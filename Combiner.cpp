@@ -126,21 +126,21 @@ void Combiner_Init()
 
 	switch (combiner.compiler)
 	{
-		case TEXTURE_ENV:
-			Init_texture_env();
-			break;
+	case TEXTURE_ENV:
+		Init_texture_env();
+		break;
 
-		case TEXTURE_ENV_COMBINE:
-			Init_texture_env_combine();
-			break;
+	case TEXTURE_ENV_COMBINE:
+		Init_texture_env_combine();
+		break;
 
-		case NV_REGISTER_COMBINERS:
-			Init_NV_register_combiners();
-			break;
+	case NV_REGISTER_COMBINERS:
+		Init_NV_register_combiners();
+		break;
 
-		case GLSL_COMBINE:
-			InitGLSLCombiner();
-			break;
+	case GLSL_COMBINE:
+		InitGLSLCombiner();
+		break;
 	}
 	combiner.root = NULL;
 }
@@ -149,17 +149,17 @@ void Combiner_UpdateCombineColors()
 {
 	switch (combiner.compiler)
 	{
-		case TEXTURE_ENV_COMBINE:
-			Update_texture_env_combine_Colors( (TexEnvCombiner*)combiner.current->compiled );
-			break;
+	case TEXTURE_ENV_COMBINE:
+		Update_texture_env_combine_Colors( (TexEnvCombiner*)combiner.current->compiled );
+		break;
 
-		case NV_REGISTER_COMBINERS:
-			Update_NV_register_combiners_Colors( (RegisterCombiners*)combiner.current->compiled );
-			break;
+	case NV_REGISTER_COMBINERS:
+		Update_NV_register_combiners_Colors( (RegisterCombiners*)combiner.current->compiled );
+		break;
 
-		case GLSL_COMBINE:
-			UpdateGLSLCombinerColors( (GLSLCombiner*)combiner.current->compiled );
-			break;
+	case GLSL_COMBINE:
+		UpdateGLSLCombinerColors( (GLSLCombiner*)combiner.current->compiled );
+		break;
 	}
 
 	gDP.changed &= ~CHANGED_COMBINE_COLORS;
@@ -378,25 +378,25 @@ CachedCombiner *Combiner_Compile( u64 mux )
 	cached->combine.mux = combine.mux;
 	cached->left = NULL;
 	cached->right = NULL;
-	
+
 	// Send the simplified combiner to the hardware-specific compiler
 	switch (combiner.compiler)
 	{
-		case TEXTURE_ENV:
-			cached->compiled = (void*)Compile_texture_env( &color, &alpha );
-			break;
+	case TEXTURE_ENV:
+		cached->compiled = (void*)Compile_texture_env( &color, &alpha );
+		break;
 
-		case TEXTURE_ENV_COMBINE:
-			cached->compiled = (void*)Compile_texture_env_combine( &color, &alpha );
-			break;
+	case TEXTURE_ENV_COMBINE:
+		cached->compiled = (void*)Compile_texture_env_combine( &color, &alpha );
+		break;
 
-		case NV_REGISTER_COMBINERS:
-			cached->compiled = (void*)Compile_NV_register_combiners( &color, &alpha );
-			break;
+	case NV_REGISTER_COMBINERS:
+		cached->compiled = (void*)Compile_NV_register_combiners( &color, &alpha );
+		break;
 
-		case GLSL_COMBINE:
-			cached->compiled = (void*)CompileGLSLCominer( &color, &alpha );
-			break;
+	case GLSL_COMBINE:
+		cached->compiled = (void*)CompileGLSLCominer( &color, &alpha );
+		break;
 	}
 
 	return cached;
@@ -430,9 +430,9 @@ void Combiner_BeginTextureUpdate()
 {
 	switch (combiner.compiler)
 	{
-		case TEXTURE_ENV_COMBINE:
-			BeginTextureUpdate_texture_env_combine();
-			break;
+	case TEXTURE_ENV_COMBINE:
+		BeginTextureUpdate_texture_env_combine();
+		break;
 	}
 }
 
@@ -440,22 +440,22 @@ void Combiner_EndTextureUpdate()
 {
 	switch (combiner.compiler)
 	{
-		case TEXTURE_ENV_COMBINE:
-			//EndTextureUpdate_texture_env_combine();
-			Set_texture_env_combine( (TexEnvCombiner*)combiner.current->compiled );
-			break;
+	case TEXTURE_ENV_COMBINE:
+		//EndTextureUpdate_texture_env_combine();
+		Set_texture_env_combine( (TexEnvCombiner*)combiner.current->compiled );
+		break;
 	}
 }
 
 DWORD64 Combiner_EncodeCombineMode( WORD saRGB0, WORD sbRGB0, WORD mRGB0, WORD aRGB0,
-								 WORD saA0,   WORD sbA0,   WORD mA0,   WORD aA0,
-								 WORD saRGB1, WORD sbRGB1, WORD mRGB1, WORD aRGB1,
-								 WORD saA1,   WORD sbA1,   WORD mA1,   WORD aA1 )
+								   WORD saA0,   WORD sbA0,   WORD mA0,   WORD aA0,
+								   WORD saRGB1, WORD sbRGB1, WORD mRGB1, WORD aRGB1,
+								   WORD saA1,   WORD sbA1,   WORD mA1,   WORD aA1 )
 {
 	return (((DWORD64)CCEncodeA[saRGB0] << 52) | ((DWORD64)CCEncodeB[sbRGB0] << 28) | ((DWORD64)CCEncodeC[mRGB0] << 47) | ((DWORD64)CCEncodeD[aRGB0] << 15) |
-		    ((DWORD64)ACEncodeA[saA0] << 44) | ((DWORD64)ACEncodeB[sbA0] << 12) | ((DWORD64)ACEncodeC[mA0] << 41) | ((DWORD64)ACEncodeD[aA0] << 9) |
-			((DWORD64)CCEncodeA[saRGB1] << 37) | ((DWORD64)CCEncodeB[sbRGB1] << 24) | ((DWORD64)CCEncodeC[mRGB1]      ) | ((DWORD64)CCEncodeD[aRGB1] <<  6) |
-			((DWORD64)ACEncodeA[saA1] << 18) | ((DWORD64)ACEncodeB[sbA1] <<  3) | ((DWORD64)ACEncodeC[mA1] << 18) | ((DWORD64)ACEncodeD[aA1]     ));
+		((DWORD64)ACEncodeA[saA0] << 44) | ((DWORD64)ACEncodeB[sbA0] << 12) | ((DWORD64)ACEncodeC[mA0] << 41) | ((DWORD64)ACEncodeD[aA0] << 9) |
+		((DWORD64)CCEncodeA[saRGB1] << 37) | ((DWORD64)CCEncodeB[sbRGB1] << 24) | ((DWORD64)CCEncodeC[mRGB1]      ) | ((DWORD64)CCEncodeD[aRGB1] <<  6) |
+		((DWORD64)ACEncodeA[saA1] << 18) | ((DWORD64)ACEncodeB[sbA1] <<  3) | ((DWORD64)ACEncodeC[mA1] << 18) | ((DWORD64)ACEncodeD[aA1]     ));
 }
 
 void Combiner_SelectCombine( u64 mux )
@@ -464,7 +464,7 @@ void Combiner_SelectCombine( u64 mux )
 	if ((gDP.otherMode.cycleType == G_CYC_1CYCLE) && (mux == 0x00ffe7ffffcf9fcf) && (cache.current[0]->frameBufferTexture))
 	{
 		mux = EncodeCombineMode( 0, 0, 0, 0, TEXEL0, 0, PRIMITIVE, 0,
-								 0, 0, 0, 0, TEXEL0, 0, PRIMITIVE, 0 );
+			0, 0, 0, 0, TEXEL0, 0, PRIMITIVE, 0 );
 	}
 
 	CachedCombiner *current = combiner.root;
@@ -503,21 +503,21 @@ void Combiner_SetCombineStates()
 {
 	switch (combiner.compiler)
 	{
-		case TEXTURE_ENV:
-			Set_texture_env( (TexEnv*)combiner.current->compiled );
-			break;
+	case TEXTURE_ENV:
+		Set_texture_env( (TexEnv*)combiner.current->compiled );
+		break;
 
-		case TEXTURE_ENV_COMBINE:
-			Set_texture_env_combine( (TexEnvCombiner*)combiner.current->compiled );
-			break;
+	case TEXTURE_ENV_COMBINE:
+		Set_texture_env_combine( (TexEnvCombiner*)combiner.current->compiled );
+		break;
 
-		case NV_REGISTER_COMBINERS:
-			Set_NV_register_combiners( (RegisterCombiners*)combiner.current->compiled );
-			break;
+	case NV_REGISTER_COMBINERS:
+		Set_NV_register_combiners( (RegisterCombiners*)combiner.current->compiled );
+		break;
 
-		case GLSL_COMBINE:
-			SetGLSLCombiner( (GLSLCombiner*)combiner.current->compiled );
-			break;
+	case GLSL_COMBINE:
+		SetGLSLCombiner( (GLSLCombiner*)combiner.current->compiled );
+		break;
 	}
 }
 

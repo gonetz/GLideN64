@@ -12,8 +12,8 @@
 #define GLSL_COMBINE				3
 
 /*
- * G_SETCOMBINE: color combine modes
- */
+* G_SETCOMBINE: color combine modes
+*/
 /* Color combiner constants: */
 #define G_CCMUX_COMBINED	0
 #define G_CCMUX_TEXEL0		1
@@ -50,15 +50,15 @@
 #define G_ACMUX_0		7
 
 #define EncodeCombineMode( a0, b0, c0, d0, Aa0, Ab0, Ac0, Ad0,	\
-		a1, b1, c1, d1,	Aa1, Ab1, Ac1, Ad1 ) \
-		(u64)(((u64)(_SHIFTL( G_CCMUX_##a0, 20, 4 ) | _SHIFTL( G_CCMUX_##c0, 15, 5 ) | \
-		_SHIFTL( G_ACMUX_##Aa0, 12, 3 ) | _SHIFTL( G_ACMUX_##Ac0, 9, 3 ) | \
-		_SHIFTL( G_CCMUX_##a1, 5, 4 ) | _SHIFTL( G_CCMUX_##c1, 0, 5 )) << 32) | \
-		(u64)(_SHIFTL( G_CCMUX_##b0, 28, 4 ) | _SHIFTL( G_CCMUX_##d0, 15, 3 ) | \
-		_SHIFTL( G_ACMUX_##Ab0, 12, 3 ) | _SHIFTL( G_ACMUX_##Ad0, 9, 3 ) | \
-		_SHIFTL( G_CCMUX_##b1, 24, 4 ) | _SHIFTL( G_ACMUX_##Aa1, 21, 3 ) | \
-		_SHIFTL( G_ACMUX_##Ac1, 18, 3 ) | _SHIFTL( G_CCMUX_##d1, 6, 3 ) | \
-		_SHIFTL( G_ACMUX_##Ab1, 3, 3 ) | _SHIFTL( G_ACMUX_##Ad1, 0, 3 )))
+	a1, b1, c1, d1,	Aa1, Ab1, Ac1, Ad1 ) \
+	(u64)(((u64)(_SHIFTL( G_CCMUX_##a0, 20, 4 ) | _SHIFTL( G_CCMUX_##c0, 15, 5 ) | \
+	_SHIFTL( G_ACMUX_##Aa0, 12, 3 ) | _SHIFTL( G_ACMUX_##Ac0, 9, 3 ) | \
+	_SHIFTL( G_CCMUX_##a1, 5, 4 ) | _SHIFTL( G_CCMUX_##c1, 0, 5 )) << 32) | \
+	(u64)(_SHIFTL( G_CCMUX_##b0, 28, 4 ) | _SHIFTL( G_CCMUX_##d0, 15, 3 ) | \
+	_SHIFTL( G_ACMUX_##Ab0, 12, 3 ) | _SHIFTL( G_ACMUX_##Ad0, 9, 3 ) | \
+	_SHIFTL( G_CCMUX_##b1, 24, 4 ) | _SHIFTL( G_ACMUX_##Aa1, 21, 3 ) | \
+	_SHIFTL( G_ACMUX_##Ac1, 18, 3 ) | _SHIFTL( G_CCMUX_##d1, 6, 3 ) | \
+	_SHIFTL( G_ACMUX_##Ab1, 3, 3 ) | _SHIFTL( G_ACMUX_##Ad1, 0, 3 )))
 
 // Internal combiner commands
 #define LOAD		0
@@ -139,62 +139,62 @@ extern struct CombinerInfo
 
 #define SetConstant( constant, color, alpha ) \
 	switch (color) \
-	{ \
-		case PRIMITIVE: \
-			constant.r = gDP.primColor.r; \
-			constant.g = gDP.primColor.g; \
-			constant.b = gDP.primColor.b; \
-			break; \
+{ \
+	case PRIMITIVE: \
+	constant.r = gDP.primColor.r; \
+	constant.g = gDP.primColor.g; \
+	constant.b = gDP.primColor.b; \
+	break; \
 		case ENVIRONMENT: \
-			constant.r = gDP.envColor.r; \
-			constant.g = gDP.envColor.g; \
-			constant.b = gDP.envColor.b; \
-			break; \
+		constant.r = gDP.envColor.r; \
+		constant.g = gDP.envColor.g; \
+		constant.b = gDP.envColor.b; \
+		break; \
 		case PRIMITIVE_ALPHA: \
-			constant.r = gDP.primColor.a; \
-			constant.g = gDP.primColor.a; \
-			constant.b = gDP.primColor.a; \
-			break; \
+		constant.r = gDP.primColor.a; \
+		constant.g = gDP.primColor.a; \
+		constant.b = gDP.primColor.a; \
+		break; \
 		case ENV_ALPHA: \
-			constant.r = gDP.envColor.a; \
-			constant.g = gDP.envColor.a; \
-			constant.b = gDP.envColor.a; \
-			break; \
+		constant.r = gDP.envColor.a; \
+		constant.g = gDP.envColor.a; \
+		constant.b = gDP.envColor.a; \
+		break; \
 		case PRIM_LOD_FRAC: \
-			constant.r = gDP.primColor.l; \
-			constant.g = gDP.primColor.l; \
-			constant.b = gDP.primColor.l; \
-			break; \
+		constant.r = gDP.primColor.l; \
+		constant.g = gDP.primColor.l; \
+		constant.b = gDP.primColor.l; \
+		break; \
 		case ONE: \
-			constant.r = 1.0f; \
-			constant.g = 1.0f; \
-			constant.b = 1.0f; \
-			break; \
+		constant.r = 1.0f; \
+		constant.g = 1.0f; \
+		constant.b = 1.0f; \
+		break; \
 		case ZERO: \
-			constant.r = 0.0f; \
-			constant.g = 0.0f; \
-			constant.b = 0.0f; \
-			break; \
-	} \
-\
+		constant.r = 0.0f; \
+		constant.g = 0.0f; \
+		constant.b = 0.0f; \
+		break; \
+} \
+	\
 	switch (alpha) \
-	{ \
-		case PRIMITIVE_ALPHA: \
-			constant.a = gDP.primColor.a; \
-			break; \
+{ \
+	case PRIMITIVE_ALPHA: \
+	constant.a = gDP.primColor.a; \
+	break; \
 		case ENV_ALPHA: \
-			constant.a = gDP.envColor.a; \
-			break; \
+		constant.a = gDP.envColor.a; \
+		break; \
 		case PRIM_LOD_FRAC: \
-			constant.a = gDP.primColor.l; \
-			break; \
+		constant.a = gDP.primColor.l; \
+		break; \
 		case ONE: \
-			constant.a = 1.0f; \
-			break; \
+		constant.a = 1.0f; \
+		break; \
 		case ZERO: \
-			constant.a = 0.0f; \
-			break; \
-	} 
+		constant.a = 0.0f; \
+		break; \
+} 
 
 void Combiner_Init();
 void Combiner_UpdateCombineColors();
