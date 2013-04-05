@@ -198,10 +198,7 @@ extern struct CombinerInfo
 
 void Combiner_Init();
 void Combiner_UpdateCombineColors();
-void Combiner_UpdateCombineMode();
 void Combiner_SetCombine( u64 mux );
-void Combiner_SelectCombine( u64 mux );
-void Combiner_SetCombineStates();
 void Combiner_Destroy();
 void Combiner_BeginTextureUpdate();
 void Combiner_EndTextureUpdate();
