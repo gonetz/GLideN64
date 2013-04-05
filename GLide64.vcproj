@@ -2,7 +2,7 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8,00"
-	Name="glN64"
+	Name="GLide64"
 	ProjectGUID="{37D31D7F-C4E7-45B0-AEF6-D6824A243CF7}"
 	Keyword="Win32Proj"
 	>
@@ -62,7 +62,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="opengl32.lib glu32.lib winmm.lib"
-				OutputFile="c:\game files\emulators\nintendo 64\plugin\glN64.dll"
+				OutputFile="E:\N64\Plugin\glide64gl.dll"
 				LinkIncremental="2"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="$(OutDir)/New glNintendo64().pdb"
@@ -146,7 +146,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="opengl32.lib winmm.lib"
-				OutputFile="c:/game files/emulators/nintendo 64/plugin/glN64.dll"
+				OutputFile="E:\N64\Plugin\glide64gl.dll"
 				LinkIncremental="1"
 				GenerateDebugInformation="true"
 				SubSystem="2"
@@ -227,7 +227,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="opengl32.lib glu32.lib winmm.lib"
-				OutputFile="c:\game files\emulators\nintendo 64\plugin\glN64.dll"
+				OutputFile="E:\N64\Plugin\glide64gl.dll"
 				LinkIncremental="2"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="$(OutDir)/New glNintendo64().pdb"
@@ -387,6 +387,10 @@
 			<Filter
 				Name="Combiners"
 				>
+				<File
+					RelativePath=".\GLSLCombiner.cpp"
+					>
+				</File>
 				<File
 					RelativePath="NV_register_combiners.cpp"
 					>
@@ -556,6 +560,10 @@
 			<Filter
 				Name="Combiners"
 				>
+				<File
+					RelativePath=".\GLSLCombiner.h"
+					>
+				</File>
 				<File
 					RelativePath="NV_register_combiners.h"
 					>

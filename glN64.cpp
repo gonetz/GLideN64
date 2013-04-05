@@ -27,7 +27,7 @@ HWND		hToolBar;
 HINSTANCE	hInstance;
 #endif // !__LINUX__
 
-char		pluginName[] = "glN64 v0.4.1-rc2";
+char		pluginName[] = "GLide64 alpha";
 char		*screenDirectory;
 
 void (*CheckInterrupts)( void );
