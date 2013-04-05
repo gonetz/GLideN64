@@ -1,0 +1,243 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// English (U.S.) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+#endif //_WIN32
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_DEBUGDLG DIALOGEX 0, 0, 489, 238
+STYLE DS_SETFONT | WS_VISIBLE | WS_CAPTION
+EXSTYLE WS_EX_TOOLWINDOW
+CAPTION "glN64 Debug Output"
+FONT 8, "MS Sans Serif", 0, 0, 0x1
+BEGIN
+    GROUPBOX        "Debug Level",IDC_STATIC,4,161,240,28
+    CONTROL         "High",IDC_DEBUGHIGH,"Button",BS_AUTORADIOBUTTON | 
+                    WS_GROUP,14,173,31,10
+    CONTROL         "Medium",IDC_DEBUGMEDIUM,"Button",BS_AUTORADIOBUTTON,71,
+                    173,41,10
+    CONTROL         "Low",IDC_DEBUGLOW,"Button",BS_AUTORADIOBUTTON,138,173,
+                    29,10
+    GROUPBOX        "Show",IDC_STATIC,4,192,303,41
+    CONTROL         "Unhandled",IDC_SHOWUNHANDLED,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,13,216,51,10
+    CONTROL         "Unknown",IDC_SHOWUNKNOWN,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,80,216,47,10
+    CONTROL         "Errors",IDC_SHOWERRORS,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,80,204,34,10
+    CONTROL         "Handled",IDC_SHOWHANDLED,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,13,204,43,10
+    PUSHBUTTON      "Pause",IDC_PAUSE,320,219,50,14
+    PUSHBUTTON      "Step",IDC_STEP,376,219,50,14
+    PUSHBUTTON      "Run",IDC_RUN,435,219,50,14
+    CONTROL         "",IDC_DEBUGEDIT,"RichEdit20A",ES_MULTILINE | 
+                    ES_AUTOHSCROLL | ES_READONLY | WS_BORDER | WS_VSCROLL | 
+                    WS_TABSTOP,4,4,481,122
+    EDITTEXT        IDC_PC,87,132,40,14,ES_AUTOHSCROLL
+    LTEXT           "PC:",IDC_STATIC,71,135,12,8
+    EDITTEXT        IDC_PCI,47,131,16,14,ES_AUTOHSCROLL
+    LTEXT           "PC Index:",IDC_STATIC,11,134,32,8
+    LTEXT           "Command:",IDC_STATIC,144,134,34,8
+    LTEXT           "Word 0:",IDC_STATIC,210,134,26,8
+    LTEXT           "Word 1:",IDC_STATIC,284,134,26,8
+    EDITTEXT        IDC_W1,315,131,40,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_W0,239,131,40,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_CMD,181,131,17,14,ES_AUTOHSCROLL
+    CONTROL         "Texture",IDC_SHOWTEXTURE,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,251,204,40,10
+    CONTROL         "Matrix",IDC_SHOWMATRIX,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,143,216,35,10
+    CONTROL         "Vertex",IDC_SHOWVERTEX,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,194,204,36,10
+    CONTROL         "Triangle",IDC_SHOWTRIANGLE,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,194,216,41,10
+    CONTROL         "Combine",IDC_SHOWCOMBINE,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,251,216,43,10
+    CONTROL         "Ignored",IDC_SHOWIGNORED,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,143,204,40,10
+    CONTROL         "Detailed",IDC_DEBUGDETAIL,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,193,173,42,10
+END
+
+IDD_CONFIGDLG DIALOGEX 0, 0, 247, 201
+STYLE DS_ABSALIGN | DS_SETFONT | DS_MODALFRAME | DS_3DLOOK | DS_FIXEDSYS | 
+    DS_CENTER | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CAPTION
+CAPTION "glN64 Configuration"
+FONT 8, "MS Shell Dlg", 0, 0, 0x0
+BEGIN
+    LTEXT           "Full Screen Mode:",IDC_STATIC,15,33,58,8
+    COMBOBOX        IDC_FULLSCREENRES,125,31,60,111,CBS_DROPDOWNLIST | 
+                    WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Windowed Resolution:",IDC_STATIC,15,49,72,8
+    COMBOBOX        IDC_WINDOWEDRES,125,47,60,100,CBS_DROPDOWNLIST | 
+                    WS_VSCROLL | WS_TABSTOP
+    CONTROL         "Force Bilinear Filtering",IDC_FORCEBILINEAR,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,135,66,86,10
+    GROUPBOX        "Textures",IDC_STATIC,7,104,233,69
+    LTEXT           "Texture Cache Size:",IDC_STATIC,15,137,66,8
+    EDITTEXT        IDC_CACHEMEGS,87,134,22,14,ES_NUMBER,WS_EX_RIGHT
+    LTEXT           "MB",IDC_STATIC,111,137,10,8
+    PUSHBUTTON      "OK",IDOK,71,180,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,126,180,50,14
+    GROUPBOX        "Display",IDC_STATIC,7,7,233,91
+    COMBOBOX        IDC_FULLSCREENREFRESH,191,31,38,111,CBS_DROPDOWNLIST | 
+                    WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Bit Depth:",IDC_STATIC,81,18,33,8
+    LTEXT           "Resolution:",IDC_STATIC,136,18,37,8
+    LTEXT           "Refresh Rate:",IDC_STATIC,187,18,46,8
+    COMBOBOX        IDC_FULLSCREENBITDEPTH,80,31,39,111,CBS_DROPDOWNLIST | 
+                    WS_VSCROLL | WS_TABSTOP
+    CONTROL         "Enable 2xSaI texture scaling",IDC_ENABLE2XSAI,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,16,66,107,10
+    CONTROL         "Enable Fog",IDC_FOG,"Button",BS_AUTOCHECKBOX | 
+                    WS_TABSTOP,135,81,51,10
+    CONTROL         "Hardware Frame Buffer Textures (Experimental)",
+                    IDC_FRAMEBUFFER,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,17,
+                    154,171,10
+    COMBOBOX        IDC_TEXTUREBPP,87,118,107,75,CBS_DROPDOWNLIST | 
+                    WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Texture Bit Depth:",IDC_STATIC,15,120,60,8
+    CONTROL         "Enabled Dithered Alpha Testing",IDC_DITHEREDALPHATEST,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,16,81,116,10
+END
+
+IDD_MICROCODEDLG DIALOGEX 0, 0, 384, 129
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | 
+    WS_SYSMENU
+CAPTION "glN64 Unknown Microcode"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,136,108,50,14
+    PUSHBUTTON      "Stop",IDCANCEL,198,108,50,14
+    COMBOBOX        IDC_MICROCODE,168,86,87,80,CBS_DROPDOWN | WS_VSCROLL | 
+                    WS_TABSTOP
+    LTEXT           "Microcode:",IDC_STATIC,129,88,36,8
+    LTEXT           "Unknown microcode detected. Please notify Orkin, including the following information:",
+                    IDC_STATIC,53,7,278,8
+    LTEXT           "You can manually select the closest matching microcode, or stop the video thread",
+                    IDC_STATIC,62,73,261,8
+    EDITTEXT        IDC_TEXTBOX,7,20,370,31,ES_MULTILINE | ES_AUTOHSCROLL | 
+                    ES_READONLY
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO 
+BEGIN
+    IDD_DEBUGDLG, DIALOG
+    BEGIN
+        LEFTMARGIN, 4
+        RIGHTMARGIN, 485
+        TOPMARGIN, 4
+        BOTTOMMARGIN, 233
+    END
+
+    IDD_CONFIGDLG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 240
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 194
+    END
+
+    IDD_MICROCODEDLG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 377
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 122
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog Info
+//
+
+IDD_CONFIGDLG DLGINIT
+BEGIN
+    IDC_FULLSCREENRES, 0x403, 10, 0
+0x3631, 0x3030, 0x3178, 0x3032, 0x0030, 
+    IDC_FULLSCREENREFRESH, 0x403, 6, 0
+0x3036, 0x4820, 0x007a, 
+    IDC_TEXTUREBPP, 0x403, 21, 0
+0x3631, 0x622d, 0x7469, 0x6f20, 0x6c6e, 0x2079, 0x6628, 0x7361, 0x6574, 
+0x2972, "\000" 
+    IDC_TEXTUREBPP, 0x403, 27, 0
+0x3631, 0x622d, 0x7469, 0x6120, 0x646e, 0x3320, 0x2d32, 0x6962, 0x2074, 
+0x6e28, 0x726f, 0x616d, 0x296c, "\000" 
+    IDC_TEXTUREBPP, 0x403, 29, 0
+0x3233, 0x622d, 0x7469, 0x6f20, 0x6c6e, 0x2079, 0x6228, 0x7365, 0x2074, 
+0x6f66, 0x2072, 0x7832, 0x4153, 0x2949, "\000" 
+    0
+END
+
+#endif    // English (U.S.) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+
