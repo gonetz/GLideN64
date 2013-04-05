@@ -1,1 +1,5 @@
 backup/
+Debug*/
+Release*/
+*.ncb
+*.suo
