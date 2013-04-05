@@ -519,41 +519,6 @@ static const char *ScissorModeText[] =
 };
 #endif
 
-/* Color combiner constants: */
-#define G_CCMUX_COMBINED		0
-#define G_CCMUX_TEXEL0			1
-#define G_CCMUX_TEXEL1			2
-#define G_CCMUX_PRIMITIVE		3
-#define G_CCMUX_SHADE			4
-#define G_CCMUX_ENVIRONMENT		5
-#define G_CCMUX_CENTER			6
-#define G_CCMUX_SCALE			6
-#define G_CCMUX_COMBINED_ALPHA	7
-#define G_CCMUX_TEXEL0_ALPHA	8
-#define G_CCMUX_TEXEL1_ALPHA	9
-#define G_CCMUX_PRIMITIVE_ALPHA	10
-#define G_CCMUX_SHADE_ALPHA		11
-#define G_CCMUX_ENV_ALPHA		12
-#define G_CCMUX_LOD_FRACTION	13
-#define G_CCMUX_PRIM_LOD_FRAC	14
-#define G_CCMUX_NOISE			7
-#define G_CCMUX_K4				7
-#define G_CCMUX_K5				15
-#define G_CCMUX_1				6
-#define G_CCMUX_0				31
-
-/* Alpha combiner constants: */
-#define G_ACMUX_COMBINED		0
-#define G_ACMUX_TEXEL0			1
-#define G_ACMUX_TEXEL1			2
-#define G_ACMUX_PRIMITIVE		3
-#define G_ACMUX_SHADE			4
-#define G_ACMUX_ENVIRONMENT		5
-#define G_ACMUX_LOD_FRACTION	0
-#define G_ACMUX_PRIM_LOD_FRAC	6
-#define G_ACMUX_1				6
-#define G_ACMUX_0				7
-
 #ifdef DEBUG
 static const char *saRGBText[] =
 {
