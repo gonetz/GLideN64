@@ -10,6 +10,7 @@
 #define TEXTURE_ENV_COMBINE			1
 #define NV_REGISTER_COMBINERS		2
 #define NV_TEXTURE_ENV_COMBINE4		3
+#define GLSL_COMBINE				4
 
 /*
  * G_SETCOMBINE: color combine modes

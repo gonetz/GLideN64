@@ -8,6 +8,7 @@
 #include "NV_register_combiners.h"
 #include "texture_env_combine.h"
 #include "texture_env.h"
+#include "GLSLCombiner.h"
 #include "Debug.h"
 #include "gDP.h"
 
@@ -15,7 +16,9 @@ CombinerInfo combiner;
 
 void Combiner_Init()
 {
-	if (OGL.NV_register_combiners)
+	if (OGL.GLSL)
+		combiner.compiler = GLSL_COMBINE;
+	else if (OGL.NV_register_combiners)
 		combiner.compiler = NV_REGISTER_COMBINERS;
 	else if (OGL.EXT_texture_env_combine || OGL.ARB_texture_env_combine)
 		combiner.compiler = TEXTURE_ENV_COMBINE;
@@ -36,6 +39,10 @@ void Combiner_Init()
 		case NV_REGISTER_COMBINERS:
 			Init_NV_register_combiners();
 			break;
+
+		case GLSL_COMBINE:
+			InitGLSLCombiner();
+			break;
 	}
 	combiner.root = NULL;
 }
@@ -50,6 +57,10 @@ void Combiner_UpdateCombineColors()
 
 		case NV_REGISTER_COMBINERS:
 			Update_NV_register_combiners_Colors( (RegisterCombiners*)combiner.current->compiled );
+			break;
+
+		case GLSL_COMBINE:
+			UpdateGLSLCombinerColors( (GLSLCombiner*)combiner.current->compiled );
 			break;
 	}
 
@@ -284,6 +295,10 @@ CachedCombiner *Combiner_Compile( u64 mux )
 		case NV_REGISTER_COMBINERS:
 			cached->compiled = (void*)Compile_NV_register_combiners( &color, &alpha );
 			break;
+
+		case GLSL_COMBINE:
+			cached->compiled = (void*)CompileGLSLCominer( &color, &alpha );
+			break;
 	}
 
 	return cached;
@@ -400,6 +415,10 @@ void Combiner_SetCombineStates()
 
 		case NV_REGISTER_COMBINERS:
 			Set_NV_register_combiners( (RegisterCombiners*)combiner.current->compiled );
+			break;
+
+		case GLSL_COMBINE:
+			SetGLSLCombiner( (GLSLCombiner*)combiner.current->compiled );
 			break;
 	}
 }

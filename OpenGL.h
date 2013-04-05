@@ -58,6 +58,7 @@ struct GLInfo
 
 	BOOL	NV_texture_env_combine4;	// TNT, GeForce
 	BOOL	NV_register_combiners;		// GeForce
+	BOOL	GLSL;						// GeForce, Radeon
 	BOOL	ARB_buffer_region;
 	BOOL	ARB_pbuffer;
 	BOOL	ARB_render_texture;
@@ -93,6 +94,23 @@ struct GLcolor
 };
 
 #ifndef __LINUX__
+extern PFNGLCREATESHADEROBJECTARBPROC glCreateShaderObjectARB;
+extern PFNGLSHADERSOURCEARBPROC glShaderSourceARB;
+extern PFNGLCOMPILESHADERARBPROC glCompileShaderARB;
+extern PFNGLCREATEPROGRAMOBJECTARBPROC glCreateProgramObjectARB;
+extern PFNGLATTACHOBJECTARBPROC glAttachObjectARB;
+extern PFNGLLINKPROGRAMARBPROC glLinkProgramARB;
+extern PFNGLUSEPROGRAMOBJECTARBPROC glUseProgramObjectARB;
+extern PFNGLGETUNIFORMLOCATIONARBPROC glGetUniformLocationARB;
+extern PFNGLUNIFORM1IARBPROC glUniform1iARB;
+extern PFNGLUNIFORM4IARBPROC glUniform4iARB;
+extern PFNGLUNIFORM4FARBPROC glUniform4fARB;
+extern PFNGLUNIFORM1FARBPROC glUniform1fARB;
+extern PFNGLDELETEOBJECTARBPROC glDeleteObjectARB;
+extern PFNGLGETINFOLOGARBPROC glGetInfoLogARB;
+extern PFNGLGETOBJECTPARAMETERIVARBPROC glGetObjectParameterivARB;
+extern PFNGLSECONDARYCOLOR3FPROC glSecondaryColor3f;
+
 extern PFNGLCOMBINERPARAMETERFVNVPROC glCombinerParameterfvNV;
 extern PFNGLCOMBINERPARAMETERFNVPROC glCombinerParameterfNV;
 extern PFNGLCOMBINERPARAMETERIVNVPROC glCombinerParameterivNV;

@@ -23,6 +23,24 @@
 GLInfo OGL;
 
 #ifndef __LINUX__
+// GLSL functions
+PFNGLCREATESHADEROBJECTARBPROC glCreateShaderObjectARB;
+PFNGLSHADERSOURCEARBPROC glShaderSourceARB;
+PFNGLCOMPILESHADERARBPROC glCompileShaderARB;
+PFNGLCREATEPROGRAMOBJECTARBPROC glCreateProgramObjectARB;
+PFNGLATTACHOBJECTARBPROC glAttachObjectARB;
+PFNGLLINKPROGRAMARBPROC glLinkProgramARB;
+PFNGLUSEPROGRAMOBJECTARBPROC glUseProgramObjectARB;
+PFNGLGETUNIFORMLOCATIONARBPROC glGetUniformLocationARB;
+PFNGLUNIFORM1IARBPROC glUniform1iARB;
+PFNGLUNIFORM4IARBPROC glUniform4iARB;
+PFNGLUNIFORM4FARBPROC glUniform4fARB;
+PFNGLUNIFORM1FARBPROC glUniform1fARB;
+PFNGLDELETEOBJECTARBPROC glDeleteObjectARB;
+PFNGLGETINFOLOGARBPROC glGetInfoLogARB;
+PFNGLGETOBJECTPARAMETERIVARBPROC glGetObjectParameterivARB;
+PFNGLSECONDARYCOLOR3FPROC glSecondaryColor3f;
+
 // NV_register_combiners functions
 PFNGLCOMBINERPARAMETERFVNVPROC glCombinerParameterfvNV;
 PFNGLCOMBINERPARAMETERFNVPROC glCombinerParameterfNV;
@@ -102,6 +120,33 @@ BOOL isExtensionSupported( const char *extension )
 
 void OGL_InitExtensions()
 {
+	if (OGL.GLSL = isExtensionSupported("GL_ARB_shading_language_100") &&
+		isExtensionSupported("GL_ARB_shader_objects") &&
+		isExtensionSupported("GL_ARB_fragment_shader") &&
+		isExtensionSupported("GL_ARB_vertex_shader"))
+	{
+#ifndef __LINUX__
+		glCreateShaderObjectARB = (PFNGLCREATESHADEROBJECTARBPROC)wglGetProcAddress("glCreateShaderObjectARB");
+		glShaderSourceARB = (PFNGLSHADERSOURCEARBPROC)wglGetProcAddress("glShaderSourceARB");
+		glCompileShaderARB = (PFNGLCOMPILESHADERARBPROC)wglGetProcAddress("glCompileShaderARB");
+		glCreateProgramObjectARB = (PFNGLCREATEPROGRAMOBJECTARBPROC)wglGetProcAddress("glCreateProgramObjectARB");
+		glAttachObjectARB = (PFNGLATTACHOBJECTARBPROC)wglGetProcAddress("glAttachObjectARB");
+		glLinkProgramARB = (PFNGLLINKPROGRAMARBPROC)wglGetProcAddress("glLinkProgramARB");
+		glUseProgramObjectARB = (PFNGLUSEPROGRAMOBJECTARBPROC)wglGetProcAddress("glUseProgramObjectARB");
+		glGetUniformLocationARB = (PFNGLGETUNIFORMLOCATIONARBPROC)wglGetProcAddress("glGetUniformLocationARB");
+		glUniform1iARB = (PFNGLUNIFORM1IARBPROC)wglGetProcAddress("glUniform1iARB");
+		glUniform4iARB = (PFNGLUNIFORM4IARBPROC)wglGetProcAddress("glUniform4iARB");
+		glUniform4fARB = (PFNGLUNIFORM4FARBPROC)wglGetProcAddress("glUniform4fARB");
+		glUniform1fARB = (PFNGLUNIFORM1FARBPROC)wglGetProcAddress("glUniform1fARB");
+		glDeleteObjectARB = (PFNGLDELETEOBJECTARBPROC)wglGetProcAddress("glDeleteObjectARB");
+		glGetInfoLogARB = (PFNGLGETINFOLOGARBPROC)wglGetProcAddress("glGetInfoLogARB");
+		glGetObjectParameterivARB = (PFNGLGETOBJECTPARAMETERIVARBPROC)wglGetProcAddress("glGetObjectParameterivARB");
+
+		glSecondaryColor3f = (PFNGLSECONDARYCOLOR3FPROC)wglGetProcAddress("glSecondaryColor3f");
+#endif // __LINUX__
+	}
+
+
 	if (OGL.NV_register_combiners = isExtensionSupported( "GL_NV_register_combiners" ))
 	{
 #ifndef __LINUX__

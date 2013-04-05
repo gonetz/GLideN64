@@ -1,3 +1,5 @@
+#ifdef _DEBUG
+
 #include <windows.h>
 #include <stdio.h>
 #include <process.h>
@@ -301,3 +303,5 @@ void DebugMsg( WORD type, LPCSTR format, ... )
 	}
 	va_end( va );
 }
+
+#endif
