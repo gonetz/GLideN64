@@ -12,6 +12,7 @@
 #include "Combiner.h"
 #include "GLSLCombiner.h"
 
+static
 void display_warning(const char *text, ...)
 {
 	static int first_message = 100;
@@ -200,8 +201,6 @@ static const char* vertex_shader =
 ;
 #endif
 
-static char shader_log[2048];
-
 void InitGLSLCombiner()
 {
 	glActiveTextureARB(GL_TEXTURE0_ARB);
@@ -214,6 +213,7 @@ void InitGLSLCombiner()
 	glCompileShaderARB(vertex_shader_object);
 }
 
+static
 void CompileCombiner(const CombinerStage & _stage, const char** _Input, char * _fragment_shader) {
 	char buf[128];
 	bool bBracketOpen = false;
@@ -262,9 +262,8 @@ void CompileCombiner(const CombinerStage & _stage, const char** _Input, char * _
 	strcat(_fragment_shader, "; \n");
 }
 
-GLSLCombiner * CompileGLSLCominer(Combiner *_color, Combiner *_alpha) {
-	GLSLCombiner *glslCombiner = (GLSLCombiner*)malloc(sizeof(GLSLCombiner));
-	glslCombiner->vertex_shader_object = vertex_shader_object;
+GLSLCombiner::GLSLCombiner(Combiner *_color, Combiner *_alpha) {
+	m_vertexShaderObject = vertex_shader_object;
 
 	char *fragment_shader = (char*)malloc(4096);
 
@@ -301,20 +300,19 @@ GLSLCombiner * CompileGLSLCominer(Combiner *_color, Combiner *_alpha) {
 
 	strcat(fragment_shader, fragment_shader_end);
 
-	glslCombiner->fragment_shader_object = glCreateShaderObjectARB(GL_FRAGMENT_SHADER_ARB);
-	glShaderSourceARB(glslCombiner->fragment_shader_object, 1, (const GLcharARB**)&fragment_shader, NULL);
+	m_fragmentShaderObject = glCreateShaderObjectARB(GL_FRAGMENT_SHADER_ARB);
+	glShaderSourceARB(m_fragmentShaderObject, 1, (const GLcharARB**)&fragment_shader, NULL);
 	free(fragment_shader);
 
-	glCompileShaderARB(glslCombiner->fragment_shader_object);
+	glCompileShaderARB(m_fragmentShaderObject);
 
-	glslCombiner->program_object = glCreateProgramObjectARB();
-	glAttachObjectARB(glslCombiner->program_object, glslCombiner->fragment_shader_object);
-	glAttachObjectARB(glslCombiner->program_object, glslCombiner->vertex_shader_object);
-	glLinkProgramARB(glslCombiner->program_object);
-	return glslCombiner;
+	m_programObject = glCreateProgramObjectARB();
+	glAttachObjectARB(m_programObject, m_fragmentShaderObject);
+	glAttachObjectARB(m_programObject, m_vertexShaderObject);
+	glLinkProgramARB(m_programObject);
 }
 
-void SetGLSLCombiner(GLSLCombiner *glslCombiner) {
+void GLSLCombiner::Set() {
 	combiner.usesT0 = FALSE;
 	combiner.usesT1 = FALSE;
 	combiner.usesNoise = FALSE;
@@ -323,49 +321,53 @@ void SetGLSLCombiner(GLSLCombiner *glslCombiner) {
 	combiner.vertex.secondaryColor = COMBINED;
 	combiner.vertex.alpha = COMBINED;
 
-	glUseProgramObjectARB(glslCombiner->program_object);
+	glUseProgramObjectARB(m_programObject);
 
-	int texture0_location = glGetUniformLocationARB(glslCombiner->program_object, "texture0");
+	int texture0_location = glGetUniformLocationARB(m_programObject, "texture0");
 	if (texture0_location != -1) {
 		glUniform1iARB(texture0_location, 0);
 		combiner.usesT0 = TRUE;
 	}
 
-	int texture1_location = glGetUniformLocationARB(glslCombiner->program_object, "texture1");
+	int texture1_location = glGetUniformLocationARB(m_programObject, "texture1");
 	if (texture1_location != -1) {
 		glUniform1iARB(texture1_location, 1);
 		combiner.usesT1 = TRUE;
 	}
 
+#ifdef _DEBUG
 	int log_length;
-	glGetObjectParameterivARB(glslCombiner->program_object, GL_OBJECT_LINK_STATUS_ARB , &log_length);
+	glGetObjectParameterivARB(m_programObject, GL_OBJECT_LINK_STATUS_ARB , &log_length);
 	if(!log_length)
 	{
-		glGetInfoLogARB(glslCombiner->fragment_shader_object, 
-			2048, &log_length, shader_log);
+		const int nLogSize = 1024;
+		char shader_log[nLogSize];
+		glGetInfoLogARB(m_fragmentShaderObject, 
+			nLogSize, &log_length, shader_log);
 		if(log_length) 
 			display_warning(shader_log);
-		glGetInfoLogARB(vertex_shader_object, 2048, &log_length, shader_log);
+		glGetInfoLogARB(m_vertexShaderObject, nLogSize, &log_length, shader_log);
 		if(log_length) 
 			display_warning(shader_log);
-		glGetInfoLogARB(glslCombiner->program_object, 
-			2048, &log_length, shader_log);
+		glGetInfoLogARB(m_programObject, 
+			nLogSize, &log_length, shader_log);
 		if(log_length) 
 			display_warning(shader_log);
 	}
+#endif
 }
 
-void UpdateGLSLCombinerColors(GLSLCombiner * _glslCombiner) {
+void GLSLCombiner::UpdateColors() {
 //	if (int chroma_color_location = glGetUniformLocationARB(_glslCombiner->program_object, "chroma_color") != -1)
 //		glUniform4fARB(chroma_color_location, chroma_color[0], chroma_color[1],	chroma_color[2], chroma_color[3]);
 
-	int prim_color_location = glGetUniformLocationARB(_glslCombiner->program_object, "prim_color");
+	int prim_color_location = glGetUniformLocationARB(m_programObject, "prim_color");
 	glUniform4fARB(prim_color_location, gDP.primColor.r, gDP.primColor.g, gDP.primColor.b, gDP.primColor.a);
 
-	int env_color_location = glGetUniformLocationARB(_glslCombiner->program_object, "env_color");
+	int env_color_location = glGetUniformLocationARB(m_programObject, "env_color");
 	glUniform4fARB(env_color_location, gDP.envColor.r, gDP.envColor.g, gDP.envColor.b, gDP.envColor.a);
 
-	int prim_lod_location = glGetUniformLocationARB(_glslCombiner->program_object, "prim_lod");
+	int prim_lod_location = glGetUniformLocationARB(m_programObject, "prim_lod");
 	glUniform1fARB(prim_lod_location, gDP.primColor.l);
 	
 	/*

@@ -115,11 +115,17 @@ struct CombineCycle
 	int sa, sb, m, a;
 };
 
+class OGLCombiner {
+public:
+	virtual void Set() = 0;
+	virtual void UpdateColors() = 0;
+};
+
 struct CachedCombiner
 {
 	gDPCombine combine;
 
-	void *compiled;
+	OGLCombiner *compiled;
 	CachedCombiner *left, *right;
 };
 
@@ -194,7 +200,7 @@ extern struct CombinerInfo
 		case ZERO: \
 		constant.a = 0.0f; \
 		break; \
-} 
+}
 
 void Combiner_Init();
 void Combiner_UpdateCombineColors();

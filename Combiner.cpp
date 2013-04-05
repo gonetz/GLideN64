@@ -147,21 +147,7 @@ void Combiner_Init()
 
 void Combiner_UpdateCombineColors()
 {
-	switch (combiner.compiler)
-	{
-	case TEXTURE_ENV_COMBINE:
-		Update_texture_env_combine_Colors( (TexEnvCombiner*)combiner.current->compiled );
-		break;
-
-	case NV_REGISTER_COMBINERS:
-		Update_NV_register_combiners_Colors( (RegisterCombiners*)combiner.current->compiled );
-		break;
-
-	case GLSL_COMBINE:
-		UpdateGLSLCombinerColors( (GLSLCombiner*)combiner.current->compiled );
-		break;
-	}
-
+	combiner.current->compiled->UpdateColors();
 	gDP.changed &= ~CHANGED_COMBINE_COLORS;
 }
 
@@ -383,19 +369,19 @@ CachedCombiner *Combiner_Compile( u64 mux )
 	switch (combiner.compiler)
 	{
 	case TEXTURE_ENV:
-		cached->compiled = (void*)Compile_texture_env( &color, &alpha );
+		cached->compiled = new TexEnv( &color, &alpha );
 		break;
 
 	case TEXTURE_ENV_COMBINE:
-		cached->compiled = (void*)Compile_texture_env_combine( &color, &alpha );
+		cached->compiled = new TexEnvCombiner( &color, &alpha );
 		break;
 
 	case NV_REGISTER_COMBINERS:
-		cached->compiled = (void*)Compile_NV_register_combiners( &color, &alpha );
+		cached->compiled = new RegisterCombiners( &color, &alpha );
 		break;
 
 	case GLSL_COMBINE:
-		cached->compiled = (void*)CompileGLSLCominer( &color, &alpha );
+		cached->compiled = new GLSLCombiner( &color, &alpha );
 		break;
 	}
 
@@ -407,7 +393,7 @@ void Combiner_DeleteCombiner( CachedCombiner *combiner )
 	if (combiner->left) Combiner_DeleteCombiner( combiner->left );
 	if (combiner->right) Combiner_DeleteCombiner( combiner->right );
 
-	free( combiner->compiled );
+	delete combiner->compiled;
 	free( combiner );
 }
 
@@ -441,8 +427,7 @@ void Combiner_EndTextureUpdate()
 	switch (combiner.compiler)
 	{
 	case TEXTURE_ENV_COMBINE:
-		//EndTextureUpdate_texture_env_combine();
-		Set_texture_env_combine( (TexEnvCombiner*)combiner.current->compiled );
+		combiner.current->compiled->Set();
 		break;
 	}
 }
@@ -501,24 +486,7 @@ void Combiner_SelectCombine( u64 mux )
 
 void Combiner_SetCombineStates()
 {
-	switch (combiner.compiler)
-	{
-	case TEXTURE_ENV:
-		Set_texture_env( (TexEnv*)combiner.current->compiled );
-		break;
-
-	case TEXTURE_ENV_COMBINE:
-		Set_texture_env_combine( (TexEnvCombiner*)combiner.current->compiled );
-		break;
-
-	case NV_REGISTER_COMBINERS:
-		Set_NV_register_combiners( (RegisterCombiners*)combiner.current->compiled );
-		break;
-
-	case GLSL_COMBINE:
-		SetGLSLCombiner( (GLSLCombiner*)combiner.current->compiled );
-		break;
-	}
+	combiner.current->compiled->Set();
 }
 
 void Combiner_SetCombine( u64 mux )

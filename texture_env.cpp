@@ -11,22 +11,16 @@ void Init_texture_env()
 {
 }
 
-void Uninit_texture_env()
+void TexEnv::UpdateColors()
 {
 }
 
-void Update_texture_env_Colors( TexEnv *texEnv )
+TexEnv::TexEnv( Combiner *color, Combiner *alpha )
 {
-}
+	m_usesT0 = FALSE;
+	m_usesT1 = FALSE;
 
-TexEnv *Compile_texture_env( Combiner *color, Combiner *alpha )
-{
-	TexEnv *texEnv = (TexEnv*)malloc( sizeof( TexEnv ) );
-
-	texEnv->usesT0 = FALSE;
-	texEnv->usesT1 = FALSE;
-
-	texEnv->fragment.color = texEnv->fragment.alpha = COMBINED;
+	m_fragment.color = m_fragment.alpha = COMBINED;
 
 	for (int i = 0; i < alpha->numStages; i++)
 	{
@@ -37,16 +31,16 @@ TexEnv *Compile_texture_env( Combiner *color, Combiner *alpha )
 				case LOAD:
 					if ((alpha->stage[i].op[j].param1 != TEXEL0_ALPHA) && (alpha->stage[i].op[j].param1 != TEXEL1_ALPHA))
 					{
-						texEnv->fragment.alpha = alpha->stage[i].op[j].param1;
-						texEnv->usesT0 = FALSE;
-						texEnv->usesT1 = FALSE;
+						m_fragment.alpha = alpha->stage[i].op[j].param1;
+						m_usesT0 = FALSE;
+						m_usesT1 = FALSE;
 					}
 					else
 					{
-						texEnv->mode = GL_REPLACE;
+						m_mode = GL_REPLACE;
 
-						texEnv->usesT0 = alpha->stage[i].op[j].param1 == TEXEL0_ALPHA;
-						texEnv->usesT1 = alpha->stage[i].op[j].param1 == TEXEL1_ALPHA;
+						m_usesT0 = alpha->stage[i].op[j].param1 == TEXEL0_ALPHA;
+						m_usesT1 = alpha->stage[i].op[j].param1 == TEXEL1_ALPHA;
 					}
 					break;
 				case SUB:
@@ -55,13 +49,13 @@ TexEnv *Compile_texture_env( Combiner *color, Combiner *alpha )
 					if (((alpha->stage[i].op[j].param1 == TEXEL0_ALPHA) || (alpha->stage[i].op[j].param1 == TEXEL1_ALPHA)) &&
 						((alpha->stage[i].op[j - 1].param1 != TEXEL0_ALPHA) || (alpha->stage[i].op[j - 1].param1 != TEXEL1_ALPHA)))
 					{
-						texEnv->mode = GL_MODULATE;
+						m_mode = GL_MODULATE;
 					}
 					else if (((alpha->stage[i].op[j].param1 != TEXEL0_ALPHA) || (alpha->stage[i].op[j].param1 != TEXEL1_ALPHA)) &&
 						((alpha->stage[i].op[j - 1].param1 == TEXEL0_ALPHA) || (alpha->stage[i].op[j - 1].param1 == TEXEL1_ALPHA)))
 					{
-						texEnv->fragment.alpha = alpha->stage[i].op[j].param1;
-						texEnv->mode = GL_MODULATE;
+						m_fragment.alpha = alpha->stage[i].op[j].param1;
+						m_mode = GL_MODULATE;
 					}
 					break;
 				case ADD:
@@ -81,24 +75,24 @@ TexEnv *Compile_texture_env( Combiner *color, Combiner *alpha )
 				case LOAD:
 					if ((color->stage[i].op[j].param1 == TEXEL0) || (color->stage[i].op[j].param1 == TEXEL0_ALPHA))
 					{
-						if (texEnv->mode == GL_MODULATE)
-							texEnv->fragment.color = ONE;
+						if (m_mode == GL_MODULATE)
+							m_fragment.color = ONE;
 
-						texEnv->usesT0 = TRUE;
-						texEnv->usesT1 = FALSE;
+						m_usesT0 = TRUE;
+						m_usesT1 = FALSE;
 					}
 					else if ((color->stage[i].op[j].param1 == TEXEL1) || (color->stage[i].op[j].param1 == TEXEL1_ALPHA))
 					{
-						if (texEnv->mode == GL_MODULATE)
-							texEnv->fragment.color = ONE;
+						if (m_mode == GL_MODULATE)
+							m_fragment.color = ONE;
 
-						texEnv->usesT0 = FALSE;
-						texEnv->usesT1 = TRUE;
+						m_usesT0 = FALSE;
+						m_usesT1 = TRUE;
 					}
 					else
 					{
-						texEnv->fragment.color = color->stage[i].op[j].param1;
-						texEnv->usesT0 = texEnv->usesT1 = FALSE;
+						m_fragment.color = color->stage[i].op[j].param1;
+						m_usesT0 = m_usesT1 = FALSE;
 					}
 					break;
 				case SUB:
@@ -106,26 +100,26 @@ TexEnv *Compile_texture_env( Combiner *color, Combiner *alpha )
 				case MUL:
 					if ((color->stage[i].op[j].param1 == TEXEL0) || (color->stage[i].op[j].param1 == TEXEL0_ALPHA))
 					{
-						if (!texEnv->usesT0 && !texEnv->usesT1)
+						if (!m_usesT0 && !m_usesT1)
 						{
-							texEnv->mode = GL_MODULATE;
-							texEnv->usesT0 = TRUE;
-							texEnv->usesT1 = FALSE;
+							m_mode = GL_MODULATE;
+							m_usesT0 = TRUE;
+							m_usesT1 = FALSE;
 						}
 					}
 					else if ((color->stage[i].op[j].param1 == TEXEL1) || (color->stage[i].op[j].param1 == TEXEL1_ALPHA))
 					{
-						if (!texEnv->usesT0 && !texEnv->usesT1)
+						if (!m_usesT0 && !m_usesT1)
 						{
-							texEnv->mode = GL_MODULATE;
-							texEnv->usesT0 = FALSE;
-							texEnv->usesT1 = TRUE;
+							m_mode = GL_MODULATE;
+							m_usesT0 = FALSE;
+							m_usesT1 = TRUE;
 						}
 					}
-					else if (texEnv->usesT0 || texEnv->usesT1)
+					else if (m_usesT0 || m_usesT1)
 					{
-						texEnv->mode = GL_MODULATE;
-						texEnv->fragment.color = color->stage[i].op[j].param1;
+						m_mode = GL_MODULATE;
+						m_fragment.color = color->stage[i].op[j].param1;
 					}
 					break;
 				case ADD:
@@ -136,48 +130,46 @@ TexEnv *Compile_texture_env( Combiner *color, Combiner *alpha )
 						 (color->stage[i].op[j].param2 != TEXEL1) && (color->stage[i].op[j].param2 != TEXEL1_ALPHA)) &&
 						 (color->stage[i].op[j].param3 == TEXEL0_ALPHA))
 					{
-						texEnv->mode = GL_DECAL;
-						texEnv->fragment.color = color->stage[i].op[j].param2;
-						texEnv->usesT0 = TRUE;
-						texEnv->usesT1 = FALSE;
+						m_mode = GL_DECAL;
+						m_fragment.color = color->stage[i].op[j].param2;
+						m_usesT0 = TRUE;
+						m_usesT1 = FALSE;
 					}
 					else if ((color->stage[i].op[j].param1 == TEXEL0) &&
 					    ((color->stage[i].op[j].param2 != TEXEL0) && (color->stage[i].op[j].param2 != TEXEL0_ALPHA) &&
 						 (color->stage[i].op[j].param2 != TEXEL1) && (color->stage[i].op[j].param2 != TEXEL1_ALPHA)) &&
 						 (color->stage[i].op[j].param3 == TEXEL0_ALPHA))
 					{
-						texEnv->mode = GL_DECAL;
-						texEnv->fragment.color = color->stage[i].op[j].param2;
-						texEnv->usesT0 = FALSE;
-						texEnv->usesT1 = TRUE;
+						m_mode = GL_DECAL;
+						m_fragment.color = color->stage[i].op[j].param2;
+						m_usesT0 = FALSE;
+						m_usesT1 = TRUE;
 					}
 					break;
 			}
 		}
 	}
-
-	return texEnv;
 }
 
 
-void Set_texture_env( TexEnv *texEnv )
+void TexEnv::Set()
 {
-	combiner.usesT0 = texEnv->usesT0;
-	combiner.usesT1 = texEnv->usesT1;
+	combiner.usesT0 = m_usesT0;
+	combiner.usesT1 = m_usesT1;
 	combiner.usesNoise = FALSE;
 
-	combiner.vertex.color = texEnv->fragment.color;
+	combiner.vertex.color = m_fragment.color;
 	combiner.vertex.secondaryColor = COMBINED;
-	combiner.vertex.alpha = texEnv->fragment.alpha;
+	combiner.vertex.alpha = m_fragment.alpha;
 
 	// Shouldn't ever happen, but who knows?
 	if (OGL.ARB_multitexture)
 		glActiveTextureARB( GL_TEXTURE0_ARB );
 
-	if (texEnv->usesT0 || texEnv->usesT1)
+	if (m_usesT0 || m_usesT1)
 		glEnable( GL_TEXTURE_2D );
 	else
 		glDisable( GL_TEXTURE_2D );
 
-	glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, texEnv->mode );
+	glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, m_mode );
 }
