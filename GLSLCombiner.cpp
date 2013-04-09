@@ -111,6 +111,9 @@ static const char* fragment_shader_header =
 "vec3 input_color;					\n"
 "									\n"
 "float calc_light();				\n"
+#ifdef USE_TOONIFY
+"void toonify(in float intensity);	\n"
+#endif
 "									\n"
 "void main()						\n"
 "{									\n"
@@ -179,6 +182,20 @@ static const char* fragment_shader_calc_light =
 "  return full_intensity;										\n"
 "}																\n"
 ;
+
+#ifdef USE_TOONIFY
+static const char* fragment_shader_toonify =
+"																	\n"
+"void toonify(in float intensity) {									\n"
+"   if (intensity > 0.5)											\n"
+"	   return;														\n"
+"	else if (intensity > 0.125)										\n"
+"		gl_FragColor = vec4(vec3(gl_FragColor)*0.5, gl_FragColor.a);\n"
+"	else															\n"
+"		gl_FragColor = vec4(vec3(gl_FragColor)*0.2, gl_FragColor.a);\n"
+"}																	\n"
+;
+#endif
 
 static const char* fragment_shader_default =
 //"  gl_FragColor = texture2D(texture0, gl_TexCoord[0].st); \n"
@@ -322,15 +339,21 @@ GLSLCombiner::GLSLCombiner(Combiner *_color, Combiner *_alpha) {
 		strcat(fragment_shader, "  color2 = color1; \n");
 
 	strcat(fragment_shader, "  gl_FragColor = vec4(color2, alpha2); \n");
+#ifdef USE_TOONIFY
+	strcat(fragment_shader, "  toonify(intensity); \n");
+#endif
 	if (gSP.geometryMode & G_FOG)
 		strcat(fragment_shader, "  gl_FragColor = vec4(mix(gl_Fog.color.rgb, gl_FragColor.rgb, gl_FogFragCoord), gl_FragColor.a); \n");
 #else
 //	strcat(fragment_shader, fragment_shader_default);
-	strcat(fragment_shader, "gl_FragColor = vec4(env_color); \n");
+	strcat(fragment_shader, "gl_FragColor = secondary_color; \n");
 #endif
 
 	strcat(fragment_shader, fragment_shader_end);
 	strcat(fragment_shader, fragment_shader_calc_light);
+#ifdef USE_TOONIFY
+	strcat(fragment_shader, fragment_shader_toonify);
+#endif
 
 	m_fragmentShaderObject = glCreateShaderObjectARB(GL_FRAGMENT_SHADER_ARB);
 	glShaderSourceARB(m_fragmentShaderObject, 1, (const GLcharARB**)&fragment_shader, NULL);
