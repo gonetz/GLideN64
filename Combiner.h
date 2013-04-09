@@ -89,6 +89,7 @@
 #define K5				18
 #define ONE				19
 #define ZERO			20
+#define LIGHT			21
 
 struct CombinerOp
 {
@@ -146,11 +147,11 @@ extern struct CombinerInfo
 #define SetConstant( constant, color, alpha ) \
 	switch (color) \
 { \
-	case PRIMITIVE: \
-	constant.r = gDP.primColor.r; \
-	constant.g = gDP.primColor.g; \
-	constant.b = gDP.primColor.b; \
-	break; \
+		case PRIMITIVE: \
+		constant.r = gDP.primColor.r; \
+		constant.g = gDP.primColor.g; \
+		constant.b = gDP.primColor.b; \
+		break; \
 		case ENVIRONMENT: \
 		constant.r = gDP.envColor.r; \
 		constant.g = gDP.envColor.g; \
@@ -181,13 +182,19 @@ extern struct CombinerInfo
 		constant.g = 0.0f; \
 		constant.b = 0.0f; \
 		break; \
+		case LIGHT: \
+		constant.r = 0.0f; \
+		constant.g = 0.0f; \
+		constant.b = 0.0f; \
+		constant.a = 0.0f; \
+		break; \
 } \
 	\
 	switch (alpha) \
 { \
-	case PRIMITIVE_ALPHA: \
-	constant.a = gDP.primColor.a; \
-	break; \
+		case PRIMITIVE_ALPHA: \
+		constant.a = gDP.primColor.a; \
+		break; \
 		case ENV_ALPHA: \
 		constant.a = gDP.envColor.a; \
 		break; \

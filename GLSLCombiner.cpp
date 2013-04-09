@@ -34,7 +34,7 @@ const char *ColorInput[] = {
 	"readtex0.rgb",
 	"readtex1.rgb",
 	"prim_color.rgb",
-	"gl_Color.rgb",
+	"vec_color.rgb",
 	"env_color.rgb",
 	"center_color.rgb",
 	"scale_color.rgb",
@@ -42,7 +42,7 @@ const char *ColorInput[] = {
 	"readtex0.a",
 	"readtex1.a",
 	"prim_color.a",
-	"gl_Color.a",
+	"vec_color.a",
 	"env_color.a",
 	"vec3(0.5)", // TODO: emulate lod_fraction
 	"vec3(prim_lod)",
@@ -58,7 +58,7 @@ const char *AlphaInput[] = {
 	"readtex0.a",
 	"readtex1.a",
 	"prim_color.a",
-	"gl_Color.a",
+	"vec_color.a",
 	"env_color.a",
 	"center_color.a",
 	"scale_color.a",
@@ -66,7 +66,7 @@ const char *AlphaInput[] = {
 	"readtex0.a",
 	"readtex1.a",
 	"prim_color.a",
-	"gl_Color.a",
+	"vec_color.a",
 	"env_color.a",
 	"0.5", // TODO: emulate lod_fraction
 	"prim_lod",
@@ -107,10 +107,14 @@ static const char* fragment_shader_header =
 "uniform float k4;					\n"
 "uniform float k5;					\n"
 "uniform float prim_lod;			\n"
+"varying vec4 secondary_color;      \n"
+"vec3 input_color;					\n"
+"									\n"
+"float calc_light();				\n"
 "									\n"
 "void main()						\n"
 "{									\n"
-"  vec4 combined_color;				\n"
+"  vec4 vec_color, combined_color;	\n"
 "  float alpha1, alpha2;			\n"
 "  vec3 color1, color2;				\n"
 ;
@@ -153,6 +157,29 @@ static const char* fragment_shader_readtex1bw_2 =
 ;
 */
 
+static const char* fragment_shader_calc_light =
+"																\n"
+"float calc_light() {											\n"
+"  input_color = gl_Color.rgb;									\n"
+"  if (int(secondary_color.r) == 0)								\n"
+"     return 1.0;												\n"
+"  float full_intensity = 0.0;									\n"
+"  int nLights = int(secondary_color.r);						\n"
+"  input_color = vec3(gl_LightSource[nLights].ambient);			\n"
+"  vec3 lightDir, lightColor;									\n"
+"  float intensity;												\n"
+"  vec3 n = normalize(gl_Color.rgb);							\n"
+"  for (int i = 0; i < nLights; i++)	{						\n"
+"    lightDir = vec3(gl_LightSource[i].position);				\n"
+"    intensity = max(dot(n,lightDir),0.0);						\n"
+"    full_intensity += intensity;								\n"
+"    lightColor = vec3(gl_LightSource[i].ambient)*intensity;	\n"
+"    input_color += lightColor;									\n"
+"  };															\n"
+"  return full_intensity;										\n"
+"}																\n"
+;
+
 static const char* fragment_shader_default =
 //"  gl_FragColor = texture2D(texture0, gl_TexCoord[0].st); \n"
 //"  gl_FragColor = gl_Color; \n"
@@ -190,6 +217,7 @@ static const char* vertex_shader =
 "}                                                              \n" // i've found to get it working fast with ATI drivers
 ;
 #else
+"varying vec4 secondary_color;                                  \n"
 "void main()                                                    \n"
 "{                                                              \n"
 "  gl_Position = ftransform();                                  \n"
@@ -197,6 +225,7 @@ static const char* vertex_shader =
 "  gl_TexCoord[0] = gl_MultiTexCoord0;                          \n"
 "  gl_TexCoord[1] = gl_MultiTexCoord1;                          \n"
 "  gl_FogFragCoord = (gl_Fog.end - gl_FogCoord) * gl_Fog.scale;	\n"
+"  secondary_color = gl_SecondaryColor;							\n"
 "}                                                              \n"
 ;
 #endif
@@ -272,6 +301,8 @@ GLSLCombiner::GLSLCombiner(Combiner *_color, Combiner *_alpha) {
 	strcat(fragment_shader, fragment_shader_readtex0color);
 	strcat(fragment_shader, fragment_shader_readtex1color);
 #if 1
+	strcat(fragment_shader, "  float intensity = calc_light(); \n");
+	strcat(fragment_shader, "  vec_color = vec4(input_color, gl_Color.a); \n");
 	strcat(fragment_shader, "  alpha1 = ");
 	CompileCombiner(_alpha->stage[0], AlphaInput, fragment_shader);
 	strcat(fragment_shader, "  color1 = ");
@@ -299,6 +330,7 @@ GLSLCombiner::GLSLCombiner(Combiner *_color, Combiner *_alpha) {
 #endif
 
 	strcat(fragment_shader, fragment_shader_end);
+	strcat(fragment_shader, fragment_shader_calc_light);
 
 	m_fragmentShaderObject = glCreateShaderObjectARB(GL_FRAGMENT_SHADER_ARB);
 	glShaderSourceARB(m_fragmentShaderObject, 1, (const GLcharARB**)&fragment_shader, NULL);
@@ -318,8 +350,8 @@ void GLSLCombiner::Set() {
 	combiner.usesNoise = FALSE;
 
 	combiner.vertex.color = COMBINED;
-	combiner.vertex.secondaryColor = COMBINED;
 	combiner.vertex.alpha = COMBINED;
+	combiner.vertex.secondaryColor = LIGHT;
 
 	glUseProgramObjectARB(m_programObject);
 
@@ -381,4 +413,3 @@ void GLSLCombiner::UpdateColors() {
 	number_of_programs++;
 	*/  
 }
-

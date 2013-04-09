@@ -112,11 +112,14 @@ static DWORD64 ACEncodeD[] =
 	7, 7, 7, 7, 7, 7, 7, 7, 0, 1, 2, 3, 4, 5, 7, 7, 7, 7, 7, 6, 7
 };
 
+bool bHWLightingCalculation = false;
+
 void Combiner_Init()
 {
-	if (OGL.GLSL)
+	if (OGL.GLSL) {
 		combiner.compiler = GLSL_COMBINE;
-	else if (OGL.NV_register_combiners)
+		bHWLightingCalculation = true;
+	} else if (OGL.NV_register_combiners)
 		combiner.compiler = NV_REGISTER_COMBINERS;
 	else if (OGL.EXT_texture_env_combine || OGL.ARB_texture_env_combine)
 		combiner.compiler = TEXTURE_ENV_COMBINE;

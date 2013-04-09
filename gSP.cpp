@@ -87,9 +87,6 @@ void gSPCombineMatrices()
 
 void gSPProcessVertex( u32 v )
 {
-	f32 intensity;
-	f32 r, g, b;
-
 	if (gSP.changed & CHANGED_MATRIX)
 		gSPCombineMatrices();
 
@@ -108,45 +105,55 @@ void gSPProcessVertex( u32 v )
 		gSP.vertices[v].z = -gSP.vertices[v].w;
 	}
 
+	gSP.vertices[v].HWLight = 0;
 	if (gSP.geometryMode & G_LIGHTING)
 	{
 		TransformVector( &gSP.vertices[v].nx, gSP.matrix.modelView[gSP.matrix.modelViewi] );
 		Normalize( &gSP.vertices[v].nx );
 
-		r = gSP.lights[gSP.numLights].r;
-		g = gSP.lights[gSP.numLights].g;
-		b = gSP.lights[gSP.numLights].b;
+		if (!bHWLightingCalculation) {
+			f32 r = gSP.lights[gSP.numLights].r;
+			f32 g = gSP.lights[gSP.numLights].g;
+			f32 b = gSP.lights[gSP.numLights].b;
 
-		for (int i = 0; i < gSP.numLights; i++)
-		{
-			intensity = DotProduct( &gSP.vertices[v].nx, &gSP.lights[i].x );
+			for (int i = 0; i < gSP.numLights; i++)
+			{
+				f32 intensity = DotProduct( &gSP.vertices[v].nx, &gSP.lights[i].x );
 
-			if (intensity < 0.0f) intensity = 0.0f;
+				if (intensity < 0.0f)
+					intensity = 0.0f;
 
-			r += gSP.lights[i].r * intensity;
-			g += gSP.lights[i].g * intensity;
-			b += gSP.lights[i].b * intensity;
+				r += gSP.lights[i].r * intensity;
+				g += gSP.lights[i].g * intensity;
+				b += gSP.lights[i].b * intensity;
+			}
+
+			gSP.vertices[v].r = r;
+			gSP.vertices[v].g = g;
+			gSP.vertices[v].b = b;
+		} else {
+			gSP.vertices[v].HWLight = gSP.numLights;
+			gSP.vertices[v].r = gSP.vertices[v].nx;
+			gSP.vertices[v].g = gSP.vertices[v].ny;
+			gSP.vertices[v].b = gSP.vertices[v].nz;
 		}
-
-		gSP.vertices[v].r = r;
-		gSP.vertices[v].g = g;
-		gSP.vertices[v].b = b;
 
 		if (gSP.geometryMode & G_TEXTURE_GEN)
 		{
-			TransformVector( &gSP.vertices[v].nx, gSP.matrix.projection );
+			float fLightDir[3] = {gSP.vertices[v].nx, gSP.vertices[v].ny, gSP.vertices[v].nz};
+			TransformVector( fLightDir, gSP.matrix.projection );
 
-			Normalize( &gSP.vertices[v].nx );
+			Normalize( fLightDir);
 
 			if (gSP.geometryMode & G_TEXTURE_GEN_LINEAR)
 			{   
-				gSP.vertices[v].s = acosf(gSP.vertices[v].nx) * 325.94931f;
-				gSP.vertices[v].t = acosf(gSP.vertices[v].ny) * 325.94931f;
+				gSP.vertices[v].s = acosf(fLightDir[0]) * 325.94931f;
+				gSP.vertices[v].t = acosf(fLightDir[1]) * 325.94931f;
 			}
 			else // G_TEXTURE_GEN
 			{
-				gSP.vertices[v].s = (gSP.vertices[v].nx + 1.0f) * 512.0f;
-				gSP.vertices[v].t = (gSP.vertices[v].ny + 1.0f) * 512.0f;
+				gSP.vertices[v].s = (fLightDir[0] + 1.0f) * 512.0f;
+				gSP.vertices[v].t = (fLightDir[1] + 1.0f) * 512.0f;
 			}
 		}
 	}
@@ -377,6 +384,13 @@ void gSPLight( u32 l, s32 n )
 		gSP.lights[n].z = light->z;
 
 		Normalize( &gSP.lights[n].x );
+	}
+
+	if (bHWLightingCalculation) {
+		float fLightPos[4] = {gSP.lights[n].x, gSP.lights[n].y, gSP.lights[n].z, 0.0};
+		glLightfv(GL_LIGHT0+n, GL_POSITION, fLightPos);
+		float fLightColor[4] = {gSP.lights[n].r, gSP.lights[n].g, gSP.lights[n].b, 1.0};
+		glLightfv(GL_LIGHT0+n, GL_AMBIENT, fLightColor);
 	}
 
 #ifdef DEBUG
@@ -757,6 +771,7 @@ void gSPCopyVertex( SPVertex *dest, SPVertex *src )
 	dest->a = src->a;
 	dest->s = src->s;
 	dest->t = src->t;
+	dest->HWLight = src->HWLight;
 }
 
 void gSPInterpolateVertex( SPVertex *dest, f32 percent, SPVertex *first, SPVertex *second )
@@ -771,6 +786,7 @@ void gSPInterpolateVertex( SPVertex *dest, f32 percent, SPVertex *first, SPVerte
 	dest->a = first->a + percent * (second->a - first->a);
 	dest->s = first->s + percent * (second->s - first->s);
 	dest->t = first->t + percent * (second->t - first->t);
+	dest->HWLight = first->HWLight;
 }
 
 void gSPTriangle( s32 v0, s32 v1, s32 v2, s32 flag )

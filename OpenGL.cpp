@@ -732,15 +732,21 @@ void OGL_AddTriangle( SPVertex *vertices, int v0, int v1, int v2 )
 		OGL.vertices[OGL.numVertices].color.b = vertices[v[i]].b;
 		OGL.vertices[OGL.numVertices].color.a = vertices[v[i]].a;
 		SetConstant( OGL.vertices[OGL.numVertices].color, combiner.vertex.color, combiner.vertex.alpha );
-		//SetConstant( OGL.vertices[OGL.numVertices].secondaryColor, combiner.vertex.secondaryColor, ONE );
 
 		if (OGL.EXT_secondary_color)
 		{
-			OGL.vertices[OGL.numVertices].secondaryColor.r = 0.0f;//lod_fraction; //vertices[v[i]].r;
-			OGL.vertices[OGL.numVertices].secondaryColor.g = 0.0f;//lod_fraction; //vertices[v[i]].g;
-			OGL.vertices[OGL.numVertices].secondaryColor.b = 0.0f;//lod_fraction; //vertices[v[i]].b;
-			OGL.vertices[OGL.numVertices].secondaryColor.a = 1.0f;
-			SetConstant( OGL.vertices[OGL.numVertices].secondaryColor, combiner.vertex.secondaryColor, ONE );
+			if (combiner.vertex.secondaryColor == LIGHT) {
+				OGL.vertices[OGL.numVertices].secondaryColor.r = vertices[v[i]].HWLight;
+				OGL.vertices[OGL.numVertices].secondaryColor.g = 0.0f;
+				OGL.vertices[OGL.numVertices].secondaryColor.b = 0.0f;
+				OGL.vertices[OGL.numVertices].secondaryColor.a = 1.0f;
+			} else {
+				OGL.vertices[OGL.numVertices].secondaryColor.r = 0.0f;//lod_fraction; //vertices[v[i]].r;
+				OGL.vertices[OGL.numVertices].secondaryColor.g = 0.0f;//lod_fraction; //vertices[v[i]].g;
+				OGL.vertices[OGL.numVertices].secondaryColor.b = 0.0f;//lod_fraction; //vertices[v[i]].b;
+				OGL.vertices[OGL.numVertices].secondaryColor.a = 1.0f;
+				SetConstant( OGL.vertices[OGL.numVertices].secondaryColor, combiner.vertex.secondaryColor, ONE );
+			}
 		}
 
 		if ((gSP.geometryMode & G_FOG) && OGL.EXT_fog_coord && OGL.fog)
