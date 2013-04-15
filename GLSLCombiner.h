@@ -11,6 +11,7 @@ private:
 	GLhandleARB m_vertexShaderObject;
 	GLhandleARB m_fragmentShaderObject;
 	GLhandleARB m_programObject;
+	int m_nInputs;
 };
 
 void InitGLSLCombiner();

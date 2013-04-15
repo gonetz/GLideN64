@@ -11,6 +11,7 @@
 #include "OpenGL.h"
 #include "Combiner.h"
 #include "GLSLCombiner.h"
+#include "Noise_shader.h"
 
 static
 void display_warning(const char *text, ...)
@@ -46,7 +47,7 @@ const char *ColorInput[] = {
 	"env_color.a",
 	"vec3(0.5)", // TODO: emulate lod_fraction
 	"vec3(prim_lod)",
-	"vec3(1.0)", // TODO: emulate noise
+	"vec3(0.5 + 0.5*snoise(noiseCoord2D))",
 	"vec3(k4)",
 	"vec3(k5)",
 	"vec3(1.0)",
@@ -70,7 +71,7 @@ const char *AlphaInput[] = {
 	"env_color.a",
 	"0.5", // TODO: emulate lod_fraction
 	"prim_lod",
-	"1.0", // TODO: emulate noise
+	"1.0",
 	"k4",
 	"k5",
 	"1.0",
@@ -107,10 +108,13 @@ static const char* fragment_shader_header =
 "uniform float k4;					\n"
 "uniform float k5;					\n"
 "uniform float prim_lod;			\n"
+"uniform int dither_enabled;		\n"
 "varying vec4 secondary_color;      \n"
+"varying vec2 noiseCoord2D;			\n"
 "vec3 input_color;					\n"
 "									\n"
 "float calc_light();				\n"
+"float snoise(vec2 v);				\n"
 #ifdef USE_TOONIFY
 "void toonify(in float intensity);	\n"
 #endif
@@ -234,6 +238,8 @@ static const char* vertex_shader =
 "}                                                              \n" // i've found to get it working fast with ATI drivers
 ;
 #else
+"uniform float time;											\n"
+"varying vec2 noiseCoord2D;										\n"
 "varying vec4 secondary_color;                                  \n"
 "void main()                                                    \n"
 "{                                                              \n"
@@ -243,6 +249,7 @@ static const char* vertex_shader =
 "  gl_TexCoord[1] = gl_MultiTexCoord1;                          \n"
 "  gl_FogFragCoord = (gl_Fog.end - gl_FogCoord) * gl_Fog.scale;	\n"
 "  secondary_color = gl_SecondaryColor;							\n"
+"  noiseCoord2D = gl_Vertex.xy + vec2(0.0, time);				\n"
 "}                                                              \n"
 ;
 #endif
@@ -260,15 +267,17 @@ void InitGLSLCombiner()
 }
 
 static
-void CompileCombiner(const CombinerStage & _stage, const char** _Input, char * _fragment_shader) {
+int CompileCombiner(const CombinerStage & _stage, const char** _Input, char * _fragment_shader) {
 	char buf[128];
 	bool bBracketOpen = false;
+	int nRes = 0;
 	for (int i = 0; i < _stage.numOps; ++i) {
 		switch(_stage.op[i].op) {
 			case LOAD:
 				sprintf(buf, "(%s ", _Input[_stage.op[i].param1]);
 				strcat(_fragment_shader, buf);
 				bBracketOpen = true;
+				nRes |= 1 << _stage.op[i].param1;
 				break;
 			case SUB:
 				if (bBracketOpen) {
@@ -277,6 +286,7 @@ void CompileCombiner(const CombinerStage & _stage, const char** _Input, char * _
 				} else
 					sprintf(buf, "- %s", _Input[_stage.op[i].param1]);
 				strcat(_fragment_shader, buf);
+				nRes |= 1 << _stage.op[i].param1;
 				break;
 			case ADD:
 				if (bBracketOpen) {
@@ -285,6 +295,7 @@ void CompileCombiner(const CombinerStage & _stage, const char** _Input, char * _
 				} else
 					sprintf(buf, "+ %s", _Input[_stage.op[i].param1]);
 				strcat(_fragment_shader, buf);
+				nRes |= 1 << _stage.op[i].param1;
 				break;
 			case MUL:
 				if (bBracketOpen) {
@@ -293,10 +304,14 @@ void CompileCombiner(const CombinerStage & _stage, const char** _Input, char * _
 				} else
 					sprintf(buf, "*%s", _Input[_stage.op[i].param1]);
 				strcat(_fragment_shader, buf);
+				nRes |= 1 << _stage.op[i].param1;
 				break;
 			case INTER:
 				sprintf(buf, "mix(%s, %s, %s)", ColorInput[_stage.op[0].param2], _Input[_stage.op[0].param1], _Input[_stage.op[0].param3]);
 				strcat(_fragment_shader, buf);
+				nRes |= 1 << _stage.op[i].param1;
+				nRes |= 1 << _stage.op[i].param2;
+				nRes |= 1 << _stage.op[i].param3;
 				break;
 
 				//			default:
@@ -306,35 +321,36 @@ void CompileCombiner(const CombinerStage & _stage, const char** _Input, char * _
 	if (bBracketOpen)
 		strcat(_fragment_shader, ")");
 	strcat(_fragment_shader, "; \n");
+	return nRes;
 }
 
 GLSLCombiner::GLSLCombiner(Combiner *_color, Combiner *_alpha) {
 	m_vertexShaderObject = vertex_shader_object;
 
 	char *fragment_shader = (char*)malloc(4096);
-
 	strcpy(fragment_shader, fragment_shader_header);
-
+#if 1
+	strcat(fragment_shader, "  if (dither_enabled > 0) \n");
+	strcat(fragment_shader, "    if (snoise(noiseCoord2D) < 0.5) discard; \n");
 	strcat(fragment_shader, fragment_shader_readtex0color);
 	strcat(fragment_shader, fragment_shader_readtex1color);
-#if 1
 	strcat(fragment_shader, "  float intensity = calc_light(); \n");
 	strcat(fragment_shader, "  vec_color = vec4(input_color, gl_Color.a); \n");
 	strcat(fragment_shader, "  alpha1 = ");
-	CompileCombiner(_alpha->stage[0], AlphaInput, fragment_shader);
+	m_nInputs = CompileCombiner(_alpha->stage[0], AlphaInput, fragment_shader);
 	strcat(fragment_shader, "  color1 = ");
-	CompileCombiner(_color->stage[0], ColorInput, fragment_shader);
+	m_nInputs |= CompileCombiner(_color->stage[0], ColorInput, fragment_shader);
 	strcat(fragment_shader, "  combined_color = vec4(color1, alpha1); \n");
 
 	if (_alpha->numStages == 2) {
 		strcat(fragment_shader, "  alpha2 = ");
-		CompileCombiner(_alpha->stage[1], AlphaInput, fragment_shader);
+		m_nInputs |= CompileCombiner(_alpha->stage[1], AlphaInput, fragment_shader);
 	} else
 		strcat(fragment_shader, "  alpha2 = alpha1; \n");
 
 	if (_color->numStages == 2) {
 		strcat(fragment_shader, "  color2 = ");
-		CompileCombiner(_color->stage[1], ColorInput, fragment_shader);
+		m_nInputs |= CompileCombiner(_color->stage[1], ColorInput, fragment_shader);
 	} else
 		strcat(fragment_shader, "  color2 = color1; \n");
 
@@ -344,15 +360,16 @@ GLSLCombiner::GLSLCombiner(Combiner *_color, Combiner *_alpha) {
 #endif
 	if (gSP.geometryMode & G_FOG)
 		strcat(fragment_shader, "  gl_FragColor = vec4(mix(gl_Fog.color.rgb, gl_FragColor.rgb, gl_FogFragCoord), gl_FragColor.a); \n");
-#else
-//	strcat(fragment_shader, fragment_shader_default);
-	strcat(fragment_shader, "gl_FragColor = secondary_color; \n");
-#endif
 
 	strcat(fragment_shader, fragment_shader_end);
 	strcat(fragment_shader, fragment_shader_calc_light);
 #ifdef USE_TOONIFY
 	strcat(fragment_shader, fragment_shader_toonify);
+#endif
+	strcat(fragment_shader, noise_fragment_shader);
+#else // #if 0
+//	strcat(fragment_shader, fragment_shader_default);
+	strcat(fragment_shader, "gl_FragColor = secondary_color; \n");
 #endif
 
 	m_fragmentShaderObject = glCreateShaderObjectARB(GL_FRAGMENT_SHADER_ARB);
@@ -366,6 +383,8 @@ GLSLCombiner::GLSLCombiner(Combiner *_color, Combiner *_alpha) {
 	glAttachObjectARB(m_programObject, m_vertexShaderObject);
 	glLinkProgramARB(m_programObject);
 }
+
+unsigned char btNoiseTime = 0;
 
 void GLSLCombiner::Set() {
 	combiner.usesT0 = FALSE;
@@ -389,6 +408,8 @@ void GLSLCombiner::Set() {
 		glUniform1iARB(texture1_location, 1);
 		combiner.usesT1 = TRUE;
 	}
+
+	UpdateColors();
 
 #ifdef _DEBUG
 	int log_length;
@@ -425,14 +446,13 @@ void GLSLCombiner::UpdateColors() {
 	int prim_lod_location = glGetUniformLocationARB(m_programObject, "prim_lod");
 	glUniform1fARB(prim_lod_location, gDP.primColor.l);
 	
-	/*
-	if(dither_enabled)
-	{
-	ditherTex_location = glGetUniformLocationARB(program_object, "ditherTex");
-	glUniform1iARB(ditherTex_location, 2);
+	if ((m_nInputs & (1<<NOISE)) > 0) {
+		int time_location = glGetUniformLocationARB(m_programObject, "time");
+		glUniform1fARB(time_location, ++btNoiseTime);
 	}
 
-	set_lambda();
-	number_of_programs++;
-	*/  
+	int nDither = 0;
+//	int nDither = (gDP.otherMode.colorDither) == 3 ? 1 : 0;
+	int dither_location = glGetUniformLocationARB(m_programObject, "dither_enabled");
+	glUniform1iARB(dither_location, nDither);
 }
