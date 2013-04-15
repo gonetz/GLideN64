@@ -109,6 +109,7 @@ static const char* fragment_shader_header =
 "uniform float k5;					\n"
 "uniform float prim_lod;			\n"
 "uniform int dither_enabled;		\n"
+"uniform int fog_enabled;			\n"
 "varying vec4 secondary_color;      \n"
 "varying vec2 noiseCoord2D;			\n"
 "vec3 input_color;					\n"
@@ -248,6 +249,7 @@ static const char* vertex_shader =
 "  gl_TexCoord[0] = gl_MultiTexCoord0;                          \n"
 "  gl_TexCoord[1] = gl_MultiTexCoord1;                          \n"
 "  gl_FogFragCoord = (gl_Fog.end - gl_FogCoord) * gl_Fog.scale;	\n"
+"  gl_FogFragCoord = clamp(gl_FogFragCoord, 0.0, 1.0);			\n"
 "  secondary_color = gl_SecondaryColor;							\n"
 "  noiseCoord2D = gl_Vertex.xy + vec2(0.0, time);				\n"
 "}                                                              \n"
@@ -358,8 +360,8 @@ GLSLCombiner::GLSLCombiner(Combiner *_color, Combiner *_alpha) {
 #ifdef USE_TOONIFY
 	strcat(fragment_shader, "  toonify(intensity); \n");
 #endif
-	if (gSP.geometryMode & G_FOG)
-		strcat(fragment_shader, "  gl_FragColor = vec4(mix(gl_Fog.color.rgb, gl_FragColor.rgb, gl_FogFragCoord), gl_FragColor.a); \n");
+	strcat(fragment_shader, "  if (fog_enabled > 0) \n");
+	strcat(fragment_shader, "    gl_FragColor = vec4(mix(gl_Fog.color.rgb, gl_FragColor.rgb, gl_FogFragCoord), gl_FragColor.a); \n");
 
 	strcat(fragment_shader, fragment_shader_end);
 	strcat(fragment_shader, fragment_shader_calc_light);
@@ -455,4 +457,7 @@ void GLSLCombiner::UpdateColors() {
 //	int nDither = (gDP.otherMode.colorDither) == 3 ? 1 : 0;
 	int dither_location = glGetUniformLocationARB(m_programObject, "dither_enabled");
 	glUniform1iARB(dither_location, nDither);
+
+	int fog_location = glGetUniformLocationARB(m_programObject, "fog_enabled");
+	glUniform1iARB(fog_location, (gSP.geometryMode & G_FOG) > 0 ? 1 : 0);
 }
