@@ -293,25 +293,21 @@ void RSP_ProcessDList()
 
 void RSP_Init()
 {
-	u8 test;
-	u32 testAddress;
-
-	// Calculate RDRAM size by intentionally causing an access violation
 #ifndef __LINUX__
+	// Calculate RDRAM size by intentionally causing an access violation
+	u32 test;
 	__try
 	{
-
-		testAddress = 0;
-		while (TRUE)
-		{
-			test = RDRAM[testAddress];
-			testAddress++;
-		}
+		test = RDRAM[0x007FFFFF] + 1;
 	}
 	__except (EXCEPTION_EXECUTE_HANDLER)
 	{
-		RDRAMSize = testAddress;
+		test = 0;
 	}
+	if (test > 0)
+		RDRAMSize = 0x7FFFFF;
+	else
+		RDRAMSize = 0x3FFFFF;
 #else // !__LINUX__
 	RDRAMSize = 1024 * 1024 * 8;
 #endif // __LINUX__
