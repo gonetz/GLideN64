@@ -1,7 +1,7 @@
 #include <windows.h>
 #include <stdio.h>
 #include "Config.h"
-#include "glN64.h"
+#include "GLideN64.h"
 #include "Resource.h"
 #include "RSP.h"
 #include "Textures.h"

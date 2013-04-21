@@ -4,7 +4,7 @@
 # include "winlnxdefs.h"
 #endif
 #include <math.h>
-#include "glN64.h"
+#include "GLideN64.h"
 #include "OpenGL.h"
 #include "Debug.h"
 #include "RSP.h"

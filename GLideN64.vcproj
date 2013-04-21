@@ -2,8 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8,00"
-	Name="GLide64"
+	Name="GLideN64"
 	ProjectGUID="{37D31D7F-C4E7-45B0-AEF6-D6824A243CF7}"
+	RootNamespace="GLideN64"
 	Keyword="Win32Proj"
 	>
 	<Platforms>
@@ -62,7 +63,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="opengl32.lib glu32.lib winmm.lib"
-				OutputFile="E:\N64\Plugin\glide64gl.dll"
+				OutputFile="c:\Games\N64\Plugin\GLideN64.dll"
 				LinkIncremental="2"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="$(OutDir)/New glNintendo64().pdb"
@@ -125,7 +126,7 @@
 				EnableIntrinsicFunctions="true"
 				FavorSizeOrSpeed="1"
 				OmitFramePointers="true"
-				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;NEWGLNINTENDO64_EXPORTS"
+				PreprocessorDefinitions="WIN32;_WINDOWS;_USRDLL;NEWGLNINTENDO64_EXPORTS"
 				StringPooling="true"
 				RuntimeLibrary="0"
 				EnableFunctionLevelLinking="true"
@@ -146,9 +147,9 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="opengl32.lib winmm.lib"
-				OutputFile="E:\N64\Plugin\glide64gl.dll"
+				OutputFile="c:\Games\N64\Plugin\GLideN64.dll"
 				LinkIncremental="1"
-				GenerateDebugInformation="true"
+				GenerateDebugInformation="false"
 				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
@@ -227,7 +228,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="opengl32.lib glu32.lib winmm.lib"
-				OutputFile="E:\N64\Plugin\glide64gl.dll"
+				OutputFile="c:\Games\N64\Plugin\GLideN64.dll"
 				LinkIncremental="2"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="$(OutDir)/New glNintendo64().pdb"
@@ -305,7 +306,7 @@
 				>
 			</File>
 			<File
-				RelativePath="glN64.cpp"
+				RelativePath=".\GLideN64.cpp"
 				>
 			</File>
 			<File
@@ -462,7 +463,7 @@
 				>
 			</File>
 			<File
-				RelativePath="glN64.h"
+				RelativePath=".\GLideN64.h"
 				>
 			</File>
 			<File

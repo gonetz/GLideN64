@@ -1,4 +1,4 @@
-#include "glN64.h"
+#include "GLideN64.h"
 #include "Types.h"
 #include "VI.h"
 #include "OpenGL.h"

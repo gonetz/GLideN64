@@ -1,7 +1,7 @@
 #ifndef COMBINER_H
 #define COMBINER_H
 
-#include "glN64.h"
+#include "GLideN64.h"
 #include "OpenGL.h"
 #include "gDP.h"
 #include "Types.h"

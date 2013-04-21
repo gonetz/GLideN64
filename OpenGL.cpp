@@ -10,7 +10,7 @@
 #endif // __LINUX__
 #include <math.h>
 #include <stdio.h>
-#include "glN64.h"
+#include "GLideN64.h"
 #include "OpenGL.h"
 #include "Types.h"
 #include "N64.h"

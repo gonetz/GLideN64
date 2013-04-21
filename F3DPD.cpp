@@ -1,4 +1,4 @@
-#include "glN64.h"
+#include "GLideN64.h"
 #include "Debug.h"
 #include "F3D.h"
 #include "F3DPD.h"

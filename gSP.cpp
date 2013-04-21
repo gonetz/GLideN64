@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <math.h>
-#include "glN64.h"
+#include "GLideN64.h"
 #include "Debug.h"
 #include "Types.h"
 #include "RSP.h"

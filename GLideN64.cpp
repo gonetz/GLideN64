@@ -7,7 +7,7 @@
 #endif
 #include <GL/gl.h>
 #include <GL/glu.h>
-#include "glN64.h"
+#include "GLideN64.h"
 #include "Debug.h"
 #include "Zilmar GFX 1.3.h"
 #include "OpenGL.h"
@@ -27,7 +27,7 @@ HWND		hToolBar;
 HINSTANCE	hInstance;
 #endif // !__LINUX__
 
-char		pluginName[] = "GLide64 alpha";
+char		pluginName[] = "GLideN64 alpha";
 char		*screenDirectory;
 
 void (*CheckInterrupts)( void );

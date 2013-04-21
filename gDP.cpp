@@ -1,4 +1,4 @@
-#include "glN64.h"
+#include "GLideN64.h"
 #include "N64.h"
 #include "GBI.h"
 #include "RSP.h"

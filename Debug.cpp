@@ -3,7 +3,7 @@
 #include <windows.h>
 #include <stdio.h>
 #include <process.h>
-#include "glN64.h"
+#include "GLideN64.h"
 #include "Debug.h"
 #include "resource.h"
 #include "RDP.h"
