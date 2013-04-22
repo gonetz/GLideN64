@@ -17,7 +17,7 @@ void DepthBuffer_RemoveBottom()
 	DepthBuffer *newBottom = depthBuffer.bottom->higher;
 
 	if (depthBuffer.bottom == depthBuffer.top)
-		depthBuffer.top == NULL;
+		depthBuffer.top = NULL;
 
 	free( depthBuffer.bottom );
 
