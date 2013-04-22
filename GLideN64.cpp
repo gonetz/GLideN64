@@ -9,7 +9,7 @@
 #include <GL/glu.h>
 #include "GLideN64.h"
 #include "Debug.h"
-#include "Zilmar GFX 1.3.h"
+#include "ZilmarGFX_1_3.h"
 #include "OpenGL.h"
 #include "N64.h"
 #include "RSP.h"
