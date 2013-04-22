@@ -444,7 +444,7 @@ void TextureCache_LoadBackground( CachedTexture *texInfo )
 
 	u8 *swapped, *src;
 	u32 numBytes, bpl;
-	u32 x, y, i, j, tx, ty;
+	u32 x, y, j, tx, ty;
 	u16 clampSClamp;
 	u16 clampTClamp;
 	GetTexelFunc	GetTexel;
@@ -689,7 +689,7 @@ void TextureCache_Load( CachedTexture *texInfo )
 u32 TextureCache_CalculateCRC( u32 t, u32 width, u32 height )
 {
 	u32 crc;
-	u32 y, i, bpl, lineBytes, line;
+	u32 y, bpl, lineBytes, line;
 	u64 *src;
 
 	src = (u64*)&TMEM[gSP.textureTile[t]->tmem];
@@ -847,8 +847,7 @@ void TextureCache_UpdateBackground()
 void TextureCache_Update( u32 t )
 {
 	CachedTexture *current;
-	s32 i, j, k;
-	u32 crc, bpl, cacheNum, maxTexels;
+	u32 crc, maxTexels;
 	u32 tileWidth, maskWidth, loadWidth, lineWidth, clampWidth, height;
 	u32 tileHeight, maskHeight, loadHeight, lineHeight, clampHeight, width;
 
