@@ -188,8 +188,8 @@ void FrameBuffer_SaveBuffer( u32 address, u16 size, u16 width, u16 height )
 	current->scaleX = OGL.scaleX;
 	current->scaleY = OGL.scaleY;
 
-	current->texture->width = current->width * OGL.scaleX;
-	current->texture->height = current->height * OGL.scaleY;
+	current->texture->width = (u32)(current->width * OGL.scaleX);
+	current->texture->height = (u32)(current->height * OGL.scaleY);
 	current->texture->clampS = 1;
 	current->texture->clampT = 1;
 	current->texture->address = current->startAddress;
@@ -200,8 +200,8 @@ void FrameBuffer_SaveBuffer( u32 address, u16 size, u16 width, u16 height )
 	current->texture->maskT = 0;
 	current->texture->mirrorS = 0;
 	current->texture->mirrorT = 0;
-	current->texture->realWidth = pow2( current->width * OGL.scaleX );
-	current->texture->realHeight = pow2( current->height * OGL.scaleY );
+	current->texture->realWidth = (u32)pow2( current->width * OGL.scaleX );
+	current->texture->realHeight = (u32)pow2( current->height * OGL.scaleY );
 	current->texture->textureBytes = current->texture->realWidth * current->texture->realHeight * 4;
 	cache.cachedBytes += current->texture->textureBytes;
 
@@ -265,16 +265,16 @@ void FrameBuffer_RenderBuffer( u32 address )
 			glDrawBuffer( GL_FRONT );
 			glBegin(GL_QUADS);
  				glTexCoord2f( 0.0f, 0.0f );
-				glVertex2f( 0.0f, OGL.height - current->texture->height );
+				glVertex2f( 0.0f, (GLfloat)(OGL.height - current->texture->height) );
 
 				glTexCoord2f( 0.0f, v1 );
-				glVertex2f( 0.0f, OGL.height );
+				glVertex2f( 0.0f, (GLfloat)OGL.height );
 
  				glTexCoord2f( u1,  v1 );
-				glVertex2f( current->texture->width, OGL.height );
+				glVertex2f( current->texture->width, (GLfloat)OGL.height );
 
  				glTexCoord2f( u1, 0.0f );
-				glVertex2f( current->texture->width, OGL.height - current->texture->height );
+				glVertex2f( current->texture->width, (GLfloat)(OGL.height - current->texture->height) );
 			glEnd();
 			glDrawBuffer( GL_BACK );
 

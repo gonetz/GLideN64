@@ -257,17 +257,17 @@ void DebugMsg( WORD type, LPCSTR format, ... )
 
 	if ((((type & DEBUG_DETAIL) && Debug.detail) || ((type & 0xF000) == Debug.level)) && (type & 0x0FFF & Debug.show))
 	{
-		for (int i = 0; i < 4 * RSP.PCi; i++)
+		for (u32 i = 0; i < 4 * RSP.PCi; i++)
 			text[i] = ' ';
 
 		vsprintf( text + 4 * RSP.PCi, format, va );
 
-		INT length = SendDlgItemMessage( hDebugDlg, IDC_DEBUGEDIT, WM_GETTEXTLENGTH, 0, 0 );
-		INT lengthLimit = SendDlgItemMessage( hDebugDlg, IDC_DEBUGEDIT, EM_GETLIMITTEXT, 0, 0 );
+		LRESULT length = SendDlgItemMessage( hDebugDlg, IDC_DEBUGEDIT, WM_GETTEXTLENGTH, 0, 0 );
+		LRESULT lengthLimit = SendDlgItemMessage( hDebugDlg, IDC_DEBUGEDIT, EM_GETLIMITTEXT, 0, 0 );
 
 		if ((length + strlen( text )) > lengthLimit)
 		{
-			INT lineLength = SendDlgItemMessage( hDebugDlg, IDC_DEBUGEDIT, EM_LINELENGTH, 0, 0 );
+			LRESULT lineLength = SendDlgItemMessage( hDebugDlg, IDC_DEBUGEDIT, EM_LINELENGTH, 0, 0 );
 			SendDlgItemMessage( hDebugDlg, IDC_DEBUGEDIT, EM_SETSEL, 0, lineLength + 1 );
 			SendDlgItemMessage( hDebugDlg, IDC_DEBUGEDIT, EM_REPLACESEL, (WPARAM)FALSE, (LPARAM)"" );
 		}

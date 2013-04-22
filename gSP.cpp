@@ -425,7 +425,7 @@ void gSPVertex( u32 v, u32 n, u32 v0 )
 
 	if ((n + v0) < (80))
 	{
-		for (int i = v0; i < n + v0; i++)
+		for (u32 i = v0; i < n + v0; i++)
 		{
 			gSP.vertices[i].x = vertex->x;
 			gSP.vertices[i].y = vertex->y;
@@ -501,7 +501,7 @@ void gSPCIVertex( u32 v, u32 n, u32 v0 )
 
 	if ((n + v0) < (80))
 	{
-		for (int i = v0; i < n + v0; i++)
+		for (u32 i = v0; i < n + v0; i++)
 		{
 			gSP.vertices[i].x = vertex->x;
 			gSP.vertices[i].y = vertex->y;
@@ -559,7 +559,7 @@ void gSPDMAVertex( u32 v, u32 n, u32 v0 )
 
 	if ((n + v0) < (80))
 	{
-		for (int i = v0; i < n + v0; i++)
+		for (u32 i = v0; i < n + v0; i++)
 		{
 			gSP.vertices[i].x = *(s16*)&RDRAM[address ^ 2];
 			gSP.vertices[i].y = *(s16*)&RDRAM[(address + 2) ^ 2];
@@ -891,7 +891,7 @@ void gSPTriangle( s32 v0, s32 v1, s32 v2, s32 flag )
 
 	if (depthBuffer.current) depthBuffer.current->cleared = FALSE;
 	gDP.colorImage.changed = TRUE;
-	gDP.colorImage.height = max( gDP.colorImage.height, gDP.scissor.lry );
+	gDP.colorImage.height = max( gDP.colorImage.height, (u32)gDP.scissor.lry );
 }
 
 void gSP1Triangle( s32 v0, s32 v1, s32 v2, s32 flag )
@@ -1015,7 +1015,7 @@ bool gSPCullVertices( u32 v0, u32 vn )
 
 	xClip = yClip = zClip = 0.0f;
 
-	for (int i = v0; i <= vn; i++)
+	for (u32 i = v0; i <= vn; i++)
 	{
 		if (gSP.vertices[i].xClip == 0.0f)
 			return FALSE;
@@ -1151,7 +1151,7 @@ void gSPSegment( s32 seg, s32 base )
 		return;
 	}
 
-	if (base > RDRAMSize - 1)
+	if (base > (s32)RDRAMSize - 1)
 	{
 #ifdef DEBUG
 		DebugMsg( DEBUG_HIGH | DEBUG_ERROR, "// Attempting to load invalid address into segment array\n",
@@ -1458,8 +1458,8 @@ void gSPBgRect1Cyc( u32 bg )
 
 	f32 imageX = _FIXED2FLOAT( objScaleBg->imageX, 5 );
 	f32 imageY = _FIXED2FLOAT( objScaleBg->imageY, 5 );
-	f32 imageW = objScaleBg->imageW >> 2;
-	f32 imageH = objScaleBg->imageH >> 2;
+	f32 imageW = (f32)(objScaleBg->imageW >> 2);
+	f32 imageH = (f32)(objScaleBg->imageH >> 2);
 
 	f32 frameX = _FIXED2FLOAT( objScaleBg->frameX, 2 );
 	f32 frameY = _FIXED2FLOAT( objScaleBg->frameY, 2 );
@@ -1538,11 +1538,11 @@ void gSPBgRectCopy( u32 bg )
 	gSP.bgImage.palette = objBg->imagePal;
 	gDP.textureMode = TEXTUREMODE_BGIMAGE;
 
-	u16 imageX = objBg->imageX >> 5;
-	u16 imageY = objBg->imageY >> 5;
+	f32 imageX = objBg->imageX / 32.f;
+	f32 imageY = objBg->imageY / 32.f;
 
-	s16 frameX = objBg->frameX / 4;
-	s16 frameY = objBg->frameY / 4;
+	f32 frameX = objBg->frameX / 4.0f;
+	f32 frameY = objBg->frameY / 4.0f;
 	u16 frameW = objBg->frameW >> 2;
 	u16 frameH = objBg->frameH >> 2;
 	
@@ -1623,22 +1623,22 @@ void gSPObjSprite( u32 sp )
 	gSP.vertices[1].y = gSP.objMatrix.C * x1 + gSP.objMatrix.D * y0 + gSP.objMatrix.Y;
 	gSP.vertices[1].z = 0.0f;
 	gSP.vertices[1].w = 1.0f;
-	gSP.vertices[1].s = imageW - 1;
+	gSP.vertices[1].s = (f32)(imageW - 1);
 	gSP.vertices[1].t = 0.0f;
 
 	gSP.vertices[2].x = gSP.objMatrix.A * x1 + gSP.objMatrix.B * y1 + gSP.objMatrix.X;
 	gSP.vertices[2].y = gSP.objMatrix.C * x1 + gSP.objMatrix.D * y1 + gSP.objMatrix.Y;
 	gSP.vertices[2].z = 0.0f;
 	gSP.vertices[2].w = 1.0f;
-	gSP.vertices[2].s = imageW - 1;
-	gSP.vertices[2].t = imageH - 1;
+	gSP.vertices[2].s = (f32)(imageW - 1);
+	gSP.vertices[2].t = (f32)(imageH - 1);
 
 	gSP.vertices[3].x = gSP.objMatrix.A * x0 + gSP.objMatrix.B * y1 + gSP.objMatrix.X;
 	gSP.vertices[3].y = gSP.objMatrix.C * x0 + gSP.objMatrix.D * y1 + gSP.objMatrix.Y;
 	gSP.vertices[3].z = 0.0f;
 	gSP.vertices[3].w = 1.0f;
 	gSP.vertices[3].s = 0;
-	gSP.vertices[3].t = imageH - 1;
+	gSP.vertices[3].t = (f32)(imageH - 1);
 
 	gDPSetTile( objSprite->imageFmt, objSprite->imageSiz, objSprite->imageStride, objSprite->imageAdrs, 0, objSprite->imagePal, G_TX_CLAMP, G_TX_CLAMP, 0, 0, 0, 0 );
 	gDPSetTileSize( 0, 0, 0, (imageW - 1) << 2, (imageH - 1) << 2 );

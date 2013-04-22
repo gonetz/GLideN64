@@ -281,20 +281,20 @@ void gDPUpdateColorImage()
 	return;
 	if ((gDP.colorImage.size == G_IM_SIZ_16b) && (gDP.colorImage.format == G_IM_FMT_RGBA))
 	{
-		u16 *frameBuffer = (u16*)malloc( gDP.colorImage.width * OGL.scaleX * gDP.colorImage.height * OGL.scaleY * 2 );
+		u16 *frameBuffer = (u16*)malloc( (u32)(gDP.colorImage.width * OGL.scaleX * gDP.colorImage.height * OGL.scaleY * 2) );
 		u16 *colorImage = (u16*)&RDRAM[gDP.colorImage.address];
 		u32 frameX, frameY;
 		u32 i = 0;
 
 		glReadBuffer( GL_BACK );
-		glReadPixels( 0, OGL.height - gDP.colorImage.height * OGL.scaleY + OGL.heightOffset, gDP.colorImage.width * OGL.scaleX, gDP.colorImage.height * OGL.scaleY, GL_RGBA, GL_UNSIGNED_SHORT_5_5_5_1_EXT, frameBuffer );
+		glReadPixels( 0, OGL.height - (u32)(gDP.colorImage.height * OGL.scaleY) + OGL.heightOffset, (u32)(gDP.colorImage.width * OGL.scaleX), (u32)(gDP.colorImage.height * OGL.scaleY), GL_RGBA, GL_UNSIGNED_SHORT_5_5_5_1_EXT, frameBuffer );
 
 		for (u32 y = 0; y < gDP.colorImage.height; y++)
 		{
-			frameY = (gDP.colorImage.height - 1) * OGL.scaleY - y * OGL.scaleY;
+			frameY = (u32)((gDP.colorImage.height - 1) * OGL.scaleY - y * OGL.scaleY);
 			for (u32 x = 0; x < gDP.colorImage.width; x++)
 			{
-				frameX = x * OGL.scaleX;
+				frameX = (u32)(x * OGL.scaleX);
 				colorImage[i^1] = frameBuffer[(u32)(gDP.colorImage.width * OGL.scaleX) * frameY + frameX];
 
 				i++;
@@ -305,19 +305,19 @@ void gDPUpdateColorImage()
 	}
 	else if ((gDP.colorImage.size == G_IM_SIZ_8b) && (gDP.colorImage.format == G_IM_FMT_I))
 	{
-		u8 *frameBuffer = (u8*)malloc( gDP.colorImage.width * OGL.scaleX * gDP.colorImage.height * OGL.scaleY );
+		u8 *frameBuffer = (u8*)malloc( (u32)(gDP.colorImage.width * OGL.scaleX * gDP.colorImage.height * OGL.scaleY) );
 		u8 *colorImage = (u8*)&RDRAM[gDP.colorImage.address];
 		u32 frameX, frameY;
 		u32 i = 0;
 
-		glReadPixels( 0, OGL.height - gDP.colorImage.height * OGL.scaleY + OGL.heightOffset, gDP.colorImage.width * OGL.scaleX, gDP.colorImage.height * OGL.scaleY, GL_LUMINANCE, GL_UNSIGNED_BYTE, frameBuffer );
+		glReadPixels( 0, OGL.height - (u32)(gDP.colorImage.height * OGL.scaleY) + OGL.heightOffset, (u32)(gDP.colorImage.width * OGL.scaleX), (u32)(gDP.colorImage.height * OGL.scaleY), GL_LUMINANCE, GL_UNSIGNED_BYTE, frameBuffer );
 
 		for (u32 y = 0; y < gDP.colorImage.height; y++)
 		{
-			frameY = (gDP.colorImage.height - 1) * OGL.scaleY - y * OGL.scaleY;
+			frameY = (u32)((gDP.colorImage.height - 1) * OGL.scaleY - y * OGL.scaleY);
 			for (u32 x = 0; x < gDP.colorImage.width; x++)
 			{
-				frameX = x * OGL.scaleX;
+				frameX = (u32)(x * OGL.scaleX);
 				colorImage[i^3] = frameBuffer[(u32)(gDP.colorImage.width * OGL.scaleX) * frameY + frameX];
 
 				i++;
@@ -351,10 +351,10 @@ void gDPSetColorImage( u32 format, u32 size, u32 width, u32 address )
 		if (OGL.frameBufferTextures)
 		{
 			if (gDP.colorImage.changed)
-				FrameBuffer_SaveBuffer( gDP.colorImage.address, gDP.colorImage.size, gDP.colorImage.width, gDP.colorImage.height );
+				FrameBuffer_SaveBuffer( gDP.colorImage.address, (u16)gDP.colorImage.size, (u16)gDP.colorImage.width, (u16)gDP.colorImage.height );
 
 			if (address != gDP.depthImageAddress)
-				FrameBuffer_RestoreBuffer( address, size, width );
+				FrameBuffer_RestoreBuffer( address, (u16)size, (u16)width );
 
 			//OGL_ClearDepthBuffer();
 		}
@@ -463,10 +463,10 @@ void gDPSetFillColor( u32 c )
 	gDP.fillColor.r = _SHIFTR( c, 11, 5 ) * 0.032258064f;
 	gDP.fillColor.g = _SHIFTR( c,  6, 5 ) * 0.032258064f;
 	gDP.fillColor.b = _SHIFTR( c,  1, 5 ) * 0.032258064f;
-	gDP.fillColor.a = _SHIFTR( c,  0, 1 );
+	gDP.fillColor.a = (f32)_SHIFTR( c,  0, 1 );
 
-	gDP.fillColor.z = _SHIFTR( c,  2, 14 );
-	gDP.fillColor.dz = _SHIFTR( c, 0, 2 );
+	gDP.fillColor.z = (f32)_SHIFTR( c,  2, 14 );
+	gDP.fillColor.dz = (f32)_SHIFTR( c, 0, 2 );
 
 #ifdef DEBUG
 	DebugMsg( DEBUG_HIGH | DEBUG_HANDLED, "gDPSetFillColor( 0x%08X );\n", c );
@@ -708,13 +708,13 @@ void gDPLoadTLUT( u32 tile, u32 uls, u32 ult, u32 lrs, u32 lrt )
 {
 	gDPSetTileSize( tile, uls, ult, lrs, lrt );
 
-    u16 count = (gDP.tiles[tile].lrs - gDP.tiles[tile].uls + 1) * (gDP.tiles[tile].lrt - gDP.tiles[tile].ult + 1);
+    u16 count = (u16)((gDP.tiles[tile].lrs - gDP.tiles[tile].uls + 1) * (gDP.tiles[tile].lrt - gDP.tiles[tile].ult + 1));
 	u32	address = gDP.textureImage.address + gDP.tiles[tile].ult * gDP.textureImage.bpl + (gDP.tiles[tile].uls << gDP.textureImage.size >> 1);
 
 	u16 *dest = (u16*)&TMEM[gDP.tiles[tile].tmem]; 
 	u16 *src = (u16*)&RDRAM[address];
 
-	u16 pal = (gDP.tiles[tile].tmem - 256) >> 4;
+	u16 pal = (u16)((gDP.tiles[tile].tmem - 256) >> 4);
 
 	int i = 0;
 	while (i < count)
@@ -797,7 +797,7 @@ void gDPFillRectangle( s32 ulx, s32 uly, s32 lrx, s32 lry )
 
 	if (depthBuffer.current) depthBuffer.current->cleared = FALSE;
 	gDP.colorImage.changed = TRUE;
-	gDP.colorImage.height = max( gDP.colorImage.height, lry );
+	gDP.colorImage.height = (u32)max( (s32)gDP.colorImage.height, lry );
 
 #ifdef DEBUG
 	DebugMsg( DEBUG_HIGH | DEBUG_HANDLED, "gDPFillRectangle( %i, %i, %i, %i );\n",
@@ -850,8 +850,8 @@ void gDPTextureRectangle( f32 ulx, f32 uly, f32 lrx, f32 lry, s32 tile, f32 s, f
 	if (gDP.textureMode == TEXTUREMODE_NORMAL)
 		gDP.textureMode = TEXTUREMODE_TEXRECT;
 
-	gDP.texRect.width = max( lrs, s ) + dsdx;
-	gDP.texRect.height = max( lrt, t ) + dtdy;
+	gDP.texRect.width = (u32)(max( lrs, s ) + dsdx);
+	gDP.texRect.height = (u32)(max( lrt, t ) + dtdy);
 
 	if (lrs > s)
 	{
@@ -873,7 +873,7 @@ void gDPTextureRectangle( f32 ulx, f32 uly, f32 lrx, f32 lry, s32 tile, f32 s, f
 
 	if (depthBuffer.current) depthBuffer.current->cleared = FALSE;
 	gDP.colorImage.changed = TRUE;
-	gDP.colorImage.height = max( gDP.colorImage.height, gDP.scissor.lry );
+	gDP.colorImage.height = max( gDP.colorImage.height, (u32)gDP.scissor.lry );
 
 #ifdef DEBUG
 	DebugMsg( DEBUG_HIGH | DEBUG_HANDLED, "gDPTextureRectangle( %f, %f, %f, %f, %i, %i, %f, %f, %f, %f );\n",

@@ -328,7 +328,7 @@ MicrocodeInfo *GBI_DetectMicrocode( u32 uc_start, u32 uc_dstart, u16 uc_dsize )
 {
 	MicrocodeInfo *current;
 
-	for (int i = 0; i < GBI.numMicrocodes; i++)
+	for (u32 i = 0; i < GBI.numMicrocodes; i++)
 	{
 		current = GBI.top;
 
@@ -432,7 +432,7 @@ MicrocodeInfo *GBI_DetectMicrocode( u32 uc_start, u32 uc_dstart, u16 uc_dsize )
 
 	// Let the user choose the microcode
 #ifndef __LINUX__
-	current->type = DialogBox( hInstance, MAKEINTRESOURCE( IDD_MICROCODEDLG ), hWnd, MicrocodeDlgProc );
+	current->type = (u32)DialogBox( hInstance, MAKEINTRESOURCE( IDD_MICROCODEDLG ), hWnd, MicrocodeDlgProc );
 #else // !__LINUX__
 	printf( "glN64: Warning - unknown ucode!!!\n" );
 	current->type = MicrocodeDialog();

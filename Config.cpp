@@ -151,7 +151,7 @@ void Config_SaveConfig()
 void Config_ApplyDlgConfig( HWND hWndDlg )
 {
 	char text[256];
-	int i;
+	LRESULT i;
 
 	SendDlgItemMessage( hWndDlg, IDC_CACHEMEGS, WM_GETTEXT, 4, (LPARAM)text );
 	cache.maxBytes = atol( text ) * 1048576;
@@ -159,7 +159,7 @@ void Config_ApplyDlgConfig( HWND hWndDlg )
 	OGL.forceBilinear = (SendDlgItemMessage( hWndDlg, IDC_FORCEBILINEAR, BM_GETCHECK, NULL, NULL ) == BST_CHECKED);
 	OGL.enable2xSaI = (SendDlgItemMessage( hWndDlg, IDC_ENABLE2XSAI, BM_GETCHECK, NULL, NULL ) == BST_CHECKED);
 	OGL.fog = (SendDlgItemMessage( hWndDlg, IDC_FOG, BM_GETCHECK, NULL, NULL ) == BST_CHECKED);
-	OGL.originAdjust = (OGL.enable2xSaI ? 0.25 : 0.50);
+	OGL.originAdjust = (OGL.enable2xSaI ? 0.25f : 0.50f);
 
 	OGL.fullscreenBits = fullscreen.bitDepth[SendDlgItemMessage( hWndDlg, IDC_FULLSCREENBITDEPTH, CB_GETCURSEL, 0, 0 )];
 	i = SendDlgItemMessage( hWndDlg, IDC_FULLSCREENRES, CB_GETCURSEL, 0, 0 );
@@ -168,7 +168,7 @@ void Config_ApplyDlgConfig( HWND hWndDlg )
 	OGL.fullscreenRefresh = fullscreen.refreshRate[SendDlgItemMessage( hWndDlg, IDC_FULLSCREENREFRESH, CB_GETCURSEL, 0, 0 )];
 
 	i = SendDlgItemMessage( hWndDlg, IDC_TEXTUREBPP, CB_GETCURSEL, 0, 0 );
-	OGL.textureBitDepth = i;
+	OGL.textureBitDepth = (int)i;
 
 	i = SendDlgItemMessage( hWndDlg, IDC_WINDOWEDRES, CB_GETCURSEL, 0, 0 );
 	OGL.windowedWidth = windowedModes[i].width;
@@ -200,7 +200,7 @@ void UpdateFullscreenConfig( HWND hWndDlg )
 	SendDlgItemMessage( hWndDlg, IDC_FULLSCREENBITDEPTH, CB_RESETCONTENT, 0, 0 );
 	while (EnumDisplaySettings( NULL, i, &deviceMode ) != 0)
 	{
-		int j = 0;
+		DWORD j = 0;
 		for (; j < fullscreen.numBitDepths; j++)
 		{
 			if (deviceMode.dmBitsPerPel == fullscreen.bitDepth[j])
@@ -229,7 +229,7 @@ void UpdateFullscreenConfig( HWND hWndDlg )
 	SendDlgItemMessage( hWndDlg, IDC_FULLSCREENRES, CB_RESETCONTENT, 0, 0 );
 	while (EnumDisplaySettings( NULL, i, &deviceMode ) != 0)
 	{
-		int j = 0;
+		DWORD j = 0;
 		for (; j < fullscreen.numResolutions; j++)
 		{
 			if ((deviceMode.dmPelsWidth == fullscreen.resolution[j].width) &&
@@ -263,7 +263,7 @@ void UpdateFullscreenConfig( HWND hWndDlg )
 	SendDlgItemMessage( hWndDlg, IDC_FULLSCREENREFRESH, CB_RESETCONTENT, 0, 0 );
 	while (EnumDisplaySettings( NULL, i, &deviceMode ) != 0)
 	{
-		int j = 0;
+		DWORD j = 0;
 		for (; j < fullscreen.numRefreshRates; j++)
 		{
 			if ((deviceMode.dmDisplayFrequency == fullscreen.refreshRate[j]))
@@ -292,7 +292,7 @@ void UpdateFullscreenConfig( HWND hWndDlg )
 BOOL CALLBACK ConfigDlgProc( HWND hWndDlg, UINT message, WPARAM wParam, LPARAM lParam ) 
 { 
 	char text[256];
-	int	 i;
+	LRESULT	 i;
 	DEVMODE deviceMode;
 	switch (message) 
     { 
