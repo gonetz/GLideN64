@@ -164,6 +164,12 @@ BOOL CALLBACK DebugDlgProc( HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam )
 					else
 						Debug.show &= ~DEBUG_MATRIX;
 					break;
+				case IDC_DUMP:
+					if (SendDlgItemMessage( hDlg, IDC_DUMP, BM_GETCHECK, NULL, NULL ) == BST_CHECKED)
+						StartDump("GLideN64.log");
+					else
+						EndDump();
+					break;
 				case IDC_PAUSE:
 					Debug.paused = TRUE;
 					break;
