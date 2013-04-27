@@ -333,7 +333,7 @@ GLSLCombiner::GLSLCombiner(Combiner *_color, Combiner *_alpha) {
 	strcpy(fragment_shader, fragment_shader_header);
 #if 1
 	strcat(fragment_shader, "  if (dither_enabled > 0) \n");
-	strcat(fragment_shader, "    if (snoise(noiseCoord2D) < 0.5) discard; \n");
+	strcat(fragment_shader, "    if (snoise(noiseCoord2D) < 0.0) discard; \n");
 	strcat(fragment_shader, fragment_shader_readtex0color);
 	strcat(fragment_shader, fragment_shader_readtex1color);
 	strcat(fragment_shader, "  float intensity = calc_light(); \n");
@@ -385,8 +385,6 @@ GLSLCombiner::GLSLCombiner(Combiner *_color, Combiner *_alpha) {
 	glAttachObjectARB(m_programObject, m_vertexShaderObject);
 	glLinkProgramARB(m_programObject);
 }
-
-unsigned char btNoiseTime = 0;
 
 void GLSLCombiner::Set() {
 	combiner.usesT0 = FALSE;
@@ -448,15 +446,14 @@ void GLSLCombiner::UpdateColors() {
 	int prim_lod_location = glGetUniformLocationARB(m_programObject, "prim_lod");
 	glUniform1fARB(prim_lod_location, gDP.primColor.l);
 	
-	if ((m_nInputs & (1<<NOISE)) > 0) {
-		int time_location = glGetUniformLocationARB(m_programObject, "time");
-		glUniform1fARB(time_location, ++btNoiseTime);
-	}
-
-	int nDither = 0;
-//	int nDither = (gDP.otherMode.colorDither) == 3 ? 1 : 0;
+	int nDither = gDP.otherMode.colorDither == 2 || gDP.otherMode.alphaDither == 2 || gDP.otherMode.alphaCompare == 3 ? 1 : 0;
 	int dither_location = glGetUniformLocationARB(m_programObject, "dither_enabled");
 	glUniform1iARB(dither_location, nDither);
+
+	if ((m_nInputs & (1<<NOISE)) + nDither > 0) {
+		int time_location = glGetUniformLocationARB(m_programObject, "time");
+		glUniform1fARB(time_location, (float)(rand()&255));
+	}
 
 	int fog_location = glGetUniformLocationARB(m_programObject, "fog_enabled");
 	glUniform1iARB(fog_location, (gSP.geometryMode & G_FOG) > 0 ? 1 : 0);
