@@ -163,30 +163,33 @@ static const char* fragment_shader_header_lod_variables =
 
 static const char* fragment_shader_header_common_functions =
 "															\n"
-"float calc_light() {										\n"
-"  input_color = gl_Color.rgb;								\n"
-"  if (int(secondary_color.r) == 0)							\n"
-"     return 1.0;											\n"
-"  float full_intensity = 0.0;								\n"
-"  int nLights = int(secondary_color.r);					\n"
-"  input_color = vec3(gl_LightSource[nLights].ambient);		\n"
-"  vec3 lightDir, lightColor;								\n"
-"  float intensity;											\n"
-"  vec3 n = normalize(gl_Color.rgb);						\n"
-"  for (int i = 0; i < nLights; i++)	{					\n"
-"    lightDir = vec3(gl_LightSource[i].position);			\n"
-"    intensity = max(dot(n,lightDir),0.0);					\n"
-"    full_intensity += intensity;							\n"
-"    lightColor = vec3(gl_LightSource[i].ambient)*intensity;\n"
-"    input_color += lightColor;								\n"
-"  };														\n"
-"  return full_intensity;									\n"
-"}															\n"
-"															\n"
 "float snoise(vec2 v);										\n"
 #ifdef USE_TOONIFY
 "void toonify(in float intensity);	\n"
 #endif
+;
+
+static const char* fragment_shader_calc_light =
+"																\n"
+"float calc_light() {											\n"
+"  input_color = gl_Color.rgb;									\n"
+"  if (int(secondary_color.r) == 0)								\n"
+"     return 1.0;												\n"
+"  float full_intensity = 0.0;									\n"
+"  int nLights = int(secondary_color.r);						\n"
+"  input_color = vec3(gl_LightSource[nLights].ambient);			\n"
+"  vec3 lightDir, lightColor;									\n"
+"  float intensity;												\n"
+"  vec3 n = normalize(gl_Color.rgb);							\n"
+"  for (int i = 0; i < nLights; i++)	{						\n"
+"    lightDir = vec3(gl_LightSource[i].position);				\n"
+"    intensity = max(dot(n,lightDir),0.0);						\n"
+"    full_intensity += intensity;								\n"
+"    lightColor = vec3(gl_LightSource[i].ambient)*intensity;	\n"
+"    input_color += lightColor;									\n"
+"  };															\n"
+"  return full_intensity;										\n"
+"}																\n"
 ;
 
 static const char* fragment_shader_calc_lod =
@@ -251,6 +254,8 @@ static const char* fragment_shader_header_main =
 "layout(pixel_center_integer) in vec4 gl_FragCoord; \n"
 "void main()						\n"
 "{									\n"
+"  if (dither_enabled > 0)			\n"
+"    if (snoise(noiseCoord2D) < 0.0) discard; \n"
 "  vec4 vec_color, combined_color;	\n"
 "  float alpha1, alpha2;			\n"
 "  vec3 color1, color2;				\n"
@@ -672,15 +677,15 @@ GLSLCombiner::GLSLCombiner(Combiner *_color, Combiner *_alpha) {
 	} else
 		strcat(strCombiner, "  color2 = color1; \n");
 
-	bool bUseLod = (m_nInputs & (1<<LOD_FRACTION)) > 0;
-	if (bUseLod)
+	const bool bUseLod = (m_nInputs & (1<<LOD_FRACTION)) > 0;
+	if (bUseLod) {
 		strcat(fragment_shader, fragment_shader_header_lod_variables);
-	strcat(fragment_shader, fragment_shader_header_common_functions);
-	if (bUseLod)
 		strcat(fragment_shader, fragment_shader_calc_lod);
+	}
+	if (bHWLightingCalculation)
+		strcat(fragment_shader, fragment_shader_calc_light);
+	strcat(fragment_shader, fragment_shader_header_common_functions);
 	strcat(fragment_shader, fragment_shader_header_main);
-	strcat(fragment_shader, "  if (dither_enabled > 0) \n");
-	strcat(fragment_shader, "    if (snoise(noiseCoord2D) < 0.0) discard; \n");
 	if (bUseLod)
 		strcat(fragment_shader, "  float lod_frac = calc_lod();		\n");
 	if ((m_nInputs & ((1<<TEXEL0)|(1<<TEXEL1)|(1<<TEXEL0_ALPHA)|(1<<TEXEL1_ALPHA))) > 0) {
@@ -689,7 +694,10 @@ GLSLCombiner::GLSLCombiner(Combiner *_color, Combiner *_alpha) {
 	} else {
 		assert(strstr(strCombiner, "readtex") == 0);
 	}
-	strcat(fragment_shader, "  float intensity = calc_light(); \n");
+	if (bHWLightingCalculation)
+		strcat(fragment_shader, "  float intensity = calc_light(); \n");
+	else
+		strcat(fragment_shader, "  input_color = gl_Color.rgb;\n");
 	strcat(fragment_shader, "  vec_color = vec4(input_color, gl_Color.a); \n");
 	strcat(fragment_shader, strCombiner);
 	strcat(fragment_shader, "  gl_FragColor = vec4(color2, alpha2); \n");
