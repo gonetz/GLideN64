@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <iostream>
 #include <fstream>
+#include <assert.h>
 #else
 # include "winlnxdefs.h"
 # include <stdlib.h> // malloc()
@@ -85,68 +86,63 @@ const char *AlphaInput[] = {
 	"0.0"
 };
 
-static const char* fragment_shader_header =
-"uniform sampler2D texture0;		\n"
-"uniform sampler2D texture1;		\n"
-"uniform sampler2D lod_texture;		\n"
-"uniform vec4 prim_color;			\n"
-"uniform vec4 env_color;			\n"
-"uniform vec4 center_color;			\n"
-"uniform vec4 scale_color;			\n"
-"uniform float k4;					\n"
-"uniform float k5;					\n"
-"uniform float prim_lod;			\n"
-"uniform int dither_enabled;		\n"
-"uniform int fog_enabled;			\n"
-"varying vec4 secondary_color;      \n"
-"varying vec2 noiseCoord2D;			\n"
-"vec3 input_color;					\n"
-"uniform int lod_enabled;			\n"
-"uniform float lod_x_scale;			\n"
-"uniform float lod_y_scale;			\n"
-"uniform float min_lod;				\n"
-"uniform int max_tile;				\n"
-"uniform int texture_detail;		\n"
-"									\n"
-"float calc_light();				\n"
-"float snoise(vec2 v);				\n"
-"float calc_lod();					\n"
+static const char* fragment_shader_header_common_variables =
+"uniform sampler2D texture0;	\n"
+"uniform sampler2D texture1;	\n"
+"uniform vec4 prim_color;		\n"
+"uniform vec4 env_color;		\n"
+"uniform vec4 center_color;		\n"
+"uniform vec4 scale_color;		\n"
+"uniform float k4;				\n"
+"uniform float k5;				\n"
+"uniform float prim_lod;		\n"
+"uniform int dither_enabled;	\n"
+"uniform int fog_enabled;		\n"
+"varying vec4 secondary_color;	\n"
+"varying vec2 noiseCoord2D;		\n"
+"vec3 input_color;				\n"
+;
+
+static const char* fragment_shader_header_lod_variables =
+"uniform int lod_enabled;		\n"
+"uniform float lod_x_scale;		\n"
+"uniform float lod_y_scale;		\n"
+"uniform float min_lod;			\n"
+"uniform int max_tile;			\n"
+"uniform int texture_detail;	\n"
+"uniform sampler2D lod_texture;	\n"
+;
+
+static const char* fragment_shader_header_common_functions =
+"															\n"
+"float calc_light() {										\n"
+"  input_color = gl_Color.rgb;								\n"
+"  if (int(secondary_color.r) == 0)							\n"
+"     return 1.0;											\n"
+"  float full_intensity = 0.0;								\n"
+"  int nLights = int(secondary_color.r);					\n"
+"  input_color = vec3(gl_LightSource[nLights].ambient);		\n"
+"  vec3 lightDir, lightColor;								\n"
+"  float intensity;											\n"
+"  vec3 n = normalize(gl_Color.rgb);						\n"
+"  for (int i = 0; i < nLights; i++)	{					\n"
+"    lightDir = vec3(gl_LightSource[i].position);			\n"
+"    intensity = max(dot(n,lightDir),0.0);					\n"
+"    full_intensity += intensity;							\n"
+"    lightColor = vec3(gl_LightSource[i].ambient)*intensity;\n"
+"    input_color += lightColor;								\n"
+"  };														\n"
+"  return full_intensity;									\n"
+"}															\n"
+"															\n"
+"float snoise(vec2 v);										\n"
 #ifdef USE_TOONIFY
 "void toonify(in float intensity);	\n"
 #endif
-"layout(pixel_center_integer) in vec4 gl_FragCoord; \n"
-"void main()						\n"
-"{									\n"
-"  vec4 vec_color, combined_color;	\n"
-"  float alpha1, alpha2;			\n"
-"  vec3 color1, color2;				\n"
-"  float lod_frac = calc_lod();		\n"
-;
-
-static const char* fragment_shader_calc_light =
-"																\n"
-"float calc_light() {											\n"
-"  input_color = gl_Color.rgb;									\n"
-"  if (int(secondary_color.r) == 0)								\n"
-"     return 1.0;												\n"
-"  float full_intensity = 0.0;									\n"
-"  int nLights = int(secondary_color.r);						\n"
-"  input_color = vec3(gl_LightSource[nLights].ambient);			\n"
-"  vec3 lightDir, lightColor;									\n"
-"  float intensity;												\n"
-"  vec3 n = normalize(gl_Color.rgb);							\n"
-"  for (int i = 0; i < nLights; i++)	{						\n"
-"    lightDir = vec3(gl_LightSource[i].position);				\n"
-"    intensity = max(dot(n,lightDir),0.0);						\n"
-"    full_intensity += intensity;								\n"
-"    lightColor = vec3(gl_LightSource[i].ambient)*intensity;	\n"
-"    input_color += lightColor;									\n"
-"  };															\n"
-"  return full_intensity;										\n"
-"}																\n"
 ;
 
 static const char* fragment_shader_calc_lod =
+"														\n"
 "vec2 fetchTex(in ivec2 screenpos) { \n"
   // look up result from previous render pass in the texture
 "  vec4 color = texelFetch(lod_texture, screenpos, 0);	\n"
@@ -200,6 +196,16 @@ static const char* fragment_shader_calc_lod =
 "  float tile = min(float(max_tile), floor(log2(floor(lod)))); \n"
 "  return fract(lod/pow(2.0, tile));					\n"
 "}														\n"
+;
+
+static const char* fragment_shader_header_main =
+"													\n"
+"layout(pixel_center_integer) in vec4 gl_FragCoord; \n"
+"void main()						\n"
+"{									\n"
+"  vec4 vec_color, combined_color;	\n"
+"  float alpha1, alpha2;			\n"
+"  vec3 color1, color2;				\n"
 ;
 
 #ifdef USE_TOONIFY
@@ -598,50 +604,57 @@ int CompileCombiner(const CombinerStage & _stage, const char** _Input, char * _f
 GLSLCombiner::GLSLCombiner(Combiner *_color, Combiner *_alpha) {
 	m_vertexShaderObject = g_vertex_shader_object;
 
-	char *fragment_shader = (char*)malloc(9000);
-	strcpy(fragment_shader, fragment_shader_header);
-#if 1
+	char *fragment_shader = (char*)malloc(8192);
+	strcpy(fragment_shader, fragment_shader_header_common_variables);
+
+	char strCombiner[256];
+	strcpy(strCombiner, "  alpha1 = ");
+	m_nInputs = CompileCombiner(_alpha->stage[0], AlphaInput, strCombiner);
+	strcat(strCombiner, "  color1 = ");
+	m_nInputs |= CompileCombiner(_color->stage[0], ColorInput, strCombiner);
+	strcat(strCombiner, "  combined_color = vec4(color1, alpha1); \n");
+	if (_alpha->numStages == 2) {
+		strcat(strCombiner, "  alpha2 = ");
+		m_nInputs |= CompileCombiner(_alpha->stage[1], AlphaInput, strCombiner);
+	} else
+		strcat(strCombiner, "  alpha2 = alpha1; \n");
+	if (_color->numStages == 2) {
+		strcat(strCombiner, "  color2 = ");
+		m_nInputs |= CompileCombiner(_color->stage[1], ColorInput, strCombiner);
+	} else
+		strcat(strCombiner, "  color2 = color1; \n");
+
+	bool bUseLod = (m_nInputs & (1<<LOD_FRACTION)) > 0;
+	if (bUseLod)
+		strcat(fragment_shader, fragment_shader_header_lod_variables);
+	strcat(fragment_shader, fragment_shader_header_common_functions);
+	if (bUseLod)
+		strcat(fragment_shader, fragment_shader_calc_lod);
+	strcat(fragment_shader, fragment_shader_header_main);
 	strcat(fragment_shader, "  if (dither_enabled > 0) \n");
 	strcat(fragment_shader, "    if (snoise(noiseCoord2D) < 0.0) discard; \n");
-	strcat(fragment_shader, fragment_shader_readtex0color);
-	strcat(fragment_shader, fragment_shader_readtex1color);
+	if (bUseLod)
+		strcat(fragment_shader, "  float lod_frac = calc_lod();		\n");
+	if ((m_nInputs & ((1<<TEXEL0)|(1<<TEXEL1)|(1<<TEXEL0_ALPHA)|(1<<TEXEL1_ALPHA))) > 0) {
+		strcat(fragment_shader, fragment_shader_readtex0color);
+		strcat(fragment_shader, fragment_shader_readtex1color);
+	} else {
+		assert(strstr(strCombiner, "readtex") == 0);
+	}
 	strcat(fragment_shader, "  float intensity = calc_light(); \n");
 	strcat(fragment_shader, "  vec_color = vec4(input_color, gl_Color.a); \n");
-	strcat(fragment_shader, "  alpha1 = ");
-	m_nInputs = CompileCombiner(_alpha->stage[0], AlphaInput, fragment_shader);
-	strcat(fragment_shader, "  color1 = ");
-	m_nInputs |= CompileCombiner(_color->stage[0], ColorInput, fragment_shader);
-	strcat(fragment_shader, "  combined_color = vec4(color1, alpha1); \n");
-
-	if (_alpha->numStages == 2) {
-		strcat(fragment_shader, "  alpha2 = ");
-		m_nInputs |= CompileCombiner(_alpha->stage[1], AlphaInput, fragment_shader);
-	} else
-		strcat(fragment_shader, "  alpha2 = alpha1; \n");
-
-	if (_color->numStages == 2) {
-		strcat(fragment_shader, "  color2 = ");
-		m_nInputs |= CompileCombiner(_color->stage[1], ColorInput, fragment_shader);
-	} else
-		strcat(fragment_shader, "  color2 = color1; \n");
-
+	strcat(fragment_shader, strCombiner);
 	strcat(fragment_shader, "  gl_FragColor = vec4(color2, alpha2); \n");
 #ifdef USE_TOONIFY
 	strcat(fragment_shader, "  toonify(intensity); \n");
 #endif
 	strcat(fragment_shader, "  if (fog_enabled > 0) \n");
 	strcat(fragment_shader, "    gl_FragColor = vec4(mix(gl_Fog.color.rgb, gl_FragColor.rgb, gl_FogFragCoord), gl_FragColor.a); \n");
-
 	strcat(fragment_shader, fragment_shader_end);
-	strcat(fragment_shader, fragment_shader_calc_light);
-	strcat(fragment_shader, fragment_shader_calc_lod);
+	strcat(fragment_shader, noise_fragment_shader);
+
 #ifdef USE_TOONIFY
 	strcat(fragment_shader, fragment_shader_toonify);
-#endif
-	strcat(fragment_shader, noise_fragment_shader);
-#else // #if 0
-//	strcat(fragment_shader, fragment_shader_default);
-	strcat(fragment_shader, "gl_FragColor = secondary_color; \n");
 #endif
 
 	m_fragmentShaderObject = glCreateShaderObjectARB(GL_FRAGMENT_SHADER_ARB);
@@ -736,7 +749,7 @@ void GLSLCombiner::UpdateColors() {
 		}
 	}
 	
-	int nDither = gDP.otherMode.colorDither == 2 || gDP.otherMode.alphaDither == 2 || gDP.otherMode.alphaCompare == 3 ? 1 : 0;
+	int nDither = (gDP.otherMode.colorDither == 2 || gDP.otherMode.alphaDither == 2 || gDP.otherMode.alphaCompare == 3) ? 1 : 0;
 	int dither_location = glGetUniformLocationARB(m_programObject, "dither_enabled");
 	glUniform1iARB(dither_location, nDither);
 
