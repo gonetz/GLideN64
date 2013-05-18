@@ -38,7 +38,7 @@ void display_warning(const char *text, ...)
 	}
 }
 
-const char *ColorInput[] = {
+const char *ColorInput_1cycle[] = {
 	"combined_color.rgb",
 	"readtex0.rgb",
 	"readtex1.rgb",
@@ -62,7 +62,31 @@ const char *ColorInput[] = {
 	"vec3(0.0)"
 };
 
-const char *AlphaInput[] = {
+const char *ColorInput_2cycle[] = {
+	"combined_color.rgb",
+	"readtex1.rgb",
+	"readtex0.rgb",
+	"prim_color.rgb",
+	"vec_color.rgb",
+	"env_color.rgb",
+	"center_color.rgb",
+	"scale_color.rgb",
+	"combined_color.a",
+	"readtex1.a",
+	"readtex0.a",
+	"prim_color.a",
+	"vec_color.a",
+	"env_color.a",
+	"lod_frac", // TODO: emulate lod_fraction
+	"vec3(prim_lod)",
+	"vec3(0.5 + 0.5*snoise(noiseCoord2D))",
+	"vec3(k4)",
+	"vec3(k5)",
+	"vec3(1.0)",
+	"vec3(0.0)"
+};
+
+const char *AlphaInput_1cycle[] = {
 	"combined_color.a",
 	"readtex0.a",
 	"readtex1.a",
@@ -74,6 +98,30 @@ const char *AlphaInput[] = {
 	"combined_color.a",
 	"readtex0.a",
 	"readtex1.a",
+	"prim_color.a",
+	"vec_color.a",
+	"env_color.a",
+	"lod_frac", // TODO: emulate lod_fraction
+	"prim_lod",
+	"1.0",
+	"k4",
+	"k5",
+	"1.0",
+	"0.0"
+};
+
+const char *AlphaInput_2cycle[] = {
+	"combined_color.a",
+	"readtex1.a",
+	"readtex0.a",
+	"prim_color.a",
+	"vec_color.a",
+	"env_color.a",
+	"center_color.a",
+	"scale_color.a",
+	"combined_color.a",
+	"readtex1.a",
+	"readtex0.a",
 	"prim_color.a",
 	"vec_color.a",
 	"env_color.a",
@@ -584,7 +632,7 @@ int CompileCombiner(const CombinerStage & _stage, const char** _Input, char * _f
 				nRes |= 1 << _stage.op[i].param1;
 				break;
 			case INTER:
-				sprintf(buf, "mix(%s, %s, %s)", ColorInput[_stage.op[0].param2], _Input[_stage.op[0].param1], _Input[_stage.op[0].param3]);
+				sprintf(buf, "mix(%s, %s, %s)", _Input[_stage.op[0].param2], _Input[_stage.op[0].param1], _Input[_stage.op[0].param3]);
 				strcat(_fragment_shader, buf);
 				nRes |= 1 << _stage.op[i].param1;
 				nRes |= 1 << _stage.op[i].param2;
@@ -609,18 +657,18 @@ GLSLCombiner::GLSLCombiner(Combiner *_color, Combiner *_alpha) {
 
 	char strCombiner[256];
 	strcpy(strCombiner, "  alpha1 = ");
-	m_nInputs = CompileCombiner(_alpha->stage[0], AlphaInput, strCombiner);
+	m_nInputs = CompileCombiner(_alpha->stage[0], AlphaInput_1cycle, strCombiner);
 	strcat(strCombiner, "  color1 = ");
-	m_nInputs |= CompileCombiner(_color->stage[0], ColorInput, strCombiner);
+	m_nInputs |= CompileCombiner(_color->stage[0], ColorInput_1cycle, strCombiner);
 	strcat(strCombiner, "  combined_color = vec4(color1, alpha1); \n");
 	if (_alpha->numStages == 2) {
 		strcat(strCombiner, "  alpha2 = ");
-		m_nInputs |= CompileCombiner(_alpha->stage[1], AlphaInput, strCombiner);
+		m_nInputs |= CompileCombiner(_alpha->stage[1], AlphaInput_2cycle, strCombiner);
 	} else
 		strcat(strCombiner, "  alpha2 = alpha1; \n");
 	if (_color->numStages == 2) {
 		strcat(strCombiner, "  color2 = ");
-		m_nInputs |= CompileCombiner(_color->stage[1], ColorInput, strCombiner);
+		m_nInputs |= CompileCombiner(_color->stage[1], ColorInput_2cycle, strCombiner);
 	} else
 		strcat(strCombiner, "  color2 = color1; \n");
 

@@ -355,7 +355,7 @@ CachedCombiner *Combiner_Compile( u64 mux )
 		Combiner_SimplifyCycle( &ac[i], &alpha.stage[i] );
 	}
 
-	if (numCycles == 2)
+	if (numCycles == 2 && combiner.compiler != GLSL_COMBINE)
 	{
 		// Attempt to merge the two stages into one
 		Combiner_MergeStages( &color );
