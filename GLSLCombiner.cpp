@@ -86,24 +86,6 @@ const char *AlphaInput[] = {
 };
 
 static const char* fragment_shader_header =
-/*
-"uniform sampler2D texture0;       \n"
-"uniform sampler2D texture1;       \n"
-"uniform sampler2D ditherTex;      \n"
-"uniform vec4 constant_color;      \n"
-"uniform vec4 ccolor0;             \n"
-"uniform vec4 ccolor1;             \n"
-"uniform vec4 chroma_color;        \n"
-"uniform float lambda;             \n"
-"varying vec4 fogValue;            \n"
-"                                  \n"
-"void test_chroma(vec4 ctexture1); \n"
-"                                  \n"
-"                                  \n"
-"void main()                       \n"
-"{                                 \n"
-;
-*/
 "uniform sampler2D texture0;		\n"
 "uniform sampler2D texture1;		\n"
 "uniform sampler2D lod_texture;		\n"
@@ -140,44 +122,6 @@ static const char* fragment_shader_header =
 "  vec3 color1, color2;				\n"
 "  float lod_frac = calc_lod();		\n"
 ;
-/*
-// using gl_FragCoord is terribly slow on ATI and varying variables don't work for some unknown
-// reason, so we use the unused components of the texture2 coordinates
-static const char* fragment_shader_dither =
-"  float dithx = (gl_TexCoord[2].b + 1.0)*0.5*1000.0; \n"
-"  float dithy = (gl_TexCoord[2].a + 1.0)*0.5*1000.0; \n"
-"  if(texture2D(ditherTex, vec2((dithx-32.0*floor(dithx/32.0))/32.0, \n"
-"                               (dithy-32.0*floor(dithy/32.0))/32.0)).a > 0.5) discard; \n"
-;
-
-static const char* fragment_shader_depth =
-"  gl_FragDepth = dot(texture2D(texture0, vec2(gl_TexCoord[0])), vec4(32*64*32/65536.0, 64*32/65536.0, 32/65536.0, 0))*0.5 + 0.5; \n"
-;
-
-static const char* fragment_shader_bw =
-"  vec4 readtex0 = texture2D(texture0, vec2(gl_TexCoord[0])); \n"
-"  gl_FragColor = vec4(vec3(readtex0.b),                      \n"
-"                 readtex0.r + readtex0.g * 8.0 / 256.0);     \n"
-;
-
-static const char* fragment_shader_readtex0bw =
-"  vec4 readtex0 = texture2D(texture0, vec2(gl_TexCoord[0])); \n"
-"  readtex0 = vec4(vec3(readtex0.b),                          \n"
-"                  readtex0.r + readtex0.g * 8.0 / 256.0);    \n"
-;
-static const char* fragment_shader_readtex0bw_2 =
-"  vec4 readtex0 = vec4(dot(texture2D(texture0, vec2(gl_TexCoord[0])), vec4(1.0/3, 1.0/3, 1.0/3, 0)));                        \n"
-;
-
-static const char* fragment_shader_readtex1bw =
-"  vec4 readtex1 = texture2D(texture1, vec2(gl_TexCoord[1])); \n"
-"  readtex1 = vec4(vec3(readtex1.b),                          \n"
-"                  readtex1.r + readtex1.g * 8.0 / 256.0);    \n"
-;
-static const char* fragment_shader_readtex1bw_2 =
-"  vec4 readtex1 = vec4(dot(texture2D(texture1, vec2(gl_TexCoord[1])), vec4(1.0/3, 1.0/3, 1.0/3, 0)));                        \n"
-;
-*/
 
 static const char* fragment_shader_calc_light =
 "																\n"
@@ -292,23 +236,6 @@ static const char* fragment_shader_end =
 ;
 
 static const char* vertex_shader =
-#if 0
-//"varying vec4 fogValue;                                         \n"
-"                                                               \n"
-"void main()                                                    \n"
-"{                                                              \n"
-"  gl_Position = ftransform();                                  \n"
-"  gl_FrontColor = gl_Color;                                    \n"
-"  gl_TexCoord[0] = gl_MultiTexCoord0;                          \n"
-"  gl_TexCoord[1] = gl_MultiTexCoord1;                          \n"
-"  float f = (gl_Fog.end - gl_SecondaryColor.r) * gl_Fog.scale; \n" // fog value passed through secondary color (workaround ATI bug)
-"  f = clamp(f, 0.0, 1.0);                                      \n"
-//"  gl_TexCoord[0].b = f;                                        \n" // various data passed through
-//"  gl_TexCoord[2].b = gl_Vertex.x;                              \n" // texture coordinates
-//"  gl_TexCoord[2].a = gl_Vertex.y;                              \n" // again it is the only way
-"}                                                              \n" // i've found to get it working fast with ATI drivers
-;
-#else
 "uniform float time;											\n"
 "varying vec2 noiseCoord2D;										\n"
 "varying vec4 secondary_color;                                  \n"
@@ -324,7 +251,6 @@ static const char* vertex_shader =
 "  noiseCoord2D = gl_Vertex.xy + vec2(0.0, time);				\n"
 "}                                                              \n"
 ;
-#endif
 
 static const char* lod_vertex_shader =
 "varying vec4 secondary_color;                                  \n"
@@ -778,9 +704,6 @@ void GLSLCombiner::Set() {
 }
 
 void GLSLCombiner::UpdateColors() {
-//	if (int chroma_color_location = glGetUniformLocationARB(_glslCombiner->program_object, "chroma_color") != -1)
-//		glUniform4fARB(chroma_color_location, chroma_color[0], chroma_color[1],	chroma_color[2], chroma_color[3]);
-
 	int prim_color_location = glGetUniformLocationARB(m_programObject, "prim_color");
 	glUniform4fARB(prim_color_location, gDP.primColor.r, gDP.primColor.g, gDP.primColor.b, gDP.primColor.a);
 
