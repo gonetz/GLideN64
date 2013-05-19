@@ -805,7 +805,7 @@ void GLSLCombiner::UpdateColors() {
 		}
 	}
 	
-	int nDither = (gDP.otherMode.colorDither == 2 || gDP.otherMode.alphaDither == 2 || gDP.otherMode.alphaCompare == 3) ? 1 : 0;
+	int nDither = (gDP.otherMode.alphaCompare == 3 && (gDP.otherMode.colorDither == 2 || gDP.otherMode.alphaDither == 2)) ? 1 : 0;
 	int dither_location = glGetUniformLocationARB(m_programObject, "dither_enabled");
 	glUniform1iARB(dither_location, nDither);
 
