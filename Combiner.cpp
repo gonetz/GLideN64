@@ -402,6 +402,9 @@ void Combiner_DeleteCombiner( CachedCombiner *combiner )
 
 void Combiner_Destroy()
 {
+	if (combiner.compiler == GLSL_COMBINE)
+		DestroyGLSLCombiner();
+
 	if (combiner.root)
 	{
 		Combiner_DeleteCombiner( combiner.root );
@@ -496,4 +499,14 @@ void Combiner_SetCombine( u64 mux )
 {
 	Combiner_SelectCombine( mux );
 	Combiner_SetCombineStates();
+}
+
+void Combiner_CalcLOD() {
+	if (combiner.compiler == GLSL_COMBINE)
+		GLSL_CalcLOD();
+}
+
+void Combiner_PostCalcLOD() {
+	if (combiner.compiler == GLSL_COMBINE)
+		GLSL_PostCalcLOD();
 }

@@ -141,7 +141,7 @@ extern struct CombinerInfo
 
 	int compiler;
 
-	BOOL usesT0, usesT1, usesNoise;
+	BOOL usesT0, usesT1, usesLOD;
 } combiner;
 
 #define SetConstant( constant, color, alpha ) \
@@ -215,5 +215,12 @@ void Combiner_SetCombine( u64 mux );
 void Combiner_Destroy();
 void Combiner_BeginTextureUpdate();
 void Combiner_EndTextureUpdate();
+void Combiner_CalcLOD();
+void Combiner_PostCalcLOD();
+
+#define FBO
+//#define LOD_TEST
+//#define FBO_OLD
+
 #endif
 

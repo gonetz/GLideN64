@@ -546,7 +546,7 @@ void RegisterCombiners::Set()
 {
 	combiner.usesT0 = m_usesT0;
 	combiner.usesT1 = m_usesT1;
-	combiner.usesNoise = FALSE;
+	combiner.usesLOD = FALSE;
 
 	combiner.vertex.color = m_vertex.color;
 	combiner.vertex.secondaryColor = m_vertex.secondaryColor;

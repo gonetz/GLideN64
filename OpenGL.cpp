@@ -86,6 +86,25 @@ PFNGLSECONDARYCOLOR3UIVEXTPROC glSecondaryColor3uivEXT;
 PFNGLSECONDARYCOLOR3USEXTPROC glSecondaryColor3usEXT;
 PFNGLSECONDARYCOLOR3USVEXTPROC glSecondaryColor3usvEXT;
 PFNGLSECONDARYCOLORPOINTEREXTPROC glSecondaryColorPointerEXT;
+
+PFNGLGENBUFFERSPROC glGenBuffers;
+PFNGLDRAWBUFFERSPROC glDrawBuffers;
+PFNGLBINDFRAMEBUFFERPROC glBindFramebuffer;
+PFNGLDELETEFRAMEBUFFERSPROC glDeleteFramebuffers;
+PFNGLGENFRAMEBUFFERSPROC glGenFramebuffers;
+PFNGLFRAMEBUFFERTEXTUREPROC glFramebufferTexture;
+PFNGLCHECKFRAMEBUFFERSTATUSPROC glCheckFramebufferStatus;
+
+PFNGLBINDFRAMEBUFFEREXTPROC glBindFramebufferEXT;
+PFNGLFRAMEBUFFERTEXTURE2DEXTPROC glFramebufferTexture2DEXT;
+PFNGLGENFRAMEBUFFERSEXTPROC glGenFramebuffersEXT;
+PFNGLBINDRENDERBUFFEREXTPROC glBindRenderbufferEXT;
+PFNGLDELETERENDERBUFFERSEXTPROC glDeleteRenderbuffersEXT;
+PFNGLGENRENDERBUFFERSEXTPROC glGenRenderbuffersEXT;
+PFNGLRENDERBUFFERSTORAGEEXTPROC glRenderbufferStorageEXT;
+PFNGLFRAMEBUFFERRENDERBUFFEREXTPROC glFramebufferRenderbufferEXT;
+PFNGLCHECKFRAMEBUFFERSTATUSEXTPROC glCheckFramebufferStatusEXT;
+PFNGLDELETEFRAMEBUFFERSEXTPROC glDeleteFramebuffersEXT;
 #endif // !__LINUX__
 
 BOOL isExtensionSupported( const char *extension )
@@ -120,6 +139,8 @@ BOOL isExtensionSupported( const char *extension )
 
 void OGL_InitExtensions()
 {
+	const char *version = reinterpret_cast<const char*>(glGetString(GL_VERSION));
+
 	if (OGL.GLSL = isExtensionSupported("GL_ARB_shading_language_100") &&
 		isExtensionSupported("GL_ARB_shader_objects") &&
 		isExtensionSupported("GL_ARB_fragment_shader") &&
@@ -218,7 +239,27 @@ void OGL_InitExtensions()
 	OGL.EXT_texture_env_combine = isExtensionSupported( "GL_EXT_texture_env_combine" );
 	OGL.ATI_texture_env_combine3 = isExtensionSupported( "GL_ATI_texture_env_combine3" );
 	OGL.ATIX_texture_env_route = isExtensionSupported( "GL_ATIX_texture_env_route" );
-	OGL.NV_texture_env_combine4 = isExtensionSupported( "GL_NV_texture_env_combine4" );;
+	OGL.NV_texture_env_combine4 = isExtensionSupported( "GL_NV_texture_env_combine4" );
+
+	glGenBuffers = (PFNGLGENBUFFERSPROC)wglGetProcAddress( "glGenBuffers" );
+	glDrawBuffers = (PFNGLDRAWBUFFERSPROC)wglGetProcAddress( "glDrawBuffers" );
+	glBindFramebuffer = (PFNGLBINDFRAMEBUFFERPROC)wglGetProcAddress( "glBindFramebuffer" );
+	glDeleteFramebuffers = (PFNGLDELETEFRAMEBUFFERSPROC)wglGetProcAddress( "glDeleteFramebuffers" );
+	glGenFramebuffers = (PFNGLGENFRAMEBUFFERSPROC)wglGetProcAddress( "glGenFramebuffers" );
+	glFramebufferTexture = (PFNGLFRAMEBUFFERTEXTUREPROC)wglGetProcAddress( "glFramebufferTexture" );
+	glCheckFramebufferStatus = (PFNGLCHECKFRAMEBUFFERSTATUSPROC)wglGetProcAddress( "glCheckFramebufferStatus" );
+
+	glBindFramebufferEXT = (PFNGLBINDFRAMEBUFFEREXTPROC)wglGetProcAddress("glBindFramebufferEXT");
+	glFramebufferTexture2DEXT = (PFNGLFRAMEBUFFERTEXTURE2DEXTPROC)wglGetProcAddress("glFramebufferTexture2DEXT");
+	glGenFramebuffersEXT = (PFNGLGENFRAMEBUFFERSEXTPROC)wglGetProcAddress("glGenFramebuffersEXT");
+	glCheckFramebufferStatusEXT = (PFNGLCHECKFRAMEBUFFERSTATUSEXTPROC)wglGetProcAddress("glCheckFramebufferStatusEXT");
+	glDeleteFramebuffersEXT = (PFNGLDELETEFRAMEBUFFERSEXTPROC)wglGetProcAddress("glDeleteFramebuffersEXT");
+
+	glBindRenderbufferEXT = (PFNGLBINDRENDERBUFFEREXTPROC)wglGetProcAddress("glBindRenderbufferEXT");
+	glDeleteRenderbuffersEXT = (PFNGLDELETERENDERBUFFERSEXTPROC)wglGetProcAddress("glDeleteRenderbuffersEXT");
+	glGenRenderbuffersEXT = (PFNGLGENRENDERBUFFERSEXTPROC)wglGetProcAddress("glGenRenderbuffersEXT");
+	glRenderbufferStorageEXT = (PFNGLRENDERBUFFERSTORAGEEXTPROC)wglGetProcAddress("glRenderbufferStorageEXT");
+	glFramebufferRenderbufferEXT = (PFNGLFRAMEBUFFERRENDERBUFFEREXTPROC)wglGetProcAddress("glFramebufferRenderbufferEXT");
 }
 
 void OGL_InitStates()
@@ -737,8 +778,10 @@ void OGL_AddTriangle( SPVertex *vertices, int v0, int v1, int v2 )
 		{
 			if (combiner.vertex.secondaryColor == LIGHT) {
 				OGL.vertices[OGL.numVertices].secondaryColor.r = vertices[v[i]].HWLight;
-				OGL.vertices[OGL.numVertices].secondaryColor.g = 0.0f;
-				OGL.vertices[OGL.numVertices].secondaryColor.b = 0.0f;
+				if (combiner.usesLOD && gDP.otherMode.textureLOD == G_TL_LOD) {
+					OGL.vertices[OGL.numVertices].secondaryColor.g = vertices[v[i]].s * cache.current[0]->shiftScaleS * gSP.texture.scales / 255.0f; // 0.0f;
+					OGL.vertices[OGL.numVertices].secondaryColor.b = vertices[v[i]].t * cache.current[0]->shiftScaleT * gSP.texture.scalet / 255.0f; // 0.0f;
+				}
 				OGL.vertices[OGL.numVertices].secondaryColor.a = 1.0f;
 			} else {
 				OGL.vertices[OGL.numVertices].secondaryColor.r = 0.0f;//lod_fraction; //vertices[v[i]].r;
@@ -810,7 +853,15 @@ void OGL_DrawTriangles()
 		glPolygonStipple( OGL.stipplePattern[(BYTE)(gDP.envColor.a * 255.0f) >> 3][OGL.lastStipple] );
 	}
 
-	glDrawArrays( GL_TRIANGLES, 0, OGL.numVertices );
+	if (combiner.usesLOD && gDP.otherMode.textureLOD == G_TL_LOD) {
+		Combiner_CalcLOD();
+#ifndef LOD_TEST
+		glDrawArrays( GL_TRIANGLES, 0, OGL.numVertices );
+		Combiner_PostCalcLOD();
+#endif
+	} else
+		glDrawArrays( GL_TRIANGLES, 0, OGL.numVertices );
+
 	OGL.numTriangles = OGL.numVertices = 0;
 }
 

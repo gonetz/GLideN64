@@ -174,8 +174,7 @@ struct gDPInfo
 
 	struct
 	{
-		u32 m;
-		f32 l, r, g, b, a;
+		f32 m, l, r, g, b, a;
 	} primColor;
 
 	struct
