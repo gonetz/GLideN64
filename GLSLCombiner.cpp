@@ -599,7 +599,7 @@ GLSLCombiner::GLSLCombiner(Combiner *_color, Combiner *_alpha) {
 	char *fragment_shader = (char*)malloc(8192);
 	strcpy(fragment_shader, fragment_shader_header_common_variables);
 
-	char strCombiner[256];
+	char strCombiner[512];
 	strcpy(strCombiner, "  alpha1 = ");
 	m_nInputs = CompileCombiner(_alpha->stage[0], AlphaInput_1cycle, strCombiner);
 	strcat(strCombiner, "  color1 = ");
