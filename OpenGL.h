@@ -84,6 +84,11 @@ struct GLInfo
 	BYTE	lastStipple;
 
 	BYTE	combiner;
+	enum {
+		fbNone,
+		fbFBO,
+		fbFBOEXT
+	} framebuffer_mode;
 };
 
 extern GLInfo OGL;
@@ -149,12 +154,16 @@ extern PFNGLSECONDARYCOLOR3USEXTPROC glSecondaryColor3usEXT;
 extern PFNGLSECONDARYCOLOR3USVEXTPROC glSecondaryColor3usvEXT;
 extern PFNGLSECONDARYCOLORPOINTEREXTPROC glSecondaryColorPointerEXT;
 
-extern PFNGLGENBUFFERSPROC glGenBuffers;
 extern PFNGLDRAWBUFFERSPROC glDrawBuffers;
 extern PFNGLGENFRAMEBUFFERSPROC glGenFramebuffers;
 extern PFNGLBINDFRAMEBUFFERPROC glBindFramebuffer;
 extern PFNGLDELETEFRAMEBUFFERSPROC glDeleteFramebuffers;
 extern PFNGLFRAMEBUFFERTEXTUREPROC glFramebufferTexture;
+extern PFNGLGENRENDERBUFFERSPROC glGenRenderbuffers;
+extern PFNGLBINDRENDERBUFFERPROC glBindRenderbuffer;
+extern PFNGLRENDERBUFFERSTORAGEPROC glRenderbufferStorage;
+extern PFNGLDELETERENDERBUFFERSPROC glDeleteRenderbuffers;
+extern PFNGLFRAMEBUFFERRENDERBUFFERPROC glFramebufferRenderbuffer;
 extern PFNGLCHECKFRAMEBUFFERSTATUSPROC glCheckFramebufferStatus;
 
 extern PFNGLBINDFRAMEBUFFEREXTPROC glBindFramebufferEXT;
@@ -185,5 +194,17 @@ void OGL_SaveScreenshot();
 void OGL_SwapBuffers();
 #endif // __LINUX__
 void OGL_ReadScreen( void **dest, long *width, long *height );
+
+void ogl_glGenFramebuffers (GLsizei n, GLuint *framebuffers);
+void ogl_glBindFramebuffer (GLenum target, GLuint framebuffer);
+void ogl_glDeleteFramebuffers (GLsizei n, const GLuint *framebuffers);
+void ogl_glFramebufferTexture (GLenum target, GLenum attachment, GLuint texture, GLint level);
+void ogl_glGenRenderbuffers (GLsizei n, GLuint *renderbuffers);
+void ogl_glBindRenderbuffer (GLenum target, GLuint renderbuffer);
+void ogl_glRenderbufferStorage (GLenum target, GLenum internalformat, GLsizei width, GLsizei height);
+void ogl_glDeleteRenderbuffers (GLsizei n, const GLuint *renderbuffers);
+void ogl_glFramebufferRenderbuffer (GLenum target, GLenum attachment, GLenum renderbuffertarget, GLuint renderbuffer);
+void ogl_glDrawBuffers (GLsizei n, const GLenum *bufs, GLuint texture);
+GLenum ogl_glCheckFramebufferStatus (GLenum target);
 
 #endif

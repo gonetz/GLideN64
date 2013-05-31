@@ -474,11 +474,10 @@ void InitGLSLCombiner()
 #endif
 #endif // LOD_TEST
 
-#ifdef FBO
 	// generate a framebuffer 
-	glGenFramebuffers(1, &g_lod_fbo);
+	ogl_glGenFramebuffers(1, &g_lod_fbo);
 	// bind it as the target for rendering commands
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, g_lod_fbo);
+	ogl_glBindFramebuffer(GL_DRAW_FRAMEBUFFER, g_lod_fbo);
 
 	glActiveTextureARB(GL_TEXTURE2_ARB);
 	glEnable(GL_TEXTURE_2D);
@@ -488,16 +487,16 @@ void InitGLSLCombiner()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glTexImage2D(GL_TEXTURE_2D, 0,GL_RG16F,
+	glTexImage2D(GL_TEXTURE_2D, 0,GL_RGBA16F,
 						OGL.width <= 1024 ? 1024 : 2048,
 						OGL.height <= 1024 ? 1024 : 2048,
-						0, GL_RG, GL_FLOAT,
+						0, GL_RGBA, GL_FLOAT,
 						NULL); 
 	glBindTexture(GL_TEXTURE_2D, 0);
-	glFramebufferTexture(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, g_lod_tex, 0);
+	ogl_glFramebufferTexture(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, g_lod_tex, 0);
 
 	// check if everything is OK
-	GLenum e = glCheckFramebufferStatus(GL_DRAW_FRAMEBUFFER);
+	GLenum e = ogl_glCheckFramebufferStatus(GL_DRAW_FRAMEBUFFER);
 	switch (e) {
 		case GL_FRAMEBUFFER_UNDEFINED:
 			printf("FBO Undefined\n");
@@ -517,83 +516,23 @@ void InitGLSLCombiner()
 		case GL_FRAMEBUFFER_COMPLETE:
 			printf("FBO OK\n");
 			break;
+		case GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS_EXT:
+			printf("framebuffer FRAMEBUFFER_DIMENSIONS\n");
+			break;
+		case GL_FRAMEBUFFER_INCOMPLETE_FORMATS_EXT:
+			printf("framebuffer INCOMPLETE_FORMATS\n");
+			break;
 		default:
 			printf("FBO Problem?\n");
 	}
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-#endif
-
-#ifdef FBO_OLD
-	// generate a framebuffer 
-	glGenFramebuffersEXT(1, &g_lod_fbo);
-	
-	glActiveTextureARB(GL_TEXTURE2_ARB);
-	glEnable(GL_TEXTURE_2D);
-	glGenTextures(1, &g_lod_tex);
-	glBindTexture(GL_TEXTURE_2D, g_lod_tex);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR); 
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glTexImage2D(GL_TEXTURE_2D, 0,GL_RGBA16F,
-						OGL.width <= 1024 ? 1024 : 2048,
-						OGL.height <= 1024 ? 1024 : 2048,
-						0, GL_RGBA, GL_FLOAT,
-						NULL); 
-	glBindTexture(GL_TEXTURE_2D, 0);
-	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, g_lod_fbo);
-	glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D, g_lod_tex, 0);
-
-	// check if everything is OK
-	GLenum e = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
-	switch (e) {
-		 case GL_FRAMEBUFFER_COMPLETE_EXT:
-		   printf("framebuffer complete!\n");
-		   break;
-		 case GL_FRAMEBUFFER_UNSUPPORTED_EXT:
-		   printf("framebuffer GL_FRAMEBUFFER_UNSUPPORTED_EXT\n");
-			/* you gotta choose different formats */
-		   break;
-		 case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT_EXT:
-		   printf("framebuffer INCOMPLETE_ATTACHMENT\n");
-		   break;
-		 case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT_EXT:
-		   printf("framebuffer FRAMEBUFFER_MISSING_ATTACHMENT\n");
-		   break;
-		 case GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS_EXT:
-		   printf("framebuffer FRAMEBUFFER_DIMENSIONS\n");
-		   break;
-		 case GL_FRAMEBUFFER_INCOMPLETE_FORMATS_EXT:
-		   printf("framebuffer INCOMPLETE_FORMATS\n");
-		   break;
-		 case GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER_EXT:
-		   printf("framebuffer INCOMPLETE_DRAW_BUFFER\n");
-		   break;
-		 case GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER_EXT:
-		   printf("framebuffer INCOMPLETE_READ_BUFFER\n");
-		   break;
-		 case GL_FRAMEBUFFER_BINDING_EXT:
-		   printf("framebuffer BINDING_EXT\n");
-		   break;
-		 default:
-		   break;
-		   /* programming error; will fail on all hardware */ \
-		   /*assert(0);*/ \
-	}
-	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
-#endif
+	ogl_glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 }
 
 void DestroyGLSLCombiner() {
 	if (g_lod_tex > 0)
 		glDeleteTextures(1, &g_lod_tex);
-#ifdef FBO
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-	glDeleteFramebuffers(1, &g_lod_fbo);
-#elif defined(FBO_OLD)
-	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
-	glDeleteFramebuffersEXT(1, &g_lod_fbo);
-#endif
+	ogl_glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+	ogl_glDeleteFramebuffers(1, &g_lod_fbo);
 }
 
 static
@@ -824,6 +763,7 @@ void OGL_UpdateCullFace();
 void OGL_UpdateViewport();
 void OGL_ClearColorBuffer( float *color );
 
+/*
 void drawFBO()
 {
 	glUseProgramObjectARB(0);
@@ -867,36 +807,24 @@ void drawFBO()
 	OGL_UpdateViewport();
 	
 }
-
+*/
 
 void GLSL_CalcLOD() {
 	glDisable( GL_DEPTH_TEST );
-#ifdef FBO
 	// bind a framebuffer object
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, g_lod_fbo);
+	ogl_glBindFramebuffer(GL_DRAW_FRAMEBUFFER, g_lod_fbo);
 	// Set Drawing buffers
 	GLuint attachments[1] = {GL_COLOR_ATTACHMENT0};
-	glDrawBuffers(1,  attachments);
+	ogl_glDrawBuffers(1,  attachments, g_lod_tex);
 	float clear_color[4] = {0.0f, 0.0f, 0.0f, 1.0f};
 	OGL_ClearColorBuffer(clear_color );
-#elif defined(FBO_OLD)
-	// bind a framebuffer object
-	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, g_lod_fbo);
-	glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D, g_lod_tex, 0);
-	float clear_color[4] = {0.0f, 0.0f, 0.0f, 1.0f};
-	OGL_ClearColorBuffer(clear_color );
-#endif	
+
 	glUseProgramObjectARB(g_lod_program);
 	glDrawArrays( GL_TRIANGLES, 0, OGL.numVertices );
-#ifdef FBO
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-#elif defined(FBO_OLD)
-	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
-#endif
 
-#if defined(FBO) || defined(FBO_OLD)
+	ogl_glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+
 //	drawFBO();
-#endif
 
 #if defined(LOD_TEST)
 	glActiveTextureARB(GL_TEXTURE2_ARB);
@@ -917,27 +845,16 @@ void GLSL_CalcLOD() {
 
 void GLSL_PostCalcLOD() {
 	glDisable( GL_DEPTH_TEST );
-#ifdef FBO
 	// bind a framebuffer object
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, g_lod_fbo);
+	ogl_glBindFramebuffer(GL_DRAW_FRAMEBUFFER, g_lod_fbo);
 	// Set Drawing buffers
 	GLuint attachments[1] = {GL_COLOR_ATTACHMENT0};
-	glDrawBuffers(1,  attachments);
-	float clear_color[4] = {0.0f, 0.0f, 0.0f, 1.0f};
-	OGL_ClearColorBuffer(clear_color );
-#elif defined(FBO_OLD)
-	// bind a framebuffer object
-	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, g_lod_fbo);
-	glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D, g_lod_tex, 0);
-	float clear_color[4] = {0.0f, 0.0f, 0.0f, 1.0f};
-	OGL_ClearColorBuffer(clear_color );
-#endif	
+	ogl_glDrawBuffers(1,  attachments, g_lod_tex);
+
 	glUseProgramObjectARB(g_lod_clear_program);
 	glDrawArrays( GL_TRIANGLES, 0, OGL.numVertices );
-#ifdef FBO
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-#elif defined(FBO_OLD)
-	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
-#endif
+
+	ogl_glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+
 	Combiner_SetCombine( gDP.combine.mux );
 }

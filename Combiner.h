@@ -218,9 +218,5 @@ void Combiner_EndTextureUpdate();
 void Combiner_CalcLOD();
 void Combiner_PostCalcLOD();
 
-#define FBO
-//#define LOD_TEST
-//#define FBO_OLD
-
 #endif
 

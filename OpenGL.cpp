@@ -87,12 +87,16 @@ PFNGLSECONDARYCOLOR3USEXTPROC glSecondaryColor3usEXT;
 PFNGLSECONDARYCOLOR3USVEXTPROC glSecondaryColor3usvEXT;
 PFNGLSECONDARYCOLORPOINTEREXTPROC glSecondaryColorPointerEXT;
 
-PFNGLGENBUFFERSPROC glGenBuffers;
 PFNGLDRAWBUFFERSPROC glDrawBuffers;
 PFNGLBINDFRAMEBUFFERPROC glBindFramebuffer;
 PFNGLDELETEFRAMEBUFFERSPROC glDeleteFramebuffers;
 PFNGLGENFRAMEBUFFERSPROC glGenFramebuffers;
 PFNGLFRAMEBUFFERTEXTUREPROC glFramebufferTexture;
+PFNGLGENRENDERBUFFERSPROC glGenRenderbuffers;
+PFNGLBINDRENDERBUFFERPROC glBindRenderbuffer;
+PFNGLRENDERBUFFERSTORAGEPROC glRenderbufferStorage;
+PFNGLFRAMEBUFFERRENDERBUFFERPROC glFramebufferRenderbuffer;
+PFNGLDELETERENDERBUFFERSPROC glDeleteRenderbuffers;
 PFNGLCHECKFRAMEBUFFERSTATUSPROC glCheckFramebufferStatus;
 
 PFNGLBINDFRAMEBUFFEREXTPROC glBindFramebufferEXT;
@@ -241,12 +245,16 @@ void OGL_InitExtensions()
 	OGL.ATIX_texture_env_route = isExtensionSupported( "GL_ATIX_texture_env_route" );
 	OGL.NV_texture_env_combine4 = isExtensionSupported( "GL_NV_texture_env_combine4" );
 
-	glGenBuffers = (PFNGLGENBUFFERSPROC)wglGetProcAddress( "glGenBuffers" );
 	glDrawBuffers = (PFNGLDRAWBUFFERSPROC)wglGetProcAddress( "glDrawBuffers" );
 	glBindFramebuffer = (PFNGLBINDFRAMEBUFFERPROC)wglGetProcAddress( "glBindFramebuffer" );
 	glDeleteFramebuffers = (PFNGLDELETEFRAMEBUFFERSPROC)wglGetProcAddress( "glDeleteFramebuffers" );
 	glGenFramebuffers = (PFNGLGENFRAMEBUFFERSPROC)wglGetProcAddress( "glGenFramebuffers" );
 	glFramebufferTexture = (PFNGLFRAMEBUFFERTEXTUREPROC)wglGetProcAddress( "glFramebufferTexture" );
+	glGenRenderbuffers = (PFNGLGENRENDERBUFFERSPROC)wglGetProcAddress( "glGenRenderbuffers" );
+	glBindRenderbuffer = (PFNGLBINDRENDERBUFFERPROC)wglGetProcAddress( "glBindRenderbuffer" );
+	glRenderbufferStorage = (PFNGLRENDERBUFFERSTORAGEPROC)wglGetProcAddress( "glRenderbufferStorage" );
+	glFramebufferRenderbuffer = (PFNGLFRAMEBUFFERRENDERBUFFERPROC)wglGetProcAddress( "glFramebufferRenderbuffer" );
+	glDeleteRenderbuffers = (PFNGLDELETERENDERBUFFERSPROC)wglGetProcAddress( "glDeleteRenderbuffers" );
 	glCheckFramebufferStatus = (PFNGLCHECKFRAMEBUFFERSTATUSPROC)wglGetProcAddress( "glCheckFramebufferStatus" );
 
 	glBindFramebufferEXT = (PFNGLBINDFRAMEBUFFEREXTPROC)wglGetProcAddress("glBindFramebufferEXT");
@@ -260,6 +268,13 @@ void OGL_InitExtensions()
 	glGenRenderbuffersEXT = (PFNGLGENRENDERBUFFERSEXTPROC)wglGetProcAddress("glGenRenderbuffersEXT");
 	glRenderbufferStorageEXT = (PFNGLRENDERBUFFERSTORAGEEXTPROC)wglGetProcAddress("glRenderbufferStorageEXT");
 	glFramebufferRenderbufferEXT = (PFNGLFRAMEBUFFERRENDERBUFFEREXTPROC)wglGetProcAddress("glFramebufferRenderbufferEXT");
+
+	if (glGenFramebuffers != NULL)
+		OGL.framebuffer_mode = GLInfo::fbFBO;
+	else if (glBindFramebufferEXT != NULL)
+		OGL.framebuffer_mode = GLInfo::fbFBOEXT;
+	else
+		OGL.framebuffer_mode = GLInfo::fbNone;
 }
 
 void OGL_InitStates()
@@ -1226,3 +1241,208 @@ OGL_SwapBuffers()
 }
 
 #endif // __LINUX__
+
+void ogl_glGenFramebuffers (GLsizei n, GLuint *framebuffers) {
+	switch (OGL.framebuffer_mode) {
+		case GLInfo::fbFBO:
+			glGenFramebuffers(n, framebuffers);
+		break;
+		case GLInfo::fbFBOEXT:
+			glGenFramebuffersEXT(n, framebuffers);
+		break;
+	}
+}
+
+void ogl_glBindFramebuffer (GLenum target, GLuint framebuffer) {
+	switch (OGL.framebuffer_mode) {
+		case GLInfo::fbFBO:
+			glBindFramebuffer(target, framebuffer);
+		break;
+		case GLInfo::fbFBOEXT:
+			switch (target) {
+				case GL_DRAW_FRAMEBUFFER:
+					target = GL_FRAMEBUFFER_EXT;
+				break;
+			}
+			glBindFramebufferEXT(target, framebuffer);
+		break;
+	}
+}
+
+void ogl_glDeleteFramebuffers (GLsizei n, const GLuint *framebuffers) {
+	switch (OGL.framebuffer_mode) {
+		case GLInfo::fbFBO:
+			glDeleteFramebuffers(n, framebuffers);
+		break;
+		case GLInfo::fbFBOEXT:
+			glDeleteFramebuffersEXT(n, framebuffers);
+		break;
+	}
+}
+
+void ogl_glFramebufferTexture (GLenum target, GLenum attachment, GLuint texture, GLint level) {
+	switch (OGL.framebuffer_mode) {
+		case GLInfo::fbFBO:
+			glFramebufferTexture(target, attachment, texture, level);
+		break;
+		case GLInfo::fbFBOEXT:
+			switch (target) {
+				case GL_DRAW_FRAMEBUFFER:
+					target = GL_FRAMEBUFFER_EXT;
+				break;
+			}
+			switch (attachment) {
+				case GL_COLOR_ATTACHMENT0:
+					attachment = GL_COLOR_ATTACHMENT0_EXT;
+				break;
+				case GL_COLOR_ATTACHMENT1:
+					attachment = GL_COLOR_ATTACHMENT1_EXT;
+				break;
+				case GL_COLOR_ATTACHMENT2:
+					attachment = GL_COLOR_ATTACHMENT2_EXT;
+				break;
+				case GL_COLOR_ATTACHMENT3:
+					attachment = GL_COLOR_ATTACHMENT3_EXT;
+				break;
+			}
+			glFramebufferTexture2DEXT(target, attachment, GL_TEXTURE_2D, texture, level);
+		break;
+	}
+}
+
+void ogl_glGenRenderbuffers (GLsizei n, GLuint *renderbuffers) {
+	switch (OGL.framebuffer_mode) {
+		case GLInfo::fbFBO:
+			glGenRenderbuffers(n, renderbuffers);
+		break;
+		case GLInfo::fbFBOEXT:
+			glGenRenderbuffersEXT(n, renderbuffers);
+		break;
+	}
+}
+
+void ogl_glBindRenderbuffer (GLenum target, GLuint renderbuffer) {
+	switch (OGL.framebuffer_mode) {
+		case GLInfo::fbFBO:
+			glBindRenderbuffer(target, renderbuffer);
+		break;
+		case GLInfo::fbFBOEXT:
+			switch (target) {
+				case GL_RENDERBUFFER:
+					target = GL_RENDERBUFFER_EXT;
+				break;
+			}
+			glBindRenderbufferEXT(target, renderbuffer);
+		break;
+	}
+}
+
+void ogl_glRenderbufferStorage (GLenum target, GLenum internalformat, GLsizei width, GLsizei height) {
+	switch (OGL.framebuffer_mode) {
+		case GLInfo::fbFBO:
+			glRenderbufferStorage(target, internalformat, width, height);
+		break;
+		case GLInfo::fbFBOEXT:
+			switch (target) {
+				case GL_RENDERBUFFER:
+					target = GL_RENDERBUFFER_EXT;
+				break;
+			}
+			glRenderbufferStorageEXT(target, internalformat, width, height);
+		break;
+	}
+}
+
+void ogl_glDeleteRenderbuffers (GLsizei n, const GLuint *renderbuffers) {
+	switch (OGL.framebuffer_mode) {
+		case GLInfo::fbFBO:
+			glDeleteRenderbuffers(n, renderbuffers);
+		break;
+		case GLInfo::fbFBOEXT:
+			glDeleteRenderbuffersEXT(n, renderbuffers);
+		break;
+	}
+}
+
+void ogl_glFramebufferRenderbuffer (GLenum target, GLenum attachment, GLenum renderbuffertarget, GLuint renderbuffer) {
+	switch (OGL.framebuffer_mode) {
+		case GLInfo::fbFBO:
+			glFramebufferRenderbuffer(target, attachment, renderbuffertarget, renderbuffer);
+		break;
+		case GLInfo::fbFBOEXT:
+			switch (target) {
+				case GL_DRAW_FRAMEBUFFER:
+					target = GL_FRAMEBUFFER_EXT;
+				break;
+			}
+			switch (attachment) {
+				case GL_COLOR_ATTACHMENT0:
+					attachment = GL_COLOR_ATTACHMENT0_EXT;
+				break;
+				case GL_COLOR_ATTACHMENT1:
+					attachment = GL_COLOR_ATTACHMENT1_EXT;
+				break;
+				case GL_COLOR_ATTACHMENT2:
+					attachment = GL_COLOR_ATTACHMENT2_EXT;
+				break;
+				case GL_COLOR_ATTACHMENT3:
+					attachment = GL_COLOR_ATTACHMENT3_EXT;
+				break;
+				case GL_DEPTH_ATTACHMENT:
+					attachment = GL_DEPTH_ATTACHMENT_EXT;
+				break;
+			}
+			switch (renderbuffertarget) {
+				case GL_RENDERBUFFER:
+					target = GL_RENDERBUFFER_EXT;
+				break;
+			}
+			glFramebufferRenderbufferEXT(target, attachment, renderbuffertarget, renderbuffer);
+		break;
+	}
+}
+
+void ogl_glDrawBuffers (GLsizei n, const GLenum *bufs, GLuint texture) {
+	switch (OGL.framebuffer_mode) {
+		case GLInfo::fbFBO:
+			glDrawBuffers(n, bufs);
+		break;
+		case GLInfo::fbFBOEXT:
+			glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D, texture, 0);
+		break;
+	}
+}
+
+GLenum ogl_glCheckFramebufferStatus (GLenum target) {
+	switch (OGL.framebuffer_mode) {
+		case GLInfo::fbFBO:
+			return glCheckFramebufferStatus(target);
+		case GLInfo::fbFBOEXT:
+			switch (target) {
+				case GL_DRAW_FRAMEBUFFER:
+					target = GL_FRAMEBUFFER_EXT;
+				break;
+			}
+			switch (glCheckFramebufferStatusEXT(target)) {
+				case GL_FRAMEBUFFER_COMPLETE_EXT:
+					return GL_FRAMEBUFFER_COMPLETE;
+				case GL_FRAMEBUFFER_UNSUPPORTED_EXT:
+					return GL_FRAMEBUFFER_UNSUPPORTED;
+				case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT_EXT:
+					return GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT;
+				case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT_EXT:
+					return GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT;
+				case GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS_EXT:
+					return GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS_EXT;
+				case GL_FRAMEBUFFER_INCOMPLETE_FORMATS_EXT:
+					return GL_FRAMEBUFFER_INCOMPLETE_FORMATS_EXT;
+				case GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER_EXT:
+					return GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER;
+				case GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER_EXT:
+					return GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER;
+				case GL_FRAMEBUFFER_BINDING_EXT:
+					return GL_FRAMEBUFFER_BINDING;
+			}
+	}
+	return GL_FRAMEBUFFER_UNSUPPORTED;
+}
