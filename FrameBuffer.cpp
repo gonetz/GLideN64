@@ -14,19 +14,6 @@
 #include "Types.h"
 #include "Debug.h"
 
-/*
-
-		glBindFramebufferEXT(GL_READ_FRAMEBUFFER_EXT,
-mFrameBuffer.Identifier );
-		glBindFramebufferEXT(GL_DRAW_FRAMEBUFFER_EXT, 0);
-		glBlitFramebufferEXT
-		(
-			0, 0, ClientWidth, ClientHeight,
-			0, 0, ClientWidth, ClientHeight,
-			GL_COLOR_BUFFER_BIT, GL_LINEAR
-		);
-		*/
-
 FrameBufferInfo frameBuffer;
 
 void FrameBuffer_Init()
@@ -279,6 +266,34 @@ void FrameBuffer_SaveBuffer( u32 address, u16 size, u16 width, u16 height )
 	gSP.changed |= CHANGED_TEXTURE;
 }
 
+
+#if 1
+void FrameBuffer_RenderBuffer( u32 address )
+{
+	FrameBuffer *current = frameBuffer.top;
+
+	while (current != NULL)
+	{
+		if ((current->startAddress <= address) &&
+			(current->endAddress >= address))
+		{
+			ogl_glBindFramebuffer(GL_READ_FRAMEBUFFER, current->fbo);
+			ogl_glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+			glDrawBuffer( GL_FRONT );
+			ogl_glBlitFramebuffer(
+				0, 0, min(OGL.width, current->texture->realWidth), min(OGL.height, current->texture->realHeight),
+				0, OGL.heightOffset, OGL.width, OGL.height+OGL.heightOffset,
+				GL_COLOR_BUFFER_BIT, GL_LINEAR
+			);
+			glDrawBuffer( GL_BACK );
+			ogl_glBindFramebuffer(GL_DRAW_FRAMEBUFFER, frameBuffer.top->fbo);
+			return;
+		}
+		current = current->lower;
+	}
+}
+#else
+
 void FrameBuffer_RenderBuffer( u32 address )
 {
 	FrameBuffer *current = frameBuffer.top;
@@ -364,7 +379,7 @@ void FrameBuffer_RenderBuffer( u32 address )
 		current = current->lower;
 	}
 }
-
+#endif
 
 void FrameBuffer_RestoreBuffer( u32 address, u16 size, u16 width )
 {
