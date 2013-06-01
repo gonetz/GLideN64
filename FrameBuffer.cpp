@@ -3,13 +3,29 @@
 #else
 # include "winlnxdefs.h"
 #endif // __LINUX__
+#include <assert.h>
 #include "OpenGL.h"
 #include "FrameBuffer.h"
+#include "DepthBuffer.h"
 #include "RSP.h"
 #include "RDP.h"
 #include "Textures.h"
 #include "Combiner.h"
 #include "Types.h"
+#include "Debug.h"
+
+/*
+
+		glBindFramebufferEXT(GL_READ_FRAMEBUFFER_EXT,
+mFrameBuffer.Identifier );
+		glBindFramebufferEXT(GL_DRAW_FRAMEBUFFER_EXT, 0);
+		glBlitFramebufferEXT
+		(
+			0, 0, ClientWidth, ClientHeight,
+			0, 0, ClientWidth, ClientHeight,
+			GL_COLOR_BUFFER_BIT, GL_LINEAR
+		);
+		*/
 
 FrameBufferInfo frameBuffer;
 
@@ -19,6 +35,7 @@ void FrameBuffer_Init()
 	frameBuffer.top = NULL;
 	frameBuffer.bottom = NULL;
 	frameBuffer.numBuffers = 0;
+	frameBuffer.drawBuffer = GL_BACK;
 }
 
 void FrameBuffer_RemoveBottom()
@@ -26,6 +43,8 @@ void FrameBuffer_RemoveBottom()
 	FrameBuffer *newBottom = frameBuffer.bottom->higher;
 
 	TextureCache_Remove( frameBuffer.bottom->texture );
+	if (frameBuffer.bottom->fbo != 0)
+		ogl_glDeleteFramebuffers(1, &frameBuffer.bottom->fbo);
 
 	if (frameBuffer.bottom == frameBuffer.top)
 		frameBuffer.top = NULL;
@@ -70,6 +89,8 @@ void FrameBuffer_Remove( FrameBuffer *buffer )
 
 	if (buffer->texture)
 		TextureCache_Remove( buffer->texture );
+	if (buffer->fbo != 0)
+		ogl_glDeleteFramebuffers(1, &buffer->fbo);
 
 	free( buffer );
 
@@ -97,6 +118,7 @@ FrameBuffer *FrameBuffer_AddTop()
 	FrameBuffer *newtop = (FrameBuffer*)malloc( sizeof( FrameBuffer ) );
 
 	newtop->texture = TextureCache_AddTop();
+	newtop->fbo = 0;
 
 	newtop->lower = frameBuffer.top;
 	newtop->higher = NULL;
@@ -146,25 +168,45 @@ void FrameBuffer_Destroy()
 
 void FrameBuffer_SaveBuffer( u32 address, u16 size, u16 width, u16 height )
 {
+	frameBuffer.drawBuffer = GL_DRAW_FRAMEBUFFER;
 	FrameBuffer *current = frameBuffer.top;
 
 	// Search through saved frame buffers
 	while (current != NULL)
 	{
-		if ((current->startAddress == address) &&
-			(current->width == width) &&
-			(current->height == height) &&
-			(current->size == size))
+		if ((current->startAddress <= address) &&
+			(current->endAddress >= address))
 		{
-			if ((current->scaleX != OGL.scaleX) ||
+			if ((current->width != width) ||
+				(current->height != height) ||
+				(current->size != size) ||  // TODO FIX ME
+				(current->scaleX != OGL.scaleX) ||
 				(current->scaleY != OGL.scaleY))
 			{
 				FrameBuffer_Remove( current );
 				break;
 			}
 
-			glBindTexture( GL_TEXTURE_2D, current->texture->glName );
-			glCopyTexSubImage2D( GL_TEXTURE_2D, 0, 0, 0, 0, OGL.height - current->texture->height + OGL.heightOffset, current->texture->width, current->texture->height );
+			current->startAddress = address;
+			current->endAddress = address + ((width * height << size >> 1) - 1);
+			current->texture->address = current->startAddress;
+			ogl_glBindFramebuffer(GL_DRAW_FRAMEBUFFER, current->fbo);
+
+			if (depthBuffer.top != NULL && depthBuffer.top->renderbuf > 0) {
+				ogl_glBindRenderbuffer(GL_RENDERBUFFER, depthBuffer.top->renderbuf);
+				ogl_glFramebufferRenderbuffer(GL_DRAW_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthBuffer.top->renderbuf);
+			}
+
+			// define the index array for the outputs
+			GLuint attachments[2] = { GL_COLOR_ATTACHMENT0, GL_DEPTH_ATTACHMENT };
+			ogl_glDrawBuffers(2,  attachments, current->texture->glName);
+			assert(checkFBO());
+			if (depthBuffer.top != NULL && depthBuffer.top->cleared)
+				OGL_ClearDepthBuffer();
+
+#ifdef DEBUG
+	DebugMsg( DEBUG_HIGH | DEBUG_HANDLED, "FrameBuffer_SaveBuffer( 0x%08X ); \n", address);
+#endif
 			*(u32*)&RDRAM[current->startAddress] = current->startAddress;
 
 			current->changed = TRUE;
@@ -206,7 +248,30 @@ void FrameBuffer_SaveBuffer( u32 address, u16 size, u16 width, u16 height )
 	cache.cachedBytes += current->texture->textureBytes;
 
 	glBindTexture( GL_TEXTURE_2D, current->texture->glName );
-	glCopyTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA8, 0, OGL.height - current->texture->height + OGL.heightOffset, current->texture->realWidth, current->texture->realHeight, 0 );
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, current->texture->realWidth, current->texture->realHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+	ogl_glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+	ogl_glGenFramebuffers(1, &current->fbo);
+	ogl_glBindFramebuffer(GL_DRAW_FRAMEBUFFER, current->fbo);
+	ogl_glFramebufferTexture(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, current->texture->glName, 0);
+
+	if (depthBuffer.top != NULL && depthBuffer.top->renderbuf > 0) {
+		ogl_glBindRenderbuffer(GL_RENDERBUFFER, depthBuffer.top->renderbuf);
+		ogl_glFramebufferRenderbuffer(GL_DRAW_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthBuffer.top->renderbuf);
+	}
+
+	GLuint attachments[2] = { GL_COLOR_ATTACHMENT0, GL_DEPTH_ATTACHMENT };
+	ogl_glDrawBuffers(2,  attachments, current->texture->glName);
+	assert(checkFBO());
+	if (depthBuffer.top != NULL && depthBuffer.top->cleared)
+		OGL_ClearDepthBuffer();
+
+#ifdef DEBUG
+	DebugMsg( DEBUG_HIGH | DEBUG_HANDLED, "FrameBuffer_SaveBuffer( 0x%08X ); depth buffer is 0x%08X\n",
+		address, (depthBuffer.top != NULL && depthBuffer.top->renderbuf > 0) ? depthBuffer.top->address : 0
+	);
+#endif
 	*(u32*)&RDRAM[current->startAddress] = current->startAddress;
 
 	current->changed = TRUE;
@@ -262,6 +327,7 @@ void FrameBuffer_RenderBuffer( u32 address )
 			u1 = (float)current->texture->width / (float)current->texture->realWidth;
 			v1 = (float)current->texture->height / (float)current->texture->realHeight;
 
+			ogl_glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 			glDrawBuffer( GL_FRONT );
 			glBegin(GL_QUADS);
  				glTexCoord2f( 0.0f, 0.0f );
@@ -277,23 +343,28 @@ void FrameBuffer_RenderBuffer( u32 address )
 				glVertex2f( current->texture->width, (GLfloat)(OGL.height - current->texture->height) );
 			glEnd();
 			glDrawBuffer( GL_BACK );
+			ogl_glBindFramebuffer(GL_DRAW_FRAMEBUFFER, frameBuffer.top->fbo);
+#ifdef DEBUG
+			DebugMsg( DEBUG_HIGH | DEBUG_HANDLED, "FrameBuffer_RenderBuffer( 0x%08X ); \n", address);
+#endif
 
 /*			glEnable( GL_TEXTURE_2D );
 			glActiveTextureARB( GL_TEXTURE0_ARB );
 			glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE_ARB );*/
+			glLoadIdentity();
 			glPopAttrib();
 
 			current->changed = FALSE;
 
-			FrameBuffer_MoveToTop( current );
-
 			gSP.changed |= CHANGED_TEXTURE | CHANGED_VIEWPORT;
 			gDP.changed |= CHANGED_COMBINE;
+
 			return;
 		}
 		current = current->lower;
 	}
 }
+
 
 void FrameBuffer_RestoreBuffer( u32 address, u16 size, u16 width )
 {
@@ -346,6 +417,7 @@ void FrameBuffer_RestoreBuffer( u32 address, u16 size, u16 width )
 			u1 = (float)current->texture->width / (float)current->texture->realWidth;
 			v1 = (float)current->texture->height / (float)current->texture->realHeight;
 
+			ogl_glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 			glBegin(GL_QUADS); 
  				glTexCoord2f( 0.0f, 0.0f );
 				glVertex2f( 0.0f, OGL.height - current->texture->height );
@@ -359,6 +431,10 @@ void FrameBuffer_RestoreBuffer( u32 address, u16 size, u16 width )
  				glTexCoord2f( u1, 0.0f );
 				glVertex2f( current->texture->width, OGL.height - current->texture->height );
 			glEnd();
+			ogl_glBindFramebuffer(GL_DRAW_FRAMEBUFFER, frameBuffer.top->fbo);
+#ifdef DEBUG
+			DebugMsg( DEBUG_HIGH | DEBUG_HANDLED, "FrameBuffer_RestoreBuffer( 0x%08X ); \n", address);
+#endif
 
 			glLoadIdentity();
 			glPopAttrib();

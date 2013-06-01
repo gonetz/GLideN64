@@ -348,13 +348,13 @@ void gDPSetColorImage( u32 format, u32 size, u32 width, u32 address )
 
 	if (gDP.colorImage.address != address)
 	{
-		if (OGL.frameBufferTextures)
+		if (OGL.frameBufferTextures && address != gDP.depthImageAddress)
 		{
-			if (gDP.colorImage.changed)
-				FrameBuffer_SaveBuffer( gDP.colorImage.address, (u16)gDP.colorImage.size, (u16)gDP.colorImage.width, (u16)gDP.colorImage.height );
+			//if (gDP.colorImage.changed)
+				FrameBuffer_SaveBuffer( address, (u16)size, (u16)width, width == VI.width ? (u16)VI.height : 1 );
 
-			if (address != gDP.depthImageAddress)
-				FrameBuffer_RestoreBuffer( address, (u16)size, (u16)width );
+			//if (address != gDP.depthImageAddress)
+				//FrameBuffer_RestoreBuffer( address, (u16)size, (u16)width );
 
 			//OGL_ClearDepthBuffer();
 		}
@@ -370,7 +370,7 @@ void gDPSetColorImage( u32 format, u32 size, u32 width, u32 address )
 	gDP.colorImage.format = format;
 	gDP.colorImage.size = size;
 	gDP.colorImage.width = width;
-	gDP.colorImage.address = RSP_SegmentToPhysical( address );
+	gDP.colorImage.address = address;
 
 #ifdef DEBUG
 	DebugMsg( DEBUG_HIGH | DEBUG_HANDLED, "gDPSetColorImage( %s, %s, %i, 0x%08X );\n",
@@ -405,8 +405,8 @@ void gDPSetDepthImage( u32 address )
 
 	DepthBuffer_SetBuffer( RSP_SegmentToPhysical( address ) );
 
-	if (depthBuffer.current->cleared)
-		OGL_ClearDepthBuffer();
+//	if (depthBuffer.current->cleared)
+//		OGL_ClearDepthBuffer();
 
 	gDP.depthImageAddress = RSP_SegmentToPhysical( address );
 
@@ -795,7 +795,7 @@ void gDPFillRectangle( s32 ulx, s32 uly, s32 lrx, s32 lry )
 
 	OGL_DrawRect( ulx, uly, lrx, lry, (gDP.otherMode.cycleType == G_CYC_FILL) ? &gDP.fillColor.r : &gDP.blendColor.r );
 
-	if (depthBuffer.current) depthBuffer.current->cleared = FALSE;
+	if (depthBuffer.top) depthBuffer.top->cleared = FALSE;
 	gDP.colorImage.changed = TRUE;
 	gDP.colorImage.height = (u32)max( (s32)gDP.colorImage.height, lry );
 

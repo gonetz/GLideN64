@@ -8,6 +8,7 @@
 # include <GL/glext.h>
 # include "SDL.h"
 #endif // __LINUX__
+#include <assert.h>
 #include <math.h>
 #include <stdio.h>
 #include "GLideN64.h"
@@ -98,6 +99,7 @@ PFNGLRENDERBUFFERSTORAGEPROC glRenderbufferStorage;
 PFNGLFRAMEBUFFERRENDERBUFFERPROC glFramebufferRenderbuffer;
 PFNGLDELETERENDERBUFFERSPROC glDeleteRenderbuffers;
 PFNGLCHECKFRAMEBUFFERSTATUSPROC glCheckFramebufferStatus;
+PFNGLBLITFRAMEBUFFERPROC glBlitFramebuffer;
 
 PFNGLBINDFRAMEBUFFEREXTPROC glBindFramebufferEXT;
 PFNGLFRAMEBUFFERTEXTURE2DEXTPROC glFramebufferTexture2DEXT;
@@ -109,6 +111,7 @@ PFNGLRENDERBUFFERSTORAGEEXTPROC glRenderbufferStorageEXT;
 PFNGLFRAMEBUFFERRENDERBUFFEREXTPROC glFramebufferRenderbufferEXT;
 PFNGLCHECKFRAMEBUFFERSTATUSEXTPROC glCheckFramebufferStatusEXT;
 PFNGLDELETEFRAMEBUFFERSEXTPROC glDeleteFramebuffersEXT;
+PFNGLBLITFRAMEBUFFEREXTPROC glBlitFramebufferEXT;
 #endif // !__LINUX__
 
 BOOL isExtensionSupported( const char *extension )
@@ -256,6 +259,7 @@ void OGL_InitExtensions()
 	glFramebufferRenderbuffer = (PFNGLFRAMEBUFFERRENDERBUFFERPROC)wglGetProcAddress( "glFramebufferRenderbuffer" );
 	glDeleteRenderbuffers = (PFNGLDELETERENDERBUFFERSPROC)wglGetProcAddress( "glDeleteRenderbuffers" );
 	glCheckFramebufferStatus = (PFNGLCHECKFRAMEBUFFERSTATUSPROC)wglGetProcAddress( "glCheckFramebufferStatus" );
+	glBlitFramebuffer = (PFNGLBLITFRAMEBUFFERPROC)wglGetProcAddress( "glBlitFramebuffer" );
 
 	glBindFramebufferEXT = (PFNGLBINDFRAMEBUFFEREXTPROC)wglGetProcAddress("glBindFramebufferEXT");
 	glFramebufferTexture2DEXT = (PFNGLFRAMEBUFFERTEXTURE2DEXTPROC)wglGetProcAddress("glFramebufferTexture2DEXT");
@@ -268,6 +272,7 @@ void OGL_InitExtensions()
 	glGenRenderbuffersEXT = (PFNGLGENRENDERBUFFERSEXTPROC)wglGetProcAddress("glGenRenderbuffersEXT");
 	glRenderbufferStorageEXT = (PFNGLRENDERBUFFERSTORAGEEXTPROC)wglGetProcAddress("glRenderbufferStorageEXT");
 	glFramebufferRenderbufferEXT = (PFNGLFRAMEBUFFERRENDERBUFFEREXTPROC)wglGetProcAddress("glFramebufferRenderbufferEXT");
+	glBlitFramebufferEXT = (PFNGLBLITFRAMEBUFFEREXTPROC)wglGetProcAddress("glBlitFramebufferEXT");
 
 	if (glGenFramebuffers != NULL)
 		OGL.framebuffer_mode = GLInfo::fbFBO;
@@ -574,7 +579,7 @@ void OGL_UpdateCullFace()
 
 void OGL_UpdateViewport()
 {
-	glViewport( gSP.viewport.x * OGL.scaleX, (VI.height - (gSP.viewport.y + gSP.viewport.height)) * OGL.scaleY + OGL.heightOffset,
+	glViewport( gSP.viewport.x * OGL.scaleX, (VI.height - (gSP.viewport.y + gSP.viewport.height)) * OGL.scaleY + (frameBuffer.drawBuffer == GL_BACK ? OGL.heightOffset : 0),
 	            gSP.viewport.width * OGL.scaleX, gSP.viewport.height * OGL.scaleY );
 	glDepthRange( 0.0f, 1.0f );//gSP.viewport.nearz, gSP.viewport.farz );
 }
@@ -652,7 +657,7 @@ void OGL_UpdateStates()
 
 	if (gDP.changed & CHANGED_SCISSOR)
 	{
-		glScissor( gDP.scissor.ulx * OGL.scaleX, (VI.height - gDP.scissor.lry) * OGL.scaleY + OGL.heightOffset,
+		glScissor( gDP.scissor.ulx * OGL.scaleX, (VI.height - gDP.scissor.lry) * OGL.scaleY + (frameBuffer.drawBuffer == GL_BACK ? OGL.heightOffset : 0),
 			(gDP.scissor.lrx - gDP.scissor.ulx) * OGL.scaleX, (gDP.scissor.lry - gDP.scissor.uly) * OGL.scaleY );
 	}
 
@@ -925,7 +930,7 @@ void OGL_DrawRect( int ulx, int uly, int lrx, int lry, float *color )
 	glMatrixMode( GL_PROJECTION );
     glLoadIdentity();
 	glOrtho( 0, VI.width, VI.height, 0, 1.0f, -1.0f );
-	glViewport( 0, OGL.heightOffset, OGL.width, OGL.height );
+	glViewport( 0, (frameBuffer.drawBuffer == GL_BACK ? OGL.heightOffset : 0), OGL.width, OGL.height );
 	glDepthRange( 0.0f, 1.0f );
 
 	glColor4f( color[0], color[1], color[2], color[3] );
@@ -957,7 +962,7 @@ void OGL_DrawTexturedRect( float ulx, float uly, float lrx, float lry, float uls
 	glMatrixMode( GL_PROJECTION );
     glLoadIdentity();
 	glOrtho( 0, VI.width, VI.height, 0, 1.0f, -1.0f );
-	glViewport( 0, OGL.heightOffset, OGL.width, OGL.height );
+	glViewport( 0, (frameBuffer.drawBuffer == GL_BACK ? OGL.heightOffset : 0), OGL.width, OGL.height );
 
 	if (combiner.usesT0)
 	{
@@ -1115,6 +1120,8 @@ void OGL_DrawTexturedRect( float ulx, float uly, float lrx, float lry, float uls
 
 void OGL_ClearDepthBuffer()
 {
+	if (OGL.frameBufferTextures && frameBuffer.top == NULL)
+		return;
 	glDisable( GL_SCISSOR_TEST );
 
 	OGL_UpdateStates();
@@ -1262,6 +1269,9 @@ void ogl_glBindFramebuffer (GLenum target, GLuint framebuffer) {
 			switch (target) {
 				case GL_DRAW_FRAMEBUFFER:
 					target = GL_FRAMEBUFFER_EXT;
+				break;
+				case GL_READ_FRAMEBUFFER:
+					target = GL_READ_FRAMEBUFFER_EXT;
 				break;
 			}
 			glBindFramebufferEXT(target, framebuffer);
@@ -1411,6 +1421,7 @@ void ogl_glDrawBuffers (GLsizei n, const GLenum *bufs, GLuint texture) {
 			glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D, texture, 0);
 		break;
 	}
+	assert(checkFBO());
 }
 
 GLenum ogl_glCheckFramebufferStatus (GLenum target) {
@@ -1445,4 +1456,48 @@ GLenum ogl_glCheckFramebufferStatus (GLenum target) {
 			}
 	}
 	return GL_FRAMEBUFFER_UNSUPPORTED;
+}
+
+bool checkFBO() {
+	GLenum e = ogl_glCheckFramebufferStatus(GL_DRAW_FRAMEBUFFER);
+	switch (e) {
+		case GL_FRAMEBUFFER_UNDEFINED:
+			printf("FBO Undefined\n");
+			break;
+		case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT :
+			printf("FBO Incomplete Attachment\n");
+			break;
+		case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT :
+			printf("FBO Missing Attachment\n");
+			break;
+		case GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER :
+			printf("FBO Incomplete Draw Buffer\n");
+			break;
+		case GL_FRAMEBUFFER_UNSUPPORTED :
+			printf("FBO Unsupported\n");
+			break;
+		case GL_FRAMEBUFFER_COMPLETE:
+			printf("FBO OK\n");
+			break;
+		case GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS_EXT:
+			printf("framebuffer FRAMEBUFFER_DIMENSIONS\n");
+			break;
+		case GL_FRAMEBUFFER_INCOMPLETE_FORMATS_EXT:
+			printf("framebuffer INCOMPLETE_FORMATS\n");
+			break;
+		default:
+			printf("FBO Problem?\n");
+	}
+	return e == GL_FRAMEBUFFER_COMPLETE;
+}
+
+void ogl_glBlitFramebuffer(GLint srcX0, GLint srcY0, GLint srcX1, GLint srcY1, GLint dstX0, GLint dstY0, GLint dstX1, GLint dstY1, GLbitfield mask, GLenum filter) {
+	switch (OGL.framebuffer_mode) {
+		case GLInfo::fbFBO:
+			glBlitFramebuffer(srcX0, srcY0, srcX1, srcY1, dstX0, dstY0, dstX1, dstY1, mask, filter);
+		break;
+		case GLInfo::fbFBOEXT:
+			glBlitFramebufferEXT(srcX0, srcY0, srcX1, srcY1, dstX0, dstY0, dstX1, dstY1, mask, filter);
+		break;
+	}
 }

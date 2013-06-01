@@ -1,6 +1,8 @@
 #include <malloc.h>
+#include "OpenGL.h"
+#include "FrameBuffer.h"
 #include "DepthBuffer.h"
-#include "Types.h"
+#include "Debug.h"
 
 DepthBufferInfo depthBuffer;
 
@@ -19,6 +21,8 @@ void DepthBuffer_RemoveBottom()
 	if (depthBuffer.bottom == depthBuffer.top)
 		depthBuffer.top = NULL;
 
+	if (depthBuffer.bottom->renderbuf != 0)
+		glDeleteRenderbuffers(1, &depthBuffer.bottom->renderbuf);
 	free( depthBuffer.bottom );
 
     depthBuffer.bottom = newBottom;
@@ -57,6 +61,8 @@ void DepthBuffer_Remove( DepthBuffer *buffer )
 		buffer->lower->higher = buffer->higher;
 	}
 
+	if (buffer->renderbuf != 0)
+		ogl_glDeleteRenderbuffers(1, &buffer->renderbuf);
 	free( buffer );
 
 	depthBuffer.numBuffers--;
@@ -83,6 +89,7 @@ DepthBuffer *DepthBuffer_AddTop()
 
 	newtop->lower = depthBuffer.top;
 	newtop->higher = NULL;
+	newtop->renderbuf = 0;
 
 	if (depthBuffer.top)
 		depthBuffer.top->higher = newtop;
@@ -138,6 +145,18 @@ void DepthBuffer_SetBuffer( u32 address )
 		{
 			DepthBuffer_MoveToTop( current );
 			depthBuffer.current = current;
+
+		if ( frameBuffer.top != NULL &&  frameBuffer.top->fbo > 0) {
+			ogl_glFramebufferRenderbuffer(GL_DRAW_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, current->renderbuf);
+			GLuint attachments[2] = { GL_COLOR_ATTACHMENT0, GL_DEPTH_ATTACHMENT };
+			ogl_glDrawBuffers(2,  attachments,  frameBuffer.top->texture->glName);
+		}
+#ifdef DEBUG
+		DebugMsg( DEBUG_HIGH | DEBUG_HANDLED, "DepthBuffer_SetBuffer( 0x%08X ); color buffer is 0x%08X\n",
+			address, ( frameBuffer.top != NULL &&  frameBuffer.top->fbo > 0) ?  frameBuffer.top->startAddress : 0
+		);
+#endif
+
 			return;
 		}
 		current = current->lower;
@@ -147,7 +166,25 @@ void DepthBuffer_SetBuffer( u32 address )
 
 	current->address = address;
 	current->cleared = TRUE;
+	if (OGL.frameBufferTextures) {
 
+		ogl_glGenRenderbuffers(1, &current->renderbuf);
+		ogl_glBindRenderbuffer(GL_RENDERBUFFER, current->renderbuf);
+		ogl_glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, (u32)pow2(OGL.width), (u32)pow2(OGL.height));
+
+		if ( frameBuffer.top != NULL &&  frameBuffer.top->fbo > 0) {
+			ogl_glFramebufferRenderbuffer(GL_DRAW_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, current->renderbuf);
+			GLuint attachments[2] = { GL_COLOR_ATTACHMENT0, GL_DEPTH_ATTACHMENT };
+			ogl_glDrawBuffers(2,  attachments,  frameBuffer.top->texture->glName);
+		}
+
+#ifdef DEBUG
+		DebugMsg( DEBUG_HIGH | DEBUG_HANDLED, "DepthBuffer_SetBuffer( 0x%08X ); color buffer is 0x%08X\n",
+			address, ( frameBuffer.top != NULL &&  frameBuffer.top->fbo > 0) ?  frameBuffer.top->startAddress : 0
+		);
+#endif
+
+	}
 	depthBuffer.current = current;
 }
 
@@ -157,7 +194,10 @@ DepthBuffer *DepthBuffer_FindBuffer( u32 address )
 
 	while (current)
 	{
-		if (current->address == address)
+		if (current->address == address) {
+			if (OGL.frameBufferTextures)
+				ogl_glFramebufferRenderbuffer(GL_DRAW_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, current->renderbuf);
+		}
 			return current;
 		current = current->lower;
 	}

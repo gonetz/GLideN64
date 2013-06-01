@@ -8,6 +8,7 @@ struct DepthBuffer
 	DepthBuffer *higher, *lower;
 
 	u32 address, cleared;
+	GLuint renderbuf;
 };
 
 struct DepthBufferInfo

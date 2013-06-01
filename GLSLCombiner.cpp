@@ -496,35 +496,7 @@ void InitGLSLCombiner()
 	ogl_glFramebufferTexture(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, g_lod_tex, 0);
 
 	// check if everything is OK
-	GLenum e = ogl_glCheckFramebufferStatus(GL_DRAW_FRAMEBUFFER);
-	switch (e) {
-		case GL_FRAMEBUFFER_UNDEFINED:
-			printf("FBO Undefined\n");
-			break;
-		case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT :
-			printf("FBO Incomplete Attachment\n");
-			break;
-		case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT :
-			printf("FBO Missing Attachment\n");
-			break;
-		case GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER :
-			printf("FBO Incomplete Draw Buffer\n");
-			break;
-		case GL_FRAMEBUFFER_UNSUPPORTED :
-			printf("FBO Unsupported\n");
-			break;
-		case GL_FRAMEBUFFER_COMPLETE:
-			printf("FBO OK\n");
-			break;
-		case GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS_EXT:
-			printf("framebuffer FRAMEBUFFER_DIMENSIONS\n");
-			break;
-		case GL_FRAMEBUFFER_INCOMPLETE_FORMATS_EXT:
-			printf("framebuffer INCOMPLETE_FORMATS\n");
-			break;
-		default:
-			printf("FBO Problem?\n");
-	}
+	assert(checkFBO());
 	ogl_glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 }
 
@@ -763,7 +735,7 @@ void OGL_UpdateCullFace();
 void OGL_UpdateViewport();
 void OGL_ClearColorBuffer( float *color );
 
-/*
+#if defined(LOD_TEST)
 void drawFBO()
 {
 	glUseProgramObjectARB(0);
@@ -784,8 +756,8 @@ void drawFBO()
 	glBindTexture(GL_TEXTURE_2D, g_lod_tex);
 	glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL );
 	glColor4f( 1, 1, 1, 1 );
-	const float s0 = 1.0f;//640.0f/1024.0f;
-	const float t0 = 1.0f;//480.0f/1024.0f;
+	const float s0 = 0.5f;//640.0f/1024.0f;
+	const float t0 = 0.5f;//480.0f/1024.0f;
 
 
 	glBegin( GL_QUADS );
@@ -807,7 +779,7 @@ void drawFBO()
 	OGL_UpdateViewport();
 	
 }
-*/
+#endif
 
 void GLSL_CalcLOD() {
 	glDisable( GL_DEPTH_TEST );
@@ -816,13 +788,11 @@ void GLSL_CalcLOD() {
 	// Set Drawing buffers
 	GLuint attachments[1] = {GL_COLOR_ATTACHMENT0};
 	ogl_glDrawBuffers(1,  attachments, g_lod_tex);
-	float clear_color[4] = {0.0f, 0.0f, 0.0f, 1.0f};
-	OGL_ClearColorBuffer(clear_color );
 
 	glUseProgramObjectARB(g_lod_program);
 	glDrawArrays( GL_TRIANGLES, 0, OGL.numVertices );
 
-	ogl_glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+	ogl_glBindFramebuffer(GL_DRAW_FRAMEBUFFER,  frameBuffer.top != NULL ? frameBuffer.top->fbo : 0);
 
 //	drawFBO();
 
@@ -854,7 +824,7 @@ void GLSL_PostCalcLOD() {
 	glUseProgramObjectARB(g_lod_clear_program);
 	glDrawArrays( GL_TRIANGLES, 0, OGL.numVertices );
 
-	ogl_glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+	ogl_glBindFramebuffer(GL_DRAW_FRAMEBUFFER,  frameBuffer.top != NULL ? frameBuffer.top->fbo : 0);
 
 	Combiner_SetCombine( gDP.combine.mux );
 }

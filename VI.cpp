@@ -39,16 +39,17 @@ void VI_UpdateScreen()
 
 	if (OGL.frameBufferTextures)
 	{
-		FrameBuffer *current = FrameBuffer_FindBuffer( *REG.VI_ORIGIN );
+		//FrameBuffer *current = FrameBuffer_FindBuffer( *REG.VI_ORIGIN );
 
-		if ((*REG.VI_ORIGIN != VI.lastOrigin) || ((current) && current->changed))
+		if ((*REG.VI_ORIGIN != VI.lastOrigin) && gDP.colorImage.changed)
 		{
+			/*
 			if (gDP.colorImage.changed)
 			{
 				FrameBuffer_SaveBuffer( gDP.colorImage.address, gDP.colorImage.size, gDP.colorImage.width, gDP.colorImage.height );
 				gDP.colorImage.changed = FALSE;
 			}
-
+			*/
 			FrameBuffer_RenderBuffer( *REG.VI_ORIGIN );
 
 			gDP.colorImage.changed = FALSE;

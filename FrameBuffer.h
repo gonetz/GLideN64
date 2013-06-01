@@ -9,6 +9,7 @@ struct FrameBuffer
 	FrameBuffer *higher, *lower;
 
 	CachedTexture *texture;
+	GLuint fbo;
 
 	u32 startAddress, endAddress;
 	u32 size, width, height, changed;
@@ -19,6 +20,7 @@ struct FrameBufferInfo
 {
 	FrameBuffer *top, *bottom, *current;
 	int numBuffers;
+	GLenum drawBuffer;
 };
 
 extern FrameBufferInfo frameBuffer;

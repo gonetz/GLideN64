@@ -165,6 +165,7 @@ extern PFNGLRENDERBUFFERSTORAGEPROC glRenderbufferStorage;
 extern PFNGLDELETERENDERBUFFERSPROC glDeleteRenderbuffers;
 extern PFNGLFRAMEBUFFERRENDERBUFFERPROC glFramebufferRenderbuffer;
 extern PFNGLCHECKFRAMEBUFFERSTATUSPROC glCheckFramebufferStatus;
+extern PFNGLBLITFRAMEBUFFERPROC glBlitFramebuffer;
 
 extern PFNGLBINDFRAMEBUFFEREXTPROC glBindFramebufferEXT;
 extern PFNGLFRAMEBUFFERTEXTURE2DEXTPROC glFramebufferTexture2DEXT;
@@ -176,6 +177,7 @@ extern PFNGLRENDERBUFFERSTORAGEEXTPROC glRenderbufferStorageEXT;
 extern PFNGLFRAMEBUFFERRENDERBUFFEREXTPROC glFramebufferRenderbufferEXT;
 extern PFNGLCHECKFRAMEBUFFERSTATUSEXTPROC glCheckFramebufferStatusEXT;
 extern PFNGLDELETEFRAMEBUFFERSEXTPROC glDeleteFramebuffersEXT;
+extern PFNGLBLITFRAMEBUFFEREXTPROC glBlitFramebufferEXT;
 #endif // !__LINUX__
 
 bool OGL_Start();
@@ -206,5 +208,9 @@ void ogl_glDeleteRenderbuffers (GLsizei n, const GLuint *renderbuffers);
 void ogl_glFramebufferRenderbuffer (GLenum target, GLenum attachment, GLenum renderbuffertarget, GLuint renderbuffer);
 void ogl_glDrawBuffers (GLsizei n, const GLenum *bufs, GLuint texture);
 GLenum ogl_glCheckFramebufferStatus (GLenum target);
+void ogl_glBlitFramebuffer(GLint srcX0, GLint srcY0, GLint srcX1, GLint srcY1, GLint dstX0, GLint dstY0, GLint dstX1, GLint dstY1, GLbitfield mask, GLenum filter);
+bool checkFBO();
+
+//#define LOD_TEST
 
 #endif
