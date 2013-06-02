@@ -579,8 +579,13 @@ void OGL_UpdateCullFace()
 
 void OGL_UpdateViewport()
 {
-	glViewport( gSP.viewport.x * OGL.scaleX, (VI.height - (gSP.viewport.y + gSP.viewport.height)) * OGL.scaleY + (frameBuffer.drawBuffer == GL_BACK ? OGL.heightOffset : 0),
+	if (frameBuffer.drawBuffer == GL_BACK)
+		glViewport( gSP.viewport.x * OGL.scaleX, (VI.height - (gSP.viewport.y + gSP.viewport.height)) * OGL.scaleY + OGL.heightOffset,
 	            gSP.viewport.width * OGL.scaleX, gSP.viewport.height * OGL.scaleY );
+	else
+		glViewport( gSP.viewport.x * OGL.scaleX, (frameBuffer.top->height - (gSP.viewport.y + gSP.viewport.height)) * OGL.scaleY,
+	            gSP.viewport.width * OGL.scaleX, gSP.viewport.height * OGL.scaleY );
+
 	glDepthRange( 0.0f, 1.0f );//gSP.viewport.nearz, gSP.viewport.farz );
 }
 
@@ -657,7 +662,8 @@ void OGL_UpdateStates()
 
 	if (gDP.changed & CHANGED_SCISSOR)
 	{
-		glScissor( gDP.scissor.ulx * OGL.scaleX, (VI.height - gDP.scissor.lry) * OGL.scaleY + (frameBuffer.drawBuffer == GL_BACK ? OGL.heightOffset : 0),
+		const u32 screenHeight = (frameBuffer.top == NULL || frameBuffer.drawBuffer == GL_BACK) ? VI.height : frameBuffer.top->height;
+		glScissor( gDP.scissor.ulx * OGL.scaleX, (screenHeight - gDP.scissor.lry) * OGL.scaleY + (frameBuffer.drawBuffer == GL_BACK ? OGL.heightOffset : 0),
 			(gDP.scissor.lrx - gDP.scissor.ulx) * OGL.scaleX, (gDP.scissor.lry - gDP.scissor.uly) * OGL.scaleY );
 	}
 
@@ -929,6 +935,11 @@ void OGL_DrawRect( int ulx, int uly, int lrx, int lry, float *color )
 	glDisable( GL_CULL_FACE );
 	glMatrixMode( GL_PROJECTION );
     glLoadIdentity();
+	u32 width = VI.width, height = VI.height;
+	if (frameBuffer.top != NULL && frameBuffer.drawBuffer != GL_BACK) {
+		width = frameBuffer.top->width;
+		height = frameBuffer.top->height;
+	}
 	glOrtho( 0, VI.width, VI.height, 0, 1.0f, -1.0f );
 	glViewport( 0, (frameBuffer.drawBuffer == GL_BACK ? OGL.heightOffset : 0), OGL.width, OGL.height );
 	glDepthRange( 0.0f, 1.0f );
@@ -960,10 +971,14 @@ void OGL_DrawTexturedRect( float ulx, float uly, float lrx, float lry, float uls
 
 	glDisable( GL_CULL_FACE );
 	glMatrixMode( GL_PROJECTION );
-    glLoadIdentity();
-	glOrtho( 0, VI.width, VI.height, 0, 1.0f, -1.0f );
-	glViewport( 0, (frameBuffer.drawBuffer == GL_BACK ? OGL.heightOffset : 0), OGL.width, OGL.height );
-
+	glLoadIdentity();
+	if (frameBuffer.drawBuffer != GL_DRAW_FRAMEBUFFER) {
+		glOrtho( 0, VI.width, VI.height, 0, 1.0f, -1.0f );
+		glViewport( 0, (frameBuffer.drawBuffer == GL_BACK ? OGL.heightOffset : 0), OGL.width, OGL.height );
+	} else {
+		glOrtho( 0, frameBuffer.top->width, frameBuffer.top->height, 0, 1.0f, -1.0f );
+		glViewport( 0, 0, frameBuffer.top->width*frameBuffer.top->scaleX, frameBuffer.top->height*frameBuffer.top->scaleY );
+	}
 	if (combiner.usesT0)
 	{
 		rect[0].s0 = rect[0].s0 * cache.current[0]->shiftScaleS - gSP.textureTile[0]->fuls;

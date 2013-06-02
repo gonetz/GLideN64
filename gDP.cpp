@@ -346,12 +346,17 @@ void gDPSetColorImage( u32 format, u32 size, u32 width, u32 address )
 	}*/
 	address = RSP_SegmentToPhysical( address );
 
-	if (gDP.colorImage.address != address)
+	if (gDP.colorImage.address != address || gDP.colorImage.width != width)
 	{
-		if (OGL.frameBufferTextures && address != gDP.depthImageAddress)
+		if (width >= gDP.scissor.lrx-1 && width <= gDP.scissor.lrx+1)
+			gDP.colorImage.height = gDP.scissor.lry;
+		else if (width >= gSP.viewport.width-1 && width <= gSP.viewport.width+1)
+			gDP.colorImage.height = gSP.viewport.height;
+
+		if (OGL.frameBufferTextures)// && address != gDP.depthImageAddress)
 		{
 			//if (gDP.colorImage.changed)
-				FrameBuffer_SaveBuffer( address, (u16)size, (u16)width, width == VI.width ? (u16)VI.height : 1 );
+				FrameBuffer_SaveBuffer( address, (u16)size, (u16)width, gDP.colorImage.height );
 
 			//if (address != gDP.depthImageAddress)
 				//FrameBuffer_RestoreBuffer( address, (u16)size, (u16)width );
@@ -361,10 +366,10 @@ void gDPSetColorImage( u32 format, u32 size, u32 width, u32 address )
 
 		gDP.colorImage.changed = FALSE;
 
-		if (width == VI.width)
-			gDP.colorImage.height = VI.height;
- 		else
-			gDP.colorImage.height = 1;
+//		if (width == VI.width)
+//			gDP.colorImage.height = VI.height;
+// 		else
+//			gDP.colorImage.height = 1;
 	}
 
 	gDP.colorImage.format = format;
@@ -871,7 +876,7 @@ void gDPTextureRectangle( f32 ulx, f32 uly, f32 lrx, f32 lry, s32 tile, f32 s, f
 	gSP.textureTile[0] = &gDP.tiles[gSP.texture.tile];
 	gSP.textureTile[1] = &gDP.tiles[gSP.texture.tile < 7 ? gSP.texture.tile + 1 : gSP.texture.tile];
 
-	if (depthBuffer.current) depthBuffer.current->cleared = FALSE;
+	if (depthBuffer.top) depthBuffer.top->cleared = FALSE;
 	gDP.colorImage.changed = TRUE;
 	gDP.colorImage.height = max( gDP.colorImage.height, (u32)gDP.scissor.lry );
 

@@ -136,6 +136,13 @@ void DepthBuffer_Destroy()
 
 void DepthBuffer_SetBuffer( u32 address )
 {
+	const FrameBuffer * pFrameBuffer = FrameBuffer_FindBuffer(address);
+	bool bNeedClear = false;
+	if (pFrameBuffer != NULL) {
+		bNeedClear = pFrameBuffer->changed > 0;
+//		FrameBuffer_RemoveBuffer(address);
+	}
+
 	DepthBuffer *current = depthBuffer.top;
 
 	// Search through saved depth buffers
@@ -150,6 +157,8 @@ void DepthBuffer_SetBuffer( u32 address )
 			ogl_glFramebufferRenderbuffer(GL_DRAW_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, current->renderbuf);
 			GLuint attachments[2] = { GL_COLOR_ATTACHMENT0, GL_DEPTH_ATTACHMENT };
 			ogl_glDrawBuffers(2,  attachments,  frameBuffer.top->texture->glName);
+			if (bNeedClear)
+				OGL_ClearDepthBuffer();
 		}
 #ifdef DEBUG
 		DebugMsg( DEBUG_HIGH | DEBUG_HANDLED, "DepthBuffer_SetBuffer( 0x%08X ); color buffer is 0x%08X\n",
@@ -176,6 +185,8 @@ void DepthBuffer_SetBuffer( u32 address )
 			ogl_glFramebufferRenderbuffer(GL_DRAW_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, current->renderbuf);
 			GLuint attachments[2] = { GL_COLOR_ATTACHMENT0, GL_DEPTH_ATTACHMENT };
 			ogl_glDrawBuffers(2,  attachments,  frameBuffer.top->texture->glName);
+			if (bNeedClear)
+				OGL_ClearDepthBuffer();
 		}
 
 #ifdef DEBUG

@@ -156,16 +156,18 @@ void FrameBuffer_Destroy()
 void FrameBuffer_SaveBuffer( u32 address, u16 size, u16 width, u16 height )
 {
 	frameBuffer.drawBuffer = GL_DRAW_FRAMEBUFFER;
-	FrameBuffer *current = frameBuffer.top;
+	//DepthBuffer_RemoveBuffer( address );
 
+	FrameBuffer *current = frameBuffer.top;
 	// Search through saved frame buffers
 	while (current != NULL)
 	{
 		if ((current->startAddress <= address) &&
 			(current->endAddress >= address))
 		{
-			if ((current->width != width) ||
-				(current->height != height) ||
+			if ((current->startAddress != address) ||
+				(current->width != width) ||
+				//(current->height != height) ||
 				(current->size != size) ||  // TODO FIX ME
 				(current->scaleX != OGL.scaleX) ||
 				(current->scaleY != OGL.scaleY))
@@ -174,10 +176,8 @@ void FrameBuffer_SaveBuffer( u32 address, u16 size, u16 width, u16 height )
 				break;
 			}
 
-			current->startAddress = address;
-			current->endAddress = address + ((width * height << size >> 1) - 1);
-			current->texture->address = current->startAddress;
 			ogl_glBindFramebuffer(GL_DRAW_FRAMEBUFFER, current->fbo);
+
 
 			if (depthBuffer.top != NULL && depthBuffer.top->renderbuf > 0) {
 				ogl_glBindRenderbuffer(GL_RENDERBUFFER, depthBuffer.top->renderbuf);
@@ -229,8 +229,8 @@ void FrameBuffer_SaveBuffer( u32 address, u16 size, u16 width, u16 height )
 	current->texture->maskT = 0;
 	current->texture->mirrorS = 0;
 	current->texture->mirrorT = 0;
-	current->texture->realWidth = (u32)pow2( current->width * OGL.scaleX );
-	current->texture->realHeight = (u32)pow2( current->height * OGL.scaleY );
+	current->texture->realWidth = (u32)pow2( current->texture->width );
+	current->texture->realHeight = (u32)pow2( current->texture->height );
 	current->texture->textureBytes = current->texture->realWidth * current->texture->realHeight * 4;
 	cache.cachedBytes += current->texture->textureBytes;
 
@@ -281,12 +281,23 @@ void FrameBuffer_RenderBuffer( u32 address )
 			ogl_glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 			glDrawBuffer( GL_FRONT );
 			ogl_glBlitFramebuffer(
-				0, 0, min(OGL.width, current->texture->realWidth), min(OGL.height, current->texture->realHeight),
+//				0, 0, current->texture->realWidth, current->texture->realHeight,
+				0, 0, OGL.width, OGL.height,
 				0, OGL.heightOffset, OGL.width, OGL.height+OGL.heightOffset,
 				GL_COLOR_BUFFER_BIT, GL_LINEAR
 			);
 			glDrawBuffer( GL_BACK );
 			ogl_glBindFramebuffer(GL_DRAW_FRAMEBUFFER, frameBuffer.top->fbo);
+			/*
+			current = current->lower;
+			while (current != NULL)
+			{
+				if ((current->startAddress <= address) &&
+					(current->endAddress >= address))
+				assert(false);
+				current = current->lower;
+			}
+			*/
 			return;
 		}
 		current = current->lower;
@@ -303,6 +314,19 @@ void FrameBuffer_RenderBuffer( u32 address )
 		if ((current->startAddress <= address) &&
 			(current->endAddress >= address))
 		{
+			/*
+			float fill_color[4] = {1.0f, 0.0f, 0.0f, 1.0f};
+			ogl_glBindFramebuffer(GL_DRAW_FRAMEBUFFER, current->fbo);
+			ogl_glBindRenderbuffer(GL_RENDERBUFFER, depthBuffer.top->renderbuf);
+			ogl_glFramebufferRenderbuffer(GL_DRAW_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthBuffer.top->renderbuf);
+			GLuint attachments[2] = { GL_COLOR_ATTACHMENT0, GL_DEPTH_ATTACHMENT };
+			ogl_glDrawBuffers(2,  attachments, current->texture->glName);
+			assert(checkFBO());
+			OGL_ClearDepthBuffer();
+			OGL_ClearColorBuffer(fill_color);
+			ogl_glBindFramebuffer(GL_DRAW_FRAMEBUFFER, frameBuffer.top->fbo);
+			*/
+
 			glPushAttrib( GL_ENABLE_BIT | GL_VIEWPORT_BIT );
 
 			Combiner_BeginTextureUpdate();
@@ -509,6 +533,6 @@ void FrameBuffer_ActivateBufferTexture( s16 t, FrameBuffer *buffer )
 		buffer->texture->offsetT = (float)buffer->height - (gDP.textureImage.address - buffer->startAddress) / (buffer->width << buffer->size >> 1);
 	}
 
-	FrameBuffer_MoveToTop( buffer );
+//	FrameBuffer_RenderBuffer(buffer->startAddress);
 	TextureCache_ActivateTexture( t, buffer->texture );
 }
