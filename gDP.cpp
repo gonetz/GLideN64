@@ -789,8 +789,11 @@ void gDPFillRectangle( s32 ulx, s32 uly, s32 lrx, s32 lry )
 	if (buffer)
 		buffer->cleared = TRUE;
 
-	if (gDP.depthImageAddress == gDP.colorImage.address)
-	{
+	if (gDP.depthImageAddress == gDP.colorImage.address) {
+		OGL_ClearDepthBuffer();
+		return;
+	} else if (gDP.fillColor.color == 0xfffcfffc) {
+		DepthBuffer_SetBuffer( gDP.colorImage.address );
 		OGL_ClearDepthBuffer();
 		return;
 	}
