@@ -172,73 +172,55 @@ void FrameBuffer_SaveBuffer( u32 address, u16 size, u16 width, u16 height )
 				(current->scaleY != OGL.scaleY))
 			{
 				FrameBuffer_Remove( current );
+				current = NULL;
 				break;
 			}
 
-			ogl_glBindFramebuffer(GL_DRAW_FRAMEBUFFER, current->fbo);
-
-
-			if (depthBuffer.top != NULL && depthBuffer.top->renderbuf > 0) {
-				ogl_glBindRenderbuffer(GL_RENDERBUFFER, depthBuffer.top->renderbuf);
-				ogl_glFramebufferRenderbuffer(GL_DRAW_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthBuffer.top->renderbuf);
-			}
-
-			// define the index array for the outputs
-			GLuint attachments[2] = { GL_COLOR_ATTACHMENT0, GL_DEPTH_ATTACHMENT };
-			ogl_glDrawBuffers(2,  attachments, current->texture->glName);
-			assert(checkFBO());
-
-#ifdef DEBUG
-	DebugMsg( DEBUG_HIGH | DEBUG_HANDLED, "FrameBuffer_SaveBuffer( 0x%08X ); \n", address);
-#endif
-			*(u32*)&RDRAM[current->startAddress] = current->startAddress;
-
-			current->changed = TRUE;
-
 			FrameBuffer_MoveToTop( current );
-
-			gSP.changed |= CHANGED_TEXTURE;
-			return;
+			ogl_glBindFramebuffer(GL_DRAW_FRAMEBUFFER, current->fbo);
+			break;
 		}
 		current = current->lower;
 	}
 
-	// Wasn't found, create a new one
-	current = FrameBuffer_AddTop();
+	if (current == NULL) {
+		// Wasn't found, create a new one
+		current = FrameBuffer_AddTop();
 
-	current->startAddress = address;
-	current->endAddress = address + ((width * height << size >> 1) - 1);
-	current->width = width;
-	current->height = height;
-	current->size = size;
-	current->scaleX = OGL.scaleX;
-	current->scaleY = OGL.scaleY;
+		current->startAddress = address;
+		current->endAddress = address + ((width * height << size >> 1) - 1);
+		current->width = width;
+		current->height = height;
+		current->size = size;
+		current->scaleX = OGL.scaleX;
+		current->scaleY = OGL.scaleY;
 
-	current->texture->width = (u32)(current->width * OGL.scaleX);
-	current->texture->height = (u32)(current->height * OGL.scaleY);
-	current->texture->clampS = 1;
-	current->texture->clampT = 1;
-	current->texture->address = current->startAddress;
-	current->texture->clampWidth = current->width;
-	current->texture->clampHeight = current->height;
-	current->texture->frameBufferTexture = TRUE;
-	current->texture->maskS = 0;
-	current->texture->maskT = 0;
-	current->texture->mirrorS = 0;
-	current->texture->mirrorT = 0;
-	current->texture->realWidth = (u32)pow2( current->texture->width );
-	current->texture->realHeight = (u32)pow2( current->texture->height );
-	current->texture->textureBytes = current->texture->realWidth * current->texture->realHeight * 4;
-	cache.cachedBytes += current->texture->textureBytes;
+		current->texture->width = (u32)(current->width * OGL.scaleX);
+		current->texture->height = (u32)(current->height * OGL.scaleY);
+		current->texture->clampS = 1;
+		current->texture->clampT = 1;
+		current->texture->address = current->startAddress;
+		current->texture->clampWidth = current->width;
+		current->texture->clampHeight = current->height;
+		current->texture->frameBufferTexture = TRUE;
+		current->texture->maskS = 0;
+		current->texture->maskT = 0;
+		current->texture->mirrorS = 0;
+		current->texture->mirrorT = 0;
+		current->texture->realWidth = (u32)pow2( current->texture->width );
+		current->texture->realHeight = (u32)pow2( current->texture->height );
+		current->texture->textureBytes = current->texture->realWidth * current->texture->realHeight * 4;
+		cache.cachedBytes += current->texture->textureBytes;
 
-	glBindTexture( GL_TEXTURE_2D, current->texture->glName );
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, current->texture->realWidth, current->texture->realHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
-	ogl_glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-	ogl_glGenFramebuffers(1, &current->fbo);
-	ogl_glBindFramebuffer(GL_DRAW_FRAMEBUFFER, current->fbo);
-	ogl_glFramebufferTexture(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, current->texture->glName, 0);
+		glBindTexture( GL_TEXTURE_2D, current->texture->glName );
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, current->texture->realWidth, current->texture->realHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+		ogl_glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+		ogl_glGenFramebuffers(1, &current->fbo);
+		ogl_glBindFramebuffer(GL_DRAW_FRAMEBUFFER, current->fbo);
+		ogl_glFramebufferTexture(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, current->texture->glName, 0);
+	}
 
 	if (depthBuffer.top != NULL && depthBuffer.top->renderbuf > 0) {
 		ogl_glBindRenderbuffer(GL_RENDERBUFFER, depthBuffer.top->renderbuf);
