@@ -889,7 +889,6 @@ void gSPTriangle( s32 v0, s32 v1, s32 v2, s32 flag )
 		DebugMsg( DEBUG_HIGH | DEBUG_ERROR | DEBUG_TRIANGLE, "// Vertex index out of range\n" );
 #endif
 
-	if (depthBuffer.top) depthBuffer.top->cleared = FALSE;
 	gDP.colorImage.changed = TRUE;
 	gDP.colorImage.height = max( gDP.colorImage.height, (u32)gDP.scissor.lry );
 }
@@ -1652,7 +1651,6 @@ void gSPObjSprite( u32 sp )
 	OGL_DrawTriangles();
 	glLoadIdentity();
 
-	if (depthBuffer.top) depthBuffer.top->cleared = FALSE;
 	gDP.colorImage.changed = TRUE;
 	gDP.colorImage.height = max( gDP.colorImage.height, gDP.scissor.lry );
 }

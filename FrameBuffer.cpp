@@ -156,7 +156,6 @@ void FrameBuffer_Destroy()
 void FrameBuffer_SaveBuffer( u32 address, u16 size, u16 width, u16 height )
 {
 	frameBuffer.drawBuffer = GL_DRAW_FRAMEBUFFER;
-	//DepthBuffer_RemoveBuffer( address );
 
 	FrameBuffer *current = frameBuffer.top;
 	// Search through saved frame buffers
@@ -188,8 +187,6 @@ void FrameBuffer_SaveBuffer( u32 address, u16 size, u16 width, u16 height )
 			GLuint attachments[2] = { GL_COLOR_ATTACHMENT0, GL_DEPTH_ATTACHMENT };
 			ogl_glDrawBuffers(2,  attachments, current->texture->glName);
 			assert(checkFBO());
-			if (depthBuffer.top != NULL && depthBuffer.top->cleared)
-				OGL_ClearDepthBuffer();
 
 #ifdef DEBUG
 	DebugMsg( DEBUG_HIGH | DEBUG_HANDLED, "FrameBuffer_SaveBuffer( 0x%08X ); \n", address);
@@ -251,8 +248,6 @@ void FrameBuffer_SaveBuffer( u32 address, u16 size, u16 width, u16 height )
 	GLuint attachments[2] = { GL_COLOR_ATTACHMENT0, GL_DEPTH_ATTACHMENT };
 	ogl_glDrawBuffers(2,  attachments, current->texture->glName);
 	assert(checkFBO());
-	if (depthBuffer.top != NULL && depthBuffer.top->cleared)
-		OGL_ClearDepthBuffer();
 
 #ifdef DEBUG
 	DebugMsg( DEBUG_HIGH | DEBUG_HANDLED, "FrameBuffer_SaveBuffer( 0x%08X ); depth buffer is 0x%08X\n",

@@ -352,6 +352,8 @@ void gDPSetColorImage( u32 format, u32 size, u32 width, u32 address )
 			gDP.colorImage.height = gDP.scissor.lry;
 		else if (width >= gSP.viewport.width-1 && width <= gSP.viewport.width+1)
 			gDP.colorImage.height = gSP.viewport.height;
+		else
+			gDP.colorImage.height = 1;
 
 		if (OGL.frameBufferTextures)// && address != gDP.depthImageAddress)
 		{
@@ -405,15 +407,9 @@ void gDPSetTextureImage( u32 format, u32 size, u32 width, u32 address )
 
 void gDPSetDepthImage( u32 address )
 {
-//	if (address != gDP.depthImageAddress)
-//		OGL_ClearDepthBuffer();
-
-	DepthBuffer_SetBuffer( RSP_SegmentToPhysical( address ) );
-
-//	if (depthBuffer.current->cleared)
-//		OGL_ClearDepthBuffer();
-
-	gDP.depthImageAddress = RSP_SegmentToPhysical( address );
+	address = RSP_SegmentToPhysical( address );
+	DepthBuffer_SetBuffer( address );
+	gDP.depthImageAddress = address;
 
 #ifdef DEBUG
 	DebugMsg( DEBUG_HIGH | DEBUG_HANDLED, "gDPSetDepthImage( 0x%08X );\n", gDP.depthImageAddress );
@@ -784,11 +780,6 @@ void gDPSetScissor( u32 mode, f32 ulx, f32 uly, f32 lrx, f32 lry )
 
 void gDPFillRectangle( s32 ulx, s32 uly, s32 lrx, s32 lry )
 {
-	DepthBuffer *buffer = DepthBuffer_FindBuffer( gDP.colorImage.address );
-
-	if (buffer)
-		buffer->cleared = TRUE;
-
 	if (gDP.depthImageAddress == gDP.colorImage.address) {
 		OGL_ClearDepthBuffer();
 		return;
@@ -817,7 +808,6 @@ void gDPFillRectangle( s32 ulx, s32 uly, s32 lrx, s32 lry )
 
 	OGL_DrawRect( ulx, uly, lrx, lry, (gDP.otherMode.cycleType == G_CYC_FILL) ? fillColor : &gDP.blendColor.r );
 
-	if (depthBuffer.top) depthBuffer.top->cleared = FALSE;
 	gDP.colorImage.changed = TRUE;
 	gDP.colorImage.height = (u32)max( (s32)gDP.colorImage.height, lry );
 
@@ -893,7 +883,6 @@ void gDPTextureRectangle( f32 ulx, f32 uly, f32 lrx, f32 lry, s32 tile, f32 s, f
 	gSP.textureTile[0] = &gDP.tiles[gSP.texture.tile];
 	gSP.textureTile[1] = &gDP.tiles[gSP.texture.tile < 7 ? gSP.texture.tile + 1 : gSP.texture.tile];
 
-	if (depthBuffer.top) depthBuffer.top->cleared = FALSE;
 	gDP.colorImage.changed = TRUE;
 	gDP.colorImage.height = max( gDP.colorImage.height, (u32)gDP.scissor.lry );
 

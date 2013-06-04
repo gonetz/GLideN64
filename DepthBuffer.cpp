@@ -1,7 +1,9 @@
 #include <malloc.h>
+#include <assert.h>
 #include "OpenGL.h"
 #include "FrameBuffer.h"
 #include "DepthBuffer.h"
+#include "VI.h"
 #include "Debug.h"
 
 DepthBufferInfo depthBuffer;
@@ -136,12 +138,9 @@ void DepthBuffer_Destroy()
 
 void DepthBuffer_SetBuffer( u32 address )
 {
-	const FrameBuffer * pFrameBuffer = FrameBuffer_FindBuffer(address);
-	bool bNeedClear = false;
-	if (pFrameBuffer != NULL) {
-		bNeedClear = pFrameBuffer->changed > 0;
-//		FrameBuffer_RemoveBuffer(address);
-	}
+	FrameBuffer * pFrameBuffer = FrameBuffer_FindBuffer(address);
+	if (pFrameBuffer == NULL)
+		pFrameBuffer = frameBuffer.top;
 
 	DepthBuffer *current = depthBuffer.top;
 
@@ -150,43 +149,37 @@ void DepthBuffer_SetBuffer( u32 address )
 	{
 		if (current->address == address)
 		{
+			if (pFrameBuffer != NULL && current->width != pFrameBuffer->width) {
+				DepthBuffer_Remove( current );
+				current = NULL;
+				break;
+			}
 			DepthBuffer_MoveToTop( current );
-			depthBuffer.current = current;
-
-		if ( frameBuffer.top != NULL &&  frameBuffer.top->fbo > 0) {
-			ogl_glFramebufferRenderbuffer(GL_DRAW_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, current->renderbuf);
-			GLuint attachments[2] = { GL_COLOR_ATTACHMENT0, GL_DEPTH_ATTACHMENT };
-			ogl_glDrawBuffers(2,  attachments,  frameBuffer.top->texture->glName);
-			if (bNeedClear)
-				OGL_ClearDepthBuffer();
-		}
-#ifdef DEBUG
-		DebugMsg( DEBUG_HIGH | DEBUG_HANDLED, "DepthBuffer_SetBuffer( 0x%08X ); color buffer is 0x%08X\n",
-			address, ( frameBuffer.top != NULL &&  frameBuffer.top->fbo > 0) ?  frameBuffer.top->startAddress : 0
-		);
-#endif
-
-			return;
+			break;
 		}
 		current = current->lower;
 	}
 
-	current = DepthBuffer_AddTop();
+	if (current == NULL) {
+		current = DepthBuffer_AddTop();
 
-	current->address = address;
-	current->cleared = TRUE;
+		current->address = address;
+		current->width = pFrameBuffer != NULL ? pFrameBuffer->width : VI.width;
+		if (OGL.frameBufferTextures) {
+			ogl_glGenRenderbuffers(1, &current->renderbuf);
+			ogl_glBindRenderbuffer(GL_RENDERBUFFER, current->renderbuf);
+			if (pFrameBuffer != NULL)
+				ogl_glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, pFrameBuffer->texture->realWidth, pFrameBuffer->texture->realHeight);
+			else
+				ogl_glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, (u32)pow2(OGL.width), (u32)pow2(OGL.height));
+		}
+	}
+
 	if (OGL.frameBufferTextures) {
-
-		ogl_glGenRenderbuffers(1, &current->renderbuf);
-		ogl_glBindRenderbuffer(GL_RENDERBUFFER, current->renderbuf);
-		ogl_glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, (u32)pow2(OGL.width), (u32)pow2(OGL.height));
-
 		if ( frameBuffer.top != NULL &&  frameBuffer.top->fbo > 0) {
 			ogl_glFramebufferRenderbuffer(GL_DRAW_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, current->renderbuf);
 			GLuint attachments[2] = { GL_COLOR_ATTACHMENT0, GL_DEPTH_ATTACHMENT };
 			ogl_glDrawBuffers(2,  attachments,  frameBuffer.top->texture->glName);
-			if (bNeedClear)
-				OGL_ClearDepthBuffer();
 		}
 
 #ifdef DEBUG
@@ -198,7 +191,7 @@ void DepthBuffer_SetBuffer( u32 address )
 	}
 	depthBuffer.current = current;
 }
-
+/*
 DepthBuffer *DepthBuffer_FindBuffer( u32 address )
 {
 	DepthBuffer *current = depthBuffer.top;
@@ -208,10 +201,11 @@ DepthBuffer *DepthBuffer_FindBuffer( u32 address )
 		if (current->address == address) {
 			if (OGL.frameBufferTextures)
 				ogl_glFramebufferRenderbuffer(GL_DRAW_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, current->renderbuf);
-		}
 			return current;
+		}
 		current = current->lower;
 	}
 
 	return NULL;
 }
+*/
