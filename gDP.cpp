@@ -465,17 +465,29 @@ void gDPSetFogColor( u32 r, u32 g, u32 b, u32 a )
 
 void gDPSetFillColor( u32 c )
 {
-	gDP.fillColor.r = _SHIFTR( c, 11, 5 ) * 0.032258064f;
-	gDP.fillColor.g = _SHIFTR( c,  6, 5 ) * 0.032258064f;
-	gDP.fillColor.b = _SHIFTR( c,  1, 5 ) * 0.032258064f;
-	gDP.fillColor.a = (f32)_SHIFTR( c,  0, 1 );
-
+	gDP.fillColor.color = c;
 	gDP.fillColor.z = (f32)_SHIFTR( c,  2, 14 );
 	gDP.fillColor.dz = (f32)_SHIFTR( c, 0, 2 );
 
 #ifdef DEBUG
 	DebugMsg( DEBUG_HIGH | DEBUG_HANDLED, "gDPSetFillColor( 0x%08X );\n", c );
 #endif
+}
+
+void gDPGetFillColor(f32 _fillColor[4])
+{
+	const u32 c = gDP.fillColor.color;
+	if (gDP.colorImage.size < 3) {
+		_fillColor[0] = _SHIFTR( c, 11, 5 ) * 0.032258064f;
+		_fillColor[1] = _SHIFTR( c,  6, 5 ) * 0.032258064f;
+		_fillColor[2] = _SHIFTR( c,  1, 5 ) * 0.032258064f;
+		_fillColor[3] = (f32)_SHIFTR( c,  0, 1 );
+	} else {
+		_fillColor[0] = _SHIFTR( c, 24, 8 ) * 0.0039215686f;
+		_fillColor[1] = _SHIFTR( c, 16, 8 ) * 0.0039215686f;
+		_fillColor[2] = _SHIFTR( c,  8, 8 ) * 0.0039215686f;
+		_fillColor[3] = _SHIFTR( c,  0, 8 ) * 0.0039215686f;
+	}
 }
 
 void gDPSetPrimColor( u32 m, u32 l, u32 r, u32 g, u32 b, u32 a )
@@ -783,6 +795,8 @@ void gDPFillRectangle( s32 ulx, s32 uly, s32 lrx, s32 lry )
 		return;
 	}
 
+	f32 fillColor[4];
+	gDPGetFillColor(fillColor);
 	if (gDP.otherMode.cycleType == G_CYC_FILL)
 	{
 		//if (gDP.fillColor.a == 0.0f)
@@ -793,12 +807,12 @@ void gDPFillRectangle( s32 ulx, s32 uly, s32 lrx, s32 lry )
 
 		if ((ulx == 0) && (uly == 0) && (lrx == VI.width) && (lry == VI.height))
 		{
-			OGL_ClearColorBuffer( &gDP.fillColor.r );
+			OGL_ClearColorBuffer( fillColor );
 			return;
 		}
 	}
 
-	OGL_DrawRect( ulx, uly, lrx, lry, (gDP.otherMode.cycleType == G_CYC_FILL) ? &gDP.fillColor.r : &gDP.blendColor.r );
+	OGL_DrawRect( ulx, uly, lrx, lry, (gDP.otherMode.cycleType == G_CYC_FILL) ? fillColor : &gDP.blendColor.r );
 
 	if (depthBuffer.top) depthBuffer.top->cleared = FALSE;
 	gDP.colorImage.changed = TRUE;
