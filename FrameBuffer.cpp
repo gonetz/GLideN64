@@ -513,3 +513,18 @@ void FrameBuffer_ActivateBufferTexture( s16 t, FrameBuffer *buffer )
 //	FrameBuffer_RenderBuffer(buffer->startAddress);
 	TextureCache_ActivateTexture( t, buffer->texture );
 }
+
+void FrameBuffer_ActivateBufferTextureBG( s16 t, FrameBuffer *buffer )
+{
+	buffer->texture->scaleS = OGL.scaleX / (float)buffer->texture->realWidth;
+	buffer->texture->scaleT = OGL.scaleY / (float)buffer->texture->realHeight;
+
+	buffer->texture->shiftScaleS = 1.0f;
+	buffer->texture->shiftScaleT = 1.0f;
+
+	buffer->texture->offsetS = gSP.bgImage.imageX;
+	buffer->texture->offsetT = (float)buffer->height - gSP.bgImage.imageY;
+
+	//	FrameBuffer_RenderBuffer(buffer->startAddress);
+	TextureCache_ActivateTexture( t, buffer->texture );
+}

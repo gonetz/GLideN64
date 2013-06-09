@@ -33,5 +33,6 @@ void FrameBuffer_RestoreBuffer( u32 address, u16 size, u16 width );
 void FrameBuffer_RemoveBuffer( u32 address );
 FrameBuffer *FrameBuffer_FindBuffer( u32 address );
 void FrameBuffer_ActivateBufferTexture( s16 t, FrameBuffer *buffer );
+void FrameBuffer_ActivateBufferTextureBG( s16 t, FrameBuffer *buffer );
 
 #endif

@@ -863,14 +863,15 @@ void TextureCache_Update( u32 t )
 		TextureCache_Init();
 	}
 
-	if (gDP.textureMode == TEXTUREMODE_BGIMAGE)
-	{
+	switch(gDP.textureMode) {
+	case TEXTUREMODE_BGIMAGE:
 		TextureCache_UpdateBackground();
 		return;
-	}
-	else if (gDP.textureMode == TEXTUREMODE_FRAMEBUFFER)
-	{
+	case TEXTUREMODE_FRAMEBUFFER:
 		FrameBuffer_ActivateBufferTexture( t, gDP.loadTile->frameBuffer );
+		return;
+	case TEXTUREMODE_FRAMEBUFFER_BG:
+		FrameBuffer_ActivateBufferTextureBG( t, gDP.loadTile->frameBuffer );
 		return;
 	}
 
