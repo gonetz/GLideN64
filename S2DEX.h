@@ -52,6 +52,7 @@ struct uObjScaleBg
   u8  padding[4];  /* Padding */
 };   /* 40 bytes */
 
+#if 0
 struct uObjBg
 {
 	u16 imageW;     /* Texture width (8-byte alignment, u10.2) */
@@ -97,6 +98,7 @@ struct uObjBg
 	u16 tmemSize;   /* imagePtr skip value for a single load  */
 	u16 tmemSizeW;  /* imagePtr skip value for one image line */
 };      /* 40 bytes */
+#endif
 
 struct uObjSprite
 {

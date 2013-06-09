@@ -1442,30 +1442,56 @@ void gSPLineW3D( s32 v0, s32 v1, s32 wd, s32 flag )
 #endif
 }
 
+static
+void loadBGImage(const uObjScaleBg * _bgInfo, bool _loadScale)
+{
+	gSP.bgImage.address = RSP_SegmentToPhysical( _bgInfo->imagePtr );
+
+	gSP.bgImage.width = _bgInfo->imageW >> 2;
+	gSP.bgImage.height = _bgInfo->imageH >> 2;
+	gSP.bgImage.format = _bgInfo->imageFmt;
+	gSP.bgImage.size = _bgInfo->imageSiz;
+	gSP.bgImage.palette = _bgInfo->imagePal;
+	gDP.textureMode = TEXTUREMODE_BGIMAGE;
+	gSP.bgImage.imageX = _FIXED2FLOAT( _bgInfo->imageX, 5 );
+	gSP.bgImage.imageY = _FIXED2FLOAT( _bgInfo->imageY, 5 );
+	if (_loadScale) {
+		gSP.bgImage.scaleW = _FIXED2FLOAT( _bgInfo->scaleW, 10 );
+		gSP.bgImage.scaleH = _FIXED2FLOAT( _bgInfo->scaleH, 10 );
+	} else
+		gSP.bgImage.scaleW = gSP.bgImage.scaleH = 1.0f;
+
+	if (OGL.frameBufferTextures)
+	{
+		FrameBuffer *buffer;
+		if (((buffer = FrameBuffer_FindBuffer( gSP.bgImage.address )) != NULL) &&
+			((*(u32*)&RDRAM[buffer->startAddress] & 0xFFFEFFFE) == (buffer->startAddress & 0xFFFEFFFE)))
+		{
+			gDP.loadTile->frameBuffer = buffer;
+			gDP.textureMode = TEXTUREMODE_FRAMEBUFFER_BG;
+			gDP.loadType = LOADTYPE_TILE;
+			gDP.changed |= CHANGED_TMEM;
+		}
+	}
+}
+
 void gSPBgRect1Cyc( u32 bg )
 {
 	u32 address = RSP_SegmentToPhysical( bg );
 	uObjScaleBg *objScaleBg = (uObjScaleBg*)&RDRAM[address];
+	loadBGImage(objScaleBg, true);
 
-	gSP.bgImage.address = RSP_SegmentToPhysical( objScaleBg->imagePtr );
-	gSP.bgImage.width = objScaleBg->imageW >> 2;
-	gSP.bgImage.height = objScaleBg->imageH >> 2;
-	gSP.bgImage.format = objScaleBg->imageFmt;
-	gSP.bgImage.size = objScaleBg->imageSiz;
-	gSP.bgImage.palette = objScaleBg->imagePal;
-	gDP.textureMode = TEXTUREMODE_BGIMAGE;
-
-	f32 imageX = _FIXED2FLOAT( objScaleBg->imageX, 5 );
-	f32 imageY = _FIXED2FLOAT( objScaleBg->imageY, 5 );
-	f32 imageW = (f32)(objScaleBg->imageW >> 2);
-	f32 imageH = (f32)(objScaleBg->imageH >> 2);
+	f32 imageX = gSP.bgImage.imageX;
+	f32 imageY = gSP.bgImage.imageY;
+	f32 imageW = _FIXED2FLOAT( objScaleBg->imageW, 2);
+	f32 imageH = _FIXED2FLOAT( objScaleBg->imageH, 2);
 
 	f32 frameX = _FIXED2FLOAT( objScaleBg->frameX, 2 );
 	f32 frameY = _FIXED2FLOAT( objScaleBg->frameY, 2 );
 	f32 frameW = _FIXED2FLOAT( objScaleBg->frameW, 2 );
 	f32 frameH = _FIXED2FLOAT( objScaleBg->frameH, 2 );
-	f32 scaleW = _FIXED2FLOAT( objScaleBg->scaleW, 10 );
-	f32 scaleH = _FIXED2FLOAT( objScaleBg->scaleH, 10 );
+	f32 scaleW = gSP.bgImage.scaleW;
+	f32 scaleH = gSP.bgImage.scaleH;
 
 	f32 frameX0 = frameX;
 	f32 frameY0 = frameY;
@@ -1474,27 +1500,30 @@ void gSPBgRect1Cyc( u32 bg )
 
 	f32 frameX1 = frameX + min( (imageW - imageX) / scaleW, frameW );
 	f32 frameY1 = frameY + min( (imageH - imageY) / scaleH, frameH );
-	f32 frameS1 = imageX + min( (imageW - imageX) * scaleW, frameW * scaleW );
-	f32 frameT1 = imageY + min( (imageH - imageY) * scaleH, frameH * scaleH );
+//	f32 frameS1 = imageX + min( (imageW - imageX) * scaleW, frameW * scaleW );
+//	f32 frameT1 = imageY + min( (imageH - imageY) * scaleH, frameH * scaleH );
 	
 	gDP.otherMode.cycleType = G_CYC_1CYCLE;
 	gDP.changed |= CHANGED_CYCLETYPE;
 	gSPTexture( 1.0f, 1.0f, 0, 0, TRUE );
-	gDPTextureRectangle( frameX0, frameY0, frameX1 - 1, frameY1 - 1, 0, frameS0 - 1, frameT0 - 1, scaleW, scaleH );
 
+//	gDPTextureRectangle( frameX0, frameY0, frameX1 - 1, frameY1 - 1, 0, frameS0 - 1, frameT0 - 1, scaleW, scaleH );
+	gDPTextureRectangle( frameX0, frameY0, frameX1, frameY1, 0, frameS0, frameT0, scaleW, scaleH );
+
+	/*
 	if ((frameX1 - frameX0) < frameW)
 	{
 		f32 frameX2 = frameW - (frameX1 - frameX0) + frameX1;
-		gDPTextureRectangle( frameX1, frameY0, frameX2 - 1, frameY1 - 1, 0, 0, frameT0, scaleW, scaleH );
+		gDPTextureRectangle( frameX1, frameY0, frameX2, frameY1, 0, 0, frameT0, scaleW, scaleH );
 	}
 
 	if ((frameY1 - frameY0) < frameH)
 	{
 		f32 frameY2 = frameH - (frameY1 - frameY0) + frameY1;
-		gDPTextureRectangle( frameX0, frameY1, frameX1 - 1, frameY2 - 1, 0, frameS0, 0, scaleW, scaleH );
+		gDPTextureRectangle( frameX0, frameY1, frameX1, frameY2, 0, frameS0, 0, scaleW, scaleH );
 	}
-
-	gDPTextureRectangle( 0, 0, 319, 239, 0, 0, 0, scaleW, scaleH );
+	*/
+//	gDPTextureRectangle( 0, 0, 319, 239, 0, 0, 0, scaleW, scaleH );
 /*	u32 line = (u32)(frameS1 - frameS0 + 1) << objScaleBg->imageSiz >> 4;
 	u16 loadHeight;
 	if (objScaleBg->imageFmt == G_IM_FMT_CI)
@@ -1527,18 +1556,8 @@ void gSPBgRect1Cyc( u32 bg )
 void gSPBgRectCopy( u32 bg )
 {
 	u32 address = RSP_SegmentToPhysical( bg );
-	uObjBg *objBg = (uObjBg*)&RDRAM[address];
-
-	gSP.bgImage.address = RSP_SegmentToPhysical( objBg->imagePtr );
-	gSP.bgImage.width = objBg->imageW >> 2;
-	gSP.bgImage.height = objBg->imageH >> 2;
-	gSP.bgImage.format = objBg->imageFmt;
-	gSP.bgImage.size = objBg->imageSiz;
-	gSP.bgImage.palette = objBg->imagePal;
-	gDP.textureMode = TEXTUREMODE_BGIMAGE;
-
-	f32 imageX = objBg->imageX / 32.f;
-	f32 imageY = objBg->imageY / 32.f;
+	uObjScaleBg *objBg = (uObjScaleBg*)&RDRAM[address];
+	loadBGImage(objBg, false);
 
 	f32 frameX = objBg->frameX / 4.0f;
 	f32 frameY = objBg->frameY / 4.0f;
@@ -1547,7 +1566,7 @@ void gSPBgRectCopy( u32 bg )
 	
 	gSPTexture( 1.0f, 1.0f, 0, 0, TRUE );
 
-	gDPTextureRectangle( frameX, frameY, frameX + frameW - 1, frameY + frameH - 1, 0, imageX, imageY, 4, 1 );
+	gDPTextureRectangle( frameX, frameY, frameX + frameW - 1, frameY + frameH - 1, 0, gSP.bgImage.imageX, gSP.bgImage.imageY, 4, 1 );
 }
 
 void gSPObjRectangle( u32 sp )
