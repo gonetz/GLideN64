@@ -33,6 +33,7 @@ public:
 	RegisterCombiners(Combiner *_color, Combiner *_alpha);
 	virtual void Set();
 	virtual void UpdateColors();
+	virtual void UpdateFBInfo() {};
 
 private:
 	GeneralCombiner m_color[8];

@@ -120,6 +120,7 @@ class OGLCombiner {
 public:
 	virtual void Set() = 0;
 	virtual void UpdateColors() = 0;
+	virtual void UpdateFBInfo() = 0;
 };
 
 struct CachedCombiner
@@ -211,6 +212,7 @@ extern struct CombinerInfo
 
 void Combiner_Init();
 void Combiner_UpdateCombineColors();
+void Combiner_UpdateCombineFBInfo();
 void Combiner_SetCombine( u64 mux );
 void Combiner_Destroy();
 void Combiner_BeginTextureUpdate();

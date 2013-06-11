@@ -7,6 +7,7 @@ public:
 	TexEnv(Combiner *_color, Combiner *_alpha);
 	virtual void Set();
 	virtual void UpdateColors();
+	virtual void UpdateFBInfo() {};
 
 private:
 	GLint m_mode;

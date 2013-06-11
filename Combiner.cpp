@@ -154,6 +154,12 @@ void Combiner_UpdateCombineColors()
 	gDP.changed &= ~CHANGED_COMBINE_COLORS;
 }
 
+void Combiner_UpdateCombineFBInfo()
+{
+	combiner.current->compiled->UpdateFBInfo();
+	gDP.changed &= ~CHANGED_FB_TEXTURE;
+}
+
 void Combiner_SimplifyCycle( CombineCycle *cc, CombinerStage *stage )
 {
 	// Load the first operand

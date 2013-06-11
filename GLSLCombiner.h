@@ -6,6 +6,7 @@ public:
 	GLSLCombiner(Combiner *_color, Combiner *_alpha);
 	virtual void Set();
 	virtual void UpdateColors();
+	virtual void UpdateFBInfo();
 
 private:
 	GLhandleARB m_vertexShaderObject;

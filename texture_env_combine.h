@@ -21,6 +21,7 @@ public:
 	TexEnvCombiner(Combiner *_color, Combiner *_alpha);
 	virtual void Set();
 	virtual void UpdateColors();
+	virtual void UpdateFBInfo() {};
 
 private:
 	BOOL m_usesT0, m_usesT1, m_usesNoise;

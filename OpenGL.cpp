@@ -720,6 +720,11 @@ void OGL_UpdateStates()
 		Combiner_EndTextureUpdate();
 	}
 
+	if (gDP.changed & CHANGED_FB_TEXTURE)
+	{
+		Combiner_UpdateCombineFBInfo();
+	}
+
 	if ((gDP.changed & CHANGED_FOGCOLOR) && OGL.fog)
 		glFogfv( GL_FOG_COLOR, &gDP.fogColor.r );
 

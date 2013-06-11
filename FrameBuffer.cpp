@@ -153,7 +153,7 @@ void FrameBuffer_Destroy()
 		FrameBuffer_RemoveBottom();
 }
 
-void FrameBuffer_SaveBuffer( u32 address, u16 size, u16 width, u16 height )
+void FrameBuffer_SaveBuffer( u32 address, u16 format, u16 size, u16 width, u16 height )
 {
 	frameBuffer.drawBuffer = GL_DRAW_FRAMEBUFFER;
 
@@ -197,6 +197,8 @@ void FrameBuffer_SaveBuffer( u32 address, u16 size, u16 width, u16 height )
 
 		current->texture->width = (u32)(current->width * OGL.scaleX);
 		current->texture->height = (u32)(current->height * OGL.scaleY);
+		current->texture->format = format;
+		current->texture->size = size;
 		current->texture->clampS = 1;
 		current->texture->clampT = 1;
 		current->texture->address = current->startAddress;
@@ -213,7 +215,10 @@ void FrameBuffer_SaveBuffer( u32 address, u16 size, u16 width, u16 height )
 		cache.cachedBytes += current->texture->textureBytes;
 
 		glBindTexture( GL_TEXTURE_2D, current->texture->glName );
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, current->texture->realWidth, current->texture->realHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+		if (size > G_IM_SIZ_8b)
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, current->texture->realWidth, current->texture->realHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+		else
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, current->texture->realWidth, current->texture->realHeight, 0, GL_RED, GL_UNSIGNED_BYTE, NULL);
 		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
 		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
 		ogl_glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
@@ -512,6 +517,7 @@ void FrameBuffer_ActivateBufferTexture( s16 t, FrameBuffer *buffer )
 
 //	FrameBuffer_RenderBuffer(buffer->startAddress);
 	TextureCache_ActivateTexture( t, buffer->texture );
+	gDP.changed |= CHANGED_FB_TEXTURE;
 }
 
 void FrameBuffer_ActivateBufferTextureBG( s16 t, FrameBuffer *buffer )
@@ -527,4 +533,5 @@ void FrameBuffer_ActivateBufferTextureBG( s16 t, FrameBuffer *buffer )
 
 	//	FrameBuffer_RenderBuffer(buffer->startAddress);
 	TextureCache_ActivateTexture( t, buffer->texture );
+	gDP.changed |= CHANGED_FB_TEXTURE;
 }

@@ -358,7 +358,7 @@ void gDPSetColorImage( u32 format, u32 size, u32 width, u32 address )
 		if (OGL.frameBufferTextures)// && address != gDP.depthImageAddress)
 		{
 			//if (gDP.colorImage.changed)
-				FrameBuffer_SaveBuffer( address, (u16)size, (u16)width, gDP.colorImage.height );
+				FrameBuffer_SaveBuffer( address, (u16)format, (u16)size, (u16)width, gDP.colorImage.height );
 
 			//if (address != gDP.depthImageAddress)
 				//FrameBuffer_RestoreBuffer( address, (u16)size, (u16)width );

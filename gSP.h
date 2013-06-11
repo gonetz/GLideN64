@@ -11,6 +11,7 @@
 #define CHANGED_GEOMETRYMODE	0x08
 #define CHANGED_TEXTURE			0x10
 #define CHANGED_FOGPOSITION		0x10
+#define CHANGED_FB_TEXTURE		0x20
 
 struct SPVertex
 {
