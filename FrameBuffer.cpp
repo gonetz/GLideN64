@@ -511,8 +511,10 @@ void FrameBuffer_ActivateBufferTexture( s16 t, FrameBuffer *buffer )
 	}
 	else
 	{
-		buffer->texture->offsetS = 0.0f;
-		buffer->texture->offsetT = (float)buffer->height - (gDP.textureImage.address - buffer->startAddress) / (buffer->width << buffer->size >> 1);
+		u32 shift = gDP.textureImage.address - buffer->startAddress;
+		u32 factor = buffer->width << buffer->size >> 1;
+		buffer->texture->offsetS = (float)(shift % factor);
+		buffer->texture->offsetT = (float)(buffer->height - shift/factor);
 	}
 
 //	FrameBuffer_RenderBuffer(buffer->startAddress);
