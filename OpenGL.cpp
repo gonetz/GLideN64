@@ -857,7 +857,7 @@ void OGL_AddTriangle( SPVertex *vertices, int v0, int v1, int v2 )
 
 		if (combiner.usesT1)
 		{
-			if (cache.current[0]->frameBufferTexture)
+			if (cache.current[1]->frameBufferTexture)
 			{
 				OGL.vertices[OGL.numVertices].s1 = (cache.current[1]->offsetS + (vertices[v[i]].s * cache.current[1]->shiftScaleS * gSP.texture.scales - gSP.textureTile[1]->fuls)) * cache.current[1]->scaleS;
 				OGL.vertices[OGL.numVertices].t1 = (cache.current[1]->offsetT - (vertices[v[i]].t * cache.current[1]->shiftScaleT * gSP.texture.scalet - gSP.textureTile[1]->fult)) * cache.current[1]->scaleT;
