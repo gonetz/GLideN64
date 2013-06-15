@@ -863,15 +863,15 @@ void TextureCache_Update( u32 t )
 		TextureCache_Init();
 	}
 
-	switch(gDP.textureMode) {
+	switch(gSP.textureTile[t]->textureMode) {
 	case TEXTUREMODE_BGIMAGE:
 		TextureCache_UpdateBackground();
 		return;
 	case TEXTUREMODE_FRAMEBUFFER:
-		FrameBuffer_ActivateBufferTexture( t, gDP.loadTile->frameBuffer );
+		FrameBuffer_ActivateBufferTexture( t, gSP.textureTile[t]->frameBuffer );
 		return;
 	case TEXTUREMODE_FRAMEBUFFER_BG:
-		FrameBuffer_ActivateBufferTextureBG( t, gDP.loadTile->frameBuffer );
+		FrameBuffer_ActivateBufferTextureBG( t, gSP.textureTile[t]->frameBuffer );
 		return;
 	}
 
@@ -894,7 +894,7 @@ void TextureCache_Update( u32 t )
 	else
 		lineHeight = 0;
 
-	if (gDP.textureMode == TEXTUREMODE_TEXRECT)
+	if (gSP.textureTile[t]->textureMode == TEXTUREMODE_TEXRECT)
 	{
 		u16 texRectWidth = gDP.texRect.width - gSP.textureTile[t]->uls;
 		u16 texRectHeight = gDP.texRect.height - gSP.textureTile[t]->ult;
@@ -912,7 +912,7 @@ void TextureCache_Update( u32 t )
 			width = gDP.texRect.width;
 		else if ((texRectWidth * texRectHeight) <= maxTexels)
 			width = gDP.texRect.width;
-		else if (gDP.loadType == LOADTYPE_TILE)
+		else if (gSP.textureTile[t]->loadType == LOADTYPE_TILE)
 			width = loadWidth;
 		else
 			width = lineWidth;
@@ -930,7 +930,7 @@ void TextureCache_Update( u32 t )
 			height = tileHeight;
 		else if ((texRectWidth * texRectHeight) <= maxTexels)
 			height = gDP.texRect.height;
-		else if (gDP.loadType == LOADTYPE_TILE)
+		else if (gSP.textureTile[t]->loadType == LOADTYPE_TILE)
 			height = loadHeight;
 		else
 			height = lineHeight;
@@ -944,7 +944,7 @@ void TextureCache_Update( u32 t )
 			width = maskWidth; // Use mask width if set and valid
 		else if ((tileWidth * tileHeight) <= maxTexels)
 			width = tileWidth; // else use tile width if valid
-		else if (gDP.loadType == LOADTYPE_TILE)
+		else if (gSP.textureTile[t]->loadType == LOADTYPE_TILE)
 			width = loadWidth; // else use load width if load done with LoadTile
 		else
 			width = lineWidth; // else use line-based width
@@ -953,7 +953,7 @@ void TextureCache_Update( u32 t )
 			height = maskHeight;
 		else if ((tileWidth * tileHeight) <= maxTexels)
 			height = tileHeight;
-		else if (gDP.loadType == LOADTYPE_TILE)
+		else if (gSP.textureTile[t]->loadType == LOADTYPE_TILE)
 			height = loadHeight;
 		else
 			height = lineHeight;

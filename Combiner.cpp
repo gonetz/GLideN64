@@ -457,13 +457,6 @@ DWORD64 Combiner_EncodeCombineMode( WORD saRGB0, WORD sbRGB0, WORD mRGB0, WORD a
 
 void Combiner_SelectCombine( u64 mux )
 {
-	// Hack for the Banjo-Tooie shadow (framebuffer textures must be enabled too)
-	if ((gDP.otherMode.cycleType == G_CYC_1CYCLE) && (mux == 0x00ffe7ffffcf9fcf) && (cache.current[0]->frameBufferTexture))
-	{
-		mux = EncodeCombineMode( 0, 0, 0, 0, TEXEL0, 0, PRIMITIVE, 0,
-			0, 0, 0, 0, TEXEL0, 0, PRIMITIVE, 0 );
-	}
-
 	CachedCombiner *current = combiner.root;
 	CachedCombiner *parent = current;
 

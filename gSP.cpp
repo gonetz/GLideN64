@@ -1451,7 +1451,7 @@ void loadBGImage(const uObjScaleBg * _bgInfo, bool _loadScale)
 	gSP.bgImage.format = _bgInfo->imageFmt;
 	gSP.bgImage.size = _bgInfo->imageSiz;
 	gSP.bgImage.palette = _bgInfo->imagePal;
-	gDP.textureMode = TEXTUREMODE_BGIMAGE;
+	gDP.tiles[0].textureMode = TEXTUREMODE_BGIMAGE;
 	gSP.bgImage.imageX = _FIXED2FLOAT( _bgInfo->imageX, 5 );
 	gSP.bgImage.imageY = _FIXED2FLOAT( _bgInfo->imageY, 5 );
 	if (_loadScale) {
@@ -1466,9 +1466,9 @@ void loadBGImage(const uObjScaleBg * _bgInfo, bool _loadScale)
 		if (((buffer = FrameBuffer_FindBuffer( gSP.bgImage.address )) != NULL) &&
 			((*(u32*)&RDRAM[buffer->startAddress] & 0xFFFEFFFE) == (buffer->startAddress & 0xFFFEFFFE)))
 		{
-			gDP.loadTile->frameBuffer = buffer;
-			gDP.textureMode = TEXTUREMODE_FRAMEBUFFER_BG;
-			gDP.loadType = LOADTYPE_TILE;
+			gDP.tiles[0].frameBuffer = buffer;
+			gDP.tiles[0].textureMode = TEXTUREMODE_FRAMEBUFFER_BG;
+			gDP.tiles[0].loadType = LOADTYPE_TILE;
 			gDP.changed |= CHANGED_TMEM;
 		}
 	}

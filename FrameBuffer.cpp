@@ -504,9 +504,9 @@ void FrameBuffer_ActivateBufferTexture( s16 t, FrameBuffer *buffer )
 	else
 		buffer->texture->shiftScaleT = 1.0f;
 
-	const u32 shift = gDP.textureImage.address - buffer->startAddress;
+	const u32 shift = gSP.textureTile[t]->imageAddress - buffer->startAddress;
 	const u32 factor = buffer->width << buffer->size >> 1;
-	if (gDP.loadType == LOADTYPE_TILE)
+	if (gSP.textureTile[t]->loadType == LOADTYPE_TILE)
 	{
 		buffer->texture->offsetS = gDP.loadTile->uls;
 		buffer->texture->offsetT = (float)(buffer->height - (gDP.loadTile->ult + shift/factor));

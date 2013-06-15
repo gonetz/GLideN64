@@ -82,11 +82,15 @@ struct gDPTile
 		};
 	};
 
-	FrameBuffer *frameBuffer;
 	u32 maskt, masks;
 	u32 shiftt, shifts;
 	f32 fuls, fult, flrs, flrt;
 	u32 uls, ult, lrs, lrt;
+
+	u32 textureMode;
+	u32 loadType;
+	u32 imageAddress;
+	FrameBuffer *frameBuffer;
 };
 
 struct gDPInfo
@@ -228,8 +232,6 @@ struct gDPInfo
 	u32 paletteCRC16[16];
 	u32 paletteCRC256;
 	u32 half_1, half_2;
-	u32 textureMode;
-	u32 loadType;
 };
 
 extern gDPInfo gDP;

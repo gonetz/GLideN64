@@ -1,3 +1,4 @@
+#include <assert.h>
 #include "GLideN64.h"
 #include "N64.h"
 #include "GBI.h"
@@ -523,6 +524,18 @@ void gDPSetTile( u32 format, u32 size, u32 line, u32 tmem, u32 tile, u32 palette
 	if (!gDP.tiles[tile].masks) gDP.tiles[tile].clamps = 1;
     if (!gDP.tiles[tile].maskt) gDP.tiles[tile].clampt = 1;
 
+	if (tile == gSP.texture.tile || gSP.texture.tile + 1) {
+		u32 nTile = 7;
+		while(gDP.tiles[nTile].tmem != tmem && nTile > gSP.texture.tile + 1)
+			--nTile;
+		if (nTile > gSP.texture.tile + 1) {
+			gDP.tiles[tile].textureMode = gDP.tiles[nTile].textureMode;
+			gDP.tiles[tile].loadType = gDP.tiles[nTile].loadType;
+			gDP.tiles[tile].frameBuffer = gDP.tiles[nTile].frameBuffer;
+			gDP.tiles[tile].imageAddress = gDP.tiles[nTile].imageAddress;
+		}
+	}
+
 #ifdef DEBUG
 	DebugMsg( DEBUG_HIGH | DEBUG_HANDLED | DEBUG_TEXTURE, "gDPSetTile( %s, %s, %i, %i, %i, %i, %s%s, %s%s, %i, %i, %i, %i );\n",
 		ImageFormatText[format],
@@ -567,6 +580,37 @@ void gDPSetTileSize( u32 tile, u32 uls, u32 ult, u32 lrs, u32 lrt )
 #endif
 }
 
+static
+bool CheckForFrameBufferTexture(u32 _address)
+{
+	if (OGL.frameBufferTextures) {
+		FrameBuffer *pBuffer = FrameBuffer_FindBuffer( _address );
+		if ((pBuffer != NULL) &&
+			((*(u32*)&RDRAM[pBuffer->startAddress] & 0xFFFEFFFE) == (pBuffer->startAddress & 0xFFFEFFFE)))
+		{
+			gDP.loadTile->frameBuffer = pBuffer;
+			gDP.loadTile->textureMode = TEXTUREMODE_FRAMEBUFFER;
+			gDP.changed |= CHANGED_TMEM;
+
+			u32 nTile = 8;;
+			if (gDP.tiles[gSP.texture.tile].tmem == gDP.loadTile->tmem)
+				nTile = gSP.texture.tile;
+			else if (gDP.tiles[gSP.texture.tile + 1].tmem == gDP.loadTile->tmem)
+				nTile = gSP.texture.tile + 1;
+			if (nTile < 8) {
+				gDPTile & curTile = gDP.tiles[nTile];
+				curTile.textureMode = gDP.loadTile->textureMode;
+				curTile.loadType = gDP.loadTile->loadType;
+				curTile.frameBuffer = gDP.loadTile->frameBuffer;
+				curTile.imageAddress = gDP.loadTile->imageAddress;
+			}
+
+			return true;
+		}
+	}
+	return false;
+}
+
 void gDPLoadTile( u32 tile, u32 uls, u32 ult, u32 lrs, u32 lrt )
 {
 	void (*Interleave)( void *mem, u32 numDWords );
@@ -577,6 +621,8 @@ void gDPLoadTile( u32 tile, u32 uls, u32 ult, u32 lrs, u32 lrt )
 
 	gDPSetTileSize( tile, uls, ult, lrs, lrt );
 	gDP.loadTile = &gDP.tiles[tile];
+	gDP.loadTile->loadType = LOADTYPE_TILE;
+	gDP.loadTile->imageAddress = gDP.textureImage.address;
 
 	if (gDP.loadTile->line == 0)
 		return;
@@ -598,19 +644,8 @@ void gDPLoadTile( u32 tile, u32 uls, u32 ult, u32 lrs, u32 lrt )
 		return;
 	}
 
-	if (OGL.frameBufferTextures)
-	{
-		FrameBuffer *buffer;
-		if (((buffer = FrameBuffer_FindBuffer( address )) != NULL) &&
-			((*(u32*)&RDRAM[buffer->startAddress] & 0xFFFEFFFE) == (buffer->startAddress & 0xFFFEFFFE)))
-		{
-			gDP.loadTile->frameBuffer = buffer;
-			gDP.textureMode = TEXTUREMODE_FRAMEBUFFER;
-			gDP.loadType = LOADTYPE_TILE;
-			gDP.changed |= CHANGED_TMEM;
-			return;
-		}
-	}
+	if (CheckForFrameBufferTexture(address))
+		return;
 
 	// Line given for 32-bit is half what it seems it should since they split the
 	// high and low words. I'm cheating by putting them together.
@@ -634,8 +669,8 @@ void gDPLoadTile( u32 tile, u32 uls, u32 ult, u32 lrs, u32 lrt )
  		dest += line;
 	}
 
-	gDP.textureMode = TEXTUREMODE_NORMAL;
-	gDP.loadType = LOADTYPE_TILE;
+	gDP.loadTile->textureMode = TEXTUREMODE_NORMAL;
+	gDP.loadTile->frameBuffer = NULL;
 	gDP.changed |= CHANGED_TMEM;
 
 #ifdef DEBUG
@@ -648,6 +683,8 @@ void gDPLoadBlock( u32 tile, u32 uls, u32 ult, u32 lrs, u32 dxt )
 {
 	gDPSetTileSize( tile, uls, ult, lrs, dxt );
 	gDP.loadTile = &gDP.tiles[tile];
+	gDP.loadTile->loadType = LOADTYPE_BLOCK;
+	gDP.loadTile->imageAddress = gDP.textureImage.address;
 
  	u32 bytes = (lrs + 1) << gDP.loadTile->size >> 1;
 	u32 address = gDP.textureImage.address + ult * gDP.textureImage.bpl + (uls << gDP.textureImage.size >> 1);
@@ -665,19 +702,8 @@ void gDPLoadBlock( u32 tile, u32 uls, u32 ult, u32 lrs, u32 dxt )
 		return;
 	}
 
-	if (OGL.frameBufferTextures)
-	{
-		FrameBuffer *buffer;
-		if (((buffer = FrameBuffer_FindBuffer( address )) != NULL) &&
-			((*(u32*)&RDRAM[buffer->startAddress] & 0xFFFEFFFE) == (buffer->startAddress & 0xFFFEFFFE)))
-		{
-			gDP.loadTile->frameBuffer = buffer;
-			gDP.textureMode = TEXTUREMODE_FRAMEBUFFER;
-			gDP.loadType = LOADTYPE_BLOCK;
-			gDP.changed |= CHANGED_TMEM;
-			return;
-		}
-	}
+	if (CheckForFrameBufferTexture(address))
+		return;
 
 	u64* src = (u64*)&RDRAM[address];
 	u64* dest = &TMEM[gDP.loadTile->tmem];
@@ -707,8 +733,8 @@ void gDPLoadBlock( u32 tile, u32 uls, u32 ult, u32 lrs, u32 dxt )
 	else
 		UnswapCopy( src, dest, bytes );
 
-	gDP.textureMode = TEXTUREMODE_NORMAL;
-	gDP.loadType = LOADTYPE_BLOCK;
+	gDP.loadTile->textureMode = TEXTUREMODE_NORMAL;
+	gDP.loadTile->frameBuffer = NULL;
 	gDP.changed |= CHANGED_TMEM;
 
 #ifdef DEBUG
@@ -856,15 +882,17 @@ void gDPTextureRectangle( f32 ulx, f32 uly, f32 lrx, f32 lry, s32 tile, f32 s, f
 	gSP.textureTile[0] = &gDP.tiles[tile];
 	gSP.textureTile[1] = &gDP.tiles[tile < 7 ? tile + 1 : tile];
 
+	if (gSP.textureTile[0]->textureMode == TEXTUREMODE_NORMAL)
+		gSP.textureTile[0]->textureMode = TEXTUREMODE_TEXRECT;
+	if (gSP.textureTile[1]->textureMode == TEXTUREMODE_NORMAL)
+		gSP.textureTile[1]->textureMode = TEXTUREMODE_TEXRECT;
+
 	// HACK ALERT!
 	if ((int(s) == 512) && (gDP.colorImage.width < 512))
 		s = 0.0f;
 
 	f32 lrs = s + (lrx - ulx - 1) * dsdx;
 	f32 lrt = t + (lry - uly - 1) * dtdy;
-
-	if (gDP.textureMode == TEXTUREMODE_NORMAL)
-		gDP.textureMode = TEXTUREMODE_TEXRECT;
 
 	gDP.texRect.width = (u32)(max( lrs, s ) + dsdx);
 	gDP.texRect.height = (u32)(max( lrt, t ) + dtdy);
