@@ -692,30 +692,18 @@ void OGL_UpdateStates()
 		Combiner_BeginTextureUpdate();
 
 		if (combiner.usesT0)
-		{
 			TextureCache_Update( 0 );
-
-			gSP.changed &= ~CHANGED_TEXTURE;
-			gDP.changed &= ~CHANGED_TILE;
-			gDP.changed &= ~CHANGED_TMEM;
-		}
 		else
-		{
 			TextureCache_ActivateDummy( 0 );
-		}
 
 		if (combiner.usesT1)
-		{
 			TextureCache_Update( 1 );
-
-			gSP.changed &= ~CHANGED_TEXTURE;
-			gDP.changed &= ~CHANGED_TILE;
-			gDP.changed &= ~CHANGED_TMEM;
-		}
 		else
-		{
 			TextureCache_ActivateDummy( 1 );
-		}
+
+		gSP.changed &= ~CHANGED_TEXTURE;
+		gDP.changed &= ~CHANGED_TILE;
+		gDP.changed &= ~CHANGED_TMEM;
 
 		Combiner_EndTextureUpdate();
 	}
