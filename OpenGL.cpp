@@ -940,13 +940,14 @@ void OGL_DrawRect( int ulx, int uly, int lrx, int lry, float *color )
 	glDisable( GL_CULL_FACE );
 	glMatrixMode( GL_PROJECTION );
     glLoadIdentity();
-	u32 width = VI.width, height = VI.height;
-	if (frameBuffer.top != NULL && frameBuffer.drawBuffer != GL_BACK) {
-		width = frameBuffer.top->width;
-		height = frameBuffer.top->height;
+	if (frameBuffer.drawBuffer != GL_DRAW_FRAMEBUFFER) {
+		glOrtho( 0, VI.width, VI.height, 0, 1.0f, -1.0f );
+		glViewport( 0, (frameBuffer.drawBuffer == GL_BACK ? OGL.heightOffset : 0), OGL.width, OGL.height );
+	} else {
+		glOrtho( 0, frameBuffer.top->width, frameBuffer.top->height, 0, 1.0f, -1.0f );
+		glViewport( 0, 0, frameBuffer.top->width*frameBuffer.top->scaleX, frameBuffer.top->height*frameBuffer.top->scaleY );
 	}
-	glOrtho( 0, VI.width, VI.height, 0, 1.0f, -1.0f );
-	glViewport( 0, (frameBuffer.drawBuffer == GL_BACK ? OGL.heightOffset : 0), OGL.width, OGL.height );
+
 	glDepthRange( 0.0f, 1.0f );
 
 	glColor4f( color[0], color[1], color[2], color[3] );
