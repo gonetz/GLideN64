@@ -146,7 +146,8 @@ static const char* fragment_shader_header_common_variables =
 "uniform float prim_lod;		\n"
 "uniform int dither_enabled;	\n"
 "uniform int fog_enabled;		\n"
-"uniform int fb_8bit_mode;			\n"
+"uniform int fb_8bit_mode;		\n"
+"uniform int fb_fixed_alpha;	\n"
 "varying vec4 secondary_color;	\n"
 "varying vec2 noiseCoord2D;		\n"
 "vec3 input_color;				\n"
@@ -285,12 +286,14 @@ static const char* fragment_shader_default =
 
 static const char* fragment_shader_readtex0color =
 "  vec4 readtex0 = texture2D(texture0, gl_TexCoord[0].st);	\n"
-"  if (fb_8bit_mode == 1) readtex0 = vec4(readtex0.r);		\n"
+"  if (fb_8bit_mode == 1 || fb_8bit_mode == 3) readtex0 = vec4(readtex0.r);	\n"
+"  if (fb_fixed_alpha == 1 || fb_fixed_alpha == 3) readtex0.a = 0.825;	\n"
 ;
 
 static const char* fragment_shader_readtex1color =
 "  vec4 readtex1 = texture2D(texture1, gl_TexCoord[1].st);	\n"
-"  if (fb_8bit_mode == 2) readtex1 = vec4(readtex1.r);		\n"
+"  if (fb_8bit_mode == 2 || fb_8bit_mode == 3) readtex1 = vec4(readtex1.r);	\n"
+"  if (fb_fixed_alpha == 2 || fb_fixed_alpha == 3) readtex1.a = 0.825;	\n"
 ;
 
 static const char* fragment_shader_end =
@@ -737,14 +740,25 @@ void GLSLCombiner::UpdateColors() {
 }
 
 void GLSLCombiner::UpdateFBInfo() {
-	int nFb8bitMode = 0;
-	// Suppose that only one 8bit texture buffer is used
-	if (cache.current[0] != NULL && cache.current[0]->size == G_IM_SIZ_8b && cache.current[0]->frameBufferTexture == TRUE)
-		nFb8bitMode = 1;
-	else if (cache.current[1] != NULL && cache.current[1]->size == G_IM_SIZ_8b && cache.current[1]->frameBufferTexture == TRUE)
-		nFb8bitMode = 2;
+	int nFb8bitMode = 0, nFbFixedAlpha = 0;
+	if (cache.current[0] != NULL && cache.current[0]->frameBufferTexture == TRUE) {
+		if (cache.current[0]->size == G_IM_SIZ_8b) {
+			nFb8bitMode |= 1;
+			if (gDP.otherMode.imageRead == 0)
+				nFbFixedAlpha |= 1;
+		}
+	}
+	if (cache.current[1] != NULL && cache.current[1]->frameBufferTexture == TRUE) {
+		if (cache.current[1]->size == G_IM_SIZ_8b) {
+			nFb8bitMode |= 2;
+			if (gDP.otherMode.imageRead == 0)
+				nFbFixedAlpha |= 2;
+		}
+	}
 	int fb8bit_location = glGetUniformLocationARB(m_programObject, "fb_8bit_mode");
 	glUniform1iARB(fb8bit_location, nFb8bitMode);
+	int fbFixedAlpha_location = glGetUniformLocationARB(m_programObject, "fb_fixed_alpha");
+	glUniform1iARB(fbFixedAlpha_location, nFbFixedAlpha);
 }
 
 #include "VI.h"
