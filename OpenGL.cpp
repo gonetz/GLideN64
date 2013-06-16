@@ -677,7 +677,7 @@ void OGL_UpdateStates()
 		if (gDP.otherMode.cycleType == G_CYC_COPY)
 			Combiner_SetCombine( EncodeCombineMode( 0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0 ) );
 		else if (gDP.otherMode.cycleType == G_CYC_FILL)
-			Combiner_SetCombine( EncodeCombineMode( 0, 0, 0, SHADE, 0, 0, 0, 1, 0, 0, 0, SHADE, 0, 0, 0, 1 ) );
+			Combiner_SetCombine( EncodeCombineMode( 0, 0, 0, SHADE, 0, 0, 0, SHADE, 0, 0, 0, SHADE, 0, 0, 0, SHADE ) );
 		else
 			Combiner_SetCombine( gDP.combine.mux );
 	}
