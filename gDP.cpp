@@ -588,9 +588,14 @@ bool CheckForFrameBufferTexture(u32 _address)
 {
 	if (OGL.frameBufferTextures) {
 		FrameBuffer *pBuffer = FrameBuffer_FindBuffer( _address );
-		if ((pBuffer != NULL) &&
-			((*(u32*)&RDRAM[pBuffer->startAddress] & 0xFFFEFFFE) == (pBuffer->startAddress & 0xFFFEFFFE)))
+		if ((pBuffer != NULL)
+			//&&			((*(u32*)&RDRAM[pBuffer->startAddress] & 0xFFFEFFFE) == (pBuffer->startAddress & 0xFFFEFFFE)) // Does not work for Jet Force Gemini
+			)
 		{
+			if (gDP.textureImage.width != pBuffer->width && gDP.textureImage.size != pBuffer->size) {
+				//FrameBuffer_RemoveBuffer(pBuffer->startAddress); // Does not work with Zelda MM
+				return false;
+			}
 			gDP.loadTile->frameBuffer = pBuffer;
 			gDP.loadTile->textureMode = TEXTUREMODE_FRAMEBUFFER;
 			gDP.changed |= CHANGED_TMEM;
