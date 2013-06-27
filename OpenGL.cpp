@@ -751,15 +751,8 @@ void OGL_UpdateStates()
 					glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
 					break;
 			}
-		}
-		else
+		} else
 			glDisable( GL_BLEND );
-
-		if (gDP.otherMode.cycleType == G_CYC_FILL)
-		{
-			glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
-			glEnable( GL_BLEND );
-		}
 	}
 
 	gDP.changed &= CHANGED_TILE | CHANGED_TMEM;
@@ -924,6 +917,11 @@ void OGL_DrawRect( int ulx, int uly, int lrx, int lry, float *color )
 {
 	OGL_UpdateStates();
 
+	if (gDP.otherMode.cycleType == G_CYC_FILL) {
+		glDisable( GL_BLEND );
+		glDisable( GL_DEPTH_TEST );
+		gDP.changed |= CHANGED_RENDERMODE;
+	}
 	glDisable( GL_SCISSOR_TEST );
 	glDisable( GL_CULL_FACE );
 	glMatrixMode( GL_PROJECTION );
@@ -951,6 +949,8 @@ void OGL_DrawRect( int ulx, int uly, int lrx, int lry, float *color )
 	OGL_UpdateCullFace();
 	OGL_UpdateViewport();
 	glEnable( GL_SCISSOR_TEST );
+	if (gSP.geometryMode & G_ZBUFFER)
+		glEnable( GL_DEPTH_TEST );
 }
 
 void OGL_DrawTexturedRect( float ulx, float uly, float lrx, float lry, float uls, float ult, float lrs, float lrt, bool flip )
