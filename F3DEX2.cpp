@@ -193,7 +193,9 @@ void F3DEX2_SetOtherMode_H( u32 w0, u32 w1 )
 
 void F3DEX2_SetOtherMode_L( u32 w0, u32 w1 )
 {
-	switch (32 - _SHIFTR( w0, 8, 8 ) - (_SHIFTR( w0, 0, 8 ) + 1))
+	const u32 length = _SHIFTR( w0, 0, 8 ) + 1;
+	const u32 shift = 32 - _SHIFTR( w0, 8, 8 ) - length;
+	switch (shift)
 	{
 		case G_MDSFT_ALPHACOMPARE:
 			gDPSetAlphaCompare( w1 >> G_MDSFT_ALPHACOMPARE );
@@ -205,16 +207,18 @@ void F3DEX2_SetOtherMode_L( u32 w0, u32 w1 )
 			gDPSetRenderMode( w1 & 0xCCCCFFFF, w1 & 0x3333FFFF );
 			break;
 		default:
-			u32 length = _SHIFTR( w0, 0, 8 ) + 1;
-			u32 shift = 32 - _SHIFTR( w0, 8, 8 ) - length;
-			u32 mask = ((1 << length) - 1) << shift;
-
-			gDP.otherMode.l &= ~mask;
-			gDP.otherMode.l |= w1 & mask;
-
-			gDP.changed |= CHANGED_RENDERMODE | CHANGED_ALPHACOMPARE;
 			break;
 	}
+	//u32 mask = ((1 << length) - 1) << shift;
+	u32 mask = 0;
+	for (int i = length; i > 0; i--)
+		mask = (mask << 1) | 1;
+	mask <<= shift;
+
+	gDP.otherMode.l &= ~mask;
+	gDP.otherMode.l |= w1 & mask;
+
+	gDP.changed |= CHANGED_RENDERMODE | CHANGED_ALPHACOMPARE;
 }
 
 void F3DEX2_GeometryMode( u32 w0, u32 w1 )

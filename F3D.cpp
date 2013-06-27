@@ -258,7 +258,8 @@ void F3D_SetOtherMode_H( u32 w0, u32 w1 )
 
 void F3D_SetOtherMode_L( u32 w0, u32 w1 )
 {
-	switch (_SHIFTR( w0, 8, 8 ))
+	const u32 shift = _SHIFTR( w0, 8, 8 );
+	switch (shift)
 	{
 		case G_MDSFT_ALPHACOMPARE:
 			gDPSetAlphaCompare( w1 >> G_MDSFT_ALPHACOMPARE );
@@ -269,17 +270,18 @@ void F3D_SetOtherMode_L( u32 w0, u32 w1 )
 		case G_MDSFT_RENDERMODE:
 			gDPSetRenderMode( w1 & 0xCCCCFFFF, w1 & 0x3333FFFF );
 			break;
-		default:
-			u32 shift = _SHIFTR( w0, 8, 8 );
-			u32 length = _SHIFTR( w0, 0, 8 );
-			u32 mask = ((1 << length) - 1) << shift;
-
-			gDP.otherMode.l &= ~mask;
-			gDP.otherMode.l |= w1 & mask;
-
-			gDP.changed |= CHANGED_RENDERMODE | CHANGED_ALPHACOMPARE;
-			break;
 	}
+	const u32 length = _SHIFTR( w0, 0, 8 );
+//	u32 mask = ((1 << length) - 1) << shift;
+	u32 mask = 0;
+	for (int i = length; i > 0; i--)
+		mask = (mask << 1) | 1;
+	mask <<= shift;
+
+	gDP.otherMode.l &= ~mask;
+	gDP.otherMode.l |= w1 & mask;
+
+	gDP.changed |= CHANGED_RENDERMODE | CHANGED_ALPHACOMPARE;
 }
 
 void F3D_EndDL( u32 w0, u32 w1 )
