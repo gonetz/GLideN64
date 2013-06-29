@@ -347,7 +347,7 @@ void gDPSetColorImage( u32 format, u32 size, u32 width, u32 address )
 	}*/
 	address = RSP_SegmentToPhysical( address );
 
-	if (gDP.colorImage.address != address || gDP.colorImage.width != width)
+	if (gDP.colorImage.address != address || gDP.colorImage.width != width || gDP.colorImage.size != size)
 	{
 		if (width == VI.width) {
 			if (width == gSP.viewport.width)

@@ -167,7 +167,7 @@ void FrameBuffer_SaveBuffer( u32 address, u16 format, u16 size, u16 width, u16 h
 			if ((current->startAddress != address) ||
 				(current->width != width) ||
 				//(current->height != height) ||
-				(current->size != size) ||  // TODO FIX ME
+				//(current->size != size) ||  // TODO FIX ME
 				(current->scaleX != OGL.scaleX) ||
 				(current->scaleY != OGL.scaleY))
 			{
@@ -178,6 +178,14 @@ void FrameBuffer_SaveBuffer( u32 address, u16 format, u16 size, u16 width, u16 h
 
 			FrameBuffer_MoveToTop( current );
 			ogl_glBindFramebuffer(GL_DRAW_FRAMEBUFFER, current->fbo);
+			if (current->size != size) {
+				f32 fillColor[4];
+				gDPGetFillColor(fillColor);
+				OGL_ClearColorBuffer(fillColor);
+				current->size = size;
+				current->texture->format = format;
+				current->texture->size = size;
+			}
 			break;
 		}
 		current = current->lower;
