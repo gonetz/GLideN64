@@ -349,28 +349,32 @@ void gDPSetColorImage( u32 format, u32 size, u32 width, u32 address )
 
 	if (gDP.colorImage.address != address || gDP.colorImage.width != width || gDP.colorImage.size != size)
 	{
+		u32 height = 1;
 		if (width == VI.width) {
 			if (width == gSP.viewport.width)
-				gDP.colorImage.height = max(VI.height, gSP.viewport.height);
+				height = max(VI.height, gSP.viewport.height);
 			else
-				gDP.colorImage.height = max(VI.height, gDP.scissor.lry);
+				height = max(VI.height, gDP.scissor.lry);
 		} else if (width == gDP.scissor.lrx && width == gSP.viewport.width)
-			gDP.colorImage.height = max(gDP.scissor.lry, gSP.viewport.height);
+			height = max(gDP.scissor.lry, gSP.viewport.height);
 		else if (width == gDP.scissor.lrx)
-			gDP.colorImage.height = gDP.scissor.lry;
+			height = gDP.scissor.lry;
 		else
-			gDP.colorImage.height = gSP.viewport.height;
+			height = gSP.viewport.height;
 
 		if (OGL.frameBufferTextures)// && address != gDP.depthImageAddress)
 		{
 			//if (gDP.colorImage.changed)
-				FrameBuffer_SaveBuffer( address, (u16)format, (u16)size, (u16)width, gDP.colorImage.height );
+				FrameBuffer_SaveBuffer( address, (u16)format, (u16)size, (u16)width, height );
+				gDP.colorImage.height = 1;
 
 			//if (address != gDP.depthImageAddress)
 				//FrameBuffer_RestoreBuffer( address, (u16)size, (u16)width );
 
 			//OGL_ClearDepthBuffer();
-		}
+		} else
+			gDP.colorImage.height = height;
+
 
 //		if (width == VI.width)
 //			gDP.colorImage.height = VI.height;

@@ -159,6 +159,8 @@ void FrameBuffer_SaveBuffer( u32 address, u16 format, u16 size, u16 width, u16 h
 	frameBuffer.drawBuffer = GL_DRAW_FRAMEBUFFER;
 
 	FrameBuffer *current = frameBuffer.top;
+	if (current != NULL && gDP.colorImage.height > 1)
+		current->endAddress = current->startAddress + ((current->width * gDP.colorImage.height << current->size >> 1) - 1);
 	// Search through saved frame buffers
 	while (current != NULL)
 	{
