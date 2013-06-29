@@ -3,6 +3,7 @@
 
 #include "Types.h"
 #include "Textures.h"
+struct gDPTile;
 
 struct FrameBuffer
 {
@@ -13,6 +14,7 @@ struct FrameBuffer
 
 	u32 startAddress, endAddress;
 	u32 size, width, height, changed;
+	gDPTile *loadTile;
 	float scaleX, scaleY;
 };
 

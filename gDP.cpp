@@ -596,21 +596,19 @@ bool CheckForFrameBufferTexture(u32 _address)
 				//FrameBuffer_RemoveBuffer(pBuffer->startAddress); // Does not work with Zelda MM
 				return false;
 			}
+			pBuffer->loadTile = gDP.loadTile;
 			gDP.loadTile->frameBuffer = pBuffer;
 			gDP.loadTile->textureMode = TEXTUREMODE_FRAMEBUFFER;
 			gDP.changed |= CHANGED_TMEM;
 
-			u32 nTile = 8;;
-			if (gDP.tiles[gSP.texture.tile].tmem == gDP.loadTile->tmem)
-				nTile = gSP.texture.tile;
-			else if (gDP.tiles[gSP.texture.tile + 1].tmem == gDP.loadTile->tmem)
-				nTile = gSP.texture.tile + 1;
-			if (nTile < 8) {
-				gDPTile & curTile = gDP.tiles[nTile];
-				curTile.textureMode = gDP.loadTile->textureMode;
-				curTile.loadType = gDP.loadTile->loadType;
-				curTile.frameBuffer = gDP.loadTile->frameBuffer;
-				curTile.imageAddress = gDP.loadTile->imageAddress;
+			for (int nTile = gSP.texture.tile; nTile < 6; ++nTile) {
+				if (gDP.tiles[nTile].tmem == gDP.loadTile->tmem) {
+					gDPTile & curTile = gDP.tiles[nTile];
+					curTile.textureMode = gDP.loadTile->textureMode;
+					curTile.loadType = gDP.loadTile->loadType;
+					curTile.frameBuffer = gDP.loadTile->frameBuffer;
+					curTile.imageAddress = gDP.loadTile->imageAddress;
+				}
 			}
 
 			return true;

@@ -9,6 +9,7 @@
 #include "DepthBuffer.h"
 #include "RSP.h"
 #include "RDP.h"
+#include "gDP.h"
 #include "Textures.h"
 #include "Combiner.h"
 #include "Types.h"
@@ -516,8 +517,8 @@ void FrameBuffer_ActivateBufferTexture( s16 t, FrameBuffer *buffer )
 	const u32 factor = buffer->width << buffer->size >> 1;
 	if (gSP.textureTile[t]->loadType == LOADTYPE_TILE)
 	{
-		buffer->texture->offsetS = gDP.loadTile->uls;
-		buffer->texture->offsetT = (float)(buffer->height - (gDP.loadTile->ult + shift/factor));
+		buffer->texture->offsetS = buffer->loadTile->uls;
+		buffer->texture->offsetT = (float)(buffer->height - (buffer->loadTile->ult + shift/factor));
 	}
 	else
 	{
