@@ -432,6 +432,7 @@ void gSPVertex( u32 v, u32 n, u32 v0 )
 			gSP.vertices[i].flag = vertex->flag;
 			gSP.vertices[i].s = _FIXED2FLOAT( vertex->s, 5 );
 			gSP.vertices[i].t = _FIXED2FLOAT( vertex->t, 5 );
+			gSP.vertices[i].st_scaled = 0;
 
 			if (gSP.geometryMode & G_LIGHTING)
 			{
@@ -508,6 +509,7 @@ void gSPCIVertex( u32 v, u32 n, u32 v0 )
 			gSP.vertices[i].flag = 0;
 			gSP.vertices[i].s = _FIXED2FLOAT( vertex->s, 5 );
 			gSP.vertices[i].t = _FIXED2FLOAT( vertex->t, 5 );
+			gSP.vertices[i].st_scaled = 0;
 
 			u8 *color = &RDRAM[gSP.vertexColorBase + (vertex->ci & 0xff)];
 
@@ -1241,8 +1243,14 @@ void gSPModifyVertex( u32 vtx, u32 where, u32 val )
 #endif
 			break;
 		case G_MWO_POINT_ST:
-			gSP.vertices[vtx].s = _FIXED2FLOAT( (s16)_SHIFTR( val, 16, 16 ), 5 );
-			gSP.vertices[vtx].t = _FIXED2FLOAT( (s16)_SHIFTR( val, 0, 16 ), 5 );
+			if (gDP.otherMode.texturePersp > 0) {
+				gSP.vertices[vtx].s = _FIXED2FLOAT( (s16)_SHIFTR( val, 16, 16 ), 5 );
+				gSP.vertices[vtx].t = _FIXED2FLOAT( (s16)_SHIFTR( val, 0, 16 ), 5 );
+			} else {
+				gSP.vertices[vtx].s = _FIXED2FLOAT( (s16)_SHIFTR( val, 16, 16 ), 6 );
+				gSP.vertices[vtx].t = _FIXED2FLOAT( (s16)_SHIFTR( val, 0, 16 ), 6 );
+			}
+			gSP.vertices[vtx].st_scaled = 1;
 #ifdef DEBUG
 			DebugMsg( DEBUG_HIGH | DEBUG_HANDLED, "gSPModifyVertex( %i, %s, 0x%08X );\n",
 				vtx, MWOPointText[(where - 0x10) >> 2], val );

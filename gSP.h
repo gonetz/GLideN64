@@ -21,7 +21,8 @@ struct SPVertex
 	f32		s, t;
 	f32		xClip, yClip, zClip;
 	s16		flag;
-	int     HWLight;
+	u8 HWLight;
+	u8 st_scaled;
 };
 
 typedef SPVertex SPTriangle[3];
