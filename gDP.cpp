@@ -816,10 +816,16 @@ void gDPSetScissor( u32 mode, f32 ulx, f32 uly, f32 lrx, f32 lry )
 
 void gDPFillRectangle( s32 ulx, s32 uly, s32 lrx, s32 lry )
 {
+#define DEPTH_CLAER_COLOR 0xfffcfffc // The value usually used to clear depth buffer
+
 	if (gDP.depthImageAddress == gDP.colorImage.address) {
-		OGL_ClearDepthBuffer();
-		return;
-	} else if (gDP.fillColor.color == 0xfffcfffc) {
+		// Game may use depth texture as auxilary color texture. Example: Mario Tennis
+		// If color is not depth clear color, that is most likely the case
+		if (gDP.fillColor.color == DEPTH_CLAER_COLOR) {
+			OGL_ClearDepthBuffer();
+			return;
+		}
+	} else if (gDP.fillColor.color == DEPTH_CLAER_COLOR) {
 		DepthBuffer_SetBuffer( gDP.colorImage.address );
 		OGL_ClearDepthBuffer();
 		return;
