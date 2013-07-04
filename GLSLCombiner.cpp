@@ -345,6 +345,13 @@ static const char* lod_clear_fragment_shader =
 static const char* lod_fragment_shader_test =
 // texture with the previous render pass
 "uniform sampler2D mytex; \n"
+"uniform int lod_enabled;		\n"
+"uniform float lod_x_scale;		\n"
+"uniform float lod_y_scale;		\n"
+"uniform float min_lod;			\n"
+"uniform int max_tile;			\n"
+"uniform int texture_detail;	\n"
+"uniform sampler2D lod_texture;	\n"
 "layout(pixel_center_integer) in vec4 gl_FragCoord; \n"
 "vec2 fetchTex(in ivec2 screenpos) {						\n"
   // look up result from previous render pass in the texture
@@ -359,53 +366,59 @@ static const char* lod_fragment_shader_test =
 "void main()												\n"
 #if 0
 "{															\n"
-"  int x0 = int(gl_FragCoord.x);							\n"
-"  int y0 = int(gl_FragCoord.y);							\n"
-"  float maxDist = 0.0;										\n"
-"  vec2 lodtex0 = 255.0*fetchTex(ivec2(x0, y0));			\n"
-"  vec2 lodtex1 = 255.0*fetchTex(ivec2(x0+1, y0));			\n"
-"  if (length(lodtex1) > 0.0) {								\n"
-"     float dist = distance(lodtex0, lodtex1);				\n"
-"     maxDist = max(dist, maxDist);							\n"
-"  }														\n"
-"  if (maxDist < 1.0) {										\n"
-"    lodtex1 = 255.0*fetchTex(ivec2(x0, y0+1));				\n"
-"    if (length(lodtex1) > 0.0) {							\n"
-"       float dist = distance(lodtex0, lodtex1);			\n"
-"       maxDist = max(dist, maxDist);						\n"
-"    }														\n"
-"  }														\n"
-"  if (maxDist < 1.0) {										\n"
-"    lodtex1 = 255.0*fetchTex(ivec2(x0-1, y0));				\n"
-"    if (length(lodtex1) > 0.0) {							\n"
-"       float dist = distance(lodtex0, lodtex1);			\n"
-"       maxDist = max(dist, maxDist);						\n"
-"    }														\n"
-"  }														\n"
-"  if (maxDist < 1.0) {										\n"
-"    lodtex1 = 255.0*fetchTex(ivec2(x0, y0-1));				\n"
-"    if (length(lodtex1) > 0.0) {							\n"
-"       float dist = distance(lodtex0, lodtex1);			\n"
-"       maxDist = max(dist, maxDist);						\n"
-"    }														\n"
-"  }														\n"
-"  float f_lod = 1.0;											\n"
-"  if (maxDist >= 1.0)										\n"
-"     f_lod = fract(maxDist);								\n"
-//"  maxDist = lodtex0.x;\n"
-//"  maxDist = abs(lodtex0.y - lodtex1.y);\n"
-//"  if (maxDist < 1.0) maxDist = abs(lodtex0.y - lodtex1.y);\n"
-//"  maxDist = distance(lodtex0,lodtex1);\n"
-//"  float f_lod = fract(maxDist);							\n"
-//"  float f_lod = maxDist/4.0;							\n"
-"  gl_FragColor = vec4(f_lod, 0.0, 0.0, 1.0);				\n"
+"  if (lod_enabled == 0)								\n"
+"    return;									\n"
+  // convert fragment position to integers
+"  int x0 = int(gl_FragCoord.x);						\n"
+"  int y0 = int(gl_FragCoord.y);						\n"
+"  float lod = 0.0;										\n"
+"  vec2 lodtex0 = 255.0*fetchTex(ivec2(x0, y0));		\n"
+"  lodtex0.x *= lod_x_scale;							\n"
+"  lodtex0.y *= lod_y_scale;							\n"
+"  vec2 lodtex1 = 255.0*fetchTex(ivec2(x0+1, y0));		\n"
+"  if (length(lodtex1) > 0.0) {							\n"
+"    lodtex1.x *= lod_x_scale;							\n"
+"    lodtex1.y *= lod_y_scale;							\n"
+"    lod = distance(lodtex0, lodtex1);					\n"
+"  }													\n"
+"  if (lod < 1.0) {										\n"
+"    lodtex1 = 255.0*fetchTex(ivec2(x0, y0+1));			\n"
+"    if (length(lodtex1) > 0.0) {						\n"
+"      lodtex1.x *= lod_x_scale;						\n"
+"      lodtex1.y *= lod_y_scale;						\n"
+"      lod = distance(lodtex0, lodtex1);				\n"
+"    }													\n"
+"  }													\n"
+"  if (lod < 1.0) {										\n"
+"    lodtex1 = 255.0*fetchTex(ivec2(x0-1, y0));			\n"
+"    if (length(lodtex1) > 0.0) {						\n"
+"      lodtex1.x *= lod_x_scale;						\n"
+"      lodtex1.y *= lod_y_scale;						\n"
+"      lod = distance(lodtex0, lodtex1);				\n"
+"    }													\n"
+"  }													\n"
+"  if (lod < 1.0) {										\n"
+"    lodtex1 = 255.0*fetchTex(ivec2(x0, y0-1));			\n"
+"    if (length(lodtex1) > 0.0) {						\n"
+"      lodtex1.x *= lod_x_scale;						\n"
+"      lodtex1.y *= lod_y_scale;						\n"
+"      lod = distance(lodtex0, lodtex1);				\n"
+"    }													\n"
+"  }													\n"
+"  if (texture_detail > 0 && lod < min_lod)				\n"
+"    lod = min_lod;										\n"
+"  if (lod < 1.0)										\n"
+"    return;										\n"
+"  float tile = min(float(max_tile), floor(log2(floor(lod)))); \n"
+"  float lod_frac = fract(lod/pow(2.0, tile));					\n"
+"  gl_FragColor = vec4(lod_frac, 0.0, 0.0, 1.0);				\n"
 "}															\n"
 #else
 "{ \n"
   // convert fragment position to integers
 "  ivec2 screenpos = ivec2(gl_FragCoord.xy); \n"
   // look up result from previous render pass in the texture
-#if 0
+#if 1
 "  vec4 color = 8.0*texelFetch(mytex, screenpos, 0); \n"
 "  gl_FragColor = vec4(color.r, color.g, 0.0, 1.0); \n"
 #else
@@ -835,6 +848,26 @@ void GLSL_CalcLOD() {
 	glBindTexture(GL_TEXTURE_2D, g_lod_tex);
 	glUseProgramObjectARB(g_lod_program_test);
 	int texture2_location = glGetUniformLocationARB(g_lod_program_test, "mytex");
+		BOOL bCalcLOD = gDP.otherMode.textureLOD == G_TL_LOD;
+		int lod_en_location = glGetUniformLocationARB(g_lod_program_test, "lod_enabled");
+		glUniform1iARB(lod_en_location, bCalcLOD);
+		if (bCalcLOD) {
+			glActiveTextureARB(GL_TEXTURE2_ARB);
+			glEnable(GL_TEXTURE_2D);
+			glBindTexture(GL_TEXTURE_2D, g_lod_tex);
+			int lod_texture_location = glGetUniformLocationARB(g_lod_program_test, "lod_texture");
+			glUniform1iARB(lod_texture_location, 2);
+			int scale_x_location = glGetUniformLocationARB(g_lod_program_test, "lod_x_scale");
+			glUniform1fARB(scale_x_location, OGL.scaleX);
+			int scale_y_location = glGetUniformLocationARB(g_lod_program_test, "lod_y_scale");
+			glUniform1fARB(scale_y_location, OGL.scaleY);
+			int min_lod_location = glGetUniformLocationARB(g_lod_program_test, "min_lod");
+			glUniform1fARB(min_lod_location, gDP.primColor.m);
+			int max_tile_location = glGetUniformLocationARB(g_lod_program_test, "max_tile");
+			glUniform1iARB(max_tile_location, gSP.texture.level);
+			int texture_detail_location = glGetUniformLocationARB(g_lod_program_test, "texture_detail");
+			glUniform1iARB(texture_detail_location, gDP.otherMode.textureDetail);
+		}
 	if (texture2_location != -1)
 		glUniform1iARB(texture2_location, 2);
 	glDrawArrays( GL_TRIANGLES, 0, OGL.numVertices );
