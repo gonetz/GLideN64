@@ -242,12 +242,13 @@ static const char* fragment_shader_calc_lod =
 "      lod = distance(lodtex0, lodtex1);				\n"
 "    }													\n"
 "  }													\n"
-"  if (texture_detail > 0 && lod < min_lod)				\n"
-"    lod = min_lod;										\n"
+//"  if (texture_detail > 0 && lod < min_lod)				\n"
+//"  if (lod < min_lod)									\n"
+//"    lod = min_lod;										\n"
 "  if (lod < 1.0)										\n"
-"    return 0.0;										\n"
+"    return min_lod;									\n"
 "  float tile = min(float(max_tile), floor(log2(floor(lod)))); \n"
-"  return fract(lod/pow(2.0, tile));					\n"
+"  return max(min_lod, fract(lod/pow(2.0, tile)));		\n"
 "}														\n"
 ;
 
