@@ -532,6 +532,7 @@ bool OGL_Start()
 
 	gSP.changed = gDP.changed = 0xFFFFFFFF;
 	OGL_UpdateScale();
+	OGL.captureScreen = false;
 
 	return TRUE;
 }
@@ -1171,9 +1172,11 @@ void OGL_SaveScreenshot()
 
 	char *pixelData = (char*)malloc( OGL.width * OGL.height * 3 );
 
+	GLint oldMode;
+	glGetIntegerv( GL_READ_BUFFER, &oldMode );
 	glReadBuffer( GL_FRONT );
 	glReadPixels( 0, OGL.heightOffset, OGL.width, OGL.height, GL_BGR_EXT, GL_UNSIGNED_BYTE, pixelData );
-	glReadBuffer( GL_BACK );
+	glReadBuffer( oldMode );
 
 	infoHeader.biSize = sizeof( BITMAPINFOHEADER );
 	infoHeader.biWidth = OGL.width;
@@ -1208,14 +1211,14 @@ void OGL_SaveScreenshot()
 		hBitmapFile = CreateFile( filename, GENERIC_WRITE, 0, NULL, CREATE_NEW, FILE_ATTRIBUTE_NORMAL, NULL );
 	}
 	while (hBitmapFile == INVALID_HANDLE_VALUE);
-	
+
 	DWORD written;
 
 	WriteFile( hBitmapFile, &fileHeader, sizeof( BITMAPFILEHEADER ), &written, NULL );
-    WriteFile( hBitmapFile, &infoHeader, sizeof( BITMAPINFOHEADER ), &written, NULL );
-    WriteFile( hBitmapFile, pixelData, infoHeader.biSizeImage, &written, NULL );
+	WriteFile( hBitmapFile, &infoHeader, sizeof( BITMAPINFOHEADER ), &written, NULL );
+	WriteFile( hBitmapFile, pixelData, infoHeader.biSizeImage, &written, NULL );
 
- 	CloseHandle( hBitmapFile );
+	CloseHandle( hBitmapFile );
 	free( pixelData );
 #else // !__LINUX__
 #endif // __LINUX__
@@ -1227,16 +1230,11 @@ void OGL_ReadScreen( void **dest, long *width, long *height )
 	*height = OGL.height;
 
 	*dest = malloc( OGL.height * OGL.width * 3 );
-	if (*dest == 0)
+	if (*dest == NULL)
 		return;
 
-	GLint oldMode;
-	glGetIntegerv( GL_READ_BUFFER, &oldMode );
 	glReadBuffer( GL_FRONT );
-//	glReadBuffer( GL_BACK );
-	glReadPixels( 0, 0, OGL.width, OGL.height,
-	              GL_BGR, GL_UNSIGNED_BYTE, *dest );
-	glReadBuffer( oldMode );
+	glReadPixels( 0, OGL.heightOffset, OGL.width, OGL.height, GL_BGR_EXT, GL_UNSIGNED_BYTE, *dest );
 }
 
 #ifdef __LINUX__

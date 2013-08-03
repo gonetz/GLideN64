@@ -79,7 +79,7 @@ EXPORT void CALL CaptureScreen ( char * Directory )
 		WaitForSingleObject( RSP.threadFinished, INFINITE );
 	}
 #else
-	OGL_SaveScreenshot();
+	OGL.captureScreen = true;
 #endif
 }
 

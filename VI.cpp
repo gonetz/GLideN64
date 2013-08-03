@@ -37,6 +37,11 @@ void VI_UpdateScreen()
 {
 	glFinish();
 
+	if (OGL.captureScreen) {
+		OGL_SaveScreenshot();
+		OGL.captureScreen = false;
+	}
+
 	if (OGL.frameBufferTextures)
 	{
 		//FrameBuffer *current = FrameBuffer_FindBuffer( *REG.VI_ORIGIN );
