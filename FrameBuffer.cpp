@@ -10,12 +10,17 @@
 #include "RSP.h"
 #include "RDP.h"
 #include "gDP.h"
+#include "VI.h"
 #include "Textures.h"
 #include "Combiner.h"
 #include "Types.h"
 #include "Debug.h"
 
+bool g_bCopyToRDRAM = true;
 FrameBufferInfo frameBuffer;
+
+static GLuint g_cur_frame_fbo = 0;
+static GLuint g_cur_frame_tex = 0;
 
 void FrameBuffer_Init()
 {
@@ -24,6 +29,23 @@ void FrameBuffer_Init()
 	frameBuffer.bottom = NULL;
 	frameBuffer.numBuffers = 0;
 	frameBuffer.drawBuffer = GL_BACK;
+
+
+	// generate a framebuffer
+	ogl_glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+	ogl_glGenFramebuffers(1, &g_cur_frame_fbo);
+	ogl_glBindFramebuffer(GL_DRAW_FRAMEBUFFER, g_cur_frame_fbo);
+
+	glGenTextures(1, &g_cur_frame_tex);
+	glBindTexture(GL_TEXTURE_2D, g_cur_frame_tex);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, 1024, 512, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+	glBindTexture(GL_TEXTURE_2D, 0);
+	ogl_glFramebufferTexture(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, g_cur_frame_tex, 0);
+	// check if everything is OK
+	assert(checkFBO());
+	ogl_glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 }
 
 void FrameBuffer_RemoveBottom()
@@ -152,6 +174,10 @@ void FrameBuffer_Destroy()
 {
 	while (frameBuffer.bottom)
 		FrameBuffer_RemoveBottom();
+
+	ogl_glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+	glDeleteTextures(1, &g_cur_frame_tex);
+	ogl_glDeleteFramebuffers(1, &g_cur_frame_fbo);
 }
 
 void FrameBuffer_SaveBuffer( u32 address, u16 format, u16 size, u16 width, u16 height )
@@ -161,7 +187,7 @@ void FrameBuffer_SaveBuffer( u32 address, u16 format, u16 size, u16 width, u16 h
 	FrameBuffer *current = frameBuffer.top;
 	if (current != NULL && gDP.colorImage.height > 1) {
 		current->endAddress = current->startAddress + ((current->width * gDP.colorImage.height << current->size >> 1) - 1);
-		if (!current->cleared)
+		if (!g_bCopyToRDRAM && !current->cleared)
 			gDPFillRDRAM(current->startAddress, 0, 0, current->width, gDP.colorImage.height, current->width, current->size, frameBuffer.top->fillcolor);
 	}
 
@@ -402,6 +428,66 @@ void FrameBuffer_RenderBuffer( u32 address )
 	}
 }
 #endif
+
+struct RGBA {
+	u8 r, g, b, a;
+};
+
+void FrameBuffer_CopyToRDRAM( u32 address )
+{
+	FrameBuffer *current = frameBuffer.top;
+	while (current != NULL)
+	{
+		if ((current->startAddress <= address) &&
+			(current->endAddress >= address))
+		{
+			ogl_glBindFramebuffer(GL_READ_FRAMEBUFFER, current->fbo);
+			glReadBuffer(GL_COLOR_ATTACHMENT0);
+			ogl_glBindFramebuffer(GL_DRAW_FRAMEBUFFER, g_cur_frame_fbo);
+			GLuint attachment = GL_COLOR_ATTACHMENT0;
+			glDrawBuffers(1, &attachment);
+			ogl_glBlitFramebuffer(
+				0, 0, OGL.width, OGL.height,
+				0, 0, current->width, current->height,
+				GL_COLOR_BUFFER_BIT, GL_LINEAR
+			);
+			ogl_glBindFramebuffer(GL_DRAW_FRAMEBUFFER, frameBuffer.top->fbo);
+
+			char *pixelData = (char*)malloc( VI.width * VI.height * 4 );
+			if (*pixelData == NULL)
+				return;
+
+			ogl_glBindFramebuffer(GL_READ_FRAMEBUFFER, g_cur_frame_fbo);
+			glReadBuffer(GL_COLOR_ATTACHMENT0);
+			const u32 offset = (address - current->startAddress) / (VI.width<<current->size>>1);
+			glReadPixels( 0, offset, VI.width, VI.height, GL_RGBA, GL_UNSIGNED_BYTE, pixelData );
+			if (current->size == G_IM_SIZ_32b) {
+				u32 *ptr_dst = (u32*)(RDRAM + address);
+				u32 *ptr_src = (u32*)pixelData;
+
+				for (u32 y = 0; y < VI.height; ++y) {
+					for (u32 x = 0; x < VI.width; ++x)
+						ptr_dst[x + y*VI.width] = ptr_src[x + (VI.height - y - 1)*VI.width];
+				}
+			} else {
+				u16 *ptr_dst = (u16*)(RDRAM + address);
+				u16 col;
+				RGBA * ptr_src = (RGBA*)pixelData;
+
+				for (u32 y = 0; y < VI.height; ++y) {
+					for (u32 x = 0; x < VI.width; ++x) {
+							const RGBA & c = ptr_src[x + (VI.height - y - 1)*VI.width];
+							ptr_dst[(x + y*VI.width)^1] = ((c.r>>3)<<11) | ((c.g>>3)<<6) | ((c.b>>3)<<1) | (c.a == 0 ? 0 : 1);
+					}
+				}
+			}
+			free( pixelData );
+			return;
+		}
+
+		current = current->lower;
+	}
+}
 
 void FrameBuffer_RestoreBuffer( u32 address, u16 size, u16 width )
 {
