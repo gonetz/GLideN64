@@ -280,5 +280,7 @@ void gDPPipeSync();
 void gDPLoadSync();
 void gDPNoOp();
 
+void gDPFillRDRAM( u32 address, s32 ulx, s32 uly, s32 lrx, s32 lry, u32 width, u32 size,  u32 color );
+
 #endif
 

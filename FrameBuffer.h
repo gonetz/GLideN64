@@ -13,7 +13,8 @@ struct FrameBuffer
 	GLuint fbo;
 
 	u32 startAddress, endAddress;
-	u32 size, width, height, changed;
+	u32 size, width, height, fillcolor;
+	bool cleared;
 	gDPTile *loadTile;
 	float scaleX, scaleY;
 };

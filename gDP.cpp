@@ -588,37 +588,61 @@ void gDPSetTileSize( u32 tile, u32 uls, u32 ult, u32 lrs, u32 lrt )
 }
 
 static
-bool CheckForFrameBufferTexture(u32 _address)
+bool CheckForFrameBufferTexture(u32 _address, u32 _bytes)
 {
-	if (OGL.frameBufferTextures) {
-		FrameBuffer *pBuffer = FrameBuffer_FindBuffer( _address );
-		if ((pBuffer != NULL)
-			//&&			((*(u32*)&RDRAM[pBuffer->startAddress] & 0xFFFEFFFE) == (pBuffer->startAddress & 0xFFFEFFFE)) // Does not work for Jet Force Gemini
-			)
-		{
-			if (gDP.textureImage.width != pBuffer->width && gDP.textureImage.size != pBuffer->size) {
-				//FrameBuffer_RemoveBuffer(pBuffer->startAddress); // Does not work with Zelda MM
-				return false;
+	gDP.loadTile->textureMode = TEXTUREMODE_NORMAL;
+	gDP.loadTile->frameBuffer = NULL;
+	gDP.changed |= CHANGED_TMEM;
+	if (!OGL.frameBufferTextures)
+		return false;
+
+	FrameBuffer *pBuffer = FrameBuffer_FindBuffer( _address );
+	bool bRes = pBuffer != NULL;
+	if ((bRes)
+		//&&			((*(u32*)&RDRAM[pBuffer->startAddress] & 0xFFFEFFFE) == (pBuffer->startAddress & 0xFFFEFFFE)) // Does not work for Jet Force Gemini
+		)
+	{
+
+		const u32 texEndAddress = _address + _bytes - 1;
+		if (_address > pBuffer->startAddress && texEndAddress > pBuffer->endAddress) {
+//			FrameBuffer_RemoveBuffer(pBuffer->startAddress);
+			bRes = false;
+		}
+
+		if (bRes && gDP.textureImage.width != pBuffer->width && gDP.textureImage.size != pBuffer->size) {
+			//FrameBuffer_RemoveBuffer(pBuffer->startAddress); // Does not work with Zelda MM
+			bRes = false;
+		}
+
+		if (bRes && pBuffer->cleared && pBuffer->size == 2) {
+			const u32 endAddress = min(texEndAddress, pBuffer->endAddress);
+			const u32 color = pBuffer->fillcolor&0xFFFEFFFE;
+			for (u32 i = _address + 4; i < endAddress; i+=4) {
+				if (((*(u32*)&RDRAM[i])&0xFFFEFFFE) != color) {
+					FrameBuffer_RemoveBuffer(pBuffer->startAddress);
+					bRes = false;
+					break;
+				}
 			}
+		}
+
+		if (bRes) {
 			pBuffer->loadTile = gDP.loadTile;
 			gDP.loadTile->frameBuffer = pBuffer;
 			gDP.loadTile->textureMode = TEXTUREMODE_FRAMEBUFFER;
-			gDP.changed |= CHANGED_TMEM;
-
-			for (int nTile = gSP.texture.tile; nTile < 6; ++nTile) {
-				if (gDP.tiles[nTile].tmem == gDP.loadTile->tmem) {
-					gDPTile & curTile = gDP.tiles[nTile];
-					curTile.textureMode = gDP.loadTile->textureMode;
-					curTile.loadType = gDP.loadTile->loadType;
-					curTile.frameBuffer = gDP.loadTile->frameBuffer;
-					curTile.imageAddress = gDP.loadTile->imageAddress;
-				}
-			}
-
-			return true;
 		}
 	}
-	return false;
+
+	for (int nTile = gSP.texture.tile; nTile < 6; ++nTile) {
+		if (gDP.tiles[nTile].tmem == gDP.loadTile->tmem) {
+			gDPTile & curTile = gDP.tiles[nTile];
+			curTile.textureMode = gDP.loadTile->textureMode;
+			curTile.loadType = gDP.loadTile->loadType;
+			curTile.frameBuffer = gDP.loadTile->frameBuffer;
+			curTile.imageAddress = gDP.loadTile->imageAddress;
+		}
+	}
+	return bRes;
 }
 
 void gDPLoadTile( u32 tile, u32 uls, u32 ult, u32 lrs, u32 lrt )
@@ -641,10 +665,11 @@ void gDPLoadTile( u32 tile, u32 uls, u32 ult, u32 lrs, u32 lrt )
 	dest = &TMEM[gDP.loadTile->tmem];
 	bpl = (gDP.loadTile->lrs - gDP.loadTile->uls + 1) << gDP.loadTile->size >> 1;
 	height = gDP.loadTile->lrt - gDP.loadTile->ult + 1;
+	const u32 bytes = height * bpl;
 	src = &RDRAM[address];
 
-	if (((address + height * bpl) > RDRAMSize) ||
-		(((gDP.loadTile->tmem << 3) + bpl * height) > 4096)) // Stay within TMEM
+	if (((address + bytes) > RDRAMSize) ||
+		(((gDP.loadTile->tmem << 3) + bytes) > 4096)) // Stay within TMEM
 	{
 #ifdef DEBUG
 		DebugMsg( DEBUG_HIGH | DEBUG_ERROR | DEBUG_TEXTURE, "// Attempting to load texture tile out of range\n" );
@@ -654,7 +679,7 @@ void gDPLoadTile( u32 tile, u32 uls, u32 ult, u32 lrs, u32 lrt )
 		return;
 	}
 
-	if (CheckForFrameBufferTexture(address))
+	if (CheckForFrameBufferTexture(address, bytes))
 		return;
 
 	// Line given for 32-bit is half what it seems it should since they split the
@@ -678,10 +703,6 @@ void gDPLoadTile( u32 tile, u32 uls, u32 ult, u32 lrs, u32 lrt )
 		src += gDP.textureImage.bpl;
  		dest += line;
 	}
-
-	gDP.loadTile->textureMode = TEXTUREMODE_NORMAL;
-	gDP.loadTile->frameBuffer = NULL;
-	gDP.changed |= CHANGED_TMEM;
 
 #ifdef DEBUG
 		DebugMsg( DEBUG_HIGH | DEBUG_HANDLED | DEBUG_TEXTURE, "gDPLoadTile( %i, %i, %i, %i, %i );\n",
@@ -712,7 +733,10 @@ void gDPLoadBlock( u32 tile, u32 uls, u32 ult, u32 lrs, u32 dxt )
 		return;
 	}
 
-	if (CheckForFrameBufferTexture(address))
+	gDP.loadTile->textureMode = TEXTUREMODE_NORMAL;
+	gDP.loadTile->frameBuffer = NULL;
+	gDP.changed |= CHANGED_TMEM;
+	if (CheckForFrameBufferTexture(address, bytes))
 		return;
 
 	u64* src = (u64*)&RDRAM[address];
@@ -742,10 +766,6 @@ void gDPLoadBlock( u32 tile, u32 uls, u32 ult, u32 lrs, u32 dxt )
 	}
 	else
 		UnswapCopy( src, dest, bytes );
-
-	gDP.loadTile->textureMode = TEXTUREMODE_NORMAL;
-	gDP.loadTile->frameBuffer = NULL;
-	gDP.changed |= CHANGED_TMEM;
 
 #ifdef DEBUG
 	DebugMsg( DEBUG_HIGH | DEBUG_HANDLED | DEBUG_TEXTURE, "gDPLoadBlock( %i, %i, %i, %i, %i );\n",
@@ -814,19 +834,51 @@ void gDPSetScissor( u32 mode, f32 ulx, f32 uly, f32 lrx, f32 lry )
 #endif
 }
 
+#define DEPTH_CLEAR_COLOR 0xfffcfffc // The value usually used to clear depth buffer
+const bool g_bDepthClearOnly = false;
+void gDPFillRDRAM(u32 address, s32 ulx, s32 uly, s32 lrx, s32 lry, u32 width, u32 size,  u32 color )
+{
+	if (g_bDepthClearOnly && color != DEPTH_CLEAR_COLOR)
+		return;
+	if (frameBuffer.drawBuffer == GL_DRAW_FRAMEBUFFER) {
+		frameBuffer.top->cleared = true;
+		frameBuffer.top->fillcolor = color;
+	}
+	ulx = min(max(ulx, gDP.scissor.ulx), gDP.scissor.lrx);
+	lrx = min(max(lrx, gDP.scissor.ulx), gDP.scissor.lrx);
+	uly = min(max(uly, gDP.scissor.uly), gDP.scissor.lry);
+	lry = min(max(lry, gDP.scissor.uly), gDP.scissor.lry);
+	u32 ci_width_in_dwords = width >> (3 - size);
+	ulx >>= (3 - size);
+	lrx >>= (3 - size);
+	u32 * dst = (u32*)(RDRAM + address);
+	dst += uly * ci_width_in_dwords;
+	for (u32 y = uly; y < lry; ++y) {
+		for (u32 x = ulx; x < lrx; ++x)
+			dst[x] = color;
+		dst += ci_width_in_dwords;
+	}
+	*(u32*)&RDRAM[address] = address;
+}
+
 void gDPFillRectangle( s32 ulx, s32 uly, s32 lrx, s32 lry )
 {
-#define DEPTH_CLAER_COLOR 0xfffcfffc // The value usually used to clear depth buffer
-
+	if (gDP.otherMode.cycleType == G_CYC_FILL)
+	{
+		lrx++;
+		lry++;
+	}
 	if (gDP.depthImageAddress == gDP.colorImage.address) {
 		// Game may use depth texture as auxilary color texture. Example: Mario Tennis
 		// If color is not depth clear color, that is most likely the case
-		if (gDP.fillColor.color == DEPTH_CLAER_COLOR) {
+		if (gDP.fillColor.color == DEPTH_CLEAR_COLOR) {
+			gDPFillRDRAM(gDP.colorImage.address, ulx, uly, lrx, lry, gDP.colorImage.width, gDP.colorImage.size, gDP.fillColor.color);
 			OGL_ClearDepthBuffer();
 			return;
 		}
-	} else if (gDP.fillColor.color == DEPTH_CLAER_COLOR) {
+	} else if (gDP.fillColor.color == DEPTH_CLEAR_COLOR) {
 		DepthBuffer_SetBuffer( gDP.colorImage.address );
+		gDPFillRDRAM(gDP.colorImage.address, ulx, uly, lrx, lry, gDP.colorImage.width, gDP.colorImage.size, gDP.fillColor.color);
 		OGL_ClearDepthBuffer();
 		return;
 	}
@@ -835,14 +887,9 @@ void gDPFillRectangle( s32 ulx, s32 uly, s32 lrx, s32 lry )
 	gDPGetFillColor(fillColor);
 	if (gDP.otherMode.cycleType == G_CYC_FILL)
 	{
-		//if (gDP.fillColor.a == 0.0f)
-		//	return;
-
-		lrx++;
-		lry++;
-
-		if ((ulx == 0) && (uly == 0) && (lrx == VI.width) && (lry == VI.height))
+		if ((ulx == 0) && (uly == 0) && (lrx == gDP.scissor.lrx) && (lry == gDP.scissor.lry))
 		{
+			gDPFillRDRAM(gDP.colorImage.address, ulx, uly, lrx, lry, gDP.colorImage.width, gDP.colorImage.size, gDP.fillColor.color);
 			OGL_ClearColorBuffer( fillColor );
 			return;
 		}
@@ -932,7 +979,10 @@ void gDPTextureRectangle( f32 ulx, f32 uly, f32 lrx, f32 lry, s32 tile, f32 s, f
 	gSP.textureTile[1] = &gDP.tiles[gSP.texture.tile < 7 ? gSP.texture.tile + 1 : gSP.texture.tile];
 
 	gDP.colorImage.changed = TRUE;
-	gDP.colorImage.height = max( gDP.colorImage.height, (u32)gDP.scissor.lry );
+	if (gDP.colorImage.width < 64)
+		gDP.colorImage.height = (u32)max( (s32)gDP.colorImage.height, lry );
+	else
+		gDP.colorImage.height = max( gDP.colorImage.height, (u32)gDP.scissor.lry );
 
 #ifdef DEBUG
 	DebugMsg( DEBUG_HIGH | DEBUG_HANDLED, "gDPTextureRectangle( %f, %f, %f, %f, %i, %i, %f, %f, %f, %f );\n",

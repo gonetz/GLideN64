@@ -93,7 +93,7 @@ void FrameBuffer_RemoveBuffer( u32 address )
 	{
 		if (current->startAddress == address)
 		{
-			current->texture = NULL;
+			//current->texture = NULL;
 			FrameBuffer_Remove( current );
 			return;
 		}
@@ -159,8 +159,12 @@ void FrameBuffer_SaveBuffer( u32 address, u16 format, u16 size, u16 width, u16 h
 	frameBuffer.drawBuffer = GL_DRAW_FRAMEBUFFER;
 
 	FrameBuffer *current = frameBuffer.top;
-	if (current != NULL && gDP.colorImage.height > 1)
+	if (current != NULL && gDP.colorImage.height > 1) {
 		current->endAddress = current->startAddress + ((current->width * gDP.colorImage.height << current->size >> 1) - 1);
+		if (!current->cleared)
+			gDPFillRDRAM(current->startAddress, 0, 0, current->width, gDP.colorImage.height, current->width, current->size, frameBuffer.top->fillcolor);
+	}
+
 	// Search through saved frame buffers
 	while (current != NULL)
 	{
@@ -205,6 +209,7 @@ void FrameBuffer_SaveBuffer( u32 address, u16 format, u16 size, u16 width, u16 h
 		current->size = size;
 		current->scaleX = OGL.scaleX;
 		current->scaleY = OGL.scaleY;
+		current->fillcolor = 0;
 
 		current->texture->width = (u32)(current->width * OGL.scaleX);
 		current->texture->height = (u32)(current->height * OGL.scaleY);
@@ -254,7 +259,7 @@ void FrameBuffer_SaveBuffer( u32 address, u16 format, u16 size, u16 width, u16 h
 #endif
 	*(u32*)&RDRAM[current->startAddress] = current->startAddress;
 
-	current->changed = TRUE;
+	current->cleared = false;
 
 	gSP.changed |= CHANGED_TEXTURE;
 }
