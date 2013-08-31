@@ -16,7 +16,7 @@
 #include "Types.h"
 #include "Debug.h"
 
-bool g_bCopyToRDRAM = true;
+bool g_bCopyToRDRAM = false;
 FrameBufferInfo frameBuffer;
 
 static GLuint g_cur_frame_fbo = 0;
@@ -180,14 +180,18 @@ void FrameBuffer_Destroy()
 	ogl_glDeleteFramebuffers(1, &g_cur_frame_fbo);
 }
 
+void FrameBuffer_CopyAuxBufferToRDRAM( u32 address );
 void FrameBuffer_SaveBuffer( u32 address, u16 format, u16 size, u16 width, u16 height )
 {
 	frameBuffer.drawBuffer = GL_DRAW_FRAMEBUFFER;
-
 	FrameBuffer *current = frameBuffer.top;
 	if (current != NULL && gDP.colorImage.height > 1) {
-		current->endAddress = current->startAddress + ((current->width * gDP.colorImage.height << current->size >> 1) - 1);
-		if (!g_bCopyToRDRAM && !current->cleared)
+		current->endAddress = current->startAddress + (((current->width * gDP.colorImage.height) << current->size >> 1) - 1);
+		if (current->startAddress == 0x13ba50 || current->startAddress == 0x264430) { // HACK ALERT: Dirty hack for Mario Tennis score board
+			FrameBuffer_CopyAuxBufferToRDRAM(current->startAddress);
+			FrameBuffer_Remove( current );
+			current = NULL;
+		} else if (!g_bCopyToRDRAM && !current->cleared)
 			gDPFillRDRAM(current->startAddress, 0, 0, current->width, gDP.colorImage.height, current->width, current->size, frameBuffer.top->fillcolor);
 	}
 
@@ -478,6 +482,67 @@ void FrameBuffer_CopyToRDRAM( u32 address )
 					for (u32 x = 0; x < VI.width; ++x) {
 							const RGBA & c = ptr_src[x + (VI.height - y - 1)*VI.width];
 							ptr_dst[(x + y*VI.width)^1] = ((c.r>>3)<<11) | ((c.g>>3)<<6) | ((c.b>>3)<<1) | (c.a == 0 ? 0 : 1);
+					}
+				}
+			}
+			free( pixelData );
+			return;
+		}
+
+		current = current->lower;
+	}
+}
+
+static
+void FrameBuffer_CopyAuxBufferToRDRAM( u32 address )
+{
+	FrameBuffer *current = frameBuffer.top;
+	while (current != NULL)
+	{
+		if ((current->startAddress <= address) &&
+			(current->endAddress >= address))
+		{
+			ogl_glBindFramebuffer(GL_READ_FRAMEBUFFER, current->fbo);
+			glReadBuffer(GL_COLOR_ATTACHMENT0);
+			ogl_glBindFramebuffer(GL_DRAW_FRAMEBUFFER, g_cur_frame_fbo);
+			GLuint attachment = GL_COLOR_ATTACHMENT0;
+			glDrawBuffers(1, &attachment);
+			const u32 width  = current->width;
+			const u32 height = (current->endAddress - current->startAddress + 1) / (current->width<<current->size>>1);
+			ogl_glBlitFramebuffer(
+				0, (current->height - height)*OGL.scaleY, width*OGL.scaleX, current->height*OGL.scaleY,
+				0, 0, width, height,
+				GL_COLOR_BUFFER_BIT, GL_LINEAR
+			);
+
+			char *pixelData = (char*)malloc(width * height * 4);
+			if (*pixelData == NULL)
+				return;
+
+			ogl_glBindFramebuffer(GL_READ_FRAMEBUFFER, g_cur_frame_fbo);
+			glReadBuffer(GL_COLOR_ATTACHMENT0);
+			glReadPixels( 0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, pixelData );
+			if (current->size == G_IM_SIZ_32b) {
+				u32 *ptr_dst = (u32*)(RDRAM + address);
+				u32 *ptr_src = (u32*)pixelData;
+
+				for (u32 y = 0; y < height; ++y) {
+					for (u32 x = 0; x < width; ++x) {
+						const u32 c = ptr_src[x + (height - y - 1)*width];
+						if (c&0xFF > 0)
+							ptr_dst[x + y*width] = ptr_src[x + (height - y - 1)*width];
+					}
+				}
+			} else {
+				u16 *ptr_dst = (u16*)(RDRAM + address);
+				u16 col;
+				RGBA * ptr_src = (RGBA*)pixelData;
+
+				for (u32 y = 0; y < height; ++y) {
+					for (u32 x = 0; x < width; ++x) {
+							const RGBA c = ptr_src[x + (height - y - 1)*width];
+							if (c.a > 0)
+								ptr_dst[(x + y*width)^1] = ((c.r>>3)<<11) | ((c.g>>3)<<6) | ((c.b>>3)<<1) | (c.a == 0 ? 0 : 1);
 					}
 				}
 			}
