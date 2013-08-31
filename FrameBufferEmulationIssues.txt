@@ -1,0 +1,47 @@
+Проблемы с эмуляцией фрейм буфера.
+
+Zelda MM:
+проверка на то, что содержимое буфера заполнено pBuffer->fillcolor обламывается на экране паузы.
+Причина: Кадр копируется в буфер, который с начале отрисовки используется под depth buffer и чистится 0xfffcfffc.
+Программа между вызовами dysplay list что-то сама пишет в этот буфер (выставляет alpha в 1), и на следующем кадре
+проверка не срабатывает.
+
+detect fb final results: 
+rdp.frame_buffers[0].status = ci_main, addr: 00000500, height: 0
+rdp.frame_buffers[1].status = ci_zimg, addr: 00383ac0, height: 240
+rdp.frame_buffers[2].status = ci_main, addr: 00000500, height: 240
+rdp.frame_buffers[3].status = ci_main, addr: 00000500, height: 240
+rdp.frame_buffers[4].status = ci_main, addr: 00000500, height: 240
+rdp.frame_buffers[5].status = ci_main, addr: 00000500, height: 240
+rdp.frame_buffers[6].status = ci_copy, addr: 00383ac0, height: 240
+rdp.frame_buffers[7].status = ci_main, addr: 00000500, height: 240
+rdp.frame_buffers[8].status = ci_aux, addr: 00784600, height: 240
+rdp.frame_buffers[9].status = ci_main, addr: 00000500, height: 240
+rdp.frame_buffers[10].status = ci_main, addr: 00000500, height: 240
+DetectFrameBufferUsage End
+
+detect fb final results: 
+rdp.frame_buffers[0].status = ci_main, addr: 00000500, height: 240
+rdp.frame_buffers[1].status = ci_main, addr: 00000500, height: 240
+rdp.frame_buffers[2].status = ci_main, addr: 00000500, height: 240
+rdp.frame_buffers[3].status = ci_main, addr: 00000500, height: 240
+DetectFrameBufferUsage End
+
+Решение: проверять только 16бит буфер и без альфа бита.
+
+
+Zelda OOT:
+Та же проблема с экраном паузы, что в Zelda MM
+К тому же экран не работает если включен subscreen fix!
+
+
+Mario Tennis:
+Scoreboard. Таблица счёта и датчик скорости подачи выглядят как чёрный фон с текстом.
+Причина: текстуры таблицы и датчика грузятся в память. Текста в них нет, пустые области.
+Мы видим эти текстуры при отключенной эмуляции буфера кадра. Когда нужно обновить текст,
+игра заводит вспомогательный буфер кадра по адресу, где лежит текстура, и рендит текст в нужных местах.
+Потом текстура с текстом накладывается на полигоны таблицы. Так как адрес буфера совпадает с адресом текстуры,
+буфер используется вместо нее, а в нем только текст.
+Решение: после отрисовки копировать содержимое буфера обратно в RDRAM. Нужно найти нормальное условие для
+определения такого буфера. Пока адреса буферов захардкоданы.
+
