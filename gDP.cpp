@@ -602,9 +602,9 @@ bool CheckForFrameBufferTexture(u32 _address, u32 _bytes)
 		//&&			((*(u32*)&RDRAM[pBuffer->startAddress] & 0xFFFEFFFE) == (pBuffer->startAddress & 0xFFFEFFFE)) // Does not work for Jet Force Gemini
 		)
 	{
-
 		const u32 texEndAddress = _address + _bytes - 1;
-		if (_address > pBuffer->startAddress && texEndAddress > pBuffer->endAddress) {
+		const u32 bufEndAddress = pBuffer->startAddress + (((pBuffer->width * (int)gDP.scissor.lry) << pBuffer->size >> 1) - 1);
+		if (_address > pBuffer->startAddress && texEndAddress > bufEndAddress) {
 //			FrameBuffer_RemoveBuffer(pBuffer->startAddress);
 			bRes = false;
 		}
