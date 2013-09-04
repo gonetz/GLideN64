@@ -368,9 +368,6 @@ void gDPSetColorImage( u32 format, u32 size, u32 width, u32 address )
 				FrameBuffer_SaveBuffer( address, (u16)format, (u16)size, (u16)width, height );
 				gDP.colorImage.height = 1;
 
-			//if (address != gDP.depthImageAddress)
-				//FrameBuffer_RestoreBuffer( address, (u16)size, (u16)width );
-
 			//OGL_ClearDepthBuffer();
 		} else
 			gDP.colorImage.height = height;
