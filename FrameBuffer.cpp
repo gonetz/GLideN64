@@ -195,40 +195,30 @@ void FrameBuffer_SaveBuffer( u32 address, u16 format, u16 size, u16 width, u16 h
 			gDPFillRDRAM(current->startAddress, 0, 0, current->width, gDP.colorImage.height, current->width, current->size, frameBuffer.top->fillcolor);
 	}
 
-	// Search through saved frame buffers
-	while (current != NULL)
-	{
-		if ((current->startAddress <= address) &&
-			(current->endAddress >= address))
+	current = FrameBuffer_FindBuffer(address);
+	if (current != NULL) {
+		if ((current->startAddress != address) ||
+			(current->width != width) ||
+			//(current->height != height) ||
+			//(current->size != size) ||  // TODO FIX ME
+			(current->scaleX != OGL.scaleX) ||
+			(current->scaleY != OGL.scaleY))
 		{
-			if ((current->startAddress != address) ||
-				(current->width != width) ||
-				//(current->height != height) ||
-				//(current->size != size) ||  // TODO FIX ME
-				(current->scaleX != OGL.scaleX) ||
-				(current->scaleY != OGL.scaleY))
-			{
-				FrameBuffer_Remove( current );
-				current = NULL;
-				break;
-			}
-
-			FrameBuffer_MoveToTop( current );
-			ogl_glBindFramebuffer(GL_DRAW_FRAMEBUFFER, current->fbo);
-			if (current->size != size) {
-				f32 fillColor[4];
-				gDPGetFillColor(fillColor);
-				OGL_ClearColorBuffer(fillColor);
-				current->size = size;
-				current->texture->format = format;
-				current->texture->size = size;
-			}
-			break;
+			FrameBuffer_Remove( current );
+			current = NULL;
 		}
-		current = current->lower;
-	}
 
-	if (current == NULL) {
+		FrameBuffer_MoveToTop( current );
+		ogl_glBindFramebuffer(GL_DRAW_FRAMEBUFFER, current->fbo);
+		if (current->size != size) {
+			f32 fillColor[4];
+			gDPGetFillColor(fillColor);
+			OGL_ClearColorBuffer(fillColor);
+			current->size = size;
+			current->texture->format = format;
+			current->texture->size = size;
+		}
+	} else {
 		// Wasn't found, create a new one
 		current = FrameBuffer_AddTop();
 
@@ -298,38 +288,20 @@ void FrameBuffer_SaveBuffer( u32 address, u16 format, u16 size, u16 width, u16 h
 #if 1
 void FrameBuffer_RenderBuffer( u32 address )
 {
-	FrameBuffer *current = frameBuffer.top;
-
-	while (current != NULL)
-	{
-		if ((current->startAddress <= address) &&
-			(current->endAddress >= address))
-		{
-			ogl_glBindFramebuffer(GL_READ_FRAMEBUFFER, current->fbo);
-			ogl_glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-			glDrawBuffer( GL_FRONT );
-			ogl_glBlitFramebuffer(
+	FrameBuffer *current = FrameBuffer_FindBuffer(address);
+	if (current == NULL)
+		return;
+	ogl_glBindFramebuffer(GL_READ_FRAMEBUFFER, current->fbo);
+	ogl_glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+	glDrawBuffer( GL_FRONT );
+	ogl_glBlitFramebuffer(
 //				0, 0, current->texture->realWidth, current->texture->realHeight,
-				0, 0, OGL.width, OGL.height,
-				0, OGL.heightOffset, OGL.width, OGL.height+OGL.heightOffset,
-				GL_COLOR_BUFFER_BIT, GL_LINEAR
-			);
-			glDrawBuffer( GL_BACK );
-			ogl_glBindFramebuffer(GL_DRAW_FRAMEBUFFER, frameBuffer.top->fbo);
-			/*
-			current = current->lower;
-			while (current != NULL)
-			{
-				if ((current->startAddress <= address) &&
-					(current->endAddress >= address))
-				assert(false);
-				current = current->lower;
-			}
-			*/
-			return;
-		}
-		current = current->lower;
-	}
+		0, 0, OGL.width, OGL.height,
+		0, OGL.heightOffset, OGL.width, OGL.height+OGL.heightOffset,
+		GL_COLOR_BUFFER_BIT, GL_LINEAR
+	);
+	glDrawBuffer( GL_BACK );
+	ogl_glBindFramebuffer(GL_DRAW_FRAMEBUFFER, frameBuffer.top->fbo);
 }
 #else
 
@@ -439,119 +411,105 @@ struct RGBA {
 
 void FrameBuffer_CopyToRDRAM( u32 address )
 {
-	FrameBuffer *current = frameBuffer.top;
-	while (current != NULL)
-	{
-		if ((current->startAddress <= address) &&
-			(current->endAddress >= address))
-		{
-			ogl_glBindFramebuffer(GL_READ_FRAMEBUFFER, current->fbo);
-			glReadBuffer(GL_COLOR_ATTACHMENT0);
-			ogl_glBindFramebuffer(GL_DRAW_FRAMEBUFFER, g_cur_frame_fbo);
-			GLuint attachment = GL_COLOR_ATTACHMENT0;
-			glDrawBuffers(1, &attachment);
-			ogl_glBlitFramebuffer(
-				0, 0, OGL.width, OGL.height,
-				0, 0, current->width, current->height,
-				GL_COLOR_BUFFER_BIT, GL_LINEAR
-			);
-			ogl_glBindFramebuffer(GL_DRAW_FRAMEBUFFER, frameBuffer.top->fbo);
+	FrameBuffer *current = FrameBuffer_FindBuffer(address);
+	if (current == NULL)
+		return;
 
-			char *pixelData = (char*)malloc( VI.width * VI.height * 4 );
-			if (*pixelData == NULL)
-				return;
+	ogl_glBindFramebuffer(GL_READ_FRAMEBUFFER, current->fbo);
+	glReadBuffer(GL_COLOR_ATTACHMENT0);
+	ogl_glBindFramebuffer(GL_DRAW_FRAMEBUFFER, g_cur_frame_fbo);
+	GLuint attachment = GL_COLOR_ATTACHMENT0;
+	glDrawBuffers(1, &attachment);
+	ogl_glBlitFramebuffer(
+		0, 0, OGL.width, OGL.height,
+		0, 0, current->width, current->height,
+		GL_COLOR_BUFFER_BIT, GL_LINEAR
+	);
+	ogl_glBindFramebuffer(GL_DRAW_FRAMEBUFFER, frameBuffer.top->fbo);
 
-			ogl_glBindFramebuffer(GL_READ_FRAMEBUFFER, g_cur_frame_fbo);
-			glReadBuffer(GL_COLOR_ATTACHMENT0);
-			const u32 offset = (address - current->startAddress) / (VI.width<<current->size>>1);
-			glReadPixels( 0, offset, VI.width, VI.height, GL_RGBA, GL_UNSIGNED_BYTE, pixelData );
-			if (current->size == G_IM_SIZ_32b) {
-				u32 *ptr_dst = (u32*)(RDRAM + address);
-				u32 *ptr_src = (u32*)pixelData;
+	char *pixelData = (char*)malloc( VI.width * VI.height * 4 );
+	if (*pixelData == NULL)
+		return;
 
-				for (u32 y = 0; y < VI.height; ++y) {
-					for (u32 x = 0; x < VI.width; ++x)
-						ptr_dst[x + y*VI.width] = ptr_src[x + (VI.height - y - 1)*VI.width];
-				}
-			} else {
-				u16 *ptr_dst = (u16*)(RDRAM + address);
-				u16 col;
-				RGBA * ptr_src = (RGBA*)pixelData;
+	ogl_glBindFramebuffer(GL_READ_FRAMEBUFFER, g_cur_frame_fbo);
+	glReadBuffer(GL_COLOR_ATTACHMENT0);
+	const u32 offset = (address - current->startAddress) / (VI.width<<current->size>>1);
+	glReadPixels( 0, offset, VI.width, VI.height, GL_RGBA, GL_UNSIGNED_BYTE, pixelData );
+	if (current->size == G_IM_SIZ_32b) {
+		u32 *ptr_dst = (u32*)(RDRAM + address);
+		u32 *ptr_src = (u32*)pixelData;
 
-				for (u32 y = 0; y < VI.height; ++y) {
-					for (u32 x = 0; x < VI.width; ++x) {
-							const RGBA & c = ptr_src[x + (VI.height - y - 1)*VI.width];
-							ptr_dst[(x + y*VI.width)^1] = ((c.r>>3)<<11) | ((c.g>>3)<<6) | ((c.b>>3)<<1) | (c.a == 0 ? 0 : 1);
-					}
-				}
-			}
-			free( pixelData );
-			return;
+		for (u32 y = 0; y < VI.height; ++y) {
+			for (u32 x = 0; x < VI.width; ++x)
+				ptr_dst[x + y*VI.width] = ptr_src[x + (VI.height - y - 1)*VI.width];
 		}
+	} else {
+		u16 *ptr_dst = (u16*)(RDRAM + address);
+		u16 col;
+		RGBA * ptr_src = (RGBA*)pixelData;
 
-		current = current->lower;
+		for (u32 y = 0; y < VI.height; ++y) {
+			for (u32 x = 0; x < VI.width; ++x) {
+					const RGBA & c = ptr_src[x + (VI.height - y - 1)*VI.width];
+					ptr_dst[(x + y*VI.width)^1] = ((c.r>>3)<<11) | ((c.g>>3)<<6) | ((c.b>>3)<<1) | (c.a == 0 ? 0 : 1);
+			}
+		}
 	}
+	free( pixelData );
 }
 
 static
 void FrameBuffer_CopyAuxBufferToRDRAM( u32 address )
 {
-	FrameBuffer *current = frameBuffer.top;
-	while (current != NULL)
-	{
-		if ((current->startAddress <= address) &&
-			(current->endAddress >= address))
-		{
-			ogl_glBindFramebuffer(GL_READ_FRAMEBUFFER, current->fbo);
-			glReadBuffer(GL_COLOR_ATTACHMENT0);
-			ogl_glBindFramebuffer(GL_DRAW_FRAMEBUFFER, g_cur_frame_fbo);
-			GLuint attachment = GL_COLOR_ATTACHMENT0;
-			glDrawBuffers(1, &attachment);
-			const u32 width  = current->width;
-			const u32 height = (current->endAddress - current->startAddress + 1) / (current->width<<current->size>>1);
-			ogl_glBlitFramebuffer(
-				0, (current->height - height)*OGL.scaleY, width*OGL.scaleX, current->height*OGL.scaleY,
-				0, 0, width, height,
-				GL_COLOR_BUFFER_BIT, GL_LINEAR
-			);
+	FrameBuffer *current = FrameBuffer_FindBuffer(address);
+	if (current == NULL)
+		return;
 
-			char *pixelData = (char*)malloc(width * height * 4);
-			if (*pixelData == NULL)
-				return;
+	ogl_glBindFramebuffer(GL_READ_FRAMEBUFFER, current->fbo);
+	glReadBuffer(GL_COLOR_ATTACHMENT0);
+	ogl_glBindFramebuffer(GL_DRAW_FRAMEBUFFER, g_cur_frame_fbo);
+	GLuint attachment = GL_COLOR_ATTACHMENT0;
+	glDrawBuffers(1, &attachment);
+	const u32 width  = current->width;
+	const u32 height = (current->endAddress - current->startAddress + 1) / (current->width<<current->size>>1);
+	ogl_glBlitFramebuffer(
+		0, (current->height - height)*OGL.scaleY, width*OGL.scaleX, current->height*OGL.scaleY,
+		0, 0, width, height,
+		GL_COLOR_BUFFER_BIT, GL_LINEAR
+	);
 
-			ogl_glBindFramebuffer(GL_READ_FRAMEBUFFER, g_cur_frame_fbo);
-			glReadBuffer(GL_COLOR_ATTACHMENT0);
-			glReadPixels( 0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, pixelData );
-			if (current->size == G_IM_SIZ_32b) {
-				u32 *ptr_dst = (u32*)(RDRAM + address);
-				u32 *ptr_src = (u32*)pixelData;
+	char *pixelData = (char*)malloc(width * height * 4);
+	if (*pixelData == NULL)
+		return;
 
-				for (u32 y = 0; y < height; ++y) {
-					for (u32 x = 0; x < width; ++x) {
-						const u32 c = ptr_src[x + (height - y - 1)*width];
-						if (c&0xFF > 0)
-							ptr_dst[x + y*width] = ptr_src[x + (height - y - 1)*width];
-					}
-				}
-			} else {
-				u16 *ptr_dst = (u16*)(RDRAM + address);
-				u16 col;
-				RGBA * ptr_src = (RGBA*)pixelData;
+	ogl_glBindFramebuffer(GL_READ_FRAMEBUFFER, g_cur_frame_fbo);
+	glReadBuffer(GL_COLOR_ATTACHMENT0);
+	glReadPixels( 0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, pixelData );
+	if (current->size == G_IM_SIZ_32b) {
+		u32 *ptr_dst = (u32*)(RDRAM + address);
+		u32 *ptr_src = (u32*)pixelData;
 
-				for (u32 y = 0; y < height; ++y) {
-					for (u32 x = 0; x < width; ++x) {
-							const RGBA c = ptr_src[x + (height - y - 1)*width];
-							if (c.a > 0)
-								ptr_dst[(x + y*width)^1] = ((c.r>>3)<<11) | ((c.g>>3)<<6) | ((c.b>>3)<<1) | (c.a == 0 ? 0 : 1);
-					}
-				}
+		for (u32 y = 0; y < height; ++y) {
+			for (u32 x = 0; x < width; ++x) {
+				const u32 c = ptr_src[x + (height - y - 1)*width];
+				if (c&0xFF > 0)
+					ptr_dst[x + y*width] = ptr_src[x + (height - y - 1)*width];
 			}
-			free( pixelData );
-			return;
 		}
+	} else {
+		u16 *ptr_dst = (u16*)(RDRAM + address);
+		u16 col;
+		RGBA * ptr_src = (RGBA*)pixelData;
 
-		current = current->lower;
+		for (u32 y = 0; y < height; ++y) {
+			for (u32 x = 0; x < width; ++x) {
+					const RGBA c = ptr_src[x + (height - y - 1)*width];
+					if (c.a > 0)
+						ptr_dst[(x + y*width)^1] = ((c.r>>3)<<11) | ((c.g>>3)<<6) | ((c.b>>3)<<1) | (c.a == 0 ? 0 : 1);
+			}
+		}
 	}
+	free( pixelData );
 }
 
 FrameBuffer *FrameBuffer_FindBuffer( u32 address )
