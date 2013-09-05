@@ -56,7 +56,7 @@ void VI_UpdateScreen()
 			}
 			*/
 			if (g_bCopyToRDRAM)
-				FrameBuffer_CopyToRDRAM( *REG.VI_ORIGIN );
+				FrameBuffer_CopyToRDRAM( *REG.VI_ORIGIN, false );
 			FrameBuffer_RenderBuffer( *REG.VI_ORIGIN );
 
 			gDP.colorImage.changed = FALSE;
