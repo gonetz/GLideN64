@@ -216,20 +216,21 @@ void FrameBuffer_SaveBuffer( u32 address, u16 format, u16 size, u16 width, u16 h
 		{
 			FrameBuffer_Remove( current );
 			current = NULL;
+		} else {
+			FrameBuffer_MoveToTop( current );
+			ogl_glBindFramebuffer(GL_DRAW_FRAMEBUFFER, current->fbo);
+			if (current->size != size) {
+				f32 fillColor[4];
+				gDPGetFillColor(fillColor);
+				OGL_ClearColorBuffer(fillColor);
+				current->size = size;
+				current->texture->format = format;
+				current->texture->size = size;
+			}
 		}
-
-		FrameBuffer_MoveToTop( current );
-		ogl_glBindFramebuffer(GL_DRAW_FRAMEBUFFER, current->fbo);
-		if (current->size != size) {
-			f32 fillColor[4];
-			gDPGetFillColor(fillColor);
-			OGL_ClearColorBuffer(fillColor);
-			current->size = size;
-			current->texture->format = format;
-			current->texture->size = size;
-		}
-	} else {
-		// Wasn't found, create a new one
+	}
+	if  (current == NULL) {
+		// Wasn't found or removed, create a new one
 		current = FrameBuffer_AddTop();
 
 		current->startAddress = address;
