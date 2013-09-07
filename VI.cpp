@@ -43,8 +43,8 @@ void VI_UpdateScreen()
 	}
 
 	if (OGL.frameBufferTextures) {
-		const bool bDListUpdated = (gSP.changed&CHANGED_CPU_FB_WRITE) == 0;
-		const bool bNeedUpdate = bDListUpdated ? (*REG.VI_ORIGIN != VI.lastOrigin) && gDP.colorImage.changed : true;
+		const bool bCFB = (gSP.changed&CHANGED_CPU_FB_WRITE) != 0;
+		const bool bNeedUpdate = bCFB ? true : (*REG.VI_ORIGIN != VI.lastOrigin) && gDP.colorImage.changed;
 
 		if (bNeedUpdate) {
 			FrameBuffer * pBuffer = FrameBuffer_FindBuffer(*REG.VI_ORIGIN);
@@ -55,9 +55,9 @@ void VI_UpdateScreen()
 				if (VI.height > 0 && size > G_IM_SIZ_8b)
 					FrameBuffer_SaveBuffer( *REG.VI_ORIGIN, G_IM_FMT_RGBA, size, *REG.VI_WIDTH, VI.height );
 			}
-			if (g_bCopyFromRDRAM || !bDListUpdated)
+			if (g_bCopyFromRDRAM || bCFB)
 				FrameBuffer_CopyFromRDRAM( *REG.VI_ORIGIN );
-			if (g_bCopyToRDRAM && bDListUpdated)
+			if (g_bCopyToRDRAM && !bCFB)
 				FrameBuffer_CopyToRDRAM( *REG.VI_ORIGIN, false );
 			FrameBuffer_RenderBuffer( *REG.VI_ORIGIN );
 
