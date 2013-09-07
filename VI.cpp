@@ -57,7 +57,7 @@ void VI_UpdateScreen()
 			}
 			if (g_bCopyFromRDRAM || !bDListUpdated)
 				FrameBuffer_CopyFromRDRAM( *REG.VI_ORIGIN );
-			if (g_bCopyToRDRAM)
+			if (g_bCopyToRDRAM && bDListUpdated)
 				FrameBuffer_CopyToRDRAM( *REG.VI_ORIGIN, false );
 			FrameBuffer_RenderBuffer( *REG.VI_ORIGIN );
 
