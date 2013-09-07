@@ -201,6 +201,7 @@ void RSP_ProcessDList()
 
 	gSP.matrix.stackSize = min( 32, *(u32*)&DMEM[0x0FE4] >> 6 );
 	gSP.matrix.modelViewi = 0;
+	gSP.changed &= ~CHANGED_CPU_FB_WRITE;
 	gSP.changed |= CHANGED_MATRIX;
 
 	for (int i = 0; i < 4; i++)

@@ -17,6 +17,7 @@
 #include "Debug.h"
 
 bool g_bCopyToRDRAM = true;
+bool g_bCopyFromRDRAM = false;
 FrameBufferInfo frameBuffer;
 
 static GLuint m_curFrameFbo = 0;
@@ -50,7 +51,32 @@ private:
 	u32 m_curIndex;
 };
 
+class RDRAMtoFrameBuffer
+{
+public:
+	RDRAMtoFrameBuffer() : m_pTexture(NULL), m_PBO(0) {}
+
+	void Init();
+	void Destroy();
+
+	void CopyFromRDRAM( u32 address);
+
+private:
+	struct PBOBinder {
+		PBOBinder(GLuint _PBO)
+		{
+			glBindBuffer(GL_PIXEL_UNPACK_BUFFER, _PBO);
+		}
+		~PBOBinder() {
+			glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
+		}
+	};
+	CachedTexture * m_pTexture;
+	GLuint m_PBO;
+};
+
 FrameBufferToRDRAM g_fbToRDRAM;
+RDRAMtoFrameBuffer g_RDRAMtoFB;
 
 void FrameBuffer_Init()
 {
@@ -60,6 +86,7 @@ void FrameBuffer_Init()
 	frameBuffer.numBuffers = 0;
 	frameBuffer.drawBuffer = GL_BACK;
 	g_fbToRDRAM.Init();
+	g_RDRAMtoFB.Init();
 }
 
 void FrameBuffer_RemoveBottom()
@@ -189,6 +216,7 @@ void FrameBuffer_Destroy()
 	while (frameBuffer.bottom)
 		FrameBuffer_RemoveBottom();
 	g_fbToRDRAM.Destroy();
+	g_RDRAMtoFB.Destroy();
 }
 
 void FrameBuffer_SaveBuffer( u32 address, u16 format, u16 size, u16 width, u16 height )
@@ -312,6 +340,7 @@ void FrameBuffer_RenderBuffer( u32 address )
 		GL_COLOR_BUFFER_BIT, GL_LINEAR
 	);
 	glDrawBuffer( GL_BACK );
+	ogl_glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
 	ogl_glBindFramebuffer(GL_DRAW_FRAMEBUFFER, frameBuffer.top->fbo);
 }
 #else
@@ -633,4 +662,178 @@ void FrameBufferToRDRAM::CopyAuxBufferToRDRAM( u32 address ) {
 void FrameBuffer_CopyToRDRAM( u32 address, bool bSync )
 {
 	g_fbToRDRAM.CopyToRDRAM(address, bSync);
+}
+
+void RDRAMtoFrameBuffer::Init()
+{
+	m_pTexture = TextureCache_AddTop();
+	m_pTexture->format = G_IM_FMT_RGBA;
+	m_pTexture->clampS = 1;
+	m_pTexture->clampT = 1;
+	m_pTexture->frameBufferTexture = TRUE;
+	m_pTexture->maskS = 0;
+	m_pTexture->maskT = 0;
+	m_pTexture->mirrorS = 0;
+	m_pTexture->mirrorT = 0;
+	m_pTexture->realWidth = 1024;
+	m_pTexture->realHeight = 512;
+	m_pTexture->textureBytes = m_pTexture->realWidth * m_pTexture->realHeight * 4;
+	cache.cachedBytes += m_pTexture->textureBytes;
+	glBindTexture( GL_TEXTURE_2D, m_pTexture->glName );
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, m_pTexture->realWidth, m_pTexture->realHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+	// Generate Pixel Buffer Object. Initialize it later
+	glGenBuffers(1, &m_PBO);
+}
+
+void RDRAMtoFrameBuffer::Destroy()
+{
+	TextureCache_Remove( m_pTexture );
+	glDeleteBuffers(1, &m_PBO);
+}
+
+void RDRAMtoFrameBuffer::CopyFromRDRAM( u32 address)
+{
+	FrameBuffer *current = FrameBuffer_FindBuffer(address);
+	if (current == NULL || current->size < G_IM_SIZ_16b)
+		return;
+
+	const u32 width = current->width;
+	const u32 height = current->height;
+	m_pTexture->width = width;
+	m_pTexture->height = height;
+	const u32 dataSize = width*height*4;
+	PBOBinder binder(m_PBO);
+	glBufferData(GL_PIXEL_UNPACK_BUFFER, dataSize, NULL, GL_DYNAMIC_DRAW);
+	GLubyte* ptr = (GLubyte*)glMapBuffer(GL_PIXEL_UNPACK_BUFFER, GL_WRITE_ONLY);
+	if (ptr == NULL)
+		return;
+
+	u8 * image = RDRAM + address;
+	u32 * dst = (u32*)ptr;
+
+	u32 empty = 0;
+	u32 r, g, b,a, idx;
+	if (current->size == G_IM_SIZ_16b) {
+		u16 * src = (u16*)image;
+		u16 col;
+		const u32 bound = (RDRAMSize + 1 - address) >> 1;
+		for (u32 y = 0; y < height; y++)
+		{
+			for (u32 x = 0; x < width; x++)
+			{
+				idx = (x + (height - y - 1)*width)^1;
+				if (idx >= bound)
+					break;
+				col = src[idx];
+				empty |= col;
+				r = ((col >> 11)&31)<<3;
+				g = ((col >> 6)&31)<<3;
+				b = ((col >> 1)&31)<<3;
+				a = col&1 > 0 ? 0xff : 0;
+				//*(dst++) = RGBA5551_RGBA8888(c);
+				dst[x + y*width] = (a<<24)|(b<<16)|(g<<8)|r;
+			}
+		}
+	} else {
+		// 32 bit
+		u32 * src = (u32*)image;
+		u32 col;
+		const u32 bound = (RDRAMSize + 1 - address) >> 2;
+		for (u32 y=0; y < height; y++)
+		{
+			for (u32 x=0; x < width; x++)
+			{
+				idx = x + (height - y - 1)*width;
+				if (idx >= bound)
+					break;
+				col = src[idx];
+				empty |= col;
+				r = (col >> 24) & 0xff;
+				g = (col >> 16) & 0xff;
+				b = (col >> 8) & 0xff;
+				a = col & 0xff;
+				dst[x + y*width] = (a<<24)|(b<<16)|(g<<8)|r;
+			}
+		}
+	}
+	glUnmapBuffer(GL_PIXEL_UNPACK_BUFFER); // release the mapped buffer
+	if (empty == 0)
+		return;
+
+	glBindTexture(GL_TEXTURE_2D, m_pTexture->glName);
+	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+#if 0
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+	ogl_glBindFramebuffer(GL_READ_FRAMEBUFFER, m_FBO);
+	const GLuint attachment = GL_COLOR_ATTACHMENT0;
+	glReadBuffer(attachment);
+	ogl_glBindFramebuffer(GL_DRAW_FRAMEBUFFER, current->fbo);
+	glDrawBuffers(1, &attachment);
+	ogl_glBlitFramebuffer(
+		0, 0, width, height,
+		0, 0, OGL.width, OGL.height,
+		GL_COLOR_BUFFER_BIT, GL_LINEAR
+		);
+	ogl_glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
+	ogl_glBindFramebuffer(GL_DRAW_FRAMEBUFFER, frameBuffer.top->fbo);
+#else
+	glPushAttrib( GL_ENABLE_BIT | GL_VIEWPORT_BIT );
+
+	glActiveTextureARB(GL_TEXTURE0_ARB);
+	glEnable(GL_TEXTURE_2D);
+	Combiner_SetCombine( EncodeCombineMode( 0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0 ) );
+	glEnable( GL_BLEND );
+	glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+	//glDisable( GL_ALPHA_TEST );
+	glDisable( GL_DEPTH_TEST );
+	glDisable( GL_CULL_FACE );
+	glDisable( GL_POLYGON_OFFSET_FILL );
+	glDisable( GL_FOG );
+
+	glMatrixMode( GL_PROJECTION );
+	glLoadIdentity();
+	glOrtho( 0, OGL.width, 0, OGL.height, -1.0f, 1.0f );
+	glViewport( 0, 0, OGL.width, OGL.height );
+	glDisable( GL_SCISSOR_TEST );
+
+	float u1, v1;
+
+	u1 = (float)width / (float)m_pTexture->realWidth;
+	v1 = (float)height / (float)m_pTexture->realHeight;
+
+	ogl_glBindFramebuffer(GL_DRAW_FRAMEBUFFER, current->fbo);
+	const GLuint attachment = GL_COLOR_ATTACHMENT0;
+	glDrawBuffers(1, &attachment);
+	glBegin(GL_QUADS);
+	glTexCoord2f( 0.0f, 0.0f );
+	glVertex2f( 0.0f, 0.0f );
+
+	glTexCoord2f( 0.0f, v1 );
+	glVertex2f( 0.0f, (GLfloat)OGL.height );
+
+	glTexCoord2f( u1,  v1 );
+	glVertex2f( (GLfloat)OGL.width, (GLfloat)OGL.height );
+
+	glTexCoord2f( u1, 0.0f );
+	glVertex2f( (GLfloat)OGL.width, 0.0f );
+	glEnd();
+	ogl_glBindFramebuffer(GL_DRAW_FRAMEBUFFER, frameBuffer.top->fbo);
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+	glLoadIdentity();
+	glPopAttrib();
+
+	gSP.changed |= CHANGED_TEXTURE | CHANGED_VIEWPORT;
+	gDP.changed |= CHANGED_COMBINE;
+#endif
+}
+
+void FrameBuffer_CopyFromRDRAM( u32 address )
+{
+	g_RDRAMtoFB.CopyFromRDRAM(address);
 }

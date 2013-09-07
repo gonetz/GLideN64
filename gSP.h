@@ -12,6 +12,7 @@
 #define CHANGED_TEXTURE			0x10
 #define CHANGED_FOGPOSITION		0x10
 #define CHANGED_FB_TEXTURE		0x20
+#define CHANGED_CPU_FB_WRITE	0x40
 
 struct SPVertex
 {

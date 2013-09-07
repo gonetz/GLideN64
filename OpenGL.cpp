@@ -105,6 +105,7 @@ PFNGLBINDBUFFERPROC glBindBuffer;
 PFNGLBUFFERDATAPROC glBufferData;
 PFNGLMAPBUFFERPROC glMapBuffer;
 PFNGLUNMAPBUFFERPROC glUnmapBuffer;
+PFNGLDELETEBUFFERSPROC glDeleteBuffers;
 
 PFNGLBINDFRAMEBUFFEREXTPROC glBindFramebufferEXT;
 PFNGLFRAMEBUFFERTEXTURE2DEXTPROC glFramebufferTexture2DEXT;
@@ -270,6 +271,7 @@ void OGL_InitExtensions()
 	glBufferData = (PFNGLBUFFERDATAPROC)wglGetProcAddress( "glBufferData" );
 	glMapBuffer = (PFNGLMAPBUFFERPROC)wglGetProcAddress( "glMapBuffer" );
 	glUnmapBuffer = (PFNGLUNMAPBUFFERPROC)wglGetProcAddress( "glUnmapBuffer" );
+	glDeleteBuffers = (PFNGLDELETEBUFFERSPROC)wglGetProcAddress( "glDeleteBuffers" );
 
 	glBindFramebufferEXT = (PFNGLBINDFRAMEBUFFEREXTPROC)wglGetProcAddress("glBindFramebufferEXT");
 	glFramebufferTexture2DEXT = (PFNGLFRAMEBUFFERTEXTURE2DEXTPROC)wglGetProcAddress("glFramebufferTexture2DEXT");

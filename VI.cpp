@@ -42,19 +42,21 @@ void VI_UpdateScreen()
 		OGL.captureScreen = false;
 	}
 
-	if (OGL.frameBufferTextures)
-	{
-		//FrameBuffer *current = FrameBuffer_FindBuffer( *REG.VI_ORIGIN );
+	if (OGL.frameBufferTextures) {
+		const bool bDListUpdated = (gSP.changed&CHANGED_CPU_FB_WRITE) == 0;
+		const bool bNeedUpdate = bDListUpdated ? (*REG.VI_ORIGIN != VI.lastOrigin) && gDP.colorImage.changed : true;
 
-		if ((*REG.VI_ORIGIN != VI.lastOrigin) && gDP.colorImage.changed)
-		{
-			/*
-			if (gDP.colorImage.changed)
-			{
-				FrameBuffer_SaveBuffer( gDP.colorImage.address, gDP.colorImage.size, gDP.colorImage.width, gDP.colorImage.height );
-				gDP.colorImage.changed = FALSE;
+		if (bNeedUpdate) {
+			FrameBuffer * pBuffer = FrameBuffer_FindBuffer(*REG.VI_ORIGIN);
+			if (pBuffer == NULL || pBuffer->width != *REG.VI_WIDTH) {
+				VI_UpdateSize();
+				OGL_UpdateScale();
+				const u32 size = *REG.VI_STATUS & 3;
+				if (VI.height > 0 && size > G_IM_SIZ_8b)
+					FrameBuffer_SaveBuffer( *REG.VI_ORIGIN, G_IM_FMT_RGBA, size, *REG.VI_WIDTH, VI.height );
 			}
-			*/
+			if (g_bCopyFromRDRAM || !bDListUpdated)
+				FrameBuffer_CopyFromRDRAM( *REG.VI_ORIGIN );
 			if (g_bCopyToRDRAM)
 				FrameBuffer_CopyToRDRAM( *REG.VI_ORIGIN, false );
 			FrameBuffer_RenderBuffer( *REG.VI_ORIGIN );
@@ -67,10 +69,8 @@ void VI_UpdateScreen()
 #endif
 		}
 	}
-	else
-	{
-		if (gSP.changed & CHANGED_COLORBUFFER)
-		{
+	else {
+		if (gSP.changed & CHANGED_COLORBUFFER) {
 #ifndef __LINUX__
 			SwapBuffers( OGL.hDC );
 #else

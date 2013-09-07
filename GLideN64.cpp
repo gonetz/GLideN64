@@ -375,6 +375,7 @@ EXPORT void CALL RomOpen (void)
 
 EXPORT void CALL ShowCFB (void)
 {	
+	gSP.changed |= CHANGED_CPU_FB_WRITE;
 }
 
 EXPORT void CALL UpdateScreen (void)
