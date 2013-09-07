@@ -20,14 +20,11 @@ bool g_bCopyToRDRAM = true;
 bool g_bCopyFromRDRAM = false;
 FrameBufferInfo frameBuffer;
 
-static GLuint m_curFrameFbo = 0;
-static GLuint m_curFrameTex = 0;
-
 class FrameBufferToRDRAM
 {
 public:
 	FrameBufferToRDRAM() :
-	  m_curFrameFbo(0), m_curFrameTex(0), m_curIndex(0)
+	  m_FBO(0), m_pTexture(NULL), m_curIndex(0)
 	{
 		m_aPBO[0] = m_aPBO[1] = 0;
 		m_aAddress[0] = m_aAddress[1] = 0;
@@ -44,8 +41,8 @@ private:
 		u8 r, g, b, a;
 	};
 
-	GLuint m_curFrameFbo;
-	GLuint m_curFrameTex;
+	GLuint m_FBO;
+	CachedTexture * m_pTexture;
 	GLuint m_aPBO[2];
 	u32 m_aAddress[2];
 	u32 m_curIndex;
@@ -517,16 +514,29 @@ void FrameBufferToRDRAM::Init()
 {
 	// generate a framebuffer
 	ogl_glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-	ogl_glGenFramebuffers(1, &m_curFrameFbo);
-	ogl_glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_curFrameFbo);
+	ogl_glGenFramebuffers(1, &m_FBO);
+	ogl_glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_FBO);
 
-	glGenTextures(1, &m_curFrameTex);
-	glBindTexture(GL_TEXTURE_2D, m_curFrameTex);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, 1024, 512, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	m_pTexture = TextureCache_AddTop();
+	m_pTexture->format = G_IM_FMT_RGBA;
+	m_pTexture->clampS = 1;
+	m_pTexture->clampT = 1;
+	m_pTexture->frameBufferTexture = TRUE;
+	m_pTexture->maskS = 0;
+	m_pTexture->maskT = 0;
+	m_pTexture->mirrorS = 0;
+	m_pTexture->mirrorT = 0;
+	m_pTexture->realWidth = 1024;
+	m_pTexture->realHeight = 512;
+	m_pTexture->textureBytes = m_pTexture->realWidth * m_pTexture->realHeight * 4;
+	cache.cachedBytes += m_pTexture->textureBytes;
+	glBindTexture( GL_TEXTURE_2D, m_pTexture->glName );
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, m_pTexture->realWidth, m_pTexture->realHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
 	glBindTexture(GL_TEXTURE_2D, 0);
-	ogl_glFramebufferTexture(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, m_curFrameTex, 0);
+
+	ogl_glFramebufferTexture(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, m_pTexture->glName, 0);
 	// check if everything is OK
 	assert(checkFBO());
 	ogl_glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
@@ -542,8 +552,9 @@ void FrameBufferToRDRAM::Init()
 
 void FrameBufferToRDRAM::Destroy() {
 	ogl_glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-	glDeleteTextures(1, &m_curFrameTex);
-	ogl_glDeleteFramebuffers(1, &m_curFrameFbo);
+	ogl_glDeleteFramebuffers(1, &m_FBO);
+	TextureCache_Remove( m_pTexture );
+	glDeleteBuffers(2, m_aPBO);
 }
 
 void FrameBufferToRDRAM::CopyToRDRAM( u32 address, bool bSync ) {
@@ -553,7 +564,7 @@ void FrameBufferToRDRAM::CopyToRDRAM( u32 address, bool bSync ) {
 
 	ogl_glBindFramebuffer(GL_READ_FRAMEBUFFER, current->fbo);
 	glReadBuffer(GL_COLOR_ATTACHMENT0);
-	ogl_glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_curFrameFbo);
+	ogl_glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_FBO);
 	GLuint attachment = GL_COLOR_ATTACHMENT0;
 	glDrawBuffers(1, &attachment);
 	ogl_glBlitFramebuffer(
@@ -571,7 +582,7 @@ void FrameBufferToRDRAM::CopyToRDRAM( u32 address, bool bSync ) {
 	const u32 nextIndex = bSync ? m_curIndex : (m_curIndex + 1) % 2;
 	m_aAddress[m_curIndex] = address;
 	glBindBuffer(GL_PIXEL_PACK_BUFFER, m_aPBO[m_curIndex]);
-	ogl_glBindFramebuffer(GL_READ_FRAMEBUFFER, m_curFrameFbo);
+	ogl_glBindFramebuffer(GL_READ_FRAMEBUFFER, m_FBO);
 	glReadBuffer(GL_COLOR_ATTACHMENT0);
 	const u32 offset = (address - current->startAddress) / (VI.width<<current->size>>1);
 	glReadPixels( 0, offset, VI.width, VI.height, GL_RGBA, GL_UNSIGNED_BYTE, 0 );
@@ -614,7 +625,7 @@ void FrameBufferToRDRAM::CopyAuxBufferToRDRAM( u32 address ) {
 
 	ogl_glBindFramebuffer(GL_READ_FRAMEBUFFER, current->fbo);
 	glReadBuffer(GL_COLOR_ATTACHMENT0);
-	ogl_glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_curFrameFbo);
+	ogl_glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_FBO);
 	GLuint attachment = GL_COLOR_ATTACHMENT0;
 	glDrawBuffers(1, &attachment);
 	const u32 width  = current->width;
@@ -629,7 +640,7 @@ void FrameBufferToRDRAM::CopyAuxBufferToRDRAM( u32 address ) {
 	if (*pixelData == NULL)
 		return;
 
-	ogl_glBindFramebuffer(GL_READ_FRAMEBUFFER, m_curFrameFbo);
+	ogl_glBindFramebuffer(GL_READ_FRAMEBUFFER, m_FBO);
 	glReadBuffer(GL_COLOR_ATTACHMENT0);
 	glReadPixels( 0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, pixelData );
 	if (current->size == G_IM_SIZ_32b) {
