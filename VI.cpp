@@ -35,6 +35,7 @@ void VI_UpdateSize()
 
 void VI_UpdateScreen()
 {
+	static u32 uNumCurFrameIsShown = 0;
 	glFinish();
 
 	if (OGL.captureScreen) {
@@ -43,7 +44,7 @@ void VI_UpdateScreen()
 	}
 
 	if (OGL.frameBufferTextures) {
-		const bool bCFB = (gSP.changed&CHANGED_CPU_FB_WRITE) != 0;
+		const bool bCFB = (gSP.changed&CHANGED_CPU_FB_WRITE) == CHANGED_CPU_FB_WRITE;
 		const bool bNeedUpdate = bCFB ? true : (*REG.VI_ORIGIN != VI.lastOrigin) && gDP.colorImage.changed;
 
 		if (bNeedUpdate) {
@@ -56,17 +57,22 @@ void VI_UpdateScreen()
 					FrameBuffer_SaveBuffer( *REG.VI_ORIGIN, G_IM_FMT_RGBA, size, *REG.VI_WIDTH, VI.height );
 			}
 			if (g_bCopyFromRDRAM || bCFB)
-				FrameBuffer_CopyFromRDRAM( *REG.VI_ORIGIN );
+				FrameBuffer_CopyFromRDRAM( *REG.VI_ORIGIN, g_bCopyFromRDRAM && !bCFB );
 			if (g_bCopyToRDRAM && !bCFB)
 				FrameBuffer_CopyToRDRAM( *REG.VI_ORIGIN, false );
 			FrameBuffer_RenderBuffer( *REG.VI_ORIGIN );
 
 			gDP.colorImage.changed = FALSE;
 			VI.lastOrigin = *REG.VI_ORIGIN;
+			uNumCurFrameIsShown = 0;;
 #ifdef DEBUG
 			while (Debug.paused && !Debug.step);
 			Debug.step = FALSE;
 #endif
+		} else {
+			uNumCurFrameIsShown++;
+			if (uNumCurFrameIsShown > 4)
+				gSP.changed |= CHANGED_CPU_FB_WRITE;
 		}
 	}
 	else {

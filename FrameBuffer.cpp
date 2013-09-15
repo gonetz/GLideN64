@@ -56,7 +56,7 @@ public:
 	void Init();
 	void Destroy();
 
-	void CopyFromRDRAM( u32 address);
+	void CopyFromRDRAM( u32 _address, bool _bUseAlpha);
 
 private:
 	struct PBOBinder {
@@ -706,9 +706,9 @@ void RDRAMtoFrameBuffer::Destroy()
 	glDeleteBuffers(1, &m_PBO);
 }
 
-void RDRAMtoFrameBuffer::CopyFromRDRAM( u32 address)
+void RDRAMtoFrameBuffer::CopyFromRDRAM( u32 _address, bool _bUseAlpha)
 {
-	FrameBuffer *current = FrameBuffer_FindBuffer(address);
+	FrameBuffer *current = FrameBuffer_FindBuffer(_address);
 	if (current == NULL || current->size < G_IM_SIZ_16b)
 		return;
 
@@ -723,7 +723,7 @@ void RDRAMtoFrameBuffer::CopyFromRDRAM( u32 address)
 	if (ptr == NULL)
 		return;
 
-	u8 * image = RDRAM + address;
+	u8 * image = RDRAM + _address;
 	u32 * dst = (u32*)ptr;
 
 	u32 empty = 0;
@@ -731,7 +731,7 @@ void RDRAMtoFrameBuffer::CopyFromRDRAM( u32 address)
 	if (current->size == G_IM_SIZ_16b) {
 		u16 * src = (u16*)image;
 		u16 col;
-		const u32 bound = (RDRAMSize + 1 - address) >> 1;
+		const u32 bound = (RDRAMSize + 1 - _address) >> 1;
 		for (u32 y = 0; y < height; y++)
 		{
 			for (u32 x = 0; x < width; x++)
@@ -753,7 +753,7 @@ void RDRAMtoFrameBuffer::CopyFromRDRAM( u32 address)
 		// 32 bit
 		u32 * src = (u32*)image;
 		u32 col;
-		const u32 bound = (RDRAMSize + 1 - address) >> 2;
+		const u32 bound = (RDRAMSize + 1 - _address) >> 2;
 		for (u32 y=0; y < height; y++)
 		{
 			for (u32 x=0; x < width; x++)
@@ -797,7 +797,10 @@ void RDRAMtoFrameBuffer::CopyFromRDRAM( u32 address)
 
 	glActiveTextureARB(GL_TEXTURE0_ARB);
 	glEnable(GL_TEXTURE_2D);
-	Combiner_SetCombine( EncodeCombineMode( 0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0 ) );
+	if (_bUseAlpha)
+		Combiner_SetCombine( EncodeCombineMode( 0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0 ) );
+	else
+		Combiner_SetCombine( EncodeCombineMode( 0, 0, 0, TEXEL0, 0, 0, 0, 1, 0, 0, 0, TEXEL0, 0, 0, 0, 1 ) );
 	glEnable( GL_BLEND );
 	glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
 	//glDisable( GL_ALPHA_TEST );
@@ -844,7 +847,7 @@ void RDRAMtoFrameBuffer::CopyFromRDRAM( u32 address)
 #endif
 }
 
-void FrameBuffer_CopyFromRDRAM( u32 address )
+void FrameBuffer_CopyFromRDRAM( u32 address, bool bUseAlpha )
 {
-	g_RDRAMtoFB.CopyFromRDRAM(address);
+	g_RDRAMtoFB.CopyFromRDRAM(address, bUseAlpha);
 }
