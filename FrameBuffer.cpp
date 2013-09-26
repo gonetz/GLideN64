@@ -562,6 +562,7 @@ void FrameBufferToRDRAM::CopyToRDRAM( u32 address, bool bSync ) {
 	if (current == NULL)
 		return;
 
+	address = current->startAddress;
 	ogl_glBindFramebuffer(GL_READ_FRAMEBUFFER, current->fbo);
 	glReadBuffer(GL_COLOR_ATTACHMENT0);
 	ogl_glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_FBO);
@@ -584,8 +585,7 @@ void FrameBufferToRDRAM::CopyToRDRAM( u32 address, bool bSync ) {
 	glBindBuffer(GL_PIXEL_PACK_BUFFER, m_aPBO[m_curIndex]);
 	ogl_glBindFramebuffer(GL_READ_FRAMEBUFFER, m_FBO);
 	glReadBuffer(GL_COLOR_ATTACHMENT0);
-	const u32 offset = (address - current->startAddress) / (VI.width<<current->size>>1);
-	glReadPixels( 0, offset, VI.width, VI.height, GL_RGBA, GL_UNSIGNED_BYTE, 0 );
+	glReadPixels( 0, 0, VI.width, VI.height, GL_RGBA, GL_UNSIGNED_BYTE, 0 );
 
 	glBindBuffer(GL_PIXEL_PACK_BUFFER, m_aPBO[nextIndex]);
 	GLubyte* pixelData = (GLubyte*)glMapBuffer(GL_PIXEL_PACK_BUFFER, GL_READ_ONLY);
