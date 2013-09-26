@@ -56,8 +56,10 @@ void VI_UpdateScreen()
 				if (VI.height > 0 && size > G_IM_SIZ_8b)
 					FrameBuffer_SaveBuffer( *REG.VI_ORIGIN, G_IM_FMT_RGBA, size, *REG.VI_WIDTH, VI.height );
 			}
-			if (g_bCopyFromRDRAM || bCFB)
+			if ((((*REG.VI_STATUS)&3) > 0) && (g_bCopyFromRDRAM || bCFB)) {
+				VI_UpdateSize();
 				FrameBuffer_CopyFromRDRAM( *REG.VI_ORIGIN, g_bCopyFromRDRAM && !bCFB );
+			}
 			if (g_bCopyToRDRAM && !bCFB)
 				FrameBuffer_CopyToRDRAM( *REG.VI_ORIGIN, false );
 			FrameBuffer_RenderBuffer( *REG.VI_ORIGIN );
