@@ -73,7 +73,7 @@ void VI_UpdateScreen()
 #endif
 		} else {
 			uNumCurFrameIsShown++;
-			if (uNumCurFrameIsShown > 4)
+			if (uNumCurFrameIsShown > 25)
 				gSP.changed |= CHANGED_CPU_FB_WRITE;
 		}
 	}
