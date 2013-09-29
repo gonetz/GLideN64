@@ -27,9 +27,16 @@ void VI_UpdateSize()
 	u32 vStart = _SHIFTR( *REG.VI_V_START, 17, 9 );
 
 	VI.width = (hEnd - hStart) * xScale;
-	VI.height = (vEnd - vStart) * yScale * 1.0126582f;
+	VI.real_height = (vEnd - vStart) * yScale;
+	VI.height = VI.real_height*1.0126582f;
 
-	if (VI.width == 0.0f) VI.width = 320.0f;
+	if (VI.vStart == 0) {
+		VI.vStart = vStart;
+		VI.vEnd = vEnd;
+		VI.vHeight = VI.height;
+	}
+
+	if (VI.width == 0.0f) VI.width = *REG.VI_WIDTH;
 	if (VI.height == 0.0f) VI.height = 240.0f;
 }
 
@@ -42,10 +49,12 @@ void VI_UpdateScreen()
 		OGL_SaveScreenshot();
 		OGL.captureScreen = false;
 	}
+	if (((*REG.VI_STATUS)&3) == 0)
+		VI.vStart = VI.vEnd = 0;
 
 	if (OGL.frameBufferTextures) {
 		const bool bCFB = (gSP.changed&CHANGED_CPU_FB_WRITE) == CHANGED_CPU_FB_WRITE;
-		const bool bNeedUpdate = bCFB ? true : (*REG.VI_ORIGIN != VI.lastOrigin) && gDP.colorImage.changed;
+		const bool bNeedUpdate = bCFB ? true : (*REG.VI_ORIGIN != VI.lastOrigin);// && gDP.colorImage.changed;
 
 		if (bNeedUpdate) {
 			FrameBuffer * pBuffer = FrameBuffer_FindBuffer(*REG.VI_ORIGIN);

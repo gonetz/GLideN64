@@ -324,18 +324,53 @@ void FrameBuffer_SaveBuffer( u32 address, u16 format, u16 size, u16 width, u16 h
 #if 1
 void FrameBuffer_RenderBuffer( u32 address )
 {
+	if (_SHIFTR( *REG.VI_H_START, 0, 10 ) == 0) // H width is zero. Don't draw
+		return;
 	FrameBuffer *current = FrameBuffer_FindBuffer(address);
 	if (current == NULL)
 		return;
+	GLint srcY0, srcY1, dstY0, dstY1;
+	GLint partHeight = 0;
+	dstY0 = 1;
+	const u32 vStart = _SHIFTR( *REG.VI_V_START, 17, 9 );
+	const u32 vEnd = _SHIFTR( *REG.VI_V_START, 1, 9 );
+	const float viScaleY = OGL.height / (float)VI.vHeight;
+
+	if (VI.vStart != vStart)
+		dstY0 += vStart - VI.vStart;
+	dstY1 = dstY0 + vEnd - vStart;
+	srcY0 = ((address - current->startAddress) << 1 >> current->size) / (*REG.VI_WIDTH);
+	srcY1 = srcY0 + VI.real_height;
+	if (srcY1 > VI.height) {
+		partHeight = srcY1 - VI.height;
+		srcY1 = VI.height;
+		dstY1 -= partHeight;
+	}
+
 	ogl_glBindFramebuffer(GL_READ_FRAMEBUFFER, current->fbo);
 	ogl_glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 	glDrawBuffer( GL_FRONT );
 	ogl_glBlitFramebuffer(
-//				0, 0, current->texture->realWidth, current->texture->realHeight,
-		0, 0, OGL.width, OGL.height,
-		0, OGL.heightOffset, OGL.width, OGL.height+OGL.heightOffset,
+		0, (GLint)(srcY0*OGL.scaleY), OGL.width, (GLint)(srcY1*OGL.scaleY),
+		0, OGL.heightOffset + (GLint)(dstY0*viScaleY), OGL.width, OGL.heightOffset + (GLint)(dstY1*viScaleY),
 		GL_COLOR_BUFFER_BIT, GL_LINEAR
 	);
+	if (partHeight > 0) {
+		const u32 size = *REG.VI_STATUS & 3;
+		current = FrameBuffer_FindBuffer(address + (((*REG.VI_WIDTH)*VI.height)<<size>>1));
+		if (current != NULL) {
+			srcY0 = 0;
+			srcY1 = partHeight;
+			dstY0 = dstY1;
+			dstY1 = dstY0 + partHeight;
+			ogl_glBindFramebuffer(GL_READ_FRAMEBUFFER, current->fbo);
+			ogl_glBlitFramebuffer(
+				0, (GLint)(srcY0*OGL.scaleY), OGL.width, (GLint)(srcY1*OGL.scaleY),
+				0, OGL.heightOffset + (GLint)(dstY0*viScaleY), OGL.width, OGL.heightOffset + (GLint)(dstY1*viScaleY),
+				GL_COLOR_BUFFER_BIT, GL_LINEAR
+			);
+		}
+	}
 	glDrawBuffer( GL_BACK );
 	ogl_glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
 	ogl_glBindFramebuffer(GL_DRAW_FRAMEBUFFER, frameBuffer.top->fbo);
