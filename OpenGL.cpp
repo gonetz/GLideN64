@@ -887,16 +887,7 @@ void OGL_DrawTriangles()
 		OGL.lastStipple = (OGL.lastStipple + 1) & 0x7;
 		glPolygonStipple( OGL.stipplePattern[(BYTE)(gDP.envColor.a * 255.0f) >> 3][OGL.lastStipple] );
 	}
-
-	if (combiner.usesLOD && gDP.otherMode.textureLOD == G_TL_LOD) {
-		Combiner_CalcLOD();
-#ifndef LOD_TEST
-		glDrawArrays( GL_TRIANGLES, 0, OGL.numVertices );
-		Combiner_PostCalcLOD();
-#endif
-	} else
-		glDrawArrays( GL_TRIANGLES, 0, OGL.numVertices );
-
+	glDrawArrays( GL_TRIANGLES, 0, OGL.numVertices );
 	OGL.numTriangles = OGL.numVertices = 0;
 }
 

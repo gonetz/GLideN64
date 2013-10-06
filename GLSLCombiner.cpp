@@ -15,11 +15,6 @@
 #include "Noise_shader.h"
 
 static GLhandleARB g_vertex_shader_object;
-static GLhandleARB g_lod_program;
-static GLhandleARB g_lod_clear_program;
-static GLhandleARB g_lod_program_test;
-static GLuint g_lod_fbo = 0;
-static GLuint g_lod_tex = 0;
 
 static
 void display_warning(const char *text, ...)
@@ -160,7 +155,6 @@ static const char* fragment_shader_header_lod_variables =
 "uniform float min_lod;			\n"
 "uniform int max_tile;			\n"
 "uniform int texture_detail;	\n"
-"uniform sampler2D lod_texture;	\n"
 ;
 
 static const char* fragment_shader_header_common_functions =
@@ -196,65 +190,32 @@ static const char* fragment_shader_calc_light =
 
 static const char* fragment_shader_calc_lod =
 "														\n"
-"vec2 fetchTex(in ivec2 screenpos) { \n"
-  // look up result from previous render pass in the texture
-"  vec4 color = texelFetch(lod_texture, screenpos, 0);	\n"
-"  return vec2(color);									\n"
-"}														\n"
-"														\n"
 "float calc_lod() {										\n"
 "  if (lod_enabled == 0)								\n"
 "    return prim_lod;									\n"
-  // convert fragment position to integers
-"  int x0 = int(gl_FragCoord.x);						\n"
-"  int y0 = int(gl_FragCoord.y);						\n"
-"  float lod = 0.0;										\n"
-"  vec2 lodtex0 = 255.0*fetchTex(ivec2(x0, y0));		\n"
-"  lodtex0.x *= lod_x_scale;							\n"
-"  lodtex0.y *= lod_y_scale;							\n"
-"  vec2 lodtex1 = 255.0*fetchTex(ivec2(x0+1, y0));		\n"
-"  if (length(lodtex1) > 0.0) {							\n"
-"    lodtex1.x *= lod_x_scale;							\n"
-"    lodtex1.y *= lod_y_scale;							\n"
-"    lod = distance(lodtex0, lodtex1);					\n"
-"  }													\n"
+" vec2 texCoord = 255.0*vec2(secondary_color.g, secondary_color.b); \n"
+" vec2 dx = dFdx(texCoord);								\n"
+" dx.x *= lod_x_scale;									\n"
+" dx.y *= lod_y_scale;									\n"
+" vec2 dy = dFdy(texCoord);								\n"
+" dy.x *= lod_x_scale;									\n"
+" dy.y *= lod_y_scale;									\n"
+" float lod = max(length(dx), length(dy));				\n"
+" float lod_frac;										\n"
 "  if (lod < 1.0) {										\n"
-"    lodtex1 = 255.0*fetchTex(ivec2(x0, y0+1));			\n"
-"    if (length(lodtex1) > 0.0) {						\n"
-"      lodtex1.x *= lod_x_scale;						\n"
-"      lodtex1.y *= lod_y_scale;						\n"
-"      lod = distance(lodtex0, lodtex1);				\n"
-"    }													\n"
+"    lod_frac = max(lod, min_lod);						\n"
+"    if (texture_detail == 1)							\n"
+"      lod_frac = 1.0 - lod_frac;						\n"
+"  } else {												\n"
+"    float tile = min(float(max_tile), floor(log2(floor(lod)))); \n"
+"    lod_frac = max(min_lod, fract(lod/pow(2.0, tile)));\n"
 "  }													\n"
-"  if (lod < 1.0) {										\n"
-"    lodtex1 = 255.0*fetchTex(ivec2(x0-1, y0));			\n"
-"    if (length(lodtex1) > 0.0) {						\n"
-"      lodtex1.x *= lod_x_scale;						\n"
-"      lodtex1.y *= lod_y_scale;						\n"
-"      lod = distance(lodtex0, lodtex1);				\n"
-"    }													\n"
-"  }													\n"
-"  if (lod < 1.0) {										\n"
-"    lodtex1 = 255.0*fetchTex(ivec2(x0, y0-1));			\n"
-"    if (length(lodtex1) > 0.0) {						\n"
-"      lodtex1.x *= lod_x_scale;						\n"
-"      lodtex1.y *= lod_y_scale;						\n"
-"      lod = distance(lodtex0, lodtex1);				\n"
-"    }													\n"
-"  }													\n"
-//"  if (texture_detail > 0 && lod < min_lod)				\n"
-//"  if (lod < min_lod)									\n"
-//"    lod = min_lod;										\n"
-"  if (lod < 1.0)										\n"
-"    return min_lod;									\n"
-"  float tile = min(float(max_tile), floor(log2(floor(lod)))); \n"
-"  return max(min_lod, fract(lod/pow(2.0, tile)));		\n"
+"  return lod_frac;										\n"
 "}														\n"
 ;
 
 static const char* fragment_shader_header_main =
-"													\n"
-"layout(pixel_center_integer) in vec4 gl_FragCoord; \n"
+"									\n"
 "void main()						\n"
 "{									\n"
 "  if (dither_enabled > 0)			\n"
@@ -318,119 +279,6 @@ static const char* vertex_shader =
 "}                                                              \n"
 ;
 
-static const char* lod_vertex_shader =
-"varying vec4 secondary_color;                                  \n"
-"void main()                                                    \n"
-"{                                                              \n"
-"  gl_Position = ftransform();                                  \n"
-"  gl_FrontColor = gl_Color;                                    \n"
-"  secondary_color = gl_SecondaryColor;							\n"
-"}                                                              \n"
-;
-
-static const char* lod_fragment_shader =
-"varying vec4 secondary_color;      \n"
-"layout (location = 0) out vec4 texCoordOut;	\n"
-"void main()						\n"
-"{texCoordOut = vec4(secondary_color.g, secondary_color.b, 0.0, 1.0);} \n"
-;
-
-static const char* lod_clear_fragment_shader =
-"varying vec4 secondary_color;      \n"
-"layout (location = 0) out vec4 texCoordOut;	\n"
-"void main()						\n"
-"{texCoordOut = vec4(0.0, 0.0, 0.0, 1.0);} \n"
-;
-
-static const char* lod_fragment_shader_test =
-// texture with the previous render pass
-"uniform sampler2D mytex; \n"
-"uniform int lod_enabled;		\n"
-"uniform float lod_x_scale;		\n"
-"uniform float lod_y_scale;		\n"
-"uniform float min_lod;			\n"
-"uniform int max_tile;			\n"
-"uniform int texture_detail;	\n"
-"uniform sampler2D lod_texture;	\n"
-"layout(pixel_center_integer) in vec4 gl_FragCoord; \n"
-"vec2 fetchTex(in ivec2 screenpos) {						\n"
-  // look up result from previous render pass in the texture
-"  vec4 color = texelFetch(mytex, screenpos, 0);			\n"
-"  return vec2(color);										\n"
-"}															\n"
-"vec2 fetchCoord(in ivec2 screenpos) {						\n"
-  // look up result from previous render pass in the texture
-"  vec4 color = texelFetch(mytex, screenpos, 0);			\n"
-"  return vec2(color.b, color.a);							\n"
-"}															\n"
-"void main()												\n"
-#if 0
-"{															\n"
-"  if (lod_enabled == 0)								\n"
-"    return;									\n"
-  // convert fragment position to integers
-"  int x0 = int(gl_FragCoord.x);						\n"
-"  int y0 = int(gl_FragCoord.y);						\n"
-"  float lod = 0.0;										\n"
-"  vec2 lodtex0 = 255.0*fetchTex(ivec2(x0, y0));		\n"
-"  lodtex0.x *= lod_x_scale;							\n"
-"  lodtex0.y *= lod_y_scale;							\n"
-"  vec2 lodtex1 = 255.0*fetchTex(ivec2(x0+1, y0));		\n"
-"  if (length(lodtex1) > 0.0) {							\n"
-"    lodtex1.x *= lod_x_scale;							\n"
-"    lodtex1.y *= lod_y_scale;							\n"
-"    lod = distance(lodtex0, lodtex1);					\n"
-"  }													\n"
-"  if (lod < 1.0) {										\n"
-"    lodtex1 = 255.0*fetchTex(ivec2(x0, y0+1));			\n"
-"    if (length(lodtex1) > 0.0) {						\n"
-"      lodtex1.x *= lod_x_scale;						\n"
-"      lodtex1.y *= lod_y_scale;						\n"
-"      lod = distance(lodtex0, lodtex1);				\n"
-"    }													\n"
-"  }													\n"
-"  if (lod < 1.0) {										\n"
-"    lodtex1 = 255.0*fetchTex(ivec2(x0-1, y0));			\n"
-"    if (length(lodtex1) > 0.0) {						\n"
-"      lodtex1.x *= lod_x_scale;						\n"
-"      lodtex1.y *= lod_y_scale;						\n"
-"      lod = distance(lodtex0, lodtex1);				\n"
-"    }													\n"
-"  }													\n"
-"  if (lod < 1.0) {										\n"
-"    lodtex1 = 255.0*fetchTex(ivec2(x0, y0-1));			\n"
-"    if (length(lodtex1) > 0.0) {						\n"
-"      lodtex1.x *= lod_x_scale;						\n"
-"      lodtex1.y *= lod_y_scale;						\n"
-"      lod = distance(lodtex0, lodtex1);				\n"
-"    }													\n"
-"  }													\n"
-"  if (texture_detail > 0 && lod < min_lod)				\n"
-"    lod = min_lod;										\n"
-"  if (lod < 1.0)										\n"
-"    return;										\n"
-"  float tile = min(float(max_tile), floor(log2(floor(lod)))); \n"
-"  float lod_frac = fract(lod/pow(2.0, tile));					\n"
-"  gl_FragColor = vec4(lod_frac, 0.0, 0.0, 1.0);				\n"
-"}															\n"
-#else
-"{ \n"
-  // convert fragment position to integers
-"  ivec2 screenpos = ivec2(gl_FragCoord.xy); \n"
-  // look up result from previous render pass in the texture
-#if 1
-"  vec4 color = 8.0*texelFetch(mytex, screenpos, 0); \n"
-"  gl_FragColor = vec4(color.r, color.g, 0.0, 1.0); \n"
-#else
-"  vec4 color = 255.0*texelFetch(mytex, screenpos, 0); \n"
-"  gl_FragColor = vec4(fract(color.r), fract(color.g), 0.0, 1.0); \n"
-#endif
-  // now use the value from the previous render pass ...
-//"  gl_FragColor = color; \n"
-"} \n"
-#endif
-;
-
 void InitGLSLCombiner()
 {
 	glActiveTextureARB(GL_TEXTURE0_ARB);
@@ -441,90 +289,10 @@ void InitGLSLCombiner()
 	g_vertex_shader_object = glCreateShaderObjectARB(GL_VERTEX_SHADER_ARB);
 	glShaderSourceARB(g_vertex_shader_object, 1, &vertex_shader, NULL);
 	glCompileShaderARB(g_vertex_shader_object);
-
-	GLhandleARB lod_vertex_shader_object = glCreateShaderObjectARB(GL_VERTEX_SHADER_ARB);
-	glShaderSourceARB(lod_vertex_shader_object, 1, &lod_vertex_shader, NULL);
-	glCompileShaderARB(lod_vertex_shader_object);
-	GLhandleARB lod_fragment_shader_object = glCreateShaderObjectARB(GL_FRAGMENT_SHADER_ARB);
-	glShaderSourceARB(lod_fragment_shader_object, 1, &lod_fragment_shader, NULL);
-	glCompileShaderARB(lod_fragment_shader_object);
-	g_lod_program = glCreateProgramObjectARB();
-	glAttachObjectARB(g_lod_program, lod_vertex_shader_object);
-	glAttachObjectARB(g_lod_program, lod_fragment_shader_object);
-	glLinkProgramARB(g_lod_program);
-
-	GLhandleARB lod_clear_fragment_shader_object = glCreateShaderObjectARB(GL_FRAGMENT_SHADER_ARB);
-	glShaderSourceARB(lod_clear_fragment_shader_object, 1, &lod_clear_fragment_shader, NULL);
-	glCompileShaderARB(lod_clear_fragment_shader_object);
-	g_lod_clear_program = glCreateProgramObjectARB();
-	glAttachObjectARB(g_lod_clear_program, lod_vertex_shader_object);
-	glAttachObjectARB(g_lod_clear_program, lod_clear_fragment_shader_object);
-	glLinkProgramARB(g_lod_clear_program);
-#ifdef LOD_TEST
-	GLhandleARB lod_vertex_shader_object2 = glCreateShaderObjectARB(GL_VERTEX_SHADER_ARB);
-	glShaderSourceARB(lod_vertex_shader_object2, 1, &lod_vertex_shader, NULL);
-	glCompileShaderARB(lod_vertex_shader_object2);
-	GLhandleARB lod_fragment_shader_object2 = glCreateShaderObjectARB(GL_FRAGMENT_SHADER_ARB);
-	glShaderSourceARB(lod_fragment_shader_object2, 1, &lod_fragment_shader_test, NULL);
-	glCompileShaderARB(lod_fragment_shader_object2);
-	g_lod_program_test = glCreateProgramObjectARB();
-	glAttachObjectARB(g_lod_program_test, lod_vertex_shader_object2);
-	glAttachObjectARB(g_lod_program_test, lod_fragment_shader_object2);
-	glLinkProgramARB(g_lod_program_test);
-
-#ifdef _DEBUG
-	int log_length;
-	glGetObjectParameterivARB(g_lod_program_test, GL_OBJECT_LINK_STATUS_ARB , &log_length);
-	if(!log_length)
-	{
-		const int nLogSize = 1024;
-		char shader_log[nLogSize];
-		glGetInfoLogARB(lod_fragment_shader_object2, 
-			nLogSize, &log_length, shader_log);
-		if(log_length) 
-			display_warning(shader_log);
-		glGetInfoLogARB(lod_vertex_shader_object2, nLogSize, &log_length, shader_log);
-		if(log_length) 
-			display_warning(shader_log);
-		glGetInfoLogARB(g_lod_program_test, 
-			nLogSize, &log_length, shader_log);
-		if(log_length) 
-			display_warning(shader_log);
-	}
-#endif
-#endif // LOD_TEST
-
-	// generate a framebuffer 
-	ogl_glGenFramebuffers(1, &g_lod_fbo);
-	// bind it as the target for rendering commands
-	ogl_glBindFramebuffer(GL_DRAW_FRAMEBUFFER, g_lod_fbo);
-
-	glActiveTextureARB(GL_TEXTURE2_ARB);
-	glEnable(GL_TEXTURE_2D);
-	glGenTextures(1, &g_lod_tex);
-	glBindTexture(GL_TEXTURE_2D, g_lod_tex);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR); 
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	glTexImage2D(GL_TEXTURE_2D, 0,GL_RGBA16F,
-						OGL.width <= 1024 ? 1024 : 2048,
-						OGL.height <= 1024 ? 1024 : 2048,
-						0, GL_RGBA, GL_FLOAT,
-						NULL); 
-	glBindTexture(GL_TEXTURE_2D, 0);
-	ogl_glFramebufferTexture(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, g_lod_tex, 0);
-
-	// check if everything is OK
-	assert(checkFBO());
-	ogl_glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 }
 
 void DestroyGLSLCombiner() {
-	if (g_lod_tex > 0)
-		glDeleteTextures(1, &g_lod_tex);
 	ogl_glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-	ogl_glDeleteFramebuffers(1, &g_lod_fbo);
 }
 
 static
@@ -718,11 +486,6 @@ void GLSLCombiner::UpdateColors() {
 		int lod_en_location = glGetUniformLocationARB(m_programObject, "lod_enabled");
 		glUniform1iARB(lod_en_location, bCalcLOD);
 		if (bCalcLOD) {
-			glActiveTextureARB(GL_TEXTURE2_ARB);
-			glEnable(GL_TEXTURE_2D);
-			glBindTexture(GL_TEXTURE_2D, g_lod_tex);
-			int lod_texture_location = glGetUniformLocationARB(m_programObject, "lod_texture");
-			glUniform1iARB(lod_texture_location, 2);
 			int scale_x_location = glGetUniformLocationARB(m_programObject, "lod_x_scale");
 			glUniform1fARB(scale_x_location, OGL.scaleX);
 			int scale_y_location = glGetUniformLocationARB(m_programObject, "lod_y_scale");
@@ -773,124 +536,4 @@ void GLSLCombiner::UpdateFBInfo() {
 	glUniform1iARB(fb8bit_location, nFb8bitMode);
 	int fbFixedAlpha_location = glGetUniformLocationARB(m_programObject, "fb_fixed_alpha");
 	glUniform1iARB(fbFixedAlpha_location, nFbFixedAlpha);
-}
-
-#include "VI.h"
-
-void OGL_UpdateCullFace();
-void OGL_UpdateViewport();
-void OGL_ClearColorBuffer( float *color );
-
-#if defined(LOD_TEST)
-void drawFBO()
-{
-	glUseProgramObjectARB(0);
-	glDisable( GL_DEPTH_TEST );
-	glDisable( GL_CULL_FACE );
-	glMatrixMode( GL_PROJECTION );
-    glLoadIdentity();
-	glOrtho( 0, VI.width, VI.height, 0, 1.0f, -1.0f );
-	glViewport( 0, OGL.heightOffset, OGL.width, OGL.height );
-
-	glActiveTextureARB(GL_TEXTURE0_ARB);
-	glDisable(GL_TEXTURE_2D);
-	glActiveTextureARB(GL_TEXTURE1_ARB);
-	glDisable(GL_TEXTURE_2D);
-	
-	glActiveTextureARB(GL_TEXTURE2_ARB);
-	glEnable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D, g_lod_tex);
-	glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL );
-	glColor4f( 1, 1, 1, 1 );
-	const float s0 = 0.5f;//640.0f/1024.0f;
-	const float t0 = 0.5f;//480.0f/1024.0f;
-
-
-	glBegin( GL_QUADS );
-		glMultiTexCoord2fARB( GL_TEXTURE2_ARB, 0, 0 );
-		glVertex4f( 0, 0, 1.0f, 1.0f );
-
-		glMultiTexCoord2fARB( GL_TEXTURE2_ARB, s0, 0 );
-		glVertex4f( 320, 0, 1.0f, 1.0f );
-
-		glMultiTexCoord2fARB( GL_TEXTURE2_ARB, s0, t0 );
-		glVertex4f( 320, 240, 1.0f, 1.0f );
-
-		glMultiTexCoord2fARB( GL_TEXTURE2_ARB, 0, t0 );
-		glVertex4f( 0, 240, 1.0f, 1.0f );
-	glEnd();
-
-	glLoadIdentity();
-	OGL_UpdateCullFace();
-	OGL_UpdateViewport();
-	
-}
-#endif
-
-void GLSL_CalcLOD() {
-	glDisable( GL_DEPTH_TEST );
-	// bind a framebuffer object
-	ogl_glBindFramebuffer(GL_DRAW_FRAMEBUFFER, g_lod_fbo);
-	// Set Drawing buffers
-	GLuint attachments[1] = {GL_COLOR_ATTACHMENT0};
-	ogl_glDrawBuffers(1,  attachments, g_lod_tex);
-
-	glUseProgramObjectARB(g_lod_program);
-	glDrawArrays( GL_TRIANGLES, 0, OGL.numVertices );
-
-	ogl_glBindFramebuffer(GL_DRAW_FRAMEBUFFER,  frameBuffer.top != NULL ? frameBuffer.top->fbo : 0);
-
-//	drawFBO();
-
-#if defined(LOD_TEST)
-	glActiveTextureARB(GL_TEXTURE2_ARB);
-	glEnable(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D, g_lod_tex);
-	glUseProgramObjectARB(g_lod_program_test);
-	int texture2_location = glGetUniformLocationARB(g_lod_program_test, "mytex");
-		BOOL bCalcLOD = gDP.otherMode.textureLOD == G_TL_LOD;
-		int lod_en_location = glGetUniformLocationARB(g_lod_program_test, "lod_enabled");
-		glUniform1iARB(lod_en_location, bCalcLOD);
-		if (bCalcLOD) {
-			glActiveTextureARB(GL_TEXTURE2_ARB);
-			glEnable(GL_TEXTURE_2D);
-			glBindTexture(GL_TEXTURE_2D, g_lod_tex);
-			int lod_texture_location = glGetUniformLocationARB(g_lod_program_test, "lod_texture");
-			glUniform1iARB(lod_texture_location, 2);
-			int scale_x_location = glGetUniformLocationARB(g_lod_program_test, "lod_x_scale");
-			glUniform1fARB(scale_x_location, OGL.scaleX);
-			int scale_y_location = glGetUniformLocationARB(g_lod_program_test, "lod_y_scale");
-			glUniform1fARB(scale_y_location, OGL.scaleY);
-			int min_lod_location = glGetUniformLocationARB(g_lod_program_test, "min_lod");
-			glUniform1fARB(min_lod_location, gDP.primColor.m);
-			int max_tile_location = glGetUniformLocationARB(g_lod_program_test, "max_tile");
-			glUniform1iARB(max_tile_location, gSP.texture.level);
-			int texture_detail_location = glGetUniformLocationARB(g_lod_program_test, "texture_detail");
-			glUniform1iARB(texture_detail_location, gDP.otherMode.textureDetail);
-		}
-	if (texture2_location != -1)
-		glUniform1iARB(texture2_location, 2);
-	glDrawArrays( GL_TRIANGLES, 0, OGL.numVertices );
-#endif
-
-	if (gSP.geometryMode & G_ZBUFFER)
-		glEnable( GL_DEPTH_TEST );
-
-	Combiner_SetCombine( gDP.combine.mux );
-}
-
-void GLSL_PostCalcLOD() {
-	glDisable( GL_DEPTH_TEST );
-	// bind a framebuffer object
-	ogl_glBindFramebuffer(GL_DRAW_FRAMEBUFFER, g_lod_fbo);
-	// Set Drawing buffers
-	GLuint attachments[1] = {GL_COLOR_ATTACHMENT0};
-	ogl_glDrawBuffers(1,  attachments, g_lod_tex);
-
-	glUseProgramObjectARB(g_lod_clear_program);
-	glDrawArrays( GL_TRIANGLES, 0, OGL.numVertices );
-
-	ogl_glBindFramebuffer(GL_DRAW_FRAMEBUFFER,  frameBuffer.top != NULL ? frameBuffer.top->fbo : 0);
-
-	Combiner_SetCombine( gDP.combine.mux );
 }

@@ -217,8 +217,6 @@ void Combiner_SetCombine( u64 mux );
 void Combiner_Destroy();
 void Combiner_BeginTextureUpdate();
 void Combiner_EndTextureUpdate();
-void Combiner_CalcLOD();
-void Combiner_PostCalcLOD();
 
 #endif
 
