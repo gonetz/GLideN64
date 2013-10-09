@@ -24,7 +24,7 @@ void DepthBuffer_RemoveBottom()
 		depthBuffer.top = NULL;
 
 	if (depthBuffer.bottom->renderbuf != 0)
-		glDeleteRenderbuffers(1, &depthBuffer.bottom->renderbuf);
+		ogl_glDeleteRenderbuffers(1, &depthBuffer.bottom->renderbuf);
 	free( depthBuffer.bottom );
 
     depthBuffer.bottom = newBottom;

@@ -2,11 +2,11 @@
 #define RSP_H
 
 #ifndef __LINUX__
-# include <windows.h>
+#include <windows.h>
 #else
-# include "winlnxdefs.h"
-# include "SDL.h"
-# include "SDL_thread.h"
+#include "winlnxdefs.h"
+#include <SDL/SDL.h>
+#include  <SDL/SDL_thread.h>
 #endif
 #include "N64.h"
 #include "GBI.h"

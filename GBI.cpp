@@ -18,8 +18,8 @@
 #ifndef __LINUX__
 # include "Resource.h"
 #else // !__LINUX__
-# include <glib.h>
-# include <gtk/gtk.h>
+#include <glib.h>
+#include <gtk/gtk.h>
 #endif // __LINUX__
 #include "CRC.h"
 #include "Debug.h"

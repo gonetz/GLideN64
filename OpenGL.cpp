@@ -1,18 +1,8 @@
-#ifndef __LINUX__
-# include <windows.h>
-# include <GL/gl.h>
-# include "glext.h"
-#else // !__LINUX__
-# include "winlnxdefs.h"
-# include <GL/gl.h>
-# include <GL/glext.h>
-# include "SDL.h"
-#endif // __LINUX__
+#include "OpenGL.h"
 #include <assert.h>
 #include <math.h>
 #include <stdio.h>
 #include "GLideN64.h"
-#include "OpenGL.h"
 #include "Types.h"
 #include "N64.h"
 #include "gSP.h"
@@ -254,6 +244,7 @@ void OGL_InitExtensions()
 	OGL.ATIX_texture_env_route = isExtensionSupported( "GL_ATIX_texture_env_route" );
 	OGL.NV_texture_env_combine4 = isExtensionSupported( "GL_NV_texture_env_combine4" );
 
+#ifndef __LINUX__
 	glDrawBuffers = (PFNGLDRAWBUFFERSPROC)wglGetProcAddress( "glDrawBuffers" );
 	glBindFramebuffer = (PFNGLBINDFRAMEBUFFERPROC)wglGetProcAddress( "glBindFramebuffer" );
 	glDeleteFramebuffers = (PFNGLDELETEFRAMEBUFFERSPROC)wglGetProcAddress( "glDeleteFramebuffers" );
@@ -285,6 +276,7 @@ void OGL_InitExtensions()
 	glRenderbufferStorageEXT = (PFNGLRENDERBUFFERSTORAGEEXTPROC)wglGetProcAddress("glRenderbufferStorageEXT");
 	glFramebufferRenderbufferEXT = (PFNGLFRAMEBUFFERRENDERBUFFEREXTPROC)wglGetProcAddress("glFramebufferRenderbufferEXT");
 	glBlitFramebufferEXT = (PFNGLBLITFRAMEBUFFEREXTPROC)wglGetProcAddress("glBlitFramebufferEXT");
+#endif // !__LINUX__
 
 	if (glGenFramebuffers != NULL)
 		OGL.framebuffer_mode = GLInfo::fbFBO;

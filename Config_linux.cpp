@@ -1,11 +1,11 @@
 #include "winlnxdefs.h"
-#include "SDL.h"
+# include <SDL/SDL.h>
 #include <errno.h>
 #include <gtk/gtk.h>
 #include <string.h>
 
 #include "Config.h"
-#include "glN64.h"
+#include "GLideN64.h"
 #include "RSP.h"
 #include "Textures.h"
 #include "OpenGL.h"

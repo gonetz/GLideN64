@@ -4,11 +4,11 @@
 #include <stdio.h>
 #include <iostream>
 #include <fstream>
-#include <assert.h>
 #else
 # include "winlnxdefs.h"
 # include <stdlib.h> // malloc()
 #endif
+#include <assert.h>
 #include "OpenGL.h"
 #include "Combiner.h"
 #include "GLSLCombiner.h"

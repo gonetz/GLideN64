@@ -2,18 +2,18 @@
 #define OPENGL_H
 
 #ifndef __LINUX__
-# include <windows.h>
-# include <GL/gl.h>
-# include "wglext.h"
-# include "glext.h"
+#include <windows.h>
+#include <GL/gl.h>
+#include "wglext.h"
+#include "glext.h"
 #else
-# include "winlnxdefs.h"
-# include <GL/gl.h>
-# include <GL/glext.h>
-# include "SDL.h"
+#define GL_GLEXT_PROTOTYPES
+#include "winlnxdefs.h"
+#include <GL/gl.h>
+#include <GL/glext.h>
+#include <SDL/SDL.h>
 #endif // __LINUX__
 
-#include "glATI.h"
 #include "gSP.h"
 
 struct GLVertex

@@ -7,6 +7,7 @@
 #include "OpenGL.h"
 #include "Combiner.h"
 #include "texture_env_combine.h"
+#include "glATI.h"
 
 static TexEnvCombinerArg TexEnvArgs[] =
 {
