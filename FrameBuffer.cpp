@@ -349,7 +349,9 @@ void FrameBuffer_RenderBuffer( u32 address )
 
 	ogl_glBindFramebuffer(GL_READ_FRAMEBUFFER, current->fbo);
 	ogl_glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-	glDrawBuffer( GL_FRONT );
+	glDrawBuffer( GL_BACK );
+	float clearColor[4] = {0.0f, 0.0f, 0.0f, 0.0f};
+	OGL_ClearColorBuffer(clearColor);
 	ogl_glBlitFramebuffer(
 		0, (GLint)(srcY0*OGL.scaleY), OGL.width, (GLint)(srcY1*OGL.scaleY),
 		0, OGL.heightOffset + (GLint)(dstY0*viScaleY), OGL.width, OGL.heightOffset + (GLint)(dstY1*viScaleY),
@@ -371,9 +373,13 @@ void FrameBuffer_RenderBuffer( u32 address )
 			);
 		}
 	}
-	glDrawBuffer( GL_BACK );
 	ogl_glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
 	ogl_glBindFramebuffer(GL_DRAW_FRAMEBUFFER, frameBuffer.top->fbo);
+#ifndef __LINUX__
+			SwapBuffers( OGL.hDC );
+#else
+			OGL_SwapBuffers();
+#endif
 }
 #else
 
