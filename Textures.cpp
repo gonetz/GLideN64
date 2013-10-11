@@ -15,6 +15,7 @@
 #include "convert.h"
 #include "2xSAI.h"
 #include "FrameBuffer.h"
+#include <assert.h>
 
 TextureCache	cache;
 
@@ -291,7 +292,9 @@ void TextureCache_Init()
 	CRC_BuildTable();
 }
 
-BOOL TextureCache_Verify()
+#ifdef TEXTURE_CACHE_VERIFICATION
+static
+bool TextureCache_Verify()
 {
 	s16 i = 0;
 	CachedTexture *current;
@@ -303,7 +306,7 @@ BOOL TextureCache_Verify()
 		i++;
 		current = current->lower;
 	}
-	if (i != cache.numCached) return FALSE;
+	if (i != cache.numCached) return false;
 
 	i = 0;
 	current = cache.bottom;
@@ -312,10 +315,14 @@ BOOL TextureCache_Verify()
 		i++;
 		current = current->higher;
 	}
-	if (i != cache.numCached) return FALSE;
+	if (i != cache.numCached) return false;
 
-	return TRUE;
+	return true;
 }
+#else
+static
+bool TextureCache_Verify() {return true;}
+#endif
 
 void TextureCache_RemoveBottom()
 {
@@ -338,6 +345,7 @@ void TextureCache_RemoveBottom()
 		cache.bottom->lower = NULL;
 
 	cache.numCached--;
+	assert(TextureCache_Verify());
 }
 
 void TextureCache_Remove( CachedTexture *texture )
@@ -373,6 +381,7 @@ void TextureCache_Remove( CachedTexture *texture )
 	free( texture );
 
 	cache.numCached--;
+	assert(TextureCache_Verify());
 }
 
 CachedTexture *TextureCache_AddTop()
@@ -402,6 +411,7 @@ CachedTexture *TextureCache_AddTop()
 
 	cache.numCached++;
 
+	assert(TextureCache_Verify());
 	return newtop;
 }
 
@@ -424,6 +434,7 @@ void TextureCache_MoveToTop( CachedTexture *newtop )
 	newtop->lower = cache.top;
 	cache.top->higher = newtop;
 	cache.top = newtop;
+	assert(TextureCache_Verify());
 }
 
 void TextureCache_Destroy()

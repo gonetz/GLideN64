@@ -84,6 +84,5 @@ void TextureCache_Update( u32 t );
 void TextureCache_ActivateTexture( u32 t, CachedTexture *texture );
 void TextureCache_ActivateNoise( u32 t );
 void TextureCache_ActivateDummy( u32 t );
-BOOL TextureCache_Verify();
 
 #endif
