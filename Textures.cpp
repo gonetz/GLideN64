@@ -390,13 +390,16 @@ CachedTexture *TextureCache_AddTop()
 	{
 		if (cache.bottom != cache.dummy)
 			TextureCache_RemoveBottom();
-		else if (cache.dummy->higher)
-			TextureCache_Remove( cache.dummy->higher );
+		else if (cache.dummy->higher) {
+			CachedTexture *pCurrent = cache.dummy->higher;
+			while (pCurrent != NULL && pCurrent->frameBufferTexture != 0)
+				pCurrent = pCurrent->higher;
+			TextureCache_Remove(pCurrent);
+		}
 	}
 
 	CachedTexture *newtop = (CachedTexture*)malloc( sizeof( CachedTexture ) );
 	memset(newtop, 0, sizeof(CachedTexture));
-
 	glGenTextures( 1, &newtop->glName );
 
 	newtop->lower = cache.top;
