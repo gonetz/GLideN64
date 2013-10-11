@@ -678,7 +678,7 @@ void FrameBufferToRDRAM::CopyAuxBufferToRDRAM( u32 address ) {
 	);
 
 	char *pixelData = (char*)malloc(width * height * 4);
-	if (*pixelData == NULL)
+	if (pixelData == NULL)
 		return;
 
 	ogl_glBindFramebuffer(GL_READ_FRAMEBUFFER, m_FBO);
