@@ -395,6 +395,7 @@ CachedTexture *TextureCache_AddTop()
 	}
 
 	CachedTexture *newtop = (CachedTexture*)malloc( sizeof( CachedTexture ) );
+	memset(newtop, 0, sizeof(CachedTexture));
 
 	glGenTextures( 1, &newtop->glName );
 
