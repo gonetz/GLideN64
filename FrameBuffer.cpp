@@ -16,7 +16,7 @@
 #include "Types.h"
 #include "Debug.h"
 
-bool g_bCopyToRDRAM = true;
+bool g_bCopyToRDRAM = false;
 bool g_bCopyFromRDRAM = false;
 FrameBufferInfo frameBuffer;
 
@@ -34,7 +34,6 @@ public:
 	void Destroy();
 
 	void CopyToRDRAM( u32 address, bool bSync );
-	void CopyAuxBufferToRDRAM( u32 address );
 
 private:
 	struct RGBA {
@@ -222,11 +221,7 @@ void FrameBuffer_SaveBuffer( u32 address, u16 format, u16 size, u16 width, u16 h
 	FrameBuffer *current = frameBuffer.top;
 	if (current != NULL && gDP.colorImage.height > 1) {
 		current->endAddress = current->startAddress + (((current->width * gDP.colorImage.height) << current->size >> 1) - 1);
-		if (current->startAddress == 0x13ba50 || current->startAddress == 0x264430) { // HACK ALERT: Dirty hack for Mario Tennis score board
-			g_fbToRDRAM.CopyAuxBufferToRDRAM(current->startAddress);
-			FrameBuffer_Remove( current );
-			current = NULL;
-		} else if (!g_bCopyToRDRAM && !current->cleared)
+		if (!g_bCopyToRDRAM && !current->cleared)
 			gDPFillRDRAM(current->startAddress, 0, 0, current->width, gDP.colorImage.height, current->width, current->size, frameBuffer.top->fillcolor);
 	}
 
@@ -254,7 +249,8 @@ void FrameBuffer_SaveBuffer( u32 address, u16 format, u16 size, u16 width, u16 h
 			}
 		}
 	}
-	if  (current == NULL) {
+	const bool bNew = current == NULL;
+	if  (bNew) {
 		// Wasn't found or removed, create a new one
 		current = FrameBuffer_AddTop();
 
@@ -313,6 +309,9 @@ void FrameBuffer_SaveBuffer( u32 address, u16 format, u16 size, u16 width, u16 h
 		address, (depthBuffer.top != NULL && depthBuffer.top->renderbuf > 0) ? depthBuffer.top->address : 0
 	);
 #endif
+	// HACK ALERT: Dirty hack for Mario Tennis score board
+	if (bNew && (current->startAddress == 0x13ba50 || current->startAddress == 0x264430))
+		g_RDRAMtoFB.CopyFromRDRAM(current->startAddress, false);
 	*(u32*)&RDRAM[current->startAddress] = current->startAddress;
 
 	current->cleared = false;
@@ -659,58 +658,6 @@ void FrameBufferToRDRAM::CopyToRDRAM( u32 address, bool bSync ) {
 	glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
 }
 
-void FrameBufferToRDRAM::CopyAuxBufferToRDRAM( u32 address ) {
-	FrameBuffer *current = FrameBuffer_FindBuffer(address);
-	if (current == NULL)
-		return;
-
-	ogl_glBindFramebuffer(GL_READ_FRAMEBUFFER, current->fbo);
-	glReadBuffer(GL_COLOR_ATTACHMENT0);
-	ogl_glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_FBO);
-	GLuint attachment = GL_COLOR_ATTACHMENT0;
-	glDrawBuffers(1, &attachment);
-	const u32 width  = current->width;
-	const u32 height = (current->endAddress - current->startAddress + 1) / (current->width<<current->size>>1);
-	ogl_glBlitFramebuffer(
-		0, (current->height - height)*OGL.scaleY, width*OGL.scaleX, current->height*OGL.scaleY,
-		0, 0, width, height,
-		GL_COLOR_BUFFER_BIT, GL_LINEAR
-	);
-
-	char *pixelData = (char*)malloc(width * height * 4);
-	if (pixelData == NULL)
-		return;
-
-	ogl_glBindFramebuffer(GL_READ_FRAMEBUFFER, m_FBO);
-	glReadBuffer(GL_COLOR_ATTACHMENT0);
-	glReadPixels( 0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, pixelData );
-	if (current->size == G_IM_SIZ_32b) {
-		u32 *ptr_dst = (u32*)(RDRAM + address);
-		u32 *ptr_src = (u32*)pixelData;
-
-		for (u32 y = 0; y < height; ++y) {
-			for (u32 x = 0; x < width; ++x) {
-				const u32 c = ptr_src[x + (height - y - 1)*width];
-				if (c&0xFF > 0)
-					ptr_dst[x + y*width] = ptr_src[x + (height - y - 1)*width];
-			}
-		}
-	} else {
-		u16 *ptr_dst = (u16*)(RDRAM + address);
-		u16 col;
-		RGBA * ptr_src = (RGBA*)pixelData;
-
-		for (u32 y = 0; y < height; ++y) {
-			for (u32 x = 0; x < width; ++x) {
-					const RGBA c = ptr_src[x + (height - y - 1)*width];
-					if (c.a > 0)
-						ptr_dst[(x + y*width)^1] = ((c.r>>3)<<11) | ((c.g>>3)<<6) | ((c.b>>3)<<1) | (c.a == 0 ? 0 : 1);
-			}
-		}
-	}
-	free( pixelData );
-}
-
 void FrameBuffer_CopyToRDRAM( u32 address, bool bSync )
 {
 	g_fbToRDRAM.CopyToRDRAM(address, bSync);
@@ -834,17 +781,29 @@ void RDRAMtoFrameBuffer::CopyFromRDRAM( u32 _address, bool _bUseAlpha)
 	ogl_glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
 	ogl_glBindFramebuffer(GL_DRAW_FRAMEBUFFER, frameBuffer.top->fbo);
 #else
+	GLfloat u1, v1, x1, y1;
+	u1 = (GLfloat)width / (GLfloat)m_pTexture->realWidth;
+	v1 = (GLfloat)height / (GLfloat)m_pTexture->realHeight;
+	if (current->width == *REG.VI_WIDTH) {
+		x1 = (GLfloat)OGL.width;
+		y1 = (GLfloat)OGL.height;
+	} else {
+		x1 = (GLfloat)width*OGL.scaleX;
+		y1 = (GLfloat)height*OGL.scaleY;
+	}
+
 	glPushAttrib( GL_ENABLE_BIT | GL_VIEWPORT_BIT );
 
-	glActiveTextureARB(GL_TEXTURE0_ARB);
-	glEnable(GL_TEXTURE_2D);
+	Combiner_BeginTextureUpdate();
+	TextureCache_ActivateTexture( 0, m_pTexture );
+
 	if (_bUseAlpha)
 		Combiner_SetCombine( EncodeCombineMode( 0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0 ) );
 	else
 		Combiner_SetCombine( EncodeCombineMode( 0, 0, 0, TEXEL0, 0, 0, 0, 1, 0, 0, 0, TEXEL0, 0, 0, 0, 1 ) );
 	glEnable( GL_BLEND );
 	glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
-	//glDisable( GL_ALPHA_TEST );
+//	glDisable( GL_ALPHA_TEST );
 	glDisable( GL_DEPTH_TEST );
 	glDisable( GL_CULL_FACE );
 	glDisable( GL_POLYGON_OFFSET_FILL );
@@ -852,14 +811,9 @@ void RDRAMtoFrameBuffer::CopyFromRDRAM( u32 _address, bool _bUseAlpha)
 
 	glMatrixMode( GL_PROJECTION );
 	glLoadIdentity();
-	glOrtho( 0, OGL.width, 0, OGL.height, -1.0f, 1.0f );
-	glViewport( 0, 0, OGL.width, OGL.height );
+	glOrtho( 0, x1, 0, y1, -1.0f, 1.0f );
+	glViewport( 0, 0, x1, y1 );
 	glDisable( GL_SCISSOR_TEST );
-
-	float u1, v1;
-
-	u1 = (float)width / (float)m_pTexture->realWidth;
-	v1 = (float)height / (float)m_pTexture->realHeight;
 
 	ogl_glBindFramebuffer(GL_DRAW_FRAMEBUFFER, current->fbo);
 	const GLuint attachment = GL_COLOR_ATTACHMENT0;
@@ -869,13 +823,13 @@ void RDRAMtoFrameBuffer::CopyFromRDRAM( u32 _address, bool _bUseAlpha)
 	glVertex2f( 0.0f, 0.0f );
 
 	glTexCoord2f( 0.0f, v1 );
-	glVertex2f( 0.0f, (GLfloat)OGL.height );
+	glVertex2f( 0.0f, y1 );
 
 	glTexCoord2f( u1,  v1 );
-	glVertex2f( (GLfloat)OGL.width, (GLfloat)OGL.height );
+	glVertex2f( x1, y1 );
 
 	glTexCoord2f( u1, 0.0f );
-	glVertex2f( (GLfloat)OGL.width, 0.0f );
+	glVertex2f( x1, 0.0f );
 	glEnd();
 	ogl_glBindFramebuffer(GL_DRAW_FRAMEBUFFER, frameBuffer.top->fbo);
 	glBindTexture(GL_TEXTURE_2D, 0);
