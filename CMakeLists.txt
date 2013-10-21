@@ -34,6 +34,8 @@ set(GLideN64_SOURCES
   VI.cpp
 )
 
+include_directories( inc )
+
 set(GLideN64_SOURCES_WIN
   Config.cpp
 )
