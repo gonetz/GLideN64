@@ -15,6 +15,7 @@
 #include "Noise_shader.h"
 
 static GLhandleARB g_vertex_shader_object;
+static GLhandleARB g_calc_light_shader_object;
 
 static
 void display_warning(const char *text, ...)
@@ -160,6 +161,7 @@ static const char* fragment_shader_header_lod_variables =
 static const char* fragment_shader_header_common_functions =
 "															\n"
 "float snoise(vec2 v);										\n"
+"float calc_light(in int nLights, out vec3 output_color);	\n"
 #ifdef USE_TOONIFY
 "void toonify(in float intensity);	\n"
 #endif
@@ -167,13 +169,12 @@ static const char* fragment_shader_header_common_functions =
 
 static const char* fragment_shader_calc_light =
 "																\n"
-"float calc_light() {											\n"
-"  input_color = gl_Color.rgb;									\n"
-"  if (int(secondary_color.r) == 0)								\n"
+"float calc_light(in int nLights, out vec3 output_color) {		\n"
+"  output_color = gl_Color.rgb;									\n"
+"  if (nLights == 0)											\n"
 "     return 1.0;												\n"
 "  float full_intensity = 0.0;									\n"
-"  int nLights = int(secondary_color.r);						\n"
-"  input_color = vec3(gl_LightSource[nLights].ambient);			\n"
+"  output_color = vec3(gl_LightSource[nLights].ambient);		\n"
 "  vec3 lightDir, lightColor;									\n"
 "  float intensity;												\n"
 "  vec3 n = normalize(gl_Color.rgb);							\n"
@@ -182,7 +183,7 @@ static const char* fragment_shader_calc_light =
 "    intensity = max(dot(n,lightDir),0.0);						\n"
 "    full_intensity += intensity;								\n"
 "    lightColor = vec3(gl_LightSource[i].ambient)*intensity;	\n"
-"    input_color += lightColor;									\n"
+"    output_color += lightColor;								\n"
 "  };															\n"
 "  return full_intensity;										\n"
 "}																\n"
@@ -289,6 +290,10 @@ void InitGLSLCombiner()
 	g_vertex_shader_object = glCreateShaderObjectARB(GL_VERTEX_SHADER_ARB);
 	glShaderSourceARB(g_vertex_shader_object, 1, &vertex_shader, NULL);
 	glCompileShaderARB(g_vertex_shader_object);
+
+	g_calc_light_shader_object = glCreateShaderObjectARB(GL_FRAGMENT_SHADER_ARB);
+	glShaderSourceARB(g_calc_light_shader_object, 1, &fragment_shader_calc_light, NULL);
+	glCompileShaderARB(g_calc_light_shader_object);
 }
 
 void DestroyGLSLCombiner() {
@@ -381,8 +386,6 @@ GLSLCombiner::GLSLCombiner(Combiner *_color, Combiner *_alpha) {
 		strcat(fragment_shader, fragment_shader_header_lod_variables);
 		strcat(fragment_shader, fragment_shader_calc_lod);
 	}
-	if (bHWLightingCalculation)
-		strcat(fragment_shader, fragment_shader_calc_light);
 	strcat(fragment_shader, fragment_shader_header_common_functions);
 	strcat(fragment_shader, fragment_shader_header_main);
 	if (bUseLod)
@@ -394,7 +397,7 @@ GLSLCombiner::GLSLCombiner(Combiner *_color, Combiner *_alpha) {
 		assert(strstr(strCombiner, "readtex") == 0);
 	}
 	if (bHWLightingCalculation)
-		strcat(fragment_shader, "  float intensity = calc_light(); \n");
+		strcat(fragment_shader, "  float intensity = calc_light(int(secondary_color.r), input_color); \n");
 	else
 		strcat(fragment_shader, "  input_color = gl_Color.rgb;\n");
 	strcat(fragment_shader, "  vec_color = vec4(input_color, gl_Color.a); \n");
@@ -420,6 +423,8 @@ GLSLCombiner::GLSLCombiner(Combiner *_color, Combiner *_alpha) {
 
 	m_programObject = glCreateProgramObjectARB();
 	glAttachObjectARB(m_programObject, m_fragmentShaderObject);
+	if (bHWLightingCalculation)
+		glAttachObjectARB(m_programObject, g_calc_light_shader_object);
 	glAttachObjectARB(m_programObject, m_vertexShaderObject);
 	glLinkProgramARB(m_programObject);
 }
