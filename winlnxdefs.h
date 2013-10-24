@@ -43,7 +43,7 @@
 #define timeGetTime() time( 0 )
 
 typedef unsigned int BOOL, BOOLEAN;
-typedef unsigned long DWORD;
+typedef unsigned int DWORD;
 typedef unsigned long long DWORD64, QWORD;
 typedef unsigned short WORD;
 typedef unsigned char BYTE, byte;
@@ -73,12 +73,16 @@ typedef const char 	*LPCSTR;
 #define __declspec(dllexport)
 #define _cdecl
 #define WINAPI
-#define APIENTRY
+//#define APIENTRY
 //#define EXPORT
 //#define CALL
 
-#define max( a, b )		((a > b) ? a : b)
+#ifndef min
 #define min( a, b )		((a > b) ? b : a)
+#endif
+#ifndef max
+#define max( a, b )		((a > b) ? a : b)
+#endif
 
 #ifndef FALSE
 #define FALSE 0

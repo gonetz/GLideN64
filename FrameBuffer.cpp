@@ -24,7 +24,7 @@ bool g_bIgnoreCFB = true;
 static const GLint depthTextureInternalFormat = g_bUseFloatDepthTexture ? GL_R32F : GL_R16;
 static const GLenum depthTextureType =  g_bUseFloatDepthTexture ? GL_FLOAT : GL_UNSIGNED_INT;
 
-FrameBufferInfo frameBuffer;
+FrameBufferList frameBuffer;
 
 class FrameBufferToRDRAM
 {

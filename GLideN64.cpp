@@ -19,6 +19,8 @@
 #include "Textures.h"
 #include "Combiner.h"
 
+char pluginName[] = "GLideN64 alpha";
+
 #ifndef MUPENPLUSAPI
 #include "ZilmarGFX_1_3.h"
 
@@ -30,7 +32,6 @@ HWND		hToolBar;
 HINSTANCE	hInstance;
 #endif // !__LINUX__
 
-char		pluginName[] = "GLideN64 alpha";
 char		*screenDirectory;
 
 void (*CheckInterrupts)( void );
@@ -133,108 +134,6 @@ BOOL CALLBACK FindToolBarProc( HWND hWnd, LPARAM lParam )
 }
 #endif // !__LINUX__
 
-EXPORT void CALL RomClosed (void)
-{
-#ifdef RSPTHREAD
-	int i;
-
-	if (RSP.thread)
-	{
-//		if (OGL.fullscreen)
-//			ChangeWindow();
-
-		if (RSP.busy)
-		{
-			RSP.halt = TRUE;
-			WaitForSingleObject( RSP.threadFinished, INFINITE );
-		}
-
-		SetEvent( RSP.threadMsg[RSPMSG_CLOSE] );
-		WaitForSingleObject( RSP.threadFinished, INFINITE );
-		for (i = 0; i < 4; i++)
-			if (RSP.threadMsg[i])
-				CloseHandle( RSP.threadMsg[i] );
-		CloseHandle( RSP.threadFinished );
-		CloseHandle( RSP.thread );
-	}
-
-	RSP.thread = NULL;
-#else
-	OGL_Stop();
-#endif
-
-#ifdef DEBUG
-	CloseDebugDlg();
-#endif
-}
-
-EXPORT void CALL RomOpen (void)
-{
-#ifdef RSPTHREAD
-# ifndef __LINUX__
-	DWORD threadID;
-	int i;
-
-	// Create RSP message events
-	for (i = 0; i < 6; i++)
-	{
-		RSP.threadMsg[i] = CreateEvent( NULL, FALSE, FALSE, NULL );
-		if (RSP.threadMsg[i] == NULL)
-		{
-			MessageBox( hWnd, "Error creating video thread message events, closing video thread...", "glN64 Error", MB_OK | MB_ICONERROR );
-			return;
-		}
-	}
-
-	// Create RSP finished event
-	RSP.threadFinished = CreateEvent( NULL, FALSE, FALSE, NULL );
-	if (RSP.threadFinished == NULL)
-	{
-		MessageBox( hWnd, "Error creating video thread finished event, closing video thread...", "glN64 Error", MB_OK | MB_ICONERROR );
-		return;
-	}
-
-	RSP.thread = CreateThread( NULL, 4096, RSP_ThreadProc, NULL, NULL, &threadID );
-	WaitForSingleObject( RSP.threadFinished, INFINITE );
-# else // !__LINUX__
-# endif // __LINUX__
-#else
-	RSP_Init();
-#endif
-
-	OGL_ResizeWindow();
-
-#ifdef DEBUG
-	OpenDebugDlg();
-#endif
-}
-
-EXPORT void CALL ShowCFB (void)
-{	
-	gSP.changed |= CHANGED_CPU_FB_WRITE;
-}
-
-EXPORT void CALL UpdateScreen (void)
-{
-#ifdef RSPTHREAD
-	if (RSP.thread)
-	{
-		SetEvent( RSP.threadMsg[RSPMSG_UPDATESCREEN] );
-		WaitForSingleObject( RSP.threadFinished, INFINITE );
-	}
-#else
-	VI_UpdateScreen();
-#endif
-}
-
-EXPORT void CALL ViStatusChanged (void)
-{
-}
-
-EXPORT void CALL ViWidthChanged (void)
-{
-}
-
 
 EXPORT void CALL ReadScreen (void **dest, long *width, long *height)
 {
@@ -242,6 +141,8 @@ EXPORT void CALL ReadScreen (void **dest, long *width, long *height)
 }
 
 #else // MUPENPLUSAPI
+#include "m64p_plugin.h"
+
 ptr_ConfigGetSharedDataFilepath ConfigGetSharedDataFilepath = NULL;
 
 void (*CheckInterrupts)( void );
@@ -273,10 +174,10 @@ EXPORT m64p_error CALL PluginGetVersion(m64p_plugin_type *PluginType,
 		*PluginVersion = PLUGIN_VERSION;
 
 	if (APIVersion != NULL)
-		*APIVersion = PLUGIN_API_VERSION;
+		*APIVersion = VIDEO_PLUGIN_API_VERSION;
 
 	if (PluginNamePtr != NULL)
-		*PluginNamePtr = PLUGIN_NAME;
+		*PluginNamePtr = pluginName;
 
 	if (Capabilities != NULL)
 	{
@@ -284,6 +185,28 @@ EXPORT m64p_error CALL PluginGetVersion(m64p_plugin_type *PluginType,
 	}
 
 	return M64ERR_SUCCESS;
+}
+
+EXPORT void CALL ReadScreen2(void *dest, int *width, int *height, int front)
+{
+	//OGL_ReadScreen( dest, width, height );
+}
+
+EXPORT void CALL SetRenderingCallback(void (*callback)(int))
+{
+	static void (*renderCallback)(int) = NULL;
+	renderCallback = callback;
+}
+
+EXPORT void CALL FBRead(u32 addr)
+{
+}
+
+EXPORT void CALL FBWrite(u32 addr, u32 size) {
+}
+
+EXPORT void CALL FBGetFrameBufferInfo(void *p)
+{
 }
 
 EXPORT void CALL ResizeVideoOutput(int Width, int Height)
@@ -424,7 +347,7 @@ EXPORT BOOL CALL InitiateGFX (GFX_INFO Gfx_Info)
 #endif // __LINUX__
 #else // MUPENPLUSAPI
 	Config_LoadConfig();
-	Config_LoadRomConfig(Gfx_Info.HEADER);
+//	Config_LoadRomConfig(Gfx_Info.HEADER);
 #endif // MUPENPLUSAPI
 
 	//OGL_Start();
@@ -469,6 +392,108 @@ EXPORT void CALL ProcessRDPList(void)
 		GFXOp[RSP.cmd0 >> 24]();*/
 		//*REG.DPC_CURRENT += 8;
 //	}
+}
+
+EXPORT void CALL RomClosed (void)
+{
+#ifdef RSPTHREAD
+	int i;
+
+	if (RSP.thread)
+	{
+//		if (OGL.fullscreen)
+//			ChangeWindow();
+
+		if (RSP.busy)
+		{
+			RSP.halt = TRUE;
+			WaitForSingleObject( RSP.threadFinished, INFINITE );
+		}
+
+		SetEvent( RSP.threadMsg[RSPMSG_CLOSE] );
+		WaitForSingleObject( RSP.threadFinished, INFINITE );
+		for (i = 0; i < 4; i++)
+			if (RSP.threadMsg[i])
+				CloseHandle( RSP.threadMsg[i] );
+		CloseHandle( RSP.threadFinished );
+		CloseHandle( RSP.thread );
+	}
+
+	RSP.thread = NULL;
+#else
+	OGL_Stop();
+#endif
+
+#ifdef DEBUG
+	CloseDebugDlg();
+#endif
+}
+
+EXPORT void CALL RomOpen (void)
+{
+#ifdef RSPTHREAD
+# ifndef __LINUX__
+	DWORD threadID;
+	int i;
+
+	// Create RSP message events
+	for (i = 0; i < 6; i++)
+	{
+		RSP.threadMsg[i] = CreateEvent( NULL, FALSE, FALSE, NULL );
+		if (RSP.threadMsg[i] == NULL)
+		{
+			MessageBox( hWnd, "Error creating video thread message events, closing video thread...", "glN64 Error", MB_OK | MB_ICONERROR );
+			return;
+		}
+	}
+
+	// Create RSP finished event
+	RSP.threadFinished = CreateEvent( NULL, FALSE, FALSE, NULL );
+	if (RSP.threadFinished == NULL)
+	{
+		MessageBox( hWnd, "Error creating video thread finished event, closing video thread...", "glN64 Error", MB_OK | MB_ICONERROR );
+		return;
+	}
+
+	RSP.thread = CreateThread( NULL, 4096, RSP_ThreadProc, NULL, NULL, &threadID );
+	WaitForSingleObject( RSP.threadFinished, INFINITE );
+# else // !__LINUX__
+# endif // __LINUX__
+#else
+	RSP_Init();
+#endif
+
+	OGL_ResizeWindow();
+
+#ifdef DEBUG
+	OpenDebugDlg();
+#endif
+}
+
+EXPORT void CALL ShowCFB (void)
+{
+	gSP.changed |= CHANGED_CPU_FB_WRITE;
+}
+
+EXPORT void CALL UpdateScreen (void)
+{
+#ifdef RSPTHREAD
+	if (RSP.thread)
+	{
+		SetEvent( RSP.threadMsg[RSPMSG_UPDATESCREEN] );
+		WaitForSingleObject( RSP.threadFinished, INFINITE );
+	}
+#else
+	VI_UpdateScreen();
+#endif
+}
+
+EXPORT void CALL ViStatusChanged (void)
+{
+}
+
+EXPORT void CALL ViWidthChanged (void)
+{
 }
 
 }

@@ -52,7 +52,7 @@ struct GLInfo
 
 	BOOL	enable2xSaI;
 	BOOL	frameBufferTextures;
-	int		textureBitDepth;
+	u32		textureBitDepth;
 	float	originAdjust;
 
 	GLVertex vertices[256];

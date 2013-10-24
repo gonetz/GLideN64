@@ -1,3 +1,4 @@
+#include <assert.h>
 #include <stdio.h>
 #include "GLideN64.h"
 #include "GBI.h"
@@ -103,6 +104,7 @@ void GBI_Unknown( u32 w0, u32 w1 )
 #endif
 }
 
+#ifndef MUPENPLUSAPI
 #ifndef __LINUX__
 INT_PTR CALLBACK MicrocodeDlgProc( HWND hWndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam )
 {
@@ -272,6 +274,7 @@ static int MicrocodeDialog()
 	return selectedMicrocode;
 }
 #endif // __LINUX__
+#endif // MUPENPLUSAPI
 
 MicrocodeInfo *GBI_AddMicrocode()
 {
@@ -430,6 +433,7 @@ MicrocodeInfo *GBI_DetectMicrocode( u32 uc_start, u32 uc_dstart, u16 uc_dsize )
 		}
 	}
 
+#ifndef MUPENPLUSAPI
 	// Let the user choose the microcode
 #ifndef __LINUX__
 	current->type = (u32)DialogBox( hInstance, MAKEINTRESOURCE( IDD_MICROCODEDLG ), hWnd, MicrocodeDlgProc );
@@ -437,6 +441,9 @@ MicrocodeInfo *GBI_DetectMicrocode( u32 uc_start, u32 uc_dstart, u16 uc_dsize )
 	printf( "glN64: Warning - unknown ucode!!!\n" );
 	current->type = MicrocodeDialog();
 #endif // __LINUX__
+#else // MUPENPLUSAPI
+	assert(false && "Unknown microcode!");
+#endif // MUPENPLUSAPI
 	return current;
 }
 

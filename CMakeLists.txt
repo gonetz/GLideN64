@@ -34,15 +34,25 @@ set(GLideN64_SOURCES
   VI.cpp
 )
 
-include_directories( inc )
-
-set(GLideN64_SOURCES_WIN
-  Config.cpp
-)
-
-set(GLideN64_SOURCES_LINUX
-  Config_linux.cpp
-)
+if(MUPENPLUSAPI)
+  add_definitions(
+    -DMUPENPLUSAPI
+  )
+  include_directories( inc )
+  set(GLideN64_SOURCES_WIN
+    Config_mupen.cpp
+  )
+  set(GLideN64_SOURCES_LINUX
+    Config_mupen.cpp
+  )
+else(MUPENPLUSAPI)
+  set(GLideN64_SOURCES_WIN
+    Config.cpp
+  )
+  set(GLideN64_SOURCES_LINUX
+    Config_linux.cpp
+  )
+endif(MUPENPLUSAPI)
 
 if(UNIX)
   list(APPEND GLideN64_SOURCES ${GLideN64_SOURCES_LINUX})
@@ -70,8 +80,18 @@ if(WIN32)
 endif(WIN32)
 
 if(SDL)
+  include(FindPkgConfig)
+  pkg_check_modules(SDL REQUIRED sdl)
   include_directories(${SDL_INCLUDE_DIRS})
 endif(SDL)
+
+find_package(OpenGL REQUIRED)
+include_directories(${OpenGL_INCLUDE_DIRS})
+link_directories(${OpenGL_LIBRARY_DIRS})
+add_definitions(${OpenGL_DEFINITIONS})
+if(NOT OPENGL_FOUND)
+	message(ERROR " OPENGL not found!")
+endif(NOT OPENGL_FOUND)
 
 add_library( GLideN64 SHARED ${GLideN64_SOURCES})
 
@@ -82,3 +102,5 @@ SET_TARGET_PROPERTIES(
   PREFIX ""
   LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/plugin
   )
+
+target_link_libraries(GLideN64 ${OPENGL_LIBRARIES} ${SDL_LIBRARIES})

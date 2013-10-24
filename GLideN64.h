@@ -1,6 +1,8 @@
 #ifndef GLIDEN64_H
 #define GLIDEN64_H
 
+extern char	pluginName[];
+
 #ifndef MUPENPLUSAPI
 
 #ifndef __LINUX__
@@ -17,8 +19,6 @@ extern HINSTANCE	hInstance;
 //#define DEBUG
 //#define RSPTHREAD
 
-extern char	pluginName[];
-
 extern void (*CheckInterrupts)( void );
 extern char *screenDirectory;
 
@@ -34,7 +34,6 @@ extern char *screenDirectory;
 
 //#define DEBUG
 
-#define PLUGIN_NAME	"GLideN64 alpha"
 #define PLUGIN_VERSION              0x020000
 #define VIDEO_PLUGIN_API_VERSION	0x020200
 #define CONFIG_API_VERSION          0x020000

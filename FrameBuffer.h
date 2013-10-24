@@ -21,14 +21,14 @@ struct FrameBuffer
 	float scaleX, scaleY;
 };
 
-struct FrameBufferInfo
+struct FrameBufferList
 {
 	FrameBuffer *top, *bottom, *current;
 	int numBuffers;
 	GLenum drawBuffer;
 };
 
-extern FrameBufferInfo frameBuffer;
+extern FrameBufferList frameBuffer;
 extern bool g_bCopyToRDRAM;
 extern bool g_bCopyDepthToRDRAM;
 extern bool g_bCopyFromRDRAM;
