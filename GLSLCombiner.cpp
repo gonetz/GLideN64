@@ -16,6 +16,7 @@
 
 static GLhandleARB g_vertex_shader_object;
 static GLhandleARB g_calc_light_shader_object;
+static GLhandleARB g_calc_lod_shader_object;
 
 static
 void display_warning(const char *text, ...)
@@ -149,19 +150,11 @@ static const char* fragment_shader_header_common_variables =
 "vec3 input_color;				\n"
 ;
 
-static const char* fragment_shader_header_lod_variables =
-"uniform int lod_enabled;		\n"
-"uniform float lod_x_scale;		\n"
-"uniform float lod_y_scale;		\n"
-"uniform float min_lod;			\n"
-"uniform int max_tile;			\n"
-"uniform int texture_detail;	\n"
-;
-
 static const char* fragment_shader_header_common_functions =
 "															\n"
 "float snoise(vec2 v);										\n"
 "float calc_light(in int nLights, out vec3 output_color);	\n"
+"float calc_lod(in float prim_lod, in vec2 texCoord);		\n"
 #ifdef USE_TOONIFY
 "void toonify(in float intensity);	\n"
 #endif
@@ -190,11 +183,16 @@ static const char* fragment_shader_calc_light =
 ;
 
 static const char* fragment_shader_calc_lod =
+"uniform int lod_enabled;		\n"
+"uniform float lod_x_scale;		\n"
+"uniform float lod_y_scale;		\n"
+"uniform float min_lod;			\n"
+"uniform int max_tile;			\n"
+"uniform int texture_detail;	\n"
 "														\n"
-"float calc_lod() {										\n"
+"float calc_lod(in float prim_lod, in vec2 texCoord) {	\n"
 "  if (lod_enabled == 0)								\n"
 "    return prim_lod;									\n"
-" vec2 texCoord = 255.0*vec2(secondary_color.g, secondary_color.b); \n"
 " vec2 dx = dFdx(texCoord);								\n"
 " dx.x *= lod_x_scale;									\n"
 " dx.y *= lod_y_scale;									\n"
@@ -294,6 +292,10 @@ void InitGLSLCombiner()
 	g_calc_light_shader_object = glCreateShaderObjectARB(GL_FRAGMENT_SHADER_ARB);
 	glShaderSourceARB(g_calc_light_shader_object, 1, &fragment_shader_calc_light, NULL);
 	glCompileShaderARB(g_calc_light_shader_object);
+
+	g_calc_lod_shader_object = glCreateShaderObjectARB(GL_FRAGMENT_SHADER_ARB);
+	glShaderSourceARB(g_calc_lod_shader_object, 1, &fragment_shader_calc_lod, NULL);
+	glCompileShaderARB(g_calc_lod_shader_object);
 }
 
 void DestroyGLSLCombiner() {
@@ -381,15 +383,11 @@ GLSLCombiner::GLSLCombiner(Combiner *_color, Combiner *_alpha) {
 	} else
 		strcat(strCombiner, "  color2 = color1; \n");
 
-	const bool bUseLod = (m_nInputs & (1<<LOD_FRACTION)) > 0;
-	if (bUseLod) {
-		strcat(fragment_shader, fragment_shader_header_lod_variables);
-		strcat(fragment_shader, fragment_shader_calc_lod);
-	}
 	strcat(fragment_shader, fragment_shader_header_common_functions);
 	strcat(fragment_shader, fragment_shader_header_main);
+	const bool bUseLod = (m_nInputs & (1<<LOD_FRACTION)) > 0;
 	if (bUseLod)
-		strcat(fragment_shader, "  float lod_frac = calc_lod();		\n");
+		strcat(fragment_shader, "  float lod_frac = calc_lod(prim_lod, 255.0*vec2(secondary_color.g, secondary_color.b));	\n");
 	if ((m_nInputs & ((1<<TEXEL0)|(1<<TEXEL1)|(1<<TEXEL0_ALPHA)|(1<<TEXEL1_ALPHA))) > 0) {
 		strcat(fragment_shader, fragment_shader_readtex0color);
 		strcat(fragment_shader, fragment_shader_readtex1color);
@@ -425,6 +423,8 @@ GLSLCombiner::GLSLCombiner(Combiner *_color, Combiner *_alpha) {
 	glAttachObjectARB(m_programObject, m_fragmentShaderObject);
 	if (bHWLightingCalculation)
 		glAttachObjectARB(m_programObject, g_calc_light_shader_object);
+	if (bUseLod)
+		glAttachObjectARB(m_programObject, g_calc_lod_shader_object);
 	glAttachObjectARB(m_programObject, m_vertexShaderObject);
 	glLinkProgramARB(m_programObject);
 }
