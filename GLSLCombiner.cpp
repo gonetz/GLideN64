@@ -17,6 +17,7 @@
 static GLhandleARB g_vertex_shader_object;
 static GLhandleARB g_calc_light_shader_object;
 static GLhandleARB g_calc_lod_shader_object;
+static GLhandleARB g_calc_noise_shader_object;
 
 static
 void display_warning(const char *text, ...)
@@ -296,6 +297,10 @@ void InitGLSLCombiner()
 	g_calc_lod_shader_object = glCreateShaderObjectARB(GL_FRAGMENT_SHADER_ARB);
 	glShaderSourceARB(g_calc_lod_shader_object, 1, &fragment_shader_calc_lod, NULL);
 	glCompileShaderARB(g_calc_lod_shader_object);
+
+	g_calc_noise_shader_object = glCreateShaderObjectARB(GL_FRAGMENT_SHADER_ARB);
+	glShaderSourceARB(g_calc_noise_shader_object, 1, &noise_fragment_shader, NULL);
+	glCompileShaderARB(g_calc_noise_shader_object);
 }
 
 void DestroyGLSLCombiner() {
@@ -407,7 +412,6 @@ GLSLCombiner::GLSLCombiner(Combiner *_color, Combiner *_alpha) {
 	strcat(fragment_shader, "  if (fog_enabled > 0) \n");
 	strcat(fragment_shader, "    gl_FragColor = vec4(mix(gl_Fog.color.rgb, gl_FragColor.rgb, gl_FogFragCoord), gl_FragColor.a); \n");
 	strcat(fragment_shader, fragment_shader_end);
-	strcat(fragment_shader, noise_fragment_shader);
 
 #ifdef USE_TOONIFY
 	strcat(fragment_shader, fragment_shader_toonify);
@@ -425,6 +429,7 @@ GLSLCombiner::GLSLCombiner(Combiner *_color, Combiner *_alpha) {
 		glAttachObjectARB(m_programObject, g_calc_light_shader_object);
 	if (bUseLod)
 		glAttachObjectARB(m_programObject, g_calc_lod_shader_object);
+	glAttachObjectARB(m_programObject, g_calc_noise_shader_object);
 	glAttachObjectARB(m_programObject, m_vertexShaderObject);
 	glLinkProgramARB(m_programObject);
 }

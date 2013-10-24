@@ -64,17 +64,5 @@ const char *noise_fragment_shader =
 "  return 130.0 * dot(m, g);										\n"
 "}																	\n"
 "																	\n"
-/*
-"varying vec2 v_texCoord2D;											\n"
-"void main( void )													\n"
-"{																	\n"
-"  float n = snoise(v_texCoord2D);									\n"
-"																	\n"
-"  gl_FragColor = vec4(0.5 + 0.5 * vec3(n, n, n), 1.0);				\n"
-//"  vec4 color = vec4(vec3(gl_Color) + 0.5 * vec3(n, n, n), 1.0);				\n"
-//"  gl_FragColor = gl_Color*color; \n"
-//"  gl_FragColor = color; \n"
-"}																	\n"
-*/
 ;
 
