@@ -611,3 +611,22 @@ void GLSLCombiner::UpdateFBInfo() {
 	int fbFixedAlpha_location = glGetUniformLocationARB(m_programObject, "fb_fixed_alpha");
 	glUniform1iARB(fbFixedAlpha_location, nFbFixedAlpha);
 }
+
+void GLSL_ClearDepthBuffer() {
+	if (frameBuffer.top == NULL || frameBuffer.top->depth_texture == NULL)
+		return;
+	const u32 numTexels = frameBuffer.top->depth_texture->width*frameBuffer.top->depth_texture->height;
+	u16 * pDepth = (u16*)malloc(numTexels * 2);
+	for (int i = 0; i < numTexels; i++)
+		pDepth[i] = 0xfffc;
+//	glActiveTextureARB( GL_TEXTURE0_ARB );
+	glBindTexture(GL_TEXTURE_2D, frameBuffer.top->depth_texture->glName);
+	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0,
+		frameBuffer.top->depth_texture->width, frameBuffer.top->depth_texture->height,
+		GL_RED, GL_UNSIGNED_SHORT, pDepth);
+	free(pDepth);
+
+	gSP.changed |= CHANGED_TEXTURE | CHANGED_VIEWPORT;
+	gDP.changed |= CHANGED_COMBINE;
+
+}

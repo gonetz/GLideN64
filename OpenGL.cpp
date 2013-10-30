@@ -1137,6 +1137,10 @@ void OGL_ClearDepthBuffer()
 {
 	if (OGL.frameBufferTextures && frameBuffer.top == NULL)
 		return;
+
+	void GLSL_ClearDepthBuffer();
+	GLSL_ClearDepthBuffer();
+
 	glDisable( GL_SCISSOR_TEST );
 
 	OGL_UpdateStates();
