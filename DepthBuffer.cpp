@@ -25,6 +25,8 @@ void DepthBuffer_RemoveBottom()
 
 	if (depthBuffer.bottom->renderbuf != 0)
 		ogl_glDeleteRenderbuffers(1, &depthBuffer.bottom->renderbuf);
+	if (depthBuffer.bottom->depth_texture != NULL)
+		TextureCache_Remove( depthBuffer.bottom->depth_texture );
 	free( depthBuffer.bottom );
 
     depthBuffer.bottom = newBottom;
@@ -65,6 +67,8 @@ void DepthBuffer_Remove( DepthBuffer *buffer )
 
 	if (buffer->renderbuf != 0)
 		ogl_glDeleteRenderbuffers(1, &buffer->renderbuf);
+	if (buffer->depth_texture != NULL)
+		TextureCache_Remove( buffer->depth_texture );
 	free( buffer );
 
 	depthBuffer.numBuffers--;
@@ -165,6 +169,7 @@ void DepthBuffer_SetBuffer( u32 address )
 
 		current->address = address;
 		current->width = pFrameBuffer != NULL ? pFrameBuffer->width : VI.width;
+		current->depth_texture = NULL;
 		if (OGL.frameBufferTextures) {
 			ogl_glGenRenderbuffers(1, &current->renderbuf);
 			ogl_glBindRenderbuffer(GL_RENDERBUFFER, current->renderbuf);
@@ -176,11 +181,7 @@ void DepthBuffer_SetBuffer( u32 address )
 	}
 
 	if (OGL.frameBufferTextures) {
-		if ( frameBuffer.top != NULL &&  frameBuffer.top->fbo > 0) {
-			ogl_glFramebufferRenderbuffer(GL_DRAW_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, current->renderbuf);
-			GLuint attachments[2] = { GL_COLOR_ATTACHMENT0, GL_DEPTH_ATTACHMENT };
-			ogl_glDrawBuffers(2,  attachments,  frameBuffer.top->texture->glName);
-		}
+		FrameBuffer_AttachDepthBuffer();
 
 #ifdef DEBUG
 		DebugMsg( DEBUG_HIGH | DEBUG_HANDLED, "DepthBuffer_SetBuffer( 0x%08X ); color buffer is 0x%08X\n",
