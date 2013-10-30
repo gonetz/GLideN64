@@ -19,6 +19,7 @@ static GLhandleARB g_calc_light_shader_object;
 static GLhandleARB g_calc_lod_shader_object;
 static GLhandleARB g_calc_noise_shader_object;
 static GLhandleARB g_calc_depth_shader_object;
+static GLuint g_zlut_tex = 0;
 
 static
 void display_warning(const char *text, ...)
@@ -303,6 +304,38 @@ static const char* depth_compare_shader =
 "}														\n"
 ;
 
+void InitZlutTexture()
+{
+	u16 * zLUT = new u16[0x40000];
+	for(int i=0; i<0x40000; i++) {
+		u32 exponent = 0;
+		u32 testbit = 1 << 17;
+		while((i & testbit) && (exponent < 7)) {
+			exponent++;
+			testbit = 1 << (17 - exponent);
+		}
+
+		u32 mantissa = (i >> (6 - (6 < exponent ? 6 : exponent))) & 0x7ff;
+		zLUT[i] = (u16)(((exponent << 11) | mantissa) << 2);
+	}
+	glGenTextures(1, &g_zlut_tex);
+	glBindTexture(GL_TEXTURE_2D, g_zlut_tex);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RED,
+		512, 512, 0, GL_RED, GL_UNSIGNED_SHORT,
+		zLUT);
+	delete[] zLUT;
+}
+
+void DestroyZlutTexture()
+{
+	if (g_zlut_tex > 0)
+		glDeleteTextures(1, &g_zlut_tex);
+}
+
 void InitGLSLCombiner()
 {
 	glActiveTextureARB(GL_TEXTURE0_ARB);
@@ -329,10 +362,13 @@ void InitGLSLCombiner()
 	g_calc_depth_shader_object = glCreateShaderObjectARB(GL_FRAGMENT_SHADER_ARB);
 	glShaderSourceARB(g_calc_depth_shader_object, 1, &depth_compare_shader, NULL);
 	glCompileShaderARB(g_calc_depth_shader_object);
+
+	InitZlutTexture();
 }
 
 void DestroyGLSLCombiner() {
 	ogl_glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+	DestroyZlutTexture();
 }
 
 static
