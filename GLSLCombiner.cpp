@@ -286,7 +286,7 @@ static const char* depth_compare_shader =
 "uniform int depthCompareEnabled;	\n"
 "uniform int depthUpdateEnabled;	\n"
 "uniform usampler2D zlut_texture;	\n"
-"layout(r16ui) uniform image2D depth_texture;\n"
+"layout(binding=0, r16ui) uniform image2D depth_texture;\n"
 "bool depth_compare()				\n"
 "{									\n"
 "  if (depthEnabled == 0) return true;				\n"
@@ -610,6 +610,35 @@ void GLSLCombiner::UpdateFBInfo() {
 	glUniform1iARB(fb8bit_location, nFb8bitMode);
 	int fbFixedAlpha_location = glGetUniformLocationARB(m_programObject, "fb_fixed_alpha");
 	glUniform1iARB(fbFixedAlpha_location, nFbFixedAlpha);
+}
+
+void GLSLCombiner::UpdateDepthInfo() {
+	if (frameBuffer.top == NULL)
+		return;
+	int nDepthEnabled = (gSP.geometryMode & G_ZBUFFER) > 0 ? 1 : 0;
+	int  depth_enabled_location = glGetUniformLocationARB(m_programObject, "depthEnabled");
+	glUniform1iARB(depth_enabled_location, nDepthEnabled);
+	int  depth_compare_location = glGetUniformLocationARB(m_programObject, "depthCompareEnabled");
+	glUniform1iARB(depth_compare_location, gDP.otherMode.depthCompare);
+	if (nDepthEnabled == 0 || gDP.otherMode.depthCompare == 0)
+		return;
+
+	int  depth_update_location = glGetUniformLocationARB(m_programObject, "depthUpdateEnabled");
+	glUniform1iARB(depth_update_location, gDP.otherMode.depthUpdate);
+
+	glEnable(GL_TEXTURE_2D);
+	glActiveTextureARB(GL_TEXTURE2_ARB);
+	glBindTexture(GL_TEXTURE_2D, g_zlut_tex);
+	int zlut_texture_location = glGetUniformLocationARB(m_programObject, "zlut_texture");
+	glUniform1iARB(zlut_texture_location, 2);
+//	glActiveTextureARB(GL_TEXTURE3_ARB);
+//	glBindTexture(GL_TEXTURE_2D, frameBuffer.top->depth_texture->glName);
+	//glBindImageTexture​(0​, frameBuffer.top->depth_texture->glName​, 0​, GL_FALSE​, 0​, GL_READ_WRITE​, GL_R16UI​​);
+	GLuint texture = frameBuffer.top->depth_texture->glName;
+	const GLuint depthBufferUnit = 0;
+	glBindImageTexture(depthBufferUnit, texture, 0, GL_FALSE, 0, GL_READ_WRITE, GL_R16UI);
+//	int depth_texture_location = glGetUniformLocationARB(m_programObject, "depth_texture");
+//	glUniform1iARB(depth_texture_location, depthBufferUnit);
 }
 
 void GLSL_ClearDepthBuffer() {

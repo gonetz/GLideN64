@@ -160,6 +160,12 @@ void Combiner_UpdateCombineFBInfo()
 	gDP.changed &= ~CHANGED_FB_TEXTURE;
 }
 
+void Combiner_UpdateCombineDepthInfo()
+{
+	if (combiner.current != NULL)
+		combiner.current->compiled->UpdateDepthInfo();
+}
+
 void Combiner_SimplifyCycle( CombineCycle *cc, CombinerStage *stage )
 {
 	// Load the first operand

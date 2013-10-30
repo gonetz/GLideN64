@@ -7,6 +7,7 @@ public:
 	virtual void Set();
 	virtual void UpdateColors();
 	virtual void UpdateFBInfo();
+	virtual void UpdateDepthInfo();
 
 private:
 	GLhandleARB m_vertexShaderObject;
