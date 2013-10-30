@@ -18,6 +18,7 @@ static GLhandleARB g_vertex_shader_object;
 static GLhandleARB g_calc_light_shader_object;
 static GLhandleARB g_calc_lod_shader_object;
 static GLhandleARB g_calc_noise_shader_object;
+static GLhandleARB g_calc_depth_shader_object;
 
 static
 void display_warning(const char *text, ...)
@@ -279,6 +280,29 @@ static const char* vertex_shader =
 "}                                                              \n"
 ;
 
+static const char* depth_compare_shader =
+"uniform int depthEnabled;	\n"
+"uniform int depthCompareEnabled;	\n"
+"uniform int depthUpdateEnabled;	\n"
+"uniform usampler2D zlut_texture;	\n"
+"layout(r16ui) uniform image2D depth_texture;\n"
+"bool depth_compare()				\n"
+"{									\n"
+"  if (depthEnabled == 0) return true;				\n"
+"  ivec2 coord = ivec2(gl_FragCoord.xy);			\n"
+"  float bufZ = imageLoad(depth_texture,coord).r	\n;"
+"  float Z = (gl_FragCoord.z*262143.0);				\n"
+"  int x0 = int(floor(mod(Z, 512.0)));					\n"
+"  int y0 = int(floor(Z / 512.0));						\n"
+"  float curZ = texelFetch(zlut_texture, ivec2(x0,y0), 0).r;\n"
+"  if (depthUpdateEnabled > 0  && curZ < bufZ)			\n"
+"    imageStore(depth_texture,coord,vec4(curZ, 0.0, 0.0, 1.0));\n"
+"  if (depthCompareEnabled > 0)							\n"
+"    return curZ <= bufZ;								\n"
+"  return true;											\n"
+"}														\n"
+;
+
 void InitGLSLCombiner()
 {
 	glActiveTextureARB(GL_TEXTURE0_ARB);
@@ -301,6 +325,10 @@ void InitGLSLCombiner()
 	g_calc_noise_shader_object = glCreateShaderObjectARB(GL_FRAGMENT_SHADER_ARB);
 	glShaderSourceARB(g_calc_noise_shader_object, 1, &noise_fragment_shader, NULL);
 	glCompileShaderARB(g_calc_noise_shader_object);
+
+	g_calc_depth_shader_object = glCreateShaderObjectARB(GL_FRAGMENT_SHADER_ARB);
+	glShaderSourceARB(g_calc_depth_shader_object, 1, &depth_compare_shader, NULL);
+	glCompileShaderARB(g_calc_depth_shader_object);
 }
 
 void DestroyGLSLCombiner() {
