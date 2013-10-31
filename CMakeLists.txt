@@ -47,7 +47,10 @@ set(GLideN64_SOURCES_LINUX
 
 if(UNIX)
   list(APPEND GLideN64_SOURCES ${GLideN64_SOURCES_LINUX})
-  add_definitions(-D__LINUX__)
+  add_definitions(
+	-D__LINUX__
+	-D_DEBUG
+  )
   find_package(PkgConfig)
   pkg_check_modules(GLIB REQUIRED glib-2.0)
   include_directories(${GLIB_INCLUDE_DIRS})
