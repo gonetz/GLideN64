@@ -8,6 +8,7 @@ public:
 	virtual void UpdateColors();
 	virtual void UpdateFBInfo();
 	virtual void UpdateDepthInfo();
+	virtual void UpdateAlphaTestInfo();
 
 private:
 	GLhandleARB m_vertexShaderObject;

@@ -647,6 +647,7 @@ void OGL_UpdateStates()
 	if ((gDP.changed & CHANGED_ALPHACOMPARE) || (gDP.changed & CHANGED_RENDERMODE))
 	{
 		// Enable alpha test for threshold mode
+		/*
 		if ((gDP.otherMode.alphaCompare == G_AC_THRESHOLD) && !(gDP.otherMode.alphaCvgSel))
 		{
 			glEnable( GL_ALPHA_TEST );
@@ -663,6 +664,8 @@ void OGL_UpdateStates()
 		}
 		else
 			glDisable( GL_ALPHA_TEST );
+			*/
+		Combiner_UpdateAlphaTestInfo();
 
 		if (OGL.usePolygonStipple && (gDP.otherMode.alphaCompare == G_AC_DITHER) && !(gDP.otherMode.alphaCvgSel))
 			glEnable( GL_POLYGON_STIPPLE );

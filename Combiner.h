@@ -121,7 +121,8 @@ public:
 	virtual void Set() = 0;
 	virtual void UpdateColors() = 0;
 	virtual void UpdateFBInfo() = 0;
-	virtual void UpdateDepthInfo(){}
+	virtual void UpdateDepthInfo() {}
+	virtual void UpdateAlphaTestInfo() {}
 };
 
 struct CachedCombiner
@@ -220,5 +221,7 @@ void Combiner_BeginTextureUpdate();
 void Combiner_EndTextureUpdate();
 
 void Combiner_UpdateCombineDepthInfo();
+void Combiner_UpdateAlphaTestInfo();
+
 #endif
 

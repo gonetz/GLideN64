@@ -19,6 +19,7 @@ static GLhandleARB g_calc_light_shader_object;
 static GLhandleARB g_calc_lod_shader_object;
 static GLhandleARB g_calc_noise_shader_object;
 static GLhandleARB g_calc_depth_shader_object;
+static GLhandleARB g_test_alpha_shader_object;
 static GLuint g_zlut_tex = 0;
 
 static
@@ -159,6 +160,7 @@ static const char* fragment_shader_header_common_functions =
 "float calc_light(in int nLights, out vec3 output_color);	\n"
 "float calc_lod(in float prim_lod, in vec2 texCoord);		\n"
 "bool depth_compare();										\n"
+"bool alpha_test(in float alphaValue);						\n"
 #ifdef USE_TOONIFY
 "void toonify(in float intensity);	\n"
 #endif
@@ -343,6 +345,17 @@ static const char* depth_compare_shader_float =
 "}														\n"
 ;
 
+static const char* alpha_test_fragment_shader =
+"uniform int alphaTestEnabled;				\n"
+"uniform float alphaTestValue;				\n"
+"bool alpha_test(in float alphaValue)		\n"
+"{											\n"
+"  if (alphaTestEnabled == 0) return true;	\n"
+"  if (alphaTestValue > 0.0) return alphaValue >= alphaTestValue;\n"
+"  return alphaValue > 0.0;					\n"
+"}											\n"
+;
+
 void InitZlutTexture()
 {
 	u16 * zLUT = new u16[0x40000];
@@ -397,6 +410,10 @@ void InitGLSLCombiner()
 	g_calc_noise_shader_object = glCreateShaderObjectARB(GL_FRAGMENT_SHADER_ARB);
 	glShaderSourceARB(g_calc_noise_shader_object, 1, &noise_fragment_shader, NULL);
 	glCompileShaderARB(g_calc_noise_shader_object);
+
+	g_test_alpha_shader_object = glCreateShaderObjectARB(GL_FRAGMENT_SHADER_ARB);
+	glShaderSourceARB(g_test_alpha_shader_object, 1, &alpha_test_fragment_shader, NULL);
+	glCompileShaderARB(g_test_alpha_shader_object);
 
 	g_calc_depth_shader_object = glCreateShaderObjectARB(GL_FRAGMENT_SHADER_ARB);
 	if (g_bUseFloatDepthTexture)
@@ -549,6 +566,7 @@ GLSLCombiner::GLSLCombiner(Combiner *_color, Combiner *_alpha) {
 	strcat(fragment_shader, strCombiner);
 	strcat(fragment_shader, "  gl_FragColor = vec4(color2, alpha2); \n");
 
+	strcat(fragment_shader, "  if (!alpha_test(gl_FragColor.a)) discard;	\n");
 	strcat(fragment_shader, "  bool bDC = depth_compare(); \n");
 //	strcat(fragment_shader, "  if (!depth_compare()) discard; \n");
 
@@ -576,6 +594,8 @@ GLSLCombiner::GLSLCombiner(Combiner *_color, Combiner *_alpha) {
 		glAttachObjectARB(m_programObject, g_calc_light_shader_object);
 	if (bUseLod)
 		glAttachObjectARB(m_programObject, g_calc_lod_shader_object);
+	glAttachObjectARB(m_programObject, g_test_alpha_shader_object);
+	glAttachObjectARB(m_programObject, g_calc_depth_shader_object);
 	glAttachObjectARB(m_programObject, g_calc_noise_shader_object);
 	glAttachObjectARB(m_programObject, m_vertexShaderObject);
 	glLinkProgramARB(m_programObject);
@@ -605,6 +625,7 @@ void GLSLCombiner::Set() {
 	}
 
 	UpdateColors();
+	UpdateAlphaTestInfo();
 
 #ifdef _DEBUG
 	int log_length;
@@ -756,6 +777,21 @@ void GLSL_ClearDepthBuffer() {
 	gSP.changed |= CHANGED_TEXTURE | CHANGED_VIEWPORT;
 	gDP.changed |= CHANGED_COMBINE;
 
+}
+
+void GLSLCombiner::UpdateAlphaTestInfo() {
+	int at_enabled_location = glGetUniformLocationARB(m_programObject, "alphaTestEnabled");
+	int at_value_location = glGetUniformLocationARB(m_programObject, "alphaTestValue");
+	if ((gDP.otherMode.alphaCompare == G_AC_THRESHOLD) && !(gDP.otherMode.alphaCvgSel))	{
+		glUniform1iARB(at_enabled_location, 1);
+		glUniform1fARB(at_value_location, gDP.blendColor.a);
+	} else if (gDP.otherMode.cvgXAlpha)	{
+		glUniform1iARB(at_enabled_location, 1);
+		glUniform1fARB(at_value_location, 0.5f);
+	} else {
+		glUniform1iARB(at_enabled_location, 0);
+		glUniform1fARB(at_value_location, 0.0f);
+	}
 }
 
 void GLSL_RenderDepth() {

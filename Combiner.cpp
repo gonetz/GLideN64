@@ -146,6 +146,7 @@ void Combiner_Init()
 		break;
 	}
 	combiner.root = NULL;
+	combiner.current = NULL;
 }
 
 void Combiner_UpdateCombineColors()
@@ -164,6 +165,12 @@ void Combiner_UpdateCombineDepthInfo()
 {
 	if (combiner.current != NULL)
 		combiner.current->compiled->UpdateDepthInfo();
+}
+
+void Combiner_UpdateAlphaTestInfo()
+{
+	if (combiner.current != NULL)
+		combiner.current->compiled->UpdateAlphaTestInfo();
 }
 
 void Combiner_SimplifyCycle( CombineCycle *cc, CombinerStage *stage )
