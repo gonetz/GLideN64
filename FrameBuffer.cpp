@@ -337,8 +337,10 @@ void _initDepthTexture()
 	depthBuffer.top->depth_texture->textureBytes = depthBuffer.top->depth_texture->realWidth * depthBuffer.top->depth_texture->realHeight * 2;
 	cache.cachedBytes += depthBuffer.top->depth_texture->textureBytes;
 
+	GLint internalFormat = GL_R32F;
+	GLenum type = GL_FLOAT;
 	glBindTexture( GL_TEXTURE_2D, depthBuffer.top->depth_texture->glName );
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_R16, depthBuffer.top->depth_texture->realWidth, depthBuffer.top->depth_texture->realHeight, 0, GL_RED, GL_UNSIGNED_SHORT,	NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, depthBuffer.top->depth_texture->realWidth, depthBuffer.top->depth_texture->realHeight, 0, GL_RED, type,	NULL);
 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
 	frameBuffer.top->depth_texture = depthBuffer.top->depth_texture;

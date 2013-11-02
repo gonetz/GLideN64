@@ -287,25 +287,28 @@ static const char* depth_compare_shader =
 "uniform int depthEnabled;	\n"
 "uniform int depthCompareEnabled;	\n"
 "uniform int depthUpdateEnabled;	\n"
+"uniform float depthPolygonOffset;	\n"
 "layout(binding = 0, r16ui) uniform readonly uimage2D zlut_image;\n"
-"layout(binding = 1, r16ui) uniform restrict uimage2D depth_image;\n"
+"layout(binding = 1, r32f) uniform restrict image2D depth_image;\n"
 "bool depth_compare()				\n"
 "{									\n"
 "  if (depthEnabled == 0) return true;				\n"
 "  ivec2 coord = ivec2(gl_FragCoord.xy);			\n"
-"  uvec4 depth = imageLoad(depth_image,coord);		\n;"
-"  unsigned int bufZ = depth.r;							\n;"
-"  float Z = (gl_FragCoord.z*262143.0);				\n"
-"  int x0 = int(floor(mod(Z, 512.0)));					\n"
-"  int y0 = int(floor(Z / 512.0));						\n"
-"  unsigned int curZ = imageLoad(zlut_image,ivec2(x0,y0)).r;\n"
-"  if (depthUpdateEnabled > 0  && curZ < bufZ) {			\n"
-"    depth.r = curZ;						\n;"
+"  highp vec4 depth = imageLoad(depth_image,coord);		\n"
+"  highp float bufZ = depth.r;							\n"
+"  highp int iZ = int(gl_FragCoord.z*262143.0);				\n"
+"  int y0 = iZ / 512;						\n"
+"  int x0 = iZ - 512*y0;					\n"
+"  unsigned int icurZ = imageLoad(zlut_image,ivec2(x0,y0)).r;\n"
+"  highp float curZ = float(icurZ)/262143.0  - depthPolygonOffset;	\n"
+"  if (depthUpdateEnabled > 0  && curZ < depth.r) {	\n"
+"    depth.r = curZ;						\n"
 "    imageStore(depth_image,coord,depth);				\n"
-"  }													\n"
-//"  memoryBarrier();										\n"
+"  }					\n"
+"  memoryBarrier();										\n"
 "  if (depthCompareEnabled > 0)							\n"
 "    return curZ <= bufZ;								\n"
+
 "  return true;											\n"
 "}														\n"
 ;
@@ -513,8 +516,8 @@ GLSLCombiner::GLSLCombiner(Combiner *_color, Combiner *_alpha) {
 	strcat(fragment_shader, strCombiner);
 	strcat(fragment_shader, "  gl_FragColor = vec4(color2, alpha2); \n");
 
-	strcat(fragment_shader, "  bool bDC = depth_compare(); \n");
-//	strcat(fragment_shader, "  if (!depth_compare()) discard; \n");
+//	strcat(fragment_shader, "  bool bDC = depth_compare(); \n");
+	strcat(fragment_shader, "  if (!depth_compare()) discard; \n");
 
 #ifdef USE_TOONIFY
 	strcat(fragment_shader, "  toonify(intensity); \n");
@@ -672,12 +675,16 @@ void GLSLCombiner::UpdateDepthInfo() {
 	glUniform1iARB(depth_compare_location, gDP.otherMode.depthCompare);
 	int  depth_update_location = glGetUniformLocationARB(m_programObject, "depthUpdateEnabled");
 	glUniform1iARB(depth_update_location, gDP.otherMode.depthUpdate);
+	int  depth_polygon_offset = glGetUniformLocationARB(m_programObject, "depthPolygonOffset");
+	float fPlygonOffset = gDP.otherMode.depthMode == ZMODE_DEC ? 0.005f : 0.0f;
+	glUniform1fARB(depth_polygon_offset, fPlygonOffset);
+	
 
 	const GLuint ZlutImageUnit = 0;
 	const GLuint depthImageUnit = 1;
 	GLuint texture = frameBuffer.top->depth_texture->glName;
 	glBindImageTexture(ZlutImageUnit, g_zlut_tex, 0, GL_FALSE, 0, GL_READ_ONLY, GL_R16UI);
-	glBindImageTexture(depthImageUnit, texture, 0, GL_FALSE, 0, GL_READ_WRITE, GL_R16UI);
+	glBindImageTexture(depthImageUnit, texture, 0, GL_FALSE, 0, GL_READ_WRITE, GL_R32F);
 }
 
 void GLSL_ClearDepthBuffer() {
@@ -685,14 +692,28 @@ void GLSL_ClearDepthBuffer() {
 		return;
 
 	const u32 numTexels = frameBuffer.top->depth_texture->width*frameBuffer.top->depth_texture->height;
-	u16 * pDepth = (u16*)malloc(numTexels * 2);
-	for (int i = 0; i < numTexels; i++)
-		pDepth[i] = 0xfffc;
+
+	GLint internalFormat = GL_R32F;
+	GLenum type = GL_FLOAT;
+	int dataSize = type == GL_FLOAT ? sizeof(float) : sizeof(unsigned short);
+	char * pData = (char*)malloc(numTexels * dataSize);;
+
+	if (type == GL_FLOAT) {
+		f32 * pDepth = (f32*)pData;
+		for (int i = 0; i < numTexels; i++)
+			pDepth[i] = 1.0f;
+	} else {
+		u16 * pDepth = (u16*)pData;
+		for (int i = 0; i < numTexels; i++)
+			pDepth[i] = 0xfffc;
+	}
 	glBindTexture(GL_TEXTURE_2D, frameBuffer.top->depth_texture->glName);
+
+
 	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0,
 		frameBuffer.top->depth_texture->width, frameBuffer.top->depth_texture->height,
-		GL_RED, GL_UNSIGNED_SHORT, pDepth);
-	free(pDepth);
+		GL_RED, type, pData);
+	free(pData);
 
 	gSP.changed |= CHANGED_TEXTURE | CHANGED_VIEWPORT;
 	gDP.changed |= CHANGED_COMBINE;
