@@ -158,6 +158,7 @@ static const char* fragment_shader_header_common_functions =
 "float snoise(vec2 v);										\n"
 "float calc_light(in int nLights, out vec3 output_color);	\n"
 "float calc_lod(in float prim_lod, in vec2 texCoord);		\n"
+"bool depth_compare();										\n"
 #ifdef USE_TOONIFY
 "void toonify(in float intensity);	\n"
 #endif
@@ -282,22 +283,27 @@ static const char* vertex_shader =
 ;
 
 static const char* depth_compare_shader =
+"#version 420 core			\n"
 "uniform int depthEnabled;	\n"
 "uniform int depthCompareEnabled;	\n"
 "uniform int depthUpdateEnabled;	\n"
-"uniform usampler2D zlut_texture;	\n"
-"layout(binding=0, r16ui) uniform image2D depth_texture;\n"
+"layout(binding = 0, r16ui) uniform readonly uimage2D zlut_image;\n"
+"layout(binding = 1, r16ui) uniform restrict uimage2D depth_image;\n"
 "bool depth_compare()				\n"
 "{									\n"
 "  if (depthEnabled == 0) return true;				\n"
 "  ivec2 coord = ivec2(gl_FragCoord.xy);			\n"
-"  float bufZ = imageLoad(depth_texture,coord).r	\n;"
+"  uvec4 depth = imageLoad(depth_image,coord);		\n;"
+"  unsigned int bufZ = depth.r;							\n;"
 "  float Z = (gl_FragCoord.z*262143.0);				\n"
 "  int x0 = int(floor(mod(Z, 512.0)));					\n"
 "  int y0 = int(floor(Z / 512.0));						\n"
-"  float curZ = texelFetch(zlut_texture, ivec2(x0,y0), 0).r;\n"
-"  if (depthUpdateEnabled > 0  && curZ < bufZ)			\n"
-"    imageStore(depth_texture,coord,vec4(curZ, 0.0, 0.0, 1.0));\n"
+"  unsigned int curZ = imageLoad(zlut_image,ivec2(x0,y0)).r;\n"
+"  if (depthUpdateEnabled > 0  && curZ < bufZ) {			\n"
+"    depth.r = curZ;						\n;"
+"    imageStore(depth_image,coord,depth);				\n"
+"  }													\n"
+//"  memoryBarrier();										\n"
 "  if (depthCompareEnabled > 0)							\n"
 "    return curZ <= bufZ;								\n"
 "  return true;											\n"
@@ -324,7 +330,7 @@ void InitZlutTexture()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RED,
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_R16,
 		512, 512, 0, GL_RED, GL_UNSIGNED_SHORT,
 		zLUT);
 	delete[] zLUT;
@@ -364,6 +370,42 @@ void InitGLSLCombiner()
 	glCompileShaderARB(g_calc_depth_shader_object);
 
 	InitZlutTexture();
+
+/*
+const char* base_vertex_shader =
+"void main()                                                    \n"
+"{                                                              \n"
+"  gl_Position = ftransform();                                  \n"
+"}                                                              \n"
+;
+
+	GLhandleARB base_vertex_shader_object = glCreateShaderObjectARB(GL_VERTEX_SHADER_ARB);
+	glShaderSourceARB(base_vertex_shader_object, 1, &base_vertex_shader, NULL);
+	glCompileShaderARB(base_vertex_shader_object);
+	GLhandleARB test_program = glCreateProgramObjectARB();
+	glAttachObjectARB(test_program, base_vertex_shader_object);
+	glAttachObjectARB(test_program, g_calc_depth_shader_object);
+	glLinkProgramARB(test_program);
+
+	int log_length;
+	glGetObjectParameterivARB(test_program, GL_OBJECT_LINK_STATUS_ARB , &log_length);
+	if(!log_length)
+	{
+		const int nLogSize = 1024;
+		char shader_log[nLogSize];
+		glGetInfoLogARB(g_calc_depth_shader_object, 
+			nLogSize, &log_length, shader_log);
+		if(log_length) 
+			display_warning(shader_log);
+		glGetInfoLogARB(base_vertex_shader_object, nLogSize, &log_length, shader_log);
+		if(log_length) 
+			display_warning(shader_log);
+		glGetInfoLogARB(test_program, 
+			nLogSize, &log_length, shader_log);
+		if(log_length) 
+			display_warning(shader_log);
+	}
+*/	
 }
 
 void DestroyGLSLCombiner() {
@@ -470,6 +512,10 @@ GLSLCombiner::GLSLCombiner(Combiner *_color, Combiner *_alpha) {
 	strcat(fragment_shader, "  vec_color = vec4(input_color, gl_Color.a); \n");
 	strcat(fragment_shader, strCombiner);
 	strcat(fragment_shader, "  gl_FragColor = vec4(color2, alpha2); \n");
+
+	strcat(fragment_shader, "  bool bDC = depth_compare(); \n");
+//	strcat(fragment_shader, "  if (!depth_compare()) discard; \n");
+
 #ifdef USE_TOONIFY
 	strcat(fragment_shader, "  toonify(intensity); \n");
 #endif
@@ -489,6 +535,7 @@ GLSLCombiner::GLSLCombiner(Combiner *_color, Combiner *_alpha) {
 
 	m_programObject = glCreateProgramObjectARB();
 	glAttachObjectARB(m_programObject, m_fragmentShaderObject);
+	glAttachObjectARB(m_programObject, g_calc_depth_shader_object);
 	if (bHWLightingCalculation)
 		glAttachObjectARB(m_programObject, g_calc_light_shader_object);
 	if (bUseLod)
@@ -613,42 +660,34 @@ void GLSLCombiner::UpdateFBInfo() {
 }
 
 void GLSLCombiner::UpdateDepthInfo() {
-	if (frameBuffer.top == NULL)
+	if (frameBuffer.top == NULL || frameBuffer.top->depth_texture == NULL)
 		return;
 	int nDepthEnabled = (gSP.geometryMode & G_ZBUFFER) > 0 ? 1 : 0;
 	int  depth_enabled_location = glGetUniformLocationARB(m_programObject, "depthEnabled");
 	glUniform1iARB(depth_enabled_location, nDepthEnabled);
-	int  depth_compare_location = glGetUniformLocationARB(m_programObject, "depthCompareEnabled");
-	glUniform1iARB(depth_compare_location, gDP.otherMode.depthCompare);
-	if (nDepthEnabled == 0 || gDP.otherMode.depthCompare == 0)
+	if (nDepthEnabled == 0)
 		return;
 
+	int  depth_compare_location = glGetUniformLocationARB(m_programObject, "depthCompareEnabled");
+	glUniform1iARB(depth_compare_location, gDP.otherMode.depthCompare);
 	int  depth_update_location = glGetUniformLocationARB(m_programObject, "depthUpdateEnabled");
 	glUniform1iARB(depth_update_location, gDP.otherMode.depthUpdate);
 
-	glEnable(GL_TEXTURE_2D);
-	glActiveTextureARB(GL_TEXTURE2_ARB);
-	glBindTexture(GL_TEXTURE_2D, g_zlut_tex);
-	int zlut_texture_location = glGetUniformLocationARB(m_programObject, "zlut_texture");
-	glUniform1iARB(zlut_texture_location, 2);
-//	glActiveTextureARB(GL_TEXTURE3_ARB);
-//	glBindTexture(GL_TEXTURE_2D, frameBuffer.top->depth_texture->glName);
-	//glBindImageTexture​(0​, frameBuffer.top->depth_texture->glName​, 0​, GL_FALSE​, 0​, GL_READ_WRITE​, GL_R16UI​​);
+	const GLuint ZlutImageUnit = 0;
+	const GLuint depthImageUnit = 1;
 	GLuint texture = frameBuffer.top->depth_texture->glName;
-	const GLuint depthBufferUnit = 0;
-	glBindImageTexture(depthBufferUnit, texture, 0, GL_FALSE, 0, GL_READ_WRITE, GL_R16UI);
-//	int depth_texture_location = glGetUniformLocationARB(m_programObject, "depth_texture");
-//	glUniform1iARB(depth_texture_location, depthBufferUnit);
+	glBindImageTexture(ZlutImageUnit, g_zlut_tex, 0, GL_FALSE, 0, GL_READ_ONLY, GL_R16UI);
+	glBindImageTexture(depthImageUnit, texture, 0, GL_FALSE, 0, GL_READ_WRITE, GL_R16UI);
 }
 
 void GLSL_ClearDepthBuffer() {
 	if (frameBuffer.top == NULL || frameBuffer.top->depth_texture == NULL)
 		return;
+
 	const u32 numTexels = frameBuffer.top->depth_texture->width*frameBuffer.top->depth_texture->height;
 	u16 * pDepth = (u16*)malloc(numTexels * 2);
 	for (int i = 0; i < numTexels; i++)
 		pDepth[i] = 0xfffc;
-//	glActiveTextureARB( GL_TEXTURE0_ARB );
 	glBindTexture(GL_TEXTURE_2D, frameBuffer.top->depth_texture->glName);
 	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0,
 		frameBuffer.top->depth_texture->width, frameBuffer.top->depth_texture->height,
@@ -658,4 +697,80 @@ void GLSL_ClearDepthBuffer() {
 	gSP.changed |= CHANGED_TEXTURE | CHANGED_VIEWPORT;
 	gDP.changed |= CHANGED_COMBINE;
 
+}
+
+void GLSL_RenderDepth() {
+#if 0
+	ogl_glBindFramebuffer(GL_READ_FRAMEBUFFER, g_zbuf_fbo);
+	ogl_glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+	glDrawBuffer( GL_FRONT );
+	ogl_glBlitFramebuffer(
+		0, 0, OGL.width, OGL.height,
+		0, OGL.heightOffset, OGL.width, OGL.heightOffset + OGL.height,
+		GL_COLOR_BUFFER_BIT, GL_LINEAR
+	);
+	glDrawBuffer( GL_BACK );
+	ogl_glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
+	ogl_glBindFramebuffer(GL_DRAW_FRAMEBUFFER, frameBuffer.top != NULL ? frameBuffer.top->fbo : 0);
+#else
+	if (frameBuffer.top == NULL || frameBuffer.top->depth_texture == NULL)
+		return;
+	glPushAttrib( GL_ENABLE_BIT | GL_VIEWPORT_BIT );
+
+	glActiveTextureARB( GL_TEXTURE0_ARB );
+	glBindTexture(GL_TEXTURE_2D, frameBuffer.top->depth_texture->glName);
+//	glBindTexture(GL_TEXTURE_2D, g_zlut_tex);
+
+	Combiner_SetCombine( EncodeCombineMode( 0, 0, 0, TEXEL0, 0, 0, 0, 1, 0, 0, 0, TEXEL0, 0, 0, 0, 1 ) );
+
+			glDisable( GL_BLEND );
+			glDisable( GL_ALPHA_TEST );
+			glDisable( GL_DEPTH_TEST );
+			glDisable( GL_CULL_FACE );
+			glDisable( GL_POLYGON_OFFSET_FILL );
+			glDisable( GL_FOG );
+
+			glMatrixMode( GL_PROJECTION );
+			glLoadIdentity();
+ 			glOrtho( 0, OGL.width, 0, OGL.height, -1.0f, 1.0f );
+			glViewport( 0, OGL.heightOffset, OGL.width, OGL.height );
+			glDisable( GL_SCISSOR_TEST );
+
+			float u1, v1;
+
+			u1 = 1.0;
+			v1 = 1.0;
+
+			ogl_glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+#ifndef __LINUX__
+			glDrawBuffer( GL_FRONT );
+#else
+			glDrawBuffer( GL_BACK );
+#endif
+			glBegin(GL_QUADS);
+ 				glTexCoord2f( 0.0f, 0.0f );
+				glVertex2f( 0.0f, 0.0f );
+
+				glTexCoord2f( 0.0f, v1 );
+				glVertex2f( 0.0f, (GLfloat)OGL.height );
+
+ 				glTexCoord2f( u1,  v1 );
+				glVertex2f( (GLfloat)OGL.width, (GLfloat)OGL.height );
+
+ 				glTexCoord2f( u1, 0.0f );
+				glVertex2f( (GLfloat)OGL.width, 0.0f );
+			glEnd();
+#ifndef __LINUX__
+			glDrawBuffer( GL_BACK );
+#else
+			OGL_SwapBuffers();
+#endif
+			ogl_glBindFramebuffer(GL_DRAW_FRAMEBUFFER, frameBuffer.top->fbo);
+
+			glLoadIdentity();
+			glPopAttrib();
+
+			gSP.changed |= CHANGED_TEXTURE | CHANGED_VIEWPORT;
+			gDP.changed |= CHANGED_COMBINE;
+#endif
 }
