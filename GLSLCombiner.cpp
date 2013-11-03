@@ -282,7 +282,37 @@ static const char* vertex_shader =
 "}                                                              \n"
 ;
 
-static const char* depth_compare_shader =
+static const char* depth_compare_shader_int =
+"#version 420 core			\n"
+"uniform int depthEnabled;	\n"
+"uniform int depthCompareEnabled;	\n"
+"uniform int depthUpdateEnabled;	\n"
+"uniform unsigned int depthPolygonOffset;	\n"
+"layout(binding = 0, r16ui) uniform readonly uimage2D zlut_image;\n"
+"layout(binding = 1, r16ui) uniform restrict uimage2D depth_image;\n"
+"bool depth_compare()				\n"
+"{									\n"
+"  if (depthEnabled == 0) return true;				\n"
+"  ivec2 coord = ivec2(gl_FragCoord.xy);			\n"
+"  highp uvec4 depth = imageLoad(depth_image,coord);		\n"
+"  highp unsigned int bufZ = depth.r;							\n"
+"  highp int iZ = int(gl_FragCoord.z*262143.0);				\n"
+"  int y0 = iZ / 512;						\n"
+"  int x0 = iZ - 512*y0;					\n"
+"  highp unsigned int curZ = imageLoad(zlut_image,ivec2(x0,y0)).r; \n"
+"  curZ = curZ - depthPolygonOffset;\n"
+"  if (depthUpdateEnabled > 0  && curZ < depth.r) {	\n"
+"    depth.r = curZ;						\n"
+"    imageStore(depth_image,coord,depth);				\n"
+"  }													\n"
+"  memoryBarrier();										\n"
+"  if (depthCompareEnabled > 0)							\n"
+"    return curZ <= bufZ;								\n"
+"  return true;											\n"
+"}														\n"
+;
+
+static const char* depth_compare_shader_float =
 "#version 420 core			\n"
 "uniform int depthEnabled;	\n"
 "uniform int depthCompareEnabled;	\n"
@@ -369,7 +399,10 @@ void InitGLSLCombiner()
 	glCompileShaderARB(g_calc_noise_shader_object);
 
 	g_calc_depth_shader_object = glCreateShaderObjectARB(GL_FRAGMENT_SHADER_ARB);
-	glShaderSourceARB(g_calc_depth_shader_object, 1, &depth_compare_shader, NULL);
+	if (g_bUseFloatDepthTexture)
+		glShaderSourceARB(g_calc_depth_shader_object, 1, &depth_compare_shader_float, NULL);
+	else
+		glShaderSourceARB(g_calc_depth_shader_object, 1, &depth_compare_shader_int, NULL);
 	glCompileShaderARB(g_calc_depth_shader_object);
 
 	InitZlutTexture();
@@ -516,8 +549,8 @@ GLSLCombiner::GLSLCombiner(Combiner *_color, Combiner *_alpha) {
 	strcat(fragment_shader, strCombiner);
 	strcat(fragment_shader, "  gl_FragColor = vec4(color2, alpha2); \n");
 
-//	strcat(fragment_shader, "  bool bDC = depth_compare(); \n");
-	strcat(fragment_shader, "  if (!depth_compare()) discard; \n");
+	strcat(fragment_shader, "  bool bDC = depth_compare(); \n");
+//	strcat(fragment_shader, "  if (!depth_compare()) discard; \n");
 
 #ifdef USE_TOONIFY
 	strcat(fragment_shader, "  toonify(intensity); \n");
@@ -676,15 +709,20 @@ void GLSLCombiner::UpdateDepthInfo() {
 	int  depth_update_location = glGetUniformLocationARB(m_programObject, "depthUpdateEnabled");
 	glUniform1iARB(depth_update_location, gDP.otherMode.depthUpdate);
 	int  depth_polygon_offset = glGetUniformLocationARB(m_programObject, "depthPolygonOffset");
-	float fPlygonOffset = gDP.otherMode.depthMode == ZMODE_DEC ? 0.005f : 0.0f;
-	glUniform1fARB(depth_polygon_offset, fPlygonOffset);
-	
+	if (g_bUseFloatDepthTexture) {
+		float fPlygonOffset = gDP.otherMode.depthMode == ZMODE_DEC ? 0.005 : 0.0f;
+		glUniform1fARB(depth_polygon_offset, fPlygonOffset);
+	} else {
+		int iPlygonOffset = gDP.otherMode.depthMode == ZMODE_DEC ? 5 : 0;
+		glUniform1iARB(depth_polygon_offset, iPlygonOffset);
+	}
 
 	const GLuint ZlutImageUnit = 0;
 	const GLuint depthImageUnit = 1;
 	GLuint texture = frameBuffer.top->depth_texture->glName;
 	glBindImageTexture(ZlutImageUnit, g_zlut_tex, 0, GL_FALSE, 0, GL_READ_ONLY, GL_R16UI);
-	glBindImageTexture(depthImageUnit, texture, 0, GL_FALSE, 0, GL_READ_WRITE, GL_R32F);
+	GLenum depthTexFormat = g_bUseFloatDepthTexture ? GL_R32F : GL_R16UI;
+	glBindImageTexture(depthImageUnit, texture, 0, GL_FALSE, 0, GL_READ_WRITE, depthTexFormat);
 }
 
 void GLSL_ClearDepthBuffer() {
@@ -693,12 +731,12 @@ void GLSL_ClearDepthBuffer() {
 
 	const u32 numTexels = frameBuffer.top->depth_texture->width*frameBuffer.top->depth_texture->height;
 
-	GLint internalFormat = GL_R32F;
-	GLenum type = GL_FLOAT;
-	int dataSize = type == GL_FLOAT ? sizeof(float) : sizeof(unsigned short);
+	GLenum type = GL_UNSIGNED_SHORT;
+	int dataSize = g_bUseFloatDepthTexture ? sizeof(float) : sizeof(unsigned short);
 	char * pData = (char*)malloc(numTexels * dataSize);;
 
-	if (type == GL_FLOAT) {
+	if (g_bUseFloatDepthTexture) {
+		type = GL_FLOAT;
 		f32 * pDepth = (f32*)pData;
 		for (int i = 0; i < numTexels; i++)
 			pDepth[i] = 1.0f;

@@ -887,7 +887,8 @@ void OGL_DrawTriangles()
 	Combiner_UpdateCombineDepthInfo();
 	glDrawArrays( GL_TRIANGLES, 0, OGL.numVertices );
 	glBindImageTexture(0, 0, 0, GL_FALSE, 0, GL_READ_WRITE, GL_R16UI);
-	glBindImageTexture(1, 0, 0, GL_FALSE, 0, GL_READ_WRITE, GL_R32F);
+	GLenum depthTexFormat = g_bUseFloatDepthTexture ? GL_R32F : GL_R16UI;
+	glBindImageTexture(1, 0, 0, GL_FALSE, 0, GL_READ_WRITE, depthTexFormat);
 
 	OGL.numTriangles = OGL.numVertices = 0;
 }

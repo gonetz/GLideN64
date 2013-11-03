@@ -30,6 +30,7 @@ struct FrameBufferInfo
 extern FrameBufferInfo frameBuffer;
 extern bool g_bCopyToRDRAM;
 extern bool g_bCopyFromRDRAM;
+extern bool g_bUseFloatDepthTexture;
 struct DepthBuffer;
 
 void FrameBuffer_Init();

@@ -18,6 +18,10 @@
 
 bool g_bCopyToRDRAM = false;
 bool g_bCopyFromRDRAM = false;
+bool g_bUseFloatDepthTexture = false;
+static const GLint depthTextureInternalFormat = g_bUseFloatDepthTexture ? GL_R32F : GL_R16;
+static const GLenum depthTextureType =  g_bUseFloatDepthTexture ? GL_FLOAT : GL_UNSIGNED_INT;
+
 FrameBufferInfo frameBuffer;
 
 class FrameBufferToRDRAM
@@ -337,10 +341,8 @@ void _initDepthTexture()
 	depthBuffer.top->depth_texture->textureBytes = depthBuffer.top->depth_texture->realWidth * depthBuffer.top->depth_texture->realHeight * 2;
 	cache.cachedBytes += depthBuffer.top->depth_texture->textureBytes;
 
-	GLint internalFormat = GL_R32F;
-	GLenum type = GL_FLOAT;
 	glBindTexture( GL_TEXTURE_2D, depthBuffer.top->depth_texture->glName );
-	glTexImage2D(GL_TEXTURE_2D, 0, internalFormat, depthBuffer.top->depth_texture->realWidth, depthBuffer.top->depth_texture->realHeight, 0, GL_RED, type,	NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, depthTextureInternalFormat, depthBuffer.top->depth_texture->realWidth, depthBuffer.top->depth_texture->realHeight, 0, GL_RED, depthTextureType,	NULL);
 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
 	frameBuffer.top->depth_texture = depthBuffer.top->depth_texture;
