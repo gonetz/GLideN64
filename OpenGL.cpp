@@ -890,8 +890,9 @@ void OGL_DrawTriangles()
 	Combiner_UpdateCombineDepthInfo();
 	glDrawArrays( GL_TRIANGLES, 0, OGL.numVertices );
 	glBindImageTexture(0, 0, 0, GL_FALSE, 0, GL_READ_WRITE, GL_R16UI);
+	glBindImageTexture(1, 0, 0, GL_FALSE, 0, GL_READ_WRITE, GL_R16UI);
 	GLenum depthTexFormat = g_bUseFloatDepthTexture ? GL_R32F : GL_R16UI;
-	glBindImageTexture(1, 0, 0, GL_FALSE, 0, GL_READ_WRITE, depthTexFormat);
+	glBindImageTexture(2, 0, 0, GL_FALSE, 0, GL_READ_WRITE, depthTexFormat);
 
 	OGL.numTriangles = OGL.numVertices = 0;
 }
@@ -972,6 +973,7 @@ void OGL_DrawRect( int ulx, int uly, int lrx, int lry, float *color )
 		glEnable( GL_DEPTH_TEST );
 }
 
+void GLS_SetShadowMapCombiner();
 void OGL_DrawTexturedRect( float ulx, float uly, float lrx, float lry, float uls, float ult, float lrs, float lrt, bool flip )
 {
 	GLVertex rect[2] =
@@ -981,6 +983,10 @@ void OGL_DrawTexturedRect( float ulx, float uly, float lrx, float lry, float uls
 	};
 
 	OGL_UpdateStates();
+
+//	if ((gDP.otherMode.l >> 16) == 0x3c18 && gDP.combine.muxs0 == 0x00ffffff && gDP.combine.muxs1 == 0xfffff238) //depth image based fog
+	if (gDP.textureImage.address >= gDP.depthImageAddress &&  gDP.textureImage.address < (gDP.depthImageAddress +  gDP.colorImage.width*gDP.colorImage.width*6/4))
+		GLS_SetShadowMapCombiner();
 
 	glDisable( GL_CULL_FACE );
 	glMatrixMode( GL_PROJECTION );
@@ -1144,6 +1150,10 @@ void OGL_DrawTexturedRect( float ulx, float uly, float lrx, float lry, float uls
 	glLoadIdentity();
 	OGL_UpdateCullFace();
 	OGL_UpdateViewport();
+
+	glBindImageTexture(0, 0, 0, GL_FALSE, 0, GL_READ_WRITE, GL_R16UI);
+	glBindImageTexture(1, 0, 0, GL_FALSE, 0, GL_READ_WRITE, GL_R16UI);
+	glBindImageTexture(2, 0, 0, GL_FALSE, 0, GL_READ_WRITE, GL_R16UI);
 }
 
 void OGL_ClearDepthBuffer()

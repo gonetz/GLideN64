@@ -71,8 +71,6 @@ void VI_UpdateScreen()
 			}
 			if (g_bCopyToRDRAM && !bCFB)
 				FrameBuffer_CopyToRDRAM( *REG.VI_ORIGIN, false );
-void GLSL_RenderDepth();
-GLSL_RenderDepth();
 			FrameBuffer_RenderBuffer( *REG.VI_ORIGIN );
 
 			gDP.colorImage.changed = FALSE;

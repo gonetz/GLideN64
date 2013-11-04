@@ -9,6 +9,7 @@
 # include <stdlib.h> // malloc()
 #endif
 #include <assert.h>
+#include "N64.h"
 #include "OpenGL.h"
 #include "Combiner.h"
 #include "GLSLCombiner.h"
@@ -22,6 +23,16 @@ static GLhandleARB g_calc_noise_shader_object;
 static GLhandleARB g_calc_depth_shader_object;
 static GLhandleARB g_test_alpha_shader_object;
 static GLuint g_zlut_tex = 0;
+
+static GLhandleARB g_shadow_map_vertex_shader_object;
+static GLhandleARB g_shadow_map_fragment_shader_object;
+static GLhandleARB g_draw_shadow_map_program;
+GLuint g_tlut_tex = 0;
+
+static const GLuint ZlutImageUnit = 0;
+static const GLuint TlutImageUnit = 1;
+static const GLuint depthImageUnit = 2;
+
 
 static
 void display_warning(const char *text, ...)
@@ -40,6 +51,7 @@ void display_warning(const char *text, ...)
 	}
 }
 
+static
 void InitZlutTexture()
 {
 	u16 * zLUT = new u16[0x40000];
@@ -66,10 +78,73 @@ void InitZlutTexture()
 	delete[] zLUT;
 }
 
+static
 void DestroyZlutTexture()
 {
 	if (g_zlut_tex > 0)
 		glDeleteTextures(1, &g_zlut_tex);
+}
+
+static
+void InitShadowMapShader()
+{
+	glGenTextures(1, &g_tlut_tex);
+	glBindTexture(GL_TEXTURE_1D, g_tlut_tex);
+	glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+	glTexImage1D(GL_TEXTURE_1D, 0, GL_R16, 256, 0, GL_RED, GL_UNSIGNED_SHORT, NULL);
+
+	g_shadow_map_vertex_shader_object = glCreateShaderObjectARB(GL_VERTEX_SHADER_ARB);
+	glShaderSourceARB(g_shadow_map_vertex_shader_object, 1, &shadow_map_vertex_shader, NULL);
+	glCompileShaderARB(g_shadow_map_vertex_shader_object);
+
+	g_shadow_map_fragment_shader_object = glCreateShaderObjectARB(GL_FRAGMENT_SHADER_ARB);
+	if (g_bUseFloatDepthTexture)
+		glShaderSourceARB(g_shadow_map_fragment_shader_object, 1, &shadow_map_fragment_shader_float, NULL);
+	else
+		glShaderSourceARB(g_shadow_map_fragment_shader_object, 1, &shadow_map_fragment_shader_int, NULL);
+	glCompileShaderARB(g_shadow_map_fragment_shader_object);
+
+	g_draw_shadow_map_program = glCreateProgramObjectARB();
+	glAttachObjectARB(g_draw_shadow_map_program, g_shadow_map_vertex_shader_object);
+	glAttachObjectARB(g_draw_shadow_map_program, g_shadow_map_fragment_shader_object);
+	glLinkProgramARB(g_draw_shadow_map_program);
+
+#ifdef _DEBUG
+	int log_length;
+	glGetObjectParameterivARB(g_draw_shadow_map_program, GL_OBJECT_LINK_STATUS_ARB , &log_length);
+	if(!log_length)
+	{
+		const int nLogSize = 1024;
+		char shader_log[nLogSize];
+		glGetInfoLogARB(g_shadow_map_fragment_shader_object,
+			nLogSize, &log_length, shader_log);
+		if(log_length)
+			display_warning(shader_log);
+		glGetInfoLogARB(g_shadow_map_vertex_shader_object, nLogSize, &log_length, shader_log);
+		if(log_length)
+			display_warning(shader_log);
+		glGetInfoLogARB(g_draw_shadow_map_program,
+			nLogSize, &log_length, shader_log);
+		if(log_length)
+			display_warning(shader_log);
+	}
+#endif
+}
+
+static
+void DestroyShadowMapShader()
+{
+	if (g_tlut_tex > 0)
+		glDeleteTextures(1, &g_tlut_tex);
+	/*
+    glDetachShader(g_draw_shadow_map_program, g_shadow_map_vertex_shader_object);
+    glDetachShader(g_draw_shadow_map_program, g_shadow_map_fragment_shader_object);
+    glDeleteShader(g_shadow_map_vertex_shader_object);
+    glDeleteShader(g_shadow_map_fragment_shader_object);
+    glDeleteProgram(g_draw_shadow_map_program);
+	*/
 }
 
 void InitGLSLCombiner()
@@ -107,6 +182,7 @@ void InitGLSLCombiner()
 	glCompileShaderARB(g_calc_depth_shader_object);
 
 	InitZlutTexture();
+	InitShadowMapShader();
 
 /*
 const char* base_vertex_shader =
@@ -148,6 +224,7 @@ const char* base_vertex_shader =
 void DestroyGLSLCombiner() {
 	ogl_glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 	DestroyZlutTexture();
+	DestroyShadowMapShader();
 }
 
 const char *ColorInput_1cycle[] = {
@@ -356,6 +433,7 @@ GLSLCombiner::GLSLCombiner(Combiner *_color, Combiner *_alpha) {
 #endif
 	strcat(fragment_shader, "  if (fog_enabled > 0) \n");
 	strcat(fragment_shader, "    gl_FragColor = vec4(mix(gl_Fog.color.rgb, gl_FragColor.rgb, gl_FogFragCoord), gl_FragColor.a); \n");
+
 	strcat(fragment_shader, fragment_shader_end);
 
 #ifdef USE_TOONIFY
@@ -519,8 +597,6 @@ void GLSLCombiner::UpdateDepthInfo() {
 		glUniform1iARB(depth_polygon_offset, iPlygonOffset);
 	}
 
-	const GLuint ZlutImageUnit = 0;
-	const GLuint depthImageUnit = 1;
 	GLuint texture = frameBuffer.top->depth_texture->glName;
 	glBindImageTexture(ZlutImageUnit, g_zlut_tex, 0, GL_FALSE, 0, GL_READ_ONLY, GL_R16UI);
 	GLenum depthTexFormat = g_bUseFloatDepthTexture ? GL_R32F : GL_R16UI;
@@ -649,4 +725,20 @@ void GLSL_RenderDepth() {
 			gSP.changed |= CHANGED_TEXTURE | CHANGED_VIEWPORT;
 			gDP.changed |= CHANGED_COMBINE;
 #endif
+}
+
+void GLS_SetShadowMapCombiner() {
+	/*
+	glBindTexture(GL_TEXTURE_1D, g_tlut_tex);
+	u16 *pData = (u16*)&TMEM[256];
+	glTexSubImage1D(GL_TEXTURE_1D, 0, 0, 256, GL_RED, GL_UNSIGNED_SHORT, pData);
+	glBindTexture(GL_TEXTURE_1D, 0);
+	*/
+	glUseProgramObjectARB(g_draw_shadow_map_program);
+
+	glBindImageTexture(TlutImageUnit, g_tlut_tex, 0, GL_FALSE, 0, GL_READ_ONLY, GL_R16UI);
+	GLenum depthTexFormat = g_bUseFloatDepthTexture ? GL_R32F : GL_R16UI;
+	GLuint texture = frameBuffer.top->depth_texture->glName;
+	glBindImageTexture(depthImageUnit, texture, 0, GL_FALSE, 0, GL_READ_ONLY, depthTexFormat);
+	gDP.changed |= CHANGED_COMBINE;
 }
