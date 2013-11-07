@@ -114,15 +114,6 @@
     <ClCompile Include="GLSLCombiner.cpp">
       <Filter>Source Files\Combiners</Filter>
     </ClCompile>
-    <ClCompile Include="NV_register_combiners.cpp">
-      <Filter>Source Files\Combiners</Filter>
-    </ClCompile>
-    <ClCompile Include="texture_env.cpp">
-      <Filter>Source Files\Combiners</Filter>
-    </ClCompile>
-    <ClCompile Include="texture_env_combine.cpp">
-      <Filter>Source Files\Combiners</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="2xSAI.h">
@@ -156,9 +147,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="gDP.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="glATI.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="glext.h">
@@ -231,15 +219,6 @@
       <Filter>Header Files\uCodes</Filter>
     </ClInclude>
     <ClInclude Include="GLSLCombiner.h">
-      <Filter>Header Files\Combiners</Filter>
-    </ClInclude>
-    <ClInclude Include="NV_register_combiners.h">
-      <Filter>Header Files\Combiners</Filter>
-    </ClInclude>
-    <ClInclude Include="texture_env.h">
-      <Filter>Header Files\Combiners</Filter>
-    </ClInclude>
-    <ClInclude Include="texture_env_combine.h">
       <Filter>Header Files\Combiners</Filter>
     </ClInclude>
     <ClInclude Include="ZilmarGFX_1_3.h">

@@ -5,9 +5,6 @@
 #endif // __LINUX__
 #include "OpenGL.h"
 #include "Combiner.h"
-#include "NV_register_combiners.h"
-#include "texture_env_combine.h"
-#include "texture_env.h"
 #include "GLSLCombiner.h"
 #include "Debug.h"
 #include "gDP.h"
@@ -116,35 +113,8 @@ bool bHWLightingCalculation = false;
 
 void Combiner_Init()
 {
-	if (OGL.GLSL) {
-		combiner.compiler = GLSL_COMBINE;
-		bHWLightingCalculation = true;
-	} else if (OGL.NV_register_combiners)
-		combiner.compiler = NV_REGISTER_COMBINERS;
-	else if (OGL.EXT_texture_env_combine || OGL.ARB_texture_env_combine)
-		combiner.compiler = TEXTURE_ENV_COMBINE;
-	else
-		combiner.compiler = TEXTURE_ENV;
-
-
-	switch (combiner.compiler)
-	{
-	case TEXTURE_ENV:
-		Init_texture_env();
-		break;
-
-	case TEXTURE_ENV_COMBINE:
-		Init_texture_env_combine();
-		break;
-
-	case NV_REGISTER_COMBINERS:
-		Init_NV_register_combiners();
-		break;
-
-	case GLSL_COMBINE:
-		InitGLSLCombiner();
-		break;
-	}
+	bHWLightingCalculation = true;
+	InitGLSLCombiner();
 	combiner.root = NULL;
 	combiner.current = NULL;
 }
@@ -242,86 +212,6 @@ void Combiner_SimplifyCycle( CombineCycle *cc, CombinerStage *stage )
 	}
 }
 
-void Combiner_MergeStages( Combiner *c )
-{
-	// If all we have is a load in the first stage we can just replace
-	// each occurance of COMBINED in the second stage with it
-	if ((c->stage[0].numOps == 1) && (c->stage[0].op[0].op == LOAD))
-	{
-		int combined = c->stage[0].op[0].param1;
-
-		for (int i = 0; i < c->stage[1].numOps; i++)
-		{
-			c->stage[0].op[i].op = c->stage[1].op[i].op;
-			c->stage[0].op[i].param1 = (c->stage[1].op[i].param1 == COMBINED) ? combined : c->stage[1].op[i].param1;
-			c->stage[0].op[i].param2 = (c->stage[1].op[i].param2 == COMBINED) ? combined : c->stage[1].op[i].param2;
-			c->stage[0].op[i].param3 = (c->stage[1].op[i].param3 == COMBINED) ? combined : c->stage[1].op[i].param3;
-		}
-
-		c->stage[0].numOps = c->stage[1].numOps;
-		c->numStages = 1;
-	}
-	// We can't do any merging on an interpolation
-	else if (c->stage[1].op[0].op != INTER)
-	{
-		int numCombined = 0;
-
-		// See how many times the first stage is used in the second one
-		for (int i = 0; i < c->stage[1].numOps; i++)
-			if (c->stage[1].op[i].param1 == COMBINED)
-				numCombined++;
-
-		// If it's not used, just replace the first stage with the second
-		if (numCombined == 0)
-		{
-			for (int i = 0; i < c->stage[1].numOps; i++)
-			{
-				c->stage[0].op[i].op = c->stage[1].op[i].op;
-				c->stage[0].op[i].param1 = c->stage[1].op[i].param1;
-				c->stage[0].op[i].param2 = c->stage[1].op[i].param2;
-				c->stage[0].op[i].param3 = c->stage[1].op[i].param3;
-			}
-			c->stage[0].numOps = c->stage[1].numOps;
-
-			c->numStages = 1;
-		}
-		// If it's only used once
-		else if (numCombined == 1)
-		{
-			// It's only used in the load, so tack on the ops from stage 2 on stage 1
-			if (c->stage[1].op[0].param1 == COMBINED)
-			{
-				for (int i = 1; i < c->stage[1].numOps; i++)
-				{
-					c->stage[0].op[c->stage[0].numOps].op = c->stage[1].op[i].op;
-					c->stage[0].op[c->stage[0].numOps].param1 = c->stage[1].op[i].param1;
-					c->stage[0].numOps++;
-				}
-
-				c->numStages = 1;
-			}
-			// Otherwise, if it's used in the second op, and that op isn't SUB
-			// we can switch the parameters so it works out to tack the ops onto stage 1
-			else if ((c->stage[1].op[1].param1 == COMBINED) && (c->stage[1].op[1].op != SUB))
-			{
-				c->stage[0].op[c->stage[0].numOps].op = c->stage[1].op[1].op;
-				c->stage[0].op[c->stage[0].numOps].param1 = c->stage[1].op[0].param1;
-				c->stage[0].numOps++;
-
-				// If there's another op, tack it onto stage 1 too
-				if (c->stage[1].numOps > 2)
-				{
-					c->stage[0].op[c->stage[0].numOps].op = c->stage[1].op[2].op;
-					c->stage[0].op[c->stage[0].numOps].param1 = c->stage[1].op[2].param1;
-					c->stage[0].numOps++;
-				}
-
-				c->numStages = 1;
-			}
-		}
-	}
-}
-
 CachedCombiner *Combiner_Compile( u64 mux )
 {
 	gDPCombine combine;
@@ -374,38 +264,13 @@ CachedCombiner *Combiner_Compile( u64 mux )
 		Combiner_SimplifyCycle( &ac[i], &alpha.stage[i] );
 	}
 
-	if (numCycles == 2 && combiner.compiler != GLSL_COMBINE)
-	{
-		// Attempt to merge the two stages into one
-		Combiner_MergeStages( &color );
-		Combiner_MergeStages( &alpha );
-	}
-
 	CachedCombiner *cached = (CachedCombiner*)malloc( sizeof( CachedCombiner ) );
 
 	cached->combine.mux = combine.mux;
 	cached->left = NULL;
 	cached->right = NULL;
 
-	// Send the simplified combiner to the hardware-specific compiler
-	switch (combiner.compiler)
-	{
-	case TEXTURE_ENV:
-		cached->compiled = new TexEnv( &color, &alpha );
-		break;
-
-	case TEXTURE_ENV_COMBINE:
-		cached->compiled = new TexEnvCombiner( &color, &alpha );
-		break;
-
-	case NV_REGISTER_COMBINERS:
-		cached->compiled = new RegisterCombiners( &color, &alpha );
-		break;
-
-	case GLSL_COMBINE:
-		cached->compiled = new GLSLCombiner( &color, &alpha );
-		break;
-	}
+	cached->compiled = new GLSLCombiner( &color, &alpha );
 
 	return cached;
 }
@@ -421,8 +286,7 @@ void Combiner_DeleteCombiner( CachedCombiner *combiner )
 
 void Combiner_Destroy()
 {
-	if (combiner.compiler == GLSL_COMBINE)
-		DestroyGLSLCombiner();
+	DestroyGLSLCombiner();
 
 	if (combiner.root)
 	{
@@ -434,26 +298,6 @@ void Combiner_Destroy()
 	{
 		glActiveTexture( GL_TEXTURE0 + i );
 		glDisable( GL_TEXTURE_2D );
-	}
-}
-
-void Combiner_BeginTextureUpdate()
-{
-	switch (combiner.compiler)
-	{
-	case TEXTURE_ENV_COMBINE:
-		BeginTextureUpdate_texture_env_combine();
-		break;
-	}
-}
-
-void Combiner_EndTextureUpdate()
-{
-	switch (combiner.compiler)
-	{
-	case TEXTURE_ENV_COMBINE:
-		combiner.current->compiled->Set();
-		break;
 	}
 }
 

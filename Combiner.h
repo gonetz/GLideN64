@@ -6,11 +6,6 @@
 #include "gDP.h"
 #include "Types.h"
 
-#define TEXTURE_ENV					0
-#define TEXTURE_ENV_COMBINE			1
-#define NV_REGISTER_COMBINERS		2
-#define GLSL_COMBINE				3
-
 /*
 * G_SETCOMBINE: color combine modes
 */
@@ -121,8 +116,8 @@ public:
 	virtual void Set() = 0;
 	virtual void UpdateColors() = 0;
 	virtual void UpdateFBInfo() = 0;
-	virtual void UpdateDepthInfo() {}
-	virtual void UpdateAlphaTestInfo() {}
+	virtual void UpdateDepthInfo() = 0;
+	virtual void UpdateAlphaTestInfo() = 0;
 };
 
 struct CachedCombiner
@@ -141,8 +136,6 @@ extern struct CombinerInfo
 	} vertex;
 
 	CachedCombiner *root, *current;
-
-	int compiler;
 
 	BOOL usesT0, usesT1, usesLOD;
 } combiner;
@@ -217,8 +210,6 @@ void Combiner_UpdateCombineColors();
 void Combiner_UpdateCombineFBInfo();
 void Combiner_SetCombine( u64 mux );
 void Combiner_Destroy();
-void Combiner_BeginTextureUpdate();
-void Combiner_EndTextureUpdate();
 
 void Combiner_UpdateCombineDepthInfo();
 void Combiner_UpdateAlphaTestInfo();

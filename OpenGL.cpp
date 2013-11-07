@@ -36,21 +36,6 @@ PFNGLGETPROGRAMIVPROC glGetProgramiv;
 
 PFNGLSECONDARYCOLOR3FPROC glSecondaryColor3f;
 
-// NV_register_combiners functions
-PFNGLCOMBINERPARAMETERFVNVPROC glCombinerParameterfvNV;
-PFNGLCOMBINERPARAMETERFNVPROC glCombinerParameterfNV;
-PFNGLCOMBINERPARAMETERIVNVPROC glCombinerParameterivNV;
-PFNGLCOMBINERPARAMETERINVPROC glCombinerParameteriNV;
-PFNGLCOMBINERINPUTNVPROC glCombinerInputNV;
-PFNGLCOMBINEROUTPUTNVPROC glCombinerOutputNV;
-PFNGLFINALCOMBINERINPUTNVPROC glFinalCombinerInputNV;
-PFNGLGETCOMBINERINPUTPARAMETERFVNVPROC glGetCombinerInputParameterfvNV;
-PFNGLGETCOMBINERINPUTPARAMETERIVNVPROC glGetCombinerInputParameterivNV;
-PFNGLGETCOMBINEROUTPUTPARAMETERFVNVPROC glGetCombinerOutputParameterfvNV;
-PFNGLGETCOMBINEROUTPUTPARAMETERIVNVPROC glGetCombinerOutputParameterivNV;
-PFNGLGETFINALCOMBINERINPUTPARAMETERFVNVPROC glGetFinalCombinerInputParameterfvNV;
-PFNGLGETFINALCOMBINERINPUTPARAMETERIVNVPROC glGetFinalCombinerInputParameterivNV;
-
 // multitexture functions
 PFNGLACTIVETEXTUREPROC glActiveTexture;
 PFNGLCLIENTACTIVETEXTUREPROC glClientActiveTexture;
@@ -152,7 +137,6 @@ void OGL_InitExtensions()
 	const char *version = reinterpret_cast<const char*>(glGetString(GL_VERSION));
 	u32 uVersion = atol(version);
 
-	OGL.GLSL = TRUE;
 #ifndef __LINUX__
 	glCreateShader = (PFNGLCREATESHADERPROC)wglGetProcAddress("glCreateShader");
 	glCompileShader = (PFNGLCOMPILESHADERPROC)wglGetProcAddress("glCompileShader");
@@ -175,27 +159,6 @@ void OGL_InitExtensions()
 
 	glSecondaryColor3f = (PFNGLSECONDARYCOLOR3FPROC)wglGetProcAddress("glSecondaryColor3f");
 #endif // __LINUX__
-
-
-	if (OGL.NV_register_combiners = isExtensionSupported( "GL_NV_register_combiners" ))
-	{
-#ifndef __LINUX__
-		glCombinerParameterfvNV = (PFNGLCOMBINERPARAMETERFVNVPROC)wglGetProcAddress( "glCombinerParameterfvNV" );
-		glCombinerParameterfNV = (PFNGLCOMBINERPARAMETERFNVPROC)wglGetProcAddress( "glCombinerParameterfNV" );
-		glCombinerParameterivNV = (PFNGLCOMBINERPARAMETERIVNVPROC)wglGetProcAddress( "glCombinerParameterivNV" );
-		glCombinerParameteriNV = (PFNGLCOMBINERPARAMETERINVPROC)wglGetProcAddress( "glCombinerParameteriNV" );
-		glCombinerInputNV = (PFNGLCOMBINERINPUTNVPROC)wglGetProcAddress( "glCombinerInputNV" );
-		glCombinerOutputNV = (PFNGLCOMBINEROUTPUTNVPROC)wglGetProcAddress( "glCombinerOutputNV" );
-		glFinalCombinerInputNV = (PFNGLFINALCOMBINERINPUTNVPROC)wglGetProcAddress( "glFinalCombinerInputNV" );
-		glGetCombinerInputParameterfvNV = (PFNGLGETCOMBINERINPUTPARAMETERFVNVPROC)wglGetProcAddress( "glGetCombinerInputParameterfvNV" );
-		glGetCombinerInputParameterivNV = (PFNGLGETCOMBINERINPUTPARAMETERIVNVPROC)wglGetProcAddress( "glGetCombinerInputParameterivNV" );
-		glGetCombinerOutputParameterfvNV = (PFNGLGETCOMBINEROUTPUTPARAMETERFVNVPROC)wglGetProcAddress( "glGetCombinerOutputParameterfvNV" );
-		glGetCombinerOutputParameterivNV = (PFNGLGETCOMBINEROUTPUTPARAMETERIVNVPROC)wglGetProcAddress( "glGetCombinerOutputParameterivNV" );
-		glGetFinalCombinerInputParameterfvNV = (PFNGLGETFINALCOMBINERINPUTPARAMETERFVNVPROC)wglGetProcAddress( "glGetFinalCombinerInputParameterfvNV" );
-		glGetFinalCombinerInputParameterivNV = (PFNGLGETFINALCOMBINERINPUTPARAMETERIVNVPROC)wglGetProcAddress( "glGetFinalCombinerInputParameterivNV" );
-#endif // !__LINUX__
-		glGetIntegerv( GL_MAX_GENERAL_COMBINERS_NV, &OGL.maxGeneralCombiners );
-	}
 
 #ifndef __LINUX__
 	glActiveTexture	= (PFNGLACTIVETEXTUREPROC)wglGetProcAddress( "glActiveTexture" );
@@ -239,13 +202,6 @@ void OGL_InitExtensions()
 		glSecondaryColorPointerEXT = (PFNGLSECONDARYCOLORPOINTEREXTPROC)wglGetProcAddress( "glSecondaryColorPointerEXT" );
 #endif // !__LINUX__
 	}
-
-	OGL.ARB_texture_env_combine = isExtensionSupported( "GL_ARB_texture_env_combine" );
-	OGL.ARB_texture_env_crossbar = isExtensionSupported( "GL_ARB_texture_env_crossbar" );
-	OGL.EXT_texture_env_combine = isExtensionSupported( "GL_EXT_texture_env_combine" );
-	OGL.ATI_texture_env_combine3 = isExtensionSupported( "GL_ATI_texture_env_combine3" );
-	OGL.ATIX_texture_env_route = isExtensionSupported( "GL_ATIX_texture_env_route" );
-	OGL.NV_texture_env_combine4 = isExtensionSupported( "GL_NV_texture_env_combine4" );
 
 #ifndef __LINUX__
 	glDrawBuffers = (PFNGLDRAWBUFFERSPROC)wglGetProcAddress( "glDrawBuffers" );
@@ -696,8 +652,6 @@ void OGL_UpdateStates()
 
 	if ((gSP.changed & CHANGED_TEXTURE) || (gDP.changed & CHANGED_TILE) || (gDP.changed & CHANGED_TMEM))
 	{
-		Combiner_BeginTextureUpdate();
-
 		if (combiner.usesT0)
 			TextureCache_Update( 0 );
 		else
@@ -711,8 +665,6 @@ void OGL_UpdateStates()
 		gSP.changed &= ~CHANGED_TEXTURE;
 		gDP.changed &= ~CHANGED_TILE;
 		gDP.changed &= ~CHANGED_TMEM;
-
-		Combiner_EndTextureUpdate();
 	}
 
 	if (gDP.changed & CHANGED_FB_TEXTURE)

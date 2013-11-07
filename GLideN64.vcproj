@@ -392,18 +392,6 @@
 					RelativePath=".\GLSLCombiner.cpp"
 					>
 				</File>
-				<File
-					RelativePath="NV_register_combiners.cpp"
-					>
-				</File>
-				<File
-					RelativePath="texture_env.cpp"
-					>
-				</File>
-				<File
-					RelativePath="texture_env_combine.cpp"
-					>
-				</File>
 			</Filter>
 		</Filter>
 		<Filter
@@ -563,18 +551,6 @@
 				>
 				<File
 					RelativePath=".\GLSLCombiner.h"
-					>
-				</File>
-				<File
-					RelativePath="NV_register_combiners.h"
-					>
-				</File>
-				<File
-					RelativePath="texture_env.h"
-					>
-				</File>
-				<File
-					RelativePath="texture_env_combine.h"
 					>
 				</File>
 			</Filter>

@@ -25,14 +25,11 @@ set(GLideN64_SOURCES
   L3DEX2.cpp
   L3DEX.cpp
   N64.cpp
-  NV_register_combiners.cpp
   OpenGL.cpp
   RDP.cpp
   RSP.cpp
   S2DEX2.cpp
   S2DEX.cpp
-  texture_env_combine.cpp
-  texture_env.cpp
   Textures.cpp
   VI.cpp
 )

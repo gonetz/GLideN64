@@ -45,26 +45,10 @@ struct GLInfo
 
 	float	scaleX, scaleY;
 
-	BOOL	ATI_texture_env_combine3;	// Radeon
-	BOOL	ATIX_texture_env_route;		// Radeon
-
-	BOOL	ARB_texture_env_combine;	// GeForce, Rage 128, Radeon
-	BOOL	ARB_texture_env_crossbar;	// Radeon (GeForce supports it, but doesn't report it)
-
 	BOOL	EXT_fog_coord;				// TNT, GeForce, Rage 128, Radeon
-	BOOL	EXT_texture_env_combine;	// TNT, GeForce, Rage 128, Radeon
 	BOOL	EXT_secondary_color;		// GeForce, Radeon
 
-	BOOL	NV_texture_env_combine4;	// TNT, GeForce
-	BOOL	NV_register_combiners;		// GeForce
-	BOOL	GLSL;						// GeForce, Radeon
-	BOOL	ARB_buffer_region;
-	BOOL	ARB_pbuffer;
-	BOOL	ARB_render_texture;
-	BOOL	ARB_pixel_format;
-
 	int		maxTextureUnits;			// TNT = 2, GeForce = 2-4, Rage 128 = 2, Radeon = 3-6
-	int		maxGeneralCombiners;
 
 	BOOL	enable2xSaI;
 	BOOL	frameBufferTextures;

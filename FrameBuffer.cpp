@@ -456,20 +456,6 @@ void FrameBuffer_RenderBuffer( u32 address )
 			Combiner_BeginTextureUpdate();
 			TextureCache_ActivateTexture( 0, current->texture );
 			Combiner_SetCombine( EncodeCombineMode( 0, 0, 0, TEXEL0, 0, 0, 0, 1, 0, 0, 0, TEXEL0, 0, 0, 0, 1 ) );
-/*			if (OGL.ARB_multitexture)
-			{
-				for (int i = 0; i < OGL.maxTextureUnits; i++)
-				{
-					glActiveTexture( GL_TEXTURE0 + i );
-					glDisable( GL_TEXTURE_2D );
-				}
-
-				glActiveTexture( GL_TEXTURE0 );
-			}
-
-			TextureCache_ActivateTexture( 0, current->texture );
-			glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE );
-			glEnable( GL_TEXTURE_2D );*/
 
 			glDisable( GL_BLEND );
 			glDisable( GL_ALPHA_TEST );
@@ -511,9 +497,6 @@ void FrameBuffer_RenderBuffer( u32 address )
 			DebugMsg( DEBUG_HIGH | DEBUG_HANDLED, "FrameBuffer_RenderBuffer( 0x%08X ); \n", address);
 #endif
 
-/*			glEnable( GL_TEXTURE_2D );
-			glActiveTexture( GL_TEXTURE0 );
-			glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE_ARB );*/
 			glLoadIdentity();
 			glPopAttrib();
 
@@ -841,7 +824,6 @@ void RDRAMtoFrameBuffer::CopyFromRDRAM( u32 _address, bool _bUseAlpha)
 
 	glPushAttrib( GL_ENABLE_BIT | GL_VIEWPORT_BIT );
 
-	Combiner_BeginTextureUpdate();
 	TextureCache_ActivateTexture( 0, m_pTexture );
 
 	if (_bUseAlpha)

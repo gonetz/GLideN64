@@ -171,9 +171,6 @@
     <ClCompile Include="S2DEX.cpp" />
     <ClCompile Include="S2DEX2.cpp" />
     <ClCompile Include="GLSLCombiner.cpp" />
-    <ClCompile Include="NV_register_combiners.cpp" />
-    <ClCompile Include="texture_env.cpp" />
-    <ClCompile Include="texture_env_combine.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="2xSAI.h" />
@@ -187,7 +184,6 @@
     <ClInclude Include="FrameBuffer.h" />
     <ClInclude Include="GBI.h" />
     <ClInclude Include="gDP.h" />
-    <ClInclude Include="glATI.h" />
     <ClInclude Include="glext.h" />
     <ClInclude Include="GLideN64.h" />
     <ClInclude Include="gSP.h" />
@@ -214,9 +210,6 @@
     <ClInclude Include="S2DEX.h" />
     <ClInclude Include="S2DEX2.h" />
     <ClInclude Include="GLSLCombiner.h" />
-    <ClInclude Include="NV_register_combiners.h" />
-    <ClInclude Include="texture_env.h" />
-    <ClInclude Include="texture_env_combine.h" />
     <ClInclude Include="ZilmarGFX_1_3.h" />
   </ItemGroup>
   <ItemGroup>
