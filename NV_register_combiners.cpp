@@ -15,9 +15,9 @@ static CombinerInput CombinerInputs[] =
 	// CMB
 	{ GL_SPARE0_NV,				GL_UNSIGNED_IDENTITY_NV,	GL_RGB },
 	// T0
-	{ GL_TEXTURE0_ARB,			GL_UNSIGNED_IDENTITY_NV,	GL_RGB },
+	{ GL_TEXTURE0,			GL_UNSIGNED_IDENTITY_NV,	GL_RGB },
 	// T1
-	{ GL_TEXTURE1_ARB,			GL_UNSIGNED_IDENTITY_NV,	GL_RGB },
+	{ GL_TEXTURE1,			GL_UNSIGNED_IDENTITY_NV,	GL_RGB },
 	// PRIM
 	{ GL_CONSTANT_COLOR0_NV,	GL_UNSIGNED_IDENTITY_NV,	GL_RGB },
 	// SHADE
@@ -31,9 +31,9 @@ static CombinerInput CombinerInputs[] =
 	// CMBALPHA
 	{ GL_SPARE0_NV,				GL_UNSIGNED_IDENTITY_NV,	GL_ALPHA },
 	// T0ALPHA
-	{ GL_TEXTURE0_ARB,			GL_UNSIGNED_IDENTITY_NV,	GL_ALPHA },
+	{ GL_TEXTURE0,			GL_UNSIGNED_IDENTITY_NV,	GL_ALPHA },
 	// T1ALPHA
-	{ GL_TEXTURE1_ARB,			GL_UNSIGNED_IDENTITY_NV,	GL_ALPHA },
+	{ GL_TEXTURE1,			GL_UNSIGNED_IDENTITY_NV,	GL_ALPHA },
 	// PRIMALPHA
 	{ GL_CONSTANT_COLOR0_NV,	GL_UNSIGNED_IDENTITY_NV,	GL_ALPHA },
 	// SHADEALPHA
@@ -45,7 +45,7 @@ static CombinerInput CombinerInputs[] =
 	// PRIMLODFRAC
 	{ GL_CONSTANT_COLOR0_NV,	GL_UNSIGNED_IDENTITY_NV,	GL_RGB },
 	// NOISE
-	{ GL_TEXTURE1_ARB,			GL_UNSIGNED_IDENTITY_NV,	GL_RGB },
+	{ GL_TEXTURE1,			GL_UNSIGNED_IDENTITY_NV,	GL_RGB },
 	// K4
 	{ GL_ZERO,					GL_UNSIGNED_IDENTITY_NV,	GL_RGB },
 	// K5
@@ -219,7 +219,7 @@ void Init_NV_register_combiners()
 
 	for (int i = 0; i < OGL.maxTextureUnits; i++)
 	{
-		glActiveTextureARB( GL_TEXTURE0_ARB + i );
+		glActiveTexture( GL_TEXTURE0 + i );
 		glDisable( GL_TEXTURE_2D );
 	}
 }
@@ -552,10 +552,10 @@ void RegisterCombiners::Set()
 	combiner.vertex.secondaryColor = m_vertex.secondaryColor;
 	combiner.vertex.alpha = m_vertex.alpha;
 
-	glActiveTextureARB( GL_TEXTURE0_ARB );
+	glActiveTexture( GL_TEXTURE0 );
 	if (combiner.usesT0) glEnable( GL_TEXTURE_2D ); else glDisable( GL_TEXTURE_2D );
 
-	glActiveTextureARB( GL_TEXTURE1_ARB );
+	glActiveTexture( GL_TEXTURE1 );
 	if (combiner.usesT1) glEnable( GL_TEXTURE_2D ); else glDisable( GL_TEXTURE_2D );
 
 	glCombinerParameteriNV( GL_NUM_GENERAL_COMBINERS_NV, m_numCombiners );

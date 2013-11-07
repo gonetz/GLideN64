@@ -101,8 +101,8 @@ static TexEnvCombinerArg TexEnvArgs[] =
 
 /*	if ((TexEnvArgs[i].source == GL_PREVIOUS_ARB) && (OGL.ATIX_texture_env_route)) \
 	{ \
-		m_alpha[combinedUnit].outputTexture = GL_TEXTURE0_ARB + n; \
-		m_alpha[n].a.source = GL_TEXTURE0_ARB + n; \
+		m_alpha[combinedUnit].outputTexture = GL_TEXTURE0 + n; \
+		m_alpha[n].a.source = GL_TEXTURE0 + n; \
 		m_alpha[n].a.operand = GL_SRC_ALPHA; \
 	} \
 	else*/
@@ -139,7 +139,7 @@ void Init_texture_env_combine()
 	for (int i = 0; i < OGL.maxTextureUnits; i++)
 	{
 		TextureCache_ActivateDummy( i );
-		//glActiveTextureARB( GL_TEXTURE0_ARB + i );
+		//glActiveTexture( GL_TEXTURE0 + i );
 		//glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE_ARB );
 		//glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA8, 4, 4, 0, GL_RGBA, GL_UNSIGNED_BYTE, tex );
 		//glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
@@ -148,11 +148,11 @@ void Init_texture_env_combine()
 
 	if ((OGL.ARB_texture_env_crossbar) || (OGL.NV_texture_env_combine4) || (OGL.ATIX_texture_env_route))
 	{
-		TexEnvArgs[TEXEL0].source = GL_TEXTURE0_ARB;
-		TexEnvArgs[TEXEL0_ALPHA].source = GL_TEXTURE0_ARB;
+		TexEnvArgs[TEXEL0].source = GL_TEXTURE0;
+		TexEnvArgs[TEXEL0_ALPHA].source = GL_TEXTURE0;
 
-		TexEnvArgs[TEXEL1].source = GL_TEXTURE1_ARB;
-		TexEnvArgs[TEXEL1_ALPHA].source = GL_TEXTURE1_ARB;
+		TexEnvArgs[TEXEL1].source = GL_TEXTURE1;
+		TexEnvArgs[TEXEL1_ALPHA].source = GL_TEXTURE1;
 	}
 
 	if (OGL.ATI_texture_env_combine3)
@@ -166,7 +166,7 @@ void Uninit_texture_env_combine()
 {
 	for (int i = 0; i < OGL.maxTextureUnits; i++)
 	{
-		glActiveTextureARB( GL_TEXTURE0_ARB + i );
+		glActiveTexture( GL_TEXTURE0 + i );
 		glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE );
 	}
 }
@@ -179,7 +179,7 @@ void TexEnvCombiner::UpdateColors()
 	{
 		SetConstant( color, m_color[i].constant, m_alpha[i].constant );
 
-		glActiveTextureARB( GL_TEXTURE0_ARB + i );
+		glActiveTexture( GL_TEXTURE0 + i );
 		glTexEnvfv( GL_TEXTURE_ENV, GL_TEXTURE_ENV_COLOR, &color.r );
 	}
 }
@@ -197,13 +197,13 @@ TexEnvCombiner::TexEnvCombiner( Combiner *color, Combiner *alpha )
 		SetColorCombinerValues( i, arg1, GL_PREVIOUS_ARB, GL_SRC_COLOR );
 		SetColorCombinerValues( i, arg2, GL_PREVIOUS_ARB, GL_SRC_COLOR );
 		m_color[i].constant = COMBINED;
-		m_color[i].outputTexture = GL_TEXTURE0_ARB + i;
+		m_color[i].outputTexture = GL_TEXTURE0 + i;
 
 		SetAlphaCombinerValues( i, arg0, GL_PREVIOUS_ARB, GL_SRC_ALPHA );
 		SetAlphaCombinerValues( i, arg1, GL_PREVIOUS_ARB, GL_SRC_ALPHA );
 		SetAlphaCombinerValues( i, arg2, GL_PREVIOUS_ARB, GL_SRC_ALPHA );
 		m_alpha[i].constant = COMBINED;
-		m_alpha[i].outputTexture = GL_TEXTURE0_ARB + i;
+		m_alpha[i].outputTexture = GL_TEXTURE0 + i;
 	}
 
 	m_usesT0 = FALSE;
@@ -541,7 +541,7 @@ void BeginTextureUpdate_texture_env_combine()
 {
 	for (int i = 0; i < OGL.maxTextureUnits; i++)
 	{
-		glActiveTextureARB( GL_TEXTURE0_ARB + i );
+		glActiveTexture( GL_TEXTURE0 + i );
 		glDisable( GL_TEXTURE_2D );
 	}
 }
@@ -558,7 +558,7 @@ void TexEnvCombiner::Set()
 
 	for (int i = 0; i < OGL.maxTextureUnits; i++)
 	{
-		glActiveTextureARB( GL_TEXTURE0_ARB + i );
+		glActiveTexture( GL_TEXTURE0 + i );
 
 		if ((i < m_usedUnits ) || ((i < 2) && m_usesT1))
 		{

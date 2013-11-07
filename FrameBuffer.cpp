@@ -460,11 +460,11 @@ void FrameBuffer_RenderBuffer( u32 address )
 			{
 				for (int i = 0; i < OGL.maxTextureUnits; i++)
 				{
-					glActiveTextureARB( GL_TEXTURE0_ARB + i );
+					glActiveTexture( GL_TEXTURE0 + i );
 					glDisable( GL_TEXTURE_2D );
 				}
 
-				glActiveTextureARB( GL_TEXTURE0_ARB );
+				glActiveTexture( GL_TEXTURE0 );
 			}
 
 			TextureCache_ActivateTexture( 0, current->texture );
@@ -512,7 +512,7 @@ void FrameBuffer_RenderBuffer( u32 address )
 #endif
 
 /*			glEnable( GL_TEXTURE_2D );
-			glActiveTextureARB( GL_TEXTURE0_ARB );
+			glActiveTexture( GL_TEXTURE0 );
 			glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE_ARB );*/
 			glLoadIdentity();
 			glPopAttrib();

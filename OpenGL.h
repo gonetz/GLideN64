@@ -48,7 +48,6 @@ struct GLInfo
 	BOOL	ATI_texture_env_combine3;	// Radeon
 	BOOL	ATIX_texture_env_route;		// Radeon
 
-	BOOL	ARB_multitexture;			// TNT, GeForce, Rage 128, Radeon
 	BOOL	ARB_texture_env_combine;	// GeForce, Rage 128, Radeon
 	BOOL	ARB_texture_env_crossbar;	// Radeon (GeForce supports it, but doesn't report it)
 
@@ -136,9 +135,9 @@ extern PFNGLGETCOMBINEROUTPUTPARAMETERIVNVPROC glGetCombinerOutputParameterivNV;
 extern PFNGLGETFINALCOMBINERINPUTPARAMETERFVNVPROC glGetFinalCombinerInputParameterfvNV;
 extern PFNGLGETFINALCOMBINERINPUTPARAMETERIVNVPROC glGetFinalCombinerInputParameterivNV;
 
-extern PFNGLACTIVETEXTUREARBPROC glActiveTextureARB;
-extern PFNGLCLIENTACTIVETEXTUREARBPROC glClientActiveTextureARB;
-extern PFNGLMULTITEXCOORD2FARBPROC glMultiTexCoord2fARB;
+extern PFNGLACTIVETEXTUREPROC glActiveTexture;
+extern PFNGLCLIENTACTIVETEXTUREPROC glClientActiveTexture;
+extern PFNGLMULTITEXCOORD2FPROC glMultiTexCoord2f;
 
 extern PFNGLSECONDARYCOLOR3FVEXTPROC glSecondaryColor3fvEXT;
 

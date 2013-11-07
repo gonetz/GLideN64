@@ -162,9 +162,7 @@ void TexEnv::Set()
 	combiner.vertex.secondaryColor = COMBINED;
 	combiner.vertex.alpha = m_fragment.alpha;
 
-	// Shouldn't ever happen, but who knows?
-	if (OGL.ARB_multitexture)
-		glActiveTextureARB( GL_TEXTURE0_ARB );
+	glActiveTexture( GL_TEXTURE0 );
 
 	if (m_usesT0 || m_usesT1)
 		glEnable( GL_TEXTURE_2D );

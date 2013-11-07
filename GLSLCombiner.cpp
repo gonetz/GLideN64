@@ -170,9 +170,9 @@ void DestroyShadowMapShader()
 
 void InitGLSLCombiner()
 {
-	glActiveTextureARB(GL_TEXTURE0_ARB);
+	glActiveTexture(GL_TEXTURE0);
 	glEnable(GL_TEXTURE_2D);
-	glActiveTextureARB(GL_TEXTURE1_ARB);
+	glActiveTexture(GL_TEXTURE1);
 	glEnable(GL_TEXTURE_2D);
 
 	g_vertex_shader_object = glCreateShader(GL_VERTEX_SHADER);
@@ -674,7 +674,7 @@ void GLSL_RenderDepth() {
 		return;
 	glPushAttrib( GL_ENABLE_BIT | GL_VIEWPORT_BIT );
 
-	glActiveTextureARB( GL_TEXTURE0_ARB );
+	glActiveTexture( GL_TEXTURE0 );
 	glBindTexture(GL_TEXTURE_2D, frameBuffer.top->depth_texture->glName);
 //	glBindTexture(GL_TEXTURE_2D, g_zlut_tex);
 
