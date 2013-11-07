@@ -1,0 +1,260 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{315ddc50-16f7-4058-b6e4-05afaad9c0b3}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;def;odl;idl;hpj;bat;asm</Extensions>
+    </Filter>
+    <Filter Include="Source Files\uCodes">
+      <UniqueIdentifier>{23e5405e-5c26-4dcf-8c37-426901e33c55}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Combiners">
+      <UniqueIdentifier>{5bde4d31-c542-44a9-a423-0f488a3f051b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{94476478-6142-414d-8301-45122ec74f2c}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc</Extensions>
+    </Filter>
+    <Filter Include="Header Files\uCodes">
+      <UniqueIdentifier>{80c1d464-fcae-461c-91c8-4c25b4f93055}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Combiners">
+      <UniqueIdentifier>{7eeef15f-09d3-4238-b68a-a2ff0018d124}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{ceb7e29d-3bc2-453c-a043-ef450103c3f0}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="2xSAI.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Combiner.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Config.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CRC.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Debug.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DepthBuffer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FrameBuffer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GBI.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gDP.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GLideN64.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="gSP.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="N64.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="OpenGL.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RDP.CPP">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RSP.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Textures.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="VI.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="F3D.cpp">
+      <Filter>Source Files\uCodes</Filter>
+    </ClCompile>
+    <ClCompile Include="F3DDKR.cpp">
+      <Filter>Source Files\uCodes</Filter>
+    </ClCompile>
+    <ClCompile Include="F3DEX.cpp">
+      <Filter>Source Files\uCodes</Filter>
+    </ClCompile>
+    <ClCompile Include="F3DEX2.cpp">
+      <Filter>Source Files\uCodes</Filter>
+    </ClCompile>
+    <ClCompile Include="F3DPD.cpp">
+      <Filter>Source Files\uCodes</Filter>
+    </ClCompile>
+    <ClCompile Include="F3DWRUS.cpp">
+      <Filter>Source Files\uCodes</Filter>
+    </ClCompile>
+    <ClCompile Include="L3D.cpp">
+      <Filter>Source Files\uCodes</Filter>
+    </ClCompile>
+    <ClCompile Include="L3DEX.cpp">
+      <Filter>Source Files\uCodes</Filter>
+    </ClCompile>
+    <ClCompile Include="L3DEX2.cpp">
+      <Filter>Source Files\uCodes</Filter>
+    </ClCompile>
+    <ClCompile Include="S2DEX.cpp">
+      <Filter>Source Files\uCodes</Filter>
+    </ClCompile>
+    <ClCompile Include="S2DEX2.cpp">
+      <Filter>Source Files\uCodes</Filter>
+    </ClCompile>
+    <ClCompile Include="GLSLCombiner.cpp">
+      <Filter>Source Files\Combiners</Filter>
+    </ClCompile>
+    <ClCompile Include="NV_register_combiners.cpp">
+      <Filter>Source Files\Combiners</Filter>
+    </ClCompile>
+    <ClCompile Include="texture_env.cpp">
+      <Filter>Source Files\Combiners</Filter>
+    </ClCompile>
+    <ClCompile Include="texture_env_combine.cpp">
+      <Filter>Source Files\Combiners</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="2xSAI.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="3DMath.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Combiner.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Config.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="convert.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CRC.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Debug.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DepthBuffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FrameBuffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GBI.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gDP.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="glATI.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="glext.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GLideN64.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="gSP.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="N64.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="OpenGL.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RDP.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RSP.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Textures.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Types.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="VI.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="wglext.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="F3D.h">
+      <Filter>Header Files\uCodes</Filter>
+    </ClInclude>
+    <ClInclude Include="F3DDKR.h">
+      <Filter>Header Files\uCodes</Filter>
+    </ClInclude>
+    <ClInclude Include="F3DEX.h">
+      <Filter>Header Files\uCodes</Filter>
+    </ClInclude>
+    <ClInclude Include="F3DEX2.h">
+      <Filter>Header Files\uCodes</Filter>
+    </ClInclude>
+    <ClInclude Include="F3DPD.h">
+      <Filter>Header Files\uCodes</Filter>
+    </ClInclude>
+    <ClInclude Include="F3DWRUS.h">
+      <Filter>Header Files\uCodes</Filter>
+    </ClInclude>
+    <ClInclude Include="L3D.h">
+      <Filter>Header Files\uCodes</Filter>
+    </ClInclude>
+    <ClInclude Include="L3DEX.h">
+      <Filter>Header Files\uCodes</Filter>
+    </ClInclude>
+    <ClInclude Include="L3DEX2.h">
+      <Filter>Header Files\uCodes</Filter>
+    </ClInclude>
+    <ClInclude Include="S2DEX.h">
+      <Filter>Header Files\uCodes</Filter>
+    </ClInclude>
+    <ClInclude Include="S2DEX2.h">
+      <Filter>Header Files\uCodes</Filter>
+    </ClInclude>
+    <ClInclude Include="GLSLCombiner.h">
+      <Filter>Header Files\Combiners</Filter>
+    </ClInclude>
+    <ClInclude Include="NV_register_combiners.h">
+      <Filter>Header Files\Combiners</Filter>
+    </ClInclude>
+    <ClInclude Include="texture_env.h">
+      <Filter>Header Files\Combiners</Filter>
+    </ClInclude>
+    <ClInclude Include="texture_env_combine.h">
+      <Filter>Header Files\Combiners</Filter>
+    </ClInclude>
+    <ClInclude Include="ZilmarGFX_1_3.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Noise_shader.h">
+      <Filter>Header Files\Combiners</Filter>
+    </ClInclude>
+    <ClInclude Include="Shaders.h">
+      <Filter>Header Files\Combiners</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Resource.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+</Project>
