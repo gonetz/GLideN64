@@ -146,6 +146,7 @@ BOOL isExtensionSupported( const char *extension )
 void OGL_InitExtensions()
 {
 	const char *version = reinterpret_cast<const char*>(glGetString(GL_VERSION));
+	u32 uVersion = atol(version);
 
 	if (OGL.GLSL = isExtensionSupported("GL_ARB_shading_language_100") &&
 		isExtensionSupported("GL_ARB_shader_objects") &&
@@ -289,6 +290,8 @@ void OGL_InitExtensions()
 		OGL.framebuffer_mode = GLInfo::fbFBOEXT;
 	else
 		OGL.framebuffer_mode = GLInfo::fbNone;
+
+	OGL.bImageTexture = (uVersion >= 4) && (glBindImageTexture != NULL);
 }
 
 void OGL_InitStates()
@@ -889,10 +892,12 @@ void OGL_DrawTriangles()
 	}
 	Combiner_UpdateCombineDepthInfo();
 	glDrawArrays( GL_TRIANGLES, 0, OGL.numVertices );
-	glBindImageTexture(0, 0, 0, GL_FALSE, 0, GL_READ_WRITE, GL_R16UI);
-	glBindImageTexture(1, 0, 0, GL_FALSE, 0, GL_READ_WRITE, GL_R16UI);
-	GLenum depthTexFormat = g_bUseFloatDepthTexture ? GL_R32F : GL_R16UI;
-	glBindImageTexture(2, 0, 0, GL_FALSE, 0, GL_READ_WRITE, depthTexFormat);
+	if (OGL.bImageTexture) {
+		glBindImageTexture(0, 0, 0, GL_FALSE, 0, GL_READ_WRITE, GL_R16UI);
+		glBindImageTexture(1, 0, 0, GL_FALSE, 0, GL_READ_WRITE, GL_R16UI);
+		GLenum depthTexFormat = g_bUseFloatDepthTexture ? GL_R32F : GL_R16UI;
+		glBindImageTexture(2, 0, 0, GL_FALSE, 0, GL_READ_WRITE, depthTexFormat);
+	}
 
 	OGL.numTriangles = OGL.numVertices = 0;
 }
@@ -1151,9 +1156,11 @@ void OGL_DrawTexturedRect( float ulx, float uly, float lrx, float lry, float uls
 	OGL_UpdateCullFace();
 	OGL_UpdateViewport();
 
-	glBindImageTexture(0, 0, 0, GL_FALSE, 0, GL_READ_WRITE, GL_R16UI);
-	glBindImageTexture(1, 0, 0, GL_FALSE, 0, GL_READ_WRITE, GL_R16UI);
-	glBindImageTexture(2, 0, 0, GL_FALSE, 0, GL_READ_WRITE, GL_R16UI);
+	if (OGL.bImageTexture) {
+		glBindImageTexture(0, 0, 0, GL_FALSE, 0, GL_READ_WRITE, GL_R16UI);
+		glBindImageTexture(1, 0, 0, GL_FALSE, 0, GL_READ_WRITE, GL_R16UI);
+		glBindImageTexture(2, 0, 0, GL_FALSE, 0, GL_READ_WRITE, GL_R16UI);
+	}
 }
 
 void OGL_ClearDepthBuffer()

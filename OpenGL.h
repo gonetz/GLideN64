@@ -89,6 +89,7 @@ struct GLInfo
 		fbFBO,
 		fbFBOEXT
 	} framebuffer_mode;
+	bool bImageTexture;
 	bool captureScreen;
 };
 

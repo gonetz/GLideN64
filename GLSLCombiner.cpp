@@ -54,6 +54,9 @@ void display_warning(const char *text, ...)
 static
 void InitZlutTexture()
 {
+	if (!OGL.bImageTexture)
+		return;
+
 	u16 * zLUT = new u16[0x40000];
 	for(int i=0; i<0x40000; i++) {
 		u32 exponent = 0;
@@ -88,6 +91,9 @@ void DestroyZlutTexture()
 static
 void InitShadowMapShader()
 {
+	if (!OGL.bImageTexture)
+		return;
+
 	glGenTextures(1, &g_tlut_tex);
 	glBindTexture(GL_TEXTURE_1D, g_tlut_tex);
 	glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -136,6 +142,9 @@ void InitShadowMapShader()
 static
 void DestroyShadowMapShader()
 {
+	if (!OGL.bImageTexture)
+		return;
+
 	if (g_tlut_tex > 0)
 		glDeleteTextures(1, &g_tlut_tex);
 	/*
@@ -174,12 +183,14 @@ void InitGLSLCombiner()
 	glShaderSourceARB(g_test_alpha_shader_object, 1, &alpha_test_fragment_shader, NULL);
 	glCompileShaderARB(g_test_alpha_shader_object);
 
-	g_calc_depth_shader_object = glCreateShaderObjectARB(GL_FRAGMENT_SHADER_ARB);
-	if (g_bUseFloatDepthTexture)
-		glShaderSourceARB(g_calc_depth_shader_object, 1, &depth_compare_shader_float, NULL);
-	else
-		glShaderSourceARB(g_calc_depth_shader_object, 1, &depth_compare_shader_int, NULL);
-	glCompileShaderARB(g_calc_depth_shader_object);
+	if (OGL.bImageTexture) {
+		g_calc_depth_shader_object = glCreateShaderObjectARB(GL_FRAGMENT_SHADER_ARB);
+		if (g_bUseFloatDepthTexture)
+			glShaderSourceARB(g_calc_depth_shader_object, 1, &depth_compare_shader_float, NULL);
+		else
+			glShaderSourceARB(g_calc_depth_shader_object, 1, &depth_compare_shader_int, NULL);
+		glCompileShaderARB(g_calc_depth_shader_object);
+	}
 
 	InitZlutTexture();
 	InitShadowMapShader();
@@ -425,8 +436,9 @@ GLSLCombiner::GLSLCombiner(Combiner *_color, Combiner *_alpha) {
 	strcat(fragment_shader, "  gl_FragColor = vec4(color2, alpha2); \n");
 
 	strcat(fragment_shader, "  if (!alpha_test(gl_FragColor.a)) discard;	\n");
-	strcat(fragment_shader, "  bool bDC = depth_compare(); \n");
-//	strcat(fragment_shader, "  if (!depth_compare()) discard; \n");
+	if (OGL.bImageTexture)
+		strcat(fragment_shader, "  bool bDC = depth_compare(); \n");
+//		strcat(fragment_shader, "  if (!depth_compare()) discard; \n");
 
 #ifdef USE_TOONIFY
 	strcat(fragment_shader, "  toonify(intensity); \n");
@@ -448,13 +460,13 @@ GLSLCombiner::GLSLCombiner(Combiner *_color, Combiner *_alpha) {
 
 	m_programObject = glCreateProgramObjectARB();
 	glAttachObjectARB(m_programObject, m_fragmentShaderObject);
-	glAttachObjectARB(m_programObject, g_calc_depth_shader_object);
 	if (bHWLightingCalculation)
 		glAttachObjectARB(m_programObject, g_calc_light_shader_object);
 	if (bUseLod)
 		glAttachObjectARB(m_programObject, g_calc_lod_shader_object);
 	glAttachObjectARB(m_programObject, g_test_alpha_shader_object);
-	glAttachObjectARB(m_programObject, g_calc_depth_shader_object);
+	if (OGL.bImageTexture)
+		glAttachObjectARB(m_programObject, g_calc_depth_shader_object);
 	glAttachObjectARB(m_programObject, g_calc_noise_shader_object);
 	glAttachObjectARB(m_programObject, m_vertexShaderObject);
 	glLinkProgramARB(m_programObject);
@@ -576,6 +588,9 @@ void GLSLCombiner::UpdateFBInfo() {
 }
 
 void GLSLCombiner::UpdateDepthInfo() {
+	if (!OGL.bImageTexture)
+		return;
+
 	if (frameBuffer.top == NULL || frameBuffer.top->depth_texture == NULL)
 		return;
 	int nDepthEnabled = (gSP.geometryMode & G_ZBUFFER) > 0 ? 1 : 0;
@@ -604,6 +619,9 @@ void GLSLCombiner::UpdateDepthInfo() {
 }
 
 void GLSL_ClearDepthBuffer() {
+	if (!OGL.bImageTexture)
+		return;
+
 	if (frameBuffer.top == NULL || frameBuffer.top->depth_texture == NULL)
 		return;
 
@@ -633,7 +651,6 @@ void GLSL_ClearDepthBuffer() {
 
 	gSP.changed |= CHANGED_TEXTURE | CHANGED_VIEWPORT;
 	gDP.changed |= CHANGED_COMBINE;
-
 }
 
 void GLSLCombiner::UpdateAlphaTestInfo() {
@@ -652,6 +669,8 @@ void GLSLCombiner::UpdateAlphaTestInfo() {
 }
 
 void GLSL_RenderDepth() {
+	if (!OGL.bImageTexture)
+		return;
 #if 0
 	ogl_glBindFramebuffer(GL_READ_FRAMEBUFFER, g_zbuf_fbo);
 	ogl_glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
@@ -728,6 +747,9 @@ void GLSL_RenderDepth() {
 }
 
 void GLS_SetShadowMapCombiner() {
+	if (!OGL.bImageTexture)
+		return;
+
 	/*
 	glBindTexture(GL_TEXTURE_1D, g_tlut_tex);
 	u16 *pData = (u16*)&TMEM[256];
