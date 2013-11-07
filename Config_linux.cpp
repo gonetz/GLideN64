@@ -14,7 +14,7 @@ static GtkWidget *configWindow = NULL;
 //static GtkWidget *bitdepthCombo[2], *resolutionCombo[2];
 static GtkWidget *resolutionCombo;
 static GtkWidget *enable2xSAICheck, *forceBilinearCheck, *enableFogCheck;
-static GtkWidget *enableHardwareFBCheck, *enablePolygonStippleCheck;
+static GtkWidget *enableHardwareFBCheck, *enableHardwareLighting;
 static GtkWidget *textureDepthCombo;
 static GtkWidget *textureCacheEntry;
 static const char *pluginDir = 0;
@@ -77,7 +77,7 @@ static void okButton_clicked( GtkWidget *widget, void *data )
 	OGL.enable2xSaI = gtk_toggle_button_get_active( GTK_TOGGLE_BUTTON(enable2xSAICheck) );
 	OGL.fog = gtk_toggle_button_get_active( GTK_TOGGLE_BUTTON(enableFogCheck) );
 	OGL.frameBufferTextures = gtk_toggle_button_get_active( GTK_TOGGLE_BUTTON(enableHardwareFBCheck) );
-	OGL.usePolygonStipple = gtk_toggle_button_get_active( GTK_TOGGLE_BUTTON(enablePolygonStippleCheck) );
+	OGL.bHWLighting = gtk_toggle_button_get_active( GTK_TOGGLE_BUTTON(enableHardwareLighting) );
 	const char *depth = gtk_entry_get_text( GTK_ENTRY(GTK_COMBO(textureDepthCombo)->entry) );
 	OGL.textureBitDepth = 1;
 	for (i = 0; textureBitDepth[i] != 0; i++)
@@ -112,7 +112,7 @@ static void okButton_clicked( GtkWidget *widget, void *data )
 	fprintf( f, "enable 2xSAI=%d\n",          OGL.enable2xSaI );
 	fprintf( f, "enable fog=%d\n",            OGL.fog );
 	fprintf( f, "enable HardwareFB=%d\n",     OGL.frameBufferTextures );
-	fprintf( f, "enable dithered alpha=%d\n", OGL.usePolygonStipple );
+	fprintf( f, "enable hardware lighting=%d\n", OGL.bHWLighting );
 	fprintf( f, "texture depth=%d\n",         OGL.textureBitDepth );
 	fprintf( f, "cache size=%d\n",            cache.maxBytes / 1048576 );
 
@@ -150,7 +150,7 @@ static void configWindow_show( GtkWidget *widget, void *data )
 	gtk_toggle_button_set_active( GTK_TOGGLE_BUTTON(enable2xSAICheck),          (OGL.enable2xSaI) );
 	gtk_toggle_button_set_active( GTK_TOGGLE_BUTTON(forceBilinearCheck),        (OGL.forceBilinear) );
 	gtk_toggle_button_set_active( GTK_TOGGLE_BUTTON(enableFogCheck),            (OGL.fog) );
-	gtk_toggle_button_set_active( GTK_TOGGLE_BUTTON(enablePolygonStippleCheck), (OGL.usePolygonStipple) );
+	gtk_toggle_button_set_active( GTK_TOGGLE_BUTTON(enableHardwareLighting), (OGL.bHWLighting) );
 
 	// textures
 	gtk_toggle_button_set_active( GTK_TOGGLE_BUTTON(enableHardwareFBCheck), (OGL.frameBufferTextures) );
@@ -271,7 +271,7 @@ static int Config_CreateWindow()
 	enable2xSAICheck = gtk_check_button_new_with_label( "Enable 2xSAI texture scaling" );
 	forceBilinearCheck = gtk_check_button_new_with_label( "Force bilinear filtering" );
 	enableFogCheck = gtk_check_button_new_with_label( "Enable fog" );
-	enablePolygonStippleCheck = gtk_check_button_new_with_label( "Enable dithered alpha testing" );
+	enableHardwareLighting = gtk_check_button_new_with_label( "Enable hardware lighting" );
 
 /*	// row 0
 	gtk_table_attach_defaults( GTK_TABLE(displayTable), bitdepthLabel, 1, 2, 0, 1 );
@@ -300,7 +300,7 @@ static int Config_CreateWindow()
 
 	// row 4
 	gtk_table_attach_defaults( GTK_TABLE(displayTable), enable2xSAICheck, 0, 1, 4, 5 );
-	gtk_table_attach_defaults( GTK_TABLE(displayTable), enablePolygonStippleCheck, 1, 2, 4, 5 );
+	gtk_table_attach_defaults( GTK_TABLE(displayTable), enableHardwareLighting, 1, 2, 4, 5 );
 
 	// textures frame
 	texturesFrame = gtk_frame_new( "Textures" );
@@ -373,7 +373,7 @@ void Config_LoadConfig()
 	OGL.fog = 1;
 	OGL.textureBitDepth = 1; // normal (16 & 32 bits)
 	OGL.frameBufferTextures = 0;
-	OGL.usePolygonStipple = 0;
+	OGL.bHWLighting = 0;
 	cache.maxBytes = 32 * 1048576;
 
 	// read configuration
@@ -450,9 +450,9 @@ void Config_LoadConfig()
 		{
 			OGL.frameBufferTextures = atoi( val );
 		}
-		else if (!strcasecmp( line, "enable dithered alpha" ))
+		else if (!strcasecmp( line, "enable hardware lighting" ))
 		{
-			OGL.usePolygonStipple = atoi( val );
+			OGL.bHWLighting = atoi( val );
 		}
 		else if (!strcasecmp( line, "texture depth" ))
 		{

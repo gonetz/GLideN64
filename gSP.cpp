@@ -110,7 +110,7 @@ void gSPProcessVertex( u32 v )
 		TransformVector( &gSP.vertices[v].nx, gSP.matrix.modelView[gSP.matrix.modelViewi] );
 		Normalize( &gSP.vertices[v].nx );
 
-		if (!bHWLightingCalculation) {
+		if (!OGL.bHWLighting) {
 			f32 r = gSP.lights[gSP.numLights].r;
 			f32 g = gSP.lights[gSP.numLights].g;
 			f32 b = gSP.lights[gSP.numLights].b;
@@ -385,7 +385,7 @@ void gSPLight( u32 l, s32 n )
 		Normalize( &gSP.lights[n].x );
 	}
 
-	if (bHWLightingCalculation) {
+	if (OGL.bHWLighting) {
 		float fLightPos[4] = {gSP.lights[n].x, gSP.lights[n].y, gSP.lights[n].z, 0.0};
 		glLightfv(GL_LIGHT0+n, GL_POSITION, fLightPos);
 		float fLightColor[4] = {gSP.lights[n].r, gSP.lights[n].g, gSP.lights[n].b, 1.0};

@@ -407,7 +407,7 @@ GLSLCombiner::GLSLCombiner(Combiner *_color, Combiner *_alpha) {
 	} else {
 		assert(strstr(strCombiner, "readtex") == 0);
 	}
-	if (bHWLightingCalculation)
+	if (OGL.bHWLighting)
 		strcat(fragment_shader, "  float intensity = calc_light(int(secondary_color.r), input_color); \n");
 	else
 		strcat(fragment_shader, "  input_color = gl_Color.rgb;\n");
@@ -448,7 +448,7 @@ GLSLCombiner::GLSLCombiner(Combiner *_color, Combiner *_alpha) {
 	m_aShaders[uShaderIdx++] = fragmentShader;
 	glAttachShader(m_program, g_calc_depth_shader_object);
 	m_aShaders[uShaderIdx++] = g_calc_depth_shader_object;
-	if (bHWLightingCalculation) {
+	if (OGL.bHWLighting) {
 		glAttachShader(m_program, g_calc_light_shader_object);
 		m_aShaders[uShaderIdx++] = g_calc_light_shader_object;
 	}

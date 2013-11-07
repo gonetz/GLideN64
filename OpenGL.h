@@ -62,7 +62,6 @@ struct GLInfo
 #ifndef __LINUX__
 	HWND	hFullscreenWnd;
 #endif
-	BOOL	usePolygonStipple;
 	GLubyte	stipplePattern[32][8][128];
 	BYTE	lastStipple;
 
@@ -74,6 +73,7 @@ struct GLInfo
 	} framebuffer_mode;
 	bool bImageTexture;
 	bool captureScreen;
+	BOOL bHWLighting;
 };
 
 extern GLInfo OGL;

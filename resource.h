@@ -59,6 +59,7 @@
 #define IDC_TEXTBOX                     1097
 #define IDC_CHECK2                      1098
 #define IDC_DITHEREDALPHATEST           1098
+#define IDC_HWLIGHT                     1098
 
 // Next default values for new objects
 // 

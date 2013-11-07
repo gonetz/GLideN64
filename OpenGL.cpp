@@ -616,11 +616,6 @@ void OGL_UpdateStates()
 			glDisable( GL_ALPHA_TEST );
 			*/
 		Combiner_UpdateAlphaTestInfo();
-
-		if (OGL.usePolygonStipple && (gDP.otherMode.alphaCompare == G_AC_DITHER) && !(gDP.otherMode.alphaCvgSel))
-			glEnable( GL_POLYGON_STIPPLE );
-		else
-			glDisable( GL_POLYGON_STIPPLE );
 	}
 
 	if (gDP.changed & CHANGED_SCISSOR)
@@ -828,11 +823,6 @@ void OGL_AddTriangle( SPVertex *vertices, int v0, int v1, int v2 )
 
 void OGL_DrawTriangles()
 {
-	if (OGL.usePolygonStipple && (gDP.otherMode.alphaCompare == G_AC_DITHER) && !(gDP.otherMode.alphaCvgSel))
-	{
-		OGL.lastStipple = (OGL.lastStipple + 1) & 0x7;
-		glPolygonStipple( OGL.stipplePattern[(BYTE)(gDP.envColor.a * 255.0f) >> 3][OGL.lastStipple] );
-	}
 	Combiner_UpdateCombineDepthInfo();
 	glDrawArrays( GL_TRIANGLES, 0, OGL.numVertices );
 	if (OGL.bImageTexture) {

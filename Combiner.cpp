@@ -109,11 +109,8 @@ static DWORD64 ACEncodeD[] =
 	7, 7, 7, 7, 7, 7, 7, 7, 0, 1, 2, 3, 4, 5, 7, 7, 7, 7, 7, 6, 7
 };
 
-bool bHWLightingCalculation = false;
-
 void Combiner_Init()
 {
-	bHWLightingCalculation = true;
 	InitGLSLCombiner();
 	combiner.root = NULL;
 	combiner.current = NULL;
