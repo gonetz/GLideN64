@@ -15,21 +15,25 @@ GLInfo OGL;
 
 #ifndef __LINUX__
 // GLSL functions
-PFNGLCREATESHADEROBJECTARBPROC glCreateShaderObjectARB;
-PFNGLSHADERSOURCEARBPROC glShaderSourceARB;
-PFNGLCOMPILESHADERARBPROC glCompileShaderARB;
-PFNGLCREATEPROGRAMOBJECTARBPROC glCreateProgramObjectARB;
-PFNGLATTACHOBJECTARBPROC glAttachObjectARB;
-PFNGLLINKPROGRAMARBPROC glLinkProgramARB;
-PFNGLUSEPROGRAMOBJECTARBPROC glUseProgramObjectARB;
-PFNGLGETUNIFORMLOCATIONARBPROC glGetUniformLocationARB;
-PFNGLUNIFORM1IARBPROC glUniform1iARB;
-PFNGLUNIFORM4IARBPROC glUniform4iARB;
-PFNGLUNIFORM4FARBPROC glUniform4fARB;
-PFNGLUNIFORM1FARBPROC glUniform1fARB;
-PFNGLDELETEOBJECTARBPROC glDeleteObjectARB;
-PFNGLGETINFOLOGARBPROC glGetInfoLogARB;
-PFNGLGETOBJECTPARAMETERIVARBPROC glGetObjectParameterivARB;
+PFNGLCREATESHADERPROC glCreateShader;
+PFNGLCOMPILESHADERPROC glCompileShader;
+PFNGLSHADERSOURCEPROC glShaderSource;
+PFNGLCREATEPROGRAMPROC glCreateProgram;
+PFNGLATTACHSHADERPROC glAttachShader;
+PFNGLLINKPROGRAMPROC glLinkProgram;
+PFNGLUSEPROGRAMPROC glUseProgram;
+PFNGLGETUNIFORMLOCATIONPROC glGetUniformLocation;
+PFNGLUNIFORM1IPROC glUniform1i;
+PFNGLUNIFORM1FPROC glUniform1f;
+PFNGLUNIFORM4FPROC glUniform4f;
+PFNGLDETACHSHADERPROC glDetachShader;
+PFNGLDELETESHADERPROC glDeleteShader;
+PFNGLDELETEPROGRAMPROC glDeleteProgram;
+PFNGLGETPROGRAMINFOLOGPROC glGetProgramInfoLog;
+PFNGLGETSHADERINFOLOGPROC glGetShaderInfoLog;
+PFNGLGETSHADERIVPROC glGetShaderiv;
+PFNGLGETPROGRAMIVPROC glGetProgramiv;
+
 PFNGLSECONDARYCOLOR3FPROC glSecondaryColor3f;
 
 // NV_register_combiners functions
@@ -148,31 +152,29 @@ void OGL_InitExtensions()
 	const char *version = reinterpret_cast<const char*>(glGetString(GL_VERSION));
 	u32 uVersion = atol(version);
 
-	if (OGL.GLSL = isExtensionSupported("GL_ARB_shading_language_100") &&
-		isExtensionSupported("GL_ARB_shader_objects") &&
-		isExtensionSupported("GL_ARB_fragment_shader") &&
-		isExtensionSupported("GL_ARB_vertex_shader"))
-	{
+	OGL.GLSL = TRUE;
 #ifndef __LINUX__
-		glCreateShaderObjectARB = (PFNGLCREATESHADEROBJECTARBPROC)wglGetProcAddress("glCreateShaderObjectARB");
-		glShaderSourceARB = (PFNGLSHADERSOURCEARBPROC)wglGetProcAddress("glShaderSourceARB");
-		glCompileShaderARB = (PFNGLCOMPILESHADERARBPROC)wglGetProcAddress("glCompileShaderARB");
-		glCreateProgramObjectARB = (PFNGLCREATEPROGRAMOBJECTARBPROC)wglGetProcAddress("glCreateProgramObjectARB");
-		glAttachObjectARB = (PFNGLATTACHOBJECTARBPROC)wglGetProcAddress("glAttachObjectARB");
-		glLinkProgramARB = (PFNGLLINKPROGRAMARBPROC)wglGetProcAddress("glLinkProgramARB");
-		glUseProgramObjectARB = (PFNGLUSEPROGRAMOBJECTARBPROC)wglGetProcAddress("glUseProgramObjectARB");
-		glGetUniformLocationARB = (PFNGLGETUNIFORMLOCATIONARBPROC)wglGetProcAddress("glGetUniformLocationARB");
-		glUniform1iARB = (PFNGLUNIFORM1IARBPROC)wglGetProcAddress("glUniform1iARB");
-		glUniform4iARB = (PFNGLUNIFORM4IARBPROC)wglGetProcAddress("glUniform4iARB");
-		glUniform4fARB = (PFNGLUNIFORM4FARBPROC)wglGetProcAddress("glUniform4fARB");
-		glUniform1fARB = (PFNGLUNIFORM1FARBPROC)wglGetProcAddress("glUniform1fARB");
-		glDeleteObjectARB = (PFNGLDELETEOBJECTARBPROC)wglGetProcAddress("glDeleteObjectARB");
-		glGetInfoLogARB = (PFNGLGETINFOLOGARBPROC)wglGetProcAddress("glGetInfoLogARB");
-		glGetObjectParameterivARB = (PFNGLGETOBJECTPARAMETERIVARBPROC)wglGetProcAddress("glGetObjectParameterivARB");
+	glCreateShader = (PFNGLCREATESHADERPROC)wglGetProcAddress("glCreateShader");
+	glCompileShader = (PFNGLCOMPILESHADERPROC)wglGetProcAddress("glCompileShader");
+	glShaderSource = (PFNGLSHADERSOURCEPROC)wglGetProcAddress("glShaderSource");
+	glCreateProgram = (PFNGLCREATEPROGRAMPROC)wglGetProcAddress("glCreateProgram");
+	glAttachShader = (PFNGLATTACHSHADERPROC)wglGetProcAddress("glAttachShader");
+	glLinkProgram = (PFNGLLINKPROGRAMPROC)wglGetProcAddress("glLinkProgram");
+	glUseProgram = (PFNGLUSEPROGRAMPROC)wglGetProcAddress("glUseProgram");
+	glGetUniformLocation = (PFNGLGETUNIFORMLOCATIONPROC)wglGetProcAddress("glGetUniformLocation");
+	glUniform1i = (PFNGLUNIFORM1IPROC)wglGetProcAddress("glUniform1i");
+	glUniform1f = (PFNGLUNIFORM1FPROC)wglGetProcAddress("glUniform1f");
+	glUniform4f = (PFNGLUNIFORM4FPROC)wglGetProcAddress("glUniform4f");
+	glDetachShader = (PFNGLDETACHSHADERPROC)wglGetProcAddress("glDetachShader");
+	glDeleteShader = (PFNGLDELETESHADERPROC)wglGetProcAddress("glDeleteShader");
+	glDeleteProgram = (PFNGLDELETEPROGRAMPROC)wglGetProcAddress("glDeleteProgram");
+	glGetProgramInfoLog = (PFNGLGETPROGRAMINFOLOGPROC)wglGetProcAddress("glGetProgramInfoLog");
+	glGetShaderInfoLog = (PFNGLGETSHADERINFOLOGPROC)wglGetProcAddress("glGetShaderInfoLog");
+	glGetShaderiv = (PFNGLGETSHADERIVPROC)wglGetProcAddress("glGetShaderiv");
+	glGetProgramiv = (PFNGLGETPROGRAMIVPROC)wglGetProcAddress("glGetProgramiv");
 
-		glSecondaryColor3f = (PFNGLSECONDARYCOLOR3FPROC)wglGetProcAddress("glSecondaryColor3f");
+	glSecondaryColor3f = (PFNGLSECONDARYCOLOR3FPROC)wglGetProcAddress("glSecondaryColor3f");
 #endif // __LINUX__
-	}
 
 
 	if (OGL.NV_register_combiners = isExtensionSupported( "GL_NV_register_combiners" ))

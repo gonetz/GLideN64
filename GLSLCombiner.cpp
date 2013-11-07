@@ -16,23 +16,22 @@
 #include "Shaders.h"
 #include "Noise_shader.h"
 
-static GLhandleARB g_vertex_shader_object;
-static GLhandleARB g_calc_light_shader_object;
-static GLhandleARB g_calc_lod_shader_object;
-static GLhandleARB g_calc_noise_shader_object;
-static GLhandleARB g_calc_depth_shader_object;
-static GLhandleARB g_test_alpha_shader_object;
+static GLuint  g_vertex_shader_object;
+static GLuint  g_calc_light_shader_object;
+static GLuint  g_calc_lod_shader_object;
+static GLuint  g_calc_noise_shader_object;
+static GLuint  g_calc_depth_shader_object;
+static GLuint  g_test_alpha_shader_object;
 static GLuint g_zlut_tex = 0;
 
-static GLhandleARB g_shadow_map_vertex_shader_object;
-static GLhandleARB g_shadow_map_fragment_shader_object;
-static GLhandleARB g_draw_shadow_map_program;
+static GLuint  g_shadow_map_vertex_shader_object;
+static GLuint  g_shadow_map_fragment_shader_object;
+static GLuint  g_draw_shadow_map_program;
 GLuint g_tlut_tex = 0;
 
 static const GLuint ZlutImageUnit = 0;
 static const GLuint TlutImageUnit = 1;
 static const GLuint depthImageUnit = 2;
-
 
 static
 void display_warning(const char *text, ...)
@@ -49,6 +48,39 @@ void display_warning(const char *text, ...)
 		va_end(ap);
 		first_message--;
 	}
+}
+
+static const GLsizei nShaderLogSize = 1024;
+static
+bool check_shader_compile_status(GLuint obj)
+{
+	GLint status;
+	glGetShaderiv(obj, GL_COMPILE_STATUS, &status);
+	if(status == GL_FALSE)
+	{
+		GLchar shader_log[nShaderLogSize];
+		GLsizei nLogSize = nShaderLogSize;
+		glGetShaderInfoLog(obj, nShaderLogSize, &nLogSize, shader_log);
+		display_warning(shader_log);
+		return false;
+	}
+	return true;
+}
+
+static
+bool check_program_link_status(GLuint obj)
+{
+	GLint status;
+	glGetProgramiv(obj, GL_LINK_STATUS, &status);
+	if(status == GL_FALSE)
+	{
+		GLsizei nLogSize = nShaderLogSize;
+		GLchar shader_log[nShaderLogSize];
+		glGetProgramInfoLog(obj, nShaderLogSize, &nLogSize, shader_log);
+		display_warning(shader_log);
+		return false;
+	}
+	return true;
 }
 
 static
@@ -101,42 +133,24 @@ void InitShadowMapShader()
 	glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_WRAP_S, GL_CLAMP);
 	glTexImage1D(GL_TEXTURE_1D, 0, GL_R16, 256, 0, GL_RED, GL_UNSIGNED_SHORT, NULL);
 
-	g_shadow_map_vertex_shader_object = glCreateShaderObjectARB(GL_VERTEX_SHADER_ARB);
-	glShaderSourceARB(g_shadow_map_vertex_shader_object, 1, &shadow_map_vertex_shader, NULL);
-	glCompileShaderARB(g_shadow_map_vertex_shader_object);
+	g_shadow_map_vertex_shader_object = glCreateShader(GL_VERTEX_SHADER);
+	glShaderSource(g_shadow_map_vertex_shader_object, 1, &shadow_map_vertex_shader, NULL);
+	glCompileShader(g_shadow_map_vertex_shader_object);
+	assert(check_shader_compile_status(g_shadow_map_vertex_shader_object));
 
-	g_shadow_map_fragment_shader_object = glCreateShaderObjectARB(GL_FRAGMENT_SHADER_ARB);
+	g_shadow_map_fragment_shader_object = glCreateShader(GL_FRAGMENT_SHADER);
 	if (g_bUseFloatDepthTexture)
-		glShaderSourceARB(g_shadow_map_fragment_shader_object, 1, &shadow_map_fragment_shader_float, NULL);
+		glShaderSource(g_shadow_map_fragment_shader_object, 1, &shadow_map_fragment_shader_float, NULL);
 	else
-		glShaderSourceARB(g_shadow_map_fragment_shader_object, 1, &shadow_map_fragment_shader_int, NULL);
-	glCompileShaderARB(g_shadow_map_fragment_shader_object);
+		glShaderSource(g_shadow_map_fragment_shader_object, 1, &shadow_map_fragment_shader_int, NULL);
+	glCompileShader(g_shadow_map_fragment_shader_object);
+	assert(check_shader_compile_status(g_shadow_map_fragment_shader_object));
 
-	g_draw_shadow_map_program = glCreateProgramObjectARB();
-	glAttachObjectARB(g_draw_shadow_map_program, g_shadow_map_vertex_shader_object);
-	glAttachObjectARB(g_draw_shadow_map_program, g_shadow_map_fragment_shader_object);
-	glLinkProgramARB(g_draw_shadow_map_program);
-
-#ifdef _DEBUG
-	int log_length;
-	glGetObjectParameterivARB(g_draw_shadow_map_program, GL_OBJECT_LINK_STATUS_ARB , &log_length);
-	if(!log_length)
-	{
-		const int nLogSize = 1024;
-		char shader_log[nLogSize];
-		glGetInfoLogARB(g_shadow_map_fragment_shader_object,
-			nLogSize, &log_length, shader_log);
-		if(log_length)
-			display_warning(shader_log);
-		glGetInfoLogARB(g_shadow_map_vertex_shader_object, nLogSize, &log_length, shader_log);
-		if(log_length)
-			display_warning(shader_log);
-		glGetInfoLogARB(g_draw_shadow_map_program,
-			nLogSize, &log_length, shader_log);
-		if(log_length)
-			display_warning(shader_log);
-	}
-#endif
+	g_draw_shadow_map_program = glCreateProgram();
+	glAttachShader(g_draw_shadow_map_program, g_shadow_map_vertex_shader_object);
+	glAttachShader(g_draw_shadow_map_program, g_shadow_map_fragment_shader_object);
+	glLinkProgram(g_draw_shadow_map_program);
+	assert(check_program_link_status(g_draw_shadow_map_program));
 }
 
 static
@@ -147,13 +161,11 @@ void DestroyShadowMapShader()
 
 	if (g_tlut_tex > 0)
 		glDeleteTextures(1, &g_tlut_tex);
-	/*
-    glDetachShader(g_draw_shadow_map_program, g_shadow_map_vertex_shader_object);
-    glDetachShader(g_draw_shadow_map_program, g_shadow_map_fragment_shader_object);
-    glDeleteShader(g_shadow_map_vertex_shader_object);
-    glDeleteShader(g_shadow_map_fragment_shader_object);
-    glDeleteProgram(g_draw_shadow_map_program);
-	*/
+	glDetachShader(g_draw_shadow_map_program, g_shadow_map_vertex_shader_object);
+	glDetachShader(g_draw_shadow_map_program, g_shadow_map_fragment_shader_object);
+	glDeleteShader(g_shadow_map_vertex_shader_object);
+	glDeleteShader(g_shadow_map_fragment_shader_object);
+	glDeleteProgram(g_draw_shadow_map_program);
 }
 
 void InitGLSLCombiner()
@@ -163,73 +175,43 @@ void InitGLSLCombiner()
 	glActiveTextureARB(GL_TEXTURE1_ARB);
 	glEnable(GL_TEXTURE_2D);
 
-	g_vertex_shader_object = glCreateShaderObjectARB(GL_VERTEX_SHADER_ARB);
-	glShaderSourceARB(g_vertex_shader_object, 1, &vertex_shader, NULL);
-	glCompileShaderARB(g_vertex_shader_object);
+	g_vertex_shader_object = glCreateShader(GL_VERTEX_SHADER);
+	glShaderSource(g_vertex_shader_object, 1, &vertex_shader, NULL);
+	glCompileShader(g_vertex_shader_object);
+	assert(check_shader_compile_status(g_vertex_shader_object));
 
-	g_calc_light_shader_object = glCreateShaderObjectARB(GL_FRAGMENT_SHADER_ARB);
-	glShaderSourceARB(g_calc_light_shader_object, 1, &fragment_shader_calc_light, NULL);
-	glCompileShaderARB(g_calc_light_shader_object);
+	g_calc_light_shader_object = glCreateShader(GL_FRAGMENT_SHADER);
+	glShaderSource(g_calc_light_shader_object, 1, &fragment_shader_calc_light, NULL);
+	glCompileShader(g_calc_light_shader_object);
+	assert(check_shader_compile_status(g_calc_light_shader_object));
 
-	g_calc_lod_shader_object = glCreateShaderObjectARB(GL_FRAGMENT_SHADER_ARB);
-	glShaderSourceARB(g_calc_lod_shader_object, 1, &fragment_shader_calc_lod, NULL);
-	glCompileShaderARB(g_calc_lod_shader_object);
+	g_calc_lod_shader_object = glCreateShader(GL_FRAGMENT_SHADER);
+	glShaderSource(g_calc_lod_shader_object, 1, &fragment_shader_calc_lod, NULL);
+	glCompileShader(g_calc_lod_shader_object);
+	assert(check_shader_compile_status(g_calc_lod_shader_object));
 
-	g_calc_noise_shader_object = glCreateShaderObjectARB(GL_FRAGMENT_SHADER_ARB);
-	glShaderSourceARB(g_calc_noise_shader_object, 1, &noise_fragment_shader, NULL);
-	glCompileShaderARB(g_calc_noise_shader_object);
+	g_calc_noise_shader_object = glCreateShader(GL_FRAGMENT_SHADER);
+	glShaderSource(g_calc_noise_shader_object, 1, &noise_fragment_shader, NULL);
+	glCompileShader(g_calc_noise_shader_object);
+	assert(check_shader_compile_status(g_calc_noise_shader_object));
 
-	g_test_alpha_shader_object = glCreateShaderObjectARB(GL_FRAGMENT_SHADER_ARB);
-	glShaderSourceARB(g_test_alpha_shader_object, 1, &alpha_test_fragment_shader, NULL);
-	glCompileShaderARB(g_test_alpha_shader_object);
+	g_test_alpha_shader_object = glCreateShader(GL_FRAGMENT_SHADER);
+	glShaderSource(g_test_alpha_shader_object, 1, &alpha_test_fragment_shader, NULL);
+	glCompileShader(g_test_alpha_shader_object);
+	assert(check_shader_compile_status(g_test_alpha_shader_object));
 
 	if (OGL.bImageTexture) {
-		g_calc_depth_shader_object = glCreateShaderObjectARB(GL_FRAGMENT_SHADER_ARB);
+		g_calc_depth_shader_object = glCreateShader(GL_FRAGMENT_SHADER);
 		if (g_bUseFloatDepthTexture)
-			glShaderSourceARB(g_calc_depth_shader_object, 1, &depth_compare_shader_float, NULL);
+			glShaderSource(g_calc_depth_shader_object, 1, &depth_compare_shader_float, NULL);
 		else
-			glShaderSourceARB(g_calc_depth_shader_object, 1, &depth_compare_shader_int, NULL);
-		glCompileShaderARB(g_calc_depth_shader_object);
+			glShaderSource(g_calc_depth_shader_object, 1, &depth_compare_shader_int, NULL);
+		glCompileShader(g_calc_depth_shader_object);
+		assert(check_shader_compile_status(g_calc_depth_shader_object));
 	}
 
 	InitZlutTexture();
 	InitShadowMapShader();
-
-/*
-const char* base_vertex_shader =
-"void main()                                                    \n"
-"{                                                              \n"
-"  gl_Position = ftransform();                                  \n"
-"}                                                              \n"
-;
-
-	GLhandleARB base_vertex_shader_object = glCreateShaderObjectARB(GL_VERTEX_SHADER_ARB);
-	glShaderSourceARB(base_vertex_shader_object, 1, &base_vertex_shader, NULL);
-	glCompileShaderARB(base_vertex_shader_object);
-	GLhandleARB test_program = glCreateProgramObjectARB();
-	glAttachObjectARB(test_program, base_vertex_shader_object);
-	glAttachObjectARB(test_program, g_calc_depth_shader_object);
-	glLinkProgramARB(test_program);
-
-	int log_length;
-	glGetObjectParameterivARB(test_program, GL_OBJECT_LINK_STATUS_ARB , &log_length);
-	if(!log_length)
-	{
-		const int nLogSize = 1024;
-		char shader_log[nLogSize];
-		glGetInfoLogARB(g_calc_depth_shader_object, 
-			nLogSize, &log_length, shader_log);
-		if(log_length) 
-			display_warning(shader_log);
-		glGetInfoLogARB(base_vertex_shader_object, nLogSize, &log_length, shader_log);
-		if(log_length) 
-			display_warning(shader_log);
-		glGetInfoLogARB(test_program, 
-			nLogSize, &log_length, shader_log);
-		if(log_length) 
-			display_warning(shader_log);
-	}
-*/	
 }
 
 void DestroyGLSLCombiner() {
@@ -394,9 +376,7 @@ int CompileCombiner(const CombinerStage & _stage, const char** _Input, char * _f
 }
 
 GLSLCombiner::GLSLCombiner(Combiner *_color, Combiner *_alpha) {
-	m_vertexShaderObject = g_vertex_shader_object;
-
-	char *fragment_shader = (char*)malloc(8192);
+	char *fragment_shader = (char*)malloc(4096);
 	strcpy(fragment_shader, fragment_shader_header_common_variables);
 
 	char strCombiner[512];
@@ -452,24 +432,51 @@ GLSLCombiner::GLSLCombiner(Combiner *_color, Combiner *_alpha) {
 	strcat(fragment_shader, fragment_shader_toonify);
 #endif
 
-	m_fragmentShaderObject = glCreateShaderObjectARB(GL_FRAGMENT_SHADER_ARB);
-	glShaderSourceARB(m_fragmentShaderObject, 1, (const GLcharARB**)&fragment_shader, NULL);
+	GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+	glShaderSource(fragmentShader, 1, (const GLchar**)&fragment_shader, NULL);
 	free(fragment_shader);
+	glCompileShader(fragmentShader);
+	assert(check_shader_compile_status(fragmentShader));
 
-	glCompileShaderARB(m_fragmentShaderObject);
+	memset(m_aShaders, 0, sizeof(m_aShaders));
+	u32 uShaderIdx = 0;
 
-	m_programObject = glCreateProgramObjectARB();
-	glAttachObjectARB(m_programObject, m_fragmentShaderObject);
-	if (bHWLightingCalculation)
-		glAttachObjectARB(m_programObject, g_calc_light_shader_object);
-	if (bUseLod)
-		glAttachObjectARB(m_programObject, g_calc_lod_shader_object);
-	glAttachObjectARB(m_programObject, g_test_alpha_shader_object);
-	if (OGL.bImageTexture)
-		glAttachObjectARB(m_programObject, g_calc_depth_shader_object);
-	glAttachObjectARB(m_programObject, g_calc_noise_shader_object);
-	glAttachObjectARB(m_programObject, m_vertexShaderObject);
-	glLinkProgramARB(m_programObject);
+	m_program = glCreateProgram();
+	glAttachShader(m_program, g_vertex_shader_object);
+	m_aShaders[uShaderIdx++] = g_vertex_shader_object;
+	glAttachShader(m_program, fragmentShader);
+	m_aShaders[uShaderIdx++] = fragmentShader;
+	glAttachShader(m_program, g_calc_depth_shader_object);
+	m_aShaders[uShaderIdx++] = g_calc_depth_shader_object;
+	if (bHWLightingCalculation) {
+		glAttachShader(m_program, g_calc_light_shader_object);
+		m_aShaders[uShaderIdx++] = g_calc_light_shader_object;
+	}
+	if (bUseLod) {
+		glAttachShader(m_program, g_calc_lod_shader_object);
+		m_aShaders[uShaderIdx++] = g_calc_lod_shader_object;
+	}
+	glAttachShader(m_program, g_test_alpha_shader_object);
+	m_aShaders[uShaderIdx++] = g_test_alpha_shader_object;
+	if (OGL.bImageTexture) {
+		glAttachShader(m_program, g_calc_depth_shader_object);
+		m_aShaders[uShaderIdx++] = g_calc_depth_shader_object;
+	}
+	glAttachShader(m_program, g_calc_noise_shader_object);
+	m_aShaders[uShaderIdx] = g_calc_noise_shader_object;
+	assert(uShaderIdx <= sizeof(m_aShaders)/sizeof(m_aShaders[0]));
+	glLinkProgram(m_program);
+	assert(check_program_link_status(m_program));
+}
+
+GLSLCombiner::~GLSLCombiner() {
+	u32 shaderIndex = 0;
+	const u32 arraySize = sizeof(m_aShaders)/sizeof(m_aShaders[0]);
+	while (shaderIndex < arraySize && m_aShaders[shaderIndex] > 0) {
+		glDetachShader(m_program, m_aShaders[shaderIndex]);
+		glDeleteShader(m_aShaders[shaderIndex++]);
+	}
+	glDeleteProgram(m_program);
 }
 
 void GLSLCombiner::Set() {
@@ -481,87 +488,66 @@ void GLSLCombiner::Set() {
 	combiner.vertex.alpha = COMBINED;
 	combiner.vertex.secondaryColor = LIGHT;
 
-	glUseProgramObjectARB(m_programObject);
+	glUseProgram(m_program);
 
-	int texture0_location = glGetUniformLocationARB(m_programObject, "texture0");
+	int texture0_location = glGetUniformLocation(m_program, "texture0");
 	if (texture0_location != -1) {
-		glUniform1iARB(texture0_location, 0);
+		glUniform1i(texture0_location, 0);
 		combiner.usesT0 = TRUE;
 	}
 
-	int texture1_location = glGetUniformLocationARB(m_programObject, "texture1");
+	int texture1_location = glGetUniformLocation(m_program, "texture1");
 	if (texture1_location != -1) {
-		glUniform1iARB(texture1_location, 1);
+		glUniform1i(texture1_location, 1);
 		combiner.usesT1 = TRUE;
 	}
 
 	UpdateColors();
 	UpdateAlphaTestInfo();
-
-#ifdef _DEBUG
-	int log_length;
-	glGetObjectParameterivARB(m_programObject, GL_OBJECT_LINK_STATUS_ARB , &log_length);
-	if(!log_length)
-	{
-		const int nLogSize = 1024;
-		char shader_log[nLogSize];
-		glGetInfoLogARB(m_fragmentShaderObject, 
-			nLogSize, &log_length, shader_log);
-		if(log_length) 
-			display_warning(shader_log);
-		glGetInfoLogARB(m_vertexShaderObject, nLogSize, &log_length, shader_log);
-		if(log_length) 
-			display_warning(shader_log);
-		glGetInfoLogARB(m_programObject, 
-			nLogSize, &log_length, shader_log);
-		if(log_length) 
-			display_warning(shader_log);
-	}
-#endif
 }
 
 void GLSLCombiner::UpdateColors() {
-	int prim_color_location = glGetUniformLocationARB(m_programObject, "prim_color");
-	glUniform4fARB(prim_color_location, gDP.primColor.r, gDP.primColor.g, gDP.primColor.b, gDP.primColor.a);
+	int prim_color_location = glGetUniformLocation(m_program, "prim_color");
+	glUniform4f(prim_color_location, gDP.primColor.r, gDP.primColor.g, gDP.primColor.b, gDP.primColor.a);
 
-	int env_color_location = glGetUniformLocationARB(m_programObject, "env_color");
-	glUniform4fARB(env_color_location, gDP.envColor.r, gDP.envColor.g, gDP.envColor.b, gDP.envColor.a);
+	int env_color_location = glGetUniformLocation(m_program, "env_color");
+	glUniform4f(env_color_location, gDP.envColor.r, gDP.envColor.g, gDP.envColor.b, gDP.envColor.a);
 
-	int prim_lod_location = glGetUniformLocationARB(m_programObject, "prim_lod");
-	glUniform1fARB(prim_lod_location, gDP.primColor.l);
+	int prim_lod_location = glGetUniformLocation(m_program, "prim_lod");
+	glUniform1f(prim_lod_location, gDP.primColor.l);
 
 	if (combiner.usesLOD) {
 		BOOL bCalcLOD = gDP.otherMode.textureLOD == G_TL_LOD;
-		int lod_en_location = glGetUniformLocationARB(m_programObject, "lod_enabled");
-		glUniform1iARB(lod_en_location, bCalcLOD);
+		int lod_en_location = glGetUniformLocation(m_program, "lod_enabled");
+		glUniform1i(lod_en_location, bCalcLOD);
 		if (bCalcLOD) {
-			int scale_x_location = glGetUniformLocationARB(m_programObject, "lod_x_scale");
-			glUniform1fARB(scale_x_location, OGL.scaleX);
-			int scale_y_location = glGetUniformLocationARB(m_programObject, "lod_y_scale");
-			glUniform1fARB(scale_y_location, OGL.scaleY);
-			int min_lod_location = glGetUniformLocationARB(m_programObject, "min_lod");
-			glUniform1fARB(min_lod_location, gDP.primColor.m);
-			int max_tile_location = glGetUniformLocationARB(m_programObject, "max_tile");
-			glUniform1iARB(max_tile_location, gSP.texture.level);
-			int texture_detail_location = glGetUniformLocationARB(m_programObject, "texture_detail");
-			glUniform1iARB(texture_detail_location, gDP.otherMode.textureDetail);
+			int scale_x_location = glGetUniformLocation(m_program, "lod_x_scale");
+			glUniform1f(scale_x_location, OGL.scaleX);
+			int scale_y_location = glGetUniformLocation(m_program, "lod_y_scale");
+			glUniform1f(scale_y_location, OGL.scaleY);
+			int min_lod_location = glGetUniformLocation(m_program, "min_lod");
+			glUniform1f(min_lod_location, gDP.primColor.m);
+			int max_tile_location = glGetUniformLocation(m_program, "max_tile");
+			glUniform1i(max_tile_location, gSP.texture.level);
+			int texture_detail_location = glGetUniformLocation(m_program, "texture_detail");
+			glUniform1i(texture_detail_location, gDP.otherMode.textureDetail);
 		}
 	}
 	
 	int nDither = (gDP.otherMode.alphaCompare == 3 && (gDP.otherMode.colorDither == 2 || gDP.otherMode.alphaDither == 2)) ? 1 : 0;
-	int dither_location = glGetUniformLocationARB(m_programObject, "dither_enabled");
-	glUniform1iARB(dither_location, nDither);
+	int dither_location = glGetUniformLocation(m_program, "dither_enabled");
+	glUniform1i(dither_location, nDither);
 
 	if ((m_nInputs & (1<<NOISE)) + nDither > 0) {
-		int time_location = glGetUniformLocationARB(m_programObject, "time");
-		glUniform1fARB(time_location, (float)(rand()&255));
+		int time_location = glGetUniformLocation(m_program, "time");
+		glUniform1f(time_location, (float)(rand()&255));
 	}
 
-	int fog_location = glGetUniformLocationARB(m_programObject, "fog_enabled");
-	glUniform1iARB(fog_location, (gSP.geometryMode & G_FOG) > 0 ? 1 : 0);
+	int fog_location = glGetUniformLocation(m_program, "fog_enabled");
+	glUniform1i(fog_location, (gSP.geometryMode & G_FOG) > 0 ? 1 : 0);
 
-	int fb8bit_location = glGetUniformLocationARB(m_programObject, "fb_8bit_mode");
-	glUniform1iARB(fb8bit_location, 0);
+	int fb8bit_location = glGetUniformLocation(m_program, "fb_8bit_mode");
+	glUniform1i(fb8bit_location, 0);
 
 }
 
@@ -581,10 +567,10 @@ void GLSLCombiner::UpdateFBInfo() {
 				nFbFixedAlpha |= 2;
 		}
 	}
-	int fb8bit_location = glGetUniformLocationARB(m_programObject, "fb_8bit_mode");
-	glUniform1iARB(fb8bit_location, nFb8bitMode);
-	int fbFixedAlpha_location = glGetUniformLocationARB(m_programObject, "fb_fixed_alpha");
-	glUniform1iARB(fbFixedAlpha_location, nFbFixedAlpha);
+	int fb8bit_location = glGetUniformLocation(m_program, "fb_8bit_mode");
+	glUniform1i(fb8bit_location, nFb8bitMode);
+	int fbFixedAlpha_location = glGetUniformLocation(m_program, "fb_fixed_alpha");
+	glUniform1i(fbFixedAlpha_location, nFbFixedAlpha);
 }
 
 void GLSLCombiner::UpdateDepthInfo() {
@@ -594,22 +580,22 @@ void GLSLCombiner::UpdateDepthInfo() {
 	if (frameBuffer.top == NULL || frameBuffer.top->depth_texture == NULL)
 		return;
 	int nDepthEnabled = (gSP.geometryMode & G_ZBUFFER) > 0 ? 1 : 0;
-	int  depth_enabled_location = glGetUniformLocationARB(m_programObject, "depthEnabled");
-	glUniform1iARB(depth_enabled_location, nDepthEnabled);
+	int  depth_enabled_location = glGetUniformLocation(m_program, "depthEnabled");
+	glUniform1i(depth_enabled_location, nDepthEnabled);
 	if (nDepthEnabled == 0)
 		return;
 
-	int  depth_compare_location = glGetUniformLocationARB(m_programObject, "depthCompareEnabled");
-	glUniform1iARB(depth_compare_location, gDP.otherMode.depthCompare);
-	int  depth_update_location = glGetUniformLocationARB(m_programObject, "depthUpdateEnabled");
-	glUniform1iARB(depth_update_location, gDP.otherMode.depthUpdate);
-	int  depth_polygon_offset = glGetUniformLocationARB(m_programObject, "depthPolygonOffset");
+	int  depth_compare_location = glGetUniformLocation(m_program, "depthCompareEnabled");
+	glUniform1i(depth_compare_location, gDP.otherMode.depthCompare);
+	int  depth_update_location = glGetUniformLocation(m_program, "depthUpdateEnabled");
+	glUniform1i(depth_update_location, gDP.otherMode.depthUpdate);
+	int  depth_polygon_offset = glGetUniformLocation(m_program, "depthPolygonOffset");
 	if (g_bUseFloatDepthTexture) {
-		float fPlygonOffset = gDP.otherMode.depthMode == ZMODE_DEC ? 0.005 : 0.0f;
-		glUniform1fARB(depth_polygon_offset, fPlygonOffset);
+		float fPlygonOffset = gDP.otherMode.depthMode == ZMODE_DEC ? 0.005f : 0.0f;
+		glUniform1f(depth_polygon_offset, fPlygonOffset);
 	} else {
 		int iPlygonOffset = gDP.otherMode.depthMode == ZMODE_DEC ? 5 : 0;
-		glUniform1iARB(depth_polygon_offset, iPlygonOffset);
+		glUniform1i(depth_polygon_offset, iPlygonOffset);
 	}
 
 	GLuint texture = frameBuffer.top->depth_texture->glName;
@@ -654,17 +640,17 @@ void GLSL_ClearDepthBuffer() {
 }
 
 void GLSLCombiner::UpdateAlphaTestInfo() {
-	int at_enabled_location = glGetUniformLocationARB(m_programObject, "alphaTestEnabled");
-	int at_value_location = glGetUniformLocationARB(m_programObject, "alphaTestValue");
+	int at_enabled_location = glGetUniformLocation(m_program, "alphaTestEnabled");
+	int at_value_location = glGetUniformLocation(m_program, "alphaTestValue");
 	if ((gDP.otherMode.alphaCompare == G_AC_THRESHOLD) && !(gDP.otherMode.alphaCvgSel))	{
-		glUniform1iARB(at_enabled_location, 1);
-		glUniform1fARB(at_value_location, gDP.blendColor.a);
+		glUniform1i(at_enabled_location, 1);
+		glUniform1f(at_value_location, gDP.blendColor.a);
 	} else if (gDP.otherMode.cvgXAlpha)	{
-		glUniform1iARB(at_enabled_location, 1);
-		glUniform1fARB(at_value_location, 0.5f);
+		glUniform1i(at_enabled_location, 1);
+		glUniform1f(at_value_location, 0.5f);
 	} else {
-		glUniform1iARB(at_enabled_location, 0);
-		glUniform1fARB(at_value_location, 0.0f);
+		glUniform1i(at_enabled_location, 0);
+		glUniform1f(at_value_location, 0.0f);
 	}
 }
 
@@ -756,7 +742,7 @@ void GLS_SetShadowMapCombiner() {
 	glTexSubImage1D(GL_TEXTURE_1D, 0, 0, 256, GL_RED, GL_UNSIGNED_SHORT, pData);
 	glBindTexture(GL_TEXTURE_1D, 0);
 	*/
-	glUseProgramObjectARB(g_draw_shadow_map_program);
+	glUseProgram(g_draw_shadow_map_program);
 
 	glBindImageTexture(TlutImageUnit, g_tlut_tex, 0, GL_FALSE, 0, GL_READ_ONLY, GL_R16UI);
 	GLenum depthTexFormat = g_bUseFloatDepthTexture ? GL_R32F : GL_R16UI;

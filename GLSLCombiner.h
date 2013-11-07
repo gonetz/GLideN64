@@ -4,6 +4,7 @@
 class GLSLCombiner : public OGLCombiner {
 public:
 	GLSLCombiner(Combiner *_color, Combiner *_alpha);
+	virtual ~GLSLCombiner();
 	virtual void Set();
 	virtual void UpdateColors();
 	virtual void UpdateFBInfo();
@@ -11,9 +12,8 @@ public:
 	virtual void UpdateAlphaTestInfo();
 
 private:
-	GLhandleARB m_vertexShaderObject;
-	GLhandleARB m_fragmentShaderObject;
-	GLhandleARB m_programObject;
+	GLuint m_aShaders[8];
+	GLuint m_program;
 	int m_nInputs;
 };
 
