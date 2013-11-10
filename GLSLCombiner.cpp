@@ -28,6 +28,7 @@ static GLuint  g_shadow_map_vertex_shader_object;
 static GLuint  g_shadow_map_fragment_shader_object;
 static GLuint  g_draw_shadow_map_program;
 GLuint g_tlut_tex = 0;
+static u32 g_paletteCRC256 = 0;
 
 static const GLuint ZlutImageUnit = 0;
 static const GLuint TlutImageUnit = 1;
@@ -126,6 +127,7 @@ void InitShadowMapShader()
 	if (!OGL.bImageTexture)
 		return;
 
+	g_paletteCRC256 = 0;
 	glGenTextures(1, &g_tlut_tex);
 	glBindTexture(GL_TEXTURE_1D, g_tlut_tex);
 	glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -743,16 +745,23 @@ void GLSL_RenderDepth() {
 }
 
 void GLS_SetShadowMapCombiner() {
+
 	if (!OGL.bImageTexture)
 		return;
 
 	_unbindImageTextures();
-	/*
-	glBindTexture(GL_TEXTURE_1D, g_tlut_tex);
-	u16 *pData = (u16*)&TMEM[256];
-	glTexSubImage1D(GL_TEXTURE_1D, 0, 0, 256, GL_RED, GL_UNSIGNED_SHORT, pData);
-	glBindTexture(GL_TEXTURE_1D, 0);
-	*/
+
+	if (g_paletteCRC256 != gDP.paletteCRC256) {
+		g_paletteCRC256 = gDP.paletteCRC256;
+		u16 palette[256];
+		u16 *src = (u16*)&TMEM[256];
+		for (int i = 0; i < 256; ++i)
+			palette[i] = swapword(src[i*4]);
+		glBindTexture(GL_TEXTURE_1D, g_tlut_tex);
+		glTexSubImage1D(GL_TEXTURE_1D, 0, 0, 256, GL_RED, GL_UNSIGNED_SHORT, palette);
+		glBindTexture(GL_TEXTURE_1D, 0);
+	}
+
 	glUseProgram(g_draw_shadow_map_program);
 
 	glBindImageTexture(TlutImageUnit, g_tlut_tex, 0, GL_FALSE, 0, GL_READ_ONLY, GL_R16UI);

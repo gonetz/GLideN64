@@ -228,7 +228,7 @@ struct gDPInfo
 
 	u32 changed;
 
-	u16 palette[256];
+	//u16 palette[256];
 	u32 paletteCRC16[16];
 	u32 paletteCRC256;
 	u32 half_1, half_2;

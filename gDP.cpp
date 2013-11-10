@@ -676,21 +676,6 @@ void gDPLoadBlock( u32 tile, u32 uls, u32 ult, u32 lrs, u32 dxt )
 #endif
 }
 
-void load_palette (u32 addr)
-{
-	if (g_tlut_tex == 0)
-		return;
-	u16 *pPal = gDP.palette;
-	for (u32 i = 0; i < 256; ++i) {
-		*(pPal++) = *(u16*)(RDRAM + (addr^2));
-		addr += 2;
-	}
-	glBindTexture(GL_TEXTURE_1D, g_tlut_tex);
-	glTexSubImage1D(GL_TEXTURE_1D, 0, 0, 256, GL_RED, GL_UNSIGNED_SHORT, gDP.palette);
-	glBindTexture(GL_TEXTURE_1D, 0);
-}
-
-
 void gDPLoadTLUT( u32 tile, u32 uls, u32 ult, u32 lrs, u32 lrt )
 {
 	gDPSetTileSize( tile, uls, ult, lrs, lrt );
@@ -725,9 +710,6 @@ void gDPLoadTLUT( u32 tile, u32 uls, u32 ult, u32 lrs, u32 lrt )
 	gDP.paletteCRC256 = CRC_Calculate( 0xFFFFFFFF, gDP.paletteCRC16, 64 );
 
 	gDP.changed |= CHANGED_TMEM;
-
-	if (count == 256)
-		load_palette(gDP.textureImage.address);
 
 #ifdef DEBUG
 	DebugMsg( DEBUG_HIGH | DEBUG_HANDLED | DEBUG_TEXTURE, "gDPLoadTLUT( %i, %i, %i, %i, %i );\n",
