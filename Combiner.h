@@ -208,11 +208,10 @@ extern struct CombinerInfo
 void Combiner_Init();
 void Combiner_UpdateCombineColors();
 void Combiner_UpdateCombineFBInfo();
-void Combiner_SetCombine( u64 mux );
-void Combiner_Destroy();
-
 void Combiner_UpdateCombineDepthInfo();
 void Combiner_UpdateAlphaTestInfo();
+void Combiner_SetCombine( u64 mux );
+void Combiner_Destroy();
 
 #endif
 

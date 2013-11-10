@@ -573,9 +573,19 @@ void GLSLCombiner::UpdateFBInfo() {
 	glUniform1i(fbFixedAlpha_location, nFbFixedAlpha);
 }
 
+static
+void _unbindImageTextures() {
+	glBindImageTexture(TlutImageUnit, 0, 0, GL_FALSE, 0, GL_READ_WRITE, GL_R16UI);
+	glBindImageTexture(ZlutImageUnit, 0, 0, GL_FALSE, 0, GL_READ_WRITE, GL_R16UI);
+	const GLenum depthTexFormat = g_bUseFloatDepthTexture ? GL_R32F : GL_R16UI;
+	glBindImageTexture(depthImageUnit, 0, 0, GL_FALSE, 0, GL_READ_WRITE, depthTexFormat);
+}
+
 void GLSLCombiner::UpdateDepthInfo() {
 	if (!OGL.bImageTexture)
 		return;
+
+	_unbindImageTextures();
 
 	if (frameBuffer.top == NULL || frameBuffer.top->depth_texture == NULL)
 		return;
@@ -635,7 +645,7 @@ void GLSL_ClearDepthBuffer() {
 		GL_RED, type, pData);
 	free(pData);
 
-	gSP.changed |= CHANGED_TEXTURE | CHANGED_VIEWPORT;
+	gSP.changed |= CHANGED_TEXTURE;
 	gDP.changed |= CHANGED_COMBINE;
 }
 
@@ -736,6 +746,7 @@ void GLS_SetShadowMapCombiner() {
 	if (!OGL.bImageTexture)
 		return;
 
+	_unbindImageTextures();
 	/*
 	glBindTexture(GL_TEXTURE_1D, g_tlut_tex);
 	u16 *pData = (u16*)&TMEM[256];

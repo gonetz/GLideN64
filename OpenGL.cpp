@@ -630,8 +630,7 @@ void OGL_UpdateStates()
 		OGL_UpdateViewport();
 	}
 
-	if ((gDP.changed & CHANGED_COMBINE) || (gDP.changed & CHANGED_CYCLETYPE))
-	{
+	if ((gDP.changed & CHANGED_COMBINE) || (gDP.changed & CHANGED_CYCLETYPE)) {
 		if (gDP.otherMode.cycleType == G_CYC_COPY)
 			Combiner_SetCombine( EncodeCombineMode( 0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0 ) );
 		else if (gDP.otherMode.cycleType == G_CYC_FILL)
@@ -641,12 +640,9 @@ void OGL_UpdateStates()
 	}
 
 	if (gDP.changed & CHANGED_COMBINE_COLORS)
-	{
 		Combiner_UpdateCombineColors();
-	}
 
-	if ((gSP.changed & CHANGED_TEXTURE) || (gDP.changed & CHANGED_TILE) || (gDP.changed & CHANGED_TMEM))
-	{
+	if ((gSP.changed & CHANGED_TEXTURE) || (gDP.changed & CHANGED_TILE) || (gDP.changed & CHANGED_TMEM)) {
 		if (combiner.usesT0)
 			TextureCache_Update( 0 );
 		else
@@ -663,15 +659,15 @@ void OGL_UpdateStates()
 	}
 
 	if (gDP.changed & CHANGED_FB_TEXTURE)
-	{
 		Combiner_UpdateCombineFBInfo();
-	}
+
+	if ((gDP.changed & CHANGED_RENDERMODE) || (gSP.geometryMode & G_ZBUFFER))
+		Combiner_UpdateCombineDepthInfo();
 
 	if ((gDP.changed & CHANGED_FOGCOLOR) && OGL.fog)
 		glFogfv( GL_FOG_COLOR, &gDP.fogColor.r );
 
-	if ((gDP.changed & CHANGED_RENDERMODE) || (gDP.changed & CHANGED_CYCLETYPE))
-	{
+	if ((gDP.changed & CHANGED_RENDERMODE) || (gDP.changed & CHANGED_CYCLETYPE)) {
 		if ((gDP.otherMode.forceBlender) &&
 			(gDP.otherMode.cycleType != G_CYC_COPY) &&
 			(gDP.otherMode.cycleType != G_CYC_FILL) &&
@@ -679,8 +675,7 @@ void OGL_UpdateStates()
 		{
  			glEnable( GL_BLEND );
 
-			switch (gDP.otherMode.l >> 16)
-			{
+			switch (gDP.otherMode.l >> 16) {
 				case 0x0448: // Add
 				case 0x055A:
 					glBlendFunc( GL_ONE, GL_ONE );
@@ -823,15 +818,7 @@ void OGL_AddTriangle( SPVertex *vertices, int v0, int v1, int v2 )
 
 void OGL_DrawTriangles()
 {
-	Combiner_UpdateCombineDepthInfo();
 	glDrawArrays( GL_TRIANGLES, 0, OGL.numVertices );
-	if (OGL.bImageTexture) {
-		glBindImageTexture(0, 0, 0, GL_FALSE, 0, GL_READ_WRITE, GL_R16UI);
-		glBindImageTexture(1, 0, 0, GL_FALSE, 0, GL_READ_WRITE, GL_R16UI);
-		GLenum depthTexFormat = g_bUseFloatDepthTexture ? GL_R32F : GL_R16UI;
-		glBindImageTexture(2, 0, 0, GL_FALSE, 0, GL_READ_WRITE, depthTexFormat);
-	}
-
 	OGL.numTriangles = OGL.numVertices = 0;
 }
 
@@ -1061,12 +1048,6 @@ void OGL_DrawTexturedRect( float ulx, float uly, float lrx, float lry, float uls
 	glLoadIdentity();
 	OGL_UpdateCullFace();
 	OGL_UpdateViewport();
-
-	if (OGL.bImageTexture) {
-		glBindImageTexture(0, 0, 0, GL_FALSE, 0, GL_READ_WRITE, GL_R16UI);
-		glBindImageTexture(1, 0, 0, GL_FALSE, 0, GL_READ_WRITE, GL_R16UI);
-		glBindImageTexture(2, 0, 0, GL_FALSE, 0, GL_READ_WRITE, GL_R16UI);
-	}
 }
 
 void OGL_ClearDepthBuffer()

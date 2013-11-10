@@ -361,10 +361,12 @@ void FrameBuffer_AttachDepthBuffer()
 		ogl_glDrawBuffers(2,  attachments,  frameBuffer.top->texture->glName);
 		assert(checkFBO());
 	} else if (frameBuffer.top != NULL) {
+		frameBuffer.top->depth_texture = 0;
 		GLuint attachments[1] = { GL_COLOR_ATTACHMENT0 };
 		ogl_glDrawBuffers(1,  attachments,  frameBuffer.top->texture->glName);
 		assert(checkFBO());
 	}
+	Combiner_UpdateCombineDepthInfo();
 }
 
 #if 1
