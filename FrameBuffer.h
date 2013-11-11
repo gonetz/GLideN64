@@ -4,13 +4,14 @@
 #include "Types.h"
 #include "Textures.h"
 struct gDPTile;
+struct DepthBuffer;
 
 struct FrameBuffer
 {
 	FrameBuffer *higher, *lower;
 
 	CachedTexture *texture;
-	const CachedTexture *depth_texture;
+	DepthBuffer *pDepthBuffer;
 	GLuint fbo;
 
 	u32 startAddress, endAddress;
@@ -31,7 +32,6 @@ extern FrameBufferInfo frameBuffer;
 extern bool g_bCopyToRDRAM;
 extern bool g_bCopyFromRDRAM;
 extern bool g_bUseFloatDepthTexture;
-struct DepthBuffer;
 
 void FrameBuffer_Init();
 void FrameBuffer_Destroy();

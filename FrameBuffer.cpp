@@ -169,7 +169,7 @@ FrameBuffer *FrameBuffer_AddTop()
 	FrameBuffer *newtop = (FrameBuffer*)malloc( sizeof( FrameBuffer ) );
 
 	newtop->texture = TextureCache_AddTop();
-	newtop->depth_texture = NULL;
+	newtop->pDepthBuffer = NULL;
 	newtop->fbo = 0;
 
 	newtop->lower = frameBuffer.top;
@@ -345,7 +345,7 @@ void _initDepthTexture()
 	glTexImage2D(GL_TEXTURE_2D, 0, depthTextureInternalFormat, depthBuffer.top->depth_texture->realWidth, depthBuffer.top->depth_texture->realHeight, 0, GL_RED, depthTextureType,	NULL);
 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
-	frameBuffer.top->depth_texture = depthBuffer.top->depth_texture;
+	frameBuffer.top->pDepthBuffer = depthBuffer.top;
 	void GLSL_ClearDepthBuffer();
 	GLSL_ClearDepthBuffer();
 }
@@ -355,13 +355,13 @@ void FrameBuffer_AttachDepthBuffer()
 	if ( frameBuffer.top != NULL &&  frameBuffer.top->fbo > 0 && depthBuffer.top != NULL && depthBuffer.top->renderbuf > 0) {
 		if (depthBuffer.top->depth_texture == NULL)
 			_initDepthTexture();
-		frameBuffer.top->depth_texture = depthBuffer.top->depth_texture;
+		frameBuffer.top->pDepthBuffer = depthBuffer.top;
 		ogl_glFramebufferRenderbuffer(GL_DRAW_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthBuffer.top->renderbuf);
 		GLuint attachments[2] = { GL_COLOR_ATTACHMENT0, GL_DEPTH_ATTACHMENT };
 		ogl_glDrawBuffers(2,  attachments,  frameBuffer.top->texture->glName);
 		assert(checkFBO());
 	} else if (frameBuffer.top != NULL) {
-		frameBuffer.top->depth_texture = 0;
+		frameBuffer.top->pDepthBuffer = 0;
 		GLuint attachments[1] = { GL_COLOR_ATTACHMENT0 };
 		ogl_glDrawBuffers(1,  attachments,  frameBuffer.top->texture->glName);
 		assert(checkFBO());
