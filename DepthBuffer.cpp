@@ -67,6 +67,8 @@ void DepthBuffer_Remove( DepthBuffer *buffer )
 
 	if (buffer->renderbuf != 0)
 		ogl_glDeleteRenderbuffers(1, &buffer->renderbuf);
+	if (buffer->fbo != 0)
+		ogl_glDeleteFramebuffers(1, &buffer->fbo);
 	if (buffer->depth_texture != NULL)
 		TextureCache_Remove( buffer->depth_texture );
 	free( buffer );
@@ -96,6 +98,7 @@ DepthBuffer *DepthBuffer_AddTop()
 	newtop->lower = depthBuffer.top;
 	newtop->higher = NULL;
 	newtop->renderbuf = 0;
+	newtop->fbo = 0;
 
 	if (depthBuffer.top)
 		depthBuffer.top->higher = newtop;

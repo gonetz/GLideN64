@@ -345,6 +345,13 @@ void _initDepthTexture()
 	glTexImage2D(GL_TEXTURE_2D, 0, depthTextureInternalFormat, depthBuffer.top->depth_texture->realWidth, depthBuffer.top->depth_texture->realHeight, 0, GL_RED, depthTextureType,	NULL);
 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+	glBindTexture( GL_TEXTURE_2D, 0);
+	ogl_glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+	ogl_glGenFramebuffers(1, &depthBuffer.top->fbo);
+	ogl_glBindFramebuffer(GL_DRAW_FRAMEBUFFER, depthBuffer.top->fbo);
+	ogl_glFramebufferTexture(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, depthBuffer.top->depth_texture->glName, 0);
+	ogl_glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+	ogl_glBindFramebuffer(GL_DRAW_FRAMEBUFFER, frameBuffer.top->fbo);
 	frameBuffer.top->pDepthBuffer = depthBuffer.top;
 	void GLSL_ClearDepthBuffer();
 	GLSL_ClearDepthBuffer();

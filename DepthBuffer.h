@@ -10,6 +10,7 @@ struct DepthBuffer
 	u32 address, width;
 	GLuint renderbuf;
 	CachedTexture *depth_texture;
+	GLuint fbo;
 };
 
 struct DepthBufferInfo
