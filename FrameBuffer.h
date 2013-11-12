@@ -30,6 +30,7 @@ struct FrameBufferInfo
 
 extern FrameBufferInfo frameBuffer;
 extern bool g_bCopyToRDRAM;
+extern bool g_bCopyDepthToRDRAM;
 extern bool g_bCopyFromRDRAM;
 extern bool g_bUseFloatDepthTexture;
 
@@ -41,6 +42,7 @@ void FrameBuffer_RemoveBuffer( u32 address );
 void FrameBuffer_AttachDepthBuffer();
 void FrameBuffer_CopyToRDRAM( u32 address, bool bSync );
 void FrameBuffer_CopyFromRDRAM( u32 address, bool bUseAlpha );
+void FrameBuffer_CopyDepthBuffer( u32 address );
 FrameBuffer *FrameBuffer_FindBuffer( u32 address );
 void FrameBuffer_ActivateBufferTexture( s16 t, FrameBuffer *buffer );
 void FrameBuffer_ActivateBufferTextureBG( s16 t, FrameBuffer *buffer );

@@ -18,6 +18,7 @@
 
 bool g_bCopyToRDRAM = false;
 bool g_bCopyFromRDRAM = false;
+bool g_bCopyDepthToRDRAM = false;
 bool g_bUseFloatDepthTexture = true;
 static const GLint depthTextureInternalFormat = g_bUseFloatDepthTexture ? GL_R32F : GL_R16;
 static const GLenum depthTextureType =  g_bUseFloatDepthTexture ? GL_FLOAT : GL_UNSIGNED_INT;
@@ -51,6 +52,29 @@ private:
 	u32 m_curIndex;
 };
 
+class DepthBufferToRDRAM
+{
+public:
+	DepthBufferToRDRAM() :
+	  m_FBO(0), m_pTexture(NULL), m_curIndex(0)
+	{
+		m_aPBO[0] = m_aPBO[1] = 0;
+		m_aAddress[0] = m_aAddress[1] = 0;
+	}
+
+	void Init();
+	void Destroy();
+
+	void CopyToRDRAM( u32 address );
+
+private:
+	GLuint m_FBO;
+	CachedTexture * m_pTexture;
+	GLuint m_aPBO[2];
+	u32 m_aAddress[2];
+	u32 m_curIndex;
+};
+
 class RDRAMtoFrameBuffer
 {
 public:
@@ -76,6 +100,7 @@ private:
 };
 
 FrameBufferToRDRAM g_fbToRDRAM;
+DepthBufferToRDRAM g_dbToRDRAM;
 RDRAMtoFrameBuffer g_RDRAMtoFB;
 
 void FrameBuffer_Init()
@@ -86,6 +111,7 @@ void FrameBuffer_Init()
 	frameBuffer.numBuffers = 0;
 	frameBuffer.drawBuffer = GL_BACK;
 	g_fbToRDRAM.Init();
+	g_dbToRDRAM.Init();
 	g_RDRAMtoFB.Init();
 }
 
@@ -217,6 +243,7 @@ void FrameBuffer_Destroy()
 	while (frameBuffer.bottom)
 		FrameBuffer_RemoveBottom();
 	g_fbToRDRAM.Destroy();
+	g_dbToRDRAM.Destroy();
 	g_RDRAMtoFB.Destroy();
 }
 
@@ -700,6 +727,106 @@ void FrameBufferToRDRAM::CopyToRDRAM( u32 address, bool bSync ) {
 void FrameBuffer_CopyToRDRAM( u32 address, bool bSync )
 {
 	g_fbToRDRAM.CopyToRDRAM(address, bSync);
+}
+
+void DepthBufferToRDRAM::Init()
+{
+	// generate a framebuffer
+	ogl_glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+	ogl_glGenFramebuffers(1, &m_FBO);
+	ogl_glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_FBO);
+
+	m_pTexture = TextureCache_AddTop();
+	m_pTexture->format = G_IM_FMT_IA;
+	m_pTexture->clampS = 1;
+	m_pTexture->clampT = 1;
+	m_pTexture->frameBufferTexture = TRUE;
+	m_pTexture->maskS = 0;
+	m_pTexture->maskT = 0;
+	m_pTexture->mirrorS = 0;
+	m_pTexture->mirrorT = 0;
+	m_pTexture->realWidth = 1024;
+	m_pTexture->realHeight = 512;
+	m_pTexture->textureBytes = m_pTexture->realWidth * m_pTexture->realHeight * 2;
+	cache.cachedBytes += m_pTexture->textureBytes;
+	glBindTexture( GL_TEXTURE_2D, m_pTexture->glName );
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_R16, m_pTexture->realWidth, m_pTexture->realHeight, 0, GL_RED, GL_UNSIGNED_SHORT, NULL);
+	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+	ogl_glFramebufferTexture(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, m_pTexture->glName, 0);
+	// check if everything is OK
+	assert(checkFBO());
+	ogl_glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+
+	// Generate and initialize Pixel Buffer Objects
+	glGenBuffers(2, m_aPBO);
+	glBindBuffer(GL_PIXEL_PACK_BUFFER, m_aPBO[0]);
+	glBufferData(GL_PIXEL_PACK_BUFFER, 640*480*2, NULL, GL_DYNAMIC_DRAW);
+	glBindBuffer(GL_PIXEL_PACK_BUFFER, m_aPBO[1]);
+	glBufferData(GL_PIXEL_PACK_BUFFER, 640*480*2, NULL, GL_DYNAMIC_DRAW);
+	glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
+}
+
+void DepthBufferToRDRAM::Destroy() {
+	ogl_glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+	ogl_glDeleteFramebuffers(1, &m_FBO);
+	TextureCache_Remove( m_pTexture );
+	glDeleteBuffers(2, m_aPBO);
+}
+
+void DepthBufferToRDRAM::CopyToRDRAM( u32 address) {
+	FrameBuffer *current = FrameBuffer_FindBuffer(address);
+	if (current == NULL)
+		return;
+
+	DepthBuffer * pDepthBuffer = current->pDepthBuffer;
+	address = pDepthBuffer->address;
+	ogl_glBindFramebuffer(GL_READ_FRAMEBUFFER, pDepthBuffer->fbo);
+	glReadBuffer(GL_COLOR_ATTACHMENT0);
+	ogl_glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_FBO);
+	GLuint attachment = GL_COLOR_ATTACHMENT0;
+	glDrawBuffers(1, &attachment);
+	ogl_glBlitFramebuffer(
+		0, 0, OGL.width, OGL.height,
+		0, 0, current->width, current->height,
+		GL_COLOR_BUFFER_BIT, GL_LINEAR
+	);
+	ogl_glBindFramebuffer(GL_DRAW_FRAMEBUFFER, frameBuffer.top->fbo);
+
+	m_curIndex = (m_curIndex + 1) % 2;
+	const u32 nextIndex = m_aAddress[m_curIndex] == 0 ? m_curIndex : (m_curIndex + 1) % 2;
+	m_aAddress[m_curIndex] = address;
+	glBindBuffer(GL_PIXEL_PACK_BUFFER, m_aPBO[m_curIndex]);
+	ogl_glBindFramebuffer(GL_READ_FRAMEBUFFER, m_FBO);
+	glReadBuffer(GL_COLOR_ATTACHMENT0);
+	glReadPixels( 0, 0, VI.width, VI.height, GL_RED, GL_UNSIGNED_SHORT, 0 );
+
+	glBindBuffer(GL_PIXEL_PACK_BUFFER, m_aPBO[nextIndex]);
+	GLubyte* pixelData = (GLubyte*)glMapBuffer(GL_PIXEL_PACK_BUFFER, GL_READ_ONLY);
+	if(pixelData == NULL) {
+		glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
+		return;
+	}
+
+	u16 * ptr_src = (u16*)pixelData;
+	u16 *ptr_dst = (u16*)(RDRAM + m_aAddress[nextIndex]);
+	u16 col;
+
+	for (u32 y = 0; y < VI.height; ++y) {
+		for (u32 x = 0; x < VI.width; ++x) {
+				col = ptr_src[x + (VI.height - y - 1)*VI.width];
+				ptr_dst[(x + y*VI.width)^1] = col;
+		}
+	}
+
+	glUnmapBuffer(GL_PIXEL_PACK_BUFFER);
+	glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
+}
+
+void FrameBuffer_CopyDepthBuffer( u32 address ) {
+	g_dbToRDRAM.CopyToRDRAM(address);
 }
 
 void RDRAMtoFrameBuffer::Init()
