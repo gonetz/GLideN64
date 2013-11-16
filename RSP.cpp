@@ -281,6 +281,8 @@ void RSP_ProcessDList()
 		GBI.cmd[RSP.cmd]( w0, w1 );
 	}
 
+	if (g_bCopyToRDRAM)
+		FrameBuffer_CopyToRDRAM( gDP.colorImage.address, false );
 	if (g_bCopyDepthToRDRAM)
 		FrameBuffer_CopyDepthBuffer( gDP.colorImage.address );
 
