@@ -599,11 +599,11 @@ void GLSLCombiner::UpdateDepthInfo() {
 	if (nDepthEnabled == 0)
 		return;
 
-	int  depth_compare_location = glGetUniformLocation(m_program, "depthCompareEnabled");
+	const int  depth_compare_location = glGetUniformLocation(m_program, "depthCompareEnabled");
 	glUniform1i(depth_compare_location, gDP.otherMode.depthCompare);
-	int  depth_update_location = glGetUniformLocation(m_program, "depthUpdateEnabled");
+	const int  depth_update_location = glGetUniformLocation(m_program, "depthUpdateEnabled");
 	glUniform1i(depth_update_location, gDP.otherMode.depthUpdate);
-	int  depth_polygon_offset = glGetUniformLocation(m_program, "depthPolygonOffset");
+	const int  depth_polygon_offset = glGetUniformLocation(m_program, "depthPolygonOffset");
 	if (g_bUseFloatDepthTexture) {
 		float fPlygonOffset = gDP.otherMode.depthMode == ZMODE_DEC ? 0.005f : 0.0f;
 		glUniform1f(depth_polygon_offset, fPlygonOffset);
@@ -611,6 +611,10 @@ void GLSLCombiner::UpdateDepthInfo() {
 		int iPlygonOffset = gDP.otherMode.depthMode == ZMODE_DEC ? 5 : 0;
 		glUniform1i(depth_polygon_offset, iPlygonOffset);
 	}
+	const int  depth_scale_location = glGetUniformLocation(m_program, "depthScale");
+	glUniform1f(depth_scale_location, gSP.viewport.vscale[2]*32768);
+	const int  depth_trans_location = glGetUniformLocation(m_program, "depthTrans");
+	glUniform1f(depth_trans_location, gSP.viewport.vtrans[2]*32768);
 
 	GLuint texture = frameBuffer.top->pDepthBuffer->depth_texture->glName;
 	glBindImageTexture(ZlutImageUnit, g_zlut_tex, 0, GL_FALSE, 0, GL_READ_ONLY, GL_R16UI);

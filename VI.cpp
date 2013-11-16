@@ -69,10 +69,6 @@ void VI_UpdateScreen()
 				VI_UpdateSize();
 				FrameBuffer_CopyFromRDRAM( *REG.VI_ORIGIN, g_bCopyFromRDRAM && !bCFB );
 			}
-			if (g_bCopyToRDRAM && !bCFB)
-				FrameBuffer_CopyToRDRAM( *REG.VI_ORIGIN, false );
-			if (g_bCopyDepthToRDRAM && !bCFB)
-				FrameBuffer_CopyDepthBuffer( *REG.VI_ORIGIN );
 			FrameBuffer_RenderBuffer( *REG.VI_ORIGIN );
 
 			gDP.colorImage.changed = FALSE;
