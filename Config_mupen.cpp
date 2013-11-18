@@ -93,7 +93,7 @@ void Config_LoadConfig()
 	Config_SetDefault();
 
 	// read configuration
-	const char *filename = ConfigGetSharedDataFilepath("glN64.conf");
+	const char *filename = ConfigGetSharedDataFilepath("GLideN64.conf");
 	f = fopen(filename, "r");
 	if (!f) {
 		fprintf( stderr, "[GLideN64]: (WW) Couldn't open config file '%s' for reading: %s\n", filename, strerror( errno ) );
