@@ -350,6 +350,8 @@ void TextureCache_RemoveBottom()
 
 void TextureCache_Remove( CachedTexture *texture )
 {
+	if (texture == NULL)
+		return;
 	if ((texture == cache.bottom) &&
 		(texture == cache.top))
 	{

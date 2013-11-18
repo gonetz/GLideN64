@@ -242,6 +242,7 @@ void FrameBuffer_Destroy()
 {
 	while (frameBuffer.bottom)
 		FrameBuffer_RemoveBottom();
+	frameBuffer.top = frameBuffer.bottom = frameBuffer.current = NULL;
 	g_fbToRDRAM.Destroy();
 	g_dbToRDRAM.Destroy();
 	g_RDRAMtoFB.Destroy();
@@ -659,8 +660,11 @@ void FrameBufferToRDRAM::Init()
 void FrameBufferToRDRAM::Destroy() {
 	ogl_glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 	ogl_glDeleteFramebuffers(1, &m_FBO);
+	m_FBO = 0;
 	TextureCache_Remove( m_pTexture );
+	m_pTexture = NULL;
 	glDeleteBuffers(2, m_aPBO);
+	m_aPBO[0] = m_aPBO[1] = 0;
 }
 
 void FrameBufferToRDRAM::CopyToRDRAM( u32 address, bool bSync ) {
@@ -772,8 +776,11 @@ void DepthBufferToRDRAM::Init()
 void DepthBufferToRDRAM::Destroy() {
 	ogl_glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 	ogl_glDeleteFramebuffers(1, &m_FBO);
+	m_FBO = 0;
 	TextureCache_Remove( m_pTexture );
+	m_pTexture = NULL;
 	glDeleteBuffers(2, m_aPBO);
+	m_aPBO[0] = m_aPBO[1] = 0;
 }
 
 void DepthBufferToRDRAM::CopyToRDRAM( u32 address) {
@@ -857,7 +864,9 @@ void RDRAMtoFrameBuffer::Init()
 void RDRAMtoFrameBuffer::Destroy()
 {
 	TextureCache_Remove( m_pTexture );
+	m_pTexture = NULL;
 	glDeleteBuffers(1, &m_PBO);
+	m_PBO = 0;
 }
 
 void RDRAMtoFrameBuffer::CopyFromRDRAM( u32 _address, bool _bUseAlpha)
