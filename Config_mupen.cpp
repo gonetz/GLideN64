@@ -93,14 +93,24 @@ void Config_LoadConfig()
 	Config_SetDefault();
 
 	// read configuration
-	const char *filename = ConfigGetSharedDataFilepath("GLideN64.conf");
-	f = fopen(filename, "r");
+	const char * pConfigName = "GLideN64.cfg";
+	const char * pConfigPath = ConfigGetUserConfigPath();
+	const size_t nPathLen = strlen(pConfigPath);
+	const size_t configNameLen = nPathLen + strlen(pConfigName) + 2;
+	char * pConfigFullName = new char[configNameLen];
+	strcpy(pConfigFullName, pConfigPath);
+	if (pConfigPath[nPathLen-1] != '/')
+		strcat(pConfigFullName, "/");
+	strcat(pConfigFullName, pConfigName);
+	f = fopen(pConfigFullName, "r");
 	if (!f) {
-		fprintf( stderr, "[GLideN64]: (WW) Couldn't open config file '%s' for reading: %s\n", filename, strerror( errno ) );
+		fprintf( stderr, "[GLideN64]: (WW) Couldn't open config file '%s' for reading: %s\n", pConfigFullName, strerror( errno ) );
 		fprintf( stderr, "[GLideN64]: Attempting to write new Config \n");
-		Config_WriteConfig(filename);
+		Config_WriteConfig(pConfigFullName);
+		delete[] pConfigFullName;
 		return;
 	}
+	delete[] pConfigFullName;
 
 	while (!feof( f )) {
 		char *val;

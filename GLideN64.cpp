@@ -144,6 +144,7 @@ EXPORT void CALL ReadScreen (void **dest, long *width, long *height)
 #include "m64p_plugin.h"
 
 ptr_ConfigGetSharedDataFilepath ConfigGetSharedDataFilepath = NULL;
+ptr_ConfigGetUserConfigPath ConfigGetUserConfigPath = NULL;
 
 void (*CheckInterrupts)( void );
 void (*renderCallback)() = NULL;
@@ -153,6 +154,7 @@ extern "C" {
 EXPORT m64p_error CALL PluginStartup(m64p_dynlib_handle CoreLibHandle, void *Context, void (*DebugCallback)(void *, int, const char *))
 {
 	ConfigGetSharedDataFilepath = (ptr_ConfigGetSharedDataFilepath)	dlsym(CoreLibHandle, "ConfigGetSharedDataFilepath");
+	ConfigGetUserConfigPath = (ptr_ConfigGetUserConfigPath)	dlsym(CoreLibHandle, "ConfigGetUserConfigPath");
 	return M64ERR_SUCCESS;
 }
 
