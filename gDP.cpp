@@ -512,7 +512,7 @@ bool CheckForFrameBufferTexture(u32 _address, u32 _bytes)
 			bRes = false;
 		}
 
-		if (bRes && gDP.textureImage.width != pBuffer->width && gDP.textureImage.size != pBuffer->size) {
+		if (bRes && gDP.loadTile->loadType == LOADTYPE_TILE && gDP.textureImage.width != pBuffer->width && gDP.textureImage.size != pBuffer->size) {
 			//FrameBuffer_RemoveBuffer(pBuffer->startAddress); // Does not work with Zelda MM
 			bRes = false;
 		}
