@@ -33,6 +33,7 @@ extern bool g_bCopyToRDRAM;
 extern bool g_bCopyDepthToRDRAM;
 extern bool g_bCopyFromRDRAM;
 extern bool g_bUseFloatDepthTexture;
+extern bool g_bIgnoreCFB;
 
 void FrameBuffer_Init();
 void FrameBuffer_Destroy();

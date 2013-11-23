@@ -53,7 +53,7 @@ void VI_UpdateScreen()
 		VI.vStart = VI.vEnd = 0;
 
 	if (OGL.frameBufferTextures) {
-		const bool bCFB = (gSP.changed&CHANGED_CPU_FB_WRITE) == CHANGED_CPU_FB_WRITE;
+		const bool bCFB = !g_bIgnoreCFB && (gSP.changed&CHANGED_CPU_FB_WRITE) == CHANGED_CPU_FB_WRITE;
 		const bool bNeedUpdate = bCFB ? true : (*REG.VI_ORIGIN != VI.lastOrigin);// && gDP.colorImage.changed;
 
 		if (bNeedUpdate) {

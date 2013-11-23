@@ -18,8 +18,9 @@
 
 bool g_bCopyToRDRAM = false;
 bool g_bCopyFromRDRAM = false;
-bool g_bCopyDepthToRDRAM = true;
+bool g_bCopyDepthToRDRAM = false;
 bool g_bUseFloatDepthTexture = true;
+bool g_bIgnoreCFB = true;
 static const GLint depthTextureInternalFormat = g_bUseFloatDepthTexture ? GL_R32F : GL_R16;
 static const GLenum depthTextureType =  g_bUseFloatDepthTexture ? GL_FLOAT : GL_UNSIGNED_INT;
 
