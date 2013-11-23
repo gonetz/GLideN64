@@ -786,7 +786,7 @@ void DepthBufferToRDRAM::Destroy() {
 
 void DepthBufferToRDRAM::CopyToRDRAM( u32 address) {
 	FrameBuffer *current = FrameBuffer_FindBuffer(address);
-	if (current == NULL)
+	if (current == NULL || current->pDepthBuffer == NULL)
 		return;
 
 	DepthBuffer * pDepthBuffer = current->pDepthBuffer;
