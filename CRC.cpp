@@ -1,16 +1,12 @@
-#ifndef __LINUX__
-# include <windows.h>
-#else
-# include "winlnxdefs.h"
-#endif // __LINUX__
+#include "Types.h"
 
 #define CRC32_POLYNOMIAL     0x04C11DB7
 
-unsigned long CRCTable[ 256 ];
+unsigned int CRCTable[ 256 ];
 
-DWORD Reflect( DWORD ref, char ch )
+u32 Reflect( u32 ref, char ch )
 {
-     DWORD value = 0;
+     u32 value = 0;
 
      // Swap bit 0 for bit 7
      // bit 1 for bit 6, etc.
@@ -25,10 +21,10 @@ DWORD Reflect( DWORD ref, char ch )
 
 void CRC_BuildTable()
 {
-    DWORD crc;
+    u32 crc;
 
-    for (int i = 0; i <= 255; i++)
-	{
+    for (int i = 0; i < 256; i++)
+    {
         crc = Reflect( i, 8 ) << 24;
         for (int j = 0; j < 8; j++)
 			crc = (crc << 1) ^ (crc & (1 << 31) ? CRC32_POLYNOMIAL : 0);
@@ -37,24 +33,24 @@ void CRC_BuildTable()
     }
 }
 
-DWORD CRC_Calculate( DWORD crc, void *buffer, DWORD count )
+u32 CRC_Calculate( u32 crc, void *buffer, u32 count )
 {
-    BYTE *p;
-	DWORD orig = crc;
+    u8 *p;
+    u32 orig = crc;
 
-    p = (BYTE*) buffer;
+    p = (u8*) buffer;
     while (count--)
 		crc = (crc >> 8) ^ CRCTable[(crc & 0xFF) ^ *p++];
 
     return crc ^ orig;
 }
 
-DWORD CRC_CalculatePalette( DWORD crc, void *buffer, DWORD count )
+u32 CRC_CalculatePalette( u32 crc, void *buffer, u32 count )
 {
-    BYTE *p;
-	DWORD orig = crc;
+    u8 *p;
+    u32 orig = crc;
 
-    p = (BYTE*) buffer;
+    p = (u8*) buffer;
     while (count--)
 	{
 		crc = (crc >> 8) ^ CRCTable[(crc & 0xFF) ^ *p++];

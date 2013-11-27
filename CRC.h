@@ -1,10 +1,6 @@
-#ifndef __LINUX__
-# include <windows.h>
-#else
-# include "winlnxdefs.h"
-#endif // __LINUX__
+#include "Types.h"
 
 void CRC_BuildTable();
 
-DWORD CRC_Calculate( DWORD crc, void *buffer, DWORD count );
-DWORD CRC_CalculatePalette( DWORD crc, void *buffer, DWORD count );
+u32 CRC_Calculate( u32 crc, void *buffer, u32 count );
+u32 CRC_CalculatePalette( u32 crc, void *buffer, u32 count );
