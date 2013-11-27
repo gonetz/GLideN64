@@ -15,6 +15,7 @@
 #include "GLSLCombiner.h"
 #include "Shaders.h"
 #include "Noise_shader.h"
+#include "FrameBuffer.h"
 #include "DepthBuffer.h"
 
 static GLuint  g_vertex_shader_object;

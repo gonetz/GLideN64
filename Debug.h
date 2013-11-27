@@ -1,11 +1,7 @@
 #if !defined( DEBUG_H ) && defined( _DEBUG )
 #define DEBUG_H
 
-#ifndef __LINUX__
-# include <windows.h>
-#else
-# include "winlnxdefs.h"
-#endif
+#include "Types.h"
 #include <stdio.h>
 
 #define		DEBUG_LOW		0x1000
@@ -26,11 +22,11 @@
 
 struct DebugInfo
 {
-	WORD show, level;
-	BOOL detail, paused, step;
+	u16 show, level;
+	u8 detail, paused, step;
 	struct
 	{
-		DWORD pci, pc, cmd, w0, w1;
+		u32 pci, pc, cmd, w0, w1;
 	} rsp;
 };
 
@@ -38,8 +34,8 @@ extern DebugInfo Debug;
 
 void OpenDebugDlg();
 void CloseDebugDlg();
-void DebugRSPState( DWORD pci, DWORD pc, DWORD cmd, DWORD w0, DWORD w1 );
-void DebugMsg( WORD type, LPCSTR format, ... );
+void DebugRSPState( u32 pci, u32 pc, u32 cmd, u32 w0, u32 w1 );
+void DebugMsg( u16 type, const char * format, ... );
 void StartDump( char *filename );
 void EndDump();
 

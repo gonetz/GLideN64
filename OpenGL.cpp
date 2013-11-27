@@ -9,6 +9,7 @@
 #include "gDP.h"
 #include "Textures.h"
 #include "Combiner.h"
+#include "FrameBuffer.h"
 #include "VI.h"
 
 GLInfo OGL;

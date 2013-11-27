@@ -1,6 +1,7 @@
 #include <assert.h>
 #include <stdio.h>
 #include "convert.h"
+#include "N64.h"
 #include "GLideN64.h"
 #include "GBI.h"
 #include "RDP.h"

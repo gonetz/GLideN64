@@ -2,7 +2,6 @@
 #define GDP_H
 
 #include "Types.h"
-#include "FrameBuffer.h"
 
 #define CHANGED_RENDERMODE		0x001
 #define CHANGED_CYCLETYPE		0x002
@@ -59,6 +58,7 @@ struct gDPCombine
 	};
 };
 
+struct FrameBuffer;
 struct gDPTile
 {
 	u32 format, size, line, tmem, palette;

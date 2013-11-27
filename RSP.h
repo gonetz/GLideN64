@@ -1,16 +1,6 @@
 #ifndef RSP_H
 #define RSP_H
 
-#ifndef __LINUX__
-#include <windows.h>
-#else
-#include "winlnxdefs.h"
-#include <SDL/SDL.h>
-#include  <SDL/SDL_thread.h>
-#endif
-#include "N64.h"
-#include "GBI.h"
-#include "gSP.h"
 #include "Types.h"
 
 typedef struct

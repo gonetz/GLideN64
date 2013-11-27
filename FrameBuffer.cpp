@@ -7,6 +7,7 @@
 #include "OpenGL.h"
 #include "FrameBuffer.h"
 #include "DepthBuffer.h"
+#include "N64.h"
 #include "RSP.h"
 #include "RDP.h"
 #include "gDP.h"

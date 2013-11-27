@@ -238,7 +238,7 @@ void EndDump()
 	fclose( dumpFile );
 }
 
-void DebugRSPState( DWORD pci, DWORD pc, DWORD cmd, DWORD w0, DWORD w1 )
+void DebugRSPState( u32 pci, u32 pc, u32 cmd, u32 w0, u32 w1 )
 {
 	Debug.rsp.pci = pci;
 	Debug.rsp.pc = pc;
@@ -247,7 +247,7 @@ void DebugRSPState( DWORD pci, DWORD pc, DWORD cmd, DWORD w0, DWORD w1 )
 	Debug.rsp.w1 = w1;
 }
 
-void DebugMsg( WORD type, LPCSTR format, ... )
+void DebugMsg( u16 type, const char * format, ... )
 {
 	char text[256];
 

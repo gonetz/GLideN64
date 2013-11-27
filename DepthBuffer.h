@@ -2,6 +2,7 @@
 #define DEPTHBUFFER_H
 
 #include "Types.h"
+#include "Textures.h"
 
 struct DepthBuffer
 {

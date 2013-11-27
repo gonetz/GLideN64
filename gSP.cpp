@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <math.h>
+#include "N64.h"
 #include "GLideN64.h"
 #include "Debug.h"
 #include "Types.h"
@@ -14,6 +15,7 @@
 #include "convert.h"
 #include "S2DEX.h"
 #include "VI.h"
+#include "FrameBuffer.h"
 #include "DepthBuffer.h"
 #ifndef __LINUX__
 # include "Resource.h"

@@ -2,7 +2,6 @@
 #include "RSP.h"
 #include "GBI.h"
 #include "gDP.h"
-#include "Types.h"
 #include "Debug.h"
 
 void RDP_Unknown( u32 w0, u32 w1 )
