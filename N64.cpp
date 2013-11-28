@@ -1,10 +1,4 @@
-#ifndef __LINUX__
-# include <windows.h>
-#else
-# include "winlnxdefs.h"
-#endif // __LINUX__
 #include "N64.h"
-#include "Types.h"
 
 u8 *DMEM;
 u8 *IMEM;
