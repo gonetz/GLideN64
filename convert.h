@@ -169,22 +169,22 @@ Done:
 	}
 # else // WIN32
 	// copy leading bytes
-	int leadingBytes = ((int)src) & 3;
+	int leadingBytes = ((long)src) & 3;
 	if (leadingBytes != 0)
 	{
 		leadingBytes = 4-leadingBytes;
-		if (leadingBytes > numBytes)
+		if ((unsigned int)leadingBytes > numBytes)
 			leadingBytes = numBytes;
 		numBytes -= leadingBytes;
 
-		src = (void *)((int)src ^ 3);
+		src = (void *)((long)src ^ 3);
 		for (int i = 0; i < leadingBytes; i++)
 		{
 			*(u8 *)(dest) = *(u8 *)(src);
-			dest = (void *)((int)dest+1);
-			src  = (void *)((int)src -1);
+			dest = (void *)((long)dest+1);
+			src  = (void *)((long)src -1);
 		}
-		src = (void *)((int)src+5);
+		src = (void *)((long)src+5);
 	}
 
 	// copy dwords
@@ -192,22 +192,26 @@ Done:
 	while (numDWords--)
 	{
 		u32 dword = *(u32 *)src;
-		__asm__ volatile( "bswapl %0\n\t" : "=q"(dword) : "0"(dword) );
+#ifdef ARM_ASM
+		asm("rev %0, %0" : "+r"(dword)::);
+#else
+		dword = ((dword<<24)|((dword<<8)&0x00FF0000)|((dword>>8)&0x0000FF00)|(dword>>24));
+#endif
 		*(u32 *)dest = dword;
-		dest = (void *)((int)dest+4);
-		src  = (void *)((int)src +4);
+		dest = (void *)((long)dest+4);
+		src  = (void *)((long)src +4);
 	}
 
 	// copy trailing bytes
 	int trailingBytes = numBytes & 3;
 	if (trailingBytes)
 	{
-		src = (void *)((int)src ^ 3);
+		src = (void *)((long)src ^ 3);
 		for (int i = 0; i < trailingBytes; i++)
 		{
 			*(u8 *)(dest) = *(u8 *)(src);
-			dest = (void *)((int)dest+1);
-			src  = (void *)((int)src -1);
+			dest = (void *)((long)dest+1);
+			src  = (void *)((long)src -1);
 		}
 	}
 #endif // WIN32
@@ -231,15 +235,13 @@ DWordInterleaveLoop:
 		loop	DWordInterleaveLoop
 	}
 #else // WIN32
-	// ok
 	int tmp;
 	while( numDWords-- )
 	{
-		tmp = *(int *)((int)mem + 0);
-		*(int *)((int)mem + 0) = *(int *)((int)mem + 4);
-		*(int *)((int)mem + 4) = tmp;
-
-		mem = (void *)((int)mem + 8);
+		tmp = *(int *)((long)mem + 0);
+		*(int *)((long)mem + 0) = *(int *)((long)mem + 4);
+		*(int *)((long)mem + 4) = tmp;
+		mem = (void *)((long)mem + 8);
 	}
 #endif // WIN32
 }
@@ -271,19 +273,17 @@ QWordInterleaveLoop:
 		loop	QWordInterleaveLoop
 	}
 #else // WIN32
-	int tmp;
 	numDWords >>= 1; // qwords
 	while( numDWords-- )
 	{
-		tmp = *(int *)((int)mem + 0);
-		*(int *)((int)mem + 0) = *(int *)((int)mem + 8);
-		*(int *)((int)mem + 8) = tmp;
-
-		tmp = *(int *)((int)mem + 4);
-		*(int *)((int)mem + 4) = *(int *)((int)mem + 12);
-		*(int *)((int)mem + 12) = tmp;
-
-		mem = (void *)((int)mem + 16);
+		int tmp0, tmp1;
+		tmp0 = *(int *)((long)mem + 0);
+		tmp1 = *(int *)((long)mem + 4);
+		*(int *)((long)mem + 0) = *(int *)((long)mem + 8);
+		*(int *)((long)mem + 8) = tmp0;
+		*(int *)((long)mem + 4) = *(int *)((long)mem + 12);
+		*(int *)((long)mem + 12) = tmp1;
+		mem = (void *)((long)mem + 16);
 	}
 #endif // WIN32
 }
@@ -298,10 +298,15 @@ inline u32 swapdword( u32 value )
 		bswap	eax
 	}
 #else // WIN32
+#ifdef ARM_ASM
+	asm("rev %0, %0" : "+r"(value)::);
+	return value;
+#else
 	return ((value & 0xff000000) >> 24) |
-	       ((value & 0x00ff0000) >>  8) |
-	       ((value & 0x0000ff00) <<  8) |
-		   ((value & 0x000000ff) << 24);
+			((value & 0x00ff0000) >>  8) |
+			((value & 0x0000ff00) <<  8) |
+			((value & 0x000000ff) << 24);
+#endif // ARM_ASM
 #endif // WIN32
 }
 
@@ -314,7 +319,12 @@ inline u16 swapword( u16 value )
 		xchg	ah, al
 	}
 #else // WIN32
+#ifdef ARM_ASM
+	asm("rev16 %0, %0" : "+r"(value)::);
+	return value;
+#else
 	return (value << 8) | (value >> 8);
+#endif // ARM_ASM
 #endif // WIN32
 }
 
