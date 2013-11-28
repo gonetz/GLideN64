@@ -20,12 +20,14 @@
 #include "F3DWRUS.h"
 #include "F3DPD.h"
 #include "Types.h"
-#ifndef __LINUX__
+#ifndef MUPENPLUSAPI
+#ifdef _WINDOWS
 # include "Resource.h"
-#else // !__LINUX__
+#else // _WINDOWS
 #include <glib.h>
 #include <gtk/gtk.h>
-#endif // __LINUX__
+#endif // _WINDOWS
+#endif // MUPENPLUSAPI
 #include "CRC.h"
 #include "Debug.h"
 
@@ -109,7 +111,7 @@ void GBI_Unknown( u32 w0, u32 w1 )
 }
 
 #ifndef MUPENPLUSAPI
-#ifndef __LINUX__
+#ifdef _WINDOWS
 INT_PTR CALLBACK MicrocodeDlgProc( HWND hWndDlg, UINT uMsg, WPARAM wParam, LPARAM lParam )
 {
 	switch (uMsg)
@@ -142,7 +144,7 @@ INT_PTR CALLBACK MicrocodeDlgProc( HWND hWndDlg, UINT uMsg, WPARAM wParam, LPARA
 
 	return FALSE;
 }
-#else // !__LINUX__
+#else // _WINDOWS
 static int selectedMicrocode = -1;
 static GtkWidget *microcodeWindow = 0;
 static GtkWidget *microcodeList = 0;
@@ -277,7 +279,7 @@ static int MicrocodeDialog()
 	gdk_threads_leave();
 	return selectedMicrocode;
 }
-#endif // __LINUX__
+#endif // _WINDOWS
 #endif // MUPENPLUSAPI
 
 MicrocodeInfo *GBI_AddMicrocode()
@@ -439,12 +441,12 @@ MicrocodeInfo *GBI_DetectMicrocode( u32 uc_start, u32 uc_dstart, u16 uc_dsize )
 
 #ifndef MUPENPLUSAPI
 	// Let the user choose the microcode
-#ifndef __LINUX__
+#ifdef _WINDOWS
 	current->type = (u32)DialogBox( hInstance, MAKEINTRESOURCE( IDD_MICROCODEDLG ), hWnd, MicrocodeDlgProc );
-#else // !__LINUX__
+#else // _WINDOWS
 	printf( "glN64: Warning - unknown ucode!!!\n" );
 	current->type = MicrocodeDialog();
-#endif // __LINUX__
+#endif // _WINDOWS
 #else // MUPENPLUSAPI
 	assert(false && "Unknown microcode!");
 #endif // MUPENPLUSAPI
