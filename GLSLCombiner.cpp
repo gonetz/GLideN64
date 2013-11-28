@@ -1,14 +1,5 @@
-#ifndef __LINUX__
-# include <windows.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <iostream>
-#include <fstream>
-#else
-# include "winlnxdefs.h"
-# include <stdlib.h> // malloc()
-#endif
 #include <assert.h>
+#include <stdio.h>
 #include "N64.h"
 #include "OpenGL.h"
 #include "Combiner.h"
