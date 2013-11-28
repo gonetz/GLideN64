@@ -5,15 +5,13 @@ extern char	pluginName[];
 
 #ifndef MUPENPLUSAPI
 
-#ifndef __LINUX__
+#ifdef _WINDOWS
 #include <windows.h>
 extern HWND			hWnd;
 extern HWND			hStatusBar;
 //HWND		hFullscreen;
 extern HWND			hToolBar;
 extern HINSTANCE	hInstance;
-#else
-# include "winlnxdefs.h"
 #endif
 
 //#define DEBUG

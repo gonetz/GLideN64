@@ -1,5 +1,7 @@
 #include <assert.h>
+#include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 #include "convert.h"
 #include "N64.h"
 #include "GLideN64.h"

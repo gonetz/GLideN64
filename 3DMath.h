@@ -1,5 +1,6 @@
 #ifndef _3DMATH_H
 #define _3DMATH_H
+#include <memory.h>
 
 #undef X86_ASM
 
