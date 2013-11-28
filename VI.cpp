@@ -86,11 +86,7 @@ void VI_UpdateScreen()
 	}
 	else {
 		if (gSP.changed & CHANGED_COLORBUFFER) {
-#ifndef __LINUX__
-			SwapBuffers( OGL.hDC );
-#else
 			OGL_SwapBuffers();
-#endif
 			gSP.changed &= ~CHANGED_COLORBUFFER;
 #ifdef DEBUG
 			while (Debug.paused && !Debug.step);

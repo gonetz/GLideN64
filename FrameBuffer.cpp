@@ -460,11 +460,7 @@ void FrameBuffer_RenderBuffer( u32 address )
 	}
 	ogl_glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
 	ogl_glBindFramebuffer(GL_DRAW_FRAMEBUFFER, frameBuffer.top->fbo);
-#ifndef __LINUX__
-			SwapBuffers( OGL.hDC );
-#else
-			OGL_SwapBuffers();
-#endif
+	OGL_SwapBuffers();
 }
 #else
 

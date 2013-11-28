@@ -310,11 +310,7 @@ void OGL_InitStates()
 											((i > (rand() >> 10)) << 0);
 	}
 
-#ifndef __LINUX__
-	SwapBuffers( wglGetCurrentDC() );
-#else
 	OGL_SwapBuffers();
-#endif
 }
 
 void OGL_UpdateScale()
@@ -1154,10 +1150,14 @@ void OGL_ReadScreen( void **dest, long *width, long *height )
 	glReadPixels( 0, OGL.heightOffset, OGL.width, OGL.height, GL_BGR_EXT, GL_UNSIGNED_BYTE, *dest );
 }
 
-#ifdef __LINUX__
-void
-OGL_SwapBuffers()
+void OGL_SwapBuffers()
 {
+#ifdef _WINDOWS
+	if (OGL.hDC == NULL)
+		SwapBuffers( wglGetCurrentDC() );
+	else
+		SwapBuffers( OGL.hDC );
+#else
 	static int frames[5] = { 0, 0, 0, 0, 0 };
 	static int framesIndex = 0;
 	static Uint32 lastTicks = 0;
@@ -1179,9 +1179,8 @@ OGL_SwapBuffers()
 	}
 
 	SDL_GL_SwapBuffers();
+#endif // _WINDOWS
 }
-
-#endif // __LINUX__
 
 void ogl_glGenFramebuffers (GLsizei n, GLuint *framebuffers) {
 	switch (OGL.framebuffer_mode) {

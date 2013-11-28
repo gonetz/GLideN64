@@ -719,7 +719,7 @@ void GLSL_RenderDepth() {
 			v1 = 1.0;
 
 			ogl_glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-#ifndef __LINUX__
+#ifdef _WINDOWS
 			glDrawBuffer( GL_FRONT );
 #else
 			glDrawBuffer( GL_BACK );
@@ -737,7 +737,7 @@ void GLSL_RenderDepth() {
  				glTexCoord2f( u1, 0.0f );
 				glVertex2f( (GLfloat)OGL.width, 0.0f );
 			glEnd();
-#ifndef __LINUX__
+#ifdef _WINDOWS
 			glDrawBuffer( GL_BACK );
 #else
 			OGL_SwapBuffers();
