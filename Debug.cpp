@@ -1,4 +1,4 @@
-#if defined(_DEBUG) && !defined(__LINUX__)
+#if defined(_DEBUG) && defined(_WINDOWS)
 
 #include <windows.h>
 #include <stdio.h>
