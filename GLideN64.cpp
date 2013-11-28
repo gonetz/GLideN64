@@ -197,6 +197,46 @@ EXPORT void CALL ResizeVideoOutput(int Width, int Height)
 {
 }
 
+EXPORT void CALL SetFrameSkipping(bool autoSkip, int maxSkips)
+{
+}
+
+EXPORT void CALL SetStretchVideo(bool stretch)
+{
+}
+
+EXPORT void CALL StartGL()
+{
+	OGL_Start();
+}
+
+EXPORT void CALL StopGL()
+{
+	OGL_Stop();
+}
+
+EXPORT void CALL ResizeGL(int width, int height)
+{
+/*
+	int videoWidth = width;
+	int videoHeight = height;
+
+	if (!config.stretchVideo) {
+		const float ratio = (config.romPAL ? 9.0f/11.0f : 0.75f);
+		videoWidth = (int) (height / ratio);
+		if (videoWidth > width) {
+			videoWidth = width;
+			videoHeight = (int) (width * ratio);
+		}
+	}
+
+	int x = (width - videoWidth) / 2;
+	int y = (height - videoHeight) / 2;
+
+	OGL_ResizeWindow(x, y, videoWidth, videoHeight);
+*/
+}
+
 } // extern "C"
 #endif // MUPENPLUSAPI
 
