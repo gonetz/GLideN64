@@ -1,8 +1,3 @@
-#ifndef __LINUX__
-# include <windows.h>
-#else
-# include "winlnxdefs.h"
-#endif // __LINUX__
 #include <assert.h>
 #include "OpenGL.h"
 #include "FrameBuffer.h"
