@@ -1,21 +1,10 @@
-#ifndef __LINUX__
-# include <windows.h>
-#else
-# include "winlnxdefs.h"
-#endif
-#include <math.h>
-#include "GLideN64.h"
-#include "OpenGL.h"
 #include "Debug.h"
 #include "RSP.h"
 #include "RDP.h"
 #include "N64.h"
 #include "F3D.h"
-#include "3DMath.h"
 #include "VI.h"
 #include "Combiner.h"
-//#include "textures.h"
-//#include "Config.h"
 #include "FrameBuffer.h"
 #include "DepthBuffer.h"
 #include "GBI.h"
