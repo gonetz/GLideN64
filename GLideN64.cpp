@@ -1,11 +1,10 @@
-#ifndef __LINUX__
+#ifdef _WINDOWS
 # include <windows.h>
 # include <commctrl.h>
-# include <process.h>
 #else
 # include "winlnxdefs.h"
 #include <dlfcn.h>
-#endif
+#endif // _WINDOWS
 #include <GL/gl.h>
 #include <GL/glu.h>
 #include "GLideN64.h"
@@ -24,19 +23,19 @@ char pluginName[] = "GLideN64 alpha";
 #ifndef MUPENPLUSAPI
 #include "ZilmarGFX_1_3.h"
 
-#ifndef __LINUX__
+#ifdef _WINDOWS
 HWND		hWnd;
 HWND		hStatusBar;
 //HWND		hFullscreen;
 HWND		hToolBar;
 HINSTANCE	hInstance;
-#endif // !__LINUX__
+#endif // _WINDOWS
 
 char		*screenDirectory;
 
 void (*CheckInterrupts)( void );
 
-#ifndef __LINUX__
+#ifdef _WINDOWS
 LONG		windowedStyle;
 LONG		windowedExStyle;
 RECT		windowedRect;
@@ -62,7 +61,7 @@ _init( void )
 	Config_LoadConfig();
 	OGL.hScreen = NULL;
 }
-#endif // !__LINUX__
+#endif // _WINDOWS
 
 EXPORT void CALL CaptureScreen ( char * Directory )
 {
@@ -76,10 +75,10 @@ EXPORT void CALL CloseDLL (void)
 
 EXPORT void CALL DllAbout ( HWND hParent )
 {
-#ifndef __LINUX__
-	MessageBox( hParent, "glN64 v0.4 by Orkin\n\nWebsite: http://gln64.emulation64.com/\n\nThanks to Clements, Rice, Gonetz, Malcolm, Dave2001, cryhlove, icepir8, zilmar, Azimer, and StrmnNrmn", pluginName, MB_OK | MB_ICONINFORMATION );
+#ifdef _WINDOWS
+	MessageBox( hParent, "GLideN64 alpha. Based on Orkin's glN64 v0.4", pluginName, MB_OK | MB_ICONINFORMATION );
 #else
-	puts( "glN64 v0.4 by Orkin\nWebsite: http://gln64.emulation64.com/\n\nThanks to Clements, Rice, Gonetz, Malcolm, Dave2001, cryhlove, icepir8, zilmar, Azimer, and StrmnNrmn\nported by blight" );
+	puts( "GLideN64 alpha. Based on Orkin's glN64 v0.4" );
 #endif
 }
 
@@ -105,7 +104,7 @@ EXPORT void CALL GetDllInfo ( PLUGIN_INFO * PluginInfo )
 	PluginInfo->MemoryBswaped = TRUE;
 }
 
-#ifndef __LINUX__
+#ifdef _WINDOWS
 BOOL CALLBACK FindToolBarProc( HWND hWnd, LPARAM lParam )
 {
 	if (GetWindowLong( hWnd, GWL_STYLE ) & RBS_VARHEIGHT)
@@ -115,7 +114,7 @@ BOOL CALLBACK FindToolBarProc( HWND hWnd, LPARAM lParam )
 	}
 	return TRUE;
 }
-#endif // !__LINUX__
+#endif // _WINDOWS
 
 
 EXPORT void CALL ReadScreen (void **dest, long *width, long *height)
@@ -250,16 +249,16 @@ EXPORT BOOL CALL InitiateGFX (GFX_INFO Gfx_Info)
 	CheckInterrupts = Gfx_Info.CheckInterrupts;
 
 #ifndef MUPENPLUSAPI
-#ifndef __LINUX__
+#ifdef _WINDOWS
 	hWnd = Gfx_Info.hWnd;
 	hStatusBar = Gfx_Info.hStatusBar;
 	hToolBar = NULL;
 
 	EnumChildWindows( hWnd, FindToolBarProc,0 );
-#else // !__LINUX__
+#else // _WINDOWS
 	Config_LoadConfig();
 	OGL.hScreen = NULL;
-#endif // __LINUX__
+#endif // _WINDOWS
 #else // MUPENPLUSAPI
 	Config_LoadConfig();
 //	Config_LoadRomConfig(Gfx_Info.HEADER);
