@@ -17,9 +17,6 @@
 #include "VI.h"
 #include "FrameBuffer.h"
 #include "DepthBuffer.h"
-#ifndef __LINUX__
-# include "Resource.h"
-#endif // !__LINUX__
 
 #ifdef DEBUG
 extern u32 uc_crc, uc_dcrc;
