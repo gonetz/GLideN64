@@ -14,7 +14,7 @@
 
 GLInfo OGL;
 
-#ifndef __LINUX__
+#ifdef _WINDOWS
 // GLSL functions
 PFNGLCREATESHADERPROC glCreateShader;
 PFNGLCOMPILESHADERPROC glCompileShader;
@@ -101,7 +101,7 @@ PFNGLFRAMEBUFFERRENDERBUFFEREXTPROC glFramebufferRenderbufferEXT;
 PFNGLCHECKFRAMEBUFFERSTATUSEXTPROC glCheckFramebufferStatusEXT;
 PFNGLDELETEFRAMEBUFFERSEXTPROC glDeleteFramebuffersEXT;
 PFNGLBLITFRAMEBUFFEREXTPROC glBlitFramebufferEXT;
-#endif // !__LINUX__
+#endif // _WINDOWS
 
 BOOL isExtensionSupported( const char *extension )
 {
@@ -138,7 +138,7 @@ void OGL_InitExtensions()
 	const char *version = reinterpret_cast<const char*>(glGetString(GL_VERSION));
 	u32 uVersion = atol(version);
 
-#ifndef __LINUX__
+#ifdef _WINDOWS
 	glCreateShader = (PFNGLCREATESHADERPROC)wglGetProcAddress("glCreateShader");
 	glCompileShader = (PFNGLCOMPILESHADERPROC)wglGetProcAddress("glCompileShader");
 	glShaderSource = (PFNGLSHADERSOURCEPROC)wglGetProcAddress("glShaderSource");
@@ -159,31 +159,31 @@ void OGL_InitExtensions()
 	glGetProgramiv = (PFNGLGETPROGRAMIVPROC)wglGetProcAddress("glGetProgramiv");
 
 	glSecondaryColor3f = (PFNGLSECONDARYCOLOR3FPROC)wglGetProcAddress("glSecondaryColor3f");
-#endif // __LINUX__
+#endif // _WINDOWS
 
-#ifndef __LINUX__
+#ifdef _WINDOWS
 	glActiveTexture	= (PFNGLACTIVETEXTUREPROC)wglGetProcAddress( "glActiveTexture" );
 	glClientActiveTexture = (PFNGLCLIENTACTIVETEXTUREPROC)wglGetProcAddress( "glClientActiveTexture" );
 	glMultiTexCoord2f = (PFNGLMULTITEXCOORD2FPROC)wglGetProcAddress( "glMultiTexCoord2f" );
-#endif // !__LINUX__
+#endif // 
 
 	glGetIntegerv( GL_MAX_TEXTURE_UNITS, &OGL.maxTextureUnits );
 	OGL.maxTextureUnits = min( 8, OGL.maxTextureUnits ); // The plugin only supports 8, and 4 is really enough
 
 	if (OGL.EXT_fog_coord = isExtensionSupported( "GL_EXT_fog_coord" ))
 	{
-#ifndef __LINUX__
+#ifdef _WINDOWS
 		glFogCoordfEXT = (PFNGLFOGCOORDFEXTPROC)wglGetProcAddress( "glFogCoordfEXT" );
 		glFogCoordfvEXT = (PFNGLFOGCOORDFVEXTPROC)wglGetProcAddress( "glFogCoordfvEXT" );
 		glFogCoorddEXT = (PFNGLFOGCOORDDEXTPROC)wglGetProcAddress( "glFogCoorddEXT" );
 		glFogCoorddvEXT = (PFNGLFOGCOORDDVEXTPROC)wglGetProcAddress( "glFogCoorddvEXT" );
 		glFogCoordPointerEXT = (PFNGLFOGCOORDPOINTEREXTPROC)wglGetProcAddress( "glFogCoordPointerEXT" );
-#endif // !__LINUX__
+#endif // _WINDOWS
 	}
 
 	if (OGL.EXT_secondary_color = isExtensionSupported( "GL_EXT_secondary_color" ))
 	{
-#ifndef __LINUX__
+#ifdef _WINDOWS
 		glSecondaryColor3bEXT = (PFNGLSECONDARYCOLOR3BEXTPROC)wglGetProcAddress( "glSecondaryColor3bEXT" );
 		glSecondaryColor3bvEXT = (PFNGLSECONDARYCOLOR3BVEXTPROC)wglGetProcAddress( "glSecondaryColor3bvEXT" );
 		glSecondaryColor3dEXT = (PFNGLSECONDARYCOLOR3DEXTPROC)wglGetProcAddress( "glSecondaryColor3dEXT" );
@@ -201,10 +201,10 @@ void OGL_InitExtensions()
 		glSecondaryColor3usEXT = (PFNGLSECONDARYCOLOR3USEXTPROC)wglGetProcAddress( "glSecondaryColor3usEXT" );
 		glSecondaryColor3usvEXT = (PFNGLSECONDARYCOLOR3USVEXTPROC)wglGetProcAddress( "glSecondaryColor3usvEXT" );
 		glSecondaryColorPointerEXT = (PFNGLSECONDARYCOLORPOINTEREXTPROC)wglGetProcAddress( "glSecondaryColorPointerEXT" );
-#endif // !__LINUX__
+#endif // _WINDOWS
 	}
 
-#ifndef __LINUX__
+#ifdef _WINDOWS
 	glDrawBuffers = (PFNGLDRAWBUFFERSPROC)wglGetProcAddress( "glDrawBuffers" );
 	glBindFramebuffer = (PFNGLBINDFRAMEBUFFERPROC)wglGetProcAddress( "glBindFramebuffer" );
 	glDeleteFramebuffers = (PFNGLDELETEFRAMEBUFFERSPROC)wglGetProcAddress( "glDeleteFramebuffers" );
@@ -238,7 +238,7 @@ void OGL_InitExtensions()
 	glRenderbufferStorageEXT = (PFNGLRENDERBUFFERSTORAGEEXTPROC)wglGetProcAddress("glRenderbufferStorageEXT");
 	glFramebufferRenderbufferEXT = (PFNGLFRAMEBUFFERRENDERBUFFEREXTPROC)wglGetProcAddress("glFramebufferRenderbufferEXT");
 	glBlitFramebufferEXT = (PFNGLBLITFRAMEBUFFEREXTPROC)wglGetProcAddress("glBlitFramebufferEXT");
-#endif // !__LINUX__
+#endif // _WINDOWS
 
 	if (glGenFramebuffers != NULL)
 		OGL.framebuffer_mode = GLInfo::fbFBO;
@@ -321,7 +321,7 @@ void OGL_UpdateScale()
 
 void OGL_ResizeWindow()
 {
-#ifndef __LINUX__
+#ifdef _WINDOWS
 	RECT	windowRect, statusRect, toolRect;
 
 	if (OGL.fullscreen)
@@ -354,13 +354,12 @@ void OGL_ResizeWindow()
 		SetWindowPos( hWnd, NULL, 0, 0,	windowRect.right - windowRect.left + 1,
 						windowRect.bottom - windowRect.top + 1 + toolRect.bottom - toolRect.top + 1, SWP_NOACTIVATE | SWP_NOZORDER | SWP_NOMOVE );
 	}
-#else // !__LINUX__
-#endif // __LINUX__
+#endif // _WINDOWS
 }
 
 bool OGL_Start()
 {
-#ifndef __LINUX__
+#ifdef _WINDOWS
 	int		pixelFormat;
 
 	PIXELFORMATDESCRIPTOR pfd = {
@@ -417,7 +416,7 @@ bool OGL_Start()
 		OGL_Stop();
 		return FALSE;
 	}
-#else // !__LINUX__
+#else // _WINDOWS
 	// init sdl & gl
 	const SDL_VideoInfo *videoInfo;
 	Uint32 videoFlags = 0;
@@ -477,7 +476,7 @@ bool OGL_Start()
 	}
 
 	SDL_WM_SetCaption( pluginName, pluginName );
-#endif // __LINUX__
+#endif // _WINDOWS
 
 	OGL_InitExtensions();
 	OGL_InitStates();
@@ -499,7 +498,7 @@ void OGL_Stop()
 	FrameBuffer_Destroy();
 	TextureCache_Destroy();
 
-#ifndef __LINUX__
+#ifdef _WINDOWS
 	wglMakeCurrent( NULL, NULL );
 
 	if (OGL.hRC)
@@ -513,10 +512,10 @@ void OGL_Stop()
 		ReleaseDC( hWnd, OGL.hDC );
 		OGL.hDC = NULL;
 	}
-#else // !__LINUX__
+#else // _WINDOWS
 	SDL_QuitSubSystem( SDL_INIT_VIDEO );
 	OGL.hScreen = NULL;
-#endif // __LINUX__
+#endif // _WINDOWS
 }
 
 void OGL_UpdateCullFace()
@@ -1078,7 +1077,7 @@ void OGL_ClearColorBuffer( float *color )
 
 void OGL_SaveScreenshot()
 {
-#ifndef __LINUX__
+#ifdef _WINDOWS
 	BITMAPFILEHEADER fileHeader;
 	BITMAPINFOHEADER infoHeader;
 	HANDLE hBitmapFile;
@@ -1133,8 +1132,7 @@ void OGL_SaveScreenshot()
 
 	CloseHandle( hBitmapFile );
 	free( pixelData );
-#else // !__LINUX__
-#endif // __LINUX__
+#endif // _WINDOWS
 }
 
 void OGL_ReadScreen( void **dest, long *width, long *height )
