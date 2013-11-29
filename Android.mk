@@ -50,6 +50,7 @@ LOCAL_CFLAGS :=         \
     -D__VEC4_OPT        \
     -DANDROID           \
     -DUSE_SDL           \
+    -DMUPENPLUSAPI      \
     -fsigned-char       \
     #-DSDL_NO_COMPAT     \
     
