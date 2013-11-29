@@ -17,7 +17,6 @@ extern HINSTANCE	hInstance;
 #endif
 
 //#define DEBUG
-//#define RSPTHREAD
 
 extern void (*CheckInterrupts)( void );
 extern char *screenDirectory;

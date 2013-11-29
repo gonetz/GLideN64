@@ -128,65 +128,6 @@ LoadLoop:
 #endif // __LINUX__
 }
 
-#ifdef RSPTHREAD
-DWORD WINAPI RSP_ThreadProc( LPVOID lpParameter )
-{
-	RSP_Init();
-
-	SetEvent( RSP.threadFinished );
-#ifndef _DEBUG
-	__try
-	{
-#endif
-		while (TRUE)
-		{
-			switch (WaitForMultipleObjects( 6, RSP.threadMsg, FALSE, INFINITE ))
-			{
-				case (WAIT_OBJECT_0 + RSPMSG_PROCESSDLIST):
-					RSP_ProcessDList();
-					break;
-				case (WAIT_OBJECT_0 + RSPMSG_UPDATESCREEN):
-					VI_UpdateScreen();
-					break;
-				case (WAIT_OBJECT_0 + RSPMSG_CLOSE):
-					OGL_Stop();
-					SetEvent( RSP.threadFinished );
-					return 1;
-				case (WAIT_OBJECT_0 + RSPMSG_DESTROYTEXTURES):
-					Combiner_Destroy();
-					FrameBuffer_Destroy();
-					TextureCache_Destroy();
-					break;
-				case (WAIT_OBJECT_0 + RSPMSG_INITTEXTURES):
-					FrameBuffer_Init();
-					TextureCache_Init();
-					Combiner_Init();
-					gSP.changed = gDP.changed = 0xFFFFFFFF;
-					break;
-				case (WAIT_OBJECT_0 + RSPMSG_CAPTURESCREEN):
-					OGL_SaveScreenshot();
-					break;
-			}
-			SetEvent( RSP.threadFinished );
-		}
-#ifndef _DEBUG
-	}
-	__except(EXCEPTION_EXECUTE_HANDLER)
-	{
-		char exception[256];
-		sprintf( exception, "Win32 exception 0x%08X occured in glN64", GetExceptionCode() );
-		MessageBox( NULL, exception, pluginName, MB_OK | MB_ICONERROR );
-
-		GBI_Destroy();
-		DepthBuffer_Destroy();
-		OGL_Stop();
-	}
-#endif
-	RSP.thread = NULL;
-	return 0;
-}
-#endif // RSPTHREAD
-
 void RSP_ProcessDList()
 {
 	VI_UpdateSize();
