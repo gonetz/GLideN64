@@ -14,7 +14,7 @@ RSPInfo		RSP;
 void RSP_LoadMatrix( f32 mtx[4][4], u32 address )
 {
 	f32 recip = 1.5258789e-05f;
-#ifndef __LINUX__
+#ifdef WIN32
 	__asm {
 		mov		esi, dword ptr [RDRAM];
 		add		esi, dword ptr [address];
@@ -58,7 +58,7 @@ LoadLoop:
 		add		edi, 10h
 		loop	LoadLoop
 	}
-#else // !__LINUX__
+#else // WIN32
 # ifdef X86_ASM
 	__asm__ __volatile__(
 	".intel_syntax noprefix"					"\n\t"
@@ -114,7 +114,7 @@ LoadLoop:
 		for (j = 0; j < 4; j++)
 			mtx[i][j] = (GLfloat)(n64Mat->integer[i][j^1]) + (GLfloat)(n64Mat->fraction[i][j^1]) * recip;
 # endif // !X86_ASM
-#endif // __LINUX__
+#endif // WIN32
 }
 
 void RSP_ProcessDList()
@@ -223,7 +223,7 @@ void RSP_ProcessDList()
 
 void RSP_Init()
 {
-#ifndef __LINUX__
+#ifdef _WINDOWS
 	// Calculate RDRAM size by intentionally causing an access violation
 	u32 test;
 	__try
@@ -238,9 +238,9 @@ void RSP_Init()
 		RDRAMSize = 0x7FFFFF;
 	else
 		RDRAMSize = 0x3FFFFF;
-#else // !__LINUX__
+#else // _WINDOWS
 	RDRAMSize = 1024 * 1024 * 8;
-#endif // __LINUX__
+#endif // _WINDOWS
 
 	RSP.DList = 0;
 	RSP.uc_start = RSP.uc_dstart = 0;
