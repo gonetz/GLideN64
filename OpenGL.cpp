@@ -867,7 +867,7 @@ void OGL_DrawRect( int ulx, int uly, int lrx, int lry, float *color )
 	glDisable( GL_CULL_FACE );
 	glMatrixMode( GL_PROJECTION );
     glLoadIdentity();
-	if (frameBuffer.drawBuffer != GL_DRAW_FRAMEBUFFER) {
+	if (frameBuffer.drawBuffer != GL_FRAMEBUFFER) {
 		glOrtho( 0, VI.width, VI.height, 0, 1.0f, -1.0f );
 		glViewport( 0, (frameBuffer.drawBuffer == GL_BACK ? OGL.heightOffset : 0), OGL.width, OGL.height );
 	} else {
@@ -912,7 +912,7 @@ void OGL_DrawTexturedRect( float ulx, float uly, float lrx, float lry, float uls
 	glDisable( GL_CULL_FACE );
 	glMatrixMode( GL_PROJECTION );
 	glLoadIdentity();
-	if (frameBuffer.drawBuffer != GL_DRAW_FRAMEBUFFER) {
+	if (frameBuffer.drawBuffer != GL_FRAMEBUFFER) {
 		glOrtho( 0, VI.width, VI.height, 0, 1.0f, -1.0f );
 		glViewport( 0, (frameBuffer.drawBuffer == GL_BACK ? OGL.heightOffset : 0), OGL.width, OGL.height );
 	} else {

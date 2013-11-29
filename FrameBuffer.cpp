@@ -247,7 +247,7 @@ void FrameBuffer_Destroy()
 
 void FrameBuffer_SaveBuffer( u32 address, u16 format, u16 size, u16 width, u16 height )
 {
-	frameBuffer.drawBuffer = GL_DRAW_FRAMEBUFFER;
+	frameBuffer.drawBuffer = GL_FRAMEBUFFER;
 	FrameBuffer *current = frameBuffer.top;
 	if (current != NULL && gDP.colorImage.height > 1) {
 		current->endAddress = current->startAddress + (((current->width * gDP.colorImage.height) << current->size >> 1) - 1);

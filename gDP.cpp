@@ -743,7 +743,7 @@ void gDPFillRDRAM(u32 address, s32 ulx, s32 uly, s32 lrx, s32 lry, u32 width, u3
 {
 	if (g_bDepthClearOnly && color != DEPTH_CLEAR_COLOR)
 		return;
-	if (frameBuffer.drawBuffer == GL_DRAW_FRAMEBUFFER) {
+	if (frameBuffer.drawBuffer == GL_FRAMEBUFFER) {
 		frameBuffer.top->cleared = true;
 		frameBuffer.top->fillcolor = color;
 	}
