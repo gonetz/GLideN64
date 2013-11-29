@@ -1,8 +1,3 @@
-#ifndef __LINUX__
-# include <windows.h>
-#else
-# include "winlnxdefs.h"
-#endif // __LINUX__
 #include "OpenGL.h"
 #include "Combiner.h"
 #include "GLSLCombiner.h"
