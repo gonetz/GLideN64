@@ -10,7 +10,7 @@
 #include "winlnxdefs.h"
 #include <GL/gl.h>
 #include <GL/glext.h>
-#include <SDL/SDL.h>
+#include <SDL.h>
 #endif // _WINDOWS
 
 #include "gSP.h"

@@ -1,5 +1,5 @@
 #include "winlnxdefs.h"
-# include <SDL/SDL.h>
+#include <SDL.h>
 #include <errno.h>
 #include <string.h>
 
