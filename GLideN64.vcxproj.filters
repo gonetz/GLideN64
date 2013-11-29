@@ -182,9 +182,6 @@
     <ClInclude Include="VI.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="wglext.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="F3D.h">
       <Filter>Header Files\uCodes</Filter>
     </ClInclude>

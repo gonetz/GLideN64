@@ -197,7 +197,6 @@
     <ClInclude Include="Textures.h" />
     <ClInclude Include="Types.h" />
     <ClInclude Include="VI.h" />
-    <ClInclude Include="wglext.h" />
     <ClInclude Include="F3D.h" />
     <ClInclude Include="F3DDKR.h" />
     <ClInclude Include="F3DEX.h" />

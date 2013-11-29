@@ -4,7 +4,6 @@
 #ifndef __LINUX__
 #include <windows.h>
 #include <GL/gl.h>
-#include "wglext.h"
 #include "glext.h"
 #else
 #define GL_GLEXT_PROTOTYPES
@@ -30,10 +29,9 @@ struct GLVertex
 struct GLInfo
 {
 #ifndef __LINUX__
-	HGLRC	hRC, hPbufferRC;
-	HDC		hDC, hPbufferDC;
+	HGLRC	hRC;
+	HDC		hDC;
 	HWND	hWnd;
-	HPBUFFERARB	hPbuffer;
 #else
 	SDL_Surface *hScreen;
 #endif // __LINUX__

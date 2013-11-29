@@ -51,9 +51,6 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD dwReason, LPVOID lpvReserved)
 		Config_LoadConfig();
 		OGL.hRC = NULL;
 		OGL.hDC = NULL;
-/*		OGL.hPbufferRC = NULL;
-		OGL.hPbufferDC = NULL;
-		OGL.hPbuffer = NULL;*/
 //		hFullscreen = NULL;
 	}
 	return TRUE;

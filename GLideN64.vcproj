@@ -491,10 +491,6 @@
 				>
 			</File>
 			<File
-				RelativePath="wglext.h"
-				>
-			</File>
-			<File
 				RelativePath="Zilmar GFX 1.3.h"
 				>
 			</File>
