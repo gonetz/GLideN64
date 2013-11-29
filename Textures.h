@@ -1,7 +1,11 @@
 #ifndef TEXTURES_H
 #define TEXTURES_H
 
+#ifdef ANDROID
+#include <GLES2/gl2.h>
+#else
 #include <GL/gl.h>
+#endif //ANDROID
 #include "convert.h"
 
 struct CachedTexture

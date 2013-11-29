@@ -5,8 +5,6 @@
 # include "winlnxdefs.h"
 #include <dlfcn.h>
 #endif // _WINDOWS
-#include <GL/gl.h>
-#include <GL/glu.h>
 #include "GLideN64.h"
 #include "Debug.h"
 #include "OpenGL.h"
