@@ -83,6 +83,9 @@ if(SDL)
   include(FindPkgConfig)
   pkg_check_modules(SDL REQUIRED sdl)
   include_directories(${SDL_INCLUDE_DIRS})
+  add_definitions(
+	-DUSE_SDL
+  )
 endif(SDL)
 
 find_package(OpenGL REQUIRED)

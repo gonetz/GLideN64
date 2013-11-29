@@ -6,11 +6,18 @@
 #include <GL/gl.h>
 #include "glext.h"
 #else
-#define GL_GLEXT_PROTOTYPES
 #include "winlnxdefs.h"
+#ifdef ANDROID
+#include <GLES2/gl2.h>
+#include <GLES2/gl2ext.h>
+#else
+#define GL_GLEXT_PROTOTYPES
 #include <GL/gl.h>
 #include <GL/glext.h>
+#endif // ANDROID
+#ifdef USE_SDL
 #include <SDL.h>
+#endif // USE_SDL
 #endif // _WINDOWS
 
 #include "gSP.h"
@@ -32,7 +39,7 @@ struct GLInfo
 	HGLRC	hRC;
 	HDC		hDC;
 	HWND	hWnd;
-#else
+#elif defined(USE_SDL)
 	SDL_Surface *hScreen;
 #endif // _WINDOWS
 

@@ -416,9 +416,8 @@ bool OGL_Start()
 		OGL_Stop();
 		return FALSE;
 	}
-#else // _WINDOWS
+#elif defined(USE_SDL)
 	// init sdl & gl
-	const SDL_VideoInfo *videoInfo;
 	Uint32 videoFlags = 0;
 
 	if (OGL.fullscreen)
@@ -442,6 +441,7 @@ bool OGL_Start()
 	}
 
 	/* Video Info */
+	const SDL_VideoInfo *videoInfo;
 	printf( "[glN64]: (II) Getting video info...\n" );
 	if (!(videoInfo = SDL_GetVideoInfo()))
 	{
@@ -512,7 +512,7 @@ void OGL_Stop()
 		ReleaseDC( hWnd, OGL.hDC );
 		OGL.hDC = NULL;
 	}
-#else // _WINDOWS
+#elif defined(USE_SDL)
 	SDL_QuitSubSystem( SDL_INIT_VIDEO );
 	OGL.hScreen = NULL;
 #endif // _WINDOWS
@@ -1155,7 +1155,7 @@ void OGL_SwapBuffers()
 		SwapBuffers( wglGetCurrentDC() );
 	else
 		SwapBuffers( OGL.hDC );
-#else
+#elif defined(USE_SDL)
 	static int frames[5] = { 0, 0, 0, 0, 0 };
 	static int framesIndex = 0;
 	static Uint32 lastTicks = 0;
