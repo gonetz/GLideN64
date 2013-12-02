@@ -848,6 +848,9 @@ void gDPTextureRectangle( f32 ulx, f32 uly, f32 lrx, f32 lry, s32 tile, f32 s, f
 		lry += 1.0f;
 	}
 
+	gDPTile *textureTileOrg[2];
+	textureTileOrg[0] = gSP.textureTile[0];
+	textureTileOrg[1] = gSP.textureTile[1];
 	gSP.textureTile[0] = &gDP.tiles[tile];
 	gSP.textureTile[1] = &gDP.tiles[tile < 7 ? tile + 1 : tile];
 
@@ -860,29 +863,37 @@ void gDPTextureRectangle( f32 ulx, f32 uly, f32 lrx, f32 lry, s32 tile, f32 s, f
 	if ((int(s) == 512) && (gDP.colorImage.width < 512))
 		s = 0.0f;
 
-	f32 lrs = s + (lrx - ulx - 1) * dsdx;
-	f32 lrt = t + (lry - uly - 1) * dtdy;
+	f32 lrs, lrt;
+	if (RSP.cmd == G_TEXRECTFLIP)
+	{
+		lrs = s + (lry - uly - 1) * dtdy;
+		lrt = t + (lrx - ulx - 1) * dsdx;
+	}
+	else
+	{
+		lrs = s + (lrx - ulx - 1) * dsdx;
+		lrt = t + (lry - uly - 1) * dtdy;
+	}
 
 	gDP.texRect.width = (u32)(max( lrs, s ) + dsdx);
 	gDP.texRect.height = (u32)(max( lrt, t ) + dtdy);
 
-	if (lrs > s)
+	float tmp;
+	if (lrs < s)
 	{
-		if (lrt > t)
-			OGL_DrawTexturedRect( ulx, uly, lrx, lry, s, t, lrs, lrt, (RSP.cmd == G_TEXRECTFLIP) );
-		else
-			OGL_DrawTexturedRect( ulx, lry, lrx, uly, s, lrt, lrs, t, (RSP.cmd == G_TEXRECTFLIP) );
+		tmp = ulx; ulx = lrx; lrx = tmp;
+		tmp = s; s = lrs; lrs = tmp;
 	}
-	else
+	if (lrt < t)
 	{
-		if (lrt > t)
-			OGL_DrawTexturedRect( lrx, uly, ulx, lry, lrs, t, s, lrt, (RSP.cmd == G_TEXRECTFLIP) );
-		else
-			OGL_DrawTexturedRect( lrx, lry, ulx, uly, lrs, lrt, s, t, (RSP.cmd == G_TEXRECTFLIP) );
+		tmp = uly; uly = lry; lry = tmp;
+		tmp = t; t = lrt; lrt = tmp;
 	}
 
-	gSP.textureTile[0] = &gDP.tiles[gSP.texture.tile];
-	gSP.textureTile[1] = &gDP.tiles[gSP.texture.tile < 7 ? gSP.texture.tile + 1 : gSP.texture.tile];
+	OGL_DrawTexturedRect( ulx, uly, lrx, lry, s, t, lrs, lrt, (RSP.cmd == G_TEXRECTFLIP));
+
+	gSP.textureTile[0] = textureTileOrg[0];
+	gSP.textureTile[1] = textureTileOrg[1];
 
 	gDP.colorImage.changed = TRUE;
 	if (gDP.colorImage.width < 64)
@@ -898,11 +909,11 @@ void gDPTextureRectangle( f32 ulx, f32 uly, f32 lrx, f32 lry, s32 tile, f32 s, f
 
 void gDPTextureRectangleFlip( f32 ulx, f32 uly, f32 lrx, f32 lry, s32 tile, f32 s, f32 t, f32 dsdx, f32 dtdy )
 {
-	gDPTextureRectangle( ulx, uly, lrx, lry, tile, s + (lrx - ulx) * dsdx, t + (lry - uly) * dtdy, -dsdx, -dtdy );
+	gDPTextureRectangle( ulx, uly, lrx, lry, tile, s, t, dsdx, dtdy );
 
 #ifdef DEBUG
-	DebugMsg( DEBUG_HIGH | DEBUG_HANDLED, "gDPTextureRectangleFlip( %f, %f, %f, %f, %i, %i, %f, %f, %f, %f );\n",
-		ulx, uly, lrx, lry, tile, s, t, dsdx, dtdy );
+	DebugMsg( DEBUG_HIGH | DEBUG_HANDLED, "gDPTextureRectangleFlip( %f, %f, %f, %f, %i, %f, %f, %f, %f);\n",
+			  ulx, uly, lrx, lry, tile, s, t, dsdx, dtdy );
 #endif
 }
 
