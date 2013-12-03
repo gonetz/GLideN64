@@ -1072,6 +1072,7 @@ void OGL_SaveScreenshot()
 
 	GLint oldMode;
 	glGetIntegerv( GL_READ_BUFFER, &oldMode );
+	ogl_glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
 	glReadBuffer( GL_FRONT );
 	glReadPixels( 0, OGL.heightOffset, OGL.width, OGL.height, GL_BGR_EXT, GL_UNSIGNED_BYTE, pixelData );
 	glReadBuffer( oldMode );
