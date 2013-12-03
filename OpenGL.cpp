@@ -296,20 +296,6 @@ void OGL_InitStates()
 
 	srand( timeGetTime() );
 
-	for (int i = 0; i < 32; i++)
-	{
-		for (int j = 0; j < 8; j++)
-			for (int k = 0; k < 128; k++)
-				OGL.stipplePattern[i][j][k] =((i > (rand() >> 10)) << 7) |
-											((i > (rand() >> 10)) << 6) |
-											((i > (rand() >> 10)) << 5) |
-											((i > (rand() >> 10)) << 4) |
-											((i > (rand() >> 10)) << 3) |
-											((i > (rand() >> 10)) << 2) |
-											((i > (rand() >> 10)) << 1) |
-											((i > (rand() >> 10)) << 0);
-	}
-
 	OGL_SwapBuffers();
 }
 

@@ -67,8 +67,6 @@ struct GLInfo
 #ifdef _WINDOWS
 	HWND	hFullscreenWnd;
 #endif
-	GLubyte	stipplePattern[32][8][128];
-	BYTE	lastStipple;
 
 	BYTE	combiner;
 	enum {
