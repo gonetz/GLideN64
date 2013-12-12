@@ -801,7 +801,10 @@ void gDPFillRectangle( s32 ulx, s32 uly, s32 lrx, s32 lry )
 	OGL_DrawRect( ulx, uly, lrx, lry, (gDP.otherMode.cycleType == G_CYC_FILL) ? fillColor : &gDP.blendColor.r );
 
 	gDP.colorImage.changed = TRUE;
-	gDP.colorImage.height = (u32)max( (s32)gDP.colorImage.height, lry );
+	if (gDP.colorImage.width < 64)
+		gDP.colorImage.height = (u32)max( (s32)gDP.colorImage.height, lry );
+	else
+		gDP.colorImage.height = max( gDP.colorImage.height, (u32)gDP.scissor.lry );
 
 #ifdef DEBUG
 	DebugMsg( DEBUG_HIGH | DEBUG_HANDLED, "gDPFillRectangle( %i, %i, %i, %i );\n",
