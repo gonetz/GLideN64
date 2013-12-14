@@ -375,8 +375,7 @@ void _initDepthTexture()
 	ogl_glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 	ogl_glBindFramebuffer(GL_DRAW_FRAMEBUFFER, frameBuffer.top->fbo);
 	frameBuffer.top->pDepthBuffer = depthBuffer.top;
-	void GLSL_ClearDepthBuffer();
-	GLSL_ClearDepthBuffer();
+	DepthBuffer_ClearBuffer();
 }
 
 void FrameBuffer_AttachDepthBuffer()

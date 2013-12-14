@@ -211,6 +211,8 @@ void RSP_ProcessDList()
 		GBI.cmd[RSP.cmd]( w0, w1 );
 	}
 
+void unbindImageTextures();
+unbindImageTextures();
 	if (g_bCopyToRDRAM)
 		FrameBuffer_CopyToRDRAM( gDP.colorImage.address, false );
 	if (g_bCopyDepthToRDRAM)

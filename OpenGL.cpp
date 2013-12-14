@@ -10,6 +10,7 @@
 #include "Textures.h"
 #include "Combiner.h"
 #include "FrameBuffer.h"
+#include "DepthBuffer.h"
 #include "VI.h"
 
 GLInfo OGL;
@@ -1037,8 +1038,7 @@ void OGL_ClearDepthBuffer()
 	if (OGL.frameBufferTextures && frameBuffer.top == NULL)
 		return;
 
-	void GLSL_ClearDepthBuffer();
-	GLSL_ClearDepthBuffer();
+	DepthBuffer_ClearBuffer();
 
 	glDisable( GL_SCISSOR_TEST );
 

@@ -1,12 +1,16 @@
 #include <malloc.h>
 #include <assert.h>
 #include "OpenGL.h"
+#include "Combiner.h"
 #include "FrameBuffer.h"
 #include "DepthBuffer.h"
 #include "VI.h"
 #include "Debug.h"
 
 DepthBufferInfo depthBuffer;
+const GLuint ZlutImageUnit = 0;
+const GLuint TlutImageUnit = 1;
+const GLuint depthImageUnit = 2;
 
 void DepthBuffer_Init()
 {
@@ -213,3 +217,13 @@ DepthBuffer *DepthBuffer_FindBuffer( u32 address )
 	return NULL;
 }
 */
+void DepthBuffer_ClearBuffer() {
+	DepthBuffer *current = depthBuffer.top;
+	if (current == NULL || current->fbo == 0)
+		return;
+	float color[4] = {1.0f, 1.0f, 0.0f, 0.0f};
+	glBindImageTexture(depthImageUnit, 0, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA32F);
+	ogl_glBindFramebuffer(GL_DRAW_FRAMEBUFFER, current->fbo);
+	OGL_DrawRect(0,0,VI.width, VI.height, color);
+	ogl_glBindFramebuffer(GL_DRAW_FRAMEBUFFER, frameBuffer.top->fbo);
+}

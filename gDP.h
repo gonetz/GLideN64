@@ -166,7 +166,7 @@ struct gDPInfo
 
 	gDPTile tiles[8], *loadTile;
 
-	struct
+	struct Color
 	{
 		f32 r, g, b, a;
 	} fogColor,  blendColor, envColor;
@@ -177,9 +177,9 @@ struct gDPInfo
 		u32 color;
 	} fillColor;
 
-	struct
+	struct PrimColor : public Color
 	{
-		f32 m, l, r, g, b, a;
+		f32 m, l;
 	} primColor;
 
 	struct
