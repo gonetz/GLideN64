@@ -26,6 +26,8 @@ extern const GLuint ZlutImageUnit;
 extern const GLuint TlutImageUnit;
 extern const GLuint depthImageUnit;
 
+extern bool g_bN64DepthCompare;
+
 void DepthBuffer_Init();
 void DepthBuffer_Destroy();
 void DepthBuffer_SetBuffer( u32 address );

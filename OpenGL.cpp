@@ -290,7 +290,13 @@ void OGL_InitStates()
 		glEnableClientState( GL_FOG_COORDINATE_ARRAY_EXT );
 	}
 
-	glPolygonOffset( -3.0f, -3.0f );
+	if (g_bN64DepthCompare) {
+		glDisable( GL_DEPTH_TEST );
+		glDisable( GL_POLYGON_OFFSET_FILL );
+		glDepthFunc( GL_ALWAYS );
+		glDepthMask( FALSE );
+	} else
+		glPolygonOffset( -3.0f, -3.0f );
 
 	glClearColor( 0.0f, 0.0f, 0.0f, 0.0f );
 	glClear( GL_COLOR_BUFFER_BIT );
@@ -559,8 +565,7 @@ void OGL_UpdateStates()
 	else
 		glDisable( GL_DEPTH_TEST );
 
-	if (gDP.changed & CHANGED_RENDERMODE)
-	{
+	if (!g_bN64DepthCompare && (gDP.changed & CHANGED_RENDERMODE) > 0) {
 		if (gDP.otherMode.depthCompare)
 			glDepthFunc( GL_LEQUAL );
 		else
@@ -568,13 +573,10 @@ void OGL_UpdateStates()
 
 		OGL_UpdateDepthUpdate();
 
-//		if (gDP.otherMode.depthMode == ZMODE_DEC)
-//			glEnable( GL_POLYGON_OFFSET_FILL );
-//		else
-		{
-//			glPolygonOffset( -3.0f, -3.0f );
+		if (gDP.otherMode.depthMode == ZMODE_DEC)
+			glEnable( GL_POLYGON_OFFSET_FILL );
+		else
 			glDisable( GL_POLYGON_OFFSET_FILL );
-		}
 	}
 
 	if ((gDP.changed & CHANGED_ALPHACOMPARE) || (gDP.changed & CHANGED_RENDERMODE))
