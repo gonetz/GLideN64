@@ -134,10 +134,7 @@ void InitShadowMapShader()
 	assert(check_shader_compile_status(g_shadow_map_vertex_shader_object));
 
 	g_shadow_map_fragment_shader_object = glCreateShader(GL_FRAGMENT_SHADER);
-	if (g_bUseFloatDepthTexture)
-		glShaderSource(g_shadow_map_fragment_shader_object, 1, &shadow_map_fragment_shader_float, NULL);
-	else
-		glShaderSource(g_shadow_map_fragment_shader_object, 1, &shadow_map_fragment_shader_int, NULL);
+	glShaderSource(g_shadow_map_fragment_shader_object, 1, &shadow_map_fragment_shader_float, NULL);
 	glCompileShader(g_shadow_map_fragment_shader_object);
 	assert(check_shader_compile_status(g_shadow_map_fragment_shader_object));
 
@@ -197,10 +194,7 @@ void InitGLSLCombiner()
 
 	if (OGL.bImageTexture) {
 		g_calc_depth_shader_object = glCreateShader(GL_FRAGMENT_SHADER);
-		if (g_bUseFloatDepthTexture)
-			glShaderSource(g_calc_depth_shader_object, 1, &depth_compare_shader_float, NULL);
-		else
-			glShaderSource(g_calc_depth_shader_object, 1, &depth_compare_shader_int, NULL);
+		glShaderSource(g_calc_depth_shader_object, 1, &depth_compare_shader_float, NULL);
 		glCompileShader(g_calc_depth_shader_object);
 		assert(check_shader_compile_status(g_calc_depth_shader_object));
 	}
@@ -412,8 +406,8 @@ GLSLCombiner::GLSLCombiner(Combiner *_color, Combiner *_alpha) {
 
 	strcat(fragment_shader, "  if (!alpha_test(gl_FragColor.a)) discard;	\n");
 	if (OGL.bImageTexture)
-		strcat(fragment_shader, "  bool bDC = depth_compare(); \n");
-//		strcat(fragment_shader, "  if (!depth_compare()) discard; \n");
+//		strcat(fragment_shader, "  bool bDC = depth_compare(); \n");
+		strcat(fragment_shader, "  if (!depth_compare()) discard; \n");
 
 #ifdef USE_TOONIFY
 	strcat(fragment_shader, "  toonify(intensity); \n");
@@ -572,8 +566,7 @@ static
 void _unbindImageTextures() {
 	glBindImageTexture(TlutImageUnit, 0, 0, GL_FALSE, 0, GL_READ_WRITE, GL_R16UI);
 	glBindImageTexture(ZlutImageUnit, 0, 0, GL_FALSE, 0, GL_READ_WRITE, GL_R16UI);
-	const GLenum depthTexFormat = g_bUseFloatDepthTexture ? GL_R32F : GL_R16UI;
-	glBindImageTexture(depthImageUnit, 0, 0, GL_FALSE, 0, GL_READ_WRITE, depthTexFormat);
+	glBindImageTexture(depthImageUnit, 0, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA32F);
 }
 
 void GLSLCombiner::UpdateDepthInfo() {
@@ -591,18 +584,12 @@ void GLSLCombiner::UpdateDepthInfo() {
 	if (nDepthEnabled == 0)
 		return;
 
+	const int  depth_mode_location = glGetUniformLocation(m_program, "depthMode");
+	glUniform1i(depth_mode_location, gDP.otherMode.depthMode);
 	const int  depth_compare_location = glGetUniformLocation(m_program, "depthCompareEnabled");
 	glUniform1i(depth_compare_location, gDP.otherMode.depthCompare);
 	const int  depth_update_location = glGetUniformLocation(m_program, "depthUpdateEnabled");
 	glUniform1i(depth_update_location, gDP.otherMode.depthUpdate);
-	const int  depth_polygon_offset = glGetUniformLocation(m_program, "depthPolygonOffset");
-	if (g_bUseFloatDepthTexture) {
-		float fPlygonOffset = gDP.otherMode.depthMode == ZMODE_DEC ? 0.005f : 0.0f;
-		glUniform1f(depth_polygon_offset, fPlygonOffset);
-	} else {
-		int iPlygonOffset = gDP.otherMode.depthMode == ZMODE_DEC ? 5 : 0;
-		glUniform1i(depth_polygon_offset, iPlygonOffset);
-	}
 	const int  depth_scale_location = glGetUniformLocation(m_program, "depthScale");
 	glUniform1f(depth_scale_location, gSP.viewport.vscale[2]*32768);
 	const int  depth_trans_location = glGetUniformLocation(m_program, "depthTrans");
@@ -610,8 +597,7 @@ void GLSLCombiner::UpdateDepthInfo() {
 
 	GLuint texture = frameBuffer.top->pDepthBuffer->depth_texture->glName;
 	glBindImageTexture(ZlutImageUnit, g_zlut_tex, 0, GL_FALSE, 0, GL_READ_ONLY, GL_R16UI);
-	GLenum depthTexFormat = g_bUseFloatDepthTexture ? GL_R32F : GL_R16UI;
-	glBindImageTexture(depthImageUnit, texture, 0, GL_FALSE, 0, GL_READ_WRITE, depthTexFormat);
+	glBindImageTexture(depthImageUnit, texture, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA32F);
 }
 
 void GLSL_ClearDepthBuffer() {
@@ -621,29 +607,25 @@ void GLSL_ClearDepthBuffer() {
 	if (frameBuffer.top == NULL || frameBuffer.top->pDepthBuffer == NULL)
 		return;
 
+	_unbindImageTextures();
 	CachedTexture * pDepthTexture = frameBuffer.top->pDepthBuffer->depth_texture;
-	const u32 numTexels = pDepthTexture->width*pDepthTexture->height;
+	const u32 numTexels = pDepthTexture->width*pDepthTexture->height*4;
 
-	GLenum type = GL_UNSIGNED_SHORT;
-	int dataSize = g_bUseFloatDepthTexture ? sizeof(float) : sizeof(unsigned short);
-	char * pData = (char*)malloc(numTexels * dataSize);;
-
-	if (g_bUseFloatDepthTexture) {
-		type = GL_FLOAT;
-		f32 * pDepth = (f32*)pData;
-		for (int i = 0; i < numTexels; i++)
-			pDepth[i] = 1.0f;
-	} else {
-		u16 * pDepth = (u16*)pData;
-		for (int i = 0; i < numTexels; i++)
-			pDepth[i] = 0xfffc;
+	char * pData = (char*)malloc(numTexels * sizeof(float));
+	f32 * pDepth = (f32*)pData;
+	for (int i = 0; i < numTexels; i+=4) {
+		pDepth[i] = 1.0f;
+		pDepth[i+1] = 1.0f;
+		pDepth[i+2] = 0.0f;
+		pDepth[i+3] = 0.0f;
 	}
 	glBindTexture(GL_TEXTURE_2D, pDepthTexture->glName);
 
 
 	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0,
 		pDepthTexture->width, pDepthTexture->height,
-		GL_RED, type, pData);
+		GL_RGBA, GL_FLOAT, pData
+	);
 	free(pData);
 
 	gSP.changed |= CHANGED_TEXTURE;
@@ -683,6 +665,8 @@ void GLSL_RenderDepth() {
 #else
 	if (frameBuffer.top == NULL || frameBuffer.top->pDepthBuffer == NULL)
 		return;
+	_unbindImageTextures();
+	return;
 	glPushAttrib( GL_ENABLE_BIT | GL_VIEWPORT_BIT );
 
 	glActiveTexture( GL_TEXTURE0 );
@@ -764,8 +748,7 @@ void GLS_SetShadowMapCombiner() {
 	glUseProgram(g_draw_shadow_map_program);
 
 	glBindImageTexture(TlutImageUnit, g_tlut_tex, 0, GL_FALSE, 0, GL_READ_ONLY, GL_R16UI);
-	GLenum depthTexFormat = g_bUseFloatDepthTexture ? GL_R32F : GL_R16UI;
 	GLuint texture = frameBuffer.top->pDepthBuffer->depth_texture->glName;
-	glBindImageTexture(depthImageUnit, texture, 0, GL_FALSE, 0, GL_READ_ONLY, depthTexFormat);
+	glBindImageTexture(depthImageUnit, texture, 0, GL_FALSE, 0, GL_READ_ONLY, GL_RGBA32F);
 	gDP.changed |= CHANGED_COMBINE;
 }

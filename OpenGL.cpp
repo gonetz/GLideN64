@@ -567,9 +567,9 @@ void OGL_UpdateStates()
 
 		OGL_UpdateDepthUpdate();
 
-		if (gDP.otherMode.depthMode == ZMODE_DEC)
-			glEnable( GL_POLYGON_OFFSET_FILL );
-		else
+//		if (gDP.otherMode.depthMode == ZMODE_DEC)
+//			glEnable( GL_POLYGON_OFFSET_FILL );
+//		else
 		{
 //			glPolygonOffset( -3.0f, -3.0f );
 			glDisable( GL_POLYGON_OFFSET_FILL );
