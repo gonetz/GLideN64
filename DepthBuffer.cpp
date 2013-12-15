@@ -220,6 +220,8 @@ DepthBuffer *DepthBuffer_FindBuffer( u32 address )
 }
 */
 void DepthBuffer_ClearBuffer() {
+	if (!OGL.bImageTexture)
+		return;
 	DepthBuffer *current = depthBuffer.top;
 	if (current == NULL || current->fbo == 0)
 		return;
@@ -227,5 +229,6 @@ void DepthBuffer_ClearBuffer() {
 	glBindImageTexture(depthImageUnit, 0, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA32F);
 	ogl_glBindFramebuffer(GL_DRAW_FRAMEBUFFER, current->fbo);
 	OGL_DrawRect(0,0,VI.width, VI.height, color);
+	glBindImageTexture(depthImageUnit, current->depth_texture->glName, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA32F);
 	ogl_glBindFramebuffer(GL_DRAW_FRAMEBUFFER, frameBuffer.top->fbo);
 }

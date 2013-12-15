@@ -101,11 +101,15 @@ void InitZlutTexture()
 		512, 512, 0, GL_RED, GL_UNSIGNED_SHORT,
 		zLUT);
 	delete[] zLUT;
+	glBindImageTexture(ZlutImageUnit, g_zlut_tex, 0, GL_FALSE, 0, GL_READ_ONLY, GL_R16UI);
 }
 
 static
 void DestroyZlutTexture()
 {
+	if (!OGL.bImageTexture)
+		return;
+	glBindImageTexture(ZlutImageUnit, 0, 0, GL_FALSE, 0, GL_READ_ONLY, GL_R16UI);
 	if (g_zlut_tex > 0)
 		glDeleteTextures(1, &g_zlut_tex);
 }
@@ -146,6 +150,8 @@ void DestroyShadowMapShader()
 {
 	if (!OGL.bImageTexture)
 		return;
+
+	glBindImageTexture(TlutImageUnit, 0, 0, GL_FALSE, 0, GL_READ_ONLY, GL_R16UI);
 
 	if (g_tlut_tex > 0)
 		glDeleteTextures(1, &g_tlut_tex);
@@ -561,17 +567,9 @@ void GLSLCombiner::UpdateFBInfo() {
 	glUniform1i(fbFixedAlpha_location, nFbFixedAlpha);
 }
 
-void unbindImageTextures() {
-	glBindImageTexture(TlutImageUnit, 0, 0, GL_FALSE, 0, GL_READ_WRITE, GL_R16UI);
-	glBindImageTexture(ZlutImageUnit, 0, 0, GL_FALSE, 0, GL_READ_WRITE, GL_R16UI);
-	glBindImageTexture(depthImageUnit, 0, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA32F);
-}
-
 void GLSLCombiner::UpdateDepthInfo() {
 	if (!OGL.bImageTexture)
 		return;
-
-	unbindImageTextures();
 
 	if (frameBuffer.top == NULL || frameBuffer.top->pDepthBuffer == NULL)
 		return;
@@ -594,8 +592,6 @@ void GLSLCombiner::UpdateDepthInfo() {
 	glUniform1f(depth_trans_location, gSP.viewport.vtrans[2]*32768);
 
 	GLuint texture = frameBuffer.top->pDepthBuffer->depth_texture->glName;
-	glBindImageTexture(ZlutImageUnit, g_zlut_tex, 0, GL_FALSE, 0, GL_READ_ONLY, GL_R16UI);
-	glBindImageTexture(depthImageUnit, texture, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA32F);
 }
 
 void GLSLCombiner::UpdateAlphaTestInfo() {
@@ -631,7 +627,7 @@ void GLSL_RenderDepth() {
 #else
 	if (frameBuffer.top == NULL || frameBuffer.top->pDepthBuffer == NULL)
 		return;
-	unbindImageTextures();
+	glBindImageTexture(depthImageUnit, 0, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA32F);
 	glPushAttrib( GL_ENABLE_BIT | GL_VIEWPORT_BIT );
 
 	glActiveTexture( GL_TEXTURE0 );
@@ -683,6 +679,8 @@ void GLSL_RenderDepth() {
 			OGL_SwapBuffers();
 #endif
 			ogl_glBindFramebuffer(GL_DRAW_FRAMEBUFFER, frameBuffer.top->fbo);
+			glBindImageTexture(depthImageUnit, frameBuffer.top->pDepthBuffer->depth_texture->glName, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA32F);
+
 
 			glLoadIdentity();
 			glPopAttrib();
@@ -697,23 +695,20 @@ void GLS_SetShadowMapCombiner() {
 	if (!OGL.bImageTexture)
 		return;
 
-	unbindImageTextures();
-
 	if (g_paletteCRC256 != gDP.paletteCRC256) {
 		g_paletteCRC256 = gDP.paletteCRC256;
 		u16 palette[256];
 		u16 *src = (u16*)&TMEM[256];
 		for (int i = 0; i < 256; ++i)
 			palette[i] = swapword(src[i*4]);
+		glBindImageTexture(TlutImageUnit, 0, 0, GL_FALSE, 0, GL_READ_ONLY, GL_R16UI);
 		glBindTexture(GL_TEXTURE_1D, g_tlut_tex);
 		glTexSubImage1D(GL_TEXTURE_1D, 0, 0, 256, GL_RED, GL_UNSIGNED_SHORT, palette);
 		glBindTexture(GL_TEXTURE_1D, 0);
+		glBindImageTexture(TlutImageUnit, g_tlut_tex, 0, GL_FALSE, 0, GL_READ_ONLY, GL_R16UI);
 	}
 
 	glUseProgram(g_draw_shadow_map_program);
 
-	glBindImageTexture(TlutImageUnit, g_tlut_tex, 0, GL_FALSE, 0, GL_READ_ONLY, GL_R16UI);
-	GLuint texture = frameBuffer.top->pDepthBuffer->depth_texture->glName;
-	glBindImageTexture(depthImageUnit, texture, 0, GL_FALSE, 0, GL_READ_ONLY, GL_RGBA32F);
 	gDP.changed |= CHANGED_COMBINE;
 }

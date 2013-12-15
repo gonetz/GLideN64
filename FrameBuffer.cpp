@@ -387,6 +387,7 @@ void FrameBuffer_AttachDepthBuffer()
 		ogl_glFramebufferRenderbuffer(GL_DRAW_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthBuffer.top->renderbuf);
 		GLuint attachments[2] = { GL_COLOR_ATTACHMENT0, GL_DEPTH_ATTACHMENT };
 		ogl_glDrawBuffers(2,  attachments,  frameBuffer.top->texture->glName);
+		glBindImageTexture(depthImageUnit, depthBuffer.top->depth_texture->glName, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA32F);
 		assert(checkFBO());
 	} else if (frameBuffer.top != NULL) {
 		frameBuffer.top->pDepthBuffer = 0;

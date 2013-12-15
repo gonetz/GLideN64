@@ -803,6 +803,8 @@ void OGL_AddTriangle( SPVertex *vertices, int v0, int v1, int v2 )
 
 void OGL_DrawTriangles()
 {
+	if (OGL.bImageTexture)
+		glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 	glDrawArrays( GL_TRIANGLES, 0, OGL.numVertices );
 	OGL.numTriangles = OGL.numVertices = 0;
 }
