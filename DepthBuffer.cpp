@@ -201,24 +201,21 @@ void DepthBuffer_SetBuffer( u32 address )
 	}
 	depthBuffer.current = current;
 }
-/*
+
 DepthBuffer *DepthBuffer_FindBuffer( u32 address )
 {
 	DepthBuffer *current = depthBuffer.top;
 
 	while (current)
 	{
-		if (current->address == address) {
-			if (OGL.frameBufferTextures)
-				ogl_glFramebufferRenderbuffer(GL_DRAW_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, current->renderbuf);
+		if (current->address == address)
 			return current;
-		}
 		current = current->lower;
 	}
 
 	return NULL;
 }
-*/
+
 void DepthBuffer_ClearBuffer() {
 	if (!OGL.bImageTexture)
 		return;

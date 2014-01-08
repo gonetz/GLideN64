@@ -33,6 +33,6 @@ void DepthBuffer_Destroy();
 void DepthBuffer_SetBuffer( u32 address );
 void DepthBuffer_RemoveBuffer( u32 address );
 void DepthBuffer_ClearBuffer();
-//DepthBuffer *DepthBuffer_FindBuffer( u32 address );
+DepthBuffer *DepthBuffer_FindBuffer( u32 address );
 
 #endif
