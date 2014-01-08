@@ -72,8 +72,6 @@ void S2DEX_Init()
 	// Set GeometryMode flags
 	GBI_InitFlags( F3DEX );
 
-	gSP.geometryMode = 0;
-
 	GBI.PCStackSize = 18;
 
 	//          GBI Command             Command Value			Command Function
