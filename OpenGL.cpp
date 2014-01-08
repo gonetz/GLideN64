@@ -679,6 +679,9 @@ void OGL_UpdateStates()
 					break;
 				case 0x0FA5: // Seems to be doing just blend color - maybe combiner can be used for this?
 				case 0x5055: // Used in Paper Mario intro, I'm not sure if this is right...
+				case 0xAF50: // LOT in Zelda: MM
+				case 0x0F5A: // LOT in Zelda: MM
+					//clr_in * 0 + clr_mem * 1
 					glBlendFunc( GL_ZERO, GL_ONE );
 					break;
 				default:
