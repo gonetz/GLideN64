@@ -22,9 +22,10 @@ void VI_UpdateSize()
 	u32 hEnd = _SHIFTR( *REG.VI_H_START, 0, 10 );
 	u32 hStart = _SHIFTR( *REG.VI_H_START, 16, 10 );
 
-	// These are in half-lines, so shift an extra bit
-	u32 vEnd = _SHIFTR( *REG.VI_V_START, 1, 9 );
-	u32 vStart = _SHIFTR( *REG.VI_V_START, 17, 9 );
+	// Shift an extra bit if not in interlaced mode
+	u32 extraShift = (*REG.VI_STATUS & 0x40) == 0x40 ? 0 : 1;
+	u32 vEnd = _SHIFTR( *REG.VI_V_START, 0 + extraShift, 10 - extraShift );
+	u32 vStart = _SHIFTR( *REG.VI_V_START, 16 + extraShift, 10 - extraShift );
 
 	VI.width = (hEnd - hStart) * xScale;
 	VI.real_height = (vEnd - vStart) * yScale;
