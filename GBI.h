@@ -674,7 +674,7 @@ struct SpecialMicrocodeInfo
 	u32 type;
 	u32 NoN;
 	u32 crc;
-	char *text;
+	const char *text;
 };
 
 struct MicrocodeInfo
