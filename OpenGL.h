@@ -76,8 +76,7 @@ struct GLInfo
 	BYTE	combiner;
 	enum {
 		fbNone,
-		fbFBO,
-		fbFBOEXT
+		fbFBO
 	} framebufferMode;
 	enum {
 		rsNone = 0,
@@ -116,18 +115,6 @@ void OGL_SaveScreenshot();
 void OGL_SwapBuffers();
 void OGL_ReadScreen( void **dest, long *width, long *height );
 
-void ogl_glGenFramebuffers (GLsizei n, GLuint *framebuffers);
-void ogl_glBindFramebuffer (GLenum target, GLuint framebuffer);
-void ogl_glDeleteFramebuffers (GLsizei n, const GLuint *framebuffers);
-void ogl_glFramebufferTexture (GLenum target, GLenum attachment, GLuint texture, GLint level);
-void ogl_glGenRenderbuffers (GLsizei n, GLuint *renderbuffers);
-void ogl_glBindRenderbuffer (GLenum target, GLuint renderbuffer);
-void ogl_glRenderbufferStorage (GLenum target, GLenum internalformat, GLsizei width, GLsizei height);
-void ogl_glDeleteRenderbuffers (GLsizei n, const GLuint *renderbuffers);
-void ogl_glFramebufferRenderbuffer (GLenum target, GLenum attachment, GLenum renderbuffertarget, GLuint renderbuffer);
-void ogl_glDrawBuffers (GLsizei n, const GLenum *bufs, GLuint texture);
-GLenum ogl_glCheckFramebufferStatus (GLenum target);
-void ogl_glBlitFramebuffer(GLint srcX0, GLint srcY0, GLint srcX1, GLint srcY1, GLint dstX0, GLint dstY0, GLint dstX1, GLint dstY1, GLbitfield mask, GLenum filter);
 bool checkFBO();
 
 #ifdef _WINDOWS
@@ -182,16 +169,5 @@ extern PFNGLDELETEBUFFERSPROC glDeleteBuffers;
 extern PFNGLBINDIMAGETEXTUREPROC glBindImageTexture;
 extern PFNGLMEMORYBARRIERPROC glMemoryBarrier;
 
-extern PFNGLBINDFRAMEBUFFEREXTPROC glBindFramebufferEXT;
-extern PFNGLFRAMEBUFFERTEXTURE2DEXTPROC glFramebufferTexture2DEXT;
-extern PFNGLGENFRAMEBUFFERSEXTPROC glGenFramebuffersEXT;
-extern PFNGLBINDRENDERBUFFEREXTPROC glBindRenderbufferEXT;
-extern PFNGLDELETERENDERBUFFERSEXTPROC glDeleteRenderbuffersEXT;
-extern PFNGLGENRENDERBUFFERSEXTPROC glGenRenderbuffersEXT;
-extern PFNGLRENDERBUFFERSTORAGEEXTPROC glRenderbufferStorageEXT;
-extern PFNGLFRAMEBUFFERRENDERBUFFEREXTPROC glFramebufferRenderbufferEXT;
-extern PFNGLCHECKFRAMEBUFFERSTATUSEXTPROC glCheckFramebufferStatusEXT;
-extern PFNGLDELETEFRAMEBUFFERSEXTPROC glDeleteFramebuffersEXT;
-extern PFNGLBLITFRAMEBUFFEREXTPROC glBlitFramebufferEXT;
 #endif // !_WINDOWS
 #endif

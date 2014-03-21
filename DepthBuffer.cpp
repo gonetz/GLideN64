@@ -30,7 +30,7 @@ void DepthBuffer_RemoveBottom()
 		depthBuffer.top = NULL;
 
 	if (depthBuffer.bottom->renderbuf != 0)
-		ogl_glDeleteRenderbuffers(1, &depthBuffer.bottom->renderbuf);
+		glDeleteRenderbuffers(1, &depthBuffer.bottom->renderbuf);
 	if (depthBuffer.bottom->depth_texture != NULL)
 		TextureCache_Remove( depthBuffer.bottom->depth_texture );
 	free( depthBuffer.bottom );
@@ -72,9 +72,9 @@ void DepthBuffer_Remove( DepthBuffer *buffer )
 	}
 
 	if (buffer->renderbuf != 0)
-		ogl_glDeleteRenderbuffers(1, &buffer->renderbuf);
+		glDeleteRenderbuffers(1, &buffer->renderbuf);
 	if (buffer->fbo != 0)
-		ogl_glDeleteFramebuffers(1, &buffer->fbo);
+		glDeleteFramebuffers(1, &buffer->fbo);
 	if (buffer->depth_texture != NULL)
 		TextureCache_Remove( buffer->depth_texture );
 	free( buffer );
@@ -180,12 +180,12 @@ void DepthBuffer_SetBuffer( u32 address )
 		current->width = pFrameBuffer != NULL ? pFrameBuffer->width : VI.width;
 		current->depth_texture = NULL;
 		if (OGL.frameBufferTextures) {
-			ogl_glGenRenderbuffers(1, &current->renderbuf);
-			ogl_glBindRenderbuffer(GL_RENDERBUFFER, current->renderbuf);
+			glGenRenderbuffers(1, &current->renderbuf);
+			glBindRenderbuffer(GL_RENDERBUFFER, current->renderbuf);
 			if (pFrameBuffer != NULL)
-				ogl_glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, pFrameBuffer->texture->realWidth, pFrameBuffer->texture->realHeight);
+				glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, pFrameBuffer->texture->realWidth, pFrameBuffer->texture->realHeight);
 			else
-				ogl_glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, (u32)pow2(OGL.width), (u32)pow2(OGL.height));
+				glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, (u32)pow2(OGL.width), (u32)pow2(OGL.height));
 		}
 	}
 
@@ -224,8 +224,8 @@ void DepthBuffer_ClearBuffer() {
 		return;
 	float color[4] = {1.0f, 1.0f, 0.0f, 0.0f};
 	glBindImageTexture(depthImageUnit, 0, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA32F);
-	ogl_glBindFramebuffer(GL_DRAW_FRAMEBUFFER, current->fbo);
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, current->fbo);
 	OGL_DrawRect(0,0,VI.width, VI.height, color);
 	glBindImageTexture(depthImageUnit, current->depth_texture->glName, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA32F);
-	ogl_glBindFramebuffer(GL_DRAW_FRAMEBUFFER, frameBuffer.top->fbo);
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, frameBuffer.top->fbo);
 }

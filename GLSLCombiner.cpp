@@ -207,7 +207,7 @@ void InitGLSLCombiner()
 }
 
 void DestroyGLSLCombiner() {
-	ogl_glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 	DestroyZlutTexture();
 	DestroyShadowMapShader();
 }
@@ -692,17 +692,17 @@ void GLSL_RenderDepth() {
 	if (!OGL.bImageTexture)
 		return;
 #if 0
-	ogl_glBindFramebuffer(GL_READ_FRAMEBUFFER, g_zbuf_fbo);
-	ogl_glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, g_zbuf_fbo);
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 	glDrawBuffer( GL_FRONT );
-	ogl_glBlitFramebuffer(
+	glBlitFramebuffer(
 		0, 0, OGL.width, OGL.height,
 		0, OGL.heightOffset, OGL.width, OGL.heightOffset + OGL.height,
 		GL_COLOR_BUFFER_BIT, GL_LINEAR
 	);
 	glDrawBuffer( GL_BACK );
-	ogl_glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
-	ogl_glBindFramebuffer(GL_DRAW_FRAMEBUFFER, frameBuffer.top != NULL ? frameBuffer.top->fbo : 0);
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, frameBuffer.top != NULL ? frameBuffer.top->fbo : 0);
 #else
 	if (frameBuffer.top == NULL || frameBuffer.top->pDepthBuffer == NULL)
 		return;
@@ -733,7 +733,7 @@ void GLSL_RenderDepth() {
 			u1 = 1.0;
 			v1 = 1.0;
 
-			ogl_glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+			glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 #ifdef _WINDOWS
 			glDrawBuffer( GL_FRONT );
 #else
@@ -757,7 +757,7 @@ void GLSL_RenderDepth() {
 #else
 			OGL_SwapBuffers();
 #endif
-			ogl_glBindFramebuffer(GL_DRAW_FRAMEBUFFER, frameBuffer.top->fbo);
+			glBindFramebuffer(GL_DRAW_FRAMEBUFFER, frameBuffer.top->fbo);
 			glBindImageTexture(depthImageUnit, frameBuffer.top->pDepthBuffer->depth_texture->glName, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA32F);
 
 
