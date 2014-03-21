@@ -10,23 +10,80 @@
 #define CHANGED_COLORBUFFER		0x04
 #define CHANGED_GEOMETRYMODE	0x08
 #define CHANGED_TEXTURE			0x10
-#define CHANGED_FOGPOSITION		0x10
-#define CHANGED_FB_TEXTURE		0x20
-#define CHANGED_CPU_FB_WRITE	0x40
+#define CHANGED_FOGPOSITION		0x20
+#define CHANGED_FB_TEXTURE		0x40
+#define CHANGED_CPU_FB_WRITE	0x80
+#define CHANGED_TEXTURESCALE    0x100
+
+#define gSPFlushTriangles() \
+if \
+( \
+    ( \
+         (OGL.triangles.num > 1000) || \
+         ( \
+             (RSP.nextCmd != G_NOOP) && \
+             (RSP.nextCmd != G_RDPNOOP) && \
+             (RSP.nextCmd != G_MOVEMEM) && \
+             (RSP.nextCmd != G_ENDDL) && \
+             (RSP.nextCmd != G_DL) && \
+             (RSP.nextCmd != G_VTXCOLORBASE) && \
+             (RSP.nextCmd != G_TRI1) && \
+             (RSP.nextCmd != G_TRI2) && \
+             (RSP.nextCmd != G_TRI4) && \
+             (RSP.nextCmd != G_QUAD) && \
+             (RSP.nextCmd != G_VTX) && \
+             (RSP.nextCmd != G_MTX) \
+         ) \
+    ) || \
+    ( \
+        (RSP.nextCmd != G_TRI1) && \
+        (RSP.nextCmd != G_TRI2) && \
+        (RSP.nextCmd != G_TRI4) && \
+        (RSP.nextCmd != G_QUAD) \
+    ) \
+) \
+{ \
+    OGL_DrawTriangles(); \
+}
+
+#define CLIP_X      0x03
+#define CLIP_NEGX   0x01
+#define CLIP_POSX   0x02
+
+#define CLIP_Y      0x0C
+#define CLIP_NEGY   0x04
+#define CLIP_POSY   0x08
+
+#define CLIP_Z      0x30
+#define CLIP_NEGZ   0x10
+#define CLIP_POSZ   0x20
+
+#define SC_POSITION             1
+#define SC_COLOR                2
+#define SC_TEXCOORD0            3
+#define SC_TEXCOORD1            4
+#define SC_STSCALED             5
+#define SC_NUMLIGHTS            6
 
 struct SPVertex
 {
 	f32		x, y, z, w;
-	f32		nx, ny, nz;
+	f32		nx, ny, nz, __pad0;
 	f32		r, g, b, a;
 	f32		s, t;
-	f32		xClip, yClip, zClip;
-	s16		flag;
-	u8 HWLight;
 	u8 st_scaled;
+	u8 HWLight;
+	s16		flag;
+	u32     clip;
 };
 
 typedef SPVertex SPTriangle[3];
+
+struct SPLight
+{
+    f32 r, g, b;
+    f32 x, y, z;
+};
 
 struct gSPInfo
 {
@@ -47,16 +104,10 @@ struct gSPInfo
 		f32 baseScaleX, baseScaleY;
 	} objMatrix;
 
-	SPVertex vertices[80];
-
 	u32 vertexColorBase;
 	u32 vertexi;
 
-	struct
-	{
-		f32	r, g, b;
-		f32	x, y, z;
-	} lights[8];
+	SPLight lights[8];
 
 	struct
 	{
@@ -116,15 +167,8 @@ void gSPDMADisplayList( u32 dl, u32 n );
 void gSPBranchList( u32 dl );
 void gSPBranchLessZ( u32 branchdl, u32 vtx, f32 zval );
 void gSPSprite2DBase( u32 base );
-void gSP1Triangle( s32 v0, s32 v1, s32 v2, s32 flag );
-void gSP2Triangles( s32 v00, s32 v01, s32 v02, s32 flag0, 
-				    s32 v10, s32 v11, s32 v12, s32 flag1 );
-void gSP4Triangles( s32 v00, s32 v01, s32 v02,
-				    s32 v10, s32 v11, s32 v12,
-					s32 v20, s32 v21, s32 v22,
-					s32 v30, s32 v31, s32 v32 );
 void gSPDMATriangles( u32 tris, u32 n );
-void gSP1Quadrangle( s32 v0, s32 v1, s32 v2, s32 v4 );
+void gSP1Quadrangle( s32 v0, s32 v1, s32 v2, s32 v3 );
 void gSPCullDisplayList( u32 v0, u32 vn );
 void gSPPopMatrix( u32 param );
 void gSPPopMatrixN( u32 param, u32 num );
@@ -154,5 +198,37 @@ void gSPObjMatrix( u32 mtx );
 void gSPObjSubMatrix( u32 mtx );
 void gSPSetDMAOffsets( u32 mtxoffset, u32 vtxoffset );
 void gSPSetVertexColorBase( u32 base );
+void gSPProcessVertex(u32 v);
+
+void gSPTriangleUnknown();
+
+void gSP1Triangle(s32 v0, s32 v1, s32 v2);
+void gSP2Triangles(const s32 v00, const s32 v01, const s32 v02, const s32 flag0,
+                    const s32 v10, const s32 v11, const s32 v12, const s32 flag1 );
+void gSP4Triangles(const s32 v00, const s32 v01, const s32 v02,
+                    const s32 v10, const s32 v11, const s32 v12,
+                    const s32 v20, const s32 v21, const s32 v22,
+                    const s32 v30, const s32 v31, const s32 v32 );
+
+
+void __indexmap_init();
+void __indexmap_clear();
+u32 __indexmap_findunused(u32 num);
+u32 __indexmap_getnew(u32 index, u32 num);
+
+#ifdef __VEC4_OPT
+extern void (*gSPTransformVertex4)(u32 v, float mtx[4][4]);
+extern void (*gSPTransformNormal4)(u32 v, float mtx[4][4]);
+extern void (*gSPLightVertex4)(u32 v);
+extern void (*gSPBillboardVertex4)(u32 v);
+#endif
+extern void (*gSPTransformVertex)(float vtx[4], float mtx[4][4]);
+extern void (*gSPLightVertex)(u32 v);
+extern void (*gSPBillboardVertex)(u32 v, u32 i);
+
+#ifdef __NEON_OPT
+void gSPInitNeon();
+#endif
+
 #endif
 
