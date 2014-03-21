@@ -306,6 +306,8 @@ static const char *SegmentText[] =
 #define G_TEXRECTFLIP			0xE5	/* -27 */
 #define G_TEXRECT				0xE4	/* -28 */
 
+#define G_RDPNOOP				0xC0
+
 #define G_TRI_FILL				0xC8	/* fill triangle:            11001000 */
 #define G_TRI_SHADE				0xCC	/* shade triangle:           11001100 */
 #define G_TRI_TXTR				0xCA	/* texture triangle:         11001010 */
