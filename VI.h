@@ -5,6 +5,7 @@
 struct VIInfo
 {
 	u32 width, height, real_height;
+	f32 rwidth, rheight;
 	u32 vStart, vEnd, vHeight;
 	u32 lastOrigin;
 

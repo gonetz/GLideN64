@@ -39,6 +39,8 @@ void VI_UpdateSize()
 
 	if (VI.width == 0.0f) VI.width = *REG.VI_WIDTH;
 	if (VI.height == 0.0f) VI.height = 240.0f;
+	VI.rwidth = 1.0f / VI.width;
+	VI.rheight = 1.0f / VI.height;
 }
 
 void VI_UpdateScreen()
