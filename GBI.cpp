@@ -19,7 +19,6 @@
 #include "F3DDKR.h"
 #include "F3DWRUS.h"
 #include "F3DPD.h"
-#include "Types.h"
 #ifndef MUPENPLUSAPI
 #ifdef _WINDOWS
 # include "Resource.h"
@@ -29,10 +28,12 @@
 #endif // _WINDOWS
 #endif // MUPENPLUSAPI
 #include "CRC.h"
+#include "Log.h"
 #include "Debug.h"
 
 u32 uc_crc, uc_dcrc;
 char uc_str[256];
+u32 last_good_ucode = (u32) -1;
 
 SpecialMicrocodeInfo specialMicrocodes[] =
 {
@@ -444,11 +445,15 @@ MicrocodeInfo *GBI_DetectMicrocode( u32 uc_start, u32 uc_dstart, u16 uc_dsize )
 #ifdef _WINDOWS
 	current->type = (u32)DialogBox( hInstance, MAKEINTRESOURCE( IDD_MICROCODEDLG ), hWnd, MicrocodeDlgProc );
 #else // _WINDOWS
-	printf( "glN64: Warning - unknown ucode!!!\n" );
+	printf( "GLideN64: Warning - unknown ucode!!!\n" );
 	current->type = MicrocodeDialog();
 #endif // _WINDOWS
 #else // MUPENPLUSAPI
-	assert(false && "Unknown microcode!");
+	LOG(LOG_ERROR, "[GLideN64]: Warning - unknown ucode!!!\n");
+	if (last_good_ucode != (u32)-1)
+		current->type=last_good_ucode;
+	else
+		assert(false && "Unknown microcode!");
 #endif // MUPENPLUSAPI
 	return current;
 }
