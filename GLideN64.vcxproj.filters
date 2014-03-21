@@ -114,6 +114,9 @@
     <ClCompile Include="GLSLCombiner.cpp">
       <Filter>Source Files\Combiners</Filter>
     </ClCompile>
+    <ClCompile Include="3DMath.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="2xSAI.h">

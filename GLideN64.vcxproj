@@ -143,6 +143,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="2xSAI.cpp" />
+    <ClCompile Include="3DMath.cpp" />
     <ClCompile Include="Combiner.cpp" />
     <ClCompile Include="Config.cpp" />
     <ClCompile Include="CRC.cpp" />

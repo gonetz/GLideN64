@@ -14,6 +14,7 @@ LOCAL_C_INCLUDES :=         \
 
 LOCAL_SRC_FILES :=                  \
 	2xSAI.cpp		\
+	3DMath.cpp		\
 	Combiner.cpp		\
 	Config_mupen.cpp	\
 	CRC.cpp			\

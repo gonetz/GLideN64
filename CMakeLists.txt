@@ -4,6 +4,7 @@ project( GLideN64 )
 
 set(GLideN64_SOURCES 
   2xSAI.cpp
+  3DMath.cpp
   Combiner.cpp
   CRC.cpp
   Debug.cpp

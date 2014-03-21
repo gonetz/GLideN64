@@ -274,6 +274,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\3DMath.cpp"
+				>
+			</File>
+			<File
 				RelativePath="Combiner.cpp"
 				>
 			</File>
