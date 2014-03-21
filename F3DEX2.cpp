@@ -58,8 +58,7 @@ void F3DEX2_Tri1( u32 w0, u32 w1 )
 {
 	gSP1Triangle( _SHIFTR( w0, 17, 7 ), 
 		          _SHIFTR( w0, 9, 7 ), 
-				  _SHIFTR( w0, 1, 7 ), 
-				  0 );
+				  _SHIFTR( w0, 1, 7 ));
 }
 
 void F3DEX2_PopMtx( u32 w0, u32 w1 )

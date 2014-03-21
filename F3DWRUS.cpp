@@ -17,10 +17,9 @@ void F3DWRUS_Vtx( u32 w0, u32 w1 )
 
 void F3DWRUS_Tri1( u32 w0, u32 w1 )
 {
-	gSP1Triangle( _SHIFTR( w1, 16, 8 ) / 5, 
-		          _SHIFTR( w1, 8, 8 ) / 5, 
-				  _SHIFTR( w1, 0, 8 ) / 5, 
-				  _SHIFTR( w1, 24, 8 ) );
+	gSP1Triangle( _SHIFTR( w1, 16, 8 ) / 5,
+		          _SHIFTR( w1, 8, 8 ) / 5,
+				  _SHIFTR( w1, 0, 8 ) / 5);
 }
 
 void F3DWRUS_Tri2( u32 w0, u32 w1 )

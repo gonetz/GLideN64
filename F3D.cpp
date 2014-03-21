@@ -118,8 +118,7 @@ void F3D_Tri1( u32 w0, u32 w1 )
 {
 	gSP1Triangle( _SHIFTR( w1, 16, 8 ) / 10, 
 		          _SHIFTR( w1, 8, 8 ) / 10, 
-				  _SHIFTR( w1, 0, 8 ) / 10, 
-				  _SHIFTR( w1, 24, 8 ) );
+				  _SHIFTR( w1, 0, 8 ) / 10);
 }
 
 void F3D_CullDL( u32 w0, u32 w1 )
