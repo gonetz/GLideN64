@@ -17,16 +17,26 @@ bool g_bCopyFromRDRAM = false;
 bool g_bCopyDepthToRDRAM = false;
 bool g_bIgnoreCFB = true;
 
+#ifndef GLES2
+const GLint monohromeInternalformat = GL_R8;
+const GLenum monohromeformat = GL_RED;
+#else
+const GLint monohromeInternalformat = GL_LUMINANCE;
+const GLenum monohromeformat = GL_LUMINANCE;
+#endif // GLES2
+
 FrameBufferList frameBuffer;
 
 class FrameBufferToRDRAM
 {
 public:
 	FrameBufferToRDRAM() :
-	  m_FBO(0), m_pTexture(NULL), m_curIndex(0)
+		m_FBO(0), m_pTexture(NULL), m_curIndex(0)
 	{
-		m_aPBO[0] = m_aPBO[1] = 0;
 		m_aAddress[0] = m_aAddress[1] = 0;
+#ifndef GLES2
+		m_aPBO[0] = m_aPBO[1] = 0;
+#endif
 	}
 
 	void Init();
@@ -41,11 +51,14 @@ private:
 
 	GLuint m_FBO;
 	CachedTexture * m_pTexture;
-	GLuint m_aPBO[2];
 	u32 m_aAddress[2];
 	u32 m_curIndex;
+#ifndef GLES2
+	GLuint m_aPBO[2];
+#endif
 };
 
+#ifndef GLES2
 class DepthBufferToRDRAM
 {
 public:
@@ -68,6 +81,7 @@ private:
 	u32 m_aAddress[2];
 	u32 m_curIndex;
 };
+#endif // GLES2
 
 class RDRAMtoFrameBuffer
 {
@@ -81,6 +95,7 @@ public:
 
 private:
 	struct PBOBinder {
+#ifndef GLES2
 		PBOBinder(GLuint _PBO)
 		{
 			glBindBuffer(GL_PIXEL_UNPACK_BUFFER, _PBO);
@@ -88,13 +103,24 @@ private:
 		~PBOBinder() {
 			glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
 		}
+#else
+		PBOBinder(GLubyte* _ptr) : ptr(_ptr) {}
+		~PBOBinder() {free(ptr);}
+		GLubyte* ptr;
+#endif
 	};
 	CachedTexture * m_pTexture;
+#ifndef GLES2
 	GLuint m_PBO;
+#else
+	GLubyte* m_PBO;
+#endif
 };
 
 FrameBufferToRDRAM g_fbToRDRAM;
+#ifndef GLES2
 DepthBufferToRDRAM g_dbToRDRAM;
+#endif
 RDRAMtoFrameBuffer g_RDRAMtoFB;
 
 void FrameBuffer_Init()
@@ -105,7 +131,9 @@ void FrameBuffer_Init()
 	frameBuffer.numBuffers = 0;
 	frameBuffer.drawBuffer = GL_BACK;
 	g_fbToRDRAM.Init();
+#ifndef GLES2
 	g_dbToRDRAM.Init();
+#endif
 	g_RDRAMtoFB.Init();
 }
 
@@ -238,7 +266,9 @@ void FrameBuffer_Destroy()
 		FrameBuffer_RemoveBottom();
 	frameBuffer.top = frameBuffer.bottom = frameBuffer.current = NULL;
 	g_fbToRDRAM.Destroy();
+#ifndef GLES2
 	g_dbToRDRAM.Destroy();
+#endif
 	g_RDRAMtoFB.Destroy();
 }
 
@@ -311,9 +341,9 @@ void FrameBuffer_SaveBuffer( u32 address, u16 format, u16 size, u16 width, u16 h
 
 		glBindTexture( GL_TEXTURE_2D, current->texture->glName );
 		if (size > G_IM_SIZ_8b)
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, current->texture->realWidth, current->texture->realHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, current->texture->realWidth, current->texture->realHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 		else
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, current->texture->realWidth, current->texture->realHeight, 0, GL_RED, GL_UNSIGNED_BYTE, NULL);
+			glTexImage2D(GL_TEXTURE_2D, 0, monohromeInternalformat, current->texture->realWidth, current->texture->realHeight, 0, monohromeformat, GL_UNSIGNED_BYTE, NULL);
 		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
 		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
 		ogl_glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
@@ -342,6 +372,7 @@ void FrameBuffer_SaveBuffer( u32 address, u16 format, u16 size, u16 width, u16 h
 static
 void _initDepthTexture()
 {
+#ifndef GLES2
 	depthBuffer.top->depth_texture = TextureCache_AddTop();
 
 	depthBuffer.top->depth_texture->width = (u32)(frameBuffer.top->width * OGL.scaleX);
@@ -376,6 +407,7 @@ void _initDepthTexture()
 	ogl_glBindFramebuffer(GL_DRAW_FRAMEBUFFER, frameBuffer.top->fbo);
 	frameBuffer.top->pDepthBuffer = depthBuffer.top;
 	DepthBuffer_ClearBuffer();
+#endif // GLES2
 }
 
 void FrameBuffer_AttachDepthBuffer()
@@ -426,7 +458,7 @@ void FrameBuffer_RenderBuffer( u32 address )
 
 	ogl_glBindFramebuffer(GL_READ_FRAMEBUFFER, current->fbo);
 	ogl_glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-	glDrawBuffer( GL_BACK );
+	//glDrawBuffer( GL_BACK );
 	float clearColor[4] = {0.0f, 0.0f, 0.0f, 0.0f};
 	OGL_ClearColorBuffer(clearColor);
 	ogl_glBlitFramebuffer(
@@ -628,7 +660,7 @@ void FrameBufferToRDRAM::Init()
 	m_pTexture->textureBytes = m_pTexture->realWidth * m_pTexture->realHeight * 4;
 	cache.cachedBytes += m_pTexture->textureBytes;
 	glBindTexture( GL_TEXTURE_2D, m_pTexture->glName );
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, m_pTexture->realWidth, m_pTexture->realHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_pTexture->realWidth, m_pTexture->realHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
 	glBindTexture(GL_TEXTURE_2D, 0);
@@ -638,6 +670,7 @@ void FrameBufferToRDRAM::Init()
 	assert(checkFBO());
 	ogl_glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 
+#ifndef GLES2
 	// Generate and initialize Pixel Buffer Objects
 	glGenBuffers(2, m_aPBO);
 	glBindBuffer(GL_PIXEL_PACK_BUFFER, m_aPBO[0]);
@@ -645,6 +678,7 @@ void FrameBufferToRDRAM::Init()
 	glBindBuffer(GL_PIXEL_PACK_BUFFER, m_aPBO[1]);
 	glBufferData(GL_PIXEL_PACK_BUFFER, 640*480*4, NULL, GL_DYNAMIC_DRAW);
 	glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
+#endif // GLES2
 }
 
 void FrameBufferToRDRAM::Destroy() {
@@ -653,8 +687,10 @@ void FrameBufferToRDRAM::Destroy() {
 	m_FBO = 0;
 	TextureCache_Remove( m_pTexture );
 	m_pTexture = NULL;
+#ifndef GLES2
 	glDeleteBuffers(2, m_aPBO);
 	m_aPBO[0] = m_aPBO[1] = 0;
+#endif // GLES2
 }
 
 void FrameBufferToRDRAM::CopyToRDRAM( u32 address, bool bSync ) {
@@ -675,6 +711,9 @@ void FrameBufferToRDRAM::CopyToRDRAM( u32 address, bool bSync ) {
 	);
 	ogl_glBindFramebuffer(GL_DRAW_FRAMEBUFFER, frameBuffer.top->fbo);
 
+	ogl_glBindFramebuffer(GL_READ_FRAMEBUFFER, m_FBO);
+	glReadBuffer(GL_COLOR_ATTACHMENT0);
+#ifndef GLES2
 	// If Sync, read pixels from the buffer, copy them to RDRAM.
 	// If not Sync, read pixels from the buffer, copy pixels from the previous buffer to RDRAM.
 	if (m_aAddress[m_curIndex] == 0)
@@ -683,8 +722,6 @@ void FrameBufferToRDRAM::CopyToRDRAM( u32 address, bool bSync ) {
 	const u32 nextIndex = bSync ? m_curIndex : (m_curIndex + 1) % 2;
 	m_aAddress[m_curIndex] = address;
 	glBindBuffer(GL_PIXEL_PACK_BUFFER, m_aPBO[m_curIndex]);
-	ogl_glBindFramebuffer(GL_READ_FRAMEBUFFER, m_FBO);
-	glReadBuffer(GL_COLOR_ATTACHMENT0);
 	glReadPixels( 0, 0, VI.width, VI.height, GL_RGBA, GL_UNSIGNED_BYTE, 0 );
 
 	glBindBuffer(GL_PIXEL_PACK_BUFFER, m_aPBO[nextIndex]);
@@ -693,6 +730,15 @@ void FrameBufferToRDRAM::CopyToRDRAM( u32 address, bool bSync ) {
 		glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
 		return;
 	}
+#else
+	m_curIndex = 0;
+	m_aAddress[0] = address;
+	const u32 nextIndex = 0;
+	GLubyte* pixelData = (GLubyte* )malloc(VI.width*VI.height*4);
+	if(pixelData == NULL)
+		return;
+	glReadPixels( 0, 0, VI.width, VI.height, GL_RGBA, GL_UNSIGNED_BYTE, pixelData );
+#endif // GLES2
 
 	if (current->size == G_IM_SIZ_32b) {
 		u32 *ptr_dst = (u32*)(RDRAM + m_aAddress[nextIndex]);
@@ -704,7 +750,6 @@ void FrameBufferToRDRAM::CopyToRDRAM( u32 address, bool bSync ) {
 		}
 	} else {
 		u16 *ptr_dst = (u16*)(RDRAM + m_aAddress[nextIndex]);
-		u16 col;
 		RGBA * ptr_src = (RGBA*)pixelData;
 
 		for (u32 y = 0; y < VI.height; ++y) {
@@ -714,8 +759,12 @@ void FrameBufferToRDRAM::CopyToRDRAM( u32 address, bool bSync ) {
 			}
 		}
 	}
+#ifndef GLES2
 	glUnmapBuffer(GL_PIXEL_PACK_BUFFER);
 	glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
+#else
+	free(pixelData);
+#endif
 	ogl_glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
 }
 
@@ -724,6 +773,7 @@ void FrameBuffer_CopyToRDRAM( u32 address, bool bSync )
 	g_fbToRDRAM.CopyToRDRAM(address, bSync);
 }
 
+#ifndef GLES2
 void DepthBufferToRDRAM::Init()
 {
 	// generate a framebuffer
@@ -823,9 +873,12 @@ void DepthBufferToRDRAM::CopyToRDRAM( u32 address) {
 	glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
 	ogl_glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
 }
+#endif // GLES2
 
 void FrameBuffer_CopyDepthBuffer( u32 address ) {
+#ifndef GLES2
 	g_dbToRDRAM.CopyToRDRAM(address);
+#endif
 }
 
 void RDRAMtoFrameBuffer::Init()
@@ -844,21 +897,25 @@ void RDRAMtoFrameBuffer::Init()
 	m_pTexture->textureBytes = m_pTexture->realWidth * m_pTexture->realHeight * 4;
 	cache.cachedBytes += m_pTexture->textureBytes;
 	glBindTexture( GL_TEXTURE_2D, m_pTexture->glName );
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, m_pTexture->realWidth, m_pTexture->realHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_pTexture->realWidth, m_pTexture->realHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
 	glBindTexture(GL_TEXTURE_2D, 0);
 
 	// Generate Pixel Buffer Object. Initialize it later
+#ifndef GLES2
 	glGenBuffers(1, &m_PBO);
+#endif
 }
 
 void RDRAMtoFrameBuffer::Destroy()
 {
 	TextureCache_Remove( m_pTexture );
 	m_pTexture = NULL;
+#ifndef GLES2
 	glDeleteBuffers(1, &m_PBO);
 	m_PBO = 0;
+#endif
 }
 
 void RDRAMtoFrameBuffer::CopyFromRDRAM( u32 _address, bool _bUseAlpha)
@@ -872,9 +929,15 @@ void RDRAMtoFrameBuffer::CopyFromRDRAM( u32 _address, bool _bUseAlpha)
 	m_pTexture->width = width;
 	m_pTexture->height = height;
 	const u32 dataSize = width*height*4;
+#ifndef GLES2
 	PBOBinder binder(m_PBO);
 	glBufferData(GL_PIXEL_UNPACK_BUFFER, dataSize, NULL, GL_DYNAMIC_DRAW);
 	GLubyte* ptr = (GLubyte*)glMapBuffer(GL_PIXEL_UNPACK_BUFFER, GL_WRITE_ONLY);
+#else
+	m_PBO = (GLubyte*)malloc(dataSize);
+	GLubyte* ptr = m_PBO;
+	PBOBinder binder(m_PBO);
+#endif // GLES2
 	if (ptr == NULL)
 		return;
 
@@ -926,12 +989,18 @@ void RDRAMtoFrameBuffer::CopyFromRDRAM( u32 _address, bool _bUseAlpha)
 			}
 		}
 	}
+#ifndef GLES2
 	glUnmapBuffer(GL_PIXEL_UNPACK_BUFFER); // release the mapped buffer
+#endif
 	if (empty == 0)
 		return;
 
 	glBindTexture(GL_TEXTURE_2D, m_pTexture->glName);
+#ifndef GLES2
 	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+#else
+	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, m_PBO);
+#endif
 #if 0
 	glBindTexture(GL_TEXTURE_2D, 0);
 
