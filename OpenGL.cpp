@@ -803,7 +803,7 @@ void OGL_DrawTriangles()
 		glVertexAttribPointer(SC_POSITION, 4, GL_FLOAT, GL_FALSE, sizeof(SPVertex), &OGL.triangles.vertices[0].x);
 		glVertexAttribPointer(SC_COLOR, 4, GL_FLOAT, GL_FALSE, sizeof(SPVertex), &OGL.triangles.vertices[0].r);
 		glVertexAttribPointer(SC_TEXCOORD0, 2, GL_FLOAT, GL_FALSE, sizeof(SPVertex), &OGL.triangles.vertices[0].s);
-		glVertexAttribPointer(SC_STSCALED, 1, GL_BYTE, GL_FALSE, sizeof(SPVertex), &OGL.triangles.vertices[0].st_scaled);
+		glVertexAttribPointer(SC_STSCALED, 1, GL_UNSIGNED_BYTE, GL_FALSE, sizeof(SPVertex), &OGL.triangles.vertices[0].st_scaled);
 		if (OGL.bHWLighting) {
 			glEnableVertexAttribArray(SC_NUMLIGHTS);
 			glVertexAttribPointer(SC_NUMLIGHTS, 1, GL_BYTE, GL_FALSE, sizeof(SPVertex), &OGL.triangles.vertices[0].HWLight);

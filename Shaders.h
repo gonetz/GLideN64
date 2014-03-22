@@ -29,7 +29,7 @@ static const char* vertex_shader =
 "  vShadeColor = aColor;										\n"
 "  if (uRenderState == 1.0) {									\n"
 "    vec2 vTexCoord = aTexCoord0;								\n"
-"    if (aSTScaled == 0) vTexCoord *= uTexScale;				\n"
+"    if (aSTScaled == 0.0) vTexCoord *= uTexScale;				\n"
 "    if (uTexturePersp == 0) vTexCoord *= 0.5;					\n"
 "    vTexCoord0 = ((vTexCoord*uCacheShiftScale[0]) +			\n"
 "      (uCacheOffset[0] - uTexOffset[0])) * uCacheScale[0];		\n"
