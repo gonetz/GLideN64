@@ -129,6 +129,7 @@ extern PFNGLGETUNIFORMLOCATIONPROC glGetUniformLocation;
 extern PFNGLUNIFORM1IPROC glUniform1i;
 extern PFNGLUNIFORM1FPROC glUniform1f;
 extern PFNGLUNIFORM2FPROC glUniform2f;
+extern PFNGLUNIFORM2IPROC glUniform2i;
 extern PFNGLUNIFORM4FPROC glUniform4f;
 extern PFNGLUNIFORM4FVPROC glUniform4fv;
 extern PFNGLDETACHSHADERPROC glDetachShader;

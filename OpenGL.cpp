@@ -28,6 +28,7 @@ PFNGLGETUNIFORMLOCATIONPROC glGetUniformLocation;
 PFNGLUNIFORM1IPROC glUniform1i;
 PFNGLUNIFORM1FPROC glUniform1f;
 PFNGLUNIFORM2FPROC glUniform2f;
+PFNGLUNIFORM2IPROC glUniform2i;
 PFNGLUNIFORM4FPROC glUniform4f;
 PFNGLUNIFORM4FVPROC glUniform4fv;
 PFNGLDETACHSHADERPROC glDetachShader;
@@ -125,6 +126,7 @@ void OGL_InitExtensions()
 	glUniform1i = (PFNGLUNIFORM1IPROC)wglGetProcAddress("glUniform1i");
 	glUniform1f = (PFNGLUNIFORM1FPROC)wglGetProcAddress("glUniform1f");
 	glUniform2f = (PFNGLUNIFORM2FPROC)wglGetProcAddress("glUniform2f");
+	glUniform2i = (PFNGLUNIFORM2IPROC)wglGetProcAddress("glUniform2i");
 	glUniform4f = (PFNGLUNIFORM4FPROC)wglGetProcAddress("glUniform4f");
 	glUniform4fv = (PFNGLUNIFORM4FVPROC)wglGetProcAddress("glUniform4fv");
 	glDetachShader = (PFNGLDETACHSHADERPROC)wglGetProcAddress("glDetachShader");

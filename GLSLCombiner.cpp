@@ -527,6 +527,7 @@ void GLSLCombiner::_locateUniforms() {
 	LocateUniform(uCacheScale[1]);
 	LocateUniform(uCacheOffset[0]);
 	LocateUniform(uCacheOffset[1]);
+	LocateUniform(uCacheFrameBuffer);
 }
 
 void GLSLCombiner::_locate_attributes() const {
@@ -606,34 +607,30 @@ void GLSLCombiner::UpdateColors(bool _bForce) {
 
 void GLSLCombiner::UpdateTextureInfo(bool _bForce) {
 	_setIUniform(m_uniforms.uTexturePersp, gDP.otherMode.texturePersp, _bForce);
-	_setV2Uniform(m_uniforms.uTexScale, gSP.texture.scales, gSP.texture.scalet, _bForce);
-	if (combiner.usesT0)
-	{
+	_setFV2Uniform(m_uniforms.uTexScale, gSP.texture.scales, gSP.texture.scalet, _bForce);
+	int nFB0 = 0, nFB1 = 0;
+	if (combiner.usesT0) {
 		if (gSP.textureTile[0])
-		{
-			_setV2Uniform(m_uniforms.uTexOffset[0], gSP.textureTile[0]->fuls, gSP.textureTile[0]->fult, _bForce);
-		}
-		if (cache.current[0])
-		{
-			_setV2Uniform(m_uniforms.uCacheShiftScale[0], cache.current[0]->shiftScaleS, cache.current[0]->shiftScaleT, _bForce);
-			_setV2Uniform(m_uniforms.uCacheScale[0], cache.current[0]->scaleS, cache.current[0]->scaleT, _bForce);
-			_setV2Uniform(m_uniforms.uCacheOffset[0], cache.current[0]->offsetS, cache.current[0]->offsetT, _bForce);
+			_setFV2Uniform(m_uniforms.uTexOffset[0], gSP.textureTile[0]->fuls, gSP.textureTile[0]->fult, _bForce);
+		if (cache.current[0]) {
+			_setFV2Uniform(m_uniforms.uCacheShiftScale[0], cache.current[0]->shiftScaleS, cache.current[0]->shiftScaleT, _bForce);
+			_setFV2Uniform(m_uniforms.uCacheScale[0], cache.current[0]->scaleS, cache.current[0]->scaleT, _bForce);
+			_setFV2Uniform(m_uniforms.uCacheOffset[0], cache.current[0]->offsetS, cache.current[0]->offsetT, _bForce);
+			nFB0 = cache.current[0]->frameBufferTexture;
 		}
 	}
 
-	if (combiner.usesT1)
-	{
+	if (combiner.usesT1) {
 		if (gSP.textureTile[1])
-		{
-			_setV2Uniform(m_uniforms.uTexOffset[1], gSP.textureTile[1]->fuls, gSP.textureTile[1]->fult, _bForce);
-		}
-		if (cache.current[1])
-		{
-			_setV2Uniform(m_uniforms.uCacheShiftScale[1], cache.current[1]->shiftScaleS, cache.current[1]->shiftScaleT, _bForce);
-			_setV2Uniform(m_uniforms.uCacheScale[1], cache.current[1]->scaleS, cache.current[1]->scaleT, _bForce);
-			_setV2Uniform(m_uniforms.uCacheOffset[1], cache.current[1]->offsetS, cache.current[1]->offsetT, _bForce);
+			_setFV2Uniform(m_uniforms.uTexOffset[1], gSP.textureTile[1]->fuls, gSP.textureTile[1]->fult, _bForce);
+		if (cache.current[1]) {
+			_setFV2Uniform(m_uniforms.uCacheShiftScale[1], cache.current[1]->shiftScaleS, cache.current[1]->shiftScaleT, _bForce);
+			_setFV2Uniform(m_uniforms.uCacheScale[1], cache.current[1]->scaleS, cache.current[1]->scaleT, _bForce);
+			_setFV2Uniform(m_uniforms.uCacheOffset[1], cache.current[1]->offsetS, cache.current[1]->offsetT, _bForce);
+			nFB1 = cache.current[1]->frameBufferTexture;
 		}
 	}
+	_setIV2Uniform(m_uniforms.uCacheFrameBuffer, nFB0, nFB1, _bForce);
 }
 
 void GLSLCombiner::UpdateFBInfo(bool _bForce) {

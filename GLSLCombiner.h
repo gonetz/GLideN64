@@ -17,6 +17,7 @@ private:
 	struct iUniform {GLint loc; int val;};
 	struct fUniform {GLint loc; float val;};
 	struct fv2Uniform {GLint loc; float val[2];};
+	struct iv2Uniform {GLint loc; int val[2];};
 	struct fv4Uniform {GLint loc; float val[4];};
 
 	struct UniformLocation
@@ -34,6 +35,8 @@ private:
 
 		fv2Uniform uTexScale, uTexOffset[2], uCacheShiftScale[2],
 			uCacheScale[2], uCacheOffset[2];
+
+		iv2Uniform uCacheFrameBuffer;
 	};
 
 	void _locate_attributes() const;
@@ -50,11 +53,18 @@ private:
 			glUniform1f(_u.loc, _val);
 		}
 	}
-	void _setV2Uniform(fv2Uniform & _u, float _val1, float _val2, bool _force) {
+	void _setFV2Uniform(fv2Uniform & _u, float _val1, float _val2, bool _force) {
 		if (_force|| _u.val[0] != _val1 || _u.val[1] != _val2) {
 			_u.val[0] = _val1;
 			_u.val[2] = _val2;
 			glUniform2f(_u.loc, _val1, _val2);
+		}
+	}
+	void _setIV2Uniform(iv2Uniform & _u, int _val1, int _val2, bool _force) {
+		if (_force|| _u.val[0] != _val1 || _u.val[1] != _val2) {
+			_u.val[0] = _val1;
+			_u.val[2] = _val2;
+			glUniform2i(_u.loc, _val1, _val2);
 		}
 	}
 	void _setV4Uniform(fv4Uniform & _u, float * _pVal, bool _force) {
