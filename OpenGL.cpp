@@ -658,30 +658,16 @@ void OGL_UpdateStates()
 		if (combiner.current != NULL)
 		{
 			if (combiner.usesT0)
-			{
-#ifdef TEXTURECACHE_TEST
-				unsigned t = ticksGetTicks();
 				TextureCache_Update(0);
-				TextureCacheTime += (ticksGetTicks() - t);
-#else
-				TextureCache_Update(0);
-#endif
-			}
-			//else TextureCache_ActivateDummy(0);
+			else
+				TextureCache_ActivateDummy(0);
 
 			//Note: enabling dummies makes some F-zero X textures flicker.... strange.
 
 			if (combiner.usesT1)
-			{
-#ifdef TEXTURECACHE_TEST
-				unsigned t = ticksGetTicks();
 				TextureCache_Update(1);
-				TextureCacheTime += (ticksGetTicks() - t);
-#else
-				TextureCache_Update(1);
-#endif
-			}
-			//else TextureCache_ActivateDummy(1);
+			else
+				TextureCache_ActivateDummy(1);
 			combiner.current->compiled->UpdateTextureInfo(true);
 		}
 	}
