@@ -568,7 +568,6 @@ void GLSLCombiner::UpdateRenderState(bool _bForce) {
 void GLSLCombiner::UpdateColors(bool _bForce) {
 	_setV4Uniform(m_uniforms.uEnvColor, &gDP.envColor.r, _bForce);
 	_setV4Uniform(m_uniforms.uPrimColor, &gDP.primColor.r, _bForce);
-	_setFUniform(m_uniforms.uPrimLod, gDP.primColor.l, _bForce);
 	_setV4Uniform(m_uniforms.uFogColor, &gDP.fogColor.r, _bForce);
 	_setV4Uniform(m_uniforms.uCenterColor, &gDP.key.center.r, _bForce);
 	_setV4Uniform(m_uniforms.uScaleColor, &gDP.key.scale.r, _bForce);
@@ -631,6 +630,7 @@ void GLSLCombiner::UpdateTextureInfo(bool _bForce) {
 		}
 	}
 	_setIV2Uniform(m_uniforms.uCacheFrameBuffer, nFB0, nFB1, _bForce);
+	_setFUniform(m_uniforms.uPrimLod, gDP.primColor.l, _bForce);
 }
 
 void GLSLCombiner::UpdateFBInfo(bool _bForce) {
