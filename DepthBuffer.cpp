@@ -12,7 +12,7 @@ const GLuint ZlutImageUnit = 0;
 const GLuint TlutImageUnit = 1;
 const GLuint depthImageUnit = 2;
 
-bool g_bN64DepthCompare = true;
+bool g_bN64DepthCompare = false;
 
 	void DepthBuffer_Init()
 {
