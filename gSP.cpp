@@ -1935,21 +1935,22 @@ void gSPObjSprite( u32 sp )
     gDPSetTileSize( 0, 0, 0, (imageW - 1) << 2, (imageH - 1) << 2 );
     gSPTexture( 1.0f, 1.0f, 0, 0, TRUE );
 
-    //glOrtho( 0, VI.width, VI.height, 0, 0.0f, 32767.0f );
-    OGL.triangles.vertices[v0].x = 2.0f * VI.rwidth * OGL.triangles.vertices[v0].x - 1.0f;
-    OGL.triangles.vertices[v0].y = -2.0f * VI.rheight * OGL.triangles.vertices[v0].y + 1.0f;
+	const float scaleX = frameBuffer.drawBuffer == GL_FRAMEBUFFER ? 1.0f/frameBuffer.top->width :  VI.rwidth;
+	const float scaleY = frameBuffer.drawBuffer == GL_FRAMEBUFFER ? 1.0f/frameBuffer.top->height :  VI.rheight;
+    OGL.triangles.vertices[v0].x = 2.0f * scaleX * OGL.triangles.vertices[v0].x - 1.0f;
+    OGL.triangles.vertices[v0].y = -2.0f * scaleY * OGL.triangles.vertices[v0].y + 1.0f;
     OGL.triangles.vertices[v0].z = -1.0f;
     OGL.triangles.vertices[v0].w = 1.0f;
-    OGL.triangles.vertices[v1].x = 2.0f * VI.rwidth * OGL.triangles.vertices[v0].x - 1.0f;
-    OGL.triangles.vertices[v1].y = -2.0f * VI.rheight * OGL.triangles.vertices[v0].y + 1.0f;
+    OGL.triangles.vertices[v1].x = 2.0f * scaleX * OGL.triangles.vertices[v0].x - 1.0f;
+    OGL.triangles.vertices[v1].y = -2.0f * scaleY * OGL.triangles.vertices[v0].y + 1.0f;
     OGL.triangles.vertices[v1].z = -1.0f;
     OGL.triangles.vertices[v1].w = 1.0f;
-    OGL.triangles.vertices[v2].x = 2.0f * VI.rwidth * OGL.triangles.vertices[v0].x - 1.0f;
-    OGL.triangles.vertices[v2].y = -2.0f * VI.rheight * OGL.triangles.vertices[v0].y + 1.0f;
+    OGL.triangles.vertices[v2].x = 2.0f * scaleX * OGL.triangles.vertices[v0].x - 1.0f;
+    OGL.triangles.vertices[v2].y = -2.0f * scaleY * OGL.triangles.vertices[v0].y + 1.0f;
     OGL.triangles.vertices[v2].z = -1.0f;
     OGL.triangles.vertices[v2].w = 1.0f;
-    OGL.triangles.vertices[v3].x = 2.0f * VI.rwidth * OGL.triangles.vertices[v0].x - 1.0f;
-    OGL.triangles.vertices[v3].y = -2.0f * VI.rheight * OGL.triangles.vertices[v0].y + 1.0f;
+    OGL.triangles.vertices[v3].x = 2.0f * scaleX * OGL.triangles.vertices[v0].x - 1.0f;
+    OGL.triangles.vertices[v3].y = -2.0f * scaleY * OGL.triangles.vertices[v0].y + 1.0f;
     OGL.triangles.vertices[v3].z = -1.0f;
     OGL.triangles.vertices[v3].w = 1.0f;
 

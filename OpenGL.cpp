@@ -856,26 +856,23 @@ void OGL_DrawRect( int ulx, int uly, int lrx, int lry, float *color )
 		combiner.current->compiled->UpdateRenderState();
 	}
 
-	if (frameBuffer.drawBuffer != GL_FRAMEBUFFER) {
-//		glOrtho( 0, VI.width, VI.height, 0, 1.0f, -1.0f );
+	if (frameBuffer.drawBuffer != GL_FRAMEBUFFER)
 		glViewport( 0, (frameBuffer.drawBuffer == GL_BACK ? OGL.heightOffset : 0), OGL.width, OGL.height );
-	} else {
-//		glOrtho( 0, frameBuffer.top->width, frameBuffer.top->height, 0, 1.0f, -1.0f );
+	else
 		glViewport( 0, 0, frameBuffer.top->width*frameBuffer.top->scaleX, frameBuffer.top->height*frameBuffer.top->scaleY );
-	}
 	glDisable(GL_SCISSOR_TEST);
 	glDisable(GL_CULL_FACE);
 
-	OGL.rect[0].x = (float) ulx * (2.0f * VI.rwidth) - 1.0;
-	OGL.rect[0].y = (float) uly * (-2.0f * VI.rheight) + 1.0;
-	OGL.rect[1].x = (float) (lrx+1) * (2.0f * VI.rwidth) - 1.0;
+	const float scaleX = frameBuffer.drawBuffer == GL_FRAMEBUFFER ? 1.0f/frameBuffer.top->width :  VI.rwidth;
+	const float scaleY = frameBuffer.drawBuffer == GL_FRAMEBUFFER ? 1.0f/frameBuffer.top->height :  VI.rheight;
+	OGL.rect[0].x = (float) ulx * (2.0f * scaleX) - 1.0;
+	OGL.rect[0].y = (float) uly * (-2.0f * scaleY) + 1.0;
+	OGL.rect[1].x = (float) (lrx+1) * (2.0f * scaleX) - 1.0;
 	OGL.rect[1].y = OGL.rect[0].y;
 	OGL.rect[2].x = OGL.rect[0].x;
-	OGL.rect[2].y = (float) (lry+1) * (-2.0f * VI.rheight) + 1.0;
+	OGL.rect[2].y = (float) (lry+1) * (-2.0f * scaleY) + 1.0;
 	OGL.rect[3].x = OGL.rect[1].x;
 	OGL.rect[3].y = OGL.rect[2].y;
-//	OGL.rect[0].z = OGL.rect[1].z = OGL.rect[2].z = OGL.rect[3].z = (gDP.otherMode.depthSource == G_ZS_PRIM) ? gDP.primDepth.z : gSP.viewport.nearz;
-//	OGL.rect[0].w = OGL.rect[1].w = OGL.rect[2].w = OGL.rect[3].w = 1.0f;
 
 	glVertexAttrib4fv(SC_COLOR, color);
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
@@ -911,21 +908,20 @@ void OGL_DrawTexturedRect( float ulx, float uly, float lrx, float lry, float uls
 	if (gSP.textureTile[0]->frameBuffer == NULL && gSP.textureTile[1]->frameBuffer == NULL && gDP.textureImage.address >= gDP.depthImageAddress &&  gDP.textureImage.address < (gDP.depthImageAddress +  gDP.colorImage.width*gDP.colorImage.width*6/4))
 		GLS_SetShadowMapCombiner();
 
-	if (frameBuffer.drawBuffer != GL_FRAMEBUFFER) {
-//		glOrtho( 0, VI.width, VI.height, 0, 1.0f, -1.0f );
+	if (frameBuffer.drawBuffer != GL_FRAMEBUFFER)
 		glViewport( 0, (frameBuffer.drawBuffer == GL_BACK ? OGL.heightOffset : 0), OGL.width, OGL.height );
-	} else {
-//		glOrtho( 0, frameBuffer.top->width, frameBuffer.top->height, 0, 1.0f, -1.0f );
+	else
 		glViewport( 0, 0, frameBuffer.top->width*frameBuffer.top->scaleX, frameBuffer.top->height*frameBuffer.top->scaleY );
-	}
 	glDisable( GL_CULL_FACE );
 
-	OGL.rect[0].x = (float) ulx * (2.0f * VI.rwidth) - 1.0f;
-	OGL.rect[0].y = (float) uly * (-2.0f * VI.rheight) + 1.0f;
-	OGL.rect[1].x = (float) (lrx) * (2.0f * VI.rwidth) - 1.0f;
+	const float scaleX = frameBuffer.drawBuffer == GL_FRAMEBUFFER ? 1.0f/frameBuffer.top->width :  VI.rwidth;
+	const float scaleY = frameBuffer.drawBuffer == GL_FRAMEBUFFER ? 1.0f/frameBuffer.top->height :  VI.rheight;
+	OGL.rect[0].x = (float) ulx * (2.0f * scaleX) - 1.0f;
+	OGL.rect[0].y = (float) uly * (-2.0f * scaleY) + 1.0f;
+	OGL.rect[1].x = (float) (lrx) * (2.0f * scaleX) - 1.0f;
 	OGL.rect[1].y = OGL.rect[0].y;
 	OGL.rect[2].x = OGL.rect[0].x;
-	OGL.rect[2].y = (float) (lry) * (-2.0f * VI.rheight) + 1.0f;
+	OGL.rect[2].y = (float) (lry) * (-2.0f * scaleY) + 1.0f;
 	OGL.rect[3].x = OGL.rect[1].x;
 	OGL.rect[3].y = OGL.rect[2].y;
 
