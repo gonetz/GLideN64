@@ -180,7 +180,7 @@ void DepthBuffer_SetBuffer( u32 address )
 		current->address = address;
 		current->width = pFrameBuffer != NULL ? pFrameBuffer->width : VI.width;
 		current->depth_texture = NULL;
-		if (config.frameBufferEmulation) {
+		if (config.frameBufferEmulation.enable) {
 			glGenRenderbuffers(1, &current->renderbuf);
 			glBindRenderbuffer(GL_RENDERBUFFER, current->renderbuf);
 			if (pFrameBuffer != NULL)
@@ -190,7 +190,7 @@ void DepthBuffer_SetBuffer( u32 address )
 		}
 	}
 
-	if (config.frameBufferEmulation) {
+	if (config.frameBufferEmulation.enable) {
 		FrameBuffer_AttachDepthBuffer();
 
 #ifdef DEBUG

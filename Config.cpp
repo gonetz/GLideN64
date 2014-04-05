@@ -83,7 +83,7 @@ void Config_LoadConfig()
 		cache.maxBytes = value * 1048576;
 
 		RegQueryValueEx( hKey, "Hardware Frame Buffer Textures", 0, NULL, (BYTE*)&value, &size );
-		config.frameBufferEmulation = value ? TRUE : FALSE;
+		config.frameBufferEmulation.enable = value ? TRUE : FALSE;
 
 		RegQueryValueEx( hKey, "Hardware lighting", 0, NULL, (BYTE*)&value, &size );
 		config.enableHWLighting = value ? TRUE : FALSE;
@@ -104,7 +104,7 @@ void Config_LoadConfig()
 		config.video.fullscreenRefresh = 60;
 		config.texture.forceBilinear = FALSE;
 		cache.maxBytes = 32 * 1048576;
-		config.frameBufferEmulation = FALSE;
+		config.frameBufferEmulation.enable = FALSE;
 		config.texture.enable2xSaI = FALSE;
 		config.texture.textureBitDepth = 1;
 		config.enableHWLighting = FALSE;
@@ -137,7 +137,7 @@ void Config_SaveConfig()
 	value = cache.maxBytes / 1048576;
 	RegSetValueEx( hKey, "Texture Cache Size", 0, REG_DWORD, (BYTE*)&value, 4 );
 
-	value = config.frameBufferEmulation ? 1 : 0;
+	value = config.frameBufferEmulation.enable ? 1 : 0;
 	RegSetValueEx( hKey, "Hardware Frame Buffer Textures", 0, REG_DWORD, (BYTE*)&value, 4 );
 
 	value = config.enableHWLighting ? 1 : 0;
@@ -175,7 +175,7 @@ void Config_ApplyDlgConfig( HWND hWndDlg )
 	config.video.windowedWidth = windowedModes[i].width;
 	config.video.windowedHeight = windowedModes[i].height;
 
-	config.frameBufferEmulation = (SendDlgItemMessage( hWndDlg, IDC_FRAMEBUFFER, BM_GETCHECK, NULL, NULL ) == BST_CHECKED);
+	config.frameBufferEmulation.enable = (SendDlgItemMessage( hWndDlg, IDC_FRAMEBUFFER, BM_GETCHECK, NULL, NULL ) == BST_CHECKED);
 	config.enableHWLighting = (SendDlgItemMessage( hWndDlg, IDC_HWLIGHT, BM_GETCHECK, NULL, NULL ) == BST_CHECKED);
 
 	if (!OGL.fullscreen)
@@ -329,7 +329,7 @@ BOOL CALLBACK ConfigDlgProc( HWND hWndDlg, UINT message, WPARAM wParam, LPARAM l
 			SendDlgItemMessage( hWndDlg, IDC_TEXTUREBPP, CB_SETCURSEL, config.texture.textureBitDepth, 0 );
 			// Enable/disable fog
 			SendDlgItemMessage( hWndDlg, IDC_FOG, BM_SETCHECK, config.enableFog ? (LPARAM)BST_CHECKED : (LPARAM)BST_UNCHECKED, NULL );
-			SendDlgItemMessage( hWndDlg, IDC_FRAMEBUFFER, BM_SETCHECK, config.frameBufferEmulation ? (LPARAM)BST_CHECKED : (LPARAM)BST_UNCHECKED, NULL );
+			SendDlgItemMessage( hWndDlg, IDC_FRAMEBUFFER, BM_SETCHECK, config.frameBufferEmulation.enable ? (LPARAM)BST_CHECKED : (LPARAM)BST_UNCHECKED, NULL );
 
 			SendDlgItemMessage( hWndDlg, IDC_HWLIGHT, BM_SETCHECK, config.enableHWLighting ? (LPARAM)BST_CHECKED : (LPARAM)BST_UNCHECKED, NULL );
 

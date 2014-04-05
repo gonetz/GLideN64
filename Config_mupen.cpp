@@ -34,7 +34,7 @@ Option configOptions[] =
 	{"texture depth", &config.texture.textureBitDepth, 1},
 	{"#Emulation Settings:", NULL, 0},
 	{"enable fog", &config.enableFog, 1},
-	{"enable HardwareFB", &config.frameBufferEmulation, 0}
+	{"enable HardwareFB", &config.frameBufferEmulation.enable, 0}
 };
 
 const int configOptionsSize = sizeof(configOptions) / sizeof(Option);

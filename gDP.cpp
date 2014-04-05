@@ -269,7 +269,7 @@ void gDPSetColorImage( u32 format, u32 size, u32 width, u32 address )
 		else
 			height = gSP.viewport.height;
 
-		if (config.frameBufferEmulation)// && address != gDP.depthImageAddress)
+		if (config.frameBufferEmulation.enable)// && address != gDP.depthImageAddress)
 		{
 			//if (gDP.colorImage.changed)
 				FrameBuffer_SaveBuffer( address, (u16)format, (u16)size, (u16)width, height );
@@ -497,7 +497,7 @@ bool CheckForFrameBufferTexture(u32 _address, u32 _bytes)
 	gDP.loadTile->textureMode = TEXTUREMODE_NORMAL;
 	gDP.loadTile->frameBuffer = NULL;
 	gDP.changed |= CHANGED_TMEM;
-	if (!config.frameBufferEmulation)
+	if (!config.frameBufferEmulation.enable)
 		return false;
 
 	FrameBuffer *pBuffer = FrameBuffer_FindBuffer( _address );

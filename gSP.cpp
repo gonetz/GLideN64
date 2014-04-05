@@ -1729,7 +1729,7 @@ void loadBGImage(const uObjScaleBg * _bgInfo, bool _loadScale)
 	} else
 		gSP.bgImage.scaleW = gSP.bgImage.scaleH = 1.0f;
 
-	if (config.frameBufferEmulation)
+	if (config.frameBufferEmulation.enable)
 	{
 		FrameBuffer *buffer;
 		if (((buffer = FrameBuffer_FindBuffer( gSP.bgImage.address )) != NULL) &&

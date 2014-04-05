@@ -23,7 +23,10 @@ struct Config
 		u32 pow2;
 	} texture;
 
-	u32 frameBufferEmulation;
+	struct {
+		u32 enable;
+	} frameBufferEmulation;
+
 	u32 enableFog;
 	u32 enableNoise;
 	u32 enableHWLighting;

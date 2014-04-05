@@ -78,7 +78,7 @@ static void okButton_clicked( GtkWidget *widget, void *data )
 	config.texture.forceBilinear = gtk_toggle_button_get_active( GTK_TOGGLE_BUTTON(forceBilinearCheck) );
 	config.texture.enable2xSaI = gtk_toggle_button_get_active( GTK_TOGGLE_BUTTON(enable2xSAICheck) );
 	config.enableFog = gtk_toggle_button_get_active( GTK_TOGGLE_BUTTON(enableFogCheck) );
-	config.frameBufferEmulation = gtk_toggle_button_get_active( GTK_TOGGLE_BUTTON(enableHardwareFBCheck) );
+	config.frameBufferEmulation.enable = gtk_toggle_button_get_active( GTK_TOGGLE_BUTTON(enableHardwareFBCheck) );
 	config.enableHWLighting = gtk_toggle_button_get_active( GTK_TOGGLE_BUTTON(enableHardwareLighting) );
 	const char *depth = gtk_entry_get_text( GTK_ENTRY(GTK_COMBO(textureDepthCombo)->entry) );
 	config.texture.textureBitDepth = 1;
@@ -113,7 +113,7 @@ static void okButton_clicked( GtkWidget *widget, void *data )
 	fprintf( f, "force bilinear=%d\n",        config.texture.forceBilinear );
 	fprintf( f, "enable 2xSAI=%d\n",          config.texture.enable2xSaI );
 	fprintf( f, "enable fog=%d\n",            config.enableFog );
-	fprintf( f, "enable HardwareFB=%d\n",     config.frameBufferEmulation );
+	fprintf( f, "enable HardwareFB=%d\n",     config.frameBufferEmulation.enable );
 	fprintf( f, "enable hardware lighting=%d\n", config.enableHWLighting );
 	fprintf( f, "texture depth=%d\n",         config.texture.textureBitDepth );
 	fprintf( f, "cache size=%d\n",            cache.maxBytes / 1048576 );
@@ -155,7 +155,7 @@ static void configWindow_show( GtkWidget *widget, void *data )
 	gtk_toggle_button_set_active( GTK_TOGGLE_BUTTON(enableHardwareLighting), (config.enableHWLighting) );
 
 	// textures
-	gtk_toggle_button_set_active( GTK_TOGGLE_BUTTON(enableHardwareFBCheck), (config.frameBufferEmulation) );
+	gtk_toggle_button_set_active( GTK_TOGGLE_BUTTON(enableHardwareFBCheck), (config.frameBufferEmulation.enable) );
 	gtk_entry_set_text( GTK_ENTRY(GTK_COMBO(textureDepthCombo)->entry), textureBitDepth[config.texture.textureBitDepth] );
 	sprintf( text, "%d", cache.maxBytes / 1048576 );
 	gtk_entry_set_text( GTK_ENTRY(textureCacheEntry), text );
@@ -374,7 +374,7 @@ void Config_LoadConfig()
 	config.texture.enable2xSaI = 0;
 	config.enableFog = 1;
 	config.texture.textureBitDepth = 1; // normal (16 & 32 bits)
-	config.frameBufferEmulation = 0;
+	config.frameBufferEmulation.enable = 0;
 	config.enableHWLighting = 0;
 	cache.maxBytes = 32 * 1048576;
 
@@ -450,7 +450,7 @@ void Config_LoadConfig()
 		}
 		else if (!strcasecmp( line, "enable HardwareFB" ))
 		{
-			config.frameBufferEmulation = atoi( val );
+			config.frameBufferEmulation.enable = atoi( val );
 		}
 		else if (!strcasecmp( line, "enable hardware lighting" ))
 		{

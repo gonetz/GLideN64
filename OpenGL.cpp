@@ -1041,7 +1041,7 @@ void OGL_DrawTexturedRect( float ulx, float uly, float lrx, float lry, float uls
 
 void OGL_ClearDepthBuffer()
 {
-	if (config.frameBufferEmulation && frameBuffer.top == NULL)
+	if (config.frameBufferEmulation.enable && frameBuffer.top == NULL)
 		return;
 
 	DepthBuffer_ClearBuffer();
