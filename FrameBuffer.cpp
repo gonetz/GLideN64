@@ -13,11 +13,6 @@
 #include "Config.h"
 #include "Debug.h"
 
-bool g_bCopyToRDRAM = false;
-bool g_bCopyFromRDRAM = false;
-bool g_bCopyDepthToRDRAM = false;
-bool g_bIgnoreCFB = true;
-
 #ifndef GLES2
 const GLint monohromeInternalformat = GL_R8;
 const GLenum monohromeformat = GL_RED;
@@ -279,7 +274,7 @@ void FrameBuffer_SaveBuffer( u32 address, u16 format, u16 size, u16 width, u16 h
 	FrameBuffer *current = frameBuffer.top;
 	if (current != NULL && gDP.colorImage.height > 1) {
 		current->endAddress = current->startAddress + (((current->width * gDP.colorImage.height) << current->size >> 1) - 1);
-		if (!g_bCopyToRDRAM && !current->cleared)
+		if (!config.frameBufferEmulation.copyToRDRAM && !current->cleared)
 			gDPFillRDRAM(current->startAddress, 0, 0, current->width, gDP.colorImage.height, current->width, current->size, frameBuffer.top->fillcolor);
 	}
 

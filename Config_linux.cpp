@@ -467,6 +467,13 @@ void Config_LoadConfig()
 	}
 
 	fclose( f );
+
+	// manually set frame bufer emulation options
+	config.frameBufferEmulation.copyToRDRAM = FALSE;
+	config.frameBufferEmulation.copyDepthToRDRAM = FALSE;
+	config.frameBufferEmulation.copyFromRDRAM = FALSE;
+	config.frameBufferEmulation.ignoreCFB = TRUE;
+	config.frameBufferEmulation.N64DepthCompare = FALSE;
 }
 
 void Config_DoConfig()

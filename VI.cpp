@@ -57,7 +57,7 @@ void VI_UpdateScreen()
 		VI.vStart = VI.vEnd = 0;
 
 	if (config.frameBufferEmulation.enable) {
-		const bool bCFB = !g_bIgnoreCFB && (gSP.changed&CHANGED_CPU_FB_WRITE) == CHANGED_CPU_FB_WRITE;
+		const bool bCFB = !config.frameBufferEmulation.ignoreCFB && (gSP.changed&CHANGED_CPU_FB_WRITE) == CHANGED_CPU_FB_WRITE;
 		const bool bNeedUpdate = bCFB ? true : (*REG.VI_ORIGIN != VI.lastOrigin);// && gDP.colorImage.changed;
 
 		if (bNeedUpdate) {
@@ -69,9 +69,9 @@ void VI_UpdateScreen()
 				if (VI.height > 0 && size > G_IM_SIZ_8b)
 					FrameBuffer_SaveBuffer( *REG.VI_ORIGIN, G_IM_FMT_RGBA, size, *REG.VI_WIDTH, VI.height );
 			}
-			if ((((*REG.VI_STATUS)&3) > 0) && (g_bCopyFromRDRAM || bCFB)) {
+			if ((((*REG.VI_STATUS)&3) > 0) && (config.frameBufferEmulation.copyFromRDRAM || bCFB)) {
 				VI_UpdateSize();
-				FrameBuffer_CopyFromRDRAM( *REG.VI_ORIGIN, g_bCopyFromRDRAM && !bCFB );
+				FrameBuffer_CopyFromRDRAM( *REG.VI_ORIGIN, config.frameBufferEmulation.copyFromRDRAM && !bCFB );
 			}
 			FrameBuffer_RenderBuffer( *REG.VI_ORIGIN );
 

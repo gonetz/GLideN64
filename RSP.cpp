@@ -8,6 +8,7 @@
 #include "FrameBuffer.h"
 #include "DepthBuffer.h"
 #include "GBI.h"
+#include "Config.h"
 
 RSPInfo		RSP;
 
@@ -211,9 +212,9 @@ void RSP_ProcessDList()
 		GBI.cmd[RSP.cmd]( w0, w1 );
 	}
 
-	if (g_bCopyToRDRAM)
+	if (config.frameBufferEmulation.copyToRDRAM)
 		FrameBuffer_CopyToRDRAM( gDP.colorImage.address, false );
-	if (g_bCopyDepthToRDRAM)
+	if (config.frameBufferEmulation.copyDepthToRDRAM)
 		FrameBuffer_CopyDepthBuffer( gDP.colorImage.address );
 
 	RSP.busy = FALSE;

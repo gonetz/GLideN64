@@ -25,6 +25,11 @@ struct Config
 
 	struct {
 		u32 enable;
+		u32 copyToRDRAM;
+		u32 copyDepthToRDRAM;
+		u32 copyFromRDRAM;
+		u32 ignoreCFB;
+		u32 N64DepthCompare;
 	} frameBufferEmulation;
 
 	u32 enableFog;

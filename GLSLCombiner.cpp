@@ -410,7 +410,7 @@ GLSLCombiner::GLSLCombiner(Combiner *_color, Combiner *_alpha) {
 
 	strcat(fragment_shader, "  if (!alpha_test(gl_FragColor.a)) discard;	\n");
 	if (OGL.bImageTexture) {
-		if (g_bN64DepthCompare)
+		if (config.frameBufferEmulation.N64DepthCompare)
 			strcat(fragment_shader, "  if (!depth_compare()) discard; \n");
 		else
 			strcat(fragment_shader, "  depth_compare(); \n");

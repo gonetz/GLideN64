@@ -109,6 +109,13 @@ void Config_LoadConfig()
 		config.texture.textureBitDepth = 1;
 		config.enableHWLighting = FALSE;
 	}
+
+	// manually set frame bufer emulation options
+	config.frameBufferEmulation.copyToRDRAM = FALSE;
+	config.frameBufferEmulation.copyDepthToRDRAM = FALSE;
+	config.frameBufferEmulation.copyFromRDRAM = FALSE;
+	config.frameBufferEmulation.ignoreCFB = TRUE;
+	config.frameBufferEmulation.N64DepthCompare = FALSE;
 }
 
 void Config_SaveConfig()

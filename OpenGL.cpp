@@ -192,7 +192,7 @@ void OGL_InitStates()
     glDepthMask( GL_FALSE );
     glEnable( GL_SCISSOR_TEST );
 
-	if (g_bN64DepthCompare) {
+	if (config.frameBufferEmulation.N64DepthCompare) {
 		glDisable( GL_DEPTH_TEST );
 		glDisable( GL_POLYGON_OFFSET_FILL );
 		glDepthFunc( GL_ALWAYS );
@@ -608,7 +608,7 @@ void OGL_UpdateStates()
 	else
 		Combiner_SetCombine(gDP.combine.mux);
 
-	if (!g_bN64DepthCompare && (gDP.changed & CHANGED_RENDERMODE) != 0) {
+	if (!config.frameBufferEmulation.N64DepthCompare && (gDP.changed & CHANGED_RENDERMODE) != 0) {
 		if (gDP.otherMode.depthCompare) {
 			glEnable( GL_DEPTH_TEST );
 			glDepthFunc( GL_LEQUAL );
