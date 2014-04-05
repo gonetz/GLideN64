@@ -13,6 +13,7 @@
 #include "FrameBuffer.h"
 #include "DepthBuffer.h"
 #include "VI.h"
+#include "Config.h"
 
 gDPInfo gDP;
 
@@ -268,7 +269,7 @@ void gDPSetColorImage( u32 format, u32 size, u32 width, u32 address )
 		else
 			height = gSP.viewport.height;
 
-		if (OGL.frameBufferTextures)// && address != gDP.depthImageAddress)
+		if (config.frameBufferEmulation)// && address != gDP.depthImageAddress)
 		{
 			//if (gDP.colorImage.changed)
 				FrameBuffer_SaveBuffer( address, (u16)format, (u16)size, (u16)width, height );
@@ -496,7 +497,7 @@ bool CheckForFrameBufferTexture(u32 _address, u32 _bytes)
 	gDP.loadTile->textureMode = TEXTUREMODE_NORMAL;
 	gDP.loadTile->frameBuffer = NULL;
 	gDP.changed |= CHANGED_TMEM;
-	if (!OGL.frameBufferTextures)
+	if (!config.frameBufferEmulation)
 		return false;
 
 	FrameBuffer *pBuffer = FrameBuffer_FindBuffer( _address );

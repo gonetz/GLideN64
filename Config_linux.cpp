@@ -10,6 +10,8 @@
 #include "Textures.h"
 #include "OpenGL.h"
 
+Config config;
+
 static GtkWidget *configWindow = NULL;
 //static GtkWidget *bitdepthCombo[2], *resolutionCombo[2];
 static GtkWidget *resolutionCombo;
@@ -70,20 +72,20 @@ static void okButton_clicked( GtkWidget *widget, void *data )
 		i1 = 640;
 		i2 = 480;
 	}
-	OGL.fullscreenWidth = OGL.windowedWidth = i1;
-	OGL.fullscreenHeight = OGL.windowedHeight = i2;
+	config.video.fullscreenWidth = config.video.windowedWidth = i1;
+	config.video.fullscreenHeight = config.video.windowedHeight = i2;
 
-	OGL.forceBilinear = gtk_toggle_button_get_active( GTK_TOGGLE_BUTTON(forceBilinearCheck) );
-	OGL.enable2xSaI = gtk_toggle_button_get_active( GTK_TOGGLE_BUTTON(enable2xSAICheck) );
-	OGL.fog = gtk_toggle_button_get_active( GTK_TOGGLE_BUTTON(enableFogCheck) );
-	OGL.frameBufferTextures = gtk_toggle_button_get_active( GTK_TOGGLE_BUTTON(enableHardwareFBCheck) );
-	OGL.bHWLighting = gtk_toggle_button_get_active( GTK_TOGGLE_BUTTON(enableHardwareLighting) );
+	config.texture.forceBilinear = gtk_toggle_button_get_active( GTK_TOGGLE_BUTTON(forceBilinearCheck) );
+	config.texture.enable2xSaI = gtk_toggle_button_get_active( GTK_TOGGLE_BUTTON(enable2xSAICheck) );
+	config.enableFog = gtk_toggle_button_get_active( GTK_TOGGLE_BUTTON(enableFogCheck) );
+	config.frameBufferEmulation = gtk_toggle_button_get_active( GTK_TOGGLE_BUTTON(enableHardwareFBCheck) );
+	config.enableHWLighting = gtk_toggle_button_get_active( GTK_TOGGLE_BUTTON(enableHardwareLighting) );
 	const char *depth = gtk_entry_get_text( GTK_ENTRY(GTK_COMBO(textureDepthCombo)->entry) );
-	OGL.textureBitDepth = 1;
+	config.texture.textureBitDepth = 1;
 	for (i = 0; textureBitDepth[i] != 0; i++)
 	{
 		if (!strcmp( depth, textureBitDepth[i] ))
-			OGL.textureBitDepth = i;
+			config.texture.textureBitDepth = i;
 	}
 	cache.maxBytes = atoi( gtk_entry_get_text( GTK_ENTRY(textureCacheEntry) ) ) * 1048576;
 
@@ -103,17 +105,17 @@ static void okButton_clicked( GtkWidget *widget, void *data )
 /*	fprintf( f, "fullscreen width=%d\n",      OGL.fullscreenWidth );
 	fprintf( f, "fullscreen height=%d\n",     OGL.fullscreenHeight );
 	fprintf( f, "fullscreen depth=%d\n",      OGL.fullscreenBits );*/
-	fprintf( f, "width=%d\n",        OGL.windowedWidth );
-	fprintf( f, "height=%d\n",       OGL.windowedHeight );
+	fprintf( f, "width=%d\n",        config.video.windowedWidth );
+	fprintf( f, "height=%d\n",       config.video.windowedHeight );
 //	fprintf( f, "windowed depth=%d\n",        OGL.windowedBits );*/
 /*	fprintf( f, "width=%d\n",                 OGL.width );
 	fprintf( f, "height=%d\n",                OGL.height );*/
-	fprintf( f, "force bilinear=%d\n",        OGL.forceBilinear );
-	fprintf( f, "enable 2xSAI=%d\n",          OGL.enable2xSaI );
-	fprintf( f, "enable fog=%d\n",            OGL.fog );
-	fprintf( f, "enable HardwareFB=%d\n",     OGL.frameBufferTextures );
-	fprintf( f, "enable hardware lighting=%d\n", OGL.bHWLighting );
-	fprintf( f, "texture depth=%d\n",         OGL.textureBitDepth );
+	fprintf( f, "force bilinear=%d\n",        config.texture.forceBilinear );
+	fprintf( f, "enable 2xSAI=%d\n",          config.texture.enable2xSaI );
+	fprintf( f, "enable fog=%d\n",            config.enableFog );
+	fprintf( f, "enable HardwareFB=%d\n",     config.frameBufferEmulation );
+	fprintf( f, "enable hardware lighting=%d\n", config.enableHWLighting );
+	fprintf( f, "texture depth=%d\n",         config.texture.textureBitDepth );
 	fprintf( f, "cache size=%d\n",            cache.maxBytes / 1048576 );
 
 	fclose( f );
@@ -144,17 +146,17 @@ static void configWindow_show( GtkWidget *widget, void *data )
 	sprintf( text, "%d x %d", OGL.windowedWidth, OGL.windowedHeight );
 	gtk_entry_set_text( GTK_ENTRY(GTK_COMBO(resolutionCombo[1])->entry), text );*/
 
-	sprintf( text, "%d x %d", OGL.windowedWidth, OGL.windowedHeight );
+	sprintf( text, "%d x %d", config.video.windowedWidth, config.video.windowedHeight );
 	gtk_entry_set_text( GTK_ENTRY(GTK_COMBO(resolutionCombo)->entry), text );
 
-	gtk_toggle_button_set_active( GTK_TOGGLE_BUTTON(enable2xSAICheck),          (OGL.enable2xSaI) );
-	gtk_toggle_button_set_active( GTK_TOGGLE_BUTTON(forceBilinearCheck),        (OGL.forceBilinear) );
-	gtk_toggle_button_set_active( GTK_TOGGLE_BUTTON(enableFogCheck),            (OGL.fog) );
-	gtk_toggle_button_set_active( GTK_TOGGLE_BUTTON(enableHardwareLighting), (OGL.bHWLighting) );
+	gtk_toggle_button_set_active( GTK_TOGGLE_BUTTON(enable2xSAICheck),          (config.texture.enable2xSaI) );
+	gtk_toggle_button_set_active( GTK_TOGGLE_BUTTON(forceBilinearCheck),        (config.texture.forceBilinear) );
+	gtk_toggle_button_set_active( GTK_TOGGLE_BUTTON(enableFogCheck),            (config.enableFog) );
+	gtk_toggle_button_set_active( GTK_TOGGLE_BUTTON(enableHardwareLighting), (config.enableHWLighting) );
 
 	// textures
-	gtk_toggle_button_set_active( GTK_TOGGLE_BUTTON(enableHardwareFBCheck), (OGL.frameBufferTextures) );
-	gtk_entry_set_text( GTK_ENTRY(GTK_COMBO(textureDepthCombo)->entry), textureBitDepth[OGL.textureBitDepth] );
+	gtk_toggle_button_set_active( GTK_TOGGLE_BUTTON(enableHardwareFBCheck), (config.frameBufferEmulation) );
+	gtk_entry_set_text( GTK_ENTRY(GTK_COMBO(textureDepthCombo)->entry), textureBitDepth[config.texture.textureBitDepth] );
 	sprintf( text, "%d", cache.maxBytes / 1048576 );
 	gtk_entry_set_text( GTK_ENTRY(textureCacheEntry), text );
 }
@@ -362,18 +364,18 @@ void Config_LoadConfig()
 		pluginDir = GetPluginDir();
 
 	// default configuration
-	OGL.fullscreenWidth = 640;
-	OGL.fullscreenHeight = 480;
+	config.video.fullscreenWidth = 640;
+	config.video.fullscreenHeight = 480;
 //	OGL.fullscreenBits = 0;
-	OGL.windowedWidth = 640;
-	OGL.windowedHeight = 480;
+	config.video.windowedWidth = 640;
+	config.video.windowedHeight = 480;
 //	OGL.windowedBits = 0;
-	OGL.forceBilinear = 0;
-	OGL.enable2xSaI = 0;
-	OGL.fog = 1;
-	OGL.textureBitDepth = 1; // normal (16 & 32 bits)
-	OGL.frameBufferTextures = 0;
-	OGL.bHWLighting = 0;
+	config.texture.forceBilinear = 0;
+	config.texture.enable2xSaI = 0;
+	config.enableFog = 1;
+	config.texture.textureBitDepth = 1; // normal (16 & 32 bits)
+	config.frameBufferEmulation = 0;
+	config.enableHWLighting = 0;
 	cache.maxBytes = 32 * 1048576;
 
 	// read configuration
@@ -423,24 +425,24 @@ void Config_LoadConfig()
 		if (!strcasecmp( line, "width" ))
 		{
 			int w = atoi( val );
-			OGL.fullscreenWidth = OGL.windowedWidth = (w == 0) ? (640) : (w);
+			config.video.fullscreenWidth = config.video.windowedWidth = (w == 0) ? (640) : (w);
 		}
 		else if (!strcasecmp( line, "height" ))
 		{
 			int h = atoi( val );
-			OGL.fullscreenHeight = OGL.windowedHeight = (h == 0) ? (480) : (h);
+			config.video.fullscreenHeight = config.video.windowedHeight = (h == 0) ? (480) : (h);
 		}
 		else if (!strcasecmp( line, "force bilinear" ))
 		{
-			OGL.forceBilinear = atoi( val );
+			config.texture.forceBilinear = atoi( val );
 		}
 		else if (!strcasecmp( line, "enable 2xSAI" ))
 		{
-			OGL.enable2xSaI = atoi( val );
+			config.texture.enable2xSaI = atoi( val );
 		}
 		else if (!strcasecmp( line, "enable fog" ))
 		{
-			OGL.fog = atoi( val );
+			config.enableFog = atoi( val );
 		}
 		else if (!strcasecmp( line, "cache size" ))
 		{
@@ -448,15 +450,15 @@ void Config_LoadConfig()
 		}
 		else if (!strcasecmp( line, "enable HardwareFB" ))
 		{
-			OGL.frameBufferTextures = atoi( val );
+			config.frameBufferEmulation = atoi( val );
 		}
 		else if (!strcasecmp( line, "enable hardware lighting" ))
 		{
-			OGL.bHWLighting = atoi( val );
+			config.enableHWLighting = atoi( val );
 		}
 		else if (!strcasecmp( line, "texture depth" ))
 		{
-			OGL.textureBitDepth = atoi( val );
+			config.texture.textureBitDepth = atoi( val );
 		}
 		else
 		{

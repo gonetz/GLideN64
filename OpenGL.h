@@ -41,10 +41,8 @@ struct GLInfo
 	SDL_Surface *hScreen;
 #endif // _WINDOWS
 
-	DWORD	fullscreenWidth, fullscreenHeight, fullscreenBits, fullscreenRefresh;
-	DWORD	width, height, windowedWidth, windowedHeight, heightOffset;
-
-	BOOL	fullscreen, forceBilinear, fog;
+	BOOL fullscreen;
+	unsigned int width, height, heightOffset;
 
 	float	scaleX, scaleY;
 
@@ -87,13 +85,6 @@ struct GLInfo
 	} renderState;
 	bool bImageTexture;
 	bool captureScreen;
-
-	// Settings. TODO: Move to Settings class
-	BOOL bHWLighting;
-	BOOL enable2xSaI;
-	BOOL frameBufferTextures;
-	u32	 textureBitDepth;
-	float originAdjust;
 };
 
 extern GLInfo OGL;

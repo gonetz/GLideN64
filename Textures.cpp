@@ -10,6 +10,7 @@
 #include "convert.h"
 #include "2xSAI.h"
 #include "FrameBuffer.h"
+#include "Config.h"
 #include <assert.h>
 
 TextureCache	cache;
@@ -226,8 +227,8 @@ void TextureCache_Init()
 	cache.bottom = NULL;
 	cache.numCached = 0;
 	cache.cachedBytes = 0;
-	cache.enable2xSaI = OGL.enable2xSaI;
-	cache.bitDepth = OGL.textureBitDepth;
+	cache.enable2xSaI = config.texture.enable2xSaI;
+	cache.bitDepth = config.texture.textureBitDepth;
 
 	glGenTextures( 32, cache.glNoiseNames );
 
@@ -738,7 +739,7 @@ void TextureCache_ActivateTexture( u32 t, CachedTexture *texture )
 	glBindTexture( GL_TEXTURE_2D, texture->glName );
 
 	// Set filter mode. Almost always bilinear, but check anyways
-	if ((gDP.otherMode.textureFilter == G_TF_BILERP) || (gDP.otherMode.textureFilter == G_TF_AVERAGE) || (OGL.forceBilinear))
+	if ((gDP.otherMode.textureFilter == G_TF_BILERP) || (gDP.otherMode.textureFilter == G_TF_AVERAGE) || (config.texture.forceBilinear))
 	{
 		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
 		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
@@ -857,13 +858,13 @@ void TextureCache_Update( u32 t )
 	u32 tileWidth, maskWidth, loadWidth, lineWidth, clampWidth, height;
 	u32 tileHeight, maskHeight, loadHeight, lineHeight, clampHeight, width;
 
-	if (cache.enable2xSaI != OGL.enable2xSaI)
+	if (cache.enable2xSaI != config.texture.enable2xSaI)
 	{
 		TextureCache_Destroy();
 		TextureCache_Init();
 	}
 
-	if (cache.bitDepth != OGL.textureBitDepth)
+	if (cache.bitDepth != config.texture.textureBitDepth)
 	{
 		TextureCache_Destroy();
 		TextureCache_Init();
@@ -1102,8 +1103,8 @@ void TextureCache_Update( u32 t )
 	cache.current[t]->shiftScaleS = 1.0f;
 	cache.current[t]->shiftScaleT = 1.0f;
 
-	cache.current[t]->offsetS = OGL.enable2xSaI ? 0.25f : 0.5f;
-	cache.current[t]->offsetT = OGL.enable2xSaI ? 0.25f : 0.5f;
+	cache.current[t]->offsetS = config.texture.enable2xSaI ? 0.25f : 0.5f;
+	cache.current[t]->offsetT = config.texture.enable2xSaI ? 0.25f : 0.5f;
 
 	if (gSP.textureTile[t]->shifts > 10)
 		cache.current[t]->shiftScaleS = (f32)(1 << (16 - gSP.textureTile[t]->shifts));

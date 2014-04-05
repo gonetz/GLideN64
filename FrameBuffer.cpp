@@ -10,6 +10,7 @@
 #include "Textures.h"
 #include "Combiner.h"
 #include "Types.h"
+#include "Config.h"
 #include "Debug.h"
 
 bool g_bCopyToRDRAM = false;
@@ -526,7 +527,7 @@ void FrameBuffer_RenderBuffer( u32 address )
 
 			glMatrixMode( GL_PROJECTION );
 			glLoadIdentity();
- 			glOrtho( 0, OGL.width, 0, OGL.height, -1.0f, 1.0f );
+			glOrtho( 0, OGL.width, 0, OGL.height, -1.0f, 1.0f );
 			glViewport( 0, OGL.heightOffset, OGL.width, OGL.height );
 			glDisable( GL_SCISSOR_TEST );
 

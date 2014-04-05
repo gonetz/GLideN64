@@ -9,28 +9,32 @@
 #include "Textures.h"
 #include "OpenGL.h"
 
+Config config;
+
 struct Option
 {
 	const char* name;
-	unsigned int* data;
+	u32* data;
 	const int initial;
 };
 
 Option configOptions[] =
 {
 	{"#GLideN64 Graphics Plugin for N64", NULL, 0},
-//	{"config version", &config.version, 0},
+	{"config version", &config.version, 0},
 	{"", NULL, 0},
 
-//	{"#Window Settings:", NULL, 0},
-	{"window width", &OGL.windowedWidth, 640},
-	{"window height", &OGL.windowedHeight, 480},
-	{"force bilinear", &OGL.forceBilinear, 0},
-	{"enable 2xSAI", &OGL.enable2xSaI, 0},
-	{"enable fog", &OGL.fog, 1},
+	{"#Window Settings:", NULL, 0},
+	{"window width", &config.video.windowedWidth, 640},
+	{"window height", &config.video.windowedHeight, 480},
+	{"#Texture Settings:", NULL, 0},
+	{"force bilinear", &config.texture.forceBilinear, 0},
+	{"enable 2xSAI", &config.texture.enable2xSaI, 0},
 	{"cache size", &cache.maxBytes, 64*1048576},
-	{"enable HardwareFB", &OGL.frameBufferTextures, 0},
-	{"texture depth", &OGL.textureBitDepth, 1}
+	{"texture depth", &config.texture.textureBitDepth, 1},
+	{"#Emulation Settings:", NULL, 0},
+	{"enable fog", &config.enableFog, 1},
+	{"enable HardwareFB", &config.frameBufferEmulation, 0}
 };
 
 const int configOptionsSize = sizeof(configOptions) / sizeof(Option);
@@ -61,8 +65,8 @@ void Config_SetDefault()
 		Option *o = &configOptions[i];
 		if (o->data) *(o->data) = o->initial;
 	}
-	OGL.fullscreenWidth = 640;
-	OGL.fullscreenHeight = 480;
+	config.video.fullscreenWidth = 640;
+	config.video.fullscreenHeight = 480;
 }
 
 void Config_SetOption(char* line, char* val)

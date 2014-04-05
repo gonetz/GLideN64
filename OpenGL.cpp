@@ -12,6 +12,7 @@
 #include "FrameBuffer.h"
 #include "DepthBuffer.h"
 #include "VI.h"
+#include "Config.h"
 
 GLInfo OGL;
 
@@ -222,16 +223,16 @@ void OGL_ResizeWindow()
 
 	if (OGL.fullscreen)
 	{
-		OGL.width = OGL.fullscreenWidth;
-		OGL.height = OGL.fullscreenHeight;
+		OGL.width = config.video.fullscreenWidth;
+		OGL.height = config.video.fullscreenHeight;
 		OGL.heightOffset = 0;
 
 		SetWindowPos( hWnd, NULL, 0, 0,	OGL.width, OGL.height, SWP_NOACTIVATE | SWP_NOZORDER | SWP_SHOWWINDOW );
 	}
 	else
 	{
-		OGL.width = OGL.windowedWidth;
-		OGL.height = OGL.windowedHeight;
+		OGL.width = config.video.windowedWidth;
+		OGL.height = config.video.windowedHeight;
 
 		GetClientRect( hWnd, &windowRect );
 		GetWindowRect( hStatusBar, &statusRect );
@@ -242,8 +243,8 @@ void OGL_ResizeWindow()
 			toolRect.bottom = toolRect.top = 0;
 
 		OGL.heightOffset = (statusRect.bottom - statusRect.top);
-		windowRect.right = windowRect.left + OGL.windowedWidth - 1;
-		windowRect.bottom = windowRect.top + OGL.windowedHeight - 1 + OGL.heightOffset;
+		windowRect.right = windowRect.left + config.video.windowedWidth - 1;
+		windowRect.bottom = windowRect.top + config.video.windowedHeight - 1 + OGL.heightOffset;
 
 		AdjustWindowRect( &windowRect, GetWindowLong( hWnd, GWL_STYLE ), GetMenu( hWnd ) != NULL );
 
@@ -318,13 +319,13 @@ bool OGL_Start()
 
 	if (OGL.fullscreen)
 	{
-		OGL.width = OGL.fullscreenWidth;
-		OGL.height = OGL.fullscreenHeight;
+		OGL.width = config.video.fullscreenWidth;
+		OGL.height = config.video.fullscreenHeight;
 	}
 	else
 	{
-		OGL.width = OGL.windowedWidth;
-		OGL.height = OGL.windowedHeight;
+		OGL.width = config.video.windowedWidth;
+		OGL.height = config.video.windowedHeight;
 	}
 
 
@@ -792,7 +793,7 @@ void OGL_DrawTriangles()
 		glVertexAttribPointer(SC_COLOR, 4, GL_FLOAT, GL_FALSE, sizeof(SPVertex), &OGL.triangles.vertices[0].r);
 		glVertexAttribPointer(SC_TEXCOORD0, 2, GL_FLOAT, GL_FALSE, sizeof(SPVertex), &OGL.triangles.vertices[0].s);
 		glVertexAttribPointer(SC_STSCALED, 1, GL_UNSIGNED_BYTE, GL_FALSE, sizeof(SPVertex), &OGL.triangles.vertices[0].st_scaled);
-		if (OGL.bHWLighting) {
+		if (config.enableHWLighting) {
 			glEnableVertexAttribArray(SC_NUMLIGHTS);
 			glVertexAttribPointer(SC_NUMLIGHTS, 1, GL_BYTE, GL_FALSE, sizeof(SPVertex), &OGL.triangles.vertices[0].HWLight);
 		}
@@ -1004,7 +1005,7 @@ void OGL_DrawTexturedRect( float ulx, float uly, float lrx, float lry, float uls
 		OGL.rect[3].t1 *= cache.current[1]->scaleT;
 	}
 
-	if ((gDP.otherMode.cycleType == G_CYC_COPY) && !OGL.forceBilinear)
+	if ((gDP.otherMode.cycleType == G_CYC_COPY) && !config.texture.forceBilinear)
 	{
 		glActiveTexture( GL_TEXTURE0 );
 		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
@@ -1040,7 +1041,7 @@ void OGL_DrawTexturedRect( float ulx, float uly, float lrx, float lry, float uls
 
 void OGL_ClearDepthBuffer()
 {
-	if (OGL.frameBufferTextures && frameBuffer.top == NULL)
+	if (config.frameBufferEmulation && frameBuffer.top == NULL)
 		return;
 
 	DepthBuffer_ClearBuffer();

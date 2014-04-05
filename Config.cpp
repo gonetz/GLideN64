@@ -8,6 +8,7 @@
 #include "OpenGL.h"
 #include <commctrl.h>
 
+Config config;
 HWND hConfigDlg;
 
 struct
@@ -62,51 +63,51 @@ void Config_LoadConfig()
 
 	if (hKey)
 	{
-        RegQueryValueEx( hKey, "Fullscreen Bit Depth", 0, NULL, (BYTE*)&OGL.fullscreenBits, &size );
-		RegQueryValueEx( hKey, "Fullscreen Width", 0, NULL, (BYTE*)&OGL.fullscreenWidth, &size );
-		RegQueryValueEx( hKey, "Fullscreen Height", 0, NULL, (BYTE*)&OGL.fullscreenHeight, &size );
-		RegQueryValueEx( hKey, "Fullscreen Refresh", 0, NULL, (BYTE*)&OGL.fullscreenRefresh, &size );
-		RegQueryValueEx( hKey, "Windowed Width", 0, NULL, (BYTE*)&OGL.windowedWidth, &size );
-		RegQueryValueEx( hKey, "Windowed Height", 0, NULL, (BYTE*)&OGL.windowedHeight, &size );
-		RegQueryValueEx( hKey, "Windowed Width", 0, NULL, (BYTE*)&OGL.windowedWidth, &size );
+        RegQueryValueEx( hKey, "Fullscreen Bit Depth", 0, NULL, (BYTE*)&config.video.fullscreenBits, &size );
+		RegQueryValueEx( hKey, "Fullscreen Width", 0, NULL, (BYTE*)&config.video.fullscreenWidth, &size );
+		RegQueryValueEx( hKey, "Fullscreen Height", 0, NULL, (BYTE*)&config.video.fullscreenHeight, &size );
+		RegQueryValueEx( hKey, "Fullscreen Refresh", 0, NULL, (BYTE*)&config.video.fullscreenRefresh, &size );
+		RegQueryValueEx( hKey, "Windowed Width", 0, NULL, (BYTE*)&config.video.windowedWidth, &size );
+		RegQueryValueEx( hKey, "Windowed Height", 0, NULL, (BYTE*)&config.video.windowedHeight, &size );
+		RegQueryValueEx( hKey, "Windowed Width", 0, NULL, (BYTE*)&config.video.windowedWidth, &size );
 		RegQueryValueEx( hKey, "Force Bilinear", 0, NULL, (BYTE*)&value, &size );
-		OGL.forceBilinear = value ? TRUE : FALSE;
+		config.texture.forceBilinear = value ? TRUE : FALSE;
 
 		RegQueryValueEx( hKey, "Enable 2xSaI", 0, NULL, (BYTE*)&value, &size );
-		OGL.enable2xSaI = value ? TRUE : FALSE;
+		config.texture.enable2xSaI = value ? TRUE : FALSE;
 
 		RegQueryValueEx( hKey, "Enable Fog", 0, NULL, (BYTE*)&value, &size );
-		OGL.fog = value ? TRUE : FALSE;
+		config.enableFog = value ? TRUE : FALSE;
 
 		RegQueryValueEx( hKey, "Texture Cache Size", 0, NULL, (BYTE*)&value, &size );
 		cache.maxBytes = value * 1048576;
 
 		RegQueryValueEx( hKey, "Hardware Frame Buffer Textures", 0, NULL, (BYTE*)&value, &size );
-		OGL.frameBufferTextures = value ? TRUE : FALSE;
+		config.frameBufferEmulation = value ? TRUE : FALSE;
 
 		RegQueryValueEx( hKey, "Hardware lighting", 0, NULL, (BYTE*)&value, &size );
-		OGL.bHWLighting = value ? TRUE : FALSE;
+		config.enableHWLighting = value ? TRUE : FALSE;
 
 		RegQueryValueEx( hKey, "Texture Bit Depth", 0, NULL, (BYTE*)&value, &size );
-		OGL.textureBitDepth = value;
+		config.texture.textureBitDepth = value;
 
 		RegCloseKey( hKey );
 	}
 	else
 	{
-		OGL.fog = TRUE;
-		OGL.windowedWidth = 640;
-		OGL.windowedHeight = 480;
-		OGL.fullscreenWidth = 640;
-		OGL.fullscreenHeight = 480;
-		OGL.fullscreenBits = 16;
-		OGL.fullscreenRefresh = 60;
-		OGL.forceBilinear = FALSE;
+		config.enableFog = TRUE;
+		config.video.windowedWidth = 640;
+		config.video.windowedHeight = 480;
+		config.video.fullscreenWidth = 640;
+		config.video.fullscreenHeight = 480;
+		config.video.fullscreenBits = 16;
+		config.video.fullscreenRefresh = 60;
+		config.texture.forceBilinear = FALSE;
 		cache.maxBytes = 32 * 1048576;
-		OGL.frameBufferTextures = FALSE;
-		OGL.enable2xSaI = FALSE;
-		OGL.textureBitDepth = 1;
-		OGL.bHWLighting = FALSE;
+		config.frameBufferEmulation = FALSE;
+		config.texture.enable2xSaI = FALSE;
+		config.texture.textureBitDepth = 1;
+		config.enableHWLighting = FALSE;
 	}
 }
 
@@ -117,32 +118,32 @@ void Config_SaveConfig()
 
 	RegCreateKeyEx( HKEY_CURRENT_USER, "Software\\N64 Emulation\\DLL\\glN64", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hKey, NULL );
 
-	RegSetValueEx( hKey, "Fullscreen Bit Depth", 0, REG_DWORD, (BYTE*)&OGL.fullscreenBits, 4 );
-	RegSetValueEx( hKey, "Fullscreen Width", 0, REG_DWORD, (BYTE*)&OGL.fullscreenWidth, 4 );
-	RegSetValueEx( hKey, "Fullscreen Height", 0, REG_DWORD, (BYTE*)&OGL.fullscreenHeight, 4 );
-	RegSetValueEx( hKey, "Fullscreen Refresh", 0, REG_DWORD, (BYTE*)&OGL.fullscreenRefresh, 4 );
-	RegSetValueEx( hKey, "Windowed Width", 0, REG_DWORD, (BYTE*)&OGL.windowedWidth, 4 );
-	RegSetValueEx( hKey, "Windowed Height", 0, REG_DWORD, (BYTE*)&OGL.windowedHeight, 4 );
+	RegSetValueEx( hKey, "Fullscreen Bit Depth", 0, REG_DWORD, (BYTE*)&config.video.fullscreenBits, 4 );
+	RegSetValueEx( hKey, "Fullscreen Width", 0, REG_DWORD, (BYTE*)&config.video.fullscreenWidth, 4 );
+	RegSetValueEx( hKey, "Fullscreen Height", 0, REG_DWORD, (BYTE*)&config.video.fullscreenHeight, 4 );
+	RegSetValueEx( hKey, "Fullscreen Refresh", 0, REG_DWORD, (BYTE*)&config.video.fullscreenRefresh, 4 );
+	RegSetValueEx( hKey, "Windowed Width", 0, REG_DWORD, (BYTE*)&config.video.windowedWidth, 4 );
+	RegSetValueEx( hKey, "Windowed Height", 0, REG_DWORD, (BYTE*)&config.video.windowedHeight, 4 );
 
-	value = OGL.forceBilinear ? 1 : 0;
+	value = config.texture.forceBilinear ? 1 : 0;
 	RegSetValueEx( hKey, "Force Bilinear", 0, REG_DWORD, (BYTE*)&value, 4 );
 
-	value = OGL.enable2xSaI ? 1 : 0;
+	value = config.texture.enable2xSaI ? 1 : 0;
 	RegSetValueEx( hKey, "Enable 2xSaI", 0, REG_DWORD, (BYTE*)&value, 4 );
 
-	value = OGL.fog ? 1 : 0;
+	value = config.enableFog ? 1 : 0;
 	RegSetValueEx( hKey, "Enable Fog", 0, REG_DWORD, (BYTE*)&value, 4 );
 
 	value = cache.maxBytes / 1048576;
 	RegSetValueEx( hKey, "Texture Cache Size", 0, REG_DWORD, (BYTE*)&value, 4 );
 
-	value = OGL.frameBufferTextures ? 1 : 0;
+	value = config.frameBufferEmulation ? 1 : 0;
 	RegSetValueEx( hKey, "Hardware Frame Buffer Textures", 0, REG_DWORD, (BYTE*)&value, 4 );
 
-	value = OGL.bHWLighting ? 1 : 0;
+	value = config.enableHWLighting ? 1 : 0;
 	RegSetValueEx( hKey, "Hardware lighting", 0, REG_DWORD, (BYTE*)&value, 4 );
 
-	value = OGL.textureBitDepth;
+	value = config.texture.textureBitDepth;
 	RegSetValueEx( hKey, "Texture Bit Depth", 0, REG_DWORD, (BYTE*)&value, 4 );
 
 	RegCloseKey( hKey );
@@ -156,26 +157,26 @@ void Config_ApplyDlgConfig( HWND hWndDlg )
 	SendDlgItemMessage( hWndDlg, IDC_CACHEMEGS, WM_GETTEXT, 4, (LPARAM)text );
 	cache.maxBytes = atol( text ) * 1048576;
 
-	OGL.forceBilinear = (SendDlgItemMessage( hWndDlg, IDC_FORCEBILINEAR, BM_GETCHECK, NULL, NULL ) == BST_CHECKED);
-	OGL.enable2xSaI = (SendDlgItemMessage( hWndDlg, IDC_ENABLE2XSAI, BM_GETCHECK, NULL, NULL ) == BST_CHECKED);
-	OGL.fog = (SendDlgItemMessage( hWndDlg, IDC_FOG, BM_GETCHECK, NULL, NULL ) == BST_CHECKED);
-	OGL.originAdjust = (OGL.enable2xSaI ? 0.25f : 0.50f);
+	config.texture.forceBilinear = (SendDlgItemMessage( hWndDlg, IDC_FORCEBILINEAR, BM_GETCHECK, NULL, NULL ) == BST_CHECKED);
+	config.texture.enable2xSaI = (SendDlgItemMessage( hWndDlg, IDC_ENABLE2XSAI, BM_GETCHECK, NULL, NULL ) == BST_CHECKED);
+	config.enableFog = (SendDlgItemMessage( hWndDlg, IDC_FOG, BM_GETCHECK, NULL, NULL ) == BST_CHECKED);
+	//OGL.originAdjust = (OGL.enable2xSaI ? 0.25f : 0.50f);
 
-	OGL.fullscreenBits = fullscreen.bitDepth[SendDlgItemMessage( hWndDlg, IDC_FULLSCREENBITDEPTH, CB_GETCURSEL, 0, 0 )];
+	config.video.fullscreenBits = fullscreen.bitDepth[SendDlgItemMessage( hWndDlg, IDC_FULLSCREENBITDEPTH, CB_GETCURSEL, 0, 0 )];
 	i = SendDlgItemMessage( hWndDlg, IDC_FULLSCREENRES, CB_GETCURSEL, 0, 0 );
-	OGL.fullscreenWidth = fullscreen.resolution[i].width;
-	OGL.fullscreenHeight = fullscreen.resolution[i].height;
-	OGL.fullscreenRefresh = fullscreen.refreshRate[SendDlgItemMessage( hWndDlg, IDC_FULLSCREENREFRESH, CB_GETCURSEL, 0, 0 )];
+	config.video.fullscreenWidth = fullscreen.resolution[i].width;
+	config.video.fullscreenHeight = fullscreen.resolution[i].height;
+	config.video.fullscreenRefresh = fullscreen.refreshRate[SendDlgItemMessage( hWndDlg, IDC_FULLSCREENREFRESH, CB_GETCURSEL, 0, 0 )];
 
 	i = SendDlgItemMessage( hWndDlg, IDC_TEXTUREBPP, CB_GETCURSEL, 0, 0 );
-	OGL.textureBitDepth = (int)i;
+	config.texture.textureBitDepth = (int)i;
 
 	i = SendDlgItemMessage( hWndDlg, IDC_WINDOWEDRES, CB_GETCURSEL, 0, 0 );
-	OGL.windowedWidth = windowedModes[i].width;
-	OGL.windowedHeight = windowedModes[i].height;
+	config.video.windowedWidth = windowedModes[i].width;
+	config.video.windowedHeight = windowedModes[i].height;
 
-	OGL.frameBufferTextures = (SendDlgItemMessage( hWndDlg, IDC_FRAMEBUFFER, BM_GETCHECK, NULL, NULL ) == BST_CHECKED);
-	OGL.bHWLighting = (SendDlgItemMessage( hWndDlg, IDC_HWLIGHT, BM_GETCHECK, NULL, NULL ) == BST_CHECKED);
+	config.frameBufferEmulation = (SendDlgItemMessage( hWndDlg, IDC_FRAMEBUFFER, BM_GETCHECK, NULL, NULL ) == BST_CHECKED);
+	config.enableHWLighting = (SendDlgItemMessage( hWndDlg, IDC_HWLIGHT, BM_GETCHECK, NULL, NULL ) == BST_CHECKED);
 
 	if (!OGL.fullscreen)
 		OGL_ResizeWindow();
@@ -299,10 +300,10 @@ BOOL CALLBACK ConfigDlgProc( HWND hWndDlg, UINT message, WPARAM wParam, LPARAM l
 		case WM_INITDIALOG:
 			hConfigDlg = hWndDlg;
 
-			fullscreen.selected.width = OGL.fullscreenWidth;
-			fullscreen.selected.height = OGL.fullscreenHeight;
-			fullscreen.selected.bitDepth = OGL.fullscreenBits;
-			fullscreen.selected.refreshRate = OGL.fullscreenRefresh;
+			fullscreen.selected.width = config.video.fullscreenWidth;
+			fullscreen.selected.height = config.video.fullscreenHeight;
+			fullscreen.selected.bitDepth = config.video.fullscreenBits;
+			fullscreen.selected.refreshRate = config.video.fullscreenRefresh;
 			UpdateFullscreenConfig( hWndDlg );
 
 			EnumDisplaySettings( NULL, ENUM_CURRENT_SETTINGS, &deviceMode );
@@ -314,23 +315,23 @@ BOOL CALLBACK ConfigDlgProc( HWND hWndDlg, UINT message, WPARAM wParam, LPARAM l
 					(deviceMode.dmPelsHeight > windowedModes[i].height))
 				{
 					SendDlgItemMessage( hWndDlg, IDC_WINDOWEDRES, CB_ADDSTRING, 0, (LPARAM)windowedModes[i].description );
-					if ((OGL.windowedWidth == windowedModes[i].width) &&
-					    (OGL.windowedHeight == windowedModes[i].height))
+					if ((config.video.windowedWidth == windowedModes[i].width) &&
+					    (config.video.windowedHeight == windowedModes[i].height))
 						SendDlgItemMessage( hWndDlg, IDC_WINDOWEDRES, CB_SETCURSEL, i, 0 );
 				}
 			}
-			SendDlgItemMessage( hWndDlg, IDC_ENABLE2XSAI, BM_SETCHECK, OGL.enable2xSaI ? (LPARAM)BST_CHECKED : (LPARAM)BST_UNCHECKED, NULL );
+			SendDlgItemMessage( hWndDlg, IDC_ENABLE2XSAI, BM_SETCHECK, config.texture.enable2xSaI ? (LPARAM)BST_CHECKED : (LPARAM)BST_UNCHECKED, NULL );
 			// Set forced bilinear check box
-			SendDlgItemMessage( hWndDlg, IDC_FORCEBILINEAR, BM_SETCHECK, OGL.forceBilinear ? (LPARAM)BST_CHECKED : (LPARAM)BST_UNCHECKED, NULL );
+			SendDlgItemMessage( hWndDlg, IDC_FORCEBILINEAR, BM_SETCHECK, config.texture.forceBilinear ? (LPARAM)BST_CHECKED : (LPARAM)BST_UNCHECKED, NULL );
 			SendDlgItemMessage( hWndDlg, IDC_TEXTUREBPP, CB_ADDSTRING, 0, (LPARAM)"16-bit only (faster)" );
 			SendDlgItemMessage( hWndDlg, IDC_TEXTUREBPP, CB_ADDSTRING, 0, (LPARAM)"16-bit and 32-bit (normal)" );
 			SendDlgItemMessage( hWndDlg, IDC_TEXTUREBPP, CB_ADDSTRING, 0, (LPARAM)"32-bit only (best for 2xSaI)" );
-			SendDlgItemMessage( hWndDlg, IDC_TEXTUREBPP, CB_SETCURSEL, OGL.textureBitDepth, 0 );
+			SendDlgItemMessage( hWndDlg, IDC_TEXTUREBPP, CB_SETCURSEL, config.texture.textureBitDepth, 0 );
 			// Enable/disable fog
-			SendDlgItemMessage( hWndDlg, IDC_FOG, BM_SETCHECK, OGL.fog ? (LPARAM)BST_CHECKED : (LPARAM)BST_UNCHECKED, NULL );
-			SendDlgItemMessage( hWndDlg, IDC_FRAMEBUFFER, BM_SETCHECK, OGL.frameBufferTextures ? (LPARAM)BST_CHECKED : (LPARAM)BST_UNCHECKED, NULL );
+			SendDlgItemMessage( hWndDlg, IDC_FOG, BM_SETCHECK, config.enableFog ? (LPARAM)BST_CHECKED : (LPARAM)BST_UNCHECKED, NULL );
+			SendDlgItemMessage( hWndDlg, IDC_FRAMEBUFFER, BM_SETCHECK, config.frameBufferEmulation ? (LPARAM)BST_CHECKED : (LPARAM)BST_UNCHECKED, NULL );
 
-			SendDlgItemMessage( hWndDlg, IDC_HWLIGHT, BM_SETCHECK, OGL.bHWLighting ? (LPARAM)BST_CHECKED : (LPARAM)BST_UNCHECKED, NULL );
+			SendDlgItemMessage( hWndDlg, IDC_HWLIGHT, BM_SETCHECK, config.enableHWLighting ? (LPARAM)BST_CHECKED : (LPARAM)BST_UNCHECKED, NULL );
 
 			_ltoa( cache.maxBytes / 1048576, text, 10 );
 			SendDlgItemMessage( hWndDlg, IDC_CACHEMEGS, WM_SETTEXT, NULL, (LPARAM)text );

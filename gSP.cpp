@@ -17,6 +17,7 @@
 #include "VI.h"
 #include "FrameBuffer.h"
 #include "DepthBuffer.h"
+#include "Config.h"
 #include "Log.h"
 
 #ifdef DEBUG
@@ -446,7 +447,7 @@ static void gSPLightVertex_default(u32 v)
 {
 	TransformVectorNormalize( &OGL.triangles.vertices[v].nx, gSP.matrix.modelView[gSP.matrix.modelViewi] );
 
-	if (!OGL.bHWLighting) {
+	if (!config.enableHWLighting) {
 		f32 r = gSP.lights[gSP.numLights].r;
 		f32 g = gSP.lights[gSP.numLights].g;
 		f32 b = gSP.lights[gSP.numLights].b;
@@ -756,7 +757,7 @@ void gSPLight( u32 l, s32 n )
 		Normalize( &gSP.lights[n].x );
 	}
 
-	if (OGL.bHWLighting) {
+	if (config.enableHWLighting) {
 		float fLightPos[4] = {gSP.lights[n].x, gSP.lights[n].y, gSP.lights[n].z, 0.0};
 		glLightfv(GL_LIGHT0+n, GL_POSITION, fLightPos);
 		float fLightColor[4] = {gSP.lights[n].r, gSP.lights[n].g, gSP.lights[n].b, 1.0};
@@ -1728,7 +1729,7 @@ void loadBGImage(const uObjScaleBg * _bgInfo, bool _loadScale)
 	} else
 		gSP.bgImage.scaleW = gSP.bgImage.scaleH = 1.0f;
 
-	if (OGL.frameBufferTextures)
+	if (config.frameBufferEmulation)
 	{
 		FrameBuffer *buffer;
 		if (((buffer = FrameBuffer_FindBuffer( gSP.bgImage.address )) != NULL) &&

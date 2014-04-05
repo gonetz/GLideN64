@@ -7,6 +7,7 @@
 #include "gDP.h"
 #include "RSP.h"
 #include "FrameBuffer.h"
+#include "Config.h"
 #include "Debug.h"
 
 VIInfo VI;
@@ -55,7 +56,7 @@ void VI_UpdateScreen()
 	if (((*REG.VI_STATUS)&3) == 0)
 		VI.vStart = VI.vEnd = 0;
 
-	if (OGL.frameBufferTextures) {
+	if (config.frameBufferEmulation) {
 		const bool bCFB = !g_bIgnoreCFB && (gSP.changed&CHANGED_CPU_FB_WRITE) == CHANGED_CPU_FB_WRITE;
 		const bool bNeedUpdate = bCFB ? true : (*REG.VI_ORIGIN != VI.lastOrigin);// && gDP.colorImage.changed;
 

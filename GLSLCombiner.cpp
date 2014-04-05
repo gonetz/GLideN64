@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include "N64.h"
 #include "OpenGL.h"
+#include "Config.h"
 #include "Combiner.h"
 #include "GLSLCombiner.h"
 #include "Shaders.h"
@@ -399,7 +400,7 @@ GLSLCombiner::GLSLCombiner(Combiner *_color, Combiner *_alpha) {
 	} else {
 		assert(strstr(strCombiner, "readtex") == 0);
 	}
-	if (OGL.bHWLighting)
+	if (config.enableHWLighting)
 		strcat(fragment_shader, "  float intensity = calc_light(int(vNumLights), vShadeColor.rgb, input_color); \n");
 	else
 		strcat(fragment_shader, "  input_color = vShadeColor.rgb;\n");
@@ -442,7 +443,7 @@ GLSLCombiner::GLSLCombiner(Combiner *_color, Combiner *_alpha) {
 	m_aShaders[uShaderIdx++] = g_vertex_shader_object;
 	glAttachShader(m_program, fragmentShader);
 	m_aShaders[uShaderIdx++] = fragmentShader;
-	if (OGL.bHWLighting) {
+	if (config.enableHWLighting) {
 		glAttachShader(m_program, g_calc_light_shader_object);
 		m_aShaders[uShaderIdx++] = g_calc_light_shader_object;
 	}
@@ -571,7 +572,7 @@ void GLSLCombiner::UpdateColors(bool _bForce) {
 	_setV4Uniform(m_uniforms.uFogColor, &gDP.fogColor.r, _bForce);
 	_setV4Uniform(m_uniforms.uCenterColor, &gDP.key.center.r, _bForce);
 	_setV4Uniform(m_uniforms.uScaleColor, &gDP.key.scale.r, _bForce);
-	_setIUniform(m_uniforms.uEnableFog, (OGL.fog && (gSP.geometryMode & G_FOG) != 0), _bForce);
+	_setIUniform(m_uniforms.uEnableFog, (config.enableFog && (gSP.geometryMode & G_FOG) != 0), _bForce);
 	_setFUniform(m_uniforms.uFogMultiplier, (float)gSP.fog.multiplier / 255.0f, _bForce);
 	_setFUniform(m_uniforms.uFogOffset, (float)gSP.fog.offset / 255.0f, _bForce);
 	_setFUniform(m_uniforms.uK4, gDP.convert.k4, _bForce);
@@ -721,7 +722,7 @@ void GLSL_RenderDepth() {
 
 			glMatrixMode( GL_PROJECTION );
 			glLoadIdentity();
- 			glOrtho( 0, OGL.width, 0, OGL.height, -1.0f, 1.0f );
+			glOrtho( 0, OGL.width, 0, OGL.height, -1.0f, 1.0f );
 			glViewport( 0, OGL.heightOffset, OGL.width, OGL.height );
 			glDisable( GL_SCISSOR_TEST );
 

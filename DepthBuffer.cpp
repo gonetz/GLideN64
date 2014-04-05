@@ -5,6 +5,7 @@
 #include "FrameBuffer.h"
 #include "DepthBuffer.h"
 #include "VI.h"
+#include "Config.h"
 #include "Debug.h"
 
 DepthBufferInfo depthBuffer;
@@ -179,7 +180,7 @@ void DepthBuffer_SetBuffer( u32 address )
 		current->address = address;
 		current->width = pFrameBuffer != NULL ? pFrameBuffer->width : VI.width;
 		current->depth_texture = NULL;
-		if (OGL.frameBufferTextures) {
+		if (config.frameBufferEmulation) {
 			glGenRenderbuffers(1, &current->renderbuf);
 			glBindRenderbuffer(GL_RENDERBUFFER, current->renderbuf);
 			if (pFrameBuffer != NULL)
@@ -189,7 +190,7 @@ void DepthBuffer_SetBuffer( u32 address )
 		}
 	}
 
-	if (OGL.frameBufferTextures) {
+	if (config.frameBufferEmulation) {
 		FrameBuffer_AttachDepthBuffer();
 
 #ifdef DEBUG
