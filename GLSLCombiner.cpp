@@ -573,8 +573,8 @@ void GLSLCombiner::UpdateColors(bool _bForce) {
 	_setV4Uniform(m_uniforms.uScaleColor, &gDP.key.scale.r, _bForce);
 	_setIUniform(m_uniforms.uEnableFog, (config.enableFog != 0 && (gSP.geometryMode & G_FOG) != 0) ? 1 : 0, _bForce);
 	if (m_uniforms.uEnableFog.val != 0) {
-		_setFUniform(m_uniforms.uFogMultiplier, (float)gSP.fog.multiplier / 255.0f, _bForce);
-		_setFUniform(m_uniforms.uFogOffset, (float)gSP.fog.offset / 255.0f, _bForce);
+		_setFUniform(m_uniforms.uFogMultiplier, (float)gSP.fog.multiplier / 256.0f, _bForce);
+		_setFUniform(m_uniforms.uFogOffset, (float)gSP.fog.offset / 256.0f, _bForce);
 		_setV4Uniform(m_uniforms.uFogColor, &gDP.fogColor.r, _bForce);
 	}
 	_setFUniform(m_uniforms.uK4, gDP.convert.k4, _bForce);
