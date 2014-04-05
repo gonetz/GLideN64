@@ -1711,6 +1711,37 @@ void gSPLineW3D( s32 v0, s32 v1, s32 wd, s32 flag )
 }
 
 static
+void _copyDepthBuffer()
+{
+	if (!config.frameBufferEmulation.enable)
+		return;
+	// The game copies content of depth buffer into current color buffer
+	// OpenGL has different format for color and depth buffers, so this trick can't be performed directly
+	// To do that, depth buffer with address of current color buffer created and attached to the current FBO
+	// It will be copy depth buffer
+	DepthBuffer_SetBuffer(gDP.colorImage.address);
+	// Take any frame buffer and attach source depth buffer to it, to blit it into copy depth buffer
+	FrameBuffer * pTmpBuffer = frameBuffer.top->lower;
+	DepthBuffer * pTmpBufferDepth = pTmpBuffer->pDepthBuffer;
+	pTmpBuffer->pDepthBuffer = DepthBuffer_FindBuffer(gSP.bgImage.address);
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, pTmpBuffer->fbo);
+	glFramebufferRenderbuffer(GL_READ_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, pTmpBuffer->pDepthBuffer->renderbuf);
+	GLuint attachments[2] = { GL_COLOR_ATTACHMENT0, GL_DEPTH_ATTACHMENT };
+	glDrawBuffers(2,  attachments);
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, frameBuffer.top->fbo);
+	glBlitFramebuffer(
+		0, 0, OGL.width, OGL.height,
+		0, 0, OGL.width, OGL.height,
+		GL_DEPTH_BUFFER_BIT, GL_NEAREST
+	);
+	// Restore objects
+	glFramebufferRenderbuffer(GL_READ_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, pTmpBufferDepth->renderbuf);
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
+	// Set back current depth buffer
+	DepthBuffer_SetBuffer(gDP.depthImageAddress);
+}
+
+static
 void loadBGImage(const uObjScaleBg * _bgInfo, bool _loadScale)
 {
 	gSP.bgImage.address = RSP_SegmentToPhysical( _bgInfo->imagePtr );
@@ -1748,6 +1779,11 @@ void gSPBgRect1Cyc( u32 bg )
 	u32 address = RSP_SegmentToPhysical( bg );
 	uObjScaleBg *objScaleBg = (uObjScaleBg*)&RDRAM[address];
 	loadBGImage(objScaleBg, true);
+
+	if (gSP.bgImage.address == gDP.depthImageAddress || DepthBuffer_FindBuffer(gSP.bgImage.address) != NULL) {
+		_copyDepthBuffer();
+		return;
+	}
 
 	f32 imageX = gSP.bgImage.imageX;
 	f32 imageY = gSP.bgImage.imageY;
@@ -1826,6 +1862,11 @@ void gSPBgRectCopy( u32 bg )
 	u32 address = RSP_SegmentToPhysical( bg );
 	uObjScaleBg *objBg = (uObjScaleBg*)&RDRAM[address];
 	loadBGImage(objBg, false);
+
+	if (gSP.bgImage.address == gDP.depthImageAddress || DepthBuffer_FindBuffer(gSP.bgImage.address) != NULL) {
+		_copyDepthBuffer();
+		return;
+	}
 
 	f32 frameX = objBg->frameX / 4.0f;
 	f32 frameY = objBg->frameY / 4.0f;
