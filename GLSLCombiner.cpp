@@ -419,7 +419,7 @@ GLSLCombiner::GLSLCombiner(Combiner *_color, Combiner *_alpha) {
 #ifdef USE_TOONIFY
 	strcat(fragment_shader, "  toonify(intensity); \n");
 #endif
-	strcat(fragment_shader, "  if (uEnableFog > 0) \n");
+	strcat(fragment_shader, "  if (uEnableFog != 0) \n");
 	strcat(fragment_shader, "    gl_FragColor = vec4(mix(gl_FragColor.rgb, uFogColor.rgb, gl_FogFragCoord), gl_FragColor.a); \n");
 
 	strcat(fragment_shader, fragment_shader_end);
@@ -569,12 +569,14 @@ void GLSLCombiner::UpdateRenderState(bool _bForce) {
 void GLSLCombiner::UpdateColors(bool _bForce) {
 	_setV4Uniform(m_uniforms.uEnvColor, &gDP.envColor.r, _bForce);
 	_setV4Uniform(m_uniforms.uPrimColor, &gDP.primColor.r, _bForce);
-	_setV4Uniform(m_uniforms.uFogColor, &gDP.fogColor.r, _bForce);
 	_setV4Uniform(m_uniforms.uCenterColor, &gDP.key.center.r, _bForce);
 	_setV4Uniform(m_uniforms.uScaleColor, &gDP.key.scale.r, _bForce);
-	_setIUniform(m_uniforms.uEnableFog, (config.enableFog && (gSP.geometryMode & G_FOG) != 0), _bForce);
-	_setFUniform(m_uniforms.uFogMultiplier, (float)gSP.fog.multiplier / 255.0f, _bForce);
-	_setFUniform(m_uniforms.uFogOffset, (float)gSP.fog.offset / 255.0f, _bForce);
+	_setIUniform(m_uniforms.uEnableFog, (config.enableFog != 0 && (gSP.geometryMode & G_FOG) != 0) ? 1 : 0, _bForce);
+	if (m_uniforms.uEnableFog.val != 0) {
+		_setFUniform(m_uniforms.uFogMultiplier, (float)gSP.fog.multiplier / 255.0f, _bForce);
+		_setFUniform(m_uniforms.uFogOffset, (float)gSP.fog.offset / 255.0f, _bForce);
+		_setV4Uniform(m_uniforms.uFogColor, &gDP.fogColor.r, _bForce);
+	}
 	_setFUniform(m_uniforms.uK4, gDP.convert.k4, _bForce);
 	_setFUniform(m_uniforms.uK5, gDP.convert.k5, _bForce);
 
@@ -595,8 +597,6 @@ void GLSLCombiner::UpdateColors(bool _bForce) {
 
 	if ((m_nInputs & (1<<NOISE)) + nDither > 0)
 		_setFUniform(m_uniforms.uNoiseTime, (float)(rand()&255), _bForce);
-
-	_setIUniform(m_uniforms.uEnableFog, (gSP.geometryMode & G_FOG) > 0 ? 1 : 0, _bForce);
 
 	if (!_bForce)
 		return;
