@@ -216,6 +216,7 @@ DepthBuffer *DepthBuffer_FindBuffer( u32 address )
 }
 
 void DepthBuffer_ClearBuffer() {
+#ifndef GLES2
 	if (!OGL.bImageTexture)
 		return;
 	DepthBuffer *current = depthBuffer.top;
@@ -227,4 +228,5 @@ void DepthBuffer_ClearBuffer() {
 	OGL_DrawRect(0,0,VI.width, VI.height, color);
 	glBindImageTexture(depthImageUnit, current->depth_texture->glName, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA32F);
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, frameBuffer.top->fbo);
+#endif // GLES2
 }

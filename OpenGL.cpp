@@ -905,9 +905,11 @@ void OGL_DrawTexturedRect( float ulx, float uly, float lrx, float lry, float uls
 		combiner.current->compiled->UpdateRenderState();
 	}
 
+#ifndef GLES2
 	//	if ((gDP.otherMode.l >> 16) == 0x3c18 && gDP.combine.muxs0 == 0x00ffffff && gDP.combine.muxs1 == 0xfffff238) //depth image based fog
 	if (gSP.textureTile[0]->frameBuffer == NULL && gSP.textureTile[1]->frameBuffer == NULL && gDP.textureImage.address >= gDP.depthImageAddress &&  gDP.textureImage.address < (gDP.depthImageAddress +  gDP.colorImage.width*gDP.colorImage.width*6/4))
 		GLS_SetShadowMapCombiner();
+#endif // GLES2
 
 	if (frameBuffer.drawBuffer != GL_FRAMEBUFFER)
 		glViewport( 0, (frameBuffer.drawBuffer == GL_BACK ? OGL.heightOffset : 0), OGL.width, OGL.height );

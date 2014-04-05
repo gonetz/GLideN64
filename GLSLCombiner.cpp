@@ -75,6 +75,7 @@ bool check_program_link_status(GLuint obj)
 	return true;
 }
 
+#ifndef GLES2
 static
 void InitZlutTexture()
 {
@@ -163,6 +164,7 @@ void DestroyShadowMapShader()
 	glDeleteShader(g_shadow_map_fragment_shader_object);
 	glDeleteProgram(g_draw_shadow_map_program);
 }
+#endif // GLES2
 
 void InitGLSLCombiner()
 {
@@ -203,14 +205,19 @@ void InitGLSLCombiner()
 		assert(check_shader_compile_status(g_calc_depth_shader_object));
 	}
 
+#ifndef GLES2
 	InitZlutTexture();
 	InitShadowMapShader();
+#endif
 }
 
 void DestroyGLSLCombiner() {
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+
+#ifndef GLES2
 	DestroyZlutTexture();
 	DestroyShadowMapShader();
+#endif
 }
 
 const char *ColorInput_1cycle[] = {
@@ -686,6 +693,7 @@ void GLSLCombiner::UpdateAlphaTestInfo(bool _bForce) {
 	}
 }
 
+#ifndef GLES2
 void GLSL_RenderDepth() {
 	if (!OGL.bImageTexture)
 		return;
@@ -789,3 +797,4 @@ void GLS_SetShadowMapCombiner() {
 
 	gDP.changed |= CHANGED_COMBINE;
 }
+#endif // GLES2
