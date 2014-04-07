@@ -89,6 +89,15 @@ if(SDL)
   )
 endif(SDL)
 
+if(OPT)
+	add_definitions(
+	-D__CRC_OPT
+	-D__HASHMAP_OPT
+	-D__TRIBUFFER_OPT
+	-D__VEC4_OPT
+	)
+endif(OPT)
+
 find_package(OpenGL REQUIRED)
 include_directories(${OpenGL_INCLUDE_DIRS})
 link_directories(${OpenGL_LIBRARY_DIRS})
