@@ -1,6 +1,7 @@
 #ifndef _3DMATH_H
 #define _3DMATH_H
 #include <memory.h>
+#include <string.h>
 
 void MultMatrix( float m0[4][4], float m1[4][4], float dest[4][4]);
 void MultMatrix2(float m0[4][4], float m1[4][4] );
