@@ -1019,21 +1019,6 @@ void RDRAMtoFrameBuffer::CopyFromRDRAM( u32 _address, bool _bUseAlpha)
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, frameBuffer.top->fbo);
 #else
-	GLfloat u1, v1, x1, y1;
-	u1 = (GLfloat)width / (GLfloat)m_pTexture->realWidth;
-	v1 = (GLfloat)height / (GLfloat)m_pTexture->realHeight;
-	if (current->width == *REG.VI_WIDTH) {
-		x1 = (GLfloat)OGL.width;
-		y1 = (GLfloat)OGL.height;
-	} else {
-		x1 = (GLfloat)width*OGL.scaleX;
-		y1 = (GLfloat)height*OGL.scaleY;
-	}
-
-	glPushAttrib( GL_ENABLE_BIT | GL_VIEWPORT_BIT );
-
-	TextureCache_ActivateTexture( 0, m_pTexture );
-
 	if (_bUseAlpha)
 		Combiner_SetCombine( EncodeCombineMode( 0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0 ) );
 	else
@@ -1045,35 +1030,17 @@ void RDRAMtoFrameBuffer::CopyFromRDRAM( u32 _address, bool _bUseAlpha)
 	glDisable( GL_CULL_FACE );
 	glDisable( GL_POLYGON_OFFSET_FILL );
 	glDisable( GL_FOG );
+	gSP.changed = gDP.changed = 0;
 
-	glMatrixMode( GL_PROJECTION );
-	glLoadIdentity();
-	glOrtho( 0, x1, 0, y1, -1.0f, 1.0f );
-	glViewport( 0, 0, x1, y1 );
-	glDisable( GL_SCISSOR_TEST );
+	m_pTexture->scaleS = 1.0f / (float)m_pTexture->realWidth;
+	m_pTexture->scaleT = 1.0f / (float)m_pTexture->realHeight;
+	m_pTexture->shiftScaleS = 1.0f;
+	m_pTexture->shiftScaleT = 1.0f;
+	m_pTexture->offsetS = 0;
+	m_pTexture->offsetT = (float)m_pTexture->height;
+	TextureCache_ActivateTexture( 0, m_pTexture );
 
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, current->fbo);
-	const GLuint attachment = GL_COLOR_ATTACHMENT0;
-	glDrawBuffers(1, &attachment);
-	glBegin(GL_QUADS);
-	glTexCoord2f( 0.0f, 0.0f );
-	glVertex2f( 0.0f, 0.0f );
-
-	glTexCoord2f( 0.0f, v1 );
-	glVertex2f( 0.0f, y1 );
-
-	glTexCoord2f( u1,  v1 );
-	glVertex2f( x1, y1 );
-
-	glTexCoord2f( u1, 0.0f );
-	glVertex2f( x1, 0.0f );
-	glEnd();
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, frameBuffer.top->fbo);
-	glBindTexture(GL_TEXTURE_2D, 0);
-
-	glLoadIdentity();
-	glPopAttrib();
-
+	OGL_DrawTexturedRect( 0.0f, 0.0f, width, height, 0.0f, 0.0f, width-1.0f, height-1.0f, false );
 	gSP.changed |= CHANGED_TEXTURE | CHANGED_VIEWPORT;
 	gDP.changed |= CHANGED_COMBINE;
 #endif
