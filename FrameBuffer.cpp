@@ -345,7 +345,7 @@ void FrameBuffer_SaveBuffer( u32 address, u16 format, u16 size, u16 width, u16 h
 		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 		glGenFramebuffers(1, &current->fbo);
 		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, current->fbo);
-		glFramebufferTexture(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, current->texture->glName, 0);
+		glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, current->texture->glName, 0);
 	}
 
 	FrameBuffer_AttachDepthBuffer();
@@ -398,7 +398,7 @@ void _initDepthTexture()
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 	glGenFramebuffers(1, &depthBuffer.top->fbo);
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, depthBuffer.top->fbo);
-	glFramebufferTexture(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, depthBuffer.top->depth_texture->glName, 0);
+	glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, depthBuffer.top->depth_texture->glName, 0);
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, frameBuffer.top->fbo);
 	frameBuffer.top->pDepthBuffer = depthBuffer.top;
@@ -661,7 +661,7 @@ void FrameBufferToRDRAM::Init()
 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
 	glBindTexture(GL_TEXTURE_2D, 0);
 
-	glFramebufferTexture(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, m_pTexture->glName, 0);
+	glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_pTexture->glName, 0);
 	// check if everything is OK
 	assert(checkFBO());
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
@@ -796,7 +796,7 @@ void DepthBufferToRDRAM::Init()
 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
 	glBindTexture(GL_TEXTURE_2D, 0);
 
-	glFramebufferTexture(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, m_pTexture->glName, 0);
+	glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_pTexture->glName, 0);
 	// check if everything is OK
 	assert(checkFBO());
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);

@@ -61,7 +61,7 @@ PFNGLDRAWBUFFERSPROC glDrawBuffers;
 PFNGLBINDFRAMEBUFFERPROC glBindFramebuffer;
 PFNGLDELETEFRAMEBUFFERSPROC glDeleteFramebuffers;
 PFNGLGENFRAMEBUFFERSPROC glGenFramebuffers;
-PFNGLFRAMEBUFFERTEXTUREPROC glFramebufferTexture;
+PFNGLFRAMEBUFFERTEXTURE2DPROC glFramebufferTexture2D;
 PFNGLGENRENDERBUFFERSPROC glGenRenderbuffers;
 PFNGLBINDRENDERBUFFERPROC glBindRenderbuffer;
 PFNGLRENDERBUFFERSTORAGEPROC glRenderbufferStorage;
@@ -156,7 +156,7 @@ void OGL_InitExtensions()
 	glBindFramebuffer = (PFNGLBINDFRAMEBUFFERPROC)wglGetProcAddress( "glBindFramebuffer" );
 	glDeleteFramebuffers = (PFNGLDELETEFRAMEBUFFERSPROC)wglGetProcAddress( "glDeleteFramebuffers" );
 	glGenFramebuffers = (PFNGLGENFRAMEBUFFERSPROC)wglGetProcAddress( "glGenFramebuffers" );
-	glFramebufferTexture = (PFNGLFRAMEBUFFERTEXTUREPROC)wglGetProcAddress( "glFramebufferTexture" );
+	glFramebufferTexture2D = (PFNGLFRAMEBUFFERTEXTURE2DPROC)wglGetProcAddress( "glFramebufferTexture2D" );
 	glGenRenderbuffers = (PFNGLGENRENDERBUFFERSPROC)wglGetProcAddress( "glGenRenderbuffers" );
 	glBindRenderbuffer = (PFNGLBINDRENDERBUFFERPROC)wglGetProcAddress( "glBindRenderbuffer" );
 	glRenderbufferStorage = (PFNGLRENDERBUFFERSTORAGEPROC)wglGetProcAddress( "glRenderbufferStorage" );
