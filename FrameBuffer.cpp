@@ -403,6 +403,8 @@ void _initDepthTexture()
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, frameBuffer.top->fbo);
 	frameBuffer.top->pDepthBuffer = depthBuffer.top;
 	DepthBuffer_ClearBuffer();
+#else
+	depthBuffer.top->depth_texture = NULL;
 #endif // GLES2
 }
 
@@ -413,14 +415,18 @@ void FrameBuffer_AttachDepthBuffer()
 			_initDepthTexture();
 		frameBuffer.top->pDepthBuffer = depthBuffer.top;
 		glFramebufferRenderbuffer(GL_DRAW_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthBuffer.top->renderbuf);
+#ifndef GLES2
 		GLuint attachments[2] = { GL_COLOR_ATTACHMENT0, GL_DEPTH_ATTACHMENT };
 		glDrawBuffers(2,  attachments);
 		glBindImageTexture(depthImageUnit, depthBuffer.top->depth_texture->glName, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA32F);
+#endif
 		assert(checkFBO());
 	} else if (frameBuffer.top != NULL) {
-		frameBuffer.top->pDepthBuffer = 0;
+		frameBuffer.top->pDepthBuffer = NULL;
+#ifndef GLES2
 		GLuint attachments[1] = { GL_COLOR_ATTACHMENT0 };
 		glDrawBuffers(1,  attachments);
+#endif
 		assert(checkFBO());
 	}
 	Combiner_UpdateCombineDepthInfo();
