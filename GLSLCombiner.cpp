@@ -726,7 +726,6 @@ void GLSL_RenderDepth() {
 			glDisable( GL_DEPTH_TEST );
 			glDisable( GL_CULL_FACE );
 			glDisable( GL_POLYGON_OFFSET_FILL );
-			glDisable( GL_FOG );
 
 			glMatrixMode( GL_PROJECTION );
 			glLoadIdentity();

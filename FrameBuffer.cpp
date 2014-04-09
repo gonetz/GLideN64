@@ -524,7 +524,6 @@ void FrameBuffer_RenderBuffer( u32 address )
 			glDisable( GL_CULL_FACE );
 			glDisable( GL_POLYGON_OFFSET_FILL );
 //			glDisable( GL_REGISTER_COMBINERS_NV );
-			glDisable( GL_FOG );
 
 			glMatrixMode( GL_PROJECTION );
 			glLoadIdentity();
@@ -1029,7 +1028,6 @@ void RDRAMtoFrameBuffer::CopyFromRDRAM( u32 _address, bool _bUseAlpha)
 	glDisable( GL_DEPTH_TEST );
 	glDisable( GL_CULL_FACE );
 	glDisable( GL_POLYGON_OFFSET_FILL );
-	glDisable( GL_FOG );
 	gSP.changed = gDP.changed = 0;
 
 	m_pTexture->scaleS = 1.0f / (float)m_pTexture->realWidth;
