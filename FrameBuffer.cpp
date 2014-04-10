@@ -23,6 +23,7 @@ const GLenum monohromeformat = GL_LUMINANCE;
 
 FrameBufferList frameBuffer;
 
+#ifndef GLES2
 class FrameBufferToRDRAM
 {
 public:
@@ -30,9 +31,7 @@ public:
 		m_FBO(0), m_pTexture(NULL), m_curIndex(0)
 	{
 		m_aAddress[0] = m_aAddress[1] = 0;
-#ifndef GLES2
 		m_aPBO[0] = m_aPBO[1] = 0;
-#endif
 	}
 
 	void Init();
@@ -49,12 +48,9 @@ private:
 	CachedTexture * m_pTexture;
 	u32 m_aAddress[2];
 	u32 m_curIndex;
-#ifndef GLES2
 	GLuint m_aPBO[2];
-#endif
 };
 
-#ifndef GLES2
 class DepthBufferToRDRAM
 {
 public:
@@ -113,8 +109,8 @@ private:
 #endif
 };
 
-FrameBufferToRDRAM g_fbToRDRAM;
 #ifndef GLES2
+FrameBufferToRDRAM g_fbToRDRAM;
 DepthBufferToRDRAM g_dbToRDRAM;
 #endif
 RDRAMtoFrameBuffer g_RDRAMtoFB;
@@ -126,8 +122,8 @@ void FrameBuffer_Init()
 	frameBuffer.bottom = NULL;
 	frameBuffer.numBuffers = 0;
 	frameBuffer.drawBuffer = GL_BACK;
-	g_fbToRDRAM.Init();
 #ifndef GLES2
+	g_fbToRDRAM.Init();
 	g_dbToRDRAM.Init();
 #endif
 	g_RDRAMtoFB.Init();
@@ -261,8 +257,8 @@ void FrameBuffer_Destroy()
 	while (frameBuffer.bottom)
 		FrameBuffer_RemoveBottom();
 	frameBuffer.top = frameBuffer.bottom = frameBuffer.current = NULL;
-	g_fbToRDRAM.Destroy();
 #ifndef GLES2
+	g_fbToRDRAM.Destroy();
 	g_dbToRDRAM.Destroy();
 #endif
 	g_RDRAMtoFB.Destroy();
@@ -432,7 +428,7 @@ void FrameBuffer_AttachDepthBuffer()
 	Combiner_UpdateCombineDepthInfo();
 }
 
-#if 1
+#ifndef GLES2
 void FrameBuffer_RenderBuffer( u32 address )
 {
 	if (_SHIFTR( *REG.VI_H_START, 0, 10 ) == 0) // H width is zero. Don't draw
@@ -639,6 +635,7 @@ void FrameBuffer_ActivateBufferTextureBG( s16 t, FrameBuffer *buffer )
 	gDP.changed |= CHANGED_FB_TEXTURE;
 }
 
+#ifndef GLES2
 void FrameBufferToRDRAM::Init()
 {
 	// generate a framebuffer
@@ -709,7 +706,7 @@ void FrameBufferToRDRAM::CopyToRDRAM( u32 address, bool bSync ) {
 
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, m_FBO);
 	glReadBuffer(GL_COLOR_ATTACHMENT0);
-#ifndef GLES2
+#if 1 //ndef GLES2
 	// If Sync, read pixels from the buffer, copy them to RDRAM.
 	// If not Sync, read pixels from the buffer, copy pixels from the previous buffer to RDRAM.
 	if (m_aAddress[m_curIndex] == 0)
@@ -755,7 +752,7 @@ void FrameBufferToRDRAM::CopyToRDRAM( u32 address, bool bSync ) {
 			}
 		}
 	}
-#ifndef GLES2
+#if 1 //ndef GLES2
 	glUnmapBuffer(GL_PIXEL_PACK_BUFFER);
 	glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
 #else
@@ -763,10 +760,13 @@ void FrameBufferToRDRAM::CopyToRDRAM( u32 address, bool bSync ) {
 #endif
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
 }
+#endif // GLES2
 
 void FrameBuffer_CopyToRDRAM( u32 address, bool bSync )
 {
+#ifndef GLES2
 	g_fbToRDRAM.CopyToRDRAM(address, bSync);
+#endif
 }
 
 #ifndef GLES2

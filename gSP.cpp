@@ -1658,6 +1658,7 @@ void gSPLineW3D( s32 v0, s32 v1, s32 wd, s32 flag )
 #endif
 }
 
+#ifndef GLES2
 static
 void _copyDepthBuffer()
 {
@@ -1688,6 +1689,7 @@ void _copyDepthBuffer()
 	// Set back current depth buffer
 	DepthBuffer_SetBuffer(gDP.depthImageAddress);
 }
+#endif // GLES2
 
 static
 void loadBGImage(const uObjScaleBg * _bgInfo, bool _loadScale)
@@ -1728,10 +1730,12 @@ void gSPBgRect1Cyc( u32 bg )
 	uObjScaleBg *objScaleBg = (uObjScaleBg*)&RDRAM[address];
 	loadBGImage(objScaleBg, true);
 
+#ifndef GLES2
 	if (gSP.bgImage.address == gDP.depthImageAddress || DepthBuffer_FindBuffer(gSP.bgImage.address) != NULL) {
 		_copyDepthBuffer();
 		return;
 	}
+#endif // GLES2
 
 	f32 imageX = gSP.bgImage.imageX;
 	f32 imageY = gSP.bgImage.imageY;
@@ -1811,10 +1815,12 @@ void gSPBgRectCopy( u32 bg )
 	uObjScaleBg *objBg = (uObjScaleBg*)&RDRAM[address];
 	loadBGImage(objBg, false);
 
+#ifndef GLES2
 	if (gSP.bgImage.address == gDP.depthImageAddress || DepthBuffer_FindBuffer(gSP.bgImage.address) != NULL) {
 		_copyDepthBuffer();
 		return;
 	}
+#endif // GLES2
 
 	f32 frameX = objBg->frameX / 4.0f;
 	f32 frameY = objBg->frameY / 4.0f;
