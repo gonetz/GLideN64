@@ -488,82 +488,40 @@ void FrameBuffer_RenderBuffer( u32 address )
 
 void FrameBuffer_RenderBuffer( u32 address )
 {
-	FrameBuffer *current = frameBuffer.top;
+	if (_SHIFTR( *REG.VI_H_START, 0, 10 ) == 0) // H width is zero. Don't draw
+		return;
+	FrameBuffer *current = FrameBuffer_FindBuffer(address);
+	if (current == NULL)
+		return;
 
-	while (current != NULL)
-	{
-		if ((current->startAddress <= address) &&
-			(current->endAddress >= address))
-		{
-			/*
-			float fill_color[4] = {1.0f, 0.0f, 0.0f, 1.0f};
-			glBindFramebuffer(GL_DRAW_FRAMEBUFFER, current->fbo);
-			glBindRenderbuffer(GL_RENDERBUFFER, depthBuffer.top->renderbuf);
-			glFramebufferRenderbuffer(GL_DRAW_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthBuffer.top->renderbuf);
-			GLuint attachments[2] = { GL_COLOR_ATTACHMENT0, GL_DEPTH_ATTACHMENT };
-			glDrawBuffers(2,  attachments, current->texture->glName);
-			assert(checkFBO());
-			OGL_ClearDepthBuffer();
-			OGL_ClearColorBuffer(fill_color);
-			glBindFramebuffer(GL_DRAW_FRAMEBUFFER, frameBuffer.top->fbo);
-			*/
+	Combiner_SetCombine( EncodeCombineMode( 0, 0, 0, TEXEL0, 0, 0, 0, 1, 0, 0, 0, TEXEL0, 0, 0, 0, 1 ) );
+	glDisable( GL_BLEND );
+	glDisable( GL_DEPTH_TEST );
+	glDisable( GL_CULL_FACE );
+	glDisable( GL_POLYGON_OFFSET_FILL );
+	gSP.changed = gDP.changed = 0;
 
-			glPushAttrib( GL_ENABLE_BIT | GL_VIEWPORT_BIT );
+	const u32 width = current->width;
+	const u32 height = current->height;
 
-			Combiner_BeginTextureUpdate();
-			TextureCache_ActivateTexture( 0, current->texture );
-			Combiner_SetCombine( EncodeCombineMode( 0, 0, 0, TEXEL0, 0, 0, 0, 1, 0, 0, 0, TEXEL0, 0, 0, 0, 1 ) );
+	current->texture->scaleS = OGL.scaleX / (float)current->texture->realWidth;
+	current->texture->scaleT = OGL.scaleY / (float)current->texture->realHeight;
+	current->texture->shiftScaleS = 1.0f;
+	current->texture->shiftScaleT = 1.0f;
+	current->texture->offsetS = 0;
+	current->texture->offsetT = (float)height;
+	TextureCache_ActivateTexture( 0, current->texture );
+	gSP.textureTile[0]->fuls = gSP.textureTile[0]->fult = 0.0f;
+	combiner.current->compiled->UpdateTextureInfo(true);
 
-			glDisable( GL_BLEND );
-			glDisable( GL_ALPHA_TEST );
-			glDisable( GL_DEPTH_TEST );
-			glDisable( GL_CULL_FACE );
-			glDisable( GL_POLYGON_OFFSET_FILL );
-//			glDisable( GL_REGISTER_COMBINERS_NV );
-
-			glMatrixMode( GL_PROJECTION );
-			glLoadIdentity();
-			glOrtho( 0, OGL.width, 0, OGL.height, -1.0f, 1.0f );
-			glViewport( 0, OGL.heightOffset, OGL.width, OGL.height );
-			glDisable( GL_SCISSOR_TEST );
-
-			float u1, v1;
-
-			u1 = (float)current->texture->width / (float)current->texture->realWidth;
-			v1 = (float)current->texture->height / (float)current->texture->realHeight;
-
-			glBindFramebuffer(GL_FRAMEBUFFER, 0);
-			glDrawBuffer( GL_FRONT );
-			glBegin(GL_QUADS);
- 				glTexCoord2f( 0.0f, 0.0f );
-				glVertex2f( 0.0f, (GLfloat)(OGL.height - current->texture->height) );
-
-				glTexCoord2f( 0.0f, v1 );
-				glVertex2f( 0.0f, (GLfloat)OGL.height );
-
- 				glTexCoord2f( u1,  v1 );
-				glVertex2f( current->texture->width, (GLfloat)OGL.height );
-
- 				glTexCoord2f( u1, 0.0f );
-				glVertex2f( current->texture->width, (GLfloat)(OGL.height - current->texture->height) );
-			glEnd();
-			glDrawBuffer( GL_BACK );
-			glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer.top->fbo);
-#ifdef DEBUG
-			DebugMsg( DEBUG_HIGH | DEBUG_HANDLED, "FrameBuffer_RenderBuffer( 0x%08X ); \n", address);
-#endif
-
-			glLoadIdentity();
-			glPopAttrib();
-
-			gSP.changed |= CHANGED_TEXTURE | CHANGED_VIEWPORT;
-			gDP.changed |= CHANGED_COMBINE;
-
-			return;
-		}
-		current = current->lower;
-	}
-	*/
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	frameBuffer.drawBuffer = GL_BACK;
+	OGL_DrawTexturedRect( 0.0f, 0.0f, width, height, 0.0f, 0.0f, width-1.0f, height-1.0f, false );
+	OGL_SwapBuffers();
+	frameBuffer.drawBuffer = GL_FRAMEBUFFER;
+	glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer.top->fbo);
+	gSP.changed |= CHANGED_TEXTURE | CHANGED_VIEWPORT;
+	gDP.changed |= CHANGED_COMBINE;
 }
 #endif
 
