@@ -291,7 +291,7 @@ void FrameBuffer_SaveBuffer( u32 address, u16 format, u16 size, u16 width, u16 h
 			current = NULL;
 		} else {
 			FrameBuffer_MoveToTop( current );
-			glBindFramebuffer(GL_DRAW_FRAMEBUFFER, current->fbo);
+			glBindFramebuffer(GL_FRAMEBUFFER, current->fbo);
 			if (current->size != size) {
 				f32 fillColor[4];
 				gDPGetFillColor(fillColor);
@@ -342,10 +342,10 @@ void FrameBuffer_SaveBuffer( u32 address, u16 format, u16 size, u16 width, u16 h
 			glTexImage2D(GL_TEXTURE_2D, 0, monohromeInternalformat, current->texture->realWidth, current->texture->realHeight, 0, monohromeformat, GL_UNSIGNED_BYTE, NULL);
 		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
 		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
-		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glGenFramebuffers(1, &current->fbo);
-		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, current->fbo);
-		glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, current->texture->glName, 0);
+		glBindFramebuffer(GL_FRAMEBUFFER, current->fbo);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, current->texture->glName, 0);
 	}
 
 	FrameBuffer_AttachDepthBuffer();
@@ -536,7 +536,7 @@ void FrameBuffer_RenderBuffer( u32 address )
 			u1 = (float)current->texture->width / (float)current->texture->realWidth;
 			v1 = (float)current->texture->height / (float)current->texture->realHeight;
 
-			glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+			glBindFramebuffer(GL_FRAMEBUFFER, 0);
 			glDrawBuffer( GL_FRONT );
 			glBegin(GL_QUADS);
  				glTexCoord2f( 0.0f, 0.0f );
@@ -552,15 +552,13 @@ void FrameBuffer_RenderBuffer( u32 address )
 				glVertex2f( current->texture->width, (GLfloat)(OGL.height - current->texture->height) );
 			glEnd();
 			glDrawBuffer( GL_BACK );
-			glBindFramebuffer(GL_DRAW_FRAMEBUFFER, frameBuffer.top->fbo);
+			glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer.top->fbo);
 #ifdef DEBUG
 			DebugMsg( DEBUG_HIGH | DEBUG_HANDLED, "FrameBuffer_RenderBuffer( 0x%08X ); \n", address);
 #endif
 
 			glLoadIdentity();
 			glPopAttrib();
-
-			current->changed = FALSE;
 
 			gSP.changed |= CHANGED_TEXTURE | CHANGED_VIEWPORT;
 			gDP.changed |= CHANGED_COMBINE;
@@ -569,6 +567,7 @@ void FrameBuffer_RenderBuffer( u32 address )
 		}
 		current = current->lower;
 	}
+	*/
 }
 #endif
 
@@ -671,7 +670,6 @@ void FrameBufferToRDRAM::Init()
 	assert(checkFBO());
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 
-#ifndef GLES2
 	// Generate and initialize Pixel Buffer Objects
 	glGenBuffers(2, m_aPBO);
 	glBindBuffer(GL_PIXEL_PACK_BUFFER, m_aPBO[0]);
@@ -679,7 +677,6 @@ void FrameBufferToRDRAM::Init()
 	glBindBuffer(GL_PIXEL_PACK_BUFFER, m_aPBO[1]);
 	glBufferData(GL_PIXEL_PACK_BUFFER, 640*480*4, NULL, GL_DYNAMIC_DRAW);
 	glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
-#endif // GLES2
 }
 
 void FrameBufferToRDRAM::Destroy() {
@@ -688,10 +685,8 @@ void FrameBufferToRDRAM::Destroy() {
 	m_FBO = 0;
 	TextureCache_Remove( m_pTexture );
 	m_pTexture = NULL;
-#ifndef GLES2
 	glDeleteBuffers(2, m_aPBO);
 	m_aPBO[0] = m_aPBO[1] = 0;
-#endif // GLES2
 }
 
 void FrameBufferToRDRAM::CopyToRDRAM( u32 address, bool bSync ) {

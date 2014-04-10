@@ -212,7 +212,7 @@ void InitGLSLCombiner()
 }
 
 void DestroyGLSLCombiner() {
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 #ifndef GLES2
 	DestroyZlutTexture();
