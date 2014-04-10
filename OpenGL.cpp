@@ -764,7 +764,7 @@ void OGL_SetTexCoordArrays()
 	else
 		glDisableVertexAttribArray(SC_TEXCOORD1);
 
-	if (combiner.usesT0 || combiner.usesT1)
+	if (OGL.renderState == GLInfo::rsTriangle && (combiner.usesT0 || combiner.usesT1))
 		glEnableVertexAttribArray(SC_STSCALED);
 	else
 		glDisableVertexAttribArray(SC_STSCALED);
@@ -780,15 +780,15 @@ void OGL_DrawTriangles()
 	if (gSP.changed || gDP.changed)
 		OGL_UpdateStates();
 
-	if (OGL.renderState != GLInfo::rsTriangle || combiner.changed)
-	{
+	const bool updateArrays = OGL.renderState != GLInfo::rsTriangle;
+	if (updateArrays || combiner.changed) {
+		OGL.renderState = GLInfo::rsTriangle;
 		OGL_SetColorArray();
 		OGL_SetTexCoordArrays();
 		glDisableVertexAttribArray(SC_TEXCOORD1);
 	}
 
-	if (OGL.renderState != GLInfo::rsTriangle)
-	{
+	if (updateArrays) {
 		glVertexAttribPointer(SC_POSITION, 4, GL_FLOAT, GL_FALSE, sizeof(SPVertex), &OGL.triangles.vertices[0].x);
 		glVertexAttribPointer(SC_COLOR, 4, GL_FLOAT, GL_FALSE, sizeof(SPVertex), &OGL.triangles.vertices[0].r);
 		glVertexAttribPointer(SC_TEXCOORD0, 2, GL_FLOAT, GL_FALSE, sizeof(SPVertex), &OGL.triangles.vertices[0].s);
@@ -801,7 +801,6 @@ void OGL_DrawTriangles()
 		OGL_UpdateCullFace();
 		OGL_UpdateViewport();
 		glEnable(GL_SCISSOR_TEST);
-		OGL.renderState = GLInfo::rsTriangle;
 		Combiner_UpdateRenderState();
 	}
 
@@ -843,17 +842,19 @@ void OGL_DrawRect( int ulx, int uly, int lrx, int lry, float *color )
 	if (gSP.changed || gDP.changed)
 		OGL_UpdateStates();
 
-	if (OGL.renderState != GLInfo::rsRect || combiner.changed) {
+	const bool updateArrays = OGL.renderState != GLInfo::rsRect;
+	if (updateArrays || combiner.changed) {
+		OGL.renderState = GLInfo::rsRect;
 		glDisableVertexAttribArray(SC_COLOR);
 		glDisableVertexAttribArray(SC_TEXCOORD0);
 		glDisableVertexAttribArray(SC_TEXCOORD1);
+		glDisableVertexAttribArray(SC_STSCALED);
 	}
 
-	if (OGL.renderState != GLInfo::rsRect) {
+	if (updateArrays) {
 		glVertexAttrib4f(SC_COLOR, 0, 0, 0, 0);
 		glVertexAttrib4f(SC_POSITION, 0, 0, (gDP.otherMode.depthSource == G_ZS_PRIM) ? gDP.primDepth.z : gSP.viewport.nearz, 1.0);
 		glVertexAttribPointer(SC_POSITION, 2, GL_FLOAT, GL_FALSE, sizeof(GLVertex), &OGL.rect[0].x);
-		OGL.renderState = GLInfo::rsRect;
 		combiner.current->compiled->UpdateRenderState();
 	}
 
@@ -887,12 +888,14 @@ void OGL_DrawTexturedRect( float ulx, float uly, float lrx, float lry, float uls
 	if (gSP.changed || gDP.changed)
 		OGL_UpdateStates();
 
-	if (OGL.renderState != GLInfo::rsTexRect || combiner.changed) {
+	const bool updateArrays = OGL.renderState != GLInfo::rsTexRect;
+	if (updateArrays || combiner.changed) {
+		OGL.renderState = GLInfo::rsTexRect;
 		glDisableVertexAttribArray(SC_COLOR);
 		OGL_SetTexCoordArrays();
 	}
 
-	if (OGL.renderState != GLInfo::rsTexRect) {
+	if (updateArrays) {
 #ifdef RENDERSTATE_TEST
 		StateChanges++;
 #endif
@@ -901,7 +904,6 @@ void OGL_DrawTexturedRect( float ulx, float uly, float lrx, float lry, float uls
 		glVertexAttribPointer(SC_POSITION, 2, GL_FLOAT, GL_FALSE, sizeof(GLVertex), &OGL.rect[0].x);
 		glVertexAttribPointer(SC_TEXCOORD0, 2, GL_FLOAT, GL_FALSE, sizeof(GLVertex), &OGL.rect[0].s0);
 		glVertexAttribPointer(SC_TEXCOORD1, 2, GL_FLOAT, GL_FALSE, sizeof(GLVertex), &OGL.rect[0].s1);
-		OGL.renderState = GLInfo::rsTexRect;
 		combiner.current->compiled->UpdateRenderState();
 	}
 
