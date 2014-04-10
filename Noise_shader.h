@@ -21,7 +21,7 @@ const char *noise_fragment_shader =
 "  return mod289(((x*34.0)+1.0)*x);									\n"
 "}																	\n"
 "																	\n"
-"float snoise(vec2 v)												\n"
+"float snoise(in vec2 v)												\n"
 "  {																\n"
 "  const vec4 C = vec4(0.211324865405187,  // (3.0-sqrt(3.0))/6.0	\n"
 "                      0.366025403784439,  // 0.5*(sqrt(3.0)-1.0)	\n"
