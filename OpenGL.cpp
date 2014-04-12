@@ -381,8 +381,10 @@ bool OGL_Start()
 	OGL_InitStates();
 
 	TextureCache_Init();
+	DepthBuffer_Init();
 	FrameBuffer_Init();
 	Combiner_Init();
+	OGL.renderState = GLInfo::rsNone;
 
 	gSP.changed = gDP.changed = 0xFFFFFFFF;
 	OGL_UpdateScale();
@@ -395,7 +397,9 @@ void OGL_Stop()
 {
 	Combiner_Destroy();
 	FrameBuffer_Destroy();
+	DepthBuffer_Destroy();
 	TextureCache_Destroy();
+	OGL.renderState = GLInfo::rsNone;
 
 #ifdef _WINDOWS
 	wglMakeCurrent( NULL, NULL );
@@ -809,6 +813,8 @@ void OGL_DrawTriangles()
 		Combiner_UpdateRenderState();
 	}
 
+	combiner.current->compiled->UpdateColors(true);
+	combiner.current->compiled->UpdateLight(true);
 	glDrawElements(GL_TRIANGLES, OGL.triangles.num, GL_UNSIGNED_BYTE, OGL.triangles.elements);
 	OGL.triangles.num = 0;
 

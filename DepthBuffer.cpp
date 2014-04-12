@@ -145,7 +145,7 @@ void DepthBuffer_Destroy()
 	while (depthBuffer.bottom)
 		DepthBuffer_RemoveBottom();
 
-	depthBuffer.top = NULL;
+	depthBuffer.top = depthBuffer.bottom = depthBuffer.current = NULL;
 }
 
 void DepthBuffer_SetBuffer( u32 address )
