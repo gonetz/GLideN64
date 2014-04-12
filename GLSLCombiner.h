@@ -12,12 +12,14 @@ public:
 	virtual void UpdateAlphaTestInfo(bool _bForce = false);
 	virtual void UpdateTextureInfo(bool _bForce = false);
 	virtual void UpdateRenderState(bool _bForce = false);
+	virtual void UpdateLight(bool _bForce = false);
 
 private:
 	struct iUniform {GLint loc; int val;};
 	struct fUniform {GLint loc; float val;};
 	struct fv2Uniform {GLint loc; float val[2];};
 	struct iv2Uniform {GLint loc; int val[2];};
+	struct fv3Uniform {GLint loc; float val[3];};
 	struct fv4Uniform {GLint loc; float val[4];};
 
 	struct UniformLocation
@@ -35,6 +37,8 @@ private:
 
 		fv2Uniform uTexScale, uTexOffset[2], uCacheShiftScale[2],
 			uCacheScale[2], uCacheOffset[2];
+
+		fv3Uniform uLightDirection[8], uLightColor[8];
 
 		iv2Uniform uCacheFrameBuffer;
 	};
@@ -65,6 +69,13 @@ private:
 			_u.val[0] = _val1;
 			_u.val[2] = _val2;
 			glUniform2i(_u.loc, _val1, _val2);
+		}
+	}
+	void _setV3Uniform(fv3Uniform & _u, float * _pVal, bool _force) {
+		const size_t szData = sizeof(float)*3;
+		if (_force|| memcmp(_u.val, _pVal, szData) > 0) {
+			memcpy(_u.val, _pVal, szData);
+			glUniform3fv(_u.loc, 1, _pVal);
 		}
 	}
 	void _setV4Uniform(fv4Uniform & _u, float * _pVal, bool _force) {

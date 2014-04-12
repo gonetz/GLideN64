@@ -536,6 +536,17 @@ void GLSLCombiner::_locateUniforms() {
 	LocateUniform(uCacheOffset[0]);
 	LocateUniform(uCacheOffset[1]);
 	LocateUniform(uCacheFrameBuffer);
+
+	if (config.enableHWLighting) {
+		// locate lights uniforms
+		char buf[32];
+		for (u32 i = 0; i < 8; ++i) {
+			sprintf(buf, "uLightDirection[%d]", i);
+			m_uniforms.uLightDirection[i].loc = glGetUniformLocation(m_program, buf);
+			sprintf(buf, "uLightColor[%d]", i);
+			m_uniforms.uLightColor[i].loc = glGetUniformLocation(m_program, buf);
+		}
+	}
 }
 
 void GLSLCombiner::_locate_attributes() const {
@@ -567,10 +578,20 @@ void GLSLCombiner::Set() {
 	UpdateTextureInfo(true);
 	UpdateAlphaTestInfo(true);
 	UpdateDepthInfo(true);
+	UpdateLight(true);
 }
 
 void GLSLCombiner::UpdateRenderState(bool _bForce) {
 	_setIUniform(m_uniforms.uRenderState, OGL.renderState, _bForce);
+}
+
+void GLSLCombiner::UpdateLight(bool _bForce) {
+	if (config.enableHWLighting == 0)
+		return;
+	for (s32 i = 0; i <= gSP.numLights; ++i) {
+		_setV3Uniform(m_uniforms.uLightDirection[i], &gSP.lights[i].x, _bForce);
+		_setV3Uniform(m_uniforms.uLightColor[i], &gSP.lights[i].r, _bForce);
+	}
 }
 
 void GLSLCombiner::UpdateColors(bool _bForce) {

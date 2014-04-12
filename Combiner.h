@@ -120,6 +120,7 @@ public:
 	virtual void UpdateAlphaTestInfo(bool _bForce = false) = 0;
 	virtual void UpdateTextureInfo(bool _bForce = false) = 0;
 	virtual void UpdateRenderState(bool _bForce = false) = 0;
+	virtual void UpdateLight(bool _bForce = false) = 0;
 };
 
 struct CachedCombiner

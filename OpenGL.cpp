@@ -31,6 +31,7 @@ PFNGLUNIFORM1FPROC glUniform1f;
 PFNGLUNIFORM2FPROC glUniform2f;
 PFNGLUNIFORM2IPROC glUniform2i;
 PFNGLUNIFORM4FPROC glUniform4f;
+PFNGLUNIFORM3FVPROC glUniform3fv;
 PFNGLUNIFORM4FVPROC glUniform4fv;
 PFNGLDETACHSHADERPROC glDetachShader;
 PFNGLDELETESHADERPROC glDeleteShader;
@@ -129,6 +130,7 @@ void OGL_InitExtensions()
 	glUniform2f = (PFNGLUNIFORM2FPROC)wglGetProcAddress("glUniform2f");
 	glUniform2i = (PFNGLUNIFORM2IPROC)wglGetProcAddress("glUniform2i");
 	glUniform4f = (PFNGLUNIFORM4FPROC)wglGetProcAddress("glUniform4f");
+	glUniform3fv = (PFNGLUNIFORM3FVPROC)wglGetProcAddress("glUniform3fv");
 	glUniform4fv = (PFNGLUNIFORM4FVPROC)wglGetProcAddress("glUniform4fv");
 	glDetachShader = (PFNGLDETACHSHADERPROC)wglGetProcAddress("glDetachShader");
 	glDeleteShader = (PFNGLDELETESHADERPROC)wglGetProcAddress("glDeleteShader");
@@ -618,6 +620,9 @@ void OGL_UpdateStates()
 
 	if (gSP.changed & CHANGED_GEOMETRYMODE)
 		OGL_UpdateCullFace();
+
+	if (gSP.changed & CHANGED_LIGHT)
+		combiner.current->compiled->UpdateLight();
 
 	if (gDP.otherMode.depthMode == ZMODE_DEC)
 		glEnable( GL_POLYGON_OFFSET_FILL );

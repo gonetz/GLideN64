@@ -120,7 +120,6 @@ void Combiner_UpdateCombineColors()
 void Combiner_UpdateCombineFBInfo()
 {
 	combiner.current->compiled->UpdateFBInfo();
-	gDP.changed &= ~CHANGED_FB_TEXTURE;
 }
 
 void Combiner_UpdateCombineDepthInfo()

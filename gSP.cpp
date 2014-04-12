@@ -705,12 +705,8 @@ void gSPLight( u32 l, s32 n )
 		Normalize( &gSP.lights[n].x );
 	}
 
-	if (config.enableHWLighting) {
-		float fLightPos[4] = {gSP.lights[n].x, gSP.lights[n].y, gSP.lights[n].z, 0.0};
-		glLightfv(GL_LIGHT0+n, GL_POSITION, fLightPos);
-		float fLightColor[4] = {gSP.lights[n].r, gSP.lights[n].g, gSP.lights[n].b, 1.0};
-		glLightfv(GL_LIGHT0+n, GL_AMBIENT, fLightColor);
-	}
+	if (config.enableHWLighting)
+		gSP.changed |= CHANGED_LIGHT;
 
 #ifdef DEBUG
 	DebugMsg( DEBUG_DETAIL | DEBUG_HANDLED, "// x = %2.6f    y = %2.6f    z = %2.6f\n",
@@ -1478,8 +1474,11 @@ void gSPModifyVertex( u32 vtx, u32 where, u32 val )
 
 void gSPNumLights( s32 n )
 {
-	if (n <= 8)
+	if (n <= 8) {
 		gSP.numLights = n;
+		if (config.enableHWLighting)
+			gSP.changed |= CHANGED_LIGHT;
+	}
 #ifdef DEBUG
 	else
 		DebugMsg( DEBUG_HIGH | DEBUG_ERROR, "// Setting an invalid number of lights\n" );
@@ -1500,6 +1499,8 @@ void gSPLightColor( u32 lightNum, u32 packedColor )
 		gSP.lights[lightNum].r = _SHIFTR( packedColor, 24, 8 ) * 0.0039215689f;
 		gSP.lights[lightNum].g = _SHIFTR( packedColor, 16, 8 ) * 0.0039215689f;
 		gSP.lights[lightNum].b = _SHIFTR( packedColor, 8, 8 ) * 0.0039215689f;
+		if (config.enableHWLighting)
+			gSP.changed |= CHANGED_LIGHT;
 	}
 #ifdef DEBUG
 	DebugMsg( DEBUG_HIGH | DEBUG_HANDLED, "gSPLightColor( %i, 0x%08X );\n",
