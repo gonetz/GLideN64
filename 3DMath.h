@@ -130,12 +130,12 @@ End:
 #else // WIN32
 	float len;
 
-	len = (float)(v[0]*v[0] + v[1]*v[1] + v[2]*v[2]);
+	len = v[0]*v[0] + v[1]*v[1] + v[2]*v[2];
 	if (len != 0.0)	{
-		len = (float)sqrt( len );
-		v[0] /= (float)len;
-		v[1] /= (float)len;
-		v[2] /= (float)len;
+		len = sqrtf( len );
+		v[0] /= len;
+		v[1] /= len;
+		v[2] /= len;
 	}
 #endif // WIN32
 }
