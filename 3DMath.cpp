@@ -24,15 +24,17 @@ void TransformVectorNormalize(float vec[3], float mtx[4][4])
 {
     float len;
 
-    vec[0] = mtx[0][0] * vec[0]
-           + mtx[1][0] * vec[1]
-           + mtx[2][0] * vec[2];
-    vec[1] = mtx[0][1] * vec[0]
-           + mtx[1][1] * vec[1]
-           + mtx[2][1] * vec[2];
-    vec[2] = mtx[0][2] * vec[0]
-           + mtx[1][2] * vec[1]
-           + mtx[2][2] * vec[2];
+	float vres[3];
+	vres[0] = mtx[0][0] * vec[0]
+		   + mtx[1][0] * vec[1]
+		   + mtx[2][0] * vec[2];
+	vres[1] = mtx[0][1] * vec[0]
+		   + mtx[1][1] * vec[1]
+		   + mtx[2][1] * vec[2];
+	vres[2] = mtx[0][2] * vec[0]
+		   + mtx[1][2] * vec[1]
+		   + mtx[2][2] * vec[2];
+	memcpy(vec, vres, sizeof(float)*3);
     len = vec[0]*vec[0] + vec[1]*vec[1] + vec[2]*vec[2];
     if (len != 0.0)
     {
