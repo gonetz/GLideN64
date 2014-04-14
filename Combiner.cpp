@@ -295,12 +295,6 @@ void Combiner_Destroy()
 		Combiner_DeleteCombiner( combiner.root );
 		combiner.root = NULL;
 	}
-
-	for (int i = 0; i < OGL.maxTextureUnits; i++)
-	{
-		glActiveTexture( GL_TEXTURE0 + i );
-		glDisable( GL_TEXTURE_2D );
-	}
 }
 
 DWORD64 Combiner_EncodeCombineMode( WORD saRGB0, WORD sbRGB0, WORD mRGB0, WORD aRGB0,

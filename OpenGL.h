@@ -66,8 +66,6 @@ struct GLInfo
 
 	GLVertex rect[4];
 
-	int		maxTextureUnits; // TNT = 2, GeForce = 2-4, Rage 128 = 2, Radeon = 3-6
-
 	BYTE	numTriangles;
 	BYTE	numVertices;
 
