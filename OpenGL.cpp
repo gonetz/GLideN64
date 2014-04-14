@@ -1241,8 +1241,13 @@ void OGL_ReadScreen( void **dest, long *width, long *height )
 	if (*dest == NULL)
 		return;
 
+#ifndef GLES2
+	const GLenum format = GL_BGR_EXT;
 	glReadBuffer( GL_FRONT );
-	glReadPixels( 0, OGL.heightOffset, OGL.width, OGL.height, GL_BGR_EXT, GL_UNSIGNED_BYTE, *dest );
+#else
+	const GLenum format = GL_RGB;
+#endif
+	glReadPixels( 0, OGL.heightOffset, OGL.width, OGL.height, format, GL_UNSIGNED_BYTE, *dest );
 }
 
 void OGL_SwapBuffers()
