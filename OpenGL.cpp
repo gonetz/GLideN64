@@ -529,12 +529,10 @@ void OGL_UpdateViewport()
 {
 	if (frameBuffer.drawBuffer == GL_BACK)
 		glViewport( gSP.viewport.x * OGL.scaleX, (VI.height - (gSP.viewport.y + gSP.viewport.height)) * OGL.scaleY + OGL.heightOffset,
-	            gSP.viewport.width * OGL.scaleX, gSP.viewport.height * OGL.scaleY );
+					gSP.viewport.width * OGL.scaleX, gSP.viewport.height * OGL.scaleY );
 	else
 		glViewport( gSP.viewport.x * OGL.scaleX, (frameBuffer.top->height - (gSP.viewport.y + gSP.viewport.height)) * OGL.scaleY,
-	            gSP.viewport.width * OGL.scaleX, gSP.viewport.height * OGL.scaleY );
-
-	glDepthRange( 0.0f, 1.0f );//gSP.viewport.nearz, gSP.viewport.farz );
+					gSP.viewport.width * OGL.scaleX, gSP.viewport.height * OGL.scaleY );
 }
 
 void OGL_UpdateDepthUpdate()
