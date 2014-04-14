@@ -2,6 +2,17 @@
 #include <assert.h>
 #include <math.h>
 #include <stdio.h>
+
+//// paulscode, added for SDL linkage:
+#if defined(GLES2) && defined (USE_SDL)
+	#include <SDL.h>
+	 // TODO: Remove this bandaid for SDL 2.0 compatibility (needed for SDL_SetVideoMode)
+	#if SDL_VERSION_ATLEAST(2,0,0)
+	#include "sdl2_compat.h" // Slightly hacked version of core/vidext_sdl2_compat.h
+	#endif
+#endif
+////
+
 #include "GLideN64.h"
 #include "Types.h"
 #include "N64.h"
@@ -13,6 +24,7 @@
 #include "DepthBuffer.h"
 #include "VI.h"
 #include "Config.h"
+#include "Log.h"
 
 GLInfo OGL;
 
@@ -255,6 +267,71 @@ void OGL_ResizeWindow()
 #endif // _WINDOWS
 }
 
+////// paulscode, added for SDL linkage
+#if defined(GLES2) && defined (USE_SDL)
+//#if defined (USE_SDL)
+bool OGL_SDL_Start()
+{
+	/* Initialize SDL */
+	LOG(LOG_MINIMAL, "Initializing SDL video subsystem...\n" );
+	if (SDL_InitSubSystem( SDL_INIT_VIDEO ) == -1)
+	{
+		 LOG(LOG_ERROR, "Error initializing SDL video subsystem: %s\n", SDL_GetError() );
+		return FALSE;
+	}
+
+	int current_w = config.video.windowedWidth;
+	int current_h = config.video.windowedHeight;
+
+	/* Set the video mode */
+	LOG(LOG_MINIMAL, "Setting video mode %dx%d...\n", current_w, current_h );
+
+	// TODO: I should actually check what the pixelformat is, rather than assuming 16 bpp (RGB_565) or 32 bpp (RGBA_8888):
+	int bitsPP = 16;
+
+	// TODO: Replace SDL_SetVideoMode with something that is SDL 2.0 compatible
+	//       Better yet, eliminate all SDL calls by using the Mupen64Plus core api
+	if (!(OGL.hScreen = SDL_SetVideoMode( current_w, current_h, bitsPP, SDL_HWSURFACE )))
+	{
+		LOG(LOG_ERROR, "Problem setting videomode %dx%d: %s\n", current_w, current_h, SDL_GetError() );
+		SDL_QuitSubSystem( SDL_INIT_VIDEO );
+		return FALSE;
+	}
+
+	/*
+//// paulscode, fixes the screen-size problem
+	int videoWidth = current_w;
+	int videoHeight = current_h;
+	int x = 0;
+	int y = 0;
+
+	//re-scale width and height on per-rom basis
+	float width = (float)videoWidth * (float)config.window.refwidth / 800.f;
+	float height = (float)videoHeight * (float)config.window.refheight / 480.f;
+
+	//re-center video if it was re-scaled per-rom
+	x -= (width - (float)videoWidth) / 2.f;
+	y -= (height - (float)videoHeight) / 2.f;
+
+	//set xpos and ypos
+	config.window.xpos = x;
+	config.window.ypos = y;
+	config.framebuffer.xpos = x;
+	config.framebuffer.ypos = y;
+
+	//set width and height
+	config.window.width = (int)width;
+	config.window.height = (int)height;
+	config.framebuffer.width = (int)width;
+	config.framebuffer.height = (int)height;
+////
+*/
+	return true;
+}
+#endif
+//////
+
+
 bool OGL_Start()
 {
 #ifdef _WINDOWS
@@ -314,7 +391,8 @@ bool OGL_Start()
 		OGL_Stop();
 		return FALSE;
 	}
-#elif defined(USE_SDL)
+#endif // _WINDOWS
+#ifdef USE_SDL
 	// init sdl & gl
 	Uint32 videoFlags = 0;
 
@@ -329,7 +407,7 @@ bool OGL_Start()
 		OGL.height = config.video.windowedHeight;
 	}
 
-
+#ifndef GLES2
 	/* Initialize SDL */
 	printf( "[glN64]: (II) Initializing SDL video subsystem...\n" );
 	if (SDL_InitSubSystem( SDL_INIT_VIDEO ) == -1)
@@ -374,7 +452,11 @@ bool OGL_Start()
 	}
 
 	SDL_WM_SetCaption( pluginName, pluginName );
-#endif // _WINDOWS
+#else // GLES2
+	if (!OGL_SDL_Start())
+		return false;
+#endif // GLES2
+#endif // USE_SDL
 
 	OGL_InitExtensions();
 	OGL_InitStates();
@@ -388,6 +470,14 @@ bool OGL_Start()
 	gSP.changed = gDP.changed = 0xFFFFFFFF;
 	OGL_UpdateScale();
 	OGL.captureScreen = false;
+
+	memset(OGL.triangles.vertices, 0, VERTBUFF_SIZE * sizeof(SPVertex));
+	memset(OGL.triangles.elements, 0, ELEMBUFF_SIZE * sizeof(GLubyte));
+	OGL.triangles.num = 0;
+
+#ifdef __TRIBUFFER_OPT
+	__indexmap_init();
+#endif
 
 	return TRUE;
 }

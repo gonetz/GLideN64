@@ -16,7 +16,7 @@
 #define GL_GLEXT_PROTOTYPES
 #include <GL/gl.h>
 #include <GL/glext.h>
-#endif // ANDROID
+#endif // GLES2
 #ifdef USE_SDL
 #include <SDL.h>
 #endif // USE_SDL
