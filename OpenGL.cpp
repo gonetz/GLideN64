@@ -870,8 +870,10 @@ void OGL_DrawTriangles()
 {
 	if (OGL.triangles.num == 0) return;
 
+#ifndef GLES2
 	if (OGL.bImageTexture)
 		glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+#endif
 
 	if (gSP.changed || gDP.changed)
 		OGL_UpdateStates();
