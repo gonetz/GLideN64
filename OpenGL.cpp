@@ -177,7 +177,11 @@ void OGL_InitExtensions()
 	else
 		OGL.framebufferMode = GLInfo::fbNone;
 
+#ifndef GLES2
 	OGL.bImageTexture = (uVersion >= 4) && (glBindImageTexture != NULL);
+#else
+	OGL.bImageTexture = false;
+#endif
 }
 
 void OGL_InitStates()
