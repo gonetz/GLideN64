@@ -284,6 +284,7 @@ static const char* shadow_map_fragment_shader_float =
 "#version 420 core											\n"
 "layout(binding = 1, r16ui) uniform readonly uimage1D uTlutImage;\n"
 "layout(binding = 2, rgba32f) uniform readonly image2D uDepthImage;\n"
+"uniform vec4 uFogColor;									\n"
 "float get_alpha()											\n"
 "{															\n"
 "  ivec2 coord = ivec2(gl_FragCoord.xy);					\n"
@@ -295,6 +296,6 @@ static const char* shadow_map_fragment_shader_float =
 "}														\n"
 "void main()											\n"
 "{														\n"
-"  gl_FragColor = vec4(gl_Fog.color.rgb, get_alpha());	\n"
+"  gl_FragColor = vec4(uFogColor.rgb, get_alpha());	\n"
 "}														\n"
 ;

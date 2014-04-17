@@ -814,6 +814,8 @@ void GLS_SetShadowMapCombiner() {
 	}
 
 	glUseProgram(g_draw_shadow_map_program);
+	int loc = glGetUniformLocation(g_draw_shadow_map_program, "uFogColor");
+	glUniform4fv(loc, 1, &gDP.fogColor.r);
 
 	gDP.changed |= CHANGED_COMBINE;
 }
