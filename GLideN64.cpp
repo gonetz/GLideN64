@@ -335,6 +335,10 @@ EXPORT void CALL RomOpen (void)
 #endif
 }
 
+EXPORT void CALL RomResumed(void)
+{
+}
+
 EXPORT void CALL ShowCFB (void)
 {
 	gSP.changed |= CHANGED_CPU_FB_WRITE;
