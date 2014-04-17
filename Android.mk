@@ -3,7 +3,7 @@ LOCAL_PATH := $(call my-dir)
 include $(CLEAR_VARS)
 
 LOCAL_MODULE := GLideN64es
-LOCAL_SHARED_LIBRARIES := ae-imports SDL2
+LOCAL_SHARED_LIBRARIES := ae-imports SDL2 core
 LOCAL_STATIC_LIBRARIES := cpufeatures
 LOCAL_ARM_MODE := arm
 
