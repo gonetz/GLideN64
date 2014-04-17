@@ -4,13 +4,16 @@
 #include <stdio.h>
 
 //// paulscode, added for SDL linkage:
-#if defined(GLES2) && defined (USE_SDL)
+#if defined(GLES2)
+#include "ae_bridge.h"
+#if defined (USE_SDL)
 	#include <SDL.h>
 	 // TODO: Remove this bandaid for SDL 2.0 compatibility (needed for SDL_SetVideoMode)
 	#if SDL_VERSION_ATLEAST(2,0,0)
 	#include "sdl2_compat.h" // Slightly hacked version of core/vidext_sdl2_compat.h
 	#endif
-#endif
+#endif // USE_SDL
+#endif // GLES2
 ////
 
 #include "GLideN64.h"
@@ -1257,7 +1260,9 @@ void OGL_SwapBuffers()
 		SwapBuffers( wglGetCurrentDC() );
 	else
 		SwapBuffers( OGL.hDC );
-#elif defined(USE_SDL)
+#endif // _WINDOWS
+#if defined(USE_SDL)
+#ifndef GLES2
 	static int frames[5] = { 0, 0, 0, 0, 0 };
 	static int framesIndex = 0;
 	static Uint32 lastTicks = 0;
@@ -1277,9 +1282,11 @@ void OGL_SwapBuffers()
 		frames[framesIndex] = 0;
 		lastTicks = ticks;
 	}
-
 	SDL_GL_SwapBuffers();
-#endif // _WINDOWS
+#else
+	Android_JNI_SwapWindow(); // paulscode, fix for black-screen bug
+#endif // GLES2
+#endif // USE_SDL
 }
 
 bool checkFBO() {
