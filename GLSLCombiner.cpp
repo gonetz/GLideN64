@@ -605,8 +605,8 @@ void GLSLCombiner::UpdateColors(bool _bForce) {
 		_setFUniform(m_uniforms.uFogOffset, (float)gSP.fog.offset / 256.0f, _bForce);
 		_setV4Uniform(m_uniforms.uFogColor, &gDP.fogColor.r, _bForce);
 	}
-	_setFUniform(m_uniforms.uK4, gDP.convert.k4, _bForce);
-	_setFUniform(m_uniforms.uK5, gDP.convert.k5, _bForce);
+	_setFUniform(m_uniforms.uK4, gDP.convert.k4*0.0039215689f, _bForce);
+	_setFUniform(m_uniforms.uK5, gDP.convert.k5*0.0039215689f, _bForce);
 
 	if (combiner.usesLOD) {
 		int uCalcLOD = gDP.otherMode.textureLOD == G_TL_LOD ? 1 : 0;
