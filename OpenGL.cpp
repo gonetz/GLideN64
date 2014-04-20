@@ -774,6 +774,7 @@ void OGL_UpdateStates()
 
 	if ((gDP.changed & CHANGED_RENDERMODE) || (gDP.changed & CHANGED_CYCLETYPE))
 	{
+#define OLD_BLENDMODE
 #ifndef OLD_BLENDMODE
 		OGL_SetBlendMode();
 #else
