@@ -142,6 +142,7 @@ void InitShadowMapShader()
 	assert(check_shader_compile_status(g_shadow_map_fragment_shader_object));
 
 	g_draw_shadow_map_program = glCreateProgram();
+	glBindAttribLocation(g_draw_shadow_map_program, SC_POSITION, "aPosition");
 	glAttachShader(g_draw_shadow_map_program, g_shadow_map_vertex_shader_object);
 	glAttachShader(g_draw_shadow_map_program, g_shadow_map_fragment_shader_object);
 	glLinkProgram(g_draw_shadow_map_program);
