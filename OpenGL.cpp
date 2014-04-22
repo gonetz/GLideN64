@@ -704,8 +704,8 @@ void OGL_UpdateStates()
 	else
 		Combiner_SetCombine(gDP.combine.mux);
 
-	if (!config.frameBufferEmulation.N64DepthCompare && (gDP.changed & CHANGED_RENDERMODE) != 0) {
-		if (gDP.otherMode.depthCompare) {
+	if ((gDP.changed & CHANGED_RENDERMODE) != 0) {
+		if (!config.frameBufferEmulation.N64DepthCompare && gDP.otherMode.depthCompare) {
 			glEnable( GL_DEPTH_TEST );
 			glDepthFunc( GL_LEQUAL );
 		} else
