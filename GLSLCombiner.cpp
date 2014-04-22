@@ -692,12 +692,14 @@ void GLSLCombiner::UpdateDepthInfo(bool _bForce) {
 
 	const int nDepthEnabled = (gSP.geometryMode & G_ZBUFFER) > 0 ? 1 : 0;
 	_setIUniform(m_uniforms.uEnableDepth, nDepthEnabled, _bForce);
-	if (nDepthEnabled == 0)
-		return;
-
+	if (nDepthEnabled == 0) {
+		_setIUniform(m_uniforms.uEnableDepthCompare, 0, _bForce);
+		_setIUniform(m_uniforms.uEnableDepthUpdate, 0, _bForce);
+	} else {
+		_setIUniform(m_uniforms.uEnableDepthCompare, gDP.otherMode.depthCompare, _bForce);
+		_setIUniform(m_uniforms.uEnableDepthUpdate, gDP.otherMode.depthUpdate, _bForce);
+	}
 	_setIUniform(m_uniforms.uDepthMode, gDP.otherMode.depthMode, _bForce);
-	_setIUniform(m_uniforms.uEnableDepthCompare, gDP.otherMode.depthCompare, _bForce);
-	_setIUniform(m_uniforms.uEnableDepthUpdate, gDP.otherMode.depthUpdate, _bForce);
 	_setFUniform(m_uniforms.uDepthScale, gSP.viewport.vscale[2]*32768.0f, _bForce);
 	_setFUniform(m_uniforms.uDepthTrans, gSP.viewport.vtrans[2]*32768.0f, _bForce);
 }
