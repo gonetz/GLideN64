@@ -704,42 +704,33 @@ void OGL_UpdateStates()
 	else
 		Combiner_SetCombine(gDP.combine.mux);
 
-	if ((gDP.changed & CHANGED_RENDERMODE) != 0) {
-		if (!config.frameBufferEmulation.N64DepthCompare && gDP.otherMode.depthCompare) {
-			glEnable( GL_DEPTH_TEST );
-			glDepthFunc( GL_LEQUAL );
-		} else
-			glDisable(GL_DEPTH_TEST);
-	}
-
 	if (gSP.changed & CHANGED_GEOMETRYMODE)
 		OGL_UpdateCullFace();
 
 	if (gSP.changed & CHANGED_LIGHT)
 		combiner.current->compiled->UpdateLight();
 
-	if (gDP.otherMode.depthMode == ZMODE_DEC)
-		glEnable( GL_POLYGON_OFFSET_FILL );
-	else
-		glDisable( GL_POLYGON_OFFSET_FILL );
+	if (config.frameBufferEmulation.N64DepthCompare) {
+		glDisable( GL_DEPTH_TEST );
+		glDepthMask( FALSE );
+	} else {
+		if (gSP.geometryMode & G_ZBUFFER)
+			glEnable( GL_DEPTH_TEST );
+		else
+			glDisable( GL_DEPTH_TEST );
 
-	if (gDP.changed & CHANGED_RENDERMODE || gDP.changed & CHANGED_CYCLETYPE)
-	{
-		if (gDP.otherMode.cycleType == G_CYC_1CYCLE || gDP.otherMode.cycleType == G_CYC_2CYCLE)
-		{
-			//glDepthFunc((gDP.otherMode.depthCompare) ? GL_GEQUAL : GL_ALWAYS);
-			glDepthFunc((gDP.otherMode.depthCompare) ? GL_LESS : GL_ALWAYS);
-			glDepthMask((gDP.otherMode.depthUpdate) ? GL_TRUE : GL_FALSE);
+		if ((gDP.changed & CHANGED_RENDERMODE) > 0) {
+			if (gDP.otherMode.depthCompare)
+				glDepthFunc( GL_LEQUAL );
+			else
+				glDepthFunc( GL_ALWAYS );
+
+			OGL_UpdateDepthUpdate();
 
 			if (gDP.otherMode.depthMode == ZMODE_DEC)
-				glEnable(GL_POLYGON_OFFSET_FILL);
-		   else
-				glDisable(GL_POLYGON_OFFSET_FILL);
-		}
-		else
-		{
-			glDepthFunc(GL_ALWAYS);
-			glDepthMask(GL_FALSE);
+				glEnable( GL_POLYGON_OFFSET_FILL );
+			else
+				glDisable( GL_POLYGON_OFFSET_FILL );
 		}
 	}
 
