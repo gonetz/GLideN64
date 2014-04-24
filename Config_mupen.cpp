@@ -8,6 +8,7 @@
 #include "RSP.h"
 #include "Textures.h"
 #include "OpenGL.h"
+#include "Log.h"
 
 Config config;
 
@@ -97,6 +98,8 @@ void Config_LoadConfig()
 	Config_SetDefault();
 
 	// read configuration
+#ifndef GLES2
+	const char *filename = ConfigGetSharedDataFilepath("GLideN64.cfg");
 	const char * pConfigName = "GLideN64.cfg";
 	const char * pConfigPath = ConfigGetUserConfigPath();
 	const size_t nPathLen = strlen(pConfigPath);
@@ -115,7 +118,17 @@ void Config_LoadConfig()
 		return;
 	}
 	delete[] pConfigFullName;
-
+#else
+	const char *filename = ConfigGetSharedDataFilepath("gles2gliden64.conf");
+	f = fopen(filename, "r");
+	if (!f) {
+		LOG(LOG_MINIMAL, "[gles2GlideN64]: Couldn't open config file '%s' for reading: %s\n", filename, strerror( errno ) );
+		LOG(LOG_MINIMAL, "[gles2GlideN64]: Attempting to write new Config \n");
+		Config_WriteConfig(filename);
+		return;
+	}
+	LOG(LOG_MINIMAL, "[gles2GlideN64]: Loading Config from %s \n", filename);
+#endif
 	while (!feof( f )) {
 		char *val;
 		fgets( line, 4096, f );
