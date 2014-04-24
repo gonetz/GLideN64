@@ -138,6 +138,8 @@ extern PFNGLVERTEXATTRIB4FPROC glVertexAttrib4f;
 extern PFNGLVERTEXATTRIB4FVPROC glVertexAttrib4fv;
 
 extern PFNGLACTIVETEXTUREPROC glActiveTexture;
+extern PFNGLDEPTHRANGEFPROC glDepthRangef;
+extern PFNGLCLEARDEPTHFPROC glClearDepthf;
 
 extern PFNGLDRAWBUFFERSPROC glDrawBuffers;
 extern PFNGLGENFRAMEBUFFERSPROC glGenFramebuffers;

@@ -65,6 +65,8 @@ PFNGLVERTEXATTRIB4FVPROC glVertexAttrib4fv;
 
 // multitexture functions
 PFNGLACTIVETEXTUREPROC glActiveTexture;
+PFNGLDEPTHRANGEFPROC glDepthRangef;
+PFNGLCLEARDEPTHFPROC glClearDepthf;
 
 // EXT_fog_coord functions
 PFNGLFOGCOORDFEXTPROC glFogCoordfEXT;
@@ -163,6 +165,8 @@ void OGL_InitExtensions()
 	glVertexAttrib4fv = (PFNGLVERTEXATTRIB4FVPROC)wglGetProcAddress("glVertexAttrib4fv");
 
 	glActiveTexture	= (PFNGLACTIVETEXTUREPROC)wglGetProcAddress( "glActiveTexture" );
+	glDepthRangef = (PFNGLDEPTHRANGEFPROC)wglGetProcAddress( "glDepthRangef" );
+	glClearDepthf = (PFNGLCLEARDEPTHFPROC)wglGetProcAddress( "glClearDepthf" );
 
 	glDrawBuffers = (PFNGLDRAWBUFFERSPROC)wglGetProcAddress( "glDrawBuffers" );
 	glBindFramebuffer = (PFNGLBINDFRAMEBUFFERPROC)wglGetProcAddress( "glBindFramebuffer" );
