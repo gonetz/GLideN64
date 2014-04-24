@@ -122,6 +122,10 @@ EXPORT void CALL ReadScreen (void **dest, long *width, long *height)
 
 #else // MUPENPLUSAPI
 #include "m64p_plugin.h"
+#include "Log.h"
+#ifdef ANDROID
+#include "ae_bridge.h"
+#endif
 
 ptr_ConfigGetSharedDataFilepath ConfigGetSharedDataFilepath = NULL;
 ptr_ConfigGetUserConfigPath ConfigGetUserConfigPath = NULL;
