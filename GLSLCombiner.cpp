@@ -179,6 +179,7 @@ void InitGLSLCombiner()
 	glCompileShader(g_vertex_shader_object);
 	assert(check_shader_compile_status(g_vertex_shader_object));
 
+#ifndef GLES2
 	g_calc_light_shader_object = glCreateShader(GL_FRAGMENT_SHADER);
 	glShaderSource(g_calc_light_shader_object, 1, &fragment_shader_calc_light, NULL);
 	glCompileShader(g_calc_light_shader_object);
@@ -206,7 +207,6 @@ void InitGLSLCombiner()
 		assert(check_shader_compile_status(g_calc_depth_shader_object));
 	}
 
-#ifndef GLES2
 	InitZlutTexture();
 	InitShadowMapShader();
 #endif
@@ -377,7 +377,7 @@ int CompileCombiner(const CombinerStage & _stage, const char** _Input, char * _f
 }
 
 GLSLCombiner::GLSLCombiner(Combiner *_color, Combiner *_alpha) {
-	char *fragment_shader = (char*)malloc(4096);
+	char *fragment_shader = (char*)malloc(1024*5);
 	strcpy(fragment_shader, fragment_shader_header_common_variables);
 
 	char strCombiner[512];
@@ -401,7 +401,11 @@ GLSLCombiner::GLSLCombiner(Combiner *_color, Combiner *_alpha) {
 	strcat(fragment_shader, fragment_shader_header_main);
 	const bool bUseLod = (m_nInputs & (1<<LOD_FRACTION)) > 0;
 	if (bUseLod)
+#ifdef GLES2
+		strcat(fragment_shader, "  lowp float lod_frac = calc_lod(uPrimLod, vLodTexCoord);	\n");
+#else
 		strcat(fragment_shader, "  float lod_frac = calc_lod(uPrimLod, vLodTexCoord);	\n");
+#endif
 	if ((m_nInputs & ((1<<TEXEL0)|(1<<TEXEL1)|(1<<TEXEL0_ALPHA)|(1<<TEXEL1_ALPHA))) > 0) {
 		strcat(fragment_shader, fragment_shader_readtex0color);
 		strcat(fragment_shader, fragment_shader_readtex1color);
@@ -409,7 +413,11 @@ GLSLCombiner::GLSLCombiner(Combiner *_color, Combiner *_alpha) {
 		assert(strstr(strCombiner, "readtex") == 0);
 	}
 	if (config.enableHWLighting)
+#ifdef GLES2
+		strcat(fragment_shader, "  lowp float intensity = calc_light(int(vNumLights), vShadeColor.rgb, input_color); \n");
+#else
 		strcat(fragment_shader, "  float intensity = calc_light(int(vNumLights), vShadeColor.rgb, input_color); \n");
+#endif
 	else
 		strcat(fragment_shader, "  input_color = vShadeColor.rgb;\n");
 	strcat(fragment_shader, "  vec_color = vec4(input_color, vShadeColor.a); \n");
@@ -428,12 +436,21 @@ GLSLCombiner::GLSLCombiner(Combiner *_color, Combiner *_alpha) {
 	strcat(fragment_shader, "  toonify(intensity); \n");
 #endif
 	strcat(fragment_shader, "  if (uEnableFog != 0) \n");
-	strcat(fragment_shader, "    gl_FragColor = vec4(mix(gl_FragColor.rgb, uFogColor.rgb, gl_FogFragCoord), gl_FragColor.a); \n");
+	strcat(fragment_shader, "    gl_FragColor = vec4(mix(gl_FragColor.rgb, uFogColor.rgb, vFogFragCoord), gl_FragColor.a); \n");
 
 	strcat(fragment_shader, fragment_shader_end);
 
 #ifdef USE_TOONIFY
 	strcat(fragment_shader, fragment_shader_toonify);
+#endif
+
+#ifdef GLES2
+	strcat(fragment_shader, alpha_test_fragment_shader);
+	strcat(fragment_shader, noise_fragment_shader);
+	if (bUseLod)
+		strcat(fragment_shader, fragment_shader_calc_lod);
+	if (config.enableHWLighting)
+		strcat(fragment_shader, fragment_shader_calc_light);
 #endif
 
 	GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
@@ -450,6 +467,9 @@ GLSLCombiner::GLSLCombiner(Combiner *_color, Combiner *_alpha) {
 	glAttachShader(m_program, g_vertex_shader_object);
 	m_aShaders[uShaderIdx++] = g_vertex_shader_object;
 	glAttachShader(m_program, fragmentShader);
+#ifdef GLES2
+	m_aShaders[uShaderIdx] = fragmentShader;
+#else
 	m_aShaders[uShaderIdx++] = fragmentShader;
 	if (config.enableHWLighting) {
 		glAttachShader(m_program, g_calc_light_shader_object);
@@ -467,7 +487,9 @@ GLSLCombiner::GLSLCombiner(Combiner *_color, Combiner *_alpha) {
 	}
 	glAttachShader(m_program, g_calc_noise_shader_object);
 	m_aShaders[uShaderIdx] = g_calc_noise_shader_object;
+#endif
 	assert(uShaderIdx <= sizeof(m_aShaders)/sizeof(m_aShaders[0]));
+
 	glLinkProgram(m_program);
 	assert(check_program_link_status(m_program));
 	_locateUniforms();

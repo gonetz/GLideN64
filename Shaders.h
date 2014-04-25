@@ -1,4 +1,32 @@
 static const char* vertex_shader =
+#ifdef GLES2
+"attribute highp vec4 aPosition;						\n"
+"attribute lowp vec4 aColor;							\n"
+"attribute highp vec2 aTexCoord0;						\n"
+"attribute highp vec2 aTexCoord1;						\n"
+"attribute lowp float aSTScaled;						\n"
+"attribute lowp float aNumLights;						\n"
+"														\n"
+"uniform int uRenderState;								\n"
+"uniform int uTexturePersp;								\n"
+"uniform float uNoiseTime;								\n"
+"uniform float uFogMultiplier, uFogOffset;				\n"
+"														\n"
+"uniform mediump vec2 uTexScale;						\n"
+"uniform mediump vec2 uTexOffset[2];					\n"
+"uniform mediump vec2 uCacheShiftScale[2];				\n"
+"uniform mediump vec2 uCacheScale[2];					\n"
+"uniform mediump vec2 uCacheOffset[2];					\n"
+"uniform lowp ivec2 uCacheFrameBuffer;					\n"
+"														\n"
+"varying lowp vec4 vShadeColor;							\n"
+"varying mediump vec2 vTexCoord0;						\n"
+"varying mediump vec2 vTexCoord1;						\n"
+"varying mediump vec2 vLodTexCoord;						\n"
+"varying mediump vec2 vNoiseCoord2D;					\n"
+"varying lowp float vNumLights;								\n"
+"varying mediump float vFogFragCoord;					\n"
+#else
 "attribute vec4	aPosition;								\n"
 "attribute vec4	aColor;									\n"
 "attribute vec2	aTexCoord0;								\n"
@@ -24,11 +52,13 @@ static const char* vertex_shader =
 "varying vec2 vLodTexCoord;								\n"
 "varying vec2 vNoiseCoord2D;							\n"
 "varying float vNumLights;								\n"
+"varying float vFogFragCoord;							\n"
+#endif
 "void main()													\n"
 "{																\n"
 "  gl_Position = aPosition;										\n"
 "  vShadeColor = aColor;										\n"
-"  if (uRenderState == 1.0) {									\n"
+"  if (uRenderState == 1) {										\n"
 "    vec2 texCoord = aTexCoord0;								\n"
 "    if (aSTScaled == 0.0) texCoord *= uTexScale;				\n"
 "    if (uTexturePersp == 0) texCoord *= 0.5;					\n"
@@ -50,16 +80,40 @@ static const char* vertex_shader =
 //"  vNoiseCoord2D = gl_Vertex.xy + vec2(0.0, uNoiseTime);		\n"
 "  vNoiseCoord2D = vec2(0.0, uNoiseTime);		\n"
 "  if (aPosition.z < -aPosition.w)								\n"
-"    gl_FogFragCoord = -uFogMultiplier + uFogOffset;			\n"
+"    vFogFragCoord = -uFogMultiplier + uFogOffset;			\n"
 "  else															\n"
-"    gl_FogFragCoord = aPosition.z/aPosition.w * uFogMultiplier	\n"
+"    vFogFragCoord = aPosition.z/aPosition.w * uFogMultiplier	\n"
 "	                   + uFogOffset;							\n"
-"  gl_FogFragCoord = clamp(gl_FogFragCoord, 0.0, 1.0);			\n"
+"  vFogFragCoord = clamp(vFogFragCoord, 0.0, 1.0);			\n"
 "  vNumLights = aNumLights;										\n"
 "}																\n"
 ;
 
 static const char* fragment_shader_header_common_variables =
+#ifdef GLES2
+"uniform sampler2D uTex0;		\n"
+"uniform sampler2D uTex1;		\n"
+"uniform lowp vec4 uPrimColor;	\n"
+"uniform lowp vec4 uEnvColor;	\n"
+"uniform lowp vec4 uCenterColor;\n"
+"uniform lowp vec4 uScaleColor;	\n"
+"uniform lowp vec4 uFogColor;	\n"
+"uniform lowp float uK4;		\n"
+"uniform lowp float uK5;		\n"
+"uniform lowp float uPrimLod;	\n"
+"uniform lowp int uEnableDither;\n"
+"uniform lowp int uEnableFog;	\n"
+"uniform lowp int uFb8Bit;		\n"
+"uniform lowp int uFbFixedAlpha;\n"
+"varying lowp vec4 vShadeColor;	\n"
+"varying mediump vec2 vTexCoord0;\n"
+"varying mediump vec2 vTexCoord1;\n"
+"varying mediump vec2 vLodTexCoord;\n"
+"varying mediump vec2 vNoiseCoord2D;\n"
+"varying lowp float vNumLights;	\n"
+"varying mediump float vFogFragCoord;\n"
+"lowp vec3 input_color;			\n"
+#else
 "uniform sampler2D uTex0;		\n"
 "uniform sampler2D uTex1;		\n"
 "uniform vec4 uPrimColor;		\n"
@@ -80,22 +134,55 @@ static const char* fragment_shader_header_common_variables =
 "varying vec2 vLodTexCoord;		\n"
 "varying vec2 vNoiseCoord2D;	\n"
 "varying float vNumLights;		\n"
+"varying float vFogFragCoord;	\n"
 "vec3 input_color;				\n"
+#endif
 ;
 
 static const char* fragment_shader_header_common_functions =
+#ifdef GLES2
+"															\n"
+"lowp float snoise(in mediump vec2 v);						\n"
+"lowp float calc_light(in lowp int nLights, in lowp vec3 input_color, out lowp vec3 output_color);\n"
+"lowp float calc_lod(in lowp float primLod, in mediump vec2 texCoord);		\n"
+"lowp bool depth_compare();										\n"
+"lowp bool alpha_test(in lowp float alphaValue);						\n"
+#else
 "															\n"
 "float snoise(in vec2 v);										\n"
 "float calc_light(in int nLights, in vec3 input_color, out vec3 output_color);\n"
 "float calc_lod(in float primLod, in vec2 texCoord);		\n"
 "bool depth_compare();										\n"
 "bool alpha_test(in float alphaValue);						\n"
+#endif
 #ifdef USE_TOONIFY
 "void toonify(in float intensity);	\n"
 #endif
 ;
 
 static const char* fragment_shader_calc_light =
+#ifdef GLES2
+"uniform lowp vec3 uLightDirection[8];	\n"
+"uniform lowp vec3 uLightColor[8];	\n"
+"																\n"
+"lowp float calc_light(in lowp int nLights, in lowp vec3 input_color, out lowp vec3 output_color) {\n"
+"  output_color = input_color;									\n"
+"  if (nLights == 0)											\n"
+"     return 1.0;												\n"
+"  lowp float full_intensity = 0.0;									\n"
+"  output_color = uLightColor[nLights];							\n"
+"  lowp vec3 lightColor;												\n"
+"  lowp float intensity;												\n"
+"  lowp vec3 n = normalize(input_color);								\n"
+"  for (int i = 0; i < nLights; i++)	{						\n"
+"    intensity = max(dot(n, uLightDirection[i]), 0.0);			\n"
+"    full_intensity += intensity;								\n"
+"    lightColor = intensity*uLightColor[i];						\n"
+"    output_color += lightColor;								\n"
+"  };															\n"
+"  return full_intensity;										\n"
+"}																\n"
+#else
 "uniform vec3 uLightDirection[8];	\n"
 "uniform vec3 uLightColor[8];	\n"
 "																\n"
@@ -116,9 +203,42 @@ static const char* fragment_shader_calc_light =
 "  };															\n"
 "  return full_intensity;										\n"
 "}																\n"
+#endif
 ;
 
 static const char* fragment_shader_calc_lod =
+#ifdef GLES2
+"uniform lowp int uEnableLod;		\n"
+"uniform lowp float uLodXScale;		\n"
+"uniform lowp float uLodYScale;		\n"
+"uniform lowp float uMinLod;			\n"
+"uniform lowp int uMaxTile;			\n"
+"uniform lowp int uTextureDetail;	\n"
+"														\n"
+"lowp float calc_lod(in lowp float primLod, in mediump vec2 texCoord) {	\n"
+//"  if (uEnableLod == 0)								\n"
+"    return primLod;									\n"
+/*
+" mediump vec2 dx = dFdx(texCoord);								\n"
+" dx.x *= uLodXScale;									\n"
+" dx.y *= uLodYScale;									\n"
+" mediump vec2 dy = dFdy(texCoord);								\n"
+" dy.x *= uLodXScale;									\n"
+" dy.y *= uLodYScale;									\n"
+" mediump float lod = max(length(dx), length(dy));		\n"
+" lowp float lod_frac;									\n"
+"  if (lod < 1.0) {										\n"
+"    lod_frac = max(lod, uMinLod);						\n"
+"    if (uTextureDetail == 1)							\n"
+"      lod_frac = 1.0 - lod_frac;						\n"
+"  } else {												\n"
+"    lowp float tile = min(float(uMaxTile), floor(log2(floor(lod)))); \n"
+"    lod_frac = max(uMinLod, fract(lod/pow(2.0, tile)));\n"
+"  }													\n"
+"  return lod_frac;										\n"
+*/
+"}														\n"
+#else
 "uniform int uEnableLod;		\n"
 "uniform float uLodXScale;		\n"
 "uniform float uLodYScale;		\n"
@@ -147,9 +267,39 @@ static const char* fragment_shader_calc_lod =
 "  }													\n"
 "  return lod_frac;										\n"
 "}														\n"
+#endif
+;
+
+static const char* alpha_test_fragment_shader =
+#ifdef GLES2
+"uniform lowp int uEnableAlphaTest;				\n"
+"uniform lowp float uAlphaTestValue;				\n"
+"lowp bool alpha_test(in lowp float alphaValue)		\n"
+#else
+"uniform int uEnableAlphaTest;				\n"
+"uniform float uAlphaTestValue;				\n"
+"bool alpha_test(in float alphaValue)		\n"
+#endif
+"{											\n"
+"  if (uEnableAlphaTest == 0) return true;	\n"
+"  if (uAlphaTestValue > 0.0) return alphaValue >= uAlphaTestValue;\n"
+"  return alphaValue > 0.0;					\n"
+"}											\n"
 ;
 
 static const char* fragment_shader_header_main =
+#ifdef GLES2
+"									\n"
+"void main()						\n"
+"{									\n"
+"  if (uEnableDither != 0) {		\n"
+"    if (snoise(vNoiseCoord2D) < 0.0) discard; \n"
+"  }								\n"
+"  lowp vec4 vec_color, combined_color;	\n"
+"  lowp float alpha1, alpha2;			\n"
+"  lowp vec3 color1, color2;				\n"
+;
+#else
 "									\n"
 "void main()						\n"
 "{									\n"
@@ -160,6 +310,7 @@ static const char* fragment_shader_header_main =
 "  float alpha1, alpha2;			\n"
 "  vec3 color1, color2;				\n"
 ;
+#endif
 
 #ifdef USE_TOONIFY
 static const char* fragment_shader_toonify =
@@ -182,6 +333,22 @@ static const char* fragment_shader_default =
 "  gl_FragColor = vShadeColor*color; \n"
 ;
 
+#ifdef GLES2
+static const char* fragment_shader_readtex0color =
+"  lowp vec4 readtex0 = texture2D(uTex0, vTexCoord0);						\n"
+"  if (uFb8Bit == 1 || uFb8Bit == 3) readtex0 = vec4(readtex0.r);	\n"
+"  if (uFbFixedAlpha == 1 || uFbFixedAlpha == 3) readtex0.a = 0.825;	\n"
+;
+
+static const char* fragment_shader_readtex1color =
+"  lowp vec4 readtex1 = texture2D(uTex1, vTexCoord1);	\n"
+"  if (uFb8Bit == 2 || uFb8Bit == 3) readtex1 = vec4(readtex1.r);	\n"
+"  if (uFbFixedAlpha == 2 || uFbFixedAlpha == 3) readtex1.a = 0.825;	\n"
+;
+
+static const char* fragment_shader_end =
+"}                               \n"
+#else
 static const char* fragment_shader_readtex0color =
 "  vec4 readtex0 = texture2D(uTex0, vTexCoord0);						\n"
 "  if (uFb8Bit == 1 || uFb8Bit == 3) readtex0 = vec4(readtex0.r);	\n"
@@ -196,6 +363,7 @@ static const char* fragment_shader_readtex1color =
 
 static const char* fragment_shader_end =
 "}                               \n"
+#endif
 ;
 
 static const char* depth_compare_shader_float =
@@ -258,17 +426,6 @@ static const char* depth_compare_shader_float =
 "    return bRes;										\n"
 "  return true;											\n"
 "}														\n"
-;
-
-static const char* alpha_test_fragment_shader =
-"uniform int uEnableAlphaTest;				\n"
-"uniform float uAlphaTestValue;				\n"
-"bool alpha_test(in float alphaValue)		\n"
-"{											\n"
-"  if (uEnableAlphaTest == 0) return true;	\n"
-"  if (uAlphaTestValue > 0.0) return alphaValue >= uAlphaTestValue;\n"
-"  return alphaValue > 0.0;					\n"
-"}											\n"
 ;
 
 static const char* shadow_map_vertex_shader =
