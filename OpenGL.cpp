@@ -475,7 +475,6 @@ bool OGL_Start()
 	OGL.renderState = GLInfo::rsNone;
 
 	gSP.changed = gDP.changed = 0xFFFFFFFF;
-	OGL_UpdateScale();
 	OGL.captureScreen = false;
 
 	memset(OGL.triangles.vertices, 0, VERTBUFF_SIZE * sizeof(SPVertex));
