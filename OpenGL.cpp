@@ -294,7 +294,14 @@ bool OGL_SDL_Start()
 	LOG(LOG_MINIMAL, "Setting video mode %dx%d...\n", current_w, current_h );
 
 	// TODO: I should actually check what the pixelformat is, rather than assuming 16 bpp (RGB_565) or 32 bpp (RGBA_8888):
-	int bitsPP = 16;
+	//// paulscode, added for switching between modes RGBA8888 and RGB565
+	// (part of the color banding fix)
+	int bitsPP;
+	if( Android_JNI_UseRGBA8888() )
+		bitsPP = 32;
+	else
+		bitsPP = 16;
+	////
 
 	// TODO: Replace SDL_SetVideoMode with something that is SDL 2.0 compatible
 	//       Better yet, eliminate all SDL calls by using the Mupen64Plus core api
