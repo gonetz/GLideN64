@@ -118,7 +118,7 @@ const char *noise_fragment_shader =
 "  vec3 g;															\n"
 "  g.x  = a0.x  * x0.x  + h.x  * x0.y;								\n"
 "  g.yz = a0.yz * x12.xz + h.yz * x12.yw;							\n"
-"  return 130.0 * dot(m, g);										\n"
+"  return clamp(130.0 * dot(m, g), -1.0, 1.0);						\n"
 "}																	\n"
 "																	\n"
 #endif
