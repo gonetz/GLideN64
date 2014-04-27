@@ -659,12 +659,6 @@ void GLSLCombiner::UpdateColors(bool _bForce) {
 	const int nDither = (gDP.otherMode.colorDither == 2 || gDP.otherMode.alphaDither == 2 || gDP.otherMode.alphaCompare == 3) ? 1 : 0;
 	if ((m_nInputs & (1<<NOISE)) + nDither != 0)
 		_setFUniform(m_uniforms.uNoiseTime, (float)(rand()&255), _bForce);
-
-	if (!_bForce)
-		return;
-	_setIUniform(m_uniforms.uFb8Bit, 0, _bForce);
-	_setIUniform(m_uniforms.uFbFixedAlpha, 0, _bForce);
-	_setIUniform(m_uniforms.uEnableDepth, 0, _bForce);
 }
 
 void GLSLCombiner::UpdateTextureInfo(bool _bForce) {
