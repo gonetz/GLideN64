@@ -747,8 +747,12 @@ void OGL_UpdateStates()
 	if ((gDP.changed & CHANGED_ALPHACOMPARE) || (gDP.changed & CHANGED_RENDERMODE))
 		Combiner_UpdateAlphaTestInfo();
 
-//	if (gDP.changed & CHANGED_SCISSOR)
-//		OGL_UpdateScissor();
+	if (gDP.changed & CHANGED_SCISSOR)
+	{
+		const u32 screenHeight = (frameBuffer.top == NULL || frameBuffer.drawBuffer == GL_BACK) ? VI.height : frameBuffer.top->height;
+		glScissor( gDP.scissor.ulx * OGL.scaleX, (screenHeight - gDP.scissor.lry) * OGL.scaleY + (frameBuffer.drawBuffer == GL_BACK ? OGL.heightOffset : 0),
+			(gDP.scissor.lrx - gDP.scissor.ulx) * OGL.scaleX, (gDP.scissor.lry - gDP.scissor.uly) * OGL.scaleY );
+	}
 
 	if (gSP.changed & CHANGED_VIEWPORT)
 		OGL_UpdateViewport();
