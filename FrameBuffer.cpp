@@ -574,6 +574,7 @@ void FrameBuffer_ActivateBufferTexture( s16 t, FrameBuffer *buffer )
 
 //	FrameBuffer_RenderBuffer(buffer->startAddress);
 	TextureCache_ActivateTexture( t, buffer->texture );
+	gDP.changed |= CHANGED_FB_TEXTURE;
 }
 
 void FrameBuffer_ActivateBufferTextureBG( s16 t, FrameBuffer *buffer )
@@ -589,6 +590,7 @@ void FrameBuffer_ActivateBufferTextureBG( s16 t, FrameBuffer *buffer )
 
 	//	FrameBuffer_RenderBuffer(buffer->startAddress);
 	TextureCache_ActivateTexture( t, buffer->texture );
+	gDP.changed |= CHANGED_FB_TEXTURE;
 }
 
 #ifndef GLES2

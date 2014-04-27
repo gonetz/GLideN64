@@ -777,6 +777,12 @@ void OGL_UpdateStates()
 		}
 	}
 
+	if (gDP.changed & CHANGED_FB_TEXTURE)
+		Combiner_UpdateCombineFBInfo();
+
+	if ((gDP.changed & CHANGED_RENDERMODE) || (gSP.geometryMode & G_ZBUFFER))
+		Combiner_UpdateCombineDepthInfo();
+
 	if ((gDP.changed & CHANGED_RENDERMODE) || (gDP.changed & CHANGED_CYCLETYPE))
 	{
 #define OLD_BLENDMODE

@@ -119,13 +119,14 @@ void Combiner_UpdateCombineColors()
 
 void Combiner_UpdateCombineFBInfo()
 {
-	combiner.current->compiled->UpdateFBInfo();
+	combiner.current->compiled->UpdateFBInfo(true);
+	gDP.changed &= ~CHANGED_FB_TEXTURE;
 }
 
 void Combiner_UpdateCombineDepthInfo()
 {
 	if (combiner.current != NULL)
-		combiner.current->compiled->UpdateDepthInfo();
+		combiner.current->compiled->UpdateDepthInfo(true);
 }
 
 void Combiner_UpdateAlphaTestInfo()
