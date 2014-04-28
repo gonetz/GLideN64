@@ -10,7 +10,7 @@ static const char* vertex_shader =
 "uniform int uRenderState;								\n"
 "uniform int uTexturePersp;								\n"
 "uniform lowp float uNoiseTime;							\n"
-"uniform mediump uFogMultiplier, uFogOffset;			\n"
+"uniform mediump float uFogMultiplier, uFogOffset;			\n"
 "uniform mediump float uScreenWidth, uScreenHeight;		\n"
 "														\n"
 "uniform mediump vec2 uTexScale;						\n"
