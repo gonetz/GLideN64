@@ -410,7 +410,7 @@ void FrameBuffer_AttachDepthBuffer()
 		if (depthBuffer.top->depth_texture == NULL)
 			_initDepthTexture();
 		frameBuffer.top->pDepthBuffer = depthBuffer.top;
-		glFramebufferRenderbuffer(GL_DRAW_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthBuffer.top->renderbuf);
+		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthBuffer.top->renderbuf);
 #ifndef GLES2
 		GLuint attachments[2] = { GL_COLOR_ATTACHMENT0, GL_DEPTH_ATTACHMENT };
 		glDrawBuffers(2,  attachments);

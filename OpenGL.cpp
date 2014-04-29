@@ -1302,25 +1302,25 @@ void OGL_SwapBuffers()
 }
 
 bool checkFBO() {
-	GLenum e = glCheckFramebufferStatus(GL_DRAW_FRAMEBUFFER);
+	GLenum e = glCheckFramebufferStatus(GL_FRAMEBUFFER);
 	switch (e) {
 //		case GL_FRAMEBUFFER_UNDEFINED:
 //			printf("FBO Undefined\n");
 //			break;
 		case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT :
-			printf("FBO Incomplete Attachment\n");
+			LOG(LOG_ERROR, "[gles2GlideN64]: FBO Incomplete Attachment\n");
 			break;
 		case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT :
-			printf("FBO Missing Attachment\n");
+			LOG(LOG_ERROR, "[gles2GlideN64]: FBO Missing Attachment\n");
 			break;
 //		case GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER :
 //			printf("FBO Incomplete Draw Buffer\n");
 //			break;
 		case GL_FRAMEBUFFER_UNSUPPORTED :
-			printf("FBO Unsupported\n");
+			LOG(LOG_ERROR, "[gles2GlideN64]: FBO Unsupported\n");
 			break;
 		case GL_FRAMEBUFFER_COMPLETE:
-			printf("FBO OK\n");
+			LOG(LOG_VERBOSE, "[gles2GlideN64]: FBO OK\n");
 			break;
 //		case GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS_EXT:
 //			printf("framebuffer FRAMEBUFFER_DIMENSIONS\n");
@@ -1329,7 +1329,7 @@ bool checkFBO() {
 //			printf("framebuffer INCOMPLETE_FORMATS\n");
 //			break;
 		default:
-			printf("FBO Problem?\n");
+			LOG(LOG_ERROR, "[gles2GlideN64]: FBO Problem?\n");
 	}
 	return e == GL_FRAMEBUFFER_COMPLETE;
 }

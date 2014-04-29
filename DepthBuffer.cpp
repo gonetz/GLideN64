@@ -181,10 +181,15 @@ void DepthBuffer_SetBuffer( u32 address )
 		if (config.frameBufferEmulation.enable) {
 			glGenRenderbuffers(1, &current->renderbuf);
 			glBindRenderbuffer(GL_RENDERBUFFER, current->renderbuf);
+#ifndef GLES2
+			const GLenum format = GL_DEPTH_COMPONENT;
+#else
+			const GLenum format = GL_DEPTH_COMPONENT24_OES;
+#endif
 			if (pFrameBuffer != NULL)
-				glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, pFrameBuffer->texture->realWidth, pFrameBuffer->texture->realHeight);
+				glRenderbufferStorage(GL_RENDERBUFFER, format, pFrameBuffer->texture->realWidth, pFrameBuffer->texture->realHeight);
 			else
-				glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, (u32)pow2(OGL.width), (u32)pow2(OGL.height));
+				glRenderbufferStorage(GL_RENDERBUFFER, format, (u32)pow2(OGL.width), (u32)pow2(OGL.height));
 		}
 	}
 
