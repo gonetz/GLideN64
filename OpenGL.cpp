@@ -744,7 +744,7 @@ void OGL_UpdateStates()
 		}
 	}
 
-	if ((gDP.changed & CHANGED_ALPHACOMPARE) || (gDP.changed & CHANGED_RENDERMODE))
+	if ((gDP.changed & (CHANGED_ALPHACOMPARE|CHANGED_RENDERMODE|CHANGED_BLENDCOLOR)) != 0)
 		Combiner_UpdateAlphaTestInfo();
 
 	if (gDP.changed & CHANGED_SCISSOR)

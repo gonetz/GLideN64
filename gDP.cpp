@@ -350,6 +350,7 @@ void gDPSetBlendColor( u32 r, u32 g, u32 b, u32 a )
 	gDP.blendColor.b = b * 0.0039215689f;
 	gDP.blendColor.a = a * 0.0039215689f;
 
+	gDP.changed |= CHANGED_BLENDCOLOR;
 #ifdef DEBUG
 	DebugMsg( DEBUG_HIGH | DEBUG_HANDLED, "gDPSetBlendColor( %i, %i, %i, %i );\n",
 		r, g, b, a );
