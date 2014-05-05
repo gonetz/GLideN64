@@ -536,6 +536,8 @@ void GLSLCombiner::_locateUniforms() {
 	LocateUniform(uTexScale);
 	LocateUniform(uTexOffset[0]);
 	LocateUniform(uTexOffset[1]);
+	LocateUniform(uTexMask[0]);
+	LocateUniform(uTexMask[1]);
 	LocateUniform(uCacheShiftScale[0]);
 	LocateUniform(uCacheShiftScale[1]);
 	LocateUniform(uCacheScale[0]);
@@ -643,8 +645,13 @@ void GLSLCombiner::UpdateTextureInfo(bool _bForce) {
 	_setFV2Uniform(m_uniforms.uTexScale, gSP.texture.scales, gSP.texture.scalet, _bForce);
 	int nFB0 = 0, nFB1 = 0;
 	if (combiner.usesT0) {
-		if (gSP.textureTile[0])
+		if (gSP.textureTile[0]) {
 			_setFV2Uniform(m_uniforms.uTexOffset[0], gSP.textureTile[0]->fuls, gSP.textureTile[0]->fult, _bForce);
+			_setFV2Uniform(m_uniforms.uTexMask[0],
+				gSP.textureTile[0]->masks > 0 ? (float)(1<<gSP.textureTile[0]->masks) : 0.0f,
+				gSP.textureTile[0]->maskt > 0 ? (float)(1<<gSP.textureTile[0]->maskt) : 0.0f,
+				_bForce);
+		}
 		if (cache.current[0]) {
 			_setFV2Uniform(m_uniforms.uCacheShiftScale[0], cache.current[0]->shiftScaleS, cache.current[0]->shiftScaleT, _bForce);
 			_setFV2Uniform(m_uniforms.uCacheScale[0], cache.current[0]->scaleS, cache.current[0]->scaleT, _bForce);
@@ -654,8 +661,13 @@ void GLSLCombiner::UpdateTextureInfo(bool _bForce) {
 	}
 
 	if (combiner.usesT1) {
-		if (gSP.textureTile[1])
+		if (gSP.textureTile[1]) {
 			_setFV2Uniform(m_uniforms.uTexOffset[1], gSP.textureTile[1]->fuls, gSP.textureTile[1]->fult, _bForce);
+			_setFV2Uniform(m_uniforms.uTexMask[1],
+				gSP.textureTile[1]->masks > 0 ? (float)(1<<gSP.textureTile[1]->masks) : 0.0f,
+				gSP.textureTile[1]->maskt > 0 ? (float)(1<<gSP.textureTile[1]->maskt) : 0.0f,
+				_bForce);
+		}
 		if (cache.current[1]) {
 			_setFV2Uniform(m_uniforms.uCacheShiftScale[1], cache.current[1]->shiftScaleS, cache.current[1]->shiftScaleT, _bForce);
 			_setFV2Uniform(m_uniforms.uCacheScale[1], cache.current[1]->scaleS, cache.current[1]->scaleT, _bForce);
