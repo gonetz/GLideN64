@@ -496,7 +496,8 @@ void FrameBuffer_RenderBuffer( u32 address )
 
 	Combiner_SetCombine( EncodeCombineMode( 0, 0, 0, TEXEL0, 0, 0, 0, 1, 0, 0, 0, TEXEL0, 0, 0, 0, 1 ) );
 	glDisable( GL_BLEND );
-	glDisable( GL_DEPTH_TEST );
+	glDisable(GL_SCISSOR_TEST);
+	glDisable(GL_DEPTH_TEST);
 	glDisable( GL_CULL_FACE );
 	glDisable( GL_POLYGON_OFFSET_FILL );
 	gSP.changed = gDP.changed = 0;
