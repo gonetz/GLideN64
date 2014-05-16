@@ -329,6 +329,20 @@ static const char* fragment_shader_header_main =
 ;
 #endif
 
+static const char* fragment_shader_color_dither =
+"  if (uColorDitherMode == 2) {								\n"
+"    color2 += 0.03125*snoise(vNoiseCoord2D);				\n"
+"    color2 = clamp(color2, 0.0, 1.0);						\n"
+"  }														\n"
+;
+
+static const char* fragment_shader_alpha_dither =
+"  if (uAlphaDitherMode == 2) {								\n"
+"    alpha2 += 0.03125*snoise(vNoiseCoord2D);				\n"
+"    alpha2 = clamp(alpha2, 0.0, 1.0);						\n"
+"  }														\n"
+;
+
 #ifdef USE_TOONIFY
 static const char* fragment_shader_toonify =
 "																	\n"

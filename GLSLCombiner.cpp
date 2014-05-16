@@ -399,8 +399,8 @@ GLSLCombiner::GLSLCombiner(Combiner *_color, Combiner *_alpha) {
 		strcat(fragment_shader, "  input_color = vShadeColor.rgb;\n");
 	strcat(fragment_shader, "  vec_color = vec4(input_color, vShadeColor.a); \n");
 	strcat(fragment_shader, strCombiner);
-	strcat(fragment_shader, "  if (uColorDitherMode == 2) color2 *= clamp(snoise(vNoiseCoord2D), 0.0, 1.0);");
-//	strcat(fragment_shader, "  if (uAlphaDitherMode == 2) alpha2 *= clamp(snoise(vNoiseCoord2D), 0.0, 1.0);");
+	strcat(fragment_shader, fragment_shader_color_dither);
+	strcat(fragment_shader, fragment_shader_alpha_dither);
 
 	strcat(fragment_shader, "  gl_FragColor = vec4(color2, alpha2); \n");
 
