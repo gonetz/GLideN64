@@ -3,8 +3,6 @@
 
 extern char	pluginName[];
 
-#ifndef MUPENPLUSAPI
-
 #ifdef _WINDOWS
 #include <windows.h>
 extern HWND			hWnd;
@@ -13,6 +11,8 @@ extern HWND			hStatusBar;
 extern HWND			hToolBar;
 extern HINSTANCE	hInstance;
 #endif
+
+#ifndef MUPENPLUSAPI
 
 //#define DEBUG
 

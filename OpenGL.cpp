@@ -1188,7 +1188,7 @@ void OGL_ClearColorBuffer( float *color )
 
 void OGL_SaveScreenshot()
 {
-#ifdef _WINDOWS
+#if defined(_WINDOWS) && !defined(MUPENPLUSAPI)
 	BITMAPFILEHEADER fileHeader;
 	BITMAPINFOHEADER infoHeader;
 	HANDLE hBitmapFile;

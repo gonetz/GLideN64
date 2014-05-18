@@ -1,5 +1,3 @@
-#include "winlnxdefs.h"
-#include <SDL.h>
 #include <errno.h>
 #include <string.h>
 
@@ -74,7 +72,11 @@ void Config_SetOption(char* line, char* val)
 {
 	for(int i=0; i< configOptionsSize; i++) {
 		Option *o = &configOptions[i];
+#ifndef _WINDOWS
 		if (strcasecmp(line, o->name) == 0)	{
+#else
+		if (_stricmp(line, o->name) == 0)	{
+#endif
 			if (o->data) {
 				int v = atoi(val);
 				*(o->data) = v;

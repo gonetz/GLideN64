@@ -18,16 +18,19 @@
 
 char pluginName[] = "GLideN64 alpha";
 
-#ifndef MUPENPLUSAPI
-#include "ZilmarGFX_1_3.h"
-
 #ifdef _WINDOWS
 HWND		hWnd;
 HWND		hStatusBar;
 //HWND		hFullscreen;
 HWND		hToolBar;
 HINSTANCE	hInstance;
+#define DLSYM(a, b) GetProcAddress(a, b)
+#else
+#define DLSYM(a, b) dlsym(a, b)
 #endif // _WINDOWS
+
+#ifndef MUPENPLUSAPI
+#include "ZilmarGFX_1_3.h"
 
 char		*screenDirectory;
 
@@ -137,8 +140,8 @@ extern "C" {
 
 EXPORT m64p_error CALL PluginStartup(m64p_dynlib_handle CoreLibHandle, void *Context, void (*DebugCallback)(void *, int, const char *))
 {
-	ConfigGetSharedDataFilepath = (ptr_ConfigGetSharedDataFilepath)	dlsym(CoreLibHandle, "ConfigGetSharedDataFilepath");
-	ConfigGetUserConfigPath = (ptr_ConfigGetUserConfigPath)	dlsym(CoreLibHandle, "ConfigGetUserConfigPath");
+	ConfigGetSharedDataFilepath = (ptr_ConfigGetSharedDataFilepath)	DLSYM(CoreLibHandle, "ConfigGetSharedDataFilepath");
+	ConfigGetUserConfigPath = (ptr_ConfigGetUserConfigPath)	DLSYM(CoreLibHandle, "ConfigGetUserConfigPath");
 	return M64ERR_SUCCESS;
 }
 
