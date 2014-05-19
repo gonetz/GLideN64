@@ -30,10 +30,16 @@ Option configOptions[] =
 	{"force bilinear", &config.texture.forceBilinear, 0},
 	{"enable 2xSAI", &config.texture.enable2xSaI, 0},
 	{"cache size", &cache.maxBytes, 64*1048576},
-	{"texture depth", &config.texture.textureBitDepth, 1},
+	{"texture bit depth", &config.texture.textureBitDepth, 1},
 	{"#Emulation Settings:", NULL, 0},
 	{"enable fog", &config.enableFog, 1},
-	{"enable HardwareFB", &config.frameBufferEmulation.enable, 0}
+	{"#Frame Buffer Settings:", NULL, 0},
+	{"enable hardware FB", &config.frameBufferEmulation.enable, 0},
+	{"enable copy Color Buffer to RDRAM", &config.frameBufferEmulation.copyToRDRAM, 0},
+	{"enable copy Depth Buffer to RDRAM", &config.frameBufferEmulation.copyDepthToRDRAM, 0},
+	{"enable copy Color Buffer from RDRAM", &config.frameBufferEmulation.copyFromRDRAM, 0},
+	{"enable ignore CFB", &config.frameBufferEmulation.ignoreCFB, 0},
+	{"enable N64 depth compare", &config.frameBufferEmulation.N64DepthCompare, 0}
 };
 
 const int configOptionsSize = sizeof(configOptions) / sizeof(Option);
