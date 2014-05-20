@@ -6,12 +6,15 @@ EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug 1964|Win32 = Debug 1964|Win32
+		Debug mupen64plus|Win32 = Debug mupen64plus|Win32
 		Debug|Win32 = Debug|Win32
 		Release|Win32 = Release|Win32
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{37D31D7F-C4E7-45B0-AEF6-D6824A243CF7}.Debug 1964|Win32.ActiveCfg = Debug 1964|Win32
 		{37D31D7F-C4E7-45B0-AEF6-D6824A243CF7}.Debug 1964|Win32.Build.0 = Debug 1964|Win32
+		{37D31D7F-C4E7-45B0-AEF6-D6824A243CF7}.Debug mupen64plus|Win32.ActiveCfg = Debug mupen64plus|Win32
+		{37D31D7F-C4E7-45B0-AEF6-D6824A243CF7}.Debug mupen64plus|Win32.Build.0 = Debug mupen64plus|Win32
 		{37D31D7F-C4E7-45B0-AEF6-D6824A243CF7}.Debug|Win32.ActiveCfg = Debug|Win32
 		{37D31D7F-C4E7-45B0-AEF6-D6824A243CF7}.Debug|Win32.Build.0 = Debug|Win32
 		{37D31D7F-C4E7-45B0-AEF6-D6824A243CF7}.Release|Win32.ActiveCfg = Release|Win32
