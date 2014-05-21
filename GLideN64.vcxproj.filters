@@ -33,9 +33,6 @@
     <ClCompile Include="Combiner.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Config.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="CRC.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -115,6 +112,12 @@
       <Filter>Source Files\Combiners</Filter>
     </ClCompile>
     <ClCompile Include="3DMath.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Config_mupen.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Config.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
