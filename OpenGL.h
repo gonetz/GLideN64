@@ -27,12 +27,7 @@
 struct GLVertex
 {
 	float x, y, z, w;
-	struct
-	{
-		float r, g, b, a;
-	} color, secondaryColor;
 	float s0, t0, s1, t1;
-	float fog;
 };
 
 struct GLInfo
@@ -41,6 +36,7 @@ struct GLInfo
 	HGLRC	hRC;
 	HDC		hDC;
 	HWND	hWnd;
+	HWND	hFullscreenWnd;
 #elif defined(USE_SDL)
 	SDL_Surface *hScreen;
 #endif // _WINDOWS
@@ -52,41 +48,87 @@ struct GLInfo
 
 	float	scaleX, scaleY;
 
-	BOOL	EXT_fog_coord;				// TNT, GeForce, Rage 128, Radeon
-	BOOL	EXT_secondary_color;		// GeForce, Radeon
+#define INDEXMAP_SIZE 64
+#define VERTBUFF_SIZE 256
+#define ELEMBUFF_SIZE 1024
 
-	int		maxTextureUnits;			// TNT = 2, GeForce = 2-4, Rage 128 = 2, Radeon = 3-6
+	struct {
+		SPVertex vertices[VERTBUFF_SIZE];
+		GLubyte elements[ELEMBUFF_SIZE];
+		int num;
 
-	BOOL	enable2xSaI;
-	BOOL	frameBufferTextures;
-	u32		textureBitDepth;
-	float	originAdjust;
 
-	GLVertex vertices[256];
-	BYTE	triangles[80][3];
+		u32 indexmap[INDEXMAP_SIZE];
+		u32 indexmapinv[VERTBUFF_SIZE];
+		u32 indexmap_prev;
+		u32 indexmap_nomap;
+
+	} triangles;
+
+
+	GLVertex rect[4];
+
+	int		maxTextureUnits; // TNT = 2, GeForce = 2-4, Rage 128 = 2, Radeon = 3-6
+
 	BYTE	numTriangles;
 	BYTE	numVertices;
-#ifdef _WINDOWS
-	HWND	hFullscreenWnd;
-#endif
 
 	BYTE	combiner;
 	enum {
 		fbNone,
 		fbFBO,
 		fbFBOEXT
-	} framebuffer_mode;
+	} framebufferMode;
+	enum {
+		rsNone = 0,
+		rsTriangle = 1,
+		rsRect = 2,
+		rsTexRect = 3,
+		rsLine = 4
+	} renderState;
 	bool bImageTexture;
 	bool captureScreen;
+
+	// Settings. TODO: Move to Settings class
 	BOOL bHWLighting;
+	BOOL enable2xSaI;
+	BOOL frameBufferTextures;
+	u32	 textureBitDepth;
+	float originAdjust;
 };
 
 extern GLInfo OGL;
 
-struct GLcolor
-{
-	float r, g, b, a;
-};
+bool OGL_Start();
+void OGL_Stop();
+
+void OGL_AddTriangle(int v0, int v1, int v2);
+void OGL_DrawTriangles();
+void OGL_DrawTriangle(SPVertex *vertices, int v0, int v1, int v2);
+void OGL_DrawLine(int v0, int v1, float width);
+void OGL_DrawRect(int ulx, int uly, int lrx, int lry, float *color);
+void OGL_DrawTexturedRect(float ulx, float uly, float lrx, float lry, float uls, float ult, float lrs, float lrt, bool flip);
+void OGL_UpdateScale();
+void OGL_ClearDepthBuffer();
+void OGL_ClearColorBuffer( float *color );
+void OGL_ResizeWindow();
+void OGL_SaveScreenshot();
+void OGL_SwapBuffers();
+void OGL_ReadScreen( void **dest, long *width, long *height );
+
+void ogl_glGenFramebuffers (GLsizei n, GLuint *framebuffers);
+void ogl_glBindFramebuffer (GLenum target, GLuint framebuffer);
+void ogl_glDeleteFramebuffers (GLsizei n, const GLuint *framebuffers);
+void ogl_glFramebufferTexture (GLenum target, GLenum attachment, GLuint texture, GLint level);
+void ogl_glGenRenderbuffers (GLsizei n, GLuint *renderbuffers);
+void ogl_glBindRenderbuffer (GLenum target, GLuint renderbuffer);
+void ogl_glRenderbufferStorage (GLenum target, GLenum internalformat, GLsizei width, GLsizei height);
+void ogl_glDeleteRenderbuffers (GLsizei n, const GLuint *renderbuffers);
+void ogl_glFramebufferRenderbuffer (GLenum target, GLenum attachment, GLenum renderbuffertarget, GLuint renderbuffer);
+void ogl_glDrawBuffers (GLsizei n, const GLenum *bufs, GLuint texture);
+GLenum ogl_glCheckFramebufferStatus (GLenum target);
+void ogl_glBlitFramebuffer(GLint srcX0, GLint srcY0, GLint srcX1, GLint srcY1, GLint dstX0, GLint dstY0, GLint dstX1, GLint dstY1, GLbitfield mask, GLenum filter);
+bool checkFBO();
 
 #ifdef _WINDOWS
 extern PFNGLCREATESHADERPROC glCreateShader;
@@ -99,7 +141,9 @@ extern PFNGLUSEPROGRAMPROC glUseProgram;
 extern PFNGLGETUNIFORMLOCATIONPROC glGetUniformLocation;
 extern PFNGLUNIFORM1IPROC glUniform1i;
 extern PFNGLUNIFORM1FPROC glUniform1f;
+extern PFNGLUNIFORM2FPROC glUniform2f;
 extern PFNGLUNIFORM4FPROC glUniform4f;
+extern PFNGLUNIFORM4FVPROC glUniform4fv;
 extern PFNGLDETACHSHADERPROC glDetachShader;
 extern PFNGLDELETESHADERPROC glDeleteShader;
 extern PFNGLDELETEPROGRAMPROC glDeleteProgram;
@@ -108,45 +152,14 @@ extern PFNGLGETSHADERINFOLOGPROC glGetShaderInfoLog;
 extern PFNGLGETSHADERIVPROC glGetShaderiv;
 extern PFNGLGETPROGRAMIVPROC glGetProgramiv;
 
-extern PFNGLSECONDARYCOLOR3FPROC glSecondaryColor3f;
-
-extern PFNGLCOMBINERPARAMETERFVNVPROC glCombinerParameterfvNV;
-extern PFNGLCOMBINERPARAMETERFNVPROC glCombinerParameterfNV;
-extern PFNGLCOMBINERPARAMETERIVNVPROC glCombinerParameterivNV;
-extern PFNGLCOMBINERPARAMETERINVPROC glCombinerParameteriNV;
-extern PFNGLCOMBINERINPUTNVPROC glCombinerInputNV;
-extern PFNGLCOMBINEROUTPUTNVPROC glCombinerOutputNV;
-extern PFNGLFINALCOMBINERINPUTNVPROC glFinalCombinerInputNV;
-extern PFNGLGETCOMBINERINPUTPARAMETERFVNVPROC glGetCombinerInputParameterfvNV;
-extern PFNGLGETCOMBINERINPUTPARAMETERIVNVPROC glGetCombinerInputParameterivNV;
-extern PFNGLGETCOMBINEROUTPUTPARAMETERFVNVPROC glGetCombinerOutputParameterfvNV;
-extern PFNGLGETCOMBINEROUTPUTPARAMETERIVNVPROC glGetCombinerOutputParameterivNV;
-extern PFNGLGETFINALCOMBINERINPUTPARAMETERFVNVPROC glGetFinalCombinerInputParameterfvNV;
-extern PFNGLGETFINALCOMBINERINPUTPARAMETERIVNVPROC glGetFinalCombinerInputParameterivNV;
+extern PFNGLENABLEVERTEXATTRIBARRAYPROC glEnableVertexAttribArray;
+extern PFNGLDISABLEVERTEXATTRIBARRAYPROC glDisableVertexAttribArray;
+extern PFNGLVERTEXATTRIBPOINTERPROC glVertexAttribPointer;
+extern PFNGLBINDATTRIBLOCATIONPROC glBindAttribLocation;
+extern PFNGLVERTEXATTRIB4FPROC glVertexAttrib4f;
+extern PFNGLVERTEXATTRIB4FVPROC glVertexAttrib4fv;
 
 extern PFNGLACTIVETEXTUREPROC glActiveTexture;
-extern PFNGLCLIENTACTIVETEXTUREPROC glClientActiveTexture;
-extern PFNGLMULTITEXCOORD2FPROC glMultiTexCoord2f;
-
-extern PFNGLSECONDARYCOLOR3FVEXTPROC glSecondaryColor3fvEXT;
-
-extern PFNGLSECONDARYCOLOR3BEXTPROC glSecondaryColor3bEXT;
-extern PFNGLSECONDARYCOLOR3BVEXTPROC glSecondaryColor3bvEXT;
-extern PFNGLSECONDARYCOLOR3DEXTPROC glSecondaryColor3dEXT;
-extern PFNGLSECONDARYCOLOR3DVEXTPROC glSecondaryColor3dvEXT;
-extern PFNGLSECONDARYCOLOR3FEXTPROC glSecondaryColor3fEXT;
-extern PFNGLSECONDARYCOLOR3FVEXTPROC glSecondaryColor3fvEXT;
-extern PFNGLSECONDARYCOLOR3IEXTPROC glSecondaryColor3iEXT;
-extern PFNGLSECONDARYCOLOR3IVEXTPROC glSecondaryColor3ivEXT;
-extern PFNGLSECONDARYCOLOR3SEXTPROC	glSecondaryColor3sEXT;
-extern PFNGLSECONDARYCOLOR3SVEXTPROC glSecondaryColor3svEXT;
-extern PFNGLSECONDARYCOLOR3UBEXTPROC glSecondaryColor3ubEXT;
-extern PFNGLSECONDARYCOLOR3UBVEXTPROC glSecondaryColor3ubvEXT;
-extern PFNGLSECONDARYCOLOR3UIEXTPROC glSecondaryColor3uiEXT;
-extern PFNGLSECONDARYCOLOR3UIVEXTPROC glSecondaryColor3uivEXT;
-extern PFNGLSECONDARYCOLOR3USEXTPROC glSecondaryColor3usEXT;
-extern PFNGLSECONDARYCOLOR3USVEXTPROC glSecondaryColor3usvEXT;
-extern PFNGLSECONDARYCOLORPOINTEREXTPROC glSecondaryColorPointerEXT;
 
 extern PFNGLDRAWBUFFERSPROC glDrawBuffers;
 extern PFNGLGENFRAMEBUFFERSPROC glGenFramebuffers;
@@ -181,34 +194,4 @@ extern PFNGLCHECKFRAMEBUFFERSTATUSEXTPROC glCheckFramebufferStatusEXT;
 extern PFNGLDELETEFRAMEBUFFERSEXTPROC glDeleteFramebuffersEXT;
 extern PFNGLBLITFRAMEBUFFEREXTPROC glBlitFramebufferEXT;
 #endif // !_WINDOWS
-
-bool OGL_Start();
-void OGL_Stop();
-void OGL_AddTriangle( SPVertex *vertices, int v0, int v1, int v2 );
-void OGL_DrawTriangles();
-void OGL_DrawLine( SPVertex *vertices, int v0, int v1, float width );
-void OGL_DrawRect( int ulx, int uly, int lrx, int lry, float *color );
-void OGL_DrawTexturedRect( float ulx, float uly, float lrx, float lry, float uls, float ult, float lrs, float lrt, bool flip );
-void OGL_UpdateScale();
-void OGL_ClearDepthBuffer();
-void OGL_ClearColorBuffer( float *color );
-void OGL_ResizeWindow();
-void OGL_SaveScreenshot();
-void OGL_SwapBuffers();
-void OGL_ReadScreen( void **dest, long *width, long *height );
-
-void ogl_glGenFramebuffers (GLsizei n, GLuint *framebuffers);
-void ogl_glBindFramebuffer (GLenum target, GLuint framebuffer);
-void ogl_glDeleteFramebuffers (GLsizei n, const GLuint *framebuffers);
-void ogl_glFramebufferTexture (GLenum target, GLenum attachment, GLuint texture, GLint level);
-void ogl_glGenRenderbuffers (GLsizei n, GLuint *renderbuffers);
-void ogl_glBindRenderbuffer (GLenum target, GLuint renderbuffer);
-void ogl_glRenderbufferStorage (GLenum target, GLenum internalformat, GLsizei width, GLsizei height);
-void ogl_glDeleteRenderbuffers (GLsizei n, const GLuint *renderbuffers);
-void ogl_glFramebufferRenderbuffer (GLenum target, GLenum attachment, GLenum renderbuffertarget, GLuint renderbuffer);
-void ogl_glDrawBuffers (GLsizei n, const GLenum *bufs, GLuint texture);
-GLenum ogl_glCheckFramebufferStatus (GLenum target);
-void ogl_glBlitFramebuffer(GLint srcX0, GLint srcY0, GLint srcX1, GLint srcY1, GLint dstX0, GLint dstY0, GLint dstX1, GLint dstY1, GLbitfield mask, GLenum filter);
-bool checkFBO();
-
 #endif

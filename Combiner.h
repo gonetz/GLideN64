@@ -114,10 +114,12 @@ struct CombineCycle
 class OGLCombiner {
 public:
 	virtual void Set() = 0;
-	virtual void UpdateColors() = 0;
-	virtual void UpdateFBInfo() = 0;
-	virtual void UpdateDepthInfo() = 0;
-	virtual void UpdateAlphaTestInfo() = 0;
+	virtual void UpdateColors(bool _bForce = false) = 0;
+	virtual void UpdateFBInfo(bool _bForce = false) = 0;
+	virtual void UpdateDepthInfo(bool _bForce = false) = 0;
+	virtual void UpdateAlphaTestInfo(bool _bForce = false) = 0;
+	virtual void UpdateTextureInfo(bool _bForce = false) = 0;
+	virtual void UpdateRenderState(bool _bForce = false) = 0;
 };
 
 struct CachedCombiner
@@ -137,7 +139,11 @@ extern struct CombinerInfo
 
 	CachedCombiner *root, *current;
 
-	BOOL usesT0, usesT1, usesLOD;
+	bool usesT0, usesT1, usesLOD, usesShadeColor, changed;
+
+	CombinerInfo() :
+		root(NULL), current(NULL), usesT0(false), usesT1(false),
+		usesShadeColor(false), changed(false) {}
 } combiner;
 
 #define SetConstant( constant, color, alpha ) \
@@ -210,6 +216,8 @@ void Combiner_UpdateCombineColors();
 void Combiner_UpdateCombineFBInfo();
 void Combiner_UpdateCombineDepthInfo();
 void Combiner_UpdateAlphaTestInfo();
+void Combiner_UpdateTextureInfo();
+void Combiner_UpdateRenderState();
 void Combiner_SetCombine( u64 mux );
 void Combiner_Destroy();
 

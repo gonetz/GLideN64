@@ -27,7 +27,9 @@ PFNGLUSEPROGRAMPROC glUseProgram;
 PFNGLGETUNIFORMLOCATIONPROC glGetUniformLocation;
 PFNGLUNIFORM1IPROC glUniform1i;
 PFNGLUNIFORM1FPROC glUniform1f;
+PFNGLUNIFORM2FPROC glUniform2f;
 PFNGLUNIFORM4FPROC glUniform4f;
+PFNGLUNIFORM4FVPROC glUniform4fv;
 PFNGLDETACHSHADERPROC glDetachShader;
 PFNGLDELETESHADERPROC glDeleteShader;
 PFNGLDELETEPROGRAMPROC glDeleteProgram;
@@ -36,12 +38,15 @@ PFNGLGETSHADERINFOLOGPROC glGetShaderInfoLog;
 PFNGLGETSHADERIVPROC glGetShaderiv;
 PFNGLGETPROGRAMIVPROC glGetProgramiv;
 
-PFNGLSECONDARYCOLOR3FPROC glSecondaryColor3f;
+PFNGLENABLEVERTEXATTRIBARRAYPROC glEnableVertexAttribArray;
+PFNGLDISABLEVERTEXATTRIBARRAYPROC glDisableVertexAttribArray;
+PFNGLVERTEXATTRIBPOINTERPROC glVertexAttribPointer;
+PFNGLBINDATTRIBLOCATIONPROC glBindAttribLocation;
+PFNGLVERTEXATTRIB4FPROC glVertexAttrib4f;
+PFNGLVERTEXATTRIB4FVPROC glVertexAttrib4fv;
 
 // multitexture functions
 PFNGLACTIVETEXTUREPROC glActiveTexture;
-PFNGLCLIENTACTIVETEXTUREPROC glClientActiveTexture;
-PFNGLMULTITEXCOORD2FPROC glMultiTexCoord2f;
 
 // EXT_fog_coord functions
 PFNGLFOGCOORDFEXTPROC glFogCoordfEXT;
@@ -49,25 +54,6 @@ PFNGLFOGCOORDFVEXTPROC glFogCoordfvEXT;
 PFNGLFOGCOORDDEXTPROC glFogCoorddEXT;
 PFNGLFOGCOORDDVEXTPROC glFogCoorddvEXT;
 PFNGLFOGCOORDPOINTEREXTPROC glFogCoordPointerEXT;
-
-// EXT_secondary_color functions
-PFNGLSECONDARYCOLOR3BEXTPROC glSecondaryColor3bEXT;
-PFNGLSECONDARYCOLOR3BVEXTPROC glSecondaryColor3bvEXT;
-PFNGLSECONDARYCOLOR3DEXTPROC glSecondaryColor3dEXT;
-PFNGLSECONDARYCOLOR3DVEXTPROC glSecondaryColor3dvEXT;
-PFNGLSECONDARYCOLOR3FEXTPROC glSecondaryColor3fEXT;
-PFNGLSECONDARYCOLOR3FVEXTPROC glSecondaryColor3fvEXT;
-PFNGLSECONDARYCOLOR3IEXTPROC glSecondaryColor3iEXT;
-PFNGLSECONDARYCOLOR3IVEXTPROC glSecondaryColor3ivEXT;
-PFNGLSECONDARYCOLOR3SEXTPROC glSecondaryColor3sEXT;
-PFNGLSECONDARYCOLOR3SVEXTPROC glSecondaryColor3svEXT;
-PFNGLSECONDARYCOLOR3UBEXTPROC glSecondaryColor3ubEXT;
-PFNGLSECONDARYCOLOR3UBVEXTPROC glSecondaryColor3ubvEXT;
-PFNGLSECONDARYCOLOR3UIEXTPROC glSecondaryColor3uiEXT;
-PFNGLSECONDARYCOLOR3UIVEXTPROC glSecondaryColor3uivEXT;
-PFNGLSECONDARYCOLOR3USEXTPROC glSecondaryColor3usEXT;
-PFNGLSECONDARYCOLOR3USVEXTPROC glSecondaryColor3usvEXT;
-PFNGLSECONDARYCOLORPOINTEREXTPROC glSecondaryColorPointerEXT;
 
 PFNGLDRAWBUFFERSPROC glDrawBuffers;
 PFNGLBINDFRAMEBUFFERPROC glBindFramebuffer;
@@ -150,7 +136,9 @@ void OGL_InitExtensions()
 	glGetUniformLocation = (PFNGLGETUNIFORMLOCATIONPROC)wglGetProcAddress("glGetUniformLocation");
 	glUniform1i = (PFNGLUNIFORM1IPROC)wglGetProcAddress("glUniform1i");
 	glUniform1f = (PFNGLUNIFORM1FPROC)wglGetProcAddress("glUniform1f");
+	glUniform2f = (PFNGLUNIFORM2FPROC)wglGetProcAddress("glUniform2f");
 	glUniform4f = (PFNGLUNIFORM4FPROC)wglGetProcAddress("glUniform4f");
+	glUniform4fv = (PFNGLUNIFORM4FVPROC)wglGetProcAddress("glUniform4fv");
 	glDetachShader = (PFNGLDETACHSHADERPROC)wglGetProcAddress("glDetachShader");
 	glDeleteShader = (PFNGLDELETESHADERPROC)wglGetProcAddress("glDeleteShader");
 	glDeleteProgram = (PFNGLDELETEPROGRAMPROC)wglGetProcAddress("glDeleteProgram");
@@ -159,51 +147,18 @@ void OGL_InitExtensions()
 	glGetShaderiv = (PFNGLGETSHADERIVPROC)wglGetProcAddress("glGetShaderiv");
 	glGetProgramiv = (PFNGLGETPROGRAMIVPROC)wglGetProcAddress("glGetProgramiv");
 
-	glSecondaryColor3f = (PFNGLSECONDARYCOLOR3FPROC)wglGetProcAddress("glSecondaryColor3f");
-#endif // _WINDOWS
+	glEnableVertexAttribArray = (PFNGLENABLEVERTEXATTRIBARRAYPROC)wglGetProcAddress("glEnableVertexAttribArray");
+	glDisableVertexAttribArray = (PFNGLDISABLEVERTEXATTRIBARRAYPROC)wglGetProcAddress("glDisableVertexAttribArray");
+	glVertexAttribPointer = (PFNGLVERTEXATTRIBPOINTERPROC)wglGetProcAddress("glVertexAttribPointer");
+	glBindAttribLocation = (PFNGLBINDATTRIBLOCATIONPROC)wglGetProcAddress("glBindAttribLocation");
+	glVertexAttrib4f = (PFNGLVERTEXATTRIB4FPROC)wglGetProcAddress("glVertexAttrib4f");
+	glVertexAttrib4fv = (PFNGLVERTEXATTRIB4FVPROC)wglGetProcAddress("glVertexAttrib4fv");
 
-#ifdef _WINDOWS
 	glActiveTexture	= (PFNGLACTIVETEXTUREPROC)wglGetProcAddress( "glActiveTexture" );
-	glClientActiveTexture = (PFNGLCLIENTACTIVETEXTUREPROC)wglGetProcAddress( "glClientActiveTexture" );
-	glMultiTexCoord2f = (PFNGLMULTITEXCOORD2FPROC)wglGetProcAddress( "glMultiTexCoord2f" );
-#endif // 
+#endif // _WINDOWS
 
 	glGetIntegerv( GL_MAX_TEXTURE_UNITS, &OGL.maxTextureUnits );
 	OGL.maxTextureUnits = min( 8, OGL.maxTextureUnits ); // The plugin only supports 8, and 4 is really enough
-
-	if (OGL.EXT_fog_coord = isExtensionSupported( "GL_EXT_fog_coord" ))
-	{
-#ifdef _WINDOWS
-		glFogCoordfEXT = (PFNGLFOGCOORDFEXTPROC)wglGetProcAddress( "glFogCoordfEXT" );
-		glFogCoordfvEXT = (PFNGLFOGCOORDFVEXTPROC)wglGetProcAddress( "glFogCoordfvEXT" );
-		glFogCoorddEXT = (PFNGLFOGCOORDDEXTPROC)wglGetProcAddress( "glFogCoorddEXT" );
-		glFogCoorddvEXT = (PFNGLFOGCOORDDVEXTPROC)wglGetProcAddress( "glFogCoorddvEXT" );
-		glFogCoordPointerEXT = (PFNGLFOGCOORDPOINTEREXTPROC)wglGetProcAddress( "glFogCoordPointerEXT" );
-#endif // _WINDOWS
-	}
-
-	if (OGL.EXT_secondary_color = isExtensionSupported( "GL_EXT_secondary_color" ))
-	{
-#ifdef _WINDOWS
-		glSecondaryColor3bEXT = (PFNGLSECONDARYCOLOR3BEXTPROC)wglGetProcAddress( "glSecondaryColor3bEXT" );
-		glSecondaryColor3bvEXT = (PFNGLSECONDARYCOLOR3BVEXTPROC)wglGetProcAddress( "glSecondaryColor3bvEXT" );
-		glSecondaryColor3dEXT = (PFNGLSECONDARYCOLOR3DEXTPROC)wglGetProcAddress( "glSecondaryColor3dEXT" );
-		glSecondaryColor3dvEXT = (PFNGLSECONDARYCOLOR3DVEXTPROC)wglGetProcAddress( "glSecondaryColor3dvEXT" );
-		glSecondaryColor3fEXT = (PFNGLSECONDARYCOLOR3FEXTPROC)wglGetProcAddress( "glSecondaryColor3fEXT" );
-		glSecondaryColor3fvEXT = (PFNGLSECONDARYCOLOR3FVEXTPROC)wglGetProcAddress( "glSecondaryColor3fvEXT" );
-		glSecondaryColor3iEXT = (PFNGLSECONDARYCOLOR3IEXTPROC)wglGetProcAddress( "glSecondaryColor3iEXT" );
-		glSecondaryColor3ivEXT = (PFNGLSECONDARYCOLOR3IVEXTPROC)wglGetProcAddress( "glSecondaryColor3ivEXT" );
-		glSecondaryColor3sEXT = (PFNGLSECONDARYCOLOR3SEXTPROC)wglGetProcAddress( "glSecondaryColor3sEXT" );
-		glSecondaryColor3svEXT = (PFNGLSECONDARYCOLOR3SVEXTPROC)wglGetProcAddress( "glSecondaryColor3svEXT" );
-		glSecondaryColor3ubEXT = (PFNGLSECONDARYCOLOR3UBEXTPROC)wglGetProcAddress( "glSecondaryColor3ubEXT" );
-		glSecondaryColor3ubvEXT = (PFNGLSECONDARYCOLOR3UBVEXTPROC)wglGetProcAddress( "glSecondaryColor3ubvEXT" );
-		glSecondaryColor3uiEXT = (PFNGLSECONDARYCOLOR3UIEXTPROC)wglGetProcAddress( "glSecondaryColor3uiEXT" );
-		glSecondaryColor3uivEXT = (PFNGLSECONDARYCOLOR3UIVEXTPROC)wglGetProcAddress( "glSecondaryColor3uivEXT" );
-		glSecondaryColor3usEXT = (PFNGLSECONDARYCOLOR3USEXTPROC)wglGetProcAddress( "glSecondaryColor3usEXT" );
-		glSecondaryColor3usvEXT = (PFNGLSECONDARYCOLOR3USVEXTPROC)wglGetProcAddress( "glSecondaryColor3usvEXT" );
-		glSecondaryColorPointerEXT = (PFNGLSECONDARYCOLORPOINTEREXTPROC)wglGetProcAddress( "glSecondaryColorPointerEXT" );
-#endif // _WINDOWS
-	}
 
 #ifdef _WINDOWS
 	glDrawBuffers = (PFNGLDRAWBUFFERSPROC)wglGetProcAddress( "glDrawBuffers" );
@@ -242,53 +197,23 @@ void OGL_InitExtensions()
 #endif // _WINDOWS
 
 	if (glGenFramebuffers != NULL)
-		OGL.framebuffer_mode = GLInfo::fbFBO;
+		OGL.framebufferMode = GLInfo::fbFBO;
 	else if (glBindFramebufferEXT != NULL)
-		OGL.framebuffer_mode = GLInfo::fbFBOEXT;
+		OGL.framebufferMode = GLInfo::fbFBOEXT;
 	else
-		OGL.framebuffer_mode = GLInfo::fbNone;
+		OGL.framebufferMode = GLInfo::fbNone;
 
 	OGL.bImageTexture = (uVersion >= 4) && (glBindImageTexture != NULL);
 }
 
 void OGL_InitStates()
 {
-	glMatrixMode( GL_PROJECTION );
-	glLoadIdentity();
-	glMatrixMode( GL_MODELVIEW );
-	glLoadIdentity();
-
-	glVertexPointer( 4, GL_FLOAT, sizeof( GLVertex ), &OGL.vertices[0].x );
-	glEnableClientState( GL_VERTEX_ARRAY );
-
-	glColorPointer( 4, GL_FLOAT, sizeof( GLVertex ), &OGL.vertices[0].color.r );
-	glEnableClientState( GL_COLOR_ARRAY );
-
-	if (OGL.EXT_secondary_color)
-	{
-		glSecondaryColorPointerEXT( 3, GL_FLOAT, sizeof( GLVertex ), &OGL.vertices[0].secondaryColor.r );
-		glEnableClientState( GL_SECONDARY_COLOR_ARRAY_EXT );
-	}
-
-	glClientActiveTexture( GL_TEXTURE0 );
-	glTexCoordPointer( 2, GL_FLOAT, sizeof( GLVertex ), &OGL.vertices[0].s0 );
-	glEnableClientState( GL_TEXTURE_COORD_ARRAY );
-
-	glClientActiveTexture( GL_TEXTURE1 );
-	glTexCoordPointer( 2, GL_FLOAT, sizeof( GLVertex ), &OGL.vertices[0].s1 );
-	glEnableClientState( GL_TEXTURE_COORD_ARRAY );
-
-	if (OGL.EXT_fog_coord)
-	{
-		glFogi( GL_FOG_COORDINATE_SOURCE_EXT, GL_FOG_COORDINATE_EXT );
-
-		glFogi( GL_FOG_MODE, GL_LINEAR );
-		glFogf( GL_FOG_START, 0.0f );
-		glFogf( GL_FOG_END, 255.0f );
-
-		glFogCoordPointerEXT( GL_FLOAT, sizeof( GLVertex ), &OGL.vertices[0].fog );
-		glEnableClientState( GL_FOG_COORDINATE_ARRAY_EXT );
-	}
+    glEnable( GL_CULL_FACE );
+    glEnableVertexAttribArray( SC_POSITION );
+    glEnable( GL_DEPTH_TEST );
+    glDepthFunc( GL_ALWAYS );
+    glDepthMask( GL_FALSE );
+    glEnable( GL_SCISSOR_TEST );
 
 	if (g_bN64DepthCompare) {
 		glDisable( GL_DEPTH_TEST );
@@ -297,6 +222,8 @@ void OGL_InitStates()
 		glDepthMask( FALSE );
 	} else
 		glPolygonOffset( -3.0f, -3.0f );
+
+	glViewport( 0, OGL.heightOffset, OGL.width, OGL.height );
 
 	glClearColor( 0.0f, 0.0f, 0.0f, 0.0f );
 	glClear( GL_COLOR_BUFFER_BIT );
@@ -546,121 +473,257 @@ void OGL_UpdateDepthUpdate()
 		glDepthMask( FALSE );
 }
 
-void OGL_UpdateStates()
+//copied from RICE VIDEO
+void OGL_SetBlendMode()
 {
-	if (gSP.changed & CHANGED_GEOMETRYMODE)
+#define BLEND_NOOP              0x0000
+#define BLEND_NOOP5             0xcc48  // Fog * 0 + Mem * 1
+#define BLEND_NOOP4             0xcc08  // Fog * 0 + In * 1
+#define BLEND_FOG_ASHADE        0xc800
+#define BLEND_FOG_3             0xc000  // Fog * AIn + In * 1-A
+#define BLEND_FOG_MEM           0xc440  // Fog * AFog + Mem * 1-A
+#define BLEND_FOG_APRIM         0xc400  // Fog * AFog + In * 1-A
+#define BLEND_BLENDCOLOR        0x8c88
+#define BLEND_BI_AFOG           0x8400  // Bl * AFog + In * 1-A
+#define BLEND_BI_AIN            0x8040  // Bl * AIn + Mem * 1-A
+#define BLEND_MEM               0x4c40  // Mem*0 + Mem*(1-0)?!
+#define BLEND_FOG_MEM_3         0x44c0  // Mem * AFog + Fog * 1-A
+#define BLEND_NOOP3             0x0c48  // In * 0 + Mem * 1
+#define BLEND_PASS              0x0c08  // In * 0 + In * 1
+#define BLEND_FOG_MEM_IN_MEM    0x0440  // In * AFog + Mem * 1-A
+#define BLEND_FOG_MEM_FOG_MEM   0x04c0  // In * AFog + Fog * 1-A
+#define BLEND_OPA               0x0044  //  In * AIn + Mem * AMem
+#define BLEND_XLU               0x0040
+#define BLEND_MEM_ALPHA_IN      0x4044  //  Mem * AIn + Mem * AMem
+
+	u32 blender = gDP.otherMode.l >> 16;
+	u32 blendmode_1 = blender&0xcccc;
+	u32 blendmode_2 = blender&0x3333;
+
+	glEnable(GL_BLEND);
+	switch(gDP.otherMode.cycleType)
 	{
-		OGL_UpdateCullFace();
+		case G_CYC_FILL:
+			glDisable(GL_BLEND);
+			break;
 
-		if ((gSP.geometryMode & G_FOG) && OGL.EXT_fog_coord && OGL.fog)
-			glEnable( GL_FOG );
-		else
-			glDisable( GL_FOG );
+		case G_CYC_COPY:
+			glBlendFunc(GL_ONE, GL_ZERO);
+			break;
 
-		gSP.changed &= ~CHANGED_GEOMETRYMODE;
+		case G_CYC_2CYCLE:
+			if (gDP.otherMode.forceBlender && gDP.otherMode.depthCompare)
+			{
+				glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+				break;
+			}
+
+			switch(blendmode_1+blendmode_2)
+			{
+				case BLEND_PASS+(BLEND_PASS>>2):    // In * 0 + In * 1
+				case BLEND_FOG_APRIM+(BLEND_PASS>>2):
+				case BLEND_FOG_MEM_FOG_MEM + (BLEND_OPA>>2):
+				case BLEND_FOG_APRIM + (BLEND_OPA>>2):
+				case BLEND_FOG_ASHADE + (BLEND_OPA>>2):
+				case BLEND_BI_AFOG + (BLEND_OPA>>2):
+				case BLEND_FOG_ASHADE + (BLEND_NOOP>>2):
+				case BLEND_NOOP + (BLEND_OPA>>2):
+				case BLEND_NOOP4 + (BLEND_NOOP>>2):
+				case BLEND_FOG_ASHADE+(BLEND_PASS>>2):
+				case BLEND_FOG_3+(BLEND_PASS>>2):
+					glDisable(GL_BLEND);
+					break;
+
+				case BLEND_PASS+(BLEND_OPA>>2):
+					if (gDP.otherMode.cvgXAlpha && gDP.otherMode.alphaCvgSel)
+						glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+					else
+						glDisable(GL_BLEND);
+					break;
+
+				case BLEND_PASS + (BLEND_XLU>>2):
+				case BLEND_FOG_ASHADE + (BLEND_XLU>>2):
+				case BLEND_FOG_APRIM + (BLEND_XLU>>2):
+				case BLEND_FOG_MEM_FOG_MEM + (BLEND_PASS>>2):
+				case BLEND_XLU + (BLEND_XLU>>2):
+				case BLEND_BI_AFOG + (BLEND_XLU>>2):
+				case BLEND_XLU + (BLEND_FOG_MEM_IN_MEM>>2):
+				case BLEND_PASS + (BLEND_FOG_MEM_IN_MEM>>2):
+					glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+					break;
+
+				case BLEND_FOG_ASHADE+0x0301:
+					glBlendFunc(GL_SRC_ALPHA, GL_ZERO);
+					break;
+
+				case 0x0c08+0x1111:
+					glBlendFunc(GL_ZERO, GL_DST_ALPHA);
+					break;
+
+				default:
+					if (blendmode_2 == (BLEND_PASS>>2))
+						glDisable(GL_BLEND);
+					else
+						glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+					break;
+				}
+				break;
+
+	default:
+
+		if (gDP.otherMode.forceBlender && gDP.otherMode.depthCompare && blendmode_1 != BLEND_FOG_ASHADE )
+		{
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+			break;
+		}
+
+		switch (blendmode_1)
+		{
+			case BLEND_XLU:
+			case BLEND_BI_AIN:
+			case BLEND_FOG_MEM:
+			case BLEND_FOG_MEM_IN_MEM:
+			case BLEND_BLENDCOLOR:
+			case 0x00c0:
+				glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+				break;
+
+			case BLEND_MEM_ALPHA_IN:
+				glBlendFunc(GL_ZERO, GL_DST_ALPHA);
+				break;
+
+			case BLEND_OPA:
+				glDisable(GL_BLEND);
+				break;
+
+			case BLEND_PASS:
+			case BLEND_NOOP:
+			case BLEND_FOG_ASHADE:
+			case BLEND_FOG_MEM_3:
+			case BLEND_BI_AFOG:
+				glDisable(GL_BLEND);
+				break;
+
+			case BLEND_FOG_APRIM:
+				glBlendFunc(GL_ONE_MINUS_SRC_ALPHA, GL_ZERO);
+				break;
+
+			case BLEND_NOOP3:
+			case BLEND_NOOP5:
+			case BLEND_MEM:
+				glBlendFunc(GL_ZERO, GL_ONE);
+				break;
+
+			default:
+				glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		}
 	}
 
-	if (gSP.geometryMode & G_ZBUFFER)
-		glEnable( GL_DEPTH_TEST );
+}
+
+void OGL_UpdateStates()
+{
+
+	if (gDP.otherMode.cycleType == G_CYC_COPY)
+		Combiner_SetCombine(EncodeCombineMode(0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0));
+	else if (gDP.otherMode.cycleType == G_CYC_FILL)
+		Combiner_SetCombine(EncodeCombineMode(0, 0, 0, SHADE, 0, 0, 0, 1, 0, 0, 0, SHADE, 0, 0, 0, 1));
 	else
-		glDisable( GL_DEPTH_TEST );
+		Combiner_SetCombine(gDP.combine.mux);
 
-	if (!g_bN64DepthCompare && (gDP.changed & CHANGED_RENDERMODE) > 0) {
-		if (gDP.otherMode.depthCompare)
+	if (!g_bN64DepthCompare && (gDP.changed & CHANGED_RENDERMODE) != 0) {
+		if (gDP.otherMode.depthCompare) {
+			glEnable( GL_DEPTH_TEST );
 			glDepthFunc( GL_LEQUAL );
-		else
-			glDepthFunc( GL_ALWAYS );
+		} else
+			glDisable(GL_DEPTH_TEST);
+	}
 
-		OGL_UpdateDepthUpdate();
+	if (gSP.changed & CHANGED_GEOMETRYMODE)
+		OGL_UpdateCullFace();
 
-		if (gDP.otherMode.depthMode == ZMODE_DEC)
-			glEnable( GL_POLYGON_OFFSET_FILL );
+	if (gDP.otherMode.depthMode == ZMODE_DEC)
+		glEnable( GL_POLYGON_OFFSET_FILL );
+	else
+		glDisable( GL_POLYGON_OFFSET_FILL );
+
+	if (gDP.changed & CHANGED_RENDERMODE || gDP.changed & CHANGED_CYCLETYPE)
+	{
+		if (gDP.otherMode.cycleType == G_CYC_1CYCLE || gDP.otherMode.cycleType == G_CYC_2CYCLE)
+		{
+			//glDepthFunc((gDP.otherMode.depthCompare) ? GL_GEQUAL : GL_ALWAYS);
+			glDepthFunc((gDP.otherMode.depthCompare) ? GL_LESS : GL_ALWAYS);
+			glDepthMask((gDP.otherMode.depthUpdate) ? GL_TRUE : GL_FALSE);
+
+			if (gDP.otherMode.depthMode == ZMODE_DEC)
+				glEnable(GL_POLYGON_OFFSET_FILL);
+		   else
+				glDisable(GL_POLYGON_OFFSET_FILL);
+		}
 		else
-			glDisable( GL_POLYGON_OFFSET_FILL );
+		{
+			glDepthFunc(GL_ALWAYS);
+			glDepthMask(GL_FALSE);
+		}
 	}
 
 	if ((gDP.changed & CHANGED_ALPHACOMPARE) || (gDP.changed & CHANGED_RENDERMODE))
-	{
-		// Enable alpha test for threshold mode
-		/*
-		if ((gDP.otherMode.alphaCompare == G_AC_THRESHOLD) && !(gDP.otherMode.alphaCvgSel))
-		{
-			glEnable( GL_ALPHA_TEST );
-
-			glAlphaFunc( (gDP.blendColor.a > 0.0f) ? GL_GEQUAL : GL_GREATER, gDP.blendColor.a );
-		}
-		// Used in TEX_EDGE and similar render modes
-		else if (gDP.otherMode.cvgXAlpha)
-		{
-			glEnable( GL_ALPHA_TEST );
-
-			// Arbitrary number -- gives nice results though
-			glAlphaFunc( GL_GEQUAL, 0.5f );
-		}
-		else
-			glDisable( GL_ALPHA_TEST );
-			*/
 		Combiner_UpdateAlphaTestInfo();
-	}
 
-	if (gDP.changed & CHANGED_SCISSOR)
-	{
-		const u32 screenHeight = (frameBuffer.top == NULL || frameBuffer.drawBuffer == GL_BACK) ? VI.height : frameBuffer.top->height;
-		glScissor( gDP.scissor.ulx * OGL.scaleX, (screenHeight - gDP.scissor.lry) * OGL.scaleY + (frameBuffer.drawBuffer == GL_BACK ? OGL.heightOffset : 0),
-			(gDP.scissor.lrx - gDP.scissor.ulx) * OGL.scaleX, (gDP.scissor.lry - gDP.scissor.uly) * OGL.scaleY );
-	}
+//	if (gDP.changed & CHANGED_SCISSOR)
+//		OGL_UpdateScissor();
 
 	if (gSP.changed & CHANGED_VIEWPORT)
-	{
 		OGL_UpdateViewport();
+
+	if ((gSP.changed & CHANGED_TEXTURE) || (gDP.changed & CHANGED_TILE) || (gDP.changed & CHANGED_TMEM))
+	{
+		//For some reason updating the texture cache on the first frame of LOZ:OOT causes a NULL Pointer exception...
+		if (combiner.current != NULL)
+		{
+			if (combiner.usesT0)
+			{
+#ifdef TEXTURECACHE_TEST
+				unsigned t = ticksGetTicks();
+				TextureCache_Update(0);
+				TextureCacheTime += (ticksGetTicks() - t);
+#else
+				TextureCache_Update(0);
+#endif
+			}
+			//else TextureCache_ActivateDummy(0);
+
+			//Note: enabling dummies makes some F-zero X textures flicker.... strange.
+
+			if (combiner.usesT1)
+			{
+#ifdef TEXTURECACHE_TEST
+				unsigned t = ticksGetTicks();
+				TextureCache_Update(1);
+				TextureCacheTime += (ticksGetTicks() - t);
+#else
+				TextureCache_Update(1);
+#endif
+			}
+			//else TextureCache_ActivateDummy(1);
+			combiner.current->compiled->UpdateTextureInfo(true);
+		}
 	}
 
-	if ((gDP.changed & CHANGED_COMBINE) || (gDP.changed & CHANGED_CYCLETYPE)) {
-		if (gDP.otherMode.cycleType == G_CYC_COPY)
-			Combiner_SetCombine( EncodeCombineMode( 0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0 ) );
-		else if (gDP.otherMode.cycleType == G_CYC_FILL)
-			Combiner_SetCombine( EncodeCombineMode( 0, 0, 0, SHADE, 0, 0, 0, SHADE, 0, 0, 0, SHADE, 0, 0, 0, SHADE ) );
-		else
-			Combiner_SetCombine( gDP.combine.mux );
-	}
-
-	if (gDP.changed & CHANGED_COMBINE_COLORS)
-		Combiner_UpdateCombineColors();
-
-	if ((gSP.changed & CHANGED_TEXTURE) || (gDP.changed & CHANGED_TILE) || (gDP.changed & CHANGED_TMEM)) {
-		if (combiner.usesT0)
-			TextureCache_Update( 0 );
-		else
-			TextureCache_ActivateDummy( 0 );
-
-		if (combiner.usesT1)
-			TextureCache_Update( 1 );
-		else
-			TextureCache_ActivateDummy( 1 );
-
-		gSP.changed &= ~CHANGED_TEXTURE;
-		gDP.changed &= ~CHANGED_TILE;
-		gDP.changed &= ~CHANGED_TMEM;
-	}
-
-	if (gDP.changed & CHANGED_FB_TEXTURE)
-		Combiner_UpdateCombineFBInfo();
-
-	if ((gDP.changed & CHANGED_RENDERMODE) || (gSP.geometryMode & G_ZBUFFER))
-		Combiner_UpdateCombineDepthInfo();
-
-	if ((gDP.changed & CHANGED_FOGCOLOR) && OGL.fog)
-		glFogfv( GL_FOG_COLOR, &gDP.fogColor.r );
-
-	if ((gDP.changed & CHANGED_RENDERMODE) || (gDP.changed & CHANGED_CYCLETYPE)) {
+	if ((gDP.changed & CHANGED_RENDERMODE) || (gDP.changed & CHANGED_CYCLETYPE))
+	{
+#ifndef OLD_BLENDMODE
+		OGL_SetBlendMode();
+#else
 		if ((gDP.otherMode.forceBlender) &&
 			(gDP.otherMode.cycleType != G_CYC_COPY) &&
 			(gDP.otherMode.cycleType != G_CYC_FILL) &&
 			!(gDP.otherMode.alphaCvgSel))
 		{
- 			glEnable( GL_BLEND );
+			glEnable( GL_BLEND );
 
-			switch (gDP.otherMode.l >> 16) {
+			switch (gDP.otherMode.l >> 16)
+			{
 				case 0x0448: // Add
 				case 0x055A:
 					glBlendFunc( GL_ONE, GL_ONE );
@@ -669,6 +732,8 @@ void OGL_UpdateStates()
 				case 0x0F0A: // Used LOTS of places
 					glBlendFunc( GL_ONE, GL_ZERO );
 					break;
+
+				case 0x0040: // Fzero
 				case 0xC810: // Blends fog
 				case 0xC811: // Blends fog
 				case 0x0C18: // Standard interpolated blend
@@ -677,6 +742,7 @@ void OGL_UpdateStates()
 				case 0x0055: // Used for antialiasing
 					glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
 					break;
+
 				case 0x0FA5: // Seems to be doing just blend color - maybe combiner can be used for this?
 				case 0x5055: // Used in Paper Mario intro, I'm not sure if this is right...
 				case 0xAF50: // LOT in Zelda: MM
@@ -684,321 +750,300 @@ void OGL_UpdateStates()
 					//clr_in * 0 + clr_mem * 1
 					glBlendFunc( GL_ZERO, GL_ONE );
 					break;
+
 				default:
+					LOG(LOG_VERBOSE, "Unhandled blend mode=%x", gDP.otherMode.l >> 16);
 					glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
 					break;
 			}
-		} else
+		}
+		else
+		{
 			glDisable( GL_BLEND );
+		}
+
+		if (gDP.otherMode.cycleType == G_CYC_FILL)
+		{
+			glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+			glEnable( GL_BLEND );
+		}
+#endif
 	}
 
 	gDP.changed &= CHANGED_TILE | CHANGED_TMEM;
 	gSP.changed &= CHANGED_TEXTURE | CHANGED_MATRIX;
 }
 
-void OGL_AddTriangle( SPVertex *vertices, int v0, int v1, int v2 )
+void OGL_AddTriangle(int v0, int v1, int v2)
 {
-	int v[] = { v0, v1, v2 };
+	OGL.triangles.elements[OGL.triangles.num++] = v0;
+	OGL.triangles.elements[OGL.triangles.num++] = v1;
+	OGL.triangles.elements[OGL.triangles.num++] = v2;
+}
 
-	if (gSP.changed || gDP.changed)
-		OGL_UpdateStates();
+void OGL_SetColorArray()
+{
+	if (combiner.usesShadeColor)
+		glEnableVertexAttribArray(SC_COLOR);
+	else
+		glDisableVertexAttribArray(SC_COLOR);
+}
 
-//	Playing around with lod fraction junk...
-//	float ds = max( max( fabs( vertices[v0].s - vertices[v1].s ), fabs( vertices[v0].s - vertices[v2].s ) ), fabs( vertices[v1].s - vertices[v2].s ) ) * cache.current[0]->shiftScaleS * gSP.texture.scales;
-//	float dx = max( max( fabs( vertices[v0].x / vertices[v0].w - vertices[v1].x / vertices[v1].w ), fabs( vertices[v0].x / vertices[v0].w - vertices[v2].x / vertices[v2].w ) ), fabs( vertices[v1].x / vertices[v1].w - vertices[v2].x / vertices[v2].w ) ) * gSP.viewport.vscale[0];
-//	float lod = ds / dx;
-//	float lod_fraction = min( 1.0f, max( 0.0f, lod - 1.0f ) / max( 1.0f, gSP.texture.level ) );
+void OGL_SetTexCoordArrays()
+{
+	if (combiner.usesT0)
+		glEnableVertexAttribArray(SC_TEXCOORD0);
+	else
+		glDisableVertexAttribArray(SC_TEXCOORD0);
 
+	if (combiner.usesT1)
+		glEnableVertexAttribArray(SC_TEXCOORD1);
+	else
+		glDisableVertexAttribArray(SC_TEXCOORD1);
 
-	for (int i = 0; i < 3; i++)
-	{
-		OGL.vertices[OGL.numVertices].x = vertices[v[i]].x;
-		OGL.vertices[OGL.numVertices].y = vertices[v[i]].y;
-		OGL.vertices[OGL.numVertices].z = gDP.otherMode.depthSource == G_ZS_PRIM ? gDP.primDepth.z * vertices[v[i]].w : vertices[v[i]].z;
-		OGL.vertices[OGL.numVertices].w = vertices[v[i]].w;
-
-		OGL.vertices[OGL.numVertices].color.r = vertices[v[i]].r;
-		OGL.vertices[OGL.numVertices].color.g = vertices[v[i]].g;
-		OGL.vertices[OGL.numVertices].color.b = vertices[v[i]].b;
-		OGL.vertices[OGL.numVertices].color.a = vertices[v[i]].a;
-		SetConstant( OGL.vertices[OGL.numVertices].color, combiner.vertex.color, combiner.vertex.alpha );
-
-		if (OGL.EXT_secondary_color)
-		{
-			if (combiner.vertex.secondaryColor == LIGHT) {
-				OGL.vertices[OGL.numVertices].secondaryColor.r = vertices[v[i]].HWLight;
-				if (combiner.usesLOD && gDP.otherMode.textureLOD == G_TL_LOD) {
-					OGL.vertices[OGL.numVertices].secondaryColor.g = vertices[v[i]].s * cache.current[0]->shiftScaleS * gSP.texture.scales / 255.0f; // 0.0f;
-					OGL.vertices[OGL.numVertices].secondaryColor.b = vertices[v[i]].t * cache.current[0]->shiftScaleT * gSP.texture.scalet / 255.0f; // 0.0f;
-				}
-				OGL.vertices[OGL.numVertices].secondaryColor.a = 1.0f;
-			} else {
-				OGL.vertices[OGL.numVertices].secondaryColor.r = 0.0f;//lod_fraction; //vertices[v[i]].r;
-				OGL.vertices[OGL.numVertices].secondaryColor.g = 0.0f;//lod_fraction; //vertices[v[i]].g;
-				OGL.vertices[OGL.numVertices].secondaryColor.b = 0.0f;//lod_fraction; //vertices[v[i]].b;
-				OGL.vertices[OGL.numVertices].secondaryColor.a = 1.0f;
-				SetConstant( OGL.vertices[OGL.numVertices].secondaryColor, combiner.vertex.secondaryColor, ONE );
-			}
-		}
-
-		if ((gSP.geometryMode & G_FOG) && OGL.EXT_fog_coord && OGL.fog)
-		{
-			if (vertices[v[i]].z < -vertices[v[i]].w)
-				OGL.vertices[OGL.numVertices].fog = max( 0.0f, -(float)gSP.fog.multiplier + (float)gSP.fog.offset );
-			else
-				OGL.vertices[OGL.numVertices].fog = max( 0.0f, vertices[v[i]].z / vertices[v[i]].w * (float)gSP.fog.multiplier + (float)gSP.fog.offset );
-		}
-
-		if (!vertices[v[i]].st_scaled) {
-			vertices[v[i]].s *= gSP.texture.scales;
-			vertices[v[i]].t *= gSP.texture.scalet;
-			if (gDP.otherMode.texturePersp == 0) {
-				vertices[v[i]].s *= 0.5f;
-				vertices[v[i]].t *= 0.5f;
-			}
-			vertices[v[i]].st_scaled = 1;
-		}
-
-		if (combiner.usesT0)
-		{
-			if (cache.current[0]->frameBufferTexture)
-			{
-/*				OGL.vertices[OGL.numVertices].s0 = (cache.current[0]->offsetS + (vertices[v[i]].s * cache.current[0]->shiftScaleS * gSP.texture.scales - gSP.textureTile[0]->fuls)) * cache.current[0]->scaleS;
-				OGL.vertices[OGL.numVertices].t0 = (cache.current[0]->offsetT - (vertices[v[i]].t * cache.current[0]->shiftScaleT * gSP.texture.scalet - gSP.textureTile[0]->fult)) * cache.current[0]->scaleT;*/
-
-				if (gSP.textureTile[0]->masks)
-					OGL.vertices[OGL.numVertices].s0 = (cache.current[0]->offsetS + (vertices[v[i]].s * cache.current[0]->shiftScaleS - fmod( gSP.textureTile[0]->fuls, 1 << gSP.textureTile[0]->masks ))) * cache.current[0]->scaleS;
-				else
-					OGL.vertices[OGL.numVertices].s0 = (cache.current[0]->offsetS + (vertices[v[i]].s * cache.current[0]->shiftScaleS - gSP.textureTile[0]->fuls)) * cache.current[0]->scaleS;
-
-				if (gSP.textureTile[0]->maskt)
-					OGL.vertices[OGL.numVertices].t0 = (cache.current[0]->offsetT - (vertices[v[i]].t * cache.current[0]->shiftScaleT - fmod( gSP.textureTile[0]->fult, 1 << gSP.textureTile[0]->maskt ))) * cache.current[0]->scaleT;
-				else
-					OGL.vertices[OGL.numVertices].t0 = (cache.current[0]->offsetT - (vertices[v[i]].t * cache.current[0]->shiftScaleT - gSP.textureTile[0]->fult)) * cache.current[0]->scaleT;
-			}
-			else
-			{
-				OGL.vertices[OGL.numVertices].s0 = (vertices[v[i]].s * cache.current[0]->shiftScaleS - gSP.textureTile[0]->fuls + cache.current[0]->offsetS) * cache.current[0]->scaleS; 
-				OGL.vertices[OGL.numVertices].t0 = (vertices[v[i]].t * cache.current[0]->shiftScaleT - gSP.textureTile[0]->fult + cache.current[0]->offsetT) * cache.current[0]->scaleT;
-			}
-		}
-
-		if (combiner.usesT1)
-		{
-			if (cache.current[1]->frameBufferTexture)
-			{
-				OGL.vertices[OGL.numVertices].s1 = (cache.current[1]->offsetS + (vertices[v[i]].s * cache.current[1]->shiftScaleS - gSP.textureTile[1]->fuls)) * cache.current[1]->scaleS;
-				OGL.vertices[OGL.numVertices].t1 = (cache.current[1]->offsetT - (vertices[v[i]].t * cache.current[1]->shiftScaleT - gSP.textureTile[1]->fult)) * cache.current[1]->scaleT;
-			}
-			else
-			{
-				OGL.vertices[OGL.numVertices].s1 = (vertices[v[i]].s * cache.current[1]->shiftScaleS - gSP.textureTile[1]->fuls + cache.current[1]->offsetS) * cache.current[1]->scaleS; 
-				OGL.vertices[OGL.numVertices].t1 = (vertices[v[i]].t * cache.current[1]->shiftScaleT - gSP.textureTile[1]->fult + cache.current[1]->offsetT) * cache.current[1]->scaleT;
-			}
-		}
-		OGL.numVertices++;
-	}
-	OGL.numTriangles++;
-
-	if (OGL.numVertices >= 255)
-		OGL_DrawTriangles();
+	if (combiner.usesT0 || combiner.usesT1)
+		glEnableVertexAttribArray(SC_STSCALED);
+	else
+		glDisableVertexAttribArray(SC_STSCALED);
 }
 
 void OGL_DrawTriangles()
 {
+	if (OGL.triangles.num == 0) return;
+
 	if (OGL.bImageTexture)
 		glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
-	glDrawArrays( GL_TRIANGLES, 0, OGL.numVertices );
-	OGL.numTriangles = OGL.numVertices = 0;
-}
-
-void OGL_DrawLine( SPVertex *vertices, int v0, int v1, float width )
-{
-	int v[] = { v0, v1 };
-
-	GLcolor color;
 
 	if (gSP.changed || gDP.changed)
 		OGL_UpdateStates();
 
-	glLineWidth( width * OGL.scaleX );
+	if (OGL.renderState != GLInfo::rsTriangle || combiner.changed)
+	{
+		OGL_SetColorArray();
+		OGL_SetTexCoordArrays();
+		glDisableVertexAttribArray(SC_TEXCOORD1);
+	}
 
-	glBegin( GL_LINES );
-		for (int i = 0; i < 2; i++)
-		{
-			color.r = vertices[v[i]].r;
-			color.g = vertices[v[i]].g;
-			color.b = vertices[v[i]].b;
-			color.a = vertices[v[i]].a;
-			SetConstant( color, combiner.vertex.color, combiner.vertex.alpha );
-			glColor4fv( &color.r );
-
-			if (OGL.EXT_secondary_color)
-			{
-				color.r = vertices[v[i]].r;
-				color.g = vertices[v[i]].g;
-				color.b = vertices[v[i]].b;
-				color.a = vertices[v[i]].a;
-				SetConstant( color, combiner.vertex.secondaryColor, combiner.vertex.alpha );
-				glSecondaryColor3fvEXT( &color.r );
-			}
-
-			glVertex4f( vertices[v[i]].x, vertices[v[i]].y, vertices[v[i]].z, vertices[v[i]].w );
+	if (OGL.renderState != GLInfo::rsTriangle)
+	{
+		glVertexAttribPointer(SC_POSITION, 4, GL_FLOAT, GL_FALSE, sizeof(SPVertex), &OGL.triangles.vertices[0].x);
+		glVertexAttribPointer(SC_COLOR, 4, GL_FLOAT, GL_FALSE, sizeof(SPVertex), &OGL.triangles.vertices[0].r);
+		glVertexAttribPointer(SC_TEXCOORD0, 2, GL_FLOAT, GL_FALSE, sizeof(SPVertex), &OGL.triangles.vertices[0].s);
+		glVertexAttribPointer(SC_STSCALED, 1, GL_BYTE, GL_FALSE, sizeof(SPVertex), &OGL.triangles.vertices[0].st_scaled);
+		if (OGL.bHWLighting) {
+			glEnableVertexAttribArray(SC_NUMLIGHTS);
+			glVertexAttribPointer(SC_NUMLIGHTS, 1, GL_BYTE, GL_FALSE, sizeof(SPVertex), &OGL.triangles.vertices[0].HWLight);
 		}
-	glEnd();
+
+		OGL_UpdateCullFace();
+		OGL_UpdateViewport();
+		glEnable(GL_SCISSOR_TEST);
+		OGL.renderState = GLInfo::rsTriangle;
+		Combiner_UpdateRenderState();
+	}
+
+	glDrawElements(GL_TRIANGLES, OGL.triangles.num, GL_UNSIGNED_BYTE, OGL.triangles.elements);
+	OGL.triangles.num = 0;
+
+#ifdef __TRIBUFFER_OPT
+	__indexmap_clear();
+#endif
+}
+
+void OGL_DrawLine(int v0, int v1, float width )
+{
+	if (gSP.changed || gDP.changed)
+		OGL_UpdateStates();
+
+	if (OGL.renderState != GLInfo::rsLine || combiner.changed)	{
+		OGL_SetColorArray();
+		glDisableVertexAttribArray(SC_TEXCOORD0);
+		glDisableVertexAttribArray(SC_TEXCOORD1);
+		glVertexAttribPointer(SC_POSITION, 4, GL_FLOAT, GL_FALSE, sizeof(SPVertex), &OGL.triangles.vertices[0].x);
+		glVertexAttribPointer(SC_COLOR, 4, GL_FLOAT, GL_FALSE, sizeof(SPVertex), &OGL.triangles.vertices[0].r);
+
+		OGL_UpdateCullFace();
+		OGL_UpdateViewport();
+		OGL.renderState = GLInfo::rsLine;
+		Combiner_UpdateRenderState();
+	}
+
+	unsigned short elem[2];
+	elem[0] = v0;
+	elem[1] = v1;
+	glLineWidth( width * OGL.scaleX );
+	glDrawElements(GL_LINES, 2, GL_UNSIGNED_SHORT, elem);
 }
 
 void OGL_DrawRect( int ulx, int uly, int lrx, int lry, float *color )
 {
-	OGL_UpdateStates();
+	if (gSP.changed || gDP.changed)
+		OGL_UpdateStates();
 
-	if (gDP.otherMode.cycleType == G_CYC_FILL) {
-		glDisable( GL_BLEND );
-		glDisable( GL_DEPTH_TEST );
-		gDP.changed |= CHANGED_RENDERMODE;
+	if (OGL.renderState != GLInfo::rsRect || combiner.changed) {
+		glDisableVertexAttribArray(SC_COLOR);
+		glDisableVertexAttribArray(SC_TEXCOORD0);
+		glDisableVertexAttribArray(SC_TEXCOORD1);
 	}
-	glDisable( GL_SCISSOR_TEST );
-	glDisable( GL_CULL_FACE );
-	glMatrixMode( GL_PROJECTION );
-    glLoadIdentity();
+
+	if (OGL.renderState != GLInfo::rsRect) {
+		glVertexAttrib4f(SC_COLOR, 0, 0, 0, 0);
+		glVertexAttrib4f(SC_POSITION, 0, 0, (gDP.otherMode.depthSource == G_ZS_PRIM) ? gDP.primDepth.z : gSP.viewport.nearz, 1.0);
+		glVertexAttribPointer(SC_POSITION, 2, GL_FLOAT, GL_FALSE, sizeof(GLVertex), &OGL.rect[0].x);
+		OGL.renderState = GLInfo::rsRect;
+		combiner.current->compiled->UpdateRenderState();
+	}
+
 	if (frameBuffer.drawBuffer != GL_FRAMEBUFFER) {
-		glOrtho( 0, VI.width, VI.height, 0, 1.0f, -1.0f );
+//		glOrtho( 0, VI.width, VI.height, 0, 1.0f, -1.0f );
 		glViewport( 0, (frameBuffer.drawBuffer == GL_BACK ? OGL.heightOffset : 0), OGL.width, OGL.height );
 	} else {
-		glOrtho( 0, frameBuffer.top->width, frameBuffer.top->height, 0, 1.0f, -1.0f );
+//		glOrtho( 0, frameBuffer.top->width, frameBuffer.top->height, 0, 1.0f, -1.0f );
 		glViewport( 0, 0, frameBuffer.top->width*frameBuffer.top->scaleX, frameBuffer.top->height*frameBuffer.top->scaleY );
 	}
+	glDisable(GL_SCISSOR_TEST);
+	glDisable(GL_CULL_FACE);
 
-	glDepthRange( 0.0f, 1.0f );
+	OGL.rect[0].x = (float) ulx * (2.0f * VI.rwidth) - 1.0;
+	OGL.rect[0].y = (float) uly * (-2.0f * VI.rheight) + 1.0;
+	OGL.rect[1].x = (float) (lrx+1) * (2.0f * VI.rwidth) - 1.0;
+	OGL.rect[1].y = OGL.rect[0].y;
+	OGL.rect[2].x = OGL.rect[0].x;
+	OGL.rect[2].y = (float) (lry+1) * (-2.0f * VI.rheight) + 1.0;
+	OGL.rect[3].x = OGL.rect[1].x;
+	OGL.rect[3].y = OGL.rect[2].y;
+//	OGL.rect[0].z = OGL.rect[1].z = OGL.rect[2].z = OGL.rect[3].z = (gDP.otherMode.depthSource == G_ZS_PRIM) ? gDP.primDepth.z : gSP.viewport.nearz;
+//	OGL.rect[0].w = OGL.rect[1].w = OGL.rect[2].w = OGL.rect[3].w = 1.0f;
 
-	glColor4f( color[0], color[1], color[2], color[3] );
-
-	glBegin( GL_QUADS );
-		glVertex4f( ulx, uly, (gDP.otherMode.depthSource == G_ZS_PRIM) ? gDP.primDepth.z : gSP.viewport.nearz, 1.0f );
-		glVertex4f( lrx, uly, (gDP.otherMode.depthSource == G_ZS_PRIM) ? gDP.primDepth.z : gSP.viewport.nearz, 1.0f );
-		glVertex4f( lrx, lry, (gDP.otherMode.depthSource == G_ZS_PRIM) ? gDP.primDepth.z : gSP.viewport.nearz, 1.0f );
-		glVertex4f( ulx, lry, (gDP.otherMode.depthSource == G_ZS_PRIM) ? gDP.primDepth.z : gSP.viewport.nearz, 1.0f );
-	glEnd();
-
-	glLoadIdentity();
-	OGL_UpdateCullFace();
+	glVertexAttrib4fv(SC_COLOR, color);
+	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+	glEnable(GL_SCISSOR_TEST);
 	OGL_UpdateViewport();
-	glEnable( GL_SCISSOR_TEST );
-	if (gSP.geometryMode & G_ZBUFFER)
-		glEnable( GL_DEPTH_TEST );
 }
 
 void GLS_SetShadowMapCombiner();
 void OGL_DrawTexturedRect( float ulx, float uly, float lrx, float lry, float uls, float ult, float lrs, float lrt, bool flip )
 {
-	GLVertex rect[2] =
-	{
-		{ ulx, uly, gDP.otherMode.depthSource == G_ZS_PRIM ? gDP.primDepth.z : gSP.viewport.nearz, 1.0f, { /*gDP.blendColor.r, gDP.blendColor.g, gDP.blendColor.b, gDP.blendColor.a */1.0f, 1.0f, 1.0f, 0.0f }, { 1.0f, 1.0f, 1.0f, 1.0f }, uls, ult, uls, ult, 0.0f },
-		{ lrx, lry, gDP.otherMode.depthSource == G_ZS_PRIM ? gDP.primDepth.z : gSP.viewport.nearz, 1.0f, { /*gDP.blendColor.r, gDP.blendColor.g, gDP.blendColor.b, gDP.blendColor.a*/1.0f, 1.0f, 1.0f, 0.0f }, { 1.0f, 1.0f, 1.0f, 1.0f }, lrs, lrt, lrs, lrt, 0.0f },
-	};
+	if (gSP.changed || gDP.changed)
+		OGL_UpdateStates();
 
-	OGL_UpdateStates();
+	if (OGL.renderState != GLInfo::rsTexRect || combiner.changed) {
+		glDisableVertexAttribArray(SC_COLOR);
+		OGL_SetTexCoordArrays();
+	}
 
-//	if ((gDP.otherMode.l >> 16) == 0x3c18 && gDP.combine.muxs0 == 0x00ffffff && gDP.combine.muxs1 == 0xfffff238) //depth image based fog
+	if (OGL.renderState != GLInfo::rsTexRect) {
+#ifdef RENDERSTATE_TEST
+		StateChanges++;
+#endif
+		glVertexAttrib4f(SC_COLOR, 0, 0, 0, 0);
+		glVertexAttrib4f(SC_POSITION, 0, 0, (gDP.otherMode.depthSource == G_ZS_PRIM) ? gDP.primDepth.z : gSP.viewport.nearz, 1.0);
+		glVertexAttribPointer(SC_POSITION, 2, GL_FLOAT, GL_FALSE, sizeof(GLVertex), &OGL.rect[0].x);
+		glVertexAttribPointer(SC_TEXCOORD0, 2, GL_FLOAT, GL_FALSE, sizeof(GLVertex), &OGL.rect[0].s0);
+		glVertexAttribPointer(SC_TEXCOORD1, 2, GL_FLOAT, GL_FALSE, sizeof(GLVertex), &OGL.rect[0].s1);
+		OGL.renderState = GLInfo::rsTexRect;
+		combiner.current->compiled->UpdateRenderState();
+	}
+
+	//	if ((gDP.otherMode.l >> 16) == 0x3c18 && gDP.combine.muxs0 == 0x00ffffff && gDP.combine.muxs1 == 0xfffff238) //depth image based fog
 	if (gSP.textureTile[0]->frameBuffer == NULL && gSP.textureTile[1]->frameBuffer == NULL && gDP.textureImage.address >= gDP.depthImageAddress &&  gDP.textureImage.address < (gDP.depthImageAddress +  gDP.colorImage.width*gDP.colorImage.width*6/4))
 		GLS_SetShadowMapCombiner();
 
-	glDisable( GL_CULL_FACE );
-	glMatrixMode( GL_PROJECTION );
-	glLoadIdentity();
 	if (frameBuffer.drawBuffer != GL_FRAMEBUFFER) {
-		glOrtho( 0, VI.width, VI.height, 0, 1.0f, -1.0f );
+//		glOrtho( 0, VI.width, VI.height, 0, 1.0f, -1.0f );
 		glViewport( 0, (frameBuffer.drawBuffer == GL_BACK ? OGL.heightOffset : 0), OGL.width, OGL.height );
 	} else {
-		glOrtho( 0, frameBuffer.top->width, frameBuffer.top->height, 0, 1.0f, -1.0f );
+//		glOrtho( 0, frameBuffer.top->width, frameBuffer.top->height, 0, 1.0f, -1.0f );
 		glViewport( 0, 0, frameBuffer.top->width*frameBuffer.top->scaleX, frameBuffer.top->height*frameBuffer.top->scaleY );
 	}
-	if (combiner.usesT0)
-	{
-		rect[0].s0 = rect[0].s0 * cache.current[0]->shiftScaleS - gSP.textureTile[0]->fuls;
-		rect[0].t0 = rect[0].t0 * cache.current[0]->shiftScaleT - gSP.textureTile[0]->fult;
-		rect[1].s0 = (rect[1].s0 + 1.0f) * cache.current[0]->shiftScaleS - gSP.textureTile[0]->fuls;
-		rect[1].t0 = (rect[1].t0 + 1.0f) * cache.current[0]->shiftScaleT - gSP.textureTile[0]->fult;
+	glDisable( GL_CULL_FACE );
 
-		if ((cache.current[0]->maskS) && (fmod( rect[0].s0, cache.current[0]->width ) == 0.0f) && !(cache.current[0]->mirrorS))
-		{
-			rect[1].s0 -= rect[0].s0;
-			rect[0].s0 = 0.0f;
+	OGL.rect[0].x = (float) ulx * (2.0f * VI.rwidth) - 1.0f;
+	OGL.rect[0].y = (float) uly * (-2.0f * VI.rheight) + 1.0f;
+	OGL.rect[1].x = (float) (lrx) * (2.0f * VI.rwidth) - 1.0f;
+	OGL.rect[1].y = OGL.rect[0].y;
+	OGL.rect[2].x = OGL.rect[0].x;
+	OGL.rect[2].y = (float) (lry) * (-2.0f * VI.rheight) + 1.0f;
+	OGL.rect[3].x = OGL.rect[1].x;
+	OGL.rect[3].y = OGL.rect[2].y;
+
+	if (combiner.usesT0 && cache.current[0] && gSP.textureTile[0]) {
+		OGL.rect[0].s0 = uls * cache.current[0]->shiftScaleS - gSP.textureTile[0]->fuls;
+		OGL.rect[0].t0 = ult * cache.current[0]->shiftScaleT - gSP.textureTile[0]->fult;
+		OGL.rect[3].s0 = (lrs + 1.0f) * cache.current[0]->shiftScaleS - gSP.textureTile[0]->fuls;
+		OGL.rect[3].t0 = (lrt + 1.0f) * cache.current[0]->shiftScaleT - gSP.textureTile[0]->fult;
+
+		if ((cache.current[0]->maskS) && !(cache.current[0]->mirrorS) && (fmod( OGL.rect[0].s0, cache.current[0]->width ) == 0.0f)) {
+			OGL.rect[3].s0 -= OGL.rect[0].s0;
+			OGL.rect[0].s0 = 0.0f;
 		}
 
-		if ((cache.current[0]->maskT) && (fmod( rect[0].t0, cache.current[0]->height ) == 0.0f) && !(cache.current[0]->mirrorT))
-		{
-			rect[1].t0 -= rect[0].t0;
-			rect[0].t0 = 0.0f;
+		if ((cache.current[0]->maskT)  && !(cache.current[0]->mirrorT) && (fmod( OGL.rect[0].t0, cache.current[0]->height ) == 0.0f)) {
+			OGL.rect[3].t0 -= OGL.rect[0].t0;
+			OGL.rect[0].t0 = 0.0f;
 		}
 
 		if (cache.current[0]->frameBufferTexture)
 		{
-			rect[0].s0 = cache.current[0]->offsetS + rect[0].s0;
-			rect[0].t0 = cache.current[0]->offsetT - rect[0].t0;
-			rect[1].s0 = cache.current[0]->offsetS + rect[1].s0;
-			rect[1].t0 = cache.current[0]->offsetT - rect[1].t0;
+			OGL.rect[0].s0 = cache.current[0]->offsetS + OGL.rect[0].s0;
+			OGL.rect[0].t0 = cache.current[0]->offsetT - OGL.rect[0].t0;
+			OGL.rect[3].s0 = cache.current[0]->offsetS + OGL.rect[3].s0;
+			OGL.rect[3].t0 = cache.current[0]->offsetT - OGL.rect[3].t0;
 		}
 
 		glActiveTexture( GL_TEXTURE0 );
 
-		if ((rect[0].s0 >= 0.0f) && (rect[1].s0 <= cache.current[0]->width))
+		if ((OGL.rect[0].s0 >= 0.0f) && (OGL.rect[3].s0 <= cache.current[0]->width))
 			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
-		//glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
-		//glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
 
-		if ((rect[0].t0 >= 0.0f) && (rect[1].t0 <= cache.current[0]->height))
+		if ((OGL.rect[0].t0 >= 0.0f) && (OGL.rect[3].t0 <= cache.current[0]->height))
 			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
 
-//		GLint height;
-
-//		glGetTexLevelParameteriv( GL_TEXTURE_2D, 0, GL_TEXTURE_HEIGHT, &height );
-
-		rect[0].s0 *= cache.current[0]->scaleS;
-		rect[0].t0 *= cache.current[0]->scaleT;
-		rect[1].s0 *= cache.current[0]->scaleS;
-		rect[1].t0 *= cache.current[0]->scaleT;
+		OGL.rect[0].s0 *= cache.current[0]->scaleS;
+		OGL.rect[0].t0 *= cache.current[0]->scaleT;
+		OGL.rect[3].s0 *= cache.current[0]->scaleS;
+		OGL.rect[3].t0 *= cache.current[0]->scaleT;
 	}
 
-	if (combiner.usesT1)
+	if (combiner.usesT1 && cache.current[1] && gSP.textureTile[1])
 	{
-		rect[0].s1 = rect[0].s1 * cache.current[1]->shiftScaleS - gSP.textureTile[1]->fuls;
-		rect[0].t1 = rect[0].t1 * cache.current[1]->shiftScaleT - gSP.textureTile[1]->fult;
-		rect[1].s1 = (rect[1].s1 + 1.0f) * cache.current[1]->shiftScaleS - gSP.textureTile[1]->fuls;
-		rect[1].t1 = (rect[1].t1 + 1.0f) * cache.current[1]->shiftScaleT - gSP.textureTile[1]->fult;
+		OGL.rect[0].s1 = uls * cache.current[1]->shiftScaleS - gSP.textureTile[1]->fuls;
+		OGL.rect[0].t1 = ult * cache.current[1]->shiftScaleT - gSP.textureTile[1]->fult;
+		OGL.rect[3].s1 = (lrs + 1.0f) * cache.current[1]->shiftScaleS - gSP.textureTile[1]->fuls;
+		OGL.rect[3].t1 = (lrt + 1.0f) * cache.current[1]->shiftScaleT - gSP.textureTile[1]->fult;
 
-		if ((cache.current[1]->maskS) && (fmod( rect[0].s1, cache.current[1]->width ) == 0.0f) && !(cache.current[1]->mirrorS))
+		if ((cache.current[1]->maskS) && (fmod( OGL.rect[0].s1, cache.current[1]->width ) == 0.0f) && !(cache.current[1]->mirrorS))
 		{
-			rect[1].s1 -= rect[0].s1;
-			rect[0].s1 = 0.0f;
+			OGL.rect[3].s1 -= OGL.rect[0].s1;
+			OGL.rect[0].s1 = 0.0f;
 		}
 
-		if ((cache.current[1]->maskT) && (fmod( rect[0].t1, cache.current[1]->height ) == 0.0f) && !(cache.current[1]->mirrorT))
+		if ((cache.current[1]->maskT) && (fmod( OGL.rect[0].t1, cache.current[1]->height ) == 0.0f) && !(cache.current[1]->mirrorT))
 		{
-			rect[1].t1 -= rect[0].t1;
-			rect[0].t1 = 0.0f;
+			OGL.rect[3].t1 -= OGL.rect[0].t1;
+			OGL.rect[0].t1 = 0.0f;
 		}
 
 		if (cache.current[1]->frameBufferTexture)
 		{
-			rect[0].s1 = cache.current[1]->offsetS + rect[0].s1;
-			rect[0].t1 = cache.current[1]->offsetT - rect[0].t1;
-			rect[1].s1 = cache.current[1]->offsetS + rect[1].s1;
-			rect[1].t1 = cache.current[1]->offsetT - rect[1].t1;
+			OGL.rect[0].s1 = cache.current[1]->offsetS + OGL.rect[0].s1;
+			OGL.rect[0].t1 = cache.current[1]->offsetT - OGL.rect[0].t1;
+			OGL.rect[3].s1 = cache.current[1]->offsetS + OGL.rect[3].s1;
+			OGL.rect[3].t1 = cache.current[1]->offsetT - OGL.rect[3].t1;
 		}
 
 		glActiveTexture( GL_TEXTURE1 );
 
-		if ((rect[0].s1 == 0.0f) && (rect[1].s1 <= cache.current[1]->width))
+		if ((OGL.rect[0].s1 == 0.0f) && (OGL.rect[3].s1 <= cache.current[1]->width))
 			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
 
-		if ((rect[0].t1 == 0.0f) && (rect[1].t1 <= cache.current[1]->height))
+		if ((OGL.rect[0].t1 == 0.0f) && (OGL.rect[3].t1 <= cache.current[1]->height))
 			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
 
-		rect[0].s1 *= cache.current[1]->scaleS;
-		rect[0].t1 *= cache.current[1]->scaleT;
-		rect[1].s1 *= cache.current[1]->scaleS;
-		rect[1].t1 *= cache.current[1]->scaleT;
+		OGL.rect[0].s1 *= cache.current[1]->scaleS;
+		OGL.rect[0].t1 *= cache.current[1]->scaleT;
+		OGL.rect[3].s1 *= cache.current[1]->scaleS;
+		OGL.rect[3].t1 *= cache.current[1]->scaleT;
 	}
 
 	if ((gDP.otherMode.cycleType == G_CYC_COPY) && !OGL.forceBilinear)
@@ -1008,35 +1053,30 @@ void OGL_DrawTexturedRect( float ulx, float uly, float lrx, float lry, float uls
 		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
 	}
 
-	SetConstant( rect[0].color, combiner.vertex.color, combiner.vertex.alpha );
+	if (flip)
+	{
+		OGL.rect[1].s0 = OGL.rect[0].s0;
+		OGL.rect[1].t0 = OGL.rect[3].t0;
+		OGL.rect[1].s1 = OGL.rect[0].s1;
+		OGL.rect[1].t1 = OGL.rect[3].t1;
+		OGL.rect[2].s0 = OGL.rect[3].s0;
+		OGL.rect[2].t0 = OGL.rect[0].t0;
+		OGL.rect[2].s1 = OGL.rect[3].s1;
+		OGL.rect[2].t1 = OGL.rect[0].t1;
+	}
+	else
+	{
+		OGL.rect[1].s0 = OGL.rect[3].s0;
+		OGL.rect[1].t0 = OGL.rect[0].t0;
+		OGL.rect[1].s1 = OGL.rect[3].s1;
+		OGL.rect[1].t1 = OGL.rect[0].t1;
+		OGL.rect[2].s0 = OGL.rect[0].s0;
+		OGL.rect[2].t0 = OGL.rect[3].t0;
+		OGL.rect[2].s1 = OGL.rect[0].s1;
+		OGL.rect[2].t1 = OGL.rect[3].t1;
+	}
 
-	if (OGL.EXT_secondary_color)
-		SetConstant( rect[0].secondaryColor, combiner.vertex.secondaryColor, combiner.vertex.alpha );
-
-	glBegin( GL_QUADS );
-		glColor4f( rect[0].color.r, rect[0].color.g, rect[0].color.b, rect[0].color.a );
-		if (OGL.EXT_secondary_color)
-			glSecondaryColor3fEXT( rect[0].secondaryColor.r, rect[0].secondaryColor.g, rect[0].secondaryColor.b );
-
-		glMultiTexCoord2f( GL_TEXTURE0, rect[0].s0, rect[0].t0 );
-		glMultiTexCoord2f( GL_TEXTURE1, rect[0].s1, rect[0].t1 );
-		glVertex4f( rect[0].x, rect[0].y, rect[0].z, 1.0f );
-
-		glMultiTexCoord2f( GL_TEXTURE0, rect[1].s0, rect[0].t0 );
-		glMultiTexCoord2f( GL_TEXTURE1, rect[1].s1, rect[0].t1 );
-		glVertex4f( rect[1].x, rect[0].y, rect[0].z, 1.0f );
-
-		glMultiTexCoord2f( GL_TEXTURE0, rect[1].s0, rect[1].t0 );
-		glMultiTexCoord2f( GL_TEXTURE1, rect[1].s1, rect[1].t1 );
-		glVertex4f( rect[1].x, rect[1].y, rect[0].z, 1.0f );
-
-		glMultiTexCoord2f( GL_TEXTURE0, rect[0].s0, rect[1].t0 );
-		glMultiTexCoord2f( GL_TEXTURE1, rect[0].s1, rect[1].t1 );
-		glVertex4f( rect[0].x, rect[1].y, rect[0].z, 1.0f );
-	glEnd();
-
-	glLoadIdentity();
-	OGL_UpdateCullFace();
+	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 	OGL_UpdateViewport();
 }
 
@@ -1175,7 +1215,7 @@ void OGL_SwapBuffers()
 }
 
 void ogl_glGenFramebuffers (GLsizei n, GLuint *framebuffers) {
-	switch (OGL.framebuffer_mode) {
+	switch (OGL.framebufferMode) {
 		case GLInfo::fbFBO:
 			glGenFramebuffers(n, framebuffers);
 		break;
@@ -1186,7 +1226,7 @@ void ogl_glGenFramebuffers (GLsizei n, GLuint *framebuffers) {
 }
 
 void ogl_glBindFramebuffer (GLenum target, GLuint framebuffer) {
-	switch (OGL.framebuffer_mode) {
+	switch (OGL.framebufferMode) {
 		case GLInfo::fbFBO:
 			glBindFramebuffer(target, framebuffer);
 		break;
@@ -1205,7 +1245,7 @@ void ogl_glBindFramebuffer (GLenum target, GLuint framebuffer) {
 }
 
 void ogl_glDeleteFramebuffers (GLsizei n, const GLuint *framebuffers) {
-	switch (OGL.framebuffer_mode) {
+	switch (OGL.framebufferMode) {
 		case GLInfo::fbFBO:
 			glDeleteFramebuffers(n, framebuffers);
 		break;
@@ -1216,7 +1256,7 @@ void ogl_glDeleteFramebuffers (GLsizei n, const GLuint *framebuffers) {
 }
 
 void ogl_glFramebufferTexture (GLenum target, GLenum attachment, GLuint texture, GLint level) {
-	switch (OGL.framebuffer_mode) {
+	switch (OGL.framebufferMode) {
 		case GLInfo::fbFBO:
 			glFramebufferTexture(target, attachment, texture, level);
 		break;
@@ -1246,7 +1286,7 @@ void ogl_glFramebufferTexture (GLenum target, GLenum attachment, GLuint texture,
 }
 
 void ogl_glGenRenderbuffers (GLsizei n, GLuint *renderbuffers) {
-	switch (OGL.framebuffer_mode) {
+	switch (OGL.framebufferMode) {
 		case GLInfo::fbFBO:
 			glGenRenderbuffers(n, renderbuffers);
 		break;
@@ -1257,7 +1297,7 @@ void ogl_glGenRenderbuffers (GLsizei n, GLuint *renderbuffers) {
 }
 
 void ogl_glBindRenderbuffer (GLenum target, GLuint renderbuffer) {
-	switch (OGL.framebuffer_mode) {
+	switch (OGL.framebufferMode) {
 		case GLInfo::fbFBO:
 			glBindRenderbuffer(target, renderbuffer);
 		break;
@@ -1273,7 +1313,7 @@ void ogl_glBindRenderbuffer (GLenum target, GLuint renderbuffer) {
 }
 
 void ogl_glRenderbufferStorage (GLenum target, GLenum internalformat, GLsizei width, GLsizei height) {
-	switch (OGL.framebuffer_mode) {
+	switch (OGL.framebufferMode) {
 		case GLInfo::fbFBO:
 			glRenderbufferStorage(target, internalformat, width, height);
 		break;
@@ -1289,7 +1329,7 @@ void ogl_glRenderbufferStorage (GLenum target, GLenum internalformat, GLsizei wi
 }
 
 void ogl_glDeleteRenderbuffers (GLsizei n, const GLuint *renderbuffers) {
-	switch (OGL.framebuffer_mode) {
+	switch (OGL.framebufferMode) {
 		case GLInfo::fbFBO:
 			glDeleteRenderbuffers(n, renderbuffers);
 		break;
@@ -1300,7 +1340,7 @@ void ogl_glDeleteRenderbuffers (GLsizei n, const GLuint *renderbuffers) {
 }
 
 void ogl_glFramebufferRenderbuffer (GLenum target, GLenum attachment, GLenum renderbuffertarget, GLuint renderbuffer) {
-	switch (OGL.framebuffer_mode) {
+	switch (OGL.framebufferMode) {
 		case GLInfo::fbFBO:
 			glFramebufferRenderbuffer(target, attachment, renderbuffertarget, renderbuffer);
 		break;
@@ -1338,7 +1378,7 @@ void ogl_glFramebufferRenderbuffer (GLenum target, GLenum attachment, GLenum ren
 }
 
 void ogl_glDrawBuffers (GLsizei n, const GLenum *bufs, GLuint texture) {
-	switch (OGL.framebuffer_mode) {
+	switch (OGL.framebufferMode) {
 		case GLInfo::fbFBO:
 			glDrawBuffers(n, bufs);
 		break;
@@ -1350,7 +1390,7 @@ void ogl_glDrawBuffers (GLsizei n, const GLenum *bufs, GLuint texture) {
 }
 
 GLenum ogl_glCheckFramebufferStatus (GLenum target) {
-	switch (OGL.framebuffer_mode) {
+	switch (OGL.framebufferMode) {
 		case GLInfo::fbFBO:
 			return glCheckFramebufferStatus(target);
 		case GLInfo::fbFBOEXT:
@@ -1417,7 +1457,7 @@ bool checkFBO() {
 }
 
 void ogl_glBlitFramebuffer(GLint srcX0, GLint srcY0, GLint srcX1, GLint srcY1, GLint dstX0, GLint dstY0, GLint dstX1, GLint dstY1, GLbitfield mask, GLenum filter) {
-	switch (OGL.framebuffer_mode) {
+	switch (OGL.framebufferMode) {
 		case GLInfo::fbFBO:
 			glBlitFramebuffer(srcX0, srcY0, srcX1, srcY1, dstX0, dstY0, dstX1, dstY1, mask, filter);
 		break;

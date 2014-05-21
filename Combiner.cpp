@@ -135,6 +135,17 @@ void Combiner_UpdateAlphaTestInfo()
 		combiner.current->compiled->UpdateAlphaTestInfo();
 }
 
+void Combiner_UpdateTextureInfo()
+{
+	if (combiner.current != NULL)
+		combiner.current->compiled->UpdateTextureInfo();
+}
+
+void Combiner_UpdateRenderState() {
+	if (combiner.current != NULL)
+		combiner.current->compiled->UpdateRenderState();
+}
+
 void Combiner_SimplifyCycle( CombineCycle *cc, CombinerStage *stage )
 {
 	// Load the first operand
@@ -306,6 +317,10 @@ DWORD64 Combiner_EncodeCombineMode( WORD saRGB0, WORD sbRGB0, WORD mRGB0, WORD a
 
 void Combiner_SelectCombine( u64 mux )
 {
+	if (combiner.current != NULL && combiner.current->combine.mux == mux) {
+		combiner.changed = false;
+		return;
+	}
 	CachedCombiner *current = combiner.root;
 	CachedCombiner *parent = current;
 
@@ -334,6 +349,7 @@ void Combiner_SelectCombine( u64 mux )
 	}
 
 	combiner.current = current;
+	combiner.changed = true;
 
 	gDP.changed |= CHANGED_COMBINE_COLORS;
 }
