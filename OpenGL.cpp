@@ -882,12 +882,6 @@ void OGL_UpdateStates()
 		{
 			glDisable( GL_BLEND );
 		}
-
-		if (gDP.otherMode.cycleType == G_CYC_FILL)
-		{
-			glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
-			glEnable( GL_BLEND );
-		}
 #endif
 	}
 
