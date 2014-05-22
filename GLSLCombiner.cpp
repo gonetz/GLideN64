@@ -9,6 +9,7 @@
 #include "Noise_shader.h"
 #include "FrameBuffer.h"
 #include "DepthBuffer.h"
+#include "Log.h"
 
 static GLuint  g_vertex_shader_object;
 static GLuint  g_calc_light_shader_object;
@@ -24,23 +25,6 @@ static GLuint  g_draw_shadow_map_program;
 GLuint g_tlut_tex = 0;
 static u32 g_paletteCRC256 = 0;
 
-static
-void display_warning(const char *text, ...)
-{
-	static int first_message = 100;
-	if (first_message)
-	{
-		char buf[1000];
-
-		va_list ap;
-
-		va_start(ap, text);
-		vsprintf(buf, text, ap);
-		va_end(ap);
-		first_message--;
-	}
-}
-
 static const GLsizei nShaderLogSize = 1024;
 static
 bool check_shader_compile_status(GLuint obj)
@@ -53,7 +37,7 @@ bool check_shader_compile_status(GLuint obj)
 		GLsizei nLogSize = nShaderLogSize;
 		glGetShaderInfoLog(obj, nShaderLogSize, &nLogSize, shader_log);
 		shader_log[nLogSize] = 0;
-		display_warning(shader_log);
+		LOG(LOG_ERROR, "shader_compile error: %s\n", shader_log);
 		return false;
 	}
 	return true;
@@ -69,7 +53,7 @@ bool check_program_link_status(GLuint obj)
 		GLsizei nLogSize = nShaderLogSize;
 		GLchar shader_log[nShaderLogSize];
 		glGetProgramInfoLog(obj, nShaderLogSize, &nLogSize, shader_log);
-		display_warning(shader_log);
+		LOG(LOG_ERROR, "shader_link error: %s\n", shader_log);
 		return false;
 	}
 	return true;
@@ -177,7 +161,8 @@ void InitGLSLCombiner()
 	g_vertex_shader_object = glCreateShader(GL_VERTEX_SHADER);
 	glShaderSource(g_vertex_shader_object, 1, &vertex_shader, NULL);
 	glCompileShader(g_vertex_shader_object);
-	assert(check_shader_compile_status(g_vertex_shader_object));
+	if (!check_shader_compile_status(g_vertex_shader_object))
+		LOG(LOG_ERROR, "Error in vertex shader\n", vertex_shader);
 
 #ifndef GLES2
 	g_calc_light_shader_object = glCreateShader(GL_FRAGMENT_SHADER);
@@ -435,9 +420,10 @@ GLSLCombiner::GLSLCombiner(Combiner *_color, Combiner *_alpha) {
 
 	GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
 	glShaderSource(fragmentShader, 1, (const GLchar**)&fragment_shader, NULL);
-	free(fragment_shader);
 	glCompileShader(fragmentShader);
-	assert(check_shader_compile_status(fragmentShader));
+	if (!check_shader_compile_status(fragmentShader))
+		LOG(LOG_ERROR, "Error in fragment shader:\n%s\n", fragment_shader);
+	free(fragment_shader);
 
 	memset(m_aShaders, 0, sizeof(m_aShaders));
 	u32 uShaderIdx = 0;
