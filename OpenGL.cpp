@@ -238,7 +238,7 @@ void OGL_UpdateScale()
 
 void OGL_ResizeWindow()
 {
-#ifdef _WINDOWS
+#if defined(_WINDOWS) && !defined(MUPENPLUSAPI)
 	RECT	windowRect, statusRect, toolRect;
 
 	if (OGL.fullscreen)
@@ -348,6 +348,7 @@ bool OGL_SDL_Start()
 
 bool OGL_Start()
 {
+#ifndef MUPENPLUSAPI
 #ifdef _WINDOWS
 	int		pixelFormat;
 
@@ -371,6 +372,9 @@ bool OGL_Start()
 		0,                                // reserved
 		0, 0, 0                           // layer masks ignored
 	};
+
+	  if ((HWND)hWnd == NULL)
+		  hWnd = GetActiveWindow();
 
 	if ((OGL.hDC = GetDC( hWnd )) == NULL)
 	{
@@ -421,7 +425,6 @@ bool OGL_Start()
 		OGL.height = config.video.windowedHeight;
 	}
 
-#ifndef GLES2
 	/* Initialize SDL */
 	printf( "[glN64]: (II) Initializing SDL video subsystem...\n" );
 	if (SDL_InitSubSystem( SDL_INIT_VIDEO ) == -1)
@@ -466,11 +469,44 @@ bool OGL_Start()
 	}
 
 	SDL_WM_SetCaption( pluginName, pluginName );
+#endif // USE_SDL
+#else  // MUPENPLUSAPI
+
+	if (OGL.fullscreen){
+		OGL.width = config.video.fullscreenWidth;
+		OGL.height = config.video.fullscreenHeight;
+	} else {
+		OGL.width = config.video.windowedWidth;
+		OGL.height = config.video.windowedHeight;
+	}
+
+#ifndef GLES2
+	CoreVideo_Init();
+	CoreVideo_GL_SetAttribute(M64P_GL_DOUBLEBUFFER, 1);
+	CoreVideo_GL_SetAttribute(M64P_GL_SWAP_CONTROL, 1);
+	CoreVideo_GL_SetAttribute(M64P_GL_BUFFER_SIZE, 16);
+	CoreVideo_GL_SetAttribute(M64P_GL_DEPTH_SIZE, 16);
+
+	printf("(II) Setting video mode %dx%d...\n", OGL.width, OGL.height);
+	if (CoreVideo_SetVideoMode(OGL.width, OGL.height, 0, OGL.fullscreen ? M64VIDEO_FULLSCREEN : M64VIDEO_WINDOWED, (m64p_video_flags) 0) != M64ERR_SUCCESS) {
+		printf("(EE) Error setting videomode %dx%d\n", OGL.width, OGL.height);
+		CoreVideo_Quit();
+		return false;
+	}
+
+	char caption[500];
+	# ifdef _DEBUG
+	sprintf(caption, "GLideN64 debug");
+	# else // _DEBUG
+	sprintf(caption, "GLideN64");
+	# endif // _DEBUG
+	CoreVideo_SetCaption(caption);
+
 #else // GLES2
 	if (!OGL_SDL_Start())
 		return false;
 #endif // GLES2
-#endif // USE_SDL
+#endif // MUPENPLUSAPI
 
 	OGL_InitExtensions();
 	OGL_InitStates();
@@ -503,6 +539,7 @@ void OGL_Stop()
 	TextureCache_Destroy();
 	OGL.renderState = GLInfo::rsNone;
 
+#ifndef MUPENPLUSAPI
 #ifdef _WINDOWS
 	wglMakeCurrent( NULL, NULL );
 
@@ -521,6 +558,16 @@ void OGL_Stop()
 	SDL_QuitSubSystem( SDL_INIT_VIDEO );
 	OGL.hScreen = NULL;
 #endif // _WINDOWS
+#else // MUPENPLUSAPI
+#ifndef GLES2
+	CoreVideo_Quit();
+#else
+#if defined(USE_SDL)
+	SDL_QuitSubSystem( SDL_INIT_VIDEO );
+	OGL.hScreen = NULL;
+#endif
+#endif // GLES2
+#endif // MUPENPLUSAPI
 }
 
 void OGL_UpdateCullFace()
@@ -1267,6 +1314,7 @@ void OGL_ReadScreen( void **dest, long *width, long *height )
 
 void OGL_SwapBuffers()
 {
+#ifndef MUPENPLUSAPI
 #ifdef _WINDOWS
 	if (OGL.hDC == NULL)
 		SwapBuffers( wglGetCurrentDC() );
@@ -1274,7 +1322,6 @@ void OGL_SwapBuffers()
 		SwapBuffers( OGL.hDC );
 #endif // _WINDOWS
 #if defined(USE_SDL)
-#ifndef GLES2
 	static int frames[5] = { 0, 0, 0, 0, 0 };
 	static int framesIndex = 0;
 	static Uint32 lastTicks = 0;
@@ -1295,10 +1342,14 @@ void OGL_SwapBuffers()
 		lastTicks = ticks;
 	}
 	SDL_GL_SwapBuffers();
+#endif // USE_SDL
+#else // MUPENPLUSAPI
+#ifndef GLES2
+   CoreVideo_GL_SwapBuffers();
 #else
 	Android_JNI_SwapWindow(); // paulscode, fix for black-screen bug
 #endif // GLES2
-#endif // USE_SDL
+#endif // MUPENPLUSAPI
 }
 
 bool checkFBO() {
