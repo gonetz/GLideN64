@@ -33,6 +33,8 @@ Option configOptions[] =
 	{"texture bit depth", &config.texture.textureBitDepth, 1},
 	{"#Emulation Settings:", NULL, 0},
 	{"enable fog", &config.enableFog, 1},
+	{"enable noise", &config.enableNoise, 1},
+	{"enable HW lighting", &config.enableHWLighting, 0},
 	{"#Frame Buffer Settings:", NULL, 0},
 	{"enable hardware FB", &config.frameBufferEmulation.enable, 0},
 	{"enable copy Color Buffer to RDRAM", &config.frameBufferEmulation.copyToRDRAM, 0},
