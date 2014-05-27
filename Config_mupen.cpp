@@ -34,6 +34,7 @@ Option configOptions[] =
 	{"#Emulation Settings:", NULL, 0},
 	{"enable fog", &config.enableFog, 1},
 	{"enable noise", &config.enableNoise, 1},
+	{"enable LOD", &config.enableLOD, 1},
 	{"enable HW lighting", &config.enableHWLighting, 0},
 	{"#Frame Buffer Settings:", NULL, 0},
 	{"enable hardware FB", &config.frameBufferEmulation.enable, 0},

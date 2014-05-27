@@ -474,6 +474,7 @@ void Config_LoadConfig()
 	config.frameBufferEmulation.copyFromRDRAM = FALSE;
 	config.frameBufferEmulation.ignoreCFB = TRUE;
 	config.frameBufferEmulation.N64DepthCompare = FALSE;
+	config.enableLOD = TRUE;
 }
 
 void Config_DoConfig()

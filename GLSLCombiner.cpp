@@ -606,7 +606,7 @@ void GLSLCombiner::UpdateColors(bool _bForce) {
 	_setFUniform(m_uniforms.uK5, gDP.convert.k5*0.0039215689f, _bForce);
 
 	if (combiner.usesLOD) {
-		int uCalcLOD = gDP.otherMode.textureLOD == G_TL_LOD ? 1 : 0;
+		int uCalcLOD = (config.enableLOD && gDP.otherMode.textureLOD == G_TL_LOD) ? 1 : 0;
 		_setIUniform(m_uniforms.uEnableLod, uCalcLOD, _bForce);
 		if (uCalcLOD) {
 			_setFUniform(m_uniforms.uLodXScale, OGL.scaleX, _bForce);
