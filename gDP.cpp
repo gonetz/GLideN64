@@ -436,7 +436,7 @@ void gDPSetTile( u32 format, u32 size, u32 line, u32 tmem, u32 tile, u32 palette
 	if (!gDP.tiles[tile].masks) gDP.tiles[tile].clamps = 1;
     if (!gDP.tiles[tile].maskt) gDP.tiles[tile].clampt = 1;
 
-	if (tile == gSP.texture.tile || gSP.texture.tile + 1) {
+	if (tile == gSP.texture.tile || tile == gSP.texture.tile + 1) {
 		u32 nTile = 7;
 		while(gDP.tiles[nTile].tmem != tmem && nTile > gSP.texture.tile + 1)
 			--nTile;
