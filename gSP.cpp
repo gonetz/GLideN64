@@ -151,32 +151,19 @@ u32 __indexmap_getnew(u32 index, u32 num)
 
 void gSPTriangle(s32 v0, s32 v1, s32 v2)
 {
-    if ((v0 < INDEXMAP_SIZE) && (v1 < INDEXMAP_SIZE) && (v2 < INDEXMAP_SIZE))
-    {
-
+	if ((v0 < INDEXMAP_SIZE) && (v1 < INDEXMAP_SIZE) && (v2 < INDEXMAP_SIZE)) {
 #ifdef __TRIBUFFER_OPT
-        v0 = OGL.triangles.indexmap[v0];
-        v1 = OGL.triangles.indexmap[v1];
-        v2 = OGL.triangles.indexmap[v2];
+		v0 = OGL.triangles.indexmap[v0];
+		v1 = OGL.triangles.indexmap[v1];
+		v2 = OGL.triangles.indexmap[v2];
 #endif
+		if (OGL.triangles.vertices[v0].clip & OGL.triangles.vertices[v1].clip & OGL.triangles.vertices[v2].clip)
+			return;
+		OGL_AddTriangle(v0, v1, v2);
+	}
 
-#if 0
-        // Don't bother with triangles completely outside clipping frustrum
-        if (config.enableClipping)
-        {
-            if (OGL.triangles.vertices[v0].clip & OGL.triangles.vertices[v1].clip & OGL.triangles.vertices[v2].clip)
-            {
-                return;
-            }
-        }
-#endif
-
-        OGL_AddTriangle(v0, v1, v2);
-
-    }
-
-    gDP.colorImage.changed = TRUE;
-    gDP.colorImage.height = (unsigned int)(max( gDP.colorImage.height, gDP.scissor.lry ));
+	gDP.colorImage.changed = TRUE;
+	gDP.colorImage.height = (unsigned int)(max( gDP.colorImage.height, gDP.scissor.lry ));
 }
 
 void gSP1Triangle( const s32 v0, const s32 v1, const s32 v2)
@@ -316,6 +303,20 @@ static void gSPBillboardVertex4_default(u32 v)
 	OGL.triangles.vertices[v+3].w += OGL.triangles.vertices[i].w;
 }
 
+void gSPClipVertex4(u32 v)
+{
+	int i;
+	for(i = 0; i < 4; i++){
+		SPVertex *vtx = &OGL.triangles.vertices[v+i];
+		vtx->clip = 0;
+		if (vtx->x > +vtx->w) vtx->clip |= CLIP_POSX;
+		if (vtx->x < -vtx->w) vtx->clip |= CLIP_NEGX;
+		if (vtx->y > +vtx->w) vtx->clip |= CLIP_POSY;
+		if (vtx->y < -vtx->w) vtx->clip |= CLIP_NEGY;
+		if (vtx->w < 0.01f)   vtx->clip |= CLIP_Z;
+	}
+}
+
 void gSPProcessVertex4(u32 v)
 {
 	if (gSP.changed & CHANGED_MATRIX)
@@ -374,6 +375,8 @@ void gSPProcessVertex4(u32 v)
 			}
 		}
 	}
+
+	gSPClipVertex4(v);
 }
 #endif
 
@@ -431,6 +434,17 @@ void gSPCombineMatrices()
     gSP.changed &= ~CHANGED_MATRIX;
 }
 
+void gSPClipVertex(u32 v)
+{
+	SPVertex *vtx = &OGL.triangles.vertices[v];
+	vtx->clip = 0;
+	if (vtx->x > +vtx->w) vtx->clip |= CLIP_POSX;
+	if (vtx->x < -vtx->w) vtx->clip |= CLIP_NEGX;
+	if (vtx->y > +vtx->w) vtx->clip |= CLIP_POSY;
+	if (vtx->y < -vtx->w) vtx->clip |= CLIP_NEGY;
+	if (vtx->w < 0.01f)   vtx->clip |= CLIP_Z;
+}
+
 void gSPProcessVertex( u32 v )
 {
 	if (gSP.changed & CHANGED_MATRIX)
@@ -454,6 +468,8 @@ void gSPProcessVertex( u32 v )
 	if (!(gSP.geometryMode & G_ZBUFFER)) {
 		OGL.triangles.vertices[v].z = -OGL.triangles.vertices[v].w;
 	}
+
+	gSPClipVertex(v);
 
 	OGL.triangles.vertices[v].HWLight = 0;
 	if (gSP.geometryMode & G_LIGHTING) {
@@ -1265,24 +1281,24 @@ void gSP1Quadrangle( s32 v0, s32 v1, s32 v2, s32 v3 )
 
 bool gSPCullVertices( u32 v0, u32 vn )
 {
-    s32 v = v0;
+	s32 v = v0;
 #ifdef __TRIBUFFER_OPT
-    v = OGL.triangles.indexmap[v0];
+	v = OGL.triangles.indexmap[v0];
 #endif
 
-    u32 clip = OGL.triangles.vertices[v].clip;
-    if (clip == 0)
-        return FALSE;
+	u32 clip = OGL.triangles.vertices[v].clip;
+	if (clip == 0)
+		return false;
 
-    for (unsigned int i = (v0+1); i <= vn; i++)
-    {
-        v = i;
+	for (unsigned int i = (v0+1); i <= vn; i++)
+	{
+		v = i;
 #ifdef __TRIBUFFER_OPT
-        v = OGL.triangles.indexmap[i];
+		v = OGL.triangles.indexmap[i];
 #endif
-        if (OGL.triangles.vertices[v].clip != clip) return FALSE;
-    }
-    return TRUE;
+		if (OGL.triangles.vertices[v].clip != clip) return FALSE;
+	}
+	return false;
 }
 
 void gSPCullDisplayList( u32 v0, u32 vn )

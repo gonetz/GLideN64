@@ -54,9 +54,9 @@ if \
 #define CLIP_NEGY   0x04
 #define CLIP_POSY   0x08
 
-#define CLIP_Z      0x30
-#define CLIP_NEGZ   0x10
-#define CLIP_POSZ   0x20
+#define CLIP_Z      0x10
+
+#define CLIP_ALL	0x1F // CLIP_NEGX|CLIP_POSX|CLIP_NEGY|CLIP_POSY|CLIP_Z
 
 #define SC_POSITION             1
 #define SC_COLOR                2
