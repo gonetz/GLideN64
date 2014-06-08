@@ -1281,24 +1281,18 @@ void gSP1Quadrangle( s32 v0, s32 v1, s32 v2, s32 v3 )
 
 bool gSPCullVertices( u32 v0, u32 vn )
 {
-	s32 v = v0;
+	u32 clip = 0;
+	for (u32 i = v0; i <= vn; i++) {
 #ifdef __TRIBUFFER_OPT
-	v = OGL.triangles.indexmap[v0];
+		const u32 v = OGL.triangles.indexmap[i];
+#else
+		const u32 v = i;
 #endif
-
-	u32 clip = OGL.triangles.vertices[v].clip;
-	if (clip == 0)
-		return false;
-
-	for (unsigned int i = (v0+1); i <= vn; i++)
-	{
-		v = i;
-#ifdef __TRIBUFFER_OPT
-		v = OGL.triangles.indexmap[i];
-#endif
-		if (OGL.triangles.vertices[v].clip != clip) return FALSE;
+		clip |= (~OGL.triangles.vertices[v].clip) & CLIP_ALL;
+		if (clip == CLIP_ALL)
+			return false;
 	}
-	return false;
+	return true;
 }
 
 void gSPCullDisplayList( u32 v0, u32 vn )
