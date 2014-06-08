@@ -61,14 +61,14 @@ private:
 	void _setFV2Uniform(fv2Uniform & _u, float _val1, float _val2, bool _force) {
 		if (_force|| _u.val[0] != _val1 || _u.val[1] != _val2) {
 			_u.val[0] = _val1;
-			_u.val[2] = _val2;
+			_u.val[1] = _val2;
 			glUniform2f(_u.loc, _val1, _val2);
 		}
 	}
 	void _setIV2Uniform(iv2Uniform & _u, int _val1, int _val2, bool _force) {
 		if (_force|| _u.val[0] != _val1 || _u.val[1] != _val2) {
 			_u.val[0] = _val1;
-			_u.val[2] = _val2;
+			_u.val[1] = _val2;
 			glUniform2i(_u.loc, _val1, _val2);
 		}
 	}
