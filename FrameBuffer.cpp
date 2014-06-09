@@ -454,6 +454,9 @@ void FrameBuffer_RenderBuffer( u32 address )
 		dstY1 -= partHeight;
 	}
 
+	// glDisable(GL_SCISSOR_TEST) does not affect glBlitFramebuffer, at least on AMD
+	glScissor( 0, 0, OGL.width, OGL.height );
+	glDisable(GL_SCISSOR_TEST);
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, current->fbo);
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 	//glDrawBuffer( GL_BACK );
@@ -480,9 +483,11 @@ void FrameBuffer_RenderBuffer( u32 address )
 			);
 		}
 	}
+	glEnable(GL_SCISSOR_TEST);
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, frameBuffer.top->fbo);
 	OGL_SwapBuffers();
+	gDP.changed |= CHANGED_SCISSOR;
 }
 #else
 
@@ -520,6 +525,7 @@ void FrameBuffer_RenderBuffer( u32 address )
 	OGL_DrawTexturedRect( 0.0f, 0.0f, width, height, 0.0f, 0.0f, width-1.0f, height-1.0f, false );
 	OGL_SwapBuffers();
 	frameBuffer.drawBuffer = GL_FRAMEBUFFER;
+	glEnable(GL_SCISSOR_TEST);
 	glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer.top->fbo);
 	gSP.changed |= CHANGED_TEXTURE | CHANGED_VIEWPORT;
 	gDP.changed |= CHANGED_COMBINE;

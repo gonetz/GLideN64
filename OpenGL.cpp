@@ -796,7 +796,7 @@ void OGL_UpdateStates()
 
 	if (gDP.changed & CHANGED_SCISSOR)
 	{
-		const u32 screenHeight = (frameBuffer.top == NULL || frameBuffer.drawBuffer == GL_BACK) ? VI.height : frameBuffer.top->height;
+		const u32 screenHeight = (frameBuffer.top == NULL || frameBuffer.top->height == 0 ||  frameBuffer.drawBuffer == GL_BACK) ? VI.height : frameBuffer.top->height;
 		glScissor( gDP.scissor.ulx * OGL.scaleX, (screenHeight - gDP.scissor.lry) * OGL.scaleY + (frameBuffer.drawBuffer == GL_BACK ? OGL.heightOffset : 0),
 			(gDP.scissor.lrx - gDP.scissor.ulx) * OGL.scaleX, (gDP.scissor.lry - gDP.scissor.uly) * OGL.scaleY );
 	}
@@ -1206,9 +1206,8 @@ void OGL_ClearDepthBuffer()
 
 	DepthBuffer_ClearBuffer();
 
-	glDisable( GL_SCISSOR_TEST );
-
 	OGL_UpdateStates();
+	glDisable( GL_SCISSOR_TEST );
 	glDepthMask( TRUE );
 	glClear( GL_DEPTH_BUFFER_BIT );
 
