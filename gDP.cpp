@@ -15,6 +15,8 @@
 #include "VI.h"
 #include "Config.h"
 
+#define DEPTH_CLEAR_COLOR 0xfffcfffc // The value usually used to clear depth buffer
+
 gDPInfo gDP;
 
 void gDPSetOtherMode( u32 mode0, u32 mode1 )
@@ -519,7 +521,7 @@ bool CheckForFrameBufferTexture(u32 _address, u32 _bytes)
 			bRes = false;
 		}
 
-		if (bRes && pBuffer->cleared && pBuffer->size == 2) {
+		if (bRes && pBuffer->cleared && pBuffer->size == 2 && pBuffer->fillcolor != DEPTH_CLEAR_COLOR) {
 			const u32 endAddress = min(texEndAddress, pBuffer->endAddress);
 			const u32 color = pBuffer->fillcolor&0xFFFEFFFE;
 			for (u32 i = _address + 4; i < endAddress; i+=4) {
@@ -739,7 +741,6 @@ void gDPSetScissor( u32 mode, f32 ulx, f32 uly, f32 lrx, f32 lry )
 #endif
 }
 
-#define DEPTH_CLEAR_COLOR 0xfffcfffc // The value usually used to clear depth buffer
 const bool g_bDepthClearOnly = false;
 void gDPFillRDRAM(u32 address, s32 ulx, s32 uly, s32 lrx, s32 lry, u32 width, u32 size,  u32 color )
 {
