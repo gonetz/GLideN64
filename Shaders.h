@@ -87,9 +87,11 @@ static const char* vertex_shader =
 "        texCoord1 -= uTexOffset[1];							\n"
 "    vTexCoord1 = (uCacheOffset[1] + texCoord1)* uCacheScale[1];\n"
 "    vLodTexCoord = texCoord * uCacheShiftScale[0];				\n"
+"    vNumLights = aNumLights;									\n"
 "  } else {														\n"
 "    vTexCoord0 = aTexCoord0;									\n"
 "    vTexCoord1 = aTexCoord1;									\n"
+"    vNumLights = 0.0;											\n"
 "  }															\n"
 "  vNoiseCoord2D = vec2(gl_Position.x*uScreenWidth, gl_Position.y*uScreenHeight + uNoiseTime);\n"
 "  if (aPosition.z < -aPosition.w)								\n"
@@ -98,7 +100,6 @@ static const char* vertex_shader =
 "    vFogFragCoord = aPosition.z/aPosition.w * uFogMultiplier	\n"
 "	                   + uFogOffset;							\n"
 "  vFogFragCoord = clamp(vFogFragCoord, 0.0, 1.0);			\n"
-"  vNumLights = aNumLights;										\n"
 "}																\n"
 ;
 
