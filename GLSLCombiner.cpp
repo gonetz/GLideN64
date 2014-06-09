@@ -223,7 +223,7 @@ const char *ColorInput[] = {
 	"uEnvColor.a",
 	"lod_frac", // TODO: emulate lod_fraction
 	"vec3(uPrimLod)",
-	"vec3(0.5 + 0.5*snoise(noiseCoord2D))",
+	"vec3(0.5 + 0.5*snoise(vNoiseCoord2D))",
 	"vec3(uK4)",
 	"vec3(uK5)",
 	"vec3(1.0)",
@@ -247,7 +247,7 @@ const char *AlphaInput[] = {
 	"uEnvColor.a",
 	"lod_frac",
 	"uPrimLod",
-	"1.0",
+	"0.5 + 0.5*snoise(vNoiseCoord2D)",
 	"uK4",
 	"uK5",
 	"1.0",
