@@ -521,7 +521,10 @@ bool CheckForFrameBufferTexture(u32 _address, u32 _bytes)
 			bRes = false;
 		}
 
-		if (bRes && pBuffer->cleared && pBuffer->size == 2 && pBuffer->fillcolor != DEPTH_CLEAR_COLOR) {
+		if (bRes && pBuffer->cleared && pBuffer->size == 2
+			&& !config.frameBufferEmulation.copyToRDRAM
+			&& (!config.frameBufferEmulation.copyDepthToRDRAM || pBuffer->fillcolor != DEPTH_CLEAR_COLOR)
+		) {
 			const u32 endAddress = min(texEndAddress, pBuffer->endAddress);
 			const u32 color = pBuffer->fillcolor&0xFFFEFFFE;
 			for (u32 i = _address + 4; i < endAddress; i+=4) {
