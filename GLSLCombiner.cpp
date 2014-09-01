@@ -559,10 +559,6 @@ void GLSLCombiner::Set() {
 	combiner.usesLOD = (m_nInputs & (1<<LOD_FRACTION)) != 0;
 	combiner.usesShadeColor = (m_nInputs & ((1<<SHADE)|(1<<SHADE_ALPHA))) != 0;
 
-	combiner.vertex.color = COMBINED;
-	combiner.vertex.alpha = COMBINED;
-	combiner.vertex.secondaryColor = LIGHT;
-
 	glUseProgram(m_program);
 
 	_setIUniform(m_uniforms.uTex0, 0, true);

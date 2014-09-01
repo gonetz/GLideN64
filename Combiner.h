@@ -133,11 +133,6 @@ struct CachedCombiner
 
 extern struct CombinerInfo
 {
-	struct
-	{
-		WORD color, secondaryColor, alpha;
-	} vertex;
-
 	CachedCombiner *root, *current;
 
 	bool usesT0, usesT1, usesLOD, usesShadeColor, changed;
