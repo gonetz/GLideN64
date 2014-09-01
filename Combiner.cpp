@@ -4,8 +4,6 @@
 #include "Debug.h"
 #include "gDP.h"
 
-CombinerInfo combiner;
-
 static int saRGBExpanded[] = 
 {
 	COMBINED,			TEXEL0,				TEXEL1,				PRIMITIVE,		
@@ -107,43 +105,43 @@ static DWORD64 ACEncodeD[] =
 void Combiner_Init()
 {
 	InitGLSLCombiner();
-	combiner.root = NULL;
-	combiner.current = NULL;
+	CombinerInfo::get().root = NULL;
+	CombinerInfo::get().current = NULL;
 }
 
 void Combiner_UpdateCombineColors()
 {
-	combiner.current->compiled->UpdateColors();
+	CombinerInfo::get().current->compiled->UpdateColors();
 	gDP.changed &= ~CHANGED_COMBINE_COLORS;
 }
 
 void Combiner_UpdateCombineFBInfo()
 {
-	combiner.current->compiled->UpdateFBInfo(true);
+	CombinerInfo::get().current->compiled->UpdateFBInfo(true);
 	gDP.changed &= ~CHANGED_FB_TEXTURE;
 }
 
 void Combiner_UpdateCombineDepthInfo()
 {
-	if (combiner.current != NULL)
-		combiner.current->compiled->UpdateDepthInfo(true);
+	if (CombinerInfo::get().current != NULL)
+		CombinerInfo::get().current->compiled->UpdateDepthInfo(true);
 }
 
 void Combiner_UpdateAlphaTestInfo()
 {
-	if (combiner.current != NULL)
-		combiner.current->compiled->UpdateAlphaTestInfo();
+	if (CombinerInfo::get().current != NULL)
+		CombinerInfo::get().current->compiled->UpdateAlphaTestInfo();
 }
 
 void Combiner_UpdateTextureInfo()
 {
-	if (combiner.current != NULL)
-		combiner.current->compiled->UpdateTextureInfo();
+	if (CombinerInfo::get().current != NULL)
+		CombinerInfo::get().current->compiled->UpdateTextureInfo();
 }
 
 void Combiner_UpdateRenderState() {
-	if (combiner.current != NULL)
-		combiner.current->compiled->UpdateRenderState();
+	if (CombinerInfo::get().current != NULL)
+		CombinerInfo::get().current->compiled->UpdateRenderState();
 }
 
 void Combiner_SimplifyCycle( CombineCycle *cc, CombinerStage *stage )
@@ -291,10 +289,10 @@ void Combiner_Destroy()
 {
 	DestroyGLSLCombiner();
 
-	if (combiner.root)
+	if (CombinerInfo::get().root)
 	{
-		Combiner_DeleteCombiner( combiner.root );
-		combiner.root = NULL;
+		Combiner_DeleteCombiner( CombinerInfo::get().root );
+		CombinerInfo::get().root = NULL;
 	}
 }
 
@@ -311,11 +309,11 @@ DWORD64 Combiner_EncodeCombineMode( WORD saRGB0, WORD sbRGB0, WORD mRGB0, WORD a
 
 void Combiner_SelectCombine( u64 mux )
 {
-	if (combiner.current != NULL && combiner.current->combine.mux == mux) {
-		combiner.changed = false;
+	if (CombinerInfo::get().current != NULL && CombinerInfo::get().current->combine.mux == mux) {
+		CombinerInfo::get().changed = false;
 		return;
 	}
-	CachedCombiner *current = combiner.root;
+	CachedCombiner *current = CombinerInfo::get().root;
 	CachedCombiner *parent = current;
 
 	while (current)
@@ -335,22 +333,22 @@ void Combiner_SelectCombine( u64 mux )
 		current = Combiner_Compile( mux );
 
 		if (parent == NULL)
-			combiner.root = current;
+			CombinerInfo::get().root = current;
 		else if (parent->combine.mux > current->combine.mux)
 			parent->left = current;
 		else
 			parent->right = current;
 	}
 
-	combiner.current = current;
-	combiner.changed = true;
+	CombinerInfo::get().current = current;
+	CombinerInfo::get().changed = true;
 
 	gDP.changed |= CHANGED_COMBINE_COLORS;
 }
 
 void Combiner_SetCombineStates()
 {
-	combiner.current->compiled->Set();
+	CombinerInfo::get().current->compiled->Set();
 }
 
 void Combiner_SetCombine( u64 mux )

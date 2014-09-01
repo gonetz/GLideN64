@@ -765,7 +765,7 @@ void OGL_UpdateStates()
 		OGL_UpdateCullFace();
 
 	if (gSP.changed & CHANGED_LIGHT)
-		combiner.current->compiled->UpdateLight();
+		CombinerInfo::get().current->compiled->UpdateLight();
 
 	if (config.frameBufferEmulation.N64DepthCompare) {
 		glDisable( GL_DEPTH_TEST );
@@ -807,20 +807,20 @@ void OGL_UpdateStates()
 	if ((gSP.changed & CHANGED_TEXTURE) || (gDP.changed & CHANGED_TILE) || (gDP.changed & CHANGED_TMEM))
 	{
 		//For some reason updating the texture cache on the first frame of LOZ:OOT causes a NULL Pointer exception...
-		if (combiner.current != NULL)
+		if (CombinerInfo::get().current != NULL)
 		{
-			if (combiner.usesT0)
+			if (CombinerInfo::get().usesT0)
 				TextureCache_Update(0);
 			else
 				TextureCache_ActivateDummy(0);
 
 			//Note: enabling dummies makes some F-zero X textures flicker.... strange.
 
-			if (combiner.usesT1)
+			if (CombinerInfo::get().usesT1)
 				TextureCache_Update(1);
 			else
 				TextureCache_ActivateDummy(1);
-			combiner.current->compiled->UpdateTextureInfo(true);
+			CombinerInfo::get().current->compiled->UpdateTextureInfo(true);
 		}
 	}
 
@@ -898,7 +898,7 @@ void OGL_AddTriangle(int v0, int v1, int v2)
 
 void OGL_SetColorArray()
 {
-	if (combiner.usesShadeColor)
+	if (CombinerInfo::get().usesShadeColor)
 		glEnableVertexAttribArray(SC_COLOR);
 	else
 		glDisableVertexAttribArray(SC_COLOR);
@@ -906,17 +906,17 @@ void OGL_SetColorArray()
 
 void OGL_SetTexCoordArrays()
 {
-	if (combiner.usesT0)
+	if (CombinerInfo::get().usesT0)
 		glEnableVertexAttribArray(SC_TEXCOORD0);
 	else
 		glDisableVertexAttribArray(SC_TEXCOORD0);
 
-	if (combiner.usesT1)
+	if (CombinerInfo::get().usesT1)
 		glEnableVertexAttribArray(SC_TEXCOORD1);
 	else
 		glDisableVertexAttribArray(SC_TEXCOORD1);
 
-	if (OGL.renderState == GLInfo::rsTriangle && (combiner.usesT0 || combiner.usesT1))
+	if (OGL.renderState == GLInfo::rsTriangle && (CombinerInfo::get().usesT0 || CombinerInfo::get().usesT1))
 		glEnableVertexAttribArray(SC_STSCALED);
 	else
 		glDisableVertexAttribArray(SC_STSCALED);
@@ -935,7 +935,7 @@ void OGL_DrawTriangles()
 		OGL_UpdateStates();
 
 	const bool updateArrays = OGL.renderState != GLInfo::rsTriangle;
-	if (updateArrays || combiner.changed) {
+	if (updateArrays || CombinerInfo::get().changed) {
 		OGL.renderState = GLInfo::rsTriangle;
 		OGL_SetColorArray();
 		OGL_SetTexCoordArrays();
@@ -958,8 +958,8 @@ void OGL_DrawTriangles()
 		Combiner_UpdateRenderState();
 	}
 
-	combiner.current->compiled->UpdateColors(true);
-	combiner.current->compiled->UpdateLight(true);
+	CombinerInfo::get().current->compiled->UpdateColors(true);
+	CombinerInfo::get().current->compiled->UpdateLight(true);
 	glDrawElements(GL_TRIANGLES, OGL.triangles.num, GL_UNSIGNED_BYTE, OGL.triangles.elements);
 	OGL.triangles.num = 0;
 
@@ -973,7 +973,7 @@ void OGL_DrawLine(int v0, int v1, float width )
 	if (gSP.changed || gDP.changed)
 		OGL_UpdateStates();
 
-	if (OGL.renderState != GLInfo::rsLine || combiner.changed)	{
+	if (OGL.renderState != GLInfo::rsLine || CombinerInfo::get().changed)	{
 		OGL_SetColorArray();
 		glDisableVertexAttribArray(SC_TEXCOORD0);
 		glDisableVertexAttribArray(SC_TEXCOORD1);
@@ -999,7 +999,7 @@ void OGL_DrawRect( int ulx, int uly, int lrx, int lry, float *color )
 		OGL_UpdateStates();
 
 	const bool updateArrays = OGL.renderState != GLInfo::rsRect;
-	if (updateArrays || combiner.changed) {
+	if (updateArrays || CombinerInfo::get().changed) {
 		OGL.renderState = GLInfo::rsRect;
 		glDisableVertexAttribArray(SC_COLOR);
 		glDisableVertexAttribArray(SC_TEXCOORD0);
@@ -1011,7 +1011,7 @@ void OGL_DrawRect( int ulx, int uly, int lrx, int lry, float *color )
 		glVertexAttrib4f(SC_COLOR, 0, 0, 0, 0);
 		glVertexAttrib4f(SC_POSITION, 0, 0, (gDP.otherMode.depthSource == G_ZS_PRIM) ? gDP.primDepth.z : gSP.viewport.nearz, 1.0);
 		glVertexAttribPointer(SC_POSITION, 2, GL_FLOAT, GL_FALSE, sizeof(GLVertex), &OGL.rect[0].x);
-		combiner.current->compiled->UpdateRenderState();
+		CombinerInfo::get().current->compiled->UpdateRenderState();
 	}
 
 	if (frameBuffer.drawBuffer != GL_FRAMEBUFFER)
@@ -1045,7 +1045,7 @@ void OGL_DrawTexturedRect( float ulx, float uly, float lrx, float lry, float uls
 		OGL_UpdateStates();
 
 	const bool updateArrays = OGL.renderState != GLInfo::rsTexRect;
-	if (updateArrays || combiner.changed) {
+	if (updateArrays || CombinerInfo::get().changed) {
 		OGL.renderState = GLInfo::rsTexRect;
 		glDisableVertexAttribArray(SC_COLOR);
 		OGL_SetTexCoordArrays();
@@ -1060,7 +1060,7 @@ void OGL_DrawTexturedRect( float ulx, float uly, float lrx, float lry, float uls
 		glVertexAttribPointer(SC_POSITION, 2, GL_FLOAT, GL_FALSE, sizeof(GLVertex), &OGL.rect[0].x);
 		glVertexAttribPointer(SC_TEXCOORD0, 2, GL_FLOAT, GL_FALSE, sizeof(GLVertex), &OGL.rect[0].s0);
 		glVertexAttribPointer(SC_TEXCOORD1, 2, GL_FLOAT, GL_FALSE, sizeof(GLVertex), &OGL.rect[0].s1);
-		combiner.current->compiled->UpdateRenderState();
+		CombinerInfo::get().current->compiled->UpdateRenderState();
 	}
 
 #ifndef GLES2
@@ -1086,7 +1086,7 @@ void OGL_DrawTexturedRect( float ulx, float uly, float lrx, float lry, float uls
 	OGL.rect[3].x = OGL.rect[1].x;
 	OGL.rect[3].y = OGL.rect[2].y;
 
-	if (combiner.usesT0 && cache.current[0] && gSP.textureTile[0]) {
+	if (CombinerInfo::get().usesT0 && cache.current[0] && gSP.textureTile[0]) {
 		OGL.rect[0].s0 = uls * cache.current[0]->shiftScaleS - gSP.textureTile[0]->fuls;
 		OGL.rect[0].t0 = ult * cache.current[0]->shiftScaleT - gSP.textureTile[0]->fult;
 		OGL.rect[3].s0 = (lrs + 1.0f) * cache.current[0]->shiftScaleS - gSP.textureTile[0]->fuls;
@@ -1124,7 +1124,7 @@ void OGL_DrawTexturedRect( float ulx, float uly, float lrx, float lry, float uls
 		OGL.rect[3].t0 *= cache.current[0]->scaleT;
 	}
 
-	if (combiner.usesT1 && cache.current[1] && gSP.textureTile[1])
+	if (CombinerInfo::get().usesT1 && cache.current[1] && gSP.textureTile[1])
 	{
 		OGL.rect[0].s1 = uls * cache.current[1]->shiftScaleS - gSP.textureTile[1]->fuls;
 		OGL.rect[0].t1 = ult * cache.current[1]->shiftScaleT - gSP.textureTile[1]->fult;

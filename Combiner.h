@@ -131,16 +131,23 @@ struct CachedCombiner
 	CachedCombiner *left, *right;
 };
 
-extern struct CombinerInfo
+class CombinerInfo
 {
+public:
 	CachedCombiner *root, *current;
 
 	bool usesT0, usesT1, usesLOD, usesShadeColor, changed;
 
+	static CombinerInfo & get() {
+		static CombinerInfo info;
+		return info;
+	}
+
+private:
 	CombinerInfo() :
 		root(NULL), current(NULL), usesT0(false), usesT1(false),
 		usesShadeColor(false), changed(false) {}
-} combiner;
+};
 
 void Combiner_Init();
 void Combiner_UpdateCombineColors();
