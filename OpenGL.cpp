@@ -206,12 +206,12 @@ void OGL_InitExtensions()
 
 void OGL_InitStates()
 {
-    glEnable( GL_CULL_FACE );
-    glEnableVertexAttribArray( SC_POSITION );
-    glEnable( GL_DEPTH_TEST );
-    glDepthFunc( GL_ALWAYS );
-    glDepthMask( GL_FALSE );
-    glEnable( GL_SCISSOR_TEST );
+	glEnable( GL_CULL_FACE );
+	glEnableVertexAttribArray( SC_POSITION );
+	glEnable( GL_DEPTH_TEST );
+	glDepthFunc( GL_ALWAYS );
+	glDepthMask( GL_FALSE );
+	glEnable( GL_SCISSOR_TEST );
 
 	if (config.frameBufferEmulation.N64DepthCompare) {
 		glDisable( GL_DEPTH_TEST );

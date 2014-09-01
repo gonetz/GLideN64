@@ -439,7 +439,7 @@ void gDPSetTile( u32 format, u32 size, u32 line, u32 tmem, u32 tile, u32 palette
 	gDP.tiles[tile].shifts = shifts;
 
 	if (!gDP.tiles[tile].masks) gDP.tiles[tile].clamps = 1;
-    if (!gDP.tiles[tile].maskt) gDP.tiles[tile].clampt = 1;
+	if (!gDP.tiles[tile].maskt) gDP.tiles[tile].clampt = 1;
 
 	if (tile == gSP.texture.tile || tile == gSP.texture.tile + 1) {
 		u32 nTile = 7;
@@ -614,7 +614,7 @@ void gDPLoadTile( u32 tile, u32 uls, u32 ult, u32 lrs, u32 lrt )
 		if (y & 1) Interleave( dest, line );
 
 		src += gDP.textureImage.bpl;
- 		dest += line;
+		dest += line;
 	}
 
 #ifdef DEBUG
@@ -630,11 +630,11 @@ void gDPLoadBlock( u32 tile, u32 uls, u32 ult, u32 lrs, u32 dxt )
 	gDP.loadTile->loadType = LOADTYPE_BLOCK;
 	gDP.loadTile->imageAddress = gDP.textureImage.address;
 
- 	u32 bytes = (lrs + 1) << gDP.loadTile->size >> 1;
+	u32 bytes = (lrs + 1) << gDP.loadTile->size >> 1;
 	u32 address = gDP.textureImage.address + ult * gDP.textureImage.bpl + (uls << gDP.textureImage.size >> 1);
 
-	if ((bytes == 0) || 
-		((address + bytes) > RDRAMSize) || 
+	if ((bytes == 0) ||
+		((address + bytes) > RDRAMSize) ||
 		(((gDP.loadTile->tmem << 3) + bytes) > 4096))
 	{
 #ifdef DEBUG
@@ -690,10 +690,10 @@ void gDPLoadTLUT( u32 tile, u32 uls, u32 ult, u32 lrs, u32 lrt )
 {
 	gDPSetTileSize( tile, uls, ult, lrs, lrt );
 
-    u16 count = (u16)((gDP.tiles[tile].lrs - gDP.tiles[tile].uls + 1) * (gDP.tiles[tile].lrt - gDP.tiles[tile].ult + 1));
-	u32	address = gDP.textureImage.address + gDP.tiles[tile].ult * gDP.textureImage.bpl + (gDP.tiles[tile].uls << gDP.textureImage.size >> 1);
+	u16 count = (u16)((gDP.tiles[tile].lrs - gDP.tiles[tile].uls + 1) * (gDP.tiles[tile].lrt - gDP.tiles[tile].ult + 1));
+	u32 address = gDP.textureImage.address + gDP.tiles[tile].ult * gDP.textureImage.bpl + (gDP.tiles[tile].uls << gDP.textureImage.size >> 1);
 
-	u16 *dest = (u16*)&TMEM[gDP.tiles[tile].tmem]; 
+	u16 *dest = (u16*)&TMEM[gDP.tiles[tile].tmem];
 	u16 *src = (u16*)&RDRAM[address];
 
 	u16 pal = (u16)((gDP.tiles[tile].tmem - 256) >> 4);
@@ -712,7 +712,7 @@ void gDPLoadTLUT( u32 tile, u32 uls, u32 ult, u32 lrs, u32 lrt )
 
 			dest += 4;
 		}
-        
+
 		gDP.paletteCRC16[pal] = CRC_CalculatePalette( 0xFFFFFFFF, &TMEM[256 + (pal << 4)], 16 );
 		pal++;
 	}
@@ -850,7 +850,7 @@ void gDPSetKeyGB(u32 cG, u32 sG, u32 wG, u32 cB, u32 sB, u32 wB )
 
 void gDPTextureRectangle( f32 ulx, f32 uly, f32 lrx, f32 lry, s32 tile, f32 s, f32 t, f32 dsdx, f32 dtdy )
 {
- 	if (gDP.otherMode.cycleType == G_CYC_COPY)
+	if (gDP.otherMode.cycleType == G_CYC_COPY)
 	{
 		dsdx = 1.0f;
 		lrx += 1.0f;
