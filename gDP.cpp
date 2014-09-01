@@ -1,4 +1,5 @@
 #include <assert.h>
+#include <algorithm>
 #include "GLideN64.h"
 #include "N64.h"
 #include "GBI.h"
@@ -16,6 +17,8 @@
 #include "Config.h"
 
 #define DEPTH_CLEAR_COLOR 0xfffcfffc // The value usually used to clear depth buffer
+
+using namespace std;
 
 gDPInfo gDP;
 
@@ -261,9 +264,9 @@ void gDPSetColorImage( u32 format, u32 size, u32 width, u32 address )
 		u32 height = 1;
 		if (width == VI.width) {
 			if (width == gSP.viewport.width)
-				height = max(VI.height, gSP.viewport.height);
+				height = max((float)VI.height, gSP.viewport.height);
 			else
-				height = max(VI.height, gDP.scissor.lry);
+				height = max((float)VI.height, gDP.scissor.lry);
 		} else if (width == gDP.scissor.lrx && width == gSP.viewport.width)
 			height = max(gDP.scissor.lry, gSP.viewport.height);
 		else if (width == gDP.scissor.lrx)
@@ -753,10 +756,10 @@ void gDPFillRDRAM(u32 address, s32 ulx, s32 uly, s32 lrx, s32 lry, u32 width, u3
 		frameBuffer.top->cleared = true;
 		frameBuffer.top->fillcolor = color;
 	}
-	ulx = min(max(ulx, gDP.scissor.ulx), gDP.scissor.lrx);
-	lrx = min(max(lrx, gDP.scissor.ulx), gDP.scissor.lrx);
-	uly = min(max(uly, gDP.scissor.uly), gDP.scissor.lry);
-	lry = min(max(lry, gDP.scissor.uly), gDP.scissor.lry);
+	ulx = min(max((float)ulx, gDP.scissor.ulx), gDP.scissor.lrx);
+	lrx = min(max((float)lrx, gDP.scissor.ulx), gDP.scissor.lrx);
+	uly = min(max((float)uly, gDP.scissor.uly), gDP.scissor.lry);
+	lry = min(max((float)lry, gDP.scissor.uly), gDP.scissor.lry);
 	u32 ci_width_in_dwords = width >> (3 - size);
 	ulx >>= (3 - size);
 	lrx >>= (3 - size);
@@ -903,7 +906,7 @@ void gDPTextureRectangle( f32 ulx, f32 uly, f32 lrx, f32 lry, s32 tile, f32 s, f
 
 	gDP.colorImage.changed = TRUE;
 	if (gDP.colorImage.width < 64)
-		gDP.colorImage.height = (u32)max( (s32)gDP.colorImage.height, lry );
+		gDP.colorImage.height = (u32)max( (f32)gDP.colorImage.height, lry );
 	else
 		gDP.colorImage.height = max( gDP.colorImage.height, (u32)gDP.scissor.lry );
 

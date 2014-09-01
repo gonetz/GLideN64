@@ -1,4 +1,5 @@
 #include <memory.h>
+#include <algorithm>
 #include "OpenGL.h"
 #include "Textures.h"
 #include "GBI.h"
@@ -12,6 +13,8 @@
 #include "FrameBuffer.h"
 #include "Config.h"
 #include <assert.h>
+
+using namespace std;
 
 TextureCache	cache;
 
@@ -497,13 +500,13 @@ void TextureCache_LoadBackground( CachedTexture *texInfo )
 	j = 0;
 	for (y = 0; y < texInfo->realHeight; y++)
 	{
-		ty = min(y, clampTClamp);
+		ty = min(y, (u32)clampTClamp);
 
 		src = &swapped[bpl * ty];
 
 		for (x = 0; x < texInfo->realWidth; x++)
 		{
-			tx = min(x, clampSClamp);
+			tx = min(x, (u32)clampSClamp);
 
 			if (glInternalFormat == GL_RGBA)
 				((u32*)dest)[j++] = GetTexel( (u64*)src, tx, 0, texInfo->palette );

@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <math.h>
+#include <algorithm>
 #include "N64.h"
 #include "GLideN64.h"
 #include "Debug.h"
@@ -19,6 +20,8 @@
 #include "DepthBuffer.h"
 #include "Config.h"
 #include "Log.h"
+
+using namespace std;
 
 #ifdef DEBUG
 extern u32 uc_crc, uc_dcrc;

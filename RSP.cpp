@@ -1,3 +1,4 @@
+#include <algorithm>
 #include "Debug.h"
 #include "RSP.h"
 #include "RDP.h"
@@ -9,6 +10,8 @@
 #include "DepthBuffer.h"
 #include "GBI.h"
 #include "Config.h"
+
+using namespace std;
 
 RSPInfo		RSP;
 
@@ -130,7 +133,7 @@ void RSP_ProcessDList()
 	RSP.halt = FALSE;
 	RSP.busy = TRUE;
 
-	gSP.matrix.stackSize = min( 32, *(u32*)&DMEM[0x0FE4] >> 6 );
+	gSP.matrix.stackSize = min( 32U, *(u32*)&DMEM[0x0FE4] >> 6 );
 	gSP.matrix.modelViewi = 0;
 	gSP.changed &= ~CHANGED_CPU_FB_WRITE;
 	gSP.changed |= CHANGED_MATRIX;
