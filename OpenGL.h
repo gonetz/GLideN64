@@ -46,9 +46,9 @@ struct GLInfo
 
 	float	scaleX, scaleY;
 
-#define INDEXMAP_SIZE 64
-#define VERTBUFF_SIZE 256
-#define ELEMBUFF_SIZE 1024
+#define INDEXMAP_SIZE 64U
+#define VERTBUFF_SIZE 256U
+#define ELEMBUFF_SIZE 1024U
 
 	struct {
 		SPVertex vertices[VERTBUFF_SIZE];
