@@ -515,7 +515,7 @@ bool OGL_Start()
 	TextureCache_Init();
 	DepthBuffer_Init();
 	FrameBuffer_Init();
-	Combiner_Init();
+	CombinerInfo::get().init();
 	OGL.renderState = GLInfo::rsNone;
 
 	gSP.changed = gDP.changed = 0xFFFFFFFF;
@@ -534,7 +534,7 @@ bool OGL_Start()
 
 void OGL_Stop()
 {
-	Combiner_Destroy();
+	CombinerInfo::get().destroy();
 	FrameBuffer_Destroy();
 	DepthBuffer_Destroy();
 	TextureCache_Destroy();
@@ -756,11 +756,11 @@ void OGL_UpdateStates()
 {
 
 	if (gDP.otherMode.cycleType == G_CYC_COPY)
-		Combiner_SetCombine(EncodeCombineMode(0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0));
+		CombinerInfo::get().setCombine(EncodeCombineMode(0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0));
 	else if (gDP.otherMode.cycleType == G_CYC_FILL)
-		Combiner_SetCombine(EncodeCombineMode(0, 0, 0, SHADE, 0, 0, 0, SHADE, 0, 0, 0, SHADE, 0, 0, 0, SHADE));
+		CombinerInfo::get().setCombine(EncodeCombineMode(0, 0, 0, SHADE, 0, 0, 0, SHADE, 0, 0, 0, SHADE, 0, 0, 0, SHADE));
 	else
-		Combiner_SetCombine(gDP.combine.mux);
+		CombinerInfo::get().setCombine(gDP.combine.mux);
 
 	if (gSP.changed & CHANGED_GEOMETRYMODE)
 		OGL_UpdateCullFace();
@@ -793,7 +793,7 @@ void OGL_UpdateStates()
 	}
 
 	if ((gDP.changed & (CHANGED_ALPHACOMPARE|CHANGED_RENDERMODE|CHANGED_BLENDCOLOR)) != 0)
-		Combiner_UpdateAlphaTestInfo();
+		CombinerInfo::get().updateAlphaTestInfo();
 
 	if (gDP.changed & CHANGED_SCISSOR)
 	{
@@ -826,10 +826,10 @@ void OGL_UpdateStates()
 	}
 
 	if (gDP.changed & CHANGED_FB_TEXTURE)
-		Combiner_UpdateCombineFBInfo();
+		CombinerInfo::get().updateCombineFBInfo();
 
 	if ((gDP.changed & CHANGED_RENDERMODE) || (gSP.geometryMode & G_ZBUFFER))
-		Combiner_UpdateCombineDepthInfo();
+		CombinerInfo::get().updateCombineDepthInfo();
 
 	if ((gDP.changed & CHANGED_RENDERMODE) || (gDP.changed & CHANGED_CYCLETYPE))
 	{
@@ -956,7 +956,7 @@ void OGL_DrawTriangles()
 		OGL_UpdateCullFace();
 		OGL_UpdateViewport();
 		glEnable(GL_SCISSOR_TEST);
-		Combiner_UpdateRenderState();
+		CombinerInfo::get().updateRenderState();
 	}
 
 	CombinerInfo::get().current->compiled->UpdateColors(true);
@@ -984,7 +984,7 @@ void OGL_DrawLine(int v0, int v1, float width )
 		OGL_UpdateCullFace();
 		OGL_UpdateViewport();
 		OGL.renderState = GLInfo::rsLine;
-		Combiner_UpdateRenderState();
+		CombinerInfo::get().updateRenderState();
 	}
 
 	unsigned short elem[2];

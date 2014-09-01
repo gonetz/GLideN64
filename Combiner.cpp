@@ -102,46 +102,46 @@ static DWORD64 ACEncodeD[] =
 	7, 7, 7, 7, 7, 7, 7, 7, 0, 1, 2, 3, 4, 5, 7, 7, 7, 7, 7, 6, 7
 };
 
-void Combiner_Init()
+void CombinerInfo::init()
 {
 	InitGLSLCombiner();
-	CombinerInfo::get().root = NULL;
-	CombinerInfo::get().current = NULL;
+    root = NULL;
+    current = NULL;
 }
 
-void Combiner_UpdateCombineColors()
+void CombinerInfo::updateCombineColors()
 {
-	CombinerInfo::get().current->compiled->UpdateColors();
+    current->compiled->UpdateColors();
 	gDP.changed &= ~CHANGED_COMBINE_COLORS;
 }
 
-void Combiner_UpdateCombineFBInfo()
+void CombinerInfo::updateCombineFBInfo()
 {
-	CombinerInfo::get().current->compiled->UpdateFBInfo(true);
+    current->compiled->UpdateFBInfo(true);
 	gDP.changed &= ~CHANGED_FB_TEXTURE;
 }
 
-void Combiner_UpdateCombineDepthInfo()
+void CombinerInfo::updateCombineDepthInfo()
 {
-	if (CombinerInfo::get().current != NULL)
-		CombinerInfo::get().current->compiled->UpdateDepthInfo(true);
+    if (current != NULL)
+        current->compiled->UpdateDepthInfo(true);
 }
 
-void Combiner_UpdateAlphaTestInfo()
+void CombinerInfo::updateAlphaTestInfo()
 {
-	if (CombinerInfo::get().current != NULL)
-		CombinerInfo::get().current->compiled->UpdateAlphaTestInfo();
+    if (current != NULL)
+        current->compiled->UpdateAlphaTestInfo();
 }
 
-void Combiner_UpdateTextureInfo()
+void CombinerInfo::updateTextureInfo()
 {
-	if (CombinerInfo::get().current != NULL)
-		CombinerInfo::get().current->compiled->UpdateTextureInfo();
+    if (current != NULL)
+        current->compiled->UpdateTextureInfo();
 }
 
-void Combiner_UpdateRenderState() {
-	if (CombinerInfo::get().current != NULL)
-		CombinerInfo::get().current->compiled->UpdateRenderState();
+void CombinerInfo::updateRenderState() {
+    if (current != NULL)
+        current->compiled->UpdateRenderState();
 }
 
 void Combiner_SimplifyCycle( CombineCycle *cc, CombinerStage *stage )
@@ -285,14 +285,13 @@ void Combiner_DeleteCombiner( CachedCombiner *combiner )
 	free( combiner );
 }
 
-void Combiner_Destroy()
+void CombinerInfo::destroy()
 {
 	DestroyGLSLCombiner();
 
-	if (CombinerInfo::get().root)
-	{
-		Combiner_DeleteCombiner( CombinerInfo::get().root );
-		CombinerInfo::get().root = NULL;
+    if (root) {
+        Combiner_DeleteCombiner( root );
+        root = NULL;
 	}
 }
 
@@ -351,7 +350,7 @@ void Combiner_SetCombineStates()
 	CombinerInfo::get().current->compiled->Set();
 }
 
-void Combiner_SetCombine( u64 mux )
+void CombinerInfo::setCombine( u64 mux )
 {
 	Combiner_SelectCombine( mux );
 	Combiner_SetCombineStates();

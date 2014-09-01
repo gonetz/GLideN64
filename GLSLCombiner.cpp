@@ -741,7 +741,7 @@ void GLSL_RenderDepth() {
 	glBindTexture(GL_TEXTURE_2D, frameBuffer.top->pDepthBuffer->depth_texture->glName);
 //	glBindTexture(GL_TEXTURE_2D, g_zlut_tex);
 
-	Combiner_SetCombine( EncodeCombineMode( 0, 0, 0, TEXEL0, 0, 0, 0, 1, 0, 0, 0, TEXEL0, 0, 0, 0, 1 ) );
+    CombinerInfo::get().setCombine( EncodeCombineMode( 0, 0, 0, TEXEL0, 0, 0, 0, 1, 0, 0, 0, TEXEL0, 0, 0, 0, 1 ) );
 
 			glDisable( GL_BLEND );
 			glDisable( GL_ALPHA_TEST );

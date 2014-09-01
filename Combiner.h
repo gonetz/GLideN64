@@ -134,30 +134,30 @@ struct CachedCombiner
 class CombinerInfo
 {
 public:
-	CachedCombiner *root, *current;
-
-	bool usesT0, usesT1, usesLOD, usesShadeColor, changed;
+    void init();
+    void updateCombineColors();
+    void updateCombineFBInfo();
+    void updateCombineDepthInfo();
+    void updateAlphaTestInfo();
+    void updateTextureInfo();
+    void updateRenderState();
+    void setCombine( u64 mux );
+    void destroy();
 
 	static CombinerInfo & get() {
 		static CombinerInfo info;
 		return info;
 	}
 
+    CachedCombiner *root, *current;
+
+    bool usesT0, usesT1, usesLOD, usesShadeColor, changed;
+
 private:
 	CombinerInfo() :
 		root(NULL), current(NULL), usesT0(false), usesT1(false),
 		usesShadeColor(false), changed(false) {}
 };
-
-void Combiner_Init();
-void Combiner_UpdateCombineColors();
-void Combiner_UpdateCombineFBInfo();
-void Combiner_UpdateCombineDepthInfo();
-void Combiner_UpdateAlphaTestInfo();
-void Combiner_UpdateTextureInfo();
-void Combiner_UpdateRenderState();
-void Combiner_SetCombine( u64 mux );
-void Combiner_Destroy();
 
 #endif
 
