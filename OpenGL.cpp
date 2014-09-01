@@ -2,6 +2,7 @@
 #include <assert.h>
 #include <math.h>
 #include <stdio.h>
+#include <time.h>       /* time_t, struct tm, difftime, time, mktime */
 
 //// paulscode, added for SDL linkage:
 #if defined(GLES2)
@@ -225,7 +226,7 @@ void OGL_InitStates()
 	glClearColor( 0.0f, 0.0f, 0.0f, 0.0f );
 	glClear( GL_COLOR_BUFFER_BIT );
 
-	srand( timeGetTime() );
+	srand( time(NULL) );
 
 	OGL_SwapBuffers();
 }
