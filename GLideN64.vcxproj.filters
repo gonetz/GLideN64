@@ -114,10 +114,10 @@
     <ClCompile Include="3DMath.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Config_mupen.cpp">
+    <ClCompile Include="Config.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Config.cpp">
+    <ClCompile Include="Config_mupen.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

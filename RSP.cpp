@@ -15,7 +15,7 @@ RSPInfo		RSP;
 void RSP_LoadMatrix( f32 mtx[4][4], u32 address )
 {
 	f32 recip = 1.5258789e-05f;
-#ifdef WIN32
+#ifdef WIN32_ASM
 	__asm {
 		mov		esi, dword ptr [RDRAM];
 		add		esi, dword ptr [address];
@@ -59,7 +59,7 @@ LoadLoop:
 		add		edi, 10h
 		loop	LoadLoop
 	}
-#else // WIN32
+#else // WIN32_ASM
 # ifdef X86_ASM
 	__asm__ __volatile__(
 	".intel_syntax noprefix"					"\n\t"
@@ -115,7 +115,7 @@ LoadLoop:
 		for (j = 0; j < 4; j++)
 			mtx[i][j] = (GLfloat)(n64Mat->integer[i][j^1]) + (GLfloat)(n64Mat->fraction[i][j^1]) * recip;
 # endif // !X86_ASM
-#endif // WIN32
+#endif // WIN32_ASM
 }
 
 void RSP_ProcessDList()

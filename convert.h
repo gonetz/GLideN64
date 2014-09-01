@@ -104,7 +104,7 @@ const volatile unsigned char One2Eight[2] =
 
 static inline void UnswapCopy( void *src, void *dest, u32 numBytes )
 {
-#ifdef WIN32
+#ifdef WIN32_ASM
 	__asm
 	{
 		mov		ecx, 0
@@ -167,7 +167,7 @@ TrailingLoop:
 		loop	TrailingLoop
 Done:
 	}
-# else // WIN32
+# else // WIN32_ASM
 	// copy leading bytes
 	int leadingBytes = ((long)src) & 3;
 	if (leadingBytes != 0)
@@ -214,12 +214,12 @@ Done:
 			src  = (void *)((long)src -1);
 		}
 	}
-#endif // WIN32
+#endif // WIN32_ASM
 }
 
 static inline void DWordInterleave( void *mem, u32 numDWords )
 {
-#ifdef WIN32
+#ifdef WIN32_ASM
 	__asm {
 		mov		esi, dword ptr [mem]
 		mov		edi, dword ptr [mem]
@@ -234,7 +234,7 @@ DWordInterleaveLoop:
 		add		edi, 8
 		loop	DWordInterleaveLoop
 	}
-#else // WIN32
+#else // WIN32_ASM
 	int tmp;
 	while( numDWords-- )
 	{
@@ -243,12 +243,12 @@ DWordInterleaveLoop:
 		*(int *)((long)mem + 4) = tmp;
 		mem = (void *)((long)mem + 8);
 	}
-#endif // WIN32
+#endif // WIN32_ASM
 }
 
 inline void QWordInterleave( void *mem, u32 numDWords )
 {
-#ifdef WIN32
+#ifdef WIN32_ASM
 	__asm
 	{
 	// Interleave the line on the qword
@@ -272,7 +272,7 @@ QWordInterleaveLoop:
 		add		edi, 12
 		loop	QWordInterleaveLoop
 	}
-#else // WIN32
+#else // WIN32_ASM
 	numDWords >>= 1; // qwords
 	while( numDWords-- )
 	{
@@ -285,19 +285,19 @@ QWordInterleaveLoop:
 		*(int *)((long)mem + 12) = tmp1;
 		mem = (void *)((long)mem + 16);
 	}
-#endif // WIN32
+#endif // WIN32_ASM
 }
 
 
 inline u32 swapdword( u32 value )
 {
-#ifdef WIN32
+#ifdef WIN32_ASM
 	__asm
 	{
 		mov		eax, dword ptr [value]
 		bswap	eax
 	}
-#else // WIN32
+#else // WIN32_ASM
 #ifdef ARM_ASM
 	asm("rev %0, %0" : "+r"(value)::);
 	return value;
@@ -307,30 +307,30 @@ inline u32 swapdword( u32 value )
 			((value & 0x0000ff00) <<  8) |
 			((value & 0x000000ff) << 24);
 #endif // ARM_ASM
-#endif // WIN32
+#endif // WIN32_ASM
 }
 
 inline u16 swapword( u16 value )
 {
-#ifdef WIN32
+#ifdef WIN32_ASM
 	__asm
 	{
 		mov		ax, word ptr [value]
 		xchg	ah, al
 	}
-#else // WIN32
+#else // WIN32_ASM
 #ifdef ARM_ASM
 	asm("rev16 %0, %0" : "+r"(value)::);
 	return value;
 #else
 	return (value << 8) | (value >> 8);
 #endif // ARM_ASM
-#endif // WIN32
+#endif // WIN32_ASM
 }
 
 inline u16 RGBA8888_RGBA4444( u32 color )
 {
-#ifdef WIN32
+#ifdef WIN32_ASM
 	__asm
 	{
 		mov		ebx, dword ptr [color]
@@ -352,17 +352,17 @@ inline u16 RGBA8888_RGBA4444( u32 color )
 		shr		bl, 4
 		or		al, bl
 	}
-#else // WIN32
+#else // WIN32_ASM
 	return ((color & 0x000000f0) <<  8) |	// r
 			((color & 0x0000f000) >>  4) |	// g
 			((color & 0x00f00000) >> 16) |	// b
 			((color & 0xf0000000) >> 28);	// a
-#endif // WIN32
+#endif // WIN32_ASM
 }
 
 inline u32 RGBA5551_RGBA8888( u16 color )
 {
-#ifdef WIN32
+#ifdef WIN32_ASM
 	__asm
 	{
 		mov		ebx, 00000000h
@@ -390,7 +390,7 @@ inline u32 RGBA5551_RGBA8888( u16 color )
 		and		bx, 1Fh
 		mov		al, byte ptr [Five2Eight+ebx]
 	}
-#else // WIN32
+#else // WIN32_ASM
 	color = swapword( color );
 	u8 r, g, b, a;
 	r = Five2Eight[color >> 11];
@@ -398,26 +398,26 @@ inline u32 RGBA5551_RGBA8888( u16 color )
 	b = Five2Eight[(color >> 1) & 0x001f];
 	a = One2Eight [(color     ) & 0x0001];
 	return (a << 24) | (b << 16) | (g << 8) | r;
-#endif // WIN32
+#endif // WIN32_ASM
 }
 
 // Just swaps the word
 inline u16 RGBA5551_RGBA5551( u16 color )
 {
-#ifdef WIN32
+#ifdef WIN32_ASM
 	__asm
 	{
 		mov		ax, word ptr [color]
 		xchg	ah, al
 	}
-#else // WIN32
+#else // WIN32_ASM
 	return swapword( color );
-#endif // WIN32
+#endif // WIN32_ASM
 }
 
 inline u32 IA88_RGBA8888( u16 color )
 {
-#ifdef WIN32
+#ifdef WIN32_ASM
 	__asm
 	{
 		mov		cx, word ptr [color]
@@ -430,17 +430,17 @@ inline u32 IA88_RGBA8888( u16 color )
 		mov		ah, cl
 		mov		al, cl
 	}
-#else // WIN32
+#else // WIN32_ASM
 	// ok
 	u8 a = color >> 8;
 	u8 i = color & 0x00FF;
 	return (a << 24) | (i << 16) | (i << 8) | i;
-#endif // WIN32
+#endif // WIN32_ASM
 }
 
 inline u16 IA88_RGBA4444( u16 color )
 {
-#ifdef WIN32
+#ifdef WIN32_ASM
 	__asm
 	{
 		mov		cx, word ptr [color]
@@ -454,16 +454,16 @@ inline u16 IA88_RGBA4444( u16 color )
 		shr		ch, 4
 		or		al, ch
 	}
-#else // WIN32
+#else // WIN32_ASM
 	u8 i = color >> 12;
 	u8 a = (color >> 4) & 0x000F;
 	return (i << 12) | (i << 8) | (i << 4) | a;
-#endif // WIN32
+#endif // WIN32_ASM
 }
 
 inline u16 IA44_RGBA4444( u8 color )
 {
-#ifdef WIN32
+#ifdef WIN32_ASM
 	__asm
 	{
 		mov		cl, byte ptr [color]
@@ -474,14 +474,14 @@ inline u16 IA44_RGBA4444( u8 color )
 		shl		cl, 4
 		or		ah, cl
 	}
-#else // WIN32
+#else // WIN32_ASM
 	return ((color & 0xf0) << 8) | ((color & 0xf0) << 4) | (color);
-#endif // WIN32
+#endif // WIN32_ASM
 }
 
 inline u32 IA44_RGBA8888( u8 color )
 {
-#ifdef WIN32
+#ifdef WIN32_ASM
 	__asm
 	{
 		mov		ebx, 00000000h
@@ -503,16 +503,16 @@ inline u32 IA44_RGBA8888( u8 color )
 		mov		ah, ch
 		mov		al, ch
 	}
-#else // WIN32
+#else // WIN32_ASM
 	u8 i = Four2Eight[color >> 4];
 	u8 a = Four2Eight[color & 0x0F];
 	return (a << 24) | (i << 16) | (i << 8) | i;
-#endif // WIN32
+#endif // WIN32_ASM
 }
 
 inline u16 IA31_RGBA4444( u8 color )
 {
-#ifdef WIN32
+#ifdef WIN32_ASM
 	__asm
 	{
 		mov		ebx, 00000000h
@@ -531,16 +531,16 @@ inline u16 IA31_RGBA4444( u8 color )
 		mov		ch, byte ptr [One2Four+ebx]
 		or		al, ch
 	}
-#else // WIN32
+#else // WIN32_ASM
 	u8 i = Three2Four[color >> 1];
 	u8 a = One2Four[color & 0x01];
 	return (i << 12) | (i << 8) | (i << 4) | a;
-#endif // WIN32
+#endif // WIN32_ASM
 }
 
 inline u32 IA31_RGBA8888( u8 color )
 {
-#ifdef WIN32
+#ifdef WIN32_ASM
 	__asm
 	{
 		mov		ebx, 00000000h
@@ -562,16 +562,16 @@ inline u32 IA31_RGBA8888( u8 color )
 		mov		ah, ch
 		mov		al, ch
 	}
-#else // WIN32
+#else // WIN32_ASM
 	u8 i = Three2Eight[color >> 1];
 	u8 a = One2Eight[color & 0x01];
 	return (i << 24) | (i << 16) | (i << 8) | a;
-#endif // WIN32
+#endif // WIN32_ASM
 }
 
 inline u16 I8_RGBA4444( u8 color )
 {
-#ifdef WIN32
+#ifdef WIN32_ASM
 	__asm
 	{
 		mov		cl, byte ptr [color]
@@ -582,15 +582,15 @@ inline u16 I8_RGBA4444( u8 color )
 		or		al, cl
 		mov		ah, al
 	}
-#else // WIN32
+#else // WIN32_ASM
 	u8 c = color >> 4;
 	return (c << 12) | (c << 8) | (c << 4) | c;
-#endif // WIN32
+#endif // WIN32_ASM
 }
 
 inline u32 I8_RGBA8888( u8 color )
 {
-#ifdef WIN32
+#ifdef WIN32_ASM
 	__asm
 	{
 		mov		cl, byte ptr [color]
@@ -601,14 +601,14 @@ inline u32 I8_RGBA8888( u8 color )
 		mov		ah, cl
 		mov		al, cl
 	}
-#else // WIN32
+#else // WIN32_ASM
 	return (color << 24) | (color << 16) | (color << 8) | color;
-#endif // WIN32
+#endif // WIN32_ASM
 }
 
 inline u16 I4_RGBA4444( u8 color )
 {
-#ifdef WIN32
+#ifdef WIN32_ASM
 	__asm
 	{
 		mov		cl, byte ptr [color]
@@ -617,17 +617,17 @@ inline u16 I4_RGBA4444( u8 color )
 		or		al, cl
 		mov		ah, al
 	}
-#else // WIN32
+#else // WIN32_ASM
 	u16 ret = color & 0x0f;
 	ret |= ret << 4;
 	ret |= ret << 8;
 	return ret;
-#endif // WIN32
+#endif // WIN32_ASM
 }
 
 inline u32 I4_RGBA8888( u8 color )
 {
-#ifdef WIN32
+#ifdef WIN32_ASM
 	__asm
 	{
 		mov		ebx, 00000000h
@@ -641,11 +641,11 @@ inline u32 I4_RGBA8888( u8 color )
 		mov		ah, cl
 		mov		al, cl
 	}
-#else // WIN32
+#else // WIN32_ASM
 	u8 c = Four2Eight[color];
 	c |= c << 4;
 	return (c << 24) | (c << 16) | (c << 8) | c;
-#endif // WIN32
+#endif // WIN32_ASM
 }
 
 #endif // CONVERT_H

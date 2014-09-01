@@ -9,7 +9,7 @@ void TransformVectorNormalize(float vec[3], float mtx[4][4]);
 
 inline void CopyMatrix( float m0[4][4], float m1[4][4] )
 {
-#ifdef WIN32
+#ifdef WIN32_ASM
 	__asm {
 		mov		esi, [m1]
 		mov		edi, [m0]
@@ -52,12 +52,12 @@ inline void CopyMatrix( float m0[4][4], float m1[4][4] )
 	}
 #else
 	memcpy( m0, m1, 16 * sizeof( float ) );
-#endif // WIN32
+#endif // WIN32_ASM
 }
 
 inline void Transpose3x3Matrix( float mtx[4][4] )
 {
-#ifdef WIN32
+#ifdef WIN32_ASM
 	__asm
 	{
 		mov		esi, [mtx]
@@ -77,7 +77,7 @@ inline void Transpose3x3Matrix( float mtx[4][4] )
 		mov		dword ptr [esi+18h], ebx
 		mov		dword ptr [esi+24h], eax
 	}
-#else // WIN32
+#else // WIN32_ASM
 	float tmp;
 
 	tmp = mtx[0][1];
@@ -91,12 +91,12 @@ inline void Transpose3x3Matrix( float mtx[4][4] )
 	tmp = mtx[1][2];
 	mtx[1][2] = mtx[2][1];
 	mtx[2][1] = tmp;
-#endif // WIN32
+#endif // WIN32_ASM
 }
 
 inline void Normalize(float v[3])
 {
-#ifdef WIN32
+#ifdef WIN32_ASM
 	__asm {
 		mov		esi, dword ptr [v]
 										//	ST(6)			ST(5)			ST(4)			ST(3)			ST(2)			ST(1)			ST
@@ -127,7 +127,7 @@ inline void Normalize(float v[3])
 End:
 		finit
 	}
-#else // WIN32
+#else // WIN32_ASM
 	float len;
 
 	len = v[0]*v[0] + v[1]*v[1] + v[2]*v[2];
@@ -137,14 +137,14 @@ End:
 		v[1] /= len;
 		v[2] /= len;
 	}
-#endif // WIN32
+#endif // WIN32_ASM
 }
 
 
 inline float DotProduct(float v0[3], float v1[3])
 {
 	float	dot;
-#ifdef WIN32
+#ifdef WIN32_ASM
 	__asm {
 		mov		esi, dword ptr [v0]
 		mov		edi, dword ptr [v1]
@@ -160,9 +160,9 @@ inline float DotProduct(float v0[3], float v1[3])
 		fadd
 		fstp	dword ptr [ebx]
 	}
-#else // WIN32
+#else // WIN32_ASM
 	dot = v0[0]*v1[0] + v0[1]*v1[1] + v0[2]*v1[2];
-#endif // WIN32
+#endif // WIN32_ASM
 	return dot;
 }
 
