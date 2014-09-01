@@ -232,27 +232,6 @@ void TextureCache_Init()
 
 	glGenTextures( 32, cache.glNoiseNames );
 
-	u8 noise[64*64*4];
-	for (s16 i = 0; i < 32; i++)
-	{
-		glBindTexture( GL_TEXTURE_2D, cache.glNoiseNames[i] );
-
-		srand( timeGetTime() );
-
-		for (s16 y = 0; y < 64; y++)
-		{
-			for (s16 x = 0; x < 64; x++)
-			{
-				u8 random = rand();
-				noise[y*64*4+x*4] = random;
-				noise[y*64*4+x*4+1] = random;
-				noise[y*64*4+x*4+2] = random;
-				noise[y*64*4+x*4+3] = random;
-			}
-		}
-		glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, 64, 64, 0, GL_RGBA, GL_UNSIGNED_BYTE, noise );
-	}
-
 	cache.dummy = TextureCache_AddTop();
 
 	cache.dummy->address = 0;
