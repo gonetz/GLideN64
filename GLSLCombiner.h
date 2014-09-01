@@ -95,7 +95,5 @@ private:
 
 void InitGLSLCombiner();
 void DestroyGLSLCombiner();
-void GLSL_CalcLOD();
-void GLSL_PostCalcLOD();
 
 #endif //GLSL_COMBINER_H
