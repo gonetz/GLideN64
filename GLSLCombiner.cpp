@@ -1,5 +1,7 @@
 #include <assert.h>
 #include <stdio.h>
+#include <string>
+
 #include "N64.h"
 #include "OpenGL.h"
 #include "Config.h"
@@ -24,6 +26,8 @@ static GLuint  g_shadow_map_fragment_shader_object;
 static GLuint  g_draw_shadow_map_program;
 GLuint g_tlut_tex = 0;
 static u32 g_paletteCRC256 = 0;
+
+static std::string strFragmentShader;
 
 static const GLsizei nShaderLogSize = 1024;
 static
@@ -164,6 +168,8 @@ void InitShaderCombiner()
 	if (!check_shader_compile_status(g_vertex_shader_object))
 		LOG(LOG_ERROR, "Error in vertex shader\n", vertex_shader);
 
+	strFragmentShader.reserve(1024*5);
+
 #ifndef GLES2
 	g_calc_light_shader_object = glCreateShader(GL_FRAGMENT_SHADER);
 	glShaderSource(g_calc_light_shader_object, 1, &fragment_shader_calc_light, NULL);
@@ -198,6 +204,7 @@ void InitShaderCombiner()
 }
 
 void DestroyShaderCombiner() {
+	strFragmentShader.clear();
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 #ifndef GLES2
@@ -279,7 +286,7 @@ void CorrectSecondStageParams(CombinerStage & _stage) {
 }
 
 static
-int CompileCombiner(const CombinerStage & _stage, const char** _Input, char * _fragment_shader) {
+int CompileCombiner(const CombinerStage & _stage, const char** _Input, char * _strCombiner) {
 	char buf[128];
 	bool bBracketOpen = false;
 	int nRes = 0;
@@ -287,7 +294,7 @@ int CompileCombiner(const CombinerStage & _stage, const char** _Input, char * _f
 		switch(_stage.op[i].op) {
 			case LOAD:
 				sprintf(buf, "(%s ", _Input[_stage.op[i].param1]);
-				strcat(_fragment_shader, buf);
+				strcat(_strCombiner, buf);
 				bBracketOpen = true;
 				nRes |= 1 << _stage.op[i].param1;
 				break;
@@ -297,7 +304,7 @@ int CompileCombiner(const CombinerStage & _stage, const char** _Input, char * _f
 					bBracketOpen = false;
 				} else
 					sprintf(buf, "- %s", _Input[_stage.op[i].param1]);
-				strcat(_fragment_shader, buf);
+				strcat(_strCombiner, buf);
 				nRes |= 1 << _stage.op[i].param1;
 				break;
 			case ADD:
@@ -306,7 +313,7 @@ int CompileCombiner(const CombinerStage & _stage, const char** _Input, char * _f
 					bBracketOpen = false;
 				} else
 					sprintf(buf, "+ %s", _Input[_stage.op[i].param1]);
-				strcat(_fragment_shader, buf);
+				strcat(_strCombiner, buf);
 				nRes |= 1 << _stage.op[i].param1;
 				break;
 			case MUL:
@@ -315,12 +322,12 @@ int CompileCombiner(const CombinerStage & _stage, const char** _Input, char * _f
 					bBracketOpen = false;
 				} else
 					sprintf(buf, "*%s", _Input[_stage.op[i].param1]);
-				strcat(_fragment_shader, buf);
+				strcat(_strCombiner, buf);
 				nRes |= 1 << _stage.op[i].param1;
 				break;
 			case INTER:
 				sprintf(buf, "mix(%s, %s, %s)", _Input[_stage.op[0].param2], _Input[_stage.op[0].param1], _Input[_stage.op[0].param3]);
-				strcat(_fragment_shader, buf);
+				strcat(_strCombiner, buf);
 				nRes |= 1 << _stage.op[i].param1;
 				nRes |= 1 << _stage.op[i].param2;
 				nRes |= 1 << _stage.op[i].param3;
@@ -331,15 +338,14 @@ int CompileCombiner(const CombinerStage & _stage, const char** _Input, char * _f
 		}
 	}
 	if (bBracketOpen)
-		strcat(_fragment_shader, ")");
-	strcat(_fragment_shader, "; \n");
+		strcat(_strCombiner, ")");
+	strcat(_strCombiner, "; \n");
 	return nRes;
 }
 
 ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCombine & _combine) : m_combine(_combine)
 {
-	char *fragment_shader = (char*)malloc(1024*5);
-	strcpy(fragment_shader, fragment_shader_header_common_variables);
+	strFragmentShader.assign(fragment_shader_header_common_variables);
 
 	char strCombiner[512];
 	strcpy(strCombiner, "  alpha1 = ");
@@ -360,71 +366,71 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 	} else
 		strcat(strCombiner, "  color2 = color1; \n");
 
-	strcat(fragment_shader, fragment_shader_header_common_functions);
-	strcat(fragment_shader, fragment_shader_header_main);
+	strFragmentShader.append(fragment_shader_header_common_functions);
+	strFragmentShader.append(fragment_shader_header_main);
 	const bool bUseLod = (m_nInputs & (1<<LOD_FRACTION)) > 0;
 	if (bUseLod)
 #ifdef GLES2
-		strcat(fragment_shader, "  lowp float lod_frac = calc_lod(uPrimLod, vLodTexCoord);	\n");
+		strBuffer.append("  lowp float lod_frac = calc_lod(uPrimLod, vLodTexCoord);	\n");
 #else
-		strcat(fragment_shader, "  float lod_frac = calc_lod(uPrimLod, vLodTexCoord);	\n");
+		strFragmentShader.append("  float lod_frac = calc_lod(uPrimLod, vLodTexCoord);	\n");
 #endif
 	if ((m_nInputs & ((1<<TEXEL0)|(1<<TEXEL1)|(1<<TEXEL0_ALPHA)|(1<<TEXEL1_ALPHA))) > 0) {
-		strcat(fragment_shader, fragment_shader_readtex0color);
-		strcat(fragment_shader, fragment_shader_readtex1color);
+		strFragmentShader.append(fragment_shader_readtex0color);
+		strFragmentShader.append(fragment_shader_readtex1color);
 	} else {
 		assert(strstr(strCombiner, "readtex") == 0);
 	}
 	if (config.enableHWLighting)
 #ifdef GLES2
-		strcat(fragment_shader, "  lowp float intensity = calc_light(int(vNumLights), vShadeColor.rgb, input_color); \n");
+		strBuffer.append("  lowp float intensity = calc_light(int(vNumLights), vShadeColor.rgb, input_color); \n");
 #else
-		strcat(fragment_shader, "  float intensity = calc_light(int(vNumLights), vShadeColor.rgb, input_color); \n");
+		strFragmentShader.append("  float intensity = calc_light(int(vNumLights), vShadeColor.rgb, input_color); \n");
 #endif
 	else
-		strcat(fragment_shader, "  input_color = vShadeColor.rgb;\n");
-	strcat(fragment_shader, "  vec_color = vec4(input_color, vShadeColor.a); \n");
-	strcat(fragment_shader, strCombiner);
-	strcat(fragment_shader, fragment_shader_color_dither);
-	strcat(fragment_shader, fragment_shader_alpha_dither);
+		strFragmentShader.append("  input_color = vShadeColor.rgb;\n");
+	strFragmentShader.append("  vec_color = vec4(input_color, vShadeColor.a); \n");
+	strFragmentShader.append(strCombiner);
+	strFragmentShader.append(fragment_shader_color_dither);
+	strFragmentShader.append(fragment_shader_alpha_dither);
 
-	strcat(fragment_shader, "  gl_FragColor = vec4(color2, alpha2); \n");
+	strFragmentShader.append("  gl_FragColor = vec4(color2, alpha2); \n");
 
-	strcat(fragment_shader, "  if (!alpha_test(gl_FragColor.a)) discard;	\n");
+	strFragmentShader.append("  if (!alpha_test(gl_FragColor.a)) discard;	\n");
 	if (OGL.bImageTexture) {
 		if (config.frameBufferEmulation.N64DepthCompare)
-			strcat(fragment_shader, "  if (!depth_compare()) discard; \n");
+			strFragmentShader.append("  if (!depth_compare()) discard; \n");
 		else
-			strcat(fragment_shader, "  depth_compare(); \n");
+			strFragmentShader.append("  depth_compare(); \n");
 	}
 
 #ifdef USE_TOONIFY
-	strcat(fragment_shader, "  toonify(intensity); \n");
+	strBuffer.append("  toonify(intensity); \n");
 #endif
-	strcat(fragment_shader, "  if (uEnableFog != 0) \n");
-	strcat(fragment_shader, "    gl_FragColor = vec4(mix(gl_FragColor.rgb, uFogColor.rgb, vFogFragCoord), gl_FragColor.a); \n");
+	strFragmentShader.append("  if (uEnableFog != 0) \n");
+	strFragmentShader.append("    gl_FragColor = vec4(mix(gl_FragColor.rgb, uFogColor.rgb, vFogFragCoord), gl_FragColor.a); \n");
 
-	strcat(fragment_shader, fragment_shader_end);
+	strFragmentShader.append(fragment_shader_end);
 
 #ifdef USE_TOONIFY
-	strcat(fragment_shader, fragment_shader_toonify);
+	strBuffer.append(fragment_shader_toonify);
 #endif
 
 #ifdef GLES2
-	strcat(fragment_shader, alpha_test_fragment_shader);
-	strcat(fragment_shader, noise_fragment_shader);
+	strBuffer.append(alpha_test_fragment_shader);
+	strBuffer.append(noise_fragment_shader);
 	if (bUseLod)
-		strcat(fragment_shader, fragment_shader_calc_lod);
+		strBuffer.append(fragment_shader_calc_lod);
 	if (config.enableHWLighting)
-		strcat(fragment_shader, fragment_shader_calc_light);
+		strBuffer.append(fragment_shader_calc_light);
 #endif
 
 	GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(fragmentShader, 1, (const GLchar**)&fragment_shader, NULL);
+	const GLchar * strShaderData = strFragmentShader.data();
+	glShaderSource(fragmentShader, 1, &strShaderData, NULL);
 	glCompileShader(fragmentShader);
 	if (!check_shader_compile_status(fragmentShader))
-		LOG(LOG_ERROR, "Error in fragment shader:\n%s\n", fragment_shader);
-	free(fragment_shader);
+		LOG(LOG_ERROR, "Error in fragment shader:\n%s\n", strFragmentShader.data());
 
 	memset(m_aShaders, 0, sizeof(m_aShaders));
 	u32 uShaderIdx = 0;
