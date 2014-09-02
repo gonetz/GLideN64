@@ -794,7 +794,7 @@ void OGL_UpdateStates()
 	}
 
 	if ((gDP.changed & (CHANGED_ALPHACOMPARE|CHANGED_RENDERMODE|CHANGED_BLENDCOLOR)) != 0)
-		CombinerInfo::get().updateAlphaTestInfo();
+		CombinerInfo::get().getCurrent()->UpdateAlphaTestInfo();
 
 	if (gDP.changed & CHANGED_SCISSOR)
 	{
@@ -827,10 +827,10 @@ void OGL_UpdateStates()
 	}
 
 	if (gDP.changed & CHANGED_FB_TEXTURE)
-		CombinerInfo::get().updateCombineFBInfo();
+		CombinerInfo::get().getCurrent()->UpdateFBInfo(true);
 
 	if ((gDP.changed & CHANGED_RENDERMODE) || (gSP.geometryMode & G_ZBUFFER))
-		CombinerInfo::get().updateCombineDepthInfo();
+		CombinerInfo::get().getCurrent()->UpdateDepthInfo(true);
 
 	if ((gDP.changed & CHANGED_RENDERMODE) || (gDP.changed & CHANGED_CYCLETYPE))
 	{
@@ -957,7 +957,7 @@ void OGL_DrawTriangles()
 		OGL_UpdateCullFace();
 		OGL_UpdateViewport();
 		glEnable(GL_SCISSOR_TEST);
-		CombinerInfo::get().updateRenderState();
+		CombinerInfo::get().getCurrent()->UpdateRenderState();
 	}
 
 	CombinerInfo::get().getCurrent()->UpdateColors(true);
@@ -985,7 +985,7 @@ void OGL_DrawLine(int v0, int v1, float width )
 		OGL_UpdateCullFace();
 		OGL_UpdateViewport();
 		OGL.renderState = GLInfo::rsLine;
-		CombinerInfo::get().updateRenderState();
+		CombinerInfo::get().getCurrent()->UpdateRenderState();
 	}
 
 	unsigned short elem[2];

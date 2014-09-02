@@ -118,12 +118,6 @@ class CombinerInfo
 {
 public:
 	void init();
-	void updateCombineColors();
-	void updateCombineFBInfo();
-	void updateCombineDepthInfo();
-	void updateAlphaTestInfo();
-	void updateTextureInfo();
-	void updateRenderState();
 	void setCombine( u64 mux );
 	void destroy();
 

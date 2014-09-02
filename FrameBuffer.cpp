@@ -9,6 +9,7 @@
 #include "VI.h"
 #include "Textures.h"
 #include "Combiner.h"
+#include "GLSLCombiner.h"
 #include "Types.h"
 #include "Config.h"
 #include "Debug.h"
@@ -425,7 +426,7 @@ void FrameBuffer_AttachDepthBuffer()
 #endif
 		assert(checkFBO());
 	}
-    CombinerInfo::get().updateCombineDepthInfo();
+	CombinerInfo::get().getCurrent()->UpdateDepthInfo(true);
 }
 
 #ifndef GLES2

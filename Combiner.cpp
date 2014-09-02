@@ -117,41 +117,6 @@ void CombinerInfo::destroy()
 	m_combiners.clear();
 }
 
-void CombinerInfo::updateCombineColors()
-{
-	m_pCurrent->UpdateColors();
-	gDP.changed &= ~CHANGED_COMBINE_COLORS;
-}
-
-void CombinerInfo::updateCombineFBInfo()
-{
-	m_pCurrent->UpdateFBInfo(true);
-	gDP.changed &= ~CHANGED_FB_TEXTURE;
-}
-
-void CombinerInfo::updateCombineDepthInfo()
-{
-	if (m_pCurrent != NULL)
-		m_pCurrent->UpdateDepthInfo(true);
-}
-
-void CombinerInfo::updateAlphaTestInfo()
-{
-	if (m_pCurrent != NULL)
-		m_pCurrent->UpdateAlphaTestInfo();
-}
-
-void CombinerInfo::updateTextureInfo()
-{
-	if (m_pCurrent != NULL)
-		m_pCurrent->UpdateTextureInfo();
-}
-
-void CombinerInfo::updateRenderState() {
-	if (m_pCurrent != NULL)
-		m_pCurrent->UpdateRenderState();
-}
-
 static
 void SimplifyCycle( CombineCycle *cc, CombinerStage *stage )
 {

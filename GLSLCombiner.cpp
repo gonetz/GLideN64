@@ -621,6 +621,8 @@ void ShaderCombiner::UpdateColors(bool _bForce) {
 	const int nDither = (gDP.otherMode.colorDither == 2 || gDP.otherMode.alphaDither == 2 || gDP.otherMode.alphaCompare == 3) ? 1 : 0;
 	if ((m_nInputs & (1<<NOISE)) + nDither != 0)
 		_setFUniform(m_uniforms.uNoiseTime, (float)(rand()&255), _bForce);
+
+	gDP.changed &= ~CHANGED_COMBINE_COLORS;
 }
 
 void ShaderCombiner::UpdateTextureInfo(bool _bForce) {
@@ -680,6 +682,8 @@ void ShaderCombiner::UpdateFBInfo(bool _bForce) {
 	}
 	_setIUniform(m_uniforms.uFb8Bit, nFb8bitMode, _bForce);
 	_setIUniform(m_uniforms.uFbFixedAlpha, nFbFixedAlpha, _bForce);
+
+	gDP.changed &= ~CHANGED_FB_TEXTURE;
 }
 
 void ShaderCombiner::UpdateDepthInfo(bool _bForce) {
