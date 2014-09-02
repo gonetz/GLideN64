@@ -811,14 +811,14 @@ void OGL_UpdateStates()
 		//For some reason updating the texture cache on the first frame of LOZ:OOT causes a NULL Pointer exception...
 		if (CombinerInfo::get().getCurrent() != NULL)
 		{
-			if (CombinerInfo::get().usesT0)
+			if (CombinerInfo::get().getCurrent()->usesT0())
 				TextureCache_Update(0);
 			else
 				TextureCache_ActivateDummy(0);
 
 			//Note: enabling dummies makes some F-zero X textures flicker.... strange.
 
-			if (CombinerInfo::get().usesT1)
+			if (CombinerInfo::get().getCurrent()->usesT1())
 				TextureCache_Update(1);
 			else
 				TextureCache_ActivateDummy(1);
@@ -900,7 +900,7 @@ void OGL_AddTriangle(int v0, int v1, int v2)
 
 void OGL_SetColorArray()
 {
-	if (CombinerInfo::get().usesShadeColor)
+	if (CombinerInfo::get().getCurrent()->usesShadeColor())
 		glEnableVertexAttribArray(SC_COLOR);
 	else
 		glDisableVertexAttribArray(SC_COLOR);
@@ -908,17 +908,17 @@ void OGL_SetColorArray()
 
 void OGL_SetTexCoordArrays()
 {
-	if (CombinerInfo::get().usesT0)
+	if (CombinerInfo::get().getCurrent()->usesT0())
 		glEnableVertexAttribArray(SC_TEXCOORD0);
 	else
 		glDisableVertexAttribArray(SC_TEXCOORD0);
 
-	if (CombinerInfo::get().usesT1)
+	if (CombinerInfo::get().getCurrent()->usesT1())
 		glEnableVertexAttribArray(SC_TEXCOORD1);
 	else
 		glDisableVertexAttribArray(SC_TEXCOORD1);
 
-	if (OGL.renderState == GLInfo::rsTriangle && (CombinerInfo::get().usesT0 || CombinerInfo::get().usesT1))
+	if (OGL.renderState == GLInfo::rsTriangle && (CombinerInfo::get().getCurrent()->usesT0() || CombinerInfo::get().getCurrent()->usesT1()))
 		glEnableVertexAttribArray(SC_STSCALED);
 	else
 		glDisableVertexAttribArray(SC_STSCALED);
@@ -937,7 +937,7 @@ void OGL_DrawTriangles()
 		OGL_UpdateStates();
 
 	const bool updateArrays = OGL.renderState != GLInfo::rsTriangle;
-	if (updateArrays || CombinerInfo::get().changed) {
+	if (updateArrays || CombinerInfo::get().isChanged()) {
 		OGL.renderState = GLInfo::rsTriangle;
 		OGL_SetColorArray();
 		OGL_SetTexCoordArrays();
@@ -975,7 +975,7 @@ void OGL_DrawLine(int v0, int v1, float width )
 	if (gSP.changed || gDP.changed)
 		OGL_UpdateStates();
 
-	if (OGL.renderState != GLInfo::rsLine || CombinerInfo::get().changed)	{
+	if (OGL.renderState != GLInfo::rsLine || CombinerInfo::get().isChanged()) {
 		OGL_SetColorArray();
 		glDisableVertexAttribArray(SC_TEXCOORD0);
 		glDisableVertexAttribArray(SC_TEXCOORD1);
@@ -1001,7 +1001,7 @@ void OGL_DrawRect( int ulx, int uly, int lrx, int lry, float *color )
 		OGL_UpdateStates();
 
 	const bool updateArrays = OGL.renderState != GLInfo::rsRect;
-	if (updateArrays || CombinerInfo::get().changed) {
+	if (updateArrays || CombinerInfo::get().isChanged()) {
 		OGL.renderState = GLInfo::rsRect;
 		glDisableVertexAttribArray(SC_COLOR);
 		glDisableVertexAttribArray(SC_TEXCOORD0);
@@ -1047,7 +1047,7 @@ void OGL_DrawTexturedRect( float ulx, float uly, float lrx, float lry, float uls
 		OGL_UpdateStates();
 
 	const bool updateArrays = OGL.renderState != GLInfo::rsTexRect;
-	if (updateArrays || CombinerInfo::get().changed) {
+	if (updateArrays || CombinerInfo::get().isChanged()) {
 		OGL.renderState = GLInfo::rsTexRect;
 		glDisableVertexAttribArray(SC_COLOR);
 		OGL_SetTexCoordArrays();
@@ -1088,7 +1088,7 @@ void OGL_DrawTexturedRect( float ulx, float uly, float lrx, float lry, float uls
 	OGL.rect[3].x = OGL.rect[1].x;
 	OGL.rect[3].y = OGL.rect[2].y;
 
-	if (CombinerInfo::get().usesT0 && cache.current[0] && gSP.textureTile[0]) {
+	if (CombinerInfo::get().getCurrent()->usesT0() && cache.current[0] && gSP.textureTile[0]) {
 		OGL.rect[0].s0 = uls * cache.current[0]->shiftScaleS - gSP.textureTile[0]->fuls;
 		OGL.rect[0].t0 = ult * cache.current[0]->shiftScaleT - gSP.textureTile[0]->fult;
 		OGL.rect[3].s0 = (lrs + 1.0f) * cache.current[0]->shiftScaleS - gSP.textureTile[0]->fuls;
@@ -1126,7 +1126,7 @@ void OGL_DrawTexturedRect( float ulx, float uly, float lrx, float lry, float uls
 		OGL.rect[3].t0 *= cache.current[0]->scaleT;
 	}
 
-	if (CombinerInfo::get().usesT1 && cache.current[1] && gSP.textureTile[1])
+	if (CombinerInfo::get().getCurrent()->usesT1() && cache.current[1] && gSP.textureTile[1])
 	{
 		OGL.rect[0].s1 = uls * cache.current[1]->shiftScaleS - gSP.textureTile[1]->fuls;
 		OGL.rect[0].t1 = ult * cache.current[1]->shiftScaleT - gSP.textureTile[1]->fult;

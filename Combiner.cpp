@@ -126,13 +126,11 @@ void SimplifyCycle( CombineCycle *cc, CombinerStage *stage )
 	stage->numOps = 1;
 
 	// If we're just subtracting zero, skip it
-	if (cc->sb != ZERO)
-	{
+	if (cc->sb != ZERO) {
 		// Subtracting a number from itself is zero
 		if (cc->sb == stage->op[0].param1)
 			stage->op[0].param1 = ZERO;
-		else
-		{
+		else {
 			stage->op[1].op = SUB;
 			stage->op[1].param1 = cc->sb;
 			stage->numOps++;
@@ -140,22 +138,17 @@ void SimplifyCycle( CombineCycle *cc, CombinerStage *stage )
 	}
 
 	// If we either subtracted, or didn't load a zero
-	if ((stage->numOps > 1) || (stage->op[0].param1 != ZERO))
-	{
+	if ((stage->numOps > 1) || (stage->op[0].param1 != ZERO)) {
 		// Multiplying by zero is zero
-		if (cc->m == ZERO)
-		{
+		if (cc->m == ZERO) {
 			stage->numOps = 1;
 			stage->op[0].op = LOAD;
 			stage->op[0].param1 = ZERO;
-		}
-		else
-		{
+		} else {
 			// Multiplying by one, so just do a load
 			if ((stage->numOps == 1) && (stage->op[0].param1 == ONE))
 				stage->op[0].param1 = cc->m;
-			else
-			{
+			else {
 				stage->op[stage->numOps].op = MUL;
 				stage->op[stage->numOps].param1 = cc->m;
 				stage->numOps++;
@@ -164,13 +157,11 @@ void SimplifyCycle( CombineCycle *cc, CombinerStage *stage )
 	}
 
 	// Don't bother adding zero
-	if (cc->a != ZERO)
-	{
+	if (cc->a != ZERO) {
 		// If all we have so far is zero, then load this instead
 		if ((stage->numOps == 1) && (stage->op[0].param1 == ZERO))
 			stage->op[0].param1 = cc->a;
-		else
-		{
+		else {
 			stage->op[stage->numOps].op = ADD;
 			stage->op[stage->numOps].param1 = cc->a;
 			stage->numOps++;
@@ -178,8 +169,7 @@ void SimplifyCycle( CombineCycle *cc, CombinerStage *stage )
 	}
 
 	// Handle interpolation
-	if ((stage->numOps == 4) && (stage->op[1].param1 == stage->op[3].param1))
-	{
+	if ((stage->numOps == 4) && (stage->op[1].param1 == stage->op[3].param1)) {
 		stage->numOps = 1;
 		stage->op[0].op = INTER;
 		stage->op[0].param2 = stage->op[1].param1;
@@ -197,14 +187,11 @@ ShaderCombiner * CombinerInfo::_compile(u64 mux) const
 
 	Combiner color, alpha;
 
-	if (gDP.otherMode.cycleType == G_CYC_2CYCLE)
-	{
+	if (gDP.otherMode.cycleType == G_CYC_2CYCLE) {
 		numCycles = 2;
 		color.numStages = 2;
 		alpha.numStages = 2;
-	}
-	else
-	{
+	} else {
 		numCycles = 1;
 		color.numStages = 1;
 		alpha.numStages = 1;
@@ -232,8 +219,7 @@ ShaderCombiner * CombinerInfo::_compile(u64 mux) const
 	ac[1].m  = mAExpanded[combine.mA1];
 	ac[1].a  = aAExpanded[combine.aA1];
 
-	for (int i = 0; i < numCycles; i++)
-	{
+	for (int i = 0; i < numCycles; i++) {
 		// Simplify each RDP combiner cycle into a combiner stage
 		SimplifyCycle( &cc[i], &color.stage[i] );
 		SimplifyCycle( &ac[i], &alpha.stage[i] );
@@ -242,22 +228,22 @@ ShaderCombiner * CombinerInfo::_compile(u64 mux) const
 	return new ShaderCombiner( color, alpha, combine );
 }
 
-void CombinerInfo::setCombine( u64 mux )
+void CombinerInfo::setCombine(u64 _mux )
 {
-	if (m_pCurrent != NULL && m_pCurrent->getMux() == mux) {
-		changed = false;
+	if (m_pCurrent != NULL && m_pCurrent->getMux() == _mux) {
+		m_bChanged = false;
 		m_pCurrent->Update();
 		return;
 	}
-	Combiners::const_iterator iter = m_combiners.find(mux);
+	Combiners::const_iterator iter = m_combiners.find(_mux);
 	if (iter != m_combiners.end())
 		m_pCurrent = iter->second;
 	else {
-		m_pCurrent = _compile(mux);
-		m_combiners[mux] = m_pCurrent;
+		m_pCurrent = _compile(_mux);
+		m_combiners[_mux] = m_pCurrent;
 	}
 	m_pCurrent->Update();
-	changed = true;
+	m_bChanged = true;
 	gDP.changed |= CHANGED_COMBINE_COLORS;
 }
 

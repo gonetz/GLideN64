@@ -555,11 +555,6 @@ void ShaderCombiner::_locate_attributes() const {
 }
 
 void ShaderCombiner::Update() {
-	CombinerInfo::get().usesT0 = (m_nInputs & ((1<<TEXEL0)|(1<<TEXEL0_ALPHA))) != 0;
-	CombinerInfo::get().usesT1 = (m_nInputs & ((1<<TEXEL1)|(1<<TEXEL1_ALPHA))) != 0;
-	CombinerInfo::get().usesLOD = (m_nInputs & (1<<LOD_FRACTION)) != 0;
-	CombinerInfo::get().usesShadeColor = (m_nInputs & ((1<<SHADE)|(1<<SHADE_ALPHA))) != 0;
-
 	glUseProgram(m_program);
 
 	_setIUniform(m_uniforms.uTex0, 0, true);
@@ -602,7 +597,7 @@ void ShaderCombiner::UpdateColors(bool _bForce) {
 	_setFUniform(m_uniforms.uK4, gDP.convert.k4*0.0039215689f, _bForce);
 	_setFUniform(m_uniforms.uK5, gDP.convert.k5*0.0039215689f, _bForce);
 
-	if (CombinerInfo::get().usesLOD) {
+	if (usesLOD()) {
 		int uCalcLOD = (config.enableLOD && gDP.otherMode.textureLOD == G_TL_LOD) ? 1 : 0;
 		_setIUniform(m_uniforms.uEnableLod, uCalcLOD, _bForce);
 		if (uCalcLOD) {
@@ -629,7 +624,7 @@ void ShaderCombiner::UpdateTextureInfo(bool _bForce) {
 	_setIUniform(m_uniforms.uTexturePersp, gDP.otherMode.texturePersp, _bForce);
 	_setFV2Uniform(m_uniforms.uTexScale, gSP.texture.scales, gSP.texture.scalet, _bForce);
 	int nFB0 = 0, nFB1 = 0;
-	if (CombinerInfo::get().usesT0) {
+	if (usesT0()) {
 		if (gSP.textureTile[0]) {
 			_setFV2Uniform(m_uniforms.uTexOffset[0], gSP.textureTile[0]->fuls, gSP.textureTile[0]->fult, _bForce);
 			_setFV2Uniform(m_uniforms.uTexMask[0],
@@ -645,7 +640,7 @@ void ShaderCombiner::UpdateTextureInfo(bool _bForce) {
 		}
 	}
 
-	if (CombinerInfo::get().usesT1) {
+	if (usesT1()) {
 		if (gSP.textureTile[1]) {
 			_setFV2Uniform(m_uniforms.uTexOffset[1], gSP.textureTile[1]->fuls, gSP.textureTile[1]->fult, _bForce);
 			_setFV2Uniform(m_uniforms.uTexMask[1],

@@ -7,6 +7,7 @@ class ShaderCombiner {
 public:
 	ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCombine & _combine);
 	~ShaderCombiner();
+
 	void Update();
 	void UpdateColors(bool _bForce = false);
 	void UpdateFBInfo(bool _bForce = false);
@@ -15,7 +16,13 @@ public:
 	void UpdateTextureInfo(bool _bForce = false);
 	void UpdateRenderState(bool _bForce = false);
 	void UpdateLight(bool _bForce = false);
+
 	u64 getMux() const {return m_combine.mux;}
+
+	bool usesT0() const {return (m_nInputs & ((1<<TEXEL0)|(1<<TEXEL0_ALPHA))) != 0;}
+	bool usesT1() const {return (m_nInputs & ((1<<TEXEL1)|(1<<TEXEL1_ALPHA))) != 0;}
+	bool usesLOD() const {return (m_nInputs & (1<<LOD_FRACTION)) != 0;}
+	bool usesShadeColor() const {return (m_nInputs & ((1<<SHADE)|(1<<SHADE_ALPHA))) != 0;}
 
 private:
 	struct iUniform {GLint loc; int val;};

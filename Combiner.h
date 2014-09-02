@@ -118,24 +118,24 @@ class CombinerInfo
 {
 public:
 	void init();
-	void setCombine( u64 mux );
 	void destroy();
+	void setCombine(u64 _mux);
+
+	ShaderCombiner * getCurrent() const {return m_pCurrent;}
+	bool isChanged() const {return m_bChanged;}
 
 	static CombinerInfo & get() {
 		static CombinerInfo info;
 		return info;
 	}
 
-	ShaderCombiner * getCurrent() const {return m_pCurrent;}
-
-	bool usesT0, usesT1, usesLOD, usesShadeColor, changed;
-
 private:
-	CombinerInfo() :
-		m_pCurrent(NULL), usesT0(false), usesT1(false),
-		usesShadeColor(false), changed(false) {}
+	CombinerInfo() : m_pCurrent(NULL), m_bChanged(false) {}
+	CombinerInfo(const CombinerInfo &);
+
 	ShaderCombiner * _compile(u64 mux) const;
 
+	bool m_bChanged;
 	ShaderCombiner * m_pCurrent;
 	typedef std::map<u64, ShaderCombiner *> Combiners;
 	Combiners m_combiners;
