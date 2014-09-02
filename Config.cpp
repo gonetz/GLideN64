@@ -26,7 +26,7 @@ struct
 	} resolution[32];
 
 	DWORD refreshRate[32];
-	
+
 	DWORD	numBitDepths;
 	DWORD	numResolutions;
 	DWORD	numRefreshRates;
@@ -37,7 +37,7 @@ struct
 struct
 {
 	WORD width, height;
-	char *description;
+	const char *description;
 } windowedModes[12] = {
 	{ 320, 240, "320 x 240" },
 	{ 400, 300, "400 x 300" },
