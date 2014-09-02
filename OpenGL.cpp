@@ -24,6 +24,7 @@
 #include "gDP.h"
 #include "Textures.h"
 #include "Combiner.h"
+#include "GLSLCombiner.h"
 #include "FrameBuffer.h"
 #include "DepthBuffer.h"
 #include "VI.h"
@@ -766,7 +767,7 @@ void OGL_UpdateStates()
 		OGL_UpdateCullFace();
 
 	if (gSP.changed & CHANGED_LIGHT)
-		CombinerInfo::get().current->compiled->UpdateLight();
+		CombinerInfo::get().getCurrent()->UpdateLight();
 
 	if (config.frameBufferEmulation.N64DepthCompare) {
 		glDisable( GL_DEPTH_TEST );
@@ -808,7 +809,7 @@ void OGL_UpdateStates()
 	if ((gSP.changed & CHANGED_TEXTURE) || (gDP.changed & CHANGED_TILE) || (gDP.changed & CHANGED_TMEM))
 	{
 		//For some reason updating the texture cache on the first frame of LOZ:OOT causes a NULL Pointer exception...
-		if (CombinerInfo::get().current != NULL)
+		if (CombinerInfo::get().getCurrent() != NULL)
 		{
 			if (CombinerInfo::get().usesT0)
 				TextureCache_Update(0);
@@ -821,7 +822,7 @@ void OGL_UpdateStates()
 				TextureCache_Update(1);
 			else
 				TextureCache_ActivateDummy(1);
-			CombinerInfo::get().current->compiled->UpdateTextureInfo(true);
+			CombinerInfo::get().getCurrent()->UpdateTextureInfo(true);
 		}
 	}
 
@@ -959,8 +960,8 @@ void OGL_DrawTriangles()
 		CombinerInfo::get().updateRenderState();
 	}
 
-	CombinerInfo::get().current->compiled->UpdateColors(true);
-	CombinerInfo::get().current->compiled->UpdateLight(true);
+	CombinerInfo::get().getCurrent()->UpdateColors(true);
+	CombinerInfo::get().getCurrent()->UpdateLight(true);
 	glDrawElements(GL_TRIANGLES, OGL.triangles.num, GL_UNSIGNED_BYTE, OGL.triangles.elements);
 	OGL.triangles.num = 0;
 
@@ -1012,7 +1013,7 @@ void OGL_DrawRect( int ulx, int uly, int lrx, int lry, float *color )
 		glVertexAttrib4f(SC_COLOR, 0, 0, 0, 0);
 		glVertexAttrib4f(SC_POSITION, 0, 0, (gDP.otherMode.depthSource == G_ZS_PRIM) ? gDP.primDepth.z : gSP.viewport.nearz, 1.0);
 		glVertexAttribPointer(SC_POSITION, 2, GL_FLOAT, GL_FALSE, sizeof(GLVertex), &OGL.rect[0].x);
-		CombinerInfo::get().current->compiled->UpdateRenderState();
+		CombinerInfo::get().getCurrent()->UpdateRenderState();
 	}
 
 	if (frameBuffer.drawBuffer != GL_FRAMEBUFFER)
@@ -1061,7 +1062,7 @@ void OGL_DrawTexturedRect( float ulx, float uly, float lrx, float lry, float uls
 		glVertexAttribPointer(SC_POSITION, 2, GL_FLOAT, GL_FALSE, sizeof(GLVertex), &OGL.rect[0].x);
 		glVertexAttribPointer(SC_TEXCOORD0, 2, GL_FLOAT, GL_FALSE, sizeof(GLVertex), &OGL.rect[0].s0);
 		glVertexAttribPointer(SC_TEXCOORD1, 2, GL_FLOAT, GL_FALSE, sizeof(GLVertex), &OGL.rect[0].s1);
-		CombinerInfo::get().current->compiled->UpdateRenderState();
+		CombinerInfo::get().getCurrent()->UpdateRenderState();
 	}
 
 #ifndef GLES2

@@ -1,18 +1,21 @@
 #ifndef GLSL_COMBINER_H
 #define GLSL_COMBINER_H
 
-class GLSLCombiner : public OGLCombiner {
+#include "gDP.h"
+
+class ShaderCombiner {
 public:
-	GLSLCombiner(Combiner *_color, Combiner *_alpha);
-	virtual ~GLSLCombiner();
-	virtual void Set();
-	virtual void UpdateColors(bool _bForce = false);
-	virtual void UpdateFBInfo(bool _bForce = false);
-	virtual void UpdateDepthInfo(bool _bForce = false);
-	virtual void UpdateAlphaTestInfo(bool _bForce = false);
-	virtual void UpdateTextureInfo(bool _bForce = false);
-	virtual void UpdateRenderState(bool _bForce = false);
-	virtual void UpdateLight(bool _bForce = false);
+	ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCombine & _combine);
+	~ShaderCombiner();
+	void Update();
+	void UpdateColors(bool _bForce = false);
+	void UpdateFBInfo(bool _bForce = false);
+	void UpdateDepthInfo(bool _bForce = false);
+	void UpdateAlphaTestInfo(bool _bForce = false);
+	void UpdateTextureInfo(bool _bForce = false);
+	void UpdateRenderState(bool _bForce = false);
+	void UpdateLight(bool _bForce = false);
+	u64 getMux() const {return m_combine.mux;}
 
 private:
 	struct iUniform {GLint loc; int val;};
@@ -87,6 +90,7 @@ private:
 		}
 	}
 
+	gDPCombine m_combine;
 	UniformLocation m_uniforms;
 	GLuint m_aShaders[8];
 	GLuint m_program;

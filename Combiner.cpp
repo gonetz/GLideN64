@@ -105,46 +105,55 @@ static DWORD64 ACEncodeD[] =
 void CombinerInfo::init()
 {
 	InitGLSLCombiner();
-	root = NULL;
-	current = NULL;
+	m_pCurrent = NULL;
+}
+
+void CombinerInfo::destroy()
+{
+	DestroyGLSLCombiner();
+	m_pCurrent = NULL;
+	for (Combiners::iterator cur = m_combiners.begin(); cur != m_combiners.end(); ++cur)
+		delete cur->second;
+	m_combiners.clear();
 }
 
 void CombinerInfo::updateCombineColors()
 {
-	current->compiled->UpdateColors();
+	m_pCurrent->UpdateColors();
 	gDP.changed &= ~CHANGED_COMBINE_COLORS;
 }
 
 void CombinerInfo::updateCombineFBInfo()
 {
-	current->compiled->UpdateFBInfo(true);
+	m_pCurrent->UpdateFBInfo(true);
 	gDP.changed &= ~CHANGED_FB_TEXTURE;
 }
 
 void CombinerInfo::updateCombineDepthInfo()
 {
-	if (current != NULL)
-		current->compiled->UpdateDepthInfo(true);
+	if (m_pCurrent != NULL)
+		m_pCurrent->UpdateDepthInfo(true);
 }
 
 void CombinerInfo::updateAlphaTestInfo()
 {
-	if (current != NULL)
-		current->compiled->UpdateAlphaTestInfo();
+	if (m_pCurrent != NULL)
+		m_pCurrent->UpdateAlphaTestInfo();
 }
 
 void CombinerInfo::updateTextureInfo()
 {
-	if (current != NULL)
-		current->compiled->UpdateTextureInfo();
+	if (m_pCurrent != NULL)
+		m_pCurrent->UpdateTextureInfo();
 }
 
 void CombinerInfo::updateRenderState() {
-	if (current != NULL)
-		current->compiled->UpdateRenderState();
+	if (m_pCurrent != NULL)
+		m_pCurrent->UpdateRenderState();
 }
 
-void Combiner_SimplifyCycle( CombineCycle *cc, CombinerStage *stage )
+static
+void SimplifyCycle( CombineCycle *cc, CombinerStage *stage )
 {
 	// Load the first operand
 	stage->op[0].op = LOAD;
@@ -213,7 +222,7 @@ void Combiner_SimplifyCycle( CombineCycle *cc, CombinerStage *stage )
 	}
 }
 
-CachedCombiner *Combiner_Compile( u64 mux )
+ShaderCombiner * CombinerInfo::_compile(u64 mux) const
 {
 	gDPCombine combine;
 
@@ -261,38 +270,30 @@ CachedCombiner *Combiner_Compile( u64 mux )
 	for (int i = 0; i < numCycles; i++)
 	{
 		// Simplify each RDP combiner cycle into a combiner stage
-		Combiner_SimplifyCycle( &cc[i], &color.stage[i] );
-		Combiner_SimplifyCycle( &ac[i], &alpha.stage[i] );
+		SimplifyCycle( &cc[i], &color.stage[i] );
+		SimplifyCycle( &ac[i], &alpha.stage[i] );
 	}
 
-	CachedCombiner *cached = (CachedCombiner*)malloc( sizeof( CachedCombiner ) );
-
-	cached->combine.mux = combine.mux;
-	cached->left = NULL;
-	cached->right = NULL;
-
-	cached->compiled = new GLSLCombiner( &color, &alpha );
-
-	return cached;
+	return new ShaderCombiner( color, alpha, combine );
 }
 
-void Combiner_DeleteCombiner( CachedCombiner *combiner )
+void CombinerInfo::setCombine( u64 mux )
 {
-	if (combiner->left) Combiner_DeleteCombiner( combiner->left );
-	if (combiner->right) Combiner_DeleteCombiner( combiner->right );
-
-	delete combiner->compiled;
-	free( combiner );
-}
-
-void CombinerInfo::destroy()
-{
-	DestroyGLSLCombiner();
-
-	if (root) {
-		Combiner_DeleteCombiner( root );
-		root = NULL;
+	if (m_pCurrent != NULL && m_pCurrent->getMux() == mux) {
+		changed = false;
+		m_pCurrent->Update();
+		return;
 	}
+	Combiners::const_iterator iter = m_combiners.find(mux);
+	if (iter != m_combiners.end())
+		m_pCurrent = iter->second;
+	else {
+		m_pCurrent = _compile(mux);
+		m_combiners[mux] = m_pCurrent;
+	}
+	m_pCurrent->Update();
+	changed = true;
+	gDP.changed |= CHANGED_COMBINE_COLORS;
 }
 
 DWORD64 Combiner_EncodeCombineMode( WORD saRGB0, WORD sbRGB0, WORD mRGB0, WORD aRGB0,
@@ -304,54 +305,4 @@ DWORD64 Combiner_EncodeCombineMode( WORD saRGB0, WORD sbRGB0, WORD mRGB0, WORD a
 		((DWORD64)ACEncodeA[saA0] << 44) | ((DWORD64)ACEncodeB[sbA0] << 12) | ((DWORD64)ACEncodeC[mA0] << 41) | ((DWORD64)ACEncodeD[aA0] << 9) |
 		((DWORD64)CCEncodeA[saRGB1] << 37) | ((DWORD64)CCEncodeB[sbRGB1] << 24) | ((DWORD64)CCEncodeC[mRGB1]      ) | ((DWORD64)CCEncodeD[aRGB1] <<  6) |
 		((DWORD64)ACEncodeA[saA1] << 18) | ((DWORD64)ACEncodeB[sbA1] <<  3) | ((DWORD64)ACEncodeC[mA1] << 18) | ((DWORD64)ACEncodeD[aA1]     ));
-}
-
-void Combiner_SelectCombine( u64 mux )
-{
-	if (CombinerInfo::get().current != NULL && CombinerInfo::get().current->combine.mux == mux) {
-		CombinerInfo::get().changed = false;
-		return;
-	}
-	CachedCombiner *current = CombinerInfo::get().root;
-	CachedCombiner *parent = current;
-
-	while (current)
-	{
-		parent = current;
-
-		if (mux == current->combine.mux)
-			break;
-		else if (mux < current->combine.mux)
-			current = current->left;
-		else
-			current = current->right;
-	}
-
-	if (current == NULL)
-	{
-		current = Combiner_Compile( mux );
-
-		if (parent == NULL)
-			CombinerInfo::get().root = current;
-		else if (parent->combine.mux > current->combine.mux)
-			parent->left = current;
-		else
-			parent->right = current;
-	}
-
-	CombinerInfo::get().current = current;
-	CombinerInfo::get().changed = true;
-
-	gDP.changed |= CHANGED_COMBINE_COLORS;
-}
-
-void Combiner_SetCombineStates()
-{
-	CombinerInfo::get().current->compiled->Set();
-}
-
-void CombinerInfo::setCombine( u64 mux )
-{
-	Combiner_SelectCombine( mux );
-	Combiner_SetCombineStates();
 }

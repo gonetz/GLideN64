@@ -336,26 +336,27 @@ int CompileCombiner(const CombinerStage & _stage, const char** _Input, char * _f
 	return nRes;
 }
 
-GLSLCombiner::GLSLCombiner(Combiner *_color, Combiner *_alpha) {
+ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCombine & _combine) : m_combine(_combine)
+{
 	char *fragment_shader = (char*)malloc(1024*5);
 	strcpy(fragment_shader, fragment_shader_header_common_variables);
 
 	char strCombiner[512];
 	strcpy(strCombiner, "  alpha1 = ");
-	m_nInputs = CompileCombiner(_alpha->stage[0], AlphaInput, strCombiner);
+	m_nInputs = CompileCombiner(_alpha.stage[0], AlphaInput, strCombiner);
 	strcat(strCombiner, "  color1 = ");
-	m_nInputs |= CompileCombiner(_color->stage[0], ColorInput, strCombiner);
+	m_nInputs |= CompileCombiner(_color.stage[0], ColorInput, strCombiner);
 	strcat(strCombiner, "  combined_color = vec4(color1, alpha1); \n");
-	if (_alpha->numStages == 2) {
+	if (_alpha.numStages == 2) {
 		strcat(strCombiner, "  alpha2 = ");
-		CorrectSecondStageParams(_alpha->stage[1]);
-		m_nInputs |= CompileCombiner(_alpha->stage[1], AlphaInput, strCombiner);
+		CorrectSecondStageParams(_alpha.stage[1]);
+		m_nInputs |= CompileCombiner(_alpha.stage[1], AlphaInput, strCombiner);
 	} else
 		strcat(strCombiner, "  alpha2 = alpha1; \n");
-	if (_color->numStages == 2) {
+	if (_color.numStages == 2) {
 		strcat(strCombiner, "  color2 = ");
-		CorrectSecondStageParams(_color->stage[1]);
-		m_nInputs |= CompileCombiner(_color->stage[1], ColorInput, strCombiner);
+		CorrectSecondStageParams(_color.stage[1]);
+		m_nInputs |= CompileCombiner(_color.stage[1], ColorInput, strCombiner);
 	} else
 		strcat(strCombiner, "  color2 = color1; \n");
 
@@ -461,7 +462,7 @@ GLSLCombiner::GLSLCombiner(Combiner *_color, Combiner *_alpha) {
 	_locateUniforms();
 }
 
-GLSLCombiner::~GLSLCombiner() {
+ShaderCombiner::~ShaderCombiner() {
 	u32 shaderIndex = 0;
 	const u32 arraySize = sizeof(m_aShaders)/sizeof(m_aShaders[0]);
 	while (shaderIndex < arraySize && m_aShaders[shaderIndex] > 0) {
@@ -474,7 +475,7 @@ GLSLCombiner::~GLSLCombiner() {
 #define LocateUniform(A) \
 	m_uniforms.A.loc = glGetUniformLocation(m_program, #A);
 
-void GLSLCombiner::_locateUniforms() {
+void ShaderCombiner::_locateUniforms() {
 	LocateUniform(uTex0);
 	LocateUniform(uTex1);
 	LocateUniform(uTlutImage);
@@ -516,9 +517,9 @@ void GLSLCombiner::_locateUniforms() {
 	LocateUniform(uFogColor);
 	LocateUniform(uCenterColor);
 	LocateUniform(uScaleColor);
-	
+
 	LocateUniform(uRenderState);
-	
+
 	LocateUniform(uTexScale);
 	LocateUniform(uTexOffset[0]);
 	LocateUniform(uTexOffset[1]);
@@ -544,7 +545,7 @@ void GLSLCombiner::_locateUniforms() {
 	}
 }
 
-void GLSLCombiner::_locate_attributes() const {
+void ShaderCombiner::_locate_attributes() const {
 	glBindAttribLocation(m_program, SC_POSITION, "aPosition");
 	glBindAttribLocation(m_program, SC_COLOR, "aColor");
 	glBindAttribLocation(m_program, SC_TEXCOORD0, "aTexCoord0");
@@ -553,7 +554,7 @@ void GLSLCombiner::_locate_attributes() const {
 	glBindAttribLocation(m_program, SC_NUMLIGHTS, "aNumLights");
 }
 
-void GLSLCombiner::Set() {
+void ShaderCombiner::Update() {
 	CombinerInfo::get().usesT0 = (m_nInputs & ((1<<TEXEL0)|(1<<TEXEL0_ALPHA))) != 0;
 	CombinerInfo::get().usesT1 = (m_nInputs & ((1<<TEXEL1)|(1<<TEXEL1_ALPHA))) != 0;
 	CombinerInfo::get().usesLOD = (m_nInputs & (1<<LOD_FRACTION)) != 0;
@@ -574,11 +575,11 @@ void GLSLCombiner::Set() {
 	UpdateLight(true);
 }
 
-void GLSLCombiner::UpdateRenderState(bool _bForce) {
+void ShaderCombiner::UpdateRenderState(bool _bForce) {
 	_setIUniform(m_uniforms.uRenderState, OGL.renderState, _bForce);
 }
 
-void GLSLCombiner::UpdateLight(bool _bForce) {
+void ShaderCombiner::UpdateLight(bool _bForce) {
 	if (config.enableHWLighting == 0)
 		return;
 	for (s32 i = 0; i <= gSP.numLights; ++i) {
@@ -587,7 +588,7 @@ void GLSLCombiner::UpdateLight(bool _bForce) {
 	}
 }
 
-void GLSLCombiner::UpdateColors(bool _bForce) {
+void ShaderCombiner::UpdateColors(bool _bForce) {
 	_setV4Uniform(m_uniforms.uEnvColor, &gDP.envColor.r, _bForce);
 	_setV4Uniform(m_uniforms.uPrimColor, &gDP.primColor.r, _bForce);
 	_setV4Uniform(m_uniforms.uCenterColor, &gDP.key.center.r, _bForce);
@@ -612,7 +613,7 @@ void GLSLCombiner::UpdateColors(bool _bForce) {
 			_setIUniform(m_uniforms.uTextureDetail, gDP.otherMode.textureDetail, _bForce);
 		}
 	}
-	
+
 	_setIUniform(m_uniforms.uAlphaCompareMode, gDP.otherMode.alphaCompare, _bForce);
 	_setIUniform(m_uniforms.uAlphaDitherMode, gDP.otherMode.alphaDither, _bForce);
 	_setIUniform(m_uniforms.uColorDitherMode, gDP.otherMode.colorDither, _bForce);
@@ -622,7 +623,7 @@ void GLSLCombiner::UpdateColors(bool _bForce) {
 		_setFUniform(m_uniforms.uNoiseTime, (float)(rand()&255), _bForce);
 }
 
-void GLSLCombiner::UpdateTextureInfo(bool _bForce) {
+void ShaderCombiner::UpdateTextureInfo(bool _bForce) {
 	_setIUniform(m_uniforms.uTexturePersp, gDP.otherMode.texturePersp, _bForce);
 	_setFV2Uniform(m_uniforms.uTexScale, gSP.texture.scales, gSP.texture.scalet, _bForce);
 	int nFB0 = 0, nFB1 = 0;
@@ -661,7 +662,7 @@ void GLSLCombiner::UpdateTextureInfo(bool _bForce) {
 	_setFUniform(m_uniforms.uPrimLod, gDP.primColor.l, _bForce);
 }
 
-void GLSLCombiner::UpdateFBInfo(bool _bForce) {
+void ShaderCombiner::UpdateFBInfo(bool _bForce) {
 	int nFb8bitMode = 0, nFbFixedAlpha = 0;
 	if (cache.current[0] != NULL && cache.current[0]->frameBufferTexture == TRUE) {
 		if (cache.current[0]->size == G_IM_SIZ_8b) {
@@ -681,7 +682,7 @@ void GLSLCombiner::UpdateFBInfo(bool _bForce) {
 	_setIUniform(m_uniforms.uFbFixedAlpha, nFbFixedAlpha, _bForce);
 }
 
-void GLSLCombiner::UpdateDepthInfo(bool _bForce) {
+void ShaderCombiner::UpdateDepthInfo(bool _bForce) {
 	if (!OGL.bImageTexture)
 		return;
 
@@ -702,7 +703,7 @@ void GLSLCombiner::UpdateDepthInfo(bool _bForce) {
 	_setFUniform(m_uniforms.uDepthTrans, gSP.viewport.vtrans[2]*32768.0f, _bForce);
 }
 
-void GLSLCombiner::UpdateAlphaTestInfo(bool _bForce) {
+void ShaderCombiner::UpdateAlphaTestInfo(bool _bForce) {
 	if ((gDP.otherMode.alphaCompare == G_AC_THRESHOLD) && !(gDP.otherMode.alphaCvgSel))	{
 		_setIUniform(m_uniforms.uEnableAlphaTest, 1, _bForce);
 		_setFUniform(m_uniforms.uAlphaTestValue, gDP.blendColor.a, _bForce);
@@ -741,7 +742,7 @@ void GLSL_RenderDepth() {
 	glBindTexture(GL_TEXTURE_2D, frameBuffer.top->pDepthBuffer->depth_texture->glName);
 //	glBindTexture(GL_TEXTURE_2D, g_zlut_tex);
 
-    CombinerInfo::get().setCombine( EncodeCombineMode( 0, 0, 0, TEXEL0, 0, 0, 0, 1, 0, 0, 0, TEXEL0, 0, 0, 0, 1 ) );
+	CombinerInfo::get().setCombine( EncodeCombineMode( 0, 0, 0, TEXEL0, 0, 0, 0, 1, 0, 0, 0, TEXEL0, 0, 0, 0, 1 ) );
 
 			glDisable( GL_BLEND );
 			glDisable( GL_ALPHA_TEST );
@@ -767,16 +768,16 @@ void GLSL_RenderDepth() {
 			glDrawBuffer( GL_BACK );
 #endif
 			glBegin(GL_QUADS);
- 				glTexCoord2f( 0.0f, 0.0f );
+				glTexCoord2f( 0.0f, 0.0f );
 				glVertex2f( 0.0f, 0.0f );
 
 				glTexCoord2f( 0.0f, v1 );
 				glVertex2f( 0.0f, (GLfloat)OGL.height );
 
- 				glTexCoord2f( u1,  v1 );
+				glTexCoord2f( u1,  v1 );
 				glVertex2f( (GLfloat)OGL.width, (GLfloat)OGL.height );
 
- 				glTexCoord2f( u1, 0.0f );
+				glTexCoord2f( u1, 0.0f );
 				glVertex2f( (GLfloat)OGL.width, 0.0f );
 			glEnd();
 #ifdef _WINDOWS

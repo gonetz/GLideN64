@@ -1,6 +1,8 @@
 #ifndef COMBINER_H
 #define COMBINER_H
 
+#include <map>
+
 #include "GLideN64.h"
 #include "OpenGL.h"
 #include "gDP.h"
@@ -111,52 +113,38 @@ struct CombineCycle
 	int sa, sb, m, a;
 };
 
-class OGLCombiner {
-public:
-	virtual void Set() = 0;
-	virtual void UpdateColors(bool _bForce = false) = 0;
-	virtual void UpdateFBInfo(bool _bForce = false) = 0;
-	virtual void UpdateDepthInfo(bool _bForce = false) = 0;
-	virtual void UpdateAlphaTestInfo(bool _bForce = false) = 0;
-	virtual void UpdateTextureInfo(bool _bForce = false) = 0;
-	virtual void UpdateRenderState(bool _bForce = false) = 0;
-	virtual void UpdateLight(bool _bForce = false) = 0;
-};
-
-struct CachedCombiner
-{
-	gDPCombine combine;
-
-	OGLCombiner *compiled;
-	CachedCombiner *left, *right;
-};
-
+class ShaderCombiner;
 class CombinerInfo
 {
 public:
-    void init();
-    void updateCombineColors();
-    void updateCombineFBInfo();
-    void updateCombineDepthInfo();
-    void updateAlphaTestInfo();
-    void updateTextureInfo();
-    void updateRenderState();
-    void setCombine( u64 mux );
-    void destroy();
+	void init();
+	void updateCombineColors();
+	void updateCombineFBInfo();
+	void updateCombineDepthInfo();
+	void updateAlphaTestInfo();
+	void updateTextureInfo();
+	void updateRenderState();
+	void setCombine( u64 mux );
+	void destroy();
 
 	static CombinerInfo & get() {
 		static CombinerInfo info;
 		return info;
 	}
 
-    CachedCombiner *root, *current;
+	ShaderCombiner * getCurrent() const {return m_pCurrent;}
 
-    bool usesT0, usesT1, usesLOD, usesShadeColor, changed;
+	bool usesT0, usesT1, usesLOD, usesShadeColor, changed;
 
 private:
 	CombinerInfo() :
-		root(NULL), current(NULL), usesT0(false), usesT1(false),
+		m_pCurrent(NULL), usesT0(false), usesT1(false),
 		usesShadeColor(false), changed(false) {}
+	ShaderCombiner * _compile(u64 mux) const;
+
+	ShaderCombiner * m_pCurrent;
+	typedef std::map<u64, ShaderCombiner *> Combiners;
+	Combiners m_combiners;
 };
 
 #endif
