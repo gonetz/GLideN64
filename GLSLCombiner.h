@@ -8,14 +8,14 @@ public:
 	ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCombine & _combine);
 	~ShaderCombiner();
 
-	void Update();
-	void UpdateColors(bool _bForce = false);
-	void UpdateFBInfo(bool _bForce = false);
-	void UpdateDepthInfo(bool _bForce = false);
-	void UpdateAlphaTestInfo(bool _bForce = false);
-	void UpdateTextureInfo(bool _bForce = false);
-	void UpdateRenderState(bool _bForce = false);
-	void UpdateLight(bool _bForce = false);
+	void update();
+	void updateColors(bool _bForce = false);
+	void updateFBInfo(bool _bForce = false);
+	void updateDepthInfo(bool _bForce = false);
+	void updateAlphaTestInfo(bool _bForce = false);
+	void updateTextureInfo(bool _bForce = false);
+	void updateRenderState(bool _bForce = false);
+	void updateLight(bool _bForce = false);
 
 	u64 getMux() const {return m_combine.mux;}
 

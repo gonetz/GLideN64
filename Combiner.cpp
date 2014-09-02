@@ -232,7 +232,7 @@ void CombinerInfo::setCombine(u64 _mux )
 {
 	if (m_pCurrent != NULL && m_pCurrent->getMux() == _mux) {
 		m_bChanged = false;
-		m_pCurrent->Update();
+		m_pCurrent->update();
 		return;
 	}
 	Combiners::const_iterator iter = m_combiners.find(_mux);
@@ -242,7 +242,7 @@ void CombinerInfo::setCombine(u64 _mux )
 		m_pCurrent = _compile(_mux);
 		m_combiners[_mux] = m_pCurrent;
 	}
-	m_pCurrent->Update();
+	m_pCurrent->update();
 	m_bChanged = true;
 	gDP.changed |= CHANGED_COMBINE_COLORS;
 }

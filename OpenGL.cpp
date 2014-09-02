@@ -767,7 +767,7 @@ void OGL_UpdateStates()
 		OGL_UpdateCullFace();
 
 	if (gSP.changed & CHANGED_LIGHT)
-		CombinerInfo::get().getCurrent()->UpdateLight();
+		CombinerInfo::get().getCurrent()->updateLight();
 
 	if (config.frameBufferEmulation.N64DepthCompare) {
 		glDisable( GL_DEPTH_TEST );
@@ -794,7 +794,7 @@ void OGL_UpdateStates()
 	}
 
 	if ((gDP.changed & (CHANGED_ALPHACOMPARE|CHANGED_RENDERMODE|CHANGED_BLENDCOLOR)) != 0)
-		CombinerInfo::get().getCurrent()->UpdateAlphaTestInfo();
+		CombinerInfo::get().getCurrent()->updateAlphaTestInfo();
 
 	if (gDP.changed & CHANGED_SCISSOR)
 	{
@@ -822,15 +822,15 @@ void OGL_UpdateStates()
 				TextureCache_Update(1);
 			else
 				TextureCache_ActivateDummy(1);
-			CombinerInfo::get().getCurrent()->UpdateTextureInfo(true);
+			CombinerInfo::get().getCurrent()->updateTextureInfo(true);
 		}
 	}
 
 	if (gDP.changed & CHANGED_FB_TEXTURE)
-		CombinerInfo::get().getCurrent()->UpdateFBInfo(true);
+		CombinerInfo::get().getCurrent()->updateFBInfo(true);
 
 	if ((gDP.changed & CHANGED_RENDERMODE) || (gSP.geometryMode & G_ZBUFFER))
-		CombinerInfo::get().getCurrent()->UpdateDepthInfo(true);
+		CombinerInfo::get().getCurrent()->updateDepthInfo(true);
 
 	if ((gDP.changed & CHANGED_RENDERMODE) || (gDP.changed & CHANGED_CYCLETYPE))
 	{
@@ -957,11 +957,11 @@ void OGL_DrawTriangles()
 		OGL_UpdateCullFace();
 		OGL_UpdateViewport();
 		glEnable(GL_SCISSOR_TEST);
-		CombinerInfo::get().getCurrent()->UpdateRenderState();
+		CombinerInfo::get().getCurrent()->updateRenderState();
 	}
 
-	CombinerInfo::get().getCurrent()->UpdateColors(true);
-	CombinerInfo::get().getCurrent()->UpdateLight(true);
+	CombinerInfo::get().getCurrent()->updateColors(true);
+	CombinerInfo::get().getCurrent()->updateLight(true);
 	glDrawElements(GL_TRIANGLES, OGL.triangles.num, GL_UNSIGNED_BYTE, OGL.triangles.elements);
 	OGL.triangles.num = 0;
 
@@ -985,7 +985,7 @@ void OGL_DrawLine(int v0, int v1, float width )
 		OGL_UpdateCullFace();
 		OGL_UpdateViewport();
 		OGL.renderState = GLInfo::rsLine;
-		CombinerInfo::get().getCurrent()->UpdateRenderState();
+		CombinerInfo::get().getCurrent()->updateRenderState();
 	}
 
 	unsigned short elem[2];
@@ -1013,7 +1013,7 @@ void OGL_DrawRect( int ulx, int uly, int lrx, int lry, float *color )
 		glVertexAttrib4f(SC_COLOR, 0, 0, 0, 0);
 		glVertexAttrib4f(SC_POSITION, 0, 0, (gDP.otherMode.depthSource == G_ZS_PRIM) ? gDP.primDepth.z : gSP.viewport.nearz, 1.0);
 		glVertexAttribPointer(SC_POSITION, 2, GL_FLOAT, GL_FALSE, sizeof(GLVertex), &OGL.rect[0].x);
-		CombinerInfo::get().getCurrent()->UpdateRenderState();
+		CombinerInfo::get().getCurrent()->updateRenderState();
 	}
 
 	if (frameBuffer.drawBuffer != GL_FRAMEBUFFER)
@@ -1062,7 +1062,7 @@ void OGL_DrawTexturedRect( float ulx, float uly, float lrx, float lry, float uls
 		glVertexAttribPointer(SC_POSITION, 2, GL_FLOAT, GL_FALSE, sizeof(GLVertex), &OGL.rect[0].x);
 		glVertexAttribPointer(SC_TEXCOORD0, 2, GL_FLOAT, GL_FALSE, sizeof(GLVertex), &OGL.rect[0].s0);
 		glVertexAttribPointer(SC_TEXCOORD1, 2, GL_FLOAT, GL_FALSE, sizeof(GLVertex), &OGL.rect[0].s1);
-		CombinerInfo::get().getCurrent()->UpdateRenderState();
+		CombinerInfo::get().getCurrent()->updateRenderState();
 	}
 
 #ifndef GLES2

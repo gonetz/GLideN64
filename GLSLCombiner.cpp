@@ -554,7 +554,7 @@ void ShaderCombiner::_locate_attributes() const {
 	glBindAttribLocation(m_program, SC_NUMLIGHTS, "aNumLights");
 }
 
-void ShaderCombiner::Update() {
+void ShaderCombiner::update() {
 	glUseProgram(m_program);
 
 	_setIUniform(m_uniforms.uTex0, 0, true);
@@ -562,19 +562,19 @@ void ShaderCombiner::Update() {
 	_setFUniform(m_uniforms.uScreenWidth, OGL.width, true);
 	_setFUniform(m_uniforms.uScreenHeight, OGL.height, true);
 
-	UpdateRenderState(true);
-	UpdateColors(true);
-	UpdateTextureInfo(true);
-	UpdateAlphaTestInfo(true);
-	UpdateDepthInfo(true);
-	UpdateLight(true);
+	updateRenderState(true);
+	updateColors(true);
+	updateTextureInfo(true);
+	updateAlphaTestInfo(true);
+	updateDepthInfo(true);
+	updateLight(true);
 }
 
-void ShaderCombiner::UpdateRenderState(bool _bForce) {
+void ShaderCombiner::updateRenderState(bool _bForce) {
 	_setIUniform(m_uniforms.uRenderState, OGL.renderState, _bForce);
 }
 
-void ShaderCombiner::UpdateLight(bool _bForce) {
+void ShaderCombiner::updateLight(bool _bForce) {
 	if (config.enableHWLighting == 0)
 		return;
 	for (s32 i = 0; i <= gSP.numLights; ++i) {
@@ -583,7 +583,7 @@ void ShaderCombiner::UpdateLight(bool _bForce) {
 	}
 }
 
-void ShaderCombiner::UpdateColors(bool _bForce) {
+void ShaderCombiner::updateColors(bool _bForce) {
 	_setV4Uniform(m_uniforms.uEnvColor, &gDP.envColor.r, _bForce);
 	_setV4Uniform(m_uniforms.uPrimColor, &gDP.primColor.r, _bForce);
 	_setV4Uniform(m_uniforms.uCenterColor, &gDP.key.center.r, _bForce);
@@ -620,7 +620,7 @@ void ShaderCombiner::UpdateColors(bool _bForce) {
 	gDP.changed &= ~CHANGED_COMBINE_COLORS;
 }
 
-void ShaderCombiner::UpdateTextureInfo(bool _bForce) {
+void ShaderCombiner::updateTextureInfo(bool _bForce) {
 	_setIUniform(m_uniforms.uTexturePersp, gDP.otherMode.texturePersp, _bForce);
 	_setFV2Uniform(m_uniforms.uTexScale, gSP.texture.scales, gSP.texture.scalet, _bForce);
 	int nFB0 = 0, nFB1 = 0;
@@ -659,7 +659,7 @@ void ShaderCombiner::UpdateTextureInfo(bool _bForce) {
 	_setFUniform(m_uniforms.uPrimLod, gDP.primColor.l, _bForce);
 }
 
-void ShaderCombiner::UpdateFBInfo(bool _bForce) {
+void ShaderCombiner::updateFBInfo(bool _bForce) {
 	int nFb8bitMode = 0, nFbFixedAlpha = 0;
 	if (cache.current[0] != NULL && cache.current[0]->frameBufferTexture == TRUE) {
 		if (cache.current[0]->size == G_IM_SIZ_8b) {
@@ -681,7 +681,7 @@ void ShaderCombiner::UpdateFBInfo(bool _bForce) {
 	gDP.changed &= ~CHANGED_FB_TEXTURE;
 }
 
-void ShaderCombiner::UpdateDepthInfo(bool _bForce) {
+void ShaderCombiner::updateDepthInfo(bool _bForce) {
 	if (!OGL.bImageTexture)
 		return;
 
@@ -702,7 +702,7 @@ void ShaderCombiner::UpdateDepthInfo(bool _bForce) {
 	_setFUniform(m_uniforms.uDepthTrans, gSP.viewport.vtrans[2]*32768.0f, _bForce);
 }
 
-void ShaderCombiner::UpdateAlphaTestInfo(bool _bForce) {
+void ShaderCombiner::updateAlphaTestInfo(bool _bForce) {
 	if ((gDP.otherMode.alphaCompare == G_AC_THRESHOLD) && !(gDP.otherMode.alphaCvgSel))	{
 		_setIUniform(m_uniforms.uEnableAlphaTest, 1, _bForce);
 		_setFUniform(m_uniforms.uAlphaTestValue, gDP.blendColor.a, _bForce);
