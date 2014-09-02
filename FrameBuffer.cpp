@@ -143,8 +143,8 @@ void FrameBuffer_RemoveBottom()
 
 	free( frameBuffer.bottom );
 
-    frameBuffer.bottom = newBottom;
-	
+	frameBuffer.bottom = newBottom;
+
 	if (frameBuffer.bottom != NULL)
 		frameBuffer.bottom->lower = NULL;
 
@@ -222,7 +222,7 @@ FrameBuffer *FrameBuffer_AddTop()
 	if (!frameBuffer.bottom)
 		frameBuffer.bottom = newtop;
 
-    frameBuffer.top = newtop;
+	frameBuffer.top = newtop;
 
 	frameBuffer.numBuffers++;
 
@@ -550,8 +550,8 @@ FrameBuffer *FrameBuffer_FindBuffer( u32 address )
 
 void FrameBuffer_ActivateBufferTexture( s16 t, FrameBuffer *buffer )
 {
-    buffer->texture->scaleS = OGL.scaleX / (float)buffer->texture->realWidth;
-    buffer->texture->scaleT = OGL.scaleY / (float)buffer->texture->realHeight;
+	buffer->texture->scaleS = OGL.scaleX / (float)buffer->texture->realWidth;
+	buffer->texture->scaleT = OGL.scaleY / (float)buffer->texture->realHeight;
 
 	if (gSP.textureTile[t]->shifts > 10)
 		buffer->texture->shiftScaleS = (float)(1 << (16 - gSP.textureTile[t]->shifts));
@@ -980,9 +980,9 @@ void RDRAMtoFrameBuffer::CopyFromRDRAM( u32 _address, bool _bUseAlpha)
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, frameBuffer.top->fbo);
 #else
 	if (_bUseAlpha)
-        CombinerInfo::get().setCombine( EncodeCombineMode( 0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0 ) );
+		CombinerInfo::get().setCombine( EncodeCombineMode( 0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0 ) );
 	else
-        CombinerInfo::get().setCombine( EncodeCombineMode( 0, 0, 0, TEXEL0, 0, 0, 0, 1, 0, 0, 0, TEXEL0, 0, 0, 0, 1 ) );
+		CombinerInfo::get().setCombine( EncodeCombineMode( 0, 0, 0, TEXEL0, 0, 0, 0, 1, 0, 0, 0, TEXEL0, 0, 0, 0, 1 ) );
 	glEnable( GL_BLEND );
 	glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
 //	glDisable( GL_ALPHA_TEST );
