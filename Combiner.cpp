@@ -246,14 +246,3 @@ void CombinerInfo::setCombine(u64 _mux )
 	m_bChanged = true;
 	gDP.changed |= CHANGED_COMBINE_COLORS;
 }
-
-DWORD64 Combiner_EncodeCombineMode( WORD saRGB0, WORD sbRGB0, WORD mRGB0, WORD aRGB0,
-								   WORD saA0,   WORD sbA0,   WORD mA0,   WORD aA0,
-								   WORD saRGB1, WORD sbRGB1, WORD mRGB1, WORD aRGB1,
-								   WORD saA1,   WORD sbA1,   WORD mA1,   WORD aA1 )
-{
-	return (((DWORD64)CCEncodeA[saRGB0] << 52) | ((DWORD64)CCEncodeB[sbRGB0] << 28) | ((DWORD64)CCEncodeC[mRGB0] << 47) | ((DWORD64)CCEncodeD[aRGB0] << 15) |
-		((DWORD64)ACEncodeA[saA0] << 44) | ((DWORD64)ACEncodeB[sbA0] << 12) | ((DWORD64)ACEncodeC[mA0] << 41) | ((DWORD64)ACEncodeD[aA0] << 9) |
-		((DWORD64)CCEncodeA[saRGB1] << 37) | ((DWORD64)CCEncodeB[sbRGB1] << 24) | ((DWORD64)CCEncodeC[mRGB1]      ) | ((DWORD64)CCEncodeD[aRGB1] <<  6) |
-		((DWORD64)ACEncodeA[saA1] << 18) | ((DWORD64)ACEncodeB[sbA1] <<  3) | ((DWORD64)ACEncodeC[mA1] << 18) | ((DWORD64)ACEncodeD[aA1]     ));
-}
