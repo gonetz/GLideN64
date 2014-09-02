@@ -104,13 +104,13 @@ static DWORD64 ACEncodeD[] =
 
 void CombinerInfo::init()
 {
-	InitGLSLCombiner();
+	InitShaderCombiner();
 	m_pCurrent = NULL;
 }
 
 void CombinerInfo::destroy()
 {
-	DestroyGLSLCombiner();
+	DestroyShaderCombiner();
 	m_pCurrent = NULL;
 	for (Combiners::iterator cur = m_combiners.begin(); cur != m_combiners.end(); ++cur)
 		delete cur->second;

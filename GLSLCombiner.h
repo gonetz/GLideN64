@@ -104,7 +104,7 @@ private:
 	int m_nInputs;
 };
 
-void InitGLSLCombiner();
-void DestroyGLSLCombiner();
+void InitShaderCombiner();
+void DestroyShaderCombiner();
 
 #endif //GLSL_COMBINER_H

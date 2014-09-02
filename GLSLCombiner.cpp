@@ -151,7 +151,7 @@ void DestroyShadowMapShader()
 }
 #endif // GLES2
 
-void InitGLSLCombiner()
+void InitShaderCombiner()
 {
 	glActiveTexture(GL_TEXTURE0);
 	glEnable(GL_TEXTURE_2D);
@@ -197,7 +197,7 @@ void InitGLSLCombiner()
 #endif
 }
 
-void DestroyGLSLCombiner() {
+void DestroyShaderCombiner() {
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 #ifndef GLES2
