@@ -63,7 +63,7 @@ void Config_LoadConfig()
 
 	if (hKey)
 	{
-        RegQueryValueEx( hKey, "Fullscreen Bit Depth", 0, NULL, (BYTE*)&config.video.fullscreenBits, &size );
+		RegQueryValueEx( hKey, "Fullscreen Bit Depth", 0, NULL, (BYTE*)&config.video.fullscreenBits, &size );
 		RegQueryValueEx( hKey, "Fullscreen Width", 0, NULL, (BYTE*)&config.video.fullscreenWidth, &size );
 		RegQueryValueEx( hKey, "Fullscreen Height", 0, NULL, (BYTE*)&config.video.fullscreenHeight, &size );
 		RegQueryValueEx( hKey, "Fullscreen Refresh", 0, NULL, (BYTE*)&config.video.fullscreenRefresh, &size );
@@ -215,7 +215,7 @@ void UpdateFullscreenConfig( HWND hWndDlg )
 			if (deviceMode.dmBitsPerPel == fullscreen.bitDepth[j])
 				break;
 		}
-		
+
 		if ((deviceMode.dmBitsPerPel != fullscreen.bitDepth[j]) && (deviceMode.dmBitsPerPel > 8))
 		{
 			fullscreen.bitDepth[fullscreen.numBitDepths] = deviceMode.dmBitsPerPel;
@@ -278,7 +278,7 @@ void UpdateFullscreenConfig( HWND hWndDlg )
 			if ((deviceMode.dmDisplayFrequency == fullscreen.refreshRate[j]))
 				break;
 		}
-		if ((deviceMode.dmDisplayFrequency != fullscreen.refreshRate[j]) && 
+		if ((deviceMode.dmDisplayFrequency != fullscreen.refreshRate[j]) &&
 				(deviceMode.dmPelsWidth == fullscreen.selected.width) &&
 				(deviceMode.dmPelsHeight == fullscreen.selected.height) &&
 				(deviceMode.dmBitsPerPel == fullscreen.selected.bitDepth))
@@ -298,13 +298,13 @@ void UpdateFullscreenConfig( HWND hWndDlg )
 		SendDlgItemMessage( hWndDlg, IDC_FULLSCREENREFRESH, CB_SETCURSEL, SendDlgItemMessage( hWndDlg, IDC_FULLSCREENREFRESH, CB_GETCOUNT, 0, 0 ) - 1, 0 );
 }
 
-BOOL CALLBACK ConfigDlgProc( HWND hWndDlg, UINT message, WPARAM wParam, LPARAM lParam ) 
-{ 
+BOOL CALLBACK ConfigDlgProc( HWND hWndDlg, UINT message, WPARAM wParam, LPARAM lParam )
+{
 	char text[256];
 	LRESULT	 i;
 	DEVMODE deviceMode;
-	switch (message) 
-    { 
+	switch (message)
+	{
 		case WM_INITDIALOG:
 			hConfigDlg = hWndDlg;
 
@@ -324,7 +324,7 @@ BOOL CALLBACK ConfigDlgProc( HWND hWndDlg, UINT message, WPARAM wParam, LPARAM l
 				{
 					SendDlgItemMessage( hWndDlg, IDC_WINDOWEDRES, CB_ADDSTRING, 0, (LPARAM)windowedModes[i].description );
 					if ((config.video.windowedWidth == windowedModes[i].width) &&
-					    (config.video.windowedHeight == windowedModes[i].height))
+						(config.video.windowedHeight == windowedModes[i].height))
 						SendDlgItemMessage( hWndDlg, IDC_WINDOWEDRES, CB_SETCURSEL, i, 0 );
 				}
 			}
@@ -346,19 +346,19 @@ BOOL CALLBACK ConfigDlgProc( HWND hWndDlg, UINT message, WPARAM wParam, LPARAM l
 
 			return TRUE;
 
-        case WM_COMMAND: 
-            switch (LOWORD(wParam)) 
-            { 
-                case IDOK: 
+		case WM_COMMAND:
+			switch (LOWORD(wParam))
+			{
+				case IDOK:
 					Config_ApplyDlgConfig( hWndDlg );
 					EndDialog( hWndDlg, wParam );
 					hConfigDlg = NULL;
 					return TRUE;
- 
-                case IDCANCEL: 
-                    EndDialog( hWndDlg, wParam );
+
+				case IDCANCEL:
+					EndDialog( hWndDlg, wParam );
 					hConfigDlg = NULL;
-                    return TRUE;
+					return TRUE;
 
 				case IDC_FULLSCREENBITDEPTH:
 					if (HIWORD(wParam) == CBN_SELCHANGE)
@@ -386,10 +386,10 @@ BOOL CALLBACK ConfigDlgProc( HWND hWndDlg, UINT message, WPARAM wParam, LPARAM l
 						UpdateFullscreenConfig( hWndDlg );
 					}
 					break;
-			} 
-    } 
-    return FALSE; 
-} 
+			}
+	}
+	return FALSE;
+}
 
 void Config_DoConfig()
 {

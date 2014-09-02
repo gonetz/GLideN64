@@ -4,25 +4,25 @@
 #include "Debug.h"
 #include "gDP.h"
 
-static int saRGBExpanded[] = 
+static int saRGBExpanded[] =
 {
-	COMBINED,			TEXEL0,				TEXEL1,				PRIMITIVE,		
+	COMBINED,			TEXEL0,				TEXEL1,				PRIMITIVE,
 	SHADE,				ENVIRONMENT,		ONE,				NOISE,
 	ZERO,				ZERO,				ZERO,				ZERO,
 	ZERO,				ZERO,				ZERO,				ZERO
 };
 
-static int sbRGBExpanded[] = 
+static int sbRGBExpanded[] =
 {
-	COMBINED,			TEXEL0,				TEXEL1,				PRIMITIVE,		
+	COMBINED,			TEXEL0,				TEXEL1,				PRIMITIVE,
 	SHADE,				ENVIRONMENT,		CENTER,				K4,
 	ZERO,				ZERO,				ZERO,				ZERO,
 	ZERO,				ZERO,				ZERO,				ZERO
 };
 
-static int mRGBExpanded[] = 
+static int mRGBExpanded[] =
 {
-	COMBINED,			TEXEL0,				TEXEL1,				PRIMITIVE,		
+	COMBINED,			TEXEL0,				TEXEL1,				PRIMITIVE,
 	SHADE,				ENVIRONMENT,		SCALE,				COMBINED_ALPHA,
 	TEXEL0_ALPHA,		TEXEL1_ALPHA,		PRIMITIVE_ALPHA,	SHADE_ALPHA,
 	ENV_ALPHA,			LOD_FRACTION,		PRIM_LOD_FRAC,		K5,
@@ -32,33 +32,33 @@ static int mRGBExpanded[] =
 	ZERO,				ZERO,				ZERO,				ZERO
 };
 
-static int aRGBExpanded[] = 
+static int aRGBExpanded[] =
 {
-	COMBINED,			TEXEL0,				TEXEL1,				PRIMITIVE,		
+	COMBINED,			TEXEL0,				TEXEL1,				PRIMITIVE,
 	SHADE,				ENVIRONMENT,		ONE,				ZERO
 };
 
-static int saAExpanded[] = 
+static int saAExpanded[] =
 {
-	COMBINED,			TEXEL0_ALPHA,		TEXEL1_ALPHA,		PRIMITIVE_ALPHA,		
+	COMBINED,			TEXEL0_ALPHA,		TEXEL1_ALPHA,		PRIMITIVE_ALPHA,
 	SHADE_ALPHA,		ENV_ALPHA,			ONE,				ZERO
 };
 
-static int sbAExpanded[] = 
+static int sbAExpanded[] =
 {
-	COMBINED,			TEXEL0_ALPHA,		TEXEL1_ALPHA,		PRIMITIVE_ALPHA,		
+	COMBINED,			TEXEL0_ALPHA,		TEXEL1_ALPHA,		PRIMITIVE_ALPHA,
 	SHADE_ALPHA,		ENV_ALPHA,			ONE,				ZERO
 };
 
-static int mAExpanded[] = 
+static int mAExpanded[] =
 {
-	LOD_FRACTION,		TEXEL0_ALPHA,		TEXEL1_ALPHA,		PRIMITIVE_ALPHA,		
+	LOD_FRACTION,		TEXEL0_ALPHA,		TEXEL1_ALPHA,		PRIMITIVE_ALPHA,
 	SHADE_ALPHA,		ENV_ALPHA,			PRIM_LOD_FRAC,		ZERO,
 };
 
-static int aAExpanded[] = 
+static int aAExpanded[] =
 {
-	COMBINED,			TEXEL0_ALPHA,		TEXEL1_ALPHA,		PRIMITIVE_ALPHA,		
+	COMBINED,			TEXEL0_ALPHA,		TEXEL1_ALPHA,		PRIMITIVE_ALPHA,
 	SHADE_ALPHA,		ENV_ALPHA,			ONE,				ZERO
 };
 
@@ -105,43 +105,43 @@ static DWORD64 ACEncodeD[] =
 void CombinerInfo::init()
 {
 	InitGLSLCombiner();
-    root = NULL;
-    current = NULL;
+	root = NULL;
+	current = NULL;
 }
 
 void CombinerInfo::updateCombineColors()
 {
-    current->compiled->UpdateColors();
+	current->compiled->UpdateColors();
 	gDP.changed &= ~CHANGED_COMBINE_COLORS;
 }
 
 void CombinerInfo::updateCombineFBInfo()
 {
-    current->compiled->UpdateFBInfo(true);
+	current->compiled->UpdateFBInfo(true);
 	gDP.changed &= ~CHANGED_FB_TEXTURE;
 }
 
 void CombinerInfo::updateCombineDepthInfo()
 {
-    if (current != NULL)
-        current->compiled->UpdateDepthInfo(true);
+	if (current != NULL)
+		current->compiled->UpdateDepthInfo(true);
 }
 
 void CombinerInfo::updateAlphaTestInfo()
 {
-    if (current != NULL)
-        current->compiled->UpdateAlphaTestInfo();
+	if (current != NULL)
+		current->compiled->UpdateAlphaTestInfo();
 }
 
 void CombinerInfo::updateTextureInfo()
 {
-    if (current != NULL)
-        current->compiled->UpdateTextureInfo();
+	if (current != NULL)
+		current->compiled->UpdateTextureInfo();
 }
 
 void CombinerInfo::updateRenderState() {
-    if (current != NULL)
-        current->compiled->UpdateRenderState();
+	if (current != NULL)
+		current->compiled->UpdateRenderState();
 }
 
 void Combiner_SimplifyCycle( CombineCycle *cc, CombinerStage *stage )
@@ -289,9 +289,9 @@ void CombinerInfo::destroy()
 {
 	DestroyGLSLCombiner();
 
-    if (root) {
-        Combiner_DeleteCombiner( root );
-        root = NULL;
+	if (root) {
+		Combiner_DeleteCombiner( root );
+		root = NULL;
 	}
 }
 
