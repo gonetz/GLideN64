@@ -36,21 +36,21 @@ set(GLideN64_SOURCES
 
 if(MUPENPLUSAPI)
   add_definitions(
-    -DMUPENPLUSAPI
+	-DMUPENPLUSAPI
   )
   include_directories( inc )
   set(GLideN64_SOURCES_WIN
-    Config_mupen.cpp
+	Config_mupen.cpp
   )
   set(GLideN64_SOURCES_LINUX
-    Config_mupen.cpp
+	Config_mupen.cpp
   )
 else(MUPENPLUSAPI)
   set(GLideN64_SOURCES_WIN
-    Config.cpp
+	Config.cpp
   )
   set(GLideN64_SOURCES_LINUX
-    Config_linux.cpp
+	Config_linux.cpp
   )
 endif(MUPENPLUSAPI)
 
@@ -69,12 +69,12 @@ endif(UNIX)
 
 if(WIN32)
   list(APPEND GLideN64_SOURCES ${GLideN64_SOURCES_WIN})
-  add_definitions( 
-    -D_WINDOWS
-    -D__WIN32__
-    -D_WIN32_
-    -D_CRT_SECURE_NO_WARNINGS
-    -D__MSC__
+  add_definitions(
+	-D_WINDOWS
+	-D__WIN32__
+	-D_WIN32_
+	-D_CRT_SECURE_NO_WARNINGS
+	-D__MSC__
   )
 endif(WIN32)
 
