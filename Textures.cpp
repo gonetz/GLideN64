@@ -231,8 +231,6 @@ void TextureCache_Init()
 	cache.cachedBytes = 0;
 	cache.bitDepth = config.texture.textureBitDepth;
 
-	glGenTextures( 32, cache.glNoiseNames );
-
 	cache.dummy = TextureCache_AddTop();
 
 	cache.dummy->address = 0;
@@ -423,9 +421,6 @@ void TextureCache_Destroy()
 {
 	while (cache.bottom)
 		TextureCache_RemoveBottom();
-
-	glDeleteTextures( 32, cache.glNoiseNames );
-//	glDeleteTextures( 1, &cache.glDummyName );
 
 	cache.top = NULL;
 	cache.bottom = NULL;
@@ -1081,13 +1076,4 @@ void TextureCache_Update( u32 t )
 	TextureCache_ActivateTexture( t, cache.current[t] );
 
 	cache.cachedBytes += cache.current[t]->textureBytes;
-}
-
-void TextureCache_ActivateNoise( u32 t )
-{
-	glActiveTexture( GL_TEXTURE0 + t );
-
-	glBindTexture( GL_TEXTURE_2D, cache.glNoiseNames[RSP.DList & 0x1F] );
-	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
-	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
 }

@@ -47,7 +47,6 @@ struct TextureCache
 	u32				cachedBytes;
 	u32				numCached;
 	u32				hits, misses;
-	GLuint			glNoiseNames[32];
 	//GLuint			glDummyName;
 	CachedTexture	*dummy;
 	u32				bitDepth;
@@ -86,7 +85,6 @@ void TextureCache_Init();
 void TextureCache_Destroy();
 void TextureCache_Update( u32 t );
 void TextureCache_ActivateTexture( u32 t, CachedTexture *texture );
-void TextureCache_ActivateNoise( u32 t );
 void TextureCache_ActivateDummy( u32 t );
 
 #endif
