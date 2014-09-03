@@ -141,5 +141,10 @@ private:
 	Combiners m_combiners;
 };
 
+inline
+ShaderCombiner * currentCombiner() {
+	return CombinerInfo::get().getCurrent();
+}
+
 #endif
 

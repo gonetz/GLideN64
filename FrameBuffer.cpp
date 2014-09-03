@@ -426,7 +426,7 @@ void FrameBuffer_AttachDepthBuffer()
 #endif
 		assert(checkFBO());
 	}
-	CombinerInfo::get().getCurrent()->updateDepthInfo(true);
+	currentCombiner()->updateDepthInfo(true);
 }
 
 #ifndef GLES2
