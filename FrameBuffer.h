@@ -26,9 +26,23 @@ struct FrameBufferList
 	FrameBuffer *top, *bottom, *current;
 	int numBuffers;
 	GLenum drawBuffer;
+
+	static FrameBufferList & get()
+	{
+		static FrameBufferList frameBufferList;
+		return frameBufferList;
+	}
+
+private:
+	FrameBufferList() : current(NULL), drawBuffer(GL_BACK) {}
+	FrameBufferList(const FrameBufferList &);
 };
 
-extern FrameBufferList frameBuffer;
+inline
+FrameBufferList & frameBufferList()
+{
+	return FrameBufferList::get();
+}
 
 void FrameBuffer_Init();
 void FrameBuffer_Destroy();

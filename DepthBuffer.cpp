@@ -150,6 +150,7 @@ void DepthBuffer_Destroy()
 
 void DepthBuffer_SetBuffer( u32 address )
 {
+	FrameBufferList & frameBuffer = frameBufferList();
 	FrameBuffer * pFrameBuffer = FrameBuffer_FindBuffer(address);
 	if (pFrameBuffer == NULL)
 		pFrameBuffer = frameBuffer.top;
@@ -232,6 +233,6 @@ void DepthBuffer_ClearBuffer() {
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, current->fbo);
 	OGL_DrawRect(0,0,VI.width, VI.height, color);
 	glBindImageTexture(depthImageUnit, current->depth_texture->glName, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA32F);
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, frameBuffer.top->fbo);
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, frameBufferList().top->fbo);
 #endif // GLES2
 }

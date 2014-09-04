@@ -1684,14 +1684,14 @@ void _copyDepthBuffer()
 	// It will be copy depth buffer
 	DepthBuffer_SetBuffer(gDP.colorImage.address);
 	// Take any frame buffer and attach source depth buffer to it, to blit it into copy depth buffer
-	FrameBuffer * pTmpBuffer = frameBuffer.top->lower;
+	FrameBuffer * pTmpBuffer = frameBufferList().top->lower;
 	DepthBuffer * pTmpBufferDepth = pTmpBuffer->pDepthBuffer;
 	pTmpBuffer->pDepthBuffer = DepthBuffer_FindBuffer(gSP.bgImage.address);
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, pTmpBuffer->fbo);
 	glFramebufferRenderbuffer(GL_READ_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, pTmpBuffer->pDepthBuffer->renderbuf);
 	GLuint attachments[2] = { GL_COLOR_ATTACHMENT0, GL_DEPTH_ATTACHMENT };
 	glDrawBuffers(2,  attachments);
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, frameBuffer.top->fbo);
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, frameBufferList().top->fbo);
 	glBlitFramebuffer(
 		0, 0, OGL.width, OGL.height,
 		0, 0, OGL.width, OGL.height,
@@ -1945,6 +1945,7 @@ void gSPObjSprite( u32 sp )
 	gDPSetTileSize( 0, 0, 0, (imageW - 1) << 2, (imageH - 1) << 2 );
 	gSPTexture( 1.0f, 1.0f, 0, 0, TRUE );
 
+	FrameBufferList & frameBuffer = frameBufferList();
 	const float scaleX = frameBuffer.drawBuffer == GL_FRAMEBUFFER ? 1.0f/frameBuffer.top->width :  VI.rwidth;
 	const float scaleY = frameBuffer.drawBuffer == GL_FRAMEBUFFER ? 1.0f/frameBuffer.top->height :  VI.rheight;
 	OGL.triangles.vertices[v0].x = 2.0f * scaleX * OGL.triangles.vertices[v0].x - 1.0f;

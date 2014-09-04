@@ -22,8 +22,6 @@ const GLint monohromeInternalformat = GL_LUMINANCE;
 const GLenum monohromeformat = GL_LUMINANCE;
 #endif // GLES2
 
-FrameBufferList frameBuffer;
-
 #ifndef GLES2
 class FrameBufferToRDRAM
 {
@@ -118,6 +116,7 @@ RDRAMtoFrameBuffer g_RDRAMtoFB;
 
 void FrameBuffer_Init()
 {
+	FrameBufferList & frameBuffer = frameBufferList();
 	frameBuffer.current = NULL;
 	frameBuffer.top = NULL;
 	frameBuffer.bottom = NULL;
@@ -132,6 +131,7 @@ void FrameBuffer_Init()
 
 void FrameBuffer_RemoveBottom()
 {
+	FrameBufferList & frameBuffer = frameBufferList();
 	FrameBuffer *newBottom = frameBuffer.bottom->higher;
 
 	textureCache().removeFrameBufferTexture(frameBuffer.bottom->texture);
@@ -153,6 +153,7 @@ void FrameBuffer_RemoveBottom()
 
 void FrameBuffer_Remove( FrameBuffer *buffer )
 {
+	FrameBufferList & frameBuffer = frameBufferList();
 	if ((buffer == frameBuffer.bottom) &&
 		(buffer == frameBuffer.top))
 	{
@@ -191,7 +192,7 @@ void FrameBuffer_Remove( FrameBuffer *buffer )
 
 void FrameBuffer_RemoveBuffer( u32 address )
 {
-	FrameBuffer *current = frameBuffer.bottom;
+	FrameBuffer *current = frameBufferList().bottom;
 
 	while (current != NULL)
 	{
@@ -207,6 +208,7 @@ void FrameBuffer_RemoveBuffer( u32 address )
 
 FrameBuffer *FrameBuffer_AddTop()
 {
+	FrameBufferList & frameBuffer = frameBufferList();
 	FrameBuffer *newtop = (FrameBuffer*)malloc( sizeof( FrameBuffer ) );
 
 	newtop->texture = textureCache().addFrameBufferTexture();
@@ -231,6 +233,7 @@ FrameBuffer *FrameBuffer_AddTop()
 
 void FrameBuffer_MoveToTop( FrameBuffer *newtop )
 {
+	FrameBufferList & frameBuffer = frameBufferList();
 	if (newtop == frameBuffer.top)
 		return;
 
@@ -253,6 +256,7 @@ void FrameBuffer_MoveToTop( FrameBuffer *newtop )
 
 void FrameBuffer_Destroy()
 {
+	FrameBufferList & frameBuffer = frameBufferList();
 	while (frameBuffer.bottom)
 		FrameBuffer_RemoveBottom();
 	frameBuffer.top = frameBuffer.bottom = frameBuffer.current = NULL;
@@ -265,6 +269,7 @@ void FrameBuffer_Destroy()
 
 void FrameBuffer_SaveBuffer( u32 address, u16 format, u16 size, u16 width, u16 height )
 {
+	FrameBufferList & frameBuffer = frameBufferList();
 	frameBuffer.drawBuffer = GL_FRAMEBUFFER;
 	FrameBuffer *current = frameBuffer.top;
 	if (current != NULL && gDP.colorImage.height > 1) {
@@ -364,6 +369,7 @@ static
 void _initDepthTexture()
 {
 #ifndef GLES2
+	FrameBufferList & frameBuffer = frameBufferList();
 	depthBuffer.top->depth_texture = textureCache().addFrameBufferTexture();
 
 	depthBuffer.top->depth_texture->width = (u32)(frameBuffer.top->width * OGL.scaleX);
@@ -405,6 +411,7 @@ void _initDepthTexture()
 
 void FrameBuffer_AttachDepthBuffer()
 {
+	FrameBufferList & frameBuffer = frameBufferList();
 	if ( frameBuffer.top != NULL &&  frameBuffer.top->fbo > 0 && depthBuffer.top != NULL && depthBuffer.top->renderbuf > 0) {
 		if (depthBuffer.top->depth_texture == NULL)
 			_initDepthTexture();
@@ -484,7 +491,7 @@ void FrameBuffer_RenderBuffer( u32 address )
 	}
 	glEnable(GL_SCISSOR_TEST);
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, frameBuffer.top->fbo);
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, frameBufferList().top->fbo);
 	OGL_SwapBuffers();
 	gDP.changed |= CHANGED_SCISSOR;
 }
@@ -519,6 +526,7 @@ void FrameBuffer_RenderBuffer( u32 address )
 	gSP.textureTile[0]->fuls = gSP.textureTile[0]->fult = 0.0f;
 	combiner.current->compiled->UpdateTextureInfo(true);
 
+	FrameBufferList & frameBuffer = frameBufferList();
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	frameBuffer.drawBuffer = GL_BACK;
 	OGL_DrawTexturedRect( 0.0f, 0.0f, width, height, 0.0f, 0.0f, width-1.0f, height-1.0f, false );
@@ -533,7 +541,7 @@ void FrameBuffer_RenderBuffer( u32 address )
 
 FrameBuffer *FrameBuffer_FindBuffer( u32 address )
 {
-	FrameBuffer *current = frameBuffer.top;
+	FrameBuffer *current = frameBufferList().top;
 
 	while (current)
 	{
@@ -666,7 +674,7 @@ void FrameBufferToRDRAM::CopyToRDRAM( u32 address, bool bSync ) {
 		0, 0, current->width, current->height,
 		GL_COLOR_BUFFER_BIT, GL_LINEAR
 	);
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, frameBuffer.top->fbo);
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, frameBufferList().top->fbo);
 
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, m_FBO);
 	glReadBuffer(GL_COLOR_ATTACHMENT0);
@@ -801,7 +809,7 @@ void DepthBufferToRDRAM::CopyToRDRAM( u32 address) {
 		0, 0, current->width, current->height,
 		GL_COLOR_BUFFER_BIT, GL_LINEAR
 	);
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, frameBuffer.top->fbo);
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, frameBufferList().top->fbo);
 
 	m_curIndex = (m_curIndex + 1) % 2;
 	const u32 nextIndex = m_aAddress[m_curIndex] == 0 ? m_curIndex : (m_curIndex + 1) % 2;
@@ -975,7 +983,7 @@ void RDRAMtoFrameBuffer::CopyFromRDRAM( u32 _address, bool _bUseAlpha)
 		GL_COLOR_BUFFER_BIT, GL_LINEAR
 		);
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, frameBuffer.top->fbo);
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, frameBufferList().top->fbo);
 #else
 	if (_bUseAlpha)
 		CombinerInfo::get().setCombine( EncodeCombineMode( 0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0 ) );

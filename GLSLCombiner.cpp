@@ -693,6 +693,7 @@ void ShaderCombiner::updateDepthInfo(bool _bForce) {
 	if (!OGL.bImageTexture)
 		return;
 
+	FrameBufferList & frameBuffer = frameBufferList();
 	if (frameBuffer.top == NULL || frameBuffer.top->pDepthBuffer == NULL)
 		return;
 
@@ -727,6 +728,7 @@ void ShaderCombiner::updateAlphaTestInfo(bool _bForce) {
 void GLSL_RenderDepth() {
 	if (!OGL.bImageTexture)
 		return;
+	FrameBufferList & frameBuffer = frameBufferList();
 #if 0
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, g_zbuf_fbo);
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
