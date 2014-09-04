@@ -102,15 +102,23 @@ static DWORD64 ACEncodeD[] =
 	7, 7, 7, 7, 7, 7, 7, 7, 0, 1, 2, 3, 4, 5, 7, 7, 7, 7, 7, 6, 7
 };
 
+void Combiner_Init() {
+	CombinerInfo::get().init();
+	InitShaderCombiner();
+}
+
+void Combiner_Destroy() {
+	DestroyShaderCombiner();
+	CombinerInfo::get().destroy();
+}
+
 void CombinerInfo::init()
 {
-	InitShaderCombiner();
 	m_pCurrent = NULL;
 }
 
 void CombinerInfo::destroy()
 {
-	DestroyShaderCombiner();
 	m_pCurrent = NULL;
 	for (Combiners::iterator cur = m_combiners.begin(); cur != m_combiners.end(); ++cur)
 		delete cur->second;

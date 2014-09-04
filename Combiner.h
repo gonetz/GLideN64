@@ -146,5 +146,8 @@ ShaderCombiner * currentCombiner() {
 	return CombinerInfo::get().getCurrent();
 }
 
+void Combiner_Init();
+void Combiner_Destroy();
+
 #endif
 

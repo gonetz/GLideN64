@@ -516,7 +516,7 @@ bool OGL_Start()
 	textureCache().init();
 	DepthBuffer_Init();
 	FrameBuffer_Init();
-	CombinerInfo::get().init();
+	Combiner_Init();
 	OGL.renderState = GLInfo::rsNone;
 
 	gSP.changed = gDP.changed = 0xFFFFFFFF;
@@ -535,7 +535,7 @@ bool OGL_Start()
 
 void OGL_Stop()
 {
-	CombinerInfo::get().destroy();
+	Combiner_Destroy();
 	FrameBuffer_Destroy();
 	DepthBuffer_Destroy();
 	textureCache().destroy();
