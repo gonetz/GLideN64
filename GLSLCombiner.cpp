@@ -748,7 +748,7 @@ void GLSL_RenderDepth() {
 	glPushAttrib( GL_ENABLE_BIT | GL_VIEWPORT_BIT );
 
 	glActiveTexture( GL_TEXTURE0 );
-	glBindTexture(GL_TEXTURE_2D, pBuffer->m_pDepthBuffer->depth_texture->glName);
+	glBindTexture(GL_TEXTURE_2D, pBuffer->m_pDepthBuffer->m_pDepthTexture->glName);
 //	glBindTexture(GL_TEXTURE_2D, g_zlut_tex);
 
 	CombinerInfo::get().setCombine( EncodeCombineMode( 0, 0, 0, TEXEL0, 0, 0, 0, 1, 0, 0, 0, TEXEL0, 0, 0, 0, 1 ) );
@@ -795,7 +795,7 @@ void GLSL_RenderDepth() {
 			OGL_SwapBuffers();
 #endif
 			glBindFramebuffer(GL_DRAW_FRAMEBUFFER, pBuffer->m_FBO);
-			glBindImageTexture(depthImageUnit, pBuffer->m_pDepthBuffer->depth_texture->glName, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA32F);
+			glBindImageTexture(depthImageUnit, pBuffer->m_pDepthBuffer->m_pDepthTexture->glName, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA32F);
 
 
 			glLoadIdentity();

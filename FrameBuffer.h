@@ -49,8 +49,6 @@ private:
 	FrameBufferList() : m_pCurrent(NULL), m_drawBuffer(GL_BACK) {}
 	FrameBufferList(const FrameBufferList &);
 
-	void _initDepthTexture();
-
 	typedef std::list<FrameBuffer> FrameBuffers;
 	FrameBuffers m_list;
 	FrameBuffer * m_pCurrent;

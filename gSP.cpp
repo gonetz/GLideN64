@@ -1682,13 +1682,13 @@ void _copyDepthBuffer()
 	// OpenGL has different format for color and depth buffers, so this trick can't be performed directly
 	// To do that, depth buffer with address of current color buffer created and attached to the current FBO
 	// It will be copy depth buffer
-	DepthBuffer_SetBuffer(gDP.colorImage.address);
+	depthBufferList().saveBuffer(gDP.colorImage.address);
 	// Take any frame buffer and attach source depth buffer to it, to blit it into copy depth buffer
 	FrameBuffer * pTmpBuffer = frameBufferList().findTmpBuffer(frameBufferList().getCurrent()->m_startAddress);
 	DepthBuffer * pTmpBufferDepth = pTmpBuffer->m_pDepthBuffer;
-	pTmpBuffer->m_pDepthBuffer = DepthBuffer_FindBuffer(gSP.bgImage.address);
+	pTmpBuffer->m_pDepthBuffer = depthBufferList().findBuffer(gSP.bgImage.address);
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, pTmpBuffer->m_FBO);
-	glFramebufferRenderbuffer(GL_READ_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, pTmpBuffer->m_pDepthBuffer->renderbuf);
+	glFramebufferRenderbuffer(GL_READ_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, pTmpBuffer->m_pDepthBuffer->m_renderbuf);
 	GLuint attachments[2] = { GL_COLOR_ATTACHMENT0, GL_DEPTH_ATTACHMENT };
 	glDrawBuffers(2,  attachments);
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, frameBufferList().getCurrent()->m_FBO);
@@ -1698,10 +1698,10 @@ void _copyDepthBuffer()
 		GL_DEPTH_BUFFER_BIT, GL_NEAREST
 	);
 	// Restore objects
-	glFramebufferRenderbuffer(GL_READ_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, pTmpBufferDepth->renderbuf);
+	glFramebufferRenderbuffer(GL_READ_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, pTmpBufferDepth->m_renderbuf);
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
 	// Set back current depth buffer
-	DepthBuffer_SetBuffer(gDP.depthImageAddress);
+	depthBufferList().saveBuffer(gDP.depthImageAddress);
 }
 #endif // GLES2
 
@@ -1745,7 +1745,7 @@ void gSPBgRect1Cyc( u32 bg )
 	loadBGImage(objScaleBg, true);
 
 #ifndef GLES2
-	if (gSP.bgImage.address == gDP.depthImageAddress || DepthBuffer_FindBuffer(gSP.bgImage.address) != NULL) {
+	if (gSP.bgImage.address == gDP.depthImageAddress || depthBufferList().findBuffer(gSP.bgImage.address) != NULL) {
 		_copyDepthBuffer();
 		return;
 	}
@@ -1830,7 +1830,7 @@ void gSPBgRectCopy( u32 bg )
 	loadBGImage(objBg, false);
 
 #ifndef GLES2
-	if (gSP.bgImage.address == gDP.depthImageAddress || DepthBuffer_FindBuffer(gSP.bgImage.address) != NULL) {
+	if (gSP.bgImage.address == gDP.depthImageAddress || depthBufferList().findBuffer(gSP.bgImage.address) != NULL) {
 		_copyDepthBuffer();
 		return;
 	}

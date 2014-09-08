@@ -325,7 +325,7 @@ void gDPSetTextureImage( u32 format, u32 size, u32 width, u32 address )
 void gDPSetDepthImage( u32 address )
 {
 	address = RSP_SegmentToPhysical( address );
-	DepthBuffer_SetBuffer( address );
+	depthBufferList().saveBuffer(address);
 	gDP.depthImageAddress = address;
 
 #ifdef DEBUG
@@ -790,7 +790,7 @@ void gDPFillRectangle( s32 ulx, s32 uly, s32 lrx, s32 lry )
 			return;
 		}
 	} else if (gDP.fillColor.color == DEPTH_CLEAR_COLOR) {
-		DepthBuffer_SetBuffer( gDP.colorImage.address );
+		depthBufferList().saveBuffer(gDP.colorImage.address);
 		gDPFillRDRAM(gDP.colorImage.address, ulx, uly, lrx, lry, gDP.colorImage.width, gDP.colorImage.size, gDP.fillColor.color);
 		OGL_ClearDepthBuffer();
 		return;

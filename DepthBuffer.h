@@ -6,18 +6,27 @@
 
 struct DepthBuffer
 {
-	DepthBuffer *higher, *lower;
+	DepthBuffer();
+	DepthBuffer(DepthBuffer && _other);
+	~DepthBuffer();
+	void initDepthTexture(FrameBuffer * _pBuffer);
 
-	u32 address, width;
-	GLuint renderbuf;
-	CachedTexture *depth_texture;
-	GLuint fbo;
+	u32 m_address, m_width;
+	GLuint m_renderbuf;
+	GLuint m_FBO;
+	CachedTexture *m_pDepthTexture;
 };
 
-struct DepthBufferList
+class DepthBufferList
 {
-	DepthBuffer *top, *bottom, *current;
-	int numBuffers;
+public:
+	void init();
+	void destroy();
+	void saveBuffer(u32 _address);
+	void removeBuffer(u32 _address);
+	void clearBuffer();
+	DepthBuffer *findBuffer(u32 _address);
+	DepthBuffer * getCurrent() const {return m_pCurrent;}
 
 	static DepthBufferList & get()
 	{
@@ -26,8 +35,12 @@ struct DepthBufferList
 	}
 
 private:
-	DepthBufferList() : current(NULL) {}
+	DepthBufferList() : m_pCurrent(NULL) {}
 	DepthBufferList(const FrameBufferList &);
+
+	typedef std::list<DepthBuffer> DepthBuffers;
+	DepthBuffers m_list;
+	DepthBuffer *m_pCurrent;
 };
 
 inline
@@ -42,9 +55,4 @@ extern const GLuint depthImageUnit;
 
 void DepthBuffer_Init();
 void DepthBuffer_Destroy();
-void DepthBuffer_SetBuffer( u32 address );
-void DepthBuffer_RemoveBuffer( u32 address );
-void DepthBuffer_ClearBuffer();
-DepthBuffer *DepthBuffer_FindBuffer( u32 address );
-
 #endif

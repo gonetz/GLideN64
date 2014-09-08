@@ -1213,7 +1213,7 @@ void OGL_ClearDepthBuffer()
 	if (config.frameBufferEmulation.enable && frameBufferList().getCurrent() == NULL)
 		return;
 
-	DepthBuffer_ClearBuffer();
+	depthBufferList().clearBuffer();
 
 	OGL_UpdateStates();
 	glDisable( GL_SCISSOR_TEST );

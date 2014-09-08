@@ -12,195 +12,141 @@ const GLuint ZlutImageUnit = 0;
 const GLuint TlutImageUnit = 1;
 const GLuint depthImageUnit = 2;
 
-void DepthBuffer_Init()
+DepthBuffer::DepthBuffer() : m_address(0), m_width(0), m_renderbuf(0), m_FBO(0), m_pDepthTexture(NULL)
 {
-	DepthBufferList & dbList = depthBufferList();
-	dbList.current = NULL;
-	dbList.top = NULL;
-	dbList.bottom = NULL;
-	dbList.numBuffers = 0;
+	glGenRenderbuffers(1, &m_renderbuf);
+	glGenFramebuffers(1, &m_FBO);
 }
 
-void DepthBuffer_RemoveBottom()
+DepthBuffer::DepthBuffer(DepthBuffer && _other) :
+	m_address(_other.m_address), m_width(_other.m_width),
+	m_renderbuf(_other.m_renderbuf), m_FBO(_other.m_FBO), m_pDepthTexture(_other.m_pDepthTexture)
 {
-	DepthBufferList & dbList = depthBufferList();
-	DepthBuffer *newBottom = dbList.bottom->higher;
-
-	if (dbList.bottom == dbList.top)
-		dbList.top = NULL;
-
-	if (dbList.bottom->renderbuf != 0)
-		glDeleteRenderbuffers(1, &dbList.bottom->renderbuf);
-	if (dbList.bottom->depth_texture != NULL)
-		textureCache().removeFrameBufferTexture(dbList.bottom->depth_texture);
-	free( dbList.bottom );
-
-	dbList.bottom = newBottom;
-
-	if (dbList.bottom != NULL)
-		dbList.bottom->lower = NULL;
-
-	dbList.numBuffers--;
+	_other.m_renderbuf = 0;
+	_other.m_FBO = 0;
+	_other.m_pDepthTexture = NULL;
 }
 
-void DepthBuffer_Remove( DepthBuffer *buffer )
+DepthBuffer::~DepthBuffer()
 {
-	DepthBufferList & dbList = depthBufferList();
-	if ((buffer == dbList.bottom) &&
-		(buffer == dbList.top))
-	{
-		dbList.top = NULL;
-		dbList.bottom = NULL;
-	}
-	else if (buffer == dbList.bottom)
-	{
-		dbList.bottom = buffer->higher;
-
-		if (dbList.bottom)
-			dbList.bottom->lower = NULL;
-	}
-	else if (buffer == dbList.top)
-	{
-		dbList.top = buffer->lower;
-
-		if (dbList.top)
-			dbList.top->higher = NULL;
-	}
-	else
-	{
-		buffer->higher->lower = buffer->lower;
-		buffer->lower->higher = buffer->higher;
-	}
-
-	if (buffer->renderbuf != 0)
-		glDeleteRenderbuffers(1, &buffer->renderbuf);
-	if (buffer->fbo != 0)
-		glDeleteFramebuffers(1, &buffer->fbo);
-	if (buffer->depth_texture != NULL)
-		textureCache().removeFrameBufferTexture(buffer->depth_texture);
-	free( buffer );
-
-	dbList.numBuffers--;
+	if (m_renderbuf != 0)
+		glDeleteRenderbuffers(1, &m_renderbuf);
+	if (m_FBO != 0)
+		glDeleteFramebuffers(1, &m_FBO);
+	if (m_pDepthTexture != NULL)
+		textureCache().removeFrameBufferTexture(m_pDepthTexture);
 }
 
-void DepthBuffer_RemoveBuffer( u32 address )
+void DepthBuffer::initDepthTexture(FrameBuffer * _pBuffer)
 {
-	DepthBuffer *current = depthBufferList().bottom;
+#ifndef GLES2
+	if (m_pDepthTexture != NULL)
+		textureCache().removeFrameBufferTexture(m_pDepthTexture);
+	m_pDepthTexture = textureCache().addFrameBufferTexture();
 
-	while (current != NULL)
-	{
-		if (current->address == address)
-		{
-			DepthBuffer_Remove( current );
+	m_pDepthTexture->width = (u32)(_pBuffer->m_pTexture->width);
+	m_pDepthTexture->height = (u32)(_pBuffer->m_pTexture->height);
+	m_pDepthTexture->format = 0;
+	m_pDepthTexture->size = 2;
+	m_pDepthTexture->clampS = 1;
+	m_pDepthTexture->clampT = 1;
+	m_pDepthTexture->address = _pBuffer->m_startAddress;
+	m_pDepthTexture->clampWidth = _pBuffer->m_width;
+	m_pDepthTexture->clampHeight = _pBuffer->m_height;
+	m_pDepthTexture->frameBufferTexture = TRUE;
+	m_pDepthTexture->maskS = 0;
+	m_pDepthTexture->maskT = 0;
+	m_pDepthTexture->mirrorS = 0;
+	m_pDepthTexture->mirrorT = 0;
+	m_pDepthTexture->realWidth = (u32)pow2( m_pDepthTexture->width );
+	m_pDepthTexture->realHeight = (u32)pow2( m_pDepthTexture->height );
+	m_pDepthTexture->textureBytes = m_pDepthTexture->realWidth * m_pDepthTexture->realHeight * 4 * 4; // Width*Height*RGBA*sizeof(GL_RGBA32F)
+	textureCache().addFrameBufferTextureSize(m_pDepthTexture->textureBytes);
+
+	glBindTexture( GL_TEXTURE_2D, m_pDepthTexture->glName );
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, m_pDepthTexture->realWidth, m_pDepthTexture->realHeight, 0, GL_RGBA, GL_FLOAT,	NULL);
+	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+	glBindTexture( GL_TEXTURE_2D, 0);
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_FBO);
+	glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_pDepthTexture->glName, 0);
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, _pBuffer->m_FBO);
+	_pBuffer->m_pDepthBuffer = this;
+	depthBufferList().clearBuffer();
+#else
+	depth_texture = NULL;
+#endif // GLES2
+}
+
+void DepthBufferList::init()
+{
+	m_pCurrent = NULL;
+}
+
+void DepthBufferList::destroy()
+{
+	m_pCurrent = NULL;
+	m_list.clear();
+}
+
+DepthBuffer * DepthBufferList::findBuffer(u32 _address)
+{
+	for (DepthBuffers::iterator iter = m_list.begin(); iter != m_list.end(); ++iter)
+		if (iter->m_address == _address)
+				return &(*iter);
+	return NULL;
+}
+
+void DepthBufferList::removeBuffer(u32 _address )
+{
+	for (DepthBuffers::iterator iter = m_list.begin(); iter != m_list.end(); ++iter)
+		if (iter->m_address == _address) {
+			m_list.erase(iter);
 			return;
 		}
-		current = current->higher;
-	}
 }
 
-DepthBuffer *DepthBuffer_AddTop()
+void DepthBufferList::saveBuffer(u32 _address)
 {
-	DepthBufferList & dbList = depthBufferList();
-	DepthBuffer *newtop = (DepthBuffer*)malloc( sizeof( DepthBuffer ) );
-
-	newtop->lower = dbList.top;
-	newtop->higher = NULL;
-	newtop->renderbuf = 0;
-	newtop->fbo = 0;
-
-	if (dbList.top)
-		dbList.top->higher = newtop;
-
-	if (!dbList.bottom)
-		dbList.bottom = newtop;
-
-	dbList.top = newtop;
-
-	dbList.numBuffers++;
-
-	return newtop;
-}
-
-void DepthBuffer_MoveToTop( DepthBuffer *newtop )
-{
-	DepthBufferList & dbList = depthBufferList();
-	if (newtop == dbList.top)
+	if (!config.frameBufferEmulation.enable)
 		return;
 
-	if (newtop == dbList.bottom)
-	{
-		dbList.bottom = newtop->higher;
-		dbList.bottom->lower = NULL;
-	}
-	else
-	{
-		newtop->higher->lower = newtop->lower;
-		newtop->lower->higher = newtop->higher;
-	}
-
-	newtop->higher = NULL;
-	newtop->lower = dbList.top;
-	dbList.top->higher = newtop;
-	dbList.top = newtop;
-}
-
-void DepthBuffer_Destroy()
-{
-	DepthBufferList & dbList = depthBufferList();
-	while (dbList.bottom)
-		DepthBuffer_RemoveBottom();
-
-	dbList.top = dbList.bottom = dbList.current = NULL;
-}
-
-void DepthBuffer_SetBuffer( u32 address )
-{
-	DepthBufferList & dbList = depthBufferList();
-	FrameBuffer * pFrameBuffer = frameBufferList().findBuffer(address);
+	FrameBuffer * pFrameBuffer = frameBufferList().findBuffer(_address);
 	if (pFrameBuffer == NULL)
 		pFrameBuffer = frameBufferList().getCurrent();
 
-	DepthBuffer *current = dbList.top;
+	if (m_pCurrent == NULL || m_pCurrent->m_address != _address)
+		m_pCurrent = findBuffer(_address);
 
-	// Search through saved depth buffers
-	while (current != NULL)
-	{
-		if (current->address == address)
-		{
-			if (pFrameBuffer != NULL && current->width != pFrameBuffer->m_width) {
-				DepthBuffer_Remove( current );
-				current = NULL;
-				break;
-			}
-			DepthBuffer_MoveToTop( current );
-			break;
-		}
-		current = current->lower;
+	if (m_pCurrent != NULL && pFrameBuffer != NULL && m_pCurrent->m_width != pFrameBuffer->m_width) {
+		removeBuffer(_address);
+		m_pCurrent = NULL;
 	}
 
-	if (current == NULL) {
-		current = DepthBuffer_AddTop();
+	if (m_pCurrent == NULL) {
+		m_list.emplace_front();
+		DepthBuffer & buffer = m_list.front();
 
-		current->address = address;
-		current->width = pFrameBuffer != NULL ? pFrameBuffer->m_width : VI.width;
-		current->depth_texture = NULL;
-		if (config.frameBufferEmulation.enable) {
-			glGenRenderbuffers(1, &current->renderbuf);
-			glBindRenderbuffer(GL_RENDERBUFFER, current->renderbuf);
+		buffer.m_address = _address;
+		buffer.m_width = pFrameBuffer != NULL ? pFrameBuffer->m_width : VI.width;
+		buffer.m_pDepthTexture = NULL;
+		glBindRenderbuffer(GL_RENDERBUFFER, buffer.m_renderbuf);
 #ifndef GLES2
 			const GLenum format = GL_DEPTH_COMPONENT;
 #else
 			const GLenum format = GL_DEPTH_COMPONENT24_OES;
 #endif
-			if (pFrameBuffer != NULL)
-				glRenderbufferStorage(GL_RENDERBUFFER, format, pFrameBuffer->m_pTexture->realWidth, pFrameBuffer->m_pTexture->realHeight);
-			else
-				glRenderbufferStorage(GL_RENDERBUFFER, format, (u32)pow2(OGL.width), (u32)pow2(OGL.height));
-		}
+		if (pFrameBuffer != NULL)
+			glRenderbufferStorage(GL_RENDERBUFFER, format, pFrameBuffer->m_pTexture->realWidth, pFrameBuffer->m_pTexture->realHeight);
+		else
+			glRenderbufferStorage(GL_RENDERBUFFER, format, (u32)pow2(OGL.width), (u32)pow2(OGL.height));
+
+		m_pCurrent = &buffer;
 	}
 
-	if (config.frameBufferEmulation.enable) {
-		frameBufferList().attachDepthBuffer();
+	frameBufferList().attachDepthBuffer();
 
 #ifdef DEBUG
 		DebugMsg( DEBUG_HIGH | DEBUG_HANDLED, "DepthBuffer_SetBuffer( 0x%08X ); color buffer is 0x%08X\n",
@@ -208,37 +154,30 @@ void DepthBuffer_SetBuffer( u32 address )
 		);
 #endif
 
-	}
-	dbList.current = current;
 }
 
-DepthBuffer *DepthBuffer_FindBuffer( u32 address )
+void DepthBufferList::clearBuffer()
 {
-	DepthBufferList & dbList = depthBufferList();
-	DepthBuffer *current = dbList.top;
-
-	while (current)
-	{
-		if (current->address == address)
-			return current;
-		current = current->lower;
-	}
-
-	return NULL;
-}
-
-void DepthBuffer_ClearBuffer() {
 #ifndef GLES2
 	if (!OGL.bImageTexture)
 		return;
-	DepthBuffer *current = depthBufferList().top;
-	if (current == NULL || current->fbo == 0)
+	if (m_pCurrent == NULL || m_pCurrent->m_FBO == 0)
 		return;
 	float color[4] = {1.0f, 1.0f, 0.0f, 1.0f};
 	glBindImageTexture(depthImageUnit, 0, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA32F);
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, current->fbo);
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_pCurrent->m_FBO);
 	OGL_DrawRect(0,0,VI.width, VI.height, color);
-	glBindImageTexture(depthImageUnit, current->depth_texture->glName, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA32F);
+	glBindImageTexture(depthImageUnit, m_pCurrent->m_pDepthTexture->glName, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA32F);
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, frameBufferList().getCurrent()->m_FBO);
 #endif // GLES2
+}
+
+void DepthBuffer_Init()
+{
+	depthBufferList().init();
+}
+
+void DepthBuffer_Destroy()
+{
+	depthBufferList().destroy();
 }
