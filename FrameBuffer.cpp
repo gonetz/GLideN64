@@ -276,56 +276,58 @@ void FrameBufferList::removeBuffer(u32 _address )
 void FrameBufferList::_initDepthTexture()
 {
 #ifndef GLES2
-	depthBuffer.top->depth_texture = textureCache().addFrameBufferTexture();
+	DepthBufferList & dbList = depthBufferList();
+	dbList.top->depth_texture = textureCache().addFrameBufferTexture();
 
-	depthBuffer.top->depth_texture->width = (u32)(m_pCurrent->m_width * OGL.scaleX);
-	depthBuffer.top->depth_texture->height = (u32)(m_pCurrent->m_height * OGL.scaleY);
-	depthBuffer.top->depth_texture->format = 0;
-	depthBuffer.top->depth_texture->size = 2;
-	depthBuffer.top->depth_texture->clampS = 1;
-	depthBuffer.top->depth_texture->clampT = 1;
-	depthBuffer.top->depth_texture->address = m_pCurrent->m_startAddress;
-	depthBuffer.top->depth_texture->clampWidth = m_pCurrent->m_width;
-	depthBuffer.top->depth_texture->clampHeight = m_pCurrent->m_height;
-	depthBuffer.top->depth_texture->frameBufferTexture = TRUE;
-	depthBuffer.top->depth_texture->maskS = 0;
-	depthBuffer.top->depth_texture->maskT = 0;
-	depthBuffer.top->depth_texture->mirrorS = 0;
-	depthBuffer.top->depth_texture->mirrorT = 0;
-	depthBuffer.top->depth_texture->realWidth = (u32)pow2( depthBuffer.top->depth_texture->width );
-	depthBuffer.top->depth_texture->realHeight = (u32)pow2( depthBuffer.top->depth_texture->height );
-	depthBuffer.top->depth_texture->textureBytes = depthBuffer.top->depth_texture->realWidth * depthBuffer.top->depth_texture->realHeight * 2;
-	textureCache().addFrameBufferTextureSize(depthBuffer.top->depth_texture->textureBytes);
+	dbList.top->depth_texture->width = (u32)(m_pCurrent->m_width * OGL.scaleX);
+	dbList.top->depth_texture->height = (u32)(m_pCurrent->m_height * OGL.scaleY);
+	dbList.top->depth_texture->format = 0;
+	dbList.top->depth_texture->size = 2;
+	dbList.top->depth_texture->clampS = 1;
+	dbList.top->depth_texture->clampT = 1;
+	dbList.top->depth_texture->address = m_pCurrent->m_startAddress;
+	dbList.top->depth_texture->clampWidth = m_pCurrent->m_width;
+	dbList.top->depth_texture->clampHeight = m_pCurrent->m_height;
+	dbList.top->depth_texture->frameBufferTexture = TRUE;
+	dbList.top->depth_texture->maskS = 0;
+	dbList.top->depth_texture->maskT = 0;
+	dbList.top->depth_texture->mirrorS = 0;
+	dbList.top->depth_texture->mirrorT = 0;
+	dbList.top->depth_texture->realWidth = (u32)pow2( dbList.top->depth_texture->width );
+	dbList.top->depth_texture->realHeight = (u32)pow2( dbList.top->depth_texture->height );
+	dbList.top->depth_texture->textureBytes = dbList.top->depth_texture->realWidth * dbList.top->depth_texture->realHeight * 2;
+	textureCache().addFrameBufferTextureSize(dbList.top->depth_texture->textureBytes);
 
-	glBindTexture( GL_TEXTURE_2D, depthBuffer.top->depth_texture->glName );
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, depthBuffer.top->depth_texture->realWidth, depthBuffer.top->depth_texture->realHeight, 0, GL_RGBA, GL_FLOAT,	NULL);
+	glBindTexture( GL_TEXTURE_2D, dbList.top->depth_texture->glName );
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, dbList.top->depth_texture->realWidth, dbList.top->depth_texture->realHeight, 0, GL_RGBA, GL_FLOAT,	NULL);
 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
 	glBindTexture( GL_TEXTURE_2D, 0);
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-	glGenFramebuffers(1, &depthBuffer.top->fbo);
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, depthBuffer.top->fbo);
-	glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, depthBuffer.top->depth_texture->glName, 0);
+	glGenFramebuffers(1, &dbList.top->fbo);
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, dbList.top->fbo);
+	glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, dbList.top->depth_texture->glName, 0);
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_pCurrent->m_FBO);
-	m_pCurrent->m_pDepthBuffer = depthBuffer.top;
+	m_pCurrent->m_pDepthBuffer = dbList.top;
 	DepthBuffer_ClearBuffer();
 #else
-	depthBuffer.top->depth_texture = NULL;
+	dbList.top->depth_texture = NULL;
 #endif // GLES2
 }
 
 void FrameBufferList::attachDepthBuffer()
 {
-	if (m_pCurrent != NULL &&  m_pCurrent->m_FBO > 0 && depthBuffer.top != NULL && depthBuffer.top->renderbuf > 0) {
-		if (depthBuffer.top->depth_texture == NULL)
+	DepthBufferList & dbList = depthBufferList();
+	if (m_pCurrent != NULL &&  m_pCurrent->m_FBO > 0 && dbList.top != NULL && dbList.top->renderbuf > 0) {
+		if (dbList.top->depth_texture == NULL)
 			_initDepthTexture();
-		m_pCurrent->m_pDepthBuffer = depthBuffer.top;
-		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthBuffer.top->renderbuf);
+		m_pCurrent->m_pDepthBuffer = dbList.top;
+		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, dbList.top->renderbuf);
 #ifndef GLES2
 		GLuint attachments[2] = { GL_COLOR_ATTACHMENT0, GL_DEPTH_ATTACHMENT };
 		glDrawBuffers(2,  attachments);
-		glBindImageTexture(depthImageUnit, depthBuffer.top->depth_texture->glName, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA32F);
+		glBindImageTexture(depthImageUnit, dbList.top->depth_texture->glName, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA32F);
 #endif
 		assert(checkFBO());
 	} else if (m_pCurrent != NULL) {

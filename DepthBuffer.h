@@ -14,13 +14,27 @@ struct DepthBuffer
 	GLuint fbo;
 };
 
-struct DepthBufferInfo
+struct DepthBufferList
 {
 	DepthBuffer *top, *bottom, *current;
 	int numBuffers;
+
+	static DepthBufferList & get()
+	{
+		static DepthBufferList depthBufferList;
+		return depthBufferList;
+	}
+
+private:
+	DepthBufferList() : current(NULL) {}
+	DepthBufferList(const FrameBufferList &);
 };
 
-extern DepthBufferInfo depthBuffer;
+inline
+DepthBufferList & depthBufferList()
+{
+	return DepthBufferList::get();
+}
 
 extern const GLuint ZlutImageUnit;
 extern const GLuint TlutImageUnit;

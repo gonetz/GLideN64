@@ -8,61 +8,63 @@
 #include "Config.h"
 #include "Debug.h"
 
-DepthBufferInfo depthBuffer;
 const GLuint ZlutImageUnit = 0;
 const GLuint TlutImageUnit = 1;
 const GLuint depthImageUnit = 2;
 
 void DepthBuffer_Init()
 {
-	depthBuffer.current = NULL;
-	depthBuffer.top = NULL;
-	depthBuffer.bottom = NULL;
-	depthBuffer.numBuffers = 0;
+	DepthBufferList & dbList = depthBufferList();
+	dbList.current = NULL;
+	dbList.top = NULL;
+	dbList.bottom = NULL;
+	dbList.numBuffers = 0;
 }
 
 void DepthBuffer_RemoveBottom()
 {
-	DepthBuffer *newBottom = depthBuffer.bottom->higher;
+	DepthBufferList & dbList = depthBufferList();
+	DepthBuffer *newBottom = dbList.bottom->higher;
 
-	if (depthBuffer.bottom == depthBuffer.top)
-		depthBuffer.top = NULL;
+	if (dbList.bottom == dbList.top)
+		dbList.top = NULL;
 
-	if (depthBuffer.bottom->renderbuf != 0)
-		glDeleteRenderbuffers(1, &depthBuffer.bottom->renderbuf);
-	if (depthBuffer.bottom->depth_texture != NULL)
-		textureCache().removeFrameBufferTexture(depthBuffer.bottom->depth_texture);
-	free( depthBuffer.bottom );
+	if (dbList.bottom->renderbuf != 0)
+		glDeleteRenderbuffers(1, &dbList.bottom->renderbuf);
+	if (dbList.bottom->depth_texture != NULL)
+		textureCache().removeFrameBufferTexture(dbList.bottom->depth_texture);
+	free( dbList.bottom );
 
-	depthBuffer.bottom = newBottom;
+	dbList.bottom = newBottom;
 
-	if (depthBuffer.bottom != NULL)
-		depthBuffer.bottom->lower = NULL;
+	if (dbList.bottom != NULL)
+		dbList.bottom->lower = NULL;
 
-	depthBuffer.numBuffers--;
+	dbList.numBuffers--;
 }
 
 void DepthBuffer_Remove( DepthBuffer *buffer )
 {
-	if ((buffer == depthBuffer.bottom) &&
-		(buffer == depthBuffer.top))
+	DepthBufferList & dbList = depthBufferList();
+	if ((buffer == dbList.bottom) &&
+		(buffer == dbList.top))
 	{
-		depthBuffer.top = NULL;
-		depthBuffer.bottom = NULL;
+		dbList.top = NULL;
+		dbList.bottom = NULL;
 	}
-	else if (buffer == depthBuffer.bottom)
+	else if (buffer == dbList.bottom)
 	{
-		depthBuffer.bottom = buffer->higher;
+		dbList.bottom = buffer->higher;
 
-		if (depthBuffer.bottom)
-			depthBuffer.bottom->lower = NULL;
+		if (dbList.bottom)
+			dbList.bottom->lower = NULL;
 	}
-	else if (buffer == depthBuffer.top)
+	else if (buffer == dbList.top)
 	{
-		depthBuffer.top = buffer->lower;
+		dbList.top = buffer->lower;
 
-		if (depthBuffer.top)
-			depthBuffer.top->higher = NULL;
+		if (dbList.top)
+			dbList.top->higher = NULL;
 	}
 	else
 	{
@@ -78,12 +80,12 @@ void DepthBuffer_Remove( DepthBuffer *buffer )
 		textureCache().removeFrameBufferTexture(buffer->depth_texture);
 	free( buffer );
 
-	depthBuffer.numBuffers--;
+	dbList.numBuffers--;
 }
 
 void DepthBuffer_RemoveBuffer( u32 address )
 {
-	DepthBuffer *current = depthBuffer.bottom;
+	DepthBuffer *current = depthBufferList().bottom;
 
 	while (current != NULL)
 	{
@@ -98,35 +100,37 @@ void DepthBuffer_RemoveBuffer( u32 address )
 
 DepthBuffer *DepthBuffer_AddTop()
 {
+	DepthBufferList & dbList = depthBufferList();
 	DepthBuffer *newtop = (DepthBuffer*)malloc( sizeof( DepthBuffer ) );
 
-	newtop->lower = depthBuffer.top;
+	newtop->lower = dbList.top;
 	newtop->higher = NULL;
 	newtop->renderbuf = 0;
 	newtop->fbo = 0;
 
-	if (depthBuffer.top)
-		depthBuffer.top->higher = newtop;
+	if (dbList.top)
+		dbList.top->higher = newtop;
 
-	if (!depthBuffer.bottom)
-		depthBuffer.bottom = newtop;
+	if (!dbList.bottom)
+		dbList.bottom = newtop;
 
-	depthBuffer.top = newtop;
+	dbList.top = newtop;
 
-	depthBuffer.numBuffers++;
+	dbList.numBuffers++;
 
 	return newtop;
 }
 
 void DepthBuffer_MoveToTop( DepthBuffer *newtop )
 {
-	if (newtop == depthBuffer.top)
+	DepthBufferList & dbList = depthBufferList();
+	if (newtop == dbList.top)
 		return;
 
-	if (newtop == depthBuffer.bottom)
+	if (newtop == dbList.bottom)
 	{
-		depthBuffer.bottom = newtop->higher;
-		depthBuffer.bottom->lower = NULL;
+		dbList.bottom = newtop->higher;
+		dbList.bottom->lower = NULL;
 	}
 	else
 	{
@@ -135,26 +139,28 @@ void DepthBuffer_MoveToTop( DepthBuffer *newtop )
 	}
 
 	newtop->higher = NULL;
-	newtop->lower = depthBuffer.top;
-	depthBuffer.top->higher = newtop;
-	depthBuffer.top = newtop;
+	newtop->lower = dbList.top;
+	dbList.top->higher = newtop;
+	dbList.top = newtop;
 }
 
 void DepthBuffer_Destroy()
 {
-	while (depthBuffer.bottom)
+	DepthBufferList & dbList = depthBufferList();
+	while (dbList.bottom)
 		DepthBuffer_RemoveBottom();
 
-	depthBuffer.top = depthBuffer.bottom = depthBuffer.current = NULL;
+	dbList.top = dbList.bottom = dbList.current = NULL;
 }
 
 void DepthBuffer_SetBuffer( u32 address )
 {
+	DepthBufferList & dbList = depthBufferList();
 	FrameBuffer * pFrameBuffer = frameBufferList().findBuffer(address);
 	if (pFrameBuffer == NULL)
 		pFrameBuffer = frameBufferList().getCurrent();
 
-	DepthBuffer *current = depthBuffer.top;
+	DepthBuffer *current = dbList.top;
 
 	// Search through saved depth buffers
 	while (current != NULL)
@@ -203,12 +209,13 @@ void DepthBuffer_SetBuffer( u32 address )
 #endif
 
 	}
-	depthBuffer.current = current;
+	dbList.current = current;
 }
 
 DepthBuffer *DepthBuffer_FindBuffer( u32 address )
 {
-	DepthBuffer *current = depthBuffer.top;
+	DepthBufferList & dbList = depthBufferList();
+	DepthBuffer *current = dbList.top;
 
 	while (current)
 	{
@@ -224,7 +231,7 @@ void DepthBuffer_ClearBuffer() {
 #ifndef GLES2
 	if (!OGL.bImageTexture)
 		return;
-	DepthBuffer *current = depthBuffer.top;
+	DepthBuffer *current = depthBufferList().top;
 	if (current == NULL || current->fbo == 0)
 		return;
 	float color[4] = {1.0f, 1.0f, 0.0f, 1.0f};
