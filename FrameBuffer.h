@@ -1,6 +1,8 @@
 #ifndef FRAMEBUFFER_H
 #define FRAMEBUFFER_H
 
+#include <list>
+
 #include "Types.h"
 #include "Textures.h"
 struct gDPTile;
@@ -8,24 +10,34 @@ struct DepthBuffer;
 
 struct FrameBuffer
 {
-	FrameBuffer *higher, *lower;
+	FrameBuffer();
+	FrameBuffer(FrameBuffer && _other);
+	~FrameBuffer();
 
-	CachedTexture *texture;
-	DepthBuffer *pDepthBuffer;
-	GLuint fbo;
+	u32 m_startAddress, m_endAddress;
+	u32 m_size, m_width, m_height, m_fillcolor;
+	float m_scaleX, m_scaleY;
+	bool m_cleared;
 
-	u32 startAddress, endAddress;
-	u32 size, width, height, fillcolor;
-	bool cleared;
-	gDPTile *loadTile;
-	float scaleX, scaleY;
+	GLuint m_FBO;
+	gDPTile *m_pLoadTile;
+	CachedTexture *m_pTexture;
+	DepthBuffer *m_pDepthBuffer;
 };
 
-struct FrameBufferList
+class FrameBufferList
 {
-	FrameBuffer *top, *bottom, *current;
-	int numBuffers;
-	GLenum drawBuffer;
+public:
+	void init();
+	void destroy();
+	void saveBuffer( u32 _address, u16 _format, u16 _size, u16 _width, u16 _height );
+	void removeBuffer( u32 _address );
+	void attachDepthBuffer();
+	FrameBuffer * findBuffer(u32 _address);
+	FrameBuffer * findTmpBuffer(u32 _address);
+	FrameBuffer * getCurrent() const {return m_pCurrent;}
+	void renderBuffer(u32 _address);
+	bool isFboMode() const {return m_drawBuffer == GL_FRAMEBUFFER;}
 
 	static FrameBufferList & get()
 	{
@@ -34,8 +46,15 @@ struct FrameBufferList
 	}
 
 private:
-	FrameBufferList() : current(NULL), drawBuffer(GL_BACK) {}
+	FrameBufferList() : m_pCurrent(NULL), m_drawBuffer(GL_BACK) {}
 	FrameBufferList(const FrameBufferList &);
+
+	void _initDepthTexture();
+
+	typedef std::list<FrameBuffer> FrameBuffers;
+	FrameBuffers m_list;
+	FrameBuffer * m_pCurrent;
+	GLenum m_drawBuffer;
 };
 
 inline
@@ -46,15 +65,10 @@ FrameBufferList & frameBufferList()
 
 void FrameBuffer_Init();
 void FrameBuffer_Destroy();
-void FrameBuffer_SaveBuffer( u32 address, u16 format, u16 size, u16 width, u16 height );
-void FrameBuffer_RenderBuffer( u32 address );
-void FrameBuffer_RemoveBuffer( u32 address );
-void FrameBuffer_AttachDepthBuffer();
 void FrameBuffer_CopyToRDRAM( u32 address, bool bSync );
 void FrameBuffer_CopyFromRDRAM( u32 address, bool bUseAlpha );
 void FrameBuffer_CopyDepthBuffer( u32 address );
-FrameBuffer *FrameBuffer_FindBuffer( u32 address );
-void FrameBuffer_ActivateBufferTexture( s16 t, FrameBuffer *buffer );
-void FrameBuffer_ActivateBufferTextureBG( s16 t, FrameBuffer *buffer );
+void FrameBuffer_ActivateBufferTexture(s16 t, FrameBuffer *pBuffer);
+void FrameBuffer_ActivateBufferTextureBG(s16 t, FrameBuffer *pBuffer);
 
 #endif

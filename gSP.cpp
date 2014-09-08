@@ -1684,14 +1684,14 @@ void _copyDepthBuffer()
 	// It will be copy depth buffer
 	DepthBuffer_SetBuffer(gDP.colorImage.address);
 	// Take any frame buffer and attach source depth buffer to it, to blit it into copy depth buffer
-	FrameBuffer * pTmpBuffer = frameBufferList().top->lower;
-	DepthBuffer * pTmpBufferDepth = pTmpBuffer->pDepthBuffer;
-	pTmpBuffer->pDepthBuffer = DepthBuffer_FindBuffer(gSP.bgImage.address);
-	glBindFramebuffer(GL_READ_FRAMEBUFFER, pTmpBuffer->fbo);
-	glFramebufferRenderbuffer(GL_READ_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, pTmpBuffer->pDepthBuffer->renderbuf);
+	FrameBuffer * pTmpBuffer = frameBufferList().findTmpBuffer(frameBufferList().getCurrent()->m_startAddress);
+	DepthBuffer * pTmpBufferDepth = pTmpBuffer->m_pDepthBuffer;
+	pTmpBuffer->m_pDepthBuffer = DepthBuffer_FindBuffer(gSP.bgImage.address);
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, pTmpBuffer->m_FBO);
+	glFramebufferRenderbuffer(GL_READ_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, pTmpBuffer->m_pDepthBuffer->renderbuf);
 	GLuint attachments[2] = { GL_COLOR_ATTACHMENT0, GL_DEPTH_ATTACHMENT };
 	glDrawBuffers(2,  attachments);
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, frameBufferList().top->fbo);
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, frameBufferList().getCurrent()->m_FBO);
 	glBlitFramebuffer(
 		0, 0, OGL.width, OGL.height,
 		0, 0, OGL.width, OGL.height,
@@ -1726,11 +1726,11 @@ void loadBGImage(const uObjScaleBg * _bgInfo, bool _loadScale)
 
 	if (config.frameBufferEmulation.enable)
 	{
-		FrameBuffer *buffer;
-		if (((buffer = FrameBuffer_FindBuffer( gSP.bgImage.address )) != NULL) &&
-			((*(u32*)&RDRAM[buffer->startAddress] & 0xFFFEFFFE) == (buffer->startAddress & 0xFFFEFFFE)))
+		FrameBuffer *pBuffer = frameBufferList().findBuffer(gSP.bgImage.address);
+		if ((pBuffer != NULL) &&
+			((*(u32*)&RDRAM[pBuffer->m_startAddress] & 0xFFFEFFFE) == (pBuffer->m_startAddress & 0xFFFEFFFE)))
 		{
-			gDP.tiles[0].frameBuffer = buffer;
+			gDP.tiles[0].frameBuffer = pBuffer;
 			gDP.tiles[0].textureMode = TEXTUREMODE_FRAMEBUFFER_BG;
 			gDP.tiles[0].loadType = LOADTYPE_TILE;
 			gDP.changed |= CHANGED_TMEM;
@@ -1945,9 +1945,10 @@ void gSPObjSprite( u32 sp )
 	gDPSetTileSize( 0, 0, 0, (imageW - 1) << 2, (imageH - 1) << 2 );
 	gSPTexture( 1.0f, 1.0f, 0, 0, TRUE );
 
-	FrameBufferList & frameBuffer = frameBufferList();
-	const float scaleX = frameBuffer.drawBuffer == GL_FRAMEBUFFER ? 1.0f/frameBuffer.top->width :  VI.rwidth;
-	const float scaleY = frameBuffer.drawBuffer == GL_FRAMEBUFFER ? 1.0f/frameBuffer.top->height :  VI.rheight;
+	const FrameBufferList & fbList = frameBufferList();
+	FrameBuffer * pBuffer = fbList.getCurrent();
+	const float scaleX = fbList.isFboMode() ? 1.0f/pBuffer->m_width :  VI.rwidth;
+	const float scaleY = fbList.isFboMode() ? 1.0f/pBuffer->m_height :  VI.rheight;
 	OGL.triangles.vertices[v0].x = 2.0f * scaleX * OGL.triangles.vertices[v0].x - 1.0f;
 	OGL.triangles.vertices[v0].y = -2.0f * scaleY * OGL.triangles.vertices[v0].y + 1.0f;
 	OGL.triangles.vertices[v0].z = -1.0f;

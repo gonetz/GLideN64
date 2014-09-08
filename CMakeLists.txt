@@ -7,7 +7,6 @@ set(GLideN64_SOURCES
   Combiner.cpp
   CRC.cpp
   Debug.cpp
-  Debug_linux.cpp
   DepthBuffer.cpp
   F3D.cpp
   F3DDKR.cpp
@@ -44,6 +43,7 @@ if(MUPENPLUSAPI)
   )
   set(GLideN64_SOURCES_LINUX
 	Config_mupen.cpp
+	Debug_linux.cpp
   )
 else(MUPENPLUSAPI)
   set(GLideN64_SOURCES_WIN
@@ -51,6 +51,7 @@ else(MUPENPLUSAPI)
   )
   set(GLideN64_SOURCES_LINUX
 	Config_linux.cpp
+	Debug_linux.cpp
   )
 endif(MUPENPLUSAPI)
 
@@ -96,6 +97,20 @@ if(OPT)
 	)
 endif(OPT)
 
+# Build type
+
+if( NOT CMAKE_BUILD_TYPE)
+	set( CMAKE_BUILD_TYPE Release)
+endif( NOT CMAKE_BUILD_TYPE)
+
+if( CMAKE_BUILD_TYPE STREQUAL "Debug")
+	set( CMAKE_BUILD_TYPE Debug)
+	set( DEBUG_BUILD TRUE)
+#	add_definitions(
+#	-DDEBUG
+#	)
+endif( CMAKE_BUILD_TYPE STREQUAL "Debug")
+
 find_package(OpenGL REQUIRED)
 include_directories(${OpenGL_INCLUDE_DIRS})
 link_directories(${OpenGL_LIBRARY_DIRS})
@@ -105,6 +120,9 @@ if(NOT OPENGL_FOUND)
 endif(NOT OPENGL_FOUND)
 
 add_library( GLideN64 SHARED ${GLideN64_SOURCES})
+
+SET(GCC_CPP11_COMPILE_FLAGS "-std=c++0x")
+SET( CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} ${GCC_CPP11_COMPILE_FLAGS}" )
 
 SET_TARGET_PROPERTIES(
   GLideN64

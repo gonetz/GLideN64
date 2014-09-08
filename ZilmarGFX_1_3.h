@@ -27,7 +27,7 @@ extern "C" {
 #define PLUGIN_TYPE_GFX				2
 
 #define EXPORT						__declspec(dllexport)
-#define CALL						_cdecl
+#define CALL						__cdecl
 
 /***** Structures *****/
 typedef struct {

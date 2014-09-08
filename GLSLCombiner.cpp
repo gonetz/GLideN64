@@ -693,8 +693,8 @@ void ShaderCombiner::updateDepthInfo(bool _bForce) {
 	if (!OGL.bImageTexture)
 		return;
 
-	FrameBufferList & frameBuffer = frameBufferList();
-	if (frameBuffer.top == NULL || frameBuffer.top->pDepthBuffer == NULL)
+	FrameBuffer * pBuffer = frameBufferList().getCurrent();
+	if (pBuffer == NULL || pBuffer->m_pDepthBuffer == NULL)
 		return;
 
 	const int nDepthEnabled = (gSP.geometryMode & G_ZBUFFER) > 0 ? 1 : 0;
@@ -728,7 +728,7 @@ void ShaderCombiner::updateAlphaTestInfo(bool _bForce) {
 void GLSL_RenderDepth() {
 	if (!OGL.bImageTexture)
 		return;
-	FrameBufferList & frameBuffer = frameBufferList();
+	FrameBuffer * pBuffer = frameBufferList().getCurrent();
 #if 0
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, g_zbuf_fbo);
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
@@ -740,15 +740,15 @@ void GLSL_RenderDepth() {
 	);
 	glDrawBuffer( GL_BACK );
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, frameBuffer.top != NULL ? frameBuffer.top->fbo : 0);
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, pBuffer != NULL ? pBuffer->m_FBO : 0);
 #else
-	if (frameBuffer.top == NULL || frameBuffer.top->pDepthBuffer == NULL)
+	if (pBuffer == NULL || pBuffer->m_pDepthBuffer == NULL)
 		return;
 	glBindImageTexture(depthImageUnit, 0, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA32F);
 	glPushAttrib( GL_ENABLE_BIT | GL_VIEWPORT_BIT );
 
 	glActiveTexture( GL_TEXTURE0 );
-	glBindTexture(GL_TEXTURE_2D, frameBuffer.top->pDepthBuffer->depth_texture->glName);
+	glBindTexture(GL_TEXTURE_2D, pBuffer->m_pDepthBuffer->depth_texture->glName);
 //	glBindTexture(GL_TEXTURE_2D, g_zlut_tex);
 
 	CombinerInfo::get().setCombine( EncodeCombineMode( 0, 0, 0, TEXEL0, 0, 0, 0, 1, 0, 0, 0, TEXEL0, 0, 0, 0, 1 ) );
@@ -794,8 +794,8 @@ void GLSL_RenderDepth() {
 #else
 			OGL_SwapBuffers();
 #endif
-			glBindFramebuffer(GL_DRAW_FRAMEBUFFER, frameBuffer.top->fbo);
-			glBindImageTexture(depthImageUnit, frameBuffer.top->pDepthBuffer->depth_texture->glName, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA32F);
+			glBindFramebuffer(GL_DRAW_FRAMEBUFFER, pBuffer->m_FBO);
+			glBindImageTexture(depthImageUnit, pBuffer->m_pDepthBuffer->depth_texture->glName, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA32F);
 
 
 			glLoadIdentity();

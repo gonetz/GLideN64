@@ -277,7 +277,7 @@ void gDPSetColorImage( u32 format, u32 size, u32 width, u32 address )
 		if (config.frameBufferEmulation.enable)// && address != gDP.depthImageAddress)
 		{
 			//if (gDP.colorImage.changed)
-				FrameBuffer_SaveBuffer( address, (u16)format, (u16)size, (u16)width, height );
+				frameBufferList().saveBuffer(address, (u16)format, (u16)size, (u16)width, height);
 				gDP.colorImage.height = 1;
 
 			//OGL_ClearDepthBuffer();
@@ -506,33 +506,33 @@ bool CheckForFrameBufferTexture(u32 _address, u32 _bytes)
 	if (!config.frameBufferEmulation.enable)
 		return false;
 
-	FrameBuffer *pBuffer = FrameBuffer_FindBuffer( _address );
+	FrameBuffer *pBuffer = frameBufferList().findBuffer(_address);
 	bool bRes = pBuffer != NULL;
 	if ((bRes)
 		//&&			((*(u32*)&RDRAM[pBuffer->startAddress] & 0xFFFEFFFE) == (pBuffer->startAddress & 0xFFFEFFFE)) // Does not work for Jet Force Gemini
 		)
 	{
 		const u32 texEndAddress = _address + _bytes - 1;
-		const u32 bufEndAddress = pBuffer->startAddress + (((pBuffer->width * (int)gDP.scissor.lry) << pBuffer->size >> 1) - 1);
-		if (_address > pBuffer->startAddress && texEndAddress > bufEndAddress) {
+		const u32 bufEndAddress = pBuffer->m_startAddress + (((pBuffer->m_width * (int)gDP.scissor.lry) << pBuffer->m_size >> 1) - 1);
+		if (_address > pBuffer->m_startAddress && texEndAddress > bufEndAddress) {
 //			FrameBuffer_RemoveBuffer(pBuffer->startAddress);
 			bRes = false;
 		}
 
-		if (bRes && gDP.loadTile->loadType == LOADTYPE_TILE && gDP.textureImage.width != pBuffer->width && gDP.textureImage.size != pBuffer->size) {
+		if (bRes && gDP.loadTile->loadType == LOADTYPE_TILE && gDP.textureImage.width != pBuffer->m_width && gDP.textureImage.size != pBuffer->m_size) {
 			//FrameBuffer_RemoveBuffer(pBuffer->startAddress); // Does not work with Zelda MM
 			bRes = false;
 		}
 
-		if (bRes && pBuffer->cleared && pBuffer->size == 2
+		if (bRes && pBuffer->m_cleared && pBuffer->m_size == 2
 			&& !config.frameBufferEmulation.copyToRDRAM
-			&& (!config.frameBufferEmulation.copyDepthToRDRAM || pBuffer->fillcolor != DEPTH_CLEAR_COLOR)
+			&& (!config.frameBufferEmulation.copyDepthToRDRAM || pBuffer->m_fillcolor != DEPTH_CLEAR_COLOR)
 		) {
-			const u32 endAddress = min(texEndAddress, pBuffer->endAddress);
-			const u32 color = pBuffer->fillcolor&0xFFFEFFFE;
+			const u32 endAddress = min(texEndAddress, pBuffer->m_endAddress);
+			const u32 color = pBuffer->m_fillcolor&0xFFFEFFFE;
 			for (u32 i = _address + 4; i < endAddress; i+=4) {
 				if (((*(u32*)&RDRAM[i])&0xFFFEFFFE) != color) {
-					FrameBuffer_RemoveBuffer(pBuffer->startAddress);
+					frameBufferList().removeBuffer(pBuffer->m_startAddress);
 					bRes = false;
 					break;
 				}
@@ -540,7 +540,7 @@ bool CheckForFrameBufferTexture(u32 _address, u32 _bytes)
 		}
 
 		if (bRes) {
-			pBuffer->loadTile = gDP.loadTile;
+			pBuffer->m_pLoadTile = gDP.loadTile;
 			gDP.loadTile->frameBuffer = pBuffer;
 			gDP.loadTile->textureMode = TEXTUREMODE_FRAMEBUFFER;
 		}
@@ -752,10 +752,10 @@ void gDPFillRDRAM(u32 address, s32 ulx, s32 uly, s32 lrx, s32 lry, u32 width, u3
 {
 	if (g_bDepthClearOnly && color != DEPTH_CLEAR_COLOR)
 		return;
-	FrameBufferList & frameBuffer = frameBufferList();
-	if (frameBuffer.drawBuffer == GL_FRAMEBUFFER) {
-		frameBuffer.top->cleared = true;
-		frameBuffer.top->fillcolor = color;
+	FrameBufferList & fbList = frameBufferList();
+	if (fbList.isFboMode()) {
+		fbList.getCurrent()->m_cleared = true;
+		fbList.getCurrent()->m_fillcolor = color;
 	}
 	ulx = min(max((float)ulx, gDP.scissor.ulx), gDP.scissor.lrx);
 	lrx = min(max((float)lrx, gDP.scissor.ulx), gDP.scissor.lrx);

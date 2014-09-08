@@ -589,11 +589,11 @@ void OGL_UpdateCullFace()
 
 void OGL_UpdateViewport()
 {
-	if (frameBufferList().drawBuffer == GL_BACK)
+	if (!frameBufferList().isFboMode())
 		glViewport( gSP.viewport.x * OGL.scaleX, (VI.height - (gSP.viewport.y + gSP.viewport.height)) * OGL.scaleY + OGL.heightOffset,
 					gSP.viewport.width * OGL.scaleX, gSP.viewport.height * OGL.scaleY );
 	else
-		glViewport( gSP.viewport.x * OGL.scaleX, (frameBufferList().top->height - (gSP.viewport.y + gSP.viewport.height)) * OGL.scaleY,
+		glViewport( gSP.viewport.x * OGL.scaleX, (frameBufferList().getCurrent()->m_height - (gSP.viewport.y + gSP.viewport.height)) * OGL.scaleY,
 					gSP.viewport.width * OGL.scaleX, gSP.viewport.height * OGL.scaleY );
 }
 
@@ -798,9 +798,9 @@ void OGL_UpdateStates()
 
 	if (gDP.changed & CHANGED_SCISSOR)
 	{
-		FrameBufferList & frameBuffer = frameBufferList();
-		const u32 screenHeight = (frameBuffer.top == NULL || frameBuffer.top->height == 0 ||  frameBuffer.drawBuffer == GL_BACK) ? VI.height : frameBuffer.top->height;
-		glScissor( gDP.scissor.ulx * OGL.scaleX, (screenHeight - gDP.scissor.lry) * OGL.scaleY + (frameBuffer.drawBuffer == GL_BACK ? OGL.heightOffset : 0),
+		FrameBufferList & fbList = frameBufferList();
+		const u32 screenHeight = (fbList.getCurrent() == NULL || fbList.getCurrent()->m_height == 0 || !fbList.isFboMode()) ? VI.height : fbList.getCurrent()->m_height;
+		glScissor( gDP.scissor.ulx * OGL.scaleX, (screenHeight - gDP.scissor.lry) * OGL.scaleY + (fbList.isFboMode() ? 0 : OGL.heightOffset),
 			(gDP.scissor.lrx - gDP.scissor.ulx) * OGL.scaleX, (gDP.scissor.lry - gDP.scissor.uly) * OGL.scaleY );
 	}
 
@@ -1017,16 +1017,18 @@ void OGL_DrawRect( int ulx, int uly, int lrx, int lry, float *color )
 		currentCombiner()->updateRenderState();
 	}
 
-	FrameBufferList & frameBuffer = frameBufferList();
-	if (frameBuffer.drawBuffer != GL_FRAMEBUFFER)
-		glViewport( 0, (frameBuffer.drawBuffer == GL_BACK ? OGL.heightOffset : 0), OGL.width, OGL.height );
-	else
-		glViewport( 0, 0, frameBuffer.top->width*frameBuffer.top->scaleX, frameBuffer.top->height*frameBuffer.top->scaleY );
+	FrameBufferList & fbList = frameBufferList();
+	FrameBuffer* pBuffer = fbList.getCurrent();
+	if (!fbList.isFboMode())
+		glViewport( 0, OGL.heightOffset, OGL.width, OGL.height );
+	else {
+		glViewport( 0, 0, pBuffer->m_width*pBuffer->m_scaleX, pBuffer->m_height*pBuffer->m_scaleY );
+	}
 	glDisable(GL_SCISSOR_TEST);
 	glDisable(GL_CULL_FACE);
 
-	const float scaleX = frameBuffer.drawBuffer == GL_FRAMEBUFFER ? 1.0f/frameBuffer.top->width :  VI.rwidth;
-	const float scaleY = frameBuffer.drawBuffer == GL_FRAMEBUFFER ? 1.0f/frameBuffer.top->height :  VI.rheight;
+	const float scaleX = fbList.isFboMode() ? 1.0f/pBuffer->m_width :  VI.rwidth;
+	const float scaleY = fbList.isFboMode() ? 1.0f/pBuffer->m_height :  VI.rheight;
 	OGL.rect[0].x = (float) ulx * (2.0f * scaleX) - 1.0;
 	OGL.rect[0].y = (float) uly * (-2.0f * scaleY) + 1.0;
 	OGL.rect[1].x = (float) (lrx+1) * (2.0f * scaleX) - 1.0;
@@ -1073,15 +1075,16 @@ void OGL_DrawTexturedRect( float ulx, float uly, float lrx, float lry, float uls
 		GLS_SetShadowMapCombiner();
 #endif // GLES2
 
-	FrameBufferList & frameBuffer = frameBufferList();
-	if (frameBuffer.drawBuffer != GL_FRAMEBUFFER)
-		glViewport( 0, (frameBuffer.drawBuffer == GL_BACK ? OGL.heightOffset : 0), OGL.width, OGL.height );
+	FrameBufferList & fbList = frameBufferList();
+	FrameBuffer* pBuffer = fbList.getCurrent();
+	if (!fbList.isFboMode())
+		glViewport( 0, OGL.heightOffset, OGL.width, OGL.height );
 	else
-		glViewport( 0, 0, frameBuffer.top->width*frameBuffer.top->scaleX, frameBuffer.top->height*frameBuffer.top->scaleY );
+		glViewport( 0, 0, pBuffer->m_width*pBuffer->m_scaleX, pBuffer->m_height*pBuffer->m_scaleY );
 	glDisable( GL_CULL_FACE );
 
-	const float scaleX = frameBuffer.drawBuffer == GL_FRAMEBUFFER ? 1.0f/frameBuffer.top->width :  VI.rwidth;
-	const float scaleY = frameBuffer.drawBuffer == GL_FRAMEBUFFER ? 1.0f/frameBuffer.top->height :  VI.rheight;
+	const float scaleX = fbList.isFboMode() ? 1.0f/pBuffer->m_width :  VI.rwidth;
+	const float scaleY = fbList.isFboMode() ? 1.0f/pBuffer->m_height :  VI.rheight;
 	OGL.rect[0].x = (float) ulx * (2.0f * scaleX) - 1.0f;
 	OGL.rect[0].y = (float) uly * (-2.0f * scaleY) + 1.0f;
 	OGL.rect[1].x = (float) (lrx) * (2.0f * scaleX) - 1.0f;
@@ -1207,7 +1210,7 @@ void OGL_DrawTexturedRect( float ulx, float uly, float lrx, float lry, float uls
 
 void OGL_ClearDepthBuffer()
 {
-	if (config.frameBufferEmulation.enable && frameBufferList().top == NULL)
+	if (config.frameBufferEmulation.enable && frameBufferList().getCurrent() == NULL)
 		return;
 
 	DepthBuffer_ClearBuffer();

@@ -61,19 +61,19 @@ void VI_UpdateScreen()
 		const bool bNeedUpdate = bCFB ? true : (*REG.VI_ORIGIN != VI.lastOrigin);// && gDP.colorImage.changed;
 
 		if (bNeedUpdate) {
-			FrameBuffer * pBuffer = FrameBuffer_FindBuffer(*REG.VI_ORIGIN);
-			if (pBuffer == NULL || pBuffer->width != *REG.VI_WIDTH) {
+			FrameBuffer * pBuffer = frameBufferList().findBuffer(*REG.VI_ORIGIN);
+			if (pBuffer == NULL || pBuffer->m_width != *REG.VI_WIDTH) {
 				VI_UpdateSize();
 				OGL_UpdateScale();
 				const u32 size = *REG.VI_STATUS & 3;
 				if (VI.height > 0 && size > G_IM_SIZ_8b)
-					FrameBuffer_SaveBuffer( *REG.VI_ORIGIN, G_IM_FMT_RGBA, size, *REG.VI_WIDTH, VI.height );
+					frameBufferList().saveBuffer( *REG.VI_ORIGIN, G_IM_FMT_RGBA, size, *REG.VI_WIDTH, VI.height );
 			}
 			if ((((*REG.VI_STATUS)&3) > 0) && (config.frameBufferEmulation.copyFromRDRAM || bCFB)) {
 				VI_UpdateSize();
 				FrameBuffer_CopyFromRDRAM( *REG.VI_ORIGIN, config.frameBufferEmulation.copyFromRDRAM && !bCFB );
 			}
-			FrameBuffer_RenderBuffer( *REG.VI_ORIGIN );
+			frameBufferList().renderBuffer(*REG.VI_ORIGIN);
 
 			gDP.colorImage.changed = FALSE;
 			VI.lastOrigin = *REG.VI_ORIGIN;
