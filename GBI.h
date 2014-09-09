@@ -18,9 +18,9 @@
 
 static const char *MicrocodeTypes[] =
 {
-	"Fast3D", 
-	"F3DEX", 
-	"F3DEX2", 
+	"Fast3D",
+	"F3DEX",
+	"F3DEX2",
 	"Line3D",
 	"L3DEX",
 	"L3DEX2",
@@ -58,9 +58,9 @@ static const int numMicrocodeTypes = 11;
 
 // Useful macros for decoding GBI command's parameters
 #define _SHIFTL( v, s, w )	\
-    (((u32)v & ((0x01 << w) - 1)) << s)
+	(((u32)v & ((0x01 << w) - 1)) << s)
 #define _SHIFTR( v, s, w )	\
-    (((u32)v >> s) & ((0x01 << w) - 1))
+	(((u32)v >> s) & ((0x01 << w) - 1))
 
 // BG flags
 #define	G_BGLT_LOADBLOCK	0x0033
@@ -93,7 +93,7 @@ static const int numMicrocodeTypes = 11;
 #define G_TEXTURE_GEN_LINEAR	0x00080000
 #define G_LOD					0x00100000
 
-#define G_MV_MMTX		2	
+#define G_MV_MMTX		2
 #define G_MV_PMTX		6
 #define G_MV_LIGHT		10
 #define G_MV_POINT		12
@@ -246,7 +246,7 @@ extern u32 G_MWO_aLIGHT_8, G_MWO_bLIGHT_8;
 #ifdef DEBUG
 static const char *ImageFormatText[] =
 {
-	"G_IM_FMT_RGBA", 
+	"G_IM_FMT_RGBA",
 	"G_IM_FMT_YUV",
 	"G_IM_FMT_CI",
 	"G_IM_FMT_IA",
@@ -258,9 +258,9 @@ static const char *ImageFormatText[] =
 
 static const char *ImageSizeText[] =
 {
-	"G_IM_SIZ_4b", 
-	"G_IM_SIZ_8b", 
-	"G_IM_SIZ_16b", 
+	"G_IM_SIZ_4b",
+	"G_IM_SIZ_8b",
+	"G_IM_SIZ_16b",
 	"G_IM_SIZ_32b"
 };
 
@@ -440,14 +440,14 @@ static const char *CvgXAlphaText = "CVG_X_ALPHA";
 static const char *AlphaCvgSelText = "ALPHA_CVG_SEL";
 static const char *ForceBlenderText = "FORCE_BL";
 
-static const char *AlphaCompareText[] = 
+static const char *AlphaCompareText[] =
 {
 	"G_AC_NONE", "G_AC_THRESHOLD", "G_AC_INVALID", "G_AC_DITHER"
 };
 
 static const char *DepthSourceText[] =
 {
-    "G_ZS_PIXEL", "G_ZS_PRIM"
+	"G_ZS_PIXEL", "G_ZS_PRIM"
 };
 
 static const char *AlphaDitherText[] =
@@ -524,7 +524,7 @@ static const char *ScissorModeText[] =
 #ifdef DEBUG
 static const char *saRGBText[] =
 {
-	"COMBINED",			"TEXEL0",			"TEXEL1",			"PRIMITIVE", 
+	"COMBINED",			"TEXEL0",			"TEXEL1",			"PRIMITIVE",
 	"SHADE",			"ENVIRONMENT",		"NOISE",			"1",
 	"0",				"0",				"0",				"0",
 	"0",				"0",				"0",				"0"
@@ -532,7 +532,7 @@ static const char *saRGBText[] =
 
 static const char *sbRGBText[] =
 {
-	"COMBINED",			"TEXEL0",			"TEXEL1",			"PRIMITIVE", 
+	"COMBINED",			"TEXEL0",			"TEXEL1",			"PRIMITIVE",
 	"SHADE",			"ENVIRONMENT",		"CENTER",			"K4",
 	"0",				"0",				"0",				"0",
 	"0",				"0",				"0",				"0"
@@ -540,7 +540,7 @@ static const char *sbRGBText[] =
 
 static const char *mRGBText[] =
 {
-	"COMBINED",			"TEXEL0",			"TEXEL1",			"PRIMITIVE", 
+	"COMBINED",			"TEXEL0",			"TEXEL1",			"PRIMITIVE",
 	"SHADE",			"ENVIRONMENT",		"SCALE",			"COMBINED_ALPHA",
 	"TEXEL0_ALPHA",		"TEXEL1_ALPHA",		"PRIMITIVE_ALPHA",	"SHADE_ALPHA",
 	"ENV_ALPHA",		"LOD_FRACTION",		"PRIM_LOD_FRAC",	"K5",
@@ -552,31 +552,31 @@ static const char *mRGBText[] =
 
 static const char *aRGBText[] =
 {
-	"COMBINED",			"TEXEL0",			"TEXEL1",			"PRIMITIVE", 
+	"COMBINED",			"TEXEL0",			"TEXEL1",			"PRIMITIVE",
 	"SHADE",			"ENVIRONMENT",		"1",				"0",
 };
 
 static const char *saAText[] =
 {
-	"COMBINED",			"TEXEL0",			"TEXEL1",			"PRIMITIVE", 
+	"COMBINED",			"TEXEL0",			"TEXEL1",			"PRIMITIVE",
 	"SHADE",			"ENVIRONMENT",		"1",				"0",
 };
 
 static const char *sbAText[] =
 {
-	"COMBINED",			"TEXEL0",			"TEXEL1",			"PRIMITIVE", 
+	"COMBINED",			"TEXEL0",			"TEXEL1",			"PRIMITIVE",
 	"SHADE",			"ENVIRONMENT",		"1",				"0",
 };
 
 static const char *mAText[] =
 {
-	"LOD_FRACTION",		"TEXEL0",			"TEXEL1",			"PRIMITIVE", 
+	"LOD_FRACTION",		"TEXEL0",			"TEXEL1",			"PRIMITIVE",
 	"SHADE",			"ENVIRONMENT",		"PRIM_LOD_FRAC",	"0",
 };
 
 static const char *aAText[] =
 {
-	"COMBINED",			"TEXEL0",			"TEXEL1",			"PRIMITIVE", 
+	"COMBINED",			"TEXEL0",			"TEXEL1",			"PRIMITIVE",
 	"SHADE",			"ENVIRONMENT",		"1",				"0",
 };
 #endif
@@ -644,7 +644,7 @@ typedef struct
 	};
 } Vertex;
 
-typedef struct 
+typedef struct
 {
 	s16 y, x;
 	u16	ci;
@@ -686,7 +686,6 @@ struct MicrocodeInfo
 	u32 type;
 	u32 NoN;
 	u32 crc;
-	u32 *text;
 
 	MicrocodeInfo *higher, *lower;
 };
