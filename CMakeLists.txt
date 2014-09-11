@@ -6,7 +6,6 @@ set(GLideN64_SOURCES
   3DMath.cpp
   Combiner.cpp
   CRC.cpp
-  Debug.cpp
   DepthBuffer.cpp
   F3D.cpp
   F3DDKR.cpp
@@ -31,6 +30,7 @@ set(GLideN64_SOURCES
   S2DEX.cpp
   Textures.cpp
   VI.cpp
+  common/CommonAPIImpl_common.cpp
 )
 
 if(MUPENPLUSAPI)
@@ -38,20 +38,40 @@ if(MUPENPLUSAPI)
 	-DMUPENPLUSAPI
   )
   include_directories( inc )
-  set(GLideN64_SOURCES_WIN
-	Config_mupen.cpp
-  )
   set(GLideN64_SOURCES_LINUX
-	Config_mupen.cpp
-	Debug_linux.cpp
+	MupenPlusPluginAPI.cpp
+	mupenplus/Config.cpp
+	mupenplus/CommonAPIImpl_mupenplus.cpp
+	mupenplus/GLideN64_mupenplus.cpp
+	mupenplus/MicrocodeDialog.cpp
+	mupenplus/MupenPlusAPIImpl.cpp
+	mupenplus/OpenGL_mupenplus.cpp
+  )
+  set(GLideN64_SOURCES_WIN ${GLideN64_SOURCES_LINUX}
+	windows/GLFunctions.cpp
   )
 else(MUPENPLUSAPI)
   set(GLideN64_SOURCES_WIN
-	Config.cpp
+	ZilmarPluginAPI.cpp
+	common/ZilmarAPIImpl_common.cpp
+	windows/Config.cpp
+	windows/Debug.cpp
+	windows/CommonAPIImpl_windows.cpp
+	windows/GLideN64_windows.cpp
+	windows/GLFunctions.cpp
+	windows/MicrocodeDialog.cpp
+	windows/OpenGL_windows.cpp
+	windows/ZilmarAPIImpl_windows.cpp
   )
   set(GLideN64_SOURCES_LINUX
-	Config_linux.cpp
-	Debug_linux.cpp
+	ZilmarPluginAPI.cpp
+	common/ZilmarAPIImpl_common.cpp
+	posix/Config.cpp
+	posix/Debug.cpp
+	posix/CommonAPIImpl_posix.cpp
+	posix/MicrocodeDialog.cpp
+	posix/OpenGL_posix.cpp
+	posix/ZilmarAPIImpl_posix.cpp
   )
 endif(MUPENPLUSAPI)
 
@@ -73,6 +93,7 @@ if(WIN32)
   add_definitions(
 	-D_WINDOWS
 	-D__WIN32__
+	-DWIN32
 	-D_WIN32_
 	-D_CRT_SECURE_NO_WARNINGS
 	-D__MSC__
@@ -119,10 +140,12 @@ if(NOT OPENGL_FOUND)
 	message(ERROR " OPENGL not found!")
 endif(NOT OPENGL_FOUND)
 
-add_library( GLideN64 SHARED ${GLideN64_SOURCES})
-
-SET(GCC_CPP11_COMPILE_FLAGS "-std=c++0x")
+SET(GCC_CPP11_COMPILE_FLAGS "-std=c++0x -static-libgcc -static-libstdc++")
 SET( CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} ${GCC_CPP11_COMPILE_FLAGS}" )
+SET(GCC_STATIC_LINK_FLAGS "-static-libgcc -static-libstdc++")
+SET( CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} ${GCC_STATIC_LINK_FLAGS}" )
+
+add_library( GLideN64 SHARED ${GLideN64_SOURCES})
 
 SET_TARGET_PROPERTIES(
   GLideN64

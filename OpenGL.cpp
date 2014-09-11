@@ -1,8 +1,8 @@
-#include "OpenGL.h"
 #include <assert.h>
 #include <math.h>
 #include <stdio.h>
 #include <time.h>       /* time_t, struct tm, difftime, time, mktime */
+#include "OpenGL.h"
 
 //// paulscode, added for SDL linkage:
 #if defined(GLES2)
@@ -32,73 +32,6 @@
 #include "Log.h"
 
 GLInfo OGL;
-
-#ifdef _WINDOWS
-// GLSL functions
-PFNGLCREATESHADERPROC glCreateShader;
-PFNGLCOMPILESHADERPROC glCompileShader;
-PFNGLSHADERSOURCEPROC glShaderSource;
-PFNGLCREATEPROGRAMPROC glCreateProgram;
-PFNGLATTACHSHADERPROC glAttachShader;
-PFNGLLINKPROGRAMPROC glLinkProgram;
-PFNGLUSEPROGRAMPROC glUseProgram;
-PFNGLGETUNIFORMLOCATIONPROC glGetUniformLocation;
-PFNGLUNIFORM1IPROC glUniform1i;
-PFNGLUNIFORM1FPROC glUniform1f;
-PFNGLUNIFORM2FPROC glUniform2f;
-PFNGLUNIFORM2IPROC glUniform2i;
-PFNGLUNIFORM4FPROC glUniform4f;
-PFNGLUNIFORM3FVPROC glUniform3fv;
-PFNGLUNIFORM4FVPROC glUniform4fv;
-PFNGLDETACHSHADERPROC glDetachShader;
-PFNGLDELETESHADERPROC glDeleteShader;
-PFNGLDELETEPROGRAMPROC glDeleteProgram;
-PFNGLGETPROGRAMINFOLOGPROC glGetProgramInfoLog;
-PFNGLGETSHADERINFOLOGPROC glGetShaderInfoLog;
-PFNGLGETSHADERIVPROC glGetShaderiv;
-PFNGLGETPROGRAMIVPROC glGetProgramiv;
-
-PFNGLENABLEVERTEXATTRIBARRAYPROC glEnableVertexAttribArray;
-PFNGLDISABLEVERTEXATTRIBARRAYPROC glDisableVertexAttribArray;
-PFNGLVERTEXATTRIBPOINTERPROC glVertexAttribPointer;
-PFNGLBINDATTRIBLOCATIONPROC glBindAttribLocation;
-PFNGLVERTEXATTRIB4FPROC glVertexAttrib4f;
-PFNGLVERTEXATTRIB4FVPROC glVertexAttrib4fv;
-
-// multitexture functions
-PFNGLACTIVETEXTUREPROC glActiveTexture;
-PFNGLDEPTHRANGEFPROC glDepthRangef;
-PFNGLCLEARDEPTHFPROC glClearDepthf;
-
-// EXT_fog_coord functions
-PFNGLFOGCOORDFEXTPROC glFogCoordfEXT;
-PFNGLFOGCOORDFVEXTPROC glFogCoordfvEXT;
-PFNGLFOGCOORDDEXTPROC glFogCoorddEXT;
-PFNGLFOGCOORDDVEXTPROC glFogCoorddvEXT;
-PFNGLFOGCOORDPOINTEREXTPROC glFogCoordPointerEXT;
-
-PFNGLDRAWBUFFERSPROC glDrawBuffers;
-PFNGLBINDFRAMEBUFFERPROC glBindFramebuffer;
-PFNGLDELETEFRAMEBUFFERSPROC glDeleteFramebuffers;
-PFNGLGENFRAMEBUFFERSPROC glGenFramebuffers;
-PFNGLFRAMEBUFFERTEXTURE2DPROC glFramebufferTexture2D;
-PFNGLGENRENDERBUFFERSPROC glGenRenderbuffers;
-PFNGLBINDRENDERBUFFERPROC glBindRenderbuffer;
-PFNGLRENDERBUFFERSTORAGEPROC glRenderbufferStorage;
-PFNGLFRAMEBUFFERRENDERBUFFERPROC glFramebufferRenderbuffer;
-PFNGLDELETERENDERBUFFERSPROC glDeleteRenderbuffers;
-PFNGLCHECKFRAMEBUFFERSTATUSPROC glCheckFramebufferStatus;
-PFNGLBLITFRAMEBUFFERPROC glBlitFramebuffer;
-PFNGLGENBUFFERSPROC glGenBuffers;
-PFNGLBINDBUFFERPROC glBindBuffer;
-PFNGLBUFFERDATAPROC glBufferData;
-PFNGLMAPBUFFERPROC glMapBuffer;
-PFNGLUNMAPBUFFERPROC glUnmapBuffer;
-PFNGLDELETEBUFFERSPROC glDeleteBuffers;
-PFNGLBINDIMAGETEXTUREPROC glBindImageTexture;
-PFNGLMEMORYBARRIERPROC glMemoryBarrier;
-
-#endif // _WINDOWS
 
 BOOL isExtensionSupported( const char *extension )
 {
@@ -135,63 +68,6 @@ void OGL_InitExtensions()
 	const char *version = reinterpret_cast<const char*>(glGetString(GL_VERSION));
 	u32 uVersion = atol(version);
 
-#ifdef _WINDOWS
-	glCreateShader = (PFNGLCREATESHADERPROC)wglGetProcAddress("glCreateShader");
-	glCompileShader = (PFNGLCOMPILESHADERPROC)wglGetProcAddress("glCompileShader");
-	glShaderSource = (PFNGLSHADERSOURCEPROC)wglGetProcAddress("glShaderSource");
-	glCreateProgram = (PFNGLCREATEPROGRAMPROC)wglGetProcAddress("glCreateProgram");
-	glAttachShader = (PFNGLATTACHSHADERPROC)wglGetProcAddress("glAttachShader");
-	glLinkProgram = (PFNGLLINKPROGRAMPROC)wglGetProcAddress("glLinkProgram");
-	glUseProgram = (PFNGLUSEPROGRAMPROC)wglGetProcAddress("glUseProgram");
-	glGetUniformLocation = (PFNGLGETUNIFORMLOCATIONPROC)wglGetProcAddress("glGetUniformLocation");
-	glUniform1i = (PFNGLUNIFORM1IPROC)wglGetProcAddress("glUniform1i");
-	glUniform1f = (PFNGLUNIFORM1FPROC)wglGetProcAddress("glUniform1f");
-	glUniform2f = (PFNGLUNIFORM2FPROC)wglGetProcAddress("glUniform2f");
-	glUniform2i = (PFNGLUNIFORM2IPROC)wglGetProcAddress("glUniform2i");
-	glUniform4f = (PFNGLUNIFORM4FPROC)wglGetProcAddress("glUniform4f");
-	glUniform3fv = (PFNGLUNIFORM3FVPROC)wglGetProcAddress("glUniform3fv");
-	glUniform4fv = (PFNGLUNIFORM4FVPROC)wglGetProcAddress("glUniform4fv");
-	glDetachShader = (PFNGLDETACHSHADERPROC)wglGetProcAddress("glDetachShader");
-	glDeleteShader = (PFNGLDELETESHADERPROC)wglGetProcAddress("glDeleteShader");
-	glDeleteProgram = (PFNGLDELETEPROGRAMPROC)wglGetProcAddress("glDeleteProgram");
-	glGetProgramInfoLog = (PFNGLGETPROGRAMINFOLOGPROC)wglGetProcAddress("glGetProgramInfoLog");
-	glGetShaderInfoLog = (PFNGLGETSHADERINFOLOGPROC)wglGetProcAddress("glGetShaderInfoLog");
-	glGetShaderiv = (PFNGLGETSHADERIVPROC)wglGetProcAddress("glGetShaderiv");
-	glGetProgramiv = (PFNGLGETPROGRAMIVPROC)wglGetProcAddress("glGetProgramiv");
-
-	glEnableVertexAttribArray = (PFNGLENABLEVERTEXATTRIBARRAYPROC)wglGetProcAddress("glEnableVertexAttribArray");
-	glDisableVertexAttribArray = (PFNGLDISABLEVERTEXATTRIBARRAYPROC)wglGetProcAddress("glDisableVertexAttribArray");
-	glVertexAttribPointer = (PFNGLVERTEXATTRIBPOINTERPROC)wglGetProcAddress("glVertexAttribPointer");
-	glBindAttribLocation = (PFNGLBINDATTRIBLOCATIONPROC)wglGetProcAddress("glBindAttribLocation");
-	glVertexAttrib4f = (PFNGLVERTEXATTRIB4FPROC)wglGetProcAddress("glVertexAttrib4f");
-	glVertexAttrib4fv = (PFNGLVERTEXATTRIB4FVPROC)wglGetProcAddress("glVertexAttrib4fv");
-
-	glActiveTexture	= (PFNGLACTIVETEXTUREPROC)wglGetProcAddress( "glActiveTexture" );
-	glDepthRangef = (PFNGLDEPTHRANGEFPROC)wglGetProcAddress( "glDepthRangef" );
-	glClearDepthf = (PFNGLCLEARDEPTHFPROC)wglGetProcAddress( "glClearDepthf" );
-
-	glDrawBuffers = (PFNGLDRAWBUFFERSPROC)wglGetProcAddress( "glDrawBuffers" );
-	glBindFramebuffer = (PFNGLBINDFRAMEBUFFERPROC)wglGetProcAddress( "glBindFramebuffer" );
-	glDeleteFramebuffers = (PFNGLDELETEFRAMEBUFFERSPROC)wglGetProcAddress( "glDeleteFramebuffers" );
-	glGenFramebuffers = (PFNGLGENFRAMEBUFFERSPROC)wglGetProcAddress( "glGenFramebuffers" );
-	glFramebufferTexture2D = (PFNGLFRAMEBUFFERTEXTURE2DPROC)wglGetProcAddress( "glFramebufferTexture2D" );
-	glGenRenderbuffers = (PFNGLGENRENDERBUFFERSPROC)wglGetProcAddress( "glGenRenderbuffers" );
-	glBindRenderbuffer = (PFNGLBINDRENDERBUFFERPROC)wglGetProcAddress( "glBindRenderbuffer" );
-	glRenderbufferStorage = (PFNGLRENDERBUFFERSTORAGEPROC)wglGetProcAddress( "glRenderbufferStorage" );
-	glFramebufferRenderbuffer = (PFNGLFRAMEBUFFERRENDERBUFFERPROC)wglGetProcAddress( "glFramebufferRenderbuffer" );
-	glDeleteRenderbuffers = (PFNGLDELETERENDERBUFFERSPROC)wglGetProcAddress( "glDeleteRenderbuffers" );
-	glCheckFramebufferStatus = (PFNGLCHECKFRAMEBUFFERSTATUSPROC)wglGetProcAddress( "glCheckFramebufferStatus" );
-	glBlitFramebuffer = (PFNGLBLITFRAMEBUFFERPROC)wglGetProcAddress( "glBlitFramebuffer" );
-	glGenBuffers = (PFNGLGENBUFFERSPROC)wglGetProcAddress( "glGenBuffers" );
-	glBindBuffer = (PFNGLBINDBUFFERPROC)wglGetProcAddress( "glBindBuffer" );
-	glBufferData = (PFNGLBUFFERDATAPROC)wglGetProcAddress( "glBufferData" );
-	glMapBuffer = (PFNGLMAPBUFFERPROC)wglGetProcAddress( "glMapBuffer" );
-	glUnmapBuffer = (PFNGLUNMAPBUFFERPROC)wglGetProcAddress( "glUnmapBuffer" );
-	glDeleteBuffers = (PFNGLDELETEBUFFERSPROC)wglGetProcAddress( "glDeleteBuffers" );
-	glBindImageTexture = (PFNGLBINDIMAGETEXTUREPROC)wglGetProcAddress( "glBindImageTexture" );
-	glMemoryBarrier = (PFNGLMEMORYBARRIERPROC)wglGetProcAddress( "glMemoryBarrier" );
-
-#endif // _WINDOWS
 
 	if (glGenFramebuffers != NULL)
 		OGL.framebufferMode = GLInfo::fbFBO;
@@ -238,278 +114,9 @@ void OGL_UpdateScale()
 	OGL.scaleY = OGL.height / (float)VI.height;
 }
 
-void OGL_ResizeWindow()
+void OGL_InitData()
 {
-#if defined(_WINDOWS) && !defined(MUPENPLUSAPI)
-	RECT	windowRect, statusRect, toolRect;
-
-	if (OGL.fullscreen)
-	{
-		OGL.width = config.video.fullscreenWidth;
-		OGL.height = config.video.fullscreenHeight;
-		OGL.heightOffset = 0;
-
-		SetWindowPos( hWnd, NULL, 0, 0,	OGL.width, OGL.height, SWP_NOACTIVATE | SWP_NOZORDER | SWP_SHOWWINDOW );
-	}
-	else
-	{
-		OGL.width = config.video.windowedWidth;
-		OGL.height = config.video.windowedHeight;
-
-		GetClientRect( hWnd, &windowRect );
-		GetWindowRect( hStatusBar, &statusRect );
-
-		if (hToolBar)
-			GetWindowRect( hToolBar, &toolRect );
-		else
-			toolRect.bottom = toolRect.top = 0;
-
-		OGL.heightOffset = (statusRect.bottom - statusRect.top);
-		windowRect.right = windowRect.left + config.video.windowedWidth - 1;
-		windowRect.bottom = windowRect.top + config.video.windowedHeight - 1 + OGL.heightOffset;
-
-		AdjustWindowRect( &windowRect, GetWindowLong( hWnd, GWL_STYLE ), GetMenu( hWnd ) != NULL );
-
-		SetWindowPos( hWnd, NULL, 0, 0,	windowRect.right - windowRect.left + 1,
-						windowRect.bottom - windowRect.top + 1 + toolRect.bottom - toolRect.top + 1, SWP_NOACTIVATE | SWP_NOZORDER | SWP_NOMOVE );
-	}
-#endif // _WINDOWS
-}
-
-////// paulscode, added for SDL linkage
-#if defined(GLES2) && defined (USE_SDL)
-//#if defined (USE_SDL)
-bool OGL_SDL_Start()
-{
-	/* Initialize SDL */
-	LOG(LOG_MINIMAL, "Initializing SDL video subsystem...\n" );
-	if (SDL_InitSubSystem( SDL_INIT_VIDEO ) == -1)
-	{
-		 LOG(LOG_ERROR, "Error initializing SDL video subsystem: %s\n", SDL_GetError() );
-		return FALSE;
-	}
-
-	int current_w = config.video.windowedWidth;
-	int current_h = config.video.windowedHeight;
-
-	/* Set the video mode */
-	LOG(LOG_MINIMAL, "Setting video mode %dx%d...\n", current_w, current_h );
-
-	// TODO: I should actually check what the pixelformat is, rather than assuming 16 bpp (RGB_565) or 32 bpp (RGBA_8888):
-	//// paulscode, added for switching between modes RGBA8888 and RGB565
-	// (part of the color banding fix)
-	int bitsPP;
-	if( Android_JNI_UseRGBA8888() )
-		bitsPP = 32;
-	else
-		bitsPP = 16;
-	////
-
-	// TODO: Replace SDL_SetVideoMode with something that is SDL 2.0 compatible
-	//       Better yet, eliminate all SDL calls by using the Mupen64Plus core api
-	if (!(OGL.hScreen = SDL_SetVideoMode( current_w, current_h, bitsPP, SDL_HWSURFACE )))
-	{
-		LOG(LOG_ERROR, "Problem setting videomode %dx%d: %s\n", current_w, current_h, SDL_GetError() );
-		SDL_QuitSubSystem( SDL_INIT_VIDEO );
-		return FALSE;
-	}
-
-	/*
-//// paulscode, fixes the screen-size problem
-	int videoWidth = current_w;
-	int videoHeight = current_h;
-	int x = 0;
-	int y = 0;
-
-	//re-scale width and height on per-rom basis
-	float width = (float)videoWidth * (float)config.window.refwidth / 800.f;
-	float height = (float)videoHeight * (float)config.window.refheight / 480.f;
-
-	//re-center video if it was re-scaled per-rom
-	x -= (width - (float)videoWidth) / 2.f;
-	y -= (height - (float)videoHeight) / 2.f;
-
-	//set xpos and ypos
-	config.window.xpos = x;
-	config.window.ypos = y;
-	config.framebuffer.xpos = x;
-	config.framebuffer.ypos = y;
-
-	//set width and height
-	config.window.width = (int)width;
-	config.window.height = (int)height;
-	config.framebuffer.width = (int)width;
-	config.framebuffer.height = (int)height;
-////
-*/
-	return true;
-}
-#endif
-//////
-
-
-bool OGL_Start()
-{
-#ifndef MUPENPLUSAPI
-#ifdef _WINDOWS
-	int		pixelFormat;
-
-	PIXELFORMATDESCRIPTOR pfd = {
-		sizeof(PIXELFORMATDESCRIPTOR),    // size of this pfd
-		1,                                // version number
-		PFD_DRAW_TO_WINDOW |              // support window
-		PFD_SUPPORT_OPENGL |              // support OpenGL
-		PFD_DOUBLEBUFFER,                 // double buffered
-		PFD_TYPE_RGBA,                    // RGBA type
-		32,								  // color depth
-		0, 0, 0, 0, 0, 0,                 // color bits ignored
-		0,                                // no alpha buffer
-		0,                                // shift bit ignored
-		0,                                // no accumulation buffer
-		0, 0, 0, 0,                       // accum bits ignored
-		32,								  // z-buffer
-		0,                                // no stencil buffer
-		0,                                // no auxiliary buffer
-		PFD_MAIN_PLANE,                   // main layer
-		0,                                // reserved
-		0, 0, 0                           // layer masks ignored
-	};
-
-	  if ((HWND)hWnd == NULL)
-		  hWnd = GetActiveWindow();
-
-	if ((OGL.hDC = GetDC( hWnd )) == NULL)
-	{
-		MessageBox( hWnd, "Error while getting a device context!", pluginName, MB_ICONERROR | MB_OK );
-		return FALSE;
-	}
-
-	if ((pixelFormat = ChoosePixelFormat( OGL.hDC, &pfd )) == 0)
-	{
-		MessageBox( hWnd, "Unable to find a suitable pixel format!", pluginName, MB_ICONERROR | MB_OK );
-		OGL_Stop();
-		return FALSE;
-	}
-
-	if ((SetPixelFormat( OGL.hDC, pixelFormat, &pfd )) == FALSE)
-	{
-		MessageBox( hWnd, "Error while setting pixel format!", pluginName, MB_ICONERROR | MB_OK );
-		OGL_Stop();
-		return FALSE;
-	}
-
-	if ((OGL.hRC = wglCreateContext( OGL.hDC )) == NULL)
-	{
-		MessageBox( hWnd, "Error while creating OpenGL context!", pluginName, MB_ICONERROR | MB_OK );
-		OGL_Stop();
-		return FALSE;
-	}
-
-	if ((wglMakeCurrent( OGL.hDC, OGL.hRC )) == FALSE)
-	{
-		MessageBox( hWnd, "Error while making OpenGL context current!", pluginName, MB_ICONERROR | MB_OK );
-		OGL_Stop();
-		return FALSE;
-	}
-#endif // _WINDOWS
-#ifdef USE_SDL
-	// init sdl & gl
-	Uint32 videoFlags = 0;
-
-	if (OGL.fullscreen)
-	{
-		OGL.width = config.video.fullscreenWidth;
-		OGL.height = config.video.fullscreenHeight;
-	}
-	else
-	{
-		OGL.width = config.video.windowedWidth;
-		OGL.height = config.video.windowedHeight;
-	}
-
-	/* Initialize SDL */
-	printf( "[glN64]: (II) Initializing SDL video subsystem...\n" );
-	if (SDL_InitSubSystem( SDL_INIT_VIDEO ) == -1)
-	{
-		printf( "[glN64]: (EE) Error initializing SDL video subsystem: %s\n", SDL_GetError() );
-		return FALSE;
-	}
-
-	/* Video Info */
-	const SDL_VideoInfo *videoInfo;
-	printf( "[glN64]: (II) Getting video info...\n" );
-	if (!(videoInfo = SDL_GetVideoInfo()))
-	{
-		printf( "[glN64]: (EE) Video query failed: %s\n", SDL_GetError() );
-		SDL_QuitSubSystem( SDL_INIT_VIDEO );
-		return FALSE;
-	}
-
-	/* Set the video mode */
-	videoFlags |= SDL_OPENGL | SDL_GL_DOUBLEBUFFER | SDL_HWPALETTE;
-
-	if (videoInfo->hw_available)
-		videoFlags |= SDL_HWSURFACE;
-	else
-		videoFlags |= SDL_SWSURFACE;
-
-	if (videoInfo->blit_hw)
-		videoFlags |= SDL_HWACCEL;
-
-	SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1 );
-/*	SDL_GL_SetAttribute( SDL_GL_RED_SIZE, 5 );
-	SDL_GL_SetAttribute( SDL_GL_GREEN_SIZE, 5 );
-	SDL_GL_SetAttribute( SDL_GL_BLUE_SIZE, 5 );*/
-	SDL_GL_SetAttribute( SDL_GL_DEPTH_SIZE, 16 );	// 32 bit z-buffer
-
-	printf( "[glN64]: (II) Setting video mode %dx%d...\n", OGL.width, OGL.height );
-	if (!(OGL.hScreen = SDL_SetVideoMode( OGL.width, OGL.height, 0, videoFlags )))
-	{
-		printf( "[glN64]: (EE) Error setting videomode %dx%d: %s\n", OGL.width, OGL.height, SDL_GetError() );
-		SDL_QuitSubSystem( SDL_INIT_VIDEO );
-		return FALSE;
-	}
-
-	SDL_WM_SetCaption( pluginName, pluginName );
-#endif // USE_SDL
-#else  // MUPENPLUSAPI
-
-	if (OGL.fullscreen){
-		OGL.width = config.video.fullscreenWidth;
-		OGL.height = config.video.fullscreenHeight;
-	} else {
-		OGL.width = config.video.windowedWidth;
-		OGL.height = config.video.windowedHeight;
-	}
-
-#ifndef GLES2
-	CoreVideo_Init();
-	CoreVideo_GL_SetAttribute(M64P_GL_DOUBLEBUFFER, 1);
-	CoreVideo_GL_SetAttribute(M64P_GL_SWAP_CONTROL, 1);
-	CoreVideo_GL_SetAttribute(M64P_GL_BUFFER_SIZE, 16);
-	CoreVideo_GL_SetAttribute(M64P_GL_DEPTH_SIZE, 16);
-
-	printf("(II) Setting video mode %dx%d...\n", OGL.width, OGL.height);
-	if (CoreVideo_SetVideoMode(OGL.width, OGL.height, 0, OGL.fullscreen ? M64VIDEO_FULLSCREEN : M64VIDEO_WINDOWED, (m64p_video_flags) 0) != M64ERR_SUCCESS) {
-		printf("(EE) Error setting videomode %dx%d\n", OGL.width, OGL.height);
-		CoreVideo_Quit();
-		return false;
-	}
-
-	char caption[500];
-	# ifdef _DEBUG
-	sprintf(caption, "GLideN64 debug");
-	# else // _DEBUG
-	sprintf(caption, "GLideN64");
-	# endif // _DEBUG
-	CoreVideo_SetCaption(caption);
-
-#else // GLES2
-	if (!OGL_SDL_Start())
-		return false;
-#endif // GLES2
-#endif // MUPENPLUSAPI
-
+	OGL_InitGLFunctions();
 	OGL_InitExtensions();
 	OGL_InitStates();
 
@@ -529,47 +136,15 @@ bool OGL_Start()
 #ifdef __TRIBUFFER_OPT
 	__indexmap_init();
 #endif
-
-	return TRUE;
 }
 
-void OGL_Stop()
+void OGL_DestroyData()
 {
+	OGL.renderState = GLInfo::rsNone;
 	Combiner_Destroy();
 	FrameBuffer_Destroy();
 	DepthBuffer_Destroy();
 	textureCache().destroy();
-	OGL.renderState = GLInfo::rsNone;
-
-#ifndef MUPENPLUSAPI
-#ifdef _WINDOWS
-	wglMakeCurrent( NULL, NULL );
-
-	if (OGL.hRC)
-	{
-		wglDeleteContext( OGL.hRC );
-		OGL.hRC = NULL;
-	}
-
-	if (OGL.hDC)
-	{
-		ReleaseDC( hWnd, OGL.hDC );
-		OGL.hDC = NULL;
-	}
-#elif defined(USE_SDL)
-	SDL_QuitSubSystem( SDL_INIT_VIDEO );
-	OGL.hScreen = NULL;
-#endif // _WINDOWS
-#else // MUPENPLUSAPI
-#ifndef GLES2
-	CoreVideo_Quit();
-#else
-#if defined(USE_SDL)
-	SDL_QuitSubSystem( SDL_INIT_VIDEO );
-	OGL.hScreen = NULL;
-#endif
-#endif // GLES2
-#endif // MUPENPLUSAPI
 }
 
 void OGL_UpdateCullFace()
@@ -1235,67 +810,6 @@ void OGL_ClearColorBuffer( float *color )
 	glEnable( GL_SCISSOR_TEST );
 }
 
-void OGL_SaveScreenshot()
-{
-#if defined(_WINDOWS) && !defined(MUPENPLUSAPI)
-	BITMAPFILEHEADER fileHeader;
-	BITMAPINFOHEADER infoHeader;
-	HANDLE hBitmapFile;
-
-	char *pixelData = (char*)malloc( OGL.width * OGL.height * 3 );
-
-	GLint oldMode;
-	glGetIntegerv( GL_READ_BUFFER, &oldMode );
-	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
-	glReadBuffer( GL_FRONT );
-	glReadPixels( 0, OGL.heightOffset, OGL.width, OGL.height, GL_BGR_EXT, GL_UNSIGNED_BYTE, pixelData );
-	glReadBuffer( oldMode );
-
-	infoHeader.biSize = sizeof( BITMAPINFOHEADER );
-	infoHeader.biWidth = OGL.width;
-	infoHeader.biHeight = OGL.height;
-	infoHeader.biPlanes = 1;
-	infoHeader.biBitCount = 24;
-	infoHeader.biCompression = BI_RGB;
-	infoHeader.biSizeImage = OGL.width * OGL.height * 3;
-	infoHeader.biXPelsPerMeter = 0;
-	infoHeader.biYPelsPerMeter = 0;
-	infoHeader.biClrUsed = 0;
-	infoHeader.biClrImportant = 0;
-
-	fileHeader.bfType = 19778;
-	fileHeader.bfSize = sizeof( BITMAPFILEHEADER ) + sizeof( BITMAPINFOHEADER ) + infoHeader.biSizeImage;
-	fileHeader.bfReserved1 = fileHeader.bfReserved2 = 0;
-	fileHeader.bfOffBits = sizeof( BITMAPFILEHEADER ) + sizeof( BITMAPINFOHEADER );
-
-	char filename[256];
-
-	CreateDirectory( screenDirectory, NULL );
-
-	int i = 0;
-	do
-	{
-		sprintf( filename, "%sscreen%02i.bmp", screenDirectory, i );
-		i++;
-
-		if (i > 99)
-			return;
-
-		hBitmapFile = CreateFile( filename, GENERIC_WRITE, 0, NULL, CREATE_NEW, FILE_ATTRIBUTE_NORMAL, NULL );
-	}
-	while (hBitmapFile == INVALID_HANDLE_VALUE);
-
-	DWORD written;
-
-	WriteFile( hBitmapFile, &fileHeader, sizeof( BITMAPFILEHEADER ), &written, NULL );
-	WriteFile( hBitmapFile, &infoHeader, sizeof( BITMAPINFOHEADER ), &written, NULL );
-	WriteFile( hBitmapFile, pixelData, infoHeader.biSizeImage, &written, NULL );
-
-	CloseHandle( hBitmapFile );
-	free( pixelData );
-#endif // _WINDOWS
-}
-
 void OGL_ReadScreen( void **dest, long *width, long *height )
 {
 	*width = OGL.width;
@@ -1312,46 +826,6 @@ void OGL_ReadScreen( void **dest, long *width, long *height )
 	const GLenum format = GL_RGB;
 #endif
 	glReadPixels( 0, OGL.heightOffset, OGL.width, OGL.height, format, GL_UNSIGNED_BYTE, *dest );
-}
-
-void OGL_SwapBuffers()
-{
-#ifndef MUPENPLUSAPI
-#ifdef _WINDOWS
-	if (OGL.hDC == NULL)
-		SwapBuffers( wglGetCurrentDC() );
-	else
-		SwapBuffers( OGL.hDC );
-#endif // _WINDOWS
-#if defined(USE_SDL)
-	static int frames[5] = { 0, 0, 0, 0, 0 };
-	static int framesIndex = 0;
-	static Uint32 lastTicks = 0;
-	Uint32 ticks = SDL_GetTicks();
-
-	frames[framesIndex]++;
-	if (ticks >= (lastTicks + 1000))
-	{
-		char caption[500];
-		float fps = 0.0;
-		for (int i = 0; i < 5; i++)
-			fps += frames[i];
-		fps /= 5.0;
-		snprintf( caption, 500, "%s - %.2f fps", pluginName, fps );
-		SDL_WM_SetCaption( caption, pluginName );
-		framesIndex = (framesIndex + 1) % 5;
-		frames[framesIndex] = 0;
-		lastTicks = ticks;
-	}
-	SDL_GL_SwapBuffers();
-#endif // USE_SDL
-#else // MUPENPLUSAPI
-#ifndef GLES2
-   CoreVideo_GL_SwapBuffers();
-#else
-	Android_JNI_SwapWindow(); // paulscode, fix for black-screen bug
-#endif // GLES2
-#endif // MUPENPLUSAPI
 }
 
 bool checkFBO() {

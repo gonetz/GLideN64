@@ -1,19 +1,20 @@
 #if defined(_DEBUG) && defined(_WINDOWS)
 
-#include <windows.h>
+#include "GLideN64_Windows.h"
 #include <stdio.h>
 #include <process.h>
-#include "GLideN64.h"
-#include "Debug.h"
-#include "resource.h"
-#include "RDP.h"
-#include "RSP.h"
-#include "RichEdit.h"
+#include <RichEdit.h>
+
+#include "../GLideN64.h"
+#include "../Debug.h"
+#include "../resource.h"
+#include "../RDP.h"
+#include "../RSP.h"
 
 DebugInfo Debug;
 
-CHARFORMAT handledFormat = 
-{ 
+CHARFORMAT handledFormat =
+{
 	sizeof( CHARFORMAT ),
 	CFM_BOLD | CFM_COLOR | CFM_FACE | CFM_ITALIC | CFM_SIZE,
 	NULL,
@@ -25,8 +26,8 @@ CHARFORMAT handledFormat =
 	(TCHAR*)"Courier New"
 };
 
-CHARFORMAT unknownFormat = 
-{ 
+CHARFORMAT unknownFormat =
+{
 	sizeof( CHARFORMAT ),
 	CFM_BOLD | CFM_COLOR | CFM_FACE | CFM_ITALIC | CFM_SIZE,
 	NULL,
@@ -38,8 +39,8 @@ CHARFORMAT unknownFormat =
 	(TCHAR*)"Courier New"
 };
 
-CHARFORMAT errorFormat = 
-{ 
+CHARFORMAT errorFormat =
+{
 	sizeof( CHARFORMAT ),
 	CFM_BOLD | CFM_COLOR | CFM_FACE | CFM_ITALIC | CFM_SIZE,
 	NULL,
@@ -51,8 +52,8 @@ CHARFORMAT errorFormat =
 	(TCHAR*)"Courier New"
 };
 
-CHARFORMAT detailFormat = 
-{ 
+CHARFORMAT detailFormat =
+{
 	sizeof( CHARFORMAT ),
 	CFM_BOLD | CFM_COLOR | CFM_FACE | CFM_ITALIC | CFM_SIZE,
 	NULL,
@@ -71,18 +72,18 @@ char dumpFilename[256];
 
 BOOL CALLBACK DebugDlgProc( HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam )
 {
-    switch (uMsg) 
-    { 
+	switch (uMsg)
+	{
 		case WM_INITDIALOG:
 			SendDlgItemMessage( hDlg, IDC_DEBUGEDIT, EM_SETCHARFORMAT, SCF_ALL, (LPARAM)&handledFormat );
 			break;
 
-        case WM_COMMAND: 
-            switch (LOWORD(wParam)) 
-            { 
-/*                case IDC_DUMP: 
+		case WM_COMMAND:
+			switch (LOWORD(wParam))
+			{
+/*                case IDC_DUMP:
 					RSP.dumpNextDL = TRUE;
-                    return TRUE; 
+					return TRUE;
 				case IDC_VERIFYCACHE:
 					if (!TextureCache_Verify())
 						MessageBox( NULL, "Texture cache chain is currupted!", "glNintendo64()", MB_OK );
@@ -184,7 +185,7 @@ BOOL CALLBACK DebugDlgProc( HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam )
 		case WM_DESTROY:
 			PostQuitMessage( 0 );
 			break;
-    } 
+	}
 
 	return FALSE;
 }
@@ -197,10 +198,10 @@ void DebugDlgThreadFunc( void* )
 	MSG msg;
 
 	while (GetMessage( &msg, hDebugDlg, 0, 0 ) != 0)
-	{ 
-        TranslateMessage(&msg);
-        DispatchMessage(&msg);
-    }
+	{
+		TranslateMessage(&msg);
+		DispatchMessage(&msg);
+	}
 }
 
 void OpenDebugDlg()
@@ -252,11 +253,11 @@ void DebugMsg( u16 type, const char * format, ... )
 	char text[256];
 
 	va_list va;
- 	va_start( va, format );
+	va_start( va, format );
 
 	if (DumpMessages)
 	{
-		dumpFile = fopen( dumpFilename, "a+" ); 
+		dumpFile = fopen( dumpFilename, "a+" );
 		vfprintf( dumpFile, format, va );
 		fclose( dumpFile );
 	}

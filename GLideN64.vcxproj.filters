@@ -25,15 +25,27 @@
       <UniqueIdentifier>{ceb7e29d-3bc2-453c-a043-ef450103c3f0}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe</Extensions>
     </Filter>
+    <Filter Include="Header Files\windows">
+      <UniqueIdentifier>{384c65a8-5096-4ef9-bdec-3256fcd337f2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\common">
+      <UniqueIdentifier>{7c6de76c-0fca-47cf-99b1-0ee0fd845d7e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\windows">
+      <UniqueIdentifier>{cad4dfbc-6dba-4d7c-805b-b2ba719da383}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\mupenplus">
+      <UniqueIdentifier>{5481df48-dd50-42c8-89e5-670b337403e2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\mupenplus">
+      <UniqueIdentifier>{b10a85f0-0fbb-4f8e-b6d8-78ee2a6394bf}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Combiner.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="CRC.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Debug.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="DepthBuffer.cpp">
@@ -111,11 +123,62 @@
     <ClCompile Include="3DMath.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Config.cpp">
+    <ClCompile Include="MupenPlusPluginAPI.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Config_mupen.cpp">
+    <ClCompile Include="CommonPluginAPI.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ZilmarPluginAPI.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="common\CommonAPIImpl_common.cpp">
+      <Filter>Source Files\common</Filter>
+    </ClCompile>
+    <ClCompile Include="common\ZilmarAPIImpl_common.cpp">
+      <Filter>Source Files\common</Filter>
+    </ClCompile>
+    <ClCompile Include="mupenplus\CommonAPIImpl_mupenplus.cpp">
+      <Filter>Source Files\mupenplus</Filter>
+    </ClCompile>
+    <ClCompile Include="mupenplus\Config.cpp">
+      <Filter>Source Files\mupenplus</Filter>
+    </ClCompile>
+    <ClCompile Include="mupenplus\GLideN64_mupenplus.cpp">
+      <Filter>Source Files\mupenplus</Filter>
+    </ClCompile>
+    <ClCompile Include="mupenplus\MicrocodeDialog.cpp">
+      <Filter>Source Files\mupenplus</Filter>
+    </ClCompile>
+    <ClCompile Include="mupenplus\MupenPlusAPIImpl.cpp">
+      <Filter>Source Files\mupenplus</Filter>
+    </ClCompile>
+    <ClCompile Include="mupenplus\OpenGL_mupenplus.cpp">
+      <Filter>Source Files\mupenplus</Filter>
+    </ClCompile>
+    <ClCompile Include="windows\CommonAPIImpl_windows.cpp">
+      <Filter>Source Files\windows</Filter>
+    </ClCompile>
+    <ClCompile Include="windows\Config.cpp">
+      <Filter>Source Files\windows</Filter>
+    </ClCompile>
+    <ClCompile Include="windows\Debug.cpp">
+      <Filter>Source Files\windows</Filter>
+    </ClCompile>
+    <ClCompile Include="windows\GLFunctions.cpp">
+      <Filter>Source Files\windows</Filter>
+    </ClCompile>
+    <ClCompile Include="windows\GLideN64_windows.cpp">
+      <Filter>Source Files\windows</Filter>
+    </ClCompile>
+    <ClCompile Include="windows\MicrocodeDialog.cpp">
+      <Filter>Source Files\windows</Filter>
+    </ClCompile>
+    <ClCompile Include="windows\OpenGL_windows.cpp">
+      <Filter>Source Files\windows</Filter>
+    </ClCompile>
+    <ClCompile Include="windows\ZilmarAPIImpl_windows.cpp">
+      <Filter>Source Files\windows</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -226,6 +289,18 @@
     </ClInclude>
     <ClInclude Include="Shaders.h">
       <Filter>Header Files\Combiners</Filter>
+    </ClInclude>
+    <ClInclude Include="windows\GLFunctions.h">
+      <Filter>Header Files\windows</Filter>
+    </ClInclude>
+    <ClInclude Include="mupenplus\GLideN64_mupenplus.h">
+      <Filter>Header Files\mupenplus</Filter>
+    </ClInclude>
+    <ClInclude Include="windows\GLideN64_windows.h">
+      <Filter>Header Files\windows</Filter>
+    </ClInclude>
+    <ClInclude Include="PluginAPI.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

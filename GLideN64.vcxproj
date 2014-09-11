@@ -194,7 +194,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <OmitFramePointers>true</OmitFramePointers>
-      <PreprocessorDefinitions>MUPENPLUSAPI;WIN32_ASM;_WINDOWS;_USRDLL;NEWGLNINTENDO64_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>MUPENPLUSAPI;WIN32;WIN32_ASM;_WINDOWS;_USRDLL;NEWGLNINTENDO64_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -241,22 +241,47 @@
   <ItemGroup>
     <ClCompile Include="3DMath.cpp" />
     <ClCompile Include="Combiner.cpp" />
-    <ClCompile Include="Config.cpp">
+    <ClCompile Include="CommonPluginAPI.cpp" />
+    <ClCompile Include="common\CommonAPIImpl_common.cpp" />
+    <ClCompile Include="common\ZilmarAPIImpl_common.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_mupenplus|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_mupenplus|Win32'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="Config_mupen.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-    </ClCompile>
     <ClCompile Include="CRC.cpp" />
-    <ClCompile Include="Debug.cpp" />
     <ClCompile Include="DepthBuffer.cpp" />
     <ClCompile Include="FrameBuffer.cpp" />
     <ClCompile Include="GBI.cpp" />
     <ClCompile Include="gDP.cpp" />
     <ClCompile Include="GLideN64.cpp" />
     <ClCompile Include="gSP.cpp" />
+    <ClCompile Include="MupenPlusPluginAPI.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="mupenplus\CommonAPIImpl_mupenplus.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="mupenplus\Config.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="mupenplus\GLideN64_mupenplus.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="mupenplus\MicrocodeDialog.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="mupenplus\MupenPlusAPIImpl.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="mupenplus\OpenGL_mupenplus.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="N64.cpp" />
     <ClCompile Include="OpenGL.cpp" />
     <ClCompile Include="RDP.CPP" />
@@ -275,6 +300,39 @@
     <ClCompile Include="S2DEX.cpp" />
     <ClCompile Include="S2DEX2.cpp" />
     <ClCompile Include="GLSLCombiner.cpp" />
+    <ClCompile Include="windows\CommonAPIImpl_windows.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_mupenplus|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_mupenplus|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="windows\Config.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_mupenplus|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_mupenplus|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="windows\Debug.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_mupenplus|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_mupenplus|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="windows\GLFunctions.cpp" />
+    <ClCompile Include="windows\GLideN64_windows.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_mupenplus|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_mupenplus|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="windows\MicrocodeDialog.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_mupenplus|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_mupenplus|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="windows\OpenGL_windows.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_mupenplus|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_mupenplus|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="windows\ZilmarAPIImpl_windows.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_mupenplus|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_mupenplus|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="ZilmarPluginAPI.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_mupenplus|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_mupenplus|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="3DMath.h" />
@@ -290,9 +348,14 @@
     <ClInclude Include="glext.h" />
     <ClInclude Include="GLideN64.h" />
     <ClInclude Include="gSP.h" />
+    <ClInclude Include="mupenplus\GLideN64_mupenplus.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="N64.h" />
     <ClInclude Include="Noise_shader.h" />
     <ClInclude Include="OpenGL.h" />
+    <ClInclude Include="PluginAPI.h" />
     <ClInclude Include="RDP.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="RSP.h" />
@@ -312,7 +375,12 @@
     <ClInclude Include="S2DEX.h" />
     <ClInclude Include="S2DEX2.h" />
     <ClInclude Include="GLSLCombiner.h" />
-    <ClInclude Include="ZilmarGFX_1_3.h" />
+    <ClInclude Include="windows\GLFunctions.h" />
+    <ClInclude Include="windows\GLideN64_windows.h" />
+    <ClInclude Include="ZilmarGFX_1_3.h">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_mupenplus|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_mupenplus|Win32'">true</ExcludedFromBuild>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Resource.rc" />

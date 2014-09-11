@@ -5,6 +5,7 @@
 #include <windows.h>
 #include <GL/gl.h>
 #include "glext.h"
+#include "windows/GLFunctions.h"
 #else
 #include "winlnxdefs.h"
 #ifdef GLES2
@@ -42,6 +43,7 @@ struct GLInfo
 #endif // _WINDOWS
 
 	BOOL fullscreen;
+	unsigned int fullscreenWidth, fullscreenHeight, fullscreenBits, fullscreenRefresh;
 	unsigned int width, height, heightOffset;
 
 	float	scaleX, scaleY;
@@ -87,6 +89,9 @@ struct GLInfo
 
 extern GLInfo OGL;
 
+void OGL_InitGLFunctions();
+void OGL_InitData();
+void OGL_DestroyData();
 bool OGL_Start();
 void OGL_Stop();
 
@@ -106,61 +111,4 @@ void OGL_ReadScreen( void **dest, long *width, long *height );
 
 bool checkFBO();
 
-#ifdef _WINDOWS
-extern PFNGLCREATESHADERPROC glCreateShader;
-extern PFNGLCOMPILESHADERPROC glCompileShader;
-extern PFNGLSHADERSOURCEPROC glShaderSource;
-extern PFNGLCREATEPROGRAMPROC glCreateProgram;
-extern PFNGLATTACHSHADERPROC glAttachShader;
-extern PFNGLLINKPROGRAMPROC glLinkProgram;
-extern PFNGLUSEPROGRAMPROC glUseProgram;
-extern PFNGLGETUNIFORMLOCATIONPROC glGetUniformLocation;
-extern PFNGLUNIFORM1IPROC glUniform1i;
-extern PFNGLUNIFORM1FPROC glUniform1f;
-extern PFNGLUNIFORM2FPROC glUniform2f;
-extern PFNGLUNIFORM2IPROC glUniform2i;
-extern PFNGLUNIFORM4FPROC glUniform4f;
-extern PFNGLUNIFORM3FVPROC glUniform3fv;
-extern PFNGLUNIFORM4FVPROC glUniform4fv;
-extern PFNGLDETACHSHADERPROC glDetachShader;
-extern PFNGLDELETESHADERPROC glDeleteShader;
-extern PFNGLDELETEPROGRAMPROC glDeleteProgram;
-extern PFNGLGETPROGRAMINFOLOGPROC glGetProgramInfoLog;
-extern PFNGLGETSHADERINFOLOGPROC glGetShaderInfoLog;
-extern PFNGLGETSHADERIVPROC glGetShaderiv;
-extern PFNGLGETPROGRAMIVPROC glGetProgramiv;
-
-extern PFNGLENABLEVERTEXATTRIBARRAYPROC glEnableVertexAttribArray;
-extern PFNGLDISABLEVERTEXATTRIBARRAYPROC glDisableVertexAttribArray;
-extern PFNGLVERTEXATTRIBPOINTERPROC glVertexAttribPointer;
-extern PFNGLBINDATTRIBLOCATIONPROC glBindAttribLocation;
-extern PFNGLVERTEXATTRIB4FPROC glVertexAttrib4f;
-extern PFNGLVERTEXATTRIB4FVPROC glVertexAttrib4fv;
-
-extern PFNGLACTIVETEXTUREPROC glActiveTexture;
-extern PFNGLDEPTHRANGEFPROC glDepthRangef;
-extern PFNGLCLEARDEPTHFPROC glClearDepthf;
-
-extern PFNGLDRAWBUFFERSPROC glDrawBuffers;
-extern PFNGLGENFRAMEBUFFERSPROC glGenFramebuffers;
-extern PFNGLBINDFRAMEBUFFERPROC glBindFramebuffer;
-extern PFNGLDELETEFRAMEBUFFERSPROC glDeleteFramebuffers;
-extern PFNGLFRAMEBUFFERTEXTURE2DPROC glFramebufferTexture2D;
-extern PFNGLGENRENDERBUFFERSPROC glGenRenderbuffers;
-extern PFNGLBINDRENDERBUFFERPROC glBindRenderbuffer;
-extern PFNGLRENDERBUFFERSTORAGEPROC glRenderbufferStorage;
-extern PFNGLDELETERENDERBUFFERSPROC glDeleteRenderbuffers;
-extern PFNGLFRAMEBUFFERRENDERBUFFERPROC glFramebufferRenderbuffer;
-extern PFNGLCHECKFRAMEBUFFERSTATUSPROC glCheckFramebufferStatus;
-extern PFNGLBLITFRAMEBUFFERPROC glBlitFramebuffer;
-extern PFNGLGENBUFFERSPROC glGenBuffers;
-extern PFNGLBINDBUFFERPROC glBindBuffer;
-extern PFNGLBUFFERDATAPROC glBufferData;
-extern PFNGLMAPBUFFERPROC glMapBuffer;
-extern PFNGLUNMAPBUFFERPROC glUnmapBuffer;
-extern PFNGLDELETEBUFFERSPROC glDeleteBuffers;
-extern PFNGLBINDIMAGETEXTUREPROC glBindImageTexture;
-extern PFNGLMEMORYBARRIERPROC glMemoryBarrier;
-
-#endif // !_WINDOWS
 #endif

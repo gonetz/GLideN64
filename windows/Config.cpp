@@ -1,12 +1,13 @@
-#include <windows.h>
+#include "GLideN64_Windows.h"
 #include <stdio.h>
-#include "Config.h"
-#include "GLideN64.h"
-#include "Resource.h"
-#include "RSP.h"
-#include "Textures.h"
-#include "OpenGL.h"
 #include <commctrl.h>
+
+#include "../Config.h"
+#include "../GLideN64.h"
+#include "../Resource.h"
+#include "../RSP.h"
+#include "../Textures.h"
+#include "../OpenGL.h"
 
 Config config;
 HWND hConfigDlg;

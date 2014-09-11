@@ -1,12 +1,13 @@
+#include "GLideN64_MupenPlus.h"
 #include <errno.h>
 #include <string.h>
 
-#include "Config.h"
-#include "GLideN64.h"
-#include "RSP.h"
-#include "Textures.h"
-#include "OpenGL.h"
-#include "Log.h"
+#include "../Config.h"
+#include "../GLideN64.h"
+#include "../RSP.h"
+#include "../Textures.h"
+#include "../OpenGL.h"
+#include "../Log.h"
 
 Config config;
 

@@ -520,8 +520,10 @@ void FrameBufferToRDRAM::Destroy() {
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 	glDeleteFramebuffers(1, &m_FBO);
 	m_FBO = 0;
-	textureCache().removeFrameBufferTexture(m_pTexture);
-	m_pTexture = NULL;
+	if (m_pTexture != NULL) {
+		textureCache().removeFrameBufferTexture(m_pTexture);
+		m_pTexture = NULL;
+	}
 	glDeleteBuffers(2, m_aPBO);
 	m_aPBO[0] = m_aPBO[1] = 0;
 }
@@ -654,8 +656,10 @@ void DepthBufferToRDRAM::Destroy() {
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 	glDeleteFramebuffers(1, &m_FBO);
 	m_FBO = 0;
-	textureCache().removeFrameBufferTexture(m_pTexture);
-	m_pTexture = NULL;
+	if (m_pTexture != NULL) {
+		textureCache().removeFrameBufferTexture(m_pTexture);
+		m_pTexture = NULL;
+	}
 	glDeleteBuffers(2, m_aPBO);
 	m_aPBO[0] = m_aPBO[1] = 0;
 }
@@ -746,8 +750,10 @@ void RDRAMtoFrameBuffer::Init()
 
 void RDRAMtoFrameBuffer::Destroy()
 {
-	textureCache().removeFrameBufferTexture(m_pTexture);
-	m_pTexture = NULL;
+	if (m_pTexture != NULL) {
+		textureCache().removeFrameBufferTexture(m_pTexture);
+		m_pTexture = NULL;
+	}
 #ifndef GLES2
 	glDeleteBuffers(1, &m_PBO);
 	m_PBO = 0;

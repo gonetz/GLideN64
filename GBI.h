@@ -32,9 +32,6 @@ static const char *MicrocodeTypes[] =
 	"None"
 };
 
-static const int numMicrocodeTypes = 11;
-
-
 // Fixed point conversion factors
 #define FIXED2FLOATRECIP1	0.5f
 #define FIXED2FLOATRECIP2	0.25f

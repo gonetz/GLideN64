@@ -1,10 +1,8 @@
-#include "Debug.h"
-
 #ifdef DEBUG
-
 #include <stdarg.h>
 #include <stdio.h>
 
+#include "../Debug.h"
 
 DebugInfo Debug;
 static bool dumpMessages = FALSE;
