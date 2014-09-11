@@ -282,8 +282,8 @@ void FrameBufferList::attachDepthBuffer()
 		m_pCurrent->m_pDepthBuffer = pDepthBuffer;
 		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, pDepthBuffer->m_renderbuf);
 #ifndef GLES2
-		GLuint attachments[2] = { GL_COLOR_ATTACHMENT0, GL_DEPTH_ATTACHMENT };
-		glDrawBuffers(2,  attachments);
+		GLuint attachments[1] = { GL_COLOR_ATTACHMENT0 };
+		glDrawBuffers(1,  attachments);
 		glBindImageTexture(depthImageUnit, pDepthBuffer->m_pDepthTexture->glName, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA32F);
 #endif
 		assert(checkFBO());
