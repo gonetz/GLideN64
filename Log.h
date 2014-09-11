@@ -6,6 +6,7 @@
 #define LOG_MINIMAL	2
 #define LOG_WARNING 3
 #define LOG_VERBOSE 4
+#define LOG_APIFUNC 5
 
 #define LOG_LEVEL LOG_WARNING
 
