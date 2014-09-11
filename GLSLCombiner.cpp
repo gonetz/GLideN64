@@ -21,8 +21,6 @@ static GLuint  g_calc_depth_shader_object;
 static GLuint  g_test_alpha_shader_object;
 static GLuint g_zlut_tex = 0;
 
-static GLuint  g_shadow_map_vertex_shader_object;
-static GLuint  g_shadow_map_fragment_shader_object;
 static GLuint  g_draw_shadow_map_program;
 GLuint g_tlut_tex = 0;
 static u32 g_paletteCRC256 = 0;
@@ -119,21 +117,23 @@ void InitShadowMapShader()
 	glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_WRAP_S, GL_CLAMP);
 	glTexImage1D(GL_TEXTURE_1D, 0, GL_R16, 256, 0, GL_RED, GL_UNSIGNED_SHORT, NULL);
 
-	g_shadow_map_vertex_shader_object = glCreateShader(GL_VERTEX_SHADER);
-	glShaderSource(g_shadow_map_vertex_shader_object, 1, &shadow_map_vertex_shader, NULL);
-	glCompileShader(g_shadow_map_vertex_shader_object);
-	assert(check_shader_compile_status(g_shadow_map_vertex_shader_object));
+	GLuint shadow_map_vertex_shader_object = glCreateShader(GL_VERTEX_SHADER);
+	glShaderSource(shadow_map_vertex_shader_object, 1, &shadow_map_vertex_shader, NULL);
+	glCompileShader(shadow_map_vertex_shader_object);
+	assert(check_shader_compile_status(shadow_map_vertex_shader_object));
 
-	g_shadow_map_fragment_shader_object = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(g_shadow_map_fragment_shader_object, 1, &shadow_map_fragment_shader_float, NULL);
-	glCompileShader(g_shadow_map_fragment_shader_object);
-	assert(check_shader_compile_status(g_shadow_map_fragment_shader_object));
+	GLuint shadow_map_fragment_shader_object = glCreateShader(GL_FRAGMENT_SHADER);
+	glShaderSource(shadow_map_fragment_shader_object, 1, &shadow_map_fragment_shader_float, NULL);
+	glCompileShader(shadow_map_fragment_shader_object);
+	assert(check_shader_compile_status(shadow_map_fragment_shader_object));
 
 	g_draw_shadow_map_program = glCreateProgram();
 	glBindAttribLocation(g_draw_shadow_map_program, SC_POSITION, "aPosition");
-	glAttachShader(g_draw_shadow_map_program, g_shadow_map_vertex_shader_object);
-	glAttachShader(g_draw_shadow_map_program, g_shadow_map_fragment_shader_object);
+	glAttachShader(g_draw_shadow_map_program, shadow_map_vertex_shader_object);
+	glAttachShader(g_draw_shadow_map_program, shadow_map_fragment_shader_object);
 	glLinkProgram(g_draw_shadow_map_program);
+	glDeleteShader(shadow_map_vertex_shader_object);
+	glDeleteShader(shadow_map_fragment_shader_object);
 	assert(check_program_link_status(g_draw_shadow_map_program));
 }
 
@@ -147,10 +147,6 @@ void DestroyShadowMapShader()
 
 	if (g_tlut_tex > 0)
 		glDeleteTextures(1, &g_tlut_tex);
-	glDetachShader(g_draw_shadow_map_program, g_shadow_map_vertex_shader_object);
-	glDetachShader(g_draw_shadow_map_program, g_shadow_map_fragment_shader_object);
-	glDeleteShader(g_shadow_map_vertex_shader_object);
-	glDeleteShader(g_shadow_map_fragment_shader_object);
 	glDeleteProgram(g_draw_shadow_map_program);
 }
 #endif // GLES2
@@ -207,7 +203,14 @@ void DestroyShaderCombiner() {
 	strFragmentShader.clear();
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
+	glDeleteShader(g_vertex_shader_object);
 #ifndef GLES2
+	glDeleteShader(g_calc_light_shader_object);
+	glDeleteShader(g_calc_lod_shader_object);
+	glDeleteShader(g_calc_noise_shader_object);
+	glDeleteShader(g_test_alpha_shader_object);
+	glDeleteShader(g_calc_depth_shader_object);
+
 	DestroyZlutTexture();
 	DestroyShadowMapShader();
 #endif
@@ -432,49 +435,27 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 	if (!check_shader_compile_status(fragmentShader))
 		LOG(LOG_ERROR, "Error in fragment shader:\n%s\n", strFragmentShader.data());
 
-	memset(m_aShaders, 0, sizeof(m_aShaders));
-	u32 uShaderIdx = 0;
-
 	m_program = glCreateProgram();
 	_locate_attributes();
 	glAttachShader(m_program, g_vertex_shader_object);
-	m_aShaders[uShaderIdx++] = g_vertex_shader_object;
 	glAttachShader(m_program, fragmentShader);
-#ifdef GLES2
-	m_aShaders[uShaderIdx] = fragmentShader;
-#else
-	m_aShaders[uShaderIdx++] = fragmentShader;
-	if (config.enableHWLighting) {
+#ifndef GLES2
+	if (config.enableHWLighting)
 		glAttachShader(m_program, g_calc_light_shader_object);
-		m_aShaders[uShaderIdx++] = g_calc_light_shader_object;
-	}
-	if (bUseLod) {
+	if (bUseLod)
 		glAttachShader(m_program, g_calc_lod_shader_object);
-		m_aShaders[uShaderIdx++] = g_calc_lod_shader_object;
-	}
 	glAttachShader(m_program, g_test_alpha_shader_object);
-	m_aShaders[uShaderIdx++] = g_test_alpha_shader_object;
-	if (OGL.bImageTexture) {
+	if (OGL.bImageTexture)
 		glAttachShader(m_program, g_calc_depth_shader_object);
-		m_aShaders[uShaderIdx++] = g_calc_depth_shader_object;
-	}
 	glAttachShader(m_program, g_calc_noise_shader_object);
-	m_aShaders[uShaderIdx] = g_calc_noise_shader_object;
 #endif
-	assert(uShaderIdx <= sizeof(m_aShaders)/sizeof(m_aShaders[0]));
-
 	glLinkProgram(m_program);
 	assert(check_program_link_status(m_program));
+	glDeleteShader(fragmentShader);
 	_locateUniforms();
 }
 
 ShaderCombiner::~ShaderCombiner() {
-	u32 shaderIndex = 0;
-	const u32 arraySize = sizeof(m_aShaders)/sizeof(m_aShaders[0]);
-	while (shaderIndex < arraySize && m_aShaders[shaderIndex] > 0) {
-		glDetachShader(m_program, m_aShaders[shaderIndex]);
-		glDeleteShader(m_aShaders[shaderIndex++]);
-	}
 	glDeleteProgram(m_program);
 }
 

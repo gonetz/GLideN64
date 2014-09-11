@@ -99,7 +99,6 @@ private:
 
 	gDPCombine m_combine;
 	UniformLocation m_uniforms;
-	GLuint m_aShaders[8];
 	GLuint m_program;
 	int m_nInputs;
 };
