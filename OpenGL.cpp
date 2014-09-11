@@ -7,13 +7,6 @@
 //// paulscode, added for SDL linkage:
 #if defined(GLES2)
 #include "ae_bridge.h"
-#if defined (USE_SDL)
-	#include <SDL.h>
-	 // TODO: Remove this bandaid for SDL 2.0 compatibility (needed for SDL_SetVideoMode)
-	#if SDL_VERSION_ATLEAST(2,0,0)
-	#include "sdl2_compat.h" // Slightly hacked version of core/vidext_sdl2_compat.h
-	#endif
-#endif // USE_SDL
 #endif // GLES2
 ////
 
