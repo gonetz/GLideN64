@@ -111,4 +111,6 @@ void OGL_ReadScreen( void **dest, long *width, long *height );
 
 bool checkFBO();
 
+bool isGLError();
+
 #endif

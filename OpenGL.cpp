@@ -823,3 +823,49 @@ bool checkFBO() {
 	}
 	return e == GL_FRAMEBUFFER_COMPLETE;
 }
+
+const char* GLErrorString(GLenum errorCode)
+{
+	static const struct {
+		GLenum code;
+		const char *string;
+	} errors[]=
+	{
+		/* GL */
+	{GL_NO_ERROR, "no error"},
+	{GL_INVALID_ENUM, "invalid enumerant"},
+	{GL_INVALID_VALUE, "invalid value"},
+	{GL_INVALID_OPERATION, "invalid operation"},
+	{GL_STACK_OVERFLOW, "stack overflow"},
+	{GL_STACK_UNDERFLOW, "stack underflow"},
+	{GL_OUT_OF_MEMORY, "out of memory"},
+
+	{0, NULL }
+};
+
+	int i;
+
+	for (i=0; errors[i].string; i++)
+	{
+		if (errors[i].code == errorCode)
+		{
+			return errors[i].string;
+		}
+	}
+
+	return NULL;
+}
+
+bool isGLError()
+{
+	GLenum errCode;
+	const char* errString;
+
+	if ((errCode = glGetError()) != GL_NO_ERROR) {
+		errString = GLErrorString(errCode);
+		if (errString != NULL)
+			fprintf (stderr, "OpenGL Error: %s\n", errString);
+		return true;
+	}
+	return false;
+}
