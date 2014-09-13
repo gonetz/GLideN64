@@ -66,7 +66,7 @@ void VI_UpdateScreen()
 				VI_UpdateSize();
 				OGL_UpdateScale();
 				const u32 size = *REG.VI_STATUS & 3;
-				if (VI.height > 0 && size > G_IM_SIZ_8b)
+				if (VI.height > 0 && size > G_IM_SIZ_8b  && _SHIFTR( *REG.VI_H_START, 0, 10 ) > 0)
 					frameBufferList().saveBuffer( *REG.VI_ORIGIN, G_IM_FMT_RGBA, size, *REG.VI_WIDTH, VI.height );
 			}
 			if ((((*REG.VI_STATUS)&3) > 0) && (config.frameBufferEmulation.copyFromRDRAM || bCFB)) {
