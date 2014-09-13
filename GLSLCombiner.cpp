@@ -99,8 +99,11 @@ void DestroyZlutTexture()
 	if (!OGL.bImageTexture)
 		return;
 	glBindImageTexture(ZlutImageUnit, 0, 0, GL_FALSE, 0, GL_READ_ONLY, GL_R16UI);
-	if (g_zlut_tex > 0)
+	if (g_zlut_tex > 0) {
+		glBindTexture(GL_TEXTURE_2D, 0);
 		glDeleteTextures(1, &g_zlut_tex);
+		g_zlut_tex = 0;
+	}
 }
 
 static
@@ -145,9 +148,13 @@ void DestroyShadowMapShader()
 
 	glBindImageTexture(TlutImageUnit, 0, 0, GL_FALSE, 0, GL_READ_ONLY, GL_R16UI);
 
-	if (g_tlut_tex > 0)
+	if (g_tlut_tex > 0) {
+		glBindTexture(GL_TEXTURE_1D, 0);
 		glDeleteTextures(1, &g_tlut_tex);
+		g_tlut_tex = 0;
+	}
 	glDeleteProgram(g_draw_shadow_map_program);
+	g_draw_shadow_map_program = 0;
 }
 #endif // GLES2
 
@@ -204,12 +211,18 @@ void DestroyShaderCombiner() {
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	glDeleteShader(g_vertex_shader_object);
+	g_vertex_shader_object = 0;
 #ifndef GLES2
 	glDeleteShader(g_calc_light_shader_object);
+	g_calc_light_shader_object = 0;
 	glDeleteShader(g_calc_lod_shader_object);
+	g_calc_lod_shader_object = 0;
 	glDeleteShader(g_calc_noise_shader_object);
+	g_calc_noise_shader_object = 0;
 	glDeleteShader(g_test_alpha_shader_object);
+	g_test_alpha_shader_object = 0;
 	glDeleteShader(g_calc_depth_shader_object);
+	g_calc_depth_shader_object = 0;
 
 	DestroyZlutTexture();
 	DestroyShadowMapShader();
@@ -457,6 +470,7 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 
 ShaderCombiner::~ShaderCombiner() {
 	glDeleteProgram(m_program);
+	m_program = 0;
 }
 
 #define LocateUniform(A) \
