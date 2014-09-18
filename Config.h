@@ -40,6 +40,8 @@ struct Config
 extern Config config;
 
 void Config_LoadConfig();
-void Config_DoConfig();
+#ifndef MUPENPLUSAPI
+void Config_DoConfig(HWND hParent);
 #endif
 
+#endif // CONFIG_H

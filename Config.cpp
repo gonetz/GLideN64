@@ -391,8 +391,8 @@ BOOL CALLBACK ConfigDlgProc( HWND hWndDlg, UINT message, WPARAM wParam, LPARAM l
 	return FALSE;
 }
 
-void Config_DoConfig()
+void Config_DoConfig(HWND hParent)
 {
 	if (!hConfigDlg)
-		DialogBox( hInstance, MAKEINTRESOURCE(IDD_CONFIGDLG), hWnd, (DLGPROC)ConfigDlgProc );
+		DialogBox( hInstance, MAKEINTRESOURCE(IDD_CONFIGDLG), hParent, (DLGPROC)ConfigDlgProc );
 }
