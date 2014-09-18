@@ -25,7 +25,7 @@
 #define IDC_WIREFRAME                   1053
 #define IDC_FULLSCREENBITDEPTH          1054
 #define IDC_ALPHATESTSHARPNESS          1055
-#define IDC_ENABLE2XSAI                 1061
+#define IDC_ENABLEDEPTHWRITE            1061
 #define IDC_COMBO1                      1064
 #define IDC_COMBINER                    1064
 #define IDC_TEXTUREBPP                  1064

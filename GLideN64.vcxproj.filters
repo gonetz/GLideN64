@@ -27,9 +27,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="2xSAI.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Combiner.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -122,9 +119,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="2xSAI.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="3DMath.h">
       <Filter>Header Files</Filter>
     </ClInclude>

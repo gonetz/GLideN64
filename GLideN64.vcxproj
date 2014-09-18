@@ -234,7 +234,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="2xSAI.cpp" />
     <ClCompile Include="3DMath.cpp" />
     <ClCompile Include="Combiner.cpp" />
     <ClCompile Include="Config.cpp">
@@ -273,7 +272,6 @@
     <ClCompile Include="GLSLCombiner.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="2xSAI.h" />
     <ClInclude Include="3DMath.h" />
     <ClInclude Include="Combiner.h" />
     <ClInclude Include="Config.h" />

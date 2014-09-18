@@ -2,8 +2,7 @@ cmake_minimum_required(VERSION 2.6)
 
 project( GLideN64 )
 
-set(GLideN64_SOURCES 
-  2xSAI.cpp
+set(GLideN64_SOURCES
   3DMath.cpp
   Combiner.cpp
   CRC.cpp

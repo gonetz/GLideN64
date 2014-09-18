@@ -73,8 +73,8 @@ void Config_LoadConfig()
 		RegQueryValueEx( hKey, "Force Bilinear", 0, NULL, (BYTE*)&value, &size );
 		config.texture.forceBilinear = value ? TRUE : FALSE;
 
-		RegQueryValueEx( hKey, "Enable 2xSaI", 0, NULL, (BYTE*)&value, &size );
-		config.texture.enable2xSaI = value ? TRUE : FALSE;
+		RegQueryValueEx( hKey, "Write depth", 0, NULL, (BYTE*)&value, &size );
+		config.frameBufferEmulation.copyDepthToRDRAM = value ? TRUE : FALSE;
 
 		RegQueryValueEx( hKey, "Enable Fog", 0, NULL, (BYTE*)&value, &size );
 		config.enableFog = value ? TRUE : FALSE;
@@ -105,14 +105,13 @@ void Config_LoadConfig()
 		config.texture.forceBilinear = FALSE;
 		cache.maxBytes = 32 * 1048576;
 		config.frameBufferEmulation.enable = FALSE;
-		config.texture.enable2xSaI = FALSE;
+		config.frameBufferEmulation.copyDepthToRDRAM = FALSE;
 		config.texture.textureBitDepth = 1;
 		config.enableHWLighting = FALSE;
 	}
 
 	// manually set frame bufer emulation options
 	config.frameBufferEmulation.copyToRDRAM = FALSE;
-	config.frameBufferEmulation.copyDepthToRDRAM = FALSE;
 	config.frameBufferEmulation.copyFromRDRAM = FALSE;
 	config.frameBufferEmulation.ignoreCFB = TRUE;
 	config.frameBufferEmulation.N64DepthCompare = FALSE;
@@ -136,8 +135,8 @@ void Config_SaveConfig()
 	value = config.texture.forceBilinear ? 1 : 0;
 	RegSetValueEx( hKey, "Force Bilinear", 0, REG_DWORD, (BYTE*)&value, 4 );
 
-	value = config.texture.enable2xSaI ? 1 : 0;
-	RegSetValueEx( hKey, "Enable 2xSaI", 0, REG_DWORD, (BYTE*)&value, 4 );
+	value = config.frameBufferEmulation.copyDepthToRDRAM ? 1 : 0;
+	RegSetValueEx( hKey, "Write depth", 0, REG_DWORD, (BYTE*)&value, 4 );
 
 	value = config.enableFog ? 1 : 0;
 	RegSetValueEx( hKey, "Enable Fog", 0, REG_DWORD, (BYTE*)&value, 4 );
@@ -166,9 +165,8 @@ void Config_ApplyDlgConfig( HWND hWndDlg )
 	cache.maxBytes = atol( text ) * 1048576;
 
 	config.texture.forceBilinear = (SendDlgItemMessage( hWndDlg, IDC_FORCEBILINEAR, BM_GETCHECK, NULL, NULL ) == BST_CHECKED);
-	config.texture.enable2xSaI = (SendDlgItemMessage( hWndDlg, IDC_ENABLE2XSAI, BM_GETCHECK, NULL, NULL ) == BST_CHECKED);
+	config.frameBufferEmulation.copyDepthToRDRAM = (SendDlgItemMessage( hWndDlg, IDC_ENABLEDEPTHWRITE, BM_GETCHECK, NULL, NULL ) == BST_CHECKED);
 	config.enableFog = (SendDlgItemMessage( hWndDlg, IDC_FOG, BM_GETCHECK, NULL, NULL ) == BST_CHECKED);
-	//OGL.originAdjust = (OGL.enable2xSaI ? 0.25f : 0.50f);
 
 	config.video.fullscreenBits = fullscreen.bitDepth[SendDlgItemMessage( hWndDlg, IDC_FULLSCREENBITDEPTH, CB_GETCURSEL, 0, 0 )];
 	i = SendDlgItemMessage( hWndDlg, IDC_FULLSCREENRES, CB_GETCURSEL, 0, 0 );
@@ -328,7 +326,7 @@ BOOL CALLBACK ConfigDlgProc( HWND hWndDlg, UINT message, WPARAM wParam, LPARAM l
 						SendDlgItemMessage( hWndDlg, IDC_WINDOWEDRES, CB_SETCURSEL, i, 0 );
 				}
 			}
-			SendDlgItemMessage( hWndDlg, IDC_ENABLE2XSAI, BM_SETCHECK, config.texture.enable2xSaI ? (LPARAM)BST_CHECKED : (LPARAM)BST_UNCHECKED, NULL );
+			SendDlgItemMessage( hWndDlg, IDC_ENABLEDEPTHWRITE, BM_SETCHECK, config.frameBufferEmulation.copyDepthToRDRAM ? (LPARAM)BST_CHECKED : (LPARAM)BST_UNCHECKED, NULL );
 			// Set forced bilinear check box
 			SendDlgItemMessage( hWndDlg, IDC_FORCEBILINEAR, BM_SETCHECK, config.texture.forceBilinear ? (LPARAM)BST_CHECKED : (LPARAM)BST_UNCHECKED, NULL );
 			SendDlgItemMessage( hWndDlg, IDC_TEXTUREBPP, CB_ADDSTRING, 0, (LPARAM)"16-bit only (faster)" );

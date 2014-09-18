@@ -18,7 +18,6 @@ struct Config
 		u32 maxAnisotropy;
 		u32 textureBitDepth;
 		u32 forceBilinear;
-		u32 enable2xSaI;
 		u32 pow2;
 	} texture;
 

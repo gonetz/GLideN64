@@ -28,7 +28,6 @@ Option configOptions[] =
 	{"window height", &config.video.windowedHeight, 480},
 	{"#Texture Settings:", NULL, 0},
 	{"force bilinear", &config.texture.forceBilinear, 0},
-	{"enable 2xSAI", &config.texture.enable2xSaI, 0},
 	{"cache size", &cache.maxBytes, 64*1048576},
 	{"texture bit depth", &config.texture.textureBitDepth, 1},
 	{"#Emulation Settings:", NULL, 0},
