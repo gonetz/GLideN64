@@ -227,11 +227,11 @@ void RSP_Init()
 #ifdef _WINDOWS
 	// Calculate RDRAM size by intentionally causing an access violation
 	u32 test;
-	__try
+	try
 	{
 		test = RDRAM[0x007FFFFF] + 1;
 	}
-	__except (EXCEPTION_EXECUTE_HANDLER)
+	catch (...)
 	{
 		test = 0;
 	}
