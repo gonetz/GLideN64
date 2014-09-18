@@ -19,6 +19,7 @@ struct Config
 		u32 textureBitDepth;
 		u32 forceBilinear;
 		u32 pow2;
+		u32 maxBytes;
 	} texture;
 
 	struct {

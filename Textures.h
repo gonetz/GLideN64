@@ -6,12 +6,14 @@
 #else
 #include <GL/gl.h>
 #endif //ANDROID
+
+#include <map>
+
 #include "convert.h"
 
 struct CachedTexture
 {
 	GLuint	glName;
-	u32		address;
 	u32		crc;
 //	float	fulS, fulT;
 //	WORD	ulS, ulT, lrS, lrT;
@@ -30,29 +32,62 @@ struct CachedTexture
 	f32		scaleS, scaleT;			  // Scale to map to 0.0-1.0
 	f32		shiftScaleS, shiftScaleT; // Scale to shift
 	u32		textureBytes;
+	u32		frameBufferTexture;
 
 	CachedTexture	*lower, *higher;
 	u32		lastDList;
+	u32		address;
 
-	u32		frameBufferTexture;
 };
 
 
 struct TextureCache
 {
-	CachedTexture	*bottom, *top;
+	CachedTexture * current[2];
 
-	CachedTexture	*(current[2]);
-	u32				maxBytes;
-	u32				cachedBytes;
-	u32				numCached;
-	u32				hits, misses;
-	//GLuint			glDummyName;
-	CachedTexture	*dummy;
-	u32				bitDepth;
+	void init();
+	void destroy();
+	CachedTexture * addFrameBufferTexture();
+	void addFrameBufferTextureSize(u32 _size) {m_cachedBytes += _size;}
+	void removeFrameBufferTexture(CachedTexture * _pTexture);
+	void activateTexture(u32 _t, CachedTexture *_pTexture);
+	void activateDummy(u32 _t);
+	void update(u32 _t);
+
+	static TextureCache & get() {
+		static TextureCache cache;
+		return cache;
+	}
+
+private:
+	TextureCache() : m_maxBytes(0), m_cachedBytes(0), m_hits(0), m_misses(0), m_bitDepth(0)
+	{
+		current[0] = NULL;
+		current[1] = NULL;
+	}
+	TextureCache(const TextureCache &);
+
+	void _checkCacheSize();
+	CachedTexture * _allocateTexture();
+	CachedTexture * _addTexture(u32 _crc32);
+	void _load(CachedTexture *pTexture);
+	void _loadBackground(CachedTexture *pTexture);
+	void _updateBackground();
+
+	typedef std::map<u32, CachedTexture *> Textures;
+	Textures m_textures;
+	Textures m_fbTextures;
+	CachedTexture * m_pDummy;
+	u32 m_hits, m_misses;
+	u32 m_bitDepth;
+	u32 m_maxBytes;
+	u32 m_cachedBytes;
 };
 
-extern TextureCache cache;
+inline TextureCache & textureCache()
+{
+	return TextureCache::get();
+}
 
 inline u32 pow2( u32 dim )
 {
@@ -76,15 +111,4 @@ inline u32 powof( u32 dim )
 
 	return i;
 }
-
-CachedTexture *TextureCache_AddTop();
-void TextureCache_MoveToTop( CachedTexture *newtop );
-void TextureCache_Remove( CachedTexture *texture );
-void TextureCache_RemoveBottom();
-void TextureCache_Init();
-void TextureCache_Destroy();
-void TextureCache_Update( u32 t );
-void TextureCache_ActivateTexture( u32 t, CachedTexture *texture );
-void TextureCache_ActivateDummy( u32 t );
-
 #endif

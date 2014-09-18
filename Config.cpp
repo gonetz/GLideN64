@@ -11,6 +11,8 @@
 Config config;
 HWND hConfigDlg;
 
+const u32 uMegabyte = 1024U*1024U;
+
 struct
 {
 	struct
@@ -80,7 +82,7 @@ void Config_LoadConfig()
 		config.enableFog = value ? TRUE : FALSE;
 
 		RegQueryValueEx( hKey, "Texture Cache Size", 0, NULL, (BYTE*)&value, &size );
-		cache.maxBytes = value * 1048576;
+		config.texture.maxBytes = value * uMegabyte;
 
 		RegQueryValueEx( hKey, "Hardware Frame Buffer Textures", 0, NULL, (BYTE*)&value, &size );
 		config.frameBufferEmulation.enable = value ? TRUE : FALSE;
@@ -103,7 +105,7 @@ void Config_LoadConfig()
 		config.video.fullscreenBits = 16;
 		config.video.fullscreenRefresh = 60;
 		config.texture.forceBilinear = FALSE;
-		cache.maxBytes = 32 * 1048576;
+		config.texture.maxBytes = 32 * uMegabyte;
 		config.frameBufferEmulation.enable = FALSE;
 		config.frameBufferEmulation.copyDepthToRDRAM = FALSE;
 		config.texture.textureBitDepth = 1;
@@ -141,7 +143,7 @@ void Config_SaveConfig()
 	value = config.enableFog ? 1 : 0;
 	RegSetValueEx( hKey, "Enable Fog", 0, REG_DWORD, (BYTE*)&value, 4 );
 
-	value = cache.maxBytes / 1048576;
+	value = config.texture.maxBytes / uMegabyte;
 	RegSetValueEx( hKey, "Texture Cache Size", 0, REG_DWORD, (BYTE*)&value, 4 );
 
 	value = config.frameBufferEmulation.enable ? 1 : 0;
@@ -162,7 +164,7 @@ void Config_ApplyDlgConfig( HWND hWndDlg )
 	LRESULT i;
 
 	SendDlgItemMessage( hWndDlg, IDC_CACHEMEGS, WM_GETTEXT, 4, (LPARAM)text );
-	cache.maxBytes = atol( text ) * 1048576;
+	config.texture.maxBytes = atol( text ) * uMegabyte;
 
 	config.texture.forceBilinear = (SendDlgItemMessage( hWndDlg, IDC_FORCEBILINEAR, BM_GETCHECK, NULL, NULL ) == BST_CHECKED);
 	config.frameBufferEmulation.copyDepthToRDRAM = (SendDlgItemMessage( hWndDlg, IDC_ENABLEDEPTHWRITE, BM_GETCHECK, NULL, NULL ) == BST_CHECKED);
@@ -339,7 +341,7 @@ BOOL CALLBACK ConfigDlgProc( HWND hWndDlg, UINT message, WPARAM wParam, LPARAM l
 
 			SendDlgItemMessage( hWndDlg, IDC_HWLIGHT, BM_SETCHECK, config.enableHWLighting ? (LPARAM)BST_CHECKED : (LPARAM)BST_UNCHECKED, NULL );
 
-			_ltoa( cache.maxBytes / 1048576, text, 10 );
+			_ltoa( config.texture.maxBytes / uMegabyte, text, 10 );
 			SendDlgItemMessage( hWndDlg, IDC_CACHEMEGS, WM_SETTEXT, NULL, (LPARAM)text );
 
 			return TRUE;

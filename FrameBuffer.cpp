@@ -134,7 +134,7 @@ void FrameBuffer_RemoveBottom()
 {
 	FrameBuffer *newBottom = frameBuffer.bottom->higher;
 
-	TextureCache_Remove( frameBuffer.bottom->texture );
+	textureCache().removeFrameBufferTexture(frameBuffer.bottom->texture);
 	if (frameBuffer.bottom->fbo != 0)
 		glDeleteFramebuffers(1, &frameBuffer.bottom->fbo);
 
@@ -180,7 +180,7 @@ void FrameBuffer_Remove( FrameBuffer *buffer )
 	}
 
 	if (buffer->texture != NULL)
-		TextureCache_Remove( buffer->texture );
+		textureCache().removeFrameBufferTexture(buffer->texture);
 	if (buffer->fbo != 0)
 		glDeleteFramebuffers(1, &buffer->fbo);
 
@@ -209,7 +209,7 @@ FrameBuffer *FrameBuffer_AddTop()
 {
 	FrameBuffer *newtop = (FrameBuffer*)malloc( sizeof( FrameBuffer ) );
 
-	newtop->texture = TextureCache_AddTop();
+	newtop->texture = textureCache().addFrameBufferTexture();
 	newtop->pDepthBuffer = NULL;
 	newtop->fbo = 0;
 
@@ -249,8 +249,6 @@ void FrameBuffer_MoveToTop( FrameBuffer *newtop )
 	newtop->lower = frameBuffer.top;
 	frameBuffer.top->higher = newtop;
 	frameBuffer.top = newtop;
-
-	TextureCache_MoveToTop( newtop->texture );
 }
 
 void FrameBuffer_Destroy()
@@ -330,7 +328,7 @@ void FrameBuffer_SaveBuffer( u32 address, u16 format, u16 size, u16 width, u16 h
 		current->texture->realWidth = (u32)pow2( current->texture->width );
 		current->texture->realHeight = (u32)pow2( current->texture->height );
 		current->texture->textureBytes = current->texture->realWidth * current->texture->realHeight * 4;
-		cache.cachedBytes += current->texture->textureBytes;
+		textureCache().addFrameBufferTextureSize(current->texture->textureBytes);
 
 		glBindTexture( GL_TEXTURE_2D, current->texture->glName );
 		if (size > G_IM_SIZ_8b)
@@ -366,7 +364,7 @@ static
 void _initDepthTexture()
 {
 #ifndef GLES2
-	depthBuffer.top->depth_texture = TextureCache_AddTop();
+	depthBuffer.top->depth_texture = textureCache().addFrameBufferTexture();
 
 	depthBuffer.top->depth_texture->width = (u32)(frameBuffer.top->width * OGL.scaleX);
 	depthBuffer.top->depth_texture->height = (u32)(frameBuffer.top->height * OGL.scaleY);
@@ -385,7 +383,7 @@ void _initDepthTexture()
 	depthBuffer.top->depth_texture->realWidth = (u32)pow2( depthBuffer.top->depth_texture->width );
 	depthBuffer.top->depth_texture->realHeight = (u32)pow2( depthBuffer.top->depth_texture->height );
 	depthBuffer.top->depth_texture->textureBytes = depthBuffer.top->depth_texture->realWidth * depthBuffer.top->depth_texture->realHeight * 2;
-	cache.cachedBytes += depthBuffer.top->depth_texture->textureBytes;
+	textureCache().addFrameBufferTextureSize(depthBuffer.top->depth_texture->textureBytes);
 
 	glBindTexture( GL_TEXTURE_2D, depthBuffer.top->depth_texture->glName );
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, depthBuffer.top->depth_texture->realWidth, depthBuffer.top->depth_texture->realHeight, 0, GL_RGBA, GL_FLOAT,	NULL);
@@ -581,7 +579,7 @@ void FrameBuffer_ActivateBufferTexture( s16 t, FrameBuffer *buffer )
 	}
 
 //	FrameBuffer_RenderBuffer(buffer->startAddress);
-	TextureCache_ActivateTexture( t, buffer->texture );
+	textureCache().activateTexture(t, buffer->texture);
 	gDP.changed |= CHANGED_FB_TEXTURE;
 }
 
@@ -597,7 +595,7 @@ void FrameBuffer_ActivateBufferTextureBG( s16 t, FrameBuffer *buffer )
 	buffer->texture->offsetT = (float)buffer->height - gSP.bgImage.imageY;
 
 	//	FrameBuffer_RenderBuffer(buffer->startAddress);
-	TextureCache_ActivateTexture( t, buffer->texture );
+	textureCache().activateTexture(t, buffer->texture);
 	gDP.changed |= CHANGED_FB_TEXTURE;
 }
 
@@ -609,7 +607,7 @@ void FrameBufferToRDRAM::Init()
 	glGenFramebuffers(1, &m_FBO);
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_FBO);
 
-	m_pTexture = TextureCache_AddTop();
+	m_pTexture = textureCache().addFrameBufferTexture();
 	m_pTexture->format = G_IM_FMT_RGBA;
 	m_pTexture->clampS = 1;
 	m_pTexture->clampT = 1;
@@ -621,7 +619,7 @@ void FrameBufferToRDRAM::Init()
 	m_pTexture->realWidth = 1024;
 	m_pTexture->realHeight = 512;
 	m_pTexture->textureBytes = m_pTexture->realWidth * m_pTexture->realHeight * 4;
-	cache.cachedBytes += m_pTexture->textureBytes;
+	textureCache().addFrameBufferTextureSize(m_pTexture->textureBytes);
 	glBindTexture( GL_TEXTURE_2D, m_pTexture->glName );
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_pTexture->realWidth, m_pTexture->realHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
@@ -646,7 +644,7 @@ void FrameBufferToRDRAM::Destroy() {
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 	glDeleteFramebuffers(1, &m_FBO);
 	m_FBO = 0;
-	TextureCache_Remove( m_pTexture );
+	textureCache().removeFrameBufferTexture(m_pTexture);
 	m_pTexture = NULL;
 	glDeleteBuffers(2, m_aPBO);
 	m_aPBO[0] = m_aPBO[1] = 0;
@@ -743,7 +741,7 @@ void DepthBufferToRDRAM::Init()
 	glGenFramebuffers(1, &m_FBO);
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_FBO);
 
-	m_pTexture = TextureCache_AddTop();
+	m_pTexture = textureCache().addFrameBufferTexture();
 	m_pTexture->format = G_IM_FMT_IA;
 	m_pTexture->clampS = 1;
 	m_pTexture->clampT = 1;
@@ -755,7 +753,7 @@ void DepthBufferToRDRAM::Init()
 	m_pTexture->realWidth = 1024;
 	m_pTexture->realHeight = 512;
 	m_pTexture->textureBytes = m_pTexture->realWidth * m_pTexture->realHeight * 2;
-	cache.cachedBytes += m_pTexture->textureBytes;
+	textureCache().addFrameBufferTextureSize(m_pTexture->textureBytes);
 	glBindTexture( GL_TEXTURE_2D, m_pTexture->glName );
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_R16, m_pTexture->realWidth, m_pTexture->realHeight, 0, GL_RED, GL_UNSIGNED_SHORT, NULL);
 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
@@ -780,7 +778,7 @@ void DepthBufferToRDRAM::Destroy() {
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 	glDeleteFramebuffers(1, &m_FBO);
 	m_FBO = 0;
-	TextureCache_Remove( m_pTexture );
+	textureCache().removeFrameBufferTexture(m_pTexture);
 	m_pTexture = NULL;
 	glDeleteBuffers(2, m_aPBO);
 	m_aPBO[0] = m_aPBO[1] = 0;
@@ -845,7 +843,7 @@ void FrameBuffer_CopyDepthBuffer( u32 address ) {
 
 void RDRAMtoFrameBuffer::Init()
 {
-	m_pTexture = TextureCache_AddTop();
+	m_pTexture = textureCache().addFrameBufferTexture();
 	m_pTexture->format = G_IM_FMT_RGBA;
 	m_pTexture->clampS = 1;
 	m_pTexture->clampT = 1;
@@ -857,7 +855,7 @@ void RDRAMtoFrameBuffer::Init()
 	m_pTexture->realWidth = 1024;
 	m_pTexture->realHeight = 512;
 	m_pTexture->textureBytes = m_pTexture->realWidth * m_pTexture->realHeight * 4;
-	cache.cachedBytes += m_pTexture->textureBytes;
+	textureCache().addFrameBufferTextureSize(m_pTexture->textureBytes);
 	glBindTexture( GL_TEXTURE_2D, m_pTexture->glName );
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_pTexture->realWidth, m_pTexture->realHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
@@ -872,7 +870,7 @@ void RDRAMtoFrameBuffer::Init()
 
 void RDRAMtoFrameBuffer::Destroy()
 {
-	TextureCache_Remove( m_pTexture );
+	textureCache().removeFrameBufferTexture(m_pTexture);
 	m_pTexture = NULL;
 #ifndef GLES2
 	glDeleteBuffers(1, &m_PBO);
@@ -997,7 +995,7 @@ void RDRAMtoFrameBuffer::CopyFromRDRAM( u32 _address, bool _bUseAlpha)
 	m_pTexture->shiftScaleT = 1.0f;
 	m_pTexture->offsetS = 0;
 	m_pTexture->offsetT = (float)m_pTexture->height;
-	TextureCache_ActivateTexture( 0, m_pTexture );
+	textureCache().activateTexture(0, m_pTexture);
 
 	OGL_DrawTexturedRect( 0.0f, 0.0f, width, height, 0.0f, 0.0f, width-1.0f, height-1.0f, false );
 	gSP.changed |= CHANGED_TEXTURE | CHANGED_VIEWPORT;

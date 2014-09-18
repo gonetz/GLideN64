@@ -513,7 +513,7 @@ bool OGL_Start()
 	OGL_InitExtensions();
 	OGL_InitStates();
 
-	TextureCache_Init();
+	textureCache().init();
 	DepthBuffer_Init();
 	FrameBuffer_Init();
 	CombinerInfo::get().init();
@@ -538,7 +538,7 @@ void OGL_Stop()
 	CombinerInfo::get().destroy();
 	FrameBuffer_Destroy();
 	DepthBuffer_Destroy();
-	TextureCache_Destroy();
+	textureCache().destroy();
 	OGL.renderState = GLInfo::rsNone;
 
 #ifndef MUPENPLUSAPI
@@ -812,16 +812,16 @@ void OGL_UpdateStates()
 		if (currentCombiner() != NULL)
 		{
 			if (currentCombiner()->usesT0())
-				TextureCache_Update(0);
+				textureCache().update(0);
 			else
-				TextureCache_ActivateDummy(0);
+				textureCache().activateDummy(0);
 
 			//Note: enabling dummies makes some F-zero X textures flicker.... strange.
 
 			if (currentCombiner()->usesT1())
-				TextureCache_Update(1);
+				textureCache().update(1);
 			else
-				TextureCache_ActivateDummy(1);
+				textureCache().activateDummy(1);
 			currentCombiner()->updateTextureInfo(true);
 		}
 	}
@@ -1088,6 +1088,7 @@ void OGL_DrawTexturedRect( float ulx, float uly, float lrx, float lry, float uls
 	OGL.rect[3].x = OGL.rect[1].x;
 	OGL.rect[3].y = OGL.rect[2].y;
 
+	TextureCache & cache = textureCache();
 	if (currentCombiner()->usesT0() && cache.current[0] && gSP.textureTile[0]) {
 		OGL.rect[0].s0 = uls * cache.current[0]->shiftScaleS - gSP.textureTile[0]->fuls;
 		OGL.rect[0].t0 = ult * cache.current[0]->shiftScaleT - gSP.textureTile[0]->fult;

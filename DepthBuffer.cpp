@@ -31,11 +31,11 @@ void DepthBuffer_RemoveBottom()
 	if (depthBuffer.bottom->renderbuf != 0)
 		glDeleteRenderbuffers(1, &depthBuffer.bottom->renderbuf);
 	if (depthBuffer.bottom->depth_texture != NULL)
-		TextureCache_Remove( depthBuffer.bottom->depth_texture );
+		textureCache().removeFrameBufferTexture(depthBuffer.bottom->depth_texture);
 	free( depthBuffer.bottom );
 
-    depthBuffer.bottom = newBottom;
-	
+	depthBuffer.bottom = newBottom;
+
 	if (depthBuffer.bottom != NULL)
 		depthBuffer.bottom->lower = NULL;
 
@@ -75,7 +75,7 @@ void DepthBuffer_Remove( DepthBuffer *buffer )
 	if (buffer->fbo != 0)
 		glDeleteFramebuffers(1, &buffer->fbo);
 	if (buffer->depth_texture != NULL)
-		TextureCache_Remove( buffer->depth_texture );
+		textureCache().removeFrameBufferTexture(buffer->depth_texture);
 	free( buffer );
 
 	depthBuffer.numBuffers--;
@@ -111,7 +111,7 @@ DepthBuffer *DepthBuffer_AddTop()
 	if (!depthBuffer.bottom)
 		depthBuffer.bottom = newtop;
 
-    depthBuffer.top = newtop;
+	depthBuffer.top = newtop;
 
 	depthBuffer.numBuffers++;
 

@@ -630,6 +630,7 @@ void ShaderCombiner::updateTextureInfo(bool _bForce) {
 	_setIUniform(m_uniforms.uTexturePersp, gDP.otherMode.texturePersp, _bForce);
 	_setFV2Uniform(m_uniforms.uTexScale, gSP.texture.scales, gSP.texture.scalet, _bForce);
 	int nFB0 = 0, nFB1 = 0;
+	TextureCache & cache = textureCache();
 	if (usesT0()) {
 		if (gSP.textureTile[0]) {
 			_setFV2Uniform(m_uniforms.uTexOffset[0], gSP.textureTile[0]->fuls, gSP.textureTile[0]->fult, _bForce);
@@ -667,6 +668,7 @@ void ShaderCombiner::updateTextureInfo(bool _bForce) {
 
 void ShaderCombiner::updateFBInfo(bool _bForce) {
 	int nFb8bitMode = 0, nFbFixedAlpha = 0;
+	TextureCache & cache = textureCache();
 	if (cache.current[0] != NULL && cache.current[0]->frameBufferTexture == TRUE) {
 		if (cache.current[0]->size == G_IM_SIZ_8b) {
 			nFb8bitMode |= 1;

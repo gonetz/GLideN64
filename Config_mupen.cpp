@@ -10,6 +10,8 @@
 
 Config config;
 
+const u32 uMegabyte = 1024U*1024U;
+
 struct Option
 {
 	const char* name;
@@ -28,7 +30,7 @@ Option configOptions[] =
 	{"window height", &config.video.windowedHeight, 480},
 	{"#Texture Settings:", NULL, 0},
 	{"force bilinear", &config.texture.forceBilinear, 0},
-	{"cache size", &cache.maxBytes, 64*1048576},
+	{"cache size", &config.texture.maxBytes, 64*uMegabyte},
 	{"texture bit depth", &config.texture.textureBitDepth, 1},
 	{"#Emulation Settings:", NULL, 0},
 	{"enable fog", &config.enableFog, 1},
