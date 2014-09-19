@@ -15,6 +15,7 @@
 
 void PluginAPI::ProcessDList()
 {
+	Lock lock(this);
 	RSP_ProcessDList();
 }
 
@@ -45,6 +46,7 @@ void PluginAPI::ShowCFB()
 
 void PluginAPI::UpdateScreen()
 {
+	Lock lock(this);
 	VI_UpdateScreen();
 }
 

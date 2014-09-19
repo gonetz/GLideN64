@@ -7,7 +7,9 @@
 #include "ZilmarGFX_1_3.h"
 #endif
 
-class PluginAPI
+#include "GLCriticalSection.h"
+
+class PluginAPI : public GLCriticalSection
 {
 public:
 	// Common

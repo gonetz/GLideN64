@@ -345,6 +345,7 @@
     <ClInclude Include="FrameBuffer.h" />
     <ClInclude Include="GBI.h" />
     <ClInclude Include="gDP.h" />
+    <ClInclude Include="GLCriticalSection.h" />
     <ClInclude Include="glext.h" />
     <ClInclude Include="GLideN64.h" />
     <ClInclude Include="gSP.h" />
