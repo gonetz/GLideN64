@@ -1,17 +1,34 @@
 #ifndef COMMONPLUGINAPI_H
 #define COMMONPLUGINAPI_H
 
+#include <thread>
+#include <condition_variable>
+
 #ifdef MUPENPLUSAPI
 #include "m64p_plugin.h"
 #else
 #include "ZilmarGFX_1_3.h"
+#define RSPTHREAD
 #endif
 
-#include "GLCriticalSection.h"
+enum API_COMMAND {
+	acNone = 0,
+	acProcessDList,
+	acUpdateScreen,
+	acRomClosed
+};
 
-class PluginAPI : public GLCriticalSection
+class PluginAPI
 {
 public:
+#ifdef RSPTHREAD
+	~PluginAPI()
+	{
+		delete m_pRspThread;
+		m_pRspThread = NULL;
+	}
+#endif
+
 	// Common
 	void MoveScreen(int /*_xpos*/, int /*_ypos*/) {}
 	void ProcessRDPList() {}
@@ -70,10 +87,24 @@ public:
 	}
 
 private:
-	PluginAPI() {}
+	PluginAPI()
+#ifdef RSPTHREAD
+		: m_pRspThread(NULL), m_command(acNone)
+	#endif
+	{}
 	PluginAPI(const PluginAPI &);
 
-	void _initiateGFX(const GFX_INFO & _gfxInfo);
+	void _initiateGFX(const GFX_INFO & _gfxInfo) const;
+
+#ifdef RSPTHREAD
+	void _callAPICommand(API_COMMAND _command);
+	std::mutex m_rspThreadMtx;
+	std::mutex m_pluginThreadMtx;
+	std::condition_variable_any m_rspThreadCv;
+	std::condition_variable_any m_pluginThreadCv;
+	std::thread * m_pRspThread;
+	API_COMMAND m_command;
+#endif
 };
 
 inline PluginAPI & api()

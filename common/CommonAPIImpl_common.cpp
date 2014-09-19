@@ -3,6 +3,7 @@
 #else
 # include "../winlnxdefs.h"
 #endif // _WINDOWS
+#include <assert.h>
 
 #include "../PluginAPI.h"
 
@@ -12,16 +13,75 @@
 #include "../RSP.h"
 #include "../VI.h"
 #include "../Debug.h"
+#include "../Log.h"
+
+#ifdef RSPTHREAD
+void RSP_ThreadProc(std::mutex * _pRspThreadMtx, std::mutex * _pPluginThreadMtx, std::condition_variable_any * _pRspThreadCv, std::condition_variable_any * _pPluginThreadCv, API_COMMAND * _pCommand)
+{
+	_pRspThreadMtx->lock();
+	RSP_Init();
+	OGL_ResizeWindow();
+	assert(!isGLError());
+
+	while (true) {
+		_pPluginThreadMtx->lock();
+		_pPluginThreadCv->notify_one();
+		_pPluginThreadMtx->unlock();
+		_pRspThreadCv->wait(*_pRspThreadMtx);
+		switch (*_pCommand) {
+		case acProcessDList:
+			RSP_ProcessDList();
+			break;
+		case acUpdateScreen:
+			VI_UpdateScreen();
+			break;
+		case acRomClosed:
+			OGL_Stop();
+			GBI_Destroy();
+			*_pCommand = acNone;
+			_pRspThreadMtx->unlock();
+			_pPluginThreadMtx->lock();
+			_pPluginThreadCv->notify_one();
+			_pPluginThreadMtx->unlock();
+			return;
+		}
+		assert(!isGLError());
+		*_pCommand = acNone;
+	}
+}
+
+void PluginAPI::_callAPICommand(API_COMMAND _command)
+{
+	m_command = _command;
+	m_pluginThreadMtx.lock();
+	m_rspThreadMtx.lock();
+	m_rspThreadCv.notify_one();
+	m_rspThreadMtx.unlock();
+	m_pluginThreadCv.wait(m_pluginThreadMtx);
+	m_pluginThreadMtx.unlock();
+}
+#endif
 
 void PluginAPI::ProcessDList()
 {
-	Lock lock(this);
+	LOG(LOG_APIFUNC, "ProcessDList\n");
+#ifdef RSPTHREAD
+	_callAPICommand(acProcessDList);
+#else
 	RSP_ProcessDList();
+#endif
 }
 
 void PluginAPI::RomClosed()
 {
+	LOG(LOG_APIFUNC, "RomClosed\n");
+#ifdef RSPTHREAD
+	_callAPICommand(acRomClosed);
+	delete m_pRspThread;
+	m_pRspThread = NULL;
+#else
 	OGL_Stop();
+#endif
 
 #ifdef DEBUG
 	CloseDebugDlg();
@@ -30,9 +90,17 @@ void PluginAPI::RomClosed()
 
 void PluginAPI::RomOpen()
 {
+	LOG(LOG_APIFUNC, "RomOpen\n");
+#ifdef RSPTHREAD
+	m_pluginThreadMtx.lock();
+	m_pRspThread = new std::thread(RSP_ThreadProc, &m_rspThreadMtx, &m_pluginThreadMtx, &m_rspThreadCv, &m_pluginThreadCv, &m_command);
+	m_pRspThread->detach();
+	m_pluginThreadCv.wait(m_pluginThreadMtx);
+	m_pluginThreadMtx.unlock();
+#else
 	RSP_Init();
-
 	OGL_ResizeWindow();
+#endif
 
 #ifdef DEBUG
 	OpenDebugDlg();
@@ -46,11 +114,15 @@ void PluginAPI::ShowCFB()
 
 void PluginAPI::UpdateScreen()
 {
-	Lock lock(this);
+	LOG(LOG_APIFUNC, "UpdateScreen\n");
+#ifdef RSPTHREAD
+	_callAPICommand(acUpdateScreen);
+#else
 	VI_UpdateScreen();
+#endif
 }
 
-void PluginAPI::_initiateGFX(const GFX_INFO & _gfxInfo) {
+void PluginAPI::_initiateGFX(const GFX_INFO & _gfxInfo) const {
 	DMEM = _gfxInfo.DMEM;
 	IMEM = _gfxInfo.IMEM;
 	RDRAM = _gfxInfo.RDRAM;
