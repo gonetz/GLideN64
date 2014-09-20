@@ -761,6 +761,10 @@ void gDPFillRDRAM(u32 address, s32 ulx, s32 uly, s32 lrx, s32 lry, u32 width, u3
 	lrx = min(max((float)lrx, gDP.scissor.ulx), gDP.scissor.lrx);
 	uly = min(max((float)uly, gDP.scissor.uly), gDP.scissor.lry);
 	lry = min(max((float)lry, gDP.scissor.uly), gDP.scissor.lry);
+	const u32 stride = width << size >> 1;
+	const u32 lowerBound = address + lry*stride;
+	if (lowerBound > RDRAMSize)
+		lry -= (lowerBound - RDRAMSize) / stride;
 	u32 ci_width_in_dwords = width >> (3 - size);
 	ulx >>= (3 - size);
 	lrx >>= (3 - size);
