@@ -14,6 +14,8 @@
 #include "Config.h"
 #include "Debug.h"
 
+using namespace std;
+
 #ifndef GLES2
 const GLint monohromeInternalformat = GL_R8;
 const GLenum monohromeformat = GL_RED;
@@ -171,7 +173,7 @@ void FrameBufferList::saveBuffer(u32 _address, u16 _format, u16 _size, u16 _widt
 {
 	m_drawBuffer = GL_FRAMEBUFFER;
 	if (m_pCurrent != NULL && gDP.colorImage.height > 1) {
-		m_pCurrent->m_endAddress = m_pCurrent->m_startAddress + (((m_pCurrent->m_width * gDP.colorImage.height) << m_pCurrent->m_size >> 1) - 1);
+		m_pCurrent->m_endAddress = min(RDRAMSize, m_pCurrent->m_startAddress + (((m_pCurrent->m_width * gDP.colorImage.height) << m_pCurrent->m_size >> 1) - 1));
 		if (!config.frameBufferEmulation.copyToRDRAM && !m_pCurrent->m_cleared)
 			gDPFillRDRAM(m_pCurrent->m_startAddress, 0, 0, m_pCurrent->m_width, gDP.colorImage.height, m_pCurrent->m_width, m_pCurrent->m_size, m_pCurrent->m_fillcolor);
 	}
