@@ -18,32 +18,32 @@
 #define gSPFlushTriangles() \
 if \
 ( \
-    ( \
-         (OGL.triangles.num > 1000) || \
-         ( \
-             (RSP.nextCmd != G_NOOP) && \
-             (RSP.nextCmd != G_RDPNOOP) && \
-             (RSP.nextCmd != G_MOVEMEM) && \
-             (RSP.nextCmd != G_ENDDL) && \
-             (RSP.nextCmd != G_DL) && \
-             (RSP.nextCmd != G_VTXCOLORBASE) && \
-             (RSP.nextCmd != G_TRI1) && \
-             (RSP.nextCmd != G_TRI2) && \
-             (RSP.nextCmd != G_TRI4) && \
-             (RSP.nextCmd != G_QUAD) && \
-             (RSP.nextCmd != G_VTX) && \
-             (RSP.nextCmd != G_MTX) \
-         ) \
-    ) || \
-    ( \
-        (RSP.nextCmd != G_TRI1) && \
-        (RSP.nextCmd != G_TRI2) && \
-        (RSP.nextCmd != G_TRI4) && \
-        (RSP.nextCmd != G_QUAD) \
-    ) \
+	( \
+		 (video().getRender().getTrianglesCount() > 1000) || \
+		 ( \
+			 (RSP.nextCmd != G_NOOP) && \
+			 (RSP.nextCmd != G_RDPNOOP) && \
+			 (RSP.nextCmd != G_MOVEMEM) && \
+			 (RSP.nextCmd != G_ENDDL) && \
+			 (RSP.nextCmd != G_DL) && \
+			 (RSP.nextCmd != G_VTXCOLORBASE) && \
+			 (RSP.nextCmd != G_TRI1) && \
+			 (RSP.nextCmd != G_TRI2) && \
+			 (RSP.nextCmd != G_TRI4) && \
+			 (RSP.nextCmd != G_QUAD) && \
+			 (RSP.nextCmd != G_VTX) && \
+			 (RSP.nextCmd != G_MTX) \
+		 ) \
+	) || \
+	( \
+		(RSP.nextCmd != G_TRI1) && \
+		(RSP.nextCmd != G_TRI2) && \
+		(RSP.nextCmd != G_TRI4) && \
+		(RSP.nextCmd != G_QUAD) \
+	) \
 ) \
 { \
-    OGL_DrawTriangles(); \
+	video().getRender().drawTriangles(); \
 }
 
 #define CLIP_X      0x03
@@ -81,8 +81,8 @@ typedef SPVertex SPTriangle[3];
 
 struct SPLight
 {
-    f32 r, g, b;
-    f32 x, y, z;
+	f32 r, g, b;
+	f32 x, y, z;
 };
 
 struct gSPInfo
@@ -113,7 +113,7 @@ struct gSPInfo
 	{
 		f32 scales, scalet;
 		s32 level, on, tile;
-    } texture;
+	} texture;
 
 	gDPTile *textureTile[2];
 
@@ -175,7 +175,7 @@ void gSPPopMatrixN( u32 param, u32 num );
 void gSPSegment( s32 seg, s32 base );
 void gSPClipRatio( u32 r );
 void gSPInsertMatrix( u32 where, u32 num );
-void gSPModifyVertex( u32 vtx, u32 where, u32 val );
+void gSPModifyVertex(u32 _vtx, u32 _where, u32 _val );
 void gSPNumLights( s32 n );
 void gSPLightColor( u32 lightNum, u32 packedColor );
 void gSPFogFactor( s16 fm, s16 fo );
@@ -204,17 +204,11 @@ void gSPTriangleUnknown();
 
 void gSP1Triangle(s32 v0, s32 v1, s32 v2);
 void gSP2Triangles(const s32 v00, const s32 v01, const s32 v02, const s32 flag0,
-                    const s32 v10, const s32 v11, const s32 v12, const s32 flag1 );
+					const s32 v10, const s32 v11, const s32 v12, const s32 flag1 );
 void gSP4Triangles(const s32 v00, const s32 v01, const s32 v02,
-                    const s32 v10, const s32 v11, const s32 v12,
-                    const s32 v20, const s32 v21, const s32 v22,
-                    const s32 v30, const s32 v31, const s32 v32 );
-
-
-void __indexmap_init();
-void __indexmap_clear();
-u32 __indexmap_findunused(u32 num);
-u32 __indexmap_getnew(u32 index, u32 num);
+					const s32 v10, const s32 v11, const s32 v12,
+					const s32 v20, const s32 v21, const s32 v22,
+					const s32 v30, const s32 v31, const s32 v32 );
 
 #ifdef __VEC4_OPT
 extern void (*gSPTransformVertex4)(u32 v, float mtx[4][4]);

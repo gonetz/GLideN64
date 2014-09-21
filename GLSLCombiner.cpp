@@ -65,7 +65,7 @@ bool check_program_link_status(GLuint obj)
 static
 void InitZlutTexture()
 {
-	if (!OGL.bImageTexture)
+	if (!video().getRender().isImageTexturesSupported())
 		return;
 
 	u16 * zLUT = new u16[0x40000];
@@ -96,7 +96,7 @@ void InitZlutTexture()
 static
 void DestroyZlutTexture()
 {
-	if (!OGL.bImageTexture)
+	if (!video().getRender().isImageTexturesSupported())
 		return;
 	glBindImageTexture(ZlutImageUnit, 0, 0, GL_FALSE, 0, GL_READ_ONLY, GL_R16UI);
 	if (g_zlut_tex > 0) {
@@ -109,7 +109,7 @@ void DestroyZlutTexture()
 static
 void InitShadowMapShader()
 {
-	if (!OGL.bImageTexture)
+	if (!video().getRender().isImageTexturesSupported())
 		return;
 
 	g_paletteCRC256 = 0;
@@ -143,7 +143,7 @@ void InitShadowMapShader()
 static
 void DestroyShadowMapShader()
 {
-	if (!OGL.bImageTexture)
+	if (!video().getRender().isImageTexturesSupported())
 		return;
 
 	glBindImageTexture(TlutImageUnit, 0, 0, GL_FALSE, 0, GL_READ_ONLY, GL_R16UI);
@@ -194,7 +194,7 @@ void InitShaderCombiner()
 	glCompileShader(g_test_alpha_shader_object);
 	assert(check_shader_compile_status(g_test_alpha_shader_object));
 
-	if (OGL.bImageTexture) {
+	if (video().getRender().isImageTexturesSupported()) {
 		g_calc_depth_shader_object = glCreateShader(GL_FRAGMENT_SHADER);
 		glShaderSource(g_calc_depth_shader_object, 1, &depth_compare_shader_float, NULL);
 		glCompileShader(g_calc_depth_shader_object);
@@ -413,7 +413,7 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 	strFragmentShader.append("  gl_FragColor = vec4(color2, alpha2); \n");
 
 	strFragmentShader.append("  if (!alpha_test(gl_FragColor.a)) discard;	\n");
-	if (OGL.bImageTexture) {
+	if (video().getRender().isImageTexturesSupported()) {
 		if (config.frameBufferEmulation.N64DepthCompare)
 			strFragmentShader.append("  if (!depth_compare()) discard; \n");
 		else
@@ -458,7 +458,7 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 	if (bUseLod)
 		glAttachShader(m_program, g_calc_lod_shader_object);
 	glAttachShader(m_program, g_test_alpha_shader_object);
-	if (OGL.bImageTexture)
+	if (video().getRender().isImageTexturesSupported())
 		glAttachShader(m_program, g_calc_depth_shader_object);
 	glAttachShader(m_program, g_calc_noise_shader_object);
 #endif
@@ -560,8 +560,8 @@ void ShaderCombiner::update() {
 
 	_setIUniform(m_uniforms.uTex0, 0, true);
 	_setIUniform(m_uniforms.uTex1, 1, true);
-	_setFUniform(m_uniforms.uScreenWidth, OGL.width, true);
-	_setFUniform(m_uniforms.uScreenHeight, OGL.height, true);
+	_setFUniform(m_uniforms.uScreenWidth, video().getWidth(), true);
+	_setFUniform(m_uniforms.uScreenHeight, video().getHeight(), true);
 
 	updateRenderState(true);
 	updateColors(true);
@@ -572,7 +572,7 @@ void ShaderCombiner::update() {
 }
 
 void ShaderCombiner::updateRenderState(bool _bForce) {
-	_setIUniform(m_uniforms.uRenderState, OGL.renderState, _bForce);
+	_setIUniform(m_uniforms.uRenderState, video().getRender().getRenderState(), _bForce);
 }
 
 void ShaderCombiner::updateLight(bool _bForce) {
@@ -602,8 +602,8 @@ void ShaderCombiner::updateColors(bool _bForce) {
 		int uCalcLOD = (config.enableLOD && gDP.otherMode.textureLOD == G_TL_LOD) ? 1 : 0;
 		_setIUniform(m_uniforms.uEnableLod, uCalcLOD, _bForce);
 		if (uCalcLOD) {
-			_setFUniform(m_uniforms.uLodXScale, OGL.scaleX, _bForce);
-			_setFUniform(m_uniforms.uLodYScale, OGL.scaleY, _bForce);
+			_setFUniform(m_uniforms.uLodXScale, video().getScaleX(), _bForce);
+			_setFUniform(m_uniforms.uLodYScale, video().getScaleY(), _bForce);
 			_setFUniform(m_uniforms.uMinLod, gDP.primColor.m, _bForce);
 			_setIUniform(m_uniforms.uMaxTile, gSP.texture.level, _bForce);
 			_setIUniform(m_uniforms.uTextureDetail, gDP.otherMode.textureDetail, _bForce);
@@ -685,7 +685,7 @@ void ShaderCombiner::updateFBInfo(bool _bForce) {
 }
 
 void ShaderCombiner::updateDepthInfo(bool _bForce) {
-	if (!OGL.bImageTexture)
+	if (!video().getRender().isImageTexturesSupported())
 		return;
 
 	FrameBuffer * pBuffer = frameBufferList().getCurrent();
@@ -719,91 +719,9 @@ void ShaderCombiner::updateAlphaTestInfo(bool _bForce) {
 	}
 }
 
-#ifndef GLES2
-void GLSL_RenderDepth() {
-	if (!OGL.bImageTexture)
-		return;
-	FrameBuffer * pBuffer = frameBufferList().getCurrent();
-#if 0
-	glBindFramebuffer(GL_READ_FRAMEBUFFER, g_zbuf_fbo);
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-	glDrawBuffer( GL_FRONT );
-	glBlitFramebuffer(
-		0, 0, OGL.width, OGL.height,
-		0, OGL.heightOffset, OGL.width, OGL.heightOffset + OGL.height,
-		GL_COLOR_BUFFER_BIT, GL_LINEAR
-	);
-	glDrawBuffer( GL_BACK );
-	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, pBuffer != NULL ? pBuffer->m_FBO : 0);
-#else
-	if (pBuffer == NULL || pBuffer->m_pDepthBuffer == NULL)
-		return;
-	glBindImageTexture(depthImageUnit, 0, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA32F);
-	glPushAttrib( GL_ENABLE_BIT | GL_VIEWPORT_BIT );
+void SetShadowMapCombiner() {
 
-	glActiveTexture( GL_TEXTURE0 );
-	glBindTexture(GL_TEXTURE_2D, pBuffer->m_pDepthBuffer->m_pDepthTexture->glName);
-//	glBindTexture(GL_TEXTURE_2D, g_zlut_tex);
-
-	CombinerInfo::get().setCombine( EncodeCombineMode( 0, 0, 0, TEXEL0, 0, 0, 0, 1, 0, 0, 0, TEXEL0, 0, 0, 0, 1 ) );
-
-			glDisable( GL_BLEND );
-			glDisable( GL_ALPHA_TEST );
-			glDisable( GL_DEPTH_TEST );
-			glDisable( GL_CULL_FACE );
-			glDisable( GL_POLYGON_OFFSET_FILL );
-
-			glMatrixMode( GL_PROJECTION );
-			glLoadIdentity();
-			glOrtho( 0, OGL.width, 0, OGL.height, -1.0f, 1.0f );
-			glViewport( 0, OGL.heightOffset, OGL.width, OGL.height );
-			glDisable( GL_SCISSOR_TEST );
-
-			float u1, v1;
-
-			u1 = 1.0;
-			v1 = 1.0;
-
-			glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-#ifdef _WINDOWS
-			glDrawBuffer( GL_FRONT );
-#else
-			glDrawBuffer( GL_BACK );
-#endif
-			glBegin(GL_QUADS);
-				glTexCoord2f( 0.0f, 0.0f );
-				glVertex2f( 0.0f, 0.0f );
-
-				glTexCoord2f( 0.0f, v1 );
-				glVertex2f( 0.0f, (GLfloat)OGL.height );
-
-				glTexCoord2f( u1,  v1 );
-				glVertex2f( (GLfloat)OGL.width, (GLfloat)OGL.height );
-
-				glTexCoord2f( u1, 0.0f );
-				glVertex2f( (GLfloat)OGL.width, 0.0f );
-			glEnd();
-#ifdef _WINDOWS
-			glDrawBuffer( GL_BACK );
-#else
-			OGL_SwapBuffers();
-#endif
-			glBindFramebuffer(GL_DRAW_FRAMEBUFFER, pBuffer->m_FBO);
-			glBindImageTexture(depthImageUnit, pBuffer->m_pDepthBuffer->m_pDepthTexture->glName, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA32F);
-
-
-			glLoadIdentity();
-			glPopAttrib();
-
-			gSP.changed |= CHANGED_TEXTURE | CHANGED_VIEWPORT;
-			gDP.changed |= CHANGED_COMBINE;
-#endif
-}
-
-void GLS_SetShadowMapCombiner() {
-
-	if (!OGL.bImageTexture)
+	if (!video().getRender().isImageTexturesSupported())
 		return;
 
 	if (g_paletteCRC256 != gDP.paletteCRC256) {
@@ -825,4 +743,3 @@ void GLS_SetShadowMapCombiner() {
 
 	gDP.changed |= CHANGED_COMBINE;
 }
-#endif // GLES2

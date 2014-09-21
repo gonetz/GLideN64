@@ -20,7 +20,7 @@ void RSP_ThreadProc(std::mutex * _pRspThreadMtx, std::mutex * _pPluginThreadMtx,
 {
 	_pRspThreadMtx->lock();
 	RSP_Init();
-	OGL_ResizeWindow();
+	video().resizeWindow();
 	assert(!isGLError());
 
 	while (true) {
@@ -36,7 +36,7 @@ void RSP_ThreadProc(std::mutex * _pRspThreadMtx, std::mutex * _pPluginThreadMtx,
 			VI_UpdateScreen();
 			break;
 		case acRomClosed:
-			OGL_Stop();
+			video().stop();
 			GBI_Destroy();
 			*_pCommand = acNone;
 			_pRspThreadMtx->unlock();
@@ -80,7 +80,7 @@ void PluginAPI::RomClosed()
 	delete m_pRspThread;
 	m_pRspThread = NULL;
 #else
-	OGL_Stop();
+	video().stop();
 #endif
 
 #ifdef DEBUG
@@ -99,7 +99,7 @@ void PluginAPI::RomOpen()
 	m_pluginThreadMtx.unlock();
 #else
 	RSP_Init();
-	OGL_ResizeWindow();
+	video().resizeWindow();
 #endif
 
 #ifdef DEBUG
@@ -153,4 +153,9 @@ void PluginAPI::_initiateGFX(const GFX_INFO & _gfxInfo) const {
 	REG.VI_Y_SCALE = _gfxInfo.VI_Y_SCALE_REG;
 
 	CheckInterrupts = _gfxInfo.CheckInterrupts;
+}
+
+void PluginAPI::ChangeWindow()
+{
+	video().setToggleFullscreen();
 }

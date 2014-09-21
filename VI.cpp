@@ -49,10 +49,10 @@ void VI_UpdateScreen()
 	static u32 uNumCurFrameIsShown = 0;
 	glFinish();
 
-	if (OGL.captureScreen) {
-		OGL_SaveScreenshot();
-		OGL.captureScreen = false;
-	}
+	OGLVideo & ogl = video();
+	if (ogl.changeWindow())
+		return;
+	ogl.saveScreenshot();
 	if (((*REG.VI_STATUS)&3) == 0)
 		VI.vStart = VI.vEnd = 0;
 
@@ -64,7 +64,7 @@ void VI_UpdateScreen()
 			FrameBuffer * pBuffer = frameBufferList().findBuffer(*REG.VI_ORIGIN);
 			if (pBuffer == NULL || pBuffer->m_width != *REG.VI_WIDTH) {
 				VI_UpdateSize();
-				OGL_UpdateScale();
+				ogl.updateScale();
 				const u32 size = *REG.VI_STATUS & 3;
 				if (VI.height > 0 && size > G_IM_SIZ_8b  && _SHIFTR( *REG.VI_H_START, 0, 10 ) > 0)
 					frameBufferList().saveBuffer( *REG.VI_ORIGIN, G_IM_FMT_RGBA, size, *REG.VI_WIDTH, VI.height );
@@ -90,7 +90,7 @@ void VI_UpdateScreen()
 	}
 	else {
 		if (gSP.changed & CHANGED_COLORBUFFER) {
-			OGL_SwapBuffers();
+			ogl.swapBuffers();
 			gSP.changed &= ~CHANGED_COLORBUFFER;
 #ifdef DEBUG
 			while (Debug.paused && !Debug.step);

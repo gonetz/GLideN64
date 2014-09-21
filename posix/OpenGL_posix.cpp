@@ -7,25 +7,42 @@ void OGL_InitGLFunctions()
 {
 }
 
-void OGL_ResizeWindow()
+class OGLVideoPosix : public OGLVideo
 {
+public:
+	OGLVideoPosix() : hScreen(NULL) {}
+
+private:
+	virtual bool _start();
+	virtual void _stop();
+	virtual void _swapBuffers();
+	virtual void _saveScreenshot();
+	virtual void _resizeWindow();
+	virtual void _changeWindow();
+
+#if defined(USE_SDL)
+	SDL_Surface *hScreen;
+#endif
+};
+
+OGLVideo & OGLVideo::get()
+{
+	static OGLVideoPosix video;
+	return video;
 }
 
-bool OGL_Start()
+bool OGLVideoPosix::_start()
 {
 #ifdef USE_SDL
 	// init sdl & gl
 	Uint32 videoFlags = 0;
 
-	if (OGL.fullscreen)
-	{
-		OGL.width = config.video.fullscreenWidth;
-		OGL.height = config.video.fullscreenHeight;
-	}
-	else
-	{
-		OGL.width = config.video.windowedWidth;
-		OGL.height = config.video.windowedHeight;
+    if (m_bFullscreen) {
+        m_width = config.video.fullscreenWidth;
+        m_height = config.video.fullscreenHeight;
+	} else {
+        m_width = config.video.windowedWidth;
+        m_height = config.video.windowedHeight;
 	}
 
 	/* Initialize SDL */
@@ -63,10 +80,10 @@ bool OGL_Start()
 	SDL_GL_SetAttribute( SDL_GL_BLUE_SIZE, 5 );*/
 	SDL_GL_SetAttribute( SDL_GL_DEPTH_SIZE, 16 );	// 32 bit z-buffer
 
-	printf( "[glN64]: (II) Setting video mode %dx%d...\n", OGL.width, OGL.height );
-	if (!(OGL.hScreen = SDL_SetVideoMode( OGL.width, OGL.height, 0, videoFlags )))
+    printf( "[glN64]: (II) Setting video mode %dx%d...\n", m_width, m_height );
+    if (!(hScreen = SDL_SetVideoMode(m_width, m_height, 0, videoFlags)))
 	{
-		printf( "[glN64]: (EE) Error setting videomode %dx%d: %s\n", OGL.width, OGL.height, SDL_GetError() );
+        printf( "[glN64]: (EE) Error setting videomode %dx%d: %s\n", m_width, m_height, SDL_GetError() );
 		SDL_QuitSubSystem( SDL_INIT_VIDEO );
 		return false;
 	}
@@ -74,22 +91,18 @@ bool OGL_Start()
 	SDL_WM_SetCaption( pluginName, pluginName );
 #endif // USE_SDL
 
-	OGL_InitData();
-
 	return true;
 }
 
-void OGL_Stop()
+void OGLVideoPosix::_stop()
 {
-	OGL_DestroyData();
-
 #if defined(USE_SDL)
 	SDL_QuitSubSystem( SDL_INIT_VIDEO );
-	OGL.hScreen = NULL;
+	hScreen = NULL;
 #endif // _WINDOWS
 }
 
-void OGL_SwapBuffers()
+void OGLVideoPosix::_swapBuffers()
 {
 #if defined(USE_SDL)
 	static int frames[5] = { 0, 0, 0, 0, 0 };
@@ -115,6 +128,17 @@ void OGL_SwapBuffers()
 #endif // USE_SDL
 }
 
-void OGL_SaveScreenshot()
+void OGLVideoPosix::_saveScreenshot()
 {
+}
+
+void OGLVideoPosix::_resizeWindow()
+{
+}
+
+void OGLVideoPosix::_changeWindow()
+{
+#if defined(USE_SDL)
+	SDL_WM_ToggleFullScreen( hScreen );
+#endif
 }

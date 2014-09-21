@@ -187,8 +187,8 @@ void Config_ApplyDlgConfig( HWND hWndDlg )
 	config.frameBufferEmulation.enable = (SendDlgItemMessage( hWndDlg, IDC_FRAMEBUFFER, BM_GETCHECK, NULL, NULL ) == BST_CHECKED);
 	config.enableHWLighting = (SendDlgItemMessage( hWndDlg, IDC_HWLIGHT, BM_GETCHECK, NULL, NULL ) == BST_CHECKED);
 
-	if (!OGL.fullscreen)
-		OGL_ResizeWindow();
+	if (!video().isFullscreen())
+		video().resizeWindow();
 
 	Config_SaveConfig();
 }

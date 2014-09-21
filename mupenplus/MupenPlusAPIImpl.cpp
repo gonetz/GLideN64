@@ -50,7 +50,13 @@ m64p_error PluginAPI::PluginStartup(m64p_dynlib_handle _CoreLibHandle)
 
 m64p_error PluginAPI::PluginShutdown()
 {
-	OGL_Stop();
+#ifdef RSPTHREAD
+	_callAPICommand(acRomClosed);
+	delete m_pRspThread;
+	m_pRspThread = NULL;
+#else
+	video().stop();
+#endif
 	return M64ERR_SUCCESS;
 }
 
@@ -91,18 +97,12 @@ void PluginAPI::SetRenderingCallback(void (*callback)(int))
 
 void PluginAPI::StartGL()
 {
-	OGL_Start();
 }
 
 void PluginAPI::StopGL()
 {
-	OGL_Stop();
 }
 
 void PluginAPI::ResizeGL(int _width, int _height)
-{
-}
-
-void PluginAPI::ChangeWindow()
 {
 }

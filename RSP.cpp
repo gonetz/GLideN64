@@ -124,7 +124,7 @@ LoadLoop:
 void RSP_ProcessDList()
 {
 	VI_UpdateSize();
-	OGL_UpdateScale();
+	video().updateScale();
 
 	RSP.PC[0] = *(u32*)&DMEM[0x0FF0];
 	RSP.PCi = 0;
@@ -254,5 +254,5 @@ void RSP_Init()
 	gSP.textureTile[1] = &gDP.tiles[1];
 //	DepthBuffer_Init();
 	GBI_Init();
-	OGL_Start();
+	video().start();
 }

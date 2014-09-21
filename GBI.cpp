@@ -134,6 +134,7 @@ void GBI_Init()
 
 void GBI_Destroy()
 {
+	GBI.current = NULL;
 	while (GBI.bottom)
 	{
 		MicrocodeInfo *newBottom = GBI.bottom->higher;

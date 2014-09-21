@@ -13,8 +13,7 @@
 
 void PluginAPI::CaptureScreen(char * _Directory)
 {
-	screenDirectory = _Directory;
-	OGL.captureScreen = true;
+	video().setCaptureScreen(_Directory);
 }
 
 void PluginAPI::DllConfig(HWND _hParent)
@@ -33,5 +32,5 @@ void PluginAPI::GetDllInfo(PLUGIN_INFO * PluginInfo)
 
 void PluginAPI::ReadScreen(void **_dest, long *_width, long *_height)
 {
-	OGL_ReadScreen(_dest, _width, _height);
+	video().readScreen(_dest, _width, _height);
 }

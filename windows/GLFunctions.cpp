@@ -58,7 +58,7 @@ PFNGLDELETEBUFFERSPROC glDeleteBuffers;
 PFNGLBINDIMAGETEXTUREPROC glBindImageTexture;
 PFNGLMEMORYBARRIERPROC glMemoryBarrier;
 
-void OGL_InitGLFunctions()
+void initGLFunctions()
 {
 	glCreateShader = (PFNGLCREATESHADERPROC)wglGetProcAddress("glCreateShader");
 	glCompileShader = (PFNGLCOMPILESHADERPROC)wglGetProcAddress("glCompileShader");

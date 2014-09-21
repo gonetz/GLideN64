@@ -105,5 +105,6 @@ private:
 
 void InitShaderCombiner();
 void DestroyShaderCombiner();
+void SetShadowMapCombiner();
 
 #endif //GLSL_COMBINER_H

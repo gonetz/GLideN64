@@ -25,92 +25,152 @@
 
 #include "gSP.h"
 
-struct GLVertex
-{
-	float x, y, z, w;
-	float s0, t0, s1, t1;
-};
-
-struct GLInfo
-{
-#ifdef _WINDOWS
-	HGLRC	hRC;
-	HDC		hDC;
-	HWND	hWnd;
-	HWND	hFullscreenWnd;
-#elif defined(USE_SDL)
-	SDL_Surface *hScreen;
-#endif // _WINDOWS
-
-	BOOL fullscreen;
-	unsigned int fullscreenWidth, fullscreenHeight, fullscreenBits, fullscreenRefresh;
-	unsigned int width, height, heightOffset;
-
-	float	scaleX, scaleY;
-
 #define INDEXMAP_SIZE 64U
 #define VERTBUFF_SIZE 256U
 #define ELEMBUFF_SIZE 1024U
 
-	struct {
-		SPVertex vertices[VERTBUFF_SIZE];
-		GLubyte elements[ELEMBUFF_SIZE];
-		int num;
+class OGLRender
+{
+public:
+	void addTriangle(int _v0, int _v1, int _v2);
+	void drawTriangles();
+	void drawLine(int _v0, int _v1, float _width);
+	void drawRect(int _ulx, int _uly, int _lrx, int _lry, float * _pColor);
+	void drawTexturedRect(
+		float _ulx, float _uly, float _lrx, float _lry,
+		float _uls, float _ult, float _lrs, float _lrt,
+		bool _flip
+	);
+	void clearDepthBuffer();
+	void clearColorBuffer( float * _pColor );
 
+	int getTrianglesCount() const {return triangles.num;}
+	bool isClipped(s32 _v0, s32 _v1, s32 _v2) const
+	{
+		return (triangles.vertices[_v0].clip & triangles.vertices[_v1].clip & triangles.vertices[_v2].clip) != 0;
+	}
+	bool isImageTexturesSupported() const {return m_bImageTexture;}
+	SPVertex & getVertex(u32 _v) {return triangles.vertices[_v];}
 
-		u32 indexmap[INDEXMAP_SIZE];
-		u32 indexmapinv[VERTBUFF_SIZE];
-		u32 indexmap_prev;
-		u32 indexmap_nomap;
-
-	} triangles;
-
-
-	GLVertex rect[4];
-
-	BYTE	numTriangles;
-	BYTE	numVertices;
-
-	BYTE	combiner;
-	enum {
-		fbNone,
-		fbFBO
-	} framebufferMode;
-	enum {
+	enum RENDER_STATE {
 		rsNone = 0,
 		rsTriangle = 1,
 		rsRect = 2,
 		rsTexRect = 3,
 		rsLine = 4
-	} renderState;
-	bool bImageTexture;
-	bool captureScreen;
+	};
+	RENDER_STATE getRenderState() const {return m_renderState;}
+
+#ifdef __TRIBUFFER_OPT
+	u32 getIndexmap(u32 _v) const {return triangles.indexmap[_v];}
+	u32 getIndexmapNew(u32 _index, u32 _num);
+	void indexmapUndo();
+#endif // __TRIBUFFER_OPT
+
+private:
+	OGLRender() : m_bImageTexture(false) {}
+	OGLRender(const OGLRender &);
+	friend class OGLVideo;
+
+	void _initExtensions();
+	void _initStates();
+	void _initData();
+	void _destroyData();
+
+	void _setColorArray() const;
+	void _setTexCoordArrays() const;
+	void _setBlendMode() const;
+	void _updateCullFace() const;
+	void _updateViewport() const;
+	void _updateDepthUpdate() const;
+	void _updateStates() const;
+
+#ifdef __TRIBUFFER_OPT
+	void _indexmap_init();
+	void _indexmap_clear();
+	u32 _indexmap_findunused(u32 num);
+#endif
+
+	struct {
+		SPVertex vertices[VERTBUFF_SIZE];
+		GLubyte elements[ELEMBUFF_SIZE];
+		int num;
+		u32 indexmap[INDEXMAP_SIZE];
+		u32 indexmapinv[VERTBUFF_SIZE];
+		u32 indexmap_prev;
+		u32 indexmap_nomap;
+	} triangles;
+
+	struct GLVertex
+	{
+		float x, y, z, w;
+		float s0, t0, s1, t1;
+	};
+
+	RENDER_STATE m_renderState;
+	GLVertex m_rect[4];
+	bool m_bImageTexture;
 };
 
-extern GLInfo OGL;
+class OGLVideo
+{
+public:
+	void start();
+	void stop();
+	void swapBuffers();
+	void saveScreenshot();
+	bool changeWindow();
+	void resizeWindow();
+	void setCaptureScreen(const char * const _strDirectory);
+	void setToggleFullscreen() {m_bToggleFullscreen = true;}
+	void readScreen(void **_pDest, long *_pWidth, long *_pHeight );
 
-void OGL_InitGLFunctions();
-void OGL_InitData();
-void OGL_DestroyData();
-bool OGL_Start();
-void OGL_Stop();
+	void updateScale();
+	f32 getScaleX() const {return m_scaleX;}
+	f32 getScaleY() const {return m_scaleY;}
+	u32 getWidth() const {return m_width;}
+	u32 getHeight() const {return m_height;}
+	u32 getHeightOffset() const {return m_heightOffset;}
+	bool isFullscreen() const {return m_bFullscreen;}
 
-void OGL_AddTriangle(int v0, int v1, int v2);
-void OGL_DrawTriangles();
-void OGL_DrawTriangle(SPVertex *vertices, int v0, int v1, int v2);
-void OGL_DrawLine(int v0, int v1, float width);
-void OGL_DrawRect(int ulx, int uly, int lrx, int lry, float *color);
-void OGL_DrawTexturedRect(float ulx, float uly, float lrx, float lry, float uls, float ult, float lrs, float lrt, bool flip);
-void OGL_UpdateScale();
-void OGL_ClearDepthBuffer();
-void OGL_ClearColorBuffer( float *color );
-void OGL_ResizeWindow();
-void OGL_SaveScreenshot();
-void OGL_SwapBuffers();
-void OGL_ReadScreen( void **dest, long *width, long *height );
+	OGLRender & getRender() {return m_render;}
 
+	static OGLVideo & get();
+
+protected:
+	OGLVideo() :
+		m_bCaptureScreen(false), m_bToggleFullscreen(false), m_bFullscreen(false),
+		m_width(0), m_height(0), m_heightOffset(0), m_scaleX(0), m_scaleY(0), m_strScreenDirectory(NULL)
+	{}
+
+	bool m_bCaptureScreen;
+	bool m_bToggleFullscreen;
+	bool m_bFullscreen;
+
+	u32 m_width, m_height, m_heightOffset;
+	f32 m_scaleX, m_scaleY;
+
+	const char * m_strScreenDirectory;
+
+	OGLRender m_render;
+
+private:
+	virtual bool _start() = 0;
+	virtual void _stop() = 0;
+	virtual void _swapBuffers() = 0;
+	virtual void _saveScreenshot() = 0;
+	virtual void _changeWindow() = 0;
+	virtual void _resizeWindow() = 0;
+};
+
+inline
+OGLVideo & video()
+{
+	return OGLVideo::get();
+}
+
+void initGLFunctions();
 bool checkFBO();
-
 bool isGLError();
 
 #endif

@@ -5,23 +5,40 @@
 #include "../Config.h"
 
 #ifndef _WINDOWS
-void OGL_InitGLFunctions()
+
+void initGLFunctions()
 {
 }
 #endif
 
-void OGL_ResizeWindow()
+class OGLVideoMupenPlus : public OGLVideo
 {
+public:
+	OGLVideoMupenPlus() {}
+
+private:
+	virtual bool _start();
+	virtual void _stop();
+	virtual void _swapBuffers();
+	virtual void _saveScreenshot();
+	virtual void _resizeWindow();
+	virtual void _changeWindow();
+};
+
+OGLVideo & OGLVideo::get()
+{
+	static OGLVideoMupenPlus video;
+	return video;
 }
 
-bool OGL_Start()
+bool OGLVideoMupenPlus::_start()
 {
-	if (OGL.fullscreen){
-		OGL.width = config.video.fullscreenWidth;
-		OGL.height = config.video.fullscreenHeight;
+	if (m_bFullscreen){
+		m_width = config.video.fullscreenWidth;
+		m_height = config.video.fullscreenHeight;
 	} else {
-		OGL.width = config.video.windowedWidth;
-		OGL.height = config.video.windowedHeight;
+		m_width = config.video.windowedWidth;
+		m_height = config.video.windowedHeight;
 	}
 
 	CoreVideo_Init();
@@ -30,14 +47,14 @@ bool OGL_Start()
 	CoreVideo_GL_SetAttribute(M64P_GL_BUFFER_SIZE, 16);
 	CoreVideo_GL_SetAttribute(M64P_GL_DEPTH_SIZE, 16);
 
-	printf("(II) Setting video mode %dx%d...\n", OGL.width, OGL.height);
-	if (CoreVideo_SetVideoMode(OGL.width, OGL.height, 0, OGL.fullscreen ? M64VIDEO_FULLSCREEN : M64VIDEO_WINDOWED, (m64p_video_flags) 0) != M64ERR_SUCCESS) {
-		printf("(EE) Error setting videomode %dx%d\n", OGL.width, OGL.height);
+	printf("(II) Setting video mode %dx%d...\n", m_width, m_height);
+	if (CoreVideo_SetVideoMode(m_width, m_height, 0, m_bFullscreen ? M64VIDEO_FULLSCREEN : M64VIDEO_WINDOWED, (m64p_video_flags)0) != M64ERR_SUCCESS) {
+		printf("(EE) Error setting videomode %dx%d\n", m_width, m_height);
 		CoreVideo_Quit();
 		return false;
 	}
 
-	char caption[500];
+	char caption[128];
 # ifdef _DEBUG
 	sprintf(caption, "GLideN64 debug");
 # else // _DEBUG
@@ -45,23 +62,41 @@ bool OGL_Start()
 # endif // _DEBUG
 	CoreVideo_SetCaption(caption);
 
-	OGL_InitData();
-
 	return true;
 }
 
-void OGL_Stop()
+void OGLVideoMupenPlus::_stop()
 {
-	OGL_DestroyData();
-
 	CoreVideo_Quit();
 }
 
-void OGL_SwapBuffers()
+void OGLVideoMupenPlus::_swapBuffers()
 {
 	CoreVideo_GL_SwapBuffers();
 }
 
-void OGL_SaveScreenshot()
+void OGLVideoMupenPlus::_saveScreenshot()
 {
+}
+
+void OGLVideoMupenPlus::_resizeWindow()
+{
+	u32 newWidth, newHeight;
+	if (m_bFullscreen) {
+		newWidth = config.video.fullscreenWidth;
+		newHeight = config.video.fullscreenHeight;
+	} else {
+		newWidth = config.video.windowedWidth;
+		newHeight = config.video.windowedHeight;
+	}
+	if (m_width != newWidth || m_height != newHeight) {
+		m_width = newWidth;
+		m_height = newHeight;
+		CoreVideo_ResizeWindow(m_width, m_height);
+	}
+}
+
+void OGLVideoMupenPlus::_changeWindow()
+{
+	CoreVideo_ToggleFullScreen();
 }

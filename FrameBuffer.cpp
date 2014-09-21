@@ -171,6 +171,7 @@ FrameBuffer * FrameBufferList::findTmpBuffer(u32 _address)
 
 void FrameBufferList::saveBuffer(u32 _address, u16 _format, u16 _size, u16 _width, u16 _height )
 {
+	OGLVideo & ogl = video();
 	m_drawBuffer = GL_FRAMEBUFFER;
 	if (m_pCurrent != NULL && gDP.colorImage.height > 1) {
 		m_pCurrent->m_endAddress = min(RDRAMSize, m_pCurrent->m_startAddress + (((m_pCurrent->m_width * gDP.colorImage.height) << m_pCurrent->m_size >> 1) - 1));
@@ -185,8 +186,8 @@ void FrameBufferList::saveBuffer(u32 _address, u16 _format, u16 _size, u16 _widt
 			(m_pCurrent->m_width != _width) ||
 			//(current->height != height) ||
 			//(current->size != size) ||  // TODO FIX ME
-			(m_pCurrent->m_scaleX != OGL.scaleX) ||
-			(m_pCurrent->m_scaleY != OGL.scaleY))
+			(m_pCurrent->m_scaleX != ogl.getScaleX()) ||
+			(m_pCurrent->m_scaleY != ogl.getScaleY()))
 		{
 			removeBuffer(m_pCurrent->m_startAddress);
 			m_pCurrent = NULL;
@@ -195,7 +196,7 @@ void FrameBufferList::saveBuffer(u32 _address, u16 _format, u16 _size, u16 _widt
 			if (m_pCurrent->m_size != _size) {
 				f32 fillColor[4];
 				gDPGetFillColor(fillColor);
-				OGL_ClearColorBuffer(fillColor);
+				ogl.getRender().clearColorBuffer(fillColor);
 				m_pCurrent->m_size = _size;
 				m_pCurrent->m_pTexture->format = _format;
 				m_pCurrent->m_pTexture->size = _size;
@@ -213,12 +214,12 @@ void FrameBufferList::saveBuffer(u32 _address, u16 _format, u16 _size, u16 _widt
 		buffer.m_width = _width;
 		buffer.m_height = _height;
 		buffer.m_size = _size;
-		buffer.m_scaleX = OGL.scaleX;
-		buffer.m_scaleY = OGL.scaleY;
+		buffer.m_scaleX = ogl.getScaleX();
+		buffer.m_scaleY = ogl.getScaleY();
 		buffer.m_fillcolor = 0;
 
-		buffer.m_pTexture->width = (u32)(buffer.m_width * OGL.scaleX);
-		buffer.m_pTexture->height = (u32)(buffer.m_height * OGL.scaleY);
+		buffer.m_pTexture->width = (u32)(buffer.m_width * video().getScaleX());
+		buffer.m_pTexture->height = (u32)(buffer.m_height * video().getScaleY());
 		buffer.m_pTexture->format = _format;
 		buffer.m_pTexture->size = _size;
 		buffer.m_pTexture->clampS = 1;
@@ -328,12 +329,13 @@ void FrameBufferList::renderBuffer(u32 _address)
 	FrameBuffer *pBuffer = findBuffer(_address);
 	if (pBuffer == NULL)
 		return;
+	OGLVideo & ogl = video();
 	GLint srcY0, srcY1, dstY0, dstY1;
 	GLint partHeight = 0;
 	dstY0 = 1;
 	const u32 vStart = _SHIFTR( *REG.VI_V_START, 17, 9 );
 	const u32 vEnd = _SHIFTR( *REG.VI_V_START, 1, 9 );
-	const float viScaleY = OGL.height / (float)VI.vHeight;
+	const float viScaleY = ogl.getHeight() / (float)VI.vHeight;
 
 	if (VI.vStart != vStart)
 		dstY0 += vStart - VI.vStart;
@@ -347,16 +349,16 @@ void FrameBufferList::renderBuffer(u32 _address)
 	}
 
 	// glDisable(GL_SCISSOR_TEST) does not affect glBlitFramebuffer, at least on AMD
-	glScissor( 0, 0, OGL.width, OGL.height );
+	glScissor(0, 0, ogl.getWidth(), ogl.getHeight());
 	glDisable(GL_SCISSOR_TEST);
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, pBuffer->m_FBO);
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 	//glDrawBuffer( GL_BACK );
 	float clearColor[4] = {0.0f, 0.0f, 0.0f, 0.0f};
-	OGL_ClearColorBuffer(clearColor);
+	ogl.getRender().clearColorBuffer(clearColor);
 	glBlitFramebuffer(
-		0, (GLint)(srcY0*OGL.scaleY), OGL.width, (GLint)(srcY1*OGL.scaleY),
-		0, OGL.heightOffset + (GLint)(dstY0*viScaleY), OGL.width, OGL.heightOffset + (GLint)(dstY1*viScaleY),
+		0, (GLint)(srcY0*ogl.getScaleY()), ogl.getWidth(), (GLint)(srcY1*ogl.getScaleY()),
+		0, ogl.getHeightOffset() + (GLint)(dstY0*viScaleY), ogl.getWidth(), ogl.getHeightOffset() + (GLint)(dstY1*viScaleY),
 		GL_COLOR_BUFFER_BIT, GL_LINEAR
 	);
 	if (partHeight > 0) {
@@ -369,8 +371,8 @@ void FrameBufferList::renderBuffer(u32 _address)
 			dstY1 = dstY0 + partHeight;
 			glBindFramebuffer(GL_READ_FRAMEBUFFER, pBuffer->m_FBO);
 			glBlitFramebuffer(
-				0, (GLint)(srcY0*OGL.scaleY), OGL.width, (GLint)(srcY1*OGL.scaleY),
-				0, OGL.heightOffset + (GLint)(dstY0*viScaleY), OGL.width, OGL.heightOffset + (GLint)(dstY1*viScaleY),
+				0, (GLint)(srcY0*ogl.getScaleY()), ogl.getWidth(), (GLint)(srcY1*ogl.getScaleY()),
+				0, ogl.getHeightOffset() + (GLint)(dstY0*viScaleY), ogl.getWidth(), ogl.getHeightOffset() + (GLint)(dstY1*viScaleY),
 				GL_COLOR_BUFFER_BIT, GL_LINEAR
 			);
 		}
@@ -378,7 +380,7 @@ void FrameBufferList::renderBuffer(u32 _address)
 	glEnable(GL_SCISSOR_TEST);
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_pCurrent->m_FBO);
-	OGL_SwapBuffers();
+	ogl.swapBuffers();
 	gDP.changed |= CHANGED_SCISSOR;
 }
 #else
@@ -402,8 +404,9 @@ void FrameBufferList::renderBuffer(u32 _address)
 	const u32 width = pBuffer->m_width;
 	const u32 height = pBuffer->m_height;
 
-	pBuffer->m_pTexture->scaleS = OGL.scaleX / (float)pBuffer->m_pTexture->realWidth;
-	pBuffer->m_pTexture->scaleT = OGL.scaleY / (float)pBuffer->m_pTexture->realHeight;
+	OGLVideo & ogl = video();
+	pBuffer->m_pTexture->scaleS = ogl.getScaleX() / (float)pBuffer->m_pTexture->realWidth;
+	pBuffer->m_pTexture->scaleT = ogl.getScaleY() / (float)pBuffer->m_pTexture->realHeight;
 	pBuffer->m_pTexture->shiftScaleS = 1.0f;
 	pBuffer->m_pTexture->shiftScaleT = 1.0f;
 	pBuffer->m_pTexture->offsetS = 0;
@@ -414,8 +417,8 @@ void FrameBufferList::renderBuffer(u32 _address)
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	drawBuffer = GL_BACK;
-	OGL_DrawTexturedRect( 0.0f, 0.0f, width, height, 0.0f, 0.0f, width-1.0f, height-1.0f, false );
-	OGL_SwapBuffers();
+	ogl.drawTexturedRect( 0.0f, 0.0f, width, height, 0.0f, 0.0f, width-1.0f, height-1.0f, false );
+	ogl.swapBuffers();
 	drawBuffer = GL_FRAMEBUFFER;
 	glEnable(GL_SCISSOR_TEST);
 	glBindFramebuffer(GL_FRAMEBUFFER, m_pCurrent->m_FBO);
@@ -426,8 +429,8 @@ void FrameBufferList::renderBuffer(u32 _address)
 
 void FrameBuffer_ActivateBufferTexture(s16 t, FrameBuffer *pBuffer)
 {
-	pBuffer->m_pTexture->scaleS = OGL.scaleX / (float)pBuffer->m_pTexture->realWidth;
-	pBuffer->m_pTexture->scaleT = OGL.scaleY / (float)pBuffer->m_pTexture->realHeight;
+	pBuffer->m_pTexture->scaleS = video().getScaleX() / (float)pBuffer->m_pTexture->realWidth;
+	pBuffer->m_pTexture->scaleT = video().getScaleY() / (float)pBuffer->m_pTexture->realHeight;
 
 	if (gSP.textureTile[t]->shifts > 10)
 		pBuffer->m_pTexture->shiftScaleS = (float)(1 << (16 - gSP.textureTile[t]->shifts));
@@ -463,8 +466,8 @@ void FrameBuffer_ActivateBufferTexture(s16 t, FrameBuffer *pBuffer)
 
 void FrameBuffer_ActivateBufferTextureBG(s16 t, FrameBuffer *pBuffer )
 {
-	pBuffer->m_pTexture->scaleS = OGL.scaleX / (float)pBuffer->m_pTexture->realWidth;
-	pBuffer->m_pTexture->scaleT = OGL.scaleY / (float)pBuffer->m_pTexture->realHeight;
+	pBuffer->m_pTexture->scaleS = video().getScaleX() / (float)pBuffer->m_pTexture->realWidth;
+	pBuffer->m_pTexture->scaleT = video().getScaleY() / (float)pBuffer->m_pTexture->realHeight;
 
 	pBuffer->m_pTexture->shiftScaleS = 1.0f;
 	pBuffer->m_pTexture->shiftScaleT = 1.0f;
@@ -542,7 +545,7 @@ void FrameBufferToRDRAM::CopyToRDRAM( u32 address, bool bSync ) {
 	GLuint attachment = GL_COLOR_ATTACHMENT0;
 	glDrawBuffers(1, &attachment);
 	glBlitFramebuffer(
-		0, 0, OGL.width, OGL.height,
+		0, 0, video().getWidth(), video().getHeight(),
 		0, 0, pBuffer->m_width, pBuffer->m_height,
 		GL_COLOR_BUFFER_BIT, GL_LINEAR
 	);
@@ -679,7 +682,7 @@ void DepthBufferToRDRAM::CopyToRDRAM( u32 address) {
 	GLuint attachment = GL_COLOR_ATTACHMENT0;
 	glDrawBuffers(1, &attachment);
 	glBlitFramebuffer(
-		0, 0, OGL.width, OGL.height,
+		0, 0, video().getWidth(), video().getHeight(),
 		0, 0, pBuffer->m_width, pBuffer->m_height,
 		GL_COLOR_BUFFER_BIT, GL_LINEAR
 	);
@@ -845,6 +848,9 @@ void RDRAMtoFrameBuffer::CopyFromRDRAM( u32 _address, bool _bUseAlpha)
 #else
 	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, m_PBO);
 #endif
+
+	OGLVideo & ogl = video();
+
 #if 0
 	glBindTexture(GL_TEXTURE_2D, 0);
 
@@ -855,7 +861,7 @@ void RDRAMtoFrameBuffer::CopyFromRDRAM( u32 _address, bool _bUseAlpha)
 	glDrawBuffers(1, &attachment);
 	glBlitFramebuffer(
 		0, 0, width, height,
-		0, 0, OGL.width, OGL.height,
+		0, 0, ogl.getWidth(), ogl.getHeight(),
 		GL_COLOR_BUFFER_BIT, GL_LINEAR
 		);
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
@@ -881,7 +887,7 @@ void RDRAMtoFrameBuffer::CopyFromRDRAM( u32 _address, bool _bUseAlpha)
 	m_pTexture->offsetT = (float)m_pTexture->height;
 	textureCache().activateTexture(0, m_pTexture);
 
-	OGL_DrawTexturedRect( 0.0f, 0.0f, width, height, 0.0f, 0.0f, width-1.0f, height-1.0f, false );
+	ogl.getRender().drawTexturedRect( 0.0f, 0.0f, width, height, 0.0f, 0.0f, width-1.0f, height-1.0f, false );
 	gSP.changed |= CHANGED_TEXTURE | CHANGED_VIEWPORT;
 	gDP.changed |= CHANGED_COMBINE;
 #endif

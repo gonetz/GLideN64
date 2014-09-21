@@ -780,8 +780,8 @@ void gDPFillRDRAM(u32 address, s32 ulx, s32 uly, s32 lrx, s32 lry, u32 width, u3
 
 void gDPFillRectangle( s32 ulx, s32 uly, s32 lrx, s32 lry )
 {
-	if (gDP.otherMode.cycleType == G_CYC_FILL)
-	{
+	OGLRender & render = video().getRender();
+	if (gDP.otherMode.cycleType == G_CYC_FILL) {
 		lrx++;
 		lry++;
 	}
@@ -790,29 +790,27 @@ void gDPFillRectangle( s32 ulx, s32 uly, s32 lrx, s32 lry )
 		// If color is not depth clear color, that is most likely the case
 		if (gDP.fillColor.color == DEPTH_CLEAR_COLOR) {
 			gDPFillRDRAM(gDP.colorImage.address, ulx, uly, lrx, lry, gDP.colorImage.width, gDP.colorImage.size, gDP.fillColor.color);
-			OGL_ClearDepthBuffer();
+			render.clearDepthBuffer();
 			return;
 		}
 	} else if (gDP.fillColor.color == DEPTH_CLEAR_COLOR) {
 		depthBufferList().saveBuffer(gDP.colorImage.address);
 		gDPFillRDRAM(gDP.colorImage.address, ulx, uly, lrx, lry, gDP.colorImage.width, gDP.colorImage.size, gDP.fillColor.color);
-		OGL_ClearDepthBuffer();
+		render.clearDepthBuffer();
 		return;
 	}
 
 	f32 fillColor[4];
 	gDPGetFillColor(fillColor);
-	if (gDP.otherMode.cycleType == G_CYC_FILL)
-	{
-		if ((ulx == 0) && (uly == 0) && (lrx == gDP.scissor.lrx) && (lry == gDP.scissor.lry))
-		{
+	if (gDP.otherMode.cycleType == G_CYC_FILL) {
+		if ((ulx == 0) && (uly == 0) && (lrx == gDP.scissor.lrx) && (lry == gDP.scissor.lry)) {
 			gDPFillRDRAM(gDP.colorImage.address, ulx, uly, lrx, lry, gDP.colorImage.width, gDP.colorImage.size, gDP.fillColor.color);
-			OGL_ClearColorBuffer( fillColor );
+			render.clearColorBuffer(fillColor);
 			return;
 		}
 	}
 
-	OGL_DrawRect( ulx, uly, lrx, lry, (gDP.otherMode.cycleType == G_CYC_FILL) ? fillColor : &gDP.blendColor.r );
+	render.drawRect(ulx, uly, lrx, lry, (gDP.otherMode.cycleType == G_CYC_FILL) ? fillColor : &gDP.blendColor.r);
 
 	gDP.colorImage.changed = TRUE;
 	if (gDP.otherMode.cycleType == G_CYC_FILL)
@@ -904,7 +902,7 @@ void gDPTextureRectangle( f32 ulx, f32 uly, f32 lrx, f32 lry, s32 tile, f32 s, f
 		tmp = t; t = lrt; lrt = tmp;
 	}
 
-	OGL_DrawTexturedRect( ulx, uly, lrx, lry, s, t, lrs, lrt, (RSP.cmd == G_TEXRECTFLIP));
+	video().getRender().drawTexturedRect( ulx, uly, lrx, lry, s, t, lrs, lrt, (RSP.cmd == G_TEXRECTFLIP));
 
 	gSP.textureTile[0] = textureTileOrg[0];
 	gSP.textureTile[1] = textureTileOrg[1];

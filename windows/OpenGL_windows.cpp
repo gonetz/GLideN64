@@ -4,43 +4,30 @@
 #include "../Config.h"
 #include "../OpenGL.h"
 
-void OGL_ResizeWindow()
+class OGLVideoWindows : public OGLVideo
 {
-	RECT	windowRect, statusRect, toolRect;
+public:
+	OGLVideoWindows() : hRC(NULL), hDC(NULL) {}
 
-	if (OGL.fullscreen)
-	{
-		OGL.width = config.video.fullscreenWidth;
-		OGL.height = config.video.fullscreenHeight;
-		OGL.heightOffset = 0;
+private:
+	virtual bool _start();
+	virtual void _stop();
+	virtual void _swapBuffers();
+	virtual void _saveScreenshot();
+	virtual void _resizeWindow();
+	virtual void _changeWindow();
 
-		SetWindowPos( hWnd, NULL, 0, 0,	OGL.width, OGL.height, SWP_NOACTIVATE | SWP_NOZORDER | SWP_SHOWWINDOW );
-	}
-	else
-	{
-		OGL.width = config.video.windowedWidth;
-		OGL.height = config.video.windowedHeight;
+	HGLRC	hRC;
+	HDC		hDC;
+};
 
-		GetClientRect( hWnd, &windowRect );
-		GetWindowRect( hStatusBar, &statusRect );
-
-		if (hToolBar)
-			GetWindowRect( hToolBar, &toolRect );
-		else
-			toolRect.bottom = toolRect.top = 0;
-
-		OGL.heightOffset = (statusRect.bottom - statusRect.top);
-		windowRect.right = windowRect.left + config.video.windowedWidth - 1;
-		windowRect.bottom = windowRect.top + config.video.windowedHeight - 1 + OGL.heightOffset;
-
-		AdjustWindowRect( &windowRect, GetWindowLong( hWnd, GWL_STYLE ), GetMenu( hWnd ) != NULL );
-
-		SetWindowPos( hWnd, NULL, 0, 0,	windowRect.right - windowRect.left + 1,
-						windowRect.bottom - windowRect.top + 1 + toolRect.bottom - toolRect.top + 1, SWP_NOACTIVATE | SWP_NOZORDER | SWP_NOMOVE );
-	}
+OGLVideo & OGLVideo::get()
+{
+	static OGLVideoWindows video;
+	return video;
 }
 
-bool OGL_Start()
+bool OGLVideoWindows::_start()
 {
 	int pixelFormat;
 
@@ -68,86 +55,83 @@ bool OGL_Start()
 	if (hWnd == NULL)
 		hWnd = GetActiveWindow();
 
-	if ((OGL.hDC = GetDC( hWnd )) == NULL) {
+	if ((hDC = GetDC( hWnd )) == NULL) {
 		MessageBox( hWnd, "Error while getting a device context!", pluginName, MB_ICONERROR | MB_OK );
 		return false;
 	}
 
-	if ((pixelFormat = ChoosePixelFormat( OGL.hDC, &pfd )) == 0) {
+	if ((pixelFormat = ChoosePixelFormat(hDC, &pfd )) == 0) {
 		MessageBox( hWnd, "Unable to find a suitable pixel format!", pluginName, MB_ICONERROR | MB_OK );
-		OGL_Stop();
+		_stop();
 		return false;
 	}
 
-	if ((SetPixelFormat( OGL.hDC, pixelFormat, &pfd )) == FALSE) {
+	if ((SetPixelFormat(hDC, pixelFormat, &pfd )) == FALSE) {
 		MessageBox( hWnd, "Error while setting pixel format!", pluginName, MB_ICONERROR | MB_OK );
-		OGL_Stop();
+		_stop();
 		return false;
 	}
 
-	if ((OGL.hRC = wglCreateContext( OGL.hDC )) == NULL) {
+	if ((hRC = wglCreateContext(hDC)) == NULL) {
 		MessageBox( hWnd, "Error while creating OpenGL context!", pluginName, MB_ICONERROR | MB_OK );
-		OGL_Stop();
+		_stop();
 		return false;
 	}
 
-	if ((wglMakeCurrent( OGL.hDC, OGL.hRC )) == FALSE) {
+	if ((wglMakeCurrent(hDC, hRC)) == FALSE) {
 		MessageBox( hWnd, "Error while making OpenGL context current!", pluginName, MB_ICONERROR | MB_OK );
-		OGL_Stop();
+		_stop();
 		return false;
 	}
-
-	OGL_InitData();
 
 	return true;
 }
 
-void OGL_Stop()
+void OGLVideoWindows::_stop()
 {
-	OGL_DestroyData();
 	wglMakeCurrent( NULL, NULL );
 
-	if (OGL.hRC) {
-		wglDeleteContext( OGL.hRC );
-		OGL.hRC = NULL;
+	if (hRC != NULL) {
+		wglDeleteContext(hRC);
+		hRC = NULL;
 	}
 
-	if (OGL.hDC) {
-		ReleaseDC( hWnd, OGL.hDC );
-		OGL.hDC = NULL;
+	if (hDC != NULL) {
+		ReleaseDC(hWnd, hDC);
+		hDC = NULL;
 	}
 }
 
-void OGL_SwapBuffers()
+void OGLVideoWindows::_swapBuffers()
 {
-	if (OGL.hDC == NULL)
+	if (hDC == NULL)
 		SwapBuffers( wglGetCurrentDC() );
 	else
-		SwapBuffers( OGL.hDC );
+		SwapBuffers( hDC );
 }
 
-void OGL_SaveScreenshot()
+void OGLVideoWindows::_saveScreenshot()
 {
 	BITMAPFILEHEADER fileHeader;
 	BITMAPINFOHEADER infoHeader;
 	HANDLE hBitmapFile;
 
-	char *pixelData = (char*)malloc( OGL.width * OGL.height * 3 );
+	char *pixelData = (char*)malloc( m_width * m_height * 3 );
 
 	GLint oldMode;
 	glGetIntegerv( GL_READ_BUFFER, &oldMode );
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
 	glReadBuffer( GL_FRONT );
-	glReadPixels( 0, OGL.heightOffset, OGL.width, OGL.height, GL_BGR_EXT, GL_UNSIGNED_BYTE, pixelData );
+	glReadPixels( 0, m_heightOffset, m_width, m_height, GL_BGR_EXT, GL_UNSIGNED_BYTE, pixelData );
 	glReadBuffer( oldMode );
 
 	infoHeader.biSize = sizeof( BITMAPINFOHEADER );
-	infoHeader.biWidth = OGL.width;
-	infoHeader.biHeight = OGL.height;
+	infoHeader.biWidth = m_width;
+	infoHeader.biHeight = m_height;
 	infoHeader.biPlanes = 1;
 	infoHeader.biBitCount = 24;
 	infoHeader.biCompression = BI_RGB;
-	infoHeader.biSizeImage = OGL.width * OGL.height * 3;
+	infoHeader.biSizeImage = m_width * m_height * 3;
 	infoHeader.biXPelsPerMeter = 0;
 	infoHeader.biYPelsPerMeter = 0;
 	infoHeader.biClrUsed = 0;
@@ -160,20 +144,17 @@ void OGL_SaveScreenshot()
 
 	char filename[256];
 
-	CreateDirectory( screenDirectory, NULL );
+	CreateDirectory( m_strScreenDirectory, NULL );
 
 	int i = 0;
-	do
-	{
-		sprintf( filename, "%sscreen%02i.bmp", screenDirectory, i );
-		i++;
+	do {
+		sprintf(filename, "%sscreen%02i.bmp", m_strScreenDirectory, i++);
 
 		if (i > 99)
 			return;
 
 		hBitmapFile = CreateFile( filename, GENERIC_WRITE, 0, NULL, CREATE_NEW, FILE_ATTRIBUTE_NORMAL, NULL );
-	}
-	while (hBitmapFile == INVALID_HANDLE_VALUE);
+	} while (hBitmapFile == INVALID_HANDLE_VALUE);
 
 	DWORD written;
 
@@ -183,4 +164,99 @@ void OGL_SaveScreenshot()
 
 	CloseHandle( hBitmapFile );
 	free( pixelData );
+}
+
+void OGLVideoWindows::_changeWindow()
+{
+	static LONG		windowedStyle;
+	static LONG		windowedExStyle;
+	static RECT		windowedRect;
+	static HMENU	windowedMenu;
+
+	if (!m_bFullscreen) {
+		DEVMODE fullscreenMode;
+		memset( &fullscreenMode, 0, sizeof(DEVMODE) );
+		fullscreenMode.dmSize = sizeof(DEVMODE);
+		fullscreenMode.dmPelsWidth = config.video.fullscreenWidth;
+		fullscreenMode.dmPelsHeight = config.video.fullscreenHeight;
+		fullscreenMode.dmBitsPerPel = config.video.fullscreenBits;
+		fullscreenMode.dmDisplayFrequency = config.video.fullscreenRefresh;
+		fullscreenMode.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT | DM_DISPLAYFREQUENCY;
+
+		if (ChangeDisplaySettings( &fullscreenMode, CDS_FULLSCREEN ) != DISP_CHANGE_SUCCESSFUL) {
+			MessageBox( NULL, "Failed to change display mode", pluginName, MB_ICONERROR | MB_OK );
+			return;
+		}
+
+		ShowCursor( FALSE );
+
+		windowedMenu = GetMenu( hWnd );
+
+		if (windowedMenu)
+			SetMenu( hWnd, NULL );
+
+		if (hStatusBar)
+			ShowWindow( hStatusBar, SW_HIDE );
+
+		windowedExStyle = GetWindowLong( hWnd, GWL_EXSTYLE );
+		windowedStyle = GetWindowLong( hWnd, GWL_STYLE );
+
+		SetWindowLong( hWnd, GWL_EXSTYLE, WS_EX_APPWINDOW | WS_EX_TOPMOST );
+		SetWindowLong( hWnd, GWL_STYLE, WS_POPUP );
+
+		GetWindowRect( hWnd, &windowedRect );
+
+		m_bFullscreen = true;
+		_resizeWindow();
+	} else {
+		ChangeDisplaySettings( NULL, 0 );
+
+		ShowCursor( TRUE );
+
+		if (windowedMenu)
+			SetMenu( hWnd, windowedMenu );
+
+		if (hStatusBar)
+			ShowWindow( hStatusBar, SW_SHOW );
+
+		SetWindowLong( hWnd, GWL_STYLE, windowedStyle );
+		SetWindowLong( hWnd, GWL_EXSTYLE, windowedExStyle );
+		SetWindowPos( hWnd, NULL, windowedRect.left, windowedRect.top, 0, 0, SWP_NOZORDER | SWP_NOSIZE );
+
+		m_bFullscreen = false;
+		_resizeWindow();
+	}
+}
+
+void OGLVideoWindows::_resizeWindow()
+{
+	RECT windowRect, statusRect, toolRect;
+
+	if (m_bFullscreen) {
+		m_width = config.video.fullscreenWidth;
+		m_height = config.video.fullscreenHeight;
+		m_heightOffset = 0;
+
+		SetWindowPos( hWnd, NULL, 0, 0, m_width, m_height, SWP_NOACTIVATE | SWP_NOZORDER | SWP_SHOWWINDOW );
+	} else {
+		m_width = config.video.windowedWidth;
+		m_height = config.video.windowedHeight;
+
+		GetClientRect( hWnd, &windowRect );
+		GetWindowRect( hStatusBar, &statusRect );
+
+		if (hToolBar)
+			GetWindowRect( hToolBar, &toolRect );
+		else
+			toolRect.bottom = toolRect.top = 0;
+
+		m_heightOffset = (statusRect.bottom - statusRect.top);
+		windowRect.right = windowRect.left + config.video.windowedWidth - 1;
+		windowRect.bottom = windowRect.top + config.video.windowedHeight - 1 + m_heightOffset;
+
+		AdjustWindowRect( &windowRect, GetWindowLong( hWnd, GWL_STYLE ), GetMenu( hWnd ) != NULL );
+
+		SetWindowPos( hWnd, NULL, 0, 0, windowRect.right - windowRect.left + 1,
+			windowRect.bottom - windowRect.top + 1 + toolRect.bottom - toolRect.top + 1, SWP_NOACTIVATE | SWP_NOZORDER | SWP_NOMOVE );
+	}
 }
