@@ -144,9 +144,6 @@
     <ClCompile Include="mupenplus\Config.cpp">
       <Filter>Source Files\mupenplus</Filter>
     </ClCompile>
-    <ClCompile Include="mupenplus\GLideN64_mupenplus.cpp">
-      <Filter>Source Files\mupenplus</Filter>
-    </ClCompile>
     <ClCompile Include="mupenplus\MicrocodeDialog.cpp">
       <Filter>Source Files\mupenplus</Filter>
     </ClCompile>

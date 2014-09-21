@@ -1,8 +1,9 @@
-#include "../CommonPluginAPI.h"
+#include "../winlnxdefs.h"
+#include "../PluginAPI.h"
 #include "../OpenGL.h"
 #include "../Config.h"
 
-int CommonPluginAPI::InitiateGFX(const GFX_INFO & _gfxInfo)
+int PluginAPI::InitiateGFX(const GFX_INFO & _gfxInfo)
 {
 	_initiateGFX(_gfxInfo);
 

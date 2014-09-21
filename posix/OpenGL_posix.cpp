@@ -1,4 +1,7 @@
+#include "../winlnxdefs.h"
+#include "../GLideN64.h"
 #include "../OpenGL.h"
+#include "../Config.h"
 
 void OGL_InitGLFunctions()
 {

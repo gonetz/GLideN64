@@ -42,7 +42,6 @@ if(MUPENPLUSAPI)
 	MupenPlusPluginAPI.cpp
 	mupenplus/Config.cpp
 	mupenplus/CommonAPIImpl_mupenplus.cpp
-	mupenplus/GLideN64_mupenplus.cpp
 	mupenplus/MicrocodeDialog.cpp
 	mupenplus/MupenPlusAPIImpl.cpp
 	mupenplus/OpenGL_mupenplus.cpp

@@ -1,3 +1,4 @@
+#include "../winlnxdefs.h"
 #include "../PluginAPI.h"
 #include "../GLideN64.h"
 #include "../OpenGL.h"

@@ -1,9 +1,16 @@
 #include <glib.h>
 #include <gtk/gtk.h>
+#include "../winlnxdefs.h"
+#include "../GLideN64.h"
+#include "../GBI.h"
 
 static int selectedMicrocode = -1;
 static GtkWidget *microcodeWindow = 0;
 static GtkWidget *microcodeList = 0;
+
+static const int numMicrocodeTypes = 11;
+static unsigned int uc_crc;
+static const char * uc_str;
 
 static void okButton_clicked( GtkWidget *widget, void *data )
 {

@@ -1,21 +1,21 @@
-#include "winlnxdefs.h"
-#include <SDL.h>
+#include "../winlnxdefs.h"
+//#include <SDL.h>
 #include <errno.h>
 #include <gtk/gtk.h>
 #include <string.h>
 
-#include "Config.h"
-#include "GLideN64.h"
-#include "RSP.h"
-#include "Textures.h"
-#include "OpenGL.h"
+#include "../Config.h"
+#include "../GLideN64.h"
+#include "../RSP.h"
+#include "../Textures.h"
+#include "../OpenGL.h"
 
 Config config;
 
 static GtkWidget *configWindow = NULL;
 //static GtkWidget *bitdepthCombo[2], *resolutionCombo[2];
 static GtkWidget *resolutionCombo;
-static GtkWidget *enable2xSAICheck, *forceBilinearCheck, *enableFogCheck;
+static GtkWidget *depthWriteCheck, *forceBilinearCheck, *enableFogCheck;
 static GtkWidget *enableHardwareFBCheck, *enableHardwareLighting;
 static GtkWidget *textureDepthCombo;
 static GtkWidget *textureCacheEntry;
@@ -76,7 +76,7 @@ static void okButton_clicked( GtkWidget *widget, void *data )
 	config.video.fullscreenHeight = config.video.windowedHeight = i2;
 
 	config.texture.forceBilinear = gtk_toggle_button_get_active( GTK_TOGGLE_BUTTON(forceBilinearCheck) );
-	config.texture.enable2xSaI = gtk_toggle_button_get_active( GTK_TOGGLE_BUTTON(enable2xSAICheck) );
+    config.frameBufferEmulation.copyDepthToRDRAM = gtk_toggle_button_get_active( GTK_TOGGLE_BUTTON(depthWriteCheck) );
 	config.enableFog = gtk_toggle_button_get_active( GTK_TOGGLE_BUTTON(enableFogCheck) );
 	config.frameBufferEmulation.enable = gtk_toggle_button_get_active( GTK_TOGGLE_BUTTON(enableHardwareFBCheck) );
 	config.enableHWLighting = gtk_toggle_button_get_active( GTK_TOGGLE_BUTTON(enableHardwareLighting) );
@@ -87,7 +87,7 @@ static void okButton_clicked( GtkWidget *widget, void *data )
 		if (!strcmp( depth, textureBitDepth[i] ))
 			config.texture.textureBitDepth = i;
 	}
-	cache.maxBytes = atoi( gtk_entry_get_text( GTK_ENTRY(textureCacheEntry) ) ) * 1048576;
+    config.texture.maxBytes = atoi( gtk_entry_get_text( GTK_ENTRY(textureCacheEntry) ) ) * 1048576;
 
 	// write configuration
 	if (pluginDir == 0)
@@ -111,12 +111,12 @@ static void okButton_clicked( GtkWidget *widget, void *data )
 /*	fprintf( f, "width=%d\n",                 OGL.width );
 	fprintf( f, "height=%d\n",                OGL.height );*/
 	fprintf( f, "force bilinear=%d\n",        config.texture.forceBilinear );
-	fprintf( f, "enable 2xSAI=%d\n",          config.texture.enable2xSaI );
+    fprintf( f, "enable depth buffer write=%d\n", config.frameBufferEmulation.copyDepthToRDRAM );
 	fprintf( f, "enable fog=%d\n",            config.enableFog );
 	fprintf( f, "enable HardwareFB=%d\n",     config.frameBufferEmulation.enable );
 	fprintf( f, "enable hardware lighting=%d\n", config.enableHWLighting );
 	fprintf( f, "texture depth=%d\n",         config.texture.textureBitDepth );
-	fprintf( f, "cache size=%d\n",            cache.maxBytes / 1048576 );
+    fprintf( f, "cache size=%d\n",            config.texture.maxBytes / 1048576 );
 
 	fclose( f );
 
@@ -149,7 +149,7 @@ static void configWindow_show( GtkWidget *widget, void *data )
 	sprintf( text, "%d x %d", config.video.windowedWidth, config.video.windowedHeight );
 	gtk_entry_set_text( GTK_ENTRY(GTK_COMBO(resolutionCombo)->entry), text );
 
-	gtk_toggle_button_set_active( GTK_TOGGLE_BUTTON(enable2xSAICheck),          (config.texture.enable2xSaI) );
+    gtk_toggle_button_set_active( GTK_TOGGLE_BUTTON(depthWriteCheck),          (config.frameBufferEmulation.copyDepthToRDRAM) );
 	gtk_toggle_button_set_active( GTK_TOGGLE_BUTTON(forceBilinearCheck),        (config.texture.forceBilinear) );
 	gtk_toggle_button_set_active( GTK_TOGGLE_BUTTON(enableFogCheck),            (config.enableFog) );
 	gtk_toggle_button_set_active( GTK_TOGGLE_BUTTON(enableHardwareLighting), (config.enableHWLighting) );
@@ -157,7 +157,7 @@ static void configWindow_show( GtkWidget *widget, void *data )
 	// textures
 	gtk_toggle_button_set_active( GTK_TOGGLE_BUTTON(enableHardwareFBCheck), (config.frameBufferEmulation.enable) );
 	gtk_entry_set_text( GTK_ENTRY(GTK_COMBO(textureDepthCombo)->entry), textureBitDepth[config.texture.textureBitDepth] );
-	sprintf( text, "%d", cache.maxBytes / 1048576 );
+    sprintf( text, "%d", config.texture.maxBytes / 1048576 );
 	gtk_entry_set_text( GTK_ENTRY(textureCacheEntry), text );
 }
 
@@ -270,7 +270,7 @@ static int Config_CreateWindow()
 	gtk_combo_set_value_in_list( GTK_COMBO(resolutionCombo), TRUE, FALSE );
 	gtk_combo_set_popdown_strings( GTK_COMBO(resolutionCombo), resolutionList );
 
-	enable2xSAICheck = gtk_check_button_new_with_label( "Enable 2xSAI texture scaling" );
+    depthWriteCheck = gtk_check_button_new_with_label( "Enable depth buffer writes" );
 	forceBilinearCheck = gtk_check_button_new_with_label( "Force bilinear filtering" );
 	enableFogCheck = gtk_check_button_new_with_label( "Enable fog" );
 	enableHardwareLighting = gtk_check_button_new_with_label( "Enable hardware lighting" );
@@ -301,7 +301,7 @@ static int Config_CreateWindow()
 	gtk_table_attach_defaults( GTK_TABLE(displayTable), forceBilinearCheck, 1, 2, 3, 4 );
 
 	// row 4
-	gtk_table_attach_defaults( GTK_TABLE(displayTable), enable2xSAICheck, 0, 1, 4, 5 );
+    gtk_table_attach_defaults( GTK_TABLE(displayTable), depthWriteCheck, 0, 1, 4, 5 );
 	gtk_table_attach_defaults( GTK_TABLE(displayTable), enableHardwareLighting, 1, 2, 4, 5 );
 
 	// textures frame
@@ -371,12 +371,12 @@ void Config_LoadConfig()
 	config.video.windowedHeight = 480;
 //	OGL.windowedBits = 0;
 	config.texture.forceBilinear = 0;
-	config.texture.enable2xSaI = 0;
+    config.frameBufferEmulation.copyDepthToRDRAM = 0;
 	config.enableFog = 1;
 	config.texture.textureBitDepth = 1; // normal (16 & 32 bits)
 	config.frameBufferEmulation.enable = 0;
 	config.enableHWLighting = 0;
-	cache.maxBytes = 32 * 1048576;
+    config.texture.maxBytes = 32 * 1048576;
 
 	// read configuration
 	char filename[PATH_MAX];
@@ -436,9 +436,9 @@ void Config_LoadConfig()
 		{
 			config.texture.forceBilinear = atoi( val );
 		}
-		else if (!strcasecmp( line, "enable 2xSAI" ))
+        else if (!strcasecmp( line, "enable depth buffer write" ))
 		{
-			config.texture.enable2xSaI = atoi( val );
+            config.frameBufferEmulation.copyDepthToRDRAM = atoi( val );
 		}
 		else if (!strcasecmp( line, "enable fog" ))
 		{
@@ -446,7 +446,7 @@ void Config_LoadConfig()
 		}
 		else if (!strcasecmp( line, "cache size" ))
 		{
-			cache.maxBytes = atoi( val ) * 1048576;
+            config.texture.maxBytes = atoi( val ) * 1048576;
 		}
 		else if (!strcasecmp( line, "enable HardwareFB" ))
 		{
@@ -470,7 +470,6 @@ void Config_LoadConfig()
 
 	// manually set frame bufer emulation options
 	config.frameBufferEmulation.copyToRDRAM = FALSE;
-	config.frameBufferEmulation.copyDepthToRDRAM = FALSE;
 	config.frameBufferEmulation.copyFromRDRAM = FALSE;
 	config.frameBufferEmulation.ignoreCFB = TRUE;
 	config.frameBufferEmulation.N64DepthCompare = FALSE;
