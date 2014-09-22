@@ -37,7 +37,7 @@ void RSP_ThreadProc(std::mutex * _pRspThreadMtx, std::mutex * _pPluginThreadMtx,
 			break;
 		case acRomClosed:
 			video().stop();
-			GBI_Destroy();
+			GBI.destroy();
 			*_pCommand = acNone;
 			_pRspThreadMtx->unlock();
 			_pPluginThreadMtx->lock();
@@ -81,6 +81,7 @@ void PluginAPI::RomClosed()
 	m_pRspThread = NULL;
 #else
 	video().stop();
+	GBI.destroy();
 #endif
 
 #ifdef DEBUG

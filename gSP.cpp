@@ -356,15 +356,7 @@ void gSPLoadUcodeEx( u32 uc_start, u32 uc_dstart, u16 uc_dsize )
 	if ((((uc_start & 0x1FFFFFFF) + 4096) > RDRAMSize) || (((uc_dstart & 0x1FFFFFFF) + uc_dsize) > RDRAMSize))
 		return;
 
-	MicrocodeInfo *ucode = GBI_DetectMicrocode( uc_start, uc_dstart, uc_dsize );
-
-	if (ucode->type != 0xFFFFFFFF)
-		last_good_ucode = ucode->type;
-
-	if (ucode->type != NONE)
-		GBI_MakeCurrent( ucode );
-	else
-		LOG(LOG_WARNING, "Unknown Ucode\n");
+	GBI.loadMicrocode(uc_start, uc_dstart, uc_dsize);
 }
 
 void gSPNoOp()

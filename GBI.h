@@ -1,5 +1,8 @@
 #ifndef GBI_H
 #define GBI_H
+
+#include <list>
+
 #include "Types.h"
 
 // Microcode Types
@@ -15,22 +18,6 @@
 #define F3DDKR		9
 #define F3DWRUS	    10
 #define NONE		11
-
-static const char *MicrocodeTypes[] =
-{
-	"Fast3D",
-	"F3DEX",
-	"F3DEX2",
-	"Line3D",
-	"L3DEX",
-	"L3DEX2",
-	"S2DEX",
-	"S2DEX2",
-	"Perfect Dark",
-	"DKR/JFG",
-	"Waverace US",
-	"None"
-};
 
 // Fixed point conversion factors
 #define FIXED2FLOATRECIP1	0.5f
@@ -681,27 +668,30 @@ struct MicrocodeInfo
 	u32 address, dataAddress;
 	u16 dataSize;
 	u32 type;
-	u32 NoN;
 	u32 crc;
-
-	MicrocodeInfo *higher, *lower;
+	bool NoN;
 };
 
 struct GBIInfo
 {
 	GBIFunc cmd[256];
 
-	u32 PCStackSize, numMicrocodes;
-	MicrocodeInfo *current, *top, *bottom;
+	u32 PCStackSize;
+
+	void init();
+	void destroy();
+	void loadMicrocode(u32 uc_start, u32 uc_dstart, u16 uc_dsize);
+
+private:
+	void _makeCurrent(MicrocodeInfo * _pCurrent);
+
+	MicrocodeInfo * m_pCurrent;
+
+	typedef std::list<MicrocodeInfo> Microcodes;
+	Microcodes m_list;
 };
 
 extern GBIInfo GBI;
-
-void GBI_MakeCurrent( MicrocodeInfo *current );
-MicrocodeInfo *GBI_DetectMicrocode( u32 uc_start, u32 uc_dstart, u16 uc_dsize );
-extern u32 last_good_ucode;
-void GBI_Init();
-void GBI_Destroy();
 
 // Allows easier setting of GBI commands
 #define GBI_SetGBI( command, value, function ) \

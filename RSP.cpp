@@ -253,6 +253,6 @@ void RSP_Init()
 	gSP.textureTile[0] = &gDP.tiles[0];
 	gSP.textureTile[1] = &gDP.tiles[1];
 //	DepthBuffer_Init();
-	GBI_Init();
+	GBI.init();
 	video().start();
 }

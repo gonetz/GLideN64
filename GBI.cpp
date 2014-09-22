@@ -86,7 +86,6 @@ u32 G_MWO_aLIGHT_6, G_MWO_bLIGHT_6;
 u32 G_MWO_aLIGHT_7, G_MWO_bLIGHT_7;
 u32 G_MWO_aLIGHT_8, G_MWO_bLIGHT_8;
 
-//GBIFunc GBICmd[256];
 GBIInfo GBI;
 
 void GBI_Unknown( u32 w0, u32 w1 )
@@ -101,203 +100,33 @@ void GBI_Unknown( u32 w0, u32 w1 )
 #endif
 }
 
-MicrocodeInfo *GBI_AddMicrocode()
+void GBIInfo::init()
 {
-	MicrocodeInfo *newtop = (MicrocodeInfo*)malloc( sizeof( MicrocodeInfo ) );
-
-	newtop->lower = GBI.top;
-	newtop->higher = NULL;
-
-	if (GBI.top)
-		GBI.top->higher = newtop;
-
-	if (!GBI.bottom)
-		GBI.bottom = newtop;
-
-	GBI.top = newtop;
-
-	GBI.numMicrocodes++;
-
-	return newtop;
+	m_pCurrent = NULL;
+	for (u32 i = 0; i <= 0xFF; ++i)
+		cmd[i] = GBI_Unknown;
 }
 
-void GBI_Init()
+void GBIInfo::destroy()
 {
-	GBI.top = NULL;
-	GBI.bottom = NULL;
-	GBI.current = NULL;
-	GBI.numMicrocodes = 0;
-
-	for (u32 i = 0; i <= 0xFF; i++)
-		GBI.cmd[i] = GBI_Unknown;
+	m_pCurrent = NULL;
+	m_list.clear();
 }
 
-void GBI_Destroy()
+void GBIInfo::_makeCurrent(MicrocodeInfo * _pCurrent)
 {
-	GBI.current = NULL;
-	while (GBI.bottom)
-	{
-		MicrocodeInfo *newBottom = GBI.bottom->higher;
-
-		if (GBI.bottom == GBI.top)
-			GBI.top = NULL;
-
-		free( GBI.bottom );
-
-		GBI.bottom = newBottom;
-
-		if (GBI.bottom)
-			GBI.bottom->lower = NULL;
-
-		GBI.numMicrocodes--;
-	}
-}
-
-int MicrocodeDialog(u32 _crc, const char * _str);
-
-MicrocodeInfo *GBI_DetectMicrocode( u32 uc_start, u32 uc_dstart, u16 uc_dsize )
-{
-	MicrocodeInfo *current;
-
-	for (u32 i = 0; i < GBI.numMicrocodes; i++)
-	{
-		current = GBI.top;
-
-		while (current)
-		{
-			if ((current->address == uc_start) && (current->dataAddress == uc_dstart) && (current->dataSize == uc_dsize))
-				return current;
-
-			current = current->lower;
-		}
+	if (_pCurrent->type == NONE) {
+		LOG(LOG_ERROR, "[GLideN64]: error - unknown ucode!!!\n");
+		return;
 	}
 
-	current = GBI_AddMicrocode();
-
-	current->address = uc_start;
-	current->dataAddress = uc_dstart;
-	current->dataSize = uc_dsize;
-	current->NoN = FALSE;
-	current->type = NONE;
-
-	// See if we can identify it by CRC
-	u32 uc_crc = CRC_Calculate( 0xFFFFFFFF, &RDRAM[uc_start & 0x1FFFFFFF], 4096 );
-	for (u32 i = 0; i < sizeof( specialMicrocodes ) / sizeof( SpecialMicrocodeInfo ); i++)
-	{
-		if (uc_crc == specialMicrocodes[i].crc)
-		{
-			current->type = specialMicrocodes[i].type;
-			return current;
-		}
-	}
-
-	// See if we can identify it by text
-	char uc_data[2048];
-	UnswapCopy( &RDRAM[uc_dstart & 0x1FFFFFFF], uc_data, 2048 );
-	char uc_str[256];
-	strcpy( uc_str, "Not Found" );
-
-	for (u32 i = 0; i < 2048; i++)
-	{
-		if ((uc_data[i] == 'R') && (uc_data[i+1] == 'S') && (uc_data[i+2] == 'P'))
-		{
-			u32 j = 0;
-			while (uc_data[i+j] > 0x0A)
-			{
-				uc_str[j] = uc_data[i+j];
-				j++;
-			}
-
-			uc_str[j] = 0x00;
-
-			int type = NONE;
-
-			if (strncmp( &uc_str[4], "SW", 2 ) == 0)
-			{
-				type = F3D;
-			}
-			else if (strncmp( &uc_str[4], "Gfx", 3 ) == 0)
-			{
-				current->NoN = (strncmp( &uc_str[20], ".NoN", 4 ) == 0);
-
-				if (strncmp( &uc_str[14], "F3D", 3 ) == 0)
-				{
-					if (uc_str[28] == '1' || strncmp(&uc_str[28], "0.95", 4) == 0)
-						type = F3DEX;
-					else if (uc_str[31] == '2')
-						type = F3DEX2;
-				}
-				else if (strncmp( &uc_str[14], "L3D", 3 ) == 0)
-				{
-					if (uc_str[28] == '1')
-						type = L3DEX;
-					else if (uc_str[31] == '2')
-						type = L3DEX2;
-				}
-				else if (strncmp( &uc_str[14], "S2D", 3 ) == 0)
-				{
-					if (uc_str[28] == '1')
-						type = S2DEX;
-					else if (uc_str[31] == '2')
-						type = S2DEX2;
-				}
-			}
-
-			if (type != NONE)
-			{
-				current->type = type;
-				return current;
-			}
-
-			break;
-		}
-	}
-
-	for (u32 i = 0; i < sizeof( specialMicrocodes ) / sizeof( SpecialMicrocodeInfo ); i++)
-	{
-		if (strcmp( uc_str, specialMicrocodes[i].text ) == 0)
-		{
-			current->type = specialMicrocodes[i].type;
-			return current;
-		}
-	}
-
-	printf( "GLideN64: Warning - unknown ucode!!!\n" );
-	LOG(LOG_ERROR, "[GLideN64]: Warning - unknown ucode!!!\n");
-	current->type = MicrocodeDialog(uc_crc, uc_str);
-	return current;
-}
-
-void GBI_MakeCurrent( MicrocodeInfo *current )
-{
-	if (current != GBI.top)
-	{
-		if (current == GBI.bottom)
-		{
-			GBI.bottom = current->higher;
-			GBI.bottom->lower = NULL;
-		}
-		else
-		{
-			current->higher->lower = current->lower;
-			current->lower->higher = current->higher;
-		}
-
-		current->higher = NULL;
-		current->lower = GBI.top;
-		GBI.top->higher = current;
-		GBI.top = current;
-	}
-
-	if (!GBI.current || (GBI.current->type != current->type))
-	{
-		for (int i = 0; i <= 0xFF; i++)
-			GBI.cmd[i] = GBI_Unknown;
+	if (m_pCurrent == NULL || (m_pCurrent->type != _pCurrent->type)) {
+		for (int i = 0; i <= 0xFF; ++i)
+			cmd[i] = GBI_Unknown;
 
 		RDP_Init();
 
-		switch (current->type)
-		{
+		switch (_pCurrent->type) {
 			case F3D:		F3D_Init();		break;
 			case F3DEX:		F3DEX_Init();	break;
 			case F3DEX2:	F3DEX2_Init();	break;
@@ -312,5 +141,103 @@ void GBI_MakeCurrent( MicrocodeInfo *current )
 		}
 	}
 
-	GBI.current = current;
+	m_pCurrent = _pCurrent;
+}
+
+int MicrocodeDialog(u32 _crc, const char * _str);
+void GBIInfo::loadMicrocode(u32 uc_start, u32 uc_dstart, u16 uc_dsize)
+{
+	for (Microcodes::iterator iter = m_list.begin(); iter != m_list.end(); ++iter) {
+		if (iter->address == uc_start && iter->dataAddress == uc_dstart && iter->dataSize == uc_dsize) {
+			_makeCurrent(&(*iter));
+			return;
+		}
+	}
+
+	m_list.emplace_front();
+	MicrocodeInfo & current = m_list.front();
+	current.address = uc_start;
+	current.dataAddress = uc_dstart;
+	current.dataSize = uc_dsize;
+	current.NoN = false;
+	current.type = NONE;
+
+	// See if we can identify it by CRC
+	const u32 uc_crc = CRC_Calculate( 0xFFFFFFFF, &RDRAM[uc_start & 0x1FFFFFFF], 4096 );
+	const u32 numSpecialMicrocodes = sizeof(specialMicrocodes) / sizeof(SpecialMicrocodeInfo);
+	for (u32 i = 0; i < numSpecialMicrocodes; ++i) {
+		if (uc_crc == specialMicrocodes[i].crc) {
+			current.type = specialMicrocodes[i].type;
+			_makeCurrent(&current);
+			return;
+		}
+	}
+
+	// See if we can identify it by text
+	char uc_data[2048];
+	UnswapCopy( &RDRAM[uc_dstart & 0x1FFFFFFF], uc_data, 2048 );
+	char uc_str[256];
+	strcpy(uc_str, "Not Found");
+
+	for (u32 i = 0; i < 2048; ++i) {
+		if ((uc_data[i] == 'R') && (uc_data[i+1] == 'S') && (uc_data[i+2] == 'P')) {
+			u32 j = 0;
+			while (uc_data[i+j] > 0x0A) {
+				uc_str[j] = uc_data[i+j];
+				j++;
+			}
+
+			uc_str[j] = 0x00;
+
+			int type = NONE;
+
+			if (strncmp( &uc_str[4], "SW", 2 ) == 0)
+				type = F3D;
+			else if (strncmp( &uc_str[4], "Gfx", 3 ) == 0) {
+				current.NoN = (strncmp( &uc_str[20], ".NoN", 4 ) == 0);
+
+				if (strncmp( &uc_str[14], "F3D", 3 ) == 0) {
+					if (uc_str[28] == '1' || strncmp(&uc_str[28], "0.95", 4) == 0)
+						type = F3DEX;
+					else if (uc_str[31] == '2')
+						type = F3DEX2;
+				}
+				else if (strncmp( &uc_str[14], "L3D", 3 ) == 0) {
+					if (uc_str[28] == '1')
+						type = L3DEX;
+					else if (uc_str[31] == '2')
+						type = L3DEX2;
+				}
+				else if (strncmp( &uc_str[14], "S2D", 3 ) == 0) {
+					if (uc_str[28] == '1')
+						type = S2DEX;
+					else if (uc_str[31] == '2')
+						type = S2DEX2;
+				}
+			}
+
+			if (type != NONE) {
+				current.type = type;
+				_makeCurrent(&current);
+				return;
+			}
+
+			break;
+		}
+	}
+
+	for (u32 i = 0; i < numSpecialMicrocodes; ++i) {
+		if (strcmp( uc_str, specialMicrocodes[i].text ) == 0) {
+			current.type = specialMicrocodes[i].type;
+			_makeCurrent(&current);
+			return;
+		}
+	}
+
+	printf( "GLideN64: Warning - unknown ucode!!!\n" );
+	const int type = MicrocodeDialog(uc_crc, uc_str);
+	if (type >= F3D && type <= NONE)
+		current.type = type;
+
+	_makeCurrent(&current);
 }
