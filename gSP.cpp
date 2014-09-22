@@ -1470,8 +1470,8 @@ void _copyDepthBuffer()
 	pTmpBuffer->m_pDepthBuffer = depthBufferList().findBuffer(gSP.bgImage.address);
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, pTmpBuffer->m_FBO);
 	glFramebufferRenderbuffer(GL_READ_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, pTmpBuffer->m_pDepthBuffer->m_renderbuf);
-	GLuint attachments[2] = { GL_COLOR_ATTACHMENT0, GL_DEPTH_ATTACHMENT };
-	glDrawBuffers(2,  attachments);
+	GLuint attachment = GL_COLOR_ATTACHMENT0;
+	glDrawBuffers(1,  &attachment);
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, frameBufferList().getCurrent()->m_FBO);
 	OGLVideo & ogl = video();
 	glBlitFramebuffer(
