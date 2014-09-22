@@ -13,6 +13,8 @@
 
 struct CachedTexture
 {
+	CachedTexture(GLuint _glName) : glName(_glName) {}
+
 	GLuint	glName;
 	u32		crc;
 //	float	fulS, fulT;
@@ -34,10 +36,8 @@ struct CachedTexture
 	u32		textureBytes;
 	u32		frameBufferTexture;
 
-	CachedTexture	*lower, *higher;
 	u32		lastDList;
 	u32		address;
-
 };
 
 
@@ -68,13 +68,12 @@ private:
 	TextureCache(const TextureCache &);
 
 	void _checkCacheSize();
-	CachedTexture * _allocateTexture();
 	CachedTexture * _addTexture(u32 _crc32);
 	void _load(CachedTexture *pTexture);
 	void _loadBackground(CachedTexture *pTexture);
 	void _updateBackground();
 
-	typedef std::map<u32, CachedTexture *> Textures;
+	typedef std::map<u32, CachedTexture> Textures;
 	Textures m_textures;
 	Textures m_fbTextures;
 	CachedTexture * m_pDummy;

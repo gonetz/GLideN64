@@ -261,16 +261,15 @@ void TextureCache::init()
 void TextureCache::destroy()
 {
 	current[0] = current[1] = NULL;
-	for (Textures::iterator cur = m_textures.begin(); cur != m_textures.end(); ++cur) {
-		glDeleteTextures( 1, &cur->second->glName );
-		free(cur->second);
-	}
+
+	for (Textures::const_iterator cur = m_textures.cbegin(); cur != m_textures.cend(); ++cur)
+		glDeleteTextures( 1, &cur->second.glName );
 	m_textures.clear();
-	for (Textures::iterator cur = m_fbTextures.begin(); cur != m_fbTextures.end(); ++cur) {
-		glDeleteTextures( 1, &cur->second->glName );
-		free(cur->second);
-	}
+
+	for (Textures::const_iterator cur = m_fbTextures.cbegin(); cur != m_fbTextures.cend(); ++cur)
+		glDeleteTextures( 1, &cur->second.glName );
 	m_fbTextures.clear();
+
 	m_cachedBytes = 0;
 }
 
@@ -278,49 +277,42 @@ void TextureCache::_checkCacheSize()
 {
 	if (m_cachedBytes <= m_maxBytes)
 		return;
-	Textures::iterator iter = m_textures.begin();
+	Textures::const_iterator iter = m_textures.cend();
 	do {
-		m_cachedBytes -= iter->second->textureBytes;
-		glDeleteTextures( 1, &iter->second->glName );
-		free(iter->second);
-		++iter;
-	} while (m_cachedBytes > m_maxBytes && iter != m_textures.end());
-	m_textures.erase(m_textures.begin(), iter);
-}
-
-CachedTexture * TextureCache::_allocateTexture()
-{
-	CachedTexture *pTexture = (CachedTexture*)malloc(sizeof(CachedTexture));
-	memset(pTexture, 0, sizeof(CachedTexture));
-	glGenTextures(1, &pTexture->glName);
-	return pTexture;
+		--iter;
+		m_cachedBytes -= iter->second.textureBytes;
+		glDeleteTextures( 1, &iter->second.glName );
+	} while (m_cachedBytes > m_maxBytes && iter != m_textures.cbegin());
+	m_textures.erase(iter, m_textures.cend());
 }
 
 CachedTexture * TextureCache::_addTexture(u32 _crc32)
 {
 	_checkCacheSize();
-	CachedTexture *pTexture = _allocateTexture();
-	pTexture->crc = _crc32;
-	m_textures[_crc32] = pTexture;
-	return pTexture;
+	GLuint glName;
+	glGenTextures(1, &glName);
+	m_textures.emplace(_crc32, glName);
+	CachedTexture & texture = m_textures.at(_crc32);
+	texture.crc = _crc32;
+	return &texture;
 }
 
 void TextureCache::removeFrameBufferTexture(CachedTexture * _pTexture)
 {
-	Textures::iterator iter = m_fbTextures.find(_pTexture->glName);
+	Textures::const_iterator iter = m_fbTextures.find(_pTexture->glName);
 	assert(iter != m_fbTextures.end());
-	m_cachedBytes -= iter->second->textureBytes;
-	glDeleteTextures( 1, &iter->second->glName );
-	free(iter->second);
+	m_cachedBytes -= iter->second.textureBytes;
+	glDeleteTextures( 1, &iter->second.glName );
 	m_fbTextures.erase(iter);
 }
 
 CachedTexture * TextureCache::addFrameBufferTexture()
 {
 	_checkCacheSize();
-	CachedTexture *pTexture = _allocateTexture();
-	m_fbTextures[pTexture->glName] = pTexture;
-	return pTexture;
+	GLuint glName;
+	glGenTextures(1, &glName);
+	m_fbTextures.emplace(glName, glName);
+	return &m_fbTextures.at(glName);
 }
 
 void TextureCache::_loadBackground( CachedTexture *pTexture )
@@ -608,15 +600,15 @@ void TextureCache::_updateBackground()
 	u32 params[4] = {gSP.bgImage.width, gSP.bgImage.height, gSP.bgImage.format, gSP.bgImage.size};
 	crc = CRC_Calculate(crc, params, sizeof(u32)*4);
 
-	Textures::const_iterator iter = m_textures.find(crc);
+	Textures::iterator iter = m_textures.find(crc);
 	if (iter != m_textures.end()) {
-		CachedTexture * pCurrent = iter->second;
-		assert((pCurrent->width == gSP.bgImage.width) &&
-			(pCurrent->height == gSP.bgImage.height) &&
-			(pCurrent->format == gSP.bgImage.format) &&
-			(pCurrent->size == gSP.bgImage.size));
+		CachedTexture & current = iter->second;
+		assert((current.width == gSP.bgImage.width) &&
+			(current.height == gSP.bgImage.height) &&
+			(current.format == gSP.bgImage.format) &&
+			(current.size == gSP.bgImage.size));
 
-		activateTexture(0, pCurrent);
+		activateTexture(0, &current);
 		m_hits++;
 		return;
 	}
@@ -824,24 +816,24 @@ void TextureCache::update(u32 _t)
 		return;
 	}
 
-	Textures::const_iterator iter = m_textures.find(crc);
+	Textures::iterator iter = m_textures.find(crc);
 	if (iter != m_textures.end()) {
-		CachedTexture * pCurrent = iter->second;
-		assert((pCurrent->width == width) &&
-			(pCurrent->height == height) &&
-			(pCurrent->clampWidth == clampWidth) &&
-			(pCurrent->clampHeight == clampHeight) &&
-			(pCurrent->maskS == gSP.textureTile[_t]->masks) &&
-			(pCurrent->maskT == gSP.textureTile[_t]->maskt) &&
-			(pCurrent->mirrorS == gSP.textureTile[_t]->mirrors) &&
-			(pCurrent->mirrorT == gSP.textureTile[_t]->mirrort) &&
-			(pCurrent->clampS == gSP.textureTile[_t]->clamps) &&
-			(pCurrent->clampT == gSP.textureTile[_t]->clampt) &&
-			(pCurrent->format == gSP.textureTile[_t]->format) &&
-			(pCurrent->size == gSP.textureTile[_t]->size)
+		CachedTexture & current = iter->second;
+		assert((current.width == width) &&
+			(current.height == height) &&
+			(current.clampWidth == clampWidth) &&
+			(current.clampHeight == clampHeight) &&
+			(current.maskS == gSP.textureTile[_t]->masks) &&
+			(current.maskT == gSP.textureTile[_t]->maskt) &&
+			(current.mirrorS == gSP.textureTile[_t]->mirrors) &&
+			(current.mirrorT == gSP.textureTile[_t]->mirrort) &&
+			(current.clampS == gSP.textureTile[_t]->clamps) &&
+			(current.clampT == gSP.textureTile[_t]->clampt) &&
+			(current.format == gSP.textureTile[_t]->format) &&
+			(current.size == gSP.textureTile[_t]->size)
 		);
 
-		activateTexture(_t, pCurrent);
+		activateTexture(_t, &current);
 		m_hits++;
 		return;
 	}
