@@ -259,8 +259,7 @@ void gDPSetColorImage( u32 format, u32 size, u32 width, u32 address )
 {
 	address = RSP_SegmentToPhysical( address );
 
-	if (gDP.colorImage.address != address || gDP.colorImage.width != width || gDP.colorImage.size != size)
-	{
+	if (gDP.colorImage.address != address || gDP.colorImage.width != width || gDP.colorImage.size != size) {
 		u32 height = 1;
 		if (width == VI.width) {
 			if (width == gSP.viewport.width)
@@ -274,7 +273,7 @@ void gDPSetColorImage( u32 format, u32 size, u32 width, u32 address )
 		else
 			height = gSP.viewport.height;
 
-		if (config.frameBufferEmulation.enable)// && address != gDP.depthImageAddress)
+		if (config.frameBufferEmulation.enable) // && address != gDP.depthImageAddress)
 		{
 			//if (gDP.colorImage.changed)
 				frameBufferList().saveBuffer(address, (u16)format, (u16)size, (u16)width, height);
@@ -597,19 +596,15 @@ void gDPLoadTile( u32 tile, u32 uls, u32 ult, u32 lrs, u32 lrt )
 
 	// Line given for 32-bit is half what it seems it should since they split the
 	// high and low words. I'm cheating by putting them together.
-	if (gDP.loadTile->size == G_IM_SIZ_32b)
-	{
+	if (gDP.loadTile->size == G_IM_SIZ_32b) {
 		line = gDP.loadTile->line << 1;
 		Interleave = QWordInterleave;
-	}
-	else
-	{
+	} else {
 		line = gDP.loadTile->line;
 		Interleave = DWordInterleave;
 	}
 
-	for (y = 0; y < height; y++)
-	{
+	for (y = 0; y < height; ++y) {
 		UnswapCopy( src, dest, bpl );
 		if (y & 1) Interleave( dest, line );
 
@@ -655,8 +650,7 @@ void gDPLoadBlock( u32 tile, u32 uls, u32 ult, u32 lrs, u32 dxt )
 	u64* src = (u64*)&RDRAM[address];
 	u64* dest = &TMEM[gDP.loadTile->tmem];
 
-	if (dxt > 0)
-	{
+	if (dxt > 0) {
 		void (*Interleave)( void *mem, u32 numDWords );
 
 		u32 line = (2047 + dxt) / dxt;
@@ -668,16 +662,14 @@ void gDPLoadBlock( u32 tile, u32 uls, u32 ult, u32 lrs, u32 dxt )
 		else
 			Interleave = DWordInterleave;
 
-		for (u32 y = 0; y < height; y++)
-		{
+		for (u32 y = 0; y < height; ++y) {
 			UnswapCopy( src, dest, bpl );
 			if (y & 1) Interleave( dest, line );
 
 			src += line;
 			dest += line;
 		}
-	}
-	else
+	} else
 		UnswapCopy( src, dest, bytes );
 
 #ifdef DEBUG
@@ -699,10 +691,8 @@ void gDPLoadTLUT( u32 tile, u32 uls, u32 ult, u32 lrs, u32 lrt )
 	u16 pal = (u16)((gDP.tiles[tile].tmem - 256) >> 4);
 
 	int i = 0;
-	while (i < count)
-	{
-		for (u16 j = 0; (j < 16) && (i < count); j++, i++)
-		{
+	while (i < count) {
+		for (u16 j = 0; (j < 16) && (i < count); ++j, ++i) {
 			u16 color = swapword( src[i^1] );
 
 			*dest = color;
@@ -713,11 +703,11 @@ void gDPLoadTLUT( u32 tile, u32 uls, u32 ult, u32 lrs, u32 lrt )
 			dest += 4;
 		}
 
-		gDP.paletteCRC16[pal] = CRC_CalculatePalette( 0xFFFFFFFF, &TMEM[256 + (pal << 4)], 16 );
+		gDP.paletteCRC16[pal] = CRC_CalculatePalette(0xFFFFFFFF, &TMEM[256 + (pal << 4)], 16);
 		pal++;
 	}
 
-	gDP.paletteCRC256 = CRC_Calculate( 0xFFFFFFFF, gDP.paletteCRC16, 64 );
+	gDP.paletteCRC256 = CRC_Calculate(0xFFFFFFFF, gDP.paletteCRC16, 64);
 
 	gDP.changed |= CHANGED_TMEM;
 
@@ -782,8 +772,8 @@ void gDPFillRectangle( s32 ulx, s32 uly, s32 lrx, s32 lry )
 {
 	OGLRender & render = video().getRender();
 	if (gDP.otherMode.cycleType == G_CYC_FILL) {
-		lrx++;
-		lry++;
+		++lrx;
+		++lry;
 	}
 	if (gDP.depthImageAddress == gDP.colorImage.address) {
 		// Game may use depth texture as auxilary color texture. Example: Mario Tennis
@@ -853,8 +843,7 @@ void gDPSetKeyGB(u32 cG, u32 sG, u32 wG, u32 cB, u32 sB, u32 wB )
 
 void gDPTextureRectangle( f32 ulx, f32 uly, f32 lrx, f32 lry, s32 tile, f32 s, f32 t, f32 dsdx, f32 dtdy )
 {
-	if (gDP.otherMode.cycleType == G_CYC_COPY)
-	{
+	if (gDP.otherMode.cycleType == G_CYC_COPY) {
 		dsdx = 1.0f;
 		lrx += 1.0f;
 		lry += 1.0f;
@@ -876,13 +865,10 @@ void gDPTextureRectangle( f32 ulx, f32 uly, f32 lrx, f32 lry, s32 tile, f32 s, f
 		s = 0.0f;
 
 	f32 lrs, lrt;
-	if (RSP.cmd == G_TEXRECTFLIP)
-	{
+	if (RSP.cmd == G_TEXRECTFLIP) {
 		lrs = s + (lry - uly - 1) * dtdy;
 		lrt = t + (lrx - ulx - 1) * dsdx;
-	}
-	else
-	{
+	} else {
 		lrs = s + (lrx - ulx - 1) * dsdx;
 		lrt = t + (lry - uly - 1) * dtdy;
 	}
@@ -891,13 +877,11 @@ void gDPTextureRectangle( f32 ulx, f32 uly, f32 lrx, f32 lry, s32 tile, f32 s, f
 	gDP.texRect.height = (u32)(max( lrt, t ) + dtdy);
 
 	float tmp;
-	if (lrs < s)
-	{
+	if (lrs < s) {
 		tmp = ulx; ulx = lrx; lrx = tmp;
 		tmp = s; s = lrs; lrs = tmp;
 	}
-	if (lrt < t)
-	{
+	if (lrt < t) {
 		tmp = uly; uly = lry; lry = tmp;
 		tmp = t; t = lrt; lrt = tmp;
 	}
@@ -967,4 +951,3 @@ void gDPNoOp()
 	DebugMsg( DEBUG_HIGH | DEBUG_IGNORED, "gDPNoOp();\n" );
 #endif
 }
-
