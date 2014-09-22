@@ -13,7 +13,7 @@
 #define CHANGED_FOGPOSITION		0x20
 #define CHANGED_LIGHT			0x40
 #define CHANGED_CPU_FB_WRITE	0x80
-#define CHANGED_TEXTURESCALE    0x100
+#define CHANGED_TEXTURESCALE	0x100
 
 #define gSPFlushTriangles() \
 if \
@@ -67,14 +67,14 @@ if \
 
 struct SPVertex
 {
-	f32		x, y, z, w;
-	f32		nx, ny, nz, __pad0;
-	f32		r, g, b, a;
-	f32		s, t;
+	f32 x, y, z, w;
+	f32 nx, ny, nz, __pad0;
+	f32 r, g, b, a;
+	f32 s, t;
 	u8 st_scaled;
 	u8 HWLight;
-	s16		flag;
-	u32     clip;
+	s16 flag;
+	u32 clip;
 };
 
 typedef SPVertex SPTriangle[3];
@@ -219,10 +219,6 @@ extern void (*gSPBillboardVertex4)(u32 v);
 extern void (*gSPTransformVertex)(float vtx[4], float mtx[4][4]);
 extern void (*gSPLightVertex)(u32 v);
 extern void (*gSPBillboardVertex)(u32 v, u32 i);
-
-#ifdef __NEON_OPT
-void gSPInitNeon();
-#endif
 
 #endif
 

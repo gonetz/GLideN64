@@ -23,12 +23,11 @@
 
 using namespace std;
 
-#ifdef DEBUG
-extern u32 uc_crc, uc_dcrc;
-extern char uc_str[256];
-#endif
-
-void gSPCombineMatrices();
+void gSPCombineMatrices()
+{
+	MultMatrix(gSP.matrix.projection, gSP.matrix.modelView[gSP.matrix.modelViewi], gSP.matrix.combined);
+	gSP.changed &= ~CHANGED_MATRIX;
+}
 
 void gSPTriangle(s32 v0, s32 v1, s32 v2)
 {
@@ -283,12 +282,6 @@ static void gSPBillboardVertex_default(u32 v, u32 i)
 	vtx.y += vtx0.y;
 	vtx.z += vtx0.z;
 	vtx.w += vtx0.w;
-}
-
-void gSPCombineMatrices()
-{
-	MultMatrix(gSP.matrix.projection, gSP.matrix.modelView[gSP.matrix.modelViewi], gSP.matrix.combined);
-	gSP.changed &= ~CHANGED_MATRIX;
 }
 
 void gSPClipVertex(u32 v)
@@ -1278,7 +1271,7 @@ void gSPNumLights( s32 n )
 
 void gSPLightColor( u32 lightNum, u32 packedColor )
 {
-	lightNum--;
+	--lightNum;
 
 	if (lightNum < 8)
 	{
@@ -1338,7 +1331,7 @@ void gSPTexture( f32 sc, f32 tc, s32 level, s32 tile, s32 on )
 void gSPEndDisplayList()
 {
 	if (RSP.PCi > 0)
-		RSP.PCi--;
+		--RSP.PCi;
 	else
 	{
 #ifdef DEBUG
@@ -1640,10 +1633,8 @@ void gSPObjLoadTxtr( u32 tx )
 	u32 address = RSP_SegmentToPhysical( tx );
 	uObjTxtr *objTxtr = (uObjTxtr*)&RDRAM[address];
 
-	if ((gSP.status[objTxtr->block.sid >> 2] & objTxtr->block.mask) != objTxtr->block.flag)
-	{
-		switch (objTxtr->block.type)
-		{
+	if ((gSP.status[objTxtr->block.sid >> 2] & objTxtr->block.mask) != objTxtr->block.flag) {
+		switch (objTxtr->block.type) {
 			case G_OBJLT_TXTRBLOCK:
 				gDPSetTextureImage( 0, 1, 0, objTxtr->block.image );
 				gDPSetTile( 0, 1, 0, objTxtr->block.tmem, 7, 0, 0, 0, 0, 0, 0, 0 );
