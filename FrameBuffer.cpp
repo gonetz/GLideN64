@@ -70,9 +70,9 @@ public:
 private:
 	GLuint m_FBO;
 	CachedTexture * m_pTexture;
-	GLuint m_aPBO[2];
 	u32 m_aAddress[2];
 	u32 m_curIndex;
+	GLuint m_aPBO[2];
 };
 #endif // GLES2
 
@@ -531,6 +531,8 @@ void FrameBufferToRDRAM::Destroy() {
 	}
 	glDeleteBuffers(2, m_aPBO);
 	m_aPBO[0] = m_aPBO[1] = 0;
+	m_curIndex = 0;
+	m_aAddress[0] = m_aAddress[1] = 0;
 }
 
 void FrameBufferToRDRAM::CopyToRDRAM( u32 address, bool bSync ) {
@@ -667,6 +669,8 @@ void DepthBufferToRDRAM::Destroy() {
 	}
 	glDeleteBuffers(2, m_aPBO);
 	m_aPBO[0] = m_aPBO[1] = 0;
+	m_curIndex = 0;
+	m_aAddress[0] = m_aAddress[1] = 0;
 }
 
 void DepthBufferToRDRAM::CopyToRDRAM( u32 address) {
