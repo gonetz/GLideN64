@@ -324,6 +324,8 @@ void FrameBuffer_Destroy()
 #ifndef GLES2
 void FrameBufferList::renderBuffer(u32 _address)
 {
+	static u32 vStartPrev = 0;
+
 	if (_SHIFTR( *REG.VI_H_START, 0, 10 ) == 0) // H width is zero. Don't draw
 		return;
 	FrameBuffer *pBuffer = findBuffer(_address);
@@ -335,12 +337,22 @@ void FrameBufferList::renderBuffer(u32 _address)
 	dstY0 = 1;
 	const u32 vStart = _SHIFTR( *REG.VI_V_START, 17, 9 );
 	const u32 vEnd = _SHIFTR( *REG.VI_V_START, 1, 9 );
+	bool isLowerField = false;
+	if ((*REG.VI_STATUS & 0x40) != 0) {
+		const bool isPAL = (*REG.VI_V_SYNC & 0x3ff) > 550;
+		isLowerField = isPAL ? vStart < vStartPrev : vStart > vStartPrev;
+	}
+	vStartPrev = vStart;
+
 	const float viScaleY = ogl.getHeight() / (float)VI.vHeight;
 
-	if (VI.vStart != vStart)
+	if (vStart > VI.vStart)
 		dstY0 += vStart - VI.vStart;
 	dstY1 = dstY0 + vEnd - vStart;
 	srcY0 = ((_address - pBuffer->m_startAddress) << 1 >> pBuffer->m_size) / (*REG.VI_WIDTH);
+	if (isLowerField)
+		--srcY0;
+
 	srcY1 = srcY0 + VI.real_height;
 	if (srcY1 > VI.height) {
 		partHeight = srcY1 - VI.height;
@@ -361,6 +373,7 @@ void FrameBufferList::renderBuffer(u32 _address)
 		0, ogl.getHeightOffset() + (GLint)(dstY0*viScaleY), ogl.getWidth(), ogl.getHeightOffset() + (GLint)(dstY1*viScaleY),
 		GL_COLOR_BUFFER_BIT, GL_LINEAR
 	);
+
 	if (partHeight > 0) {
 		const u32 size = *REG.VI_STATUS & 3;
 		pBuffer = findBuffer(_address + (((*REG.VI_WIDTH)*VI.height)<<size>>1));
@@ -377,6 +390,7 @@ void FrameBufferList::renderBuffer(u32 _address)
 			);
 		}
 	}
+
 	glEnable(GL_SCISSOR_TEST);
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_pCurrent->m_FBO);
