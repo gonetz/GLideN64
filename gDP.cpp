@@ -895,8 +895,11 @@ void gDPTextureRectangle( f32 ulx, f32 uly, f32 lrx, f32 lry, s32 tile, f32 s, f
 	gSP.textureTile[1] = textureTileOrg[1];
 
 	gDP.colorImage.changed = TRUE;
-	if (gDP.colorImage.width < 64)
-		gDP.colorImage.height = (u32)max( (f32)gDP.colorImage.height, lry );
+	if (gDP.otherMode.cycleType == G_CYC_COPY)
+		if (VI.interlaced && lry > VI.height)
+			gDP.colorImage.height = (u32)max((s32)gDP.colorImage.height, lry - 1);
+		else
+			gDP.colorImage.height = (u32)max((s32)gDP.colorImage.height, lry);
 	else
 		gDP.colorImage.height = max( gDP.colorImage.height, (u32)gDP.scissor.lry );
 
