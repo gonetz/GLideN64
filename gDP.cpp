@@ -803,9 +803,12 @@ void gDPFillRectangle( s32 ulx, s32 uly, s32 lrx, s32 lry )
 	render.drawRect(ulx, uly, lrx, lry, (gDP.otherMode.cycleType == G_CYC_FILL) ? fillColor : &gDP.blendColor.r);
 
 	gDP.colorImage.changed = TRUE;
-	if (gDP.otherMode.cycleType == G_CYC_FILL)
-		gDP.colorImage.height = (u32)max( (s32)gDP.colorImage.height, lry );
-	else
+	if (gDP.otherMode.cycleType == G_CYC_FILL) {
+		if (VI.interlaced && lry > VI.height)
+			gDP.colorImage.height = (u32)max((s32)gDP.colorImage.height, lry - 1);
+		else
+			gDP.colorImage.height = (u32)max((s32)gDP.colorImage.height, lry);
+	} else
 		gDP.colorImage.height = max( gDP.colorImage.height, (u32)gDP.scissor.lry );
 
 #ifdef DEBUG
