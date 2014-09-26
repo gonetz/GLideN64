@@ -4,12 +4,18 @@
 
 struct VIInfo
 {
-	u32 width, height, real_height;
+	u32 width;
+	u32 height, real_height;
 	f32 rwidth, rheight;
 	u32 vStart, vEnd, vHeight;
 	u32 lastOrigin;
+	bool interlaced;
 
-	VIInfo() : width(0), height(0), real_height(0), vStart(0), vEnd(0), vHeight(0), lastOrigin(0) {}
+	VIInfo() :
+		width(0), height(0), real_height(0),
+		vStart(0), vEnd(0), vHeight(0), lastOrigin(0),
+		interlaced(false)
+	{}
 };
 
 extern VIInfo VI;

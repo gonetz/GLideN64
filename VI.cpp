@@ -14,19 +14,19 @@ VIInfo VI;
 
 void VI_UpdateSize()
 {
-	f32 xScale = _FIXED2FLOAT( _SHIFTR( *REG.VI_X_SCALE, 0, 12 ), 10 );
-	f32 xOffset = _FIXED2FLOAT( _SHIFTR( *REG.VI_X_SCALE, 16, 12 ), 10 );
+	const f32 xScale = _FIXED2FLOAT( _SHIFTR( *REG.VI_X_SCALE, 0, 12 ), 10 );
+//	f32 xOffset = _FIXED2FLOAT( _SHIFTR( *REG.VI_X_SCALE, 16, 12 ), 10 );
 
-	f32 yScale = _FIXED2FLOAT( _SHIFTR( *REG.VI_Y_SCALE, 0, 12 ), 10 );
-	f32 yOffset = _FIXED2FLOAT( _SHIFTR( *REG.VI_Y_SCALE, 16, 12 ), 10 );
+	const f32 yScale = _FIXED2FLOAT( _SHIFTR( *REG.VI_Y_SCALE, 0, 12 ), 10 );
+//	f32 yOffset = _FIXED2FLOAT( _SHIFTR( *REG.VI_Y_SCALE, 16, 12 ), 10 );
 
-	u32 hEnd = _SHIFTR( *REG.VI_H_START, 0, 10 );
-	u32 hStart = _SHIFTR( *REG.VI_H_START, 16, 10 );
+	const u32 hEnd = _SHIFTR( *REG.VI_H_START, 0, 10 );
+	const u32 hStart = _SHIFTR( *REG.VI_H_START, 16, 10 );
 
-	// Shift an extra bit if not in interlaced mode
-	u32 extraShift = (*REG.VI_STATUS & 0x40) == 0x40 ? 0 : 1;
-	u32 vEnd = _SHIFTR( *REG.VI_V_START, 0 + extraShift, 10 - extraShift );
-	u32 vStart = _SHIFTR( *REG.VI_V_START, 16 + extraShift, 10 - extraShift );
+	// These are in half-lines, so shift an extra bit
+	const u32 vEnd = _SHIFTR( *REG.VI_V_START, 1, 9 );
+	const u32 vStart = _SHIFTR( *REG.VI_V_START, 17, 9 );
+	VI.interlaced = (*REG.VI_STATUS & 0x40) != 0;
 
 	VI.width = (hEnd - hStart) * xScale;
 	VI.real_height = (vEnd - vStart) * yScale;
@@ -38,8 +38,10 @@ void VI_UpdateSize()
 		VI.vHeight = VI.height;
 	}
 
-	if (VI.width == 0.0f) VI.width = *REG.VI_WIDTH;
-	if (VI.height == 0.0f) VI.height = 240.0f;
+	if (VI.width == 0.0f)
+		VI.width = *REG.VI_WIDTH;
+	if (VI.height == 0.0f)
+		VI.height = 240.0f;
 	VI.rwidth = 1.0f / VI.width;
 	VI.rheight = 1.0f / VI.height;
 }
