@@ -416,10 +416,10 @@ void FrameBufferList::renderBuffer(u32 _address)
 	currentCombiner()->updateTextureInfo(true);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	drawBuffer = GL_BACK;
-	ogl.drawTexturedRect( 0.0f, 0.0f, width, height, 0.0f, 0.0f, width-1.0f, height-1.0f, false );
+	m_drawBuffer = GL_BACK;
+	ogl.getRender().drawTexturedRect(0.0f, 0.0f, width, height, 0.0f, 0.0f, width - 1.0f, height - 1.0f, false);
 	ogl.swapBuffers();
-	drawBuffer = GL_FRAMEBUFFER;
+	m_drawBuffer = GL_FRAMEBUFFER;
 	glEnable(GL_SCISSOR_TEST);
 	glBindFramebuffer(GL_FRAMEBUFFER, m_pCurrent->m_FBO);
 	gSP.changed |= CHANGED_TEXTURE | CHANGED_VIEWPORT;
