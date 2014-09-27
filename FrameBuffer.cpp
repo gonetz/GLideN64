@@ -171,6 +171,8 @@ FrameBuffer * FrameBufferList::findTmpBuffer(u32 _address)
 
 void FrameBufferList::saveBuffer(u32 _address, u16 _format, u16 _size, u16 _width, u16 _height )
 {
+	if (_SHIFTR(*REG.VI_H_START, 0, 10) == 0) // H width is zero. Don't save
+		return;
 	OGLVideo & ogl = video();
 	m_drawBuffer = GL_FRAMEBUFFER;
 	if (m_pCurrent != NULL && gDP.colorImage.height > 1) {
@@ -550,6 +552,8 @@ void FrameBufferToRDRAM::Destroy() {
 }
 
 void FrameBufferToRDRAM::CopyToRDRAM( u32 address, bool bSync ) {
+	if (_SHIFTR(*REG.VI_H_START, 0, 10) == 0) // H width is zero. Don't copy
+		return;
 	FrameBuffer *pBuffer = frameBufferList().findBuffer(address);
 	if (pBuffer == NULL)
 		return;
@@ -688,6 +692,8 @@ void DepthBufferToRDRAM::Destroy() {
 }
 
 void DepthBufferToRDRAM::CopyToRDRAM( u32 address) {
+	if (_SHIFTR(*REG.VI_H_START, 0, 10) == 0) // H width is zero. Don't copy
+		return;
 	FrameBuffer *pBuffer = frameBufferList().findBuffer(address);
 	if (pBuffer == NULL || pBuffer->m_pDepthBuffer == NULL)
 		return;
