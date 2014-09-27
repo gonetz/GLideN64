@@ -29,7 +29,10 @@ void VI_UpdateSize()
 	VI.interlaced = (*REG.VI_STATUS & 0x40) != 0;
 
 	VI.width = (hEnd - hStart) * xScale;
-	VI.real_height = (vEnd - vStart) * yScale;
+	if (VI.interlaced &&  _SHIFTR(*REG.VI_Y_SCALE, 0, 12) == 1024)
+		VI.real_height = (vEnd - vStart) << 1;
+	else
+		VI.real_height = (vEnd - vStart) * yScale;
 	VI.height = VI.real_height*1.0126582f;
 
 	if (VI.vStart == 0) {
