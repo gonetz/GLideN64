@@ -331,15 +331,15 @@ void FrameBufferList::renderBuffer(u32 _address)
 
 	if (_SHIFTR( *REG.VI_H_START, 0, 10 ) == 0) // H width is zero. Don't draw
 		return;
+
 	FrameBuffer *pBuffer = findBuffer(_address);
 	if (pBuffer == NULL)
 		return;
+
 	OGLVideo & ogl = video();
 	GLint srcY0, srcY1, dstY0, dstY1;
 	GLint partHeight = 0;
-	dstY0 = 1;
 	const u32 vStart = _SHIFTR( *REG.VI_V_START, 17, 9 );
-	const u32 vEnd = _SHIFTR( *REG.VI_V_START, 1, 9 );
 	bool isLowerField = false;
 	if ((*REG.VI_STATUS & 0x40) != 0) {
 		const bool isPAL = (*REG.VI_V_SYNC & 0x3ff) > 550;
@@ -347,11 +347,6 @@ void FrameBufferList::renderBuffer(u32 _address)
 	}
 	vStartPrev = vStart;
 
-	const float viScaleY = ogl.getHeight() / (float)VI.vHeight;
-
-	if (vStart > VI.vStart)
-		dstY0 += vStart - VI.vStart;
-	dstY1 = dstY0 + vEnd - vStart;
 	srcY0 = ((_address - pBuffer->m_startAddress) << 1 >> pBuffer->m_size) / (*REG.VI_WIDTH);
 	if (isLowerField)
 		--srcY0;
@@ -360,7 +355,11 @@ void FrameBufferList::renderBuffer(u32 _address)
 	if (srcY1 > VI.height) {
 		partHeight = srcY1 - VI.height;
 		srcY1 = VI.height;
-		dstY1 -= partHeight;
+		dstY0 = 1;
+		dstY1 = dstY0 + VI.real_height - partHeight;
+	} else {
+		dstY0 = srcY0;
+		dstY1 = srcY1;
 	}
 
 	// glDisable(GL_SCISSOR_TEST) does not affect glBlitFramebuffer, at least on AMD
@@ -371,9 +370,10 @@ void FrameBufferList::renderBuffer(u32 _address)
 	//glDrawBuffer( GL_BACK );
 	float clearColor[4] = {0.0f, 0.0f, 0.0f, 0.0f};
 	ogl.getRender().clearColorBuffer(clearColor);
+	const float scaleY = ogl.getScaleY();
 	glBlitFramebuffer(
-		0, (GLint)(srcY0*ogl.getScaleY()), ogl.getWidth(), (GLint)(srcY1*ogl.getScaleY()),
-		0, ogl.getHeightOffset() + (GLint)(dstY0*viScaleY), ogl.getWidth(), ogl.getHeightOffset() + (GLint)(dstY1*viScaleY),
+		0, (GLint)(srcY0*scaleY), ogl.getWidth(), (GLint)(srcY1*scaleY),
+		0, ogl.getHeightOffset() + (GLint)(dstY0*scaleY), ogl.getWidth(), ogl.getHeightOffset() + (GLint)(dstY1*scaleY),
 		GL_COLOR_BUFFER_BIT, GL_LINEAR
 	);
 
@@ -387,8 +387,8 @@ void FrameBufferList::renderBuffer(u32 _address)
 			dstY1 = dstY0 + partHeight;
 			glBindFramebuffer(GL_READ_FRAMEBUFFER, pBuffer->m_FBO);
 			glBlitFramebuffer(
-				0, (GLint)(srcY0*ogl.getScaleY()), ogl.getWidth(), (GLint)(srcY1*ogl.getScaleY()),
-				0, ogl.getHeightOffset() + (GLint)(dstY0*viScaleY), ogl.getWidth(), ogl.getHeightOffset() + (GLint)(dstY1*viScaleY),
+				0, (GLint)(srcY0*scaleY), ogl.getWidth(), (GLint)(srcY1*scaleY),
+				0, ogl.getHeightOffset() + (GLint)(dstY0*scaleY), ogl.getWidth(), ogl.getHeightOffset() + (GLint)(dstY1*scaleY),
 				GL_COLOR_BUFFER_BIT, GL_LINEAR
 			);
 		}

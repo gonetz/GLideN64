@@ -17,7 +17,8 @@ void VI_UpdateSize()
 	const f32 xScale = _FIXED2FLOAT( _SHIFTR( *REG.VI_X_SCALE, 0, 12 ), 10 );
 //	f32 xOffset = _FIXED2FLOAT( _SHIFTR( *REG.VI_X_SCALE, 16, 12 ), 10 );
 
-	const f32 yScale = _FIXED2FLOAT( _SHIFTR( *REG.VI_Y_SCALE, 0, 12 ), 10 );
+	const u32 vScale = _SHIFTR(*REG.VI_Y_SCALE, 0, 12);
+	const f32 yScale = _FIXED2FLOAT(vScale, 10);
 //	f32 yOffset = _FIXED2FLOAT( _SHIFTR( *REG.VI_Y_SCALE, 16, 12 ), 10 );
 
 	const u32 hEnd = _SHIFTR( *REG.VI_H_START, 0, 10 );
@@ -34,12 +35,6 @@ void VI_UpdateSize()
 	else
 		VI.real_height = (vEnd - vStart) * yScale;
 	VI.height = VI.real_height*1.0126582f;
-
-	if (VI.vStart == 0) {
-		VI.vStart = vStart;
-		VI.vEnd = vEnd;
-		VI.vHeight = VI.height;
-	}
 
 	if (VI.width == 0.0f)
 		VI.width = *REG.VI_WIDTH;
@@ -58,8 +53,6 @@ void VI_UpdateScreen()
 	if (ogl.changeWindow())
 		return;
 	ogl.saveScreenshot();
-	if (((*REG.VI_STATUS)&3) == 0)
-		VI.vStart = VI.vEnd = 0;
 
 	if (config.frameBufferEmulation.enable) {
 		const bool bCFB = !config.frameBufferEmulation.ignoreCFB && (gSP.changed&CHANGED_CPU_FB_WRITE) == CHANGED_CPU_FB_WRITE;
