@@ -151,6 +151,7 @@ void FrameBufferList::init()
 void FrameBufferList::destroy() {
 	m_list.clear();
 	m_pCurrent = NULL;
+	m_drawBuffer = GL_BACK;
 }
 
 FrameBuffer * FrameBufferList::findBuffer(u32 _address)
