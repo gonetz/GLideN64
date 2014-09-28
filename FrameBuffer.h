@@ -18,6 +18,7 @@ struct FrameBuffer
 	u32 m_size, m_width, m_height, m_fillcolor;
 	float m_scaleX, m_scaleY;
 	bool m_cleared;
+	bool m_cfb;
 
 	GLuint m_FBO;
 	gDPTile *m_pLoadTile;
@@ -30,8 +31,8 @@ class FrameBufferList
 public:
 	void init();
 	void destroy();
-	void saveBuffer( u32 _address, u16 _format, u16 _size, u16 _width, u16 _height );
-	void removeBuffer( u32 _address );
+	void saveBuffer(u32 _address, u16 _format, u16 _size, u16 _width, u16 _height, bool _cfb);
+	void removeBuffer(u32 _address);
 	void attachDepthBuffer();
 	FrameBuffer * findBuffer(u32 _address);
 	FrameBuffer * findTmpBuffer(u32 _address);

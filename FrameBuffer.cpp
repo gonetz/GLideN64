@@ -125,7 +125,7 @@ FrameBuffer::FrameBuffer() : m_cleared(false), m_pLoadTile(NULL), m_pDepthBuffer
 FrameBuffer::FrameBuffer(FrameBuffer && _other) :
 	m_startAddress(_other.m_startAddress), m_endAddress(_other.m_endAddress),
 	m_size(_other.m_size), m_width(_other.m_width), m_height(_other.m_height), m_fillcolor(_other.m_fillcolor),
-	m_scaleX(_other.m_scaleX), m_scaleY(_other.m_scaleY), m_cleared(_other.m_cleared),
+	m_scaleX(_other.m_scaleX), m_scaleY(_other.m_scaleY), m_cleared(_other.m_cleared), m_cfb(_other.m_cfb),
 	m_FBO(_other.m_FBO), m_pTexture(_other.m_pTexture), m_pLoadTile(_other.m_pLoadTile), m_pDepthBuffer(_other.m_pDepthBuffer)
 {
 	_other.m_FBO = 0;
@@ -170,7 +170,7 @@ FrameBuffer * FrameBufferList::findTmpBuffer(u32 _address)
 	return NULL;
 }
 
-void FrameBufferList::saveBuffer(u32 _address, u16 _format, u16 _size, u16 _width, u16 _height )
+void FrameBufferList::saveBuffer(u32 _address, u16 _format, u16 _size, u16 _width, u16 _height, bool _cfb)
 {
 	if (_SHIFTR(*REG.VI_H_START, 0, 10) == 0) // H width is zero. Don't save
 		return;
@@ -178,7 +178,7 @@ void FrameBufferList::saveBuffer(u32 _address, u16 _format, u16 _size, u16 _widt
 	m_drawBuffer = GL_FRAMEBUFFER;
 	if (m_pCurrent != NULL && gDP.colorImage.height > 1) {
 		m_pCurrent->m_endAddress = min(RDRAMSize, m_pCurrent->m_startAddress + (((m_pCurrent->m_width * gDP.colorImage.height) << m_pCurrent->m_size >> 1) - 1));
-		if (!config.frameBufferEmulation.copyToRDRAM && !m_pCurrent->m_cleared)
+		if (!config.frameBufferEmulation.copyToRDRAM && !m_pCurrent->m_cfb && !m_pCurrent->m_cleared)
 			gDPFillRDRAM(m_pCurrent->m_startAddress, 0, 0, m_pCurrent->m_width, gDP.colorImage.height, m_pCurrent->m_width, m_pCurrent->m_size, m_pCurrent->m_fillcolor);
 	}
 
@@ -220,6 +220,7 @@ void FrameBufferList::saveBuffer(u32 _address, u16 _format, u16 _size, u16 _widt
 		buffer.m_scaleX = ogl.getScaleX();
 		buffer.m_scaleY = ogl.getScaleY();
 		buffer.m_fillcolor = 0;
+		buffer.m_cfb = _cfb;
 
 		buffer.m_pTexture->width = (u32)(buffer.m_width * video().getScaleX());
 		buffer.m_pTexture->height = (u32)(buffer.m_height * video().getScaleY());
