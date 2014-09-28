@@ -7,6 +7,7 @@
 #include "gDP.h"
 #include "RSP.h"
 #include "FrameBuffer.h"
+#include "DepthBuffer.h"
 #include "Config.h"
 #include "Debug.h"
 
@@ -27,7 +28,14 @@ void VI_UpdateSize()
 	// These are in half-lines, so shift an extra bit
 	const u32 vEnd = _SHIFTR( *REG.VI_V_START, 1, 9 );
 	const u32 vStart = _SHIFTR( *REG.VI_V_START, 17, 9 );
+	const bool interlacedPrev = VI.interlaced;
 	VI.interlaced = (*REG.VI_STATUS & 0x40) != 0;
+	if (interlacedPrev != VI.interlaced) {
+		frameBufferList().destroy();
+		depthBufferList().destroy();
+		depthBufferList().init();
+		frameBufferList().init();
+	}
 
 	VI.width = (hEnd - hStart) * xScale;
 	if (VI.interlaced &&  _SHIFTR(*REG.VI_Y_SCALE, 0, 12) == 1024)
