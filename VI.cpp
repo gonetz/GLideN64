@@ -34,7 +34,11 @@ void VI_UpdateSize()
 		VI.real_height = (vEnd - vStart) << 1;
 	else
 		VI.real_height = (vEnd - vStart) * yScale;
-	VI.height = VI.real_height*1.0126582f;
+	const bool isPAL = (*REG.VI_V_SYNC & 0x3ff) > 550;
+	if (isPAL && (vEnd - vStart) > 237)
+		VI.height = VI.real_height*1.0041841f;
+	else
+		VI.height = VI.real_height*1.0126582f;
 
 	if (VI.width == 0.0f)
 		VI.width = *REG.VI_WIDTH;
