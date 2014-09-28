@@ -342,10 +342,8 @@ void FrameBufferList::renderBuffer(u32 _address)
 	GLint partHeight = 0;
 	const u32 vStart = _SHIFTR( *REG.VI_V_START, 17, 9 );
 	bool isLowerField = false;
-	if ((*REG.VI_STATUS & 0x40) != 0) {
-		const bool isPAL = (*REG.VI_V_SYNC & 0x3ff) > 550;
-		isLowerField = isPAL ? vStart < vStartPrev : vStart > vStartPrev;
-	}
+	if ((*REG.VI_STATUS & 0x40) != 0)
+		isLowerField = vStart > vStartPrev;
 	vStartPrev = vStart;
 
 	srcY0 = ((_address - pBuffer->m_startAddress) << 1 >> pBuffer->m_size) / (*REG.VI_WIDTH);
