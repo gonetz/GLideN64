@@ -30,13 +30,11 @@ void VI_UpdateSize()
 	const u32 vEnd = _SHIFTR( *REG.VI_V_START, 1, 9 );
 	const u32 vStart = _SHIFTR( *REG.VI_V_START, 17, 9 );
 	const bool interlacedPrev = VI.interlaced;
+	const u32 widthPrev = VI.width;
+	const u32 heightPrev = VI.height;
+
 	VI.interlaced = (*REG.VI_STATUS & 0x40) != 0;
-	if (interlacedPrev != VI.interlaced) {
-		frameBufferList().destroy();
-		depthBufferList().destroy();
-		depthBufferList().init();
-		frameBufferList().init();
-	}
+
 	VI.width = (u32)floor((hEnd - hStart) * xScale + 0.5f);
 
 	if (VI.interlaced &&  _SHIFTR(*REG.VI_Y_SCALE, 0, 12) == 1024)
@@ -53,6 +51,14 @@ void VI_UpdateSize()
 		VI.width = *REG.VI_WIDTH;
 	if (VI.height == 0.0f)
 		VI.height = 240.0f;
+
+	if (config.frameBufferEmulation.enable && (interlacedPrev != VI.interlaced || widthPrev != VI.width || heightPrev != VI.height)) {
+		frameBufferList().destroy();
+		depthBufferList().destroy();
+		depthBufferList().init();
+		frameBufferList().init();
+	}
+
 	VI.rwidth = 1.0f / VI.width;
 	VI.rheight = 1.0f / VI.height;
 }
@@ -72,13 +78,15 @@ void VI_UpdateScreen()
 		const bool bNeedUpdate = bCFB ? true : (*REG.VI_ORIGIN != VI.lastOrigin);// && gDP.colorImage.changed;
 
 		if (bNeedUpdate) {
-			FrameBuffer * pBuffer = frameBufferList().findBuffer(*REG.VI_ORIGIN);
-			if (pBuffer == NULL || abs((int)pBuffer->m_width - (int)VI.width) > 1) {
-				VI_UpdateSize();
-				ogl.updateScale();
-				const u32 size = *REG.VI_STATUS & 3;
-				if (VI.height > 0 && size > G_IM_SIZ_8b  && _SHIFTR( *REG.VI_H_START, 0, 10 ) > 0)
-					frameBufferList().saveBuffer(*REG.VI_ORIGIN, G_IM_FMT_RGBA, size, VI.width, VI.height, true);
+			if ((gSP.changed&CHANGED_CPU_FB_WRITE) == CHANGED_CPU_FB_WRITE) {
+				FrameBuffer * pBuffer = frameBufferList().findBuffer(*REG.VI_ORIGIN);
+				if (pBuffer == NULL || pBuffer->m_width != VI.width) {
+					VI_UpdateSize();
+					ogl.updateScale();
+					const u32 size = *REG.VI_STATUS & 3;
+					if (VI.height > 0 && size > G_IM_SIZ_8b  && _SHIFTR( *REG.VI_H_START, 0, 10 ) > 0)
+						frameBufferList().saveBuffer(*REG.VI_ORIGIN, G_IM_FMT_RGBA, size, VI.width, VI.height, true);
+				}
 			}
 			if ((((*REG.VI_STATUS)&3) > 0) && (config.frameBufferEmulation.copyFromRDRAM || bCFB)) {
 				VI_UpdateSize();
