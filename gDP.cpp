@@ -261,12 +261,9 @@ void gDPSetColorImage( u32 format, u32 size, u32 width, u32 address )
 
 	if (gDP.colorImage.address != address || gDP.colorImage.width != width || gDP.colorImage.size != size) {
 		u32 height = 1;
-		if (width == VI.width) {
-			if (width == gSP.viewport.width)
-				height = max((float)VI.height, gSP.viewport.height);
-			else
-				height = max((float)VI.height, gDP.scissor.lry);
-		} else if (width == gDP.scissor.lrx && width == gSP.viewport.width)
+		if (width == VI.width)
+			height = VI.height;
+		else if (width == gDP.scissor.lrx && width == gSP.viewport.width)
 			height = max(gDP.scissor.lry, gSP.viewport.height);
 		else if (width == gDP.scissor.lrx)
 			height = gDP.scissor.lry;
