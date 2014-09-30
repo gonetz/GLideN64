@@ -1,4 +1,5 @@
 #include "GLideN64.h"
+#include <math.h>
 #include "Types.h"
 #include "VI.h"
 #include "OpenGL.h"
@@ -36,12 +37,12 @@ void VI_UpdateSize()
 		depthBufferList().init();
 		frameBufferList().init();
 	}
+	VI.width = (u32)floor((hEnd - hStart) * xScale + 0.5f);
 
-	VI.width = (hEnd - hStart) * xScale;
 	if (VI.interlaced &&  _SHIFTR(*REG.VI_Y_SCALE, 0, 12) == 1024)
 		VI.real_height = (vEnd - vStart) << 1;
 	else
-		VI.real_height = (vEnd - vStart) * yScale;
+		VI.real_height = (u32)floor((vEnd - vStart) * yScale + 0.5f);
 	const bool isPAL = (*REG.VI_V_SYNC & 0x3ff) > 550;
 	if (isPAL && (vEnd - vStart) > 237)
 		VI.height = VI.real_height*1.0041841f;
