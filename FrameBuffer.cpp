@@ -302,6 +302,7 @@ void FrameBufferList::attachDepthBuffer()
 #endif
 		assert(checkFBO());
 	}
+	CombinerInfo::get().update();
 	currentCombiner()->updateDepthInfo(true);
 }
 

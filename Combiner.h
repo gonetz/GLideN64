@@ -119,6 +119,7 @@ class CombinerInfo
 public:
 	void init();
 	void destroy();
+	void update();
 	void setCombine(u64 _mux);
 
 	ShaderCombiner * getCurrent() const {return m_pCurrent;}

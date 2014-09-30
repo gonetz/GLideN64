@@ -420,12 +420,7 @@ void OGLRender::_updateStates() const
 {
 	OGLVideo & ogl = video();
 
-	if (gDP.otherMode.cycleType == G_CYC_COPY)
-		CombinerInfo::get().setCombine(EncodeCombineMode(0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0));
-	else if (gDP.otherMode.cycleType == G_CYC_FILL)
-		CombinerInfo::get().setCombine(EncodeCombineMode(0, 0, 0, SHADE, 0, 0, 0, SHADE, 0, 0, 0, SHADE, 0, 0, 0, SHADE));
-	else
-		CombinerInfo::get().setCombine(gDP.combine.mux);
+	CombinerInfo::get().update();
 
 	if (gSP.changed & CHANGED_GEOMETRYMODE)
 		_updateCullFace();
