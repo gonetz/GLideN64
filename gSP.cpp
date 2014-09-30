@@ -568,14 +568,14 @@ void gSPLookAt( u32 l )
 {
 }
 
-void gSPVertex( u32 v, u32 n, u32 v0 )
+void gSPVertex( u32 a, u32 n, u32 v0 )
 {
 	//flush batched triangles:
 #ifdef __TRIBUFFER_OPT
 	gSPFlushTriangles();
 #endif
 
-	u32 address = RSP_SegmentToPhysical( v );
+	u32 address = RSP_SegmentToPhysical(a);
 
 	if ((address + sizeof( Vertex ) * n) > RDRAMSize)
 		return;
@@ -648,14 +648,14 @@ void gSPVertex( u32 v, u32 n, u32 v0 )
 	}
 }
 
-void gSPCIVertex( u32 v, u32 n, u32 v0 )
+void gSPCIVertex( u32 a, u32 n, u32 v0 )
 {
 
 #ifdef __TRIBUFFER_OPT
 	gSPFlushTriangles();
 #endif
 
-	u32 address = RSP_SegmentToPhysical( v );
+	u32 address = RSP_SegmentToPhysical( a );
 
 	if ((address + sizeof( PDVertex ) * n) > RDRAMSize)
 		return;
@@ -731,10 +731,10 @@ void gSPCIVertex( u32 v, u32 n, u32 v0 )
 	}
 }
 
-void gSPDMAVertex( u32 v, u32 n, u32 v0 )
+void gSPDMAVertex( u32 a, u32 n, u32 v0 )
 {
 
-	u32 address = gSP.DMAOffsets.vtx + RSP_SegmentToPhysical( v );
+	u32 address = gSP.DMAOffsets.vtx + RSP_SegmentToPhysical(a);
 
 	if ((address + 10 * n) > RDRAMSize)
 		return;

@@ -834,7 +834,7 @@ void RDRAMtoFrameBuffer::CopyFromRDRAM( u32 _address, bool _bUseAlpha)
 				r = ((col >> 11)&31)<<3;
 				g = ((col >> 6)&31)<<3;
 				b = ((col >> 1)&31)<<3;
-				a = col&1 > 0 ? 0xff : 0;
+				a = (col&1) > 0 ? 0xff : 0;
 				//*(dst++) = RGBA5551_RGBA8888(c);
 				dst[x + y*width] = (a<<24)|(b<<16)|(g<<8)|r;
 			}

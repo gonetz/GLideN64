@@ -41,6 +41,6 @@ extern ptr_VidExt_GL_SetAttribute       CoreVideo_GL_SetAttribute;
 extern ptr_VidExt_GL_GetAttribute       CoreVideo_GL_GetAttribute;
 extern ptr_VidExt_GL_SwapBuffers        CoreVideo_GL_SwapBuffers;
 
-extern void (*renderCallback)();
+extern void(*renderCallback)(int);
 
 #endif // GLIDEN64_MUPENPLUS_H

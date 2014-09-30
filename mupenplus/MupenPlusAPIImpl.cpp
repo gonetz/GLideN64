@@ -25,7 +25,7 @@ ptr_VidExt_GL_SetAttribute       CoreVideo_GL_SetAttribute = NULL;
 ptr_VidExt_GL_GetAttribute       CoreVideo_GL_GetAttribute = NULL;
 ptr_VidExt_GL_SwapBuffers        CoreVideo_GL_SwapBuffers = NULL;
 
-void (*renderCallback)() = NULL;
+void(*renderCallback)(int) = NULL;
 
 m64p_error PluginAPI::PluginStartup(m64p_dynlib_handle _CoreLibHandle)
 {
@@ -91,7 +91,6 @@ m64p_error PluginAPI::PluginGetVersion(
 
 void PluginAPI::SetRenderingCallback(void (*callback)(int))
 {
-	static void (*renderCallback)(int) = NULL;
 	renderCallback = callback;
 }
 
