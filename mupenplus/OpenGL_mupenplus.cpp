@@ -33,19 +33,27 @@ OGLVideo & OGLVideo::get()
 
 bool OGLVideoMupenPlus::_start()
 {
-	if (m_bFullscreen){
-		m_width = config.video.fullscreenWidth;
-		m_height = config.video.fullscreenHeight;
-	} else {
-		m_width = config.video.windowedWidth;
-		m_height = config.video.windowedHeight;
-	}
+	m_bFullscreen = config.video.fullscreen > 0;
+	m_width = config.video.windowedWidth;
+	m_height = config.video.windowedHeight;
 
 	CoreVideo_Init();
 	CoreVideo_GL_SetAttribute(M64P_GL_DOUBLEBUFFER, 1);
-	CoreVideo_GL_SetAttribute(M64P_GL_SWAP_CONTROL, 1);
-	CoreVideo_GL_SetAttribute(M64P_GL_BUFFER_SIZE, 16);
+	CoreVideo_GL_SetAttribute(M64P_GL_SWAP_CONTROL, config.video.verticalSync);
+	CoreVideo_GL_SetAttribute(M64P_GL_BUFFER_SIZE, 32);
 	CoreVideo_GL_SetAttribute(M64P_GL_DEPTH_SIZE, 16);
+
+	if (config.video.multisampling > 0) {
+		CoreVideo_GL_SetAttribute(M64P_GL_MULTISAMPLEBUFFERS, 1);
+		if (config.video.multisampling <= 2)
+			CoreVideo_GL_SetAttribute(M64P_GL_MULTISAMPLESAMPLES, 2);
+		else if (config.video.multisampling <= 4)
+			CoreVideo_GL_SetAttribute(M64P_GL_MULTISAMPLESAMPLES, 4);
+		else if (config.video.multisampling <= 8)
+			CoreVideo_GL_SetAttribute(M64P_GL_MULTISAMPLESAMPLES, 8);
+		else
+			CoreVideo_GL_SetAttribute(M64P_GL_MULTISAMPLESAMPLES, 16);
+	}
 
 	printf("(II) Setting video mode %dx%d...\n", m_width, m_height);
 	if (CoreVideo_SetVideoMode(m_width, m_height, 0, m_bFullscreen ? M64VIDEO_FULLSCREEN : M64VIDEO_WINDOWED, (m64p_video_flags)0) != M64ERR_SUCCESS) {
@@ -82,13 +90,8 @@ void OGLVideoMupenPlus::_saveScreenshot()
 void OGLVideoMupenPlus::_resizeWindow()
 {
 	u32 newWidth, newHeight;
-	if (m_bFullscreen) {
-		newWidth = config.video.fullscreenWidth;
-		newHeight = config.video.fullscreenHeight;
-	} else {
-		newWidth = config.video.windowedWidth;
-		newHeight = config.video.windowedHeight;
-	}
+	newWidth = config.video.windowedWidth;
+	newHeight = config.video.windowedHeight;
 	if (m_width != newWidth || m_height != newHeight) {
 		m_width = newWidth;
 		m_height = newHeight;

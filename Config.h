@@ -9,8 +9,10 @@ struct Config
 
 	struct
 	{
+		u32 fullscreen;
 		u32 fullscreenWidth, fullscreenHeight, windowedWidth, windowedHeight;
 		u32 fullscreenBits, fullscreenRefresh;
+		u32 multisampling, verticalSync;
 	} video;
 
 	struct

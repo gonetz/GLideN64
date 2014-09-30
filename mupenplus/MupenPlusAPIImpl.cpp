@@ -11,6 +11,11 @@
 
 ptr_ConfigGetSharedDataFilepath ConfigGetSharedDataFilepath = NULL;
 ptr_ConfigGetUserConfigPath ConfigGetUserConfigPath = NULL;
+ptr_ConfigOpenSection      ConfigOpenSection = NULL;
+ptr_ConfigSetDefaultInt    ConfigSetDefaultInt = NULL;
+ptr_ConfigSetDefaultBool   ConfigSetDefaultBool = NULL;
+ptr_ConfigGetParamInt      ConfigGetParamInt = NULL;
+ptr_ConfigGetParamBool     ConfigGetParamBool = NULL;
 
 /* definitions of pointers to Core video extension functions */
 ptr_VidExt_Init                  CoreVideo_Init = NULL;
@@ -31,6 +36,11 @@ m64p_error PluginAPI::PluginStartup(m64p_dynlib_handle _CoreLibHandle)
 {
 	ConfigGetSharedDataFilepath = (ptr_ConfigGetSharedDataFilepath)	DLSYM(_CoreLibHandle, "ConfigGetSharedDataFilepath");
 	ConfigGetUserConfigPath = (ptr_ConfigGetUserConfigPath)	DLSYM(_CoreLibHandle, "ConfigGetUserConfigPath");
+	ConfigOpenSection = (ptr_ConfigOpenSection)DLSYM(_CoreLibHandle, "ConfigOpenSection");
+	ConfigSetDefaultInt = (ptr_ConfigSetDefaultInt)DLSYM(_CoreLibHandle, "ConfigSetDefaultInt");
+	ConfigSetDefaultBool = (ptr_ConfigSetDefaultBool)DLSYM(_CoreLibHandle, "ConfigSetDefaultBool");
+	ConfigGetParamInt = (ptr_ConfigGetParamInt)DLSYM(_CoreLibHandle, "ConfigGetParamInt");
+	ConfigGetParamBool = (ptr_ConfigGetParamBool)DLSYM(_CoreLibHandle, "ConfigGetParamBool");
 
 	/* Get the core Video Extension function pointers from the library handle */
 	CoreVideo_Init = (ptr_VidExt_Init) DLSYM(_CoreLibHandle, "VidExt_Init");
