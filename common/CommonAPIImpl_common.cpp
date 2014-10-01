@@ -20,6 +20,8 @@ void RSP_ThreadProc(std::mutex * _pRspThreadMtx, std::mutex * _pPluginThreadMtx,
 {
 	_pRspThreadMtx->lock();
 	RSP_Init();
+	GBI.init();
+	video().start();
 	video().resizeWindow();
 	assert(!isGLError());
 
@@ -100,6 +102,8 @@ void PluginAPI::RomOpen()
 	m_pluginThreadMtx.unlock();
 #else
 	RSP_Init();
+	GBI.init();
+	video().start();
 	video().resizeWindow();
 #endif
 
