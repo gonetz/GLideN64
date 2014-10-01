@@ -22,7 +22,6 @@ void RSP_ThreadProc(std::mutex * _pRspThreadMtx, std::mutex * _pPluginThreadMtx,
 	RSP_Init();
 	GBI.init();
 	video().start();
-	video().resizeWindow();
 	assert(!isGLError());
 
 	while (true) {
@@ -104,7 +103,6 @@ void PluginAPI::RomOpen()
 	RSP_Init();
 	GBI.init();
 	video().start();
-	video().resizeWindow();
 #endif
 
 #ifdef DEBUG

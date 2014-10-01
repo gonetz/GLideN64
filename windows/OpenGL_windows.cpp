@@ -84,6 +84,8 @@ bool OGLVideoWindows::_start()
 		return false;
 	}
 
+	_resizeWindow();
+
 	return true;
 }
 
