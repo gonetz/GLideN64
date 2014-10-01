@@ -19,11 +19,13 @@ public:
 	OGLVideoMupenPlus() {}
 
 private:
+	void _setAttributes();
+
 	virtual bool _start();
 	virtual void _stop();
 	virtual void _swapBuffers();
 	virtual void _saveScreenshot();
-	virtual void _resizeWindow();
+	virtual bool _resizeWindow();
 	virtual void _changeWindow();
 };
 
@@ -33,13 +35,8 @@ OGLVideo & OGLVideo::get()
 	return video;
 }
 
-bool OGLVideoMupenPlus::_start()
+void OGLVideoMupenPlus::_setAttributes()
 {
-	m_bFullscreen = config.video.fullscreen > 0;
-	m_width = config.video.windowedWidth;
-	m_height = config.video.windowedHeight;
-
-	CoreVideo_Init();
 	CoreVideo_GL_SetAttribute(M64P_GL_DOUBLEBUFFER, 1);
 	CoreVideo_GL_SetAttribute(M64P_GL_SWAP_CONTROL, config.video.verticalSync);
 	CoreVideo_GL_SetAttribute(M64P_GL_BUFFER_SIZE, 32);
@@ -56,9 +53,20 @@ bool OGLVideoMupenPlus::_start()
 		else
 			CoreVideo_GL_SetAttribute(M64P_GL_MULTISAMPLESAMPLES, 16);
 	}
+}
+
+bool OGLVideoMupenPlus::_start()
+{
+	CoreVideo_Init();
+	_setAttributes();
+
+	m_bFullscreen = config.video.fullscreen > 0;
+	m_width = config.video.windowedWidth;
+	m_height = config.video.windowedHeight;
 
 	printf("(II) Setting video mode %dx%d...\n", m_width, m_height);
-	if (CoreVideo_SetVideoMode(m_width, m_height, 0, m_bFullscreen ? M64VIDEO_FULLSCREEN : M64VIDEO_WINDOWED, (m64p_video_flags)0) != M64ERR_SUCCESS) {
+	const m64p_video_flags flags = M64VIDEOFLAG_SUPPORT_RESIZING;
+	if (CoreVideo_SetVideoMode(m_width, m_height, 0, m_bFullscreen ? M64VIDEO_FULLSCREEN : M64VIDEO_WINDOWED, flags) != M64ERR_SUCCESS) {
 		printf("(EE) Error setting videomode %dx%d\n", m_width, m_height);
 		CoreVideo_Quit();
 		return false;
@@ -92,16 +100,21 @@ void OGLVideoMupenPlus::_saveScreenshot()
 {
 }
 
-void OGLVideoMupenPlus::_resizeWindow()
+bool OGLVideoMupenPlus::_resizeWindow()
 {
-	u32 newWidth, newHeight;
-	newWidth = config.video.windowedWidth;
-	newHeight = config.video.windowedHeight;
-	if (m_width != newWidth || m_height != newHeight) {
-		m_width = newWidth;
-		m_height = newHeight;
-		CoreVideo_ResizeWindow(m_width, m_height);
+	_setAttributes();
+
+	m_bFullscreen = false;
+	m_width = m_resizeWidth;
+	m_height = m_resizeHeight;
+	if (CoreVideo_ResizeWindow(m_width, m_height) != M64ERR_SUCCESS) {
+		printf("(EE) Error setting videomode %dx%d\n", m_width, m_height);
+		m_width = config.video.windowedWidth;
+		m_height = config.video.windowedHeight;
+		CoreVideo_Quit();
+		return false;
 	}
+	return true;
 }
 
 void OGLVideoMupenPlus::_changeWindow()

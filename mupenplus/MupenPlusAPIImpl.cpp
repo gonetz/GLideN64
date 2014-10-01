@@ -103,3 +103,8 @@ void PluginAPI::SetRenderingCallback(void (*callback)(int))
 {
 	renderCallback = callback;
 }
+
+void PluginAPI::ResizeVideoOutput(int _Width, int _Height)
+{
+	video().setWindowSize(_Width, _Height);
+}

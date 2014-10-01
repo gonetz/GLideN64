@@ -188,7 +188,7 @@ void Config_ApplyDlgConfig( HWND hWndDlg )
 	config.enableHWLighting = (SendDlgItemMessage( hWndDlg, IDC_HWLIGHT, BM_GETCHECK, NULL, NULL ) == BST_CHECKED);
 
 	if (!video().isFullscreen())
-		video().resizeWindow();
+		video().setWindowSize(config.video.windowedWidth, config.video.windowedHeight);
 
 	Config_SaveConfig();
 }

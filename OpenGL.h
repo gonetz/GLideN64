@@ -120,7 +120,8 @@ public:
 	void swapBuffers();
 	void saveScreenshot();
 	bool changeWindow();
-	void resizeWindow();
+	bool resizeWindow();
+	void setWindowSize(u32 _width, u32 _height);
 	void setCaptureScreen(const char * const _strDirectory);
 	void setToggleFullscreen() {m_bToggleFullscreen = true;}
 	void readScreen(void **_pDest, long *_pWidth, long *_pHeight );
@@ -139,28 +140,30 @@ public:
 
 protected:
 	OGLVideo() :
-		m_bCaptureScreen(false), m_bToggleFullscreen(false), m_bFullscreen(false),
-		m_width(0), m_height(0), m_heightOffset(0), m_scaleX(0), m_scaleY(0), m_strScreenDirectory(NULL)
+		m_bCaptureScreen(false), m_bToggleFullscreen(false), m_bResizeWindow(false), m_bFullscreen(false),
+		m_width(0), m_height(0), m_heightOffset(0), m_resizeWidth(0), m_resizeHeight(0),
+		m_scaleX(0), m_scaleY(0), m_strScreenDirectory(NULL)
 	{}
 
 	bool m_bCaptureScreen;
 	bool m_bToggleFullscreen;
+	bool m_bResizeWindow;
 	bool m_bFullscreen;
 
-	u32 m_width, m_height, m_heightOffset;
+	u32 m_width, m_height, m_heightOffset, m_resizeWidth, m_resizeHeight;
 	f32 m_scaleX, m_scaleY;
 
 	const char * m_strScreenDirectory;
 
+private:
 	OGLRender m_render;
 
-private:
 	virtual bool _start() = 0;
 	virtual void _stop() = 0;
 	virtual void _swapBuffers() = 0;
 	virtual void _saveScreenshot() = 0;
 	virtual void _changeWindow() = 0;
-	virtual void _resizeWindow() = 0;
+	virtual bool _resizeWindow() = 0;
 };
 
 inline

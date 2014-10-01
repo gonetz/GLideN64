@@ -14,7 +14,7 @@ private:
 	virtual void _stop();
 	virtual void _swapBuffers();
 	virtual void _saveScreenshot();
-	virtual void _resizeWindow();
+	virtual bool _resizeWindow();
 	virtual void _changeWindow();
 
 	HGLRC	hRC;
@@ -84,9 +84,7 @@ bool OGLVideoWindows::_start()
 		return false;
 	}
 
-	_resizeWindow();
-
-	return true;
+	return _resizeWindow();
 }
 
 void OGLVideoWindows::_stop()
@@ -230,7 +228,7 @@ void OGLVideoWindows::_changeWindow()
 	}
 }
 
-void OGLVideoWindows::_resizeWindow()
+bool OGLVideoWindows::_resizeWindow()
 {
 	RECT windowRect, statusRect, toolRect;
 
@@ -239,7 +237,7 @@ void OGLVideoWindows::_resizeWindow()
 		m_height = config.video.fullscreenHeight;
 		m_heightOffset = 0;
 
-		SetWindowPos( hWnd, NULL, 0, 0, m_width, m_height, SWP_NOACTIVATE | SWP_NOZORDER | SWP_SHOWWINDOW );
+		return (SetWindowPos( hWnd, NULL, 0, 0, m_width, m_height, SWP_NOACTIVATE | SWP_NOZORDER | SWP_SHOWWINDOW ) == TRUE);
 	} else {
 		m_width = config.video.windowedWidth;
 		m_height = config.video.windowedHeight;
@@ -258,7 +256,7 @@ void OGLVideoWindows::_resizeWindow()
 
 		AdjustWindowRect( &windowRect, GetWindowLong( hWnd, GWL_STYLE ), GetMenu( hWnd ) != NULL );
 
-		SetWindowPos( hWnd, NULL, 0, 0, windowRect.right - windowRect.left + 1,
-			windowRect.bottom - windowRect.top + 1 + toolRect.bottom - toolRect.top + 1, SWP_NOACTIVATE | SWP_NOZORDER | SWP_NOMOVE );
+		return (SetWindowPos( hWnd, NULL, 0, 0, windowRect.right - windowRect.left + 1,
+			windowRect.bottom - windowRect.top + 1 + toolRect.bottom - toolRect.top + 1, SWP_NOACTIVATE | SWP_NOZORDER | SWP_NOMOVE ) == TRUE);
 	}
 }

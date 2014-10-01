@@ -61,7 +61,7 @@ public:
 	void FBRead(unsigned int _addr) {}
 	void FBWrite(unsigned int addr, unsigned int size) {}
 	void FBGetFrameBufferInfo(void * _p) {}
-	void ResizeVideoOutput(int _Width, int _Height) {}
+	void ResizeVideoOutput(int _Width, int _Height);
 
 	m64p_error PluginStartup(m64p_dynlib_handle _CoreLibHandle);
 	m64p_error PluginShutdown();

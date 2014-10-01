@@ -17,7 +17,7 @@ private:
 	virtual void _stop();
 	virtual void _swapBuffers();
 	virtual void _saveScreenshot();
-	virtual void _resizeWindow();
+	virtual bool _resizeWindow();
 	virtual void _changeWindow();
 
 #if defined(USE_SDL)
@@ -132,8 +132,9 @@ void OGLVideoPosix::_saveScreenshot()
 {
 }
 
-void OGLVideoPosix::_resizeWindow()
+bool OGLVideoPosix::_resizeWindow()
 {
+	return false;
 }
 
 void OGLVideoPosix::_changeWindow()

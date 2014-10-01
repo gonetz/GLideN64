@@ -146,9 +146,25 @@ bool OGLVideo::changeWindow()
 	return true;
 }
 
-void OGLVideo::resizeWindow()
+void OGLVideo::setWindowSize(u32 _width, u32 _height)
 {
-	_resizeWindow();
+	if (m_width != _width || m_height != _height) {
+		m_resizeWidth = _width;
+		m_resizeHeight = _height;
+		m_bResizeWindow = true;
+	}
+}
+
+bool OGLVideo::resizeWindow()
+{
+	if (!m_bResizeWindow)
+		return false;
+	m_render._destroyData();
+	if (!_resizeWindow())
+		_start();
+	m_render._initData();
+	m_bResizeWindow = false;
+	return true;
 }
 
 void OGLVideo::updateScale()

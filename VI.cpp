@@ -71,6 +71,8 @@ void VI_UpdateScreen()
 	OGLVideo & ogl = video();
 	if (ogl.changeWindow())
 		return;
+	if (ogl.resizeWindow())
+		return;
 	ogl.saveScreenshot();
 
 	if (config.frameBufferEmulation.enable) {
