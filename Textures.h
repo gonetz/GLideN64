@@ -9,6 +9,7 @@
 
 #include <map>
 
+#include "CRC.h"
 #include "convert.h"
 
 struct CachedTexture
@@ -60,10 +61,11 @@ struct TextureCache
 	}
 
 private:
-	TextureCache() : m_maxBytes(0), m_cachedBytes(0), m_hits(0), m_misses(0), m_bitDepth(0)
+	TextureCache() : m_pDummy(NULL), m_maxBytes(0), m_cachedBytes(0), m_hits(0), m_misses(0), m_bitDepth(0)
 	{
 		current[0] = NULL;
 		current[1] = NULL;
+		CRC_BuildTable();
 	}
 	TextureCache(const TextureCache &);
 

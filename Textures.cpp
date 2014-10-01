@@ -7,7 +7,6 @@
 #include "gDP.h"
 #include "gSP.h"
 #include "N64.h"
-#include "CRC.h"
 #include "convert.h"
 #include "FrameBuffer.h"
 #include "Config.h"
@@ -254,8 +253,7 @@ void TextureCache::init()
 	m_cachedBytes = m_pDummy->textureBytes;
 	activateDummy( 0 );
 	activateDummy( 1 );
-
-	CRC_BuildTable();
+	current[0] = current[1] = NULL;
 }
 
 void TextureCache::destroy()
