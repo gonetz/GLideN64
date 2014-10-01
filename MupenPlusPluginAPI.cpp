@@ -58,29 +58,4 @@ EXPORT void CALL ResizeVideoOutput(int Width, int Height)
 	api().ResizeVideoOutput(Width, Height);
 }
 
-EXPORT void CALL SetFrameSkipping(bool autoSkip, int maxSkips)
-{
-	api().SetFrameSkipping(autoSkip, maxSkips);
-}
-
-EXPORT void CALL SetStretchVideo(bool stretch)
-{
-	api().SetStretchVideo(stretch);
-}
-
-EXPORT void CALL StartGL()
-{
-	api().StartGL();
-}
-
-EXPORT void CALL StopGL()
-{
-	api().StopGL();
-}
-
-EXPORT void CALL ResizeGL(int width, int height)
-{
-	api().ResizeGL(width, height);
-}
-
 } // extern "C"

@@ -103,15 +103,3 @@ void PluginAPI::SetRenderingCallback(void (*callback)(int))
 {
 	renderCallback = callback;
 }
-
-void PluginAPI::StartGL()
-{
-}
-
-void PluginAPI::StopGL()
-{
-}
-
-void PluginAPI::ResizeGL(int _width, int _height)
-{
-}

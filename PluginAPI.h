@@ -62,8 +62,6 @@ public:
 	void FBWrite(unsigned int addr, unsigned int size) {}
 	void FBGetFrameBufferInfo(void * _p) {}
 	void ResizeVideoOutput(int _Width, int _Height) {}
-	void SetFrameSkipping(bool _autoSkip, int _maxSkips) {}
-	void SetStretchVideo(bool _stretch) {}
 
 	m64p_error PluginStartup(m64p_dynlib_handle _CoreLibHandle);
 	m64p_error PluginShutdown();
@@ -75,9 +73,6 @@ public:
 		int * _Capabilities
 	);
 	void SetRenderingCallback(void (*callback)(int));
-	void StartGL();
-	void StopGL();
-	void ResizeGL(int _width, int _height);
 #endif
 
 	static PluginAPI & get()
