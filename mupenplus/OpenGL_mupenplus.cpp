@@ -80,6 +80,9 @@ void OGLVideoMupenPlus::_stop()
 
 void OGLVideoMupenPlus::_swapBuffers()
 {
+	// if emulator defined a render callback function, call it before buffer swap
+	if (renderCallback)
+		(*renderCallback)((gSP.changed&CHANGED_CPU_FB_WRITE) == 0 ? 1 : 0);
 	CoreVideo_GL_SwapBuffers();
 }
 
