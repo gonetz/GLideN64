@@ -1,8 +1,10 @@
 #include "GLideN64_MupenPlus.h"
 #include <stdio.h>
 
+#include "../GLideN64.h"
 #include "../OpenGL.h"
 #include "../Config.h"
+#include "../Revision.h"
 
 #ifndef _WINDOWS
 
@@ -64,9 +66,9 @@ bool OGLVideoMupenPlus::_start()
 
 	char caption[128];
 # ifdef _DEBUG
-	sprintf(caption, "GLideN64 debug");
+	sprintf(caption, "%s debug. Revision %s", pluginName, PLUGIN_REVISION);
 # else // _DEBUG
-	sprintf(caption, "GLideN64");
+	sprintf(caption, "%s. Revision %s", pluginName, PLUGIN_REVISION);
 # endif // _DEBUG
 	CoreVideo_SetCaption(caption);
 
