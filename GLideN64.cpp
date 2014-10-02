@@ -1,2 +1,2 @@
-char pluginName[] = "GLideN64 alpha";
+char pluginName[] = "GLideN64";
 void (*CheckInterrupts)( void );
