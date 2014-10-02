@@ -8,6 +8,22 @@ static int selectedMicrocode = -1;
 static GtkWidget *microcodeWindow = 0;
 static GtkWidget *microcodeList = 0;
 
+static const char *MicrocodeTypes[] =
+{
+	"Fast3D",
+	"F3DEX",
+	"F3DEX2",
+	"Line3D",
+	"L3DEX",
+	"L3DEX2",
+	"S2DEX",
+	"S2DEX2",
+	"Perfect Dark",
+	"DKR/JFG",
+	"Waverace US",
+	"None"
+};
+
 static const int numMicrocodeTypes = 11;
 static unsigned int uc_crc;
 static const char * uc_str;

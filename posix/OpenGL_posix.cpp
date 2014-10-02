@@ -3,7 +3,7 @@
 #include "../OpenGL.h"
 #include "../Config.h"
 
-void OGL_InitGLFunctions()
+void initGLFunctions()
 {
 }
 

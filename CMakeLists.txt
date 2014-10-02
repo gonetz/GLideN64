@@ -5,6 +5,7 @@ project( GLideN64 )
 set(GLideN64_SOURCES
   3DMath.cpp
   Combiner.cpp
+  CommonPluginAPI.cpp
   CRC.cpp
   DepthBuffer.cpp
   F3D.cpp

@@ -477,7 +477,7 @@ void Config_LoadConfig()
 	config.enableLOD = TRUE;
 }
 
-void Config_DoConfig()
+void Config_DoConfig(HWND /*hParent*/)
 {
 	Config_LoadConfig();
 
