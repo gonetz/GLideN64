@@ -173,6 +173,49 @@ void OGLVideo::updateScale()
 	m_scaleY = m_height / (float)VI.height;
 }
 
+void OGLVideo::_setBufferSize()
+{
+	if (m_bFullscreen && config.frameBufferEmulation.enable) {
+		switch (config.video.aspect) {
+			case 0: // stretch
+			m_width = m_screenWidth;
+			m_height = m_screenHeight;
+			break;
+			case 1: // force 4/3
+			if (m_screenWidth * 3 / 4 > m_screenHeight) {
+				m_height = m_screenHeight;
+				m_width = m_screenHeight * 4 / 3;
+			} else if (m_screenHeight * 4 / 3 > m_screenWidth) {
+				m_width = m_screenWidth;
+				m_height = m_screenWidth * 3 / 4;
+			} else {
+				m_width = m_screenWidth;
+				m_height = m_screenHeight;
+			}
+			break;
+			case 2: // force 16/9
+			if (m_screenWidth * 9 / 16 > m_screenHeight) {
+				m_height = m_screenHeight;
+				m_width = m_screenHeight * 16 / 9;
+			} else if (m_screenHeight * 16 / 9 > m_screenWidth) {
+				m_width = m_screenWidth;
+				m_height = m_screenWidth * 9 / 16;
+			} else {
+				m_width = m_screenWidth;
+				m_height = m_screenHeight;
+			}
+			break;
+			default:
+			assert(false && "Unknown aspect ratio");
+			m_width = m_screenWidth;
+			m_height = m_screenHeight;
+		}
+	} else {
+		m_width = m_screenWidth;
+		m_height = m_screenHeight;
+	}
+}
+
 void OGLVideo::readScreen(void **_pDest, long *_pWidth, long *_pHeight )
 {
 	*_pWidth = m_width;
@@ -635,7 +678,7 @@ void OGLRender::drawRect(int _ulx, int _uly, int _lrx, int _lry, float *_pColor)
 	FrameBuffer* pBuffer = fbList.getCurrent();
 	OGLVideo & ogl = video();
 	if (!fbList.isFboMode())
-		glViewport( 0, ogl.getHeightOffset(), ogl.getWidth(), ogl.getHeight());
+		glViewport( 0, ogl.getHeightOffset(), ogl.getScreenWidth(), ogl.getScreenHeight());
 	else {
 		glViewport( 0, 0, pBuffer->m_width*pBuffer->m_scaleX, pBuffer->m_height*pBuffer->m_scaleY );
 	}
@@ -693,7 +736,7 @@ void OGLRender::drawTexturedRect(float _ulx, float _uly, float _lrx, float _lry,
 	FrameBuffer* pBuffer = fbList.getCurrent();
 	OGLVideo & ogl = video();
 	if (!fbList.isFboMode())
-		glViewport( 0, ogl.getHeightOffset(), ogl.getWidth(), ogl.getHeight());
+		glViewport( 0, ogl.getHeightOffset(), ogl.getScreenWidth(), ogl.getScreenHeight());
 	else
 		glViewport( 0, 0, pBuffer->m_width*pBuffer->m_scaleX, pBuffer->m_height*pBuffer->m_scaleY );
 	glDisable( GL_CULL_FACE );
@@ -871,7 +914,7 @@ void OGLRender::_initStates()
 		glPolygonOffset( -3.0f, -3.0f );
 
 	OGLVideo & ogl = video();
-	glViewport( 0, ogl.getHeightOffset(), ogl.getWidth(), ogl.getHeight());
+	glViewport( 0, ogl.getHeightOffset(), ogl.getScreenWidth(), ogl.getScreenHeight());
 
 	glClearColor( 0.0f, 0.0f, 0.0f, 0.0f );
 	glClear( GL_COLOR_BUFFER_BIT );

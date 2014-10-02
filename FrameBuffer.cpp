@@ -363,7 +363,7 @@ void FrameBufferList::renderBuffer(u32 _address)
 	}
 
 	// glDisable(GL_SCISSOR_TEST) does not affect glBlitFramebuffer, at least on AMD
-	glScissor(0, 0, ogl.getWidth(), ogl.getHeight());
+	glScissor(0, 0, ogl.getScreenWidth(), ogl.getScreenHeight());
 	glDisable(GL_SCISSOR_TEST);
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, pBuffer->m_FBO);
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
@@ -371,9 +371,11 @@ void FrameBufferList::renderBuffer(u32 _address)
 	float clearColor[4] = {0.0f, 0.0f, 0.0f, 0.0f};
 	ogl.getRender().clearColorBuffer(clearColor);
 	const float scaleY = ogl.getScaleY();
+	const float hOffset = (ogl.getScreenWidth() - ogl.getWidth()) / 2.0f;
+	const float vOffset = (ogl.getScreenHeight() - ogl.getHeight()) / 2.0f;
 	glBlitFramebuffer(
 		0, (GLint)(srcY0*scaleY), ogl.getWidth(), (GLint)(srcY1*scaleY),
-		0, ogl.getHeightOffset() + (GLint)(dstY0*scaleY), ogl.getWidth(), ogl.getHeightOffset() + (GLint)(dstY1*scaleY),
+		hOffset, vOffset + ogl.getHeightOffset() + (GLint)(dstY0*scaleY), hOffset + ogl.getWidth(), vOffset + ogl.getHeightOffset() + (GLint)(dstY1*scaleY),
 		GL_COLOR_BUFFER_BIT, GL_LINEAR
 	);
 
@@ -388,7 +390,7 @@ void FrameBufferList::renderBuffer(u32 _address)
 			glBindFramebuffer(GL_READ_FRAMEBUFFER, pBuffer->m_FBO);
 			glBlitFramebuffer(
 				0, (GLint)(srcY0*scaleY), ogl.getWidth(), (GLint)(srcY1*scaleY),
-				0, ogl.getHeightOffset() + (GLint)(dstY0*scaleY), ogl.getWidth(), ogl.getHeightOffset() + (GLint)(dstY1*scaleY),
+				hOffset, vOffset + ogl.getHeightOffset() + (GLint)(dstY0*scaleY), hOffset + ogl.getWidth(), vOffset +  ogl.getHeightOffset() + (GLint)(dstY1*scaleY),
 				GL_COLOR_BUFFER_BIT, GL_LINEAR
 			);
 		}

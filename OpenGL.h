@@ -131,6 +131,8 @@ public:
 	f32 getScaleY() const {return m_scaleY;}
 	u32 getWidth() const {return m_width;}
 	u32 getHeight() const {return m_height;}
+	u32 getScreenWidth() const {return m_screenWidth;}
+	u32 getScreenHeight() const {return m_screenHeight;}
 	u32 getHeightOffset() const {return m_heightOffset;}
 	bool isFullscreen() const {return m_bFullscreen;}
 
@@ -141,16 +143,21 @@ public:
 protected:
 	OGLVideo() :
 		m_bCaptureScreen(false), m_bToggleFullscreen(false), m_bResizeWindow(false), m_bFullscreen(false),
-		m_width(0), m_height(0), m_heightOffset(0), m_resizeWidth(0), m_resizeHeight(0),
+		m_width(0), m_height(0), m_heightOffset(0),
+		m_screenWidth(0), m_screenHeight(0), m_resizeWidth(0), m_resizeHeight(0),
 		m_scaleX(0), m_scaleY(0), m_strScreenDirectory(NULL)
 	{}
+
+	void _setBufferSize();
 
 	bool m_bCaptureScreen;
 	bool m_bToggleFullscreen;
 	bool m_bResizeWindow;
 	bool m_bFullscreen;
 
-	u32 m_width, m_height, m_heightOffset, m_resizeWidth, m_resizeHeight;
+	u32 m_width, m_height, m_heightOffset;
+	u32 m_screenWidth, m_screenHeight;
+	u32 m_resizeWidth, m_resizeHeight;
 	f32 m_scaleX, m_scaleY;
 
 	const char * m_strScreenDirectory;

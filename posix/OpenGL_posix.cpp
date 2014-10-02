@@ -38,12 +38,13 @@ bool OGLVideoPosix::_start()
 	Uint32 videoFlags = 0;
 
     if (m_bFullscreen) {
-        m_width = config.video.fullscreenWidth;
-        m_height = config.video.fullscreenHeight;
+		m_screenWidth = config.video.fullscreenWidth;
+		m_screenHeight = config.video.fullscreenHeight;
 	} else {
-        m_width = config.video.windowedWidth;
-        m_height = config.video.windowedHeight;
+		m_screenWidth = config.video.windowedWidth;
+		m_screenHeight = config.video.windowedHeight;
 	}
+	_setBufferSize();
 
 	/* Initialize SDL */
 	printf( "[glN64]: (II) Initializing SDL video subsystem...\n" );
@@ -80,10 +81,10 @@ bool OGLVideoPosix::_start()
 	SDL_GL_SetAttribute( SDL_GL_BLUE_SIZE, 5 );*/
 	SDL_GL_SetAttribute( SDL_GL_DEPTH_SIZE, 16 );	// 32 bit z-buffer
 
-    printf( "[glN64]: (II) Setting video mode %dx%d...\n", m_width, m_height );
-    if (!(hScreen = SDL_SetVideoMode(m_width, m_height, 0, videoFlags)))
+	printf("[glN64]: (II) Setting video mode %dx%d...\n", m_screenWidth, m_screenHeight);
+	if (!(hScreen = SDL_SetVideoMode(m_screenWidth, m_screenHeight, 0, videoFlags)))
 	{
-        printf( "[glN64]: (EE) Error setting videomode %dx%d: %s\n", m_width, m_height, SDL_GetError() );
+		printf("[glN64]: (EE) Error setting videomode %dx%d: %s\n", m_screenWidth, m_screenHeight, SDL_GetError());
 		SDL_QuitSubSystem( SDL_INIT_VIDEO );
 		return false;
 	}

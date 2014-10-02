@@ -233,14 +233,16 @@ bool OGLVideoWindows::_resizeWindow()
 	RECT windowRect, statusRect, toolRect;
 
 	if (m_bFullscreen) {
-		m_width = config.video.fullscreenWidth;
-		m_height = config.video.fullscreenHeight;
+		m_screenWidth = config.video.fullscreenWidth;
+		m_screenHeight = config.video.fullscreenHeight;
 		m_heightOffset = 0;
+		_setBufferSize();
 
-		return (SetWindowPos( hWnd, NULL, 0, 0, m_width, m_height, SWP_NOACTIVATE | SWP_NOZORDER | SWP_SHOWWINDOW ) == TRUE);
+		return (SetWindowPos(hWnd, NULL, 0, 0, m_screenWidth, m_screenHeight, SWP_NOACTIVATE | SWP_NOZORDER | SWP_SHOWWINDOW) == TRUE);
 	} else {
-		m_width = config.video.windowedWidth;
-		m_height = config.video.windowedHeight;
+		m_screenWidth = m_width = config.video.windowedWidth;
+		m_screenHeight = config.video.windowedHeight;
+		_setBufferSize();
 
 		GetClientRect( hWnd, &windowRect );
 		GetWindowRect( hStatusBar, &statusRect );

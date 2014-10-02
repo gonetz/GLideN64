@@ -13,6 +13,7 @@ struct Config
 		u32 fullscreenWidth, fullscreenHeight, windowedWidth, windowedHeight;
 		u32 fullscreenBits, fullscreenRefresh;
 		u32 multisampling, verticalSync;
+		u32 aspect; // 0: stretch ; 1: 4/3 ; 2: 16/9
 	} video;
 
 	struct

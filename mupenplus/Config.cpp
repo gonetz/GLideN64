@@ -41,6 +41,8 @@ bool Config_SetDefault()
 
 	res = ConfigSetDefaultInt(g_configVideoGliden64, "MultiSampling", 0, "Enable/Disable MultiSampling (0=off, 2,4,8,16=quality)");
 	assert(res == M64ERR_SUCCESS);
+	res = ConfigSetDefaultInt(g_configVideoGliden64, "AspectRatio", 0, "Screen aspect ratio (0=stretch, 1=force 4:3, 2=force 16:9)");
+	assert(res == M64ERR_SUCCESS);
 
 	//#Texture Settings
 	res = ConfigSetDefaultBool(g_configVideoGliden64, "ForceBilinear", 0, "Force bilinear texture filter");
@@ -85,6 +87,7 @@ void Config_LoadConfig()
 	config.video.verticalSync = ConfigGetParamBool(g_configVideoGeneral, "VerticalSync");
 
 	config.video.multisampling = ConfigGetParamInt(g_configVideoGliden64, "MultiSampling");
+	config.video.aspect = ConfigGetParamInt(g_configVideoGliden64, "AspectRatio");
 
 	//#Texture Settings
 	config.texture.forceBilinear = ConfigGetParamBool(g_configVideoGliden64, "ForceBilinear");

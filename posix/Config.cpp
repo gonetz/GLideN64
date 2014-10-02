@@ -468,6 +468,7 @@ void Config_LoadConfig()
 
 	fclose( f );
 
+	config.video.aspect = 1;
 	// manually set frame bufer emulation options
 	config.frameBufferEmulation.copyToRDRAM = FALSE;
 	config.frameBufferEmulation.copyFromRDRAM = FALSE;
