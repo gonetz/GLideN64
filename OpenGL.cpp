@@ -234,6 +234,27 @@ void OGLVideo::readScreen(void **_pDest, long *_pWidth, long *_pHeight )
 	glReadPixels( 0, m_heightOffset, m_width, m_height, format, GL_UNSIGNED_BYTE, *_pDest );
 }
 
+void OGLVideo::readScreen2(void * _dest, int * _width, int * _height, int _front)
+{
+	if (_width == NULL || _height == NULL)
+		return;
+
+	*_width = m_screenWidth;
+	*_height = m_screenHeight;
+
+	if (_dest == NULL)
+		return;
+
+	GLint oldMode;
+	glGetIntegerv(GL_READ_BUFFER, &oldMode);
+	if (_front != 0)
+		glReadBuffer(GL_FRONT);
+	else
+		glReadBuffer(GL_BACK);
+	glReadPixels(0, m_heightOffset, m_screenWidth, m_screenHeight, GL_RGB, GL_UNSIGNED_BYTE, _dest);
+	glReadBuffer(oldMode);
+}
+
 void OGLRender::addTriangle(int _v0, int _v1, int _v2)
 {
 	triangles.elements[triangles.num++] = _v0;

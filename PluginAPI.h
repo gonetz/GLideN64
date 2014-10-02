@@ -57,11 +57,11 @@ public:
 	void DllAbout(HWND _hParent);
 #else
 	// MupenPlus
-	void ReadScreen2(void * _dest, int * _width, int * _height, int _front) {}
 	void FBRead(unsigned int _addr) {}
 	void FBWrite(unsigned int addr, unsigned int size) {}
 	void FBGetFrameBufferInfo(void * _p) {}
 	void ResizeVideoOutput(int _Width, int _Height);
+	void ReadScreen2(void * _dest, int * _width, int * _height, int _front);
 
 	m64p_error PluginStartup(m64p_dynlib_handle _CoreLibHandle);
 	m64p_error PluginShutdown();

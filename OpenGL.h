@@ -125,6 +125,7 @@ public:
 	void setCaptureScreen(const char * const _strDirectory);
 	void setToggleFullscreen() {m_bToggleFullscreen = true;}
 	void readScreen(void **_pDest, long *_pWidth, long *_pHeight );
+	void readScreen2(void * _dest, int * _width, int * _height, int _front);
 
 	void updateScale();
 	f32 getScaleX() const {return m_scaleX;}

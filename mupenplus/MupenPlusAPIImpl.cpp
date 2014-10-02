@@ -108,3 +108,8 @@ void PluginAPI::ResizeVideoOutput(int _Width, int _Height)
 {
 	video().setWindowSize(_Width, _Height);
 }
+
+void PluginAPI::ReadScreen2(void * _dest, int * _width, int * _height, int _front)
+{
+	video().readScreen2(_dest, _width, _height, _front);
+}
