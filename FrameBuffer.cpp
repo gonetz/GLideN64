@@ -291,7 +291,8 @@ void FrameBufferList::attachDepthBuffer()
 #ifndef GLES2
 		GLuint attachments[1] = { GL_COLOR_ATTACHMENT0 };
 		glDrawBuffers(1,  attachments);
-		glBindImageTexture(depthImageUnit, pDepthBuffer->m_pDepthTexture->glName, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA32F);
+		if (video().getRender().isImageTexturesSupported())
+			glBindImageTexture(depthImageUnit, pDepthBuffer->m_pDepthTexture->glName, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA32F);
 #endif
 		assert(checkFBO());
 	} else if (m_pCurrent != NULL) {
