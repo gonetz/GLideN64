@@ -480,12 +480,13 @@ void OGLRender::_updateCullFace() const
 void OGLRender::_updateViewport() const
 {
 	OGLVideo & ogl = video();
-	if (!frameBufferList().isFboMode())
-		glViewport(gSP.viewport.x * ogl.getScaleX(), (VI.height - (gSP.viewport.y + gSP.viewport.height)) * ogl.getScaleY() + ogl.getHeightOffset(),
-			gSP.viewport.width * ogl.getScaleX(), gSP.viewport.height * ogl.getScaleY());
-	else
-		glViewport(gSP.viewport.x * ogl.getScaleX(), (frameBufferList().getCurrent()->m_height - (gSP.viewport.y + gSP.viewport.height)) * ogl.getScaleY(),
-			gSP.viewport.width * ogl.getScaleX(), gSP.viewport.height * ogl.getScaleY());
+	if (!frameBufferList().isFboMode()) {
+		glViewport( (GLint)(gSP.viewport.x * ogl.getScaleX()), (GLint)((VI.height - (gSP.viewport.y + gSP.viewport.height)) * ogl.getScaleY() + ogl.getHeightOffset()),
+			max((GLint)(gSP.viewport.width * ogl.getScaleX()), 0), max((GLint)(gSP.viewport.height * ogl.getScaleY()), 0) );
+	} else {
+		glViewport( (GLint)(gSP.viewport.x * ogl.getScaleX()), (GLint)((frameBufferList().getCurrent()->m_height - (gSP.viewport.y + gSP.viewport.height)) * ogl.getScaleY()),
+			max((GLint)(gSP.viewport.width * ogl.getScaleX()), 0), max((GLint)(gSP.viewport.height * ogl.getScaleY()), 0) );
+	}
 }
 
 void OGLRender::_updateDepthUpdate() const
