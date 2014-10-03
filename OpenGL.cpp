@@ -749,8 +749,8 @@ void OGLRender::drawTexturedRect(float _ulx, float _uly, float _lrx, float _lry,
 	}
 
 #ifndef GLES2
-	//	if ((gDP.otherMode.l >> 16) == 0x3c18 && gDP.combine.muxs0 == 0x00ffffff && gDP.combine.muxs1 == 0xfffff238) //depth image based fog
-	if (gDP.textureImage.size == 2 && gDP.textureImage.address >= gDP.depthImageAddress &&  gDP.textureImage.address < (gDP.depthImageAddress +  gDP.colorImage.width*gDP.colorImage.width*6/4))
+	if ((gDP.otherMode.l >> 16) == 0x3c18 && gDP.combine.muxs0 == 0x00ffffff && gDP.combine.muxs1 == 0xfffff238) //depth image based fog
+	//if (gDP.textureImage.size == 2 && gDP.textureImage.address >= gDP.depthImageAddress &&  gDP.textureImage.address < (gDP.depthImageAddress +  gDP.colorImage.width*gDP.colorImage.width*6/4))
 		SetShadowMapCombiner();
 #endif // GLES2
 
