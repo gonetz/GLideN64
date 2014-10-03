@@ -539,8 +539,8 @@ void OGLRender::_updateStates() const
 	if (gDP.changed & CHANGED_SCISSOR) {
 		FrameBufferList & fbList = frameBufferList();
 		const u32 screenHeight = (fbList.getCurrent() == NULL || fbList.getCurrent()->m_height == 0 || !fbList.isFboMode()) ? VI.height : fbList.getCurrent()->m_height;
-		glScissor( gDP.scissor.ulx * ogl.getScaleX(), (screenHeight - gDP.scissor.lry) * ogl.getScaleY() + (fbList.isFboMode() ? 0 : ogl.getHeightOffset()),
-			(gDP.scissor.lrx - gDP.scissor.ulx) * ogl.getScaleX(), (gDP.scissor.lry - gDP.scissor.uly) * ogl.getScaleY() );
+		glScissor( (GLint)(gDP.scissor.ulx * ogl.getScaleX()), (GLint)((screenHeight - gDP.scissor.lry) * ogl.getScaleY() + (fbList.isFboMode() ? 0 : ogl.getHeightOffset())),
+			max((GLint)((gDP.scissor.lrx - gDP.scissor.ulx) * ogl.getScaleX()), 0), max((GLint)((gDP.scissor.lry - gDP.scissor.uly) * ogl.getScaleY()), 0) );
 	}
 
 	if (gSP.changed & CHANGED_VIEWPORT)
