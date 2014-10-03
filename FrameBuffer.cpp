@@ -479,7 +479,7 @@ void FrameBuffer_ActivateBufferTexture(s16 t, FrameBuffer *pBuffer)
 		pBuffer->m_pTexture->offsetT = (float)(pBuffer->m_height - shift/factor);
 	}
 
-//	FrameBuffer_RenderBuffer(buffer->startAddress);
+//	frameBufferList().renderBuffer(pBuffer->m_startAddress);
 	textureCache().activateTexture(t, pBuffer->m_pTexture);
 	gDP.changed |= CHANGED_FB_TEXTURE;
 }
