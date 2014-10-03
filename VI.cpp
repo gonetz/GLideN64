@@ -36,6 +36,8 @@ void VI_UpdateSize()
 	VI.interlaced = (*REG.VI_STATUS & 0x40) != 0;
 
 	VI.width = (u32)floor((hEnd - hStart) * xScale + 0.5f);
+	if (*REG.VI_WIDTH > 0)
+		VI.width = min(VI.width, *REG.VI_WIDTH);
 
 	if (VI.interlaced &&  _SHIFTR(*REG.VI_Y_SCALE, 0, 12) == 1024)
 		VI.real_height = (vEnd - vStart);
