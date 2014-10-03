@@ -1512,10 +1512,11 @@ void gSPBgRect1Cyc( u32 bg )
 	loadBGImage(objScaleBg, true);
 
 #ifndef GLES2
-	if (gSP.bgImage.address == gDP.depthImageAddress || depthBufferList().findBuffer(gSP.bgImage.address) != NULL) {
+	if (gSP.bgImage.address == gDP.depthImageAddress || depthBufferList().findBuffer(gSP.bgImage.address) != NULL)
 		_copyDepthBuffer();
-		return;
-	}
+	// Zelda MM uses depth buffer copy in LoT and in pause screen.
+	// In later case depth buffer is used as temporal color buffer, and usual rendering must be used.
+	// Since both situations are hard to distinguish, do the both depth buffer copy and bg rendering.
 #endif // GLES2
 
 	f32 imageX = gSP.bgImage.imageX;
@@ -1597,10 +1598,9 @@ void gSPBgRectCopy( u32 bg )
 	loadBGImage(objBg, false);
 
 #ifndef GLES2
-	if (gSP.bgImage.address == gDP.depthImageAddress || depthBufferList().findBuffer(gSP.bgImage.address) != NULL) {
+	if (gSP.bgImage.address == gDP.depthImageAddress || depthBufferList().findBuffer(gSP.bgImage.address) != NULL)
 		_copyDepthBuffer();
-		return;
-	}
+	// See comment to gSPBgRect1Cyc
 #endif // GLES2
 
 	f32 frameX = objBg->frameX / 4.0f;
