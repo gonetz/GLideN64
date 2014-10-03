@@ -27,8 +27,8 @@ void VI_UpdateSize()
 	const u32 hStart = _SHIFTR( *REG.VI_H_START, 16, 10 );
 
 	// These are in half-lines, so shift an extra bit
-	const u32 vEnd = _SHIFTR( *REG.VI_V_START, 1, 9 );
-	const u32 vStart = _SHIFTR( *REG.VI_V_START, 17, 9 );
+	const u32 vEnd = _SHIFTR( *REG.VI_V_START, 0, 10 );
+	const u32 vStart = _SHIFTR( *REG.VI_V_START, 16, 10 );
 	const bool interlacedPrev = VI.interlaced;
 	const u32 widthPrev = VI.width;
 	const u32 heightPrev = VI.height;
@@ -38,14 +38,19 @@ void VI_UpdateSize()
 	VI.width = (u32)floor((hEnd - hStart) * xScale + 0.5f);
 
 	if (VI.interlaced &&  _SHIFTR(*REG.VI_Y_SCALE, 0, 12) == 1024)
-		VI.real_height = (vEnd - vStart) << 1;
+		VI.real_height = (vEnd - vStart);
 	else
-		VI.real_height = (u32)floor((vEnd - vStart) * yScale + 0.5f);
+		VI.real_height = (u32)floor(((vEnd - vStart)>>1) * yScale + 0.5f);
+	if (VI.interlaced && VI.real_height % 2 == 1)
+		--VI.real_height;
 	const bool isPAL = (*REG.VI_V_SYNC & 0x3ff) > 550;
-	if (isPAL && (vEnd - vStart) > 237)
+	if (isPAL && (vEnd - vStart) > 480)
 		VI.height = VI.real_height*1.0041841f;
 	else
 		VI.height = VI.real_height*1.0126582f;
+
+//	const int fsaa = ((*REG.VI_STATUS) >> 8) & 3;
+//	const int divot = ((*REG.VI_STATUS) >> 4) & 1;
 
 	if (VI.width == 0)
 		VI.width = *REG.VI_WIDTH;
