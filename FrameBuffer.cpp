@@ -172,7 +172,7 @@ FrameBuffer * FrameBufferList::findTmpBuffer(u32 _address)
 
 void FrameBufferList::saveBuffer(u32 _address, u16 _format, u16 _size, u16 _width, u16 _height, bool _cfb)
 {
-	if (_SHIFTR(*REG.VI_H_START, 0, 10) == 0) // H width is zero. Don't save
+	if (VI.width == 0) // H width is zero. Don't save
 		return;
 	OGLVideo & ogl = video();
 	m_drawBuffer = GL_FRAMEBUFFER;
@@ -332,7 +332,7 @@ void FrameBufferList::renderBuffer(u32 _address)
 {
 	static u32 vStartPrev = 0;
 
-	if (_SHIFTR( *REG.VI_H_START, 0, 10 ) == 0) // H width is zero. Don't draw
+	if (VI.width == 0) // H width is zero. Don't draw
 		return;
 
 	FrameBuffer *pBuffer = findBuffer(_address);
@@ -407,7 +407,7 @@ void FrameBufferList::renderBuffer(u32 _address)
 
 void FrameBufferList::renderBuffer(u32 _address)
 {
-	if (_SHIFTR( *REG.VI_H_START, 0, 10 ) == 0) // H width is zero. Don't draw
+	if (VI.width == 0) // H width is zero. Don't draw
 		return;
 	FrameBuffer *pBuffer = findBuffer(_address);
 	if (pBuffer == NULL)
@@ -556,7 +556,7 @@ void FrameBufferToRDRAM::Destroy() {
 }
 
 void FrameBufferToRDRAM::CopyToRDRAM( u32 address, bool bSync ) {
-	if (_SHIFTR(*REG.VI_H_START, 0, 10) == 0) // H width is zero. Don't copy
+	if (VI.width == 0) // H width is zero. Don't copy
 		return;
 	FrameBuffer *pBuffer = frameBufferList().findBuffer(address);
 	if (pBuffer == NULL)
@@ -696,7 +696,7 @@ void DepthBufferToRDRAM::Destroy() {
 }
 
 void DepthBufferToRDRAM::CopyToRDRAM( u32 address) {
-	if (_SHIFTR(*REG.VI_H_START, 0, 10) == 0) // H width is zero. Don't copy
+	if (VI.width == 0) // H width is zero. Don't copy
 		return;
 	FrameBuffer *pBuffer = frameBufferList().findBuffer(address);
 	if (pBuffer == NULL || pBuffer->m_pDepthBuffer == NULL)
