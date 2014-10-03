@@ -47,10 +47,10 @@ void VI_UpdateSize()
 	else
 		VI.height = VI.real_height*1.0126582f;
 
-	if (VI.width == 0.0f)
+	if (VI.width == 0)
 		VI.width = *REG.VI_WIDTH;
-	if (VI.height == 0.0f)
-		VI.height = 240.0f;
+	if (VI.height == 0)
+		VI.height = 240;
 
 	if (config.frameBufferEmulation.enable && (interlacedPrev != VI.interlaced || widthPrev != VI.width || heightPrev != VI.height)) {
 		frameBufferList().destroy();
