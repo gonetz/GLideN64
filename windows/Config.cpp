@@ -106,7 +106,7 @@ void Config_LoadConfig()
 		config.video.fullscreenBits = 16;
 		config.video.fullscreenRefresh = 60;
 		config.texture.forceBilinear = FALSE;
-		config.texture.maxBytes = 32 * uMegabyte;
+		config.texture.maxBytes = 192 * uMegabyte;
 		config.frameBufferEmulation.enable = FALSE;
 		config.frameBufferEmulation.copyDepthToRDRAM = FALSE;
 		config.texture.textureBitDepth = 1;
