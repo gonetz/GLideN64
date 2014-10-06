@@ -38,5 +38,7 @@ void DebugRSPState( u32 pci, u32 pc, u32 cmd, u32 w0, u32 w1 );
 void DebugMsg( u16 type, const char * format, ... );
 void StartDump( char *filename );
 void EndDump();
-
+#else
+#define DebugMsg(A, ...)
+#define DebugRSPState(A, ...)
 #endif // DEBUG_H
