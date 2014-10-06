@@ -5,7 +5,8 @@
 
 typedef struct
 {
-	u32 PC[18], PCi, busy, halt, close, DList, uc_start, uc_dstart, cmd, nextCmd, count;
+	u32 PC[18], PCi, busy, halt, close, DList, uc_start, uc_dstart, cmd, nextCmd;
+	s32 count;
 } RSPInfo;
 
 extern RSPInfo RSP;
@@ -15,5 +16,6 @@ extern RSPInfo RSP;
 void RSP_Init();
 void RSP_ProcessDList();
 void RSP_LoadMatrix( f32 mtx[4][4], u32 address );
+void RSP_CheckDLCounter();
 
 #endif

@@ -201,6 +201,7 @@ void F3DEX2_DMAIO( u32 w0, u32 w1 )
 
 void F3DEX2_Special_1( u32 w0, u32 w1 )
 {
+	gSPDlistCount(_SHIFTR( w0, 0, 8 ), w1);
 }
 
 void F3DEX2_Special_2( u32 w0, u32 w1 )

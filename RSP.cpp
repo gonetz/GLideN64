@@ -121,6 +121,18 @@ LoadLoop:
 #endif // WIN32_ASM
 }
 
+void RSP_CheckDLCounter()
+{
+	if (RSP.count != -1) {
+		--RSP.count;
+		if (RSP.count == 0) {
+			RSP.count = -1;
+			--RSP.PCi;
+			DebugMsg( DEBUG_LOW | DEBUG_HANDLED, "End of DL\n" );
+		}
+	}
+}
+
 void RSP_ProcessDList()
 {
 	VI_UpdateSize();
@@ -128,7 +140,7 @@ void RSP_ProcessDList()
 
 	RSP.PC[0] = *(u32*)&DMEM[0x0FF0];
 	RSP.PCi = 0;
-	RSP.count = 0;
+	RSP.count = -1;
 
 	RSP.halt = FALSE;
 	RSP.busy = TRUE;
@@ -213,6 +225,7 @@ void RSP_ProcessDList()
 		RSP.nextCmd = _SHIFTR( *(u32*)&RDRAM[RSP.PC[RSP.PCi]], 24, 8 );
 
 		GBI.cmd[RSP.cmd]( w0, w1 );
+		RSP_CheckDLCounter();
 	}
 
 	if (config.frameBufferEmulation.copyToRDRAM)

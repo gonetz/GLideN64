@@ -934,6 +934,29 @@ void gSPBranchLessZ( u32 branchdl, u32 vtx, f32 zval )
 #endif
 }
 
+void gSPDlistCount(u32 count, u32 v)
+{
+	u32 address = RSP_SegmentToPhysical( v );
+	if (address == 0 || (address + 8) > RDRAMSize) {
+		DebugMsg( DEBUG_HIGH | DEBUG_ERROR, "// Attempting to branch to display list at invalid address\n" );
+		DebugMsg( DEBUG_HIGH | DEBUG_HANDLED, "gSPDlistCnt(%d, 0x%08X );\n", count, v );
+		return;
+	}
+
+	if (RSP.PCi >= 9) {
+		DebugMsg( DEBUG_HIGH | DEBUG_ERROR, "// ** DL stack overflow **\n" );
+		DebugMsg( DEBUG_HIGH | DEBUG_HANDLED, "gSPDlistCnt(%d, 0x%08X );\n", count, v );
+		return;
+	}
+
+	DebugMsg( DEBUG_HIGH | DEBUG_HANDLED, "gSPDlistCnt(%d, 0x%08X );\n", count, v );
+
+	++RSP.PCi;  // go to the next PC in the stack
+	RSP.PC[RSP.PCi] = address;  // jump to the address
+	RSP.nextCmd = _SHIFTR( *(u32*)&RDRAM[address], 24, 8 );
+	RSP.count = count + 1;
+}
+
 void gSPSetDMAOffsets( u32 mtxoffset, u32 vtxoffset )
 {
 	gSP.DMAOffsets.mtx = mtxoffset;

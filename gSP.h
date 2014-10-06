@@ -166,6 +166,7 @@ void gSPDisplayList( u32 dl );
 void gSPDMADisplayList( u32 dl, u32 n );
 void gSPBranchList( u32 dl );
 void gSPBranchLessZ( u32 branchdl, u32 vtx, f32 zval );
+void gSPDlistCount(u32 count, u32 v);
 void gSPSprite2DBase( u32 base );
 void gSPDMATriangles( u32 tris, u32 n );
 void gSP1Quadrangle( s32 v0, s32 v1, s32 v2, s32 v3 );
