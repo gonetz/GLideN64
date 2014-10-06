@@ -20,8 +20,8 @@ void RDP_NoOp( u32 w0, u32 w1 )
 void RDP_SetCImg( u32 w0, u32 w1 )
 {
 	gDPSetColorImage( _SHIFTR( w0, 21,  3 ),		// fmt
-		              _SHIFTR( w0, 19,  2 ),		// siz
-                      _SHIFTR( w0,  0, 12 ) + 1,	// width
+					  _SHIFTR( w0, 19,  2 ),		// siz
+					  _SHIFTR( w0,  0, 12 ) + 1,	// width
 					  w1 );							// img
 }
 
@@ -55,7 +55,7 @@ void RDP_SetEnvColor( u32 w0, u32 w1 )
 void RDP_SetPrimColor( u32 w0, u32 w1 )
 {
 	gDPSetPrimColor( _SHIFTR( w0,  8, 8 ),		// m
-		             _SHIFTR( w0,  0, 8 ),		// l
+					 _SHIFTR( w0,  0, 8 ),		// l
 					 _SHIFTR( w1, 24, 8 ),		// r
 					 _SHIFTR( w1, 16, 8 ),		// g
 					 _SHIFTR( w1,  8, 8 ),		// b
@@ -66,7 +66,7 @@ void RDP_SetPrimColor( u32 w0, u32 w1 )
 void RDP_SetBlendColor( u32 w0, u32 w1 )
 {
 	gDPSetBlendColor( _SHIFTR( w1, 24, 8 ),		// r
-			 		  _SHIFTR( w1, 16, 8 ),		// g
+					  _SHIFTR( w1, 16, 8 ),		// g
 					  _SHIFTR( w1,  8, 8 ),		// b
 					  _SHIFTR( w1,  0, 8 ) );	// a
 }
@@ -88,15 +88,15 @@ void RDP_FillRect( u32 w0, u32 w1 )
 {
 	gDPFillRectangle( _SHIFTR( w1, 14, 10 ),	// ulx
 					  _SHIFTR( w1,  2, 10 ),	// uly
-		              _SHIFTR( w0, 14, 10 ),	// lrx
+					  _SHIFTR( w0, 14, 10 ),	// lrx
 					  _SHIFTR( w0,  2, 10 ) );	// lry
 }
 
 void RDP_SetTile( u32 w0, u32 w1 )
 {
 	gDPSetTile( _SHIFTR( w0, 21, 3 ),	// fmt
-	            _SHIFTR( w0, 19, 2 ),	// siz
-	            _SHIFTR( w0,  9, 9 ),	// line
+				_SHIFTR( w0, 19, 2 ),	// siz
+				_SHIFTR( w0,  9, 9 ),	// line
 				_SHIFTR( w0,  0, 9 ),	// tmem
 				_SHIFTR( w1, 24, 3 ),	// tile
 				_SHIFTR( w1, 20, 4 ),	// palette
@@ -111,7 +111,7 @@ void RDP_SetTile( u32 w0, u32 w1 )
 void RDP_LoadTile( u32 w0, u32 w1 )
 {
 	gDPLoadTile( _SHIFTR( w1, 24,  3 ),		// tile
-		         _SHIFTR( w0, 12, 12 ),		// uls
+				 _SHIFTR( w0, 12, 12 ),		// uls
 				 _SHIFTR( w0,  0, 12 ),		// ult
 				 _SHIFTR( w1, 12, 12 ),		// lrs
 				 _SHIFTR( w1,  0, 12 ) );	// lrt
@@ -120,7 +120,7 @@ void RDP_LoadTile( u32 w0, u32 w1 )
 void RDP_LoadBlock( u32 w0, u32 w1 )
 {
 	gDPLoadBlock( _SHIFTR( w1, 24,  3 ),	// tile
-		          _SHIFTR( w0, 12, 12 ),	// uls
+				  _SHIFTR( w0, 12, 12 ),	// uls
 				  _SHIFTR( w0,  0, 12 ),	// ult
 				  _SHIFTR( w1, 12, 12 ),	// lrs
 				  _SHIFTR( w1,  0, 12 ) );	// dxt
@@ -129,16 +129,16 @@ void RDP_LoadBlock( u32 w0, u32 w1 )
 void RDP_SetTileSize( u32 w0, u32 w1 )
 {
 	gDPSetTileSize( _SHIFTR( w1, 24,  3 ),		// tile
-		            _SHIFTR( w0, 12, 12 ),		// uls
-				    _SHIFTR( w0,  0, 12 ),		// ult
-				    _SHIFTR( w1, 12, 12 ),		// lrs
-				    _SHIFTR( w1,  0, 12 ) );	// lrt
+					_SHIFTR( w0, 12, 12 ),		// uls
+					_SHIFTR( w0,  0, 12 ),		// ult
+					_SHIFTR( w1, 12, 12 ),		// lrs
+					_SHIFTR( w1,  0, 12 ) );	// lrt
 }
 
 void RDP_LoadTLUT( u32 w0, u32 w1 )
 {
 	gDPLoadTLUT( _SHIFTR( w1, 24,  3 ),	// tile
-		          _SHIFTR( w0, 12, 12 ),	// uls
+				  _SHIFTR( w0, 12, 12 ),	// uls
 				  _SHIFTR( w0,  0, 12 ),	// ult
 				  _SHIFTR( w1, 12, 12 ),	// lrs
 				  _SHIFTR( w1,  0, 12 ) );	// lrt
@@ -153,13 +153,13 @@ void RDP_SetOtherMode( u32 w0, u32 w1 )
 void RDP_SetPrimDepth( u32 w0, u32 w1 )
 {
 	gDPSetPrimDepth( _SHIFTR( w1, 16, 16 ),		// z
-		             _SHIFTR( w1,  0, 16 ) );	// dz
+					 _SHIFTR( w1,  0, 16 ) );	// dz
 }
 
 void RDP_SetScissor( u32 w0, u32 w1 )
 {
 	gDPSetScissor( _SHIFTR( w1, 24, 2 ),						// mode
-		           _FIXED2FLOAT( _SHIFTR( w0, 12, 12 ), 2 ),	// ulx
+				   _FIXED2FLOAT( _SHIFTR( w0, 12, 12 ), 2 ),	// ulx
 				   _FIXED2FLOAT( _SHIFTR( w0,  0, 12 ), 2 ),	// uly
 				   _FIXED2FLOAT( _SHIFTR( w1, 12, 12 ), 2 ),	// lrx
 				   _FIXED2FLOAT( _SHIFTR( w1,  0, 12 ), 2 ) );	// lry
@@ -168,7 +168,7 @@ void RDP_SetScissor( u32 w0, u32 w1 )
 void RDP_SetConvert( u32 w0, u32 w1 )
 {
 	gDPSetConvert( _SHIFTR( w0, 13, 9 ),	// k0
-		           _SHIFTR( w0,  4, 9 ),	// k1
+				   _SHIFTR( w0,  4, 9 ),	// k1
 				   _SHIFTL( w0,  5, 4 ) | _SHIFTR( w1, 25, 5 ),	// k2
 				   _SHIFTR( w1, 18, 9 ),	// k3
 				   _SHIFTR( w1,  9, 9 ),	// k4
@@ -178,14 +178,14 @@ void RDP_SetConvert( u32 w0, u32 w1 )
 void RDP_SetKeyR( u32 w0, u32 w1 )
 {
 	gDPSetKeyR( _SHIFTR( w1,  8,  8 ),		// cR
-			    _SHIFTR( w1,  0,  8 ),		// sR
+				_SHIFTR( w1,  0,  8 ),		// sR
 				_SHIFTR( w1, 16, 12 ) );	// wR
 }
 
 void RDP_SetKeyGB( u32 w0, u32 w1 )
 {
 	gDPSetKeyGB( _SHIFTR( w1, 24,  8 ),		// cG
-		         _SHIFTR( w1, 16,  8 ),		// sG
+				 _SHIFTR( w1, 16,  8 ),		// sG
 				 _SHIFTR( w0, 12, 12 ),		// wG
 				 _SHIFTR( w1,  8,  8 ),		// cB
 				 _SHIFTR( w1,  0,  8 ),		// SB
