@@ -4,7 +4,7 @@
 #include "F3DEX.h"
 #include "F3DEX2.h"
 #include "N64.h"
-#include "RSP.h"	
+#include "RSP.h"
 #include "RDP.h"
 #include "gSP.h"
 #include "gDP.h"
@@ -60,8 +60,8 @@ void F3DEX2_Reserved1( u32 w0, u32 w1 )
 
 void F3DEX2_Tri1( u32 w0, u32 w1 )
 {
-	gSP1Triangle( _SHIFTR( w0, 17, 7 ), 
-		          _SHIFTR( w0, 9, 7 ), 
+	gSP1Triangle( _SHIFTR( w0, 17, 7 ),
+				  _SHIFTR( w0, 9, 7 ),
 				  _SHIFTR( w0, 1, 7 ));
 }
 
@@ -93,7 +93,7 @@ void F3DEX2_MoveWord( u32 w0, u32 w1 )
 			gSPFogFactor( (s16)_SHIFTR( w1, 16, 16 ), (s16)_SHIFTR( w1, 0, 16 ) );
 			break;
 		case G_MW_LIGHTCOL:
-            gSPLightColor((_SHIFTR( w0, 0, 16 ) / 24) + 1, w1 );
+			gSPLightColor((_SHIFTR( w0, 0, 16 ) / 24) + 1, w1 );
 			break;
 		case G_MW_PERSPNORM:
 			gSPPerspNormalize( w1 );
@@ -103,10 +103,10 @@ void F3DEX2_MoveWord( u32 w0, u32 w1 )
 
 void F3DEX2_Texture( u32 w0, u32 w1 )
 {
-	gSPTexture( _FIXED2FLOAT( _SHIFTR( w1, 16, 16 ), 16 ), 
-		        _FIXED2FLOAT( _SHIFTR( w1, 0, 16 ), 16 ), 
-		        _SHIFTR( w0, 11, 3 ), 
-				_SHIFTR( w0, 8, 3 ), 
+	gSPTexture( _FIXED2FLOAT( _SHIFTR( w1, 16, 16 ), 16 ),
+				_FIXED2FLOAT( _SHIFTR( w1, 0, 16 ), 16 ),
+				_SHIFTR( w0, 11, 3 ),
+				_SHIFTR( w0, 8, 3 ),
 				_SHIFTR( w0, 1, 7 ) );
 }
 
@@ -214,13 +214,13 @@ void F3DEX2_Special_3( u32 w0, u32 w1 )
 
 void F3DEX2_Quad( u32 w0, u32 w1 )
 {
-	gSP2Triangles( _SHIFTR( w0, 17, 7 ), 
-		           _SHIFTR( w0, 9, 7 ), 
-				   _SHIFTR( w0, 1, 7 ), 
+	gSP2Triangles( _SHIFTR( w0, 17, 7 ),
+				   _SHIFTR( w0, 9, 7 ),
+				   _SHIFTR( w0, 1, 7 ),
 				   0,
-				   _SHIFTR( w1, 17, 7 ), 
-		           _SHIFTR( w1, 9, 7 ), 
-				   _SHIFTR( w1, 1, 7 ), 
+				   _SHIFTR( w1, 17, 7 ),
+				   _SHIFTR( w1, 9, 7 ),
+				   _SHIFTR( w1, 1, 7 ),
 				   0 );
 }
 
