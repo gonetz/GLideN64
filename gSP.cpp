@@ -1250,7 +1250,7 @@ void gSPModifyVertex( u32 _vtx, u32 _where, u32 _val )
 			vtx0.a = _SHIFTR( _val, 0, 8 ) * 0.0039215689f;
 			break;
 		case G_MWO_POINT_ST:
-			if (gDP.otherMode.texturePersp > 0) {
+			if (gDP.otherMode.texturePersp != 0) {
 				vtx0.s = _FIXED2FLOAT( (s16)_SHIFTR( _val, 16, 16 ), 5 );
 				vtx0.t = _FIXED2FLOAT( (s16)_SHIFTR( _val, 0, 16 ), 5 );
 			} else {
