@@ -12,6 +12,8 @@
 #include "Config.h"
 #include "Debug.h"
 
+using namespace std;
+
 VIInfo VI;
 
 void VI_UpdateSize()

@@ -24,6 +24,8 @@
 #include "Config.h"
 #include "Log.h"
 
+using namespace std;
+
 bool checkFBO() {
 	GLenum e = glCheckFramebufferStatus(GL_FRAMEBUFFER);
 	switch (e) {
