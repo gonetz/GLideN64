@@ -2,7 +2,7 @@
 #include "Debug.h"
 #include "F3D.h"
 #include "N64.h"
-#include "RSP.h"	
+#include "RSP.h"
 #include "RDP.h"
 #include "gSP.h"
 #include "gDP.h"
@@ -116,8 +116,8 @@ void F3D_Sprite2D_Base( u32 w0, u32 w1 )
 
 void F3D_Tri1( u32 w0, u32 w1 )
 {
-	gSP1Triangle( _SHIFTR( w1, 16, 8 ) / 10, 
-		          _SHIFTR( w1, 8, 8 ) / 10, 
+	gSP1Triangle( _SHIFTR( w1, 16, 8 ) / 10,
+				  _SHIFTR( w1, 8, 8 ) / 10,
 				  _SHIFTR( w1, 0, 8 ) / 10);
 }
 
@@ -198,10 +198,10 @@ void F3D_MoveWord( u32 w0, u32 w1 )
 
 void F3D_Texture( u32 w0, u32 w1 )
 {
-	gSPTexture( _FIXED2FLOAT( _SHIFTR( w1, 16, 16 ), 16 ), 
-		        _FIXED2FLOAT( _SHIFTR( w1, 0, 16 ), 16 ), 
-		        _SHIFTR( w0, 11, 3 ), 
-				_SHIFTR( w0, 8, 3 ), 
+	gSPTexture( _FIXED2FLOAT( _SHIFTR( w1, 16, 16 ), 16 ),
+				_FIXED2FLOAT( _SHIFTR( w1, 0, 16 ), 16 ),
+				_SHIFTR( w0, 11, 3 ),
+				_SHIFTR( w0, 8, 3 ),
 				_SHIFTR( w0, 0, 8 ) );
 }
 
@@ -340,7 +340,7 @@ void F3D_RDPHalf_Cont( u32 w0, u32 w1 )
 void F3D_Tri4( u32 w0, u32 w1 )
 {
 	gSP4Triangles( _SHIFTR( w0,  0, 4 ), _SHIFTR( w1,  0, 4 ), _SHIFTR( w1,  4, 4 ),
-		           _SHIFTR( w0,  4, 4 ), _SHIFTR( w1,  8, 4 ), _SHIFTR( w1, 12, 4 ),
+				   _SHIFTR( w0,  4, 4 ), _SHIFTR( w1,  8, 4 ), _SHIFTR( w1, 12, 4 ),
 				   _SHIFTR( w0,  8, 4 ), _SHIFTR( w1, 16, 4 ), _SHIFTR( w1, 20, 4 ),
 				   _SHIFTR( w0, 12, 4 ), _SHIFTR( w1, 24, 4 ), _SHIFTR( w1, 28, 4 ) );
 }
