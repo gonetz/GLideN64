@@ -11,6 +11,7 @@
 #include "../GLideN64.h"
 #include "../OpenGL.h"
 #include "../RSP.h"
+#include "../RDP.h"
 #include "../VI.h"
 #include "../Debug.h"
 #include "../Log.h"
@@ -32,6 +33,9 @@ void RSP_ThreadProc(std::mutex * _pRspThreadMtx, std::mutex * _pPluginThreadMtx,
 		switch (*_pCommand) {
 		case acProcessDList:
 			RSP_ProcessDList();
+			break;
+		case acProcessRDPList:
+			RDP_ProcessRDPList();
 			break;
 		case acUpdateScreen:
 			VI_UpdateScreen();
@@ -70,6 +74,16 @@ void PluginAPI::ProcessDList()
 	_callAPICommand(acProcessDList);
 #else
 	RSP_ProcessDList();
+#endif
+}
+
+void PluginAPI::ProcessRDPList()
+{
+	LOG(LOG_APIFUNC, "ProcessRDPList\n");
+#ifdef RSPTHREAD
+	_callAPICommand(acProcessRDPList);
+#else
+	RDP_ProcessRDPList();
 #endif
 }
 

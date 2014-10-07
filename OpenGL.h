@@ -34,6 +34,7 @@ class OGLRender
 public:
 	void addTriangle(int _v0, int _v1, int _v2);
 	void drawTriangles();
+	void drawLLETriangle(u32 _numVtx);
 	void drawLine(int _v0, int _v1, float _width);
 	void drawRect(int _ulx, int _uly, int _lrx, int _lry, float * _pColor);
 	void drawTexturedRect(
@@ -84,6 +85,7 @@ private:
 	void _updateViewport() const;
 	void _updateDepthUpdate() const;
 	void _updateStates() const;
+	void _prepareDrawTriangle();
 
 #ifdef __TRIBUFFER_OPT
 	void _indexmap_init();

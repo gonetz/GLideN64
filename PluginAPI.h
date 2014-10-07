@@ -14,6 +14,7 @@
 enum API_COMMAND {
 	acNone = 0,
 	acProcessDList,
+	acProcessRDPList,
 	acUpdateScreen,
 	acRomClosed
 };
@@ -31,11 +32,11 @@ public:
 
 	// Common
 	void MoveScreen(int /*_xpos*/, int /*_ypos*/) {}
-	void ProcessRDPList() {}
 	void ViStatusChanged() {}
 	void ViWidthChanged() {}
 
 	void ProcessDList();
+	void ProcessRDPList();
 	void RomClosed();
 	void RomOpen();
 	void ShowCFB();

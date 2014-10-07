@@ -1,5 +1,6 @@
 #include "N64.h"
 #include "RSP.h"
+#include "RDP.h"
 #include "GBI.h"
 #include "gDP.h"
 #include "Debug.h"
@@ -214,12 +215,17 @@ void RDP_LoadSync( u32 w0, u32 w1 )
 
 void RDP_TexRectFlip( u32 w0, u32 w1 )
 {
-	u32 w2 = *(u32*)&RDRAM[RSP.PC[RSP.PCi] + 4];
-	RSP.PC[RSP.PCi] += 8;
+	u32 w2, w3;
+	if (RSP.bLLE) {
+		w2 = RDP.w2;
+		w3 = RDP.w3;
+	} else {
+		w2 = *(u32*)&RDRAM[RSP.PC[RSP.PCi] + 4];
+		RSP.PC[RSP.PCi] += 8;
 
-	u32 w3 = *(u32*)&RDRAM[RSP.PC[RSP.PCi] + 4];
-	RSP.PC[RSP.PCi] += 8;
-
+		w3 = *(u32*)&RDRAM[RSP.PC[RSP.PCi] + 4];
+		RSP.PC[RSP.PCi] += 8;
+	}
 	gDPTextureRectangleFlip( _FIXED2FLOAT( _SHIFTR( w1, 12, 12 ), 2 ),			// ulx
 							 _FIXED2FLOAT( _SHIFTR( w1,  0, 12 ), 2 ),			// uly
 							 _FIXED2FLOAT( _SHIFTR( w0, 12, 12 ), 2 ),			// lrx
@@ -233,12 +239,17 @@ void RDP_TexRectFlip( u32 w0, u32 w1 )
 
 void RDP_TexRect( u32 w0, u32 w1 )
 {
-	u32 w2 = *(u32*)&RDRAM[RSP.PC[RSP.PCi] + 4];
-	RSP.PC[RSP.PCi] += 8;
+	u32 w2, w3;
+	if (RSP.bLLE) {
+		w2 = RDP.w2;
+		w3 = RDP.w3;
+	} else {
+		w2 = *(u32*)&RDRAM[RSP.PC[RSP.PCi] + 4];
+		RSP.PC[RSP.PCi] += 8;
 
-	u32 w3 = *(u32*)&RDRAM[RSP.PC[RSP.PCi] + 4];
-	RSP.PC[RSP.PCi] += 8;
-
+		w3 = *(u32*)&RDRAM[RSP.PC[RSP.PCi] + 4];
+		RSP.PC[RSP.PCi] += 8;
+	}
 	gDPTextureRectangle( _FIXED2FLOAT( _SHIFTR( w1, 12, 12 ), 2 ),			// ulx
 						 _FIXED2FLOAT( _SHIFTR( w1,  0, 12 ), 2 ),			// uly
 						 _FIXED2FLOAT( _SHIFTR( w0, 12, 12 ), 2 ),			// lrx
@@ -249,6 +260,48 @@ void RDP_TexRect( u32 w0, u32 w1 )
 						 _FIXED2FLOAT( (s16)_SHIFTR( w3, 16, 16 ), 10 ),	// dsdx
 						 _FIXED2FLOAT( (s16)_SHIFTR( w3,  0, 16 ), 10 ) );	// dsdy
 }
+
+void RDP_TriFill( u32 _w0, u32 _w1 )
+{
+	gDPTriFill(_w0, _w1);
+}
+
+void RDP_TriShade( u32 _w0, u32 _w1 )
+{
+	gDPTriShade(_w0, _w1);
+}
+
+void RDP_TriTxtr( u32 _w0, u32 _w1 )
+{
+	gDPTriTxtr(_w0, _w1);
+}
+
+void RDP_TriShadeTxtr( u32 _w0, u32 _w1 )
+{
+	gDPTriShadeTxtr(_w0, _w1);
+}
+
+void RDP_TriFillZ( u32 _w0, u32 _w1 )
+{
+	gDPTriFillZ(_w0, _w1);
+}
+
+void RDP_TriShadeZ( u32 _w0, u32 _w1 )
+{
+	gDPTriShadeZ(_w0, _w1);
+}
+
+void RDP_TriTxtrZ( u32 _w0, u32 _w1 )
+{
+	gDPTriTxtrZ(_w0, _w1);
+}
+
+void RDP_TriShadeTxtrZ( u32 _w0, u32 _w1 )
+{
+	gDPTriShadeTxtrZ(_w0, _w1);
+}
+
+RDPInfo RDP;
 
 void RDP_Init()
 {
@@ -289,5 +342,199 @@ void RDP_Init()
 	GBI.cmd[G_RDPLOADSYNC]		= RDP_LoadSync;
 	GBI.cmd[G_TEXRECTFLIP]		= RDP_TexRectFlip;
 	GBI.cmd[G_TEXRECT]			= RDP_TexRect;
+
+	RDP.w2 = RDP.w3 = 0;
+	RDP.cmd_ptr = RDP.cmd_cur = 0;
 }
 
+static
+GBIFunc LLEcmd[64] = {
+	/* 0x00 */
+	RDP_NoOp,			RDP_Unknown,		RDP_Unknown,		RDP_Unknown,
+	RDP_Unknown,		RDP_Unknown,		RDP_Unknown,		RDP_Unknown,
+	RDP_TriFill,		RDP_TriFillZ,		RDP_TriTxtr,		RDP_TriTxtrZ,
+	RDP_TriShade,		RDP_TriShadeZ,		RDP_TriShadeTxtr,	RDP_TriShadeTxtrZ,
+	/* 0x10 */
+	RDP_Unknown,		RDP_Unknown,		RDP_Unknown,		RDP_Unknown,
+	RDP_Unknown,		RDP_Unknown,		RDP_Unknown,		RDP_Unknown,
+	RDP_Unknown,		RDP_Unknown,		RDP_Unknown,		RDP_Unknown,
+	RDP_Unknown,		RDP_Unknown,		RDP_Unknown,		RDP_Unknown,
+	/* 0x20 */
+	RDP_Unknown,		RDP_Unknown,		RDP_Unknown,		RDP_Unknown,
+	RDP_TexRect,		RDP_TexRectFlip,	RDP_LoadSync,		RDP_PipeSync,
+	RDP_TileSync,		RDP_FullSync,		RDP_SetKeyGB,		RDP_SetKeyR,
+	RDP_SetConvert,		RDP_SetScissor,		RDP_SetPrimDepth,	RDP_SetOtherMode,
+	/* 0x30 */
+	RDP_LoadTLUT,		RDP_Unknown,		RDP_SetTileSize,	RDP_LoadBlock,
+	RDP_LoadTile,		RDP_SetTile,		RDP_FillRect,		RDP_SetFillColor,
+	RDP_SetFogColor,	RDP_SetBlendColor,	RDP_SetPrimColor,	RDP_SetEnvColor,
+	RDP_SetCombine,		RDP_SetTImg,		RDP_SetZImg,		RDP_SetCImg
+};
+
+static
+const u32 CmdLength[64] =
+{
+	8,                      // 0x00, No Op
+	8,                      // 0x01, ???
+	8,                      // 0x02, ???
+	8,                      // 0x03, ???
+	8,                      // 0x04, ???
+	8,                      // 0x05, ???
+	8,                      // 0x06, ???
+	8,                      // 0x07, ???
+	32,                     // 0x08, Non-Shaded Triangle
+	32+16,          // 0x09, Non-Shaded, Z-Buffered Triangle
+	32+64,          // 0x0a, Textured Triangle
+	32+64+16,       // 0x0b, Textured, Z-Buffered Triangle
+	32+64,          // 0x0c, Shaded Triangle
+	32+64+16,       // 0x0d, Shaded, Z-Buffered Triangle
+	32+64+64,       // 0x0e, Shaded+Textured Triangle
+	32+64+64+16,// 0x0f, Shaded+Textured, Z-Buffered Triangle
+	8,                      // 0x10, ???
+	8,                      // 0x11, ???
+	8,                      // 0x12, ???
+	8,                      // 0x13, ???
+	8,                      // 0x14, ???
+	8,                      // 0x15, ???
+	8,                      // 0x16, ???
+	8,                      // 0x17, ???
+	8,                      // 0x18, ???
+	8,                      // 0x19, ???
+	8,                      // 0x1a, ???
+	8,                      // 0x1b, ???
+	8,                      // 0x1c, ???
+	8,                      // 0x1d, ???
+	8,                      // 0x1e, ???
+	8,                      // 0x1f, ???
+	8,                      // 0x20, ???
+	8,                      // 0x21, ???
+	8,                      // 0x22, ???
+	8,                      // 0x23, ???
+	16,                     // 0x24, Texture_Rectangle
+	16,                     // 0x25, Texture_Rectangle_Flip
+	8,                      // 0x26, Sync_Load
+	8,                      // 0x27, Sync_Pipe
+	8,                      // 0x28, Sync_Tile
+	8,                      // 0x29, Sync_Full
+	8,                      // 0x2a, Set_Key_GB
+	8,                      // 0x2b, Set_Key_R
+	8,                      // 0x2c, Set_Convert
+	8,                      // 0x2d, Set_Scissor
+	8,                      // 0x2e, Set_Prim_Depth
+	8,                      // 0x2f, Set_Other_Modes
+	8,                      // 0x30, Load_TLUT
+	8,                      // 0x31, ???
+	8,                      // 0x32, Set_Tile_Size
+	8,                      // 0x33, Load_Block
+	8,                      // 0x34, Load_Tile
+	8,                      // 0x35, Set_Tile
+	8,                      // 0x36, Fill_Rectangle
+	8,                      // 0x37, Set_Fill_Color
+	8,                      // 0x38, Set_Fog_Color
+	8,                      // 0x39, Set_Blend_Color
+	8,                      // 0x3a, Set_Prim_Color
+	8,                      // 0x3b, Set_Env_Color
+	8,                      // 0x3c, Set_Combine
+	8,                      // 0x3d, Set_Texture_Image
+	8,                      // 0x3e, Set_Mask_Image
+	8                       // 0x3f, Set_Color_Image
+};
+
+void RDP_Half_1( u32 _c )
+{
+	u32 w0 = 0, w1 = _c;
+	u32 cmd = _SHIFTR( _c, 24, 8 );
+	if (cmd >= 0xc8 && cmd <=0xcf) {//triangle command
+		DebugMsg( DEBUG_HIGH | DEBUG_HANDLED, "gDPHalf_1 LLE Triangle\n");
+		RDP.cmd_ptr = 0;
+		RDP.cmd_cur = 0;
+		do {
+			RDP.cmd_data[RDP.cmd_ptr++] = w1;
+			RSP_CheckDLCounter();
+
+			w0 = *(u32*)&RDRAM[RSP.PC[RSP.PCi]];
+			w1 = *(u32*)&RDRAM[RSP.PC[RSP.PCi] + 4];
+			RSP.cmd = _SHIFTR( w0, 24, 8 );
+
+			DebugRSPState( RSP.PCi, RSP.PC[RSP.PCi], _SHIFTR( w0, 24, 8 ), w0, w1 );
+			DebugMsg( DEBUG_LOW | DEBUG_HANDLED, "0x%08lX: CMD=0x%02lX W0=0x%08lX W1=0x%08lX\n", RSP.PC[RSP.PCi], _SHIFTR( w0, 24, 8 ), w0, w1 );
+
+			RSP.PC[RSP.PCi] += 8;
+			// RSP.nextCmd = _SHIFTR( *(u32*)&RDRAM[RSP.PC[RSP.PCi]], 24, 8 );
+		} while (RSP.cmd != 0xb3);
+		RDP.cmd_data[RDP.cmd_ptr++] = w1;
+		RSP.cmd = (RDP.cmd_data[RDP.cmd_cur] >> 24) & 0x3f;
+		w0 = RDP.cmd_data[RDP.cmd_cur+0];
+		w1 = RDP.cmd_data[RDP.cmd_cur+1];
+		LLEcmd[RSP.cmd](w0, w1);
+	} else {
+		DebugMsg( DEBUG_HIGH | DEBUG_IGNORED, "gDPHalf_1()\n" );
+	}
+}
+
+#define rdram ((u32*)RDRAM)
+#define rsp_dmem ((u32*)DMEM)
+
+#define dp_start (*(u32*)REG.DPC_START)
+#define dp_end (*(u32*)REG.DPC_END)
+#define dp_current (*(u32*)REG.DPC_CURRENT)
+#define dp_status (*(u32*)REG.DPC_STATUS)
+
+inline u32 READ_RDP_DATA(u32 address)
+{
+	if (dp_status & 0x1)          // XBUS_DMEM_DMA enabled
+		return rsp_dmem[(address & 0xfff)>>2];
+	else
+		return rdram[address>>2];
+}
+
+void RDP_ProcessRDPList()
+{
+	DebugMsg(DEBUG_HIGH | DEBUG_HANDLED, "ProcessRDPList()\n");
+
+	u32 i;
+	u32 cmd, length, cmd_length;
+	RDP.cmd_ptr = 0;
+	RDP.cmd_cur = 0;
+
+	if (dp_end <= dp_current) return;
+	length = dp_end - dp_current;
+
+	// load command data
+	for (i = 0; i < length; i += 4) {
+		RDP.cmd_data[RDP.cmd_ptr++] = READ_RDP_DATA(dp_current + i);
+		if (RDP.cmd_ptr >= 0x1000) {
+			DebugMsg(DEBUG_HIGH | DEBUG_ERROR, "rdp_process_list: RDP.cmd_ptr overflow %x %x --> %x\n", length, dp_current, dp_end);
+		}
+	}
+
+	dp_current = dp_end;
+
+	cmd = (RDP.cmd_data[0] >> 24) & 0x3f;
+	cmd_length = (RDP.cmd_ptr + 1) * 4;
+
+	// check if more data is needed
+	if (cmd_length < CmdLength[cmd])
+		return;
+	RSP.bLLE = true;
+	while (RDP.cmd_cur < RDP.cmd_ptr) {
+		cmd = (RDP.cmd_data[RDP.cmd_cur] >> 24) & 0x3f;
+
+		if (((RDP.cmd_ptr-RDP.cmd_cur) * 4) < CmdLength[cmd])
+			return;
+
+		// execute the command
+		u32 w0 = RDP.cmd_data[RDP.cmd_cur+0];
+		u32 w1 = RDP.cmd_data[RDP.cmd_cur+1];
+		RDP.w2 = RDP.cmd_data[RDP.cmd_cur+2];
+		RDP.w3 = RDP.cmd_data[RDP.cmd_cur+3];
+		LLEcmd[cmd](w0, w1);
+
+		RDP.cmd_cur += CmdLength[cmd] / 4;
+	};
+	RSP.bLLE = false;
+
+	dp_start = dp_end;
+
+	dp_status &= ~0x0002;
+}

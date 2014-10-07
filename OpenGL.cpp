@@ -605,10 +605,8 @@ void OGLRender::_setTexCoordArrays() const
 		glDisableVertexAttribArray(SC_STSCALED);
 }
 
-void OGLRender::drawTriangles()
+void OGLRender::_prepareDrawTriangle()
 {
-	if (triangles.num == 0) return;
-
 #ifndef GLES2
 	if (m_bImageTexture)
 		glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
@@ -641,8 +639,53 @@ void OGLRender::drawTriangles()
 		currentCombiner()->updateRenderState();
 	}
 
-	currentCombiner()->updateColors(true);
-	currentCombiner()->updateLight(true);
+	currentCombiner()->updateColors();
+	currentCombiner()->updateLight();
+}
+
+void OGLRender::drawLLETriangle(u32 _numVtx)
+{
+	if (_numVtx == 0)
+		return;
+
+	_prepareDrawTriangle();
+	glDisable(GL_CULL_FACE);
+
+	FrameBufferList & fbList = frameBufferList();
+	FrameBuffer* pBuffer = fbList.getCurrent();
+	OGLVideo & ogl = video();
+	if (!fbList.isFboMode())
+		glViewport( 0, ogl.getHeightOffset(), ogl.getScreenWidth(), ogl.getScreenHeight());
+	else
+		glViewport(0, 0, pBuffer->m_width*pBuffer->m_scaleX, pBuffer->m_height*pBuffer->m_scaleY);
+
+	const float scaleX = fbList.isFboMode() ? 1.0f / pBuffer->m_width : VI.rwidth;
+	const float scaleY = fbList.isFboMode() ? 1.0f / pBuffer->m_height : VI.rheight;
+
+	for (u32 i = 0; i < _numVtx; ++i) {
+		triangles.vertices[i].HWLight = 0;
+		triangles.vertices[i].st_scaled = 0;
+		triangles.vertices[i].x = triangles.vertices[i].x * (2.0f * scaleX) - 1.0f;
+		triangles.vertices[i].x *= triangles.vertices[i].w;
+		triangles.vertices[i].y = triangles.vertices[i].y * (-2.0f * scaleY) + 1.0f;
+		triangles.vertices[i].y *= triangles.vertices[i].w;
+	}
+
+	glDrawArrays(GL_TRIANGLE_STRIP, 0, _numVtx);
+	triangles.num = 0;
+
+	gSP.changed != CHANGED_VIEWPORT | CHANGED_GEOMETRYMODE;
+
+#ifdef __TRIBUFFER_OPT
+	_indexmap_clear();
+#endif
+}
+
+void OGLRender::drawTriangles()
+{
+	if (triangles.num == 0) return;
+
+	_prepareDrawTriangle();
 	glDrawElements(GL_TRIANGLES, triangles.num, GL_UNSIGNED_BYTE, triangles.elements);
 	triangles.num = 0;
 

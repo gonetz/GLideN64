@@ -310,22 +310,8 @@ void F3D_Quad( u32 w0, u32 w1 )
 
 void F3D_RDPHalf_1( u32 w0, u32 w1 )
 {
-/*	if (_SHIFTR( w1, 24, 8 ) == 0xCE)
-	{
-		u32 w2 = *(u32*)&RDRAM[RSP.PC[RSP.PCi] + 4];
-		RSP.PC[RSP.PCi] += 8;
-
-		gDPTextureRectangle( gDP.scissor.ulx,									// ulx
-							_FIXED2FLOAT( _SHIFTR( w2,  0, 16 ), 2 ),			// uly
-							gDP.scissor.lrx,			// lrx
-							_FIXED2FLOAT( _SHIFTR( w2,  16, 16 ), 2 ),			// lry
-							0,													// tile
-							0,		// s
-							0,		// t
-							1,		// dsdx
-							1 );		// dsdy
-	}*/
 	gDP.half_1 = w1;
+	RDP_Half_1(w1);
 }
 
 void F3D_RDPHalf_2( u32 w0, u32 w1 )

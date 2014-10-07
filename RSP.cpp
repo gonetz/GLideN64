@@ -261,6 +261,7 @@ void RSP_Init()
 
 	RSP.DList = 0;
 	RSP.uc_start = RSP.uc_dstart = 0;
+	RSP.bLLE = false;
 
 	gDP.loadTile = &gDP.tiles[7];
 	gSP.textureTile[0] = &gDP.tiles[0];

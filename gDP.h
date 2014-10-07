@@ -138,7 +138,7 @@ struct gDPInfo
 				unsigned int blendMask : 4;
 				unsigned int alphaDither : 2;
 				unsigned int colorDither : 2;
-				
+
 				unsigned int combineKey : 1;
 				unsigned int textureConvert : 3;
 				unsigned int textureFilter : 2;
@@ -281,6 +281,15 @@ void gDPTileSync();
 void gDPPipeSync();
 void gDPLoadSync();
 void gDPNoOp();
+
+void gDPTriFill( u32 w0, u32 w1 );
+void gDPTriShade( u32 w0, u32 w1 );
+void gDPTriTxtr( u32 w0, u32 w1 );
+void gDPTriShadeTxtr( u32 w0, u32 w1 );
+void gDPTriFillZ( u32 w0, u32 w1 );
+void gDPTriShadeZ( u32 w0, u32 w1 );
+void gDPTriTxtrZ( u32 w0, u32 w1 );
+void gDPTriShadeTxtrZ( u32 w0, u32 w1 );
 
 void gDPFillRDRAM( u32 address, s32 ulx, s32 uly, s32 lrx, s32 lry, u32 width, u32 size,  u32 color );
 
