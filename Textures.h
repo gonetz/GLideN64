@@ -14,7 +14,7 @@
 
 struct CachedTexture
 {
-	CachedTexture(GLuint _glName) : glName(_glName) {}
+	CachedTexture(GLuint _glName) : glName(_glName), max_level(0) {}
 
 	GLuint	glName;
 	u32		crc;
@@ -39,6 +39,7 @@ struct CachedTexture
 
 	u32		lastDList;
 	u32		address;
+	u32		max_level;
 };
 
 
@@ -71,7 +72,7 @@ private:
 
 	void _checkCacheSize();
 	CachedTexture * _addTexture(u32 _crc32);
-	void _load(CachedTexture *pTexture);
+	void _load(u32 _tile, CachedTexture *_pTexture);
 	void _loadBackground(CachedTexture *pTexture);
 	void _updateBackground();
 

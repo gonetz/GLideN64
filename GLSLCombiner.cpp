@@ -15,7 +15,7 @@
 
 static GLuint  g_vertex_shader_object;
 static GLuint  g_calc_light_shader_object;
-static GLuint  g_calc_lod_shader_object;
+static GLuint  g_calc_mipmap_shader_object;
 static GLuint  g_calc_noise_shader_object;
 static GLuint  g_calc_depth_shader_object;
 static GLuint  g_test_alpha_shader_object;
@@ -179,10 +179,10 @@ void InitShaderCombiner()
 	glCompileShader(g_calc_light_shader_object);
 	assert(check_shader_compile_status(g_calc_light_shader_object));
 
-	g_calc_lod_shader_object = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(g_calc_lod_shader_object, 1, &fragment_shader_calc_lod, NULL);
-	glCompileShader(g_calc_lod_shader_object);
-	assert(check_shader_compile_status(g_calc_lod_shader_object));
+	g_calc_mipmap_shader_object = glCreateShader(GL_FRAGMENT_SHADER);
+	glShaderSource(g_calc_mipmap_shader_object, 1, &fragment_shader_mipmap, NULL);
+	glCompileShader(g_calc_mipmap_shader_object);
+	assert(check_shader_compile_status(g_calc_mipmap_shader_object));
 
 	g_calc_noise_shader_object = glCreateShader(GL_FRAGMENT_SHADER);
 	glShaderSource(g_calc_noise_shader_object, 1, &noise_fragment_shader, NULL);
@@ -215,8 +215,8 @@ void DestroyShaderCombiner() {
 #ifndef GLES2
 	glDeleteShader(g_calc_light_shader_object);
 	g_calc_light_shader_object = 0;
-	glDeleteShader(g_calc_lod_shader_object);
-	g_calc_lod_shader_object = 0;
+	glDeleteShader(g_calc_mipmap_shader_object);
+	g_calc_mipmap_shader_object = 0;
 	glDeleteShader(g_calc_noise_shader_object);
 	g_calc_noise_shader_object = 0;
 	glDeleteShader(g_test_alpha_shader_object);
@@ -385,21 +385,32 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 	strFragmentShader.append(fragment_shader_header_common_functions);
 	strFragmentShader.append(fragment_shader_header_main);
 	const bool bUseLod = (m_nInputs & (1<<LOD_FRACTION)) > 0;
-	if (bUseLod)
+	if (bUseLod) {
 #ifdef GLES2
-		strBuffer.append("  lowp float lod_frac = calc_lod(uPrimLod, vLodTexCoord);	\n");
+		strFragmentShader.append("  lowp vec4 readtex0, readtex1; \n");
+		strFragmentShader.append("  lowp float lod_frac = mipmap(readtex0, readtex1);	\n");
 #else
-		strFragmentShader.append("  float lod_frac = calc_lod(uPrimLod, vLodTexCoord);	\n");
+		strFragmentShader.append("  vec4 readtex0, readtex1; \n");
+		strFragmentShader.append("  float lod_frac = mipmap(readtex0, readtex1);	\n");
 #endif
-	if ((m_nInputs & ((1<<TEXEL0)|(1<<TEXEL1)|(1<<TEXEL0_ALPHA)|(1<<TEXEL1_ALPHA))) > 0) {
-		strFragmentShader.append(fragment_shader_readtex0color);
-		strFragmentShader.append(fragment_shader_readtex1color);
 	} else {
-		assert(strstr(strCombiner, "readtex") == 0);
+		if (_alpha.numStages == 1 && _color.numStages == 1) {
+			if ((m_nInputs & ((1 << TEXEL0) | (1 << TEXEL0_ALPHA))) > 0)
+				strFragmentShader.append(fragment_shader_readtex0color);
+			if ((m_nInputs & ((1 << TEXEL1) | (1 << TEXEL1_ALPHA))) > 0)
+				strFragmentShader.append(fragment_shader_readtex1color);
+		} else {
+			if ((m_nInputs & ((1 << TEXEL0) | (1 << TEXEL1) | (1 << TEXEL0_ALPHA) | (1 << TEXEL1_ALPHA))) > 0) {
+				strFragmentShader.append(fragment_shader_readtex0color);
+				strFragmentShader.append(fragment_shader_readtex1color);
+			} else {
+				assert(strstr(strCombiner, "readtex") == 0);
+			}
+		}
 	}
 	if (config.enableHWLighting)
 #ifdef GLES2
-		strBuffer.append("  lowp float intensity = calc_light(int(vNumLights), vShadeColor.rgb, input_color); \n");
+		strFragmentShader.append("  lowp float intensity = calc_light(int(vNumLights), vShadeColor.rgb, input_color); \n");
 #else
 		strFragmentShader.append("  float intensity = calc_light(int(vNumLights), vShadeColor.rgb, input_color); \n");
 #endif
@@ -421,7 +432,7 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 	}
 
 #ifdef USE_TOONIFY
-	strBuffer.append("  toonify(intensity); \n");
+	strFragmentShader.append("  toonify(intensity); \n");
 #endif
 	strFragmentShader.append("  if (uEnableFog != 0) \n");
 	strFragmentShader.append("    gl_FragColor = vec4(mix(gl_FragColor.rgb, uFogColor.rgb, vFogFragCoord), gl_FragColor.a); \n");
@@ -433,12 +444,12 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 #endif
 
 #ifdef GLES2
-	strBuffer.append(alpha_test_fragment_shader);
-	strBuffer.append(noise_fragment_shader);
+	strFragmentShader.append(alpha_test_fragment_shader);
+	strFragmentShader.append(noise_fragment_shader);
 	if (bUseLod)
-		strBuffer.append(fragment_shader_calc_lod);
+		strFragmentShader.append(fragment_shader_mipmap);
 	if (config.enableHWLighting)
-		strBuffer.append(fragment_shader_calc_light);
+		strFragmentShader.append(fragment_shader_calc_light);
 #endif
 
 	GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
@@ -456,7 +467,7 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 	if (config.enableHWLighting)
 		glAttachShader(m_program, g_calc_light_shader_object);
 	if (bUseLod)
-		glAttachShader(m_program, g_calc_lod_shader_object);
+		glAttachShader(m_program, g_calc_mipmap_shader_object);
 	glAttachShader(m_program, g_test_alpha_shader_object);
 	if (video().getRender().isImageTexturesSupported())
 		glAttachShader(m_program, g_calc_depth_shader_object);

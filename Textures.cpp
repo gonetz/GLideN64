@@ -389,7 +389,7 @@ void TextureCache::_loadBackground( CachedTexture *pTexture )
 	free(pDest);
 }
 
-void TextureCache::_load(CachedTexture *pTexture)
+void TextureCache::_load(u32 _tile , CachedTexture *_pTexture)
 {
 	u32 *pDest;
 
@@ -400,13 +400,15 @@ void TextureCache::_load(CachedTexture *pTexture)
 	GetTexelFunc GetTexel;
 	GLuint glInternalFormat;
 	GLenum glType;
+	u32 sizeShift;
 
-	if (((imageFormat[pTexture->size][pTexture->format].autoFormat == GL_RGBA) ||
-		((pTexture->format == G_IM_FMT_CI) && (gDP.otherMode.textureLUT == G_TT_IA16)) || (m_bitDepth == 2)) && (m_bitDepth != 0))
+	if (((imageFormat[_pTexture->size][_pTexture->format].autoFormat == GL_RGBA) ||
+		((_pTexture->format == G_IM_FMT_CI) && (gDP.otherMode.textureLUT == G_TT_IA16)) || (m_bitDepth == 2)) && (m_bitDepth != 0))
 	{
-		pTexture->textureBytes = (pTexture->realWidth * pTexture->realHeight) << 2;
-		if ((pTexture->format == G_IM_FMT_CI) && (gDP.otherMode.textureLUT == G_TT_IA16)) {
-			if (pTexture->size == G_IM_SIZ_4b)
+		sizeShift = 2;
+		_pTexture->textureBytes = (_pTexture->realWidth * _pTexture->realHeight) << sizeShift;
+		if ((_pTexture->format == G_IM_FMT_CI) && (gDP.otherMode.textureLUT == G_TT_IA16)) {
+			if (_pTexture->size == G_IM_SIZ_4b)
 				GetTexel = GetCI4IA_RGBA8888;
 			else
 				GetTexel = GetCI8IA_RGBA8888;
@@ -414,14 +416,15 @@ void TextureCache::_load(CachedTexture *pTexture)
 			glInternalFormat = GL_RGBA;
 			glType = GL_UNSIGNED_BYTE;
 		} else {
-			GetTexel = imageFormat[pTexture->size][pTexture->format].Get32;
-			glInternalFormat = imageFormat[pTexture->size][pTexture->format].glInternalFormat32;
-			glType = imageFormat[pTexture->size][pTexture->format].glType32;
+			GetTexel = imageFormat[_pTexture->size][_pTexture->format].Get32;
+			glInternalFormat = imageFormat[_pTexture->size][_pTexture->format].glInternalFormat32;
+			glType = imageFormat[_pTexture->size][_pTexture->format].glType32;
 		}
 	} else {
-		pTexture->textureBytes = (pTexture->realWidth * pTexture->realHeight) << 1;
-		if ((pTexture->format == G_IM_FMT_CI) && (gDP.otherMode.textureLUT == G_TT_IA16)) {
-			if (pTexture->size == G_IM_SIZ_4b)
+		sizeShift = 1;
+		_pTexture->textureBytes = (_pTexture->realWidth * _pTexture->realHeight) << sizeShift;
+		if ((_pTexture->format == G_IM_FMT_CI) && (gDP.otherMode.textureLUT == G_TT_IA16)) {
+			if (_pTexture->size == G_IM_SIZ_4b)
 				GetTexel = GetCI4IA_RGBA4444;
 			else
 				GetTexel = GetCI8IA_RGBA4444;
@@ -429,67 +432,101 @@ void TextureCache::_load(CachedTexture *pTexture)
 			glInternalFormat = GL_RGBA4;
 			glType = GL_UNSIGNED_SHORT_4_4_4_4;
 		} else {
-			GetTexel = imageFormat[pTexture->size][pTexture->format].Get16;
-			glInternalFormat = imageFormat[pTexture->size][pTexture->format].glInternalFormat16;
-			glType = imageFormat[pTexture->size][pTexture->format].glType16;
+			GetTexel = imageFormat[_pTexture->size][_pTexture->format].Get16;
+			glInternalFormat = imageFormat[_pTexture->size][_pTexture->format].glInternalFormat16;
+			glType = imageFormat[_pTexture->size][_pTexture->format].glType16;
 		}
 	}
 
-	pDest = (u32*)malloc( pTexture->textureBytes );
+	pDest = (u32*)malloc( _pTexture->textureBytes );
 
-	line = pTexture->line;
+	GLint mipLevel = 0, maxLevel = 0;
+	if (gSP.texture.level > 1)
+		maxLevel = _tile == 0 ? 0 : gSP.texture.level - 1;
 
-	if (pTexture->size == G_IM_SIZ_32b)
+	_pTexture->max_level = maxLevel;
+
+	CachedTexture tmptex(0);
+	memcpy(&tmptex, _pTexture, sizeof(CachedTexture));
+
+	line = tmptex.line;
+	if (tmptex.size == G_IM_SIZ_32b)
 		line <<= 1;
 
-	if (pTexture->maskS) {
-		clampSClamp = pTexture->clampS ? pTexture->clampWidth - 1 : (pTexture->mirrorS ? (pTexture->width << 1) - 1 : pTexture->width - 1);
-		maskSMask = (1 << pTexture->maskS) - 1;
-		mirrorSBit = pTexture->mirrorS ? 1 << pTexture->maskS : 0;
-	} else {
-		clampSClamp = min( pTexture->clampWidth, pTexture->width ) - 1;
-		maskSMask = 0xFFFF;
-		mirrorSBit = 0x0000;
-	}
-
-	if (pTexture->maskT) {
-		clampTClamp = pTexture->clampT ? pTexture->clampHeight - 1 : (pTexture->mirrorT ? (pTexture->height << 1) - 1: pTexture->height - 1);
-		maskTMask = (1 << pTexture->maskT) - 1;
-		mirrorTBit = pTexture->mirrorT ?	1 << pTexture->maskT : 0;
-	} else {
-		clampTClamp = min( pTexture->clampHeight, pTexture->height ) - 1;
-		maskTMask = 0xFFFF;
-		mirrorTBit = 0x0000;
-	}
-
-	// Hack for Zelda warp texture
-	if (((pTexture->tMem << 3) + (pTexture->width * pTexture->height << pTexture->size >> 1)) > 4096)
-		pTexture->tMem = 0;
-
-	j = 0;
-	for (y = 0; y < pTexture->realHeight; y++) {
-		ty = min(y, clampTClamp) & maskTMask;
-
-		if (y & mirrorTBit)
-			ty ^= maskTMask;
-
-		pSrc = &TMEM[pTexture->tMem] + line * ty;
-
-		i = (ty & 1) << 1;
-		for (x = 0; x < pTexture->realWidth; x++) {
-			tx = min(x, clampSClamp) & maskSMask;
-
-			if (x & mirrorSBit)
-				tx ^= maskSMask;
-
-			if (glInternalFormat == GL_RGBA)
-				((u32*)pDest)[j++] = GetTexel( pSrc, tx, i, pTexture->palette );
-			else
-				((u16*)pDest)[j++] = GetTexel( pSrc, tx, i, pTexture->palette );
+	while (true) {
+		if (tmptex.maskS > 0) {
+			clampSClamp = tmptex.clampS ? tmptex.clampWidth - 1 : (tmptex.mirrorS ? (tmptex.width << 1) - 1 : tmptex.width - 1);
+			maskSMask = (1 << tmptex.maskS) - 1;
+			mirrorSBit = tmptex.mirrorS ? 1 << tmptex.maskS : 0;
+		} else {
+			clampSClamp = min(tmptex.clampWidth, tmptex.width) - 1;
+			maskSMask = 0xFFFF;
+			mirrorSBit = 0x0000;
 		}
-	}
 
-	glTexImage2D( GL_TEXTURE_2D, 0, glInternalFormat, pTexture->realWidth, pTexture->realHeight, 0, GL_RGBA, glType, pDest );
+		if (tmptex.maskT > 0) {
+			clampTClamp = tmptex.clampT ? tmptex.clampHeight - 1 : (tmptex.mirrorT ? (tmptex.height << 1) - 1: tmptex.height - 1);
+			maskTMask = (1 << tmptex.maskT) - 1;
+			mirrorTBit = tmptex.mirrorT ?	1 << tmptex.maskT : 0;
+		} else {
+			clampTClamp = min( tmptex.clampHeight, tmptex.height ) - 1;
+			maskTMask = 0xFFFF;
+			mirrorTBit = 0x0000;
+		}
+
+		// Hack for Zelda warp texture
+		if (((tmptex.tMem << 3) + (tmptex.width * tmptex.height << tmptex.size >> 1)) > 4096)
+			tmptex.tMem = 0;
+
+		j = 0;
+		for (y = 0; y < tmptex.realHeight; y++) {
+			ty = min(y, clampTClamp) & maskTMask;
+
+			if (y & mirrorTBit)
+				ty ^= maskTMask;
+
+			pSrc = &TMEM[tmptex.tMem] + line * ty;
+
+			i = (ty & 1) << 1;
+			for (x = 0; x < tmptex.realWidth; x++) {
+				tx = min(x, clampSClamp) & maskSMask;
+
+				if (x & mirrorSBit)
+					tx ^= maskSMask;
+
+				if (glInternalFormat == GL_RGBA)
+					((u32*)pDest)[j++] = GetTexel( pSrc, tx, i, tmptex.palette );
+				else
+					((u16*)pDest)[j++] = GetTexel( pSrc, tx, i, tmptex.palette );
+			}
+		}
+
+		glTexImage2D(GL_TEXTURE_2D, mipLevel, glInternalFormat, tmptex.realWidth, tmptex.realHeight, 0, GL_RGBA, glType, pDest);
+		if (mipLevel == maxLevel)
+			break;
+		++mipLevel;
+		if (line > 1)
+			line >>= 1;
+		if (tmptex.maskS > 0)
+			--tmptex.maskS;
+		if (tmptex.clampWidth > 1)
+			tmptex.clampWidth >>= 1;
+		if (tmptex.width > 1)
+			tmptex.width >>= 1;
+		if (tmptex.realWidth > 1)
+			tmptex.realWidth >>= 1;
+		if (tmptex.maskT > 0)
+			--tmptex.maskT;
+		if (tmptex.clampHeight > 1)
+			tmptex.clampHeight >>= 1;
+		if (tmptex.height > 1)
+			tmptex.height >>= 1;
+		if (tmptex.realHeight > 1)
+			tmptex.realHeight >>= 1;
+		tmptex.tMem = gDP.tiles[gSP.texture.tile + mipLevel + 1].tmem;
+		tmptex.palette = gDP.tiles[gSP.texture.tile + mipLevel + 1].palette;
+		_pTexture->textureBytes += (tmptex.realWidth * tmptex.realHeight) << sizeShift;
+	};
 	free(pDest);
 }
 
@@ -550,17 +587,22 @@ void TextureCache::activateTexture(u32 _t, CachedTexture *_pTexture)
 	// Bind the cached texture
 	glBindTexture( GL_TEXTURE_2D, _pTexture->glName );
 
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, _pTexture->max_level);
 	// Set filter mode. Almost always bilinear, but check anyways
-	if ((gDP.otherMode.textureFilter == G_TF_BILERP) || (gDP.otherMode.textureFilter == G_TF_AVERAGE) || (config.texture.forceBilinear))
-	{
-		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
-		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+	if ((gDP.otherMode.textureFilter == G_TF_BILERP) || (gDP.otherMode.textureFilter == G_TF_AVERAGE) || (config.texture.forceBilinear)) {
+		if (_pTexture->max_level > 0)
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
+		else
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	} else {
+		if (_pTexture->max_level > 0)
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
+		else
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	}
-	else
-	{
-		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
-		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
-	}
+
 
 	// Set clamping modes
 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, _pTexture->clampS ? GL_CLAMP_TO_EDGE : GL_REPEAT );
@@ -920,7 +962,7 @@ void TextureCache::update(u32 _t)
 	else if (gSP.textureTile[_t]->shiftt > 0)
 		pCurrent->shiftScaleT /= (f32)(1 << gSP.textureTile[_t]->shiftt);
 
-	_load( pCurrent );
+	_load( _t, pCurrent );
 	activateTexture( _t, pCurrent );
 
 	m_cachedBytes += pCurrent->textureBytes;
