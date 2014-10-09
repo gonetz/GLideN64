@@ -77,8 +77,6 @@ struct SPVertex
 	u32 clip;
 };
 
-typedef SPVertex SPTriangle[3];
-
 struct SPLight
 {
 	f32 r, g, b;

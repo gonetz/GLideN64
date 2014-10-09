@@ -1,6 +1,7 @@
 #ifndef OPENGL_H
 #define OPENGL_H
 
+#include <vector>
 #ifdef _WINDOWS
 #include <windows.h>
 #include <GL/gl.h>
@@ -35,6 +36,7 @@ public:
 	void addTriangle(int _v0, int _v1, int _v2);
 	void drawTriangles();
 	void drawLLETriangle(u32 _numVtx);
+	void drawDMATriangles(u32 _numVtx);
 	void drawLine(int _v0, int _v1, float _width);
 	void drawRect(int _ulx, int _uly, int _lrx, int _lry, float * _pColor);
 	void drawTexturedRect(
@@ -52,6 +54,8 @@ public:
 	}
 	bool isImageTexturesSupported() const {return m_bImageTexture;}
 	SPVertex & getVertex(u32 _v) {return triangles.vertices[_v];}
+	void setDMAVerticesSize(u32 _size) { if (triangles.dmaVertices.size() < _size) triangles.dmaVertices.resize(_size); }
+	SPVertex * getDMAVerticesData() { return triangles.dmaVertices.data(); }
 
 	enum RENDER_STATE {
 		rsNone = 0,
@@ -85,7 +89,7 @@ private:
 	void _updateViewport() const;
 	void _updateDepthUpdate() const;
 	void _updateStates() const;
-	void _prepareDrawTriangle();
+	void _prepareDrawTriangle(bool _dma);
 
 #ifdef __TRIBUFFER_OPT
 	void _indexmap_init();
@@ -95,6 +99,7 @@ private:
 
 	struct {
 		SPVertex vertices[VERTBUFF_SIZE];
+		std::vector<SPVertex> dmaVertices;
 		GLubyte elements[ELEMBUFF_SIZE];
 		int num;
 		u32 indexmap[INDEXMAP_SIZE];

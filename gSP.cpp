@@ -774,8 +774,6 @@ void gSPDMAVertex( u32 a, u32 n, u32 v0 )
 			u32 v = i;
 #ifdef __TRIBUFFER_OPT
 			v = render.getIndexmapNew(v, 1);
-#else
-			v = i;
 #endif
 			SPVertex & vtx = render.getVertex(v);
 			vtx.x = *(s16*)&RDRAM[address ^ 2];
@@ -793,6 +791,7 @@ void gSPDMAVertex( u32 a, u32 n, u32 v0 )
 				vtx.b = *(u8*)&RDRAM[(address + 8) ^ 3] * 0.0039215689f;
 				vtx.a = *(u8*)&RDRAM[(address + 9) ^ 3] * 0.0039215689f;
 			}
+			vtx.st_scaled = 0;
 
 			gSPProcessVertex(v);
 			address += 10;
@@ -1024,12 +1023,13 @@ void gSPDMATriangles( u32 tris, u32 n ){
 	}
 
 	OGLRender & render = video().getRender();
+	render.setDMAVerticesSize(n * 3);
 #ifdef __TRIBUFFER_OPT
 	render.indexmapUndo();
 #endif
 
 	DKRTriangle *triangles = (DKRTriangle*)&RDRAM[address];
-
+	SPVertex * pVtx = render.getDMAVerticesData();
 	for (u32 i = 0; i < n; ++i) {
 		int mode = 0;
 		if (!(triangles->flag & 0x40)) {
@@ -1038,34 +1038,36 @@ void gSPDMATriangles( u32 tris, u32 n ){
 			else
 				mode |= G_CULL_FRONT;
 		}
-
 		if ((gSP.geometryMode&G_CULL_BOTH) != mode) {
-			render.drawTriangles();
+			render.drawDMATriangles(pVtx - render.getDMAVerticesData());
+			pVtx = render.getDMAVerticesData();
 			gSP.geometryMode &= ~G_CULL_BOTH;
 			gSP.geometryMode |= mode;
 			gSP.changed |= CHANGED_GEOMETRYMODE;
 		}
 
-
-		s32 v0 = triangles->v0;
-		s32 v1 = triangles->v1;
-		s32 v2 = triangles->v2;
-		SPVertex & vtx0 = render.getVertex(v0);
-		vtx0.s = _FIXED2FLOAT( triangles->s0, 5 );
-		vtx0.t = _FIXED2FLOAT( triangles->t0, 5 );
-		SPVertex & vtx1 = render.getVertex(v1);
-		vtx1.s = _FIXED2FLOAT( triangles->s1, 5 );
-		vtx1.t = _FIXED2FLOAT( triangles->t1, 5 );
-		SPVertex & vtx2 = render.getVertex(v2);
-		vtx2.s = _FIXED2FLOAT( triangles->s2, 5 );
-		vtx2.t = _FIXED2FLOAT( triangles->t2, 5 );
-		gSPTriangle(triangles->v0, triangles->v1, triangles->v2);
-		triangles++;
+		const s32 v0 = triangles->v0;
+		const s32 v1 = triangles->v1;
+		const s32 v2 = triangles->v2;
+		if (render.isClipped(v0, v1, v2)) {
+			++triangles;
+			continue;
+		}
+		*pVtx = render.getVertex(v0);
+		pVtx->s = _FIXED2FLOAT(triangles->s0, 5);
+		pVtx->t = _FIXED2FLOAT(triangles->t0, 5);
+		++pVtx;
+		*pVtx = render.getVertex(v1);
+		pVtx->s = _FIXED2FLOAT(triangles->s1, 5);
+		pVtx->t = _FIXED2FLOAT(triangles->t1, 5);
+		++pVtx;
+		*pVtx = render.getVertex(v2);
+		pVtx->s = _FIXED2FLOAT(triangles->s2, 5);
+		pVtx->t = _FIXED2FLOAT(triangles->t2, 5);
+		++pVtx;
+		++triangles;
 	}
-
-#ifdef __TRIBUFFER_OPT
-	render.drawTriangles();
-#endif
+	render.drawDMATriangles(pVtx - render.getDMAVerticesData());
 }
 
 void gSP1Quadrangle( s32 v0, s32 v1, s32 v2, s32 v3 )

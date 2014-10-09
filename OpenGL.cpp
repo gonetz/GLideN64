@@ -605,7 +605,7 @@ void OGLRender::_setTexCoordArrays() const
 		glDisableVertexAttribArray(SC_STSCALED);
 }
 
-void OGLRender::_prepareDrawTriangle()
+void OGLRender::_prepareDrawTriangle(bool _dma)
 {
 #ifndef GLES2
 	if (m_bImageTexture)
@@ -624,13 +624,14 @@ void OGLRender::_prepareDrawTriangle()
 	}
 
 	if (updateArrays) {
-		glVertexAttribPointer(SC_POSITION, 4, GL_FLOAT, GL_FALSE, sizeof(SPVertex), &triangles.vertices[0].x);
-		glVertexAttribPointer(SC_COLOR, 4, GL_FLOAT, GL_FALSE, sizeof(SPVertex), &triangles.vertices[0].r);
-		glVertexAttribPointer(SC_TEXCOORD0, 2, GL_FLOAT, GL_FALSE, sizeof(SPVertex), &triangles.vertices[0].s);
-		glVertexAttribPointer(SC_STSCALED, 1, GL_UNSIGNED_BYTE, GL_FALSE, sizeof(SPVertex), &triangles.vertices[0].st_scaled);
+		SPVertex * pVtx = _dma ? triangles.dmaVertices.data() : &triangles.vertices[0];
+		glVertexAttribPointer(SC_POSITION, 4, GL_FLOAT, GL_FALSE, sizeof(SPVertex), &pVtx->x);
+		glVertexAttribPointer(SC_COLOR, 4, GL_FLOAT, GL_FALSE, sizeof(SPVertex), &pVtx->r);
+		glVertexAttribPointer(SC_TEXCOORD0, 2, GL_FLOAT, GL_FALSE, sizeof(SPVertex), &pVtx->s);
+		glVertexAttribPointer(SC_STSCALED, 1, GL_UNSIGNED_BYTE, GL_FALSE, sizeof(SPVertex), &pVtx->st_scaled);
 		if (config.enableHWLighting) {
 			glEnableVertexAttribArray(SC_NUMLIGHTS);
-			glVertexAttribPointer(SC_NUMLIGHTS, 1, GL_BYTE, GL_FALSE, sizeof(SPVertex), &triangles.vertices[0].HWLight);
+			glVertexAttribPointer(SC_NUMLIGHTS, 1, GL_BYTE, GL_FALSE, sizeof(SPVertex), &pVtx->HWLight);
 		}
 
 		_updateCullFace();
@@ -648,7 +649,7 @@ void OGLRender::drawLLETriangle(u32 _numVtx)
 	if (_numVtx == 0)
 		return;
 
-	_prepareDrawTriangle();
+	_prepareDrawTriangle(false);
 	glDisable(GL_CULL_FACE);
 
 	FrameBufferList & fbList = frameBufferList();
@@ -681,11 +682,19 @@ void OGLRender::drawLLETriangle(u32 _numVtx)
 #endif
 }
 
+void OGLRender::drawDMATriangles(u32 _numVtx)
+{
+	if (_numVtx == 0)
+		return;
+	_prepareDrawTriangle(true);
+	glDrawArrays(GL_TRIANGLES, 0, _numVtx);
+}
+
 void OGLRender::drawTriangles()
 {
 	if (triangles.num == 0) return;
 
-	_prepareDrawTriangle();
+	_prepareDrawTriangle(false);
 	glDrawElements(GL_TRIANGLES, triangles.num, GL_UNSIGNED_BYTE, triangles.elements);
 	triangles.num = 0;
 
