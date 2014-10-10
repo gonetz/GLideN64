@@ -470,7 +470,7 @@ void FrameBuffer_ActivateBufferTexture(s16 t, FrameBuffer *pBuffer)
 	const u32 factor = pBuffer->m_width << pBuffer->m_size >> 1;
 	if (gSP.textureTile[t]->loadType == LOADTYPE_TILE)
 	{
-		pBuffer->m_pTexture->offsetS = pBuffer->m_pLoadTile->uls;
+		pBuffer->m_pTexture->offsetS = (float)pBuffer->m_pLoadTile->uls;
 		pBuffer->m_pTexture->offsetT = (float)(pBuffer->m_height - (pBuffer->m_pLoadTile->ult + shift/factor));
 	}
 	else
@@ -915,7 +915,7 @@ void RDRAMtoFrameBuffer::CopyFromRDRAM( u32 _address, bool _bUseAlpha)
 	m_pTexture->offsetT = (float)m_pTexture->height;
 	textureCache().activateTexture(0, m_pTexture);
 
-	ogl.getRender().drawTexturedRect( 0.0f, 0.0f, width, height, 0.0f, 0.0f, width-1.0f, height-1.0f, false );
+	ogl.getRender().drawTexturedRect(0.0f, 0.0f, (float)width, (float)height, 0.0f, 0.0f, width - 1.0f, height - 1.0f, false);
 	gSP.changed |= CHANGED_TEXTURE | CHANGED_VIEWPORT;
 	gDP.changed |= CHANGED_COMBINE;
 #endif
