@@ -452,6 +452,16 @@ void OGLRender::_setBlendMode() const
 				glBlendFunc( GL_ZERO, GL_ONE );
 				break;
 
+			case 0xF550: //clr_fog * a_fog + clr_mem * (1-a)
+			case 0x0150: // spiderman
+			case 0x0D18: //clr_in * a_fog + clr_mem * (1-a)
+				glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+				break;
+
+			case 0xC912: //40 winks, clr_in * a_fog + clr_mem * 1
+				glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+				break;
+
 			default:
 				LOG(LOG_VERBOSE, "Unhandled blend mode=%x", gDP.otherMode.l >> 16);
 				glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );

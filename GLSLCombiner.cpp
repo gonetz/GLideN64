@@ -421,7 +421,9 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 	strFragmentShader.append(fragment_shader_color_dither);
 	strFragmentShader.append(fragment_shader_alpha_dither);
 
-	strFragmentShader.append("  gl_FragColor = vec4(color2, alpha2); \n");
+	strFragmentShader.append("  if (uFogUsage == 3) gl_FragColor = uFogColor; \n");
+	strFragmentShader.append("  else if (uFogUsage == 2) gl_FragColor = vec4(color2, uFogColor.a); \n");
+	strFragmentShader.append("  else gl_FragColor = vec4(color2, alpha2); \n");
 
 	strFragmentShader.append("  if (!alpha_test(gl_FragColor.a)) discard;	\n");
 	if (video().getRender().isImageTexturesSupported()) {
@@ -434,7 +436,7 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 #ifdef USE_TOONIFY
 	strFragmentShader.append("  toonify(intensity); \n");
 #endif
-	strFragmentShader.append("  if (uEnableFog != 0) \n");
+	strFragmentShader.append("  if (uFogUsage == 1) \n");
 	strFragmentShader.append("    gl_FragColor = vec4(mix(gl_FragColor.rgb, uFogColor.rgb, vFogFragCoord), gl_FragColor.a); \n");
 
 	strFragmentShader.append(fragment_shader_end);
@@ -493,7 +495,8 @@ void ShaderCombiner::_locateUniforms() {
 	LocateUniform(uTlutImage);
 	LocateUniform(uZlutImage);
 	LocateUniform(uDepthImage);
-	LocateUniform(uEnableFog);
+	LocateUniform(uFogMode);
+	LocateUniform(uFogUsage);
 	LocateUniform(uAlphaCompareMode);
 	LocateUniform(uAlphaDitherMode);
 	LocateUniform(uColorDitherMode);
@@ -596,13 +599,44 @@ void ShaderCombiner::updateLight(bool _bForce) {
 	}
 }
 
-void ShaderCombiner::updateColors(bool _bForce) {
+void ShaderCombiner::updateColors(bool _bForce)
+{
 	_setV4Uniform(m_uniforms.uEnvColor, &gDP.envColor.r, _bForce);
 	_setV4Uniform(m_uniforms.uPrimColor, &gDP.primColor.r, _bForce);
 	_setV4Uniform(m_uniforms.uCenterColor, &gDP.key.center.r, _bForce);
 	_setV4Uniform(m_uniforms.uScaleColor, &gDP.key.scale.r, _bForce);
-	_setIUniform(m_uniforms.uEnableFog, (config.enableFog != 0 && (gSP.geometryMode & G_FOG) != 0) ? 1 : 0, _bForce);
-	if (m_uniforms.uEnableFog.val != 0) {
+	const u32 blender = (gDP.otherMode.l >> 16);
+	int nFogUsage;
+	switch (blender) {
+	case 0x0150:
+	case 0x0D18:
+	case 0xC912:
+		nFogUsage = 2;
+		break;
+	case 0xF550:
+		nFogUsage = 3;
+		break;
+	default:
+		nFogUsage = (config.enableFog != 0 && (gSP.geometryMode & G_FOG) != 0) ? 1 : 0;
+	}
+	int nFogMode = 0; // Normal
+	if (nFogUsage == 0) {
+		switch (blender) {
+		case 0xC410:
+		case 0xC411:
+		case 0xF500:
+			nFogMode = 1; // fog blend
+			nFogUsage = 1;
+			break;
+		case 0x04D1:
+			nFogMode = 2; // inverse fog blend
+			nFogUsage = 1;
+			break;
+		}
+	}
+	_setIUniform(m_uniforms.uFogUsage, nFogUsage, _bForce);
+	_setIUniform(m_uniforms.uFogMode, nFogMode, _bForce);
+	if (nFogUsage + nFogMode != 0) {
 		_setFUniform(m_uniforms.uFogMultiplier, (float)gSP.fog.multiplier / 256.0f, _bForce);
 		_setFUniform(m_uniforms.uFogOffset, (float)gSP.fog.offset / 256.0f, _bForce);
 		_setV4Uniform(m_uniforms.uFogColor, &gDP.fogColor.r, _bForce);

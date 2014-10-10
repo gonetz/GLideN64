@@ -35,7 +35,7 @@ private:
 	struct UniformLocation
 	{
 		iUniform uTex0, uTex1, uTlutImage, uZlutImage, uDepthImage,
-			uEnableFog, uEnableLod, uEnableAlphaTest,
+			uFogMode, uFogUsage, uEnableLod, uEnableAlphaTest,
 			uEnableDepth, uEnableDepthCompare, uEnableDepthUpdate,
 			uDepthMode, uFb8Bit, uFbFixedAlpha, uRenderState,
 			uMaxTile, uTextureDetail, uTexturePersp,
