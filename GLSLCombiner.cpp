@@ -578,6 +578,7 @@ void ShaderCombiner::update() {
 	updateColors(true);
 	updateTextureInfo(true);
 	updateAlphaTestInfo(true);
+	updateFBInfo(true);
 	updateDepthInfo(true);
 	updateLight(true);
 }

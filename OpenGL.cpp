@@ -567,7 +567,7 @@ void OGLRender::_updateStates() const
 	}
 
 	if (gDP.changed & CHANGED_FB_TEXTURE)
-		currentCombiner()->updateFBInfo(true);
+		currentCombiner()->updateFBInfo(false);
 
 	if ((gDP.changed & CHANGED_RENDERMODE) || (gSP.geometryMode & G_ZBUFFER))
 		currentCombiner()->updateDepthInfo(true);
