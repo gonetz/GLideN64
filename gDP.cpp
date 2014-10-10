@@ -303,14 +303,24 @@ void gDPSetColorImage( u32 format, u32 size, u32 width, u32 address )
 #endif
 }
 
-void gDPSetTextureImage( u32 format, u32 size, u32 width, u32 address )
+void gDPSetTextureImage(u32 format, u32 size, u32 width, u32 address)
 {
 	gDP.textureImage.format = format;
 	gDP.textureImage.size = size;
 	gDP.textureImage.width = width;
-	gDP.textureImage.address = RSP_SegmentToPhysical( address );
+	gDP.textureImage.address = RSP_SegmentToPhysical(address);
 	gDP.textureImage.bpl = gDP.textureImage.width << gDP.textureImage.size >> 1;
-
+	if (gSP.DMAOffsets.tex_offset != 0) {
+		if (format == G_IM_FMT_RGBA) {
+			u16 * t = (u16*)(RDRAM + gSP.DMAOffsets.tex_offset);
+			gSP.DMAOffsets.tex_shift = t[gSP.DMAOffsets.tex_count ^ 1];
+			gDP.textureImage.address += gSP.DMAOffsets.tex_shift;
+		} else {
+			gSP.DMAOffsets.tex_offset = 0;
+			gSP.DMAOffsets.tex_shift = 0;
+			gSP.DMAOffsets.tex_count = 0;
+		}
+	}
 #ifdef DEBUG
 	DebugMsg( DEBUG_HIGH | DEBUG_HANDLED | DEBUG_TEXTURE, "gDPSetTextureImage( %s, %s, %i, 0x%08X );\n",
 		ImageFormatText[gDP.textureImage.format],
@@ -622,6 +632,16 @@ void gDPLoadBlock( u32 tile, u32 uls, u32 ult, u32 lrs, u32 dxt )
 	gDPSetTileSize( tile, uls, ult, lrs, dxt );
 	gDP.loadTile = &gDP.tiles[tile];
 	gDP.loadTile->loadType = LOADTYPE_BLOCK;
+
+	if (gSP.DMAOffsets.tex_offset != 0) {
+		if (gSP.DMAOffsets.tex_shift % (((lrs>>2) + 1) << 3)) {
+			gDP.textureImage.address -= gSP.DMAOffsets.tex_shift;
+			gSP.DMAOffsets.tex_offset = 0;
+			gSP.DMAOffsets.tex_shift = 0;
+			gSP.DMAOffsets.tex_count = 0;
+		} else
+			++gSP.DMAOffsets.tex_count;
+	}
 	gDP.loadTile->imageAddress = gDP.textureImage.address;
 
 	u32 bytes = (lrs + 1) << gDP.loadTile->size >> 1;

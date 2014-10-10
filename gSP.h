@@ -143,7 +143,7 @@ struct gSPInfo
 
 	struct
 	{
-		u32 vtx, mtx;
+		u32 vtx, mtx, tex_offset, tex_shift, tex_count;
 	} DMAOffsets;
 };
 
@@ -196,6 +196,7 @@ void gSPBgRectCopy( u32 bg );
 void gSPObjMatrix( u32 mtx );
 void gSPObjSubMatrix( u32 mtx );
 void gSPSetDMAOffsets( u32 mtxoffset, u32 vtxoffset );
+void gSPSetDMATexOffset(u32 _addr);
 void gSPSetVertexColorBase( u32 base );
 void gSPProcessVertex(u32 v);
 

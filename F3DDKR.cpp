@@ -84,6 +84,11 @@ void F3DDKR_DMA_Offsets( u32 w0, u32 w1 )
 	gSPSetDMAOffsets( _SHIFTR( w0, 0, 24 ), _SHIFTR( w1, 0, 24 ) );
 }
 
+void F3DDKR_DMA_Tex_Offset(u32 w0, u32 w1)
+{
+	gSPSetDMATexOffset(w1);
+}
+
 void F3DDKR_MoveWord( u32 w0, u32 w1 )
 {
 	switch (_SHIFTR( w0, 0, 8 ))
@@ -111,6 +116,7 @@ void F3DDKR_Init()
 	//          GBI Command             Command Value			Command Function
 	GBI_SetGBI( G_SPNOOP,				F3D_SPNOOP,				F3D_SPNoOp );
 	GBI_SetGBI( G_DMA_MTX,				F3DDKR_DMA_MTX,			F3DDKR_DMA_Mtx );
+	GBI_SetGBI( G_DMA_TEX_OFFSET,		F3DDKR_DMA_TEX_OFFSET,	F3DDKR_DMA_Tex_Offset );
 	GBI_SetGBI( G_MOVEMEM,				F3D_MOVEMEM,			F3D_MoveMem );
 	GBI_SetGBI( G_DMA_VTX,				F3DDKR_DMA_VTX,			F3DDKR_DMA_Vtx );
 	GBI_SetGBI( G_DL,					F3D_DL,					F3D_DList );

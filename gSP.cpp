@@ -967,6 +967,13 @@ void gSPSetDMAOffsets( u32 mtxoffset, u32 vtxoffset )
 #endif
 }
 
+void gSPSetDMATexOffset(u32 _addr)
+{
+	gSP.DMAOffsets.tex_offset = RSP_SegmentToPhysical(_addr);
+	gSP.DMAOffsets.tex_shift = 0;
+	gSP.DMAOffsets.tex_count = 0;
+}
+
 void gSPSetVertexColorBase( u32 base )
 {
 	gSP.vertexColorBase = RSP_SegmentToPhysical( base );
