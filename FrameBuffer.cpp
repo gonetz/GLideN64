@@ -330,7 +330,7 @@ void FrameBuffer_Destroy()
 #ifndef GLES2
 void FrameBufferList::renderBuffer(u32 _address)
 {
-	static u32 vStartPrev = 0;
+	static s32 vStartPrev = 0;
 
 	if (VI.width == 0) // H width is zero. Don't draw
 		return;
@@ -341,8 +341,25 @@ void FrameBufferList::renderBuffer(u32 _address)
 
 	OGLVideo & ogl = video();
 	GLint srcY0, srcY1, dstY0, dstY1;
-	GLint partHeight = 0;
-	const u32 vStart = _SHIFTR( *REG.VI_V_START, 17, 9 );
+	GLint srcPartHeight = 0;
+	GLint dstPartHeight = 0;
+
+	const f32 yScale = _FIXED2FLOAT(_SHIFTR(*REG.VI_Y_SCALE, 0, 12), 10);
+	s32 vEnd = _SHIFTR(*REG.VI_V_START, 0, 10);
+	s32 vStart = _SHIFTR(*REG.VI_V_START, 16, 10);
+	const s32 vSync = (*REG.VI_V_SYNC) & 0x03FF;
+	const bool interlaced = (*REG.VI_STATUS & 0x40) != 0;
+	const bool isPAL = vSync > 550;
+	const s32 vShift = (isPAL ? 47 : 37);
+	dstY0 = vStart - vShift;
+	dstY0 >>= 1;
+	dstY0 &= -(dstY0 >= 0);
+	vStart >>= 1;
+	vEnd >>= 1;
+	const u32 vFullHeight = isPAL ? 288 : 240;
+	const u32 vCurrentHeight = vEnd - vStart;
+	const float dstScaleY = (float)ogl.getHeight() / float(vFullHeight);
+
 	bool isLowerField = false;
 	if ((*REG.VI_STATUS & 0x40) != 0)
 		isLowerField = vStart > vStartPrev;
@@ -352,15 +369,17 @@ void FrameBufferList::renderBuffer(u32 _address)
 	if (isLowerField)
 		--srcY0;
 
-	srcY1 = srcY0 + VI.real_height;
-	if (srcY1 > VI.height) {
-		partHeight = srcY1 - VI.height;
-		srcY1 = VI.height;
-		dstY0 = 1;
-		dstY1 = dstY0 + VI.real_height - partHeight;
+	if (srcY0 + vCurrentHeight > vFullHeight) {
+		dstPartHeight = srcY0;
+		srcY0 = (GLint)(srcY0*yScale);
+		srcPartHeight = srcY0;
+		srcY1 = VI.real_height;
+		dstY1 = dstY0 + vCurrentHeight - dstPartHeight;
 	} else {
-		dstY0 = srcY0;
-		dstY1 = srcY1;
+		dstY0 += srcY0;
+		dstY1 = dstY0 + vCurrentHeight;
+		srcY0 = (GLint)(srcY0*yScale);
+		srcY1 = srcY0 + VI.real_height;
 	}
 
 	// glDisable(GL_SCISSOR_TEST) does not affect glBlitFramebuffer, at least on AMD
@@ -371,27 +390,29 @@ void FrameBufferList::renderBuffer(u32 _address)
 	//glDrawBuffer( GL_BACK );
 	float clearColor[4] = {0.0f, 0.0f, 0.0f, 0.0f};
 	ogl.getRender().clearColorBuffer(clearColor);
-	const float scaleY = ogl.getScaleY();
-	const float hOffset = (ogl.getScreenWidth() - ogl.getWidth()) / 2.0f;
-	const float vOffset = (ogl.getScreenHeight() - ogl.getHeight()) / 2.0f;
+	const float srcScaleY = ogl.getScaleY();
+	const GLint hOffset = (ogl.getScreenWidth() - ogl.getWidth()) / 2;
+	GLint vOffset = (ogl.getScreenHeight() - ogl.getHeight()) / 2;
+	if (!ogl.isFullscreen())
+		vOffset += ogl.getHeightOffset();
 	glBlitFramebuffer(
-		0, (GLint)(srcY0*scaleY), ogl.getWidth(), (GLint)(srcY1*scaleY),
-		hOffset, vOffset + ogl.getHeightOffset() + (GLint)(dstY0*scaleY), hOffset + ogl.getWidth(), vOffset + ogl.getHeightOffset() + (GLint)(dstY1*scaleY),
+		0, (GLint)(srcY0*srcScaleY), ogl.getWidth(), (GLint)(srcY1*srcScaleY),
+		hOffset, vOffset + (GLint)(dstY0*dstScaleY), hOffset + ogl.getWidth(), vOffset + (GLint)(dstY1*dstScaleY),
 		GL_COLOR_BUFFER_BIT, GL_LINEAR
 	);
 
-	if (partHeight > 0) {
+	if (dstPartHeight > 0) {
 		const u32 size = *REG.VI_STATUS & 3;
 		pBuffer = findBuffer(_address + (((*REG.VI_WIDTH)*VI.height)<<size>>1));
 		if (pBuffer != NULL) {
 			srcY0 = 0;
-			srcY1 = partHeight;
+			srcY1 = srcPartHeight;
 			dstY0 = dstY1;
-			dstY1 = dstY0 + partHeight;
+			dstY1 = dstY0 + dstPartHeight;
 			glBindFramebuffer(GL_READ_FRAMEBUFFER, pBuffer->m_FBO);
 			glBlitFramebuffer(
-				0, (GLint)(srcY0*scaleY), ogl.getWidth(), (GLint)(srcY1*scaleY),
-				hOffset, vOffset + ogl.getHeightOffset() + (GLint)(dstY0*scaleY), hOffset + ogl.getWidth(), vOffset +  ogl.getHeightOffset() + (GLint)(dstY1*scaleY),
+				0, (GLint)(srcY0*srcScaleY), ogl.getWidth(), (GLint)(srcY1*srcScaleY),
+				hOffset, vOffset + (GLint)(dstY0*dstScaleY), hOffset + ogl.getWidth(), vOffset + (GLint)(dstY1*dstScaleY),
 				GL_COLOR_BUFFER_BIT, GL_LINEAR
 			);
 		}
