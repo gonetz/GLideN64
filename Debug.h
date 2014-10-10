@@ -1,4 +1,4 @@
-#if !defined( DEBUG_H ) && defined( _DEBUG )
+#if !defined( DEBUG_H ) && defined( USE_DEBUG )
 #define DEBUG_H
 
 #include "Types.h"
