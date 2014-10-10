@@ -34,7 +34,7 @@ SpecialMicrocodeInfo specialMicrocodes[] =
 
 	{ F3DDKR,	FALSE,	0x8d91244f, "Diddy Kong Racing" },
 	{ F3DDKR,	FALSE,	0x6e6fc893, "Diddy Kong Racing" },
-	{ F3DDKR,	FALSE,	0xbde9d1fb, "Jet Force Gemini" },
+	{ F3DJFG,	FALSE,	0xbde9d1fb, "Jet Force Gemini" },
 	{ F3DPD,	FALSE,	0x1c4f7869, "Perfect Dark" }
 };
 
@@ -136,6 +136,7 @@ void GBIInfo::_makeCurrent(MicrocodeInfo * _pCurrent)
 			case S2DEX:		S2DEX_Init();	break;
 			case S2DEX2:	S2DEX2_Init();	break;
 			case F3DDKR:	F3DDKR_Init();	break;
+			case F3DJFG:	F3DJFG_Init();	break;
 			case F3DWRUS:	F3DWRUS_Init();	break;
 			case F3DPD:		F3DPD_Init();	break;
 		}

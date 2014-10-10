@@ -16,8 +16,9 @@
 #define S2DEX2		7
 #define F3DPD		8
 #define F3DDKR		9
-#define F3DWRUS	    10
-#define NONE		11
+#define F3DJFG		10
+#define F3DWRUS		11
+#define NONE		12
 
 // Fixed point conversion factors
 #define FIXED2FLOATRECIP1	0.5f

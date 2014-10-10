@@ -16,12 +16,13 @@ static const char *MicrocodeTypes[] =
 	"S2DEX",
 	"S2DEX2",
 	"Perfect Dark",
-	"DKR/JFG",
+	"DKR",
+	"JFG",
 	"Waverace US",
 	"None"
 };
 
-static const int numMicrocodeTypes = 11;
+static const int numMicrocodeTypes = 12;
 static unsigned int uc_crc;
 static const char * uc_str;
 
