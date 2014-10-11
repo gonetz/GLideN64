@@ -72,8 +72,10 @@ void F3D_MoveMem( u32 w0, u32 w1 )
 			gSPLight( w1, LIGHT_8 );
 			break;
 		case G_MV_LOOKATX:
+			gSPLookAt(w1, 0);
 			break;
 		case G_MV_LOOKATY:
+			gSPLookAt(w1, 1);
 			break;
 	}
 }

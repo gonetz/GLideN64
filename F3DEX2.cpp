@@ -33,16 +33,14 @@ void F3DEX2_MoveMem( u32 w0, u32 w1 )
 			RSP.PC[RSP.PCi] += 8;
 			break;
 		case G_MV_LIGHT:
-			u32 offset = _SHIFTR( w0, 8, 8 ) << 3;
-
-			if (offset >= 48)
 			{
-				gSPLight( w1, (offset - 24) / 24);
+			const u32 offset = (_SHIFTR(w0, 5, 11))&0x7F8;
+			const u32 n = offset / 24;
+			if (n < 2)
+				gSPLookAt(w1, n);
+			else
+				gSPLight(w1, n - 1);
 			}
-/*			else
-			{
-				// Do lookat stuff
-			}*/
 			break;
 	}
 }

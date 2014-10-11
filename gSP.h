@@ -106,6 +106,8 @@ struct gSPInfo
 	u32 vertexi;
 
 	SPLight lights[8];
+	SPLight lookat[2];
+	bool lookatEnable;
 
 	struct
 	{
@@ -156,7 +158,7 @@ void gSPDMAMatrix( u32 matrix, u8 index, u8 multiply );
 void gSPViewport( u32 v );
 void gSPForceMatrix( u32 mptr );
 void gSPLight( u32 l, s32 n );
-void gSPLookAt( u32 l );
+void gSPLookAt( u32 l, u32 n );
 void gSPVertex( u32 v, u32 n, u32 v0 );
 void gSPCIVertex( u32 v, u32 n, u32 v0 );
 void gSPDMAVertex( u32 v, u32 n, u32 v0 );

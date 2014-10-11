@@ -326,15 +326,22 @@ void gSPProcessVertex( u32 v )
 		gSPLightVertex(v);
 
 		if (gSP.geometryMode & G_TEXTURE_GEN) {
-			float fLightDir[3] = {vtx.nx, vtx.ny, vtx.nz};
+			f32 fLightDir[3] = {vtx.nx, vtx.ny, vtx.nz};
 			TransformVectorNormalize(fLightDir, gSP.matrix.projection);
-
+			f32 x, y;
+			if (gSP.lookatEnable) {
+				x = DotProduct(&gSP.lookat[0].x, fLightDir);
+				y = DotProduct(&gSP.lookat[1].x, fLightDir);
+			} else {
+				x = fLightDir[0];
+				y = fLightDir[1];
+			}
 			if (gSP.geometryMode & G_TEXTURE_GEN_LINEAR) {
-				vtx.s = acosf(fLightDir[0]) * 325.94931f;
-				vtx.t = acosf(fLightDir[1]) * 325.94931f;
+				vtx.s = acosf(x) * 325.94931f;
+				vtx.t = acosf(y) * 325.94931f;
 			} else { // G_TEXTURE_GEN
-				vtx.s = (fLightDir[0] + 1.0f) * 512.0f;
-				vtx.t = (fLightDir[1] + 1.0f) * 512.0f;
+				vtx.s = (x + 1.0f) * 512.0f;
+				vtx.t = (y + 1.0f) * 512.0f;
 			}
 		}
 	}
@@ -525,7 +532,7 @@ void gSPForceMatrix( u32 mptr )
 
 void gSPLight( u32 l, s32 n )
 {
-	n--;
+	--n;
 	u32 address = RSP_SegmentToPhysical( l );
 
 	if ((address + sizeof( Light )) > RDRAMSize) {
@@ -564,8 +571,28 @@ void gSPLight( u32 l, s32 n )
 #endif
 }
 
-void gSPLookAt( u32 l )
+void gSPLookAt( u32 _l, u32 _n )
 {
+	u32 address = RSP_SegmentToPhysical(_l);
+
+	if ((address + sizeof(Light)) > RDRAMSize) {
+#ifdef DEBUG
+		DebugMsg(DEBUG_HIGH | DEBUG_ERROR, "// Attempting to load light from invalid address\n");
+		DebugMsg(DEBUG_HIGH | DEBUG_HANDLED, "gSPLookAt( 0x%08X, LOOKAT_%i );\n",
+			l, n);
+#endif
+		return;
+	}
+
+	Light *light = (Light*)&RDRAM[address];
+
+	gSP.lookat[_n].x = light->x;
+	gSP.lookat[_n].y = light->y;
+	gSP.lookat[_n].z = light->z;
+
+	gSP.lookatEnable = (_n == 0) || (_n == 1 && light->x != 0 && light->y != 0);
+
+	Normalize(&gSP.lookat[_n].x);
 }
 
 void gSPVertex( u32 a, u32 n, u32 v0 )
