@@ -128,24 +128,34 @@ static void gSPLightVertex4_default(u32 v)
 {
 	gSPTransformNormal4(v, gSP.matrix.modelView[gSP.matrix.modelViewi]);
 	OGLRender & render = video().getRender();
-	for(int j = 0; j < 4; ++j) {
-		f32 r, g, b;
-		r = gSP.lights[gSP.numLights].r;
-		g = gSP.lights[gSP.numLights].g;
-		b = gSP.lights[gSP.numLights].b;
-		SPVertex & vtx = render.getVertex(v+j);
+	if (!config.enableHWLighting) {
+		for(int j = 0; j < 4; ++j) {
+			f32 r = gSP.lights[gSP.numLights].r;
+			f32 g = gSP.lights[gSP.numLights].g;
+			f32 b = gSP.lights[gSP.numLights].b;
+			SPVertex & vtx = render.getVertex(v+j);
+			vtx.HWLight = 0;
 
-		for (int i = 0; i < gSP.numLights; i++) {
-			f32 intensity = DotProduct( &vtx.nx, &gSP.lights[i].x );
-			if (intensity < 0.0f)
-				intensity = 0.0f;
-			r += gSP.lights[i].r * intensity;
-			g += gSP.lights[i].g * intensity;
-			b += gSP.lights[i].b * intensity;
+			for (int i = 0; i < gSP.numLights; ++i) {
+				f32 intensity = DotProduct( &vtx.nx, &gSP.lights[i].x );
+				if (intensity < 0.0f)
+					intensity = 0.0f;
+				r += gSP.lights[i].r * intensity;
+				g += gSP.lights[i].g * intensity;
+				b += gSP.lights[i].b * intensity;
+			}
+			vtx.r = min(1.0f, r);
+			vtx.g = min(1.0f, g);
+			vtx.b = min(1.0f, b);
 		}
-		vtx.r = min(1.0f, r);
-		vtx.g = min(1.0f, g);
-		vtx.b = min(1.0f, b);
+	} else {
+		for(int j = 0; j < 4; ++j) {
+			SPVertex & vtx = render.getVertex(v+j);
+			vtx.HWLight = gSP.numLights;
+			vtx.r = vtx.nx;
+			vtx.g = vtx.ny;
+			vtx.b = vtx.nz;
+		}
 	}
 }
 
@@ -209,22 +219,30 @@ void gSPProcessVertex4(u32 v)
 		gSPLightVertex4(v);
 
 		if (gSP.geometryMode & G_TEXTURE_GEN) {
-			gSPTransformNormal4(v, gSP.matrix.projection);
-
-			if (gSP.geometryMode & G_TEXTURE_GEN_LINEAR) {
-				for(int i = 0; i < 4; ++i) {
-					SPVertex & vtx = render.getVertex(v+i);
-					vtx.s = acosf(vtx.nx) * 325.94931f;
-					vtx.t = acosf(vtx.ny) * 325.94931f;
+			for(int i = 0; i < 4; ++i) {
+				SPVertex & vtx = render.getVertex(v+i);
+				f32 fLightDir[3] = {vtx.nx, vtx.ny, vtx.nz};
+				TransformVectorNormalize(fLightDir, gSP.matrix.projection);
+				f32 x, y;
+				if (gSP.lookatEnable) {
+					x = DotProduct(&gSP.lookat[0].x, fLightDir);
+					y = DotProduct(&gSP.lookat[1].x, fLightDir);
+				} else {
+					x = fLightDir[0];
+					y = fLightDir[1];
 				}
-			} else { // G_TEXTURE_GEN
-				for(int i = 0; i < 4; ++i) {
-					SPVertex & vtx = render.getVertex(v+i);
-					vtx.s = (vtx.nx + 1.0f) * 512.0f;
-					vtx.t = (vtx.ny + 1.0f) * 512.0f;
+				if (gSP.geometryMode & G_TEXTURE_GEN_LINEAR) {
+					vtx.s = acosf(x) * 325.94931f;
+					vtx.t = acosf(y) * 325.94931f;
+				} else { // G_TEXTURE_GEN
+					vtx.s = (x + 1.0f) * 512.0f;
+					vtx.t = (y + 1.0f) * 512.0f;
 				}
 			}
 		}
+	} else {
+		for(int i = 0; i < 4; ++i)
+			render.getVertex(v+i).HWLight = 0;
 	}
 
 	gSPClipVertex4(v);
@@ -251,6 +269,7 @@ static void gSPLightVertex_default(u32 v)
 	TransformVectorNormalize( &vtx.nx, gSP.matrix.modelView[gSP.matrix.modelViewi] );
 
 	if (!config.enableHWLighting) {
+		vtx.HWLight = 0;
 		f32 r = gSP.lights[gSP.numLights].r;
 		f32 g = gSP.lights[gSP.numLights].g;
 		f32 b = gSP.lights[gSP.numLights].b;
@@ -321,7 +340,6 @@ void gSPProcessVertex( u32 v )
 
 	gSPClipVertex(v);
 
-	vtx.HWLight = 0;
 	if (gSP.geometryMode & G_LIGHTING) {
 		gSPLightVertex(v);
 
@@ -344,7 +362,8 @@ void gSPProcessVertex( u32 v )
 				vtx.t = (y + 1.0f) * 512.0f;
 			}
 		}
-	}
+	} else
+		vtx.HWLight = 0;
 }
 
 void gSPLoadUcodeEx( u32 uc_start, u32 uc_dstart, u16 uc_dsize )
