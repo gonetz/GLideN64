@@ -77,13 +77,6 @@ typedef const char 	*LPCSTR;
 //#define EXPORT
 //#define CALL
 
-#ifndef min
-#define min( a, b )		((a > b) ? b : a)
-#endif
-#ifndef max
-#define max( a, b )		((a > b) ? a : b)
-#endif
-
 #ifndef FALSE
 #define FALSE 0
 #endif
