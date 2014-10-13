@@ -131,7 +131,7 @@ public:
 	}
 
 private:
-	CombinerInfo() : m_pCurrent(NULL), m_bChanged(false) {}
+	CombinerInfo() : m_bChanged(false), m_pCurrent(NULL) {}
 	CombinerInfo(const CombinerInfo &);
 
 	ShaderCombiner * _compile(u64 mux) const;

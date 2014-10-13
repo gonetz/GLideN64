@@ -126,7 +126,7 @@ FrameBuffer::FrameBuffer(FrameBuffer && _other) :
 	m_startAddress(_other.m_startAddress), m_endAddress(_other.m_endAddress),
 	m_size(_other.m_size), m_width(_other.m_width), m_height(_other.m_height), m_fillcolor(_other.m_fillcolor),
 	m_scaleX(_other.m_scaleX), m_scaleY(_other.m_scaleY), m_cleared(_other.m_cleared), m_cfb(_other.m_cfb),
-	m_FBO(_other.m_FBO), m_pTexture(_other.m_pTexture), m_pLoadTile(_other.m_pLoadTile), m_pDepthBuffer(_other.m_pDepthBuffer)
+	m_FBO(_other.m_FBO), m_pLoadTile(_other.m_pLoadTile), m_pTexture(_other.m_pTexture), m_pDepthBuffer(_other.m_pDepthBuffer)
 {
 	_other.m_FBO = 0;
 	_other.m_pTexture = NULL;
