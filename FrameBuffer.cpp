@@ -361,7 +361,7 @@ void FrameBufferList::renderBuffer(u32 _address)
 	const float dstScaleY = (float)ogl.getHeight() / float(vFullHeight);
 
 	bool isLowerField = false;
-	if ((*REG.VI_STATUS & 0x40) != 0)
+	if (interlaced)
 		isLowerField = vStart > vStartPrev;
 	vStartPrev = vStart;
 
