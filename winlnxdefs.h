@@ -30,7 +30,6 @@
 #ifndef WINLNXDEFS_H
 #define WINLNXDEFS_H
 
-#include <features.h>	// we want GNU extensions
 #include <dlfcn.h>
 #include <errno.h>
 #include <limits.h> // PATH_MAX

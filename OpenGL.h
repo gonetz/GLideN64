@@ -19,6 +19,7 @@
 #define GL_GLEXT_PROTOTYPES
 #if defined(OS_MAC_OS_X)
 #include <OpenGL/OpenGL.h>
+#include <OpenGL/gl.h>
 #include <OpenGL/glext.h>
 #elif defined(OS_LINUX)
 #include <GL/gl.h>

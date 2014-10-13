@@ -1,4 +1,8 @@
+#ifdef OS_MAC_OS_X
+#include <malloc/malloc.h>
+#else
 #include <malloc.h>
+#endif
 #include <assert.h>
 #include "OpenGL.h"
 #include "Combiner.h"

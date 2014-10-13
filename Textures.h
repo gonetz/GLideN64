@@ -3,6 +3,8 @@
 
 #ifdef ANDROID
 #include <GLES2/gl2.h>
+#elif defined (OS_MAC_OS_X)
+#include <OpenGL/gl.h>
 #else
 #include <GL/gl.h>
 #endif //ANDROID

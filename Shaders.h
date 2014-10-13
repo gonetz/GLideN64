@@ -309,13 +309,6 @@ static const char* fragment_shader_toonify =
 ;
 #endif
 
-static const char* fragment_shader_default =
-//"  gl_FragColor = texture2D(uTex0, gl_TexCoord[0].st); \n"
-//"  gl_FragColor = gl_Color; \n"
-"  vec4 color = texture2D(uTex0, vTexCoord0); \n"
-"  gl_FragColor = vShadeColor*color; \n"
-;
-
 #ifdef GLES2
 static const char* fragment_shader_readtex0color =
 "  lowp vec4 readtex0 = texture2D(uTex0, vTexCoord0);						\n"
@@ -342,6 +335,11 @@ static const char* fragment_shader_readtex1color =
 "  vec4 readtex1 = texture2D(uTex1, vTexCoord1);	\n"
 "  if (uFb8Bit == 2 || uFb8Bit == 3) readtex1 = vec4(readtex1.r);	\n"
 "  if (uFbFixedAlpha == 2 || uFbFixedAlpha == 3) readtex1.a = 0.825;	\n"
+;
+
+static const char* fragment_shader_end =
+"}                               \n"
+#endif
 ;
 
 static const char* fragment_shader_mipmap =
@@ -482,11 +480,7 @@ static const char* fragment_shader_mipmap =
 #endif
 ;
 
-static const char* fragment_shader_end =
-"}                               \n"
-#endif
-;
-
+#ifdef GL_IMAGE_TEXTURES_SUPPORT
 static const char* depth_compare_shader_float =
 "#version 420 core			\n"
 "uniform int uEnableDepth;	\n"
@@ -577,3 +571,4 @@ static const char* shadow_map_fragment_shader_float =
 "  gl_FragColor = vec4(uFogColor.rgb, get_alpha());	\n"
 "}														\n"
 ;
+#endif // GL_IMAGE_TEXTURES_SUPPORT
