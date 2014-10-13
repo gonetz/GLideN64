@@ -1,4 +1,4 @@
-#if defined(USE_DEBUG) && defined(_WINDOWS)
+#if defined(USE_DEBUG) && defined(OS_WINDOWS)
 
 #include "GLideN64_Windows.h"
 #include <stdio.h>

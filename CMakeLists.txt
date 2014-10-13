@@ -39,7 +39,7 @@ if(MUPENPLUSAPI)
 	-DMUPENPLUSAPI
   )
   include_directories( inc )
-  set(GLideN64_SOURCES_LINUX
+  set(GLideN64_SOURCES_UNIX
 	MupenPlusPluginAPI.cpp
 	mupenplus/Config.cpp
 	mupenplus/CommonAPIImpl_mupenplus.cpp
@@ -47,7 +47,7 @@ if(MUPENPLUSAPI)
 	mupenplus/MupenPlusAPIImpl.cpp
 	mupenplus/OpenGL_mupenplus.cpp
   )
-  set(GLideN64_SOURCES_WIN ${GLideN64_SOURCES_LINUX}
+  set(GLideN64_SOURCES_WIN ${GLideN64_SOURCES_UNIX}
 	windows/GLFunctions.cpp
   )
 else(MUPENPLUSAPI)
@@ -63,7 +63,7 @@ else(MUPENPLUSAPI)
 	windows/OpenGL_windows.cpp
 	windows/ZilmarAPIImpl_windows.cpp
   )
-  set(GLideN64_SOURCES_LINUX
+  set(GLideN64_SOURCES_UNIX
 	ZilmarPluginAPI.cpp
 	common/ZilmarAPIImpl_common.cpp
 	posix/Config.cpp
@@ -76,9 +76,18 @@ else(MUPENPLUSAPI)
 endif(MUPENPLUSAPI)
 
 if(UNIX)
-  list(APPEND GLideN64_SOURCES ${GLideN64_SOURCES_LINUX})
+  list(APPEND GLideN64_SOURCES ${GLideN64_SOURCES_UNIX})
+  if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+	add_definitions(
+	  -DOS_MAC_OS_X
+	)
+  elseif(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+	add_definitions(
+	  -DOS_LINUX
+	)
+  endif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+  if( NOT MUPENPLUSAPI)
   add_definitions(
-	-D__LINUX__
 	-D_DEBUG
   )
   find_package(PkgConfig)
@@ -86,15 +95,16 @@ if(UNIX)
   include_directories(${GLIB_INCLUDE_DIRS})
   find_package(GTK2 REQUIRED)
   include_directories(${GTK2_INCLUDE_DIRS})
+  endif( NOT MUPENPLUSAPI)
 endif(UNIX)
 
 if(WIN32)
   list(APPEND GLideN64_SOURCES ${GLideN64_SOURCES_WIN})
   add_definitions(
-	-D_WINDOWS
+	-DOS_WINDOWS
 	-D__WIN32__
 	-DWIN32
-	-D_WIN32_
+	-D_WIN32_ASM
 	-D_CRT_SECURE_NO_WARNINGS
 	-D__MSC__
   )

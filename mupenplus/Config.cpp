@@ -175,7 +175,7 @@ void Config_SetOption(char* line, char* val)
 {
 	for (int i = 0; i< configOptionsSize; i++) {
 		Option *o = &configOptions[i];
-#ifndef _WINDOWS
+#ifndef OS_WINDOWS
 		if (strcasecmp(line, o->name) == 0) {
 #else
 		if (_stricmp(line, o->name) == 0) {

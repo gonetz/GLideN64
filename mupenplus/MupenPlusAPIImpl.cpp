@@ -3,11 +3,11 @@
 #include "../GLideN64.h"
 #include "../OpenGL.h"
 
-#ifdef _WINDOWS
+#ifdef OS_WINDOWS
 #define DLSYM(a, b) GetProcAddress(a, b)
 #else
 #define DLSYM(a, b) dlsym(a, b)
-#endif // _WINDOWS
+#endif // OS_WINDOWS
 
 ptr_ConfigGetSharedDataFilepath ConfigGetSharedDataFilepath = NULL;
 ptr_ConfigGetUserConfigPath ConfigGetUserConfigPath = NULL;

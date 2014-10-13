@@ -7,7 +7,7 @@
 #include "../Config.h"
 #include "../Revision.h"
 
-#ifndef _WINDOWS
+#ifndef OS_WINDOWS
 
 void initGLFunctions()
 {

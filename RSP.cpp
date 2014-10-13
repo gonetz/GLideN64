@@ -240,7 +240,7 @@ void RSP_ProcessDList()
 
 void RSP_Init()
 {
-#ifdef _WINDOWS
+#ifdef OS_WINDOWS
 	// Calculate RDRAM size by intentionally causing an access violation
 	u32 test;
 	try
@@ -255,9 +255,9 @@ void RSP_Init()
 		RDRAMSize = 0x7FFFFF;
 	else
 		RDRAMSize = 0x3FFFFF;
-#else // _WINDOWS
+#else // OS_WINDOWS
 	RDRAMSize = 1024 * 1024 * 8;
-#endif // _WINDOWS
+#endif // OS_WINDOWS
 
 	RSP.DList = 0;
 	RSP.uc_start = RSP.uc_dstart = 0;

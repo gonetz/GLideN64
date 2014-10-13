@@ -2,7 +2,7 @@
 #define OPENGL_H
 
 #include <vector>
-#ifdef _WINDOWS
+#ifdef OS_WINDOWS
 #include <windows.h>
 #include <GL/gl.h>
 #include "glext.h"
@@ -16,13 +16,18 @@
 #define GL_READ_FRAMEBUFFER GL_FRAMEBUFFER
 #else
 #define GL_GLEXT_PROTOTYPES
+#if defined(OS_MAC_OS_X)
+#include <OpenGL/OpenGL.h>
+#include <OpenGL/glext.h>
+#elif defined(OS_LINUX)
 #include <GL/gl.h>
 #include <GL/glext.h>
+#endif // OS_MAC_OS_X
 #endif // GLES2
 #ifdef USE_SDL
 #include <SDL.h>
 #endif // USE_SDL
-#endif // _WINDOWS
+#endif // OS_WINDOWS
 
 #include "gSP.h"
 

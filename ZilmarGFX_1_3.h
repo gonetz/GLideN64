@@ -26,7 +26,7 @@ extern "C" {
 /* Plugin types */
 #define PLUGIN_TYPE_GFX				2
 
-#ifdef _WINDOWS
+#ifdef OS_WINDOWS
   #define EXPORT	__declspec(dllexport)
   #define CALL		__cdecl
 #else
