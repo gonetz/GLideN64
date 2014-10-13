@@ -39,7 +39,7 @@ DepthBuffer::~DepthBuffer()
 
 void DepthBuffer::initDepthTexture(FrameBuffer * _pBuffer)
 {
-#ifndef GLES2
+#ifdef GL_IMAGE_TEXTURES_SUPPORT
 	if (m_pDepthTexture != NULL)
 		textureCache().removeFrameBufferTexture(m_pDepthTexture);
 	m_pDepthTexture = textureCache().addFrameBufferTexture();
@@ -75,9 +75,7 @@ void DepthBuffer::initDepthTexture(FrameBuffer * _pBuffer)
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, _pBuffer->m_FBO);
 	_pBuffer->m_pDepthBuffer = this;
 	depthBufferList().clearBuffer();
-#else
-	depth_texture = NULL;
-#endif // GLES2
+#endif // GL_IMAGE_TEXTURES_SUPPORT
 }
 
 void DepthBufferList::init()
@@ -158,7 +156,7 @@ void DepthBufferList::saveBuffer(u32 _address)
 
 void DepthBufferList::clearBuffer()
 {
-#ifndef GLES2
+#ifdef GL_IMAGE_TEXTURES_SUPPORT
 	if (!video().getRender().isImageTexturesSupported())
 		return;
 	if (m_pCurrent == NULL || m_pCurrent->m_FBO == 0)
@@ -169,7 +167,7 @@ void DepthBufferList::clearBuffer()
 	video().getRender().drawRect(0,0,VI.width, VI.height, color);
 	glBindImageTexture(depthImageUnit, m_pCurrent->m_pDepthTexture->glName, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA32F);
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, frameBufferList().getCurrent()->m_FBO);
-#endif // GLES2
+#endif // GL_IMAGE_TEXTURES_SUPPORT
 }
 
 void DepthBuffer_Init()

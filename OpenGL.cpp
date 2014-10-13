@@ -617,10 +617,10 @@ void OGLRender::_setTexCoordArrays() const
 
 void OGLRender::_prepareDrawTriangle(bool _dma)
 {
-#ifndef GLES2
+#ifdef GL_IMAGE_TEXTURES_SUPPORT
 	if (m_bImageTexture)
 		glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
-#endif
+#endif // GL_IMAGE_TEXTURES_SUPPORT
 
 	if (gSP.changed || gDP.changed)
 		_updateStates();
@@ -812,11 +812,11 @@ void OGLRender::drawTexturedRect(float _ulx, float _uly, float _lrx, float _lry,
 		currentCombiner()->updateRenderState();
 	}
 
-#ifndef GLES2
+#ifdef GL_IMAGE_TEXTURES_SUPPORT
 	if ((gDP.otherMode.l >> 16) == 0x3c18 && gDP.combine.muxs0 == 0x00ffffff && gDP.combine.muxs1 == 0xfffff238) //depth image based fog
 	//if (gDP.textureImage.size == 2 && gDP.textureImage.address >= gDP.depthImageAddress &&  gDP.textureImage.address < (gDP.depthImageAddress +  gDP.colorImage.width*gDP.colorImage.width*6/4))
 		SetShadowMapCombiner();
-#endif // GLES2
+#endif // GL_IMAGE_TEXTURES_SUPPORT
 
 	FrameBufferList & fbList = frameBufferList();
 	FrameBuffer* pBuffer = fbList.getCurrent();
@@ -972,13 +972,13 @@ void OGLRender::clearColorBuffer(float *_pColor )
 
 void OGLRender::_initExtensions()
 {
+#ifdef GL_IMAGE_TEXTURES_SUPPORT
 	const char *version = reinterpret_cast<const char*>(glGetString(GL_VERSION));
 	u32 uVersion = atol(version);
 
-#ifndef GLES2
 	m_bImageTexture = (uVersion >= 4) && (glBindImageTexture != NULL);
 #else
-	bImageTexture = false;
+	m_bImageTexture = false;
 #endif
 }
 

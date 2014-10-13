@@ -7,6 +7,7 @@
 #include <GL/gl.h>
 #include "glext.h"
 #include "windows/GLFunctions.h"
+#define GL_IMAGE_TEXTURES_SUPPORT
 #else
 #include "winlnxdefs.h"
 #ifdef GLES2
@@ -22,6 +23,7 @@
 #elif defined(OS_LINUX)
 #include <GL/gl.h>
 #include <GL/glext.h>
+#define GL_IMAGE_TEXTURES_SUPPORT
 #endif // OS_MAC_OS_X
 #endif // GLES2
 #ifdef USE_SDL

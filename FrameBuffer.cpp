@@ -288,7 +288,7 @@ void FrameBufferList::attachDepthBuffer()
 			pDepthBuffer->initDepthTexture(m_pCurrent);
 		m_pCurrent->m_pDepthBuffer = pDepthBuffer;
 		glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, pDepthBuffer->m_renderbuf);
-#ifndef GLES2
+#ifdef GL_IMAGE_TEXTURES_SUPPORT
 		GLuint attachments[1] = { GL_COLOR_ATTACHMENT0 };
 		glDrawBuffers(1,  attachments);
 		if (video().getRender().isImageTexturesSupported())
@@ -598,7 +598,7 @@ void FrameBufferToRDRAM::CopyToRDRAM( u32 address, bool bSync ) {
 
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, m_FBO);
 	glReadBuffer(GL_COLOR_ATTACHMENT0);
-#if 1 //ndef GLES2
+#ifndef GLES2
 	// If Sync, read pixels from the buffer, copy them to RDRAM.
 	// If not Sync, read pixels from the buffer, copy pixels from the previous buffer to RDRAM.
 	if (m_aAddress[m_curIndex] == 0)

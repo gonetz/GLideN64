@@ -19,11 +19,13 @@ static GLuint  g_calc_mipmap_shader_object;
 static GLuint  g_calc_noise_shader_object;
 static GLuint  g_calc_depth_shader_object;
 static GLuint  g_test_alpha_shader_object;
-static GLuint g_zlut_tex = 0;
 
+#ifdef GL_IMAGE_TEXTURES_SUPPORT
+static GLuint g_zlut_tex = 0;
 static GLuint  g_draw_shadow_map_program;
 GLuint g_tlut_tex = 0;
 static u32 g_paletteCRC256 = 0;
+#endif // GL_IMAGE_TEXTURES_SUPPORT
 
 static std::string strFragmentShader;
 
@@ -61,7 +63,7 @@ bool check_program_link_status(GLuint obj)
 	return true;
 }
 
-#ifndef GLES2
+#ifdef GL_IMAGE_TEXTURES_SUPPORT
 static
 void InitZlutTexture()
 {
@@ -156,7 +158,7 @@ void DestroyShadowMapShader()
 	glDeleteProgram(g_draw_shadow_map_program);
 	g_draw_shadow_map_program = 0;
 }
-#endif // GLES2
+#endif // GL_IMAGE_TEXTURES_SUPPORT
 
 void InitShaderCombiner()
 {
@@ -194,6 +196,7 @@ void InitShaderCombiner()
 	glCompileShader(g_test_alpha_shader_object);
 	assert(check_shader_compile_status(g_test_alpha_shader_object));
 
+#ifdef GL_IMAGE_TEXTURES_SUPPORT
 	if (video().getRender().isImageTexturesSupported()) {
 		g_calc_depth_shader_object = glCreateShader(GL_FRAGMENT_SHADER);
 		glShaderSource(g_calc_depth_shader_object, 1, &depth_compare_shader_float, NULL);
@@ -203,7 +206,8 @@ void InitShaderCombiner()
 
 	InitZlutTexture();
 	InitShadowMapShader();
-#endif
+#endif // GL_IMAGE_TEXTURES_SUPPORT
+#endif // GLES2
 }
 
 void DestroyShaderCombiner() {
@@ -224,9 +228,11 @@ void DestroyShaderCombiner() {
 	glDeleteShader(g_calc_depth_shader_object);
 	g_calc_depth_shader_object = 0;
 
+#ifdef GL_IMAGE_TEXTURES_SUPPORT
 	DestroyZlutTexture();
 	DestroyShadowMapShader();
-#endif
+#endif // GL_IMAGE_TEXTURES_SUPPORT
+#endif // GLES2
 }
 
 const char *ColorInput[] = {
@@ -765,6 +771,7 @@ void ShaderCombiner::updateAlphaTestInfo(bool _bForce) {
 	}
 }
 
+#ifdef GL_IMAGE_TEXTURES_SUPPORT
 void SetShadowMapCombiner() {
 
 	if (!video().getRender().isImageTexturesSupported())
@@ -789,3 +796,4 @@ void SetShadowMapCombiner() {
 
 	gDP.changed |= CHANGED_COMBINE;
 }
+#endif // GL_IMAGE_TEXTURES_SUPPORT
