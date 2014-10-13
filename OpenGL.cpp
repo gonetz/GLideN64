@@ -685,7 +685,7 @@ void OGLRender::drawLLETriangle(u32 _numVtx)
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, _numVtx);
 	triangles.num = 0;
 
-	gSP.changed != CHANGED_VIEWPORT | CHANGED_GEOMETRYMODE;
+	gSP.changed |= CHANGED_VIEWPORT | CHANGED_GEOMETRYMODE;
 
 #ifdef __TRIBUFFER_OPT
 	_indexmap_clear();
