@@ -62,46 +62,6 @@ static int aAExpanded[] =
 	SHADE_ALPHA,		ENV_ALPHA,			ONE,				ZERO
 };
 
-static int CCEncodeA[] =
-{
-	0, 1, 2, 3, 4, 5, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 7, 15, 15, 6, 15
-};
-
-static int CCEncodeB[] =
-{
-	0, 1, 2, 3, 4, 5, 6, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 7, 15, 15, 15
-};
-
-static int CCEncodeC[] =
-{
-	0, 1, 2, 3, 4, 5, 31, 6, 7, 8, 9, 10, 11, 12, 13, 14, 31, 31, 15, 31, 31
-};
-
-static int CCEncodeD[] =
-{
-	0, 1, 2, 3, 4, 5, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 6, 15
-};
-
-static DWORD64 ACEncodeA[] =
-{
-	7, 7, 7, 7, 7, 7, 7, 7, 0, 1, 2, 3, 4, 5, 7, 7, 7, 7, 7, 6, 7
-};
-
-static DWORD64 ACEncodeB[] =
-{
-	7, 7, 7, 7, 7, 7, 7, 7, 0, 1, 2, 3, 4, 5, 7, 7, 7, 7, 7, 6, 7
-};
-
-static DWORD64 ACEncodeC[] =
-{
-	7, 7, 7, 7, 7, 7, 7, 7, 0, 1, 2, 3, 4, 5, 7, 6, 7, 7, 7, 7, 7
-};
-
-static DWORD64 ACEncodeD[] =
-{
-	7, 7, 7, 7, 7, 7, 7, 7, 0, 1, 2, 3, 4, 5, 7, 7, 7, 7, 7, 6, 7
-};
-
 void Combiner_Init() {
 	CombinerInfo::get().init();
 	InitShaderCombiner();
