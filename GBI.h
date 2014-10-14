@@ -77,6 +77,7 @@
 #define G_TEXTURE_GEN			0x00040000
 #define G_TEXTURE_GEN_LINEAR	0x00080000
 #define G_LOD					0x00100000
+#define G_POINT_LIGHTING		0x00400000
 
 #define G_MV_MMTX		2
 #define G_MV_PMTX		6

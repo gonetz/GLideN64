@@ -81,6 +81,8 @@ struct SPLight
 {
 	f32 r, g, b;
 	f32 x, y, z;
+	f32 posx, posy, posz;
+	f32 ca, la, qa;
 };
 
 struct gSPInfo
@@ -216,10 +218,12 @@ void gSP4Triangles(const s32 v00, const s32 v01, const s32 v02,
 extern void (*gSPTransformVertex4)(u32 v, float mtx[4][4]);
 extern void (*gSPTransformNormal4)(u32 v, float mtx[4][4]);
 extern void (*gSPLightVertex4)(u32 v);
+extern void (*gSPPointLightVertex4)(u32 v, float _vPos[4][3]);
 extern void (*gSPBillboardVertex4)(u32 v);
 #endif
 extern void (*gSPTransformVertex)(float vtx[4], float mtx[4][4]);
-extern void (*gSPLightVertex)(u32 v);
+extern void (*gSPLightVertex)(SPVertex & _vtx);
+extern void (*gSPPointLightVertex)(SPVertex & _vtx, float * _vPos);
 extern void (*gSPBillboardVertex)(u32 v, u32 i);
 
 #endif
