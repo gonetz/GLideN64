@@ -1,5 +1,8 @@
+#define SHADER_PRECISION
+
 static const char* vertex_shader =
-#ifdef GLES2
+#ifdef SHADER_PRECISION
+"#version 330 core										\n"
 "attribute highp vec4 aPosition;						\n"
 "attribute lowp vec4 aColor;							\n"
 "attribute highp vec2 aTexCoord0;						\n"
@@ -9,9 +12,10 @@ static const char* vertex_shader =
 "														\n"
 "uniform int uRenderState;								\n"
 "uniform int uTexturePersp;								\n"
-"uniform int uFogMode;									\n"
-"uniform vec4 uFogColor;								\n"
 "uniform lowp float uNoiseTime;							\n"
+"														\n"
+"uniform int uFogMode;									\n"
+"uniform lowp vec4 uFogColor;							\n"
 "uniform mediump float uFogMultiplier, uFogOffset;		\n"
 "uniform mediump float uScreenWidth, uScreenHeight;		\n"
 "														\n"
@@ -119,7 +123,8 @@ static const char* vertex_shader =
 ;
 
 static const char* fragment_shader_header_common_variables =
-#ifdef GLES2
+#ifdef SHADER_PRECISION
+"#version 330 core				\n"
 "uniform sampler2D uTex0;		\n"
 "uniform sampler2D uTex1;		\n"
 "uniform lowp vec4 uPrimColor;	\n"
@@ -173,11 +178,11 @@ static const char* fragment_shader_header_common_variables =
 ;
 
 static const char* fragment_shader_header_common_functions =
-#ifdef GLES2
+#ifdef SHADER_PRECISION
 "															\n"
 "lowp float snoise(in mediump vec2 v);						\n"
-"lowp float calc_light(in lowp int nLights, in lowp vec3 input_color, out lowp vec3 output_color);\n"
-"lowp float mipmap(out lowp vec4 readtex0, out lowp vec4 readtex1);		\n"
+"mediump float calc_light(in lowp int nLights, in lowp vec3 input_color, out lowp vec3 output_color);\n"
+"mediump float mipmap(out lowp vec4 readtex0, out lowp vec4 readtex1);		\n"
 "lowp bool depth_compare();										\n"
 "lowp bool alpha_test(in lowp float alphaValue);						\n"
 #else
@@ -194,19 +199,20 @@ static const char* fragment_shader_header_common_functions =
 ;
 
 static const char* fragment_shader_calc_light =
-#ifdef GLES2
-"uniform lowp vec3 uLightDirection[8];	\n"
+#ifdef SHADER_PRECISION
+"#version 330 core						\n"
+"uniform mediump vec3 uLightDirection[8];	\n"
 "uniform lowp vec3 uLightColor[8];	\n"
 "																\n"
-"lowp float calc_light(in lowp int nLights, in lowp vec3 input_color, out lowp vec3 output_color) {\n"
+"mediump float calc_light(in lowp int nLights, in lowp vec3 input_color, out lowp vec3 output_color) {\n"
 "  output_color = input_color;									\n"
 "  if (nLights == 0)											\n"
 "     return 1.0;												\n"
-"  lowp float full_intensity = 0.0;									\n"
+"  mediump float full_intensity = 0.0;							\n"
 "  output_color = uLightColor[nLights];							\n"
-"  lowp vec3 lightColor;												\n"
-"  lowp float intensity;												\n"
-"  lowp vec3 n = normalize(input_color);								\n"
+"  lowp vec3 lightColor;										\n"
+"  mediump float intensity;										\n"
+"  mediump vec3 n = normalize(input_color);						\n"
 "  for (int i = 0; i < nLights; i++)	{						\n"
 "    intensity = max(dot(n, uLightDirection[i]), 0.0);			\n"
 "    full_intensity += intensity;								\n"
@@ -240,10 +246,11 @@ static const char* fragment_shader_calc_light =
 ;
 
 static const char* alpha_test_fragment_shader =
-#ifdef GLES2
+#ifdef SHADER_PRECISION
+"#version 330 core								\n"
 "uniform lowp int uEnableAlphaTest;				\n"
-"uniform lowp float uAlphaTestValue;				\n"
-"lowp bool alpha_test(in lowp float alphaValue)		\n"
+"uniform lowp float uAlphaTestValue;			\n"
+"lowp bool alpha_test(in lowp float alphaValue)	\n"
 #else
 "uniform int uEnableAlphaTest;				\n"
 "uniform float uAlphaTestValue;				\n"
@@ -257,7 +264,7 @@ static const char* alpha_test_fragment_shader =
 ;
 
 static const char* fragment_shader_header_main =
-#ifdef GLES2
+#ifdef SHADER_PRECISION
 "									\n"
 "void main()						\n"
 "{									\n"
@@ -298,7 +305,7 @@ static const char* fragment_shader_alpha_dither =
 #ifdef USE_TOONIFY
 static const char* fragment_shader_toonify =
 "																	\n"
-"void toonify(in float intensity) {									\n"
+"void toonify(in mediump float intensity) {							\n"
 "   if (intensity > 0.5)											\n"
 "	   return;														\n"
 "	else if (intensity > 0.125)										\n"
@@ -309,7 +316,7 @@ static const char* fragment_shader_toonify =
 ;
 #endif
 
-#ifdef GLES2
+#ifdef SHADER_PRECISION
 static const char* fragment_shader_readtex0color =
 "  lowp vec4 readtex0 = texture2D(uTex0, vTexCoord0);						\n"
 "  if (uFb8Bit == 1 || uFb8Bit == 3) readtex0 = vec4(readtex0.r);	\n"
@@ -343,15 +350,22 @@ static const char* fragment_shader_end =
 ;
 
 static const char* fragment_shader_mipmap =
-#ifdef GLES2
+#ifdef SHADER_PRECISION
+"#version 330 core					\n"
+"varying mediump vec2 vTexCoord0;	\n"
+"varying mediump vec2 vTexCoord1;	\n"
+"varying mediump vec2 vLodTexCoord;	\n"
+"uniform sampler2D uTex0;			\n"
+"uniform sampler2D uTex1;			\n"
+"uniform lowp float uPrimLod;		\n"
 "uniform lowp int uEnableLod;		\n"
-"uniform lowp float uLodXScale;		\n"
-"uniform lowp float uLodYScale;		\n"
-"uniform lowp float uMinLod;		\n"
+"uniform mediump float uLodXScale;	\n"
+"uniform mediump float uLodYScale;	\n"
+"uniform mediump float uMinLod;		\n"
 "uniform lowp int uMaxTile;			\n"
 "uniform lowp int uTextureDetail;	\n"
 "														\n"
-"lowp float mipmap(out lowp vec4 readtex0, out lowp vec4 readtex1) {	\n"
+"mediump float mipmap(out lowp vec4 readtex0, out lowp vec4 readtex1) {	\n"
 "  if (uEnableLod == 0) {								\n"
 "    readtex0 = texture2D(uTex0, vTexCoord0);			\n"
 "    readtex1 = texture2D(uTex1, vTexCoord1);			\n"
@@ -364,7 +378,8 @@ static const char* fragment_shader_mipmap =
 "  dy.x *= uLodXScale;									\n"
 "  dy.y *= uLodYScale;									\n"
 "  mediump float lod = max(length(dx), length(dy));		\n"
-"  lowp float lod_tile, lod_frac;						\n"
+//" float lod = max(length(dx), length(dy)) * max(uLodXScale, uLodYScale);\n"
+"  mediump float lod_tile, lod_frac;					\n"
 "  lowp bool magnifying;								\n"
 "  if (lod < 1.0) {										\n"
 "    magnifying = true;									\n"
@@ -406,7 +421,6 @@ static const char* fragment_shader_mipmap =
 "  }																\n"
 "  return lod_frac;													\n"
 "}																	\n"
-"}														\n"
 #else
 "varying vec2 vTexCoord0;		\n"
 "varying vec2 vTexCoord1;		\n"
@@ -487,8 +501,8 @@ static const char* depth_compare_shader_float =
 "uniform int uDepthMode;		\n"
 "uniform int uEnableDepthCompare;	\n"
 "uniform int uEnableDepthUpdate;	\n"
-"uniform float uDepthTrans;			\n"
-"uniform float uDepthScale;			\n"
+"uniform mediump float uDepthTrans;			\n"
+"uniform mediump float uDepthScale;			\n"
 "layout(binding = 0, r16ui) uniform readonly uimage2D uZlutImage;\n"
 "layout(binding = 2, rgba32f) uniform restrict image2D uDepthImage;\n"
 "void write_depth(in highp float dz, in ivec2 coord)		\n"
@@ -504,7 +518,7 @@ static const char* depth_compare_shader_float =
 "  memoryBarrier();											\n"
 "  imageStore(uDepthImage,coord,depth);						\n"
 "}															\n"
-"bool depth_compare()										\n"
+"lowp bool depth_compare()										\n"
 "{															\n"
 //"  if (uEnableDepth == 0) return true;						\n"
 "  ivec2 coord = ivec2(gl_FragCoord.xy);					\n"
@@ -556,11 +570,11 @@ static const char* shadow_map_fragment_shader_float =
 "#version 420 core											\n"
 "layout(binding = 1, r16ui) uniform readonly uimage1D uTlutImage;\n"
 "layout(binding = 2, rgba32f) uniform readonly image2D uDepthImage;\n"
-"uniform vec4 uFogColor;									\n"
-"float get_alpha()											\n"
+"uniform lowp vec4 uFogColor;								\n"
+"lowp float get_alpha()										\n"
 "{															\n"
 "  ivec2 coord = ivec2(gl_FragCoord.xy);					\n"
-"  float bufZ = imageLoad(uDepthImage,coord).r;		\n"
+"  mediump float bufZ = imageLoad(uDepthImage,coord).r;		\n"
 "  int index = min(255, int(bufZ*255.0));					\n"
 "  unsigned int iAlpha = imageLoad(uTlutImage,index).r; \n"
 "  memoryBarrier();										\n"
