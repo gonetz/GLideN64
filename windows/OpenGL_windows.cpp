@@ -116,22 +116,22 @@ void OGLVideoWindows::_saveScreenshot()
 	BITMAPINFOHEADER infoHeader;
 	HANDLE hBitmapFile;
 
-	char *pixelData = (char*)malloc( m_width * m_height * 3 );
+	char *pixelData = (char*)malloc(m_screenWidth * m_screenHeight * 3);
 
 	GLint oldMode;
 	glGetIntegerv( GL_READ_BUFFER, &oldMode );
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
 	glReadBuffer( GL_FRONT );
-	glReadPixels( 0, m_heightOffset, m_width, m_height, GL_BGR_EXT, GL_UNSIGNED_BYTE, pixelData );
+	glReadPixels(0, m_heightOffset, m_screenWidth, m_screenHeight, GL_BGR_EXT, GL_UNSIGNED_BYTE, pixelData);
 	glReadBuffer( oldMode );
 
 	infoHeader.biSize = sizeof( BITMAPINFOHEADER );
-	infoHeader.biWidth = m_width;
-	infoHeader.biHeight = m_height;
+	infoHeader.biWidth = m_screenWidth;
+	infoHeader.biHeight = m_screenHeight;
 	infoHeader.biPlanes = 1;
 	infoHeader.biBitCount = 24;
 	infoHeader.biCompression = BI_RGB;
-	infoHeader.biSizeImage = m_width * m_height * 3;
+	infoHeader.biSizeImage = m_screenWidth * m_screenHeight * 3;
 	infoHeader.biXPelsPerMeter = 0;
 	infoHeader.biYPelsPerMeter = 0;
 	infoHeader.biClrUsed = 0;
