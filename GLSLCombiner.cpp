@@ -427,11 +427,11 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 	strFragmentShader.append(fragment_shader_color_dither);
 	strFragmentShader.append(fragment_shader_alpha_dither);
 
-	strFragmentShader.append("  if (uFogUsage == 3) gl_FragColor = uFogColor; \n");
-	strFragmentShader.append("  else if (uFogUsage == 2) gl_FragColor = vec4(color2, uFogColor.a); \n");
-	strFragmentShader.append("  else gl_FragColor = vec4(color2, alpha2); \n");
+	strFragmentShader.append("  if (uFogUsage == 3) fragColor = uFogColor; \n");
+	strFragmentShader.append("  else if (uFogUsage == 2) fragColor = vec4(color2, uFogColor.a); \n");
+	strFragmentShader.append("  else fragColor = vec4(color2, alpha2); \n");
 
-	strFragmentShader.append("  if (!alpha_test(gl_FragColor.a)) discard;	\n");
+	strFragmentShader.append("  if (!alpha_test(fragColor.a)) discard;	\n");
 	if (video().getRender().isImageTexturesSupported()) {
 		if (config.frameBufferEmulation.N64DepthCompare)
 			strFragmentShader.append("  if (!depth_compare()) discard; \n");
@@ -443,7 +443,7 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 	strFragmentShader.append("  toonify(intensity); \n");
 #endif
 	strFragmentShader.append("  if (uFogUsage == 1) \n");
-	strFragmentShader.append("    gl_FragColor = vec4(mix(gl_FragColor.rgb, uFogColor.rgb, vFogFragCoord), gl_FragColor.a); \n");
+	strFragmentShader.append("    fragColor = vec4(mix(fragColor.rgb, uFogColor.rgb, vFogFragCoord), fragColor.a); \n");
 
 	strFragmentShader.append(fragment_shader_end);
 
