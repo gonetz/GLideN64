@@ -62,7 +62,7 @@ void Config_LoadConfig()
 
 	HKEY hKey;
 
-	RegOpenKeyEx( HKEY_CURRENT_USER, "Software\\N64 Emulation\\DLL\\glN64", 0, KEY_READ, &hKey );
+	RegOpenKeyEx( HKEY_CURRENT_USER, "Software\\N64 Emulation\\DLL\\GLideN64", 0, KEY_READ, &hKey );
 
 	if (hKey)
 	{
@@ -127,7 +127,7 @@ void Config_SaveConfig()
 	DWORD value;
 	HKEY hKey;
 
-	RegCreateKeyEx( HKEY_CURRENT_USER, "Software\\N64 Emulation\\DLL\\glN64", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hKey, NULL );
+	RegCreateKeyEx( HKEY_CURRENT_USER, "Software\\N64 Emulation\\DLL\\GLideN64", 0, NULL, REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hKey, NULL );
 
 	RegSetValueEx( hKey, "Fullscreen Bit Depth", 0, REG_DWORD, (BYTE*)&config.video.fullscreenBits, 4 );
 	RegSetValueEx( hKey, "Fullscreen Width", 0, REG_DWORD, (BYTE*)&config.video.fullscreenWidth, 4 );

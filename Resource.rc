@@ -54,7 +54,7 @@ END
 IDD_DEBUGDLG DIALOGEX 0, 0, 489, 238
 STYLE DS_SETFONT | WS_VISIBLE | WS_CAPTION
 EXSTYLE WS_EX_TOOLWINDOW
-CAPTION "glN64 Debug Output"
+CAPTION "GLideN64 Debug Output"
 FONT 8, "MS Sans Serif", 0, 0, 0x1
 BEGIN
     GROUPBOX        "Debug Level",IDC_STATIC,4,161,304,28
@@ -92,7 +92,7 @@ END
 
 IDD_CONFIGDLG DIALOGEX 0, 0, 247, 201
 STYLE DS_ABSALIGN | DS_SETFONT | DS_MODALFRAME | DS_3DLOOK | DS_FIXEDSYS | DS_CENTER | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CAPTION
-CAPTION "glN64 Configuration"
+CAPTION "GLideN64 Configuration"
 FONT 8, "MS Shell Dlg", 0, 0, 0x0
 BEGIN
     LTEXT           "Full Screen Mode:",IDC_STATIC,15,33,58,8
@@ -123,14 +123,14 @@ END
 
 IDD_MICROCODEDLG DIALOGEX 0, 0, 384, 129
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "glN64 Unknown Microcode"
+CAPTION "GLideN64 Unknown Microcode"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
     DEFPUSHBUTTON   "OK",IDOK,136,108,50,14
     PUSHBUTTON      "Stop",IDCANCEL,198,108,50,14
     COMBOBOX        IDC_MICROCODE,168,86,87,80,CBS_DROPDOWN | WS_VSCROLL | WS_TABSTOP
     LTEXT           "Microcode:",IDC_STATIC,129,88,36,8
-    LTEXT           "Unknown microcode detected. Please notify Orkin, including the following information:",IDC_STATIC,53,7,278,8
+    LTEXT           "Unknown microcode detected:",IDC_STATIC,53,7,278,8
     LTEXT           "You can manually select the closest matching microcode, or stop the video thread",IDC_STATIC,62,73,261,8
     EDITTEXT        IDC_TEXTBOX,7,20,370,31,ES_MULTILINE | ES_AUTOHSCROLL | ES_READONLY
 END
