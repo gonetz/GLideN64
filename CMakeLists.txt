@@ -10,10 +10,11 @@ set(GLideN64_SOURCES
   DepthBuffer.cpp
   F3D.cpp
   F3DDKR.cpp
-  F3DEX2.cpp
   F3DEX.cpp
   F3DPD.cpp
   F3DWRUS.cpp
+  F3DEX2.cpp
+  F3DEX2CBFD.cpp
   FrameBuffer.cpp
   GBI.cpp
   gDP.cpp

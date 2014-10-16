@@ -5,7 +5,7 @@
 #include "F3DEX2.h"
 #include "L3DEX2.h"
 #include "N64.h"
-#include "RSP.h"	
+#include "RSP.h"
 #include "RDP.h"
 #include "gSP.h"
 #include "gDP.h"
@@ -23,6 +23,7 @@ void L3DEX2_Line3D( u32 w0, u32 w1 )
 
 void L3DEX2_Init()
 {
+	gSPSetupFunctions();
 	// Set GeometryMode flags
 	GBI_InitFlags( F3DEX2 );
 

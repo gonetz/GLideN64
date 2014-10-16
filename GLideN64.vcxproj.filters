@@ -177,6 +177,9 @@
     <ClCompile Include="windows\ZilmarAPIImpl_windows.cpp">
       <Filter>Source Files\windows</Filter>
     </ClCompile>
+    <ClCompile Include="F3DEX2CBFD.cpp">
+      <Filter>Source Files\uCodes</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="3DMath.h">
@@ -301,6 +304,9 @@
     </ClInclude>
     <ClInclude Include="Log.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="F3DEX2CBFD.h">
+      <Filter>Header Files\uCodes</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -63,6 +63,16 @@ void F3DEX2_Tri1( u32 w0, u32 w1 )
 				  _SHIFTR( w0, 1, 7 ));
 }
 
+void F3DEX2_Line3D( u32 w0, u32 w1 )
+{
+	/*
+	u16 width = (u16)(w0 + 3)&0xFF;
+	gSP1Triangle( _SHIFTR( w0, 17, 7 ),
+				  _SHIFTR( w0, 9, 7 ),
+				  _SHIFTR( w0, 9, 7 ));
+	*/
+}
+
 void F3DEX2_PopMtx( u32 w0, u32 w1 )
 {
 	gSPPopMatrixN( 0, w1 >> 6 );
@@ -224,6 +234,7 @@ void F3DEX2_Quad( u32 w0, u32 w1 )
 
 void F3DEX2_Init()
 {
+	gSPSetupFunctions();
 	// Set GeometryMode flags
 	GBI_InitFlags( F3DEX2 );
 
@@ -256,6 +267,6 @@ void F3DEX2_Init()
 	GBI_SetGBI( G_TRI1,					F3DEX2_TRI1,				F3DEX2_Tri1 );
 	GBI_SetGBI( G_TRI2,					F3DEX2_TRI2,				F3DEX_Tri2 );
 	GBI_SetGBI( G_QUAD,					F3DEX2_QUAD,				F3DEX2_Quad );
-//	GBI_SetGBI( G_LINE3D,				F3DEX2_LINE3D,				F3DEX2_Line3D );
+	GBI_SetGBI( G_LINE3D,				F3DEX2_LINE3D,				F3DEX2_Line3D );
 }
 

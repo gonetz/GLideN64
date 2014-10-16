@@ -4,7 +4,7 @@
 #include "F3DEX.h"
 #include "F3DWRUS.h"
 #include "N64.h"
-#include "RSP.h"	
+#include "RSP.h"
 #include "RDP.h"
 #include "gSP.h"
 #include "gDP.h"
@@ -18,7 +18,7 @@ void F3DWRUS_Vtx( u32 w0, u32 w1 )
 void F3DWRUS_Tri1( u32 w0, u32 w1 )
 {
 	gSP1Triangle( _SHIFTR( w1, 16, 8 ) / 5,
-		          _SHIFTR( w1, 8, 8 ) / 5,
+				  _SHIFTR( w1, 8, 8 ) / 5,
 				  _SHIFTR( w1, 0, 8 ) / 5);
 }
 
@@ -36,6 +36,7 @@ void F3DWRUS_Quad( u32 w0, u32 w1 )
 
 void F3DWRUS_Init()
 {
+	gSPSetupFunctions();
 	// Set GeometryMode flags
 	GBI_InitFlags( F3D );
 

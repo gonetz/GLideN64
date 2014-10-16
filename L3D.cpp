@@ -3,7 +3,7 @@
 #include "F3D.h"
 #include "L3D.h"
 #include "N64.h"
-#include "RSP.h"	
+#include "RSP.h"
 #include "RDP.h"
 #include "gSP.h"
 #include "gDP.h"
@@ -21,6 +21,7 @@ void L3D_Line3D( u32 w0, u32 w1 )
 
 void L3D_Init()
 {
+	gSPSetupFunctions();
 	// Set GeometryMode flags
 	GBI_InitFlags( F3D );
 

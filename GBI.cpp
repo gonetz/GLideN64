@@ -19,6 +19,7 @@
 #include "F3DDKR.h"
 #include "F3DWRUS.h"
 #include "F3DPD.h"
+#include "F3DEX2CBFD.h"
 #include "CRC.h"
 #include "Log.h"
 #include "Debug.h"
@@ -35,7 +36,8 @@ SpecialMicrocodeInfo specialMicrocodes[] =
 	{ F3DDKR,	FALSE,	0x8d91244f, "Diddy Kong Racing" },
 	{ F3DDKR,	FALSE,	0x6e6fc893, "Diddy Kong Racing" },
 	{ F3DJFG,	FALSE,	0xbde9d1fb, "Jet Force Gemini" },
-	{ F3DPD,	FALSE,	0x1c4f7869, "Perfect Dark" }
+	{ F3DPD,	FALSE,	0x1c4f7869, "Perfect Dark" },
+	{ F3DEX2CBFD,TRUE,	0x1b4ace88, "Conker's Bad Fur Day"}
 };
 
 u32 G_RDPHALF_1, G_RDPHALF_2, G_RDPHALF_CONT;
@@ -121,12 +123,13 @@ void GBIInfo::_makeCurrent(MicrocodeInfo * _pCurrent)
 	}
 
 	if (m_pCurrent == NULL || (m_pCurrent->type != _pCurrent->type)) {
+		m_pCurrent = _pCurrent;
 		for (int i = 0; i <= 0xFF; ++i)
 			cmd[i] = GBI_Unknown;
 
 		RDP_Init();
 
-		switch (_pCurrent->type) {
+		switch (m_pCurrent->type) {
 			case F3D:		F3D_Init();		break;
 			case F3DEX:		F3DEX_Init();	break;
 			case F3DEX2:	F3DEX2_Init();	break;
@@ -139,10 +142,9 @@ void GBIInfo::_makeCurrent(MicrocodeInfo * _pCurrent)
 			case F3DJFG:	F3DJFG_Init();	break;
 			case F3DWRUS:	F3DWRUS_Init();	break;
 			case F3DPD:		F3DPD_Init();	break;
+			case F3DEX2CBFD:F3DEX2CBFD_Init();break;
 		}
 	}
-
-	m_pCurrent = _pCurrent;
 }
 
 int MicrocodeDialog(u32 _crc, const char * _str);

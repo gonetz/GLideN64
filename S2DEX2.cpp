@@ -5,13 +5,14 @@
 #include "F3DEX.h"
 #include "F3DEX2.h"
 #include "GBI.h"
-#include "gSP.h" 
+#include "gSP.h"
 #include "gDP.h"
 #include "RSP.h"
 #include "Types.h"
 
 void S2DEX2_Init()
 {
+	gSPSetupFunctions();
 	// Set GeometryMode flags
 	GBI_InitFlags( F3DEX2 );
 

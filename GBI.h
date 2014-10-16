@@ -18,7 +18,8 @@
 #define F3DDKR		9
 #define F3DJFG		10
 #define F3DWRUS		11
-#define NONE		12
+#define F3DEX2CBFD	12
+#define NONE		13
 
 // Fixed point conversion factors
 #define FIXED2FLOATRECIP1	0.5f
@@ -84,6 +85,7 @@
 #define G_MV_LIGHT		10
 #define G_MV_POINT		12
 #define G_MV_MATRIX		14
+#define G_MV_NORMALES	14
 
 #define G_MVO_LOOKATX	0
 #define G_MVO_LOOKATY	24
@@ -121,6 +123,7 @@
 #define G_MW_FORCEMTX		0x0C
 #define G_MW_POINTS			0x0C
 #define	G_MW_PERSPNORM		0x0E
+#define	G_MW_COORD_MOD		0x10
 
 #define G_MWO_NUMLIGHT		0x00
 #define G_MWO_CLIP_RNX		0x04
@@ -683,6 +686,7 @@ struct GBIInfo
 	void init();
 	void destroy();
 	void loadMicrocode(u32 uc_start, u32 uc_dstart, u16 uc_dsize);
+	u32 getMicrocodeType() const {return m_pCurrent != NULL ? m_pCurrent->type : NONE;}
 
 private:
 	void _makeCurrent(MicrocodeInfo * _pCurrent);

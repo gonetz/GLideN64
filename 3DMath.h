@@ -141,7 +141,7 @@ End:
 }
 
 
-inline float DotProduct(float v0[3], float v1[3])
+inline float DotProduct(const float v0[3], const float v1[3])
 {
 	float	dot;
 #ifdef WIN32_ASM

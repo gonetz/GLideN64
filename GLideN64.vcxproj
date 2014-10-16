@@ -249,6 +249,7 @@
     </ClCompile>
     <ClCompile Include="CRC.cpp" />
     <ClCompile Include="DepthBuffer.cpp" />
+    <ClCompile Include="F3DEX2CBFD.cpp" />
     <ClCompile Include="FrameBuffer.cpp" />
     <ClCompile Include="GBI.cpp" />
     <ClCompile Include="gDP.cpp" />
@@ -338,6 +339,7 @@
     <ClInclude Include="CRC.h" />
     <ClInclude Include="Debug.h" />
     <ClInclude Include="DepthBuffer.h" />
+    <ClInclude Include="F3DEX2CBFD.h" />
     <ClInclude Include="FrameBuffer.h" />
     <ClInclude Include="GBI.h" />
     <ClInclude Include="gDP.h" />

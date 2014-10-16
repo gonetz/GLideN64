@@ -181,7 +181,7 @@ static void gSPPointLightVertex4_default(u32 v, float _vPos[4][3])
 			const float light_len = sqrtf(light_len2);
 			const float at = gSP.lights[l].ca + light_len/65535.0f*gSP.lights[l].la + light_len2/65535.0f*gSP.lights[l].qa;
 			if (at > 0.0f)
-				light_intensity = 1/at;//DotProduct (lvec, nvec) / (light_len * normal_len * at);
+				light_intensity = 1/at;
 			else
 				light_intensity = 0.0f;
 			if (light_intensity > 0.0f) {
@@ -193,6 +193,90 @@ static void gSPPointLightVertex4_default(u32 v, float _vPos[4][3])
 		if (vtx.r > 1.0f) vtx.r = 1.0f;
 		if (vtx.g > 1.0f) vtx.g = 1.0f;
 		if (vtx.b > 1.0f) vtx.b = 1.0f;
+	}
+}
+
+static void gSPLightVertex4_CBFD(u32 v)
+{
+	gSPTransformNormal4(v, gSP.matrix.modelView[gSP.matrix.modelViewi]);
+	OGLRender & render = video().getRender();
+	for(int j = 0; j < 4; ++j) {
+		SPVertex & vtx = render.getVertex(v+j);
+		f32 r = gSP.lights[gSP.numLights].r;
+		f32 g = gSP.lights[gSP.numLights].g;
+		f32 b = gSP.lights[gSP.numLights].b;
+
+		for (u32 l = 0; l < gSP.numLights; ++l) {
+			const SPLight & light = gSP.lights[l];
+			const f32 vx = (vtx.x + gSP.vertexCoordMod[ 8])*gSP.vertexCoordMod[12] - light.posx;
+			const f32 vy = (vtx.y + gSP.vertexCoordMod[ 9])*gSP.vertexCoordMod[13] - light.posy;
+			const f32 vz = (vtx.z + gSP.vertexCoordMod[10])*gSP.vertexCoordMod[14] - light.posz;
+			const f32 vw = (vtx.w + gSP.vertexCoordMod[11])*gSP.vertexCoordMod[15] - light.posw;
+			const f32 len = (vx*vx+vy*vy+vz*vz+vw*vw)/65536.0f;
+			f32 intensity = light.ca / len;
+			if (intensity > 1.0f) intensity = 1.0f;
+			r += light.r * intensity;
+			g += light.g * intensity;
+			b += light.b * intensity;
+		}
+
+		r = min(1.0f, r);
+		g = min(1.0f, g);
+		b = min(1.0f, b);
+
+		vtx.r *= r;
+		vtx.g *= g;
+		vtx.b *= b;
+		vtx.HWLight = 0;
+	}
+}
+
+static void gSPPointLightVertex4_CBFD(u32 v, float _vPos[4][3])
+{
+	gSPTransformNormal4(v, gSP.matrix.modelView[gSP.matrix.modelViewi]);
+	OGLRender & render = video().getRender();
+	for(int j = 0; j < 4; ++j) {
+		SPVertex & vtx = render.getVertex(v+j);
+		f32 r = gSP.lights[gSP.numLights].r;
+		f32 g = gSP.lights[gSP.numLights].g;
+		f32 b = gSP.lights[gSP.numLights].b;
+
+		f32 intensity = 0.0f;
+		for (u32 l = 0; l < gSP.numLights-1; ++l) {
+			const SPLight & light = gSP.lights[l];
+			intensity = DotProduct( &vtx.nx, &light.x );
+			if (intensity < 0.0f)
+				continue;
+			if (light.ca > 0.0f) {
+				const f32 vx = (vtx.x + gSP.vertexCoordMod[ 8])*gSP.vertexCoordMod[12] - light.posx;
+				const f32 vy = (vtx.y + gSP.vertexCoordMod[ 9])*gSP.vertexCoordMod[13] - light.posy;
+				const f32 vz = (vtx.z + gSP.vertexCoordMod[10])*gSP.vertexCoordMod[14] - light.posz;
+				const f32 vw = (vtx.w + gSP.vertexCoordMod[11])*gSP.vertexCoordMod[15] - light.posw;
+				const f32 len = (vx*vx+vy*vy+vz*vz+vw*vw)/65536.0f;
+				float p_i = light.ca / len;
+				if (p_i > 1.0f) p_i = 1.0f;
+				intensity *= p_i;
+			}
+			r += light.r * intensity;
+			g += light.g * intensity;
+			b += light.b * intensity;
+		}
+		const SPLight & light = gSP.lights[gSP.numLights-1];
+		intensity = DotProduct( &vtx.nx, &light.x );
+		if (intensity > 0.0f) {
+			r += light.r * intensity;
+			g += light.g * intensity;
+			b += light.b * intensity;
+		}
+
+		r = min(1.0f, r);
+		g = min(1.0f, g);
+		b = min(1.0f, b);
+
+		vtx.r *= r;
+		vtx.g *= g;
+		vtx.b *= b;
+		vtx.HWLight = 0;
 	}
 }
 
@@ -365,6 +449,80 @@ static void gSPPointLightVertex_default(SPVertex & _vtx, float * _vPos)
 	if (_vtx.r > 1.0f) _vtx.r = 1.0f;
 	if (_vtx.g > 1.0f) _vtx.g = 1.0f;
 	if (_vtx.b > 1.0f) _vtx.b = 1.0f;
+}
+
+static void gSPLightVertex_CBFD(SPVertex & _vtx)
+{
+	f32 r = gSP.lights[gSP.numLights].r;
+	f32 g = gSP.lights[gSP.numLights].g;
+	f32 b = gSP.lights[gSP.numLights].b;
+
+	for (u32 l = 0; l < gSP.numLights; ++l) {
+		const SPLight & light = gSP.lights[l];
+		const f32 vx = (_vtx.x + gSP.vertexCoordMod[ 8])*gSP.vertexCoordMod[12] - light.posx;
+		const f32 vy = (_vtx.y + gSP.vertexCoordMod[ 9])*gSP.vertexCoordMod[13] - light.posy;
+		const f32 vz = (_vtx.z + gSP.vertexCoordMod[10])*gSP.vertexCoordMod[14] - light.posz;
+		const f32 vw = (_vtx.w + gSP.vertexCoordMod[11])*gSP.vertexCoordMod[15] - light.posw;
+		const f32 len = (vx*vx+vy*vy+vz*vz+vw*vw)/65536.0f;
+		f32 intensity = light.ca / len;
+		if (intensity > 1.0f) intensity = 1.0f;
+		r += light.r * intensity;
+		g += light.g * intensity;
+		b += light.b * intensity;
+	}
+
+	r = min(1.0f, r);
+	g = min(1.0f, g);
+	b = min(1.0f, b);
+
+	_vtx.r *= r;
+	_vtx.g *= g;
+	_vtx.b *= b;
+	_vtx.HWLight = 0;
+}
+
+static void gSPPointLightVertex_CBFD(SPVertex & _vtx, float * /*_vPos*/)
+{
+	f32 r = gSP.lights[gSP.numLights].r;
+	f32 g = gSP.lights[gSP.numLights].g;
+	f32 b = gSP.lights[gSP.numLights].b;
+
+	f32 intensity = 0.0f;
+	for (u32 l = 0; l < gSP.numLights-1; ++l) {
+		const SPLight & light = gSP.lights[l];
+		intensity = DotProduct( &_vtx.nx, &light.x );
+		if (intensity < 0.0f)
+			continue;
+		if (light.ca > 0.0f) {
+			const f32 vx = (_vtx.x + gSP.vertexCoordMod[ 8])*gSP.vertexCoordMod[12] - light.posx;
+			const f32 vy = (_vtx.y + gSP.vertexCoordMod[ 9])*gSP.vertexCoordMod[13] - light.posy;
+			const f32 vz = (_vtx.z + gSP.vertexCoordMod[10])*gSP.vertexCoordMod[14] - light.posz;
+			const f32 vw = (_vtx.w + gSP.vertexCoordMod[11])*gSP.vertexCoordMod[15] - light.posw;
+			const f32 len = (vx*vx+vy*vy+vz*vz+vw*vw)/65536.0f;
+			float p_i = light.ca / len;
+			if (p_i > 1.0f) p_i = 1.0f;
+			intensity *= p_i;
+		}
+		r += light.r * intensity;
+		g += light.g * intensity;
+		b += light.b * intensity;
+	}
+	const SPLight & light = gSP.lights[gSP.numLights-1];
+	intensity = DotProduct( &_vtx.nx, &light.x );
+	if (intensity > 0.0f) {
+		r += light.r * intensity;
+		g += light.g * intensity;
+		b += light.b * intensity;
+	}
+
+	r = min(1.0f, r);
+	g = min(1.0f, g);
+	b = min(1.0f, b);
+
+	_vtx.r *= r;
+	_vtx.g *= g;
+	_vtx.b *= b;
+	_vtx.HWLight = 0;
 }
 
 static void gSPBillboardVertex_default(u32 v, u32 i)
@@ -677,6 +835,52 @@ void gSPLight( u32 l, s32 n )
 #endif
 }
 
+void gSPLightCBFD( u32 l, s32 n )
+{
+	u32 addrByte = RSP_SegmentToPhysical( l );
+
+	if ((addrByte + sizeof( Light )) > RDRAMSize) {
+#ifdef DEBUG
+		DebugMsg( DEBUG_HIGH | DEBUG_ERROR, "// Attempting to load light from invalid address\n" );
+		DebugMsg( DEBUG_HIGH | DEBUG_HANDLED, "gSPLight( 0x%08X, LIGHT_%i );\n",
+			l, n );
+#endif
+		return;
+	}
+
+	Light *light = (Light*)&RDRAM[addrByte];
+
+	if (n < 12) {
+		gSP.lights[n].r = light->r * 0.0039215689f;
+		gSP.lights[n].g = light->g * 0.0039215689f;
+		gSP.lights[n].b = light->b * 0.0039215689f;
+
+		gSP.lights[n].x = light->x;
+		gSP.lights[n].y = light->y;
+		gSP.lights[n].z = light->z;
+
+		Normalize( &gSP.lights[n].x );
+		u32 addrShort = addrByte >> 1;
+		gSP.lights[n].posx = (float)(((short*)RDRAM)[(addrShort+16)^1]);
+		gSP.lights[n].posy = (float)(((short*)RDRAM)[(addrShort+17)^1]);
+		gSP.lights[n].posz = (float)(((short*)RDRAM)[(addrShort+18)^1]);
+		gSP.lights[n].posw = (float)(((short*)RDRAM)[(addrShort+19)^1]);
+		gSP.lights[n].ca = (float)(RDRAM[(addrByte + 12) ^ 3]) / 16.0f;
+	}
+
+	if (config.enableHWLighting)
+		gSP.changed |= CHANGED_LIGHT;
+
+#ifdef DEBUG
+	DebugMsg( DEBUG_DETAIL | DEBUG_HANDLED, "// x = %2.6f    y = %2.6f    z = %2.6f\n",
+		_FIXED2FLOAT( light->x, 7 ), _FIXED2FLOAT( light->y, 7 ), _FIXED2FLOAT( light->z, 7 ) );
+	DebugMsg( DEBUG_DETAIL | DEBUG_HANDLED, "// r = %3i    g = %3i   b = %3i\n",
+		light->r, light->g, light->b );
+	DebugMsg( DEBUG_HIGH | DEBUG_HANDLED, "gSPLight( 0x%08X, LIGHT_%i );\n",
+		l, n );
+#endif
+}
+
 void gSPLookAt( u32 _l, u32 _n )
 {
 	u32 address = RSP_SegmentToPhysical(_l);
@@ -934,6 +1138,83 @@ void gSPDMAVertex( u32 a, u32 n, u32 v0 )
 	}
 }
 
+void gSPCBFDVertex( u32 a, u32 n, u32 v0 )
+{
+	//flush batched triangles:
+#ifdef __TRIBUFFER_OPT
+	gSPFlushTriangles();
+#endif
+
+	u32 address = RSP_SegmentToPhysical(a);
+
+	if ((address + sizeof( Vertex ) * n) > RDRAMSize)
+		return;
+
+	Vertex *vertex = (Vertex*)&RDRAM[address];
+
+	OGLRender & render = video().getRender();
+	if ((n + v0) <= INDEXMAP_SIZE) {
+		unsigned int i = v0;
+#ifdef __VEC4_OPT
+		for (; i < n - (n%4) + v0; i += 4) {
+			u32 v = i;
+#ifdef __TRIBUFFER_OPT
+			v = render.getIndexmapNew(v, 4);
+#endif
+			for(int j = 0; j < 4; ++j) {
+				SPVertex & vtx = render.getVertex(v+j);
+				vtx.x = vertex->x;
+				vtx.y = vertex->y;
+				vtx.z = vertex->z;
+				vtx.s = _FIXED2FLOAT( vertex->s, 5 );
+				vtx.t = _FIXED2FLOAT( vertex->t, 5 );
+				vtx.st_scaled = 0;
+				if (gSP.geometryMode & G_LIGHTING) {
+					const u32 normaleAddrOffset = ((v0+v+j)<<1);
+					vtx.nx = (float)(((s8*)RDRAM)[(gSP.vertexNormalBase + normaleAddrOffset + 0)^3]);
+					vtx.ny = (float)(((s8*)RDRAM)[(gSP.vertexNormalBase + normaleAddrOffset + 1)^3]);
+					vtx.nz = (float)((s16)(vertex->flag&0xFF));
+					vtx.a = vertex->color.a * 0.0039215689f;
+				}
+				vtx.r = vertex->color.r * 0.0039215689f;
+				vtx.g = vertex->color.g * 0.0039215689f;
+				vtx.b = vertex->color.b * 0.0039215689f;
+				vtx.a = vertex->color.a * 0.0039215689f;
+				vertex++;
+			}
+			gSPProcessVertex4(v);
+		}
+#endif
+		for (; i < n + v0; ++i) {
+			u32 v = i;
+#ifdef __TRIBUFFER_OPT
+			v = render.getIndexmapNew(v, 1);
+#endif
+			SPVertex & vtx = render.getVertex(v);
+			vtx.x = vertex->x;
+			vtx.y = vertex->y;
+			vtx.z = vertex->z;
+			vtx.s = _FIXED2FLOAT( vertex->s, 5 );
+			vtx.t = _FIXED2FLOAT( vertex->t, 5 );
+			vtx.st_scaled = 0;
+			if (gSP.geometryMode & G_LIGHTING) {
+				const u32 normaleAddrOffset = (v<<1);
+				vtx.nx = (float)(((s8*)RDRAM)[(gSP.vertexNormalBase + normaleAddrOffset + 0)^3]);
+				vtx.ny = (float)(((s8*)RDRAM)[(gSP.vertexNormalBase + normaleAddrOffset + 1)^3]);
+				vtx.nz = (float)((s8)(vertex->flag&0xFF));
+			}
+			vtx.r = vertex->color.r * 0.0039215689f;
+			vtx.g = vertex->color.g * 0.0039215689f;
+			vtx.b = vertex->color.b * 0.0039215689f;
+			vtx.a = vertex->color.a * 0.0039215689f;
+			gSPProcessVertex(v);
+			vertex++;
+		}
+	} else {
+		LOG(LOG_ERROR, "Using Vertex outside buffer v0=%i, n=%i\n", v0, n);
+	}
+}
+
 void gSPDisplayList( u32 dl )
 {
 	u32 address = RSP_SegmentToPhysical( dl );
@@ -1113,6 +1394,16 @@ void gSPSetVertexColorBase( u32 base )
 
 #ifdef DEBUG
 		DebugMsg( DEBUG_HIGH | DEBUG_HANDLED, "gSPSetVertexColorBase( 0x%08X );\n",
+			base );
+#endif
+}
+
+void gSPSetVertexNormaleBase( u32 base )
+{
+	gSP.vertexNormalBase = RSP_SegmentToPhysical( base );
+
+#ifdef DEBUG
+		DebugMsg( DEBUG_HIGH | DEBUG_HANDLED, "gSPSetVertexNormaleBase( 0x%08X );\n",
 			base );
 #endif
 }
@@ -1418,7 +1709,7 @@ void gSPModifyVertex( u32 _vtx, u32 _where, u32 _val )
 
 void gSPNumLights( s32 n )
 {
-	if (n <= 8) {
+	if (n <= 12) {
 		gSP.numLights = n;
 		if (config.enableHWLighting)
 			gSP.changed |= CHANGED_LIGHT;
@@ -1468,6 +1759,27 @@ void gSPPerspNormalize( u16 scale )
 #ifdef DEBUG
 		DebugMsg( DEBUG_HIGH | DEBUG_UNHANDLED, "gSPPerspNormalize( %i );\n", scale );
 #endif
+}
+
+void gSPCoordMod(u32 _w0, u32 _w1)
+{
+	if ((_w0&8) != 0)
+		return;
+	u32 idx = _SHIFTR(_w0, 1, 2);
+	u32 pos = _w0&0x30;
+	if (pos == 0) {
+		gSP.vertexCoordMod[0+idx] = (f32)(s16)_SHIFTR(_w1, 16, 16);
+		gSP.vertexCoordMod[1+idx] = (f32)(s16)_SHIFTR(_w1, 0, 16);
+	} else if (pos == 0x10) {
+		gSP.vertexCoordMod[4+idx] = _SHIFTR(_w1, 16, 16)/65536.0f;
+		gSP.vertexCoordMod[5+idx] = _SHIFTR(_w1, 0, 16)/65536.0f;
+		gSP.vertexCoordMod[12+idx] = gSP.vertexCoordMod[0+idx] + gSP.vertexCoordMod[4+idx];
+		gSP.vertexCoordMod[13+idx] = gSP.vertexCoordMod[1+idx] + gSP.vertexCoordMod[5+idx];
+
+	} else if (pos == 0x20) {
+		gSP.vertexCoordMod[8+idx] = (f32)(s16)_SHIFTR(_w1, 16, 16);
+		gSP.vertexCoordMod[9+idx] = (f32)(s16)_SHIFTR(_w1, 0, 16);
+	}
 }
 
 void gSPTexture( f32 sc, f32 tc, s32 level, s32 tile, s32 on )
@@ -1954,3 +2266,22 @@ void (*gSPTransformVertex)(float vtx[4], float mtx[4][4]) =
 void (*gSPLightVertex)(SPVertex & _vtx) = gSPLightVertex_default;
 void (*gSPPointLightVertex)(SPVertex & _vtx, float * _vPos) = gSPPointLightVertex_default;
 void (*gSPBillboardVertex)(u32 v, u32 i) = gSPBillboardVertex_default;
+
+void gSPSetupFunctions()
+{
+	if (GBI.getMicrocodeType() != F3DEX2CBFD) {
+#ifdef __VEC4_OPT
+		gSPLightVertex4 = gSPLightVertex4_default;
+		gSPPointLightVertex4 = gSPPointLightVertex4_default;
+#endif
+		gSPLightVertex = gSPLightVertex_default;
+		gSPPointLightVertex = gSPPointLightVertex_default;
+		return;
+	}
+#ifdef __VEC4_OPT
+		gSPLightVertex4 = gSPLightVertex4_CBFD;
+		gSPPointLightVertex4 = gSPPointLightVertex4_CBFD;
+#endif
+		gSPLightVertex = gSPLightVertex_CBFD;
+		gSPPointLightVertex = gSPPointLightVertex_CBFD;
+}
