@@ -8,6 +8,7 @@ typedef struct
 	u32 PC[18], PCi, busy, halt, close, DList, uc_start, uc_dstart, cmd, nextCmd;
 	s32 count;
 	bool bLLE;
+	char romname[21];
 } RSPInfo;
 
 extern RSPInfo RSP;

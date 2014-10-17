@@ -263,6 +263,15 @@ void RSP_Init()
 	RSP.uc_start = RSP.uc_dstart = 0;
 	RSP.bLLE = false;
 
+	// get the name of the ROM
+	for (int i = 0; i < 20; ++i)
+		RSP.romname[i] = HEADER[(32 + i) ^ 3];
+	RSP.romname[20] = 0;
+
+	// remove all trailing spaces
+	while (RSP.romname[strlen(RSP.romname) - 1] == ' ')
+		RSP.romname[strlen(RSP.romname) - 1] = 0;
+
 	memset(&gSP, 0, sizeof(gSPInfo));
 
 	gDP.loadTile = &gDP.tiles[7];
