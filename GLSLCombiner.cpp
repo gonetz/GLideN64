@@ -597,7 +597,7 @@ void ShaderCombiner::updateRenderState(bool _bForce) {
 }
 
 void ShaderCombiner::updateLight(bool _bForce) {
-	if (config.enableHWLighting == 0)
+	if (config.enableHWLighting == 0 || !GBI.isHWLSupported())
 		return;
 	for (s32 i = 0; i <= gSP.numLights; ++i) {
 		_setV3Uniform(m_uniforms.uLightDirection[i], &gSP.lights[i].x, _bForce);

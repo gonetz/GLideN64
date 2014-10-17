@@ -115,6 +115,21 @@ void GBIInfo::destroy()
 	m_list.clear();
 }
 
+bool GBIInfo::isHWLSupported() const
+{
+	if (m_pCurrent == NULL)
+		return false;
+	switch (m_pCurrent->type) {
+		case S2DEX:
+		case S2DEX2:
+		case F3DDKR:
+		case F3DJFG:
+		case F3DEX2CBFD:
+		return false;
+	}
+	return true;
+}
+
 void GBIInfo::_makeCurrent(MicrocodeInfo * _pCurrent)
 {
 	if (_pCurrent->type == NONE) {
