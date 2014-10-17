@@ -584,6 +584,7 @@ void FrameBufferToRDRAM::CopyToRDRAM( u32 address, bool bSync ) {
 	if (pBuffer == NULL)
 		return;
 
+	glDisable(GL_SCISSOR_TEST);
 	address = pBuffer->m_startAddress;
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, pBuffer->m_FBO);
 	glReadBuffer(GL_COLOR_ATTACHMENT0);
@@ -652,6 +653,7 @@ void FrameBufferToRDRAM::CopyToRDRAM( u32 address, bool bSync ) {
 	free(pixelData);
 #endif
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
+	glEnable(GL_SCISSOR_TEST);
 }
 #endif // GLES2
 
@@ -724,6 +726,7 @@ void DepthBufferToRDRAM::CopyToRDRAM( u32 address) {
 	if (pBuffer == NULL || pBuffer->m_pDepthBuffer == NULL)
 		return;
 
+	glDisable(GL_SCISSOR_TEST);
 	DepthBuffer * pDepthBuffer = pBuffer->m_pDepthBuffer;
 	address = pDepthBuffer->m_address;
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, pDepthBuffer->m_FBO);
@@ -767,6 +770,7 @@ void DepthBufferToRDRAM::CopyToRDRAM( u32 address) {
 	glUnmapBuffer(GL_PIXEL_PACK_BUFFER);
 	glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
+	glEnable(GL_SCISSOR_TEST);
 }
 #endif // GLES2
 
