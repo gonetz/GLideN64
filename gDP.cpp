@@ -276,17 +276,11 @@ void gDPSetColorImage( u32 format, u32 size, u32 width, u32 address )
 		{
 			//if (gDP.colorImage.changed)
 				frameBufferList().saveBuffer(address, (u16)format, (u16)size, (u16)width, height, false);
-				gDP.colorImage.height = 1;
+				gDP.colorImage.height = 0;
 
 			//OGL_ClearDepthBuffer();
 		} else
 			gDP.colorImage.height = height;
-
-
-//		if (width == VI.width)
-//			gDP.colorImage.height = VI.height;
-// 		else
-//			gDP.colorImage.height = 1;
 	}
 
 	gDP.colorImage.format = format;
