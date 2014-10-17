@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <time.h>       /* time_t, struct tm, difftime, time, mktime */
 #include "OpenGL.h"
+#include "RSP.h"
 
 //// paulscode, added for SDL linkage:
 #if defined(GLES2)
@@ -788,6 +789,31 @@ void OGLRender::drawRect(int _ulx, int _uly, int _lrx, int _lry, float *_pColor)
 	_updateViewport();
 }
 
+bool texturedRectShadowMap()
+{
+#ifdef GL_IMAGE_TEXTURES_SUPPORT
+	if ((gDP.otherMode.l >> 16) == 0x3c18 && gDP.combine.muxs0 == 0x00ffffff && gDP.combine.muxs1 == 0xfffff238) //depth image based fog
+		//if (gDP.textureImage.size == 2 && gDP.textureImage.address >= gDP.depthImageAddress &&  gDP.textureImage.address < (gDP.depthImageAddress +  gDP.colorImage.width*gDP.colorImage.width*6/4))
+		SetShadowMapCombiner();
+#endif // GL_IMAGE_TEXTURES_SUPPORT
+	return false;
+}
+
+bool texturedRectTextureCopy()
+{
+	const gDPTile * pTile = gSP.textureTile[0];
+	if (pTile->loadType == LOADTYPE_BLOCK && pTile->tmem == 0 && pTile->lrs + 1 == gDP.colorImage.width &&
+		pTile->lrs + 1 == (u32)gDP.scissor.lrx && (u32)gDP.scissor.lry == 1) {
+		memcpy(RDRAM + gDP.colorImage.address, TMEM, gDP.colorImage.width << gDP.colorImage.size >> 1);
+		return true;
+	}
+	return false;
+}
+
+// Special processing of textured rect.
+// Return true if actuial rendering is not necessary
+bool(*texturedRectSpecial)() = texturedRectShadowMap;
+
 void OGLRender::drawTexturedRect(float _ulx, float _uly, float _lrx, float _lry, float _uls, float _ult, float _lrs, float _lrt, bool _flip)
 {
 	if (gSP.changed || gDP.changed)
@@ -812,11 +838,8 @@ void OGLRender::drawTexturedRect(float _ulx, float _uly, float _lrx, float _lry,
 		currentCombiner()->updateRenderState();
 	}
 
-#ifdef GL_IMAGE_TEXTURES_SUPPORT
-	if ((gDP.otherMode.l >> 16) == 0x3c18 && gDP.combine.muxs0 == 0x00ffffff && gDP.combine.muxs1 == 0xfffff238) //depth image based fog
-	//if (gDP.textureImage.size == 2 && gDP.textureImage.address >= gDP.depthImageAddress &&  gDP.textureImage.address < (gDP.depthImageAddress +  gDP.colorImage.width*gDP.colorImage.width*6/4))
-		SetShadowMapCombiner();
-#endif // GL_IMAGE_TEXTURES_SUPPORT
+	if (texturedRectSpecial != NULL && texturedRectSpecial())
+		return;
 
 	FrameBufferList & fbList = frameBufferList();
 	FrameBuffer* pBuffer = fbList.getCurrent();
@@ -1014,6 +1037,7 @@ void OGLRender::_initData()
 {
 	_initExtensions();
 	_initStates();
+	_setSpecialTexrect();
 
 	textureCache().init();
 	DepthBuffer_Init();
@@ -1039,6 +1063,18 @@ void OGLRender::_destroyData()
 	FrameBuffer_Destroy();
 	DepthBuffer_Destroy();
 	textureCache().destroy();
+}
+
+void OGLRender::_setSpecialTexrect() const
+{
+	const char * name = RSP.romname;
+	if (strstr(name, (const char *)"Beetle") || strstr(name, (const char *)"BEETLE") || strstr(name, (const char *)"HSV")
+		|| strstr(name, (const char *)"DUCK DODGERS") || strstr(name, (const char *)"DAFFY DUCK"))
+		texturedRectSpecial = texturedRectShadowMap;
+//	else if (strstr(name, (const char *)"CONKER BFD"))
+//		texturedRectSpecial = texturedRectTextureCopy; // Causes camera rotation!
+	else
+		texturedRectSpecial = NULL;
 }
 
 #ifdef __TRIBUFFER_OPT

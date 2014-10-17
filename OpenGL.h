@@ -90,6 +90,8 @@ private:
 	void _initData();
 	void _destroyData();
 
+	void _setSpecialTexrect() const;
+
 	void _setColorArray() const;
 	void _setTexCoordArrays() const;
 	void _setBlendMode() const;
