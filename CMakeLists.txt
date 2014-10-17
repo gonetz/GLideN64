@@ -42,9 +42,9 @@ if(MUPENPLUSAPI)
   include_directories( inc )
   set(GLideN64_SOURCES_UNIX
 	MupenPlusPluginAPI.cpp
-	mupenplus/Config.cpp
+	mupenplus/Config_mupenplus.cpp
 	mupenplus/CommonAPIImpl_mupenplus.cpp
-	mupenplus/MicrocodeDialog.cpp
+	mupenplus/MicrocodeDialog_mupenplus.cpp
 	mupenplus/MupenPlusAPIImpl.cpp
 	mupenplus/OpenGL_mupenplus.cpp
   )
@@ -55,22 +55,22 @@ else(MUPENPLUSAPI)
   set(GLideN64_SOURCES_WIN
 	ZilmarPluginAPI.cpp
 	common/ZilmarAPIImpl_common.cpp
-	windows/Config.cpp
+	windows/Config_windows.cpp
 	windows/Debug.cpp
 	windows/CommonAPIImpl_windows.cpp
 	windows/GLideN64_windows.cpp
 	windows/GLFunctions.cpp
-	windows/MicrocodeDialog.cpp
+	windows/MicrocodeDialog_windows.cpp
 	windows/OpenGL_windows.cpp
 	windows/ZilmarAPIImpl_windows.cpp
   )
   set(GLideN64_SOURCES_UNIX
 	ZilmarPluginAPI.cpp
 	common/ZilmarAPIImpl_common.cpp
-	posix/Config.cpp
+	posix/Config_posix.cpp
 	posix/Debug.cpp
 	posix/CommonAPIImpl_posix.cpp
-	posix/MicrocodeDialog.cpp
+	posix/MicrocodeDialog_posix.cpp
 	posix/OpenGL_posix.cpp
 	posix/ZilmarAPIImpl_posix.cpp
   )

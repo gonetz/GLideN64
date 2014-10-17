@@ -141,12 +141,6 @@
     <ClCompile Include="mupenplus\CommonAPIImpl_mupenplus.cpp">
       <Filter>Source Files\mupenplus</Filter>
     </ClCompile>
-    <ClCompile Include="mupenplus\Config.cpp">
-      <Filter>Source Files\mupenplus</Filter>
-    </ClCompile>
-    <ClCompile Include="mupenplus\MicrocodeDialog.cpp">
-      <Filter>Source Files\mupenplus</Filter>
-    </ClCompile>
     <ClCompile Include="mupenplus\MupenPlusAPIImpl.cpp">
       <Filter>Source Files\mupenplus</Filter>
     </ClCompile>
@@ -154,9 +148,6 @@
       <Filter>Source Files\mupenplus</Filter>
     </ClCompile>
     <ClCompile Include="windows\CommonAPIImpl_windows.cpp">
-      <Filter>Source Files\windows</Filter>
-    </ClCompile>
-    <ClCompile Include="windows\Config.cpp">
       <Filter>Source Files\windows</Filter>
     </ClCompile>
     <ClCompile Include="windows\Debug.cpp">
@@ -168,9 +159,6 @@
     <ClCompile Include="windows\GLideN64_windows.cpp">
       <Filter>Source Files\windows</Filter>
     </ClCompile>
-    <ClCompile Include="windows\MicrocodeDialog.cpp">
-      <Filter>Source Files\windows</Filter>
-    </ClCompile>
     <ClCompile Include="windows\OpenGL_windows.cpp">
       <Filter>Source Files\windows</Filter>
     </ClCompile>
@@ -179,6 +167,18 @@
     </ClCompile>
     <ClCompile Include="F3DEX2CBFD.cpp">
       <Filter>Source Files\uCodes</Filter>
+    </ClCompile>
+    <ClCompile Include="windows\Config_windows.cpp">
+      <Filter>Source Files\windows</Filter>
+    </ClCompile>
+    <ClCompile Include="mupenplus\Config_mupenplus.cpp">
+      <Filter>Source Files\mupenplus</Filter>
+    </ClCompile>
+    <ClCompile Include="windows\MicrocodeDialog_windows.cpp">
+      <Filter>Source Files\windows</Filter>
+    </ClCompile>
+    <ClCompile Include="mupenplus\MicrocodeDialog_mupenplus.cpp">
+      <Filter>Source Files\mupenplus</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
