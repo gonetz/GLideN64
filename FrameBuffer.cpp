@@ -155,10 +155,11 @@ void FrameBufferList::destroy() {
 	m_drawBuffer = GL_BACK;
 }
 
-FrameBuffer * FrameBufferList::findBuffer(u32 _address)
+FrameBuffer * FrameBufferList::findBuffer(u32 _startAddress, u32 _endAddress)
 {
 	for (FrameBuffers::iterator iter = m_list.begin(); iter != m_list.end(); ++iter)
-		if (iter->m_startAddress <= _address && iter->m_endAddress >= _address)
+		if ((iter->m_startAddress <= _startAddress && iter->m_endAddress >= _startAddress) ||
+			(_startAddress < iter->m_startAddress && _endAddress > iter->m_startAddress))
 				return &(*iter);
 	return NULL;
 }
@@ -183,8 +184,9 @@ void FrameBufferList::saveBuffer(u32 _address, u16 _format, u16 _size, u16 _widt
 			gDPFillRDRAM(m_pCurrent->m_startAddress, 0, 0, m_pCurrent->m_width, gDP.colorImage.height, m_pCurrent->m_width, m_pCurrent->m_size, m_pCurrent->m_fillcolor);
 	}
 
+	const u32 endAddress = _address + ((_width * _height << _size >> 1) - 1);
 	if (m_pCurrent == NULL || m_pCurrent->m_startAddress != _address)
-		m_pCurrent = findBuffer(_address);
+		m_pCurrent = findBuffer(_address, endAddress);
 	if (m_pCurrent != NULL) {
 		if ((m_pCurrent->m_startAddress != _address) ||
 			(m_pCurrent->m_width != _width) ||
@@ -214,7 +216,7 @@ void FrameBufferList::saveBuffer(u32 _address, u16 _format, u16 _size, u16 _widt
 		FrameBuffer & buffer = m_list.front();
 
 		buffer.m_startAddress = _address;
-		buffer.m_endAddress = _address + ((_width * _height << _size >> 1) - 1);
+		buffer.m_endAddress = endAddress;
 		buffer.m_width = _width;
 		buffer.m_height = _height;
 		buffer.m_size = _size;
@@ -337,7 +339,7 @@ void FrameBufferList::renderBuffer(u32 _address)
 	if (VI.width == 0) // H width is zero. Don't draw
 		return;
 
-	FrameBuffer *pBuffer = findBuffer(_address);
+	FrameBuffer *pBuffer = findBuffer(_address, 0);
 	if (pBuffer == NULL)
 		return;
 

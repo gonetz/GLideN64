@@ -34,7 +34,7 @@ public:
 	void saveBuffer(u32 _address, u16 _format, u16 _size, u16 _width, u16 _height, bool _cfb);
 	void removeBuffer(u32 _address);
 	void attachDepthBuffer();
-	FrameBuffer * findBuffer(u32 _address);
+	FrameBuffer * findBuffer(u32 _startAddress, u32 _endAddress = 0);
 	FrameBuffer * findTmpBuffer(u32 _address);
 	FrameBuffer * getCurrent() const {return m_pCurrent;}
 	void renderBuffer(u32 _address);
