@@ -14,6 +14,7 @@ extern RDPInfo RDP;
 void RDP_Init();
 void RDP_Half_1(u32 _c);
 void RDP_ProcessRDPList();
+void RDP_RepeatLastLoadBlock();
 
 #endif
 

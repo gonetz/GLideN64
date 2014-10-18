@@ -118,13 +118,21 @@ void RDP_LoadTile( u32 w0, u32 w1 )
 				 _SHIFTR( w1,  0, 12 ) );	// lrt
 }
 
+static u32 lbw0, lbw1;
 void RDP_LoadBlock( u32 w0, u32 w1 )
 {
+	lbw0 = w0;
+	lbw1 = w1;
 	gDPLoadBlock( _SHIFTR( w1, 24,  3 ),	// tile
 				  _SHIFTR( w0, 12, 12 ),	// uls
 				  _SHIFTR( w0,  0, 12 ),	// ult
 				  _SHIFTR( w1, 12, 12 ),	// lrs
 				  _SHIFTR( w1,  0, 12 ) );	// dxt
+}
+
+void RDP_RepeatLastLoadBlock()
+{
+	RDP_LoadBlock(lbw0, lbw1);
 }
 
 void RDP_SetTileSize( u32 w0, u32 w1 )
