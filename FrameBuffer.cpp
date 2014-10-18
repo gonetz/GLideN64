@@ -471,6 +471,8 @@ void FrameBufferList::renderBuffer(u32 _address)
 
 void FrameBuffer_ActivateBufferTexture(s16 t, FrameBuffer *pBuffer)
 {
+	if (pBuffer == NULL || pBuffer->m_pTexture == NULL)
+		return;
 	pBuffer->m_pTexture->scaleS = video().getScaleX() / (float)pBuffer->m_pTexture->realWidth;
 	pBuffer->m_pTexture->scaleT = video().getScaleY() / (float)pBuffer->m_pTexture->realHeight;
 
