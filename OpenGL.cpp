@@ -799,12 +799,17 @@ bool texturedRectShadowMap()
 	return false;
 }
 
-bool texturedRectTextureCopy()
+bool texturedRectDepthBufferCopy()
 {
+	// Copy one line from depth buffer into auxiliary color buffer with height = 1.
+	// Data from depth buffer loaded into TMEM and then rendered to RDRAM by texrect.
+	// Works only with depth buffer emulation enabled.
+	// Load of arbitrary data to that area causes weird camera rotation.
 	const gDPTile * pTile = gSP.textureTile[0];
-	if (pTile->loadType == LOADTYPE_BLOCK && pTile->tmem == 0 && pTile->lrs + 1 == gDP.colorImage.width &&
+	if (config.frameBufferEmulation.enable != 0 && config.frameBufferEmulation.copyDepthToRDRAM != 0 &&
+		pTile->loadType == LOADTYPE_BLOCK && pTile->lrs + 1 == gDP.colorImage.width &&
 		pTile->lrs + 1 == (u32)gDP.scissor.lrx && (u32)gDP.scissor.lry == 1) {
-		memcpy(RDRAM + gDP.colorImage.address, TMEM, gDP.colorImage.width << gDP.colorImage.size >> 1);
+		memcpy(RDRAM + gDP.colorImage.address, &TMEM[pTile->tmem], gDP.colorImage.width << gDP.colorImage.size >> 1);
 		return true;
 	}
 	return false;
@@ -1071,8 +1076,8 @@ void OGLRender::_setSpecialTexrect() const
 	if (strstr(name, (const char *)"Beetle") || strstr(name, (const char *)"BEETLE") || strstr(name, (const char *)"HSV")
 		|| strstr(name, (const char *)"DUCK DODGERS") || strstr(name, (const char *)"DAFFY DUCK"))
 		texturedRectSpecial = texturedRectShadowMap;
-//	else if (strstr(name, (const char *)"CONKER BFD"))
-//		texturedRectSpecial = texturedRectTextureCopy; // Causes camera rotation!
+	else if (strstr(name, (const char *)"CONKER BFD"))
+		texturedRectSpecial = texturedRectDepthBufferCopy; // See comments to that function!
 	else
 		texturedRectSpecial = NULL;
 }

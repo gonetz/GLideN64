@@ -657,8 +657,7 @@ void gDPLoadBlock( u32 tile, u32 uls, u32 ult, u32 lrs, u32 dxt )
 	gDP.loadTile->textureMode = TEXTUREMODE_NORMAL;
 	gDP.loadTile->frameBuffer = NULL;
 	gDP.changed |= CHANGED_TMEM;
-	if (CheckForFrameBufferTexture(address, bytes))
-		return;
+	CheckForFrameBufferTexture(address, bytes); // Load data to TMEM even if FB texture is found. See comment to texturedRectDepthBufferCopy
 
 	u64* src = (u64*)&RDRAM[address];
 	u64* dest = &TMEM[gDP.loadTile->tmem];
