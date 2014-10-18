@@ -714,6 +714,9 @@ void ShaderCombiner::updateTextureInfo(bool _bForce) {
 }
 
 void ShaderCombiner::updateFBInfo(bool _bForce) {
+	if (!usesT0() && usesT1())
+		return;
+
 	int nFb8bitMode = 0, nFbFixedAlpha = 0;
 	TextureCache & cache = textureCache();
 	if (cache.current[0] != NULL && cache.current[0]->frameBufferTexture == TRUE) {
