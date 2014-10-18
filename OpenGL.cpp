@@ -788,17 +788,19 @@ void OGLRender::drawRect(int _ulx, int _uly, int _lrx, int _lry, float *_pColor)
 	_updateViewport();
 }
 
-bool texturedRectShadowMap()
+static
+bool texturedRectShadowMap(float, float, float, float, float)
 {
 #ifdef GL_IMAGE_TEXTURES_SUPPORT
-	if ((gDP.otherMode.l >> 16) == 0x3c18 && gDP.combine.muxs0 == 0x00ffffff && gDP.combine.muxs1 == 0xfffff238) //depth image based fog
-		//if (gDP.textureImage.size == 2 && gDP.textureImage.address >= gDP.depthImageAddress &&  gDP.textureImage.address < (gDP.depthImageAddress +  gDP.colorImage.width*gDP.colorImage.width*6/4))
+//	if ((gDP.otherMode.l >> 16) == 0x3c18 && gDP.combine.muxs0 == 0x00ffffff && gDP.combine.muxs1 == 0xfffff238) //depth image based fog
+	if (gDP.textureImage.size == 2 && gDP.textureImage.address >= gDP.depthImageAddress &&  gDP.textureImage.address < (gDP.depthImageAddress +  gDP.colorImage.width*gDP.colorImage.width*6/4))
 		SetShadowMapCombiner();
 #endif // GL_IMAGE_TEXTURES_SUPPORT
 	return false;
 }
 
-bool texturedRectDepthBufferCopy()
+static
+bool texturedRectDepthBufferCopy(float _ulx, float _uly, float _lrx, float _lry, float _uls)
 {
 	// Copy one line from depth buffer into auxiliary color buffer with height = 1.
 	// Data from depth buffer loaded into TMEM and then rendered to RDRAM by texrect.
@@ -816,7 +818,7 @@ bool texturedRectDepthBufferCopy()
 
 // Special processing of textured rect.
 // Return true if actuial rendering is not necessary
-bool(*texturedRectSpecial)() = texturedRectShadowMap;
+bool(*texturedRectSpecial)(float _ulx, float _uly, float _lrx, float _lry, float _uls) = NULL;
 
 void OGLRender::drawTexturedRect(float _ulx, float _uly, float _lrx, float _lry, float _uls, float _ult, float _lrs, float _lrt, bool _flip)
 {
@@ -842,7 +844,7 @@ void OGLRender::drawTexturedRect(float _ulx, float _uly, float _lrx, float _lry,
 		currentCombiner()->updateRenderState();
 	}
 
-	if (texturedRectSpecial != NULL && texturedRectSpecial())
+	if (texturedRectSpecial != NULL && texturedRectSpecial(_ulx, _uly, _lrx, _lry, _uls))
 		return;
 
 	FrameBufferList & fbList = frameBufferList();
