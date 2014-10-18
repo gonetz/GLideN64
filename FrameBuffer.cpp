@@ -56,11 +56,8 @@ class DepthBufferToRDRAM
 {
 public:
 	DepthBufferToRDRAM() :
-		m_FBO(0), m_pTexture(NULL), m_curIndex(0), m_lastDList(0)
-	{
-		m_aPBO[0] = m_aPBO[1] = 0;
-		m_aAddress[0] = m_aAddress[1] = 0;
-	}
+		m_FBO(0), m_PBO(0), m_pTexture(NULL), m_lastDList(0)
+	{}
 
 	void Init();
 	void Destroy();
@@ -69,11 +66,9 @@ public:
 
 private:
 	GLuint m_FBO;
+	GLuint m_PBO;
 	CachedTexture * m_pTexture;
-	u32 m_aAddress[2];
-	u32 m_curIndex;
 	u32 m_lastDList;
-	GLuint m_aPBO[2];
 };
 #endif // GLES2
 
@@ -702,10 +697,8 @@ void DepthBufferToRDRAM::Init()
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 
 	// Generate and initialize Pixel Buffer Objects
-	glGenBuffers(2, m_aPBO);
-	glBindBuffer(GL_PIXEL_PACK_BUFFER, m_aPBO[0]);
-	glBufferData(GL_PIXEL_PACK_BUFFER, 640*480*2, NULL, GL_DYNAMIC_DRAW);
-	glBindBuffer(GL_PIXEL_PACK_BUFFER, m_aPBO[1]);
+	glGenBuffers(1, &m_PBO);
+	glBindBuffer(GL_PIXEL_PACK_BUFFER, m_PBO);
 	glBufferData(GL_PIXEL_PACK_BUFFER, 640*480*2, NULL, GL_DYNAMIC_DRAW);
 	glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
 }
@@ -718,25 +711,23 @@ void DepthBufferToRDRAM::Destroy() {
 		textureCache().removeFrameBufferTexture(m_pTexture);
 		m_pTexture = NULL;
 	}
-	glDeleteBuffers(2, m_aPBO);
-	m_aPBO[0] = m_aPBO[1] = 0;
-	m_curIndex = 0;
-	m_aAddress[0] = m_aAddress[1] = 0;
+	glDeleteBuffers(1, &m_PBO);
+	m_PBO = 0;
 }
 
-bool DepthBufferToRDRAM::CopyToRDRAM( u32 address) {
+bool DepthBufferToRDRAM::CopyToRDRAM( u32 _address) {
 	if (VI.width == 0) // H width is zero. Don't copy
 		return false;
 	if (m_lastDList == RSP.DList) // Already read;
 		return false;
-	FrameBuffer *pBuffer = frameBufferList().findBuffer(address);
+	FrameBuffer *pBuffer = frameBufferList().findBuffer(_address);
 	if (pBuffer == NULL || pBuffer->m_pDepthBuffer == NULL)
 		return false;
 
 	m_lastDList = RSP.DList;
 	glDisable(GL_SCISSOR_TEST);
 	DepthBuffer * pDepthBuffer = pBuffer->m_pDepthBuffer;
-	address = pDepthBuffer->m_address;
+	const u32 address = pDepthBuffer->m_address;
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, pDepthBuffer->m_FBO);
 	glReadBuffer(GL_COLOR_ATTACHMENT0);
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_FBO);
@@ -749,15 +740,12 @@ bool DepthBufferToRDRAM::CopyToRDRAM( u32 address) {
 	);
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, frameBufferList().getCurrent()->m_FBO);
 
-	m_curIndex = (m_curIndex + 1) % 2;
-	const u32 nextIndex = m_aAddress[m_curIndex] == 0 ? m_curIndex : (m_curIndex + 1) % 2;
-	m_aAddress[m_curIndex] = address;
-	glBindBuffer(GL_PIXEL_PACK_BUFFER, m_aPBO[m_curIndex]);
+	glBindBuffer(GL_PIXEL_PACK_BUFFER, m_PBO);
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, m_FBO);
 	glReadBuffer(GL_COLOR_ATTACHMENT0);
 	glReadPixels( 0, 0, VI.width, VI.height, GL_RED, GL_UNSIGNED_SHORT, 0 );
 
-	glBindBuffer(GL_PIXEL_PACK_BUFFER, m_aPBO[nextIndex]);
+	glBindBuffer(GL_PIXEL_PACK_BUFFER, m_PBO);
 	GLubyte* pixelData = (GLubyte*)glMapBuffer(GL_PIXEL_PACK_BUFFER, GL_READ_ONLY);
 	if(pixelData == NULL) {
 		glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
@@ -765,7 +753,7 @@ bool DepthBufferToRDRAM::CopyToRDRAM( u32 address) {
 	}
 
 	u16 * ptr_src = (u16*)pixelData;
-	u16 *ptr_dst = (u16*)(RDRAM + m_aAddress[nextIndex]);
+	u16 *ptr_dst = (u16*)(RDRAM + address);
 	u16 col;
 
 	for (u32 y = 0; y < VI.height; ++y) {
