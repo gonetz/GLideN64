@@ -56,7 +56,7 @@ class DepthBufferToRDRAM
 {
 public:
 	DepthBufferToRDRAM() :
-	  m_FBO(0), m_pTexture(NULL), m_curIndex(0)
+		m_FBO(0), m_pTexture(NULL), m_curIndex(0), m_lastDList(0)
 	{
 		m_aPBO[0] = m_aPBO[1] = 0;
 		m_aAddress[0] = m_aAddress[1] = 0;
@@ -65,13 +65,14 @@ public:
 	void Init();
 	void Destroy();
 
-	void CopyToRDRAM( u32 address );
+	bool CopyToRDRAM( u32 address );
 
 private:
 	GLuint m_FBO;
 	CachedTexture * m_pTexture;
 	u32 m_aAddress[2];
 	u32 m_curIndex;
+	u32 m_lastDList;
 	GLuint m_aPBO[2];
 };
 #endif // GLES2
@@ -721,13 +722,16 @@ void DepthBufferToRDRAM::Destroy() {
 	m_aAddress[0] = m_aAddress[1] = 0;
 }
 
-void DepthBufferToRDRAM::CopyToRDRAM( u32 address) {
+bool DepthBufferToRDRAM::CopyToRDRAM( u32 address) {
 	if (VI.width == 0) // H width is zero. Don't copy
-		return;
+		return false;
+	if (m_lastDList == RSP.DList) // Already read;
+		return false;
 	FrameBuffer *pBuffer = frameBufferList().findBuffer(address);
 	if (pBuffer == NULL || pBuffer->m_pDepthBuffer == NULL)
-		return;
+		return false;
 
+	m_lastDList = RSP.DList;
 	glDisable(GL_SCISSOR_TEST);
 	DepthBuffer * pDepthBuffer = pBuffer->m_pDepthBuffer;
 	address = pDepthBuffer->m_address;
@@ -755,7 +759,7 @@ void DepthBufferToRDRAM::CopyToRDRAM( u32 address) {
 	GLubyte* pixelData = (GLubyte*)glMapBuffer(GL_PIXEL_PACK_BUFFER, GL_READ_ONLY);
 	if(pixelData == NULL) {
 		glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
-		return;
+		return false;
 	}
 
 	u16 * ptr_src = (u16*)pixelData;
@@ -773,12 +777,13 @@ void DepthBufferToRDRAM::CopyToRDRAM( u32 address) {
 	glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
 	glEnable(GL_SCISSOR_TEST);
+	return true;
 }
 #endif // GLES2
 
-void FrameBuffer_CopyDepthBuffer( u32 address ) {
+bool FrameBuffer_CopyDepthBuffer( u32 address ) {
 #ifndef GLES2
-	g_dbToRDRAM.CopyToRDRAM(address);
+	return g_dbToRDRAM.CopyToRDRAM(address);
 #endif
 }
 
