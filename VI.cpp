@@ -56,11 +56,6 @@ void VI_UpdateSize()
 //	const int fsaa = ((*REG.VI_STATUS) >> 8) & 3;
 //	const int divot = ((*REG.VI_STATUS) >> 4) & 1;
 
-	if (VI.width == 0)
-		VI.width = *REG.VI_WIDTH;
-	if (VI.height == 0)
-		VI.height = 240;
-
 	if (config.frameBufferEmulation.enable && (interlacedPrev != VI.interlaced || widthPrev != VI.width || heightPrev != VI.height)) {
 		frameBufferList().destroy();
 		depthBufferList().destroy();
@@ -68,8 +63,8 @@ void VI_UpdateSize()
 		frameBufferList().init();
 	}
 
-	VI.rwidth = 1.0f / VI.width;
-	VI.rheight = 1.0f / VI.height;
+	VI.rwidth = VI.width != 0 ? 1.0f / VI.width : 0.0f;
+	VI.rheight = VI.height != 0 ? 1.0f / VI.height : 0.0f;
 }
 
 void VI_UpdateScreen()
