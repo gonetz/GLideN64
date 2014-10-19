@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <time.h>       /* time_t, struct tm, difftime, time, mktime */
 #include "OpenGL.h"
+#include "RDP.h"
 #include "RSP.h"
 
 //// paulscode, added for SDL linkage:
@@ -805,12 +806,27 @@ bool texturedRectDepthBufferCopy(float _ulx, float _uly, float _lrx, float _lry,
 	// Copy one line from depth buffer into auxiliary color buffer with height = 1.
 	// Data from depth buffer loaded into TMEM and then rendered to RDRAM by texrect.
 	// Works only with depth buffer emulation enabled.
-	// Load of arbitrary data to that area causes weird camera rotation.
+	// Load of arbitrary data to that area causes weird camera rotation in CBFD.
 	const gDPTile * pTile = gSP.textureTile[0];
-	if (config.frameBufferEmulation.enable != 0 && config.frameBufferEmulation.copyDepthToRDRAM != 0 &&
-		pTile->loadType == LOADTYPE_BLOCK && pTile->lrs + 1 == gDP.colorImage.width &&
-		pTile->lrs + 1 == (u32)gDP.scissor.lrx && (u32)gDP.scissor.lry == 1) {
-		memcpy(RDRAM + gDP.colorImage.address, &TMEM[pTile->tmem], gDP.colorImage.width << gDP.colorImage.size >> 1);
+	if (pTile->loadType == LOADTYPE_BLOCK && gDP.textureImage.size == 2 && gDP.textureImage.address >= gDP.depthImageAddress &&  gDP.textureImage.address < (gDP.depthImageAddress + gDP.colorImage.width*gDP.colorImage.width * 6 / 4)) {
+		if (!config.frameBufferEmulation.enable)
+			return true;
+		frameBufferList().getCurrent()->m_cleared = true;
+		if (!config.frameBufferEmulation.copyDepthToRDRAM)
+			return true;
+		if (FrameBuffer_CopyDepthBuffer(gDP.colorImage.address))
+			RDP_RepeatLastLoadBlock();
+
+		const u32 width = (u32)(_lrx - _ulx);
+		const u32 ulx = (u32)_ulx;
+		u16 * pSrc = ((u16*)TMEM) + (u32)floorf(_uls + 0.5f);
+		u16 *pDst = (u16*)(RDRAM + gDP.colorImage.address);
+		for (u32 x = 0; x < width; ++x) {
+			u16 c = pSrc[x];
+			c = ((c << 8) & 0xFF00) | (c >> 8);
+			pDst[(ulx + x) ^ 1] = c;
+		}
+
 		return true;
 	}
 	return false;
@@ -1077,7 +1093,7 @@ void OGLRender::_setSpecialTexrect() const
 	if (strstr(name, (const char *)"Beetle") || strstr(name, (const char *)"BEETLE") || strstr(name, (const char *)"HSV")
 		|| strstr(name, (const char *)"DUCK DODGERS") || strstr(name, (const char *)"DAFFY DUCK"))
 		texturedRectSpecial = texturedRectShadowMap;
-	else if (strstr(name, (const char *)"CONKER BFD"))
+	else if (strstr(name, (const char *)"CONKER BFD") || strstr(name, (const char *)"Perfect Dark") || strstr(name, (const char *)"PERFECT DARK"))
 		texturedRectSpecial = texturedRectDepthBufferCopy; // See comments to that function!
 	else
 		texturedRectSpecial = NULL;
