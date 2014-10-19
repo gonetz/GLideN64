@@ -764,7 +764,7 @@ void DepthBufferToRDRAM::CopyToRDRAM( u32 address) {
 
 	for (u32 y = 0; y < VI.height; ++y) {
 		for (u32 x = 0; x < VI.width; ++x) {
-				col = ptr_src[x + (VI.height - y - 1)*VI.width];
+				col = min((u16)0xfffc, ptr_src[x + (VI.height - y - 1)*VI.width]);
 				ptr_dst[(x + y*VI.width)^1] = col;
 		}
 	}
