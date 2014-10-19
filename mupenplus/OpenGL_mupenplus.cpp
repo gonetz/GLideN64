@@ -42,8 +42,7 @@ void OGLVideoMupenPlus::_setAttributes()
 	CoreVideo_GL_SetAttribute(M64P_GL_SWAP_CONTROL, config.video.verticalSync);
 	CoreVideo_GL_SetAttribute(M64P_GL_BUFFER_SIZE, 32);
 	CoreVideo_GL_SetAttribute(M64P_GL_DEPTH_SIZE, 16);
-
-	if (config.video.multisampling > 0) {
+	if (config.video.multisampling > 0 && config.frameBufferEmulation.enable == 0) {
 		CoreVideo_GL_SetAttribute(M64P_GL_MULTISAMPLEBUFFERS, 1);
 		if (config.video.multisampling <= 2)
 			CoreVideo_GL_SetAttribute(M64P_GL_MULTISAMPLESAMPLES, 2);
