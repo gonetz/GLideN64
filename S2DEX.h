@@ -10,45 +10,45 @@
 struct uObjScaleBg
 {
   u16 imageW;     /* Texture width (8-byte alignment, u10.2) */
-  u16 imageX;     /* x-coordinate of upper-left 
-                  position of texture (u10.5) */ 
+  u16 imageX;     /* x-coordinate of upper-left
+				  position of texture (u10.5) */
   u16 frameW;     /* Transfer destination frame width (u10.2) */
-  s16 frameX;     /* x-coordinate of upper-left 
-                  position of transfer destination frame (s10.2) */
+  s16 frameX;     /* x-coordinate of upper-left
+				  position of transfer destination frame (s10.2) */
 
   u16 imageH;     /* Texture height (u10.2) */
-  u16 imageY;     /* y-coordinate of upper-left position of 
-                  texture (u10.5) */ 
+  u16 imageY;     /* y-coordinate of upper-left position of
+				  texture (u10.5) */
   u16 frameH;     /* Transfer destination frame height (u10.2) */
-  s16 frameY;     /* y-coordinate of upper-left position of transfer 
-                  destination  frame (s10.2) */
+  s16 frameY;     /* y-coordinate of upper-left position of transfer
+				  destination  frame (s10.2) */
 
   u32 imagePtr;  /* Address of texture source in DRAM*/
   u8  imageSiz;   /* Texel size
-                     G_IM_SIZ_4b (4 bits/texel)
-                     G_IM_SIZ_8b (8 bits/texel)
-                     G_IM_SIZ_16b (16 bits/texel)
-                     G_IM_SIZ_32b (32 bits/texel) */
+					 G_IM_SIZ_4b (4 bits/texel)
+					 G_IM_SIZ_8b (8 bits/texel)
+					 G_IM_SIZ_16b (16 bits/texel)
+					 G_IM_SIZ_32b (32 bits/texel) */
   u8  imageFmt;   /*Texel format
-                     G_IM_FMT_RGBA (RGBA format)
-                     G_IM_FMT_YUV (YUV format)
-                     G_IM_FMT_CI (CI format)
-                     G_IM_FMT_IA (IA format)
-                     G_IM_FMT_I (I format)  */
+					 G_IM_FMT_RGBA (RGBA format)
+					 G_IM_FMT_YUV (YUV format)
+					 G_IM_FMT_CI (CI format)
+					 G_IM_FMT_IA (IA format)
+					 G_IM_FMT_I (I format)  */
   u16 imageLoad;  /* Method for loading the BG image texture
-                     G_BGLT_LOADBLOCK (use LoadBlock)
-                     G_BGLT_LOADTILE (use LoadTile) */
-  u16 imageFlip;  /* Image inversion on/off (horizontal 
-                     direction only)
-                     0 (normal display (no inversion))
-                     G_BG_FLAG_FLIPS (horizontal inversion of texture image) */
-  u16 imagePal;   /* Position of palette for 4-bit color 
-                  index texture (4-bit precision, 0~15) */
+					 G_BGLT_LOADBLOCK (use LoadBlock)
+					 G_BGLT_LOADTILE (use LoadTile) */
+  u16 imageFlip;  /* Image inversion on/off (horizontal
+					 direction only)
+					 0 (normal display (no inversion))
+					 G_BG_FLAG_FLIPS (horizontal inversion of texture image) */
+  u16 imagePal;   /* Position of palette for 4-bit color
+				  index texture (4-bit precision, 0~15) */
 
   u16 scaleH;      /* y-direction scale value (u5.10) */
   u16 scaleW;      /* x-direction scale value (u5.10) */
   s32 imageYorig;  /* image drawing origin (s20.5)*/
-  
+
   u8  padding[4];  /* Padding */
 };   /* 40 bytes */
 
@@ -56,42 +56,42 @@ struct uObjScaleBg
 struct uObjBg
 {
 	u16 imageW;     /* Texture width (8-byte alignment, u10.2) */
-	u16 imageX;     /* x-coordinate of upper-left position of texture (u10.5) */ 
+	u16 imageX;     /* x-coordinate of upper-left position of texture (u10.5) */
 	u16 frameW;     /* Transfer destination frame width (u10.2) */
-    s16 frameX;     /* x-coordinate of upper-left position of 
-		              transfer destination frame (s10.2) */
+	s16 frameX;     /* x-coordinate of upper-left position of
+					  transfer destination frame (s10.2) */
 	u16 imageH;     /* Texture height (u10.2) */
-	u16 imageY;     /* y-coordinate of upper-left position of 
-		              texture (u10.5) */ 
+	u16 imageY;     /* y-coordinate of upper-left position of
+					  texture (u10.5) */
 	u16 frameH;     /* Transfer destination frame height (u10.2) */
-	s16 frameY;     /* y-coordinate of upper-left position of 
-                  transfer destination frame (s10.2) */
+	s16 frameY;     /* y-coordinate of upper-left position of
+				  transfer destination frame (s10.2) */
 
 	u32 imagePtr;  /* Address of texture source in DRAM*/
 	u8  imageSiz;   /* Texel size
-                     G_IM_SIZ_4b (4 bits/texel)
-                     G_IM_SIZ_8b (8 bits/texel)
-                     G_IM_SIZ_16b (16 bits/texel)
-                     G_IM_SIZ_32b (32 bits/texel) */
+					 G_IM_SIZ_4b (4 bits/texel)
+					 G_IM_SIZ_8b (8 bits/texel)
+					 G_IM_SIZ_16b (16 bits/texel)
+					 G_IM_SIZ_32b (32 bits/texel) */
 	u8  imageFmt;   /*Texel format
-                     G_IM_FMT_RGBA (RGBA format)
-                     G_IM_FMT_YUV (YUV format)
-                     G_IM_FMT_CI (CI format)
-                     G_IM_FMT_IA (IA format)
-                     G_IM_FMT_I (I format)  */
+					 G_IM_FMT_RGBA (RGBA format)
+					 G_IM_FMT_YUV (YUV format)
+					 G_IM_FMT_CI (CI format)
+					 G_IM_FMT_IA (IA format)
+					 G_IM_FMT_I (I format)  */
 	u16 imageLoad;  /* Method for loading the BG image texture
-                     G_BGLT_LOADBLOCK (use LoadBlock)
-                     G_BGLT_LOADTILE (use LoadTile) */
+					 G_BGLT_LOADBLOCK (use LoadBlock)
+					 G_BGLT_LOADTILE (use LoadTile) */
 	u16 imageFlip;  /* Image inversion on/off (horizontal direction only)
-                     0 (normal display (no inversion))
-                     G_BG_FLAG_FLIPS (horizontal inversion of 
-                     texture image) */
-	u16 imagePal;   /* Position of palette for 4-bit color 
-                     index texture (4-bit precision, 0~15) */
+					 0 (normal display (no inversion))
+					 G_BG_FLAG_FLIPS (horizontal inversion of
+					 texture image) */
+	u16 imagePal;   /* Position of palette for 4-bit color
+					 index texture (4-bit precision, 0~15) */
 
 /* The following is set in the initialization routine guS2DInitBg */
-	u16 tmemH;      /* TMEM height for a single load (quadruple 
-                     value, s13.2) */
+	u16 tmemH;      /* TMEM height for a single load (quadruple
+					 value, s13.2) */
 	u16 tmemW;      /* TMEM width for one frame line (word size) */
 	u16 tmemLoadTH; /* TH value or Stride value */
 	u16 tmemLoadSH; /* SH value */
@@ -113,22 +113,22 @@ struct uObjSprite
 	u16 imageAdrs;   /* Texture starting position in TMEM (In units of 64-bit words) */
 	u16 imageStride; /* Texel wrapping width (In units of 64-bit words) */
 	u8  imageFlags;  /* Display flag
-                (*) More than one of the following flags can be specified as the bit sum of the flags: 
-                      0 (Normal display (no inversion))
-                      G_OBJ_FLAG_FLIPS (s-direction (x) inversion)
-                      G_OBJ_FLAG_FLIPT (t-direction (y) inversion)  */
+				(*) More than one of the following flags can be specified as the bit sum of the flags:
+					  0 (Normal display (no inversion))
+					  G_OBJ_FLAG_FLIPS (s-direction (x) inversion)
+					  G_OBJ_FLAG_FLIPT (t-direction (y) inversion)  */
 	u8  imagePal;    /* Position of palette for 4-bit color index texture  (4-bit precision, 0~7)  */
 	u8  imageSiz;    /* Texel size
-                      G_IM_SIZ_4b (4 bits/texel)
-                      G_IM_SIZ_8b (8 bits/texel)
-                      G_IM_SIZ_16b (16 bits/texel)
-                      G_IM_SIZ_32b (32 bits/texel) */
+					  G_IM_SIZ_4b (4 bits/texel)
+					  G_IM_SIZ_8b (8 bits/texel)
+					  G_IM_SIZ_16b (16 bits/texel)
+					  G_IM_SIZ_32b (32 bits/texel) */
 	u8  imageFmt;    /* Texel format
-                      G_IM_FMT_RGBA (RGBA format)
-                      G_IM_FMT_YUV (YUV format)
-                      G_IM_FMT_CI (CI format)
-                      G_IM_FMT_IA (IA format)
-                      G_IM_FMT_I  (I format) */
+					  G_IM_FMT_RGBA (RGBA format)
+					  G_IM_FMT_YUV (YUV format)
+					  G_IM_FMT_CI (CI format)
+					  G_IM_FMT_IA (IA format)
+					  G_IM_FMT_I  (I format) */
 };    /* 24 bytes */
 
 struct uObjTxtrBlock
@@ -167,14 +167,14 @@ struct uObjTxtrTLUT
 	u32   mask;   /* Status mask */
 };      /* 24 bytes */
 
-typedef union 
+typedef union
 {
 	uObjTxtrBlock      block;
 	uObjTxtrTile       tile;
 	uObjTxtrTLUT       tlut;
 } uObjTxtr;
 
-struct uObjTxSprite 
+struct uObjTxSprite
 {
 	uObjTxtr      txtr;
 	uObjSprite    sprite;
@@ -218,4 +218,3 @@ void S2DEX_Init();
 #define	S2DEX_RDPHALF_0			0xE4
 
 #endif
-

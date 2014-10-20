@@ -17,4 +17,3 @@ void S2DEX2_Init();
 #define	S2DEX2_BG_COPY			0x0A
 #define	S2DEX2_OBJ_RENDERMODE	0x0B
 #endif
-
