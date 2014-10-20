@@ -279,4 +279,13 @@ void RSP_Init()
 	gSP.textureTile[1] = &gDP.tiles[1];
 	gSP.lookat[0].x = gSP.lookat[1].x = 1.0f;
 	gSP.lookatEnable = false;
+
+	gSP.objMatrix.A = 1.0f;
+	gSP.objMatrix.B = 0.0f;
+	gSP.objMatrix.C = 0.0f;
+	gSP.objMatrix.D = 1.0f;
+	gSP.objMatrix.X = 0.0f;
+	gSP.objMatrix.Y = 0.0f;
+	gSP.objMatrix.baseScaleX = 1.0f;
+	gSP.objMatrix.baseScaleY = 1.0f;
 }
