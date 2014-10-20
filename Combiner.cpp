@@ -161,8 +161,11 @@ ShaderCombiner * CombinerInfo::_compile(u64 mux) const
 		alpha.numStages = 2;
 	} else {
 		numCycles = 1;
-		color.numStages = 1;
-		alpha.numStages = 1;
+		if (combine.saRGB0 != combine.saRGB1 || combine.sbRGB0 != combine.sbRGB1 || combine.mRGB0 != combine.mRGB1 || combine.aRGB0 != combine.aRGB1 ||
+			combine.saA0 != combine.saA1 || combine.sbA0 != combine.sbA1 || combine.mA0 != combine.mA1 || combine.aA0 != combine.aA1)
+			numCycles = 2;
+		color.numStages = numCycles;
+		alpha.numStages = numCycles;
 	}
 
 	CombineCycle cc[2];

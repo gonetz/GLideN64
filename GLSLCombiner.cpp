@@ -377,13 +377,15 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 	strcat(strCombiner, "  combined_color = vec4(color1, alpha1); \n");
 	if (_alpha.numStages == 2) {
 		strcat(strCombiner, "  alpha2 = ");
-		CorrectSecondStageParams(_alpha.stage[1]);
+		if (gDP.otherMode.cycleType == G_CYC_2CYCLE)
+			CorrectSecondStageParams(_alpha.stage[1]);
 		m_nInputs |= CompileCombiner(_alpha.stage[1], AlphaInput, strCombiner);
 	} else
 		strcat(strCombiner, "  alpha2 = alpha1; \n");
 	if (_color.numStages == 2) {
 		strcat(strCombiner, "  color2 = ");
-		CorrectSecondStageParams(_color.stage[1]);
+		if (gDP.otherMode.cycleType == G_CYC_2CYCLE)
+			CorrectSecondStageParams(_color.stage[1]);
 		m_nInputs |= CompileCombiner(_color.stage[1], ColorInput, strCombiner);
 	} else
 		strcat(strCombiner, "  color2 = color1; \n");
