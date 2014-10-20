@@ -202,6 +202,10 @@ void S2DEX_Obj_LdTx_Rect( u32 w0, u32 w1 );
 void S2DEX_Obj_LdTx_Rect_R( u32 w0, u32 w1 );
 void S2DEX_Init();
 
+#define S2DEX_MV_MATRIX			0
+#define S2DEX_MV_SUBMUTRIX		2
+#define S2DEX_MV_VIEWPORT		8
+
 #define	S2DEX_BG_1CYC			0x01
 #define	S2DEX_BG_COPY			0x02
 #define	S2DEX_OBJ_RECTANGLE		0x03
