@@ -7,6 +7,7 @@
 #include "gDP.h"
 #include "RSP.h"
 #include "Types.h"
+#include "Log.h"
 
 void S2DEX_BG_1Cyc( u32 w0, u32 w1 )
 {
@@ -45,14 +46,17 @@ void S2DEX_Obj_MoveMem( u32 w0, u32 w1 )
 
 void S2DEX_Select_DL( u32 w0, u32 w1 )
 {
+	LOG(LOG_ERROR, "S2DEX_Select_DL unimplemented\n");
 }
 
 void S2DEX_Obj_RenderMode( u32 w0, u32 w1 )
 {
+	LOG(LOG_ERROR, "S2DEX_Obj_RenderMode unimplemented\n");
 }
 
 void S2DEX_Obj_Rectangle_R( u32 w0, u32 w1 )
 {
+	gSPObjRectangleR(w1);
 }
 
 void S2DEX_Obj_LoadTxtr( u32 w0, u32 w1 )
@@ -67,6 +71,7 @@ void S2DEX_Obj_LdTx_Sprite( u32 w0, u32 w1 )
 
 void S2DEX_Obj_LdTx_Rect( u32 w0, u32 w1 )
 {
+	gSPObjLoadTxRect(w1);
 }
 
 void S2DEX_Obj_LdTx_Rect_R( u32 w0, u32 w1 )
