@@ -816,8 +816,8 @@ void gDPFillRectangle( s32 ulx, s32 uly, s32 lrx, s32 lry )
 
 	gDP.colorImage.changed = TRUE;
 	if (gDP.otherMode.cycleType == G_CYC_FILL) {
-		if (lry > VI.height)
-			gDP.colorImage.height = (u32)max((s32)gDP.colorImage.height, lry - 1);
+		if (lry > (u32)gDP.scissor.lry)
+			gDP.colorImage.height = (u32)max(gDP.colorImage.height, (u32)gDP.scissor.lry);
 		else
 			gDP.colorImage.height = (u32)max((s32)gDP.colorImage.height, lry);
 	} else
