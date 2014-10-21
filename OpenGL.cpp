@@ -790,7 +790,7 @@ void OGLRender::drawRect(int _ulx, int _uly, int _lrx, int _lry, float *_pColor)
 }
 
 static
-bool texturedRectShadowMap(float, float, float, float, float)
+bool texturedRectShadowMap(const OGLRender::TexturedRectParams &)
 {
 #ifdef GL_IMAGE_TEXTURES_SUPPORT
 //	if ((gDP.otherMode.l >> 16) == 0x3c18 && gDP.combine.muxs0 == 0x00ffffff && gDP.combine.muxs1 == 0xfffff238) //depth image based fog
@@ -801,7 +801,7 @@ bool texturedRectShadowMap(float, float, float, float, float)
 }
 
 static
-bool texturedRectDepthBufferCopy(float _ulx, float _uly, float _lrx, float _lry, float _uls)
+bool texturedRectDepthBufferCopy(const OGLRender::TexturedRectParams & _params)
 {
 	// Copy one line from depth buffer into auxiliary color buffer with height = 1.
 	// Data from depth buffer loaded into TMEM and then rendered to RDRAM by texrect.
@@ -817,9 +817,9 @@ bool texturedRectDepthBufferCopy(float _ulx, float _uly, float _lrx, float _lry,
 		if (FrameBuffer_CopyDepthBuffer(gDP.colorImage.address))
 			RDP_RepeatLastLoadBlock();
 
-		const u32 width = (u32)(_lrx - _ulx);
-		const u32 ulx = (u32)_ulx;
-		u16 * pSrc = ((u16*)TMEM) + (u32)floorf(_uls + 0.5f);
+		const u32 width = (u32)(_params.lrx - _params.ulx);
+		const u32 ulx = (u32)_params.ulx;
+		u16 * pSrc = ((u16*)TMEM) + (u32)floorf(_params.uls + 0.5f);
 		u16 *pDst = (u16*)(RDRAM + gDP.colorImage.address);
 		for (u32 x = 0; x < width; ++x) {
 			u16 c = pSrc[x];
@@ -834,9 +834,9 @@ bool texturedRectDepthBufferCopy(float _ulx, float _uly, float _lrx, float _lry,
 
 // Special processing of textured rect.
 // Return true if actuial rendering is not necessary
-bool(*texturedRectSpecial)(float _ulx, float _uly, float _lrx, float _lry, float _uls) = NULL;
+bool(*texturedRectSpecial)(const OGLRender::TexturedRectParams & _params) = NULL;
 
-void OGLRender::drawTexturedRect(float _ulx, float _uly, float _lrx, float _lry, float _uls, float _ult, float _lrs, float _lrt, bool _flip)
+void OGLRender::drawTexturedRect(const TexturedRectParams & _params)
 {
 	if (gSP.changed || gDP.changed)
 		_updateStates();
@@ -860,7 +860,7 @@ void OGLRender::drawTexturedRect(float _ulx, float _uly, float _lrx, float _lry,
 		currentCombiner()->updateRenderState();
 	}
 
-	if (texturedRectSpecial != NULL && texturedRectSpecial(_ulx, _uly, _lrx, _lry, _uls))
+	if (texturedRectSpecial != NULL && texturedRectSpecial(_params))
 		return;
 
 	FrameBufferList & fbList = frameBufferList();
@@ -874,21 +874,21 @@ void OGLRender::drawTexturedRect(float _ulx, float _uly, float _lrx, float _lry,
 
 	const float scaleX = fbList.isFboMode() ? 1.0f/pBuffer->m_width :  VI.rwidth;
 	const float scaleY = fbList.isFboMode() ? 1.0f/pBuffer->m_height :  VI.rheight;
-	m_rect[0].x = (float) _ulx * (2.0f * scaleX) - 1.0f;
-	m_rect[0].y = (float) _uly * (-2.0f * scaleY) + 1.0f;
-	m_rect[1].x = (float) (_lrx) * (2.0f * scaleX) - 1.0f;
+	m_rect[0].x = (float)_params.ulx * (2.0f * scaleX) - 1.0f;
+	m_rect[0].y = (float)_params.uly * (-2.0f * scaleY) + 1.0f;
+	m_rect[1].x = (float)(_params.lrx) * (2.0f * scaleX) - 1.0f;
 	m_rect[1].y = m_rect[0].y;
 	m_rect[2].x = m_rect[0].x;
-	m_rect[2].y = (float) (_lry) * (-2.0f * scaleY) + 1.0f;
+	m_rect[2].y = (float)(_params.lry) * (-2.0f * scaleY) + 1.0f;
 	m_rect[3].x = m_rect[1].x;
 	m_rect[3].y = m_rect[2].y;
 
 	TextureCache & cache = textureCache();
 	if (currentCombiner()->usesT0() && cache.current[0] && gSP.textureTile[0]) {
-		m_rect[0].s0 = _uls * cache.current[0]->shiftScaleS - gSP.textureTile[0]->fuls;
-		m_rect[0].t0 = _ult * cache.current[0]->shiftScaleT - gSP.textureTile[0]->fult;
-		m_rect[3].s0 = (_lrs + 1.0f) * cache.current[0]->shiftScaleS - gSP.textureTile[0]->fuls;
-		m_rect[3].t0 = (_lrt + 1.0f) * cache.current[0]->shiftScaleT - gSP.textureTile[0]->fult;
+		m_rect[0].s0 = _params.uls * cache.current[0]->shiftScaleS - gSP.textureTile[0]->fuls;
+		m_rect[0].t0 = _params.ult * cache.current[0]->shiftScaleT - gSP.textureTile[0]->fult;
+		m_rect[3].s0 = (_params.lrs + 1.0f) * cache.current[0]->shiftScaleS - gSP.textureTile[0]->fuls;
+		m_rect[3].t0 = (_params.lrt + 1.0f) * cache.current[0]->shiftScaleT - gSP.textureTile[0]->fult;
 
 		if ((cache.current[0]->maskS) && !(cache.current[0]->mirrorS) && (fmod(m_rect[0].s0, cache.current[0]->width) == 0.0f)) {
 			m_rect[3].s0 -= m_rect[0].s0;
@@ -922,10 +922,10 @@ void OGLRender::drawTexturedRect(float _ulx, float _uly, float _lrx, float _lry,
 	}
 
 	if (currentCombiner()->usesT1() && cache.current[1] && gSP.textureTile[1]) {
-		m_rect[0].s1 = _uls * cache.current[1]->shiftScaleS - gSP.textureTile[1]->fuls;
-		m_rect[0].t1 = _ult * cache.current[1]->shiftScaleT - gSP.textureTile[1]->fult;
-		m_rect[3].s1 = (_lrs + 1.0f) * cache.current[1]->shiftScaleS - gSP.textureTile[1]->fuls;
-		m_rect[3].t1 = (_lrt + 1.0f) * cache.current[1]->shiftScaleT - gSP.textureTile[1]->fult;
+		m_rect[0].s1 = _params.uls * cache.current[1]->shiftScaleS - gSP.textureTile[1]->fuls;
+		m_rect[0].t1 = _params.ult * cache.current[1]->shiftScaleT - gSP.textureTile[1]->fult;
+		m_rect[3].s1 = (_params.lrs + 1.0f) * cache.current[1]->shiftScaleS - gSP.textureTile[1]->fuls;
+		m_rect[3].t1 = (_params.lrt + 1.0f) * cache.current[1]->shiftScaleT - gSP.textureTile[1]->fult;
 
 		if ((cache.current[1]->maskS) && (fmod(m_rect[0].s1, cache.current[1]->width) == 0.0f) && !(cache.current[1]->mirrorS)) {
 			m_rect[3].s1 -= m_rect[0].s1;
@@ -964,7 +964,7 @@ void OGLRender::drawTexturedRect(float _ulx, float _uly, float _lrx, float _lry,
 		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
 	}
 
-	if (_flip) {
+	if (_params.flip) {
 		m_rect[1].s0 = m_rect[0].s0;
 		m_rect[1].t0 = m_rect[3].t0;
 		m_rect[1].s1 = m_rect[0].s1;
