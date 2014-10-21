@@ -2124,6 +2124,7 @@ void gSPSetSpriteTile(const uObjSprite *_pObjSprite)
 	gDPSetTile( _pObjSprite->imageFmt, _pObjSprite->imageSiz, _pObjSprite->imageStride, _pObjSprite->imageAdrs, 0, _pObjSprite->imagePal, G_TX_CLAMP, G_TX_CLAMP, 0, 0, 0, 0 );
 	gDPSetTileSize( 0, 0, 0, (w - 1) << 2, (h - 1) << 2 );
 	gSPTexture( 1.0f, 1.0f, 0, 0, TRUE );
+	gDP.otherMode.texturePersp = 1;
 }
 
 void gSPObjRectangle(u32 sp)
@@ -2158,7 +2159,7 @@ void gSPObjSprite(u32 sp)
 	const f32 x1 = data.X1;
 	const f32 y1 = data.Y1;
 
-	s32 v0=0,v1=1,v2=2,v3=3;
+	const s32 v0 = 0, v1 = 1, v2 = 2, v3 = 3;
 
 	OGLRender & render = video().getRender();
 #ifdef __TRIBUFFER_OPT
@@ -2167,64 +2168,46 @@ void gSPObjSprite(u32 sp)
 	v2 = render.getIndexmap(v2);
 	v3 = render.getIndexmap(v3);
 #endif
+	float uls = 0, lrs =  data.imageW - 1, ult = 0, lrt = data.imageH - 1;
+	if (objSprite->imageFlags & 0x01) { // flipS
+		uls = lrs;
+		lrs = 0;
+	}
+	if (objSprite->imageFlags & 0x10) { // flipT
+		ult = lrt;
+		lrt = 0;
+	}
 
 	SPVertex & vtx0 = render.getVertex(v0);
 	vtx0.x = gSP.objMatrix.A * x0 + gSP.objMatrix.B * y0 + gSP.objMatrix.X;
 	vtx0.y = gSP.objMatrix.C * x0 + gSP.objMatrix.D * y0 + gSP.objMatrix.Y;
 	vtx0.z = 0.0f;
 	vtx0.w = 1.0f;
-	vtx0.s = 0.0f;
-	vtx0.t = 0.0f;
+	vtx0.s = uls;
+	vtx0.t = ult;
 	SPVertex & vtx1 = render.getVertex(v1);
 	vtx1.x = gSP.objMatrix.A * x1 + gSP.objMatrix.B * y0 + gSP.objMatrix.X;
 	vtx1.y = gSP.objMatrix.C * x1 + gSP.objMatrix.D * y0 + gSP.objMatrix.Y;
 	vtx1.z = 0.0f;
 	vtx1.w = 1.0f;
-	vtx1.s = data.imageW - 1;
-	vtx1.t = 0.0f;
+	vtx1.s = lrs;
+	vtx1.t = ult;
 	SPVertex & vtx2 = render.getVertex(v2);
-	vtx2.x = gSP.objMatrix.A * x1 + gSP.objMatrix.B * y1 + gSP.objMatrix.X;
-	vtx2.y = gSP.objMatrix.C * x1 + gSP.objMatrix.D * y1 + gSP.objMatrix.Y;
+	vtx2.x = gSP.objMatrix.A * x0 + gSP.objMatrix.B * y1 + gSP.objMatrix.X;
+	vtx2.y = gSP.objMatrix.C * x0 + gSP.objMatrix.D * y1 + gSP.objMatrix.Y;
 	vtx2.z = 0.0f;
 	vtx2.w = 1.0f;
-	vtx2.s = data.imageW - 1;
-	vtx2.t = data.imageH - 1;
+	vtx2.s = uls;
+	vtx2.t = lrt;
 	SPVertex & vtx3 = render.getVertex(v3);
-	vtx3.x = gSP.objMatrix.A * x0 + gSP.objMatrix.B * y1 + gSP.objMatrix.X;
-	vtx3.y = gSP.objMatrix.C * x0 + gSP.objMatrix.D * y1 + gSP.objMatrix.Y;
+	vtx3.x = gSP.objMatrix.A * x1 + gSP.objMatrix.B * y1 + gSP.objMatrix.X;
+	vtx3.y = gSP.objMatrix.C * x1 + gSP.objMatrix.D * y1 + gSP.objMatrix.Y;
 	vtx3.z = 0.0f;
 	vtx3.w = 1.0f;
-	vtx3.s = 0;
-	vtx3.t = data.imageH - 1;
+	vtx3.s = lrs;
+	vtx3.t = lrt;
 
-	const FrameBufferList & fbList = frameBufferList();
-	FrameBuffer * pBuffer = fbList.getCurrent();
-	const float scaleX = fbList.isFboMode() ? 1.0f/pBuffer->m_width :  VI.rwidth;
-	const float scaleY = fbList.isFboMode() ? 1.0f/pBuffer->m_height :  VI.rheight;
-	vtx0.x = 2.0f * scaleX * vtx0.x - 1.0f;
-	vtx0.y = -2.0f * scaleY * vtx0.y + 1.0f;
-	vtx0.z = -1.0f;
-	vtx0.w = 1.0f;
-	vtx0.st_scaled = 1;
-	vtx1.x = 2.0f * scaleX * vtx1.x - 1.0f;
-	vtx1.y = -2.0f * scaleY * vtx1.y + 1.0f;
-	vtx1.z = -1.0f;
-	vtx1.w = 1.0f;
-	vtx1.st_scaled = 1;
-	vtx2.x = 2.0f * scaleX * vtx2.x - 1.0f;
-	vtx2.y = -2.0f * scaleY * vtx2.y + 1.0f;
-	vtx2.z = -1.0f;
-	vtx2.w = 1.0f;
-	vtx2.st_scaled = 1;
-	vtx3.x = 2.0f * scaleX * vtx3.x - 1.0f;
-	vtx3.y = -2.0f * scaleY * vtx3.y + 1.0f;
-	vtx3.z = -1.0f;
-	vtx3.w = 1.0f;
-	vtx2.st_scaled = 1;
-
-	render.addTriangle(v0, v1, v2);
-	render.addTriangle(v0, v2, v3);
-	render.drawTriangles();
+	render.drawLLETriangle(4);
 
 	gDP.colorImage.changed = TRUE;
 	gDP.colorImage.height = (u32)(max( gDP.colorImage.height, (u32)gDP.scissor.lry ));
