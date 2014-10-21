@@ -269,6 +269,8 @@ void gDPSetColorImage( u32 format, u32 size, u32 width, u32 address )
 			height = min(height, VI.height);
 		} else if (width == gDP.scissor.lrx)
 			height = gDP.scissor.lry;
+		else if (width <= 64)
+			height = width;
 		else
 			height = gSP.viewport.height;
 
