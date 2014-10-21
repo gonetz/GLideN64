@@ -1412,36 +1412,6 @@ void gSPSprite2DBase( u32 base )
 {
 }
 
-void gSPCopyVertex( SPVertex *dest, SPVertex *src )
-{
-	dest->x = src->x;
-	dest->y = src->y;
-	dest->z = src->z;
-	dest->w = src->w;
-	dest->r = src->r;
-	dest->g = src->g;
-	dest->b = src->b;
-	dest->a = src->a;
-	dest->s = src->s;
-	dest->t = src->t;
-	dest->HWLight = src->HWLight;
-}
-
-void gSPInterpolateVertex( SPVertex *dest, f32 percent, SPVertex *first, SPVertex *second )
-{
-	dest->x = first->x + percent * (second->x - first->x);
-	dest->y = first->y + percent * (second->y - first->y);
-	dest->z = first->z + percent * (second->z - first->z);
-	dest->w = first->w + percent * (second->w - first->w);
-	dest->r = first->r + percent * (second->r - first->r);
-	dest->g = first->g + percent * (second->g - first->g);
-	dest->b = first->b + percent * (second->b - first->b);
-	dest->a = first->a + percent * (second->a - first->a);
-	dest->s = first->s + percent * (second->s - first->s);
-	dest->t = first->t + percent * (second->t - first->t);
-	dest->HWLight = first->HWLight;
-}
-
 void gSPDMATriangles( u32 tris, u32 n ){
 	u32 address = RSP_SegmentToPhysical( tris );
 
@@ -2235,18 +2205,22 @@ void gSPObjSprite(u32 sp)
 	vtx0.y = -2.0f * scaleY * vtx0.y + 1.0f;
 	vtx0.z = -1.0f;
 	vtx0.w = 1.0f;
+	vtx0.st_scaled = 1;
 	vtx1.x = 2.0f * scaleX * vtx1.x - 1.0f;
 	vtx1.y = -2.0f * scaleY * vtx1.y + 1.0f;
 	vtx1.z = -1.0f;
 	vtx1.w = 1.0f;
+	vtx1.st_scaled = 1;
 	vtx2.x = 2.0f * scaleX * vtx2.x - 1.0f;
 	vtx2.y = -2.0f * scaleY * vtx2.y + 1.0f;
 	vtx2.z = -1.0f;
 	vtx2.w = 1.0f;
+	vtx2.st_scaled = 1;
 	vtx3.x = 2.0f * scaleX * vtx3.x - 1.0f;
 	vtx3.y = -2.0f * scaleY * vtx3.y + 1.0f;
 	vtx3.z = -1.0f;
 	vtx3.w = 1.0f;
+	vtx2.st_scaled = 1;
 
 	render.addTriangle(v0, v1, v2);
 	render.addTriangle(v0, v2, v3);
