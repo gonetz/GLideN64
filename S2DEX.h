@@ -188,7 +188,14 @@ struct uObjMtx
   u16 BaseScaleX;   /* u5.10 */
 };
 
-void S2DEX_BG_1Cyc( u32 w0, u32 w1 );
+struct uObjSubMtx
+{
+	s16 Y, X;		/* s10.2  */
+	u16 BaseScaleY;	/* u5.10  */
+	u16 BaseScaleX;	/* u5.10  */
+};
+
+void S2DEX_BG_1Cyc(u32 w0, u32 w1);
 void S2DEX_BG_Copy( u32 w0, u32 w1 );
 void S2DEX_Obj_Rectangle( u32 w0, u32 w1 );
 void S2DEX_Obj_Sprite( u32 w0, u32 w1 );

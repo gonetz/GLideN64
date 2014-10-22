@@ -2252,6 +2252,12 @@ void gSPObjMatrix( u32 mtx )
 
 void gSPObjSubMatrix( u32 mtx )
 {
+	u32 address = RSP_SegmentToPhysical(mtx);
+	uObjSubMtx *objMtx = (uObjSubMtx*)&RDRAM[address];
+	gSP.objMatrix.X = _FIXED2FLOAT(objMtx->X, 2);
+	gSP.objMatrix.Y = _FIXED2FLOAT(objMtx->Y, 2);
+	gSP.objMatrix.baseScaleX = _FIXED2FLOAT(objMtx->BaseScaleX, 10);
+	gSP.objMatrix.baseScaleY = _FIXED2FLOAT(objMtx->BaseScaleY, 10);
 }
 
 #ifdef __VEC4_OPT
