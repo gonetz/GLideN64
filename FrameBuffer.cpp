@@ -150,12 +150,33 @@ void FrameBufferList::destroy() {
 	m_drawBuffer = GL_BACK;
 }
 
-FrameBuffer * FrameBufferList::findBuffer(u32 _startAddress, u32 _endAddress)
+FrameBuffer * FrameBufferList::findBuffer(u32 _startAddress)
 {
 	for (FrameBuffers::iterator iter = m_list.begin(); iter != m_list.end(); ++iter)
-		if ((iter->m_startAddress <= _startAddress && iter->m_endAddress >= _startAddress) ||
-			(_startAddress < iter->m_startAddress && _endAddress > iter->m_startAddress))
-				return &(*iter);
+	if (iter->m_startAddress <= _startAddress && iter->m_endAddress >= _startAddress) // [  {  ]
+		return &(*iter);
+	return NULL;
+}
+
+FrameBuffer * FrameBufferList::_findBuffer(u32 _startAddress, u32 _endAddress, u32 _width)
+{
+	if (m_list.empty())
+		return NULL;
+
+	FrameBuffers::iterator iter = m_list.end();
+	do {
+		--iter;
+		if ((iter->m_startAddress <= _startAddress && iter->m_endAddress >= _startAddress) || // [  {  ]
+			(_startAddress <= iter->m_startAddress && _endAddress >= iter->m_startAddress)) { // {  [  }
+
+			if (_startAddress != iter->m_startAddress || _width != iter->m_width) {
+				m_list.erase(iter);
+				return _findBuffer(_startAddress, _endAddress, _width);
+			}
+
+			return &(*iter);
+		}
+	} while (iter != m_list.begin());
 	return NULL;
 }
 
@@ -180,8 +201,8 @@ void FrameBufferList::saveBuffer(u32 _address, u16 _format, u16 _size, u16 _widt
 	}
 
 	const u32 endAddress = _address + ((_width * _height << _size >> 1) - 1);
-	if (m_pCurrent == NULL || m_pCurrent->m_startAddress != _address)
-		m_pCurrent = findBuffer(_address, endAddress);
+	if (m_pCurrent == NULL || m_pCurrent->m_startAddress != _address || m_pCurrent->m_width != _width)
+		m_pCurrent = _findBuffer(_address, endAddress, _width);
 	if (m_pCurrent != NULL) {
 		if ((m_pCurrent->m_startAddress != _address) ||
 			(m_pCurrent->m_width != _width) ||
@@ -334,7 +355,7 @@ void FrameBufferList::renderBuffer(u32 _address)
 	if (VI.width == 0) // H width is zero. Don't draw
 		return;
 
-	FrameBuffer *pBuffer = findBuffer(_address, 0);
+	FrameBuffer *pBuffer = findBuffer(_address);
 	if (pBuffer == NULL)
 		return;
 

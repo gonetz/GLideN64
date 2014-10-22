@@ -34,7 +34,7 @@ public:
 	void saveBuffer(u32 _address, u16 _format, u16 _size, u16 _width, u16 _height, bool _cfb);
 	void removeBuffer(u32 _address);
 	void attachDepthBuffer();
-	FrameBuffer * findBuffer(u32 _startAddress, u32 _endAddress = 0);
+	FrameBuffer * findBuffer(u32 _startAddress);
 	FrameBuffer * findTmpBuffer(u32 _address);
 	FrameBuffer * getCurrent() const {return m_pCurrent;}
 	void renderBuffer(u32 _address);
@@ -49,6 +49,8 @@ public:
 private:
 	FrameBufferList() : m_pCurrent(NULL), m_drawBuffer(GL_BACK) {}
 	FrameBufferList(const FrameBufferList &);
+
+	FrameBuffer * _findBuffer(u32 _startAddress, u32 _endAddress, u32 _width);
 
 	typedef std::list<FrameBuffer> FrameBuffers;
 	FrameBuffers m_list;

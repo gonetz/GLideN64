@@ -686,6 +686,7 @@ void gDPLoadBlock( u32 tile, u32 uls, u32 ult, u32 lrs, u32 dxt )
 	} else
 		UnswapCopy( src, dest, bytes );
 
+	//gDP.textureImage.address += bytes;
 #ifdef DEBUG
 	DebugMsg( DEBUG_HIGH | DEBUG_HANDLED | DEBUG_TEXTURE, "gDPLoadBlock( %i, %i, %i, %i, %i );\n",
 		tile, uls, ult, lrs, dxt );
