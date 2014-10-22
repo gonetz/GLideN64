@@ -832,6 +832,33 @@ bool texturedRectDepthBufferCopy(const OGLRender::TexturedRectParams & _params)
 	return false;
 }
 
+static
+bool texturedRectBGCopy(const OGLRender::TexturedRectParams & _params)
+{
+	if (GBI.getMicrocodeType() != S2DEX)
+		return false;
+
+	float flry = _params.lry;
+	if (flry > gDP.scissor.lry)
+		flry = gDP.scissor.lry;
+
+	const u32 width = (u32)(_params.lrx - _params.ulx);
+	const u32 tex_width = gSP.textureTile[0]->line << 3;
+	const u32 uly = (u32)_params.uly;
+	const u32 lry = flry;
+
+	u8 * texaddr = RDRAM + gSP.textureTile[0]->imageAddress + tex_width*(u32)_params.ult + (u32)_params.uls;
+	u8 * fbaddr = RDRAM + gDP.colorImage.address + (u32)_params.ulx;
+	LOG(LOG_VERBOSE, "memrect (%d, %d, %d, %d), ci_width: %d texaddr: 0x%08lx fbaddr: 0x%08lx\n", (u32)_params.ulx, uly, (u32)_params.lrx, lry, gDP.colorImage.width, gSP.textureTile[0]->imageAddress + tex_width*(u32)_params.ult + (u32)_params.uls, gDP.colorImage.address + (u32)_params.ulx);
+
+	for (u32 y = uly; y < lry; ++y) {
+		u8 *src = texaddr + (y - uly) * tex_width;
+		u8 *dst = fbaddr + y * gDP.colorImage.width;
+		memcpy(dst, src, width);
+	}
+	return true;
+}
+
 // Special processing of textured rect.
 // Return true if actuial rendering is not necessary
 bool(*texturedRectSpecial)(const OGLRender::TexturedRectParams & _params) = NULL;
@@ -860,7 +887,7 @@ void OGLRender::drawTexturedRect(const TexturedRectParams & _params)
 		currentCombiner()->updateRenderState();
 	}
 
-	if (texturedRectSpecial != NULL && texturedRectSpecial(_params))
+	if (RSP.cmd == 0xE4 && texturedRectSpecial != NULL && texturedRectSpecial(_params))
 		return;
 
 	FrameBufferList & fbList = frameBufferList();
@@ -1095,6 +1122,8 @@ void OGLRender::_setSpecialTexrect() const
 		texturedRectSpecial = texturedRectShadowMap;
 	else if (strstr(name, (const char *)"CONKER BFD") || strstr(name, (const char *)"Perfect Dark") || strstr(name, (const char *)"PERFECT DARK"))
 		texturedRectSpecial = texturedRectDepthBufferCopy; // See comments to that function!
+	else if (strstr(name, (const char *)"YOSHI STORY"))
+		texturedRectSpecial = texturedRectBGCopy;
 	else
 		texturedRectSpecial = NULL;
 }
