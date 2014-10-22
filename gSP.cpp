@@ -1966,76 +1966,78 @@ void gSPBgRect1Cyc( u32 bg )
 	// Since both situations are hard to distinguish, do the both depth buffer copy and bg rendering.
 #endif // GL_IMAGE_TEXTURES_SUPPORT
 
-	f32 imageX = gSP.bgImage.imageX;
-	f32 imageY = gSP.bgImage.imageY;
-	f32 imageW = _FIXED2FLOAT( objScaleBg->imageW, 2);
-	f32 imageH = _FIXED2FLOAT( objScaleBg->imageH, 2);
+	const f32 frameX = _FIXED2FLOAT(objScaleBg->frameX, 2);
+	const f32 frameY = _FIXED2FLOAT(objScaleBg->frameY, 2);
+	const f32 frameW = _FIXED2FLOAT(objScaleBg->frameW, 2);
+	const f32 frameH = _FIXED2FLOAT(objScaleBg->frameH, 2);
+	const f32 scaleW = gSP.bgImage.scaleW;
+	const f32 scaleH = gSP.bgImage.scaleH;
+	const f32 uls = gSP.bgImage.imageX;
+	const f32 ult = gSP.bgImage.imageY;
+	const f32 lrs = uls + frameW * scaleW;
+	const f32 lrt = ult + frameH * scaleH;
+	//const f32 lrs = uls + gSP.bgImage.width * scaleW;
+	//const f32 lrt = ult + gSP.bgImage.height * scaleH;
 
-	f32 frameX = _FIXED2FLOAT( objScaleBg->frameX, 2 );
-	f32 frameY = _FIXED2FLOAT( objScaleBg->frameY, 2 );
-	f32 frameW = _FIXED2FLOAT( objScaleBg->frameW, 2 );
-	f32 frameH = _FIXED2FLOAT( objScaleBg->frameH, 2 );
-	f32 scaleW = gSP.bgImage.scaleW;
-	f32 scaleH = gSP.bgImage.scaleH;
-
-	f32 frameX0 = frameX;
-	f32 frameY0 = frameY;
-	f32 frameS0 = imageX;
-	f32 frameT0 = imageY;
-
-	f32 frameX1 = frameX + min( (imageW - imageX) / scaleW, frameW );
-	f32 frameY1 = frameY + min( (imageH - imageY) / scaleH, frameH );
-//	f32 frameS1 = imageX + min( (imageW - imageX) * scaleW, frameW * scaleW );
-//	f32 frameT1 = imageY + min( (imageH - imageY) * scaleH, frameH * scaleH );
+	f32 ulx, uly, lrx, lry;
+	if ((objScaleBg->imageFlip & 0x01) != 0) {
+		ulx = frameX + frameW;
+		lrx = frameX;
+	} else {
+		ulx = frameX;
+		lrx = frameX + frameW;
+	}
+	uly = frameY;
+	lry = frameY + frameH;
 
 	gDP.otherMode.cycleType = G_CYC_1CYCLE;
 	gDP.changed |= CHANGED_CYCLETYPE;
-	gSPTexture( 1.0f, 1.0f, 0, 0, TRUE );
+	gSPTexture(1.0f, 1.0f, 0, 0, TRUE);
+	gDP.otherMode.texturePersp = 1;
 
-//	gDPTextureRectangle( frameX0, frameY0, frameX1 - 1, frameY1 - 1, 0, frameS0 - 1, frameT0 - 1, scaleW, scaleH );
-	gDPTextureRectangle( frameX0, frameY0, frameX1, frameY1, 0, frameS0, frameT0, scaleW, scaleH );
+	const s32 v0 = 0, v1 = 1, v2 = 2, v3 = 3;
 
-	/*
-	if ((frameX1 - frameX0) < frameW)
-	{
-		f32 frameX2 = frameW - (frameX1 - frameX0) + frameX1;
-		gDPTextureRectangle( frameX1, frameY0, frameX2, frameY1, 0, 0, frameT0, scaleW, scaleH );
-	}
+	OGLRender & render = video().getRender();
+#ifdef __TRIBUFFER_OPT
+	v0 = render.getIndexmap(v0);
+	v1 = render.getIndexmap(v1);
+	v2 = render.getIndexmap(v2);
+	v3 = render.getIndexmap(v3);
+#endif
 
-	if ((frameY1 - frameY0) < frameH)
-	{
-		f32 frameY2 = frameH - (frameY1 - frameY0) + frameY1;
-		gDPTextureRectangle( frameX0, frameY1, frameX1, frameY2, 0, frameS0, 0, scaleW, scaleH );
-	}
-	*/
-//	gDPTextureRectangle( 0, 0, 319, 239, 0, 0, 0, scaleW, scaleH );
-/*	u32 line = (u32)(frameS1 - frameS0 + 1) << objScaleBg->imageSiz >> 4;
-	u16 loadHeight;
-	if (objScaleBg->imageFmt == G_IM_FMT_CI)
-		loadHeight = 256 / line;
-	else
-		loadHeight = 512 / line;
+	SPVertex & vtx0 = render.getVertex(v0);
+	vtx0.x = ulx;
+	vtx0.y = uly;
+	vtx0.z = 0.0f;
+	vtx0.w = 1.0f;
+	vtx0.s = uls;
+	vtx0.t = ult;
+	SPVertex & vtx1 = render.getVertex(v1);
+	vtx1.x = lrx;
+	vtx1.y = uly;
+	vtx1.z = 0.0f;
+	vtx1.w = 1.0f;
+	vtx1.s = lrs;
+	vtx1.t = ult;
+	SPVertex & vtx2 = render.getVertex(v2);
+	vtx2.x = ulx;
+	vtx2.y = lry;
+	vtx2.z = 0.0f;
+	vtx2.w = 1.0f;
+	vtx2.s = uls;
+	vtx2.t = lrt;
+	SPVertex & vtx3 = render.getVertex(v3);
+	vtx3.x = lrx;
+	vtx3.y = lry;
+	vtx3.z = 0.0f;
+	vtx3.w = 1.0f;
+	vtx3.s = lrs;
+	vtx3.t = lrt;
 
-	gDPSetTile( objScaleBg->imageFmt, objScaleBg->imageSiz, line, 0, 7, objScaleBg->imagePal, G_TX_CLAMP, G_TX_CLAMP, 0, 0, 0, 0 );
-	gDPSetTile( objScaleBg->imageFmt, objScaleBg->imageSiz, line, 0, 0, objScaleBg->imagePal, G_TX_CLAMP, G_TX_CLAMP, 0, 0, 0, 0 );
-	gDPSetTileSize( 0, 0, 0, frameS1 * 4, frameT1 * 4 );
-	gDPSetTextureImage( objScaleBg->imageFmt, objScaleBg->imageSiz, imageW, objScaleBg->imagePtr );
+	render.drawLLETriangle(4);
 
-	gSPTexture( 1.0f, 1.0f, 0, 0, TRUE );
-
-	for (u32 i = 0; i < frameT1 / loadHeight; i++)
-	{
-		//if (objScaleBg->imageLoad == G_BGLT_LOADTILE)
-			gDPLoadTile( 7, frameS0 * 4, (frameT0 + loadHeight * i) * 4, frameS1 * 4, (frameT1 + loadHeight * (i + 1) * 4 );
-		//else
-		//{
-//			gDPSetTextureImage( objScaleBg->imageFmt, objScaleBg->imageSiz, imageW, objScaleBg->imagePtr + (i + imageY) * (imageW << objScaleBg->imageSiz >> 1) + (imageX << objScaleBg->imageSiz >> 1) );
-//			gDPLoadBlock( 7, 0, 0, (loadHeight * frameW << objScaleBg->imageSiz >> 1) - 1, 0 );
-// 		}
-
-		gDPTextureRectangle( frameX0, frameY0 + loadHeight * i,
-			frameX1, frameY0 + loadHeight * (i + 1) - 1, 0, 0, 0, 4, 1 );
-	}*/
+	gDP.colorImage.changed = TRUE;
+	gDP.colorImage.height = (u32)(max(gDP.colorImage.height, (u32)gDP.scissor.lry));
 }
 
 void gSPBgRectCopy( u32 bg )
