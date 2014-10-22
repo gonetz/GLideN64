@@ -673,23 +673,26 @@ void TextureCache::_updateBackground()
 	pCurrent->palette = gSP.bgImage.palette;
 	pCurrent->maskS = 0;
 	pCurrent->maskT = 0;
-	pCurrent->mirrorS = 0;
-	pCurrent->mirrorT = 0;
-	pCurrent->clampS = 1;
-	pCurrent->clampT = 1;
+	pCurrent->mirrorS = 1;
+	pCurrent->mirrorT = 1;
+	pCurrent->clampS = 0;
+	pCurrent->clampT = 0;
 	pCurrent->line = 0;
 	pCurrent->tMem = 0;
 	pCurrent->lastDList = RSP.DList;
 	pCurrent->frameBufferTexture = FALSE;
 
-	pCurrent->realWidth = pow2( gSP.bgImage.width );
-	pCurrent->realHeight = pow2( gSP.bgImage.height );
+	pCurrent->realWidth = gSP.bgImage.width;
+	pCurrent->realHeight = gSP.bgImage.height;
 
 	pCurrent->scaleS = 1.0f / (f32)(pCurrent->realWidth);
 	pCurrent->scaleT = 1.0f / (f32)(pCurrent->realHeight);
 
 	pCurrent->shiftScaleS = 1.0f;
 	pCurrent->shiftScaleT = 1.0f;
+
+	pCurrent->offsetS = 0.5f;
+	pCurrent->offsetT = 0.5f;
 
 	_loadBackground(pCurrent);
 	activateTexture(0, pCurrent);
