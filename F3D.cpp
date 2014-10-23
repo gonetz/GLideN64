@@ -112,8 +112,8 @@ void F3D_Reserved3( u32 w0, u32 w1 )
 
 void F3D_Sprite2D_Base( u32 w0, u32 w1 )
 {
-	//gSPSprite2DBase( w1 );
-	RSP.PC[RSP.PCi] += 8;
+	gSPSprite2DBase( w1 );
+//	RSP.PC[RSP.PCi] += 8;
 }
 
 void F3D_Tri1( u32 w0, u32 w1 )

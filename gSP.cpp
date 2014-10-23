@@ -1408,10 +1408,6 @@ void gSPSetVertexNormaleBase( u32 base )
 #endif
 }
 
-void gSPSprite2DBase( u32 base )
-{
-}
-
 void gSPDMATriangles( u32 tris, u32 n ){
 	u32 address = RSP_SegmentToPhysical( tris );
 
@@ -2256,7 +2252,147 @@ void gSPObjSprite(u32 sp)
 	gDP.colorImage.height = (u32)(max( gDP.colorImage.height, (u32)gDP.scissor.lry ));
 }
 
-void gSPObjLoadTxSprite( u32 txsp )
+static
+void _loadSpriteImage(const uSprite *_pSprite)
+{
+	gSP.bgImage.address = RSP_SegmentToPhysical( _pSprite->imagePtr );
+
+	gSP.bgImage.width = _pSprite->stride;
+	gSP.bgImage.height = _pSprite->imageY + _pSprite->imageH;
+	gSP.bgImage.format = _pSprite->imageFmt;
+	gSP.bgImage.size = _pSprite->imageSiz;
+	gSP.bgImage.palette = 0;
+	gDP.tiles[0].textureMode = TEXTUREMODE_BGIMAGE;
+	gSP.bgImage.imageX = _pSprite->imageX;
+	gSP.bgImage.imageY = _pSprite->imageY;
+	gSP.bgImage.scaleW = gSP.bgImage.scaleH = 1.0f;
+
+	if (config.frameBufferEmulation.enable)
+	{
+		FrameBuffer *pBuffer = frameBufferList().findBuffer(gSP.bgImage.address);
+		if ((pBuffer != NULL) &&
+			((*(u32*)&RDRAM[pBuffer->m_startAddress] & 0xFFFEFFFE) == (pBuffer->m_startAddress & 0xFFFEFFFE)))
+		{
+			gDP.tiles[0].frameBuffer = pBuffer;
+			gDP.tiles[0].textureMode = TEXTUREMODE_FRAMEBUFFER_BG;
+			gDP.tiles[0].loadType = LOADTYPE_TILE;
+			gDP.changed |= CHANGED_TMEM;
+		}
+	}
+}
+
+void gSPSprite2DBase(u32 base)
+{
+	assert(RSP.nextCmd == 0xBE);
+	const u32 address = RSP_SegmentToPhysical( base );
+	uSprite *pSprite = (uSprite*)&RDRAM[address];
+
+	if (pSprite->tlutPtr != 0) {
+		gDPSetTextureImage( 0, 2, 1, pSprite->tlutPtr );
+		gDPSetTile( 0, 2, 0, 256, 7, 0, 0, 0, 0, 0, 0, 0 );
+		gDPLoadTLUT( 7, 0, 0, 1020, 0 );
+
+		if (pSprite->imageFmt != G_IM_FMT_RGBA)
+			gDP.otherMode.textureLUT = G_TT_RGBA16;
+		else
+			gDP.otherMode.textureLUT = G_TT_NONE;
+	} else
+		gDP.otherMode.textureLUT = G_TT_NONE;
+
+	_loadSpriteImage(pSprite);
+	gSPTexture( 1.0f, 1.0f, 0, 0, TRUE );
+	gDP.otherMode.texturePersp = 1;
+
+	const f32 z = (gDP.otherMode.depthSource == G_ZS_PRIM) ? gDP.primDepth.z : gSP.viewport.nearz;
+	const f32 w = 1.0f;
+
+	f32 scaleX, scaleY;
+	u32 flipX, flipY;
+	do {
+		u32 w0 = *(u32*)&RDRAM[RSP.PC[RSP.PCi]];
+		u32 w1 = *(u32*)&RDRAM[RSP.PC[RSP.PCi] + 4];
+		RSP.cmd = _SHIFTR( w0, 24, 8 );
+
+		RSP.PC[RSP.PCi] += 8;
+		RSP.nextCmd = _SHIFTR( *(u32*)&RDRAM[RSP.PC[RSP.PCi]], 24, 8 );
+
+		if ( RSP.cmd == 0xBE ) { // gSPSprite2DScaleFlip
+			scaleX  = _FIXED2FLOAT( _SHIFTR(w1, 16, 16), 10 );
+			scaleY  = _FIXED2FLOAT( _SHIFTR(w1,  0, 16), 10 );
+			flipX = _SHIFTR(w0, 8, 8);
+			flipY = _SHIFTR(w0, 0, 8);
+			continue;
+		}
+		// gSPSprite2DDraw
+		const f32 frameX = _FIXED2FLOAT(((s16)_SHIFTR(w1, 16, 16)), 2);
+		const f32 frameY = _FIXED2FLOAT(((s16)_SHIFTR(w1,  0, 16)), 2);
+		const f32 frameW = pSprite->imageW / scaleX;
+		const f32 frameH = pSprite->imageH / scaleY;
+
+		f32 ulx, uly, lrx, lry;
+		if (flipX != 0) {
+			ulx = frameX + frameW;
+			lrx = frameX;
+		} else {
+			ulx = frameX;
+			lrx = frameX + frameW;
+		}
+		if (flipY != 0) {
+			uly = frameY + frameH;
+			lry = frameY;
+		} else {
+			uly = frameY;
+			lry = frameY + frameH;
+		}
+
+		const float uls = pSprite->imageX;
+		const float ult = pSprite->imageY;
+		const float lrs = uls + pSprite->imageW - 1;
+		const float lrt = ult + pSprite->imageH - 1;
+		s32 v0 = 0, v1 = 1, v2 = 2, v3 = 3;
+
+		OGLRender & render = video().getRender();
+	#ifdef __TRIBUFFER_OPT
+		v0 = render.getIndexmap(v0);
+		v1 = render.getIndexmap(v1);
+		v2 = render.getIndexmap(v2);
+		v3 = render.getIndexmap(v3);
+	#endif
+
+		SPVertex & vtx0 = render.getVertex(v0);
+		vtx0.x = ulx;
+		vtx0.y = uly;
+		vtx0.z = z;
+		vtx0.w = w;
+		vtx0.s = uls;
+		vtx0.t = ult;
+		SPVertex & vtx1 = render.getVertex(v1);
+		vtx1.x = lrx;
+		vtx1.y = uly;
+		vtx1.z = z;
+		vtx1.w = w;
+		vtx1.s = lrs;
+		vtx1.t = ult;
+		SPVertex & vtx2 = render.getVertex(v2);
+		vtx2.x = ulx;
+		vtx2.y = lry;
+		vtx2.z = z;
+		vtx2.w = w;
+		vtx2.s = uls;
+		vtx2.t = lrt;
+		SPVertex & vtx3 = render.getVertex(v3);
+		vtx3.x = lrx;
+		vtx3.y = lry;
+		vtx3.z = z;
+		vtx3.w = w;
+		vtx3.s = lrs;
+		vtx3.t = lrt;
+
+		render.drawLLETriangle(4);
+	} while (RSP.nextCmd == 0xBD || RSP.nextCmd == 0xBE);
+}
+
+void gSPObjLoadTxSprite(u32 txsp)
 {
 	gSPObjLoadTxtr( txsp );
 	gSPObjSprite( txsp + sizeof( uObjTxtr ) );

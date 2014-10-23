@@ -52,53 +52,18 @@ struct uObjScaleBg
   u8  padding[4];  /* Padding */
 };   /* 40 bytes */
 
-#if 0
-struct uObjBg
-{
-	u16 imageW;     /* Texture width (8-byte alignment, u10.2) */
-	u16 imageX;     /* x-coordinate of upper-left position of texture (u10.5) */
-	u16 frameW;     /* Transfer destination frame width (u10.2) */
-	s16 frameX;     /* x-coordinate of upper-left position of
-					  transfer destination frame (s10.2) */
-	u16 imageH;     /* Texture height (u10.2) */
-	u16 imageY;     /* y-coordinate of upper-left position of
-					  texture (u10.5) */
-	u16 frameH;     /* Transfer destination frame height (u10.2) */
-	s16 frameY;     /* y-coordinate of upper-left position of
-				  transfer destination frame (s10.2) */
-
-	u32 imagePtr;  /* Address of texture source in DRAM*/
-	u8  imageSiz;   /* Texel size
-					 G_IM_SIZ_4b (4 bits/texel)
-					 G_IM_SIZ_8b (8 bits/texel)
-					 G_IM_SIZ_16b (16 bits/texel)
-					 G_IM_SIZ_32b (32 bits/texel) */
-	u8  imageFmt;   /*Texel format
-					 G_IM_FMT_RGBA (RGBA format)
-					 G_IM_FMT_YUV (YUV format)
-					 G_IM_FMT_CI (CI format)
-					 G_IM_FMT_IA (IA format)
-					 G_IM_FMT_I (I format)  */
-	u16 imageLoad;  /* Method for loading the BG image texture
-					 G_BGLT_LOADBLOCK (use LoadBlock)
-					 G_BGLT_LOADTILE (use LoadTile) */
-	u16 imageFlip;  /* Image inversion on/off (horizontal direction only)
-					 0 (normal display (no inversion))
-					 G_BG_FLAG_FLIPS (horizontal inversion of
-					 texture image) */
-	u16 imagePal;   /* Position of palette for 4-bit color
-					 index texture (4-bit precision, 0~15) */
-
-/* The following is set in the initialization routine guS2DInitBg */
-	u16 tmemH;      /* TMEM height for a single load (quadruple
-					 value, s13.2) */
-	u16 tmemW;      /* TMEM width for one frame line (word size) */
-	u16 tmemLoadTH; /* TH value or Stride value */
-	u16 tmemLoadSH; /* SH value */
-	u16 tmemSize;   /* imagePtr skip value for a single load  */
-	u16 tmemSizeW;  /* imagePtr skip value for one image line */
-};      /* 40 bytes */
-#endif
+struct uSprite {
+	u32 imagePtr;
+	u32 tlutPtr;
+	s16	imageW;
+	s16	stride;
+	s8	imageSiz;
+	s8	imageFmt;
+	s16	imageH;
+	s16	imageY;
+	s16	imageX;
+	s8	dummy[4];
+};    /* 24 bytes */
 
 struct uObjSprite
 {
