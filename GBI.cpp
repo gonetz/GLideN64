@@ -162,6 +162,12 @@ void GBIInfo::_makeCurrent(MicrocodeInfo * _pCurrent)
 	}
 }
 
+inline
+bool _isDigit(char _c)
+{
+	return _c >= '0' && _c <= '9';
+}
+
 int MicrocodeDialog(u32 _crc, const char * _str);
 void GBIInfo::loadMicrocode(u32 uc_start, u32 uc_dstart, u16 uc_dsize)
 {
@@ -221,15 +227,19 @@ void GBIInfo::loadMicrocode(u32 uc_start, u32 uc_dstart, u16 uc_dsize)
 						type = F3DEX2;
 				}
 				else if (strncmp( &uc_str[14], "L3D", 3 ) == 0) {
-					if (uc_str[28] == '1')
+					u32 t = 22;
+					while (!_isDigit(uc_str[t]) && t++ < j);
+					if (uc_str[t] == '1')
 						type = L3DEX;
-					else if (uc_str[31] == '2')
+					else if (uc_str[t] == '2')
 						type = L3DEX2;
 				}
 				else if (strncmp( &uc_str[14], "S2D", 3 ) == 0) {
-					if (uc_str[28] == '1')
+					u32 t = 20;
+					while (!_isDigit(uc_str[t]) && t++ < j);
+					if (uc_str[t] == '1')
 						type = S2DEX;
-					else if (uc_str[31] == '2')
+					else if (uc_str[t] == '2')
 						type = S2DEX2;
 				}
 			}
