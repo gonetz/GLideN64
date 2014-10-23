@@ -2345,12 +2345,22 @@ void gSPSprite2DBase(u32 base)
 			lry = frameY + frameH;
 		}
 
-		const float uls = pSprite->imageX;
-		const float ult = pSprite->imageY;
-		const float lrs = uls + pSprite->imageW - 1;
-		const float lrt = ult + pSprite->imageH - 1;
-		s32 v0 = 0, v1 = 1, v2 = 2, v3 = 3;
+		f32 uls = pSprite->imageX;
+		f32 ult = pSprite->imageY;
+		f32 lrs = uls + pSprite->imageW - 1;
+		f32 lrt = ult + pSprite->imageH - 1;
 
+		/* Hack for WCW Nitro. TODO : activate it later.
+		if (WCW_NITRO) {
+			gSP.bgImage.height /= scaleY;
+			gSP.bgImage.imageY /= scaleY;
+			ult /= scaleY;
+			lrt /= scaleY;
+			gSP.bgImage.width *= scaleY;
+		}
+		*/
+
+		s32 v0 = 0, v1 = 1, v2 = 2, v3 = 3;
 		OGLRender & render = video().getRender();
 	#ifdef __TRIBUFFER_OPT
 		v0 = render.getIndexmap(v0);
