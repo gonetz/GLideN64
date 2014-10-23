@@ -1885,6 +1885,200 @@ void gSPLineW3D( s32 v0, s32 v1, s32 wd, s32 flag )
 #endif
 }
 
+void gSPObjLoadTxtr( u32 tx )
+{
+	u32 address = RSP_SegmentToPhysical( tx );
+	uObjTxtr *objTxtr = (uObjTxtr*)&RDRAM[address];
+
+	if ((gSP.status[objTxtr->block.sid >> 2] & objTxtr->block.mask) != objTxtr->block.flag) {
+		switch (objTxtr->block.type) {
+			case G_OBJLT_TXTRBLOCK:
+				gDPSetTextureImage( 0, 1, 0, objTxtr->block.image );
+				gDPSetTile( 0, 1, 0, objTxtr->block.tmem, 7, 0, 0, 0, 0, 0, 0, 0 );
+				gDPLoadBlock( 7, 0, 0, ((objTxtr->block.tsize + 1) << 3) - 1, objTxtr->block.tline );
+				break;
+			case G_OBJLT_TXTRTILE:
+				gDPSetTextureImage( 0, 1, (objTxtr->tile.twidth + 1) << 1, objTxtr->tile.image );
+				gDPSetTile( 0, 1, (objTxtr->tile.twidth + 1) >> 2, objTxtr->tile.tmem, 7, 0, 0, 0, 0, 0, 0, 0 );
+				gDPLoadTile( 7, 0, 0, (((objTxtr->tile.twidth + 1) << 1) - 1) << 2, (((objTxtr->tile.theight + 1) >> 2) - 1) << 2 );
+				break;
+			case G_OBJLT_TLUT:
+				gDPSetTextureImage( 0, 2, 1, objTxtr->tlut.image );
+				gDPSetTile( 0, 2, 0, objTxtr->tlut.phead, 7, 0, 0, 0, 0, 0, 0, 0 );
+				gDPLoadTLUT( 7, 0, 0, objTxtr->tlut.pnum << 2, 0 );
+				break;
+		}
+		gSP.status[objTxtr->block.sid >> 2] = (gSP.status[objTxtr->block.sid >> 2] & ~objTxtr->block.mask) | (objTxtr->block.flag & objTxtr->block.mask);
+	}
+}
+
+static
+void gSPSetSpriteTile(const uObjSprite *_pObjSprite)
+{
+	const u32 w = max(_pObjSprite->imageW >> 5, 1);
+	const u32 h = max(_pObjSprite->imageH >> 5, 1);
+
+	gDPSetTile( _pObjSprite->imageFmt, _pObjSprite->imageSiz, _pObjSprite->imageStride, _pObjSprite->imageAdrs, 0, _pObjSprite->imagePal, G_TX_CLAMP, G_TX_CLAMP, 0, 0, 0, 0 );
+	gDPSetTileSize( 0, 0, 0, (w - 1) << 2, (h - 1) << 2 );
+	gSPTexture( 1.0f, 1.0f, 0, 0, TRUE );
+	gDP.otherMode.texturePersp = 1;
+}
+
+struct ObjData
+{
+	f32 scaleW;
+	f32 scaleH;
+	u32 imageW;
+	u32 imageH;
+	f32 X0;
+	f32 X1;
+	f32 Y0;
+	f32 Y1;
+	bool flipS, flipT;
+	ObjData(const uObjSprite *_pObjSprite)
+	{
+		scaleW = _FIXED2FLOAT(_pObjSprite->scaleW, 10);
+		scaleH = _FIXED2FLOAT(_pObjSprite->scaleH, 10);
+		imageW = _pObjSprite->imageW >> 5;
+		imageH = _pObjSprite->imageH >> 5;
+		X0 = _FIXED2FLOAT(_pObjSprite->objX, 2);
+		X1 = X0 + imageW / scaleW;
+		Y0 = _FIXED2FLOAT(_pObjSprite->objY, 2);
+		Y1 = Y0 + imageH / scaleH;
+		flipS = (_pObjSprite->imageFlags & 0x01) != 0;
+		flipT = (_pObjSprite->imageFlags & 0x10) != 0;
+	}
+};
+
+struct ObjCoordinates
+{
+	f32 ulx, uly, lrx, lry;
+	f32 uls, ult, lrs, lrt;
+	f32 z, w;
+
+	ObjCoordinates(const uObjSprite *_pObjSprite, bool _useMatrix)
+	{
+		ObjData data(_pObjSprite);
+		ulx = data.X0;
+		lrx = data.X1;
+		uly = data.Y0;
+		lry = data.Y1;
+		if (_useMatrix) {
+			ulx = ulx/gSP.objMatrix.baseScaleX + gSP.objMatrix.X;
+			lrx = lrx/gSP.objMatrix.baseScaleX + gSP.objMatrix.X;
+			uly = uly/gSP.objMatrix.baseScaleY + gSP.objMatrix.Y;
+			lry = lry/gSP.objMatrix.baseScaleY + gSP.objMatrix.Y;
+		}
+
+		uls = ult = 0;
+		lrs = data.imageW - 1;
+		lrt = data.imageH - 1;
+		if (data.flipS) {
+			uls = lrs;
+			lrs = 0;
+		}
+		if (data.flipT) {
+			ult = lrt;
+			lrt = 0;
+		}
+
+		z = (gDP.otherMode.depthSource == G_ZS_PRIM) ? gDP.primDepth.z : gSP.viewport.nearz;
+		w = 1.0f;
+	}
+
+	ObjCoordinates(const uObjScaleBg * _pObjScaleBg)
+	{
+		const f32 frameX = _FIXED2FLOAT(_pObjScaleBg->frameX, 2);
+		const f32 frameY = _FIXED2FLOAT(_pObjScaleBg->frameY, 2);
+		const f32 frameW = _FIXED2FLOAT(_pObjScaleBg->frameW, 2);
+		const f32 frameH = _FIXED2FLOAT(_pObjScaleBg->frameH, 2);
+		const f32 scaleW = gSP.bgImage.scaleW;
+		const f32 scaleH = gSP.bgImage.scaleH;
+		uls = gSP.bgImage.imageX;
+		ult = gSP.bgImage.imageY;
+		lrs = uls + frameW * scaleW - 1.0f;
+		lrt = ult + frameH * scaleH - 1.0f;
+		//lrs = uls + gSP.bgImage.width * scaleW;
+		//lrt = ult + gSP.bgImage.height * scaleH;
+
+		if ((_pObjScaleBg->imageFlip & 0x01) != 0) {
+			ulx = frameX + frameW;
+			lrx = frameX;
+		} else {
+			ulx = frameX;
+			lrx = frameX + frameW;
+		}
+		uly = frameY;
+		lry = frameY + frameH;
+
+		z = (gDP.otherMode.depthSource == G_ZS_PRIM) ? gDP.primDepth.z : gSP.viewport.nearz;
+		w = 1.0f;
+	}
+};
+
+static
+void gSPDrawObjRect(const ObjCoordinates & _coords)
+{
+	u32 v0 = 0, v1 = 1, v2 = 2, v3 = 3;
+	OGLRender & render = video().getRender();
+	#ifdef __TRIBUFFER_OPT
+	v0 = render.getIndexmap(v0);
+	v1 = render.getIndexmap(v1);
+	v2 = render.getIndexmap(v2);
+	v3 = render.getIndexmap(v3);
+	#endif
+	SPVertex & vtx0 = render.getVertex(v0);
+	vtx0.x = _coords.ulx;
+	vtx0.y = _coords.uly;
+	vtx0.z = _coords.z;
+	vtx0.w = _coords.w;
+	vtx0.s = _coords.uls;
+	vtx0.t = _coords.ult;
+	SPVertex & vtx1 = render.getVertex(v1);
+	vtx1.x = _coords.lrx;
+	vtx1.y = _coords.uly;
+	vtx1.z = _coords.z;
+	vtx1.w = _coords.w;
+	vtx1.s = _coords.lrs;
+	vtx1.t = _coords.ult;
+	SPVertex & vtx2 = render.getVertex(v2);
+	vtx2.x = _coords.ulx;
+	vtx2.y = _coords.lry;
+	vtx2.z = _coords.z;
+	vtx2.w = _coords.w;
+	vtx2.s = _coords.uls;
+	vtx2.t = _coords.lrt;
+	SPVertex & vtx3 = render.getVertex(v3);
+	vtx3.x = _coords.lrx;
+	vtx3.y = _coords.lry;
+	vtx3.z = _coords.z;
+	vtx3.w = _coords.w;
+	vtx3.s = _coords.lrs;
+	vtx3.t = _coords.lrt;
+
+	render.drawLLETriangle(4);
+	gDP.colorImage.changed = TRUE;
+	gDP.colorImage.height = (u32)(max(gDP.colorImage.height, (u32)gDP.scissor.lry));
+}
+
+void gSPObjRectangle(u32 sp)
+{
+	u32 address = RSP_SegmentToPhysical(sp);
+	uObjSprite *objSprite = (uObjSprite*)&RDRAM[address];
+	gSPSetSpriteTile(objSprite);
+	ObjCoordinates objCoords(objSprite, false);
+	gSPDrawObjRect(objCoords);
+}
+
+void gSPObjRectangleR(u32 sp)
+{
+	const u32 address = RSP_SegmentToPhysical(sp);
+	const uObjSprite *objSprite = (uObjSprite*)&RDRAM[address];
+	gSPSetSpriteTile(objSprite);
+	ObjCoordinates objCoords(objSprite, true);
+	gSPDrawObjRect(objCoords);
+}
+
 #ifdef GL_IMAGE_TEXTURES_SUPPORT
 static
 void _copyDepthBuffer()
@@ -1920,7 +2114,7 @@ void _copyDepthBuffer()
 #endif // GL_IMAGE_TEXTURES_SUPPORT
 
 static
-void loadBGImage(const uObjScaleBg * _bgInfo, bool _loadScale)
+void _loadBGImage(const uObjScaleBg * _bgInfo, bool _loadScale)
 {
 	gSP.bgImage.address = RSP_SegmentToPhysical( _bgInfo->imagePtr );
 
@@ -1956,7 +2150,7 @@ void gSPBgRect1Cyc( u32 bg )
 {
 	u32 address = RSP_SegmentToPhysical( bg );
 	uObjScaleBg *objScaleBg = (uObjScaleBg*)&RDRAM[address];
-	loadBGImage(objScaleBg, true);
+	_loadBGImage(objScaleBg, true);
 
 #ifdef GL_IMAGE_TEXTURES_SUPPORT
 	if (gSP.bgImage.address == gDP.depthImageAddress || depthBufferList().findBuffer(gSP.bgImage.address) != NULL)
@@ -1966,86 +2160,20 @@ void gSPBgRect1Cyc( u32 bg )
 	// Since both situations are hard to distinguish, do the both depth buffer copy and bg rendering.
 #endif // GL_IMAGE_TEXTURES_SUPPORT
 
-	const f32 frameX = _FIXED2FLOAT(objScaleBg->frameX, 2);
-	const f32 frameY = _FIXED2FLOAT(objScaleBg->frameY, 2);
-	const f32 frameW = _FIXED2FLOAT(objScaleBg->frameW, 2);
-	const f32 frameH = _FIXED2FLOAT(objScaleBg->frameH, 2);
-	const f32 scaleW = gSP.bgImage.scaleW;
-	const f32 scaleH = gSP.bgImage.scaleH;
-	const f32 uls = gSP.bgImage.imageX;
-	const f32 ult = gSP.bgImage.imageY;
-	const f32 lrs = uls + frameW * scaleW;
-	const f32 lrt = ult + frameH * scaleH;
-	const float z = (gDP.otherMode.depthSource == G_ZS_PRIM) ? gDP.primDepth.z : gSP.viewport.nearz;
-	//const f32 lrs = uls + gSP.bgImage.width * scaleW;
-	//const f32 lrt = ult + gSP.bgImage.height * scaleH;
-
-	f32 ulx, uly, lrx, lry;
-	if ((objScaleBg->imageFlip & 0x01) != 0) {
-		ulx = frameX + frameW;
-		lrx = frameX;
-	} else {
-		ulx = frameX;
-		lrx = frameX + frameW;
-	}
-	uly = frameY;
-	lry = frameY + frameH;
-
 	gDP.otherMode.cycleType = G_CYC_1CYCLE;
 	gDP.changed |= CHANGED_CYCLETYPE;
 	gSPTexture(1.0f, 1.0f, 0, 0, TRUE);
 	gDP.otherMode.texturePersp = 1;
 
-	const s32 v0 = 0, v1 = 1, v2 = 2, v3 = 3;
-
-	OGLRender & render = video().getRender();
-#ifdef __TRIBUFFER_OPT
-	v0 = render.getIndexmap(v0);
-	v1 = render.getIndexmap(v1);
-	v2 = render.getIndexmap(v2);
-	v3 = render.getIndexmap(v3);
-#endif
-
-	SPVertex & vtx0 = render.getVertex(v0);
-	vtx0.x = ulx;
-	vtx0.y = uly;
-	vtx0.z = z;
-	vtx0.w = 1.0f;
-	vtx0.s = uls;
-	vtx0.t = ult;
-	SPVertex & vtx1 = render.getVertex(v1);
-	vtx1.x = lrx;
-	vtx1.y = uly;
-	vtx1.z = z;
-	vtx1.w = 1.0f;
-	vtx1.s = lrs;
-	vtx1.t = ult;
-	SPVertex & vtx2 = render.getVertex(v2);
-	vtx2.x = ulx;
-	vtx2.y = lry;
-	vtx2.z = z;
-	vtx2.w = 1.0f;
-	vtx2.s = uls;
-	vtx2.t = lrt;
-	SPVertex & vtx3 = render.getVertex(v3);
-	vtx3.x = lrx;
-	vtx3.y = lry;
-	vtx3.z = z;
-	vtx3.w = 1.0f;
-	vtx3.s = lrs;
-	vtx3.t = lrt;
-
-	render.drawLLETriangle(4);
-
-	gDP.colorImage.changed = TRUE;
-	gDP.colorImage.height = (u32)(max(gDP.colorImage.height, (u32)gDP.scissor.lry));
+	ObjCoordinates objCoords(objScaleBg);
+	gSPDrawObjRect(objCoords);
 }
 
 void gSPBgRectCopy( u32 bg )
 {
 	u32 address = RSP_SegmentToPhysical( bg );
 	uObjScaleBg *objBg = (uObjScaleBg*)&RDRAM[address];
-	loadBGImage(objBg, false);
+	_loadBGImage(objBg, false);
 
 #ifdef GL_IMAGE_TEXTURES_SUPPORT
 	if (gSP.bgImage.address == gDP.depthImageAddress || depthBufferList().findBuffer(gSP.bgImage.address) != NULL)
@@ -2053,101 +2181,11 @@ void gSPBgRectCopy( u32 bg )
 	// See comment to gSPBgRect1Cyc
 #endif // GL_IMAGE_TEXTURES_SUPPORT
 
-	f32 frameX = objBg->frameX / 4.0f;
-	f32 frameY = objBg->frameY / 4.0f;
-	u16 frameW = objBg->frameW >> 2;
-	u16 frameH = objBg->frameH >> 2;
-
-	gSPTexture( 1.0f, 1.0f, 0, 0, TRUE );
-
-	gDPTextureRectangle( frameX, frameY, frameX + frameW - 1, frameY + frameH - 1, 0, gSP.bgImage.imageX, gSP.bgImage.imageY, 4, 1 );
-}
-
-void gSPObjLoadTxtr( u32 tx )
-{
-	u32 address = RSP_SegmentToPhysical( tx );
-	uObjTxtr *objTxtr = (uObjTxtr*)&RDRAM[address];
-
-	if ((gSP.status[objTxtr->block.sid >> 2] & objTxtr->block.mask) != objTxtr->block.flag) {
-		switch (objTxtr->block.type) {
-			case G_OBJLT_TXTRBLOCK:
-				gDPSetTextureImage( 0, 1, 0, objTxtr->block.image );
-				gDPSetTile( 0, 1, 0, objTxtr->block.tmem, 7, 0, 0, 0, 0, 0, 0, 0 );
-				gDPLoadBlock( 7, 0, 0, ((objTxtr->block.tsize + 1) << 3) - 1, objTxtr->block.tline );
-				break;
-			case G_OBJLT_TXTRTILE:
-				gDPSetTextureImage( 0, 1, (objTxtr->tile.twidth + 1) << 1, objTxtr->tile.image );
-				gDPSetTile( 0, 1, (objTxtr->tile.twidth + 1) >> 2, objTxtr->tile.tmem, 7, 0, 0, 0, 0, 0, 0, 0 );
-				gDPLoadTile( 7, 0, 0, (((objTxtr->tile.twidth + 1) << 1) - 1) << 2, (((objTxtr->tile.theight + 1) >> 2) - 1) << 2 );
-				break;
-			case G_OBJLT_TLUT:
-				gDPSetTextureImage( 0, 2, 1, objTxtr->tlut.image );
-				gDPSetTile( 0, 2, 0, objTxtr->tlut.phead, 7, 0, 0, 0, 0, 0, 0, 0 );
-				gDPLoadTLUT( 7, 0, 0, objTxtr->tlut.pnum << 2, 0 );
-				break;
-		}
-		gSP.status[objTxtr->block.sid >> 2] = (gSP.status[objTxtr->block.sid >> 2] & ~objTxtr->block.mask) | (objTxtr->block.flag & objTxtr->block.mask);
-	}
-}
-
-struct ObjData {
-	f32 scaleW;
-	f32 scaleH;
-	u32 imageW;
-	u32 imageH;
-	f32 X0;
-	f32 X1;
-	f32 Y0;
-	f32 Y1;
-	ObjData(const uObjSprite *_pObjSprite, bool _scale)
-	{
-		scaleW = _FIXED2FLOAT(_pObjSprite->scaleW, 10);
-		scaleH = _FIXED2FLOAT(_pObjSprite->scaleH, 10);
-		imageW = _pObjSprite->imageW >> 5;
-		imageH = _pObjSprite->imageH >> 5;
-		X0 = _FIXED2FLOAT(_pObjSprite->objX, 2);
-		X1 = X0 + imageW / scaleW;
-		Y0 = _FIXED2FLOAT(_pObjSprite->objY, 2);
-		Y1 = Y0 + imageH / scaleH;
-		if (_scale) {
-			X0 /= gSP.objMatrix.baseScaleX;
-			X1 /= gSP.objMatrix.baseScaleX;
-			Y0 /= gSP.objMatrix.baseScaleY;
-			Y1 /= gSP.objMatrix.baseScaleY;
-		}
-	}
-};
-
-static
-void gSPSetSpriteTile(const uObjSprite *_pObjSprite)
-{
-	const u32 w = max(_pObjSprite->imageW >> 5, 1);
-	const u32 h = max(_pObjSprite->imageH >> 5, 1);
-
-	gDPSetTile( _pObjSprite->imageFmt, _pObjSprite->imageSiz, _pObjSprite->imageStride, _pObjSprite->imageAdrs, 0, _pObjSprite->imagePal, G_TX_CLAMP, G_TX_CLAMP, 0, 0, 0, 0 );
-	gDPSetTileSize( 0, 0, 0, (w - 1) << 2, (h - 1) << 2 );
 	gSPTexture( 1.0f, 1.0f, 0, 0, TRUE );
 	gDP.otherMode.texturePersp = 1;
-}
 
-void gSPObjRectangle(u32 sp)
-{
-	u32 address = RSP_SegmentToPhysical(sp);
-	uObjSprite *objSprite = (uObjSprite*)&RDRAM[address];
-	gSPSetSpriteTile(objSprite);
-	ObjData data(objSprite, false);
-
-	gDPTextureRectangle(data.X0, data.Y0, data.X1, data.Y1, 0, 0.0f, 0.0f, data.scaleW * (gDP.otherMode.cycleType == G_CYC_COPY ? 4.0f : 1.0f), data.scaleH);
-}
-
-void gSPObjRectangleR(u32 sp)
-{
-	const u32 address = RSP_SegmentToPhysical(sp);
-	const uObjSprite *objSprite = (uObjSprite*)&RDRAM[address];
-	gSPSetSpriteTile(objSprite);
-	ObjData data(objSprite, true);
-
-	gDPTextureRectangle(gSP.objMatrix.X + data.X0, gSP.objMatrix.Y + data.Y0, gSP.objMatrix.X + data.X1, gSP.objMatrix.Y + data.Y1, 0, 0.0f, 0.0f, data.scaleW * (gDP.otherMode.cycleType == G_CYC_COPY ? 4.0f : 1.0f), data.scaleH);
+	ObjCoordinates objCoords(objBg);
+	gSPDrawObjRect(objCoords);
 }
 
 void gSPObjSprite(u32 sp)
@@ -2155,22 +2193,13 @@ void gSPObjSprite(u32 sp)
 	u32 address = RSP_SegmentToPhysical( sp );
 	uObjSprite *objSprite = (uObjSprite*)&RDRAM[address];
 	gSPSetSpriteTile(objSprite);
-	ObjData data(objSprite, false);
+	ObjData data(objSprite);
 
-	const f32 x0 = data.X0;
-	const f32 y0 = data.Y0;
-	const f32 x1 = data.X1;
-	const f32 y1 = data.Y1;
+	const f32 ulx = data.X0;
+	const f32 uly = data.Y0;
+	const f32 lrx = data.X1;
+	const f32 lry = data.Y1;
 
-	const s32 v0 = 0, v1 = 1, v2 = 2, v3 = 3;
-
-	OGLRender & render = video().getRender();
-#ifdef __TRIBUFFER_OPT
-	v0 = render.getIndexmap(v0);
-	v1 = render.getIndexmap(v1);
-	v2 = render.getIndexmap(v2);
-	v3 = render.getIndexmap(v3);
-#endif
 	float uls = 0, lrs =  data.imageW - 1, ult = 0, lrt = data.imageH - 1;
 	if (objSprite->imageFlags & 0x01) { // flipS
 		uls = lrs;
@@ -2182,30 +2211,40 @@ void gSPObjSprite(u32 sp)
 	}
 	const float z = (gDP.otherMode.depthSource == G_ZS_PRIM) ? gDP.primDepth.z : gSP.viewport.nearz;
 
+	s32 v0 = 0, v1 = 1, v2 = 2, v3 = 3;
+
+	OGLRender & render = video().getRender();
+#ifdef __TRIBUFFER_OPT
+	v0 = render.getIndexmap(v0);
+	v1 = render.getIndexmap(v1);
+	v2 = render.getIndexmap(v2);
+	v3 = render.getIndexmap(v3);
+#endif
+
 	SPVertex & vtx0 = render.getVertex(v0);
-	vtx0.x = gSP.objMatrix.A * x0 + gSP.objMatrix.B * y0 + gSP.objMatrix.X;
-	vtx0.y = gSP.objMatrix.C * x0 + gSP.objMatrix.D * y0 + gSP.objMatrix.Y;
+	vtx0.x = gSP.objMatrix.A * ulx + gSP.objMatrix.B * uly + gSP.objMatrix.X;
+	vtx0.y = gSP.objMatrix.C * ulx + gSP.objMatrix.D * uly + gSP.objMatrix.Y;
 	vtx0.z = z;
 	vtx0.w = 1.0f;
 	vtx0.s = uls;
 	vtx0.t = ult;
 	SPVertex & vtx1 = render.getVertex(v1);
-	vtx1.x = gSP.objMatrix.A * x1 + gSP.objMatrix.B * y0 + gSP.objMatrix.X;
-	vtx1.y = gSP.objMatrix.C * x1 + gSP.objMatrix.D * y0 + gSP.objMatrix.Y;
+	vtx1.x = gSP.objMatrix.A * lrx + gSP.objMatrix.B * uly + gSP.objMatrix.X;
+	vtx1.y = gSP.objMatrix.C * lrx + gSP.objMatrix.D * uly + gSP.objMatrix.Y;
 	vtx1.z = z;
 	vtx1.w = 1.0f;
 	vtx1.s = lrs;
 	vtx1.t = ult;
 	SPVertex & vtx2 = render.getVertex(v2);
-	vtx2.x = gSP.objMatrix.A * x0 + gSP.objMatrix.B * y1 + gSP.objMatrix.X;
-	vtx2.y = gSP.objMatrix.C * x0 + gSP.objMatrix.D * y1 + gSP.objMatrix.Y;
+	vtx2.x = gSP.objMatrix.A * ulx + gSP.objMatrix.B * lry + gSP.objMatrix.X;
+	vtx2.y = gSP.objMatrix.C * ulx + gSP.objMatrix.D * lry + gSP.objMatrix.Y;
 	vtx2.z = z;
 	vtx2.w = 1.0f;
 	vtx2.s = uls;
 	vtx2.t = lrt;
 	SPVertex & vtx3 = render.getVertex(v3);
-	vtx3.x = gSP.objMatrix.A * x1 + gSP.objMatrix.B * y1 + gSP.objMatrix.X;
-	vtx3.y = gSP.objMatrix.C * x1 + gSP.objMatrix.D * y1 + gSP.objMatrix.Y;
+	vtx3.x = gSP.objMatrix.A * lrx + gSP.objMatrix.B * lry + gSP.objMatrix.X;
+	vtx3.y = gSP.objMatrix.C * lrx + gSP.objMatrix.D * lry + gSP.objMatrix.Y;
 	vtx3.z = z;
 	vtx3.w = 1.0f;
 	vtx3.s = lrs;
