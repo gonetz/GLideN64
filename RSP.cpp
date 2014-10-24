@@ -288,4 +288,5 @@ void RSP_Init()
 	gSP.objMatrix.Y = 0.0f;
 	gSP.objMatrix.baseScaleX = 1.0f;
 	gSP.objMatrix.baseScaleY = 1.0f;
+	gSP.objRendermode = 0;
 }

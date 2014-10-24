@@ -51,7 +51,7 @@ void S2DEX_Select_DL( u32 w0, u32 w1 )
 
 void S2DEX_Obj_RenderMode( u32 w0, u32 w1 )
 {
-	LOG(LOG_WARNING, "S2DEX_Obj_RenderMode unimplemented\n");
+	gSPObjRendermode(w1);
 }
 
 void S2DEX_Obj_Rectangle_R( u32 w0, u32 w1 )

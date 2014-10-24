@@ -2453,6 +2453,11 @@ void gSPObjSubMatrix( u32 mtx )
 	gSP.objMatrix.baseScaleY = _FIXED2FLOAT(objMtx->BaseScaleY, 10);
 }
 
+void gSPObjRendermode(u32 _mode)
+{
+	gSP.objRendermode = _mode;
+}
+
 #ifdef __VEC4_OPT
 void (*gSPTransformVertex4)(u32 v, float mtx[4][4]) =
 		gSPTransformVertex4_default;

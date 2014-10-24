@@ -104,6 +104,8 @@ struct gSPInfo
 		f32 baseScaleX, baseScaleY;
 	} objMatrix;
 
+	u32 objRendermode;
+
 	u32 vertexColorBase;
 	u32 vertexi;
 
@@ -207,6 +209,7 @@ void gSPBgRect1Cyc( u32 bg );
 void gSPBgRectCopy( u32 bg );
 void gSPObjMatrix( u32 mtx );
 void gSPObjSubMatrix( u32 mtx );
+void gSPObjRendermode(u32 _mode);
 void gSPSetDMAOffsets( u32 mtxoffset, u32 vtxoffset );
 void gSPSetDMATexOffset(u32 _addr);
 void gSPSetVertexColorBase( u32 base );

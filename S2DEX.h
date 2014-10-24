@@ -1,11 +1,19 @@
 #ifndef S2DEX_H
 #define S2DEX_H
 
-#define	G_BGLT_LOADBLOCK	0x0033
-#define	G_BGLT_LOADTILE		0xfff4
+#define	G_BGLT_LOADBLOCK		0x0033
+#define	G_BGLT_LOADTILE			0xfff4
 
-#define	G_BG_FLAG_FLIPS		0x01
-#define	G_BG_FLAG_FLIPT		0x10
+#define	G_BG_FLAG_FLIPS			0x01
+#define	G_BG_FLAG_FLIPT			0x10
+
+#define	G_OBJRM_NOTXCLAMP		0x01
+#define	G_OBJRM_XLU				0x02
+#define	G_OBJRM_ANTIALIAS		0x04
+#define	G_OBJRM_BILERP			0x08
+#define	G_OBJRM_SHRINKSIZE_1	0x10
+#define	G_OBJRM_SHRINKSIZE_2	0x20
+#define	G_OBJRM_WIDEN			0x40
 
 struct uObjScaleBg
 {
