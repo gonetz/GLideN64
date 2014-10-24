@@ -1990,22 +1990,30 @@ struct ObjCoordinates
 		const f32 frameH = _FIXED2FLOAT(_pObjScaleBg->frameH, 2);
 		const f32 scaleW = gSP.bgImage.scaleW;
 		const f32 scaleH = gSP.bgImage.scaleH;
+
+		ulx = frameX;
+		uly = frameY;
+		lrx = frameX + min((f32)gSP.bgImage.width/scaleW, frameW - 1.0f);
+		lry = frameY + min((f32)gSP.bgImage.height/scaleH, frameH - 1.0f);
+		if (gDP.otherMode.cycleType == G_CYC_COPY) {
+			lrx += 1.0f;
+			lry += 1.0f;;
+		}
+
 		uls = gSP.bgImage.imageX;
 		ult = gSP.bgImage.imageY;
-		lrs = uls + frameW * scaleW - 1.0f;
-		lrt = ult + frameH * scaleH - 1.0f;
-		//lrs = uls + gSP.bgImage.width * scaleW;
-		//lrt = ult + gSP.bgImage.height * scaleH;
+		if (gDP.otherMode.cycleType == G_CYC_COPY) {
+			lrs = uls + f32(gSP.bgImage.width - 1);
+			lrt = ult + f32(gSP.bgImage.height - 1);
+		} else {
+			lrs = uls + (lrx - ulx) * scaleW;
+			lrt = ult + (lry - uly) * scaleH;
+		}
 
 		if ((_pObjScaleBg->imageFlip & 0x01) != 0) {
-			ulx = frameX + frameW;
+			ulx = lrx;
 			lrx = frameX;
-		} else {
-			ulx = frameX;
-			lrx = frameX + frameW;
 		}
-		uly = frameY;
-		lry = frameY + frameH;
 
 		z = (gDP.otherMode.depthSource == G_ZS_PRIM) ? gDP.primDepth.z : gSP.viewport.nearz;
 		w = 1.0f;
