@@ -2122,8 +2122,10 @@ void _loadBGImage(const uObjScaleBg * _bgInfo, bool _loadScale)
 {
 	gSP.bgImage.address = RSP_SegmentToPhysical( _bgInfo->imagePtr );
 
-	gSP.bgImage.width = _bgInfo->imageW >> 2;
-	gSP.bgImage.height = _bgInfo->imageH >> 2;
+	const u32 imageW = _bgInfo->imageW >> 2;
+	gSP.bgImage.width = imageW - imageW%2;
+	const u32 imageH = _bgInfo->imageH >> 2;
+	gSP.bgImage.height = imageH - imageH%2;
 	gSP.bgImage.format = _bgInfo->imageFmt;
 	gSP.bgImage.size = _bgInfo->imageSiz;
 	gSP.bgImage.palette = _bgInfo->imagePal;
