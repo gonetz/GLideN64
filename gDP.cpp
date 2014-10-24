@@ -16,6 +16,7 @@
 #include "DepthBuffer.h"
 #include "VI.h"
 #include "Config.h"
+#include "Combiner.h"
 
 #define DEPTH_CLEAR_COLOR 0xfffcfffc // The value usually used to clear depth buffer
 
@@ -815,7 +816,14 @@ void gDPFillRectangle( s32 ulx, s32 uly, s32 lrx, s32 lry )
 		}
 	}
 
-	render.drawRect(ulx, uly, lrx, lry, (gDP.otherMode.cycleType == G_CYC_FILL) ? fillColor : &gDP.blendColor.r);
+	f32 * pColor = fillColor;
+	if (gDP.otherMode.cycleType != G_CYC_FILL) {
+		if (gDP.combine.mux == EncodeCombineMode(0, 0, 0, SHADE, 0, 0, 0, SHADE, 0, 0, 0, SHADE, 0, 0, 0, SHADE))
+			memset(pColor, 0, sizeof(f32)* 4);
+		else
+			pColor = &gDP.blendColor.r;
+	}
+	render.drawRect(ulx, uly, lrx, lry, pColor);
 
 	gDP.colorImage.changed = TRUE;
 	if (gDP.otherMode.cycleType == G_CYC_FILL) {
