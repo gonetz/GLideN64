@@ -1988,26 +1988,39 @@ struct ObjCoordinates
 		const f32 frameY = _FIXED2FLOAT(_pObjScaleBg->frameY, 2);
 		const f32 frameW = _FIXED2FLOAT(_pObjScaleBg->frameW, 2);
 		const f32 frameH = _FIXED2FLOAT(_pObjScaleBg->frameH, 2);
+		const f32 imageX = gSP.bgImage.imageX;
+		const f32 imageY = gSP.bgImage.imageY;
+		const f32 imageW = (f32)(_pObjScaleBg->imageW>>2);
+		const f32 imageH = (f32)(_pObjScaleBg->imageH >> 2);
+//		const f32 imageW = (f32)gSP.bgImage.width;
+//		const f32 imageH = (f32)gSP.bgImage.height;
 		const f32 scaleW = gSP.bgImage.scaleW;
 		const f32 scaleH = gSP.bgImage.scaleH;
 
 		ulx = frameX;
 		uly = frameY;
-		lrx = frameX + min((f32)gSP.bgImage.width/scaleW, frameW - 1.0f);
-		lry = frameY + min((f32)gSP.bgImage.height/scaleH, frameH - 1.0f);
+		lrx = frameX + min(imageW/scaleW, frameW) - 1.0f;
+		lry = frameY + min(imageH/scaleH, frameH) - 1.0f;
 		if (gDP.otherMode.cycleType == G_CYC_COPY) {
 			lrx += 1.0f;
 			lry += 1.0f;;
 		}
 
-		uls = gSP.bgImage.imageX;
-		ult = gSP.bgImage.imageY;
+		uls = imageX;
+		ult = imageY;
 		if (gDP.otherMode.cycleType == G_CYC_COPY) {
-			lrs = uls + f32(gSP.bgImage.width - 1);
-			lrt = ult + f32(gSP.bgImage.height - 1);
+			lrs = uls + imageW - 1.0f;
+			lrt = ult + imageH - 1.0f;
 		} else {
 			lrs = uls + (lrx - ulx) * scaleW;
 			lrt = ult + (lry - uly) * scaleH;
+			if ((gSP.objRendermode&G_OBJRM_SHRINKSIZE_1) != 0) {
+				lrs -= 1.0f / scaleW;
+				lrt -= 1.0f / scaleH;
+			} else if ((gSP.objRendermode&G_OBJRM_SHRINKSIZE_2) != 0) {
+				lrs -= 1.0f;
+				lrt -= 1.0f;
+			}
 		}
 
 		if ((_pObjScaleBg->imageFlip & 0x01) != 0) {
