@@ -821,11 +821,8 @@ bool texturedRectDepthBufferCopy(const OGLRender::TexturedRectParams & _params)
 		const u32 ulx = (u32)_params.ulx;
 		u16 * pSrc = ((u16*)TMEM) + (u32)floorf(_params.uls + 0.5f);
 		u16 *pDst = (u16*)(RDRAM + gDP.colorImage.address);
-		for (u32 x = 0; x < width; ++x) {
-			u16 c = pSrc[x];
-			c = ((c << 8) & 0xFF00) | (c >> 8);
-			pDst[(ulx + x) ^ 1] = c;
-		}
+		for (u32 x = 0; x < width; ++x)
+			pDst[(ulx + x) ^ 1] = swapword(pSrc[x]);
 
 		return true;
 	}
