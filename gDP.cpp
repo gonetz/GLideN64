@@ -697,30 +697,21 @@ void gDPLoadBlock( u32 tile, u32 uls, u32 ult, u32 lrs, u32 dxt )
 void gDPLoadTLUT( u32 tile, u32 uls, u32 ult, u32 lrs, u32 lrt )
 {
 	gDPSetTileSize( tile, uls, ult, lrs, lrt );
-
-	u16 count = (u16)((gDP.tiles[tile].lrs - gDP.tiles[tile].uls + 1) * (gDP.tiles[tile].lrt - gDP.tiles[tile].ult + 1));
+	const u16 count = (u16)((gDP.tiles[tile].lrs - gDP.tiles[tile].uls + 1) * (gDP.tiles[tile].lrt - gDP.tiles[tile].ult + 1));
 	u32 address = gDP.textureImage.address + gDP.tiles[tile].ult * gDP.textureImage.bpl + (gDP.tiles[tile].uls << gDP.textureImage.size >> 1);
-
-	u16 *dest = (u16*)&TMEM[gDP.tiles[tile].tmem];
-	u16 *src = (u16*)&RDRAM[address];
-
 	u16 pal = (u16)((gDP.tiles[tile].tmem - 256) >> 4);
+	u16 *dest = (u16*)&TMEM[gDP.tiles[tile].tmem];
 
 	int i = 0;
 	while (i < count) {
 		for (u16 j = 0; (j < 16) && (i < count); ++j, ++i) {
-			u16 color = swapword( src[i^1] );
-
-			*dest = color;
-			//dest[1] = color;
-			//dest[2] = color;
-			//dest[3] = color;
-
+			*dest = swapword(*(u16*)(RDRAM + (address ^ 2)));
+			address += 2;
 			dest += 4;
 		}
 
 		gDP.paletteCRC16[pal] = CRC_CalculatePalette(0xFFFFFFFF, &TMEM[256 + (pal << 4)], 16);
-		pal++;
+		++pal;
 	}
 
 	gDP.paletteCRC256 = CRC_Calculate(0xFFFFFFFF, gDP.paletteCRC16, 64);
