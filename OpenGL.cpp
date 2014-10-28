@@ -856,6 +856,27 @@ bool texturedRectBGCopy(const OGLRender::TexturedRectParams & _params)
 	return true;
 }
 
+static
+bool texturedRectPaletteMod(const OGLRender::TexturedRectParams & _params)
+{
+	if (gDP.scissor.lrx != 16 || gDP.scissor.lry != 1 || _params.lrx != 16 || _params.lry != 1)
+		return false;
+	u8 envr = (u8)(gDP.envColor.r * 31.0f);
+	u8 envg = (u8)(gDP.envColor.g * 31.0f);
+	u8 envb = (u8)(gDP.envColor.b * 31.0f);
+	u16 env16 = (u16)((envr << 11) | (envg << 6) | (envb << 1) | 1);
+	u8 prmr = (u8)(gDP.primColor.r * 31.0f);
+	u8 prmg = (u8)(gDP.primColor.g * 31.0f);
+	u8 prmb = (u8)(gDP.primColor.b * 31.0f);
+	u16 prim16 = (u16)((prmr << 11) | (prmg << 6) | (prmb << 1) | 1);
+	u16 * src = (u16*)&TMEM[256];
+	u16 * dst = (u16*)(RDRAM + gDP.colorImage.address);
+	for (int i = 0; i < 64; i += 4) {
+		dst[i ^ 1] = (src[i] & 0x100) ? prim16 : env16;
+	}
+	return true;
+}
+
 // Special processing of textured rect.
 // Return true if actuial rendering is not necessary
 bool(*texturedRectSpecial)(const OGLRender::TexturedRectParams & _params) = NULL;
@@ -1121,6 +1142,8 @@ void OGLRender::_setSpecialTexrect() const
 		texturedRectSpecial = texturedRectDepthBufferCopy; // See comments to that function!
 	else if (strstr(name, (const char *)"YOSHI STORY"))
 		texturedRectSpecial = texturedRectBGCopy;
+	else if (strstr(name, (const char *)"PAPER MARIO") || strstr(name, (const char *)"MARIO STORY"))
+		texturedRectSpecial = texturedRectPaletteMod;
 	else
 		texturedRectSpecial = NULL;
 }
