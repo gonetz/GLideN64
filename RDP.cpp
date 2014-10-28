@@ -178,7 +178,7 @@ void RDP_SetConvert( u32 w0, u32 w1 )
 {
 	gDPSetConvert( _SHIFTR( w0, 13, 9 ),	// k0
 				   _SHIFTR( w0,  4, 9 ),	// k1
-				   _SHIFTL( w0,  5, 4 ) | _SHIFTR( w1, 25, 5 ),	// k2
+				   _SHIFTL( w0,  5, 4 ) | _SHIFTR( w1, 27, 5 ),	// k2
 				   _SHIFTR( w1, 18, 9 ),	// k3
 				   _SHIFTR( w1,  9, 9 ),	// k4
 				   _SHIFTR( w1,  0, 9 ) );	// k5
