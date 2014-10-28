@@ -147,12 +147,32 @@ inline u32 GetI8_RGBA4444( u64 *src, u16 x, u16 i, u8 palette )
 
 inline u32 GetRGBA5551_RGBA8888( u64 *src, u16 x, u16 i, u8 palette )
 {
-	return RGBA5551_RGBA8888( ((u16*)src)[x^i] );
+	u16 tex = ((u16*)src)[x^i];
+	switch (gDP.otherMode.textureLUT) {
+		case G_TT_NONE:
+			return RGBA5551_RGBA8888(tex);
+		case G_TT_RGBA16:
+			return RGBA5551_RGBA8888(*(u16*)&TMEM[256 + (tex>>8)]);
+		case G_TT_IA16:
+			tex = (*(u16*)&TMEM[256 + (tex >> 8)])>>8;
+			return (tex<<24)|(tex<<16)|(tex<<8)|tex;
+	}
+	return RGBA5551_RGBA8888(tex);
 }
 
 inline u32 GetRGBA5551_RGBA5551( u64 *src, u16 x, u16 i, u8 palette )
 {
-	return RGBA5551_RGBA5551( ((u16*)src)[x^i] );
+	u16 tex = ((u16*)src)[x^i];
+	switch (gDP.otherMode.textureLUT) {
+		case G_TT_NONE:
+			return RGBA5551_RGBA5551(tex);
+		case G_TT_RGBA16:
+			return RGBA5551_RGBA5551(*(u16*)&TMEM[256 + (tex >> 8)]);
+		case G_TT_IA16:
+			tex = (*(u16*)&TMEM[256 + (tex >> 8)]) >> 11;
+			return (1 << 15) | (tex << 10) | (tex << 5) | tex;
+	}
+	return RGBA5551_RGBA5551(tex);
 }
 
 inline u32 GetIA88_RGBA8888( u64 *src, u16 x, u16 i, u8 palette )
