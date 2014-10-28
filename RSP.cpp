@@ -272,6 +272,9 @@ void RSP_Init()
 	while (RSP.romname[strlen(RSP.romname) - 1] == ' ')
 		RSP.romname[strlen(RSP.romname) - 1] = 0;
 
+	if (strstr(RSP.romname, (const char *)"OgreBattle64"))
+		config.hacks |= hack_Ogre64;
+
 	memset(&gSP, 0, sizeof(gSPInfo));
 
 	gDP.loadTile = &gDP.tiles[7];

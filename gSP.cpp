@@ -2078,6 +2078,68 @@ void gSPDrawObjRect(const ObjCoordinates & _coords)
 	gDP.colorImage.height = (u32)(max(gDP.colorImage.height, (u32)gDP.scissor.lry));
 }
 
+static
+u16 _YUVtoRGBA(u8 y, u8 u, u8 v)
+{
+	float r = y + (1.370705f * (v - 128));
+	float g = y - (0.698001f * (v - 128)) - (0.337633f * (u - 128));
+	float b = y + (1.732446f * (u - 128));
+	r *= 0.125f;
+	g *= 0.125f;
+	b *= 0.125f;
+	//clipping the result
+	if (r > 32) r = 32;
+	if (g > 32) g = 32;
+	if (b > 32) b = 32;
+	if (r < 0) r = 0;
+	if (g < 0) g = 0;
+	if (b < 0) b = 0;
+
+	u16 c = (u16)(((u16)(r) << 11) |
+		((u16)(g) << 6) |
+		((u16)(b) << 1) | 1);
+	return c;
+}
+
+static
+void _drawYUVImageToFrameBuffer(const ObjCoordinates & _objCoords)
+{
+	const u32 ulx = (u32)_objCoords.ulx;
+	const u32 uly = (u32)_objCoords.uly;
+	const u32 lrx = (u32)_objCoords.lrx;
+	const u32 lry = (u32)_objCoords.lry;
+	const u32 ci_width = gDP.colorImage.width;
+	const u32 ci_height = gDP.colorImage.height;
+	if (ulx >= ci_width)
+		return;
+	if (uly >= ci_height)
+		return;
+	u32 width = 16, height = 16;
+	if (lrx > ci_width)
+		width = ci_width - ulx;
+	if (lry > ci_height)
+		height = ci_height - uly;
+	u32 * mb = (u32*)(RDRAM + gDP.textureImage.address); //pointer to the first macro block
+	u16 * dst = (u16*)(RDRAM + gDP.colorImage.address);
+	dst += ulx + uly * ci_width;
+	//yuv macro block contains 16x16 texture. we need to put it in the proper place inside cimg
+	for (u16 h = 0; h < 16; h++) {
+		for (u16 w = 0; w < 16; w += 2) {
+			u32 t = *(mb++); //each u32 contains 2 pixels
+			if ((h < height) && (w < width)) //clipping. texture image may be larger than color image
+			{
+				u8 y0 = (u8)t & 0xFF;
+				u8 v = (u8)(t >> 8) & 0xFF;
+				u8 y1 = (u8)(t >> 16) & 0xFF;
+				u8 u = (u8)(t >> 24) & 0xFF;
+				*(dst++) = _YUVtoRGBA(y0, u, v);
+				*(dst++) = _YUVtoRGBA(y1, u, v);
+			}
+		}
+		dst += ci_width - 16;
+	}
+}
+
 void gSPObjRectangle(u32 sp)
 {
 	u32 address = RSP_SegmentToPhysical(sp);
@@ -2093,6 +2155,9 @@ void gSPObjRectangleR(u32 sp)
 	const uObjSprite *objSprite = (uObjSprite*)&RDRAM[address];
 	gSPSetSpriteTile(objSprite);
 	ObjCoordinates objCoords(objSprite, true);
+
+	if (objSprite->imageFmt == G_IM_FMT_YUV && (config.hacks&hack_Ogre64)) //Ogre Battle needs to copy YUV texture to frame buffer
+		_drawYUVImageToFrameBuffer(objCoords);
 	gSPDrawObjRect(objCoords);
 }
 

@@ -42,6 +42,8 @@ struct Config
 	u32 hacks;
 };
 
+#define hack_Ogre64	(1<<0)  //Ogre Battle 64
+
 extern Config config;
 
 void Config_LoadConfig();
