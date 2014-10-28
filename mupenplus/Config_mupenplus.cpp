@@ -105,6 +105,7 @@ void Config_LoadConfig()
 	config.frameBufferEmulation.copyFromRDRAM = ConfigGetParamBool(g_configVideoGliden64, "EnableCopyColorFromRDRAM");
 	config.frameBufferEmulation.ignoreCFB = ConfigGetParamBool(g_configVideoGliden64, "EnableIgnoreCFB");
 	config.frameBufferEmulation.N64DepthCompare = ConfigGetParamBool(g_configVideoGliden64, "EnableN64DepthCompare");
+	config.hacks = 0;
 }
 
 #if 0

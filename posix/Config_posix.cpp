@@ -475,6 +475,7 @@ void Config_LoadConfig()
 	config.frameBufferEmulation.ignoreCFB = TRUE;
 	config.frameBufferEmulation.N64DepthCompare = FALSE;
 	config.enableLOD = TRUE;
+	config.hacks = 0;
 }
 
 void Config_DoConfig(HWND /*hParent*/)
