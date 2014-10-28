@@ -175,6 +175,53 @@ inline u32 GetRGBA8888_RGBA4444( u64 *src, u16 x, u16 i, u8 palette )
 	return RGBA8888_RGBA4444(((u32*)src)[x^i]);
 }
 
+u32 YUV_RGBA8888(u8 y, u8 u, u8 v)
+{
+	s32 r = (s32)(y + (1.370705f * (v - 128)));
+	s32 g = (s32)((y - (0.698001f * (v - 128)) - (0.337633f * (u - 128))));
+	s32 b = (s32)(y + (1.732446f * (u - 128)));
+	//clipping the result
+	if (r > 255) r = 255;
+	if (g > 255) g = 255;
+	if (b > 255) b = 255;
+	if (r < 0) r = 0;
+	if (g < 0) g = 0;
+	if (b < 0) b = 0;
+
+	return (0xff << 24) | (b << 16) | (g << 8) | r;
+}
+
+u16 YUV_RGBA4444(u8 y, u8 u, u8 v)
+{
+	return RGBA8888_RGBA4444(YUV_RGBA8888(y, u, v));
+}
+
+inline void GetYUV_RGBA8888(u64 * src, u32 * dst, u16 x)
+{
+	const u32 t = (((u32*)src)[x]);
+	u8 y1 = (u8)t & 0xFF;
+	u8 v = (u8)(t >> 8) & 0xFF;
+	u8 y0 = (u8)(t >> 16) & 0xFF;
+	u8 u = (u8)(t >> 24) & 0xFF;
+	u32 c = YUV_RGBA8888(y0, u, v);
+	*(dst++) = c;
+	c = YUV_RGBA8888(y1, u, v);
+	*(dst++) = c;
+}
+
+inline void GetYUV_RGBA4444(u64 * src, u16 * dst, u16 x)
+{
+	const u32 t = (((u32*)src)[x]);
+	u8 y1 = (u8)t & 0xFF;
+	u8 v = (u8)(t >> 8) & 0xFF;
+	u8 y0 = (u8)(t >> 16) & 0xFF;
+	u8 u = (u8)(t >> 24) & 0xFF;
+	u16 c = YUV_RGBA4444(y0, u, v);
+	*(dst++) = c;
+	c = YUV_RGBA4444(y1, u, v);
+	*(dst++) = c;
+}
+
 const struct
 {
 	GetTexelFunc	Get16;
@@ -478,7 +525,7 @@ void TextureCache::_load(u32 _tile , CachedTexture *_pTexture)
 
 		if (tmptex.size == G_IM_SIZ_32b) {
 			const u16 * tmem16 = (u16*)TMEM;
-			const u32 tbase =  tmptex.tMem << 2;
+			const u32 tbase = tmptex.tMem << 2;
 
 			u32 width = (tmptex.clampWidth) << 2;
 			if (width & 15) width += 16;
@@ -504,6 +551,19 @@ void TextureCache::_load(u32 _tile , CachedTexture *_pTexture)
 					gr = swapword(tmem16[taddr]);
 					ab = swapword(tmem16[taddr | 0x400]);
 					pDest[j++] = (ab << 16) | gr;
+				}
+			}
+		} else if (tmptex.format == G_IM_FMT_YUV) {
+			j = 0;
+			line <<= 1;
+			for (y = 0; y < tmptex.realHeight; ++y) {
+				pSrc = &TMEM[tmptex.tMem] + line * y;
+				for (x = 0; x < tmptex.realWidth / 2; x++) {
+					if (glInternalFormat == GL_RGBA)
+						GetYUV_RGBA8888(pSrc, pDest + j, x);
+					else
+						GetYUV_RGBA4444(pSrc, (u16*)pDest + j, x);
+					j += 2;
 				}
 			}
 		} else {
