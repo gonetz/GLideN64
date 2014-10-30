@@ -427,13 +427,50 @@ void OGLRender::_setBlendMode() const
 
 		switch (gDP.otherMode.l >> 16)
 		{
+			// Mace objects
+			case 0x0382:
+			case 0x0091:
+			case 0x0C08: // 1080 Sky
+			case 0x0F0A: // Used LOTS of places
+			//DK64 blue prints
+			case 0x0302:
+			//Sin and Punishment
+			case 0xCB02:
+			// Battlezone
+			// clr_in * a + clr_in * (1-a)
+			case 0xC800:
+			case 0x00C0:
+			//ISS64
+			case 0xC302:
+				glBlendFunc(GL_ONE, GL_ZERO);
+				break;
+
+			//Space Invaders
 			case 0x0448: // Add
 			case 0x055A:
 				glBlendFunc( GL_ONE, GL_ONE );
 				break;
-			case 0x0C08: // 1080 Sky
-			case 0x0F0A: // Used LOTS of places
-				glBlendFunc( GL_ONE, GL_ZERO );
+
+			case 0xAF50: // LOT in Zelda: MM
+			case 0x0F5A: // LOT in Zelda: MM
+			case 0x0FA5: // Seems to be doing just blend color - maybe combiner can be used for this?
+			case 0x5055: // Used in Paper Mario intro, I'm not sure if this is right...
+				//clr_in * 0 + clr_mem * 1
+				glBlendFunc( GL_ZERO, GL_ONE );
+				break;
+
+			case 0x5F50: //clr_mem * 0 + clr_mem * (1-a)
+				glBlendFunc( GL_ZERO, GL_ONE_MINUS_SRC_ALPHA );
+				break;
+
+			case 0xF550: //clr_fog * a_fog + clr_mem * (1-a)
+			case 0x0150: // spiderman
+			case 0x0D18: //clr_in * a_fog + clr_mem * (1-a)
+				glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+				break;
+
+			case 0xC912: //40 winks, clr_in * a_fog + clr_mem * 1
+				glBlendFunc(GL_SRC_ALPHA, GL_ONE);
 				break;
 
 			case 0x0040: // Fzero
@@ -446,23 +483,6 @@ void OGLRender::_setBlendMode() const
 				glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
 				break;
 
-			case 0x0FA5: // Seems to be doing just blend color - maybe combiner can be used for this?
-			case 0x5055: // Used in Paper Mario intro, I'm not sure if this is right...
-			case 0xAF50: // LOT in Zelda: MM
-			case 0x0F5A: // LOT in Zelda: MM
-				//clr_in * 0 + clr_mem * 1
-				glBlendFunc( GL_ZERO, GL_ONE );
-				break;
-
-			case 0xF550: //clr_fog * a_fog + clr_mem * (1-a)
-			case 0x0150: // spiderman
-			case 0x0D18: //clr_in * a_fog + clr_mem * (1-a)
-				glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-				break;
-
-			case 0xC912: //40 winks, clr_in * a_fog + clr_mem * 1
-				glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-				break;
 
 			default:
 				LOG(LOG_VERBOSE, "Unhandled blend mode=%x", gDP.otherMode.l >> 16);
