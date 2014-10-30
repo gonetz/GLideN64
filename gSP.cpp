@@ -778,7 +778,7 @@ void gSPForceMatrix( u32 mptr )
 		return;
 	}
 
-	RSP_LoadMatrix( gSP.matrix.combined, RSP_SegmentToPhysical( mptr ) );
+	RSP_LoadMatrix(gSP.matrix.combined, address);
 
 	gSP.changed &= ~CHANGED_MATRIX;
 

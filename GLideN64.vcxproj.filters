@@ -180,6 +180,9 @@
     <ClCompile Include="mupenplus\MicrocodeDialog_mupenplus.cpp">
       <Filter>Source Files\mupenplus</Filter>
     </ClCompile>
+    <ClCompile Include="Turbo3D.cpp">
+      <Filter>Source Files\uCodes</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="3DMath.h">
@@ -306,6 +309,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="F3DEX2CBFD.h">
+      <Filter>Header Files\uCodes</Filter>
+    </ClInclude>
+    <ClInclude Include="Turbo3D.h">
       <Filter>Header Files\uCodes</Filter>
     </ClInclude>
   </ItemGroup>

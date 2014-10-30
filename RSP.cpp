@@ -4,6 +4,7 @@
 #include "RDP.h"
 #include "N64.h"
 #include "F3D.h"
+#include "Turbo3D.h"
 #include "VI.h"
 #include "Combiner.h"
 #include "FrameBuffer.h"
@@ -181,51 +182,53 @@ void RSP_ProcessDList()
 	gDPSetCycleType( G_CYC_1CYCLE );
 	gDPPipelineMode( G_PM_NPRIMITIVE );
 
-	while (!RSP.halt)
-	{
-		if ((RSP.PC[RSP.PCi] + 8) > RDRAMSize)
-		{
+	if (GBI.getMicrocodeType() == Turbo3D)
+		RunTurbo3D();
+	else {
+		while (!RSP.halt) {
+			if ((RSP.PC[RSP.PCi] + 8) > RDRAMSize) {
 #ifdef DEBUG
-			switch (Debug.level)
-			{
-				case DEBUG_LOW:
+				switch (Debug.level)
+				{
+					case DEBUG_LOW:
 					DebugMsg( DEBUG_LOW | DEBUG_ERROR, "ATTEMPTING TO EXECUTE RSP COMMAND AT INVALID RDRAM LOCATION\n" );
 					break;
-				case DEBUG_MEDIUM:
+					case DEBUG_MEDIUM:
 					DebugMsg( DEBUG_MEDIUM | DEBUG_ERROR, "Attempting to execute RSP command at invalid RDRAM location\n" );
 					break;
-				case DEBUG_HIGH:
+					case DEBUG_HIGH:
 					DebugMsg( DEBUG_HIGH | DEBUG_ERROR, "// Attempting to execute RSP command at invalid RDRAM location\n" );
 					break;
-			}
+				}
 #endif
-			break;
-		}
-
-//		printf( "!!!!!! RDRAM = 0x%8.8x\n", RDRAM );//RSP.PC[RSP.PCi] );
-/*		{
-			static u8 *lastRDRAM = 0;
-			if (lastRDRAM == 0)
-				lastRDRAM = RDRAM;
-			if (RDRAM != lastRDRAM)
-			{
-				__asm__( "int $3" );
+				break;
 			}
-		}*/
-		u32 w0 = *(u32*)&RDRAM[RSP.PC[RSP.PCi]];
-		u32 w1 = *(u32*)&RDRAM[RSP.PC[RSP.PCi] + 4];
-		RSP.cmd = _SHIFTR( w0, 24, 8 );
+
+			//		printf( "!!!!!! RDRAM = 0x%8.8x\n", RDRAM );//RSP.PC[RSP.PCi] );
+			/*		{
+						static u8 *lastRDRAM = 0;
+						if (lastRDRAM == 0)
+						lastRDRAM = RDRAM;
+						if (RDRAM != lastRDRAM)
+						{
+						__asm__( "int $3" );
+						}
+						}*/
+			u32 w0 = *(u32*)&RDRAM[RSP.PC[RSP.PCi]];
+			u32 w1 = *(u32*)&RDRAM[RSP.PC[RSP.PCi] + 4];
+			RSP.cmd = _SHIFTR(w0, 24, 8);
 
 #ifdef DEBUG
-		DebugRSPState( RSP.PCi, RSP.PC[RSP.PCi], _SHIFTR( w0, 24, 8 ), w0, w1 );
-		DebugMsg( DEBUG_LOW | DEBUG_HANDLED, "0x%08lX: CMD=0x%02lX W0=0x%08lX W1=0x%08lX\n", RSP.PC[RSP.PCi], _SHIFTR( w0, 24, 8 ), w0, w1 );
+			DebugRSPState( RSP.PCi, RSP.PC[RSP.PCi], _SHIFTR( w0, 24, 8 ), w0, w1 );
+			DebugMsg( DEBUG_LOW | DEBUG_HANDLED, "0x%08lX: CMD=0x%02lX W0=0x%08lX W1=0x%08lX\n", RSP.PC[RSP.PCi], _SHIFTR( w0, 24, 8 ), w0, w1 );
 #endif
 
-		RSP.PC[RSP.PCi] += 8;
-		RSP.nextCmd = _SHIFTR( *(u32*)&RDRAM[RSP.PC[RSP.PCi]], 24, 8 );
+			RSP.PC[RSP.PCi] += 8;
+			RSP.nextCmd = _SHIFTR(*(u32*)&RDRAM[RSP.PC[RSP.PCi]], 24, 8);
 
-		GBI.cmd[RSP.cmd]( w0, w1 );
-		RSP_CheckDLCounter();
+			GBI.cmd[RSP.cmd](w0, w1);
+			RSP_CheckDLCounter();
+		}
 	}
 
 	if (config.frameBufferEmulation.copyToRDRAM)

@@ -37,7 +37,8 @@ SpecialMicrocodeInfo specialMicrocodes[] =
 	{ F3DDKR,	FALSE,	0x6e6fc893, "Diddy Kong Racing" },
 	{ F3DJFG,	FALSE,	0xbde9d1fb, "Jet Force Gemini" },
 	{ F3DPD,	FALSE,	0x1c4f7869, "Perfect Dark" },
-	{ F3DEX2CBFD,TRUE,	0x1b4ace88, "Conker's Bad Fur Day"}
+	{ Turbo3D,	FALSE,	0x2bdcfc8a, "Turbo3D" },
+	{F3DEX2CBFD, TRUE, 0x1b4ace88, "Conker's Bad Fur Day"}
 };
 
 u32 G_RDPHALF_1, G_RDPHALF_2, G_RDPHALF_CONT;
@@ -157,7 +158,8 @@ void GBIInfo::_makeCurrent(MicrocodeInfo * _pCurrent)
 			case F3DJFG:	F3DJFG_Init();	break;
 			case F3DWRUS:	F3DWRUS_Init();	break;
 			case F3DPD:		F3DPD_Init();	break;
-			case F3DEX2CBFD:F3DEX2CBFD_Init();break;
+			case Turbo3D:	F3D_Init();		break;
+			case F3DEX2CBFD:F3DEX2CBFD_Init(); break;
 		}
 	}
 }

@@ -19,7 +19,8 @@
 #define F3DJFG		10
 #define F3DWRUS		11
 #define F3DEX2CBFD	12
-#define NONE		13
+#define Turbo3D		13
+#define NONE		14
 
 // Fixed point conversion factors
 #define FIXED2FLOATRECIP1	0.5f

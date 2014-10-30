@@ -284,6 +284,7 @@
     <ClCompile Include="RDP.CPP" />
     <ClCompile Include="RSP.cpp" />
     <ClCompile Include="Textures.cpp" />
+    <ClCompile Include="Turbo3D.cpp" />
     <ClCompile Include="VI.cpp" />
     <ClCompile Include="F3D.cpp" />
     <ClCompile Include="F3DDKR.cpp" />
@@ -360,6 +361,7 @@
     <ClInclude Include="RSP.h" />
     <ClInclude Include="Shaders.h" />
     <ClInclude Include="Textures.h" />
+    <ClInclude Include="Turbo3D.h" />
     <ClInclude Include="Types.h" />
     <ClInclude Include="VI.h" />
     <ClInclude Include="F3D.h" />

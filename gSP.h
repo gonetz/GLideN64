@@ -219,6 +219,7 @@ void gSPCoordMod(u32 _w0, u32 _w1);
 
 void gSPTriangleUnknown();
 
+void gSPTriangle(s32 v0, s32 v1, s32 v2);
 void gSP1Triangle(s32 v0, s32 v1, s32 v2);
 void gSP2Triangles(const s32 v00, const s32 v01, const s32 v02, const s32 flag0,
 					const s32 v10, const s32 v11, const s32 v12, const s32 flag1 );

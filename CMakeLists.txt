@@ -30,6 +30,7 @@ set(GLideN64_SOURCES
   RSP.cpp
   S2DEX2.cpp
   S2DEX.cpp
+  Turbo3D.cpp
   Textures.cpp
   VI.cpp
   common/CommonAPIImpl_common.cpp
