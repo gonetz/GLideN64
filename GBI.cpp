@@ -20,6 +20,7 @@
 #include "F3DWRUS.h"
 #include "F3DPD.h"
 #include "F3DEX2CBFD.h"
+#include "ZSort.h"
 #include "CRC.h"
 #include "Log.h"
 #include "Debug.h"
@@ -159,6 +160,7 @@ void GBIInfo::_makeCurrent(MicrocodeInfo * _pCurrent)
 			case F3DWRUS:	F3DWRUS_Init();	break;
 			case F3DPD:		F3DPD_Init();	break;
 			case Turbo3D:	F3D_Init();		break;
+			case ZSortp:	ZSort_Init();	break;
 			case F3DEX2CBFD:F3DEX2CBFD_Init(); break;
 		}
 	}
@@ -243,6 +245,9 @@ void GBIInfo::loadMicrocode(u32 uc_start, u32 uc_dstart, u16 uc_dsize)
 						type = S2DEX;
 					else if (uc_str[t] == '2')
 						type = S2DEX2;
+				}
+				else if (strncmp(&uc_str[14], "ZSortp", 6) == 0) {
+					type = ZSortp;
 				}
 			}
 

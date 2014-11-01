@@ -31,6 +31,7 @@ set(GLideN64_SOURCES
   S2DEX2.cpp
   S2DEX.cpp
   Turbo3D.cpp
+  ZSort.cpp
   Textures.cpp
   VI.cpp
   common/CommonAPIImpl_common.cpp

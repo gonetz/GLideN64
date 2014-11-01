@@ -183,6 +183,9 @@
     <ClCompile Include="Turbo3D.cpp">
       <Filter>Source Files\uCodes</Filter>
     </ClCompile>
+    <ClCompile Include="ZSort.cpp">
+      <Filter>Source Files\uCodes</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="3DMath.h">
@@ -312,6 +315,9 @@
       <Filter>Header Files\uCodes</Filter>
     </ClInclude>
     <ClInclude Include="Turbo3D.h">
+      <Filter>Header Files\uCodes</Filter>
+    </ClInclude>
+    <ClInclude Include="ZSort.h">
       <Filter>Header Files\uCodes</Filter>
     </ClInclude>
   </ItemGroup>
