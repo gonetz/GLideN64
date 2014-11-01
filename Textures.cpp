@@ -924,8 +924,8 @@ void TextureCache::update(u32 _t)
 		return;
 	}*/
 
-	clampWidth = gSP.textureTile[_t]->clamps ? tileWidth : width;
-	clampHeight = gSP.textureTile[_t]->clampt ? tileHeight : height;
+	clampWidth = (gSP.textureTile[_t]->clamps && gDP.otherMode.cycleType != G_CYC_COPY) ? tileWidth : width;
+	clampHeight = (gSP.textureTile[_t]->clampt && gDP.otherMode.cycleType != G_CYC_COPY) ? tileHeight : height;
 
 	if (clampWidth > 256)
 		gSP.textureTile[_t]->clamps = 0;
