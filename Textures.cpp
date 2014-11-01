@@ -1,3 +1,4 @@
+#include <assert.h>
 #include <memory.h>
 #include <algorithm>
 #include "OpenGL.h"
@@ -10,7 +11,8 @@
 #include "convert.h"
 #include "FrameBuffer.h"
 #include "Config.h"
-#include <assert.h>
+#include "Combiner.h"
+#include "GLSLCombiner.h"
 
 using namespace std;
 
@@ -857,13 +859,16 @@ void TextureCache::update(u32 _t)
 	{
 		u16 texRectWidth = gDP.texRect.width - gSP.textureTile[_t]->uls;
 		u16 texRectHeight = gDP.texRect.height - gSP.textureTile[_t]->ult;
-
-//		if ((tileWidth == (maskWidth + 1)) && (gDP.loadType == LOADTYPE_TILE) && (gDP.loadTile->lrs - gDP.loadTile->uls + 1 == tileWidth))
-//			gSP.textureTile[t]->masks = 0;
+		const bool bUseLoadSizes = gDP.loadTile->loadType == LOADTYPE_TILE &&
+			(gSP.textureTile[_t]->format == gDP.loadTile->format || !(currentCombiner()->usesT0() && currentCombiner()->usesT1()));
 
 		if (gSP.textureTile[_t]->masks && ((maskWidth * maskHeight) <= maxTexels))
 			width = maskWidth;
-		else if ((tileWidth * tileHeight) <= maxTexels)
+		else if (bUseLoadSizes) {
+			width = loadWidth;
+			if (gSP.textureTile[_t]->size < gDP.loadTile->size)
+				width <<= (gDP.loadTile->size - gSP.textureTile[_t]->size);
+		} else if ((tileWidth * tileHeight) <= maxTexels)
 			width = tileWidth;
 		else if ((tileWidth * texRectHeight) <= maxTexels)
 			width = tileWidth;
@@ -871,16 +876,13 @@ void TextureCache::update(u32 _t)
 			width = gDP.texRect.width;
 		else if ((texRectWidth * texRectHeight) <= maxTexels)
 			width = gDP.texRect.width;
-		else if (gSP.textureTile[_t]->loadType == LOADTYPE_TILE)
-			width = loadWidth;
 		else
 			width = lineWidth;
 
-//		if ((tileHeight == (maskHeight + 1)) && (gDP.loadType == LOADTYPE_TILE) && (gDP.loadTile->lrt - gDP.loadTile->ult + 1 == tileHeight))
-//			gSP.textureTile[t]->maskt = 0;
-
 		if (gSP.textureTile[_t]->maskt && ((maskWidth * maskHeight) <= maxTexels))
 			height = maskHeight;
+		else if (bUseLoadSizes)
+			height = loadHeight;
 		else if ((tileWidth * tileHeight) <= maxTexels)
 			height = tileHeight;
 		else if ((tileWidth * texRectHeight) <= maxTexels)
@@ -889,8 +891,6 @@ void TextureCache::update(u32 _t)
 			height = tileHeight;
 		else if ((texRectWidth * texRectHeight) <= maxTexels)
 			height = gDP.texRect.height;
-		else if (gSP.textureTile[_t]->loadType == LOADTYPE_TILE)
-			height = loadHeight;
 		else
 			height = lineHeight;
 
