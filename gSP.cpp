@@ -1543,19 +1543,22 @@ void gSPPopMatrixN( u32 param, u32 num )
 
 void gSPPopMatrix( u32 param )
 {
-	if (gSP.matrix.modelViewi > 0) {
-		gSP.matrix.modelViewi--;
+	switch (param) {
+	case 0: // modelview
+		if (gSP.matrix.modelViewi > 0) {
+			gSP.matrix.modelViewi--;
 
-		gSP.changed |= CHANGED_MATRIX;
-	}
-#ifdef DEBUG
-	else
+			gSP.changed |= CHANGED_MATRIX;
+		}
+	break;
+	case 1: // projection, can't
+	break;
+	default:
 		DebugMsg( DEBUG_HIGH | DEBUG_ERROR | DEBUG_MATRIX, "// Attempting to pop matrix stack below 0\n" );
-
-	DebugMsg( DEBUG_HIGH | DEBUG_HANDLED | DEBUG_MATRIX, "gSPPopMatrix( %s );\n",
-		(param == G_MTX_MODELVIEW) ? "G_MTX_MODELVIEW" :
-		(param == G_MTX_PROJECTION) ? "G_MTX_PROJECTION" : "G_MTX_INVALID" );
-#endif
+		DebugMsg( DEBUG_HIGH | DEBUG_HANDLED | DEBUG_MATRIX, "gSPPopMatrix( %s );\n",
+			(param == G_MTX_MODELVIEW) ? "G_MTX_MODELVIEW" :
+			(param == G_MTX_PROJECTION) ? "G_MTX_PROJECTION" : "G_MTX_INVALID" );
+	}
 }
 
 void gSPSegment( s32 seg, s32 base )
