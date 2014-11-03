@@ -11,8 +11,6 @@
 #include "convert.h"
 #include "FrameBuffer.h"
 #include "Config.h"
-#include "Combiner.h"
-#include "GLSLCombiner.h"
 
 using namespace std;
 
@@ -860,7 +858,7 @@ void TextureCache::update(u32 _t)
 		u16 texRectWidth = gDP.texRect.width - gSP.textureTile[_t]->uls;
 		u16 texRectHeight = gDP.texRect.height - gSP.textureTile[_t]->ult;
 		const bool bUseLoadSizes = gDP.loadTile->loadType == LOADTYPE_TILE &&
-			(gSP.textureTile[_t]->format == gDP.loadTile->format || !(currentCombiner()->usesT0() && currentCombiner()->usesT1()));
+			(gSP.textureTile[_t]->tmem == gDP.loadTile->tmem);
 
 		if (gSP.textureTile[_t]->masks && ((maskWidth * maskHeight) <= maxTexels))
 			width = maskWidth;
