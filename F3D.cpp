@@ -300,11 +300,6 @@ void F3D_ClearGeometryMode( u32 w0, u32 w1 )
 	gSPClearGeometryMode( w1 );
 }
 
-void F3D_Line3D( u32 w0, u32 w1 )
-{
-	// Hmmm...
-}
-
 void F3D_Quad( u32 w0, u32 w1 )
 {
 	gSP1Quadrangle( _SHIFTR( w1, 24, 8 ) / 10, _SHIFTR( w1, 16, 8 ) / 10, _SHIFTR( w1, 8, 8 ) / 10, _SHIFTR( w1, 0, 8 ) / 10 );
