@@ -944,7 +944,7 @@ void gDPTextureRectangle( f32 ulx, f32 uly, f32 lrx, f32 lry, s32 tile, f32 s, f
 	textureTileOrg[0] = gSP.textureTile[0];
 	textureTileOrg[1] = gSP.textureTile[1];
 	gSP.textureTile[0] = &gDP.tiles[tile];
-	gSP.textureTile[1] = &gDP.tiles[tile < 7 ? tile + 1 : tile];
+	gSP.textureTile[1] = &gDP.tiles[(tile + 1) & 7];
 
 	if (gSP.textureTile[0]->textureMode == TEXTUREMODE_NORMAL)
 		gSP.textureTile[0]->textureMode = TEXTUREMODE_TEXRECT;
@@ -1057,7 +1057,7 @@ void gDPLLETriangle(u32 _w1, u32 _w2, int _shade, int _texture, int _zbuffer, u3
 	textureTileOrg[0] = gSP.textureTile[0];
 	textureTileOrg[1] = gSP.textureTile[1];
 	gSP.textureTile[0] = &gDP.tiles[tile];
-	gSP.textureTile[1] = &gDP.tiles[tile < 7 ? tile + 1 : tile];
+	gSP.textureTile[1] = &gDP.tiles[(tile + 1) & 7];
 
 	int j;
 	int xleft, xright, xleft_inc, xright_inc;

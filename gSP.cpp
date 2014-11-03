@@ -1764,7 +1764,7 @@ void gSPTexture( f32 sc, f32 tc, s32 level, s32 tile, s32 on )
 
 	gSP.texture.tile = tile;
 	gSP.textureTile[0] = &gDP.tiles[tile];
-	gSP.textureTile[1] = &gDP.tiles[(tile < 7) ? (tile + 1) : tile];
+	gSP.textureTile[1] = &gDP.tiles[(tile + 1) & 7];
 
 	gSP.changed |= CHANGED_TEXTURE;
 

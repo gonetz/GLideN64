@@ -97,7 +97,7 @@ void Turbo3D_LoadObject(u32 pstate, u32 pvtx, u32 ptri)
 	const u32 tile = (ostate->textureState)&7;
 	gSP.texture.tile = tile;
 	gSP.textureTile[0] = &gDP.tiles[tile];
-	gSP.textureTile[1] = &gDP.tiles[(tile < 7) ? (tile + 1) : tile];
+	gSP.textureTile[1] = &gDP.tiles[(tile + 1) & 7];
 	gSP.texture.scales = 1.0f;
 	gSP.texture.scalet = 1.0f;
 
