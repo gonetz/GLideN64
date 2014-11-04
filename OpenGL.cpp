@@ -776,8 +776,7 @@ void OGLRender::drawRect(int _ulx, int _uly, int _lrx, int _lry, float *_pColor)
 
 	if (updateArrays) {
 		glVertexAttrib4f(SC_COLOR, 0, 0, 0, 0);
-		glVertexAttrib4f(SC_POSITION, 0, 0, (gDP.otherMode.depthSource == G_ZS_PRIM) ? gDP.primDepth.z : gSP.viewport.nearz, 1.0);
-		glVertexAttribPointer(SC_POSITION, 2, GL_FLOAT, GL_FALSE, sizeof(GLVertex), &m_rect[0].x);
+		glVertexAttribPointer(SC_POSITION, 4, GL_FLOAT, GL_FALSE, sizeof(GLVertex), &m_rect[0].x);
 		currentCombiner()->updateRenderState();
 	}
 
@@ -794,14 +793,24 @@ void OGLRender::drawRect(int _ulx, int _uly, int _lrx, int _lry, float *_pColor)
 
 	const float scaleX = fbList.isFboMode() ? 1.0f/pBuffer->m_width :  VI.rwidth;
 	const float scaleY = fbList.isFboMode() ? 1.0f/pBuffer->m_height :  VI.rheight;
-	m_rect[0].x = (float) _ulx * (2.0f * scaleX) - 1.0;
-	m_rect[0].y = (float) _uly * (-2.0f * scaleY) + 1.0;
-	m_rect[1].x = (float) (_lrx+1) * (2.0f * scaleX) - 1.0;
+	const float Z = (gDP.otherMode.depthSource == G_ZS_PRIM) ? gDP.primDepth.z : gSP.viewport.nearz;
+	const float W = 1.0f;
+	m_rect[0].x = (float)_ulx * (2.0f * scaleX) - 1.0;
+	m_rect[0].y = (float)_uly * (-2.0f * scaleY) + 1.0;
+	m_rect[0].z = Z;
+	m_rect[0].w = W;
+	m_rect[1].x = (float)(_lrx + 1) * (2.0f * scaleX) - 1.0;
 	m_rect[1].y = m_rect[0].y;
+	m_rect[1].z = Z;
+	m_rect[1].w = W;
 	m_rect[2].x = m_rect[0].x;
-	m_rect[2].y = (float) (_lry+1) * (-2.0f * scaleY) + 1.0;
+	m_rect[2].y = (float)(_lry + 1) * (-2.0f * scaleY) + 1.0;
+	m_rect[2].z = Z;
+	m_rect[2].w = W;
 	m_rect[3].x = m_rect[1].x;
 	m_rect[3].y = m_rect[2].y;
+	m_rect[3].z = Z;
+	m_rect[3].w = W;
 
 	glVertexAttrib4fv(SC_COLOR, _pColor);
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
@@ -918,8 +927,7 @@ void OGLRender::drawTexturedRect(const TexturedRectParams & _params)
 		StateChanges++;
 #endif
 		glVertexAttrib4f(SC_COLOR, 0, 0, 0, 0);
-		glVertexAttrib4f(SC_POSITION, 0, 0, (gDP.otherMode.depthSource == G_ZS_PRIM) ? gDP.primDepth.z : gSP.viewport.nearz, 1.0);
-		glVertexAttribPointer(SC_POSITION, 2, GL_FLOAT, GL_FALSE, sizeof(GLVertex), &m_rect[0].x);
+		glVertexAttribPointer(SC_POSITION, 4, GL_FLOAT, GL_FALSE, sizeof(GLVertex), &m_rect[0].x);
 		glVertexAttribPointer(SC_TEXCOORD0, 2, GL_FLOAT, GL_FALSE, sizeof(GLVertex), &m_rect[0].s0);
 		glVertexAttribPointer(SC_TEXCOORD1, 2, GL_FLOAT, GL_FALSE, sizeof(GLVertex), &m_rect[0].s1);
 		currentCombiner()->updateRenderState();
@@ -939,14 +947,24 @@ void OGLRender::drawTexturedRect(const TexturedRectParams & _params)
 
 	const float scaleX = fbList.isFboMode() ? 1.0f/pBuffer->m_width :  VI.rwidth;
 	const float scaleY = fbList.isFboMode() ? 1.0f/pBuffer->m_height :  VI.rheight;
+	const float Z = (gDP.otherMode.depthSource == G_ZS_PRIM) ? gDP.primDepth.z : gSP.viewport.nearz;
+	const float W = 1.0f;
 	m_rect[0].x = (float)_params.ulx * (2.0f * scaleX) - 1.0f;
 	m_rect[0].y = (float)_params.uly * (-2.0f * scaleY) + 1.0f;
+	m_rect[0].z = Z;
+	m_rect[0].w = W;
 	m_rect[1].x = (float)(_params.lrx) * (2.0f * scaleX) - 1.0f;
 	m_rect[1].y = m_rect[0].y;
+	m_rect[1].z = Z;
+	m_rect[1].w = W;
 	m_rect[2].x = m_rect[0].x;
 	m_rect[2].y = (float)(_params.lry) * (-2.0f * scaleY) + 1.0f;
+	m_rect[2].z = Z;
+	m_rect[2].w = W;
 	m_rect[3].x = m_rect[1].x;
 	m_rect[3].y = m_rect[2].y;
+	m_rect[3].z = Z;
+	m_rect[3].w = W;
 
 	TextureCache & cache = textureCache();
 	if (currentCombiner()->usesT0() && cache.current[0] && gSP.textureTile[0]) {
