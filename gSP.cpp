@@ -326,7 +326,7 @@ void gSPProcessVertex4(u32 v)
 	}
 	gSPTransformVertex4(v, gSP.matrix.combined );
 
-	if (gDP.otherMode.depthSource) {
+	if (gDP.otherMode.depthSource == G_ZS_PRIM) {
 		for(int i = 0; i < 4; ++i) {
 			SPVertex & vtx = render.getVertex(v+i);
 			vtx.z = gDP.primDepth.z * vtx.w;
@@ -557,7 +557,7 @@ void gSPProcessVertex(u32 v)
 	float vPos[3] = {(float)vtx.x, (float)vtx.y, (float)vtx.z};
 	gSPTransformVertex( &vtx.x, gSP.matrix.combined );
 
-	if (gDP.otherMode.depthSource)
+	if (gDP.otherMode.depthSource == G_ZS_PRIM)
 		vtx.z = gDP.primDepth.z * vtx.w;
 
 	if (gSP.matrix.billboard) {
