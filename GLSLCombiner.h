@@ -39,7 +39,7 @@ private:
 			uEnableDepth, uEnableDepthCompare, uEnableDepthUpdate,
 			uDepthMode, uFb8Bit, uFbFixedAlpha, uRenderState,
 			uMaxTile, uTextureDetail, uTexturePersp,
-			uAlphaCompareMode, uAlphaDitherMode, uColorDitherMode;
+			uAlphaCompareMode, uAlphaDitherMode, uColorDitherMode, uGammaCorrectionEnabled;
 
 		fUniform uFogMultiplier, uFogOffset, uK4, uK5, uPrimLod, uNoiseTime, uScreenWidth, uScreenHeight,
 			uLodXScale, uLodYScale, uMinLod, uDepthTrans, uDepthScale, uAlphaTestValue;

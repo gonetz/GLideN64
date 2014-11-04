@@ -446,6 +446,8 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 #endif
 	strFragmentShader.append("  if (uFogUsage == 1) \n");
 	strFragmentShader.append("    fragColor = vec4(mix(fragColor.rgb, uFogColor.rgb, vFogFragCoord), fragColor.a); \n");
+	strFragmentShader.append("  if (uGammaCorrectionEnabled != 0) \n");
+	strFragmentShader.append("    fragColor = vec4(sqrt(fragColor.rgb), fragColor.a); \n");
 
 	strFragmentShader.append(fragment_shader_end);
 
@@ -508,6 +510,7 @@ void ShaderCombiner::_locateUniforms() {
 	LocateUniform(uAlphaCompareMode);
 	LocateUniform(uAlphaDitherMode);
 	LocateUniform(uColorDitherMode);
+	LocateUniform(uGammaCorrectionEnabled);
 	LocateUniform(uEnableLod);
 	LocateUniform(uEnableAlphaTest);
 	LocateUniform(uEnableDepth);
@@ -667,6 +670,7 @@ void ShaderCombiner::updateColors(bool _bForce)
 	_setIUniform(m_uniforms.uAlphaCompareMode, gDP.otherMode.alphaCompare, _bForce);
 	_setIUniform(m_uniforms.uAlphaDitherMode, gDP.otherMode.alphaDither, _bForce);
 	_setIUniform(m_uniforms.uColorDitherMode, gDP.otherMode.colorDither, _bForce);
+	_setIUniform(m_uniforms.uGammaCorrectionEnabled, *REG.VI_STATUS & 8, _bForce);
 
 	const int nDither = (gDP.otherMode.cycleType < G_CYC_COPY) && (gDP.otherMode.colorDither == G_CD_NOISE || gDP.otherMode.alphaDither == G_AD_NOISE || gDP.otherMode.alphaCompare == G_AC_DITHER) ? 1 : 0;
 	if ((m_nInputs & (1<<NOISE)) + nDither != 0)
