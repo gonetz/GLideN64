@@ -29,6 +29,11 @@ u32 last_good_ucode = (u32) -1;
 
 SpecialMicrocodeInfo specialMicrocodes[] =
 {
+	{ F3D,		FALSE,	0xe62a706d, "Fast3D" },
+	{ F3D,		FALSE,	0x7d372819, "Fast3D" },
+	{ F3D,		FALSE,	0x2edee7be, "Fast3D" },
+	{ F3D,		FALSE,	0xe01e14be, "Fast3D" },
+
 	{ F3DWRUS,	FALSE,	0xd17906e2, "RSP SW Version: 2.0D, 04-01-96" },
 	{ F3DWRUS,	FALSE,	0x94c4c833, "RSP SW Version: 2.0D, 04-01-96" },
 
@@ -39,7 +44,7 @@ SpecialMicrocodeInfo specialMicrocodes[] =
 	{ F3DJFG,	FALSE,	0xbde9d1fb, "Jet Force Gemini" },
 	{ F3DPD,	FALSE,	0x1c4f7869, "Perfect Dark" },
 	{ Turbo3D,	FALSE,	0x2bdcfc8a, "Turbo3D" },
-	{F3DEX2CBFD, TRUE, 0x1b4ace88, "Conker's Bad Fur Day"}
+	{ F3DEX2CBFD, TRUE, 0x1b4ace88, "Conker's Bad Fur Day" }
 };
 
 u32 G_RDPHALF_1, G_RDPHALF_2, G_RDPHALF_CONT;
