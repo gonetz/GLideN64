@@ -668,7 +668,7 @@ void ShaderCombiner::updateColors(bool _bForce)
 	_setIUniform(m_uniforms.uAlphaDitherMode, gDP.otherMode.alphaDither, _bForce);
 	_setIUniform(m_uniforms.uColorDitherMode, gDP.otherMode.colorDither, _bForce);
 
-	const int nDither = (gDP.otherMode.colorDither == 2 || gDP.otherMode.alphaDither == 2 || gDP.otherMode.alphaCompare == 3) ? 1 : 0;
+	const int nDither = (gDP.otherMode.cycleType < G_CYC_COPY) && (gDP.otherMode.colorDither == G_CD_NOISE || gDP.otherMode.alphaDither == G_AD_NOISE || gDP.otherMode.alphaCompare == G_AC_DITHER) ? 1 : 0;
 	if ((m_nInputs & (1<<NOISE)) + nDither != 0)
 		_setFUniform(m_uniforms.uNoiseTime, (float)(rand()&255), _bForce);
 
