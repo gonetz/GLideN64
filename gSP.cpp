@@ -1650,7 +1650,7 @@ void gSPModifyVertex( u32 _vtx, u32 _where, u32 _val )
 			vtx0.g = _SHIFTR( _val, 16, 8 ) * 0.0039215689f;
 			vtx0.b = _SHIFTR( _val, 8, 8 ) * 0.0039215689f;
 			vtx0.a = _SHIFTR( _val, 0, 8 ) * 0.0039215689f;
-			break;
+		break;
 		case G_MWO_POINT_ST:
 			if (gDP.otherMode.texturePersp != 0) {
 				vtx0.s = _FIXED2FLOAT( (s16)_SHIFTR( _val, 16, 16 ), 5 );
@@ -1660,19 +1660,24 @@ void gSPModifyVertex( u32 _vtx, u32 _where, u32 _val )
 				vtx0.t = _FIXED2FLOAT( (s16)_SHIFTR( _val, 0, 16 ), 6 );
 			}
 			vtx0.st_scaled = 1;
-			break;
+		break;
 		case G_MWO_POINT_XYSCREEN:
-#ifdef DEBUG
-			DebugMsg( DEBUG_HIGH | DEBUG_UNHANDLED, "gSPModifyVertex( %i, %s, 0x%08X );\n",
-				_vtx, MWOPointText[(_where - 0x10) >> 2], _val );
-#endif
-			break;
+		{
+			f32 scrX = _FIXED2FLOAT( (s16)_SHIFTR( _val, 16, 16 ), 2 );
+			f32 scrY = _FIXED2FLOAT( (s16)_SHIFTR( _val, 0, 16 ), 2 );
+			vtx0.x = (scrX - gSP.viewport.vtrans[0]) / gSP.viewport.vscale[0];
+			vtx0.x *= vtx0.w;
+			vtx0.y = -(scrY - gSP.viewport.vtrans[1]) / gSP.viewport.vscale[1];
+			vtx0.y *= vtx0.w;
+		}
+		break;
 		case G_MWO_POINT_ZSCREEN:
-#ifdef DEBUG
-			DebugMsg( DEBUG_HIGH | DEBUG_UNHANDLED, "gSPModifyVertex( %i, %s, 0x%08X );\n",
-				_vtx, MWOPointText[(_where - 0x10) >> 2], _val );
-#endif
-			break;
+		{
+			f32 scrZ = (f32)((s16)(_val>>16));
+			vtx0.z = (scrZ - gSP.viewport.vtrans[2]) / gSP.viewport.vscale[2];
+			vtx0.z *= vtx0.w;
+		}
+		break;
 	}
 }
 
