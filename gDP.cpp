@@ -659,7 +659,9 @@ void gDPLoadBlock32(u32 uls, u32 ult, u32 lrs, u32 dxt)
 	u16 *tmem16 = (u16*)TMEM;
 	u32 addr = gDP.loadTile->imageAddress >> 2;
 	u32 width = (lrs - uls + 1) << 2;
-	if (width & 7)
+	if (width == 4) // lr_s == 0, 1x1 texture
+		width = 1;
+	else if (width & 7)
 		width = (width & (~7)) + 8;
 
 	if (dxt != 0) {
@@ -668,7 +670,6 @@ void gDPLoadBlock32(u32 uls, u32 ult, u32 lrs, u32 dxt)
 		u32 oldt = 0;
 		u32 ptr;
 
-		addr += (ult * tiwindwords) + slindwords;
 		u32 c = 0;
 		for (u32 i = 0; i < width; i += 2) {
 			oldt = t;
@@ -686,7 +687,6 @@ void gDPLoadBlock32(u32 uls, u32 ult, u32 lrs, u32 dxt)
 			j += dxt;
 		}
 	} else {
-		addr += (ult * tiwindwords) + slindwords;
 		u32 c, ptr;
 		for (u32 i = 0; i < width; i++) {
 			ptr = ((tb + i) ^ 1) & 0x3ff;
