@@ -230,7 +230,7 @@ void GBIInfo::loadMicrocode(u32 uc_start, u32 uc_dstart, u16 uc_dsize)
 				current.NoN = (strncmp( &uc_str[20], ".NoN", 4 ) == 0);
 
 				if (strncmp( &uc_str[14], "F3D", 3 ) == 0) {
-					if (uc_str[28] == '1' || strncmp(&uc_str[28], "0.95", 4) == 0)
+					if (uc_str[28] == '1' || strncmp(&uc_str[28], "0.95", 4) == 0 || strncmp(&uc_str[28], "0.96", 4) == 0)
 						type = F3DEX;
 					else if (uc_str[31] == '2')
 						type = F3DEX2;
