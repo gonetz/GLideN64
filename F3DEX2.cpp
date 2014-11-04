@@ -1,3 +1,4 @@
+#include <assert.h>
 #include "GLideN64.h"
 #include "Debug.h"
 #include "F3D.h"
@@ -65,12 +66,7 @@ void F3DEX2_Tri1( u32 w0, u32 w1 )
 
 void F3DEX2_Line3D( u32 w0, u32 w1 )
 {
-	/*
-	u16 width = (u16)(w0 + 3)&0xFF;
-	gSP1Triangle( _SHIFTR( w0, 17, 7 ),
-				  _SHIFTR( w0, 9, 7 ),
-				  _SHIFTR( w0, 9, 7 ));
-	*/
+	assert(false);
 }
 
 void F3DEX2_PopMtx( u32 w0, u32 w1 )
