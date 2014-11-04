@@ -653,7 +653,7 @@ void gSPMatrix( u32 matrix, u8 param )
 		else
 			MultMatrix2( gSP.matrix.projection, mtx );
 	} else {
-		if ((param & G_MTX_PUSH) && (gSP.matrix.modelViewi < (gSP.matrix.stackSize - 1))) {
+		if ((param & G_MTX_PUSH) && (gSP.matrix.modelViewi < (gSP.matrix.stackSize))) {
 			CopyMatrix( gSP.matrix.modelView[gSP.matrix.modelViewi + 1], gSP.matrix.modelView[gSP.matrix.modelViewi] );
 			gSP.matrix.modelViewi++;
 		}
@@ -1238,14 +1238,13 @@ void gSPDisplayList( u32 dl )
 		RSP.PC[RSP.PCi] = address;
 		RSP.nextCmd = _SHIFTR( *(u32*)&RDRAM[address], 24, 8 );
 	}
-#ifdef DEBUG
 	else
 	{
+		assert(false);
 		DebugMsg( DEBUG_HIGH | DEBUG_ERROR, "// PC stack overflow\n" );
 		DebugMsg( DEBUG_HIGH | DEBUG_HANDLED, "gSPDisplayList( 0x%08X );\n",
 			dl );
 	}
-#endif
 }
 
 void gSPDMADisplayList( u32 dl, u32 n )
