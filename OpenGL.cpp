@@ -467,6 +467,7 @@ void OGLRender::_setBlendMode() const
 
 			case 0xF550: //clr_fog * a_fog + clr_mem * (1-a)
 			case 0x0150: // spiderman
+			case 0x0550: // bomberman 64
 			case 0x0D18: //clr_in * a_fog + clr_mem * (1-a)
 				glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 				break;

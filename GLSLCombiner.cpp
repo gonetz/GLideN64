@@ -429,9 +429,22 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 	strFragmentShader.append(fragment_shader_color_dither);
 	strFragmentShader.append(fragment_shader_alpha_dither);
 
-	strFragmentShader.append("  if (uFogUsage == 3) fragColor = uFogColor; \n");
-	strFragmentShader.append("  else if (uFogUsage == 2) fragColor = vec4(color2, uFogColor.a); \n");
-	strFragmentShader.append("  else fragColor = vec4(color2, alpha2); \n");
+	strFragmentShader.append(
+		"  switch (uFogUsage) {									\n"
+		"	case 2:												\n"
+		"		fragColor = vec4(color2, uFogColor.a);			\n"
+		"	break;												\n"
+		"	case 3:												\n"
+		"		fragColor = uFogColor;							\n"
+		"	break;												\n"
+		"	case 4:												\n"
+		"		fragColor = vec4(color2, uFogColor.a*alpha2);	\n"
+		"	break;												\n"
+		"	default:											\n"
+		"		fragColor = vec4(color2, alpha2);				\n"
+		"	break;												\n"
+		"  }													\n"
+	);
 
 	strFragmentShader.append("  if (!alpha_test(fragColor.a)) discard;	\n");
 	if (video().getRender().isImageTexturesSupported()) {
@@ -444,10 +457,12 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 #ifdef USE_TOONIFY
 	strFragmentShader.append("  toonify(intensity); \n");
 #endif
-	strFragmentShader.append("  if (uFogUsage == 1) \n");
-	strFragmentShader.append("    fragColor = vec4(mix(fragColor.rgb, uFogColor.rgb, vFogFragCoord), fragColor.a); \n");
-	strFragmentShader.append("  if (uGammaCorrectionEnabled != 0) \n");
-	strFragmentShader.append("    fragColor = vec4(sqrt(fragColor.rgb), fragColor.a); \n");
+	strFragmentShader.append(
+		"	if (uFogUsage == 1) \n"
+		"		fragColor = vec4(mix(fragColor.rgb, uFogColor.rgb, vFogFragCoord), fragColor.a); \n"
+		"	if (uGammaCorrectionEnabled != 0) \n"
+		"		fragColor = vec4(sqrt(fragColor.rgb), fragColor.a); \n"
+	);
 
 	strFragmentShader.append(fragment_shader_end);
 
@@ -621,8 +636,13 @@ void ShaderCombiner::updateColors(bool _bForce)
 	switch (blender) {
 	case 0x0150:
 	case 0x0D18:
+		nFogUsage = gDP.otherMode.cycleType == G_CYC_2CYCLE ? 2 : 0;
+		break;
 	case 0xC912:
 		nFogUsage = 2;
+		break;
+	case 0x0550:
+		nFogUsage = 4;
 		break;
 	case 0xF550:
 		nFogUsage = 3;
