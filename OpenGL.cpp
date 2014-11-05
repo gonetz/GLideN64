@@ -418,11 +418,13 @@ void OGLVideo::_setBlendMode() const
 #else
 void OGLRender::_setBlendMode() const
 {
-	if ((gDP.otherMode.forceBlender) &&
-		(gDP.otherMode.cycleType != G_CYC_COPY) &&
-		(gDP.otherMode.cycleType != G_CYC_FILL) &&
-		!(gDP.otherMode.alphaCvgSel))
-	{
+	// 0x7000 = CVG_X_ALPHA|ALPHA_CVG_SEL|FORCE_BL
+	if (gDP.otherMode.alphaCvgSel != 0 && (gDP.otherMode.l & 0x7000) != 0x7000) {
+		glDisable(GL_BLEND);
+		return;
+	}
+
+	if (gDP.otherMode.forceBlender != 0 && gDP.otherMode.cycleType < G_CYC_COPY) {
 		glEnable( GL_BLEND );
 
 		switch (gDP.otherMode.l >> 16)
