@@ -837,6 +837,9 @@ void TextureCache::update(u32 _t)
 	maxTexels = imageFormat[gSP.textureTile[_t]->size][gSP.textureTile[_t]->format].maxTexels;
 
 	// Here comes a bunch of code that just calculates the texture size...I wish there was an easier way...
+	if (gSP.texture.tile == 7 && _t == 0 && gSP.textureTile[0] == gDP.loadTile && gDP.loadTile->loadType == LOADTYPE_BLOCK && gSP.textureTile[0]->tmem == gSP.textureTile[1]->tmem)
+		gSP.textureTile[0] = gSP.textureTile[1];
+
 	tileWidth = gSP.textureTile[_t]->lrs - gSP.textureTile[_t]->uls + 1;
 	tileHeight = gSP.textureTile[_t]->lrt - gSP.textureTile[_t]->ult + 1;
 
