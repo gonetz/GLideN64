@@ -76,7 +76,7 @@ void F3DDKR_DMA_Tri(u32 w0, u32 w1)
 
 void F3DDKR_DMA_DList( u32 w0, u32 w1 )
 {
-	gSPDMADisplayList( w1, _SHIFTR( w0, 16, 8 ) );
+	gSPDlistCount(_SHIFTR(w0, 16, 8), w1);
 }
 
 void F3DDKR_DMA_Offsets( u32 w0, u32 w1 )

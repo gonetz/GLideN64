@@ -1247,61 +1247,6 @@ void gSPDisplayList( u32 dl )
 	}
 }
 
-void gSPDMADisplayList( u32 dl, u32 n )
-{
-	if ((dl + (n << 3)) > RDRAMSize) {
-#ifdef DEBUG
-		DebugMsg( DEBUG_HIGH | DEBUG_ERROR, "// Attempting to load display list from invalid address\n" );
-		DebugMsg( DEBUG_HIGH | DEBUG_HANDLED, "gSPDMADisplayList( 0x%08X, %i );\n",
-			dl, n );
-#endif
-		return;
-	}
-
-	u32 curDL = RSP.PC[RSP.PCi];
-
-	RSP.PC[RSP.PCi] = RSP_SegmentToPhysical( dl );
-
-	while ((RSP.PC[RSP.PCi] - dl) < (n << 3)) {
-		if ((RSP.PC[RSP.PCi] + 8) > RDRAMSize) {
-#ifdef DEBUG
-			switch (Debug.level) {
-				case DEBUG_LOW:
-					DebugMsg( DEBUG_LOW | DEBUG_ERROR, "ATTEMPTING TO EXECUTE RSP COMMAND AT INVALID RDRAM LOCATION\n" );
-					break;
-				case DEBUG_MEDIUM:
-					DebugMsg( DEBUG_MEDIUM | DEBUG_ERROR, "Attempting to execute RSP command at invalid RDRAM location\n" );
-					break;
-				case DEBUG_HIGH:
-					DebugMsg( DEBUG_HIGH | DEBUG_ERROR, "// Attempting to execute RSP command at invalid RDRAM location\n" );
-					break;
-			}
-#endif
-			break;
-		}
-
-		u32 w0 = *(u32*)&RDRAM[RSP.PC[RSP.PCi]];
-		u32 w1 = *(u32*)&RDRAM[RSP.PC[RSP.PCi] + 4];
-
-#ifdef DEBUG
-		DebugRSPState( RSP.PCi, RSP.PC[RSP.PCi], _SHIFTR( w0, 24, 8 ), w0, w1 );
-		DebugMsg( DEBUG_LOW | DEBUG_HANDLED, "0x%08lX: CMD=0x%02lX W0=0x%08lX W1=0x%08lX\n", RSP.PC[RSP.PCi], _SHIFTR( w0, 24, 8 ), w0, w1 );
-#endif
-
-		RSP.PC[RSP.PCi] += 8;
-		RSP.nextCmd = _SHIFTR( *(u32*)&RDRAM[RSP.PC[RSP.PCi]], 24, 8 );
-
-		GBI.cmd[_SHIFTR( w0, 24, 8 )]( w0, w1 );
-	}
-
-	RSP.PC[RSP.PCi] = curDL;
-
-#ifdef DEBUG
-	DebugMsg( DEBUG_HIGH | DEBUG_HANDLED, "gSPDMADisplayList( 0x%08X, %i );\n",
-		dl, n );
-#endif
-}
-
 void gSPBranchList( u32 dl )
 {
 	u32 address = RSP_SegmentToPhysical( dl );
