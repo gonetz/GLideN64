@@ -632,11 +632,6 @@ void OGLRender::_setTexCoordArrays() const
 		glEnableVertexAttribArray(SC_TEXCOORD1);
 	else
 		glDisableVertexAttribArray(SC_TEXCOORD1);
-
-	if (m_renderState == rsTriangle && (currentCombiner()->usesT0() || currentCombiner()->usesT1()))
-		glEnableVertexAttribArray(SC_STSCALED);
-	else
-		glDisableVertexAttribArray(SC_STSCALED);
 }
 
 void OGLRender::_prepareDrawTriangle(bool _dma)
@@ -662,7 +657,6 @@ void OGLRender::_prepareDrawTriangle(bool _dma)
 		glVertexAttribPointer(SC_POSITION, 4, GL_FLOAT, GL_FALSE, sizeof(SPVertex), &pVtx->x);
 		glVertexAttribPointer(SC_COLOR, 4, GL_FLOAT, GL_FALSE, sizeof(SPVertex), &pVtx->r);
 		glVertexAttribPointer(SC_TEXCOORD0, 2, GL_FLOAT, GL_FALSE, sizeof(SPVertex), &pVtx->s);
-		glVertexAttribPointer(SC_STSCALED, 1, GL_UNSIGNED_BYTE, GL_FALSE, sizeof(SPVertex), &pVtx->st_scaled);
 		if (config.enableHWLighting) {
 			glEnableVertexAttribArray(SC_NUMLIGHTS);
 			glVertexAttribPointer(SC_NUMLIGHTS, 1, GL_BYTE, GL_FALSE, sizeof(SPVertex), &pVtx->HWLight);
@@ -699,7 +693,6 @@ void OGLRender::drawLLETriangle(u32 _numVtx)
 
 	for (u32 i = 0; i < _numVtx; ++i) {
 		triangles.vertices[i].HWLight = 0;
-		triangles.vertices[i].st_scaled = 0;
 		triangles.vertices[i].x = triangles.vertices[i].x * (2.0f * scaleX) - 1.0f;
 		triangles.vertices[i].x *= triangles.vertices[i].w;
 		triangles.vertices[i].y = triangles.vertices[i].y * (-2.0f * scaleY) + 1.0f;
@@ -774,7 +767,6 @@ void OGLRender::drawRect(int _ulx, int _uly, int _lrx, int _lry, float *_pColor)
 		glDisableVertexAttribArray(SC_COLOR);
 		glDisableVertexAttribArray(SC_TEXCOORD0);
 		glDisableVertexAttribArray(SC_TEXCOORD1);
-		glDisableVertexAttribArray(SC_STSCALED);
 	}
 
 	if (updateArrays) {

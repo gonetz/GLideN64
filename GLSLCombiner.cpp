@@ -591,7 +591,6 @@ void ShaderCombiner::_locate_attributes() const {
 	glBindAttribLocation(m_program, SC_COLOR, "aColor");
 	glBindAttribLocation(m_program, SC_TEXCOORD0, "aTexCoord0");
 	glBindAttribLocation(m_program, SC_TEXCOORD1, "aTexCoord1");
-	glBindAttribLocation(m_program, SC_STSCALED, "aSTScaled");
 	glBindAttribLocation(m_program, SC_NUMLIGHTS, "aNumLights");
 }
 

@@ -937,7 +937,6 @@ void gSPVertex( u32 a, u32 n, u32 v0 )
 				//vtx.flag = vertex->flag;
 				vtx.s = _FIXED2FLOAT( vertex->s, 5 );
 				vtx.t = _FIXED2FLOAT( vertex->t, 5 );
-				vtx.st_scaled = 0;
 				if (gSP.geometryMode & G_LIGHTING) {
 					vtx.nx = vertex->normal.x;
 					vtx.ny = vertex->normal.y;
@@ -965,7 +964,6 @@ void gSPVertex( u32 a, u32 n, u32 v0 )
 			vtx.z = vertex->z;
 			vtx.s = _FIXED2FLOAT( vertex->s, 5 );
 			vtx.t = _FIXED2FLOAT( vertex->t, 5 );
-			vtx.st_scaled = 0;
 			if (gSP.geometryMode & G_LIGHTING) {
 				vtx.nx = vertex->normal.x;
 				vtx.ny = vertex->normal.y;
@@ -1015,7 +1013,6 @@ void gSPCIVertex( u32 a, u32 n, u32 v0 )
 				vtx.z = vertex->z;
 				vtx.s = _FIXED2FLOAT( vertex->s, 5 );
 				vtx.t = _FIXED2FLOAT( vertex->t, 5 );
-				vtx.st_scaled = 0;
 				u8 *color = &RDRAM[gSP.vertexColorBase + (vertex->ci & 0xff)];
 
 				if (gSP.geometryMode & G_LIGHTING) {
@@ -1045,7 +1042,6 @@ void gSPCIVertex( u32 a, u32 n, u32 v0 )
 			vtx.z = vertex->z;
 			vtx.s = _FIXED2FLOAT( vertex->s, 5 );
 			vtx.t = _FIXED2FLOAT( vertex->t, 5 );
-			vtx.st_scaled = 0;
 			u8 *color = &RDRAM[gSP.vertexColorBase + (vertex->ci & 0xff)];
 
 			if (gSP.geometryMode & G_LIGHTING) {
@@ -1128,7 +1124,6 @@ void gSPDMAVertex( u32 a, u32 n, u32 v0 )
 				vtx.b = *(u8*)&RDRAM[(address + 8) ^ 3] * 0.0039215689f;
 				vtx.a = *(u8*)&RDRAM[(address + 9) ^ 3] * 0.0039215689f;
 			}
-			vtx.st_scaled = 0;
 
 			gSPProcessVertex(v);
 			address += 10;
@@ -1168,7 +1163,6 @@ void gSPCBFDVertex( u32 a, u32 n, u32 v0 )
 				vtx.z = vertex->z;
 				vtx.s = _FIXED2FLOAT( vertex->s, 5 );
 				vtx.t = _FIXED2FLOAT( vertex->t, 5 );
-				vtx.st_scaled = 0;
 				if (gSP.geometryMode & G_LIGHTING) {
 					const u32 normaleAddrOffset = ((v0+v+j)<<1);
 					vtx.nx = (float)(((s8*)RDRAM)[(gSP.vertexNormalBase + normaleAddrOffset + 0)^3]);
@@ -1196,7 +1190,6 @@ void gSPCBFDVertex( u32 a, u32 n, u32 v0 )
 			vtx.z = vertex->z;
 			vtx.s = _FIXED2FLOAT( vertex->s, 5 );
 			vtx.t = _FIXED2FLOAT( vertex->t, 5 );
-			vtx.st_scaled = 0;
 			if (gSP.geometryMode & G_LIGHTING) {
 				const u32 normaleAddrOffset = (v<<1);
 				vtx.nx = (float)(((s8*)RDRAM)[(gSP.vertexNormalBase + normaleAddrOffset + 0)^3]);
@@ -1596,14 +1589,8 @@ void gSPModifyVertex( u32 _vtx, u32 _where, u32 _val )
 			vtx0.a = _SHIFTR( _val, 0, 8 ) * 0.0039215689f;
 		break;
 		case G_MWO_POINT_ST:
-			if (gDP.otherMode.texturePersp != 0) {
-				vtx0.s = _FIXED2FLOAT( (s16)_SHIFTR( _val, 16, 16 ), 5 );
-				vtx0.t = _FIXED2FLOAT( (s16)_SHIFTR( _val, 0, 16 ), 5 );
-			} else {
-				vtx0.s = _FIXED2FLOAT( (s16)_SHIFTR( _val, 16, 16 ), 6 );
-				vtx0.t = _FIXED2FLOAT( (s16)_SHIFTR( _val, 0, 16 ), 6 );
-			}
-			vtx0.st_scaled = 1;
+			vtx0.s = _FIXED2FLOAT( (s16)_SHIFTR( _val, 16, 16 ), 5 ) / gSP.texture.scales;
+			vtx0.t = _FIXED2FLOAT((s16)_SHIFTR(_val, 0, 16), 5) / gSP.texture.scalet;
 		break;
 		case G_MWO_POINT_XYSCREEN:
 		{

@@ -145,7 +145,6 @@ void ZSort_DrawObject (u8 * _addr, u32 _type)
 		vtx.flag = 0;
 		vtx.HWLight = 0;
 		vtx.clip = 0;
-		vtx.st_scaled = 0;
 		if (textured != 0) {
 			vtx.s = _FIXED2FLOAT(((s16*)_addr)[4^1], 5 );
 			vtx.t = _FIXED2FLOAT(((s16*)_addr)[5^1], 5 );

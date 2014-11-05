@@ -62,8 +62,7 @@ if \
 #define SC_COLOR                2
 #define SC_TEXCOORD0            3
 #define SC_TEXCOORD1            4
-#define SC_STSCALED             5
-#define SC_NUMLIGHTS            6
+#define SC_NUMLIGHTS            5
 
 struct SPVertex
 {
@@ -71,7 +70,6 @@ struct SPVertex
 	f32 nx, ny, nz, __pad0;
 	f32 r, g, b, a;
 	f32 s, t;
-	u8 st_scaled;
 	u8 HWLight;
 	s16 flag;
 	u32 clip;
