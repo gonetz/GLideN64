@@ -572,6 +572,9 @@ void gSPProcessVertex(u32 v)
 	if (!(gSP.geometryMode & G_ZBUFFER))
 		vtx.z = -vtx.w;
 
+	if (gSP.viewport.vscale[1] < 0)
+		vtx.y = -vtx.y;
+
 	gSPClipVertex(v);
 
 	if (gSP.geometryMode & G_LIGHTING) {
@@ -755,7 +758,7 @@ void gSPViewport( u32 v )
 	gSP.viewport.x		= gSP.viewport.vtrans[0] - gSP.viewport.vscale[0];
 	gSP.viewport.y		= gSP.viewport.vtrans[1] - gSP.viewport.vscale[1];
 	gSP.viewport.width	= gSP.viewport.vscale[0] * 2;
-	gSP.viewport.height	= gSP.viewport.vscale[1] * 2;
+	gSP.viewport.height	= fabs(gSP.viewport.vscale[1] * 2);
 	gSP.viewport.nearz	= gSP.viewport.vtrans[2] - gSP.viewport.vscale[2];
 	gSP.viewport.farz	= (gSP.viewport.vtrans[2] + gSP.viewport.vscale[2]) ;
 
