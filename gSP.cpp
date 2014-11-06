@@ -1408,6 +1408,12 @@ void gSP1Quadrangle( s32 v0, s32 v1, s32 v2, s32 v3 )
 
 bool gSPCullVertices( u32 v0, u32 vn )
 {
+	if (vn < v0) {
+		// Aidyn Chronicles - The First Mage seems to pass parameters in reverse order.
+		const u32 v = v0;
+		v0 = vn;
+		vn = v;
+	}
 	u32 clip = 0;
 	OGLRender & render = video().getRender();
 	for (u32 i = v0; i <= vn; ++i) {
