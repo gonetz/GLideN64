@@ -17,6 +17,7 @@
 #include "S2DEX.h"
 #include "S2DEX2.h"
 #include "F3DDKR.h"
+#include "F3DSWSE.h"
 #include "F3DWRUS.h"
 #include "F3DPD.h"
 #include "F3DEX2CBFD.h"
@@ -35,7 +36,7 @@ SpecialMicrocodeInfo specialMicrocodes[] =
 	{ F3D,		FALSE,	0xe01e14be, "Fast3D" },
 
 	{ F3DWRUS,	FALSE,	0xd17906e2, "RSP SW Version: 2.0D, 04-01-96" },
-	{ F3DWRUS,	FALSE,	0x94c4c833, "RSP SW Version: 2.0D, 04-01-96" },
+	{ F3DSWSE,	FALSE,	0x94c4c833, "RSP SW Version: 2.0D, 04-01-96" },
 
 	{ S2DEX,	FALSE,	0x9df31081, "RSP Gfx ucode S2DEX  1.06 Yoshitaka Yasumoto Nintendo." },
 
@@ -162,6 +163,7 @@ void GBIInfo::_makeCurrent(MicrocodeInfo * _pCurrent)
 			case S2DEX2:	S2DEX2_Init();	break;
 			case F3DDKR:	F3DDKR_Init();	break;
 			case F3DJFG:	F3DJFG_Init();	break;
+			case F3DSWSE:	F3DSWSE_Init();	break;
 			case F3DWRUS:	F3DWRUS_Init();	break;
 			case F3DPD:		F3DPD_Init();	break;
 			case Turbo3D:	F3D_Init();		break;

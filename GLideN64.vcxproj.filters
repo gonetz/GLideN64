@@ -186,6 +186,9 @@
     <ClCompile Include="ZSort.cpp">
       <Filter>Source Files\uCodes</Filter>
     </ClCompile>
+    <ClCompile Include="F3DSWSE.cpp">
+      <Filter>Source Files\uCodes</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="3DMath.h">
@@ -318,6 +321,9 @@
       <Filter>Header Files\uCodes</Filter>
     </ClInclude>
     <ClInclude Include="ZSort.h">
+      <Filter>Header Files\uCodes</Filter>
+    </ClInclude>
+    <ClInclude Include="F3DSWSE.h">
       <Filter>Header Files\uCodes</Filter>
     </ClInclude>
   </ItemGroup>
