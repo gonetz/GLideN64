@@ -785,7 +785,6 @@ void OGLRender::drawRect(int _ulx, int _uly, int _lrx, int _lry, float *_pColor)
 	else {
 		glViewport( 0, 0, pBuffer->m_width*pBuffer->m_scaleX, pBuffer->m_height*pBuffer->m_scaleY );
 	}
-	glDisable(GL_SCISSOR_TEST);
 	glDisable(GL_CULL_FACE);
 
 	const float scaleX = fbList.isFboMode() ? 1.0f/pBuffer->m_width :  VI.rwidth;
@@ -811,7 +810,6 @@ void OGLRender::drawRect(int _ulx, int _uly, int _lrx, int _lry, float *_pColor)
 
 	glVertexAttrib4fv(SC_COLOR, _pColor);
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-	glEnable(GL_SCISSOR_TEST);
 	_updateViewport();
 }
 
