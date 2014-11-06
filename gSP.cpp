@@ -572,9 +572,6 @@ void gSPProcessVertex(u32 v)
 	if (!(gSP.geometryMode & G_ZBUFFER))
 		vtx.z = -vtx.w;
 
-	if (gSP.viewport.vscale[1] < 0)
-		vtx.y = -vtx.y;
-
 	gSPClipVertex(v);
 
 	if (gSP.geometryMode & G_LIGHTING) {
