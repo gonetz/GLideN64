@@ -336,13 +336,6 @@ void gSPProcessVertex4(u32 v)
 	if (gSP.matrix.billboard)
 		gSPBillboardVertex4(v);
 
-	if (!(gSP.geometryMode & G_ZBUFFER)) {
-		for(int i = 0; i < 4; ++i) {
-			SPVertex & vtx = render.getVertex(v+i);
-			vtx.z = -vtx.w;
-		}
-	}
-
 	if (gSP.geometryMode & G_LIGHTING) {
 		if (gSP.geometryMode & G_POINT_LIGHTING)
 			gSPPointLightVertex4(v, vPos);
@@ -568,9 +561,6 @@ void gSPProcessVertex(u32 v)
 
 		gSPBillboardVertex(v, i);
 	}
-
-	if (!(gSP.geometryMode & G_ZBUFFER))
-		vtx.z = -vtx.w;
 
 	gSPClipVertex(v);
 
