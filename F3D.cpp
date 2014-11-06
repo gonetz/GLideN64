@@ -147,7 +147,7 @@ void F3D_MoveWord( u32 w0, u32 w1 )
 			gSPClipRatio( w1 );
 			break;
 		case G_MW_SEGMENT:
-			gSPSegment( _SHIFTR( w0, 8, 16 ) >> 2, w1 & 0x00FFFFFF );
+			gSPSegment( _SHIFTR( w0, 10, 4 ), w1 & 0x00FFFFFF );
 			break;
 		case G_MW_FOG:
 /*			u32 fm, fo, min, max;
