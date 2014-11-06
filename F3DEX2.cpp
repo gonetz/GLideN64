@@ -91,7 +91,7 @@ void F3DEX2_MoveWord( u32 w0, u32 w1 )
 			gSPClipRatio( w1 );
 			break;
 		case G_MW_SEGMENT:
-			gSPSegment( _SHIFTR( w0, 0, 16 ) >> 2, w1 & 0x00FFFFFF );
+			gSPSegment( _SHIFTR( w0, 2, 4 ) , w1 & 0x00FFFFFF );
 			break;
 		case G_MW_FOG:
 			gSPFogFactor( (s16)_SHIFTR( w1, 16, 16 ), (s16)_SHIFTR( w1, 0, 16 ) );
