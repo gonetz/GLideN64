@@ -478,7 +478,8 @@ void FrameBufferList::renderBuffer(u32 _address)
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	m_drawBuffer = GL_BACK;
-	ogl.getRender().drawTexturedRect(0.0f, 0.0f, width, height, 0.0f, 0.0f, width - 1.0f, height - 1.0f, false);
+	OGLRender::TexturedRectParams params(0.0f, 0.0f, width, height, 0.0f, 0.0f, width - 1.0f, height - 1.0f, false);
+	ogl.getRender().drawTexturedRect(params);
 	ogl.swapBuffers();
 	m_drawBuffer = GL_FRAMEBUFFER;
 	glEnable(GL_SCISSOR_TEST);
