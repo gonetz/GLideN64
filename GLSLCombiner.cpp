@@ -284,7 +284,30 @@ const char *AlphaInput[] = {
 };
 
 inline
-int CorrectStageParam(int _param) {
+int CorrectFirstStageParam(int _param)
+{
+	switch (_param) {
+		case TEXEL1:
+		return TEXEL0;
+		case TEXEL1_ALPHA:
+		return TEXEL0_ALPHA;
+	}
+	return _param;
+}
+
+static
+void CorrectFirstStageParams(CombinerStage & _stage)
+{
+	for (int i = 0; i < _stage.numOps; ++i) {
+		_stage.op[i].param1 = CorrectFirstStageParam(_stage.op[i].param1);
+		_stage.op[i].param2 = CorrectFirstStageParam(_stage.op[i].param2);
+		_stage.op[i].param3 = CorrectFirstStageParam(_stage.op[i].param3);
+	}
+}
+
+inline
+int CorrectSecondStageParam(int _param)
+{
 	switch (_param) {
 		case TEXEL0:
 			return TEXEL1;
@@ -301,9 +324,9 @@ int CorrectStageParam(int _param) {
 static
 void CorrectSecondStageParams(CombinerStage & _stage) {
 	for (int i = 0; i < _stage.numOps; ++i) {
-		_stage.op[i].param1 = CorrectStageParam(_stage.op[i].param1);
-		_stage.op[i].param2 = CorrectStageParam(_stage.op[i].param2);
-		_stage.op[i].param3 = CorrectStageParam(_stage.op[i].param3);
+		_stage.op[i].param1 = CorrectSecondStageParam(_stage.op[i].param1);
+		_stage.op[i].param2 = CorrectSecondStageParam(_stage.op[i].param2);
+		_stage.op[i].param3 = CorrectSecondStageParam(_stage.op[i].param3);
 	}
 }
 
@@ -371,8 +394,12 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 
 	char strCombiner[512];
 	strcpy(strCombiner, "  alpha1 = ");
+	if (gDP.otherMode.cycleType == G_CYC_1CYCLE)
+		CorrectFirstStageParams(_alpha.stage[0]);
 	m_nInputs = CompileCombiner(_alpha.stage[0], AlphaInput, strCombiner);
 	strcat(strCombiner, "  color1 = ");
+	if (gDP.otherMode.cycleType == G_CYC_1CYCLE)
+		CorrectFirstStageParams(_color.stage[0]);
 	m_nInputs |= CompileCombiner(_color.stage[0], ColorInput, strCombiner);
 	strcat(strCombiner, "  combined_color = vec4(color1, alpha1); \n");
 	if (_alpha.numStages == 2) {
