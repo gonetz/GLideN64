@@ -14,6 +14,7 @@ static const char* vertex_shader =
 "uniform lowp float uNoiseTime;							\n"
 "														\n"
 "uniform int uFogMode;									\n"
+"uniform lowp int uFogUsage;							\n"
 "uniform lowp vec4 uFogColor;							\n"
 "uniform mediump float uFogMultiplier, uFogOffset;		\n"
 "uniform mediump float uScreenWidth, uScreenHeight;		\n"
@@ -45,6 +46,7 @@ static const char* vertex_shader =
 "uniform float uNoiseTime;								\n"
 "														\n"
 "uniform int uFogMode;									\n"
+"uniform int uFogUsage;									\n"
 "uniform vec4 uFogColor;								\n"
 "uniform float uFogMultiplier, uFogOffset;				\n"
 "uniform float uScreenWidth, uScreenHeight;				\n"
@@ -118,6 +120,8 @@ static const char* vertex_shader =
 "    break;														\n"
 "  }															\n"
 "  vFogFragCoord = clamp(vFogFragCoord, 0.0, 1.0);				\n"
+"  if (uFogUsage == 1 && uFogMode == 0)							\n"
+"     vShadeColor.a = vFogFragCoord;							\n"
 "}																\n"
 ;
 
