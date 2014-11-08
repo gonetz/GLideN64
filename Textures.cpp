@@ -840,14 +840,14 @@ void TextureCache::update(u32 _t)
 	if (gSP.texture.tile == 7 && _t == 0 && gSP.textureTile[0] == gDP.loadTile && gDP.loadTile->loadType == LOADTYPE_BLOCK && gSP.textureTile[0]->tmem == gSP.textureTile[1]->tmem)
 		gSP.textureTile[0] = gSP.textureTile[1];
 
-	tileWidth = gSP.textureTile[_t]->lrs - gSP.textureTile[_t]->uls + 1;
-	tileHeight = gSP.textureTile[_t]->lrt - gSP.textureTile[_t]->ult + 1;
+	tileWidth = (gSP.textureTile[_t]->lrs - gSP.textureTile[_t]->uls + 1) & 0x03FF;
+	tileHeight = (gSP.textureTile[_t]->lrt - gSP.textureTile[_t]->ult + 1) & 0x03FF;
 
 	maskWidth = 1 << gSP.textureTile[_t]->masks;
 	maskHeight = 1 << gSP.textureTile[_t]->maskt;
 
-	loadWidth = gDP.loadTile->lrs - gDP.loadTile->uls + 1;
-	loadHeight = gDP.loadTile->lrt - gDP.loadTile->ult + 1;
+	loadWidth = (gDP.loadTile->lrs - gDP.loadTile->uls + 1) & 0x03FF;
+	loadHeight = (gDP.loadTile->lrt - gDP.loadTile->ult + 1) & 0x03FF;
 
 	lineWidth = gSP.textureTile[_t]->line << imageFormat[gSP.textureTile[_t]->size][gSP.textureTile[_t]->format].lineShift;
 
