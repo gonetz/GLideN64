@@ -169,7 +169,7 @@ void DepthBufferList::clearBuffer()
 	glBindImageTexture(depthImageUnit, 0, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA32F);
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_pCurrent->m_FBO);
 	const u32 cycleType = gDP.otherMode.cycleType;
-	gDP.otherMode.cycleType == G_CYC_FILL;
+	gDP.otherMode.cycleType = G_CYC_FILL;
 	video().getRender().drawRect(0,0,VI.width, VI.height, color);
 	gDP.otherMode.cycleType = cycleType;
 	glBindImageTexture(depthImageUnit, m_pCurrent->m_pDepthTexture->glName, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA32F);
