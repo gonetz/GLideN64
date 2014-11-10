@@ -648,12 +648,10 @@ void gDPLoadTile(u32 tile, u32 uls, u32 ult, u32 lrs, u32 lrt)
 // LoadBlock for 32bit RGBA texture
 // Based on sources of angrylion's software plugin.
 //
-void gDPLoadBlock32(u32 uls, u32 ult, u32 lrs, u32 dxt)
+void gDPLoadBlock32(u32 uls,u32 lrs, u32 dxt)
 {
 	const u32 * src = (const u32*)RDRAM;
 	const u32 tb = gDP.loadTile->tmem << 2;
-	const u32 tiwindwords = gDP.textureImage.width;
-	const u32 slindwords = uls;
 	const u32 line = gDP.loadTile->line << 2;
 
 	u16 *tmem16 = (u16*)TMEM;
@@ -736,7 +734,7 @@ void gDPLoadBlock(u32 tile, u32 uls, u32 ult, u32 lrs, u32 dxt)
 	CheckForFrameBufferTexture(address, bytes); // Load data to TMEM even if FB texture is found. See comment to texturedRectDepthBufferCopy
 
 	if (gDP.loadTile->size == G_IM_SIZ_32b)
-		gDPLoadBlock32(gDP.loadTile->uls, gDP.loadTile->ult, gDP.loadTile->lrs, dxt);
+		gDPLoadBlock32(gDP.loadTile->uls, gDP.loadTile->lrs, dxt);
 	else if (gDP.loadTile->format == G_IM_FMT_YUV)
 		memcpy(TMEM, &RDRAM[address], bytes); // HACK!
 	else {
