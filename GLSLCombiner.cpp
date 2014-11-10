@@ -626,8 +626,8 @@ void ShaderCombiner::update() {
 
 	_setIUniform(m_uniforms.uTex0, 0, true);
 	_setIUniform(m_uniforms.uTex1, 1, true);
-	_setFUniform(m_uniforms.uScreenWidth, video().getWidth(), true);
-	_setFUniform(m_uniforms.uScreenHeight, video().getHeight(), true);
+	_setFUniform(m_uniforms.uScreenWidth, (float)video().getWidth(), true);
+	_setFUniform(m_uniforms.uScreenHeight, (float)video().getHeight(), true);
 
 	updateRenderState(true);
 	updateColors(true);
