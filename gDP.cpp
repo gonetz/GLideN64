@@ -593,7 +593,7 @@ void gDPLoadTile32b(u32 uls, u32 ult, u32 lrs, u32 lrt)
 
 void gDPLoadTile(u32 tile, u32 uls, u32 ult, u32 lrs, u32 lrt)
 {
-	u32 address, height, bpl, line, y;
+	u32 address, bpl, line, y;
 	u64 *dest;
 	u8 *src;
 
@@ -602,13 +602,25 @@ void gDPLoadTile(u32 tile, u32 uls, u32 ult, u32 lrs, u32 lrt)
 	gDP.loadTile->loadType = LOADTYPE_TILE;
 	gDP.loadTile->imageAddress = gDP.textureImage.address;
 
+	const u32 width = (gDP.loadTile->lrs - gDP.loadTile->uls + 1) & 0x03FF;
+	const u32 height = (gDP.loadTile->lrt - gDP.loadTile->ult + 1) & 0x03FF;
+
+	gDPLoadTileInfo &info = gDP.loadInfo[gDP.loadTile->tmem];
+	info.texAddress = gDP.loadTile->imageAddress;
+	info.uls = uls;
+	info.ult = ult;
+	info.width = gDP.loadTile->masks != 0 ? (u16)min(width, 1U<<gDP.loadTile->masks) : (u16)width;
+	info.height = gDP.loadTile->maskt != 0 ? (u16)min(height, 1U<<gDP.loadTile->maskt) : (u16)height;
+	info.texWidth = gDP.textureImage.width;
+	info.size = gDP.textureImage.size;
+	info.loadType = LOADTYPE_TILE;
+
 	if (gDP.loadTile->line == 0)
 		return;
 
 	address = gDP.textureImage.address + gDP.loadTile->ult * gDP.textureImage.bpl + (gDP.loadTile->uls << gDP.textureImage.size >> 1);
 	dest = &TMEM[gDP.loadTile->tmem];
 	bpl = (gDP.loadTile->lrs - gDP.loadTile->uls + 1) << gDP.loadTile->size >> 1;
-	height = gDP.loadTile->lrt - gDP.loadTile->ult + 1;
 	const u32 bytes = height * bpl;
 	src = &RDRAM[address];
 
@@ -711,6 +723,13 @@ void gDPLoadBlock(u32 tile, u32 uls, u32 ult, u32 lrs, u32 dxt)
 			++gSP.DMAOffsets.tex_count;
 	}
 	gDP.loadTile->imageAddress = gDP.textureImage.address;
+
+	gDPLoadTileInfo &info = gDP.loadInfo[gDP.loadTile->tmem];
+	info.texAddress = gDP.loadTile->imageAddress;
+	info.width = lrs;
+	info.dxt = dxt;
+	info.size = gDP.textureImage.size;
+	info.loadType = LOADTYPE_BLOCK;
 
 	u32 bytes = (lrs + 1) << gDP.loadTile->size >> 1;
 	u32 address = gDP.textureImage.address + ult * gDP.textureImage.bpl + (uls << gDP.textureImage.size >> 1);

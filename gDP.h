@@ -95,6 +95,18 @@ struct gDPTile
 	FrameBuffer *frameBuffer;
 };
 
+struct gDPLoadTileInfo {
+	u8 size;
+	u8 loadType;
+	u16 uls;
+	u16 ult;
+	u16 width;
+	u16 height;
+	u16 texWidth;
+	u32 texAddress;
+	u32 dxt;
+};
+
 struct gDPInfo
 {
 	struct
@@ -234,6 +246,8 @@ struct gDPInfo
 	u32 paletteCRC16[16];
 	u32 paletteCRC256;
 	u32 half_1, half_2;
+
+	 gDPLoadTileInfo loadInfo[512];
 };
 
 extern gDPInfo gDP;
