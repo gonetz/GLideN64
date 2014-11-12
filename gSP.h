@@ -15,7 +15,7 @@
 #define CHANGED_CPU_FB_WRITE	0x80
 #define CHANGED_TEXTURESCALE	0x100
 
-#if 0 // disabled because it causes geometry loss in WCW Backstage Assault
+#if 1 // It causes geometry loss in WCW Backstage Assault. Performance drops in many games when disabled.
 #define gSPFlushTriangles() \
 if \
 ( \
