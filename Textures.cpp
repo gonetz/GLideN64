@@ -719,7 +719,7 @@ void TextureCache::_load(u32 _tile , CachedTexture *_pTexture)
 				if (y & mirrorTBit)
 					ty ^= maskTMask;
 
-				pSrc = &TMEM[tmptex.tMem] + line * ty;
+				pSrc = &TMEM[(tmptex.tMem + line * ty)&0x1FF];
 
 				i = (ty & 1) << 1;
 				for (x = 0; x < tmptex.realWidth; ++x) {
