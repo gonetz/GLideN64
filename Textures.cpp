@@ -411,6 +411,7 @@ void _calcTileSizes(u32 _t, TileSizes & _sizes, gDPTile * _pLoadTile)
 	u32 maskHeight = 1 << pTile->maskt;
 	u32 width, height;
 
+#if 0
 	if (pTile->textureMode == TEXTUREMODE_TEXRECT) {
 		u16 texRectWidth = gDP.texRect.width - pTile->uls;
 		u16 texRectHeight = gDP.texRect.height - pTile->ult;
@@ -465,7 +466,29 @@ void _calcTileSizes(u32 _t, TileSizes & _sizes, gDPTile * _pLoadTile)
 		else
 			height = lineHeight;
 	}
+#else
+	gDPLoadTileInfo &info = gDP.loadInfo[pTile->tmem];
+	if (info.loadType == LOADTYPE_TILE) {
+		width = min(info.width, info.texWidth);
+		if (info.size > pTile->size)
+			width <<= info.size - pTile->size;
+		height = info.height;
+	} else {
+		if (pTile->masks && ((maskWidth * maskHeight) <= maxTexels))
+			width = maskWidth; // Use mask width if set and valid
+		else if ((tileWidth * tileHeight) <= maxTexels)
+			width = tileWidth; // else use tile width if valid
+		else
+			width = lineWidth; // else use line-based width
 
+		if (pTile->maskt && ((maskWidth * maskHeight) <= maxTexels))
+			height = maskHeight;
+		else if ((tileWidth * tileHeight) <= maxTexels)
+			height = tileHeight;
+		else
+			height = lineHeight;
+	}
+#endif
 	_sizes.clampWidth = (pTile->clamps && gDP.otherMode.cycleType != G_CYC_COPY) ? tileWidth : width;
 	_sizes.clampHeight = (pTile->clampt && gDP.otherMode.cycleType != G_CYC_COPY) ? tileHeight : height;
 
