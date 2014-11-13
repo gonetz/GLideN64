@@ -62,8 +62,8 @@ void DepthBuffer::initDepthTexture(FrameBuffer * _pBuffer)
 	m_pDepthTexture->maskT = 0;
 	m_pDepthTexture->mirrorS = 0;
 	m_pDepthTexture->mirrorT = 0;
-	m_pDepthTexture->realWidth = (u32)pow2( m_pDepthTexture->width );
-	m_pDepthTexture->realHeight = (u32)pow2( m_pDepthTexture->height );
+	m_pDepthTexture->realWidth = m_pDepthTexture->width;
+	m_pDepthTexture->realHeight = m_pDepthTexture->height;
 	m_pDepthTexture->textureBytes = m_pDepthTexture->realWidth * m_pDepthTexture->realHeight * 4 * 4; // Width*Height*RGBA*sizeof(GL_RGBA32F)
 	textureCache().addFrameBufferTextureSize(m_pDepthTexture->textureBytes);
 
@@ -143,7 +143,7 @@ void DepthBufferList::saveBuffer(u32 _address)
 		if (pFrameBuffer != NULL)
 			glRenderbufferStorage(GL_RENDERBUFFER, format, pFrameBuffer->m_pTexture->realWidth, pFrameBuffer->m_pTexture->realHeight);
 		else
-			glRenderbufferStorage(GL_RENDERBUFFER, format, (u32)pow2(video().getWidth()), (u32)pow2(video().getHeight()));
+			glRenderbufferStorage(GL_RENDERBUFFER, format, video().getWidth(), video().getHeight());
 
 		m_pCurrent = &buffer;
 	}

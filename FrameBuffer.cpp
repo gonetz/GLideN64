@@ -255,8 +255,8 @@ void FrameBufferList::saveBuffer(u32 _address, u16 _format, u16 _size, u16 _widt
 		buffer.m_pTexture->maskT = 0;
 		buffer.m_pTexture->mirrorS = 0;
 		buffer.m_pTexture->mirrorT = 0;
-		buffer.m_pTexture->realWidth = (u32)pow2( buffer.m_pTexture->width );
-		buffer.m_pTexture->realHeight = (u32)pow2( buffer.m_pTexture->height );
+		buffer.m_pTexture->realWidth = buffer.m_pTexture->width;
+		buffer.m_pTexture->realHeight = buffer.m_pTexture->height;
 		buffer.m_pTexture->textureBytes = buffer.m_pTexture->realWidth * buffer.m_pTexture->realHeight * 4;
 		textureCache().addFrameBufferTextureSize(buffer.m_pTexture->textureBytes);
 

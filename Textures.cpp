@@ -490,19 +490,24 @@ void _calcTileSizes(u32 _t, TileSizes & _sizes, gDPTile * _pLoadTile)
 	_sizes.width = width;
 	_sizes.height = height;
 
-	if (pTile->clamps)
-		_sizes.realWidth = pow2(_sizes.clampWidth);
-	else if (pTile->mirrors)
-		_sizes.realWidth = _sizes.maskWidth << 1;
+	if (pTile->clamps != 0)
+		_sizes.realWidth = _sizes.clampWidth;
+	else if (pTile->mirrors + pTile->masks != 0)
+		_sizes.realWidth = _sizes.maskWidth;
 	else
-		_sizes.realWidth = pow2(_sizes.width);
+		_sizes.realWidth = _sizes.width;
 
-	if (pTile->clampt)
-		_sizes.realHeight = pow2(_sizes.clampHeight);
-	else if (pTile->mirrort)
-		_sizes.realHeight = _sizes.maskHeight << 1;
+	if (pTile->clampt != 0)
+		_sizes.realHeight = _sizes.clampHeight;
+	else if (pTile->mirrort + pTile->maskt != 0)
+		_sizes.realHeight = _sizes.maskHeight;
 	else
-		_sizes.realHeight = pow2(_sizes.height);
+		_sizes.realHeight = _sizes.height;
+
+	if (gSP.texture.level > gSP.texture.tile) {
+		_sizes.realWidth = pow2(_sizes.realWidth);
+		_sizes.realHeight = pow2(_sizes.realHeight);
+	}
 }
 
 void TextureCache::_loadBackground(CachedTexture *pTexture)
@@ -577,7 +582,12 @@ void TextureCache::_loadBackground(CachedTexture *pTexture)
 		}
 	}
 
-	glTexImage2D( GL_TEXTURE_2D, 0, glInternalFormat, pTexture->realWidth, pTexture->realHeight, 0, GL_RGBA, glType, pDest );
+	GLint curUnpackAlignment;
+	glGetIntegerv(GL_UNPACK_ALIGNMENT, &curUnpackAlignment);
+	if (pTexture->realWidth % 2 != 0 && glInternalFormat != GL_RGBA)
+		glPixelStorei(GL_UNPACK_ALIGNMENT, 2);
+	glTexImage2D(GL_TEXTURE_2D, 0, glInternalFormat, pTexture->realWidth, pTexture->realHeight, 0, GL_RGBA, glType, pDest);
+	glPixelStorei(GL_UNPACK_ALIGNMENT, curUnpackAlignment);
 	free(pDest);
 }
 
@@ -642,6 +652,9 @@ void TextureCache::_load(u32 _tile , CachedTexture *_pTexture)
 	memcpy(&tmptex, _pTexture, sizeof(CachedTexture));
 
 	line = tmptex.line;
+
+	GLint curUnpackAlignment;
+	glGetIntegerv(GL_UNPACK_ALIGNMENT, &curUnpackAlignment);
 
 	while (true) {
 		if (tmptex.maskS > 0) {
@@ -735,6 +748,8 @@ void TextureCache::_load(u32 _tile , CachedTexture *_pTexture)
 				}
 			}
 		}
+		if (tmptex.realWidth % 2 != 0 && glInternalFormat != GL_RGBA)
+			glPixelStorei(GL_UNPACK_ALIGNMENT, 2);
 		glTexImage2D(GL_TEXTURE_2D, mipLevel, glInternalFormat, tmptex.realWidth, tmptex.realHeight, 0, GL_RGBA, glType, pDest);
 		if (mipLevel == maxLevel)
 			break;
@@ -759,6 +774,7 @@ void TextureCache::_load(u32 _tile , CachedTexture *_pTexture)
 			tmptex.realHeight >>= 1;
 		_pTexture->textureBytes += (tmptex.realWidth * tmptex.realHeight) << sizeShift;
 	};
+	glPixelStorei(GL_UNPACK_ALIGNMENT, curUnpackAlignment);
 	free(pDest);
 }
 
@@ -837,8 +853,8 @@ void TextureCache::activateTexture(u32 _t, CachedTexture *_pTexture)
 
 
 	// Set clamping modes
-	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, _pTexture->clampS ? GL_CLAMP_TO_EDGE : GL_REPEAT );
-	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, _pTexture->clampT ? GL_CLAMP_TO_EDGE : GL_REPEAT );
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, _pTexture->clampS ? GL_CLAMP_TO_EDGE : _pTexture->mirrorS ? GL_MIRRORED_REPEAT : GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, _pTexture->clampT ? GL_CLAMP_TO_EDGE : _pTexture->mirrorT ? GL_MIRRORED_REPEAT : GL_REPEAT);
 
 	_pTexture->lastDList = RSP.DList;
 
@@ -905,8 +921,8 @@ void TextureCache::_updateBackground()
 	pCurrent->palette = gSP.bgImage.palette;
 	pCurrent->maskS = 0;
 	pCurrent->maskT = 0;
-	pCurrent->mirrorS = 1;
-	pCurrent->mirrorT = 1;
+	pCurrent->mirrorS = 0;
+	pCurrent->mirrorT = 0;
 	pCurrent->clampS = 0;
 	pCurrent->clampT = 0;
 	pCurrent->line = 0;
