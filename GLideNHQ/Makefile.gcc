@@ -1,0 +1,126 @@
+# This MUST be processed by GNU make
+#
+# Texture Filtering Linux Makefile
+# Version:  1.0
+#
+# Copyright (C) 2007  Hiroshi Morii   All Rights Reserved.
+# Email koolsmoky(at)users.sourceforge.net
+# Web   http://www.3dfxzone.it/koolsmoky
+#
+# this is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2, or (at your option)
+# any later version.
+#
+# this is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with GNU Make; see the file COPYING.  If not, write to
+# the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
+#
+
+#
+#  Available options:
+#
+#    Environment variables:
+#	DEBUG=1		enable debugging checks and messages
+#			default = no
+#
+#    Environment variables:
+#
+#    Targets:
+#	all:		build dynamic module
+#	clean:		remove object files
+#	realclean:	remove all generated files
+#
+#
+#  Requirements:
+#
+#    Compiler:
+#       GCC 4.2
+#
+#    Libraries:
+#       boost  1.41.0   (http://www.boost.org)  bjam --toolset=gcc link=static runtime-link=static variant=release,debug stage
+#       libpng 1.4.1    (http://www.libpng.org) static library
+#       zlib   1.2.3    (http://www.zlib.org)   static library
+#       tc     1.1+                             patched for ARGB input and ATI Radeon workaround
+# 
+
+#
+# GCC does not have SEH (structured exception handling)
+#
+
+.PHONY: all clean realclean
+
+DLLNAME = GlideHQ.so
+
+# libpng and zlib headers & libraries
+EXT_INC = ./inc
+EXT_LIB = ./lib
+
+# boost library & headers
+BOOST_INC = ../boost_1_41_0
+BOOST_LIB = ../boost_1_41_0/stage/lib
+
+CC = g++
+CFLAGS = -Wall -W -pedantic -ansi -Wno-long-long
+CFLAGS += -O3 -ffast-math -funroll-loops
+#CFLAGS += -fexpensive-optimizations -march=k6
+CFLAGS += -I. -I$(EXT_INC) -I$(BOOST_INC)
+CFLAGS += -fPIC -DPIC
+#CFLAGS += -DTXFILTER_DLL
+
+ifdef DEBUG
+CFLAGS += -DDEBUG
+endif
+
+LD = g++
+LDFLAGS = -shared -lstdc++ -lpthread
+LDLIBS = $(EXT_LIB)/libdxtn.a $(EXT_LIB)/libpng.a $(EXT_LIB)/libz.a $(BOOST_LIB)/libboost_filesystem-gcc42-mt-s.a $(BOOST_LIB)/libboost_system-gcc42-mt-s.a $(BOOST_LIB)/libboost_thread-gcc42-mt-s.a
+
+RM = rm
+
+SOURCES = \
+	TxFilterExport.cpp \
+	TxFilter.cpp \
+	TxCache.cpp \
+	TxTexCache.cpp \
+	TxHiResCache.cpp \
+	TxQuantize.cpp \
+	TxUtil.cpp \
+	TextureFilters.cpp \
+	TextureFilters_2xsai.cpp \
+	TextureFilters_hq2x.cpp \
+	TextureFilters_hq4x.cpp \
+	TxImage.cpp \
+	TxReSample.cpp \
+	TxDbg.cpp
+
+OBJECTS = $(SOURCES:.cpp=.o)
+
+.cpp.o:
+	$(CC) -o $@ $(CFLAGS) -c $<
+
+all: $(DLLNAME)
+
+$(DLLNAME): $(OBJECTS)
+	$(LD) -o $@ $(LDFLAGS) $^ $(LDLIBS)
+
+$(OBJECTS): $(SOURCES) bldno.h
+
+bldno.h: bldno.exe
+	./$< > $@
+
+bldno.exe: bldno.cpp
+	$(CC) -o $@ $(CFLAGS) $<
+
+clean:
+	-$(RM) *.o
+
+realclean: clean
+	-$(RM) $(DLLNAME) bldno.exe bldno.h
+
+-include depend

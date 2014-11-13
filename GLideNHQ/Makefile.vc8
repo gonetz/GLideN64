@@ -1,0 +1,144 @@
+# This MUST be processed by GNU make
+#
+# Texture Filtering MSVC Makefile
+# Version:  1.0
+#
+# Copyright (C) 2007  Hiroshi Morii   All Rights Reserved.
+# Email koolsmoky(at)users.sourceforge.net
+# Web   http://www.3dfxzone.it/koolsmoky
+#
+# this is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2, or (at your option)
+# any later version.
+#
+# this is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with GNU Make; see the file COPYING.  If not, write to
+# the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
+#
+
+#
+#  Available options:
+#
+#    Environment variables:
+#	DEBUG=1		enable debugging checks and messages
+#			default = no
+#
+#    Targets:
+#	all:		build everything
+#	clean:		remove object files
+#	realclean:	remove all generated files
+#
+#
+#  Requirements:
+#
+#    Compiler:
+#       Microsoft VisualC++ 8.0 (VS2005)
+#
+#    Libraries:
+#       boost  1.41.0   (http://www.boost.org)  bjam --toolset=msvc-8.0 link=static runtime-link=static variant=release,debug stage
+#       libpng 1.4.1    (http://www.libpng.org) built with /MT or /MTd switch
+#       zlib   1.2.3    (http://www.zlib.org)   built with /MT or /MTd switch
+#       tc     1.1+                             patched for ARGB input and ATI Radeon workaround
+#
+#       All libraries must be built with /MT or /MTd switch and statically linked.
+#       If you need any help feel free to drop me a line.
+#
+
+.PHONY: all clean realclean
+.SUFFIXES: .cpp .obj .rc .res
+
+# RESNAME = txfilter.res
+# DLLNAME = txfilter.dll
+# LIBNAME = txfilter.lib
+# EXPNAME = txfilter.exp
+RESNAME = GlideHQ.res
+DLLNAME = GlideHQ.dll
+LIBNAME = GlideHQ.lib
+EXPNAME = GlideHQ.exp
+
+# libpng and zlib headers & libraries
+EXT_INC = ./inc
+EXT_LIB = ./lib
+
+# boost library & headers
+BOOST_INC = ../boost_1_41_0
+BOOST_LIB = ../boost_1_41_0/stage/lib
+
+CC = cl
+AS = nasm
+LD = _link # change this to suite your build environment
+RC = rc
+
+UNLINK = $(RM) $(1)
+
+LDFLAGS = -nologo -dll -opt:WIN98 -machine:X86 -nodefaultlib
+
+ASFLAGS = -O6 -fwin32 -D__WIN32__ --prefix _
+ASFLAGS += $(CDEFS)
+
+CFLAGS  = -nologo -W3 -WX -D__MSC__ -DWIN32 -D_WINDOWS -D_WINDLL -EHa -D_CRT_SECURE_NO_DEPRECATE -DTXFILTER_DLL
+
+LDLIBS = user32.lib kernel32.lib
+ifdef DEBUG
+CFLAGS += -Zi -DDEBUG -MTd
+LDLIBS += $(EXT_LIB)/dxtnd.lib $(EXT_LIB)/libpngd.lib $(EXT_LIB)/zlibd.lib LIBCMTD.LIB LIBCPMTD.LIB $(BOOST_LIB)/libboost_filesystem-vc80-mt-sgd.lib $(BOOST_LIB)/libboost_system-vc80-mt-sgd.lib $(BOOST_LIB)/libboost_thread-vc80-mt-sgd.lib
+OPTFLAGS ?= -Od
+else
+CFLAGS += -DNDEBUG -GL -MT
+LDFLAGS += -ltcg:STATUS
+LDLIBS += $(EXT_LIB)/dxtn.lib $(EXT_LIB)/libpng.lib $(EXT_LIB)/zlib.lib LIBCMT.LIB LIBCPMT.LIB $(BOOST_LIB)/libboost_filesystem-vc80-mt-s.lib $(BOOST_LIB)/libboost_system-vc80-mt-s.lib $(BOOST_LIB)/libboost_thread-vc80-mt-s.lib
+OPTFLAGS ?= -O2
+endif
+
+CFLAGS += -I. -I$(EXT_INC) -I$(BOOST_INC)
+CFLAGS += $(CDEFS) $(OPTFLAGS)
+
+SOURCES = \
+	TxFilterExport.cpp \
+	TxFilter.cpp \
+	TxCache.cpp \
+	TxTexCache.cpp \
+	TxHiResCache.cpp \
+	TxQuantize.cpp \
+	TxUtil.cpp \
+	TextureFilters.cpp \
+	TextureFilters_2xsai.cpp \
+	TextureFilters_hq2x.cpp \
+	TextureFilters_hq4x.cpp \
+	TxImage.cpp \
+	TxReSample.cpp \
+	TxDbg.cpp
+
+
+OBJECTS = $(SOURCES:.cpp=.obj)
+
+.cpp.obj:
+	$(CC) -Fo$@ $(CFLAGS) -c $<
+
+.rc.res:
+	$(RC) -Fo$@ $(CDEFS) $<
+
+all: $(DLLNAME)
+
+$(DLLNAME): $(OBJECTS) $(RESNAME)
+	$(LD) -out:$@ $(LDFLAGS) $(OBJECTS) $(LDLIBS) $(RESNAME)
+
+$(OBJECTS): $(SOURCES) bldno.h
+
+bldno.h: bldno.exe
+	./$< > $@
+
+bldno.exe: bldno.cpp
+	$(CC) -o $@ $(CFLAGS) $<
+
+clean:
+	-$(RM) *.obj *.pdb $(RESNAME) bldno.h *.ilk
+
+realclean: clean
+	-$(RM) $(DLLNAME) $(LIBNAME) $(EXPNAME) bldno.exe
