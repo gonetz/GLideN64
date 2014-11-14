@@ -57,7 +57,8 @@ TxFilter::~TxFilter()
 
 TxFilter::TxFilter(int maxwidth, int maxheight, int maxbpp, int options,
 				   int cachesize, wchar_t *path, wchar_t *ident,
-				   dispInfoFuncExt callback)
+				   dispInfoFuncExt callback) :
+	_tex1(NULL), _tex2(NULL), _txQuantize(NULL), _txTexCache(NULL), _txHiResCache(NULL), _txUtil(NULL), _txImage(NULL)
 {
   /* HACKALERT: the emulator misbehaves and sometimes forgets to shutdown */
   if ((ident && wcscmp(ident, L"DEFAULT") != 0 && _ident.compare(ident) == 0) &&
@@ -66,7 +67,7 @@ TxFilter::TxFilter(int maxwidth, int maxheight, int maxbpp, int options,
 	  _maxbpp    == maxbpp    &&
 	  _options   == options   &&
 	  _cacheSize == cachesize) return;
-  clear(); /* gcc does not allow the destructor to be called */
+//  clear(); /* gcc does not allow the destructor to be called */
 
   /* shamelessness :P this first call to the debug output message creates
    * a file in the executable directory. */
