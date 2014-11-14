@@ -27,6 +27,8 @@ set(Boost_USE_MULTITHREADED ON)
 find_package(Boost COMPONENTS thread filesystem system REQUIRED)
 include_directories(${Boost_INCLUDE_DIRS})
 
+add_definitions( -DTXFILTER_DLL )
+
 if(WIN32)
   LINK_DIRECTORIES( ${CMAKE_CURRENT_SOURCE_DIR}/lib )
   add_definitions(
@@ -34,7 +36,6 @@ if(WIN32)
 	-D_CRT_SECURE_NO_WARNINGS
   )
 endif(WIN32)
-
 
 if (WIN32 AND __COMPILER_GNU)
    # mingw-gcc fails to link boost::thread
@@ -63,10 +64,9 @@ if(NOT OPENGL_FOUND)
 	message(ERROR " OPENGL not found!")
 endif(NOT OPENGL_FOUND)
 
-SET(GCC_CPP11_COMPILE_FLAGS "-std=c++0x -static-libgcc -static-libstdc++")
-SET( CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} ${GCC_CPP11_COMPILE_FLAGS}" )
-SET(GCC_STATIC_LINK_FLAGS "-static-libgcc -static-libstdc++")
-SET( CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} ${GCC_STATIC_LINK_FLAGS}" )
+if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
+	add_definitions( -D__MSC__)
+endif()
 
 if( NOT GHQCHK )
 	add_library( GLideNHQ STATIC ${GLideNHQ_SOURCES})
@@ -100,10 +100,10 @@ else( NOT GHQCHK )
 	  )
 
 	if( CMAKE_BUILD_TYPE STREQUAL "Debug")
-	target_link_libraries(ghqchk ${OPENGL_LIBRARIES} ${Boost_LIBRARIES} libpng zlib dxtn )
+	target_link_libraries(ghqchk ${OPENGL_LIBRARIES} ${Boost_LIBRARIES} png z dxtn )
 	endif( CMAKE_BUILD_TYPE STREQUAL "Debug")
 
 	if( CMAKE_BUILD_TYPE STREQUAL "Release")
-	target_link_libraries(ghqchk ${OPENGL_LIBRARIES} ${Boost_LIBRARIES} libpng zlib dxtn )
+	target_link_libraries(ghqchk ${OPENGL_LIBRARIES} ${Boost_LIBRARIES} png z dxtn )
 	endif( CMAKE_BUILD_TYPE STREQUAL "Release")
 endif( NOT GHQCHK )
