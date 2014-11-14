@@ -21,7 +21,7 @@
  * the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#include "Ext_TxFilter.h"
+#include "../Ext_TxFilter.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdarg.h>
@@ -48,8 +48,8 @@ void DisplayLoadProgress(const wchar_t *format, ...)
   else if (i == 2) printf("\b\\");
   else if (i == 3) printf("\b|");
   else {
-    printf("\b/");
-    i = 0;
+	printf("\b/");
+	i = 0;
   }
 #endif
 }
@@ -104,13 +104,13 @@ int main(int argc, char* argv[])
   options |= RICE_HIRESTEXTURES;
 
   bret = ext_ghq_init(1024, // max texture width supported by hardware
-                      1024, // max texture height supported by hardware
-                      32, // max texture bpp supported by hardware
-                      options,
-                      0, // cache texture to system memory
-                      path, // plugin path
-                      name, // name of ROM. must be no longer than 256 characters
-                      DisplayLoadProgress);
+					  1024, // max texture height supported by hardware
+					  32, // max texture bpp supported by hardware
+					  options,
+					  0, // cache texture to system memory
+					  path, // plugin path
+					  name, // name of ROM. must be no longer than 256 characters
+					  DisplayLoadProgress);
 
   ext_ghq_shutdown();
 
