@@ -896,24 +896,6 @@ TxHiResCache::loadHiResTextures(boost::filesystem::wpath dir_path, boolean repla
 			;
 		  }
 		  break;
-		case FXT1_COMPRESSION:
-		  switch (destformat) {
-		  case GR_TEXFMT_ARGB_1555:
-		  case GR_TEXFMT_RGB_565:
-		  case GR_TEXFMT_INTENSITY_8:
-			dataSize = (width * height) >> 1;
-			break;
-			/* XXX: textures that use 8bit alpha channel look bad with the current
-			 * fxt1 library, so we substitute it with dxtn for now. afaik all gfx
-			 * cards that support fxt1 also support dxtn. (3dfx and Intel) */
-		  case GR_TEXFMT_ALPHA_INTENSITY_88:
-		  case GR_TEXFMT_ARGB_8888:
-			compressionType = S3TC_COMPRESSION;
-			dataSize = width * height;
-			break;
-		  case GR_TEXFMT_ALPHA_8: /* no size benefit with dxtn */
-			;
-		  }
 		}
 		/* compress it! */
 		if (dataSize) {

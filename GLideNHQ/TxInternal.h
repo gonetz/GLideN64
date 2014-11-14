@@ -51,11 +51,6 @@ typedef unsigned long  uint32;
 #define GL_COMPRESSED_RGBA_S3TC_DXT3_EXT  0x83F2
 #define GL_COMPRESSED_RGBA_S3TC_DXT5_EXT  0x83F3
 
-/* for explicit fxt1 compression */
-#define CC_CHROMA 0x0
-#define CC_HI     0x1
-#define CC_ALPHA  0x2
-
 /* in-memory zlib texture compression */
 #define GR_TEXFMT_GZ                 0x8000
 

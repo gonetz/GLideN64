@@ -39,7 +39,6 @@ TxQuantize::TxQuantize()
   _numcore = _txUtil->getNumberofProcessors();
 
   /* get dxtn extensions */
-  _tx_compress_fxt1 = TxLoadLib::getInstance()->getfxtCompressTexFuncExt();
   _tx_compress_dxtn = TxLoadLib::getInstance()->getdxtCompressTexFuncExt();
 }
 
@@ -956,86 +955,6 @@ TxQuantize::quantize(uint8* src, uint8* dest, int width, int height, uint16 srcf
 }
 
 boolean
-TxQuantize::FXT1(uint8 *src, uint8 *dest,
-			 int srcwidth, int srcheight, uint16 srcformat,
-			 int *destwidth, int *destheight, uint16 *destformat)
-{
-  /*
-   * NOTE: src must be in ARGB8888 format, srcformat describes
-   * the closest 16bbp representation of src.
-   *
-   * NOTE: I have modified the dxtn library to use ARGB format
-   * which originaly was ABGR format.
-   */
-
-  boolean bRet = 0;
-
-  if (_tx_compress_fxt1 &&
-	  srcwidth >= 8 && srcheight >= 4) {
-	/* compress to fxt1
-	 * width and height must be larger than 8 and 4 respectively
-	 */
-	int dstRowStride = ((srcwidth + 7) & ~7) << 1;
-	int srcRowStride = (srcwidth << 2);
-
-	unsigned int numcore = _numcore;
-	unsigned int blkrow = 0;
-	while (numcore > 1 && blkrow == 0) {
-	  blkrow = (srcheight >> 2) / numcore;
-	  numcore--;
-	}
-	if (blkrow > 0 && numcore > 1) {
-	  boost::thread *thrd[MAX_NUMCORE];
-	  unsigned int i;
-	  int blkheight = blkrow << 2;
-	  unsigned int srcStride = (srcwidth * blkheight) << 2;
-	  unsigned int destStride = dstRowStride * blkrow;
-	  for (i = 0; i < numcore - 1; i++) {
-		thrd[i] = new boost::thread(boost::bind(_tx_compress_fxt1,
-												srcwidth,
-												blkheight,
-												4,
-												src,
-												srcRowStride,
-												dest,
-												dstRowStride));
-		src  += srcStride;
-		dest += destStride;
-	  }
-	  thrd[i] = new boost::thread(boost::bind(_tx_compress_fxt1,
-											  srcwidth,
-											  srcheight - blkheight * i,
-											  4,
-											  src,
-											  srcRowStride,
-											  dest,
-											  dstRowStride));
-	  for (i = 0; i < numcore; i++) {
-		thrd[i]->join();
-		delete thrd[i];
-	  }
-	} else {
-	  (*_tx_compress_fxt1)(srcwidth,      /* width */
-						   srcheight,     /* height */
-						   4,             /* comps: ARGB8888=4, RGB888=3 */
-						   src,           /* source */
-						   srcRowStride,  /* width*comps */
-						   dest,          /* destination */
-						   dstRowStride); /* 16 bytes per 8x4 texel */
-	}
-
-	/* dxtn adjusts width and height to M8 and M4 respectively by replication */
-	*destwidth  = (srcwidth  + 7) & ~7;
-	*destheight = (srcheight + 3) & ~3;
-	*destformat = GR_TEXFMT_ARGB_CMP_FXT1;
-
-	bRet = 1;
-  }
-
-  return bRet;
-}
-
-boolean
 TxQuantize::DXTn(uint8 *src, uint8 *dest,
 			 int srcwidth, int srcheight, uint16 srcformat,
 			 int *destwidth, int *destheight, uint16 *destformat)
@@ -1151,11 +1070,6 @@ TxQuantize::compress(uint8 *src, uint8 *dest,
   boolean bRet = 0;
 
   switch (compressionType) {
-  case FXT1_COMPRESSION:
-	bRet = FXT1(src, dest,
-				srcwidth, srcheight, srcformat,
-				destwidth, destheight, destformat);
-	break;
   case S3TC_COMPRESSION:
 	bRet = DXTn(src, dest,
 				srcwidth, srcheight, srcformat,

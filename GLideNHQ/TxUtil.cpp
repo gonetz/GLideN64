@@ -31,22 +31,7 @@
  ******************************************************************************/
 TxLoadLib::TxLoadLib()
 {
-#ifdef DXTN_DLL
-  if (!_dxtnlib)
-	_dxtnlib = LoadLibrary("dxtn");
-
-  if (_dxtnlib) {
-	if (!_tx_compress_dxtn)
-	  _tx_compress_dxtn = (dxtCompressTexFuncExt)DLSYM(_dxtnlib, "tx_compress_dxtn");
-
-	if (!_tx_compress_fxt1)
-	  _tx_compress_fxt1 = (fxtCompressTexFuncExt)DLSYM(_dxtnlib, "fxt1_encode");
-  }
-#else
   _tx_compress_dxtn = tx_compress_dxtn;
-  _tx_compress_fxt1 = fxt1_encode;
-
-#endif
 }
 
 TxLoadLib::~TxLoadLib()
@@ -57,12 +42,6 @@ TxLoadLib::~TxLoadLib()
 	FreeLibrary(_dxtnlib);
 #endif
 
-}
-
-fxtCompressTexFuncExt
-TxLoadLib::getfxtCompressTexFuncExt()
-{
-  return _tx_compress_fxt1;
 }
 
 dxtCompressTexFuncExt
@@ -96,9 +75,6 @@ TxUtil::sizeofTx(int width, int height, uint16 format)
 
   /* a lookup table for the shifts would be better */
   switch (format) {
-  case GR_TEXFMT_ARGB_CMP_FXT1:
-	dataSize = (((width + 0x7) & ~0x7) * ((height + 0x3) & ~0x3)) >> 1;
-	break;
   case GR_TEXFMT_ARGB_CMP_DXT1:
 	dataSize = (((width + 0x3) & ~0x3) * ((height + 0x3) & ~0x3)) >> 1;
 	break;

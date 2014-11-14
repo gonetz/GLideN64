@@ -37,7 +37,6 @@ private:
   TxUtil *_txUtil;
   int _numcore;
 
-  fxtCompressTexFuncExt _tx_compress_fxt1;
   dxtCompressTexFuncExt _tx_compress_dxtn;
 
   /* fast optimized... well, sort of. */
@@ -64,12 +63,9 @@ private:
   void ARGB8888_I8_Slow(uint32* src, uint32* dst, int width, int height);
 
   /* compressors */
-  boolean FXT1(uint8 *src, uint8 *dest,
-               int srcwidth, int srcheight, uint16 srcformat,
-               int *destwidth, int *destheight, uint16 *destformat);
   boolean DXTn(uint8 *src, uint8 *dest,
-               int srcwidth, int srcheight, uint16 srcformat,
-               int *destwidth, int *destheight, uint16 *destformat);
+			   int srcwidth, int srcheight, uint16 srcformat,
+			   int *destwidth, int *destheight, uint16 *destformat);
 
 public:
   TxQuantize();
@@ -81,15 +77,15 @@ public:
   boolean quantize(uint8* src, uint8* dest, int width, int height, uint16 srcformat, uint16 destformat, boolean fastQuantizer = 1);
 
   boolean compress(uint8 *src, uint8 *dest,
-                   int srcwidth, int srcheight, uint16 srcformat,
-                   int *destwidth, int *destheight, uint16 *destformat,
-                   int compressionType);
+				   int srcwidth, int srcheight, uint16 srcformat,
+				   int *destwidth, int *destheight, uint16 *destformat,
+				   int compressionType);
 
 
 #if 0 /* unused */
   void ARGB8888_I8(uint32* src, uint32* dst, int width, int height);
   void I8_ARGB8888(uint32* src, uint32* dst, int width, int height);
-  
+
   void ARGB1555_ABGR8888(uint32* src, uint32* dst, int width, int height);
   void ARGB4444_ABGR8888(uint32* src, uint32* dst, int width, int height);
   void ARGB8888_ABGR8888(uint32* src, uint32* dst, int width, int height);

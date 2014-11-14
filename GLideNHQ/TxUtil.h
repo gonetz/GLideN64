@@ -35,25 +35,18 @@
 extern "C"{
 #endif
 void tx_compress_dxtn(int srccomps, int width, int height,
-                      const void *source, int destformat, void *dest,
-                      int destRowStride);
+					  const void *source, int destformat, void *dest,
+					  int destRowStride);
 
-int fxt1_encode(int width, int height, int comps,
-                const void *source, int srcRowStride,
-                void *dest, int destRowStride);
 #ifdef __cplusplus
 }
 #endif
 #endif /* DXTN_DLL */
 
 typedef void (*dxtCompressTexFuncExt)(int srccomps, int width,
-                                      int height, const void *srcPixData,
-                                      int destformat, void *dest,
-                                      int dstRowStride);
-
-typedef int (*fxtCompressTexFuncExt)(int width, int height, int comps,
-                                     const void *source, int srcRowStride,
-                                     void *dest, int destRowStride);
+									  int height, const void *srcPixData,
+									  int destformat, void *dest,
+									  int dstRowStride);
 
 class TxLoadLib
 {
@@ -61,16 +54,14 @@ private:
 #ifdef DXTN_DLL
   HMODULE _dxtnlib;
 #endif
-  fxtCompressTexFuncExt _tx_compress_fxt1;
   dxtCompressTexFuncExt _tx_compress_dxtn;
   TxLoadLib();
 public:
   static TxLoadLib* getInstance() {
-    static TxLoadLib txLoadLib;
-    return &txLoadLib;
+	static TxLoadLib txLoadLib;
+	return &txLoadLib;
   }
   ~TxLoadLib();
-  fxtCompressTexFuncExt getfxtCompressTexFuncExt();
   dxtCompressTexFuncExt getdxtCompressTexFuncExt();
 };
 
@@ -81,9 +72,9 @@ private:
   uint32 Adler32(const uint8* src, int width, int height, int size, int rowStride);
   uint32 RiceCRC32(const uint8* src, int width, int height, int size, int rowStride);
   boolean RiceCRC32_CI4(const uint8* src, int width, int height, int size, int rowStride,
-                        uint32* crc32, uint32* cimax);
+						uint32* crc32, uint32* cimax);
   boolean RiceCRC32_CI8(const uint8* src, int width, int height, int size, int rowStride,
-                        uint32* crc32, uint32* cimax);
+						uint32* crc32, uint32* cimax);
   int log2(int num);
 public:
   TxUtil() { }
@@ -108,8 +99,8 @@ private:
   TxMemBuf();
 public:
   static TxMemBuf* getInstance() {
-    static TxMemBuf txMemBuf;
-    return &txMemBuf;
+	static TxMemBuf txMemBuf;
+	return &txMemBuf;
   }
   ~TxMemBuf();
   boolean init(int maxwidth, int maxheight);
