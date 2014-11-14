@@ -1,6 +1,10 @@
 backup/
 Debug*/
 Release*/
-build/
+build*/
+gles2n64/
+Roms/
 *.ncb
 *.suo
+*.sdf
+*.user
