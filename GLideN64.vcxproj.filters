@@ -326,6 +326,9 @@
     <ClInclude Include="F3DSWSE.h">
       <Filter>Header Files\uCodes</Filter>
     </ClInclude>
+    <ClInclude Include="GLideNHQ\Ext_TxFilter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Resource.rc">

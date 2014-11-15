@@ -3,7 +3,6 @@ cmake_minimum_required(VERSION 2.6)
 project( GLideNHQ )
 
 set(GLideNHQ_SOURCES
-  Ext_TxFilter.cpp
   TextureFilters.cpp
   TextureFilters_2xsai.cpp
   TextureFilters_hq2x.cpp
@@ -27,12 +26,12 @@ set(Boost_USE_MULTITHREADED ON)
 find_package(Boost COMPONENTS thread filesystem system REQUIRED)
 include_directories(${Boost_INCLUDE_DIRS})
 
-add_definitions( -DTXFILTER_DLL )
+LINK_DIRECTORIES( ${CMAKE_CURRENT_SOURCE_DIR}/lib )
 
 if(WIN32)
-  LINK_DIRECTORIES( ${CMAKE_CURRENT_SOURCE_DIR}/lib )
   add_definitions(
 	-DWIN32
+	-DOS_WINDOWS
 	-D_CRT_SECURE_NO_WARNINGS
   )
 endif(WIN32)
@@ -69,10 +68,10 @@ if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
 endif()
 
 if( NOT GHQCHK )
-	add_library( GLideNHQ STATIC ${GLideNHQ_SOURCES})
+	add_library( libGLideNHQ STATIC ${GLideNHQ_SOURCES})
 
 	SET_TARGET_PROPERTIES(
-	  GLideNHQ
+	  libGLideNHQ
 	  PROPERTIES
 	  LINKER_LANGUAGE CXX # Or else we get an error message, because cmake can't figure out from the ".o"-suffix that it is a C-linker we need.
 	  PREFIX ""
@@ -80,11 +79,11 @@ if( NOT GHQCHK )
 	  )
 
 	if( CMAKE_BUILD_TYPE STREQUAL "Debug")
-	target_link_libraries(GLideNHQ ${OPENGL_LIBRARIES} ${Boost_LIBRARIES} libpng zlib dxtn )
+	target_link_libraries(libGLideNHQ ${OPENGL_LIBRARIES} ${Boost_LIBRARIES} png z dxtn )
 	endif( CMAKE_BUILD_TYPE STREQUAL "Debug")
 
 	if( CMAKE_BUILD_TYPE STREQUAL "Release")
-	target_link_libraries(GLideNHQ ${OPENGL_LIBRARIES} ${Boost_LIBRARIES} libpng zlib dxtn )
+	target_link_libraries(libGLideNHQ ${OPENGL_LIBRARIES} ${Boost_LIBRARIES} png z dxtn )
 	endif( CMAKE_BUILD_TYPE STREQUAL "Release")
 else( NOT GHQCHK )
 	add_definitions(-DGHQCHK)

@@ -24,7 +24,7 @@
 #ifndef __EXT_TXFILTER_H__
 #define __EXT_TXFILTER_H__
 
-#ifdef WIN32
+#ifdef OS_WINDOWS
 #include <windows.h>
 #define TXHMODULE HMODULE
 #define DLOPEN(a) LoadLibraryW(a)
@@ -157,7 +157,17 @@ struct GHQTexInfo {
 #define INFO_BUF 4095
 typedef void (*dispInfoFuncExt)(const wchar_t *format, ...);
 
-#ifndef TXFILTER_DLL
+/* dll exports */
+/* Use TXFilter as a library. Define exported functions. */
+#ifdef TXFILTER_LIB
+#define TAPI __declspec(dllexport)
+#define TAPIENTRY
+#else
+#define TAPI
+#define TAPIENTRY
+#endif
+
+#ifdef TXFILTER_DLL
 boolean ext_ghq_init(int maxwidth, /* maximum texture width supported by hardware */
 					 int maxheight,/* maximum texture height supported by hardware */
 					 int maxbpp,   /* maximum texture bpp supported by hardware */
@@ -202,6 +212,45 @@ boolean ext_ghq_dmptx(unsigned char *src,   /* input texture (must be in 3Dfx Gl
 					  );
 
 boolean ext_ghq_reloadhirestex();
+
+#else
+
+typedef unsigned char  uint8;
+typedef unsigned short uint16;
+typedef unsigned long  uint32;
+
+#ifdef __cplusplus
+extern "C"{
+#endif
+
+TAPI boolean TAPIENTRY
+txfilter_init(int maxwidth, int maxheight, int maxbpp, int options, int cachesize,
+			  wchar_t *path, wchar_t*ident,
+			  dispInfoFuncExt callback);
+
+TAPI void TAPIENTRY
+txfilter_shutdown(void);
+
+TAPI boolean TAPIENTRY
+txfilter(uint8 *src, int srcwidth, int srcheight, uint16 srcformat,
+		 uint64 g64crc, GHQTexInfo *info);
+
+TAPI boolean TAPIENTRY
+txfilter_hirestex(uint64 g64crc, uint64 r_crc64, uint16 *palette, GHQTexInfo *info);
+
+TAPI uint64 TAPIENTRY
+txfilter_checksum(uint8 *src, int width, int height, int size, int rowStride, uint8 *palette);
+
+TAPI boolean TAPIENTRY
+txfilter_dmptx(uint8 *src, int width, int height, int rowStridePixel, uint16 gfmt, uint16 n64fmt, uint64 r_crc64);
+
+TAPI boolean TAPIENTRY
+txfilter_reloadhirestex();
+
+#ifdef __cplusplus
+}
+#endif
+
 #endif /* TXFILTER_DLL */
 
 #endif /* __EXT_TXFILTER_H__ */

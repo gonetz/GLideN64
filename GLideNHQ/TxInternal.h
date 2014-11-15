@@ -26,19 +26,6 @@
 
 #include "Ext_TxFilter.h"
 
-/* dll exports */
-#ifdef TXFILTER_DLL
-#define TAPI __declspec(dllexport)
-#define TAPIENTRY
-#else
-#define TAPI
-#define TAPIENTRY
-#endif
-
-typedef unsigned char  uint8;
-typedef unsigned short uint16;
-typedef unsigned long  uint32;
-
 #ifdef WIN32
 #define KBHIT(key) ((GetAsyncKeyState(key) & 0x8001) == 0x8001)
 #else

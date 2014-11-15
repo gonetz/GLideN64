@@ -18,8 +18,15 @@ endif( CMAKE_BUILD_TYPE STREQUAL "Debug")
 
 add_definitions(
   -DGHQCHK=1
+  -DTXFILTER_DLL=1
 )
 
+if(WIN32)
+  add_definitions(
+	-DWIN32
+	-DOS_WINDOWS
+  )
+endif(WIN32)
 
 #SET( CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} ${GCC_CPP11_COMPILE_FLAGS}" )
 

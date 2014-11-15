@@ -38,6 +38,9 @@ set(GLideN64_SOURCES
   common/CommonAPIImpl_common.cpp
 )
 
+include_directories( GLideNHQ )
+LINK_DIRECTORIES( ${CMAKE_CURRENT_SOURCE_DIR}/GLideNHQ/build )
+
 if(MUPENPLUSAPI)
   add_definitions(
 	-DMUPENPLUSAPI
@@ -169,4 +172,4 @@ SET_TARGET_PROPERTIES(
   LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/plugin
   )
 
-target_link_libraries(GLideN64 ${OPENGL_LIBRARIES} ${SDL_LIBRARIES})
+target_link_libraries(GLideN64 ${OPENGL_LIBRARIES} ${SDL_LIBRARIES} GLideNHQ )
