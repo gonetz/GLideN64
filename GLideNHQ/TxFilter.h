@@ -56,23 +56,23 @@ private:
 public:
   ~TxFilter();
   TxFilter(int maxwidth,
-           int maxheight,
-           int maxbpp,
-           int options,
-           int cachesize,
-           wchar_t *path,
-           wchar_t *ident,
-           dispInfoFuncExt callback);
+		   int maxheight,
+		   int maxbpp,
+		   int options,
+		   int cachesize,
+		   const wchar_t *path,
+		   const wchar_t *ident,
+		   dispInfoFuncExt callback);
   boolean filter(uint8 *src,
-                  int srcwidth,
-                  int srcheight,
-                  uint16 srcformat,
-                  uint64 g64crc, /* glide64 crc, 64bit for future use */
-                  GHQTexInfo *info);
+				  int srcwidth,
+				  int srcheight,
+				  uint16 srcformat,
+				  uint64 g64crc, /* glide64 crc, 64bit for future use */
+				  GHQTexInfo *info);
   boolean hirestex(uint64 g64crc, /* glide64 crc, 64bit for future use */
-                      uint64 r_crc64,   /* checksum hi:palette low:texture */
-                      uint16 *palette,
-                      GHQTexInfo *info);
+					  uint64 r_crc64,   /* checksum hi:palette low:texture */
+					  uint16 *palette,
+					  GHQTexInfo *info);
   uint64 checksum64(uint8 *src, int width, int height, int size, int rowStride, uint8 *palette);
   boolean dmptx(uint8 *src, int width, int height, int rowStridePixel, uint16 gfmt, uint16 n64fmt, uint64 r_crc64);
   boolean reloadhirestex();

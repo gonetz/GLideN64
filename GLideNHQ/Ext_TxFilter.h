@@ -173,8 +173,8 @@ boolean ext_ghq_init(int maxwidth, /* maximum texture width supported by hardwar
 					 int maxbpp,   /* maximum texture bpp supported by hardware */
 					 int options,  /* options */
 					 int cachesize,/* cache textures to system memory */
-					 wchar_t *path,   /* plugin directory. must be smaller than MAX_PATH */
-					 wchar_t *ident,  /* name of ROM. must be no longer than 64 in character. */
+					 const wchar_t *path,   /* plugin directory. must be smaller than MAX_PATH */
+					 const wchar_t *ident,  /* name of ROM. must be no longer than 64 in character. */
 					 dispInfoFuncExt callback /* callback function to display info */
 					 );
 
@@ -225,7 +225,7 @@ extern "C"{
 
 TAPI boolean TAPIENTRY
 txfilter_init(int maxwidth, int maxheight, int maxbpp, int options, int cachesize,
-			  wchar_t *path, wchar_t*ident,
+			  const wchar_t *path, const wchar_t*ident,
 			  dispInfoFuncExt callback);
 
 TAPI void TAPIENTRY

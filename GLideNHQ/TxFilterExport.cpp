@@ -35,13 +35,13 @@ extern "C"{
 
 TAPI boolean TAPIENTRY
 txfilter_init(int maxwidth, int maxheight, int maxbpp, int options, int cachesize,
-              wchar_t *path, wchar_t*ident,
-              dispInfoFuncExt callback)
+			  const wchar_t * path, const wchar_t * ident,
+			  dispInfoFuncExt callback)
 {
   if (txFilter) return 0;
 
   txFilter = new TxFilter(maxwidth, maxheight, maxbpp, options, cachesize,
-                           path, ident, callback);
+						   path, ident, callback);
 
   return (txFilter ? 1 : 0);
 }
@@ -56,11 +56,11 @@ txfilter_shutdown(void)
 
 TAPI boolean TAPIENTRY
 txfilter(uint8 *src, int srcwidth, int srcheight, uint16 srcformat,
-         uint64 g64crc, GHQTexInfo *info)
+		 uint64 g64crc, GHQTexInfo *info)
 {
   if (txFilter)
-    return txFilter->filter(src, srcwidth, srcheight, srcformat,
-                               g64crc, info);
+	return txFilter->filter(src, srcwidth, srcheight, srcformat,
+							   g64crc, info);
 
   return 0;
 }
@@ -69,7 +69,7 @@ TAPI boolean TAPIENTRY
 txfilter_hirestex(uint64 g64crc, uint64 r_crc64, uint16 *palette, GHQTexInfo *info)
 {
   if (txFilter)
-    return txFilter->hirestex(g64crc, r_crc64, palette, info);
+	return txFilter->hirestex(g64crc, r_crc64, palette, info);
 
   return 0;
 }
@@ -78,7 +78,7 @@ TAPI uint64 TAPIENTRY
 txfilter_checksum(uint8 *src, int width, int height, int size, int rowStride, uint8 *palette)
 {
   if (txFilter)
-    return txFilter->checksum64(src, width, height, size, rowStride, palette);
+	return txFilter->checksum64(src, width, height, size, rowStride, palette);
 
   return 0;
 }
@@ -87,7 +87,7 @@ TAPI boolean TAPIENTRY
 txfilter_dmptx(uint8 *src, int width, int height, int rowStridePixel, uint16 gfmt, uint16 n64fmt, uint64 r_crc64)
 {
   if (txFilter)
-    return txFilter->dmptx(src, width, height, rowStridePixel, gfmt, n64fmt, r_crc64);
+	return txFilter->dmptx(src, width, height, rowStridePixel, gfmt, n64fmt, r_crc64);
 
   return 0;
 }
@@ -96,7 +96,7 @@ TAPI boolean TAPIENTRY
 txfilter_reloadhirestex()
 {
   if (txFilter)
-    return txFilter->reloadhirestex();
+	return txFilter->reloadhirestex();
 
   return 0;
 }
