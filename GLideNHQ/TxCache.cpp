@@ -164,10 +164,6 @@ TxCache::add(uint64 checksum, GHQTexInfo *info, int dataSize)
 	  DBG_INFO(80, L"smalllodlog2:%d largelodlog2:%d aspectratiolog2:%d\n",
 			   txCache->info.smallLodLog2, txCache->info.largeLodLog2, txCache->info.aspectRatioLog2);
 
-	  if (info->tiles) {
-		DBG_INFO(80, L"tiles:%d un-tiled size:%d x %d\n", info->tiles, info->untiled_width, info->untiled_height);
-	  }
-
 	  if (_cacheSize > 0) {
 		DBG_INFO(80, L"cache max config:%.02fmb\n", (float)_cacheSize/1000000);
 
@@ -291,10 +287,6 @@ TxCache::save(const wchar_t *path, const wchar_t *filename, int config)
 		  gzwrite(gzfp, &((*itMap).second->info.largeLodLog2), 4);
 		  gzwrite(gzfp, &((*itMap).second->info.aspectRatioLog2), 4);
 
-		  gzwrite(gzfp, &((*itMap).second->info.tiles), 4);
-		  gzwrite(gzfp, &((*itMap).second->info.untiled_width), 4);
-		  gzwrite(gzfp, &((*itMap).second->info.untiled_height), 4);
-
 		  gzwrite(gzfp, &((*itMap).second->info.is_hires_tex), 1);
 
 		  gzwrite(gzfp, &destLen, 4);
@@ -361,10 +353,6 @@ TxCache::load(const wchar_t *path, const wchar_t *filename, int config)
 		gzread(gzfp, &tmpInfo.smallLodLog2, 4);
 		gzread(gzfp, &tmpInfo.largeLodLog2, 4);
 		gzread(gzfp, &tmpInfo.aspectRatioLog2, 4);
-
-		gzread(gzfp, &tmpInfo.tiles, 4);
-		gzread(gzfp, &tmpInfo.untiled_width, 4);
-		gzread(gzfp, &tmpInfo.untiled_height, 4);
 
 		gzread(gzfp, &tmpInfo.is_hires_tex, 1);
 

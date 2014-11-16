@@ -32,20 +32,9 @@
  * (0:disable, 1:enable) */
 #define DUMP_CACHE 1
 
-/* handle oversized textures by
- *   0: minification
- *   1: Glide64 style tiling
- */
-#define TEXTURE_TILING 1
-
 /* use power of 2 texture size
  * (0:disable, 1:enable, 2:3dfx) */
 #define POW2_TEXTURES 2
-
-#if TEXTURE_TILING
-#undef POW2_TEXTURES
-#define POW2_TEXTURES 2
-#endif
 
 /* hack to reduce texture footprint to achieve
  * better performace on midrange gfx cards.
@@ -60,6 +49,7 @@
 #include "TxDbg.h"
 #include <zlib.h>
 #include <string>
+#include <math.h>
 
 TxHiResCache::~TxHiResCache()
 {
@@ -684,147 +674,6 @@ TxHiResCache::loadHiResTextures(boost::filesystem::wpath dir_path, boolean repla
 	/* XXX: only ARGB8888 for now. comeback to this later... */
 	if (format == GR_TEXFMT_ARGB_8888) {
 
-#if TEXTURE_TILING
-
-	  /* Glide64 style texture tiling */
-	  /* NOTE: narrow wide textures can be tiled into 256x256 size textures */
-
-	  /* adjust texture size to allow tiling for V1, Rush, V2, Banshee, V3 */
-	  /* NOTE: we skip this for palette textures that need minification
-	   * becasue it will look ugly. */
-
-	  /* minification */
-	  {
-		int ratio = 1;
-
-		/* minification to enable glide64 style texture tiling */
-		/* determine the minification ratio to tile the texture into 256x256 size */
-		if ((_options & TILE_HIRESTEX) && _maxwidth >= 256 && _maxheight >= 256) {
-		  DBG_INFO(80, L"determine minification ratio to tile\n");
-		  tmpwidth = width;
-		  tmpheight = height;
-		  if (height > 256) {
-			ratio = ((height - 1) >> 8) + 1;
-			tmpwidth = width / ratio;
-			tmpheight = height / ratio;
-			DBG_INFO(80, L"height > 256, minification ratio:%d %d x %d -> %d x %d\n",
-					 ratio, width, height, tmpwidth, tmpheight);
-		  }
-		  if (tmpwidth > 256 && (((tmpwidth - 1) >> 8) + 1) * tmpheight > 256) {
-			ratio *= ((((((tmpwidth - 1) >> 8) + 1) * tmpheight) - 1) >> 8) + 1;
-			DBG_INFO(80, L"width > 256, minification ratio:%d %d x %d -> %d x %d\n",
-					 ratio, width, height, width / ratio, height / ratio);
-		  }
-		} else {
-		  /* normal minification to fit max texture size */
-		  if (width > _maxwidth || height > _maxheight) {
-			DBG_INFO(80, L"determine minification ratio to fit max texture size\n");
-			tmpwidth = width;
-			tmpheight = height;
-			while (tmpwidth > _maxwidth) {
-			  tmpheight >>= 1;
-			  tmpwidth >>= 1;
-			  ratio <<= 1;
-			}
-			while (tmpheight > _maxheight) {
-			  tmpheight >>= 1;
-			  tmpwidth >>= 1;
-			  ratio <<= 1;
-			}
-			DBG_INFO(80, L"minification ratio:%d %d x %d -> %d x %d\n",
-					 ratio, width, height, tmpwidth, tmpheight);
-		  }
-		}
-
-		if (ratio > 1) {
-		  if (!_txReSample->minify(&tex, &width, &height, ratio)) {
-			free(tex);
-			tex = NULL;
-			DBG_INFO(80, L"Error: minification failed!\n");
-			continue;
-		  }
-		}
-	  }
-
-	  /* tiling */
-	  if ((_options & TILE_HIRESTEX) && _maxwidth >= 256 && _maxheight >= 256) {
-		boolean usetile = 0;
-
-		/* to tile or not to tile, that is the question */
-		if (width > 256 && height <= 128 && (((width - 1) >> 8) + 1) * height <= 256) {
-
-		  if (width > _maxwidth) usetile = 1;
-		  else {
-			/* tile if the tiled texture memory footprint is smaller */
-			int tilewidth  = 256;
-			int tileheight = _txReSample->nextPow2((((width - 1) >> 8) + 1) * height);
-			tmpwidth  = width;
-			tmpheight = height;
-
-			/* 3dfx Glide3 tmpheight, W:H aspect ratio range (8:1 - 1:8) */
-			if (tilewidth > (tileheight << 3)) tileheight = tilewidth >> 3;
-
-			/* HACKALERT: see TxReSample::pow2(); */
-			if      (tmpwidth  > 64) tmpwidth  -= 4;
-			else if (tmpwidth  > 16) tmpwidth  -= 2;
-			else if (tmpwidth  >  4) tmpwidth  -= 1;
-
-			if      (tmpheight > 64) tmpheight -= 4;
-			else if (tmpheight > 16) tmpheight -= 2;
-			else if (tmpheight >  4) tmpheight -= 1;
-
-			tmpwidth  = _txReSample->nextPow2(tmpwidth);
-			tmpheight = _txReSample->nextPow2(tmpheight);
-
-			/* 3dfx Glide3 tmpheight, W:H aspect ratio range (8:1 - 1:8) */
-			if (tmpwidth > tmpheight) {
-			  if (tmpwidth  > (tmpheight << 3)) tmpheight = tmpwidth  >> 3;
-			} else {
-			  if (tmpheight > (tmpwidth  << 3)) tmpwidth  = tmpheight >> 3;
-			}
-
-			usetile = (tilewidth * tileheight < tmpwidth * tmpheight);
-		  }
-
-		}
-
-		/* tile it! do the actual tiling into 256x256 size */
-		if (usetile) {
-		  DBG_INFO(80, L"Glide64 style texture tiling\n");
-
-		  int x, y, z, ratio, offset;
-		  offset = 0;
-		  ratio = ((width - 1) >> 8) + 1;
-		  tmptex = (uint8 *)malloc(_txUtil->sizeofTx(256, height * ratio, format));
-		  if (tmptex) {
-			for (x = 0; x < ratio; x++) {
-			  for (y = 0; y < height; y++) {
-				if (x < ratio - 1) {
-				  memcpy(&tmptex[offset << 2], &tex[(x * 256 + y * width) << 2], 256 << 2);
-				} else {
-				  for (z = 0; z < width - 256 * (ratio - 1); z++) {
-					((uint32*)tmptex)[offset + z] = ((uint32*)tex)[x * 256 + y * width + z];
-				  }
-				  for (; z < 256; z++) {
-					((uint32*)tmptex)[offset + z] = ((uint32*)tmptex)[offset + z - 1];
-				  }
-				}
-				offset += 256;
-			  }
-			}
-			free(tex);
-			tex = tmptex;
-			untiled_width = width;
-			untiled_height = height;
-			width = 256;
-			height *= ratio;
-			DBG_INFO(80, L"Tiled: %d x %d -> %d x %d\n", untiled_width, untiled_height, width, height);
-		  }
-		}
-	  }
-
-#else  /* TEXTURE_TILING */
-
 	  /* minification */
 	  if (width > _maxwidth || height > _maxheight) {
 		int ratio = 1;
@@ -840,8 +689,6 @@ TxHiResCache::loadHiResTextures(boost::filesystem::wpath dir_path, boolean repla
 		  continue;
 		}
 	  }
-
-#endif /* TEXTURE_TILING */
 
 	  /* texture compression */
 	  if ((_options & COMPRESSION_MASK) &&
@@ -1025,15 +872,6 @@ TxHiResCache::loadHiResTextures(boost::filesystem::wpath dir_path, boolean repla
 	  tmpInfo.smallLodLog2 = tmpInfo.largeLodLog2;
 	  tmpInfo.aspectRatioLog2 = _txUtil->grAspectRatioLog2(width, height);
 	  tmpInfo.is_hires_tex = 1;
-
-#if TEXTURE_TILING
-	  /* Glide64 style texture tiling. */
-	  if (untiled_width && untiled_height) {
-		tmpInfo.tiles = ((untiled_width - 1) >> 8) + 1;
-		tmpInfo.untiled_width = untiled_width;
-		tmpInfo.untiled_height = untiled_height;
-	  }
-#endif
 
 	  /* remove redundant in cache */
 	  if (replace && TxCache::del(chksum64)) {

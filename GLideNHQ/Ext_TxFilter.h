@@ -132,10 +132,6 @@ struct GHQTexInfo {
   int largeLodLog2;
   int aspectRatioLog2;
 
-  int tiles;
-  int untiled_width;
-  int untiled_height;
-
   unsigned char is_hires_tex;
 };
 
