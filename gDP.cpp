@@ -805,6 +805,12 @@ void gDPLoadTLUT( u32 tile, u32 uls, u32 ult, u32 lrs, u32 lrt )
 
 	gDP.paletteCRC256 = CRC_Calculate(0xFFFFFFFF, gDP.paletteCRC16, 64);
 
+	if (TFH.isInited()) {
+		const u16 start = gDP.tiles[tile].tmem - 256; // starting location in the palettes
+		u16 *spal = (u16*)(RDRAM + gDP.textureImage.address);
+		memcpy((u8*)(gDP.TexFilterPalette + start), spal, count<<1);
+	}
+
 	gDP.changed |= CHANGED_TMEM;
 
 #ifdef DEBUG
