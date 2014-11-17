@@ -267,14 +267,19 @@ void RSP_Init()
 	RSP.bLLE = false;
 
 	// get the name of the ROM
+	char romname[21];
 	for (int i = 0; i < 20; ++i)
-		RSP.romname[i] = HEADER[(32 + i) ^ 3];
-	RSP.romname[20] = 0;
+		romname[i] = HEADER[(32 + i) ^ 3];
+	romname[20] = 0;
 
 	// remove all trailing spaces
-	while (RSP.romname[strlen(RSP.romname) - 1] == ' ')
-		RSP.romname[strlen(RSP.romname) - 1] = 0;
+	while (romname[strlen(romname) - 1] == ' ')
+		romname[strlen(romname) - 1] = 0;
 
+	if (strcmp(RSP.romname, romname) != 0)
+		TFH.shutdown();
+
+	strncpy(RSP.romname, romname, 21);
 	if (strstr(RSP.romname, (const char *)"OgreBattle64"))
 		config.hacks |= hack_Ogre64;
 

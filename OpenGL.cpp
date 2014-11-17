@@ -2,9 +2,6 @@
 #include <math.h>
 #include <stdio.h>
 #include <time.h>       /* time_t, struct tm, difftime, time, mktime */
-#include "OpenGL.h"
-#include "RDP.h"
-#include "RSP.h"
 
 //// paulscode, added for SDL linkage:
 #if defined(GLES2)
@@ -12,8 +9,11 @@
 #endif // GLES2
 ////
 
-#include "GLideN64.h"
 #include "Types.h"
+#include "GLideN64.h"
+#include "OpenGL.h"
+#include "RDP.h"
+#include "RSP.h"
 #include "N64.h"
 #include "gSP.h"
 #include "gDP.h"
@@ -22,6 +22,7 @@
 #include "GLSLCombiner.h"
 #include "FrameBuffer.h"
 #include "DepthBuffer.h"
+#include "GLideNHQ/Ext_TxFilter.h"
 #include "VI.h"
 #include "Config.h"
 #include "Log.h"
@@ -1190,6 +1191,106 @@ void OGLRender::_setSpecialTexrect() const
 	else
 		texturedRectSpecial = NULL;
 }
+
+static
+u32 textureFilters[] = {
+	NO_FILTER, //"None"
+	SMOOTH_FILTER_1, //"Smooth filtering 1"
+	SMOOTH_FILTER_2, //"Smooth filtering 2"
+	SMOOTH_FILTER_3, //"Smooth filtering 3"
+	SMOOTH_FILTER_4, //"Smooth filtering 4"
+	SHARP_FILTER_1,  //"Sharp filtering 1"
+	SHARP_FILTER_2,  //"Sharp filtering 2"
+};
+
+static
+u32 textureEnhancements[] = {
+	NO_ENHANCEMENT,    //"None"
+	NO_ENHANCEMENT,    //"Store"
+	X2_ENHANCEMENT,    //"X2"
+	X2SAI_ENHANCEMENT, //"X2SAI"
+	HQ2X_ENHANCEMENT,  //"HQ2X"
+	HQ2XS_ENHANCEMENT, //"HQ2XS"
+	LQ2X_ENHANCEMENT,  //"LQ2X"
+	LQ2XS_ENHANCEMENT, //"LQ2XS"
+	HQ4X_ENHANCEMENT,  //"HQ4X"
+};
+
+void displayLoadProgress(const wchar_t *format, ...)
+{
+	va_list args;
+	wchar_t wbuf[INFO_BUF];
+	//	char buf[INFO_BUF];
+
+	// process input
+	va_start(args, format);
+	vswprintf(wbuf, INFO_BUF, format, args);
+	va_end(args);
+
+	// XXX: convert to multibyte
+	//	wcstombs(buf, wbuf, INFO_BUF);
+
+	OutputDebugStringW(wbuf);
+}
+
+void TextureFilterHandler::init()
+{
+	if (!isInited()) {
+		m_inited = config.textureFilter.txFilterMode | config.textureFilter.txEnhancementMode | config.textureFilter.txHiresEnable;
+		if (m_inited != 0) {
+			u32 options = textureFilters[config.textureFilter.txFilterMode] | textureEnhancements[config.textureFilter.txEnhancementMode];
+			if (config.textureFilter.txFilterCompression != 0)
+				options |= COMPRESS_TEX | S3TC_COMPRESSION;
+			if (config.textureFilter.txHiresCompression)
+				options |= COMPRESS_HIRESTEX | S3TC_COMPRESSION;
+			if (config.textureFilter.txHiresEnable)
+				options |= RICE_HIRESTEXTURES;
+			if (config.textureFilter.txFilterForce16bpp)
+				options |= FORCE16BPP_TEX;
+			if (config.textureFilter.txHiresForce16bpp)
+				options |= FORCE16BPP_HIRESTEX;
+			if (config.textureFilter.txFilterCacheCompression)
+				options |= GZ_TEXCACHE;
+			if (config.textureFilter.txHiresCacheCompression)
+				options |= GZ_HIRESTEXCACHE;
+			if (config.textureFilter.txSaveCache)
+				options |= (DUMP_TEXCACHE | DUMP_HIRESTEXCACHE);
+			if (config.textureFilter.txHiresFullAlphaChannel)
+				options |= LET_TEXARTISTS_FLY;
+			if (config.textureFilter.txDump)
+				options |= DUMP_TEX;
+
+			GLint maxTextureSize;
+			glGetIntegerv(GL_MAX_TEXTURE_SIZE, &maxTextureSize);
+			wchar_t wRomName[32];
+			::mbstowcs(wRomName, RSP.romname, 32);
+
+			wchar_t buffer[MAX_PATH];
+			GetModuleFileNameW(NULL, buffer, MAX_PATH);
+			wstring pluginPath(buffer);
+			wstring::size_type pos = pluginPath.find_last_of(L"\\/");
+
+			m_inited = txfilter_init(maxTextureSize, // max texture width supported by hardware
+				maxTextureSize, // max texture height supported by hardware
+				32, // max texture bpp supported by hardware
+				options,
+				config.textureFilter.txCacheSize, // cache texture to system memory
+				pluginPath.substr(0, pos).c_str(), // plugin path
+				wRomName, // name of ROM. must be no longer than 256 characters
+				displayLoadProgress);
+		}
+	}
+}
+
+void TextureFilterHandler::shutdown()
+{
+	if (isInited()) {
+		txfilter_shutdown();
+		m_inited = 0;
+	}
+}
+
+TextureFilterHandler TFH;
 
 #ifdef __TRIBUFFER_OPT
 void OGLRender::_indexmap_init()

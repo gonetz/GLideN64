@@ -23,6 +23,7 @@ void RSP_ThreadProc(std::mutex * _pRspThreadMtx, std::mutex * _pPluginThreadMtx,
 	RSP_Init();
 	GBI.init();
 	video().start();
+	TFH.init();
 	assert(!isGLError());
 
 	while (true) {
@@ -41,6 +42,7 @@ void RSP_ThreadProc(std::mutex * _pRspThreadMtx, std::mutex * _pPluginThreadMtx,
 			VI_UpdateScreen();
 			break;
 		case acRomClosed:
+			TFH.shutdown();
 			video().stop();
 			GBI.destroy();
 			*_pCommand = acNone;
@@ -95,6 +97,7 @@ void PluginAPI::RomClosed()
 	delete m_pRspThread;
 	m_pRspThread = NULL;
 #else
+	TFH.shutdown();
 	video().stop();
 	GBI.destroy();
 #endif
@@ -117,6 +120,7 @@ void PluginAPI::RomOpen()
 	RSP_Init();
 	GBI.init();
 	video().start();
+	TFH.init();
 #endif
 
 #ifdef DEBUG

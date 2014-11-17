@@ -153,7 +153,6 @@ void Config_LoadConfig()
 	config.textureFilter.txHresAltCRC = ConfigGetParamBool(g_configVideoGliden64, "txHresAltCRC");
 	config.textureFilter.txHiresCacheCompression = ConfigGetParamBool(g_configVideoGliden64, "txHiresCacheCompression");
 	config.textureFilter.txDump = ConfigGetParamBool(g_configVideoGliden64, "txDump");
-	config.textureFilter.txFilterEnable = 0; // Disable for now
 }
 
 #if 0

@@ -202,8 +202,25 @@ OGLVideo & video()
 	return OGLVideo::get();
 }
 
+class TextureFilterHandler
+{
+public:
+	TextureFilterHandler() : m_inited(0) {}
+	// It's not safe to call shutdown() in destructor, because texture filter has its own static objects, which can be destroyed first.
+	~TextureFilterHandler() { m_inited = 0; }
+	void init();
+	void shutdown();
+	bool isInited() const { return m_inited != 0; }
+private:
+	u32 m_inited;
+};
+
+extern TextureFilterHandler TFH;
+
 void initGLFunctions();
 bool checkFBO();
 bool isGLError();
+
+void GHQ_init();
 
 #endif

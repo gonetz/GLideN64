@@ -121,7 +121,6 @@ void Config_LoadConfig()
 	config.frameBufferEmulation.N64DepthCompare = FALSE;
 	config.enableLOD = TRUE;
 	config.hacks = 0;
-	config.textureFilter.txFilterEnable = 0;
 }
 
 void Config_SaveConfig()

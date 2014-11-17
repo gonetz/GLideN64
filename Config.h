@@ -45,9 +45,6 @@ struct Config
 		u32 txHresAltCRC;				// Use alternative method of paletted textures CRC calculation
 		u32 txHiresCacheCompression;	// Zip cache of hires textures
 		u32 txDump;						// Dump textures
-
-
-		u32 txFilterEnable;				// 1 if texture filtering library is in use, 0 otherwise
 	} textureFilter;
 
 	struct {
