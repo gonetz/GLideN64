@@ -244,67 +244,12 @@ TxReSample::minify(uint8 **src, int *width, int *height, int ratio)
 {
   /* NOTE: src must be ARGB8888, ratio is the inverse representation */
 
-#if 0
-  if (!*src || ratio < 2) return 0;
-
-  /* Box filtering.
-   * It would be nice to do Kaiser filtering.
-   * N64 uses narrow strip textures which makes it hard to filter effectively.
-   */
-
-  int x, y, x2, y2, offset, numtexel;
-  uint32 A, R, G, B, texel;
-
-  int tmpwidth = *width / ratio;
-  int tmpheight = *height / ratio;
-
-  uint8 *tmptex = (uint8*)malloc((tmpwidth * tmpheight) << 2);
-
-  if (tmptex) {
-    numtexel = ratio * ratio;
-    for (y = 0; y < tmpheight; y++) {
-      offset = ratio * y * *width;
-      for (x = 0; x < tmpwidth; x++) {
-        A = R = G = B = 0;
-        for (y2 = 0; y2 < ratio; y2++) {
-          for (x2 = 0; x2 < ratio; x2++) {
-            texel = ((uint32*)*src)[offset + *width * y2 + x2];
-            A += (texel >> 24);
-            R += ((texel >> 16) & 0x000000ff);
-            G += ((texel >> 8) & 0x000000ff);
-            B += (texel & 0x000000ff);
-          }
-        }
-        A = (A + ratio) / numtexel;
-        R = (R + ratio) / numtexel;
-        G = (G + ratio) / numtexel;
-        B = (B + ratio) / numtexel;
-        ((uint32*)tmptex)[y * tmpwidth + x] = ((A << 24) | (R << 16) | (G << 8) | B);
-        offset += ratio;
-      }
-    }
-    free(*src);
-    *src = tmptex;
-    *width = tmpwidth;
-    *height = tmpheight;
-
-    DBG_INFO(80, L"minification ratio:%d -> %d x %d\n", ratio, *width, *height);
-
-    return 1;
-  }
-
-  DBG_INFO(80, L"Error: failed minification!\n");
-
-  return 0;
-
-#else
-
   if (!*src || ratio < 2) return 0;
 
   /* Image Resampling */
-  
+
   /* half width of filter window.
-   * NOTE: must be 1.0 or larger. 
+   * NOTE: must be 1.0 or larger.
    *
    * kaiser-bessel 5, lanczos3 3, mitchell 2, gaussian 1.5, tent 1
    */
@@ -413,5 +358,4 @@ TxReSample::minify(uint8 **src, int *width, int *height, int ratio)
   DBG_INFO(80, L"minification ratio:%d -> %d x %d\n", ratio, *width, *height);
 
   return 1;
-#endif
 }
