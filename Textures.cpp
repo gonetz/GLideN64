@@ -653,6 +653,68 @@ void TextureCache::_loadBackground(CachedTexture *pTexture)
 
 void TextureCache::_load(u32 _tile , CachedTexture *_pTexture)
 {
+	if (TFH.isInited()) {
+		isGLError();
+		GHQTexInfo ghqTexInfo;
+		memset(&ghqTexInfo, 0, sizeof(GHQTexInfo));
+		gDPLoadTileInfo & info = gDP.loadInfo[gSP.textureTile[_tile]->tmem];
+
+		int bpl;
+		u8 * addr = (u8*)(RDRAM + info.texAddress);
+		int tile_width = _pTexture->width;
+		int tile_height = _pTexture->height;
+		if (info.loadType == LOADTYPE_TILE) {
+			bpl = info.width << info.size >> 1;
+			addr += (info.ult * bpl) + (((info.uls << info.size) + 1) >> 1);
+		} else {
+			if (gSP.textureTile[_tile]->size == G_IM_SIZ_32b)
+				bpl = gSP.textureTile[_tile]->line << 4;
+			else if (info.dxt == 0)
+				bpl = gSP.textureTile[_tile]->line << 3;
+			else {
+				u32 dxt = info.dxt;
+				if (dxt > 1)
+					dxt = ReverseDXT(dxt, info.width, _pTexture->width, gSP.textureTile[_tile]->size);
+				bpl = dxt << 3;
+			}
+		}
+
+		u8 * paladdr = 0;
+		//		u16 * palette = 0;
+		if ((gSP.textureTile[_tile]->size < G_IM_SIZ_16b) && (gDP.otherMode.textureLUT != G_TT_NONE || gSP.textureTile[_tile]->format == G_IM_FMT_CI)) {
+			if (gSP.textureTile[_tile]->size == G_IM_SIZ_8b)
+				paladdr = (u8*)(gDP.TexFilterPalette);
+			else if (config.textureFilter.txHresAltCRC)
+				paladdr = (u8*)(gDP.TexFilterPalette + (gSP.textureTile[_tile]->palette << 5));
+			else
+				paladdr = (u8*)(gDP.TexFilterPalette + (gSP.textureTile[_tile]->palette << 4));
+			//			palette = (rdp.pal_8 + (gSP.textureTile[_t]->palette << 4));
+		}
+
+		u64 ricecrc = txfilter_checksum(addr, tile_width, tile_height, (unsigned short)(gSP.textureTile[_tile]->format << 8 | gSP.textureTile[_tile]->size), bpl, paladdr);
+		//FRDP("CI RICE CRC. format: %d, size: %d, CRC: %08lx, PalCRC: %08lx\n", rdp.tiles[td].format, rdp.tiles[td].size, (u32)(cache->ricecrc & 0xFFFFFFFF), (u32)(cache->ricecrc >> 32));
+		if (txfilter_hirestex(_pTexture->crc, ricecrc, NULL, &ghqTexInfo)) {
+			//u8 is_hires_tex = ghqTexInfo.is_hires_tex;
+			//			if (ghqTexInfo.is_hires_tex == 0 && aspect != ghqTexInfo.aspectRatioLog2)
+			//				ghqTexInfo.data = 0; //if aspects of current texture and found filtered texture are different, texture must be filtered again.
+			glTexImage2D(GL_TEXTURE_2D, 0, ghqTexInfo.format, ghqTexInfo.width, ghqTexInfo.height, 0, ghqTexInfo.texture_format, ghqTexInfo.pixel_type, ghqTexInfo.data);
+			assert(!isGLError());
+			_pTexture->textureBytes = ghqTexInfo.width * ghqTexInfo.height;
+			switch (ghqTexInfo.format) {
+				case GL_RGBA8:
+					_pTexture->textureBytes <<= 2;
+					break;
+				case GL_RGB:
+				case GL_RGBA4:
+				case GL_RGB5_A1:
+				case GL_LUMINANCE8_ALPHA8:
+					_pTexture->textureBytes <<= 1;
+					break;
+			}
+			return;
+		}
+	}
+
 	u32 *pDest;
 
 	u64 *pSrc;
@@ -1057,52 +1119,6 @@ void TextureCache::update(u32 _t)
 	if (current[_t] != NULL && current[_t]->crc == crc) {
 		activateTexture(_t, current[_t]);
 		return;
-	}
-
-	if (TFH.isInited()) {
-		GHQTexInfo ghqTexInfo;
-		memset(&ghqTexInfo, 0, sizeof(GHQTexInfo));
-		gDPLoadTileInfo & info = gDP.loadInfo[gSP.textureTile[_t]->tmem];
-
-		int bpl;
-		u8 * addr = (u8*)(RDRAM + info.texAddress);
-		int tile_width = sizes.width;
-		int tile_height = sizes.height;
-		if (info.loadType == LOADTYPE_TILE) {
-			bpl = info.width << info.size >> 1;
-			addr += (info.ult * bpl) + (((info.uls << info.size) + 1) >> 1);
-		} else {
-			if (gSP.textureTile[_t]->size == G_IM_SIZ_32b)
-				bpl = gSP.textureTile[_t]->line << 4;
-			else if (info.dxt == 0)
-				bpl = gSP.textureTile[_t]->line << 3;
-			else {
-				u32 dxt = info.dxt;
-				if (dxt > 1)
-					dxt = ReverseDXT(dxt, info.width, sizes.width, gSP.textureTile[_t]->size);
-				bpl = dxt << 3;
-			}
-		}
-
-		u8 * paladdr = 0;
-//		u16 * palette = 0;
-		if ((gSP.textureTile[_t]->size < G_IM_SIZ_16b) && (gDP.otherMode.textureLUT != G_TT_NONE || gSP.textureTile[_t]->format == G_IM_FMT_CI)) {
-			if (gSP.textureTile[_t]->size == G_IM_SIZ_8b)
-				paladdr = (u8*)(gDP.TexFilterPalette);
-			else if (config.textureFilter.txHresAltCRC)
-				paladdr = (u8*)(gDP.TexFilterPalette + (gSP.textureTile[_t]->palette << 5));
-			else
-				paladdr = (u8*)(gDP.TexFilterPalette + (gSP.textureTile[_t]->palette << 4));
-//			palette = (rdp.pal_8 + (gSP.textureTile[_t]->palette << 4));
-		}
-
-		u64 ricecrc = txfilter_checksum(addr, tile_width, tile_height, (unsigned short)(gSP.textureTile[_t]->format << 8 | gSP.textureTile[_t]->size), bpl, paladdr);
-		//FRDP("CI RICE CRC. format: %d, size: %d, CRC: %08lx, PalCRC: %08lx\n", rdp.tiles[td].format, rdp.tiles[td].size, (u32)(cache->ricecrc & 0xFFFFFFFF), (u32)(cache->ricecrc >> 32));
-		if (txfilter_hirestex((uint64)crc, ricecrc, NULL, &ghqTexInfo)) {
-			u8 is_hires_tex = ghqTexInfo.is_hires_tex;
-//			if (ghqTexInfo.is_hires_tex == 0 && aspect != ghqTexInfo.aspectRatioLog2)
-//				ghqTexInfo.data = 0; //if aspects of current texture and found filtered texture are different, texture must be filtered again.
-		}
 	}
 
 	Textures::iterator iter = m_textures.find(crc);
