@@ -167,7 +167,7 @@ TxImage::readPNG(FILE* fp, int* width, int* height, uint16* format)
 	png_set_shift(png_ptr, sig_bit);*/
 
   /* convert rgba to bgra */
-  png_set_bgr(png_ptr);
+  //png_set_bgr(png_ptr); // OpenGL does not need it
 
   /* turn on interlace handling to cope with the weirdness
    * of texture authors using interlaced format */
@@ -176,7 +176,7 @@ TxImage::readPNG(FILE* fp, int* width, int* height, uint16* format)
   /* update info structure */
   png_read_update_info(png_ptr, info_ptr);
 
-  /* we only get here if ARGB8888 */
+  /* we only get here if RGBA8888 */
   row_bytes = png_get_rowbytes(png_ptr, info_ptr);
 
   /* allocate memory to read in image */
@@ -202,7 +202,7 @@ TxImage::readPNG(FILE* fp, int* width, int* height, uint16* format)
 
 	*width = (row_bytes >> 2);
 	*height = o_height;
-	*format = GR_TEXFMT_ARGB_8888;
+	*format = GL_RGBA8;
 
 #if POW2_TEXTURES
 	/* next power of 2 size conversions */
@@ -489,8 +489,8 @@ uint8*
 TxImage::readBMP(FILE* fp, int* width, int* height, uint16* format)
 {
   /* NOTE: returned image format;
-   *       4, 8bit palette bmp -> GR_TEXFMT_P_8
-   *       24, 32bit bmp -> GR_TEXFMT_ARGB_8888
+   *       4, 8bit palette bmp -> GL_COLOR_INDEX8_EXT
+   *       24, 32bit bmp -> GL_RGBA8
    */
 
   uint8 *image = NULL;
@@ -610,11 +610,11 @@ TxImage::readBMP(FILE* fp, int* width, int* height, uint16* format)
 	switch (bmp_ihdr.biBitCount) {
 	case 8:
 	case 4:
-	  *format = GR_TEXFMT_P_8;
+	  *format = GL_COLOR_INDEX8_EXT;
 	  break;
 	case 32:
 	case 24:
-	  *format = GR_TEXFMT_ARGB_8888;
+	  *format = GL_RGBA8;
 	}
 
 #if POW2_TEXTURES
@@ -770,15 +770,15 @@ TxImage::readDDS(FILE* fp, int* width, int* height, uint16* format)
 	DBG_INFO(80, L"DXT1 format\n");
 	/* compensate for missing LinearSize */
 	dds_fhdr.dwLinearSize = (dds_fhdr.dwWidth * dds_fhdr.dwHeight) >> 1;
-	tmpformat = GR_TEXFMT_ARGB_CMP_DXT1;
+	tmpformat = GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
   } else if (memcmp(&dds_fhdr.ddpf.dwFourCC, "DXT3", 4) == 0) {
 	DBG_INFO(80, L"DXT3 format\n");
 	dds_fhdr.dwLinearSize = dds_fhdr.dwWidth * dds_fhdr.dwHeight;
-	tmpformat = GR_TEXFMT_ARGB_CMP_DXT3;
+	tmpformat = GL_COMPRESSED_RGBA_S3TC_DXT3_EXT;
   } else if (memcmp(&dds_fhdr.ddpf.dwFourCC, "DXT5", 4) == 0) {
 	DBG_INFO(80, L"DXT5 format\n");
 	dds_fhdr.dwLinearSize = dds_fhdr.dwWidth * dds_fhdr.dwHeight;
-	tmpformat = GR_TEXFMT_ARGB_CMP_DXT5;
+	tmpformat = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
   } else {
 	DBG_INFO(80, L"Error: not DXT1 or DXT3 or DXT5 format!\n");
 	return NULL;

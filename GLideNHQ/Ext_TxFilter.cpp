@@ -99,7 +99,7 @@ boolean ext_ghq_init(int maxwidth, int maxheight, int maxbpp, int options, int c
 	if (!txfilter.shutdown)
 	  txfilter.shutdown = (txfilter_shutdown)DLSYM(txfilter.lib, "txfilter_shutdown");
 	if (!txfilter.filter)
-	  txfilter.filter = (txfilter_filter)DLSYM(txfilter.lib, "txfilter");
+	  txfilter.filter = (txfilter_filter)DLSYM(txfilter.lib, "txfilter_filter");
 	if (!txfilter.hirestex)
 	  txfilter.hirestex = (txfilter_hirestex)DLSYM(txfilter.lib, "txfilter_hirestex");
 	if (!txfilter.checksum)

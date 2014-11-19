@@ -102,37 +102,19 @@ typedef unsigned char boolean;
 #define LET_TEXARTISTS_FLY  0x40000000 /* a little freedom for texture artists */
 #define DUMP_TEX            0x80000000
 
-#ifndef __GLIDE_H__ /* GLIDE3 */
-/* from 3Dfx Interactive Inc. glide.h */
-#define GR_TEXFMT_ALPHA_8           0x2
-#define GR_TEXFMT_INTENSITY_8       0x3
-
-#define GR_TEXFMT_ALPHA_INTENSITY_44 0x4
-#define GR_TEXFMT_P_8                0x5
-
-#define GR_TEXFMT_RGB_565            0xa
-#define GR_TEXFMT_ARGB_1555          0xb
-#define GR_TEXFMT_ARGB_4444          0xc
-#define GR_TEXFMT_ALPHA_INTENSITY_88 0xd
-
-#define GR_TEXFMT_ARGB_8888          0x12
-
-#define GR_TEXFMT_ARGB_CMP_DXT1      0x16
-#define GR_TEXFMT_ARGB_CMP_DXT3      0x18
-#define GR_TEXFMT_ARGB_CMP_DXT5      0x1A
-#endif /* GLIDE3 */
-
 struct GHQTexInfo {
   unsigned char *data;
   int width;
   int height;
-  unsigned short format;
-
-  int smallLodLog2;
-  int largeLodLog2;
-  int aspectRatioLog2;
-
+  unsigned int format;
+  unsigned short texture_format;
+  unsigned short pixel_type;
   unsigned char is_hires_tex;
+
+  GHQTexInfo() :
+	  data(NULL), width(0), height(0), format(0),
+	  texture_format(0), pixel_type(0), is_hires_tex(0)
+  {}
 };
 
 /* Callback to display hires texture info.
@@ -228,7 +210,7 @@ TAPI void TAPIENTRY
 txfilter_shutdown(void);
 
 TAPI boolean TAPIENTRY
-txfilter(uint8 *src, int srcwidth, int srcheight, uint16 srcformat,
+txfilter_filter(uint8 *src, int srcwidth, int srcheight, uint16 srcformat,
 		 uint64 g64crc, GHQTexInfo *info);
 
 TAPI boolean TAPIENTRY

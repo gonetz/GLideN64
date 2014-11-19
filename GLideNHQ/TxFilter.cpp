@@ -163,6 +163,8 @@ TxFilter::filter(uint8 *src, int srcwidth, int srcheight, uint16 srcformat, uint
 {
   uint8 *texture = src;
   uint8 *tmptex = _tex1;
+  if (srcformat == GL_RGBA)
+	  srcformat = GL_RGBA8;
   uint16 destformat = srcformat;
 
   /* We need to be initialized first! */
@@ -194,26 +196,26 @@ TxFilter::filter(uint8 *src, int srcwidth, int srcheight, uint16 srcformat, uint
    */
   if ((srcwidth >= 4 && srcheight >= 4) &&
 	  ((_options & (FILTER_MASK|ENHANCEMENT_MASK|COMPRESSION_MASK)) ||
-	   (srcformat == GR_TEXFMT_ARGB_8888 && (_maxbpp < 32 || _options & FORCE16BPP_TEX)))) {
+	   (srcformat == GL_RGBA8 && (_maxbpp < 32 || _options & FORCE16BPP_TEX)))) {
 
 #if !_16BPP_HACK
 	/* convert textures to a format that the compressor accepts (ARGB8888) */
 	if (_options & COMPRESSION_MASK) {
 #endif
-	  if (srcformat != GR_TEXFMT_ARGB_8888) {
-		if (!_txQuantize->quantize(texture, tmptex, srcwidth, srcheight, srcformat, GR_TEXFMT_ARGB_8888)) {
+	  if (srcformat != GL_RGBA8) {
+		if (!_txQuantize->quantize(texture, tmptex, srcwidth, srcheight, srcformat, GL_RGBA8)) {
 		  DBG_INFO(80, L"Error: unsupported format! gfmt:%x\n", srcformat);
 		  return 0;
 		}
 		texture = tmptex;
-		destformat = GR_TEXFMT_ARGB_8888;
+		destformat = GL_RGBA8;
 	  }
 #if !_16BPP_HACK
 	}
 #endif
 
 	switch (destformat) {
-	case GR_TEXFMT_ARGB_8888:
+	case GL_RGBA8:
 
 	  /*
 	   * prepare texture enhancements (x2, x4 scalers)
@@ -322,9 +324,9 @@ TxFilter::filter(uint8 *src, int srcwidth, int srcheight, uint16 srcformat, uint
 		int compressionType = _options & COMPRESSION_MASK;
 		int tmpwidth, tmpheight;
 		uint16 tmpformat;
-		if ((destformat == GR_TEXFMT_ALPHA_INTENSITY_88) ||
-			(destformat == GR_TEXFMT_ARGB_8888) ||
-			(destformat == GR_TEXFMT_ALPHA_8)) {
+		if ((destformat == GL_LUMINANCE8_ALPHA8) ||
+			(destformat == GL_RGBA8) ||
+			(destformat == GL_ALPHA8)) {
 		  compressionType = S3TC_COMPRESSION;
 		}
 		tmptex = (texture == _tex1) ? _tex2 : _tex1;
@@ -343,11 +345,11 @@ TxFilter::filter(uint8 *src, int srcwidth, int srcheight, uint16 srcformat, uint
 	  /*
 	   * texture (re)conversions
 	   */
-	  if (destformat == GR_TEXFMT_ARGB_8888) {
-		if (srcformat == GR_TEXFMT_ARGB_8888 && (_maxbpp < 32 || _options & FORCE16BPP_TEX)) srcformat = GR_TEXFMT_ARGB_4444;
-		if (srcformat != GR_TEXFMT_ARGB_8888) {
+	  if (destformat == GL_RGBA8) {
+		if (srcformat == GL_RGBA8 && (_maxbpp < 32 || _options & FORCE16BPP_TEX)) srcformat = GL_RGBA4;
+		if (srcformat != GL_RGBA8) {
 		  tmptex = (texture == _tex1) ? _tex2 : _tex1;
-		  if (!_txQuantize->quantize(texture, tmptex, srcwidth, srcheight, GR_TEXFMT_ARGB_8888, srcformat)) {
+		  if (!_txQuantize->quantize(texture, tmptex, srcwidth, srcheight, GL_RGBA8, srcformat)) {
 			DBG_INFO(80, L"Error: unsupported format! gfmt:%x\n", srcformat);
 			return 0;
 		  }
@@ -358,7 +360,7 @@ TxFilter::filter(uint8 *src, int srcwidth, int srcheight, uint16 srcformat, uint
 
 	  break;
 #if !_16BPP_HACK
-	case GR_TEXFMT_ARGB_4444:
+	case GL_RGBA4:
 
 	  int scale_shift = 0;
 	  tmptex = (texture == _tex1) ? _tex2 : _tex1;
@@ -426,11 +428,11 @@ TxFilter::filter(uint8 *src, int srcwidth, int srcheight, uint16 srcformat, uint
 	  }
 
 	  break;
-	case GR_TEXFMT_ARGB_1555:
+	case GL_RGB5_A1:
 	  break;
-	case GR_TEXFMT_RGB_565:
+	case GL_RGB:
 	  break;
-	case GR_TEXFMT_ALPHA_8:
+	case GL_ALPHA8:
 	  break;
 #endif /* _16BPP_HACK */
 	}
@@ -440,11 +442,8 @@ TxFilter::filter(uint8 *src, int srcwidth, int srcheight, uint16 srcformat, uint
   info->data = texture;
   info->width  = srcwidth;
   info->height = srcheight;
-  info->format = destformat;
-  info->smallLodLog2 = _txUtil->grLodLog2(srcwidth, srcheight);
-  info->largeLodLog2 = info->smallLodLog2;
-  info->aspectRatioLog2 = _txUtil->grAspectRatioLog2(srcwidth, srcheight);
   info->is_hires_tex = 0;
+  setTextureFormat(destformat, info);
 
   /* cache the texture. */
   if (_cacheSize) _txTexCache->add(g64crc, info);
@@ -513,8 +512,9 @@ TxFilter::hirestex(uint64 g64crc, uint64 r_crc64, uint16 *palette, GHQTexInfo *i
 	   * NOTE: the pre-converted palette from Glide64 is in RGBA5551 format.
 	   * A comp comes before RGB comp.
 	   */
-	  if (palette && info->format == GR_TEXFMT_P_8) {
-		DBG_INFO(80, L"found GR_TEXFMT_P_8 format. Need conversion!!\n");
+	  // TODO: deal with palette textures
+	  if (palette && info->format == GL_COLOR_INDEX8_EXT) {
+		DBG_INFO(80, L"found GL_COLOR_INDEX8_EXT format. Need conversion!!\n");
 
 		int width = info->width;
 		int height = info->height;
@@ -526,30 +526,30 @@ TxFilter::hirestex(uint64 g64crc, uint64 r_crc64, uint16 *palette, GHQTexInfo *i
 		/* use palette and convert to 16bit format */
 		_txQuantize->P8_16BPP((uint32*)texture, (uint32*)tmptex, info->width, info->height, (uint32*)palette);
 		texture = tmptex;
-		format = GR_TEXFMT_ARGB_1555;
+		format = GL_RGB5_A1;
 
 #if 1
 		/* XXX: compressed if memory cache compression is ON */
 		if (_options & COMPRESSION_MASK) {
 		  tmptex = (texture == _tex1) ? _tex2 : _tex1;
-		  if (_txQuantize->quantize(texture, tmptex, info->width, info->height, format, GR_TEXFMT_ARGB_8888)) {
+		  if (_txQuantize->quantize(texture, tmptex, info->width, info->height, format, GL_RGBA8)) {
 			texture = tmptex;
-			format = GR_TEXFMT_ARGB_8888;
+			format = GL_RGBA8;
 		  }
-		  if (format == GR_TEXFMT_ARGB_8888) {
+		  if (format == GL_RGBA8) {
 			tmptex = (texture == _tex1) ? _tex2 : _tex1;
 			if (_txQuantize->compress(texture, tmptex,
-									  info->width, info->height, GR_TEXFMT_ARGB_1555,
+									  info->width, info->height, GL_RGB5_A1,
 									  &width, &height, &format,
 									  _options & COMPRESSION_MASK)) {
 			  texture = tmptex;
 			} else {
-			  /*if (!_txQuantize->quantize(texture, tmptex, info->width, info->height, GR_TEXFMT_ARGB_8888, GR_TEXFMT_ARGB_1555)) {
+			  /*if (!_txQuantize->quantize(texture, tmptex, info->width, info->height, GL_RGBA8, GL_RGB5_A1)) {
 				DBG_INFO(80, L"Error: unsupported format! gfmt:%x\n", format);
 				return 0;
 			  }*/
 			  texture = tmptex;
-			  format = GR_TEXFMT_ARGB_1555;
+			  format = GL_RGB5_A1;
 			}
 		  }
 		}
@@ -559,16 +559,13 @@ TxFilter::hirestex(uint64 g64crc, uint64 r_crc64, uint16 *palette, GHQTexInfo *i
 		info->data = texture;
 		info->width = width;
 		info->height = height;
-		info->format = format;
-		info->smallLodLog2 = _txUtil->grLodLog2(width, height);
-		info->largeLodLog2 = info->smallLodLog2;
-		info->aspectRatioLog2 = _txUtil->grAspectRatioLog2(width, height);
 		info->is_hires_tex = 1;
+		setTextureFormat(format, info);
 
 		/* XXX: add to hires texture cache!!! */
 		_txHiResCache->add(r_crc64, info);
 
-		DBG_INFO(80, L"GR_TEXFMT_P_8 loaded as gfmt:%x!\n", format);
+		DBG_INFO(80, L"GL_COLOR_INDEX8_EXT loaded as gfmt:%x!\n", format);
 	  }
 
 	  return 1;
@@ -611,7 +608,7 @@ TxFilter::dmptx(uint8 *src, int width, int height, int rowStridePixel, uint16 gf
   DBG_INFO(80, L"hirestex: r_crc64:%08X %08X\n",
 		   (uint32)(r_crc64 >> 32), (uint32)(r_crc64 & 0xffffffff));
 
-  if (!_txQuantize->quantize(src, _tex1, rowStridePixel, height, (gfmt & 0x00ff), GR_TEXFMT_ARGB_8888))
+  if (!_txQuantize->quantize(src, _tex1, rowStridePixel, height, (gfmt & 0x00ff), GL_RGBA8))
 	return 0;
 
   src = _tex1;

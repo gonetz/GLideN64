@@ -32,51 +32,25 @@
 #define KBHIT(key) (0)
 #endif
 
-/* from OpenGL glext.h */
-#define GL_COMPRESSED_RGB_S3TC_DXT1_EXT   0x83F0
-#define GL_COMPRESSED_RGBA_S3TC_DXT1_EXT  0x83F1
-#define GL_COMPRESSED_RGBA_S3TC_DXT3_EXT  0x83F2
-#define GL_COMPRESSED_RGBA_S3TC_DXT5_EXT  0x83F3
+#ifdef OS_WINDOWS
+#include <GL/gl.h>
+#include "glext.h"
+#else
+#ifdef GLES2
+#include <GLES2/gl2.h>
+#include <GLES2/gl2ext.h>
+#else
+#if defined(OS_MAC_OS_X)
+#include <OpenGL/gl.h>
+#include <OpenGL/glext.h>
+#elif defined(OS_LINUX)
+#include <GL/gl.h>
+#include <GL/glext.h>
+#endif // OS_MAC_OS_X
+#endif // GLES2
+#endif // OS_WINDOWS
 
 /* in-memory zlib texture compression */
-#define GR_TEXFMT_GZ                 0x8000
-
-#if 0 /* this is here to remind me of other formats */
-/* from 3Dfx Interactive Inc. glide.h */
-#define GR_TEXFMT_8BIT                  0x0
-#define GR_TEXFMT_RGB_332               GR_TEXFMT_8BIT
-#define GR_TEXFMT_YIQ_422               0x1
-#define GR_TEXFMT_ALPHA_8               0x2 /* (0..0xFF) alpha     */
-#define GR_TEXFMT_INTENSITY_8           0x3 /* (0..0xFF) intensity */
-#define GR_TEXFMT_ALPHA_INTENSITY_44    0x4
-#define GR_TEXFMT_P_8                   0x5 /* 8-bit palette */
-#define GR_TEXFMT_RSVD0                 0x6 /* GR_TEXFMT_P_8_RGBA */
-#define GR_TEXFMT_P_8_6666              GR_TEXFMT_RSVD0
-#define GR_TEXFMT_P_8_6666_EXT          GR_TEXFMT_RSVD0
-#define GR_TEXFMT_RSVD1                 0x7
-#define GR_TEXFMT_16BIT                 0x8
-#define GR_TEXFMT_ARGB_8332             GR_TEXFMT_16BIT
-#define GR_TEXFMT_AYIQ_8422             0x9
-#define GR_TEXFMT_RGB_565               0xa
-#define GR_TEXFMT_ARGB_1555             0xb
-#define GR_TEXFMT_ARGB_4444             0xc
-#define GR_TEXFMT_ALPHA_INTENSITY_88    0xd
-#define GR_TEXFMT_AP_88                 0xe /* 8-bit alpha 8-bit palette */
-#define GR_TEXFMT_RSVD2                 0xf
-#define GR_TEXFMT_RSVD4                 GR_TEXFMT_RSVD2
-
-/* from 3Dfx Interactive Inc. g3ext.h */
-#define GR_TEXFMT_ARGB_CMP_FXT1        0x11
-#define GR_TEXFMT_ARGB_8888            0x12
-#define GR_TEXFMT_YUYV_422             0x13
-#define GR_TEXFMT_UYVY_422             0x14
-#define GR_TEXFMT_AYUV_444             0x15
-#define GR_TEXFMT_ARGB_CMP_DXT1        0x16
-#define GR_TEXFMT_ARGB_CMP_DXT2        0x17
-#define GR_TEXFMT_ARGB_CMP_DXT3        0x18
-#define GR_TEXFMT_ARGB_CMP_DXT4        0x19
-#define GR_TEXFMT_ARGB_CMP_DXT5        0x1A
-#define GR_TEXTFMT_RGB_888             0xFF
-#endif
+#define GL_TEXFMT_GZ 0x80000000
 
 #endif /* __INTERNAL_H__ */

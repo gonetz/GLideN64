@@ -34,7 +34,7 @@
 
 /* use power of 2 texture size
  * (0:disable, 1:enable, 2:3dfx) */
-#define POW2_TEXTURES 2
+#define POW2_TEXTURES 0
 
 /* hack to reduce texture footprint to achieve
  * better performace on midrange gfx cards.
@@ -220,7 +220,6 @@ TxHiResCache::loadHiResTextures(boost::filesystem::wpath dir_path, boolean repla
 	int tmpwidth = 0, tmpheight = 0;
 	uint16 tmpformat = 0;
 	uint8 *tmptex= NULL;
-	int untiled_width = 0, untiled_height = 0;
 	uint16 destformat = 0;
 
 	/* Rice hi-res textures: begin
@@ -378,7 +377,7 @@ TxHiResCache::loadHiResTextures(boost::filesystem::wpath dir_path, boolean repla
 	  if (tmptex) {
 		/* check if _rgb.* and _a.* have matching size and format. */
 		if (!tex || width != tmpwidth || height != tmpheight ||
-			format != GR_TEXFMT_ARGB_8888 || tmpformat != GR_TEXFMT_ARGB_8888) {
+			format != GL_RGBA8 || tmpformat != GL_RGBA8) {
 #if !DEBUG
 		  INFO(80, L"-----\n");
 		  INFO(80, L"path: %ls\n", dir_path.string().c_str());
@@ -388,7 +387,7 @@ TxHiResCache::loadHiResTextures(boost::filesystem::wpath dir_path, boolean repla
 			INFO(80, L"Error: missing _rgb.*!\n");
 		  } else if (width != tmpwidth || height != tmpheight) {
 			INFO(80, L"Error: _rgb.* and _a.* have mismatched width or height!\n");
-		  } else if (format != GR_TEXFMT_ARGB_8888 || tmpformat != GR_TEXFMT_ARGB_8888) {
+		  } else if (format != GL_RGBA8 || tmpformat != GL_RGBA8) {
 			INFO(80, L"Error: _rgb.* or _a.* not in 32bit color!\n");
 		  }
 		  if (tex) free(tex);
@@ -408,7 +407,7 @@ TxHiResCache::loadHiResTextures(boost::filesystem::wpath dir_path, boolean repla
 #if 1
 			/* use R comp for alpha. this is what Rice uses. sigh... */
 			((uint32*)tex)[i] &= 0x00ffffff;
-			((uint32*)tex)[i] |= ((((uint32*)tmptex)[i] & 0x00ff0000) << 8);
+			((uint32*)tex)[i] |= ((((uint32*)tmptex)[i] & 0xff) << 24);
 #endif
 #if 0
 			/* use libpng style grayscale conversion */
@@ -514,11 +513,11 @@ TxHiResCache::loadHiResTextures(boost::filesystem::wpath dir_path, boolean repla
 	DBG_INFO(80, L"read in as %d x %d gfmt:%x\n", tmpwidth, tmpheight, tmpformat);
 
 	/* check if size and format are OK */
-	if (!(format == GR_TEXFMT_ARGB_8888     ||
-		  format == GR_TEXFMT_P_8           ||
-		  format == GR_TEXFMT_ARGB_CMP_DXT1 ||
-		  format == GR_TEXFMT_ARGB_CMP_DXT3 ||
-		  format == GR_TEXFMT_ARGB_CMP_DXT5) ||
+	if (!(format == GL_RGBA8                          ||
+		  format == GL_COLOR_INDEX8_EXT               ||
+		  format == GL_COMPRESSED_RGBA_S3TC_DXT1_EXT  ||
+		  format == GL_COMPRESSED_RGBA_S3TC_DXT3_EXT  ||
+		  format == GL_COMPRESSED_RGBA_S3TC_DXT5_EXT) ||
 		(width * height) < 4) { /* TxQuantize requirement: width * height must be 4 or larger. */
 	  free(tex);
 	  tex = NULL;
@@ -532,7 +531,7 @@ TxHiResCache::loadHiResTextures(boost::filesystem::wpath dir_path, boolean repla
 	}
 
 	/* analyze and determine best format to quantize */
-	if (format == GR_TEXFMT_ARGB_8888) {
+	if (format == GL_RGBA8) {
 	  int i;
 	  int alphabits = 0;
 	  int fullalpha = 0;
@@ -580,16 +579,16 @@ TxHiResCache::loadHiResTextures(boost::filesystem::wpath dir_path, boolean repla
 				if (j < width - 1) tmptexel[7] = ((uint32*)tex)[i * width + j + 1]; /* east */
 				for (k = 0; k < 8; k++) {
 				  if ((tmptexel[k] & 0xff000000) == 0xff000000) {
-					r += ((tmptexel[k] & 0x00ff0000) >> 16);
+					b += ((tmptexel[k] & 0x00ff0000) >> 16);
 					g += ((tmptexel[k] & 0x0000ff00) >>  8);
-					b += ((tmptexel[k] & 0x000000ff)      );
+					r += ((tmptexel[k] & 0x000000ff)      );
 					numtexel++;
 				  }
 				}
 				if (numtexel) {
-				  ((uint32*)tex)[i * width + j] = ((r / numtexel) << 16) |
+				  ((uint32*)tex)[i * width + j] = ((b / numtexel) << 16) |
 												  ((g / numtexel) <<  8) |
-												  ((b / numtexel)      );
+												  ((r / numtexel)      );
 				} else {
 				  ((uint32*)tex)[i * width + j] = texel & 0x00ffffff;
 				}
@@ -637,16 +636,16 @@ TxHiResCache::loadHiResTextures(boost::filesystem::wpath dir_path, boolean repla
 #if !REDUCE_TEXTURE_FOOTPRINT
 	  if (_maxbpp < 32 || _options & (FORCE16BPP_HIRESTEX|COMPRESSION_MASK)) {
 #endif
-		if      (alphabits == 0) destformat = GR_TEXFMT_RGB_565;
-		else if (alphabits == 1) destformat = GR_TEXFMT_ARGB_1555;
-		else                     destformat = GR_TEXFMT_ARGB_8888;
+		if      (alphabits == 0) destformat = GL_RGB;
+		else if (alphabits == 1) destformat = GL_RGB5_A1;
+		else                     destformat = GL_RGBA8;
 #if !REDUCE_TEXTURE_FOOTPRINT
 	  } else {
-		destformat = GR_TEXFMT_ARGB_8888;
+		destformat = GL_RGBA8;
 	  }
 #endif
 	  if (fmt == 4 && alphabits == 0) {
-		destformat = GR_TEXFMT_ARGB_8888;
+		destformat = GL_RGBA8;
 		/* Rice I format; I = (R + G + B) / 3 */
 		for (i = 0; i < height * width; i++) {
 		  uint32 texel = ((uint32*)tex)[i];
@@ -658,10 +657,10 @@ TxHiResCache::loadHiResTextures(boost::filesystem::wpath dir_path, boolean repla
 	  }
 	  if (intensity) {
 		if (alphabits == 0) {
-		  if (fmt == 4) destformat = GR_TEXFMT_ALPHA_8;
-		  else          destformat = GR_TEXFMT_INTENSITY_8;
+		  if (fmt == 4) destformat = GL_ALPHA8;
+		  else          destformat = GL_LUMINANCE8;
 		} else {
-		  destformat = GR_TEXFMT_ALPHA_INTENSITY_88;
+		  destformat = GL_LUMINANCE8_ALPHA8;
 		}
 	  }
 
@@ -671,8 +670,8 @@ TxHiResCache::loadHiResTextures(boost::filesystem::wpath dir_path, boolean repla
 	 * Rice hi-res textures: end */
 
 
-	/* XXX: only ARGB8888 for now. comeback to this later... */
-	if (format == GR_TEXFMT_ARGB_8888) {
+	/* XXX: only RGBA8888 for now. comeback to this later... */
+	if (format == GL_RGBA8) {
 
 	  /* minification */
 	  if (width > _maxwidth || height > _maxheight) {
@@ -703,7 +702,6 @@ TxHiResCache::loadHiResTextures(boost::filesystem::wpath dir_path, boolean repla
 										 * NOTE: texture size must be checked before expanding to pow2 size.
 										 */
 		  ) {
-		uint32 alpha = 0;
 		int dataSize = 0;
 		int compressionType = _options & COMPRESSION_MASK;
 
@@ -725,21 +723,21 @@ TxHiResCache::loadHiResTextures(boost::filesystem::wpath dir_path, boolean repla
 		switch (_options & COMPRESSION_MASK) {
 		case S3TC_COMPRESSION:
 		  switch (destformat) {
-		  case GR_TEXFMT_ARGB_8888:
+		  case GL_RGBA8:
 #if GLIDE64_DXTN
-		  case GR_TEXFMT_ARGB_1555: /* for ARGB1555 use DXT5 instead of DXT1 */
+		  case GL_RGB5_A1: /* for GL_RGB5_A1 use DXT5 instead of DXT1 */
 #endif
-		  case GR_TEXFMT_ALPHA_INTENSITY_88:
+		  case GL_LUMINANCE8_ALPHA8:
 			dataSize = width * height;
 			break;
 #if !GLIDE64_DXTN
-		  case GR_TEXFMT_ARGB_1555:
+		  case GL_RGB5_A1:
 #endif
-		  case GR_TEXFMT_RGB_565:
-		  case GR_TEXFMT_INTENSITY_8:
+		  case GL_RGB:
+		  case GL_LUMINANCE8:
 			dataSize = (width * height) >> 1;
 			break;
-		  case GR_TEXFMT_ALPHA_8: /* no size benefit with dxtn */
+		  case GL_ALPHA8: /* no size benefit with dxtn */
 			;
 		  }
 		  break;
@@ -749,8 +747,8 @@ TxHiResCache::loadHiResTextures(boost::filesystem::wpath dir_path, boolean repla
 #if 0 /* TEST: dither before compression for better results with gradients */
 		  tmptex = (uint8 *)malloc(_txUtil->sizeofTx(width, height, destformat));
 		  if (tmptex) {
-			if (_txQuantize->quantize(tex, tmptex, width, height, GR_TEXFMT_ARGB_8888, destformat, 0))
-			  _txQuantize->quantize(tmptex, tex, width, height, destformat, GR_TEXFMT_ARGB_8888, 0);
+			if (_txQuantize->quantize(tex, tmptex, width, height, GL_RGBA8, destformat, 0))
+			  _txQuantize->quantize(tmptex, tex, width, height, destformat, GL_RGBA8, 0);
 			free(tmptex);
 		  }
 #endif
@@ -794,40 +792,35 @@ TxHiResCache::loadHiResTextures(boost::filesystem::wpath dir_path, boolean repla
 		tmptex = (uint8 *)malloc(_txUtil->sizeofTx(width, height, destformat));
 		if (tmptex) {
 		  switch (destformat) {
-		  case GR_TEXFMT_ARGB_8888:
-		  case GR_TEXFMT_ARGB_4444:
+		  case GL_RGBA8:
+		  case GL_RGBA4:
 #if !REDUCE_TEXTURE_FOOTPRINT
 			if (_maxbpp < 32 || _options & FORCE16BPP_HIRESTEX)
 #endif
-			  destformat = GR_TEXFMT_ARGB_4444;
+			  destformat = GL_RGBA4;
 			break;
-		  case GR_TEXFMT_ARGB_1555:
+		  case GL_RGB5_A1:
 #if !REDUCE_TEXTURE_FOOTPRINT
 			if (_maxbpp < 32 || _options & FORCE16BPP_HIRESTEX)
 #endif
-			  destformat = GR_TEXFMT_ARGB_1555;
+			  destformat = GL_RGB5_A1;
 			break;
-		  case GR_TEXFMT_RGB_565:
+		  case GL_RGB:
 #if !REDUCE_TEXTURE_FOOTPRINT
 			if (_maxbpp < 32 || _options & FORCE16BPP_HIRESTEX)
 #endif
-			  destformat = GR_TEXFMT_RGB_565;
+			  destformat = GL_RGB;
 			break;
-		  case GR_TEXFMT_ALPHA_INTENSITY_88:
-		  case GR_TEXFMT_ALPHA_INTENSITY_44:
-#if !REDUCE_TEXTURE_FOOTPRINT
-			destformat = GR_TEXFMT_ALPHA_INTENSITY_88;
-#else
-			destformat = GR_TEXFMT_ALPHA_INTENSITY_44;
-#endif
+		  case GL_LUMINANCE8_ALPHA8:
+			destformat = GL_LUMINANCE8_ALPHA8;
 			break;
-		  case GR_TEXFMT_ALPHA_8:
-			destformat = GR_TEXFMT_ALPHA_8; /* yes, this is correct. ALPHA_8 instead of INTENSITY_8 */
+		  case GL_ALPHA8:
+			destformat = GL_ALPHA8; /* yes, this is correct. ALPHA_8 instead of INTENSITY_8 */
 			break;
-		  case GR_TEXFMT_INTENSITY_8:
-			destformat = GR_TEXFMT_INTENSITY_8;
+		  case GL_LUMINANCE8:
+			destformat = GL_LUMINANCE8;
 		  }
-		  if (_txQuantize->quantize(tex, tmptex, width, height, GR_TEXFMT_ARGB_8888, destformat, 0)) {
+		  if (_txQuantize->quantize(tex, tmptex, width, height, GL_RGBA8, destformat, 0)) {
 			format = destformat;
 			free(tex);
 			tex = tmptex;
@@ -862,16 +855,11 @@ TxHiResCache::loadHiResTextures(boost::filesystem::wpath dir_path, boolean repla
 	  chksum64 |= (uint64)chksum;
 
 	  GHQTexInfo tmpInfo;
-	  memset(&tmpInfo, 0, sizeof(GHQTexInfo));
-
 	  tmpInfo.data = tex;
 	  tmpInfo.width = width;
 	  tmpInfo.height = height;
-	  tmpInfo.format = format;
-	  tmpInfo.largeLodLog2 = _txUtil->grLodLog2(width, height);
-	  tmpInfo.smallLodLog2 = tmpInfo.largeLodLog2;
-	  tmpInfo.aspectRatioLog2 = _txUtil->grAspectRatioLog2(width, height);
 	  tmpInfo.is_hires_tex = 1;
+	  setTextureFormat(format, &tmpInfo);
 
 	  /* remove redundant in cache */
 	  if (replace && TxCache::del(chksum64)) {

@@ -55,7 +55,7 @@ txfilter_shutdown(void)
 }
 
 TAPI boolean TAPIENTRY
-txfilter(uint8 *src, int srcwidth, int srcheight, uint16 srcformat,
+txfilter_filter(uint8 *src, int srcwidth, int srcheight, uint16 srcformat,
 		 uint64 g64crc, GHQTexInfo *info)
 {
   if (txFilter)

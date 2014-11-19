@@ -75,26 +75,25 @@ TxUtil::sizeofTx(int width, int height, uint16 format)
 
   /* a lookup table for the shifts would be better */
   switch (format) {
-  case GR_TEXFMT_ARGB_CMP_DXT1:
+  case GL_COMPRESSED_RGBA_S3TC_DXT1_EXT:
 	dataSize = (((width + 0x3) & ~0x3) * ((height + 0x3) & ~0x3)) >> 1;
 	break;
-  case GR_TEXFMT_ARGB_CMP_DXT3:
-  case GR_TEXFMT_ARGB_CMP_DXT5:
+  case GL_COMPRESSED_RGBA_S3TC_DXT3_EXT:
+  case GL_COMPRESSED_RGBA_S3TC_DXT5_EXT:
 	dataSize = ((width + 0x3) & ~0x3) * ((height + 0x3) & ~0x3);
 	break;
-  case GR_TEXFMT_ALPHA_INTENSITY_44:
-  case GR_TEXFMT_ALPHA_8:
-  case GR_TEXFMT_INTENSITY_8:
-  case GR_TEXFMT_P_8:
+  case GL_ALPHA8:
+  case GL_LUMINANCE8:
+  case GL_COLOR_INDEX8_EXT:
 	dataSize = width * height;
 	break;
-  case GR_TEXFMT_ARGB_4444:
-  case GR_TEXFMT_ARGB_1555:
-  case GR_TEXFMT_RGB_565:
-  case GR_TEXFMT_ALPHA_INTENSITY_88:
+  case GL_RGBA4:
+  case GL_RGB5_A1:
+  case GL_RGB:
+  case GL_LUMINANCE8_ALPHA8:
 	dataSize = (width * height) << 1;
 	break;
-  case GR_TEXFMT_ARGB_8888:
+  case GL_RGBA8:
 	dataSize = (width * height) << 2;
 	break;
   default:
@@ -935,4 +934,43 @@ uint32
 TxMemBuf::size_of(unsigned int num)
 {
   return ((num < 2) ? _size[num] : 0);
+}
+
+void setTextureFormat(uint16 internalFormat, GHQTexInfo * info)
+{
+	info->format = internalFormat;
+	switch (internalFormat) {
+	case GL_RGBA8:
+		info->texture_format = GL_RGBA;
+		info->pixel_type = GL_UNSIGNED_BYTE;
+	break;
+	case GL_RGB:
+		info->texture_format = GL_RGB;
+		info->pixel_type = GL_UNSIGNED_SHORT_5_6_5;
+	break;
+	case GL_RGBA4:
+		info->texture_format = GL_RGBA;
+		info->pixel_type = GL_UNSIGNED_SHORT_4_4_4_4;
+	break;
+	case GL_RGB5_A1:
+		info->texture_format = GL_RGBA;
+		info->pixel_type = GL_UNSIGNED_SHORT_5_5_5_1;
+	break;
+	case GL_ALPHA8:
+		info->texture_format = GL_ALPHA;
+		info->pixel_type = GL_UNSIGNED_BYTE;
+	break;
+	case GL_LUMINANCE8:
+		info->texture_format = GL_LUMINANCE;
+		info->pixel_type = GL_UNSIGNED_BYTE;
+	break;
+	case GL_LUMINANCE8_ALPHA8:
+		info->texture_format = GL_LUMINANCE_ALPHA;
+		info->pixel_type = GL_UNSIGNED_BYTE;
+	break;
+	default:
+		info->texture_format = GL_RGBA;
+		info->pixel_type = GL_UNSIGNED_BYTE;
+	break;
+	}
 }

@@ -109,4 +109,6 @@ public:
   uint32 size_of(unsigned int num);
 };
 
+void setTextureFormat(uint16 internalFormat, GHQTexInfo * info);
+
 #endif /* __TXUTIL_H__ */

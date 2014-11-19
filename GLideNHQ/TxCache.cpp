@@ -97,7 +97,7 @@ TxCache::add(uint64 checksum, GHQTexInfo *info, int dataSize)
 	  } else {
 		DBG_INFO(80, L"zlib compressed: %.02fkb->%.02fkb\n", (float)dataSize/1000, (float)destLen/1000);
 		dataSize = destLen;
-		format |= GR_TEXFMT_GZ;
+		format |= GL_TEXFMT_GZ;
 	  }
 	}
   }
@@ -161,9 +161,6 @@ TxCache::add(uint64 checksum, GHQTexInfo *info, int dataSize)
 			   _cache.size(), (uint32)(checksum >> 32), (uint32)(checksum & 0xffffffff),
 			   info->width, info->height, info->format, (float)_totalSize/1000000);
 
-	  DBG_INFO(80, L"smalllodlog2:%d largelodlog2:%d aspectratiolog2:%d\n",
-			   txCache->info.smallLodLog2, txCache->info.largeLodLog2, txCache->info.aspectRatioLog2);
-
 	  if (_cacheSize > 0) {
 		DBG_INFO(80, L"cache max config:%.02fmb\n", (float)_cacheSize/1000000);
 
@@ -203,7 +200,7 @@ TxCache::get(uint64 checksum, GHQTexInfo *info)
 	}
 
 	/* zlib decompress it */
-	if (info->format & GR_TEXFMT_GZ) {
+	if (info->format & GL_TEXFMT_GZ) {
 	  uint32 destLen = _gzdestLen;
 	  uint8 *dest = (_gzdest0 == info->data) ? _gzdest1 : _gzdest0;
 	  if (uncompress(dest, &destLen, info->data, ((*itMap).second)->size) != Z_OK) {
@@ -211,7 +208,7 @@ TxCache::get(uint64 checksum, GHQTexInfo *info)
 		return 0;
 	  }
 	  info->data = dest;
-	  info->format &= ~GR_TEXFMT_GZ;
+	  info->format &= ~GL_TEXFMT_GZ;
 	  DBG_INFO(80, L"zlib decompressed: %.02fkb->%.02fkb\n", (float)(((*itMap).second)->size)/1000, (float)destLen/1000);
 	}
 
@@ -262,7 +259,7 @@ TxCache::save(const wchar_t *path, const wchar_t *filename, int config)
 		 * texture data in a zlib compressed state. if the GZ_TEXCACHE or GZ_HIRESTEXCACHE
 		 * option is toggled, the cache will need to be rebuilt.
 		 */
-		/*if (format & GR_TEXFMT_GZ) {
+		/*if (format & GL_TEXFMT_GZ) {
 		  dest = _gzdest0;
 		  destLen = _gzdestLen;
 		  if (dest && destLen) {
@@ -270,7 +267,7 @@ TxCache::save(const wchar_t *path, const wchar_t *filename, int config)
 			  dest = NULL;
 			  destLen = 0;
 			}
-			format &= ~GR_TEXFMT_GZ;
+			format &= ~GL_TEXFMT_GZ;
 		  }
 		}*/
 
@@ -281,12 +278,9 @@ TxCache::save(const wchar_t *path, const wchar_t *filename, int config)
 		  /* other texture info */
 		  gzwrite(gzfp, &((*itMap).second->info.width), 4);
 		  gzwrite(gzfp, &((*itMap).second->info.height), 4);
-		  gzwrite(gzfp, &format, 2);
-
-		  gzwrite(gzfp, &((*itMap).second->info.smallLodLog2), 4);
-		  gzwrite(gzfp, &((*itMap).second->info.largeLodLog2), 4);
-		  gzwrite(gzfp, &((*itMap).second->info.aspectRatioLog2), 4);
-
+		  gzwrite(gzfp, &format, 4);
+		  gzwrite(gzfp, &((*itMap).second->info.texture_format), 2);
+		  gzwrite(gzfp, &((*itMap).second->info.pixel_type), 2);
 		  gzwrite(gzfp, &((*itMap).second->info.is_hires_tex), 1);
 
 		  gzwrite(gzfp, &destLen, 4);
@@ -335,25 +329,21 @@ TxCache::load(const wchar_t *path, const wchar_t *filename, int config)
 	/* yep, we have it. load it into memory cache. */
 	int dataSize;
 	uint64 checksum;
-	GHQTexInfo tmpInfo;
 	int tmpconfig;
 	/* read header to determine config match */
 	gzread(gzfp, &tmpconfig, 4);
 
 	if (tmpconfig == config) {
 	  do {
-		memset(&tmpInfo, 0, sizeof(GHQTexInfo));
+		GHQTexInfo tmpInfo;
 
 		gzread(gzfp, &checksum, 8);
 
 		gzread(gzfp, &tmpInfo.width, 4);
 		gzread(gzfp, &tmpInfo.height, 4);
-		gzread(gzfp, &tmpInfo.format, 2);
-
-		gzread(gzfp, &tmpInfo.smallLodLog2, 4);
-		gzread(gzfp, &tmpInfo.largeLodLog2, 4);
-		gzread(gzfp, &tmpInfo.aspectRatioLog2, 4);
-
+		gzread(gzfp, &tmpInfo.format, 4);
+		gzread(gzfp, &tmpInfo.texture_format, 2);
+		gzread(gzfp, &tmpInfo.pixel_type, 2);
 		gzread(gzfp, &tmpInfo.is_hires_tex, 1);
 
 		gzread(gzfp, &dataSize, 4);
@@ -363,7 +353,7 @@ TxCache::load(const wchar_t *path, const wchar_t *filename, int config)
 		  gzread(gzfp, tmpInfo.data, dataSize);
 
 		  /* add to memory cache */
-		  add(checksum, &tmpInfo, (tmpInfo.format & GR_TEXFMT_GZ) ? dataSize : 0);
+		  add(checksum, &tmpInfo, (tmpInfo.format & GL_TEXFMT_GZ) ? dataSize : 0);
 
 		  free(tmpInfo.data);
 		} else {
