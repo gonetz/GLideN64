@@ -48,24 +48,71 @@ TxQuantize::~TxQuantize()
   delete _txUtil;
 }
 
+const volatile unsigned char Five2Eight[32] =
+{
+	0, // 00000 = 00000000
+	8, // 00001 = 00001000
+	16, // 00010 = 00010000
+	25, // 00011 = 00011001
+	33, // 00100 = 00100001
+	41, // 00101 = 00101001
+	49, // 00110 = 00110001
+	58, // 00111 = 00111010
+	66, // 01000 = 01000010
+	74, // 01001 = 01001010
+	82, // 01010 = 01010010
+	90, // 01011 = 01011010
+	99, // 01100 = 01100011
+	107, // 01101 = 01101011
+	115, // 01110 = 01110011
+	123, // 01111 = 01111011
+	132, // 10000 = 10000100
+	140, // 10001 = 10001100
+	148, // 10010 = 10010100
+	156, // 10011 = 10011100
+	165, // 10100 = 10100101
+	173, // 10101 = 10101101
+	181, // 10110 = 10110101
+	189, // 10111 = 10111101
+	197, // 11000 = 11000101
+	206, // 11001 = 11001110
+	214, // 11010 = 11010110
+	222, // 11011 = 11011110
+	230, // 11100 = 11100110
+	239, // 11101 = 11101111
+	247, // 11110 = 11110111
+	255  // 11111 = 11111111
+};
+
+const volatile unsigned char One2Eight[2] =
+{
+	0, // 0 = 00000000
+	255, // 1 = 11111111
+};
+
 void
 TxQuantize::ARGB1555_ARGB8888(uint32* src, uint32* dest, int width, int height)
 {
-  int siz = (width * height) >> 1;
-  int i;
-  for (i = 0; i < siz; i++) {
-	*dest = (((*src & 0x00008000) ? 0xff000000 : 0x00000000) |
-			((*src & 0x00007c00) << 9) | ((*src & 0x00007000) << 4) |
-			((*src & 0x000003e0) << 6) | ((*src & 0x00000380) << 1) |
-			((*src & 0x0000001f) << 3) | ((*src & 0x0000001c) >> 2));
-	dest++;
-	*dest = (((*src & 0x80000000) ? 0xff000000 : 0x00000000) |
-			((*src & 0x7c000000) >>  7) | ((*src & 0x70000000) >> 12) |
-			((*src & 0x03e00000) >> 10) | ((*src & 0x03800000) >> 15) |
-			((*src & 0x001f0000) >> 13) | ((*src & 0x001c0000) >> 18));
-	dest++;
-	src++;
-  }
+	const int siz = (width * height) >> 1;
+	uint8 r, g, b, a;
+	uint32 color;
+	for (int i = 0; i < siz; ++i) {
+		color = (*src) & 0xffff;
+		r = Five2Eight[color >> 11];
+		g = Five2Eight[(color >> 6) & 0x001f];
+		b = Five2Eight[(color >> 1) & 0x001f];
+		a = One2Eight [(color     ) & 0x0001];
+		*dest = (a << 24) | (b << 16) | (g << 8) | r;
+		++dest;
+		color = (*src) >> 16;
+		r = Five2Eight[color >> 11];
+		g = Five2Eight[(color >> 6) & 0x001f];
+		b = Five2Eight[(color >> 1) & 0x001f];
+		a = One2Eight [(color     ) & 0x0001];
+		*dest = (a << 24) | (b << 16) | (g << 8) | r;
+		++dest;
+		++src;
+	}
 }
 
 void
@@ -187,21 +234,26 @@ TxQuantize::AI88_ARGB8888(uint32* src, uint32* dest, int width, int height)
 void
 TxQuantize::ARGB8888_ARGB1555(uint32* src, uint32* dest, int width, int height)
 {
-  int siz = (width * height) >> 1;
-  int i;
-  for (i = 0; i < siz; i++) {
-	*dest = ((*src & 0xff000000) ? 0x00008000 : 0x00000000);
-	*dest |= (((*src & 0x00f80000) >> 9) |
-			  ((*src & 0x0000f800) >> 6) |
-			  ((*src & 0x000000f8) >> 3));
-	src++;
-	*dest |= ((*src & 0xff000000) ? 0x80000000 : 0x00000000);
-	*dest |= (((*src & 0x00f80000) << 7) |
-			  ((*src & 0x0000f800) << 10) |
-			  ((*src & 0x000000f8) << 13));
-	src++;
-	dest++;
-  }
+	const int siz = (width * height) >> 1;
+	uint32 color;
+	uint32 r, g, b;
+	for (int i = 0; i < siz; i++) {
+		color = *src;
+		*dest = ((color & 0xff000000) ? 0x0001 : 0x0000);
+		r = (color & 0x000000FF) >> 3;
+		g = (color & 0x0000FF00) >> 11;
+		b = (color & 0x00FF0000) >> 19;
+		*dest |= (r<<11)|(g<<6)|(b<<1);
+		src++;
+		color = *src;
+		*dest |= ((color & 0xff000000) ? 0x00010000 : 0x0000);
+		r = (color & 0x000000FF) >> 3;
+		g = (color & 0x0000FF00) >> 11;
+		b = (color & 0x00FF0000) >> 19;
+		*dest |= (r<<27)|(g<<22)|(b<<17);
+		src++;
+		dest++;
+	}
 }
 
 void
