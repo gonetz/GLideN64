@@ -219,9 +219,9 @@ static int hq2x_interp_16_diff(uint16 p1, uint16 p2)
   if (p1 == p2)
     return 0;
 
-  b = (int)((p1 & 0x000F) - (p2 & 0x000F));
+  r = (int)((p1 & 0x000F) - (p2 & 0x000F));
   g = (int)((p1 & 0x00F0) - (p2 & 0x00F0)) >> 4;
-  r = (int)((p1 & 0x0F00) - (p2 & 0x0F00)) >> 8;
+  b = (int)((p1 & 0x0F00) - (p2 & 0x0F00)) >> 8;
 
   y = r + g + b;
   u = r - b;
@@ -248,9 +248,9 @@ static int hq2x_interp_32_diff(uint32 p1, uint32 p2)
   if ((p1 & 0xF8F8F8) == (p2 & 0xF8F8F8))
     return 0;
 
-  b = (int)((p1 & 0xFF) - (p2 & 0xFF));
+  r = (int)((p1 & 0xFF) - (p2 & 0xFF));
   g = (int)((p1 & 0xFF00) - (p2 & 0xFF00)) >> 8;
-  r = (int)((p1 & 0xFF0000) - (p2 & 0xFF0000)) >> 16;
+  b = (int)((p1 & 0xFF0000) - (p2 & 0xFF0000)) >> 16;
 
   y = r + g + b;
   u = r - b;

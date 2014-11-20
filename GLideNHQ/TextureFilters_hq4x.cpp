@@ -35,9 +35,9 @@ static uint32 RGB555toYUV(uint32 val)
 {
   uint32 r, g, b, Y, u, v;
 
-  r = (val & 0x7C00) >> 7;
+  b = (val & 0x7C00) >> 7;
   g = (val & 0x03E0) >> 2;
-  b = (val & 0x001F) << 3;
+  r = (val & 0x001F) << 3;
   r |= r >> 5;
   g |= g >> 5;
   b |= b >> 5;
@@ -53,9 +53,9 @@ static uint32 RGB565toYUV(uint32 val)
 {
   uint32 r, g, b, Y, u, v;
 
-  r = (val & 0xF800) >> 8;
+  b = (val & 0xF800) >> 8;
   g = (val & 0x07E0) >> 3;
-  b = (val & 0x001F) << 3;
+  r = (val & 0x001F) << 3;
   r |= r >> 5;
   g |= g >> 6;
   b |= b >> 5;
@@ -72,9 +72,9 @@ static uint32 RGB888toYUV(uint32 val)
 {
   uint32 r, g, b, Y, u, v;
 
-  r = (val & 0x00ff0000) >> 16;
+  b = (val & 0x00ff0000) >> 16;
   g = (val & 0x0000ff00) >> 8;
-  b = val & 0x000000ff;
+  r = val & 0x000000ff;
 
   Y = (r + g + b) >> 2;
   u = (0x00000200 + r - b) >> 2;
