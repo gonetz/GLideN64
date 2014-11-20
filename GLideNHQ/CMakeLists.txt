@@ -7,6 +7,7 @@ set(GLideNHQ_SOURCES
   TextureFilters_2xsai.cpp
   TextureFilters_hq2x.cpp
   TextureFilters_hq4x.cpp
+  TextureFilters_xbrz.cpp
   TxCache.cpp
   TxDbg.cpp
   TxFilter.cpp
@@ -65,6 +66,11 @@ endif(NOT OPENGL_FOUND)
 
 if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
 	add_definitions( -D__MSC__)
+endif()
+
+if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+SET(GCC_CPP11_COMPILE_FLAGS "-std=c++0x -static-libgcc -static-libstdc++")
+SET( CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} ${GCC_CPP11_COMPILE_FLAGS}" )
 endif()
 
 if( NOT GHQCHK )

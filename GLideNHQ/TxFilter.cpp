@@ -220,23 +220,60 @@ TxFilter::filter(uint8 *src, int srcwidth, int srcheight, uint16 srcformat, uint
 			/*
 	   * prepare texture enhancements (x2, x4 scalers)
 	   */
-			int scale_shift = 0, num_filters = 0;
+			int scale = 1, num_filters = 0;
 			uint32 filter = 0;
 
-			if ((_options & ENHANCEMENT_MASK) == HQ4X_ENHANCEMENT) {
+			const uint32 enhancement = (_options & ENHANCEMENT_MASK);
+			switch (enhancement) {
+			case NO_ENHANCEMENT:
+				// Do nothing
+			break;
+			case HQ4X_ENHANCEMENT:
 				if (srcwidth  <= (_maxwidth >> 2) && srcheight <= (_maxheight >> 2)) {
 					filter |= HQ4X_ENHANCEMENT;
-					scale_shift = 2;
+					scale = 4;
 					num_filters++;
 				} else if (srcwidth  <= (_maxwidth >> 1) && srcheight <= (_maxheight >> 1)) {
 					filter |= HQ2X_ENHANCEMENT;
-					scale_shift = 1;
+					scale = 2;
 					num_filters++;
 				}
-			} else if (_options & ENHANCEMENT_MASK) {
+			break;
+			case BRZ3X_ENHANCEMENT:
+				if (srcwidth  <= (_maxwidth / 3) && srcheight <= (_maxheight / 3)) {
+					filter |= BRZ3X_ENHANCEMENT;
+					scale = 3;
+					num_filters++;
+				} else if (srcwidth  <= (_maxwidth >> 1) && srcheight <= (_maxheight >> 1)) {
+					filter |= BRZ2X_ENHANCEMENT;
+					scale = 2;
+					num_filters++;
+				}
+			case BRZ4X_ENHANCEMENT:
+				if (srcwidth  <= (_maxwidth >> 2) && srcheight <= (_maxheight >> 2)) {
+					filter |= BRZ4X_ENHANCEMENT;
+					scale = 4;
+					num_filters++;
+				} else if (srcwidth  <= (_maxwidth >> 1) && srcheight <= (_maxheight >> 1)) {
+					filter |= BRZ2X_ENHANCEMENT;
+					scale = 2;
+					num_filters++;
+				}
+			case BRZ5X_ENHANCEMENT:
+				if (srcwidth  <= (_maxwidth / 5) && srcheight <= (_maxheight / 5)) {
+					filter |= BRZ5X_ENHANCEMENT;
+					scale = 5;
+					num_filters++;
+				} else if (srcwidth  <= (_maxwidth >> 1) && srcheight <= (_maxheight >> 1)) {
+					filter |= BRZ2X_ENHANCEMENT;
+					scale = 2;
+					num_filters++;
+				}
+			break;
+			default:
 				if (srcwidth  <= (_maxwidth >> 1) && srcheight <= (_maxheight >> 1)) {
-					filter |= (_options & ENHANCEMENT_MASK);
-					scale_shift = 1;
+					filter |= enhancement;
+					scale = 2;
 					num_filters++;
 				}
 			}
@@ -270,7 +307,7 @@ TxFilter::filter(uint8 *src, int srcwidth, int srcheight, uint16 srcformat, uint
 					unsigned int i;
 					int blkheight = blkrow << 2;
 					unsigned int srcStride = (srcwidth * blkheight) << 2;
-					unsigned int destStride = srcStride << scale_shift << scale_shift;
+					unsigned int destStride = srcStride * scale * scale;
 					for (i = 0; i < numcore - 1; i++) {
 						thrd[i] = new boost::thread(boost::bind(filter_8888,
 																(uint32*)_texture,
@@ -296,10 +333,10 @@ TxFilter::filter(uint8 *src, int srcwidth, int srcheight, uint16 srcformat, uint
 				}
 
 				if (filter & ENHANCEMENT_MASK) {
-					srcwidth  <<= scale_shift;
-					srcheight <<= scale_shift;
+					srcwidth  *= scale;
+					srcheight *= scale;
 					filter &= ~ENHANCEMENT_MASK;
-					scale_shift = 0;
+					scale = 1;
 				}
 
 				texture = tmptex;
@@ -362,58 +399,58 @@ TxFilter::filter(uint8 *src, int srcwidth, int srcheight, uint16 srcformat, uint
 #if !_16BPP_HACK
 		case GL_RGBA4:
 
-			int scale_shift = 0;
+			int scale = 1;
 			tmptex = (texture == _tex1) ? _tex2 : _tex1;
 
 			switch (_options & ENHANCEMENT_MASK) {
 			case HQ4X_ENHANCEMENT:
 				if (srcwidth <= (_maxwidth >> 2) && srcheight <= (_maxheight >> 2)) {
 					hq4x_4444((uint8*)texture, (uint8*)tmptex, srcwidth, srcheight, srcwidth, srcwidth * 4 * 2);
-					scale_shift = 2;
+					scale = 4;
 				}/* else if (srcwidth <= (_maxwidth >> 1) && srcheight <= (_maxheight >> 1)) {
 		  hq2x_16((uint8*)texture, srcwidth * 2, (uint8*)tmptex, srcwidth * 2 * 2, srcwidth, srcheight);
-		  scale_shift = 1;
+		  scale = 2;
 		}*/
 			break;
 			case HQ2X_ENHANCEMENT:
 				if (srcwidth <= (_maxwidth >> 1) && srcheight <= (_maxheight >> 1)) {
 					hq2x_16((uint8*)texture, srcwidth * 2, (uint8*)tmptex, srcwidth * 2 * 2, srcwidth, srcheight);
-					scale_shift = 1;
+					scale = 2;
 				}
 			break;
 			case HQ2XS_ENHANCEMENT:
 				if (srcwidth <= (_maxwidth >> 1) && srcheight <= (_maxheight >> 1)) {
 					hq2xS_16((uint8*)texture, srcwidth * 2, (uint8*)tmptex, srcwidth * 2 * 2, srcwidth, srcheight);
-					scale_shift = 1;
+					scale = 2;
 				}
 			break;
 			case LQ2X_ENHANCEMENT:
 				if (srcwidth  <= (_maxwidth >> 1) && srcheight <= (_maxheight >> 1)) {
 					lq2x_16((uint8*)texture, srcwidth * 2, (uint8*)tmptex, srcwidth * 2 * 2, srcwidth, srcheight);
-					scale_shift = 1;
+					scale = 2;
 				}
 			break;
 			case LQ2XS_ENHANCEMENT:
 				if (srcwidth  <= (_maxwidth >> 1) && srcheight <= (_maxheight >> 1)) {
 					lq2xS_16((uint8*)texture, srcwidth * 2, (uint8*)tmptex, srcwidth * 2 * 2, srcwidth, srcheight);
-					scale_shift = 1;
+					scale = 2;
 				}
 			break;
 			case X2SAI_ENHANCEMENT:
 				if (srcwidth  <= (_maxwidth >> 1) && srcheight <= (_maxheight >> 1)) {
 					Super2xSaI_4444((uint16*)texture, (uint16*)tmptex, srcwidth, srcheight, srcwidth);
-					scale_shift = 1;
+					scale = 2;
 				}
 			break;
 			case X2_ENHANCEMENT:
 				if (srcwidth  <= (_maxwidth >> 1) && srcheight <= (_maxheight >> 1)) {
 					Texture2x_16((uint8*)texture, srcwidth * 2, (uint8*)tmptex, srcwidth * 2 * 2, srcwidth, srcheight);
-					scale_shift = 1;
+					scale = 2;
 				}
 			}
-			if (scale_shift) {
-				srcwidth <<= scale_shift;
-				srcheight <<= scale_shift;
+			if (scale) {
+				srcwidth *= scale;
+				srcheight *= scale;
 				texture = tmptex;
 			}
 
