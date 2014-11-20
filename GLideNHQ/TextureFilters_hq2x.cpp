@@ -45,79 +45,79 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 static uint16 hq2x_interp_16_521(uint16 p1, uint16 p2, uint16 p3)
 {
   return INTERP_16_MASK_1_3((INTERP_16_MASK_1_3(p1)*5 + INTERP_16_MASK_1_3(p2)*2 + INTERP_16_MASK_1_3(p3)*1) / 8)
-    | INTERP_16_MASK_SHIFTBACK_2_4((INTERP_16_MASK_SHIFT_2_4(p1)*5 + INTERP_16_MASK_SHIFT_2_4(p2)*2 + INTERP_16_MASK_SHIFT_2_4(p3)*1) / 8);
+	| INTERP_16_MASK_SHIFTBACK_2_4((INTERP_16_MASK_SHIFT_2_4(p1)*5 + INTERP_16_MASK_SHIFT_2_4(p2)*2 + INTERP_16_MASK_SHIFT_2_4(p3)*1) / 8);
 }
 
 static uint16 hq2x_interp_16_332(uint16 p1, uint16 p2, uint16 p3)
 {
   return INTERP_16_MASK_1_3((INTERP_16_MASK_1_3(p1)*3 + INTERP_16_MASK_1_3(p2)*3 + INTERP_16_MASK_1_3(p3)*2) / 8)
-    | INTERP_16_MASK_SHIFTBACK_2_4((INTERP_16_MASK_SHIFT_2_4(p1)*3 + INTERP_16_MASK_SHIFT_2_4(p2)*3 + INTERP_16_MASK_SHIFT_2_4(p3)*2) / 8);
+	| INTERP_16_MASK_SHIFTBACK_2_4((INTERP_16_MASK_SHIFT_2_4(p1)*3 + INTERP_16_MASK_SHIFT_2_4(p2)*3 + INTERP_16_MASK_SHIFT_2_4(p3)*2) / 8);
 }
 
 static uint16 hq2x_interp_16_611(uint16 p1, uint16 p2, uint16 p3)
 {
   return INTERP_16_MASK_1_3((INTERP_16_MASK_1_3(p1)*6 + INTERP_16_MASK_1_3(p2) + INTERP_16_MASK_1_3(p3)) / 8)
-    | INTERP_16_MASK_SHIFTBACK_2_4((INTERP_16_MASK_SHIFT_2_4(p1)*6 + INTERP_16_MASK_SHIFT_2_4(p2) + INTERP_16_MASK_SHIFT_2_4(p3)) / 8);
+	| INTERP_16_MASK_SHIFTBACK_2_4((INTERP_16_MASK_SHIFT_2_4(p1)*6 + INTERP_16_MASK_SHIFT_2_4(p2) + INTERP_16_MASK_SHIFT_2_4(p3)) / 8);
 }
 
 static uint16 hq2x_interp_16_71(uint16 p1, uint16 p2)
 {
   return INTERP_16_MASK_1_3((INTERP_16_MASK_1_3(p1)*7 + INTERP_16_MASK_1_3(p2)) / 8)
-    | INTERP_16_MASK_SHIFTBACK_2_4((INTERP_16_MASK_SHIFT_2_4(p1)*7 + INTERP_16_MASK_SHIFT_2_4(p2)) / 8);
+	| INTERP_16_MASK_SHIFTBACK_2_4((INTERP_16_MASK_SHIFT_2_4(p1)*7 + INTERP_16_MASK_SHIFT_2_4(p2)) / 8);
 }
 
 static uint16 hq2x_interp_16_211(uint16 p1, uint16 p2, uint16 p3)
 {
   return INTERP_16_MASK_1_3((INTERP_16_MASK_1_3(p1)*2 + INTERP_16_MASK_1_3(p2) + INTERP_16_MASK_1_3(p3)) / 4)
-    | INTERP_16_MASK_SHIFTBACK_2_4((INTERP_16_MASK_SHIFT_2_4(p1)*2 + INTERP_16_MASK_SHIFT_2_4(p2) + INTERP_16_MASK_SHIFT_2_4(p3)) / 4);
+	| INTERP_16_MASK_SHIFTBACK_2_4((INTERP_16_MASK_SHIFT_2_4(p1)*2 + INTERP_16_MASK_SHIFT_2_4(p2) + INTERP_16_MASK_SHIFT_2_4(p3)) / 4);
 }
 
 static uint16 hq2x_interp_16_772(uint16 p1, uint16 p2, uint16 p3)
 {
   return INTERP_16_MASK_1_3(((INTERP_16_MASK_1_3(p1) + INTERP_16_MASK_1_3(p2))*7 + INTERP_16_MASK_1_3(p3)*2) / 16)
-    | INTERP_16_MASK_SHIFTBACK_2_4(((INTERP_16_MASK_SHIFT_2_4(p1) + INTERP_16_MASK_SHIFT_2_4(p2))*7 + INTERP_16_MASK_SHIFT_2_4(p3)*2) / 16);
+	| INTERP_16_MASK_SHIFTBACK_2_4(((INTERP_16_MASK_SHIFT_2_4(p1) + INTERP_16_MASK_SHIFT_2_4(p2))*7 + INTERP_16_MASK_SHIFT_2_4(p3)*2) / 16);
 }
 
 static uint16 hq2x_interp_16_11(uint16 p1, uint16 p2)
 {
   return INTERP_16_MASK_1_3((INTERP_16_MASK_1_3(p1) + INTERP_16_MASK_1_3(p2)) / 2)
-    | INTERP_16_MASK_SHIFTBACK_2_4((INTERP_16_MASK_SHIFT_2_4(p1) + INTERP_16_MASK_SHIFT_2_4(p2)) / 2);
+	| INTERP_16_MASK_SHIFTBACK_2_4((INTERP_16_MASK_SHIFT_2_4(p1) + INTERP_16_MASK_SHIFT_2_4(p2)) / 2);
 }
 
 static uint16 hq2x_interp_16_31(uint16 p1, uint16 p2)
 {
   return INTERP_16_MASK_1_3((INTERP_16_MASK_1_3(p1)*3 + INTERP_16_MASK_1_3(p2)) / 4)
-    | INTERP_16_MASK_SHIFTBACK_2_4((INTERP_16_MASK_SHIFT_2_4(p1)*3 + INTERP_16_MASK_SHIFT_2_4(p2)) / 4);
+	| INTERP_16_MASK_SHIFTBACK_2_4((INTERP_16_MASK_SHIFT_2_4(p1)*3 + INTERP_16_MASK_SHIFT_2_4(p2)) / 4);
 }
 
 static uint16 hq2x_interp_16_1411(uint16 p1, uint16 p2, uint16 p3)
 {
   return INTERP_16_MASK_1_3((INTERP_16_MASK_1_3(p1)*14 + INTERP_16_MASK_1_3(p2) + INTERP_16_MASK_1_3(p3)) / 16)
-    | INTERP_16_MASK_SHIFTBACK_2_4((INTERP_16_MASK_SHIFT_2_4(p1)*14 + INTERP_16_MASK_SHIFT_2_4(p2) + INTERP_16_MASK_SHIFT_2_4(p3)) / 16);
+	| INTERP_16_MASK_SHIFTBACK_2_4((INTERP_16_MASK_SHIFT_2_4(p1)*14 + INTERP_16_MASK_SHIFT_2_4(p2) + INTERP_16_MASK_SHIFT_2_4(p3)) / 16);
 }
 
 static uint16 hq2x_interp_16_431(uint16 p1, uint16 p2, uint16 p3)
 {
   return INTERP_16_MASK_1_3((INTERP_16_MASK_1_3(p1)*4 + INTERP_16_MASK_1_3(p2)*3 + INTERP_16_MASK_1_3(p3)) / 8)
-    | INTERP_16_MASK_SHIFTBACK_2_4((INTERP_16_MASK_SHIFT_2_4(p1)*4 + INTERP_16_MASK_SHIFT_2_4(p2)*3 + INTERP_16_MASK_SHIFT_2_4(p3)) / 8);
+	| INTERP_16_MASK_SHIFTBACK_2_4((INTERP_16_MASK_SHIFT_2_4(p1)*4 + INTERP_16_MASK_SHIFT_2_4(p2)*3 + INTERP_16_MASK_SHIFT_2_4(p3)) / 8);
 }
 
 static uint16 hq2x_interp_16_53(uint16 p1, uint16 p2)
 {
   return INTERP_16_MASK_1_3((INTERP_16_MASK_1_3(p1)*5 + INTERP_16_MASK_1_3(p2)*3) / 8)
-    | INTERP_16_MASK_SHIFTBACK_2_4((INTERP_16_MASK_SHIFT_2_4(p1)*5 + INTERP_16_MASK_SHIFT_2_4(p2)*3) / 8);
+	| INTERP_16_MASK_SHIFTBACK_2_4((INTERP_16_MASK_SHIFT_2_4(p1)*5 + INTERP_16_MASK_SHIFT_2_4(p2)*3) / 8);
 }
 
 static uint16 hq2x_interp_16_151(uint16 p1, uint16 p2)
 {
   return INTERP_16_MASK_1_3((INTERP_16_MASK_1_3(p1)*15 + INTERP_16_MASK_1_3(p2)) / 16)
-    | INTERP_16_MASK_SHIFTBACK_2_4((INTERP_16_MASK_SHIFT_2_4(p1)*15 + INTERP_16_MASK_SHIFT_2_4(p2)) / 16);
+	| INTERP_16_MASK_SHIFTBACK_2_4((INTERP_16_MASK_SHIFT_2_4(p1)*15 + INTERP_16_MASK_SHIFT_2_4(p2)) / 16);
 }
 
 static uint16 hq2x_interp_16_97(uint16 p1, uint16 p2)
 {
   return INTERP_16_MASK_1_3((INTERP_16_MASK_1_3(p1)*9 + INTERP_16_MASK_1_3(p2)*7) / 16)
-    | INTERP_16_MASK_SHIFTBACK_2_4((INTERP_16_MASK_SHIFT_2_4(p1)*9 + INTERP_16_MASK_SHIFT_2_4(p2)*7) / 16);
+	| INTERP_16_MASK_SHIFTBACK_2_4((INTERP_16_MASK_SHIFT_2_4(p1)*9 + INTERP_16_MASK_SHIFT_2_4(p2)*7) / 16);
 }
 #endif /* !_16BPP_HACK */
 
@@ -128,79 +128,79 @@ static uint16 hq2x_interp_16_97(uint16 p1, uint16 p2)
 static uint32 hq2x_interp_32_521(uint32 p1, uint32 p2, uint32 p3)
 {
   return INTERP_32_MASK_1_3((INTERP_32_MASK_1_3(p1)*5 + INTERP_32_MASK_1_3(p2)*2 + INTERP_32_MASK_1_3(p3)*1) / 8)
-    | INTERP_32_MASK_SHIFTBACK_2_4((INTERP_32_MASK_SHIFT_2_4(p1)*5 + INTERP_32_MASK_SHIFT_2_4(p2)*2 + INTERP_32_MASK_SHIFT_2_4(p3)*1) / 8);
+	| INTERP_32_MASK_SHIFTBACK_2_4((INTERP_32_MASK_SHIFT_2_4(p1)*5 + INTERP_32_MASK_SHIFT_2_4(p2)*2 + INTERP_32_MASK_SHIFT_2_4(p3)*1) / 8);
 }
 
 static uint32 hq2x_interp_32_332(uint32 p1, uint32 p2, uint32 p3)
 {
   return INTERP_32_MASK_1_3((INTERP_32_MASK_1_3(p1)*3 + INTERP_32_MASK_1_3(p2)*3 + INTERP_32_MASK_1_3(p3)*2) / 8)
-    | INTERP_32_MASK_SHIFTBACK_2_4((INTERP_32_MASK_SHIFT_2_4(p1)*3 + INTERP_32_MASK_SHIFT_2_4(p2)*3 + INTERP_32_MASK_SHIFT_2_4(p3)*2) / 8);
+	| INTERP_32_MASK_SHIFTBACK_2_4((INTERP_32_MASK_SHIFT_2_4(p1)*3 + INTERP_32_MASK_SHIFT_2_4(p2)*3 + INTERP_32_MASK_SHIFT_2_4(p3)*2) / 8);
 }
 
 static uint32 hq2x_interp_32_211(uint32 p1, uint32 p2, uint32 p3)
 {
   return INTERP_32_MASK_1_3((INTERP_32_MASK_1_3(p1)*2 + INTERP_32_MASK_1_3(p2) + INTERP_32_MASK_1_3(p3)) / 4)
-    | INTERP_32_MASK_SHIFTBACK_2_4((INTERP_32_MASK_SHIFT_2_4(p1)*2 + INTERP_32_MASK_SHIFT_2_4(p2) + INTERP_32_MASK_SHIFT_2_4(p3)) / 4);
+	| INTERP_32_MASK_SHIFTBACK_2_4((INTERP_32_MASK_SHIFT_2_4(p1)*2 + INTERP_32_MASK_SHIFT_2_4(p2) + INTERP_32_MASK_SHIFT_2_4(p3)) / 4);
 }
 
 static uint32 hq2x_interp_32_611(uint32 p1, uint32 p2, uint32 p3)
 {
   return INTERP_32_MASK_1_3((INTERP_32_MASK_1_3(p1)*6 + INTERP_32_MASK_1_3(p2) + INTERP_32_MASK_1_3(p3)) / 8)
-    | INTERP_32_MASK_SHIFTBACK_2_4((INTERP_32_MASK_SHIFT_2_4(p1)*6 + INTERP_32_MASK_SHIFT_2_4(p2) + INTERP_32_MASK_SHIFT_2_4(p3)) / 8);
+	| INTERP_32_MASK_SHIFTBACK_2_4((INTERP_32_MASK_SHIFT_2_4(p1)*6 + INTERP_32_MASK_SHIFT_2_4(p2) + INTERP_32_MASK_SHIFT_2_4(p3)) / 8);
 }
 
 static uint32 hq2x_interp_32_71(uint32 p1, uint32 p2)
 {
   return INTERP_32_MASK_1_3((INTERP_32_MASK_1_3(p1)*7 + INTERP_32_MASK_1_3(p2)) / 8)
-    | INTERP_32_MASK_SHIFTBACK_2_4((INTERP_32_MASK_SHIFT_2_4(p1)*7 + INTERP_32_MASK_SHIFT_2_4(p2)) / 8);
+	| INTERP_32_MASK_SHIFTBACK_2_4((INTERP_32_MASK_SHIFT_2_4(p1)*7 + INTERP_32_MASK_SHIFT_2_4(p2)) / 8);
 }
 
 static uint32 hq2x_interp_32_772(uint32 p1, uint32 p2, uint32 p3)
 {
   return INTERP_32_MASK_1_3(((INTERP_32_MASK_1_3(p1) + INTERP_32_MASK_1_3(p2))*7 + INTERP_32_MASK_1_3(p3)*2) / 16)
-    | INTERP_32_MASK_SHIFTBACK_2_4(((INTERP_32_MASK_SHIFT_2_4(p1) + INTERP_32_MASK_SHIFT_2_4(p2))*7 + INTERP_32_MASK_SHIFT_2_4(p3)*2) / 16);
+	| INTERP_32_MASK_SHIFTBACK_2_4(((INTERP_32_MASK_SHIFT_2_4(p1) + INTERP_32_MASK_SHIFT_2_4(p2))*7 + INTERP_32_MASK_SHIFT_2_4(p3)*2) / 16);
 }
 
 static uint32 hq2x_interp_32_11(uint32 p1, uint32 p2)
 {
   return INTERP_32_MASK_1_3((INTERP_32_MASK_1_3(p1) + INTERP_32_MASK_1_3(p2)) / 2)
-    | INTERP_32_MASK_SHIFTBACK_2_4((INTERP_32_MASK_SHIFT_2_4(p1) + INTERP_32_MASK_SHIFT_2_4(p2)) / 2);
+	| INTERP_32_MASK_SHIFTBACK_2_4((INTERP_32_MASK_SHIFT_2_4(p1) + INTERP_32_MASK_SHIFT_2_4(p2)) / 2);
 }
 
 static uint32 hq2x_interp_32_31(uint32 p1, uint32 p2)
 {
   return INTERP_32_MASK_1_3((INTERP_32_MASK_1_3(p1)*3 + INTERP_32_MASK_1_3(p2)) / 4)
-    | INTERP_32_MASK_SHIFTBACK_2_4((INTERP_32_MASK_SHIFT_2_4(p1)*3 + INTERP_32_MASK_SHIFT_2_4(p2)) / 4);
+	| INTERP_32_MASK_SHIFTBACK_2_4((INTERP_32_MASK_SHIFT_2_4(p1)*3 + INTERP_32_MASK_SHIFT_2_4(p2)) / 4);
 }
 
 static uint32 hq2x_interp_32_1411(uint32 p1, uint32 p2, uint32 p3)
 {
   return INTERP_32_MASK_1_3((INTERP_32_MASK_1_3(p1)*14 + INTERP_32_MASK_1_3(p2) + INTERP_32_MASK_1_3(p3)) / 16)
-    | INTERP_32_MASK_SHIFTBACK_2_4((INTERP_32_MASK_SHIFT_2_4(p1)*14 + INTERP_32_MASK_SHIFT_2_4(p2) + INTERP_32_MASK_SHIFT_2_4(p3)) / 16);
+	| INTERP_32_MASK_SHIFTBACK_2_4((INTERP_32_MASK_SHIFT_2_4(p1)*14 + INTERP_32_MASK_SHIFT_2_4(p2) + INTERP_32_MASK_SHIFT_2_4(p3)) / 16);
 }
 
 static uint32 hq2x_interp_32_431(uint32 p1, uint32 p2, uint32 p3)
 {
   return INTERP_32_MASK_1_3((INTERP_32_MASK_1_3(p1)*4 + INTERP_32_MASK_1_3(p2)*3 + INTERP_32_MASK_1_3(p3)) / 8)
-    | INTERP_32_MASK_SHIFTBACK_2_4((INTERP_32_MASK_SHIFT_2_4(p1)*4 + INTERP_32_MASK_SHIFT_2_4(p2)*3 + INTERP_32_MASK_SHIFT_2_4(p3)) / 8);
+	| INTERP_32_MASK_SHIFTBACK_2_4((INTERP_32_MASK_SHIFT_2_4(p1)*4 + INTERP_32_MASK_SHIFT_2_4(p2)*3 + INTERP_32_MASK_SHIFT_2_4(p3)) / 8);
 }
 
 static uint32 hq2x_interp_32_53(uint32 p1, uint32 p2)
 {
   return INTERP_32_MASK_1_3((INTERP_32_MASK_1_3(p1)*5 + INTERP_32_MASK_1_3(p2)*3) / 8)
-    | INTERP_32_MASK_SHIFTBACK_2_4((INTERP_32_MASK_SHIFT_2_4(p1)*5 + INTERP_32_MASK_SHIFT_2_4(p2)*3) / 8);
+	| INTERP_32_MASK_SHIFTBACK_2_4((INTERP_32_MASK_SHIFT_2_4(p1)*5 + INTERP_32_MASK_SHIFT_2_4(p2)*3) / 8);
 }
 
 static uint32 hq2x_interp_32_151(uint32 p1, uint32 p2)
 {
   return INTERP_32_MASK_1_3((INTERP_32_MASK_1_3(p1)*15 + INTERP_32_MASK_1_3(p2)) / 16)
-    | INTERP_32_MASK_SHIFTBACK_2_4((INTERP_32_MASK_SHIFT_2_4(p1)*15 + INTERP_32_MASK_SHIFT_2_4(p2)) / 16);
+	| INTERP_32_MASK_SHIFTBACK_2_4((INTERP_32_MASK_SHIFT_2_4(p1)*15 + INTERP_32_MASK_SHIFT_2_4(p2)) / 16);
 }
 
 static uint32 hq2x_interp_32_97(uint32 p1, uint32 p2)
 {
   return INTERP_32_MASK_1_3((INTERP_32_MASK_1_3(p1)*9 + INTERP_32_MASK_1_3(p2)*7) / 16)
-    | INTERP_32_MASK_SHIFTBACK_2_4((INTERP_32_MASK_SHIFT_2_4(p1)*9 + INTERP_32_MASK_SHIFT_2_4(p2)*7) / 16);
+	| INTERP_32_MASK_SHIFTBACK_2_4((INTERP_32_MASK_SHIFT_2_4(p1)*9 + INTERP_32_MASK_SHIFT_2_4(p2)*7) / 16);
 }
 
 /***************************************************************************/
@@ -217,7 +217,7 @@ static int hq2x_interp_16_diff(uint16 p1, uint16 p2)
   int y, u, v;
 
   if (p1 == p2)
-    return 0;
+	return 0;
 
   r = (int)((p1 & 0x000F) - (p2 & 0x000F));
   g = (int)((p1 & 0x00F0) - (p2 & 0x00F0)) >> 4;
@@ -228,13 +228,13 @@ static int hq2x_interp_16_diff(uint16 p1, uint16 p2)
   v = -r + 2*g - b;
 
   if (y < -INTERP_Y_LIMIT || y > INTERP_Y_LIMIT)
-    return 1;
+	return 1;
 
   if (u < -INTERP_U_LIMIT || u > INTERP_U_LIMIT)
-    return 1;
+	return 1;
 
   if (v < -INTERP_V_LIMIT || v > INTERP_V_LIMIT)
-    return 1;
+	return 1;
 
   return 0;
 }
@@ -246,7 +246,7 @@ static int hq2x_interp_32_diff(uint32 p1, uint32 p2)
   int y, u, v;
 
   if ((p1 & 0xF8F8F8) == (p2 & 0xF8F8F8))
-    return 0;
+	return 0;
 
   r = (int)((p1 & 0xFF) - (p2 & 0xFF));
   g = (int)((p1 & 0xFF00) - (p2 & 0xFF00)) >> 8;
@@ -257,13 +257,13 @@ static int hq2x_interp_32_diff(uint32 p1, uint32 p2)
   v = -r + 2*g - b;
 
   if (y < -INTERP_Y_LIMIT || y > INTERP_Y_LIMIT)
-    return 1;
+	return 1;
 
   if (u < -INTERP_U_LIMIT || u > INTERP_U_LIMIT)
-    return 1;
+	return 1;
 
   if (v < -INTERP_V_LIMIT || v > INTERP_V_LIMIT)
-    return 1;
+	return 1;
 
   return 0;
 }
@@ -279,52 +279,52 @@ static void hq2x_16_def(uint16* dst0, uint16* dst1, const uint16* src0, const ui
   unsigned i;
 
   for(i=0;i<count;++i) {
-    unsigned char mask;
+	unsigned char mask;
 
-    uint16 c[9];
+	uint16 c[9];
 
-    c[1] = src0[0];
-    c[4] = src1[0];
-    c[7] = src2[0];
+	c[1] = src0[0];
+	c[4] = src1[0];
+	c[7] = src2[0];
 
-    if (i>0) {
-      c[0] = src0[-1];
-      c[3] = src1[-1];
-      c[6] = src2[-1];
-    } else {
-      c[0] = c[1];
-      c[3] = c[4];
-      c[6] = c[7];
-    }
+	if (i>0) {
+	  c[0] = src0[-1];
+	  c[3] = src1[-1];
+	  c[6] = src2[-1];
+	} else {
+	  c[0] = c[1];
+	  c[3] = c[4];
+	  c[6] = c[7];
+	}
 
-    if (i<count-1) {
-      c[2] = src0[1];
-      c[5] = src1[1];
-      c[8] = src2[1];
-    } else {
-      c[2] = c[1];
-      c[5] = c[4];
-      c[8] = c[7];
-    }
+	if (i<count-1) {
+	  c[2] = src0[1];
+	  c[5] = src1[1];
+	  c[8] = src2[1];
+	} else {
+	  c[2] = c[1];
+	  c[5] = c[4];
+	  c[8] = c[7];
+	}
 
-    mask = 0;
+	mask = 0;
 
-    if (hq2x_interp_16_diff(c[0], c[4]))
-      mask |= 1 << 0;
-    if (hq2x_interp_16_diff(c[1], c[4]))
-      mask |= 1 << 1;
-    if (hq2x_interp_16_diff(c[2], c[4]))
-      mask |= 1 << 2;
-    if (hq2x_interp_16_diff(c[3], c[4]))
-      mask |= 1 << 3;
-    if (hq2x_interp_16_diff(c[5], c[4]))
-      mask |= 1 << 4;
-    if (hq2x_interp_16_diff(c[6], c[4]))
-      mask |= 1 << 5;
-    if (hq2x_interp_16_diff(c[7], c[4]))
-      mask |= 1 << 6;
-    if (hq2x_interp_16_diff(c[8], c[4]))
-      mask |= 1 << 7;
+	if (hq2x_interp_16_diff(c[0], c[4]))
+	  mask |= 1 << 0;
+	if (hq2x_interp_16_diff(c[1], c[4]))
+	  mask |= 1 << 1;
+	if (hq2x_interp_16_diff(c[2], c[4]))
+	  mask |= 1 << 2;
+	if (hq2x_interp_16_diff(c[3], c[4]))
+	  mask |= 1 << 3;
+	if (hq2x_interp_16_diff(c[5], c[4]))
+	  mask |= 1 << 4;
+	if (hq2x_interp_16_diff(c[6], c[4]))
+	  mask |= 1 << 5;
+	if (hq2x_interp_16_diff(c[7], c[4]))
+	  mask |= 1 << 6;
+	if (hq2x_interp_16_diff(c[8], c[4]))
+	  mask |= 1 << 7;
 
 #define P0 dst0[0]
 #define P1 dst0[1]
@@ -349,9 +349,9 @@ static void hq2x_16_def(uint16* dst0, uint16* dst1, const uint16* src0, const ui
 #define I1411(p0,p1,p2) hq2x_interp_16_1411(c[p0], c[p1], c[p2])
 #define I151(p0,p1) hq2x_interp_16_151(c[p0], c[p1])
 
-    switch (mask) {
+	switch (mask) {
 #include "TextureFilters_hq2x.h"
-    }
+	}
 
 #undef P0
 #undef P1
@@ -376,11 +376,11 @@ static void hq2x_16_def(uint16* dst0, uint16* dst1, const uint16* src0, const ui
 #undef I1411
 #undef I151
 
-    src0 += 1;
-    src1 += 1;
-    src2 += 1;
-    dst0 += 2;
-    dst1 += 2;
+	src0 += 1;
+	src1 += 1;
+	src2 += 1;
+	dst0 += 2;
+	dst1 += 2;
   }
 }
 
@@ -389,80 +389,80 @@ static void hq2xS_16_def(uint16* dst0, uint16* dst1, const uint16* src0, const u
   unsigned i;
 
   for(i=0;i<count;++i) {
-    unsigned char mask;
+	unsigned char mask;
 
-    uint16 c[9];
+	uint16 c[9];
 
-    c[1] = src0[0];
-    c[4] = src1[0];
-    c[7] = src2[0];
+	c[1] = src0[0];
+	c[4] = src1[0];
+	c[7] = src2[0];
 
-    if (i>0) {
-      c[0] = src0[-1];
-      c[3] = src1[-1];
-      c[6] = src2[-1];
-    } else {
-      c[0] = c[1];
-      c[3] = c[4];
-      c[6] = c[7];
-    }
+	if (i>0) {
+	  c[0] = src0[-1];
+	  c[3] = src1[-1];
+	  c[6] = src2[-1];
+	} else {
+	  c[0] = c[1];
+	  c[3] = c[4];
+	  c[6] = c[7];
+	}
 
-    if (i<count-1) {
-      c[2] = src0[1];
-      c[5] = src1[1];
-      c[8] = src2[1];
-    } else {
-      c[2] = c[1];
-      c[5] = c[4];
-      c[8] = c[7];
-    }
+	if (i<count-1) {
+	  c[2] = src0[1];
+	  c[5] = src1[1];
+	  c[8] = src2[1];
+	} else {
+	  c[2] = c[1];
+	  c[5] = c[4];
+	  c[8] = c[7];
+	}
 
-    mask = 0;
+	mask = 0;
 
-    // hq2xS dynamic edge detection:
-    // simply comparing the center color against its surroundings will give bad results in many cases,
-    // so, instead, compare the center color relative to the max difference in brightness of this 3x3 block
-    int brightArray[9];
-    int maxBright = 0, minBright = 999999;
-    for(int j = 0 ; j < 9 ; j++) {
-      int r,g,b;
-      if (interp_bits_per_pixel == 16) {
-        b = (int)((c[j] & 0x1F)) << 3;
-        g = (int)((c[j] & 0x7E0)) >> 3;
-        r = (int)((c[j] & 0xF800)) >> 8;
-      } else {
-        b = (int)((c[j] & 0x1F)) << 3;
-        g = (int)((c[j] & 0x3E0)) >> 2;
-        r = (int)((c[j] & 0x7C00)) >> 7;
-      }
-      const int bright = r+r+r + g+g+g + b+b;
-      if(bright > maxBright) maxBright = bright;
-      if(bright < minBright) minBright = bright;
+	// hq2xS dynamic edge detection:
+	// simply comparing the center color against its surroundings will give bad results in many cases,
+	// so, instead, compare the center color relative to the max difference in brightness of this 3x3 block
+	int brightArray[9];
+	int maxBright = 0, minBright = 999999;
+	for(int j = 0 ; j < 9 ; j++) {
+	  int r,g,b;
+	  if (interp_bits_per_pixel == 16) {
+		b = (int)((c[j] & 0x1F)) << 3;
+		g = (int)((c[j] & 0x7E0)) >> 3;
+		r = (int)((c[j] & 0xF800)) >> 8;
+	  } else {
+		b = (int)((c[j] & 0x1F)) << 3;
+		g = (int)((c[j] & 0x3E0)) >> 2;
+		r = (int)((c[j] & 0x7C00)) >> 7;
+	  }
+	  const int bright = r+r+r + g+g+g + b+b;
+	  if(bright > maxBright) maxBright = bright;
+	  if(bright < minBright) minBright = bright;
 
-      brightArray[j] = bright;
-    }
-    int diffBright = ((maxBright - minBright) * 7) >> 4;
-    if(diffBright > 7) {
+	  brightArray[j] = bright;
+	}
+	int diffBright = ((maxBright - minBright) * 7) >> 4;
+	if(diffBright > 7) {
 #define ABS(x) ((x) < 0 ? -(x) : (x))
 
-      const int centerBright = brightArray[4];
-      if(ABS(brightArray[0] - centerBright) > diffBright)
-        mask |= 1 << 0;
-      if(ABS(brightArray[1] - centerBright) > diffBright)
-        mask |= 1 << 1;
-      if(ABS(brightArray[2] - centerBright) > diffBright)
-        mask |= 1 << 2;
-      if(ABS(brightArray[3] - centerBright) > diffBright)
-        mask |= 1 << 3;
-      if(ABS(brightArray[5] - centerBright) > diffBright)
-        mask |= 1 << 4;
-      if(ABS(brightArray[6] - centerBright) > diffBright)
-        mask |= 1 << 5;
-      if(ABS(brightArray[7] - centerBright) > diffBright)
-        mask |= 1 << 6;
-      if(ABS(brightArray[8] - centerBright) > diffBright)
-        mask |= 1 << 7;
-    }
+	  const int centerBright = brightArray[4];
+	  if(ABS(brightArray[0] - centerBright) > diffBright)
+		mask |= 1 << 0;
+	  if(ABS(brightArray[1] - centerBright) > diffBright)
+		mask |= 1 << 1;
+	  if(ABS(brightArray[2] - centerBright) > diffBright)
+		mask |= 1 << 2;
+	  if(ABS(brightArray[3] - centerBright) > diffBright)
+		mask |= 1 << 3;
+	  if(ABS(brightArray[5] - centerBright) > diffBright)
+		mask |= 1 << 4;
+	  if(ABS(brightArray[6] - centerBright) > diffBright)
+		mask |= 1 << 5;
+	  if(ABS(brightArray[7] - centerBright) > diffBright)
+		mask |= 1 << 6;
+	  if(ABS(brightArray[8] - centerBright) > diffBright)
+		mask |= 1 << 7;
+	}
 
 #define P0 dst0[0]
 #define P1 dst0[1]
@@ -487,9 +487,9 @@ static void hq2xS_16_def(uint16* dst0, uint16* dst1, const uint16* src0, const u
 #define I1411(p0,p1,p2) hq2x_interp_16_1411(c[p0], c[p1], c[p2])
 #define I151(p0,p1) hq2x_interp_16_151(c[p0], c[p1])
 
-    switch (mask) {
+	switch (mask) {
 #include "TextureFilters_hq2x.h"
-    }
+	}
 
 #undef P0
 #undef P1
@@ -514,11 +514,11 @@ static void hq2xS_16_def(uint16* dst0, uint16* dst1, const uint16* src0, const u
 #undef I1411
 #undef I151
 
-    src0 += 1;
-    src1 += 1;
-    src2 += 1;
-    dst0 += 2;
-    dst1 += 2;
+	src0 += 1;
+	src1 += 1;
+	src2 += 1;
+	dst0 += 2;
+	dst1 += 2;
   }
 }
 #endif /* !_16BPP_HACK */
@@ -528,52 +528,52 @@ static void hq2x_32_def(uint32* dst0, uint32* dst1, const uint32* src0, const ui
   unsigned i;
 
   for(i=0;i<count;++i) {
-    unsigned char mask;
+	unsigned char mask;
 
-    uint32 c[9];
+	uint32 c[9];
 
-    c[1] = src0[0];
-    c[4] = src1[0];
-    c[7] = src2[0];
+	c[1] = src0[0];
+	c[4] = src1[0];
+	c[7] = src2[0];
 
-    if (i>0) {
-      c[0] = src0[-1];
-      c[3] = src1[-1];
-      c[6] = src2[-1];
-    } else {
-      c[0] = src0[0];
-      c[3] = src1[0];
-      c[6] = src2[0];
-    }
+	if (i>0) {
+	  c[0] = src0[-1];
+	  c[3] = src1[-1];
+	  c[6] = src2[-1];
+	} else {
+	  c[0] = src0[0];
+	  c[3] = src1[0];
+	  c[6] = src2[0];
+	}
 
-    if (i<count-1) {
-      c[2] = src0[1];
-      c[5] = src1[1];
-      c[8] = src2[1];
-    } else {
-      c[2] = src0[0];
-      c[5] = src1[0];
-      c[8] = src2[0];
-    }
+	if (i<count-1) {
+	  c[2] = src0[1];
+	  c[5] = src1[1];
+	  c[8] = src2[1];
+	} else {
+	  c[2] = src0[0];
+	  c[5] = src1[0];
+	  c[8] = src2[0];
+	}
 
-    mask = 0;
+	mask = 0;
 
-    if (hq2x_interp_32_diff(c[0], c[4]))
-      mask |= 1 << 0;
-    if (hq2x_interp_32_diff(c[1], c[4]))
-      mask |= 1 << 1;
-    if (hq2x_interp_32_diff(c[2], c[4]))
-      mask |= 1 << 2;
-    if (hq2x_interp_32_diff(c[3], c[4]))
-      mask |= 1 << 3;
-    if (hq2x_interp_32_diff(c[5], c[4]))
-      mask |= 1 << 4;
-    if (hq2x_interp_32_diff(c[6], c[4]))
-      mask |= 1 << 5;
-    if (hq2x_interp_32_diff(c[7], c[4]))
-      mask |= 1 << 6;
-    if (hq2x_interp_32_diff(c[8], c[4]))
-      mask |= 1 << 7;
+	if (hq2x_interp_32_diff(c[0], c[4]))
+	  mask |= 1 << 0;
+	if (hq2x_interp_32_diff(c[1], c[4]))
+	  mask |= 1 << 1;
+	if (hq2x_interp_32_diff(c[2], c[4]))
+	  mask |= 1 << 2;
+	if (hq2x_interp_32_diff(c[3], c[4]))
+	  mask |= 1 << 3;
+	if (hq2x_interp_32_diff(c[5], c[4]))
+	  mask |= 1 << 4;
+	if (hq2x_interp_32_diff(c[6], c[4]))
+	  mask |= 1 << 5;
+	if (hq2x_interp_32_diff(c[7], c[4]))
+	  mask |= 1 << 6;
+	if (hq2x_interp_32_diff(c[8], c[4]))
+	  mask |= 1 << 7;
 
 #define P0 dst0[0]
 #define P1 dst0[1]
@@ -598,9 +598,9 @@ static void hq2x_32_def(uint32* dst0, uint32* dst1, const uint32* src0, const ui
 #define I1411(p0,p1,p2) hq2x_interp_32_1411(c[p0], c[p1], c[p2])
 #define I151(p0,p1) hq2x_interp_32_151(c[p0], c[p1])
 
-    switch (mask) {
+	switch (mask) {
 #include "TextureFilters_hq2x.h"
-    }
+	}
 
 #undef P0
 #undef P1
@@ -625,11 +625,11 @@ static void hq2x_32_def(uint32* dst0, uint32* dst1, const uint32* src0, const ui
 #undef I1411
 #undef I151
 
-    src0 += 1;
-    src1 += 1;
-    src2 += 1;
-    dst0 += 2;
-    dst1 += 2;
+	src0 += 1;
+	src1 += 1;
+	src2 += 1;
+	dst0 += 2;
+	dst1 += 2;
   }
 }
 
@@ -638,72 +638,72 @@ static void hq2xS_32_def(uint32* dst0, uint32* dst1, const uint32* src0, const u
   unsigned i;
 
   for(i=0;i<count;++i) {
-    unsigned char mask;
+	unsigned char mask;
 
-    uint32 c[9];
+	uint32 c[9];
 
-    c[1] = src0[0];
-    c[4] = src1[0];
-    c[7] = src2[0];
+	c[1] = src0[0];
+	c[4] = src1[0];
+	c[7] = src2[0];
 
-    if (i>0) {
-      c[0] = src0[-1];
-      c[3] = src1[-1];
-      c[6] = src2[-1];
-    } else {
-      c[0] = src0[0];
-      c[3] = src1[0];
-      c[6] = src2[0];
-    }
+	if (i>0) {
+	  c[0] = src0[-1];
+	  c[3] = src1[-1];
+	  c[6] = src2[-1];
+	} else {
+	  c[0] = src0[0];
+	  c[3] = src1[0];
+	  c[6] = src2[0];
+	}
 
-    if (i<count-1) {
-      c[2] = src0[1];
-      c[5] = src1[1];
-      c[8] = src2[1];
-    } else {
-      c[2] = src0[0];
-      c[5] = src1[0];
-      c[8] = src2[0];
-    }
-    
-    mask = 0;
-    // hq2xS dynamic edge detection:
-    // simply comparing the center color against its surroundings will give bad results in many cases,
-    // so, instead, compare the center color relative to the max difference in brightness of this 3x3 block
-    int brightArray[9];
-    int maxBright = 0, minBright = 999999;
-    for(int j = 0 ; j < 9 ; j++) {
-      const int b = (int)((c[j] & 0xF8));
-      const int g = (int)((c[j] & 0xF800)) >> 8;
-      const int r = (int)((c[j] & 0xF80000)) >> 16;
-      const int bright = r+r+r + g+g+g + b+b;
-      if(bright > maxBright) maxBright = bright;
-      if(bright < minBright) minBright = bright;
+	if (i<count-1) {
+	  c[2] = src0[1];
+	  c[5] = src1[1];
+	  c[8] = src2[1];
+	} else {
+	  c[2] = src0[0];
+	  c[5] = src1[0];
+	  c[8] = src2[0];
+	}
 
-      brightArray[j] = bright;
-    }
-    int diffBright = ((maxBright - minBright) * 7) >> 4;
-    if(diffBright > 7) {
+	mask = 0;
+	// hq2xS dynamic edge detection:
+	// simply comparing the center color against its surroundings will give bad results in many cases,
+	// so, instead, compare the center color relative to the max difference in brightness of this 3x3 block
+	int brightArray[9];
+	int maxBright = 0, minBright = 999999;
+	for(int j = 0 ; j < 9 ; j++) {
+	  const int b = (int)((c[j] & 0xF8));
+	  const int g = (int)((c[j] & 0xF800)) >> 8;
+	  const int r = (int)((c[j] & 0xF80000)) >> 16;
+	  const int bright = r+r+r + g+g+g + b+b;
+	  if(bright > maxBright) maxBright = bright;
+	  if(bright < minBright) minBright = bright;
+
+	  brightArray[j] = bright;
+	}
+	int diffBright = ((maxBright - minBright) * 7) >> 4;
+	if(diffBright > 7) {
 #define ABS(x) ((x) < 0 ? -(x) : (x))
 
-      const int centerBright = brightArray[4];
-      if(ABS(brightArray[0] - centerBright) > diffBright)
-        mask |= 1 << 0;
-      if(ABS(brightArray[1] - centerBright) > diffBright)
-        mask |= 1 << 1;
-      if(ABS(brightArray[2] - centerBright) > diffBright)
-        mask |= 1 << 2;
-      if(ABS(brightArray[3] - centerBright) > diffBright)
-        mask |= 1 << 3;
-      if(ABS(brightArray[5] - centerBright) > diffBright)
-        mask |= 1 << 4;
-      if(ABS(brightArray[6] - centerBright) > diffBright)
-        mask |= 1 << 5;
-      if(ABS(brightArray[7] - centerBright) > diffBright)
-        mask |= 1 << 6;
-      if(ABS(brightArray[8] - centerBright) > diffBright)
-        mask |= 1 << 7;
-    }
+	  const int centerBright = brightArray[4];
+	  if(ABS(brightArray[0] - centerBright) > diffBright)
+		mask |= 1 << 0;
+	  if(ABS(brightArray[1] - centerBright) > diffBright)
+		mask |= 1 << 1;
+	  if(ABS(brightArray[2] - centerBright) > diffBright)
+		mask |= 1 << 2;
+	  if(ABS(brightArray[3] - centerBright) > diffBright)
+		mask |= 1 << 3;
+	  if(ABS(brightArray[5] - centerBright) > diffBright)
+		mask |= 1 << 4;
+	  if(ABS(brightArray[6] - centerBright) > diffBright)
+		mask |= 1 << 5;
+	  if(ABS(brightArray[7] - centerBright) > diffBright)
+		mask |= 1 << 6;
+	  if(ABS(brightArray[8] - centerBright) > diffBright)
+		mask |= 1 << 7;
+	}
 #define P0 dst0[0]
 #define P1 dst0[1]
 #define P2 dst1[0]
@@ -727,9 +727,9 @@ static void hq2xS_32_def(uint32* dst0, uint32* dst1, const uint32* src0, const u
 #define I1411(p0,p1,p2) hq2x_interp_32_1411(c[p0], c[p1], c[p2])
 #define I151(p0,p1) hq2x_interp_32_151(c[p0], c[p1])
 
-    switch (mask) {
+	switch (mask) {
 #include "TextureFilters_hq2x.h"
-    }
+	}
 
 #undef P0
 #undef P1
@@ -754,11 +754,11 @@ static void hq2xS_32_def(uint32* dst0, uint32* dst1, const uint32* src0, const u
 #undef I1411
 #undef I151
 
-    src0 += 1;
-    src1 += 1;
-    src2 += 1;
-    dst0 += 2;
-    dst1 += 2;
+	src0 += 1;
+	src1 += 1;
+	src2 += 1;
+	dst0 += 2;
+	dst1 += 2;
   }
 }
 
@@ -775,52 +775,52 @@ static void lq2x_16_def(uint16* dst0, uint16* dst1, const uint16* src0, const ui
   unsigned i;
 
   for(i=0;i<count;++i) {
-    unsigned char mask;
+	unsigned char mask;
 
-    uint16 c[9];
+	uint16 c[9];
 
-    c[1] = src0[0];
-    c[4] = src1[0];
-    c[7] = src2[0];
+	c[1] = src0[0];
+	c[4] = src1[0];
+	c[7] = src2[0];
 
-    if (i>0) {
-      c[0] = src0[-1];
-      c[3] = src1[-1];
-      c[6] = src2[-1];
-    } else {
-      c[0] = c[1];
-      c[3] = c[4];
-      c[6] = c[7];
-    }
+	if (i>0) {
+	  c[0] = src0[-1];
+	  c[3] = src1[-1];
+	  c[6] = src2[-1];
+	} else {
+	  c[0] = c[1];
+	  c[3] = c[4];
+	  c[6] = c[7];
+	}
 
-    if (i<count-1) {
-      c[2] = src0[1];
-      c[5] = src1[1];
-      c[8] = src2[1];
-    } else {
-      c[2] = c[1];
-      c[5] = c[4];
-      c[8] = c[7];
-    }
+	if (i<count-1) {
+	  c[2] = src0[1];
+	  c[5] = src1[1];
+	  c[8] = src2[1];
+	} else {
+	  c[2] = c[1];
+	  c[5] = c[4];
+	  c[8] = c[7];
+	}
 
-    mask = 0;
+	mask = 0;
 
-    if (c[0] != c[4])
-      mask |= 1 << 0;
-    if (c[1] != c[4])
-      mask |= 1 << 1;
-    if (c[2] != c[4])
-      mask |= 1 << 2;
-    if (c[3] != c[4])
-      mask |= 1 << 3;
-    if (c[5] != c[4])
-      mask |= 1 << 4;
-    if (c[6] != c[4])
-      mask |= 1 << 5;
-    if (c[7] != c[4])
-      mask |= 1 << 6;
-    if (c[8] != c[4])
-      mask |= 1 << 7;
+	if (c[0] != c[4])
+	  mask |= 1 << 0;
+	if (c[1] != c[4])
+	  mask |= 1 << 1;
+	if (c[2] != c[4])
+	  mask |= 1 << 2;
+	if (c[3] != c[4])
+	  mask |= 1 << 3;
+	if (c[5] != c[4])
+	  mask |= 1 << 4;
+	if (c[6] != c[4])
+	  mask |= 1 << 5;
+	if (c[7] != c[4])
+	  mask |= 1 << 6;
+	if (c[8] != c[4])
+	  mask |= 1 << 7;
 
 #define P0 dst0[0]
 #define P1 dst0[1]
@@ -845,9 +845,9 @@ static void lq2x_16_def(uint16* dst0, uint16* dst1, const uint16* src0, const ui
 #define I1411(p0,p1,p2) hq2x_interp_16_1411(c[p0], c[p1], c[p2])
 #define I151(p0,p1) hq2x_interp_16_151(c[p0], c[p1])
 
-    switch (mask) {
+	switch (mask) {
 #include "TextureFilters_lq2x.h"
-    }
+	}
 
 #undef P0
 #undef P1
@@ -872,11 +872,11 @@ static void lq2x_16_def(uint16* dst0, uint16* dst1, const uint16* src0, const ui
 #undef I1411
 #undef I151
 
-    src0 += 1;
-    src1 += 1;
-    src2 += 1;
-    dst0 += 2;
-    dst1 += 2;
+	src0 += 1;
+	src1 += 1;
+	src2 += 1;
+	dst0 += 2;
+	dst1 += 2;
   }
 }
 
@@ -885,71 +885,71 @@ static void lq2xS_16_def(uint16* dst0, uint16* dst1, const uint16* src0, const u
   unsigned i;
 
   for(i=0;i<count;++i) {
-    unsigned char mask;
+	unsigned char mask;
 
-    uint16 c[9];
+	uint16 c[9];
 
-    c[1] = src0[0];
-    c[4] = src1[0];
-    c[7] = src2[0];
+	c[1] = src0[0];
+	c[4] = src1[0];
+	c[7] = src2[0];
 
-    if (i>0) {
-      c[0] = src0[-1];
-      c[3] = src1[-1];
-      c[6] = src2[-1];
-    } else {
-      c[0] = c[1];
-      c[3] = c[4];
-      c[6] = c[7];
-    }
+	if (i>0) {
+	  c[0] = src0[-1];
+	  c[3] = src1[-1];
+	  c[6] = src2[-1];
+	} else {
+	  c[0] = c[1];
+	  c[3] = c[4];
+	  c[6] = c[7];
+	}
 
-    if (i<count-1) {
-      c[2] = src0[1];
-      c[5] = src1[1];
-      c[8] = src2[1];
-    } else {
-      c[2] = c[1];
-      c[5] = c[4];
-      c[8] = c[7];
-    }
+	if (i<count-1) {
+	  c[2] = src0[1];
+	  c[5] = src1[1];
+	  c[8] = src2[1];
+	} else {
+	  c[2] = c[1];
+	  c[5] = c[4];
+	  c[8] = c[7];
+	}
 
-    // hq2xS dynamic edge detection:
-    // simply comparing the center color against its surroundings will give bad results in many cases,
-    // so, instead, compare the center color relative to the max difference in brightness of this 3x3 block
-    int brightArray[9];
-    int maxBright = 0, minBright = 999999;
-    for(int j = 0 ; j < 9 ; j++) {
-      const int b = (int)((c[j] & 0xF8));
-      const int g = (int)((c[j] & 0xF800)) >> 8;
-      const int r = (int)((c[j] & 0xF80000)) >> 16;
-      const int bright = r+r+r + g+g+g + b+b;
-      if(bright > maxBright) maxBright = bright;
-      if(bright < minBright) minBright = bright;
+	// hq2xS dynamic edge detection:
+	// simply comparing the center color against its surroundings will give bad results in many cases,
+	// so, instead, compare the center color relative to the max difference in brightness of this 3x3 block
+	int brightArray[9];
+	int maxBright = 0, minBright = 999999;
+	for(int j = 0 ; j < 9 ; j++) {
+	  const int b = (int)((c[j] & 0xF8));
+	  const int g = (int)((c[j] & 0xF800)) >> 8;
+	  const int r = (int)((c[j] & 0xF80000)) >> 16;
+	  const int bright = r+r+r + g+g+g + b+b;
+	  if(bright > maxBright) maxBright = bright;
+	  if(bright < minBright) minBright = bright;
 
-      brightArray[j] = bright;
-    }
-    int diffBright = ((maxBright - minBright) * 7) >> 4;
-    if(diffBright > 7) {
+	  brightArray[j] = bright;
+	}
+	int diffBright = ((maxBright - minBright) * 7) >> 4;
+	if(diffBright > 7) {
 #define ABS(x) ((x) < 0 ? -(x) : (x))
 
-      const int centerBright = brightArray[4];
-      if(ABS(brightArray[0] - centerBright) > diffBright)
-        mask |= 1 << 0;
-      if(ABS(brightArray[1] - centerBright) > diffBright)
-        mask |= 1 << 1;
-      if(ABS(brightArray[2] - centerBright) > diffBright)
-        mask |= 1 << 2;
-      if(ABS(brightArray[3] - centerBright) > diffBright)
-        mask |= 1 << 3;
-      if(ABS(brightArray[5] - centerBright) > diffBright)
-        mask |= 1 << 4;
-      if(ABS(brightArray[6] - centerBright) > diffBright)
-        mask |= 1 << 5;
-      if(ABS(brightArray[7] - centerBright) > diffBright)
-        mask |= 1 << 6;
-      if(ABS(brightArray[8] - centerBright) > diffBright)
-        mask |= 1 << 7;
-    }
+	  const int centerBright = brightArray[4];
+	  if(ABS(brightArray[0] - centerBright) > diffBright)
+		mask |= 1 << 0;
+	  if(ABS(brightArray[1] - centerBright) > diffBright)
+		mask |= 1 << 1;
+	  if(ABS(brightArray[2] - centerBright) > diffBright)
+		mask |= 1 << 2;
+	  if(ABS(brightArray[3] - centerBright) > diffBright)
+		mask |= 1 << 3;
+	  if(ABS(brightArray[5] - centerBright) > diffBright)
+		mask |= 1 << 4;
+	  if(ABS(brightArray[6] - centerBright) > diffBright)
+		mask |= 1 << 5;
+	  if(ABS(brightArray[7] - centerBright) > diffBright)
+		mask |= 1 << 6;
+	  if(ABS(brightArray[8] - centerBright) > diffBright)
+		mask |= 1 << 7;
+	}
 
 #define P0 dst0[0]
 #define P1 dst0[1]
@@ -974,9 +974,9 @@ static void lq2xS_16_def(uint16* dst0, uint16* dst1, const uint16* src0, const u
 #define I1411(p0,p1,p2) hq2x_interp_16_1411(c[p0], c[p1], c[p2])
 #define I151(p0,p1) hq2x_interp_16_151(c[p0], c[p1])
 
-    switch (mask) {
+	switch (mask) {
 #include "TextureFilters_lq2x.h"
-    }
+	}
 
 #undef P0
 #undef P1
@@ -1001,11 +1001,11 @@ static void lq2xS_16_def(uint16* dst0, uint16* dst1, const uint16* src0, const u
 #undef I1411
 #undef I151
 
-    src0 += 1;
-    src1 += 1;
-    src2 += 1;
-    dst0 += 2;
-    dst1 += 2;
+	src0 += 1;
+	src1 += 1;
+	src2 += 1;
+	dst0 += 2;
+	dst1 += 2;
   }
 }
 #endif /* !_16BPP_HACK */
@@ -1015,52 +1015,52 @@ static void lq2x_32_def(uint32* dst0, uint32* dst1, const uint32* src0, const ui
   unsigned i;
 
   for(i=0;i<count;++i) {
-    unsigned char mask;
+	unsigned char mask;
 
-    uint32 c[9];
+	uint32 c[9];
 
-    c[1] = src0[0];
-    c[4] = src1[0];
-    c[7] = src2[0];
+	c[1] = src0[0];
+	c[4] = src1[0];
+	c[7] = src2[0];
 
-    if (i>0) {
-      c[0] = src0[-1];
-      c[3] = src1[-1];
-      c[6] = src2[-1];
-    } else {
-      c[0] = c[1];
-      c[3] = c[4];
-      c[6] = c[7];
-    }
+	if (i>0) {
+	  c[0] = src0[-1];
+	  c[3] = src1[-1];
+	  c[6] = src2[-1];
+	} else {
+	  c[0] = c[1];
+	  c[3] = c[4];
+	  c[6] = c[7];
+	}
 
-    if (i<count-1) {
-      c[2] = src0[1];
-      c[5] = src1[1];
-      c[8] = src2[1];
-    } else {
-      c[2] = c[1];
-      c[5] = c[4];
-      c[8] = c[7];
-    }
+	if (i<count-1) {
+	  c[2] = src0[1];
+	  c[5] = src1[1];
+	  c[8] = src2[1];
+	} else {
+	  c[2] = c[1];
+	  c[5] = c[4];
+	  c[8] = c[7];
+	}
 
-    mask = 0;
+	mask = 0;
 
-    if (c[0] != c[4])
-      mask |= 1 << 0;
-    if (c[1] != c[4])
-      mask |= 1 << 1;
-    if (c[2] != c[4])
-      mask |= 1 << 2;
-    if (c[3] != c[4])
-      mask |= 1 << 3;
-    if (c[5] != c[4])
-      mask |= 1 << 4;
-    if (c[6] != c[4])
-      mask |= 1 << 5;
-    if (c[7] != c[4])
-      mask |= 1 << 6;
-    if (c[8] != c[4])
-      mask |= 1 << 7;
+	if (c[0] != c[4])
+	  mask |= 1 << 0;
+	if (c[1] != c[4])
+	  mask |= 1 << 1;
+	if (c[2] != c[4])
+	  mask |= 1 << 2;
+	if (c[3] != c[4])
+	  mask |= 1 << 3;
+	if (c[5] != c[4])
+	  mask |= 1 << 4;
+	if (c[6] != c[4])
+	  mask |= 1 << 5;
+	if (c[7] != c[4])
+	  mask |= 1 << 6;
+	if (c[8] != c[4])
+	  mask |= 1 << 7;
 
 #define P0 dst0[0]
 #define P1 dst0[1]
@@ -1085,9 +1085,9 @@ static void lq2x_32_def(uint32* dst0, uint32* dst1, const uint32* src0, const ui
 #define I1411(p0,p1,p2) hq2x_interp_32_1411(c[p0], c[p1], c[p2])
 #define I151(p0,p1) hq2x_interp_32_151(c[p0], c[p1])
 
-    switch (mask) {
+	switch (mask) {
 #include "TextureFilters_lq2x.h"
-    }
+	}
 
 #undef P0
 #undef P1
@@ -1112,11 +1112,11 @@ static void lq2x_32_def(uint32* dst0, uint32* dst1, const uint32* src0, const ui
 #undef I1411
 #undef I151
 
-    src0 += 1;
-    src1 += 1;
-    src2 += 1;
-    dst0 += 2;
-    dst1 += 2;
+	src0 += 1;
+	src1 += 1;
+	src2 += 1;
+	dst0 += 2;
+	dst1 += 2;
   }
 }
 
@@ -1125,71 +1125,71 @@ static void lq2xS_32_def(uint32* dst0, uint32* dst1, const uint32* src0, const u
   unsigned i;
 
   for(i=0;i<count;++i) {
-    unsigned char mask;
+	unsigned char mask;
 
-    uint32 c[9];
+	uint32 c[9];
 
-    c[1] = src0[0];
-    c[4] = src1[0];
-    c[7] = src2[0];
+	c[1] = src0[0];
+	c[4] = src1[0];
+	c[7] = src2[0];
 
-    if (i>0) {
-      c[0] = src0[-1];
-      c[3] = src1[-1];
-      c[6] = src2[-1];
-    } else {
-      c[0] = c[1];
-      c[3] = c[4];
-      c[6] = c[7];
-    }
+	if (i>0) {
+	  c[0] = src0[-1];
+	  c[3] = src1[-1];
+	  c[6] = src2[-1];
+	} else {
+	  c[0] = c[1];
+	  c[3] = c[4];
+	  c[6] = c[7];
+	}
 
-    if (i<count-1) {
-      c[2] = src0[1];
-      c[5] = src1[1];
-      c[8] = src2[1];
-    } else {
-      c[2] = c[1];
-      c[5] = c[4];
-      c[8] = c[7];
-    }
+	if (i<count-1) {
+	  c[2] = src0[1];
+	  c[5] = src1[1];
+	  c[8] = src2[1];
+	} else {
+	  c[2] = c[1];
+	  c[5] = c[4];
+	  c[8] = c[7];
+	}
 
-    // hq2xS dynamic edge detection:
-    // simply comparing the center color against its surroundings will give bad results in many cases,
-    // so, instead, compare the center color relative to the max difference in brightness of this 3x3 block
-    int brightArray[9];
-    int maxBright = 0, minBright = 999999;
-    for(int j = 0 ; j < 9 ; j++) {
-      const int b = (int)((c[j] & 0xF8));
-      const int g = (int)((c[j] & 0xF800)) >> 8;
-      const int r = (int)((c[j] & 0xF80000)) >> 16;
-      const int bright = r+r+r + g+g+g + b+b;
-      if(bright > maxBright) maxBright = bright;
-      if(bright < minBright) minBright = bright;
+	// hq2xS dynamic edge detection:
+	// simply comparing the center color against its surroundings will give bad results in many cases,
+	// so, instead, compare the center color relative to the max difference in brightness of this 3x3 block
+	int brightArray[9];
+	int maxBright = 0, minBright = 999999;
+	for(int j = 0 ; j < 9 ; j++) {
+	  const int b = (int)((c[j] & 0xF8));
+	  const int g = (int)((c[j] & 0xF800)) >> 8;
+	  const int r = (int)((c[j] & 0xF80000)) >> 16;
+	  const int bright = r+r+r + g+g+g + b+b;
+	  if(bright > maxBright) maxBright = bright;
+	  if(bright < minBright) minBright = bright;
 
-      brightArray[j] = bright;
-    }
-    int diffBright = ((maxBright - minBright) * 7) >> 4;
-    if(diffBright > 7) {
+	  brightArray[j] = bright;
+	}
+	int diffBright = ((maxBright - minBright) * 7) >> 4;
+	if(diffBright > 7) {
 #define ABS(x) ((x) < 0 ? -(x) : (x))
 
-      const int centerBright = brightArray[4];
-      if(ABS(brightArray[0] - centerBright) > diffBright)
-        mask |= 1 << 0;
-      if(ABS(brightArray[1] - centerBright) > diffBright)
-        mask |= 1 << 1;
-      if(ABS(brightArray[2] - centerBright) > diffBright)
-        mask |= 1 << 2;
-      if(ABS(brightArray[3] - centerBright) > diffBright)
-        mask |= 1 << 3;
-      if(ABS(brightArray[5] - centerBright) > diffBright)
-        mask |= 1 << 4;
-      if(ABS(brightArray[6] - centerBright) > diffBright)
-        mask |= 1 << 5;
-      if(ABS(brightArray[7] - centerBright) > diffBright)
-        mask |= 1 << 6;
-      if(ABS(brightArray[8] - centerBright) > diffBright)
-        mask |= 1 << 7;
-    }
+	  const int centerBright = brightArray[4];
+	  if(ABS(brightArray[0] - centerBright) > diffBright)
+		mask |= 1 << 0;
+	  if(ABS(brightArray[1] - centerBright) > diffBright)
+		mask |= 1 << 1;
+	  if(ABS(brightArray[2] - centerBright) > diffBright)
+		mask |= 1 << 2;
+	  if(ABS(brightArray[3] - centerBright) > diffBright)
+		mask |= 1 << 3;
+	  if(ABS(brightArray[5] - centerBright) > diffBright)
+		mask |= 1 << 4;
+	  if(ABS(brightArray[6] - centerBright) > diffBright)
+		mask |= 1 << 5;
+	  if(ABS(brightArray[7] - centerBright) > diffBright)
+		mask |= 1 << 6;
+	  if(ABS(brightArray[8] - centerBright) > diffBright)
+		mask |= 1 << 7;
+	}
 
 #define P0 dst0[0]
 #define P1 dst0[1]
@@ -1214,9 +1214,9 @@ static void lq2xS_32_def(uint32* dst0, uint32* dst1, const uint32* src0, const u
 #define I1411(p0,p1,p2) hq2x_interp_32_1411(c[p0], c[p1], c[p2])
 #define I151(p0,p1) hq2x_interp_32_151(c[p0], c[p1])
 
-    switch (mask) {
+	switch (mask) {
 #include "TextureFilters_lq2x.h"
-    }
+	}
 
 #undef P0
 #undef P1
@@ -1241,11 +1241,11 @@ static void lq2xS_32_def(uint32* dst0, uint32* dst1, const uint32* src0, const u
 #undef I1411
 #undef I151
 
-    src0 += 1;
-    src1 += 1;
-    src2 += 1;
-    dst0 += 2;
-    dst1 += 2;
+	src0 += 1;
+	src1 += 1;
+	src2 += 1;
+	dst0 += 2;
+	dst1 += 2;
   }
 }
 
@@ -1268,13 +1268,13 @@ void hq2x_16(uint8 *srcPtr, uint32 srcPitch, uint8 *dstPtr, uint32 dstPitch, int
 
   count -= 2;
   while(count>0) {
-    dst0 += dstPitch;
-    dst1 += dstPitch;
-    hq2x_16_def(dst0, dst1, src0, src1, src2, width);
-    src0 = src1;
-    src1 = src2;
-    src2 += srcPitch >> 1;
-    --count;
+	dst0 += dstPitch;
+	dst1 += dstPitch;
+	hq2x_16_def(dst0, dst1, src0, src1, src2, width);
+	src0 = src1;
+	src1 = src2;
+	src2 += srcPitch >> 1;
+	--count;
   }
   dst0 += dstPitch;
   dst1 += dstPitch;
@@ -1283,28 +1283,28 @@ void hq2x_16(uint8 *srcPtr, uint32 srcPitch, uint8 *dstPtr, uint32 dstPitch, int
 
 
 void hq2xS_16(u8 *srcPtr, u32 srcPitch, u8 * /* deltaPtr */,
-              u8 *dstPtr, u32 dstPitch, int width, int height)
+			  u8 *dstPtr, u32 dstPitch, int width, int height)
 {
   u16 *dst0 = (u16 *)dstPtr;
   u16 *dst1 = dst0 + (dstPitch >> 1);
-  
+
   u16 *src0 = (u16 *)srcPtr;
   u16 *src1 = src0 + (srcPitch >> 1);
   u16 *src2 = src1 + (srcPitch >> 1);
-  
+
   hq2xS_16_def(dst0, dst1, src0, src0, src1, width);
-  
+
   int count = height;
-  
+
   count -= 2;
   while(count) {
-    dst0 += dstPitch;
-    dst1 += dstPitch;
-    hq2xS_16_def(dst0, dst1, src0, src1, src2, width);
-    src0 = src1;
-    src1 = src2;
-    src2 += srcPitch >> 1;
-    --count;
+	dst0 += dstPitch;
+	dst1 += dstPitch;
+	hq2xS_16_def(dst0, dst1, src0, src1, src2, width);
+	src0 = src1;
+	src1 = src2;
+	src2 += srcPitch >> 1;
+	--count;
   }
   dst0 += dstPitch;
   dst1 += dstPitch;
@@ -1330,13 +1330,13 @@ void hq2x_32(uint8 *srcPtr, uint32 srcPitch, uint8 *dstPtr, uint32 dstPitch, int
 
   count -= 2;
   while(count>0) {
-    dst0 += dstPitch >> 1;
-    dst1 += dstPitch >> 1;
-    hq2x_32_def(dst0, dst1, src0, src1, src2, width);
-    src0 = src1;
-    src1 = src2;
-    src2 += srcPitch >> 2;
-    --count;
+	dst0 += dstPitch >> 1;
+	dst1 += dstPitch >> 1;
+	hq2x_32_def(dst0, dst1, src0, src1, src2, width);
+	src0 = src1;
+	src1 = src2;
+	src2 += srcPitch >> 2;
+	--count;
   }
   dst0 += dstPitch >> 1;
   dst1 += dstPitch >> 1;
@@ -1352,18 +1352,18 @@ void hq2xS_32(uint8 *srcPtr, uint32 srcPitch, uint8 *dstPtr, uint32 dstPitch, in
   uint32 *src1 = src0 + (srcPitch >> 2);
   uint32 *src2 = src1 + (srcPitch >> 2);
   hq2xS_32_def(dst0, dst1, src0, src0, src1, width);
-  
+
   int count = height;
-  
+
   count -= 2;
   while(count) {
-    dst0 += dstPitch >> 1;
-    dst1 += dstPitch >> 1;
-    hq2xS_32_def(dst0, dst1, src0, src1, src2, width);
-    src0 = src1;
-    src1 = src2;
-    src2 += srcPitch >> 2;
-    --count;
+	dst0 += dstPitch >> 1;
+	dst1 += dstPitch >> 1;
+	hq2xS_32_def(dst0, dst1, src0, src1, src2, width);
+	src0 = src1;
+	src1 = src2;
+	src2 += srcPitch >> 2;
+	--count;
   }
   dst0 += dstPitch >> 1;
   dst1 += dstPitch >> 1;
@@ -1389,13 +1389,13 @@ void lq2x_16(uint8 *srcPtr, uint32 srcPitch, uint8 *dstPtr, uint32 dstPitch, int
 
   count -= 2;
   while(count>0) {
-    dst0 += dstPitch;
-    dst1 += dstPitch;
-    hq2x_16_def(dst0, dst1, src0, src1, src2, width);
-    src0 = src1;
-    src1 = src2;
-    src2 += srcPitch >> 1;
-    --count;
+	dst0 += dstPitch;
+	dst1 += dstPitch;
+	hq2x_16_def(dst0, dst1, src0, src1, src2, width);
+	src0 = src1;
+	src1 = src2;
+	src2 += srcPitch >> 1;
+	--count;
   }
   dst0 += dstPitch;
   dst1 += dstPitch;
@@ -1420,13 +1420,13 @@ void lq2xS_16(uint8 *srcPtr, uint32 srcPitch, uint8 *dstPtr, uint32 dstPitch, in
 
   count -= 2;
   while(count>0) {
-    dst0 += dstPitch;
-    dst1 += dstPitch;
-    hq2x_16_def(dst0, dst1, src0, src1, src2, width);
-    src0 = src1;
-    src1 = src2;
-    src2 += srcPitch >> 1;
-    --count;
+	dst0 += dstPitch;
+	dst1 += dstPitch;
+	hq2x_16_def(dst0, dst1, src0, src1, src2, width);
+	src0 = src1;
+	src1 = src2;
+	src2 += srcPitch >> 1;
+	--count;
   }
   dst0 += dstPitch;
   dst1 += dstPitch;
@@ -1452,13 +1452,13 @@ void lq2x_32(uint8 *srcPtr, uint32 srcPitch, uint8 *dstPtr, uint32 dstPitch, int
 
   count -= 2;
   while(count>0) {
-    dst0 += dstPitch >> 1;
-    dst1 += dstPitch >> 1;
-    hq2x_32_def(dst0, dst1, src0, src1, src2, width);
-    src0 = src1;
-    src1 = src2;
-    src2 += srcPitch >> 2;
-    --count;
+	dst0 += dstPitch >> 1;
+	dst1 += dstPitch >> 1;
+	hq2x_32_def(dst0, dst1, src0, src1, src2, width);
+	src0 = src1;
+	src1 = src2;
+	src2 += srcPitch >> 2;
+	--count;
   }
   dst0 += dstPitch >> 1;
   dst1 += dstPitch >> 1;
@@ -1483,13 +1483,13 @@ void lq2xS_32(uint8 *srcPtr, uint32 srcPitch, uint8 *dstPtr, uint32 dstPitch, in
 
   count -= 2;
   while(count>0) {
-    dst0 += dstPitch >> 1;
-    dst1 += dstPitch >> 1;
-    hq2x_32_def(dst0, dst1, src0, src1, src2, width);
-    src0 = src1;
-    src1 = src2;
-    src2 += srcPitch >> 2;
-    --count;
+	dst0 += dstPitch >> 1;
+	dst1 += dstPitch >> 1;
+	hq2x_32_def(dst0, dst1, src0, src1, src2, width);
+	src0 = src1;
+	src1 = src2;
+	src2 += srcPitch >> 2;
+	--count;
   }
   dst0 += dstPitch >> 1;
   dst1 += dstPitch >> 1;

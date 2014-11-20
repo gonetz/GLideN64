@@ -30,46 +30,46 @@
 
 TxDbg::TxDbg()
 {
-  _level = DBG_LEVEL;
+	_level = DBG_LEVEL;
 
-  if (!_dbgfile)
+	if (!_dbgfile)
 #ifdef GHQCHK
-    _dbgfile = fopen("ghqchk.txt", "w");
+		_dbgfile = fopen("ghqchk.txt", "w");
 #else
-    _dbgfile = fopen("glidehq.dbg", "w");
+		_dbgfile = fopen("glidehq.dbg", "w");
 #endif
 }
 
 TxDbg::~TxDbg()
 {
-  if (_dbgfile) {
-    fclose(_dbgfile);
-    _dbgfile = 0;
-  }
+	if (_dbgfile) {
+		fclose(_dbgfile);
+		_dbgfile = 0;
+	}
 
-  _level = DBG_LEVEL;
+	_level = DBG_LEVEL;
 }
 
 void
 TxDbg::output(const int level, const wchar_t *format, ...)
 {
-  va_list args;
-  //wchar_t newformat[4095];
-  std::wstring newformat;
+	va_list args;
+	//wchar_t newformat[4095];
+	std::wstring newformat;
 
-  if (level > _level)
-    return;
+	if (level > _level)
+		return;
 
-  va_start(args, format);
-  //swprintf(newformat, 4095, L"%d:\t", level);
-  //wcscat(newformat, format);
-  //vfwprintf(_dbgfile, newformat, args);
-  newformat = boost::str(boost::wformat(L"%d:\t%ls") % level % format);
-  vfwprintf(_dbgfile, newformat.c_str(), args);
-  fflush(_dbgfile);
+	va_start(args, format);
+	//swprintf(newformat, 4095, L"%d:\t", level);
+	//wcscat(newformat, format);
+	//vfwprintf(_dbgfile, newformat, args);
+	newformat = boost::str(boost::wformat(L"%d:\t%ls") % level % format);
+	vfwprintf(_dbgfile, newformat.c_str(), args);
+	fflush(_dbgfile);
 #ifdef GHQCHK
-  //vwprintf(newformat, args);
-  vwprintf(newformat.c_str(), args);
+	//vwprintf(newformat, args);
+	vwprintf(newformat.c_str(), args);
 #endif
-  va_end(args);
+	va_end(args);
 }

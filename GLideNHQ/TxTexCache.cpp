@@ -37,15 +37,15 @@
 TxTexCache::~TxTexCache()
 {
 #if DUMP_CACHE
-  if (_options & DUMP_TEXCACHE) {
-	/* dump cache to disk */
-	std::wstring filename = _ident + L"_MEMORYCACHE.dat";
-	boost::filesystem::wpath cachepath(_path);
-	cachepath /= boost::filesystem::wpath(L"cache");
-	int config = _options & (FILTER_MASK|ENHANCEMENT_MASK|COMPRESS_TEX|COMPRESSION_MASK|FORCE16BPP_TEX|GZ_TEXCACHE);
+	if (_options & DUMP_TEXCACHE) {
+		/* dump cache to disk */
+		std::wstring filename = _ident + L"_MEMORYCACHE.dat";
+		boost::filesystem::wpath cachepath(_path);
+		cachepath /= boost::filesystem::wpath(L"cache");
+		int config = _options & (FILTER_MASK|ENHANCEMENT_MASK|COMPRESS_TEX|COMPRESSION_MASK|FORCE16BPP_TEX|GZ_TEXCACHE);
 
-	TxCache::save(cachepath.wstring().c_str(), filename.c_str(), config);
-  }
+		TxCache::save(cachepath.wstring().c_str(), filename.c_str(), config);
+	}
 #endif
 }
 
@@ -53,27 +53,27 @@ TxTexCache::TxTexCache(int options, int cachesize, const wchar_t *path, const wc
 					   dispInfoFuncExt callback
 					   ) : TxCache((options & ~GZ_HIRESTEXCACHE), cachesize, path, ident, callback)
 {
-  /* assert local options */
-  if (_path.empty() || _ident.empty() || !_cacheSize)
-	_options &= ~DUMP_TEXCACHE;
+	/* assert local options */
+	if (_path.empty() || _ident.empty() || !_cacheSize)
+		_options &= ~DUMP_TEXCACHE;
 
 #if DUMP_CACHE
-  if (_options & DUMP_TEXCACHE) {
-	/* find it on disk */
-	std::wstring filename = _ident + L"_MEMORYCACHE.dat";
-	boost::filesystem::wpath cachepath(_path);
-	cachepath /= boost::filesystem::wpath(L"cache");
-	int config = _options & (FILTER_MASK|ENHANCEMENT_MASK|COMPRESS_TEX|COMPRESSION_MASK|FORCE16BPP_TEX|GZ_TEXCACHE);
+	if (_options & DUMP_TEXCACHE) {
+		/* find it on disk */
+		std::wstring filename = _ident + L"_MEMORYCACHE.dat";
+		boost::filesystem::wpath cachepath(_path);
+		cachepath /= boost::filesystem::wpath(L"cache");
+		int config = _options & (FILTER_MASK|ENHANCEMENT_MASK|COMPRESS_TEX|COMPRESSION_MASK|FORCE16BPP_TEX|GZ_TEXCACHE);
 
-	TxCache::load(cachepath.wstring().c_str(), filename.c_str(), config);
-  }
+		TxCache::load(cachepath.wstring().c_str(), filename.c_str(), config);
+	}
 #endif
 }
 
 boolean
 TxTexCache::add(uint64 checksum, GHQTexInfo *info)
 {
-  if (_cacheSize <= 0) return 0;
+	if (_cacheSize <= 0) return 0;
 
-  return TxCache::add(checksum, info);
+	return TxCache::add(checksum, info);
 }
