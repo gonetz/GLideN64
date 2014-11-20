@@ -651,12 +651,34 @@ void TextureCache::_loadBackground(CachedTexture *pTexture)
 	free(pDest);
 }
 
+inline
+void _updateCachedTexture(const GHQTexInfo & _info, CachedTexture *_pTexture)
+{
+	_pTexture->textureBytes = _info.width * _info.height;
+	switch (_info.format) {
+		case GL_RGB:
+		case GL_RGBA4:
+		case GL_RGB5_A1:
+		case GL_LUMINANCE8_ALPHA8:
+			_pTexture->textureBytes <<= 1;
+		break;
+		default:
+			_pTexture->textureBytes <<= 2;
+	}
+	/*
+	_pTexture->realWidth = _info.width;
+	_pTexture->realHeight = _info.height;
+	_pTexture->scaleS = 1.0f / (f32)(_pTexture->realWidth);
+	_pTexture->scaleT = 1.0f / (f32)(_pTexture->realHeight);
+	*/
+}
+
+
 void TextureCache::_load(u32 _tile , CachedTexture *_pTexture)
 {
 	if (TFH.isInited()) {
 		isGLError();
 		GHQTexInfo ghqTexInfo;
-		memset(&ghqTexInfo, 0, sizeof(GHQTexInfo));
 		gDPLoadTileInfo & info = gDP.loadInfo[gSP.textureTile[_tile]->tmem];
 
 		int bpl;
@@ -679,8 +701,8 @@ void TextureCache::_load(u32 _tile , CachedTexture *_pTexture)
 			}
 		}
 
-		u8 * paladdr = 0;
-		//		u16 * palette = 0;
+		u8 * paladdr = NULL;
+		u16 * palette = NULL;
 		if ((gSP.textureTile[_tile]->size < G_IM_SIZ_16b) && (gDP.otherMode.textureLUT != G_TT_NONE || gSP.textureTile[_tile]->format == G_IM_FMT_CI)) {
 			if (gSP.textureTile[_tile]->size == G_IM_SIZ_8b)
 				paladdr = (u8*)(gDP.TexFilterPalette);
@@ -688,29 +710,15 @@ void TextureCache::_load(u32 _tile , CachedTexture *_pTexture)
 				paladdr = (u8*)(gDP.TexFilterPalette + (gSP.textureTile[_tile]->palette << 5));
 			else
 				paladdr = (u8*)(gDP.TexFilterPalette + (gSP.textureTile[_tile]->palette << 4));
+			// TODO: fix palette load
 			//			palette = (rdp.pal_8 + (gSP.textureTile[_t]->palette << 4));
 		}
 
 		u64 ricecrc = txfilter_checksum(addr, tile_width, tile_height, (unsigned short)(gSP.textureTile[_tile]->format << 8 | gSP.textureTile[_tile]->size), bpl, paladdr);
-		//FRDP("CI RICE CRC. format: %d, size: %d, CRC: %08lx, PalCRC: %08lx\n", rdp.tiles[td].format, rdp.tiles[td].size, (u32)(cache->ricecrc & 0xFFFFFFFF), (u32)(cache->ricecrc >> 32));
-		if (txfilter_hirestex(_pTexture->crc, ricecrc, NULL, &ghqTexInfo)) {
-			//u8 is_hires_tex = ghqTexInfo.is_hires_tex;
-			//			if (ghqTexInfo.is_hires_tex == 0 && aspect != ghqTexInfo.aspectRatioLog2)
-			//				ghqTexInfo.data = 0; //if aspects of current texture and found filtered texture are different, texture must be filtered again.
+		if (txfilter_hirestex(_pTexture->crc, ricecrc, palette, &ghqTexInfo)) {
 			glTexImage2D(GL_TEXTURE_2D, 0, ghqTexInfo.format, ghqTexInfo.width, ghqTexInfo.height, 0, ghqTexInfo.texture_format, ghqTexInfo.pixel_type, ghqTexInfo.data);
 			assert(!isGLError());
-			_pTexture->textureBytes = ghqTexInfo.width * ghqTexInfo.height;
-			switch (ghqTexInfo.format) {
-				case GL_RGBA8:
-					_pTexture->textureBytes <<= 2;
-					break;
-				case GL_RGB:
-				case GL_RGBA4:
-				case GL_RGB5_A1:
-				case GL_LUMINANCE8_ALPHA8:
-					_pTexture->textureBytes <<= 1;
-					break;
-			}
+			_updateCachedTexture(ghqTexInfo, _pTexture);
 			return;
 		}
 	}
@@ -870,9 +878,21 @@ void TextureCache::_load(u32 _tile , CachedTexture *_pTexture)
 				}
 			}
 		}
-		if (tmptex.realWidth % 2 != 0 && glInternalFormat != GL_RGBA)
-			glPixelStorei(GL_UNPACK_ALIGNMENT, 2);
-		glTexImage2D(GL_TEXTURE_2D, mipLevel, glInternalFormat, tmptex.realWidth, tmptex.realHeight, 0, GL_RGBA, glType, pDest);
+
+		bool bLoaded = false;
+		if (TFH.isInited() && maxLevel == 0) {
+			GHQTexInfo ghqTexInfo;
+			if (txfilter_filter((u8*)pDest, tmptex.realWidth, tmptex.realHeight, glInternalFormat, (uint64)_pTexture->crc, &ghqTexInfo) != 0 && ghqTexInfo.data != NULL) {
+				glTexImage2D(GL_TEXTURE_2D, 0, ghqTexInfo.format, ghqTexInfo.width, ghqTexInfo.height, 0, ghqTexInfo.texture_format, ghqTexInfo.pixel_type, ghqTexInfo.data);
+				_updateCachedTexture(ghqTexInfo, _pTexture);
+				bLoaded = true;
+			}
+		}
+		if (!bLoaded) {
+			if (tmptex.realWidth % 2 != 0 && glInternalFormat != GL_RGBA)
+				glPixelStorei(GL_UNPACK_ALIGNMENT, 2);
+			glTexImage2D(GL_TEXTURE_2D, mipLevel, glInternalFormat, tmptex.realWidth, tmptex.realHeight, 0, GL_RGBA, glType, pDest);
+		}
 		if (mipLevel == maxLevel)
 			break;
 		++mipLevel;
