@@ -116,4 +116,6 @@ void InitShaderCombiner();
 void DestroyShaderCombiner();
 void SetShadowMapCombiner();
 
+//#define USE_TOONIFY
+
 #endif //GLSL_COMBINER_H

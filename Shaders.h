@@ -201,7 +201,7 @@ static const char* fragment_shader_header_common_functions =
 "bool alpha_test(in float alphaValue);						\n"
 #endif
 #ifdef USE_TOONIFY
-"void toonify(in float intensity);	\n"
+"void toonify(in mediump float intensity);	\n"
 #endif
 ;
 
@@ -316,9 +316,9 @@ static const char* fragment_shader_toonify =
 "   if (intensity > 0.5)											\n"
 "	   return;														\n"
 "	else if (intensity > 0.125)										\n"
-"		gl_FragColor = vec4(vec3(gl_FragColor)*0.5, gl_FragColor.a);\n"
+"		fragColor = vec4(vec3(fragColor)*0.5, fragColor.a);\n"
 "	else															\n"
-"		gl_FragColor = vec4(vec3(gl_FragColor)*0.2, gl_FragColor.a);\n"
+"		fragColor = vec4(vec3(fragColor)*0.2, fragColor.a);\n"
 "}																	\n"
 ;
 #endif

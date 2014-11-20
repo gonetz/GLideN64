@@ -494,7 +494,7 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 	strFragmentShader.append(fragment_shader_end);
 
 #ifdef USE_TOONIFY
-	strBuffer.append(fragment_shader_toonify);
+	strFragmentShader.append(fragment_shader_toonify);
 #endif
 
 #ifdef GLES2
