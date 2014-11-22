@@ -1,12 +1,15 @@
 #ifndef RDP_H
 #define RDP_H
 
+#define MAXCMD 0x100000
+const unsigned int maxCMDMask = MAXCMD - 1;
+
 typedef struct
 {
 	u32 w2, w3;
 	u32 cmd_ptr;
 	u32 cmd_cur;
-	u32 cmd_data[0x1000];
+	u32 cmd_data[MAXCMD + 32];
 } RDPInfo;
 
 extern RDPInfo RDP;

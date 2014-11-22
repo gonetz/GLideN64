@@ -3,6 +3,9 @@
 #include "RDP.h"
 #include "GBI.h"
 #include "gDP.h"
+#include "gSP.h"
+#include "VI.h"
+#include "OpenGL.h"
 #include "Debug.h"
 
 void RDP_Unknown( u32 w0, u32 w1 )
@@ -500,49 +503,51 @@ void RDP_ProcessRDPList()
 {
 	DebugMsg(DEBUG_HIGH | DEBUG_HANDLED, "ProcessRDPList()\n");
 
-	u32 i;
-	u32 cmd, length, cmd_length;
-	RDP.cmd_ptr = 0;
-	RDP.cmd_cur = 0;
+	const u32 length = dp_end - dp_current;
+
+	dp_status &= ~0x0002;
 
 	if (dp_end <= dp_current) return;
-	length = dp_end - dp_current;
+
+	VI_UpdateSize();
+	video().updateScale();
+
+	RSP.bLLE = true;
 
 	// load command data
-	for (i = 0; i < length; i += 4) {
-		RDP.cmd_data[RDP.cmd_ptr++] = READ_RDP_DATA(dp_current + i);
-		if (RDP.cmd_ptr >= 0x1000) {
-			DebugMsg(DEBUG_HIGH | DEBUG_ERROR, "rdp_process_list: RDP.cmd_ptr overflow %x %x --> %x\n", length, dp_current, dp_end);
-		}
+	for (u32 i = 0; i < length; i += 4) {
+		RDP.cmd_data[RDP.cmd_ptr] = READ_RDP_DATA(dp_current + i);
+		RDP.cmd_ptr = (RDP.cmd_ptr + 1) & maxCMDMask;
 	}
 
-	dp_current = dp_end;
+	bool setZero = true;
+	while (RDP.cmd_cur != RDP.cmd_ptr) {
+		u32 cmd = (RDP.cmd_data[RDP.cmd_cur] >> 24) & 0x3f;
 
-	cmd = (RDP.cmd_data[0] >> 24) & 0x3f;
-	cmd_length = (RDP.cmd_ptr + 1) * 4;
+		if ((((RDP.cmd_ptr - RDP.cmd_cur)&maxCMDMask) * 4) < CmdLength[cmd]) {
+			setZero = false;
+			break;
+		}
 
-	// check if more data is needed
-	if (cmd_length < CmdLength[cmd])
-		return;
-	RSP.bLLE = true;
-	while (RDP.cmd_cur < RDP.cmd_ptr) {
-		cmd = (RDP.cmd_data[RDP.cmd_cur] >> 24) & 0x3f;
-
-		if (((RDP.cmd_ptr-RDP.cmd_cur) * 4) < CmdLength[cmd])
-			return;
+		if (RDP.cmd_cur + CmdLength[cmd] / 4 > MAXCMD)
+			memcpy(RDP.cmd_data + MAXCMD, RDP.cmd_data, CmdLength[cmd] - (MAXCMD - RDP.cmd_cur) * 4);
 
 		// execute the command
 		u32 w0 = RDP.cmd_data[RDP.cmd_cur+0];
 		u32 w1 = RDP.cmd_data[RDP.cmd_cur+1];
 		RDP.w2 = RDP.cmd_data[RDP.cmd_cur+2];
-		RDP.w3 = RDP.cmd_data[RDP.cmd_cur+3];
+		RDP.w3 = RDP.cmd_data[RDP.cmd_cur + 3];
 		LLEcmd[cmd](w0, w1);
 
-		RDP.cmd_cur += CmdLength[cmd] / 4;
-	};
-	RSP.bLLE = false;
+		RDP.cmd_cur = (RDP.cmd_cur + CmdLength[cmd] / 4) & maxCMDMask;
+	}
 
-	dp_start = dp_end;
+	if (setZero) {
+		RDP.cmd_ptr = 0;
+		RDP.cmd_cur = 0;
+	}
 
-	dp_status &= ~0x0002;
+	gSP.changed |= CHANGED_COLORBUFFER;
+
+	dp_start = dp_current = dp_end;
 }
