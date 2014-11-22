@@ -280,6 +280,7 @@ void RSP_Init()
 
 	memset(&gSP, 0, sizeof(gSPInfo));
 
+	gSPTexture(1.0f, 1.0f, 0, 0, TRUE);
 	gDP.loadTile = &gDP.tiles[7];
 	gSP.textureTile[0] = &gDP.tiles[0];
 	gSP.textureTile[1] = &gDP.tiles[1];
