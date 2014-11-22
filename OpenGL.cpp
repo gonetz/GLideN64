@@ -703,6 +703,7 @@ void OGLRender::drawLLETriangle(u32 _numVtx)
 		triangles.vertices[i].x *= triangles.vertices[i].w;
 		triangles.vertices[i].y = triangles.vertices[i].y * (-2.0f * scaleY) + 1.0f;
 		triangles.vertices[i].y *= triangles.vertices[i].w;
+		triangles.vertices[i].z *= triangles.vertices[i].w;
 	}
 
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, _numVtx);
