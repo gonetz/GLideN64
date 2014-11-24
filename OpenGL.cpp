@@ -705,6 +705,10 @@ void OGLRender::drawLLETriangle(u32 _numVtx)
 		vtx.y = vtx.y * (-2.0f * scaleY) + 1.0f;
 		vtx.y *= vtx.w;
 		vtx.z *= vtx.w;
+		if (gDP.otherMode.texturePersp == 0) {
+			vtx.s *= 2.0f;
+			vtx.t *= 2.0f;
+		}
 	}
 
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, _numVtx);
