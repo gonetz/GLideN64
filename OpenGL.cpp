@@ -698,12 +698,13 @@ void OGLRender::drawLLETriangle(u32 _numVtx)
 	const float scaleY = fbList.isFboMode() ? 1.0f / pBuffer->m_height : VI.rheight;
 
 	for (u32 i = 0; i < _numVtx; ++i) {
-		triangles.vertices[i].HWLight = 0;
-		triangles.vertices[i].x = triangles.vertices[i].x * (2.0f * scaleX) - 1.0f;
-		triangles.vertices[i].x *= triangles.vertices[i].w;
-		triangles.vertices[i].y = triangles.vertices[i].y * (-2.0f * scaleY) + 1.0f;
-		triangles.vertices[i].y *= triangles.vertices[i].w;
-		triangles.vertices[i].z *= triangles.vertices[i].w;
+		SPVertex & vtx = triangles.vertices[i];
+		vtx.HWLight = 0;
+		vtx.x = vtx.x * (2.0f * scaleX) - 1.0f;
+		vtx.x *= vtx.w;
+		vtx.y = vtx.y * (-2.0f * scaleY) + 1.0f;
+		vtx.y *= vtx.w;
+		vtx.z *= vtx.w;
 	}
 
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, _numVtx);
