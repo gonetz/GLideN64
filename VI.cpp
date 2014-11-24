@@ -122,6 +122,13 @@ void VI_UpdateScreen()
 			Debug.step = FALSE;
 #endif
 		}
+		VI.lastOrigin = *REG.VI_ORIGIN;
 	}
+
+	if (VI.lastOrigin == 0) { // Workaround for Mupen64Plus issue with initialization
+		glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+		glClear(GL_COLOR_BUFFER_BIT);
+	}
+
 	glFinish();
 }
