@@ -79,6 +79,11 @@ void VI_UpdateScreen()
 		return;
 	ogl.saveScreenshot();
 
+	if (RSP.bLLE && *REG.VI_ORIGIN != VI.lastOrigin) {
+		VI_UpdateSize();
+		video().updateScale();
+	}
+
 	if (config.frameBufferEmulation.enable) {
 		const bool bCFB = !config.frameBufferEmulation.ignoreCFB && (gSP.changed&CHANGED_CPU_FB_WRITE) == CHANGED_CPU_FB_WRITE;
 		const bool bNeedUpdate = bCFB ? true : (*REG.VI_ORIGIN != VI.lastOrigin);// && gDP.colorImage.changed;

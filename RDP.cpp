@@ -4,8 +4,6 @@
 #include "GBI.h"
 #include "gDP.h"
 #include "gSP.h"
-#include "VI.h"
-#include "OpenGL.h"
 #include "Debug.h"
 
 void RDP_Unknown( u32 w0, u32 w1 )
@@ -508,9 +506,6 @@ void RDP_ProcessRDPList()
 	dp_status &= ~0x0002;
 
 	if (dp_end <= dp_current) return;
-
-	VI_UpdateSize();
-	video().updateScale();
 
 	RSP.bLLE = true;
 
