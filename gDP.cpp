@@ -1157,9 +1157,9 @@ void gDPLLETriangle(u32 _w1, u32 _w2, int _shade, int _texture, int _zbuffer, u3
 #define SSCALE(s, _w) (PERSP_EN? float(PERSP(s, _w))/(1 << 10) : float(s)/(1<<21))
 #define TSCALE(s, w) (PERSP_EN? float(PERSP(s, w))/(1 << 10) : float(s)/(1<<21))
 
-	u32 nbVtxs = 0;
 	OGLRender & render = video().getRender();
-	SPVertex * vtx = &render.getVertex(nbVtxs++);
+	SPVertex * vtx0 = &render.getVertex(0);
+	SPVertex * vtx = vtx0;
 
 	xleft = xm;
 	xright = xh;
@@ -1197,7 +1197,7 @@ void gDPLLETriangle(u32 _w1, u32 _w2, int _shade, int _texture, int _zbuffer, u3
 			vtx->y = YSCALE(yh);
 			vtx->z = ZSCALE(z+dzdx*dx);
 			vtx->w = WSCALE(w+dwdx*dx);
-			vtx = &render.getVertex(nbVtxs++);
+			++vtx;
 		}
 		if ((!flip/* && xleft < xright*/) ||
 				(flip && xleft > xright))
@@ -1216,7 +1216,7 @@ void gDPLLETriangle(u32 _w1, u32 _w2, int _shade, int _texture, int _zbuffer, u3
 			vtx->y = YSCALE(yh);
 			vtx->z = ZSCALE(z);
 			vtx->w = WSCALE(w);
-			vtx = &render.getVertex(nbVtxs++);
+			++vtx;
 		}
 		xleft += xleft_inc*j;  xright += xright_inc*j;
 		s += dsde*j;  t += dtde*j;
@@ -1250,7 +1250,7 @@ void gDPLLETriangle(u32 _w1, u32 _w2, int _shade, int _texture, int _zbuffer, u3
 			vtx->y = YSCALE(ym);
 			vtx->z = ZSCALE(z+dzdx*dx);
 			vtx->w = WSCALE(w+dwdx*dx);
-			vtx = &render.getVertex(nbVtxs++);
+			++vtx;
 		}
 		if ((!flip/* && xleft <= xright*/) ||
 				(flip && xleft >= xright))
@@ -1269,7 +1269,7 @@ void gDPLLETriangle(u32 _w1, u32 _w2, int _shade, int _texture, int _zbuffer, u3
 			vtx->y = YSCALE(ym);
 			vtx->z = ZSCALE(z);
 			vtx->w = WSCALE(w);
-			vtx = &render.getVertex(nbVtxs++);
+			++vtx;
 		}
 	}
 	xleft_inc = dxldy;
@@ -1313,7 +1313,7 @@ void gDPLLETriangle(u32 _w1, u32 _w2, int _shade, int _texture, int _zbuffer, u3
 			vtx->y = YSCALE(yl);
 			vtx->z = ZSCALE(z+dzdx*dx);
 			vtx->w = WSCALE(w+dwdx*dx);
-			vtx = &render.getVertex(nbVtxs++);
+			++vtx;
 		}
 		if ((!flip/* && xleft <= xright*/) ||
 				(flip && xleft >= xright))
@@ -1332,7 +1332,7 @@ void gDPLLETriangle(u32 _w1, u32 _w2, int _shade, int _texture, int _zbuffer, u3
 			vtx->y = YSCALE(yl);
 			vtx->z = ZSCALE(z);
 			vtx->w = WSCALE(w);
-			vtx = &render.getVertex(nbVtxs++);
+			++vtx;
 		}
 	}
 
@@ -1341,7 +1341,7 @@ void gDPLLETriangle(u32 _w1, u32 _w2, int _shade, int _texture, int _zbuffer, u3
 	if (_zbuffer != 0)
 		gSP.geometryMode |= G_ZBUFFER;
 
-	render.drawLLETriangle(nbVtxs - 1);
+	render.drawLLETriangle(vtx - vtx0);
 	gSP.textureTile[0] = textureTileOrg[0];
 	gSP.textureTile[1] = textureTileOrg[1];
 }
