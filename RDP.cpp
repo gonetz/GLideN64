@@ -1,3 +1,4 @@
+#include <memory.h>
 #include "N64.h"
 #include "RSP.h"
 #include "RDP.h"
