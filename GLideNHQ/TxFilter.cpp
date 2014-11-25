@@ -361,11 +361,8 @@ TxFilter::filter(uint8 *src, int srcwidth, int srcheight, uint16 srcformat, uint
 				int compressionType = _options & COMPRESSION_MASK;
 				int tmpwidth, tmpheight;
 				uint16 tmpformat;
-				if ((destformat == GL_LUMINANCE8_ALPHA8) ||
-						(destformat == GL_RGBA8) ||
-						(destformat == GL_ALPHA8)) {
+				if (destformat == GL_RGBA8)
 					compressionType = S3TC_COMPRESSION;
-				}
 				tmptex = (texture == _tex1) ? _tex2 : _tex1;
 				if (_txQuantize->compress(texture, tmptex,
 										  srcwidth, srcheight, srcformat,
@@ -468,8 +465,6 @@ TxFilter::filter(uint8 *src, int srcwidth, int srcheight, uint16 srcformat, uint
 		case GL_RGB5_A1:
 		break;
 		case GL_RGB:
-		break;
-		case GL_ALPHA8:
 		break;
 #endif /* _16BPP_HACK */
 		}

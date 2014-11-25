@@ -655,14 +655,6 @@ TxHiResCache::loadHiResTextures(boost::filesystem::wpath dir_path, boolean repla
 		  ((uint32*)tex)[i] = (icomp << 24) | (texel & 0x00ffffff);
 		}
 	  }
-	  if (intensity) {
-		if (alphabits == 0) {
-		  if (fmt == 4) destformat = GL_ALPHA8;
-		  else          destformat = GL_LUMINANCE8;
-		} else {
-		  destformat = GL_LUMINANCE8_ALPHA8;
-		}
-	  }
 
 	  DBG_INFO(80, L"best gfmt:%x\n", destformat);
 	}
@@ -727,18 +719,12 @@ TxHiResCache::loadHiResTextures(boost::filesystem::wpath dir_path, boolean repla
 #if GLIDE64_DXTN
 		  case GL_RGB5_A1: /* for GL_RGB5_A1 use DXT5 instead of DXT1 */
 #endif
-		  case GL_LUMINANCE8_ALPHA8:
-			dataSize = width * height;
-			break;
 #if !GLIDE64_DXTN
 		  case GL_RGB5_A1:
 #endif
 		  case GL_RGB:
-		  case GL_LUMINANCE8:
 			dataSize = (width * height) >> 1;
 			break;
-		  case GL_ALPHA8: /* no size benefit with dxtn */
-			;
 		  }
 		  break;
 		}
@@ -811,14 +797,6 @@ TxHiResCache::loadHiResTextures(boost::filesystem::wpath dir_path, boolean repla
 #endif
 			  destformat = GL_RGB;
 			break;
-		  case GL_LUMINANCE8_ALPHA8:
-			destformat = GL_LUMINANCE8_ALPHA8;
-			break;
-		  case GL_ALPHA8:
-			destformat = GL_ALPHA8; /* yes, this is correct. ALPHA_8 instead of INTENSITY_8 */
-			break;
-		  case GL_LUMINANCE8:
-			destformat = GL_LUMINANCE8;
 		  }
 		  if (_txQuantize->quantize(tex, tmptex, width, height, GL_RGBA8, destformat, 0)) {
 			format = destformat;

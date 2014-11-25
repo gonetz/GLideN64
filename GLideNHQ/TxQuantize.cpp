@@ -880,14 +880,6 @@ TxQuantize::quantize(uint8* src, uint8* dest, int width, int height, uint16 srcf
 			quantizer = &TxQuantize::RGB565_ARGB8888;
 			bpp_shift = 1;
 		break;
-		case GL_ALPHA8:
-			quantizer = &TxQuantize::A8_ARGB8888;
-			bpp_shift = 2;
-		break;
-		case GL_LUMINANCE8_ALPHA8:
-			quantizer = &TxQuantize::AI88_ARGB8888;
-			bpp_shift = 1;
-		break;
 		default:
 		return 0;
 		}
@@ -940,15 +932,6 @@ TxQuantize::quantize(uint8* src, uint8* dest, int width, int height, uint16 srcf
 		break;
 		case GL_RGB:
 			quantizer = fastQuantizer ? &TxQuantize::ARGB8888_RGB565 : &TxQuantize::ARGB8888_RGB565_ErrD;
-			bpp_shift = 1;
-		break;
-		case GL_ALPHA8:
-		case GL_LUMINANCE8:
-			quantizer = fastQuantizer ? &TxQuantize::ARGB8888_A8 : &TxQuantize::ARGB8888_I8_Slow;
-			bpp_shift = 2;
-		break;
-		case GL_LUMINANCE8_ALPHA8:
-			quantizer = fastQuantizer ? &TxQuantize::ARGB8888_AI88 : &TxQuantize::ARGB8888_AI88_Slow;
 			bpp_shift = 1;
 		break;
 		default:
@@ -1019,86 +1002,80 @@ TxQuantize::DXTn(uint8 *src, uint8 *dest,
 	 * width and height must be larger than 4
 	 */
 
-		/* skip formats that DXTn won't help in size. */
-		if (srcformat == GL_ALPHA8) {
-			; /* shutup compiler */
-		} else {
-			int dstRowStride = ((srcwidth + 3) & ~3) << 2;
-			int compression = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
+		int dstRowStride = ((srcwidth + 3) & ~3) << 2;
+		int compression = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
 
-			*destformat = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
+		*destformat = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
 
 #if !GLIDE64_DXTN
-			/* okay... we are going to disable DXT1 with 1bit alpha
-	   * for Glide64. some textures have all 0 alpha values.
-	   * see "N64 Kobe Bryant in NBA Courtside"
-	   */
-			if (srcformat == GL_RGB5_A1) {
-				dstRowStride >>= 1;
-				compression = GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
-				*destformat = GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
-			} else
+		/* okay... we are going to disable DXT1 with 1bit alpha
+   * for Glide64. some textures have all 0 alpha values.
+   * see "N64 Kobe Bryant in NBA Courtside"
+   */
+		if (srcformat == GL_RGB5_A1) {
+			dstRowStride >>= 1;
+			compression = GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
+			*destformat = GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
+		} else
 #endif
-				if (srcformat == GL_RGB ||
-						srcformat == GL_LUMINANCE8) {
-					dstRowStride >>= 1;
-					compression = GL_COMPRESSED_RGB_S3TC_DXT1_EXT;
-					*destformat = GL_COMPRESSED_RGB_S3TC_DXT1_EXT;
-				}
+		if (srcformat == GL_RGB) {
+			dstRowStride >>= 1;
+			compression = GL_COMPRESSED_RGB_S3TC_DXT1_EXT;
+			*destformat = GL_COMPRESSED_RGB_S3TC_DXT1_EXT;
+		}
 
-			unsigned int numcore = _numcore;
-			unsigned int blkrow = 0;
-			while (numcore > 1 && blkrow == 0) {
-				blkrow = (srcheight >> 2) / numcore;
-				numcore--;
-			}
-			if (blkrow > 0 && numcore > 1) {
-				boost::thread *thrd[MAX_NUMCORE];
-				unsigned int i;
-				int blkheight = blkrow << 2;
-				unsigned int srcStride = (srcwidth * blkheight) << 2;
-				unsigned int destStride = dstRowStride * blkrow;
-				for (i = 0; i < numcore - 1; i++) {
-					thrd[i] = new boost::thread(boost::bind(_tx_compress_dxtn,
-															4,
-															srcwidth,
-															blkheight,
-															src,
-															compression,
-															dest,
-															dstRowStride));
-					src  += srcStride;
-					dest += destStride;
-				}
+		unsigned int numcore = _numcore;
+		unsigned int blkrow = 0;
+		while (numcore > 1 && blkrow == 0) {
+			blkrow = (srcheight >> 2) / numcore;
+			numcore--;
+		}
+		if (blkrow > 0 && numcore > 1) {
+			boost::thread *thrd[MAX_NUMCORE];
+			unsigned int i;
+			int blkheight = blkrow << 2;
+			unsigned int srcStride = (srcwidth * blkheight) << 2;
+			unsigned int destStride = dstRowStride * blkrow;
+			for (i = 0; i < numcore - 1; i++) {
 				thrd[i] = new boost::thread(boost::bind(_tx_compress_dxtn,
 														4,
 														srcwidth,
-														srcheight - blkheight * i,
+														blkheight,
 														src,
 														compression,
 														dest,
 														dstRowStride));
-				for (i = 0; i < numcore; i++) {
-					thrd[i]->join();
-					delete thrd[i];
-				}
-			} else {
-				(*_tx_compress_dxtn)(4,             /* comps: ARGB8888=4, RGB888=3 */
-									 srcwidth,      /* width */
-									 srcheight,     /* height */
-									 src,           /* source */
-									 compression,   /* format */
-									 dest,          /* destination */
-									 dstRowStride); /* DXT1 = 8 bytes per 4x4 texel
-											 * others = 16 bytes per 4x4 texel */
+				src += srcStride;
+				dest += destStride;
 			}
-
-			/* dxtn adjusts width and height to M4 by replication */
-			*destwidth  = (srcwidth  + 3) & ~3;
-			*destheight = (srcheight + 3) & ~3;
-
-			bRet = 1;
+			thrd[i] = new boost::thread(boost::bind(_tx_compress_dxtn,
+													4,
+													srcwidth,
+													srcheight - blkheight * i,
+													src,
+													compression,
+													dest,
+													dstRowStride));
+			for (i = 0; i < numcore; i++) {
+				thrd[i]->join();
+				delete thrd[i];
+			}
+		} else {
+			(*_tx_compress_dxtn)(4,             /* comps: ARGB8888=4, RGB888=3 */
+								 srcwidth,      /* width */
+								 srcheight,     /* height */
+								 src,           /* source */
+								 compression,   /* format */
+								 dest,          /* destination */
+								 dstRowStride); /* DXT1 = 8 bytes per 4x4 texel
+										 * others = 16 bytes per 4x4 texel */
 		}
+
+		/* dxtn adjusts width and height to M4 by replication */
+		*destwidth = (srcwidth + 3) & ~3;
+		*destheight = (srcheight + 3) & ~3;
+
+		bRet = 1;
 	}
 
 	return bRet;

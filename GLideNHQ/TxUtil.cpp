@@ -82,15 +82,12 @@ TxUtil::sizeofTx(int width, int height, uint16 format)
 	case GL_COMPRESSED_RGBA_S3TC_DXT5_EXT:
 		dataSize = ((width + 0x3) & ~0x3) * ((height + 0x3) & ~0x3);
 	break;
-	case GL_ALPHA8:
-	case GL_LUMINANCE8:
 	case GL_COLOR_INDEX8_EXT:
 		dataSize = width * height;
 	break;
 	case GL_RGBA4:
 	case GL_RGB5_A1:
 	case GL_RGB:
-	case GL_LUMINANCE8_ALPHA8:
 		dataSize = (width * height) << 1;
 	break;
 	case GL_RGBA8:
@@ -955,18 +952,6 @@ void setTextureFormat(uint16 internalFormat, GHQTexInfo * info)
 	case GL_RGB5_A1:
 		info->texture_format = GL_RGBA;
 		info->pixel_type = GL_UNSIGNED_SHORT_5_5_5_1;
-	break;
-	case GL_ALPHA8:
-		info->texture_format = GL_ALPHA;
-		info->pixel_type = GL_UNSIGNED_BYTE;
-	break;
-	case GL_LUMINANCE8:
-		info->texture_format = GL_LUMINANCE;
-		info->pixel_type = GL_UNSIGNED_BYTE;
-	break;
-	case GL_LUMINANCE8_ALPHA8:
-		info->texture_format = GL_LUMINANCE_ALPHA;
-		info->pixel_type = GL_UNSIGNED_BYTE;
 	break;
 	default:
 		info->texture_format = GL_RGBA;
