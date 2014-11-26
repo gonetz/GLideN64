@@ -249,6 +249,7 @@ TxFilter::filter(uint8 *src, int srcwidth, int srcheight, uint16 srcformat, uint
 					scale = 2;
 					num_filters++;
 				}
+			break;
 			case BRZ4X_ENHANCEMENT:
 				if (srcwidth  <= (_maxwidth >> 2) && srcheight <= (_maxheight >> 2)) {
 					filter |= BRZ4X_ENHANCEMENT;
@@ -259,6 +260,7 @@ TxFilter::filter(uint8 *src, int srcwidth, int srcheight, uint16 srcformat, uint
 					scale = 2;
 					num_filters++;
 				}
+			break;
 			case BRZ5X_ENHANCEMENT:
 				if (srcwidth  <= (_maxwidth / 5) && srcheight <= (_maxheight / 5)) {
 					filter |= BRZ5X_ENHANCEMENT;
