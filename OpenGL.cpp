@@ -1243,10 +1243,6 @@ void TextureFilterHandler::init()
 		m_inited = config.textureFilter.txFilterMode | config.textureFilter.txEnhancementMode | config.textureFilter.txHiresEnable;
 		if (m_inited != 0) {
 			u32 options = textureFilters[config.textureFilter.txFilterMode] | textureEnhancements[config.textureFilter.txEnhancementMode];
-			if (config.textureFilter.txFilterCompression != 0)
-				options |= COMPRESS_TEX | S3TC_COMPRESSION;
-			if (config.textureFilter.txHiresCompression)
-				options |= COMPRESS_HIRESTEX | S3TC_COMPRESSION;
 			if (config.textureFilter.txHiresEnable)
 				options |= RICE_HIRESTEXTURES;
 			if (config.textureFilter.txFilterForce16bpp)

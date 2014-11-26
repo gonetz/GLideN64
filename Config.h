@@ -29,7 +29,6 @@ struct Config
 	{
 		u32 txFilterMode;				// Texture filtering mode, eg Sharpen
 		u32 txEnhancementMode;			// Texture enhancement mode, eg 2xSAI
-		u32 txFilterCompression;		// Apply texture compression to filtered textures
 		//u32 txTileTextures;			// Split enchanced textures onto tiles with 256 width. Not used.
 		u32 txFilterForce16bpp;			// Force use 16bit color textures
 		u32 txFilterIgnoreBG;			// Do not apply filtering to backgrounds textures
@@ -38,7 +37,6 @@ struct Config
 		u32 txSaveCache;				// Save texture cache to hard disk
 
 		u32 txHiresEnable;				// Use high-resolution texture packs
-		u32 txHiresCompression;			// Apply texture compression to high-res textures
 		//u32 txTileHiresTextures;		// Split hires textures onto tiles with 256 width. Not used.
 		u32 txHiresForce16bpp;			// Force use 16bit color textures
 		u32 txHiresFullAlphaChannel;	// Use alpha channel fully
