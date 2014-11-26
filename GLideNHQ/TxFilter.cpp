@@ -115,18 +115,6 @@ TxFilter::TxFilter(int maxwidth, int maxheight, int maxbpp, int options,
 	if (ident && wcscmp(ident, L"DEFAULT") != 0)
 		_ident.assign(ident);
 
-	/* check for dxtn extensions */
-	if (!TxLoadLib::getInstance()->getdxtCompressTexFuncExt())
-		_options &= ~S3TC_COMPRESSION;
-
-	switch (options & COMPRESSION_MASK) {
-	case S3TC_COMPRESSION:
-	break;
-	case NCC_COMPRESSION:
-	default:
-		_options &= ~COMPRESSION_MASK;
-	}
-
 	if (TxMemBuf::getInstance()->init(_maxwidth, _maxheight)) {
 		if (!_tex1)
 			_tex1 = TxMemBuf::getInstance()->get(0);
@@ -150,9 +138,6 @@ TxFilter::TxFilter(int maxwidth, int maxheight, int maxbpp, int options,
 	if (_txHiResCache->empty())
 		_options &= ~HIRESTEXTURES_MASK;
 #endif
-
-	if (!(_options & COMPRESS_TEX))
-		_options &= ~COMPRESSION_MASK;
 
 	if (_tex1 && _tex2)
 		_initialized = 1;
@@ -195,24 +180,17 @@ TxFilter::filter(uint8 *src, int srcwidth, int srcheight, uint16 srcformat, uint
    * Bypass _options to do ARGB8888->16bpp if _maxbpp=16 or forced color reduction.
    */
 	if ((srcwidth >= 4 && srcheight >= 4) &&
-			((_options & (FILTER_MASK|ENHANCEMENT_MASK|COMPRESSION_MASK)) ||
+			((_options & (FILTER_MASK|ENHANCEMENT_MASK)) ||
 			 (srcformat == GL_RGBA8 && (_maxbpp < 32 || _options & FORCE16BPP_TEX)))) {
 
-#if !_16BPP_HACK
-		/* convert textures to a format that the compressor accepts (ARGB8888) */
-		if (_options & COMPRESSION_MASK) {
-#endif
-			if (srcformat != GL_RGBA8) {
-				if (!_txQuantize->quantize(texture, tmptex, srcwidth, srcheight, srcformat, GL_RGBA8)) {
-					DBG_INFO(80, L"Error: unsupported format! gfmt:%x\n", srcformat);
-					return 0;
-				}
-				texture = tmptex;
-				destformat = GL_RGBA8;
+		if (srcformat != GL_RGBA8) {
+			if (!_txQuantize->quantize(texture, tmptex, srcwidth, srcheight, srcformat, GL_RGBA8)) {
+				DBG_INFO(80, L"Error: unsupported format! gfmt:%x\n", srcformat);
+				return 0;
 			}
-#if !_16BPP_HACK
+			texture = tmptex;
+			destformat = GL_RGBA8;
 		}
-#endif
 
 		switch (destformat) {
 		case GL_RGBA8:
@@ -344,39 +322,6 @@ TxFilter::filter(uint8 *src, int srcwidth, int srcheight, uint16 srcformat, uint
 				texture = tmptex;
 				num_filters--;
 			}
-
-			/*
-	   * texture compression
-	   */
-			/* ignored if we only have texture compression option on.
-	   * only done when texture enhancer is used. see constructor. */
-			if ((_options & COMPRESSION_MASK) &&
-					(srcwidth >= 64 && srcheight >= 64) /* Texture compression is not suitable for low pixel coarse detail
-													   * textures. The assumption here is that textures larger than 64x64
-													   * have enough detail to produce decent quality when compressed. The
-													   * down side is that narrow stripped textures that the N64 often use
-													   * for large background textures are also ignored. It would be more
-													   * reasonable if decisions are made based on fourier-transform
-													   * spectrum or RMS error.
-													   */
-					) {
-				int compressionType = _options & COMPRESSION_MASK;
-				int tmpwidth, tmpheight;
-				uint16 tmpformat;
-				if (destformat == GL_RGBA8)
-					compressionType = S3TC_COMPRESSION;
-				tmptex = (texture == _tex1) ? _tex2 : _tex1;
-				if (_txQuantize->compress(texture, tmptex,
-										  srcwidth, srcheight, srcformat,
-										  &tmpwidth, &tmpheight, &tmpformat,
-										  compressionType)) {
-					srcwidth = tmpwidth;
-					srcheight = tmpheight;
-					destformat = tmpformat;
-					texture = tmptex;
-				}
-			}
-
 
 			/*
 	   * texture (re)conversions
@@ -561,33 +506,6 @@ TxFilter::hirestex(uint64 g64crc, uint64 r_crc64, uint16 *palette, GHQTexInfo *i
 				_txQuantize->P8_16BPP((uint32*)texture, (uint32*)tmptex, info->width, info->height, (uint32*)palette);
 				texture = tmptex;
 				format = GL_RGB5_A1;
-
-#if 1
-				/* XXX: compressed if memory cache compression is ON */
-				if (_options & COMPRESSION_MASK) {
-					tmptex = (texture == _tex1) ? _tex2 : _tex1;
-					if (_txQuantize->quantize(texture, tmptex, info->width, info->height, format, GL_RGBA8)) {
-						texture = tmptex;
-						format = GL_RGBA8;
-					}
-					if (format == GL_RGBA8) {
-						tmptex = (texture == _tex1) ? _tex2 : _tex1;
-						if (_txQuantize->compress(texture, tmptex,
-												  info->width, info->height, GL_RGB5_A1,
-												  &width, &height, &format,
-												  _options & COMPRESSION_MASK)) {
-							texture = tmptex;
-						} else {
-							/*if (!_txQuantize->quantize(texture, tmptex, info->width, info->height, GL_RGBA8, GL_RGB5_A1)) {
-				DBG_INFO(80, L"Error: unsupported format! gfmt:%x\n", format);
-				return 0;
-			  }*/
-							texture = tmptex;
-							format = GL_RGB5_A1;
-						}
-					}
-				}
-#endif
 
 				/* fill in the required info to return */
 				info->data = texture;

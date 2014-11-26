@@ -27,31 +27,6 @@
 #include <malloc.h>
 
 /*
- * External libraries
- ******************************************************************************/
-TxLoadLib::TxLoadLib()
-{
-	_tx_compress_dxtn = tx_compress_dxtn;
-}
-
-TxLoadLib::~TxLoadLib()
-{
-#ifdef DXTN_DLL
-	/* free dynamic library */
-	if (_dxtnlib)
-		FreeLibrary(_dxtnlib);
-#endif
-
-}
-
-dxtCompressTexFuncExt
-TxLoadLib::getdxtCompressTexFuncExt()
-{
-	return _tx_compress_dxtn;
-}
-
-
-/*
  * Utilities
  ******************************************************************************/
 uint32
@@ -75,13 +50,6 @@ TxUtil::sizeofTx(int width, int height, uint16 format)
 
 	/* a lookup table for the shifts would be better */
 	switch (format) {
-	case GL_COMPRESSED_RGBA_S3TC_DXT1_EXT:
-		dataSize = (((width + 0x3) & ~0x3) * ((height + 0x3) & ~0x3)) >> 1;
-	break;
-	case GL_COMPRESSED_RGBA_S3TC_DXT3_EXT:
-	case GL_COMPRESSED_RGBA_S3TC_DXT5_EXT:
-		dataSize = ((width + 0x3) & ~0x3) * ((height + 0x3) & ~0x3);
-	break;
 	case GL_COLOR_INDEX8_EXT:
 		dataSize = width * height;
 	break;

@@ -30,41 +30,6 @@
 #include "TxInternal.h"
 #include <string>
 
-#ifndef DXTN_DLL
-#ifdef __cplusplus
-extern "C"{
-#endif
-void tx_compress_dxtn(int srccomps, int width, int height,
-					  const void *source, int destformat, void *dest,
-					  int destRowStride);
-
-#ifdef __cplusplus
-}
-#endif
-#endif /* DXTN_DLL */
-
-typedef void (*dxtCompressTexFuncExt)(int srccomps, int width,
-									  int height, const void *srcPixData,
-									  int destformat, void *dest,
-									  int dstRowStride);
-
-class TxLoadLib
-{
-private:
-#ifdef DXTN_DLL
-  HMODULE _dxtnlib;
-#endif
-  dxtCompressTexFuncExt _tx_compress_dxtn;
-  TxLoadLib();
-public:
-  static TxLoadLib* getInstance() {
-	static TxLoadLib txLoadLib;
-	return &txLoadLib;
-  }
-  ~TxLoadLib();
-  dxtCompressTexFuncExt getdxtCompressTexFuncExt();
-};
-
 class TxUtil
 {
 private:

@@ -59,7 +59,7 @@ TxHiResCache::~TxHiResCache()
 	std::wstring filename = _ident + L"_HIRESTEXTURES.dat";
 	boost::filesystem::wpath cachepath(_path);
 	cachepath /= boost::filesystem::wpath(L"cache");
-	int config = _options & (HIRESTEXTURES_MASK|COMPRESS_HIRESTEX|COMPRESSION_MASK|TILE_HIRESTEX|FORCE16BPP_HIRESTEX|GZ_HIRESTEXCACHE|LET_TEXARTISTS_FLY);
+	int config = _options & (HIRESTEXTURES_MASK|TILE_HIRESTEX|FORCE16BPP_HIRESTEX|GZ_HIRESTEXCACHE|LET_TEXARTISTS_FLY);
 
 	TxCache::save(cachepath.wstring().c_str(), filename.c_str(), config);
   }
@@ -85,10 +85,6 @@ TxHiResCache::TxHiResCache(int maxwidth, int maxheight, int maxbpp, int options,
   _abortLoad = 0;
   _haveCache = 0;
 
-  /* assert local options */
-  if (!(_options & COMPRESS_HIRESTEX))
-	_options &= ~COMPRESSION_MASK;
-
   if (_path.empty() || _ident.empty()) {
 	_options &= ~DUMP_HIRESTEXCACHE;
 	return;
@@ -101,7 +97,7 @@ TxHiResCache::TxHiResCache(int maxwidth, int maxheight, int maxbpp, int options,
 	std::wstring filename = _ident + L"_HIRESTEXTURES.dat";
 	boost::filesystem::wpath cachepath(_path);
 	cachepath /= boost::filesystem::wpath(L"cache");
-	int config = _options & (HIRESTEXTURES_MASK|COMPRESS_HIRESTEX|COMPRESSION_MASK|TILE_HIRESTEX|FORCE16BPP_HIRESTEX|GZ_HIRESTEXCACHE|LET_TEXARTISTS_FLY);
+	int config = _options & (HIRESTEXTURES_MASK|TILE_HIRESTEX|FORCE16BPP_HIRESTEX|GZ_HIRESTEXCACHE|LET_TEXARTISTS_FLY);
 
 	_haveCache = TxCache::load(cachepath.wstring().c_str(), filename.c_str(), config);
   }
@@ -482,11 +478,7 @@ TxHiResCache::loadHiResTextures(boost::filesystem::wpath dir_path, boolean repla
 	DBG_INFO(80, L"read in as %d x %d gfmt:%x\n", tmpwidth, tmpheight, tmpformat);
 
 	/* check if size and format are OK */
-	if (!(format == GL_RGBA8                          ||
-		  format == GL_COLOR_INDEX8_EXT               ||
-		  format == GL_COMPRESSED_RGBA_S3TC_DXT1_EXT  ||
-		  format == GL_COMPRESSED_RGBA_S3TC_DXT3_EXT  ||
-		  format == GL_COMPRESSED_RGBA_S3TC_DXT5_EXT) ||
+	if (!(format == GL_RGBA8 || format == GL_COLOR_INDEX8_EXT ) ||
 		(width * height) < 4) { /* TxQuantize requirement: width * height must be 4 or larger. */
 	  free(tex);
 	  tex = NULL;
@@ -603,7 +595,7 @@ TxHiResCache::loadHiResTextures(boost::filesystem::wpath dir_path, boolean repla
 
 	  /* preparations based on above analysis */
 #if !REDUCE_TEXTURE_FOOTPRINT
-	  if (_maxbpp < 32 || _options & (FORCE16BPP_HIRESTEX|COMPRESSION_MASK)) {
+	  if (_maxbpp < 32 || _options & FORCE16BPP_HIRESTEX) {
 #endif
 		if      (alphabits == 0) destformat = GL_RGB;
 		else if (alphabits == 1) destformat = GL_RGB5_A1;
@@ -650,22 +642,6 @@ TxHiResCache::loadHiResTextures(boost::filesystem::wpath dir_path, boolean repla
 		}
 	  }
 
-	  /* texture compression */
-	  if ((_options & COMPRESSION_MASK) &&
-		  (width >= 64 && height >= 64) /* Texture compression is not suitable for low pixel coarse detail
-										 * textures. The assumption here is that textures larger than 64x64
-										 * have enough detail to produce decent quality when compressed. The
-										 * down side is that narrow stripped textures that the N64 often use
-										 * for large background textures are also ignored. It would be more
-										 * reasonable if decisions are made based on fourier-transform
-										 * spectrum or RMS error.
-										 *
-										 * NOTE: texture size must be checked before expanding to pow2 size.
-										 */
-		  ) {
-		int dataSize = 0;
-		int compressionType = _options & COMPRESSION_MASK;
-
 #if POW2_TEXTURES
 #if (POW2_TEXTURES == 2)
 		/* 3dfx Glide3x aspect ratio (8:1 - 1:8) */
@@ -680,67 +656,6 @@ TxHiResCache::loadHiResTextures(boost::filesystem::wpath dir_path, boolean repla
 		  continue;
 		}
 #endif
-
-		switch (_options & COMPRESSION_MASK) {
-		case S3TC_COMPRESSION:
-		  switch (destformat) {
-		  case GL_RGBA8:
-#if GLIDE64_DXTN
-		  case GL_RGB5_A1: /* for GL_RGB5_A1 use DXT5 instead of DXT1 */
-#endif
-#if !GLIDE64_DXTN
-		  case GL_RGB5_A1:
-#endif
-		  case GL_RGB:
-			dataSize = (width * height) >> 1;
-			break;
-		  }
-		  break;
-		}
-		/* compress it! */
-		if (dataSize) {
-#if 0 /* TEST: dither before compression for better results with gradients */
-		  tmptex = (uint8 *)malloc(_txUtil->sizeofTx(width, height, destformat));
-		  if (tmptex) {
-			if (_txQuantize->quantize(tex, tmptex, width, height, GL_RGBA8, destformat, 0))
-			  _txQuantize->quantize(tmptex, tex, width, height, destformat, GL_RGBA8, 0);
-			free(tmptex);
-		  }
-#endif
-		  tmptex = (uint8 *)malloc(dataSize);
-		  if (tmptex) {
-			if (_txQuantize->compress(tex, tmptex,
-									  width, height, destformat,
-									  &tmpwidth, &tmpheight, &tmpformat,
-									  compressionType)) {
-			  free(tex);
-			  tex = tmptex;
-			  width = tmpwidth;
-			  height = tmpheight;
-			  format = destformat = tmpformat;
-			} else {
-			  free(tmptex);
-			}
-		  }
-		}
-
-	  } else {
-
-#if POW2_TEXTURES
-#if (POW2_TEXTURES == 2)
-		/* 3dfx Glide3x aspect ratio (8:1 - 1:8) */
-		if (!_txReSample->nextPow2(&tex, &width , &height, 32, 1)) {
-#else
-		/* normal pow2 expansion */
-		if (!_txReSample->nextPow2(&tex, &width , &height, 32, 0)) {
-#endif
-		  free(tex);
-		  tex = NULL;
-		  DBG_INFO(80, L"Error: aspect ratio adjustment failed!\n");
-		  continue;
-		}
-#endif
-	  }
 
 	  /* quantize */
 	  {

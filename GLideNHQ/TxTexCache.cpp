@@ -42,7 +42,7 @@ TxTexCache::~TxTexCache()
 		std::wstring filename = _ident + L"_MEMORYCACHE.dat";
 		boost::filesystem::wpath cachepath(_path);
 		cachepath /= boost::filesystem::wpath(L"cache");
-		int config = _options & (FILTER_MASK|ENHANCEMENT_MASK|COMPRESS_TEX|COMPRESSION_MASK|FORCE16BPP_TEX|GZ_TEXCACHE);
+		int config = _options & (FILTER_MASK|ENHANCEMENT_MASK|FORCE16BPP_TEX|GZ_TEXCACHE);
 
 		TxCache::save(cachepath.wstring().c_str(), filename.c_str(), config);
 	}
@@ -63,7 +63,7 @@ TxTexCache::TxTexCache(int options, int cachesize, const wchar_t *path, const wc
 		std::wstring filename = _ident + L"_MEMORYCACHE.dat";
 		boost::filesystem::wpath cachepath(_path);
 		cachepath /= boost::filesystem::wpath(L"cache");
-		int config = _options & (FILTER_MASK|ENHANCEMENT_MASK|COMPRESS_TEX|COMPRESSION_MASK|FORCE16BPP_TEX|GZ_TEXCACHE);
+		int config = _options & (FILTER_MASK|ENHANCEMENT_MASK|FORCE16BPP_TEX|GZ_TEXCACHE);
 
 		TxCache::load(cachepath.wstring().c_str(), filename.c_str(), config);
 	}
