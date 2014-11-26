@@ -464,39 +464,8 @@ TxHiResCache::loadHiResTextures(boost::filesystem::wpath dir_path, boolean repla
 		pfname == strstr(fname, "_ci.bmp")) {
 	  if ((fp = fopen(fname, "rb")) != NULL) {
 		if      (strstr(fname, ".png")) tex = _txImage->readPNG(fp, &width, &height, &format);
-		else if (strstr(fname, ".dds")) tex = _txImage->readDDS(fp, &width, &height, &format);
 		else                            tex = _txImage->readBMP(fp, &width, &height, &format);
 		fclose(fp);
-	  }
-	  /* XXX: auto-adjustment of dxt dds textures unsupported for now */
-	  if (tex && strstr(fname, ".dds")) {
-		const float aspectratio = (width > height) ? (float)width/(float)height : (float)height/(float)width;
-		if (!(aspectratio == 1.0 ||
-			  aspectratio == 2.0 ||
-			  aspectratio == 4.0 ||
-			  aspectratio == 8.0)) {
-		  free(tex);
-		  tex = NULL;
-#if !DEBUG
-		  INFO(80, L"-----\n");
-		  INFO(80, L"path: %ls\n", dir_path.string().c_str());
-		  INFO(80, L"file: %ls\n", it->path().leaf().c_str());
-#endif
-		  INFO(80, L"Error: W:H aspect ratio range not 8:1 - 1:8!\n");
-		  continue;
-		}
-		if (width  != _txReSample->nextPow2(width) ||
-			height != _txReSample->nextPow2(height)) {
-		  free(tex);
-		  tex = NULL;
-#if !DEBUG
-		  INFO(80, L"-----\n");
-		  INFO(80, L"path: %ls\n", dir_path.string().c_str());
-		  INFO(80, L"file: %ls\n", it->path().leaf().c_str());
-#endif
-		  INFO(80, L"Error: not power of 2 size!\n");
-		  continue;
-		}
 	  }
 	}
 
