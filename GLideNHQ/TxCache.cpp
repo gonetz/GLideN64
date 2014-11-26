@@ -80,7 +80,7 @@ TxCache::add(uint64 checksum, GHQTexInfo *info, int dataSize)
 	if (!checksum || !info->data) return 0;
 
 	uint8 *dest = info->data;
-	uint16 format = info->format;
+	uint32 format = info->format;
 
 	if (!dataSize) {
 		dataSize = _txUtil->sizeofTx(info->width, info->height, info->format);
@@ -159,7 +159,7 @@ TxCache::add(uint64 checksum, GHQTexInfo *info, int dataSize)
 #ifdef DEBUG
 			DBG_INFO(80, L"[%5d] added!! crc:%08X %08X %d x %d gfmt:%x total:%.02fmb\n",
 					 _cache.size(), (uint32)(checksum >> 32), (uint32)(checksum & 0xffffffff),
-					 info->width, info->height, info->format, (float)_totalSize/1000000);
+					 info->width, info->height, info->format & 0xffff, (float)_totalSize/1000000);
 
 			if (_cacheSize > 0) {
 				DBG_INFO(80, L"cache max config:%.02fmb\n", (float)_cacheSize/1000000);
@@ -252,7 +252,7 @@ TxCache::save(const wchar_t *path, const wchar_t *filename, int config)
 			while (itMap != _cache.end()) {
 				uint8 *dest    = (*itMap).second->info.data;
 				uint32 destLen = (*itMap).second->size;
-				uint16 format  = (*itMap).second->info.format;
+				uint32 format  = (*itMap).second->info.format;
 
 				/* to keep things simple, we save the texture data in a zlib uncompressed state. */
 				/* sigh... for those who cannot wait the extra few seconds. changed to keep
