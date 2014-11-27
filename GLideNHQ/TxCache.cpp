@@ -249,6 +249,7 @@ TxCache::save(const wchar_t *path, const wchar_t *filename, int config)
 			gzwrite(gzfp, &config, 4);
 
 			std::map<uint64, TXCACHE*>::iterator itMap = _cache.begin();
+			int total = 0;
 			while (itMap != _cache.end()) {
 				uint8 *dest    = (*itMap).second->info.data;
 				uint32 destLen = (*itMap).second->size;
@@ -289,9 +290,8 @@ TxCache::save(const wchar_t *path, const wchar_t *filename, int config)
 
 				itMap++;
 
-				/* not ready yet */
-				/*if (_callback)
-		  (*_callback)(L"Total textures saved to HDD: %d\n", std::distance(itMap, _cache.begin()));*/
+				if (_callback)
+					(*_callback)(L"Total textures saved to HDD: %d\n", ++total);
 			}
 			gzclose(gzfp);
 		}
