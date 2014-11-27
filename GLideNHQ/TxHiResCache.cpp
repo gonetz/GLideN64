@@ -56,7 +56,7 @@ TxHiResCache::~TxHiResCache()
 #if DUMP_CACHE
   if ((_options & DUMP_HIRESTEXCACHE) && !_haveCache && !_abortLoad) {
 	/* dump cache to disk */
-	std::wstring filename = _ident + L"_HIRESTEXTURES.dat";
+	std::wstring filename = _ident + L"_HIRESTEXTURES." + TEXCACHE_EXT;
 	boost::filesystem::wpath cachepath(_path);
 	cachepath /= boost::filesystem::wpath(L"cache");
 	int config = _options & (HIRESTEXTURES_MASK|TILE_HIRESTEX|FORCE16BPP_HIRESTEX|GZ_HIRESTEXCACHE|LET_TEXARTISTS_FLY);
@@ -94,7 +94,7 @@ TxHiResCache::TxHiResCache(int maxwidth, int maxheight, int maxbpp, int options,
   /* read in hires texture cache */
   if (_options & DUMP_HIRESTEXCACHE) {
 	/* find it on disk */
-	std::wstring filename = _ident + L"_HIRESTEXTURES.dat";
+	std::wstring filename = _ident + L"_HIRESTEXTURES." + TEXCACHE_EXT;
 	boost::filesystem::wpath cachepath(_path);
 	cachepath /= boost::filesystem::wpath(L"cache");
 	int config = _options & (HIRESTEXTURES_MASK|TILE_HIRESTEX|FORCE16BPP_HIRESTEX|GZ_HIRESTEXCACHE|LET_TEXARTISTS_FLY);

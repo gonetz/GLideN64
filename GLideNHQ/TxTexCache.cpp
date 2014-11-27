@@ -39,7 +39,7 @@ TxTexCache::~TxTexCache()
 #if DUMP_CACHE
 	if (_options & DUMP_TEXCACHE) {
 		/* dump cache to disk */
-		std::wstring filename = _ident + L"_MEMORYCACHE.dat";
+		std::wstring filename = _ident + L"_MEMORYCACHE." + TEXCACHE_EXT;
 		boost::filesystem::wpath cachepath(_path);
 		cachepath /= boost::filesystem::wpath(L"cache");
 		int config = _options & (FILTER_MASK|ENHANCEMENT_MASK|FORCE16BPP_TEX|GZ_TEXCACHE);
@@ -60,7 +60,7 @@ TxTexCache::TxTexCache(int options, int cachesize, const wchar_t *path, const wc
 #if DUMP_CACHE
 	if (_options & DUMP_TEXCACHE) {
 		/* find it on disk */
-		std::wstring filename = _ident + L"_MEMORYCACHE.dat";
+		std::wstring filename = _ident + L"_MEMORYCACHE." + TEXCACHE_EXT;
 		boost::filesystem::wpath cachepath(_path);
 		cachepath /= boost::filesystem::wpath(L"cache");
 		int config = _options & (FILTER_MASK|ENHANCEMENT_MASK|FORCE16BPP_TEX|GZ_TEXCACHE);
