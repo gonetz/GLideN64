@@ -891,7 +891,7 @@ void gSPLookAt( u32 _l, u32 _n )
 	gSP.lookat[_n].y = light->y;
 	gSP.lookat[_n].z = light->z;
 
-	gSP.lookatEnable = (_n == 0) || (_n == 1 && light->x != 0 && light->y != 0);
+	gSP.lookatEnable = (_n == 0) || (_n == 1 && (light->x != 0 || light->y != 0));
 
 	Normalize(&gSP.lookat[_n].x);
 }
