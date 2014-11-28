@@ -189,6 +189,9 @@
     <ClCompile Include="F3DSWSE.cpp">
       <Filter>Source Files\uCodes</Filter>
     </ClCompile>
+    <ClCompile Include="TextDrawer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="3DMath.h">
@@ -327,6 +330,9 @@
       <Filter>Header Files\uCodes</Filter>
     </ClInclude>
     <ClInclude Include="GLideNHQ\Ext_TxFilter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TextDrawer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

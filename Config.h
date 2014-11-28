@@ -1,6 +1,7 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
+#include <string>
 #include "Types.h"
 
 struct Config
@@ -53,6 +54,13 @@ struct Config
 		u32 ignoreCFB;
 		u32 N64DepthCompare;
 	} frameBufferEmulation;
+
+	struct
+	{
+		std::string name;
+		u32 size;
+		float color[4];
+	} font;
 
 	u32 enableFog;
 	u32 enableNoise;

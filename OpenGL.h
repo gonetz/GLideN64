@@ -57,6 +57,7 @@ public:
 		{}
 	};
 	void drawTexturedRect(const TexturedRectParams & _params);
+	void drawText(const char *_pText, float x, float y);
 	void clearDepthBuffer();
 	void clearColorBuffer( float * _pColor );
 

@@ -34,6 +34,7 @@ set(GLideN64_SOURCES
   Turbo3D.cpp
   ZSort.cpp
   Textures.cpp
+  TextDrawer.cpp
   VI.cpp
   common/CommonAPIImpl_common.cpp
 )
@@ -125,6 +126,10 @@ if(SDL)
 	-DUSE_SDL
   )
 endif(SDL)
+
+SET( ENV{FREETYPE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/../freetype )
+FIND_PACKAGE( Freetype REQUIRED )
+include_directories( ${FREETYPE_INCLUDE_DIRS} )
 
 if(OPT)
 	add_definitions(

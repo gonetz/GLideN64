@@ -5,6 +5,7 @@
 
 #include "../Config.h"
 #include "../GLideN64.h"
+#include "../GBI.h"
 #include "../RSP.h"
 #include "../Textures.h"
 #include "../OpenGL.h"
@@ -47,7 +48,7 @@ bool Config_SetDefault()
 	//#Texture Settings
 	res = ConfigSetDefaultBool(g_configVideoGliden64, "ForceBilinear", 0, "Force bilinear texture filter");
 	assert(res == M64ERR_SUCCESS);
-	res = ConfigSetDefaultInt(g_configVideoGliden64, "CacheSize", 192, "Size of texture cache in megabytes. Good value is VRAM*3/4");
+	res = ConfigSetDefaultInt(g_configVideoGliden64, "CacheSize", 500, "Size of texture cache in megabytes. Good value is VRAM*3/4");
 	assert(res == M64ERR_SUCCESS);
 	res = ConfigSetDefaultInt(g_configVideoGliden64, "TextureBitDepth", 1, "Texture bit depth (0=16bit only, 1=16 and 32 bit, 2=32bit only)");
 	assert(res == M64ERR_SUCCESS);
@@ -101,6 +102,14 @@ bool Config_SetDefault()
 	res = ConfigSetDefaultBool(g_configVideoGliden64, "txDump", 0, "Enable dump of loaded N64 textures.");
 	assert(res == M64ERR_SUCCESS);
 
+	res = ConfigSetDefaultString(g_configVideoGliden64, "fontName", "comic.ttf", "File name of True Type Font for text messages.");
+	assert(res == M64ERR_SUCCESS);
+	res = ConfigSetDefaultInt(g_configVideoGliden64, "fontSize", 30, "Font size.");
+	assert(res == M64ERR_SUCCESS);
+	res = ConfigSetDefaultString(g_configVideoGliden64, "fontColor", "B5E61D", "Font color in RGB format.");
+	assert(res == M64ERR_SUCCESS);
+
+
 	return res == M64ERR_SUCCESS;
 }
 
@@ -147,6 +156,22 @@ void Config_LoadConfig()
 	config.textureFilter.txHresAltCRC = ConfigGetParamBool(g_configVideoGliden64, "txHresAltCRC");
 	config.textureFilter.txHiresCacheCompression = ConfigGetParamBool(g_configVideoGliden64, "txHiresCacheCompression");
 	config.textureFilter.txDump = ConfigGetParamBool(g_configVideoGliden64, "txDump");
+	//#Font settings
+	config.font.name = ConfigGetParamString(g_configVideoGliden64, "fontName");
+	if (config.font.name.empty())
+		config.font.name = "comic.ttf";
+	char buf[16];
+	sprintf(buf, "0x%s", ConfigGetParamString(g_configVideoGliden64, "fontColor"));
+	long int uColor = strtol(buf, NULL, 16);
+	if (uColor != 0) {
+		config.font.color[0] = _FIXED2FLOAT(_SHIFTR(uColor, 16, 8), 8);
+		config.font.color[1] = _FIXED2FLOAT(_SHIFTR(uColor,	 8, 8), 8);
+		config.font.color[2] = _FIXED2FLOAT(_SHIFTR(uColor,  0, 8), 8);
+		config.font.color[3] = 1.0f;
+	}
+	config.font.size = ConfigGetParamInt(g_configVideoGliden64, "fontSize");
+	if (config.font.size == 0)
+		config.font.size = 30;
 }
 
 #if 0

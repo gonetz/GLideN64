@@ -26,6 +26,7 @@
 #include "VI.h"
 #include "Config.h"
 #include "Log.h"
+#include "TextDrawer.h"
 
 using namespace std;
 
@@ -1077,6 +1078,12 @@ void OGLRender::drawTexturedRect(const TexturedRectParams & _params)
 	_updateViewport();
 }
 
+void OGLRender::drawText(const char *_pText, float x, float y)
+{
+	m_renderState = rsNone;
+	TextDrawer::get().renderText(_pText, x, y);
+}
+
 void OGLRender::clearDepthBuffer()
 {
 	if (config.frameBufferEmulation.enable && frameBufferList().getCurrent() == NULL)
@@ -1154,6 +1161,7 @@ void OGLRender::_initData()
 	DepthBuffer_Init();
 	FrameBuffer_Init();
 	Combiner_Init();
+	TextDrawer::get().init();
 	m_renderState = rsNone;
 
 	gSP.changed = gDP.changed = 0xFFFFFFFF;
@@ -1170,6 +1178,7 @@ void OGLRender::_initData()
 void OGLRender::_destroyData()
 {
 	m_renderState = rsNone;
+	TextDrawer::get().destroy();
 	Combiner_Destroy();
 	FrameBuffer_Destroy();
 	DepthBuffer_Destroy();
@@ -1224,7 +1233,7 @@ void displayLoadProgress(const wchar_t *format, ...)
 {
 	va_list args;
 	wchar_t wbuf[INFO_BUF];
-	//	char buf[INFO_BUF];
+	char buf[INFO_BUF];
 
 	// process input
 	va_start(args, format);
@@ -1232,9 +1241,21 @@ void displayLoadProgress(const wchar_t *format, ...)
 	va_end(args);
 
 	// XXX: convert to multibyte
-	//	wcstombs(buf, wbuf, INFO_BUF);
+	wcstombs(buf, wbuf, INFO_BUF);
 
-	OutputDebugStringW(wbuf);
+	FrameBuffer* pBuffer = frameBufferList().getCurrent();
+	if (pBuffer != NULL)
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+
+	OGLRender & render = video().getRender();
+	float black[4] = {0, 0, 0, 0};
+	render.clearColorBuffer(black);
+	render.drawText(buf, -0.9f, 0);
+	video().swapBuffers();
+
+	if (pBuffer != NULL)
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, pBuffer->m_FBO);
+	//OutputDebugStringW(wbuf);
 }
 
 void TextureFilterHandler::init()
