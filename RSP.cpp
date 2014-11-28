@@ -283,6 +283,11 @@ void RSP_Init()
 	if (strstr(RSP.romname, (const char *)"OgreBattle64"))
 		config.hacks |= hack_Ogre64;
 
+	GetModuleFileNameW(NULL, RSP.pluginpath, PLUGIN_PATH_SIZE);
+	wstring pluginPath(RSP.pluginpath);
+	wstring::size_type pos = pluginPath.find_last_of(L"\\/");
+	wcscpy(RSP.pluginpath, pluginPath.substr(0, pos).c_str());
+
 	memset(&gSP, 0, sizeof(gSPInfo));
 
 	gSPTexture(1.0f, 1.0f, 0, 0, TRUE);

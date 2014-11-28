@@ -1286,17 +1286,12 @@ void TextureFilterHandler::init()
 			wchar_t wRomName[32];
 			::mbstowcs(wRomName, RSP.romname, 32);
 
-			wchar_t buffer[MAX_PATH];
-			GetModuleFileNameW(NULL, buffer, MAX_PATH);
-			wstring pluginPath(buffer);
-			wstring::size_type pos = pluginPath.find_last_of(L"\\/");
-
 			m_inited = txfilter_init(maxTextureSize, // max texture width supported by hardware
 				maxTextureSize, // max texture height supported by hardware
 				32, // max texture bpp supported by hardware
 				options,
 				config.textureFilter.txCacheSize, // cache texture to system memory
-				pluginPath.substr(0, pos).c_str(), // plugin path
+				RSP.pluginpath, // plugin path
 				wRomName, // name of ROM. must be no longer than 256 characters
 				displayLoadProgress);
 		}
