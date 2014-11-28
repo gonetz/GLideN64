@@ -620,8 +620,10 @@ void TextureCache::_loadBackground(CachedTexture *pTexture)
 	bpl = gSP.bgImage.width << gSP.bgImage.size >> 1;
 	numBytes = bpl * gSP.bgImage.height;
 	pSwapped = (u8*)malloc( numBytes );
+	assert(pSwapped != NULL);
 	UnswapCopy( &RDRAM[gSP.bgImage.address], pSwapped, numBytes );
 	pDest = (u32*)malloc( pTexture->textureBytes );
+	assert(pDest != NULL);
 
 	clampSClamp = pTexture->width - 1;
 	clampTClamp = pTexture->height - 1;

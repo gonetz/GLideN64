@@ -221,83 +221,84 @@ TxCache::get(uint64 checksum, GHQTexInfo *info)
 boolean
 TxCache::save(const wchar_t *path, const wchar_t *filename, int config)
 {
-	if (!_cache.empty()) {
-		/* dump cache to disk */
-		char cbuf[MAX_PATH];
+	if (_cache.empty())
+		return true;
 
-		boost::filesystem::wpath cachepath(path);
-		boost::filesystem::create_directory(cachepath);
+	/* dump cache to disk */
+	char cbuf[MAX_PATH];
 
-		/* Ugly hack to enable fopen/gzopen in Win9x */
+	boost::filesystem::wpath cachepath(path);
+	boost::filesystem::create_directory(cachepath);
+
+	/* Ugly hack to enable fopen/gzopen in Win9x */
 #ifdef WIN32
-		wchar_t curpath[MAX_PATH];
-		GETCWD(MAX_PATH, curpath);
-		CHDIR(cachepath.wstring().c_str());
+	wchar_t curpath[MAX_PATH];
+	GETCWD(MAX_PATH, curpath);
+	CHDIR(cachepath.wstring().c_str());
 #else
-		char curpath[MAX_PATH];
-		wcstombs(cbuf, cachepath.string().c_str(), MAX_PATH);
-		GETCWD(MAX_PATH, curpath);
-		CHDIR(cbuf);
+	char curpath[MAX_PATH];
+	wcstombs(cbuf, cachepath.string().c_str(), MAX_PATH);
+	GETCWD(MAX_PATH, curpath);
+	CHDIR(cbuf);
 #endif
 
-		wcstombs(cbuf, filename, MAX_PATH);
+	wcstombs(cbuf, filename, MAX_PATH);
 
-		gzFile gzfp = gzopen(cbuf, "wb1");
-		DBG_INFO(80, L"gzfp:%x file:%ls\n", gzfp, filename);
-		if (gzfp) {
-			/* write header to determine config match */
-			gzwrite(gzfp, &config, 4);
+	gzFile gzfp = gzopen(cbuf, "wb1");
+	DBG_INFO(80, L"gzfp:%x file:%ls\n", gzfp, filename);
+	if (gzfp) {
+		/* write header to determine config match */
+		gzwrite(gzfp, &config, 4);
 
-			std::map<uint64, TXCACHE*>::iterator itMap = _cache.begin();
-			int total = 0;
-			while (itMap != _cache.end()) {
-				uint8 *dest    = (*itMap).second->info.data;
-				uint32 destLen = (*itMap).second->size;
-				uint32 format  = (*itMap).second->info.format;
+		std::map<uint64, TXCACHE*>::iterator itMap = _cache.begin();
+		int total = 0;
+		while (itMap != _cache.end()) {
+			uint8 *dest = (*itMap).second->info.data;
+			uint32 destLen = (*itMap).second->size;
+			uint32 format = (*itMap).second->info.format;
 
-				/* to keep things simple, we save the texture data in a zlib uncompressed state. */
-				/* sigh... for those who cannot wait the extra few seconds. changed to keep
-		 * texture data in a zlib compressed state. if the GZ_TEXCACHE or GZ_HIRESTEXCACHE
-		 * option is toggled, the cache will need to be rebuilt.
-		 */
-				/*if (format & GL_TEXFMT_GZ) {
-		  dest = _gzdest0;
-		  destLen = _gzdestLen;
-		  if (dest && destLen) {
-			if (uncompress(dest, &destLen, (*itMap).second->info.data, (*itMap).second->size) != Z_OK) {
-			  dest = NULL;
-			  destLen = 0;
+			/* to keep things simple, we save the texture data in a zlib uncompressed state. */
+			/* sigh... for those who cannot wait the extra few seconds. changed to keep
+	 * texture data in a zlib compressed state. if the GZ_TEXCACHE or GZ_HIRESTEXCACHE
+	 * option is toggled, the cache will need to be rebuilt.
+	 */
+			/*if (format & GL_TEXFMT_GZ) {
+	  dest = _gzdest0;
+	  destLen = _gzdestLen;
+	  if (dest && destLen) {
+	  if (uncompress(dest, &destLen, (*itMap).second->info.data, (*itMap).second->size) != Z_OK) {
+	  dest = NULL;
+	  destLen = 0;
+	  }
+	  format &= ~GL_TEXFMT_GZ;
+	  }
+	  }*/
+
+			if (dest && destLen) {
+				/* texture checksum */
+				gzwrite(gzfp, &((*itMap).first), 8);
+
+				/* other texture info */
+				gzwrite(gzfp, &((*itMap).second->info.width), 4);
+				gzwrite(gzfp, &((*itMap).second->info.height), 4);
+				gzwrite(gzfp, &format, 4);
+				gzwrite(gzfp, &((*itMap).second->info.texture_format), 2);
+				gzwrite(gzfp, &((*itMap).second->info.pixel_type), 2);
+				gzwrite(gzfp, &((*itMap).second->info.is_hires_tex), 1);
+
+				gzwrite(gzfp, &destLen, 4);
+				gzwrite(gzfp, dest, destLen);
 			}
-			format &= ~GL_TEXFMT_GZ;
-		  }
-		}*/
 
-				if (dest && destLen) {
-					/* texture checksum */
-					gzwrite(gzfp, &((*itMap).first), 8);
+			itMap++;
 
-					/* other texture info */
-					gzwrite(gzfp, &((*itMap).second->info.width), 4);
-					gzwrite(gzfp, &((*itMap).second->info.height), 4);
-					gzwrite(gzfp, &format, 4);
-					gzwrite(gzfp, &((*itMap).second->info.texture_format), 2);
-					gzwrite(gzfp, &((*itMap).second->info.pixel_type), 2);
-					gzwrite(gzfp, &((*itMap).second->info.is_hires_tex), 1);
-
-					gzwrite(gzfp, &destLen, 4);
-					gzwrite(gzfp, dest, destLen);
-				}
-
-				itMap++;
-
-				if (_callback)
-					(*_callback)(L"Total textures saved to HDD: %d\n", ++total);
-			}
-			gzclose(gzfp);
+			if (_callback)
+				(*_callback)(L"Total textures saved to HDD: %d\n", ++total);
 		}
-
-		CHDIR(curpath);
+		gzclose(gzfp);
 	}
+
+	CHDIR(curpath);
 
 	return _cache.empty();
 }

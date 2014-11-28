@@ -105,7 +105,7 @@ int Calc_invw (int _w) {
 static
 void ZSort_DrawObject (u8 * _addr, u32 _type)
 {
-	u32 textured, vnum, vsize;
+	u32 textured = 0, vnum = 0, vsize = 0;
 	switch (_type) {
 	case ZH_NULL:
 		textured = vnum = vsize = 0;
@@ -329,8 +329,8 @@ void ZSort_MTXRNSP( u32, u32 )
 
 void ZSort_MTXCAT(u32 _w0, u32 _w1)
 {
-	M44 *s;
-	M44 *t;
+	M44 *s = NULL;
+	M44 *t = NULL;
 	u32 S = _SHIFTR(_w0, 0, 4);
 	u32 T = _SHIFTR(_w1, 16, 4);
 	u32 D = _SHIFTR(_w1, 0, 4);
@@ -356,7 +356,7 @@ void ZSort_MTXCAT(u32 _w0, u32 _w1)
 		t = (M44*)gSP.matrix.combined;
 	break;
 	}
-
+	assert(s != NULL && t != NULL);
 	f32 m[4][4];
 	MultMatrix(*s, *t, m);
 

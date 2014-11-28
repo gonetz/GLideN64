@@ -246,13 +246,13 @@ TxImage::readPNG(FILE* fp, int* width, int* height, uint16* format)
 boolean
 TxImage::writePNG(uint8* src, FILE* fp, int width, int height, int rowStride, uint16 format, uint8 *palette)
 {
-	png_structp png_ptr;
-	png_infop info_ptr;
+	png_structp png_ptr = NULL;
+	png_infop info_ptr = NULL;
 	png_color_8 sig_bit;
-	png_colorp palette_ptr;
-	png_bytep trans_ptr;//, tex_ptr;
-	int bit_depth, color_type, row_bytes, num_palette;
-	int i;
+	png_colorp palette_ptr = NULL;
+	png_bytep trans_ptr = NULL;//, tex_ptr;
+	int bit_depth = 0, color_type = 0, row_bytes = 0, num_palette = 0;
+	int i = 0;
 	//uint16 srcfmt, destfmt;
 
 	if (!src || !fp)

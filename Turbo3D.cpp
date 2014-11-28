@@ -92,7 +92,7 @@ void Turbo3D_LoadGlobState(u32 pgstate)
 static
 void Turbo3D_LoadObject(u32 pstate, u32 pvtx, u32 ptri)
 {
-	const u32 addr = RSP_SegmentToPhysical(pstate);
+	u32 addr = RSP_SegmentToPhysical(pstate);
 	T3DState *ostate = (T3DState*)&RDRAM[addr];
 	const u32 tile = (ostate->textureState)&7;
 	gSP.texture.tile = tile;
@@ -119,7 +119,7 @@ void Turbo3D_LoadObject(u32 pstate, u32 pvtx, u32 ptri)
 	Turbo3D_ProcessRDP(ostate->rdpCmds);
 
 	if (ptri != 0) {
-		u32 addr = RSP_SegmentToPhysical(ptri);
+		addr = RSP_SegmentToPhysical(ptri);
 		for (int t = 0; t < ostate->triCount; ++t) {
 			T3DTriN * tri = (T3DTriN*)&RDRAM[addr];
 			addr += 4;

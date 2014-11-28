@@ -883,6 +883,7 @@ void gSPLookAt( u32 _l, u32 _n )
 #endif
 		return;
 	}
+	assert(_n < 2);
 
 	Light *light = (Light*)&RDRAM[address];
 
@@ -1651,6 +1652,7 @@ void gSPCoordMod(u32 _w0, u32 _w1)
 		gSP.vertexCoordMod[0+idx] = (f32)(s16)_SHIFTR(_w1, 16, 16);
 		gSP.vertexCoordMod[1+idx] = (f32)(s16)_SHIFTR(_w1, 0, 16);
 	} else if (pos == 0x10) {
+		assert(idx < 3);
 		gSP.vertexCoordMod[4+idx] = _SHIFTR(_w1, 16, 16)/65536.0f;
 		gSP.vertexCoordMod[5+idx] = _SHIFTR(_w1, 0, 16)/65536.0f;
 		gSP.vertexCoordMod[12+idx] = gSP.vertexCoordMod[0+idx] + gSP.vertexCoordMod[4+idx];
@@ -2308,8 +2310,8 @@ void gSPSprite2DBase(u32 base)
 	const f32 z = (gDP.otherMode.depthSource == G_ZS_PRIM) ? gDP.primDepth.z : gSP.viewport.nearz;
 	const f32 w = 1.0f;
 
-	f32 scaleX, scaleY;
-	u32 flipX, flipY;
+	f32 scaleX = 1.0f, scaleY = 1.0f;
+	u32 flipX = 0, flipY = 0;
 	do {
 		u32 w0 = *(u32*)&RDRAM[RSP.PC[RSP.PCi]];
 		u32 w1 = *(u32*)&RDRAM[RSP.PC[RSP.PCi] + 4];
