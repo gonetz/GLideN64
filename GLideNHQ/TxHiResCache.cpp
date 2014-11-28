@@ -686,7 +686,9 @@ TxHiResCache::loadHiResTextures(boost::filesystem::wpath dir_path, boolean repla
 			format = destformat;
 			free(tex);
 			tex = tmptex;
-		  }
+		  } else
+			  free(tmptex);
+		  tmptex = NULL;
 		}
 	  }
 
