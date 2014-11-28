@@ -543,6 +543,7 @@ void RDP_ProcessRDPList()
 		RDP.cmd_cur = 0;
 	}
 
+	RSP.bLLE = false;
 	gSP.changed |= CHANGED_COLORBUFFER;
 
 	dp_start = dp_current = dp_end;

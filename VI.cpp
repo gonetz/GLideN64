@@ -79,7 +79,7 @@ void VI_UpdateScreen()
 		return;
 	ogl.saveScreenshot();
 
-	if (RSP.bLLE && *REG.VI_ORIGIN != VI.lastOrigin) {
+	if (*REG.VI_ORIGIN != VI.lastOrigin) {
 		VI_UpdateSize();
 		video().updateScale();
 	}
@@ -126,8 +126,8 @@ void VI_UpdateScreen()
 			while (Debug.paused && !Debug.step);
 			Debug.step = FALSE;
 #endif
+			VI.lastOrigin = *REG.VI_ORIGIN;
 		}
-		VI.lastOrigin = *REG.VI_ORIGIN;
 	}
 
 	if (VI.lastOrigin == 0) { // Workaround for Mupen64Plus issue with initialization
