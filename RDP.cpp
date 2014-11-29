@@ -533,6 +533,7 @@ void RDP_ProcessRDPList()
 		u32 w1 = RDP.cmd_data[RDP.cmd_cur+1];
 		RDP.w2 = RDP.cmd_data[RDP.cmd_cur+2];
 		RDP.w3 = RDP.cmd_data[RDP.cmd_cur + 3];
+		RSP.cmd = cmd;
 		LLEcmd[cmd](w0, w1);
 
 		RDP.cmd_cur = (RDP.cmd_cur + CmdLength[cmd] / 4) & maxCMDMask;
