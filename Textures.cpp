@@ -570,8 +570,85 @@ void _calcTileSizes(u32 _t, TileSizes & _sizes, gDPTile * _pLoadTile)
 	}
 }
 
+inline
+void _updateCachedTexture(const GHQTexInfo & _info, CachedTexture *_pTexture)
+{
+	_pTexture->textureBytes = _info.width * _info.height;
+	switch (_info.format) {
+		case GL_RGB:
+		case GL_RGBA4:
+		case GL_RGB5_A1:
+		case GL_LUMINANCE8_ALPHA8:
+		_pTexture->textureBytes <<= 1;
+		break;
+		default:
+		_pTexture->textureBytes <<= 2;
+	}
+	/*
+	_pTexture->realWidth = _info.width;
+	_pTexture->realHeight = _info.height;
+	_pTexture->scaleS = 1.0f / (f32)(_pTexture->realWidth);
+	_pTexture->scaleT = 1.0f / (f32)(_pTexture->realHeight);
+	*/
+}
+
+bool TextureCache::_loadHiresTexture(u32 _tile, CachedTexture *_pTexture)
+{
+	if (!TFH.isInited())
+		return false;
+
+	isGLError();  // Workaround for Mupen64Plus;
+	GHQTexInfo ghqTexInfo;
+	gDPLoadTileInfo & info = gDP.loadInfo[gSP.textureTile[_tile]->tmem];
+
+	int bpl;
+	u8 * addr = (u8*)(RDRAM + info.texAddress);
+	int tile_width = _pTexture->width;
+	int tile_height = _pTexture->height;
+	if (info.loadType == LOADTYPE_TILE) {
+		bpl = info.width << info.size >> 1;
+		addr += (info.ult * bpl) + (((info.uls << info.size) + 1) >> 1);
+	} else {
+		if (gSP.textureTile[_tile]->size == G_IM_SIZ_32b)
+			bpl = gSP.textureTile[_tile]->line << 4;
+		else if (info.dxt == 0)
+			bpl = gSP.textureTile[_tile]->line << 3;
+		else {
+			u32 dxt = info.dxt;
+			if (dxt > 1)
+				dxt = ReverseDXT(dxt, info.width, _pTexture->width, gSP.textureTile[_tile]->size);
+			bpl = dxt << 3;
+		}
+	}
+
+	u8 * paladdr = NULL;
+	u16 * palette = NULL;
+	if ((gSP.textureTile[_tile]->size < G_IM_SIZ_16b) && (gDP.otherMode.textureLUT != G_TT_NONE || gSP.textureTile[_tile]->format == G_IM_FMT_CI)) {
+		if (gSP.textureTile[_tile]->size == G_IM_SIZ_8b)
+			paladdr = (u8*)(gDP.TexFilterPalette);
+		else if (config.textureFilter.txHresAltCRC)
+			paladdr = (u8*)(gDP.TexFilterPalette + (gSP.textureTile[_tile]->palette << 5));
+		else
+			paladdr = (u8*)(gDP.TexFilterPalette + (gSP.textureTile[_tile]->palette << 4));
+		// TODO: fix palette load
+		//			palette = (rdp.pal_8 + (gSP.textureTile[_t]->palette << 4));
+	}
+
+	u64 ricecrc = txfilter_checksum(addr, tile_width, tile_height, (unsigned short)(gSP.textureTile[_tile]->format << 8 | gSP.textureTile[_tile]->size), bpl, paladdr);
+	if (txfilter_hirestex(_pTexture->crc, ricecrc, palette, &ghqTexInfo)) {
+		glTexImage2D(GL_TEXTURE_2D, 0, ghqTexInfo.format, ghqTexInfo.width, ghqTexInfo.height, 0, ghqTexInfo.texture_format, ghqTexInfo.pixel_type, ghqTexInfo.data);
+		assert(!isGLError());
+		_updateCachedTexture(ghqTexInfo, _pTexture);
+		return true;
+	}
+	return false;
+}
+
 void TextureCache::_loadBackground(CachedTexture *pTexture)
 {
+	if (_loadHiresTexture(0, pTexture))
+		return;
+
 	u32 *pDest;
 
 	u8 *pSwapped, *pSrc;
@@ -584,8 +661,7 @@ void TextureCache::_loadBackground(CachedTexture *pTexture)
 	GLenum glType;
 
 	if (((imageFormat[pTexture->size][pTexture->format].autoFormat == GL_RGBA) ||
-		((pTexture->format == G_IM_FMT_CI) && (gDP.otherMode.textureLUT == G_TT_IA16)) || (m_bitDepth == 2)) && (m_bitDepth != 0))
-	{
+		((pTexture->format == G_IM_FMT_CI) && (gDP.otherMode.textureLUT == G_TT_IA16)) || (m_bitDepth == 2)) && (m_bitDepth != 0)) {
 		pTexture->textureBytes = (pTexture->realWidth * pTexture->realHeight) << 2;
 		if ((pTexture->format == G_IM_FMT_CI) && (gDP.otherMode.textureLUT == G_TT_IA16)) {
 			if (pTexture->size == G_IM_SIZ_4b)
@@ -619,10 +695,10 @@ void TextureCache::_loadBackground(CachedTexture *pTexture)
 
 	bpl = gSP.bgImage.width << gSP.bgImage.size >> 1;
 	numBytes = bpl * gSP.bgImage.height;
-	pSwapped = (u8*)malloc( numBytes );
+	pSwapped = (u8*)malloc(numBytes);
 	assert(pSwapped != NULL);
-	UnswapCopy( &RDRAM[gSP.bgImage.address], pSwapped, numBytes );
-	pDest = (u32*)malloc( pTexture->textureBytes );
+	UnswapCopy(&RDRAM[gSP.bgImage.address], pSwapped, numBytes);
+	pDest = (u32*)malloc(pTexture->textureBytes);
 	assert(pDest != NULL);
 
 	clampSClamp = pTexture->width - 1;
@@ -638,92 +714,39 @@ void TextureCache::_loadBackground(CachedTexture *pTexture)
 			tx = min(x, (u32)clampSClamp);
 
 			if (glInternalFormat == GL_RGBA)
-				((u32*)pDest)[j++] = GetTexel( (u64*)pSrc, tx, 0, pTexture->palette );
+				((u32*)pDest)[j++] = GetTexel((u64*)pSrc, tx, 0, pTexture->palette);
 			else
-				((u16*)pDest)[j++] = GetTexel( (u64*)pSrc, tx, 0, pTexture->palette );
+				((u16*)pDest)[j++] = GetTexel((u64*)pSrc, tx, 0, pTexture->palette);
 		}
 	}
 
 	GLint curUnpackAlignment;
 	glGetIntegerv(GL_UNPACK_ALIGNMENT, &curUnpackAlignment);
-	if (pTexture->realWidth % 2 != 0 && glInternalFormat != GL_RGBA)
-		glPixelStorei(GL_UNPACK_ALIGNMENT, 2);
-	glTexImage2D(GL_TEXTURE_2D, 0, glInternalFormat, pTexture->realWidth, pTexture->realHeight, 0, GL_RGBA, glType, pDest);
+
+	bool bLoaded = false;
+	if (TFH.isInited() && config.textureFilter.txFilterIgnoreBG == 0) {
+		GHQTexInfo ghqTexInfo;
+		if (txfilter_filter((u8*)pDest, pTexture->realWidth, pTexture->realHeight, glInternalFormat, (uint64)pTexture->crc, &ghqTexInfo) != 0 && ghqTexInfo.data != NULL) {
+			if (ghqTexInfo.width % 2 != 0 && ghqTexInfo.format != GL_RGBA)
+				glPixelStorei(GL_UNPACK_ALIGNMENT, 2);
+			glTexImage2D(GL_TEXTURE_2D, 0, ghqTexInfo.format, ghqTexInfo.width, ghqTexInfo.height, 0, ghqTexInfo.texture_format, ghqTexInfo.pixel_type, ghqTexInfo.data);
+			_updateCachedTexture(ghqTexInfo, pTexture);
+			bLoaded = true;
+		}
+	}
+	if (!bLoaded) {
+		if (pTexture->realWidth % 2 != 0 && glInternalFormat != GL_RGBA)
+			glPixelStorei(GL_UNPACK_ALIGNMENT, 2);
+		glTexImage2D(GL_TEXTURE_2D, 0, glInternalFormat, pTexture->realWidth, pTexture->realHeight, 0, GL_RGBA, glType, pDest);
+	}
 	glPixelStorei(GL_UNPACK_ALIGNMENT, curUnpackAlignment);
 	free(pDest);
 }
 
-inline
-void _updateCachedTexture(const GHQTexInfo & _info, CachedTexture *_pTexture)
+void TextureCache::_load(u32 _tile, CachedTexture *_pTexture)
 {
-	_pTexture->textureBytes = _info.width * _info.height;
-	switch (_info.format) {
-		case GL_RGB:
-		case GL_RGBA4:
-		case GL_RGB5_A1:
-		case GL_LUMINANCE8_ALPHA8:
-			_pTexture->textureBytes <<= 1;
-		break;
-		default:
-			_pTexture->textureBytes <<= 2;
-	}
-	/*
-	_pTexture->realWidth = _info.width;
-	_pTexture->realHeight = _info.height;
-	_pTexture->scaleS = 1.0f / (f32)(_pTexture->realWidth);
-	_pTexture->scaleT = 1.0f / (f32)(_pTexture->realHeight);
-	*/
-}
-
-
-void TextureCache::_load(u32 _tile , CachedTexture *_pTexture)
-{
-	if (TFH.isInited()) {
-		isGLError();
-		GHQTexInfo ghqTexInfo;
-		gDPLoadTileInfo & info = gDP.loadInfo[gSP.textureTile[_tile]->tmem];
-
-		int bpl;
-		u8 * addr = (u8*)(RDRAM + info.texAddress);
-		int tile_width = _pTexture->width;
-		int tile_height = _pTexture->height;
-		if (info.loadType == LOADTYPE_TILE) {
-			bpl = info.width << info.size >> 1;
-			addr += (info.ult * bpl) + (((info.uls << info.size) + 1) >> 1);
-		} else {
-			if (gSP.textureTile[_tile]->size == G_IM_SIZ_32b)
-				bpl = gSP.textureTile[_tile]->line << 4;
-			else if (info.dxt == 0)
-				bpl = gSP.textureTile[_tile]->line << 3;
-			else {
-				u32 dxt = info.dxt;
-				if (dxt > 1)
-					dxt = ReverseDXT(dxt, info.width, _pTexture->width, gSP.textureTile[_tile]->size);
-				bpl = dxt << 3;
-			}
-		}
-
-		u8 * paladdr = NULL;
-		u16 * palette = NULL;
-		if ((gSP.textureTile[_tile]->size < G_IM_SIZ_16b) && (gDP.otherMode.textureLUT != G_TT_NONE || gSP.textureTile[_tile]->format == G_IM_FMT_CI)) {
-			if (gSP.textureTile[_tile]->size == G_IM_SIZ_8b)
-				paladdr = (u8*)(gDP.TexFilterPalette);
-			else if (config.textureFilter.txHresAltCRC)
-				paladdr = (u8*)(gDP.TexFilterPalette + (gSP.textureTile[_tile]->palette << 5));
-			else
-				paladdr = (u8*)(gDP.TexFilterPalette + (gSP.textureTile[_tile]->palette << 4));
-			// TODO: fix palette load
-			//			palette = (rdp.pal_8 + (gSP.textureTile[_t]->palette << 4));
-		}
-
-		u64 ricecrc = txfilter_checksum(addr, tile_width, tile_height, (unsigned short)(gSP.textureTile[_tile]->format << 8 | gSP.textureTile[_tile]->size), bpl, paladdr);
-		if (txfilter_hirestex(_pTexture->crc, ricecrc, palette, &ghqTexInfo)) {
-			glTexImage2D(GL_TEXTURE_2D, 0, ghqTexInfo.format, ghqTexInfo.width, ghqTexInfo.height, 0, ghqTexInfo.texture_format, ghqTexInfo.pixel_type, ghqTexInfo.data);
-			assert(!isGLError());
-			_updateCachedTexture(ghqTexInfo, _pTexture);
-			return;
-		}
-	}
+	if (_loadHiresTexture(_tile, _pTexture))
+		return;
 
 	u32 *pDest;
 
@@ -737,8 +760,7 @@ void TextureCache::_load(u32 _tile , CachedTexture *_pTexture)
 	u32 sizeShift;
 
 	if (((imageFormat[_pTexture->size][_pTexture->format].autoFormat == GL_RGBA) ||
-		((_pTexture->format == G_IM_FMT_CI) && (gDP.otherMode.textureLUT == G_TT_IA16)) || (m_bitDepth == 2)) && (m_bitDepth != 0))
-	{
+		((_pTexture->format == G_IM_FMT_CI) && (gDP.otherMode.textureLUT == G_TT_IA16)) || (m_bitDepth == 2)) && (m_bitDepth != 0)) {
 		sizeShift = 2;
 		_pTexture->textureBytes = (_pTexture->realWidth * _pTexture->realHeight) << sizeShift;
 		if ((_pTexture->format == G_IM_FMT_CI) && (gDP.otherMode.textureLUT == G_TT_IA16)) {
@@ -772,7 +794,7 @@ void TextureCache::_load(u32 _tile , CachedTexture *_pTexture)
 		}
 	}
 
-	pDest = (u32*)malloc( _pTexture->textureBytes );
+	pDest = (u32*)malloc(_pTexture->textureBytes);
 
 	GLint mipLevel = 0, maxLevel = 0;
 	if (gSP.texture.level > gSP.texture.tile + 1)
@@ -800,11 +822,11 @@ void TextureCache::_load(u32 _tile , CachedTexture *_pTexture)
 		}
 
 		if (tmptex.maskT > 0) {
-			clampTClamp = tmptex.clampT ? tmptex.clampHeight - 1 : (tmptex.mirrorT ? (tmptex.height << 1) - 1: tmptex.height - 1);
+			clampTClamp = tmptex.clampT ? tmptex.clampHeight - 1 : (tmptex.mirrorT ? (tmptex.height << 1) - 1 : tmptex.height - 1);
 			maskTMask = (1 << tmptex.maskT) - 1;
-			mirrorTBit = tmptex.mirrorT ?	1 << tmptex.maskT : 0;
+			mirrorTBit = tmptex.mirrorT ? 1 << tmptex.maskT : 0;
 		} else {
-			clampTClamp = min( tmptex.clampHeight, tmptex.height ) - 1;
+			clampTClamp = min(tmptex.clampHeight, tmptex.height) - 1;
 			maskTMask = 0xFFFF;
 			mirrorTBit = 0x0000;
 		}
@@ -864,7 +886,7 @@ void TextureCache::_load(u32 _tile , CachedTexture *_pTexture)
 				if (y & mirrorTBit)
 					ty ^= maskTMask;
 
-				pSrc = &TMEM[(tmptex.tMem + line * ty)&0x1FF];
+				pSrc = &TMEM[(tmptex.tMem + line * ty) & 0x1FF];
 
 				i = (ty & 1) << 1;
 				for (x = 0; x < tmptex.realWidth; ++x) {
