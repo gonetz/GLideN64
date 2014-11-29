@@ -22,7 +22,6 @@ void VI_UpdateSize()
 //	f32 xOffset = _FIXED2FLOAT( _SHIFTR( *REG.VI_X_SCALE, 16, 12 ), 10 );
 
 	const u32 vScale = _SHIFTR(*REG.VI_Y_SCALE, 0, 12);
-	const f32 yScale = _FIXED2FLOAT(vScale, 10);
 //	f32 yOffset = _FIXED2FLOAT( _SHIFTR( *REG.VI_Y_SCALE, 16, 12 ), 10 );
 
 	const u32 hEnd = _SHIFTR( *REG.VI_H_START, 0, 10 );
@@ -38,13 +37,21 @@ void VI_UpdateSize()
 	VI.interlaced = (*REG.VI_STATUS & 0x40) != 0;
 
 	VI.width = (u32)floor((hEnd - hStart) * xScale + 0.5f);
+
+#if 0
+	const f32 yScale = _FIXED2FLOAT(vScale, 10);
 	if (*REG.VI_WIDTH > 0)
 		VI.width = min(VI.width, *REG.VI_WIDTH);
-
 	if (VI.interlaced &&  _SHIFTR(*REG.VI_Y_SCALE, 0, 12) == 1024)
 		VI.real_height = (vEnd - vStart);
 	else
-		VI.real_height = (u32)floor(((vEnd - vStart)>>1) * yScale + 0.5f);
+		VI.real_height = (u32)floor(((vEnd - vStart) >> 1) * yScale + 0.5f);
+#else
+	VI.real_height = (((vEnd - vStart) >> 1) * vScale) >> 10;
+	if (VI.interlaced && VI.width != 0)
+		VI.real_height *= *REG.VI_WIDTH / VI.width;
+#endif
+
 	if (VI.interlaced && VI.real_height % 2 == 1)
 		--VI.real_height;
 	const bool isPAL = (*REG.VI_V_SYNC & 0x3ff) > 550;
