@@ -386,8 +386,12 @@ void FrameBufferList::renderBuffer(u32 _address)
 	vStartPrev = vStart;
 
 	srcY0 = ((_address - pBuffer->m_startAddress) << 1 >> pBuffer->m_size) / (*REG.VI_WIDTH);
-	if (isLowerField)
+	if (isLowerField) {
+		if (srcY0 > 0)
 		--srcY0;
+		if (dstY0 > 0)
+			--dstY0;
+	}
 
 	if (srcY0 + vCurrentHeight > vFullHeight) {
 		dstPartHeight = srcY0;
