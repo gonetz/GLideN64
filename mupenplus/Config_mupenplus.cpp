@@ -102,9 +102,9 @@ bool Config_SetDefault()
 	res = ConfigSetDefaultBool(g_configVideoGliden64, "txDump", 0, "Enable dump of loaded N64 textures.");
 	assert(res == M64ERR_SUCCESS);
 
-	res = ConfigSetDefaultString(g_configVideoGliden64, "fontName", "comic.ttf", "File name of True Type Font for text messages.");
+	res = ConfigSetDefaultString(g_configVideoGliden64, "fontName", "arial.ttf", "File name of True Type Font for text messages.");
 	assert(res == M64ERR_SUCCESS);
-	res = ConfigSetDefaultInt(g_configVideoGliden64, "fontSize", 30, "Font size.");
+	res = ConfigSetDefaultInt(g_configVideoGliden64, "fontSize", 18, "Font size.");
 	assert(res == M64ERR_SUCCESS);
 	res = ConfigSetDefaultString(g_configVideoGliden64, "fontColor", "B5E61D", "Font color in RGB format.");
 	assert(res == M64ERR_SUCCESS);
