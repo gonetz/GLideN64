@@ -1922,12 +1922,9 @@ struct ObjCoordinates
 
 		uls = imageX;
 		ult = imageY;
-		if (gDP.otherMode.cycleType == G_CYC_COPY) {
-			lrs = uls + imageW - 1.0f;
-			lrt = ult + imageH - 1.0f;
-		} else {
-			lrs = uls + (lrx - ulx) * scaleW;
-			lrt = ult + (lry - uly) * scaleH;
+		lrs = uls + (lrx - ulx) * scaleW;
+		lrt = ult + (lry - uly) * scaleH;
+		if (gDP.otherMode.cycleType != G_CYC_COPY) {
 			if ((gSP.objRendermode&G_OBJRM_SHRINKSIZE_1) != 0) {
 				lrs -= 1.0f / scaleW;
 				lrt -= 1.0f / scaleH;
