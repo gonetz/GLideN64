@@ -732,11 +732,16 @@ void ShaderCombiner::updateTextureInfo(bool _bForce) {
 	TextureCache & cache = textureCache();
 	if (usesT0()) {
 		if (gSP.textureTile[0]) {
-			_setFV2Uniform(m_uniforms.uTexOffset[0], gSP.textureTile[0]->fuls, gSP.textureTile[0]->fult, _bForce);
-			_setFV2Uniform(m_uniforms.uTexMask[0],
-				gSP.textureTile[0]->masks > 0 ? (float)(1<<gSP.textureTile[0]->masks) : 0.0f,
-				gSP.textureTile[0]->maskt > 0 ? (float)(1<<gSP.textureTile[0]->maskt) : 0.0f,
-				_bForce);
+			if (gSP.textureTile[0]->textureMode == TEXTUREMODE_BGIMAGE || gSP.textureTile[0]->textureMode == TEXTUREMODE_FRAMEBUFFER_BG) {
+				_setFV2Uniform(m_uniforms.uTexOffset[0], 0.0f, 0.0f, _bForce);
+				_setFV2Uniform(m_uniforms.uTexMask[0], 0.0f, 0.0f, _bForce);
+			} else {
+				_setFV2Uniform(m_uniforms.uTexOffset[0], gSP.textureTile[0]->fuls, gSP.textureTile[0]->fult, _bForce);
+				_setFV2Uniform(m_uniforms.uTexMask[0],
+					gSP.textureTile[0]->masks > 0 ? (float)(1 << gSP.textureTile[0]->masks) : 0.0f,
+					gSP.textureTile[0]->maskt > 0 ? (float)(1 << gSP.textureTile[0]->maskt) : 0.0f,
+					_bForce);
+			}
 		}
 		if (cache.current[0]) {
 			_setFV2Uniform(m_uniforms.uCacheShiftScale[0], cache.current[0]->shiftScaleS, cache.current[0]->shiftScaleT, _bForce);
