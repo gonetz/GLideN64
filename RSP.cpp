@@ -144,6 +144,8 @@ void RSP_ProcessDList()
 	RSP.busy = TRUE;
 
 	gSP.matrix.stackSize = min( 32U, *(u32*)&DMEM[0x0FE4] >> 6 );
+	if (gSP.matrix.stackSize == 0)
+		gSP.matrix.stackSize = 32;
 	gSP.matrix.modelViewi = 0;
 	gSP.changed &= ~CHANGED_CPU_FB_WRITE;
 	gSP.changed |= CHANGED_MATRIX;
