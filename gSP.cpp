@@ -1265,7 +1265,8 @@ void gSPBranchLessZ( u32 branchdl, u32 vtx, f32 zval )
 	}
 
 	SPVertex & v = video().getRender().getVertex(vtx);
-	if (v.z/v.w <= zval)
+	const float zTest = v.z / v.w;
+	if (zTest > 1.0f || zTest <= zval)
 		RSP.PC[RSP.PCi] = address;
 
 #ifdef DEBUG
