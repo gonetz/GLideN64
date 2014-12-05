@@ -24,6 +24,7 @@
 #include "ZSort.h"
 #include "CRC.h"
 #include "Log.h"
+#include "OpenGL.h"
 #include "Debug.h"
 
 u32 last_good_ucode = (u32) -1;
@@ -169,6 +170,16 @@ void GBIInfo::_makeCurrent(MicrocodeInfo * _pCurrent)
 			case Turbo3D:	F3D_Init();		break;
 			case ZSortp:	ZSort_Init();	break;
 			case F3DEX2CBFD:F3DEX2CBFD_Init(); break;
+		}
+
+		if (m_pCurrent->NoN) {
+			// Disable near and far plane clipping
+			glEnable(GL_DEPTH_CLAMP);
+			// Enable Far clipping plane in vertex shader
+			glEnable(GL_CLIP_DISTANCE0);
+		} else {
+			glDisable(GL_DEPTH_CLAMP);
+			glDisable(GL_CLIP_DISTANCE0);
 		}
 	}
 }

@@ -556,11 +556,13 @@ void OGLRender::_updateStates() const
 	} else {
 		if ((gSP.geometryMode & G_ZBUFFER) || gDP.otherMode.depthSource == G_ZS_PRIM) {
 			glEnable(GL_DEPTH_TEST);
-			glDisable(GL_DEPTH_CLAMP);
+			if (!GBI.isNoN())
+				glDisable(GL_DEPTH_CLAMP);
 		}
 		else {
 			glDisable(GL_DEPTH_TEST);
-			glEnable(GL_DEPTH_CLAMP);
+			if (!GBI.isNoN())
+				glEnable(GL_DEPTH_CLAMP);
 		}
 
 		if ((gDP.changed & CHANGED_RENDERMODE) > 0) {
