@@ -457,7 +457,7 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 	strFragmentShader.append(fragment_shader_alpha_dither);
 
 	strFragmentShader.append(
-		"  switch (uFogUsage) {									\n"
+		"  switch (uFogUsage&255) {								\n"
 		"	case 2:												\n"
 		"		fragColor = vec4(color2, uFogColor.a);			\n"
 		"	break;												\n"
@@ -485,7 +485,7 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 	strFragmentShader.append("  toonify(intensity); \n");
 #endif
 	strFragmentShader.append(
-		"	if (uFogUsage == 1) \n"
+		"	if (uFogUsage == 257) \n"
 		"		fragColor = vec4(mix(fragColor.rgb, uFogColor.rgb, vFogFragCoord), fragColor.a); \n"
 		"	if (uGammaCorrectionEnabled != 0) \n"
 		"		fragColor = vec4(sqrt(fragColor.rgb), fragColor.a); \n"
@@ -658,6 +658,7 @@ void ShaderCombiner::updateColors(bool _bForce)
 	_setV4Uniform(m_uniforms.uCenterColor, &gDP.key.center.r, _bForce);
 	_setV4Uniform(m_uniforms.uScaleColor, &gDP.key.scale.r, _bForce);
 	const u32 blender = (gDP.otherMode.l >> 16);
+	const int nFogBlendEnabled = (gDP.otherMode.c1_m1a == 3 || gDP.otherMode.c1_m2a == 3 || gDP.otherMode.c2_m1a == 3 || gDP.otherMode.c2_m2a == 3) ? 256 : 0;
 	int nFogUsage;
 	switch (blender) {
 	case 0x0150:
@@ -691,7 +692,7 @@ void ShaderCombiner::updateColors(bool _bForce)
 			break;
 		}
 	}
-	_setIUniform(m_uniforms.uFogUsage, nFogUsage, _bForce);
+	_setIUniform(m_uniforms.uFogUsage, nFogUsage | nFogBlendEnabled, _bForce);
 	_setIUniform(m_uniforms.uFogMode, nFogMode, _bForce);
 	if (nFogUsage + nFogMode != 0) {
 		_setFUniform(m_uniforms.uFogMultiplier, (float)gSP.fog.multiplier / 256.0f, _bForce);

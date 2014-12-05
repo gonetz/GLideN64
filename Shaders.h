@@ -120,7 +120,7 @@ static const char* vertex_shader =
 "    break;														\n"
 "  }															\n"
 "  vFogFragCoord = clamp(vFogFragCoord, 0.0, 1.0);				\n"
-"  if (uFogUsage == 1 && uFogMode == 0)							\n"
+"  if ((uFogUsage&255) == 1 && uFogMode == 0)							\n"
 "     vShadeColor.a = vFogFragCoord;							\n"
 "}																\n"
 ;
