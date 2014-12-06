@@ -926,6 +926,23 @@ bool texturedRectPaletteMod(const OGLRender::TexturedRectParams & _params)
 	return true;
 }
 
+static
+bool texturedRectMonochromeBackground(const OGLRender::TexturedRectParams & _params)
+{
+	if (gDP.textureImage.address >= gDP.colorImage.address && gDP.textureImage.address <= (gDP.colorImage.address + gDP.colorImage.width*gDP.colorImage.height * 2)) {
+#ifdef GL_IMAGE_TEXTURES_SUPPORT
+		FrameBufferList & fb = frameBufferList();
+		if (fb.isFboMode()) {
+			FrameBuffer_ActivateBufferTexture(0, fb.getCurrent());
+			SetMonochromeCombiner(g_monochrome_image_program);
+			return false;
+		} else
+#endif
+			return true;
+	}
+	return false;
+}
+
 // Special processing of textured rect.
 // Return true if actuial rendering is not necessary
 bool(*texturedRectSpecial)(const OGLRender::TexturedRectParams & _params) = NULL;
@@ -1223,6 +1240,8 @@ void OGLRender::_setSpecialTexrect() const
 		texturedRectSpecial = texturedRectBGCopy;
 	else if (strstr(name, (const char *)"PAPER MARIO") || strstr(name, (const char *)"MARIO STORY"))
 		texturedRectSpecial = texturedRectPaletteMod;
+	else if (strstr(name, (const char *)"ZELDA"))
+		texturedRectSpecial = texturedRectMonochromeBackground;
 	else
 		texturedRectSpecial = NULL;
 }

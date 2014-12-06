@@ -21,6 +21,7 @@ static GLuint  g_test_alpha_shader_object;
 
 #ifdef GL_IMAGE_TEXTURES_SUPPORT
 GLuint g_draw_shadow_map_program = 0;
+GLuint g_monochrome_image_program = 0;
 static GLuint g_zlut_tex = 0;
 GLuint g_tlut_tex = 0;
 static u32 g_paletteCRC256 = 0;
@@ -145,6 +146,7 @@ void InitShadowMapShader()
 	glTexImage1D(GL_TEXTURE_1D, 0, GL_R16, 256, 0, GL_RED, GL_UNSIGNED_SHORT, NULL);
 
 	g_draw_shadow_map_program = createShaderProgram(default_vertex_shader, shadow_map_fragment_shader_float);
+	g_monochrome_image_program = createShaderProgram(default_vertex_shader, zelda_monochrome_fragment_shader);
 }
 
 static
@@ -162,6 +164,8 @@ void DestroyShadowMapShader()
 	}
 	glDeleteProgram(g_draw_shadow_map_program);
 	g_draw_shadow_map_program = 0;
+	glDeleteProgram(g_monochrome_image_program);
+	g_monochrome_image_program = 0;
 }
 #endif // GL_IMAGE_TEXTURES_SUPPORT
 

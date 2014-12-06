@@ -598,4 +598,43 @@ static const char* shadow_map_fragment_shader_float =
 "  fragColor = vec4(uFogColor.rgb, get_alpha());		\n"
 "}														\n"
 ;
+
+#if 0 // Do palette based monochrome image. Exactly as N64 does
+static const char* zelda_monochrome_fragment_shader =
+"#version 420 core											\n"
+"layout(binding = 0) uniform sampler2D uColorImage;			\n"
+"layout(binding = 1, r16ui) uniform readonly uimage1D uTlutImage;\n"
+"out lowp vec4 fragColor;									\n"
+"lowp float get_color()										\n"
+"{															\n"
+"  ivec2 coord = ivec2(gl_FragCoord.xy);					\n"
+"  vec4 color = 31.0*texelFetch(uColorImage, coord, 0);		\n"
+"  int r = int(color.r); int g = int(color.g); int b = int(color.b);\n"
+//"  int a = 0; if ((color.r + color.g + color.b) > 0) a = 32768;\n"
+//"  int color16 = 32768 + r*1024 + g*32 + b;		\n"
+"  int color16 = r*1024 + g*32 + b;						\n"
+"  int index = min(255, color16/256);					\n"
+"  unsigned int iAlpha = imageLoad(uTlutImage,index).r; \n"
+"  memoryBarrier();										\n"
+"  return clamp(float((iAlpha&255) + index)/255.0, 0.0, 1.0); \n"
+"}														\n"
+"void main()											\n"
+"{														\n"
+"  fragColor = vec4(vec3(get_color()), 1.0);			\n"
+"}														\n"
+;
+#else // Cheat it
+static const char* zelda_monochrome_fragment_shader =
+"#version 420 core										\n"
+"layout(binding = 0) uniform sampler2D uColorImage;		\n"
+"out lowp vec4 fragColor;								\n"
+"void main()											\n"
+"{														\n"
+"  ivec2 coord = ivec2(gl_FragCoord.xy);				\n"
+"  vec4 tex = texelFetch(uColorImage, coord, 0);		\n"
+"  lowp float c = (tex.r + tex.g + tex.b) / 3.0f;		\n"
+"  fragColor = vec4(vec3(c), 1.0);						\n"
+"}														\n"
+;
+#endif
 #endif // GL_IMAGE_TEXTURES_SUPPORT
