@@ -988,8 +988,8 @@ void gDPTextureRectangle( f32 ulx, f32 uly, f32 lrx, f32 lry, s32 tile, f32 s, f
 
 	f32 lrs, lrt;
 	if (RSP.cmd == G_TEXRECTFLIP) {
-		lrs = s + (lry - uly - 1) * dtdy;
-		lrt = t + (lrx - ulx - 1) * dsdx;
+		lrs = s + (lry - uly - 1) * dsdx;
+		lrt = t + (lrx - ulx - 1) * dtdy;
 	} else {
 		lrs = s + (lrx - ulx - 1) * dsdx;
 		lrt = t + (lry - uly - 1) * dtdy;

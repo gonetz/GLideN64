@@ -976,78 +976,83 @@ void OGLRender::drawTexturedRect(const TexturedRectParams & _params)
 	m_rect[3].w = W;
 
 	TextureCache & cache = textureCache();
-	if (currentCombiner()->usesT0() && cache.current[0] && gSP.textureTile[0]) {
-		m_rect[0].s0 = _params.uls * cache.current[0]->shiftScaleS - gSP.textureTile[0]->fuls;
-		m_rect[0].t0 = _params.ult * cache.current[0]->shiftScaleT - gSP.textureTile[0]->fult;
-		m_rect[3].s0 = (_params.lrs + 1.0f) * cache.current[0]->shiftScaleS - gSP.textureTile[0]->fuls;
-		m_rect[3].t0 = (_params.lrt + 1.0f) * cache.current[0]->shiftScaleT - gSP.textureTile[0]->fult;
+	struct
+	{
+		float s0, t0, s1, t1;
+	} texST[2]; //struct for texture coordinates
 
-		if ((cache.current[0]->maskS) && !(cache.current[0]->mirrorS) && (fmod(m_rect[0].s0, cache.current[0]->width) == 0.0f)) {
-			m_rect[3].s0 -= m_rect[0].s0;
-			m_rect[0].s0 = 0.0f;
+	if (currentCombiner()->usesT0() && cache.current[0] && gSP.textureTile[0]) {
+		texST[0].s0 = _params.uls * cache.current[0]->shiftScaleS - gSP.textureTile[0]->fuls;
+		texST[0].t0 = _params.ult * cache.current[0]->shiftScaleT - gSP.textureTile[0]->fult;
+		texST[0].s1 = (_params.lrs + 1.0f) * cache.current[0]->shiftScaleS - gSP.textureTile[0]->fuls;
+		texST[0].t1 = (_params.lrt + 1.0f) * cache.current[0]->shiftScaleT - gSP.textureTile[0]->fult;
+
+		if ((cache.current[0]->maskS) && !(cache.current[0]->mirrorS) && (fmod(texST[0].s0, cache.current[0]->width) == 0.0f)) {
+			texST[0].s1 -= texST[0].s0;
+			texST[0].s0 = 0.0f;
 		}
 
-		if ((cache.current[0]->maskT)  && !(cache.current[0]->mirrorT) && (fmod(m_rect[0].t0, cache.current[0]->height) == 0.0f)) {
-			m_rect[3].t0 -= m_rect[0].t0;
-			m_rect[0].t0 = 0.0f;
+		if ((cache.current[0]->maskT) && !(cache.current[0]->mirrorT) && (fmod(texST[0].t0, cache.current[0]->height) == 0.0f)) {
+			texST[0].t1 -= texST[0].t0;
+			texST[0].t0 = 0.0f;
 		}
 
 		if (cache.current[0]->frameBufferTexture) {
-			m_rect[0].s0 = cache.current[0]->offsetS + m_rect[0].s0;
-			m_rect[0].t0 = cache.current[0]->offsetT - m_rect[0].t0;
-			m_rect[3].s0 = cache.current[0]->offsetS + m_rect[3].s0;
-			m_rect[3].t0 = cache.current[0]->offsetT - m_rect[3].t0;
+			texST[0].s0 = cache.current[0]->offsetS + texST[0].s0;
+			texST[0].t0 = cache.current[0]->offsetT - texST[0].t0;
+			texST[0].s1 = cache.current[0]->offsetS + texST[0].s1;
+			texST[0].t1 = cache.current[0]->offsetT - texST[0].t1;
 		}
 
 		glActiveTexture( GL_TEXTURE0 );
 
-		if ((m_rect[0].s0 >= 0.0 && m_rect[3].s0 <= cache.current[0]->width) || (cache.current[0]->maskS + cache.current[0]->mirrorS == 0 && (m_rect[0].s0 < -1024.0f || m_rect[3].s0 > 1023.99f)))
+		if ((texST[0].s0 >= 0.0 && texST[0].s1 <= cache.current[0]->width) || (cache.current[0]->maskS + cache.current[0]->mirrorS == 0 && (texST[0].s0 < -1024.0f || texST[0].s1 > 1023.99f)))
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 
-		if (m_rect[0].t0 >= 0.0f && m_rect[3].t0 <= cache.current[0]->height)
+		if (texST[0].t0 >= 0.0f && texST[0].t1 <= cache.current[0]->height)
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-		m_rect[0].s0 *= cache.current[0]->scaleS;
-		m_rect[0].t0 *= cache.current[0]->scaleT;
-		m_rect[3].s0 *= cache.current[0]->scaleS;
-		m_rect[3].t0 *= cache.current[0]->scaleT;
+		texST[0].s0 *= cache.current[0]->scaleS;
+		texST[0].t0 *= cache.current[0]->scaleT;
+		texST[0].s1 *= cache.current[0]->scaleS;
+		texST[0].t1 *= cache.current[0]->scaleT;
 	}
 
 	if (currentCombiner()->usesT1() && cache.current[1] && gSP.textureTile[1]) {
-		m_rect[0].s1 = _params.uls * cache.current[1]->shiftScaleS - gSP.textureTile[1]->fuls;
-		m_rect[0].t1 = _params.ult * cache.current[1]->shiftScaleT - gSP.textureTile[1]->fult;
-		m_rect[3].s1 = (_params.lrs + 1.0f) * cache.current[1]->shiftScaleS - gSP.textureTile[1]->fuls;
-		m_rect[3].t1 = (_params.lrt + 1.0f) * cache.current[1]->shiftScaleT - gSP.textureTile[1]->fult;
+		texST[1].s0 = _params.uls * cache.current[1]->shiftScaleS - gSP.textureTile[1]->fuls;
+		texST[1].t0 = _params.ult * cache.current[1]->shiftScaleT - gSP.textureTile[1]->fult;
+		texST[1].s1 = (_params.lrs + 1.0f) * cache.current[1]->shiftScaleS - gSP.textureTile[1]->fuls;
+		texST[1].t1 = (_params.lrt + 1.0f) * cache.current[1]->shiftScaleT - gSP.textureTile[1]->fult;
 
-		if ((cache.current[1]->maskS) && (fmod(m_rect[0].s1, cache.current[1]->width) == 0.0f) && !(cache.current[1]->mirrorS)) {
-			m_rect[3].s1 -= m_rect[0].s1;
-			m_rect[0].s1 = 0.0f;
+		if ((cache.current[1]->maskS) && (fmod(texST[1].s0, cache.current[1]->width) == 0.0f) && !(cache.current[1]->mirrorS)) {
+			texST[1].s1 -= texST[1].s0;
+			texST[1].s0 = 0.0f;
 		}
 
-		if ((cache.current[1]->maskT) && (fmod(m_rect[0].t1, cache.current[1]->height ) == 0.0f) && !(cache.current[1]->mirrorT)) {
-			m_rect[3].t1 -= m_rect[0].t1;
-			m_rect[0].t1 = 0.0f;
+		if ((cache.current[1]->maskT) && (fmod(texST[1].t0, cache.current[1]->height) == 0.0f) && !(cache.current[1]->mirrorT)) {
+			texST[1].t1 -= texST[1].t0;
+			texST[1].t0 = 0.0f;
 		}
 
 		if (cache.current[1]->frameBufferTexture) {
-			m_rect[0].s1 = cache.current[1]->offsetS + m_rect[0].s1;
-			m_rect[0].t1 = cache.current[1]->offsetT - m_rect[0].t1;
-			m_rect[3].s1 = cache.current[1]->offsetS + m_rect[3].s1;
-			m_rect[3].t1 = cache.current[1]->offsetT - m_rect[3].t1;
+			texST[1].s0 = cache.current[1]->offsetS + texST[1].s0;
+			texST[1].t0 = cache.current[1]->offsetT - texST[1].t0;
+			texST[1].s1 = cache.current[1]->offsetS + texST[1].s1;
+			texST[1].t1 = cache.current[1]->offsetT - texST[1].t1;
 		}
 
 		glActiveTexture( GL_TEXTURE1 );
 
-		if ((m_rect[0].s1 == 0.0f) && (m_rect[3].s1 <= cache.current[1]->width))
+		if ((texST[1].s0 == 0.0f) && (texST[1].s1 <= cache.current[1]->width))
 			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
 
-		if ((m_rect[0].t1 == 0.0f) && (m_rect[3].t1 <= cache.current[1]->height))
+		if ((texST[1].t0 == 0.0f) && (texST[1].t1 <= cache.current[1]->height))
 			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
 
-		m_rect[0].s1 *= cache.current[1]->scaleS;
-		m_rect[0].t1 *= cache.current[1]->scaleT;
-		m_rect[3].s1 *= cache.current[1]->scaleS;
-		m_rect[3].t1 *= cache.current[1]->scaleT;
+		texST[1].s0 *= cache.current[1]->scaleS;
+		texST[1].t0 *= cache.current[1]->scaleT;
+		texST[1].s1 *= cache.current[1]->scaleS;
+		texST[1].t1 *= cache.current[1]->scaleT;
 	}
 
 	if ((gDP.otherMode.cycleType == G_CYC_COPY) && !config.texture.forceBilinear) {
@@ -1056,24 +1061,32 @@ void OGLRender::drawTexturedRect(const TexturedRectParams & _params)
 		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
 	}
 
+	m_rect[1].s0 = texST[0].s1;
+	m_rect[1].t0 = texST[0].t0;
+	m_rect[1].s1 = texST[1].s1;
+	m_rect[1].t1 = texST[1].t0;
+	m_rect[2].s0 = texST[0].s0;
+	m_rect[2].t0 = texST[0].t1;
+	m_rect[2].s1 = texST[1].s0;
+	m_rect[2].t1 = texST[1].t1;
 	if (_params.flip) {
-		m_rect[1].s0 = m_rect[0].s0;
-		m_rect[1].t0 = m_rect[3].t0;
-		m_rect[1].s1 = m_rect[0].s1;
-		m_rect[1].t1 = m_rect[3].t1;
-		m_rect[2].s0 = m_rect[3].s0;
-		m_rect[2].t0 = m_rect[0].t0;
-		m_rect[2].s1 = m_rect[3].s1;
-		m_rect[2].t1 = m_rect[0].t1;
+		m_rect[0].s0 = texST[0].s1;
+		m_rect[0].t0 = texST[0].t1;
+		m_rect[0].s1 = texST[1].s1;
+		m_rect[0].t1 = texST[1].t1;
+		m_rect[3].s0 = texST[0].s0;
+		m_rect[3].t0 = texST[0].t0;
+		m_rect[3].s1 = texST[1].s0;
+		m_rect[3].t1 = texST[1].t0;
 	} else {
-		m_rect[1].s0 = m_rect[3].s0;
-		m_rect[1].t0 = m_rect[0].t0;
-		m_rect[1].s1 = m_rect[3].s1;
-		m_rect[1].t1 = m_rect[0].t1;
-		m_rect[2].s0 = m_rect[0].s0;
-		m_rect[2].t0 = m_rect[3].t0;
-		m_rect[2].s1 = m_rect[0].s1;
-		m_rect[2].t1 = m_rect[3].t1;
+		m_rect[0].s0 = texST[0].s0;
+		m_rect[0].t0 = texST[0].t0;
+		m_rect[0].s1 = texST[1].s0;
+		m_rect[0].t1 = texST[1].t0;
+		m_rect[3].s0 = texST[0].s1;
+		m_rect[3].t0 = texST[0].t1;
+		m_rect[3].s1 = texST[1].s1;
+		m_rect[3].t1 = texST[1].t1;
 	}
 
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
