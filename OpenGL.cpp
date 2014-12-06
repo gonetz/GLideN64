@@ -844,7 +844,7 @@ bool texturedRectShadowMap(const OGLRender::TexturedRectParams &)
 #ifdef GL_IMAGE_TEXTURES_SUPPORT
 //	if ((gDP.otherMode.l >> 16) == 0x3c18 && gDP.combine.muxs0 == 0x00ffffff && gDP.combine.muxs1 == 0xfffff238) //depth image based fog
 	if (gDP.textureImage.size == 2 && gDP.textureImage.address >= gDP.depthImageAddress &&  gDP.textureImage.address < (gDP.depthImageAddress +  gDP.colorImage.width*gDP.colorImage.width*6/4))
-		SetShadowMapCombiner();
+		SetMonochromeCombiner(g_draw_shadow_map_program);
 #endif // GL_IMAGE_TEXTURES_SUPPORT
 	return false;
 }

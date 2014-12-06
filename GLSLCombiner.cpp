@@ -20,8 +20,8 @@ static GLuint  g_calc_depth_shader_object;
 static GLuint  g_test_alpha_shader_object;
 
 #ifdef GL_IMAGE_TEXTURES_SUPPORT
+GLuint g_draw_shadow_map_program = 0;
 static GLuint g_zlut_tex = 0;
-static GLuint  g_draw_shadow_map_program;
 GLuint g_tlut_tex = 0;
 static u32 g_paletteCRC256 = 0;
 #endif // GL_IMAGE_TEXTURES_SUPPORT
@@ -841,7 +841,8 @@ void ShaderCombiner::updateAlphaTestInfo(bool _bForce) {
 }
 
 #ifdef GL_IMAGE_TEXTURES_SUPPORT
-void SetShadowMapCombiner() {
+void SetMonochromeCombiner(GLuint _program)
+{
 
 	if (!video().getRender().isImageTexturesSupported())
 		return;
@@ -859,9 +860,10 @@ void SetShadowMapCombiner() {
 		glBindImageTexture(TlutImageUnit, g_tlut_tex, 0, GL_FALSE, 0, GL_READ_ONLY, GL_R16UI);
 	}
 
-	glUseProgram(g_draw_shadow_map_program);
-	int loc = glGetUniformLocation(g_draw_shadow_map_program, "uFogColor");
-	glUniform4fv(loc, 1, &gDP.fogColor.r);
+	glUseProgram(_program);
+	int loc = glGetUniformLocation(_program, "uFogColor");
+	if (loc >=0)
+		glUniform4fv(loc, 1, &gDP.fogColor.r);
 
 	gDP.changed |= CHANGED_COMBINE;
 }

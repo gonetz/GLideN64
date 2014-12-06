@@ -115,7 +115,9 @@ private:
 
 void InitShaderCombiner();
 void DestroyShaderCombiner();
-void SetShadowMapCombiner();
+
+extern GLuint g_draw_shadow_map_program;
+void SetMonochromeCombiner(GLuint _program);
 
 GLuint createShaderProgram(const char * _strVertex, const char * _strFragment);
 
