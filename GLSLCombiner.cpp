@@ -144,7 +144,7 @@ void InitShadowMapShader()
 	glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_WRAP_S, GL_CLAMP);
 	glTexImage1D(GL_TEXTURE_1D, 0, GL_R16, 256, 0, GL_RED, GL_UNSIGNED_SHORT, NULL);
 
-	g_draw_shadow_map_program = createShaderProgram(shadow_map_vertex_shader, shadow_map_fragment_shader_float);
+	g_draw_shadow_map_program = createShaderProgram(default_vertex_shader, shadow_map_fragment_shader_float);
 }
 
 static

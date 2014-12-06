@@ -569,7 +569,7 @@ static const char* depth_compare_shader_float =
 "}														\n"
 ;
 
-static const char* shadow_map_vertex_shader =
+static const char* default_vertex_shader =
 "#version 420 core												\n"
 "in highp vec4 	aPosition;								\n"
 "void main()                                                    \n"
