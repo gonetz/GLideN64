@@ -831,10 +831,6 @@ void TextureCache::_load(u32 _tile, CachedTexture *_pTexture)
 			mirrorTBit = 0x0000;
 		}
 
-		// Hack for Zelda warp texture
-		if (((tmptex.tMem << 3) + (tmptex.width * tmptex.height << tmptex.size >> 1)) > 4096)
-			tmptex.tMem = 0;
-
 		if (tmptex.size == G_IM_SIZ_32b) {
 			const u16 * tmem16 = (u16*)TMEM;
 			const u32 tbase = tmptex.tMem << 2;
