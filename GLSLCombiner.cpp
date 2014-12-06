@@ -447,7 +447,7 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 #ifdef GLES2
 		strFragmentShader.append("  lowp float intensity = calc_light(int(vNumLights), vShadeColor.rgb, input_color); \n");
 #else
-		strFragmentShader.append("  float intensity = calc_light(int(vNumLights), vShadeColor.rgb, input_color); \n");
+		strFragmentShader.append("  float intensity = calc_light(vNumLights, vShadeColor.rgb, input_color); \n");
 #endif
 	else
 		strFragmentShader.append("  input_color = vShadeColor.rgb;\n");
