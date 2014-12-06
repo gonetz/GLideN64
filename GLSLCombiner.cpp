@@ -5,7 +5,6 @@
 #include "N64.h"
 #include "OpenGL.h"
 #include "Config.h"
-#include "Combiner.h"
 #include "GLSLCombiner.h"
 #include "Shaders.h"
 #include "Noise_shader.h"
@@ -108,6 +107,29 @@ void DestroyZlutTexture()
 	}
 }
 
+GLuint createShaderProgram(const char * _strVertex, const char * _strFragment)
+{
+	GLuint vertex_shader_object = glCreateShader(GL_VERTEX_SHADER);
+	glShaderSource(vertex_shader_object, 1, &_strVertex, NULL);
+	glCompileShader(vertex_shader_object);
+	assert(check_shader_compile_status(vertex_shader_object));
+
+	GLuint fragment_shader_object = glCreateShader(GL_FRAGMENT_SHADER);
+	glShaderSource(fragment_shader_object, 1, &_strFragment, NULL);
+	glCompileShader(fragment_shader_object);
+	assert(check_shader_compile_status(fragment_shader_object));
+
+	GLuint program = glCreateProgram();
+	glBindAttribLocation(program, SC_POSITION, "aPosition");
+	glAttachShader(program, vertex_shader_object);
+	glAttachShader(program, fragment_shader_object);
+	glLinkProgram(program);
+	glDeleteShader(vertex_shader_object);
+	glDeleteShader(fragment_shader_object);
+	assert(check_program_link_status(program));
+	return program;
+}
+
 static
 void InitShadowMapShader()
 {
@@ -122,24 +144,7 @@ void InitShadowMapShader()
 	glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_WRAP_S, GL_CLAMP);
 	glTexImage1D(GL_TEXTURE_1D, 0, GL_R16, 256, 0, GL_RED, GL_UNSIGNED_SHORT, NULL);
 
-	GLuint shadow_map_vertex_shader_object = glCreateShader(GL_VERTEX_SHADER);
-	glShaderSource(shadow_map_vertex_shader_object, 1, &shadow_map_vertex_shader, NULL);
-	glCompileShader(shadow_map_vertex_shader_object);
-	assert(check_shader_compile_status(shadow_map_vertex_shader_object));
-
-	GLuint shadow_map_fragment_shader_object = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(shadow_map_fragment_shader_object, 1, &shadow_map_fragment_shader_float, NULL);
-	glCompileShader(shadow_map_fragment_shader_object);
-	assert(check_shader_compile_status(shadow_map_fragment_shader_object));
-
-	g_draw_shadow_map_program = glCreateProgram();
-	glBindAttribLocation(g_draw_shadow_map_program, SC_POSITION, "aPosition");
-	glAttachShader(g_draw_shadow_map_program, shadow_map_vertex_shader_object);
-	glAttachShader(g_draw_shadow_map_program, shadow_map_fragment_shader_object);
-	glLinkProgram(g_draw_shadow_map_program);
-	glDeleteShader(shadow_map_vertex_shader_object);
-	glDeleteShader(shadow_map_fragment_shader_object);
-	assert(check_program_link_status(g_draw_shadow_map_program));
+	g_draw_shadow_map_program = createShaderProgram(shadow_map_vertex_shader, shadow_map_fragment_shader_float);
 }
 
 static

@@ -2,6 +2,7 @@
 #define GLSL_COMBINER_H
 
 #include "gDP.h"
+#include "Combiner.h"
 
 class ShaderCombiner {
 public:
@@ -115,6 +116,8 @@ private:
 void InitShaderCombiner();
 void DestroyShaderCombiner();
 void SetShadowMapCombiner();
+
+GLuint createShaderProgram(const char * _strVertex, const char * _strFragment);
 
 //#define USE_TOONIFY
 

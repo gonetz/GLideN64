@@ -17,6 +17,7 @@
 
 #include "TextDrawer.h"
 #include "Config.h"
+#include "GLSLCombiner.h"
 
 struct point {
 	GLfloat x;
@@ -219,30 +220,7 @@ void TextDrawer::init()
 		return;
 	}
 
-	GLint status;
-
-	GLuint draw_text_vertex_shader_object = glCreateShader(GL_VERTEX_SHADER);
-	glShaderSource(draw_text_vertex_shader_object, 1, &strDrawTextVertexShader, NULL);
-	glCompileShader(draw_text_vertex_shader_object);
-	glGetShaderiv(draw_text_vertex_shader_object, GL_COMPILE_STATUS, &status);
-	assert(status == GL_TRUE);
-
-	GLuint draw_text_fragment_shader_object = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(draw_text_fragment_shader_object, 1, &strDrawTextFragmentShader, NULL);
-	glCompileShader(draw_text_fragment_shader_object);
-	glGetShaderiv(draw_text_fragment_shader_object, GL_COMPILE_STATUS, &status);
-	assert(status == GL_TRUE);
-
-	m_program = glCreateProgram();
-	glBindAttribLocation(m_program, SC_POSITION, "aPosition");
-	glAttachShader(m_program, draw_text_vertex_shader_object);
-	glAttachShader(m_program, draw_text_fragment_shader_object);
-	glLinkProgram(m_program);
-	glDeleteShader(draw_text_vertex_shader_object);
-	glDeleteShader(draw_text_fragment_shader_object);
-	glGetProgramiv(m_program, GL_LINK_STATUS, &status);
-	assert(status == GL_TRUE);
-
+	m_program = createShaderProgram(strDrawTextVertexShader, strDrawTextFragmentShader);
 	if(m_program == 0)
 		return;
 
