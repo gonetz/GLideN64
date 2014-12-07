@@ -553,30 +553,41 @@ void OGLRender::_updateStates() const
 	if (config.frameBufferEmulation.N64DepthCompare) {
 		glDisable( GL_DEPTH_TEST );
 		glDepthMask( FALSE );
-	} else {
-		if ((gSP.geometryMode & G_ZBUFFER) || gDP.otherMode.depthSource == G_ZS_PRIM) {
-			glEnable(GL_DEPTH_TEST);
-			if (!GBI.isNoN())
-				glDisable(GL_DEPTH_CLAMP);
-		}
-		else {
-			glDisable(GL_DEPTH_TEST);
-			if (!GBI.isNoN())
-				glEnable(GL_DEPTH_CLAMP);
-		}
-
-		if ((gDP.changed & CHANGED_RENDERMODE) > 0) {
-			if (gDP.otherMode.depthCompare)
-				glDepthFunc( GL_LEQUAL );
-			else
-				glDepthFunc( GL_ALWAYS );
+	} else if ((gDP.changed & (CHANGED_RENDERMODE | CHANGED_CYCLETYPE)) != 0) {
+		if (((gSP.geometryMode & G_ZBUFFER) || gDP.otherMode.depthSource == G_ZS_PRIM) && gDP.otherMode.cycleType <= G_CYC_2CYCLE) {
+			if (gDP.otherMode.depthCompare) {
+				switch (gDP.otherMode.depthMode) {
+					case ZMODE_OPA:
+					glDisable(GL_POLYGON_OFFSET_FILL);
+					glDepthFunc(GL_LEQUAL);
+					break;
+					case ZMODE_INTER:
+					glEnable(GL_POLYGON_OFFSET_FILL);
+					glDepthFunc(GL_LEQUAL);
+					break;
+					case ZMODE_XLU:
+					glDisable(GL_POLYGON_OFFSET_FILL);
+					glDepthFunc(GL_LESS);
+					break;
+					case ZMODE_DEC:
+					glEnable(GL_POLYGON_OFFSET_FILL);
+					glDepthFunc(GL_LEQUAL);
+					break;
+				}
+			} else {
+				glDisable(GL_POLYGON_OFFSET_FILL);
+				glDepthFunc(GL_ALWAYS);
+			}
 
 			_updateDepthUpdate();
 
-			if (gDP.otherMode.depthMode == ZMODE_DEC)
-				glEnable( GL_POLYGON_OFFSET_FILL );
-			else
-				glDisable( GL_POLYGON_OFFSET_FILL );
+			glEnable(GL_DEPTH_TEST);
+			if (!GBI.isNoN())
+				glDisable(GL_DEPTH_CLAMP);
+		} else {
+			glDisable(GL_DEPTH_TEST);
+			if (!GBI.isNoN())
+				glEnable(GL_DEPTH_CLAMP);
 		}
 	}
 
