@@ -149,37 +149,14 @@ void RSP_ProcessDList()
 	gSP.matrix.modelViewi = 0;
 	gSP.changed &= ~CHANGED_CPU_FB_WRITE;
 	gSP.changed |= CHANGED_MATRIX;
-
-	for (int i = 0; i < 4; i++)
-		for (int j = 0; j < 4; j++)
-			gSP.matrix.modelView[0][i][j] = 0.0f;
-
-	gSP.matrix.modelView[0][0][0] = 1.0f;
-	gSP.matrix.modelView[0][1][1] = 1.0f;
-	gSP.matrix.modelView[0][2][2] = 1.0f;
-	gSP.matrix.modelView[0][3][3] = 1.0f;
+	gDPSetDepthSource(G_ZS_PIXEL);
 
 	u32 uc_start = *(u32*)&DMEM[0x0FD0];
 	u32 uc_dstart = *(u32*)&DMEM[0x0FD8];
 	u32 uc_dsize = *(u32*)&DMEM[0x0FDC];
 
 	if ((uc_start != RSP.uc_start) || (uc_dstart != RSP.uc_dstart))
-		gSPLoadUcodeEx( uc_start, uc_dstart, uc_dsize );
-
-	gDPSetAlphaCompare( G_AC_NONE );
-	gDPSetDepthSource( G_ZS_PIXEL );
-	gDPSetRenderMode( 0, 0 );
-	gDPSetAlphaDither( G_AD_DISABLE );
-	gDPSetColorDither( G_CD_DISABLE );
-	gDPSetCombineKey( G_CK_NONE );
-	gDPSetTextureConvert( G_TC_FILT );
-	gDPSetTextureFilter( G_TF_POINT );
-	gDPSetTextureLUT( G_TT_NONE );
-	gDPSetTextureLOD( G_TL_TILE );
-	gDPSetTextureDetail( G_TD_CLAMP );
-	gDPSetTexturePersp( G_TP_PERSP );
-	gDPSetCycleType( G_CYC_1CYCLE );
-	gDPPipelineMode( G_PM_NPRIMITIVE );
+		gSPLoadUcodeEx(uc_start, uc_dstart, uc_dsize);
 
 	if (GBI.getMicrocodeType() == Turbo3D)
 		RunTurbo3D();
@@ -240,6 +217,53 @@ void RSP_ProcessDList()
 	gSP.changed |= CHANGED_COLORBUFFER;
 }
 
+static
+void RSP_SetDefaultState()
+{
+	memset(&gSP, 0, sizeof(gSPInfo));
+
+	gSPTexture(1.0f, 1.0f, 0, 0, TRUE);
+	gDP.loadTile = &gDP.tiles[7];
+	gSP.textureTile[0] = &gDP.tiles[0];
+	gSP.textureTile[1] = &gDP.tiles[1];
+	gSP.lookat[0].x = gSP.lookat[1].x = 1.0f;
+	gSP.lookatEnable = false;
+
+	gSP.objMatrix.A = 1.0f;
+	gSP.objMatrix.B = 0.0f;
+	gSP.objMatrix.C = 0.0f;
+	gSP.objMatrix.D = 1.0f;
+	gSP.objMatrix.X = 0.0f;
+	gSP.objMatrix.Y = 0.0f;
+	gSP.objMatrix.baseScaleX = 1.0f;
+	gSP.objMatrix.baseScaleY = 1.0f;
+	gSP.objRendermode = 0;
+
+	for (int i = 0; i < 4; i++)
+	for (int j = 0; j < 4; j++)
+		gSP.matrix.modelView[0][i][j] = 0.0f;
+
+	gSP.matrix.modelView[0][0][0] = 1.0f;
+	gSP.matrix.modelView[0][1][1] = 1.0f;
+	gSP.matrix.modelView[0][2][2] = 1.0f;
+	gSP.matrix.modelView[0][3][3] = 1.0f;
+
+	gDPSetAlphaCompare(G_AC_NONE);
+	gDPSetDepthSource(G_ZS_PIXEL);
+	gDPSetRenderMode(0, 0);
+	gDPSetAlphaDither(G_AD_DISABLE);
+	gDPSetColorDither(G_CD_DISABLE);
+	gDPSetCombineKey(G_CK_NONE);
+	gDPSetTextureConvert(G_TC_FILT);
+	gDPSetTextureFilter(G_TF_POINT);
+	gDPSetTextureLUT(G_TT_NONE);
+	gDPSetTextureLOD(G_TL_TILE);
+	gDPSetTextureDetail(G_TD_CLAMP);
+	gDPSetTexturePersp(G_TP_PERSP);
+	gDPSetCycleType(G_CYC_1CYCLE);
+	gDPPipelineMode(G_PM_NPRIMITIVE);
+}
+
 void RSP_Init()
 {
 #ifdef OS_WINDOWS
@@ -287,22 +311,5 @@ void RSP_Init()
 	wstring::size_type pos = pluginPath.find_last_of(L"\\/");
 	wcscpy(RSP.pluginpath, pluginPath.substr(0, pos).c_str());
 
-	memset(&gSP, 0, sizeof(gSPInfo));
-
-	gSPTexture(1.0f, 1.0f, 0, 0, TRUE);
-	gDP.loadTile = &gDP.tiles[7];
-	gSP.textureTile[0] = &gDP.tiles[0];
-	gSP.textureTile[1] = &gDP.tiles[1];
-	gSP.lookat[0].x = gSP.lookat[1].x = 1.0f;
-	gSP.lookatEnable = false;
-
-	gSP.objMatrix.A = 1.0f;
-	gSP.objMatrix.B = 0.0f;
-	gSP.objMatrix.C = 0.0f;
-	gSP.objMatrix.D = 1.0f;
-	gSP.objMatrix.X = 0.0f;
-	gSP.objMatrix.Y = 0.0f;
-	gSP.objMatrix.baseScaleX = 1.0f;
-	gSP.objMatrix.baseScaleY = 1.0f;
-	gSP.objRendermode = 0;
+	RSP_SetDefaultState();
 }
