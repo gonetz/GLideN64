@@ -75,8 +75,9 @@ private:
 	void _checkCacheSize();
 	CachedTexture * _addTexture(u32 _crc32);
 	void _load(u32 _tile, CachedTexture *_pTexture);
-	void _loadBackground(CachedTexture *pTexture);
 	bool _loadHiresTexture(u32 _tile, CachedTexture *_pTexture);
+	void _loadBackground(CachedTexture *pTexture);
+	bool _loadHiresBackground(CachedTexture *_pTexture);
 	void _updateBackground();
 
 	typedef std::map<u32, CachedTexture> Textures;

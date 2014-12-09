@@ -584,57 +584,40 @@ void _updateCachedTexture(const GHQTexInfo & _info, CachedTexture *_pTexture)
 		default:
 		_pTexture->textureBytes <<= 2;
 	}
-	/*
 	_pTexture->realWidth = _info.width;
 	_pTexture->realHeight = _info.height;
+	/*
 	_pTexture->scaleS = 1.0f / (f32)(_pTexture->realWidth);
 	_pTexture->scaleT = 1.0f / (f32)(_pTexture->realHeight);
 	*/
 }
 
-bool TextureCache::_loadHiresTexture(u32 _tile, CachedTexture *_pTexture)
+bool TextureCache::_loadHiresBackground(CachedTexture *_pTexture)
 {
 	if (!TFH.isInited())
 		return false;
 
 	isGLError();  // Workaround for Mupen64Plus;
-	GHQTexInfo ghqTexInfo;
-	gDPLoadTileInfo & info = gDP.loadInfo[_pTexture->tMem];
-
-	int bpl;
-	u8 * addr = (u8*)(RDRAM + info.texAddress);
-	int tile_width = _pTexture->width;
-	int tile_height = _pTexture->height;
-	if (info.loadType == LOADTYPE_TILE) {
-		bpl = info.texWidth << info.size >> 1;
-		addr += (info.ult * bpl) + (((info.uls << info.size) + 1) >> 1);
-	} else {
-		if (gSP.textureTile[_tile]->size == G_IM_SIZ_32b)
-			bpl = gSP.textureTile[_tile]->line << 4;
-		else if (info.dxt == 0)
-			bpl = gSP.textureTile[_tile]->line << 3;
-		else {
-			u32 dxt = info.dxt;
-			if (dxt > 1)
-				dxt = ReverseDXT(dxt, info.width, _pTexture->width, _pTexture->size);
-			bpl = dxt << 3;
-		}
-	}
+	u8 * addr = (u8*)(RDRAM + gSP.bgImage.address);
+	int tile_width = gSP.bgImage.width;
+	int tile_height = gSP.bgImage.height;
+	int bpl = tile_width << gSP.bgImage.size >> 1;
 
 	u8 * paladdr = NULL;
 	u16 * palette = NULL;
-	if ((_pTexture->size < G_IM_SIZ_16b) && (gDP.otherMode.textureLUT != G_TT_NONE || _pTexture->format == G_IM_FMT_CI)) {
-		if (_pTexture->size == G_IM_SIZ_8b)
+	if ((gSP.bgImage.size < G_IM_SIZ_16b) && (gDP.otherMode.textureLUT != G_TT_NONE || gSP.bgImage.format == G_IM_FMT_CI)) {
+		if (gSP.bgImage.size == G_IM_SIZ_8b)
 			paladdr = (u8*)(gDP.TexFilterPalette);
 		else if (config.textureFilter.txHresAltCRC)
-			paladdr = (u8*)(gDP.TexFilterPalette + (_pTexture->palette << 5));
+			paladdr = (u8*)(gDP.TexFilterPalette + (gSP.bgImage.palette << 5));
 		else
-			paladdr = (u8*)(gDP.TexFilterPalette + (_pTexture->palette << 4));
+			paladdr = (u8*)(gDP.TexFilterPalette + (gSP.bgImage.palette << 4));
 		// TODO: fix palette load
 		//			palette = (rdp.pal_8 + (gSP.textureTile[_t]->palette << 4));
 	}
 
-	u64 ricecrc = txfilter_checksum(addr, tile_width, tile_height, (unsigned short)(_pTexture->format << 8 | _pTexture->size), bpl, paladdr);
+	u64 ricecrc = txfilter_checksum(addr, tile_width, tile_height, (unsigned short)(gSP.bgImage.format << 8 | gSP.bgImage.size), bpl, paladdr);
+	GHQTexInfo ghqTexInfo;
 	if (txfilter_hirestex(_pTexture->crc, ricecrc, palette, &ghqTexInfo)) {
 		glTexImage2D(GL_TEXTURE_2D, 0, ghqTexInfo.format, ghqTexInfo.width, ghqTexInfo.height, 0, ghqTexInfo.texture_format, ghqTexInfo.pixel_type, ghqTexInfo.data);
 		assert(!isGLError());
@@ -646,7 +629,7 @@ bool TextureCache::_loadHiresTexture(u32 _tile, CachedTexture *_pTexture)
 
 void TextureCache::_loadBackground(CachedTexture *pTexture)
 {
-	if (_loadHiresTexture(0, pTexture))
+	if (_loadHiresBackground(pTexture))
 		return;
 
 	u32 *pDest;
@@ -741,6 +724,59 @@ void TextureCache::_loadBackground(CachedTexture *pTexture)
 	}
 	glPixelStorei(GL_UNPACK_ALIGNMENT, curUnpackAlignment);
 	free(pDest);
+}
+
+bool TextureCache::_loadHiresTexture(u32 _tile, CachedTexture *_pTexture)
+{
+	if (!TFH.isInited())
+		return false;
+
+	isGLError();  // Workaround for Mupen64Plus;
+	gDPLoadTileInfo & info = gDP.loadInfo[_pTexture->tMem];
+
+	int bpl;
+	u8 * addr = (u8*)(RDRAM + info.texAddress);
+	int tile_width = _pTexture->width;
+	int tile_height = _pTexture->height;
+	if (info.loadType == LOADTYPE_TILE) {
+		bpl = info.texWidth << info.size >> 1;
+		addr += (info.ult * bpl) + (((info.uls << info.size) + 1) >> 1);
+	}
+	else {
+		if (gSP.textureTile[_tile]->size == G_IM_SIZ_32b)
+			bpl = gSP.textureTile[_tile]->line << 4;
+		else if (info.dxt == 0)
+			bpl = gSP.textureTile[_tile]->line << 3;
+		else {
+			u32 dxt = info.dxt;
+			if (dxt > 1)
+				dxt = ReverseDXT(dxt, info.width, _pTexture->width, _pTexture->size);
+			bpl = dxt << 3;
+		}
+	}
+
+	u8 * paladdr = NULL;
+	u16 * palette = NULL;
+	if ((_pTexture->size < G_IM_SIZ_16b) && (gDP.otherMode.textureLUT != G_TT_NONE || _pTexture->format == G_IM_FMT_CI)) {
+		if (_pTexture->size == G_IM_SIZ_8b)
+			paladdr = (u8*)(gDP.TexFilterPalette);
+		else if (config.textureFilter.txHresAltCRC)
+			paladdr = (u8*)(gDP.TexFilterPalette + (_pTexture->palette << 5));
+		else
+			paladdr = (u8*)(gDP.TexFilterPalette + (_pTexture->palette << 4));
+		// TODO: fix palette load
+		//			palette = (rdp.pal_8 + (gSP.textureTile[_t]->palette << 4));
+	}
+
+	u64 ricecrc = txfilter_checksum(addr, tile_width, tile_height, (unsigned short)(_pTexture->format << 8 | _pTexture->size), bpl, paladdr);
+	GHQTexInfo ghqTexInfo;
+	if (txfilter_hirestex(_pTexture->crc, ricecrc, palette, &ghqTexInfo)) {
+		glTexImage2D(GL_TEXTURE_2D, 0, ghqTexInfo.format, ghqTexInfo.width, ghqTexInfo.height, 0, ghqTexInfo.texture_format, ghqTexInfo.pixel_type, ghqTexInfo.data);
+		assert(!isGLError());
+		_updateCachedTexture(ghqTexInfo, _pTexture);
+		return true;
+	}
+	return false;
 }
 
 void TextureCache::_load(u32 _tile, CachedTexture *_pTexture)
