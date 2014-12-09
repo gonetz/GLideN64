@@ -606,7 +606,7 @@ bool TextureCache::_loadHiresTexture(u32 _tile, CachedTexture *_pTexture)
 	int tile_width = _pTexture->width;
 	int tile_height = _pTexture->height;
 	if (info.loadType == LOADTYPE_TILE) {
-		bpl = info.width << info.size >> 1;
+		bpl = info.texWidth << info.size >> 1;
 		addr += (info.ult * bpl) + (((info.uls << info.size) + 1) >> 1);
 	} else {
 		if (gSP.textureTile[_tile]->size == G_IM_SIZ_32b)
