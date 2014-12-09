@@ -599,7 +599,7 @@ bool TextureCache::_loadHiresTexture(u32 _tile, CachedTexture *_pTexture)
 
 	isGLError();  // Workaround for Mupen64Plus;
 	GHQTexInfo ghqTexInfo;
-	gDPLoadTileInfo & info = gDP.loadInfo[gSP.textureTile[_tile]->tmem];
+	gDPLoadTileInfo & info = gDP.loadInfo[_pTexture->tMem];
 
 	int bpl;
 	u8 * addr = (u8*)(RDRAM + info.texAddress);
@@ -616,25 +616,25 @@ bool TextureCache::_loadHiresTexture(u32 _tile, CachedTexture *_pTexture)
 		else {
 			u32 dxt = info.dxt;
 			if (dxt > 1)
-				dxt = ReverseDXT(dxt, info.width, _pTexture->width, gSP.textureTile[_tile]->size);
+				dxt = ReverseDXT(dxt, info.width, _pTexture->width, _pTexture->size);
 			bpl = dxt << 3;
 		}
 	}
 
 	u8 * paladdr = NULL;
 	u16 * palette = NULL;
-	if ((gSP.textureTile[_tile]->size < G_IM_SIZ_16b) && (gDP.otherMode.textureLUT != G_TT_NONE || gSP.textureTile[_tile]->format == G_IM_FMT_CI)) {
-		if (gSP.textureTile[_tile]->size == G_IM_SIZ_8b)
+	if ((_pTexture->size < G_IM_SIZ_16b) && (gDP.otherMode.textureLUT != G_TT_NONE || _pTexture->format == G_IM_FMT_CI)) {
+		if (_pTexture->size == G_IM_SIZ_8b)
 			paladdr = (u8*)(gDP.TexFilterPalette);
 		else if (config.textureFilter.txHresAltCRC)
-			paladdr = (u8*)(gDP.TexFilterPalette + (gSP.textureTile[_tile]->palette << 5));
+			paladdr = (u8*)(gDP.TexFilterPalette + (_pTexture->palette << 5));
 		else
-			paladdr = (u8*)(gDP.TexFilterPalette + (gSP.textureTile[_tile]->palette << 4));
+			paladdr = (u8*)(gDP.TexFilterPalette + (_pTexture->palette << 4));
 		// TODO: fix palette load
 		//			palette = (rdp.pal_8 + (gSP.textureTile[_t]->palette << 4));
 	}
 
-	u64 ricecrc = txfilter_checksum(addr, tile_width, tile_height, (unsigned short)(gSP.textureTile[_tile]->format << 8 | gSP.textureTile[_tile]->size), bpl, paladdr);
+	u64 ricecrc = txfilter_checksum(addr, tile_width, tile_height, (unsigned short)(_pTexture->format << 8 | _pTexture->size), bpl, paladdr);
 	if (txfilter_hirestex(_pTexture->crc, ricecrc, palette, &ghqTexInfo)) {
 		glTexImage2D(GL_TEXTURE_2D, 0, ghqTexInfo.format, ghqTexInfo.width, ghqTexInfo.height, 0, ghqTexInfo.texture_format, ghqTexInfo.pixel_type, ghqTexInfo.data);
 		assert(!isGLError());
