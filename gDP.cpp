@@ -607,8 +607,8 @@ void gDPLoadTile(u32 tile, u32 uls, u32 ult, u32 lrs, u32 lrt)
 
 	gDPLoadTileInfo &info = gDP.loadInfo[gDP.loadTile->tmem];
 	info.texAddress = gDP.loadTile->imageAddress;
-	info.uls = uls;
-	info.ult = ult;
+	info.uls = gDP.loadTile->uls;
+	info.ult = gDP.loadTile->ult;
 	info.width = gDP.loadTile->masks != 0 ? (u16)min(width, 1U<<gDP.loadTile->masks) : (u16)width;
 	info.height = gDP.loadTile->maskt != 0 ? (u16)min(height, 1U<<gDP.loadTile->maskt) : (u16)height;
 	info.texWidth = gDP.textureImage.width;
@@ -726,7 +726,7 @@ void gDPLoadBlock(u32 tile, u32 uls, u32 ult, u32 lrs, u32 dxt)
 
 	gDPLoadTileInfo &info = gDP.loadInfo[gDP.loadTile->tmem];
 	info.texAddress = gDP.loadTile->imageAddress;
-	info.width = lrs;
+	info.width = gDP.loadTile->lrs;
 	info.dxt = dxt;
 	info.size = gDP.textureImage.size;
 	info.loadType = LOADTYPE_BLOCK;
