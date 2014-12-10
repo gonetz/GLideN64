@@ -835,10 +835,16 @@ void TextureCache::_load(u32 _tile, CachedTexture *_pTexture)
 			const u16 * tmem16 = (u16*)TMEM;
 			const u32 tbase = tmptex.tMem << 2;
 
-			u32 width = (tmptex.clampWidth) << 2;
-			if (width & 15) width += 16;
-			width &= 0xFFFFFFF0;
-			width >>= 2;
+			int wid_64 = (tmptex.clampWidth) << 2;
+			if (wid_64 & 15) wid_64 += 16;
+			wid_64 &= 0xFFFFFFF0;
+			wid_64 >>= 3;
+			int line = tmptex.line << 1;
+			line = (line - wid_64) << 3;
+			if (wid_64 < 1) wid_64 = 1;
+			int width = wid_64 << 1;
+			line = width + (line >> 2);
+
 			u16 gr, ab;
 
 			j = 0;
@@ -847,7 +853,7 @@ void TextureCache::_load(u32 _tile, CachedTexture *_pTexture)
 				if (y & mirrorTBit)
 					ty ^= maskTMask;
 
-				u32 tline = tbase + width * ty;
+				u32 tline = tbase + line * ty;
 				u32 xorval = (ty & 1) ? 3 : 1;
 
 				for (x = 0; x < tmptex.realWidth; ++x) {
