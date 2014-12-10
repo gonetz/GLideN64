@@ -190,7 +190,10 @@ void F3D_MoveWord( u32 w0, u32 w1 )
 			}
 			break;
 		case G_MW_POINTS:
-			gSPModifyVertex( _SHIFTR( w0, 8, 16 ) / 40, _SHIFTR( w0, 0, 8 ) % 40, w1 );
+			{
+			  const u32 val = _SHIFTR(w0, 8, 16);
+			  gSPModifyVertex(val / 40, val % 40, w1);
+			}
 			break;
 		case G_MW_PERSPNORM:
 			gSPPerspNormalize( w1 );
