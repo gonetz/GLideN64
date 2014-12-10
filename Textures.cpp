@@ -807,6 +807,14 @@ void TextureCache::_load(u32 _tile, CachedTexture *_pTexture)
 
 			glInternalFormat = GL_RGBA;
 			glType = GL_UNSIGNED_BYTE;
+		} else if ((_pTexture->format == G_IM_FMT_IA || _pTexture->format == G_IM_FMT_I) && (gDP.otherMode.textureLUT == G_IM_FMT_CI)) {
+			if (_pTexture->size == G_IM_SIZ_4b)
+				GetTexel = GetCI4RGBA_RGBA8888;
+			else
+				GetTexel = GetCI8RGBA_RGBA8888;
+
+			glInternalFormat = GL_RGBA;
+			glType = GL_UNSIGNED_BYTE;
 		} else {
 			GetTexel = imageFormat[_pTexture->size][_pTexture->format].Get32;
 			glInternalFormat = imageFormat[_pTexture->size][_pTexture->format].glInternalFormat32;
@@ -823,6 +831,14 @@ void TextureCache::_load(u32 _tile, CachedTexture *_pTexture)
 
 			glInternalFormat = GL_RGBA4;
 			glType = GL_UNSIGNED_SHORT_4_4_4_4;
+		} else if ((_pTexture->format == G_IM_FMT_IA || _pTexture->format == G_IM_FMT_I) && (gDP.otherMode.textureLUT == G_IM_FMT_CI)) {
+				if (_pTexture->size == G_IM_SIZ_4b)
+					GetTexel = GetCI4RGBA_RGBA5551;
+				else
+					GetTexel = GetCI8RGBA_RGBA5551;
+
+				glInternalFormat = GL_RGB5_A1;
+				glType = GL_UNSIGNED_SHORT_5_5_5_1;
 		} else {
 			GetTexel = imageFormat[_pTexture->size][_pTexture->format].Get16;
 			glInternalFormat = imageFormat[_pTexture->size][_pTexture->format].glInternalFormat16;
