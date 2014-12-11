@@ -167,7 +167,8 @@ void F3DEX2_SetOtherMode_H( u32 w0, u32 w1 )
 void F3DEX2_SetOtherMode_L( u32 w0, u32 w1 )
 {
 	const u32 length = _SHIFTR( w0, 0, 8 ) + 1;
-	const u32 shift = 32 - _SHIFTR( w0, 8, 8 ) - length;
+	int shift = 32 - _SHIFTR( w0, 8, 8 ) - length;
+	if (shift < 0) shift = 0;
 	switch (shift)
 	{
 		case G_MDSFT_ALPHACOMPARE:
