@@ -670,6 +670,9 @@ void ShaderCombiner::updateColors(bool _bForce)
 	case 0x0D18:
 		nFogUsage = gDP.otherMode.cycleType == G_CYC_2CYCLE ? 2 : 0;
 		break;
+	case 0x0440:
+		nFogUsage = gDP.otherMode.cycleType == G_CYC_1CYCLE ? 2 : 0;
+		break;
 	case 0xC912:
 		nFogUsage = 2;
 		break;
