@@ -34,7 +34,7 @@
 
 #include "gSP.h"
 
-#define INDEXMAP_SIZE 64U
+#define INDEXMAP_SIZE 80U
 #define VERTBUFF_SIZE 256U
 #define ELEMBUFF_SIZE 1024U
 
