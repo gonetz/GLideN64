@@ -438,19 +438,10 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 		strFragmentShader.append("  float lod_frac = mipmap(readtex0, readtex1);	\n");
 #endif
 	} else {
-		if (_alpha.numStages == 1 && _color.numStages == 1) {
-			if ((m_nInputs & ((1 << TEXEL0) | (1 << TEXEL0_ALPHA))) > 0)
+		if (usesT0())
 				strFragmentShader.append(fragment_shader_readtex0color);
-			if ((m_nInputs & ((1 << TEXEL1) | (1 << TEXEL1_ALPHA))) > 0)
+		if (usesT1())
 				strFragmentShader.append(fragment_shader_readtex1color);
-		} else {
-			if ((m_nInputs & ((1 << TEXEL0) | (1 << TEXEL1) | (1 << TEXEL0_ALPHA) | (1 << TEXEL1_ALPHA))) > 0) {
-				strFragmentShader.append(fragment_shader_readtex0color);
-				strFragmentShader.append(fragment_shader_readtex1color);
-			} else {
-				assert(strstr(strCombiner, "readtex") == 0);
-			}
-		}
 	}
 	if (config.enableHWLighting)
 #ifdef GLES2
