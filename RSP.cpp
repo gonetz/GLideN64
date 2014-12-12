@@ -150,6 +150,7 @@ void RSP_ProcessDList()
 	gSP.changed &= ~CHANGED_CPU_FB_WRITE;
 	gSP.changed |= CHANGED_MATRIX;
 	gDPSetDepthSource(G_ZS_PIXEL);
+	gDPSetTexturePersp(G_TP_PERSP);
 
 	u32 uc_start = *(u32*)&DMEM[0x0FD0];
 	u32 uc_dstart = *(u32*)&DMEM[0x0FD8];
