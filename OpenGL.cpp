@@ -566,8 +566,14 @@ void OGLRender::_updateStates() const
 					glDepthFunc(GL_LEQUAL);
 					break;
 					case ZMODE_XLU:
+					// Max || Infront;
 					glDisable(GL_POLYGON_OFFSET_FILL);
-					glDepthFunc(GL_LESS);
+					if (gDP.otherMode.depthSource == G_ZS_PRIM && gDP.primDepth.z == 1.0f)
+						// Max
+						glDepthFunc(GL_LEQUAL);
+					else
+						// Infront
+						glDepthFunc(GL_LESS);
 					break;
 					case ZMODE_DEC:
 					glEnable(GL_POLYGON_OFFSET_FILL);
