@@ -650,15 +650,23 @@ void OGLRender::_setColorArray() const
 
 void OGLRender::_setTexCoordArrays() const
 {
-	if (currentCombiner()->usesT0())
-		glEnableVertexAttribArray(SC_TEXCOORD0);
-	else
-		glDisableVertexAttribArray(SC_TEXCOORD0);
-
-	if (currentCombiner()->usesT1())
-		glEnableVertexAttribArray(SC_TEXCOORD1);
-	else
+	if (m_renderState == rsTriangle) {
 		glDisableVertexAttribArray(SC_TEXCOORD1);
+		if (currentCombiner()->usesT0() || currentCombiner()->usesT1())
+			glEnableVertexAttribArray(SC_TEXCOORD0);
+		else
+			glDisableVertexAttribArray(SC_TEXCOORD0);
+	} else {
+		if (currentCombiner()->usesT0())
+			glEnableVertexAttribArray(SC_TEXCOORD0);
+		else
+			glDisableVertexAttribArray(SC_TEXCOORD0);
+
+		if (currentCombiner()->usesT1())
+			glEnableVertexAttribArray(SC_TEXCOORD1);
+		else
+			glDisableVertexAttribArray(SC_TEXCOORD1);
+	}
 }
 
 void OGLRender::_prepareDrawTriangle(bool _dma)
@@ -676,7 +684,6 @@ void OGLRender::_prepareDrawTriangle(bool _dma)
 		m_renderState = rsTriangle;
 		_setColorArray();
 		_setTexCoordArrays();
-		glDisableVertexAttribArray(SC_TEXCOORD1);
 	}
 
 	if (updateArrays) {
