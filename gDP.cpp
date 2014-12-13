@@ -731,7 +731,7 @@ void gDPLoadBlock(u32 tile, u32 uls, u32 ult, u32 lrs, u32 dxt)
 	info.size = gDP.textureImage.size;
 	info.loadType = LOADTYPE_BLOCK;
 
-	u32 bytes = (lrs + 1) << gDP.loadTile->size >> 1;
+	u32 bytes = (gDP.loadTile->lrs - gDP.loadTile->uls + 1) << 3;
 	u32 address = gDP.textureImage.address + ult * gDP.textureImage.bpl + (uls << gDP.textureImage.size >> 1);
 
 	if ((bytes == 0) ||
