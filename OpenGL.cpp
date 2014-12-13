@@ -125,6 +125,7 @@ void OGLVideo::stop()
 void OGLVideo::swapBuffers()
 {
 	_swapBuffers();
+	gDPSetRenderMode(0, 0);
 }
 
 void OGLVideo::setCaptureScreen(const char * const _strDirectory)
