@@ -1225,6 +1225,8 @@ void OGLRender::_initData()
 
 	memset(triangles.vertices, 0, VERTBUFF_SIZE * sizeof(SPVertex));
 	memset(triangles.elements, 0, ELEMBUFF_SIZE * sizeof(GLubyte));
+	for (u32 i = 0; i < VERTBUFF_SIZE; ++i)
+		triangles.vertices[i].w = 1.0f;
 	triangles.num = 0;
 
 #ifdef __TRIBUFFER_OPT
