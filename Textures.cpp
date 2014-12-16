@@ -1070,24 +1070,22 @@ struct TextureParams
 static
 u32 _calculateCRC(u32 t, const TextureParams & _params)
 {
-	u32 crc;
-	u32 y, bpl, lineBytes, line;
-	u64 *src;
+	const u32 line = gSP.textureTile[t]->line;
+	const u32 lineBytes = line << 3;
 
-	src = (u64*)&TMEM[gSP.textureTile[t]->tmem];
-	bpl = _params.width << gSP.textureTile[t]->size >> 1;
-	lineBytes = gSP.textureTile[t]->line << 3;
-
-	line = gSP.textureTile[t]->line;
-	if (gSP.textureTile[t]->size == G_IM_SIZ_32b)
-		line <<= 1;
-
-	crc = 0xFFFFFFFF;
-	for (y = 0; y < _params.height; y++)
-	{
-		crc = CRC_Calculate( crc, src, bpl );
-
+	const u64 *src = (u64*)&TMEM[gSP.textureTile[t]->tmem];
+	u32 crc = 0xFFFFFFFF;
+	for (u32 y = 0; y < _params.height; ++y) {
+		crc = CRC_Calculate(crc, src, lineBytes);
 		src += line;
+	}
+
+	if (gSP.textureTile[t]->size == G_IM_SIZ_32b) {
+		src = (u64*)&TMEM[gSP.textureTile[t]->tmem + 256];
+		for (u32 y = 0; y < _params.height; ++y) {
+			crc = CRC_Calculate(crc, src, lineBytes);
+			src += line;
+		}
 	}
 
 	if (gDP.otherMode.textureLUT != G_TT_NONE || gSP.textureTile[t]->format == G_IM_FMT_CI) {
