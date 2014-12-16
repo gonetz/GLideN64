@@ -826,6 +826,14 @@ void ShaderCombiner::updateAlphaTestInfo(bool _bForce) {
 	if (gDP.otherMode.cycleType == G_CYC_FILL) {
 		_setIUniform(m_uniforms.uEnableAlphaTest, 0, _bForce);
 		_setFUniform(m_uniforms.uAlphaTestValue, 0.0f, _bForce);
+	} else if (gDP.otherMode.cycleType == G_CYC_COPY) {
+		if (gDP.otherMode.alphaCompare == G_AC_THRESHOLD) {
+			_setIUniform(m_uniforms.uEnableAlphaTest, 1, _bForce);
+			_setFUniform(m_uniforms.uAlphaTestValue, 0.5f, _bForce);
+		} else {
+			_setIUniform(m_uniforms.uEnableAlphaTest, 0, _bForce);
+			_setFUniform(m_uniforms.uAlphaTestValue, 0.0f, _bForce);
+		}
 	} else if ((gDP.otherMode.alphaCompare == G_AC_THRESHOLD) && !(gDP.otherMode.alphaCvgSel))	{
 		_setIUniform(m_uniforms.uEnableAlphaTest, 1, _bForce);
 		_setFUniform(m_uniforms.uAlphaTestValue, gDP.blendColor.a, _bForce);
