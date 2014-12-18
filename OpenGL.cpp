@@ -444,16 +444,21 @@ void OGLVideo::_setBlendMode() const
 #else
 void OGLRender::_setBlendMode() const
 {
+	const u32 blendmode = gDP.otherMode.l >> 16;
 	// 0x7000 = CVG_X_ALPHA|ALPHA_CVG_SEL|FORCE_BL
 	if (gDP.otherMode.alphaCvgSel != 0 && (gDP.otherMode.l & 0x7000) != 0x7000) {
-		glDisable(GL_BLEND);
+		if (blendmode == 0x4055) { // Mario Golf
+			glEnable(GL_BLEND);
+			glBlendFunc(GL_ZERO, GL_ONE);
+		} else
+			glDisable(GL_BLEND);
 		return;
 	}
 
 	if (gDP.otherMode.forceBlender != 0 && gDP.otherMode.cycleType < G_CYC_COPY) {
 		glEnable( GL_BLEND );
 
-		switch (gDP.otherMode.l >> 16)
+		switch (blendmode)
 		{
 			// Mace objects
 			case 0x0382:
