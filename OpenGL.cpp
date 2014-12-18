@@ -267,6 +267,27 @@ void OGLRender::addTriangle(int _v0, int _v1, int _v2)
 	triangles.elements[triangles.num++] = _v0;
 	triangles.elements[triangles.num++] = _v1;
 	triangles.elements[triangles.num++] = _v2;
+
+	if ((gSP.geometryMode & G_SHADE) == 0) {
+		// Prim shading
+		for (u32 i = triangles.num - 3; i < triangles.num; ++i) {
+			SPVertex & vtx = triangles.vertices[triangles.elements[i]];
+			vtx.flat_r = gDP.primColor.r;
+			vtx.flat_g = gDP.primColor.g;
+			vtx.flat_b = gDP.primColor.b;
+			vtx.flat_a = vtx.a;
+		}
+	} else if ((gSP.geometryMode & G_SHADING_SMOOTH) == 0) {
+		// Flat shading
+		SPVertex & vtx0 = triangles.vertices[_v0];
+		for (u32 i = triangles.num - 3; i < triangles.num; ++i) {
+			SPVertex & vtx = triangles.vertices[triangles.elements[i]];
+			vtx.flat_r = vtx0.r;
+			vtx.flat_g = vtx0.g;
+			vtx.flat_b = vtx0.b;
+			vtx.flat_a = vtx.a;
+		}
+	}
 }
 
 #define ORKIN_BLENDMODE
@@ -687,10 +708,17 @@ void OGLRender::_prepareDrawTriangle(bool _dma)
 		_setTexCoordArrays();
 	}
 
+	const bool updateColorArrays = m_bFlatColors != (!RSP.bLLE && (gSP.geometryMode & G_SHADING_SMOOTH) == 0);
+	if (updateColorArrays)
+		m_bFlatColors = !m_bFlatColors;
+
 	if (updateArrays) {
 		SPVertex * pVtx = _dma ? triangles.dmaVertices.data() : &triangles.vertices[0];
 		glVertexAttribPointer(SC_POSITION, 4, GL_FLOAT, GL_FALSE, sizeof(SPVertex), &pVtx->x);
-		glVertexAttribPointer(SC_COLOR, 4, GL_FLOAT, GL_FALSE, sizeof(SPVertex), &pVtx->r);
+		if (m_bFlatColors)
+			glVertexAttribPointer(SC_COLOR, 4, GL_FLOAT, GL_FALSE, sizeof(SPVertex), &pVtx->flat_r);
+		else
+			glVertexAttribPointer(SC_COLOR, 4, GL_FLOAT, GL_FALSE, sizeof(SPVertex), &pVtx->r);
 		glVertexAttribPointer(SC_TEXCOORD0, 2, GL_FLOAT, GL_FALSE, sizeof(SPVertex), &pVtx->s);
 		if (config.enableHWLighting) {
 			glEnableVertexAttribArray(SC_NUMLIGHTS);
@@ -701,6 +729,12 @@ void OGLRender::_prepareDrawTriangle(bool _dma)
 		_updateViewport();
 		glEnable(GL_SCISSOR_TEST);
 		currentCombiner()->updateRenderState();
+	} else if (updateColorArrays) {
+		SPVertex * pVtx = _dma ? triangles.dmaVertices.data() : &triangles.vertices[0];
+		if (m_bFlatColors)
+			glVertexAttribPointer(SC_COLOR, 4, GL_FLOAT, GL_FALSE, sizeof(SPVertex), &pVtx->flat_r);
+		else
+			glVertexAttribPointer(SC_COLOR, 4, GL_FLOAT, GL_FALSE, sizeof(SPVertex), &pVtx->r);
 	}
 
 	currentCombiner()->updateColors();

@@ -21,6 +21,7 @@ if \
 ( \
 	( \
 		 (video().getRender().getTrianglesCount() > 1000) || \
+		 ((gSP.geometryMode & G_SHADING_SMOOTH) == 0) || \
 		 ( \
 			 (RSP.nextCmd != G_NOOP) && \
 			 (RSP.nextCmd != G_RDPNOOP) && \
@@ -73,6 +74,7 @@ struct SPVertex
 	f32 x, y, z, w;
 	f32 nx, ny, nz, __pad0;
 	f32 r, g, b, a;
+	f32 flat_r, flat_g, flat_b, flat_a;
 	f32 s, t;
 	u8 HWLight;
 	s16 flag;

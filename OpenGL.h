@@ -87,7 +87,7 @@ public:
 #endif // __TRIBUFFER_OPT
 
 private:
-	OGLRender() : m_bImageTexture(false) {}
+	OGLRender() : m_bImageTexture(false), m_bFlatColors(false) {}
 	OGLRender(const OGLRender &);
 	friend class OGLVideo;
 
@@ -133,6 +133,7 @@ private:
 	RENDER_STATE m_renderState;
 	GLVertex m_rect[4];
 	bool m_bImageTexture;
+	bool m_bFlatColors;
 };
 
 class OGLVideo
