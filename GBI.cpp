@@ -182,6 +182,7 @@ void GBIInfo::_makeCurrent(MicrocodeInfo * _pCurrent)
 			glDisable(GL_CLIP_DISTANCE0);
 		}
 	}
+	m_pCurrent = _pCurrent;
 }
 
 inline
@@ -206,6 +207,7 @@ void GBIInfo::loadMicrocode(u32 uc_start, u32 uc_dstart, u16 uc_dsize)
 	current.dataAddress = uc_dstart;
 	current.dataSize = uc_dsize;
 	current.NoN = false;
+	current.textureGen = true;
 	current.type = NONE;
 
 	// See if we can identify it by CRC
@@ -214,6 +216,7 @@ void GBIInfo::loadMicrocode(u32 uc_start, u32 uc_dstart, u16 uc_dsize)
 	for (u32 i = 0; i < numSpecialMicrocodes; ++i) {
 		if (uc_crc == specialMicrocodes[i].crc) {
 			current.type = specialMicrocodes[i].type;
+			current.NoN = specialMicrocodes[i].NoN;
 			_makeCurrent(&current);
 			return;
 		}
@@ -247,6 +250,8 @@ void GBIInfo::loadMicrocode(u32 uc_start, u32 uc_dstart, u16 uc_dsize)
 						type = F3DEX;
 					else if (uc_str[31] == '2')
 						type = F3DEX2;
+					if (strncmp(&uc_str[14], "F3DF", 4) == 0)
+						current.textureGen = false;
 				}
 				else if (strncmp( &uc_str[14], "L3D", 3 ) == 0) {
 					u32 t = 22;

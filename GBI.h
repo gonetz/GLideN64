@@ -678,6 +678,7 @@ struct MicrocodeInfo
 	u32 type;
 	u32 crc;
 	bool NoN;
+	bool textureGen;
 };
 
 struct GBIInfo
@@ -691,7 +692,8 @@ struct GBIInfo
 	void loadMicrocode(u32 uc_start, u32 uc_dstart, u16 uc_dsize);
 	u32 getMicrocodeType() const {return m_pCurrent != NULL ? m_pCurrent->type : NONE;}
 	bool isHWLSupported() const;
-	bool isNoN() const { return m_pCurrent != NULL ? m_pCurrent->NoN != 0 : false; }
+	bool isNoN() const { return m_pCurrent != NULL ? m_pCurrent->NoN : false; }
+	bool isTextureGen() const { return m_pCurrent != NULL ? m_pCurrent->textureGen: true; }
 
 private:
 	void _makeCurrent(MicrocodeInfo * _pCurrent);
