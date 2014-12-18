@@ -1101,7 +1101,7 @@ u32 _calculateCRC(u32 t, const TextureParams & _params)
 
 void TextureCache::activateTexture(u32 _t, CachedTexture *_pTexture)
 {
-	glActiveTexture( GL_TEXTURE0 + _t );
+	glActiveTexture(GL_TEXTURE0 + _t);
 
 	// Bind the cached texture
 	glBindTexture( GL_TEXTURE_2D, _pTexture->glName );
@@ -1220,6 +1220,23 @@ void TextureCache::_updateBackground()
 	current[0] = pCurrent;
 }
 
+static
+void _updateShiftScale(u32 _t, CachedTexture *_pTexture)
+{
+	_pTexture->shiftScaleS = 1.0f;
+	_pTexture->shiftScaleT = 1.0f;
+
+	if (gSP.textureTile[_t]->shifts > 10)
+		_pTexture->shiftScaleS = (f32)(1 << (16 - gSP.textureTile[_t]->shifts));
+	else if (gSP.textureTile[_t]->shifts > 0)
+		_pTexture->shiftScaleS /= (f32)(1 << gSP.textureTile[_t]->shifts);
+
+	if (gSP.textureTile[_t]->shiftt > 10)
+		_pTexture->shiftScaleT = (f32)(1 << (16 - gSP.textureTile[_t]->shiftt));
+	else if (gSP.textureTile[_t]->shiftt > 0)
+		_pTexture->shiftScaleT /= (f32)(1 << gSP.textureTile[_t]->shiftt);
+}
+
 void TextureCache::update(u32 _t)
 {
 	if (m_bitDepth != config.texture.textureBitDepth)
@@ -1266,6 +1283,7 @@ void TextureCache::update(u32 _t)
 	}
 
 	if (current[_t] != NULL && current[_t]->crc == crc) {
+		_updateShiftScale(_t, current[_t]);
 		activateTexture(_t, current[_t]);
 		return;
 	}
@@ -1287,6 +1305,7 @@ void TextureCache::update(u32 _t)
 			(current.size == gSP.textureTile[_t]->size)
 		);
 
+		_updateShiftScale(_t, &current);
 		activateTexture(_t, &current);
 		m_hits++;
 		return;
@@ -1335,23 +1354,12 @@ void TextureCache::update(u32 _t)
 	pCurrent->scaleS = 1.0f / (f32)(pCurrent->realWidth);
 	pCurrent->scaleT = 1.0f / (f32)(pCurrent->realHeight);
 
-	pCurrent->shiftScaleS = 1.0f;
-	pCurrent->shiftScaleT = 1.0f;
-
 	pCurrent->offsetS = 0.5f;
 	pCurrent->offsetT = 0.5f;
 
-	if (gSP.textureTile[_t]->shifts > 10)
-		pCurrent->shiftScaleS = (f32)(1 << (16 - gSP.textureTile[_t]->shifts));
-	else if (gSP.textureTile[_t]->shifts > 0)
-		pCurrent->shiftScaleS /= (f32)(1 << gSP.textureTile[_t]->shifts);
+	_updateShiftScale(_t, pCurrent);
 
-	if (gSP.textureTile[_t]->shiftt > 10)
-		pCurrent->shiftScaleT = (f32)(1 << (16 - gSP.textureTile[_t]->shiftt));
-	else if (gSP.textureTile[_t]->shiftt > 0)
-		pCurrent->shiftScaleT /= (f32)(1 << gSP.textureTile[_t]->shiftt);
-
-	_load( _t, pCurrent );
+	_load(_t, pCurrent);
 	activateTexture( _t, pCurrent );
 
 	m_cachedBytes += pCurrent->textureBytes;
