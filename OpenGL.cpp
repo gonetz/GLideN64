@@ -969,9 +969,8 @@ bool texturedRectPaletteMod(const OGLRender::TexturedRectParams & _params)
 	u16 prim16 = (u16)((prmr << 11) | (prmg << 6) | (prmb << 1) | 1);
 	u16 * src = (u16*)&TMEM[256];
 	u16 * dst = (u16*)(RDRAM + gDP.colorImage.address);
-	for (int i = 0; i < 64; i += 4) {
-		dst[i ^ 1] = (src[i] & 0x100) ? prim16 : env16;
-	}
+	for (u32 i = 0; i < 16; ++i)
+		dst[i ^ 1] = (src[i<<2] & 0x100) ? prim16 : env16;
 	return true;
 }
 
