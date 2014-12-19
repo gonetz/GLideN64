@@ -1319,7 +1319,7 @@ void TextureCache::update(u32 _t)
 
 	glBindTexture( GL_TEXTURE_2D, pCurrent->glName );
 
-	pCurrent->address = gDP.textureImage.address;
+	pCurrent->address = gDP.loadInfo[gSP.textureTile[_t]->tmem].texAddress;
 
 	pCurrent->format = gSP.textureTile[_t]->format;
 	pCurrent->size = gSP.textureTile[_t]->size;
