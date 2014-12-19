@@ -1257,6 +1257,12 @@ void TextureCache::update(u32 _t)
 		return;
 	}
 
+	if (gDP.otherMode.textureLOD == G_TL_LOD && gSP.texture.level == gSP.texture.tile && _t == 1) {
+		current[1] = current[0];
+		activateTexture(_t, current[_t]);
+		return;
+	}
+
 	if (gSP.texture.tile == 7 && _t == 0 && gSP.textureTile[0] == gDP.loadTile && gDP.loadTile->loadType == LOADTYPE_BLOCK && gSP.textureTile[0]->tmem == gSP.textureTile[1]->tmem)
 		gSP.textureTile[0] = gSP.textureTile[1];
 
