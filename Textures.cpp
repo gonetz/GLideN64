@@ -537,16 +537,16 @@ void _calcTileSizes(u32 _t, TileSizes & _sizes, gDPTile * _pLoadTile)
 
 	const TextureLoadParameters & loadParams = imageFormat[gDP.otherMode.textureLUT][pTile->size][pTile->format];
 	const u32 maxTexels = loadParams.maxTexels;
-	const u32 tileWidth = (pTile->lrs - pTile->uls + 1) & 0x03FF;
-	const u32 tileHeight = (pTile->lrt - pTile->ult + 1) & 0x03FF;
+	const u32 tileWidth = ((pTile->lrs - pTile->uls) & 0x03FF) + 1;
+	const u32 tileHeight = ((pTile->lrt - pTile->ult) & 0x03FF) + 1;
 
 	const bool bUseLoadSizes = _pLoadTile != NULL && _pLoadTile->loadType == LOADTYPE_TILE &&
 		(pTile->tmem == _pLoadTile->tmem);
 
 	u32 loadWidth = 0, loadHeight = 0;
 	if (bUseLoadSizes) {
-		loadWidth = (_pLoadTile->lrs - _pLoadTile->uls + 1) & 0x03FF;
-		loadHeight = (_pLoadTile->lrt - _pLoadTile->ult + 1) & 0x03FF;
+		loadWidth = ((_pLoadTile->lrs - _pLoadTile->uls) & 0x03FF) + 1;
+		loadHeight = ((_pLoadTile->lrt - _pLoadTile->ult) & 0x03FF) + 1;
 	}
 
 	const u32 lineWidth = pTile->line << loadParams.lineShift;
