@@ -751,7 +751,7 @@ void TextureCache::_loadBackground(CachedTexture *pTexture)
 	GLuint glInternalFormat;
 	GLenum glType;
 
-	const TextureLoadParameters & loadParams = imageFormat[gDP.otherMode.textureLUT][pTexture->size][pTexture->format];
+	const TextureLoadParameters & loadParams = imageFormat[pTexture->format == 2 ? G_TT_RGBA16 : G_TT_NONE][pTexture->size][pTexture->format];
 	if (((loadParams.autoFormat == GL_RGBA) || (m_bitDepth == 2)) && (m_bitDepth != 0)) {
 		pTexture->textureBytes = (pTexture->realWidth * pTexture->realHeight) << 2;
 		GetTexel = loadParams.Get32;
