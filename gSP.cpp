@@ -1779,6 +1779,58 @@ void gSPClearGeometryMode( u32 mode )
 #endif
 }
 
+void gSPSetOtherMode_H(u32 _length, u32 _shift, u32 _data)
+{
+	const u32 mask = (((u64)1 << _length) - 1) << _shift;
+
+	if (mask & 0x00000030)  // alpha dither mode
+		gDPSetAlphaDither(_data >> G_MDSFT_ALPHADITHER);
+
+	if (mask & 0x000000C0)  // rgb dither mode
+		gDPSetColorDither(_data >> G_MDSFT_RGBDITHER);
+
+	if (mask & 0x00000100)  // Combine Key
+		gDPSetCombineKey(_data >> G_MDSFT_COMBKEY);
+
+	if (mask & 0x00000E00)  // Texture convert
+		gDPSetTextureConvert(_data >> G_MDSFT_TEXTCONV);
+
+	if (mask & 0x00003000)  // filter mode
+		gDPSetTextureFilter(_data >> G_MDSFT_TEXTFILT);
+
+	if (mask & 0x0000C000)  // tlut mode
+		gDPSetTextureLUT(_data >> G_MDSFT_TEXTLUT);
+
+	if (mask & 0x00010000)  // LOD enable
+		gDPSetTextureLOD(_data >> G_MDSFT_TEXTLOD);
+
+	if (mask & 0x00060000)  // Texture detail mode
+		gDPSetTextureDetail(_data >> G_MDSFT_TEXTDETAIL);
+
+	if (mask & 0x00080000)  // Persp enable
+		gDPSetTexturePersp(_data >> G_MDSFT_TEXTPERSP);
+
+	if (mask & 0x00300000)  // cycle type
+		gDPSetCycleType(_data >> G_MDSFT_CYCLETYPE);
+
+	if (mask & 0x00800000)  // Pipeline mode
+		gDPPipelineMode(_data >> G_MDSFT_PIPELINE);
+}
+
+void gSPSetOtherMode_L(u32 _length, u32 _shift, u32 _data)
+{
+	u32 mask = (((u64)1 << _length) - 1) << _shift;
+
+	if (mask & 0x00000003)  // alpha compare
+		gDPSetAlphaCompare(_data >> G_MDSFT_ALPHACOMPARE);
+
+	if (mask & 0x00000004)  // z-src selection
+		gDPSetDepthSource(_data >> G_MDSFT_ZSRCSEL);
+
+	if (mask & 0xFFFFFFF8)  // rendermode / blender bits
+		gDPSetRenderMode(_data & 0xCCCCFFFF, _data & 0x3333FFFF);
+}
+
 void gSPLine3D( s32 v0, s32 v1, s32 flag )
 {
 	video().getRender().drawLine(v0, v1, 1.5f);

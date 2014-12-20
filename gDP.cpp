@@ -82,7 +82,7 @@ void gDPPipelineMode( u32 mode )
 
 void gDPSetCycleType( u32 type )
 {
-	gDP.otherMode.cycleType = type;
+	gDP.otherMode.cycleType = type & 3;
 
 	gDP.changed |= CHANGED_CYCLETYPE;
 
@@ -94,7 +94,7 @@ void gDPSetCycleType( u32 type )
 
 void gDPSetTexturePersp( u32 enable )
 {
-	gDP.otherMode.texturePersp = enable;
+	gDP.otherMode.texturePersp = enable & 1;
 
 #ifdef DEBUG
 	DebugMsg( DEBUG_HIGH | DEBUG_HANDLED | DEBUG_TEXTURE, "gDPSetTexturePersp( %s );\n",
@@ -104,7 +104,7 @@ void gDPSetTexturePersp( u32 enable )
 
 void gDPSetTextureDetail( u32 type )
 {
-	gDP.otherMode.textureDetail = type;
+	gDP.otherMode.textureDetail = type & 3;
 
 #ifdef DEBUG
 	DebugMsg( DEBUG_HIGH | DEBUG_HANDLED | DEBUG_TEXTURE, "gDPSetTextureDetail( %s );\n",
@@ -114,7 +114,7 @@ void gDPSetTextureDetail( u32 type )
 
 void gDPSetTextureLOD( u32 mode )
 {
-	gDP.otherMode.textureLOD = mode;
+	gDP.otherMode.textureLOD = mode & 1;
 
 #ifdef DEBUG
 	DebugMsg( DEBUG_HIGH | DEBUG_HANDLED | DEBUG_TEXTURE, "gDPSetTextureLOD( %s );\n",
@@ -124,7 +124,7 @@ void gDPSetTextureLOD( u32 mode )
 
 void gDPSetTextureLUT( u32 mode )
 {
-	gDP.otherMode.textureLUT = mode;
+	gDP.otherMode.textureLUT = mode & 3;
 
 #ifdef DEBUG
 	DebugMsg( DEBUG_HIGH | DEBUG_HANDLED | DEBUG_TEXTURE, "gDPSetTextureLUT( %s );\n",
@@ -134,7 +134,7 @@ void gDPSetTextureLUT( u32 mode )
 
 void gDPSetTextureFilter( u32 type )
 {
-	gDP.otherMode.textureFilter = type;
+	gDP.otherMode.textureFilter = type & 3;
 
 #ifdef DEBUG
 	DebugMsg( DEBUG_HIGH | DEBUG_HANDLED | DEBUG_TEXTURE, "gDPSetTextureFilter( %s );\n",
@@ -144,7 +144,7 @@ void gDPSetTextureFilter( u32 type )
 
 void gDPSetTextureConvert( u32 type )
 {
-	gDP.otherMode.textureConvert = type;
+	gDP.otherMode.textureConvert = type & 7;
 
 #ifdef DEBUG
 	DebugMsg( DEBUG_HIGH | DEBUG_HANDLED | DEBUG_TEXTURE, "gDPSetTextureConvert( %s );\n",
@@ -154,7 +154,7 @@ void gDPSetTextureConvert( u32 type )
 
 void gDPSetCombineKey( u32 type )
 {
-	gDP.otherMode.combineKey = type;
+	gDP.otherMode.combineKey = type & 1;
 
 #ifdef DEBUG
 	DebugMsg( DEBUG_HIGH | DEBUG_HANDLED | DEBUG_COMBINE, "gDPSetCombineKey( %s );\n",
@@ -164,7 +164,7 @@ void gDPSetCombineKey( u32 type )
 
 void gDPSetColorDither( u32 type )
 {
-	gDP.otherMode.colorDither = type;
+	gDP.otherMode.colorDither = type & 3;
 
 #ifdef DEBUG
 	DebugMsg( DEBUG_HIGH | DEBUG_HANDLED, "gDPSetColorDither( %s );\n",
@@ -174,7 +174,7 @@ void gDPSetColorDither( u32 type )
 
 void gDPSetAlphaDither( u32 type )
 {
-	gDP.otherMode.alphaDither = type;
+	gDP.otherMode.alphaDither = type & 3;
 
 #ifdef DEBUG
 	DebugMsg( DEBUG_HIGH | DEBUG_HANDLED, "gDPSetAlphaDither( %s );\n",
@@ -184,7 +184,7 @@ void gDPSetAlphaDither( u32 type )
 
 void gDPSetAlphaCompare( u32 mode )
 {
-	gDP.otherMode.alphaCompare = mode;
+	gDP.otherMode.alphaCompare = mode & 3;
 
 	gDP.changed |= CHANGED_ALPHACOMPARE;
 
@@ -196,7 +196,7 @@ void gDPSetAlphaCompare( u32 mode )
 
 void gDPSetDepthSource( u32 source )
 {
-	gDP.otherMode.depthSource = source;
+	gDP.otherMode.depthSource = source & 1;
 
 #ifdef DEBUG
 	DebugMsg( DEBUG_HIGH | DEBUG_HANDLED, "gDPSetDepthSource( %s );\n",

@@ -12,6 +12,8 @@
 #include "GBI.h"
 #include "OpenGL.h"
 
+using namespace std;
+
 void F3DEX2_Mtx( u32 w0, u32 w1 )
 {
 	gSPMatrix( w1, _SHIFTR( w0, 0, 8 ) ^ G_MTX_PUSH );
@@ -116,83 +118,16 @@ void F3DEX2_Texture( u32 w0, u32 w1 )
 
 void F3DEX2_SetOtherMode_H( u32 w0, u32 w1 )
 {
-	switch (32 - _SHIFTR( w0, 8, 8 ) - (_SHIFTR( w0, 0, 8 ) + 1))
-	{
-		case G_MDSFT_PIPELINE:
-			gDPPipelineMode( w1 >> G_MDSFT_PIPELINE );
-			break;
-		case G_MDSFT_CYCLETYPE:
-			gDPSetCycleType( w1 >> G_MDSFT_CYCLETYPE );
-			break;
-		case G_MDSFT_TEXTPERSP:
-			gDPSetTexturePersp( w1 >> G_MDSFT_TEXTPERSP );
-			break;
-		case G_MDSFT_TEXTDETAIL:
-			gDPSetTextureDetail( w1 >> G_MDSFT_TEXTDETAIL );
-			break;
-		case G_MDSFT_TEXTLOD:
-			gDPSetTextureLOD( w1 >> G_MDSFT_TEXTLOD );
-			break;
-		case G_MDSFT_TEXTLUT:
-			gDPSetTextureLUT( w1 >> G_MDSFT_TEXTLUT );
-			break;
-		case G_MDSFT_TEXTFILT:
-			gDPSetTextureFilter( w1 >> G_MDSFT_TEXTFILT );
-			break;
-		case G_MDSFT_TEXTCONV:
-			gDPSetTextureConvert( w1 >> G_MDSFT_TEXTCONV );
-			break;
-		case G_MDSFT_COMBKEY:
-			gDPSetCombineKey( w1 >> G_MDSFT_COMBKEY );
-			break;
-		case G_MDSFT_RGBDITHER:
-			gDPSetColorDither( w1 >> G_MDSFT_RGBDITHER );
-			break;
-		case G_MDSFT_ALPHADITHER:
-			gDPSetAlphaDither( w1 >> G_MDSFT_ALPHADITHER );
-			break;
-		default:
-			u32 length = _SHIFTR( w0, 0, 8 ) + 1;
-			u32 shift = 32 - _SHIFTR( w0, 8, 8 ) - length;
-			u32 mask = ((1 << length) - 1) << shift;
-
-			gDP.otherMode.h &= ~mask;
-			gDP.otherMode.h |= w1 & mask;
-
-			gDP.changed |= CHANGED_CYCLETYPE;
-			break;
-	}
+	const u32 length = _SHIFTR(w0, 0, 8) + 1;
+	const u32 shift = max(0, (s32)(32 - _SHIFTR(w0, 8, 8) - length));
+	gSPSetOtherMode_H(length, shift, w1);
 }
 
 void F3DEX2_SetOtherMode_L( u32 w0, u32 w1 )
 {
-	const u32 length = _SHIFTR( w0, 0, 8 ) + 1;
-	int shift = 32 - _SHIFTR( w0, 8, 8 ) - length;
-	if (shift < 0) shift = 0;
-	switch (shift)
-	{
-		case G_MDSFT_ALPHACOMPARE:
-			gDPSetAlphaCompare( w1 >> G_MDSFT_ALPHACOMPARE );
-			break;
-		case G_MDSFT_ZSRCSEL:
-			gDPSetDepthSource( w1 >> G_MDSFT_ZSRCSEL );
-			break;
-		case G_MDSFT_RENDERMODE:
-			gDPSetRenderMode( w1 & 0xCCCCFFFF, w1 & 0x3333FFFF );
-			break;
-		default:
-			break;
-	}
-	//u32 mask = ((1 << length) - 1) << shift;
-	u32 mask = 0;
-	for (int i = length; i > 0; i--)
-		mask = (mask << 1) | 1;
-	mask <<= shift;
-
-	gDP.otherMode.l &= ~mask;
-	gDP.otherMode.l |= w1 & mask;
-
-	gDP.changed |= CHANGED_RENDERMODE | CHANGED_ALPHACOMPARE;
+	const u32 length = _SHIFTR(w0, 0, 8) + 1;
+	const u32 shift = max(0, (s32)(32 - _SHIFTR(w0, 8, 8) - length));
+	gSPSetOtherMode_L(length, shift, w1);
 }
 
 void F3DEX2_GeometryMode( u32 w0, u32 w1 )

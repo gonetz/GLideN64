@@ -212,80 +212,16 @@ void F3D_Texture( u32 w0, u32 w1 )
 
 void F3D_SetOtherMode_H( u32 w0, u32 w1 )
 {
-	switch (_SHIFTR( w0, 8, 8 ))
-	{
-		case G_MDSFT_PIPELINE:
-			gDPPipelineMode( w1 >> G_MDSFT_PIPELINE );
-			break;
-		case G_MDSFT_CYCLETYPE:
-			gDPSetCycleType( w1 >> G_MDSFT_CYCLETYPE );
-			break;
-		case G_MDSFT_TEXTPERSP:
-			gDPSetTexturePersp( w1 >> G_MDSFT_TEXTPERSP );
-			break;
-		case G_MDSFT_TEXTDETAIL:
-			gDPSetTextureDetail( w1 >> G_MDSFT_TEXTDETAIL );
-			break;
-		case G_MDSFT_TEXTLOD:
-			gDPSetTextureLOD( w1 >> G_MDSFT_TEXTLOD );
-			break;
-		case G_MDSFT_TEXTLUT:
-			gDPSetTextureLUT( w1 >> G_MDSFT_TEXTLUT );
-			break;
-		case G_MDSFT_TEXTFILT:
-			gDPSetTextureFilter( w1 >> G_MDSFT_TEXTFILT );
-			break;
-		case G_MDSFT_TEXTCONV:
-			gDPSetTextureConvert( w1 >> G_MDSFT_TEXTCONV );
-			break;
-		case G_MDSFT_COMBKEY:
-			gDPSetCombineKey( w1 >> G_MDSFT_COMBKEY );
-			break;
-		case G_MDSFT_RGBDITHER:
-			gDPSetColorDither( w1 >> G_MDSFT_RGBDITHER );
-			break;
-		case G_MDSFT_ALPHADITHER:
-			gDPSetAlphaDither( w1 >> G_MDSFT_ALPHADITHER );
-			break;
-		default:
-			u32 shift = _SHIFTR( w0, 8, 8 );
-			u32 length = _SHIFTR( w0, 0, 8 );
-			u32 mask = ((1 << length) - 1) << shift;
-
-			gDP.otherMode.h &= ~mask;
-			gDP.otherMode.h |= w1 & mask;
-
-			gDP.changed |= CHANGED_CYCLETYPE;
-			break;
-	}
+	const u32 length = _SHIFTR(w0, 0, 8);
+	const u32 shift = _SHIFTR(w0, 8, 8);
+	gSPSetOtherMode_H(length, shift, w1);
 }
 
 void F3D_SetOtherMode_L( u32 w0, u32 w1 )
 {
-	const u32 shift = _SHIFTR( w0, 8, 8 );
-	switch (shift)
-	{
-		case G_MDSFT_ALPHACOMPARE:
-			gDPSetAlphaCompare( w1 >> G_MDSFT_ALPHACOMPARE );
-			break;
-		case G_MDSFT_ZSRCSEL:
-			gDPSetDepthSource( w1 >> G_MDSFT_ZSRCSEL );
-			break;
-		case G_MDSFT_RENDERMODE:
-			gDPSetRenderMode( w1 & 0xCCCCFFFF, w1 & 0x3333FFFF );
-			break;
-	}
-	const u32 length = _SHIFTR( w0, 0, 8 );
-//	u32 mask = ((1 << length) - 1) << shift;
-	u32 mask = 0;
-	for (int i = length; i > 0; i--)
-		mask = (mask << 1) | 1;
-	mask <<= shift;
-
-	gDP.otherMode.l &= ~mask;
-	gDP.otherMode.l |= w1 & mask;
-
-	gDP.changed |= CHANGED_RENDERMODE | CHANGED_ALPHACOMPARE;
+	const u32 length = _SHIFTR(w0, 0, 8);
+	const u32 shift = _SHIFTR(w0, 8, 8);
+	gSPSetOtherMode_L(length, shift, w1);
 }
 
 void F3D_EndDL( u32 w0, u32 w1 )
