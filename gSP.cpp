@@ -1579,8 +1579,8 @@ void gSPModifyVertex( u32 _vtx, u32 _where, u32 _val )
 		break;
 		case G_MWO_POINT_ZSCREEN:
 		{
-			f32 scrZ = (f32)((s16)(_val>>16));
-			vtx0.z = (scrZ - gSP.viewport.vtrans[2]) / gSP.viewport.vscale[2];
+			f32 scrZ = _FIXED2FLOAT((s16)_SHIFTR(_val, 16, 16), 15);
+			vtx0.z = (scrZ - gSP.viewport.vtrans[2]) / (gSP.viewport.vscale[2]);
 			vtx0.z *= vtx0.w;
 		}
 		break;
