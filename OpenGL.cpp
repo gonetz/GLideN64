@@ -586,7 +586,7 @@ void OGLRender::_updateStates() const
 					glDepthFunc(GL_LEQUAL);
 					break;
 					case ZMODE_INTER:
-					glEnable(GL_POLYGON_OFFSET_FILL);
+					glDisable(GL_POLYGON_OFFSET_FILL);
 					glDepthFunc(GL_LEQUAL);
 					break;
 					case ZMODE_XLU:
