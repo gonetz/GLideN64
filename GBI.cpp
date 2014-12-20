@@ -208,6 +208,7 @@ void GBIInfo::loadMicrocode(u32 uc_start, u32 uc_dstart, u16 uc_dsize)
 	current.dataSize = uc_dsize;
 	current.NoN = false;
 	current.textureGen = true;
+	current.branchLessZ = true;
 	current.type = NONE;
 
 	// See if we can identify it by CRC
@@ -252,6 +253,8 @@ void GBIInfo::loadMicrocode(u32 uc_start, u32 uc_dstart, u16 uc_dsize)
 						type = F3DEX2;
 					if (strncmp(&uc_str[14], "F3DF", 4) == 0)
 						current.textureGen = false;
+					else if (strncmp(&uc_str[14], "F3DZ", 4) == 0)
+						current.branchLessZ = false;
 				}
 				else if (strncmp( &uc_str[14], "L3D", 3 ) == 0) {
 					u32 t = 22;
