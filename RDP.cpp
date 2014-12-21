@@ -249,7 +249,8 @@ void _getTexRectParams(u32 & w2, u32 & w3)
 			texRectMode = gspTexRect;
 		else
 			texRectMode = halfTexRect;
-	}
+	} else if (cmd1 == 0xF1)
+		texRectMode = halfTexRect;
 
 	switch (texRectMode) {
 	case gspTexRect:
