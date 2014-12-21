@@ -120,7 +120,6 @@ void PluginAPI::RomOpen()
 	RSP_Init();
 	GBI.init();
 	video().start();
-	TFH.init();
 #endif
 
 #ifdef DEBUG

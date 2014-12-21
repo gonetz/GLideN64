@@ -1254,6 +1254,7 @@ void OGLRender::_initData()
 	FrameBuffer_Init();
 	Combiner_Init();
 	TextDrawer::get().init();
+	TFH.init();
 	m_renderState = rsNone;
 
 	gSP.changed = gDP.changed = 0xFFFFFFFF;
