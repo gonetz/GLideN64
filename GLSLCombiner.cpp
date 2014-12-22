@@ -457,6 +457,7 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 	strFragmentShader.append(fragment_shader_alpha_dither);
 
 	strFragmentShader.append(
+		"  if (!alpha_test(alpha2)) discard;					\n"
 		"  switch (uFogUsage&255) {								\n"
 		"	case 2:												\n"
 		"		fragColor = vec4(color2, uFogColor.a);			\n"
@@ -473,7 +474,6 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 		"  }													\n"
 	);
 
-	strFragmentShader.append("  if (!alpha_test(fragColor.a)) discard;	\n");
 	if (video().getRender().isImageTexturesSupported()) {
 		if (config.frameBufferEmulation.N64DepthCompare)
 			strFragmentShader.append("  if (!depth_compare()) discard; \n");
