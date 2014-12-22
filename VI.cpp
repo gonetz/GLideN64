@@ -48,8 +48,13 @@ void VI_UpdateSize()
 		VI.real_height = (u32)floor(((vEnd - vStart) >> 1) * yScale + 0.5f);
 #else
 	VI.real_height = (((vEnd - vStart) >> 1) * vScale) >> 10;
-	if (VI.interlaced && VI.width != 0)
-		VI.real_height *= *REG.VI_WIDTH / VI.width;
+	if (VI.interlaced) {
+		if (VI.width != 0)
+			VI.real_height *= *REG.VI_WIDTH / VI.width;
+	} else {
+		if (*REG.VI_WIDTH > 0)
+			VI.width = min(VI.width, *REG.VI_WIDTH);
+	}
 #endif
 
 	if (VI.interlaced && VI.real_height % 2 == 1)
