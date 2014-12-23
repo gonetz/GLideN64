@@ -532,9 +532,9 @@ void OGLRender::_updateCullFace() const
 		glEnable( GL_CULL_FACE );
 
 		if (gSP.geometryMode & G_CULL_BACK)
-			glCullFace( GL_BACK );
+			glCullFace(GL_BACK);
 		else
-			glCullFace( GL_FRONT );
+			glCullFace(GL_FRONT);
 	}
 	else
 		glDisable( GL_CULL_FACE );
@@ -544,12 +544,14 @@ void OGLRender::_updateViewport() const
 {
 	OGLVideo & ogl = video();
 	if (!frameBufferList().isFboMode()) {
-		const GLint Y = gSP.viewport.vscale[1] < 0 ? (GLint)((gSP.viewport.y + gSP.viewport.vscale[1]*2.0f) * ogl.getScaleY()) : (GLint)((VI.height - (gSP.viewport.y + gSP.viewport.height)) * ogl.getScaleY());
-		glViewport( (GLint)(gSP.viewport.x * ogl.getScaleX()), Y + ogl.getHeightOffset(),
+		const GLint X = gSP.viewport.vscale[0] < 0 ? (GLint)((gSP.viewport.x + gSP.viewport.vscale[0] * 2.0f) * ogl.getScaleX()) : (GLint)(gSP.viewport.x * ogl.getScaleX());
+		const GLint Y = gSP.viewport.vscale[1] < 0 ? (GLint)((gSP.viewport.y + gSP.viewport.vscale[1] * 2.0f) * ogl.getScaleY()) : (GLint)((VI.height - (gSP.viewport.y + gSP.viewport.height)) * ogl.getScaleY());
+		glViewport( X, Y + ogl.getHeightOffset(),
 			max((GLint)(gSP.viewport.width * ogl.getScaleX()), 0), max((GLint)(gSP.viewport.height * ogl.getScaleY()), 0) );
 	} else {
+		const GLint X = gSP.viewport.vscale[0] < 0 ? (GLint)((gSP.viewport.x + gSP.viewport.vscale[0] * 2.0f) * ogl.getScaleX()) : (GLint)(gSP.viewport.x * ogl.getScaleX());
 		const GLint Y = gSP.viewport.vscale[1] < 0 ? (GLint)((gSP.viewport.y + gSP.viewport.vscale[1] * 2.0f) * ogl.getScaleY()) : (GLint)((frameBufferList().getCurrent()->m_height - (gSP.viewport.y + gSP.viewport.height)) * ogl.getScaleY());
-		glViewport((GLint)(gSP.viewport.x * ogl.getScaleX()), Y,
+		glViewport(X, Y,
 			max((GLint)(gSP.viewport.width * ogl.getScaleX()), 0), max((GLint)(gSP.viewport.height * ogl.getScaleY()), 0) );
 	}
 }

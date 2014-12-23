@@ -326,11 +326,12 @@ void gSPProcessVertex4(u32 v)
 	}
 	gSPTransformVertex4(v, gSP.matrix.combined );
 
-	if (gDP.otherMode.depthSource == G_ZS_PRIM) {
-		for(int i = 0; i < 4; ++i) {
-			SPVertex & vtx = render.getVertex(v+i);
+	for(int i = 0; i < 4; ++i) {
+		SPVertex & vtx = render.getVertex(v+i);
+		if (gDP.otherMode.depthSource == G_ZS_PRIM)
 			vtx.z = gDP.primDepth.z * vtx.w;
-		}
+		if (gSP.viewport.vscale[0] < 0)
+			vtx.x = -vtx.x;
 	}
 
 	if (gSP.matrix.billboard)
@@ -552,6 +553,9 @@ void gSPProcessVertex(u32 v)
 	if (gDP.otherMode.depthSource == G_ZS_PRIM)
 		vtx.z = gDP.primDepth.z * vtx.w;
 
+	if (gSP.viewport.vscale[0] < 0)
+		vtx.x = -vtx.x;
+
 	if (gSP.matrix.billboard) {
 		int i = 0;
 #ifdef __TRIBUFFER_OPT
@@ -742,7 +746,7 @@ void gSPViewport( u32 v )
 
 	gSP.viewport.x		= gSP.viewport.vtrans[0] - gSP.viewport.vscale[0];
 	gSP.viewport.y		= gSP.viewport.vtrans[1] - gSP.viewport.vscale[1];
-	gSP.viewport.width	= gSP.viewport.vscale[0] * 2;
+	gSP.viewport.width = fabs(gSP.viewport.vscale[0]) * 2;
 	gSP.viewport.height	= fabs(gSP.viewport.vscale[1] * 2);
 	gSP.viewport.nearz	= gSP.viewport.vtrans[2] - gSP.viewport.vscale[2];
 	gSP.viewport.farz	= (gSP.viewport.vtrans[2] + gSP.viewport.vscale[2]) ;
