@@ -290,6 +290,13 @@ void OGLRender::addTriangle(int _v0, int _v1, int _v2)
 			vtx.flat_a = vtx.a;
 		}
 	}
+
+	if (gDP.otherMode.depthSource == G_ZS_PRIM) {
+		for (u32 i = triangles.num - 3; i < triangles.num; ++i) {
+			SPVertex & vtx = triangles.vertices[triangles.elements[i]];
+			vtx.z = gDP.primDepth.z * vtx.w;
+		}
+	}
 }
 
 #define ORKIN_BLENDMODE
