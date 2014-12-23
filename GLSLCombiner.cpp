@@ -410,6 +410,10 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 	if (gDP.otherMode.cycleType == G_CYC_1CYCLE)
 		CorrectFirstStageParams(_color.stage[0]);
 	m_nInputs |= CompileCombiner(_color.stage[0], ColorInput, strCombiner);
+
+	// Hack For Mace
+	strcat(strCombiner, "  if (uUseBlendColor != 0) color1 = color1 * alpha1 + uBlendColor.rgb * (1.0 - alpha1); \n");
+
 	strcat(strCombiner, "  combined_color = vec4(color1, alpha1); \n");
 	if (_alpha.numStages == 2) {
 		strcat(strCombiner, "  alpha2 = ");
@@ -564,6 +568,7 @@ void ShaderCombiner::_locateUniforms() {
 	LocateUniform(uMaxTile)
 	LocateUniform(uTextureDetail);
 	LocateUniform(uTexturePersp);
+	LocateUniform(uUseBlendColor);
 
 	LocateUniform(uFogMultiplier);
 	LocateUniform(uFogOffset);
@@ -585,6 +590,7 @@ void ShaderCombiner::_locateUniforms() {
 	LocateUniform(uFogColor);
 	LocateUniform(uCenterColor);
 	LocateUniform(uScaleColor);
+	LocateUniform(uBlendColor);
 
 	LocateUniform(uRenderState);
 
@@ -655,8 +661,8 @@ void ShaderCombiner::updateColors(bool _bForce)
 {
 	_setV4Uniform(m_uniforms.uEnvColor, &gDP.envColor.r, _bForce);
 	_setV4Uniform(m_uniforms.uPrimColor, &gDP.primColor.r, _bForce);
-	_setV4Uniform(m_uniforms.uCenterColor, &gDP.key.center.r, _bForce);
 	_setV4Uniform(m_uniforms.uScaleColor, &gDP.key.scale.r, _bForce);
+	_setV4Uniform(m_uniforms.uCenterColor, &gDP.key.center.r, _bForce);
 	const u32 blender = (gDP.otherMode.l >> 16);
 	const int nFogBlendEnabled = (gDP.otherMode.c1_m1a == 3 || gDP.otherMode.c1_m2a == 3 || gDP.otherMode.c2_m1a == 3 || gDP.otherMode.c2_m2a == 3) ? 256 : 0;
 	int nFogUsage;
@@ -677,7 +683,14 @@ void ShaderCombiner::updateColors(bool _bForce)
 	case 0xF550:
 		nFogUsage = 3;
 		break;
+	case 0x0382:
+	case 0x0091:
+		_setIUniform(m_uniforms.uUseBlendColor, 1, _bForce);
+		_setV4Uniform(m_uniforms.uBlendColor, &gDP.blendColor.r, _bForce);
+		nFogUsage = (config.enableFog != 0 && (gSP.geometryMode & G_FOG) != 0) ? 1 : 0;
+		break;
 	default:
+		_setIUniform(m_uniforms.uUseBlendColor, 0, _bForce);
 		nFogUsage = (config.enableFog != 0 && (gSP.geometryMode & G_FOG) != 0) ? 1 : 0;
 	}
 	int nFogMode = 0; // Normal

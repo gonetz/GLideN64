@@ -38,14 +38,14 @@ private:
 		iUniform uTex0, uTex1, uTlutImage, uZlutImage, uDepthImage,
 			uFogMode, uFogUsage, uEnableLod, uEnableAlphaTest,
 			uEnableDepth, uEnableDepthCompare, uEnableDepthUpdate,
-			uDepthMode, uFb8Bit, uFbFixedAlpha, uRenderState,
+			uDepthMode, uFb8Bit, uFbFixedAlpha, uRenderState, uUseBlendColor,
 			uMaxTile, uTextureDetail, uTexturePersp,
 			uAlphaCompareMode, uAlphaDitherMode, uColorDitherMode, uGammaCorrectionEnabled;
 
 		fUniform uFogMultiplier, uFogOffset, uK4, uK5, uPrimLod, uNoiseTime, uScreenWidth, uScreenHeight,
 			uLodXScale, uLodYScale, uMinLod, uDepthTrans, uDepthScale, uAlphaTestValue;
 
-		fv4Uniform uEnvColor, uPrimColor, uFogColor, uCenterColor, uScaleColor;
+		fv4Uniform uEnvColor, uPrimColor, uFogColor, uCenterColor, uScaleColor, uBlendColor;
 
 		fv2Uniform uTexScale, uTexOffset[2], uTexMask[2],
 			uCacheShiftScale[2], uCacheScale[2], uCacheOffset[2];
