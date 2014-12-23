@@ -237,7 +237,7 @@ TxCache::save(const wchar_t *path, const wchar_t *filename, int config)
 	CHDIR(cachepath.wstring().c_str());
 #else
 	char curpath[MAX_PATH];
-	wcstombs(cbuf, cachepath.string().c_str(), MAX_PATH);
+    wcstombs(cbuf, cachepath.wstring().c_str(), MAX_PATH);
 	GETCWD(MAX_PATH, curpath);
 	CHDIR(cbuf);
 #endif
@@ -317,7 +317,7 @@ TxCache::load(const wchar_t *path, const wchar_t *filename, int config)
 	CHDIR(cachepath.wstring().c_str());
 #else
 	char curpath[MAX_PATH];
-	wcstombs(cbuf, cachepath.string().c_str(), MAX_PATH);
+    wcstombs(cbuf, cachepath.wstring().c_str(), MAX_PATH);
 	GETCWD(MAX_PATH, curpath);
 	CHDIR(cbuf);
 #endif

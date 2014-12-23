@@ -136,6 +136,7 @@ typedef void (*dispInfoFuncExt)(const wchar_t *format, ...);
 
 /* dll exports */
 /* Use TXFilter as a library. Define exported functions. */
+#ifdef OS_WINDOWS
 #ifdef TXFILTER_LIB
 #define TAPI __declspec(dllexport)
 #define TAPIENTRY
@@ -143,6 +144,15 @@ typedef void (*dispInfoFuncExt)(const wchar_t *format, ...);
 #define TAPI
 #define TAPIENTRY
 #endif
+#else // OS_WINDOWS
+#ifdef TXFILTER_LIB
+#define TAPI __attribute__((visibility("default")))
+#define TAPIENTRY
+#else
+#define TAPI
+#define TAPIENTRY
+#endif
+#endif // OS_WINDOWS
 
 #ifdef TXFILTER_DLL
 boolean ext_ghq_init(int maxwidth, /* maximum texture width supported by hardware */

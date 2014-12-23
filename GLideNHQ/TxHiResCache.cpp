@@ -175,7 +175,7 @@ TxHiResCache::loadHiResTextures(boost::filesystem::wpath dir_path, boolean repla
 #else
   char curpath[MAX_PATH];
   char cbuf[MAX_PATH];
-  wcstombs(cbuf, dir_path.string().c_str(), MAX_PATH);
+  wcstombs(cbuf, dir_path.wstring().c_str(), MAX_PATH);
   GETCWD(MAX_PATH, curpath);
   CHDIR(cbuf);
 #endif
@@ -240,7 +240,7 @@ TxHiResCache::loadHiResTextures(boost::filesystem::wpath dir_path, boolean repla
 	/* read in Rice's file naming convention */
 #define CRCFMTSIZ_LEN 13
 #define PALCRC_LEN 9
-	wcstombs(fname, it->path().leaf().c_str(), MAX_PATH);
+    wcstombs(fname, it->path().leaf().wstring().c_str(), MAX_PATH);
 	/* XXX case sensitivity fiasco!
 	 * files must use _a, _rgb, _all, _allciByRGBA, _ciByRGBA, _ci
 	 * and file extensions must be in lower case letters! */
@@ -265,9 +265,9 @@ TxHiResCache::loadHiResTextures(boost::filesystem::wpath dir_path, boolean repla
 	pfname = strstr(fname, ident.c_str());
 	if (pfname != fname) pfname = 0;
 	if (pfname) {
-	  if (sscanf(pfname + ident.size(), "#%08X#%01X#%01X#%08X", &chksum, &fmt, &siz, &palchksum) == 4)
+      if (sscanf(pfname + ident.size(), "#%08lX#%01lX#%01lX#%08lX", &chksum, &fmt, &siz, &palchksum) == 4)
 		pfname += (ident.size() + CRCFMTSIZ_LEN + PALCRC_LEN);
-	  else if (sscanf(pfname + ident.size(), "#%08X#%01X#%01X", &chksum, &fmt, &siz) == 3)
+      else if (sscanf(pfname + ident.size(), "#%08lX#%01lX#%01lX", &chksum, &fmt, &siz) == 3)
 		pfname += (ident.size() + CRCFMTSIZ_LEN);
 	  else
 		pfname = 0;

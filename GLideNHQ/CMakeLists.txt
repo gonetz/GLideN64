@@ -22,14 +22,23 @@ set(GLideNHQ_SOURCES
 
 include_directories( inc )
 
-set(Boost_USE_STATIC_LIBS   ON)
+set(Boost_USE_STATIC_LIBS ON)
 set(Boost_USE_MULTITHREADED ON)
-find_package(Boost COMPONENTS thread filesystem system REQUIRED)
+find_package(Boost REQUIRED COMPONENTS thread filesystem system )
 include_directories(${Boost_INCLUDE_DIRS})
+link_directories(${Boost_LIBRARY_DIRS})
+add_definitions(-DBOOST_THREAD_USE_LIB)
 
-LINK_DIRECTORIES( ${CMAKE_CURRENT_SOURCE_DIR}/lib )
+if(UNIX)
+  add_definitions(
+    -DNDEBUG
+    -DOS_LINUX
+    -DBOOST_THREAD_POSIX
+  )
+endif(UNIX)
 
 if(WIN32)
+  LINK_DIRECTORIES( ${CMAKE_CURRENT_SOURCE_DIR}/lib )
   add_definitions(
 	-DWIN32
 	-DOS_WINDOWS
@@ -69,27 +78,49 @@ if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
 endif()
 
 if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
-SET(GCC_CPP11_COMPILE_FLAGS "-std=c++0x -static-libgcc -static-libstdc++")
-SET( CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} ${GCC_CPP11_COMPILE_FLAGS}" )
+SET(GCC_CPP11_COMPILE_FLAGS "-std=c++0x")
+SET( CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} ${GCC_CPP11_COMPILE_FLAGS} -static -fPIC " )
+#SET( CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} ${GCC_CPP11_COMPILE_FLAGS} " )
 endif()
 
 if( NOT GHQCHK )
-	add_library( libGLideNHQ STATIC ${GLideNHQ_SOURCES})
+        add_definitions( -DTXFILTER_LIB)
 
-	SET_TARGET_PROPERTIES(
-	  libGLideNHQ
-	  PROPERTIES
-	  LINKER_LANGUAGE CXX # Or else we get an error message, because cmake can't figure out from the ".o"-suffix that it is a C-linker we need.
-	  PREFIX ""
-	  LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/plugin
-	  )
+        if( CMAKE_BUILD_TYPE STREQUAL "Debug")
+        add_library( libGLideNHQd STATIC ${GLideNHQ_SOURCES})
 
-	if( CMAKE_BUILD_TYPE STREQUAL "Debug")
-	target_link_libraries(libGLideNHQ ${OPENGL_LIBRARIES} ${Boost_LIBRARIES} png z )
-	endif( CMAKE_BUILD_TYPE STREQUAL "Debug")
+        SET_TARGET_PROPERTIES(
+          libGLideNHQd
+          PROPERTIES
+          LINKER_LANGUAGE CXX # Or else we get an error message, because cmake can't figure out from the ".o"-suffix that it is a C-linker we need.
+          PREFIX ""
+          LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/debug
+          )
+
+        target_link_libraries(libGLideNHQd
+            #${OPENGL_LIBRARIES}
+            #${Boost_FILESYSTEM_LIBRARY}
+            #${Boost_SYSTEM_LIBRARY}
+            #${Boost_THREAD_LIBRARY}
+            pthread png z
+            ${Boost_LIBRARIES}
+        )
+        endif( CMAKE_BUILD_TYPE STREQUAL "Debug")
 
 	if( CMAKE_BUILD_TYPE STREQUAL "Release")
-	target_link_libraries(libGLideNHQ ${OPENGL_LIBRARIES} ${Boost_LIBRARIES} png z )
+        add_library( libGLideNHQ STATIC ${GLideNHQ_SOURCES})
+
+        SET_TARGET_PROPERTIES(
+          libGLideNHQ
+          PROPERTIES
+          LINKER_LANGUAGE CXX # Or else we get an error message, because cmake can't figure out from the ".o"-suffix that it is a C-linker we need.
+          PREFIX ""
+          LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+          )
+        target_link_libraries(libGLideNHQ
+            pthread png z
+            ${Boost_LIBRARIES}
+        )
 	endif( CMAKE_BUILD_TYPE STREQUAL "Release")
 else( NOT GHQCHK )
 	add_definitions(-DGHQCHK)
@@ -105,7 +136,7 @@ else( NOT GHQCHK )
 	  )
 
 	if( CMAKE_BUILD_TYPE STREQUAL "Debug")
-	target_link_libraries(ghqchk ${OPENGL_LIBRARIES} ${Boost_LIBRARIES} png z )
+        target_link_libraries(ghqchk ${OPENGL_LIBRARIES} ${Boost_LIBRARIES} png z )
 	endif( CMAKE_BUILD_TYPE STREQUAL "Debug")
 
 	if( CMAKE_BUILD_TYPE STREQUAL "Release")

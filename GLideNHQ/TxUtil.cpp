@@ -26,6 +26,13 @@
 #include <zlib.h>
 #include <malloc.h>
 
+#if defined (OS_MAC_OS_X)
+#include <sys/param.h>
+#include <sys/sysctl.h>
+#elif defined OS_LINUX
+#include <unistd.h>
+#endif
+
 /*
  * Utilities
  ******************************************************************************/
@@ -98,14 +105,14 @@ TxUtil::checksum64(uint8 *src, int width, int height, int size, int rowStride, u
 		uint32 crc32 = 0, cimax = 0;
 		switch (size & 0xff) {
 		case 1:
-			if (RiceCRC32_CI8(src, width, height, size, rowStride, &crc32, &cimax)) {
+			if (RiceCRC32_CI8(src, width, height, rowStride, &crc32, &cimax)) {
 				crc64Ret = (uint64)RiceCRC32(palette, cimax + 1, 1, 2, 512);
 				crc64Ret <<= 32;
 				crc64Ret |= (uint64)crc32;
 			}
 		break;
 		case 0:
-			if (RiceCRC32_CI4(src, width, height, size, rowStride, &crc32, &cimax)) {
+			if (RiceCRC32_CI4(src, width, height, rowStride, &crc32, &cimax)) {
 				crc64Ret = (uint64)RiceCRC32(palette, cimax + 1, 1, 2, 32);
 				crc64Ret <<= 32;
 				crc64Ret |= (uint64)crc32;
@@ -217,9 +224,7 @@ TxUtil::RiceCRC32(const uint8* src, int width, int height, int size, int rowStri
 	/* NOTE: bytes_per_width must be equal or larger than 4 */
 
 	uint32 crc32Ret = 0;
-	const uint32 bytes_per_width = ((width << size) + 1) >> 1;
-
-	/*if (bytes_per_width < 4) return 0;*/
+	const uint32 bytesPerLine = width << size >> 1;
 
 	try {
 #ifdef __MSC__
@@ -234,7 +239,7 @@ TxUtil::RiceCRC32(const uint8* src, int width, int height, int size, int rowStri
 			dec eax;
 
 loop2:
-			mov ebx, dword ptr [bytes_per_width];
+			mov ebx, dword ptr[bytesPerLine];
 			sub ebx, 4;
 
 loop1:
@@ -258,43 +263,25 @@ loop1:
 			pop ebx;
 		}
 #else
-		asm volatile(
-					"pushl %%ebx \n"
-					"pushl %%esi \n"
-					"pushl %%edi \n"
+		int y = height - 1;
+		while (y >= 0)
+		{
+			uint32 esi = 0;
+			int x = bytesPerLine - 4;
+			while (x >= 0)
+			{
+				esi = *(uint32*)(src + x);
+				esi ^= x;
 
-					"movl %0, %%ecx \n"
-					"movl %1, %%eax \n"
-					"movl $0, %%edx \n"
-					"decl %%eax \n"
-
-					"0: \n"
-					"movl %2, %%ebx \n"
-					"subl $4, %%ebx \n"
-
-					"1: \n"
-					"movl (%%ecx,%%ebx), %%esi \n"
-					"xorl %%ebx, %%esi \n"
-					"roll $4, %%edx \n"
-					"addl %%esi, %%edx \n"
-					"subl $4, %%ebx \n"
-					"jge  1b \n"
-
-					"xorl %%eax, %%esi \n"
-					"addl %%esi, %%edx \n"
-					"addl %3, %%ecx \n"
-					"decl %%eax \n"
-					"jge  0b \n"
-
-					"movl %%edx, %4 \n"
-
-					"popl %%edi \n"
-					"popl %%esi \n"
-					"popl %%ebx \n"
-					:
-					: "m"(src), "m"(height), "m"(bytes_per_width), "m"(rowStride), "m"(crc32Ret)
-					: "memory", "cc"
-					);
+				crc32Ret = (crc32Ret << 4) + ((crc32Ret >> 28) & 15);
+				crc32Ret += esi;
+				x -= 4;
+			}
+			esi ^= y;
+			crc32Ret += esi;
+			src += rowStride;
+			--y;
+		}
 #endif
 	} catch(...) {
 		DBG_INFO(80, L"Error: RiceCRC32 exception!\n");
@@ -303,15 +290,51 @@ loop1:
 	return crc32Ret;
 }
 
+static
+uint8 CalculateMaxCI8b(const uint8* src, uint32 width, uint32 height, uint32 rowStride)
+{
+	uint8 val = 0;
+	for (uint32 y = 0; y < height; ++y) {
+		const uint8 * buf = src + rowStride * y;
+		for (uint32 x = 0; x<width; ++x) {
+			if (buf[x] > val)
+				val = buf[x];
+			if (val == 0xFF)
+				return 0xFF;
+		}
+	}
+	return val;
+}
+
+static
+uint8 CalculateMaxCI4b(const uint8* src, uint32 width, uint32 height, uint32 rowStride)
+{
+	uint8 val = 0;
+	uint8 val1, val2;
+	width >>= 1;
+	for (uint32 y = 0; y < height; ++y) {
+		const uint8 * buf = src + rowStride * y;
+		for (uint32 x = 0; x<width; ++x) {
+			val1 = buf[x] >> 4;
+			val2 = buf[x] & 0xF;
+			if (val1 > val) val = val1;
+			if (val2 > val) val = val2;
+			if (val == 0xF)
+				return 0xF;
+		}
+	}
+	return val;
+}
+
 boolean
-TxUtil::RiceCRC32_CI4(const uint8* src, int width, int height, int size, int rowStride,
+TxUtil::RiceCRC32_CI4(const uint8* src, int width, int height, int rowStride,
 					  uint32* crc32, uint32* cimax)
 {
 	/* NOTE: bytes_per_width must be equal or larger than 4 */
 
 	uint32 crc32Ret = 0;
 	uint32 cimaxRet = 0;
-	const uint32 bytes_per_width = ((width << size) + 1) >> 1;
+	const uint32 bytes_per_width = width >> 1;
 
 	/*if (bytes_per_width < 4) return 0;*/
 
@@ -426,116 +449,8 @@ findmax0:
 			pop ebx;
 		}
 #else
-		asm volatile(
-					"pushl %%ebx \n"
-					"pushl %%esi \n"
-					"pushl %%edi \n"
-
-					"movl %0, %%ecx \n"
-					"movl %1, %%eax \n"
-					"movl $0, %%edx \n"
-					"movl $0, %%edi \n"
-					"decl %%eax \n"
-
-					"0: \n"
-					"movl %2, %%ebx \n"
-					"subl $4, %%ebx \n"
-
-					"1: \n"
-					"movl (%%ecx,%%ebx), %%esi \n"
-
-					"cmpl $0x0000000f, %%edi \n"
-					"je  10f \n"
-
-					"pushl %%ecx \n"
-					"movl %%esi, %%ecx \n"
-					"andl $0x0000000f, %%ecx \n"
-					"cmpl %%edi, %%ecx \n"
-					"jb   2f \n"
-					"movl %%ecx, %%edi \n"
-
-					"2: \n"
-					"movl %%esi, %%ecx \n"
-					"shrl $4, %%ecx \n"
-					"andl $0x0000000f, %%ecx \n"
-					"cmpl %%edi, %%ecx \n"
-					"jb   3f \n"
-					"movl %%ecx, %%edi \n"
-
-					"3: \n"
-					"movl %%esi, %%ecx \n"
-					"shrl $8, %%ecx \n"
-					"andl $0x0000000f, %%ecx \n"
-					"cmpl %%edi, %%ecx \n"
-					"jb   4f \n"
-					"movl %%ecx, %%edi \n"
-
-					"4: \n"
-					"movl %%esi, %%ecx \n"
-					"shrl $12, %%ecx \n"
-					"andl $0x0000000f, %%ecx \n"
-					"cmpl %%edi, %%ecx \n"
-					"jb   5f \n"
-					"movl %%ecx, %%edi \n"
-
-					"5: \n"
-					"movl %%esi, %%ecx \n"
-					"shrl $16, %%ecx \n"
-					"andl $0x0000000f, %%ecx \n"
-					"cmpl %%edi, %%ecx \n"
-					"jb   6f \n"
-					"movl %%ecx, %%edi \n"
-
-					"6: \n"
-					"movl %%esi, %%ecx \n"
-					"shrl $20, %%ecx \n"
-					"andl $0x0000000f, %%ecx \n"
-					"cmpl %%edi, %%ecx \n"
-					"jb   7f \n"
-					"movl %%ecx, %%edi \n"
-
-					"7: \n"
-					"movl %%esi, %%ecx \n"
-					"shrl $24, %%ecx \n"
-					"andl $0x0000000f, %%ecx \n"
-					"cmpl %%edi, %%ecx \n"
-					"jb   8f \n"
-					"movl %%ecx, %%edi \n"
-
-					"8: \n"
-					"movl %%esi, %%ecx \n"
-					"shrl $28, %%ecx \n"
-					"andl $0x0000000f, %%ecx \n"
-					"cmpl %%edi, %%ecx \n"
-					"jb   9f \n"
-					"movl %%ecx, %%edi \n"
-
-					"9: \n"
-					"popl %%ecx \n"
-
-					"10: \n"
-					"xorl %%ebx, %%esi \n"
-					"roll $4, %%edx \n"
-					"addl %%esi, %%edx \n"
-					"subl $4, %%ebx \n"
-					"jge  1b \n"
-
-					"xorl %%eax, %%esi \n"
-					"addl %%esi, %%edx \n"
-					"addl %3, %%ecx \n"
-					"decl %%eax \n"
-					"jge  0b \n"
-
-					"movl %%edx, %4 \n"
-					"movl %%edi, %5 \n"
-
-					"popl %%edi \n"
-					"popl %%esi \n"
-					"popl %%ebx \n"
-					:
-					: "m"(src), "m"(height), "m"(bytes_per_width), "m"(rowStride), "m"(crc32Ret), "m"(cimaxRet)
-					: "memory", "cc"
-					);
+		crc32Ret = RiceCRC32(src, width, height, 0, rowStride);
+		cimaxRet = CalculateMaxCI4b(src, width, height, rowStride);
 #endif
 	} catch(...) {
 		DBG_INFO(80, L"Error: RiceCRC32 exception!\n");
@@ -548,20 +463,18 @@ findmax0:
 }
 
 boolean
-TxUtil::RiceCRC32_CI8(const uint8* src, int width, int height, int size, int rowStride,
+TxUtil::RiceCRC32_CI8(const uint8* src, int width, int height, int rowStride,
 					  uint32* crc32, uint32* cimax)
 {
 	/* NOTE: bytes_per_width must be equal or larger than 4 */
 
 	uint32 crc32Ret = 0;
 	uint32 cimaxRet = 0;
-	const uint32 bytes_per_width = ((width << size) + 1) >> 1;
-
-	/*if (bytes_per_width < 4) return 0;*/
 
 	/* 8bit CI */
 	try {
 #ifdef __MSC__
+		const uint32 bytes_per_width = width;
 		__asm {
 			push ebx;
 			push esi;
@@ -638,84 +551,8 @@ findmax0:
 			pop ebx;
 		}
 #else
-		asm volatile(
-					"pushl %%ebx \n"
-					"pushl %%esi \n"
-					"pushl %%edi \n"
-
-					"movl %0, %%ecx \n"
-					"movl %1, %%eax \n"
-					"movl $0, %%edx \n"
-					"movl $0, %%edi \n"
-					"decl %%eax \n"
-
-					"0: \n"
-					"movl %2, %%ebx \n"
-					"subl $4, %%ebx \n"
-
-					"1: \n"
-					"movl (%%ecx,%%ebx), %%esi \n"
-
-					"cmpl $0x000000ff, %%edi \n"
-					"je   6f \n"
-
-					"pushl %%ecx \n"
-					"movl %%esi, %%ecx \n"
-					"andl $0x000000ff, %%ecx \n"
-					"cmpl %%edi, %%ecx \n"
-					"jb   2f \n"
-					"movl %%ecx, %%edi \n"
-
-					"2: \n"
-					"movl %%esi, %%ecx \n"
-					"shrl $8, %%ecx \n"
-					"andl $0x000000ff, %%ecx \n"
-					"cmpl %%edi, %%ecx \n"
-					"jb   3f \n"
-					"movl %%ecx, %%edi \n"
-
-					"3: \n"
-					"movl %%esi, %%ecx \n"
-					"shrl $16, %%ecx \n"
-					"andl $0x000000ff, %%ecx \n"
-					"cmpl %%edi, %%ecx \n"
-					"jb   4f \n"
-					"movl %%ecx, %%edi \n"
-
-					"4: \n"
-					"movl %%esi, %%ecx \n"
-					"shrl $24, %%ecx \n"
-					"andl $0x000000ff, %%ecx \n"
-					"cmpl %%edi, %%ecx \n"
-					"jb   5f \n"
-					"movl %%ecx, %%edi \n"
-
-					"5: \n"
-					"popl %%ecx \n"
-
-					"6: \n"
-					"xorl %%ebx, %%esi \n"
-					"roll $4, %%edx \n"
-					"addl %%esi, %%edx \n"
-					"subl $4, %%ebx \n"
-					"jge  1b \n"
-
-					"xorl %%eax, %%esi \n"
-					"addl %%esi, %%edx \n"
-					"addl %3, %%ecx \n"
-					"decl %%eax \n"
-					"jge  0b \n"
-
-					"movl %%edx, %4 \n"
-					"movl %%edi, %5 \n"
-
-					"popl %%edi \n"
-					"popl %%esi \n"
-					"popl %%ebx \n"
-					:
-					: "m"(src), "m"(height), "m"(bytes_per_width), "m"(rowStride), "m"(crc32Ret), "m"(cimaxRet)
-					: "memory", "cc"
-					);
+		crc32Ret = RiceCRC32(src, width, height, 1, rowStride);
+		cimaxRet = CalculateMaxCI8b(src, width, height, rowStride);
 #endif
 	} catch(...) {
 		DBG_INFO(80, L"Error: RiceCRC32 exception!\n");
@@ -728,110 +565,32 @@ findmax0:
 }
 
 int
-TxUtil::log2(int num)
-{
-	int i = 0;
-
-#if 1
-	if (!num) return 0;
-#ifdef __MSC__
-	__asm {
-		mov eax, dword ptr [num];
-		bsr eax, eax;
-		mov dword ptr [i], eax;
-	}
-#else
-	asm volatile(
-				"movl %0, %%eax \n"
-				"bsrl %%eax, %%eax \n"
-				"movl %%eax, %1 \n"
-				:
-				: "m"(num), "m"(i)
-				: "memory", "cc"
-				);
-#endif
-#else
-	switch (num) {
-	case 1:    return 0;
-	case 2:    return 1;
-	case 4:    return 2;
-	case 8:    return 3;
-	case 16:   return 4;
-	case 32:   return 5;
-	case 64:   return 6;
-	case 128:  return 7;
-	case 256:  return 8;
-	case 512:  return 9;
-	case 1024:  return 10;
-	case 2048:  return 11;
-	}
-#endif
-
-	return i;
-}
-
-int
-TxUtil::grLodLog2(int w, int h)
-{
-	return (w >= h ? log2(w) : log2(h));
-}
-
-int
-TxUtil::grAspectRatioLog2(int w, int h)
-{
-	return (w >= h ? log2(w/h) : -log2(h/w));
-}
-
-int
 TxUtil::getNumberofProcessors()
 {
 	int numcore = 1;
-
-	/* number of logical processors per physical processor */
 	try {
-#ifdef __MSC__
-#if 1
-		/* use win32 api */
-		SYSTEM_INFO siSysInfo;
-		ZeroMemory(&siSysInfo, sizeof(SYSTEM_INFO));
-		GetSystemInfo(&siSysInfo);
-		numcore = siSysInfo.dwNumberOfProcessors;
-#else
-		__asm {
-			push ebx;
+#if defined (OS_WINDOWS)
+	SYSTEM_INFO sysinfo;
+	GetSystemInfo(&sysinfo);
+	numcore = sysinfo.dwNumberOfProcessors;
+#elif defined (OS_MAC_OS_X)
+	int nm[2];
+	size_t len = 4;
+	uint32_t count;
 
-			mov eax, 1;
-			cpuid;
-			test edx, 0x10000000; /* check HTT */
-			jz uniproc;
-			and ebx, 0x00ff0000;  /* mask logical core counter bit */
-			shr ebx, 16;
-			mov dword ptr [numcore], ebx;
-uniproc:
+	nm[0] = CTL_HW; nm[1] = HW_AVAILCPU;
+	sysctl(nm, 2, &count, &len, NULL, 0);
 
-			pop ebx;
-		}
+	if (count < 1) {
+		nm[1] = HW_NCPU;
+		sysctl(nm, 2, &count, &len, NULL, 0);
+		if (count < 1) { count = 1; }
+	}
+	numcore = count;
+#elif defined (OS_LINUX)
+	numcore = sysconf(_SC_NPROCESSORS_ONLN);
 #endif
-#else
-		asm volatile(
-					"pushl %%ebx \n"
-
-					"movl $1, %%eax \n"
-					"cpuid \n"
-					"testl $0x10000000, %%edx \n"
-					"jz 0f \n"
-					"andl $0x00ff0000, %%ebx \n"
-					"shrl $16, %%ebx \n"
-					"movl %%ebx, %0 \n"
-					"0: \n"
-
-					"popl %%ebx \n"
-					:
-					: "m"(numcore)
-					: "memory", "cc"
-					);
-#endif
-	} catch(...) {
+	} catch (...) {
 		DBG_INFO(80, L"Error: number of processor detection failed!\n");
 	}
 
@@ -841,7 +600,6 @@ uniproc:
 
 	return numcore;
 }
-
 
 /*
  * Memory buffers for texture manipulations

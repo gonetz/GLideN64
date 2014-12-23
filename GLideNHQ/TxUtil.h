@@ -39,11 +39,10 @@ private:
   uint32 Adler32(const uint8* data, int Len, uint32 Adler);
   uint32 Adler32(const uint8* src, int width, int height, int size, int rowStride);
   uint32 RiceCRC32(const uint8* src, int width, int height, int size, int rowStride);
-  boolean RiceCRC32_CI4(const uint8* src, int width, int height, int size, int rowStride,
+  boolean RiceCRC32_CI4(const uint8* src, int width, int height, int rowStride,
 						uint32* crc32, uint32* cimax);
-  boolean RiceCRC32_CI8(const uint8* src, int width, int height, int size, int rowStride,
+  boolean RiceCRC32_CI8(const uint8* src, int width, int height, int rowStride,
 						uint32* crc32, uint32* cimax);
-  int log2(int num);
 public:
   TxUtil() { }
   ~TxUtil() { }
@@ -54,8 +53,6 @@ public:
 #endif
   uint32 checksum(uint8 *src, int width, int height, int size, int rowStride);
   uint64 checksum64(uint8 *src, int width, int height, int size, int rowStride, uint8 *palette);
-  int grLodLog2(int w, int h);
-  int grAspectRatioLog2(int w, int h);
   int getNumberofProcessors();
 };
 
