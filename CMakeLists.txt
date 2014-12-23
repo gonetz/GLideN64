@@ -40,11 +40,12 @@ set(GLideN64_SOURCES
 )
 
 include_directories( GLideNHQ )
-LINK_DIRECTORIES( ${CMAKE_CURRENT_SOURCE_DIR}/GLideNHQ/build )
+LINK_DIRECTORIES( ${CMAKE_CURRENT_SOURCE_DIR}/GLideNHQ/build64 )
 
 if(MUPENPLUSAPI)
   add_definitions(
 	-DMUPENPLUSAPI
+        -DTXFILTER_LIB
   )
   include_directories( inc )
   set(GLideN64_SOURCES_UNIX
@@ -58,6 +59,7 @@ if(MUPENPLUSAPI)
   set(GLideN64_SOURCES_WIN ${GLideN64_SOURCES_UNIX}
 	windows/GLFunctions.cpp
   )
+  set(GLideN64_DLL_NAME mupen64plus-video-GLideN64)
 else(MUPENPLUSAPI)
   set(GLideN64_SOURCES_WIN
 	ZilmarPluginAPI.cpp
@@ -81,6 +83,7 @@ else(MUPENPLUSAPI)
 	posix/OpenGL_posix.cpp
 	posix/ZilmarAPIImpl_posix.cpp
   )
+  set(GLideN64_DLL_NAME GLideN64)
 endif(MUPENPLUSAPI)
 
 if(UNIX)
@@ -167,14 +170,31 @@ SET( CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} ${GCC_CPP11_COMPILE_FLAGS}" )
 SET(GCC_STATIC_LINK_FLAGS "-static-libgcc -static-libstdc++")
 SET( CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} ${GCC_STATIC_LINK_FLAGS}" )
 
-add_library( GLideN64 SHARED ${GLideN64_SOURCES})
+if( CMAKE_BUILD_TYPE STREQUAL "Debug")
+add_library( ${GLideN64_DLL_NAME} SHARED ${GLideN64_SOURCES})
 
 SET_TARGET_PROPERTIES(
-  GLideN64
+  ${GLideN64_DLL_NAME}
   PROPERTIES
   LINKER_LANGUAGE CXX # Or else we get an error message, because cmake can't figure out from the ".o"-suffix that it is a C-linker we need.
   PREFIX ""
-  LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/plugin
+  LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/plugin/debug
   )
 
-target_link_libraries(GLideN64 ${OPENGL_LIBRARIES} ${SDL_LIBRARIES} GLideNHQ )
+target_link_libraries(${GLideN64_DLL_NAME} ${OPENGL_LIBRARIES} ${SDL_LIBRARIES} GLideNHQd )
+endif( CMAKE_BUILD_TYPE STREQUAL "Debug")
+
+if( CMAKE_BUILD_TYPE STREQUAL "Release")
+add_library( ${GLideN64_DLL_NAME} SHARED ${GLideN64_SOURCES})
+
+SET_TARGET_PROPERTIES(
+  ${GLideN64_DLL_NAME}
+  PROPERTIES
+  LINKER_LANGUAGE CXX # Or else we get an error message, because cmake can't figure out from the ".o"-suffix that it is a C-linker we need.
+  PREFIX ""
+  LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/plugin/release
+  )
+
+target_link_libraries(${GLideN64_DLL_NAME} ${OPENGL_LIBRARIES} ${SDL_LIBRARIES} GLideNHQ )
+endif( CMAKE_BUILD_TYPE STREQUAL "Release")
+

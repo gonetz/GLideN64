@@ -16,6 +16,7 @@
 #include FT_FREETYPE_H
 
 #include "TextDrawer.h"
+#include "RSP.h"
 #include "Config.h"
 #include "GLSLCombiner.h"
 
@@ -185,11 +186,14 @@ TextDrawer & TextDrawer::get() {
 static
 bool getFontFileName(char * _strName)
 {
-	char * pWinPath = getenv("WINDIR");
-	if (pWinPath == NULL)
+#ifdef OS_WINDOWS
+	char * pSysPath = getenv("WINDIR");
+	if (pSysPath == NULL)
 		return false;
-//	sprintf(_strName, "%s/Fonts/ARIALN.TTF", pWinPath);
-	sprintf(_strName, "%s/Fonts/%s", pWinPath, config.font.name.c_str());
+	sprintf(_strName, "%s/Fonts/%s", pSysPath, config.font.name.c_str());
+#else
+	sprintf(_strName, "/usr/share/fonts/truetype/%s", config.font.name.c_str());
+#endif
 	return true;
 }
 
@@ -201,7 +205,7 @@ void TextDrawer::init()
 	if (m_pAtlas != NULL)
 		return;
 
-	char strBuffer[MAX_PATH];
+	char strBuffer[PLUGIN_PATH_SIZE];
 	const char *fontfilename;
 	if (getFontFileName(strBuffer))
 		fontfilename = strBuffer;

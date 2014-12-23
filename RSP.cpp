@@ -265,6 +265,32 @@ void RSP_SetDefaultState()
 	gDPPipelineMode(G_PM_NPRIMITIVE);
 }
 
+static
+void _findPluginPath()
+{
+#ifdef OS_WINDOWS
+	GetModuleFileNameW(NULL, RSP.pluginpath, PLUGIN_PATH_SIZE);
+#elif OS_LINUX
+	char path[512];
+	int res = readlink("/proc/self/exe", path, 510);
+	if (res != -1) {
+		path[res] = 0;
+		::mbstowcs(RSP.pluginpath, path, PLUGIN_PATH_SIZE);
+	}
+#elif OS_MAC_OS_X
+	char path[MAXPATHLEN];
+	uint32_t pathLen = MAXPATHLEN*2;
+	if (_NSGetExecutablePath(path, pathLen) == 0) {
+		::mbstowcs(RSP.pluginpath, path, PLUGIN_PATH_SIZE);
+	}
+#else
+	RSP.pluginpath = L"\0";
+#endif
+	wstring pluginPath(RSP.pluginpath);
+	wstring::size_type pos = pluginPath.find_last_of(L"\\/");
+	wcscpy(RSP.pluginpath, pluginPath.substr(0, pos).c_str());
+}
+
 void RSP_Init()
 {
 #ifdef OS_WINDOWS
@@ -307,10 +333,7 @@ void RSP_Init()
 	if (strstr(RSP.romname, (const char *)"OgreBattle64"))
 		config.hacks |= hack_Ogre64;
 
-	GetModuleFileNameW(NULL, RSP.pluginpath, PLUGIN_PATH_SIZE);
-	wstring pluginPath(RSP.pluginpath);
-	wstring::size_type pos = pluginPath.find_last_of(L"\\/");
-	wcscpy(RSP.pluginpath, pluginPath.substr(0, pos).c_str());
+	_findPluginPath();
 
 	RSP_SetDefaultState();
 }
