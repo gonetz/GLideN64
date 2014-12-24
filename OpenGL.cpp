@@ -277,7 +277,7 @@ void OGLRender::addTriangle(int _v0, int _v1, int _v2)
 			vtx.flat_r = gDP.primColor.r;
 			vtx.flat_g = gDP.primColor.g;
 			vtx.flat_b = gDP.primColor.b;
-			vtx.flat_a = vtx.a;
+			vtx.flat_a = gDP.primColor.a;
 		}
 	} else if ((gSP.geometryMode & G_SHADING_SMOOTH) == 0) {
 		// Flat shading
