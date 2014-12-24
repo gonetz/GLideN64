@@ -93,7 +93,7 @@ void VI_UpdateScreen()
 
 	if (*REG.VI_ORIGIN != VI.lastOrigin) {
 		VI_UpdateSize();
-		video().updateScale();
+		ogl.updateScale();
 	}
 
 	if (config.frameBufferEmulation.enable) {
