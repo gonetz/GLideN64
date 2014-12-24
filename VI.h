@@ -12,7 +12,7 @@ struct VIInfo
 
 	VIInfo() :
 		width(0), height(0), real_height(0),
-		lastOrigin(0), interlaced(false)
+		lastOrigin(-1), interlaced(false)
 	{}
 };
 

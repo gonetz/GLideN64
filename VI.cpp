@@ -150,7 +150,7 @@ void VI_UpdateScreen()
 		}
 	}
 
-	if (VI.lastOrigin == 0) { // Workaround for Mupen64Plus issue with initialization
+	if (VI.lastOrigin == -1) { // Workaround for Mupen64Plus issue with initialization
 		glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 	}
