@@ -178,6 +178,8 @@ bool OGLVideo::resizeWindow()
 
 void OGLVideo::updateScale()
 {
+	if (VI.width == 0 || VI.height == 0)
+		return;
 	m_scaleX = m_width / (float)VI.width;
 	m_scaleY = m_height / (float)VI.height;
 }
