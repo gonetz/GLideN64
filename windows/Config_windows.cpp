@@ -117,7 +117,7 @@ void Config_LoadConfig()
 	// manually set frame bufer emulation options
 	config.frameBufferEmulation.copyToRDRAM = FALSE;
 	config.frameBufferEmulation.copyFromRDRAM = FALSE;
-	config.frameBufferEmulation.ignoreCFB = TRUE;
+	config.frameBufferEmulation.ignoreCFB = FALSE;
 	config.frameBufferEmulation.N64DepthCompare = FALSE;
 	config.enableLOD = TRUE;
 	config.enableNoise = TRUE;
