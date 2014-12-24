@@ -61,9 +61,9 @@ void VI_UpdateSize()
 		--VI.real_height;
 	const bool isPAL = (*REG.VI_V_SYNC & 0x3ff) > 550;
 	if (isPAL && (vEnd - vStart) > 480)
-		VI.height = VI.real_height*1.0041841f;
+		VI.height = (u32)(VI.real_height*1.0041841f);
 	else
-		VI.height = VI.real_height*1.0126582f;
+		VI.height = (u32)(VI.real_height*1.0126582f);
 
 //	const int fsaa = ((*REG.VI_STATUS) >> 8) & 3;
 //	const int divot = ((*REG.VI_STATUS) >> 4) & 1;
