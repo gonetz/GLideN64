@@ -623,7 +623,7 @@ void gDPLoadTile(u32 tile, u32 uls, u32 ult, u32 lrs, u32 lrt)
 
 	address = gDP.textureImage.address + gDP.loadTile->ult * gDP.textureImage.bpl + (gDP.loadTile->uls << gDP.textureImage.size >> 1);
 	dest = &TMEM[gDP.loadTile->tmem];
-	bpl = (gDP.loadTile->lrs - gDP.loadTile->uls + 1) << gDP.loadTile->size >> 1;
+	bpl = gDP.loadTile->line << 3;
 	const u32 bytes = height * bpl;
 	src = &RDRAM[address];
 
