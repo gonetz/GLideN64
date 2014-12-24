@@ -91,8 +91,10 @@ void VI_UpdateScreen()
 		return;
 	ogl.saveScreenshot();
 
+	bool bVIUpdated = false;
 	if (*REG.VI_ORIGIN != VI.lastOrigin) {
 		VI_UpdateSize();
+		bVIUpdated = true;
 		ogl.updateScale();
 	}
 
@@ -104,16 +106,22 @@ void VI_UpdateScreen()
 			if ((gSP.changed&CHANGED_CPU_FB_WRITE) == CHANGED_CPU_FB_WRITE) {
 				FrameBuffer * pBuffer = frameBufferList().findBuffer(*REG.VI_ORIGIN);
 				if (pBuffer == NULL || pBuffer->m_width != VI.width) {
-					VI_UpdateSize();
-					ogl.updateScale();
+					if (!bVIUpdated) {
+						VI_UpdateSize();
+						ogl.updateScale();
+						bVIUpdated = true;
+					}
 					const u32 size = *REG.VI_STATUS & 3;
 					if (VI.height > 0 && size > G_IM_SIZ_8b  && VI.width > 0)
 						frameBufferList().saveBuffer(*REG.VI_ORIGIN, G_IM_FMT_RGBA, size, VI.width, VI.height, true);
 				}
 			}
 			if ((((*REG.VI_STATUS)&3) > 0) && (config.frameBufferEmulation.copyFromRDRAM || bCFB)) {
-				VI_UpdateSize();
-				FrameBuffer_CopyFromRDRAM( *REG.VI_ORIGIN, config.frameBufferEmulation.copyFromRDRAM && !bCFB );
+				if (!bVIUpdated) {
+					VI_UpdateSize();
+					bVIUpdated = true;
+				}
+				FrameBuffer_CopyFromRDRAM(*REG.VI_ORIGIN, config.frameBufferEmulation.copyFromRDRAM && !bCFB);
 			}
 			frameBufferList().renderBuffer(*REG.VI_ORIGIN);
 
