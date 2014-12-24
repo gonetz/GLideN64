@@ -954,6 +954,7 @@ void RDRAMtoFrameBuffer::CopyFromRDRAM( u32 _address, bool _bUseAlpha)
 	glDisable( GL_DEPTH_TEST );
 	glDisable( GL_CULL_FACE );
 	glDisable( GL_POLYGON_OFFSET_FILL );
+	const u32 gspChanged = gSP.changed & CHANGED_CPU_FB_WRITE;
 	gSP.changed = gDP.changed = 0;
 
 	m_pTexture->scaleS = 1.0f / (float)m_pTexture->realWidth;
@@ -966,7 +967,7 @@ void RDRAMtoFrameBuffer::CopyFromRDRAM( u32 _address, bool _bUseAlpha)
 
 	OGLRender::TexturedRectParams params(0.0f, 0.0f, (float)width, (float)height, 0.0f, 0.0f, width - 1.0f, height - 1.0f, false);
 	ogl.getRender().drawTexturedRect(params);
-	gSP.changed |= CHANGED_TEXTURE | CHANGED_VIEWPORT;
+	gSP.changed |= gspChanged| CHANGED_TEXTURE | CHANGED_VIEWPORT;
 	gDP.changed |= CHANGED_COMBINE;
 #endif
 }
