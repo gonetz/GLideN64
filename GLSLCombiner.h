@@ -67,26 +67,26 @@ private:
 	void _locate_attributes() const;
 	void _locateUniforms();
 	void _setIUniform(iUniform & _u, int _val, bool _force) {
-		if (_force|| _u.val != _val) {
+		if (_u.loc >= 0 && (_force || _u.val != _val)) {
 			_u.val = _val;
 			glUniform1i(_u.loc, _val);
 		}
 	}
 	void _setFUniform(fUniform & _u, float _val, bool _force) {
-		if (_force|| _u.val != _val) {
+		if (_u.loc >= 0 && (_force || _u.val != _val)) {
 			_u.val = _val;
 			glUniform1f(_u.loc, _val);
 		}
 	}
 	void _setFV2Uniform(fv2Uniform & _u, float _val1, float _val2, bool _force) {
-		if (_force|| _u.val[0] != _val1 || _u.val[1] != _val2) {
+		if (_u.loc >= 0 && (_force || _u.val[0] != _val1 || _u.val[1] != _val2)) {
 			_u.val[0] = _val1;
 			_u.val[1] = _val2;
 			glUniform2f(_u.loc, _val1, _val2);
 		}
 	}
 	void _setIV2Uniform(iv2Uniform & _u, int _val1, int _val2, bool _force) {
-		if (_force|| _u.val[0] != _val1 || _u.val[1] != _val2) {
+		if (_u.loc >= 0 && (_force || _u.val[0] != _val1 || _u.val[1] != _val2)) {
 			_u.val[0] = _val1;
 			_u.val[1] = _val2;
 			glUniform2i(_u.loc, _val1, _val2);
@@ -94,14 +94,14 @@ private:
 	}
 	void _setV3Uniform(fv3Uniform & _u, float * _pVal, bool _force) {
 		const size_t szData = sizeof(float)*3;
-		if (_force|| memcmp(_u.val, _pVal, szData) > 0) {
+		if (_u.loc >= 0 && (_force || memcmp(_u.val, _pVal, szData) > 0)) {
 			memcpy(_u.val, _pVal, szData);
 			glUniform3fv(_u.loc, 1, _pVal);
 		}
 	}
 	void _setV4Uniform(fv4Uniform & _u, float * _pVal, bool _force) {
 		const size_t szData = sizeof(float)*4;
-		if (_force|| memcmp(_u.val, _pVal, szData) > 0) {
+		if (_u.loc >= 0 && (_force || memcmp(_u.val, _pVal, szData) > 0)) {
 			memcpy(_u.val, _pVal, szData);
 			glUniform4fv(_u.loc, 1, _pVal);
 		}
