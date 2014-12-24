@@ -596,10 +596,6 @@ void gDPLoadTile32b(u32 uls, u32 ult, u32 lrs, u32 lrt)
 
 void gDPLoadTile(u32 tile, u32 uls, u32 ult, u32 lrs, u32 lrt)
 {
-	u32 address, bpl, line, y;
-	u64 *dest;
-	u8 *src;
-
 	gDPSetTileSize( tile, uls, ult, lrs, lrt );
 	gDP.loadTile = &gDP.tiles[tile];
 	gDP.loadTile->loadType = LOADTYPE_TILE;
@@ -621,11 +617,9 @@ void gDPLoadTile(u32 tile, u32 uls, u32 ult, u32 lrs, u32 lrt)
 	if (gDP.loadTile->line == 0)
 		return;
 
-	address = gDP.textureImage.address + gDP.loadTile->ult * gDP.textureImage.bpl + (gDP.loadTile->uls << gDP.textureImage.size >> 1);
-	dest = &TMEM[gDP.loadTile->tmem];
-	bpl = gDP.loadTile->line << 3;
+	const u32 address = gDP.textureImage.address + gDP.loadTile->ult * gDP.textureImage.bpl + (gDP.loadTile->uls << gDP.textureImage.size >> 1);
+	const u32 bpl = gDP.loadTile->line << 3;
 	const u32 bytes = height * bpl;
-	src = &RDRAM[address];
 
 	if (((address + bytes) > RDRAMSize) ||
 		(((gDP.loadTile->tmem << 3) + bytes) > 4096)) // Stay within TMEM
@@ -644,8 +638,10 @@ void gDPLoadTile(u32 tile, u32 uls, u32 ult, u32 lrs, u32 lrt)
 	if (gDP.loadTile->size == G_IM_SIZ_32b)
 		gDPLoadTile32b(gDP.loadTile->uls, gDP.loadTile->ult, gDP.loadTile->lrs, gDP.loadTile->lrt);
 	else {
-		line = gDP.loadTile->line;
-		for (y = 0; y < height; ++y) {
+		u64 * dest = &TMEM[gDP.loadTile->tmem];
+		u8 * src = &RDRAM[address];
+		const u32 line = gDP.loadTile->line;
+		for (u32 y = 0; y < height; ++y) {
 			UnswapCopy(src, dest, bpl);
 			if (y & 1) DWordInterleave(dest, line);
 
