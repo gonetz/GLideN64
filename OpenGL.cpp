@@ -482,6 +482,8 @@ void OGLRender::_setBlendMode() const
 			case 0x00C0:
 			//ISS64
 			case 0xC302:
+			// Donald Duck
+			case 0xC702:
 				glBlendFunc(GL_ONE, GL_ZERO);
 				break;
 
