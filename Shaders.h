@@ -147,7 +147,7 @@ static const char* fragment_shader_header_common_variables =
 "uniform lowp int uFogUsage;	\n"
 "uniform lowp int uFb8Bit;		\n"
 "uniform lowp int uFbFixedAlpha;\n"
-"uniform lowp int uUseBlendColor;\n"
+"uniform lowp int uSpecialBlendMode;\n"
 "in lowp vec4 vShadeColor;	\n"
 "in mediump vec2 vTexCoord0;\n"
 "in mediump vec2 vTexCoord1;\n"
@@ -341,6 +341,19 @@ static const char* fragment_shader_readtex1color =
 "  lowp vec4 readtex1 = texture(uTex1, vTexCoord1);	\n"
 "  if (uFb8Bit == 2 || uFb8Bit == 3) readtex1 = vec4(readtex1.r);	\n"
 "  if (uFbFixedAlpha == 2 || uFbFixedAlpha == 3) readtex1.a = 0.825;	\n"
+;
+
+static const char* fragment_shader_blender =
+"  switch (uSpecialBlendMode) {							\n"
+"	case 1:												\n"
+// Mace
+"		color1 = color1 * alpha1 + uBlendColor.rgb * (1.0 - alpha1); \n"
+"	break;												\n"
+// Donald Duck
+"	case 2:												\n"
+"		color1 = uFogColor.rgb*uFogColor.a + color1*(1.0-alpha1);\n"
+"	break;												\n"
+"  }													\n"
 ;
 
 static const char* fragment_shader_end =

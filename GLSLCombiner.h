@@ -38,7 +38,7 @@ private:
 		iUniform uTex0, uTex1, uTlutImage, uZlutImage, uDepthImage,
 			uFogMode, uFogUsage, uEnableLod, uEnableAlphaTest,
 			uEnableDepth, uEnableDepthCompare, uEnableDepthUpdate,
-			uDepthMode, uFb8Bit, uFbFixedAlpha, uRenderState, uUseBlendColor,
+			uDepthMode, uFb8Bit, uFbFixedAlpha, uRenderState, uSpecialBlendMode,
 			uMaxTile, uTextureDetail, uTexturePersp,
 			uAlphaCompareMode, uAlphaDitherMode, uColorDitherMode, uGammaCorrectionEnabled;
 

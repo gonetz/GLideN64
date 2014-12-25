@@ -401,18 +401,17 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 {
 	strFragmentShader.assign(fragment_shader_header_common_variables);
 
-	char strCombiner[512];
-	strcpy(strCombiner, "  alpha1 = ");
-	if (gDP.otherMode.cycleType == G_CYC_1CYCLE)
+	if (gDP.otherMode.cycleType == G_CYC_1CYCLE) {
 		CorrectFirstStageParams(_alpha.stage[0]);
+		CorrectFirstStageParams(_color.stage[0]);
+	}
+	char strCombiner[1024];
+	strcpy(strCombiner, "  alpha1 = ");
 	m_nInputs = CompileCombiner(_alpha.stage[0], AlphaInput, strCombiner);
 	strcat(strCombiner, "  color1 = ");
-	if (gDP.otherMode.cycleType == G_CYC_1CYCLE)
-		CorrectFirstStageParams(_color.stage[0]);
 	m_nInputs |= CompileCombiner(_color.stage[0], ColorInput, strCombiner);
-
-	// Hack For Mace
-	strcat(strCombiner, "  if (uUseBlendColor != 0) color1 = color1 * alpha1 + uBlendColor.rgb * (1.0 - alpha1); \n");
+	if (gDP.otherMode.cycleType == G_CYC_2CYCLE)
+		strcat(strCombiner, fragment_shader_blender);
 
 	strcat(strCombiner, "  combined_color = vec4(color1, alpha1); \n");
 	if (_alpha.numStages == 2) {
@@ -568,7 +567,7 @@ void ShaderCombiner::_locateUniforms() {
 	LocateUniform(uMaxTile)
 	LocateUniform(uTextureDetail);
 	LocateUniform(uTexturePersp);
-	LocateUniform(uUseBlendColor);
+	LocateUniform(uSpecialBlendMode);
 
 	LocateUniform(uFogMultiplier);
 	LocateUniform(uFogOffset);
@@ -663,9 +662,11 @@ void ShaderCombiner::updateColors(bool _bForce)
 	_setV4Uniform(m_uniforms.uPrimColor, &gDP.primColor.r, _bForce);
 	_setV4Uniform(m_uniforms.uScaleColor, &gDP.key.scale.r, _bForce);
 	_setV4Uniform(m_uniforms.uCenterColor, &gDP.key.center.r, _bForce);
+
 	const u32 blender = (gDP.otherMode.l >> 16);
 	const int nFogBlendEnabled = (gDP.otherMode.c1_m1a == 3 || gDP.otherMode.c1_m2a == 3 || gDP.otherMode.c2_m1a == 3 || gDP.otherMode.c2_m2a == 3) ? 256 : 0;
-	int nFogUsage;
+	int nFogUsage = (config.enableFog != 0 && (gSP.geometryMode & G_FOG) != 0) ? 1 : 0;
+	int nSpecialBlendMode = 0;
 	switch (blender) {
 	case 0x0150:
 	case 0x0D18:
@@ -677,22 +678,27 @@ void ShaderCombiner::updateColors(bool _bForce)
 	case 0xC912:
 		nFogUsage = 2;
 		break;
-	case 0x0550:
-		nFogUsage = 4;
-		break;
 	case 0xF550:
 		nFogUsage = 3;
 		break;
+	case 0x0550:
+		nFogUsage = 4;
+		break;
 	case 0x0382:
 	case 0x0091:
-		_setIUniform(m_uniforms.uUseBlendColor, 1, _bForce);
+		// Mace
+		// CLR_IN * A_IN + CLR_BL * 1MA
+		nSpecialBlendMode = 1;
 		_setV4Uniform(m_uniforms.uBlendColor, &gDP.blendColor.r, _bForce);
-		nFogUsage = (config.enableFog != 0 && (gSP.geometryMode & G_FOG) != 0) ? 1 : 0;
 		break;
-	default:
-		_setIUniform(m_uniforms.uUseBlendColor, 0, _bForce);
-		nFogUsage = (config.enableFog != 0 && (gSP.geometryMode & G_FOG) != 0) ? 1 : 0;
+	case 0xc702:
+		// Donald Duck
+		// clr_fog*a_fog + clr_in*1ma
+		nFogUsage = 5;
+		nSpecialBlendMode = 2;
+		break;
 	}
+
 	int nFogMode = 0; // Normal
 	if (nFogUsage == 0) {
 		switch (blender) {
@@ -708,6 +714,8 @@ void ShaderCombiner::updateColors(bool _bForce)
 			break;
 		}
 	}
+
+	_setIUniform(m_uniforms.uSpecialBlendMode, nSpecialBlendMode, _bForce);
 	_setIUniform(m_uniforms.uFogUsage, nFogUsage | nFogBlendEnabled, _bForce);
 	_setIUniform(m_uniforms.uFogMode, nFogMode, _bForce);
 	if (nFogUsage + nFogMode != 0) {
@@ -715,6 +723,7 @@ void ShaderCombiner::updateColors(bool _bForce)
 		_setFUniform(m_uniforms.uFogOffset, (float)gSP.fog.offset / 256.0f, _bForce);
 		_setV4Uniform(m_uniforms.uFogColor, &gDP.fogColor.r, _bForce);
 	}
+
 	_setFUniform(m_uniforms.uK4, gDP.convert.k4*0.0039215689f, _bForce);
 	_setFUniform(m_uniforms.uK5, gDP.convert.k5*0.0039215689f, _bForce);
 
