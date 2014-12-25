@@ -795,7 +795,7 @@ void TextureCache::_loadBackground(CachedTexture *pTexture)
 	glGetIntegerv(GL_UNPACK_ALIGNMENT, &curUnpackAlignment);
 
 	bool bLoaded = false;
-	if (TFH.isInited() && config.textureFilter.txFilterIgnoreBG == 0) {
+	if ((config.textureFilter.txEnhancementMode | config.textureFilter.txFilterMode) != 0 && config.textureFilter.txFilterIgnoreBG == 0 && TFH.isInited()) {
 		GHQTexInfo ghqTexInfo;
 		if (txfilter_filter((u8*)pDest, pTexture->realWidth, pTexture->realHeight, glInternalFormat, (uint64)pTexture->crc, &ghqTexInfo) != 0 && ghqTexInfo.data != NULL) {
 			if (ghqTexInfo.width % 2 != 0 && ghqTexInfo.format != GL_RGBA)
@@ -816,7 +816,7 @@ void TextureCache::_loadBackground(CachedTexture *pTexture)
 
 bool TextureCache::_loadHiresTexture(u32 _tile, CachedTexture *_pTexture)
 {
-	if (!TFH.isInited())
+	if (config.textureFilter.txHiresEnable == 0 || !TFH.isInited())
 		return false;
 
 	isGLError();  // Workaround for Mupen64Plus;
@@ -1010,7 +1010,7 @@ void TextureCache::_load(u32 _tile, CachedTexture *_pTexture)
 		}
 
 		bool bLoaded = false;
-		if (TFH.isInited() && maxLevel == 0 && (config.textureFilter.txFilterIgnoreBG == 0 || (RSP.cmd != G_TEXRECT && RSP.cmd != G_TEXRECTFLIP)))
+		if ((config.textureFilter.txEnhancementMode | config.textureFilter.txFilterMode) != 0 && maxLevel == 0 && (config.textureFilter.txFilterIgnoreBG == 0 || (RSP.cmd != G_TEXRECT && RSP.cmd != G_TEXRECTFLIP)) && TFH.isInited())
 		{
 			GHQTexInfo ghqTexInfo;
 			if (txfilter_filter((u8*)pDest, tmptex.realWidth, tmptex.realHeight, glInternalFormat, (uint64)_pTexture->crc, &ghqTexInfo) != 0 && ghqTexInfo.data != NULL) {
