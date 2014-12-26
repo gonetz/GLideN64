@@ -343,6 +343,7 @@ static const char* fragment_shader_readtex1color =
 "  if (uFbFixedAlpha == 2 || uFbFixedAlpha == 3) readtex1.a = 0.825;	\n"
 ;
 
+#if 0
 static const char* fragment_shader_blender =
 "  switch (uSpecialBlendMode) {							\n"
 "	case 1:												\n"
@@ -355,6 +356,14 @@ static const char* fragment_shader_blender =
 "	break;												\n"
 "  }													\n"
 ;
+#else
+static const char* fragment_shader_blender =
+"  if (uSpecialBlendMode == 1) {						\n"
+// Mace
+"		color1 = color1 * alpha1 + uBlendColor.rgb * (1.0 - alpha1); \n"
+"  }													\n"
+;
+#endif
 
 static const char* fragment_shader_end =
 "}                               \n"

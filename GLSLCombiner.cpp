@@ -691,12 +691,14 @@ void ShaderCombiner::updateColors(bool _bForce)
 		nSpecialBlendMode = 1;
 		_setV4Uniform(m_uniforms.uBlendColor, &gDP.blendColor.r, _bForce);
 		break;
+	/* Brings troubles with Roadsters sky
 	case 0xc702:
 		// Donald Duck
 		// clr_fog*a_fog + clr_in*1ma
 		nFogUsage = 5;
 		nSpecialBlendMode = 2;
 		break;
+		*/
 	}
 
 	int nFogMode = 0; // Normal
