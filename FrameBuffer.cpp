@@ -521,7 +521,7 @@ void FrameBuffer_ActivateBufferTexture(s16 t, FrameBuffer *pBuffer)
 	}
 	else
 	{
-		pBuffer->m_pTexture->offsetS = (float)(shift % factor);
+		pBuffer->m_pTexture->offsetS = (float)((shift % factor) >> pBuffer->m_size << 1);
 		pBuffer->m_pTexture->offsetT = (float)(pBuffer->m_height - shift/factor);
 	}
 
