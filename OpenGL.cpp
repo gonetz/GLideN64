@@ -289,7 +289,7 @@ void OGLRender::addTriangle(int _v0, int _v1, int _v2)
 			vtx.flat_r = vtx0.r;
 			vtx.flat_g = vtx0.g;
 			vtx.flat_b = vtx0.b;
-			vtx.flat_a = vtx.a;
+			vtx.flat_a = vtx0.a;
 		}
 	}
 
