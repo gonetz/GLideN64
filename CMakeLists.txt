@@ -39,9 +39,6 @@ set(GLideN64_SOURCES
   common/CommonAPIImpl_common.cpp
 )
 
-include_directories( GLideNHQ )
-LINK_DIRECTORIES( ${CMAKE_CURRENT_SOURCE_DIR}/GLideNHQ/build64 )
-
 if(MUPENPLUSAPI)
   add_definitions(
 	-DMUPENPLUSAPI
@@ -86,6 +83,9 @@ else(MUPENPLUSAPI)
   set(GLideN64_DLL_NAME GLideN64)
 endif(MUPENPLUSAPI)
 
+add_subdirectory(GLideNHQ)
+include_directories( GLideNHQ )
+
 if(UNIX)
   list(APPEND GLideN64_SOURCES ${GLideN64_SOURCES_UNIX})
   if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
@@ -98,14 +98,14 @@ if(UNIX)
 	)
   endif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
   if( NOT MUPENPLUSAPI)
-  add_definitions(
+    add_definitions(
 	-D_DEBUG
-  )
-  find_package(PkgConfig)
-  pkg_check_modules(GLIB REQUIRED glib-2.0)
-  include_directories(${GLIB_INCLUDE_DIRS})
-  find_package(GTK2 REQUIRED)
-  include_directories(${GTK2_INCLUDE_DIRS})
+    )
+    find_package(PkgConfig)
+    pkg_check_modules(GLIB REQUIRED glib-2.0)
+    include_directories(${GLIB_INCLUDE_DIRS})
+    find_package(GTK2 REQUIRED)
+    include_directories(${GTK2_INCLUDE_DIRS})
   endif( NOT MUPENPLUSAPI)
 endif(UNIX)
 
@@ -165,36 +165,44 @@ if(NOT OPENGL_FOUND)
 	message(ERROR " OPENGL not found!")
 endif(NOT OPENGL_FOUND)
 
-SET(GCC_CPP11_COMPILE_FLAGS "-std=c++0x -static-libgcc -static-libstdc++")
-SET( CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} ${GCC_CPP11_COMPILE_FLAGS}" )
-SET(GCC_STATIC_LINK_FLAGS "-static-libgcc -static-libstdc++")
-SET( CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} ${GCC_STATIC_LINK_FLAGS}" )
+if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+    SET(GCC_CPP11_COMPILE_FLAGS "-std=c++0x -static-libgcc -static-libstdc++")
+    SET( CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} ${GCC_CPP11_COMPILE_FLAGS}" )
+    SET(GCC_STATIC_LINK_FLAGS "-static-libgcc -static-libstdc++")
+    SET( CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} ${GCC_STATIC_LINK_FLAGS}" )
+endif()
 
-if( CMAKE_BUILD_TYPE STREQUAL "Debug")
 add_library( ${GLideN64_DLL_NAME} SHARED ${GLideN64_SOURCES})
 
-SET_TARGET_PROPERTIES(
-  ${GLideN64_DLL_NAME}
-  PROPERTIES
-  LINKER_LANGUAGE CXX # Or else we get an error message, because cmake can't figure out from the ".o"-suffix that it is a C-linker we need.
-  PREFIX ""
-  LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/plugin/debug
+if( CMAKE_BUILD_TYPE STREQUAL "Debug")
+  SET_TARGET_PROPERTIES(
+    ${GLideN64_DLL_NAME}
+    PROPERTIES
+    LINKER_LANGUAGE CXX # Or else we get an error message, because cmake can't figure out from the ".o"-suffix that it is a C-linker we need.
+    PREFIX ""
+    LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/plugin/debug
   )
 
-target_link_libraries(${GLideN64_DLL_NAME} ${OPENGL_LIBRARIES} ${SDL_LIBRARIES} GLideNHQd )
+  if(SDL)
+    target_link_libraries(${GLideN64_DLL_NAME} PRIVATE ${OPENGL_LIBRARIES} ${SDL_LIBRARIES} ${FREETYPE_LIBRARIES} GLideNHQd )
+  else(SDL)
+    target_link_libraries(${GLideN64_DLL_NAME} PRIVATE ${OPENGL_LIBRARIES} ${FREETYPE_LIBRARIES} GLideNHQd )
+  endif(SDL)
 endif( CMAKE_BUILD_TYPE STREQUAL "Debug")
 
 if( CMAKE_BUILD_TYPE STREQUAL "Release")
-add_library( ${GLideN64_DLL_NAME} SHARED ${GLideN64_SOURCES})
-
-SET_TARGET_PROPERTIES(
-  ${GLideN64_DLL_NAME}
-  PROPERTIES
-  LINKER_LANGUAGE CXX # Or else we get an error message, because cmake can't figure out from the ".o"-suffix that it is a C-linker we need.
-  PREFIX ""
-  LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/plugin/release
+  SET_TARGET_PROPERTIES(
+    ${GLideN64_DLL_NAME}
+    PROPERTIES
+    LINKER_LANGUAGE CXX # Or else we get an error message, because cmake can't figure out from the ".o"-suffix that it is a C-linker we need.
+    PREFIX ""
+    LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/plugin/release
   )
 
-target_link_libraries(${GLideN64_DLL_NAME} ${OPENGL_LIBRARIES} ${SDL_LIBRARIES} GLideNHQ )
+  if(SDL)
+    target_link_libraries(${GLideN64_DLL_NAME} ${OPENGL_LIBRARIES} ${SDL_LIBRARIES} ${FREETYPE_LIBRARIES} GLideNHQ )
+  else(SDL)
+    target_link_libraries(${GLideN64_DLL_NAME} PRIVATE ${OPENGL_LIBRARIES} ${FREETYPE_LIBRARIES} GLideNHQ )
+  endif(SDL)
 endif( CMAKE_BUILD_TYPE STREQUAL "Release")
 
