@@ -35,6 +35,7 @@ static const char* vertex_shader =
 "out lowp float vNumLights;							\n"
 "out mediump float vFogFragCoord;					\n"
 #else
+"#version 330 core										\n"
 "in vec4	aPosition;								\n"
 "in vec4	aColor;									\n"
 "in vec2	aTexCoord0;								\n"
@@ -158,12 +159,14 @@ static const char* fragment_shader_header_common_variables =
 "lowp vec3 input_color;			\n"
 "out lowp vec4 fragColor;		\n"
 #else
+"#version 330 core										\n"
 "uniform sampler2D uTex0;		\n"
 "uniform sampler2D uTex1;		\n"
 "uniform vec4 uPrimColor;		\n"
 "uniform vec4 uEnvColor;		\n"
 "uniform vec4 uCenterColor;		\n"
 "uniform vec4 uScaleColor;		\n"
+"uniform vec4 uBlendColor;		\n"
 "uniform vec4 uFogColor;		\n"
 "uniform float uK4;				\n"
 "uniform float uK5;				\n"
@@ -175,6 +178,7 @@ static const char* fragment_shader_header_common_variables =
 "uniform int uFogUsage;		\n"
 "uniform int uFb8Bit;		\n"
 "uniform int uFbFixedAlpha;	\n"
+"uniform int uSpecialBlendMode;\n"
 "in vec4 vShadeColor;		\n"
 "in vec2 vTexCoord0;		\n"
 "in vec2 vTexCoord1;		\n"
@@ -234,6 +238,7 @@ static const char* fragment_shader_calc_light =
 "  return full_intensity;										\n"
 "}																\n"
 #else
+"#version 330 core										\n"
 "uniform vec3 uLightDirection[8];	\n"
 "uniform vec3 uLightColor[8];	\n"
 "																\n"
@@ -266,6 +271,7 @@ static const char* alpha_test_fragment_shader =
 "uniform lowp float uAlphaTestValue;			\n"
 "lowp bool alpha_test(in lowp float alphaValue)	\n"
 #else
+"#version 330 core										\n"
 "uniform int uEnableAlphaTest;				\n"
 "uniform float uAlphaTestValue;				\n"
 "bool alpha_test(in float alphaValue)		\n"
@@ -380,6 +386,13 @@ static const char* fragment_shader_readtex1color =
 "  if (uFbFixedAlpha == 2 || uFbFixedAlpha == 3) readtex1.a = 0.825;	\n"
 ;
 
+static const char* fragment_shader_blender =
+"  if (uSpecialBlendMode == 1) {						\n"
+// Mace
+"		color1 = color1 * alpha1 + uBlendColor.rgb * (1.0 - alpha1); \n"
+"  }													\n"
+;
+
 static const char* fragment_shader_end =
 "}                               \n"
 #endif
@@ -458,6 +471,7 @@ static const char* fragment_shader_mipmap =
 "  return lod_frac;													\n"
 "}																	\n"
 #else
+"#version 330 core										\n"
 "in vec2 vTexCoord0;		\n"
 "in vec2 vTexCoord1;		\n"
 "in vec2 vLodTexCoord;		\n"
