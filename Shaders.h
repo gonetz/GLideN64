@@ -1,5 +1,3 @@
-#define SHADER_PRECISION
-
 static const char* vertex_shader =
 #ifdef SHADER_PRECISION
 "#version 330 core										\n"

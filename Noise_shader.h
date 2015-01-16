@@ -9,7 +9,8 @@ const char *noise_fragment_shader =
 //               https://github.com/ashima/webgl-noise
 //
 //
-#ifdef GLES2
+#ifdef SHADER_PRECISION
+"#version 150 core													\n"
 "mediump vec3 mod289(mediump vec3 x) {								\n"
 "  return x - floor(x * (1.0 / 289.0)) * 289.0;						\n"
 "}																	\n"
@@ -66,6 +67,7 @@ const char *noise_fragment_shader =
 "}																	\n"
 "																	\n"
 #else
+"#version 150 core													\n"
 "vec3 mod289(vec3 x) {												\n"
 "  return x - floor(x * (1.0 / 289.0)) * 289.0;						\n"
 "}																	\n"

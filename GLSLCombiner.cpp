@@ -6,11 +6,13 @@
 #include "OpenGL.h"
 #include "Config.h"
 #include "GLSLCombiner.h"
-#include "Shaders.h"
-#include "Noise_shader.h"
 #include "FrameBuffer.h"
 #include "DepthBuffer.h"
 #include "Log.h"
+
+#define SHADER_PRECISION
+#include "Shaders.h"
+#include "Noise_shader.h"
 
 static GLuint  g_vertex_shader_object;
 static GLuint  g_calc_light_shader_object;
