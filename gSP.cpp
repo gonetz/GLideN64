@@ -42,6 +42,8 @@ void gSPTriangle(s32 v0, s32 v1, s32 v2)
 		if (render.isClipped(v0, v1, v2))
 			return;
 		render.addTriangle(v0, v1, v2);
+		if (config.frameBufferEmulation.N64DepthCompare != 0)
+			render.drawTriangles();
 	}
 
 	gDP.colorImage.changed = TRUE;

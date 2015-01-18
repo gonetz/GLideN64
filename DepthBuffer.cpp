@@ -69,8 +69,8 @@ void DepthBuffer::initDepthTexture(FrameBuffer * _pBuffer)
 
 	glBindTexture( GL_TEXTURE_2D, m_pDepthTexture->glName );
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, m_pDepthTexture->realWidth, m_pDepthTexture->realHeight, 0, GL_RGBA, GL_FLOAT,	NULL);
-	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
 	glBindTexture( GL_TEXTURE_2D, 0);
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_FBO);

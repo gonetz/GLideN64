@@ -94,7 +94,8 @@ void OGLVideoMupenPlus::_swapBuffers()
 	// if emulator defined a render callback function, call it before buffer swap
 	if (renderCallback != NULL) {
 		glUseProgram(0);
-		glViewport(0, getHeightOffset(), getScreenWidth(), getScreenHeight());
+		if (config.frameBufferEmulation.N64DepthCompare == 0)
+			glViewport(0, getHeightOffset(), getScreenWidth(), getScreenHeight());
 		gDP.changed |= CHANGED_COMBINE;
 		(*renderCallback)((gSP.changed&CHANGED_CPU_FB_WRITE) == 0 ? 1 : 0);
 	}
