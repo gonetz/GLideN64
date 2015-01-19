@@ -492,25 +492,25 @@ TxUtil::getNumberofProcessors()
 	int numcore = 1;
 	try {
 #if defined (OS_WINDOWS)
-	SYSTEM_INFO sysinfo;
-	GetSystemInfo(&sysinfo);
-	numcore = sysinfo.dwNumberOfProcessors;
+		SYSTEM_INFO sysinfo;
+		GetSystemInfo(&sysinfo);
+		numcore = sysinfo.dwNumberOfProcessors;
 #elif defined (OS_MAC_OS_X)
-	int nm[2];
-	size_t len = 4;
-	uint32_t count;
+		int nm[2];
+		size_t len = 4;
+		uint32_t count;
 
-	nm[0] = CTL_HW; nm[1] = HW_AVAILCPU;
-	sysctl(nm, 2, &count, &len, NULL, 0);
-
-	if (count < 1) {
-		nm[1] = HW_NCPU;
+		nm[0] = CTL_HW; nm[1] = HW_AVAILCPU;
 		sysctl(nm, 2, &count, &len, NULL, 0);
-		if (count < 1) { count = 1; }
-	}
-	numcore = count;
+
+		if (count < 1) {
+			nm[1] = HW_NCPU;
+			sysctl(nm, 2, &count, &len, NULL, 0);
+			if (count < 1) { count = 1; }
+		}
+		numcore = count;
 #elif defined (OS_LINUX)
-	numcore = sysconf(_SC_NPROCESSORS_ONLN);
+		numcore = sysconf(_SC_NPROCESSORS_ONLN);
 #endif
 	} catch (...) {
 		DBG_INFO(80, L"Error: number of processor detection failed!\n");
