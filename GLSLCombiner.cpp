@@ -435,7 +435,7 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 	strFragmentShader.append(fragment_shader_header_main);
 	const bool bUseLod = (m_nInputs & (1<<LOD_FRACTION)) > 0;
 	if (bUseLod) {
-#ifdef GLES2
+#ifdef SHADER_PRECISION
 		strFragmentShader.append("  lowp vec4 readtex0, readtex1; \n");
 		strFragmentShader.append("  lowp float lod_frac = mipmap(readtex0, readtex1);	\n");
 #else
@@ -449,7 +449,7 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 				strFragmentShader.append(fragment_shader_readtex1color);
 	}
 	if (config.enableHWLighting)
-#ifdef GLES2
+#ifdef SHADER_PRECISION
 		strFragmentShader.append("  lowp float intensity = calc_light(int(vNumLights), vShadeColor.rgb, input_color); \n");
 #else
 		strFragmentShader.append("  float intensity = calc_light(vNumLights, vShadeColor.rgb, input_color); \n");
