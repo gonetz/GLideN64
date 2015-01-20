@@ -564,6 +564,7 @@ void ShaderCombiner::_locateUniforms() {
 	LocateUniform(uEnableDepthCompare)
 	LocateUniform(uEnableDepthUpdate);
 	LocateUniform(uDepthMode);
+	LocateUniform(uDepthSource);
 	LocateUniform(uFb8Bit);
 	LocateUniform(uFbFixedAlpha);
 	LocateUniform(uMaxTile)
@@ -582,8 +583,7 @@ void ShaderCombiner::_locateUniforms() {
 	LocateUniform(uLodXScale);
 	LocateUniform(uLodYScale);
 	LocateUniform(uMinLod);
-	LocateUniform(uDepthTrans);
-	LocateUniform(uDepthScale);
+	LocateUniform(uDeltaZ);
 	LocateUniform(uAlphaTestValue);
 
 	LocateUniform(uEnvColor);
@@ -596,6 +596,7 @@ void ShaderCombiner::_locateUniforms() {
 	LocateUniform(uRenderState);
 
 	LocateUniform(uTexScale);
+	LocateUniform(uDepthScale);
 	LocateUniform(uTexOffset[0]);
 	LocateUniform(uTexOffset[1]);
 	LocateUniform(uTexMask[0]);
@@ -844,8 +845,10 @@ void ShaderCombiner::updateDepthInfo(bool _bForce) {
 		_setIUniform(m_uniforms.uEnableDepthUpdate, gDP.otherMode.depthUpdate, _bForce);
 	}
 	_setIUniform(m_uniforms.uDepthMode, gDP.otherMode.depthMode, _bForce);
-	_setFUniform(m_uniforms.uDepthScale, gSP.viewport.vscale[2]*32768.0f, _bForce);
-	_setFUniform(m_uniforms.uDepthTrans, gSP.viewport.vtrans[2]*32768.0f, _bForce);
+	_setIUniform(m_uniforms.uDepthSource, gDP.otherMode.depthSource, _bForce);
+	_setFV2Uniform(m_uniforms.uDepthScale, gSP.viewport.vscale[2] * 32768.0f, gSP.viewport.vtrans[2] * 32768.0f, _bForce);
+	if (gDP.otherMode.depthSource == G_ZS_PRIM)
+		_setFUniform(m_uniforms.uDeltaZ, gDP.primDepth.deltaZ, _bForce);
 }
 
 void ShaderCombiner::updateAlphaTestInfo(bool _bForce) {
