@@ -192,7 +192,7 @@ bool getFontFileName(char * _strName)
 		return false;
 	sprintf(_strName, "%s/Fonts/%s", pSysPath, config.font.name.c_str());
 #else
-	sprintf(_strName, "/usr/share/fonts/truetype/%s", config.font.name.c_str());
+    sprintf(_strName, "/usr/share/fonts/truetype/freefont/%s", config.font.name.c_str());
 #endif
 	return true;
 }

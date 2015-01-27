@@ -102,7 +102,11 @@ bool Config_SetDefault()
 	res = ConfigSetDefaultBool(g_configVideoGliden64, "txDump", 0, "Enable dump of loaded N64 textures.");
 	assert(res == M64ERR_SUCCESS);
 
-	res = ConfigSetDefaultString(g_configVideoGliden64, "fontName", "arial.ttf", "File name of True Type Font for text messages.");
+#ifdef OS_WINDOWS
+    res = ConfigSetDefaultString(g_configVideoGliden64, "fontName", "arial.ttf", "File name of True Type Font for text messages.");
+#else
+    res = ConfigSetDefaultString(g_configVideoGliden64, "fontName", "FreeSans.ttf", "File name of True Type Font for text messages.");
+#endif
 	assert(res == M64ERR_SUCCESS);
 	res = ConfigSetDefaultInt(g_configVideoGliden64, "fontSize", 18, "Font size.");
 	assert(res == M64ERR_SUCCESS);
