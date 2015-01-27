@@ -25,7 +25,7 @@ LINK_DIRECTORIES( ${CMAKE_CURRENT_SOURCE_DIR}/lib )
 
 set(Boost_USE_STATIC_LIBS ON)
 set(Boost_USE_MULTITHREADED ON)
-find_package(Boost REQUIRED COMPONENTS thread filesystem system )
+find_package(Boost REQUIRED COMPONENTS filesystem system )
 include_directories(${Boost_INCLUDE_DIRS})
 link_directories(${Boost_LIBRARY_DIRS})
 
@@ -37,6 +37,7 @@ if(UNIX)
 endif(UNIX)
 
 if(WIN32)
+  LINK_DIRECTORIES( ${CMAKE_CURRENT_SOURCE_DIR}/lib )
   add_definitions(
 	-DWIN32
 	-DOS_WINDOWS
@@ -73,7 +74,7 @@ endif()
 if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
     SET(GCC_CPP11_COMPILE_FLAGS "-std=c++0x")
     if( NOT GHQCHK )
-      SET( CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} ${GCC_CPP11_COMPILE_FLAGS} -static -static-libstdc++ -static-libgcc -fPIC " )
+      SET( CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} ${GCC_CPP11_COMPILE_FLAGS} -static -fPIC " )
     else( NOT GHQCHK )
       SET( CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} ${GCC_CPP11_COMPILE_FLAGS}" )
     endif( NOT GHQCHK )
@@ -91,13 +92,12 @@ if( NOT GHQCHK )
       set_target_properties(GLideNHQd PROPERTIES LINK_SEARCH_END_STATIC 1)
 
 #          target_link_libraries( GLideNHQd PRIVATE png z ${Boost_LIBRARIES} )
-#      target_link_libraries(GLideNHQd ${CMAKE_CURRENT_SOURCE_DIR}/lib/libpng.a ${CMAKE_CURRENT_SOURCE_DIR}/lib/libz.a ${BOOSTSYSTEMLIB} ${BOOSTFILESYSTEMLIB} ${BOOSTTHREADLIB})
+#      target_link_libraries(GLideNHQd ${CMAKE_CURRENT_SOURCE_DIR}/lib/libpng.a ${CMAKE_CURRENT_SOURCE_DIR}/lib/libz.a ${BOOSTSYSTEMLIB} ${BOOSTFILESYSTEMLIB})
       target_link_libraries(GLideNHQd PRIVATE
             ${CMAKE_CURRENT_SOURCE_DIR}/lib/libpng.a
             ${CMAKE_CURRENT_SOURCE_DIR}/lib/libz.a
             ${CMAKE_CURRENT_SOURCE_DIR}/lib/libboost_system.a
             ${CMAKE_CURRENT_SOURCE_DIR}/lib/libboost_filesystem.a
-            ${CMAKE_CURRENT_SOURCE_DIR}/lib/libboost_thread.a
        )
     endif( CMAKE_BUILD_TYPE STREQUAL "Debug")
 
@@ -115,7 +115,6 @@ if( NOT GHQCHK )
             ${CMAKE_CURRENT_SOURCE_DIR}/lib/libz.a
             ${CMAKE_CURRENT_SOURCE_DIR}/lib/libboost_system.a
             ${CMAKE_CURRENT_SOURCE_DIR}/lib/libboost_filesystem.a
-            ${CMAKE_CURRENT_SOURCE_DIR}/lib/libboost_thread.a
        )
     endif( CMAKE_BUILD_TYPE STREQUAL "Release")
 else( NOT GHQCHK )

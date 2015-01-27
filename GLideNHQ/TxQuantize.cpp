@@ -27,9 +27,10 @@
 
 /* NOTE: The codes are not optimized. They can be made faster. */
 
+#include <functional>
+#include <thread>
+
 #include "TxQuantize.h"
-#include <boost/thread.hpp>
-#include <boost/bind.hpp>
 
 TxQuantize::TxQuantize()
 {
@@ -888,13 +889,13 @@ TxQuantize::quantize(uint8* src, uint8* dest, int width, int height, uint16 srcf
 			numcore--;
 		}
 		if (blkrow > 0 && numcore > 1) {
-			boost::thread *thrd[MAX_NUMCORE];
+			std::thread *thrd[MAX_NUMCORE];
 			unsigned int i;
 			int blkheight = blkrow << 2;
 			unsigned int srcStride = (width * blkheight) << (2 - bpp_shift);
 			unsigned int destStride = srcStride << bpp_shift;
 			for (i = 0; i < numcore - 1; i++) {
-				thrd[i] = new boost::thread(boost::bind(quantizer,
+				thrd[i] = new std::thread(std::bind(quantizer,
 														this,
 														(uint32*)src,
 														(uint32*)dest,
@@ -903,7 +904,7 @@ TxQuantize::quantize(uint8* src, uint8* dest, int width, int height, uint16 srcf
 				src  += srcStride;
 				dest += destStride;
 			}
-			thrd[i] = new boost::thread(boost::bind(quantizer,
+			thrd[i] = new std::thread(std::bind(quantizer,
 													this,
 													(uint32*)src,
 													(uint32*)dest,
@@ -942,13 +943,13 @@ TxQuantize::quantize(uint8* src, uint8* dest, int width, int height, uint16 srcf
 			numcore--;
 		}
 		if (blkrow > 0 && numcore > 1) {
-			boost::thread *thrd[MAX_NUMCORE];
+			std::thread *thrd[MAX_NUMCORE];
 			unsigned int i;
 			int blkheight = blkrow << 2;
 			unsigned int srcStride = (width * blkheight) << 2;
 			unsigned int destStride = srcStride >> bpp_shift;
 			for (i = 0; i < numcore - 1; i++) {
-				thrd[i] = new boost::thread(boost::bind(quantizer,
+				thrd[i] = new std::thread(std::bind(quantizer,
 														this,
 														(uint32*)src,
 														(uint32*)dest,
@@ -957,7 +958,7 @@ TxQuantize::quantize(uint8* src, uint8* dest, int width, int height, uint16 srcf
 				src  += srcStride;
 				dest += destStride;
 			}
-			thrd[i] = new boost::thread(boost::bind(quantizer,
+			thrd[i] = new std::thread(std::bind(quantizer,
 													this,
 													(uint32*)src,
 													(uint32*)dest,

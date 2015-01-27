@@ -25,13 +25,14 @@
 #pragma warning(disable: 4786)
 #endif
 
+#include <functional>
+#include <thread>
+#include <boost/format.hpp>
+
 #include "TxFilter.h"
 #include "TextureFilters.h"
 #include "TxDbg.h"
 #include "bldno.h"
-#include <boost/thread.hpp>
-#include <boost/bind.hpp>
-#include <boost/format.hpp>
 
 void TxFilter::clear()
 {
@@ -283,13 +284,13 @@ TxFilter::filter(uint8 *src, int srcwidth, int srcheight, uint16 srcformat, uint
 					numcore--;
 				}
 				if (blkrow > 0 && numcore > 1) {
-					boost::thread *thrd[MAX_NUMCORE];
+					std::thread *thrd[MAX_NUMCORE];
 					unsigned int i;
 					int blkheight = blkrow << 2;
 					unsigned int srcStride = (srcwidth * blkheight) << 2;
 					unsigned int destStride = srcStride * scale * scale;
 					for (i = 0; i < numcore - 1; i++) {
-						thrd[i] = new boost::thread(boost::bind(filter_8888,
+						thrd[i] = new std::thread(std::bind(filter_8888,
 																(uint32*)_texture,
 																srcwidth,
 																blkheight,
@@ -298,7 +299,7 @@ TxFilter::filter(uint8 *src, int srcwidth, int srcheight, uint16 srcformat, uint
 						_texture += srcStride;
 						_tmptex  += destStride;
 					}
-					thrd[i] = new boost::thread(boost::bind(filter_8888,
+					thrd[i] = new std::thread(std::bind(filter_8888,
 															(uint32*)_texture,
 															srcwidth,
 															srcheight - blkheight * i,
