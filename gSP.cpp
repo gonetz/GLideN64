@@ -2143,7 +2143,7 @@ void _copyDepthBuffer()
 	DepthBuffer * pTmpBufferDepth = pTmpBuffer->m_pDepthBuffer;
 	pTmpBuffer->m_pDepthBuffer = depthBufferList().findBuffer(gSP.bgImage.address);
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, pTmpBuffer->m_FBO);
-	glFramebufferRenderbuffer(GL_READ_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, pTmpBuffer->m_pDepthBuffer->m_renderbuf);
+	pTmpBuffer->m_pDepthBuffer->setDepthAttachment();
 	GLuint attachment = GL_COLOR_ATTACHMENT0;
 	glDrawBuffers(1,  &attachment);
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, frameBufferList().getCurrent()->m_FBO);
@@ -2154,7 +2154,7 @@ void _copyDepthBuffer()
 		GL_DEPTH_BUFFER_BIT, GL_NEAREST
 	);
 	// Restore objects
-	glFramebufferRenderbuffer(GL_READ_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, pTmpBufferDepth->m_renderbuf);
+	pTmpBufferDepth->setDepthAttachment();
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
 	// Set back current depth buffer
 	depthBufferList().saveBuffer(gDP.depthImageAddress);

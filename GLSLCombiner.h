@@ -117,9 +117,8 @@ void InitShaderCombiner();
 void DestroyShaderCombiner();
 
 #ifdef GL_IMAGE_TEXTURES_SUPPORT
-extern GLuint g_draw_shadow_map_program;
-extern GLuint g_monochrome_image_program;
-void SetMonochromeCombiner(GLuint _program);
+void SetDepthFogCombiner();
+void SetMonochromeCombiner();
 #endif // GL_IMAGE_TEXTURES_SUPPORT
 
 GLuint createShaderProgram(const char * _strVertex, const char * _strFragment);

@@ -909,11 +909,13 @@ void OGLRender::drawRect(int _ulx, int _uly, int _lrx, int _lry, float *_pColor)
 static
 bool texturedRectShadowMap(const OGLRender::TexturedRectParams &)
 {
-#ifdef GL_IMAGE_TEXTURES_SUPPORT
-//	if ((gDP.otherMode.l >> 16) == 0x3c18 && gDP.combine.muxs0 == 0x00ffffff && gDP.combine.muxs1 == 0xfffff238) //depth image based fog
-	if (gDP.textureImage.size == 2 && gDP.textureImage.address >= gDP.depthImageAddress &&  gDP.textureImage.address < (gDP.depthImageAddress +  gDP.colorImage.width*gDP.colorImage.width*6/4))
-		SetMonochromeCombiner(g_draw_shadow_map_program);
-#endif // GL_IMAGE_TEXTURES_SUPPORT
+	FrameBufferList & fb = frameBufferList();
+	if (fb.isFboMode()) {
+		if (gDP.textureImage.size == 2 && gDP.textureImage.address >= gDP.depthImageAddress &&  gDP.textureImage.address < (gDP.depthImageAddress + gDP.colorImage.width*gDP.colorImage.width * 6 / 4)) {
+			fb.getCurrent()->m_pDepthBuffer->activateDepthBufferTexture();
+			SetDepthFogCombiner();
+		}
+	}
 	return false;
 }
 
@@ -1001,7 +1003,7 @@ bool texturedRectMonochromeBackground(const OGLRender::TexturedRectParams & _par
 		FrameBufferList & fb = frameBufferList();
 		if (fb.isFboMode()) {
 			FrameBuffer_ActivateBufferTexture(0, fb.getCurrent());
-			SetMonochromeCombiner(g_monochrome_image_program);
+			SetMonochromeCombiner();
 			return false;
 		} else
 #endif

@@ -16,70 +16,136 @@ const GLuint ZlutImageUnit = 0;
 const GLuint TlutImageUnit = 1;
 const GLuint depthImageUnit = 2;
 
-DepthBuffer::DepthBuffer() : m_address(0), m_width(0), m_renderbuf(0), m_FBO(0), m_pDepthTexture(NULL)
+DepthBuffer::DepthBuffer() : m_address(0), m_width(0), m_FBO(0), m_pDepthImageTexture(NULL), m_pDepthBufferTexture(NULL)
 {
-	glGenRenderbuffers(1, &m_renderbuf);
 	glGenFramebuffers(1, &m_FBO);
 }
 
 DepthBuffer::DepthBuffer(DepthBuffer && _other) :
 	m_address(_other.m_address), m_width(_other.m_width),
-	m_renderbuf(_other.m_renderbuf), m_FBO(_other.m_FBO), m_pDepthTexture(_other.m_pDepthTexture)
+	m_FBO(_other.m_FBO), m_pDepthImageTexture(_other.m_pDepthImageTexture), m_pDepthBufferTexture(_other.m_pDepthBufferTexture)
 {
-	_other.m_renderbuf = 0;
 	_other.m_FBO = 0;
-	_other.m_pDepthTexture = NULL;
+	_other.m_pDepthImageTexture = NULL;
+	_other.m_pDepthBufferTexture = NULL;
 }
 
 DepthBuffer::~DepthBuffer()
 {
-	if (m_renderbuf != 0)
-		glDeleteRenderbuffers(1, &m_renderbuf);
 	if (m_FBO != 0)
 		glDeleteFramebuffers(1, &m_FBO);
-	if (m_pDepthTexture != NULL)
-		textureCache().removeFrameBufferTexture(m_pDepthTexture);
+	if (m_pDepthImageTexture != NULL)
+		textureCache().removeFrameBufferTexture(m_pDepthImageTexture);
+	if (m_pDepthBufferTexture != NULL)
+		textureCache().removeFrameBufferTexture(m_pDepthBufferTexture);
 }
 
-void DepthBuffer::initDepthTexture(FrameBuffer * _pBuffer)
+void DepthBuffer::initDepthImageTexture(FrameBuffer * _pBuffer)
 {
 #ifdef GL_IMAGE_TEXTURES_SUPPORT
-	if (m_pDepthTexture != NULL)
-		textureCache().removeFrameBufferTexture(m_pDepthTexture);
-	m_pDepthTexture = textureCache().addFrameBufferTexture();
+	if (m_pDepthImageTexture != NULL)
+		return;
 
-	m_pDepthTexture->width = (u32)(_pBuffer->m_pTexture->width);
-	m_pDepthTexture->height = (u32)(_pBuffer->m_pTexture->height);
-	m_pDepthTexture->format = 0;
-	m_pDepthTexture->size = 2;
-	m_pDepthTexture->clampS = 1;
-	m_pDepthTexture->clampT = 1;
-	m_pDepthTexture->address = _pBuffer->m_startAddress;
-	m_pDepthTexture->clampWidth = _pBuffer->m_width;
-	m_pDepthTexture->clampHeight = _pBuffer->m_height;
-	m_pDepthTexture->frameBufferTexture = TRUE;
-	m_pDepthTexture->maskS = 0;
-	m_pDepthTexture->maskT = 0;
-	m_pDepthTexture->mirrorS = 0;
-	m_pDepthTexture->mirrorT = 0;
-	m_pDepthTexture->realWidth = m_pDepthTexture->width;
-	m_pDepthTexture->realHeight = m_pDepthTexture->height;
-	m_pDepthTexture->textureBytes = m_pDepthTexture->realWidth * m_pDepthTexture->realHeight * 4 * 4; // Width*Height*RGBA*sizeof(GL_RGBA32F)
-	textureCache().addFrameBufferTextureSize(m_pDepthTexture->textureBytes);
+	m_pDepthImageTexture = textureCache().addFrameBufferTexture();
 
-	glBindTexture( GL_TEXTURE_2D, m_pDepthTexture->glName );
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, m_pDepthTexture->realWidth, m_pDepthTexture->realHeight, 0, GL_RGBA, GL_FLOAT,	NULL);
+	m_pDepthImageTexture->width = (u32)(_pBuffer->m_pTexture->width);
+	m_pDepthImageTexture->height = (u32)(_pBuffer->m_pTexture->height);
+	m_pDepthImageTexture->format = 0;
+	m_pDepthImageTexture->size = 2;
+	m_pDepthImageTexture->clampS = 1;
+	m_pDepthImageTexture->clampT = 1;
+	m_pDepthImageTexture->address = _pBuffer->m_startAddress;
+	m_pDepthImageTexture->clampWidth = _pBuffer->m_width;
+	m_pDepthImageTexture->clampHeight = _pBuffer->m_height;
+	m_pDepthImageTexture->frameBufferTexture = TRUE;
+	m_pDepthImageTexture->maskS = 0;
+	m_pDepthImageTexture->maskT = 0;
+	m_pDepthImageTexture->mirrorS = 0;
+	m_pDepthImageTexture->mirrorT = 0;
+	m_pDepthImageTexture->realWidth = m_pDepthImageTexture->width;
+	m_pDepthImageTexture->realHeight = m_pDepthImageTexture->height;
+	m_pDepthImageTexture->textureBytes = m_pDepthImageTexture->realWidth * m_pDepthImageTexture->realHeight * 4 * 4; // Width*Height*RGBA*sizeof(GL_RGBA32F)
+	textureCache().addFrameBufferTextureSize(m_pDepthImageTexture->textureBytes);
+
+	glBindTexture( GL_TEXTURE_2D, m_pDepthImageTexture->glName );
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, m_pDepthImageTexture->realWidth, m_pDepthImageTexture->realHeight, 0, GL_RGBA, GL_FLOAT,	NULL);
 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
 	glBindTexture( GL_TEXTURE_2D, 0);
+
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_FBO);
-	glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_pDepthTexture->glName, 0);
+	glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_pDepthImageTexture->glName, 0);
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, _pBuffer->m_FBO);
-	_pBuffer->m_pDepthBuffer = this;
+
 	depthBufferList().clearBuffer();
 #endif // GL_IMAGE_TEXTURES_SUPPORT
+}
+
+void DepthBuffer::initDepthBufferTexture(FrameBuffer * _pBuffer)
+{
+	if (m_pDepthBufferTexture != NULL)
+		return;
+
+	m_pDepthBufferTexture = textureCache().addFrameBufferTexture();
+
+	if (_pBuffer != NULL) {
+		m_pDepthBufferTexture->width = (u32)(_pBuffer->m_pTexture->width);
+		m_pDepthBufferTexture->height = (u32)(_pBuffer->m_pTexture->height);
+		m_pDepthBufferTexture->address = _pBuffer->m_startAddress;
+		m_pDepthBufferTexture->clampWidth = _pBuffer->m_width;
+		m_pDepthBufferTexture->clampHeight = _pBuffer->m_height;
+	}
+	else {
+		m_pDepthBufferTexture->width = video().getWidth();
+		m_pDepthBufferTexture->height = video().getHeight();
+		m_pDepthBufferTexture->address = VI.lastOrigin;
+		m_pDepthBufferTexture->clampWidth = VI.width;
+		m_pDepthBufferTexture->clampHeight = VI.height;
+	}
+	m_pDepthBufferTexture->format = 0;
+	m_pDepthBufferTexture->size = 2;
+	m_pDepthBufferTexture->clampS = 1;
+	m_pDepthBufferTexture->clampT = 1;
+	m_pDepthBufferTexture->frameBufferTexture = TRUE;
+	m_pDepthBufferTexture->maskS = 0;
+	m_pDepthBufferTexture->maskT = 0;
+	m_pDepthBufferTexture->mirrorS = 0;
+	m_pDepthBufferTexture->mirrorT = 0;
+	m_pDepthBufferTexture->realWidth = m_pDepthBufferTexture->width;
+	m_pDepthBufferTexture->realHeight = m_pDepthBufferTexture->height;
+	m_pDepthBufferTexture->textureBytes = m_pDepthBufferTexture->realWidth * m_pDepthBufferTexture->realHeight * sizeof(float);
+	textureCache().addFrameBufferTextureSize(m_pDepthBufferTexture->textureBytes);
+
+#ifndef GLES2
+	const GLenum format = GL_DEPTH_COMPONENT;
+#else
+	const GLenum format = GL_DEPTH_COMPONENT24_OES;
+#endif
+	glBindTexture( GL_TEXTURE_2D, m_pDepthBufferTexture->glName );
+	if (_pBuffer != NULL)
+		glTexImage2D(GL_TEXTURE_2D, 0, format, _pBuffer->m_pTexture->realWidth, _pBuffer->m_pTexture->realHeight, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+	else
+		glTexImage2D(GL_TEXTURE_2D, 0, format, video().getWidth(), video().getHeight(), 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+
+	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
+	glBindTexture( GL_TEXTURE_2D, 0);
+}
+
+void DepthBuffer::setDepthAttachment() {
+	glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, m_pDepthBufferTexture->glName, 0);
+}
+
+void DepthBuffer::activateDepthBufferTexture() {
+	textureCache().activateTexture(0, m_pDepthBufferTexture);
+}
+
+void DepthBuffer::bindDepthImageTexture() {
+#ifdef GL_IMAGE_TEXTURES_SUPPORT
+	glBindImageTexture(depthImageUnit, m_pDepthImageTexture->glName, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA32F);
+#endif
 }
 
 void DepthBufferList::init()
@@ -133,17 +199,8 @@ void DepthBufferList::saveBuffer(u32 _address)
 
 		buffer.m_address = _address;
 		buffer.m_width = pFrameBuffer != NULL ? pFrameBuffer->m_width : VI.width;
-		buffer.m_pDepthTexture = NULL;
-		glBindRenderbuffer(GL_RENDERBUFFER, buffer.m_renderbuf);
-#ifndef GLES2
-			const GLenum format = GL_DEPTH_COMPONENT;
-#else
-			const GLenum format = GL_DEPTH_COMPONENT24_OES;
-#endif
-		if (pFrameBuffer != NULL)
-			glRenderbufferStorage(GL_RENDERBUFFER, format, pFrameBuffer->m_pTexture->realWidth, pFrameBuffer->m_pTexture->realHeight);
-		else
-			glRenderbufferStorage(GL_RENDERBUFFER, format, video().getWidth(), video().getHeight());
+
+		buffer.initDepthBufferTexture(pFrameBuffer);
 
 		m_pCurrent = &buffer;
 	}
@@ -172,7 +229,7 @@ void DepthBufferList::clearBuffer()
 	gDP.otherMode.cycleType = G_CYC_FILL;
 	video().getRender().drawRect(0,0,VI.width, VI.height, color);
 	gDP.otherMode.cycleType = cycleType;
-	glBindImageTexture(depthImageUnit, m_pCurrent->m_pDepthTexture->glName, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA32F);
+	glBindImageTexture(depthImageUnit, m_pCurrent->m_pDepthImageTexture->glName, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA32F);
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, frameBufferList().getCurrent()->m_FBO);
 #endif // GL_IMAGE_TEXTURES_SUPPORT
 }

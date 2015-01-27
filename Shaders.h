@@ -621,17 +621,25 @@ static const char* default_vertex_shader =
 
 static const char* shadow_map_fragment_shader_float =
 "#version 420 core											\n"
+"layout(binding = 0) uniform sampler2D uDepthImage;		\n"
+"layout(binding = 0, r16ui) uniform readonly uimage2D uZlutImage;\n"
 "layout(binding = 1, r16ui) uniform readonly uimage1D uTlutImage;\n"
-"layout(binding = 2, rgba32f) uniform readonly image2D uDepthImage;\n"
 "uniform lowp vec4 uFogColor;								\n"
+"uniform mediump vec2 uDepthScale;							\n"
 "out lowp vec4 fragColor;									\n"
 "lowp float get_alpha()										\n"
 "{															\n"
 "  ivec2 coord = ivec2(gl_FragCoord.xy);					\n"
-"  mediump float bufZ = imageLoad(uDepthImage,coord).r;		\n"
-"  int index = min(255, int(bufZ*255.0));					\n"
+"  highp float bufZ = texelFetch(uDepthImage,coord, 0).r;	\n"
+"  highp float fZ = 2.0*bufZ - 1.0;							\n"
+"  fZ = (uDepthScale.x*fZ + uDepthScale.y)*8.0;				\n"
+"  const highp int iZ = int(floor(fZ + 0.5));				\n"
+"  int y0 = clamp(iZ/512, 0, 511);							\n"
+"  int x0 = iZ - 512*y0;									\n"
+"  unsigned int iN64z = imageLoad(uZlutImage,ivec2(x0,y0)).r;\n"
+"  highp float n64z = clamp(float(iN64z)/65532.0, 0.0, 1.0);\n"
+"  int index = min(255, int(n64z*255.0));					\n"
 "  unsigned int iAlpha = imageLoad(uTlutImage,index).r; \n"
-"  memoryBarrier();										\n"
 "  return float(iAlpha/256)/255.0;						\n"
 "}														\n"
 "void main()											\n"
@@ -639,8 +647,10 @@ static const char* shadow_map_fragment_shader_float =
 "  fragColor = vec4(uFogColor.rgb, get_alpha());		\n"
 "}														\n"
 ;
+#endif // GL_IMAGE_TEXTURES_SUPPORT
 
 #if 0 // Do palette based monochrome image. Exactly as N64 does
+#ifdef GL_IMAGE_TEXTURES_SUPPORT
 static const char* zelda_monochrome_fragment_shader =
 "#version 420 core											\n"
 "layout(binding = 0) uniform sampler2D uColorImage;			\n"
@@ -664,6 +674,7 @@ static const char* zelda_monochrome_fragment_shader =
 "  fragColor = vec4(vec3(get_color()), 1.0);			\n"
 "}														\n"
 ;
+#endif // GL_IMAGE_TEXTURES_SUPPORT
 #else // Cheat it
 static const char* zelda_monochrome_fragment_shader =
 "#version 420 core										\n"
@@ -679,4 +690,3 @@ static const char* zelda_monochrome_fragment_shader =
 "}														\n"
 ;
 #endif
-#endif // GL_IMAGE_TEXTURES_SUPPORT
