@@ -151,10 +151,25 @@ void DepthBuffer::bindDepthImageTexture() {
 void DepthBufferList::init()
 {
 	m_pCurrent = NULL;
+
+	m_pzLUT = new u16[0x40000];
+	for (int i = 0; i<0x40000; i++) {
+		u32 exponent = 0;
+		u32 testbit = 1 << 17;
+		while ((i & testbit) && (exponent < 7)) {
+			exponent++;
+			testbit = 1 << (17 - exponent);
+		}
+
+		const u32 mantissa = (i >> (6 - (6 < exponent ? 6 : exponent))) & 0x7ff;
+		m_pzLUT[i] = (u16)(((exponent << 11) | mantissa) << 2);
+	}
 }
 
 void DepthBufferList::destroy()
 {
+	delete[] m_pzLUT;
+	m_pzLUT = NULL;
 	m_pCurrent = NULL;
 	m_list.clear();
 }

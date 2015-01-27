@@ -72,18 +72,7 @@ void InitZlutTexture()
 	if (!video().getRender().isImageTexturesSupported())
 		return;
 
-	u16 * zLUT = new u16[0x40000];
-	for(int i=0; i<0x40000; i++) {
-		u32 exponent = 0;
-		u32 testbit = 1 << 17;
-		while((i & testbit) && (exponent < 7)) {
-			exponent++;
-			testbit = 1 << (17 - exponent);
-		}
-
-		u32 mantissa = (i >> (6 - (6 < exponent ? 6 : exponent))) & 0x7ff;
-		zLUT[i] = (u16)(((exponent << 11) | mantissa) << 2);
-	}
+	const u16 * const zLUT = depthBufferList().getZLUT();
 	glGenTextures(1, &g_zlut_tex);
 	glBindTexture(GL_TEXTURE_2D, g_zlut_tex);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -93,7 +82,6 @@ void InitZlutTexture()
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_R16,
 		512, 512, 0, GL_RED, GL_UNSIGNED_SHORT,
 		zLUT);
-	delete[] zLUT;
 	glBindImageTexture(ZlutImageUnit, g_zlut_tex, 0, GL_FALSE, 0, GL_READ_ONLY, GL_R16UI);
 }
 

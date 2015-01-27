@@ -70,7 +70,6 @@ private:
 	GLuint m_PBO;
 	CachedTexture * m_pTexture;
 	u32 m_lastDList;
-	u16 * zLUT;
 };
 #endif // GLES2
 
@@ -728,20 +727,6 @@ void DepthBufferToRDRAM::Init()
 	glBindBuffer(GL_PIXEL_PACK_BUFFER, m_PBO);
 	glBufferData(GL_PIXEL_PACK_BUFFER, 640*480*sizeof(float), NULL, GL_DYNAMIC_DRAW);
 	glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
-
-	zLUT = new u16[0x40000];
-	for (int i = 0; i<0x40000; i++) {
-		u32 exponent = 0;
-		u32 testbit = 1 << 17;
-		while ((i & testbit) && (exponent < 7)) {
-			exponent++;
-			testbit = 1 << (17 - exponent);
-		}
-
-		u32 mantissa = (i >> (6 - (6 < exponent ? 6 : exponent))) & 0x7ff;
-		zLUT[i] = (u16)(((exponent << 11) | mantissa) << 2);
-	}
-
 }
 
 void DepthBufferToRDRAM::Destroy() {
@@ -754,8 +739,6 @@ void DepthBufferToRDRAM::Destroy() {
 	}
 	glDeleteBuffers(1, &m_PBO);
 	m_PBO = 0;
-	delete[] zLUT;
-	zLUT = 0;
 }
 
 bool DepthBufferToRDRAM::CopyToRDRAM( u32 _address) {
@@ -793,12 +776,13 @@ bool DepthBufferToRDRAM::CopyToRDRAM( u32 _address) {
 
 	f32 * ptr_src = (f32*)pixelData;
 	u16 *ptr_dst = (u16*)(RDRAM + address);
-	const float scale = gSP.viewport.vscale[2] * 32768.0f;
-	const float trans = gSP.viewport.vtrans[2] * 32768.0f;
+	const f32 scale = gSP.viewport.vscale[2] * 32768.0f;
+	const f32 trans = gSP.viewport.vtrans[2] * 32768.0f;
+	const u16 * const zLUT = depthBufferList().getZLUT();
 
 	for (u32 y = 0; y < VI.height; ++y) {
 		for (u32 x = 0; x < VI.width; ++x) {
-			float z = ptr_src[x + (VI.height - y - 1)*VI.width];
+			f32 z = ptr_src[x + (VI.height - y - 1)*VI.width];
 			if (z == 1.0f)
 				ptr_dst[(x + y*VI.width) ^ 1] = zLUT[0x3FFFF];
 			else {

@@ -40,13 +40,16 @@ public:
 		return depthBufferList;
 	}
 
+	const u16 * const getZLUT() const {return m_pzLUT;}
+
 private:
-	DepthBufferList() : m_pCurrent(NULL) {}
+	DepthBufferList() : m_pCurrent(NULL), m_pzLUT(NULL) {}
 	DepthBufferList(const FrameBufferList &);
 
 	typedef std::list<DepthBuffer> DepthBuffers;
 	DepthBuffers m_list;
 	DepthBuffer *m_pCurrent;
+	u16 * m_pzLUT;
 };
 
 inline
