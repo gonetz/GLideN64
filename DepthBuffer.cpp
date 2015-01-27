@@ -64,14 +64,14 @@ void DepthBuffer::initDepthImageTexture(FrameBuffer * _pBuffer)
 	m_pDepthImageTexture->mirrorT = 0;
 	m_pDepthImageTexture->realWidth = m_pDepthImageTexture->width;
 	m_pDepthImageTexture->realHeight = m_pDepthImageTexture->height;
-	m_pDepthImageTexture->textureBytes = m_pDepthImageTexture->realWidth * m_pDepthImageTexture->realHeight * 4 * 4; // Width*Height*RGBA*sizeof(GL_RGBA32F)
+	m_pDepthImageTexture->textureBytes = m_pDepthImageTexture->realWidth * m_pDepthImageTexture->realHeight * 2 * sizeof(float); // Width*Height*RG*sizeof(GL_RGBA32F)
 	textureCache().addFrameBufferTextureSize(m_pDepthImageTexture->textureBytes);
 
-	glBindTexture( GL_TEXTURE_2D, m_pDepthImageTexture->glName );
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, m_pDepthImageTexture->realWidth, m_pDepthImageTexture->realHeight, 0, GL_RGBA, GL_FLOAT,	NULL);
-	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
-	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
-	glBindTexture( GL_TEXTURE_2D, 0);
+	glBindTexture(GL_TEXTURE_2D, m_pDepthImageTexture->glName);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RG32F, m_pDepthImageTexture->realWidth, m_pDepthImageTexture->realHeight, 0, GL_RG, GL_FLOAT, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glBindTexture(GL_TEXTURE_2D, 0);
 
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_FBO);
@@ -144,7 +144,7 @@ void DepthBuffer::activateDepthBufferTexture() {
 
 void DepthBuffer::bindDepthImageTexture() {
 #ifdef GL_IMAGE_TEXTURES_SUPPORT
-	glBindImageTexture(depthImageUnit, m_pDepthImageTexture->glName, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA32F);
+	glBindImageTexture(depthImageUnit, m_pDepthImageTexture->glName, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RG32F);
 #endif
 }
 
@@ -238,13 +238,13 @@ void DepthBufferList::clearBuffer()
 	if (m_pCurrent == NULL || m_pCurrent->m_FBO == 0)
 		return;
 	float color[4] = {1.0f, 1.0f, 0.0f, 1.0f};
-	glBindImageTexture(depthImageUnit, 0, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA32F);
+	glBindImageTexture(depthImageUnit, 0, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RG32F);
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_pCurrent->m_FBO);
 	const u32 cycleType = gDP.otherMode.cycleType;
 	gDP.otherMode.cycleType = G_CYC_FILL;
 	video().getRender().drawRect(0,0,VI.width, VI.height, color);
 	gDP.otherMode.cycleType = cycleType;
-	glBindImageTexture(depthImageUnit, m_pCurrent->m_pDepthImageTexture->glName, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA32F);
+	glBindImageTexture(depthImageUnit, m_pCurrent->m_pDepthImageTexture->glName, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RG32F);
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, frameBufferList().getCurrent()->m_FBO);
 #endif // GL_IMAGE_TEXTURES_SUPPORT
 }
