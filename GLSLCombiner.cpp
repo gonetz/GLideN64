@@ -196,7 +196,7 @@ void InitShaderCombiner()
 	assert(check_shader_compile_status(g_test_alpha_shader_object));
 
 #ifdef GL_IMAGE_TEXTURES_SUPPORT
-	if (video().getRender().isImageTexturesSupported()) {
+	if (video().getRender().isImageTexturesSupported() && config.frameBufferEmulation.N64DepthCompare != 0) {
 		g_calc_depth_shader_object = glCreateShader(GL_FRAGMENT_SHADER);
 		glShaderSource(g_calc_depth_shader_object, 1, &depth_compare_shader_float, NULL);
 		glCompileShader(g_calc_depth_shader_object);
@@ -467,12 +467,8 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 		"  }													\n"
 	);
 
-	if (video().getRender().isImageTexturesSupported()) {
-		if (config.frameBufferEmulation.N64DepthCompare)
-			strFragmentShader.append("  if (!depth_compare()) discard; \n");
-		else
-			strFragmentShader.append("  depth_compare(); \n");
-	}
+	if (video().getRender().isImageTexturesSupported() && config.frameBufferEmulation.N64DepthCompare != 0)
+		strFragmentShader.append("  if (!depth_compare()) discard; \n");
 
 #ifdef USE_TOONIFY
 	strFragmentShader.append("  toonify(intensity); \n");
@@ -516,7 +512,7 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 	if (bUseLod)
 		glAttachShader(m_program, g_calc_mipmap_shader_object);
 	glAttachShader(m_program, g_test_alpha_shader_object);
-	if (video().getRender().isImageTexturesSupported())
+	if (video().getRender().isImageTexturesSupported() && config.frameBufferEmulation.N64DepthCompare != 0)
 		glAttachShader(m_program, g_calc_depth_shader_object);
 	glAttachShader(m_program, g_calc_noise_shader_object);
 #endif

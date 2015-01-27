@@ -43,7 +43,7 @@ DepthBuffer::~DepthBuffer()
 void DepthBuffer::initDepthImageTexture(FrameBuffer * _pBuffer)
 {
 #ifdef GL_IMAGE_TEXTURES_SUPPORT
-	if (m_pDepthImageTexture != NULL)
+	if (!video().getRender().isImageTexturesSupported() || config.frameBufferEmulation.N64DepthCompare == 0 || m_pDepthImageTexture != NULL)
 		return;
 
 	m_pDepthImageTexture = textureCache().addFrameBufferTexture();
@@ -233,7 +233,7 @@ void DepthBufferList::saveBuffer(u32 _address)
 void DepthBufferList::clearBuffer()
 {
 #ifdef GL_IMAGE_TEXTURES_SUPPORT
-	if (!video().getRender().isImageTexturesSupported())
+	if (!video().getRender().isImageTexturesSupported() || config.frameBufferEmulation.N64DepthCompare == 0)
 		return;
 	if (m_pCurrent == NULL || m_pCurrent->m_FBO == 0)
 		return;

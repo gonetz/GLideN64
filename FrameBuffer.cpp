@@ -312,7 +312,7 @@ void FrameBufferList::attachDepthBuffer()
 		pDepthBuffer->initDepthBufferTexture(m_pCurrent);
 		m_pCurrent->m_pDepthBuffer = pDepthBuffer;
 		pDepthBuffer->setDepthAttachment();
-		if (video().getRender().isImageTexturesSupported())
+		if (video().getRender().isImageTexturesSupported() && config.frameBufferEmulation.N64DepthCompare != 0)
 			pDepthBuffer->bindDepthImageTexture();
 	} else
 		m_pCurrent->m_pDepthBuffer = NULL;
