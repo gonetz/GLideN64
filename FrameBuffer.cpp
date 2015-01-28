@@ -1,4 +1,5 @@
 #include <assert.h>
+#include <math.h>
 #include "OpenGL.h"
 #include "FrameBuffer.h"
 #include "DepthBuffer.h"
@@ -69,6 +70,7 @@ private:
 	GLuint m_PBO;
 	CachedTexture * m_pTexture;
 	u32 m_lastDList;
+	u16 * zLUT;
 };
 #endif // GLES2
 
@@ -703,26 +705,43 @@ void DepthBufferToRDRAM::Init()
 	m_pTexture->maskT = 0;
 	m_pTexture->mirrorS = 0;
 	m_pTexture->mirrorT = 0;
-	m_pTexture->realWidth = 1024;
-	m_pTexture->realHeight = 512;
-	m_pTexture->textureBytes = m_pTexture->realWidth * m_pTexture->realHeight * 2;
+	m_pTexture->realWidth = 640;
+	m_pTexture->realHeight = 480;
+	m_pTexture->textureBytes = m_pTexture->realWidth * m_pTexture->realHeight * sizeof(float);
 	textureCache().addFrameBufferTextureSize(m_pTexture->textureBytes);
 	glBindTexture( GL_TEXTURE_2D, m_pTexture->glName );
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_R16, m_pTexture->realWidth, m_pTexture->realHeight, 0, GL_RED, GL_UNSIGNED_SHORT, NULL);
-	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, m_pTexture->realWidth, m_pTexture->realHeight, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
 	glBindTexture(GL_TEXTURE_2D, 0);
 
 	glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_pTexture->glName, 0);
+	glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, m_pTexture->glName, 0);
 	// check if everything is OK
 	assert(checkFBO());
+	assert(!isGLError());
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 
 	// Generate and initialize Pixel Buffer Objects
 	glGenBuffers(1, &m_PBO);
 	glBindBuffer(GL_PIXEL_PACK_BUFFER, m_PBO);
-	glBufferData(GL_PIXEL_PACK_BUFFER, 640*480*2, NULL, GL_DYNAMIC_DRAW);
+	glBufferData(GL_PIXEL_PACK_BUFFER, 640*480*sizeof(float), NULL, GL_DYNAMIC_DRAW);
 	glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
+
+	zLUT = new u16[0x40000];
+	for (int i = 0; i<0x40000; i++) {
+		u32 exponent = 0;
+		u32 testbit = 1 << 17;
+		while ((i & testbit) && (exponent < 7)) {
+			exponent++;
+			testbit = 1 << (17 - exponent);
+		}
+
+		u32 mantissa = (i >> (6 - (6 < exponent ? 6 : exponent))) & 0x7ff;
+		zLUT[i] = (u16)(((exponent << 11) | mantissa) << 2);
+	}
+
 }
 
 void DepthBufferToRDRAM::Destroy() {
@@ -735,6 +754,8 @@ void DepthBufferToRDRAM::Destroy() {
 	}
 	glDeleteBuffers(1, &m_PBO);
 	m_PBO = 0;
+	delete[] zLUT;
+	zLUT = 0;
 }
 
 bool DepthBufferToRDRAM::CopyToRDRAM( u32 _address) {
@@ -750,22 +771,18 @@ bool DepthBufferToRDRAM::CopyToRDRAM( u32 _address) {
 	glDisable(GL_SCISSOR_TEST);
 	DepthBuffer * pDepthBuffer = pBuffer->m_pDepthBuffer;
 	const u32 address = pDepthBuffer->m_address;
-	glBindFramebuffer(GL_READ_FRAMEBUFFER, pDepthBuffer->m_FBO);
-	glReadBuffer(GL_COLOR_ATTACHMENT0);
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, pBuffer->m_FBO);
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_FBO);
-	GLuint attachment = GL_COLOR_ATTACHMENT0;
-	glDrawBuffers(1, &attachment);
 	glBlitFramebuffer(
 		0, 0, video().getWidth(), video().getHeight(),
 		0, 0, pBuffer->m_width, pBuffer->m_height,
-		GL_COLOR_BUFFER_BIT, GL_LINEAR
+		GL_DEPTH_BUFFER_BIT, GL_NEAREST
 	);
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, frameBufferList().getCurrent()->m_FBO);
 
 	glBindBuffer(GL_PIXEL_PACK_BUFFER, m_PBO);
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, m_FBO);
-	glReadBuffer(GL_COLOR_ATTACHMENT0);
-	glReadPixels( 0, 0, VI.width, VI.height, GL_RED, GL_UNSIGNED_SHORT, 0 );
+	glReadPixels(0, 0, VI.width, VI.height, GL_DEPTH_COMPONENT, GL_FLOAT, 0);
 
 	glBindBuffer(GL_PIXEL_PACK_BUFFER, m_PBO);
 	GLubyte* pixelData = (GLubyte*)glMapBuffer(GL_PIXEL_PACK_BUFFER, GL_READ_ONLY);
@@ -774,14 +791,22 @@ bool DepthBufferToRDRAM::CopyToRDRAM( u32 _address) {
 		return false;
 	}
 
-	u16 * ptr_src = (u16*)pixelData;
+	f32 * ptr_src = (f32*)pixelData;
 	u16 *ptr_dst = (u16*)(RDRAM + address);
-	u16 col;
+	const float scale = gSP.viewport.vscale[2] * 32768.0f;
+	const float trans = gSP.viewport.vtrans[2] * 32768.0f;
 
 	for (u32 y = 0; y < VI.height; ++y) {
 		for (u32 x = 0; x < VI.width; ++x) {
-				col = min((u16)0xfffc, ptr_src[x + (VI.height - y - 1)*VI.width]);
-				ptr_dst[(x + y*VI.width)^1] = col;
+			float z = ptr_src[x + (VI.height - y - 1)*VI.width];
+			if (z == 1.0f)
+				ptr_dst[(x + y*VI.width) ^ 1] = zLUT[0x3FFFF];
+			else {
+				z = z*2.0f - 1.0f;
+				z = (z*scale + trans) * 8.0f;
+				const u32 idx = min(0x3FFFFU, u32(floorf(z + 0.5f)));
+				ptr_dst[(x + y*VI.width) ^ 1] = zLUT[idx];
+			}
 		}
 	}
 
