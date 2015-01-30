@@ -14,6 +14,7 @@
 #include "Types.h"
 #include "Config.h"
 #include "Debug.h"
+#include "PostProcessor.h"
 
 using namespace std;
 
@@ -403,6 +404,9 @@ void FrameBufferList::renderBuffer(u32 _address)
 		srcY1 = srcY0 + VI.real_height;
 	}
 
+#if 1
+	PostProcessor::get().processTexture(pBuffer->m_pTexture);
+#endif
 	// glDisable(GL_SCISSOR_TEST) does not affect glBlitFramebuffer, at least on AMD
 	glScissor(0, 0, ogl.getScreenWidth(), ogl.getScreenHeight());
 	glDisable(GL_SCISSOR_TEST);

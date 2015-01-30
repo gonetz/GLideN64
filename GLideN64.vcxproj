@@ -293,6 +293,7 @@
     </ClCompile>
     <ClCompile Include="N64.cpp" />
     <ClCompile Include="OpenGL.cpp" />
+    <ClCompile Include="PostProcessor.cpp" />
     <ClCompile Include="RDP.CPP" />
     <ClCompile Include="RSP.cpp" />
     <ClCompile Include="TextDrawer.cpp" />
@@ -372,6 +373,7 @@
     <ClInclude Include="Noise_shader.h" />
     <ClInclude Include="OpenGL.h" />
     <ClInclude Include="PluginAPI.h" />
+    <ClInclude Include="PostProcessor.h" />
     <ClInclude Include="RDP.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="RSP.h" />

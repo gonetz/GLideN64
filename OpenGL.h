@@ -80,6 +80,8 @@ public:
 	};
 	RENDER_STATE getRenderState() const {return m_renderState;}
 
+	void dropRenderState() {m_renderState = rsNone;}
+
 #ifdef __TRIBUFFER_OPT
 	u32 getIndexmap(u32 _v) const {return triangles.indexmap[_v];}
 	u32 getIndexmapNew(u32 _index, u32 _num);

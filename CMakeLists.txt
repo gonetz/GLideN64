@@ -35,6 +35,7 @@ set(GLideN64_SOURCES
   ZSort.cpp
   Textures.cpp
   TextDrawer.cpp
+  PostProcessor.cpp
   VI.cpp
   common/CommonAPIImpl_common.cpp
 )
@@ -42,7 +43,7 @@ set(GLideN64_SOURCES
 if(MUPENPLUSAPI)
   add_definitions(
 	-DMUPENPLUSAPI
-        -DTXFILTER_LIB
+		-DTXFILTER_LIB
   )
   include_directories( inc )
   set(GLideN64_SOURCES_UNIX
@@ -98,14 +99,14 @@ if(UNIX)
 	)
   endif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
   if( NOT MUPENPLUSAPI)
-    add_definitions(
+	add_definitions(
 	-D_DEBUG
-    )
-    find_package(PkgConfig)
-    pkg_check_modules(GLIB REQUIRED glib-2.0)
-    include_directories(${GLIB_INCLUDE_DIRS})
-    find_package(GTK2 REQUIRED)
-    include_directories(${GTK2_INCLUDE_DIRS})
+	)
+	find_package(PkgConfig)
+	pkg_check_modules(GLIB REQUIRED glib-2.0)
+	include_directories(${GLIB_INCLUDE_DIRS})
+	find_package(GTK2 REQUIRED)
+	include_directories(${GTK2_INCLUDE_DIRS})
   endif( NOT MUPENPLUSAPI)
 endif(UNIX)
 
@@ -166,43 +167,43 @@ if(NOT OPENGL_FOUND)
 endif(NOT OPENGL_FOUND)
 
 if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
-    SET(GCC_CPP11_COMPILE_FLAGS "-std=c++0x -static-libgcc -static-libstdc++")
-    SET( CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} ${GCC_CPP11_COMPILE_FLAGS}" )
-    SET(GCC_STATIC_LINK_FLAGS "-static-libgcc -static-libstdc++")
-    SET( CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} ${GCC_STATIC_LINK_FLAGS}" )
+	SET(GCC_CPP11_COMPILE_FLAGS "-std=c++0x -static-libgcc -static-libstdc++")
+	SET( CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} ${GCC_CPP11_COMPILE_FLAGS}" )
+	SET(GCC_STATIC_LINK_FLAGS "-static-libgcc -static-libstdc++")
+	SET( CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} ${GCC_STATIC_LINK_FLAGS}" )
 endif()
 
 add_library( ${GLideN64_DLL_NAME} SHARED ${GLideN64_SOURCES})
 
 if( CMAKE_BUILD_TYPE STREQUAL "Debug")
   SET_TARGET_PROPERTIES(
-    ${GLideN64_DLL_NAME}
-    PROPERTIES
-    LINKER_LANGUAGE CXX # Or else we get an error message, because cmake can't figure out from the ".o"-suffix that it is a C-linker we need.
-    PREFIX ""
-    LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/plugin/debug
+	${GLideN64_DLL_NAME}
+	PROPERTIES
+	LINKER_LANGUAGE CXX # Or else we get an error message, because cmake can't figure out from the ".o"-suffix that it is a C-linker we need.
+	PREFIX ""
+	LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/plugin/debug
   )
 
   if(SDL)
-    target_link_libraries(${GLideN64_DLL_NAME} PRIVATE ${OPENGL_LIBRARIES} ${SDL_LIBRARIES} ${FREETYPE_LIBRARIES} GLideNHQd )
+	target_link_libraries(${GLideN64_DLL_NAME} PRIVATE ${OPENGL_LIBRARIES} ${SDL_LIBRARIES} ${FREETYPE_LIBRARIES} GLideNHQd )
   else(SDL)
-    target_link_libraries(${GLideN64_DLL_NAME} PRIVATE ${OPENGL_LIBRARIES} ${FREETYPE_LIBRARIES} GLideNHQd )
+	target_link_libraries(${GLideN64_DLL_NAME} PRIVATE ${OPENGL_LIBRARIES} ${FREETYPE_LIBRARIES} GLideNHQd )
   endif(SDL)
 endif( CMAKE_BUILD_TYPE STREQUAL "Debug")
 
 if( CMAKE_BUILD_TYPE STREQUAL "Release")
   SET_TARGET_PROPERTIES(
-    ${GLideN64_DLL_NAME}
-    PROPERTIES
-    LINKER_LANGUAGE CXX # Or else we get an error message, because cmake can't figure out from the ".o"-suffix that it is a C-linker we need.
-    PREFIX ""
-    LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/plugin/release
+	${GLideN64_DLL_NAME}
+	PROPERTIES
+	LINKER_LANGUAGE CXX # Or else we get an error message, because cmake can't figure out from the ".o"-suffix that it is a C-linker we need.
+	PREFIX ""
+	LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/plugin/release
   )
 
   if(SDL)
-    target_link_libraries(${GLideN64_DLL_NAME} ${OPENGL_LIBRARIES} ${SDL_LIBRARIES} ${FREETYPE_LIBRARIES} GLideNHQ )
+	target_link_libraries(${GLideN64_DLL_NAME} ${OPENGL_LIBRARIES} ${SDL_LIBRARIES} ${FREETYPE_LIBRARIES} GLideNHQ )
   else(SDL)
-    target_link_libraries(${GLideN64_DLL_NAME} PRIVATE ${OPENGL_LIBRARIES} ${FREETYPE_LIBRARIES} GLideNHQ )
+	target_link_libraries(${GLideN64_DLL_NAME} PRIVATE ${OPENGL_LIBRARIES} ${FREETYPE_LIBRARIES} GLideNHQ )
   endif(SDL)
 endif( CMAKE_BUILD_TYPE STREQUAL "Release")
 

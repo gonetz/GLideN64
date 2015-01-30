@@ -27,6 +27,7 @@
 #include "Config.h"
 #include "Log.h"
 #include "TextDrawer.h"
+#include "PostProcessor.h"
 
 using namespace std;
 
@@ -1275,6 +1276,7 @@ void OGLRender::_initData()
 	Combiner_Init();
 	TextDrawer::get().init();
 	TFH.init();
+	PostProcessor::get().init();
 	m_renderState = rsNone;
 
 	gSP.changed = gDP.changed = 0xFFFFFFFF;
@@ -1293,6 +1295,7 @@ void OGLRender::_initData()
 void OGLRender::_destroyData()
 {
 	m_renderState = rsNone;
+	PostProcessor::get().destroy();
 	TextDrawer::get().destroy();
 	Combiner_Destroy();
 	FrameBuffer_Destroy();
