@@ -55,6 +55,14 @@ struct Config
 		u32 N64DepthCompare;
 	} frameBufferEmulation;
 
+	struct {
+		u32 mode;
+		u32 thresholdLevel;
+		u32 blendMode;
+		u32 blurAmount;
+		u32 blurStrength;
+	} bloomFilter;
+
 	struct
 	{
 		std::string name;

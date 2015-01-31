@@ -122,6 +122,7 @@ void Config_LoadConfig()
 	config.enableLOD = TRUE;
 	config.enableNoise = TRUE;
 	config.hacks = 0;
+	config.bloomFilter.mode = 0;
 }
 
 void Config_SaveConfig()

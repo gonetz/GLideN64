@@ -113,6 +113,17 @@ bool Config_SetDefault()
 	res = ConfigSetDefaultString(g_configVideoGliden64, "fontColor", "B5E61D", "Font color in RGB format.");
 	assert(res == M64ERR_SUCCESS);
 
+	//#Bloom filter settings
+	res = ConfigSetDefaultInt(g_configVideoGliden64, "bloomMode", 0, "Bloom filter mode (0=none, 1=Single pass, 2=Multi pass)");
+	assert(res == M64ERR_SUCCESS);
+	res = ConfigSetDefaultInt(g_configVideoGliden64, "bloomThresholdLevel", 4, "Brightness threshold level for bloom. Values [2, 6]");
+	assert(res == M64ERR_SUCCESS);
+	res = ConfigSetDefaultInt(g_configVideoGliden64, "bloomBlendMode", 0, "Bloom blend mode (0=Strong, 1=Mild, 2=Light)");
+	assert(res == M64ERR_SUCCESS);
+	res = ConfigSetDefaultInt(g_configVideoGliden64, "blurAmount", 10, "Blur radius. Values [2, 10]");
+	assert(res == M64ERR_SUCCESS);
+	res = ConfigSetDefaultInt(g_configVideoGliden64, "blurStrength", 20, "Blur strength. Values [10, 100]");
+	assert(res == M64ERR_SUCCESS);
 
 	return res == M64ERR_SUCCESS;
 }
@@ -176,6 +187,12 @@ void Config_LoadConfig()
 	config.font.size = ConfigGetParamInt(g_configVideoGliden64, "fontSize");
 	if (config.font.size == 0)
 		config.font.size = 30;
+	//#Bloom filter settings
+	config.bloomFilter.mode = ConfigGetParamInt(g_configVideoGliden64, "bloomMode");
+	config.bloomFilter.thresholdLevel = ConfigGetParamInt(g_configVideoGliden64, "bloomThresholdLevel");
+	config.bloomFilter.blendMode = ConfigGetParamInt(g_configVideoGliden64, "bloomBlendMode");
+	config.bloomFilter.blurAmount = ConfigGetParamInt(g_configVideoGliden64, "blurAmount");
+	config.bloomFilter.blurStrength = ConfigGetParamInt(g_configVideoGliden64, "blurStrength");
 }
 
 #if 0

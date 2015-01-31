@@ -1276,7 +1276,8 @@ void OGLRender::_initData()
 	Combiner_Init();
 	TextDrawer::get().init();
 	TFH.init();
-	PostProcessor::get().init();
+	if (config.bloomFilter.mode != 0)
+		PostProcessor::get().init();
 	m_renderState = rsNone;
 
 	gSP.changed = gDP.changed = 0xFFFFFFFF;
@@ -1295,7 +1296,8 @@ void OGLRender::_initData()
 void OGLRender::_destroyData()
 {
 	m_renderState = rsNone;
-	PostProcessor::get().destroy();
+	if (config.bloomFilter.mode != 0)
+		PostProcessor::get().destroy();
 	TextDrawer::get().destroy();
 	Combiner_Destroy();
 	FrameBuffer_Destroy();
