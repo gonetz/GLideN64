@@ -405,7 +405,7 @@ void FrameBufferList::renderBuffer(u32 _address)
 	}
 
 #if 1
-	PostProcessor::get().processTexture(pBuffer->m_pTexture);
+	PostProcessor::get().process(pBuffer);
 #endif
 	// glDisable(GL_SCISSOR_TEST) does not affect glBlitFramebuffer, at least on AMD
 	glScissor(0, 0, ogl.getScreenWidth(), ogl.getScreenHeight());
