@@ -4,6 +4,7 @@
 #include "gSP.h"
 #include "PostProcessor.h"
 #include "FrameBuffer.h"
+#include "GLSLCombiner.h"
 #include "Config.h"
 
 static const char * vertexShader =
@@ -47,18 +48,14 @@ static const char* seperableBlurShader =
 ///
 /// Fragment shader for performing a seperable blur on the specified texture.
 "#version 330 core																							                                        \n"
-"#ifdef GL_ES                                                                                                                                       \n"
-"	precision highp float;                                                                                                                      \n"
-"#endif                                                                                                                                             \n"
-"                                                                                                                                                   \n"
 // Uniform variables.
 "layout(binding = 0) uniform sampler2D Sample0;                                                                                                     \n"
-"uniform vec2 TexelSize;                                                                                                                            \n"
+"uniform mediump vec2 TexelSize;                                                                                                                    \n"
 "                                                                                                                                                   \n"
-"uniform int Orientation;                                                                                                                           \n"
-"uniform int BlurAmount;                                                                                                                            \n"
-"uniform float BlurScale;                                                                                                                           \n"
-"uniform float BlurStrength;                                                                                                                        \n"
+"uniform lowp int Orientation;                                                                                                                      \n"
+"uniform lowp int BlurAmount;                                                                                                                       \n"
+"uniform lowp float BlurScale;                                                                                                                      \n"
+"uniform lowp float BlurStrength;                                                                                                                   \n"
 "                                                                                                                                                   \n"
 "in mediump vec2 vTexCoord;																								                            \n"
 "out lowp vec4 fragColor;																															\n"
@@ -67,46 +64,46 @@ static const char* seperableBlurShader =
 // "x" Distance from origin on the x-axis.
 // "deviation" Standard deviation.
 // returns The gaussian value on the x-axis.
-"float Gaussian (float x, float deviation)                                                                                                          \n"
+"mediump float Gaussian (in mediump float x, in mediump float deviation)                                                                            \n"
 "{                                                                                                                                                  \n"
-"	return (1.0 / sqrt(2.0 * 3.141592 * deviation)) * exp(-((x * x) / (2.0 * deviation)));	                                                    \n"
+"	return (1.0 / sqrt(2.0 * 3.141592 * deviation)) * exp(-((x * x) / (2.0 * deviation)));	                                                        \n"
 "}                                                                                                                                                  \n"
 "                                                                                                                                                   \n"
 // Fragment shader entry.
 "void main ()                                                                                                                                       \n"
 "{                                                                                                                                                  \n"
 "	// Locals                                                                                                                                   \n"
-"	float halfBlur = float(BlurAmount) * 0.5;                                                                                                   \n"
-"	vec4 colour = vec4(0.0);                                                                                                                    \n"
+"	mediump float halfBlur = float(BlurAmount) * 0.5;                                                                                           \n"
+"	mediump vec4 colour = vec4(0.0);                                                                                                            \n"
 "	                                                                                                                                            \n"
 "	// Gaussian deviation                                                                                                                       \n"
-"	float deviation = halfBlur * 0.35;                                                                                                          \n"
+"	mediump float deviation = halfBlur * 0.35;                                                                                                  \n"
 "	deviation *= deviation;                                                                                                                     \n"
-"	float strength = 1.0 - BlurStrength;                                                                                                        \n"
+"	mediump float strength = 1.0 - BlurStrength;                                                                                                \n"
 "	                                                                                                                                            \n"
 "	if ( Orientation == 0 )                                                                                                                     \n"
 "	{                                                                                                                                           \n"
 "		// Horizontal blur                                                                                                                  \n"
-"		for (int i = 0; i < BlurAmount; ++i)                                                                                                        \n"
+"		for (int i = 0; i < BlurAmount; ++i)                                                                                                \n"
 "		{                                                                                                                                   \n"
-"			float offset = float(i) - halfBlur;                                                                                         \n"
+"			mediump float offset = float(i) - halfBlur;                                                                                     \n"
 "			colour += texture2D(Sample0, vTexCoord + vec2(offset * TexelSize.x * BlurScale, 0.0)) * Gaussian(offset * strength, deviation); \n"
 "		}                                                                                                                                   \n"
-"	}                                                                                                                                           \n"
-"	else                                                                                                                                        \n"
-"	{                                                                                                                                           \n"
+"	}                                                                                                                                       \n"
+"	else                                                                                                                                    \n"
+"	{                                                                                                                                       \n"
 "		// Vertical blur                                                                                                                    \n"
-"		for (int i = 0; i < BlurAmount; ++i)                                                                                                        \n"
+"		for (int i = 0; i < BlurAmount; ++i)                                                                                                \n"
 "		{                                                                                                                                   \n"
-"			float offset = float(i) - halfBlur;                                                                                         \n"
+"			mediump float offset = float(i) - halfBlur;                                                                                     \n"
 "			colour += texture2D(Sample0, vTexCoord + vec2(0.0, offset * TexelSize.y * BlurScale)) * Gaussian(offset * strength, deviation); \n"
 "		}                                                                                                                                   \n"
-"	}                                                                                                                                           \n"
-"	                                                                                                                                            \n"
-"	// Apply colour                                                                                                                             \n"
-"	fragColor = clamp(colour, 0.0, 1.0);                                                                                                     \n"
-"	fragColor.a = 1.0;                                                                                                                       \n"
-"}                                                                                                                                                  \n"
+"	}                                                                                                                                       \n"
+"	                                                                                                                                        \n"
+"	// Apply colour                                                                                                                         \n"
+"	fragColor = clamp(colour, 0.0, 1.0);                                                                                                    \n"
+"	fragColor.a = 1.0;                                                                                                                      \n"
+"}                                                                                                                                          \n"
 ;
 
 static const char* glowShader =
@@ -117,23 +114,19 @@ static const char* glowShader =
 ///
 /// Fragment shader for blending two textures using an algorithm that overlays the glowmap.
 "#version 330 core													                                       \n"
-"#ifdef GL_ES                                                                                             \n"
-"	precision highp float;                                                                            \n"
-"#endif                                                                                                   \n"
-"                                                                                                         \n"
 // Uniform variables.
 "layout(binding = 0) uniform sampler2D Sample0;                                                           \n"
 "layout(binding = 1) uniform sampler2D Sample1;                                                           \n"
-"uniform int BlendMode;                                                                                   \n"
+"uniform lowp int BlendMode;                                                                              \n"
 "                                                                                                         \n"
-"in mediump vec2 vTexCoord;																								                            \n"
-"out lowp vec4 fragColor;																															\n"
+"in mediump vec2 vTexCoord;														                            \n"
+"out lowp vec4 fragColor;																					\n"
 "                                                                                                         \n"
 // Fragment shader entry.
 "void main ()                                                                                             \n"
 "{                                                                                                        \n"
-"	vec4 dst = texture2D(Sample0, vTexCoord); // rendered scene                                             \n"
-"	vec4 src = texture2D(Sample1, vTexCoord); // glowmap                                                    \n"
+"	lowp vec4 dst = texture2D(Sample0, vTexCoord); // rendered scene                                      \n"
+"	lowp vec4 src = texture2D(Sample1, vTexCoord); // glowmap                                             \n"
 "                                                                                                         \n"
 "	if ( BlendMode == 0 )                                                                             \n"
 "	{                                                                                                 \n"
@@ -176,57 +169,22 @@ static const char* simpleBloomShader =
 "out lowp vec4 fragColor;																\n"
 "void main()                                                                            \n"
 "{                                                                                      \n"
-"   vec4 sum = vec4(0);                                                                 \n"
-"   vec2 texcoord = vTexCoord;															\n"
-"   int j;                                                                              \n"
-"   int i;                                                                              \n"
+"   lowp vec4 sum = vec4(0.0);                                                          \n"
 "                                                                                       \n"
-"   for( i= -4 ; i < 4; i++) {                                                          \n"
-"        for (j = -3; j < 3; j++)                                                       \n"
-"            sum += texture2D(bgl_RenderedTexture, texcoord + vec2(j, i)*0.004) * 0.25; \n"
+"   for(int i = -4 ; i < 4; i++) {                                                      \n"
+"        for (int j = -3; j < 3; j++)                                                   \n"
+"            sum += texture2D(bgl_RenderedTexture, vTexCoord + vec2(j, i)*0.004) * 0.25;\n"
 "   }                                                                                   \n"
-"    if (texture2D(bgl_RenderedTexture, texcoord).r < 0.3) {	                        \n"
-"       fragColor = sum*sum*0.012 + texture2D(bgl_RenderedTexture, texcoord);		 	\n"
-"    } else {                                                                           \n"
-"        if (texture2D(bgl_RenderedTexture, texcoord).r < 0.5)                          \n"
-"            fragColor = sum*sum*0.009 + texture2D(bgl_RenderedTexture, texcoord);   \n"
-"        else                                                                           \n"
-"            fragColor = sum*sum*0.0075 + texture2D(bgl_RenderedTexture, texcoord);  \n"
-"    }                                                                                  \n"
+"   if (texture2D(bgl_RenderedTexture, vTexCoord).r < 0.3) {	                        \n"
+"      fragColor = sum*sum*0.012 + texture2D(bgl_RenderedTexture, vTexCoord);		 	\n"
+"   } else {                                                                            \n"
+"       if (texture2D(bgl_RenderedTexture, vTexCoord).r < 0.5)                          \n"
+"           fragColor = sum*sum*0.009 + texture2D(bgl_RenderedTexture, vTexCoord);      \n"
+"       else                                                                            \n"
+"           fragColor = sum*sum*0.0075 + texture2D(bgl_RenderedTexture, vTexCoord);     \n"
+"   }                                                                                   \n"
 "}                                                                                      \n"
 ;
-
-static const GLsizei nShaderLogSize = 1024;
-static
-bool check_shader_compile_status(GLuint obj)
-{
-	GLint status;
-	glGetShaderiv(obj, GL_COMPILE_STATUS, &status);
-	if (status == GL_FALSE)
-	{
-		GLchar shader_log[nShaderLogSize];
-		GLsizei nLogSize = nShaderLogSize;
-		glGetShaderInfoLog(obj, nShaderLogSize, &nLogSize, shader_log);
-		shader_log[nLogSize] = 0;
-		return false;
-	}
-	return true;
-}
-
-static
-bool check_program_link_status(GLuint obj)
-{
-	GLint status;
-	glGetProgramiv(obj, GL_LINK_STATUS, &status);
-	if (status == GL_FALSE)
-	{
-		GLsizei nLogSize = nShaderLogSize;
-		GLchar shader_log[nShaderLogSize];
-		glGetProgramInfoLog(obj, nShaderLogSize, &nLogSize, shader_log);
-		return false;
-	}
-	return true;
-}
 
 static
 GLuint _createShaderProgram(const char * _strVertex, const char * _strFragment)
@@ -234,12 +192,12 @@ GLuint _createShaderProgram(const char * _strVertex, const char * _strFragment)
 	GLuint vertex_shader_object = glCreateShader(GL_VERTEX_SHADER);
 	glShaderSource(vertex_shader_object, 1, &_strVertex, NULL);
 	glCompileShader(vertex_shader_object);
-	assert(check_shader_compile_status(vertex_shader_object));
+	assert(checkShaderCompileStatus(vertex_shader_object));
 
 	GLuint fragment_shader_object = glCreateShader(GL_FRAGMENT_SHADER);
 	glShaderSource(fragment_shader_object, 1, &_strFragment, NULL);
 	glCompileShader(fragment_shader_object);
-	assert(check_shader_compile_status(fragment_shader_object));
+	assert(checkShaderCompileStatus(fragment_shader_object));
 
 	GLuint program = glCreateProgram();
 	glBindAttribLocation(program, SC_POSITION, "aPosition");
@@ -249,7 +207,7 @@ GLuint _createShaderProgram(const char * _strVertex, const char * _strFragment)
 	glLinkProgram(program);
 	glDeleteShader(vertex_shader_object);
 	glDeleteShader(fragment_shader_object);
-	assert(check_program_link_status(program));
+	assert(checkProgramLinkStatus(program));
 	return program;
 }
 

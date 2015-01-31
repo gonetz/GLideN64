@@ -32,8 +32,7 @@ static u32 g_paletteCRC256 = 0;
 static std::string strFragmentShader;
 
 static const GLsizei nShaderLogSize = 1024;
-static
-bool check_shader_compile_status(GLuint obj)
+bool checkShaderCompileStatus(GLuint obj)
 {
 	GLint status;
 	glGetShaderiv(obj, GL_COMPILE_STATUS, &status);
@@ -49,8 +48,7 @@ bool check_shader_compile_status(GLuint obj)
 	return true;
 }
 
-static
-bool check_program_link_status(GLuint obj)
+bool checkProgramLinkStatus(GLuint obj)
 {
 	GLint status;
 	glGetProgramiv(obj, GL_LINK_STATUS, &status);
@@ -103,12 +101,12 @@ GLuint createShaderProgram(const char * _strVertex, const char * _strFragment)
 	GLuint vertex_shader_object = glCreateShader(GL_VERTEX_SHADER);
 	glShaderSource(vertex_shader_object, 1, &_strVertex, NULL);
 	glCompileShader(vertex_shader_object);
-	assert(check_shader_compile_status(vertex_shader_object));
+	assert(checkShaderCompileStatus(vertex_shader_object));
 
 	GLuint fragment_shader_object = glCreateShader(GL_FRAGMENT_SHADER);
 	glShaderSource(fragment_shader_object, 1, &_strFragment, NULL);
 	glCompileShader(fragment_shader_object);
-	assert(check_shader_compile_status(fragment_shader_object));
+	assert(checkShaderCompileStatus(fragment_shader_object));
 
 	GLuint program = glCreateProgram();
 	glBindAttribLocation(program, SC_POSITION, "aPosition");
@@ -117,7 +115,7 @@ GLuint createShaderProgram(const char * _strVertex, const char * _strFragment)
 	glLinkProgram(program);
 	glDeleteShader(vertex_shader_object);
 	glDeleteShader(fragment_shader_object);
-	assert(check_program_link_status(program));
+	assert(checkProgramLinkStatus(program));
 	return program;
 }
 
@@ -169,7 +167,7 @@ void InitShaderCombiner()
 	g_vertex_shader_object = glCreateShader(GL_VERTEX_SHADER);
 	glShaderSource(g_vertex_shader_object, 1, &vertex_shader, NULL);
 	glCompileShader(g_vertex_shader_object);
-	if (!check_shader_compile_status(g_vertex_shader_object))
+	if (!checkShaderCompileStatus(g_vertex_shader_object))
 		LOG(LOG_ERROR, "Error in vertex shader\n", vertex_shader);
 
 	strFragmentShader.reserve(1024*5);
@@ -178,29 +176,29 @@ void InitShaderCombiner()
 	g_calc_light_shader_object = glCreateShader(GL_FRAGMENT_SHADER);
 	glShaderSource(g_calc_light_shader_object, 1, &fragment_shader_calc_light, NULL);
 	glCompileShader(g_calc_light_shader_object);
-	assert(check_shader_compile_status(g_calc_light_shader_object));
+	assert(checkShaderCompileStatus(g_calc_light_shader_object));
 
 	g_calc_mipmap_shader_object = glCreateShader(GL_FRAGMENT_SHADER);
 	glShaderSource(g_calc_mipmap_shader_object, 1, &fragment_shader_mipmap, NULL);
 	glCompileShader(g_calc_mipmap_shader_object);
-	assert(check_shader_compile_status(g_calc_mipmap_shader_object));
+	assert(checkShaderCompileStatus(g_calc_mipmap_shader_object));
 
 	g_calc_noise_shader_object = glCreateShader(GL_FRAGMENT_SHADER);
 	glShaderSource(g_calc_noise_shader_object, 1, &noise_fragment_shader, NULL);
 	glCompileShader(g_calc_noise_shader_object);
-	assert(check_shader_compile_status(g_calc_noise_shader_object));
+	assert(checkShaderCompileStatus(g_calc_noise_shader_object));
 
 	g_test_alpha_shader_object = glCreateShader(GL_FRAGMENT_SHADER);
 	glShaderSource(g_test_alpha_shader_object, 1, &alpha_test_fragment_shader, NULL);
 	glCompileShader(g_test_alpha_shader_object);
-	assert(check_shader_compile_status(g_test_alpha_shader_object));
+	assert(checkShaderCompileStatus(g_test_alpha_shader_object));
 
 #ifdef GL_IMAGE_TEXTURES_SUPPORT
 	if (video().getRender().isImageTexturesSupported() && config.frameBufferEmulation.N64DepthCompare != 0) {
 		g_calc_depth_shader_object = glCreateShader(GL_FRAGMENT_SHADER);
 		glShaderSource(g_calc_depth_shader_object, 1, &depth_compare_shader_float, NULL);
 		glCompileShader(g_calc_depth_shader_object);
-		assert(check_shader_compile_status(g_calc_depth_shader_object));
+		assert(checkShaderCompileStatus(g_calc_depth_shader_object));
 	}
 
 	InitZlutTexture();
@@ -499,7 +497,7 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 	const GLchar * strShaderData = strFragmentShader.data();
 	glShaderSource(fragmentShader, 1, &strShaderData, NULL);
 	glCompileShader(fragmentShader);
-	if (!check_shader_compile_status(fragmentShader))
+	if (!checkShaderCompileStatus(fragmentShader))
 		LOG(LOG_ERROR, "Error in fragment shader:\n%s\n", strFragmentShader.data());
 
 	m_program = glCreateProgram();
@@ -517,7 +515,7 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 	glAttachShader(m_program, g_calc_noise_shader_object);
 #endif
 	glLinkProgram(m_program);
-	assert(check_program_link_status(m_program));
+	assert(checkProgramLinkStatus(m_program));
 	glDeleteShader(fragmentShader);
 	_locateUniforms();
 }
