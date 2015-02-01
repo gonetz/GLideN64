@@ -21,14 +21,14 @@ static const char * vertexShader =
 static const char* extractBloomShader =
 "#version 330 core                                        \n"
 "in mediump vec2 vTexCoord;                               \n"
-"layout(binding = 0) uniform sampler2D tex;               \n"
+"uniform sampler2D Sample0;				               \n"
 "out lowp vec4 fragColor;								\n"
 "                                                         \n"
 "uniform lowp int ThresholdLevel;                         \n"
 "                                                         \n"
 "void main()                                              \n"
 "{                                                        \n"
-"    lowp vec4 color = texture2D(tex, vTexCoord);         \n"
+"    lowp vec4 color = texture2D(Sample0, vTexCoord);         \n"
 "                                                         \n"
 "    mediump float lum = dot(vec4(0.30, 0.59, 0.11, 0.0), color);\n"
 "    mediump float scale = lum;									\n"
@@ -49,7 +49,7 @@ static const char* seperableBlurShader =
 /// Fragment shader for performing a seperable blur on the specified texture.
 "#version 330 core																							                                        \n"
 // Uniform variables.
-"layout(binding = 0) uniform sampler2D Sample0;                                                                                                     \n"
+"uniform sampler2D Sample0;																                                                            \n"
 "uniform mediump vec2 TexelSize;                                                                                                                    \n"
 "                                                                                                                                                   \n"
 "uniform lowp int Orientation;                                                                                                                      \n"
@@ -115,8 +115,8 @@ static const char* glowShader =
 /// Fragment shader for blending two textures using an algorithm that overlays the glowmap.
 "#version 330 core													                                       \n"
 // Uniform variables.
-"layout(binding = 0) uniform sampler2D Sample0;                                                           \n"
-"layout(binding = 1) uniform sampler2D Sample1;                                                           \n"
+"uniform sampler2D Sample0;						                                                         \n"
+"uniform sampler2D Sample1;											                                      \n"
 "uniform lowp int BlendMode;                                                                              \n"
 "                                                                                                         \n"
 "in mediump vec2 vTexCoord;														                            \n"
@@ -165,7 +165,7 @@ static const char* simpleBloomShader =
 // http://wp.applesandoranges.eu/
 "#version 330 core																		\n"
 "in mediump vec2 vTexCoord;																\n"
-"layout(binding = 0) uniform sampler2D bgl_RenderedTexture;                             \n"
+"uniform sampler2D Sample0;									                             \n"
 "out lowp vec4 fragColor;																\n"
 "void main()                                                                            \n"
 "{                                                                                      \n"
@@ -173,15 +173,15 @@ static const char* simpleBloomShader =
 "                                                                                       \n"
 "   for(int i = -4 ; i < 4; i++) {                                                      \n"
 "        for (int j = -3; j < 3; j++)                                                   \n"
-"            sum += texture2D(bgl_RenderedTexture, vTexCoord + vec2(j, i)*0.004) * 0.25;\n"
+"            sum += texture2D(Sample0, vTexCoord + vec2(j, i)*0.004) * 0.25;\n"
 "   }                                                                                   \n"
-"   if (texture2D(bgl_RenderedTexture, vTexCoord).r < 0.3) {	                        \n"
-"      fragColor = sum*sum*0.012 + texture2D(bgl_RenderedTexture, vTexCoord);		 	\n"
+"   if (texture2D(Sample0, vTexCoord).r < 0.3) {	                        \n"
+"      fragColor = sum*sum*0.012 + texture2D(Sample0, vTexCoord);		 	\n"
 "   } else {                                                                            \n"
-"       if (texture2D(bgl_RenderedTexture, vTexCoord).r < 0.5)                          \n"
-"           fragColor = sum*sum*0.009 + texture2D(bgl_RenderedTexture, vTexCoord);      \n"
+"       if (texture2D(Sample0, vTexCoord).r < 0.5)                          \n"
+"           fragColor = sum*sum*0.009 + texture2D(Sample0, vTexCoord);      \n"
 "       else                                                                            \n"
-"           fragColor = sum*sum*0.0075 + texture2D(bgl_RenderedTexture, vTexCoord);     \n"
+"           fragColor = sum*sum*0.0075 + texture2D(Sample0, vTexCoord);     \n"
 "   }                                                                                   \n"
 "}                                                                                      \n"
 ;
@@ -254,15 +254,26 @@ void PostProcessor::init()
 
 	if (config.bloomFilter.mode == 1) {
 		m_bloomProgram = _createShaderProgram(vertexShader, simpleBloomShader);
-	} else {
+		glUseProgram(m_extractBloomProgram);
+		int loc = glGetUniformLocation(m_bloomProgram, "Sample0");
+		assert(loc >= 0);
+		glUniform1i(loc, 0);
+	}
+	else {
 		m_extractBloomProgram = _createShaderProgram(vertexShader, extractBloomShader);
 		glUseProgram(m_extractBloomProgram);
-		int loc = glGetUniformLocation(m_extractBloomProgram, "ThresholdLevel");
+		int loc = glGetUniformLocation(m_extractBloomProgram, "Sample0");
+		assert(loc >= 0);
+		glUniform1i(loc, 0);
+		loc = glGetUniformLocation(m_extractBloomProgram, "ThresholdLevel");
 		assert(loc >= 0);
 		glUniform1i(loc, config.bloomFilter.thresholdLevel);
 
 		m_seperableBlurProgram = _createShaderProgram(vertexShader, seperableBlurShader);
 		glUseProgram(m_seperableBlurProgram);
+		loc = glGetUniformLocation(m_seperableBlurProgram, "Sample0");
+		assert(loc >= 0);
+		glUniform1i(loc, 0);
 		loc = glGetUniformLocation(m_seperableBlurProgram, "TexelSize");
 		assert(loc >= 0);
 		glUniform2f(loc, 1.0f / video().getWidth(), 1.0f / video().getHeight());
@@ -281,11 +292,15 @@ void PostProcessor::init()
 
 		m_glowProgram = _createShaderProgram(vertexShader, glowShader);
 		glUseProgram(m_glowProgram);
+		loc = glGetUniformLocation(m_glowProgram, "Sample0");
+		assert(loc >= 0);
+		glUniform1i(loc, 0);
+		loc = glGetUniformLocation(m_glowProgram, "Sample1");
+		assert(loc >= 0);
+		glUniform1i(loc, 1);
 		loc = glGetUniformLocation(m_glowProgram, "BlendMode");
 		assert(loc >= 0);
 		glUniform1i(loc, config.bloomFilter.blendMode);
-
-		glUseProgram(0);
 
 		m_pTextureGlowMap = _createTexture();
 		m_pTextureBlur = _createTexture();
@@ -294,6 +309,7 @@ void PostProcessor::init()
 		m_FBO_blur = _createFBO(m_pTextureBlur);
 	}
 
+	glUseProgram(0);
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 }
 
