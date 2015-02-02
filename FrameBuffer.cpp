@@ -58,7 +58,7 @@ class DepthBufferToRDRAM
 {
 public:
 	DepthBufferToRDRAM() :
-		m_FBO(0), m_PBO(0), m_pTexture(NULL), m_lastDList(0)
+		m_FBO(0), m_PBO(0), m_pColorTexture(NULL), m_pDepthTexture(NULL), m_lastDList(0)
 	{}
 
 	void Init();
@@ -69,7 +69,8 @@ public:
 private:
 	GLuint m_FBO;
 	GLuint m_PBO;
-	CachedTexture * m_pTexture;
+	CachedTexture * m_pColorTexture;
+	CachedTexture * m_pDepthTexture;
 	u32 m_lastDList;
 };
 #endif // GLES2
@@ -699,28 +700,48 @@ void DepthBufferToRDRAM::Init()
 	glGenFramebuffers(1, &m_FBO);
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_FBO);
 
-	m_pTexture = textureCache().addFrameBufferTexture();
-	m_pTexture->format = G_IM_FMT_IA;
-	m_pTexture->clampS = 1;
-	m_pTexture->clampT = 1;
-	m_pTexture->frameBufferTexture = TRUE;
-	m_pTexture->maskS = 0;
-	m_pTexture->maskT = 0;
-	m_pTexture->mirrorS = 0;
-	m_pTexture->mirrorT = 0;
-	m_pTexture->realWidth = 640;
-	m_pTexture->realHeight = 480;
-	m_pTexture->textureBytes = m_pTexture->realWidth * m_pTexture->realHeight * sizeof(float);
-	textureCache().addFrameBufferTextureSize(m_pTexture->textureBytes);
-	glBindTexture( GL_TEXTURE_2D, m_pTexture->glName );
+	m_pColorTexture = textureCache().addFrameBufferTexture();
+	m_pColorTexture->format = G_IM_FMT_I;
+	m_pColorTexture->clampS = 1;
+	m_pColorTexture->clampT = 1;
+	m_pColorTexture->frameBufferTexture = TRUE;
+	m_pColorTexture->maskS = 0;
+	m_pColorTexture->maskT = 0;
+	m_pColorTexture->mirrorS = 0;
+	m_pColorTexture->mirrorT = 0;
+	m_pColorTexture->realWidth = 640;
+	m_pColorTexture->realHeight = 480;
+	m_pColorTexture->textureBytes = m_pColorTexture->realWidth * m_pColorTexture->realHeight;
+	textureCache().addFrameBufferTextureSize(m_pColorTexture->textureBytes);
 
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, m_pTexture->realWidth, m_pTexture->realHeight, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+	m_pDepthTexture = textureCache().addFrameBufferTexture();
+	m_pDepthTexture->format = G_IM_FMT_I;
+	m_pDepthTexture->clampS = 1;
+	m_pDepthTexture->clampT = 1;
+	m_pDepthTexture->frameBufferTexture = TRUE;
+	m_pDepthTexture->maskS = 0;
+	m_pDepthTexture->maskT = 0;
+	m_pDepthTexture->mirrorS = 0;
+	m_pDepthTexture->mirrorT = 0;
+	m_pDepthTexture->realWidth = 640;
+	m_pDepthTexture->realHeight = 480;
+	m_pDepthTexture->textureBytes = m_pDepthTexture->realWidth * m_pDepthTexture->realHeight * sizeof(float);
+	textureCache().addFrameBufferTextureSize(m_pDepthTexture->textureBytes);
+
+	glBindTexture( GL_TEXTURE_2D, m_pColorTexture->glName );
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, m_pColorTexture->realWidth, m_pColorTexture->realHeight, 0, GL_RED, GL_UNSIGNED_BYTE, NULL);
 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
+
+	glBindTexture( GL_TEXTURE_2D, m_pDepthTexture->glName );
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, m_pDepthTexture->realWidth, m_pDepthTexture->realHeight, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
+
 	glBindTexture(GL_TEXTURE_2D, 0);
 
-	glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_pTexture->glName, 0);
-	glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, m_pTexture->glName, 0);
+	glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_pColorTexture->glName, 0);
+	glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, m_pDepthTexture->glName, 0);
 	// check if everything is OK
 	assert(checkFBO());
 	assert(!isGLError());
@@ -737,9 +758,13 @@ void DepthBufferToRDRAM::Destroy() {
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 	glDeleteFramebuffers(1, &m_FBO);
 	m_FBO = 0;
-	if (m_pTexture != NULL) {
-		textureCache().removeFrameBufferTexture(m_pTexture);
-		m_pTexture = NULL;
+	if (m_pColorTexture != NULL) {
+		textureCache().removeFrameBufferTexture(m_pColorTexture);
+		m_pColorTexture = NULL;
+	}
+	if (m_pDepthTexture != NULL) {
+		textureCache().removeFrameBufferTexture(m_pDepthTexture);
+		m_pDepthTexture = NULL;
 	}
 	glDeleteBuffers(1, &m_PBO);
 	m_PBO = 0;
