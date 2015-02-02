@@ -36,12 +36,12 @@
       <Extensions>cpp;c;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
     <Filter Include="Generated Files\Debug">
-      <UniqueIdentifier>{71daf651-4f5f-4301-8ea3-1b31ba0c1276}</UniqueIdentifier>
+      <UniqueIdentifier>{3c4de5d9-fbc9-428b-a76a-4316cc47ab18}</UniqueIdentifier>
       <Extensions>cpp;moc</Extensions>
       <SourceControlFiles>False</SourceControlFiles>
     </Filter>
     <Filter Include="Generated Files\Release">
-      <UniqueIdentifier>{22bf1cf0-d41b-479c-8899-20137fbbdb69}</UniqueIdentifier>
+      <UniqueIdentifier>{56b4f220-aa69-4516-a37c-1f65e75c30da}</UniqueIdentifier>
       <Extensions>cpp;moc</Extensions>
       <SourceControlFiles>False</SourceControlFiles>
     </Filter>
@@ -59,11 +59,17 @@
     <ClCompile Include="GeneratedFiles\Release\moc_ConfigDialog.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
+    <ClCompile Include="FullscreenResolutions_windows.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="ConfigDialog.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
+    <ClInclude Include="FullscreenResolutions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
     <ClInclude Include="GLideNUI.h">
       <Filter>Header Files</Filter>
     </ClInclude>

@@ -123,6 +123,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="ConfigDialog.cpp" />
+    <ClCompile Include="FullscreenResolutions_windows.cpp" />
     <ClCompile Include="GeneratedFiles\Debug\moc_ConfigDialog.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
@@ -152,6 +153,7 @@ endlocal
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
     </CustomBuild>
+    <ClInclude Include="FullscreenResolutions.h" />
     <ClInclude Include="GeneratedFiles\ui_configDialog.h" />
     <ClInclude Include="GLideNUI.h" />
   </ItemGroup>

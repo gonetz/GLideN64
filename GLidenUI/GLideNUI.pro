@@ -15,7 +15,7 @@ CONFIG += staticlib
 SOURCES += \
     ConfigDialog.cpp \
     GLideNUI.cpp \
-    fullscreenresolutions_windows.cpp
+    FullscreenResolutions_windows.cpp
 
 HEADERS += \
     ConfigDialog.h \
