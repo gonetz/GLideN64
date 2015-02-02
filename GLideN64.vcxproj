@@ -127,7 +127,7 @@
       <AdditionalIncludeDirectories>../freetype/include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>freetype253MT_D.lib;GLideNHQ\build_vs\Debug\libGLideNHQ.lib;opengl32.lib;glu32.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>freetype253MT_D.lib;GLideNUI\debug\GLideNUI.lib;GLideNHQ\build_vs\Debug\libGLideNHQ.lib;opengl32.lib;glu32.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>c:\Games\N64\Plugin\GLideN64.dll</OutputFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ProgramDatabaseFile>$(OutDir)New glNintendo64().pdb</ProgramDatabaseFile>
@@ -184,7 +184,7 @@
       <AdditionalIncludeDirectories>../freetype/include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>freetype253MT.lib;GLideNHQ\build_vs\Release\libGLideNHQ.lib;opengl32.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>freetype253MT.lib;GLideNUI\release\GLideNUI.lib;GLideNHQ\build_vs\Release\libGLideNHQ.lib;opengl32.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>c:\Games\N64\Plugin\GLideN64.dll</OutputFile>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
