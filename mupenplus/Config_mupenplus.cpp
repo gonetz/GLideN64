@@ -180,10 +180,14 @@ void Config_LoadConfig()
 	sprintf(buf, "0x%s", ConfigGetParamString(g_configVideoGliden64, "fontColor"));
 	long int uColor = strtol(buf, NULL, 16);
 	if (uColor != 0) {
-		config.font.color[0] = _FIXED2FLOAT(_SHIFTR(uColor, 16, 8), 8);
-		config.font.color[1] = _FIXED2FLOAT(_SHIFTR(uColor,	 8, 8), 8);
-		config.font.color[2] = _FIXED2FLOAT(_SHIFTR(uColor,  0, 8), 8);
-		config.font.color[3] = 1.0f;
+		config.font.color[0] = _SHIFTR(uColor, 16, 8);
+		config.font.color[1] = _SHIFTR(uColor, 8, 8);
+		config.font.color[2] = _SHIFTR(uColor, 0, 8);
+		config.font.color[3] = 0xFF;
+		config.font.colorf[0] = _FIXED2FLOAT(config.font.color[0], 8);
+		config.font.colorf[1] = _FIXED2FLOAT(config.font.color[1], 8);
+		config.font.colorf[2] = _FIXED2FLOAT(config.font.color[2], 8);
+		config.font.colorf[3] = 1.0f;
 	}
 	config.font.size = ConfigGetParamInt(g_configVideoGliden64, "fontSize");
 	if (config.font.size == 0)

@@ -278,7 +278,7 @@ void TextDrawer::renderText(const char *_pText, float _x, float _y) const
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	/* Set color */
-	glUniform4fv(m_uColor, 1, config.font.color);
+	glUniform4fv(m_uColor, 1, config.font.colorf);
 
 	/* Use the texture containing the atlas */
 	glActiveTexture(GL_TEXTURE0);

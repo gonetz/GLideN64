@@ -64,7 +64,8 @@ struct Config
 	{
 		std::string name;
 		u32 size;
-		float color[4];
+		u8 color[4];
+		float colorf[4];
 	} font;
 
 	struct {
