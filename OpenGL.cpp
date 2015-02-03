@@ -188,7 +188,7 @@ void OGLVideo::updateScale()
 void OGLVideo::_setBufferSize()
 {
 	if (config.frameBufferEmulation.enable) {
-		switch (config.video.aspect) {
+		switch (config.frameBufferEmulation.aspect) {
 			case 0: // stretch
 			m_width = m_screenWidth;
 			m_height = m_screenHeight;

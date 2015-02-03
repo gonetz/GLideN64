@@ -137,7 +137,7 @@ void Config_LoadConfig()
 	config.video.verticalSync = ConfigGetParamBool(g_configVideoGeneral, "VerticalSync");
 
 	config.video.multisampling = ConfigGetParamInt(g_configVideoGliden64, "MultiSampling");
-	config.video.aspect = ConfigGetParamInt(g_configVideoGliden64, "AspectRatio");
+	config.frameBufferEmulation.aspect = ConfigGetParamInt(g_configVideoGliden64, "AspectRatio");
 
 	//#Texture Settings
 	config.texture.forceBilinear = ConfigGetParamBool(g_configVideoGliden64, "ForceBilinear");

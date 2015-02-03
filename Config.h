@@ -13,8 +13,8 @@ struct Config
 		u32 fullscreen;
 		u32 fullscreenWidth, fullscreenHeight, windowedWidth, windowedHeight;
 		u32 fullscreenBits, fullscreenRefresh;
-		u32 multisampling, verticalSync;
-		u32 aspect; // 0: stretch ; 1: 4/3 ; 2: 16/9
+		u32 multisampling, anisotropic;
+		u32 verticalSync;
 	} video;
 
 	struct
@@ -39,6 +39,7 @@ struct Config
 		u32 copyFromRDRAM;
 		u32 ignoreCFB;
 		u32 N64DepthCompare;
+		u32 aspect; // 0: stretch ; 1: 4/3 ; 2: 16/9
 	} frameBufferEmulation;
 
 	struct
