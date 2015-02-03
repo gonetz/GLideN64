@@ -92,9 +92,6 @@ void Config_LoadConfig()
 		RegQueryValueEx( hKey, "Hardware lighting", 0, NULL, (BYTE*)&value, &size );
 		config.generalEmulation.enableHWLighting = value ? TRUE : FALSE;
 
-		RegQueryValueEx( hKey, "Texture Bit Depth", 0, NULL, (BYTE*)&value, &size );
-		config.texture.textureBitDepth = value;
-
 		RegCloseKey( hKey );
 	}
 	else
@@ -110,7 +107,6 @@ void Config_LoadConfig()
 		config.texture.maxBytes = 192 * uMegabyte;
 		config.frameBufferEmulation.enable = FALSE;
 		config.frameBufferEmulation.copyDepthToRDRAM = FALSE;
-		config.texture.textureBitDepth = 1;
 		config.generalEmulation.enableHWLighting = FALSE;
 	}
 
@@ -158,9 +154,6 @@ void Config_SaveConfig()
 	value = config.generalEmulation.enableHWLighting ? 1 : 0;
 	RegSetValueEx( hKey, "Hardware lighting", 0, REG_DWORD, (BYTE*)&value, 4 );
 
-	value = config.texture.textureBitDepth;
-	RegSetValueEx( hKey, "Texture Bit Depth", 0, REG_DWORD, (BYTE*)&value, 4 );
-
 	RegCloseKey( hKey );
 }
 
@@ -181,9 +174,6 @@ void Config_ApplyDlgConfig( HWND hWndDlg )
 	config.video.fullscreenWidth = fullscreen.resolution[i].width;
 	config.video.fullscreenHeight = fullscreen.resolution[i].height;
 	config.video.fullscreenRefresh = fullscreen.refreshRate[SendDlgItemMessage( hWndDlg, IDC_FULLSCREENREFRESH, CB_GETCURSEL, 0, 0 )];
-
-	i = SendDlgItemMessage( hWndDlg, IDC_TEXTUREBPP, CB_GETCURSEL, 0, 0 );
-	config.texture.textureBitDepth = (int)i;
 
 	i = SendDlgItemMessage( hWndDlg, IDC_WINDOWEDRES, CB_GETCURSEL, 0, 0 );
 	config.video.windowedWidth = windowedModes[i].width;
@@ -340,7 +330,7 @@ BOOL CALLBACK ConfigDlgProc( HWND hWndDlg, UINT message, WPARAM wParam, LPARAM l
 			SendDlgItemMessage( hWndDlg, IDC_TEXTUREBPP, CB_ADDSTRING, 0, (LPARAM)"16-bit only (faster)" );
 			SendDlgItemMessage( hWndDlg, IDC_TEXTUREBPP, CB_ADDSTRING, 0, (LPARAM)"16-bit and 32-bit (normal)" );
 			SendDlgItemMessage( hWndDlg, IDC_TEXTUREBPP, CB_ADDSTRING, 0, (LPARAM)"32-bit only (best for 2xSaI)" );
-			SendDlgItemMessage( hWndDlg, IDC_TEXTUREBPP, CB_SETCURSEL, config.texture.textureBitDepth, 0 );
+			SendDlgItemMessage( hWndDlg, IDC_TEXTUREBPP, CB_SETCURSEL, 1, 0 );
 			// Enable/disable fog
 			SendDlgItemMessage( hWndDlg, IDC_FOG, BM_SETCHECK, config.generalEmulation.enableFog ? (LPARAM)BST_CHECKED : (LPARAM)BST_UNCHECKED, NULL );
 			SendDlgItemMessage( hWndDlg, IDC_FRAMEBUFFER, BM_SETCHECK, config.frameBufferEmulation.enable ? (LPARAM)BST_CHECKED : (LPARAM)BST_UNCHECKED, NULL );

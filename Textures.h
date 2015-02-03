@@ -64,7 +64,7 @@ struct TextureCache
 	}
 
 private:
-	TextureCache() : m_pDummy(NULL), m_hits(0), m_misses(0), m_bitDepth(0), m_maxBytes(0), m_cachedBytes(0)
+	TextureCache() : m_pDummy(NULL), m_hits(0), m_misses(0), m_maxBytes(0), m_cachedBytes(0)
 	{
 		current[0] = NULL;
 		current[1] = NULL;
@@ -85,7 +85,6 @@ private:
 	Textures m_fbTextures;
 	CachedTexture * m_pDummy;
 	u32 m_hits, m_misses;
-	u32 m_bitDepth;
 	u32 m_maxBytes;
 	u32 m_cachedBytes;
 };

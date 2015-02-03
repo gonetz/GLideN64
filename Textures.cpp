@@ -431,7 +431,6 @@ void TextureCache::init()
 {
 	u32 dummyTexture[16] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
-	m_bitDepth = config.texture.textureBitDepth;
 	m_maxBytes = config.texture.maxBytes;
 
 	m_pDummy = addFrameBufferTexture(); // we don't want to remove dummy texture
@@ -752,7 +751,7 @@ void TextureCache::_loadBackground(CachedTexture *pTexture)
 	GLenum glType;
 
 	const TextureLoadParameters & loadParams = imageFormat[pTexture->format == 2 ? G_TT_RGBA16 : G_TT_NONE][pTexture->size][pTexture->format];
-	if (((loadParams.autoFormat == GL_RGBA) || (m_bitDepth == 2)) && (m_bitDepth != 0)) {
+	if (loadParams.autoFormat == GL_RGBA) {
 		pTexture->textureBytes = (pTexture->realWidth * pTexture->realHeight) << 2;
 		GetTexel = loadParams.Get32;
 		glInternalFormat = loadParams.glInternalFormat32;
@@ -884,7 +883,7 @@ void TextureCache::_load(u32 _tile, CachedTexture *_pTexture)
 	u32 sizeShift;
 
 	const TextureLoadParameters & loadParams = imageFormat[gDP.otherMode.textureLUT][_pTexture->size][_pTexture->format];
-	if (((loadParams.autoFormat == GL_RGBA) || (m_bitDepth == 2)) && (m_bitDepth != 0)) {
+	if (loadParams.autoFormat == GL_RGBA) {
 		sizeShift = 2;
 		_pTexture->textureBytes = (_pTexture->realWidth * _pTexture->realHeight) << sizeShift;
 		GetTexel = loadParams.Get32;
@@ -1239,12 +1238,6 @@ void _updateShiftScale(u32 _t, CachedTexture *_pTexture)
 
 void TextureCache::update(u32 _t)
 {
-	if (m_bitDepth != config.texture.textureBitDepth)
-	{
-		destroy();
-		init();
-	}
-
 	switch(gSP.textureTile[_t]->textureMode) {
 	case TEXTUREMODE_BGIMAGE:
 		_updateBackground();

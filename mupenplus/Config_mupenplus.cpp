@@ -51,8 +51,6 @@ bool Config_SetDefault()
 	assert(res == M64ERR_SUCCESS);
 	res = ConfigSetDefaultInt(g_configVideoGliden64, "CacheSize", 500, "Size of texture cache in megabytes. Good value is VRAM*3/4");
 	assert(res == M64ERR_SUCCESS);
-	res = ConfigSetDefaultInt(g_configVideoGliden64, "TextureBitDepth", 1, "Texture bit depth (0=16bit only, 1=16 and 32 bit, 2=32bit only)");
-	assert(res == M64ERR_SUCCESS);
 	//#Emulation Settings
 	res = ConfigSetDefaultBool(g_configVideoGliden64, "EnableFog", 1, "Enable fog emulation.");
 	assert(res == M64ERR_SUCCESS);
@@ -144,7 +142,6 @@ void Config_LoadConfig()
 	//#Texture Settings
 	config.texture.forceBilinear = ConfigGetParamBool(g_configVideoGliden64, "ForceBilinear");
 	config.texture.maxBytes = ConfigGetParamInt(g_configVideoGliden64, "CacheSize") * uMegabyte;
-	config.texture.textureBitDepth = ConfigGetParamInt(g_configVideoGliden64, "TextureBitDepth");
 	//#Emulation Settings
 	config.generalEmulation.enableFog = ConfigGetParamBool(g_configVideoGliden64, "EnableFog");
 	config.generalEmulation.enableNoise = ConfigGetParamBool(g_configVideoGliden64, "EnableNoise");
@@ -217,7 +214,6 @@ Option configOptions[] =
 	{"#Texture Settings:", NULL, 0},
 	{"force bilinear", &config.texture.forceBilinear, 0},
 	{"cache size", &config.texture.maxBytes, 64 * uMegabyte},
-	{"texture bit depth", &config.texture.textureBitDepth, 1},
 	{"#Emulation Settings:", NULL, 0},
 	{"enable fog", &config.generalEmulation.enableFog, 1},
 	{"enable noise", &config.generalEmulation.enableNoise, 1},

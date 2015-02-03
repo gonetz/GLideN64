@@ -20,7 +20,6 @@ struct Config
 	struct
 	{
 		u32 maxAnisotropy;
-		u32 textureBitDepth;
 		u32 forceBilinear;
 		u32 maxBytes;
 	} texture;

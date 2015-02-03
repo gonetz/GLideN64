@@ -21,14 +21,6 @@ static GtkWidget *textureDepthCombo;
 static GtkWidget *textureCacheEntry;
 static const char *pluginDir = 0;
 
-static const char *textureBitDepth[] =
-{
-	"16-bit only (faster)",
-	"16-bit and 32-bit (normal)",
-	"32-bit only (best for 2xSaI)",
-	0
-};
-
 static void okButton_clicked( GtkWidget *widget, void *data )
 {
 	const char *text;
@@ -81,12 +73,6 @@ static void okButton_clicked( GtkWidget *widget, void *data )
 	config.frameBufferEmulation.enable = gtk_toggle_button_get_active( GTK_TOGGLE_BUTTON(enableHardwareFBCheck) );
 	config.generalEmulation.enableHWLighting = gtk_toggle_button_get_active( GTK_TOGGLE_BUTTON(enableHardwareLighting) );
 	const char *depth = gtk_entry_get_text( GTK_ENTRY(GTK_COMBO(textureDepthCombo)->entry) );
-	config.texture.textureBitDepth = 1;
-	for (i = 0; textureBitDepth[i] != 0; i++)
-	{
-		if (!strcmp( depth, textureBitDepth[i] ))
-			config.texture.textureBitDepth = i;
-	}
     config.texture.maxBytes = atoi( gtk_entry_get_text( GTK_ENTRY(textureCacheEntry) ) ) * 1048576;
 
 	// write configuration
@@ -115,7 +101,6 @@ static void okButton_clicked( GtkWidget *widget, void *data )
 	fprintf( f, "enable fog=%d\n",            config.generalEmulation.enableFog );
 	fprintf( f, "enable HardwareFB=%d\n",     config.frameBufferEmulation.enable );
 	fprintf( f, "enable hardware lighting=%d\n", config.generalEmulation.enableHWLighting );
-	fprintf( f, "texture depth=%d\n",         config.texture.textureBitDepth );
     fprintf( f, "cache size=%d\n",            config.texture.maxBytes / 1048576 );
 
 	fclose( f );
@@ -156,7 +141,6 @@ static void configWindow_show( GtkWidget *widget, void *data )
 
 	// textures
 	gtk_toggle_button_set_active( GTK_TOGGLE_BUTTON(enableHardwareFBCheck), (config.frameBufferEmulation.enable) );
-	gtk_entry_set_text( GTK_ENTRY(GTK_COMBO(textureDepthCombo)->entry), textureBitDepth[config.texture.textureBitDepth] );
     sprintf( text, "%d", config.texture.maxBytes / 1048576 );
 	gtk_entry_set_text( GTK_ENTRY(textureCacheEntry), text );
 }
@@ -315,20 +299,6 @@ static int Config_CreateWindow()
 	gtk_table_set_row_spacings( GTK_TABLE(texturesTable), 3 );
 	gtk_container_add( GTK_CONTAINER(texturesFrame), texturesTable );
 
-	textureDepthLabel = gtk_label_new( "Texture bit depth" );
-	textureDepthCombo = gtk_combo_new();
-	if (!textureDepthList)
-	{
-		i = 0;
-		while (textureBitDepth[i] != 0)
-		{
-			textureDepthList = g_list_append( textureDepthList, (void *)textureBitDepth[i] );
-			i++;
-		}
-	}
-	gtk_combo_set_popdown_strings( GTK_COMBO(textureDepthCombo), textureDepthList );
-	gtk_combo_set_value_in_list( GTK_COMBO(textureDepthCombo), TRUE, FALSE );
-
 	textureCacheLabel = gtk_label_new( "Texture cache size (MB)" );
 	textureCacheEntry = gtk_entry_new();
 	gtk_entry_set_text( GTK_ENTRY(textureCacheEntry), "0" );
@@ -373,7 +343,6 @@ void Config_LoadConfig()
 	config.texture.forceBilinear = 0;
     config.frameBufferEmulation.copyDepthToRDRAM = 0;
 	config.generalEmulation.enableFog = 1;
-	config.texture.textureBitDepth = 1; // normal (16 & 32 bits)
 	config.frameBufferEmulation.enable = 0;
 	config.generalEmulation.enableHWLighting = 0;
     config.texture.maxBytes = 32 * 1048576;
@@ -455,10 +424,6 @@ void Config_LoadConfig()
 		else if (!strcasecmp( line, "enable hardware lighting" ))
 		{
 			config.generalEmulation.enableHWLighting = atoi( val );
-		}
-		else if (!strcasecmp( line, "texture depth" ))
-		{
-			config.texture.textureBitDepth = atoi( val );
 		}
 		else
 		{
