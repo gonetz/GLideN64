@@ -131,7 +131,7 @@ static void gSPLightVertex4_default(u32 v)
 {
 	gSPTransformNormal4(v, gSP.matrix.modelView[gSP.matrix.modelViewi]);
 	OGLRender & render = video().getRender();
-	if (!config.enableHWLighting) {
+	if (!config.generalEmulation.enableHWLighting) {
 		for(int j = 0; j < 4; ++j) {
 			SPVertex & vtx = render.getVertex(v+j);
 			vtx.r = gSP.lights[gSP.numLights].r;
@@ -390,7 +390,7 @@ static void gSPTransformVertex_default(float vtx[4], float mtx[4][4])
 
 static void gSPLightVertex_default(SPVertex & _vtx)
 {
-	if (!config.enableHWLighting) {
+	if (!config.generalEmulation.enableHWLighting) {
 		_vtx.HWLight = 0;
 		_vtx.r = gSP.lights[gSP.numLights].r;
 		_vtx.g = gSP.lights[gSP.numLights].g;
@@ -812,7 +812,7 @@ void gSPLight( u32 l, s32 n )
 		gSP.lights[n].qa = (float)(RDRAM[(addrByte + 14) ^ 3]) / 8.0f;
 	}
 
-	if (config.enableHWLighting)
+	if (config.generalEmulation.enableHWLighting)
 		gSP.changed |= CHANGED_LIGHT;
 
 #ifdef DEBUG
@@ -858,7 +858,7 @@ void gSPLightCBFD( u32 l, s32 n )
 		gSP.lights[n].ca = (float)(RDRAM[(addrByte + 12) ^ 3]) / 16.0f;
 	}
 
-	if (config.enableHWLighting)
+	if (config.generalEmulation.enableHWLighting)
 		gSP.changed |= CHANGED_LIGHT;
 
 #ifdef DEBUG
@@ -1593,7 +1593,7 @@ void gSPNumLights( s32 n )
 {
 	if (n <= 12) {
 		gSP.numLights = n;
-		if (config.enableHWLighting)
+		if (config.generalEmulation.enableHWLighting)
 			gSP.changed |= CHANGED_LIGHT;
 	}
 #ifdef DEBUG
@@ -1616,7 +1616,7 @@ void gSPLightColor( u32 lightNum, u32 packedColor )
 		gSP.lights[lightNum].r = _SHIFTR( packedColor, 24, 8 ) * 0.0039215689f;
 		gSP.lights[lightNum].g = _SHIFTR( packedColor, 16, 8 ) * 0.0039215689f;
 		gSP.lights[lightNum].b = _SHIFTR( packedColor, 8, 8 ) * 0.0039215689f;
-		if (config.enableHWLighting)
+		if (config.generalEmulation.enableHWLighting)
 			gSP.changed |= CHANGED_LIGHT;
 	}
 #ifdef DEBUG
@@ -2122,7 +2122,7 @@ void gSPObjRectangleR(u32 sp)
 	gSPSetSpriteTile(objSprite);
 	ObjCoordinates objCoords(objSprite, true);
 
-	if (objSprite->imageFmt == G_IM_FMT_YUV && (config.hacks&hack_Ogre64)) //Ogre Battle needs to copy YUV texture to frame buffer
+	if (objSprite->imageFmt == G_IM_FMT_YUV && (config.generalEmulation.hacks&hack_Ogre64)) //Ogre Battle needs to copy YUV texture to frame buffer
 		_drawYUVImageToFrameBuffer(objCoords);
 	gSPDrawObjRect(objCoords);
 }

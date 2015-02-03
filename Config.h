@@ -25,6 +25,23 @@ struct Config
 		u32 maxBytes;
 	} texture;
 
+	struct {
+		u32 enableFog;
+		u32 enableNoise;
+		u32 enableLOD;
+		u32 enableHWLighting;
+		u32 hacks;
+	} generalEmulation;
+
+	struct {
+		u32 enable;
+		u32 copyToRDRAM;
+		u32 copyDepthToRDRAM;
+		u32 copyFromRDRAM;
+		u32 ignoreCFB;
+		u32 N64DepthCompare;
+	} frameBufferEmulation;
+
 	struct
 	{
 		u32 txFilterMode;				// Texture filtering mode, eg Sharpen
@@ -43,14 +60,12 @@ struct Config
 		u32 txDump;						// Dump textures
 	} textureFilter;
 
-	struct {
-		u32 enable;
-		u32 copyToRDRAM;
-		u32 copyDepthToRDRAM;
-		u32 copyFromRDRAM;
-		u32 ignoreCFB;
-		u32 N64DepthCompare;
-	} frameBufferEmulation;
+	struct
+	{
+		std::string name;
+		u32 size;
+		float color[4];
+	} font;
 
 	struct {
 		u32 mode;
@@ -59,20 +74,6 @@ struct Config
 		u32 blurAmount;
 		u32 blurStrength;
 	} bloomFilter;
-
-	struct
-	{
-		std::string name;
-		u32 size;
-		float color[4];
-	} font;
-
-	u32 enableFog;
-	u32 enableNoise;
-	u32 enableLOD;
-	u32 enableHWLighting;
-
-	u32 hacks;
 };
 
 #define hack_Ogre64	(1<<0)  //Ogre Battle 64

@@ -8,6 +8,7 @@
 #include "../RSP.h"
 #include "../Textures.h"
 #include "../OpenGL.h"
+#include "../GLideNUI/glidenui.h"
 
 Config config;
 HWND hConfigDlg;
@@ -80,7 +81,7 @@ void Config_LoadConfig()
 		config.frameBufferEmulation.copyDepthToRDRAM = value ? TRUE : FALSE;
 
 		RegQueryValueEx( hKey, "Enable Fog", 0, NULL, (BYTE*)&value, &size );
-		config.enableFog = value ? TRUE : FALSE;
+		config.generalEmulation.enableFog = value ? TRUE : FALSE;
 
 		RegQueryValueEx( hKey, "Texture Cache Size", 0, NULL, (BYTE*)&value, &size );
 		config.texture.maxBytes = value * uMegabyte;
@@ -89,7 +90,7 @@ void Config_LoadConfig()
 		config.frameBufferEmulation.enable = value ? TRUE : FALSE;
 
 		RegQueryValueEx( hKey, "Hardware lighting", 0, NULL, (BYTE*)&value, &size );
-		config.enableHWLighting = value ? TRUE : FALSE;
+		config.generalEmulation.enableHWLighting = value ? TRUE : FALSE;
 
 		RegQueryValueEx( hKey, "Texture Bit Depth", 0, NULL, (BYTE*)&value, &size );
 		config.texture.textureBitDepth = value;
@@ -98,7 +99,7 @@ void Config_LoadConfig()
 	}
 	else
 	{
-		config.enableFog = TRUE;
+		config.generalEmulation.enableFog = TRUE;
 		config.video.windowedWidth = 640;
 		config.video.windowedHeight = 480;
 		config.video.fullscreenWidth = 640;
@@ -110,7 +111,7 @@ void Config_LoadConfig()
 		config.frameBufferEmulation.enable = FALSE;
 		config.frameBufferEmulation.copyDepthToRDRAM = FALSE;
 		config.texture.textureBitDepth = 1;
-		config.enableHWLighting = FALSE;
+		config.generalEmulation.enableHWLighting = FALSE;
 	}
 
 	config.video.aspect = 1;
@@ -119,9 +120,9 @@ void Config_LoadConfig()
 	config.frameBufferEmulation.copyFromRDRAM = FALSE;
 	config.frameBufferEmulation.ignoreCFB = FALSE;
 	config.frameBufferEmulation.N64DepthCompare = FALSE;
-	config.enableLOD = TRUE;
-	config.enableNoise = TRUE;
-	config.hacks = 0;
+	config.generalEmulation.enableLOD = TRUE;
+	config.generalEmulation.enableNoise = TRUE;
+	config.generalEmulation.hacks = 0;
 	config.bloomFilter.mode = 0;
 }
 
@@ -145,7 +146,7 @@ void Config_SaveConfig()
 	value = config.frameBufferEmulation.copyDepthToRDRAM ? 1 : 0;
 	RegSetValueEx( hKey, "Write depth", 0, REG_DWORD, (BYTE*)&value, 4 );
 
-	value = config.enableFog ? 1 : 0;
+	value = config.generalEmulation.enableFog ? 1 : 0;
 	RegSetValueEx( hKey, "Enable Fog", 0, REG_DWORD, (BYTE*)&value, 4 );
 
 	value = config.texture.maxBytes / uMegabyte;
@@ -154,7 +155,7 @@ void Config_SaveConfig()
 	value = config.frameBufferEmulation.enable ? 1 : 0;
 	RegSetValueEx( hKey, "Hardware Frame Buffer Textures", 0, REG_DWORD, (BYTE*)&value, 4 );
 
-	value = config.enableHWLighting ? 1 : 0;
+	value = config.generalEmulation.enableHWLighting ? 1 : 0;
 	RegSetValueEx( hKey, "Hardware lighting", 0, REG_DWORD, (BYTE*)&value, 4 );
 
 	value = config.texture.textureBitDepth;
@@ -173,7 +174,7 @@ void Config_ApplyDlgConfig( HWND hWndDlg )
 
 	config.texture.forceBilinear = (SendDlgItemMessage( hWndDlg, IDC_FORCEBILINEAR, BM_GETCHECK, NULL, NULL ) == BST_CHECKED);
 	config.frameBufferEmulation.copyDepthToRDRAM = (SendDlgItemMessage( hWndDlg, IDC_ENABLEDEPTHWRITE, BM_GETCHECK, NULL, NULL ) == BST_CHECKED);
-	config.enableFog = (SendDlgItemMessage( hWndDlg, IDC_FOG, BM_GETCHECK, NULL, NULL ) == BST_CHECKED);
+	config.generalEmulation.enableFog = (SendDlgItemMessage( hWndDlg, IDC_FOG, BM_GETCHECK, NULL, NULL ) == BST_CHECKED);
 
 	config.video.fullscreenBits = fullscreen.bitDepth[SendDlgItemMessage( hWndDlg, IDC_FULLSCREENBITDEPTH, CB_GETCURSEL, 0, 0 )];
 	i = SendDlgItemMessage( hWndDlg, IDC_FULLSCREENRES, CB_GETCURSEL, 0, 0 );
@@ -189,7 +190,7 @@ void Config_ApplyDlgConfig( HWND hWndDlg )
 	config.video.windowedHeight = windowedModes[i].height;
 
 	config.frameBufferEmulation.enable = (SendDlgItemMessage( hWndDlg, IDC_FRAMEBUFFER, BM_GETCHECK, NULL, NULL ) == BST_CHECKED);
-	config.enableHWLighting = (SendDlgItemMessage( hWndDlg, IDC_HWLIGHT, BM_GETCHECK, NULL, NULL ) == BST_CHECKED);
+	config.generalEmulation.enableHWLighting = (SendDlgItemMessage( hWndDlg, IDC_HWLIGHT, BM_GETCHECK, NULL, NULL ) == BST_CHECKED);
 
 	if (!video().isFullscreen())
 		video().setWindowSize(config.video.windowedWidth, config.video.windowedHeight);
@@ -341,10 +342,10 @@ BOOL CALLBACK ConfigDlgProc( HWND hWndDlg, UINT message, WPARAM wParam, LPARAM l
 			SendDlgItemMessage( hWndDlg, IDC_TEXTUREBPP, CB_ADDSTRING, 0, (LPARAM)"32-bit only (best for 2xSaI)" );
 			SendDlgItemMessage( hWndDlg, IDC_TEXTUREBPP, CB_SETCURSEL, config.texture.textureBitDepth, 0 );
 			// Enable/disable fog
-			SendDlgItemMessage( hWndDlg, IDC_FOG, BM_SETCHECK, config.enableFog ? (LPARAM)BST_CHECKED : (LPARAM)BST_UNCHECKED, NULL );
+			SendDlgItemMessage( hWndDlg, IDC_FOG, BM_SETCHECK, config.generalEmulation.enableFog ? (LPARAM)BST_CHECKED : (LPARAM)BST_UNCHECKED, NULL );
 			SendDlgItemMessage( hWndDlg, IDC_FRAMEBUFFER, BM_SETCHECK, config.frameBufferEmulation.enable ? (LPARAM)BST_CHECKED : (LPARAM)BST_UNCHECKED, NULL );
 
-			SendDlgItemMessage( hWndDlg, IDC_HWLIGHT, BM_SETCHECK, config.enableHWLighting ? (LPARAM)BST_CHECKED : (LPARAM)BST_UNCHECKED, NULL );
+			SendDlgItemMessage( hWndDlg, IDC_HWLIGHT, BM_SETCHECK, config.generalEmulation.enableHWLighting ? (LPARAM)BST_CHECKED : (LPARAM)BST_UNCHECKED, NULL );
 
 			_ltoa( config.texture.maxBytes / uMegabyte, text, 10 );
 			SendDlgItemMessage( hWndDlg, IDC_CACHEMEGS, WM_SETTEXT, NULL, (LPARAM)text );
@@ -398,6 +399,7 @@ BOOL CALLBACK ConfigDlgProc( HWND hWndDlg, UINT message, WPARAM wParam, LPARAM l
 
 void Config_DoConfig(HWND hParent)
 {
-	if (!hConfigDlg)
-		DialogBox( hInstance, MAKEINTRESOURCE(IDD_CONFIGDLG), hParent, (DLGPROC)ConfigDlgProc );
+//	if (!hConfigDlg)
+//		DialogBox( hInstance, MAKEINTRESOURCE(IDD_CONFIGDLG), hParent, (DLGPROC)ConfigDlgProc );
+	RunConfig(hInstance);
 }

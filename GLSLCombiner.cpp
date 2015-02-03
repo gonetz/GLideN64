@@ -434,7 +434,7 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 		if (usesT1())
 				strFragmentShader.append(fragment_shader_readtex1color);
 	}
-	if (config.enableHWLighting)
+	if (config.generalEmulation.enableHWLighting)
 #ifdef SHADER_PRECISION
 		strFragmentShader.append("  lowp float intensity = calc_light(vNumLights, vShadeColor.rgb, input_color); \n");
 #else
@@ -489,7 +489,7 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 	strFragmentShader.append(noise_fragment_shader);
 	if (bUseLod)
 		strFragmentShader.append(fragment_shader_mipmap);
-	if (config.enableHWLighting)
+	if (config.generalEmulation.enableHWLighting)
 		strFragmentShader.append(fragment_shader_calc_light);
 #endif
 
@@ -505,7 +505,7 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 	glAttachShader(m_program, g_vertex_shader_object);
 	glAttachShader(m_program, fragmentShader);
 #ifndef GLES2
-	if (config.enableHWLighting)
+	if (config.generalEmulation.enableHWLighting)
 		glAttachShader(m_program, g_calc_light_shader_object);
 	if (bUseLod)
 		glAttachShader(m_program, g_calc_mipmap_shader_object);
@@ -590,7 +590,7 @@ void ShaderCombiner::_locateUniforms() {
 	LocateUniform(uCacheOffset[1]);
 	LocateUniform(uCacheFrameBuffer);
 
-	if (config.enableHWLighting) {
+	if (config.generalEmulation.enableHWLighting) {
 		// locate lights uniforms
 		char buf[32];
 		for (u32 i = 0; i < 8; ++i) {
@@ -632,7 +632,7 @@ void ShaderCombiner::updateRenderState(bool _bForce) {
 }
 
 void ShaderCombiner::updateLight(bool _bForce) {
-	if (config.enableHWLighting == 0 || !GBI.isHWLSupported())
+	if (config.generalEmulation.enableHWLighting == 0 || !GBI.isHWLSupported())
 		return;
 	for (s32 i = 0; i <= gSP.numLights; ++i) {
 		_setV3Uniform(m_uniforms.uLightDirection[i], &gSP.lights[i].x, _bForce);
@@ -649,7 +649,7 @@ void ShaderCombiner::updateColors(bool _bForce)
 
 	const u32 blender = (gDP.otherMode.l >> 16);
 	const int nFogBlendEnabled = (gDP.otherMode.c1_m1a == 3 || gDP.otherMode.c1_m2a == 3 || gDP.otherMode.c2_m1a == 3 || gDP.otherMode.c2_m2a == 3) ? 256 : 0;
-	int nFogUsage = (config.enableFog != 0 && (gSP.geometryMode & G_FOG) != 0) ? 1 : 0;
+	int nFogUsage = (config.generalEmulation.enableFog != 0 && (gSP.geometryMode & G_FOG) != 0) ? 1 : 0;
 	int nSpecialBlendMode = 0;
 	switch (blender) {
 	case 0x0150:
@@ -714,7 +714,7 @@ void ShaderCombiner::updateColors(bool _bForce)
 	_setFUniform(m_uniforms.uK5, gDP.convert.k5*0.0039215689f, _bForce);
 
 	if (usesLOD()) {
-		int uCalcLOD = (config.enableLOD && gDP.otherMode.textureLOD == G_TL_LOD) ? 1 : 0;
+		int uCalcLOD = (config.generalEmulation.enableLOD && gDP.otherMode.textureLOD == G_TL_LOD) ? 1 : 0;
 		_setIUniform(m_uniforms.uEnableLod, uCalcLOD, _bForce);
 		if (uCalcLOD) {
 			_setFUniform(m_uniforms.uLodXScale, video().getScaleX(), _bForce);

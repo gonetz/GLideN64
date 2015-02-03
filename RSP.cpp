@@ -331,7 +331,7 @@ void RSP_Init()
 
 	strncpy(RSP.romname, romname, 21);
 	if (strstr(RSP.romname, (const char *)"OgreBattle64"))
-		config.hacks |= hack_Ogre64;
+		config.generalEmulation.hacks |= hack_Ogre64;
 
 	_findPluginPath();
 

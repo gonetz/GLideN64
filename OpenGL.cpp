@@ -741,7 +741,7 @@ void OGLRender::_prepareDrawTriangle(bool _dma)
 		else
 			glVertexAttribPointer(SC_COLOR, 4, GL_FLOAT, GL_FALSE, sizeof(SPVertex), &pVtx->r);
 		glVertexAttribPointer(SC_TEXCOORD0, 2, GL_FLOAT, GL_FALSE, sizeof(SPVertex), &pVtx->s);
-		if (config.enableHWLighting) {
+		if (config.generalEmulation.enableHWLighting) {
 			glEnableVertexAttribArray(SC_NUMLIGHTS);
 			glVertexAttribPointer(SC_NUMLIGHTS, 1, GL_BYTE, GL_FALSE, sizeof(SPVertex), &pVtx->HWLight);
 		}

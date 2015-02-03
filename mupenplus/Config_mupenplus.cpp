@@ -13,6 +13,7 @@
 
 Config config;
 
+static
 const u32 uMegabyte = 1024U*1024U;
 
 static m64p_handle g_configVideoGeneral = NULL;
@@ -145,10 +146,10 @@ void Config_LoadConfig()
 	config.texture.maxBytes = ConfigGetParamInt(g_configVideoGliden64, "CacheSize") * uMegabyte;
 	config.texture.textureBitDepth = ConfigGetParamInt(g_configVideoGliden64, "TextureBitDepth");
 	//#Emulation Settings
-	config.enableFog = ConfigGetParamBool(g_configVideoGliden64, "EnableFog");
-	config.enableNoise = ConfigGetParamBool(g_configVideoGliden64, "EnableNoise");
-	config.enableLOD = ConfigGetParamBool(g_configVideoGliden64, "EnableLOD");
-	config.enableHWLighting = ConfigGetParamBool(g_configVideoGliden64, "EnableHWLighting");
+	config.generalEmulation.enableFog = ConfigGetParamBool(g_configVideoGliden64, "EnableFog");
+	config.generalEmulation.enableNoise = ConfigGetParamBool(g_configVideoGliden64, "EnableNoise");
+	config.generalEmulation.enableLOD = ConfigGetParamBool(g_configVideoGliden64, "EnableLOD");
+	config.generalEmulation.enableHWLighting = ConfigGetParamBool(g_configVideoGliden64, "EnableHWLighting");
 	//#Frame Buffer Settings:"
 	config.frameBufferEmulation.enable = ConfigGetParamBool(g_configVideoGliden64, "EnableFBEmulation");
 	config.frameBufferEmulation.copyToRDRAM = ConfigGetParamBool(g_configVideoGliden64, "EnableCopyColorToRDRAM");
@@ -156,7 +157,7 @@ void Config_LoadConfig()
 	config.frameBufferEmulation.copyFromRDRAM = ConfigGetParamBool(g_configVideoGliden64, "EnableCopyColorFromRDRAM");
 	config.frameBufferEmulation.ignoreCFB = ConfigGetParamBool(g_configVideoGliden64, "EnableIgnoreCFB");
 	config.frameBufferEmulation.N64DepthCompare = ConfigGetParamBool(g_configVideoGliden64, "EnableN64DepthCompare");
-	config.hacks = 0;
+	config.generalEmulation.hacks = 0;
 	//#Texture filter settings
 	config.textureFilter.txFilterMode = ConfigGetParamInt(g_configVideoGliden64, "txFilterMode");
 	config.textureFilter.txEnhancementMode = ConfigGetParamInt(g_configVideoGliden64, "txEnhancementMode");
@@ -214,10 +215,10 @@ Option configOptions[] =
 	{"cache size", &config.texture.maxBytes, 64 * uMegabyte},
 	{"texture bit depth", &config.texture.textureBitDepth, 1},
 	{"#Emulation Settings:", NULL, 0},
-	{"enable fog", &config.enableFog, 1},
-	{"enable noise", &config.enableNoise, 1},
-	{"enable LOD", &config.enableLOD, 1},
-	{"enable HW lighting", &config.enableHWLighting, 0},
+	{"enable fog", &config.generalEmulation.enableFog, 1},
+	{"enable noise", &config.generalEmulation.enableNoise, 1},
+	{"enable LOD", &config.generalEmulation.enableLOD, 1},
+	{"enable HW lighting", &config.generalEmulation.enableHWLighting, 0},
 	{"#Frame Buffer Settings:", NULL, 0},
 	{"enable hardware FB", &config.frameBufferEmulation.enable, 0},
 	{"enable copy Color Buffer to RDRAM", &config.frameBufferEmulation.copyToRDRAM, 0},

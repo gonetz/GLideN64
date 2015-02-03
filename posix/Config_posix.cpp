@@ -77,9 +77,9 @@ static void okButton_clicked( GtkWidget *widget, void *data )
 
 	config.texture.forceBilinear = gtk_toggle_button_get_active( GTK_TOGGLE_BUTTON(forceBilinearCheck) );
     config.frameBufferEmulation.copyDepthToRDRAM = gtk_toggle_button_get_active( GTK_TOGGLE_BUTTON(depthWriteCheck) );
-	config.enableFog = gtk_toggle_button_get_active( GTK_TOGGLE_BUTTON(enableFogCheck) );
+	config.generalEmulation.enableFog = gtk_toggle_button_get_active( GTK_TOGGLE_BUTTON(enableFogCheck) );
 	config.frameBufferEmulation.enable = gtk_toggle_button_get_active( GTK_TOGGLE_BUTTON(enableHardwareFBCheck) );
-	config.enableHWLighting = gtk_toggle_button_get_active( GTK_TOGGLE_BUTTON(enableHardwareLighting) );
+	config.generalEmulation.enableHWLighting = gtk_toggle_button_get_active( GTK_TOGGLE_BUTTON(enableHardwareLighting) );
 	const char *depth = gtk_entry_get_text( GTK_ENTRY(GTK_COMBO(textureDepthCombo)->entry) );
 	config.texture.textureBitDepth = 1;
 	for (i = 0; textureBitDepth[i] != 0; i++)
@@ -112,9 +112,9 @@ static void okButton_clicked( GtkWidget *widget, void *data )
 	fprintf( f, "height=%d\n",                OGL.height );*/
 	fprintf( f, "force bilinear=%d\n",        config.texture.forceBilinear );
     fprintf( f, "enable depth buffer write=%d\n", config.frameBufferEmulation.copyDepthToRDRAM );
-	fprintf( f, "enable fog=%d\n",            config.enableFog );
+	fprintf( f, "enable fog=%d\n",            config.generalEmulation.enableFog );
 	fprintf( f, "enable HardwareFB=%d\n",     config.frameBufferEmulation.enable );
-	fprintf( f, "enable hardware lighting=%d\n", config.enableHWLighting );
+	fprintf( f, "enable hardware lighting=%d\n", config.generalEmulation.enableHWLighting );
 	fprintf( f, "texture depth=%d\n",         config.texture.textureBitDepth );
     fprintf( f, "cache size=%d\n",            config.texture.maxBytes / 1048576 );
 
@@ -151,8 +151,8 @@ static void configWindow_show( GtkWidget *widget, void *data )
 
     gtk_toggle_button_set_active( GTK_TOGGLE_BUTTON(depthWriteCheck),          (config.frameBufferEmulation.copyDepthToRDRAM) );
 	gtk_toggle_button_set_active( GTK_TOGGLE_BUTTON(forceBilinearCheck),        (config.texture.forceBilinear) );
-	gtk_toggle_button_set_active( GTK_TOGGLE_BUTTON(enableFogCheck),            (config.enableFog) );
-	gtk_toggle_button_set_active( GTK_TOGGLE_BUTTON(enableHardwareLighting), (config.enableHWLighting) );
+	gtk_toggle_button_set_active( GTK_TOGGLE_BUTTON(enableFogCheck),            (config.generalEmulation.enableFog) );
+	gtk_toggle_button_set_active( GTK_TOGGLE_BUTTON(enableHardwareLighting), (config.generalEmulation.enableHWLighting) );
 
 	// textures
 	gtk_toggle_button_set_active( GTK_TOGGLE_BUTTON(enableHardwareFBCheck), (config.frameBufferEmulation.enable) );
@@ -372,10 +372,10 @@ void Config_LoadConfig()
 //	OGL.windowedBits = 0;
 	config.texture.forceBilinear = 0;
     config.frameBufferEmulation.copyDepthToRDRAM = 0;
-	config.enableFog = 1;
+	config.generalEmulation.enableFog = 1;
 	config.texture.textureBitDepth = 1; // normal (16 & 32 bits)
 	config.frameBufferEmulation.enable = 0;
-	config.enableHWLighting = 0;
+	config.generalEmulation.enableHWLighting = 0;
     config.texture.maxBytes = 32 * 1048576;
 
 	// read configuration
@@ -442,7 +442,7 @@ void Config_LoadConfig()
 		}
 		else if (!strcasecmp( line, "enable fog" ))
 		{
-			config.enableFog = atoi( val );
+			config.generalEmulation.enableFog = atoi( val );
 		}
 		else if (!strcasecmp( line, "cache size" ))
 		{
@@ -454,7 +454,7 @@ void Config_LoadConfig()
 		}
 		else if (!strcasecmp( line, "enable hardware lighting" ))
 		{
-			config.enableHWLighting = atoi( val );
+			config.generalEmulation.enableHWLighting = atoi( val );
 		}
 		else if (!strcasecmp( line, "texture depth" ))
 		{
@@ -474,8 +474,8 @@ void Config_LoadConfig()
 	config.frameBufferEmulation.copyFromRDRAM = FALSE;
 	config.frameBufferEmulation.ignoreCFB = TRUE;
 	config.frameBufferEmulation.N64DepthCompare = FALSE;
-	config.enableLOD = TRUE;
-	config.hacks = 0;
+	config.generalEmulation.enableLOD = TRUE;
+	config.generalEmulation.hacks = 0;
 	config.bloomFilter.mode = 0;
 }
 
