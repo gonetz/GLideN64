@@ -22,7 +22,6 @@ struct Config
 		u32 maxAnisotropy;
 		u32 textureBitDepth;
 		u32 forceBilinear;
-		u32 pow2;
 		u32 maxBytes;
 	} texture;
 
@@ -30,7 +29,6 @@ struct Config
 	{
 		u32 txFilterMode;				// Texture filtering mode, eg Sharpen
 		u32 txEnhancementMode;			// Texture enhancement mode, eg 2xSAI
-		//u32 txTileTextures;			// Split enchanced textures onto tiles with 256 width. Not used.
 		u32 txFilterForce16bpp;			// Force use 16bit color textures
 		u32 txFilterIgnoreBG;			// Do not apply filtering to backgrounds textures
 		u32 txCacheSize;				// Cache size in Mbytes
@@ -38,7 +36,6 @@ struct Config
 		u32 txSaveCache;				// Save texture cache to hard disk
 
 		u32 txHiresEnable;				// Use high-resolution texture packs
-		//u32 txTileHiresTextures;		// Split hires textures onto tiles with 256 width. Not used.
 		u32 txHiresForce16bpp;			// Force use 16bit color textures
 		u32 txHiresFullAlphaChannel;	// Use alpha channel fully
 		u32 txHresAltCRC;				// Use alternative method of paletted textures CRC calculation
