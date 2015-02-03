@@ -29,7 +29,7 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>0</number>
+      <number>2</number>
      </property>
      <widget class="QWidget" name="videoTab">
       <attribute name="title">
@@ -440,7 +440,7 @@
             </widget>
            </item>
            <item>
-            <widget class="QPushButton" name="pushButton_4">
+            <widget class="QPushButton" name="selectLangButton">
              <property name="toolTip">
               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Language select:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Press the button to invoke language selection dialog. Selected language will be activated after restart of the configuration dialog.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
              </property>
@@ -867,7 +867,7 @@
                </widget>
               </item>
               <item row="0" column="1">
-               <widget class="QLabel" name="label_10">
+               <widget class="QLabel" name="fontNameLabel">
                 <property name="toolTip">
                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select font and font size for text messages, displayed during texture cache or texture pack save/load.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                 </property>
@@ -877,7 +877,7 @@
                </widget>
               </item>
               <item row="1" column="1">
-               <widget class="QLabel" name="label_11">
+               <widget class="QLabel" name="fontColorLabel">
                 <property name="toolTip">
                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select color of text messages.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                 </property>
@@ -887,7 +887,7 @@
                </widget>
               </item>
               <item row="1" column="2">
-               <widget class="QPushButton" name="pushButton_2">
+               <widget class="QPushButton" name="PickFontColorButton">
                 <property name="toolTip">
                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select color of text messages.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                 </property>
@@ -897,7 +897,7 @@
                </widget>
               </item>
               <item row="0" column="2">
-               <widget class="QPushButton" name="pushButton">
+               <widget class="QPushButton" name="selectFontButton">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -939,7 +939,7 @@
                </widget>
               </item>
               <item row="2" column="2">
-               <widget class="QPushButton" name="pushButton_3">
+               <widget class="QPushButton" name="texPackPathButton">
                 <property name="toolTip">
                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select path to HD textures packs&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                 </property>
@@ -993,8 +993,8 @@
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>315</x>
-     <y>501</y>
+     <x>324</x>
+     <y>524</y>
     </hint>
     <hint type="destinationlabel">
      <x>316</x>
@@ -1009,8 +1009,8 @@
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>295</x>
-     <y>501</y>
+     <x>304</x>
+     <y>524</y>
     </hint>
     <hint type="destinationlabel">
      <x>276</x>

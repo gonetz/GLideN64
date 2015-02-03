@@ -1,3 +1,4 @@
+#include <QFontDialog>
 #include "ConfigDialog.h"
 #include "ui_configDialog.h"
 #include "FullscreenResolutions.h"
@@ -138,6 +139,21 @@ ConfigDialog::ConfigDialog(QWidget *parent) :
 	ui->alternativeCRCCheckBox->setChecked(config.textureFilter.txHresAltCRC != 0);
 	ui->textureDumpCheckBox->setChecked(config.textureFilter.txDump != 0);
 	ui->saveTextureCacheCheckBox->setChecked(config.textureFilter.txSaveCache != 0);
+
+	QString fontName(config.font.name.c_str());
+	m_font = QFont(fontName.left(fontName.indexOf(".ttf")), config.font.size);
+	QString strSize;
+	strSize.setNum(m_font.pointSize());
+	ui->fontNameLabel->setText(m_font.family() + " - " + strSize);
+
+	m_color = QColor(config.font.color[0], config.font.color[1], config.font.color[2]);
+	ui->fontColorLabel->setFont(m_font);
+	ui->fontColorLabel->setText(m_color.name());
+	QPalette palette;
+	palette.setColor(QPalette::Window, Qt::black);
+	palette.setColor(QPalette::WindowText, m_color);
+	ui->fontColorLabel->setAutoFillBackground(true);
+	ui->fontColorLabel->setPalette(palette);
 }
 
 ConfigDialog::~ConfigDialog()
@@ -198,5 +214,28 @@ void ConfigDialog::accept()
 	config.textureFilter.txDump = ui->textureDumpCheckBox->isChecked() ? 1 : 0;
 	config.textureFilter.txSaveCache = ui->saveTextureCacheCheckBox->isChecked() ? 1 : 0;
 
+	config.font.size = m_font.pointSize();
+	QString fontName = m_font.family() + ".ttf";
+#ifdef OS_WINDOWS
+	config.font.name = fontName.toLocal8Bit().constData();
+#else
+	config.font.name = fontName.toStdString();
+#endif
+
 	QDialog::accept();
+}
+
+void ConfigDialog::on_selectFontButton_clicked()
+{
+	bool ok;
+	m_font = QFontDialog::getFont(
+		&ok, m_font, this);
+	if (!ok)
+		return;
+
+	// the user clicked OK and font is set to the font the user selected
+	QString strSize;
+	strSize.setNum(m_font.pointSize());
+	ui->fontNameLabel->setText(m_font.family() + " - " + strSize);
+	ui->fontColorLabel->setFont(m_font);
 }

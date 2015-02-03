@@ -20,8 +20,13 @@ public:
 public Q_SLOTS:
 	virtual void accept();
 
+private slots:
+	void on_selectFontButton_clicked();
+
 private:
 	Ui::ConfigDialog *ui;
+	QFont m_font;
+	QColor m_color;
 };
 
 #endif // CONFIGDIALOG_H
