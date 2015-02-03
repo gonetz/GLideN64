@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>372</width>
-    <height>511</height>
+    <height>534</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -20,7 +20,7 @@
    </sizepolicy>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>GLideN64 settings</string>
   </property>
   <property name="modal">
    <bool>true</bool>
@@ -98,6 +98,13 @@
             </widget>
            </item>
           </layout>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="verticalSyncCheckBox">
+           <property name="text">
+            <string>Vertical sync</string>
+           </property>
+          </widget>
          </item>
          <item>
           <spacer name="verticalSpacer">
@@ -210,7 +217,7 @@
              <item>
               <layout class="QHBoxLayout" name="horizontalLayout_5">
                <item>
-                <widget class="QSlider" name="horizontalSlider_2">
+                <widget class="QSlider" name="anisotropicSlider">
                  <property name="maximum">
                   <number>16</number>
                  </property>
@@ -259,43 +266,14 @@
           </layout>
          </item>
          <item>
-          <spacer name="verticalSpacer_4">
-           <property name="orientation">
-            <enum>Qt::Vertical</enum>
+          <widget class="QCheckBox" name="forceBilinearCheckBox">
+           <property name="toolTip">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Bilinear filtering:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Off - filter exactly how the N64 specifies.&lt;br/&gt;On - apply bilinear filtering to all textures to make them appear more smooth.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;off&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
-           <property name="sizeType">
-            <enum>QSizePolicy::Fixed</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>20</width>
-             <height>4</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-         <item>
-          <widget class="Line" name="line">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
+           <property name="text">
+            <string>Force texture bilinear filtering</string>
            </property>
           </widget>
-         </item>
-         <item>
-          <spacer name="verticalSpacer_3">
-           <property name="orientation">
-            <enum>Qt::Vertical</enum>
-           </property>
-           <property name="sizeType">
-            <enum>QSizePolicy::Fixed</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>20</width>
-             <height>4</height>
-            </size>
-           </property>
-          </spacer>
          </item>
          <item>
           <layout class="QHBoxLayout" name="horizontalLayout">
@@ -341,6 +319,45 @@
           </layout>
          </item>
          <item>
+          <spacer name="verticalSpacer_4">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeType">
+            <enum>QSizePolicy::Fixed</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>4</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="Line" name="line">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="verticalSpacer_3">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeType">
+            <enum>QSizePolicy::Fixed</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>4</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
           <layout class="QHBoxLayout" name="horizontalLayout_13">
            <item>
             <widget class="QLabel" name="label_16">
@@ -353,7 +370,7 @@
             </widget>
            </item>
            <item>
-            <widget class="QComboBox" name="comboBox">
+            <widget class="QComboBox" name="screenshotFormatComboBox">
              <property name="toolTip">
               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select a format, in which screen shots will be saved&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
              </property>
@@ -486,16 +503,6 @@
            </widget>
           </item>
           <item>
-           <widget class="QCheckBox" name="forceBilinearCheckBox">
-            <property name="toolTip">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Bilinear filtering:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Off - filter exactly how the N64 specifies.&lt;br/&gt;On - apply bilinear filtering to all textures to make them appear more smooth.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;off&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-            </property>
-            <property name="text">
-             <string>Force bilinear filtering</string>
-            </property>
-           </widget>
-          </item>
-          <item>
            <widget class="QCheckBox" name="enableHWLightingCheckBox">
             <property name="text">
              <string>Enable hardware lighting</string>
@@ -555,7 +562,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QCheckBox" name="n64DepthComparecheckBox">
+           <widget class="QCheckBox" name="n64DepthCompareCheckBox">
             <property name="toolTip">
              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Use shadres to emulate N64 depth compare modes. &lt;span style=&quot; font-weight:600;&quot;&gt;Experimantal!&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
@@ -697,7 +704,7 @@
              </widget>
             </item>
             <item>
-             <widget class="QSpinBox" name="spinBox">
+             <widget class="QSpinBox" name="textureFilterCacheSpinBox">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                 <horstretch>0</horstretch>
@@ -729,6 +736,16 @@
           </item>
           <item>
            <layout class="QVBoxLayout" name="verticalLayout_12">
+            <item>
+             <widget class="QCheckBox" name="filterForce16bppCheckBox">
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Force 16bpp textures:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;The color of the textures will be reduced to 16bpp.This is space saver and performance enhancer. This halves the space used on the texture cache and the GFX hardware's texture RAM. Color reduction is done so that the original quality is preserved as much as possible. Depending on the texture, this usually is hardly noticeable. Sometimes though, it can be: skies are a good example.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;off&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="text">
+               <string>Force 16bpp textures</string>
+              </property>
+             </widget>
+            </item>
             <item>
              <widget class="QCheckBox" name="ignoreBackgroundsCheckBox">
               <property name="toolTip">
@@ -764,7 +781,7 @@
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_14">
           <item>
-           <widget class="QCheckBox" name="force16bppCheckBox">
+           <widget class="QCheckBox" name="hiresForce16bppCheckBox">
             <property name="toolTip">
              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Force 16bpp textures:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;The color of the textures will be reduced to 16bpp.This is space saver and performance enhancer. This halves the space used on the texture cache and the GFX hardware's texture RAM. Color reduction is done so that the original quality is preserved as much as possible. Depending on the texture, this usually is hardly noticeable. Sometimes though, it can be: skies are a good example.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;off&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
@@ -794,7 +811,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QCheckBox" name="alterbativeCRCCheckBox">
+           <widget class="QCheckBox" name="alternativeCRCCheckBox">
             <property name="toolTip">
              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Alternative CRC calculation:&lt;/p&gt;&lt;p&gt;This option enables emulation of a palette CRC calculation bug in RiceVideo.If some textures are not loaded, try to set this option on/off.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;mostly off, on for really old packs&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
@@ -804,7 +821,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QCheckBox" name="checkBox_8">
+           <widget class="QCheckBox" name="textureDumpCheckBox">
             <property name="toolTip">
              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Texture dumping mode:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;In this mode, you have that ability to dump textures on screen to the appropriate folder. You can also reload textures while the game is running to see how they look instantly - big time saver!&lt;/p&gt;&lt;p&gt;Hotkeys: &lt;span style=&quot; font-weight:600;&quot;&gt;R&lt;/span&gt; reloads hires textures from the texture pack - &lt;span style=&quot; font-weight:600;&quot;&gt;D&lt;/span&gt; toggles texture dumps on/off.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
@@ -976,8 +993,8 @@
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>306</x>
-     <y>425</y>
+     <x>315</x>
+     <y>501</y>
     </hint>
     <hint type="destinationlabel">
      <x>316</x>
@@ -992,8 +1009,8 @@
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>286</x>
-     <y>435</y>
+     <x>295</x>
+     <y>501</y>
     </hint>
     <hint type="destinationlabel">
      <x>276</x>
@@ -1008,28 +1025,28 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>194</x>
-     <y>133</y>
+     <x>209</x>
+     <y>214</y>
     </hint>
     <hint type="destinationlabel">
-     <x>304</x>
-     <y>151</y>
+     <x>338</x>
+     <y>213</y>
     </hint>
    </hints>
   </connection>
   <connection>
-   <sender>horizontalSlider_2</sender>
+   <sender>anisotropicSlider</sender>
    <signal>valueChanged(int)</signal>
    <receiver>anisotropicLabelVal</receiver>
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>144</x>
-     <y>198</y>
+     <x>159</x>
+     <y>270</y>
     </hint>
     <hint type="destinationlabel">
-     <x>231</x>
-     <y>203</y>
+     <x>338</x>
+     <y>269</y>
     </hint>
    </hints>
   </connection>

@@ -22,6 +22,7 @@ struct Config
 		u32 maxAnisotropy;
 		u32 forceBilinear;
 		u32 maxBytes;
+		u32 screenShotFormat;
 	} texture;
 
 	struct {

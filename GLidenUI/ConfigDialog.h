@@ -3,6 +3,8 @@
 
 #include <QDialog>
 
+extern const unsigned int g_uMegabyte;
+
 namespace Ui {
 class ConfigDialog;
 }
@@ -14,6 +16,9 @@ class ConfigDialog : public QDialog
 public:
 	explicit ConfigDialog(QWidget *parent = 0);
 	~ConfigDialog();
+
+public Q_SLOTS:
+	virtual void accept();
 
 private:
 	Ui::ConfigDialog *ui;
