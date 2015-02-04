@@ -23,6 +23,8 @@ public Q_SLOTS:
 private slots:
 	void on_selectFontButton_clicked();
 
+	void on_PickFontColorButton_clicked();
+
 private:
 	Ui::ConfigDialog *ui;
 	QFont m_font;

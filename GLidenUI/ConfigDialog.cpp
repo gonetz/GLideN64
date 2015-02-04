@@ -1,4 +1,5 @@
 #include <QFontDialog>
+#include <QColorDialog>
 #include "ConfigDialog.h"
 #include "ui_configDialog.h"
 #include "FullscreenResolutions.h"
@@ -221,6 +222,14 @@ void ConfigDialog::accept()
 #else
 	config.font.name = fontName.toStdString();
 #endif
+	config.font.color[0] = m_color.red();
+	config.font.color[1] = m_color.green();
+	config.font.color[2] = m_color.blue();
+	config.font.color[3] = m_color.alpha();
+	config.font.colorf[0] = m_color.redF();
+	config.font.colorf[1] = m_color.greenF();
+	config.font.colorf[2] = m_color.blueF();
+	config.font.colorf[3] = m_color.alphaF();
 
 	QDialog::accept();
 }
@@ -238,4 +247,19 @@ void ConfigDialog::on_selectFontButton_clicked()
 	strSize.setNum(m_font.pointSize());
 	ui->fontNameLabel->setText(m_font.family() + " - " + strSize);
 	ui->fontColorLabel->setFont(m_font);
+}
+
+void ConfigDialog::on_PickFontColorButton_clicked()
+{
+	const QColor color = QColorDialog::getColor(m_color, this);
+
+	if (!color.isValid())
+		return;
+
+	m_color = color;
+	QPalette palette;
+	palette.setColor(QPalette::Window, Qt::black);
+	palette.setColor(QPalette::WindowText, m_color);
+	ui->fontColorLabel->setText(m_color.name());
+	ui->fontColorLabel->setPalette(palette);
 }
