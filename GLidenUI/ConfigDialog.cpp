@@ -84,7 +84,14 @@ void ConfigDialog::_init()
 	ui->forceBilinearCheckBox->setChecked(config.texture.forceBilinear != 0);
 	ui->cacheSizeSpinBox->setValue(config.texture.maxBytes / gc_uMegabyte);
 
-	ui->screenshotFormatComboBox->setCurrentIndex(config.texture.screenShotFormat);
+	switch (config.texture.screenShotFormat) {
+	case 0:
+		ui->pngRadioButton->setChecked(true);
+		break;
+	case 1:
+		ui->jpegRadioButton->setChecked(true);
+		break;
+	}
 
 	// Emulation settings
 	ui->emulateLodCheckBox->setChecked(config.generalEmulation.enableLOD != 0);
@@ -180,7 +187,10 @@ void ConfigDialog::accept()
 	config.texture.forceBilinear = ui->forceBilinearCheckBox->isChecked();
 	config.texture.maxBytes = ui->cacheSizeSpinBox->value() * gc_uMegabyte;
 
-	config.texture.screenShotFormat = ui->screenshotFormatComboBox->currentIndex();
+	if (ui->pngRadioButton->isChecked())
+		config.texture.screenShotFormat = 0;
+	else if (ui->jpegRadioButton->isChecked())
+		config.texture.screenShotFormat = 1;
 
 	// Emulation settings
 	config.generalEmulation.enableLOD = ui->emulateLodCheckBox->isChecked() ? 1 : 0;

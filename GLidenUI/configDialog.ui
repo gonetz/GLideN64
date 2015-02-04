@@ -365,14 +365,21 @@
               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select a format, in which screen shots will be saved&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
              </property>
              <property name="text">
-              <string>Screenshots format</string>
+              <string>Screenshots format:</string>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="QComboBox" name="screenshotFormatComboBox">
-             <property name="toolTip">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select a format, in which screen shots will be saved&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            <widget class="QRadioButton" name="pngRadioButton">
+             <property name="text">
+              <string>png</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QRadioButton" name="jpegRadioButton">
+             <property name="text">
+              <string>jpeg</string>
              </property>
             </widget>
            </item>
