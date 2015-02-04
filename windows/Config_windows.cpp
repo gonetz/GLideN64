@@ -1,7 +1,4 @@
 #include "GLideN64_Windows.h"
-#include <stdio.h>
-#include <commctrl.h>
-
 #include "../Config.h"
 #include "../GLideN64.h"
 #include "../Resource.h"
@@ -11,6 +8,11 @@
 #include "../GLideNUI/glidenui.h"
 
 Config config;
+
+#ifdef LEGACY_UI
+#include <stdio.h>
+#include <commctrl.h>
+
 HWND hConfigDlg;
 
 const u32 uMegabyte = 1024U*1024U;
@@ -393,3 +395,14 @@ void Config_DoConfig(HWND hParent)
 //		DialogBox( hInstance, MAKEINTRESOURCE(IDD_CONFIGDLG), hParent, (DLGPROC)ConfigDlgProc );
 	RunConfig(hInstance);
 }
+#else // LEGACY_UI
+void Config_DoConfig(HWND hParent)
+{
+	RunConfig();
+}
+
+void Config_LoadConfig()
+{
+	LoadConfig();
+}
+#endif // LEGACY_UI

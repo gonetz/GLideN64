@@ -1,23 +1,20 @@
 #ifndef GLIDENUII_H
 #define GLIDENUII_H
 
-#include <windows.h>
-
 #if defined(__cplusplus)
 extern "C" {
 #endif
 
+#ifdef OS_WINDOWS
 #define EXPORT	__declspec(dllexport)
-#define CALL	__cdecl
+#define CALL		__cdecl
+#else
+#define EXPORT 	__attribute__((visibility("default")))
+#define CALL          _cdecl
+#endif
 
-	/******************************************************************
-	Function: DllConfig
-	Purpose:  This function is optional function that is provided
-	to allow the user to configure the dll
-	input:    a handle to the window that calls this function
-	output:   none
-	*******************************************************************/
-	EXPORT int CALL RunConfig(HINSTANCE hInstance /*HWND hParent*/);
+	EXPORT int CALL RunConfig();
+	EXPORT void CALL LoadConfig();
 
 #if defined(__cplusplus)
 }

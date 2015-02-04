@@ -1,3 +1,5 @@
+#include <thread>
+
 #include "GLideNUI.h"
 #include "ConfigDialog.h"
 #include <QApplication>
@@ -18,7 +20,6 @@ void _writeSettings()
 	settings.setValue("version", config.version);
 
 	settings.beginGroup("video");
-	settings.setValue("fullscreen", config.video.fullscreen);
 	settings.setValue("fullscreenWidth", config.video.fullscreenWidth);
 	settings.setValue("fullscreenHeight", config.video.fullscreenHeight);
 	settings.setValue("windowedWidth", config.video.windowedWidth);
@@ -91,7 +92,7 @@ void _loadSettings()
 	config.version = settings.value("version").toInt();
 
 	settings.beginGroup("video");
-	config.video.fullscreen = settings.value("fullscreen", 0).toInt();
+	config.video.fullscreen = 0;
 	config.video.fullscreenWidth = settings.value("fullscreenWidth", 640).toInt();
 	config.video.fullscreenHeight = settings.value("fullscreenHeight", 480).toInt();
 	config.video.windowedWidth = settings.value("windowedWidth", 640).toInt();
@@ -158,7 +159,7 @@ void _loadSettings()
 	config.font.colorf[0] = _FIXED2FLOAT(config.font.color[0], 8);
 	config.font.colorf[1] = _FIXED2FLOAT(config.font.color[1], 8);
 	config.font.colorf[2] = _FIXED2FLOAT(config.font.color[2], 8);
-	config.font.colorf[3] = _FIXED2FLOAT(config.font.color[3], 8);
+	config.font.colorf[3] = config.font.color[3] == 0 ? 1.0f : _FIXED2FLOAT(config.font.color[3], 8);
 	settings.endGroup();
 
 	settings.beginGroup("bloomFilter");
@@ -170,58 +171,35 @@ void _loadSettings()
 	settings.endGroup();
 }
 
-//#define USE_WIN_THREADS
-
-#ifdef USE_WIN_THREADS
-
-int main(int argc, char *argv[])
-{
-	argc = 0;
-	argv = 0;
-	QApplication a(argc, argv);
-	ConfigDialog w;
-	w.show();
-
-	return a.exec();
-}
-
-
-int runThread(HINSTANCE hInstance) {
-	HANDLE hThread = CreateThread(NULL, 0, (LPTHREAD_START_ROUTINE)main, (LPVOID)hInstance, 0, NULL);
-	DWORD res = WaitForSingleObject(hThread, INFINITE);
-	return res;
-}
-
-#else
-#include <thread>
-int main()
+static
+int openConfigDialog()
 {
 	_loadSettings();
+
 	int argc = 0;
 	char * argv = 0;
-	int res;
 	QApplication a(argc, &argv);
-	{
-		ConfigDialog w;
-		w.show();
 
-		res = a.exec();
-	}
+	ConfigDialog w;
+	w.show();
+	int res = a.exec();
+
 	_writeSettings();
 	return res;
 }
 
-int runThread(HINSTANCE /*hInstance*/) {
-	std::thread first(main);
-	first.join();
+int runThread() {
+	std::thread configThread(openConfigDialog);
+	configThread.join();
 	return 0;
 }
 
-#endif
-
-EXPORT int CALL RunConfig(HINSTANCE hInstance /*HWND hParent*/)
+EXPORT int CALL RunConfig()
 {
-	return runThread(hInstance);
+	return runThread();
 }
 
-
+EXPORT void CALL LoadConfig()
+{
+	_loadSettings();
+}
