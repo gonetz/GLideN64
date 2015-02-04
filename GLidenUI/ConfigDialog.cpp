@@ -1,12 +1,11 @@
 #include <QFontDialog>
 #include <QColorDialog>
 #include <QAbstractButton>
-#include <QSettings>
-#include "ConfigDialog.h"
-#include "ui_configDialog.h"
-#include "FullscreenResolutions.h"
-
 #include "../Config.h"
+#include "ui_configDialog.h"
+#include "Settings.h"
+#include "ConfigDialog.h"
+#include "FullscreenResolutions.h"
 
 static
 const unsigned int numWindowedModes = 12U;
@@ -57,78 +56,6 @@ static const char * cmbTexEnhancement_choices[numEnhancements] = {
 	"4xBRZ",
 	"5xBRZ"
 };
-
-static
-void _writeSettings()
-{
-	QSettings settings("Emulation", "GLideN64");
-	settings.setValue("version", config.version);
-
-	settings.beginGroup("video");
-	settings.setValue("fullscreenWidth", config.video.fullscreenWidth);
-	settings.setValue("fullscreenHeight", config.video.fullscreenHeight);
-	settings.setValue("windowedWidth", config.video.windowedWidth);
-	settings.setValue("windowedHeight", config.video.windowedHeight);
-	settings.setValue("fullscreenBits", config.video.fullscreenBits);
-	settings.setValue("fullscreenRefresh", config.video.fullscreenRefresh);
-	settings.setValue("multisampling", config.video.multisampling);
-	settings.setValue("verticalSync", config.video.verticalSync);
-	settings.endGroup();
-
-	settings.beginGroup("texture");
-	settings.setValue("maxAnisotropy", config.texture.maxAnisotropy);
-	settings.setValue("forceBilinear", config.texture.forceBilinear);
-	settings.setValue("maxBytes", config.texture.maxBytes);
-	settings.endGroup();
-
-	settings.beginGroup("generalEmulation");
-	settings.setValue("enableFog", config.generalEmulation.enableFog);
-	settings.setValue("enableNoise", config.generalEmulation.enableNoise);
-	settings.setValue("enableLOD", config.generalEmulation.enableLOD);
-	settings.setValue("enableHWLighting", config.generalEmulation.enableHWLighting);
-	settings.setValue("hacks", config.generalEmulation.hacks);
-	settings.endGroup();
-
-	settings.beginGroup("frameBufferEmulation");
-	settings.setValue("enable", config.frameBufferEmulation.enable);
-	settings.setValue("copyToRDRAM", config.frameBufferEmulation.copyToRDRAM);
-	settings.setValue("copyDepthToRDRAM", config.frameBufferEmulation.copyDepthToRDRAM);
-	settings.setValue("copyFromRDRAM", config.frameBufferEmulation.copyFromRDRAM);
-	settings.setValue("ignoreCFB", config.frameBufferEmulation.ignoreCFB);
-	settings.setValue("N64DepthCompare", config.frameBufferEmulation.N64DepthCompare);
-	settings.setValue("aspect", config.frameBufferEmulation.aspect);
-	settings.endGroup();
-
-	settings.beginGroup("textureFilter");
-	settings.setValue("txFilterMode", config.textureFilter.txFilterMode);
-	settings.setValue("txEnhancementMode", config.textureFilter.txEnhancementMode);
-	settings.setValue("txFilterForce16bpp", config.textureFilter.txFilterForce16bpp);
-	settings.setValue("txFilterIgnoreBG", config.textureFilter.txFilterIgnoreBG);
-	settings.setValue("txFilterCacheCompression", config.textureFilter.txFilterCacheCompression);
-	settings.setValue("txSaveCache", config.textureFilter.txSaveCache);
-	settings.setValue("txCacheSize", config.textureFilter.txCacheSize);
-	settings.setValue("txHiresEnable", config.textureFilter.txHiresEnable);
-	settings.setValue("txHiresForce16bpp", config.textureFilter.txHiresForce16bpp);
-	settings.setValue("txHiresFullAlphaChannel", config.textureFilter.txHiresFullAlphaChannel);
-	settings.setValue("txHresAltCRC", config.textureFilter.txHresAltCRC);
-	settings.setValue("txHiresCacheCompression", config.textureFilter.txHiresCacheCompression);
-	settings.setValue("txDump", config.textureFilter.txDump);
-	settings.endGroup();
-
-	settings.beginGroup("font");
-	settings.setValue("name", config.font.name.c_str());
-	settings.setValue("size", config.font.size);
-	settings.setValue("color", QColor(config.font.color[0], config.font.color[1], config.font.color[2], config.font.color[3]));
-	settings.endGroup();
-
-	settings.beginGroup("bloomFilter");
-	settings.setValue("enable", config.bloomFilter.mode);
-	settings.setValue("thresholdLevel", config.bloomFilter.thresholdLevel);
-	settings.setValue("blendMode", config.bloomFilter.blendMode);
-	settings.setValue("blurAmount", config.bloomFilter.blurAmount);
-	settings.setValue("blurStrength", config.bloomFilter.blurStrength);
-	settings.endGroup();
-}
 
 void ConfigDialog::_init()
 {
@@ -306,7 +233,7 @@ void ConfigDialog::accept()
 	config.font.colorf[1] = m_color.greenF();
 	config.font.colorf[2] = m_color.blueF();
 	config.font.colorf[3] = m_color.alphaF();
-	_writeSettings();
+	writeSettings();
 
 	QDialog::accept();
 }
