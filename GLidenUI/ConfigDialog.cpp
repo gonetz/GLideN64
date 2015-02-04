@@ -153,7 +153,7 @@ void ConfigDialog::_init()
 
 	ui->verticalSyncCheckBox->setChecked(config.video.verticalSync != 0);
 	ui->aliasingSlider->setValue(config.video.multisampling);
-	ui->anisotropicSlider->setValue(config.video.anisotropic);
+	ui->anisotropicSlider->setValue(config.texture.maxAnisotropy);
 	ui->forceBilinearCheckBox->setChecked(config.texture.forceBilinear != 0);
 	ui->cacheSizeSpinBox->setValue(config.texture.maxBytes / gc_uMegabyte);
 
@@ -249,7 +249,7 @@ void ConfigDialog::accept()
 
 	config.video.verticalSync = ui->verticalSyncCheckBox->isChecked() ? 1 : 0;
 	config.video.multisampling = ui->aliasingSlider->value();
-	config.video.anisotropic = ui->anisotropicSlider->value();
+	config.texture.maxAnisotropy = ui->anisotropicSlider->value();
 	config.texture.forceBilinear = ui->forceBilinearCheckBox->isChecked();
 	config.texture.maxBytes = ui->cacheSizeSpinBox->value() * gc_uMegabyte;
 

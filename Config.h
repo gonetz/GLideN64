@@ -18,7 +18,7 @@ struct Config
 		u32 fullscreen;
 		u32 fullscreenWidth, fullscreenHeight, windowedWidth, windowedHeight;
 		u32 fullscreenBits, fullscreenRefresh;
-		u32 multisampling, anisotropic;
+		u32 multisampling;
 		u32 verticalSync;
 	} video;
 
@@ -91,7 +91,6 @@ struct Config
 		video.fullscreenHeight = video.windowedHeight = 480;
 		video.fullscreenRefresh = 60;
 		video.multisampling = 0;
-		video.anisotropic = 0;
 		video.verticalSync = 0;
 
 		texture.maxAnisotropy = 0;
