@@ -14,78 +14,6 @@ Q_IMPORT_PLUGIN(QWindowsIntegrationPlugin)
 #endif
 
 static
-void _writeSettings()
-{
-	QSettings settings("Emulation", "GLideN64");
-	settings.setValue("version", config.version);
-
-	settings.beginGroup("video");
-	settings.setValue("fullscreenWidth", config.video.fullscreenWidth);
-	settings.setValue("fullscreenHeight", config.video.fullscreenHeight);
-	settings.setValue("windowedWidth", config.video.windowedWidth);
-	settings.setValue("windowedHeight", config.video.windowedHeight);
-	settings.setValue("fullscreenBits", config.video.fullscreenBits);
-	settings.setValue("fullscreenRefresh", config.video.fullscreenRefresh);
-	settings.setValue("multisampling", config.video.multisampling);
-	settings.setValue("verticalSync", config.video.verticalSync);
-	settings.endGroup();
-
-	settings.beginGroup("texture");
-	settings.setValue("maxAnisotropy", config.texture.maxAnisotropy);
-	settings.setValue("forceBilinear", config.texture.forceBilinear);
-	settings.setValue("maxBytes", config.texture.maxBytes);
-	settings.endGroup();
-
-	settings.beginGroup("generalEmulation");
-	settings.setValue("enableFog", config.generalEmulation.enableFog);
-	settings.setValue("enableNoise", config.generalEmulation.enableNoise);
-	settings.setValue("enableLOD", config.generalEmulation.enableLOD);
-	settings.setValue("enableHWLighting", config.generalEmulation.enableHWLighting);
-	settings.setValue("hacks", config.generalEmulation.hacks);
-	settings.endGroup();
-
-	settings.beginGroup("frameBufferEmulation");
-	settings.setValue("enable", config.frameBufferEmulation.enable);
-	settings.setValue("copyToRDRAM", config.frameBufferEmulation.copyToRDRAM);
-	settings.setValue("copyDepthToRDRAM", config.frameBufferEmulation.copyDepthToRDRAM);
-	settings.setValue("copyFromRDRAM", config.frameBufferEmulation.copyFromRDRAM);
-	settings.setValue("ignoreCFB", config.frameBufferEmulation.ignoreCFB);
-	settings.setValue("N64DepthCompare", config.frameBufferEmulation.N64DepthCompare);
-	settings.setValue("aspect", config.frameBufferEmulation.aspect);
-	settings.endGroup();
-
-	settings.beginGroup("textureFilter");
-	settings.setValue("txFilterMode", config.textureFilter.txFilterMode);
-	settings.setValue("txEnhancementMode", config.textureFilter.txEnhancementMode);
-	settings.setValue("txFilterForce16bpp", config.textureFilter.txFilterForce16bpp);
-	settings.setValue("txFilterIgnoreBG", config.textureFilter.txFilterIgnoreBG);
-	settings.setValue("txFilterCacheCompression", config.textureFilter.txFilterCacheCompression);
-	settings.setValue("txSaveCache", config.textureFilter.txSaveCache);
-	settings.setValue("txCacheSize", config.textureFilter.txCacheSize);
-	settings.setValue("txHiresEnable", config.textureFilter.txHiresEnable);
-	settings.setValue("txHiresForce16bpp", config.textureFilter.txHiresForce16bpp);
-	settings.setValue("txHiresFullAlphaChannel", config.textureFilter.txHiresFullAlphaChannel);
-	settings.setValue("txHresAltCRC", config.textureFilter.txHresAltCRC);
-	settings.setValue("txHiresCacheCompression", config.textureFilter.txHiresCacheCompression);
-	settings.setValue("txDump", config.textureFilter.txDump);
-	settings.endGroup();
-
-	settings.beginGroup("font");
-	settings.setValue("name", config.font.name.c_str());
-	settings.setValue("size", config.font.size);
-	settings.setValue("color", QColor(config.font.color[0], config.font.color[1], config.font.color[2], config.font.color[3]));
-	settings.endGroup();
-
-	settings.beginGroup("bloomFilter");
-	settings.setValue("enable", config.bloomFilter.mode);
-	settings.setValue("thresholdLevel", config.bloomFilter.thresholdLevel);
-	settings.setValue("blendMode", config.bloomFilter.blendMode);
-	settings.setValue("blurAmount", config.bloomFilter.blurAmount);
-	settings.setValue("blurStrength", config.bloomFilter.blurStrength);
-	settings.endGroup();
-}
-
-static
 void _loadSettings()
 {
 	QSettings settings("Emulation", "GLideN64");
@@ -106,7 +34,7 @@ void _loadSettings()
 	settings.beginGroup("texture");
 	config.texture.maxAnisotropy = settings.value("maxAnisotropy", 0).toInt();
 	config.texture.forceBilinear = settings.value("forceBilinear", 0).toInt();
-	config.texture.maxBytes = settings.value("maxBytes", 500 * g_uMegabyte).toInt();
+	config.texture.maxBytes = settings.value("maxBytes", 500 * gc_uMegabyte).toInt();
 	settings.endGroup();
 
 	settings.beginGroup("generalEmulation");
@@ -133,7 +61,7 @@ void _loadSettings()
 	config.textureFilter.txFilterIgnoreBG = settings.value("txFilterIgnoreBG", 0).toInt();
 	config.textureFilter.txFilterCacheCompression = settings.value("txFilterCacheCompression", 1).toInt();
 	config.textureFilter.txSaveCache = settings.value("txSaveCache", 1).toInt();
-	config.textureFilter.txCacheSize = settings.value("txCacheSize", 100 * g_uMegabyte).toInt();
+	config.textureFilter.txCacheSize = settings.value("txCacheSize", 100 * gc_uMegabyte).toInt();
 	config.textureFilter.txHiresEnable = settings.value("txHiresEnable", 0).toInt();
 	config.textureFilter.txHiresForce16bpp = settings.value("txHiresForce16bpp", 0).toInt();
 	config.textureFilter.txHiresFullAlphaChannel = settings.value("txHiresFullAlphaChannel", 0).toInt();
@@ -182,10 +110,7 @@ int openConfigDialog()
 
 	ConfigDialog w;
 	w.show();
-	int res = a.exec();
-
-	_writeSettings();
-	return res;
+	return a.exec();
 }
 
 int runThread() {

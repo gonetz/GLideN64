@@ -29,7 +29,7 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>2</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="videoTab">
       <attribute name="title">
@@ -1031,12 +1031,12 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>209</x>
-     <y>214</y>
+     <x>77</x>
+     <y>188</y>
     </hint>
     <hint type="destinationlabel">
      <x>338</x>
-     <y>213</y>
+     <y>189</y>
     </hint>
    </hints>
   </connection>
@@ -1047,12 +1047,12 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>159</x>
-     <y>270</y>
+     <x>77</x>
+     <y>244</y>
     </hint>
     <hint type="destinationlabel">
      <x>338</x>
-     <y>269</y>
+     <y>245</y>
     </hint>
    </hints>
   </connection>

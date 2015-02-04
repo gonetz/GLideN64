@@ -13,8 +13,8 @@ extern "C" {
 #define CALL          _cdecl
 #endif
 
-	EXPORT int CALL RunConfig();
-	EXPORT void CALL LoadConfig();
+EXPORT int CALL RunConfig();
+EXPORT void CALL LoadConfig();
 
 #if defined(__cplusplus)
 }

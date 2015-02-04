@@ -1,12 +1,12 @@
 #include <QFontDialog>
 #include <QColorDialog>
+#include <QAbstractButton>
+#include <QSettings>
 #include "ConfigDialog.h"
 #include "ui_configDialog.h"
 #include "FullscreenResolutions.h"
 
 #include "../Config.h"
-
-const unsigned int g_uMegabyte = 1024U * 1024U;
 
 static
 const unsigned int numWindowedModes = 12U;
@@ -58,12 +58,80 @@ static const char * cmbTexEnhancement_choices[numEnhancements] = {
 	"5xBRZ"
 };
 
-ConfigDialog::ConfigDialog(QWidget *parent) :
-	QDialog(parent),
-	ui(new Ui::ConfigDialog)
+static
+void _writeSettings()
 {
-	ui->setupUi(this);
+	QSettings settings("Emulation", "GLideN64");
+	settings.setValue("version", config.version);
 
+	settings.beginGroup("video");
+	settings.setValue("fullscreenWidth", config.video.fullscreenWidth);
+	settings.setValue("fullscreenHeight", config.video.fullscreenHeight);
+	settings.setValue("windowedWidth", config.video.windowedWidth);
+	settings.setValue("windowedHeight", config.video.windowedHeight);
+	settings.setValue("fullscreenBits", config.video.fullscreenBits);
+	settings.setValue("fullscreenRefresh", config.video.fullscreenRefresh);
+	settings.setValue("multisampling", config.video.multisampling);
+	settings.setValue("verticalSync", config.video.verticalSync);
+	settings.endGroup();
+
+	settings.beginGroup("texture");
+	settings.setValue("maxAnisotropy", config.texture.maxAnisotropy);
+	settings.setValue("forceBilinear", config.texture.forceBilinear);
+	settings.setValue("maxBytes", config.texture.maxBytes);
+	settings.endGroup();
+
+	settings.beginGroup("generalEmulation");
+	settings.setValue("enableFog", config.generalEmulation.enableFog);
+	settings.setValue("enableNoise", config.generalEmulation.enableNoise);
+	settings.setValue("enableLOD", config.generalEmulation.enableLOD);
+	settings.setValue("enableHWLighting", config.generalEmulation.enableHWLighting);
+	settings.setValue("hacks", config.generalEmulation.hacks);
+	settings.endGroup();
+
+	settings.beginGroup("frameBufferEmulation");
+	settings.setValue("enable", config.frameBufferEmulation.enable);
+	settings.setValue("copyToRDRAM", config.frameBufferEmulation.copyToRDRAM);
+	settings.setValue("copyDepthToRDRAM", config.frameBufferEmulation.copyDepthToRDRAM);
+	settings.setValue("copyFromRDRAM", config.frameBufferEmulation.copyFromRDRAM);
+	settings.setValue("ignoreCFB", config.frameBufferEmulation.ignoreCFB);
+	settings.setValue("N64DepthCompare", config.frameBufferEmulation.N64DepthCompare);
+	settings.setValue("aspect", config.frameBufferEmulation.aspect);
+	settings.endGroup();
+
+	settings.beginGroup("textureFilter");
+	settings.setValue("txFilterMode", config.textureFilter.txFilterMode);
+	settings.setValue("txEnhancementMode", config.textureFilter.txEnhancementMode);
+	settings.setValue("txFilterForce16bpp", config.textureFilter.txFilterForce16bpp);
+	settings.setValue("txFilterIgnoreBG", config.textureFilter.txFilterIgnoreBG);
+	settings.setValue("txFilterCacheCompression", config.textureFilter.txFilterCacheCompression);
+	settings.setValue("txSaveCache", config.textureFilter.txSaveCache);
+	settings.setValue("txCacheSize", config.textureFilter.txCacheSize);
+	settings.setValue("txHiresEnable", config.textureFilter.txHiresEnable);
+	settings.setValue("txHiresForce16bpp", config.textureFilter.txHiresForce16bpp);
+	settings.setValue("txHiresFullAlphaChannel", config.textureFilter.txHiresFullAlphaChannel);
+	settings.setValue("txHresAltCRC", config.textureFilter.txHresAltCRC);
+	settings.setValue("txHiresCacheCompression", config.textureFilter.txHiresCacheCompression);
+	settings.setValue("txDump", config.textureFilter.txDump);
+	settings.endGroup();
+
+	settings.beginGroup("font");
+	settings.setValue("name", config.font.name.c_str());
+	settings.setValue("size", config.font.size);
+	settings.setValue("color", QColor(config.font.color[0], config.font.color[1], config.font.color[2], config.font.color[3]));
+	settings.endGroup();
+
+	settings.beginGroup("bloomFilter");
+	settings.setValue("enable", config.bloomFilter.mode);
+	settings.setValue("thresholdLevel", config.bloomFilter.thresholdLevel);
+	settings.setValue("blendMode", config.bloomFilter.blendMode);
+	settings.setValue("blurAmount", config.bloomFilter.blurAmount);
+	settings.setValue("blurStrength", config.bloomFilter.blurStrength);
+	settings.endGroup();
+}
+
+void ConfigDialog::_init()
+{
 	// Video settings
 	QStringList windowedModesList;
 	int windowedModesCurrent = 0;
@@ -87,7 +155,7 @@ ConfigDialog::ConfigDialog(QWidget *parent) :
 	ui->aliasingSlider->setValue(config.video.multisampling);
 	ui->anisotropicSlider->setValue(config.video.anisotropic);
 	ui->forceBilinearCheckBox->setChecked(config.texture.forceBilinear != 0);
-	ui->cacheSizeSpinBox->setValue(config.texture.maxBytes/g_uMegabyte);
+	ui->cacheSizeSpinBox->setValue(config.texture.maxBytes / gc_uMegabyte);
 
 	ui->screenshotFormatComboBox->setCurrentIndex(config.texture.screenShotFormat);
 
@@ -104,14 +172,14 @@ ConfigDialog::ConfigDialog(QWidget *parent) :
 	ui->CopyDepthCheckBox->setChecked(config.frameBufferEmulation.copyDepthToRDRAM != 0);
 	ui->n64DepthCompareCheckBox->setChecked(config.frameBufferEmulation.N64DepthCompare != 0);
 	switch (config.frameBufferEmulation.aspect) {
-		case 0:
-			ui->aspectStretchRadioButton->setChecked(true);
+	case 0:
+		ui->aspectStretchRadioButton->setChecked(true);
 		break;
-		case 1:
-			ui->aspect43RadioButton->setChecked(true);
+	case 1:
+		ui->aspect43RadioButton->setChecked(true);
 		break;
-		case 2:
-			ui->aspect169RadioButton->setChecked(true);
+	case 2:
+		ui->aspect169RadioButton->setChecked(true);
 		break;
 	}
 
@@ -128,7 +196,7 @@ ConfigDialog::ConfigDialog(QWidget *parent) :
 	ui->enhancementComboBox->insertItems(0, textureEnhancementList);
 	ui->enhancementComboBox->setCurrentIndex(config.textureFilter.txEnhancementMode);
 
-	ui->textureFilterCacheSpinBox->setValue(config.textureFilter.txCacheSize/g_uMegabyte);
+	ui->textureFilterCacheSpinBox->setValue(config.textureFilter.txCacheSize / gc_uMegabyte);
 	ui->filterForce16bppCheckBox->setChecked(config.textureFilter.txFilterForce16bpp != 0);
 	ui->ignoreBackgroundsCheckBox->setChecked(config.textureFilter.txFilterIgnoreBG != 0);
 	ui->compressFilterCacheCheckBox->setChecked(config.textureFilter.txFilterCacheCompression != 0);
@@ -157,6 +225,14 @@ ConfigDialog::ConfigDialog(QWidget *parent) :
 	ui->fontColorLabel->setPalette(palette);
 }
 
+ConfigDialog::ConfigDialog(QWidget *parent) :
+	QDialog(parent),
+	ui(new Ui::ConfigDialog)
+{
+	ui->setupUi(this);
+	_init();
+}
+
 ConfigDialog::~ConfigDialog()
 {
 	delete ui;
@@ -175,7 +251,7 @@ void ConfigDialog::accept()
 	config.video.multisampling = ui->aliasingSlider->value();
 	config.video.anisotropic = ui->anisotropicSlider->value();
 	config.texture.forceBilinear = ui->forceBilinearCheckBox->isChecked();
-	config.texture.maxBytes = ui->cacheSizeSpinBox->value() * g_uMegabyte;
+	config.texture.maxBytes = ui->cacheSizeSpinBox->value() * gc_uMegabyte;
 
 	config.texture.screenShotFormat = ui->screenshotFormatComboBox->currentIndex();
 
@@ -202,7 +278,7 @@ void ConfigDialog::accept()
 	config.textureFilter.txFilterMode = ui->filterComboBox->currentIndex();
 	config.textureFilter.txEnhancementMode = ui->enhancementComboBox->currentIndex();
 
-	config.textureFilter.txCacheSize = ui->textureFilterCacheSpinBox->value() * g_uMegabyte;
+	config.textureFilter.txCacheSize = ui->textureFilterCacheSpinBox->value() * gc_uMegabyte;
 	config.textureFilter.txFilterForce16bpp = ui->filterForce16bppCheckBox->isChecked() ? 1 : 0;
 	config.textureFilter.txFilterIgnoreBG = ui->ignoreBackgroundsCheckBox->isChecked() ? 1 : 0;
 	config.textureFilter.txFilterCacheCompression = ui->compressFilterCacheCheckBox->isChecked() ? 1 : 0;
@@ -230,6 +306,7 @@ void ConfigDialog::accept()
 	config.font.colorf[1] = m_color.greenF();
 	config.font.colorf[2] = m_color.blueF();
 	config.font.colorf[3] = m_color.alphaF();
+	_writeSettings();
 
 	QDialog::accept();
 }
@@ -262,4 +339,12 @@ void ConfigDialog::on_PickFontColorButton_clicked()
 	palette.setColor(QPalette::WindowText, m_color);
 	ui->fontColorLabel->setText(m_color.name());
 	ui->fontColorLabel->setPalette(palette);
+}
+
+void ConfigDialog::on_buttonBox_clicked(QAbstractButton *button)
+{
+	if ((QPushButton *)button == ui->buttonBox->button(QDialogButtonBox::RestoreDefaults)) {
+		config.resetToDefaults();
+		_init();
+	}
 }
