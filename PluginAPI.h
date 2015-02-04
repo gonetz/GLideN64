@@ -44,6 +44,8 @@ public:
 	int InitiateGFX(const GFX_INFO & _gfxInfo);
 	void ChangeWindow();
 
+	void FindPluginPath(wchar_t * _strPath);
+
 #ifndef MUPENPLUSAPI
 	// Zilmar
 	void DllTest(HWND /*_hParent*/) {}
@@ -86,7 +88,7 @@ private:
 	PluginAPI()
 #ifdef RSPTHREAD
 		: m_pRspThread(NULL), m_command(acNone)
-	#endif
+#endif
 	{}
 	PluginAPI(const PluginAPI &);
 
