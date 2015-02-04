@@ -4,6 +4,11 @@
 #include <string>
 #include "Types.h"
 
+#define CONFIG_VERSION_ONE 1U
+#define CONFIG_VERSION_CURRENT CONFIG_VERSION_ONE
+
+const u32 gc_uMegabyte = 1024U * 1024U;
+
 struct Config
 {
 	u32 version;
@@ -76,6 +81,70 @@ struct Config
 		u32 blurAmount;
 		u32 blurStrength;
 	} bloomFilter;
+
+	void resetToDefaults()
+	{
+		version = CONFIG_VERSION_CURRENT;
+
+		video.fullscreen = 0;
+		video.fullscreenWidth = video.windowedWidth = 640;
+		video.fullscreenHeight = video.windowedHeight = 480;
+		video.fullscreenRefresh = 60;
+		video.multisampling = 0;
+		video.anisotropic = 0;
+		video.verticalSync = 0;
+
+		texture.maxAnisotropy = 0;
+		texture.forceBilinear = 0;
+		texture.maxBytes = 500 * gc_uMegabyte;
+		texture.screenShotFormat = 0;
+
+		generalEmulation.enableFog = 1;
+		generalEmulation.enableLOD = 1;
+		generalEmulation.enableNoise = 1;
+		generalEmulation.enableHWLighting = 0;
+		generalEmulation.hacks = 0;
+
+		frameBufferEmulation.enable = 1;
+		frameBufferEmulation.copyDepthToRDRAM = 1;
+		frameBufferEmulation.copyFromRDRAM = 0;
+		frameBufferEmulation.copyToRDRAM = 0;
+		frameBufferEmulation.ignoreCFB = 0;
+		frameBufferEmulation.N64DepthCompare = 0;
+
+		textureFilter.txCacheSize = 100 * gc_uMegabyte;
+		textureFilter.txDump = 0;
+		textureFilter.txEnhancementMode = 0;
+		textureFilter.txFilterCacheCompression = 1;
+		textureFilter.txFilterForce16bpp = 0;
+		textureFilter.txFilterIgnoreBG = 0;
+		textureFilter.txFilterMode = 0;
+		textureFilter.txHiresCacheCompression = 1;
+		textureFilter.txHiresEnable = 0;
+		textureFilter.txHiresForce16bpp = 0;
+		textureFilter.txHiresFullAlphaChannel = 0;
+		textureFilter.txHresAltCRC = 0;
+		textureFilter.txSaveCache = 1;
+
+#ifdef OS_WINDOWS
+		font.name = "arial.ttf";
+#else
+		font.name = "FreeSans.ttf";
+#endif
+		font.size = 18;
+		font.color[0] = 0xB5;
+		font.color[1] = 0xE6;
+		font.color[2] = 0x1D;
+		font.color[3] = 0xFF;
+		for (int i = 0; i < 4; ++i)
+			font.colorf[i] = font.color[i] /255.0f;
+
+		bloomFilter.mode = 0;
+		bloomFilter.thresholdLevel = 4;
+		bloomFilter.blendMode = 0;
+		bloomFilter.blurAmount = 10;
+		bloomFilter.blurStrength = 20;
+	}
 };
 
 #define hack_Ogre64	(1<<0)  //Ogre Battle 64
