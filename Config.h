@@ -16,8 +16,8 @@ struct Config
 	struct
 	{
 		u32 fullscreen;
-		u32 fullscreenWidth, fullscreenHeight, windowedWidth, windowedHeight;
-		u32 fullscreenBits, fullscreenRefresh;
+		u32 windowedWidth, windowedHeight;
+		u32 fullscreenWidth, fullscreenHeight, fullscreenRefresh;
 		u32 multisampling;
 		u32 verticalSync;
 	} video;

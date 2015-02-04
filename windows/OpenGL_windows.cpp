@@ -179,7 +179,7 @@ void OGLVideoWindows::_changeWindow()
 		fullscreenMode.dmSize = sizeof(DEVMODE);
 		fullscreenMode.dmPelsWidth = config.video.fullscreenWidth;
 		fullscreenMode.dmPelsHeight = config.video.fullscreenHeight;
-		fullscreenMode.dmBitsPerPel = config.video.fullscreenBits;
+		fullscreenMode.dmBitsPerPel = 32;
 		fullscreenMode.dmDisplayFrequency = config.video.fullscreenRefresh;
 		fullscreenMode.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT | DM_DISPLAYFREQUENCY;
 
