@@ -1,6 +1,8 @@
 #include <QFontDialog>
 #include <QColorDialog>
 #include <QAbstractButton>
+#include <QMessageBox>
+
 #include "../Config.h"
 #include "ui_configDialog.h"
 #include "Settings.h"
@@ -281,7 +283,14 @@ void ConfigDialog::on_PickFontColorButton_clicked()
 void ConfigDialog::on_buttonBox_clicked(QAbstractButton *button)
 {
 	if ((QPushButton *)button == ui->buttonBox->button(QDialogButtonBox::RestoreDefaults)) {
-		config.resetToDefaults();
-		_init();
+		QMessageBox msgBox(QMessageBox::Question, "GLideN64",
+			"Do you really want to reset all settings to defaults?",
+			QMessageBox::RestoreDefaults | QMessageBox::Cancel, this
+		);
+		msgBox.setDefaultButton(QMessageBox::Cancel);
+		if (msgBox.exec() == QMessageBox::RestoreDefaults) {
+			config.resetToDefaults();
+			_init();
+		}
 	}
 }
