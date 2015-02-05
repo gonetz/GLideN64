@@ -10,9 +10,14 @@
 Q_IMPORT_PLUGIN(QWindowsIntegrationPlugin)
 #endif
 
+inline void initMyResource() { Q_INIT_RESOURCE(icon); }
+inline void cleanMyResource() { Q_CLEANUP_RESOURCE(icon); }
+
 static
 int openConfigDialog()
 {
+	cleanMyResource();
+	initMyResource();
 	loadSettings();
 
 	int argc = 0;

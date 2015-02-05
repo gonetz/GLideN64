@@ -25,7 +25,8 @@ HEADERS += \
     FullscreenResolutions.h \
     Settings.h
 
-RESOURCES +=
+RESOURCES += \
+    icon.qrc
 
 FORMS += \
     configDialog.ui

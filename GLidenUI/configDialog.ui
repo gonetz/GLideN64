@@ -22,6 +22,10 @@
   <property name="windowTitle">
    <string>GLideN64 settings</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="icon.qrc">
+    <normaloff>:/Icon.png</normaloff>:/Icon.png</iconset>
+  </property>
   <property name="modal">
    <bool>true</bool>
   </property>
@@ -970,7 +974,9 @@
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="icon.qrc"/>
+ </resources>
  <connections>
   <connection>
    <sender>buttonBox</sender>
