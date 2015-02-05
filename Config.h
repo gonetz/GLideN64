@@ -52,18 +52,17 @@ struct Config
 	{
 		u32 txFilterMode;				// Texture filtering mode, eg Sharpen
 		u32 txEnhancementMode;			// Texture enhancement mode, eg 2xSAI
-		u32 txFilterForce16bpp;			// Force use 16bit color textures
 		u32 txFilterIgnoreBG;			// Do not apply filtering to backgrounds textures
 		u32 txCacheSize;				// Cache size in Mbytes
-		u32 txFilterCacheCompression;	// Zip cache of filtered textures
-		u32 txSaveCache;				// Save texture cache to hard disk
 
 		u32 txHiresEnable;				// Use high-resolution texture packs
-		u32 txHiresForce16bpp;			// Force use 16bit color textures
 		u32 txHiresFullAlphaChannel;	// Use alpha channel fully
 		u32 txHresAltCRC;				// Use alternative method of paletted textures CRC calculation
-		u32 txHiresCacheCompression;	// Zip cache of hires textures
 		u32 txDump;						// Dump textures
+
+		u32 txForce16bpp;				// Force use 16bit color textures
+		u32 txCacheCompression;			// Zip textures cache
+		u32 txSaveCache;				// Save texture cache to hard disk
 	} textureFilter;
 
 	struct
@@ -114,15 +113,14 @@ struct Config
 		textureFilter.txCacheSize = 100 * gc_uMegabyte;
 		textureFilter.txDump = 0;
 		textureFilter.txEnhancementMode = 0;
-		textureFilter.txFilterCacheCompression = 1;
-		textureFilter.txFilterForce16bpp = 0;
 		textureFilter.txFilterIgnoreBG = 0;
 		textureFilter.txFilterMode = 0;
-		textureFilter.txHiresCacheCompression = 1;
 		textureFilter.txHiresEnable = 0;
-		textureFilter.txHiresForce16bpp = 0;
 		textureFilter.txHiresFullAlphaChannel = 0;
 		textureFilter.txHresAltCRC = 0;
+
+		textureFilter.txCacheCompression = 1;
+		textureFilter.txForce16bpp = 0;
 		textureFilter.txSaveCache = 1;
 
 #ifdef OS_WINDOWS

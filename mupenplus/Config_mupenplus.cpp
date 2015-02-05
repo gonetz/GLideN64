@@ -78,27 +78,23 @@ bool Config_SetDefault()
 	assert(res == M64ERR_SUCCESS);
 	res = ConfigSetDefaultInt(g_configVideoGliden64, "txEnhancementMode", 0, "Texture Enhancement (0=none, 1=store as is, 2=X2, 3=X2SAI, 4=HQ2X, 5=HQ2XS, 6=LQ2X, 7=LQ2XS, 8=HQ4X, 9=2xBRZ, 10=3xBRZ, 11=4xBRZ, 12=5xBRZ)");
 	assert(res == M64ERR_SUCCESS);
-	res = ConfigSetDefaultBool(g_configVideoGliden64, "txFilterForce16bpp", 0, "Force use 16bit texture formats for filtered textures.");
-	assert(res == M64ERR_SUCCESS);
 	res = ConfigSetDefaultBool(g_configVideoGliden64, "txFilterIgnoreBG", 0, "Don't filter background textures.");
 	assert(res == M64ERR_SUCCESS);
 	res = ConfigSetDefaultInt(g_configVideoGliden64, "txCacheSize", 128, "Size of filtered textures cache in megabytes.");
 	assert(res == M64ERR_SUCCESS);
-	res = ConfigSetDefaultBool(g_configVideoGliden64, "txFilterCacheCompression", 0, "Zip cache of filtered textures.");
-	assert(res == M64ERR_SUCCESS);
-	res = ConfigSetDefaultBool(g_configVideoGliden64, "txSaveCache", 0, "Save texture cache to hard disk.");
-	assert(res == M64ERR_SUCCESS);
 	res = ConfigSetDefaultBool(g_configVideoGliden64, "txHiresEnable", 0, "Use high-resolution texture packs if available.");
-	assert(res == M64ERR_SUCCESS);
-	res = ConfigSetDefaultBool(g_configVideoGliden64, "txHiresForce16bpp", 0, "Force use 16bit texture formats for high-res textures.");
 	assert(res == M64ERR_SUCCESS);
 	res = ConfigSetDefaultBool(g_configVideoGliden64, "txHiresFullAlphaChannel", 0, "Allow to use alpha channel of high-res texture fully.");
 	assert(res == M64ERR_SUCCESS);
 	res = ConfigSetDefaultBool(g_configVideoGliden64, "txHresAltCRC", 0, "Use alternative method of paletted textures CRC calculation.");
 	assert(res == M64ERR_SUCCESS);
-	res = ConfigSetDefaultBool(g_configVideoGliden64, "txHiresCacheCompression", 0, "Zip cache of high-res textures.");
-	assert(res == M64ERR_SUCCESS);
 	res = ConfigSetDefaultBool(g_configVideoGliden64, "txDump", 0, "Enable dump of loaded N64 textures.");
+	assert(res == M64ERR_SUCCESS);
+	res = ConfigSetDefaultBool(g_configVideoGliden64, "txCacheCompression", 0, "Zip textures cache.");
+	assert(res == M64ERR_SUCCESS);
+	res = ConfigSetDefaultBool(g_configVideoGliden64, "txForce16bpp", 0, "Force use 16bit texture formats for HD textures.");
+	assert(res == M64ERR_SUCCESS);
+	res = ConfigSetDefaultBool(g_configVideoGliden64, "txSaveCache", 0, "Save texture cache to hard disk.");
 	assert(res == M64ERR_SUCCESS);
 
 #ifdef OS_WINDOWS
@@ -158,17 +154,15 @@ void Config_LoadConfig()
 	//#Texture filter settings
 	config.textureFilter.txFilterMode = ConfigGetParamInt(g_configVideoGliden64, "txFilterMode");
 	config.textureFilter.txEnhancementMode = ConfigGetParamInt(g_configVideoGliden64, "txEnhancementMode");
-	config.textureFilter.txFilterForce16bpp = ConfigGetParamBool(g_configVideoGliden64, "txFilterForce16bpp");
 	config.textureFilter.txFilterIgnoreBG = ConfigGetParamBool(g_configVideoGliden64, "txFilterIgnoreBG");
 	config.textureFilter.txCacheSize = ConfigGetParamInt(g_configVideoGliden64, "txCacheSize") * uMegabyte;
-	config.textureFilter.txFilterCacheCompression = ConfigGetParamBool(g_configVideoGliden64, "txFilterCacheCompression");
-	config.textureFilter.txSaveCache = ConfigGetParamBool(g_configVideoGliden64, "txSaveCache");
 	config.textureFilter.txHiresEnable = ConfigGetParamBool(g_configVideoGliden64, "txHiresEnable");
-	config.textureFilter.txHiresForce16bpp = ConfigGetParamBool(g_configVideoGliden64, "txHiresForce16bpp");
 	config.textureFilter.txHiresFullAlphaChannel = ConfigGetParamBool(g_configVideoGliden64, "txHiresFullAlphaChannel");
 	config.textureFilter.txHresAltCRC = ConfigGetParamBool(g_configVideoGliden64, "txHresAltCRC");
-	config.textureFilter.txHiresCacheCompression = ConfigGetParamBool(g_configVideoGliden64, "txHiresCacheCompression");
 	config.textureFilter.txDump = ConfigGetParamBool(g_configVideoGliden64, "txDump");
+	config.textureFilter.txForce16bpp = ConfigGetParamBool(g_configVideoGliden64, "txForce16bpp");
+	config.textureFilter.txCacheCompression = ConfigGetParamBool(g_configVideoGliden64, "txCacheCompression");
+	config.textureFilter.txSaveCache = ConfigGetParamBool(g_configVideoGliden64, "txSaveCache");
 	//#Font settings
 	config.font.name = ConfigGetParamString(g_configVideoGliden64, "fontName");
 	if (config.font.name.empty())

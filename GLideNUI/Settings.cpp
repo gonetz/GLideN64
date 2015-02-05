@@ -59,17 +59,15 @@ void loadSettings()
 	settings.beginGroup("textureFilter");
 	config.textureFilter.txFilterMode = settings.value("txFilterMode", 0).toInt();
 	config.textureFilter.txEnhancementMode = settings.value("txEnhancementMode", 0).toInt();
-	config.textureFilter.txFilterForce16bpp = settings.value("txFilterForce16bpp", 0).toInt();
 	config.textureFilter.txFilterIgnoreBG = settings.value("txFilterIgnoreBG", 0).toInt();
-	config.textureFilter.txFilterCacheCompression = settings.value("txFilterCacheCompression", 1).toInt();
-	config.textureFilter.txSaveCache = settings.value("txSaveCache", 1).toInt();
 	config.textureFilter.txCacheSize = settings.value("txCacheSize", 100 * gc_uMegabyte).toInt();
 	config.textureFilter.txHiresEnable = settings.value("txHiresEnable", 0).toInt();
-	config.textureFilter.txHiresForce16bpp = settings.value("txHiresForce16bpp", 0).toInt();
 	config.textureFilter.txHiresFullAlphaChannel = settings.value("txHiresFullAlphaChannel", 0).toInt();
 	config.textureFilter.txHresAltCRC = settings.value("txHresAltCRC", 0).toInt();
-	config.textureFilter.txHiresCacheCompression = settings.value("txHiresCacheCompression", 1).toInt();
 	config.textureFilter.txDump = settings.value("txDump", 0).toInt();
+	config.textureFilter.txForce16bpp = settings.value("txForce16bpp", 0).toInt();
+	config.textureFilter.txCacheCompression = settings.value("txCacheCompression", 1).toInt();
+	config.textureFilter.txSaveCache = settings.value("txSaveCache", 1).toInt();
 	settings.endGroup();
 
 	settings.beginGroup("font");
@@ -143,17 +141,15 @@ void writeSettings()
 	settings.beginGroup("textureFilter");
 	settings.setValue("txFilterMode", config.textureFilter.txFilterMode);
 	settings.setValue("txEnhancementMode", config.textureFilter.txEnhancementMode);
-	settings.setValue("txFilterForce16bpp", config.textureFilter.txFilterForce16bpp);
 	settings.setValue("txFilterIgnoreBG", config.textureFilter.txFilterIgnoreBG);
-	settings.setValue("txFilterCacheCompression", config.textureFilter.txFilterCacheCompression);
-	settings.setValue("txSaveCache", config.textureFilter.txSaveCache);
 	settings.setValue("txCacheSize", config.textureFilter.txCacheSize);
 	settings.setValue("txHiresEnable", config.textureFilter.txHiresEnable);
-	settings.setValue("txHiresForce16bpp", config.textureFilter.txHiresForce16bpp);
 	settings.setValue("txHiresFullAlphaChannel", config.textureFilter.txHiresFullAlphaChannel);
 	settings.setValue("txHresAltCRC", config.textureFilter.txHresAltCRC);
-	settings.setValue("txHiresCacheCompression", config.textureFilter.txHiresCacheCompression);
 	settings.setValue("txDump", config.textureFilter.txDump);
+	settings.setValue("txForce16bpp", config.textureFilter.txForce16bpp);
+	settings.setValue("txCacheCompression", config.textureFilter.txCacheCompression);
+	settings.setValue("txSaveCache", config.textureFilter.txSaveCache);
 	settings.endGroup();
 
 	settings.beginGroup("font");

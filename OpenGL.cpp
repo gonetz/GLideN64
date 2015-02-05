@@ -1388,14 +1388,10 @@ void TextureFilterHandler::init()
 			u32 options = textureFilters[config.textureFilter.txFilterMode] | textureEnhancements[config.textureFilter.txEnhancementMode];
 			if (config.textureFilter.txHiresEnable)
 				options |= RICE_HIRESTEXTURES;
-			if (config.textureFilter.txFilterForce16bpp)
-				options |= FORCE16BPP_TEX;
-			if (config.textureFilter.txHiresForce16bpp)
-				options |= FORCE16BPP_HIRESTEX;
-			if (config.textureFilter.txFilterCacheCompression)
-				options |= GZ_TEXCACHE;
-			if (config.textureFilter.txHiresCacheCompression)
-				options |= GZ_HIRESTEXCACHE;
+			if (config.textureFilter.txForce16bpp)
+				options |= FORCE16BPP_TEX | FORCE16BPP_HIRESTEX;
+			if (config.textureFilter.txCacheCompression)
+				options |= GZ_TEXCACHE | GZ_HIRESTEXCACHE;
 			if (config.textureFilter.txSaveCache)
 				options |= (DUMP_TEXCACHE | DUMP_HIRESTEXCACHE);
 			if (config.textureFilter.txHiresFullAlphaChannel)

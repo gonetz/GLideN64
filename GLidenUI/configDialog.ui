@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>372</width>
-    <height>534</height>
+    <height>488</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -737,32 +737,12 @@
           <item>
            <layout class="QVBoxLayout" name="verticalLayout_12">
             <item>
-             <widget class="QCheckBox" name="filterForce16bppCheckBox">
-              <property name="toolTip">
-               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Force 16bpp textures:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;The color of the textures will be reduced to 16bpp.This is space saver and performance enhancer. This halves the space used on the texture cache and the GFX hardware's texture RAM. Color reduction is done so that the original quality is preserved as much as possible. Depending on the texture, this usually is hardly noticeable. Sometimes though, it can be: skies are a good example.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;off&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-              </property>
-              <property name="text">
-               <string>Force 16bpp textures</string>
-              </property>
-             </widget>
-            </item>
-            <item>
              <widget class="QCheckBox" name="ignoreBackgroundsCheckBox">
               <property name="toolTip">
                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Ignore Backgrounds:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;It is used to skip enhancement for long narrow textures, usually used for backgrounds. This may save texture memory greatly and increase performance.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;on (off for 'Store' mode)&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
               </property>
               <property name="text">
                <string>Ignore backgrounds</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QCheckBox" name="compressFilterCacheCheckBox">
-              <property name="toolTip">
-               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Compress texture cache:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Memory will be compressed so that more textures can be held in the texture cache. The compression ratio varies with each texture, but 1/5 of the original size would be a modest approximation. They will be decompressed on-the-fly, before being downloaded to the gfx hardware.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;on&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-              </property>
-              <property name="text">
-               <string>Compress texture cache</string>
               </property>
              </widget>
             </item>
@@ -781,32 +761,12 @@
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_14">
           <item>
-           <widget class="QCheckBox" name="hiresForce16bppCheckBox">
-            <property name="toolTip">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Force 16bpp textures:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;The color of the textures will be reduced to 16bpp.This is space saver and performance enhancer. This halves the space used on the texture cache and the GFX hardware's texture RAM. Color reduction is done so that the original quality is preserved as much as possible. Depending on the texture, this usually is hardly noticeable. Sometimes though, it can be: skies are a good example.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;off&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-            </property>
-            <property name="text">
-             <string>Force 16bpp textures</string>
-            </property>
-           </widget>
-          </item>
-          <item>
            <widget class="QCheckBox" name="alphaChannelCheckBox">
             <property name="toolTip">
              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Use Alpha channel fully:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;When this option is off, 16bit rgba textures will be loaded using RiceVideo style - with 1bit for alpha channel. When it is on, GlideHQ will check, how alpha channel is used by the hires texture, and select most appropriate format for it. This gives texture designers freedom to play with alpha, as they need, regardless of format of original N64 texture. For older and badly designed texture packs it can cause unwanted black borders.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;texture pack dependant&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
             <property name="text">
              <string>Use alpha channel fully</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QCheckBox" name="compressHDTexturesCacheCheckBox">
-            <property name="toolTip">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Compress texture cache:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;When game started, plugin loads all its hi-resolution textures into PC memory. Since hi-resolution textures are usually large, the whole pack can take hundreds megabytes of memory. Cache compression allows save memory space greatly. Textures will be decompressed on-the-fly, before being downloaded to the gfx hardware.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;on&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-            </property>
-            <property name="text">
-             <string>Compress texture cache</string>
             </property>
            </widget>
           </item>
@@ -959,6 +919,26 @@
            </layout>
           </item>
          </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="force16bppCheckBox">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Force 16bpp textures:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;The color of the textures will be reduced to 16bpp.This is space saver and performance enhancer. This halves the space used on the texture cache and the GFX hardware's texture RAM. Color reduction is done so that the original quality is preserved as much as possible. Depending on the texture, this usually is hardly noticeable. Sometimes though, it can be: skies are a good example.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;off&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="text">
+          <string>Force 16bpp textures</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="compressCacheCheckBox">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Compress texture cache:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Memory will be compressed so that more textures can be held in the texture cache. The compression ratio varies with each texture, but 1/5 of the original size would be a modest approximation. They will be decompressed on-the-fly, before being downloaded to the gfx hardware.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;on&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="text">
+          <string>Compress texture cache</string>
+         </property>
         </widget>
        </item>
        <item>

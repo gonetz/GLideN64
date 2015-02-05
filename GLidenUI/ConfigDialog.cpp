@@ -132,16 +132,14 @@ void ConfigDialog::_init()
 	ui->enhancementComboBox->setCurrentIndex(config.textureFilter.txEnhancementMode);
 
 	ui->textureFilterCacheSpinBox->setValue(config.textureFilter.txCacheSize / gc_uMegabyte);
-	ui->filterForce16bppCheckBox->setChecked(config.textureFilter.txFilterForce16bpp != 0);
 	ui->ignoreBackgroundsCheckBox->setChecked(config.textureFilter.txFilterIgnoreBG != 0);
-	ui->compressFilterCacheCheckBox->setChecked(config.textureFilter.txFilterCacheCompression != 0);
 
 	ui->texturePackGroupBox->setChecked(config.textureFilter.txHiresEnable != 0);
-	ui->hiresForce16bppCheckBox->setChecked(config.textureFilter.txHiresForce16bpp != 0);
 	ui->alphaChannelCheckBox->setChecked(config.textureFilter.txHiresFullAlphaChannel != 0);
-	ui->compressHDTexturesCacheCheckBox->setChecked(config.textureFilter.txHiresCacheCompression != 0);
 	ui->alternativeCRCCheckBox->setChecked(config.textureFilter.txHresAltCRC != 0);
 	ui->textureDumpCheckBox->setChecked(config.textureFilter.txDump != 0);
+	ui->force16bppCheckBox->setChecked(config.textureFilter.txForce16bpp != 0);
+	ui->compressCacheCheckBox->setChecked(config.textureFilter.txCacheCompression != 0);
 	ui->saveTextureCacheCheckBox->setChecked(config.textureFilter.txSaveCache != 0);
 
 	QString fontName(config.font.name.c_str());
@@ -216,16 +214,15 @@ void ConfigDialog::accept()
 	config.textureFilter.txEnhancementMode = ui->enhancementComboBox->currentIndex();
 
 	config.textureFilter.txCacheSize = ui->textureFilterCacheSpinBox->value() * gc_uMegabyte;
-	config.textureFilter.txFilterForce16bpp = ui->filterForce16bppCheckBox->isChecked() ? 1 : 0;
 	config.textureFilter.txFilterIgnoreBG = ui->ignoreBackgroundsCheckBox->isChecked() ? 1 : 0;
-	config.textureFilter.txFilterCacheCompression = ui->compressFilterCacheCheckBox->isChecked() ? 1 : 0;
 
 	config.textureFilter.txHiresEnable = ui->texturePackGroupBox->isChecked() ? 1 : 0;
-	config.textureFilter.txHiresForce16bpp = ui->hiresForce16bppCheckBox->isChecked() ? 1 : 0;
 	config.textureFilter.txHiresFullAlphaChannel = ui->alphaChannelCheckBox->isChecked() ? 1 : 0;
-	config.textureFilter.txHiresCacheCompression = ui->compressHDTexturesCacheCheckBox->isChecked() ? 1 : 0;
 	config.textureFilter.txHresAltCRC = ui->alternativeCRCCheckBox->isChecked() ? 1 : 0;
 	config.textureFilter.txDump = ui->textureDumpCheckBox->isChecked() ? 1 : 0;
+
+	config.textureFilter.txCacheCompression = ui->compressCacheCheckBox->isChecked() ? 1 : 0;
+	config.textureFilter.txForce16bpp = ui->force16bppCheckBox->isChecked() ? 1 : 0;
 	config.textureFilter.txSaveCache = ui->saveTextureCacheCheckBox->isChecked() ? 1 : 0;
 
 	config.font.size = m_font.pointSize();
