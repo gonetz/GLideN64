@@ -25,6 +25,7 @@ struct Config
 	struct
 	{
 		u32 maxAnisotropy;
+		f32 maxAnisotropyF;
 		u32 forceBilinear;
 		u32 maxBytes;
 		u32 screenShotFormat;

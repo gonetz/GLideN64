@@ -1234,6 +1234,12 @@ void OGLRender::_initExtensions()
 #else
 	m_bImageTexture = false;
 #endif
+
+	if (config.texture.maxAnisotropy != 0) {
+		glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &config.texture.maxAnisotropyF);
+		config.texture.maxAnisotropyF = min(config.texture.maxAnisotropyF, (f32)config.texture.maxAnisotropy);
+	} else
+		config.texture.maxAnisotropyF = 0.0f;
 }
 
 void OGLRender::_initStates()
