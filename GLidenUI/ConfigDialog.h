@@ -26,6 +26,8 @@ private slots:
 
 	void on_buttonBox_clicked(QAbstractButton *button);
 
+	void on_fullScreenResolutionComboBox_currentIndexChanged(int index);
+
 private:
 	void _init();
 

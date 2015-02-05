@@ -3,7 +3,9 @@
 
 #include "ConfigDialog.h"
 
-void fillFullscreenResolutionsList(QStringList & _listResolutions, int & _resolution, QStringList & _listRefreshRates, int & _rate);
+void fillFullscreenResolutionsList(QStringList & _listResolutions, int & _resolutionIdx, QStringList & _listRefreshRates, int & _rateIdx);
+
+void fillFullscreenRefreshRateList(int _resolutionIdx, QStringList & _listRefreshRates, int & _rateIdx);
 
 void getFullscreenResolutions(int _idx, unsigned int & _width, unsigned int & _height);
 void getFullscreenRefreshRate(int _idx, unsigned int & _rate);

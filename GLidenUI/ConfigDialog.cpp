@@ -294,3 +294,13 @@ void ConfigDialog::on_buttonBox_clicked(QAbstractButton *button)
 		}
 	}
 }
+
+void ConfigDialog::on_fullScreenResolutionComboBox_currentIndexChanged(int index)
+{
+	QStringList fullscreenRatesList;
+	int fullscreenRate;
+	fillFullscreenRefreshRateList(index, fullscreenRatesList, fullscreenRate);
+	ui->fullScreenRefreshRateComboBox->clear();
+	ui->fullScreenRefreshRateComboBox->insertItems(0, fullscreenRatesList);
+	ui->fullScreenRefreshRateComboBox->setCurrentIndex(fullscreenRate);
+}

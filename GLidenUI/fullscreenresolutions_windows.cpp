@@ -21,12 +21,45 @@ struct
 	DWORD	numRefreshRates;
 } fullscreen;
 
-void fillFullscreenResolutionsList(QStringList & _listResolutions, int & _resolution, QStringList & _listRefreshRates, int & _rate)
+static
+void _fillFullscreenRefreshRateList(QStringList & _listRefreshRates, int & _rateIdx)
 {
-	DEVMODE deviceMode;
-	int i;
-	char text[128];
+	memset(&fullscreen.refreshRate, 0, sizeof(fullscreen.refreshRate));
+	fullscreen.numRefreshRates = 0;
+	_rateIdx = 0;
 
+	int i = 0;
+	char text[128];
+	DEVMODE deviceMode;
+	while (EnumDisplaySettings(NULL, i, &deviceMode) != 0)
+	{
+		if (deviceMode.dmBitsPerPel != 32)
+			continue;
+
+		DWORD j = 0;
+		for (; j < fullscreen.numRefreshRates; ++j)	{
+			if ((deviceMode.dmDisplayFrequency == fullscreen.refreshRate[j]))
+				break;
+		}
+		if ((deviceMode.dmDisplayFrequency != fullscreen.refreshRate[j]) &&
+			(deviceMode.dmPelsWidth == fullscreen.selected.width) &&
+			(deviceMode.dmPelsHeight == fullscreen.selected.height)) {
+
+			fullscreen.refreshRate[j] = deviceMode.dmDisplayFrequency;
+			sprintf(text, "%i Hz", deviceMode.dmDisplayFrequency);
+			_listRefreshRates.append(text);
+
+			if (fullscreen.selected.refreshRate == deviceMode.dmDisplayFrequency)
+				_rateIdx = fullscreen.numRefreshRates;
+
+			++fullscreen.numRefreshRates;
+		}
+		++i;
+	}
+}
+
+void fillFullscreenResolutionsList(QStringList & _listResolutions, int & _resolutionIdx, QStringList & _listRefreshRates, int & _rateIdx)
+{
 	fullscreen.selected.width = config.video.fullscreenWidth;
 	fullscreen.selected.height = config.video.fullscreenHeight;
 	fullscreen.selected.refreshRate = config.video.fullscreenRefresh;
@@ -35,8 +68,11 @@ void fillFullscreenResolutionsList(QStringList & _listResolutions, int & _resolu
 	memset(&fullscreen.refreshRate, 0, sizeof(fullscreen.refreshRate));
 	fullscreen.numResolutions = 0;
 	fullscreen.numRefreshRates = 0;
+	_resolutionIdx = 0;
 
-	i = 0;
+	int i = 0;
+	char text[128];
+	DEVMODE deviceMode;
 	while (EnumDisplaySettings(NULL, i, &deviceMode) != 0)
 	{
 		if (deviceMode.dmBitsPerPel != 32)
@@ -59,39 +95,22 @@ void fillFullscreenResolutionsList(QStringList & _listResolutions, int & _resolu
 
 			if ((fullscreen.selected.width == deviceMode.dmPelsWidth) &&
 				(fullscreen.selected.height == deviceMode.dmPelsHeight))
-				_resolution = fullscreen.numResolutions;
+				_resolutionIdx = fullscreen.numResolutions;
 
 			++fullscreen.numResolutions;
 		}
 		++i;
 	}
 
-	i = 0;
-	while (EnumDisplaySettings(NULL, i, &deviceMode) != 0)
-	{
-		if (deviceMode.dmBitsPerPel != 32)
-			continue;
+	_fillFullscreenRefreshRateList(_listRefreshRates, _rateIdx);
+}
 
-		DWORD j = 0;
-		for (; j < fullscreen.numRefreshRates; ++j)	{
-			if ((deviceMode.dmDisplayFrequency == fullscreen.refreshRate[j]))
-				break;
-		}
-		if ((deviceMode.dmDisplayFrequency != fullscreen.refreshRate[j]) &&
-			(deviceMode.dmPelsWidth == fullscreen.selected.width) &&
-			(deviceMode.dmPelsHeight == fullscreen.selected.height)) {
-
-			fullscreen.refreshRate[j] = deviceMode.dmDisplayFrequency;
-			sprintf(text, "%i Hz", deviceMode.dmDisplayFrequency);
-			_listRefreshRates.append(text);
-
-			if (fullscreen.selected.refreshRate == deviceMode.dmDisplayFrequency)
-				_rate = fullscreen.numRefreshRates;
-
-			++fullscreen.numRefreshRates;
-		}
-		++i;
-	}
+void fillFullscreenRefreshRateList(int _resolutionIdx, QStringList & _listRefreshRates, int & _rateIdx)
+{
+	fullscreen.selected.width = fullscreen.resolution[_resolutionIdx].width;
+	fullscreen.selected.height = fullscreen.resolution[_resolutionIdx].height;
+	_fillFullscreenRefreshRateList(_listRefreshRates, _rateIdx);
+	_rateIdx = fullscreen.numRefreshRates - 1;
 }
 
 void getFullscreenResolutions(int _idx, unsigned int & _width, unsigned int & _height)
