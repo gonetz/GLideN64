@@ -80,7 +80,6 @@ void ConfigDialog::_init()
 	ui->fullScreenRefreshRateComboBox->insertItems(0, fullscreenRatesList);
 	ui->fullScreenRefreshRateComboBox->setCurrentIndex(fullscreenRate);
 
-	ui->verticalSyncCheckBox->setChecked(config.video.verticalSync != 0);
 	ui->aliasingSlider->setValue(config.video.multisampling);
 	ui->anisotropicSlider->setValue(config.texture.maxAnisotropy);
 	ui->forceBilinearCheckBox->setChecked(config.texture.forceBilinear != 0);
@@ -183,7 +182,6 @@ void ConfigDialog::accept()
 	getFullscreenResolutions(ui->fullScreenResolutionComboBox->currentIndex(), config.video.fullscreenWidth, config.video.fullscreenHeight);
 	getFullscreenRefreshRate(ui->fullScreenRefreshRateComboBox->currentIndex(), config.video.fullscreenRefresh);
 
-	config.video.verticalSync = ui->verticalSyncCheckBox->isChecked() ? 1 : 0;
 	config.video.multisampling = ui->aliasingSlider->value();
 	config.texture.maxAnisotropy = ui->anisotropicSlider->value();
 	config.texture.forceBilinear = ui->forceBilinearCheckBox->isChecked();

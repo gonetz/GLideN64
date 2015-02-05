@@ -30,7 +30,6 @@ void loadSettings()
 	config.video.windowedHeight = settings.value("windowedHeight", 480).toInt();
 	config.video.fullscreenRefresh = settings.value("fullscreenRefresh", 60).toInt();
 	config.video.multisampling = settings.value("multisampling", 0).toInt();
-	config.video.verticalSync = settings.value("verticalSync", 0).toInt();
 	settings.endGroup();
 
 	settings.beginGroup("texture");
@@ -114,7 +113,6 @@ void writeSettings()
 	settings.setValue("windowedHeight", config.video.windowedHeight);
 	settings.setValue("fullscreenRefresh", config.video.fullscreenRefresh);
 	settings.setValue("multisampling", config.video.multisampling);
-	settings.setValue("verticalSync", config.video.verticalSync);
 	settings.endGroup();
 
 	settings.beginGroup("texture");

@@ -100,13 +100,6 @@
           </layout>
          </item>
          <item>
-          <widget class="QCheckBox" name="verticalSyncCheckBox">
-           <property name="text">
-            <string>Vertical sync</string>
-           </property>
-          </widget>
-         </item>
-         <item>
           <spacer name="verticalSpacer">
            <property name="orientation">
             <enum>Qt::Vertical</enum>
