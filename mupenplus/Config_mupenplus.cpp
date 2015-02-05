@@ -166,7 +166,7 @@ void Config_LoadConfig()
 	//#Font settings
 	config.font.name = ConfigGetParamString(g_configVideoGliden64, "fontName");
 	if (config.font.name.empty())
-		config.font.name = "comic.ttf";
+		config.font.name = "arial.ttf";
 	char buf[16];
 	sprintf(buf, "0x%s", ConfigGetParamString(g_configVideoGliden64, "fontColor"));
 	long int uColor = strtol(buf, NULL, 16);
