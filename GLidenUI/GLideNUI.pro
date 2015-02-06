@@ -16,7 +16,8 @@ SOURCES += \
     ConfigDialog.cpp \
     GLideNUI.cpp \
     FullscreenResolutions_windows.cpp \
-    Settings.cpp
+    Settings.cpp \
+    ScreenShot.cpp
 
 HEADERS += \
     ConfigDialog.h \

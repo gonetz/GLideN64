@@ -5,7 +5,7 @@
 #include "../RSP.h"
 #include "../Textures.h"
 #include "../OpenGL.h"
-#include "../GLideNUI/glidenui.h"
+#include "../GLideNUI/GLideNUI.h"
 
 Config config;
 

@@ -3,6 +3,8 @@
 #include "../GLideN64.h"
 #include "../Config.h"
 #include "../OpenGL.h"
+#include "../RSP.h"
+#include "../GLideNUI/GLideNUI.h"
 
 class OGLVideoWindows : public OGLVideo
 {
@@ -112,57 +114,14 @@ void OGLVideoWindows::_swapBuffers()
 
 void OGLVideoWindows::_saveScreenshot()
 {
-	BITMAPFILEHEADER fileHeader;
-	BITMAPINFOHEADER infoHeader;
-	HANDLE hBitmapFile;
-
-	char *pixelData = (char*)malloc(m_screenWidth * m_screenHeight * 3);
-
+	unsigned char *pixelData = (unsigned char*)malloc(m_screenWidth * m_screenHeight * 3);
 	GLint oldMode;
 	glGetIntegerv( GL_READ_BUFFER, &oldMode );
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
 	glReadBuffer( GL_FRONT );
-	glReadPixels(0, m_heightOffset, m_screenWidth, m_screenHeight, GL_BGR_EXT, GL_UNSIGNED_BYTE, pixelData);
+	glReadPixels(0, m_heightOffset, m_screenWidth, m_screenHeight, GL_RGB, GL_UNSIGNED_BYTE, pixelData);
 	glReadBuffer( oldMode );
-
-	infoHeader.biSize = sizeof( BITMAPINFOHEADER );
-	infoHeader.biWidth = m_screenWidth;
-	infoHeader.biHeight = m_screenHeight;
-	infoHeader.biPlanes = 1;
-	infoHeader.biBitCount = 24;
-	infoHeader.biCompression = BI_RGB;
-	infoHeader.biSizeImage = m_screenWidth * m_screenHeight * 3;
-	infoHeader.biXPelsPerMeter = 0;
-	infoHeader.biYPelsPerMeter = 0;
-	infoHeader.biClrUsed = 0;
-	infoHeader.biClrImportant = 0;
-
-	fileHeader.bfType = 19778;
-	fileHeader.bfSize = sizeof( BITMAPFILEHEADER ) + sizeof( BITMAPINFOHEADER ) + infoHeader.biSizeImage;
-	fileHeader.bfReserved1 = fileHeader.bfReserved2 = 0;
-	fileHeader.bfOffBits = sizeof( BITMAPFILEHEADER ) + sizeof( BITMAPINFOHEADER );
-
-	char filename[256];
-
-	CreateDirectory( m_strScreenDirectory, NULL );
-
-	int i = 0;
-	do {
-		sprintf(filename, "%sscreen%02i.bmp", m_strScreenDirectory, i++);
-
-		if (i > 99)
-			return;
-
-		hBitmapFile = CreateFile( filename, GENERIC_WRITE, 0, NULL, CREATE_NEW, FILE_ATTRIBUTE_NORMAL, NULL );
-	} while (hBitmapFile == INVALID_HANDLE_VALUE);
-
-	DWORD written;
-
-	WriteFile( hBitmapFile, &fileHeader, sizeof( BITMAPFILEHEADER ), &written, NULL );
-	WriteFile( hBitmapFile, &infoHeader, sizeof( BITMAPINFOHEADER ), &written, NULL );
-	WriteFile( hBitmapFile, pixelData, infoHeader.biSizeImage, &written, NULL );
-
-	CloseHandle( hBitmapFile );
+	SaveScreenshot(m_strScreenDirectory, RSP.romname, m_screenWidth, m_screenHeight, pixelData);
 	free( pixelData );
 }
 

@@ -15,6 +15,7 @@ extern "C" {
 
 EXPORT int CALL RunConfig();
 EXPORT void CALL LoadConfig();
+EXPORT void CALL SaveScreenshot(const char * _folder, const char * _name, int _width, int _height, const unsigned char * _data);
 
 #if defined(__cplusplus)
 }
