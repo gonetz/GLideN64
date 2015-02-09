@@ -13,6 +13,9 @@ struct FrameBuffer
 	FrameBuffer();
 	FrameBuffer(FrameBuffer && _other);
 	~FrameBuffer();
+	void init(u32 _address, u32 _endAddress, u16 _format, u16 _size, u16 _width, u16 _height, bool _cfb);
+	void resolveMultisampledTexture();
+	CachedTexture * getTexture();
 
 	u32 m_startAddress, m_endAddress;
 	u32 m_size, m_width, m_height, m_fillcolor;
@@ -24,6 +27,14 @@ struct FrameBuffer
 	gDPTile *m_pLoadTile;
 	CachedTexture *m_pTexture;
 	DepthBuffer *m_pDepthBuffer;
+	// multisampling
+	CachedTexture *m_pResolveTexture;
+	GLuint m_resolveFBO;
+	bool m_resolved;
+
+private:
+	void _initTexture(u16 _format, u16 _size, CachedTexture *_pTexture);
+	void _setAndAttachTexture(u16 _size, CachedTexture *_pTexture);
 };
 
 class FrameBufferList

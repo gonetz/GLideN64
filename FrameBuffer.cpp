@@ -115,7 +115,7 @@ DepthBufferToRDRAM g_dbToRDRAM;
 #endif
 RDRAMtoFrameBuffer g_RDRAMtoFB;
 
-FrameBuffer::FrameBuffer() : m_cleared(false), m_pLoadTile(NULL), m_pDepthBuffer(NULL)
+FrameBuffer::FrameBuffer() : m_cleared(false), m_pLoadTile(NULL), m_pDepthBuffer(NULL), m_pResolveTexture(NULL), m_resolveFBO(0), m_resolved(false)
 {
 	m_pTexture = textureCache().addFrameBufferTexture();
 	glGenFramebuffers(1, &m_FBO);
@@ -125,12 +125,15 @@ FrameBuffer::FrameBuffer(FrameBuffer && _other) :
 	m_startAddress(_other.m_startAddress), m_endAddress(_other.m_endAddress),
 	m_size(_other.m_size), m_width(_other.m_width), m_height(_other.m_height), m_fillcolor(_other.m_fillcolor),
 	m_scaleX(_other.m_scaleX), m_scaleY(_other.m_scaleY), m_cleared(_other.m_cleared), m_cfb(_other.m_cfb),
-	m_FBO(_other.m_FBO), m_pLoadTile(_other.m_pLoadTile), m_pTexture(_other.m_pTexture), m_pDepthBuffer(_other.m_pDepthBuffer)
+	m_FBO(_other.m_FBO), m_pLoadTile(_other.m_pLoadTile), m_pTexture(_other.m_pTexture), m_pDepthBuffer(_other.m_pDepthBuffer),
+	m_pResolveTexture(_other.m_pResolveTexture), m_resolveFBO(_other.m_resolveFBO), m_resolved(_other.m_resolved)
 {
 	_other.m_FBO = 0;
 	_other.m_pTexture = NULL;
 	_other.m_pLoadTile = NULL;
 	_other.m_pDepthBuffer = NULL;
+	_other.m_pResolveTexture = NULL;
+	_other.m_resolveFBO = 0;
 }
 
 
@@ -140,6 +143,115 @@ FrameBuffer::~FrameBuffer()
 		glDeleteFramebuffers(1, &m_FBO);
 	if (m_pTexture != NULL)
 		textureCache().removeFrameBufferTexture(m_pTexture);
+	if (m_resolveFBO != 0)
+		glDeleteFramebuffers(1, &m_resolveFBO);
+	if (m_pResolveTexture != NULL)
+		textureCache().removeFrameBufferTexture(m_pResolveTexture);
+}
+
+void FrameBuffer::_initTexture(u16 _format, u16 _size, CachedTexture *_pTexture)
+{
+	_pTexture->width = (u32)(m_width * video().getScaleX());
+	_pTexture->height = (u32)(m_height * video().getScaleY());
+	_pTexture->format = _format;
+	_pTexture->size = _size;
+	_pTexture->clampS = 1;
+	_pTexture->clampT = 1;
+	_pTexture->address = m_startAddress;
+	_pTexture->clampWidth = m_width;
+	_pTexture->clampHeight = m_height;
+	_pTexture->frameBufferTexture = TRUE;
+	_pTexture->maskS = 0;
+	_pTexture->maskT = 0;
+	_pTexture->mirrorS = 0;
+	_pTexture->mirrorT = 0;
+	_pTexture->realWidth = _pTexture->width;
+	_pTexture->realHeight = _pTexture->height;
+	_pTexture->textureBytes = _pTexture->realWidth * _pTexture->realHeight;
+	if (_size > G_IM_SIZ_8b)
+		_pTexture->textureBytes *= 4;
+	textureCache().addFrameBufferTextureSize(_pTexture->textureBytes);
+}
+
+void FrameBuffer::_setAndAttachTexture(u16 _size, CachedTexture *_pTexture)
+{
+	glBindTexture(GL_TEXTURE_2D, _pTexture->glName);
+	if (_size > G_IM_SIZ_8b)
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, _pTexture->realWidth, _pTexture->realHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	else
+		glTexImage2D(GL_TEXTURE_2D, 0, monohromeInternalformat, _pTexture->realWidth, _pTexture->realHeight, 0, monohromeformat, GL_UNSIGNED_BYTE, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _pTexture->glName, 0);
+}
+
+void FrameBuffer::init(u32 _address, u32 _endAddress, u16 _format, u16 _size, u16 _width, u16 _height, bool _cfb)
+{
+	OGLVideo & ogl = video();
+	m_startAddress = _address;
+	m_endAddress = _endAddress;
+	m_width = _width;
+	m_height = _height;
+	m_size = _size;
+	m_scaleX = ogl.getScaleX();
+	m_scaleY = ogl.getScaleY();
+	m_fillcolor = 0;
+	m_cfb = _cfb;
+
+	_initTexture(_format, _size, m_pTexture);
+	glBindFramebuffer(GL_FRAMEBUFFER, m_FBO);
+
+	if (config.video.multisampling != 0) {
+		glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, m_pTexture->glName);
+		if (_size > G_IM_SIZ_8b)
+			glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, config.video.multisampling, GL_RGBA8, m_pTexture->realWidth, m_pTexture->realHeight, false);
+		else
+			glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, config.video.multisampling, monohromeInternalformat, m_pTexture->realWidth, m_pTexture->realHeight, false);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D_MULTISAMPLE, m_pTexture->glName, 0);
+
+		m_pResolveTexture = textureCache().addFrameBufferTexture();
+		_initTexture(_format, _size, m_pResolveTexture);
+		glGenFramebuffers(1, &m_resolveFBO);
+		glBindFramebuffer(GL_FRAMEBUFFER, m_resolveFBO);
+		_setAndAttachTexture(_size, m_pResolveTexture);
+		assert(checkFBO());
+
+		glBindFramebuffer(GL_FRAMEBUFFER, m_FBO);
+	} else
+		_setAndAttachTexture(_size, m_pTexture);
+}
+
+void FrameBuffer::resolveMultisampledTexture()
+{
+	if (m_resolved)
+		return;
+	glDisable(GL_SCISSOR_TEST);
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, m_FBO);
+	glReadBuffer(GL_COLOR_ATTACHMENT0);
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_resolveFBO);
+	GLuint attachment = GL_COLOR_ATTACHMENT0;
+	glDrawBuffers(1, &attachment);
+	glBlitFramebuffer(
+		0, 0, m_pTexture->realWidth, m_pTexture->realHeight,
+		0, 0, m_pResolveTexture->realWidth, m_pResolveTexture->realHeight,
+		GL_COLOR_BUFFER_BIT, GL_NEAREST
+		);
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, frameBufferList().getCurrent()->m_FBO);
+	glEnable(GL_SCISSOR_TEST);
+	m_resolved = true;
+}
+
+CachedTexture * FrameBuffer::getTexture()
+{
+	if (config.video.multisampling == 0)
+		return m_pTexture;
+	if (m_resolved)
+		return m_pResolveTexture;
+
+	resolveMultisampledTexture();
+	return m_pResolveTexture;
 }
 
 void FrameBufferList::init()
@@ -217,6 +329,7 @@ void FrameBufferList::saveBuffer(u32 _address, u16 _format, u16 _size, u16 _widt
 			removeBuffer(m_pCurrent->m_startAddress);
 			m_pCurrent = NULL;
 		} else {
+			m_pCurrent->m_resolved = false;
 			glBindFramebuffer(GL_FRAMEBUFFER, m_pCurrent->m_FBO);
 			if (m_pCurrent->m_size != _size) {
 				f32 fillColor[4];
@@ -233,54 +346,7 @@ void FrameBufferList::saveBuffer(u32 _address, u16 _format, u16 _size, u16 _widt
 		// Wasn't found or removed, create a new one
 		m_list.emplace_front();
 		FrameBuffer & buffer = m_list.front();
-
-		buffer.m_startAddress = _address;
-		buffer.m_endAddress = endAddress;
-		buffer.m_width = _width;
-		buffer.m_height = _height;
-		buffer.m_size = _size;
-		buffer.m_scaleX = ogl.getScaleX();
-		buffer.m_scaleY = ogl.getScaleY();
-		buffer.m_fillcolor = 0;
-		buffer.m_cfb = _cfb;
-
-		buffer.m_pTexture->width = (u32)(buffer.m_width * video().getScaleX());
-		buffer.m_pTexture->height = (u32)(buffer.m_height * video().getScaleY());
-		buffer.m_pTexture->format = _format;
-		buffer.m_pTexture->size = _size;
-		buffer.m_pTexture->clampS = 1;
-		buffer.m_pTexture->clampT = 1;
-		buffer.m_pTexture->address = buffer.m_startAddress;
-		buffer.m_pTexture->clampWidth = buffer.m_width;
-		buffer.m_pTexture->clampHeight = buffer.m_height;
-		buffer.m_pTexture->frameBufferTexture = TRUE;
-		buffer.m_pTexture->maskS = 0;
-		buffer.m_pTexture->maskT = 0;
-		buffer.m_pTexture->mirrorS = 0;
-		buffer.m_pTexture->mirrorT = 0;
-		buffer.m_pTexture->realWidth = buffer.m_pTexture->width;
-		buffer.m_pTexture->realHeight = buffer.m_pTexture->height;
-		buffer.m_pTexture->textureBytes = buffer.m_pTexture->realWidth * buffer.m_pTexture->realHeight * 4;
-		textureCache().addFrameBufferTextureSize(buffer.m_pTexture->textureBytes);
-
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
-		glBindFramebuffer(GL_FRAMEBUFFER, buffer.m_FBO);
-
-		if (config.video.multisampling != 0 && _size > G_IM_SIZ_8b) {
-			glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, buffer.m_pTexture->glName);
-			glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, config.video.multisampling, GL_RGBA8, buffer.m_pTexture->realWidth, buffer.m_pTexture->realHeight, false);
-			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D_MULTISAMPLE, buffer.m_pTexture->glName, 0);
-		} else {
-			glBindTexture(GL_TEXTURE_2D, buffer.m_pTexture->glName);
-			if (_size > G_IM_SIZ_8b)
-				glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, buffer.m_pTexture->realWidth, buffer.m_pTexture->realHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-			else
-				glTexImage2D(GL_TEXTURE_2D, 0, monohromeInternalformat, buffer.m_pTexture->realWidth, buffer.m_pTexture->realHeight, 0, monohromeformat, GL_UNSIGNED_BYTE, NULL);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-
-			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, buffer.m_pTexture->glName, 0);
-		}
+		buffer.init(_address, endAddress, _format, _size, _width, _height, _cfb);
 		m_pCurrent = &buffer;
 	}
 
@@ -426,13 +492,29 @@ void FrameBufferList::renderBuffer(u32 _address)
 	const float srcScaleY = ogl.getScaleY();
 	const GLint hOffset = (ogl.getScreenWidth() - ogl.getWidth()) / 2;
 	GLint vOffset = (ogl.getScreenHeight() - ogl.getHeight()) / 2;
-	const GLenum filter = config.video.multisampling != 0 ? GL_NEAREST : GL_LINEAR;
+
+	GLint srcCoord[4] = { 0, (GLint)(srcY0*srcScaleY), ogl.getWidth(), (GLint)(srcY1*srcScaleY) };
+	GLint dstCoord[4] = { hOffset, vOffset + (GLint)(dstY0*dstScaleY), hOffset + ogl.getWidth(), vOffset + (GLint)(dstY1*dstScaleY) };
+
+	assert(!isGLError());
+	GLenum filter = GL_LINEAR;
+	if (config.video.multisampling != 0) {
+		if (dstPartHeight > 0 ||
+			(srcCoord[2] - srcCoord[0]) != (dstCoord[2] - dstCoord[0]) ||
+			(srcCoord[3] - srcCoord[1]) != (dstCoord[3] - dstCoord[1])) {
+			pBuffer->resolveMultisampledTexture();
+			glBindFramebuffer(GL_READ_FRAMEBUFFER, pBuffer->m_resolveFBO);
+			glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+		} else
+			filter = GL_NEAREST;
+	}
+	assert(!isGLError());
 
 	if (!ogl.isFullscreen())
 		vOffset += ogl.getHeightOffset();
 	glBlitFramebuffer(
-		0, (GLint)(srcY0*srcScaleY), ogl.getWidth(), (GLint)(srcY1*srcScaleY),
-		hOffset, vOffset + (GLint)(dstY0*dstScaleY), hOffset + ogl.getWidth(), vOffset + (GLint)(dstY1*dstScaleY),
+		srcCoord[0], srcCoord[1], srcCoord[2], srcCoord[3],
+		dstCoord[0], dstCoord[1], dstCoord[2], dstCoord[3],
 		GL_COLOR_BUFFER_BIT, filter
 	);
 
@@ -508,54 +590,61 @@ void FrameBuffer_ActivateBufferTexture(s16 t, FrameBuffer *pBuffer)
 {
 	if (pBuffer == NULL || pBuffer->m_pTexture == NULL)
 		return;
-	pBuffer->m_pTexture->scaleS = video().getScaleX() / (float)pBuffer->m_pTexture->realWidth;
-	pBuffer->m_pTexture->scaleT = video().getScaleY() / (float)pBuffer->m_pTexture->realHeight;
+
+	CachedTexture *pTexture = pBuffer->getTexture();
+
+	pTexture->scaleS = video().getScaleX() / (float)pTexture->realWidth;
+	pTexture->scaleT = video().getScaleY() / (float)pTexture->realHeight;
 
 	if (gSP.textureTile[t]->shifts > 10)
-		pBuffer->m_pTexture->shiftScaleS = (float)(1 << (16 - gSP.textureTile[t]->shifts));
+		pTexture->shiftScaleS = (float)(1 << (16 - gSP.textureTile[t]->shifts));
 	else if (gSP.textureTile[t]->shifts > 0)
-		pBuffer->m_pTexture->shiftScaleS = 1.0f / (float)(1 << gSP.textureTile[t]->shifts);
+		pTexture->shiftScaleS = 1.0f / (float)(1 << gSP.textureTile[t]->shifts);
 	else
-		pBuffer->m_pTexture->shiftScaleS = 1.0f;
+		pTexture->shiftScaleS = 1.0f;
 
 	if (gSP.textureTile[t]->shiftt > 10)
-		pBuffer->m_pTexture->shiftScaleT = (float)(1 << (16 - gSP.textureTile[t]->shiftt));
+		pTexture->shiftScaleT = (float)(1 << (16 - gSP.textureTile[t]->shiftt));
 	else if (gSP.textureTile[t]->shiftt > 0)
-		pBuffer->m_pTexture->shiftScaleT = 1.0f / (float)(1 << gSP.textureTile[t]->shiftt);
+		pTexture->shiftScaleT = 1.0f / (float)(1 << gSP.textureTile[t]->shiftt);
 	else
-		pBuffer->m_pTexture->shiftScaleT = 1.0f;
+		pTexture->shiftScaleT = 1.0f;
 
 	const u32 shift = gSP.textureTile[t]->imageAddress - pBuffer->m_startAddress;
 	const u32 factor = pBuffer->m_width << pBuffer->m_size >> 1;
 	if (gSP.textureTile[t]->loadType == LOADTYPE_TILE)
 	{
-		pBuffer->m_pTexture->offsetS = (float)pBuffer->m_pLoadTile->uls;
-		pBuffer->m_pTexture->offsetT = (float)(pBuffer->m_height - (pBuffer->m_pLoadTile->ult + shift/factor));
+		pTexture->offsetS = (float)pBuffer->m_pLoadTile->uls;
+		pTexture->offsetT = (float)(pBuffer->m_height - (pBuffer->m_pLoadTile->ult + shift/factor));
 	}
 	else
 	{
-		pBuffer->m_pTexture->offsetS = (float)((shift % factor) >> pBuffer->m_size << 1);
-		pBuffer->m_pTexture->offsetT = (float)(pBuffer->m_height - shift/factor);
+		pTexture->offsetS = (float)((shift % factor) >> pBuffer->m_size << 1);
+		pTexture->offsetT = (float)(pBuffer->m_height - shift/factor);
 	}
 
 //	frameBufferList().renderBuffer(pBuffer->m_startAddress);
-	textureCache().activateTexture(t, pBuffer->m_pTexture);
+	textureCache().activateTexture(t, pTexture);
 	gDP.changed |= CHANGED_FB_TEXTURE;
 }
 
 void FrameBuffer_ActivateBufferTextureBG(s16 t, FrameBuffer *pBuffer )
 {
-	pBuffer->m_pTexture->scaleS = video().getScaleX() / (float)pBuffer->m_pTexture->realWidth;
-	pBuffer->m_pTexture->scaleT = video().getScaleY() / (float)pBuffer->m_pTexture->realHeight;
+	if (pBuffer == NULL || pBuffer->m_pTexture == NULL)
+		return;
 
-	pBuffer->m_pTexture->shiftScaleS = 1.0f;
-	pBuffer->m_pTexture->shiftScaleT = 1.0f;
+	CachedTexture *pTexture = pBuffer->getTexture();
+	pTexture->scaleS = video().getScaleX() / (float)pTexture->realWidth;
+	pTexture->scaleT = video().getScaleY() / (float)pTexture->realHeight;
 
-	pBuffer->m_pTexture->offsetS = gSP.bgImage.imageX;
-	pBuffer->m_pTexture->offsetT = (float)pBuffer->m_height - gSP.bgImage.imageY;
+	pTexture->shiftScaleS = 1.0f;
+	pTexture->shiftScaleT = 1.0f;
+
+	pTexture->offsetS = gSP.bgImage.imageX;
+	pTexture->offsetT = (float)pBuffer->m_height - gSP.bgImage.imageY;
 
 	//	FrameBuffer_RenderBuffer(buffer->startAddress);
-	textureCache().activateTexture(t, pBuffer->m_pTexture);
+	textureCache().activateTexture(t, pTexture);
 	gDP.changed |= CHANGED_FB_TEXTURE;
 }
 
