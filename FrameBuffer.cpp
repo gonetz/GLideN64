@@ -263,16 +263,24 @@ void FrameBufferList::saveBuffer(u32 _address, u16 _format, u16 _size, u16 _widt
 		buffer.m_pTexture->textureBytes = buffer.m_pTexture->realWidth * buffer.m_pTexture->realHeight * 4;
 		textureCache().addFrameBufferTextureSize(buffer.m_pTexture->textureBytes);
 
-		glBindTexture( GL_TEXTURE_2D, buffer.m_pTexture->glName );
-		if (_size > G_IM_SIZ_8b)
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, buffer.m_pTexture->realWidth, buffer.m_pTexture->realHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-		else
-			glTexImage2D(GL_TEXTURE_2D, 0, monohromeInternalformat, buffer.m_pTexture->realWidth, buffer.m_pTexture->realHeight, 0, monohromeformat, GL_UNSIGNED_BYTE, NULL);
-		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glBindFramebuffer(GL_FRAMEBUFFER, buffer.m_FBO);
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, buffer.m_pTexture->glName, 0);
+
+		if (config.video.multisampling != 0 && _size > G_IM_SIZ_8b) {
+			glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, buffer.m_pTexture->glName);
+			glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, config.video.multisampling, GL_RGBA8, buffer.m_pTexture->realWidth, buffer.m_pTexture->realHeight, false);
+			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D_MULTISAMPLE, buffer.m_pTexture->glName, 0);
+		} else {
+			glBindTexture(GL_TEXTURE_2D, buffer.m_pTexture->glName);
+			if (_size > G_IM_SIZ_8b)
+				glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, buffer.m_pTexture->realWidth, buffer.m_pTexture->realHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+			else
+				glTexImage2D(GL_TEXTURE_2D, 0, monohromeInternalformat, buffer.m_pTexture->realWidth, buffer.m_pTexture->realHeight, 0, monohromeformat, GL_UNSIGNED_BYTE, NULL);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, buffer.m_pTexture->glName, 0);
+		}
 		m_pCurrent = &buffer;
 	}
 
@@ -405,9 +413,8 @@ void FrameBufferList::renderBuffer(u32 _address)
 		srcY1 = srcY0 + VI.real_height;
 	}
 
-#if 1
+
 	PostProcessor::get().process(pBuffer);
-#endif
 	// glDisable(GL_SCISSOR_TEST) does not affect glBlitFramebuffer, at least on AMD
 	glScissor(0, 0, ogl.getScreenWidth(), ogl.getScreenHeight());
 	glDisable(GL_SCISSOR_TEST);
@@ -419,12 +426,14 @@ void FrameBufferList::renderBuffer(u32 _address)
 	const float srcScaleY = ogl.getScaleY();
 	const GLint hOffset = (ogl.getScreenWidth() - ogl.getWidth()) / 2;
 	GLint vOffset = (ogl.getScreenHeight() - ogl.getHeight()) / 2;
+	const GLenum filter = config.video.multisampling != 0 ? GL_NEAREST : GL_LINEAR;
+
 	if (!ogl.isFullscreen())
 		vOffset += ogl.getHeightOffset();
 	glBlitFramebuffer(
 		0, (GLint)(srcY0*srcScaleY), ogl.getWidth(), (GLint)(srcY1*srcScaleY),
 		hOffset, vOffset + (GLint)(dstY0*dstScaleY), hOffset + ogl.getWidth(), vOffset + (GLint)(dstY1*dstScaleY),
-		GL_COLOR_BUFFER_BIT, GL_LINEAR
+		GL_COLOR_BUFFER_BIT, filter
 	);
 
 	if (dstPartHeight > 0) {
@@ -439,7 +448,7 @@ void FrameBufferList::renderBuffer(u32 _address)
 			glBlitFramebuffer(
 				0, (GLint)(srcY0*srcScaleY), ogl.getWidth(), (GLint)(srcY1*srcScaleY),
 				hOffset, vOffset + (GLint)(dstY0*dstScaleY), hOffset + ogl.getWidth(), vOffset + (GLint)(dstY1*dstScaleY),
-				GL_COLOR_BUFFER_BIT, GL_LINEAR
+				GL_COLOR_BUFFER_BIT, filter
 			);
 		}
 	}
