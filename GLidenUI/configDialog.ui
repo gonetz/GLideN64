@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>372</width>
-    <height>488</height>
+    <height>529</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -104,43 +104,57 @@
           </layout>
          </item>
          <item>
-          <spacer name="verticalSpacer">
-           <property name="orientation">
-            <enum>Qt::Vertical</enum>
-           </property>
-           <property name="sizeType">
-            <enum>QSizePolicy::Fixed</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>20</width>
-             <height>4</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
-         <item>
-          <widget class="Line" name="line_2">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <spacer name="verticalSpacer_2">
-           <property name="orientation">
-            <enum>Qt::Vertical</enum>
-           </property>
-           <property name="sizeType">
-            <enum>QSizePolicy::Fixed</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>20</width>
-             <height>4</height>
-            </size>
-           </property>
-          </spacer>
+          <layout class="QHBoxLayout" name="horizontalLayout_11">
+           <item>
+            <widget class="QLabel" name="label_10">
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Aspect ratio of the output.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Most N64 games use 4:3 aspect ratio, but some support widescreen too.You may select appropriate aspect here and set widescreen mode in game settings.In &lt;span style=&quot; font-weight:600;&quot;&gt;Stretch&lt;/span&gt; mode the output will be stretched to the entire screen, other modes may add black borders if necessary.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
+             <property name="text">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Aspect&lt;span style=&quot; vertical-align:super;&quot;&gt;*&lt;/span&gt;:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QRadioButton" name="aspectStretchRadioButton">
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Aspect ratio of the output.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Most N64 games use 4:3 aspect ratio, but some support widescreen too.You may select appropriate aspect here and set widescreen mode in game settings.In &lt;span style=&quot; font-weight:600;&quot;&gt;Stretch&lt;/span&gt; mode the output will be stretched to the entire screen, other modes may add black borders if necessary.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
+             <property name="text">
+              <string>Stretch</string>
+             </property>
+             <attribute name="buttonGroup">
+              <string notr="true">aspectButtonGroup</string>
+             </attribute>
+            </widget>
+           </item>
+           <item>
+            <widget class="QRadioButton" name="aspect43RadioButton">
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Aspect ratio of the output.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Most N64 games use 4:3 aspect ratio, but some support widescreen too.You may select appropriate aspect here and set widescreen mode in game settings.In &lt;span style=&quot; font-weight:600;&quot;&gt;Stretch&lt;/span&gt; mode the output will be stretched to the entire screen, other modes may add black borders if necessary.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
+             <property name="text">
+              <string>4:3</string>
+             </property>
+             <attribute name="buttonGroup">
+              <string notr="true">aspectButtonGroup</string>
+             </attribute>
+            </widget>
+           </item>
+           <item>
+            <widget class="QRadioButton" name="aspect169RadioButton">
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Aspect ratio of the output.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Most N64 games use 4:3 aspect ratio, but some support widescreen too.You may select appropriate aspect here and set widescreen mode in game settings.In &lt;span style=&quot; font-weight:600;&quot;&gt;Stretch&lt;/span&gt; mode the output will be stretched to the entire screen, other modes may add black borders if necessary.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
+             <property name="text">
+              <string>16:9</string>
+             </property>
+             <attribute name="buttonGroup">
+              <string notr="true">aspectButtonGroup</string>
+             </attribute>
+            </widget>
+           </item>
+          </layout>
          </item>
          <item>
           <layout class="QVBoxLayout" name="verticalLayout_5">
@@ -149,7 +163,7 @@
              <item>
               <widget class="QLabel" name="labelAliasing">
                <property name="text">
-                <string>Anti-aliasing:</string>
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Anti-aliasing&lt;span style=&quot; vertical-align:super;&quot;&gt;*&lt;/span&gt;:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                </property>
               </widget>
              </item>
@@ -201,6 +215,52 @@
               </layout>
              </item>
             </layout>
+           </item>
+           <item>
+            <widget class="QLabel" name="label_11">
+             <property name="text">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;*requires frame buffer emulation enabled &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <spacer name="verticalSpacer_5">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+             <property name="sizeType">
+              <enum>QSizePolicy::Fixed</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>20</width>
+               <height>4</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item>
+            <widget class="Line" name="line_3">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <spacer name="verticalSpacer_6">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+             <property name="sizeType">
+              <enum>QSizePolicy::Fixed</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>20</width>
+               <height>4</height>
+              </size>
+             </property>
+            </spacer>
            </item>
            <item>
             <layout class="QVBoxLayout" name="verticalLayout_7">
@@ -371,6 +431,9 @@
              <property name="text">
               <string>png</string>
              </property>
+             <attribute name="buttonGroup">
+              <string notr="true">screenshotButtonGroup</string>
+             </attribute>
             </widget>
            </item>
            <item>
@@ -378,12 +441,15 @@
              <property name="text">
               <string>jpeg</string>
              </property>
+             <attribute name="buttonGroup">
+              <string notr="true">screenshotButtonGroup</string>
+             </attribute>
             </widget>
            </item>
           </layout>
          </item>
          <item>
-          <spacer name="verticalSpacer_5">
+          <spacer name="verticalSpacer_2">
            <property name="orientation">
             <enum>Qt::Vertical</enum>
            </property>
@@ -399,14 +465,14 @@
           </spacer>
          </item>
          <item>
-          <widget class="Line" name="line_3">
+          <widget class="Line" name="line_2">
            <property name="orientation">
             <enum>Qt::Horizontal</enum>
            </property>
           </widget>
          </item>
          <item>
-          <spacer name="verticalSpacer_6">
+          <spacer name="verticalSpacer">
            <property name="orientation">
             <enum>Qt::Vertical</enum>
            </property>
@@ -574,63 +640,6 @@
              <string>Emulate N64 depth compare</string>
             </property>
            </widget>
-          </item>
-          <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_6">
-            <item>
-             <widget class="QLabel" name="label_4">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="toolTip">
-               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Aspect ratio of the output.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Most N64 games use 4:3 aspect ratio, but some support widescreen too.You may select appropriate aspect here and set widescreen mode in game settings.In &lt;span style=&quot; font-weight:600;&quot;&gt;Stretch&lt;/span&gt; mode the output will be stretched to the entire screen, other modes may add black borders if necessary.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-              </property>
-              <property name="text">
-               <string>Aspect ratio:</string>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <layout class="QVBoxLayout" name="verticalLayout_9">
-              <item>
-               <widget class="QRadioButton" name="aspectStretchRadioButton">
-                <property name="toolTip">
-                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Aspect ratio of the output.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Most N64 games use 4:3 aspect ratio, but some support widescreen too.You may select appropriate aspect here and set widescreen mode in game settings.In &lt;span style=&quot; font-weight:600;&quot;&gt;Stretch&lt;/span&gt; mode the output will be stretched to the entire screen, other modes may add black borders if necessary.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                </property>
-                <property name="text">
-                 <string>Stretch</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QRadioButton" name="aspect43RadioButton">
-                <property name="toolTip">
-                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Aspect ratio of the output.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Most N64 games use 4:3 aspect ratio, but some support widescreen too.You may select appropriate aspect here and set widescreen mode in game settings.In &lt;span style=&quot; font-weight:600;&quot;&gt;Stretch&lt;/span&gt; mode the output will be stretched to the entire screen, other modes may add black borders if necessary.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                </property>
-                <property name="text">
-                 <string>force 4:3</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QRadioButton" name="aspect169RadioButton">
-                <property name="toolTip">
-                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Aspect ratio of the output.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Most N64 games use 4:3 aspect ratio, but some support widescreen too.You may select appropriate aspect here and set widescreen mode in game settings.In &lt;span style=&quot; font-weight:600;&quot;&gt;Stretch&lt;/span&gt; mode the output will be stretched to the entire screen, other modes may add black borders if necessary.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                </property>
-                <property name="text">
-                 <string>force 16:9</string>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </item>
-           </layout>
           </item>
          </layout>
         </widget>
@@ -985,8 +994,8 @@
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>324</x>
-     <y>524</y>
+     <x>333</x>
+     <y>478</y>
     </hint>
     <hint type="destinationlabel">
      <x>316</x>
@@ -1001,28 +1010,12 @@
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>304</x>
-     <y>524</y>
+     <x>313</x>
+     <y>478</y>
     </hint>
     <hint type="destinationlabel">
      <x>276</x>
      <y>460</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>aliasingSlider</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>aliasingLabelVal</receiver>
-   <slot>setNum(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>77</x>
-     <y>188</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>338</x>
-     <y>189</y>
     </hint>
    </hints>
   </connection>
@@ -1042,5 +1035,25 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>aliasingSlider</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>aliasingLabelVal</receiver>
+   <slot>setNum(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>77</x>
+     <y>188</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>338</x>
+     <y>189</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
+ <buttongroups>
+  <buttongroup name="aspectButtonGroup"/>
+  <buttongroup name="screenshotButtonGroup"/>
+ </buttongroups>
 </ui>
