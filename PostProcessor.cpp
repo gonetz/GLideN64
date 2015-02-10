@@ -169,32 +169,6 @@ static const char* glowShader =
 "}																														\n"
 ;
 
-static const char* simpleBloomShader =
-// glsl bloom shader by krischan
-// http://wp.applesandoranges.eu/
-"#version 330 core																		\n"
-"in mediump vec2 vTexCoord;																\n"
-"uniform sampler2D Sample0;									                             \n"
-"out lowp vec4 fragColor;																\n"
-"void main()                                                                            \n"
-"{                                                                                      \n"
-"   lowp vec4 sum = vec4(0.0);                                                          \n"
-"                                                                                       \n"
-"   for(int i = -4 ; i < 4; i++) {                                                      \n"
-"        for (int j = -3; j < 3; j++)                                                   \n"
-"            sum += texture2D(Sample0, vTexCoord + vec2(j, i)*0.004) * 0.25;\n"
-"   }                                                                                   \n"
-"   if (texture2D(Sample0, vTexCoord).r < 0.3) {	                        \n"
-"      fragColor = sum*sum*0.012 + texture2D(Sample0, vTexCoord);		 	\n"
-"   } else {                                                                            \n"
-"       if (texture2D(Sample0, vTexCoord).r < 0.5)                          \n"
-"           fragColor = sum*sum*0.009 + texture2D(Sample0, vTexCoord);      \n"
-"       else                                                                            \n"
-"           fragColor = sum*sum*0.0075 + texture2D(Sample0, vTexCoord);     \n"
-"   }                                                                                   \n"
-"}                                                                                      \n"
-;
-
 static
 GLuint _createShaderProgram(const char * _strVertex, const char * _strFragment)
 {
@@ -261,62 +235,53 @@ void PostProcessor::init()
 	m_pTextureOriginal = _createTexture();
 	m_FBO_original = _createFBO(m_pTextureOriginal);
 
-	if (config.bloomFilter.mode == 1) {
-		m_bloomProgram = _createShaderProgram(vertexShader, simpleBloomShader);
-		glUseProgram(m_extractBloomProgram);
-		int loc = glGetUniformLocation(m_bloomProgram, "Sample0");
-		assert(loc >= 0);
-		glUniform1i(loc, 0);
-	}
-	else {
-		m_extractBloomProgram = _createShaderProgram(vertexShader, extractBloomShader);
-		glUseProgram(m_extractBloomProgram);
-		int loc = glGetUniformLocation(m_extractBloomProgram, "Sample0");
-		assert(loc >= 0);
-		glUniform1i(loc, 0);
-		loc = glGetUniformLocation(m_extractBloomProgram, "ThresholdLevel");
-		assert(loc >= 0);
-		glUniform1i(loc, config.bloomFilter.thresholdLevel);
+	m_extractBloomProgram = _createShaderProgram(vertexShader, extractBloomShader);
+	glUseProgram(m_extractBloomProgram);
+	int loc = glGetUniformLocation(m_extractBloomProgram, "Sample0");
+	assert(loc >= 0);
+	glUniform1i(loc, 0);
+	loc = glGetUniformLocation(m_extractBloomProgram, "ThresholdLevel");
+	assert(loc >= 0);
+	glUniform1i(loc, config.bloomFilter.thresholdLevel);
 
-		m_seperableBlurProgram = _createShaderProgram(vertexShader, seperableBlurShader);
-		glUseProgram(m_seperableBlurProgram);
-		loc = glGetUniformLocation(m_seperableBlurProgram, "Sample0");
-		assert(loc >= 0);
-		glUniform1i(loc, 0);
-		loc = glGetUniformLocation(m_seperableBlurProgram, "TexelSize");
-		assert(loc >= 0);
-		glUniform2f(loc, 1.0f / video().getWidth(), 1.0f / video().getHeight());
-		loc = glGetUniformLocation(m_seperableBlurProgram, "Orientation");
-		assert(loc >= 0);
-		glUniform1i(loc, 0);
-		loc = glGetUniformLocation(m_seperableBlurProgram, "BlurAmount");
-		assert(loc >= 0);
-		glUniform1i(loc, config.bloomFilter.blurAmount);
-		loc = glGetUniformLocation(m_seperableBlurProgram, "BlurScale");
-		assert(loc >= 0);
-		glUniform1f(loc, 1.0f);
-		loc = glGetUniformLocation(m_seperableBlurProgram, "BlurStrength");
-		assert(loc >= 0);
-		glUniform1f(loc, config.bloomFilter.blurStrength/100.0f);
+	m_seperableBlurProgram = _createShaderProgram(vertexShader, seperableBlurShader);
+	glUseProgram(m_seperableBlurProgram);
+	loc = glGetUniformLocation(m_seperableBlurProgram, "Sample0");
+	assert(loc >= 0);
+	glUniform1i(loc, 0);
+	loc = glGetUniformLocation(m_seperableBlurProgram, "TexelSize");
+	assert(loc >= 0);
+	glUniform2f(loc, 1.0f / video().getWidth(), 1.0f / video().getHeight());
+	loc = glGetUniformLocation(m_seperableBlurProgram, "Orientation");
+	assert(loc >= 0);
+	glUniform1i(loc, 0);
+	loc = glGetUniformLocation(m_seperableBlurProgram, "BlurAmount");
+	assert(loc >= 0);
+	glUniform1i(loc, config.bloomFilter.blurAmount);
+	loc = glGetUniformLocation(m_seperableBlurProgram, "BlurScale");
+	assert(loc >= 0);
+	glUniform1f(loc, 1.0f);
+	loc = glGetUniformLocation(m_seperableBlurProgram, "BlurStrength");
+	assert(loc >= 0);
+	glUniform1f(loc, config.bloomFilter.blurStrength/100.0f);
 
-		m_glowProgram = _createShaderProgram(vertexShader, glowShader);
-		glUseProgram(m_glowProgram);
-		loc = glGetUniformLocation(m_glowProgram, "Sample0");
-		assert(loc >= 0);
-		glUniform1i(loc, 0);
-		loc = glGetUniformLocation(m_glowProgram, "Sample1");
-		assert(loc >= 0);
-		glUniform1i(loc, 1);
-		loc = glGetUniformLocation(m_glowProgram, "BlendMode");
-		assert(loc >= 0);
-		glUniform1i(loc, config.bloomFilter.blendMode);
+	m_glowProgram = _createShaderProgram(vertexShader, glowShader);
+	glUseProgram(m_glowProgram);
+	loc = glGetUniformLocation(m_glowProgram, "Sample0");
+	assert(loc >= 0);
+	glUniform1i(loc, 0);
+	loc = glGetUniformLocation(m_glowProgram, "Sample1");
+	assert(loc >= 0);
+	glUniform1i(loc, 1);
+	loc = glGetUniformLocation(m_glowProgram, "BlendMode");
+	assert(loc >= 0);
+	glUniform1i(loc, config.bloomFilter.blendMode);
 
-		m_pTextureGlowMap = _createTexture();
-		m_pTextureBlur = _createTexture();
+	m_pTextureGlowMap = _createTexture();
+	m_pTextureBlur = _createTexture();
 
-		m_FBO_glowMap = _createFBO(m_pTextureGlowMap);
-		m_FBO_blur = _createFBO(m_pTextureBlur);
-	}
+	m_FBO_glowMap = _createFBO(m_pTextureGlowMap);
+	m_FBO_blur = _createFBO(m_pTextureBlur);
 
 	glUseProgram(0);
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
@@ -403,39 +368,32 @@ void PostProcessor::process(FrameBuffer * _pBuffer)
 		GL_COLOR_BUFFER_BIT, GL_LINEAR
 	);
 
-	if (config.bloomFilter.mode == 1) {
-		glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
-		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, _pBuffer->m_FBO);
-		textureCache().activateTexture(0, m_pTextureOriginal);
-		glUseProgram(m_bloomProgram);
-		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-	} else {
-		glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
 
-		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_FBO_glowMap);
-		textureCache().activateTexture(0, m_pTextureOriginal);
-		glUseProgram(m_extractBloomProgram);
-		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_FBO_glowMap);
+	textureCache().activateTexture(0, m_pTextureOriginal);
+	glUseProgram(m_extractBloomProgram);
+	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
-		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_FBO_blur);
-		textureCache().activateTexture(0, m_pTextureGlowMap);
-		glUseProgram(m_seperableBlurProgram);
-		int loc = glGetUniformLocation(m_seperableBlurProgram, "Orientation");
-		assert(loc >= 0);
-		glUniform1i(loc, 0);
-		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_FBO_blur);
+	textureCache().activateTexture(0, m_pTextureGlowMap);
+	glUseProgram(m_seperableBlurProgram);
+	int loc = glGetUniformLocation(m_seperableBlurProgram, "Orientation");
+	assert(loc >= 0);
+	glUniform1i(loc, 0);
+	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
-		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_FBO_glowMap);
-		textureCache().activateTexture(0, m_pTextureBlur);
-		glUniform1i(loc, 1);
-		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_FBO_glowMap);
+	textureCache().activateTexture(0, m_pTextureBlur);
+	glUniform1i(loc, 1);
+	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
-		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, _pBuffer->m_FBO);
-		textureCache().activateTexture(0, m_pTextureOriginal);
-		textureCache().activateTexture(1, m_pTextureGlowMap);
-		glUseProgram(m_glowProgram);
-		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-	}
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, _pBuffer->m_FBO);
+	textureCache().activateTexture(0, m_pTextureOriginal);
+	textureCache().activateTexture(1, m_pTextureGlowMap);
+	glUseProgram(m_glowProgram);
+	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 	video().getRender().dropRenderState();
 	glUseProgram(0);
