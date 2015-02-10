@@ -191,7 +191,6 @@ bool _isDigit(char _c)
 	return _c >= '0' && _c <= '9';
 }
 
-int MicrocodeDialog(u32 _crc, const char * _str);
 void GBIInfo::loadMicrocode(u32 uc_start, u32 uc_dstart, u16 uc_dsize)
 {
 	for (Microcodes::iterator iter = m_list.begin(); iter != m_list.end(); ++iter) {
@@ -287,18 +286,6 @@ void GBIInfo::loadMicrocode(u32 uc_start, u32 uc_dstart, u16 uc_dsize)
 		}
 	}
 
-	for (u32 i = 0; i < numSpecialMicrocodes; ++i) {
-		if (strcmp( uc_str, specialMicrocodes[i].text ) == 0) {
-			current.type = specialMicrocodes[i].type;
-			_makeCurrent(&current);
-			return;
-		}
-	}
-
-	printf( "GLideN64: Warning - unknown ucode!!!\n" );
-	const int type = MicrocodeDialog(uc_crc, uc_str);
-	if (type >= F3D && type <= NONE)
-		current.type = type;
-
+	assert(false && "unknown ucode!!!'n");
 	_makeCurrent(&current);
 }

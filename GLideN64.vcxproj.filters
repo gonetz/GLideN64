@@ -174,12 +174,6 @@
     <ClCompile Include="mupenplus\Config_mupenplus.cpp">
       <Filter>Source Files\mupenplus</Filter>
     </ClCompile>
-    <ClCompile Include="windows\MicrocodeDialog_windows.cpp">
-      <Filter>Source Files\windows</Filter>
-    </ClCompile>
-    <ClCompile Include="mupenplus\MicrocodeDialog_mupenplus.cpp">
-      <Filter>Source Files\mupenplus</Filter>
-    </ClCompile>
     <ClCompile Include="Turbo3D.cpp">
       <Filter>Source Files\uCodes</Filter>
     </ClCompile>
