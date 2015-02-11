@@ -87,7 +87,7 @@ void ConfigDialog::_init()
 
 	switch (config.texture.screenShotFormat) {
 	case 0:
-		ui->pngRadioButton->setChecked(true);
+		ui->bmpRadioButton->setChecked(true);
 		break;
 	case 1:
 		ui->jpegRadioButton->setChecked(true);
@@ -202,7 +202,7 @@ void ConfigDialog::accept()
 	config.texture.forceBilinear = ui->forceBilinearCheckBox->isChecked();
 	config.texture.maxBytes = ui->cacheSizeSpinBox->value() * gc_uMegabyte;
 
-	if (ui->pngRadioButton->isChecked())
+	if (ui->bmpRadioButton->isChecked())
 		config.texture.screenShotFormat = 0;
 	else if (ui->jpegRadioButton->isChecked())
 		config.texture.screenShotFormat = 1;

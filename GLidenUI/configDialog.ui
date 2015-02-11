@@ -430,9 +430,9 @@
             </widget>
            </item>
            <item>
-            <widget class="QRadioButton" name="pngRadioButton">
+            <widget class="QRadioButton" name="bmpRadioButton">
              <property name="text">
-              <string>png</string>
+              <string>bmp</string>
              </property>
              <attribute name="buttonGroup">
               <string notr="true">screenshotButtonGroup</string>

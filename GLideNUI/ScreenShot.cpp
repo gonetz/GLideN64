@@ -8,9 +8,9 @@
 
 EXPORT void CALL SaveScreenshot(const char * _folder, const char * _name, int _width, int _height, const unsigned char * _data)
 {
-	const char * png = "png";
+	const char * bmp = "bmp";
 	const char * jpg = "jpg";
-	const char * fileExt = config.texture.screenShotFormat == 0 ? png : jpg;
+	const char * fileExt = config.texture.screenShotFormat == 0 ? bmp : jpg;
 	QString romName(_name);
 	romName = romName.replace(' ', '_');
 	romName = romName.replace(':', ';');
