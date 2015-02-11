@@ -17,16 +17,19 @@ SOURCES += \
     GLideNUI.cpp \
     FullscreenResolutions_windows.cpp \
     Settings.cpp \
-    ScreenShot.cpp
+    ScreenShot.cpp \
+    AboutDialog.cpp
 
 HEADERS += \
     ConfigDialog.h \
     GLideNUI.h \
     FullscreenResolutions.h \
-    Settings.h
+    Settings.h \
+    AboutDialog.h
 
 RESOURCES += \
     icon.qrc
 
 FORMS += \
-    configDialog.ui
+    configDialog.ui \
+    AboutDialog.ui
