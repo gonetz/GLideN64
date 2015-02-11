@@ -41,6 +41,9 @@ bool Config_SetDefault()
 	res = ConfigSetDefaultBool(g_configVideoGeneral, "VerticalSync", 0, "If true, activate the SDL_GL_SWAP_CONTROL attribute");
 	assert(res == M64ERR_SUCCESS);
 
+	res = ConfigSetDefaultInt(g_configVideoGliden64, "configVersion", CONFIG_VERSION_CURRENT, "Settings version. Don't touch it.");
+	assert(res == M64ERR_SUCCESS);
+
 	res = ConfigSetDefaultInt(g_configVideoGliden64, "MultiSampling", 0, "Enable/Disable MultiSampling (0=off, 2,4,8,16=quality)");
 	assert(res == M64ERR_SUCCESS);
 	res = ConfigSetDefaultInt(g_configVideoGliden64, "AspectRatio", 0, "Screen aspect ratio (0=stretch, 1=force 4:3, 2=force 16:9)");
@@ -128,6 +131,11 @@ bool Config_SetDefault()
 void Config_LoadConfig()
 {
 	Config_SetDefault();
+	config.version = ConfigGetParamInt(g_configVideoGliden64, "configVersion");
+	if (config.version != CONFIG_VERSION_CURRENT) {
+		ConfigDeleteSection("Video-GLideN64");
+		Config_SetDefault();
+	}
 
 	config.video.fullscreen = ConfigGetParamBool(g_configVideoGeneral, "Fullscreen");
 	config.video.windowedWidth = ConfigGetParamInt(g_configVideoGeneral, "ScreenWidth");

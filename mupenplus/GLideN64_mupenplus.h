@@ -11,6 +11,7 @@
 
 /* definitions of pointers to Core config functions */
 extern ptr_ConfigOpenSection      ConfigOpenSection;
+extern ptr_ConfigDeleteSection    ConfigDeleteSection;
 extern ptr_ConfigSetParameter     ConfigSetParameter;
 extern ptr_ConfigGetParameter     ConfigGetParameter;
 extern ptr_ConfigGetParameterHelp ConfigGetParameterHelp;

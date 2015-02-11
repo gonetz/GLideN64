@@ -12,6 +12,7 @@
 ptr_ConfigGetSharedDataFilepath ConfigGetSharedDataFilepath = NULL;
 ptr_ConfigGetUserConfigPath ConfigGetUserConfigPath = NULL;
 ptr_ConfigOpenSection      ConfigOpenSection = NULL;
+ptr_ConfigDeleteSection ConfigDeleteSection = NULL;
 ptr_ConfigSetDefaultInt    ConfigSetDefaultInt = NULL;
 ptr_ConfigSetDefaultBool   ConfigSetDefaultBool = NULL;
 ptr_ConfigSetDefaultString ConfigSetDefaultString = NULL;
@@ -39,6 +40,7 @@ m64p_error PluginAPI::PluginStartup(m64p_dynlib_handle _CoreLibHandle)
 	ConfigGetSharedDataFilepath = (ptr_ConfigGetSharedDataFilepath)	DLSYM(_CoreLibHandle, "ConfigGetSharedDataFilepath");
 	ConfigGetUserConfigPath = (ptr_ConfigGetUserConfigPath)	DLSYM(_CoreLibHandle, "ConfigGetUserConfigPath");
 	ConfigOpenSection = (ptr_ConfigOpenSection)DLSYM(_CoreLibHandle, "ConfigOpenSection");
+	ConfigDeleteSection = (ptr_ConfigDeleteSection)DLSYM(_CoreLibHandle, "ConfigDeleteSection");
 	ConfigSetDefaultInt = (ptr_ConfigSetDefaultInt)DLSYM(_CoreLibHandle, "ConfigSetDefaultInt");
 	ConfigSetDefaultBool = (ptr_ConfigSetDefaultBool)DLSYM(_CoreLibHandle, "ConfigSetDefaultBool");
 	ConfigSetDefaultString = (ptr_ConfigSetDefaultString)DLSYM(_CoreLibHandle, "ConfigSetDefaultString");
