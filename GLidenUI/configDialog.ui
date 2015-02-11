@@ -30,10 +30,13 @@
    <bool>true</bool>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_3">
+   <property name="sizeConstraint">
+    <enum>QLayout::SetFixedSize</enum>
+   </property>
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>0</number>
+      <number>3</number>
      </property>
      <widget class="QWidget" name="videoTab">
       <attribute name="title">
@@ -966,6 +969,187 @@
        </item>
       </layout>
      </widget>
+     <widget class="QWidget" name="postFilterTab">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <attribute name="title">
+       <string>Post filters</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="postFilterVerticalLayout">
+       <item>
+        <widget class="QGroupBox" name="bloomGroupBox">
+         <property name="title">
+          <string>Bloom</string>
+         </property>
+         <property name="checkable">
+          <bool>true</bool>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_15">
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_6">
+            <item>
+             <widget class="QLabel" name="bloomBlendModeLabel">
+              <property name="text">
+               <string>Bloom blend mode:</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QRadioButton" name="bloomStrongRadioButton">
+              <property name="text">
+               <string>Strong</string>
+              </property>
+              <attribute name="buttonGroup">
+               <string notr="true">bloomBlendModeButtonGroup</string>
+              </attribute>
+             </widget>
+            </item>
+            <item>
+             <widget class="QRadioButton" name="bloomMildRadioButton">
+              <property name="text">
+               <string>Mild</string>
+              </property>
+              <attribute name="buttonGroup">
+               <string notr="true">bloomBlendModeButtonGroup</string>
+              </attribute>
+             </widget>
+            </item>
+            <item>
+             <widget class="QRadioButton" name="bloomLightRadioButton">
+              <property name="text">
+               <string>Light</string>
+              </property>
+              <attribute name="buttonGroup">
+               <string notr="true">bloomBlendModeButtonGroup</string>
+              </attribute>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QGridLayout" name="gridLayout_3">
+            <item row="0" column="1">
+             <widget class="QSlider" name="bloomThresholdSlider">
+              <property name="minimum">
+               <number>2</number>
+              </property>
+              <property name="maximum">
+               <number>8</number>
+              </property>
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="tickPosition">
+               <enum>QSlider::TicksBelow</enum>
+              </property>
+              <property name="tickInterval">
+               <number>1</number>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QLabel" name="label_20">
+              <property name="text">
+               <string>Blur amount:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <widget class="QSlider" name="blurAmountSlider">
+              <property name="minimum">
+               <number>1</number>
+              </property>
+              <property name="maximum">
+               <number>10</number>
+              </property>
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="tickPosition">
+               <enum>QSlider::TicksBelow</enum>
+              </property>
+              <property name="tickInterval">
+               <number>1</number>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="0">
+             <widget class="QLabel" name="label_19">
+              <property name="text">
+               <string>Threshold level:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="0">
+             <widget class="QLabel" name="label_21">
+              <property name="text">
+               <string>Blur strength:</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="1">
+             <widget class="QSlider" name="blurStrengthSlider">
+              <property name="minimum">
+               <number>10</number>
+              </property>
+              <property name="maximum">
+               <number>99</number>
+              </property>
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="tickPosition">
+               <enum>QSlider::TicksBelow</enum>
+              </property>
+              <property name="tickInterval">
+               <number>10</number>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="2">
+             <widget class="QLabel" name="label_4">
+              <property name="text">
+               <string> 0</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="2">
+             <widget class="QLabel" name="label_22">
+              <property name="text">
+               <string> 0</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="2">
+             <widget class="QLabel" name="label_23">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text">
+               <string> 0</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QWidget" name="widget_3" native="true"/>
+       </item>
+      </layout>
+     </widget>
     </widget>
    </item>
    <item>
@@ -994,8 +1178,8 @@
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>333</x>
-     <y>478</y>
+     <x>342</x>
+     <y>519</y>
     </hint>
     <hint type="destinationlabel">
      <x>316</x>
@@ -1010,8 +1194,8 @@
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>313</x>
-     <y>478</y>
+     <x>322</x>
+     <y>519</y>
     </hint>
     <hint type="destinationlabel">
      <x>276</x>
@@ -1026,12 +1210,12 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>77</x>
-     <y>244</y>
+     <x>92</x>
+     <y>291</y>
     </hint>
     <hint type="destinationlabel">
      <x>338</x>
-     <y>245</y>
+     <y>290</y>
     </hint>
    </hints>
   </connection>
@@ -1042,18 +1226,67 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>77</x>
-     <y>188</y>
+     <x>92</x>
+     <y>187</y>
     </hint>
     <hint type="destinationlabel">
      <x>338</x>
-     <y>189</y>
+     <y>186</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>bloomThresholdSlider</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>label_4</receiver>
+   <slot>setNum(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>219</x>
+     <y>96</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>309</x>
+     <y>106</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>blurAmountSlider</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>label_22</receiver>
+   <slot>setNum(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>216</x>
+     <y>126</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>306</x>
+     <y>130</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>blurStrengthSlider</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>label_23</receiver>
+   <slot>setNum(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>147</x>
+     <y>161</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>307</x>
+     <y>163</y>
     </hint>
    </hints>
   </connection>
  </connections>
  <buttongroups>
-  <buttongroup name="aspectButtonGroup"/>
   <buttongroup name="screenshotButtonGroup"/>
+  <buttongroup name="bloomBlendModeButtonGroup"/>
+  <buttongroup name="aspectButtonGroup"/>
  </buttongroups>
 </ui>

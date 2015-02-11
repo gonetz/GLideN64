@@ -156,6 +156,23 @@ void ConfigDialog::_init()
 	palette.setColor(QPalette::WindowText, m_color);
 	ui->fontColorLabel->setAutoFillBackground(true);
 	ui->fontColorLabel->setPalette(palette);
+
+	// Post filter settings
+	ui->bloomGroupBox->setChecked(config.bloomFilter.enable != 0);
+	switch (config.bloomFilter.blendMode) {
+	case 0:
+		ui->bloomStrongRadioButton->setChecked(true);
+		break;
+	case 1:
+		ui->bloomMildRadioButton->setChecked(true);
+		break;
+	case 2:
+		ui->bloomLightRadioButton->setChecked(true);
+		break;
+	}
+	ui->bloomThresholdSlider->setValue(config.bloomFilter.thresholdLevel);
+	ui->blurAmountSlider->setValue(config.bloomFilter.blurAmount);
+	ui->blurStrengthSlider->setValue(config.bloomFilter.blurStrength);
 }
 
 ConfigDialog::ConfigDialog(QWidget *parent) :
@@ -240,6 +257,19 @@ void ConfigDialog::accept()
 	config.font.colorf[1] = m_color.greenF();
 	config.font.colorf[2] = m_color.blueF();
 	config.font.colorf[3] = m_color.alphaF();
+
+	// Post filter settings
+	config.bloomFilter.enable = ui->bloomGroupBox->isChecked() ? 1 : 0;
+	if (ui->bloomStrongRadioButton->isChecked())
+		config.bloomFilter.blendMode = 0;
+	else if (ui->bloomMildRadioButton->isChecked())
+		config.bloomFilter.blendMode = 1;
+	else if (ui->bloomLightRadioButton->isChecked())
+		config.bloomFilter.blendMode = 2;
+	config.bloomFilter.thresholdLevel = ui->bloomThresholdSlider->value();
+	config.bloomFilter.blurAmount = ui->blurAmountSlider->value();
+	config.bloomFilter.blurStrength = ui->blurStrengthSlider->value();
+
 	writeSettings();
 
 	QDialog::accept();
