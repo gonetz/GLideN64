@@ -31,7 +31,7 @@ void _fillFullscreenRefreshRateList(QStringList & _listRefreshRates, int & _rate
 	int i = 0;
 	char text[128];
 	DEVMODE deviceMode;
-	while (EnumDisplaySettings(NULL, i, &deviceMode) != 0)
+	while (EnumDisplaySettings(NULL, i++, &deviceMode) != 0)
 	{
 		if (deviceMode.dmBitsPerPel != 32)
 			continue;
@@ -54,7 +54,6 @@ void _fillFullscreenRefreshRateList(QStringList & _listRefreshRates, int & _rate
 
 			++fullscreen.numRefreshRates;
 		}
-		++i;
 	}
 }
 
@@ -73,7 +72,7 @@ void fillFullscreenResolutionsList(QStringList & _listResolutions, int & _resolu
 	int i = 0;
 	char text[128];
 	DEVMODE deviceMode;
-	while (EnumDisplaySettings(NULL, i, &deviceMode) != 0)
+	while (EnumDisplaySettings(NULL, i++, &deviceMode) != 0)
 	{
 		if (deviceMode.dmBitsPerPel != 32)
 			continue;
@@ -99,7 +98,6 @@ void fillFullscreenResolutionsList(QStringList & _listResolutions, int & _resolu
 
 			++fullscreen.numResolutions;
 		}
-		++i;
 	}
 
 	_fillFullscreenRefreshRateList(_listRefreshRates, _rateIdx);
