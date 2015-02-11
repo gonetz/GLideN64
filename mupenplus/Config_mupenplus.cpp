@@ -95,11 +95,11 @@ bool Config_SetDefault()
 	assert(res == M64ERR_SUCCESS);
 	res = ConfigSetDefaultBool(g_configVideoGliden64, "txDump", 0, "Enable dump of loaded N64 textures.");
 	assert(res == M64ERR_SUCCESS);
-	res = ConfigSetDefaultBool(g_configVideoGliden64, "txCacheCompression", 0, "Zip textures cache.");
+	res = ConfigSetDefaultBool(g_configVideoGliden64, "txCacheCompression", 1, "Zip textures cache.");
 	assert(res == M64ERR_SUCCESS);
 	res = ConfigSetDefaultBool(g_configVideoGliden64, "txForce16bpp", 0, "Force use 16bit texture formats for HD textures.");
 	assert(res == M64ERR_SUCCESS);
-	res = ConfigSetDefaultBool(g_configVideoGliden64, "txSaveCache", 0, "Save texture cache to hard disk.");
+	res = ConfigSetDefaultBool(g_configVideoGliden64, "txSaveCache", 1, "Save texture cache to hard disk.");
 	assert(res == M64ERR_SUCCESS);
 
 #ifdef OS_WINDOWS
