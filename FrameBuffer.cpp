@@ -496,7 +496,6 @@ void FrameBufferList::renderBuffer(u32 _address)
 	GLint srcCoord[4] = { 0, (GLint)(srcY0*srcScaleY), ogl.getWidth(), (GLint)(srcY1*srcScaleY) };
 	GLint dstCoord[4] = { hOffset, vOffset + (GLint)(dstY0*dstScaleY), hOffset + ogl.getWidth(), vOffset + (GLint)(dstY1*dstScaleY) };
 
-	assert(!isGLError());
 	GLenum filter = GL_LINEAR;
 	if (config.video.multisampling != 0) {
 		if (dstPartHeight > 0 ||
@@ -508,7 +507,6 @@ void FrameBufferList::renderBuffer(u32 _address)
 		} else
 			filter = GL_NEAREST;
 	}
-	assert(!isGLError());
 
 	if (!ogl.isFullscreen())
 		vOffset += ogl.getHeightOffset();

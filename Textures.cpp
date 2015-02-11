@@ -704,7 +704,6 @@ bool TextureCache::_loadHiresBackground(CachedTexture *_pTexture)
 	if (!TFH.isInited())
 		return false;
 
-	isGLError();  // Workaround for Mupen64Plus;
 	u8 * addr = (u8*)(RDRAM + gSP.bgImage.address);
 	int tile_width = gSP.bgImage.width;
 	int tile_height = gSP.bgImage.height;
@@ -818,7 +817,6 @@ bool TextureCache::_loadHiresTexture(u32 _tile, CachedTexture *_pTexture)
 	if (config.textureFilter.txHiresEnable == 0 || !TFH.isInited())
 		return false;
 
-	isGLError();  // Workaround for Mupen64Plus;
 	gDPLoadTileInfo & info = gDP.loadInfo[_pTexture->tMem];
 
 	int bpl;
