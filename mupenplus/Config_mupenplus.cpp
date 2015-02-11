@@ -111,7 +111,7 @@ bool Config_SetDefault()
 	assert(res == M64ERR_SUCCESS);
 
 	//#Bloom filter settings
-	res = ConfigSetDefaultInt(g_configVideoGliden64, "bloomMode", 0, "Bloom filter mode (0=none, 1=Single pass, 2=Multi pass)");
+	res = ConfigSetDefaultInt(g_configVideoGliden64, "EnableBloom", 0, "Enable bloom filter");
 	assert(res == M64ERR_SUCCESS);
 	res = ConfigSetDefaultInt(g_configVideoGliden64, "bloomThresholdLevel", 4, "Brightness threshold level for bloom. Values [2, 6]");
 	assert(res == M64ERR_SUCCESS);
@@ -187,7 +187,7 @@ void Config_LoadConfig()
 	if (config.font.size == 0)
 		config.font.size = 30;
 	//#Bloom filter settings
-	config.bloomFilter.mode = ConfigGetParamInt(g_configVideoGliden64, "bloomMode");
+	config.bloomFilter.enable = ConfigGetParamInt(g_configVideoGliden64, "EnableBloom");
 	config.bloomFilter.thresholdLevel = ConfigGetParamInt(g_configVideoGliden64, "bloomThresholdLevel");
 	config.bloomFilter.blendMode = ConfigGetParamInt(g_configVideoGliden64, "bloomBlendMode");
 	config.bloomFilter.blurAmount = ConfigGetParamInt(g_configVideoGliden64, "blurAmount");

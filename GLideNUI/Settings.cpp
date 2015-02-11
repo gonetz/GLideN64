@@ -91,7 +91,7 @@ void loadSettings()
 	settings.endGroup();
 
 	settings.beginGroup("bloomFilter");
-	config.bloomFilter.mode = settings.value("enable", 0).toInt();
+	config.bloomFilter.enable = settings.value("enable", 0).toInt();
 	config.bloomFilter.thresholdLevel = settings.value("thresholdLevel", 4).toInt();
 	config.bloomFilter.blendMode = settings.value("blendMode", 0).toInt();
 	config.bloomFilter.blurAmount = settings.value("blurAmount", 10).toInt();
@@ -159,7 +159,7 @@ void writeSettings()
 	settings.endGroup();
 
 	settings.beginGroup("bloomFilter");
-	settings.setValue("enable", config.bloomFilter.mode);
+	settings.setValue("enable", config.bloomFilter.enable);
 	settings.setValue("thresholdLevel", config.bloomFilter.thresholdLevel);
 	settings.setValue("blendMode", config.bloomFilter.blendMode);
 	settings.setValue("blurAmount", config.bloomFilter.blurAmount);

@@ -75,7 +75,7 @@ struct Config
 	} font;
 
 	struct {
-		u32 mode;
+		u32 enable;
 		u32 thresholdLevel;
 		u32 blendMode;
 		u32 blurAmount;
@@ -137,7 +137,7 @@ struct Config
 		for (int i = 0; i < 4; ++i)
 			font.colorf[i] = font.color[i] /255.0f;
 
-		bloomFilter.mode = 0;
+		bloomFilter.enable = 0;
 		bloomFilter.thresholdLevel = 4;
 		bloomFilter.blendMode = 0;
 		bloomFilter.blurAmount = 10;

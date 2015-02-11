@@ -354,7 +354,7 @@ void _setGLState() {
 
 void PostProcessor::process(FrameBuffer * _pBuffer)
 {
-	if (config.bloomFilter.mode == 0)
+	if (config.bloomFilter.enable == 0)
 		return;
 
 	_setGLState();

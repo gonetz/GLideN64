@@ -1282,7 +1282,7 @@ void OGLRender::_initData()
 	Combiner_Init();
 	TextDrawer::get().init();
 	TFH.init();
-	if (config.bloomFilter.mode != 0)
+	if (config.bloomFilter.enable != 0)
 		PostProcessor::get().init();
 	m_renderState = rsNone;
 
@@ -1302,7 +1302,7 @@ void OGLRender::_initData()
 void OGLRender::_destroyData()
 {
 	m_renderState = rsNone;
-	if (config.bloomFilter.mode != 0)
+	if (config.bloomFilter.enable != 0)
 		PostProcessor::get().destroy();
 	TextDrawer::get().destroy();
 	Combiner_Destroy();
