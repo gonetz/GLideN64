@@ -1077,7 +1077,7 @@ void OGLRender::drawTexturedRect(const TexturedRectParams & _params)
 	struct
 	{
 		float s0, t0, s1, t1;
-	} texST[2]; //struct for texture coordinates
+	} texST[2] = { { 0, 0, 0, 0 }, { 0, 0, 0, 0 } }; //struct for texture coordinates
 
 	if (currentCombiner()->usesT0() && cache.current[0] && gSP.textureTile[0]) {
 		texST[0].s0 = _params.uls * cache.current[0]->shiftScaleS - gSP.textureTile[0]->fuls;

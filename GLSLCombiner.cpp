@@ -593,7 +593,7 @@ void ShaderCombiner::_locateUniforms() {
 	if (config.generalEmulation.enableHWLighting) {
 		// locate lights uniforms
 		char buf[32];
-		for (u32 i = 0; i < 8; ++i) {
+		for (s32 i = 0; i < 8; ++i) {
 			sprintf(buf, "uLightDirection[%d]", i);
 			m_uniforms.uLightDirection[i].loc = glGetUniformLocation(m_program, buf);
 			sprintf(buf, "uLightColor[%d]", i);

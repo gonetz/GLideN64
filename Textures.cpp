@@ -940,11 +940,11 @@ void TextureCache::_load(u32 _tile, CachedTexture *_pTexture)
 			if (wid_64 & 15) wid_64 += 16;
 			wid_64 &= 0xFFFFFFF0;
 			wid_64 >>= 3;
-			int line = tmptex.line << 1;
-			line = (line - wid_64) << 3;
+			int line32 = tmptex.line << 1;
+			line32 = (line32 - wid_64) << 3;
 			if (wid_64 < 1) wid_64 = 1;
 			int width = wid_64 << 1;
-			line = width + (line >> 2);
+			line32 = width + (line32 >> 2);
 
 			u16 gr, ab;
 
@@ -954,7 +954,7 @@ void TextureCache::_load(u32 _tile, CachedTexture *_pTexture)
 				if (y & mirrorTBit)
 					ty ^= maskTMask;
 
-				u32 tline = tbase + line * ty;
+				u32 tline = tbase + line32 * ty;
 				u32 xorval = (ty & 1) ? 3 : 1;
 
 				for (x = 0; x < tmptex.realWidth; ++x) {

@@ -8,10 +8,10 @@
 EXTERN_C IMAGE_DOS_HEADER __ImageBase;
 #endif
 
-BOOL CALLBACK FindToolBarProc( HWND hWnd, LPARAM lParam )
+BOOL CALLBACK FindToolBarProc( HWND _hWnd, LPARAM lParam )
 {
-	if (GetWindowLong( hWnd, GWL_STYLE ) & RBS_VARHEIGHT) {
-		hToolBar = hWnd;
+	if (GetWindowLong( _hWnd, GWL_STYLE ) & RBS_VARHEIGHT) {
+		hToolBar = _hWnd;
 		return FALSE;
 	}
 	return TRUE;
@@ -35,6 +35,7 @@ void PluginAPI::FindPluginPath(wchar_t * _strPath)
 		return;
 #ifdef OS_WINDOWS
 	TCHAR  strDLLPath[PLUGIN_PATH_SIZE];
+	memset(strDLLPath, 0, sizeof(strDLLPath));
 	::GetModuleFileName((HINSTANCE)&__ImageBase, strDLLPath, PLUGIN_PATH_SIZE);
 	::mbstowcs(_strPath, strDLLPath, PLUGIN_PATH_SIZE);
 #else
