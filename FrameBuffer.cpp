@@ -492,6 +492,8 @@ void FrameBufferList::renderBuffer(u32 _address)
 	const float srcScaleY = ogl.getScaleY();
 	const GLint hOffset = (ogl.getScreenWidth() - ogl.getWidth()) / 2;
 	GLint vOffset = (ogl.getScreenHeight() - ogl.getHeight()) / 2;
+	if (!ogl.isFullscreen())
+		vOffset += ogl.getHeightOffset();
 
 	GLint srcCoord[4] = { 0, (GLint)(srcY0*srcScaleY), ogl.getWidth(), (GLint)(srcY1*srcScaleY) };
 	GLint dstCoord[4] = { hOffset, vOffset + (GLint)(dstY0*dstScaleY), hOffset + ogl.getWidth(), vOffset + (GLint)(dstY1*dstScaleY) };
@@ -508,8 +510,6 @@ void FrameBufferList::renderBuffer(u32 _address)
 			filter = GL_NEAREST;
 	}
 
-	if (!ogl.isFullscreen())
-		vOffset += ogl.getHeightOffset();
 	glBlitFramebuffer(
 		srcCoord[0], srcCoord[1], srcCoord[2], srcCoord[3],
 		dstCoord[0], dstCoord[1], dstCoord[2], dstCoord[3],
