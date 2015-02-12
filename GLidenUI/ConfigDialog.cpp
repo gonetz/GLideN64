@@ -10,7 +10,7 @@
 #include "FullscreenResolutions.h"
 
 static
-const unsigned int numWindowedModes = 12U;
+const unsigned int numWindowedModes = 13U;
 static
 struct
 {
@@ -28,6 +28,7 @@ struct
 	{ 1280, 960, "1280 x 960" },
 	{ 1280, 1024, "1280 x 1024" },
 	{ 1440, 1080, "1440 x 1080" },
+	{ 1600, 1024, "1600 x 1024" },
 	{ 1600, 1200, "1600 x 1200" }
 };
 
