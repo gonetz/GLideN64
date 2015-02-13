@@ -710,7 +710,11 @@ void FrameBufferToRDRAM::CopyToRDRAM( u32 address, bool bSync ) {
 
 	glDisable(GL_SCISSOR_TEST);
 	address = pBuffer->m_startAddress;
-	glBindFramebuffer(GL_READ_FRAMEBUFFER, pBuffer->m_FBO);
+	if (config.video.multisampling != 0) {
+		pBuffer->resolveMultisampledTexture();
+		glBindFramebuffer(GL_READ_FRAMEBUFFER, pBuffer->m_resolveFBO);
+	} else
+		glBindFramebuffer(GL_READ_FRAMEBUFFER, pBuffer->m_FBO);
 	glReadBuffer(GL_COLOR_ATTACHMENT0);
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_FBO);
 	GLuint attachment = GL_COLOR_ATTACHMENT0;
