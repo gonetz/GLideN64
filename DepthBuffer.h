@@ -11,9 +11,10 @@ struct DepthBuffer
 	~DepthBuffer();
 	void initDepthImageTexture(FrameBuffer * _pBuffer);
 	void initDepthBufferTexture(FrameBuffer * _pBuffer);
+	CachedTexture * resolveDepthBufferTexture(FrameBuffer * _pBuffer);
 
 	void setDepthAttachment();
-	void activateDepthBufferTexture();
+	void activateDepthBufferTexture(FrameBuffer * _pBuffer);
 
 	void bindDepthImageTexture();
 
@@ -21,6 +22,12 @@ struct DepthBuffer
 	GLuint m_FBO;
 	CachedTexture *m_pDepthImageTexture;
 	CachedTexture *m_pDepthBufferTexture;
+	// multisampling
+	CachedTexture *m_pResolveDepthBufferTexture;
+	bool m_resolved;
+
+private:
+	void _initDepthBufferTexture(FrameBuffer * _pBuffer, CachedTexture *_pTexture, bool _multisample);
 };
 
 class DepthBufferList

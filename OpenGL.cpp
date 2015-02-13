@@ -913,7 +913,7 @@ bool texturedRectShadowMap(const OGLRender::TexturedRectParams &)
 	FrameBufferList & fb = frameBufferList();
 	if (fb.isFboMode()) {
 		if (gDP.textureImage.size == 2 && gDP.textureImage.address >= gDP.depthImageAddress &&  gDP.textureImage.address < (gDP.depthImageAddress + gDP.colorImage.width*gDP.colorImage.width * 6 / 4)) {
-			fb.getCurrent()->m_pDepthBuffer->activateDepthBufferTexture();
+			fb.getCurrent()->m_pDepthBuffer->activateDepthBufferTexture(fb.getCurrent());
 			SetDepthFogCombiner();
 		}
 	}
