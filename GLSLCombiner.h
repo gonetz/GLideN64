@@ -9,7 +9,7 @@ public:
 	ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCombine & _combine);
 	~ShaderCombiner();
 
-	void update();
+	void update(bool _bForce);
 	void updateColors(bool _bForce = false);
 	void updateFBInfo(bool _bForce = false);
 	void updateDepthInfo(bool _bForce = false);

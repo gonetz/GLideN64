@@ -610,21 +610,21 @@ void ShaderCombiner::_locate_attributes() const {
 	glBindAttribLocation(m_program, SC_NUMLIGHTS, "aNumLights");
 }
 
-void ShaderCombiner::update() {
+void ShaderCombiner::update(bool _bForce) {
 	glUseProgram(m_program);
 
-	_setIUniform(m_uniforms.uTex0, 0, true);
-	_setIUniform(m_uniforms.uTex1, 1, true);
-	_setFUniform(m_uniforms.uScreenWidth, (float)video().getWidth(), true);
-	_setFUniform(m_uniforms.uScreenHeight, (float)video().getHeight(), true);
+	_setIUniform(m_uniforms.uTex0, 0, _bForce);
+	_setIUniform(m_uniforms.uTex1, 1, _bForce);
+	_setFUniform(m_uniforms.uScreenWidth, (float)video().getWidth(), _bForce);
+	_setFUniform(m_uniforms.uScreenHeight, (float)video().getHeight(), _bForce);
 
-	updateRenderState(true);
-	updateColors(true);
-	updateTextureInfo(true);
-	updateAlphaTestInfo(true);
-	updateFBInfo(true);
-	updateDepthInfo(true);
-	updateLight(true);
+	updateRenderState(_bForce);
+	updateColors(_bForce);
+	updateTextureInfo(_bForce);
+	updateAlphaTestInfo(_bForce);
+	updateFBInfo(_bForce);
+	updateDepthInfo(_bForce);
+	updateLight(_bForce);
 }
 
 void ShaderCombiner::updateRenderState(bool _bForce) {
