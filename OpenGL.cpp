@@ -667,14 +667,14 @@ void OGLRender::_updateStates() const
 				textureCache().update(1);
 			else
 				textureCache().activateDummy(1);
-			currentCombiner()->updateTextureInfo(true);
+			currentCombiner()->updateTextureInfo();
 		}
 	}
 
-	currentCombiner()->updateFBInfo(false);
+	currentCombiner()->updateFBInfo();
 
 	if ((gDP.changed & CHANGED_RENDERMODE) || (gSP.geometryMode & G_ZBUFFER))
-		currentCombiner()->updateDepthInfo(true);
+		currentCombiner()->updateDepthInfo();
 
 	if ((gDP.changed & CHANGED_RENDERMODE) || (gDP.changed & CHANGED_CYCLETYPE))
 		_setBlendMode();
