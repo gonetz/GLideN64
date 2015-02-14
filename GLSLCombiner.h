@@ -94,14 +94,14 @@ private:
 	}
 	void _setV3Uniform(fv3Uniform & _u, float * _pVal, bool _force) {
 		const size_t szData = sizeof(float)*3;
-		if (_u.loc >= 0 && (_force || memcmp(_u.val, _pVal, szData) > 0)) {
+		if (_u.loc >= 0 && (_force || memcmp(_u.val, _pVal, szData) != 0)) {
 			memcpy(_u.val, _pVal, szData);
 			glUniform3fv(_u.loc, 1, _pVal);
 		}
 	}
 	void _setV4Uniform(fv4Uniform & _u, float * _pVal, bool _force) {
 		const size_t szData = sizeof(float)*4;
-		if (_u.loc >= 0 && (_force || memcmp(_u.val, _pVal, szData) > 0)) {
+		if (_u.loc >= 0 && (_force || memcmp(_u.val, _pVal, szData) != 0)) {
 			memcpy(_u.val, _pVal, szData);
 			glUniform4fv(_u.loc, 1, _pVal);
 		}
