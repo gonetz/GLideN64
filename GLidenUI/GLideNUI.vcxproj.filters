@@ -46,17 +46,20 @@
       <Extensions>cpp;c;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
     <Filter Include="Generated Files\Debug">
-      <UniqueIdentifier>{d9d08fb0-53a8-4724-b4ab-fb1e2ea99dfd}</UniqueIdentifier>
+      <UniqueIdentifier>{81db5148-64bc-4cdf-b666-47488b3cb857}</UniqueIdentifier>
       <Extensions>cpp;moc</Extensions>
       <SourceControlFiles>False</SourceControlFiles>
     </Filter>
     <Filter Include="Generated Files\Release">
-      <UniqueIdentifier>{af9d1355-f301-48fa-b05c-f2943e14f77d}</UniqueIdentifier>
+      <UniqueIdentifier>{2d0855ca-d6fc-413c-8d8f-93865ecb277b}</UniqueIdentifier>
       <Extensions>cpp;moc</Extensions>
       <SourceControlFiles>False</SourceControlFiles>
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AboutDialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="ConfigDialog.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -72,10 +75,16 @@
     <ClCompile Include="Settings.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_ConfigDialog.cpp">
+    <ClCompile Include="Debug\moc_AboutDialog.cpp">
       <Filter>Generated Files\Debug</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_ConfigDialog.cpp">
+    <ClCompile Include="Release\moc_AboutDialog.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="Debug\moc_ConfigDialog.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="Release\moc_ConfigDialog.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
     <ClCompile Include="GeneratedFiles\qrc_icon.cpp">
@@ -83,6 +92,9 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <CustomBuild Include="AboutDialog.h">
+      <Filter>Header Files</Filter>
+    </CustomBuild>
     <CustomBuild Include="ConfigDialog.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
@@ -97,6 +109,9 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
+    <CustomBuild Include="AboutDialog.ui">
+      <Filter>Form Files</Filter>
+    </CustomBuild>
     <CustomBuild Include="configDialog.ui">
       <Filter>Form Files</Filter>
     </CustomBuild>
@@ -110,6 +125,9 @@
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="GeneratedFiles\ui_AboutDialog.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
     <ClInclude Include="GeneratedFiles\ui_configDialog.h">
       <Filter>Generated Files</Filter>
     </ClInclude>

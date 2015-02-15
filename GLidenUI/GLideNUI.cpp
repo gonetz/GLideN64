@@ -2,6 +2,7 @@
 #include <QApplication>
 
 #include "GLideNUI.h"
+#include "AboutDialog.h"
 #include "ConfigDialog.h"
 #include "Settings.h"
 
@@ -29,15 +30,41 @@ int openConfigDialog()
 	return a.exec();
 }
 
-int runThread() {
+static
+int openAboutDialog()
+{
+	cleanMyResource();
+	initMyResource();
+
+	int argc = 0;
+	char * argv = 0;
+	QApplication a(argc, &argv);
+
+	AboutDialog w;
+	w.show();
+	return a.exec();
+}
+
+int runConfigThread() {
 	std::thread configThread(openConfigDialog);
 	configThread.join();
 	return 0;
 }
 
+int runAboutThread() {
+	std::thread aboutThread(openAboutDialog);
+	aboutThread.join();
+	return 0;
+}
+
 EXPORT int CALL RunConfig()
 {
-	return runThread();
+	return runConfigThread();
+}
+
+EXPORT int CALL RunAbout()
+{
+	return runAboutThread();
 }
 
 EXPORT void CALL LoadConfig()
