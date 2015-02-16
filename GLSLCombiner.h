@@ -35,14 +35,14 @@ private:
 
 	struct UniformLocation
 	{
-		iUniform uTex0, uTex1, uTlutImage, uZlutImage, uDepthImage,
+		iUniform uTex0, uTex1, uTexNoise, uTlutImage, uZlutImage, uDepthImage,
 			uFogMode, uFogUsage, uEnableLod, uEnableAlphaTest,
 			uEnableDepth, uEnableDepthCompare, uEnableDepthUpdate,
 			uDepthMode, uDepthSource, uFb8Bit, uFbFixedAlpha, uRenderState, uSpecialBlendMode,
 			uMaxTile, uTextureDetail, uTexturePersp,
 			uAlphaCompareMode, uAlphaDitherMode, uColorDitherMode, uGammaCorrectionEnabled;
 
-		fUniform uFogMultiplier, uFogOffset, uK4, uK5, uPrimLod, uNoiseTime, uScreenWidth, uScreenHeight,
+		fUniform uFogMultiplier, uFogOffset, uK4, uK5, uPrimLod, uScreenWidth, uScreenHeight,
 			uMinLod, uDeltaZ, uAlphaTestValue;
 
 		fv4Uniform uEnvColor, uPrimColor, uFogColor, uCenterColor, uScaleColor, uBlendColor;

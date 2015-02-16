@@ -29,7 +29,7 @@
    <string>About GLideN64</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="icon.qrc">
+   <iconset>
     <normaloff>:/Icon.png</normaloff>:/Icon.png</iconset>
   </property>
   <property name="modal">
@@ -90,7 +90,7 @@
             </font>
            </property>
            <property name="text">
-            <string>Olivier Thacker</string>
+            <string>Olivieryuyu</string>
            </property>
           </widget>
          </item>
@@ -134,7 +134,7 @@
             </font>
            </property>
            <property name="text">
-            <string>Funder name</string>
+            <string>Mush Man</string>
            </property>
           </widget>
          </item>
@@ -222,7 +222,7 @@
             </font>
            </property>
            <property name="text">
-            <string>Funder name</string>
+            <string>zilmar</string>
            </property>
           </widget>
          </item>
@@ -420,7 +420,7 @@ p, li { white-space: pre-wrap; }
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;Orkin&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt; - author of original glN64 graphics plugin&lt;br /&gt;&lt;/span&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;Hiroshi Morii&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt; - author of GlideHQ texture library&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;Ian McEwan, Ashima Arts&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt; - authors of the noise shader. Copyright (C) 2011 Ashima Arts.&lt;br /&gt;&lt;/span&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;Nathaniel Meyer&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt; - author of the blur shader. Copyright:	Nutty Software&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;Nathaniel Meyer&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt; - author of the blur shader. Copyright:	Nutty Software&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:10pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
           </widget>
@@ -446,9 +446,7 @@ p, li { white-space: pre-wrap; }
    </item>
   </layout>
  </widget>
- <resources>
-  <include location="icon.qrc"/>
- </resources>
+ <resources/>
  <connections>
   <connection>
    <sender>buttonBox</sender>

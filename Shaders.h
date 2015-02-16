@@ -9,7 +9,6 @@ static const char* vertex_shader =
 "														\n"
 "uniform int uRenderState;								\n"
 "uniform int uTexturePersp;								\n"
-"uniform lowp float uNoiseTime;							\n"
 "														\n"
 "uniform int uFogMode;									\n"
 "uniform lowp int uFogUsage;							\n"
@@ -29,7 +28,6 @@ static const char* vertex_shader =
 "out mediump vec2 vTexCoord0;						\n"
 "out mediump vec2 vTexCoord1;						\n"
 "out mediump vec2 vLodTexCoord;						\n"
-"out mediump vec2 vNoiseCoord2D;					\n"
 "out lowp float vNumLights;							\n"
 "out mediump float vFogFragCoord;					\n"
 #else
@@ -42,7 +40,6 @@ static const char* vertex_shader =
 "														\n"
 "uniform int uRenderState;								\n"
 "uniform int uTexturePersp;								\n"
-"uniform float uNoiseTime;								\n"
 "														\n"
 "uniform int uFogMode;									\n"
 "uniform int uFogUsage;									\n"
@@ -62,7 +59,6 @@ static const char* vertex_shader =
 "out vec2 vTexCoord0;								\n"
 "out vec2 vTexCoord1;								\n"
 "out vec2 vLodTexCoord;								\n"
-"out vec2 vNoiseCoord2D;							\n"
 "out float vNumLights;								\n"
 "out float vFogFragCoord;							\n"
 #endif
@@ -120,7 +116,6 @@ static const char* vertex_shader =
 "    vTexCoord1 = aTexCoord1;									\n"
 "    vNumLights = 0.0;											\n"
 "  }															\n"
-"  vNoiseCoord2D = vec2(gl_Position.x*uScreenWidth, gl_Position.y*uScreenHeight + uNoiseTime);\n"
 "  gl_ClipDistance[0] = gl_Position.w - gl_Position.z;			\n"
 "}																\n"
 ;
@@ -151,7 +146,6 @@ static const char* fragment_shader_header_common_variables =
 "in mediump vec2 vTexCoord0;\n"
 "in mediump vec2 vTexCoord1;\n"
 "in mediump vec2 vLodTexCoord;\n"
-"in mediump vec2 vNoiseCoord2D;\n"
 "in lowp float vNumLights;	\n"
 "in mediump float vFogFragCoord;\n"
 "lowp vec3 input_color;			\n"
@@ -181,7 +175,6 @@ static const char* fragment_shader_header_common_variables =
 "in vec2 vTexCoord0;		\n"
 "in vec2 vTexCoord1;		\n"
 "in vec2 vLodTexCoord;		\n"
-"in vec2 vNoiseCoord2D;		\n"
 "in float vNumLights;		\n"
 "in float vFogFragCoord;	\n"
 "vec3 input_color;			\n"
@@ -192,14 +185,14 @@ static const char* fragment_shader_header_common_variables =
 static const char* fragment_shader_header_common_functions =
 #ifdef SHADER_PRECISION
 "															\n"
-"lowp float snoise(in mediump vec2 v);						\n"
+"lowp float snoise();						\n"
 "mediump float calc_light(in lowp float fLights, in lowp vec3 input_color, out lowp vec3 output_color);\n"
 "mediump float mipmap(out lowp vec4 readtex0, out lowp vec4 readtex1);		\n"
 "bool depth_compare();										\n"
 "bool alpha_test(in lowp float alphaValue);						\n"
 #else
 "															\n"
-"float snoise(in vec2 v);										\n"
+"float snoise();										\n"
 "float calc_light(in float fLights, in vec3 input_color, out vec3 output_color);\n"
 "float mipmap(out vec4 readtex0, out vec4 readtex1);		\n"
 "bool depth_compare();										\n"
@@ -287,7 +280,7 @@ static const char* fragment_shader_header_main =
 "void main()						\n"
 "{									\n"
 "  if (uAlphaCompareMode == 3) {//dither \n"
-"    if (snoise(vNoiseCoord2D) < 0.0) discard; \n"
+"    if (snoise() < 0.0) discard; \n"
 "  }								\n"
 "  lowp vec4 vec_color, combined_color;	\n"
 "  lowp float alpha1, alpha2;			\n"
@@ -298,7 +291,7 @@ static const char* fragment_shader_header_main =
 "void main()						\n"
 "{									\n"
 "  if (uAlphaCompareMode == 3) {//dither \n"
-"    if (snoise(vNoiseCoord2D) < 0.0) discard; \n"
+"    if (snoise() < 0.0) discard; \n"
 "  }								\n"
 "  vec4 vec_color, combined_color;	\n"
 "  float alpha1, alpha2;			\n"
@@ -308,14 +301,14 @@ static const char* fragment_shader_header_main =
 
 static const char* fragment_shader_color_dither =
 "  if (uColorDitherMode == 2) {								\n"
-"    color2 += 0.03125*snoise(vNoiseCoord2D);				\n"
+"    color2 += 0.03125*snoise();							\n"
 "    color2 = clamp(color2, 0.0, 1.0);						\n"
 "  }														\n"
 ;
 
 static const char* fragment_shader_alpha_dither =
 "  if (uAlphaDitherMode == 2) {								\n"
-"    alpha2 += 0.03125*snoise(vNoiseCoord2D);				\n"
+"    alpha2 += 0.03125*snoise();							\n"
 "    alpha2 = clamp(alpha2, 0.0, 1.0);						\n"
 "  }														\n"
 ;
@@ -531,6 +524,17 @@ static const char* fragment_shader_mipmap =
 "  return lod_frac;													\n"
 "}																	\n"
 #endif
+;
+
+static const char* fragment_shader_noise =
+"#version 330 core					\n"
+"uniform sampler2D uTexNoise;		\n"
+"uniform mediump vec2 uScreenScale;	\n"
+"lowp float snoise()									\n"
+"{														\n"
+"  ivec2 coord = ivec2(gl_FragCoord.xy/uScreenScale);	\n"
+"  return (texelFetch(uTexNoise, coord, 0).r - 0.5)*2.0;\n"
+"}														\n"
 ;
 
 #ifdef GL_IMAGE_TEXTURES_SUPPORT

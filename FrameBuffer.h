@@ -69,6 +69,22 @@ private:
 	GLenum m_drawBuffer;
 };
 
+struct PBOBinder {
+#ifndef GLES2
+	PBOBinder(GLuint _PBO)
+	{
+		glBindBuffer(GL_PIXEL_UNPACK_BUFFER, _PBO);
+	}
+	~PBOBinder() {
+		glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
+	}
+#else
+	PBOBinder(GLubyte* _ptr) : ptr(_ptr) {}
+	~PBOBinder() { free(ptr); }
+	GLubyte* ptr;
+#endif
+};
+
 inline
 FrameBufferList & frameBufferList()
 {

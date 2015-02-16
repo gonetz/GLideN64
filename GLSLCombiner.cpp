@@ -8,11 +8,12 @@
 #include "GLSLCombiner.h"
 #include "FrameBuffer.h"
 #include "DepthBuffer.h"
+#include "RSP.h"
+#include "VI.h"
 #include "Log.h"
 
 #define SHADER_PRECISION
 #include "Shaders.h"
-#include "Noise_shader.h"
 
 static GLuint  g_vertex_shader_object;
 static GLuint  g_calc_light_shader_object;
@@ -62,6 +63,101 @@ bool checkProgramLinkStatus(GLuint obj)
 	}
 	return true;
 }
+
+static const GLuint noiseTexIndex = 2;
+class NoiseTexture
+{
+public:
+	NoiseTexture() : m_pTexture(NULL), m_PBO(0), m_DList(0) {}
+	void init();
+	void destroy();
+	void update();
+
+private:
+	CachedTexture * m_pTexture;
+#ifndef GLES2
+	GLuint m_PBO;
+#else
+	GLubyte* m_PBO;
+#endif
+	u32 m_DList;
+} noiseTex;
+
+void NoiseTexture::init()
+{
+	m_pTexture = textureCache().addFrameBufferTexture();
+	m_pTexture->format = G_IM_FMT_RGBA;
+	m_pTexture->clampS = 1;
+	m_pTexture->clampT = 1;
+	m_pTexture->frameBufferTexture = TRUE;
+	m_pTexture->maskS = 0;
+	m_pTexture->maskT = 0;
+	m_pTexture->mirrorS = 0;
+	m_pTexture->mirrorT = 0;
+	m_pTexture->realWidth = 640;
+	m_pTexture->realHeight = 480;
+	m_pTexture->textureBytes = m_pTexture->realWidth * m_pTexture->realHeight;
+	textureCache().addFrameBufferTextureSize(m_pTexture->textureBytes);
+	glBindTexture(GL_TEXTURE_2D, m_pTexture->glName);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, m_pTexture->realWidth, m_pTexture->realHeight, 0, GL_RED, GL_UNSIGNED_BYTE, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+	// Generate Pixel Buffer Object. Initialize it later
+#ifndef GLES2
+	glGenBuffers(1, &m_PBO);
+#endif
+}
+
+void NoiseTexture::destroy()
+{
+	if (m_pTexture != NULL) {
+		textureCache().removeFrameBufferTexture(m_pTexture);
+		m_pTexture = NULL;
+	}
+#ifndef GLES2
+	glDeleteBuffers(1, &m_PBO);
+	m_PBO = 0;
+#endif
+}
+
+void NoiseTexture::update()
+{
+	if (m_DList == RSP.DList)
+		return;
+	const u32 dataSize = VI.width*VI.height;
+	if (dataSize == 0)
+		return;
+#ifndef GLES2
+	PBOBinder binder(m_PBO);
+	glBufferData(GL_PIXEL_UNPACK_BUFFER, dataSize, NULL, GL_DYNAMIC_DRAW);
+	GLubyte* ptr = (GLubyte*)glMapBuffer(GL_PIXEL_UNPACK_BUFFER, GL_WRITE_ONLY);
+#else
+	m_PBO = (GLubyte*)malloc(dataSize);
+	GLubyte* ptr = m_PBO;
+	PBOBinder binder(m_PBO);
+#endif // GLES2
+	if (ptr == NULL)
+		return;
+	for (u32 y = 0; y < VI.height; ++y)	{
+		for (u32 x = 0; x < VI.width; ++x)
+			ptr[x + y*VI.width] = rand()&0xFF;
+	}
+#ifndef GLES2
+	glUnmapBuffer(GL_PIXEL_UNPACK_BUFFER); // release the mapped buffer
+#endif
+
+	glActiveTexture(GL_TEXTURE0 + noiseTexIndex);
+	glBindTexture(GL_TEXTURE_2D, m_pTexture->glName);
+#ifndef GLES2
+	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, VI.width, VI.height, GL_RED, GL_UNSIGNED_BYTE, 0);
+#else
+	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, VI.width, VI.height, GL_RED, GL_UNSIGNED_BYTE, m_PBO);
+#endif
+	m_DList = RSP.DList;
+}
+
 
 #ifdef GL_IMAGE_TEXTURES_SUPPORT
 static
@@ -184,7 +280,7 @@ void InitShaderCombiner()
 	assert(checkShaderCompileStatus(g_calc_mipmap_shader_object));
 
 	g_calc_noise_shader_object = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(g_calc_noise_shader_object, 1, &noise_fragment_shader, NULL);
+	glShaderSource(g_calc_noise_shader_object, 1, &fragment_shader_noise, NULL);
 	glCompileShader(g_calc_noise_shader_object);
 	assert(checkShaderCompileStatus(g_calc_noise_shader_object));
 
@@ -203,6 +299,7 @@ void InitShaderCombiner()
 
 	InitZlutTexture();
 	InitShadowMapShader();
+	noiseTex.init();
 #endif // GL_IMAGE_TEXTURES_SUPPORT
 #endif // GLES2
 }
@@ -226,6 +323,7 @@ void DestroyShaderCombiner() {
 	g_calc_depth_shader_object = 0;
 
 #ifdef GL_IMAGE_TEXTURES_SUPPORT
+	noiseTex.destroy();
 	DestroyZlutTexture();
 	DestroyShadowMapShader();
 #endif // GL_IMAGE_TEXTURES_SUPPORT
@@ -249,7 +347,7 @@ const char *ColorInput[] = {
 	"uEnvColor.a",
 	"lod_frac", // TODO: emulate lod_fraction
 	"vec3(uPrimLod)",
-	"vec3(0.5 + 0.5*snoise(vNoiseCoord2D))",
+	"vec3(0.5 + 0.5*snoise())",
 	"vec3(uK4)",
 	"vec3(uK5)",
 	"vec3(1.0)",
@@ -273,7 +371,7 @@ const char *AlphaInput[] = {
 	"uEnvColor.a",
 	"lod_frac",
 	"uPrimLod",
-	"0.5 + 0.5*snoise(vNoiseCoord2D)",
+	"0.5 + 0.5*snoise()",
 	"uK4",
 	"uK5",
 	"1.0",
@@ -531,6 +629,7 @@ ShaderCombiner::~ShaderCombiner() {
 void ShaderCombiner::_locateUniforms() {
 	LocateUniform(uTex0);
 	LocateUniform(uTex1);
+	LocateUniform(uTexNoise);
 	LocateUniform(uTlutImage);
 	LocateUniform(uZlutImage);
 	LocateUniform(uDepthImage);
@@ -559,7 +658,6 @@ void ShaderCombiner::_locateUniforms() {
 	LocateUniform(uK4);
 	LocateUniform(uK5);
 	LocateUniform(uPrimLod);
-	LocateUniform(uNoiseTime);
 	LocateUniform(uScreenWidth);
 	LocateUniform(uScreenHeight);
 	LocateUniform(uMinLod);
@@ -614,6 +712,7 @@ void ShaderCombiner::update(bool _bForce) {
 
 	_setIUniform(m_uniforms.uTex0, 0, _bForce);
 	_setIUniform(m_uniforms.uTex1, 1, _bForce);
+	_setIUniform(m_uniforms.uTexNoise, noiseTexIndex, _bForce);
 	_setFUniform(m_uniforms.uScreenWidth, (float)video().getWidth(), _bForce);
 	_setFUniform(m_uniforms.uScreenHeight, (float)video().getHeight(), _bForce);
 
@@ -729,8 +828,10 @@ void ShaderCombiner::updateColors(bool _bForce)
 	_setIUniform(m_uniforms.uGammaCorrectionEnabled, *REG.VI_STATUS & 8, _bForce);
 
 	const int nDither = (gDP.otherMode.cycleType < G_CYC_COPY) && (gDP.otherMode.colorDither == G_CD_NOISE || gDP.otherMode.alphaDither == G_AD_NOISE || gDP.otherMode.alphaCompare == G_AC_DITHER) ? 1 : 0;
-	if ((m_nInputs & (1<<NOISE)) + nDither != 0)
-		_setFUniform(m_uniforms.uNoiseTime, (float)(rand()&255), _bForce);
+	if ((m_nInputs & (1 << NOISE)) + nDither != 0) {
+		_setFV2Uniform(m_uniforms.uScreenScale, video().getScaleX(), video().getScaleY(), _bForce);
+		noiseTex.update();
+	}
 
 	gDP.changed &= ~CHANGED_COMBINE_COLORS;
 }
