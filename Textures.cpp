@@ -459,6 +459,8 @@ void TextureCache::init()
 
 	glBindTexture( GL_TEXTURE_2D, m_pDummy->glName );
 	glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, 2, 2, 0, GL_RGBA, GL_UNSIGNED_BYTE, dummyTexture );
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
 	m_cachedBytes = m_pDummy->textureBytes;
 	activateDummy( 0 );
@@ -1096,13 +1098,8 @@ u32 _calculateCRC(u32 t, const TextureParams & _params)
 	return crc;
 }
 
-void TextureCache::activateTexture(u32 _t, CachedTexture *_pTexture)
+void TextureCache::_setTextureParameters(CachedTexture *_pTexture)
 {
-	glActiveTexture(GL_TEXTURE0 + _t);
-
-	// Bind the cached texture
-	glBindTexture( GL_TEXTURE_2D, _pTexture->glName );
-
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, _pTexture->max_level);
 	// Set filter mode. Almost always bilinear, but check anyways
 	if ((gDP.otherMode.textureFilter == G_TF_BILERP) || (gDP.otherMode.textureFilter == G_TF_AVERAGE) || ((gSP.objRendermode&G_OBJRM_BILERP) != 0) || (config.texture.forceBilinear)) {
@@ -1126,9 +1123,15 @@ void TextureCache::activateTexture(u32 _t, CachedTexture *_pTexture)
 
 	if (video().getRender().getRenderState() == OGLRender::rsTriangle && config.texture.maxAnisotropyF > 0.0f)
 		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, config.texture.maxAnisotropyF);
+}
 
+void TextureCache::activateTexture(u32 _t, CachedTexture *_pTexture)
+{
+	glActiveTexture(GL_TEXTURE0 + _t);
 	_pTexture->lastDList = RSP.DList;
 
+	// Bind the cached texture
+	glBindTexture( GL_TEXTURE_2D, _pTexture->glName );
 	current[_t] = _pTexture;
 }
 
@@ -1138,8 +1141,7 @@ void TextureCache::activateDummy(u32 _t)
 
 	glBindTexture( GL_TEXTURE_2D, m_pDummy->glName );
 
-	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
-	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+	current[_t] = m_pDummy;
 }
 
 void TextureCache::_updateBackground()
@@ -1215,6 +1217,7 @@ void TextureCache::_updateBackground()
 
 	_loadBackground(pCurrent);
 	activateTexture(0, pCurrent);
+	_setTextureParameters(pCurrent);
 
 	m_cachedBytes += pCurrent->textureBytes;
 	current[0] = pCurrent;
@@ -1361,6 +1364,7 @@ void TextureCache::update(u32 _t)
 
 	_load(_t, pCurrent);
 	activateTexture( _t, pCurrent );
+	_setTextureParameters(pCurrent);
 
 	m_cachedBytes += pCurrent->textureBytes;
 	current[_t] = pCurrent;

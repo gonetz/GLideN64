@@ -74,6 +74,7 @@ private:
 
 	void _checkCacheSize();
 	CachedTexture * _addTexture(u32 _crc32);
+	void _setTextureParameters(CachedTexture *_pTexture);
 	void _load(u32 _tile, CachedTexture *_pTexture);
 	bool _loadHiresTexture(u32 _tile, CachedTexture *_pTexture);
 	void _loadBackground(CachedTexture *pTexture);
