@@ -1277,6 +1277,7 @@ void OGLRender::_initStates()
 
 void OGLRender::_initData()
 {
+	glState.reset();
 	_initExtensions();
 	_initStates();
 	_setSpecialTexrect();

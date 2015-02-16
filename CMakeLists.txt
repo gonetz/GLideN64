@@ -21,6 +21,7 @@ set(GLideN64_SOURCES
   gDP.cpp
   GLideN64.cpp
   GLSLCombiner.cpp
+  glState.cpp
   gSP.cpp
   L3D.cpp
   L3DEX2.cpp

@@ -7,8 +7,6 @@
 #include "../GLideN64.h"
 #include "../GBI.h"
 #include "../RSP.h"
-#include "../Textures.h"
-#include "../OpenGL.h"
 #include "../Log.h"
 
 Config config;

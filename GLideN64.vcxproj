@@ -266,6 +266,7 @@
     <ClCompile Include="GBI.cpp" />
     <ClCompile Include="gDP.cpp" />
     <ClCompile Include="GLideN64.cpp" />
+    <ClCompile Include="glState.cpp" />
     <ClCompile Include="gSP.cpp" />
     <ClCompile Include="MupenPlusPluginAPI.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>

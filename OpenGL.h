@@ -32,6 +32,7 @@
 #endif // USE_SDL
 #endif // OS_WINDOWS
 
+#include "glState.h"
 #include "gSP.h"
 
 #define INDEXMAP_SIZE 80U
