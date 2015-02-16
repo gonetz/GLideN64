@@ -562,8 +562,6 @@ void ShaderCombiner::_locateUniforms() {
 	LocateUniform(uNoiseTime);
 	LocateUniform(uScreenWidth);
 	LocateUniform(uScreenHeight);
-	LocateUniform(uLodXScale);
-	LocateUniform(uLodYScale);
 	LocateUniform(uMinLod);
 	LocateUniform(uDeltaZ);
 	LocateUniform(uAlphaTestValue);
@@ -578,6 +576,7 @@ void ShaderCombiner::_locateUniforms() {
 	LocateUniform(uRenderState);
 
 	LocateUniform(uTexScale);
+	LocateUniform(uScreenScale);
 	LocateUniform(uTexOffset[0]);
 	LocateUniform(uTexOffset[1]);
 	LocateUniform(uTexMask[0]);
@@ -717,8 +716,7 @@ void ShaderCombiner::updateColors(bool _bForce)
 		int uCalcLOD = (config.generalEmulation.enableLOD && gDP.otherMode.textureLOD == G_TL_LOD) ? 1 : 0;
 		_setIUniform(m_uniforms.uEnableLod, uCalcLOD, _bForce);
 		if (uCalcLOD) {
-			_setFUniform(m_uniforms.uLodXScale, video().getScaleX(), _bForce);
-			_setFUniform(m_uniforms.uLodYScale, video().getScaleY(), _bForce);
+			_setFV2Uniform(m_uniforms.uScreenScale, video().getScaleX(), video().getScaleY(), _bForce);
 			_setFUniform(m_uniforms.uMinLod, gDP.primColor.m, _bForce);
 			_setIUniform(m_uniforms.uMaxTile, gSP.texture.level, _bForce);
 			_setIUniform(m_uniforms.uTextureDetail, gDP.otherMode.textureDetail, _bForce);

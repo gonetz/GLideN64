@@ -43,11 +43,11 @@ private:
 			uAlphaCompareMode, uAlphaDitherMode, uColorDitherMode, uGammaCorrectionEnabled;
 
 		fUniform uFogMultiplier, uFogOffset, uK4, uK5, uPrimLod, uNoiseTime, uScreenWidth, uScreenHeight,
-			uLodXScale, uLodYScale, uMinLod, uDeltaZ, uAlphaTestValue;
+			uMinLod, uDeltaZ, uAlphaTestValue;
 
 		fv4Uniform uEnvColor, uPrimColor, uFogColor, uCenterColor, uScaleColor, uBlendColor;
 
-		fv2Uniform uTexScale, uTexOffset[2], uTexMask[2],
+		fv2Uniform uTexScale, uScreenScale, uTexOffset[2], uTexMask[2],
 			uCacheShiftScale[2], uCacheScale[2], uCacheOffset[2];
 
 		fv3Uniform uLightDirection[8], uLightColor[8];
