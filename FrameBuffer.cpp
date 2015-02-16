@@ -759,7 +759,7 @@ void FrameBufferToRDRAM::CopyToRDRAM( u32 address, bool bSync ) {
 		u32 *ptr_dst = (u32*)(RDRAM + m_aAddress[nextIndex]);
 		u32 *ptr_src = (u32*)pixelData;
 
-		for (u32 y = 0; y < VI.height; ++y) {
+		for (u32 y = 0; y <= VI.real_height; ++y) {
 			for (u32 x = 0; x < VI.width; ++x)
 				ptr_dst[x + y*VI.width] = ptr_src[x + (VI.height - y - 1)*VI.width];
 		}
@@ -767,7 +767,7 @@ void FrameBufferToRDRAM::CopyToRDRAM( u32 address, bool bSync ) {
 		u16 *ptr_dst = (u16*)(RDRAM + m_aAddress[nextIndex]);
 		RGBA * ptr_src = (RGBA*)pixelData;
 
-		for (u32 y = 0; y < VI.height; ++y) {
+		for (u32 y = 0; y <= VI.real_height; ++y) {
 			for (u32 x = 0; x < VI.width; ++x) {
 					const RGBA & c = ptr_src[x + (VI.height - y - 1)*VI.width];
 					ptr_dst[(x + y*VI.width)^1] = ((c.r>>3)<<11) | ((c.g>>3)<<6) | ((c.b>>3)<<1) | (c.a == 0 ? 0 : 1);
@@ -909,7 +909,7 @@ bool DepthBufferToRDRAM::CopyToRDRAM( u32 _address) {
 	const f32 trans = gSP.viewport.vtrans[2] * 32768.0f;
 	const u16 * const zLUT = depthBufferList().getZLUT();
 
-	for (u32 y = 0; y < VI.height; ++y) {
+	for (u32 y = 0; y <= VI.real_height; ++y) {
 		for (u32 x = 0; x < VI.width; ++x) {
 			f32 z = ptr_src[x + (VI.height - y - 1)*VI.width];
 			if (z == 1.0f)
