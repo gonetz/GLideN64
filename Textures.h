@@ -23,25 +23,25 @@ struct CachedTexture
 //	float	fulS, fulT;
 //	WORD	ulS, ulT, lrS, lrT;
 	float	offsetS, offsetT;
-	u32		maskS, maskT;
-	u32		clampS, clampT;
-	u32		mirrorS, mirrorT;
-	u32		line;
-	u32		size;
-	u32		format;
+	u8		maskS, maskT;
+	u8		clampS, clampT;
+	u8		mirrorS, mirrorT;
+	u16		line;
+	u16		size;
+	u16		format;
 	u32		tMem;
 	u32		palette;
-	u32		width, height;			  // N64 width and height
-	u32		clampWidth, clampHeight;  // Size to clamp to
-	u32		realWidth, realHeight;	  // Actual texture size
+	u16		width, height;			  // N64 width and height
+	u16		clampWidth, clampHeight;  // Size to clamp to
+	u16		realWidth, realHeight;	  // Actual texture size
 	f32		scaleS, scaleT;			  // Scale to map to 0.0-1.0
 	f32		shiftScaleS, shiftScaleT; // Scale to shift
 	u32		textureBytes;
-	u32		frameBufferTexture;
 
 	u32		lastDList;
 	u32		address;
-	u32		max_level;
+	u8		max_level;
+	u8		frameBufferTexture;
 };
 
 
