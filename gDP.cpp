@@ -280,11 +280,8 @@ void gDPSetColorImage( u32 format, u32 size, u32 width, u32 address )
 
 		if (config.frameBufferEmulation.enable) // && address != gDP.depthImageAddress)
 		{
-			//if (gDP.colorImage.changed)
 				frameBufferList().saveBuffer(address, (u16)format, (u16)size, (u16)width, height, false);
 				gDP.colorImage.height = 0;
-
-			//OGL_ClearDepthBuffer();
 		} else
 			gDP.colorImage.height = height;
 	}
