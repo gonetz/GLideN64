@@ -157,8 +157,11 @@ void RSP_ProcessDList()
 	u32 uc_dstart = *(u32*)&DMEM[0x0FD8];
 	u32 uc_dsize = *(u32*)&DMEM[0x0FDC];
 
-	if ((uc_start != RSP.uc_start) || (uc_dstart != RSP.uc_dstart))
+	if ((uc_start != RSP.uc_start) || (uc_dstart != RSP.uc_dstart)) {
 		gSPLoadUcodeEx(uc_start, uc_dstart, uc_dsize);
+		RSP.uc_start = uc_start;
+		RSP.uc_dstart = uc_dstart;
+	}
 
 	if (GBI.getMicrocodeType() == Turbo3D)
 		RunTurbo3D();
