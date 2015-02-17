@@ -22,6 +22,7 @@ struct DepthBuffer
 	GLuint m_FBO;
 	CachedTexture *m_pDepthImageTexture;
 	CachedTexture *m_pDepthBufferTexture;
+	bool m_cleared;
 	// multisampling
 	CachedTexture *m_pResolveDepthBufferTexture;
 	bool m_resolved;
@@ -38,6 +39,7 @@ public:
 	void saveBuffer(u32 _address);
 	void removeBuffer(u32 _address);
 	void clearBuffer();
+	void setNotCleared();
 	DepthBuffer *findBuffer(u32 _address);
 	DepthBuffer * getCurrent() const {return m_pCurrent;}
 

@@ -163,6 +163,8 @@ void RSP_ProcessDList()
 		RSP.uc_dstart = uc_dstart;
 	}
 
+	depthBufferList().setNotCleared();
+
 	if (GBI.getMicrocodeType() == Turbo3D)
 		RunTurbo3D();
 	else {

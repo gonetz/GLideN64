@@ -16,7 +16,7 @@ const GLuint ZlutImageUnit = 0;
 const GLuint TlutImageUnit = 1;
 const GLuint depthImageUnit = 2;
 
-DepthBuffer::DepthBuffer() : m_address(0), m_width(0), m_FBO(0), m_pDepthImageTexture(NULL), m_pDepthBufferTexture(NULL), m_pResolveDepthBufferTexture(NULL), m_resolved(false)
+DepthBuffer::DepthBuffer() : m_address(0), m_width(0), m_FBO(0), m_pDepthImageTexture(NULL), m_pDepthBufferTexture(NULL), m_cleared(false), m_pResolveDepthBufferTexture(NULL), m_resolved(false)
 {
 	glGenFramebuffers(1, &m_FBO);
 }
@@ -230,6 +230,12 @@ void DepthBufferList::destroy()
 	m_list.clear();
 }
 
+void DepthBufferList::setNotCleared()
+{
+	for (DepthBuffers::iterator iter = m_list.begin(); iter != m_list.end(); ++iter)
+		iter->m_cleared = false;
+}
+
 DepthBuffer * DepthBufferList::findBuffer(u32 _address)
 {
 	for (DepthBuffers::iterator iter = m_list.begin(); iter != m_list.end(); ++iter)
@@ -288,10 +294,11 @@ void DepthBufferList::saveBuffer(u32 _address)
 
 void DepthBufferList::clearBuffer()
 {
-#ifdef GL_IMAGE_TEXTURES_SUPPORT
-	if (!video().getRender().isImageTexturesSupported() || config.frameBufferEmulation.N64DepthCompare == 0)
+	if (m_pCurrent == NULL)
 		return;
-	if (m_pCurrent == NULL || m_pCurrent->m_FBO == 0)
+	m_pCurrent->m_cleared = true;
+#ifdef GL_IMAGE_TEXTURES_SUPPORT
+	if (m_pCurrent->m_FBO == 0 || !video().getRender().isImageTexturesSupported() || config.frameBufferEmulation.N64DepthCompare == 0)
 		return;
 	float color[4] = {1.0f, 1.0f, 0.0f, 1.0f};
 	glBindImageTexture(depthImageUnit, 0, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RG32F);
