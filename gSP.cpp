@@ -2185,7 +2185,7 @@ void _loadBGImage(const uObjScaleBg * _bgInfo, bool _loadScale)
 	if (config.frameBufferEmulation.enable)
 	{
 		FrameBuffer *pBuffer = frameBufferList().findBuffer(gSP.bgImage.address);
-		if ((pBuffer != NULL) &&
+		if ((pBuffer != NULL) && pBuffer->m_size == gSP.bgImage.size &&
 			((*(u32*)&RDRAM[pBuffer->m_startAddress] & 0xFFFEFFFE) == (pBuffer->m_startAddress & 0xFFFEFFFE)))
 		{
 			gDP.tiles[0].frameBuffer = pBuffer;
