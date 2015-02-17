@@ -1047,32 +1047,17 @@ void RDRAMtoFrameBuffer::CopyFromRDRAM( u32 _address, bool _bUseAlpha)
 
 	OGLVideo & ogl = video();
 
-#if 0
-	glBindTexture(GL_TEXTURE_2D, 0);
-
-	glBindFramebuffer(GL_READ_FRAMEBUFFER, m_FBO);
-	const GLuint attachment = GL_COLOR_ATTACHMENT0;
-	glReadBuffer(attachment);
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, pBuffer->m_FBO);
-	glDrawBuffers(1, &attachment);
-	glBlitFramebuffer(
-		0, 0, width, height,
-		0, 0, ogl.getWidth(), ogl.getHeight(),
-		GL_COLOR_BUFFER_BIT, GL_LINEAR
-		);
-	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, frameBufferList().getCurrent()->m_FBO);
-#else
-	if (_bUseAlpha)
-		CombinerInfo::get().setCombine( EncodeCombineMode( 0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0 ) );
-	else
-		CombinerInfo::get().setCombine( EncodeCombineMode( 0, 0, 0, TEXEL0, 0, 0, 0, 1, 0, 0, 0, TEXEL0, 0, 0, 0, 1 ) );
-	glEnable( GL_BLEND );
-	glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
-//	glDisable( GL_ALPHA_TEST );
+	if (_bUseAlpha) {
+		CombinerInfo::get().setCombine(EncodeCombineMode(0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0));
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	}	else {
+		CombinerInfo::get().setCombine(EncodeCombineMode(0, 0, 0, TEXEL0, 0, 0, 0, 1, 0, 0, 0, TEXEL0, 0, 0, 0, 1));
+		glDisable(GL_BLEND);
+	}
 	glDisable( GL_DEPTH_TEST );
 	glDisable( GL_CULL_FACE );
-	glDisable( GL_POLYGON_OFFSET_FILL );
 	const u32 gspChanged = gSP.changed & CHANGED_CPU_FB_WRITE;
 	gSP.changed = gDP.changed = 0;
 
@@ -1086,9 +1071,9 @@ void RDRAMtoFrameBuffer::CopyFromRDRAM( u32 _address, bool _bUseAlpha)
 
 	OGLRender::TexturedRectParams params(0.0f, 0.0f, (float)width, (float)height, 0.0f, 0.0f, width - 1.0f, height - 1.0f, false);
 	ogl.getRender().drawTexturedRect(params);
-	gSP.changed |= gspChanged| CHANGED_TEXTURE | CHANGED_VIEWPORT;
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, frameBufferList().getCurrent()->m_FBO);
+	gSP.changed |= gspChanged | CHANGED_TEXTURE | CHANGED_VIEWPORT;
 	gDP.changed |= CHANGED_COMBINE;
-#endif
 }
 
 void FrameBuffer_CopyFromRDRAM( u32 address, bool bUseAlpha )
