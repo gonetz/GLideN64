@@ -35,8 +35,9 @@ void VI_UpdateSize()
 	const u32 heightPrev = VI.height;
 
 	VI.interlaced = (*REG.VI_STATUS & 0x40) != 0;
+	const bool isPAL = (*REG.VI_V_SYNC & 0x3ff) > 550;
 
-	VI.width = (u32)floor((hEnd - hStart) * xScale + 0.5f);
+	VI.width = (u32)floor((hEnd - (isPAL?128:108))* xScale + 0.5f);
 
 #if 0
 	const f32 yScale = _FIXED2FLOAT(vScale, 10);
@@ -59,7 +60,6 @@ void VI_UpdateSize()
 
 	if (VI.interlaced && VI.real_height % 2 == 1)
 		--VI.real_height;
-	const bool isPAL = (*REG.VI_V_SYNC & 0x3ff) > 550;
 	if (isPAL && (vEnd - vStart) > 480)
 		VI.height = (u32)(VI.real_height*1.0041841f);
 	else
