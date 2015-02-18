@@ -33,7 +33,7 @@ public:
 	FrameBufferToRDRAM() :
 		m_FBO(0), m_pTexture(NULL), m_curIndex(0)
 	{
-		m_aAddress[0] = m_aAddress[1] = 0;
+		m_aAddress = 0;
 		m_aPBO[0] = m_aPBO[1] = 0;
 	}
 
@@ -49,7 +49,7 @@ private:
 
 	GLuint m_FBO;
 	CachedTexture * m_pTexture;
-	u32 m_aAddress[2];
+	u32 m_aAddress;
 	u32 m_curIndex;
 	GLuint m_aPBO[2];
 };
@@ -683,7 +683,7 @@ void FrameBufferToRDRAM::Destroy() {
 	glDeleteBuffers(2, m_aPBO);
 	m_aPBO[0] = m_aPBO[1] = 0;
 	m_curIndex = 0;
-	m_aAddress[0] = m_aAddress[1] = 0;
+	m_aAddress = 0;
 }
 
 void FrameBufferToRDRAM::CopyToRDRAM( u32 address, bool bSync ) {
@@ -716,11 +716,11 @@ void FrameBufferToRDRAM::CopyToRDRAM( u32 address, bool bSync ) {
 #ifndef GLES2
 	// If Sync, read pixels from the buffer, copy them to RDRAM.
 	// If not Sync, read pixels from the buffer, copy pixels from the previous buffer to RDRAM.
-	if (m_aAddress[m_curIndex] == 0)
+	if (m_aAddress == 0)
 		bSync = true;
 	m_curIndex = (m_curIndex + 1) % 2;
 	const u32 nextIndex = bSync ? m_curIndex : (m_curIndex + 1) % 2;
-	m_aAddress[m_curIndex] = address;
+	m_aAddress = address;
 	glBindBuffer(GL_PIXEL_PACK_BUFFER, m_aPBO[m_curIndex]);
 	glReadPixels( 0, 0, VI.width, VI.height, GL_RGBA, GL_UNSIGNED_BYTE, 0 );
 
@@ -732,7 +732,7 @@ void FrameBufferToRDRAM::CopyToRDRAM( u32 address, bool bSync ) {
 	}
 #else
 	m_curIndex = 0;
-	m_aAddress[0] = address;
+	m_aAddress = address;
 	const u32 nextIndex = 0;
 	GLubyte* pixelData = (GLubyte* )malloc(VI.width*VI.height*4);
 	if(pixelData == NULL)
@@ -741,7 +741,7 @@ void FrameBufferToRDRAM::CopyToRDRAM( u32 address, bool bSync ) {
 #endif // GLES2
 
 	if (pBuffer->m_size == G_IM_SIZ_32b) {
-		u32 *ptr_dst = (u32*)(RDRAM + m_aAddress[nextIndex]);
+		u32 *ptr_dst = (u32*)(RDRAM + m_aAddress);
 		u32 *ptr_src = (u32*)pixelData;
 
 		for (u32 y = 0; y <= VI.real_height; ++y) {
@@ -749,7 +749,7 @@ void FrameBufferToRDRAM::CopyToRDRAM( u32 address, bool bSync ) {
 				ptr_dst[x + y*VI.width] = ptr_src[x + (VI.height - y - 1)*VI.width];
 		}
 	} else {
-		u16 *ptr_dst = (u16*)(RDRAM + m_aAddress[nextIndex]);
+		u16 *ptr_dst = (u16*)(RDRAM + m_aAddress);
 		RGBA * ptr_src = (RGBA*)pixelData;
 
 		for (u32 y = 0; y <= VI.real_height; ++y) {
