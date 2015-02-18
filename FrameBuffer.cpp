@@ -410,7 +410,7 @@ void FrameBufferList::renderBuffer(u32 _address)
 {
 	static s32 vStartPrev = 0;
 
-	if (VI.width == 0) // H width is zero. Don't draw
+	if (VI.width == 0 || *REG.VI_WIDTH == 0) // H width is zero. Don't draw
 		return;
 
 	FrameBuffer *pBuffer = findBuffer(_address);
