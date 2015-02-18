@@ -2042,7 +2042,6 @@ void gSPDrawObjRect(const ObjCoordinates & _coords)
 	vtx3.t = _coords.lrt;
 
 	render.drawLLETriangle(4);
-	gDP.colorImage.changed = TRUE;
 	gDP.colorImage.height = (u32)(max(gDP.colorImage.height, (u32)gDP.scissor.lry));
 }
 

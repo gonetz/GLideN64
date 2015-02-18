@@ -129,9 +129,15 @@ void VI_UpdateScreen()
 			}
 			frameBufferList().renderBuffer(*REG.VI_ORIGIN);
 
+			if (gDP.colorImage.changed)
+				uNumCurFrameIsShown = 0;
+			else {
+				uNumCurFrameIsShown++;
+				if (uNumCurFrameIsShown > 25)
+					gSP.changed |= CHANGED_CPU_FB_WRITE;
+			}
 			gDP.colorImage.changed = FALSE;
 			VI.lastOrigin = *REG.VI_ORIGIN;
-			uNumCurFrameIsShown = 0;;
 #ifdef DEBUG
 			while (Debug.paused && !Debug.step);
 			Debug.step = FALSE;
