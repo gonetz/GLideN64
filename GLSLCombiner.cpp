@@ -340,12 +340,12 @@ const char *ColorInput[] = {
 	"uCenterColor.rgb",
 	"uScaleColor.rgb",
 	"combined_color.a",
-	"readtex0.a",
-	"readtex1.a",
-	"uPrimColor.a",
-	"vec_color.a",
-	"uEnvColor.a",
-	"lod_frac", // TODO: emulate lod_fraction
+	"vec3(readtex0.a)",
+	"vec3(readtex1.a)",
+	"vec3(uPrimColor.a)",
+	"vec3(vec_color.a)",
+	"vec3(uEnvColor.a)",
+	"vec3(lod_frac)", // TODO: emulate lod_fraction
 	"vec3(uPrimLod)",
 	"vec3(0.5 + 0.5*snoise())",
 	"vec3(uK4)",
