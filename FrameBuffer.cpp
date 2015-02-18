@@ -300,7 +300,7 @@ void FrameBufferList::saveBuffer(u32 _address, u16 _format, u16 _size, u16 _widt
 			gDPFillRDRAM(m_pCurrent->m_startAddress, 0, 0, m_pCurrent->m_width, gDP.colorImage.height, m_pCurrent->m_width, m_pCurrent->m_size, m_pCurrent->m_fillcolor);
 	}
 
-	const u32 endAddress = _address + ((_width * _height << _size >> 1) - 1);
+	const u32 endAddress = _address + ((_width * (_height - 1)) << _size >> 1) - 1;
 	if (m_pCurrent == NULL || m_pCurrent->m_startAddress != _address || m_pCurrent->m_width != _width)
 		m_pCurrent = _findBuffer(_address, endAddress, _width);
 	if (m_pCurrent != NULL) {
