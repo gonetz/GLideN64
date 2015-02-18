@@ -419,12 +419,15 @@ void FrameBufferList::renderBuffer(u32 _address)
 
 	OGLVideo & ogl = video();
 	GLint srcY0, srcY1, dstY0, dstY1;
+	GLint X0, X1, Xwidth;
 	GLint srcPartHeight = 0;
 	GLint dstPartHeight = 0;
 
 	const f32 yScale = _FIXED2FLOAT(_SHIFTR(*REG.VI_Y_SCALE, 0, 12), 10);
 	s32 vEnd = _SHIFTR(*REG.VI_V_START, 0, 10);
 	s32 vStart = _SHIFTR(*REG.VI_V_START, 16, 10);
+	const s32 hEnd = _SHIFTR(*REG.VI_H_START, 0, 10);
+	const s32 hStart = _SHIFTR(*REG.VI_H_START, 16, 10);
 	const s32 vSync = (*REG.VI_V_SYNC) & 0x03FF;
 	const bool interlaced = (*REG.VI_STATUS & 0x40) != 0;
 	const bool isPAL = vSync > 550;
@@ -464,6 +467,10 @@ void FrameBufferList::renderBuffer(u32 _address)
 		srcY1 = srcY0 + VI.real_height;
 	}
 
+	const f32 scaleX = _FIXED2FLOAT(_SHIFTR(*REG.VI_X_SCALE, 0, 12), 10);
+	X0 = (GLint)(max(0, hStart - (isPAL ? 128 : 108)) * scaleX * ogl.getScaleX());
+	Xwidth = (GLint)((min(VI.width, (hEnd - hStart)*scaleX)) * ogl.getScaleX());
+	X1 = X0 + Xwidth;
 
 	PostProcessor::get().process(pBuffer);
 	// glDisable(GL_SCISSOR_TEST) does not affect glBlitFramebuffer, at least on AMD
@@ -480,8 +487,8 @@ void FrameBufferList::renderBuffer(u32 _address)
 	if (!ogl.isFullscreen())
 		vOffset += ogl.getHeightOffset();
 
-	GLint srcCoord[4] = { 0, (GLint)(srcY0*srcScaleY), ogl.getWidth(), (GLint)(srcY1*srcScaleY) };
-	GLint dstCoord[4] = { hOffset, vOffset + (GLint)(dstY0*dstScaleY), hOffset + ogl.getWidth(), vOffset + (GLint)(dstY1*dstScaleY) };
+	GLint srcCoord[4] = { X0, (GLint)(srcY0*srcScaleY), X1, (GLint)(srcY1*srcScaleY) };
+	GLint dstCoord[4] = { X0 + hOffset, vOffset + (GLint)(dstY0*dstScaleY), hOffset + X1, vOffset + (GLint)(dstY1*dstScaleY) };
 
 	GLenum filter = GL_LINEAR;
 	if (config.video.multisampling != 0) {
