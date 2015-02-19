@@ -604,6 +604,8 @@ void gSPLoadUcodeEx( u32 uc_start, u32 uc_dstart, u16 uc_dsize )
 		return;
 
 	GBI.loadMicrocode(uc_start, uc_dstart, uc_dsize);
+	RSP.uc_start = uc_start;
+	RSP.uc_dstart = uc_dstart;
 }
 
 void gSPNoOp()
