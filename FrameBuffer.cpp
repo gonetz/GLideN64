@@ -347,6 +347,7 @@ void FrameBufferList::saveBuffer(u32 _address, u16 _format, u16 _size, u16 _widt
 		*(u32*)&RDRAM[m_pCurrent->m_startAddress] = m_pCurrent->m_startAddress;
 
 	m_pCurrent->m_cleared = false;
+	m_pCurrent->m_isDepthBuffer = false;
 
 	gSP.changed |= CHANGED_TEXTURE;
 }

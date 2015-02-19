@@ -22,6 +22,7 @@ struct FrameBuffer
 	float m_scaleX, m_scaleY;
 	bool m_cleared;
 	bool m_cfb;
+	bool m_isDepthBuffer;
 
 	GLuint m_FBO;
 	gDPTile *m_pLoadTile;

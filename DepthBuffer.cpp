@@ -261,6 +261,8 @@ void DepthBufferList::saveBuffer(u32 _address)
 	FrameBuffer * pFrameBuffer = frameBufferList().findBuffer(_address);
 	if (pFrameBuffer == NULL)
 		pFrameBuffer = frameBufferList().getCurrent();
+	else
+		pFrameBuffer->m_isDepthBuffer = true;
 
 	if (m_pCurrent == NULL || m_pCurrent->m_address != _address)
 		m_pCurrent = findBuffer(_address);
