@@ -974,6 +974,7 @@ bool texturedRectBGCopy(const OGLRender::TexturedRectParams & _params)
 		u8 *dst = fbaddr + y * gDP.colorImage.width;
 		memcpy(dst, src, width);
 	}
+	frameBufferList().removeBuffer(gDP.colorImage.address);
 	return true;
 }
 
