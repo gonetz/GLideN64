@@ -357,6 +357,8 @@ void FrameBufferList::removeBuffer(u32 _address )
 {
 	for (FrameBuffers::iterator iter = m_list.begin(); iter != m_list.end(); ++iter)
 		if (iter->m_startAddress == _address) {
+			if (m_pCurrent != NULL && m_pCurrent->m_startAddress == _address)
+				m_pCurrent = NULL;
 			m_list.erase(iter);
 			return;
 		}
