@@ -215,8 +215,6 @@ void FrameBuffer::resolveMultisampledTexture()
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, m_FBO);
 	glReadBuffer(GL_COLOR_ATTACHMENT0);
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_resolveFBO);
-	GLuint attachment = GL_COLOR_ATTACHMENT0;
-	glDrawBuffers(1, &attachment);
 	glBlitFramebuffer(
 		0, 0, m_pTexture->realWidth, m_pTexture->realHeight,
 		0, 0, m_pResolveTexture->realWidth, m_pResolveTexture->realHeight,
@@ -702,17 +700,15 @@ void FrameBufferToRDRAM::CopyToRDRAM( u32 address, bool bSync ) {
 	if (pBuffer == NULL)
 		return;
 
-	glDisable(GL_SCISSOR_TEST);
 	address = pBuffer->m_startAddress;
 	if (config.video.multisampling != 0) {
 		pBuffer->resolveMultisampledTexture();
 		glBindFramebuffer(GL_READ_FRAMEBUFFER, pBuffer->m_resolveFBO);
 	} else
 		glBindFramebuffer(GL_READ_FRAMEBUFFER, pBuffer->m_FBO);
+	glDisable(GL_SCISSOR_TEST);
 	glReadBuffer(GL_COLOR_ATTACHMENT0);
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_FBO);
-	GLuint attachment = GL_COLOR_ATTACHMENT0;
-	glDrawBuffers(1, &attachment);
 	glBlitFramebuffer(
 		0, 0, video().getWidth(), video().getHeight(),
 		0, 0, pBuffer->m_width, pBuffer->m_height,
