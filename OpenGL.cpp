@@ -890,12 +890,12 @@ void OGLRender::drawRect(int _ulx, int _uly, int _lrx, int _lry, float *_pColor)
 	m_rect[0].y = (float)_uly * (-2.0f * scaleY) + 1.0;
 	m_rect[0].z = Z;
 	m_rect[0].w = W;
-	m_rect[1].x = (float)(_lrx + 1) * (2.0f * scaleX) - 1.0;
+	m_rect[1].x = (float)_lrx * (2.0f * scaleX) - 1.0;
 	m_rect[1].y = m_rect[0].y;
 	m_rect[1].z = Z;
 	m_rect[1].w = W;
 	m_rect[2].x = m_rect[0].x;
-	m_rect[2].y = (float)(_lry + 1) * (-2.0f * scaleY) + 1.0;
+	m_rect[2].y = (float)_lry * (-2.0f * scaleY) + 1.0;
 	m_rect[2].z = Z;
 	m_rect[2].w = W;
 	m_rect[3].x = m_rect[1].x;
