@@ -64,6 +64,8 @@ void VI_UpdateSize()
 		VI.height = (u32)(VI.real_height*1.0041841f);
 	else
 		VI.height = (u32)(VI.real_height*1.0126582f);
+	if (VI.height % 2 == 1)
+		--VI.height;
 
 //	const int fsaa = ((*REG.VI_STATUS) >> 8) & 3;
 //	const int divot = ((*REG.VI_STATUS) >> 4) & 1;
