@@ -469,9 +469,12 @@ void FrameBufferList::renderBuffer(u32 _address)
 	}
 
 	const f32 scaleX = _FIXED2FLOAT(_SHIFTR(*REG.VI_X_SCALE, 0, 12), 10);
-	X0 = (GLint)(max(0, hStart - (isPAL ? 128 : 108)) * scaleX * ogl.getScaleX());
-	Xwidth = (GLint)((min(VI.width, (hEnd - hStart)*scaleX)) * ogl.getScaleX());
-	X1 = X0 + Xwidth;
+	const s32 h0 = (isPAL ? 128 : 108);
+	const s32 hx0 = max(0, hStart - h0);
+	const s32 hx1 = max(0, h0 + 640 - hEnd);
+	X0 = (GLint)(hx0 * scaleX * ogl.getScaleX());
+	Xwidth = (GLint)((min((f32)VI.width, (hEnd - hStart)*scaleX)) * ogl.getScaleX());
+	X1 = ogl.getWidth() - (GLint)(hx1 *scaleX * ogl.getScaleX());
 
 	PostProcessor::get().process(pBuffer);
 	// glDisable(GL_SCISSOR_TEST) does not affect glBlitFramebuffer, at least on AMD
@@ -488,12 +491,12 @@ void FrameBufferList::renderBuffer(u32 _address)
 	if (!ogl.isFullscreen())
 		vOffset += ogl.getHeightOffset();
 
-	GLint srcCoord[4] = { X0, (GLint)(srcY0*srcScaleY), X1, (GLint)(srcY1*srcScaleY) };
+	GLint srcCoord[4] = { 0, (GLint)(srcY0*srcScaleY), Xwidth, (GLint)(srcY1*srcScaleY) };
 	GLint dstCoord[4] = { X0 + hOffset, vOffset + (GLint)(dstY0*dstScaleY), hOffset + X1, vOffset + (GLint)(dstY1*dstScaleY) };
 
 	GLenum filter = GL_LINEAR;
 	if (config.video.multisampling != 0) {
-		if (dstPartHeight > 0 ||
+		if (X0 > 0 || dstPartHeight > 0 ||
 			(srcCoord[2] - srcCoord[0]) != (dstCoord[2] - dstCoord[0]) ||
 			(srcCoord[3] - srcCoord[1]) != (dstCoord[3] - dstCoord[1])) {
 			pBuffer->resolveMultisampledTexture();
