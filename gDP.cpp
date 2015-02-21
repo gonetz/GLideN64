@@ -518,7 +518,10 @@ bool CheckForFrameBufferTexture(u32 _address, u32 _bytes)
 		)
 	{
 		const u32 texEndAddress = _address + _bytes - 1;
-		const u32 bufEndAddress = pBuffer->m_startAddress + (((pBuffer->m_width * (int)gDP.scissor.lry) << pBuffer->m_size >> 1) - 1);
+		u32 height = (int)gDP.scissor.lry;
+		if (height % 2 != 0)
+			++height;
+		const u32 bufEndAddress = pBuffer->m_startAddress + (((pBuffer->m_width * height) << pBuffer->m_size >> 1) - 1);
 		if (_address > pBuffer->m_startAddress && texEndAddress > bufEndAddress) {
 //			FrameBuffer_RemoveBuffer(pBuffer->startAddress);
 			bRes = false;
