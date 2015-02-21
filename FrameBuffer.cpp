@@ -321,6 +321,10 @@ void FrameBufferList::saveBuffer(u32 _address, u16 _format, u16 _size, u16 _widt
 				m_pCurrent->m_size = _size;
 				m_pCurrent->m_pTexture->format = _format;
 				m_pCurrent->m_pTexture->size = _size;
+				if (m_pCurrent->m_pResolveTexture != NULL) {
+					m_pCurrent->m_pResolveTexture->format = _format;
+					m_pCurrent->m_pResolveTexture->size = _size;
+				}
 			}
 		}
 	}
