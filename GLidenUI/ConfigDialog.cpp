@@ -178,7 +178,8 @@ void ConfigDialog::_init()
 
 ConfigDialog::ConfigDialog(QWidget *parent) :
 	QDialog(parent),
-	ui(new Ui::ConfigDialog)
+	ui(new Ui::ConfigDialog),
+	m_accepted(false)
 {
 	ui->setupUi(this);
 	_init();
@@ -191,6 +192,7 @@ ConfigDialog::~ConfigDialog()
 
 void ConfigDialog::accept()
 {
+	m_accepted = true;
 	const int currentWindowedResolution = ui->windowedResolutionComboBox->currentIndex();
 	config.video.windowedWidth = WindowedModes[currentWindowedResolution].width;
 	config.video.windowedHeight = WindowedModes[currentWindowedResolution].height;

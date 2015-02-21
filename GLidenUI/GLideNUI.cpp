@@ -15,7 +15,7 @@ inline void initMyResource() { Q_INIT_RESOURCE(icon); }
 inline void cleanMyResource() { Q_CLEANUP_RESOURCE(icon); }
 
 static
-int openConfigDialog()
+int openConfigDialog(bool & _accepted)
 {
 	cleanMyResource();
 	initMyResource();
@@ -27,7 +27,9 @@ int openConfigDialog()
 
 	ConfigDialog w;
 	w.show();
-	return a.exec();
+	const int res = a.exec();
+	_accepted = w.isAccepted();
+	return res;
 }
 
 static
@@ -45,10 +47,11 @@ int openAboutDialog()
 	return a.exec();
 }
 
-int runConfigThread() {
-	std::thread configThread(openConfigDialog);
+bool runConfigThread() {
+	bool accepted = false;
+	std::thread configThread(openConfigDialog, std::ref(accepted));
 	configThread.join();
-	return 0;
+	return accepted;
 }
 
 int runAboutThread() {
@@ -57,7 +60,7 @@ int runAboutThread() {
 	return 0;
 }
 
-EXPORT int CALL RunConfig()
+EXPORT bool CALL RunConfig()
 {
 	return runConfigThread();
 }

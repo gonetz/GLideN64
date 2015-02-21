@@ -16,6 +16,8 @@ public:
 	explicit ConfigDialog(QWidget *parent = 0);
 	~ConfigDialog();
 
+	bool isAccepted() const {return m_accepted;}
+
 public Q_SLOTS:
 	virtual void accept();
 
@@ -34,6 +36,7 @@ private:
 	Ui::ConfigDialog *ui;
 	QFont m_font;
 	QColor m_color;
+	bool m_accepted;
 };
 
 #endif // CONFIGDIALOG_H
