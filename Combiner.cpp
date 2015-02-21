@@ -63,8 +63,12 @@ static int aAExpanded[] =
 };
 
 void Combiner_Init() {
-	CombinerInfo::get().init();
+	CombinerInfo & cmbInfo = CombinerInfo::get();
+	cmbInfo.init();
 	InitShaderCombiner();
+	cmbInfo.setCombine(EncodeCombineMode(0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0));
+	cmbInfo.setCombine(EncodeCombineMode(0, 0, 0, TEXEL0, 0, 0, 0, 1, 0, 0, 0, TEXEL0, 0, 0, 0, 1));
+	cmbInfo.setCombine(EncodeCombineMode(0, 0, 0, SHADE, 0, 0, 0, SHADE, 0, 0, 0, SHADE, 0, 0, 0, SHADE));
 }
 
 void Combiner_Destroy() {
