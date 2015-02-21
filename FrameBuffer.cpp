@@ -972,9 +972,12 @@ void RDRAMtoFrameBuffer::CopyFromRDRAM( u32 _address, bool _bUseAlpha)
 	FrameBuffer *pBuffer = frameBufferList().findBuffer(_address);
 	if (pBuffer == NULL || pBuffer->m_size < G_IM_SIZ_16b)
 		return;
+	if (pBuffer->m_startAddress == _address && gDP.colorImage.changed != 0)
+		return;
 
+	const u32 address = pBuffer->m_startAddress;
 	const u32 width = pBuffer->m_width;
-	const u32 height = pBuffer->m_height;
+	const u32 height = pBuffer->m_startAddress == _address ? VI.real_height : pBuffer->m_height;
 	m_pTexture->width = width;
 	m_pTexture->height = height;
 	const u32 dataSize = width*height*4;
@@ -990,7 +993,7 @@ void RDRAMtoFrameBuffer::CopyFromRDRAM( u32 _address, bool _bUseAlpha)
 	if (ptr == NULL)
 		return;
 
-	u8 * image = RDRAM + _address;
+	u8 * image = RDRAM + address;
 	u32 * dst = (u32*)ptr;
 
 	u32 empty = 0;
@@ -998,7 +1001,7 @@ void RDRAMtoFrameBuffer::CopyFromRDRAM( u32 _address, bool _bUseAlpha)
 	if (pBuffer->m_size == G_IM_SIZ_16b) {
 		u16 * src = (u16*)image;
 		u16 col;
-		const u32 bound = (RDRAMSize + 1 - _address) >> 1;
+		const u32 bound = (RDRAMSize + 1 - address) >> 1;
 		for (u32 y = 0; y < height; y++)
 		{
 			for (u32 x = 0; x < width; x++)
@@ -1007,12 +1010,13 @@ void RDRAMtoFrameBuffer::CopyFromRDRAM( u32 _address, bool _bUseAlpha)
 				if (idx >= bound)
 					break;
 				col = src[idx];
+				if (_bUseAlpha)
+					src[idx] = 0;
 				empty |= col;
 				r = ((col >> 11)&31)<<3;
 				g = ((col >> 6)&31)<<3;
 				b = ((col >> 1)&31)<<3;
 				a = (col&1) > 0 ? 0xff : 0;
-				//*(dst++) = RGBA5551_RGBA8888(c);
 				dst[x + y*width] = (a<<24)|(b<<16)|(g<<8)|r;
 			}
 		}
@@ -1020,7 +1024,7 @@ void RDRAMtoFrameBuffer::CopyFromRDRAM( u32 _address, bool _bUseAlpha)
 		// 32 bit
 		u32 * src = (u32*)image;
 		u32 col;
-		const u32 bound = (RDRAMSize + 1 - _address) >> 2;
+		const u32 bound = (RDRAMSize + 1 - address) >> 2;
 		for (u32 y=0; y < height; y++)
 		{
 			for (u32 x=0; x < width; x++)
@@ -1029,6 +1033,8 @@ void RDRAMtoFrameBuffer::CopyFromRDRAM( u32 _address, bool _bUseAlpha)
 				if (idx >= bound)
 					break;
 				col = src[idx];
+				if (_bUseAlpha)
+					src[idx] = 0;
 				empty |= col;
 				r = (col >> 24) & 0xff;
 				g = (col >> 16) & 0xff;
@@ -1051,9 +1057,6 @@ void RDRAMtoFrameBuffer::CopyFromRDRAM( u32 _address, bool _bUseAlpha)
 	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, m_PBO);
 #endif
 
-	OGLVideo & ogl = video();
-
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, pBuffer->m_FBO);
 	if (_bUseAlpha) {
 		CombinerInfo::get().setCombine(EncodeCombineMode(0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0));
 		glEnable(GL_BLEND);
@@ -1062,7 +1065,7 @@ void RDRAMtoFrameBuffer::CopyFromRDRAM( u32 _address, bool _bUseAlpha)
 		CombinerInfo::get().setCombine(EncodeCombineMode(0, 0, 0, TEXEL0, 0, 0, 0, 1, 0, 0, 0, TEXEL0, 0, 0, 0, 1));
 		glDisable(GL_BLEND);
 	}
-	glDisable( GL_DEPTH_TEST );
+	glDisable(GL_DEPTH_TEST);
 	glDisable( GL_CULL_FACE );
 	const u32 gspChanged = gSP.changed & CHANGED_CPU_FB_WRITE;
 	gSP.changed = gDP.changed = 0;
@@ -1076,8 +1079,8 @@ void RDRAMtoFrameBuffer::CopyFromRDRAM( u32 _address, bool _bUseAlpha)
 	textureCache().activateTexture(0, m_pTexture);
 
 	OGLRender::TexturedRectParams params(0.0f, 0.0f, (float)width, (float)height, 0.0f, 0.0f, width - 1.0f, height - 1.0f, false);
-	ogl.getRender().drawTexturedRect(params);
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, frameBufferList().getCurrent()->m_FBO);
+	video().getRender().drawTexturedRect(params);
+
 	gSP.changed |= gspChanged | CHANGED_TEXTURE | CHANGED_VIEWPORT;
 	gDP.changed |= CHANGED_COMBINE;
 }
