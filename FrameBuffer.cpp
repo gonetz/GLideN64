@@ -288,7 +288,7 @@ FrameBuffer * FrameBufferList::findTmpBuffer(u32 _address)
 
 void FrameBufferList::saveBuffer(u32 _address, u16 _format, u16 _size, u16 _width, u16 _height, bool _cfb)
 {
-	if (VI.width == 0 || VI.height == 0) // H width is zero. Don't save
+	if (VI.width == 0 || VI.height == 0 || _height == 0) // H width is zero. Don't save
 		return;
 	OGLVideo & ogl = video();
 	m_drawBuffer = GL_FRAMEBUFFER;
