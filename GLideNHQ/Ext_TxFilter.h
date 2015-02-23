@@ -155,6 +155,10 @@ typedef void (*dispInfoFuncExt)(const wchar_t *format, ...);
 #endif // OS_WINDOWS
 
 #ifdef TXFILTER_DLL
+typedef unsigned char  uint8;
+typedef unsigned short uint16;
+typedef unsigned long  uint32;
+
 boolean ext_ghq_init(int maxwidth, /* maximum texture width supported by hardware */
 					 int maxheight,/* maximum texture height supported by hardware */
 					 int maxbpp,   /* maximum texture bpp supported by hardware */
