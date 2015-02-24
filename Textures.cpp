@@ -661,14 +661,14 @@ void _calcTileSizes(u32 _t, TileSizes & _sizes, gDPTile * _pLoadTile)
 
 	if (pTile->clamps != 0)
 		_sizes.realWidth = _sizes.clampWidth;
-	else if (pTile->mirrors + pTile->masks != 0)
+	else if (pTile->masks != 0)
 		_sizes.realWidth = _sizes.maskWidth;
 	else
 		_sizes.realWidth = _sizes.width;
 
 	if (pTile->clampt != 0)
 		_sizes.realHeight = _sizes.clampHeight;
-	else if (pTile->mirrort + pTile->maskt != 0)
+	else if (pTile->maskt != 0)
 		_sizes.realHeight = _sizes.maskHeight;
 	else
 		_sizes.realHeight = _sizes.height;
