@@ -663,9 +663,9 @@ void FrameBufferToRDRAM::Init()
 	m_pTexture->maskT = 0;
 	m_pTexture->mirrorS = 0;
 	m_pTexture->mirrorT = 0;
-	m_pTexture->realWidth = 1024;
-	m_pTexture->realHeight = 512;
-	m_pTexture->textureBytes = m_pTexture->realWidth * m_pTexture->realHeight * 4;
+	m_pTexture->realWidth = 640;
+	m_pTexture->realHeight = 480;
+	m_pTexture->textureBytes = 640 * 480 * 4;
 	textureCache().addFrameBufferTextureSize(m_pTexture->textureBytes);
 	glBindTexture( GL_TEXTURE_2D, m_pTexture->glName );
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_pTexture->realWidth, m_pTexture->realHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
@@ -705,7 +705,7 @@ void FrameBufferToRDRAM::CopyToRDRAM( u32 address, bool bSync ) {
 	if (VI.width == 0) // H width is zero. Don't copy
 		return;
 	FrameBuffer *pBuffer = frameBufferList().findBuffer(address);
-	if (pBuffer == NULL)
+	if (pBuffer == NULL || pBuffer->m_width < VI.width)
 		return;
 
 	address = pBuffer->m_startAddress;
@@ -719,7 +719,7 @@ void FrameBufferToRDRAM::CopyToRDRAM( u32 address, bool bSync ) {
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_FBO);
 	glBlitFramebuffer(
 		0, 0, video().getWidth(), video().getHeight(),
-		0, 0, pBuffer->m_width, pBuffer->m_height,
+		0, 0, VI.width, VI.height,
 		GL_COLOR_BUFFER_BIT, GL_LINEAR
 	);
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, frameBufferList().getCurrent()->m_FBO);
