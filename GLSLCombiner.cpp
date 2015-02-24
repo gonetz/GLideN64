@@ -822,9 +822,16 @@ void ShaderCombiner::updateColors(bool _bForce)
 		}
 	}
 
-	_setIUniform(m_uniforms.uAlphaCompareMode, gDP.otherMode.alphaCompare, _bForce);
-	_setIUniform(m_uniforms.uAlphaDitherMode, gDP.otherMode.alphaDither, _bForce);
-	_setIUniform(m_uniforms.uColorDitherMode, gDP.otherMode.colorDither, _bForce);
+	if (gDP.otherMode.cycleType < G_CYC_COPY) {
+		_setIUniform(m_uniforms.uAlphaCompareMode, gDP.otherMode.alphaCompare, _bForce);
+		_setIUniform(m_uniforms.uAlphaDitherMode, gDP.otherMode.alphaDither, _bForce);
+		_setIUniform(m_uniforms.uColorDitherMode, gDP.otherMode.colorDither, _bForce);
+	} else {
+		_setIUniform(m_uniforms.uAlphaCompareMode, 0, _bForce);
+		_setIUniform(m_uniforms.uAlphaDitherMode, 0, _bForce);
+		_setIUniform(m_uniforms.uColorDitherMode, 0, _bForce);
+	}
+
 	_setIUniform(m_uniforms.uGammaCorrectionEnabled, *REG.VI_STATUS & 8, _bForce);
 
 	const int nDither = (gDP.otherMode.cycleType < G_CYC_COPY) && (gDP.otherMode.colorDither == G_CD_NOISE || gDP.otherMode.alphaDither == G_AD_NOISE || gDP.otherMode.alphaCompare == G_AC_DITHER) ? 1 : 0;
