@@ -37,7 +37,7 @@ void VI_UpdateSize()
 	VI.interlaced = (*REG.VI_STATUS & 0x40) != 0;
 	const bool isPAL = (*REG.VI_V_SYNC & 0x3ff) > 550;
 
-	VI.width = (u32)floor((hEnd - (isPAL?128:108))* xScale + 0.5f);
+	VI.width = hEnd == 0 ? 0 : (u32)floor((hEnd - (isPAL ? 128 : 108))* xScale + 0.5f);
 
 #if 0
 	const f32 yScale = _FIXED2FLOAT(vScale, 10);
