@@ -31,16 +31,13 @@ class FrameBufferToRDRAM
 {
 public:
 	FrameBufferToRDRAM() :
-		m_FBO(0), m_pTexture(NULL), m_curIndex(0)
-	{
-		m_aAddress = 0;
-		m_aPBO[0] = m_aPBO[1] = 0;
-	}
+		m_FBO(0), m_PBO(0), m_pTexture(NULL)
+	{}
 
 	void Init();
 	void Destroy();
 
-	void CopyToRDRAM( u32 address, bool bSync );
+	void CopyToRDRAM(u32 _address);
 
 private:
 	struct RGBA {
@@ -48,10 +45,8 @@ private:
 	};
 
 	GLuint m_FBO;
+	GLuint m_PBO;
 	CachedTexture * m_pTexture;
-	u32 m_aAddress;
-	u32 m_curIndex;
-	GLuint m_aPBO[2];
 };
 
 class DepthBufferToRDRAM
@@ -679,36 +674,36 @@ void FrameBufferToRDRAM::Init()
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 
 	// Generate and initialize Pixel Buffer Objects
-	glGenBuffers(2, m_aPBO);
-	glBindBuffer(GL_PIXEL_PACK_BUFFER, m_aPBO[0]);
-	glBufferData(GL_PIXEL_PACK_BUFFER, 640*480*4, NULL, GL_DYNAMIC_DRAW);
-	glBindBuffer(GL_PIXEL_PACK_BUFFER, m_aPBO[1]);
-	glBufferData(GL_PIXEL_PACK_BUFFER, 640*480*4, NULL, GL_DYNAMIC_DRAW);
+	glGenBuffers(1, &m_PBO);
+	glBindBuffer(GL_PIXEL_PACK_BUFFER, m_PBO);
+	glBufferData(GL_PIXEL_PACK_BUFFER, m_pTexture->textureBytes, NULL, GL_DYNAMIC_DRAW);
 	glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
 }
 
 void FrameBufferToRDRAM::Destroy() {
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-	glDeleteFramebuffers(1, &m_FBO);
-	m_FBO = 0;
+	if (m_FBO != 0) {
+		glDeleteFramebuffers(1, &m_FBO);
+		m_FBO = 0;
+	}
 	if (m_pTexture != NULL) {
 		textureCache().removeFrameBufferTexture(m_pTexture);
 		m_pTexture = NULL;
 	}
-	glDeleteBuffers(2, m_aPBO);
-	m_aPBO[0] = m_aPBO[1] = 0;
-	m_curIndex = 0;
-	m_aAddress = 0;
+	if (m_PBO != 0) {
+		glDeleteBuffers(1, &m_PBO);
+		m_PBO = 0;
+	}
 }
 
-void FrameBufferToRDRAM::CopyToRDRAM( u32 address, bool bSync ) {
+void FrameBufferToRDRAM::CopyToRDRAM(u32 _address) {
 	if (VI.width == 0) // H width is zero. Don't copy
 		return;
-	FrameBuffer *pBuffer = frameBufferList().findBuffer(address);
+	FrameBuffer *pBuffer = frameBufferList().findBuffer(_address);
 	if (pBuffer == NULL || pBuffer->m_width < VI.width)
 		return;
 
-	address = pBuffer->m_startAddress;
+	_address = pBuffer->m_startAddress;
 	if (config.video.multisampling != 0) {
 		pBuffer->resolveMultisampledTexture();
 		glBindFramebuffer(GL_READ_FRAMEBUFFER, pBuffer->m_resolveFBO);
@@ -727,17 +722,8 @@ void FrameBufferToRDRAM::CopyToRDRAM( u32 address, bool bSync ) {
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, m_FBO);
 	glReadBuffer(GL_COLOR_ATTACHMENT0);
 #ifndef GLES2
-	// If Sync, read pixels from the buffer, copy them to RDRAM.
-	// If not Sync, read pixels from the buffer, copy pixels from the previous buffer to RDRAM.
-	if (m_aAddress == 0)
-		bSync = true;
-	m_curIndex = (m_curIndex + 1) % 2;
-	const u32 nextIndex = bSync ? m_curIndex : (m_curIndex + 1) % 2;
-	m_aAddress = address;
-	glBindBuffer(GL_PIXEL_PACK_BUFFER, m_aPBO[m_curIndex]);
+	glBindBuffer(GL_PIXEL_PACK_BUFFER, m_PBO);
 	glReadPixels( 0, 0, VI.width, VI.height, GL_RGBA, GL_UNSIGNED_BYTE, 0 );
-
-	glBindBuffer(GL_PIXEL_PACK_BUFFER, m_aPBO[nextIndex]);
 	GLubyte* pixelData = (GLubyte*)glMapBuffer(GL_PIXEL_PACK_BUFFER, GL_READ_ONLY);
 	if(pixelData == NULL) {
 		glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
@@ -745,7 +731,6 @@ void FrameBufferToRDRAM::CopyToRDRAM( u32 address, bool bSync ) {
 	}
 #else
 	m_curIndex = 0;
-	m_aAddress = address;
 	const u32 nextIndex = 0;
 	GLubyte* pixelData = (GLubyte* )malloc(VI.width*VI.height*4);
 	if(pixelData == NULL)
@@ -754,7 +739,7 @@ void FrameBufferToRDRAM::CopyToRDRAM( u32 address, bool bSync ) {
 #endif // GLES2
 
 	if (pBuffer->m_size == G_IM_SIZ_32b) {
-		u32 *ptr_dst = (u32*)(RDRAM + m_aAddress);
+		u32 *ptr_dst = (u32*)(RDRAM + _address);
 		u32 *ptr_src = (u32*)pixelData;
 
 		for (u32 y = 0; y < VI.height; ++y) {
@@ -762,7 +747,7 @@ void FrameBufferToRDRAM::CopyToRDRAM( u32 address, bool bSync ) {
 				ptr_dst[x + y*VI.width] = ptr_src[x + (VI.height - y - 1)*VI.width];
 		}
 	} else {
-		u16 *ptr_dst = (u16*)(RDRAM + m_aAddress);
+		u16 *ptr_dst = (u16*)(RDRAM + _address);
 		RGBA * ptr_src = (RGBA*)pixelData;
 
 		for (u32 y = 0; y < VI.height; ++y) {
@@ -772,7 +757,7 @@ void FrameBufferToRDRAM::CopyToRDRAM( u32 address, bool bSync ) {
 			}
 		}
 	}
-#if 1 //ndef GLES2
+#ifndef GLES2
 	glUnmapBuffer(GL_PIXEL_PACK_BUFFER);
 	glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
 #else
@@ -783,10 +768,10 @@ void FrameBufferToRDRAM::CopyToRDRAM( u32 address, bool bSync ) {
 }
 #endif // GLES2
 
-void FrameBuffer_CopyToRDRAM( u32 address, bool bSync )
+void FrameBuffer_CopyToRDRAM(u32 _address)
 {
 #ifndef GLES2
-	g_fbToRDRAM.CopyToRDRAM(address, bSync);
+	g_fbToRDRAM.CopyToRDRAM(_address);
 #endif
 }
 
