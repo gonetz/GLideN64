@@ -50,8 +50,11 @@ void VI_UpdateSize()
 #else
 	VI.real_height = vEnd > vStart ? (((vEnd - vStart) >> 1) * vScale) >> 10 : 0;
 	if (VI.interlaced) {
-		if (VI.width != 0)
-			VI.real_height *= *REG.VI_WIDTH / VI.width;
+		if (VI.width != 0) {
+			const u32 heightScale = *REG.VI_WIDTH / (u32)((hEnd - hStart)*xScale + 0.5f);
+			if (heightScale > 1)
+				VI.real_height *= heightScale;
+		}
 	} else {
 		if (*REG.VI_WIDTH > 0)
 			VI.width = min(VI.width, *REG.VI_WIDTH);
