@@ -942,7 +942,7 @@ void ShaderCombiner::updateAlphaTestInfo(bool _bForce) {
 		_setIUniform(m_uniforms.uEnableAlphaTest, 0, _bForce);
 		_setFUniform(m_uniforms.uAlphaTestValue, 0.0f, _bForce);
 	} else if (gDP.otherMode.cycleType == G_CYC_COPY) {
-		if (gDP.otherMode.alphaCompare == G_AC_THRESHOLD) {
+		if (gDP.otherMode.alphaCompare & 1) {
 			_setIUniform(m_uniforms.uEnableAlphaTest, 1, _bForce);
 			_setFUniform(m_uniforms.uAlphaTestValue, 0.5f, _bForce);
 		} else {
