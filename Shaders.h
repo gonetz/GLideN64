@@ -297,15 +297,21 @@ static const char* fragment_shader_header_main =
 
 static const char* fragment_shader_color_dither =
 "  if (uColorDitherMode == 2) {								\n"
-"    color2 += 0.03125*snoise();							\n"
-"    color2 = clamp(color2, 0.0, 1.0);						\n"
+"    mediump vec3 tmpColor = color2*255.0;					\n"
+"    mediump ivec3 iColor = ivec3(tmpColor)&248;			\n"
+"    lowp float noise = clamp(snoise(), 0.0, 1.0);			\n"
+"    iColor += ivec3(tmpColor*noise)&7;						\n"
+"    color2 = vec3(iColor)/255.0;							\n"
 "  }														\n"
 ;
 
 static const char* fragment_shader_alpha_dither =
 "  if (uAlphaDitherMode == 2) {								\n"
-"    alpha2 += 0.03125*snoise();							\n"
-"    alpha2 = clamp(alpha2, 0.0, 1.0);						\n"
+"    mediump float tmpAlpha = alpha2*255.0;					\n"
+"    mediump int iAlpha = int(tmpAlpha)&248;				\n"
+"    lowp float noise = clamp(snoise(), 0.0, 1.0);			\n"
+"    iAlpha += int(tmpAlpha*noise)&7;						\n"
+"    alpha2 = float(iAlpha)/255.0;							\n"
 "  }														\n"
 ;
 
