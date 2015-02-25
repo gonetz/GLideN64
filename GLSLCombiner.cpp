@@ -542,8 +542,11 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 		strFragmentShader.append("  input_color = vShadeColor.rgb;\n");
 	strFragmentShader.append("  vec_color = vec4(input_color, vShadeColor.a); \n");
 	strFragmentShader.append(strCombiner);
-	strFragmentShader.append(fragment_shader_color_dither);
-	strFragmentShader.append(fragment_shader_alpha_dither);
+
+	if (config.generalEmulation.enableNoise != 0) {
+		strFragmentShader.append(fragment_shader_color_dither);
+		strFragmentShader.append(fragment_shader_alpha_dither);
+	}
 
 	strFragmentShader.append(
 		"  if (!alpha_test(alpha2)) discard;					\n"
@@ -578,6 +581,9 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 
 	strFragmentShader.append(fragment_shader_end);
 
+	if (config.generalEmulation.enableNoise == 0)
+		strFragmentShader.append(fragment_shader_dummy_noise);
+
 #ifdef USE_TOONIFY
 	strFragmentShader.append(fragment_shader_toonify);
 #endif
@@ -610,7 +616,8 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 	glAttachShader(m_program, g_test_alpha_shader_object);
 	if (video().getRender().isImageTexturesSupported() && config.frameBufferEmulation.N64DepthCompare != 0)
 		glAttachShader(m_program, g_calc_depth_shader_object);
-	glAttachShader(m_program, g_calc_noise_shader_object);
+	if (config.generalEmulation.enableNoise != 0)
+		glAttachShader(m_program, g_calc_noise_shader_object);
 #endif
 	glLinkProgram(m_program);
 	assert(checkProgramLinkStatus(m_program));

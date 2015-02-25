@@ -539,6 +539,14 @@ static const char* fragment_shader_noise =
 "}														\n"
 ;
 
+static const char* fragment_shader_dummy_noise =
+"						\n"
+"lowp float snoise()	\n"
+"{						\n"
+"  return 1.0;			\n"
+"}						\n"
+;
+
 #ifdef GL_IMAGE_TEXTURES_SUPPORT
 static const char* depth_compare_shader_float =
 "#version 430								\n"
