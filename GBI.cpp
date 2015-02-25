@@ -38,6 +38,7 @@ SpecialMicrocodeInfo specialMicrocodes[] =
 
 	{ F3DWRUS,	FALSE,	0xd17906e2, "RSP SW Version: 2.0D, 04-01-96" },
 	{ F3DSWSE,	FALSE,	0x94c4c833, "RSP SW Version: 2.0D, 04-01-96" },
+	{ F3DEX,	TRUE,	0x637b4b58, "RSP SW Version: 2.0D, 04-01-96" },
 
 	{ S2DEX,	FALSE,	0x9df31081, "RSP Gfx ucode S2DEX  1.06 Yoshitaka Yasumoto Nintendo." },
 
