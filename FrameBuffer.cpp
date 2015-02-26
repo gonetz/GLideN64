@@ -865,7 +865,12 @@ bool DepthBufferToRDRAM::CopyToRDRAM( u32 _address) {
 	m_lastDList = RSP.DList;
 	DepthBuffer * pDepthBuffer = pBuffer->m_pDepthBuffer;
 	const u32 address = pDepthBuffer->m_address;
-	glBindFramebuffer(GL_READ_FRAMEBUFFER, pBuffer->m_FBO);
+	if (config.video.multisampling == 0)
+		glBindFramebuffer(GL_READ_FRAMEBUFFER, pBuffer->m_FBO);
+	else {
+		pDepthBuffer->resolveDepthBufferTexture(pBuffer);
+		glBindFramebuffer(GL_READ_FRAMEBUFFER, pBuffer->m_resolveFBO);
+	}
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_FBO);
 	glDisable(GL_SCISSOR_TEST);
 	glBlitFramebuffer(
