@@ -145,7 +145,8 @@ struct Config
 	}
 };
 
-#define hack_Ogre64	(1<<0)  //Ogre Battle 64
+#define hack_Ogre64	(1<<0)  //Ogre Battle 64 background copy
+#define hack_MarioGolf	(1<<1)  //Mario golf replays
 
 extern Config config;
 

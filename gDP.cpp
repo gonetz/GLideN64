@@ -512,7 +512,7 @@ bool CheckForFrameBufferTexture(u32 _address, u32 _bytes)
 		return false;
 
 	FrameBuffer *pBuffer = frameBufferList().findBuffer(_address);
-	bool bRes = pBuffer != NULL && !pBuffer->m_isDepthBuffer;
+	bool bRes = pBuffer != NULL && ((config.generalEmulation.hacks & hack_MarioGolf) == 0 || !pBuffer->m_isDepthBuffer);
 	if ((bRes)
 		//&&			((*(u32*)&RDRAM[pBuffer->startAddress] & 0xFFFEFFFE) == (pBuffer->startAddress & 0xFFFEFFFE)) // Does not work for Jet Force Gemini
 		)
