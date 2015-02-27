@@ -129,6 +129,7 @@ void OGLVideo::swapBuffers()
 	gDPSetRenderMode(0, 0);
 	gDPSetTextureLUT(G_TT_NONE);
 	gDPSetAlphaCompare(G_AC_NONE);
+	++RSP.DList;
 }
 
 void OGLVideo::setCaptureScreen(const char * const _strDirectory)
