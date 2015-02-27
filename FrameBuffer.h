@@ -23,6 +23,7 @@ struct FrameBuffer
 	bool m_cleared;
 	bool m_cfb;
 	bool m_isDepthBuffer;
+	bool m_copiedToRDRAM;
 
 	GLuint m_FBO;
 	gDPTile *m_pLoadTile;

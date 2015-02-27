@@ -306,10 +306,10 @@ void RSP_Init()
 		TFH.shutdown();
 
 	strncpy(RSP.romname, romname, 21);
-	if (strstr(RSP.romname, (const char *)"OgreBattle64"))
+	if (strstr(RSP.romname, (const char *)"OgreBattle64") != NULL)
 		config.generalEmulation.hacks |= hack_Ogre64;
-	else if (strstr(RSP.romname, (const char *)"MarioGolf64"))
-		config.generalEmulation.hacks |= hack_MarioGolf;
+	else if (strstr(RSP.romname, (const char *)"MarioGolf64") != NULL || strstr(RSP.romname, (const char *)"CONKER BFD") != NULL)
+		config.generalEmulation.hacks |= hack_noDepthFrameBuffers;
 
 	api().FindPluginPath(RSP.pluginpath);
 

@@ -512,11 +512,18 @@ bool CheckForFrameBufferTexture(u32 _address, u32 _bytes)
 		return false;
 
 	FrameBuffer *pBuffer = frameBufferList().findBuffer(_address);
-	bool bRes = pBuffer != NULL && ((config.generalEmulation.hacks & hack_MarioGolf) == 0 || !pBuffer->m_isDepthBuffer);
+	const bool noDepthBuffers = (config.generalEmulation.hacks & hack_noDepthFrameBuffers) != 0;
+	bool bRes = pBuffer != NULL && (!noDepthBuffers || !pBuffer->m_isDepthBuffer);
 	if ((bRes)
 		//&&			((*(u32*)&RDRAM[pBuffer->startAddress] & 0xFFFEFFFE) == (pBuffer->startAddress & 0xFFFEFFFE)) // Does not work for Jet Force Gemini
 		)
 	{
+		if (noDepthBuffers && gDP.colorImage.address == gDP.depthImageAddress && pBuffer->m_copiedToRDRAM)
+		{
+			memcpy(RDRAM + gDP.depthImageAddress, RDRAM + pBuffer->m_startAddress, (pBuffer->m_width*pBuffer->m_height) << pBuffer->m_size >> 1);
+			pBuffer->m_copiedToRDRAM = false;
+		}
+
 		const u32 texEndAddress = _address + _bytes - 1;
 		u32 height = (int)gDP.scissor.lry;
 		if (height % 2 != 0)
