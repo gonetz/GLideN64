@@ -477,7 +477,8 @@ void FrameBufferList::renderBuffer(u32 _address)
 
 	PostProcessor::get().process(pBuffer);
 	// glDisable(GL_SCISSOR_TEST) does not affect glBlitFramebuffer, at least on AMD
-	glScissor(0, 0, ogl.getScreenWidth(), ogl.getScreenHeight());
+	GLint vOffset = ogl.isFullscreen() ? 0 : ogl.getHeightOffset();
+	glScissor(0, 0, ogl.getScreenWidth(), ogl.getScreenHeight() + vOffset);
 	glDisable(GL_SCISSOR_TEST);
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, pBuffer->m_FBO);
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
@@ -486,9 +487,7 @@ void FrameBufferList::renderBuffer(u32 _address)
 	ogl.getRender().clearColorBuffer(clearColor);
 	const float srcScaleY = ogl.getScaleY();
 	const GLint hOffset = (ogl.getScreenWidth() - ogl.getWidth()) / 2;
-	GLint vOffset = (ogl.getScreenHeight() - ogl.getHeight()) / 2;
-	if (!ogl.isFullscreen())
-		vOffset += ogl.getHeightOffset();
+	vOffset += (ogl.getScreenHeight() - ogl.getHeight()) / 2;
 
 	GLint srcCoord[4] = { 0, (GLint)(srcY0*srcScaleY), Xwidth, (GLint)(srcY1*srcScaleY) };
 	GLint dstCoord[4] = { X0 + hOffset, vOffset + (GLint)(dstY0*dstScaleY), hOffset + X1, vOffset + (GLint)(dstY1*dstScaleY) };
