@@ -261,10 +261,10 @@ void F3D_RDPHalf_Cont( u32 w0, u32 w1 )
 
 void F3D_Tri4( u32 w0, u32 w1 )
 {
-	gSP4Triangles( _SHIFTR( w0,  0, 4 ), _SHIFTR( w1,  0, 4 ), _SHIFTR( w1,  4, 4 ),
-				   _SHIFTR( w0,  4, 4 ), _SHIFTR( w1,  8, 4 ), _SHIFTR( w1, 12, 4 ),
-				   _SHIFTR( w0,  8, 4 ), _SHIFTR( w1, 16, 4 ), _SHIFTR( w1, 20, 4 ),
-				   _SHIFTR( w0, 12, 4 ), _SHIFTR( w1, 24, 4 ), _SHIFTR( w1, 28, 4 ) );
+	gSP4Triangles( _SHIFTR( w1, 28, 4 ), _SHIFTR( w0, 12, 4 ), _SHIFTR( w1, 24, 4 ),
+				   _SHIFTR( w1, 20, 4 ), _SHIFTR( w0,  8, 4 ), _SHIFTR( w1, 16, 4 ),
+				   _SHIFTR( w1, 12, 4 ), _SHIFTR( w0,  4, 4 ), _SHIFTR( w1,  8, 4 ),
+				   _SHIFTR( w1,  4, 4 ), _SHIFTR( w0,  0, 4 ), _SHIFTR( w1,  0, 4 ) );
 }
 
 void F3D_Init()
