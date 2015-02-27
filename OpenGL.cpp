@@ -576,7 +576,7 @@ void OGLRender::_updateViewport() const
 
 void OGLRender::_updateDepthUpdate() const
 {
-	if (gDP.otherMode.depthUpdate)
+	if (gDP.otherMode.depthUpdate != 0)
 		glDepthMask( TRUE );
 	else
 		glDepthMask( FALSE );
@@ -599,7 +599,7 @@ void OGLRender::_updateStates() const
 		glDepthMask( FALSE );
 	} else if ((gDP.changed & (CHANGED_RENDERMODE | CHANGED_CYCLETYPE)) != 0) {
 		if (((gSP.geometryMode & G_ZBUFFER) || gDP.otherMode.depthSource == G_ZS_PRIM) && gDP.otherMode.cycleType <= G_CYC_2CYCLE) {
-			if (gDP.otherMode.depthCompare) {
+			if (gDP.otherMode.depthCompare != 0) {
 				switch (gDP.otherMode.depthMode) {
 					case ZMODE_OPA:
 					glDisable(GL_POLYGON_OFFSET_FILL);
