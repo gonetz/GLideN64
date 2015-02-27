@@ -1074,8 +1074,15 @@ void RDRAMtoFrameBuffer::CopyFromRDRAM( u32 _address, bool _bUseAlpha)
 	m_pTexture->offsetT = (float)m_pTexture->height;
 	textureCache().activateTexture(0, m_pTexture);
 
+	gDPTile tile0;
+	tile0.fuls = tile0.fult = 0.0f;
+	gDPTile * pTile0 = gSP.textureTile[0];
+	gSP.textureTile[0] = &tile0;
+
 	OGLRender::TexturedRectParams params(0.0f, 0.0f, (float)width, (float)height, 0.0f, 0.0f, width - 1.0f, height - 1.0f, false);
 	video().getRender().drawTexturedRect(params);
+
+	gSP.textureTile[0] = pTile0;
 
 	gSP.changed |= gspChanged | CHANGED_TEXTURE | CHANGED_VIEWPORT;
 	gDP.changed |= CHANGED_COMBINE;
