@@ -26,6 +26,7 @@ struct GLState {
 	bool cached_BLEND;
 	bool cached_CULL_FACE;
 	bool cached_DEPTH_TEST;
+	bool cached_DEPTH_CLAMP;
 	bool cached_DITHER;
 	bool cached_POLYGON_OFFSET_FILL;
 	bool cached_SAMPLE_ALPHA_TO_COVERAGE;
@@ -148,6 +149,12 @@ void inline cache_glDisable (GLenum cap)
 			glState.cached_DEPTH_TEST = false;
 		}
 		break;
+	case GL_DEPTH_CLAMP:
+		if (glState.cached_DEPTH_CLAMP) {
+			glDisable(GL_DEPTH_CLAMP);
+			glState.cached_DEPTH_CLAMP = false;
+		}
+		break;
 	case GL_DITHER:
 		if (glState.cached_DITHER) {
 			glDisable(GL_DITHER);
@@ -204,6 +211,12 @@ void inline cache_glEnable(GLenum cap)
 		if (!glState.cached_DEPTH_TEST) {
 			glEnable(GL_DEPTH_TEST);
 			glState.cached_DEPTH_TEST = true;
+		}
+		break;
+	case GL_DEPTH_CLAMP:
+		if (!glState.cached_DEPTH_CLAMP) {
+			glEnable(GL_DEPTH_CLAMP);
+			glState.cached_DEPTH_CLAMP = true;
 		}
 		break;
 	case GL_DITHER:

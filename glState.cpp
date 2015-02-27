@@ -20,6 +20,7 @@ void GLState::reset()
 	cached_BLEND = false;
 	cached_CULL_FACE = false;
 	cached_DEPTH_TEST = false;
+	cached_DEPTH_CLAMP = false;
 	cached_DITHER = false;
 	cached_POLYGON_OFFSET_FILL = false;
 	cached_SAMPLE_ALPHA_TO_COVERAGE = false;
