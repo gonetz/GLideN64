@@ -235,11 +235,6 @@ struct gDPInfo
 		} center, scale, width;
 	} key;
 
-	struct
-	{
-		u32 width, height;
-	} texRect;
-
 	u32 changed;
 
 	u16 TexFilterPalette[512];
