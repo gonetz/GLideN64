@@ -1167,32 +1167,36 @@ void OGLRender::drawTexturedRect(const TexturedRectParams & _params)
 		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
 	}
 
-	m_rect[1].s0 = texST[0].s1;
-	m_rect[1].t0 = texST[0].t0;
-	m_rect[1].s1 = texST[1].s1;
-	m_rect[1].t1 = texST[1].t0;
-	m_rect[2].s0 = texST[0].s0;
-	m_rect[2].t0 = texST[0].t1;
-	m_rect[2].s1 = texST[1].s0;
-	m_rect[2].t1 = texST[1].t1;
+	m_rect[0].s0 = texST[0].s0;
+	m_rect[0].t0 = texST[0].t0;
+	m_rect[0].s1 = texST[1].s0;
+	m_rect[0].t1 = texST[1].t0;
+
+	m_rect[3].s0 = texST[0].s1;
+	m_rect[3].t0 = texST[0].t1;
+	m_rect[3].s1 = texST[1].s1;
+	m_rect[3].t1 = texST[1].t1;
+
 	if (_params.flip) {
-		m_rect[0].s0 = texST[0].s1;
-		m_rect[0].t0 = texST[0].t1;
-		m_rect[0].s1 = texST[1].s1;
-		m_rect[0].t1 = texST[1].t1;
-		m_rect[3].s0 = texST[0].s0;
-		m_rect[3].t0 = texST[0].t0;
-		m_rect[3].s1 = texST[1].s0;
-		m_rect[3].t1 = texST[1].t0;
+		m_rect[1].s0 = texST[0].s0;
+		m_rect[1].t0 = texST[0].t1;
+		m_rect[1].s1 = texST[1].s0;
+		m_rect[1].t1 = texST[1].t1;
+
+		m_rect[2].s0 = texST[0].s1;
+		m_rect[2].t0 = texST[0].t0;
+		m_rect[2].s1 = texST[1].s1;
+		m_rect[2].t1 = texST[1].t0;
 	} else {
-		m_rect[0].s0 = texST[0].s0;
-		m_rect[0].t0 = texST[0].t0;
-		m_rect[0].s1 = texST[1].s0;
-		m_rect[0].t1 = texST[1].t0;
-		m_rect[3].s0 = texST[0].s1;
-		m_rect[3].t0 = texST[0].t1;
-		m_rect[3].s1 = texST[1].s1;
-		m_rect[3].t1 = texST[1].t1;
+		m_rect[1].s0 = texST[0].s1;
+		m_rect[1].t0 = texST[0].t0;
+		m_rect[1].s1 = texST[1].s1;
+		m_rect[1].t1 = texST[1].t0;
+
+		m_rect[2].s0 = texST[0].s0;
+		m_rect[2].t0 = texST[0].t1;
+		m_rect[2].s1 = texST[1].s0;
+		m_rect[2].t1 = texST[1].t1;
 	}
 
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
