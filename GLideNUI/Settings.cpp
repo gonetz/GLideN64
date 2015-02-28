@@ -68,6 +68,7 @@ void loadSettings()
 	config.textureFilter.txForce16bpp = settings.value("txForce16bpp", 0).toInt();
 	config.textureFilter.txCacheCompression = settings.value("txCacheCompression", 1).toInt();
 	config.textureFilter.txSaveCache = settings.value("txSaveCache", 1).toInt();
+	settings.value("txPath", "").toString().toWCharArray(config.textureFilter.txPath);
 	settings.endGroup();
 
 	settings.beginGroup("font");
@@ -150,6 +151,9 @@ void writeSettings()
 	settings.setValue("txForce16bpp", config.textureFilter.txForce16bpp);
 	settings.setValue("txCacheCompression", config.textureFilter.txCacheCompression);
 	settings.setValue("txSaveCache", config.textureFilter.txSaveCache);
+	QString txPath = QString::fromWCharArray(config.textureFilter.txPath);
+	if (!txPath.isEmpty())
+		settings.setValue("txPath", txPath);
 	settings.endGroup();
 
 	settings.beginGroup("font");

@@ -36,4 +36,8 @@ typedef double				f64;	/* double prec floating point */
 #define NULL    0
 #endif
 
+#ifndef PLUGIN_PATH_SIZE
+#define PLUGIN_PATH_SIZE 260
+#endif
+
 #endif // TYPES_H

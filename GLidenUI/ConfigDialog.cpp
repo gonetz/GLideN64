@@ -1,3 +1,4 @@
+#include <QFileDialog>
 #include <QFontDialog>
 #include <QColorDialog>
 #include <QAbstractButton>
@@ -143,6 +144,10 @@ void ConfigDialog::_init()
 	ui->compressCacheCheckBox->setChecked(config.textureFilter.txCacheCompression != 0);
 	ui->saveTextureCacheCheckBox->setChecked(config.textureFilter.txSaveCache != 0);
 
+	QString txPath = QString::fromWCharArray(config.textureFilter.txPath);
+	if (!txPath.isEmpty())
+		ui->txPathLabel->setText(txPath);
+
 	QString fontName(config.font.name.c_str());
 	m_font = QFont(fontName.left(fontName.indexOf(".ttf")), config.font.size);
 	QString strSize;
@@ -245,6 +250,10 @@ void ConfigDialog::accept()
 	config.textureFilter.txForce16bpp = ui->force16bppCheckBox->isChecked() ? 1 : 0;
 	config.textureFilter.txSaveCache = ui->saveTextureCacheCheckBox->isChecked() ? 1 : 0;
 
+	QString txPath = ui->txPathLabel->text();
+	if (!txPath.isEmpty())
+		config.textureFilter.txPath[txPath.toWCharArray(config.textureFilter.txPath)] = '\0';
+
 	config.font.size = m_font.pointSize();
 	QString fontName = m_font.family() + ".ttf";
 #ifdef OS_WINDOWS
@@ -331,4 +340,15 @@ void ConfigDialog::on_fullScreenResolutionComboBox_currentIndexChanged(int index
 	ui->fullScreenRefreshRateComboBox->clear();
 	ui->fullScreenRefreshRateComboBox->insertItems(0, fullscreenRatesList);
 	ui->fullScreenRefreshRateComboBox->setCurrentIndex(fullscreenRate);
+}
+
+void ConfigDialog::on_texPackPathButton_clicked()
+{
+	QFileDialog::Options options = QFileDialog::DontResolveSymlinks | QFileDialog::ShowDirsOnly | QFileDialog::ReadOnly | QFileDialog::DontUseSheet | QFileDialog::ReadOnly | QFileDialog::HideNameFilterDetails;
+	QString directory = QFileDialog::getExistingDirectory(this,
+		"",
+		QString::fromWCharArray(config.textureFilter.txPath),
+		options);
+	if (!directory.isEmpty())
+		ui->txPathLabel->setText(directory);
 }

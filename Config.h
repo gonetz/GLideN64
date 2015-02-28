@@ -64,6 +64,8 @@ struct Config
 		u32 txForce16bpp;				// Force use 16bit color textures
 		u32 txCacheCompression;			// Zip textures cache
 		u32 txSaveCache;				// Save texture cache to hard disk
+
+		wchar_t txPath[PLUGIN_PATH_SIZE];
 	} textureFilter;
 
 	struct
@@ -123,6 +125,8 @@ struct Config
 		textureFilter.txCacheCompression = 1;
 		textureFilter.txForce16bpp = 0;
 		textureFilter.txSaveCache = 1;
+
+		textureFilter.txPath[0] = '\0';
 
 #ifdef OS_WINDOWS
 		font.name = "arial.ttf";

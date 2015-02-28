@@ -3,8 +3,6 @@
 
 #include "Types.h"
 
-#define PLUGIN_PATH_SIZE 260
-
 typedef struct
 {
 	u32 PC[18], PCi, busy, halt, close, DList, uc_start, uc_dstart, cmd, nextCmd;

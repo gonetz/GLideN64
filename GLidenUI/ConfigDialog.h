@@ -30,6 +30,8 @@ private slots:
 
 	void on_fullScreenResolutionComboBox_currentIndexChanged(int index);
 
+	void on_texPackPathButton_clicked();
+
 private:
 	void _init();
 

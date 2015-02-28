@@ -1433,7 +1433,7 @@ void TextureFilterHandler::init()
 				32, // max texture bpp supported by hardware
 				options,
 				config.textureFilter.txCacheSize, // cache texture to system memory
-				RSP.pluginpath, // plugin path
+				::wcslen(config.textureFilter.txPath) > 0 ? config.textureFilter.txPath : RSP.pluginpath, // path to texture packs folder
 				wRomName, // name of ROM. must be no longer than 256 characters
 				displayLoadProgress);
 		}
