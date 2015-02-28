@@ -45,7 +45,7 @@ SpecialMicrocodeInfo specialMicrocodes[] =
 	{ F3DDKR,	FALSE,	0x8d91244f, "Diddy Kong Racing" },
 	{ F3DDKR,	FALSE,	0x6e6fc893, "Diddy Kong Racing" },
 	{ F3DJFG,	FALSE,	0xbde9d1fb, "Jet Force Gemini" },
-	{ F3DPD,	FALSE,	0x1c4f7869, "Perfect Dark" },
+	{ F3DPD,	TRUE,	0x1c4f7869, "Perfect Dark" },
 	{ Turbo3D,	FALSE,	0x2bdcfc8a, "Turbo3D" },
 	{ F3DEX2CBFD, TRUE, 0x1b4ace88, "Conker's Bad Fur Day" }
 };
