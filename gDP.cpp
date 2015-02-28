@@ -1016,16 +1016,6 @@ void gDPTextureRectangle( f32 ulx, f32 uly, f32 lrx, f32 lry, s32 tile, f32 s, f
 	gDP.texRect.width = (u32)(max( lrs, s ) + dsdx);
 	gDP.texRect.height = (u32)(max( lrt, t ) + dtdy);
 
-	float tmp;
-	if (lrs < s) {
-		tmp = ulx; ulx = lrx; lrx = tmp;
-		tmp = s; s = lrs; lrs = tmp;
-	}
-	if (lrt < t) {
-		tmp = uly; uly = lry; lry = tmp;
-		tmp = t; t = lrt; lrt = tmp;
-	}
-
 	OGLRender::TexturedRectParams params(ulx, uly, lrx, lry, s, t, lrs, lrt, (RSP.cmd == G_TEXRECTFLIP));
 	video().getRender().drawTexturedRect(params);
 
