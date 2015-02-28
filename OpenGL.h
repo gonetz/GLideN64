@@ -144,6 +144,7 @@ class OGLVideo
 public:
 	void start();
 	void stop();
+	void restart();
 	void swapBuffers();
 	void saveScreenshot();
 	bool changeWindow();

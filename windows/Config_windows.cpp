@@ -398,7 +398,8 @@ void Config_DoConfig(HWND hParent)
 #else // LEGACY_UI
 void Config_DoConfig(HWND hParent)
 {
-	RunConfig();
+	if (RunConfig())
+		video().restart();
 }
 
 void Config_LoadConfig()

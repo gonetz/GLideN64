@@ -123,6 +123,11 @@ void OGLVideo::stop()
 	_stop();
 }
 
+void OGLVideo::restart()
+{
+	m_bResizeWindow = true;
+}
+
 void OGLVideo::swapBuffers()
 {
 	_swapBuffers();
