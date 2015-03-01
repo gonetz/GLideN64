@@ -46,7 +46,7 @@ void gSPTriangle(s32 v0, s32 v1, s32 v2)
 			render.drawTriangles();
 	}
 
-	gDP.colorImage.changed = TRUE;
+	frameBufferList().setBufferChanged();
 	gDP.colorImage.height = (u32)max( gDP.colorImage.height, (u32)gDP.scissor.lry );
 }
 
@@ -2303,7 +2303,7 @@ void gSPObjSprite(u32 sp)
 
 	render.drawLLETriangle(4);
 
-	gDP.colorImage.changed = TRUE;
+	frameBufferList().setBufferChanged();
 	gDP.colorImage.height = (u32)(max( gDP.colorImage.height, (u32)gDP.scissor.lry ));
 }
 

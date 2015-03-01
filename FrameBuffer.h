@@ -21,6 +21,7 @@ struct FrameBuffer
 	u32 m_size, m_width, m_height, m_fillcolor;
 	float m_scaleX, m_scaleY;
 	bool m_cleared;
+	bool m_changed;
 	bool m_cfb;
 	bool m_isDepthBuffer;
 	bool m_copiedToRDRAM;
@@ -52,6 +53,8 @@ public:
 	FrameBuffer * getCurrent() const {return m_pCurrent;}
 	void renderBuffer(u32 _address);
 	bool isFboMode() const {return m_drawBuffer == GL_FRAMEBUFFER;}
+	void setBufferChanged();
+	void clearBuffersChanged();
 
 	static FrameBufferList & get()
 	{

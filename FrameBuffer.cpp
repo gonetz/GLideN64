@@ -95,7 +95,7 @@ DepthBufferToRDRAM g_dbToRDRAM;
 #endif
 RDRAMtoFrameBuffer g_RDRAMtoFB;
 
-FrameBuffer::FrameBuffer() : m_cleared(false), m_isDepthBuffer(false), m_copiedToRDRAM(false), m_pLoadTile(NULL), m_pDepthBuffer(NULL), m_pResolveTexture(NULL), m_resolveFBO(0), m_resolved(false)
+FrameBuffer::FrameBuffer() : m_cleared(false), m_changed(false), m_isDepthBuffer(false), m_copiedToRDRAM(false), m_pLoadTile(NULL), m_pDepthBuffer(NULL), m_pResolveTexture(NULL), m_resolveFBO(0), m_resolved(false)
 {
 	m_pTexture = textureCache().addFrameBufferTexture();
 	glGenFramebuffers(1, &m_FBO);
@@ -104,7 +104,7 @@ FrameBuffer::FrameBuffer() : m_cleared(false), m_isDepthBuffer(false), m_copiedT
 FrameBuffer::FrameBuffer(FrameBuffer && _other) :
 	m_startAddress(_other.m_startAddress), m_endAddress(_other.m_endAddress),
 	m_size(_other.m_size), m_width(_other.m_width), m_height(_other.m_height), m_fillcolor(_other.m_fillcolor),
-	m_scaleX(_other.m_scaleX), m_scaleY(_other.m_scaleY), m_cleared(_other.m_cleared), m_cfb(_other.m_cfb), m_isDepthBuffer(_other.m_isDepthBuffer), m_copiedToRDRAM(_other.m_copiedToRDRAM),
+	m_scaleX(_other.m_scaleX), m_scaleY(_other.m_scaleY), m_cleared(_other.m_cleared), m_changed(_other.m_changed), m_cfb(_other.m_cfb), m_isDepthBuffer(_other.m_isDepthBuffer), m_copiedToRDRAM(_other.m_copiedToRDRAM),
 	m_FBO(_other.m_FBO), m_pLoadTile(_other.m_pLoadTile), m_pTexture(_other.m_pTexture), m_pDepthBuffer(_other.m_pDepthBuffer),
 	m_pResolveTexture(_other.m_pResolveTexture), m_resolveFBO(_other.m_resolveFBO), m_resolved(_other.m_resolved)
 {
@@ -241,6 +241,20 @@ void FrameBufferList::destroy() {
 	m_list.clear();
 	m_pCurrent = NULL;
 	m_drawBuffer = GL_BACK;
+}
+
+void FrameBufferList::setBufferChanged()
+{
+	gDP.colorImage.changed = TRUE;
+	if (m_pCurrent != NULL)
+		m_pCurrent->m_changed = true;
+}
+
+void FrameBufferList::clearBuffersChanged()
+{
+	gDP.colorImage.changed = FALSE;
+	for (FrameBuffers::iterator iter = m_list.begin(); iter != m_list.end(); ++iter)
+		iter->m_changed = false;
 }
 
 FrameBuffer * FrameBufferList::findBuffer(u32 _startAddress)

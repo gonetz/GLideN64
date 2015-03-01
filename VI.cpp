@@ -141,7 +141,7 @@ void VI_UpdateScreen()
 				if (uNumCurFrameIsShown > 25)
 					gSP.changed |= CHANGED_CPU_FB_WRITE;
 			}
-			gDP.colorImage.changed = FALSE;
+			frameBufferList().clearBuffersChanged();
 			VI.lastOrigin = *REG.VI_ORIGIN;
 #ifdef DEBUG
 			while (Debug.paused && !Debug.step);

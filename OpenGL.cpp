@@ -804,7 +804,7 @@ void OGLRender::drawLLETriangle(u32 _numVtx)
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, _numVtx);
 	triangles.num = 0;
 
-	gDP.colorImage.changed = TRUE;
+	frameBufferList().setBufferChanged();
 	gSP.changed |= CHANGED_VIEWPORT | CHANGED_GEOMETRYMODE;
 
 #ifdef __TRIBUFFER_OPT

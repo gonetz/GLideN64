@@ -934,7 +934,7 @@ void gDPFillRectangle( s32 ulx, s32 uly, s32 lrx, s32 lry )
 	}
 	render.drawRect(ulx, uly, lrx, lry, pColor);
 
-	gDP.colorImage.changed = TRUE;
+	frameBufferList().setBufferChanged();
 	if (gDP.otherMode.cycleType == G_CYC_FILL) {
 		if (lry > (u32)gDP.scissor.lry)
 			gDP.colorImage.height = (u32)max(gDP.colorImage.height, (u32)gDP.scissor.lry);
@@ -1019,7 +1019,7 @@ void gDPTextureRectangle( f32 ulx, f32 uly, f32 lrx, f32 lry, s32 tile, f32 s, f
 	gSP.textureTile[0] = textureTileOrg[0];
 	gSP.textureTile[1] = textureTileOrg[1];
 
-	gDP.colorImage.changed = TRUE;
+	frameBufferList().setBufferChanged();
 	if (gDP.colorImage.width < 64)
 		gDP.colorImage.height = (u32)max( (f32)gDP.colorImage.height, lry );
 	else
