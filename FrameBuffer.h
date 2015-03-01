@@ -25,6 +25,7 @@ struct FrameBuffer
 	bool m_cfb;
 	bool m_isDepthBuffer;
 	bool m_copiedToRDRAM;
+	bool m_needHeightCorrection;
 
 	GLuint m_FBO;
 	gDPTile *m_pLoadTile;
@@ -54,6 +55,8 @@ public:
 	void renderBuffer(u32 _address);
 	bool isFboMode() const {return m_drawBuffer == GL_FRAMEBUFFER;}
 	void setBufferChanged();
+	void setNeedHeightCorrection(bool _needCorrection);
+	void correctHeight();
 	void clearBuffersChanged();
 
 	static FrameBufferList & get()
