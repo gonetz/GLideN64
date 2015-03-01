@@ -1118,8 +1118,10 @@ void RDRAMtoFrameBuffer::CopyFromRDRAM( u32 _address, bool _bUseAlpha)
 	gDPTile * pTile0 = gSP.textureTile[0];
 	gSP.textureTile[0] = &tile0;
 
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, pBuffer->m_FBO);
 	OGLRender::TexturedRectParams params(0.0f, 0.0f, (float)width, (float)height, 0.0f, 0.0f, width - 1.0f, height - 1.0f, false);
 	video().getRender().drawTexturedRect(params);
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, frameBufferList().getCurrent()->m_FBO);
 
 	gSP.textureTile[0] = pTile0;
 
