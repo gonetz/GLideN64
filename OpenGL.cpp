@@ -1112,10 +1112,10 @@ void OGLRender::drawTexturedRect(const TexturedRectParams & _params)
 
 		glActiveTexture( GL_TEXTURE0 );
 
-		if ((texST[0].s0 >= 0.0 && texST[0].s1 <= cache.current[0]->width) || (cache.current[0]->maskS + cache.current[0]->mirrorS == 0 && (texST[0].s0 < -1024.0f || texST[0].s1 > 1023.99f)))
+		if ((texST[0].s0 < texST[0].s1 && texST[0].s0 >= 0.0 && texST[0].s1 <= cache.current[0]->width) || (cache.current[0]->maskS + cache.current[0]->mirrorS == 0 && (texST[0].s0 < -1024.0f || texST[0].s1 > 1023.99f)))
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 
-		if (texST[0].t0 >= 0.0f && texST[0].t1 <= cache.current[0]->height)
+		if (texST[0].t0 < texST[0].t1 && texST[0].t0 >= 0.0f && texST[0].t1 <= cache.current[0]->height)
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
 		texST[0].s0 *= cache.current[0]->scaleS;
