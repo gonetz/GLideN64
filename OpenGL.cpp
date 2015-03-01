@@ -596,9 +596,6 @@ void OGLRender::_updateStates() const
 	if (gSP.changed & CHANGED_GEOMETRYMODE)
 		_updateCullFace();
 
-	if (gSP.changed & CHANGED_LIGHT)
-		currentCombiner()->updateLight();
-
 	if (config.frameBufferEmulation.N64DepthCompare) {
 		glDisable( GL_DEPTH_TEST );
 		glDepthMask( FALSE );
@@ -646,9 +643,6 @@ void OGLRender::_updateStates() const
 		}
 	}
 
-	if ((gDP.changed & (CHANGED_ALPHACOMPARE|CHANGED_RENDERMODE|CHANGED_BLENDCOLOR)) != 0)
-		currentCombiner()->updateAlphaTestInfo();
-
 	if (gDP.changed & CHANGED_SCISSOR) {
 		FrameBufferList & fbList = frameBufferList();
 		const u32 screenHeight = (fbList.getCurrent() == NULL || fbList.getCurrent()->m_height == 0 || !fbList.isFboMode()) ? VI.height : fbList.getCurrent()->m_height;
@@ -674,13 +668,10 @@ void OGLRender::_updateStates() const
 			else
 				textureCache().activateDummy(1);
 			currentCombiner()->updateTextureInfo();
+			currentCombiner()->updateFBInfo();
 		}
 	}
 
-	currentCombiner()->updateFBInfo();
-
-	if ((gDP.changed & CHANGED_RENDERMODE) || (gSP.geometryMode & G_ZBUFFER))
-		currentCombiner()->updateDepthInfo();
 
 	if ((gDP.changed & CHANGED_RENDERMODE) || (gDP.changed & CHANGED_CYCLETYPE))
 		_setBlendMode();
@@ -763,9 +754,6 @@ void OGLRender::_prepareDrawTriangle(bool _dma)
 		else
 			glVertexAttribPointer(SC_COLOR, 4, GL_FLOAT, GL_FALSE, sizeof(SPVertex), &pVtx->r);
 	}
-
-	currentCombiner()->updateColors();
-	currentCombiner()->updateLight();
 }
 
 void OGLRender::drawLLETriangle(u32 _numVtx)
