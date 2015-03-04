@@ -486,6 +486,8 @@ void OGLRender::_setBlendMode() const
 			case 0x0F0A:
 			//DK64 blue prints
 			case 0x0302:
+			// Bomberman 2 special blend mode, see GLSLCombiner.cpp
+			case 0xA500:
 			//Sin and Punishment
 			case 0xCB02:
 			// Battlezone

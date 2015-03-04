@@ -359,10 +359,16 @@ static const char* fragment_shader_blender =
 ;
 #else
 static const char* fragment_shader_blender =
-"  if (uSpecialBlendMode == 1) {						\n"
+"  switch (uSpecialBlendMode) {	\n"
+"    case 1:					\n"
 // Mace
 "		color1 = color1 * alpha1 + uBlendColor.rgb * (1.0 - alpha1); \n"
-"  }													\n"
+"    break;						\n"
+"    case 2:					\n"
+// Bomberman2
+"		color1 = uBlendColor.rgb * uFogColor.a + color1.rgb * (1.0 - uFogColor.a); \n"
+"    break;						\n"
+"  }							\n"
 ;
 #endif
 

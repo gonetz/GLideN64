@@ -496,8 +496,7 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 	m_nInputs = CompileCombiner(_alpha.stage[0], AlphaInput, strCombiner);
 	strcat(strCombiner, "  color1 = ");
 	m_nInputs |= CompileCombiner(_color.stage[0], ColorInput, strCombiner);
-	if (gDP.otherMode.cycleType == G_CYC_2CYCLE)
-		strcat(strCombiner, fragment_shader_blender);
+	strcat(strCombiner, fragment_shader_blender);
 
 	strcat(strCombiner, "  combined_color = vec4(color1, alpha1); \n");
 	if (_alpha.numStages == 2) {
@@ -778,8 +777,19 @@ void ShaderCombiner::updateColors(bool _bForce)
 	case 0x0091:
 		// Mace
 		// CLR_IN * A_IN + CLR_BL * 1MA
-		nSpecialBlendMode = 1;
-		_setV4Uniform(m_uniforms.uBlendColor, &gDP.blendColor.r, _bForce);
+		if (gDP.otherMode.cycleType == G_CYC_2CYCLE) {
+			nSpecialBlendMode = 1;
+			_setV4Uniform(m_uniforms.uBlendColor, &gDP.blendColor.r, _bForce);
+		}
+		break;
+	case 0xA500:
+		// Bomberman 2
+		// CLR_BL * A_FOG + CLR_IN * 1MA
+		if (gDP.otherMode.cycleType == G_CYC_1CYCLE) {
+			nSpecialBlendMode = 2;
+			nFogUsage = 5;
+			_setV4Uniform(m_uniforms.uBlendColor, &gDP.blendColor.r, _bForce);
+		}
 		break;
 	/* Brings troubles with Roadsters sky
 	case 0xc702:
