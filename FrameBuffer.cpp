@@ -325,6 +325,8 @@ void FrameBufferList::saveBuffer(u32 _address, u16 _format, u16 _size, u16 _widt
 	OGLVideo & ogl = video();
 	m_drawBuffer = GL_FRAMEBUFFER;
 	if (m_pCurrent != NULL && gDP.colorImage.height > 0) {
+		if (m_pCurrent->m_width == VI.width)
+			gDP.colorImage.height = min(gDP.colorImage.height, VI.height);
 		m_pCurrent->m_endAddress = min(RDRAMSize, m_pCurrent->m_startAddress + (((m_pCurrent->m_width * gDP.colorImage.height) << m_pCurrent->m_size >> 1) - 1));
 		if (!config.frameBufferEmulation.copyToRDRAM && !config.frameBufferEmulation.copyFromRDRAM && !m_pCurrent->m_cfb && !m_pCurrent->m_cleared && gDP.colorImage.height > 1)
 			gDPFillRDRAM(m_pCurrent->m_startAddress, 0, 0, m_pCurrent->m_width, gDP.colorImage.height, m_pCurrent->m_width, m_pCurrent->m_size, m_pCurrent->m_fillcolor, false);
