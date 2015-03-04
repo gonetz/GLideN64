@@ -478,9 +478,12 @@ void OGLRender::_setBlendMode() const
 		{
 			// Mace objects
 			case 0x0382:
+			// Mace special blend mode, see GLSLCombiner.cpp
 			case 0x0091:
-			case 0x0C08: // 1080 Sky
-			case 0x0F0A: // Used LOTS of places
+			// 1080 Sky
+			case 0x0C08:
+			// Used LOTS of places
+			case 0x0F0A:
 			//DK64 blue prints
 			case 0x0302:
 			//Sin and Punishment
