@@ -34,37 +34,22 @@ void VI_UpdateSize()
 	const u32 widthPrev = VI.width;
 	const u32 heightPrev = VI.height;
 
-	VI.interlaced = (*REG.VI_STATUS & 0x40) != 0;
-	const bool isPAL = (*REG.VI_V_SYNC & 0x3ff) > 550;
-
-	if (hEnd != 0)
-		VI.width = (u32)floor((hEnd - (isPAL ? 128 : 108))* xScale + 0.5f);
-	else if (!VI.interlaced)
-		VI.width = *REG.VI_WIDTH;
-	else
-		VI.width = 0;
-
-#if 0
-	const f32 yScale = _FIXED2FLOAT(vScale, 10);
-	if (*REG.VI_WIDTH > 0)
-		VI.width = min(VI.width, *REG.VI_WIDTH);
-	if (VI.interlaced &&  _SHIFTR(*REG.VI_Y_SCALE, 0, 12) == 1024)
-		VI.real_height = (vEnd - vStart);
-	else
-		VI.real_height = (u32)floor(((vEnd - vStart) >> 1) * yScale + 0.5f);
-#else
 	VI.real_height = vEnd > vStart ? (((vEnd - vStart) >> 1) * vScale) >> 10 : 0;
+	VI.width = *REG.VI_WIDTH;
+	VI.interlaced = (*REG.VI_STATUS & 0x40) != 0;
 	if (VI.interlaced) {
-		if (VI.width != 0)
-			VI.real_height *= *REG.VI_WIDTH / VI.width;
-	} else {
-		if (*REG.VI_WIDTH > 0)
-			VI.width = min(VI.width, *REG.VI_WIDTH);
-	}
-#endif
+		u32 fullWidth = (u32)(640.0f*xScale);
+		if (*REG.VI_WIDTH > fullWidth) {
+			const u32 scale = *REG.VI_WIDTH / fullWidth;
+			VI.width /= scale;
+			VI.real_height *= scale;
+		}
+		if (VI.real_height % 2 == 1)
+			--VI.real_height;
+	} else if (hEnd != 0 && *REG.VI_WIDTH != 0)
+		VI.width = min((u32)((hEnd - hStart)*xScale), *REG.VI_WIDTH);
 
-	if (VI.interlaced && VI.real_height % 2 == 1)
-		--VI.real_height;
+	const bool isPAL = (*REG.VI_V_SYNC & 0x3ff) > 550;
 	if (isPAL && (vEnd - vStart) > 480)
 		VI.height = (u32)(VI.real_height*1.0041841f);
 	else
