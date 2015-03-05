@@ -944,7 +944,10 @@ void ShaderCombiner::updateFBInfo(bool _bForce) {
 }
 
 void ShaderCombiner::updateDepthInfo(bool _bForce) {
-	_setFV2Uniform(m_uniforms.uDepthScale, gSP.viewport.vscale[2], gSP.viewport.vtrans[2], _bForce);
+	if (RSP.bLLE)
+		_setFV2Uniform(m_uniforms.uDepthScale, 0.5f, 0.5f, _bForce);
+	else
+		_setFV2Uniform(m_uniforms.uDepthScale, gSP.viewport.vscale[2], gSP.viewport.vtrans[2], _bForce);
 
 	if (!video().getRender().isImageTexturesSupported())
 		return;
