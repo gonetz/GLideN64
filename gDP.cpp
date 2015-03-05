@@ -18,8 +18,6 @@
 #include "Config.h"
 #include "Combiner.h"
 
-#define DEPTH_CLEAR_COLOR 0xfffcfffc // The value usually used to clear depth buffer
-
 using namespace std;
 
 gDPInfo gDP;
@@ -545,7 +543,7 @@ bool CheckForFrameBufferTexture(u32 _address, u32 _bytes)
 
 		if (bRes && pBuffer->m_cleared && pBuffer->m_size == 2
 			&& !config.frameBufferEmulation.copyToRDRAM
-			&& (!config.frameBufferEmulation.copyDepthToRDRAM || pBuffer->m_fillcolor != DEPTH_CLEAR_COLOR)
+			&& (!config.frameBufferEmulation.copyDepthToRDRAM || pBuffer->m_fillcolor != DepthClearColor)
 		) {
 			const u32 endAddress = min(texEndAddress, pBuffer->m_endAddress);
 			const u32 color = pBuffer->m_fillcolor&0xFFFEFFFE;
@@ -864,7 +862,7 @@ void gDPSetScissor( u32 mode, f32 ulx, f32 uly, f32 lrx, f32 lry )
 const bool g_bDepthClearOnly = false;
 void gDPFillRDRAM(u32 address, s32 ulx, s32 uly, s32 lrx, s32 lry, u32 width, u32 size, u32 color, bool scissor)
 {
-	if (g_bDepthClearOnly && color != DEPTH_CLEAR_COLOR)
+	if (g_bDepthClearOnly && color != DepthClearColor)
 		return;
 	FrameBufferList & fbList = frameBufferList();
 	if (fbList.isFboMode()) {
@@ -905,13 +903,12 @@ void gDPFillRectangle( s32 ulx, s32 uly, s32 lrx, s32 lry )
 	if (gDP.depthImageAddress == gDP.colorImage.address) {
 		// Game may use depth texture as auxilary color texture. Example: Mario Tennis
 		// If color is not depth clear color, that is most likely the case
-		if (gDP.fillColor.color == DEPTH_CLEAR_COLOR ||
-			(((gDP.fillColor.color & 0xFFFF) == (gDP.fillColor.color >> 16)) && abs((int)(DEPTH_CLEAR_COLOR & 0xFFFF) - (int)(gDP.fillColor.color & 0xFFFF)) < 100)) {
+		if (gDP.fillColor.color == DepthClearColor) {
 			gDPFillRDRAM(gDP.colorImage.address, ulx, uly, lrx, lry, gDP.colorImage.width, gDP.colorImage.size, gDP.fillColor.color);
 			render.clearDepthBuffer();
 			return;
 		}
-	} else if (gDP.fillColor.color == DEPTH_CLEAR_COLOR && gDP.otherMode.cycleType == G_CYC_FILL) {
+	} else if (gDP.fillColor.color == DepthClearColor && gDP.otherMode.cycleType == G_CYC_FILL) {
 		depthBufferList().saveBuffer(gDP.colorImage.address);
 		gDPFillRDRAM(gDP.colorImage.address, ulx, uly, lrx, lry, gDP.colorImage.width, gDP.colorImage.size, gDP.fillColor.color);
 		render.clearDepthBuffer();

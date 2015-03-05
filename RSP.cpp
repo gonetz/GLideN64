@@ -267,6 +267,21 @@ void RSP_SetDefaultState()
 	gDPPipelineMode(G_PM_NPRIMITIVE);
 }
 
+u32 DepthClearColor = 0xfffcfffc;
+
+static
+void setDepthClearColor()
+{
+	if (strstr(RSP.romname, (const char *)"Elmo's") != NULL)
+		DepthClearColor = 0xFFFFFFFF;
+	else if (strstr(RSP.romname, (const char *)"Taz Express") != NULL)
+		DepthClearColor = 0xFFBCFFBC;
+	else if (strstr(RSP.romname, (const char *)"NFL QBC 2000") != NULL || strstr(RSP.romname, (const char *)"NFL Quarterback Club") != NULL)
+		DepthClearColor = 0xFFFDFFFC;
+	else
+		DepthClearColor = 0xFFFCFFFC;
+}
+
 void RSP_Init()
 {
 #ifdef OS_WINDOWS
@@ -306,6 +321,7 @@ void RSP_Init()
 		TFH.shutdown();
 
 	strncpy(RSP.romname, romname, 21);
+	setDepthClearColor();
 	if (strstr(RSP.romname, (const char *)"OgreBattle64") != NULL)
 		config.generalEmulation.hacks |= hack_Ogre64;
 	else if (strstr(RSP.romname, (const char *)"MarioGolf64") != NULL || strstr(RSP.romname, (const char *)"CONKER BFD") != NULL)
