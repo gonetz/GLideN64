@@ -938,14 +938,12 @@ bool DepthBufferToRDRAM::CopyToRDRAM( u32 _address) {
 	for (u32 y = 0; y < VI.height; ++y) {
 		for (u32 x = 0; x < VI.width; ++x) {
 			f32 z = ptr_src[x + (VI.height - y - 1)*VI.width];
-			if (z == 1.0f)
-				ptr_dst[(x + y*VI.width) ^ 1] = zLUT[0x3FFFF];
-			else {
-				z = z*2.0f - 1.0f;
-				z = (z*scale + trans) * 8.0f;
-				const u32 idx = min(0x3FFFFU, u32(floorf(z + 0.5f)));
-				ptr_dst[(x + y*VI.width) ^ 1] = zLUT[idx];
+			u32 idx = 0x3FFFF;
+			if (z < 1.0f) {
+				z *= 262144.0f;
+				idx = min(0x3FFFFU, u32(floorf(z + 0.5f)));
 			}
+			ptr_dst[(x + y*VI.width) ^ 1] = zLUT[idx];
 		}
 	}
 

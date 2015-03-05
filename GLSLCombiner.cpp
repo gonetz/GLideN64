@@ -682,6 +682,7 @@ void ShaderCombiner::_locateUniforms() {
 
 	LocateUniform(uTexScale);
 	LocateUniform(uScreenScale);
+	LocateUniform(uDepthScale);
 	LocateUniform(uTexOffset[0]);
 	LocateUniform(uTexOffset[1]);
 	LocateUniform(uTexMask[0]);
@@ -922,6 +923,8 @@ void ShaderCombiner::updateFBInfo(bool _bForce) {
 }
 
 void ShaderCombiner::updateDepthInfo(bool _bForce) {
+	_setFV2Uniform(m_uniforms.uDepthScale, gSP.viewport.vscale[2], gSP.viewport.vtrans[2], _bForce);
+
 	if (!video().getRender().isImageTexturesSupported())
 		return;
 
@@ -991,9 +994,6 @@ void SetDepthFogCombiner()
 	int loc = glGetUniformLocation(g_draw_shadow_map_program, "uFogColor");
 	if (loc >= 0)
 		glUniform4fv(loc, 1, &gDP.fogColor.r);
-	loc = glGetUniformLocation(g_draw_shadow_map_program, "uDepthScale");
-	if (loc >= 0)
-		glUniform2f(loc, gSP.viewport.vscale[2] * 32768.0f, gSP.viewport.vtrans[2] * 32768.0f);
 
 	gDP.changed |= CHANGED_COMBINE;
 }

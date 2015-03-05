@@ -47,7 +47,7 @@ private:
 
 		fv4Uniform uEnvColor, uPrimColor, uFogColor, uCenterColor, uScaleColor, uBlendColor;
 
-		fv2Uniform uTexScale, uScreenScale, uTexOffset[2], uTexMask[2],
+		fv2Uniform uTexScale, uScreenScale, uDepthScale, uTexOffset[2], uTexMask[2],
 			uCacheShiftScale[2], uCacheScale[2], uCacheOffset[2];
 
 		fv3Uniform uLightDirection[8], uLightColor[8];
