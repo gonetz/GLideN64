@@ -151,9 +151,7 @@ void writeSettings()
 	settings.setValue("txForce16bpp", config.textureFilter.txForce16bpp);
 	settings.setValue("txCacheCompression", config.textureFilter.txCacheCompression);
 	settings.setValue("txSaveCache", config.textureFilter.txSaveCache);
-	QString txPath = QString::fromWCharArray(config.textureFilter.txPath);
-	if (!txPath.isEmpty())
-		settings.setValue("txPath", txPath);
+	settings.setValue("txPath", QString::fromWCharArray(config.textureFilter.txPath));
 	settings.endGroup();
 
 	settings.beginGroup("font");
