@@ -39,7 +39,7 @@ private:
 			uFogMode, uFogUsage, uEnableLod, uEnableAlphaTest,
 			uEnableDepth, uEnableDepthCompare, uEnableDepthUpdate,
 			uDepthMode, uDepthSource, uFb8Bit, uFbFixedAlpha, uRenderState, uSpecialBlendMode,
-			uMaxTile, uTextureDetail, uTexturePersp,
+			uMaxTile, uTextureDetail, uTexturePersp, uTextureFilterMode,
 			uAlphaCompareMode, uAlphaDitherMode, uColorDitherMode, uGammaCorrectionEnabled;
 
 		fUniform uFogMultiplier, uFogOffset, uK4, uK5, uPrimLod, uScreenWidth, uScreenHeight,

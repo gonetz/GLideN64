@@ -185,6 +185,7 @@ static const char* fragment_shader_header_common_functions =
 "lowp float snoise();						\n"
 "mediump float calc_light(in lowp float fLights, in lowp vec3 input_color, out lowp vec3 output_color);\n"
 "mediump float mipmap(out lowp vec4 readtex0, out lowp vec4 readtex1);		\n"
+"lowp vec4 readTex(in sampler2D tex, in mediump vec2 texCoord, in bool fb8bit, in bool fbFixedAlpha);	\n"
 "bool depth_compare();										\n"
 "bool alpha_test(in lowp float alphaValue);						\n"
 #else
@@ -332,18 +333,6 @@ static const char* fragment_shader_toonify =
 #endif
 
 #ifdef SHADER_PRECISION
-static const char* fragment_shader_readtex0color =
-"  lowp vec4 readtex0 = texture(uTex0, vTexCoord0);						\n"
-"  if (uFb8Bit == 1 || uFb8Bit == 3) readtex0 = vec4(readtex0.r);	\n"
-"  if (uFbFixedAlpha == 1 || uFbFixedAlpha == 3) readtex0.a = 0.825;	\n"
-;
-
-static const char* fragment_shader_readtex1color =
-"  lowp vec4 readtex1 = texture(uTex1, vTexCoord1);	\n"
-"  if (uFb8Bit == 2 || uFb8Bit == 3) readtex1 = vec4(readtex1.r);	\n"
-"  if (uFbFixedAlpha == 2 || uFbFixedAlpha == 3) readtex1.a = 0.825;	\n"
-;
-
 #if 0
 static const char* fragment_shader_blender =
 "  switch (uSpecialBlendMode) {							\n"
@@ -366,7 +355,7 @@ static const char* fragment_shader_blender =
 "    break;						\n"
 "    case 2:					\n"
 // Bomberman2
-"		color1 = uBlendColor.rgb * uFogColor.a + color1.rgb * (1.0 - uFogColor.a); \n"
+"		color1 = uBlendColor.rgb * uFogColor.a + color1 * (1.0 - uFogColor.a); \n"
 "    break;						\n"
 "  }							\n"
 ;
@@ -375,23 +364,17 @@ static const char* fragment_shader_blender =
 static const char* fragment_shader_end =
 "}                               \n"
 #else
-static const char* fragment_shader_readtex0color =
-"  vec4 readtex0 = texture(uTex0, vTexCoord0);						\n"
-"  if (uFb8Bit == 1 || uFb8Bit == 3) readtex0 = vec4(readtex0.r);	\n"
-"  if (uFbFixedAlpha == 1 || uFbFixedAlpha == 3) readtex0.a = 0.825;	\n"
-;
-
-static const char* fragment_shader_readtex1color =
-"  vec4 readtex1 = texture(uTex1, vTexCoord1);	\n"
-"  if (uFb8Bit == 2 || uFb8Bit == 3) readtex1 = vec4(readtex1.r);	\n"
-"  if (uFbFixedAlpha == 2 || uFbFixedAlpha == 3) readtex1.a = 0.825;	\n"
-;
-
 static const char* fragment_shader_blender =
-"  if (uSpecialBlendMode == 1) {						\n"
+"  switch (uSpecialBlendMode) {	\n"
+"    case 1:					\n"
 // Mace
 "		color1 = color1 * alpha1 + uBlendColor.rgb * (1.0 - alpha1); \n"
-"  }													\n"
+"    break;						\n"
+"    case 2:					\n"
+// Bomberman2
+"		color1 = uBlendColor.rgb * uFogColor.a + color1.rgb * (1.0 - uFogColor.a); \n"
+"    break;						\n"
+"  }							\n"
 ;
 
 static const char* fragment_shader_end =
@@ -539,6 +522,36 @@ static const char* fragment_shader_mipmap =
 "  return lod_frac;													\n"
 "}																	\n"
 #endif
+;
+
+static const char* fragment_shader_readtex =
+"#version 330 core													\n"
+"uniform lowp int uTextureFilterMode;								\n"
+"lowp vec4 filterNearest(in sampler2D tex, in mediump vec2 texCoord)\n"
+"{																	\n"
+"  return texture(tex, texCoord);									\n"
+"}																	\n"
+// 3 point texture filtering.
+// Original author: ArthurCarvalho
+// GLSL implementation: twinaphex, mupen64plus-libretro project.
+"#define TEX_OFFSET(off) texture2D(tex, texCoord - (off)/texSize)			\n"
+"lowp vec4 filter3point(in sampler2D tex, in mediump vec2 texCoord)			\n"
+"{																			\n"
+"  mediump vec2 texSize = vec2(textureSize(tex,0));							\n"
+"  mediump vec2 offset = fract(texCoord*texSize - vec2(0.5));	\n"
+"  offset -= step(1.0, offset.x + offset.y);								\n"
+"  lowp vec4 c0 = TEX_OFFSET(offset);										\n"
+"  lowp vec4 c1 = TEX_OFFSET(vec2(offset.x - sign(offset.x), offset.y));	\n"
+"  lowp vec4 c2 = TEX_OFFSET(vec2(offset.x, offset.y - sign(offset.y)));	\n"
+"  return c0 + abs(offset.x)*(c1-c0) + abs(offset.y)*(c2-c0);				\n"
+"}																			\n"
+"lowp vec4 readTex(in sampler2D tex, in mediump vec2 texCoord, in bool fb8bit, in bool fbFixedAlpha)	\n"
+"{																			\n"
+"  lowp vec4 texColor = uTextureFilterMode == 0 ? filterNearest(tex, texCoord) : filter3point(tex, texCoord); \n"
+"  if (fb8bit) texColor = vec4(texColor.r);									\n"
+"  if (fbFixedAlpha) texColor.a = 0.825;									\n"
+"  return texColor;															\n"
+"}																			\n"
 ;
 
 static const char* fragment_shader_noise =

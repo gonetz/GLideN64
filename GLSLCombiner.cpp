@@ -21,6 +21,7 @@ static GLuint  g_calc_mipmap_shader_object;
 static GLuint  g_calc_noise_shader_object;
 static GLuint  g_calc_depth_shader_object;
 static GLuint  g_test_alpha_shader_object;
+static GLuint  g_readtex_shader_object;
 
 GLuint g_monochrome_image_program = 0;
 #ifdef GL_IMAGE_TEXTURES_SUPPORT
@@ -289,6 +290,11 @@ void InitShaderCombiner()
 	glCompileShader(g_test_alpha_shader_object);
 	assert(checkShaderCompileStatus(g_test_alpha_shader_object));
 
+	g_readtex_shader_object = glCreateShader(GL_FRAGMENT_SHADER);
+	glShaderSource(g_readtex_shader_object, 1, &fragment_shader_readtex, NULL);
+	glCompileShader(g_readtex_shader_object);
+	assert(checkShaderCompileStatus(g_readtex_shader_object));
+
 #ifdef GL_IMAGE_TEXTURES_SUPPORT
 	if (video().getRender().isImageTexturesSupported() && config.frameBufferEmulation.N64DepthCompare != 0) {
 		g_calc_depth_shader_object = glCreateShader(GL_FRAGMENT_SHADER);
@@ -315,6 +321,8 @@ void DestroyShaderCombiner() {
 	g_calc_light_shader_object = 0;
 	glDeleteShader(g_calc_mipmap_shader_object);
 	g_calc_mipmap_shader_object = 0;
+	glDeleteShader(g_readtex_shader_object);
+	g_readtex_shader_object = 0;
 	glDeleteShader(g_calc_noise_shader_object);
 	g_calc_noise_shader_object = 0;
 	glDeleteShader(g_test_alpha_shader_object);
@@ -527,9 +535,9 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 #endif
 	} else {
 		if (usesT0())
-				strFragmentShader.append(fragment_shader_readtex0color);
+			strFragmentShader.append("  lowp vec4 readtex0 = readTex(uTex0, vTexCoord0, uFb8Bit == 1 || uFb8Bit == 3, uFbFixedAlpha == 1 || uFbFixedAlpha == 3); \n");
 		if (usesT1())
-				strFragmentShader.append(fragment_shader_readtex1color);
+			strFragmentShader.append("  lowp vec4 readtex1 = readTex(uTex1, vTexCoord1, uFb8Bit == 2 || uFb8Bit == 3, uFbFixedAlpha == 2 || uFbFixedAlpha == 3); \n");
 	}
 	if (config.generalEmulation.enableHWLighting)
 #ifdef SHADER_PRECISION
@@ -612,6 +620,7 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 		glAttachShader(m_program, g_calc_light_shader_object);
 	if (bUseLod)
 		glAttachShader(m_program, g_calc_mipmap_shader_object);
+	glAttachShader(m_program, g_readtex_shader_object);
 	glAttachShader(m_program, g_test_alpha_shader_object);
 	if (video().getRender().isImageTexturesSupported() && config.frameBufferEmulation.N64DepthCompare != 0)
 		glAttachShader(m_program, g_calc_depth_shader_object);
@@ -657,6 +666,7 @@ void ShaderCombiner::_locateUniforms() {
 	LocateUniform(uMaxTile)
 	LocateUniform(uTextureDetail);
 	LocateUniform(uTexturePersp);
+	LocateUniform(uTextureFilterMode);
 	LocateUniform(uSpecialBlendMode);
 
 	LocateUniform(uFogMultiplier);
@@ -863,6 +873,7 @@ void ShaderCombiner::updateColors(bool _bForce)
 
 void ShaderCombiner::updateTextureInfo(bool _bForce) {
 	_setIUniform(m_uniforms.uTexturePersp, gDP.otherMode.texturePersp, _bForce);
+	_setIUniform(m_uniforms.uTextureFilterMode, config.texture.forceBilinear == 0 ? gDP.otherMode.textureFilter | (gSP.objRendermode&G_OBJRM_BILERP) : 0, _bForce);
 	_setFV2Uniform(m_uniforms.uTexScale, gSP.texture.scales, gSP.texture.scalet, _bForce);
 	int nFB0 = 0, nFB1 = 0;
 	TextureCache & cache = textureCache();
