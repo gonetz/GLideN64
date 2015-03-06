@@ -131,7 +131,9 @@ void Config_LoadConfig()
 	Config_SetDefault();
 	config.version = ConfigGetParamInt(g_configVideoGliden64, "configVersion");
 	if (config.version != CONFIG_VERSION_CURRENT) {
-		ConfigDeleteSection("Video-GLideN64");
+		m64p_error res = ConfigDeleteSection("Video-GLideN64");
+		assert(res == M64ERR_SUCCESS);
+		ConfigSaveFile();
 		Config_SetDefault();
 	}
 
