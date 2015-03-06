@@ -152,9 +152,7 @@ void ConfigDialog::_init()
 	ui->compressCacheCheckBox->setChecked(config.textureFilter.txCacheCompression != 0);
 	ui->saveTextureCacheCheckBox->setChecked(config.textureFilter.txSaveCache != 0);
 
-	QString txPath = QString::fromWCharArray(config.textureFilter.txPath);
-	if (!txPath.isEmpty())
-		ui->txPathLabel->setText(txPath);
+	ui->txPathLabel->setText(QString::fromWCharArray(config.textureFilter.txPath));
 
 	QString fontName(config.font.name.c_str());
 	m_font = QFont(fontName.left(fontName.indexOf(".ttf")), config.font.size);
