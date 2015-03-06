@@ -463,11 +463,15 @@ void OGLRender::_setBlendMode() const
 	const u32 blendmode = gDP.otherMode.l >> 16;
 	// 0x7000 = CVG_X_ALPHA|ALPHA_CVG_SEL|FORCE_BL
 	if (gDP.otherMode.alphaCvgSel != 0 && (gDP.otherMode.l & 0x7000) != 0x7000) {
-		if (blendmode == 0x4055) { // Mario Golf
+		switch (blendmode) {
+		case 0x4055: // Mario Golf
+		case 0x5055: // Paper Mario intro clr_mem * a_in + clr_mem * a_mem
 			glEnable(GL_BLEND);
 			glBlendFunc(GL_ZERO, GL_ONE);
-		} else
+			break;
+		default:
 			glDisable(GL_BLEND);
+		}
 		return;
 	}
 
