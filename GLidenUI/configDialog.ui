@@ -524,6 +524,9 @@
           <layout class="QHBoxLayout" name="horizontalLayout_12">
            <item>
             <widget class="QLabel" name="label_15">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
              <property name="toolTip">
               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Language select:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Press the button to invoke language selection dialog. Selected language will be activated after restart of the configuration dialog.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
              </property>
@@ -534,6 +537,9 @@
            </item>
            <item>
             <widget class="QLabel" name="label_14">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
              <property name="toolTip">
               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Language select:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Press the button to invoke language selection dialog. Selected language will be activated after restart of the configuration dialog.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
              </property>
@@ -544,6 +550,9 @@
            </item>
            <item>
             <widget class="QPushButton" name="selectLangButton">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
              <property name="toolTip">
               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Language select:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Press the button to invoke language selection dialog. Selected language will be activated after restart of the configuration dialog.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
              </property>
