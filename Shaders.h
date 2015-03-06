@@ -618,7 +618,7 @@ static const char* depth_compare_shader_float =
 "       break;											\n"
 "  }													\n"
 "  if (uEnableDepthUpdate != 0  && bRes) {				\n"
-"    highp vec4 depth_out = vec4(gl_FragCoord.z, dz, 1.0, 1.0); \n"
+"    highp vec4 depth_out = vec4(gl_FragDepth, dz, 1.0, 1.0); \n"
 "    imageStore(uDepthImage,coord, depth_out);			\n"
 "  }													\n"
 "  memoryBarrierImage();								\n"
