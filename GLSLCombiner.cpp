@@ -873,7 +873,7 @@ void ShaderCombiner::updateColors(bool _bForce)
 
 void ShaderCombiner::updateTextureInfo(bool _bForce) {
 	_setIUniform(m_uniforms.uTexturePersp, gDP.otherMode.texturePersp, _bForce);
-	_setIUniform(m_uniforms.uTextureFilterMode, config.texture.forceBilinear == 0 ? gDP.otherMode.textureFilter | (gSP.objRendermode&G_OBJRM_BILERP) : 0, _bForce);
+	_setIUniform(m_uniforms.uTextureFilterMode, config.texture.bilinearMode == BILINEAR_3POINT ? gDP.otherMode.textureFilter | (gSP.objRendermode&G_OBJRM_BILERP) : 0, _bForce);
 	_setFV2Uniform(m_uniforms.uTexScale, gSP.texture.scales, gSP.texture.scalet, _bForce);
 	int nFB0 = 0, nFB1 = 0;
 	TextureCache & cache = textureCache();

@@ -48,7 +48,7 @@ bool Config_SetDefault()
 	assert(res == M64ERR_SUCCESS);
 
 	//#Texture Settings
-	res = ConfigSetDefaultBool(g_configVideoGliden64, "ForceBilinear", 0, "Force bilinear texture filter");
+	res = ConfigSetDefaultBool(g_configVideoGliden64, "bilinearMode", 0, "Bilinear filtering mode (0=N64 3point, 1=standard)");
 	assert(res == M64ERR_SUCCESS);
 	res = ConfigSetDefaultBool(g_configVideoGliden64, "MaxAnisotropy", 0, "Max level of Anisotropic Filtering, 0 for off");
 	assert(res == M64ERR_SUCCESS);
@@ -144,7 +144,7 @@ void Config_LoadConfig()
 	config.frameBufferEmulation.aspect = ConfigGetParamInt(g_configVideoGliden64, "AspectRatio");
 
 	//#Texture Settings
-	config.texture.forceBilinear = ConfigGetParamBool(g_configVideoGliden64, "ForceBilinear");
+	config.texture.bilinearMode = ConfigGetParamBool(g_configVideoGliden64, "bilinearMode");
 	config.texture.maxAnisotropy = ConfigGetParamInt(g_configVideoGliden64, "MaxAnisotropy");
 	config.texture.maxBytes = ConfigGetParamInt(g_configVideoGliden64, "CacheSize") * uMegabyte;
 	//#Emulation Settings

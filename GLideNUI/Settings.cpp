@@ -34,7 +34,7 @@ void loadSettings()
 
 	settings.beginGroup("texture");
 	config.texture.maxAnisotropy = settings.value("maxAnisotropy", 0).toInt();
-	config.texture.forceBilinear = settings.value("forceBilinear", 0).toInt();
+	config.texture.bilinearMode = settings.value("bilinearMode", BILINEAR_STANDARD).toInt();
 	config.texture.maxBytes = settings.value("maxBytes", 500 * gc_uMegabyte).toInt();
 	config.texture.screenShotFormat = settings.value("screenShotFormat", 0).toInt();
 	settings.endGroup();
@@ -116,7 +116,7 @@ void writeSettings()
 
 	settings.beginGroup("texture");
 	settings.setValue("maxAnisotropy", config.texture.maxAnisotropy);
-	settings.setValue("forceBilinear", config.texture.forceBilinear);
+	settings.setValue("bilinearMode", config.texture.bilinearMode);
 	settings.setValue("maxBytes", config.texture.maxBytes);
 	settings.setValue("screenShotFormat", config.texture.screenShotFormat);
 	settings.endGroup();

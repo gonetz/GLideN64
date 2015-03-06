@@ -5,7 +5,11 @@
 #include "Types.h"
 
 #define CONFIG_VERSION_ONE 1U
-#define CONFIG_VERSION_CURRENT CONFIG_VERSION_ONE
+#define CONFIG_VERSION_TWO 2U
+#define CONFIG_VERSION_CURRENT CONFIG_VERSION_TWO
+
+#define BILINEAR_3POINT   0
+#define BILINEAR_STANDARD 1
 
 const u32 gc_uMegabyte = 1024U * 1024U;
 
@@ -26,7 +30,7 @@ struct Config
 	{
 		u32 maxAnisotropy;
 		f32 maxAnisotropyF;
-		u32 forceBilinear;
+		u32 bilinearMode;
 		u32 maxBytes;
 		u32 screenShotFormat;
 	} texture;
@@ -96,7 +100,7 @@ struct Config
 		video.verticalSync = 0;
 
 		texture.maxAnisotropy = 0;
-		texture.forceBilinear = 0;
+		texture.bilinearMode = BILINEAR_STANDARD;
 		texture.maxBytes = 500 * gc_uMegabyte;
 		texture.screenShotFormat = 0;
 

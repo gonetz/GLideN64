@@ -1048,7 +1048,7 @@ void TextureCache::activateTexture(u32 _t, CachedTexture *_pTexture)
 	glBindTexture( GL_TEXTURE_2D, _pTexture->glName );
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, _pTexture->max_level);
-	if (config.texture.forceBilinear != 0) {
+	if (config.texture.bilinearMode == BILINEAR_STANDARD && (gDP.otherMode.textureFilter | (gSP.objRendermode&G_OBJRM_BILERP)) != 0) {
 		if (_pTexture->max_level > 0)
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
 		else

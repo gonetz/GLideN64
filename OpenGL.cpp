@@ -1154,7 +1154,7 @@ void OGLRender::drawTexturedRect(const TexturedRectParams & _params)
 		texST[1].t1 *= cache.current[1]->scaleT;
 	}
 
-	if ((gDP.otherMode.cycleType == G_CYC_COPY) && !config.texture.forceBilinear) {
+	if (gDP.otherMode.cycleType == G_CYC_COPY) {
 		glActiveTexture( GL_TEXTURE0 );
 		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
 		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );

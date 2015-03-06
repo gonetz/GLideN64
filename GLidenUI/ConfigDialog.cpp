@@ -84,8 +84,16 @@ void ConfigDialog::_init()
 
 	ui->aliasingSlider->setValue(config.video.multisampling);
 	ui->anisotropicSlider->setValue(config.texture.maxAnisotropy);
-	ui->forceBilinearCheckBox->setChecked(config.texture.forceBilinear != 0);
 	ui->cacheSizeSpinBox->setValue(config.texture.maxBytes / gc_uMegabyte);
+
+	switch (config.texture.bilinearMode) {
+	case BILINEAR_3POINT:
+		ui->blnr3PointRadioButton->setChecked(true);
+		break;
+	case BILINEAR_STANDARD:
+		ui->blnrStandardRadioButton->setChecked(true);
+		break;
+	}
 
 	switch (config.texture.screenShotFormat) {
 	case 0:
@@ -207,8 +215,12 @@ void ConfigDialog::accept()
 
 	config.video.multisampling = ui->aliasingSlider->value();
 	config.texture.maxAnisotropy = ui->anisotropicSlider->value();
-	config.texture.forceBilinear = ui->forceBilinearCheckBox->isChecked();
 	config.texture.maxBytes = ui->cacheSizeSpinBox->value() * gc_uMegabyte;
+
+	if (ui->blnrStandardRadioButton->isChecked())
+		config.texture.bilinearMode = BILINEAR_STANDARD;
+	else if (ui->blnr3PointRadioButton->isChecked())
+		config.texture.bilinearMode = BILINEAR_3POINT;
 
 	if (ui->bmpRadioButton->isChecked())
 		config.texture.screenShotFormat = 0;

@@ -326,14 +326,44 @@
           </layout>
          </item>
          <item>
-          <widget class="QCheckBox" name="forceBilinearCheckBox">
-           <property name="toolTip">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Bilinear filtering:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Off - filter exactly how the N64 specifies.&lt;br/&gt;On - apply bilinear filtering to all textures to make them appear more smooth.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;off&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-           </property>
-           <property name="text">
-            <string>Force texture bilinear filtering</string>
-           </property>
-          </widget>
+          <layout class="QHBoxLayout" name="horizontalLayout_9">
+           <item>
+            <widget class="QLabel" name="label_13">
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Bilinear filtering:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;[standard] - standard texture filtering provided by PC hardware.&lt;/p&gt;&lt;p&gt;[N64 3point]- emulation of 3 point texture filtering used by the original hardware. Provides less smooth but more authentic look.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
+             <property name="text">
+              <string>Texture bilinear filtering:</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QRadioButton" name="blnrStandardRadioButton">
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Bilinear filtering:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;[standard] - standard texture filtering provided by PC hardware.&lt;/p&gt;&lt;p&gt;[N64 3point]- emulation of 3 point texture filtering used by the original hardware. Provides less smooth but more authentic look.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
+             <property name="text">
+              <string>standard</string>
+             </property>
+             <attribute name="buttonGroup">
+              <string notr="true">bilinearButtonGroup</string>
+             </attribute>
+            </widget>
+           </item>
+           <item>
+            <widget class="QRadioButton" name="blnr3PointRadioButton">
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Bilinear filtering:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;[standard] - standard texture filtering provided by PC hardware.&lt;/p&gt;&lt;p&gt;[N64 3point]- emulation of 3 point texture filtering used by the original hardware. Provides less smooth but more authentic look.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
+             <property name="text">
+              <string>N64 3point</string>
+             </property>
+             <attribute name="buttonGroup">
+              <string notr="true">bilinearButtonGroup</string>
+             </attribute>
+            </widget>
+           </item>
+          </layout>
          </item>
          <item>
           <layout class="QHBoxLayout" name="horizontalLayout">
@@ -1295,7 +1325,8 @@
  </connections>
  <buttongroups>
   <buttongroup name="screenshotButtonGroup"/>
-  <buttongroup name="aspectButtonGroup"/>
   <buttongroup name="bloomBlendModeButtonGroup"/>
+  <buttongroup name="aspectButtonGroup"/>
+  <buttongroup name="bilinearButtonGroup"/>
  </buttongroups>
 </ui>
