@@ -1420,13 +1420,21 @@ void TextureFilterHandler::init()
 			glGetIntegerv(GL_MAX_TEXTURE_SIZE, &maxTextureSize);
 			wchar_t wRomName[32];
 			::mbstowcs(wRomName, RSP.romname, 32);
+			wchar_t txPath[PLUGIN_PATH_SIZE+16];
+			wchar_t * pTexPackPath = config.textureFilter.txPath;
+			if (::wcslen(config.textureFilter.txPath) == 0) {
+				wcscpy(txPath, RSP.pluginpath);
+				wcscat(txPath, L"/hires_texture");
+				pTexPackPath = txPath;
+			}
 
 			m_inited = txfilter_init(maxTextureSize, // max texture width supported by hardware
 				maxTextureSize, // max texture height supported by hardware
 				32, // max texture bpp supported by hardware
 				options,
 				config.textureFilter.txCacheSize, // cache texture to system memory
-				::wcslen(config.textureFilter.txPath) > 0 ? config.textureFilter.txPath : RSP.pluginpath, // path to texture packs folder
+				RSP.pluginpath, // plugin path
+				pTexPackPath, // path to texture packs folder
 				wRomName, // name of ROM. must be no longer than 256 characters
 				displayLoadProgress);
 		}

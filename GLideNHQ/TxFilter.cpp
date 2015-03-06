@@ -57,7 +57,7 @@ TxFilter::~TxFilter()
 }
 
 TxFilter::TxFilter(int maxwidth, int maxheight, int maxbpp, int options,
-				   int cachesize, const wchar_t * path, const wchar_t * ident,
+	int cachesize, const wchar_t * path, const wchar_t * texPackPath, const wchar_t * ident,
 				   dispInfoFuncExt callback) :
 	_tex1(NULL), _tex2(NULL), _txQuantize(NULL), _txTexCache(NULL), _txHiResCache(NULL), _txUtil(NULL), _txImage(NULL)
 {
@@ -134,7 +134,7 @@ TxFilter::TxFilter(int maxwidth, int maxheight, int maxbpp, int options,
 
 	/* hires texture */
 #if HIRES_TEXTURE
-	_txHiResCache = new TxHiResCache(_maxwidth, _maxheight, _maxbpp, _options, _path.c_str(), _ident.c_str(), callback);
+	_txHiResCache = new TxHiResCache(_maxwidth, _maxheight, _maxbpp, _options, _path.c_str(), texPackPath, _ident.c_str(), callback);
 
 	if (_txHiResCache->empty())
 		_options &= ~HIRESTEXTURES_MASK;

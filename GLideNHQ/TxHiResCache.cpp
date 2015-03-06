@@ -71,9 +71,9 @@ TxHiResCache::~TxHiResCache()
 }
 
 TxHiResCache::TxHiResCache(int maxwidth, int maxheight, int maxbpp, int options,
-						   const wchar_t *path, const wchar_t *ident,
-						   dispInfoFuncExt callback
-						   ) : TxCache((options & ~GZ_TEXCACHE), 0, path, ident, callback)
+	const wchar_t *cachePath, const wchar_t *texPackPath, const wchar_t *ident,
+	dispInfoFuncExt callback
+	) : TxCache((options & ~GZ_TEXCACHE), 0, cachePath, ident, callback)
 {
   _txImage = new TxImage();
   _txQuantize  = new TxQuantize();
@@ -84,6 +84,9 @@ TxHiResCache::TxHiResCache(int maxwidth, int maxheight, int maxbpp, int options,
   _maxbpp    = maxbpp;
   _abortLoad = 0;
   _haveCache = 0;
+
+  if (texPackPath)
+	  _texPackPath.assign(texPackPath);
 
   if (_path.empty() || _ident.empty()) {
 	_options &= ~DUMP_HIRESTEXCACHE;
@@ -116,11 +119,11 @@ TxHiResCache::empty()
 boolean
 TxHiResCache::load(boolean replace) /* 0 : reload, 1 : replace partial */
 {
-  if (!_path.empty() && !_ident.empty()) {
+  if (!_texPackPath.empty() && !_ident.empty()) {
 
 	if (!replace) TxCache::clear();
 
-	boost::filesystem::wpath dir_path(_path);
+	boost::filesystem::wpath dir_path(_texPackPath);
 
 	switch (_options & HIRESTEXTURES_MASK) {
 	case GHQ_HIRESTEXTURES:
@@ -137,7 +140,6 @@ TxHiResCache::load(boolean replace) /* 0 : reload, 1 : replace partial */
 	  INFO(80, L"  usage of only 2) and 3) highly recommended!\n");
 	  INFO(80, L"  folder names must be in US-ASCII characters!\n");
 
-	  dir_path /= boost::filesystem::wpath(L"hires_texture");
 	  dir_path /= boost::filesystem::wpath(_ident);
 	  loadHiResTextures(dir_path, replace);
 	  break;

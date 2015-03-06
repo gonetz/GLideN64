@@ -47,12 +47,13 @@ private:
   TxImage *_txImage;
   TxQuantize *_txQuantize;
   TxReSample *_txReSample;
+  std::wstring _texPackPath;
   boolean loadHiResTextures(boost::filesystem::wpath dir_path, boolean replace);
 public:
   ~TxHiResCache();
   TxHiResCache(int maxwidth, int maxheight, int maxbpp, int options,
-               const wchar_t *path, const wchar_t *ident,
-               dispInfoFuncExt callback);
+	  const wchar_t *cachePath, const wchar_t *texPackPath, const wchar_t *ident,
+      dispInfoFuncExt callback);
   boolean empty();
   boolean load(boolean replace);
 };

@@ -61,6 +61,7 @@ public:
 		   int options,
 		   int cachesize,
 		   const wchar_t *path,
+		   const wchar_t * texPackPath,
 		   const wchar_t *ident,
 		   dispInfoFuncExt callback);
   boolean filter(uint8 *src,
