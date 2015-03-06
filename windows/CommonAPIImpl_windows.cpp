@@ -1,3 +1,4 @@
+#include <algorithm>
 #include "GLideN64_Windows.h"
 #include <commctrl.h>
 #include "../PluginAPI.h"
@@ -43,6 +44,7 @@ void PluginAPI::FindPluginPath(wchar_t * _strPath)
 	return;
 #endif
 	std::wstring pluginPath(_strPath);
-	std::wstring::size_type pos = pluginPath.find_last_of(L"\\/");
+	std::replace(pluginPath.begin(), pluginPath.end(), L'\\', L'/');
+	std::wstring::size_type pos = pluginPath.find_last_of(L"/");
 	wcscpy(_strPath, pluginPath.substr(0, pos).c_str());
 }
