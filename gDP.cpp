@@ -520,39 +520,41 @@ bool CheckForFrameBufferTexture(u32 _address, u32 _bytes)
 		//&&			((*(u32*)&RDRAM[pBuffer->startAddress] & 0xFFFEFFFE) == (pBuffer->startAddress & 0xFFFEFFFE)) // Does not work for Jet Force Gemini
 		)
 	{
-		if (noDepthBuffers && gDP.colorImage.address == gDP.depthImageAddress && pBuffer->m_copiedToRDRAM)
-		{
+		if (noDepthBuffers && gDP.colorImage.address == gDP.depthImageAddress && pBuffer->m_RdramCrc != 0)	{
 			memcpy(RDRAM + gDP.depthImageAddress, RDRAM + pBuffer->m_startAddress, (pBuffer->m_width*pBuffer->m_height) << pBuffer->m_size >> 1);
-			pBuffer->m_copiedToRDRAM = false;
+			pBuffer->m_RdramCrc = 0;
 		}
 
 		const u32 texEndAddress = _address + _bytes - 1;
-		u32 height = (int)gDP.scissor.lry;
-		if (height % 2 != 0)
-			++height;
-		const u32 bufEndAddress = pBuffer->m_startAddress + (((pBuffer->m_width * height) << pBuffer->m_size >> 1) - 1);
-		if (_address > pBuffer->m_startAddress && texEndAddress > bufEndAddress) {
-//			FrameBuffer_RemoveBuffer(pBuffer->startAddress);
+		if (_address > pBuffer->m_startAddress && texEndAddress > (pBuffer->m_endAddress + (pBuffer->m_width << pBuffer->m_size >> 1))) {
+			//frameBufferList().removeBuffer(pBuffer->m_startAddress);
 			bRes = false;
 		}
 
 		if (bRes && gDP.loadTile->loadType == LOADTYPE_TILE && gDP.textureImage.width != pBuffer->m_width && gDP.textureImage.size != pBuffer->m_size) {
-			//FrameBuffer_RemoveBuffer(pBuffer->startAddress); // Does not work with Zelda MM
+			//frameBufferList().removeBuffer(pBuffer->m_startAddress); // Does not work with Zelda MM
 			bRes = false;
 		}
 
-		if (bRes && pBuffer->m_cleared && pBuffer->m_size == 2
-			&& !config.frameBufferEmulation.copyToRDRAM
-			&& (!config.frameBufferEmulation.copyDepthToRDRAM || pBuffer->m_fillcolor != DepthClearColor)
-		) {
-			const u32 endAddress = min(texEndAddress, pBuffer->m_endAddress);
-			const u32 color = pBuffer->m_fillcolor&0xFFFEFFFE;
-			for (u32 i = _address + 4; i < endAddress; i+=4) {
-				if (((*(u32*)&RDRAM[i])&0xFFFEFFFE) != color) {
-					frameBufferList().removeBuffer(pBuffer->m_startAddress);
-					bRes = false;
-					break;
+		if (bRes && pBuffer->m_validityChecked != RSP.DList) {
+			if (pBuffer->m_cleared) {
+				const u32 color = pBuffer->m_fillcolor & 0xFFFEFFFE;
+				for (u32 i = pBuffer->m_startAddress + 4; i < pBuffer->m_endAddress; i += 4) {
+					if (((*(u32*)&RDRAM[i]) & 0xFFFEFFFE) != color) {
+						frameBufferList().removeBuffer(pBuffer->m_startAddress);
+						bRes = false;
+						break;
+					}
 				}
+				if (bRes)
+					pBuffer->m_validityChecked = RSP.DList;
+			} else if (pBuffer->m_RdramCrc != 0) {
+				const u32 crc = CRC_Calculate(0xFFFFFFFF, RDRAM + pBuffer->m_startAddress, (VI.width*VI.height) << pBuffer->m_size >> 1);
+				bRes = (pBuffer->m_RdramCrc == crc);
+				if (bRes)
+					pBuffer->m_validityChecked = RSP.DList;
+				else
+					frameBufferList().removeBuffer(pBuffer->m_startAddress);
 			}
 		}
 

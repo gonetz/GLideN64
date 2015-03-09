@@ -18,13 +18,12 @@ struct FrameBuffer
 	CachedTexture * getTexture();
 
 	u32 m_startAddress, m_endAddress;
-	u32 m_size, m_width, m_height, m_fillcolor;
+	u32 m_size, m_width, m_height, m_fillcolor, m_RdramCrc, m_validityChecked;
 	float m_scaleX, m_scaleY;
 	bool m_cleared;
 	bool m_changed;
 	bool m_cfb;
 	bool m_isDepthBuffer;
-	bool m_copiedToRDRAM;
 	bool m_needHeightCorrection;
 
 	GLuint m_FBO;
