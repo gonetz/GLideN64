@@ -325,10 +325,13 @@ void RSP_Init()
 	if (strstr(RSP.romname, (const char *)"OgreBattle64") != NULL)
 		config.generalEmulation.hacks |= hack_Ogre64;
 	else if (strstr(RSP.romname, (const char *)"MarioGolf64") != NULL ||
-		strstr(RSP.romname, (const char *)"CONKER BFD") != NULL ||
-		strstr(RSP.romname, (const char *)"MICKEY USA") != NULL
+		strstr(RSP.romname, (const char *)"F1 POLE POSITION 64") != NULL
 		)
 		config.generalEmulation.hacks |= hack_noDepthFrameBuffers;
+	else if (strstr(RSP.romname, (const char *)"CONKER BFD") != NULL ||
+		strstr(RSP.romname, (const char *)"MICKEY USA") != NULL
+		)
+		config.generalEmulation.hacks |= hack_blurPauseScreen;
 
 	api().FindPluginPath(RSP.pluginpath);
 

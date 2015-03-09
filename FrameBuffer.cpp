@@ -956,10 +956,8 @@ bool DepthBufferToRDRAM::CopyToRDRAM( u32 _address) {
 
 	pDepthBuffer->m_cleared = false;
 	pBuffer = frameBufferList().findBuffer(pDepthBuffer->m_address);
-	if (pBuffer != NULL) {
-		pBuffer->m_RdramCrc = CRC_Calculate(0xFFFFFFFF, RDRAM + pDepthBuffer->m_address, (VI.width*VI.height) << pBuffer->m_size >> 1);
+	if (pBuffer != NULL)
 		pBuffer->m_cleared = false;
-	}
 
 	glUnmapBuffer(GL_PIXEL_PACK_BUFFER);
 	glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);

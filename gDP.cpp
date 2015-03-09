@@ -514,13 +514,12 @@ bool CheckForFrameBufferTexture(u32 _address, u32 _bytes)
 		return false;
 
 	FrameBuffer *pBuffer = frameBufferList().findBuffer(_address);
-	const bool noDepthBuffers = (config.generalEmulation.hacks & hack_noDepthFrameBuffers) != 0;
 	bool bRes = pBuffer != NULL;
 	if ((bRes)
 		//&&			((*(u32*)&RDRAM[pBuffer->startAddress] & 0xFFFEFFFE) == (pBuffer->startAddress & 0xFFFEFFFE)) // Does not work for Jet Force Gemini
 		)
 	{
-		if (noDepthBuffers) {
+		if ((config.generalEmulation.hacks & hack_blurPauseScreen) != 0) {
 			if (gDP.colorImage.address == gDP.depthImageAddress && pBuffer->m_RdramCrc != 0) {
 				memcpy(RDRAM + gDP.depthImageAddress, RDRAM + pBuffer->m_startAddress, (pBuffer->m_width*pBuffer->m_height) << pBuffer->m_size >> 1);
 				pBuffer->m_RdramCrc = 0;
@@ -528,6 +527,11 @@ bool CheckForFrameBufferTexture(u32 _address, u32 _bytes)
 			}
 			if (pBuffer->m_isPauseScreen)
 				bRes = false;
+		}
+
+		if ((config.generalEmulation.hacks & hack_noDepthFrameBuffers) != 0 && pBuffer->m_isDepthBuffer) {
+			frameBufferList().removeBuffer(pBuffer->m_startAddress);
+			bRes = false;
 		}
 
 		const u32 texEndAddress = _address + _bytes - 1;

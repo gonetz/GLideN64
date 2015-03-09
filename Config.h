@@ -93,6 +93,7 @@ struct Config
 
 #define hack_Ogre64	(1<<0)  //Ogre Battle 64 background copy
 #define hack_noDepthFrameBuffers (1<<1)  //Do not use depth buffers as texture
+#define hack_blurPauseScreen (2<<1)  //Game copies frame buffer to depth buffer area, CPU blurs it. That image is used as background for pause screen.
 
 extern Config config;
 
