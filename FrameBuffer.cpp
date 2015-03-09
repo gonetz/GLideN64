@@ -388,8 +388,8 @@ void FrameBufferList::saveBuffer(u32 _address, u16 _format, u16 _size, u16 _widt
 	if (!_cfb)
 		*(u32*)&RDRAM[m_pCurrent->m_startAddress] = m_pCurrent->m_startAddress;
 
-	m_pCurrent->m_cleared = m_pCurrent->m_isDepthBuffer = false;
-	m_pCurrent->m_RdramCrc = m_pCurrent->m_validityChecked = 0;
+	m_pCurrent->m_cleared = false;
+	m_pCurrent->m_isDepthBuffer = _address == gDP.depthImageAddress;
 
 	gSP.changed |= CHANGED_TEXTURE;
 }
