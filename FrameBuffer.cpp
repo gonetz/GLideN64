@@ -390,6 +390,7 @@ void FrameBufferList::saveBuffer(u32 _address, u16 _format, u16 _size, u16 _widt
 
 	m_pCurrent->m_cleared = false;
 	m_pCurrent->m_isDepthBuffer = _address == gDP.depthImageAddress;
+	m_pCurrent->m_isPauseScreen = false;
 
 	gSP.changed |= CHANGED_TEXTURE;
 }

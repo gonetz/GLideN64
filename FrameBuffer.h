@@ -24,6 +24,7 @@ struct FrameBuffer
 	bool m_changed;
 	bool m_cfb;
 	bool m_isDepthBuffer;
+	bool m_isPauseScreen;
 	bool m_needHeightCorrection;
 
 	GLuint m_FBO;

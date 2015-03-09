@@ -324,7 +324,10 @@ void RSP_Init()
 	setDepthClearColor();
 	if (strstr(RSP.romname, (const char *)"OgreBattle64") != NULL)
 		config.generalEmulation.hacks |= hack_Ogre64;
-	else if (strstr(RSP.romname, (const char *)"MarioGolf64") != NULL || strstr(RSP.romname, (const char *)"CONKER BFD") != NULL)
+	else if (strstr(RSP.romname, (const char *)"MarioGolf64") != NULL ||
+		strstr(RSP.romname, (const char *)"CONKER BFD") != NULL ||
+		strstr(RSP.romname, (const char *)"MICKEY USA") != NULL
+		)
 		config.generalEmulation.hacks |= hack_noDepthFrameBuffers;
 
 	api().FindPluginPath(RSP.pluginpath);
