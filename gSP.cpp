@@ -2105,6 +2105,9 @@ void _drawYUVImageToFrameBuffer(const ObjCoordinates & _objCoords)
 		}
 		dst += ci_width - 16;
 	}
+	FrameBuffer *pBuffer = frameBufferList().getCurrent();
+	if (pBuffer != NULL)
+		pBuffer->m_isOBScreen = true;
 }
 
 void gSPObjRectangle(u32 sp)

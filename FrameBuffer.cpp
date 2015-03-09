@@ -390,7 +390,7 @@ void FrameBufferList::saveBuffer(u32 _address, u16 _format, u16 _size, u16 _widt
 
 	m_pCurrent->m_cleared = false;
 	m_pCurrent->m_isDepthBuffer = _address == gDP.depthImageAddress;
-	m_pCurrent->m_isPauseScreen = false;
+	m_pCurrent->m_isPauseScreen = m_pCurrent->m_isOBScreen = false;
 
 	gSP.changed |= CHANGED_TEXTURE;
 }
@@ -743,7 +743,7 @@ void FrameBufferToRDRAM::CopyToRDRAM(u32 _address) {
 	if (VI.width == 0) // H width is zero. Don't copy
 		return;
 	FrameBuffer *pBuffer = frameBufferList().findBuffer(_address);
-	if (pBuffer == NULL || pBuffer->m_width < VI.width)
+	if (pBuffer == NULL || pBuffer->m_width < VI.width || pBuffer->m_isOBScreen)
 		return;
 
 	_address = pBuffer->m_startAddress;
