@@ -249,8 +249,10 @@ void FrameBufferList::destroy() {
 void FrameBufferList::setBufferChanged()
 {
 	gDP.colorImage.changed = TRUE;
-	if (m_pCurrent != NULL)
+	if (m_pCurrent != NULL) {
 		m_pCurrent->m_changed = true;
+		m_pCurrent->m_RdramCrc = m_pCurrent->m_validityChecked = 0;
+	}
 }
 
 void FrameBufferList::setNeedHeightCorrection(bool _needCorrection)
