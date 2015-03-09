@@ -2186,12 +2186,9 @@ void _loadBGImage(const uObjScaleBg * _bgInfo, bool _loadScale)
 	} else
 		gSP.bgImage.scaleW = gSP.bgImage.scaleH = 1.0f;
 
-	if (config.frameBufferEmulation.enable)
-	{
+	if (config.frameBufferEmulation.enable) {
 		FrameBuffer *pBuffer = frameBufferList().findBuffer(gSP.bgImage.address);
-		if ((pBuffer != NULL) && pBuffer->m_size == gSP.bgImage.size &&
-			((*(u32*)&RDRAM[pBuffer->m_startAddress] & 0xFFFEFFFE) == (pBuffer->m_startAddress & 0xFFFEFFFE)))
-		{
+		if ((pBuffer != NULL) && pBuffer->m_size == gSP.bgImage.size) {
 			gDP.tiles[0].frameBuffer = pBuffer;
 			gDP.tiles[0].textureMode = TEXTUREMODE_FRAMEBUFFER_BG;
 			gDP.tiles[0].loadType = LOADTYPE_TILE;
