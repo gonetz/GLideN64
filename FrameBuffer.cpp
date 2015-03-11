@@ -601,7 +601,8 @@ void FrameBufferList::renderBuffer(u32 _address)
 
 	glEnable(GL_SCISSOR_TEST);
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_pCurrent->m_FBO);
+	if (m_pCurrent != NULL)
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_pCurrent->m_FBO);
 	ogl.swapBuffers();
 	gDP.changed |= CHANGED_SCISSOR;
 }
