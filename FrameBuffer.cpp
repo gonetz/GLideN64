@@ -645,8 +645,8 @@ void FrameBuffer_ActivateBufferTexture(s16 t, FrameBuffer *pBuffer)
 
 	CachedTexture *pTexture = pBuffer->getTexture();
 
-	pTexture->scaleS = video().getScaleX() / (float)pTexture->realWidth;
-	pTexture->scaleT = video().getScaleY() / (float)pTexture->realHeight;
+	pTexture->scaleS = pBuffer->m_scaleX / (float)pTexture->realWidth;
+	pTexture->scaleT = pBuffer->m_scaleY / (float)pTexture->realHeight;
 
 	if (gSP.textureTile[t]->shifts > 10)
 		pTexture->shiftScaleS = (float)(1 << (16 - gSP.textureTile[t]->shifts));
