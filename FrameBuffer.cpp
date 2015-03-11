@@ -181,6 +181,7 @@ void FrameBuffer::init(u32 _address, u32 _endAddress, u16 _format, u16 _size, u1
 	m_scaleY = ogl.getScaleY();
 	m_fillcolor = 0;
 	m_cfb = _cfb;
+	m_needHeightCorrection = _width != VI.width;
 
 	_initTexture(_format, _size, m_pTexture);
 	glBindFramebuffer(GL_FRAMEBUFFER, m_FBO);
@@ -267,12 +268,6 @@ void FrameBufferList::setBufferChanged()
 		m_pCurrent->m_changed = true;
 		m_pCurrent->m_RdramCrc = m_pCurrent->m_validityChecked = 0;
 	}
-}
-
-void FrameBufferList::setNeedHeightCorrection(bool _needCorrection)
-{
-	if (m_pCurrent != NULL)
-		m_pCurrent->m_needHeightCorrection = _needCorrection;
 }
 
 void FrameBufferList::correctHeight()

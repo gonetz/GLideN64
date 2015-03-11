@@ -263,7 +263,6 @@ void gDPSetColorImage( u32 format, u32 size, u32 width, u32 address )
 	address = RSP_SegmentToPhysical( address );
 
 	if (gDP.colorImage.address != address || gDP.colorImage.width != width || gDP.colorImage.size != size) {
-		bool bNeedHeightCorrection = false;
 		u32 height = 1;
 		if (width == VI.width)
 			height = VI.height;
@@ -274,15 +273,12 @@ void gDPSetColorImage( u32 format, u32 size, u32 width, u32 address )
 			height = gDP.scissor.lry;
 		else if (width <= 64)
 			height = width;
-		else {
+		else
 			height = gSP.viewport.height;
-			bNeedHeightCorrection = true;
-		}
 
 		if (config.frameBufferEmulation.enable) // && address != gDP.depthImageAddress)
 		{
 				frameBufferList().saveBuffer(address, (u16)format, (u16)size, (u16)width, height, false);
-				frameBufferList().setNeedHeightCorrection(bNeedHeightCorrection);
 				gDP.colorImage.height = 0;
 		} else
 			gDP.colorImage.height = height;

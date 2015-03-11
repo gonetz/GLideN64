@@ -57,7 +57,6 @@ public:
 	FrameBuffer * getCurrent() const {return m_pCurrent;}
 	void renderBuffer(u32 _address);
 	void setBufferChanged();
-	void setNeedHeightCorrection(bool _needCorrection);
 	void correctHeight();
 	void clearBuffersChanged();
 
