@@ -67,10 +67,10 @@ void VI_UpdateSize()
 //	const int divot = ((*REG.VI_STATUS) >> 4) & 1;
 
 	if (config.frameBufferEmulation.enable && (interlacedPrev != VI.interlaced || widthPrev != VI.width || heightPrev != VI.height)) {
-		frameBufferList().destroy();
+		frameBufferList().removeBuffers(widthPrev, heightPrev);
+		frameBufferList().removeBuffers(VI.width, VI.height);
 		depthBufferList().destroy();
 		depthBufferList().init();
-		frameBufferList().init();
 	}
 
 	VI.rwidth = VI.width != 0 ? 1.0f / VI.width : 0.0f;

@@ -422,6 +422,18 @@ void FrameBufferList::removeBuffer(u32 _address )
 		}
 }
 
+void FrameBufferList::removeBuffers(u32 _width, u32 _height)
+{
+	m_pCurrent = NULL;
+	for (FrameBuffers::iterator iter = m_list.begin(); iter != m_list.end(); ++iter) {
+		while (iter->m_width == _width && iter->m_height == _height) {
+			iter = m_list.erase(iter);
+			if (iter == m_list.end())
+				return;
+		}
+	}
+}
+
 void FrameBufferList::attachDepthBuffer()
 {
 	if (m_pCurrent == NULL)
