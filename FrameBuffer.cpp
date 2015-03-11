@@ -205,6 +205,21 @@ void FrameBuffer::init(u32 _address, u32 _endAddress, u16 _format, u16 _size, u1
 		_setAndAttachTexture(_size, m_pTexture);
 }
 
+void FrameBuffer::reinit(u16 _height)
+{
+	const u16 format = m_pTexture->format;
+	const u32 endAddress = m_startAddress + ((m_width * (_height - 1)) << m_size >> 1) - 1;
+	if (m_pTexture != NULL)
+		textureCache().removeFrameBufferTexture(m_pTexture);
+	if (m_resolveFBO != 0)
+		glDeleteFramebuffers(1, &m_resolveFBO);
+	if (m_pResolveTexture != NULL)
+		textureCache().removeFrameBufferTexture(m_pResolveTexture);
+	m_pTexture = textureCache().addFrameBufferTexture();
+	init(m_startAddress, endAddress, format, m_size, m_width, _height, m_cfb);
+}
+
+
 void FrameBuffer::resolveMultisampledTexture()
 {
 	if (m_resolved)
@@ -269,7 +284,10 @@ void FrameBufferList::correctHeight()
 		return;
 	}
 	if (m_pCurrent->m_needHeightCorrection && m_pCurrent->m_width == gDP.scissor.lrx) {
-		m_pCurrent->m_height = (u32)gDP.scissor.lry;
+		if (m_pCurrent->m_height < (u32)gDP.scissor.lry)
+			m_pCurrent->reinit((u32)gDP.scissor.lry);
+		else
+			m_pCurrent->m_height = (u32)gDP.scissor.lry;
 		m_pCurrent->m_needHeightCorrection = false;
 		gSP.changed |= CHANGED_VIEWPORT;
 	}

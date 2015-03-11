@@ -14,6 +14,7 @@ struct FrameBuffer
 	FrameBuffer(FrameBuffer && _other);
 	~FrameBuffer();
 	void init(u32 _address, u32 _endAddress, u16 _format, u16 _size, u16 _width, u16 _height, bool _cfb);
+	void reinit(u16 _height);
 	void resolveMultisampledTexture();
 	CachedTexture * getTexture();
 
