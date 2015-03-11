@@ -322,6 +322,7 @@ void RSP_Init()
 
 	strncpy(RSP.romname, romname, 21);
 	setDepthClearColor();
+	config.generalEmulation.hacks = 0;
 	if (strstr(RSP.romname, (const char *)"OgreBattle64") != NULL)
 		config.generalEmulation.hacks |= hack_Ogre64;
 	else if (strstr(RSP.romname, (const char *)"MarioGolf64") != NULL ||
