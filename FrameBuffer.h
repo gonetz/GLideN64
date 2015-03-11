@@ -54,7 +54,6 @@ public:
 	FrameBuffer * findTmpBuffer(u32 _address);
 	FrameBuffer * getCurrent() const {return m_pCurrent;}
 	void renderBuffer(u32 _address);
-	bool isFboMode() const {return m_drawBuffer == GL_FRAMEBUFFER;}
 	void setBufferChanged();
 	void setNeedHeightCorrection(bool _needCorrection);
 	void correctHeight();
@@ -67,7 +66,7 @@ public:
 	}
 
 private:
-	FrameBufferList() : m_pCurrent(NULL), m_drawBuffer(GL_BACK) {}
+	FrameBufferList() : m_pCurrent(NULL) {}
 	FrameBufferList(const FrameBufferList &);
 
 	FrameBuffer * _findBuffer(u32 _startAddress, u32 _endAddress, u32 _width);
@@ -75,7 +74,6 @@ private:
 	typedef std::list<FrameBuffer> FrameBuffers;
 	FrameBuffers m_list;
 	FrameBuffer * m_pCurrent;
-	GLenum m_drawBuffer;
 };
 
 struct PBOBinder {

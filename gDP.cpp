@@ -875,10 +875,10 @@ void gDPFillRDRAM(u32 address, s32 ulx, s32 uly, s32 lrx, s32 lry, u32 width, u3
 {
 	if (g_bDepthClearOnly && color != DepthClearColor)
 		return;
-	FrameBufferList & fbList = frameBufferList();
-	if (fbList.isFboMode()) {
-		fbList.getCurrent()->m_cleared = true;
-		fbList.getCurrent()->m_fillcolor = color;
+	FrameBuffer * pCurrentBuffer = frameBufferList().getCurrent();
+	if (pCurrentBuffer != NULL) {
+		pCurrentBuffer->m_cleared = true;
+		pCurrentBuffer->m_fillcolor = color;
 	}
 	if (scissor) {
 		ulx = min(max((float)ulx, gDP.scissor.ulx), gDP.scissor.lrx);

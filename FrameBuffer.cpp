@@ -243,7 +243,6 @@ void FrameBufferList::init()
 void FrameBufferList::destroy() {
 	m_list.clear();
 	m_pCurrent = NULL;
-	m_drawBuffer = GL_BACK;
 }
 
 void FrameBufferList::setBufferChanged()
@@ -327,7 +326,6 @@ void FrameBufferList::saveBuffer(u32 _address, u16 _format, u16 _size, u16 _widt
 	if (VI.width == 0 || VI.height == 0 || _height == 0) // H width is zero. Don't save
 		return;
 	OGLVideo & ogl = video();
-	m_drawBuffer = GL_FRAMEBUFFER;
 	if (m_pCurrent != NULL && gDP.colorImage.height > 0) {
 		if (m_pCurrent->m_width == VI.width)
 			gDP.colorImage.height = min(gDP.colorImage.height, VI.height);

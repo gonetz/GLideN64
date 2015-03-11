@@ -575,14 +575,15 @@ void OGLRender::_updateCullFace() const
 void OGLRender::_updateViewport() const
 {
 	OGLVideo & ogl = video();
-	if (!frameBufferList().isFboMode()) {
+	FrameBuffer * pCurrentBuffer = frameBufferList().getCurrent();
+	if (pCurrentBuffer == NULL) {
 		const GLint X = gSP.viewport.vscale[0] < 0 ? (GLint)((gSP.viewport.x + gSP.viewport.vscale[0] * 2.0f) * ogl.getScaleX()) : (GLint)(gSP.viewport.x * ogl.getScaleX());
 		const GLint Y = gSP.viewport.vscale[1] < 0 ? (GLint)((gSP.viewport.y + gSP.viewport.vscale[1] * 2.0f) * ogl.getScaleY()) : (GLint)((VI.height - (gSP.viewport.y + gSP.viewport.height)) * ogl.getScaleY());
 		glViewport( X, Y + ogl.getHeightOffset(),
 			max((GLint)(gSP.viewport.width * ogl.getScaleX()), 0), max((GLint)(gSP.viewport.height * ogl.getScaleY()), 0) );
 	} else {
 		const GLint X = gSP.viewport.vscale[0] < 0 ? (GLint)((gSP.viewport.x + gSP.viewport.vscale[0] * 2.0f) * ogl.getScaleX()) : (GLint)(gSP.viewport.x * ogl.getScaleX());
-		const GLint Y = gSP.viewport.vscale[1] < 0 ? (GLint)((gSP.viewport.y + gSP.viewport.vscale[1] * 2.0f) * ogl.getScaleY()) : (GLint)((frameBufferList().getCurrent()->m_height - (gSP.viewport.y + gSP.viewport.height)) * ogl.getScaleY());
+		const GLint Y = gSP.viewport.vscale[1] < 0 ? (GLint)((gSP.viewport.y + gSP.viewport.vscale[1] * 2.0f) * ogl.getScaleY()) : (GLint)((pCurrentBuffer->m_height - (gSP.viewport.y + gSP.viewport.height)) * ogl.getScaleY());
 		glViewport(X, Y,
 			max((GLint)(gSP.viewport.width * ogl.getScaleX()), 0), max((GLint)(gSP.viewport.height * ogl.getScaleY()), 0) );
 	}
@@ -653,9 +654,9 @@ void OGLRender::_updateStates() const
 	}
 
 	if (gDP.changed & CHANGED_SCISSOR) {
-		FrameBufferList & fbList = frameBufferList();
-		const u32 screenHeight = (fbList.getCurrent() == NULL || fbList.getCurrent()->m_height == 0 || !fbList.isFboMode()) ? VI.height : fbList.getCurrent()->m_height;
-		glScissor( (GLint)(gDP.scissor.ulx * ogl.getScaleX()), (GLint)((screenHeight - gDP.scissor.lry) * ogl.getScaleY() + (fbList.isFboMode() ? 0 : ogl.getHeightOffset())),
+		FrameBuffer * pCurrentBuffer = frameBufferList().getCurrent();
+		const u32 screenHeight = (pCurrentBuffer == NULL || pCurrentBuffer->m_height == 0) ? VI.height : pCurrentBuffer->m_height;
+		glScissor((GLint)(gDP.scissor.ulx * ogl.getScaleX()), (GLint)((screenHeight - gDP.scissor.lry) * ogl.getScaleY() + (pCurrentBuffer != NULL ? 0 : ogl.getHeightOffset())),
 			max((GLint)((gDP.scissor.lrx - gDP.scissor.ulx) * ogl.getScaleX()), 0), max((GLint)((gDP.scissor.lry - gDP.scissor.uly) * ogl.getScaleY()), 0) );
 	}
 
@@ -773,16 +774,15 @@ void OGLRender::drawLLETriangle(u32 _numVtx)
 	_prepareDrawTriangle(false);
 	glDisable(GL_CULL_FACE);
 
-	FrameBufferList & fbList = frameBufferList();
-	FrameBuffer* pBuffer = fbList.getCurrent();
 	OGLVideo & ogl = video();
-	if (!fbList.isFboMode())
+	FrameBuffer * pCurrentBuffer = frameBufferList().getCurrent();
+	if (pCurrentBuffer == NULL)
 		glViewport( 0, ogl.getHeightOffset(), ogl.getScreenWidth(), ogl.getScreenHeight());
 	else
-		glViewport(0, 0, pBuffer->m_width*pBuffer->m_scaleX, pBuffer->m_height*pBuffer->m_scaleY);
+		glViewport(0, 0, pCurrentBuffer->m_width*pCurrentBuffer->m_scaleX, pCurrentBuffer->m_height*pCurrentBuffer->m_scaleY);
 
-	const float scaleX = fbList.isFboMode() ? 1.0f / pBuffer->m_width : VI.rwidth;
-	const float scaleY = fbList.isFboMode() ? 1.0f / pBuffer->m_height : VI.rheight;
+	const float scaleX = pCurrentBuffer != NULL ? 1.0f / pCurrentBuffer->m_width : VI.rwidth;
+	const float scaleY = pCurrentBuffer != NULL ? 1.0f / pCurrentBuffer->m_height : VI.rheight;
 
 	for (u32 i = 0; i < _numVtx; ++i) {
 		SPVertex & vtx = triangles.vertices[i];
@@ -875,18 +875,17 @@ void OGLRender::drawRect(int _ulx, int _uly, int _lrx, int _lry, float *_pColor)
 		currentCombiner()->updateRenderState();
 	}
 
-	FrameBufferList & fbList = frameBufferList();
-	FrameBuffer* pBuffer = fbList.getCurrent();
+	FrameBuffer * pCurrentBuffer = frameBufferList().getCurrent();
 	OGLVideo & ogl = video();
-	if (!fbList.isFboMode())
+	if (pCurrentBuffer == NULL)
 		glViewport( 0, ogl.getHeightOffset(), ogl.getScreenWidth(), ogl.getScreenHeight());
 	else {
-		glViewport( 0, 0, pBuffer->m_width*pBuffer->m_scaleX, pBuffer->m_height*pBuffer->m_scaleY );
+		glViewport(0, 0, pCurrentBuffer->m_width*pCurrentBuffer->m_scaleX, pCurrentBuffer->m_height*pCurrentBuffer->m_scaleY);
 	}
 	glDisable(GL_CULL_FACE);
 
-	const float scaleX = fbList.isFboMode() ? 1.0f/pBuffer->m_width :  VI.rwidth;
-	const float scaleY = fbList.isFboMode() ? 1.0f/pBuffer->m_height :  VI.rheight;
+	const float scaleX = pCurrentBuffer != NULL ? 1.0f / pCurrentBuffer->m_width : VI.rwidth;
+	const float scaleY = pCurrentBuffer != NULL ? 1.0f / pCurrentBuffer->m_height : VI.rheight;
 	const float Z = (gDP.otherMode.depthSource == G_ZS_PRIM) ? gDP.primDepth.z : gSP.viewport.nearz;
 	const float W = 1.0f;
 	m_rect[0].x = (float)_ulx * (2.0f * scaleX) - 1.0;
@@ -914,10 +913,10 @@ void OGLRender::drawRect(int _ulx, int _uly, int _lrx, int _lry, float *_pColor)
 static
 bool texturedRectShadowMap(const OGLRender::TexturedRectParams &)
 {
-	FrameBufferList & fb = frameBufferList();
-	if (fb.isFboMode()) {
+	FrameBuffer * pCurrentBuffer = frameBufferList().getCurrent();
+	if (pCurrentBuffer != NULL) {
 		if (gDP.textureImage.size == 2 && gDP.textureImage.address >= gDP.depthImageAddress &&  gDP.textureImage.address < (gDP.depthImageAddress + gDP.colorImage.width*gDP.colorImage.width * 6 / 4)) {
-			fb.getCurrent()->m_pDepthBuffer->activateDepthBufferTexture(fb.getCurrent());
+			pCurrentBuffer->m_pDepthBuffer->activateDepthBufferTexture(pCurrentBuffer);
 			SetDepthFogCombiner();
 		}
 	}
@@ -1006,9 +1005,9 @@ bool texturedRectMonochromeBackground(const OGLRender::TexturedRectParams & _par
 {
 	if (gDP.textureImage.address >= gDP.colorImage.address && gDP.textureImage.address <= (gDP.colorImage.address + gDP.colorImage.width*gDP.colorImage.height * 2)) {
 #ifdef GL_IMAGE_TEXTURES_SUPPORT
-		FrameBufferList & fb = frameBufferList();
-		if (fb.isFboMode()) {
-			FrameBuffer_ActivateBufferTexture(0, fb.getCurrent());
+		FrameBuffer * pCurrentBuffer = frameBufferList().getCurrent();
+		if (pCurrentBuffer != NULL) {
+			FrameBuffer_ActivateBufferTexture(0, pCurrentBuffer);
 			SetMonochromeCombiner();
 			return false;
 		} else
@@ -1048,17 +1047,16 @@ void OGLRender::drawTexturedRect(const TexturedRectParams & _params)
 	if (RSP.cmd == 0xE4 && texturedRectSpecial != NULL && texturedRectSpecial(_params))
 		return;
 
-	FrameBufferList & fbList = frameBufferList();
-	FrameBuffer* pBuffer = fbList.getCurrent();
+	FrameBuffer * pCurrentBuffer = frameBufferList().getCurrent();
 	OGLVideo & ogl = video();
-	if (!fbList.isFboMode())
+	if (pCurrentBuffer == NULL)
 		glViewport( 0, ogl.getHeightOffset(), ogl.getScreenWidth(), ogl.getScreenHeight());
 	else
-		glViewport( 0, 0, pBuffer->m_width*pBuffer->m_scaleX, pBuffer->m_height*pBuffer->m_scaleY );
+		glViewport(0, 0, pCurrentBuffer->m_width*pCurrentBuffer->m_scaleX, pCurrentBuffer->m_height*pCurrentBuffer->m_scaleY);
 	glDisable( GL_CULL_FACE );
 
-	const float scaleX = fbList.isFboMode() ? 1.0f/pBuffer->m_width :  VI.rwidth;
-	const float scaleY = fbList.isFboMode() ? 1.0f/pBuffer->m_height :  VI.rheight;
+	const float scaleX = pCurrentBuffer != NULL ? 1.0f / pCurrentBuffer->m_width : VI.rwidth;
+	const float scaleY = pCurrentBuffer != NULL ? 1.0f / pCurrentBuffer->m_height : VI.rheight;
 	const float Z = (gDP.otherMode.depthSource == G_ZS_PRIM) ? gDP.primDepth.z : gSP.viewport.nearz;
 	const float W = 1.0f;
 	m_rect[0].x = (float)_params.ulx * (2.0f * scaleX) - 1.0f;
