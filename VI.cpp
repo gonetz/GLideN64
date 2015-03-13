@@ -47,7 +47,7 @@ void VI_UpdateSize()
 		if (VI.real_height % 2 == 1)
 			--VI.real_height;
 	} else if (hEnd != 0 && *REG.VI_WIDTH != 0)
-		VI.width = min((u32)((hEnd - hStart)*xScale), *REG.VI_WIDTH);
+		VI.width = min((u32)floorf((hEnd - hStart)*xScale + 0.5f), *REG.VI_WIDTH);
 
 	const bool isPAL = (*REG.VI_V_SYNC & 0x3ff) > 550;
 	if (isPAL && (vEnd - vStart) > 480) {
