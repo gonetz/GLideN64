@@ -426,9 +426,6 @@ void gDPSetPrimColor( u32 m, u32 l, u32 r, u32 g, u32 b, u32 a )
 
 void gDPSetTile( u32 format, u32 size, u32 line, u32 tmem, u32 tile, u32 palette, u32 cmt, u32 cms, u32 maskt, u32 masks, u32 shiftt, u32 shifts )
 {
-	if (((size == G_IM_SIZ_4b) || (size == G_IM_SIZ_8b)) && (format == G_IM_FMT_RGBA))
-		format = G_IM_FMT_CI;
-
 	gDP.tiles[tile].format = format;
 	gDP.tiles[tile].size = size;
 	gDP.tiles[tile].line = line;
