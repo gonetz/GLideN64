@@ -801,6 +801,14 @@ void ShaderCombiner::updateColors(bool _bForce)
 			_setV4Uniform(m_uniforms.uBlendColor, &gDP.blendColor.r, _bForce);
 		}
 		break;
+	case 0x07C2:
+		// Conker BFD shadow
+		// CLR_IN * A_FOG + CLR_FOG * 1MA
+		if (gDP.otherMode.cycleType == G_CYC_2CYCLE) {
+			nSpecialBlendMode = 3;
+			nFogUsage = 5;
+		}
+		break;
 	/* Brings troubles with Roadsters sky
 	case 0xc702:
 		// Donald Duck

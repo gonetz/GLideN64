@@ -357,6 +357,10 @@ static const char* fragment_shader_blender =
 // Bomberman2
 "		color1 = uBlendColor.rgb * uFogColor.a + color1 * (1.0 - uFogColor.a); \n"
 "    break;						\n"
+"    case 3:					\n"
+// Conker BFD
+"		color1 = color1 * uFogColor.a + uFogColor.rgb * (1.0 - uFogColor.a); \n"
+"    break;						\n"
 "  }							\n"
 ;
 #endif

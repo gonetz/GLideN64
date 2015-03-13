@@ -497,6 +497,10 @@ void OGLRender::_setBlendMode() const
 			// Battlezone
 			// clr_in * a + clr_in * (1-a)
 			case 0xC800:
+			// Conker BFD
+			// clr_in * a_fog + clr_fog * (1-a)
+			// clr_in * 0 + clr_in * 1
+			case 0x07C2:
 			case 0x00C0:
 			//ISS64
 			case 0xC302:
