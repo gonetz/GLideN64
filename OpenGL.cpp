@@ -957,6 +957,14 @@ bool texturedRectDepthBufferCopy(const OGLRender::TexturedRectParams & _params)
 }
 
 static
+bool texturedRectCopyToItself(const OGLRender::TexturedRectParams & _params)
+{
+	if (gSP.textureTile[0]->frameBuffer == frameBufferList().getCurrent())
+		return true;
+	return texturedRectDepthBufferCopy(_params);
+}
+
+static
 bool texturedRectBGCopy(const OGLRender::TexturedRectParams & _params)
 {
 	if (GBI.getMicrocodeType() != S2DEX)
@@ -1334,8 +1342,10 @@ void OGLRender::_setSpecialTexrect() const
 	if (strstr(name, (const char *)"Beetle") || strstr(name, (const char *)"BEETLE") || strstr(name, (const char *)"HSV")
 		|| strstr(name, (const char *)"DUCK DODGERS") || strstr(name, (const char *)"DAFFY DUCK"))
 		texturedRectSpecial = texturedRectShadowMap;
-	else if (strstr(name, (const char *)"CONKER BFD") || strstr(name, (const char *)"Perfect Dark") || strstr(name, (const char *)"PERFECT DARK"))
+	else if (strstr(name, (const char *)"Perfect Dark") || strstr(name, (const char *)"PERFECT DARK"))
 		texturedRectSpecial = texturedRectDepthBufferCopy; // See comments to that function!
+	else if (strstr(name, (const char *)"CONKER BFD"))
+		texturedRectSpecial = texturedRectCopyToItself;
 	else if (strstr(name, (const char *)"YOSHI STORY"))
 		texturedRectSpecial = texturedRectBGCopy;
 	else if (strstr(name, (const char *)"PAPER MARIO") || strstr(name, (const char *)"MARIO STORY"))
