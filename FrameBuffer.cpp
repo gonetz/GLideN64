@@ -397,8 +397,6 @@ void FrameBufferList::saveBuffer(u32 _address, u16 _format, u16 _size, u16 _widt
 	// HACK ALERT: Dirty hack for Mario Tennis score board
 	if (bNew && (m_pCurrent->m_startAddress == 0x13ba50 || m_pCurrent->m_startAddress == 0x264430))
 		g_RDRAMtoFB.CopyFromRDRAM(m_pCurrent->m_startAddress, false);
-	if (!_cfb)
-		*(u32*)&RDRAM[m_pCurrent->m_startAddress] = m_pCurrent->m_startAddress;
 
 	m_pCurrent->m_cleared = false;
 	m_pCurrent->m_isDepthBuffer = _address == gDP.depthImageAddress;

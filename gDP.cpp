@@ -508,10 +508,7 @@ bool CheckForFrameBufferTexture(u32 _address, u32 _bytes)
 
 	FrameBuffer *pBuffer = frameBufferList().findBuffer(_address);
 	bool bRes = pBuffer != NULL;
-	if ((bRes)
-		//&&			((*(u32*)&RDRAM[pBuffer->startAddress] & 0xFFFEFFFE) == (pBuffer->startAddress & 0xFFFEFFFE)) // Does not work for Jet Force Gemini
-		)
-	{
+	if (bRes) {
 		if ((config.generalEmulation.hacks & hack_blurPauseScreen) != 0) {
 			if (gDP.colorImage.address == gDP.depthImageAddress && pBuffer->m_RdramCrc != 0) {
 				memcpy(RDRAM + gDP.depthImageAddress, RDRAM + pBuffer->m_startAddress, (pBuffer->m_width*pBuffer->m_height) << pBuffer->m_size >> 1);

@@ -2325,9 +2325,7 @@ void _loadSpriteImage(const uSprite *_pSprite)
 	if (config.frameBufferEmulation.enable)
 	{
 		FrameBuffer *pBuffer = frameBufferList().findBuffer(gSP.bgImage.address);
-		if ((pBuffer != NULL) &&
-			((*(u32*)&RDRAM[pBuffer->m_startAddress] & 0xFFFEFFFE) == (pBuffer->m_startAddress & 0xFFFEFFFE)))
-		{
+		if (pBuffer != NULL) {
 			gDP.tiles[0].frameBuffer = pBuffer;
 			gDP.tiles[0].textureMode = TEXTUREMODE_FRAMEBUFFER_BG;
 			gDP.tiles[0].loadType = LOADTYPE_TILE;
