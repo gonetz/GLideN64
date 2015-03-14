@@ -557,10 +557,17 @@ void _calcTileSizes(u32 _t, TileSizes & _sizes, gDPTile * _pLoadTile)
 
 	gDPLoadTileInfo &info = gDP.loadInfo[pTile->tmem];
 	if (info.loadType == LOADTYPE_TILE) {
-		width = min(info.width, info.texWidth);
-		if (info.size > pTile->size)
-			width <<= info.size - pTile->size;
-		height = info.height;
+		if (pTile->masks && ((maskWidth * maskHeight) <= maxTexels))
+			width = maskWidth; // Use mask width if set and valid
+		else {
+			width = min(info.width, info.texWidth);
+			if (info.size > pTile->size)
+				width <<= info.size - pTile->size;
+		}
+		if (pTile->maskt && ((maskWidth * maskHeight) <= maxTexels))
+			height = maskHeight;
+		else
+			height = info.height;
 	} else {
 		if (pTile->masks && ((maskWidth * maskHeight) <= maxTexels))
 			width = maskWidth; // Use mask width if set and valid
