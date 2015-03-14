@@ -849,7 +849,7 @@ void TextureCache::_load(u32 _tile, CachedTexture *_pTexture)
 	pDest = (u32*)malloc(_pTexture->textureBytes);
 
 	GLint mipLevel = 0, maxLevel = 0;
-	if (gSP.texture.level > gSP.texture.tile + 1)
+	if (config.generalEmulation.enableLOD != 0 && gSP.texture.level > gSP.texture.tile + 1)
 		maxLevel = _tile == 0 ? 0 : gSP.texture.level - gSP.texture.tile - 1;
 
 	_pTexture->max_level = maxLevel;
