@@ -333,6 +333,8 @@ void RSP_Init()
 		strstr(RSP.romname, (const char *)"MICKEY USA") != NULL
 		)
 		config.generalEmulation.hacks |= hack_blurPauseScreen;
+	else if (strstr(RSP.romname, (const char *)"MarioTennis") != NULL)
+		config.generalEmulation.hacks |= hack_scoreboard;
 
 	api().FindPluginPath(RSP.pluginpath);
 

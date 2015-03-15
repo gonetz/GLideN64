@@ -270,6 +270,11 @@ void FrameBufferList::setBufferChanged()
 	}
 }
 
+bool FrameBufferList::_isMarioTennisScoreboard()
+{
+	return (config.generalEmulation.hacks&hack_scoreboard) != 0 && m_pCurrent != NULL && (m_pCurrent->m_startAddress == 0x13ba50 || m_pCurrent->m_startAddress == 0x264430);
+}
+
 void FrameBufferList::correctHeight()
 {
 	if (m_pCurrent == NULL)
@@ -283,6 +288,10 @@ void FrameBufferList::correctHeight()
 			m_pCurrent->reinit((u32)gDP.scissor.lry);
 		else
 			m_pCurrent->m_height = (u32)gDP.scissor.lry;
+
+		if (_isMarioTennisScoreboard())
+			g_RDRAMtoFB.CopyFromRDRAM(m_pCurrent->m_startAddress + 4, false);
+
 		m_pCurrent->m_needHeightCorrection = false;
 		gSP.changed |= CHANGED_VIEWPORT;
 	}
@@ -338,12 +347,14 @@ void FrameBufferList::saveBuffer(u32 _address, u16 _format, u16 _size, u16 _widt
 {
 	if (VI.width == 0 || _height == 0)
 		return;
+
+	const bool bMarioTennisScoreboard = _isMarioTennisScoreboard();
 	OGLVideo & ogl = video();
 	if (m_pCurrent != NULL && gDP.colorImage.height > 0) {
 		if (m_pCurrent->m_width == VI.width)
 			gDP.colorImage.height = min(gDP.colorImage.height, VI.height);
 		m_pCurrent->m_endAddress = min(RDRAMSize, m_pCurrent->m_startAddress + (((m_pCurrent->m_width * gDP.colorImage.height) << m_pCurrent->m_size >> 1) - 1));
-		if (!config.frameBufferEmulation.copyFromRDRAM && !m_pCurrent->m_isDepthBuffer && m_pCurrent->m_RdramCrc == 0 && !m_pCurrent->m_cfb && !m_pCurrent->m_cleared && gDP.colorImage.height > 1)
+		if (!config.frameBufferEmulation.copyFromRDRAM && !bMarioTennisScoreboard && !m_pCurrent->m_isDepthBuffer && m_pCurrent->m_RdramCrc == 0 && !m_pCurrent->m_cfb && !m_pCurrent->m_cleared && gDP.colorImage.height > 1)
 			gDPFillRDRAM(m_pCurrent->m_startAddress, 0, 0, m_pCurrent->m_width, gDP.colorImage.height, m_pCurrent->m_width, m_pCurrent->m_size, m_pCurrent->m_fillcolor, false);
 		m_pCurrent = _findBuffer(m_pCurrent->m_startAddress, m_pCurrent->m_endAddress, m_pCurrent->m_width);
 	}
@@ -394,9 +405,9 @@ void FrameBufferList::saveBuffer(u32 _address, u16 _format, u16 _size, u16 _widt
 		address, (depthBuffer.top != NULL && depthBuffer.top->renderbuf > 0) ? depthBuffer.top->address : 0
 	);
 #endif
-	// HACK ALERT: Dirty hack for Mario Tennis score board
-	if (bNew && (m_pCurrent->m_startAddress == 0x13ba50 || m_pCurrent->m_startAddress == 0x264430))
-		g_RDRAMtoFB.CopyFromRDRAM(m_pCurrent->m_startAddress, false);
+
+	if (bMarioTennisScoreboard)
+		g_RDRAMtoFB.CopyFromRDRAM(m_pCurrent->m_startAddress + 4, false);
 
 	m_pCurrent->m_cleared = false;
 	m_pCurrent->m_isDepthBuffer = _address == gDP.depthImageAddress;

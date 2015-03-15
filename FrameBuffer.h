@@ -71,6 +71,7 @@ private:
 	FrameBufferList(const FrameBufferList &);
 
 	FrameBuffer * _findBuffer(u32 _startAddress, u32 _endAddress, u32 _width);
+	bool _isMarioTennisScoreboard();
 
 	typedef std::list<FrameBuffer> FrameBuffers;
 	FrameBuffers m_list;
