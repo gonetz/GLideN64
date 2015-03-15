@@ -1125,19 +1125,6 @@ void RDRAMtoFrameBuffer::CopyFromRDRAM( u32 _address, bool _bUseAlpha)
 	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, m_PBO);
 #endif
 
-	if (_bUseAlpha) {
-		CombinerInfo::get().setCombine(EncodeCombineMode(0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0));
-		glEnable(GL_BLEND);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	}	else {
-		CombinerInfo::get().setCombine(EncodeCombineMode(0, 0, 0, TEXEL0, 0, 0, 0, 1, 0, 0, 0, TEXEL0, 0, 0, 0, 1));
-		glDisable(GL_BLEND);
-	}
-	glDisable(GL_DEPTH_TEST);
-	glDisable( GL_CULL_FACE );
-	const u32 gspChanged = gSP.changed & CHANGED_CPU_FB_WRITE;
-	gSP.changed = gDP.changed = 0;
-
 	m_pTexture->scaleS = 1.0f / (float)m_pTexture->realWidth;
 	m_pTexture->scaleT = 1.0f / (float)m_pTexture->realHeight;
 	m_pTexture->shiftScaleS = 1.0f;
@@ -1150,6 +1137,21 @@ void RDRAMtoFrameBuffer::CopyFromRDRAM( u32 _address, bool _bUseAlpha)
 	tile0.fuls = tile0.fult = 0.0f;
 	gDPTile * pTile0 = gSP.textureTile[0];
 	gSP.textureTile[0] = &tile0;
+
+	if (_bUseAlpha) {
+		CombinerInfo::get().setCombine(EncodeCombineMode(0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0));
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	}
+	else {
+		CombinerInfo::get().setCombine(EncodeCombineMode(0, 0, 0, TEXEL0, 0, 0, 0, 1, 0, 0, 0, TEXEL0, 0, 0, 0, 1));
+		glDisable(GL_BLEND);
+	}
+
+	glDisable(GL_DEPTH_TEST);
+	glDisable(GL_CULL_FACE);
+	const u32 gspChanged = gSP.changed & CHANGED_CPU_FB_WRITE;
+	gSP.changed = gDP.changed = 0;
 
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, pBuffer->m_FBO);
 	OGLRender::TexturedRectParams params(0.0f, 0.0f, (float)width, (float)height, 0.0f, 0.0f, width - 1.0f, height - 1.0f, false);
