@@ -638,13 +638,11 @@ void gDPLoadTile(u32 tile, u32 uls, u32 ult, u32 lrs, u32 lrt)
 		return;
 
 	const u32 address = gDP.textureImage.address + gDP.loadTile->ult * gDP.textureImage.bpl + (gDP.loadTile->uls << gDP.textureImage.size >> 1);
-	const u32 bpl = gDP.loadTile->line << 3;
-	u32 bytes = height * bpl;
-
-	if ((address + bytes) > RDRAMSize)
+	if ((address + height * gDP.textureImage.bpl) > RDRAMSize)
 		return;
 
-	if (((gDP.loadTile->tmem << 3) + bytes) > 4096) // Stay within TMEM
+	const u32 bpl = gDP.loadTile->line << 3;
+	if (((gDP.loadTile->tmem << 3) + height * bpl) > 4096) // Stay within TMEM
 	{
 #ifdef DEBUG
 		DebugMsg( DEBUG_HIGH | DEBUG_ERROR | DEBUG_TEXTURE, "// Attempting to load texture tile out of range\n" );
