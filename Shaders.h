@@ -533,12 +533,12 @@ static const char* fragment_shader_readtex =
 "uniform lowp int uTextureFilterMode;								\n"
 "lowp vec4 filterNearest(in sampler2D tex, in mediump vec2 texCoord)\n"
 "{																	\n"
-"  return texture2DLod(tex, texCoord, 0.0);							\n"
+"  return textureLod(tex, texCoord, 0.0);							\n"
 "}																	\n"
 // 3 point texture filtering.
 // Original author: ArthurCarvalho
 // GLSL implementation: twinaphex, mupen64plus-libretro project.
-"#define TEX_OFFSET(off) texture2DLod(tex, texCoord - (off)/texSize, 0.0)	\n"
+"#define TEX_OFFSET(off) textureLod(tex, texCoord - (off)/texSize, 0.0)	\n"
 "lowp vec4 filter3point(in sampler2D tex, in mediump vec2 texCoord)			\n"
 "{																			\n"
 "  mediump vec2 texSize = vec2(textureSize(tex,0));							\n"
