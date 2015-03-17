@@ -544,6 +544,7 @@ void OGLRender::_setBlendMode() const
 			case 0x0C18: // Standard interpolated blend
 			case 0x0C19: // Used for antialiasing
 			case 0x0050: // Standard interpolated blend
+			case 0x0051: // Standard interpolated blend
 			case 0x0055: // Used for antialiasing
 				glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
 				break;
