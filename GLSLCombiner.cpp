@@ -254,6 +254,16 @@ void DestroyShadowMapShader()
 }
 #endif // GL_IMAGE_TEXTURES_SUPPORT
 
+static
+GLuint _createFragmentShader(const char * _strShader)
+{
+	GLuint shader_object = glCreateShader(GL_FRAGMENT_SHADER);
+	glShaderSource(shader_object, 1, &_strShader, NULL);
+	glCompileShader(shader_object);
+	assert(checkShaderCompileStatus(shader_object));
+	return shader_object;
+}
+
 void InitShaderCombiner()
 {
 	glActiveTexture(GL_TEXTURE0);
@@ -270,38 +280,15 @@ void InitShaderCombiner()
 	strFragmentShader.reserve(1024*5);
 
 #ifndef GLES2
-	g_calc_light_shader_object = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(g_calc_light_shader_object, 1, &fragment_shader_calc_light, NULL);
-	glCompileShader(g_calc_light_shader_object);
-	assert(checkShaderCompileStatus(g_calc_light_shader_object));
-
-	g_calc_mipmap_shader_object = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(g_calc_mipmap_shader_object, 1, &fragment_shader_mipmap, NULL);
-	glCompileShader(g_calc_mipmap_shader_object);
-	assert(checkShaderCompileStatus(g_calc_mipmap_shader_object));
-
-	g_calc_noise_shader_object = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(g_calc_noise_shader_object, 1, &fragment_shader_noise, NULL);
-	glCompileShader(g_calc_noise_shader_object);
-	assert(checkShaderCompileStatus(g_calc_noise_shader_object));
-
-	g_test_alpha_shader_object = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(g_test_alpha_shader_object, 1, &alpha_test_fragment_shader, NULL);
-	glCompileShader(g_test_alpha_shader_object);
-	assert(checkShaderCompileStatus(g_test_alpha_shader_object));
-
-	g_readtex_shader_object = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(g_readtex_shader_object, 1, &fragment_shader_readtex, NULL);
-	glCompileShader(g_readtex_shader_object);
-	assert(checkShaderCompileStatus(g_readtex_shader_object));
+	g_calc_light_shader_object = _createFragmentShader(fragment_shader_calc_light);
+	g_calc_mipmap_shader_object = _createFragmentShader(fragment_shader_mipmap);
+	g_calc_noise_shader_object = _createFragmentShader(fragment_shader_noise);
+	g_test_alpha_shader_object = _createFragmentShader(alpha_test_fragment_shader);
+	g_readtex_shader_object = _createFragmentShader(fragment_shader_readtex);
 
 #ifdef GL_IMAGE_TEXTURES_SUPPORT
-	if (video().getRender().isImageTexturesSupported() && config.frameBufferEmulation.N64DepthCompare != 0) {
-		g_calc_depth_shader_object = glCreateShader(GL_FRAGMENT_SHADER);
-		glShaderSource(g_calc_depth_shader_object, 1, &depth_compare_shader_float, NULL);
-		glCompileShader(g_calc_depth_shader_object);
-		assert(checkShaderCompileStatus(g_calc_depth_shader_object));
-	}
+	if (video().getRender().isImageTexturesSupported() && config.frameBufferEmulation.N64DepthCompare != 0)
+		g_calc_depth_shader_object = _createFragmentShader(depth_compare_shader_float);
 
 	InitZlutTexture();
 	InitShadowMapShader();
