@@ -526,7 +526,7 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 		if (usesT1())
 			strFragmentShader.append("  lowp vec4 readtex1 = readTex(uTex1, vTexCoord1, uFb8Bit == 2 || uFb8Bit == 3, uFbFixedAlpha == 2 || uFbFixedAlpha == 3); \n");
 	}
-	if (config.generalEmulation.enableHWLighting)
+	if (config.generalEmulation.enableHWLighting != 0 && (m_nInputs & (1 << SHADE)) != 0)
 #ifdef SHADER_PRECISION
 		strFragmentShader.append("  calc_light(vNumLights, vShadeColor.rgb, input_color); \n");
 #else
