@@ -537,13 +537,14 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 	strFragmentShader.append("  vec_color = vec4(input_color, vShadeColor.a); \n");
 	strFragmentShader.append(strCombiner);
 
+	strFragmentShader.append("  if (!alpha_test(alpha2)) discard;\n");
+
 	if (config.generalEmulation.enableNoise != 0) {
 		strFragmentShader.append(fragment_shader_color_dither);
 		strFragmentShader.append(fragment_shader_alpha_dither);
 	}
 
 	strFragmentShader.append(
-		"  if (!alpha_test(alpha2)) discard;					\n"
 		"  switch (uFogUsage&255) {								\n"
 		"	case 2:												\n"
 		"		fragColor = vec4(color2, uFogColor.a);			\n"
