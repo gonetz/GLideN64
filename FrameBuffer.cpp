@@ -556,7 +556,6 @@ void FrameBufferList::renderBuffer(u32 _address)
 	// glDisable(GL_SCISSOR_TEST) does not affect glBlitFramebuffer, at least on AMD
 	GLint vOffset = ogl.isFullscreen() ? 0 : ogl.getHeightOffset();
 	glScissor(0, 0, ogl.getScreenWidth(), ogl.getScreenHeight() + vOffset);
-	glDisable(GL_SCISSOR_TEST);
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, pBuffer->m_FBO);
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 	//glDrawBuffer( GL_BACK );
@@ -566,7 +565,7 @@ void FrameBufferList::renderBuffer(u32 _address)
 	const GLint hOffset = (ogl.getScreenWidth() - ogl.getWidth()) / 2;
 	vOffset += (ogl.getScreenHeight() - ogl.getHeight()) / 2;
 
-	GLint srcCoord[4] = { 0, (GLint)(srcY0*srcScaleY), Xwidth, (GLint)(srcY1*srcScaleY) };
+	GLint srcCoord[4] = { 0, (GLint)(srcY0*srcScaleY), Xwidth, min((GLint)(srcY1*srcScaleY), (GLint)pBuffer->m_pTexture->realHeight) };
 	GLint dstCoord[4] = { X0 + hOffset, vOffset + (GLint)(dstY0*dstScaleY), hOffset + X1, vOffset + (GLint)(dstY1*dstScaleY) };
 
 	GLenum filter = GL_LINEAR;
@@ -597,7 +596,7 @@ void FrameBufferList::renderBuffer(u32 _address)
 			dstY1 = dstY0 + dstPartHeight;
 			glBindFramebuffer(GL_READ_FRAMEBUFFER, pBuffer->m_FBO);
 			glBlitFramebuffer(
-				0, (GLint)(srcY0*srcScaleY), ogl.getWidth(), (GLint)(srcY1*srcScaleY),
+				0, (GLint)(srcY0*srcScaleY), ogl.getWidth(), min((GLint)(srcY1*srcScaleY), (GLint)pBuffer->m_pTexture->realHeight),
 				hOffset, vOffset + (GLint)(dstY0*dstScaleY), hOffset + ogl.getWidth(), vOffset + (GLint)(dstY1*dstScaleY),
 				GL_COLOR_BUFFER_BIT, filter
 			);
@@ -786,9 +785,9 @@ void FrameBufferToRDRAM::CopyToRDRAM(u32 _address) {
 		glBindFramebuffer(GL_READ_FRAMEBUFFER, pBuffer->m_resolveFBO);
 	} else
 		glBindFramebuffer(GL_READ_FRAMEBUFFER, pBuffer->m_FBO);
-	glDisable(GL_SCISSOR_TEST);
 	glReadBuffer(GL_COLOR_ATTACHMENT0);
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_FBO);
+	glScissor(0, 0, pBuffer->m_pTexture->realWidth, pBuffer->m_pTexture->realHeight);
 	glBlitFramebuffer(
 		0, 0, video().getWidth(), video().getHeight(),
 		0, 0, VI.width, VI.height,
@@ -951,7 +950,7 @@ bool DepthBufferToRDRAM::CopyToRDRAM( u32 _address) {
 		glBindFramebuffer(GL_READ_FRAMEBUFFER, pBuffer->m_resolveFBO);
 	}
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_FBO);
-	glDisable(GL_SCISSOR_TEST);
+	glScissor(0, 0, pBuffer->m_pTexture->realWidth, pBuffer->m_pTexture->realHeight);
 	glBlitFramebuffer(
 		0, 0, video().getWidth(), video().getHeight(),
 		0, 0, pBuffer->m_width, pBuffer->m_height,
