@@ -182,6 +182,7 @@ void FrameBuffer::init(u32 _address, u32 _endAddress, u16 _format, u16 _size, u1
 	m_fillcolor = 0;
 	m_cfb = _cfb;
 	m_needHeightCorrection = _width != VI.width;
+	m_cleared = false;
 
 	_initTexture(_format, _size, m_pTexture);
 	glBindFramebuffer(GL_FRAMEBUFFER, m_FBO);
@@ -409,7 +410,6 @@ void FrameBufferList::saveBuffer(u32 _address, u16 _format, u16 _size, u16 _widt
 	if (bMarioTennisScoreboard)
 		g_RDRAMtoFB.CopyFromRDRAM(m_pCurrent->m_startAddress + 4, false);
 
-	m_pCurrent->m_cleared = false;
 	m_pCurrent->m_isDepthBuffer = _address == gDP.depthImageAddress;
 	m_pCurrent->m_isPauseScreen = m_pCurrent->m_isOBScreen = false;
 
