@@ -971,8 +971,6 @@ bool DepthBufferToRDRAM::CopyToRDRAM( u32 _address) {
 
 	f32 * ptr_src = (f32*)pixelData;
 	u16 *ptr_dst = (u16*)(RDRAM + address);
-	const f32 scale = gSP.viewport.vscale[2] * 32768.0f;
-	const f32 trans = gSP.viewport.vtrans[2] * 32768.0f;
 	const u16 * const zLUT = depthBufferList().getZLUT();
 
 	for (u32 y = 0; y < VI.height; ++y) {
