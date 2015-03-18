@@ -1224,7 +1224,6 @@ void OGLRender::clearDepthBuffer()
 
 	depthBufferList().clearBuffer();
 
-	_updateStates();
 	glDisable( GL_SCISSOR_TEST );
 	glDepthMask( TRUE );
 	glClear( GL_DEPTH_BUFFER_BIT );
