@@ -1824,6 +1824,8 @@ void gSPSetOtherMode_H(u32 _length, u32 _shift, u32 _data)
 void gSPSetOtherMode_L(u32 _length, u32 _shift, u32 _data)
 {
 	u32 mask = (((u64)1 << _length) - 1) << _shift;
+	_data &= mask;
+	gDP.otherMode.l &= ~mask;
 
 	if (mask & 0x00000003)  // alpha compare
 		gDPSetAlphaCompare(_data >> G_MDSFT_ALPHACOMPARE);

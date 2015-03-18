@@ -207,7 +207,6 @@ void gDPSetDepthSource( u32 source )
 
 void gDPSetRenderMode( u32 mode1, u32 mode2 )
 {
-	gDP.otherMode.l &= 0x00000007;
 	gDP.otherMode.l |= mode1 | mode2;
 
 	gDP.changed |= CHANGED_RENDERMODE;
