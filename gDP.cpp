@@ -897,7 +897,6 @@ void gDPFillRDRAM(u32 address, s32 ulx, s32 uly, s32 lrx, s32 lry, u32 width, u3
 			dst[x] = color;
 		dst += ci_width_in_dwords;
 	}
-	*(u32*)&RDRAM[address] = address;
 }
 
 void gDPFillRectangle( s32 ulx, s32 uly, s32 lrx, s32 lry )
