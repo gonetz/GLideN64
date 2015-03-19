@@ -1,5 +1,7 @@
-#if !defined( DEBUG_H ) && defined( USE_DEBUG )
+#ifndef DEBUG_H
 #define DEBUG_H
+
+#ifdef USE_DEBUG
 
 #include "Types.h"
 #include <stdio.h>
@@ -38,7 +40,14 @@ void DebugRSPState( u32 pci, u32 pc, u32 cmd, u32 w0, u32 w1 );
 void DebugMsg( u16 type, const char * format, ... );
 void StartDump( char *filename );
 void EndDump();
-#else
+
+#else // USE_DEBUG
+
 #define DebugMsg(A, ...)
 #define DebugRSPState(A, ...)
+
+#endif // USE_DEBUG
+
+void debugPrint(const char * format, ...);
+
 #endif // DEBUG_H

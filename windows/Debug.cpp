@@ -312,3 +312,17 @@ void DebugMsg( u16 type, const char * format, ... )
 }
 
 #endif
+
+#ifdef OS_WINDOWS
+#include "GLideN64_Windows.h"
+#include <stdio.h>
+
+void debugPrint(const char * format, ...)
+{
+	char text[256];
+	va_list va;
+	va_start(va, format);
+	vsprintf(text, format, va);
+	OutputDebugString(text);
+}
+#endif
