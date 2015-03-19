@@ -22,6 +22,7 @@ static GLuint  g_calc_noise_shader_object;
 static GLuint  g_calc_depth_shader_object;
 static GLuint  g_test_alpha_shader_object;
 static GLuint  g_readtex_shader_object;
+static GLuint  g_dither_shader_object;
 
 GLuint g_monochrome_image_program = 0;
 #ifdef GL_IMAGE_TEXTURES_SUPPORT
@@ -285,6 +286,7 @@ void InitShaderCombiner()
 	g_calc_noise_shader_object = _createFragmentShader(fragment_shader_noise);
 	g_test_alpha_shader_object = _createFragmentShader(alpha_test_fragment_shader);
 	g_readtex_shader_object = _createFragmentShader(fragment_shader_readtex);
+	g_dither_shader_object = _createFragmentShader(fragment_shader_dither);
 
 #ifdef GL_IMAGE_TEXTURES_SUPPORT
 	if (video().getRender().isImageTexturesSupported() && config.frameBufferEmulation.N64DepthCompare != 0)
@@ -314,6 +316,8 @@ void DestroyShaderCombiner() {
 	g_calc_noise_shader_object = 0;
 	glDeleteShader(g_test_alpha_shader_object);
 	g_test_alpha_shader_object = 0;
+	glDeleteShader(g_dither_shader_object);
+	g_dither_shader_object = 0;
 	glDeleteShader(g_calc_depth_shader_object);
 	g_calc_depth_shader_object = 0;
 
@@ -540,8 +544,10 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 	strFragmentShader.append("  if (!alpha_test(alpha2)) discard;\n");
 
 	if (config.generalEmulation.enableNoise != 0) {
-		strFragmentShader.append(fragment_shader_color_dither);
-		strFragmentShader.append(fragment_shader_alpha_dither);
+		strFragmentShader.append(
+			"  if (uColorDitherMode == 2) colorNoiseDither(clamp(snoise(), 0.0, 1.0), color2);	\n"
+			"  if (uAlphaDitherMode == 2) alphaNoiseDither(clamp(snoise(), 0.0, 1.0), alpha2);	\n"
+		);
 	}
 
 	strFragmentShader.append(
@@ -612,8 +618,10 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 	glAttachShader(m_program, g_test_alpha_shader_object);
 	if (video().getRender().isImageTexturesSupported() && config.frameBufferEmulation.N64DepthCompare != 0)
 		glAttachShader(m_program, g_calc_depth_shader_object);
-	if (config.generalEmulation.enableNoise != 0)
+	if (config.generalEmulation.enableNoise != 0) {
 		glAttachShader(m_program, g_calc_noise_shader_object);
+		glAttachShader(m_program, g_dither_shader_object);
+	}
 #endif
 	glLinkProgram(m_program);
 	assert(checkProgramLinkStatus(m_program));

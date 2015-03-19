@@ -188,6 +188,8 @@ static const char* fragment_shader_header_common_functions =
 "lowp vec4 readTex(in sampler2D tex, in mediump vec2 texCoord, in bool fb8bit, in bool fbFixedAlpha);	\n"
 "bool depth_compare();										\n"
 "bool alpha_test(in lowp float alphaValue);						\n"
+"void colorNoiseDither(in float _noise, inout vec3 _color);	\n"
+"void alphaNoiseDither(in float _noise, inout float _alpha);\n"
 #else
 "															\n"
 "float snoise();										\n"
@@ -293,24 +295,23 @@ static const char* fragment_shader_header_main =
 ;
 #endif
 
-static const char* fragment_shader_color_dither =
-"  if (uColorDitherMode == 2) {								\n"
-"    mediump vec3 tmpColor = color2*255.0;					\n"
-"    mediump ivec3 iColor = ivec3(tmpColor)&248;			\n"
-"    lowp float noise = clamp(snoise(), 0.0, 1.0);			\n"
-"    iColor += ivec3(tmpColor*noise)&7;						\n"
-"    color2 = vec3(iColor)/255.0;							\n"
-"  }														\n"
-;
-
-static const char* fragment_shader_alpha_dither =
-"  if (uAlphaDitherMode == 2) {								\n"
-"    mediump float tmpAlpha = alpha2*255.0;					\n"
+static const char* fragment_shader_dither =
+"#version 330 core					\n"
+"void colorNoiseDither(in float _noise, inout vec3 _color)	\n"
+"{															\n"
+"    mediump vec3 tmpColor = _color*255.0;					\n"
+"    mediump ivec3 iColor = ivec3(tmpColor);				\n"
+//"    iColor &= 248;										\n" // does not work with HW lighting enabled (why?!)
+"    iColor |= ivec3(tmpColor*_noise)&7;					\n"
+"    _color = vec3(iColor)/255.0;							\n"
+"}															\n"
+"void alphaNoiseDither(in float _noise, inout float _alpha)	\n"
+"{															\n"
+"    mediump float tmpAlpha = _alpha*255.0;					\n"
 "    mediump int iAlpha = int(tmpAlpha)&248;				\n"
-"    lowp float noise = clamp(snoise(), 0.0, 1.0);			\n"
-"    iAlpha += int(tmpAlpha*noise)&7;						\n"
-"    alpha2 = float(iAlpha)/255.0;							\n"
-"  }														\n"
+"    iAlpha |= int(tmpAlpha*_noise)&7;						\n"
+"    _alpha = float(iAlpha)/255.0;							\n"
+"}															\n"
 ;
 
 #ifdef USE_TOONIFY
