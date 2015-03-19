@@ -181,7 +181,7 @@ void FrameBuffer::init(u32 _address, u32 _endAddress, u16 _format, u16 _size, u1
 	m_scaleY = ogl.getScaleY();
 	m_fillcolor = 0;
 	m_cfb = _cfb;
-	m_needHeightCorrection = _width != VI.width;
+	m_needHeightCorrection = _width != VI.width && _width != *REG.VI_WIDTH;
 	m_cleared = false;
 
 	_initTexture(_format, _size, m_pTexture);
