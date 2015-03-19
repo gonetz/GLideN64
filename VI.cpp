@@ -38,9 +38,9 @@ void VI_UpdateSize()
 	VI.width = *REG.VI_WIDTH;
 	VI.interlaced = (*REG.VI_STATUS & 0x40) != 0;
 	if (VI.interlaced) {
-		u32 fullWidth = (u32)(640.0f*xScale);
+		f32 fullWidth = 640.0f*xScale;
 		if (*REG.VI_WIDTH > fullWidth) {
-			const u32 scale = *REG.VI_WIDTH / fullWidth;
+			const u32 scale = (u32)floorf(*REG.VI_WIDTH / fullWidth + 0.5f);
 			VI.width /= scale;
 			VI.real_height *= scale;
 		}
