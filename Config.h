@@ -95,6 +95,7 @@ struct Config
 #define hack_noDepthFrameBuffers	(1<<1)  //Do not use depth buffers as texture
 #define hack_blurPauseScreen		(1<<2)  //Game copies frame buffer to depth buffer area, CPU blurs it. That image is used as background for pause screen.
 #define hack_scoreboard				(1<<3)  //Copy data from RDRAM to auxilary frame buffer. Scoreboard in Mario Tennis.
+#define hack_pilotWings				(1<<4)  //Special blend mode for PilotWings.
 
 extern Config config;
 

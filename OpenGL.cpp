@@ -555,9 +555,10 @@ void OGLRender::_setBlendMode() const
 				glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
 				break;
 		}
-	}
-	else
-	{
+	} else if ((config.generalEmulation.hacks & hack_pilotWings) != 0 && (gDP.otherMode.l & 0x80) != 0) { //CLR_ON_CVG without FORCE_BL
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_ZERO, GL_ONE);
+	} else {
 		glDisable( GL_BLEND );
 	}
 }

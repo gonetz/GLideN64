@@ -335,6 +335,9 @@ void RSP_Init()
 		config.generalEmulation.hacks |= hack_blurPauseScreen;
 	else if (strstr(RSP.romname, (const char *)"MarioTennis") != NULL)
 		config.generalEmulation.hacks |= hack_scoreboard;
+	else if (strstr(RSP.romname, (const char *)"Pilot Wings64") != NULL)
+		config.generalEmulation.hacks |= hack_pilotWings;
+
 
 	api().FindPluginPath(RSP.pluginpath);
 
