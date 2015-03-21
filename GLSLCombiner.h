@@ -11,11 +11,15 @@ public:
 
 	void update(bool _bForce);
 	void updateColors(bool _bForce = false);
+	void updateFogMode(bool _bForce = false);
+	void updateDitherMode(bool _bForce = false);
+	void updateLOD(bool _bForce = false);
 	void updateFBInfo(bool _bForce = false);
 	void updateDepthInfo(bool _bForce = false);
 	void updateAlphaTestInfo(bool _bForce = false);
 	void updateTextureInfo(bool _bForce = false);
 	void updateRenderState(bool _bForce = false);
+	void updateGammaCorrection(bool _bForce = false);
 	void updateLight(bool _bForce = false);
 
 	u64 getMux() const {return m_combine.mux;}

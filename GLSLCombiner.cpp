@@ -723,14 +723,20 @@ void ShaderCombiner::_locate_attributes() const {
 void ShaderCombiner::update(bool _bForce) {
 	glUseProgram(m_program);
 
-	_setIUniform(m_uniforms.uTex0, 0, _bForce);
-	_setIUniform(m_uniforms.uTex1, 1, _bForce);
-	_setIUniform(m_uniforms.uTexNoise, noiseTexIndex, _bForce);
-	_setFUniform(m_uniforms.uScreenWidth, (float)video().getWidth(), _bForce);
-	_setFUniform(m_uniforms.uScreenHeight, (float)video().getHeight(), _bForce);
+	if (_bForce) {
+		_setIUniform(m_uniforms.uTex0, 0, _bForce);
+		_setIUniform(m_uniforms.uTex1, 1, _bForce);
+		_setIUniform(m_uniforms.uTexNoise, noiseTexIndex, _bForce);
+		_setFUniform(m_uniforms.uScreenWidth, (float)video().getWidth(), _bForce);
+		_setFUniform(m_uniforms.uScreenHeight, (float)video().getHeight(), _bForce);
+	}
 
 	updateRenderState(_bForce);
+	updateGammaCorrection(_bForce);
 	updateColors(_bForce);
+	updateFogMode(_bForce);
+	updateDitherMode(_bForce);
+	updateLOD(_bForce);
 	updateTextureInfo(_bForce);
 	updateAlphaTestInfo(_bForce);
 	updateFBInfo(_bForce);
@@ -738,11 +744,18 @@ void ShaderCombiner::update(bool _bForce) {
 	updateLight(_bForce);
 }
 
-void ShaderCombiner::updateRenderState(bool _bForce) {
+void ShaderCombiner::updateRenderState(bool _bForce)
+{
 	_setIUniform(m_uniforms.uRenderState, video().getRender().getRenderState(), _bForce);
 }
 
-void ShaderCombiner::updateLight(bool _bForce) {
+void ShaderCombiner::updateGammaCorrection(bool _bForce)
+{
+	_setIUniform(m_uniforms.uGammaCorrectionEnabled, *REG.VI_STATUS & 8, _bForce);
+}
+
+void ShaderCombiner::updateLight(bool _bForce)
+{
 	if (config.generalEmulation.enableHWLighting == 0 || !GBI.isHWLSupported())
 		return;
 	for (s32 i = 0; i <= gSP.numLights; ++i) {
@@ -757,7 +770,14 @@ void ShaderCombiner::updateColors(bool _bForce)
 	_setV4Uniform(m_uniforms.uPrimColor, &gDP.primColor.r, _bForce);
 	_setV4Uniform(m_uniforms.uScaleColor, &gDP.key.scale.r, _bForce);
 	_setV4Uniform(m_uniforms.uCenterColor, &gDP.key.center.r, _bForce);
+	_setFUniform(m_uniforms.uK4, gDP.convert.k4*0.0039215689f, _bForce);
+	_setFUniform(m_uniforms.uK5, gDP.convert.k5*0.0039215689f, _bForce);
 
+	gDP.changed &= ~CHANGED_COMBINE_COLORS;
+}
+
+void ShaderCombiner::updateFogMode(bool _bForce)
+{
 	const u32 blender = (gDP.otherMode.l >> 16);
 	const int nFogBlendEnabled = (gDP.otherMode.c1_m1a == 3 || gDP.otherMode.c1_m2a == 3 || gDP.otherMode.c2_m1a == 3 || gDP.otherMode.c2_m2a == 3) ? 256 : 0;
 	int nFogUsage = (config.generalEmulation.enableFog != 0 && (gSP.geometryMode & G_FOG) != 0) ? 1 : 0;
@@ -805,8 +825,8 @@ void ShaderCombiner::updateColors(bool _bForce)
 			nFogUsage = 5;
 		}
 		break;
-	/* Brings troubles with Roadsters sky
-	case 0xc702:
+		/* Brings troubles with Roadsters sky
+		case 0xc702:
 		// Donald Duck
 		// clr_fog*a_fog + clr_in*1ma
 		nFogUsage = 5;
@@ -839,21 +859,10 @@ void ShaderCombiner::updateColors(bool _bForce)
 		_setFUniform(m_uniforms.uFogOffset, (float)gSP.fog.offset / 256.0f, _bForce);
 		_setV4Uniform(m_uniforms.uFogColor, &gDP.fogColor.r, _bForce);
 	}
+}
 
-	_setFUniform(m_uniforms.uK4, gDP.convert.k4*0.0039215689f, _bForce);
-	_setFUniform(m_uniforms.uK5, gDP.convert.k5*0.0039215689f, _bForce);
-
-	if (usesLOD()) {
-		int uCalcLOD = (config.generalEmulation.enableLOD && gDP.otherMode.textureLOD == G_TL_LOD) ? 1 : 0;
-		_setIUniform(m_uniforms.uEnableLod, uCalcLOD, _bForce);
-		if (uCalcLOD) {
-			_setFV2Uniform(m_uniforms.uScreenScale, video().getScaleX(), video().getScaleY(), _bForce);
-			_setFUniform(m_uniforms.uMinLod, gDP.primColor.m, _bForce);
-			_setIUniform(m_uniforms.uMaxTile, gSP.texture.level, _bForce);
-			_setIUniform(m_uniforms.uTextureDetail, gDP.otherMode.textureDetail, _bForce);
-		}
-	}
-
+void ShaderCombiner::updateDitherMode(bool _bForce)
+{
 	if (gDP.otherMode.cycleType < G_CYC_COPY) {
 		_setIUniform(m_uniforms.uAlphaCompareMode, gDP.otherMode.alphaCompare, _bForce);
 		_setIUniform(m_uniforms.uAlphaDitherMode, gDP.otherMode.alphaDither, _bForce);
@@ -864,15 +873,25 @@ void ShaderCombiner::updateColors(bool _bForce)
 		_setIUniform(m_uniforms.uColorDitherMode, 0, _bForce);
 	}
 
-	_setIUniform(m_uniforms.uGammaCorrectionEnabled, *REG.VI_STATUS & 8, _bForce);
-
 	const int nDither = (gDP.otherMode.cycleType < G_CYC_COPY) && (gDP.otherMode.colorDither == G_CD_NOISE || gDP.otherMode.alphaDither == G_AD_NOISE || gDP.otherMode.alphaCompare == G_AC_DITHER) ? 1 : 0;
 	if ((m_nInputs & (1 << NOISE)) + nDither != 0) {
 		_setFV2Uniform(m_uniforms.uScreenScale, video().getScaleX(), video().getScaleY(), _bForce);
 		noiseTex.update();
 	}
+}
 
-	gDP.changed &= ~CHANGED_COMBINE_COLORS;
+void ShaderCombiner::updateLOD(bool _bForce)
+{
+	if (usesLOD()) {
+		int uCalcLOD = (config.generalEmulation.enableLOD && gDP.otherMode.textureLOD == G_TL_LOD) ? 1 : 0;
+		_setIUniform(m_uniforms.uEnableLod, uCalcLOD, _bForce);
+		if (uCalcLOD) {
+			_setFV2Uniform(m_uniforms.uScreenScale, video().getScaleX(), video().getScaleY(), _bForce);
+			_setFUniform(m_uniforms.uMinLod, gDP.primColor.m, _bForce);
+			_setIUniform(m_uniforms.uMaxTile, gSP.texture.level, _bForce);
+			_setIUniform(m_uniforms.uTextureDetail, gDP.otherMode.textureDetail, _bForce);
+		}
+	}
 }
 
 void ShaderCombiner::updateTextureInfo(bool _bForce) {
