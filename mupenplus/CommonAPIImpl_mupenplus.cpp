@@ -1,13 +1,10 @@
 #include "../PluginAPI.h"
 #include "../OpenGL.h"
-#include "../Config.h"
 #include "../RSP.h"
 
 int PluginAPI::InitiateGFX(const GFX_INFO & _gfxInfo)
 {
 	_initiateGFX(_gfxInfo);
-
-	Config_LoadConfig();
 
 	return TRUE;
 }

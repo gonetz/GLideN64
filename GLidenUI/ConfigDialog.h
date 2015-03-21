@@ -16,7 +16,8 @@ public:
 	explicit ConfigDialog(QWidget *parent = 0);
 	~ConfigDialog();
 
-	bool isAccepted() const {return m_accepted;}
+	void setIniPath(const QString & _strIniPath) { m_strIniPath = _strIniPath; }
+	bool isAccepted() const { return m_accepted; }
 
 public Q_SLOTS:
 	virtual void accept();
@@ -39,6 +40,7 @@ private:
 	QFont m_font;
 	QColor m_color;
 	bool m_accepted;
+	QString m_strIniPath;
 };
 
 #endif // CONFIGDIALOG_H

@@ -11,14 +11,15 @@
 
 #include "Settings.h"
 
-void loadSettings()
+void loadSettings(const QString & _strFileName)
 {
-	QSettings settings("Emulation", "GLideN64");
+//	QSettings settings("Emulation", "GLideN64");
+	QSettings settings(_strFileName, QSettings::IniFormat);
 	config.version = settings.value("version").toInt();
 	if (config.version != CONFIG_VERSION_CURRENT) {
 		config.resetToDefaults();
 		settings.clear();
-		writeSettings();
+		writeSettings(_strFileName);
 		return;
 	}
 
@@ -100,9 +101,10 @@ void loadSettings()
 	settings.endGroup();
 }
 
-void writeSettings()
+void writeSettings(const QString & _strFileName)
 {
-	QSettings settings("Emulation", "GLideN64");
+//	QSettings settings("Emulation", "GLideN64");
+	QSettings settings(_strFileName, QSettings::IniFormat);
 	settings.setValue("version", config.version);
 
 	settings.beginGroup("video");

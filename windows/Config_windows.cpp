@@ -3,6 +3,7 @@
 #include "../GLideN64.h"
 #include "../Resource.h"
 #include "../RSP.h"
+#include "../PluginAPI.h"
 #include "../Textures.h"
 #include "../OpenGL.h"
 #include "../GLideNUI/GLideNUI.h"
@@ -396,14 +397,26 @@ void Config_DoConfig(HWND hParent)
 	RunConfig(hInstance);
 }
 #else // LEGACY_UI
+static
+void _getIniFileName(wchar_t * _buf)
+{
+	api().FindPluginPath(_buf);
+	wcscat(_buf, L"/GLideN64.ini");
+}
+
 void Config_DoConfig(HWND hParent)
 {
-	if (RunConfig())
+	wchar_t strIniFileName[PLUGIN_PATH_SIZE];
+	_getIniFileName(strIniFileName);
+
+	if (RunConfig(strIniFileName))
 		video().restart();
 }
 
 void Config_LoadConfig()
 {
-	LoadConfig();
+	wchar_t strIniFileName[PLUGIN_PATH_SIZE];
+	_getIniFileName(strIniFileName);
+	LoadConfig(strIniFileName);
 }
 #endif // LEGACY_UI

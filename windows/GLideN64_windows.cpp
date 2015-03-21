@@ -1,6 +1,5 @@
 #include "GLideN64_Windows.h"
 #include "../OpenGL.h"
-#include "../Config.h"
 
 HWND		hWnd;
 HWND		hStatusBar;
@@ -11,7 +10,5 @@ BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD dwReason, LPVOID /*lpvReserved*/)
 {
 	hInstance = hinstDLL;
 
-	if (dwReason == DLL_PROCESS_ATTACH)
-		Config_LoadConfig();
 	return TRUE;
 }

@@ -13,6 +13,7 @@
 #include "../RSP.h"
 #include "../RDP.h"
 #include "../VI.h"
+#include "../Config.h"
 #include "../Debug.h"
 #include "../Log.h"
 
@@ -22,6 +23,7 @@ void RSP_ThreadProc(std::mutex * _pRspThreadMtx, std::mutex * _pPluginThreadMtx,
 	_pRspThreadMtx->lock();
 	RSP_Init();
 	GBI.init();
+	Config_LoadConfig();
 	video().start();
 	TFH.init();
 	assert(!isGLError());
@@ -119,6 +121,7 @@ void PluginAPI::RomOpen()
 #else
 	RSP_Init();
 	GBI.init();
+	Config_LoadConfig();
 	video().start();
 #endif
 

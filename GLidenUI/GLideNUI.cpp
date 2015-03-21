@@ -15,17 +15,20 @@ inline void initMyResource() { Q_INIT_RESOURCE(icon); }
 inline void cleanMyResource() { Q_CLEANUP_RESOURCE(icon); }
 
 static
-int openConfigDialog(bool & _accepted)
+int openConfigDialog(const wchar_t * _strFileName, bool & _accepted)
 {
 	cleanMyResource();
 	initMyResource();
-	loadSettings();
+	QString strIniFileName = QString::fromWCharArray(_strFileName);
+	loadSettings(strIniFileName);
 
 	int argc = 0;
 	char * argv = 0;
 	QApplication a(argc, &argv);
 
 	ConfigDialog w;
+
+	w.setIniPath(strIniFileName);
 	w.show();
 	const int res = a.exec();
 	_accepted = w.isAccepted();
@@ -47,9 +50,9 @@ int openAboutDialog()
 	return a.exec();
 }
 
-bool runConfigThread() {
+bool runConfigThread(const wchar_t * _strFileName) {
 	bool accepted = false;
-	std::thread configThread(openConfigDialog, std::ref(accepted));
+	std::thread configThread(openConfigDialog, _strFileName, std::ref(accepted));
 	configThread.join();
 	return accepted;
 }
@@ -60,9 +63,9 @@ int runAboutThread() {
 	return 0;
 }
 
-EXPORT bool CALL RunConfig()
+EXPORT bool CALL RunConfig(const wchar_t * _strFileName)
 {
-	return runConfigThread();
+	return runConfigThread(_strFileName);
 }
 
 EXPORT int CALL RunAbout()
@@ -70,7 +73,7 @@ EXPORT int CALL RunAbout()
 	return runAboutThread();
 }
 
-EXPORT void CALL LoadConfig()
+EXPORT void CALL LoadConfig(const wchar_t * _strFileName)
 {
-	loadSettings();
+	loadSettings(QString::fromWCharArray(_strFileName));
 }

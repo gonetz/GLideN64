@@ -13,9 +13,9 @@ extern "C" {
 #define CALL          _cdecl
 #endif
 
-EXPORT bool CALL RunConfig();
+EXPORT bool CALL RunConfig(const wchar_t * _strFileName);
 EXPORT int CALL RunAbout();
-EXPORT void CALL LoadConfig();
+EXPORT void CALL LoadConfig(const wchar_t * _strFileName);
 EXPORT void CALL SaveScreenshot(const char * _folder, const char * _name, int _width, int _height, const unsigned char * _data);
 
 #if defined(__cplusplus)

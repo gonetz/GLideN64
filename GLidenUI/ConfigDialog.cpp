@@ -292,7 +292,7 @@ void ConfigDialog::accept()
 	config.bloomFilter.blurAmount = ui->blurAmountSlider->value();
 	config.bloomFilter.blurStrength = ui->blurStrengthSlider->value();
 
-	writeSettings();
+	writeSettings(m_strIniPath);
 
 	QDialog::accept();
 }
