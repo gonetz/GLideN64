@@ -66,9 +66,11 @@ void VI_UpdateSize()
 //	const int fsaa = ((*REG.VI_STATUS) >> 8) & 3;
 //	const int divot = ((*REG.VI_STATUS) >> 4) & 1;
 
-	if (config.frameBufferEmulation.enable && (interlacedPrev != VI.interlaced)) {
-		frameBufferList().removeBuffers(widthPrev);
-		frameBufferList().removeBuffers(VI.width);
+	FrameBufferList & fbList = frameBufferList();
+	FrameBuffer * pBuffer = fbList.findBuffer(VI.lastOrigin);
+	if (config.frameBufferEmulation.enable && ((interlacedPrev != VI.interlaced) || (pBuffer != NULL && pBuffer->m_width != VI.width))) {
+		fbList.removeBuffers(widthPrev);
+		fbList.removeBuffers(VI.width);
 		depthBufferList().destroy();
 		depthBufferList().init();
 	}
