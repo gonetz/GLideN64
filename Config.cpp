@@ -27,6 +27,7 @@ void Config::resetToDefaults()
 	generalEmulation.enableLOD = 1;
 	generalEmulation.enableNoise = 1;
 	generalEmulation.enableHWLighting = 0;
+	generalEmulation.enableCustomSettings = 1;
 	generalEmulation.hacks = 0;
 
 	frameBufferEmulation.enable = 1;

@@ -409,8 +409,11 @@ void Config_DoConfig(HWND hParent)
 	wchar_t strIniFileName[PLUGIN_PATH_SIZE];
 	_getIniFileName(strIniFileName);
 
-	if (RunConfig(strIniFileName))
+	if (RunConfig(strIniFileName)) {
+		if (config.generalEmulation.enableCustomSettings != 0)
+			LoadCustomRomSettings(strIniFileName, RSP.romname);
 		video().restart();
+	}
 }
 
 void Config_LoadConfig()
@@ -418,5 +421,7 @@ void Config_LoadConfig()
 	wchar_t strIniFileName[PLUGIN_PATH_SIZE];
 	_getIniFileName(strIniFileName);
 	LoadConfig(strIniFileName);
+	if (config.generalEmulation.enableCustomSettings != 0)
+		LoadCustomRomSettings(strIniFileName, RSP.romname);
 }
 #endif // LEGACY_UI

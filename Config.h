@@ -41,6 +41,7 @@ struct Config
 		u32 enableNoise;
 		u32 enableLOD;
 		u32 enableHWLighting;
+		u32 enableCustomSettings;
 		u32 hacks;
 	} generalEmulation;
 

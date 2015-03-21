@@ -45,6 +45,7 @@ void loadSettings(const QString & _strFileName)
 	config.generalEmulation.enableNoise = settings.value("enableNoise", 1).toInt();
 	config.generalEmulation.enableLOD = settings.value("enableLOD", 1).toInt();
 	config.generalEmulation.enableHWLighting = settings.value("enableHWLighting", 0).toInt();
+	config.generalEmulation.enableCustomSettings = settings.value("enableCustomSettings", 0).toInt();
 	settings.endGroup();
 
 	settings.beginGroup("frameBufferEmulation");
@@ -128,7 +129,7 @@ void writeSettings(const QString & _strFileName)
 	settings.setValue("enableNoise", config.generalEmulation.enableNoise);
 	settings.setValue("enableLOD", config.generalEmulation.enableLOD);
 	settings.setValue("enableHWLighting", config.generalEmulation.enableHWLighting);
-	settings.setValue("hacks", config.generalEmulation.hacks);
+	settings.setValue("enableCustomSettings", config.generalEmulation.enableCustomSettings);
 	settings.endGroup();
 
 	settings.beginGroup("frameBufferEmulation");
@@ -168,5 +169,54 @@ void writeSettings(const QString & _strFileName)
 	settings.setValue("blendMode", config.bloomFilter.blendMode);
 	settings.setValue("blurAmount", config.bloomFilter.blurAmount);
 	settings.setValue("blurStrength", config.bloomFilter.blurStrength);
+	settings.endGroup();
+}
+
+void loadCustomRomSettings(const QString & _strFileName, const QString & _strRomName)
+{
+	QSettings settings(_strFileName, QSettings::IniFormat);
+	config.version = settings.value("version").toInt();
+	if (config.version != CONFIG_VERSION_CURRENT)
+		return;
+
+	if (settings.childGroups().indexOf(_strRomName) < 0)
+		return;
+
+	settings.beginGroup(_strRomName);
+
+	settings.beginGroup("video");
+	config.video.multisampling = settings.value("multisampling", config.video.multisampling).toInt();
+	settings.endGroup();
+
+	settings.beginGroup("texture");
+	config.texture.maxAnisotropy = settings.value("maxAnisotropy", config.texture.maxAnisotropy).toInt();
+	config.texture.bilinearMode = settings.value("bilinearMode", config.texture.bilinearMode).toInt();
+	settings.endGroup();
+
+	settings.beginGroup("generalEmulation");
+	config.generalEmulation.enableFog = settings.value("enableFog", config.generalEmulation.enableFog).toInt();
+	config.generalEmulation.enableNoise = settings.value("enableNoise", config.generalEmulation.enableNoise).toInt();
+	config.generalEmulation.enableLOD = settings.value("enableLOD", config.generalEmulation.enableLOD).toInt();
+	config.generalEmulation.enableHWLighting = settings.value("enableHWLighting", config.generalEmulation.enableHWLighting).toInt();
+	settings.endGroup();
+
+	settings.beginGroup("frameBufferEmulation");
+	config.frameBufferEmulation.enable = settings.value("enable", config.frameBufferEmulation.enable).toInt();
+	config.frameBufferEmulation.copyToRDRAM = settings.value("copyToRDRAM", config.frameBufferEmulation.copyToRDRAM).toInt();
+	config.frameBufferEmulation.copyDepthToRDRAM = settings.value("copyDepthToRDRAM", config.frameBufferEmulation.copyDepthToRDRAM).toInt();
+	config.frameBufferEmulation.copyFromRDRAM = settings.value("copyFromRDRAM", config.frameBufferEmulation.copyFromRDRAM).toInt();
+	config.frameBufferEmulation.detectCFB = settings.value("detectCFB", config.frameBufferEmulation.detectCFB).toInt();
+	config.frameBufferEmulation.N64DepthCompare = settings.value("N64DepthCompare", config.frameBufferEmulation.N64DepthCompare).toInt();
+	config.frameBufferEmulation.aspect = settings.value("aspect", config.frameBufferEmulation.aspect).toInt();
+	settings.endGroup();
+
+	settings.beginGroup("bloomFilter");
+	config.bloomFilter.enable = settings.value("enable", config.bloomFilter.enable).toInt();
+	config.bloomFilter.thresholdLevel = settings.value("thresholdLevel", config.bloomFilter.thresholdLevel).toInt();
+	config.bloomFilter.blendMode = settings.value("blendMode", config.bloomFilter.blendMode).toInt();
+	config.bloomFilter.blurAmount = settings.value("blurAmount", config.bloomFilter.blurAmount).toInt();
+	config.bloomFilter.blurStrength = settings.value("blurStrength", config.bloomFilter.blurStrength).toInt();
+	settings.endGroup();
+
 	settings.endGroup();
 }

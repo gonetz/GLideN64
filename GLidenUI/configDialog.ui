@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>372</width>
-    <height>529</height>
+    <height>531</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -590,10 +590,10 @@
           <item>
            <widget class="QCheckBox" name="emulateLodCheckBox">
             <property name="toolTip">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Per-pixel level-of-detail calculation:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;N64 uses special mechanism for mip-mapping, which is hard to reproduce correctly on PC hardware. This option enables shaders based emulation of that feature.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;on&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Enable mip-mapping emulation:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;N64 uses special mechanism for mip-mapping, which is hard to reproduce correctly on PC hardware. This option enables shaders based emulation of that feature.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;on&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
             <property name="text">
-             <string>Emulate LOD</string>
+             <string>Emulate mip-mapping</string>
             </property>
            </widget>
           </item>
@@ -618,6 +618,16 @@
            <widget class="QCheckBox" name="enableHWLightingCheckBox">
             <property name="text">
              <string>Enable hardware lighting</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="customSettingsCheckBox">
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Custom game settings:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Ini file may contain custom settings for particular game. These settings provide optimal performance for the game. Custom settings will override user's settings when this option is enabled. Disable to ignore custom settings.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;on&lt;/span&gt;]&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="text">
+             <string>Use custom per-game settings</string>
             </property>
            </widget>
           </item>
@@ -1338,7 +1348,7 @@
  <buttongroups>
   <buttongroup name="screenshotButtonGroup"/>
   <buttongroup name="bloomBlendModeButtonGroup"/>
-  <buttongroup name="aspectButtonGroup"/>
   <buttongroup name="bilinearButtonGroup"/>
+  <buttongroup name="aspectButtonGroup"/>
  </buttongroups>
 </ui>
