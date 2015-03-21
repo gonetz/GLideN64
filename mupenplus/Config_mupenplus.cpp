@@ -72,7 +72,7 @@ bool Config_SetDefault()
 	assert(res == M64ERR_SUCCESS);
 	res = ConfigSetDefaultBool(g_configVideoGliden64, "EnableCopyColorFromRDRAM", 0, "Enable color buffer copy from RDRAM.");
 	assert(res == M64ERR_SUCCESS);
-	res = ConfigSetDefaultBool(g_configVideoGliden64, "EnableIgnoreCFB", 1, "Ignore CPU writes to frame buffer.");
+	res = ConfigSetDefaultBool(g_configVideoGliden64, "EnableDetectCFB", 0, "Detect CPU writes to frame buffer.");
 	assert(res == M64ERR_SUCCESS);
 	res = ConfigSetDefaultBool(g_configVideoGliden64, "EnableN64DepthCompare", 0, "Enable N64 depth compare instead of OpenGL standard one. Experimental.");
 	assert(res == M64ERR_SUCCESS);
@@ -101,9 +101,9 @@ bool Config_SetDefault()
 	assert(res == M64ERR_SUCCESS);
 
 #ifdef OS_WINDOWS
-    res = ConfigSetDefaultString(g_configVideoGliden64, "fontName", "arial.ttf", "File name of True Type Font for text messages.");
+	res = ConfigSetDefaultString(g_configVideoGliden64, "fontName", "arial.ttf", "File name of True Type Font for text messages.");
 #else
-    res = ConfigSetDefaultString(g_configVideoGliden64, "fontName", "FreeSans.ttf", "File name of True Type Font for text messages.");
+	res = ConfigSetDefaultString(g_configVideoGliden64, "fontName", "FreeSans.ttf", "File name of True Type Font for text messages.");
 #endif
 	assert(res == M64ERR_SUCCESS);
 	res = ConfigSetDefaultInt(g_configVideoGliden64, "fontSize", 18, "Font size.");
@@ -159,7 +159,7 @@ void Config_LoadConfig()
 	config.frameBufferEmulation.copyToRDRAM = ConfigGetParamBool(g_configVideoGliden64, "EnableCopyColorToRDRAM");
 	config.frameBufferEmulation.copyDepthToRDRAM = ConfigGetParamBool(g_configVideoGliden64, "EnableCopyDepthToRDRAM");
 	config.frameBufferEmulation.copyFromRDRAM = ConfigGetParamBool(g_configVideoGliden64, "EnableCopyColorFromRDRAM");
-	config.frameBufferEmulation.ignoreCFB = ConfigGetParamBool(g_configVideoGliden64, "EnableIgnoreCFB");
+	config.frameBufferEmulation.detectCFB = ConfigGetParamBool(g_configVideoGliden64, "EnableDetectCFB");
 	config.frameBufferEmulation.N64DepthCompare = ConfigGetParamBool(g_configVideoGliden64, "EnableN64DepthCompare");
 	config.generalEmulation.hacks = 0;
 	//#Texture filter settings

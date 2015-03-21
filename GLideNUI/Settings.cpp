@@ -51,7 +51,7 @@ void loadSettings()
 	config.frameBufferEmulation.copyToRDRAM = settings.value("copyToRDRAM", 0).toInt();
 	config.frameBufferEmulation.copyDepthToRDRAM = settings.value("copyDepthToRDRAM", 1).toInt();
 	config.frameBufferEmulation.copyFromRDRAM = settings.value("copyFromRDRAM", 0).toInt();
-	config.frameBufferEmulation.ignoreCFB = settings.value("ignoreCFB", 0).toInt();
+	config.frameBufferEmulation.detectCFB = settings.value("detectCFB", 0).toInt();
 	config.frameBufferEmulation.N64DepthCompare = settings.value("N64DepthCompare", 0).toInt();
 	config.frameBufferEmulation.aspect = settings.value("aspect", 0).toInt();
 	settings.endGroup();
@@ -134,7 +134,7 @@ void writeSettings()
 	settings.setValue("copyToRDRAM", config.frameBufferEmulation.copyToRDRAM);
 	settings.setValue("copyDepthToRDRAM", config.frameBufferEmulation.copyDepthToRDRAM);
 	settings.setValue("copyFromRDRAM", config.frameBufferEmulation.copyFromRDRAM);
-	settings.setValue("ignoreCFB", config.frameBufferEmulation.ignoreCFB);
+	settings.setValue("detectCFB", config.frameBufferEmulation.detectCFB);
 	settings.setValue("N64DepthCompare", config.frameBufferEmulation.N64DepthCompare);
 	settings.setValue("aspect", config.frameBufferEmulation.aspect);
 	settings.endGroup();

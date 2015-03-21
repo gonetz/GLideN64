@@ -33,7 +33,7 @@ void Config::resetToDefaults()
 	frameBufferEmulation.copyDepthToRDRAM = 1;
 	frameBufferEmulation.copyFromRDRAM = 0;
 	frameBufferEmulation.copyToRDRAM = 0;
-	frameBufferEmulation.ignoreCFB = 0;
+	frameBufferEmulation.detectCFB = 0;
 	frameBufferEmulation.N64DepthCompare = 0;
 
 	textureFilter.txCacheSize = 100 * gc_uMegabyte;
