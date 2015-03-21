@@ -772,8 +772,6 @@ void ShaderCombiner::updateColors(bool _bForce)
 	_setV4Uniform(m_uniforms.uCenterColor, &gDP.key.center.r, _bForce);
 	_setFUniform(m_uniforms.uK4, gDP.convert.k4*0.0039215689f, _bForce);
 	_setFUniform(m_uniforms.uK5, gDP.convert.k5*0.0039215689f, _bForce);
-
-	gDP.changed &= ~CHANGED_COMBINE_COLORS;
 }
 
 void ShaderCombiner::updateFogMode(bool _bForce)

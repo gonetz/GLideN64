@@ -342,8 +342,6 @@ void gDPSetEnvColor( u32 r, u32 g, u32 b, u32 a )
 	gDP.envColor.b = b * 0.0039215689f;
 	gDP.envColor.a = a * 0.0039215689f;
 
-	gDP.changed |= CHANGED_COMBINE_COLORS;
-
 #ifdef DEBUG
 	DebugMsg( DEBUG_HIGH | DEBUG_HANDLED | DEBUG_COMBINE, "gDPSetEnvColor( %i, %i, %i, %i );\n",
 		r, g, b, a );
@@ -414,8 +412,6 @@ void gDPSetPrimColor( u32 m, u32 l, u32 r, u32 g, u32 b, u32 a )
 	gDP.primColor.g = g * 0.0039215689f;
 	gDP.primColor.b = b * 0.0039215689f;
 	gDP.primColor.a = a * 0.0039215689f;
-
-	gDP.changed |= CHANGED_COMBINE_COLORS;
 
 #ifdef DEBUG
 	DebugMsg( DEBUG_HIGH | DEBUG_HANDLED | DEBUG_COMBINE, "gDPSetPrimColor( %i, %i, %i, %i, %i, %i );\n",

@@ -235,5 +235,4 @@ void CombinerInfo::setCombine(u64 _mux )
 		m_combiners[_mux] = m_pCurrent;
 	}
 	m_bChanged = true;
-	gDP.changed |= CHANGED_COMBINE_COLORS;
 }
