@@ -593,6 +593,7 @@ void OGLRender::_updateViewport() const
 		glViewport(X, Y,
 			max((GLint)(gSP.viewport.width * ogl.getScaleX()), 0), max((GLint)(gSP.viewport.height * ogl.getScaleY()), 0) );
 	}
+	gSP.changed &= ~CHANGED_VIEWPORT;
 }
 
 void OGLRender::_updateDepthUpdate() const
@@ -609,8 +610,10 @@ void OGLRender::_updateStates() const
 
 	CombinerInfo::get().update();
 
-	if (gSP.changed & CHANGED_GEOMETRYMODE)
+	if (gSP.changed & CHANGED_GEOMETRYMODE) {
 		_updateCullFace();
+		gSP.changed &= ~CHANGED_GEOMETRYMODE;
+	}
 
 	if (config.frameBufferEmulation.N64DepthCompare) {
 		glDisable( GL_DEPTH_TEST );
@@ -664,6 +667,7 @@ void OGLRender::_updateStates() const
 		const u32 screenHeight = (pCurrentBuffer == NULL || pCurrentBuffer->m_height == 0) ? VI.height : pCurrentBuffer->m_height;
 		glScissor((GLint)(gDP.scissor.ulx * ogl.getScaleX()), (GLint)((screenHeight - gDP.scissor.lry) * ogl.getScaleY() + (pCurrentBuffer != NULL ? 0 : ogl.getHeightOffset())),
 			max((GLint)((gDP.scissor.lrx - gDP.scissor.ulx) * ogl.getScaleX()), 0), max((GLint)((gDP.scissor.lry - gDP.scissor.uly) * ogl.getScaleY()), 0) );
+		gDP.changed &= ~CHANGED_SCISSOR;
 	}
 
 	if (gSP.changed & CHANGED_VIEWPORT)
@@ -686,14 +690,14 @@ void OGLRender::_updateStates() const
 			currentCombiner()->updateTextureInfo();
 			currentCombiner()->updateFBInfo();
 		}
+		gDP.changed &= ~(CHANGED_TILE | CHANGED_TMEM);
+		gSP.changed &= ~(CHANGED_TEXTURE);
 	}
 
-
-	if ((gDP.changed & CHANGED_RENDERMODE) || (gDP.changed & CHANGED_CYCLETYPE))
+	if ((gDP.changed & CHANGED_RENDERMODE) || (gDP.changed & CHANGED_CYCLETYPE)) {
 		_setBlendMode();
-
-	gDP.changed &= CHANGED_TILE | CHANGED_TMEM;
-	gSP.changed &= CHANGED_TEXTURE | CHANGED_MATRIX;
+		gDP.changed &= ~(CHANGED_RENDERMODE | CHANGED_CYCLETYPE);
+	}
 }
 
 void OGLRender::_setColorArray() const
