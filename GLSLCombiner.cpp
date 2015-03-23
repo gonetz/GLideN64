@@ -665,23 +665,15 @@ void ShaderCombiner::_locateUniforms() {
 	LocateUniform(uTextureFilterMode);
 	LocateUniform(uSpecialBlendMode);
 
+	LocateUniform(uFogAlpha);
 	LocateUniform(uFogMultiplier);
 	LocateUniform(uFogOffset);
-	LocateUniform(uK4);
-	LocateUniform(uK5);
-	LocateUniform(uPrimLod);
 	LocateUniform(uScreenWidth);
 	LocateUniform(uScreenHeight);
+	LocateUniform(uPrimitiveLod);
 	LocateUniform(uMinLod);
 	LocateUniform(uDeltaZ);
 	LocateUniform(uAlphaTestValue);
-
-	LocateUniform(uEnvColor);
-	LocateUniform(uPrimColor);
-	LocateUniform(uFogColor);
-	LocateUniform(uCenterColor);
-	LocateUniform(uScaleColor);
-	LocateUniform(uBlendColor);
 
 	LocateUniform(uRenderState);
 
@@ -733,7 +725,6 @@ void ShaderCombiner::update(bool _bForce) {
 
 	updateRenderState(_bForce);
 	updateGammaCorrection(_bForce);
-	updateColors(_bForce);
 	updateFogMode(_bForce);
 	updateDitherMode(_bForce);
 	updateLOD(_bForce);
@@ -764,16 +755,6 @@ void ShaderCombiner::updateLight(bool _bForce)
 	}
 }
 
-void ShaderCombiner::updateColors(bool _bForce)
-{
-	_setV4Uniform(m_uniforms.uEnvColor, &gDP.envColor.r, _bForce);
-	_setV4Uniform(m_uniforms.uPrimColor, &gDP.primColor.r, _bForce);
-	_setV4Uniform(m_uniforms.uScaleColor, &gDP.key.scale.r, _bForce);
-	_setV4Uniform(m_uniforms.uCenterColor, &gDP.key.center.r, _bForce);
-	_setFUniform(m_uniforms.uK4, gDP.convert.k4*0.0039215689f, _bForce);
-	_setFUniform(m_uniforms.uK5, gDP.convert.k5*0.0039215689f, _bForce);
-}
-
 void ShaderCombiner::updateFogMode(bool _bForce)
 {
 	const u32 blender = (gDP.otherMode.l >> 16);
@@ -801,10 +782,8 @@ void ShaderCombiner::updateFogMode(bool _bForce)
 	case 0x0091:
 		// Mace
 		// CLR_IN * A_IN + CLR_BL * 1MA
-		if (gDP.otherMode.cycleType == G_CYC_2CYCLE) {
+		if (gDP.otherMode.cycleType == G_CYC_2CYCLE)
 			nSpecialBlendMode = 1;
-			_setV4Uniform(m_uniforms.uBlendColor, &gDP.blendColor.r, _bForce);
-		}
 		break;
 	case 0xA500:
 		// Bomberman 2
@@ -812,7 +791,6 @@ void ShaderCombiner::updateFogMode(bool _bForce)
 		if (gDP.otherMode.cycleType == G_CYC_1CYCLE) {
 			nSpecialBlendMode = 2;
 			nFogUsage = 5;
-			_setV4Uniform(m_uniforms.uBlendColor, &gDP.blendColor.r, _bForce);
 		}
 		break;
 	case 0x07C2:
@@ -855,7 +833,7 @@ void ShaderCombiner::updateFogMode(bool _bForce)
 	if (nFogUsage + nFogMode != 0) {
 		_setFUniform(m_uniforms.uFogMultiplier, (float)gSP.fog.multiplier / 256.0f, _bForce);
 		_setFUniform(m_uniforms.uFogOffset, (float)gSP.fog.offset / 256.0f, _bForce);
-		_setV4Uniform(m_uniforms.uFogColor, &gDP.fogColor.r, _bForce);
+		_setFUniform(m_uniforms.uFogAlpha, gDP.fogColor.a, _bForce);
 	}
 }
 
@@ -885,6 +863,7 @@ void ShaderCombiner::updateLOD(bool _bForce)
 		_setIUniform(m_uniforms.uEnableLod, uCalcLOD, _bForce);
 		if (uCalcLOD) {
 			_setFV2Uniform(m_uniforms.uScreenScale, video().getScaleX(), video().getScaleY(), _bForce);
+			_setFUniform(m_uniforms.uPrimitiveLod, gDP.primColor.l, _bForce);
 			_setFUniform(m_uniforms.uMinLod, gDP.primColor.m, _bForce);
 			_setIUniform(m_uniforms.uMaxTile, gSP.texture.level, _bForce);
 			_setIUniform(m_uniforms.uTextureDetail, gDP.otherMode.textureDetail, _bForce);
@@ -935,7 +914,6 @@ void ShaderCombiner::updateTextureInfo(bool _bForce) {
 		}
 	}
 	_setIV2Uniform(m_uniforms.uCacheFrameBuffer, nFB0, nFB1, _bForce);
-	_setFUniform(m_uniforms.uPrimLod, gDP.primColor.l, _bForce);
 }
 
 void ShaderCombiner::updateFBInfo(bool _bForce) {
@@ -1047,4 +1025,66 @@ void SetDepthFogCombiner()
 void SetMonochromeCombiner() {
 	glUseProgram(g_monochrome_image_program);
 	gDP.changed |= CHANGED_COMBINE;
+}
+
+/*======================UniformBlock==========================*/
+
+static
+const char * strColorUniforms[UniformBlock::cuTotal] = {
+	"uFogColor",
+	"uCenterColor",
+	"uScaleColor",
+	"uBlendColor",
+	"uEnvColor",
+	"uPrimColor",
+	"uPrimLod",
+	"uK4",
+	"uK5"
+};
+
+UniformBlock::UniformBlock()
+{
+}
+
+UniformBlock::~UniformBlock()
+{
+}
+
+void UniformBlock::_initColorsBuffer(GLuint _program)
+{
+	const GLint blockSize = m_colorsBlock.initBuffer(_program, "ColorsBlock", strColorUniforms);
+	GLbyte * pData = new GLbyte[blockSize];
+	memset(pData, 0, blockSize);
+	memcpy(pData + m_colorsBlock.m_offsets[cuFogColor], &gDP.fogColor.r, sizeof(f32)* 4);
+	memcpy(pData + m_colorsBlock.m_offsets[cuCenterColor], &gDP.key.center.r, sizeof(f32)* 4);
+	memcpy(pData + m_colorsBlock.m_offsets[cuScaleColor], &gDP.key.scale.r, sizeof(f32)* 4);
+	memcpy(pData + m_colorsBlock.m_offsets[cuEnvColor], &gDP.envColor.r, sizeof(f32)* 4);
+	memcpy(pData + m_colorsBlock.m_offsets[cuPrimColor], &gDP.primColor.r, sizeof(f32)* 4);
+	*(f32*)(pData + m_colorsBlock.m_offsets[cuPrimLod]) = gDP.primColor.l;
+	*(f32*)(pData + m_colorsBlock.m_offsets[cuK4]) = gDP.convert.k4*0.0039215689f;
+	*(f32*)(pData + m_colorsBlock.m_offsets[cuK5]) = gDP.convert.k5*0.0039215689f;
+
+	glBufferData(GL_UNIFORM_BUFFER, blockSize, pData, GL_DYNAMIC_DRAW);
+	glBindBufferBase(GL_UNIFORM_BUFFER, m_colorsBlock.m_blockBindingPoint, m_colorsBlock.m_buffer);
+	delete[] pData;
+	pData = NULL;
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+}
+
+void UniformBlock::attachShaderCombiner(ShaderCombiner * _pCombiner)
+{
+	if (m_colorsBlock.m_buffer == 0)
+		_initColorsBuffer(_pCombiner->m_program);
+	else
+		glUniformBlockBinding(_pCombiner->m_program, m_colorsBlock.m_blockIndex, m_colorsBlock.m_blockBindingPoint);
+}
+
+
+void UniformBlock::setColor(ColorUniforms _index, u32 _dataSize, const f32 * _data)
+{
+	if (m_colorsBlock.m_buffer == 0)
+		return;
+	glBindBuffer(GL_UNIFORM_BUFFER, m_colorsBlock.m_buffer);
+	glBufferSubData(GL_UNIFORM_BUFFER, m_colorsBlock.m_offsets[_index], _dataSize, _data);
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }

@@ -80,10 +80,13 @@ void Combiner_Destroy() {
 void CombinerInfo::init()
 {
 	m_pCurrent = NULL;
+	m_pUniformBlock = new UniformBlock;
 }
 
 void CombinerInfo::destroy()
 {
+	delete m_pUniformBlock;
+	m_pUniformBlock = NULL;
 	m_pCurrent = NULL;
 	for (Combiners::iterator cur = m_combiners.begin(); cur != m_combiners.end(); ++cur)
 		delete cur->second;
@@ -232,7 +235,39 @@ void CombinerInfo::setCombine(u64 _mux )
 	} else {
 		m_pCurrent = _compile(_mux);
 		m_pCurrent->update(true);
+		m_pUniformBlock->attachShaderCombiner(m_pCurrent);
 		m_combiners[_mux] = m_pCurrent;
 	}
 	m_bChanged = true;
+}
+
+void CombinerInfo::updatePrimColor()
+{
+	m_pUniformBlock->setColor(UniformBlock::cuPrimColor, sizeof(f32)* 5, &gDP.primColor.r);
+}
+
+void CombinerInfo::updateEnvColor()
+{
+	m_pUniformBlock->setColor(UniformBlock::cuEnvColor, sizeof(f32)* 4, &gDP.envColor.r);
+}
+
+void CombinerInfo::updateFogColor()
+{
+	m_pUniformBlock->setColor(UniformBlock::cuFogColor, sizeof(f32)* 4, &gDP.fogColor.r);
+}
+
+void CombinerInfo::updateBlendColor()
+{
+	m_pUniformBlock->setColor(UniformBlock::cuBlendColor, sizeof(f32)* 4, &gDP.blendColor.r);
+}
+
+void CombinerInfo::updateKeyColor()
+{
+	m_pUniformBlock->setColor(UniformBlock::cuCenterColor, sizeof(f32)* 8, &gDP.key.center.r);
+}
+
+void CombinerInfo::updateConvertColor()
+{
+	f32 convert[2] = { gDP.convert.k4*0.0039215689f, gDP.convert.k5*0.0039215689f };
+	m_pUniformBlock->setColor(UniformBlock::cuK4, sizeof(convert), convert);
 }

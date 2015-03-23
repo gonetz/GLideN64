@@ -114,6 +114,7 @@ struct CombineCycle
 };
 
 class ShaderCombiner;
+class UniformBlock;
 class CombinerInfo
 {
 public:
@@ -130,6 +131,13 @@ public:
 		return info;
 	}
 
+	void updatePrimColor();
+	void updateEnvColor();
+	void updateFogColor();
+	void updateBlendColor();
+	void updateKeyColor();
+	void updateConvertColor();
+
 private:
 	CombinerInfo() : m_bChanged(false), m_pCurrent(NULL) {}
 	CombinerInfo(const CombinerInfo &);
@@ -140,6 +148,7 @@ private:
 	ShaderCombiner * m_pCurrent;
 	typedef std::map<u64, ShaderCombiner *> Combiners;
 	Combiners m_combiners;
+	UniformBlock * m_pUniformBlock;
 };
 
 inline

@@ -10,7 +10,6 @@ public:
 	~ShaderCombiner();
 
 	void update(bool _bForce);
-	void updateColors(bool _bForce = false);
 	void updateFogMode(bool _bForce = false);
 	void updateDitherMode(bool _bForce = false);
 	void updateLOD(bool _bForce = false);
@@ -30,6 +29,8 @@ public:
 	bool usesShadeColor() const {return (m_nInputs & ((1<<SHADE)|(1<<SHADE_ALPHA))) != 0;}
 
 private:
+	friend class UniformBlock;
+
 	struct iUniform {GLint loc; int val;};
 	struct fUniform {GLint loc; float val;};
 	struct fv2Uniform {GLint loc; float val[2];};
@@ -46,10 +47,8 @@ private:
 			uMaxTile, uTextureDetail, uTexturePersp, uTextureFilterMode,
 			uAlphaCompareMode, uAlphaDitherMode, uColorDitherMode, uGammaCorrectionEnabled;
 
-		fUniform uFogMultiplier, uFogOffset, uK4, uK5, uPrimLod, uScreenWidth, uScreenHeight,
-			uMinLod, uDeltaZ, uAlphaTestValue;
-
-		fv4Uniform uEnvColor, uPrimColor, uFogColor, uCenterColor, uScaleColor, uBlendColor;
+		fUniform uFogAlpha, uFogMultiplier, uFogOffset, uScreenWidth, uScreenHeight,
+			uPrimitiveLod, uMinLod, uDeltaZ, uAlphaTestValue;
 
 		fv2Uniform uTexScale, uScreenScale, uDepthScale, uTexOffset[2], uTexMask[2],
 			uCacheShiftScale[2], uCacheScale[2], uCacheOffset[2];
@@ -115,6 +114,75 @@ private:
 	UniformLocation m_uniforms;
 	GLuint m_program;
 	int m_nInputs;
+};
+
+class UniformBlock
+{
+public:
+	enum ColorUniforms {
+		cuFogColor,
+		cuCenterColor,
+		cuScaleColor,
+		cuBlendColor,
+		cuEnvColor,
+		cuPrimColor,
+		cuPrimLod,
+		cuK4,
+		cuK5,
+		cuTotal
+	};
+
+	UniformBlock();
+	~UniformBlock();
+
+	void attachShaderCombiner(ShaderCombiner * _pCombiner);
+	void setColor(ColorUniforms _index, u32 _dataSize, const f32 * _data);
+
+private:
+	void _initColorsBuffer(GLuint _program);
+
+	template <u32 _numUniforms, u32 _bindingPoint>
+	struct UniformBlockData
+	{
+		UniformBlockData() : m_buffer(0), m_blockIndex(0), m_blockBindingPoint(_bindingPoint)
+		{
+			memset(m_indices, 0, sizeof(m_indices));
+			memset(m_offsets, 0, sizeof(m_offsets));
+		}
+		~UniformBlockData()
+		{
+			if (m_buffer != 0) {
+				glDeleteBuffers(1, &m_buffer);
+				m_buffer = 0;
+			}
+		}
+
+		GLint initBuffer(GLuint _program, const char * _strBlockName, const char ** _strUniformNames)
+		{
+			m_blockIndex = glGetUniformBlockIndex(_program, _strBlockName);
+
+			GLint blockSize, numUniforms;
+			glGetActiveUniformBlockiv(_program, m_blockIndex, GL_UNIFORM_BLOCK_DATA_SIZE, &blockSize);
+			glGetActiveUniformBlockiv(_program, m_blockIndex, GL_UNIFORM_BLOCK_ACTIVE_UNIFORMS, &numUniforms);
+			assert(numUniforms == _numUniforms);
+
+			glGetUniformIndices(_program, numUniforms, _strUniformNames, m_indices);
+			glGetActiveUniformsiv(_program, numUniforms, m_indices, GL_UNIFORM_OFFSET, m_offsets);
+
+			glUniformBlockBinding(_program, m_blockIndex, m_blockBindingPoint);
+			glGenBuffers(1, &m_buffer);
+			glBindBuffer(GL_UNIFORM_BUFFER, m_buffer);
+			return blockSize;
+		}
+
+		GLuint m_buffer;
+		GLuint m_blockIndex;
+		GLuint m_blockBindingPoint;
+		GLuint m_indices[_numUniforms];
+		GLint m_offsets[_numUniforms];
+	};
+
+	UniformBlockData<cuTotal, 1> m_colorsBlock;
 };
 
 void InitShaderCombiner();

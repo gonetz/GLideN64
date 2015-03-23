@@ -193,7 +193,7 @@ struct gDPInfo
 
 	struct PrimColor : public Color
 	{
-		f32 m, l;
+		f32 l, m;
 	} primColor;
 
 	struct
@@ -229,10 +229,7 @@ struct gDPInfo
 
 	struct
 	{
-		struct
-		{
-			f32 r, g, b, a;
-		} center, scale, width;
+		Color center, scale, width;
 	} key;
 
 	u32 changed;
