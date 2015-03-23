@@ -152,6 +152,8 @@ private:
 	void _initTextureBuffer(GLuint _program);
 	void _initColorsBuffer(GLuint _program);
 
+	bool _isDataChanged(void * _pBuffer, const void * _pData, u32 _dataSize);
+
 	template <u32 _numUniforms, u32 _bindingPoint>
 	struct UniformBlockData
 	{
@@ -196,6 +198,7 @@ private:
 	UniformBlockData<cuTotal, 2> m_colorsBlock;
 
 	std::vector<GLbyte> m_textureBlockData;
+	std::vector<GLbyte> m_colorsBlockData;
 };
 
 void InitShaderCombiner();

@@ -1009,6 +1009,8 @@ void UniformBlock::_initTextureBuffer(GLuint _program)
 {
 	const GLint blockSize = m_textureBlock.initBuffer(_program, "TextureBlock", strTextureUniforms);
 	m_textureBlockData.resize(blockSize);
+	GLbyte * pData = m_textureBlockData.data();
+	memset(pData, 0, blockSize);
 	glBindBuffer(GL_UNIFORM_BUFFER, m_textureBlock.m_buffer);
 	glBufferData(GL_UNIFORM_BUFFER, blockSize, 0, GL_DYNAMIC_DRAW);
 	glBindBufferBase(GL_UNIFORM_BUFFER, m_textureBlock.m_blockBindingPoint, m_textureBlock.m_buffer);
@@ -1019,7 +1021,8 @@ void UniformBlock::_initTextureBuffer(GLuint _program)
 void UniformBlock::_initColorsBuffer(GLuint _program)
 {
 	const GLint blockSize = m_colorsBlock.initBuffer(_program, "ColorsBlock", strColorUniforms);
-	GLbyte * pData = new GLbyte[blockSize];
+	m_colorsBlockData.resize(blockSize);
+	GLbyte * pData = m_colorsBlockData.data();
 	memset(pData, 0, blockSize);
 	memcpy(pData + m_colorsBlock.m_offsets[cuFogColor], &gDP.fogColor.r, sizeof(f32)* 4);
 	memcpy(pData + m_colorsBlock.m_offsets[cuCenterColor], &gDP.key.center.r, sizeof(f32)* 4);
@@ -1033,9 +1036,21 @@ void UniformBlock::_initColorsBuffer(GLuint _program)
 	glBindBuffer(GL_UNIFORM_BUFFER, m_colorsBlock.m_buffer);
 	glBufferData(GL_UNIFORM_BUFFER, blockSize, pData, GL_DYNAMIC_DRAW);
 	glBindBufferBase(GL_UNIFORM_BUFFER, m_colorsBlock.m_blockBindingPoint, m_colorsBlock.m_buffer);
-	delete[] pData;
-	pData = NULL;
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+}
+
+bool UniformBlock::_isDataChanged(void * _pBuffer, const void * _pData, u32 _dataSize)
+{
+	u32 * pSrc = (u32*)_pData;
+	u32 * pDst = (u32*)_pBuffer;
+	u32 cnt = _dataSize / 4;
+	for (u32 i = 0; i < cnt; ++i) {
+		if (pSrc[i] != pDst[i]) {
+			memcpy(_pBuffer, _pData, _dataSize);
+			return true;
+		}
+	}
+	return false;
 }
 
 void UniformBlock::attachShaderCombiner(ShaderCombiner * _pCombiner)
@@ -1057,6 +1072,8 @@ void UniformBlock::setColorData(ColorUniforms _index, u32 _dataSize, const void 
 {
 	if (m_colorsBlock.m_buffer == 0)
 		return;
+	if (!_isDataChanged(m_colorsBlockData.data() + m_colorsBlock.m_offsets[_index], _data, _dataSize))
+		return;
 	glBindBuffer(GL_UNIFORM_BUFFER, m_colorsBlock.m_buffer);
 	glBufferSubData(GL_UNIFORM_BUFFER, m_colorsBlock.m_offsets[_index], _dataSize, _data);
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
@@ -1065,7 +1082,6 @@ void UniformBlock::setColorData(ColorUniforms _index, u32 _dataSize, const void 
 void UniformBlock::updateTextureParameters()
 {
 	GLbyte * pData = m_textureBlockData.data();
-	memset(pData, 0, m_textureBlockData.size());
 	f32 texScale[4] = { gSP.texture.scales, gSP.texture.scalet, 0, 0 };
 	memcpy(pData + m_textureBlock.m_offsets[tuTexScale], texScale, m_textureBlock.m_offsets[tuTexMask] - m_textureBlock.m_offsets[tuTexScale]);
 
