@@ -668,8 +668,6 @@ void ShaderCombiner::_locateUniforms() {
 	LocateUniform(uFogAlpha);
 	LocateUniform(uFogMultiplier);
 	LocateUniform(uFogOffset);
-	LocateUniform(uScreenWidth);
-	LocateUniform(uScreenHeight);
 	LocateUniform(uPrimitiveLod);
 	LocateUniform(uMinLod);
 	LocateUniform(uDeltaZ);
@@ -719,8 +717,6 @@ void ShaderCombiner::update(bool _bForce) {
 		_setIUniform(m_uniforms.uTex0, 0, _bForce);
 		_setIUniform(m_uniforms.uTex1, 1, _bForce);
 		_setIUniform(m_uniforms.uTexNoise, noiseTexIndex, _bForce);
-		_setFUniform(m_uniforms.uScreenWidth, (float)video().getWidth(), _bForce);
-		_setFUniform(m_uniforms.uScreenHeight, (float)video().getHeight(), _bForce);
 	}
 
 	updateRenderState(_bForce);

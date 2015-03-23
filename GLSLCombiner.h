@@ -47,7 +47,7 @@ private:
 			uMaxTile, uTextureDetail, uTexturePersp, uTextureFilterMode,
 			uAlphaCompareMode, uAlphaDitherMode, uColorDitherMode, uGammaCorrectionEnabled;
 
-		fUniform uFogAlpha, uFogMultiplier, uFogOffset, uScreenWidth, uScreenHeight,
+		fUniform uFogAlpha, uFogMultiplier, uFogOffset,
 			uPrimitiveLod, uMinLod, uDeltaZ, uAlphaTestValue;
 
 		fv2Uniform uTexScale, uScreenScale, uDepthScale, uTexOffset[2], uTexMask[2],
