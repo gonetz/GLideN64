@@ -535,7 +535,8 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 		if (usesT1())
 			strFragmentShader.append("  lowp vec4 readtex1 = readTex(uTex1, vTexCoord1, uFb8Bit == 2 || uFb8Bit == 3, uFbFixedAlpha == 2 || uFbFixedAlpha == 3); \n");
 	}
-	if (config.generalEmulation.enableHWLighting != 0 && usesShadeColor())
+	const bool bUseHWLight = config.generalEmulation.enableHWLighting != 0 && GBI.isHWLSupported() && usesShadeColor();
+	if (bUseHWLight)
 #ifdef SHADER_PRECISION
 		strFragmentShader.append("  calc_light(vNumLights, vShadeColor.rgb, input_color); \n");
 #else
@@ -618,7 +619,7 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 		glAttachShader(m_program, g_vertex_shader_object_notex);
 	glAttachShader(m_program, fragmentShader);
 #ifndef GLES2
-	if (config.generalEmulation.enableHWLighting)
+	if (bUseHWLight)
 		glAttachShader(m_program, g_calc_light_shader_object);
 	if (bUseLod)
 		glAttachShader(m_program, g_calc_mipmap_shader_object);
