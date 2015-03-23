@@ -1,6 +1,7 @@
 #ifndef GLSL_COMBINER_H
 #define GLSL_COMBINER_H
 
+#include <vector>
 #include "gDP.h"
 #include "Combiner.h"
 
@@ -50,12 +51,9 @@ private:
 		fUniform uFogAlpha, uFogMultiplier, uFogOffset,
 			uPrimitiveLod, uMinLod, uDeltaZ, uAlphaTestValue;
 
-		fv2Uniform uTexScale, uScreenScale, uDepthScale, uTexOffset[2], uTexMask[2],
-			uCacheShiftScale[2], uCacheScale[2], uCacheOffset[2];
+		fv2Uniform uScreenScale, uDepthScale;
 
 		fv3Uniform uLightDirection[8], uLightColor[8];
-
-		iv2Uniform uCacheFrameBuffer;
 	};
 
 #ifdef OS_MAC_OS_X
@@ -119,6 +117,17 @@ private:
 class UniformBlock
 {
 public:
+	enum TextureUniforms {
+		tuTexScale,
+		tuTexMask,
+		tuTexOffset,
+		tuCacheScale,
+		tuCacheOffset,
+		tuCacheShiftScale,
+		tuCacheFrameBuffer,
+		tuTotal
+	};
+
 	enum ColorUniforms {
 		cuFogColor,
 		cuCenterColor,
@@ -136,9 +145,11 @@ public:
 	~UniformBlock();
 
 	void attachShaderCombiner(ShaderCombiner * _pCombiner);
-	void setColor(ColorUniforms _index, u32 _dataSize, const f32 * _data);
+	void setColorData(ColorUniforms _index, u32 _dataSize, const void * _data);
+	void updateTextureParameters();
 
 private:
+	void _initTextureBuffer(GLuint _program);
 	void _initColorsBuffer(GLuint _program);
 
 	template <u32 _numUniforms, u32 _bindingPoint>
@@ -171,7 +182,6 @@ private:
 
 			glUniformBlockBinding(_program, m_blockIndex, m_blockBindingPoint);
 			glGenBuffers(1, &m_buffer);
-			glBindBuffer(GL_UNIFORM_BUFFER, m_buffer);
 			return blockSize;
 		}
 
@@ -182,7 +192,10 @@ private:
 		GLint m_offsets[_numUniforms];
 	};
 
-	UniformBlockData<cuTotal, 1> m_colorsBlock;
+	UniformBlockData<tuTotal, 1> m_textureBlock;
+	UniformBlockData<cuTotal, 2> m_colorsBlock;
+
+	std::vector<GLbyte> m_textureBlockData;
 };
 
 void InitShaderCombiner();

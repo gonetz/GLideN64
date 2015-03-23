@@ -243,31 +243,44 @@ void CombinerInfo::setCombine(u64 _mux )
 
 void CombinerInfo::updatePrimColor()
 {
-	m_pUniformBlock->setColor(UniformBlock::cuPrimColor, sizeof(f32)* 5, &gDP.primColor.r);
+	if (m_pUniformBlock != NULL)
+		m_pUniformBlock->setColorData(UniformBlock::cuPrimColor, sizeof(f32)* 5, &gDP.primColor.r);
 }
 
 void CombinerInfo::updateEnvColor()
 {
-	m_pUniformBlock->setColor(UniformBlock::cuEnvColor, sizeof(f32)* 4, &gDP.envColor.r);
+	if (m_pUniformBlock != NULL)
+		m_pUniformBlock->setColorData(UniformBlock::cuEnvColor, sizeof(f32)* 4, &gDP.envColor.r);
 }
 
 void CombinerInfo::updateFogColor()
 {
-	m_pUniformBlock->setColor(UniformBlock::cuFogColor, sizeof(f32)* 4, &gDP.fogColor.r);
+	if (m_pUniformBlock != NULL)
+		m_pUniformBlock->setColorData(UniformBlock::cuFogColor, sizeof(f32)* 4, &gDP.fogColor.r);
 }
 
 void CombinerInfo::updateBlendColor()
 {
-	m_pUniformBlock->setColor(UniformBlock::cuBlendColor, sizeof(f32)* 4, &gDP.blendColor.r);
+	if (m_pUniformBlock != NULL)
+		m_pUniformBlock->setColorData(UniformBlock::cuBlendColor, sizeof(f32)* 4, &gDP.blendColor.r);
 }
 
 void CombinerInfo::updateKeyColor()
 {
-	m_pUniformBlock->setColor(UniformBlock::cuCenterColor, sizeof(f32)* 8, &gDP.key.center.r);
+	if (m_pUniformBlock != NULL)
+		m_pUniformBlock->setColorData(UniformBlock::cuCenterColor, sizeof(f32)* 8, &gDP.key.center.r);
 }
 
 void CombinerInfo::updateConvertColor()
 {
+	if (m_pUniformBlock == NULL)
+		return;
 	f32 convert[2] = { gDP.convert.k4*0.0039215689f, gDP.convert.k5*0.0039215689f };
-	m_pUniformBlock->setColor(UniformBlock::cuK4, sizeof(convert), convert);
+	m_pUniformBlock->setColorData(UniformBlock::cuK4, sizeof(convert), convert);
+}
+
+void CombinerInfo::updateTextureParameters()
+{
+	if (m_pUniformBlock != NULL)
+		m_pUniformBlock->updateTextureParameters();
 }

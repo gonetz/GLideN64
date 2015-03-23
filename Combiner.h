@@ -138,6 +138,8 @@ public:
 	void updateKeyColor();
 	void updateConvertColor();
 
+	void updateTextureParameters();
+
 private:
 	CombinerInfo() : m_bChanged(false), m_pCurrent(NULL) {}
 	CombinerInfo(const CombinerInfo &);

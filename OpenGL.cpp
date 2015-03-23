@@ -687,9 +687,11 @@ void OGLRender::_updateStates() const
 				textureCache().update(1);
 			else
 				textureCache().activateDummy(1);
+
 			currentCombiner()->updateTextureInfo();
 			currentCombiner()->updateFBInfo();
 		}
+		CombinerInfo::get().updateTextureParameters();
 		gDP.changed &= ~(CHANGED_TILE | CHANGED_TMEM);
 		gSP.changed &= ~(CHANGED_TEXTURE);
 	}
