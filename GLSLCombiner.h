@@ -20,7 +20,6 @@ public:
 	void updateTextureInfo(bool _bForce = false);
 	void updateRenderState(bool _bForce = false);
 	void updateGammaCorrection(bool _bForce = false);
-	void updateLight(bool _bForce = false);
 
 	u64 getMux() const {return m_combine.mux;}
 
@@ -28,7 +27,8 @@ public:
 	bool usesT1() const {return (m_nInputs & ((1<<TEXEL1)|(1<<TEXEL1_ALPHA))) != 0;}
 	bool usesTex() const { return (m_nInputs & ((1 << TEXEL1)|(1 << TEXEL1_ALPHA)|(1 << TEXEL0)|(1 << TEXEL0_ALPHA))) != 0; }
 	bool usesLOD() const { return (m_nInputs & (1 << LOD_FRACTION)) != 0; }
-	bool usesShadeColor() const {return (m_nInputs & ((1<<SHADE)|(1<<SHADE_ALPHA))) != 0;}
+	bool usesShade() const { return (m_nInputs & ((1 << SHADE) | (1 << SHADE_ALPHA))) != 0; }
+	bool usesShadeColor() const { return (m_nInputs & (1 << SHADE)) != 0; }
 
 private:
 	friend class UniformBlock;
@@ -36,9 +36,6 @@ private:
 	struct iUniform {GLint loc; int val;};
 	struct fUniform {GLint loc; float val;};
 	struct fv2Uniform {GLint loc; float val[2];};
-	struct iv2Uniform {GLint loc; int val[2];};
-	struct fv3Uniform {GLint loc; float val[3];};
-	struct fv4Uniform {GLint loc; float val[4];};
 
 	struct UniformLocation
 	{
@@ -52,8 +49,6 @@ private:
 		fUniform uFogAlpha, uPrimitiveLod, uMinLod, uDeltaZ, uAlphaTestValue;
 
 		fv2Uniform uScreenScale, uDepthScale, uFogScale;
-
-		fv3Uniform uLightDirection[8], uLightColor[8];
 	};
 
 #ifdef OS_MAC_OS_X
@@ -84,27 +79,6 @@ private:
 			_u.val[0] = _val1;
 			_u.val[1] = _val2;
 			glUniform2f(_u.loc, _val1, _val2);
-		}
-	}
-	void _setIV2Uniform(iv2Uniform & _u, int _val1, int _val2, bool _force) {
-		if (_u.loc >= 0 && (_force || _u.val[0] != _val1 || _u.val[1] != _val2)) {
-			_u.val[0] = _val1;
-			_u.val[1] = _val2;
-			glUniform2i(_u.loc, _val1, _val2);
-		}
-	}
-	void _setV3Uniform(fv3Uniform & _u, float * _pVal, bool _force) {
-		const size_t szData = sizeof(float)*3;
-		if (_u.loc >= 0 && (_force || memcmp(_u.val, _pVal, szData) != 0)) {
-			memcpy(_u.val, _pVal, szData);
-			glUniform3fv(_u.loc, 1, _pVal);
-		}
-	}
-	void _setV4Uniform(fv4Uniform & _u, float * _pVal, bool _force) {
-		const size_t szData = sizeof(float)*4;
-		if (_u.loc >= 0 && (_force || memcmp(_u.val, _pVal, szData) != 0)) {
-			memcpy(_u.val, _pVal, szData);
-			glUniform4fv(_u.loc, 1, _pVal);
 		}
 	}
 
@@ -141,23 +115,31 @@ public:
 		cuTotal
 	};
 
+	enum LightUniforms {
+		luLightDirection,
+		luLightColor,
+		luTotal
+	};
+
 	UniformBlock();
 	~UniformBlock();
 
 	void bindWithShaderCombiner(ShaderCombiner * _pCombiner);
 	void setColorData(ColorUniforms _index, u32 _dataSize, const void * _data);
 	void updateTextureParameters();
+	void updateLightParameters();
 
 private:
 	void _initTextureBuffer(GLuint _program);
 	void _initColorsBuffer(GLuint _program);
+	void _initLightBuffer(GLuint _program);
 
 	bool _isDataChanged(void * _pBuffer, const void * _pData, u32 _dataSize);
 
 	template <u32 _numUniforms, u32 _bindingPoint>
 	struct UniformBlockData
 	{
-		UniformBlockData() : m_buffer(0), m_blockIndex(0), m_blockBindingPoint(_bindingPoint)
+		UniformBlockData() : m_buffer(0), m_blockBindingPoint(_bindingPoint)
 		{
 			memset(m_indices, 0, sizeof(m_indices));
 			memset(m_offsets, 0, sizeof(m_offsets));
@@ -172,23 +154,22 @@ private:
 
 		GLint initBuffer(GLuint _program, const char * _strBlockName, const char ** _strUniformNames)
 		{
-			m_blockIndex = glGetUniformBlockIndex(_program, _strBlockName);
+			GLuint blockIndex = glGetUniformBlockIndex(_program, _strBlockName);
 
 			GLint blockSize, numUniforms;
-			glGetActiveUniformBlockiv(_program, m_blockIndex, GL_UNIFORM_BLOCK_DATA_SIZE, &blockSize);
-			glGetActiveUniformBlockiv(_program, m_blockIndex, GL_UNIFORM_BLOCK_ACTIVE_UNIFORMS, &numUniforms);
+			glGetActiveUniformBlockiv(_program, blockIndex, GL_UNIFORM_BLOCK_DATA_SIZE, &blockSize);
+			glGetActiveUniformBlockiv(_program, blockIndex, GL_UNIFORM_BLOCK_ACTIVE_UNIFORMS, &numUniforms);
 			assert(numUniforms == _numUniforms);
 
 			glGetUniformIndices(_program, numUniforms, _strUniformNames, m_indices);
 			glGetActiveUniformsiv(_program, numUniforms, m_indices, GL_UNIFORM_OFFSET, m_offsets);
 
-			glUniformBlockBinding(_program, m_blockIndex, m_blockBindingPoint);
+			glUniformBlockBinding(_program, blockIndex, m_blockBindingPoint);
 			glGenBuffers(1, &m_buffer);
 			return blockSize;
 		}
 
 		GLuint m_buffer;
-		GLuint m_blockIndex;
 		GLuint m_blockBindingPoint;
 		GLuint m_indices[_numUniforms];
 		GLint m_offsets[_numUniforms];
@@ -198,9 +179,11 @@ private:
 
 	UniformBlockData<tuTotal, 1> m_textureBlock;
 	UniformBlockData<cuTotal, 2> m_colorsBlock;
+	UniformBlockData<luTotal, 3> m_lightBlock;
 
 	std::vector<GLbyte> m_textureBlockData;
 	std::vector<GLbyte> m_colorsBlockData;
+	std::vector<GLbyte> m_lightBlockData;
 };
 
 void InitShaderCombiner();

@@ -139,6 +139,7 @@ public:
 	void updateConvertColor();
 
 	void updateTextureParameters();
+	void updateLightParameters();
 
 private:
 	CombinerInfo() : m_bChanged(false), m_pCurrent(NULL) {}

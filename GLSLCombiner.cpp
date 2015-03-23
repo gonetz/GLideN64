@@ -535,7 +535,7 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 		if (usesT1())
 			strFragmentShader.append("  lowp vec4 readtex1 = readTex(uTex1, vTexCoord1, uFb8Bit == 2 || uFb8Bit == 3, uFbFixedAlpha == 2 || uFbFixedAlpha == 3); \n");
 	}
-	if (config.generalEmulation.enableHWLighting != 0 && (m_nInputs & (1 << SHADE)) != 0)
+	if (config.generalEmulation.enableHWLighting != 0 && usesShadeColor())
 #ifdef SHADER_PRECISION
 		strFragmentShader.append("  calc_light(vNumLights, vShadeColor.rgb, input_color); \n");
 #else
@@ -685,17 +685,6 @@ void ShaderCombiner::_locateUniforms() {
 	LocateUniform(uScreenScale);
 	LocateUniform(uDepthScale);
 	LocateUniform(uFogScale);
-
-	if (config.generalEmulation.enableHWLighting) {
-		// locate lights uniforms
-		char buf[32];
-		for (s32 i = 0; i < 8; ++i) {
-			sprintf(buf, "uLightDirection[%d]", i);
-			m_uniforms.uLightDirection[i].loc = glGetUniformLocation(m_program, buf);
-			sprintf(buf, "uLightColor[%d]", i);
-			m_uniforms.uLightColor[i].loc = glGetUniformLocation(m_program, buf);
-		}
-	}
 }
 
 void ShaderCombiner::_locate_attributes() const {
@@ -724,7 +713,6 @@ void ShaderCombiner::update(bool _bForce) {
 	updateAlphaTestInfo(_bForce);
 	updateFBInfo(_bForce);
 	updateDepthInfo(_bForce);
-	updateLight(_bForce);
 }
 
 void ShaderCombiner::updateRenderState(bool _bForce)
@@ -735,16 +723,6 @@ void ShaderCombiner::updateRenderState(bool _bForce)
 void ShaderCombiner::updateGammaCorrection(bool _bForce)
 {
 	_setIUniform(m_uniforms.uGammaCorrectionEnabled, *REG.VI_STATUS & 8, _bForce);
-}
-
-void ShaderCombiner::updateLight(bool _bForce)
-{
-	if (config.generalEmulation.enableHWLighting == 0 || !GBI.isHWLSupported())
-		return;
-	for (s32 i = 0; i <= gSP.numLights; ++i) {
-		_setV3Uniform(m_uniforms.uLightDirection[i], &gSP.lights[i].x, _bForce);
-		_setV3Uniform(m_uniforms.uLightColor[i], &gSP.lights[i].r, _bForce);
-	}
 }
 
 void ShaderCombiner::updateFogMode(bool _bForce)
@@ -1004,6 +982,12 @@ const char * strColorUniforms[UniformBlock::cuTotal] = {
 	"uK5"
 };
 
+static
+const char * strLightUniforms[UniformBlock::luTotal] = {
+	"uLightDirection",
+	"uLightColor"
+};
+
 UniformBlock::UniformBlock() : m_currentBuffer(0)
 {
 }
@@ -1045,6 +1029,18 @@ void UniformBlock::_initColorsBuffer(GLuint _program)
 	m_currentBuffer = m_colorsBlock.m_buffer;
 }
 
+void UniformBlock::_initLightBuffer(GLuint _program)
+{
+	const GLint blockSize = m_lightBlock.initBuffer(_program, "LightBlock", strLightUniforms);
+	m_lightBlockData.resize(blockSize);
+	GLbyte * pData = m_lightBlockData.data();
+	memset(pData, 0, blockSize);
+	glBindBuffer(GL_UNIFORM_BUFFER, m_lightBlock.m_buffer);
+	glBufferData(GL_UNIFORM_BUFFER, blockSize, 0, GL_DYNAMIC_DRAW);
+	glBindBufferBase(GL_UNIFORM_BUFFER, m_lightBlock.m_blockBindingPoint, m_lightBlock.m_buffer);
+	updateLightParameters();
+}
+
 bool UniformBlock::_isDataChanged(void * _pBuffer, const void * _pData, u32 _dataSize)
 {
 	u32 * pSrc = (u32*)_pData;
@@ -1061,17 +1057,25 @@ bool UniformBlock::_isDataChanged(void * _pBuffer, const void * _pData, u32 _dat
 
 void UniformBlock::bindWithShaderCombiner(ShaderCombiner * _pCombiner)
 {
+	const GLuint program = _pCombiner->m_program;
 	if (_pCombiner->usesTex()) {
 		if (m_textureBlock.m_buffer == 0)
-			_initTextureBuffer(_pCombiner->m_program);
+			_initTextureBuffer(program);
 		else
-			glUniformBlockBinding(_pCombiner->m_program, m_textureBlock.m_blockIndex, m_textureBlock.m_blockBindingPoint);
+			glUniformBlockBinding(program, glGetUniformBlockIndex(program, "TextureBlock"), m_textureBlock.m_blockBindingPoint);
 	}
 
 	if (m_colorsBlock.m_buffer == 0)
-		_initColorsBuffer(_pCombiner->m_program);
+		_initColorsBuffer(program);
 	else
-		glUniformBlockBinding(_pCombiner->m_program, m_colorsBlock.m_blockIndex, m_colorsBlock.m_blockBindingPoint);
+		glUniformBlockBinding(program, glGetUniformBlockIndex(program, "ColorsBlock"), m_colorsBlock.m_blockBindingPoint);
+
+	if (_pCombiner->usesShadeColor() && config.generalEmulation.enableHWLighting != 0) {
+		if (m_lightBlock.m_buffer == 0)
+			_initLightBuffer(program);
+		else
+			glUniformBlockBinding(program, glGetUniformBlockIndex(program, "LightBlock"), m_lightBlock.m_blockBindingPoint);
+	}
 }
 
 void UniformBlock::setColorData(ColorUniforms _index, u32 _dataSize, const void * _data)
@@ -1149,4 +1153,22 @@ void UniformBlock::updateTextureParameters()
 		glBindBuffer(GL_UNIFORM_BUFFER, m_textureBlock.m_buffer);
 	}
 	glBufferSubData(GL_UNIFORM_BUFFER, m_textureBlock.m_offsets[tuTexScale], m_textureBlockData.size(), pData);
+}
+
+void UniformBlock::updateLightParameters()
+{
+	if (m_lightBlock.m_buffer == 0)
+		return;
+
+	GLbyte * pData = m_lightBlockData.data();
+	const u32 arraySize = m_lightBlock.m_offsets[luLightColor] / 8;
+	for (s32 i = 0; i <= gSP.numLights; ++i) {
+		memcpy(pData + m_lightBlock.m_offsets[luLightDirection] + arraySize*i, &gSP.lights[i].x, arraySize);
+		memcpy(pData + m_lightBlock.m_offsets[luLightColor] + arraySize*i, &gSP.lights[i].r, arraySize);
+	}
+	if (m_currentBuffer != m_lightBlock.m_buffer) {
+		m_currentBuffer = m_lightBlock.m_buffer;
+		glBindBuffer(GL_UNIFORM_BUFFER, m_lightBlock.m_buffer);
+	}
+	glBufferSubData(GL_UNIFORM_BUFFER, m_lightBlock.m_offsets[luLightDirection], m_lightBlockData.size(), pData);
 }

@@ -307,11 +307,11 @@ static const char* fragment_shader_header_common_functions_notex =
 ;
 
 static const char* fragment_shader_calc_light =
-#ifdef SHADER_PRECISION
 "#version 330 core						\n"
-"uniform mediump vec3 uLightDirection[8];	\n"
-"uniform lowp vec3 uLightColor[8];	\n"
-"																\n"
+"layout (std140) uniform LightBlock {				\n"
+"  mediump vec3 uLightDirection[8];	\n"
+"  lowp vec3 uLightColor[8];	\n"
+"};																\n"
 "void calc_light(in lowp float fLights, in lowp vec3 input_color, out lowp vec3 output_color) {\n"
 "  output_color = input_color;									\n"
 "  lowp int nLights = int(floor(fLights + 0.5));				\n"
@@ -326,31 +326,6 @@ static const char* fragment_shader_calc_light =
 "  };															\n"
 "  clamp(output_color, 0.0, 1.0);								\n"
 "}																\n"
-#else
-"#version 330 core										\n"
-"uniform vec3 uLightDirection[8];	\n"
-"uniform vec3 uLightColor[8];	\n"
-"																\n"
-"float calc_light(in float fLights, in vec3 input_color, out vec3 output_color) {\n"
-"  output_color = input_color;									\n"
-"  int nLights = int(floor(fLights + 0.5));						\n"
-"  if (nLights == 0)											\n"
-"     return 1.0;												\n"
-"  float full_intensity = 0.0;									\n"
-"  output_color = uLightColor[nLights];							\n"
-"  vec3 lightColor;												\n"
-"  float intensity;												\n"
-"  vec3 n = normalize(input_color);								\n"
-"  for (int i = 0; i < nLights; i++)	{						\n"
-"    intensity = max(dot(n, uLightDirection[i]), 0.0);			\n"
-"    full_intensity += intensity;								\n"
-"    lightColor = intensity*uLightColor[i];						\n"
-"    output_color += lightColor;								\n"
-"  };															\n"
-"  clamp(output_color, 0.0, 1.0);								\n"
-"  return full_intensity;										\n"
-"}																\n"
-#endif
 ;
 
 static const char* alpha_test_fragment_shader =

@@ -673,6 +673,9 @@ void OGLRender::_updateStates() const
 	if (gSP.changed & CHANGED_VIEWPORT)
 		_updateViewport();
 
+	if (gSP.changed & CHANGED_LIGHT)
+		CombinerInfo::get().updateLightParameters();
+
 	if ((gSP.changed & CHANGED_TEXTURE) || (gDP.changed & CHANGED_TILE) || (gDP.changed & CHANGED_TMEM)) {
 		//For some reason updating the texture cache on the first frame of LOZ:OOT causes a NULL Pointer exception...
 		if (currentCombiner() != NULL) {
@@ -704,7 +707,7 @@ void OGLRender::_updateStates() const
 
 void OGLRender::_setColorArray() const
 {
-	if (currentCombiner()->usesShadeColor())
+	if (currentCombiner()->usesShade())
 		glEnableVertexAttribArray(SC_COLOR);
 	else
 		glDisableVertexAttribArray(SC_COLOR);

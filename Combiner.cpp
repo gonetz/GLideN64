@@ -284,3 +284,10 @@ void CombinerInfo::updateTextureParameters()
 	if (m_pUniformBlock != NULL)
 		m_pUniformBlock->updateTextureParameters();
 }
+
+void CombinerInfo::updateLightParameters()
+{
+	if (m_pUniformBlock != NULL)
+		m_pUniformBlock->updateLightParameters();
+	gSP.changed &= ~CHANGED_LIGHT;
+}
