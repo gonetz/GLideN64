@@ -666,8 +666,6 @@ void ShaderCombiner::_locateUniforms() {
 	LocateUniform(uSpecialBlendMode);
 
 	LocateUniform(uFogAlpha);
-	LocateUniform(uFogMultiplier);
-	LocateUniform(uFogOffset);
 	LocateUniform(uPrimitiveLod);
 	LocateUniform(uMinLod);
 	LocateUniform(uDeltaZ);
@@ -677,6 +675,7 @@ void ShaderCombiner::_locateUniforms() {
 
 	LocateUniform(uScreenScale);
 	LocateUniform(uDepthScale);
+	LocateUniform(uFogScale);
 
 	if (config.generalEmulation.enableHWLighting) {
 		// locate lights uniforms
@@ -815,8 +814,7 @@ void ShaderCombiner::updateFogMode(bool _bForce)
 	_setIUniform(m_uniforms.uFogUsage, nFogUsage | nFogBlendEnabled, _bForce);
 	_setIUniform(m_uniforms.uFogMode, nFogMode, _bForce);
 	if (nFogUsage + nFogMode != 0) {
-		_setFUniform(m_uniforms.uFogMultiplier, (float)gSP.fog.multiplier / 256.0f, _bForce);
-		_setFUniform(m_uniforms.uFogOffset, (float)gSP.fog.offset / 256.0f, _bForce);
+		_setFV2Uniform(m_uniforms.uFogScale, (float)gSP.fog.multiplier / 256.0f, (float)gSP.fog.offset / 256.0f, _bForce);
 		_setFUniform(m_uniforms.uFogAlpha, gDP.fogColor.a, _bForce);
 	}
 }
