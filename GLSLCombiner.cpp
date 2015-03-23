@@ -999,6 +999,8 @@ UniformBlock::~UniformBlock()
 void UniformBlock::_initTextureBuffer(GLuint _program)
 {
 	const GLint blockSize = m_textureBlock.initBuffer(_program, "TextureBlock", strTextureUniforms);
+	if (blockSize == 0)
+		return;
 	m_textureBlockData.resize(blockSize);
 	GLbyte * pData = m_textureBlockData.data();
 	memset(pData, 0, blockSize);
@@ -1011,6 +1013,8 @@ void UniformBlock::_initTextureBuffer(GLuint _program)
 void UniformBlock::_initColorsBuffer(GLuint _program)
 {
 	const GLint blockSize = m_colorsBlock.initBuffer(_program, "ColorsBlock", strColorUniforms);
+	if (blockSize == 0)
+		return;
 	m_colorsBlockData.resize(blockSize);
 	GLbyte * pData = m_colorsBlockData.data();
 	memset(pData, 0, blockSize);
@@ -1032,6 +1036,8 @@ void UniformBlock::_initColorsBuffer(GLuint _program)
 void UniformBlock::_initLightBuffer(GLuint _program)
 {
 	const GLint blockSize = m_lightBlock.initBuffer(_program, "LightBlock", strLightUniforms);
+	if (blockSize == 0)
+		return;
 	m_lightBlockData.resize(blockSize);
 	GLbyte * pData = m_lightBlockData.data();
 	memset(pData, 0, blockSize);
@@ -1061,20 +1067,29 @@ void UniformBlock::bindWithShaderCombiner(ShaderCombiner * _pCombiner)
 	if (_pCombiner->usesTex()) {
 		if (m_textureBlock.m_buffer == 0)
 			_initTextureBuffer(program);
-		else
-			glUniformBlockBinding(program, glGetUniformBlockIndex(program, "TextureBlock"), m_textureBlock.m_blockBindingPoint);
+		else {
+			const GLint blockIndex = glGetUniformBlockIndex(program, "TextureBlock");
+			if (blockIndex != GL_INVALID_INDEX)
+				glUniformBlockBinding(program, blockIndex, m_textureBlock.m_blockBindingPoint);
+		}
 	}
 
 	if (m_colorsBlock.m_buffer == 0)
 		_initColorsBuffer(program);
-	else
-		glUniformBlockBinding(program, glGetUniformBlockIndex(program, "ColorsBlock"), m_colorsBlock.m_blockBindingPoint);
+	else {
+		const GLint blockIndex = glGetUniformBlockIndex(program, "ColorsBlock");
+		if (blockIndex != GL_INVALID_INDEX)
+			glUniformBlockBinding(program, blockIndex, m_colorsBlock.m_blockBindingPoint);
+	}
 
 	if (_pCombiner->usesShadeColor() && config.generalEmulation.enableHWLighting != 0) {
 		if (m_lightBlock.m_buffer == 0)
 			_initLightBuffer(program);
-		else
-			glUniformBlockBinding(program, glGetUniformBlockIndex(program, "LightBlock"), m_lightBlock.m_blockBindingPoint);
+		else {
+			const GLint blockIndex = glGetUniformBlockIndex(program, "LightBlock");
+			if (blockIndex != GL_INVALID_INDEX)
+				glUniformBlockBinding(program, blockIndex, m_lightBlock.m_blockBindingPoint);
+		}
 	}
 }
 

@@ -155,6 +155,8 @@ private:
 		GLint initBuffer(GLuint _program, const char * _strBlockName, const char ** _strUniformNames)
 		{
 			GLuint blockIndex = glGetUniformBlockIndex(_program, _strBlockName);
+			if (blockIndex == GL_INVALID_INDEX)
+				return 0;
 
 			GLint blockSize, numUniforms;
 			glGetActiveUniformBlockiv(_program, blockIndex, GL_UNIFORM_BLOCK_DATA_SIZE, &blockSize);
