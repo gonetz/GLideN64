@@ -235,7 +235,7 @@ void CombinerInfo::setCombine(u64 _mux )
 	} else {
 		m_pCurrent = _compile(_mux);
 		m_pCurrent->update(true);
-		m_pUniformBlock->attachShaderCombiner(m_pCurrent);
+		m_pUniformBlock->bindWithShaderCombiner(m_pCurrent);
 		m_combiners[_mux] = m_pCurrent;
 	}
 	m_bChanged = true;

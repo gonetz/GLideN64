@@ -144,7 +144,7 @@ public:
 	UniformBlock();
 	~UniformBlock();
 
-	void attachShaderCombiner(ShaderCombiner * _pCombiner);
+	void bindWithShaderCombiner(ShaderCombiner * _pCombiner);
 	void setColorData(ColorUniforms _index, u32 _dataSize, const void * _data);
 	void updateTextureParameters();
 

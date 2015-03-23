@@ -1059,7 +1059,7 @@ bool UniformBlock::_isDataChanged(void * _pBuffer, const void * _pData, u32 _dat
 	return false;
 }
 
-void UniformBlock::attachShaderCombiner(ShaderCombiner * _pCombiner)
+void UniformBlock::bindWithShaderCombiner(ShaderCombiner * _pCombiner)
 {
 	if (_pCombiner->usesTex()) {
 		if (m_textureBlock.m_buffer == 0)
