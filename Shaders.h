@@ -123,6 +123,63 @@ static const char* vertex_shader =
 "}																\n"
 ;
 
+static const char* vertex_shader_notex =
+"#version 330 core					\n"
+"in highp vec4 aPosition;			\n"
+"in lowp vec4 aColor;				\n"
+"in lowp float aNumLights;			\n"
+"									\n"
+"uniform int uRenderState;			\n"
+"									\n"
+"uniform int uFogMode;				\n"
+"uniform lowp int uFogUsage;		\n"
+"uniform lowp float uFogAlpha;		\n"
+"uniform mediump vec2 uFogScale;	\n"
+"									\n"
+"out lowp vec4 vShadeColor;			\n"
+"out lowp float vNumLights;			\n"
+"out mediump float vFogFragCoord;	\n"
+"																\n"
+"void main()													\n"
+"{																\n"
+"  gl_Position = aPosition;										\n"
+"  vFogFragCoord = 0.0;											\n"
+"  vShadeColor = aColor;										\n"
+"  if (uRenderState == 1) {										\n"
+"    vNumLights = aNumLights;									\n"
+"    switch (uFogMode) {										\n"
+"      case 0:													\n"
+"        if (aPosition.z < -aPosition.w)						\n"
+"          vFogFragCoord = -uFogScale.s + uFogScale.t;			\n"
+"        else													\n"
+"          vFogFragCoord = aPosition.z/aPosition.w*uFogScale.s	\n"
+"	                   + uFogScale.t;							\n"
+"      break;													\n"
+"      case 1:													\n"
+"          vFogFragCoord = uFogAlpha;							\n"
+"      break;													\n"
+"      case 2:													\n"
+"          vFogFragCoord = 1.0 - uFogAlpha;						\n"
+"      break;													\n"
+"    }															\n"
+"    vFogFragCoord = clamp(vFogFragCoord, 0.0, 1.0);			\n"
+"    if ((uFogUsage&255) == 1 && uFogMode == 0)					\n"
+"       vShadeColor.a = vFogFragCoord;							\n"
+"  } else {														\n"
+"    vNumLights = 0.0;											\n"
+"    switch (uFogMode) {										\n"
+"      case 1:													\n"
+"          vFogFragCoord = uFogAlpha;							\n"
+"      break;													\n"
+"      case 2:													\n"
+"          vFogFragCoord = 1.0 - uFogAlpha;						\n"
+"      break;													\n"
+"    }															\n"
+"  }															\n"
+"  gl_ClipDistance[0] = gl_Position.w - gl_Position.z;			\n"
+"}																\n"
+;
+
 static const char* fragment_shader_header_common_variables =
 #ifdef SHADER_PRECISION
 "#version 330 core				\n"
@@ -188,6 +245,33 @@ static const char* fragment_shader_header_common_variables =
 #endif
 ;
 
+static const char* fragment_shader_header_common_variables_notex =
+"#version 330 core				\n"
+"layout (std140) uniform ColorsBlock {\n"
+"  lowp vec4 uFogColor;			\n"
+"  lowp vec4 uCenterColor;		\n"
+"  lowp vec4 uScaleColor;		\n"
+"  lowp vec4 uBlendColor;		\n"
+"  lowp vec4 uEnvColor;			\n"
+"  lowp vec4 uPrimColor;		\n"
+"  lowp float uPrimLod;			\n"
+"  lowp float uK4;				\n"
+"  lowp float uK5;				\n"
+"};								\n"
+"uniform lowp int uAlphaCompareMode;	\n"
+"uniform lowp int uAlphaDitherMode;	\n"
+"uniform lowp int uColorDitherMode;	\n"
+"uniform lowp int uGammaCorrectionEnabled;	\n"
+"uniform lowp int uFogUsage;	\n"
+"uniform lowp int uSpecialBlendMode;\n"
+"uniform mediump vec2 uDepthScale;	\n"
+"in lowp vec4 vShadeColor;	\n"
+"in lowp float vNumLights;	\n"
+"in mediump float vFogFragCoord;\n"
+"lowp vec3 input_color;			\n"
+"out lowp vec4 fragColor;		\n"
+;
+
 static const char* fragment_shader_header_common_functions =
 #ifdef SHADER_PRECISION
 "															\n"
@@ -210,6 +294,16 @@ static const char* fragment_shader_header_common_functions =
 #ifdef USE_TOONIFY
 "void toonify(in mediump float intensity);	\n"
 #endif
+;
+
+static const char* fragment_shader_header_common_functions_notex =
+"															\n"
+"lowp float snoise();						\n"
+"void calc_light(in lowp float fLights, in lowp vec3 input_color, out lowp vec3 output_color);\n"
+"bool depth_compare();										\n"
+"bool alpha_test(in lowp float alphaValue);						\n"
+"void colorNoiseDither(in float _noise, inout vec3 _color);	\n"
+"void alphaNoiseDither(in float _noise, inout float _alpha);\n"
 ;
 
 static const char* fragment_shader_calc_light =

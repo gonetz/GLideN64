@@ -16,6 +16,7 @@
 #include "Shaders.h"
 
 static GLuint  g_vertex_shader_object;
+static GLuint  g_vertex_shader_object_notex;
 static GLuint  g_calc_light_shader_object;
 static GLuint  g_calc_mipmap_shader_object;
 static GLuint  g_calc_noise_shader_object;
@@ -256,9 +257,9 @@ void DestroyShadowMapShader()
 #endif // GL_IMAGE_TEXTURES_SUPPORT
 
 static
-GLuint _createFragmentShader(const char * _strShader)
+GLuint _createShader(GLenum _type, const char * _strShader)
 {
-	GLuint shader_object = glCreateShader(GL_FRAGMENT_SHADER);
+	GLuint shader_object = glCreateShader(_type);
 	glShaderSource(shader_object, 1, &_strShader, NULL);
 	glCompileShader(shader_object);
 	assert(checkShaderCompileStatus(shader_object));
@@ -272,25 +273,22 @@ void InitShaderCombiner()
 	glActiveTexture(GL_TEXTURE1);
 	glEnable(GL_TEXTURE_2D);
 
-	g_vertex_shader_object = glCreateShader(GL_VERTEX_SHADER);
-	glShaderSource(g_vertex_shader_object, 1, &vertex_shader, NULL);
-	glCompileShader(g_vertex_shader_object);
-	if (!checkShaderCompileStatus(g_vertex_shader_object))
-		LOG(LOG_ERROR, "Error in vertex shader\n", vertex_shader);
+	g_vertex_shader_object = _createShader(GL_VERTEX_SHADER, vertex_shader);
+	g_vertex_shader_object_notex = _createShader(GL_VERTEX_SHADER, vertex_shader_notex);
 
 	strFragmentShader.reserve(1024*5);
 
 #ifndef GLES2
-	g_calc_light_shader_object = _createFragmentShader(fragment_shader_calc_light);
-	g_calc_mipmap_shader_object = _createFragmentShader(fragment_shader_mipmap);
-	g_calc_noise_shader_object = _createFragmentShader(fragment_shader_noise);
-	g_test_alpha_shader_object = _createFragmentShader(alpha_test_fragment_shader);
-	g_readtex_shader_object = _createFragmentShader(fragment_shader_readtex);
-	g_dither_shader_object = _createFragmentShader(fragment_shader_dither);
+	g_calc_light_shader_object = _createShader(GL_FRAGMENT_SHADER, fragment_shader_calc_light);
+	g_calc_mipmap_shader_object = _createShader(GL_FRAGMENT_SHADER, fragment_shader_mipmap);
+	g_calc_noise_shader_object = _createShader(GL_FRAGMENT_SHADER, fragment_shader_noise);
+	g_test_alpha_shader_object = _createShader(GL_FRAGMENT_SHADER, alpha_test_fragment_shader);
+	g_readtex_shader_object = _createShader(GL_FRAGMENT_SHADER, fragment_shader_readtex);
+	g_dither_shader_object = _createShader(GL_FRAGMENT_SHADER, fragment_shader_dither);
 
 #ifdef GL_IMAGE_TEXTURES_SUPPORT
 	if (video().getRender().isImageTexturesSupported() && config.frameBufferEmulation.N64DepthCompare != 0)
-		g_calc_depth_shader_object = _createFragmentShader(depth_compare_shader_float);
+		g_calc_depth_shader_object = _createShader(GL_FRAGMENT_SHADER, depth_compare_shader_float);
 
 	InitZlutTexture();
 	InitShadowMapShader();
@@ -305,6 +303,8 @@ void DestroyShaderCombiner() {
 
 	glDeleteShader(g_vertex_shader_object);
 	g_vertex_shader_object = 0;
+	glDeleteShader(g_vertex_shader_object_notex);
+	g_vertex_shader_object_notex = 0;
 #ifndef GLES2
 	glDeleteShader(g_calc_light_shader_object);
 	g_calc_light_shader_object = 0;
@@ -484,8 +484,6 @@ int CompileCombiner(const CombinerStage & _stage, const char** _Input, char * _s
 
 ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCombine & _combine) : m_combine(_combine)
 {
-	strFragmentShader.assign(fragment_shader_header_common_variables);
-
 	if (gDP.otherMode.cycleType == G_CYC_1CYCLE) {
 		CorrectFirstStageParams(_alpha.stage[0]);
 		CorrectFirstStageParams(_color.stage[0]);
@@ -513,7 +511,14 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 	} else
 		strcat(strCombiner, "  color2 = color1; \n");
 
-	strFragmentShader.append(fragment_shader_header_common_functions);
+	if (usesTex()) {
+		strFragmentShader.assign(fragment_shader_header_common_variables);
+		strFragmentShader.append(fragment_shader_header_common_functions);
+	}
+	else {
+		strFragmentShader.assign(fragment_shader_header_common_variables_notex);
+		strFragmentShader.append(fragment_shader_header_common_functions_notex);
+	}
 	strFragmentShader.append(fragment_shader_header_main);
 	const bool bUseLod = (m_nInputs & (1<<LOD_FRACTION)) > 0;
 	if (bUseLod) {
@@ -607,14 +612,18 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 
 	m_program = glCreateProgram();
 	_locate_attributes();
-	glAttachShader(m_program, g_vertex_shader_object);
+	if (usesTex())
+		glAttachShader(m_program, g_vertex_shader_object);
+	else
+		glAttachShader(m_program, g_vertex_shader_object_notex);
 	glAttachShader(m_program, fragmentShader);
 #ifndef GLES2
 	if (config.generalEmulation.enableHWLighting)
 		glAttachShader(m_program, g_calc_light_shader_object);
 	if (bUseLod)
 		glAttachShader(m_program, g_calc_mipmap_shader_object);
-	glAttachShader(m_program, g_readtex_shader_object);
+	else if (usesTex())
+		glAttachShader(m_program, g_readtex_shader_object);
 	glAttachShader(m_program, g_test_alpha_shader_object);
 	if (video().getRender().isImageTexturesSupported() && config.frameBufferEmulation.N64DepthCompare != 0)
 		glAttachShader(m_program, g_calc_depth_shader_object);
