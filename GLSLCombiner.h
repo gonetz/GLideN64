@@ -194,6 +194,8 @@ private:
 		GLint m_offsets[_numUniforms];
 	};
 
+	GLuint m_currentBuffer;
+
 	UniformBlockData<tuTotal, 1> m_textureBlock;
 	UniformBlockData<cuTotal, 2> m_colorsBlock;
 

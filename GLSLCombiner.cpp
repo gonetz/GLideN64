@@ -997,7 +997,7 @@ const char * strColorUniforms[UniformBlock::cuTotal] = {
 	"uK5"
 };
 
-UniformBlock::UniformBlock()
+UniformBlock::UniformBlock() : m_currentBuffer(0)
 {
 }
 
@@ -1014,7 +1014,6 @@ void UniformBlock::_initTextureBuffer(GLuint _program)
 	glBindBuffer(GL_UNIFORM_BUFFER, m_textureBlock.m_buffer);
 	glBufferData(GL_UNIFORM_BUFFER, blockSize, 0, GL_DYNAMIC_DRAW);
 	glBindBufferBase(GL_UNIFORM_BUFFER, m_textureBlock.m_blockBindingPoint, m_textureBlock.m_buffer);
-	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 	updateTextureParameters();
 }
 
@@ -1036,7 +1035,7 @@ void UniformBlock::_initColorsBuffer(GLuint _program)
 	glBindBuffer(GL_UNIFORM_BUFFER, m_colorsBlock.m_buffer);
 	glBufferData(GL_UNIFORM_BUFFER, blockSize, pData, GL_DYNAMIC_DRAW);
 	glBindBufferBase(GL_UNIFORM_BUFFER, m_colorsBlock.m_blockBindingPoint, m_colorsBlock.m_buffer);
-	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+	m_currentBuffer = m_colorsBlock.m_buffer;
 }
 
 bool UniformBlock::_isDataChanged(void * _pBuffer, const void * _pData, u32 _dataSize)
@@ -1074,13 +1073,19 @@ void UniformBlock::setColorData(ColorUniforms _index, u32 _dataSize, const void 
 		return;
 	if (!_isDataChanged(m_colorsBlockData.data() + m_colorsBlock.m_offsets[_index], _data, _dataSize))
 		return;
-	glBindBuffer(GL_UNIFORM_BUFFER, m_colorsBlock.m_buffer);
+
+	if (m_currentBuffer != m_colorsBlock.m_buffer) {
+		m_currentBuffer = m_colorsBlock.m_buffer;
+		glBindBuffer(GL_UNIFORM_BUFFER, m_colorsBlock.m_buffer);
+	}
 	glBufferSubData(GL_UNIFORM_BUFFER, m_colorsBlock.m_offsets[_index], _dataSize, _data);
-	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }
 
 void UniformBlock::updateTextureParameters()
 {
+	if (m_textureBlock.m_buffer == 0)
+		return;
+
 	GLbyte * pData = m_textureBlockData.data();
 	f32 texScale[4] = { gSP.texture.scales, gSP.texture.scalet, 0, 0 };
 	memcpy(pData + m_textureBlock.m_offsets[tuTexScale], texScale, m_textureBlock.m_offsets[tuTexMask] - m_textureBlock.m_offsets[tuTexScale]);
@@ -1132,7 +1137,9 @@ void UniformBlock::updateTextureParameters()
 	memcpy(pData + m_textureBlock.m_offsets[tuCacheShiftScale], texCacheShiftScale, m_textureBlock.m_offsets[tuCacheFrameBuffer] - m_textureBlock.m_offsets[tuCacheShiftScale]);
 	memcpy(pData + m_textureBlock.m_offsets[tuCacheFrameBuffer], texCacheFrameBuffer, m_textureBlockData.size() - m_textureBlock.m_offsets[tuCacheFrameBuffer]);
 
-	glBindBuffer(GL_UNIFORM_BUFFER, m_textureBlock.m_buffer);
+	if (m_currentBuffer != m_textureBlock.m_buffer) {
+		m_currentBuffer = m_textureBlock.m_buffer;
+		glBindBuffer(GL_UNIFORM_BUFFER, m_textureBlock.m_buffer);
+	}
 	glBufferSubData(GL_UNIFORM_BUFFER, m_textureBlock.m_offsets[tuTexScale], m_textureBlockData.size(), pData);
-	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }
