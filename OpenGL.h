@@ -107,7 +107,7 @@ private:
 	void _updateCullFace() const;
 	void _updateViewport() const;
 	void _updateDepthUpdate() const;
-	void _updateStates() const;
+	void _updateStates(RENDER_STATE _renderState) const;
 	void _prepareDrawTriangle(bool _dma);
 
 #ifdef __TRIBUFFER_OPT

@@ -604,7 +604,7 @@ void OGLRender::_updateDepthUpdate() const
 		glDepthMask( FALSE );
 }
 
-void OGLRender::_updateStates() const
+void OGLRender::_updateStates(RENDER_STATE _renderState) const
 {
 	OGLVideo & ogl = video();
 
@@ -695,7 +695,8 @@ void OGLRender::_updateStates() const
 
 			pCurrentCombiner->updateFBInfo();
 		}
-		cmbInfo.updateTextureParameters();
+		if (_renderState == rsTriangle || _renderState == rsLine)
+			cmbInfo.updateTextureParameters();
 		gDP.changed &= ~(CHANGED_TILE | CHANGED_TMEM);
 		gSP.changed &= ~(CHANGED_TEXTURE);
 	}
@@ -743,7 +744,7 @@ void OGLRender::_prepareDrawTriangle(bool _dma)
 #endif // GL_IMAGE_TEXTURES_SUPPORT
 
 	if (gSP.changed || gDP.changed)
-		_updateStates();
+		_updateStates(rsTriangle);
 
 	const bool updateArrays = m_renderState != rsTriangle;
 	if (updateArrays || CombinerInfo::get().isChanged()) {
@@ -849,7 +850,7 @@ void OGLRender::drawTriangles()
 void OGLRender::drawLine(int _v0, int _v1, float _width)
 {
 	if (gSP.changed || gDP.changed)
-		_updateStates();
+		_updateStates(rsLine);
 
 	if (m_renderState != rsLine || CombinerInfo::get().isChanged()) {
 		_setColorArray();
@@ -875,7 +876,7 @@ void OGLRender::drawLine(int _v0, int _v1, float _width)
 void OGLRender::drawRect(int _ulx, int _uly, int _lrx, int _lry, float *_pColor)
 {
 	if (gSP.changed || gDP.changed)
-		_updateStates();
+		_updateStates(rsRect);
 
 	const bool updateArrays = m_renderState != rsRect;
 	if (updateArrays || CombinerInfo::get().isChanged()) {
@@ -1048,7 +1049,7 @@ bool(*texturedRectSpecial)(const OGLRender::TexturedRectParams & _params) = NULL
 void OGLRender::drawTexturedRect(const TexturedRectParams & _params)
 {
 	if (gSP.changed || gDP.changed)
-		_updateStates();
+		_updateStates(rsTexRect);
 
 	const bool updateArrays = m_renderState != rsTexRect;
 	if (updateArrays || CombinerInfo::get().isChanged()) {
