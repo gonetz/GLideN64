@@ -608,7 +608,8 @@ void OGLRender::_updateStates() const
 {
 	OGLVideo & ogl = video();
 
-	CombinerInfo::get().update();
+	CombinerInfo & cmbInfo = CombinerInfo::get();
+	cmbInfo.update();
 
 	if (gSP.changed & CHANGED_GEOMETRYMODE) {
 		_updateCullFace();
@@ -674,27 +675,27 @@ void OGLRender::_updateStates() const
 		_updateViewport();
 
 	if (gSP.changed & CHANGED_LIGHT)
-		CombinerInfo::get().updateLightParameters();
+		cmbInfo.updateLightParameters();
 
 	if ((gSP.changed & CHANGED_TEXTURE) || (gDP.changed & CHANGED_TILE) || (gDP.changed & CHANGED_TMEM)) {
 		//For some reason updating the texture cache on the first frame of LOZ:OOT causes a NULL Pointer exception...
-		if (currentCombiner() != NULL) {
-			if (currentCombiner()->usesT0())
+		ShaderCombiner * pCurrentCombiner = currentCombiner();
+		if (pCurrentCombiner != NULL) {
+			if (pCurrentCombiner->usesT0())
 				textureCache().update(0);
 			else
 				textureCache().activateDummy(0);
 
 			//Note: enabling dummies makes some F-zero X textures flicker.... strange.
 
-			if (currentCombiner()->usesT1())
+			if (pCurrentCombiner->usesT1())
 				textureCache().update(1);
 			else
 				textureCache().activateDummy(1);
 
-			currentCombiner()->updateTextureInfo();
-			currentCombiner()->updateFBInfo();
+			pCurrentCombiner->updateFBInfo();
 		}
-		CombinerInfo::get().updateTextureParameters();
+		cmbInfo.updateTextureParameters();
 		gDP.changed &= ~(CHANGED_TILE | CHANGED_TMEM);
 		gSP.changed &= ~(CHANGED_TEXTURE);
 	}

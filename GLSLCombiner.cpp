@@ -847,7 +847,7 @@ void ShaderCombiner::updateTextureInfo(bool _bForce) {
 }
 
 void ShaderCombiner::updateFBInfo(bool _bForce) {
-	if (!usesT0() && !usesT1())
+	if (!usesTex())
 		return;
 
 	int nFb8bitMode = 0, nFbFixedAlpha = 0;
