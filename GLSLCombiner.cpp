@@ -878,7 +878,7 @@ void ShaderCombiner::updateDepthInfo(bool _bForce) {
 	else
 		_setFV2Uniform(m_uniforms.uDepthScale, gSP.viewport.vscale[2], gSP.viewport.vtrans[2], _bForce);
 
-	if (!video().getRender().isImageTexturesSupported())
+	if (config.frameBufferEmulation.N64DepthCompare == 0 || !video().getRender().isImageTexturesSupported())
 		return;
 
 	FrameBuffer * pBuffer = frameBufferList().getCurrent();
