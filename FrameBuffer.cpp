@@ -800,13 +800,11 @@ void FrameBufferToRDRAM::CopyToRDRAM(u32 _address) {
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, m_FBO);
 	glReadBuffer(GL_COLOR_ATTACHMENT0);
 #ifndef GLES2
-	glBindBuffer(GL_PIXEL_PACK_BUFFER, m_PBO);
-	glReadPixels( 0, 0, VI.width, VI.height, GL_RGBA, GL_UNSIGNED_BYTE, 0 );
+	PBOBinder binder(GL_PIXEL_PACK_BUFFER, m_PBO);
+	glReadPixels(0, 0, VI.width, VI.height, GL_RGBA, GL_UNSIGNED_BYTE, 0);
 	GLubyte* pixelData = (GLubyte*)glMapBuffer(GL_PIXEL_PACK_BUFFER, GL_READ_ONLY);
-	if(pixelData == NULL) {
-		glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
+	if(pixelData == NULL)
 		return;
-	}
 #else
 	m_curIndex = 0;
 	const u32 nextIndex = 0;
@@ -839,7 +837,6 @@ void FrameBufferToRDRAM::CopyToRDRAM(u32 _address) {
 	pBuffer->m_cleared = false;
 #ifndef GLES2
 	glUnmapBuffer(GL_PIXEL_PACK_BUFFER);
-	glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
 #else
 	free(pixelData);
 #endif
@@ -960,16 +957,13 @@ bool DepthBufferToRDRAM::CopyToRDRAM( u32 _address) {
 	);
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, frameBufferList().getCurrent()->m_FBO);
 
-	glBindBuffer(GL_PIXEL_PACK_BUFFER, m_PBO);
+	PBOBinder binder(GL_PIXEL_PACK_BUFFER, m_PBO);
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, m_FBO);
 	glReadPixels(0, 0, VI.width, VI.height, GL_DEPTH_COMPONENT, GL_FLOAT, 0);
 
-	glBindBuffer(GL_PIXEL_PACK_BUFFER, m_PBO);
 	GLubyte* pixelData = (GLubyte*)glMapBuffer(GL_PIXEL_PACK_BUFFER, GL_READ_ONLY);
-	if(pixelData == NULL) {
-		glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
+	if(pixelData == NULL)
 		return false;
-	}
 
 	f32 * ptr_src = (f32*)pixelData;
 	u16 *ptr_dst = (u16*)(RDRAM + address);
@@ -993,7 +987,6 @@ bool DepthBufferToRDRAM::CopyToRDRAM( u32 _address) {
 		pBuffer->m_cleared = false;
 
 	glUnmapBuffer(GL_PIXEL_PACK_BUFFER);
-	glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
 	glEnable(GL_SCISSOR_TEST);
 	return true;
