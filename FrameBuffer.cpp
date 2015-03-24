@@ -754,7 +754,7 @@ void FrameBufferToRDRAM::Init()
 	// Generate and initialize Pixel Buffer Objects
 	glGenBuffers(1, &m_PBO);
 	glBindBuffer(GL_PIXEL_PACK_BUFFER, m_PBO);
-	glBufferData(GL_PIXEL_PACK_BUFFER, m_pTexture->textureBytes, NULL, GL_DYNAMIC_DRAW);
+	glBufferData(GL_PIXEL_PACK_BUFFER, m_pTexture->textureBytes, NULL, GL_DYNAMIC_READ);
 	glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
 }
 
@@ -913,7 +913,7 @@ void DepthBufferToRDRAM::Init()
 	// Generate and initialize Pixel Buffer Objects
 	glGenBuffers(1, &m_PBO);
 	glBindBuffer(GL_PIXEL_PACK_BUFFER, m_PBO);
-	glBufferData(GL_PIXEL_PACK_BUFFER, 640*480*sizeof(float), NULL, GL_DYNAMIC_DRAW);
+	glBufferData(GL_PIXEL_PACK_BUFFER, 640*480*sizeof(float), NULL, GL_DYNAMIC_READ);
 	glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
 }
 
