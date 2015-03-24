@@ -58,3 +58,29 @@ u32 CRC_CalculatePalette(u32 crc, const void * buffer, u32 count )
 
 	return crc ^ orig;
 }
+
+u32 Adler32(u32 crc, const void *buffer, u32 count)
+{
+	register u32 s1 = crc & 0xFFFF;
+	register u32 s2 = (crc >> 16) & 0xFFFF;
+	int k;
+	const u8 *Buffer = (const u8*)buffer;
+
+	if (Buffer == NULL)
+		return 0;
+
+	while (count > 0) {
+		/* 5552 is the largest n such that 255n(n+1)/2 + (n+1)(BASE-1) <= 2^32-1 */
+		k = (count < 5552 ? count : 5552);
+		count -= k;
+		while (k--) {
+			s1 += *Buffer++;
+			s2 += s1;
+		}
+		/* 65521 is the largest prime smaller than 65536 */
+		s1 %= 65521;
+		s2 %= 65521;
+	}
+
+	return (s2 << 16) | s1;
+}

@@ -833,7 +833,7 @@ void FrameBufferToRDRAM::CopyToRDRAM(u32 _address) {
 			}
 		}
 	}
-	pBuffer->m_RdramCrc = CRC_Calculate(0xFFFFFFFF, RDRAM + _address, (VI.width*VI.height) << pBuffer->m_size>>1);
+	pBuffer->m_RdramCrc = Adler32(0, RDRAM + _address, (VI.width*VI.height) << pBuffer->m_size >> 1);
 	pBuffer->m_cleared = false;
 #ifndef GLES2
 	glUnmapBuffer(GL_PIXEL_PACK_BUFFER);
