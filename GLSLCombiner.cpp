@@ -133,7 +133,7 @@ void NoiseTexture::update()
 	if (dataSize == 0)
 		return;
 #ifndef GLES2
-	PBOBinder binder(m_PBO);
+	PBOBinder binder(GL_PIXEL_UNPACK_BUFFER, m_PBO);
 	glBufferData(GL_PIXEL_UNPACK_BUFFER, dataSize, NULL, GL_DYNAMIC_DRAW);
 	GLubyte* ptr = (GLubyte*)glMapBuffer(GL_PIXEL_UNPACK_BUFFER, GL_WRITE_ONLY);
 #else

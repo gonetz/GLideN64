@@ -80,13 +80,14 @@ private:
 
 struct PBOBinder {
 #ifndef GLES2
-	PBOBinder(GLuint _PBO)
+	PBOBinder(GLenum _target, GLuint _PBO) : m_target(_target)
 	{
-		glBindBuffer(GL_PIXEL_UNPACK_BUFFER, _PBO);
+		glBindBuffer(m_target, _PBO);
 	}
 	~PBOBinder() {
-		glBindBuffer(GL_PIXEL_UNPACK_BUFFER, 0);
+		glBindBuffer(m_target, 0);
 	}
+	GLenum m_target;
 #else
 	PBOBinder(GLubyte* _ptr) : ptr(_ptr) {}
 	~PBOBinder() { free(ptr); }
