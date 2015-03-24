@@ -1017,8 +1017,8 @@ void RDRAMtoFrameBuffer::Init()
 	m_pTexture->maskT = 0;
 	m_pTexture->mirrorS = 0;
 	m_pTexture->mirrorT = 0;
-	m_pTexture->realWidth = 1024;
-	m_pTexture->realHeight = 512;
+	m_pTexture->realWidth = 640;
+	m_pTexture->realHeight = 480;
 	m_pTexture->textureBytes = m_pTexture->realWidth * m_pTexture->realHeight * 4;
 	textureCache().addFrameBufferTextureSize(m_pTexture->textureBytes);
 	glBindTexture( GL_TEXTURE_2D, m_pTexture->glName );
