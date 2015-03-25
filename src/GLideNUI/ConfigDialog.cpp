@@ -118,14 +118,17 @@ void ConfigDialog::_init()
 	ui->CopyDepthCheckBox->setChecked(config.frameBufferEmulation.copyDepthToRDRAM != 0);
 	ui->n64DepthCompareCheckBox->setChecked(config.frameBufferEmulation.N64DepthCompare != 0);
 	switch (config.frameBufferEmulation.aspect) {
-	case 0:
+	case Config::aStretch:
 		ui->aspectStretchRadioButton->setChecked(true);
 		break;
-	case 1:
+	case Config::a43:
 		ui->aspect43RadioButton->setChecked(true);
 		break;
-	case 2:
+	case Config::a169:
 		ui->aspect169RadioButton->setChecked(true);
+		break;
+	case Config::aAdjust:
+		ui->aspectAdjustRadioButton->setChecked(true);
 		break;
 	}
 	switch (config.frameBufferEmulation.validityCheckMethod) {
@@ -197,9 +200,9 @@ void ConfigDialog::_init()
 }
 
 ConfigDialog::ConfigDialog(QWidget *parent) :
-	QDialog(parent),
-	ui(new Ui::ConfigDialog),
-	m_accepted(false)
+QDialog(parent),
+ui(new Ui::ConfigDialog),
+m_accepted(false)
 {
 	ui->setupUi(this);
 	_init();
@@ -248,11 +251,14 @@ void ConfigDialog::accept()
 	config.frameBufferEmulation.copyDepthToRDRAM = ui->CopyDepthCheckBox->isChecked() ? 1 : 0;
 	config.frameBufferEmulation.N64DepthCompare = ui->n64DepthCompareCheckBox->isChecked() ? 1 : 0;
 	if (ui->aspectStretchRadioButton->isChecked())
-		config.frameBufferEmulation.aspect = 0;
+		config.frameBufferEmulation.aspect = Config::aStretch;
 	else if (ui->aspect43RadioButton->isChecked())
-		config.frameBufferEmulation.aspect = 1;
+		config.frameBufferEmulation.aspect = Config::a43;
 	else if (ui->aspect169RadioButton->isChecked())
-		config.frameBufferEmulation.aspect = 2;
+		config.frameBufferEmulation.aspect = Config::a169;
+	else if (ui->aspectAdjustRadioButton->isChecked())
+		config.frameBufferEmulation.aspect = Config::aAdjust;
+
 	if (ui->checksumRadioButton->isChecked())
 		config.frameBufferEmulation.validityCheckMethod = 0;
 	else if (ui->fillRdramRadioButton->isChecked())
@@ -347,7 +353,7 @@ void ConfigDialog::on_buttonBox_clicked(QAbstractButton *button)
 		QMessageBox msgBox(QMessageBox::Question, "GLideN64",
 			"Do you really want to reset all settings to defaults?",
 			QMessageBox::RestoreDefaults | QMessageBox::Cancel, this
-		);
+			);
 		msgBox.setDefaultButton(QMessageBox::Cancel);
 		if (msgBox.exec() == QMessageBox::RestoreDefaults) {
 			config.resetToDefaults();

@@ -44,7 +44,7 @@ bool Config_SetDefault()
 
 	res = ConfigSetDefaultInt(g_configVideoGliden64, "MultiSampling", 0, "Enable/Disable MultiSampling (0=off, 2,4,8,16=quality)");
 	assert(res == M64ERR_SUCCESS);
-	res = ConfigSetDefaultInt(g_configVideoGliden64, "AspectRatio", 0, "Screen aspect ratio (0=stretch, 1=force 4:3, 2=force 16:9)");
+	res = ConfigSetDefaultInt(g_configVideoGliden64, "AspectRatio", 0, "Screen aspect ratio (0=stretch, 1=force 4:3, 2=force 16:9, 3=adjust)");
 	assert(res == M64ERR_SUCCESS);
 
 	//#Texture Settings

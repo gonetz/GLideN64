@@ -45,6 +45,14 @@ struct Config
 		u32 hacks;
 	} generalEmulation;
 
+	enum Aspect {
+		aStretch = 0,
+		a43 = 1,
+		a169 = 2,
+		aAdjust = 3,
+		aTotal = 4
+	};
+
 	struct {
 		u32 enable;
 		u32 copyToRDRAM;
@@ -52,7 +60,7 @@ struct Config
 		u32 copyFromRDRAM;
 		u32 detectCFB;
 		u32 N64DepthCompare;
-		u32 aspect; // 0: stretch ; 1: 4/3 ; 2: 16/9
+		u32 aspect; // 0: stretch ; 1: 4/3 ; 2: 16/9; 3: adjust
 		u32 validityCheckMethod; // 0: checksum; 1: fill RDRAM
 	} frameBufferEmulation;
 

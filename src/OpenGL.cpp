@@ -195,11 +195,11 @@ void OGLVideo::_setBufferSize()
 {
 	if (config.frameBufferEmulation.enable) {
 		switch (config.frameBufferEmulation.aspect) {
-			case 0: // stretch
+		case Config::aStretch: // stretch
 			m_width = m_screenWidth;
 			m_height = m_screenHeight;
 			break;
-			case 1: // force 4/3
+		case Config::a43: // force 4/3
 			if (m_screenWidth * 3 / 4 > m_screenHeight) {
 				m_height = m_screenHeight;
 				m_width = m_screenHeight * 4 / 3;
@@ -211,7 +211,7 @@ void OGLVideo::_setBufferSize()
 				m_height = m_screenHeight;
 			}
 			break;
-			case 2: // force 16/9
+		case Config::a169: // force 16/9
 			if (m_screenWidth * 9 / 16 > m_screenHeight) {
 				m_height = m_screenHeight;
 				m_width = m_screenHeight * 16 / 9;
