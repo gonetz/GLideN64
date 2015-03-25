@@ -554,10 +554,14 @@ void gSPProcessVertex(u32 v)
 	if (gSP.changed & CHANGED_MATRIX)
 		gSPCombineMatrices();
 
-	OGLRender & render = video().getRender();
+	OGLVideo & ogl = video();
+	OGLRender & render = ogl.getRender();
 	SPVertex & vtx = render.getVertex(v);
 	float vPos[3] = {(float)vtx.x, (float)vtx.y, (float)vtx.z};
 	gSPTransformVertex( &vtx.x, gSP.matrix.combined );
+
+	if (ogl.isAdjustScreen() && (gDP.colorImage.width > VI.width * 98 / 100))
+			vtx.x *= ogl.getAdjustScale();
 
 	if (gSP.viewport.vscale[0] < 0)
 		vtx.x = -vtx.x;

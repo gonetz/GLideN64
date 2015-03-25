@@ -100,6 +100,7 @@ private:
 	void _setBlendMode() const;
 	void _updateCullFace() const;
 	void _updateViewport() const;
+	void _updateScissor() const;
 	void _updateDepthUpdate() const;
 	void _updateStates(RENDER_STATE _renderState) const;
 	void _prepareDrawTriangle(bool _dma);
@@ -146,12 +147,14 @@ public:
 	void updateScale();
 	f32 getScaleX() const {return m_scaleX;}
 	f32 getScaleY() const {return m_scaleY;}
-	u32 getWidth() const {return m_width;}
+	f32 getAdjustScale() const {return m_adjustScale;}
+	u32 getWidth() const { return m_width; }
 	u32 getHeight() const {return m_height;}
 	u32 getScreenWidth() const {return m_screenWidth;}
 	u32 getScreenHeight() const {return m_screenHeight;}
 	u32 getHeightOffset() const {return m_heightOffset;}
 	bool isFullscreen() const {return m_bFullscreen;}
+	bool isAdjustScreen() const {return m_bAdjustScreen;}
 
 	OGLRender & getRender() {return m_render;}
 
@@ -159,10 +162,10 @@ public:
 
 protected:
 	OGLVideo() :
-		m_bCaptureScreen(false), m_bToggleFullscreen(false), m_bResizeWindow(false), m_bFullscreen(false),
+		m_bCaptureScreen(false), m_bToggleFullscreen(false), m_bResizeWindow(false), m_bFullscreen(false), m_bAdjustScreen(false),
 		m_width(0), m_height(0), m_heightOffset(0),
 		m_screenWidth(0), m_screenHeight(0), m_resizeWidth(0), m_resizeHeight(0),
-		m_scaleX(0), m_scaleY(0), m_strScreenDirectory(NULL)
+		m_scaleX(0), m_scaleY(0), m_adjustScale(0), m_strScreenDirectory(NULL)
 	{}
 
 	void _setBufferSize();
@@ -171,11 +174,13 @@ protected:
 	bool m_bToggleFullscreen;
 	bool m_bResizeWindow;
 	bool m_bFullscreen;
+	bool m_bAdjustScreen;
 
 	u32 m_width, m_height, m_heightOffset;
 	u32 m_screenWidth, m_screenHeight;
 	u32 m_resizeWidth, m_resizeHeight;
 	f32 m_scaleX, m_scaleY;
+	f32 m_adjustScale;
 
 	const char * m_strScreenDirectory;
 

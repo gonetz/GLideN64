@@ -193,6 +193,7 @@ void OGLVideo::updateScale()
 
 void OGLVideo::_setBufferSize()
 {
+	m_bAdjustScreen = false;
 	if (config.frameBufferEmulation.enable) {
 		switch (config.frameBufferEmulation.aspect) {
 		case Config::aStretch: // stretch
@@ -223,7 +224,16 @@ void OGLVideo::_setBufferSize()
 				m_height = m_screenHeight;
 			}
 			break;
-			default:
+		case Config::aAdjust: // adjust
+			m_width = m_screenWidth;
+			m_height = m_screenHeight;
+			if (m_screenWidth * 3 / 4 > m_screenHeight) {
+				f32 width43 = m_screenHeight * 4.0f / 3.0f;
+				m_adjustScale = width43 / m_screenWidth;
+				m_bAdjustScreen = true;
+			}
+			break;
+		default:
 			assert(false && "Unknown aspect ratio");
 			m_width = m_screenWidth;
 			m_height = m_screenHeight;
@@ -438,6 +448,14 @@ void OGLRender::_updateCullFace() const
 		glDisable( GL_CULL_FACE );
 }
 
+inline
+float _adjustViewportX(f32 _X0)
+{
+		const float halfX = gDP.colorImage.width / 2.0f;
+		const float halfVP = gSP.viewport.width / 2.0f;
+		return (_X0 + halfVP - halfX) * video().getAdjustScale() + halfX - halfVP;
+}
+
 void OGLRender::_updateViewport() const
 {
 	OGLVideo & ogl = video();
@@ -445,19 +463,62 @@ void OGLRender::_updateViewport() const
 	if (pCurrentBuffer == NULL) {
 		const f32 scaleX = ogl.getScaleX();
 		const f32 scaleY = ogl.getScaleY();
-		const GLint X = gSP.viewport.vscale[0] < 0 ? (GLint)((gSP.viewport.x + gSP.viewport.vscale[0] * 2.0f) * scaleX) : (GLint)(gSP.viewport.x * scaleX);
+		float Xf = gSP.viewport.vscale[0] < 0 ? (gSP.viewport.x + gSP.viewport.vscale[0] * 2.0f) : gSP.viewport.x;
+		if (ogl.isAdjustScreen() && gSP.viewport.width < gDP.colorImage.width && gDP.colorImage.width > VI.width * 98 / 100)
+			Xf = _adjustViewportX(Xf);
+		const GLint X = (GLint)(Xf * scaleX);
 		const GLint Y = gSP.viewport.vscale[1] < 0 ? (GLint)((gSP.viewport.y + gSP.viewport.vscale[1] * 2.0f) * scaleY) : (GLint)((VI.height - (gSP.viewport.y + gSP.viewport.height)) * scaleY);
-		glViewport( X, Y + ogl.getHeightOffset(),
+		glViewport(X, Y + ogl.getHeightOffset(),
 			max((GLint)(gSP.viewport.width * scaleX), 0), max((GLint)(gSP.viewport.height * scaleY), 0));
 	} else {
 		const f32 scaleX = pCurrentBuffer->m_scaleX;
 		const f32 scaleY = pCurrentBuffer->m_scaleY;
-		const GLint X = gSP.viewport.vscale[0] < 0 ? (GLint)((gSP.viewport.x + gSP.viewport.vscale[0] * 2.0f) * scaleX) : (GLint)(gSP.viewport.x * scaleX);
+		float Xf = gSP.viewport.vscale[0] < 0 ? (gSP.viewport.x + gSP.viewport.vscale[0] * 2.0f) : gSP.viewport.x;
+		if (ogl.isAdjustScreen() && gSP.viewport.width < gDP.colorImage.width && gDP.colorImage.width > VI.width * 98 / 100)
+			Xf = _adjustViewportX(Xf);
+		const GLint X = (GLint)(Xf * scaleX);
 		const GLint Y = gSP.viewport.vscale[1] < 0 ? (GLint)((gSP.viewport.y + gSP.viewport.vscale[1] * 2.0f) * scaleY) : (GLint)((pCurrentBuffer->m_height - (gSP.viewport.y + gSP.viewport.height)) * scaleY);
 		glViewport(X, Y,
 			max((GLint)(gSP.viewport.width * scaleX), 0), max((GLint)(gSP.viewport.height * scaleY), 0));
 	}
 	gSP.changed &= ~CHANGED_VIEWPORT;
+}
+
+inline
+void _adjustScissorX(f32 & _X0, f32 & _X1, float _scale)
+{
+	const float halfX = gDP.colorImage.width / 2.0f;
+	_X0 = (_X0 - halfX) * _scale + halfX;
+	_X1 = (_X1 - halfX) * _scale + halfX;
+}
+
+void OGLRender::_updateScissor() const
+{
+	OGLVideo & ogl = video();
+	f32 scaleX, scaleY;
+	u32 heightOffset, screenHeight;
+	FrameBuffer * pCurrentBuffer = frameBufferList().getCurrent();
+	if (pCurrentBuffer == NULL) {
+		scaleX = ogl.getScaleX();
+		scaleY = ogl.getScaleY();
+		heightOffset = ogl.getHeightOffset();
+		screenHeight = VI.height;
+	}
+	else {
+		scaleX = pCurrentBuffer->m_scaleX;
+		scaleY = pCurrentBuffer->m_scaleY;
+		heightOffset = 0;
+		screenHeight = (pCurrentBuffer->m_height == 0) ? VI.height : pCurrentBuffer->m_height;
+	}
+
+	float SX0 = gDP.scissor.ulx;
+	float SX1 = gDP.scissor.lrx;
+	if (ogl.isAdjustScreen() && gSP.viewport.width < gDP.colorImage.width && gDP.colorImage.width > VI.width * 98 / 100)
+		_adjustScissorX(SX0, SX1, ogl.getAdjustScale());
+
+	glScissor((GLint)(SX0 * scaleX), (GLint)((screenHeight - gDP.scissor.lry) * scaleY + heightOffset),
+		max((GLint)((SX1 - SX0) * scaleX), 0), max((GLint)((gDP.scissor.lry - gDP.scissor.uly) * scaleY), 0));
+	gDP.changed &= ~CHANGED_SCISSOR;
 }
 
 void OGLRender::_updateDepthUpdate() const
@@ -527,21 +588,8 @@ void OGLRender::_updateStates(RENDER_STATE _renderState) const
 		}
 	}
 
-	if (gDP.changed & CHANGED_SCISSOR) {
-		FrameBuffer * pCurrentBuffer = frameBufferList().getCurrent();
-		if (pCurrentBuffer == NULL) {
-			const f32 scaleX = ogl.getScaleX();
-			const f32 scaleY = ogl.getScaleY();
-			glScissor((GLint)(gDP.scissor.ulx * scaleX), (GLint)((VI.height - gDP.scissor.lry) * scaleY) + ogl.getHeightOffset(),
-				max((GLint)((gDP.scissor.lrx - gDP.scissor.ulx) * scaleX), 0), max((GLint)((gDP.scissor.lry - gDP.scissor.uly) * scaleY), 0));
-		} else {
-			const f32 scaleX = pCurrentBuffer->m_scaleX;
-			const f32 scaleY = pCurrentBuffer->m_scaleY;
-			glScissor((GLint)(gDP.scissor.ulx * scaleX), (GLint)((pCurrentBuffer->m_height - gDP.scissor.lry) * scaleY),
-				max((GLint)((gDP.scissor.lrx - gDP.scissor.ulx) * scaleX), 0), max((GLint)((gDP.scissor.lry - gDP.scissor.uly) * scaleY), 0));
-		}
-		gDP.changed &= ~CHANGED_SCISSOR;
-	}
+	if (gDP.changed & CHANGED_SCISSOR)
+		_updateScissor();
 
 	if (gSP.changed & CHANGED_VIEWPORT)
 		_updateViewport();
@@ -783,10 +831,17 @@ void OGLRender::drawRect(int _ulx, int _uly, int _lrx, int _lry, float *_pColor)
 	m_rect[3].z = Z;
 	m_rect[3].w = W;
 
+	if (ogl.isAdjustScreen() && (gDP.colorImage.width > VI.width * 98 / 100) && (_lrx - _ulx < VI.width * 9 / 10)) {
+		const float scale = ogl.getAdjustScale();
+		for (u32 i = 0; i < 4; ++i)
+			m_rect[i].x *= scale;
+	}
+
 	if (gDP.otherMode.cycleType == G_CYC_FILL)
 		glVertexAttrib4fv(SC_COLOR, _pColor);
 	else
 		glVertexAttrib4f(SC_COLOR, 0.0f, 0.0f, 0.0f, 0.0f);
+
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 	gSP.changed |= CHANGED_GEOMETRYMODE | CHANGED_VIEWPORT;
 }
@@ -1065,6 +1120,12 @@ void OGLRender::drawTexturedRect(const TexturedRectParams & _params)
 		m_rect[2].t0 = texST[0].t1;
 		m_rect[2].s1 = texST[1].s0;
 		m_rect[2].t1 = texST[1].t1;
+	}
+
+	if (ogl.isAdjustScreen() && (gDP.colorImage.width > VI.width * 98 / 100) && (_params.lrx - _params.ulx < VI.width * 9 / 10)) {
+		const float scale = ogl.getAdjustScale();
+		for (u32 i = 0; i < 4; ++i)
+			m_rect[i].x *= scale;
 	}
 
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
