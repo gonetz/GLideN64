@@ -157,6 +157,7 @@ bool OGLVideo::changeWindow()
 		return false;
 	m_render._destroyData();
 	_changeWindow();
+	updateScale();
 	m_render._initData();
 	m_bToggleFullscreen = false;
 	return true;
