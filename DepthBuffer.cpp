@@ -204,10 +204,8 @@ void DepthBuffer::bindDepthImageTexture()
 #endif
 }
 
-void DepthBufferList::init()
+DepthBufferList::DepthBufferList() : m_pCurrent(NULL), m_pzLUT(NULL) 
 {
-	m_pCurrent = NULL;
-
 	m_pzLUT = new u16[0x40000];
 	for (int i = 0; i<0x40000; i++) {
 		u32 exponent = 0;
@@ -222,10 +220,20 @@ void DepthBufferList::init()
 	}
 }
 
-void DepthBufferList::destroy()
+DepthBufferList::~DepthBufferList()
 {
 	delete[] m_pzLUT;
 	m_pzLUT = NULL;
+	m_list.clear();
+}
+
+void DepthBufferList::init()
+{
+	m_pCurrent = NULL;
+}
+
+void DepthBufferList::destroy()
+{
 	m_pCurrent = NULL;
 	m_list.clear();
 }
