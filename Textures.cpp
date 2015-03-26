@@ -446,15 +446,15 @@ void TextureCache::init()
 	m_pDummy->frameBufferTexture = FALSE;
 	m_pDummy->width = 2;
 	m_pDummy->height = 2;
-	m_pDummy->realWidth = 0;
-	m_pDummy->realHeight = 0;
+	m_pDummy->realWidth = 2;
+	m_pDummy->realHeight = 2;
 	m_pDummy->maskS = 0;
 	m_pDummy->maskT = 0;
 	m_pDummy->scaleS = 0.5f;
 	m_pDummy->scaleT = 0.5f;
 	m_pDummy->shiftScaleS = 1.0f;
 	m_pDummy->shiftScaleT = 1.0f;
-	m_pDummy->textureBytes = 64;
+	m_pDummy->textureBytes = 2*2*4;
 	m_pDummy->tMem = 0;
 
 	glBindTexture( GL_TEXTURE_2D, m_pDummy->glName );
