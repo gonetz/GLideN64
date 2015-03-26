@@ -134,8 +134,8 @@ FrameBuffer::~FrameBuffer()
 
 void FrameBuffer::_initTexture(u16 _format, u16 _size, CachedTexture *_pTexture)
 {
-	_pTexture->width = (u32)(m_width * video().getScaleX());
-	_pTexture->height = (u32)(m_height * video().getScaleY());
+	_pTexture->width = (u32)(m_width * m_scaleX);
+	_pTexture->height = (u32)(m_height * m_scaleY);
 	_pTexture->format = _format;
 	_pTexture->size = _size;
 	_pTexture->clampS = 1;
