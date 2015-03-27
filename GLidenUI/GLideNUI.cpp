@@ -80,7 +80,5 @@ EXPORT void CALL LoadConfig(const wchar_t * _strFileName)
 
 EXPORT void CALL LoadCustomRomSettings(const wchar_t * _strFileName, const char * _romName)
 {
-	QString romName(_romName);
-	romName = romName.replace(' ', '_');
-	loadCustomRomSettings(QString::fromWCharArray(_strFileName), romName);
+	loadCustomRomSettings(QString::fromWCharArray(_strFileName), _romName);
 }
