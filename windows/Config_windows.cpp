@@ -409,11 +409,11 @@ void Config_DoConfig(HWND hParent)
 	wchar_t strIniFileName[PLUGIN_PATH_SIZE];
 	_getIniFileName(strIniFileName);
 
-	if (RunConfig(strIniFileName)) {
-		if (config.generalEmulation.enableCustomSettings != 0)
-			LoadCustomRomSettings(strIniFileName, RSP.romname);
+	const bool bRestart = RunConfig(strIniFileName);
+	if (config.generalEmulation.enableCustomSettings != 0)
+		LoadCustomRomSettings(strIniFileName, RSP.romname);
+	if (bRestart)
 		video().restart();
-	}
 }
 
 void Config_LoadConfig()
