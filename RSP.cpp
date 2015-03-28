@@ -150,7 +150,6 @@ void RSP_ProcessDList()
 	gSP.matrix.modelViewi = 0;
 	gSP.changed &= ~CHANGED_CPU_FB_WRITE;
 	gSP.changed |= CHANGED_MATRIX;
-	gDPSetDepthSource(G_ZS_PIXEL);
 	gDPSetTexturePersp(G_TP_PERSP);
 
 	u32 uc_start = *(u32*)&DMEM[0x0FD0];
@@ -251,20 +250,7 @@ void RSP_SetDefaultState()
 	gSP.matrix.modelView[0][2][2] = 1.0f;
 	gSP.matrix.modelView[0][3][3] = 1.0f;
 
-	gDPSetAlphaCompare(G_AC_NONE);
-	gDPSetDepthSource(G_ZS_PIXEL);
-	gDPSetRenderMode(0, 0);
-	gDPSetAlphaDither(G_AD_DISABLE);
-	gDPSetColorDither(G_CD_DISABLE);
-	gDPSetCombineKey(G_CK_NONE);
-	gDPSetTextureConvert(G_TC_FILT);
-	gDPSetTextureFilter(G_TF_POINT);
-	gDPSetTextureLUT(G_TT_NONE);
-	gDPSetTextureLOD(G_TL_TILE);
-	gDPSetTextureDetail(G_TD_CLAMP);
-	gDPSetTexturePersp(G_TP_PERSP);
-	gDPSetCycleType(G_CYC_1CYCLE);
-	gDPPipelineMode(G_PM_NPRIMITIVE);
+	gDP.otherMode._u64 = 0U;
 }
 
 u32 DepthClearColor = 0xfffcfffc;

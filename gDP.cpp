@@ -71,28 +71,6 @@ void gDPSetPrimDepth( u16 z, u16 dz )
 #endif
 }
 
-void gDPPipelineMode( u32 mode )
-{
-	gDP.otherMode.pipelineMode = mode;
-
-#ifdef DEBUG
-	DebugMsg( DEBUG_HIGH | DEBUG_HANDLED, "gDPPipelineMode( %s );\n",
-		PipelineModeText[gDP.otherMode.pipelineMode] );
-#endif
-}
-
-void gDPSetCycleType( u32 type )
-{
-	gDP.otherMode.cycleType = type & 3;
-
-	gDP.changed |= CHANGED_CYCLETYPE;
-
-#ifdef DEBUG
-	DebugMsg( DEBUG_HIGH | DEBUG_HANDLED, "gDPSetCycleType( %s );\n",
-		CycleTypeText[gDP.otherMode.cycleType] );
-#endif
-}
-
 void gDPSetTexturePersp( u32 enable )
 {
 	gDP.otherMode.texturePersp = enable & 1;
@@ -103,26 +81,6 @@ void gDPSetTexturePersp( u32 enable )
 #endif
 }
 
-void gDPSetTextureDetail( u32 type )
-{
-	gDP.otherMode.textureDetail = type & 3;
-
-#ifdef DEBUG
-	DebugMsg( DEBUG_HIGH | DEBUG_HANDLED | DEBUG_TEXTURE, "gDPSetTextureDetail( %s );\n",
-		TextureDetailText[gDP.otherMode.textureDetail] );
-#endif
-}
-
-void gDPSetTextureLOD( u32 mode )
-{
-	gDP.otherMode.textureLOD = mode & 1;
-
-#ifdef DEBUG
-	DebugMsg( DEBUG_HIGH | DEBUG_HANDLED | DEBUG_TEXTURE, "gDPSetTextureLOD( %s );\n",
-		TextureLODText[gDP.otherMode.textureLOD] );
-#endif
-}
-
 void gDPSetTextureLUT( u32 mode )
 {
 	gDP.otherMode.textureLUT = mode & 3;
@@ -130,99 +88,6 @@ void gDPSetTextureLUT( u32 mode )
 #ifdef DEBUG
 	DebugMsg( DEBUG_HIGH | DEBUG_HANDLED | DEBUG_TEXTURE, "gDPSetTextureLUT( %s );\n",
 		TextureLUTText[gDP.otherMode.textureLUT] );
-#endif
-}
-
-void gDPSetTextureFilter( u32 type )
-{
-	gDP.otherMode.textureFilter = type & 3;
-
-#ifdef DEBUG
-	DebugMsg( DEBUG_HIGH | DEBUG_HANDLED | DEBUG_TEXTURE, "gDPSetTextureFilter( %s );\n",
-		TextureFilterText[gDP.otherMode.textureFilter] );
-#endif
-}
-
-void gDPSetTextureConvert( u32 type )
-{
-	gDP.otherMode.textureConvert = type & 7;
-
-#ifdef DEBUG
-	DebugMsg( DEBUG_HIGH | DEBUG_HANDLED | DEBUG_TEXTURE, "gDPSetTextureConvert( %s );\n",
-		TextureConvertText[gDP.otherMode.textureConvert] );
-#endif
-}
-
-void gDPSetCombineKey( u32 type )
-{
-	gDP.otherMode.combineKey = type & 1;
-
-#ifdef DEBUG
-	DebugMsg( DEBUG_HIGH | DEBUG_HANDLED | DEBUG_COMBINE, "gDPSetCombineKey( %s );\n",
-		CombineKeyText[gDP.otherMode.combineKey] );
-#endif
-}
-
-void gDPSetColorDither( u32 type )
-{
-	gDP.otherMode.colorDither = type & 3;
-
-#ifdef DEBUG
-	DebugMsg( DEBUG_HIGH | DEBUG_HANDLED, "gDPSetColorDither( %s );\n",
-		ColorDitherText[gDP.otherMode.colorDither] );
-#endif
-}
-
-void gDPSetAlphaDither( u32 type )
-{
-	gDP.otherMode.alphaDither = type & 3;
-
-#ifdef DEBUG
-	DebugMsg( DEBUG_HIGH | DEBUG_HANDLED, "gDPSetAlphaDither( %s );\n",
-		AlphaDitherText[gDP.otherMode.alphaDither] );
-#endif
-}
-
-void gDPSetAlphaCompare( u32 mode )
-{
-	gDP.otherMode.alphaCompare = mode & 3;
-
-	gDP.changed |= CHANGED_ALPHACOMPARE;
-
-#ifdef DEBUG
-	DebugMsg( DEBUG_HIGH | DEBUG_HANDLED, "gDPSetAlphaCompare( %s );\n",
-		AlphaCompareText[gDP.otherMode.alphaCompare] );
-#endif
-}
-
-void gDPSetDepthSource( u32 source )
-{
-	gDP.otherMode.depthSource = source & 1;
-
-#ifdef DEBUG
-	DebugMsg( DEBUG_HIGH | DEBUG_HANDLED, "gDPSetDepthSource( %s );\n",
-		DepthSourceText[gDP.otherMode.depthSource] );
-#endif
-}
-
-void gDPSetRenderMode( u32 mode1, u32 mode2 )
-{
-	gDP.otherMode.l |= mode1 | mode2;
-
-	gDP.changed |= CHANGED_RENDERMODE;
-
-#ifdef DEBUG
-	// THIS IS INCOMPLETE!!!
-	DebugMsg( DEBUG_HIGH | DEBUG_HANDLED, "gDPSetRenderMode( %s%s%s%s%s | %s | %s%s%s );\n",
-		gDP.otherMode.AAEnable ? "AA_EN | " : "",
-		gDP.otherMode.depthCompare ? "Z_CMP | " : "",
-		gDP.otherMode.depthUpdate ? "Z_UPD | " : "",
-		gDP.otherMode.imageRead ? "IM_RD | " : "",
-		CvgDestText[gDP.otherMode.cvgDest],
-		DepthModeText[gDP.otherMode.depthMode],
-		gDP.otherMode.cvgXAlpha ? "CVG_X_ALPHA | " : "",
-		gDP.otherMode.alphaCvgSel ? "ALPHA_CVG_SEL | " : "",
-		gDP.otherMode.forceBlender ? "FORCE_BL" : "" );
 #endif
 }
 

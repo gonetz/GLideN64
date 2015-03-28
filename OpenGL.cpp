@@ -131,9 +131,8 @@ void OGLVideo::restart()
 void OGLVideo::swapBuffers()
 {
 	_swapBuffers();
-	gDPSetRenderMode(0, 0);
+	gDP.otherMode.l = 0;
 	gDPSetTextureLUT(G_TT_NONE);
-	gDPSetAlphaCompare(G_AC_NONE);
 	++RSP.DList;
 }
 
