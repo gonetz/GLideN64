@@ -21,7 +21,6 @@ static GLuint  g_calc_light_shader_object;
 static GLuint  g_calc_mipmap_shader_object;
 static GLuint  g_calc_noise_shader_object;
 static GLuint  g_calc_depth_shader_object;
-static GLuint  g_test_alpha_shader_object;
 static GLuint  g_readtex_shader_object;
 static GLuint  g_dither_shader_object;
 
@@ -282,7 +281,6 @@ void InitShaderCombiner()
 	g_calc_light_shader_object = _createShader(GL_FRAGMENT_SHADER, fragment_shader_calc_light);
 	g_calc_mipmap_shader_object = _createShader(GL_FRAGMENT_SHADER, fragment_shader_mipmap);
 	g_calc_noise_shader_object = _createShader(GL_FRAGMENT_SHADER, fragment_shader_noise);
-	g_test_alpha_shader_object = _createShader(GL_FRAGMENT_SHADER, alpha_test_fragment_shader);
 	g_readtex_shader_object = _createShader(GL_FRAGMENT_SHADER, fragment_shader_readtex);
 	g_dither_shader_object = _createShader(GL_FRAGMENT_SHADER, fragment_shader_dither);
 
@@ -314,8 +312,6 @@ void DestroyShaderCombiner() {
 	g_readtex_shader_object = 0;
 	glDeleteShader(g_calc_noise_shader_object);
 	g_calc_noise_shader_object = 0;
-	glDeleteShader(g_test_alpha_shader_object);
-	g_test_alpha_shader_object = 0;
 	glDeleteShader(g_dither_shader_object);
 	g_dither_shader_object = 0;
 	glDeleteShader(g_calc_depth_shader_object);
@@ -547,12 +543,17 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 	strFragmentShader.append("  vec_color = vec4(input_color, vShadeColor.a); \n");
 	strFragmentShader.append(strCombiner);
 
-	strFragmentShader.append("  if (!alpha_test(alpha2)) discard;\n");
+	strFragmentShader.append(
+		"  if (uEnableAlphaTest != 0) {				\n"
+		"    lowp float alphaTestValue = (uAlphaCompareMode == 3 && alpha2 > 0.0) ? snoise() : uAlphaTestValue;	\n"
+		"    if  (alpha2 < alphaTestValue) discard;	\n"
+		"  }										\n"
+		);
 
 	if (config.generalEmulation.enableNoise != 0) {
 		strFragmentShader.append(
-			"  if (uColorDitherMode == 2) colorNoiseDither(clamp(snoise(), 0.0, 1.0), color2);	\n"
-			"  if (uAlphaDitherMode == 2) alphaNoiseDither(clamp(snoise(), 0.0, 1.0), alpha2);	\n"
+			"  if (uColorDitherMode == 2) colorNoiseDither(snoise(), color2);	\n"
+			"  if (uAlphaDitherMode == 2) alphaNoiseDither(snoise(), alpha2);	\n"
 		);
 	}
 
@@ -596,7 +597,6 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 #endif
 
 #ifdef GLES2
-	strFragmentShader.append(alpha_test_fragment_shader);
 	strFragmentShader.append(noise_fragment_shader);
 	if (bUseLod)
 		strFragmentShader.append(fragment_shader_mipmap);
@@ -625,7 +625,6 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 		glAttachShader(m_program, g_calc_mipmap_shader_object);
 	else if (usesTex())
 		glAttachShader(m_program, g_readtex_shader_object);
-	glAttachShader(m_program, g_test_alpha_shader_object);
 	if (video().getRender().isImageTexturesSupported() && config.frameBufferEmulation.N64DepthCompare != 0)
 		glAttachShader(m_program, g_calc_depth_shader_object);
 	if (config.generalEmulation.enableNoise != 0) {
@@ -905,16 +904,16 @@ void ShaderCombiner::updateAlphaTestInfo(bool _bForce) {
 		_setIUniform(m_uniforms.uEnableAlphaTest, 0, _bForce);
 		_setFUniform(m_uniforms.uAlphaTestValue, 0.0f, _bForce);
 	} else if (gDP.otherMode.cycleType == G_CYC_COPY) {
-		if (gDP.otherMode.alphaCompare & 1) {
+		if (gDP.otherMode.alphaCompare & G_AC_THRESHOLD) {
 			_setIUniform(m_uniforms.uEnableAlphaTest, 1, _bForce);
 			_setFUniform(m_uniforms.uAlphaTestValue, 0.5f, _bForce);
 		} else {
 			_setIUniform(m_uniforms.uEnableAlphaTest, 0, _bForce);
 			_setFUniform(m_uniforms.uAlphaTestValue, 0.0f, _bForce);
 		}
-	} else if ((gDP.otherMode.alphaCompare == G_AC_THRESHOLD) && (gDP.otherMode.alphaCvgSel == 0) && (gDP.otherMode.forceBlender == 0 || gDP.blendColor.a > 0))	{
+	} else if (((gDP.otherMode.alphaCompare & G_AC_THRESHOLD) != 0) && (gDP.otherMode.alphaCvgSel == 0) && (gDP.otherMode.forceBlender == 0 || gDP.blendColor.a > 0))	{
 		_setIUniform(m_uniforms.uEnableAlphaTest, 1, _bForce);
-		_setFUniform(m_uniforms.uAlphaTestValue, gDP.blendColor.a, _bForce);
+		_setFUniform(m_uniforms.uAlphaTestValue, max(gDP.blendColor.a, 1.0f/256.0f), _bForce);
 	} else if (gDP.otherMode.cvgXAlpha != 0)	{
 		_setIUniform(m_uniforms.uEnableAlphaTest, 1, _bForce);
 		_setFUniform(m_uniforms.uAlphaTestValue, 0.125f, _bForce);

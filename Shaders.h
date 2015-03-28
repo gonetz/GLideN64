@@ -204,6 +204,8 @@ static const char* fragment_shader_header_common_variables =
 "uniform lowp int uFb8Bit;		\n"
 "uniform lowp int uFbFixedAlpha;\n"
 "uniform lowp int uSpecialBlendMode;\n"
+"uniform lowp int uEnableAlphaTest;	\n"
+"uniform lowp float uAlphaTestValue;\n"
 "uniform mediump vec2 uDepthScale;	\n"
 "in lowp vec4 vShadeColor;	\n"
 "in mediump vec2 vTexCoord0;\n"
@@ -264,6 +266,8 @@ static const char* fragment_shader_header_common_variables_notex =
 "uniform lowp int uGammaCorrectionEnabled;	\n"
 "uniform lowp int uFogUsage;	\n"
 "uniform lowp int uSpecialBlendMode;\n"
+"uniform lowp int uEnableAlphaTest;	\n"
+"uniform lowp float uAlphaTestValue;\n"
 "uniform mediump vec2 uDepthScale;	\n"
 "in lowp vec4 vShadeColor;	\n"
 "in lowp float vNumLights;	\n"
@@ -280,7 +284,6 @@ static const char* fragment_shader_header_common_functions =
 "mediump float mipmap(out lowp vec4 readtex0, out lowp vec4 readtex1);		\n"
 "lowp vec4 readTex(in sampler2D tex, in mediump vec2 texCoord, in bool fb8bit, in bool fbFixedAlpha);	\n"
 "bool depth_compare();										\n"
-"bool alpha_test(in lowp float alphaValue);						\n"
 "void colorNoiseDither(in float _noise, inout vec3 _color);	\n"
 "void alphaNoiseDither(in float _noise, inout float _alpha);\n"
 #else
@@ -289,7 +292,6 @@ static const char* fragment_shader_header_common_functions =
 "float calc_light(in float fLights, in vec3 input_color, out vec3 output_color);\n"
 "float mipmap(out vec4 readtex0, out vec4 readtex1);		\n"
 "bool depth_compare();										\n"
-"bool alpha_test(in float alphaValue);						\n"
 #endif
 #ifdef USE_TOONIFY
 "void toonify(in mediump float intensity);	\n"
@@ -301,7 +303,6 @@ static const char* fragment_shader_header_common_functions_notex =
 "lowp float snoise();						\n"
 "void calc_light(in lowp float fLights, in lowp vec3 input_color, out lowp vec3 output_color);\n"
 "bool depth_compare();										\n"
-"bool alpha_test(in lowp float alphaValue);						\n"
 "void colorNoiseDither(in float _noise, inout vec3 _color);	\n"
 "void alphaNoiseDither(in float _noise, inout float _alpha);\n"
 ;
@@ -328,34 +329,12 @@ static const char* fragment_shader_calc_light =
 "}																\n"
 ;
 
-static const char* alpha_test_fragment_shader =
-#ifdef SHADER_PRECISION
-"#version 330 core								\n"
-"uniform lowp int uEnableAlphaTest;				\n"
-"uniform lowp float uAlphaTestValue;			\n"
-"bool alpha_test(in lowp float alphaValue)		\n"
-#else
-"#version 330 core										\n"
-"uniform int uEnableAlphaTest;				\n"
-"uniform float uAlphaTestValue;				\n"
-"bool alpha_test(in float alphaValue)		\n"
-#endif
-"{											\n"
-"  if (uEnableAlphaTest == 0) return true;	\n"
-"  if (uAlphaTestValue > 0.0) return alphaValue >= uAlphaTestValue;\n"
-"  return alphaValue > 0.0;					\n"
-"}											\n"
-;
-
 static const char* fragment_shader_header_main =
 #ifdef SHADER_PRECISION
 "									\n"
 "void main()						\n"
 "{									\n"
 "  gl_FragDepth = clamp((gl_FragCoord.z * 2.0 - 1.0) * uDepthScale.s + uDepthScale.t, 0.0, 1.0);   \n"
-"  if (uAlphaCompareMode == 3) {//dither \n"
-"    if (snoise() < 0.0) discard; \n"
-"  }								\n"
 "  lowp vec4 vec_color, combined_color;	\n"
 "  lowp float alpha1, alpha2;			\n"
 "  lowp vec3 color1, color2;				\n"
@@ -639,7 +618,7 @@ static const char* fragment_shader_noise =
 "lowp float snoise()									\n"
 "{														\n"
 "  ivec2 coord = ivec2(gl_FragCoord.xy/uScreenScale);	\n"
-"  return (texelFetch(uTexNoise, coord, 0).r - 0.5)*2.0;\n"
+"  return texelFetch(uTexNoise, coord, 0).r;			\n"
 "}														\n"
 ;
 
