@@ -298,12 +298,12 @@ void FrameBufferList::correctHeight()
 	}
 }
 
-
 void FrameBufferList::clearBuffersChanged()
 {
 	gDP.colorImage.changed = FALSE;
-	for (FrameBuffers::iterator iter = m_list.begin(); iter != m_list.end(); ++iter)
-		iter->m_changed = false;
+	FrameBuffer * pBuffer = frameBufferList().findBuffer(*REG.VI_ORIGIN);
+	if (pBuffer != NULL)
+		pBuffer->m_changed = false;
 }
 
 FrameBuffer * FrameBufferList::findBuffer(u32 _startAddress)
@@ -1046,6 +1046,7 @@ void RDRAMtoFrameBuffer::CopyFromRDRAM( u32 _address, bool _bUseAlpha)
 	if (pBuffer->m_startAddress == _address && gDP.colorImage.changed != 0)
 		return;
 
+	const bool bUseAlpha = _bUseAlpha && pBuffer->m_changed;
 	const u32 address = pBuffer->m_startAddress;
 	const u32 width = pBuffer->m_width;
 	const u32 height = pBuffer->m_startAddress == _address ? VI.real_height : pBuffer->m_height;
@@ -1081,7 +1082,7 @@ void RDRAMtoFrameBuffer::CopyFromRDRAM( u32 _address, bool _bUseAlpha)
 				if (idx >= bound)
 					break;
 				col = src[idx];
-				if (_bUseAlpha)
+				if (bUseAlpha)
 					src[idx] = 0;
 				empty |= col;
 				r = ((col >> 11)&31)<<3;
@@ -1104,7 +1105,7 @@ void RDRAMtoFrameBuffer::CopyFromRDRAM( u32 _address, bool _bUseAlpha)
 				if (idx >= bound)
 					break;
 				col = src[idx];
-				if (_bUseAlpha)
+				if (bUseAlpha)
 					src[idx] = 0;
 				empty |= col;
 				r = (col >> 24) & 0xff;
