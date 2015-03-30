@@ -1069,7 +1069,7 @@ void RDRAMtoFrameBuffer::CopyFromRDRAM( u32 _address, bool _bUseAlpha)
 	u32 * dst = (u32*)ptr;
 
 	u32 empty = 0;
-	u32 r, g, b,a, idx;
+	u32 r, g, b, a, idx;
 	if (pBuffer->m_size == G_IM_SIZ_16b) {
 		u16 * src = (u16*)image;
 		u16 col;
@@ -1088,7 +1088,7 @@ void RDRAMtoFrameBuffer::CopyFromRDRAM( u32 _address, bool _bUseAlpha)
 				r = ((col >> 11)&31)<<3;
 				g = ((col >> 6)&31)<<3;
 				b = ((col >> 1)&31)<<3;
-				a = (col&1) > 0 ? 0xff : 0;
+				a = (col&1) > 0 && (r|g|b) > 0 ? 0xff : 0U;
 				dst[x + y*width] = (a << 24) | (b << 16) | (g << 8) | r;
 			}
 		}
@@ -1111,7 +1111,7 @@ void RDRAMtoFrameBuffer::CopyFromRDRAM( u32 _address, bool _bUseAlpha)
 				r = (col >> 24) & 0xff;
 				g = (col >> 16) & 0xff;
 				b = (col >> 8) & 0xff;
-				a = col & 0xff;
+				a = (r|g|b) > 0 ? col & 0xff : 0U;
 				dst[x + y*width] = (a<<24)|(b<<16)|(g<<8)|r;
 			}
 		}
