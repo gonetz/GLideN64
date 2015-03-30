@@ -2113,8 +2113,12 @@ void _copyDepthBuffer()
 	depthBufferList().saveBuffer(gDP.colorImage.address);
 	// Take any frame buffer and attach source depth buffer to it, to blit it into copy depth buffer
 	FrameBuffer * pTmpBuffer = frameBufferList().findTmpBuffer(frameBufferList().getCurrent()->m_startAddress);
+	if (pTmpBuffer == NULL)
+		return;
 	DepthBuffer * pTmpBufferDepth = pTmpBuffer->m_pDepthBuffer;
 	pTmpBuffer->m_pDepthBuffer = depthBufferList().findBuffer(gSP.bgImage.address);
+	if (pTmpBufferDepth == NULL || pTmpBuffer->m_pDepthBuffer == NULL)
+		return;
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, pTmpBuffer->m_FBO);
 	pTmpBuffer->m_pDepthBuffer->setDepthAttachment();
 	GLuint attachment = GL_COLOR_ATTACHMENT0;
