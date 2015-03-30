@@ -84,7 +84,7 @@ void DepthBuffer::initDepthImageTexture(FrameBuffer * _pBuffer)
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, _pBuffer->m_FBO);
 
-	depthBufferList().clearBuffer();
+	depthBufferList().clearBuffer(true);
 #endif // GL_IMAGE_TEXTURES_SUPPORT
 }
 
@@ -302,11 +302,11 @@ void DepthBufferList::saveBuffer(u32 _address)
 
 }
 
-void DepthBufferList::clearBuffer()
+void DepthBufferList::clearBuffer(bool _fullsize)
 {
 	if (m_pCurrent == NULL)
 		return;
-	m_pCurrent->m_cleared = true;
+	m_pCurrent->m_cleared = _fullsize;
 #ifdef GL_IMAGE_TEXTURES_SUPPORT
 	if (m_pCurrent->m_FBO == 0 || !video().getRender().isImageTexturesSupported() || config.frameBufferEmulation.N64DepthCompare == 0)
 		return;

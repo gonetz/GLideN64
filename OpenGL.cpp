@@ -1229,12 +1229,12 @@ void OGLRender::drawText(const char *_pText, float x, float y)
 	TextDrawer::get().renderText(_pText, x, y);
 }
 
-void OGLRender::clearDepthBuffer()
+void OGLRender::clearDepthBuffer(bool _fullsize)
 {
 	if (config.frameBufferEmulation.enable && frameBufferList().getCurrent() == NULL)
 		return;
 
-	depthBufferList().clearBuffer();
+	depthBufferList().clearBuffer(_fullsize);
 
 	glDisable( GL_SCISSOR_TEST );
 	glDepthMask( TRUE );
