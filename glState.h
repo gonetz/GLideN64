@@ -27,6 +27,7 @@ struct GLState {
 	bool cached_CULL_FACE;
 	bool cached_DEPTH_TEST;
 	bool cached_DEPTH_CLAMP;
+	bool cached_CLIP_DISTANCE0;
 	bool cached_DITHER;
 	bool cached_POLYGON_OFFSET_FILL;
 	bool cached_SAMPLE_ALPHA_TO_COVERAGE;
@@ -155,6 +156,12 @@ void inline cache_glDisable (GLenum cap)
 			glState.cached_DEPTH_CLAMP = false;
 		}
 		break;
+	case GL_CLIP_DISTANCE0:
+		if (glState.cached_CLIP_DISTANCE0) {
+			glDisable(GL_CLIP_DISTANCE0);
+			glState.cached_CLIP_DISTANCE0 = false;
+		}
+		break;
 	case GL_DITHER:
 		if (glState.cached_DITHER) {
 			glDisable(GL_DITHER);
@@ -217,6 +224,12 @@ void inline cache_glEnable(GLenum cap)
 		if (!glState.cached_DEPTH_CLAMP) {
 			glEnable(GL_DEPTH_CLAMP);
 			glState.cached_DEPTH_CLAMP = true;
+		}
+		break;
+	case GL_CLIP_DISTANCE0:
+		if (!glState.cached_CLIP_DISTANCE0) {
+			glEnable(GL_CLIP_DISTANCE0);
+			glState.cached_CLIP_DISTANCE0 = true;
 		}
 		break;
 	case GL_DITHER:
