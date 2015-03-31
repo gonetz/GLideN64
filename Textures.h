@@ -61,7 +61,7 @@ struct TextureCache
 	static TextureCache & get();
 
 private:
-	TextureCache() : m_pDummy(NULL), m_hits(0), m_misses(0), m_maxBytes(0), m_cachedBytes(0)
+	TextureCache() : m_pDummy(NULL), m_hits(0), m_misses(0), m_maxBytes(0), m_cachedBytes(0), m_curUnpackAlignment(4)
 	{
 		current[0] = NULL;
 		current[1] = NULL;
@@ -84,6 +84,7 @@ private:
 	u32 m_hits, m_misses;
 	u32 m_maxBytes;
 	u32 m_cachedBytes;
+	GLint m_curUnpackAlignment;
 };
 
 inline TextureCache & textureCache()

@@ -462,6 +462,8 @@ void TextureCache::init()
 	m_pDummy->textureBytes = 2*2*4;
 	m_pDummy->tMem = 0;
 
+	glGetIntegerv(GL_UNPACK_ALIGNMENT, &m_curUnpackAlignment);
+
 	glBindTexture( GL_TEXTURE_2D, m_pDummy->glName );
 	glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, 2, 2, 0, GL_RGBA, GL_UNSIGNED_BYTE, dummyTexture );
 
@@ -745,9 +747,6 @@ void TextureCache::_loadBackground(CachedTexture *pTexture)
 		}
 	}
 
-	GLint curUnpackAlignment;
-	glGetIntegerv(GL_UNPACK_ALIGNMENT, &curUnpackAlignment);
-
 	bool bLoaded = false;
 	if ((config.textureFilter.txEnhancementMode | config.textureFilter.txFilterMode) != 0 && config.textureFilter.txFilterIgnoreBG == 0 && TFH.isInited()) {
 		GHQTexInfo ghqTexInfo;
@@ -764,7 +763,7 @@ void TextureCache::_loadBackground(CachedTexture *pTexture)
 			glPixelStorei(GL_UNPACK_ALIGNMENT, 2);
 		glTexImage2D(GL_TEXTURE_2D, 0, glInternalFormat, pTexture->realWidth, pTexture->realHeight, 0, GL_RGBA, glType, pDest);
 	}
-	glPixelStorei(GL_UNPACK_ALIGNMENT, curUnpackAlignment);
+	glPixelStorei(GL_UNPACK_ALIGNMENT, m_curUnpackAlignment);
 	free(pDest);
 }
 
@@ -863,9 +862,6 @@ void TextureCache::_load(u32 _tile, CachedTexture *_pTexture)
 	memcpy(&tmptex, _pTexture, sizeof(CachedTexture));
 
 	line = tmptex.line;
-
-	GLint curUnpackAlignment;
-	glGetIntegerv(GL_UNPACK_ALIGNMENT, &curUnpackAlignment);
 
 	while (true) {
 		if (tmptex.maskS > 0) {
@@ -1000,7 +996,7 @@ void TextureCache::_load(u32 _tile, CachedTexture *_pTexture)
 			tmptex.realHeight >>= 1;
 		_pTexture->textureBytes += (tmptex.realWidth * tmptex.realHeight) << sizeShift;
 	};
-	glPixelStorei(GL_UNPACK_ALIGNMENT, curUnpackAlignment);
+	glPixelStorei(GL_UNPACK_ALIGNMENT, m_curUnpackAlignment);
 	free(pDest);
 }
 
