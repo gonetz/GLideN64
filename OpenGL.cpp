@@ -677,9 +677,9 @@ void OGLRender::_updateStates(RENDER_STATE _renderState) const
 	if (gSP.changed & CHANGED_LIGHT)
 		cmbInfo.updateLightParameters();
 
-	if ((gSP.changed & CHANGED_TEXTURE) || (gDP.changed & CHANGED_TILE) || (gDP.changed & CHANGED_TMEM)) {
+	if ((gSP.changed & CHANGED_TEXTURE) || (gDP.changed & CHANGED_TILE) || (gDP.changed & CHANGED_TMEM) || cmbInfo.isChanged()) {
 		//For some reason updating the texture cache on the first frame of LOZ:OOT causes a NULL Pointer exception...
-		ShaderCombiner * pCurrentCombiner = currentCombiner();
+		ShaderCombiner * pCurrentCombiner = cmbInfo.getCurrent();
 		if (pCurrentCombiner != NULL) {
 			if (pCurrentCombiner->usesT0())
 				textureCache().update(0);
