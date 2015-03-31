@@ -86,8 +86,6 @@ void VI_UpdateScreen()
 	if (VI.lastOrigin == -1) // Workaround for Mupen64Plus issue with initialization
 		isGLError();
 
-	glFinish();
-
 	OGLVideo & ogl = video();
 	if (ogl.changeWindow())
 		return;
@@ -164,6 +162,4 @@ void VI_UpdateScreen()
 		glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
 	}
-
-	glFinish();
 }
