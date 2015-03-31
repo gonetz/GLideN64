@@ -771,10 +771,6 @@ void OGLRender::_prepareDrawTriangle(bool _dma)
 			glVertexAttribPointer(SC_NUMLIGHTS, 1, GL_BYTE, GL_FALSE, sizeof(SPVertex), &pVtx->HWLight);
 		}
 
-		_updateCullFace();
-		_updateViewport();
-		glEnable(GL_SCISSOR_TEST);
-		currentCombiner()->updateRenderState();
 	} else if (updateColorArrays) {
 		SPVertex * pVtx = _dma ? triangles.dmaVertices.data() : &triangles.vertices[0];
 		if (m_bFlatColors)
