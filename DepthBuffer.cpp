@@ -227,6 +227,12 @@ DepthBufferList::~DepthBufferList()
 	m_list.clear();
 }
 
+DepthBufferList & DepthBufferList::get()
+{
+	static DepthBufferList depthBufferList;
+	return depthBufferList;
+}
+
 void DepthBufferList::init()
 {
 	m_pCurrent = NULL;

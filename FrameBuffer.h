@@ -60,11 +60,7 @@ public:
 	void correctHeight();
 	void clearBuffersChanged();
 
-	static FrameBufferList & get()
-	{
-		static FrameBufferList frameBufferList;
-		return frameBufferList;
-	}
+	static FrameBufferList & get();
 
 private:
 	FrameBufferList() : m_pCurrent(NULL) {}

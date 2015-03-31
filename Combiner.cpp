@@ -76,6 +76,12 @@ void Combiner_Destroy() {
 	CombinerInfo::get().destroy();
 }
 
+CombinerInfo & CombinerInfo::get()
+{
+	static CombinerInfo info;
+	return info;
+}
+
 void CombinerInfo::init()
 {
 	m_pCurrent = NULL;

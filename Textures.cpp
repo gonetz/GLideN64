@@ -427,6 +427,11 @@ inline u32 ReverseDXT(u32 val, u32 lrs, u32 width, u32 size)
 }
 /** end RiceVideo cite */
 
+TextureCache & TextureCache::get() {
+	static TextureCache cache;
+	return cache;
+}
+
 void TextureCache::init()
 {
 	u32 dummyTexture[16] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };

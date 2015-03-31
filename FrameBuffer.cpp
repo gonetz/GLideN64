@@ -252,6 +252,12 @@ CachedTexture * FrameBuffer::getTexture()
 	return m_pResolveTexture;
 }
 
+FrameBufferList & FrameBufferList::get()
+{
+	static FrameBufferList frameBufferList;
+	return frameBufferList;
+}
+
 void FrameBufferList::init()
 {
 	 m_pCurrent = NULL;

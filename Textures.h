@@ -58,10 +58,7 @@ struct TextureCache
 	void activateDummy(u32 _t);
 	void update(u32 _t);
 
-	static TextureCache & get() {
-		static TextureCache cache;
-		return cache;
-	}
+	static TextureCache & get();
 
 private:
 	TextureCache() : m_pDummy(NULL), m_hits(0), m_misses(0), m_maxBytes(0), m_cachedBytes(0)

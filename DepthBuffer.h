@@ -43,11 +43,7 @@ public:
 	DepthBuffer *findBuffer(u32 _address);
 	DepthBuffer * getCurrent() const {return m_pCurrent;}
 
-	static DepthBufferList & get()
-	{
-		static DepthBufferList depthBufferList;
-		return depthBufferList;
-	}
+	static DepthBufferList & get();
 
 	const u16 * const getZLUT() const {return m_pzLUT;}
 

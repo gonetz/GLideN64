@@ -17,6 +17,12 @@
 #include "../Debug.h"
 #include "../Log.h"
 
+PluginAPI & PluginAPI::get()
+{
+	static PluginAPI api;
+	return api;
+}
+
 #ifdef RSPTHREAD
 void RSP_ThreadProc(std::mutex * _pRspThreadMtx, std::mutex * _pPluginThreadMtx, std::condition_variable_any * _pRspThreadCv, std::condition_variable_any * _pPluginThreadCv, API_COMMAND * _pCommand)
 {

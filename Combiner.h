@@ -126,10 +126,7 @@ public:
 	ShaderCombiner * getCurrent() const {return m_pCurrent;}
 	bool isChanged() const {return m_bChanged;}
 
-	static CombinerInfo & get() {
-		static CombinerInfo info;
-		return info;
-	}
+	static CombinerInfo & get();
 
 	void updatePrimColor();
 	void updateEnvColor();

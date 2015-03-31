@@ -78,11 +78,7 @@ public:
 	void SetRenderingCallback(void (*callback)(int));
 #endif
 
-	static PluginAPI & get()
-	{
-		static PluginAPI api;
-		return api;
-	}
+	static PluginAPI & get();
 
 private:
 	PluginAPI()
