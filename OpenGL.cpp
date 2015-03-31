@@ -921,7 +921,7 @@ void OGLRender::drawRect(int _ulx, int _uly, int _lrx, int _lry, float *_pColor)
 
 	glVertexAttrib4fv(SC_COLOR, _pColor);
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-	_updateViewport();
+	gSP.changed |= CHANGED_GEOMETRYMODE | CHANGED_VIEWPORT;
 }
 
 static
@@ -1217,7 +1217,7 @@ void OGLRender::drawTexturedRect(const TexturedRectParams & _params)
 	}
 
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
-	_updateViewport();
+	gSP.changed |= CHANGED_GEOMETRYMODE | CHANGED_VIEWPORT;
 }
 
 void OGLRender::drawText(const char *_pText, float x, float y)
