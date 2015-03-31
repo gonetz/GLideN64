@@ -739,7 +739,7 @@ void OGLRender::_setTexCoordArrays() const
 void OGLRender::_prepareDrawTriangle(bool _dma)
 {
 #ifdef GL_IMAGE_TEXTURES_SUPPORT
-	if (m_bImageTexture)
+	if (m_bImageTexture && config.frameBufferEmulation.N64DepthCompare != 0)
 		glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 #endif // GL_IMAGE_TEXTURES_SUPPORT
 
