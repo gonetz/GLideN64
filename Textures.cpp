@@ -1024,17 +1024,11 @@ u32 _calculateCRC(u32 t, const TextureParams & _params)
 
 	const u64 *src = (u64*)&TMEM[gSP.textureTile[t]->tmem];
 	u32 crc = 0xFFFFFFFF;
-	for (u32 y = 0; y < _params.height; ++y) {
-		crc = CRC_Calculate(crc, src, lineBytes);
-		src += line;
-	}
+	crc = CRC_Calculate(crc, src, _params.height*lineBytes);
 
 	if (gSP.textureTile[t]->size == G_IM_SIZ_32b) {
 		src = (u64*)&TMEM[gSP.textureTile[t]->tmem + 256];
-		for (u32 y = 0; y < _params.height; ++y) {
-			crc = CRC_Calculate(crc, src, lineBytes);
-			src += line;
-		}
+		crc = CRC_Calculate(crc, src, _params.height*lineBytes);
 	}
 
 	if (gDP.otherMode.textureLUT != G_TT_NONE || gSP.textureTile[t]->format == G_IM_FMT_CI) {
@@ -1045,6 +1039,7 @@ u32 _calculateCRC(u32 t, const TextureParams & _params)
 	}
 
 	crc = CRC_Calculate(crc, &_params, sizeof(_params));
+
 	return crc;
 }
 
