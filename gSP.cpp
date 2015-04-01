@@ -2100,7 +2100,7 @@ void gSPObjRectangleR(u32 sp)
 	gSPDrawObjRect(objCoords);
 }
 
-#ifdef GL_IMAGE_TEXTURES_SUPPORT
+#ifndef GLES2
 static
 void _copyDepthBuffer()
 {
@@ -2115,14 +2115,11 @@ void _copyDepthBuffer()
 	FrameBuffer * pTmpBuffer = frameBufferList().findTmpBuffer(frameBufferList().getCurrent()->m_startAddress);
 	if (pTmpBuffer == NULL)
 		return;
-	DepthBuffer * pTmpBufferDepth = pTmpBuffer->m_pDepthBuffer;
-	pTmpBuffer->m_pDepthBuffer = depthBufferList().findBuffer(gSP.bgImage.address);
-	if (pTmpBufferDepth == NULL || pTmpBuffer->m_pDepthBuffer == NULL)
+	DepthBuffer * pCopyBufferDepth = depthBufferList().findBuffer(gSP.bgImage.address);
+	if (pCopyBufferDepth == NULL)
 		return;
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, pTmpBuffer->m_FBO);
-	pTmpBuffer->m_pDepthBuffer->setDepthAttachment();
-	GLuint attachment = GL_COLOR_ATTACHMENT0;
-	glDrawBuffers(1,  &attachment);
+	pCopyBufferDepth->setDepthAttachment(GL_READ_FRAMEBUFFER);
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, frameBufferList().getCurrent()->m_FBO);
 	OGLVideo & ogl = video();
 	glBlitFramebuffer(
@@ -2131,12 +2128,13 @@ void _copyDepthBuffer()
 		GL_DEPTH_BUFFER_BIT, GL_NEAREST
 	);
 	// Restore objects
-	pTmpBufferDepth->setDepthAttachment();
+	if (pTmpBuffer->m_pDepthBuffer != NULL)
+		pTmpBuffer->m_pDepthBuffer->setDepthAttachment(GL_READ_FRAMEBUFFER);
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
 	// Set back current depth buffer
 	depthBufferList().saveBuffer(gDP.depthImageAddress);
 }
-#endif // GL_IMAGE_TEXTURES_SUPPORT
+#endif // GLES2
 
 static
 void _loadBGImage(const uObjScaleBg * _bgInfo, bool _loadScale)

@@ -13,7 +13,7 @@ struct DepthBuffer
 	void initDepthBufferTexture(FrameBuffer * _pBuffer);
 	CachedTexture * resolveDepthBufferTexture(FrameBuffer * _pBuffer);
 
-	void setDepthAttachment();
+	void setDepthAttachment(GLenum _target);
 	void activateDepthBufferTexture(FrameBuffer * _pBuffer);
 
 	void bindDepthImageTexture();

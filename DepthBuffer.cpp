@@ -143,12 +143,12 @@ void DepthBuffer::_initDepthBufferTexture(FrameBuffer * _pBuffer, CachedTexture 
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-void DepthBuffer::setDepthAttachment()
+void DepthBuffer::setDepthAttachment(GLenum _target)
 {
 	if (config.video.multisampling != 0)
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D_MULTISAMPLE, m_pDepthBufferTexture->glName, 0);
+		glFramebufferTexture2D(_target, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D_MULTISAMPLE, m_pDepthBufferTexture->glName, 0);
 	else
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, m_pDepthBufferTexture->glName, 0);
+		glFramebufferTexture2D(_target, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, m_pDepthBufferTexture->glName, 0);
 	m_resolved = false;
 }
 
