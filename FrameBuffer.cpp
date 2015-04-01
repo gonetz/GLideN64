@@ -947,6 +947,9 @@ bool DepthBufferToRDRAM::CopyToRDRAM( u32 _address) {
 	m_lastDList = RSP.DList;
 	DepthBuffer * pDepthBuffer = pBuffer->m_pDepthBuffer;
 	const u32 address = pDepthBuffer->m_address;
+	if (address + VI.width*VI.height*2 > RDRAMSize)
+		return false;
+
 	if (config.video.multisampling == 0)
 		glBindFramebuffer(GL_READ_FRAMEBUFFER, pBuffer->m_FBO);
 	else {
