@@ -752,6 +752,7 @@ void OGLRender::_prepareDrawTriangle(bool _dma)
 		_setColorArray();
 		_setTexCoordArrays();
 	}
+	currentCombiner()->updateRenderState();
 
 	const bool updateColorArrays = m_bFlatColors != (!RSP.bLLE && (gSP.geometryMode & G_SHADING_SMOOTH) == 0);
 	if (updateColorArrays)
@@ -862,8 +863,8 @@ void OGLRender::drawLine(int _v0, int _v1, float _width)
 		_updateCullFace();
 		_updateViewport();
 		m_renderState = rsLine;
-		currentCombiner()->updateRenderState();
 	}
+	currentCombiner()->updateRenderState();
 
 	unsigned short elem[2];
 	elem[0] = _v0;
@@ -889,8 +890,8 @@ void OGLRender::drawRect(int _ulx, int _uly, int _lrx, int _lry, float *_pColor)
 	if (updateArrays) {
 		glVertexAttrib4f(SC_COLOR, 0, 0, 0, 0);
 		glVertexAttribPointer(SC_POSITION, 4, GL_FLOAT, GL_FALSE, sizeof(GLVertex), &m_rect[0].x);
-		currentCombiner()->updateRenderState();
 	}
+	currentCombiner()->updateRenderState();
 
 	FrameBuffer * pCurrentBuffer = frameBufferList().getCurrent();
 	OGLVideo & ogl = video();
@@ -1066,8 +1067,8 @@ void OGLRender::drawTexturedRect(const TexturedRectParams & _params)
 		glVertexAttribPointer(SC_POSITION, 4, GL_FLOAT, GL_FALSE, sizeof(GLVertex), &m_rect[0].x);
 		glVertexAttribPointer(SC_TEXCOORD0, 2, GL_FLOAT, GL_FALSE, sizeof(GLVertex), &m_rect[0].s0);
 		glVertexAttribPointer(SC_TEXCOORD1, 2, GL_FLOAT, GL_FALSE, sizeof(GLVertex), &m_rect[0].s1);
-		currentCombiner()->updateRenderState();
 	}
+	currentCombiner()->updateRenderState();
 
 	if (RSP.cmd == 0xE4 && texturedRectSpecial != NULL && texturedRectSpecial(_params))
 		return;

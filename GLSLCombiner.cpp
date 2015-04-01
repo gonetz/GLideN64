@@ -700,16 +700,17 @@ void ShaderCombiner::update(bool _bForce) {
 		_setIUniform(m_uniforms.uTex0, 0, _bForce);
 		_setIUniform(m_uniforms.uTex1, 1, _bForce);
 		_setIUniform(m_uniforms.uTexNoise, noiseTexIndex, _bForce);
+
+		updateFBInfo(_bForce);
+		updateRenderState(_bForce);
 	}
 
-	updateRenderState(_bForce);
 	updateGammaCorrection(_bForce);
 	updateFogMode(_bForce);
 	updateDitherMode(_bForce);
 	updateLOD(_bForce);
 	updateTextureInfo(_bForce);
 	updateAlphaTestInfo(_bForce);
-	updateFBInfo(_bForce);
 	updateDepthInfo(_bForce);
 }
 
