@@ -3,7 +3,7 @@
 
 void loadSettings(const QString & _strFileName);
 void writeSettings(const QString & _strFileName);
-void loadCustomRomSettings(const QString & _strFileName, const QString & _strRomName);
+void loadCustomRomSettings(const QString & _strFileName, const char * _strRomName);
 
 #endif // SETTINGS_H
 

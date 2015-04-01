@@ -172,17 +172,23 @@ void writeSettings(const QString & _strFileName)
 	settings.endGroup();
 }
 
-void loadCustomRomSettings(const QString & _strFileName, const QString & _strRomName)
+void loadCustomRomSettings(const QString & _strFileName, const char * _strRomName)
 {
 	QSettings settings(_strFileName, QSettings::IniFormat);
 	config.version = settings.value("version").toInt();
 	if (config.version != CONFIG_VERSION_CURRENT)
 		return;
 
-	if (settings.childGroups().indexOf(_strRomName) < 0)
+	const QByteArray bytes(_strRomName);
+	bool bASCII = true;
+	for (int i = 0; i < bytes.length() && bASCII; ++i)
+		bASCII = bytes.at(i) >= 0;
+
+	const QString romName = bASCII ? QString::fromLatin1(_strRomName) : QString::number(qChecksum(bytes.data(), bytes.length()), 16);
+	if (settings.childGroups().indexOf(romName) < 0)
 		return;
 
-	settings.beginGroup(_strRomName);
+	settings.beginGroup(romName);
 
 	settings.beginGroup("video");
 	config.video.multisampling = settings.value("multisampling", config.video.multisampling).toInt();
