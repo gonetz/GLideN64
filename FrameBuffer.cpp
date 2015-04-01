@@ -939,7 +939,7 @@ bool DepthBufferToRDRAM::CopyToRDRAM( u32 _address) {
 	if (VI.width == 0) // H width is zero. Don't copy
 		return false;
 	if (m_lastDList == RSP.DList) // Already read;
-		return false;
+		return true;
 	FrameBuffer *pBuffer = frameBufferList().findBuffer(_address);
 	if (pBuffer == NULL || pBuffer->m_width < VI.width || pBuffer->m_pDepthBuffer == NULL || !pBuffer->m_pDepthBuffer->m_cleared)
 		return false;
@@ -996,7 +996,7 @@ bool DepthBufferToRDRAM::CopyToRDRAM( u32 _address) {
 
 	glUnmapBuffer(GL_PIXEL_PACK_BUFFER);
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
-	glEnable(GL_SCISSOR_TEST);
+	gDP.changed |= CHANGED_SCISSOR;
 	return true;
 }
 #endif // GLES2
