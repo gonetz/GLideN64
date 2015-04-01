@@ -15,41 +15,7 @@
 #define CHANGED_CPU_FB_WRITE	0x80
 #define CHANGED_TEXTURESCALE	0x100
 
-#if 1 // It causes geometry loss in WCW Backstage Assault. Performance drops in many games when disabled.
-#define gSPFlushTriangles() \
-if \
-( \
-	( \
-		 (video().getRender().getTrianglesCount() > 1000) || \
-		 ((gSP.geometryMode & G_SHADING_SMOOTH) == 0) || \
-		 ( \
-			 (RSP.nextCmd != G_NOOP) && \
-			 (RSP.nextCmd != G_RDPNOOP) && \
-			 (RSP.nextCmd != G_MOVEMEM) && \
-			 (RSP.nextCmd != G_ENDDL) && \
-			 (RSP.nextCmd != G_DL) && \
-			 (RSP.nextCmd != G_VTXCOLORBASE) && \
-			 (RSP.nextCmd != G_TRI1) && \
-			 (RSP.nextCmd != G_TRI2) && \
-			 (RSP.nextCmd != G_TRI4) && \
-			 (RSP.nextCmd != G_QUAD) && \
-			 (RSP.nextCmd != G_VTX) && \
-			 (RSP.nextCmd != G_MTX) \
-		 ) \
-	) || \
-	( \
-		(RSP.nextCmd != G_TRI1) && \
-		(RSP.nextCmd != G_TRI2) && \
-		(RSP.nextCmd != G_TRI4) && \
-		(RSP.nextCmd != G_QUAD) \
-	) \
-) \
-{ \
-	video().getRender().drawTriangles(); \
-}
-#else
-#define gSPFlushTriangles() video().getRender().drawTriangles();
-#endif
+//void gSPFlushTriangles();
 
 #define CLIP_X      0x03
 #define CLIP_NEGX   0x01

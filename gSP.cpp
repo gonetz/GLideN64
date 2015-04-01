@@ -24,6 +24,22 @@
 
 using namespace std;
 
+inline void gSPFlushTriangles()
+{
+	if ((gSP.geometryMode & G_SHADING_SMOOTH) == 0) {
+		video().getRender().drawTriangles();
+		return;
+	}
+
+	if (
+		(RSP.nextCmd != G_TRI1) &&
+		(RSP.nextCmd != G_TRI2) &&
+		(RSP.nextCmd != G_TRI4) &&
+		(RSP.nextCmd != G_QUAD)
+	)
+		video().getRender().drawTriangles();
+}
+
 void gSPCombineMatrices()
 {
 	MultMatrix(gSP.matrix.projection, gSP.matrix.modelView[gSP.matrix.modelViewi], gSP.matrix.combined);
