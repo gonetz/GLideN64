@@ -509,12 +509,20 @@ void OGLRender::_setBlendMode() const
 				glBlendFunc(GL_ONE, GL_ZERO);
 				break;
 
+			case 0x0F1A:
+				if (gDP.otherMode.cycleType == G_CYC_1CYCLE)
+					glBlendFunc(GL_ONE, GL_ZERO);
+				else
+					glBlendFunc(GL_ZERO, GL_ONE);
+				break;
+
 			//Space Invaders
 			case 0x0448: // Add
 			case 0x055A:
 				glBlendFunc( GL_ONE, GL_ONE );
 				break;
 
+			case 0xc712: // Pokemon Stadium?
 			case 0xAF50: // LOT in Zelda: MM
 			case 0x0F5A: // LOT in Zelda: MM
 			case 0x0FA5: // Seems to be doing just blend color - maybe combiner can be used for this?
