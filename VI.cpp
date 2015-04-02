@@ -31,8 +31,8 @@ void VI_UpdateSize()
 	const u32 vEnd = _SHIFTR( *REG.VI_V_START, 0, 10 );
 	const u32 vStart = _SHIFTR( *REG.VI_V_START, 16, 10 );
 	const bool interlacedPrev = VI.interlaced;
-	const u32 widthPrev = VI.width;
-	const u32 heightPrev = VI.height;
+	if (VI.width > 0)
+		VI.widthPrev = VI.width;
 
 	VI.real_height = vEnd > vStart ? (((vEnd - vStart) >> 1) * vScale) >> 10 : 0;
 	VI.width = *REG.VI_WIDTH;
@@ -66,10 +66,9 @@ void VI_UpdateSize()
 //	const int fsaa = ((*REG.VI_STATUS) >> 8) & 3;
 //	const int divot = ((*REG.VI_STATUS) >> 4) & 1;
 
-	FrameBufferList & fbList = frameBufferList();
-	FrameBuffer * pBuffer = fbList.findBuffer(VI.lastOrigin);
-	if (config.frameBufferEmulation.enable && ((interlacedPrev != VI.interlaced) || (pBuffer != NULL && pBuffer->m_width != VI.width))) {
-		fbList.removeBuffers(widthPrev);
+	if (config.frameBufferEmulation.enable && ((interlacedPrev != VI.interlaced) || (VI.width > 0 && VI.width != VI.widthPrev))) {
+		FrameBufferList & fbList = frameBufferList();
+		fbList.removeBuffers(VI.widthPrev);
 		fbList.removeBuffers(VI.width);
 		depthBufferList().destroy();
 		depthBufferList().init();
