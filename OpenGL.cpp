@@ -591,15 +591,19 @@ void OGLRender::_updateViewport() const
 	OGLVideo & ogl = video();
 	FrameBuffer * pCurrentBuffer = frameBufferList().getCurrent();
 	if (pCurrentBuffer == NULL) {
-		const GLint X = gSP.viewport.vscale[0] < 0 ? (GLint)((gSP.viewport.x + gSP.viewport.vscale[0] * 2.0f) * ogl.getScaleX()) : (GLint)(gSP.viewport.x * ogl.getScaleX());
-		const GLint Y = gSP.viewport.vscale[1] < 0 ? (GLint)((gSP.viewport.y + gSP.viewport.vscale[1] * 2.0f) * ogl.getScaleY()) : (GLint)((VI.height - (gSP.viewport.y + gSP.viewport.height)) * ogl.getScaleY());
+		const f32 scaleX = ogl.getScaleX();
+		const f32 scaleY = ogl.getScaleY();
+		const GLint X = gSP.viewport.vscale[0] < 0 ? (GLint)((gSP.viewport.x + gSP.viewport.vscale[0] * 2.0f) * scaleX) : (GLint)(gSP.viewport.x * scaleX);
+		const GLint Y = gSP.viewport.vscale[1] < 0 ? (GLint)((gSP.viewport.y + gSP.viewport.vscale[1] * 2.0f) * scaleY) : (GLint)((VI.height - (gSP.viewport.y + gSP.viewport.height)) * scaleY);
 		glViewport( X, Y + ogl.getHeightOffset(),
-			max((GLint)(gSP.viewport.width * ogl.getScaleX()), 0), max((GLint)(gSP.viewport.height * ogl.getScaleY()), 0) );
+			max((GLint)(gSP.viewport.width * scaleX), 0), max((GLint)(gSP.viewport.height * scaleY), 0));
 	} else {
-		const GLint X = gSP.viewport.vscale[0] < 0 ? (GLint)((gSP.viewport.x + gSP.viewport.vscale[0] * 2.0f) * ogl.getScaleX()) : (GLint)(gSP.viewport.x * ogl.getScaleX());
-		const GLint Y = gSP.viewport.vscale[1] < 0 ? (GLint)((gSP.viewport.y + gSP.viewport.vscale[1] * 2.0f) * ogl.getScaleY()) : (GLint)((pCurrentBuffer->m_height - (gSP.viewport.y + gSP.viewport.height)) * ogl.getScaleY());
+		const f32 scaleX = pCurrentBuffer->m_scaleX;
+		const f32 scaleY = pCurrentBuffer->m_scaleY;
+		const GLint X = gSP.viewport.vscale[0] < 0 ? (GLint)((gSP.viewport.x + gSP.viewport.vscale[0] * 2.0f) * scaleX) : (GLint)(gSP.viewport.x * scaleX);
+		const GLint Y = gSP.viewport.vscale[1] < 0 ? (GLint)((gSP.viewport.y + gSP.viewport.vscale[1] * 2.0f) * scaleY) : (GLint)((pCurrentBuffer->m_height - (gSP.viewport.y + gSP.viewport.height)) * scaleY);
 		glViewport(X, Y,
-			max((GLint)(gSP.viewport.width * ogl.getScaleX()), 0), max((GLint)(gSP.viewport.height * ogl.getScaleY()), 0) );
+			max((GLint)(gSP.viewport.width * scaleX), 0), max((GLint)(gSP.viewport.height * scaleY), 0));
 	}
 	gSP.changed &= ~CHANGED_VIEWPORT;
 }
@@ -673,9 +677,17 @@ void OGLRender::_updateStates(RENDER_STATE _renderState) const
 
 	if (gDP.changed & CHANGED_SCISSOR) {
 		FrameBuffer * pCurrentBuffer = frameBufferList().getCurrent();
-		const u32 screenHeight = (pCurrentBuffer == NULL || pCurrentBuffer->m_height == 0) ? VI.height : pCurrentBuffer->m_height;
-		glScissor((GLint)(gDP.scissor.ulx * ogl.getScaleX()), (GLint)((screenHeight - gDP.scissor.lry) * ogl.getScaleY() + (pCurrentBuffer != NULL ? 0 : ogl.getHeightOffset())),
-			max((GLint)((gDP.scissor.lrx - gDP.scissor.ulx) * ogl.getScaleX()), 0), max((GLint)((gDP.scissor.lry - gDP.scissor.uly) * ogl.getScaleY()), 0) );
+		if (pCurrentBuffer == NULL) {
+			const f32 scaleX = ogl.getScaleX();
+			const f32 scaleY = ogl.getScaleY();
+			glScissor((GLint)(gDP.scissor.ulx * scaleX), (GLint)((VI.height - gDP.scissor.lry) * scaleY) + ogl.getHeightOffset(),
+				max((GLint)((gDP.scissor.lrx - gDP.scissor.ulx) * scaleX), 0), max((GLint)((gDP.scissor.lry - gDP.scissor.uly) * scaleY), 0));
+		} else {
+			const f32 scaleX = pCurrentBuffer->m_scaleX;
+			const f32 scaleY = pCurrentBuffer->m_scaleY;
+			glScissor((GLint)(gDP.scissor.ulx * scaleX), (GLint)((pCurrentBuffer->m_height - gDP.scissor.lry) * scaleY),
+				max((GLint)((gDP.scissor.lrx - gDP.scissor.ulx) * scaleX), 0), max((GLint)((gDP.scissor.lry - gDP.scissor.uly) * scaleY), 0));
+		}
 		gDP.changed &= ~CHANGED_SCISSOR;
 	}
 
