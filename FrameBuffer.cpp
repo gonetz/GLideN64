@@ -428,7 +428,7 @@ void FrameBufferList::removeBuffer(u32 _address )
 {
 	for (FrameBuffers::iterator iter = m_list.begin(); iter != m_list.end(); ++iter)
 		if (iter->m_startAddress == _address) {
-			if (m_pCurrent != NULL && m_pCurrent->m_startAddress == _address)
+			if (&(*iter) == m_pCurrent)
 				m_pCurrent = NULL;
 			m_list.erase(iter);
 			return;
@@ -440,6 +440,8 @@ void FrameBufferList::removeBuffers(u32 _width)
 	m_pCurrent = NULL;
 	for (FrameBuffers::iterator iter = m_list.begin(); iter != m_list.end(); ++iter) {
 		while (iter->m_width == _width) {
+			if (&(*iter) == m_pCurrent)
+				m_pCurrent = NULL;
 			iter = m_list.erase(iter);
 			if (iter == m_list.end())
 				return;
