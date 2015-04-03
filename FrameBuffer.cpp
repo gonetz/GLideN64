@@ -226,7 +226,7 @@ void FrameBuffer::resolveMultisampledTexture()
 {
 	if (m_resolved)
 		return;
-	glDisable(GL_SCISSOR_TEST);
+	glScissor(0, 0, m_pTexture->realWidth, m_pTexture->realHeight);
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, m_FBO);
 	glReadBuffer(GL_COLOR_ATTACHMENT0);
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_resolveFBO);
@@ -237,7 +237,7 @@ void FrameBuffer::resolveMultisampledTexture()
 		);
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, frameBufferList().getCurrent()->m_FBO);
-	glEnable(GL_SCISSOR_TEST);
+	gDP.changed |= CHANGED_SCISSOR;
 	m_resolved = true;
 }
 
@@ -854,7 +854,7 @@ void FrameBufferToRDRAM::CopyToRDRAM(u32 _address) {
 	free(pixelData);
 #endif
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
-	glEnable(GL_SCISSOR_TEST);
+	gDP.changed |= CHANGED_SCISSOR;
 }
 #endif // GLES2
 

@@ -171,7 +171,7 @@ CachedTexture * DepthBuffer::resolveDepthBufferTexture(FrameBuffer * _pBuffer)
 		return m_pDepthBufferTexture;
 	if (m_resolved)
 		return m_pResolveDepthBufferTexture;
-	glDisable(GL_SCISSOR_TEST);
+	glScissor(0, 0, m_pDepthBufferTexture->realWidth, m_pDepthBufferTexture->realHeight);
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, _pBuffer->m_FBO);
 	glReadBuffer(GL_COLOR_ATTACHMENT0);
 	GLuint attachment = GL_COLOR_ATTACHMENT0;
@@ -187,8 +187,8 @@ CachedTexture * DepthBuffer::resolveDepthBufferTexture(FrameBuffer * _pBuffer)
 		);
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, _pBuffer->m_FBO);
-	glEnable(GL_SCISSOR_TEST);
 	m_resolved = true;
+	gDP.changed |= CHANGED_SCISSOR;
 	return m_pResolveDepthBufferTexture;
 }
 
