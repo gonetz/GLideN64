@@ -721,7 +721,7 @@ void OGLRender::_updateStates(RENDER_STATE _renderState) const
 		gSP.changed &= ~(CHANGED_TEXTURE);
 	}
 
-	if ((gDP.changed & CHANGED_RENDERMODE) || (gDP.changed & CHANGED_CYCLETYPE)) {
+	if ((gDP.changed & (CHANGED_RENDERMODE | CHANGED_CYCLETYPE))) {
 		_setBlendMode();
 		gDP.changed &= ~(CHANGED_RENDERMODE | CHANGED_CYCLETYPE);
 	}
