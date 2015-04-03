@@ -562,21 +562,24 @@ void FrameBufferList::renderBuffer(u32 _address)
 	Xwidth = (GLint)((min((f32)VI.width, (hEnd - hStart)*scaleX)) * ogl.getScaleX());
 	X1 = ogl.getWidth() - (GLint)(hx1 *scaleX * ogl.getScaleX());
 
-	PostProcessor::get().process(pBuffer);
-	// glDisable(GL_SCISSOR_TEST) does not affect glBlitFramebuffer, at least on AMD
-	GLint vOffset = ogl.isFullscreen() ? 0 : ogl.getHeightOffset();
-	glScissor(0, 0, ogl.getScreenWidth(), ogl.getScreenHeight() + vOffset);
-	glBindFramebuffer(GL_READ_FRAMEBUFFER, pBuffer->m_FBO);
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-	//glDrawBuffer( GL_BACK );
-	float clearColor[4] = {0.0f, 0.0f, 0.0f, 0.0f};
-	ogl.getRender().clearColorBuffer(clearColor);
 	const float srcScaleY = ogl.getScaleY();
 	const GLint hOffset = (ogl.getScreenWidth() - ogl.getWidth()) / 2;
-	vOffset += (ogl.getScreenHeight() - ogl.getHeight()) / 2;
-
-	GLint srcCoord[4] = { 0, (GLint)(srcY0*srcScaleY), Xwidth, min((GLint)(srcY1*srcScaleY), (GLint)pBuffer->m_pTexture->realHeight) };
+	const GLint vOffset = (ogl.getScreenHeight() - ogl.getHeight()) / 2 + ogl.getHeightOffset();
+	CachedTexture * pBufferTexture = pBuffer->m_pTexture;
+	GLint srcCoord[4] = { 0, (GLint)(srcY0*srcScaleY), Xwidth, min((GLint)(srcY1*srcScaleY), (GLint)pBufferTexture->realHeight) };
+	if (srcCoord[2] > pBufferTexture->realWidth || srcCoord[3] > pBufferTexture->realHeight) {
+		removeBuffer(pBuffer->m_startAddress);
+		return;
+	}
 	GLint dstCoord[4] = { X0 + hOffset, vOffset + (GLint)(dstY0*dstScaleY), hOffset + X1, vOffset + (GLint)(dstY1*dstScaleY) };
+
+	PostProcessor::get().process(pBuffer);
+	// glDisable(GL_SCISSOR_TEST) does not affect glBlitFramebuffer, at least on AMD
+	glScissor(0, 0, ogl.getScreenWidth(), ogl.getScreenHeight() + ogl.getHeightOffset());
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+	//glDrawBuffer( GL_BACK );
+	float clearColor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+	ogl.getRender().clearColorBuffer(clearColor);
 
 	GLenum filter = GL_LINEAR;
 	if (config.video.multisampling != 0) {
@@ -586,9 +589,12 @@ void FrameBufferList::renderBuffer(u32 _address)
 			pBuffer->resolveMultisampledTexture();
 			glBindFramebuffer(GL_READ_FRAMEBUFFER, pBuffer->m_resolveFBO);
 			glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-		} else
+		} else {
+			glBindFramebuffer(GL_READ_FRAMEBUFFER, pBuffer->m_FBO);
 			filter = GL_NEAREST;
-	}
+		}
+	} else
+		glBindFramebuffer(GL_READ_FRAMEBUFFER, pBuffer->m_FBO);
 
 	glBlitFramebuffer(
 		srcCoord[0], srcCoord[1], srcCoord[2], srcCoord[3],
