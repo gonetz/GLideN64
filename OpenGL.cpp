@@ -1297,8 +1297,8 @@ void OGLRender::_initExtensions()
 
 void OGLRender::_initStates()
 {
-	glEnable( GL_CULL_FACE );
-	glEnableVertexAttribArray( SC_POSITION );
+	glDisable(GL_CULL_FACE);
+	glEnableVertexAttribArray(SC_POSITION);
 	glEnable( GL_DEPTH_TEST );
 	glDepthFunc( GL_ALWAYS );
 	glDepthMask( GL_FALSE );
