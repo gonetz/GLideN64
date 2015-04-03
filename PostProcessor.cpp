@@ -329,10 +329,10 @@ PostProcessor & PostProcessor::get()
 	return processor;
 }
 
-void _setGLState() {
-	glDisable(GL_SCISSOR_TEST);
+void _setGLState(FrameBuffer * _pBuffer) {
 	glDisable(GL_DEPTH_TEST);
 	glDisable(GL_BLEND);
+	glScissor(0, 0, _pBuffer->m_pTexture->realWidth, _pBuffer->m_pTexture->realHeight);
 
 	static const float vert[] =
 	{
@@ -350,6 +350,8 @@ void _setGLState() {
 	glDisableVertexAttribArray(SC_TEXCOORD1);
 	glDisableVertexAttribArray(SC_NUMLIGHTS);
 	glViewport(0, 0, video().getWidth(), video().getHeight());
+	gSP.changed |= CHANGED_VIEWPORT | CHANGED_TEXTURE;
+	gDP.changed |= CHANGED_RENDERMODE | CHANGED_SCISSOR;
 }
 
 void PostProcessor::process(FrameBuffer * _pBuffer)
@@ -357,7 +359,7 @@ void PostProcessor::process(FrameBuffer * _pBuffer)
 	if (config.bloomFilter.enable == 0)
 		return;
 
-	_setGLState();
+	_setGLState(_pBuffer);
 	OGLVideo & ogl = video();
 
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, _pBuffer->m_FBO);
@@ -397,5 +399,4 @@ void PostProcessor::process(FrameBuffer * _pBuffer)
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 	video().getRender().dropRenderState();
 	glUseProgram(0);
-	gSP.changed = CHANGED_VIEWPORT | CHANGED_TEXTURE;
 }
