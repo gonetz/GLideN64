@@ -805,6 +805,7 @@ void OGLRender::drawLLETriangle(u32 _numVtx)
 	if (_numVtx == 0)
 		return;
 
+	gSP.changed &= ~CHANGED_GEOMETRYMODE; // Don't update cull mode
 	_prepareDrawTriangle(false);
 	glDisable(GL_CULL_FACE);
 
@@ -892,6 +893,7 @@ void OGLRender::drawLine(int _v0, int _v1, float _width)
 
 void OGLRender::drawRect(int _ulx, int _uly, int _lrx, int _lry, float *_pColor)
 {
+	gSP.changed &= ~CHANGED_GEOMETRYMODE; // Don't update cull mode
 	if (gSP.changed || gDP.changed)
 		_updateStates(rsRect);
 
@@ -1065,6 +1067,7 @@ bool(*texturedRectSpecial)(const OGLRender::TexturedRectParams & _params) = NULL
 
 void OGLRender::drawTexturedRect(const TexturedRectParams & _params)
 {
+	gSP.changed &= ~CHANGED_GEOMETRYMODE; // Don't update cull mode
 	if (gSP.changed || gDP.changed)
 		_updateStates(rsTexRect);
 
@@ -1086,8 +1089,10 @@ void OGLRender::drawTexturedRect(const TexturedRectParams & _params)
 	}
 	currentCombiner()->updateRenderState();
 
-	if (RSP.cmd == 0xE4 && texturedRectSpecial != NULL && texturedRectSpecial(_params))
+	if (RSP.cmd == 0xE4 && texturedRectSpecial != NULL && texturedRectSpecial(_params)) {
+		gSP.changed |= CHANGED_GEOMETRYMODE;
 		return;
+	}
 
 	FrameBuffer * pCurrentBuffer = frameBufferList().getCurrent();
 	OGLVideo & ogl = video();
