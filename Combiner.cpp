@@ -168,29 +168,14 @@ ShaderCombiner * CombinerInfo::_compile(u64 mux) const
 
 	Combiner color, alpha;
 
-	if (gDP.otherMode.cycleType == G_CYC_2CYCLE) {
-		numCycles = 2;
-		color.numStages = 2;
-		alpha.numStages = 2;
-	} else {
-		numCycles = 1;
-		color.numStages = 1;
-		alpha.numStages = 1;
-	}
+	numCycles = gDP.otherMode.cycleType + 1;
+	color.numStages = numCycles;
+	alpha.numStages = numCycles;
 
 	CombineCycle cc[2];
 	CombineCycle ac[2];
 
 	// Decode and expand the combine mode into a more general form
-	cc[0].sa = saRGBExpanded[combine.saRGB0];
-	cc[0].sb = sbRGBExpanded[combine.sbRGB0];
-	cc[0].m  = mRGBExpanded[combine.mRGB0];
-	cc[0].a  = aRGBExpanded[combine.aRGB0];
-	ac[0].sa = saAExpanded[combine.saA0];
-	ac[0].sb = sbAExpanded[combine.sbA0];
-	ac[0].m  = mAExpanded[combine.mA0];
-	ac[0].a  = aAExpanded[combine.aA0];
-
 	cc[1].sa = saRGBExpanded[combine.saRGB1];
 	cc[1].sb = sbRGBExpanded[combine.sbRGB1];
 	cc[1].m  = mRGBExpanded[combine.mRGB1];
@@ -200,10 +185,25 @@ ShaderCombiner * CombinerInfo::_compile(u64 mux) const
 	ac[1].m  = mAExpanded[combine.mA1];
 	ac[1].a  = aAExpanded[combine.aA1];
 
-	for (int i = 0; i < numCycles; i++) {
-		// Simplify each RDP combiner cycle into a combiner stage
-		SimplifyCycle( &cc[i], &color.stage[i] );
-		SimplifyCycle( &ac[i], &alpha.stage[i] );
+	// Simplify each RDP combiner cycle into a combiner stage
+	if (gDP.otherMode.cycleType == G_CYC_1CYCLE) {
+		SimplifyCycle(&cc[1], &color.stage[0]);
+		SimplifyCycle(&ac[1], &alpha.stage[0]);
+	}
+	else {
+		cc[0].sa = saRGBExpanded[combine.saRGB0];
+		cc[0].sb = sbRGBExpanded[combine.sbRGB0];
+		cc[0].m = mRGBExpanded[combine.mRGB0];
+		cc[0].a = aRGBExpanded[combine.aRGB0];
+		ac[0].sa = saAExpanded[combine.saA0];
+		ac[0].sb = sbAExpanded[combine.sbA0];
+		ac[0].m = mAExpanded[combine.mA0];
+		ac[0].a = aAExpanded[combine.aA0];
+
+		SimplifyCycle(&cc[0], &color.stage[0]);
+		SimplifyCycle(&ac[0], &alpha.stage[0]);
+		SimplifyCycle(&cc[1], &color.stage[1]);
+		SimplifyCycle(&ac[1], &alpha.stage[1]);
 	}
 
 	return new ShaderCombiner( color, alpha, combine );
