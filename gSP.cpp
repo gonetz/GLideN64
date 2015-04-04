@@ -1595,6 +1595,7 @@ void gSPModifyVertex( u32 _vtx, u32 _where, u32 _val )
 			vtx0.x *= vtx0.w;
 			vtx0.y = -(scrY - gSP.viewport.vtrans[1]) / gSP.viewport.vscale[1];
 			vtx0.y *= vtx0.w;
+			vtx0.clip &= ~(CLIP_POSX | CLIP_NEGX | CLIP_POSY | CLIP_NEGY);
 		}
 		break;
 		case G_MWO_POINT_ZSCREEN:
@@ -1602,6 +1603,7 @@ void gSPModifyVertex( u32 _vtx, u32 _where, u32 _val )
 			f32 scrZ = _FIXED2FLOAT((s16)_SHIFTR(_val, 16, 16), 15);
 			vtx0.z = (scrZ - gSP.viewport.vtrans[2]) / (gSP.viewport.vscale[2]);
 			vtx0.z *= vtx0.w;
+			vtx0.clip &= ~CLIP_Z;
 		}
 		break;
 	}
