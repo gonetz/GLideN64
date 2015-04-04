@@ -511,14 +511,14 @@ void gDPLoadTile(u32 tile, u32 uls, u32 ult, u32 lrs, u32 lrt)
 		return;
 
 	const u32 bpl = gDP.loadTile->line << 3;
-	if (((gDP.loadTile->tmem << 3) + height * bpl) > 4096) // Stay within TMEM
+	if (((gDP.loadTile->tmem << 3) + height * bpl) > TMEM_SIZE_BYTES) // Stay within TMEM
 	{
 #ifdef DEBUG
 		DebugMsg( DEBUG_HIGH | DEBUG_ERROR | DEBUG_TEXTURE, "// Attempting to load texture tile out of range\n" );
 		DebugMsg( DEBUG_HIGH | DEBUG_HANDLED | DEBUG_TEXTURE, "gDPLoadTile( %i, %i, %i, %i, %i );\n",
 			tile, gDP.loadTile->uls, gDP.loadTile->ult, gDP.loadTile->lrs, gDP.loadTile->lrt );
 #endif
-		height = (4096 - (gDP.loadTile->tmem << 3)) / bpl;
+		height = (TMEM_SIZE_BYTES - (gDP.loadTile->tmem << 3)) / bpl;
 	}
 
 	u32 bpl2 = bpl;
@@ -626,20 +626,18 @@ void gDPLoadBlock(u32 tile, u32 uls, u32 ult, u32 lrs, u32 dxt)
 	info.loadType = LOADTYPE_BLOCK;
 
 	u32 bytes = (lrs - uls + 1) << gDP.loadTile->size >> 1;
+	if (((gDP.loadTile->tmem << 3) + bytes) > TMEM_SIZE_BYTES) // Stay within TMEM
+		bytes = TMEM_SIZE_BYTES - (gDP.loadTile->tmem << 3);
 	if ((bytes & 7) != 0)
 		bytes = (bytes & (~7)) + 8;
 	u32 address = gDP.textureImage.address + ult * gDP.textureImage.bpl + (uls << gDP.textureImage.size >> 1);
 
-	if ((bytes == 0) ||
-		((address + bytes) > RDRAMSize) ||
-		(((gDP.loadTile->tmem << 3) + bytes) > 4096))
-	{
+	if (bytes == 0 || (address + bytes) > RDRAMSize) {
 #ifdef DEBUG
 		DebugMsg( DEBUG_HIGH | DEBUG_ERROR | DEBUG_TEXTURE, "// Attempting to load texture block out of range\n" );
-		DebugMsg( DEBUG_HIGH | DEBUG_HANDLED | DEBUG_TEXTURE, "gDPLoadBlock( %i, %i, %i, %i, %i );\n",
+		DebugMsg(DEBUG_HIGH | DEBUG_HANDLED | DEBUG_TEXTURE, "gDPLoadBlock( %i, %i, %i, %i, %i );\n",
 			tile, uls, ult, lrs, dxt );
 #endif
-//		bytes = min( bytes, min( RDRAMSize - gDP.textureImage.address, 4096 - (gDP.loadTile->tmem << 3) ) );
 		return;
 	}
 
