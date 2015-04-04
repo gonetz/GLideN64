@@ -327,7 +327,8 @@ void RSP_Init()
 		strstr(RSP.romname, (const char *)"ZELDA MASTER QUEST") != NULL
 		)
 		config.generalEmulation.hacks |= hack_subscreen;
-
+	else if (strstr(RSP.romname, (const char *)"LEGORacers") != NULL)
+		config.generalEmulation.hacks |= hack_legoRacers;
 
 	api().FindPluginPath(RSP.pluginpath);
 

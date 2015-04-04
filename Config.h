@@ -99,6 +99,7 @@ struct Config
 #define hack_scoreboard				(1<<3)  //Copy data from RDRAM to auxilary frame buffer. Scoreboard in Mario Tennis.
 #define hack_pilotWings				(1<<4)  //Special blend mode for PilotWings.
 #define hack_subscreen				(1<<5)  //Fix subscreen delay in Zelda OOT
+#define hack_legoRacers				(1<<6)  //LEGO racers course map
 
 extern Config config;
 

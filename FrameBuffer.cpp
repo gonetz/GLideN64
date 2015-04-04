@@ -417,7 +417,7 @@ void FrameBufferList::saveBuffer(u32 _address, u16 _format, u16 _size, u16 _widt
 	);
 #endif
 
-	if (bMarioTennisScoreboard)
+	if (bMarioTennisScoreboard || ((config.generalEmulation.hacks & hack_legoRacers) != 0 && bNew && _width == VI.width))
 		g_RDRAMtoFB.CopyFromRDRAM(m_pCurrent->m_startAddress + 4, false);
 
 	m_pCurrent->m_isDepthBuffer = _address == gDP.depthImageAddress;
