@@ -98,6 +98,7 @@ struct Config
 #define hack_blurPauseScreen		(1<<2)  //Game copies frame buffer to depth buffer area, CPU blurs it. That image is used as background for pause screen.
 #define hack_scoreboard				(1<<3)  //Copy data from RDRAM to auxilary frame buffer. Scoreboard in Mario Tennis.
 #define hack_pilotWings				(1<<4)  //Special blend mode for PilotWings.
+#define hack_subscreen				(1<<5)  //Fix subscreen delay in Zelda OOT
 
 extern Config config;
 

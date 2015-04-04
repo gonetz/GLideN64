@@ -40,6 +40,8 @@ public:
 	void CopyToRDRAM(u32 _address);
 
 private:
+	void _copyWhite(FrameBuffer * _pBuffer);
+
 	struct RGBA {
 		u8 r, g, b, a;
 	};
@@ -787,12 +789,41 @@ void FrameBufferToRDRAM::Destroy() {
 	}
 }
 
-void FrameBufferToRDRAM::CopyToRDRAM(u32 _address) {
+void FrameBufferToRDRAM::_copyWhite(FrameBuffer * _pBuffer)
+{
+	if (_pBuffer->m_size == G_IM_SIZ_32b) {
+		u32 *ptr_dst = (u32*)(RDRAM + _pBuffer->m_startAddress);
+
+		for (u32 y = 0; y < VI.height; ++y) {
+			for (u32 x = 0; x < VI.width; ++x)
+				ptr_dst[x + y*VI.width] = 0xFFFFFFFF;
+		}
+	}
+	else {
+		u16 *ptr_dst = (u16*)(RDRAM + _pBuffer->m_startAddress);
+
+		for (u32 y = 0; y < VI.height; ++y) {
+			for (u32 x = 0; x < VI.width; ++x) {
+				ptr_dst[(x + y*VI.width) ^ 1] = 0xFFFF;
+			}
+		}
+	}
+	_pBuffer->m_RdramCrc = Adler32(0, RDRAM + _pBuffer->m_startAddress, (VI.width*VI.height) << _pBuffer->m_size >> 1);
+	_pBuffer->m_cleared = false;
+}
+
+void FrameBufferToRDRAM::CopyToRDRAM(u32 _address)
+{
 	if (VI.width == 0) // H width is zero. Don't copy
 		return;
 	FrameBuffer *pBuffer = frameBufferList().findBuffer(_address);
 	if (pBuffer == NULL || pBuffer->m_width < VI.width || pBuffer->m_isOBScreen)
 		return;
+
+	if ((config.generalEmulation.hacks & hack_subscreen) != 0) {
+		_copyWhite(pBuffer);
+		return;
+	}
 
 	_address = pBuffer->m_startAddress;
 	if (config.video.multisampling != 0) {

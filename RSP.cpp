@@ -323,6 +323,10 @@ void RSP_Init()
 		config.generalEmulation.hacks |= hack_scoreboard;
 	else if (strstr(RSP.romname, (const char *)"Pilot Wings64") != NULL)
 		config.generalEmulation.hacks |= hack_pilotWings;
+	else if (strstr(RSP.romname, (const char *)"THE LEGEND OF ZELDA") != NULL ||
+		strstr(RSP.romname, (const char *)"ZELDA MASTER QUEST") != NULL
+		)
+		config.generalEmulation.hacks |= hack_subscreen;
 
 
 	api().FindPluginPath(RSP.pluginpath);
