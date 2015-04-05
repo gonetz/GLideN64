@@ -588,7 +588,7 @@ void gSPProcessVertex(u32 v)
 		else
 			gSPLightVertex(vtx);
 
-		if (GBI.isTextureGen() && gSP.geometryMode & G_TEXTURE_GEN) {
+		if (GBI.isTextureGen() && (gSP.geometryMode & G_TEXTURE_GEN) != 0) {
 			f32 fLightDir[3] = {vtx.nx, vtx.ny, vtx.nz};
 			f32 x, y;
 			if (gSP.lookatEnable) {
