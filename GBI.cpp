@@ -185,6 +185,17 @@ void GBIInfo::_makeCurrent(MicrocodeInfo * _pCurrent)
 			glDisable(GL_DEPTH_CLAMP);
 			glDisable(GL_CLIP_DISTANCE0);
 		}
+	} else if (m_pCurrent->NoN != _pCurrent->NoN) {
+		if (_pCurrent->NoN) {
+			// Disable near and far plane clipping
+			glEnable(GL_DEPTH_CLAMP);
+			// Enable Far clipping plane in vertex shader
+			glEnable(GL_CLIP_DISTANCE0);
+		}
+		else {
+			glDisable(GL_DEPTH_CLAMP);
+			glDisable(GL_CLIP_DISTANCE0);
+		}
 	}
 	m_pCurrent = _pCurrent;
 }
