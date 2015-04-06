@@ -1136,16 +1136,6 @@ void OGLRender::drawTexturedRect(const TexturedRectParams & _params)
 		texST[0].s1 = (_params.lrs + 1.0f) * cache.current[0]->shiftScaleS - gSP.textureTile[0]->fuls;
 		texST[0].t1 = (_params.lrt + 1.0f) * cache.current[0]->shiftScaleT - gSP.textureTile[0]->fult;
 
-		if ((cache.current[0]->maskS) && !(cache.current[0]->mirrorS) && (fmod(texST[0].s0, cache.current[0]->width) == 0.0f)) {
-			texST[0].s1 -= texST[0].s0;
-			texST[0].s0 = 0.0f;
-		}
-
-		if ((cache.current[0]->maskT) && !(cache.current[0]->mirrorT) && (fmod(texST[0].t0, cache.current[0]->height) == 0.0f)) {
-			texST[0].t1 -= texST[0].t0;
-			texST[0].t0 = 0.0f;
-		}
-
 		if (cache.current[0]->frameBufferTexture) {
 			texST[0].s0 = cache.current[0]->offsetS + texST[0].s0;
 			texST[0].t0 = cache.current[0]->offsetT - texST[0].t0;
@@ -1172,16 +1162,6 @@ void OGLRender::drawTexturedRect(const TexturedRectParams & _params)
 		texST[1].t0 = _params.ult * cache.current[1]->shiftScaleT - gSP.textureTile[1]->fult;
 		texST[1].s1 = (_params.lrs + 1.0f) * cache.current[1]->shiftScaleS - gSP.textureTile[1]->fuls;
 		texST[1].t1 = (_params.lrt + 1.0f) * cache.current[1]->shiftScaleT - gSP.textureTile[1]->fult;
-
-		if ((cache.current[1]->maskS) && (fmod(texST[1].s0, cache.current[1]->width) == 0.0f) && !(cache.current[1]->mirrorS)) {
-			texST[1].s1 -= texST[1].s0;
-			texST[1].s0 = 0.0f;
-		}
-
-		if ((cache.current[1]->maskT) && (fmod(texST[1].t0, cache.current[1]->height) == 0.0f) && !(cache.current[1]->mirrorT)) {
-			texST[1].t1 -= texST[1].t0;
-			texST[1].t0 = 0.0f;
-		}
 
 		if (cache.current[1]->frameBufferTexture) {
 			texST[1].s0 = cache.current[1]->offsetS + texST[1].s0;
