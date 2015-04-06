@@ -867,7 +867,7 @@ void TextureCache::_load(u32 _tile, CachedTexture *_pTexture)
 		if (tmptex.maskS > 0) {
 			clampSClamp = tmptex.clampS ? tmptex.clampWidth - 1 : (tmptex.mirrorS ? (tmptex.width << 1) - 1 : tmptex.width - 1);
 			maskSMask = (1 << tmptex.maskS) - 1;
-			mirrorSBit = tmptex.mirrorS ? 1 << tmptex.maskS : 0;
+			mirrorSBit = (tmptex.mirrorS != 0 || tmptex.realWidth/tmptex.width == 2) ? 1 << tmptex.maskS : 0;
 		} else {
 			clampSClamp = min(tmptex.clampWidth, tmptex.width) - 1;
 			maskSMask = 0xFFFF;
@@ -877,7 +877,7 @@ void TextureCache::_load(u32 _tile, CachedTexture *_pTexture)
 		if (tmptex.maskT > 0) {
 			clampTClamp = tmptex.clampT ? tmptex.clampHeight - 1 : (tmptex.mirrorT ? (tmptex.height << 1) - 1 : tmptex.height - 1);
 			maskTMask = (1 << tmptex.maskT) - 1;
-			mirrorTBit = tmptex.mirrorT ? 1 << tmptex.maskT : 0;
+			mirrorTBit = (tmptex.mirrorT != 0 || tmptex.realHeight/tmptex.height == 2) ? 1 << tmptex.maskT : 0;
 		} else {
 			clampTClamp = min(tmptex.clampHeight, tmptex.height) - 1;
 			maskTMask = 0xFFFF;
