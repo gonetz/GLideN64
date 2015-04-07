@@ -1687,6 +1687,10 @@ void gSPCoordMod(u32 _w0, u32 _w1)
 
 void gSPTexture( f32 sc, f32 tc, s32 level, s32 tile, s32 on )
 {
+	gSP.texture.on = on;
+	if (on == 0)
+		return;
+
 	gSP.texture.scales = sc;
 	gSP.texture.scalet = tc;
 
@@ -1694,7 +1698,6 @@ void gSPTexture( f32 sc, f32 tc, s32 level, s32 tile, s32 on )
 	if (gSP.texture.scalet == 0.0f) gSP.texture.scalet = 1.0f;
 
 	gSP.texture.level = level;
-	gSP.texture.on = on;
 
 	gSP.texture.tile = tile;
 	gSP.textureTile[0] = &gDP.tiles[tile];
