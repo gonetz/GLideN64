@@ -329,6 +329,8 @@ void RSP_Init()
 		config.generalEmulation.hacks |= hack_subscreen;
 	else if (strstr(RSP.romname, (const char *)"LEGORacers") != NULL)
 		config.generalEmulation.hacks |= hack_legoRacers;
+	else if (strstr(RSP.romname, (const char *)"Blast") != NULL)
+		config.generalEmulation.hacks |= hack_blastCorps;
 
 	api().FindPluginPath(RSP.pluginpath);
 

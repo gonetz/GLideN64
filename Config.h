@@ -100,6 +100,7 @@ struct Config
 #define hack_pilotWings				(1<<4)  //Special blend mode for PilotWings.
 #define hack_subscreen				(1<<5)  //Fix subscreen delay in Zelda OOT
 #define hack_legoRacers				(1<<6)  //LEGO racers course map
+#define hack_blastCorps				(1<<7)  //Blast Corps black polygons
 
 extern Config config;
 
