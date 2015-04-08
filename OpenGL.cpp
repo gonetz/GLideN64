@@ -905,10 +905,8 @@ void OGLRender::drawRect(int _ulx, int _uly, int _lrx, int _lry, float *_pColor)
 		glDisableVertexAttribArray(SC_TEXCOORD1);
 	}
 
-	if (updateArrays) {
-		glVertexAttrib4f(SC_COLOR, 0, 0, 0, 0);
+	if (updateArrays)
 		glVertexAttribPointer(SC_POSITION, 4, GL_FLOAT, GL_FALSE, sizeof(GLVertex), &m_rect[0].x);
-	}
 	currentCombiner()->updateRenderState();
 
 	FrameBuffer * pCurrentBuffer = frameBufferList().getCurrent();
@@ -941,7 +939,10 @@ void OGLRender::drawRect(int _ulx, int _uly, int _lrx, int _lry, float *_pColor)
 	m_rect[3].z = Z;
 	m_rect[3].w = W;
 
-	glVertexAttrib4fv(SC_COLOR, _pColor);
+	if (gDP.otherMode.cycleType == G_CYC_FILL)
+		glVertexAttrib4fv(SC_COLOR, _pColor);
+	else
+		glVertexAttrib4f(SC_COLOR, 0.0f, 0.0f, 0.0f, 0.0f);
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 	gSP.changed |= CHANGED_GEOMETRYMODE | CHANGED_VIEWPORT;
 }

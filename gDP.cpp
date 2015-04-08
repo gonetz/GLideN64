@@ -804,14 +804,7 @@ void gDPFillRectangle( s32 ulx, s32 uly, s32 lrx, s32 lry )
 		}
 	}
 
-	f32 * pColor = fillColor;
-	if (gDP.otherMode.cycleType != G_CYC_FILL) {
-		if (gDP.combine.mux == EncodeCombineMode(0, 0, 0, SHADE, 0, 0, 0, SHADE, 0, 0, 0, SHADE, 0, 0, 0, SHADE))
-			memset(pColor, 0, sizeof(f32)* 4);
-		else
-			pColor = &gDP.blendColor.r;
-	}
-	render.drawRect(ulx, uly, lrx, lry, pColor);
+	render.drawRect(ulx, uly, lrx, lry, fillColor);
 
 	frameBufferList().setBufferChanged();
 	if (gDP.otherMode.cycleType == G_CYC_FILL) {
