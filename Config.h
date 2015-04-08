@@ -53,6 +53,7 @@ struct Config
 		u32 detectCFB;
 		u32 N64DepthCompare;
 		u32 aspect; // 0: stretch ; 1: 4/3 ; 2: 16/9
+		u32 validityCheckMethod; // 0: checksum; 1: fill RDRAM
 	} frameBufferEmulation;
 
 	struct
