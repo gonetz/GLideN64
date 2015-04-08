@@ -693,6 +693,46 @@
             </property>
            </widget>
           </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_10">
+            <item>
+             <widget class="QLabel" name="label_24">
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Frame buffer validity check:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;For hardware frame buffer emulation it is essential to know that hardware frame buffer is still valid and can be used as texture. Frame buffer validity means that corresponded area in RDRAM is still used for that buffer. Plugin checks RDRAM context for changes before use of hardware buffer. There are two methods to check RDRAM context:&lt;/p&gt;&lt;p&gt;1. Checksum calculation. Plugin calculates checksum of RDRAM area for allocated frame buffer. Checksum change means that frame buffer is not valid. This method is harmless, but it is incompatible with some games, e.g. Mario Tennis. &lt;/p&gt;&lt;p&gt;2. Fill RDRAM. Plugin fills RDRAM area for allocated frame buffer with some color. Frame buffer is valid until all pixels inside the area are the same. This method is faster that the first one, but it may cause emulator's crash if actual frame buffer bounds are less than the ones detected by the plugin. &lt;/p&gt;&lt;p&gt;[Recommended: Checksum calculation]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="text">
+               <string>Validity check method:</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QRadioButton" name="checksumRadioButton">
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Frame buffer validity check:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;For hardware, frame buffer emulation it is essential to know that hardware frame buffer is still valid and can be used as texture. Frame buffer validity means that corresponded area in RDRAM is still used for that buffer. Plugin checks RDRAM context for changes before use of hardware buffer. There are two methods to check RDRAM context:&lt;/p&gt;&lt;p&gt;1. Checksum calculation. Plugin calculates checksum of RDRAM area for allocated frame buffer. Checksum change means that frame buffer is not valid. This method is harmless, but it is incompatible with some games, e.g. Mario Tennis. &lt;/p&gt;&lt;p&gt;2. Fill RDRAM. Plugin fills RDRAM area for allocated frame buffer with some color. Frame buffer is valid until all pixels inside the area are the same. This method is faster that the first one, but it may cause emulator's crash if actual frame buffer bounds are less than the ones detected by the plugin. &lt;/p&gt;&lt;p&gt;[Recommended: Checksum calculation]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="text">
+               <string>checksum</string>
+              </property>
+              <attribute name="buttonGroup">
+               <string notr="true">validityCheckMethodButtonGroup</string>
+              </attribute>
+             </widget>
+            </item>
+            <item>
+             <widget class="QRadioButton" name="fillRdramRadioButton">
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Frame buffer validity check:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;For hardware, frame buffer emulation it is essential to know that hardware frame buffer is still valid and can be used as texture. Frame buffer validity means that corresponded area in RDRAM is still used for that buffer. Plugin checks RDRAM context for changes before use of hardware buffer. There are two methods to check RDRAM context:&lt;/p&gt;&lt;p&gt;1. Checksum calculation. Plugin calculates checksum of RDRAM area for allocated frame buffer. Checksum change means that frame buffer is not valid. This method is harmless, but it is incompatible with some games, e.g. Mario Tennis. &lt;/p&gt;&lt;p&gt;2. Fill RDRAM. Plugin fills RDRAM area for allocated frame buffer with some color. Frame buffer is valid until all pixels inside the area are the same. This method is faster that the first one, but it may cause emulator's crash if actual frame buffer bounds are less than the ones detected by the plugin. &lt;/p&gt;&lt;p&gt;[Recommended: Checksum calculation]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="text">
+               <string>fill RDRAM</string>
+              </property>
+              <attribute name="buttonGroup">
+               <string notr="true">validityCheckMethodButtonGroup</string>
+              </attribute>
+             </widget>
+            </item>
+           </layout>
+          </item>
          </layout>
         </widget>
        </item>
@@ -1346,9 +1386,10 @@
   </connection>
  </connections>
  <buttongroups>
-  <buttongroup name="screenshotButtonGroup"/>
   <buttongroup name="bloomBlendModeButtonGroup"/>
   <buttongroup name="bilinearButtonGroup"/>
+  <buttongroup name="screenshotButtonGroup"/>
   <buttongroup name="aspectButtonGroup"/>
+  <buttongroup name="validityCheckMethodButtonGroup"/>
  </buttongroups>
 </ui>

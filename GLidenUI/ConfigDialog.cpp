@@ -128,6 +128,14 @@ void ConfigDialog::_init()
 		ui->aspect169RadioButton->setChecked(true);
 		break;
 	}
+	switch (config.frameBufferEmulation.validityCheckMethod) {
+	case 0:
+		ui->checksumRadioButton->setChecked(true);
+		break;
+	case 1:
+		ui->fillRdramRadioButton->setChecked(true);
+		break;
+	}
 
 	// Texture filter settings
 	QStringList textureFiltersList;
@@ -245,6 +253,10 @@ void ConfigDialog::accept()
 		config.frameBufferEmulation.aspect = 1;
 	else if (ui->aspect169RadioButton->isChecked())
 		config.frameBufferEmulation.aspect = 2;
+	if (ui->checksumRadioButton->isChecked())
+		config.frameBufferEmulation.validityCheckMethod = 0;
+	else if (ui->fillRdramRadioButton->isChecked())
+		config.frameBufferEmulation.validityCheckMethod = 1;
 
 	// Texture filter settings
 	config.textureFilter.txFilterMode = ui->filterComboBox->currentIndex();

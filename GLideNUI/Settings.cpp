@@ -56,6 +56,7 @@ void loadSettings(const QString & _strFileName)
 	config.frameBufferEmulation.detectCFB = settings.value("detectCFB", 0).toInt();
 	config.frameBufferEmulation.N64DepthCompare = settings.value("N64DepthCompare", 0).toInt();
 	config.frameBufferEmulation.aspect = settings.value("aspect", 0).toInt();
+	config.frameBufferEmulation.validityCheckMethod = settings.value("validityCheckMethod", 0).toInt();
 	settings.endGroup();
 
 	settings.beginGroup("textureFilter");
@@ -140,6 +141,7 @@ void writeSettings(const QString & _strFileName)
 	settings.setValue("detectCFB", config.frameBufferEmulation.detectCFB);
 	settings.setValue("N64DepthCompare", config.frameBufferEmulation.N64DepthCompare);
 	settings.setValue("aspect", config.frameBufferEmulation.aspect);
+	settings.setValue("validityCheckMethod", config.frameBufferEmulation.validityCheckMethod);
 	settings.endGroup();
 
 	settings.beginGroup("textureFilter");
@@ -214,6 +216,7 @@ void loadCustomRomSettings(const QString & _strFileName, const char * _strRomNam
 	config.frameBufferEmulation.detectCFB = settings.value("detectCFB", config.frameBufferEmulation.detectCFB).toInt();
 	config.frameBufferEmulation.N64DepthCompare = settings.value("N64DepthCompare", config.frameBufferEmulation.N64DepthCompare).toInt();
 	config.frameBufferEmulation.aspect = settings.value("aspect", config.frameBufferEmulation.aspect).toInt();
+	config.frameBufferEmulation.validityCheckMethod = settings.value("validityCheckMethod", config.frameBufferEmulation.aspect).toInt();
 	settings.endGroup();
 
 	settings.beginGroup("bloomFilter");
