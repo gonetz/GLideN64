@@ -409,7 +409,10 @@ void FrameBufferList::saveBuffer(u32 _address, u16 _format, u16 _size, u16 _widt
 		m_pCurrent = &buffer;
 	}
 
-	attachDepthBuffer();
+	if (_address == gDP.depthImageAddress)
+		depthBufferList().saveBuffer(_address);
+	else
+		attachDepthBuffer();
 
 #ifdef DEBUG
 	DebugMsg( DEBUG_HIGH | DEBUG_HANDLED, "FrameBuffer_SaveBuffer( 0x%08X ); depth buffer is 0x%08X\n",

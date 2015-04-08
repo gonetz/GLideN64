@@ -100,7 +100,7 @@ void DepthBuffer::_initDepthBufferTexture(FrameBuffer * _pBuffer, CachedTexture 
 	else {
 		_pTexture->width = video().getWidth();
 		_pTexture->height = video().getHeight();
-		_pTexture->address = VI.lastOrigin;
+		_pTexture->address = gDP.depthImageAddress;
 		_pTexture->clampWidth = VI.width;
 		_pTexture->clampHeight = VI.height;
 	}
@@ -273,9 +273,7 @@ void DepthBufferList::saveBuffer(u32 _address)
 		return;
 
 	FrameBuffer * pFrameBuffer = frameBufferList().findBuffer(_address);
-	if (pFrameBuffer == NULL)
-		pFrameBuffer = frameBufferList().getCurrent();
-	else
+	if (pFrameBuffer != NULL)
 		pFrameBuffer->m_isDepthBuffer = true;
 
 	if (m_pCurrent == NULL || m_pCurrent->m_address != _address)
