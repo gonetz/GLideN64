@@ -847,7 +847,7 @@ void FrameBufferToRDRAM::CopyToRDRAM(u32 _address)
 	glBlitFramebuffer(
 		0, 0, video().getWidth(), video().getHeight(),
 		0, 0, VI.width, VI.height,
-		GL_COLOR_BUFFER_BIT, GL_LINEAR
+		GL_COLOR_BUFFER_BIT, GL_NEAREST
 	);
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, frameBufferList().getCurrent()->m_FBO);
 
