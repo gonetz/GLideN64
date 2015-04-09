@@ -774,6 +774,7 @@ void gDPFillRectangle( s32 ulx, s32 uly, s32 lrx, s32 lry )
 		++lry;
 	} else if (lry == uly)
 		++lry;
+
 	if (gDP.depthImageAddress == gDP.colorImage.address) {
 		// Game may use depth texture as auxilary color texture. Example: Mario Tennis
 		// If color is not depth clear color, that is most likely the case
@@ -788,6 +789,8 @@ void gDPFillRectangle( s32 ulx, s32 uly, s32 lrx, s32 lry )
 		render.clearDepthBuffer(lrx - ulx == gDP.scissor.lrx - gDP.scissor.ulx && lry - uly == gDP.scissor.lry - gDP.scissor.uly);
 		return;
 	}
+
+	frameBufferList().setBufferChanged();
 
 	f32 fillColor[4];
 	gDPGetFillColor(fillColor);
@@ -806,7 +809,6 @@ void gDPFillRectangle( s32 ulx, s32 uly, s32 lrx, s32 lry )
 
 	render.drawRect(ulx, uly, lrx, lry, fillColor);
 
-	frameBufferList().setBufferChanged();
 	if (gDP.otherMode.cycleType == G_CYC_FILL) {
 		if (lry > (u32)gDP.scissor.lry)
 			gDP.colorImage.height = (u32)max(gDP.colorImage.height, (u32)gDP.scissor.lry);
