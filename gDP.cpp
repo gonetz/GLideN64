@@ -427,7 +427,7 @@ bool CheckForFrameBufferTexture(u32 _address, u32 _bytes)
 				else
 					frameBufferList().removeBuffer(pBuffer->m_startAddress);
 			} else if (pBuffer->m_RdramCrc != 0) {
-				const u32 crc = Adler32(0, RDRAM + pBuffer->m_startAddress, (VI.width*VI.height) << pBuffer->m_size >> 1);
+				const u32 crc = textureCRC(RDRAM + pBuffer->m_startAddress, pBuffer->m_height, pBuffer->m_width << pBuffer->m_size >> 1);
 				bRes = (pBuffer->m_RdramCrc == crc);
 				if (bRes)
 					pBuffer->m_validityChecked = RSP.DList;

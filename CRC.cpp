@@ -59,28 +59,24 @@ u32 CRC_CalculatePalette(u32 crc, const void * buffer, u32 count )
 	return crc ^ orig;
 }
 
-u32 Adler32(u32 crc, const void *buffer, u32 count)
+u32 textureCRC(u8 * addr, u32 height, u32 stride)
 {
-	register u32 s1 = crc & 0xFFFF;
-	register u32 s2 = (crc >> 16) & 0xFFFF;
-	int k;
-	const u8 *Buffer = (const u8*)buffer;
+	const u32 width = stride / 8;
+	const u32 line = stride % 8;
+	u64 crc = 0;
+	u64 twopixel_crc;
 
-	if (Buffer == NULL)
-		return 0;
-
-	while (count > 0) {
-		/* 5552 is the largest n such that 255n(n+1)/2 + (n+1)(BASE-1) <= 2^32-1 */
-		k = (count < 5552 ? count : 5552);
-		count -= k;
-		while (k--) {
-			s1 += *Buffer++;
-			s2 += s1;
+	u32 *  pixelpos = (u32*)addr;
+	for (; height; height--) {
+		int col = 0;
+		for (u32 i = width; i; --i) {
+			twopixel_crc = i * ((u64)(pixelpos[1] & 0xFFFEFFFE) + (u64)(pixelpos[0] & 0xFFFEFFFE) + crc);
+			crc = (twopixel_crc >> 32) + twopixel_crc;
+			pixelpos += 2;
 		}
-		/* 65521 is the largest prime smaller than 65536 */
-		s1 %= 65521;
-		s2 %= 65521;
+		crc = (height * crc >> 32) + height * crc;
+		pixelpos = (u32*)((u8*)pixelpos + line);
 	}
 
-	return (s2 << 16) | s1;
+	return crc&0xFFFFFFFF;
 }

@@ -811,7 +811,8 @@ void FrameBufferToRDRAM::_copyWhite(FrameBuffer * _pBuffer)
 			}
 		}
 	}
-	_pBuffer->m_RdramCrc = Adler32(0, RDRAM + _pBuffer->m_startAddress, (VI.width*VI.height) << _pBuffer->m_size >> 1);
+	_pBuffer->m_RdramCrc = textureCRC(RDRAM + _pBuffer->m_startAddress, _pBuffer->m_height, _pBuffer->m_width << _pBuffer->m_size >> 1);
+
 	_pBuffer->m_cleared = false;
 }
 
@@ -880,7 +881,7 @@ void FrameBufferToRDRAM::CopyToRDRAM(u32 _address)
 			}
 		}
 	}
-	pBuffer->m_RdramCrc = Adler32(0, RDRAM + _address, (VI.width*VI.height) << pBuffer->m_size >> 1);
+	pBuffer->m_RdramCrc = textureCRC(RDRAM + pBuffer->m_startAddress, pBuffer->m_height, pBuffer->m_width << pBuffer->m_size >> 1);
 	pBuffer->m_cleared = false;
 #ifndef GLES2
 	glUnmapBuffer(GL_PIXEL_PACK_BUFFER);
