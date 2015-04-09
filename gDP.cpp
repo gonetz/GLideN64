@@ -407,21 +407,12 @@ bool CheckForFrameBufferTexture(u32 _address, u32 _bytes)
 		if (bRes && pBuffer->m_validityChecked != RSP.DList) {
 			if (pBuffer->m_cleared) {
 				const u32 color = pBuffer->m_fillcolor & 0xFFFEFFFE;
-				if (pBuffer->m_size > G_IM_SIZ_8b) {
-					for (u32 i = pBuffer->m_startAddress + 4; i < pBuffer->m_endAddress; i += 4) {
-						if (((*(u32*)&RDRAM[i]) & 0xFFFEFFFE) != color) {
-							bRes = false;
-							break;
-						}
-					}
-				} else {
-					u32 wrongPixels = 0;
-					for (u32 i = pBuffer->m_startAddress + 4; i < pBuffer->m_endAddress; i += 4) {
-						if (((*(u32*)&RDRAM[i]) & 0xFFFEFFFE) != color)
-							++wrongPixels;
-					}
-					bRes = wrongPixels < (pBuffer->m_endAddress - pBuffer->m_startAddress)/100; // treshold level 1%
+				u32 wrongPixels = 0;
+				for (u32 i = pBuffer->m_startAddress + 4; i < pBuffer->m_endAddress; i += 4) {
+					if (((*(u32*)&RDRAM[i]) & 0xFFFEFFFE) != color)
+						++wrongPixels;
 				}
+				bRes = wrongPixels < (pBuffer->m_endAddress - pBuffer->m_startAddress)/100; // treshold level 1%
 				if (bRes)
 					pBuffer->m_validityChecked = RSP.DList;
 				else
