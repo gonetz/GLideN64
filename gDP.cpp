@@ -137,8 +137,10 @@ void gDPSetColorImage( u32 format, u32 size, u32 width, u32 address )
 			height = gDP.scissor.lry;
 		else if (width <= 64)
 			height = width;
-		else
+		else if (gSP.viewport.height > 0)
 			height = gSP.viewport.height;
+		else
+			height = gDP.scissor.lry;
 
 		if (config.frameBufferEmulation.enable) // && address != gDP.depthImageAddress)
 		{
