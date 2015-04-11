@@ -68,7 +68,12 @@ void VI_UpdateSize()
 	FrameBufferList & fbList = frameBufferList();
 	FrameBuffer * pBuffer = fbList.findBuffer(VI.lastOrigin);
 	DepthBuffer * pDepthBuffer = pBuffer != NULL ? pBuffer->m_pDepthBuffer : NULL;
-	if (config.frameBufferEmulation.enable && ((interlacedPrev != VI.interlaced) || (VI.width > 0 && VI.width != VI.widthPrev) || (pDepthBuffer != NULL && pDepthBuffer->m_width != VI.width))) {
+	if (config.frameBufferEmulation.enable &&
+		((interlacedPrev != VI.interlaced) ||
+		(VI.width > 0 && VI.width != VI.widthPrev) ||
+		(pDepthBuffer != NULL && pDepthBuffer->m_width != VI.width) ||
+		(pBuffer != NULL && pBuffer->m_height != VI.height))
+	) {
 		fbList.removeBuffers(VI.widthPrev);
 		fbList.removeBuffers(VI.width);
 		depthBufferList().destroy();
