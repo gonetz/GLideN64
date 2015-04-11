@@ -479,10 +479,13 @@ void FrameBufferList::attachDepthBuffer()
 	if (m_pCurrent->m_FBO > 0 && pDepthBuffer != NULL) {
 		pDepthBuffer->initDepthImageTexture(m_pCurrent);
 		pDepthBuffer->initDepthBufferTexture(m_pCurrent);
-		m_pCurrent->m_pDepthBuffer = pDepthBuffer;
-		pDepthBuffer->setDepthAttachment(GL_DRAW_FRAMEBUFFER);
-		if (video().getRender().isImageTexturesSupported() && config.frameBufferEmulation.N64DepthCompare != 0)
-			pDepthBuffer->bindDepthImageTexture();
+		if (pDepthBuffer->m_pDepthBufferTexture->realWidth >= m_pCurrent->m_pTexture->realWidth) {
+			m_pCurrent->m_pDepthBuffer = pDepthBuffer;
+			pDepthBuffer->setDepthAttachment(GL_DRAW_FRAMEBUFFER);
+			if (video().getRender().isImageTexturesSupported() && config.frameBufferEmulation.N64DepthCompare != 0)
+				pDepthBuffer->bindDepthImageTexture();
+		} else
+			m_pCurrent->m_pDepthBuffer = NULL;
 	} else
 		m_pCurrent->m_pDepthBuffer = NULL;
 
