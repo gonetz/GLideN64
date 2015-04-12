@@ -36,7 +36,7 @@ TxDbg::TxDbg()
 #ifdef GHQCHK
 		_dbgfile = fopen("ghqchk.txt", "w");
 #else
-		_dbgfile = fopen("glidehq.dbg", "w");
+		_dbgfile = fopen("glidenhq.dbg", "w");
 #endif
 }
 
