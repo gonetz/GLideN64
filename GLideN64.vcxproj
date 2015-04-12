@@ -269,6 +269,7 @@
     <ClCompile Include="GLideN64.cpp" />
     <ClCompile Include="glState.cpp" />
     <ClCompile Include="gSP.cpp" />
+    <ClCompile Include="Keys.cpp" />
     <ClCompile Include="MupenPlusPluginAPI.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
@@ -358,6 +359,7 @@
     <ClInclude Include="GLideN64.h" />
     <ClInclude Include="GLideNHQ\Ext_TxFilter.h" />
     <ClInclude Include="gSP.h" />
+    <ClInclude Include="Keys.h" />
     <ClInclude Include="Log.h" />
     <ClInclude Include="mupenplus\GLideN64_mupenplus.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>

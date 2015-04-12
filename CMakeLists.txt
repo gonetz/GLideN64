@@ -24,6 +24,7 @@ set(GLideN64_SOURCES
   GLSLCombiner.cpp
   glState.cpp
   gSP.cpp
+  Keys.cpp
   L3D.cpp
   L3DEX2.cpp
   L3DEX.cpp

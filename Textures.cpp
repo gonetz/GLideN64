@@ -1,6 +1,8 @@
 #include <assert.h>
 #include <memory.h>
 #include <algorithm>
+#include <thread>         // std::this_thread::sleep_for
+#include <chrono>         // std::chrono::seconds
 #include "OpenGL.h"
 #include "Textures.h"
 #include "GBI.h"
@@ -11,6 +13,7 @@
 #include "convert.h"
 #include "FrameBuffer.h"
 #include "Config.h"
+#include "Keys.h"
 #include "GLideNHQ/Ext_TxFilter.h"
 
 using namespace std;
@@ -767,7 +770,7 @@ void TextureCache::_loadBackground(CachedTexture *pTexture)
 	free(pDest);
 }
 
-bool TextureCache::_loadHiresTexture(u32 _tile, CachedTexture *_pTexture)
+bool TextureCache::_loadHiresTexture(u32 _tile, CachedTexture *_pTexture, u64 & _ricecrc)
 {
 	if (config.textureFilter.txHiresEnable == 0 || !TFH.isInited())
 		return false;
@@ -808,20 +811,22 @@ bool TextureCache::_loadHiresTexture(u32 _tile, CachedTexture *_pTexture)
 		//			palette = (rdp.pal_8 + (gSP.textureTile[_t]->palette << 4));
 	}
 
-	u64 ricecrc = txfilter_checksum(addr, tile_width, tile_height, (unsigned short)(_pTexture->format << 8 | _pTexture->size), bpl, paladdr);
+	_ricecrc = txfilter_checksum(addr, tile_width, tile_height, (unsigned short)(_pTexture->format << 8 | _pTexture->size), bpl, paladdr);
 	GHQTexInfo ghqTexInfo;
-	if (txfilter_hirestex(_pTexture->crc, ricecrc, palette, &ghqTexInfo)) {
+	if (txfilter_hirestex(_pTexture->crc, _ricecrc, palette, &ghqTexInfo)) {
 		glTexImage2D(GL_TEXTURE_2D, 0, ghqTexInfo.format, ghqTexInfo.width, ghqTexInfo.height, 0, ghqTexInfo.texture_format, ghqTexInfo.pixel_type, ghqTexInfo.data);
 		assert(!isGLError());
 		_updateCachedTexture(ghqTexInfo, _pTexture);
 		return true;
 	}
+
 	return false;
 }
 
 void TextureCache::_load(u32 _tile, CachedTexture *_pTexture)
 {
-	if (_loadHiresTexture(_tile, _pTexture))
+	u64 ricecrc = 0;
+	if (_loadHiresTexture(_tile, _pTexture, ricecrc))
 		return;
 
 	u32 *pDest;
@@ -959,7 +964,10 @@ void TextureCache::_load(u32 _tile, CachedTexture *_pTexture)
 		}
 
 		bool bLoaded = false;
-		if ((config.textureFilter.txEnhancementMode | config.textureFilter.txFilterMode) != 0 && maxLevel == 0 && (config.textureFilter.txFilterIgnoreBG == 0 || (RSP.cmd != G_TEXRECT && RSP.cmd != G_TEXRECTFLIP)) && TFH.isInited())
+		if (m_toggleDumpTex && config.textureFilter.txHiresEnable != 0 && config.textureFilter.txDump != 0) {
+			txfilter_dmptx((u8*)pDest, tmptex.realWidth, tmptex.realHeight, tmptex.realWidth, glInternalFormat, (unsigned short)(_pTexture->format << 8 | _pTexture->size), ricecrc);
+		}
+		else if ((config.textureFilter.txEnhancementMode | config.textureFilter.txFilterMode) != 0 && maxLevel == 0 && (config.textureFilter.txFilterIgnoreBG == 0 || (RSP.cmd != G_TEXRECT && RSP.cmd != G_TEXRECTFLIP)) && TFH.isInited())
 		{
 			GHQTexInfo ghqTexInfo;
 			if (txfilter_filter((u8*)pDest, tmptex.realWidth, tmptex.realHeight, glInternalFormat, (uint64)_pTexture->crc, &ghqTexInfo) != 0 && ghqTexInfo.data != NULL) {
@@ -1186,6 +1194,17 @@ void TextureCache::_updateBackground()
 	current[0] = pCurrent;
 }
 
+void TextureCache::_clear()
+{
+	current[0] = current[1] = NULL;
+
+	for (Textures::const_iterator cur = m_textures.cbegin(); cur != m_textures.cend(); ++cur) {
+		m_cachedBytes -= cur->second.textureBytes;
+		glDeleteTextures(1, &cur->second.glName);
+	}
+	m_textures.clear();
+}
+
 static
 void _updateShiftScale(u32 _t, CachedTexture *_pTexture)
 {
@@ -1205,6 +1224,29 @@ void _updateShiftScale(u32 _t, CachedTexture *_pTexture)
 
 void TextureCache::update(u32 _t)
 {
+	if (config.textureFilter.txHiresEnable != 0 && config.textureFilter.txDump != 0) {
+		/* Force reload hi-res textures. Useful for texture artists */
+		if (isKeyPressed(G64_VK_R, 0x0001)) {
+			if (txfilter_reloadhirestex()) {
+				_clear();
+			}
+		}
+		/* Turn on texture dump */
+		else if (isKeyPressed(G64_VK_D, 0x0001)) {
+			m_toggleDumpTex = !m_toggleDumpTex;
+			if (m_toggleDumpTex) {
+				displayLoadProgress(L"Texture dump - ON\n");
+				_clear();
+				std::this_thread::sleep_for(std::chrono::seconds(1));
+			}
+			else {
+				displayLoadProgress(L"Texture dump - OFF\n");
+				std::this_thread::sleep_for(std::chrono::seconds(1));
+			}
+		}
+	}
+
+
 	switch(gSP.textureTile[_t]->textureMode) {
 	case TEXTUREMODE_BGIMAGE:
 		_updateBackground();

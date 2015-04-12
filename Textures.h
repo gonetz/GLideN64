@@ -61,7 +61,7 @@ struct TextureCache
 	static TextureCache & get();
 
 private:
-	TextureCache() : m_pDummy(NULL), m_hits(0), m_misses(0), m_maxBytes(0), m_cachedBytes(0), m_curUnpackAlignment(4)
+	TextureCache() : m_pDummy(NULL), m_hits(0), m_misses(0), m_maxBytes(0), m_cachedBytes(0), m_curUnpackAlignment(4), m_toggleDumpTex(false)
 	{
 		current[0] = NULL;
 		current[1] = NULL;
@@ -72,10 +72,11 @@ private:
 	void _checkCacheSize();
 	CachedTexture * _addTexture(u32 _crc32);
 	void _load(u32 _tile, CachedTexture *_pTexture);
-	bool _loadHiresTexture(u32 _tile, CachedTexture *_pTexture);
+	bool _loadHiresTexture(u32 _tile, CachedTexture *_pTexture, u64 & _ricecrc);
 	void _loadBackground(CachedTexture *pTexture);
 	bool _loadHiresBackground(CachedTexture *_pTexture);
 	void _updateBackground();
+	void _clear();
 
 	typedef std::map<u32, CachedTexture> Textures;
 	Textures m_textures;
@@ -85,6 +86,7 @@ private:
 	u32 m_maxBytes;
 	u32 m_cachedBytes;
 	GLint m_curUnpackAlignment;
+	bool m_toggleDumpTex;
 };
 
 inline TextureCache & textureCache()

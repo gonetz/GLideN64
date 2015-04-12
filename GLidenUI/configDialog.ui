@@ -888,7 +888,7 @@
           <item>
            <widget class="QCheckBox" name="textureDumpCheckBox">
             <property name="enabled">
-             <bool>false</bool>
+             <bool>true</bool>
             </property>
             <property name="toolTip">
              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Texture dumping mode:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;In this mode, you have that ability to dump textures on screen to the appropriate folder. You can also reload textures while the game is running to see how they look instantly - big time saver!&lt;/p&gt;&lt;p&gt;Hotkeys: &lt;span style=&quot; font-weight:600;&quot;&gt;R&lt;/span&gt; reloads hires textures from the texture pack - &lt;span style=&quot; font-weight:600;&quot;&gt;D&lt;/span&gt; toggles texture dumps on/off.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -1386,10 +1386,10 @@
   </connection>
  </connections>
  <buttongroups>
-  <buttongroup name="bloomBlendModeButtonGroup"/>
-  <buttongroup name="bilinearButtonGroup"/>
-  <buttongroup name="screenshotButtonGroup"/>
   <buttongroup name="aspectButtonGroup"/>
+  <buttongroup name="bloomBlendModeButtonGroup"/>
+  <buttongroup name="screenshotButtonGroup"/>
+  <buttongroup name="bilinearButtonGroup"/>
   <buttongroup name="validityCheckMethodButtonGroup"/>
  </buttongroups>
 </ui>
