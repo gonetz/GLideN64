@@ -161,7 +161,6 @@ private:
 			GLint blockSize, numUniforms;
 			glGetActiveUniformBlockiv(_program, blockIndex, GL_UNIFORM_BLOCK_DATA_SIZE, &blockSize);
 			glGetActiveUniformBlockiv(_program, blockIndex, GL_UNIFORM_BLOCK_ACTIVE_UNIFORMS, &numUniforms);
-			assert(numUniforms == _numUniforms);
 
 			glGetUniformIndices(_program, numUniforms, _strUniformNames, m_indices);
 			glGetActiveUniformsiv(_program, numUniforms, m_indices, GL_UNIFORM_OFFSET, m_offsets);

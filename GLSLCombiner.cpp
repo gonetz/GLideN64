@@ -15,6 +15,8 @@
 #define SHADER_PRECISION
 #include "Shaders.h"
 
+using namespace std;
+
 static GLuint  g_vertex_shader_object;
 static GLuint  g_vertex_shader_object_notex;
 static GLuint  g_calc_light_shader_object;
