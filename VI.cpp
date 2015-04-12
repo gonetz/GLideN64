@@ -71,7 +71,7 @@ void VI_UpdateSize()
 	if (config.frameBufferEmulation.enable &&
 		((interlacedPrev != VI.interlaced) ||
 		(VI.width > 0 && VI.width != VI.widthPrev) ||
-		(pDepthBuffer != NULL && pDepthBuffer->m_width != VI.width) ||
+		(!VI.interlaced && pDepthBuffer != NULL && pDepthBuffer->m_width != VI.width) ||
 		(pBuffer != NULL && pBuffer->m_height != VI.height))
 	) {
 		fbList.removeBuffers(VI.widthPrev);
