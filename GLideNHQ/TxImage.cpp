@@ -357,7 +357,7 @@ TxImage::writePNG(uint8* src, FILE* fp, int width, int height, int rowStride, ui
 	case PNG_COLOR_TYPE_RGB:
 		//row_bytes = (bit_depth * width) >> 1;
 		row_bytes = rowStride;
-		png_set_bgr(png_ptr);
+		//png_set_bgr(png_ptr); // OpenGL does not need it
 		png_set_sBIT(png_ptr, info_ptr, &sig_bit);
 	break;
 	case PNG_COLOR_TYPE_PALETTE:

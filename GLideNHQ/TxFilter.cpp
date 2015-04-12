@@ -561,10 +561,11 @@ TxFilter::dmptx(uint8 *src, int width, int height, int rowStridePixel, uint16 gf
 	DBG_INFO(80, L"hirestex: r_crc64:%08X %08X\n",
 			 (uint32)(r_crc64 >> 32), (uint32)(r_crc64 & 0xffffffff));
 
-	if (!_txQuantize->quantize(src, _tex1, rowStridePixel, height, (gfmt & 0x00ff), GL_RGBA8))
-		return 0;
-
-	src = _tex1;
+	if (gfmt != GL_RGBA && gfmt != GL_RGBA8) {
+		if (!_txQuantize->quantize(src, _tex1, rowStridePixel, height, gfmt, GL_RGBA8))
+			return 0;
+		src = _tex1;
+	}
 
 	if (!_path.empty() && !_ident.empty()) {
 		/* dump it to disk */
@@ -582,7 +583,7 @@ TxFilter::dmptx(uint8 *src, int width, int height, int rowStridePixel, uint16 gf
 				!boost::filesystem::create_directory(tmpbuf))
 			return 0;
 
-		tmpbuf.append(L"/GlideHQ");
+		tmpbuf.append(L"/GLideNHQ");
 		if (!boost::filesystem::exists(tmpbuf) &&
 				!boost::filesystem::create_directory(tmpbuf))
 			return 0;
