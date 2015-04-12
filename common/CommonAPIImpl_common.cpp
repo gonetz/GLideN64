@@ -50,7 +50,6 @@ void RSP_ThreadProc(std::mutex * _pRspThreadMtx, std::mutex * _pPluginThreadMtx,
 			VI_UpdateScreen();
 			break;
 		case acRomClosed:
-			TFH.shutdown();
 			video().stop();
 			GBI.destroy();
 			*_pCommand = acNone;
