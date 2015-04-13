@@ -99,7 +99,7 @@ void NoiseTexture::init()
 	m_pTexture->mirrorS = 0;
 	m_pTexture->mirrorT = 0;
 	m_pTexture->realWidth = 640;
-	m_pTexture->realHeight = 480;
+	m_pTexture->realHeight = 580;
 	m_pTexture->textureBytes = m_pTexture->realWidth * m_pTexture->realHeight;
 	textureCache().addFrameBufferTextureSize(m_pTexture->textureBytes);
 	glBindTexture(GL_TEXTURE_2D, m_pTexture->glName);

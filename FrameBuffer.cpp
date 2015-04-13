@@ -774,8 +774,8 @@ void FrameBufferToRDRAM::Init()
 	m_pTexture->mirrorS = 0;
 	m_pTexture->mirrorT = 0;
 	m_pTexture->realWidth = 640;
-	m_pTexture->realHeight = 480;
-	m_pTexture->textureBytes = 640 * 480 * 4;
+	m_pTexture->realHeight = 580;
+	m_pTexture->textureBytes = m_pTexture->realWidth * m_pTexture->realHeight * 4;
 	textureCache().addFrameBufferTextureSize(m_pTexture->textureBytes);
 	glBindTexture( GL_TEXTURE_2D, m_pTexture->glName );
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_pTexture->realWidth, m_pTexture->realHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
@@ -940,7 +940,7 @@ void DepthBufferToRDRAM::Init()
 	m_pColorTexture->mirrorS = 0;
 	m_pColorTexture->mirrorT = 0;
 	m_pColorTexture->realWidth = 640;
-	m_pColorTexture->realHeight = 480;
+	m_pColorTexture->realHeight = 580;
 	m_pColorTexture->textureBytes = m_pColorTexture->realWidth * m_pColorTexture->realHeight;
 	textureCache().addFrameBufferTextureSize(m_pColorTexture->textureBytes);
 
@@ -954,7 +954,7 @@ void DepthBufferToRDRAM::Init()
 	m_pDepthTexture->mirrorS = 0;
 	m_pDepthTexture->mirrorT = 0;
 	m_pDepthTexture->realWidth = 640;
-	m_pDepthTexture->realHeight = 480;
+	m_pDepthTexture->realHeight = 580;
 	m_pDepthTexture->textureBytes = m_pDepthTexture->realWidth * m_pDepthTexture->realHeight * sizeof(float);
 	textureCache().addFrameBufferTextureSize(m_pDepthTexture->textureBytes);
 
@@ -980,7 +980,7 @@ void DepthBufferToRDRAM::Init()
 	// Generate and initialize Pixel Buffer Objects
 	glGenBuffers(1, &m_PBO);
 	glBindBuffer(GL_PIXEL_PACK_BUFFER, m_PBO);
-	glBufferData(GL_PIXEL_PACK_BUFFER, 640*480*sizeof(float), NULL, GL_DYNAMIC_READ);
+	glBufferData(GL_PIXEL_PACK_BUFFER, m_pDepthTexture->realWidth * m_pDepthTexture->realHeight * sizeof(float), NULL, GL_DYNAMIC_READ);
 	glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
 }
 
@@ -1085,7 +1085,7 @@ void RDRAMtoFrameBuffer::Init()
 	m_pTexture->mirrorS = 0;
 	m_pTexture->mirrorT = 0;
 	m_pTexture->realWidth = 640;
-	m_pTexture->realHeight = 480;
+	m_pTexture->realHeight = 580;
 	m_pTexture->textureBytes = m_pTexture->realWidth * m_pTexture->realHeight * 4;
 	textureCache().addFrameBufferTextureSize(m_pTexture->textureBytes);
 	glBindTexture( GL_TEXTURE_2D, m_pTexture->glName );
