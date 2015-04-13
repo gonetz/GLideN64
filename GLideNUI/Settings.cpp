@@ -215,7 +215,7 @@ void loadCustomRomSettings(const QString & _strFileName, const char * _strRomNam
 	for (int i = 0; i < bytes.length() && bASCII; ++i)
 		bASCII = bytes.at(i) >= 0;
 
-	const QString romName = bASCII ? QString::fromLatin1(_strRomName) : QString::number(Adler32(0xFFFFFFFF, bytes.data(), bytes.length()), 16);
+	const QString romName = bASCII ? QString::fromLatin1(_strRomName).toUpper() : QString::number(Adler32(0xFFFFFFFF, bytes.data(), bytes.length()), 16);
 	if (settings.childGroups().indexOf(romName) < 0)
 		return;
 
