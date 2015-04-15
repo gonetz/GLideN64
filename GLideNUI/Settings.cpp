@@ -11,6 +11,9 @@
 
 #include "Settings.h"
 
+static const char * strIniFileName = "GLideN64.ini";
+static const char * strCustomSettingsFileName = "GLideN64.custom.ini";
+
 static
 void _loadSettings(QSettings & settings)
 {
@@ -87,15 +90,15 @@ void _loadSettings(QSettings & settings)
 	settings.endGroup();
 }
 
-void loadSettings(const QString & _strFileName)
+void loadSettings(const QString & _strIniFolder)
 {
 //	QSettings settings("Emulation", "GLideN64");
-	QSettings settings(_strFileName, QSettings::IniFormat);
+	QSettings settings(_strIniFolder + "/" + strIniFileName, QSettings::IniFormat);
 	config.version = settings.value("version").toInt();
 	if (config.version != CONFIG_VERSION_CURRENT) {
 		config.resetToDefaults();
 		settings.clear();
-		writeSettings(_strFileName);
+		writeSettings(_strIniFolder);
 		return;
 	}
 
@@ -105,10 +108,10 @@ void loadSettings(const QString & _strFileName)
 	config.generalEmulation.hacks = hacks;
 }
 
-void writeSettings(const QString & _strFileName)
+void writeSettings(const QString & _strIniFolder)
 {
 //	QSettings settings("Emulation", "GLideN64");
-	QSettings settings(_strFileName, QSettings::IniFormat);
+	QSettings settings(_strIniFolder + "/" + strIniFileName, QSettings::IniFormat);
 	settings.setValue("version", config.version);
 
 	settings.beginGroup("video");
@@ -203,9 +206,9 @@ u32 Adler32(u32 crc, const void *buffer, u32 count)
 	return (s2 << 16) | s1;
 }
 
-void loadCustomRomSettings(const QString & _strFileName, const char * _strRomName)
+void loadCustomRomSettings(const QString & _strIniFolder, const char * _strRomName)
 {
-	QSettings settings(_strFileName, QSettings::IniFormat);
+	QSettings settings(_strIniFolder + "/" + strCustomSettingsFileName, QSettings::IniFormat);
 	config.version = settings.value("version").toInt();
 	if (config.version != CONFIG_VERSION_CURRENT)
 		return;
@@ -215,7 +218,7 @@ void loadCustomRomSettings(const QString & _strFileName, const char * _strRomNam
 	for (int i = 0; i < bytes.length() && bASCII; ++i)
 		bASCII = bytes.at(i) >= 0;
 
-	const QString romName = bASCII ? QString::fromLatin1(_strRomName).toUpper() : QString::number(Adler32(0xFFFFFFFF, bytes.data(), bytes.length()), 16);
+	const QString romName = bASCII ? QString::fromLatin1(_strRomName).toUpper() : QString::number(Adler32(0xFFFFFFFF, bytes.data(), bytes.length()), 16).toUpper();
 	if (settings.childGroups().indexOf(romName) < 0)
 		return;
 

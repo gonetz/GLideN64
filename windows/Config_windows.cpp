@@ -7,30 +7,23 @@
 
 Config config;
 
-static
-void _getIniFileName(wchar_t * _buf)
-{
-	api().FindPluginPath(_buf);
-	wcscat(_buf, L"/GLideN64.ini");
-}
-
 void Config_DoConfig(/*HWND hParent*/)
 {
-	wchar_t strIniFileName[PLUGIN_PATH_SIZE];
-	_getIniFileName(strIniFileName);
+	wchar_t strIniFolderPath[PLUGIN_PATH_SIZE];
+	api().FindPluginPath(strIniFolderPath);
 
-	const bool bRestart = RunConfig(strIniFileName);
+	const bool bRestart = RunConfig(strIniFolderPath);
 	if (config.generalEmulation.enableCustomSettings != 0)
-		LoadCustomRomSettings(strIniFileName, RSP.romname);
+		LoadCustomRomSettings(strIniFolderPath, RSP.romname);
 	if (bRestart)
 		video().restart();
 }
 
 void Config_LoadConfig()
 {
-	wchar_t strIniFileName[PLUGIN_PATH_SIZE];
-	_getIniFileName(strIniFileName);
-	LoadConfig(strIniFileName);
+	wchar_t strIniFolderPath[PLUGIN_PATH_SIZE];
+	api().FindPluginPath(strIniFolderPath);
+	LoadConfig(strIniFolderPath);
 	if (config.generalEmulation.enableCustomSettings != 0)
-		LoadCustomRomSettings(strIniFileName, RSP.romname);
+		LoadCustomRomSettings(strIniFolderPath, RSP.romname);
 }

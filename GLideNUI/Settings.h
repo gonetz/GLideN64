@@ -1,9 +1,9 @@
 #ifndef SETTINGS_H
 #define SETTINGS_H
 
-void loadSettings(const QString & _strFileName);
-void writeSettings(const QString & _strFileName);
-void loadCustomRomSettings(const QString & _strFileName, const char * _strRomName);
+void loadSettings(const QString & _strIniFolder);
+void writeSettings(const QString & _strIniFolder);
+void loadCustomRomSettings(const QString & _strIniFolder, const char * _strRomName);
 
 #endif // SETTINGS_H
 
