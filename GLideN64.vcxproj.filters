@@ -21,10 +21,6 @@
     <Filter Include="Header Files\Combiners">
       <UniqueIdentifier>{7eeef15f-09d3-4238-b68a-a2ff0018d124}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{ceb7e29d-3bc2-453c-a043-ef450103c3f0}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe</Extensions>
-    </Filter>
     <Filter Include="Header Files\windows">
       <UniqueIdentifier>{384c65a8-5096-4ef9-bdec-3256fcd337f2}</UniqueIdentifier>
     </Filter>
@@ -245,9 +241,6 @@
     <ClInclude Include="RDP.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="resource.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="RSP.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -299,9 +292,6 @@
     <ClInclude Include="ZilmarGFX_1_3.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Noise_shader.h">
-      <Filter>Header Files\Combiners</Filter>
-    </ClInclude>
     <ClInclude Include="Shaders.h">
       <Filter>Header Files\Combiners</Filter>
     </ClInclude>
@@ -344,10 +334,5 @@
     <ClInclude Include="Keys.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="Resource.rc">
-      <Filter>Resource Files</Filter>
-    </ResourceCompile>
   </ItemGroup>
 </Project>

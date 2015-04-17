@@ -362,12 +362,10 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="N64.h" />
-    <ClInclude Include="Noise_shader.h" />
     <ClInclude Include="OpenGL.h" />
     <ClInclude Include="PluginAPI.h" />
     <ClInclude Include="PostProcessor.h" />
     <ClInclude Include="RDP.h" />
-    <ClInclude Include="resource.h" />
     <ClInclude Include="RSP.h" />
     <ClInclude Include="Shaders.h" />
     <ClInclude Include="TextDrawer.h" />
@@ -394,9 +392,6 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_mupenplus|Win32'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="ZSort.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="Resource.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
