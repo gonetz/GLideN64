@@ -588,7 +588,7 @@ static const char* zelda_monochrome_fragment_shader =
 "  ivec2 coord = ivec2(gl_FragCoord.xy);				\n"
 "  vec4 tex = texelFetch(uColorImage, coord, 0);		\n"
 //"  lowp float c = (tex.r + tex.g + tex.b) / 3.0f;		\n"
-"  lowp float c = 0.2126 * tex.r + 0.7152 * tex.g + 0.0722 * tex.b; \n"
+"  lowp float c = dot(vec4(0.2126, 0.7152, 0.0722, 0.0), tex);\n"
 "  fragColor = vec4(c, c, c, 1.0);						\n"
 "}														\n"
 ;
