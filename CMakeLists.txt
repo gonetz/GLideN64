@@ -65,7 +65,6 @@ else(MUPENPLUSAPI)
 	ZilmarPluginAPI.cpp
 	common/ZilmarAPIImpl_common.cpp
 	windows/Config_windows.cpp
-	windows/Debug.cpp
 	windows/CommonAPIImpl_windows.cpp
 	windows/GLideN64_windows.cpp
 	windows/GLFunctions.cpp
@@ -76,7 +75,6 @@ else(MUPENPLUSAPI)
 	ZilmarPluginAPI.cpp
 	common/ZilmarAPIImpl_common.cpp
 	posix/Config_posix.cpp
-	posix/Debug.cpp
 	posix/CommonAPIImpl_posix.cpp
 	posix/OpenGL_posix.cpp
 	posix/ZilmarAPIImpl_posix.cpp

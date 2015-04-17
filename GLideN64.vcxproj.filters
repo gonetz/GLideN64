@@ -150,9 +150,6 @@
     <ClCompile Include="windows\CommonAPIImpl_windows.cpp">
       <Filter>Source Files\windows</Filter>
     </ClCompile>
-    <ClCompile Include="windows\Debug.cpp">
-      <Filter>Source Files\windows</Filter>
-    </ClCompile>
     <ClCompile Include="windows\GLFunctions.cpp">
       <Filter>Source Files\windows</Filter>
     </ClCompile>
