@@ -61,6 +61,9 @@ if(MUPENPLUSAPI)
   )
   set(GLideN64_DLL_NAME mupen64plus-video-GLideN64)
 else(MUPENPLUSAPI)
+  if(NOT UNIX)
+	message(ERROR "UNIX build requires MUPENPLUSAPI!")
+  endif(NOT UNIX)
   set(GLideN64_SOURCES_WIN
 	ZilmarPluginAPI.cpp
 	common/ZilmarAPIImpl_common.cpp
@@ -70,14 +73,6 @@ else(MUPENPLUSAPI)
 	windows/GLFunctions.cpp
 	windows/OpenGL_windows.cpp
 	windows/ZilmarAPIImpl_windows.cpp
-  )
-  set(GLideN64_SOURCES_UNIX
-	ZilmarPluginAPI.cpp
-	common/ZilmarAPIImpl_common.cpp
-	posix/Config_posix.cpp
-	posix/CommonAPIImpl_posix.cpp
-	posix/OpenGL_posix.cpp
-	posix/ZilmarAPIImpl_posix.cpp
   )
   set(GLideN64_DLL_NAME GLideN64)
 endif(MUPENPLUSAPI)
@@ -96,16 +91,6 @@ if(UNIX)
 	  -DOS_LINUX
 	)
   endif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-  if( NOT MUPENPLUSAPI)
-	add_definitions(
-	-D_DEBUG
-	)
-	find_package(PkgConfig)
-	pkg_check_modules(GLIB REQUIRED glib-2.0)
-	include_directories(${GLIB_INCLUDE_DIRS})
-	find_package(GTK2 REQUIRED)
-	include_directories(${GTK2_INCLUDE_DIRS})
-  endif( NOT MUPENPLUSAPI)
 endif(UNIX)
 
 if(WIN32)
