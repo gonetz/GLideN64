@@ -12,7 +12,6 @@
 #include "VI.h"
 #include "Log.h"
 
-#define SHADER_PRECISION
 #include "Shaders.h"
 
 using namespace std;
@@ -518,13 +517,8 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 	strFragmentShader.append(fragment_shader_header_main);
 	const bool bUseLod = (m_nInputs & (1<<LOD_FRACTION)) > 0;
 	if (bUseLod) {
-#ifdef SHADER_PRECISION
 		strFragmentShader.append("  lowp vec4 readtex0, readtex1; \n");
 		strFragmentShader.append("  lowp float lod_frac = mipmap(readtex0, readtex1);	\n");
-#else
-		strFragmentShader.append("  vec4 readtex0, readtex1; \n");
-		strFragmentShader.append("  float lod_frac = mipmap(readtex0, readtex1);	\n");
-#endif
 	} else {
 		if (usesT0())
 			strFragmentShader.append("  lowp vec4 readtex0 = readTex(uTex0, vTexCoord0, uFb8Bit == 1 || uFb8Bit == 3, uFbFixedAlpha == 1 || uFbFixedAlpha == 3); \n");
@@ -533,11 +527,7 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 	}
 	const bool bUseHWLight = config.generalEmulation.enableHWLighting != 0 && GBI.isHWLSupported() && usesShadeColor();
 	if (bUseHWLight)
-#ifdef SHADER_PRECISION
 		strFragmentShader.append("  calc_light(vNumLights, vShadeColor.rgb, input_color); \n");
-#else
-		strFragmentShader.append("  calc_light(vNumLights, vShadeColor.rgb, input_color); \n");
-#endif
 	else
 		strFragmentShader.append("  input_color = vShadeColor.rgb;\n");
 	strFragmentShader.append("  vec_color = vec4(input_color, vShadeColor.a); \n");

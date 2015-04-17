@@ -1,5 +1,5 @@
 static const char* vertex_shader =
-#ifdef SHADER_PRECISION
+
 "#version 330 core										\n"
 "in highp vec4 aPosition;						\n"
 "in lowp vec4 aColor;							\n"
@@ -30,37 +30,7 @@ static const char* vertex_shader =
 "out mediump vec2 vLodTexCoord;						\n"
 "out lowp float vNumLights;							\n"
 "out mediump float vFogFragCoord;					\n"
-#else
-"#version 330 core										\n"
-"in vec4	aPosition;								\n"
-"in vec4	aColor;									\n"
-"in vec2	aTexCoord0;								\n"
-"in vec2	aTexCoord1;								\n"
-"in float aNumLights;							\n"
-"														\n"
-"uniform int uRenderState;								\n"
-"uniform int uTexturePersp;								\n"
-"														\n"
-"uniform int uFogMode;									\n"
-"uniform int uFogUsage;									\n"
-"uniform vec4 uFogColor;								\n"
-"uniform vec2 uFogScale				;					\n"
-"														\n"
-"uniform vec2 	uTexScale;								\n"
-"uniform vec2 	uTexOffset[2];							\n"
-"uniform vec2 	uTexMask[2];							\n"
-"uniform vec2 	uCacheShiftScale[2];					\n"
-"uniform vec2 	uCacheScale[2];							\n"
-"uniform vec2	uCacheOffset[2];						\n"
-"uniform ivec2	uCacheFrameBuffer;						\n"
-"														\n"
-"out vec4 vShadeColor;								\n"
-"out vec2 vTexCoord0;								\n"
-"out vec2 vTexCoord1;								\n"
-"out vec2 vLodTexCoord;								\n"
-"out float vNumLights;								\n"
-"out float vFogFragCoord;							\n"
-#endif
+
 "mediump vec2 calcTexCoord(in vec2 texCoord, in int idx)		\n"
 "{																\n"
 "    vec2 texCoordOut = texCoord*uCacheShiftScale[idx];			\n"
@@ -181,7 +151,6 @@ static const char* vertex_shader_notex =
 ;
 
 static const char* fragment_shader_header_common_variables =
-#ifdef SHADER_PRECISION
 "#version 330 core				\n"
 "uniform sampler2D uTex0;		\n"
 "uniform sampler2D uTex1;		\n"
@@ -215,36 +184,6 @@ static const char* fragment_shader_header_common_variables =
 "in mediump float vFogFragCoord;\n"
 "lowp vec3 input_color;			\n"
 "out lowp vec4 fragColor;		\n"
-#else
-"#version 330 core										\n"
-"uniform sampler2D uTex0;		\n"
-"uniform sampler2D uTex1;		\n"
-"uniform vec4 uPrimColor;		\n"
-"uniform vec4 uEnvColor;		\n"
-"uniform vec4 uCenterColor;		\n"
-"uniform vec4 uScaleColor;		\n"
-"uniform vec4 uBlendColor;		\n"
-"uniform vec4 uFogColor;		\n"
-"uniform float uK4;				\n"
-"uniform float uK5;				\n"
-"uniform float uPrimLod;		\n"
-"uniform int uAlphaCompareMode;	\n"
-"uniform int uAlphaDitherMode;	\n"
-"uniform int uColorDitherMode;	\n"
-"uniform int uGammaCorrectionEnabled;\n"
-"uniform int uFogUsage;		\n"
-"uniform int uFb8Bit;		\n"
-"uniform int uFbFixedAlpha;	\n"
-"uniform int uSpecialBlendMode;\n"
-"in vec4 vShadeColor;		\n"
-"in vec2 vTexCoord0;		\n"
-"in vec2 vTexCoord1;		\n"
-"in vec2 vLodTexCoord;		\n"
-"in float vNumLights;		\n"
-"in float vFogFragCoord;	\n"
-"vec3 input_color;			\n"
-"out vec4 fragColor;		\n"
-#endif
 ;
 
 static const char* fragment_shader_header_common_variables_notex =
@@ -277,7 +216,6 @@ static const char* fragment_shader_header_common_variables_notex =
 ;
 
 static const char* fragment_shader_header_common_functions =
-#ifdef SHADER_PRECISION
 "															\n"
 "lowp float snoise();						\n"
 "void calc_light(in lowp float fLights, in lowp vec3 input_color, out lowp vec3 output_color);\n"
@@ -286,13 +224,6 @@ static const char* fragment_shader_header_common_functions =
 "bool depth_compare();										\n"
 "void colorNoiseDither(in float _noise, inout vec3 _color);	\n"
 "void alphaNoiseDither(in float _noise, inout float _alpha);\n"
-#else
-"															\n"
-"float snoise();										\n"
-"float calc_light(in float fLights, in vec3 input_color, out vec3 output_color);\n"
-"float mipmap(out vec4 readtex0, out vec4 readtex1);		\n"
-"bool depth_compare();										\n"
-#endif
 #ifdef USE_TOONIFY
 "void toonify(in mediump float intensity);	\n"
 #endif
@@ -330,7 +261,6 @@ static const char* fragment_shader_calc_light =
 ;
 
 static const char* fragment_shader_header_main =
-#ifdef SHADER_PRECISION
 "									\n"
 "void main()						\n"
 "{									\n"
@@ -339,18 +269,6 @@ static const char* fragment_shader_header_main =
 "  lowp float alpha1, alpha2;			\n"
 "  lowp vec3 color1, color2;				\n"
 ;
-#else
-"									\n"
-"void main()						\n"
-"{									\n"
-"  if (uAlphaCompareMode == 3) {//dither \n"
-"    if (snoise() < 0.0) discard; \n"
-"  }								\n"
-"  vec4 vec_color, combined_color;	\n"
-"  float alpha1, alpha2;			\n"
-"  vec3 color1, color2;				\n"
-;
-#endif
 
 static const char* fragment_shader_dither =
 "#version 330 core					\n"
@@ -385,7 +303,6 @@ static const char* fragment_shader_toonify =
 ;
 #endif
 
-#ifdef SHADER_PRECISION
 #if 0
 static const char* fragment_shader_blender =
 "  switch (uSpecialBlendMode) {							\n"
@@ -420,27 +337,9 @@ static const char* fragment_shader_blender =
 
 static const char* fragment_shader_end =
 "}                               \n"
-#else
-static const char* fragment_shader_blender =
-"  switch (uSpecialBlendMode) {	\n"
-"    case 1:					\n"
-// Mace
-"		color1 = color1 * alpha1 + uBlendColor.rgb * (1.0 - alpha1); \n"
-"    break;						\n"
-"    case 2:					\n"
-// Bomberman2
-"		color1 = uBlendColor.rgb * uFogColor.a + color1.rgb * (1.0 - uFogColor.a); \n"
-"    break;						\n"
-"  }							\n"
-;
-
-static const char* fragment_shader_end =
-"}                               \n"
-#endif
 ;
 
 static const char* fragment_shader_mipmap =
-#ifdef SHADER_PRECISION
 "#version 330 core					\n"
 "in mediump vec2 vTexCoord0;	\n"
 "in mediump vec2 vTexCoord1;	\n"
@@ -511,74 +410,6 @@ static const char* fragment_shader_mipmap =
 "  }																\n"
 "  return lod_frac;													\n"
 "}																	\n"
-#else
-"#version 330 core										\n"
-"in vec2 vTexCoord0;		\n"
-"in vec2 vTexCoord1;		\n"
-"in vec2 vLodTexCoord;		\n"
-"uniform sampler2D uTex0;		\n"
-"uniform sampler2D uTex1;		\n"
-"uniform float uPrimitiveLod;		\n"
-"uniform int uEnableLod;		\n"
-"uniform vec2 uScreenScale;	\n"
-"uniform float uMinLod;			\n"
-"uniform int uMaxTile;			\n"
-"uniform int uTextureDetail;	\n"
-"														\n"
-"float mipmap(out vec4 readtex0, out vec4 readtex1) {	\n"
-"  if (uEnableLod == 0) {								\n"
-"    readtex0 = texture(uTex0, vTexCoord0);			\n"
-"    readtex1 = texture(uTex1, vTexCoord1);			\n"
-"    return uPrimitiveLod;									\n"
-"  }													\n"
-"  vec2 dx = dFdx(vLodTexCoord);						\n"
-"  dx *= uScreenScale;									\n"
-"  vec2 dy = dFdy(vLodTexCoord);						\n"
-"  dy *= uScreenScale;									\n"
-"  float lod = max(length(dx), length(dy));				\n"
-//" float lod = max(length(dx), length(dy)) * max(uLodXScale, uLodYScale);\n"
-"  float lod_tile, lod_frac;							\n"
-"  bool magnifying = false;								\n"
-"  if (lod < 1.0) {										\n"
-"    magnifying = true;									\n"
-"    lod_tile = 0.0;									\n"
-"    lod_frac = lod;									\n"
-"    if (uTextureDetail != 0)							\n"
-"      lod_frac = max(lod, uMinLod);					\n"
-"    if (uTextureDetail == 1)							\n"
-"      lod_frac = 1.0 - lod_frac;						\n"
-"  } else {												\n"
-"    lod_tile = min(float(uMaxTile), floor(log2(floor(lod)))); \n"
-"    lod_frac = fract(lod/pow(2.0, lod_tile));			\n"
-"  }													\n"
-"  if (lod_tile < 1.0) {								\n"
-"    if (magnifying) {									\n"
-"      readtex0 = texture(uTex0, vTexCoord0);			\n"
-//     !sharpen && !detail
-"      if (uTextureDetail == 0) readtex1 = readtex0;	\n"
-"      else readtex1 = texture(uTex1, vTexCoord1);	\n"
-"    } else {											\n"
-//     detail
-"      if (uTextureDetail == 2) {						\n"
-"        readtex0 = textureLod(uTex1, vTexCoord1, 0.0);\n"
-"        readtex1 = textureLod(uTex1, vTexCoord1, 1.0);\n"
-"      } else {											\n"
-"        readtex0 = texture(uTex0, vTexCoord0);		\n"
-"        readtex1 = texture(uTex1, vTexCoord1);		\n"
-"      }												\n"
-"    }													\n"
-"  } else {												\n"
-"    if (uTextureDetail == 2) {							\n"
-"      readtex0 = textureLod(uTex1, vTexCoord1, lod_tile);		\n"
-"      readtex1 = textureLod(uTex1, vTexCoord1, lod_tile + 1.0);	\n"
-"    } else {														\n"
-"      readtex0 = textureLod(uTex1, vTexCoord1, lod_tile - 1.0);	\n"
-"      readtex1 = textureLod(uTex1, vTexCoord1, lod_tile);		\n"
-"    }																\n"
-"  }																\n"
-"  return lod_frac;													\n"
-"}																	\n"
-#endif
 ;
 
 static const char* fragment_shader_readtex =
