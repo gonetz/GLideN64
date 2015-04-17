@@ -14,7 +14,7 @@ void _getIniFileName(wchar_t * _buf)
 	wcscat(_buf, L"/GLideN64.ini");
 }
 
-void Config_DoConfig(HWND hParent)
+void Config_DoConfig(/*HWND hParent*/)
 {
 	wchar_t strIniFileName[PLUGIN_PATH_SIZE];
 	_getIniFileName(strIniFileName);

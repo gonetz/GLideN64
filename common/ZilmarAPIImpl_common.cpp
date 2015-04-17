@@ -19,7 +19,7 @@ void PluginAPI::CaptureScreen(char * _Directory)
 
 void PluginAPI::DllConfig(HWND _hParent)
 {
-	Config_DoConfig(_hParent);
+	Config_DoConfig(/*_hParent*/);
 }
 
 void PluginAPI::GetDllInfo(PLUGIN_INFO * PluginInfo)

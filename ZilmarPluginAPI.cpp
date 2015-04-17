@@ -20,7 +20,7 @@ EXPORT void CALL CloseDLL (void)
 
 EXPORT void CALL DllAbout ( HWND hParent )
 {
-	api().DllAbout(hParent);
+	api().DllAbout(/*hParent*/);
 }
 
 EXPORT void CALL DllConfig ( HWND hParent )

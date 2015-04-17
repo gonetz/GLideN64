@@ -57,7 +57,7 @@ public:
 	void GetDllInfo (PLUGIN_INFO * PluginInfo);
 	void ReadScreen(void **_dest, long *_width, long *_height);
 
-	void DllAbout(HWND _hParent);
+	void DllAbout(/*HWND _hParent*/);
 #else
 	// MupenPlus
 	void FBRead(unsigned int _addr) {}

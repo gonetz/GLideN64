@@ -107,7 +107,7 @@ extern Config config;
 
 void Config_LoadConfig();
 #ifndef MUPENPLUSAPI
-void Config_DoConfig(HWND hParent);
+void Config_DoConfig(/*HWND hParent*/);
 #endif
 
 #endif // CONFIG_H
