@@ -50,11 +50,6 @@ void gSPTriangle(s32 v0, s32 v1, s32 v2)
 {
 	OGLRender & render = video().getRender();
 	if ((v0 < INDEXMAP_SIZE) && (v1 < INDEXMAP_SIZE) && (v2 < INDEXMAP_SIZE)) {
-#ifdef __TRIBUFFER_OPT
-		v0 = render.getIndexmap(v0);
-		v1 = render.getIndexmap(v1);
-		v2 = render.getIndexmap(v2);
-#endif
 		if (render.isClipped(v0, v1, v2))
 			return;
 		render.addTriangle(v0, v1, v2);
@@ -302,9 +297,6 @@ static void gSPBillboardVertex4_default(u32 v)
 {
 	OGLRender & render = video().getRender();
 	int i = 0;
-#ifdef __TRIBUFFER_OPT
-	i = render.getIndexmap(0);
-#endif
 	SPVertex & vtx0 = render.getVertex(i);
 	for (int j = 0; j < 4; ++j) {
 		SPVertex & vtx = render.getVertex(v+j);
@@ -572,10 +564,6 @@ void gSPProcessVertex(u32 v)
 
 	if (gSP.matrix.billboard) {
 		int i = 0;
-#ifdef __TRIBUFFER_OPT
-		i = render.getIndexmap(0);
-#endif
-
 		gSPBillboardVertex(v, i);
 	}
 
@@ -634,9 +622,6 @@ void gSPNoOp()
 
 void gSPMatrix( u32 matrix, u8 param )
 {
-#ifdef __TRIBUFFER_OPT
-	gSPFlushTriangles();
-#endif
 
 	f32 mtx[4][4];
 	u32 address = RSP_SegmentToPhysical( matrix );
@@ -916,16 +901,10 @@ void gSPLookAt( u32 _l, u32 _n )
 
 void gSPVertex( u32 a, u32 n, u32 v0 )
 {
-	//flush batched triangles:
-#ifdef __TRIBUFFER_OPT
-	gSPFlushTriangles();
-#endif
-
 	u32 address = RSP_SegmentToPhysical(a);
 
 	if ((address + sizeof( Vertex ) * n) > RDRAMSize)
 		return;
-
 
 	Vertex *vertex = (Vertex*)&RDRAM[address];
 
@@ -935,9 +914,6 @@ void gSPVertex( u32 a, u32 n, u32 v0 )
 #ifdef __VEC4_OPT
 		for (; i < n - (n%4) + v0; i += 4) {
 			u32 v = i;
-#ifdef __TRIBUFFER_OPT
-			v = render.getIndexmapNew(v, 4);
-#endif
 			for(int j = 0; j < 4; ++j) {
 				SPVertex & vtx = render.getVertex(v+j);
 				vtx.x = vertex->x;
@@ -964,9 +940,6 @@ void gSPVertex( u32 a, u32 n, u32 v0 )
 #endif
 		for (; i < n + v0; ++i) {
 			u32 v = i;
-#ifdef __TRIBUFFER_OPT
-			v = render.getIndexmapNew(v, 1);
-#endif
 			SPVertex & vtx = render.getVertex(v);
 			vtx.x = vertex->x;
 			vtx.y = vertex->y;
@@ -995,10 +968,6 @@ void gSPVertex( u32 a, u32 n, u32 v0 )
 void gSPCIVertex( u32 a, u32 n, u32 v0 )
 {
 
-#ifdef __TRIBUFFER_OPT
-	gSPFlushTriangles();
-#endif
-
 	u32 address = RSP_SegmentToPhysical( a );
 
 	if ((address + sizeof( PDVertex ) * n) > RDRAMSize)
@@ -1012,9 +981,6 @@ void gSPCIVertex( u32 a, u32 n, u32 v0 )
 #ifdef __VEC4_OPT
 		for (; i < n - (n%4) + v0; i += 4) {
 			u32 v = i;
-#ifdef __TRIBUFFER_OPT
-			v = render.getIndexmapNew(v, 4);
-#endif
 			for(unsigned int j = 0; j < 4; ++j) {
 				SPVertex & vtx = render.getVertex(v + j);
 				vtx.x = vertex->x;
@@ -1042,9 +1008,6 @@ void gSPCIVertex( u32 a, u32 n, u32 v0 )
 #endif
 		for(; i < n + v0; ++i) {
 			u32 v = i;
-#ifdef __TRIBUFFER_OPT
-			v = render.getIndexmapNew(v, 1);
-#endif
 			SPVertex & vtx = render.getVertex(v);
 			vtx.x = vertex->x;
 			vtx.y = vertex->y;
@@ -1087,9 +1050,6 @@ void gSPDMAVertex( u32 a, u32 n, u32 v0 )
 #ifdef __VEC4_OPT
 		for (; i < n - (n%4) + v0; i += 4) {
 			u32 v = i;
-#ifdef __TRIBUFFER_OPT
-			v = render.getIndexmapNew(v, 4);
-#endif
 			for(int j = 0; j < 4; ++j) {
 				SPVertex & vtx = render.getVertex(v + j);
 				vtx.x = *(s16*)&RDRAM[address ^ 2];
@@ -1114,9 +1074,6 @@ void gSPDMAVertex( u32 a, u32 n, u32 v0 )
 #endif
 		for (; i < n + v0; ++i) {
 			u32 v = i;
-#ifdef __TRIBUFFER_OPT
-			v = render.getIndexmapNew(v, 1);
-#endif
 			SPVertex & vtx = render.getVertex(v);
 			vtx.x = *(s16*)&RDRAM[address ^ 2];
 			vtx.y = *(s16*)&RDRAM[(address + 2) ^ 2];
@@ -1144,11 +1101,6 @@ void gSPDMAVertex( u32 a, u32 n, u32 v0 )
 
 void gSPCBFDVertex( u32 a, u32 n, u32 v0 )
 {
-	//flush batched triangles:
-#ifdef __TRIBUFFER_OPT
-	gSPFlushTriangles();
-#endif
-
 	u32 address = RSP_SegmentToPhysical(a);
 
 	if ((address + sizeof( Vertex ) * n) > RDRAMSize)
@@ -1162,9 +1114,6 @@ void gSPCBFDVertex( u32 a, u32 n, u32 v0 )
 #ifdef __VEC4_OPT
 		for (; i < n - (n%4) + v0; i += 4) {
 			u32 v = i;
-#ifdef __TRIBUFFER_OPT
-			v = render.getIndexmapNew(v, 4);
-#endif
 			for(int j = 0; j < 4; ++j) {
 				SPVertex & vtx = render.getVertex(v+j);
 				vtx.x = vertex->x;
@@ -1190,9 +1139,6 @@ void gSPCBFDVertex( u32 a, u32 n, u32 v0 )
 #endif
 		for (; i < n + v0; ++i) {
 			u32 v = i;
-#ifdef __TRIBUFFER_OPT
-			v = render.getIndexmapNew(v, 1);
-#endif
 			SPVertex & vtx = render.getVertex(v);
 			vtx.x = vertex->x;
 			vtx.y = vertex->y;
@@ -1369,9 +1315,6 @@ void gSPDMATriangles( u32 tris, u32 n ){
 
 	OGLRender & render = video().getRender();
 	render.setDMAVerticesSize(n * 3);
-#ifdef __TRIBUFFER_OPT
-	render.indexmapUndo();
-#endif
 
 	DKRTriangle *triangles = (DKRTriangle*)&RDRAM[address];
 	SPVertex * pVtx = render.getDMAVerticesData();
@@ -1438,12 +1381,7 @@ bool gSPCullVertices( u32 v0, u32 vn )
 	u32 clip = 0;
 	OGLRender & render = video().getRender();
 	for (u32 i = v0; i <= vn; ++i) {
-#ifdef __TRIBUFFER_OPT
-		const u32 v = render.getIndexmap(i);
-#else
-		const u32 v = i;
-#endif
-		clip |= (~render.getVertex(v).clip) & CLIP_ALL;
+		clip |= (~render.getVertex(i).clip) & CLIP_ALL;
 		if (clip == CLIP_ALL)
 			return false;
 	}
@@ -1571,9 +1509,6 @@ void gSPModifyVertex( u32 _vtx, u32 _where, u32 _val )
 	s32 v = _vtx;
 
 	OGLRender & render = video().getRender();
-#ifdef __TRIBUFFER_OPT
-	v = render.getIndexmap(v);
-#endif
 
 	SPVertex & vtx0 = render.getVertex(v);
 	switch (_where) {
@@ -1723,10 +1658,6 @@ void gSPEndDisplayList()
 		RSP.halt = TRUE;
 	}
 
-#ifdef __TRIBUFFER_OPT
-	RSP.nextCmd = _SHIFTR( *(u32*)&RDRAM[RSP.PC[RSP.PCi]], 24, 8 );
-	gSPFlushTriangles();
-#endif
 #ifdef DEBUG
 	DebugMsg( DEBUG_HIGH | DEBUG_HANDLED, "gSPEndDisplayList();\n\n" );
 #endif
@@ -1996,12 +1927,6 @@ void gSPDrawObjRect(const ObjCoordinates & _coords)
 {
 	u32 v0 = 0, v1 = 1, v2 = 2, v3 = 3;
 	OGLRender & render = video().getRender();
-	#ifdef __TRIBUFFER_OPT
-	v0 = render.getIndexmap(v0);
-	v1 = render.getIndexmap(v1);
-	v2 = render.getIndexmap(v2);
-	v3 = render.getIndexmap(v3);
-	#endif
 	SPVertex & vtx0 = render.getVertex(v0);
 	vtx0.x = _coords.ulx;
 	vtx0.y = _coords.uly;
@@ -2257,12 +2182,6 @@ void gSPObjSprite(u32 sp)
 	s32 v0 = 0, v1 = 1, v2 = 2, v3 = 3;
 
 	OGLRender & render = video().getRender();
-#ifdef __TRIBUFFER_OPT
-	v0 = render.getIndexmap(v0);
-	v1 = render.getIndexmap(v1);
-	v2 = render.getIndexmap(v2);
-	v3 = render.getIndexmap(v3);
-#endif
 
 	SPVertex & vtx0 = render.getVertex(v0);
 	vtx0.x = gSP.objMatrix.A * ulx + gSP.objMatrix.B * uly + gSP.objMatrix.X;
@@ -2407,12 +2326,6 @@ void gSPSprite2DBase(u32 base)
 
 		s32 v0 = 0, v1 = 1, v2 = 2, v3 = 3;
 		OGLRender & render = video().getRender();
-	#ifdef __TRIBUFFER_OPT
-		v0 = render.getIndexmap(v0);
-		v1 = render.getIndexmap(v1);
-		v2 = render.getIndexmap(v2);
-		v3 = render.getIndexmap(v3);
-	#endif
 
 		SPVertex & vtx0 = render.getVertex(v0);
 		vtx0.x = ulx;

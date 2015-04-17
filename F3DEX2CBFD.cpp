@@ -46,9 +46,6 @@ void F3DEX2CBFD_MoveWord( u32 w0, u32 w1 )
 
 void F3DEX2CBFD_MoveMem( u32 w0, u32 w1 )
 {
-#ifdef __TRIBUFFER_OPT
-	gSPFlushTriangles();
-#endif
 	switch (_SHIFTR( w0, 0, 8 ))
 	{
 		case F3DEX2_MV_VIEWPORT:

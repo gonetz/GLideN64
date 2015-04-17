@@ -83,12 +83,6 @@ public:
 
 	void dropRenderState() {m_renderState = rsNone;}
 
-#ifdef __TRIBUFFER_OPT
-	u32 getIndexmap(u32 _v) const {return triangles.indexmap[_v];}
-	u32 getIndexmapNew(u32 _index, u32 _num);
-	void indexmapUndo();
-#endif // __TRIBUFFER_OPT
-
 private:
 	OGLRender() : m_bImageTexture(false), m_bFlatColors(false) {}
 	OGLRender(const OGLRender &);
@@ -109,12 +103,6 @@ private:
 	void _updateDepthUpdate() const;
 	void _updateStates(RENDER_STATE _renderState) const;
 	void _prepareDrawTriangle(bool _dma);
-
-#ifdef __TRIBUFFER_OPT
-	void _indexmap_init();
-	void _indexmap_clear();
-	u32 _indexmap_findunused(u32 num);
-#endif
 
 	struct {
 		SPVertex vertices[VERTBUFF_SIZE];

@@ -841,10 +841,6 @@ void OGLRender::drawLLETriangle(u32 _numVtx)
 
 	frameBufferList().setBufferChanged();
 	gSP.changed |= CHANGED_VIEWPORT | CHANGED_GEOMETRYMODE;
-
-#ifdef __TRIBUFFER_OPT
-	_indexmap_clear();
-#endif
 }
 
 void OGLRender::drawDMATriangles(u32 _numVtx)
@@ -862,10 +858,6 @@ void OGLRender::drawTriangles()
 	_prepareDrawTriangle(false);
 	glDrawElements(GL_TRIANGLES, triangles.num, GL_UNSIGNED_BYTE, triangles.elements);
 	triangles.num = 0;
-
-#ifdef __TRIBUFFER_OPT
-	_indexmap_clear();
-#endif
 }
 
 void OGLRender::drawLine(int _v0, int _v1, float _width)
@@ -1336,10 +1328,6 @@ void OGLRender::_initData()
 	for (u32 i = 0; i < VERTBUFF_SIZE; ++i)
 		triangles.vertices[i].w = 1.0f;
 	triangles.num = 0;
-
-#ifdef __TRIBUFFER_OPT
-	_indexmap_init();
-#endif
 }
 
 void OGLRender::_destroyData()
@@ -1484,113 +1472,3 @@ void TextureFilterHandler::shutdown()
 }
 
 TextureFilterHandler TFH;
-
-#ifdef __TRIBUFFER_OPT
-void OGLRender::_indexmap_init()
-{
-	memset(triangles.indexmapinv, 0xFF, VERTBUFF_SIZE*sizeof(u32));
-	for(int i = 0; i<INDEXMAP_SIZE; ++i) {
-		triangles.indexmap[i] = i;
-		//triangles.indexmapinv[i] = i;
-	}
-
-	triangles.indexmap_prev = -1;
-	triangles.indexmap_nomap = 0;
-}
-
-void OGLRender::_indexmap_clear()
-{
-	memset(triangles.indexmapinv, 0xFF, VERTBUFF_SIZE * sizeof(u32));
-	for(int i = 0; i < INDEXMAP_SIZE; ++i)
-		triangles.indexmapinv[triangles.indexmap[i]] = i;
-}
-
-u32 OGLRender::_indexmap_findunused(u32 num)
-{
-	u32 c = 0;
-	u32 i = std::min(triangles.indexmap_prev + 1, VERTBUFF_SIZE - 1);
-	u32 n = 0;
-	while(n < VERTBUFF_SIZE) {
-		c = (triangles.indexmapinv[i] == 0xFFFFFFFF) ? (c + 1) : 0;
-		if ((c == num) && (i < (VERTBUFF_SIZE - num)))
-			break;
-		i = i + 1;
-		if (i >= VERTBUFF_SIZE)
-			{i = 0; c = 0;}
-		++n;
-	}
-	return (c == num) ? (i-num+1) : (0xFFFFFFFF);
-}
-
-void OGLRender::indexmapUndo()
-{
-	SPVertex tmp[INDEXMAP_SIZE];
-	memset(triangles.indexmapinv, 0xFF, VERTBUFF_SIZE * sizeof(u32));
-
-	for(int i=0; i < INDEXMAP_SIZE; ++i) {
-		u32 ind = triangles.indexmap[i];
-		tmp[i] = triangles.vertices[ind];
-		triangles.indexmap[i] = i;
-		triangles.indexmapinv[i] = i;
-	}
-
-	memcpy(triangles.vertices, tmp, INDEXMAP_SIZE * sizeof(SPVertex));
-	triangles.indexmap_nomap = 1;
-}
-
-u32 OGLRender::getIndexmapNew(u32 _index, u32 _num)
-{
-	u32 ind;
-
-	//test to see if unmapped
-	u32 unmapped = 1;
-	for(int i = 0; i < _num; ++i) {
-		if (triangles.indexmap[i] != 0xFFFFFFFF) {
-			unmapped = 0;
-			break;
-		}
-	}
-
-	if (unmapped)
-		ind = _index;
-	else {
-		ind = _indexmap_findunused(_num);
-
-		//no more room in buffer....
-		if (ind > VERTBUFF_SIZE) {
-			drawTriangles();
-			ind = _indexmap_findunused(_num);
-
-			//OK the indices are spread so sparsely, we cannot find a num element block.
-			if (ind > VERTBUFF_SIZE) {
-				indexmapUndo();
-				ind = _indexmap_findunused(_num);
-				if (ind > VERTBUFF_SIZE) {
-					LOG(LOG_ERROR, "Could not allocate %i indices\n", _num);
-
-					LOG(LOG_VERBOSE, "indexmap=[");
-					for(int i=0;i<INDEXMAP_SIZE;i++)
-						LOG(LOG_VERBOSE, "%i,", triangles.indexmap[i]);
-					LOG(LOG_VERBOSE, "]\n");
-
-					LOG(LOG_VERBOSE, "indexmapinv=[");
-					for(int i=0;i<VERTBUFF_SIZE;i++)
-						LOG(LOG_VERBOSE, "%i,", triangles.indexmapinv[i]);
-					LOG(LOG_VERBOSE, "]\n");
-				}
-				return ind;
-			}
-		}
-	}
-
-	for(int i = 0; i < _num; ++i) {
-		triangles.indexmap[_index + i] = ind + i;
-		triangles.indexmapinv[ind + i] = _index + i;
-	}
-
-	triangles.indexmap_prev = ind + _num - 1;
-	triangles.indexmap_nomap = 0;
-
-	return ind;
-}
-#endif // __TRIBUFFER_OPT

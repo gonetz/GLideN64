@@ -15,8 +15,6 @@
 #define CHANGED_CPU_FB_WRITE	0x80
 #define CHANGED_TEXTURESCALE	0x100
 
-//void gSPFlushTriangles();
-
 #define CLIP_X      0x03
 #define CLIP_NEGX   0x01
 #define CLIP_POSX   0x02
