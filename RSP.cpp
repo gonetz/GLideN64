@@ -183,16 +183,6 @@ void RSP_ProcessDList()
 				break;
 			}
 
-			//		printf( "!!!!!! RDRAM = 0x%8.8x\n", RDRAM );//RSP.PC[RSP.PCi] );
-			/*		{
-						static u8 *lastRDRAM = 0;
-						if (lastRDRAM == 0)
-						lastRDRAM = RDRAM;
-						if (RDRAM != lastRDRAM)
-						{
-						__asm__( "int $3" );
-						}
-						}*/
 			u32 w0 = *(u32*)&RDRAM[RSP.PC[RSP.PCi]];
 			u32 w1 = *(u32*)&RDRAM[RSP.PC[RSP.PCi] + 4];
 			RSP.cmd = _SHIFTR(w0, 24, 8);
