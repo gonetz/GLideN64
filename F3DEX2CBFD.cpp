@@ -63,7 +63,6 @@ void F3DEX2CBFD_MoveMem( u32 w0, u32 w1 )
 			break;
 		case G_MV_NORMALES:
 			gSPSetVertexNormaleBase(w1);
-			//RSP.PC[RSP.PCi] += 8;
 			break;
 	}
 }
