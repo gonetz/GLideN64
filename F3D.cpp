@@ -15,9 +15,7 @@ void F3D_SPNoOp( u32 w0, u32 w1 )
 
 void F3D_Mtx( u32 w0, u32 w1 )
 {
-	if (_SHIFTR( w0, 0, 16 ) != 64)
-	{
-//		GBI_DetectUCode(); // Something's wrong
+	if (_SHIFTR( w0, 0, 16 ) != 64) {
 #ifdef DEBUG
 	DebugMsg( DEBUG_MEDIUM | DEBUG_HIGH | DEBUG_ERROR, "G_MTX: address = 0x%08X    length = %i    params = 0x%02X\n", w1, _SHIFTR( w0, 0, 16 ), _SHIFTR( w0, 16, 8 ) );
 #endif
@@ -36,9 +34,8 @@ void F3D_Reserved0( u32 w0, u32 w1 )
 
 void F3D_MoveMem( u32 w0, u32 w1 )
 {
-	switch (_SHIFTR( w0, 16, 8 ))
-	{
-		case F3D_MV_VIEWPORT://G_MV_VIEWPORT:
+	switch (_SHIFTR( w0, 16, 8 )) {
+		case F3D_MV_VIEWPORT:
 			gSPViewport( w1 );
 			break;
 		case G_MV_MATRIX_1:
@@ -113,7 +110,6 @@ void F3D_Reserved3( u32 w0, u32 w1 )
 void F3D_Sprite2D_Base( u32 w0, u32 w1 )
 {
 	gSPSprite2DBase( w1 );
-//	RSP.PC[RSP.PCi] += 8;
 }
 
 void F3D_Tri1( u32 w0, u32 w1 )
@@ -135,8 +131,7 @@ void F3D_PopMtx( u32 w0, u32 w1 )
 
 void F3D_MoveWord( u32 w0, u32 w1 )
 {
-	switch (_SHIFTR( w0, 0, 8 ))
-	{
+	switch (_SHIFTR( w0, 0, 8 )) {
 		case G_MW_MATRIX:
 			gSPInsertMatrix( _SHIFTR( w0, 8, 16 ), w1 );
 			break;
@@ -303,4 +298,3 @@ void F3D_Init()
 	GBI_SetGBI( G_RDPHALF_CONT,			F3D_RDPHALF_CONT,		F3D_RDPHalf_Cont );
 	GBI_SetGBI( G_TRI4,					F3D_TRI4,				F3D_Tri4 );
 }
-
