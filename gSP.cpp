@@ -698,11 +698,8 @@ void gSPDMAMatrix( u32 matrix, u8 index, u8 multiply )
 
 	gSP.matrix.modelViewi = index;
 
-	if (multiply) {
-//		CopyMatrix( gSP.matrix.modelView[gSP.matrix.modelViewi], gSP.matrix.modelView[0] );
-//		MultMatrix( gSP.matrix.modelView[gSP.matrix.modelViewi], mtx );
+	if (multiply)
 		MultMatrix(gSP.matrix.modelView[0], mtx, gSP.matrix.modelView[gSP.matrix.modelViewi]);
-	}
 	else
 		CopyMatrix( gSP.matrix.modelView[gSP.matrix.modelViewi], mtx );
 
@@ -815,7 +812,7 @@ void gSPLight( u32 l, s32 n )
 		gSP.lights[n].qa = (float)(RDRAM[(addrByte + 14) ^ 3]) / 8.0f;
 	}
 
-	if (config.generalEmulation.enableHWLighting)
+	if (config.generalEmulation.enableHWLighting != 0)
 		gSP.changed |= CHANGED_LIGHT;
 
 #ifdef DEBUG
@@ -861,7 +858,7 @@ void gSPLightCBFD( u32 l, s32 n )
 		gSP.lights[n].ca = (float)(RDRAM[(addrByte + 12) ^ 3]) / 16.0f;
 	}
 
-	if (config.generalEmulation.enableHWLighting)
+	if (config.generalEmulation.enableHWLighting != 0)
 		gSP.changed |= CHANGED_LIGHT;
 
 #ifdef DEBUG
@@ -1303,7 +1300,7 @@ void gSPSetVertexNormaleBase( u32 base )
 }
 
 void gSPDMATriangles( u32 tris, u32 n ){
-	u32 address = RSP_SegmentToPhysical( tris );
+	const u32 address = RSP_SegmentToPhysical( tris );
 
 	if (address + sizeof( DKRTriangle ) * n > RDRAMSize) {
 #ifdef DEBUG
@@ -1406,8 +1403,7 @@ void gSPCullDisplayList( u32 v0, u32 vn )
 #endif
 	}
 #ifdef DEBUG
-	else
-	{
+	else {
 		DebugMsg( DEBUG_DETAIL | DEBUG_HANDLED, "// Not culling display list\n" );
 		DebugMsg( DEBUG_HIGH | DEBUG_HANDLED, "gSPCullDisplayList( %i, %i );\n",
 			v0, vn );
@@ -1548,7 +1544,7 @@ void gSPNumLights( s32 n )
 {
 	if (n <= 12) {
 		gSP.numLights = n;
-		if (config.generalEmulation.enableHWLighting)
+		if (config.generalEmulation.enableHWLighting != 0)
 			gSP.changed |= CHANGED_LIGHT;
 	}
 #ifdef DEBUG
@@ -1571,7 +1567,7 @@ void gSPLightColor( u32 lightNum, u32 packedColor )
 		gSP.lights[lightNum].r = _SHIFTR( packedColor, 24, 8 ) * 0.0039215689f;
 		gSP.lights[lightNum].g = _SHIFTR( packedColor, 16, 8 ) * 0.0039215689f;
 		gSP.lights[lightNum].b = _SHIFTR( packedColor, 8, 8 ) * 0.0039215689f;
-		if (config.generalEmulation.enableHWLighting)
+		if (config.generalEmulation.enableHWLighting != 0)
 			gSP.changed |= CHANGED_LIGHT;
 	}
 #ifdef DEBUG
@@ -1613,7 +1609,6 @@ void gSPCoordMod(u32 _w0, u32 _w1)
 		gSP.vertexCoordMod[5+idx] = _SHIFTR(_w1, 0, 16)/65536.0f;
 		gSP.vertexCoordMod[12+idx] = gSP.vertexCoordMod[0+idx] + gSP.vertexCoordMod[4+idx];
 		gSP.vertexCoordMod[13+idx] = gSP.vertexCoordMod[1+idx] + gSP.vertexCoordMod[5+idx];
-
 	} else if (pos == 0x20) {
 		gSP.vertexCoordMod[8+idx] = (f32)(s16)_SHIFTR(_w1, 16, 16);
 		gSP.vertexCoordMod[9+idx] = (f32)(s16)_SHIFTR(_w1, 0, 16);
@@ -1746,7 +1741,7 @@ void gSPSetOtherMode_H(u32 _length, u32 _shift, u32 _data)
 
 void gSPSetOtherMode_L(u32 _length, u32 _shift, u32 _data)
 {
-	u32 mask = (((u64)1 << _length) - 1) << _shift;
+	const u32 mask = (((u64)1 << _length) - 1) << _shift;
 	gDP.otherMode.l = (gDP.otherMode.l&(~mask)) | _data;
 
 	if (mask & 0x00000003)  // alpha compare
@@ -1775,7 +1770,7 @@ void gSPLineW3D( s32 v0, s32 v1, s32 wd, s32 flag )
 
 void gSPObjLoadTxtr( u32 tx )
 {
-	u32 address = RSP_SegmentToPhysical( tx );
+	const u32 address = RSP_SegmentToPhysical( tx );
 	uObjTxtr *objTxtr = (uObjTxtr*)&RDRAM[address];
 
 	if ((gSP.status[objTxtr->block.sid >> 2] & objTxtr->block.mask) != objTxtr->block.flag) {
@@ -2025,18 +2020,18 @@ void _drawYUVImageToFrameBuffer(const ObjCoordinates & _objCoords)
 		pBuffer->m_isOBScreen = true;
 }
 
-void gSPObjRectangle(u32 sp)
+void gSPObjRectangle(u32 _sp)
 {
-	u32 address = RSP_SegmentToPhysical(sp);
+	const u32 address = RSP_SegmentToPhysical(_sp);
 	uObjSprite *objSprite = (uObjSprite*)&RDRAM[address];
 	gSPSetSpriteTile(objSprite);
 	ObjCoordinates objCoords(objSprite, false);
 	gSPDrawObjRect(objCoords);
 }
 
-void gSPObjRectangleR(u32 sp)
+void gSPObjRectangleR(u32 _sp)
 {
-	const u32 address = RSP_SegmentToPhysical(sp);
+	const u32 address = RSP_SegmentToPhysical(_sp);
 	const uObjSprite *objSprite = (uObjSprite*)&RDRAM[address];
 	gSPSetSpriteTile(objSprite);
 	ObjCoordinates objCoords(objSprite, true);
@@ -2114,9 +2109,9 @@ void _loadBGImage(const uObjScaleBg * _bgInfo, bool _loadScale)
 	}
 }
 
-void gSPBgRect1Cyc( u32 bg )
+void gSPBgRect1Cyc( u32 _bg )
 {
-	u32 address = RSP_SegmentToPhysical( bg );
+	const u32 address = RSP_SegmentToPhysical( _bg );
 	uObjScaleBg *objScaleBg = (uObjScaleBg*)&RDRAM[address];
 	_loadBGImage(objScaleBg, true);
 
@@ -2137,9 +2132,9 @@ void gSPBgRect1Cyc( u32 bg )
 	gSPDrawObjRect(objCoords);
 }
 
-void gSPBgRectCopy( u32 bg )
+void gSPBgRectCopy( u32 _bg )
 {
-	u32 address = RSP_SegmentToPhysical( bg );
+	const u32 address = RSP_SegmentToPhysical( _bg );
 	uObjScaleBg *objBg = (uObjScaleBg*)&RDRAM[address];
 	_loadBGImage(objBg, false);
 
@@ -2156,9 +2151,9 @@ void gSPBgRectCopy( u32 bg )
 	gSPDrawObjRect(objCoords);
 }
 
-void gSPObjSprite(u32 sp)
+void gSPObjSprite(u32 _sp)
 {
-	u32 address = RSP_SegmentToPhysical( sp );
+	const u32 address = RSP_SegmentToPhysical( _sp );
 	uObjSprite *objSprite = (uObjSprite*)&RDRAM[address];
 	gSPSetSpriteTile(objSprite);
 	ObjData data(objSprite);
@@ -2233,7 +2228,7 @@ void _loadSpriteImage(const uSprite *_pSprite)
 	gSP.bgImage.imageY = _pSprite->imageY;
 	gSP.bgImage.scaleW = gSP.bgImage.scaleH = 1.0f;
 
-	if (config.frameBufferEmulation.enable)
+	if (config.frameBufferEmulation.enable != 0)
 	{
 		FrameBuffer *pBuffer = frameBufferList().findBuffer(gSP.bgImage.address);
 		if (pBuffer != NULL) {
@@ -2245,10 +2240,10 @@ void _loadSpriteImage(const uSprite *_pSprite)
 	}
 }
 
-void gSPSprite2DBase(u32 base)
+void gSPSprite2DBase(u32 _base)
 {
 	assert(RSP.nextCmd == 0xBE);
-	const u32 address = RSP_SegmentToPhysical( base );
+	const u32 address = RSP_SegmentToPhysical( _base );
 	uSprite *pSprite = (uSprite*)&RDRAM[address];
 
 	if (pSprite->tlutPtr != 0) {
