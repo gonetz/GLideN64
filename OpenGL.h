@@ -216,6 +216,5 @@ bool checkFBO();
 bool isGLError();
 
 void displayLoadProgress(const wchar_t *format, ...);
-void GHQ_init();
 
 #endif
