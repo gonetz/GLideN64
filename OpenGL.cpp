@@ -1104,15 +1104,13 @@ void OGLRender::clearColorBuffer(float *_pColor )
 
 void OGLRender::_initExtensions()
 {
-#ifdef GL_IMAGE_TEXTURES_SUPPORT
-	const char *version = reinterpret_cast<const char*>(glGetString(GL_VERSION));
-	const u32 uVersion = atol(version);
-	assert(uVersion >= 3 && "Plugin requires GL version 3 or higher.");
-
-	GLint majorVersion = 0, minorVersion = 0;
+	GLint majorVersion = 0;
 	glGetIntegerv(GL_MAJOR_VERSION, &majorVersion);
-	glGetIntegerv(GL_MINOR_VERSION, &minorVersion);
+	assert(majorVersion >= 3 && "Plugin requires GL version 3 or higher.");
 
+#ifdef GL_IMAGE_TEXTURES_SUPPORT
+	GLint minorVersion = 0;
+	glGetIntegerv(GL_MINOR_VERSION, &minorVersion);
 	m_bImageTexture = (majorVersion >= 4) && (minorVersion >= 3) && (glBindImageTexture != NULL);
 #else
 	m_bImageTexture = false;
