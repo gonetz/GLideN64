@@ -18,7 +18,7 @@ private:
 	PostProcessor() :
 		m_extractBloomProgram(0), m_seperableBlurProgram(0), m_glowProgram(0), m_bloomProgram(0),
 		m_FBO_original(0), m_FBO_glowMap(0), m_FBO_blur(0),
-		m_pTextureOriginal(NULL), m_pTextureGlowMap(NULL), m_pTextureBlur(NULL) {};
+		m_pTextureOriginal(NULL), m_pTextureGlowMap(NULL), m_pTextureBlur(NULL) {}
 	PostProcessor(const PostProcessor & _other);
 
 	GLuint m_extractBloomProgram;
