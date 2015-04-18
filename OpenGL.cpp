@@ -1132,7 +1132,7 @@ void OGLRender::_initStates()
 	glDepthMask( GL_FALSE );
 	glEnable( GL_SCISSOR_TEST );
 
-	if (config.frameBufferEmulation.N64DepthCompare) {
+	if (config.frameBufferEmulation.N64DepthCompare != 0) {
 		glDisable( GL_DEPTH_TEST );
 		glDisable( GL_POLYGON_OFFSET_FILL );
 		glDepthFunc( GL_ALWAYS );
@@ -1141,7 +1141,7 @@ void OGLRender::_initStates()
 		glPolygonOffset( -3.0f, -3.0f );
 
 	OGLVideo & ogl = video();
-	glViewport( 0, ogl.getHeightOffset(), ogl.getScreenWidth(), ogl.getScreenHeight());
+	glViewport(0, ogl.getHeightOffset(), ogl.getScreenWidth(), ogl.getScreenHeight());
 
 	glClearColor( 0.0f, 0.0f, 0.0f, 0.0f );
 	glClear( GL_COLOR_BUFFER_BIT );
@@ -1263,7 +1263,6 @@ void displayLoadProgress(const wchar_t *format, ...)
 
 	if (pBuffer != NULL)
 		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, pBuffer->m_FBO);
-	//OutputDebugStringW(wbuf);
 }
 
 void TextureFilterHandler::init()
