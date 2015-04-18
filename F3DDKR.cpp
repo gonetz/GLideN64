@@ -11,9 +11,7 @@
 
 void F3DDKR_DMA_Mtx( u32 w0, u32 w1 )
 {
-	if (_SHIFTR( w0, 0, 16 ) != 64)
-	{
-//		GBI_DetectUCode(); // Something's wrong
+	if (_SHIFTR( w0, 0, 16 ) != 64) {
 #ifdef DEBUG
 	DebugMsg( DEBUG_MEDIUM | DEBUG_HIGH | DEBUG_ERROR, "G_MTX: address = 0x%08X    length = %i    params = 0x%02X\n", w1, _SHIFTR( w0, 0, 16 ), _SHIFTR( w0, 16, 8 ) );
 #endif
@@ -23,13 +21,11 @@ void F3DDKR_DMA_Mtx( u32 w0, u32 w1 )
 	u32 index = _SHIFTR( w0, 16, 4 );
 	u32 multiply;
 
-	if (index == 0) // DKR
-	{
+	if (index == 0) {// DKR
 		index = _SHIFTR( w0, 22, 2 );
 		multiply = 0;
 	}
-	else // Gemini
-	{
+	else { // JFG
 		multiply = _SHIFTR( w0, 23, 1 );
 	}
 
@@ -38,12 +34,10 @@ void F3DDKR_DMA_Mtx( u32 w0, u32 w1 )
 
 void F3DDKR_DMA_Vtx( u32 w0, u32 w1 )
 {
-	if ((w0 & F3DDKR_VTX_APPEND))
-	{
+	if ((w0 & F3DDKR_VTX_APPEND)) {
 		if (gSP.matrix.billboard)
 			gSP.vertexi = 1;
-	}
-	else
+	} else
 		gSP.vertexi = 0;
 
 	u32 n = _SHIFTR( w0, 19, 5 ) + 1;
@@ -91,8 +85,7 @@ void F3DDKR_DMA_Tex_Offset(u32 w0, u32 w1)
 
 void F3DDKR_MoveWord( u32 w0, u32 w1 )
 {
-	switch (_SHIFTR( w0, 0, 8 ))
-	{
+	switch (_SHIFTR( w0, 0, 8 )) {
 		case 0x02:
 			gSP.matrix.billboard = w1 & 1;
 			break;
