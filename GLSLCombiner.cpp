@@ -341,7 +341,7 @@ const char *ColorInput[] = {
 	"vec3(uPrimColor.a)",
 	"vec3(vec_color.a)",
 	"vec3(uEnvColor.a)",
-	"vec3(lod_frac)", // TODO: emulate lod_fraction
+	"vec3(lod_frac)",
 	"vec3(uPrimLod)",
 	"vec3(0.5 + 0.5*snoise())",
 	"vec3(uK4)",
