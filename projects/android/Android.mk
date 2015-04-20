@@ -1,6 +1,7 @@
 LOCAL_PATH := $(call my-dir)
 
 include $(CLEAR_VARS)
+SRCDIR := ../../src
 
 LOCAL_MODULE := GLideN64es
 LOCAL_SHARED_LIBRARIES := ae-imports SDL2 core
@@ -11,43 +12,55 @@ LOCAL_C_INCLUDES :=         \
     $(M64P_API_INCLUDES)    \
     $(SDL_INCLUDES)         \
     $(AE_BRIDGE_INCLUDES)   \
+    $(LOCAL_PATH)/$(SRCDIR)/inc        \
 
-LOCAL_SRC_FILES :=                  \
-	2xSAI.cpp		\
-	3DMath.cpp		\
-	Combiner.cpp		\
-	Config_mupen.cpp	\
-	CRC.cpp			\
-	DepthBuffer.cpp		\
-	F3D.cpp			\
-	F3DDKR.cpp		\
-	F3DEX2.cpp		\
-	F3DEX.cpp		\
-	F3DPD.cpp		\
-	F3DWRUS.cpp		\
-	FrameBuffer.cpp		\
-	GBI.cpp			\
-	gDP.cpp			\
-	GLideN64.cpp		\
-	GLSLCombiner.cpp	\
-	gSP.cpp			\
-	L3D.cpp			\
-	L3DEX2.cpp		\
-	L3DEX.cpp		\
-	N64.cpp			\
-	OpenGL.cpp		\
-	RDP.cpp			\
-	RSP.cpp			\
-	S2DEX2.cpp		\
-	S2DEX.cpp		\
-	Textures.cpp		\
-	VI.cpp			\
+LOCAL_SRC_FILES :=			\
+	$(SRCDIR)/3DMath.cpp		\
+	$(SRCDIR)/Combiner.cpp		\
+	$(SRCDIR)/CommonPluginAPI.cpp	\
+	$(SRCDIR)/Config.cpp		\
+	$(SRCDIR)/CRC.cpp		\
+	$(SRCDIR)/DepthBuffer.cpp	\
+	$(SRCDIR)/F3D.cpp		\
+	$(SRCDIR)/F3DDKR.cpp		\
+	$(SRCDIR)/F3DEX2CBFD.cpp	\
+	$(SRCDIR)/F3DEX2.cpp		\
+	$(SRCDIR)/F3DEX.cpp		\
+	$(SRCDIR)/F3DPD.cpp		\
+	$(SRCDIR)/F3DSWSE.cpp		\
+	$(SRCDIR)/F3DWRUS.cpp		\
+	$(SRCDIR)/FrameBuffer.cpp	\
+	$(SRCDIR)/GBI.cpp		\
+	$(SRCDIR)/gDP.cpp		\
+	$(SRCDIR)/GLideN64.cpp		\
+	$(SRCDIR)/GLSLCombiner.cpp	\
+	$(SRCDIR)/glState.cpp		\
+	$(SRCDIR)/gSP.cpp		\
+	$(SRCDIR)/Keys.cpp		\
+	$(SRCDIR)/L3D.cpp		\
+	$(SRCDIR)/L3DEX2.cpp		\
+	$(SRCDIR)/L3DEX.cpp		\
+	$(SRCDIR)/MupenPlusPluginAPI.cpp \
+	$(SRCDIR)/N64.cpp		\
+	$(SRCDIR)/OpenGL.cpp		\
+	$(SRCDIR)/PostProcessor.cpp	\
+	$(SRCDIR)/RDP.cpp		\
+	$(SRCDIR)/RSP.cpp		\
+	$(SRCDIR)/S2DEX2.cpp		\
+	$(SRCDIR)/S2DEX.cpp		\
+	$(SRCDIR)/TextDrawer.cpp	\
+	$(SRCDIR)/Textures.cpp		\
+	$(SRCDIR)/Turbo3D.cpp		\
+	$(SRCDIR)/VI.cpp		\
+	$(SRCDIR)/ZSort.cpp		\
+	$(SRCDIR)/common/CommonAPIImpl_common.cpp	\
+	$(SRCDIR)/mupenplus/CommonAPIImpl_mupenplus.cpp	\
+	$(SRCDIR)/mupenplus/Config_mupenplus.cpp	\
+	$(SRCDIR)/mupenplus/MupenPlusAPIImpl.cpp	\
+	$(SRCDIR)/mupenplus/OpenGL_mupenplus.cpp	\
 
 LOCAL_CFLAGS :=         \
     $(COMMON_CFLAGS)    \
-    -D__CRC_OPT         \
-    -D__HASHMAP_OPT     \
-    -D__TRIBUFFER_OPT   \
     -D__VEC4_OPT        \
     -DANDROID           \
     -DUSE_SDL           \
