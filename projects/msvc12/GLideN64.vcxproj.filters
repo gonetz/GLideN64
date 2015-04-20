@@ -38,300 +38,300 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Combiner.cpp">
+    <ClCompile Include="..\..\src\Combiner.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CRC.cpp">
+    <ClCompile Include="..\..\src\CRC.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="DepthBuffer.cpp">
+    <ClCompile Include="..\..\src\DepthBuffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="FrameBuffer.cpp">
+    <ClCompile Include="..\..\src\FrameBuffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GBI.cpp">
+    <ClCompile Include="..\..\src\GBI.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="gDP.cpp">
+    <ClCompile Include="..\..\src\gDP.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GLideN64.cpp">
+    <ClCompile Include="..\..\src\GLideN64.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="gSP.cpp">
+    <ClCompile Include="..\..\src\gSP.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="N64.cpp">
+    <ClCompile Include="..\..\src\N64.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="OpenGL.cpp">
+    <ClCompile Include="..\..\src\OpenGL.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="RDP.CPP">
+    <ClCompile Include="..\..\src\RDP.CPP">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="RSP.cpp">
+    <ClCompile Include="..\..\src\RSP.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Textures.cpp">
+    <ClCompile Include="..\..\src\Textures.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="VI.cpp">
+    <ClCompile Include="..\..\src\VI.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="F3D.cpp">
+    <ClCompile Include="..\..\src\F3D.cpp">
       <Filter>Source Files\uCodes</Filter>
     </ClCompile>
-    <ClCompile Include="F3DDKR.cpp">
+    <ClCompile Include="..\..\src\F3DDKR.cpp">
       <Filter>Source Files\uCodes</Filter>
     </ClCompile>
-    <ClCompile Include="F3DEX.cpp">
+    <ClCompile Include="..\..\src\F3DEX.cpp">
       <Filter>Source Files\uCodes</Filter>
     </ClCompile>
-    <ClCompile Include="F3DEX2.cpp">
+    <ClCompile Include="..\..\src\F3DEX2.cpp">
       <Filter>Source Files\uCodes</Filter>
     </ClCompile>
-    <ClCompile Include="F3DPD.cpp">
+    <ClCompile Include="..\..\src\F3DPD.cpp">
       <Filter>Source Files\uCodes</Filter>
     </ClCompile>
-    <ClCompile Include="F3DWRUS.cpp">
+    <ClCompile Include="..\..\src\F3DWRUS.cpp">
       <Filter>Source Files\uCodes</Filter>
     </ClCompile>
-    <ClCompile Include="L3D.cpp">
+    <ClCompile Include="..\..\src\L3D.cpp">
       <Filter>Source Files\uCodes</Filter>
     </ClCompile>
-    <ClCompile Include="L3DEX.cpp">
+    <ClCompile Include="..\..\src\L3DEX.cpp">
       <Filter>Source Files\uCodes</Filter>
     </ClCompile>
-    <ClCompile Include="L3DEX2.cpp">
+    <ClCompile Include="..\..\src\L3DEX2.cpp">
       <Filter>Source Files\uCodes</Filter>
     </ClCompile>
-    <ClCompile Include="S2DEX.cpp">
+    <ClCompile Include="..\..\src\S2DEX.cpp">
       <Filter>Source Files\uCodes</Filter>
     </ClCompile>
-    <ClCompile Include="S2DEX2.cpp">
+    <ClCompile Include="..\..\src\S2DEX2.cpp">
       <Filter>Source Files\uCodes</Filter>
     </ClCompile>
-    <ClCompile Include="GLSLCombiner.cpp">
+    <ClCompile Include="..\..\src\GLSLCombiner.cpp">
       <Filter>Source Files\Combiners</Filter>
     </ClCompile>
-    <ClCompile Include="3DMath.cpp">
+    <ClCompile Include="..\..\src\3DMath.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="MupenPlusPluginAPI.cpp">
+    <ClCompile Include="..\..\src\MupenPlusPluginAPI.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CommonPluginAPI.cpp">
+    <ClCompile Include="..\..\src\CommonPluginAPI.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ZilmarPluginAPI.cpp">
+    <ClCompile Include="..\..\src\ZilmarPluginAPI.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="common\CommonAPIImpl_common.cpp">
+    <ClCompile Include="..\..\src\common\CommonAPIImpl_common.cpp">
       <Filter>Source Files\common</Filter>
     </ClCompile>
-    <ClCompile Include="common\ZilmarAPIImpl_common.cpp">
+    <ClCompile Include="..\..\src\common\ZilmarAPIImpl_common.cpp">
       <Filter>Source Files\common</Filter>
     </ClCompile>
-    <ClCompile Include="mupenplus\CommonAPIImpl_mupenplus.cpp">
+    <ClCompile Include="..\..\src\mupenplus\CommonAPIImpl_mupenplus.cpp">
       <Filter>Source Files\mupenplus</Filter>
     </ClCompile>
-    <ClCompile Include="mupenplus\MupenPlusAPIImpl.cpp">
+    <ClCompile Include="..\..\src\mupenplus\MupenPlusAPIImpl.cpp">
       <Filter>Source Files\mupenplus</Filter>
     </ClCompile>
-    <ClCompile Include="mupenplus\OpenGL_mupenplus.cpp">
+    <ClCompile Include="..\..\src\mupenplus\OpenGL_mupenplus.cpp">
       <Filter>Source Files\mupenplus</Filter>
     </ClCompile>
-    <ClCompile Include="windows\CommonAPIImpl_windows.cpp">
+    <ClCompile Include="..\..\src\windows\CommonAPIImpl_windows.cpp">
       <Filter>Source Files\windows</Filter>
     </ClCompile>
-    <ClCompile Include="windows\GLFunctions.cpp">
+    <ClCompile Include="..\..\src\windows\GLFunctions.cpp">
       <Filter>Source Files\windows</Filter>
     </ClCompile>
-    <ClCompile Include="windows\GLideN64_windows.cpp">
+    <ClCompile Include="..\..\src\windows\GLideN64_windows.cpp">
       <Filter>Source Files\windows</Filter>
     </ClCompile>
-    <ClCompile Include="windows\OpenGL_windows.cpp">
+    <ClCompile Include="..\..\src\windows\OpenGL_windows.cpp">
       <Filter>Source Files\windows</Filter>
     </ClCompile>
-    <ClCompile Include="windows\ZilmarAPIImpl_windows.cpp">
+    <ClCompile Include="..\..\src\windows\ZilmarAPIImpl_windows.cpp">
       <Filter>Source Files\windows</Filter>
     </ClCompile>
-    <ClCompile Include="F3DEX2CBFD.cpp">
+    <ClCompile Include="..\..\src\F3DEX2CBFD.cpp">
       <Filter>Source Files\uCodes</Filter>
     </ClCompile>
-    <ClCompile Include="windows\Config_windows.cpp">
+    <ClCompile Include="..\..\src\windows\Config_windows.cpp">
       <Filter>Source Files\windows</Filter>
     </ClCompile>
-    <ClCompile Include="mupenplus\Config_mupenplus.cpp">
+    <ClCompile Include="..\..\src\mupenplus\Config_mupenplus.cpp">
       <Filter>Source Files\mupenplus</Filter>
     </ClCompile>
-    <ClCompile Include="Turbo3D.cpp">
+    <ClCompile Include="..\..\src\Turbo3D.cpp">
       <Filter>Source Files\uCodes</Filter>
     </ClCompile>
-    <ClCompile Include="ZSort.cpp">
+    <ClCompile Include="..\..\src\ZSort.cpp">
       <Filter>Source Files\uCodes</Filter>
     </ClCompile>
-    <ClCompile Include="F3DSWSE.cpp">
+    <ClCompile Include="..\..\src\F3DSWSE.cpp">
       <Filter>Source Files\uCodes</Filter>
     </ClCompile>
-    <ClCompile Include="TextDrawer.cpp">
+    <ClCompile Include="..\..\src\TextDrawer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="PostProcessor.cpp">
+    <ClCompile Include="..\..\src\PostProcessor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="glState.cpp">
+    <ClCompile Include="..\..\src\glState.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Config.cpp">
+    <ClCompile Include="..\..\src\Config.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Keys.cpp">
+    <ClCompile Include="..\..\src\Keys.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="3DMath.h">
+    <ClInclude Include="..\..\src\3DMath.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Combiner.h">
+    <ClInclude Include="..\..\src\Combiner.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Config.h">
+    <ClInclude Include="..\..\src\Config.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="convert.h">
+    <ClInclude Include="..\..\src\convert.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="CRC.h">
+    <ClInclude Include="..\..\src\CRC.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Debug.h">
+    <ClInclude Include="..\..\src\Debug.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="DepthBuffer.h">
+    <ClInclude Include="..\..\src\DepthBuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="FrameBuffer.h">
+    <ClInclude Include="..\..\src\FrameBuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="GBI.h">
+    <ClInclude Include="..\..\src\GBI.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="gDP.h">
+    <ClInclude Include="..\..\src\gDP.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="glext.h">
+    <ClInclude Include="..\..\src\glext.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="GLideN64.h">
+    <ClInclude Include="..\..\src\GLideN64.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="gSP.h">
+    <ClInclude Include="..\..\src\gSP.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="N64.h">
+    <ClInclude Include="..\..\src\N64.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="OpenGL.h">
+    <ClInclude Include="..\..\src\OpenGL.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="RDP.h">
+    <ClInclude Include="..\..\src\RDP.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="RSP.h">
+    <ClInclude Include="..\..\src\RSP.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Textures.h">
+    <ClInclude Include="..\..\src\Textures.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Types.h">
+    <ClInclude Include="..\..\src\Types.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="VI.h">
+    <ClInclude Include="..\..\src\VI.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="F3D.h">
+    <ClInclude Include="..\..\src\F3D.h">
       <Filter>Header Files\uCodes</Filter>
     </ClInclude>
-    <ClInclude Include="F3DDKR.h">
+    <ClInclude Include="..\..\src\F3DDKR.h">
       <Filter>Header Files\uCodes</Filter>
     </ClInclude>
-    <ClInclude Include="F3DEX.h">
+    <ClInclude Include="..\..\src\F3DEX.h">
       <Filter>Header Files\uCodes</Filter>
     </ClInclude>
-    <ClInclude Include="F3DEX2.h">
+    <ClInclude Include="..\..\src\F3DEX2.h">
       <Filter>Header Files\uCodes</Filter>
     </ClInclude>
-    <ClInclude Include="F3DPD.h">
+    <ClInclude Include="..\..\src\F3DPD.h">
       <Filter>Header Files\uCodes</Filter>
     </ClInclude>
-    <ClInclude Include="F3DWRUS.h">
+    <ClInclude Include="..\..\src\F3DWRUS.h">
       <Filter>Header Files\uCodes</Filter>
     </ClInclude>
-    <ClInclude Include="L3D.h">
+    <ClInclude Include="..\..\src\L3D.h">
       <Filter>Header Files\uCodes</Filter>
     </ClInclude>
-    <ClInclude Include="L3DEX.h">
+    <ClInclude Include="..\..\src\L3DEX.h">
       <Filter>Header Files\uCodes</Filter>
     </ClInclude>
-    <ClInclude Include="L3DEX2.h">
+    <ClInclude Include="..\..\src\L3DEX2.h">
       <Filter>Header Files\uCodes</Filter>
     </ClInclude>
-    <ClInclude Include="S2DEX.h">
+    <ClInclude Include="..\..\src\S2DEX.h">
       <Filter>Header Files\uCodes</Filter>
     </ClInclude>
-    <ClInclude Include="S2DEX2.h">
+    <ClInclude Include="..\..\src\S2DEX2.h">
       <Filter>Header Files\uCodes</Filter>
     </ClInclude>
-    <ClInclude Include="GLSLCombiner.h">
+    <ClInclude Include="..\..\src\GLSLCombiner.h">
       <Filter>Header Files\Combiners</Filter>
     </ClInclude>
-    <ClInclude Include="ZilmarGFX_1_3.h">
+    <ClInclude Include="..\..\src\ZilmarGFX_1_3.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Shaders.h">
+    <ClInclude Include="..\..\src\Shaders.h">
       <Filter>Header Files\Combiners</Filter>
     </ClInclude>
-    <ClInclude Include="windows\GLFunctions.h">
+    <ClInclude Include="..\..\src\windows\GLFunctions.h">
       <Filter>Header Files\windows</Filter>
     </ClInclude>
-    <ClInclude Include="mupenplus\GLideN64_mupenplus.h">
+    <ClInclude Include="..\..\src\mupenplus\GLideN64_mupenplus.h">
       <Filter>Header Files\mupenplus</Filter>
     </ClInclude>
-    <ClInclude Include="windows\GLideN64_windows.h">
+    <ClInclude Include="..\..\src\windows\GLideN64_windows.h">
       <Filter>Header Files\windows</Filter>
     </ClInclude>
-    <ClInclude Include="PluginAPI.h">
+    <ClInclude Include="..\..\src\PluginAPI.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Log.h">
+    <ClInclude Include="..\..\src\Log.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="F3DEX2CBFD.h">
+    <ClInclude Include="..\..\src\F3DEX2CBFD.h">
       <Filter>Header Files\uCodes</Filter>
     </ClInclude>
-    <ClInclude Include="Turbo3D.h">
+    <ClInclude Include="..\..\src\Turbo3D.h">
       <Filter>Header Files\uCodes</Filter>
     </ClInclude>
-    <ClInclude Include="ZSort.h">
+    <ClInclude Include="..\..\src\ZSort.h">
       <Filter>Header Files\uCodes</Filter>
     </ClInclude>
-    <ClInclude Include="F3DSWSE.h">
+    <ClInclude Include="..\..\src\F3DSWSE.h">
       <Filter>Header Files\uCodes</Filter>
     </ClInclude>
-    <ClInclude Include="GLideNHQ\Ext_TxFilter.h">
+    <ClInclude Include="..\..\src\GLideNHQ\Ext_TxFilter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="TextDrawer.h">
+    <ClInclude Include="..\..\src\TextDrawer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="PostProcessor.h">
+    <ClInclude Include="..\..\src\PostProcessor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Keys.h">
+    <ClInclude Include="..\..\src\Keys.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

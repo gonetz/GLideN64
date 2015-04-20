@@ -124,17 +124,17 @@
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <ExceptionHandling>Async</ExceptionHandling>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <AdditionalIncludeDirectories>../freetype/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../src/inc;../../../freetype/include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>freetype253MT_D.lib;GLideNUI\debug\GLideNUI.lib;GLideNHQ\build_vs\Debug\libGLideNHQ.lib;opengl32.lib;glu32.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>freetype253MT_D.lib;..\..\src\GLideNUI\debug\GLideNUI.lib;GLideNHQ\Debug\libGLideNHQ.lib;opengl32.lib;glu32.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>c:\Games\N64\Plugin\GLideN64.dll</OutputFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ProgramDatabaseFile>$(OutDir)New glNintendo64().pdb</ProgramDatabaseFile>
       <SubSystem>Windows</SubSystem>
       <ImportLibrary>$(OutDir)New glNintendo64().lib</ImportLibrary>
       <TargetMachine>MachineX86</TargetMachine>
-      <AdditionalLibraryDirectories>%BOOST_ROOT%/lib32-msvc-12.0;../freetype/lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>%BOOST_ROOT%/lib32-msvc-12.0;../../../freetype/lib</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug_mupenplus|Win32'">
@@ -149,19 +149,19 @@
       <PrecompiledHeaderFile>glN64.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
-      <AdditionalIncludeDirectories>inc;../freetype/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../src/inc;../../../freetype/include</AdditionalIncludeDirectories>
       <ExceptionHandling>Async</ExceptionHandling>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>freetype253MT_D.lib;GLideNHQ\build_vs\Debug\libGLideNHQ.lib;opengl32.lib;glu32.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>freetype253MT_D.lib;GLideNHQ\Debug\libGLideNHQ.lib;opengl32.lib;glu32.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>c:\Games\N64\M64Py\mupen64plus-video-GLideN64.dll </OutputFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ProgramDatabaseFile>$(OutDir)New glNintendo64().pdb</ProgramDatabaseFile>
       <SubSystem>Windows</SubSystem>
       <ImportLibrary>$(OutDir)New glNintendo64().lib</ImportLibrary>
       <TargetMachine>MachineX86</TargetMachine>
-      <AdditionalLibraryDirectories>%BOOST_ROOT%/lib32-msvc-12.0;../freetype/lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>%BOOST_ROOT%/lib32-msvc-12.0;../../../freetype/lib</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -181,10 +181,10 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <ExceptionHandling>Async</ExceptionHandling>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <AdditionalIncludeDirectories>../freetype/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../src/inc;../../../freetype/include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>freetype253MT.lib;GLideNUI\release\GLideNUI.lib;GLideNHQ\build_vs\Release\libGLideNHQ.lib;opengl32.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>freetype253MT.lib;..\..\src\GLideNUI\release\GLideNUI.lib;GLideNHQ\Release\libGLideNHQ.lib;opengl32.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>c:\Games\N64\Plugin\GLideN64.dll</OutputFile>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
@@ -192,7 +192,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <ImportLibrary>$(OutDir)New glNintendo64().lib</ImportLibrary>
       <TargetMachine>MachineX86</TargetMachine>
-      <AdditionalLibraryDirectories>%BOOST_ROOT%/lib32-msvc-12.0;../freetype/lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>%BOOST_ROOT%/lib32-msvc-12.0;../../../freetype/lib</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_mupenplus|Win32'">
@@ -210,12 +210,12 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>inc;../freetype/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../src/inc;../../../freetype/include</AdditionalIncludeDirectories>
       <ExceptionHandling>Async</ExceptionHandling>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>freetype253MT.lib;GLideNHQ\build_vs\Release\libGLideNHQ.lib;opengl32.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>freetype253MT.lib;GLideNHQ\Release\libGLideNHQ.lib;opengl32.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>c:\Games\N64\M64Py\mupen64plus-video-GLideN64.dll</OutputFile>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
@@ -223,7 +223,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <ImportLibrary>$(OutDir)New glNintendo64().lib</ImportLibrary>
       <TargetMachine>MachineX86</TargetMachine>
-      <AdditionalLibraryDirectories>%BOOST_ROOT%/lib32-msvc-12.0;../freetype/lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>%BOOST_ROOT%/lib32-msvc-12.0;../../../freetype/lib</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug 1964|Win32'">
@@ -250,148 +250,148 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="3DMath.cpp" />
-    <ClCompile Include="Combiner.cpp" />
-    <ClCompile Include="CommonPluginAPI.cpp" />
-    <ClCompile Include="common\CommonAPIImpl_common.cpp" />
-    <ClCompile Include="common\ZilmarAPIImpl_common.cpp">
+    <ClCompile Include="..\..\src\3DMath.cpp" />
+    <ClCompile Include="..\..\src\Combiner.cpp" />
+    <ClCompile Include="..\..\src\CommonPluginAPI.cpp" />
+    <ClCompile Include="..\..\src\common\CommonAPIImpl_common.cpp" />
+    <ClCompile Include="..\..\src\common\ZilmarAPIImpl_common.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_mupenplus|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_mupenplus|Win32'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="Config.cpp" />
-    <ClCompile Include="CRC.cpp" />
-    <ClCompile Include="DepthBuffer.cpp" />
-    <ClCompile Include="F3DEX2CBFD.cpp" />
-    <ClCompile Include="F3DSWSE.cpp" />
-    <ClCompile Include="FrameBuffer.cpp" />
-    <ClCompile Include="GBI.cpp" />
-    <ClCompile Include="gDP.cpp" />
-    <ClCompile Include="GLideN64.cpp" />
-    <ClCompile Include="glState.cpp" />
-    <ClCompile Include="gSP.cpp" />
-    <ClCompile Include="Keys.cpp" />
-    <ClCompile Include="MupenPlusPluginAPI.cpp">
+    <ClCompile Include="..\..\src\Config.cpp" />
+    <ClCompile Include="..\..\src\CRC.cpp" />
+    <ClCompile Include="..\..\src\DepthBuffer.cpp" />
+    <ClCompile Include="..\..\src\F3DEX2CBFD.cpp" />
+    <ClCompile Include="..\..\src\F3DSWSE.cpp" />
+    <ClCompile Include="..\..\src\FrameBuffer.cpp" />
+    <ClCompile Include="..\..\src\GBI.cpp" />
+    <ClCompile Include="..\..\src\gDP.cpp" />
+    <ClCompile Include="..\..\src\GLideN64.cpp" />
+    <ClCompile Include="..\..\src\glState.cpp" />
+    <ClCompile Include="..\..\src\gSP.cpp" />
+    <ClCompile Include="..\..\src\Keys.cpp" />
+    <ClCompile Include="..\..\src\MupenPlusPluginAPI.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="mupenplus\CommonAPIImpl_mupenplus.cpp">
+    <ClCompile Include="..\..\src\mupenplus\CommonAPIImpl_mupenplus.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="mupenplus\Config_mupenplus.cpp">
+    <ClCompile Include="..\..\src\mupenplus\Config_mupenplus.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="mupenplus\MupenPlusAPIImpl.cpp">
+    <ClCompile Include="..\..\src\mupenplus\MupenPlusAPIImpl.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="mupenplus\OpenGL_mupenplus.cpp">
+    <ClCompile Include="..\..\src\mupenplus\OpenGL_mupenplus.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="N64.cpp" />
-    <ClCompile Include="OpenGL.cpp" />
-    <ClCompile Include="PostProcessor.cpp" />
-    <ClCompile Include="RDP.CPP" />
-    <ClCompile Include="RSP.cpp" />
-    <ClCompile Include="TextDrawer.cpp" />
-    <ClCompile Include="Textures.cpp" />
-    <ClCompile Include="Turbo3D.cpp" />
-    <ClCompile Include="VI.cpp" />
-    <ClCompile Include="F3D.cpp" />
-    <ClCompile Include="F3DDKR.cpp" />
-    <ClCompile Include="F3DEX.cpp" />
-    <ClCompile Include="F3DEX2.cpp" />
-    <ClCompile Include="F3DPD.cpp" />
-    <ClCompile Include="F3DWRUS.cpp" />
-    <ClCompile Include="L3D.cpp" />
-    <ClCompile Include="L3DEX.cpp" />
-    <ClCompile Include="L3DEX2.cpp" />
-    <ClCompile Include="S2DEX.cpp" />
-    <ClCompile Include="S2DEX2.cpp" />
-    <ClCompile Include="GLSLCombiner.cpp" />
-    <ClCompile Include="windows\CommonAPIImpl_windows.cpp">
+    <ClCompile Include="..\..\src\N64.cpp" />
+    <ClCompile Include="..\..\src\OpenGL.cpp" />
+    <ClCompile Include="..\..\src\PostProcessor.cpp" />
+    <ClCompile Include="..\..\src\RDP.CPP" />
+    <ClCompile Include="..\..\src\RSP.cpp" />
+    <ClCompile Include="..\..\src\TextDrawer.cpp" />
+    <ClCompile Include="..\..\src\Textures.cpp" />
+    <ClCompile Include="..\..\src\Turbo3D.cpp" />
+    <ClCompile Include="..\..\src\VI.cpp" />
+    <ClCompile Include="..\..\src\F3D.cpp" />
+    <ClCompile Include="..\..\src\F3DDKR.cpp" />
+    <ClCompile Include="..\..\src\F3DEX.cpp" />
+    <ClCompile Include="..\..\src\F3DEX2.cpp" />
+    <ClCompile Include="..\..\src\F3DPD.cpp" />
+    <ClCompile Include="..\..\src\F3DWRUS.cpp" />
+    <ClCompile Include="..\..\src\L3D.cpp" />
+    <ClCompile Include="..\..\src\L3DEX.cpp" />
+    <ClCompile Include="..\..\src\L3DEX2.cpp" />
+    <ClCompile Include="..\..\src\S2DEX.cpp" />
+    <ClCompile Include="..\..\src\S2DEX2.cpp" />
+    <ClCompile Include="..\..\src\GLSLCombiner.cpp" />
+    <ClCompile Include="..\..\src\windows\CommonAPIImpl_windows.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_mupenplus|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_mupenplus|Win32'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="windows\Config_windows.cpp">
+    <ClCompile Include="..\..\src\windows\Config_windows.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_mupenplus|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_mupenplus|Win32'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="windows\GLFunctions.cpp" />
-    <ClCompile Include="windows\GLideN64_windows.cpp">
+    <ClCompile Include="..\..\src\windows\GLFunctions.cpp" />
+    <ClCompile Include="..\..\src\windows\GLideN64_windows.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_mupenplus|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_mupenplus|Win32'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="windows\OpenGL_windows.cpp">
+    <ClCompile Include="..\..\src\windows\OpenGL_windows.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_mupenplus|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_mupenplus|Win32'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="windows\ZilmarAPIImpl_windows.cpp">
+    <ClCompile Include="..\..\src\windows\ZilmarAPIImpl_windows.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_mupenplus|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_mupenplus|Win32'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="ZilmarPluginAPI.cpp">
+    <ClCompile Include="..\..\src\ZilmarPluginAPI.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_mupenplus|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_mupenplus|Win32'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="ZSort.cpp" />
+    <ClCompile Include="..\..\src\ZSort.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="3DMath.h" />
-    <ClInclude Include="Combiner.h" />
-    <ClInclude Include="Config.h" />
-    <ClInclude Include="convert.h" />
-    <ClInclude Include="CRC.h" />
-    <ClInclude Include="Debug.h" />
-    <ClInclude Include="DepthBuffer.h" />
-    <ClInclude Include="F3DEX2CBFD.h" />
-    <ClInclude Include="F3DSWSE.h" />
-    <ClInclude Include="FrameBuffer.h" />
-    <ClInclude Include="GBI.h" />
-    <ClInclude Include="gDP.h" />
-    <ClInclude Include="glext.h" />
-    <ClInclude Include="GLideN64.h" />
-    <ClInclude Include="GLideNHQ\Ext_TxFilter.h" />
-    <ClInclude Include="gSP.h" />
-    <ClInclude Include="Keys.h" />
-    <ClInclude Include="Log.h" />
-    <ClInclude Include="mupenplus\GLideN64_mupenplus.h">
+    <ClInclude Include="..\..\src\3DMath.h" />
+    <ClInclude Include="..\..\src\Combiner.h" />
+    <ClInclude Include="..\..\src\Config.h" />
+    <ClInclude Include="..\..\src\convert.h" />
+    <ClInclude Include="..\..\src\CRC.h" />
+    <ClInclude Include="..\..\src\Debug.h" />
+    <ClInclude Include="..\..\src\DepthBuffer.h" />
+    <ClInclude Include="..\..\src\F3DEX2CBFD.h" />
+    <ClInclude Include="..\..\src\F3DSWSE.h" />
+    <ClInclude Include="..\..\src\FrameBuffer.h" />
+    <ClInclude Include="..\..\src\GBI.h" />
+    <ClInclude Include="..\..\src\gDP.h" />
+    <ClInclude Include="..\..\src\glext.h" />
+    <ClInclude Include="..\..\src\GLideN64.h" />
+    <ClInclude Include="..\..\src\GLideNHQ\Ext_TxFilter.h" />
+    <ClInclude Include="..\..\src\gSP.h" />
+    <ClInclude Include="..\..\src\Keys.h" />
+    <ClInclude Include="..\..\src\Log.h" />
+    <ClInclude Include="..\..\src\mupenplus\GLideN64_mupenplus.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClInclude>
-    <ClInclude Include="N64.h" />
-    <ClInclude Include="OpenGL.h" />
-    <ClInclude Include="PluginAPI.h" />
-    <ClInclude Include="PostProcessor.h" />
-    <ClInclude Include="RDP.h" />
-    <ClInclude Include="RSP.h" />
-    <ClInclude Include="Shaders.h" />
-    <ClInclude Include="TextDrawer.h" />
-    <ClInclude Include="Textures.h" />
-    <ClInclude Include="Turbo3D.h" />
-    <ClInclude Include="Types.h" />
-    <ClInclude Include="VI.h" />
-    <ClInclude Include="F3D.h" />
-    <ClInclude Include="F3DDKR.h" />
-    <ClInclude Include="F3DEX.h" />
-    <ClInclude Include="F3DEX2.h" />
-    <ClInclude Include="F3DPD.h" />
-    <ClInclude Include="F3DWRUS.h" />
-    <ClInclude Include="L3D.h" />
-    <ClInclude Include="L3DEX.h" />
-    <ClInclude Include="L3DEX2.h" />
-    <ClInclude Include="S2DEX.h" />
-    <ClInclude Include="S2DEX2.h" />
-    <ClInclude Include="GLSLCombiner.h" />
-    <ClInclude Include="windows\GLFunctions.h" />
-    <ClInclude Include="windows\GLideN64_windows.h" />
-    <ClInclude Include="ZilmarGFX_1_3.h">
+    <ClInclude Include="..\..\src\N64.h" />
+    <ClInclude Include="..\..\src\OpenGL.h" />
+    <ClInclude Include="..\..\src\PluginAPI.h" />
+    <ClInclude Include="..\..\src\PostProcessor.h" />
+    <ClInclude Include="..\..\src\RDP.h" />
+    <ClInclude Include="..\..\src\RSP.h" />
+    <ClInclude Include="..\..\src\Shaders.h" />
+    <ClInclude Include="..\..\src\TextDrawer.h" />
+    <ClInclude Include="..\..\src\Textures.h" />
+    <ClInclude Include="..\..\src\Turbo3D.h" />
+    <ClInclude Include="..\..\src\Types.h" />
+    <ClInclude Include="..\..\src\VI.h" />
+    <ClInclude Include="..\..\src\F3D.h" />
+    <ClInclude Include="..\..\src\F3DDKR.h" />
+    <ClInclude Include="..\..\src\F3DEX.h" />
+    <ClInclude Include="..\..\src\F3DEX2.h" />
+    <ClInclude Include="..\..\src\F3DPD.h" />
+    <ClInclude Include="..\..\src\F3DWRUS.h" />
+    <ClInclude Include="..\..\src\L3D.h" />
+    <ClInclude Include="..\..\src\L3DEX.h" />
+    <ClInclude Include="..\..\src\L3DEX2.h" />
+    <ClInclude Include="..\..\src\S2DEX.h" />
+    <ClInclude Include="..\..\src\S2DEX2.h" />
+    <ClInclude Include="..\..\src\GLSLCombiner.h" />
+    <ClInclude Include="..\..\src\windows\GLFunctions.h" />
+    <ClInclude Include="..\..\src\windows\GLideN64_windows.h" />
+    <ClInclude Include="..\..\src\ZilmarGFX_1_3.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_mupenplus|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_mupenplus|Win32'">true</ExcludedFromBuild>
     </ClInclude>
-    <ClInclude Include="ZSort.h" />
+    <ClInclude Include="..\..\src\ZSort.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
