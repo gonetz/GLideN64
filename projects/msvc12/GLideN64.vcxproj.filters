@@ -131,9 +131,6 @@
     <ClCompile Include="..\..\src\common\CommonAPIImpl_common.cpp">
       <Filter>Source Files\common</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\common\ZilmarAPIImpl_common.cpp">
-      <Filter>Source Files\common</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\mupenplus\CommonAPIImpl_mupenplus.cpp">
       <Filter>Source Files\mupenplus</Filter>
     </ClCompile>
