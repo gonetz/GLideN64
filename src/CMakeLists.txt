@@ -57,7 +57,7 @@ if(MUPENPLUSAPI)
 	mupenplus/OpenGL_mupenplus.cpp
   )
   set(GLideN64_SOURCES_WIN ${GLideN64_SOURCES_UNIX}
-	windows/GLFunctions.cpp
+	windows/GLFunctions_windows.cpp
   )
   set(GLideN64_DLL_NAME mupen64plus-video-GLideN64)
 else(MUPENPLUSAPI)

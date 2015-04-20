@@ -146,9 +146,6 @@
     <ClCompile Include="..\..\src\windows\CommonAPIImpl_windows.cpp">
       <Filter>Source Files\windows</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\windows\GLFunctions.cpp">
-      <Filter>Source Files\windows</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\windows\GLideN64_windows.cpp">
       <Filter>Source Files\windows</Filter>
     </ClCompile>
@@ -190,6 +187,9 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Keys.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\windows\GLFunctions_windows.cpp">
+      <Filter>Source Files\windows</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
