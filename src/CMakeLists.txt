@@ -114,15 +114,12 @@ if(SDL)
   )
 endif(SDL)
 
-SET( ENV{FREETYPE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/../freetype )
+SET( ENV{FREETYPE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/../../freetype )
 FIND_PACKAGE( Freetype REQUIRED )
 include_directories( ${FREETYPE_INCLUDE_DIRS} )
 
 if(OPT)
 	add_definitions(
-	-D__CRC_OPT
-	-D__HASHMAP_OPT
-	-D__TRIBUFFER_OPT
 	-D__VEC4_OPT
 	)
 endif(OPT)
