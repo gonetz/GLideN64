@@ -1,3 +1,23 @@
+GLideN64 LICENSE
+------------------------------------
+
+GLideN64 is licensed under the GNU General Public License version 2.
+
+The author of GLideN64 is Sergey Lipskiy (c) 2014-2015
+
+Credits:
+* The project started from sources of glN64 project, author Orkin.
+* The project contains source code fragments of glN64 ported to Android
+  by yongzh (freeman.yong@gmail.com). The original source code of gles2n64 is available at:
+  http://code.google.com/p/gles2n64/
+* Some ucodes ported from sources of Glide64 project, author Sergey Lipskiy
+* LLE code ported from z64 OpenGL LLE plugin, author ziggy.
+* Bloom is based on shaders by Nathaniel Meyer, Copyright:Nutty Software, www.nutty.ca.
+* GLideNHQ hi-res textures library is OpenGL port of GlideHQ library.
+  Author of GlideHQ is Hiroshi Morii aka KoolSmoky, Copyright (C) 2007.
+  Author of the GLideNHQ port is Sergey Lipskiy.
+
+
 		    GNU GENERAL PUBLIC LICENSE  
 		       Version 2, June 1991  
   

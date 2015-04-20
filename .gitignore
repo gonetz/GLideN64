@@ -2,7 +2,6 @@ backup/
 Debug*/
 Release*/
 build*/
-gles2n64/
 Roms/
 *.ncb
 *.suo
