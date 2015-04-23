@@ -647,7 +647,6 @@ void _updateCachedTexture(const GHQTexInfo & _info, CachedTexture *_pTexture)
 		case GL_RGB:
 		case GL_RGBA4:
 		case GL_RGB5_A1:
-		case GL_LUMINANCE8_ALPHA8:
 		_pTexture->textureBytes <<= 1;
 		break;
 		default:
