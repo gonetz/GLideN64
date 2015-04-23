@@ -1,6 +1,7 @@
-#include "GLideN64_MupenPlus.h"
+#include "GLideN64_mupenplus.h"
 #include <assert.h>
 #include <errno.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include "../Config.h"

@@ -1,4 +1,4 @@
-#include "GLideN64_MupenPlus.h"
+#include "GLideN64_mupenplus.h"
 #include <stdio.h>
 
 #include "../GLideN64.h"
