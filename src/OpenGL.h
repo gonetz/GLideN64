@@ -20,6 +20,7 @@
 #include <GLES3/gl31.h>
 #include <GLES3/gl3ext.h>
 #define GLESX
+#define GL_IMAGE_TEXTURES_SUPPORT
 #else
 #define GL_GLEXT_PROTOTYPES
 #if defined(OS_MAC_OS_X)

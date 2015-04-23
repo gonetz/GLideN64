@@ -1184,7 +1184,13 @@ void OGLRender::_initExtensions()
 #ifdef GL_IMAGE_TEXTURES_SUPPORT
 	GLint minorVersion = 0;
 	glGetIntegerv(GL_MINOR_VERSION, &minorVersion);
+#ifndef GLESX
 	m_bImageTexture = (majorVersion >= 4) && (minorVersion >= 3) && (glBindImageTexture != NULL);
+#elif defined(GLES3)
+	m_bImageTexture = (majorVersion >= 3) && (minorVersion >= 1) && (glBindImageTexture != NULL);
+#else
+	m_bImageTexture = false;
+#endif
 #else
 	m_bImageTexture = false;
 #endif
