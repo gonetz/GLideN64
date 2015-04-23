@@ -16,6 +16,10 @@
 #define GL_DRAW_FRAMEBUFFER GL_FRAMEBUFFER
 #define GL_READ_FRAMEBUFFER GL_FRAMEBUFFER
 #define GLESX
+#elif defined(GLES3)
+#include <GLES3/gl31.h>
+#include <GLES3/gl3ext.h>
+#define GLESX
 #else
 #define GL_GLEXT_PROTOTYPES
 #if defined(OS_MAC_OS_X)
