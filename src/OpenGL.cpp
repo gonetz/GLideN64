@@ -578,12 +578,16 @@ void OGLRender::_updateStates(RENDER_STATE _renderState) const
 			_updateDepthUpdate();
 
 			glEnable(GL_DEPTH_TEST);
+#ifndef GLESX
 			if (!GBI.isNoN())
 				glDisable(GL_DEPTH_CLAMP);
+#endif
 		} else {
 			glDisable(GL_DEPTH_TEST);
+#ifndef GLESX
 			if (!GBI.isNoN())
 				glEnable(GL_DEPTH_CLAMP);
+#endif
 		}
 	}
 

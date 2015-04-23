@@ -15,6 +15,7 @@
 #include <GLES2/gl2ext.h>
 #define GL_DRAW_FRAMEBUFFER GL_FRAMEBUFFER
 #define GL_READ_FRAMEBUFFER GL_FRAMEBUFFER
+#define GLESX
 #else
 #define GL_GLEXT_PROTOTYPES
 #if defined(OS_MAC_OS_X)

@@ -176,6 +176,7 @@ void GBIInfo::_makeCurrent(MicrocodeInfo * _pCurrent)
 			case F3DEX2CBFD:F3DEX2CBFD_Init(); break;
 		}
 
+#ifndef GLESX
 		if (m_pCurrent->NoN) {
 			// Disable near and far plane clipping
 			glEnable(GL_DEPTH_CLAMP);
@@ -185,7 +186,9 @@ void GBIInfo::_makeCurrent(MicrocodeInfo * _pCurrent)
 			glDisable(GL_DEPTH_CLAMP);
 			glDisable(GL_CLIP_DISTANCE0);
 		}
+#endif
 	} else if (m_pCurrent->NoN != _pCurrent->NoN) {
+#ifndef GLESX
 		if (_pCurrent->NoN) {
 			// Disable near and far plane clipping
 			glEnable(GL_DEPTH_CLAMP);
@@ -196,6 +199,7 @@ void GBIInfo::_makeCurrent(MicrocodeInfo * _pCurrent)
 			glDisable(GL_DEPTH_CLAMP);
 			glDisable(GL_CLIP_DISTANCE0);
 		}
+#endif
 	}
 	m_pCurrent = _pCurrent;
 }
