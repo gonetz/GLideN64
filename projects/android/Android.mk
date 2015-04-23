@@ -59,6 +59,7 @@ LOCAL_SRC_FILES :=			\
 	$(SRCDIR)/mupenplus/MupenPlusAPIImpl.cpp	\
 	$(SRCDIR)/mupenplus/OpenGL_mupenplus.cpp	\
 	$(SRCDIR)/TextDrawerStub.cpp	\
+	$(SRCDIR)/TxFilterStub.cpp	\
 
 LOCAL_CFLAGS :=         \
     $(COMMON_CFLAGS)    \
