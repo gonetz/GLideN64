@@ -1147,6 +1147,8 @@ bool DepthBufferToRDRAM::CopyToRDRAM( u32 _address) {
 bool FrameBuffer_CopyDepthBuffer( u32 address ) {
 #ifndef GLES2
 	return g_dbToRDRAM.CopyToRDRAM(address);
+#else
+	return false;
 #endif
 }
 
