@@ -58,7 +58,7 @@ LOCAL_SRC_FILES :=			\
 	$(SRCDIR)/mupenplus/Config_mupenplus.cpp	\
 	$(SRCDIR)/mupenplus/MupenPlusAPIImpl.cpp	\
 	$(SRCDIR)/mupenplus/OpenGL_mupenplus.cpp	\
-#	$(SRCDIR)/TextDrawer.cpp	\
+	$(SRCDIR)/TextDrawerStub.cpp	\
 
 LOCAL_CFLAGS :=         \
     $(COMMON_CFLAGS)    \
