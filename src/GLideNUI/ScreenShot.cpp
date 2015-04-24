@@ -11,7 +11,7 @@ EXPORT void CALL SaveScreenshot(const char * _folder, const char * _name, int _w
 	const char * bmp = "bmp";
 	const char * jpg = "jpg";
 	const char * fileExt = config.texture.screenShotFormat == 0 ? bmp : jpg;
-	QString folderName(_folder);
+	QString folderName = QString::fromLocal8Bit(_folder);
 	QDir folder;
 	if (!folder.exists(folderName) && !folder.mkpath(folderName))
 		return;
