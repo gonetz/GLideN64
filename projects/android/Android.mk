@@ -3,7 +3,7 @@ LOCAL_PATH := $(call my-dir)
 include $(CLEAR_VARS)
 SRCDIR := ../../src
 
-LOCAL_MODULE := GLideN64es
+LOCAL_MODULE := gles2gliden64
 LOCAL_SHARED_LIBRARIES := ae-imports SDL2 core
 LOCAL_STATIC_LIBRARIES := cpufeatures
 LOCAL_ARM_MODE := arm
@@ -12,6 +12,7 @@ LOCAL_C_INCLUDES :=         \
     $(M64P_API_INCLUDES)    \
     $(SDL_INCLUDES)         \
     $(AE_BRIDGE_INCLUDES)   \
+    $(LOCAL_PATH)/$(SRCDIR)        \
     $(LOCAL_PATH)/$(SRCDIR)/inc        \
 
 LOCAL_SRC_FILES :=			\
@@ -48,7 +49,6 @@ LOCAL_SRC_FILES :=			\
 	$(SRCDIR)/RSP.cpp		\
 	$(SRCDIR)/S2DEX2.cpp		\
 	$(SRCDIR)/S2DEX.cpp		\
-	$(SRCDIR)/TextDrawer.cpp	\
 	$(SRCDIR)/Textures.cpp		\
 	$(SRCDIR)/Turbo3D.cpp		\
 	$(SRCDIR)/VI.cpp		\
@@ -58,23 +58,24 @@ LOCAL_SRC_FILES :=			\
 	$(SRCDIR)/mupenplus/Config_mupenplus.cpp	\
 	$(SRCDIR)/mupenplus/MupenPlusAPIImpl.cpp	\
 	$(SRCDIR)/mupenplus/OpenGL_mupenplus.cpp	\
+#	$(SRCDIR)/TextDrawer.cpp	\
 
 LOCAL_CFLAGS :=         \
     $(COMMON_CFLAGS)    \
     -D__VEC4_OPT        \
     -DANDROID           \
     -DUSE_SDL           \
-    -DGLES2             \
+    -DGLES3             \
     -DMUPENPLUSAPI      \
     -fsigned-char       \
     #-DSDL_NO_COMPAT     \
     
-LOCAL_CPPFLAGS := $(COMMON_CPPFLAGS)
+LOCAL_CPPFLAGS := $(COMMON_CPPFLAGS) -std=c++11
     
 LOCAL_LDFLAGS := -Wl,-version-script,$(LOCAL_PATH)/video_api_export.ver
 
 LOCAL_LDLIBS :=         \
-    -lGLESv2            \
+    -lGLESv3            \
     -llog               \
 
 ifeq ($(TARGET_ARCH_ABI), armeabi-v7a)
