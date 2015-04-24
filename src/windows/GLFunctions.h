@@ -52,6 +52,7 @@ extern PFNGLGENBUFFERSPROC glGenBuffers;
 extern PFNGLBINDBUFFERPROC glBindBuffer;
 extern PFNGLBUFFERDATAPROC glBufferData;
 extern PFNGLMAPBUFFERPROC glMapBuffer;
+extern PFNGLMAPBUFFERRANGEPROC glMapBufferRange;
 extern PFNGLUNMAPBUFFERPROC glUnmapBuffer;
 extern PFNGLDELETEBUFFERSPROC glDeleteBuffers;
 extern PFNGLBINDIMAGETEXTUREPROC glBindImageTexture;

@@ -935,7 +935,9 @@ void FrameBufferToRDRAM::CopyToRDRAM(u32 _address)
 #ifndef GLES2
 	PBOBinder binder(GL_PIXEL_PACK_BUFFER, m_PBO);
 	glReadPixels(0, 0, VI.width, VI.height, GL_RGBA, GL_UNSIGNED_BYTE, 0);
-	GLubyte* pixelData = (GLubyte*)glMapBuffer(GL_PIXEL_PACK_BUFFER, GL_READ_ONLY);
+	isGLError();
+	GLubyte* pixelData = (GLubyte*)glMapBufferRange(GL_PIXEL_PACK_BUFFER, 0, VI.width * VI.height * 4, GL_MAP_READ_BIT);
+	isGLError();
 	if(pixelData == NULL)
 		return;
 #else
@@ -1101,7 +1103,7 @@ bool DepthBufferToRDRAM::CopyToRDRAM( u32 _address) {
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, m_FBO);
 	glReadPixels(0, 0, VI.width, VI.height, GL_DEPTH_COMPONENT, GL_FLOAT, 0);
 
-	GLubyte* pixelData = (GLubyte*)glMapBuffer(GL_PIXEL_PACK_BUFFER, GL_READ_ONLY);
+	GLubyte* pixelData = (GLubyte*)glMapBufferRange(GL_PIXEL_PACK_BUFFER, 0, VI.width * VI.height * 4, GL_MAP_READ_BIT);
 	if(pixelData == NULL)
 		return false;
 
@@ -1197,7 +1199,7 @@ void RDRAMtoFrameBuffer::CopyFromRDRAM( u32 _address, bool _bUseAlpha)
 #ifndef GLES2
 	PBOBinder binder(GL_PIXEL_UNPACK_BUFFER, m_PBO);
 	glBufferData(GL_PIXEL_UNPACK_BUFFER, dataSize, NULL, GL_DYNAMIC_DRAW);
-	GLubyte* ptr = (GLubyte*)glMapBuffer(GL_PIXEL_UNPACK_BUFFER, GL_WRITE_ONLY);
+	GLubyte* ptr = (GLubyte*)glMapBufferRange(GL_PIXEL_UNPACK_BUFFER, 0, dataSize, GL_MAP_WRITE_BIT);
 #else
 	m_PBO = (GLubyte*)malloc(dataSize);
 	GLubyte* ptr = m_PBO;

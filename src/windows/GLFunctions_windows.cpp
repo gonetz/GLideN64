@@ -54,6 +54,7 @@ PFNGLGENBUFFERSPROC glGenBuffers;
 PFNGLBINDBUFFERPROC glBindBuffer;
 PFNGLBUFFERDATAPROC glBufferData;
 PFNGLMAPBUFFERPROC glMapBuffer;
+PFNGLMAPBUFFERRANGEPROC glMapBufferRange;
 PFNGLUNMAPBUFFERPROC glUnmapBuffer;
 PFNGLDELETEBUFFERSPROC glDeleteBuffers;
 PFNGLBINDIMAGETEXTUREPROC glBindImageTexture;
@@ -120,6 +121,7 @@ void initGLFunctions()
 	glBindBuffer = (PFNGLBINDBUFFERPROC)wglGetProcAddress( "glBindBuffer" );
 	glBufferData = (PFNGLBUFFERDATAPROC)wglGetProcAddress( "glBufferData" );
 	glMapBuffer = (PFNGLMAPBUFFERPROC)wglGetProcAddress( "glMapBuffer" );
+	glMapBufferRange = (PFNGLMAPBUFFERRANGEPROC)wglGetProcAddress("glMapBufferRange");
 	glUnmapBuffer = (PFNGLUNMAPBUFFERPROC)wglGetProcAddress( "glUnmapBuffer" );
 	glDeleteBuffers = (PFNGLDELETEBUFFERSPROC)wglGetProcAddress( "glDeleteBuffers" );
 	glBindImageTexture = (PFNGLBINDIMAGETEXTUREPROC)wglGetProcAddress( "glBindImageTexture" );
