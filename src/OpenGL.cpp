@@ -836,7 +836,8 @@ bool texturedRectDepthBufferCopy(const OGLRender::TexturedRectParams & _params)
 static
 bool texturedRectCopyToItself(const OGLRender::TexturedRectParams & _params)
 {
-	if (gSP.textureTile[0]->frameBuffer == frameBufferList().getCurrent())
+	FrameBuffer * pCurrent = frameBufferList().getCurrent();
+	if (pCurrent != NULL && pCurrent->m_size == G_IM_SIZ_8b && gSP.textureTile[0]->frameBuffer == pCurrent)
 		return true;
 	return texturedRectDepthBufferCopy(_params);
 }
