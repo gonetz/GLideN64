@@ -164,7 +164,6 @@ void Config_LoadConfig()
 	config.frameBufferEmulation.detectCFB = ConfigGetParamBool(g_configVideoGliden64, "EnableDetectCFB");
 	config.frameBufferEmulation.N64DepthCompare = ConfigGetParamBool(g_configVideoGliden64, "EnableN64DepthCompare");
 	config.frameBufferEmulation.validityCheckMethod = ConfigGetParamBool(g_configVideoGliden64, "ValidityCheckMethod");
-	config.generalEmulation.hacks = 0;
 	//#Texture filter settings
 	config.textureFilter.txFilterMode = ConfigGetParamInt(g_configVideoGliden64, "txFilterMode");
 	config.textureFilter.txEnhancementMode = ConfigGetParamInt(g_configVideoGliden64, "txEnhancementMode");
