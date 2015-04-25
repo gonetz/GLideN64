@@ -58,30 +58,30 @@ bool OGLVideoWindows::_start()
 		hWnd = GetActiveWindow();
 
 	if ((hDC = GetDC( hWnd )) == NULL) {
-		MessageBox( hWnd, "Error while getting a device context!", pluginName, MB_ICONERROR | MB_OK );
+		MessageBox( hWnd, L"Error while getting a device context!", pluginNameW, MB_ICONERROR | MB_OK );
 		return false;
 	}
 
 	if ((pixelFormat = ChoosePixelFormat(hDC, &pfd )) == 0) {
-		MessageBox( hWnd, "Unable to find a suitable pixel format!", pluginName, MB_ICONERROR | MB_OK );
+		MessageBox( hWnd, L"Unable to find a suitable pixel format!", pluginNameW, MB_ICONERROR | MB_OK );
 		_stop();
 		return false;
 	}
 
 	if ((SetPixelFormat(hDC, pixelFormat, &pfd )) == FALSE) {
-		MessageBox( hWnd, "Error while setting pixel format!", pluginName, MB_ICONERROR | MB_OK );
+		MessageBox( hWnd, L"Error while setting pixel format!", pluginNameW, MB_ICONERROR | MB_OK );
 		_stop();
 		return false;
 	}
 
 	if ((hRC = wglCreateContext(hDC)) == NULL) {
-		MessageBox( hWnd, "Error while creating OpenGL context!", pluginName, MB_ICONERROR | MB_OK );
+		MessageBox( hWnd, L"Error while creating OpenGL context!", pluginNameW, MB_ICONERROR | MB_OK );
 		_stop();
 		return false;
 	}
 
 	if ((wglMakeCurrent(hDC, hRC)) == FALSE) {
-		MessageBox( hWnd, "Error while making OpenGL context current!", pluginName, MB_ICONERROR | MB_OK );
+		MessageBox( hWnd, L"Error while making OpenGL context current!", pluginNameW, MB_ICONERROR | MB_OK );
 		_stop();
 		return false;
 	}
@@ -143,7 +143,7 @@ void OGLVideoWindows::_changeWindow()
 		fullscreenMode.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT | DM_DISPLAYFREQUENCY;
 
 		if (ChangeDisplaySettings( &fullscreenMode, CDS_FULLSCREEN ) != DISP_CHANGE_SUCCESSFUL) {
-			MessageBox( NULL, "Failed to change display mode", pluginName, MB_ICONERROR | MB_OK );
+			MessageBox( NULL, L"Failed to change display mode", pluginNameW, MB_ICONERROR | MB_OK );
 			return;
 		}
 

@@ -35,10 +35,7 @@ void PluginAPI::FindPluginPath(wchar_t * _strPath)
 	if (_strPath == NULL)
 		return;
 #ifdef OS_WINDOWS
-	TCHAR  strDLLPath[PLUGIN_PATH_SIZE];
-	memset(strDLLPath, 0, sizeof(strDLLPath));
-	::GetModuleFileName((HINSTANCE)&__ImageBase, strDLLPath, PLUGIN_PATH_SIZE);
-	::mbstowcs(_strPath, strDLLPath, PLUGIN_PATH_SIZE);
+	::GetModuleFileName((HINSTANCE)&__ImageBase, _strPath, PLUGIN_PATH_SIZE);
 #else
 	// TODO: for other OS
 	return;
