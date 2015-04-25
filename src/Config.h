@@ -106,10 +106,11 @@ struct Config
 #define hack_noDepthFrameBuffers	(1<<1)  //Do not use depth buffers as texture
 #define hack_blurPauseScreen		(1<<2)  //Game copies frame buffer to depth buffer area, CPU blurs it. That image is used as background for pause screen.
 #define hack_scoreboard				(1<<3)  //Copy data from RDRAM to auxilary frame buffer. Scoreboard in Mario Tennis.
-#define hack_pilotWings				(1<<4)  //Special blend mode for PilotWings.
-#define hack_subscreen				(1<<5)  //Fix subscreen delay in Zelda OOT
-#define hack_legoRacers				(1<<6)  //LEGO racers course map
-#define hack_blastCorps				(1<<7)  //Blast Corps black polygons
+#define hack_scoreboardJ			(1<<4)  //Copy data from RDRAM to auxilary frame buffer. Scoreboard in Mario Tennis (J).
+#define hack_pilotWings				(1<<5)  //Special blend mode for PilotWings.
+#define hack_subscreen				(1<<6)  //Fix subscreen delay in Zelda OOT
+#define hack_legoRacers				(1<<7)  //LEGO racers course map
+#define hack_blastCorps				(1<<8)  //Blast Corps black polygons
 
 extern Config config;
 

@@ -309,6 +309,8 @@ void RSP_Init()
 		strstr(RSP.romname, (const char *)"MICKEY USA") != NULL
 		)
 		config.generalEmulation.hacks |= hack_blurPauseScreen;
+	else if (strstr(RSP.romname, (const char *)"MarioTennis64") != NULL)
+		config.generalEmulation.hacks |= hack_scoreboardJ;
 	else if (strstr(RSP.romname, (const char *)"MarioTennis") != NULL)
 		config.generalEmulation.hacks |= hack_scoreboard;
 	else if (strstr(RSP.romname, (const char *)"Pilot Wings64") != NULL)
