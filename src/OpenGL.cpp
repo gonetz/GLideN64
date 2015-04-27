@@ -138,7 +138,7 @@ void OGLVideo::swapBuffers()
 
 void OGLVideo::setCaptureScreen(const char * const _strDirectory)
 {
-	m_strScreenDirectory = _strDirectory;
+	::mbstowcs(m_strScreenDirectory, _strDirectory, PLUGIN_PATH_SIZE-1);
 	m_bCaptureScreen = true;
 }
 

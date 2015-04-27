@@ -165,7 +165,7 @@ protected:
 		m_bCaptureScreen(false), m_bToggleFullscreen(false), m_bResizeWindow(false), m_bFullscreen(false), m_bAdjustScreen(false),
 		m_width(0), m_height(0), m_heightOffset(0),
 		m_screenWidth(0), m_screenHeight(0), m_resizeWidth(0), m_resizeHeight(0),
-		m_scaleX(0), m_scaleY(0), m_adjustScale(0), m_strScreenDirectory(NULL)
+		m_scaleX(0), m_scaleY(0), m_adjustScale(0)
 	{}
 
 	void _setBufferSize();
@@ -182,7 +182,7 @@ protected:
 	f32 m_scaleX, m_scaleY;
 	f32 m_adjustScale;
 
-	const char * m_strScreenDirectory;
+	wchar_t m_strScreenDirectory[PLUGIN_PATH_SIZE];
 
 private:
 	OGLRender m_render;
