@@ -367,14 +367,13 @@ void FrameBufferList::saveBuffer(u32 _address, u16 _format, u16 _size, u16 _widt
 	if (VI.width == 0 || _height == 0)
 		return;
 
-	const bool bMarioTennisScoreboard = _isMarioTennisScoreboard();
 	OGLVideo & ogl = video();
 	if (m_pCurrent != NULL) {
 		if (gDP.colorImage.height > 0) {
 			if (m_pCurrent->m_width == VI.width)
 				gDP.colorImage.height = min(gDP.colorImage.height, VI.height);
 			m_pCurrent->m_endAddress = min(RDRAMSize, m_pCurrent->m_startAddress + (((m_pCurrent->m_width * gDP.colorImage.height) << m_pCurrent->m_size >> 1) - 1));
-			if (!config.frameBufferEmulation.copyFromRDRAM && !bMarioTennisScoreboard && !m_pCurrent->m_isDepthBuffer && m_pCurrent->m_RdramCrc == 0 && !m_pCurrent->m_cfb && !m_pCurrent->m_cleared && gDP.colorImage.height > 1) {
+			if (!config.frameBufferEmulation.copyFromRDRAM && !_isMarioTennisScoreboard() && !m_pCurrent->m_isDepthBuffer && m_pCurrent->m_RdramCrc == 0 && !m_pCurrent->m_cfb && !m_pCurrent->m_cleared && gDP.colorImage.height > 1) {
 				if (config.frameBufferEmulation.validityCheckMethod == 0) {
 					const u32 stride = m_pCurrent->m_width << m_pCurrent->m_size >> 1;
 					m_pCurrent->m_RdramCrc = textureCRC(RDRAM + m_pCurrent->m_startAddress, _cutHeight(m_pCurrent->m_startAddress, m_pCurrent->m_height, stride), stride);
@@ -425,6 +424,9 @@ void FrameBufferList::saveBuffer(u32 _address, u16 _format, u16 _size, u16 _widt
 		FrameBuffer & buffer = m_list.front();
 		buffer.init(_address, endAddress, _format, _size, _width, _height, _cfb);
 		m_pCurrent = &buffer;
+
+		if (_isMarioTennisScoreboard() || ((config.generalEmulation.hacks & hack_legoRacers) != 0 && _width == VI.width))
+			g_RDRAMtoFB.CopyFromRDRAM(m_pCurrent->m_startAddress + 4, false);
 	}
 
 	if (_address == gDP.depthImageAddress)
@@ -437,9 +439,6 @@ void FrameBufferList::saveBuffer(u32 _address, u16 _format, u16 _size, u16 _widt
 		address, (depthBuffer.top != NULL && depthBuffer.top->renderbuf > 0) ? depthBuffer.top->address : 0
 	);
 #endif
-
-	if (bMarioTennisScoreboard || ((config.generalEmulation.hacks & hack_legoRacers) != 0 && bNew && _width == VI.width))
-		g_RDRAMtoFB.CopyFromRDRAM(m_pCurrent->m_startAddress + 4, false);
 
 	m_pCurrent->m_isDepthBuffer = _address == gDP.depthImageAddress;
 	m_pCurrent->m_isPauseScreen = m_pCurrent->m_isOBScreen = false;
