@@ -281,8 +281,12 @@ void FrameBufferList::setBufferChanged()
 
 bool FrameBufferList::_isMarioTennisScoreboard()
 {
-	if ((config.generalEmulation.hacks&hack_scoreboard) != 0)
-		return m_pCurrent != NULL && (m_pCurrent->m_startAddress == 0x13ba50 || m_pCurrent->m_startAddress == 0x264430);
+	if ((config.generalEmulation.hacks&hack_scoreboard) != 0) {
+		if (VI.PAL)
+			return m_pCurrent != NULL && (m_pCurrent->m_startAddress == 0x13b480 || m_pCurrent->m_startAddress == 0x26a530);
+		else
+			return m_pCurrent != NULL && (m_pCurrent->m_startAddress == 0x13ba50 || m_pCurrent->m_startAddress == 0x264430);
+	}
 	return (config.generalEmulation.hacks&hack_scoreboardJ) != 0 && m_pCurrent != NULL && (m_pCurrent->m_startAddress == 0x134080 || m_pCurrent->m_startAddress == 0x1332f8);
 }
 

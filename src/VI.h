@@ -8,10 +8,11 @@ struct VIInfo
 	f32 rwidth, rheight;
 	u32 lastOrigin;
 	bool interlaced;
+	bool PAL;
 
 	VIInfo() :
 		width(0), widthPrev(0), height(0), real_height(0),
-		lastOrigin(-1), interlaced(false)
+		lastOrigin(-1), interlaced(false), PAL(false)
 	{}
 };
 
