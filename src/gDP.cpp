@@ -757,13 +757,13 @@ void gDPFillRectangle( s32 ulx, s32 uly, s32 lrx, s32 lry )
 		// If color is not depth clear color, that is most likely the case
 		if (gDP.fillColor.color == DepthClearColor) {
 			gDPFillRDRAM(gDP.colorImage.address, ulx, uly, lrx, lry, gDP.colorImage.width, gDP.colorImage.size, gDP.fillColor.color);
-			render.clearDepthBuffer(lrx - ulx >= gDP.scissor.lrx - gDP.scissor.ulx && lry - uly >= gDP.scissor.lry - gDP.scissor.uly);
+			render.clearDepthBuffer();
 			return;
 		}
 	} else if (gDP.fillColor.color == DepthClearColor && gDP.otherMode.cycleType == G_CYC_FILL) {
 		depthBufferList().saveBuffer(gDP.colorImage.address);
 		gDPFillRDRAM(gDP.colorImage.address, ulx, uly, lrx, lry, gDP.colorImage.width, gDP.colorImage.size, gDP.fillColor.color);
-		render.clearDepthBuffer(lrx - ulx == gDP.scissor.lrx - gDP.scissor.ulx && lry - uly == gDP.scissor.lry - gDP.scissor.uly);
+		render.clearDepthBuffer();
 		return;
 	}
 

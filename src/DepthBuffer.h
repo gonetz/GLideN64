@@ -38,7 +38,7 @@ public:
 	void destroy();
 	void saveBuffer(u32 _address);
 	void removeBuffer(u32 _address);
-	void clearBuffer(bool _fullsize);
+	void clearBuffer();
 	void setNotCleared();
 	DepthBuffer *findBuffer(u32 _address);
 	DepthBuffer * getCurrent() const {return m_pCurrent;}
