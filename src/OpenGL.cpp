@@ -1031,10 +1031,13 @@ void OGLRender::drawTexturedRect(const TexturedRectParams & _params)
 	} texST[2] = { { 0, 0, 0, 0 }, { 0, 0, 0, 0 } }; //struct for texture coordinates
 
 	if (currentCombiner()->usesT0() && cache.current[0] && gSP.textureTile[0]) {
-		texST[0].s0 = _params.uls * cache.current[0]->shiftScaleS - gSP.textureTile[0]->fuls;
-		texST[0].t0 = _params.ult * cache.current[0]->shiftScaleT - gSP.textureTile[0]->fult;
-		texST[0].s1 = (_params.lrs + 1.0f) * cache.current[0]->shiftScaleS - gSP.textureTile[0]->fuls;
-		texST[0].t1 = (_params.lrt + 1.0f) * cache.current[0]->shiftScaleT - gSP.textureTile[0]->fult;
+		f32 shiftScaleS = 1.0f;
+		f32 shiftScaleT = 1.0f;
+		getTextureShiftScale(0, cache, shiftScaleS, shiftScaleT);
+		texST[0].s0 = _params.uls * shiftScaleS - gSP.textureTile[0]->fuls;
+		texST[0].t0 = _params.ult * shiftScaleT - gSP.textureTile[0]->fult;
+		texST[0].s1 = (_params.lrs + 1.0f) * shiftScaleS - gSP.textureTile[0]->fuls;
+		texST[0].t1 = (_params.lrt + 1.0f) * shiftScaleT - gSP.textureTile[0]->fult;
 
 		if (cache.current[0]->frameBufferTexture) {
 			texST[0].s0 = cache.current[0]->offsetS + texST[0].s0;
@@ -1058,10 +1061,13 @@ void OGLRender::drawTexturedRect(const TexturedRectParams & _params)
 	}
 
 	if (currentCombiner()->usesT1() && cache.current[1] && gSP.textureTile[1]) {
-		texST[1].s0 = _params.uls * cache.current[1]->shiftScaleS - gSP.textureTile[1]->fuls;
-		texST[1].t0 = _params.ult * cache.current[1]->shiftScaleT - gSP.textureTile[1]->fult;
-		texST[1].s1 = (_params.lrs + 1.0f) * cache.current[1]->shiftScaleS - gSP.textureTile[1]->fuls;
-		texST[1].t1 = (_params.lrt + 1.0f) * cache.current[1]->shiftScaleT - gSP.textureTile[1]->fult;
+		f32 shiftScaleS = 1.0f;
+		f32 shiftScaleT = 1.0f;
+		getTextureShiftScale(1, cache, shiftScaleS, shiftScaleT);
+		texST[1].s0 = _params.uls * shiftScaleS - gSP.textureTile[1]->fuls;
+		texST[1].t0 = _params.ult * shiftScaleT - gSP.textureTile[1]->fult;
+		texST[1].s1 = (_params.lrs + 1.0f) * shiftScaleS - gSP.textureTile[1]->fuls;
+		texST[1].t1 = (_params.lrt + 1.0f) * shiftScaleT - gSP.textureTile[1]->fult;
 
 		if (cache.current[1]->frameBufferTexture) {
 			texST[1].s0 = cache.current[1]->offsetS + texST[1].s0;

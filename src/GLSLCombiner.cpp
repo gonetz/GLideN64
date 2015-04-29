@@ -1136,8 +1136,12 @@ void UniformBlock::updateTextureParameters()
 		texCacheScale[1] = cache.current[0]->scaleT;
 		texCacheOffset[0] = cache.current[0]->offsetS;
 		texCacheOffset[1] = cache.current[0]->offsetT;
-		texCacheShiftScale[0] = cache.current[0]->shiftScaleS;
-		texCacheShiftScale[1] = cache.current[0]->shiftScaleT;
+
+		f32 shiftScaleS = 1.0f;
+		f32 shiftScaleT = 1.0f;
+		getTextureShiftScale(0, cache, shiftScaleS, shiftScaleT);
+		texCacheShiftScale[0] = shiftScaleS;
+		texCacheShiftScale[1] = shiftScaleT;
 		texCacheFrameBuffer[0] = cache.current[0]->frameBufferTexture;
 	}
 	if (cache.current[1]) {
@@ -1145,8 +1149,12 @@ void UniformBlock::updateTextureParameters()
 		texCacheScale[5] = cache.current[1]->scaleT;
 		texCacheOffset[4] = cache.current[1]->offsetS;
 		texCacheOffset[5] = cache.current[1]->offsetT;
-		texCacheShiftScale[4] = cache.current[1]->shiftScaleS;
-		texCacheShiftScale[5] = cache.current[1]->shiftScaleT;
+
+		f32 shiftScaleS = 1.0f;
+		f32 shiftScaleT = 1.0f;
+		getTextureShiftScale(1, cache, shiftScaleS, shiftScaleT);
+		texCacheShiftScale[4] = shiftScaleS;
+		texCacheShiftScale[5] = shiftScaleT;
 		texCacheFrameBuffer[1] = cache.current[1]->frameBufferTexture;
 	}
 	memcpy(pData + m_textureBlock.m_offsets[tuCacheScale], texCacheScale, m_textureBlock.m_offsets[tuCacheOffset] - m_textureBlock.m_offsets[tuCacheScale]);

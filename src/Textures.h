@@ -89,6 +89,8 @@ private:
 	bool m_toggleDumpTex;
 };
 
+void getTextureShiftScale(u32 tile, const TextureCache & cache, f32 & shiftScaleS, f32 & shiftScaleT);
+
 inline TextureCache & textureCache()
 {
 	return TextureCache::get();

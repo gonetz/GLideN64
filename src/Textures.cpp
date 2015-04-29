@@ -1205,23 +1205,6 @@ void TextureCache::_clear()
 	m_textures.clear();
 }
 
-static
-void _updateShiftScale(u32 _t, CachedTexture *_pTexture)
-{
-	_pTexture->shiftScaleS = 1.0f;
-	_pTexture->shiftScaleT = 1.0f;
-
-	if (gSP.textureTile[_t]->shifts > 10)
-		_pTexture->shiftScaleS = (f32)(1 << (16 - gSP.textureTile[_t]->shifts));
-	else if (gSP.textureTile[_t]->shifts > 0)
-		_pTexture->shiftScaleS /= (f32)(1 << gSP.textureTile[_t]->shifts);
-
-	if (gSP.textureTile[_t]->shiftt > 10)
-		_pTexture->shiftScaleT = (f32)(1 << (16 - gSP.textureTile[_t]->shiftt));
-	else if (gSP.textureTile[_t]->shiftt > 0)
-		_pTexture->shiftScaleT /= (f32)(1 << gSP.textureTile[_t]->shiftt);
-}
-
 void TextureCache::update(u32 _t)
 {
 	if (config.textureFilter.txHiresEnable != 0 && config.textureFilter.txDump != 0) {
@@ -1291,7 +1274,6 @@ void TextureCache::update(u32 _t)
 	}
 
 	if (current[_t] != NULL && current[_t]->crc == crc) {
-		_updateShiftScale(_t, current[_t]);
 		activateTexture(_t, current[_t]);
 		return;
 	}
@@ -1313,7 +1295,6 @@ void TextureCache::update(u32 _t)
 			(current.size == gSP.textureTile[_t]->size)
 		);
 
-		_updateShiftScale(_t, &current);
 		activateTexture(_t, &current);
 		m_hits++;
 		return;
@@ -1365,11 +1346,28 @@ void TextureCache::update(u32 _t)
 	pCurrent->offsetS = 0.5f;
 	pCurrent->offsetT = 0.5f;
 
-	_updateShiftScale(_t, pCurrent);
-
 	_load(_t, pCurrent);
 	activateTexture( _t, pCurrent );
 
 	m_cachedBytes += pCurrent->textureBytes;
 	current[_t] = pCurrent;
+}
+
+void getTextureShiftScale(u32 t, const TextureCache & cache, f32 & shiftScaleS, f32 & shiftScaleT)
+{
+	if (gSP.textureTile[t]->textureMode != TEXTUREMODE_NORMAL) {
+		shiftScaleS = cache.current[t]->shiftScaleS;
+		shiftScaleT = cache.current[t]->shiftScaleT;
+		return;
+	}
+
+	if (gSP.textureTile[t]->shifts > 10)
+		shiftScaleS = (f32)(1 << (16 - gSP.textureTile[t]->shifts));
+	else if (gSP.textureTile[t]->shifts > 0)
+		shiftScaleS /= (f32)(1 << gSP.textureTile[t]->shifts);
+
+	if (gSP.textureTile[t]->shiftt > 10)
+		shiftScaleT = (f32)(1 << (16 - gSP.textureTile[t]->shiftt));
+	else if (gSP.textureTile[t]->shiftt > 0)
+		shiftScaleT /= (f32)(1 << gSP.textureTile[t]->shiftt);
 }
