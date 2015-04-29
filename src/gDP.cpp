@@ -376,9 +376,9 @@ bool CheckForFrameBufferTexture(u32 _address, u32 _bytes)
 	bool bRes = pBuffer != NULL;
 	if (bRes) {
 		if ((config.generalEmulation.hacks & hack_blurPauseScreen) != 0) {
-			if (gDP.colorImage.address == gDP.depthImageAddress && pBuffer->m_RdramCrc != 0) {
+			if (gDP.colorImage.address == gDP.depthImageAddress && pBuffer->m_copiedToRdram) {
 				memcpy(RDRAM + gDP.depthImageAddress, RDRAM + pBuffer->m_startAddress, (pBuffer->m_width*pBuffer->m_height) << pBuffer->m_size >> 1);
-				pBuffer->m_RdramCrc = 0;
+				pBuffer->m_copiedToRdram = false;
 				frameBufferList().getCurrent()->m_isPauseScreen = true;
 			}
 			if (pBuffer->m_isPauseScreen)
@@ -406,27 +406,12 @@ bool CheckForFrameBufferTexture(u32 _address, u32 _bytes)
 			bRes = false;
 		}
 
-		if (bRes && pBuffer->m_validityChecked != RSP.DList) {
-			if (pBuffer->m_cleared) {
-				const u32 color = pBuffer->m_fillcolor & 0xFFFEFFFE;
-				u32 wrongPixels = 0;
-				for (u32 i = pBuffer->m_startAddress + 4; i < pBuffer->m_endAddress; i += 4) {
-					if (((*(u32*)&RDRAM[i]) & 0xFFFEFFFE) != color)
-						++wrongPixels;
-				}
-				bRes = wrongPixels < (pBuffer->m_endAddress - pBuffer->m_startAddress)/100; // treshold level 1%
-				if (bRes)
-					pBuffer->m_validityChecked = RSP.DList;
-				else
-					frameBufferList().removeBuffer(pBuffer->m_startAddress);
-			} else if (pBuffer->m_RdramCrc != 0) {
-				const u32 crc = textureCRC(RDRAM + pBuffer->m_startAddress, pBuffer->m_height, pBuffer->m_width << pBuffer->m_size >> 1);
-				bRes = (pBuffer->m_RdramCrc == crc);
-				if (bRes)
-					pBuffer->m_validityChecked = RSP.DList;
-				else
-					frameBufferList().removeBuffer(pBuffer->m_startAddress);
-			}
+		if (bRes) {
+			bRes = pBuffer->isValid();
+			if (bRes)
+				pBuffer->m_validityChecked = RSP.DList;
+			else
+				frameBufferList().removeBuffer(pBuffer->m_startAddress);
 		}
 
 		if (bRes) {

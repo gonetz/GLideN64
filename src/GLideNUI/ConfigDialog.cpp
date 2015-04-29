@@ -132,11 +132,11 @@ void ConfigDialog::_init()
 		break;
 	}
 	switch (config.frameBufferEmulation.validityCheckMethod) {
-	case 0:
-		ui->checksumRadioButton->setChecked(true);
+	case Config::vcFill:
+		ui->validityMethodFillRadioButton->setChecked(true);
 		break;
-	case 1:
-		ui->fillRdramRadioButton->setChecked(true);
+	case Config::vcFingerprint:
+		ui->validityMethodFingerprintRadioButton->setChecked(true);
 		break;
 	}
 
@@ -259,10 +259,10 @@ void ConfigDialog::accept()
 	else if (ui->aspectAdjustRadioButton->isChecked())
 		config.frameBufferEmulation.aspect = Config::aAdjust;
 
-	if (ui->checksumRadioButton->isChecked())
-		config.frameBufferEmulation.validityCheckMethod = 0;
-	else if (ui->fillRdramRadioButton->isChecked())
-		config.frameBufferEmulation.validityCheckMethod = 1;
+	if (ui->validityMethodFillRadioButton->isChecked())
+		config.frameBufferEmulation.validityCheckMethod = Config::vcFill;
+	else if (ui->validityMethodFingerprintRadioButton->isChecked())
+		config.frameBufferEmulation.validityCheckMethod = Config::vcFingerprint;
 
 	// Texture filter settings
 	config.textureFilter.txFilterMode = ui->filterComboBox->currentIndex();

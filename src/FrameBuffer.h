@@ -2,6 +2,7 @@
 #define FRAMEBUFFER_H
 
 #include <list>
+#include <vector>
 
 #include "Types.h"
 #include "Textures.h"
@@ -17,10 +18,13 @@ struct FrameBuffer
 	void reinit(u16 _height);
 	void resolveMultisampledTexture();
 	CachedTexture * getTexture();
+	void copyRdram();
+	bool isValid() const;
 
 	u32 m_startAddress, m_endAddress;
-	u32 m_size, m_width, m_height, m_fillcolor, m_RdramCrc, m_validityChecked;
+	u32 m_size, m_width, m_height, m_fillcolor, m_validityChecked;
 	float m_scaleX, m_scaleY;
+	bool m_copiedToRdram;
 	bool m_cleared;
 	bool m_changed;
 	bool m_cfb;
@@ -37,6 +41,8 @@ struct FrameBuffer
 	CachedTexture *m_pResolveTexture;
 	GLuint m_resolveFBO;
 	bool m_resolved;
+
+	std::vector<u8> m_RdramCopy;
 
 private:
 	void _initTexture(u16 _format, u16 _size, CachedTexture *_pTexture);

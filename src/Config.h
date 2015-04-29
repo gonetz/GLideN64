@@ -53,6 +53,12 @@ struct Config
 		aTotal = 4
 	};
 
+	enum ValidityCheckMethod {
+		vcFingerprint = 0,
+		vcFill = 1,
+		vcTotal = 2
+	};
+
 	struct {
 		u32 enable;
 		u32 copyToRDRAM;
@@ -61,7 +67,7 @@ struct Config
 		u32 detectCFB;
 		u32 N64DepthCompare;
 		u32 aspect; // 0: stretch ; 1: 4/3 ; 2: 16/9; 3: adjust
-		u32 validityCheckMethod; // 0: checksum; 1: fill RDRAM
+		u32 validityCheckMethod; // 0=write fingerprint to the buffer, 1=fill whole buffer in RDRAM with test value
 	} frameBufferEmulation;
 
 	struct

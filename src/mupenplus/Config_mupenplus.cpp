@@ -76,7 +76,7 @@ bool Config_SetDefault()
 	assert(res == M64ERR_SUCCESS);
 	res = ConfigSetDefaultBool(g_configVideoGliden64, "EnableN64DepthCompare", 0, "Enable N64 depth compare instead of OpenGL standard one. Experimental.");
 	assert(res == M64ERR_SUCCESS);
-	res = ConfigSetDefaultBool(g_configVideoGliden64, "ValidityCheckMethod", 0, "Method to check validity of texture frame buffer (0=by checksum, 1=fill RDRAM.");
+	res = ConfigSetDefaultBool(g_configVideoGliden64, "ValidityCheckMethod", 0, "Method to check validity of auxiliary texture frame buffer (0=write fingerprint to the buffer, 1=fill whole buffer in RDRAM with test value)");
 	assert(res == M64ERR_SUCCESS);
 	//#Texture filter settings
 	res = ConfigSetDefaultInt(g_configVideoGliden64, "txFilterMode", 0, "Texture filter (0=none, 1=Smooth filtering 1, 2=Smooth filtering 2, 3=Smooth filtering 3, 4=Smooth filtering 4, 5=Sharp filtering 1, 6=Sharp filtering 2)");

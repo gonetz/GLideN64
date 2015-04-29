@@ -23,7 +23,7 @@
    <string>GLideN64 settings</string>
   </property>
   <property name="windowIcon">
-   <iconset resource="icon.qrc">
+   <iconset>
     <normaloff>:/Icon.png</normaloff>:/Icon.png</iconset>
   </property>
   <property name="modal">
@@ -36,7 +36,7 @@
    <item>
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="videoTab">
       <attribute name="title">
@@ -704,40 +704,40 @@
            </widget>
           </item>
           <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_10">
+           <layout class="QVBoxLayout" name="verticalLayout_9">
             <item>
              <widget class="QLabel" name="label_24">
               <property name="toolTip">
-               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Frame buffer validity check:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;For hardware frame buffer emulation it is essential to know that hardware frame buffer is still valid and can be used as texture. Frame buffer validity means that corresponded area in RDRAM is still used for that buffer. Plugin checks RDRAM context for changes before use of hardware buffer. There are two methods to check RDRAM context:&lt;/p&gt;&lt;p&gt;1. Checksum calculation. Plugin calculates checksum of RDRAM area for allocated frame buffer. Checksum change means that frame buffer is not valid. This method is harmless, but it is incompatible with some games, e.g. Mario Tennis. &lt;/p&gt;&lt;p&gt;2. Fill RDRAM. Plugin fills RDRAM area for allocated frame buffer with some color. Frame buffer is valid until all pixels inside the area are the same. This method is faster that the first one, but it may cause emulator's crash if actual frame buffer bounds are less than the ones detected by the plugin. &lt;/p&gt;&lt;p&gt;[Recommended: Checksum calculation]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Frame buffer validity check:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;For hardware, frame buffer emulation it is essential to know that hardware frame buffer is still valid and can be used as texture. Frame buffer validity means that corresponded area in RDRAM is still used for that buffer. Plugin checks RDRAM context for changes before use of hardware buffer. There are two methods to check RDRAM context:&lt;/p&gt;&lt;p&gt;1. Write fingerprint to RDRAM. The plugin writes smal portion of data (fingerprint) to buffer area in RDRAM. It helps plugin to detect changes in RDRAM context. Small portion of modifications makes possibility of game crash very low.&lt;/p&gt;&lt;p&gt;2. Fill RDRAM. Plugin fills RDRAM area for allocated frame buffer with some test value. Frame buffer is valid until all pixels inside the area match that value. it is recommended method for Legend of Zelda.&lt;br/&gt;Warning: This method may cause emulator's crash if actual frame buffer bounds are less than the ones detected by the plugin.&lt;/p&gt;&lt;p&gt;[Recommended: Write fingerprint to RDRAM]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
               </property>
               <property name="text">
-               <string>Validity check method:</string>
+               <string>Frame buffer validity check method:</string>
               </property>
              </widget>
             </item>
             <item>
-             <widget class="QRadioButton" name="checksumRadioButton">
+             <widget class="QRadioButton" name="validityMethodFingerprintRadioButton">
               <property name="toolTip">
-               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Frame buffer validity check:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;For hardware, frame buffer emulation it is essential to know that hardware frame buffer is still valid and can be used as texture. Frame buffer validity means that corresponded area in RDRAM is still used for that buffer. Plugin checks RDRAM context for changes before use of hardware buffer. There are two methods to check RDRAM context:&lt;/p&gt;&lt;p&gt;1. Checksum calculation. Plugin calculates checksum of RDRAM area for allocated frame buffer. Checksum change means that frame buffer is not valid. This method is harmless, but it is incompatible with some games, e.g. Mario Tennis. &lt;/p&gt;&lt;p&gt;2. Fill RDRAM. Plugin fills RDRAM area for allocated frame buffer with some color. Frame buffer is valid until all pixels inside the area are the same. This method is faster that the first one, but it may cause emulator's crash if actual frame buffer bounds are less than the ones detected by the plugin. &lt;/p&gt;&lt;p&gt;[Recommended: Checksum calculation]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Frame buffer validity check:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;For hardware, frame buffer emulation it is essential to know that hardware frame buffer is still valid and can be used as texture. Frame buffer validity means that corresponded area in RDRAM is still used for that buffer. Plugin checks RDRAM context for changes before use of hardware buffer. There are two methods to check RDRAM context:&lt;/p&gt;&lt;p&gt;1. Write fingerprint to RDRAM. The plugin writes smal portion of data (fingerprint) to buffer area in RDRAM. It helps plugin to detect changes in RDRAM context. Small portion of modifications makes possibility of game crash very low.&lt;/p&gt;&lt;p&gt;2. Fill RDRAM. Plugin fills RDRAM area for allocated frame buffer with some test value. Frame buffer is valid until all pixels inside the area match that value. it is recommended method for Legend of Zelda.&lt;br/&gt;Warning: This method may cause emulator's crash if actual frame buffer bounds are less than the ones detected by the plugin.&lt;/p&gt;&lt;p&gt;[Recommended: Write fingerprint to RDRAM]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
               </property>
               <property name="text">
-               <string>checksum</string>
+               <string>write fingerprint to RDRAM</string>
               </property>
               <attribute name="buttonGroup">
-               <string notr="true">validityCheckMethodButtonGroup</string>
+               <string notr="true">validityCheckbuttonGroup</string>
               </attribute>
              </widget>
             </item>
             <item>
-             <widget class="QRadioButton" name="fillRdramRadioButton">
+             <widget class="QRadioButton" name="validityMethodFillRadioButton">
               <property name="toolTip">
-               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Frame buffer validity check:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;For hardware, frame buffer emulation it is essential to know that hardware frame buffer is still valid and can be used as texture. Frame buffer validity means that corresponded area in RDRAM is still used for that buffer. Plugin checks RDRAM context for changes before use of hardware buffer. There are two methods to check RDRAM context:&lt;/p&gt;&lt;p&gt;1. Checksum calculation. Plugin calculates checksum of RDRAM area for allocated frame buffer. Checksum change means that frame buffer is not valid. This method is harmless, but it is incompatible with some games, e.g. Mario Tennis. &lt;/p&gt;&lt;p&gt;2. Fill RDRAM. Plugin fills RDRAM area for allocated frame buffer with some color. Frame buffer is valid until all pixels inside the area are the same. This method is faster that the first one, but it may cause emulator's crash if actual frame buffer bounds are less than the ones detected by the plugin. &lt;/p&gt;&lt;p&gt;[Recommended: Checksum calculation]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Frame buffer validity check:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;For hardware, frame buffer emulation it is essential to know that hardware frame buffer is still valid and can be used as texture. Frame buffer validity means that corresponded area in RDRAM is still used for that buffer. Plugin checks RDRAM context for changes before use of hardware buffer. There are two methods to check RDRAM context:&lt;/p&gt;&lt;p&gt;1. Write fingerprint to RDRAM. The plugin writes smal portion of data (fingerprint) to buffer area in RDRAM. It helps plugin to detect changes in RDRAM context. Small portion of modifications makes possibility of game crash very low.&lt;/p&gt;&lt;p&gt;2. Fill RDRAM. Plugin fills RDRAM area for allocated frame buffer with some test value. Frame buffer is valid until all pixels inside the area match that value. it is recommended method for Legend of Zelda.&lt;br/&gt;Warning: This method may cause emulator's crash if actual frame buffer bounds are less than the ones detected by the plugin.&lt;/p&gt;&lt;p&gt;[Recommended: Write fingerprint to RDRAM]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
               </property>
               <property name="text">
-               <string>fill RDRAM</string>
+               <string>fill buffer in RDRAM  with test value</string>
               </property>
               <attribute name="buttonGroup">
-               <string notr="true">validityCheckMethodButtonGroup</string>
+               <string notr="true">validityCheckbuttonGroup</string>
               </attribute>
              </widget>
             </item>
@@ -1278,9 +1278,7 @@
    </item>
   </layout>
  </widget>
- <resources>
-  <include location="icon.qrc"/>
- </resources>
+ <resources/>
  <connections>
   <connection>
    <sender>buttonBox</sender>
@@ -1396,10 +1394,10 @@
   </connection>
  </connections>
  <buttongroups>
-  <buttongroup name="aspectButtonGroup"/>
   <buttongroup name="bloomBlendModeButtonGroup"/>
   <buttongroup name="screenshotButtonGroup"/>
+  <buttongroup name="validityCheckbuttonGroup"/>
   <buttongroup name="bilinearButtonGroup"/>
-  <buttongroup name="validityCheckMethodButtonGroup"/>
+  <buttongroup name="aspectButtonGroup"/>
  </buttongroups>
 </ui>
