@@ -13,23 +13,27 @@ TEMPLATE = lib
 CONFIG += staticlib
 
 SOURCES += \
-    ConfigDialog.cpp \
-    GLideNUI.cpp \
-    FullscreenResolutions_windows.cpp \
-    Settings.cpp \
-    ScreenShot.cpp \
-    AboutDialog.cpp
+	ConfigDialog.cpp \
+	GLideNUI.cpp \
+	FullscreenResolutions_windows.cpp \
+	Settings.cpp \
+	ScreenShot.cpp \
+	AboutDialog.cpp
 
 HEADERS += \
-    ConfigDialog.h \
-    GLideNUI.h \
-    FullscreenResolutions.h \
-    Settings.h \
-    AboutDialog.h
+	ConfigDialog.h \
+	GLideNUI.h \
+	FullscreenResolutions.h \
+	Settings.h \
+	AboutDialog.h
 
 RESOURCES += \
-    icon.qrc
+	icon.qrc
 
 FORMS += \
-    configDialog.ui \
-    AboutDialog.ui
+	configDialog.ui \
+	AboutDialog.ui
+
+TRANSLATIONS = gliden64_fr.ts \
+			   gliden64_de.ts \
+			   gliden64_ru.ts

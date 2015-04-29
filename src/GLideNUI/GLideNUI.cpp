@@ -1,5 +1,6 @@
 #include <thread>
 #include <QApplication>
+#include <QTranslator>
 
 #include "GLideNUI.h"
 #include "AboutDialog.h"
@@ -25,6 +26,10 @@ int openConfigDialog(const wchar_t * _strFileName, bool & _accepted)
 	int argc = 0;
 	char * argv = 0;
 	QApplication a(argc, &argv);
+
+	QTranslator translator;
+	if (translator.load(getTranslationFile(), strIniFileName))
+		a.installTranslator(&translator);
 
 	ConfigDialog w;
 

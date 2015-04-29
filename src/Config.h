@@ -18,6 +18,8 @@ struct Config
 {
 	u32 version;
 
+	std::string translationFile;
+
 	struct
 	{
 		u32 fullscreen;

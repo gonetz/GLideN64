@@ -16,7 +16,7 @@ public:
 	explicit ConfigDialog(QWidget *parent = 0);
 	~ConfigDialog();
 
-	void setIniPath(const QString & _strIniPath) { m_strIniPath = _strIniPath; }
+	void setIniPath(const QString & _strIniPath);
 	bool isAccepted() const { return m_accepted; }
 
 public Q_SLOTS:
@@ -35,6 +35,7 @@ private slots:
 
 private:
 	void _init();
+	void _getTranslations(QStringList & _translationFiles) const;
 
 	Ui::ConfigDialog *ui;
 	QFont m_font;

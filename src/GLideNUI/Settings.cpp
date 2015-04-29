@@ -17,6 +17,8 @@ static const char * strCustomSettingsFileName = "GLideN64.custom.ini";
 static
 void _loadSettings(QSettings & settings)
 {
+	config.translationFile = settings.value("translation", config.translationFile.c_str()).toString().toLocal8Bit().constData();
+
 	settings.beginGroup("video");
 	config.video.fullscreenWidth = settings.value("fullscreenWidth", config.video.fullscreenWidth).toInt();
 	config.video.fullscreenHeight = settings.value("fullscreenHeight", config.video.fullscreenHeight).toInt();
@@ -113,6 +115,8 @@ void writeSettings(const QString & _strIniFolder)
 //	QSettings settings("Emulation", "GLideN64");
 	QSettings settings(_strIniFolder + "/" + strIniFileName, QSettings::IniFormat);
 	settings.setValue("version", config.version);
+
+	settings.setValue("translation", config.translationFile.c_str());
 
 	settings.beginGroup("video");
 	settings.setValue("fullscreenWidth", config.video.fullscreenWidth);
@@ -225,4 +229,9 @@ void loadCustomRomSettings(const QString & _strIniFolder, const char * _strRomNa
 	settings.beginGroup(romName);
 	_loadSettings(settings);
 	settings.endGroup();
+}
+
+QString getTranslationFile()
+{
+	return config.translationFile.c_str();
 }
