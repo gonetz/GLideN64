@@ -19,6 +19,7 @@ struct DepthBuffer
 	void bindDepthImageTexture();
 
 	u32 m_address, m_width;
+	u32 m_uly, m_lry; // Top and bottom bounds of fillrect command.
 	GLuint m_FBO;
 	CachedTexture *m_pDepthImageTexture;
 	CachedTexture *m_pDepthBufferTexture;
@@ -38,7 +39,7 @@ public:
 	void destroy();
 	void saveBuffer(u32 _address);
 	void removeBuffer(u32 _address);
-	void clearBuffer();
+	void clearBuffer(u32 _uly, u32 _lry);
 	void setNotCleared();
 	DepthBuffer *findBuffer(u32 _address);
 	DepthBuffer * getCurrent() const {return m_pCurrent;}

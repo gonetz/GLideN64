@@ -1106,9 +1106,9 @@ bool DepthBufferToRDRAM::CopyToRDRAM( u32 _address) {
 	f32 * ptr_src = (f32*)pixelData;
 	u16 *ptr_dst = (u16*)(RDRAM + address);
 	const u16 * const zLUT = depthBufferList().getZLUT();
-	const u32 height = _cutHeight(address, VI.height, pBuffer->m_width * 2);
+	const u32 height = _cutHeight(address, min(VI.height, pDepthBuffer->m_lry), pBuffer->m_width * 2);
 
-	for (u32 y = 0; y < height; ++y) {
+	for (u32 y = pDepthBuffer->m_uly; y < height; ++y) {
 		for (u32 x = 0; x < VI.width; ++x) {
 			f32 z = ptr_src[x + (height - y - 1)*VI.width];
 			u32 idx = 0x3FFFF;

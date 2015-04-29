@@ -59,7 +59,7 @@ public:
 	};
 	void drawTexturedRect(const TexturedRectParams & _params);
 	void drawText(const char *_pText, float x, float y);
-	void clearDepthBuffer();
+	void clearDepthBuffer(u32 _uly, u32 _lry);
 	void clearColorBuffer( float * _pColor );
 
 	int getTrianglesCount() const {return triangles.num;}

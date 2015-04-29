@@ -16,13 +16,15 @@ const GLuint ZlutImageUnit = 0;
 const GLuint TlutImageUnit = 1;
 const GLuint depthImageUnit = 2;
 
-DepthBuffer::DepthBuffer() : m_address(0), m_width(0), m_FBO(0), m_pDepthImageTexture(NULL), m_pDepthBufferTexture(NULL), m_cleared(false), m_pResolveDepthBufferTexture(NULL), m_resolved(false)
+DepthBuffer::DepthBuffer() : m_address(0), m_width(0), m_uly(0), m_lry(0),
+	m_FBO(0), m_pDepthImageTexture(NULL), m_pDepthBufferTexture(NULL),
+	m_cleared(false), m_pResolveDepthBufferTexture(NULL), m_resolved(false)
 {
 	glGenFramebuffers(1, &m_FBO);
 }
 
 DepthBuffer::DepthBuffer(DepthBuffer && _other) :
-	m_address(_other.m_address), m_width(_other.m_width),
+	m_address(_other.m_address), m_width(_other.m_width), m_uly(_other.m_uly), m_lry(_other.m_lry),
 	m_FBO(_other.m_FBO), m_pDepthImageTexture(_other.m_pDepthImageTexture), m_pDepthBufferTexture(_other.m_pDepthBufferTexture),
 	m_pResolveDepthBufferTexture(_other.m_pResolveDepthBufferTexture), m_resolved(_other.m_resolved)
 {
@@ -84,7 +86,7 @@ void DepthBuffer::initDepthImageTexture(FrameBuffer * _pBuffer)
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, _pBuffer->m_FBO);
 
-	depthBufferList().clearBuffer();
+	depthBufferList().clearBuffer(0, VI.height);
 #endif // GL_IMAGE_TEXTURES_SUPPORT
 }
 
@@ -306,11 +308,13 @@ void DepthBufferList::saveBuffer(u32 _address)
 
 }
 
-void DepthBufferList::clearBuffer()
+void DepthBufferList::clearBuffer(u32 _uly, u32 _lry)
 {
 	if (m_pCurrent == NULL)
 		return;
 	m_pCurrent->m_cleared = true;
+	m_pCurrent->m_uly = _uly;
+	m_pCurrent->m_lry = _lry;
 #ifdef GL_IMAGE_TEXTURES_SUPPORT
 	if (m_pCurrent->m_FBO == 0 || !video().getRender().isImageTexturesSupported() || config.frameBufferEmulation.N64DepthCompare == 0)
 		return;
