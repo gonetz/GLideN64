@@ -31,12 +31,12 @@
     <message>
         <location filename="AboutDialog.ui" line="120"/>
         <source>beta tester</source>
-        <translation type="unfinished">beta Tester</translation>
+        <translation type="unfinished">Beta-Tester</translation>
     </message>
     <message>
         <location filename="AboutDialog.ui" line="136"/>
         <source>Main funders</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Haupt-Finanzierer</translation>
     </message>
     <message>
         <location filename="AboutDialog.ui" line="158"/>
@@ -75,7 +75,7 @@
     </message>
     <message>
         <location filename="AboutDialog.ui" line="281"/>
-        <source>Funders</source>
+        <source>Finanzierer</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -216,7 +216,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location filename="AboutDialog.ui" line="443"/>
-        <source>Credits</source>
+        <source>Kredits</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -291,7 +291,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="configDialog.ui" line="127"/>
         <source>Stretch</source>
-        <translation type="unfinished">Verzerren</translation>
+        <translation type="unfinished">Strecken</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="140"/>
@@ -345,7 +345,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="configDialog.ui" line="346"/>
         <source>Texture bilinear filtering:</source>
-        <translation type="unfinished">Textur billiniare Filterung:</translation>
+        <translation type="unfinished">Bi-liniare Textur-Filterung:</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="356"/>
@@ -354,13 +354,13 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location filename="configDialog.ui" line="369"/>
-        <source>N64 3point</source>
+        <source>N64 3-Point</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="389"/>
         <source>Texture cache size:</source>
-        <translation type="unfinished">Texture cache Größe:</translation>
+        <translation type="unfinished">Textur Cache Größe:</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="415"/>
@@ -428,12 +428,12 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="configDialog.ui" line="606"/>
         <source>Emulate mip-mapping</source>
-        <translation type="unfinished">mip-mapping emulieren</translation>
+        <translation type="unfinished">Mip-Mapping emulieren</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="613"/>
         <source>Emulate noise</source>
-        <translation type="unfinished">noise emulieren</translation>
+        <translation type="unfinished">Noise emulieren</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="620"/>
@@ -448,7 +448,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="configDialog.ui" line="630"/>
         <source>Enable hardware lighting</source>
-        <translation type="unfinished">hardware Belichtung aktivieren</translation>
+        <translation type="unfinished">Hardware-Belichtung aktivieren</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="637"/>
@@ -458,12 +458,12 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="configDialog.ui" line="640"/>
         <source>Use custom per-game settings</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Nutze angepasste Spieleinstellungen</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="650"/>
         <source>Emulate frame buffer</source>
-        <translation type="unfinished">emuliere frame buffer</translation>
+        <translation type="unfinished">Frame Buffer emulieren</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="659"/>
@@ -473,7 +473,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="configDialog.ui" line="662"/>
         <source>Copy frame buffer to RDRAM</source>
-        <translation type="unfinished">Kopiere frame buffer in RDRAM</translation>
+        <translation type="unfinished">Kopiere den Frame Buffer in den RDRAM</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="669"/>
@@ -483,7 +483,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="configDialog.ui" line="672"/>
         <source>Render frame buffer as texture</source>
-        <translation type="unfinished">Rendere frame buffer als Textur</translation>
+        <translation type="unfinished">Rendere den Frame Buffer als Textur</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="679"/>
@@ -493,7 +493,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="configDialog.ui" line="682"/>
         <source>Detect CPU writes to the frame buffer</source>
-        <translation type="unfinished">Erkenne CPU writes in den frame buffer</translation>
+        <translation type="unfinished">Erkenne CPU-Writes in den Frame Buffer</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="689"/>
@@ -503,7 +503,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="configDialog.ui" line="692"/>
         <source>Copy depth buffer to RDRAM</source>
-        <translation type="unfinished">Kopiere depth buffer in RDRAM</translation>
+        <translation type="unfinished">Kopiere Depth Buffer in den RDRAM</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="699"/>
@@ -513,7 +513,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="configDialog.ui" line="702"/>
         <source>Emulate N64 depth compare</source>
-        <translation type="unfinished">emuliere N64 depth compare</translation>
+        <translation type="unfinished">N64 Depth Compare emulieren</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="711"/>
@@ -530,12 +530,12 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="configDialog.ui" line="724"/>
         <source>fill buffer in RDRAM  with test value</source>
-        <translation type="unfinished">Fülle buffer in RDRAM mit Testwert</translation>
+        <translation type="unfinished">Fülle Buffer in den RDRAM mit einem Testwert</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="737"/>
         <source>write fingerprint to RDRAM</source>
-        <translation type="unfinished">Schreibe Fingerabdruck in RDRAM</translation>
+        <translation type="unfinished">Schreibe einen Fingerabdruck in den RDRAM</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="756"/>
@@ -545,7 +545,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="configDialog.ui" line="762"/>
         <source>Texture enhancement</source>
-        <translation type="unfinished">Textur Verbesserungen</translation>
+        <translation type="unfinished">Textur-Verbesserungen</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="770"/>
@@ -579,7 +579,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="configDialog.ui" line="817"/>
         <source>Texture cache:</source>
-        <translation type="unfinished">Textur cache:</translation>
+        <translation type="unfinished">Textur-Cache:</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="857"/>
@@ -604,7 +604,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="configDialog.ui" line="884"/>
         <source>Use alpha channel fully</source>
-        <translation type="unfinished">Verwende Alphakanal ganz</translation>
+        <translation type="unfinished">Nutze vollen Alphakanal</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="891"/>
@@ -614,7 +614,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="configDialog.ui" line="894"/>
         <source>Alternative CRC calculation</source>
-        <translation type="unfinished">Alternative CRC calculation</translation>
+        <translation type="unfinished">Alternative CRC-Calculation</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="904"/>
@@ -705,7 +705,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="configDialog.ui" line="1067"/>
         <source>Compress texture cache</source>
-        <translation type="unfinished">Textur cache komprimieren</translation>
+        <translation type="unfinished">Textur-Cache komprimieren</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="1074"/>
@@ -715,7 +715,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="configDialog.ui" line="1077"/>
         <source>Save texture cache to hard disk</source>
-        <translation type="unfinished">Speichere textur cache auf der Fertplatte</translation>
+        <translation type="unfinished">Speichere Textur-Cache auf der Festplatte</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="1091"/>
@@ -730,7 +730,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="configDialog.ui" line="1111"/>
         <source>Bloom blend mode:</source>
-        <translation type="unfinished">Bloom Blendmodus:</translation>
+        <translation type="unfinished">Bloom-Modus:</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="1118"/>
