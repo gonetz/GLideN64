@@ -5,6 +5,7 @@
 #include <chrono>         // std::chrono::seconds
 #include "OpenGL.h"
 #include "Textures.h"
+#include "GLSLCombiner.h"
 #include "GBI.h"
 #include "RSP.h"
 #include "gDP.h"
@@ -1084,7 +1085,7 @@ void TextureCache::activateTexture(u32 _t, CachedTexture *_pTexture)
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 			}
-		} else if (bUseBilinear && config.generalEmulation.enableLOD != 0 && gSP.texture.level > gSP.texture.tile) { // Apply standard bilinear to first tile of mipmap texture
+		} else if (bUseBilinear && config.generalEmulation.enableLOD != 0 && currentCombiner()->usesLOD()) { // Apply standard bilinear to first tile of mipmap texture
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		} else { // Don't use texture filter. Texture will be filtered by 3 point filter shader
