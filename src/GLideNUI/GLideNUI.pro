@@ -36,4 +36,4 @@ FORMS += \
 
 TRANSLATIONS = gliden64_fr.ts \
 			   gliden64_de.ts \
-			   gliden64_ru.ts
+			   gliden64_it.ts
