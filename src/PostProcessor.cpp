@@ -329,7 +329,7 @@ PostProcessor & PostProcessor::get()
 	return processor;
 }
 
-void _setGLState(FrameBuffer * _pBuffer) {
+void _setGLState() {
 	glDisable(GL_DEPTH_TEST);
 	glDisable(GL_BLEND);
 
@@ -358,7 +358,12 @@ void PostProcessor::process(FrameBuffer * _pBuffer)
 	if (config.bloomFilter.enable == 0)
 		return;
 
-	_setGLState(_pBuffer);
+	if (_pBuffer == NULL || _pBuffer->m_postProcessed)
+		return;
+
+	_pBuffer->m_postProcessed = true;
+
+	_setGLState();
 	OGLVideo & ogl = video();
 
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, _pBuffer->m_FBO);
