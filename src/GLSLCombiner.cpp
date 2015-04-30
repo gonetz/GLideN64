@@ -515,7 +515,7 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 		strFragmentShader.append(fragment_shader_header_common_functions_notex);
 	}
 	strFragmentShader.append(fragment_shader_header_main);
-	const bool bUseLod = (m_nInputs & (1<<LOD_FRACTION)) > 0;
+	const bool bUseLod = usesLOD();
 	if (bUseLod) {
 		strFragmentShader.append("  lowp vec4 readtex0, readtex1; \n");
 		strFragmentShader.append("  lowp float lod_frac = mipmap(readtex0, readtex1);	\n");
