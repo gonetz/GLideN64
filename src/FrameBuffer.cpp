@@ -660,6 +660,7 @@ void FrameBufferList::renderBuffer(u32 _address)
 	}
 	GLint dstCoord[4] = { X0 + hOffset, vOffset + (GLint)(dstY0*dstScaleY), hOffset + X1, vOffset + (GLint)(dstY1*dstScaleY) };
 
+	ogl.getRender().updateScissor(pBuffer);
 	PostProcessor::get().process(pBuffer);
 	// glDisable(GL_SCISSOR_TEST) does not affect glBlitFramebuffer, at least on AMD
 	glScissor(0, 0, ogl.getScreenWidth(), ogl.getScreenHeight() + ogl.getHeightOffset());

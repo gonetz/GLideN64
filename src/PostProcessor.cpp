@@ -332,7 +332,6 @@ PostProcessor & PostProcessor::get()
 void _setGLState(FrameBuffer * _pBuffer) {
 	glDisable(GL_DEPTH_TEST);
 	glDisable(GL_BLEND);
-	glScissor(0, 0, _pBuffer->m_pTexture->realWidth, _pBuffer->m_pTexture->realHeight);
 
 	static const float vert[] =
 	{
@@ -351,7 +350,7 @@ void _setGLState(FrameBuffer * _pBuffer) {
 	glDisableVertexAttribArray(SC_NUMLIGHTS);
 	glViewport(0, 0, video().getWidth(), video().getHeight());
 	gSP.changed |= CHANGED_VIEWPORT | CHANGED_TEXTURE;
-	gDP.changed |= CHANGED_RENDERMODE | CHANGED_SCISSOR;
+	gDP.changed |= CHANGED_RENDERMODE;
 }
 
 void PostProcessor::process(FrameBuffer * _pBuffer)

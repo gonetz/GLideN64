@@ -492,23 +492,22 @@ void _adjustScissorX(f32 & _X0, f32 & _X1, float _scale)
 	_X1 = (_X1 - halfX) * _scale + halfX;
 }
 
-void OGLRender::_updateScissor() const
+void OGLRender::updateScissor(FrameBuffer * _pBuffer) const
 {
 	OGLVideo & ogl = video();
 	f32 scaleX, scaleY;
 	u32 heightOffset, screenHeight;
-	FrameBuffer * pCurrentBuffer = frameBufferList().getCurrent();
-	if (pCurrentBuffer == NULL) {
+	if (_pBuffer == NULL) {
 		scaleX = ogl.getScaleX();
 		scaleY = ogl.getScaleY();
 		heightOffset = ogl.getHeightOffset();
 		screenHeight = VI.height;
 	}
 	else {
-		scaleX = pCurrentBuffer->m_scaleX;
-		scaleY = pCurrentBuffer->m_scaleY;
+		scaleX = _pBuffer->m_scaleX;
+		scaleY = _pBuffer->m_scaleY;
 		heightOffset = 0;
-		screenHeight = (pCurrentBuffer->m_height == 0) ? VI.height : pCurrentBuffer->m_height;
+		screenHeight = (_pBuffer->m_height == 0) ? VI.height : _pBuffer->m_height;
 	}
 
 	float SX0 = gDP.scissor.ulx;
@@ -589,7 +588,7 @@ void OGLRender::_updateStates(RENDER_STATE _renderState) const
 	}
 
 	if (gDP.changed & CHANGED_SCISSOR)
-		_updateScissor();
+		updateScissor(frameBufferList().getCurrent());
 
 	if (gSP.changed & CHANGED_VIEWPORT)
 		_updateViewport();

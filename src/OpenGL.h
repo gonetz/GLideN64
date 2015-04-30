@@ -71,6 +71,7 @@ public:
 	SPVertex & getVertex(u32 _v) {return triangles.vertices[_v];}
 	void setDMAVerticesSize(u32 _size) { if (triangles.dmaVertices.size() < _size) triangles.dmaVertices.resize(_size); }
 	SPVertex * getDMAVerticesData() { return triangles.dmaVertices.data(); }
+	void updateScissor(FrameBuffer * _pBuffer) const;
 
 	enum RENDER_STATE {
 		rsNone = 0,
@@ -100,7 +101,6 @@ private:
 	void _setBlendMode() const;
 	void _updateCullFace() const;
 	void _updateViewport() const;
-	void _updateScissor() const;
 	void _updateDepthUpdate() const;
 	void _updateStates(RENDER_STATE _renderState) const;
 	void _prepareDrawTriangle(bool _dma);
