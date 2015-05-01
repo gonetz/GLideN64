@@ -137,6 +137,11 @@ void RSP_CheckDLCounter()
 
 void RSP_ProcessDList()
 {
+	if (ConfigOpen) {
+		gDPFullSync();
+		return;
+	}
+
 	RSP.PC[0] = *(u32*)&DMEM[0x0FF0];
 	RSP.PCi = 0;
 	RSP.count = -1;

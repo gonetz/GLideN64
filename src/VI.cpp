@@ -91,6 +91,9 @@ void VI_UpdateScreen()
 	if (VI.lastOrigin == -1) // Workaround for Mupen64Plus issue with initialization
 		isGLError();
 
+	if (ConfigOpen)
+		return;
+
 	OGLVideo & ogl = video();
 	if (ogl.changeWindow())
 		return;

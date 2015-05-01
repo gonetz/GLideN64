@@ -47,6 +47,7 @@ extern u8 *IMEM;
 extern u8 *RDRAM;
 extern u64 TMEM[TMEM_SIZE];
 extern u32 RDRAMSize;
+extern bool ConfigOpen;
 
 #endif
 
