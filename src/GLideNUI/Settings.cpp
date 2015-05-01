@@ -95,16 +95,18 @@ void _loadSettings(QSettings & settings)
 void loadSettings(const QString & _strIniFolder)
 {
 //	QSettings settings("Emulation", "GLideN64");
+	const u32 hacks = config.generalEmulation.hacks;
+
 	QSettings settings(_strIniFolder + "/" + strIniFileName, QSettings::IniFormat);
 	config.version = settings.value("version").toInt();
 	if (config.version != CONFIG_VERSION_CURRENT) {
 		config.resetToDefaults();
 		settings.clear();
 		writeSettings(_strIniFolder);
+		config.generalEmulation.hacks = hacks;
 		return;
 	}
 
-	const u32 hacks = config.generalEmulation.hacks;
 	config.resetToDefaults();
 	_loadSettings(settings);
 	config.generalEmulation.hacks = hacks;
