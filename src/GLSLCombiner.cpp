@@ -176,8 +176,8 @@ void InitZlutTexture()
 	glBindTexture(GL_TEXTURE_2D, g_zlut_tex);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_R16,
 		512, 512, 0, GL_RED, GL_UNSIGNED_SHORT,
 		zLUT);
@@ -228,11 +228,11 @@ void InitShadowMapShader()
 
 	g_paletteCRC256 = 0;
 	glGenTextures(1, &g_tlut_tex);
-	glBindTexture(GL_TEXTURE_1D, g_tlut_tex);
-	glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_1D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-	glTexImage1D(GL_TEXTURE_1D, 0, GL_R16, 256, 0, GL_RED, GL_UNSIGNED_SHORT, NULL);
+	glBindTexture(GL_TEXTURE_2D, g_tlut_tex);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_R16, 256, 1, 0, GL_RED, GL_UNSIGNED_SHORT, NULL);
 
 	g_draw_shadow_map_program = createShaderProgram(default_vertex_shader, shadow_map_fragment_shader_float);
 	g_monochrome_image_program = createShaderProgram(default_vertex_shader, zelda_monochrome_fragment_shader);
@@ -247,7 +247,7 @@ void DestroyShadowMapShader()
 	glBindImageTexture(TlutImageUnit, 0, 0, GL_FALSE, 0, GL_READ_ONLY, GL_R16UI);
 
 	if (g_tlut_tex > 0) {
-		glBindTexture(GL_TEXTURE_1D, 0);
+		glBindTexture(GL_TEXTURE_2D, 0);
 		glDeleteTextures(1, &g_tlut_tex);
 		g_tlut_tex = 0;
 	}
@@ -929,9 +929,9 @@ void SetDepthFogCombiner()
 		for (int i = 0; i < 256; ++i)
 			palette[i] = swapword(src[i*4]);
 		glBindImageTexture(TlutImageUnit, 0, 0, GL_FALSE, 0, GL_READ_ONLY, GL_R16UI);
-		glBindTexture(GL_TEXTURE_1D, g_tlut_tex);
-		glTexSubImage1D(GL_TEXTURE_1D, 0, 0, 256, GL_RED, GL_UNSIGNED_SHORT, palette);
-		glBindTexture(GL_TEXTURE_1D, 0);
+		glBindTexture(GL_TEXTURE_2D, g_tlut_tex);
+		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 256, 1, GL_RED, GL_UNSIGNED_SHORT, palette);
+		glBindTexture(GL_TEXTURE_2D, 0);
 		glBindImageTexture(TlutImageUnit, g_tlut_tex, 0, GL_FALSE, 0, GL_READ_ONLY, GL_R16UI);
 	}
 
