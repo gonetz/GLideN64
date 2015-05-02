@@ -31,12 +31,12 @@
     <message>
         <location filename="AboutDialog.ui" line="120"/>
         <source>beta tester</source>
-        <translation>Beta-Tester</translation>
+        <translation>Beta-Testadores</translation>
     </message>
     <message>
         <location filename="AboutDialog.ui" line="136"/>
         <source>Main funders</source>
-        <translation>Haupt-Finanzierer</translation>
+        <translation>Financiadores Principais</translation>
     </message>
     <message>
         <location filename="AboutDialog.ui" line="158"/>
