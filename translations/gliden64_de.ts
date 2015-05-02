@@ -76,7 +76,7 @@
     <message>
         <location filename="AboutDialog.ui" line="281"/>
         <source>Funders</source>
-        <translation type="unfinished"></translation>
+        <translation>Finanzierer</translation>
     </message>
     <message>
         <location filename="AboutDialog.ui" line="458"/>
@@ -89,11 +89,15 @@ p, li { white-space: pre-wrap; }
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;ziggy&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt; - author of &lt;/span&gt;&lt;span style=&quot; font-size:10pt; text-decoration: underline;&quot;&gt;z64&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt; OpenGL LLE plugin&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;Nathaniel Meyer&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt; - author of the blur shader. Copyright: Nutty Software&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:10pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Finanzierer</source>
-        <translation type="vanished">Finanzierer</translation>
+        <translation>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;Orkin&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt; - Autor des original glN64 Grafik-Plugins&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;yongzh -&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt; Autor von gles2n64, einem Port von glN64 zu GL-ES 2.0&lt;br /&gt;&lt;/span&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;Hiroshi Morii&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt; - Autor der GlideHQ Texturbibliothek&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;ziggy&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt; - Autor von z64, einem OpenGL-LLE-Plugin&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;Nathaniel Meyer&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt; - Autor des Blur-Shaders. Copyright: Nutty Software&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:10pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="AboutDialog.ui" line="296"/>
@@ -365,24 +369,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="AboutDialog.ui" line="443"/>
         <source>Credits</source>
-        <oldsource>Kredits</oldsource>
-        <translation type="unfinished">Kredits</translation>
-    </message>
-    <message>
-        <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;Orkin&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt; - author of original glN64 graphics plugin&lt;br /&gt;&lt;/span&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;Hiroshi Morii&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt; - author of GlideHQ texture library&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;Nathaniel Meyer&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt; - author of the blur shader. Copyright: Nutty Software&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:10pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="vanished">&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;Orkin&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt; - Autor des original glN64 Grafik-Plugins&lt;br /&gt;&lt;/span&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;Hiroshi Morii&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt; - Autor der GlideHQ Texturbibliothek&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;Nathaniel Meyer&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt; - Autor des Blur-Shaders. Copyright: Nutty Software&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:10pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <translation>Kredits</translation>
     </message>
 </context>
 <context>
@@ -509,8 +496,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="configDialog.ui" line="369"/>
         <source>N64 3point</source>
-        <oldsource>N64 3-Point</oldsource>
-        <translation type="unfinished">N64 3-Punkt</translation>
+        <translation>N64 3-Punkt</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="389"/>
@@ -552,14 +538,6 @@ p, li { white-space: pre-wrap; }
         <location filename="configDialog.ui" line="544"/>
         <source>Language:</source>
         <translation>Sprache:</translation>
-    </message>
-    <message>
-        <source>English</source>
-        <translation type="vanished">Englisch</translation>
-    </message>
-    <message>
-        <source>Change</source>
-        <translation type="vanished">wechseln</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="568"/>
