@@ -33,6 +33,12 @@ GLuint g_tlut_tex = 0;
 static u32 g_paletteCRC256 = 0;
 #endif // GL_IMAGE_TEXTURES_SUPPORT
 
+#ifndef GLESX
+#define GL_RED16 GL_R16
+#else
+#define GL_RED16 GL_R16UI
+#endif
+
 static std::string strFragmentShader;
 
 static const GLsizei nShaderLogSize = 1024;
@@ -178,7 +184,7 @@ void InitZlutTexture()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_R16,
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RED16,
 		512, 512, 0, GL_RED, GL_UNSIGNED_SHORT,
 		zLUT);
 	glBindImageTexture(ZlutImageUnit, g_zlut_tex, 0, GL_FALSE, 0, GL_READ_ONLY, GL_R16UI);
@@ -232,7 +238,7 @@ void InitShadowMapShader()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_R16, 256, 1, 0, GL_RED, GL_UNSIGNED_SHORT, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RED16, 256, 1, 0, GL_RED, GL_UNSIGNED_SHORT, NULL);
 
 	g_draw_shadow_map_program = createShaderProgram(default_vertex_shader, shadow_map_fragment_shader_float);
 	g_monochrome_image_program = createShaderProgram(default_vertex_shader, zelda_monochrome_fragment_shader);
