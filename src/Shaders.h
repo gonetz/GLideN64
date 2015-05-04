@@ -167,6 +167,9 @@ static const char* fragment_shader_header_common_variables =
 "  lowp float uK4;				\n"
 "  lowp float uK5;				\n"
 "};								\n"
+#ifdef GLESX
+"uniform mediump vec2 uScreenScale;	\n"
+#endif
 "uniform lowp int uAlphaCompareMode;	\n"
 "uniform lowp int uAlphaDitherMode;	\n"
 "uniform lowp int uColorDitherMode;	\n"
@@ -201,6 +204,9 @@ static const char* fragment_shader_header_common_variables_notex =
 "  lowp float uK4;				\n"
 "  lowp float uK5;				\n"
 "};								\n"
+#ifdef GLESX
+"uniform mediump vec2 uScreenScale;	\n"
+#endif
 "uniform lowp int uAlphaCompareMode;	\n"
 "uniform lowp int uAlphaDitherMode;	\n"
 "uniform lowp int uColorDitherMode;	\n"
@@ -241,7 +247,9 @@ static const char* fragment_shader_header_common_functions_notex =
 ;
 
 static const char* fragment_shader_calc_light =
-"#version 330 core						\n"
+#ifndef GLESX
+"#version 330 core					\n"
+#endif
 "layout (std140) uniform LightBlock {				\n"
 "  mediump vec3 uLightDirection[8];	\n"
 "  lowp vec3 uLightColor[8];	\n"
@@ -266,14 +274,18 @@ static const char* fragment_shader_header_main =
 "									\n"
 "void main()						\n"
 "{									\n"
+#ifndef GLESX
 "  gl_FragDepth = clamp((gl_FragCoord.z * 2.0 - 1.0) * uDepthScale.s + uDepthScale.t, 0.0, 1.0);   \n"
+#endif
 "  lowp vec4 vec_color, combined_color;	\n"
 "  lowp float alpha1, alpha2;			\n"
 "  lowp vec3 color1, color2;				\n"
 ;
 
 static const char* fragment_shader_dither =
+#ifndef GLESX
 "#version 330 core					\n"
+#endif
 "void colorNoiseDither(in float _noise, inout vec3 _color)	\n"
 "{															\n"
 "    mediump vec3 tmpColor = _color*255.0;					\n"
@@ -342,15 +354,21 @@ static const char* fragment_shader_end =
 ;
 
 static const char* fragment_shader_mipmap =
-"#version 330 core					\n"
+#ifndef GLESX
+"#version 330 core				\n"
 "in mediump vec2 vTexCoord0;	\n"
 "in mediump vec2 vTexCoord1;	\n"
 "in mediump vec2 vLodTexCoord;	\n"
 "uniform sampler2D uTex0;			\n"
 "uniform sampler2D uTex1;			\n"
+"uniform mediump vec2 uScreenScale;	\n"
+#else
+"#ifdef GL_OES_standard_derivatives			\n"
+"    #extension GL_OES_standard_derivatives : enable \n"
+"#endif										\n"
+#endif
 "uniform lowp float uPrimitiveLod;		\n"
 "uniform lowp int uEnableLod;		\n"
-"uniform mediump vec2 uScreenScale;	\n"
 "uniform mediump float uMinLod;		\n"
 "uniform lowp int uMaxTile;			\n"
 "uniform lowp int uTextureDetail;	\n"
@@ -415,7 +433,9 @@ static const char* fragment_shader_mipmap =
 ;
 
 static const char* fragment_shader_readtex =
-"#version 330 core													\n"
+#ifndef GLESX
+"#version 330 core					\n"
+#endif
 "uniform lowp int uTextureFilterMode;								\n"
 "lowp vec4 filterNearest(in sampler2D tex, in mediump vec2 texCoord)\n"
 "{																	\n"
@@ -445,9 +465,11 @@ static const char* fragment_shader_readtex =
 ;
 
 static const char* fragment_shader_noise =
+#ifndef GLESX
 "#version 330 core					\n"
-"uniform sampler2D uTexNoise;		\n"
 "uniform mediump vec2 uScreenScale;	\n"
+#endif
+"uniform sampler2D uTexNoise;		\n"
 "lowp float snoise()									\n"
 "{														\n"
 "  ivec2 coord = ivec2(gl_FragCoord.xy/uScreenScale);	\n"
@@ -465,7 +487,13 @@ static const char* fragment_shader_dummy_noise =
 
 #ifdef GL_IMAGE_TEXTURES_SUPPORT
 static const char* depth_compare_shader_float =
+#ifndef GLESX
 "#version 430								\n"
+#else
+"#ifdef GL_OES_standard_derivatives			\n"
+"    #extension GL_OES_standard_derivatives : enable \n"
+"#endif										\n"
+#endif
 //"uniform int uEnableDepth;				\n"
 "uniform lowp int uDepthMode;				\n"
 "uniform lowp int uDepthSource;				\n"
