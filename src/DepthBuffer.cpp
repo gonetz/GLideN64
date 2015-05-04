@@ -120,21 +120,23 @@ void DepthBuffer::_initDepthBufferTexture(FrameBuffer * _pBuffer, CachedTexture 
 	_pTexture->textureBytes = _pTexture->realWidth * _pTexture->realHeight * sizeof(float);
 	textureCache().addFrameBufferTextureSize(_pTexture->textureBytes);
 
+#ifdef GL_MULTISAMPLING_SUPPORT
 	if (_multisample) {
 		glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, _pTexture->glName);
-#ifndef GLESX
-		if (_pBuffer != NULL)
-			glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, config.video.multisampling, GL_DEPTH_COMPONENT, _pBuffer->m_pTexture->realWidth, _pBuffer->m_pTexture->realHeight, false);
-		else
-			glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, config.video.multisampling, GL_DEPTH_COMPONENT, video().getWidth(), video().getHeight(), false);
-#elif defined(GLES3_1)
+#if defined(GLES3_1)
 		if (_pBuffer != NULL)
 			glTexStorage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, config.video.multisampling, GL_DEPTH_COMPONENT, _pBuffer->m_pTexture->realWidth, _pBuffer->m_pTexture->realHeight, false);
 		else
 			glTexStorage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, config.video.multisampling, GL_DEPTH_COMPONENT, video().getWidth(), video().getHeight(), false);
+#else
+		if (_pBuffer != NULL)
+			glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, config.video.multisampling, GL_DEPTH_COMPONENT, _pBuffer->m_pTexture->realWidth, _pBuffer->m_pTexture->realHeight, false);
+		else
+			glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, config.video.multisampling, GL_DEPTH_COMPONENT, video().getWidth(), video().getHeight(), false);
 #endif
-	}
-	else {
+	} else
+#endif // GL_MULTISAMPLING_SUPPORT
+	{
 		glBindTexture(GL_TEXTURE_2D, _pTexture->glName);
 		if (_pBuffer != NULL)
 			glTexImage2D(GL_TEXTURE_2D, 0, DEPTH_COMPONENT_FORMAT, _pBuffer->m_pTexture->realWidth, _pBuffer->m_pTexture->realHeight, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
@@ -149,9 +151,11 @@ void DepthBuffer::_initDepthBufferTexture(FrameBuffer * _pBuffer, CachedTexture 
 
 void DepthBuffer::setDepthAttachment(GLenum _target)
 {
+#ifdef GL_MULTISAMPLING_SUPPORT
 	if (config.video.multisampling != 0)
 		glFramebufferTexture2D(_target, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D_MULTISAMPLE, m_pDepthBufferTexture->glName, 0);
 	else
+#endif
 		glFramebufferTexture2D(_target, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, m_pDepthBufferTexture->glName, 0);
 	m_resolved = false;
 }
