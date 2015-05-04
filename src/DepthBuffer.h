@@ -71,4 +71,13 @@ extern const GLuint depthImageUnit;
 
 void DepthBuffer_Init();
 void DepthBuffer_Destroy();
+
+#ifdef GLES2
+#define DEPTH_COMPONENT_FORMAT GL_DEPTH_COMPONENT24_OES
+#elif defined (GLES3)
+#define DEPTH_COMPONENT_FORMAT GL_DEPTH_COMPONENT32F
+#else
+#define DEPTH_COMPONENT_FORMAT GL_DEPTH_COMPONENT
+#endif
+
 #endif

@@ -120,11 +120,6 @@ void DepthBuffer::_initDepthBufferTexture(FrameBuffer * _pBuffer, CachedTexture 
 	_pTexture->textureBytes = _pTexture->realWidth * _pTexture->realHeight * sizeof(float);
 	textureCache().addFrameBufferTextureSize(_pTexture->textureBytes);
 
-#ifndef GLES2
-	const GLenum format = GL_DEPTH_COMPONENT;
-#else
-	const GLenum format = GL_DEPTH_COMPONENT24_OES;
-#endif
 	if (_multisample) {
 		glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, _pTexture->glName);
 #ifndef GLESX
@@ -142,9 +137,9 @@ void DepthBuffer::_initDepthBufferTexture(FrameBuffer * _pBuffer, CachedTexture 
 	else {
 		glBindTexture(GL_TEXTURE_2D, _pTexture->glName);
 		if (_pBuffer != NULL)
-			glTexImage2D(GL_TEXTURE_2D, 0, format, _pBuffer->m_pTexture->realWidth, _pBuffer->m_pTexture->realHeight, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+			glTexImage2D(GL_TEXTURE_2D, 0, DEPTH_COMPONENT_FORMAT, _pBuffer->m_pTexture->realWidth, _pBuffer->m_pTexture->realHeight, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
 		else
-			glTexImage2D(GL_TEXTURE_2D, 0, format, video().getWidth(), video().getHeight(), 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+			glTexImage2D(GL_TEXTURE_2D, 0, DEPTH_COMPONENT_FORMAT, video().getWidth(), video().getHeight(), 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
 
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
