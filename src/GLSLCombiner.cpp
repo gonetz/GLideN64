@@ -286,12 +286,13 @@ void InitShaderCombiner()
 
 	strFragmentShader.reserve(1024*5);
 
-#ifndef GLES2
+#ifndef GLESX
 	g_calc_light_shader_object = _createShader(GL_FRAGMENT_SHADER, fragment_shader_calc_light);
 	g_calc_mipmap_shader_object = _createShader(GL_FRAGMENT_SHADER, fragment_shader_mipmap);
 	g_calc_noise_shader_object = _createShader(GL_FRAGMENT_SHADER, fragment_shader_noise);
 	g_readtex_shader_object = _createShader(GL_FRAGMENT_SHADER, fragment_shader_readtex);
 	g_dither_shader_object = _createShader(GL_FRAGMENT_SHADER, fragment_shader_dither);
+#endif // GLESX
 
 #ifdef GL_IMAGE_TEXTURES_SUPPORT
 	if (video().getRender().isImageTexturesSupported() && config.frameBufferEmulation.N64DepthCompare != 0)
@@ -301,7 +302,6 @@ void InitShaderCombiner()
 	InitShadowMapShader();
 	noiseTex.init();
 #endif // GL_IMAGE_TEXTURES_SUPPORT
-#endif // GLES2
 }
 
 void DestroyShaderCombiner() {
@@ -312,7 +312,7 @@ void DestroyShaderCombiner() {
 	g_vertex_shader_object = 0;
 	glDeleteShader(g_vertex_shader_object_notex);
 	g_vertex_shader_object_notex = 0;
-#ifndef GLES2
+#ifndef GLESX
 	glDeleteShader(g_calc_light_shader_object);
 	g_calc_light_shader_object = 0;
 	glDeleteShader(g_calc_mipmap_shader_object);
@@ -325,13 +325,13 @@ void DestroyShaderCombiner() {
 	g_dither_shader_object = 0;
 	glDeleteShader(g_calc_depth_shader_object);
 	g_calc_depth_shader_object = 0;
+#endif // GLESX
 
 #ifdef GL_IMAGE_TEXTURES_SUPPORT
 	noiseTex.destroy();
 	DestroyZlutTexture();
 	DestroyShadowMapShader();
 #endif // GL_IMAGE_TEXTURES_SUPPORT
-#endif // GLES2
 }
 
 const char *ColorInput[] = {
@@ -594,12 +594,19 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 	strFragmentShader.append(fragment_shader_toonify);
 #endif
 
-#ifdef GLES2
-	strFragmentShader.append(noise_fragment_shader);
+#ifdef GLESX
+	if (bUseHWLight)
+		strFragmentShader.append(fragment_shader_calc_light);
 	if (bUseLod)
 		strFragmentShader.append(fragment_shader_mipmap);
-	if (config.generalEmulation.enableHWLighting)
-		strFragmentShader.append(fragment_shader_calc_light);
+	else if (usesTex())
+		strFragmentShader.append(fragment_shader_readtex);
+	if (video().getRender().isImageTexturesSupported() && config.frameBufferEmulation.N64DepthCompare != 0)
+		strFragmentShader.append(depth_compare_shader_float);
+	if (config.generalEmulation.enableNoise != 0) {
+		strFragmentShader.append(fragment_shader_noise);
+		strFragmentShader.append(fragment_shader_dither);
+	}
 #endif
 
 	GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
@@ -616,7 +623,7 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 	else
 		glAttachShader(m_program, g_vertex_shader_object_notex);
 	glAttachShader(m_program, fragmentShader);
-#ifndef GLES2
+#ifndef GLESX
 	if (bUseHWLight)
 		glAttachShader(m_program, g_calc_light_shader_object);
 	if (bUseLod)
