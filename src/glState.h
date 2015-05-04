@@ -1,6 +1,10 @@
 #ifndef GLSTATE_H
 #define GLSTATE_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 struct GLState {
 	GLState() { reset(); }
 	void reset();
@@ -315,5 +319,9 @@ void inline cache_glViewport (GLint x, GLint y, GLsizei width, GLsizei height)
 	}
 }
 #define glViewport(x, y, width, height) cache_glViewport(x, y, width, height)
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif //GLSTATE_H
