@@ -29,7 +29,8 @@ void PluginAPI::FindPluginPath(wchar_t * _strPath)
 		::mbstowcs(_strPath, path, PLUGIN_PATH_SIZE);
 	}
 #else
-	_strPath = L"\0";
+	// TODO: Android implementation
+	::mbstowcs(_strPath, "Plugin", PLUGIN_PATH_SIZE);
 #endif
 	std::wstring pluginPath(_strPath);
 	std::wstring::size_type pos = pluginPath.find_last_of(L"\\/");
