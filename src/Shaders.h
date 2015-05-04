@@ -589,8 +589,8 @@ static const char* shadow_map_fragment_shader_float =
 ;
 #endif // GL_IMAGE_TEXTURES_SUPPORT
 
-#if 0 // Do palette based monochrome image. Exactly as N64 does
 #ifdef GL_IMAGE_TEXTURES_SUPPORT
+#if 0 // Do palette based monochrome image. Exactly as N64 does
 static const char* zelda_monochrome_fragment_shader =
 "#version 420 core											\n"
 "layout(binding = 0) uniform sampler2D uColorImage;			\n"
@@ -614,7 +614,6 @@ static const char* zelda_monochrome_fragment_shader =
 "  fragColor = vec4(vec3(get_color()), 1.0);			\n"
 "}														\n"
 ;
-#endif // GL_IMAGE_TEXTURES_SUPPORT
 #else // Cheat it
 static const char* zelda_monochrome_fragment_shader =
 "#version 420 core										\n"
@@ -630,3 +629,4 @@ static const char* zelda_monochrome_fragment_shader =
 "}														\n"
 ;
 #endif
+#endif // GL_IMAGE_TEXTURES_SUPPORT
