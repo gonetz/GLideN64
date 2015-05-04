@@ -857,8 +857,12 @@ bool texturedRectShadowMap(const OGLRender::TexturedRectParams &)
 	FrameBuffer * pCurrentBuffer = frameBufferList().getCurrent();
 	if (pCurrentBuffer != NULL) {
 		if (gDP.textureImage.size == 2 && gDP.textureImage.address >= gDP.depthImageAddress &&  gDP.textureImage.address < (gDP.depthImageAddress + gDP.colorImage.width*gDP.colorImage.width * 6 / 4)) {
+#ifdef GL_IMAGE_TEXTURES_SUPPORT
 			pCurrentBuffer->m_pDepthBuffer->activateDepthBufferTexture(pCurrentBuffer);
 			SetDepthFogCombiner();
+#else
+			return true;
+#endif
 		}
 	}
 	return false;
