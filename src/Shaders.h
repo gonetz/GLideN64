@@ -1,6 +1,11 @@
-static const char* vertex_shader =
+#ifdef GLES3
+#define SHADER_VERSION "#version 300 es \n"
+#else
+#define SHADER_VERSION "#version 330 core \n"
+#endif
 
-"#version 330 core										\n"
+static const char* vertex_shader =
+SHADER_VERSION
 "in highp vec4 aPosition;						\n"
 "in lowp vec4 aColor;							\n"
 "in highp vec2 aTexCoord0;						\n"
@@ -96,7 +101,7 @@ static const char* vertex_shader =
 ;
 
 static const char* vertex_shader_notex =
-"#version 330 core					\n"
+SHADER_VERSION
 "in highp vec4 aPosition;			\n"
 "in lowp vec4 aColor;				\n"
 "in lowp float aNumLights;			\n"
@@ -155,7 +160,7 @@ static const char* vertex_shader_notex =
 ;
 
 static const char* fragment_shader_header_common_variables =
-"#version 330 core				\n"
+SHADER_VERSION
 "uniform sampler2D uTex0;		\n"
 "uniform sampler2D uTex1;		\n"
 "layout (std140) uniform ColorsBlock {\n"
@@ -194,7 +199,7 @@ static const char* fragment_shader_header_common_variables =
 ;
 
 static const char* fragment_shader_header_common_variables_notex =
-"#version 330 core				\n"
+SHADER_VERSION
 "layout (std140) uniform ColorsBlock {\n"
 "  lowp vec4 uFogColor;			\n"
 "  lowp vec4 uCenterColor;		\n"
@@ -250,7 +255,7 @@ static const char* fragment_shader_header_common_functions_notex =
 
 static const char* fragment_shader_calc_light =
 #ifndef GLESX
-"#version 330 core					\n"
+SHADER_VERSION
 #endif
 "layout (std140) uniform LightBlock {				\n"
 "  mediump vec3 uLightDirection[8];	\n"
@@ -286,7 +291,7 @@ static const char* fragment_shader_header_main =
 
 static const char* fragment_shader_dither =
 #ifndef GLESX
-"#version 330 core					\n"
+SHADER_VERSION
 #endif
 "void colorNoiseDither(in float _noise, inout vec3 _color)	\n"
 "{															\n"
@@ -357,7 +362,7 @@ static const char* fragment_shader_end =
 
 static const char* fragment_shader_mipmap =
 #ifndef GLESX
-"#version 330 core				\n"
+SHADER_VERSION
 "in mediump vec2 vTexCoord0;	\n"
 "in mediump vec2 vTexCoord1;	\n"
 "in mediump vec2 vLodTexCoord;	\n"
@@ -436,7 +441,7 @@ static const char* fragment_shader_mipmap =
 
 static const char* fragment_shader_readtex =
 #ifndef GLESX
-"#version 330 core					\n"
+SHADER_VERSION
 #endif
 "uniform lowp int uTextureFilterMode;								\n"
 "lowp vec4 filterNearest(in sampler2D tex, in mediump vec2 texCoord)\n"
@@ -468,7 +473,7 @@ static const char* fragment_shader_readtex =
 
 static const char* fragment_shader_noise =
 #ifndef GLESX
-"#version 330 core					\n"
+SHADER_VERSION
 "uniform mediump vec2 uScreenScale;	\n"
 #endif
 "uniform sampler2D uTexNoise;		\n"
