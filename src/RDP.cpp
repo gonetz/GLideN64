@@ -1,5 +1,6 @@
 #include <assert.h>
 #include <memory.h>
+#include <cstring>
 #include "N64.h"
 #include "RSP.h"
 #include "RDP.h"
@@ -577,7 +578,7 @@ void RDP_ProcessRDPList()
 		}
 
 		if (RDP.cmd_cur + CmdLength[cmd] / 4 > MAXCMD)
-			memcpy(RDP.cmd_data + MAXCMD, RDP.cmd_data, CmdLength[cmd] - (MAXCMD - RDP.cmd_cur) * 4);
+			::memcpy(RDP.cmd_data + MAXCMD, RDP.cmd_data, CmdLength[cmd] - (MAXCMD - RDP.cmd_cur) * 4);
 
 		// execute the command
 		u32 w0 = RDP.cmd_data[RDP.cmd_cur+0];
