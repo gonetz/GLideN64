@@ -1040,7 +1040,7 @@ void DepthBufferToRDRAM::Init()
 	textureCache().addFrameBufferTextureSize(m_pDepthTexture->textureBytes);
 
 	glBindTexture( GL_TEXTURE_2D, m_pColorTexture->glName );
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, m_pColorTexture->realWidth, m_pColorTexture->realHeight, 0, GL_RED, GL_UNSIGNED_BYTE, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, m_pColorTexture->realWidth, m_pColorTexture->realHeight, 0, GL_RED, GL_UNSIGNED_BYTE, NULL);
 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
 
