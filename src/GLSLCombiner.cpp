@@ -601,8 +601,10 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 		strFragmentShader.append(fragment_shader_mipmap);
 	else if (usesTex())
 		strFragmentShader.append(fragment_shader_readtex);
+#ifdef GL_IMAGE_TEXTURES_SUPPORT
 	if (video().getRender().isImageTexturesSupported() && config.frameBufferEmulation.N64DepthCompare != 0)
 		strFragmentShader.append(depth_compare_shader_float);
+#endif
 	if (config.generalEmulation.enableNoise != 0) {
 		strFragmentShader.append(fragment_shader_noise);
 		strFragmentShader.append(fragment_shader_dither);
