@@ -74,7 +74,7 @@ void DepthBuffer_Destroy();
 
 #ifdef GLES2
 #define DEPTH_COMPONENT_FORMAT GL_DEPTH_COMPONENT24_OES
-#elif defined (GLES3_1)
+#elif defined (GLES3) || defined (GLES3_1)
 #define DEPTH_COMPONENT_FORMAT GL_DEPTH_COMPONENT32F
 #else
 #define DEPTH_COMPONENT_FORMAT GL_DEPTH_COMPONENT
