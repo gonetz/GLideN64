@@ -571,20 +571,24 @@ void FrameBufferList::attachDepthBuffer()
 void FrameBuffer_Init()
 {
 	frameBufferList().init();
+	if (config.frameBufferEmulation.enable != 0) {
 #ifndef GLES2
 	g_fbToRDRAM.Init();
 	g_dbToRDRAM.Init();
 #endif
 	g_RDRAMtoFB.Init();
+	}
 }
 
 void FrameBuffer_Destroy()
 {
+	if (config.frameBufferEmulation.enable != 0) {
 	g_RDRAMtoFB.Destroy();
 #ifndef GLES2
 	g_dbToRDRAM.Destroy();
 	g_fbToRDRAM.Destroy();
 #endif
+	}
 	frameBufferList().destroy();
 }
 
