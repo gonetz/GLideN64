@@ -148,7 +148,9 @@ static const char* vertex_shader_notex =
 "      break;													\n"
 "    }															\n"
 "  }															\n"
+#ifndef GLESX
 "  gl_ClipDistance[0] = gl_Position.w - gl_Position.z;			\n"
+#endif
 "}																\n"
 ;
 
