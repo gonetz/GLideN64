@@ -903,7 +903,7 @@ void FrameBufferToRDRAM::_copyWhite(FrameBuffer * _pBuffer)
 
 void FrameBufferToRDRAM::CopyToRDRAM(u32 _address)
 {
-	if (VI.width == 0) // H width is zero. Don't copy
+	if (VI.width == 0 || frameBufferList().getCurrent() == NULL) // H width is zero or no current buffer. Don't copy
 		return;
 	FrameBuffer *pBuffer = frameBufferList().findBuffer(_address);
 	if (pBuffer == NULL || pBuffer->m_width < VI.width || pBuffer->m_isOBScreen)
