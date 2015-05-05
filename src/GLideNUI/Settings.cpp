@@ -66,7 +66,9 @@ void _loadSettings(QSettings & settings)
 	config.textureFilter.txForce16bpp = settings.value("txForce16bpp", config.textureFilter.txForce16bpp).toInt();
 	config.textureFilter.txCacheCompression = settings.value("txCacheCompression", config.textureFilter.txCacheCompression).toInt();
 	config.textureFilter.txSaveCache = settings.value("txSaveCache", config.textureFilter.txSaveCache).toInt();
-	settings.value("txPath", "").toString().toWCharArray(config.textureFilter.txPath);
+	QString txPath = QString::fromWCharArray(config.textureFilter.txPath);
+	config.textureFilter.txPath[settings.value("txPath", txPath).toString().toWCharArray(config.textureFilter.txPath)] = L'\0';
+
 	settings.endGroup();
 
 	settings.beginGroup("font");

@@ -327,7 +327,7 @@ void ConfigDialog::accept()
 
 	QString txPath = ui->txPathLabel->text();
 	if (!txPath.isEmpty())
-		config.textureFilter.txPath[txPath.toWCharArray(config.textureFilter.txPath)] = '\0';
+		config.textureFilter.txPath[txPath.toWCharArray(config.textureFilter.txPath)] = L'\0';
 
 	config.font.size = m_font.pointSize();
 	QString fontName = m_font.family() + ".ttf";
@@ -422,7 +422,7 @@ void ConfigDialog::on_texPackPathButton_clicked()
 	QFileDialog::Options options = QFileDialog::DontResolveSymlinks | QFileDialog::ShowDirsOnly | QFileDialog::ReadOnly | QFileDialog::DontUseSheet | QFileDialog::ReadOnly | QFileDialog::HideNameFilterDetails;
 	QString directory = QFileDialog::getExistingDirectory(this,
 		"",
-		QString::fromWCharArray(config.textureFilter.txPath),
+		ui->txPathLabel->text(),
 		options);
 	if (!directory.isEmpty())
 		ui->txPathLabel->setText(directory);
