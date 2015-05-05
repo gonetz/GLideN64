@@ -41,7 +41,7 @@ int openConfigDialog(const wchar_t * _strFileName, bool & _accepted)
 }
 
 static
-int openAboutDialog()
+int openAboutDialog(const wchar_t * _strFileName)
 {
 	cleanMyResource();
 	initMyResource();
@@ -49,6 +49,10 @@ int openAboutDialog()
 	int argc = 0;
 	char * argv = 0;
 	QApplication a(argc, &argv);
+
+	QTranslator translator;
+	if (translator.load(getTranslationFile(), QString::fromWCharArray(_strFileName)))
+		a.installTranslator(&translator);
 
 	AboutDialog w;
 	w.show();
@@ -62,8 +66,8 @@ bool runConfigThread(const wchar_t * _strFileName) {
 	return accepted;
 }
 
-int runAboutThread() {
-	std::thread aboutThread(openAboutDialog);
+int runAboutThread(const wchar_t * _strFileName) {
+	std::thread aboutThread(openAboutDialog, _strFileName);
 	aboutThread.join();
 	return 0;
 }
@@ -73,9 +77,9 @@ EXPORT bool CALL RunConfig(const wchar_t * _strFileName)
 	return runConfigThread(_strFileName);
 }
 
-EXPORT int CALL RunAbout()
+EXPORT int CALL RunAbout(const wchar_t * _strFileName)
 {
-	return runAboutThread();
+	return runAboutThread(_strFileName);
 }
 
 EXPORT void CALL LoadConfig(const wchar_t * _strFileName)
