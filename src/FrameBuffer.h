@@ -20,6 +20,7 @@ struct FrameBuffer
 	CachedTexture * getTexture();
 	void copyRdram();
 	bool isValid() const;
+	bool _isMarioTennisScoreboard() const;
 
 	u32 m_startAddress, m_endAddress;
 	u32 m_size, m_width, m_height, m_fillcolor, m_validityChecked;
@@ -74,7 +75,6 @@ private:
 	FrameBufferList(const FrameBufferList &);
 
 	FrameBuffer * _findBuffer(u32 _startAddress, u32 _endAddress, u32 _width);
-	bool _isMarioTennisScoreboard();
 
 	typedef std::list<FrameBuffer> FrameBuffers;
 	FrameBuffers m_list;

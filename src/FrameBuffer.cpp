@@ -172,6 +172,17 @@ void FrameBuffer::_setAndAttachTexture(u16 _size, CachedTexture *_pTexture)
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _pTexture->glName, 0);
 }
 
+bool FrameBuffer::_isMarioTennisScoreboard() const
+{
+	if ((config.generalEmulation.hacks&hack_scoreboard) != 0) {
+		if (VI.PAL)
+			return m_startAddress == 0x13b480 || m_startAddress == 0x26a530;
+		else
+			return m_startAddress == 0x13ba50 || m_startAddress == 0x264430;
+	}
+	return (config.generalEmulation.hacks&hack_scoreboardJ) != 0 && (m_startAddress == 0x134080 || m_startAddress == 0x1332f8);
+}
+
 void FrameBuffer::init(u32 _address, u32 _endAddress, u16 _format, u16 _size, u16 _width, u16 _height, bool _cfb)
 {
 	OGLVideo & ogl = video();
@@ -359,17 +370,6 @@ void FrameBufferList::setBufferChanged()
 	}
 }
 
-bool FrameBufferList::_isMarioTennisScoreboard()
-{
-	if ((config.generalEmulation.hacks&hack_scoreboard) != 0) {
-		if (VI.PAL)
-			return m_pCurrent != NULL && (m_pCurrent->m_startAddress == 0x13b480 || m_pCurrent->m_startAddress == 0x26a530);
-		else
-			return m_pCurrent != NULL && (m_pCurrent->m_startAddress == 0x13ba50 || m_pCurrent->m_startAddress == 0x264430);
-	}
-	return (config.generalEmulation.hacks&hack_scoreboardJ) != 0 && m_pCurrent != NULL && (m_pCurrent->m_startAddress == 0x134080 || m_pCurrent->m_startAddress == 0x1332f8);
-}
-
 void FrameBufferList::correctHeight()
 {
 	if (m_pCurrent == NULL)
@@ -384,7 +384,7 @@ void FrameBufferList::correctHeight()
 		else
 			m_pCurrent->m_height = (u32)gDP.scissor.lry;
 
-		if (_isMarioTennisScoreboard())
+		if (m_pCurrent->_isMarioTennisScoreboard())
 			g_RDRAMtoFB.CopyFromRDRAM(m_pCurrent->m_startAddress + 4, false);
 
 		m_pCurrent->m_needHeightCorrection = false;
@@ -449,7 +449,7 @@ void FrameBufferList::saveBuffer(u32 _address, u16 _format, u16 _size, u16 _widt
 			if (m_pCurrent->m_width == VI.width)
 				gDP.colorImage.height = min(gDP.colorImage.height, VI.height);
 			m_pCurrent->m_endAddress = min(RDRAMSize, m_pCurrent->m_startAddress + (((m_pCurrent->m_width * gDP.colorImage.height) << m_pCurrent->m_size >> 1) - 1));
-			if (!config.frameBufferEmulation.copyFromRDRAM && !_isMarioTennisScoreboard() && !m_pCurrent->m_isDepthBuffer && !m_pCurrent->m_copiedToRdram && !m_pCurrent->m_cfb && !m_pCurrent->m_cleared && m_pCurrent->m_RdramCopy.empty() && gDP.colorImage.height > 1) {
+			if (!config.frameBufferEmulation.copyFromRDRAM && !m_pCurrent->_isMarioTennisScoreboard() && !m_pCurrent->m_isDepthBuffer && !m_pCurrent->m_copiedToRdram && !m_pCurrent->m_cfb && !m_pCurrent->m_cleared && m_pCurrent->m_RdramCopy.empty() && gDP.colorImage.height > 1) {
 				m_pCurrent->copyRdram();
 			}
 		}
@@ -496,7 +496,7 @@ void FrameBufferList::saveBuffer(u32 _address, u16 _format, u16 _size, u16 _widt
 		buffer.init(_address, endAddress, _format, _size, _width, _height, _cfb);
 		m_pCurrent = &buffer;
 
-		if (_isMarioTennisScoreboard() || ((config.generalEmulation.hacks & hack_legoRacers) != 0 && _width == VI.width))
+		if (m_pCurrent->_isMarioTennisScoreboard() || ((config.generalEmulation.hacks & hack_legoRacers) != 0 && _width == VI.width))
 			g_RDRAMtoFB.CopyFromRDRAM(m_pCurrent->m_startAddress + 4, false);
 	}
 
