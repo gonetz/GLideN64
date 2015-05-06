@@ -146,7 +146,7 @@ void FrameBuffer::_initTexture(u16 _format, u16 _size, CachedTexture *_pTexture)
 	_pTexture->address = m_startAddress;
 	_pTexture->clampWidth = m_width;
 	_pTexture->clampHeight = m_height;
-	_pTexture->frameBufferTexture = TRUE;
+	_pTexture->frameBufferTexture = CachedTexture::fbOneSample;
 	_pTexture->maskS = 0;
 	_pTexture->maskT = 0;
 	_pTexture->mirrorS = 0;
@@ -215,6 +215,7 @@ void FrameBuffer::init(u32 _address, u32 _endAddress, u16 _format, u16 _size, u1
 		else
 			glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, config.video.multisampling, monohromeInternalformat, m_pTexture->realWidth, m_pTexture->realHeight, false);
 #endif
+		m_pTexture->frameBufferTexture = CachedTexture::fbMultiSample;
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D_MULTISAMPLE, m_pTexture->glName, 0);
 
 		m_pResolveTexture = textureCache().addFrameBufferTexture();
@@ -846,7 +847,7 @@ void FrameBufferToRDRAM::Init()
 	m_pTexture->format = G_IM_FMT_RGBA;
 	m_pTexture->clampS = 1;
 	m_pTexture->clampT = 1;
-	m_pTexture->frameBufferTexture = TRUE;
+	m_pTexture->frameBufferTexture = CachedTexture::fbOneSample;
 	m_pTexture->maskS = 0;
 	m_pTexture->maskT = 0;
 	m_pTexture->mirrorS = 0;
@@ -1016,7 +1017,7 @@ void DepthBufferToRDRAM::Init()
 	m_pColorTexture->format = G_IM_FMT_I;
 	m_pColorTexture->clampS = 1;
 	m_pColorTexture->clampT = 1;
-	m_pColorTexture->frameBufferTexture = TRUE;
+	m_pColorTexture->frameBufferTexture = CachedTexture::fbOneSample;
 	m_pColorTexture->maskS = 0;
 	m_pColorTexture->maskT = 0;
 	m_pColorTexture->mirrorS = 0;
@@ -1030,7 +1031,7 @@ void DepthBufferToRDRAM::Init()
 	m_pDepthTexture->format = G_IM_FMT_I;
 	m_pDepthTexture->clampS = 1;
 	m_pDepthTexture->clampT = 1;
-	m_pDepthTexture->frameBufferTexture = TRUE;
+	m_pDepthTexture->frameBufferTexture = CachedTexture::fbOneSample;
 	m_pDepthTexture->maskS = 0;
 	m_pDepthTexture->maskT = 0;
 	m_pDepthTexture->mirrorS = 0;
@@ -1163,7 +1164,7 @@ void RDRAMtoFrameBuffer::Init()
 	m_pTexture->format = G_IM_FMT_RGBA;
 	m_pTexture->clampS = 1;
 	m_pTexture->clampT = 1;
-	m_pTexture->frameBufferTexture = TRUE;
+	m_pTexture->frameBufferTexture = CachedTexture::fbOneSample;
 	m_pTexture->maskS = 0;
 	m_pTexture->maskT = 0;
 	m_pTexture->mirrorS = 0;

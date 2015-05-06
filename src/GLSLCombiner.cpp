@@ -95,7 +95,7 @@ void NoiseTexture::init()
 	m_pTexture->format = G_IM_FMT_RGBA;
 	m_pTexture->clampS = 1;
 	m_pTexture->clampT = 1;
-	m_pTexture->frameBufferTexture = TRUE;
+	m_pTexture->frameBufferTexture = CachedTexture::fbOneSample;
 	m_pTexture->maskS = 0;
 	m_pTexture->maskT = 0;
 	m_pTexture->mirrorS = 0;
@@ -895,21 +895,21 @@ void ShaderCombiner::updateFBInfo(bool _bForce) {
 	int nFb8bitMode = 0, nFbFixedAlpha = 0;
 	int nMSTex0Enabled = 0, nMSTex1Enabled = 0;
 	TextureCache & cache = textureCache();
-	if (cache.current[0] != NULL && cache.current[0]->frameBufferTexture == TRUE) {
+	if (cache.current[0] != NULL && cache.current[0]->frameBufferTexture != CachedTexture::fbNone) {
 		if (cache.current[0]->size == G_IM_SIZ_8b) {
 			nFb8bitMode |= 1;
 			if (gDP.otherMode.imageRead == 0)
 				nFbFixedAlpha |= 1;
 		}
-		nMSTex0Enabled = config.video.multisampling;
+		nMSTex0Enabled = cache.current[0]->frameBufferTexture == CachedTexture::fbMultiSample ? 1 : 0;
 	}
-	if (cache.current[1] != NULL && cache.current[1]->frameBufferTexture == TRUE) {
+	if (cache.current[1] != NULL && cache.current[1]->frameBufferTexture != CachedTexture::fbNone) {
 		if (cache.current[1]->size == G_IM_SIZ_8b) {
 			nFb8bitMode |= 2;
 			if (gDP.otherMode.imageRead == 0)
 				nFbFixedAlpha |= 2;
 		}
-		nMSTex1Enabled = config.video.multisampling;
+		nMSTex1Enabled = cache.current[1]->frameBufferTexture == CachedTexture::fbMultiSample ? 1 : 0;
 	}
 	_setIUniform(m_uniforms.uFb8Bit, nFb8bitMode, _bForce);
 	_setIUniform(m_uniforms.uFbFixedAlpha, nFbFixedAlpha, _bForce);

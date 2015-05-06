@@ -449,7 +449,7 @@ void TextureCache::_initDummyTexture(CachedTexture * _pDummy)
 	_pDummy->crc = 0;
 	_pDummy->format = 0;
 	_pDummy->size = 0;
-	_pDummy->frameBufferTexture = FALSE;
+	_pDummy->frameBufferTexture = CachedTexture::fbNone;
 	_pDummy->width = 2;
 	_pDummy->height = 2;
 	_pDummy->realWidth = 2;
@@ -1073,7 +1073,7 @@ u32 _calculateCRC(u32 t, const TextureParams & _params)
 void TextureCache::activateTexture(u32 _t, CachedTexture *_pTexture)
 {
 #ifdef GL_MULTISAMPLING_SUPPORT
-	if (config.video.multisampling > 0 && _pTexture->frameBufferTexture == TRUE) {
+	if (config.video.multisampling > 0 && _pTexture->frameBufferTexture == CachedTexture::fbMultiSample) {
 		glActiveTexture(GL_TEXTURE0 + g_MSTex0Index + _t);
 		// Bind the cached texture
 		glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, _pTexture->glName);
@@ -1216,7 +1216,7 @@ void TextureCache::_updateBackground()
 	pCurrent->line = 0;
 	pCurrent->tMem = 0;
 	pCurrent->lastDList = RSP.DList;
-	pCurrent->frameBufferTexture = FALSE;
+	pCurrent->frameBufferTexture = CachedTexture::fbNone;
 
 	pCurrent->realWidth = gSP.bgImage.width;
 	pCurrent->realHeight = gSP.bgImage.height;
@@ -1378,7 +1378,7 @@ void TextureCache::update(u32 _t)
 	pCurrent->line = gSP.textureTile[_t]->line;
 	pCurrent->tMem = gSP.textureTile[_t]->tmem;
 	pCurrent->lastDList = RSP.DList;
-	pCurrent->frameBufferTexture = FALSE;
+	pCurrent->frameBufferTexture = CachedTexture::fbNone;
 
 	pCurrent->realWidth = sizes.realWidth;
 	pCurrent->realHeight = sizes.realHeight;

@@ -11,7 +11,7 @@ extern const GLuint g_MSTex0Index;
 
 struct CachedTexture
 {
-	CachedTexture(GLuint _glName) : glName(_glName), max_level(0) {}
+	CachedTexture(GLuint _glName) : glName(_glName), max_level(0), frameBufferTexture(fbNone) {}
 
 	GLuint	glName;
 	u32		crc;
@@ -36,7 +36,11 @@ struct CachedTexture
 	u32		lastDList;
 	u32		address;
 	u8		max_level;
-	u8		frameBufferTexture;
+	enum {
+		fbNone = 0,
+		fbOneSample = 1,
+		fbMultiSample = 2
+	} frameBufferTexture;
 };
 
 

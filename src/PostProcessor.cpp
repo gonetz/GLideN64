@@ -201,7 +201,7 @@ CachedTexture * _createTexture()
 	pTexture->format = G_IM_FMT_RGBA;
 	pTexture->clampS = 1;
 	pTexture->clampT = 1;
-	pTexture->frameBufferTexture = TRUE;
+	pTexture->frameBufferTexture = CachedTexture::fbOneSample;
 	pTexture->maskS = 0;
 	pTexture->maskT = 0;
 	pTexture->mirrorS = 0;

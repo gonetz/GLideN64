@@ -64,7 +64,7 @@ void DepthBuffer::initDepthImageTexture(FrameBuffer * _pBuffer)
 	m_pDepthImageTexture->address = _pBuffer->m_startAddress;
 	m_pDepthImageTexture->clampWidth = _pBuffer->m_width;
 	m_pDepthImageTexture->clampHeight = _pBuffer->m_height;
-	m_pDepthImageTexture->frameBufferTexture = TRUE;
+	m_pDepthImageTexture->frameBufferTexture = CachedTexture::fbOneSample;
 	m_pDepthImageTexture->maskS = 0;
 	m_pDepthImageTexture->maskT = 0;
 	m_pDepthImageTexture->mirrorS = 0;
@@ -110,7 +110,7 @@ void DepthBuffer::_initDepthBufferTexture(FrameBuffer * _pBuffer, CachedTexture 
 	_pTexture->size = 2;
 	_pTexture->clampS = 1;
 	_pTexture->clampT = 1;
-	_pTexture->frameBufferTexture = TRUE;
+	_pTexture->frameBufferTexture = CachedTexture::fbOneSample;
 	_pTexture->maskS = 0;
 	_pTexture->maskT = 0;
 	_pTexture->mirrorS = 0;
@@ -134,6 +134,7 @@ void DepthBuffer::_initDepthBufferTexture(FrameBuffer * _pBuffer, CachedTexture 
 		else
 			glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, config.video.multisampling, GL_DEPTH_COMPONENT, video().getWidth(), video().getHeight(), false);
 #endif
+		_pTexture->frameBufferTexture = CachedTexture::fbMultiSample;
 	} else
 #endif // GL_MULTISAMPLING_SUPPORT
 	{
