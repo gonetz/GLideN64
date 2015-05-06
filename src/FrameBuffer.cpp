@@ -777,7 +777,7 @@ void FrameBuffer_ActivateBufferTexture(s16 t, FrameBuffer *pBuffer)
 	if (pBuffer == NULL || pBuffer->m_pTexture == NULL)
 		return;
 
-	CachedTexture *pTexture = pBuffer->getTexture();
+	CachedTexture *pTexture = pBuffer->m_pTexture;
 
 	pTexture->scaleS = pBuffer->m_scaleX / (float)pTexture->realWidth;
 	pTexture->scaleT = pBuffer->m_scaleY / (float)pTexture->realHeight;
@@ -819,7 +819,7 @@ void FrameBuffer_ActivateBufferTextureBG(s16 t, FrameBuffer *pBuffer )
 	if (pBuffer == NULL || pBuffer->m_pTexture == NULL)
 		return;
 
-	CachedTexture *pTexture = pBuffer->getTexture();
+	CachedTexture *pTexture = pBuffer->m_pTexture;
 	pTexture->scaleS = video().getScaleX() / (float)pTexture->realWidth;
 	pTexture->scaleT = video().getScaleY() / (float)pTexture->realHeight;
 

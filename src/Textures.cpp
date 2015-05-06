@@ -19,6 +19,9 @@
 
 using namespace std;
 
+const GLuint g_noiseTexIndex = 2;
+const GLuint g_MSTex0Index = g_noiseTexIndex + 1;
+
 typedef u32 (*GetTexelFunc)( u64 *src, u16 x, u16 i, u8 palette );
 
 inline u32 GetNone( u64 *src, u16 x, u16 i, u8 palette )
@@ -436,45 +439,61 @@ TextureCache & TextureCache::get() {
 	return cache;
 }
 
+void TextureCache::_initDummyTexture(CachedTexture * _pDummy)
+{
+	_pDummy->address = 0;
+	_pDummy->clampS = 1;
+	_pDummy->clampT = 1;
+	_pDummy->clampWidth = 2;
+	_pDummy->clampHeight = 2;
+	_pDummy->crc = 0;
+	_pDummy->format = 0;
+	_pDummy->size = 0;
+	_pDummy->frameBufferTexture = FALSE;
+	_pDummy->width = 2;
+	_pDummy->height = 2;
+	_pDummy->realWidth = 2;
+	_pDummy->realHeight = 2;
+	_pDummy->maskS = 0;
+	_pDummy->maskT = 0;
+	_pDummy->scaleS = 0.5f;
+	_pDummy->scaleT = 0.5f;
+	_pDummy->shiftScaleS = 1.0f;
+	_pDummy->shiftScaleT = 1.0f;
+	_pDummy->textureBytes = 2 * 2 * 4;
+	_pDummy->tMem = 0;
+}
+
 void TextureCache::init()
 {
-	u32 dummyTexture[16] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-
 	m_maxBytes = config.texture.maxBytes;
-
-	m_pDummy = addFrameBufferTexture(); // we don't want to remove dummy texture
-
-	m_pDummy->address = 0;
-	m_pDummy->clampS = 1;
-	m_pDummy->clampT = 1;
-	m_pDummy->clampWidth = 2;
-	m_pDummy->clampHeight = 2;
-	m_pDummy->crc = 0;
-	m_pDummy->format = 0;
-	m_pDummy->size = 0;
-	m_pDummy->frameBufferTexture = FALSE;
-	m_pDummy->width = 2;
-	m_pDummy->height = 2;
-	m_pDummy->realWidth = 2;
-	m_pDummy->realHeight = 2;
-	m_pDummy->maskS = 0;
-	m_pDummy->maskT = 0;
-	m_pDummy->scaleS = 0.5f;
-	m_pDummy->scaleT = 0.5f;
-	m_pDummy->shiftScaleS = 1.0f;
-	m_pDummy->shiftScaleT = 1.0f;
-	m_pDummy->textureBytes = 2*2*4;
-	m_pDummy->tMem = 0;
 
 	glGetIntegerv(GL_UNPACK_ALIGNMENT, &m_curUnpackAlignment);
 
-	glBindTexture( GL_TEXTURE_2D, m_pDummy->glName );
+	u32 dummyTexture[16] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
+	m_pDummy = addFrameBufferTexture(); // we don't want to remove dummy texture
+	_initDummyTexture(m_pDummy);
+
+	glBindTexture(GL_TEXTURE_2D, m_pDummy->glName);
 	glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, 2, 2, 0, GL_RGBA, GL_UNSIGNED_BYTE, dummyTexture );
 
 	m_cachedBytes = m_pDummy->textureBytes;
 	activateDummy( 0 );
 	activateDummy( 1 );
 	current[0] = current[1] = NULL;
+
+#ifdef GL_MULTISAMPLING_SUPPORT
+	m_pMSDummy = addFrameBufferTexture(); // we don't want to remove dummy texture
+	_initDummyTexture(m_pMSDummy);
+
+	glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, m_pMSDummy->glName);
+	glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, config.video.multisampling, GL_RGBA8, m_pMSDummy->realWidth, m_pMSDummy->realHeight, false);
+	activateMSDummy(0);
+	activateMSDummy(1);
+#else
+	m_pMSDummy = NULL;
+#endif
 }
 
 void TextureCache::destroy()
@@ -1053,10 +1072,18 @@ u32 _calculateCRC(u32 t, const TextureParams & _params)
 
 void TextureCache::activateTexture(u32 _t, CachedTexture *_pTexture)
 {
-	glActiveTexture(GL_TEXTURE0 + _t);
-
-	// Bind the cached texture
-	glBindTexture( GL_TEXTURE_2D, _pTexture->glName );
+#ifdef GL_MULTISAMPLING_SUPPORT
+	if (config.video.multisampling > 0 && _pTexture->frameBufferTexture == TRUE) {
+		glActiveTexture(GL_TEXTURE0 + g_MSTex0Index + _t);
+		// Bind the cached texture
+		glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, _pTexture->glName);
+	} else
+#endif
+	{
+		glActiveTexture(GL_TEXTURE0 + _t);
+		// Bind the cached texture
+		glBindTexture(GL_TEXTURE_2D, _pTexture->glName);
+	}
 
 	const bool bUseBilinear = (gDP.otherMode.textureFilter | (gSP.objRendermode&G_OBJRM_BILERP)) != 0;
 
@@ -1116,6 +1143,20 @@ void TextureCache::activateDummy(u32 _t)
 
 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+}
+
+void TextureCache::activateMSDummy(u32 _t)
+{
+#ifdef GL_MULTISAMPLING_SUPPORT
+	glActiveTexture(GL_TEXTURE0 + g_MSTex0Index + _t);
+
+	glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, m_pMSDummy->glName);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+	glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, 0);
+#endif
 }
 
 void TextureCache::_updateBackground()

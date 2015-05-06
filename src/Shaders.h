@@ -163,6 +163,12 @@ static const char* fragment_shader_header_common_variables =
 SHADER_VERSION
 "uniform sampler2D uTex0;		\n"
 "uniform sampler2D uTex1;		\n"
+#ifdef GL_MULTISAMPLING_SUPPORT
+"uniform sampler2DMS uMSTex0;	\n"
+"uniform sampler2DMS uMSTex1;	\n"
+"uniform lowp int uMSTex0Enabled;	\n"
+"uniform lowp int uMSTex1Enabled;	\n"
+#endif
 "layout (std140) uniform ColorsBlock {\n"
 "  lowp vec4 uFogColor;			\n"
 "  lowp vec4 uCenterColor;		\n"
@@ -236,6 +242,9 @@ static const char* fragment_shader_header_common_functions =
 "void calc_light(in lowp float fLights, in lowp vec3 input_color, out lowp vec3 output_color);\n"
 "mediump float mipmap(out lowp vec4 readtex0, out lowp vec4 readtex1);		\n"
 "lowp vec4 readTex(in sampler2D tex, in mediump vec2 texCoord, in bool fb8bit, in bool fbFixedAlpha);	\n"
+#ifdef GL_MULTISAMPLING_SUPPORT
+"lowp vec4 readTexMS(in sampler2DMS mstex, in mediump vec2 texCoord, in bool fb8bit, in bool fbFixedAlpha);	\n"
+#endif // GL_MULTISAMPLING_SUPPORT
 "bool depth_compare();										\n"
 "void colorNoiseDither(in float _noise, inout vec3 _color);	\n"
 "void alphaNoiseDither(in float _noise, inout float _alpha);\n"
@@ -469,6 +478,27 @@ SHADER_VERSION
 "  if (fbFixedAlpha) texColor.a = 0.825;									\n"
 "  return texColor;															\n"
 "}																			\n"
+#ifdef GL_MULTISAMPLING_SUPPORT
+"uniform lowp int uMSAASamples;	\n"
+"uniform lowp float uMSAAScale;	\n"
+"lowp vec4 sampleMS(in sampler2DMS mstex, in mediump ivec2 ipos)			\n"
+"{																			\n"
+"  lowp vec4 texel = vec4(0.0);												\n"
+"  for (int i = 0; i < uMSAASamples; ++i)									\n"
+"    texel += texelFetch(mstex, ipos, i);									\n"
+"  return texel * uMSAAScale;												\n"
+"}																			\n"
+"																			\n"
+"lowp vec4 readTexMS(in sampler2DMS mstex, in mediump vec2 texCoord, in bool fb8bit, in bool fbFixedAlpha)	\n"
+"{																			\n"
+"  mediump vec2 msTexSize = vec2(textureSize(mstex));						\n"
+"  mediump ivec2 itexCoord = ivec2(msTexSize * texCoord);					\n"
+"  lowp vec4 texColor = sampleMS(mstex, itexCoord);							\n"
+"  if (fb8bit) texColor = vec4(texColor.r);									\n"
+"  if (fbFixedAlpha) texColor.a = 0.825;									\n"
+"  return texColor;															\n"
+"}																			\n"
+#endif // GL_MULTISAMPLING_SUPPORT
 ;
 
 static const char* fragment_shader_noise =

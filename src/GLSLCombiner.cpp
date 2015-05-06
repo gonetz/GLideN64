@@ -46,8 +46,7 @@ bool checkShaderCompileStatus(GLuint obj)
 {
 	GLint status;
 	glGetShaderiv(obj, GL_COMPILE_STATUS, &status);
-	if(status == GL_FALSE)
-	{
+	if(status == GL_FALSE) {
 		GLchar shader_log[nShaderLogSize];
 		GLsizei nLogSize = nShaderLogSize;
 		glGetShaderInfoLog(obj, nShaderLogSize, &nLogSize, shader_log);
@@ -62,8 +61,7 @@ bool checkProgramLinkStatus(GLuint obj)
 {
 	GLint status;
 	glGetProgramiv(obj, GL_LINK_STATUS, &status);
-	if(status == GL_FALSE)
-	{
+	if(status == GL_FALSE) {
 		GLsizei nLogSize = nShaderLogSize;
 		GLchar shader_log[nShaderLogSize];
 		glGetProgramInfoLog(obj, nShaderLogSize, &nLogSize, shader_log);
@@ -73,7 +71,6 @@ bool checkProgramLinkStatus(GLuint obj)
 	return true;
 }
 
-static const GLuint noiseTexIndex = 2;
 class NoiseTexture
 {
 public:
@@ -159,7 +156,7 @@ void NoiseTexture::update()
 	glUnmapBuffer(GL_PIXEL_UNPACK_BUFFER); // release the mapped buffer
 #endif
 
-	glActiveTexture(GL_TEXTURE0 + noiseTexIndex);
+	glActiveTexture(GL_TEXTURE0 + g_noiseTexIndex);
 	glBindTexture(GL_TEXTURE_2D, m_pTexture->glName);
 #ifndef GLES2
 	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, VI.width, VI.height, GL_RED, GL_UNSIGNED_BYTE, 0);
@@ -528,10 +525,29 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 		strFragmentShader.append("  lowp vec4 readtex0, readtex1; \n");
 		strFragmentShader.append("  lowp float lod_frac = mipmap(readtex0, readtex1);	\n");
 	} else {
+#ifdef GL_MULTISAMPLING_SUPPORT
+		if (usesT0()) {
+			if (config.video.multisampling > 0) {
+				strFragmentShader.append("  lowp vec4 readtex0; \n");
+				strFragmentShader.append("  if (uMSTex0Enabled == 0) readtex0 = readTex(uTex0, vTexCoord0, uFb8Bit == 1 || uFb8Bit == 3, uFbFixedAlpha == 1 || uFbFixedAlpha == 3); \n");
+				strFragmentShader.append("  else readtex0 = readTexMS(uMSTex0, vTexCoord0, uFb8Bit == 1 || uFb8Bit == 3, uFbFixedAlpha == 1 || uFbFixedAlpha == 3); \n");
+			} else
+				strFragmentShader.append("  lowp vec4 readtex0 = readTex(uTex0, vTexCoord0, uFb8Bit == 1 || uFb8Bit == 3, uFbFixedAlpha == 1 || uFbFixedAlpha == 3); \n");
+		}
+		if (usesT1()) {
+			if (config.video.multisampling > 0) {
+				strFragmentShader.append("  lowp vec4 readtex1; \n");
+				strFragmentShader.append("  if (uMSTex1Enabled == 0) readtex1 = readTex(uTex1, vTexCoord1, uFb8Bit == 2 || uFb8Bit == 3, uFbFixedAlpha == 2 || uFbFixedAlpha == 3); \n");
+				strFragmentShader.append("  else readtex1 = readTexMS(uMSTex1, vTexCoord1, uFb8Bit == 1 || uFb8Bit == 3, uFbFixedAlpha == 1 || uFbFixedAlpha == 3); \n");
+			} else
+				strFragmentShader.append("  lowp vec4 readtex1 = readTex(uTex1, vTexCoord1, uFb8Bit == 2 || uFb8Bit == 3, uFbFixedAlpha == 2 || uFbFixedAlpha == 3); \n");
+		}
+#else
 		if (usesT0())
 			strFragmentShader.append("  lowp vec4 readtex0 = readTex(uTex0, vTexCoord0, uFb8Bit == 1 || uFb8Bit == 3, uFbFixedAlpha == 1 || uFbFixedAlpha == 3); \n");
 		if (usesT1())
 			strFragmentShader.append("  lowp vec4 readtex1 = readTex(uTex1, vTexCoord1, uFb8Bit == 2 || uFb8Bit == 3, uFbFixedAlpha == 2 || uFbFixedAlpha == 3); \n");
+#endif // GL_MULTISAMPLING_SUPPORT
 	}
 	const bool bUseHWLight = config.generalEmulation.enableHWLighting != 0 && GBI.isHWLSupported() && usesShadeColor();
 	if (bUseHWLight)
@@ -692,6 +708,15 @@ void ShaderCombiner::_locateUniforms() {
 	LocateUniform(uScreenScale);
 	LocateUniform(uDepthScale);
 	LocateUniform(uFogScale);
+
+#ifdef GL_MULTISAMPLING_SUPPORT
+	LocateUniform(uMSTex0);
+	LocateUniform(uMSTex1);
+	LocateUniform(uMSTex0Enabled);
+	LocateUniform(uMSTex1Enabled);
+	LocateUniform(uMSAASamples);
+	LocateUniform(uMSAAScale);
+#endif
 }
 
 void ShaderCombiner::_locate_attributes() const {
@@ -706,12 +731,22 @@ void ShaderCombiner::update(bool _bForce) {
 	glUseProgram(m_program);
 
 	if (_bForce) {
-		_setIUniform(m_uniforms.uTex0, 0, _bForce);
-		_setIUniform(m_uniforms.uTex1, 1, _bForce);
-		_setIUniform(m_uniforms.uTexNoise, noiseTexIndex, _bForce);
+		_setIUniform(m_uniforms.uTexNoise, g_noiseTexIndex, true);
+		if (usesTex()) {
+			_setIUniform(m_uniforms.uTex0, 0, true);
+			_setIUniform(m_uniforms.uTex1, 1, true);
+#ifdef GL_MULTISAMPLING_SUPPORT
+			_setIUniform(m_uniforms.uMSTex0, g_MSTex0Index + 0, true);
+			_setIUniform(m_uniforms.uMSTex1, g_MSTex0Index + 1, true);
+			_setIUniform(m_uniforms.uMSAASamples, config.video.multisampling, true);
+			_setFUniform(m_uniforms.uMSAAScale, 1.0f / (float)config.video.multisampling, true);
+			_setIUniform(m_uniforms.uMSTex0Enabled, 0, true);
+			_setIUniform(m_uniforms.uMSTex1Enabled, 0, true);
+#endif
+		}
 
-		updateFBInfo(_bForce);
-		updateRenderState(_bForce);
+		updateFBInfo(true);
+		updateRenderState(true);
 	}
 
 	updateGammaCorrection(_bForce);
@@ -858,6 +893,7 @@ void ShaderCombiner::updateFBInfo(bool _bForce) {
 		return;
 
 	int nFb8bitMode = 0, nFbFixedAlpha = 0;
+	int nMSTex0Enabled = 0, nMSTex1Enabled = 0;
 	TextureCache & cache = textureCache();
 	if (cache.current[0] != NULL && cache.current[0]->frameBufferTexture == TRUE) {
 		if (cache.current[0]->size == G_IM_SIZ_8b) {
@@ -865,6 +901,7 @@ void ShaderCombiner::updateFBInfo(bool _bForce) {
 			if (gDP.otherMode.imageRead == 0)
 				nFbFixedAlpha |= 1;
 		}
+		nMSTex0Enabled = config.video.multisampling;
 	}
 	if (cache.current[1] != NULL && cache.current[1]->frameBufferTexture == TRUE) {
 		if (cache.current[1]->size == G_IM_SIZ_8b) {
@@ -872,9 +909,12 @@ void ShaderCombiner::updateFBInfo(bool _bForce) {
 			if (gDP.otherMode.imageRead == 0)
 				nFbFixedAlpha |= 2;
 		}
+		nMSTex1Enabled = config.video.multisampling;
 	}
 	_setIUniform(m_uniforms.uFb8Bit, nFb8bitMode, _bForce);
 	_setIUniform(m_uniforms.uFbFixedAlpha, nFbFixedAlpha, _bForce);
+	_setIUniform(m_uniforms.uMSTex0Enabled, nMSTex0Enabled, _bForce);
+	_setIUniform(m_uniforms.uMSTex1Enabled, nMSTex1Enabled, _bForce);
 
 	gDP.changed &= ~CHANGED_FB_TEXTURE;
 }

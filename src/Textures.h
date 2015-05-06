@@ -6,6 +6,9 @@
 #include "CRC.h"
 #include "convert.h"
 
+extern const GLuint g_noiseTexIndex;
+extern const GLuint g_MSTex0Index;
+
 struct CachedTexture
 {
 	CachedTexture(GLuint _glName) : glName(_glName), max_level(0) {}
@@ -48,6 +51,7 @@ struct TextureCache
 	void removeFrameBufferTexture(CachedTexture * _pTexture);
 	void activateTexture(u32 _t, CachedTexture *_pTexture);
 	void activateDummy(u32 _t);
+	void activateMSDummy(u32 _t);
 	void update(u32 _t);
 
 	static TextureCache & get();
@@ -69,11 +73,13 @@ private:
 	bool _loadHiresBackground(CachedTexture *_pTexture);
 	void _updateBackground();
 	void _clear();
+	void _initDummyTexture(CachedTexture * _pDummy);
 
 	typedef std::map<u32, CachedTexture> Textures;
 	Textures m_textures;
 	Textures m_fbTextures;
 	CachedTexture * m_pDummy;
+	CachedTexture * m_pMSDummy;
 	u32 m_hits, m_misses;
 	u32 m_maxBytes;
 	u32 m_cachedBytes;

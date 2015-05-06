@@ -39,14 +39,14 @@ private:
 
 	struct UniformLocation
 	{
-		iUniform uTex0, uTex1, uTexNoise, uTlutImage, uZlutImage, uDepthImage,
+		iUniform uTex0, uTex1, uMSTex0, uMSTex1, uMSTex0Enabled, uMSTex1Enabled, uTexNoise, uTlutImage, uZlutImage, uDepthImage,
 			uFogMode, uFogUsage, uEnableLod, uEnableAlphaTest,
 			uEnableDepth, uEnableDepthCompare, uEnableDepthUpdate,
 			uDepthMode, uDepthSource, uFb8Bit, uFbFixedAlpha, uRenderState, uSpecialBlendMode,
-			uMaxTile, uTextureDetail, uTexturePersp, uTextureFilterMode,
+			uMaxTile, uTextureDetail, uTexturePersp, uTextureFilterMode, uMSAASamples,
 			uAlphaCompareMode, uAlphaDitherMode, uColorDitherMode, uGammaCorrectionEnabled;
 
-		fUniform uFogAlpha, uPrimitiveLod, uMinLod, uDeltaZ, uAlphaTestValue;
+		fUniform uFogAlpha, uPrimitiveLod, uMinLod, uDeltaZ, uAlphaTestValue, uMSAAScale;
 
 		fv2Uniform uScreenScale, uDepthScale, uFogScale;
 	};
