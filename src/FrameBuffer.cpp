@@ -1310,6 +1310,7 @@ void RDRAMtoFrameBuffer::CopyFromRDRAM( u32 _address, bool _bUseAlpha)
 		CombinerInfo::get().setCombine(EncodeCombineMode(0, 0, 0, TEXEL0, 0, 0, 0, 1, 0, 0, 0, TEXEL0, 0, 0, 0, 1));
 		glDisable(GL_BLEND);
 	}
+	currentCombiner()->updateFBInfo();
 
 	glDisable(GL_DEPTH_TEST);
 	const u32 gspChanged = gSP.changed & CHANGED_CPU_FB_WRITE;
