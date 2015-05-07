@@ -453,14 +453,10 @@ static const char* fragment_shader_readtex =
 SHADER_VERSION
 #endif
 "uniform lowp int uTextureFilterMode;								\n"
-"lowp vec4 filterNearest(in sampler2D tex, in mediump vec2 texCoord)\n"
-"{																	\n"
-"  return textureLod(tex, texCoord, 0.0);							\n"
-"}																	\n"
 // 3 point texture filtering.
 // Original author: ArthurCarvalho
 // GLSL implementation: twinaphex, mupen64plus-libretro project.
-"#define TEX_OFFSET(off) textureLod(tex, texCoord - (off)/texSize, 0.0)	\n"
+"#define TEX_OFFSET(off) texture(tex, texCoord - (off)/texSize)	\n"
 "lowp vec4 filter3point(in sampler2D tex, in mediump vec2 texCoord)			\n"
 "{																			\n"
 "  mediump vec2 texSize = vec2(textureSize(tex,0));							\n"
@@ -473,7 +469,7 @@ SHADER_VERSION
 "}																			\n"
 "lowp vec4 readTex(in sampler2D tex, in mediump vec2 texCoord, in bool fb8bit, in bool fbFixedAlpha)	\n"
 "{																			\n"
-"  lowp vec4 texColor = uTextureFilterMode == 0 ? filterNearest(tex, texCoord) : filter3point(tex, texCoord); \n"
+"  lowp vec4 texColor = uTextureFilterMode == 0 ? texture(tex, texCoord) : filter3point(tex, texCoord); \n"
 "  if (fb8bit) texColor = vec4(texColor.r);									\n"
 "  if (fbFixedAlpha) texColor.a = 0.825;									\n"
 "  return texColor;															\n"
