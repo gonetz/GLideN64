@@ -515,8 +515,6 @@ void FrameBufferList::saveBuffer(u32 _address, u16 _format, u16 _size, u16 _widt
 	m_pCurrent->m_isDepthBuffer = _address == gDP.depthImageAddress;
 	m_pCurrent->m_isPauseScreen = m_pCurrent->m_isOBScreen = false;
 	m_pCurrent->m_postProcessed = false;
-
-	gSP.changed |= CHANGED_TEXTURE;
 }
 
 void FrameBufferList::removeBuffer(u32 _address )
@@ -768,7 +766,7 @@ void FrameBufferList::renderBuffer(u32 _address)
 	m_drawBuffer = GL_FRAMEBUFFER;
 	glEnable(GL_SCISSOR_TEST);
 	glBindFramebuffer(GL_FRAMEBUFFER, m_pCurrent->m_FBO);
-	gSP.changed |= CHANGED_TEXTURE | CHANGED_VIEWPORT;
+	gSP.changed |= CHANGED_VIEWPORT;
 	gDP.changed |= CHANGED_COMBINE;
 }
 #endif
@@ -1323,7 +1321,6 @@ void RDRAMtoFrameBuffer::CopyFromRDRAM( u32 _address, bool _bUseAlpha)
 
 	gSP.textureTile[0] = pTile0;
 
-	gSP.changed |= gspChanged | CHANGED_TEXTURE;
 	gDP.changed |= CHANGED_RENDERMODE | CHANGED_COMBINE;
 }
 

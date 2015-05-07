@@ -1223,7 +1223,7 @@ void gDPLLETriangle(u32 _w1, u32 _w2, int _shade, int _texture, int _zbuffer, u3
 	}
 
 	if (_texture != 0)
-		gSP.changed |= CHANGED_TEXTURE;
+		gDP.changed |= CHANGED_TILE;
 	if (_zbuffer != 0)
 		gSP.geometryMode |= G_ZBUFFER;
 

@@ -349,7 +349,7 @@ void _setGLState() {
 	glDisableVertexAttribArray(SC_TEXCOORD1);
 	glDisableVertexAttribArray(SC_NUMLIGHTS);
 	glViewport(0, 0, video().getWidth(), video().getHeight());
-	gSP.changed |= CHANGED_VIEWPORT | CHANGED_TEXTURE;
+	gSP.changed |= CHANGED_VIEWPORT;
 	gDP.changed |= CHANGED_RENDERMODE;
 }
 
