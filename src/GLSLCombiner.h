@@ -43,7 +43,7 @@ private:
 		iUniform uTex0, uTex1, uMSTex0, uMSTex1, uTexNoise, uTlutImage, uZlutImage, uDepthImage,
 			uFogMode, uFogUsage, uEnableLod, uEnableAlphaTest,
 			uEnableDepth, uEnableDepthCompare, uEnableDepthUpdate,
-			uDepthMode, uDepthSource, uFb8Bit, uFbFixedAlpha, uRenderState, uSpecialBlendMode,
+			uDepthMode, uDepthSource, uRenderState, uSpecialBlendMode,
 			uMaxTile, uTextureDetail, uTexturePersp, uTextureFilterMode, uMSAASamples,
 			uAlphaCompareMode, uAlphaDitherMode, uColorDitherMode, uGammaCorrectionEnabled;
 
@@ -51,7 +51,7 @@ private:
 
 		fv2Uniform uScreenScale, uDepthScale, uFogScale;
 
-		iv2Uniform uMSTexEnabled;
+		iv2Uniform uMSTexEnabled, uFb8Bit, uFbFixedAlpha;
 	};
 
 #ifdef OS_MAC_OS_X

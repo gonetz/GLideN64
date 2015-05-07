@@ -529,24 +529,24 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 		if (usesT0()) {
 			if (config.video.multisampling > 0) {
 				strFragmentShader.append("  lowp vec4 readtex0; \n");
-				strFragmentShader.append("  if (uMSTexEnabled[0] == 0) readtex0 = readTex(uTex0, vTexCoord0, uFb8Bit == 1 || uFb8Bit == 3, uFbFixedAlpha == 1 || uFbFixedAlpha == 3); \n");
-				strFragmentShader.append("  else readtex0 = readTexMS(uMSTex0, vTexCoord0, uFb8Bit == 1 || uFb8Bit == 3, uFbFixedAlpha == 1 || uFbFixedAlpha == 3); \n");
+				strFragmentShader.append("  if (uMSTexEnabled[0] == 0) readtex0 = readTex(uTex0, vTexCoord0, uFb8Bit[0] != 0, uFbFixedAlpha[0] != 0); \n");
+				strFragmentShader.append("  else readtex0 = readTexMS(uMSTex0, vTexCoord0, uFb8Bit[0] != 0, uFbFixedAlpha[0] != 0); \n");
 			} else
-				strFragmentShader.append("  lowp vec4 readtex0 = readTex(uTex0, vTexCoord0, uFb8Bit == 1 || uFb8Bit == 3, uFbFixedAlpha == 1 || uFbFixedAlpha == 3); \n");
+				strFragmentShader.append("  lowp vec4 readtex0 = readTex(uTex0, vTexCoord0, uFb8Bit[0] != 0, uFbFixedAlpha[0] != 0); \n");
 		}
 		if (usesT1()) {
 			if (config.video.multisampling > 0) {
 				strFragmentShader.append("  lowp vec4 readtex1; \n");
-				strFragmentShader.append("  if (uMSTexEnabled[1] == 0) readtex1 = readTex(uTex1, vTexCoord1, uFb8Bit == 2 || uFb8Bit == 3, uFbFixedAlpha == 2 || uFbFixedAlpha == 3); \n");
-				strFragmentShader.append("  else readtex1 = readTexMS(uMSTex1, vTexCoord1, uFb8Bit == 1 || uFb8Bit == 3, uFbFixedAlpha == 1 || uFbFixedAlpha == 3); \n");
+				strFragmentShader.append("  if (uMSTexEnabled[1] == 0) readtex1 = readTex(uTex1, vTexCoord1, uFb8Bit[1] != 0, uFbFixedAlpha[1] != 0); \n");
+				strFragmentShader.append("  else readtex1 = readTexMS(uMSTex1, vTexCoord1, uFb8Bit[1] != 0, uFbFixedAlpha[1] != 0); \n");
 			} else
-				strFragmentShader.append("  lowp vec4 readtex1 = readTex(uTex1, vTexCoord1, uFb8Bit == 2 || uFb8Bit == 3, uFbFixedAlpha == 2 || uFbFixedAlpha == 3); \n");
+				strFragmentShader.append("  lowp vec4 readtex1 = readTex(uTex1, vTexCoord1, uFb8Bit[1] != 0, uFbFixedAlpha[1] != 0); \n");
 		}
 #else
 		if (usesT0())
-			strFragmentShader.append("  lowp vec4 readtex0 = readTex(uTex0, vTexCoord0, uFb8Bit == 1 || uFb8Bit == 3, uFbFixedAlpha == 1 || uFbFixedAlpha == 3); \n");
+			strFragmentShader.append("  lowp vec4 readtex0 = readTex(uTex0, vTexCoord0, uFb8Bit[0] != 0, uFbFixedAlpha[0] != 0); \n");
 		if (usesT1())
-			strFragmentShader.append("  lowp vec4 readtex1 = readTex(uTex1, vTexCoord1, uFb8Bit == 2 || uFb8Bit == 3, uFbFixedAlpha == 2 || uFbFixedAlpha == 3); \n");
+			strFragmentShader.append("  lowp vec4 readtex1 = readTex(uTex1, vTexCoord1, uFb8Bit[1] != 0, uFbFixedAlpha[1] != 0); \n");
 #endif // GL_MULTISAMPLING_SUPPORT
 	}
 	const bool bUseHWLight = config.generalEmulation.enableHWLighting != 0 && GBI.isHWLSupported() && usesShadeColor();
@@ -890,27 +890,28 @@ void ShaderCombiner::updateFBInfo(bool _bForce) {
 	if (!usesTex())
 		return;
 
-	int nFb8bitMode = 0, nFbFixedAlpha = 0;
+	int nFb8bitMode0 = 0, nFb8bitMode1 = 0;
+	int nFbFixedAlpha0 = 0, nFbFixedAlpha1 = 0;
 	int nMSTex0Enabled = 0, nMSTex1Enabled = 0;
 	TextureCache & cache = textureCache();
 	if (cache.current[0] != NULL && cache.current[0]->frameBufferTexture != CachedTexture::fbNone) {
 		if (cache.current[0]->size == G_IM_SIZ_8b) {
-			nFb8bitMode |= 1;
+			nFb8bitMode0 = 1;
 			if (gDP.otherMode.imageRead == 0)
-				nFbFixedAlpha |= 1;
+				nFbFixedAlpha0 = 1;
 		}
 		nMSTex0Enabled = cache.current[0]->frameBufferTexture == CachedTexture::fbMultiSample ? 1 : 0;
 	}
 	if (cache.current[1] != NULL && cache.current[1]->frameBufferTexture != CachedTexture::fbNone) {
 		if (cache.current[1]->size == G_IM_SIZ_8b) {
-			nFb8bitMode |= 2;
+			nFb8bitMode1 = 1;
 			if (gDP.otherMode.imageRead == 0)
-				nFbFixedAlpha |= 2;
+				nFbFixedAlpha1 = 1;
 		}
 		nMSTex1Enabled = cache.current[1]->frameBufferTexture == CachedTexture::fbMultiSample ? 1 : 0;
 	}
-	_setIUniform(m_uniforms.uFb8Bit, nFb8bitMode, _bForce);
-	_setIUniform(m_uniforms.uFbFixedAlpha, nFbFixedAlpha, _bForce);
+	_setIV2Uniform(m_uniforms.uFb8Bit, nFb8bitMode0, nFb8bitMode1, _bForce);
+	_setIV2Uniform(m_uniforms.uFbFixedAlpha, nFbFixedAlpha0, nFbFixedAlpha1, _bForce);
 	_setIV2Uniform(m_uniforms.uMSTexEnabled, nMSTex0Enabled, nMSTex1Enabled, _bForce);
 
 	gDP.changed &= ~CHANGED_FB_TEXTURE;
