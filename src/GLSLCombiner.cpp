@@ -529,7 +529,7 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 		if (usesT0()) {
 			if (config.video.multisampling > 0) {
 				strFragmentShader.append("  lowp vec4 readtex0; \n");
-				strFragmentShader.append("  if (uMSTex0Enabled == 0) readtex0 = readTex(uTex0, vTexCoord0, uFb8Bit == 1 || uFb8Bit == 3, uFbFixedAlpha == 1 || uFbFixedAlpha == 3); \n");
+				strFragmentShader.append("  if (uMSTexEnabled[0] == 0) readtex0 = readTex(uTex0, vTexCoord0, uFb8Bit == 1 || uFb8Bit == 3, uFbFixedAlpha == 1 || uFbFixedAlpha == 3); \n");
 				strFragmentShader.append("  else readtex0 = readTexMS(uMSTex0, vTexCoord0, uFb8Bit == 1 || uFb8Bit == 3, uFbFixedAlpha == 1 || uFbFixedAlpha == 3); \n");
 			} else
 				strFragmentShader.append("  lowp vec4 readtex0 = readTex(uTex0, vTexCoord0, uFb8Bit == 1 || uFb8Bit == 3, uFbFixedAlpha == 1 || uFbFixedAlpha == 3); \n");
@@ -537,7 +537,7 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 		if (usesT1()) {
 			if (config.video.multisampling > 0) {
 				strFragmentShader.append("  lowp vec4 readtex1; \n");
-				strFragmentShader.append("  if (uMSTex1Enabled == 0) readtex1 = readTex(uTex1, vTexCoord1, uFb8Bit == 2 || uFb8Bit == 3, uFbFixedAlpha == 2 || uFbFixedAlpha == 3); \n");
+				strFragmentShader.append("  if (uMSTexEnabled[1] == 0) readtex1 = readTex(uTex1, vTexCoord1, uFb8Bit == 2 || uFb8Bit == 3, uFbFixedAlpha == 2 || uFbFixedAlpha == 3); \n");
 				strFragmentShader.append("  else readtex1 = readTexMS(uMSTex1, vTexCoord1, uFb8Bit == 1 || uFb8Bit == 3, uFbFixedAlpha == 1 || uFbFixedAlpha == 3); \n");
 			} else
 				strFragmentShader.append("  lowp vec4 readtex1 = readTex(uTex1, vTexCoord1, uFb8Bit == 2 || uFb8Bit == 3, uFbFixedAlpha == 2 || uFbFixedAlpha == 3); \n");
@@ -712,8 +712,7 @@ void ShaderCombiner::_locateUniforms() {
 #ifdef GL_MULTISAMPLING_SUPPORT
 	LocateUniform(uMSTex0);
 	LocateUniform(uMSTex1);
-	LocateUniform(uMSTex0Enabled);
-	LocateUniform(uMSTex1Enabled);
+	LocateUniform(uMSTexEnabled);
 	LocateUniform(uMSAASamples);
 	LocateUniform(uMSAAScale);
 #endif
@@ -740,8 +739,7 @@ void ShaderCombiner::update(bool _bForce) {
 			_setIUniform(m_uniforms.uMSTex1, g_MSTex0Index + 1, true);
 			_setIUniform(m_uniforms.uMSAASamples, config.video.multisampling, true);
 			_setFUniform(m_uniforms.uMSAAScale, 1.0f / (float)config.video.multisampling, true);
-			_setIUniform(m_uniforms.uMSTex0Enabled, 0, true);
-			_setIUniform(m_uniforms.uMSTex1Enabled, 0, true);
+			_setIV2Uniform(m_uniforms.uMSTexEnabled, 0, 0, true);
 #endif
 		}
 
@@ -913,8 +911,7 @@ void ShaderCombiner::updateFBInfo(bool _bForce) {
 	}
 	_setIUniform(m_uniforms.uFb8Bit, nFb8bitMode, _bForce);
 	_setIUniform(m_uniforms.uFbFixedAlpha, nFbFixedAlpha, _bForce);
-	_setIUniform(m_uniforms.uMSTex0Enabled, nMSTex0Enabled, _bForce);
-	_setIUniform(m_uniforms.uMSTex1Enabled, nMSTex1Enabled, _bForce);
+	_setIV2Uniform(m_uniforms.uMSTexEnabled, nMSTex0Enabled, nMSTex1Enabled, _bForce);
 
 	gDP.changed &= ~CHANGED_FB_TEXTURE;
 }

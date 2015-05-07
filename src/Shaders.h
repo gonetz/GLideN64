@@ -166,8 +166,7 @@ SHADER_VERSION
 #ifdef GL_MULTISAMPLING_SUPPORT
 "uniform sampler2DMS uMSTex0;	\n"
 "uniform sampler2DMS uMSTex1;	\n"
-"uniform lowp int uMSTex0Enabled;	\n"
-"uniform lowp int uMSTex1Enabled;	\n"
+"uniform lowp ivec2 uMSTexEnabled;	\n"
 #endif
 "layout (std140) uniform ColorsBlock {\n"
 "  lowp vec4 uFogColor;			\n"
