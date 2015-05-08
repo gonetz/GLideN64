@@ -467,8 +467,7 @@ void TextureCache::_initDummyTexture(CachedTexture * _pDummy)
 void TextureCache::init()
 {
 	m_maxBytes = config.texture.maxBytes;
-
-	glGetIntegerv(GL_UNPACK_ALIGNMENT, &m_curUnpackAlignment);
+	m_curUnpackAlignment = 0;
 
 	u32 dummyTexture[16] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
@@ -532,6 +531,8 @@ void TextureCache::_checkCacheSize()
 
 CachedTexture * TextureCache::_addTexture(u32 _crc32)
 {
+	if (m_curUnpackAlignment == 0)
+		glGetIntegerv(GL_UNPACK_ALIGNMENT, &m_curUnpackAlignment);
 	_checkCacheSize();
 	GLuint glName;
 	glGenTextures(1, &glName);
@@ -779,7 +780,7 @@ void TextureCache::_loadBackground(CachedTexture *pTexture)
 	if ((config.textureFilter.txEnhancementMode | config.textureFilter.txFilterMode) != 0 && config.textureFilter.txFilterIgnoreBG == 0 && TFH.isInited()) {
 		GHQTexInfo ghqTexInfo;
 		if (txfilter_filter((u8*)pDest, pTexture->realWidth, pTexture->realHeight, glInternalFormat, (uint64)pTexture->crc, &ghqTexInfo) != 0 && ghqTexInfo.data != NULL) {
-			if (ghqTexInfo.width % 2 != 0 && ghqTexInfo.format != GL_RGBA)
+			if (ghqTexInfo.width % 2 != 0 && ghqTexInfo.format != GL_RGBA && m_curUnpackAlignment > 1)
 				glPixelStorei(GL_UNPACK_ALIGNMENT, 2);
 			glTexImage2D(GL_TEXTURE_2D, 0, ghqTexInfo.format, ghqTexInfo.width, ghqTexInfo.height, 0, ghqTexInfo.texture_format, ghqTexInfo.pixel_type, ghqTexInfo.data);
 			_updateCachedTexture(ghqTexInfo, pTexture);
@@ -791,7 +792,8 @@ void TextureCache::_loadBackground(CachedTexture *pTexture)
 			glPixelStorei(GL_UNPACK_ALIGNMENT, 2);
 		glTexImage2D(GL_TEXTURE_2D, 0, glInternalFormat, pTexture->realWidth, pTexture->realHeight, 0, GL_RGBA, glType, pDest);
 	}
-	glPixelStorei(GL_UNPACK_ALIGNMENT, m_curUnpackAlignment);
+	if (m_curUnpackAlignment > 1)
+		glPixelStorei(GL_UNPACK_ALIGNMENT, m_curUnpackAlignment);
 	free(pDest);
 }
 
@@ -1002,7 +1004,7 @@ void TextureCache::_load(u32 _tile, CachedTexture *_pTexture)
 			}
 		}
 		if (!bLoaded) {
-			if (tmptex.realWidth % 2 != 0 && glInternalFormat != GL_RGBA)
+			if (tmptex.realWidth % 2 != 0 && glInternalFormat != GL_RGBA && m_curUnpackAlignment > 1)
 				glPixelStorei(GL_UNPACK_ALIGNMENT, 2);
 			glTexImage2D(GL_TEXTURE_2D, mipLevel, glInternalFormat, tmptex.realWidth, tmptex.realHeight, 0, GL_RGBA, glType, pDest);
 		}
@@ -1029,7 +1031,8 @@ void TextureCache::_load(u32 _tile, CachedTexture *_pTexture)
 			tmptex.realHeight >>= 1;
 		_pTexture->textureBytes += (tmptex.realWidth * tmptex.realHeight) << sizeShift;
 	};
-	glPixelStorei(GL_UNPACK_ALIGNMENT, m_curUnpackAlignment);
+	if (m_curUnpackAlignment > 1)
+		glPixelStorei(GL_UNPACK_ALIGNMENT, m_curUnpackAlignment);
 	free(pDest);
 }
 
