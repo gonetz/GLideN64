@@ -8,6 +8,7 @@
 
 void PluginAPI::DllAbout(/*HWND _hParent*/)
 {
+	Config_LoadConfig();
 	wchar_t strIniFolderPath[PLUGIN_PATH_SIZE];
 	api().FindPluginPath(strIniFolderPath);
 	RunAbout(strIniFolderPath);
