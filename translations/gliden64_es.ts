@@ -6,7 +6,7 @@
     <message>
         <location filename="AboutDialog.ui" line="35"/>
         <source>About GLideN64</source>
-        <translation>Acerca de GlideN64</translation>
+        <translation>Sobre GlideN64</translation>
     </message>
     <message>
         <location filename="AboutDialog.ui" line="66"/>
