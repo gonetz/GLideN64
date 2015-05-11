@@ -511,7 +511,7 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 	} else
 		strcat(strCombiner, "  color2 = color1; \n");
 
-	if (usesTex()) {
+	if (usesTexture()) {
 		strFragmentShader.assign(fragment_shader_header_common_variables);
 		strFragmentShader.append(fragment_shader_header_common_functions);
 	}
@@ -636,7 +636,7 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 
 	m_program = glCreateProgram();
 	_locate_attributes();
-	if (usesTex())
+	if (usesTexture())
 		glAttachShader(m_program, g_vertex_shader_object);
 	else
 		glAttachShader(m_program, g_vertex_shader_object_notex);
@@ -646,7 +646,7 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 		glAttachShader(m_program, g_calc_light_shader_object);
 	if (bUseLod)
 		glAttachShader(m_program, g_calc_mipmap_shader_object);
-	else if (usesTex())
+	else if (usesTexture())
 		glAttachShader(m_program, g_readtex_shader_object);
 	if (video().getRender().isImageTexturesSupported() && config.frameBufferEmulation.N64DepthCompare != 0)
 		glAttachShader(m_program, g_calc_depth_shader_object);
@@ -731,7 +731,7 @@ void ShaderCombiner::update(bool _bForce) {
 
 	if (_bForce) {
 		_setIUniform(m_uniforms.uTexNoise, g_noiseTexIndex, true);
-		if (usesTex()) {
+		if (usesTexture()) {
 			_setIUniform(m_uniforms.uTex0, 0, true);
 			_setIUniform(m_uniforms.uTex1, 1, true);
 #ifdef GL_MULTISAMPLING_SUPPORT
@@ -887,7 +887,7 @@ void ShaderCombiner::updateTextureInfo(bool _bForce) {
 }
 
 void ShaderCombiner::updateFBInfo(bool _bForce) {
-	if (!usesTex())
+	if (!usesTexture())
 		return;
 
 	int nFb8bitMode0 = 0, nFb8bitMode1 = 0;
@@ -1110,7 +1110,7 @@ bool UniformBlock::_isDataChanged(void * _pBuffer, const void * _pData, u32 _dat
 void UniformBlock::bindWithShaderCombiner(ShaderCombiner * _pCombiner)
 {
 	const GLuint program = _pCombiner->m_program;
-	if (_pCombiner->usesTex()) {
+	if (_pCombiner->usesTexture()) {
 		if (m_textureBlock.m_buffer == 0)
 			_initTextureBuffer(program);
 		else {
