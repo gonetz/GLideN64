@@ -38,4 +38,5 @@ TRANSLATIONS = gliden64_fr.ts \
 			   gliden64_de.ts \
 			   gliden64_it.ts \
 			   gliden64_es.ts \
+			   gliden64_pl.ts \
 			   gliden64_pt_BR.ts
