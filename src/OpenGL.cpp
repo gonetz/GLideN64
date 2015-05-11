@@ -1033,64 +1033,36 @@ void OGLRender::drawTexturedRect(const TexturedRectParams & _params)
 		float s0, t0, s1, t1;
 	} texST[2] = { { 0, 0, 0, 0 }, { 0, 0, 0, 0 } }; //struct for texture coordinates
 
-	if (currentCombiner()->usesTile(0) && cache.current[0] && gSP.textureTile[0]) {
-		f32 shiftScaleS = 1.0f;
-		f32 shiftScaleT = 1.0f;
-		getTextureShiftScale(0, cache, shiftScaleS, shiftScaleT);
-		texST[0].s0 = _params.uls * shiftScaleS - gSP.textureTile[0]->fuls;
-		texST[0].t0 = _params.ult * shiftScaleT - gSP.textureTile[0]->fult;
-		texST[0].s1 = (_params.lrs + 1.0f) * shiftScaleS - gSP.textureTile[0]->fuls;
-		texST[0].t1 = (_params.lrt + 1.0f) * shiftScaleT - gSP.textureTile[0]->fult;
+	for (u32 t = 0; t < 2; ++t) {
+		if (currentCombiner()->usesTile(t) && cache.current[t] && gSP.textureTile[t]) {
+			f32 shiftScaleS = 1.0f;
+			f32 shiftScaleT = 1.0f;
+			getTextureShiftScale(t, cache, shiftScaleS, shiftScaleT);
+			texST[t].s0 = _params.uls * shiftScaleS - gSP.textureTile[t]->fuls;
+			texST[t].t0 = _params.ult * shiftScaleT - gSP.textureTile[t]->fult;
+			texST[t].s1 = (_params.lrs + 1.0f) * shiftScaleS - gSP.textureTile[t]->fuls;
+			texST[t].t1 = (_params.lrt + 1.0f) * shiftScaleT - gSP.textureTile[t]->fult;
 
-		if (cache.current[0]->frameBufferTexture) {
-			texST[0].s0 = cache.current[0]->offsetS + texST[0].s0;
-			texST[0].t0 = cache.current[0]->offsetT - texST[0].t0;
-			texST[0].s1 = cache.current[0]->offsetS + texST[0].s1;
-			texST[0].t1 = cache.current[0]->offsetT - texST[0].t1;
+			if (cache.current[t]->frameBufferTexture) {
+				texST[t].s0 = cache.current[t]->offsetS + texST[t].s0;
+				texST[t].t0 = cache.current[t]->offsetT - texST[t].t0;
+				texST[t].s1 = cache.current[t]->offsetS + texST[t].s1;
+				texST[t].t1 = cache.current[t]->offsetT - texST[t].t1;
+			}
+
+			glActiveTexture(GL_TEXTURE0 + t);
+
+			if ((texST[t].s0 < texST[t].s1 && texST[t].s0 >= 0.0 && texST[t].s1 <= cache.current[t]->width) || (cache.current[t]->maskS + cache.current[t]->mirrorS == 0 && (texST[t].s0 < -1024.0f || texST[t].s1 > 1023.99f)))
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+
+			if (texST[t].t0 < texST[t].t1 && texST[t].t0 >= 0.0f && texST[t].t1 <= cache.current[t]->height)
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+			texST[t].s0 *= cache.current[t]->scaleS;
+			texST[t].t0 *= cache.current[t]->scaleT;
+			texST[t].s1 *= cache.current[t]->scaleS;
+			texST[t].t1 *= cache.current[t]->scaleT;
 		}
-
-		glActiveTexture( GL_TEXTURE0 );
-
-		if ((texST[0].s0 < texST[0].s1 && texST[0].s0 >= 0.0 && texST[0].s1 <= cache.current[0]->width) || (cache.current[0]->maskS + cache.current[0]->mirrorS == 0 && (texST[0].s0 < -1024.0f || texST[0].s1 > 1023.99f)))
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-
-		if (texST[0].t0 < texST[0].t1 && texST[0].t0 >= 0.0f && texST[0].t1 <= cache.current[0]->height)
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
-		texST[0].s0 *= cache.current[0]->scaleS;
-		texST[0].t0 *= cache.current[0]->scaleT;
-		texST[0].s1 *= cache.current[0]->scaleS;
-		texST[0].t1 *= cache.current[0]->scaleT;
-	}
-
-	if (currentCombiner()->usesTile(1) && cache.current[1] && gSP.textureTile[1]) {
-		f32 shiftScaleS = 1.0f;
-		f32 shiftScaleT = 1.0f;
-		getTextureShiftScale(1, cache, shiftScaleS, shiftScaleT);
-		texST[1].s0 = _params.uls * shiftScaleS - gSP.textureTile[1]->fuls;
-		texST[1].t0 = _params.ult * shiftScaleT - gSP.textureTile[1]->fult;
-		texST[1].s1 = (_params.lrs + 1.0f) * shiftScaleS - gSP.textureTile[1]->fuls;
-		texST[1].t1 = (_params.lrt + 1.0f) * shiftScaleT - gSP.textureTile[1]->fult;
-
-		if (cache.current[1]->frameBufferTexture) {
-			texST[1].s0 = cache.current[1]->offsetS + texST[1].s0;
-			texST[1].t0 = cache.current[1]->offsetT - texST[1].t0;
-			texST[1].s1 = cache.current[1]->offsetS + texST[1].s1;
-			texST[1].t1 = cache.current[1]->offsetT - texST[1].t1;
-		}
-
-		glActiveTexture( GL_TEXTURE1 );
-
-		if ((texST[1].s0 == 0.0f) && (texST[1].s1 <= cache.current[1]->width))
-			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
-
-		if ((texST[1].t0 == 0.0f) && (texST[1].t1 <= cache.current[1]->height))
-			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
-
-		texST[1].s0 *= cache.current[1]->scaleS;
-		texST[1].t0 *= cache.current[1]->scaleT;
-		texST[1].s1 *= cache.current[1]->scaleS;
-		texST[1].t1 *= cache.current[1]->scaleT;
 	}
 
 	if (gDP.otherMode.cycleType == G_CYC_COPY) {
