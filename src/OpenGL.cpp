@@ -606,18 +606,12 @@ void OGLRender::_updateStates(RENDER_STATE _renderState) const
 		//For some reason updating the texture cache on the first frame of LOZ:OOT causes a NULL Pointer exception...
 		ShaderCombiner * pCurrentCombiner = cmbInfo.getCurrent();
 		if (pCurrentCombiner != NULL) {
-			if (pCurrentCombiner->usesTile(0))
-				textureCache().update(0);
-			else
-				textureCache().activateDummy(0);
-
-			//Note: enabling dummies makes some F-zero X textures flicker.... strange.
-
-			if (pCurrentCombiner->usesTile(1))
-				textureCache().update(1);
-			else
-				textureCache().activateDummy(1);
-
+			for (u32 t = 0; t < 2; ++t) {
+				if (pCurrentCombiner->usesTile(t))
+					textureCache().update(t);
+				else
+					textureCache().activateDummy(t);
+			}
 			pCurrentCombiner->updateFBInfo();
 		}
 		if (_renderState == rsTriangle || _renderState == rsLine)
