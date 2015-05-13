@@ -23,8 +23,11 @@ public:
 
 	u64 getMux() const {return m_combine.mux;}
 
-	bool usesT0() const {return (m_nInputs & ((1<<TEXEL0)|(1<<TEXEL0_ALPHA))) != 0;}
-	bool usesT1() const {return (m_nInputs & ((1<<TEXEL1)|(1<<TEXEL1_ALPHA))) != 0;}
+	bool usesTile(u32 _t) const {
+		if (_t == 0)
+			return (m_nInputs & ((1<<TEXEL0)|(1<<TEXEL0_ALPHA))) != 0;
+		return (m_nInputs & ((1 << TEXEL1) | (1 << TEXEL1_ALPHA))) != 0;
+	}
 	bool usesTexture() const { return (m_nInputs & ((1 << TEXEL1)|(1 << TEXEL1_ALPHA)|(1 << TEXEL0)|(1 << TEXEL0_ALPHA))) != 0; }
 	bool usesLOD() const { return (m_nInputs & (1 << LOD_FRACTION)) != 0; }
 	bool usesShade() const { return (m_nInputs & ((1 << SHADE) | (1 << SHADE_ALPHA))) != 0; }

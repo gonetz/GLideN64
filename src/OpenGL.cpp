@@ -606,14 +606,14 @@ void OGLRender::_updateStates(RENDER_STATE _renderState) const
 		//For some reason updating the texture cache on the first frame of LOZ:OOT causes a NULL Pointer exception...
 		ShaderCombiner * pCurrentCombiner = cmbInfo.getCurrent();
 		if (pCurrentCombiner != NULL) {
-			if (pCurrentCombiner->usesT0())
+			if (pCurrentCombiner->usesTile(0))
 				textureCache().update(0);
 			else
 				textureCache().activateDummy(0);
 
 			//Note: enabling dummies makes some F-zero X textures flicker.... strange.
 
-			if (pCurrentCombiner->usesT1())
+			if (pCurrentCombiner->usesTile(1))
 				textureCache().update(1);
 			else
 				textureCache().activateDummy(1);
@@ -644,17 +644,17 @@ void OGLRender::_setTexCoordArrays() const
 {
 	if (m_renderState == rsTriangle) {
 		glDisableVertexAttribArray(SC_TEXCOORD1);
-		if (currentCombiner()->usesT0() || currentCombiner()->usesT1())
+		if (currentCombiner()->usesTexture())
 			glEnableVertexAttribArray(SC_TEXCOORD0);
 		else
 			glDisableVertexAttribArray(SC_TEXCOORD0);
 	} else {
-		if (currentCombiner()->usesT0())
+		if (currentCombiner()->usesTile(0))
 			glEnableVertexAttribArray(SC_TEXCOORD0);
 		else
 			glDisableVertexAttribArray(SC_TEXCOORD0);
 
-		if (currentCombiner()->usesT1())
+		if (currentCombiner()->usesTile(1))
 			glEnableVertexAttribArray(SC_TEXCOORD1);
 		else
 			glDisableVertexAttribArray(SC_TEXCOORD1);
@@ -1039,7 +1039,7 @@ void OGLRender::drawTexturedRect(const TexturedRectParams & _params)
 		float s0, t0, s1, t1;
 	} texST[2] = { { 0, 0, 0, 0 }, { 0, 0, 0, 0 } }; //struct for texture coordinates
 
-	if (currentCombiner()->usesT0() && cache.current[0] && gSP.textureTile[0]) {
+	if (currentCombiner()->usesTile(0) && cache.current[0] && gSP.textureTile[0]) {
 		f32 shiftScaleS = 1.0f;
 		f32 shiftScaleT = 1.0f;
 		getTextureShiftScale(0, cache, shiftScaleS, shiftScaleT);
@@ -1069,7 +1069,7 @@ void OGLRender::drawTexturedRect(const TexturedRectParams & _params)
 		texST[0].t1 *= cache.current[0]->scaleT;
 	}
 
-	if (currentCombiner()->usesT1() && cache.current[1] && gSP.textureTile[1]) {
+	if (currentCombiner()->usesTile(1) && cache.current[1] && gSP.textureTile[1]) {
 		f32 shiftScaleS = 1.0f;
 		f32 shiftScaleT = 1.0f;
 		getTextureShiftScale(1, cache, shiftScaleS, shiftScaleT);

@@ -526,7 +526,7 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 		strFragmentShader.append("  lowp float lod_frac = mipmap(readtex0, readtex1);	\n");
 	} else {
 #ifdef GL_MULTISAMPLING_SUPPORT
-		if (usesT0()) {
+		if (usesTile(0)) {
 			if (config.video.multisampling > 0) {
 				strFragmentShader.append("  lowp vec4 readtex0; \n");
 				strFragmentShader.append("  if (uMSTexEnabled[0] == 0) readtex0 = readTex(uTex0, vTexCoord0, uFb8Bit[0] != 0, uFbFixedAlpha[0] != 0); \n");
@@ -534,7 +534,7 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 			} else
 				strFragmentShader.append("  lowp vec4 readtex0 = readTex(uTex0, vTexCoord0, uFb8Bit[0] != 0, uFbFixedAlpha[0] != 0); \n");
 		}
-		if (usesT1()) {
+		if (usesTile(1)) {
 			if (config.video.multisampling > 0) {
 				strFragmentShader.append("  lowp vec4 readtex1; \n");
 				strFragmentShader.append("  if (uMSTexEnabled[1] == 0) readtex1 = readTex(uTex1, vTexCoord1, uFb8Bit[1] != 0, uFbFixedAlpha[1] != 0); \n");
@@ -543,9 +543,9 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 				strFragmentShader.append("  lowp vec4 readtex1 = readTex(uTex1, vTexCoord1, uFb8Bit[1] != 0, uFbFixedAlpha[1] != 0); \n");
 		}
 #else
-		if (usesT0())
+		if ((usesTile(0))
 			strFragmentShader.append("  lowp vec4 readtex0 = readTex(uTex0, vTexCoord0, uFb8Bit[0] != 0, uFbFixedAlpha[0] != 0); \n");
-		if (usesT1())
+		if ((usesTile(1))
 			strFragmentShader.append("  lowp vec4 readtex1 = readTex(uTex1, vTexCoord1, uFb8Bit[1] != 0, uFbFixedAlpha[1] != 0); \n");
 #endif // GL_MULTISAMPLING_SUPPORT
 	}
@@ -615,7 +615,7 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 		strFragmentShader.append(fragment_shader_calc_light);
 	if (bUseLod)
 		strFragmentShader.append(fragment_shader_mipmap);
-	else if (usesTex())
+	else if (usesTexture())
 		strFragmentShader.append(fragment_shader_readtex);
 #ifdef GL_IMAGE_TEXTURES_SUPPORT
 	if (video().getRender().isImageTexturesSupported() && config.frameBufferEmulation.N64DepthCompare != 0)
