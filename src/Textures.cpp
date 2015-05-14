@@ -1098,7 +1098,9 @@ void TextureCache::activateTexture(u32 _t, CachedTexture *_pTexture)
 	const bool bUseLOD = currentCombiner()->usesLOD();
 	const GLint texLevel = bUseLOD ? _pTexture->max_level : 0;
 
+#ifndef GLES2
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, texLevel);
+#endif
 	if (config.texture.bilinearMode == BILINEAR_STANDARD) {
 		if (bUseBilinear) {
 			if (texLevel > 0)
