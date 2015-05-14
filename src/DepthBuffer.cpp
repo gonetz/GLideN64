@@ -176,6 +176,7 @@ void DepthBuffer::initDepthBufferTexture(FrameBuffer * _pBuffer)
 
 CachedTexture * DepthBuffer::resolveDepthBufferTexture(FrameBuffer * _pBuffer)
 {
+#ifdef GL_MULTISAMPLING_SUPPORT
 	if (config.video.multisampling == 0)
 		return m_pDepthBufferTexture;
 	if (m_resolved)
@@ -199,6 +200,9 @@ CachedTexture * DepthBuffer::resolveDepthBufferTexture(FrameBuffer * _pBuffer)
 	m_resolved = true;
 	gDP.changed |= CHANGED_SCISSOR;
 	return m_pResolveDepthBufferTexture;
+#else
+	return m_pDepthBufferTexture;
+#endif
 }
 
 void DepthBuffer::activateDepthBufferTexture(FrameBuffer * _pBuffer)

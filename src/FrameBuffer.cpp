@@ -317,6 +317,7 @@ bool FrameBuffer::isValid() const
 
 void FrameBuffer::resolveMultisampledTexture()
 {
+#ifdef GL_MULTISAMPLING_SUPPORT
 	if (m_resolved)
 		return;
 	glScissor(0, 0, m_pTexture->realWidth, m_pTexture->realHeight);
@@ -332,6 +333,7 @@ void FrameBuffer::resolveMultisampledTexture()
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, frameBufferList().getCurrent()->m_FBO);
 	gDP.changed |= CHANGED_SCISSOR;
 	m_resolved = true;
+#endif
 }
 
 CachedTexture * FrameBuffer::getTexture()
