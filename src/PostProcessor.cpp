@@ -24,6 +24,18 @@ SHADER_VERSION
 "}                                                      \n"
 ;
 
+static const char* copyShader =
+SHADER_VERSION
+"in mediump vec2 vTexCoord;                             \n"
+"uniform sampler2D Sample0;				                \n"
+"out lowp vec4 fragColor;								\n"
+"                                                       \n"
+"void main()                                            \n"
+"{                                                      \n"
+"    fragColor = texture2D(Sample0, vTexCoord);         \n"
+"}							                            \n"
+;
+
 static const char* extractBloomShader =
 SHADER_VERSION
 "in mediump vec2 vTexCoord;                               \n"
@@ -250,6 +262,14 @@ void PostProcessor::init()
 	assert(loc >= 0);
 	glUniform1i(loc, config.bloomFilter.thresholdLevel);
 
+#ifdef GLES2
+	m_copyProgram = _createShaderProgram(vertexShader, copyShader);
+	glUseProgram(m_copyProgram);
+	loc = glGetUniformLocation(m_copyProgram, "Sample0");
+	assert(loc >= 0);
+	glUniform1i(loc, 0);
+#endif
+
 	m_seperableBlurProgram = _createShaderProgram(vertexShader, seperableBlurShader);
 	glUseProgram(m_seperableBlurProgram);
 	loc = glGetUniformLocation(m_seperableBlurProgram, "Sample0");
@@ -295,6 +315,9 @@ void PostProcessor::init()
 
 void PostProcessor::destroy()
 {
+	if (m_copyProgram != 0)
+		glDeleteProgram(m_copyProgram);
+	m_copyProgram = 0;
 	if (m_extractBloomProgram != 0)
 		glDeleteProgram(m_extractBloomProgram);
 	m_extractBloomProgram = 0;
@@ -372,6 +395,12 @@ void PostProcessor::process(FrameBuffer * _pBuffer)
 	_setGLState();
 	OGLVideo & ogl = video();
 
+#ifdef GLES2
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_FBO_original);
+	textureCache().activateTexture(0, _pBuffer->m_pTexture);
+	glUseProgram(m_copyProgram);
+	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+#else
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, _pBuffer->m_FBO);
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_FBO_original);
 	glBlitFramebuffer(
@@ -379,6 +408,7 @@ void PostProcessor::process(FrameBuffer * _pBuffer)
 		0, 0, ogl.getWidth(), ogl.getHeight(),
 		GL_COLOR_BUFFER_BIT, GL_LINEAR
 	);
+#endif
 
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
 
