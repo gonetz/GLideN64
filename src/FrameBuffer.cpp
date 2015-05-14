@@ -761,11 +761,9 @@ void FrameBufferList::renderBuffer(u32 _address)
 	currentCombiner()->updateTextureInfo(true);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	m_drawBuffer = GL_BACK;
 	OGLRender::TexturedRectParams params(0.0f, 0.0f, width, height, 0.0f, 0.0f, width - 1.0f, height - 1.0f, false);
 	ogl.getRender().drawTexturedRect(params);
 	ogl.swapBuffers();
-	m_drawBuffer = GL_FRAMEBUFFER;
 	glEnable(GL_SCISSOR_TEST);
 	glBindFramebuffer(GL_FRAMEBUFFER, m_pCurrent->m_FBO);
 	gSP.changed |= CHANGED_VIEWPORT;
