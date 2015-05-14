@@ -105,7 +105,11 @@ void NoiseTexture::init()
 	m_pTexture->textureBytes = m_pTexture->realWidth * m_pTexture->realHeight;
 	textureCache().addFrameBufferTextureSize(m_pTexture->textureBytes);
 	glBindTexture(GL_TEXTURE_2D, m_pTexture->glName);
+#ifdef GLES2
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE, m_pTexture->realWidth, m_pTexture->realHeight, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, NULL);
+#else
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, m_pTexture->realWidth, m_pTexture->realHeight, 0, GL_RED, GL_UNSIGNED_BYTE, NULL);
+#endif
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glBindTexture(GL_TEXTURE_2D, 0);
@@ -161,7 +165,7 @@ void NoiseTexture::update()
 #ifndef GLES2
 	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, VI.width, VI.height, GL_RED, GL_UNSIGNED_BYTE, 0);
 #else
-	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, VI.width, VI.height, GL_RED, GL_UNSIGNED_BYTE, m_PBO);
+	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, VI.width, VI.height, GL_LUMINANCE, GL_UNSIGNED_BYTE, m_PBO);
 #endif
 	m_DList = RSP.DList;
 }
