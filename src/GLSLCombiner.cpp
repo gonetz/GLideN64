@@ -730,16 +730,16 @@ void ShaderCombiner::update(bool _bForce) {
 	glUseProgram(m_program);
 
 	if (_bForce) {
-		_setIUniform(m_uniforms.uTexNoise, g_noiseTexIndex, true);
+		m_uniforms.uTexNoise.set(g_noiseTexIndex, true);
 		if (usesTexture()) {
-			_setIUniform(m_uniforms.uTex0, 0, true);
-			_setIUniform(m_uniforms.uTex1, 1, true);
+			m_uniforms.uTex0.set(0, true);
+			m_uniforms.uTex1.set(1, true);
 #ifdef GL_MULTISAMPLING_SUPPORT
-			_setIUniform(m_uniforms.uMSTex0, g_MSTex0Index + 0, true);
-			_setIUniform(m_uniforms.uMSTex1, g_MSTex0Index + 1, true);
-			_setIUniform(m_uniforms.uMSAASamples, config.video.multisampling, true);
-			_setFUniform(m_uniforms.uMSAAScale, 1.0f / (float)config.video.multisampling, true);
-			_setIV2Uniform(m_uniforms.uMSTexEnabled, 0, 0, true);
+			m_uniforms.uMSTex0.set(g_MSTex0Index + 0, true);
+			m_uniforms.uMSTex1.set(g_MSTex0Index + 1, true);
+			m_uniforms.uMSAASamples.set(config.video.multisampling, true);
+			m_uniforms.uMSAAScale.set(1.0f / (float)config.video.multisampling, true);
+			m_uniforms.uMSTexEnabled.set(0, 0, true);
 #endif
 		}
 
@@ -758,12 +758,12 @@ void ShaderCombiner::update(bool _bForce) {
 
 void ShaderCombiner::updateRenderState(bool _bForce)
 {
-	_setIUniform(m_uniforms.uRenderState, video().getRender().getRenderState(), _bForce);
+	m_uniforms.uRenderState.set(video().getRender().getRenderState(), _bForce);
 }
 
 void ShaderCombiner::updateGammaCorrection(bool _bForce)
 {
-	_setIUniform(m_uniforms.uGammaCorrectionEnabled, *REG.VI_STATUS & 8, _bForce);
+	m_uniforms.uGammaCorrectionEnabled.set(*REG.VI_STATUS & 8, _bForce);
 }
 
 void ShaderCombiner::updateFogMode(bool _bForce)
@@ -838,30 +838,30 @@ void ShaderCombiner::updateFogMode(bool _bForce)
 		}
 	}
 
-	_setIUniform(m_uniforms.uSpecialBlendMode, nSpecialBlendMode, _bForce);
-	_setIUniform(m_uniforms.uFogUsage, nFogUsage | nFogBlendEnabled, _bForce);
-	_setIUniform(m_uniforms.uFogMode, nFogMode, _bForce);
+	m_uniforms.uSpecialBlendMode.set(nSpecialBlendMode, _bForce);
+	m_uniforms.uFogUsage.set(nFogUsage | nFogBlendEnabled, _bForce);
+	m_uniforms.uFogMode.set(nFogMode, _bForce);
 	if (nFogUsage + nFogMode != 0) {
-		_setFV2Uniform(m_uniforms.uFogScale, (float)gSP.fog.multiplier / 256.0f, (float)gSP.fog.offset / 256.0f, _bForce);
-		_setFUniform(m_uniforms.uFogAlpha, gDP.fogColor.a, _bForce);
+		m_uniforms.uFogScale.set((float)gSP.fog.multiplier / 256.0f, (float)gSP.fog.offset / 256.0f, _bForce);
+		m_uniforms.uFogAlpha.set(gDP.fogColor.a, _bForce);
 	}
 }
 
 void ShaderCombiner::updateDitherMode(bool _bForce)
 {
 	if (gDP.otherMode.cycleType < G_CYC_COPY) {
-		_setIUniform(m_uniforms.uAlphaCompareMode, gDP.otherMode.alphaCompare, _bForce);
-		_setIUniform(m_uniforms.uAlphaDitherMode, gDP.otherMode.alphaDither, _bForce);
-		_setIUniform(m_uniforms.uColorDitherMode, gDP.otherMode.colorDither, _bForce);
+		m_uniforms.uAlphaCompareMode.set(gDP.otherMode.alphaCompare, _bForce);
+		m_uniforms.uAlphaDitherMode.set(gDP.otherMode.alphaDither, _bForce);
+		m_uniforms.uColorDitherMode.set(gDP.otherMode.colorDither, _bForce);
 	} else {
-		_setIUniform(m_uniforms.uAlphaCompareMode, 0, _bForce);
-		_setIUniform(m_uniforms.uAlphaDitherMode, 0, _bForce);
-		_setIUniform(m_uniforms.uColorDitherMode, 0, _bForce);
+		m_uniforms.uAlphaCompareMode.set(0, _bForce);
+		m_uniforms.uAlphaDitherMode.set(0, _bForce);
+		m_uniforms.uColorDitherMode.set(0, _bForce);
 	}
 
 	const int nDither = (gDP.otherMode.cycleType < G_CYC_COPY) && (gDP.otherMode.colorDither == G_CD_NOISE || gDP.otherMode.alphaDither == G_AD_NOISE || gDP.otherMode.alphaCompare == G_AC_DITHER) ? 1 : 0;
 	if ((m_nInputs & (1 << NOISE)) + nDither != 0) {
-		_setFV2Uniform(m_uniforms.uScreenScale, video().getScaleX(), video().getScaleY(), _bForce);
+		m_uniforms.uScreenScale.set(video().getScaleX(), video().getScaleY(), _bForce);
 		noiseTex.update();
 	}
 }
@@ -870,20 +870,20 @@ void ShaderCombiner::updateLOD(bool _bForce)
 {
 	if (usesLOD()) {
 		int uCalcLOD = (config.generalEmulation.enableLOD && gDP.otherMode.textureLOD == G_TL_LOD) ? 1 : 0;
-		_setIUniform(m_uniforms.uEnableLod, uCalcLOD, _bForce);
+		m_uniforms.uEnableLod.set(uCalcLOD, _bForce);
 		if (uCalcLOD) {
-			_setFV2Uniform(m_uniforms.uScreenScale, video().getScaleX(), video().getScaleY(), _bForce);
-			_setFUniform(m_uniforms.uPrimitiveLod, gDP.primColor.l, _bForce);
-			_setFUniform(m_uniforms.uMinLod, gDP.primColor.m, _bForce);
-			_setIUniform(m_uniforms.uMaxTile, gSP.texture.level, _bForce);
-			_setIUniform(m_uniforms.uTextureDetail, gDP.otherMode.textureDetail, _bForce);
+			m_uniforms.uScreenScale.set(video().getScaleX(), video().getScaleY(), _bForce);
+			m_uniforms.uPrimitiveLod.set(gDP.primColor.l, _bForce);
+			m_uniforms.uMinLod.set(gDP.primColor.m, _bForce);
+			m_uniforms.uMaxTile.set(gSP.texture.level, _bForce);
+			m_uniforms.uTextureDetail.set(gDP.otherMode.textureDetail, _bForce);
 		}
 	}
 }
 
 void ShaderCombiner::updateTextureInfo(bool _bForce) {
-	_setIUniform(m_uniforms.uTexturePersp, gDP.otherMode.texturePersp, _bForce);
-	_setIUniform(m_uniforms.uTextureFilterMode, config.texture.bilinearMode == BILINEAR_3POINT ? gDP.otherMode.textureFilter | (gSP.objRendermode&G_OBJRM_BILERP) : 0, _bForce);
+	m_uniforms.uTexturePersp.set(gDP.otherMode.texturePersp, _bForce);
+	m_uniforms.uTextureFilterMode.set(config.texture.bilinearMode == BILINEAR_3POINT ? gDP.otherMode.textureFilter | (gSP.objRendermode&G_OBJRM_BILERP) : 0, _bForce);
 }
 
 void ShaderCombiner::updateFBInfo(bool _bForce) {
@@ -910,18 +910,18 @@ void ShaderCombiner::updateFBInfo(bool _bForce) {
 		}
 		nMSTex1Enabled = cache.current[1]->frameBufferTexture == CachedTexture::fbMultiSample ? 1 : 0;
 	}
-	_setIV2Uniform(m_uniforms.uFb8Bit, nFb8bitMode0, nFb8bitMode1, _bForce);
-	_setIV2Uniform(m_uniforms.uFbFixedAlpha, nFbFixedAlpha0, nFbFixedAlpha1, _bForce);
-	_setIV2Uniform(m_uniforms.uMSTexEnabled, nMSTex0Enabled, nMSTex1Enabled, _bForce);
+	m_uniforms.uFb8Bit.set(nFb8bitMode0, nFb8bitMode1, _bForce);
+	m_uniforms.uFbFixedAlpha.set(nFbFixedAlpha0, nFbFixedAlpha1, _bForce);
+	m_uniforms.uMSTexEnabled.set(nMSTex0Enabled, nMSTex1Enabled, _bForce);
 
 	gDP.changed &= ~CHANGED_FB_TEXTURE;
 }
 
 void ShaderCombiner::updateDepthInfo(bool _bForce) {
 	if (RSP.bLLE)
-		_setFV2Uniform(m_uniforms.uDepthScale, 0.5f, 0.5f, _bForce);
+		m_uniforms.uDepthScale.set(0.5f, 0.5f, _bForce);
 	else
-		_setFV2Uniform(m_uniforms.uDepthScale, gSP.viewport.vscale[2], gSP.viewport.vtrans[2], _bForce);
+		m_uniforms.uDepthScale.set(gSP.viewport.vscale[2], gSP.viewport.vtrans[2], _bForce);
 
 	if (config.frameBufferEmulation.N64DepthCompare == 0 || !video().getRender().isImageTexturesSupported())
 		return;
@@ -931,41 +931,41 @@ void ShaderCombiner::updateDepthInfo(bool _bForce) {
 		return;
 
 	const int nDepthEnabled = (gSP.geometryMode & G_ZBUFFER) > 0 ? 1 : 0;
-	_setIUniform(m_uniforms.uEnableDepth, nDepthEnabled, _bForce);
+	m_uniforms.uEnableDepth.set(nDepthEnabled, _bForce);
 	if (nDepthEnabled == 0) {
-		_setIUniform(m_uniforms.uEnableDepthCompare, 0, _bForce);
-		_setIUniform(m_uniforms.uEnableDepthUpdate, 0, _bForce);
+		m_uniforms.uEnableDepthCompare.set(0, _bForce);
+		m_uniforms.uEnableDepthUpdate.set(0, _bForce);
 	} else {
-		_setIUniform(m_uniforms.uEnableDepthCompare, gDP.otherMode.depthCompare, _bForce);
-		_setIUniform(m_uniforms.uEnableDepthUpdate, gDP.otherMode.depthUpdate, _bForce);
+		m_uniforms.uEnableDepthCompare.set(gDP.otherMode.depthCompare, _bForce);
+		m_uniforms.uEnableDepthUpdate.set(gDP.otherMode.depthUpdate, _bForce);
 	}
-	_setIUniform(m_uniforms.uDepthMode, gDP.otherMode.depthMode, _bForce);
-	_setIUniform(m_uniforms.uDepthSource, gDP.otherMode.depthSource, _bForce);
+	m_uniforms.uDepthMode.set(gDP.otherMode.depthMode, _bForce);
+	m_uniforms.uDepthSource.set(gDP.otherMode.depthSource, _bForce);
 	if (gDP.otherMode.depthSource == G_ZS_PRIM)
-		_setFUniform(m_uniforms.uDeltaZ, gDP.primDepth.deltaZ, _bForce);
+		m_uniforms.uDeltaZ.set(gDP.primDepth.deltaZ, _bForce);
 }
 
 void ShaderCombiner::updateAlphaTestInfo(bool _bForce) {
 	if (gDP.otherMode.cycleType == G_CYC_FILL) {
-		_setIUniform(m_uniforms.uEnableAlphaTest, 0, _bForce);
-		_setFUniform(m_uniforms.uAlphaTestValue, 0.0f, _bForce);
+		m_uniforms.uEnableAlphaTest.set(0, _bForce);
+		m_uniforms.uAlphaTestValue.set(0.0f, _bForce);
 	} else if (gDP.otherMode.cycleType == G_CYC_COPY) {
 		if (gDP.otherMode.alphaCompare & G_AC_THRESHOLD) {
-			_setIUniform(m_uniforms.uEnableAlphaTest, 1, _bForce);
-			_setFUniform(m_uniforms.uAlphaTestValue, 0.5f, _bForce);
+			m_uniforms.uEnableAlphaTest.set(1, _bForce);
+			m_uniforms.uAlphaTestValue.set(0.5f, _bForce);
 		} else {
-			_setIUniform(m_uniforms.uEnableAlphaTest, 0, _bForce);
-			_setFUniform(m_uniforms.uAlphaTestValue, 0.0f, _bForce);
+			m_uniforms.uEnableAlphaTest.set(0, _bForce);
+			m_uniforms.uAlphaTestValue.set(0.0f, _bForce);
 		}
 	} else if (((gDP.otherMode.alphaCompare & G_AC_THRESHOLD) != 0) && (gDP.otherMode.alphaCvgSel == 0) && (gDP.otherMode.forceBlender == 0 || gDP.blendColor.a > 0))	{
-		_setIUniform(m_uniforms.uEnableAlphaTest, 1, _bForce);
-		_setFUniform(m_uniforms.uAlphaTestValue, max(gDP.blendColor.a, 1.0f/256.0f), _bForce);
+		m_uniforms.uEnableAlphaTest.set(1, _bForce);
+		m_uniforms.uAlphaTestValue.set(max(gDP.blendColor.a, 1.0f / 256.0f), _bForce);
 	} else if (gDP.otherMode.cvgXAlpha != 0)	{
-		_setIUniform(m_uniforms.uEnableAlphaTest, 1, _bForce);
-		_setFUniform(m_uniforms.uAlphaTestValue, 0.125f, _bForce);
+		m_uniforms.uEnableAlphaTest.set(1, _bForce);
+		m_uniforms.uAlphaTestValue.set(0.125f, _bForce);
 	} else {
-		_setIUniform(m_uniforms.uEnableAlphaTest, 0, _bForce);
-		_setFUniform(m_uniforms.uAlphaTestValue, 0.0f, _bForce);
+		m_uniforms.uEnableAlphaTest.set(0, _bForce);
+		m_uniforms.uAlphaTestValue.set(0.0f, _bForce);
 	}
 }
 

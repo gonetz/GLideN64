@@ -36,10 +36,51 @@ public:
 private:
 	friend class UniformBlock;
 
-	struct iUniform {GLint loc; int val;};
-	struct fUniform {GLint loc; float val;};
-	struct fv2Uniform {GLint loc; float val[2];};
-	struct iv2Uniform { GLint loc; int val[2]; };
+	struct iUniform	{
+		GLint loc;
+		int val;
+		void set(int _val, bool _force) {
+			if (loc >= 0 && (_force || val != _val)) {
+				val = _val;
+				glUniform1i(loc, _val);
+			}
+		}
+	};
+
+	struct fUniform {
+		GLint loc;
+		float val;
+		void set(float _val, bool _force) {
+			if (loc >= 0 && (_force || val != _val)) {
+				val = _val;
+				glUniform1f(loc, _val);
+			}
+		}
+	};
+
+	struct fv2Uniform {
+		GLint loc;
+		float val[2];
+		void set(float _val1, float _val2, bool _force) {
+			if (loc >= 0 && (_force || val[0] != _val1 || val[1] != _val2)) {
+				val[0] = _val1;
+				val[1] = _val2;
+				glUniform2f(loc, _val1, _val2);
+			}
+		}
+	};
+
+	struct iv2Uniform {
+		GLint loc;
+		int val[2];
+		void set(int _val1, int _val2, bool _force) {
+			if (loc >= 0 && (_force || val[0] != _val1 || val[1] != _val2)) {
+				val[0] = _val1;
+				val[1] = _val2;
+				glUniform2i(loc, _val1, _val2);
+			}
+		}
+	};
 
 	struct UniformLocation
 	{
@@ -68,32 +109,6 @@ private:
 
 	void _locate_attributes() const;
 	void _locateUniforms();
-	void _setIUniform(iUniform & _u, int _val, bool _force) {
-		if (_u.loc >= 0 && (_force || _u.val != _val)) {
-			_u.val = _val;
-			glUniform1i(_u.loc, _val);
-		}
-	}
-	void _setFUniform(fUniform & _u, float _val, bool _force) {
-		if (_u.loc >= 0 && (_force || _u.val != _val)) {
-			_u.val = _val;
-			glUniform1f(_u.loc, _val);
-		}
-	}
-	void _setFV2Uniform(fv2Uniform & _u, float _val1, float _val2, bool _force) {
-		if (_u.loc >= 0 && (_force || _u.val[0] != _val1 || _u.val[1] != _val2)) {
-			_u.val[0] = _val1;
-			_u.val[1] = _val2;
-			glUniform2f(_u.loc, _val1, _val2);
-		}
-	}
-	void _setIV2Uniform(iv2Uniform & _u, int _val1, int _val2, bool _force) {
-		if (_u.loc >= 0 && (_force || _u.val[0] != _val1 || _u.val[1] != _val2)) {
-			_u.val[0] = _val1;
-			_u.val[1] = _val2;
-			glUniform2i(_u.loc, _val1, _val2);
-		}
-	}
 
 	gDPCombine m_combine;
 	UniformLocation m_uniforms;
