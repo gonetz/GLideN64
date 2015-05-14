@@ -1153,9 +1153,11 @@ void OGLRender::clearColorBuffer(float *_pColor )
 
 void OGLRender::_initExtensions()
 {
+#ifndef GLES2
 	GLint majorVersion = 0;
 	glGetIntegerv(GL_MAJOR_VERSION, &majorVersion);
 	assert(majorVersion >= 3 && "Plugin requires GL version 3 or higher.");
+#endif
 
 #ifdef GL_IMAGE_TEXTURES_SUPPORT
 	GLint minorVersion = 0;
