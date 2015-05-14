@@ -58,9 +58,9 @@ EXPORT m64p_error CALL DebugSetCoreCompare(void (*)(unsigned int), void (*)(int,
  *
  * This function sets the run state of the R4300 CPU emulator.
  */
-typedef m64p_error (*ptr_DebugSetRunState)(int);
+typedef m64p_error (*ptr_DebugSetRunState)(m64p_dbg_runstate);
 #if defined(M64P_CORE_PROTOTYPES)
-EXPORT m64p_error CALL DebugSetRunState(int);
+EXPORT m64p_error CALL DebugSetRunState(m64p_dbg_runstate);
 #endif
 
 /* DebugGetState()
@@ -189,9 +189,9 @@ EXPORT int CALL DebugBreakpointLookup(unsigned int, unsigned int, unsigned int);
  * removing, or searching the breakpoints. The meanings of the index and ptr
  * input parameters vary by command.
  */
-typedef int (*ptr_DebugBreakpointCommand)(m64p_dbg_bkp_command, unsigned int, void *);
+typedef int (*ptr_DebugBreakpointCommand)(m64p_dbg_bkp_command, unsigned int, m64p_breakpoint *);
 #if defined(M64P_CORE_PROTOTYPES)
-EXPORT int CALL DebugBreakpointCommand(m64p_dbg_bkp_command, unsigned int, void *);
+EXPORT int CALL DebugBreakpointCommand(m64p_dbg_bkp_command, unsigned int, m64p_breakpoint *);
 #endif
 
 #ifdef __cplusplus

@@ -28,6 +28,7 @@
 /* ----------------------------------------- */
 
 /* necessary headers */
+#include <stdint.h>
 #if defined(WIN32)
   #include <windows.h>
 #endif
@@ -159,8 +160,8 @@ typedef enum {
 } m64p_command;
 
 typedef struct {
-  unsigned int address;
-  int          value;
+  uint32_t address;
+  int      value;
 } m64p_cheat_code;
 
 /* ----------------------------------------- */
@@ -176,21 +177,21 @@ typedef enum
 
 typedef struct
 {
-   unsigned char init_PI_BSB_DOM1_LAT_REG;  /* 0x00 */
-   unsigned char init_PI_BSB_DOM1_PGS_REG;  /* 0x01 */
-   unsigned char init_PI_BSB_DOM1_PWD_REG;  /* 0x02 */
-   unsigned char init_PI_BSB_DOM1_PGS_REG2; /* 0x03 */
-   unsigned int ClockRate;                  /* 0x04 */
-   unsigned int PC;                         /* 0x08 */
-   unsigned int Release;                    /* 0x0C */
-   unsigned int CRC1;                       /* 0x10 */
-   unsigned int CRC2;                       /* 0x14 */
-   unsigned int Unknown[2];                 /* 0x18 */
-   unsigned char Name[20];                  /* 0x20 */
-   unsigned int unknown;                    /* 0x34 */
-   unsigned int Manufacturer_ID;            /* 0x38 */
-   unsigned short Cartridge_ID;             /* 0x3C - Game serial number  */
-   unsigned short Country_code;             /* 0x3E */
+   uint8_t  init_PI_BSB_DOM1_LAT_REG;  /* 0x00 */
+   uint8_t  init_PI_BSB_DOM1_PGS_REG;  /* 0x01 */
+   uint8_t  init_PI_BSB_DOM1_PWD_REG;  /* 0x02 */
+   uint8_t  init_PI_BSB_DOM1_PGS_REG2; /* 0x03 */
+   uint32_t ClockRate;                 /* 0x04 */
+   uint32_t PC;                        /* 0x08 */
+   uint32_t Release;                   /* 0x0C */
+   uint32_t CRC1;                      /* 0x10 */
+   uint32_t CRC2;                      /* 0x14 */
+   uint32_t Unknown[2];                /* 0x18 */
+   uint8_t  Name[20];                  /* 0x20 */
+   uint32_t unknown;                   /* 0x34 */
+   uint32_t Manufacturer_ID;           /* 0x38 */
+   uint16_t Cartridge_ID;              /* 0x3C - Game serial number  */
+   uint16_t Country_code;              /* 0x3E */
 } m64p_rom_header;
 
 typedef struct
@@ -214,6 +215,12 @@ typedef enum {
   M64P_DBG_CPU_DYNACORE,
   M64P_DBG_CPU_NEXT_INTERRUPT
 } m64p_dbg_state;
+
+typedef enum {
+  M64P_DBG_RUNSTATE_PAUSED = 0,
+  M64P_DBG_RUNSTATE_STEPPING,
+  M64P_DBG_RUNSTATE_RUNNING
+} m64p_dbg_runstate;
 
 typedef enum {
   M64P_DBG_MEM_TYPE = 1,
@@ -250,7 +257,7 @@ typedef enum {
 typedef enum {
   M64P_MEM_FLAG_READABLE = 0x01,
   M64P_MEM_FLAG_WRITABLE = 0x02,
-  M64P_MEM_FLAG_READABLE_EMUONLY = 0x04,  // the EMUONLY flags signify that emulated code can read/write here, but debugger cannot
+  M64P_MEM_FLAG_READABLE_EMUONLY = 0x04,  /* the EMUONLY flags signify that emulated code can read/write here, but debugger cannot */
   M64P_MEM_FLAG_WRITABLE_EMUONLY = 0x08
 } m64p_dbg_mem_flags;
 
@@ -286,29 +293,28 @@ typedef enum {
   M64P_BKP_CMD_CHECK
 } m64p_dbg_bkp_command;
 
-#define M64P_MEM_INVALID        0xFFFFFFFF  // invalid memory read will return this
+#define M64P_MEM_INVALID        0xFFFFFFFF  /* invalid memory read will return this */
 
 #define BREAKPOINTS_MAX_NUMBER  128
 
-#define BPT_FLAG_ENABLED        0x01
-#define BPT_FLAG_CONDITIONAL    0x02
-#define BPT_FLAG_COUNTER        0x04
-#define BPT_FLAG_READ           0x08
-#define BPT_FLAG_WRITE          0x10
-#define BPT_FLAG_EXEC           0x20
-#define BPT_FLAG_LOG            0x40 //Log to the console when this breakpoint hits.
+typedef enum {
+  M64P_BKP_FLAG_ENABLED = 0x01,
+  M64P_BKP_FLAG_READ = 0x02,
+  M64P_BKP_FLAG_WRITE = 0x04,
+  M64P_BKP_FLAG_EXEC = 0x08,
+  M64P_BKP_FLAG_LOG = 0x10 /* Log to the console when this breakpoint hits */
+} m64p_dbg_bkp_flags;
 
 #define BPT_CHECK_FLAG(a, b)  ((a.flags & b) == b)
 #define BPT_SET_FLAG(a, b)    a.flags = (a.flags | b);
 #define BPT_CLEAR_FLAG(a, b)  a.flags = (a.flags & (~b));
 #define BPT_TOGGLE_FLAG(a, b) a.flags = (a.flags ^ b);
 
-typedef struct _breakpoint {
-    unsigned int address; 
-    unsigned int endaddr;
-    unsigned int flags;
-    //unsigned int condition;  //Placeholder for breakpoint condition
-    } breakpoint;
+typedef struct {
+  uint32_t     address;
+  uint32_t     endaddr;
+  unsigned int flags;
+} m64p_breakpoint;
 
 /* ------------------------------------------------- */
 /* Structures and Types for Core Video Extension API */
@@ -329,8 +335,17 @@ typedef enum {
   M64P_GL_ALPHA_SIZE,
   M64P_GL_SWAP_CONTROL,
   M64P_GL_MULTISAMPLEBUFFERS,
-  M64P_GL_MULTISAMPLESAMPLES
+  M64P_GL_MULTISAMPLESAMPLES,
+  M64P_GL_CONTEXT_MAJOR_VERSION,
+  M64P_GL_CONTEXT_MINOR_VERSION,
+  M64P_GL_CONTEXT_PROFILE_MASK
 } m64p_GLattr;
+
+typedef enum {
+  M64P_GL_CONTEXT_PROFILE_CORE,
+  M64P_GL_CONTEXT_PROFILE_COMPATIBILITY,
+  M64P_GL_CONTEXT_PROFILE_ES
+} m64p_GLContextType;
 
 typedef struct {
   unsigned int Functions;
