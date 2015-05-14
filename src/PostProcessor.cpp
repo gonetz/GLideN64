@@ -7,8 +7,14 @@
 #include "GLSLCombiner.h"
 #include "Config.h"
 
+#ifdef GLES3
+#define SHADER_VERSION "#version 300 es \n"
+#else
+#define SHADER_VERSION "#version 330 core \n"
+#endif
+
 static const char * vertexShader =
-"#version 330 core										\n"
+SHADER_VERSION
 "in highp vec2 aPosition;								\n"
 "in highp vec2 aTexCoord;								\n"
 "out mediump vec2 vTexCoord;							\n"
@@ -19,7 +25,7 @@ static const char * vertexShader =
 ;
 
 static const char* extractBloomShader =
-"#version 330 core                                        \n"
+SHADER_VERSION
 "in mediump vec2 vTexCoord;                               \n"
 "uniform sampler2D Sample0;				               \n"
 "out lowp vec4 fragColor;								\n"
@@ -47,7 +53,7 @@ static const char* seperableBlurShader =
 ///				http://www.nutty.ca
 ///
 /// Fragment shader for performing a seperable blur on the specified texture.
-"#version 330 core																							                                        \n"
+SHADER_VERSION
 // Uniform variables.
 "uniform sampler2D Sample0;																                                                            \n"
 "uniform mediump vec2 TexelSize;                                                                                                                    \n"
@@ -113,7 +119,7 @@ static const char* glowShader =
 ///				http://www.nutty.ca
 ///
 /// Fragment shader for blending two textures using an algorithm that overlays the glowmap.
-"#version 330 core													                                       \n"
+SHADER_VERSION
 // Uniform variables.
 "uniform sampler2D Sample0;						                                                         \n"
 "uniform sampler2D Sample1;											                                      \n"
