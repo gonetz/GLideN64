@@ -275,6 +275,7 @@ void OGLVideo::readScreen2(void * _dest, int * _width, int * _height, int _front
 	if (_dest == NULL)
 		return;
 
+#ifndef GLES2
 	GLint oldMode;
 	glGetIntegerv(GL_READ_BUFFER, &oldMode);
 	if (_front != 0)
@@ -283,6 +284,9 @@ void OGLVideo::readScreen2(void * _dest, int * _width, int * _height, int _front
 		glReadBuffer(GL_BACK);
 	glReadPixels(0, m_heightOffset, m_screenWidth, m_screenHeight, GL_RGB, GL_UNSIGNED_BYTE, _dest);
 	glReadBuffer(oldMode);
+#else
+	glReadPixels(0, m_heightOffset, m_screenWidth, m_screenHeight, GL_RGB, GL_UNSIGNED_BYTE, _dest);
+#endif
 }
 
 void OGLRender::addTriangle(int _v0, int _v1, int _v2)
