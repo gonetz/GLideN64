@@ -168,10 +168,12 @@ void DepthBuffer::initDepthBufferTexture(FrameBuffer * _pBuffer)
 		_initDepthBufferTexture(_pBuffer, m_pDepthBufferTexture, config.video.multisampling != 0);
 	}
 
+#ifdef GL_MULTISAMPLING_SUPPORT
 	if (config.video.multisampling != 0 && m_pResolveDepthBufferTexture == NULL) {
 		m_pResolveDepthBufferTexture = textureCache().addFrameBufferTexture();
 		_initDepthBufferTexture(_pBuffer, m_pResolveDepthBufferTexture, false);
 	}
+#endif
 }
 
 CachedTexture * DepthBuffer::resolveDepthBufferTexture(FrameBuffer * _pBuffer)
