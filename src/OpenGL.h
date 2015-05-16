@@ -9,6 +9,7 @@
 #include "windows/GLFunctions.h"
 #define GL_IMAGE_TEXTURES_SUPPORT
 #define GL_MULTISAMPLING_SUPPORT
+#define GL_UNIFORMBLOCK_SUPPORT
 #else
 #include "winlnxdefs.h"
 #ifdef GLES2
@@ -21,12 +22,14 @@
 #include <GLES3/gl3.h>
 #include <GLES3/gl3ext.h>
 #define GLESX
+#define GL_UNIFORMBLOCK_SUPPORT
 #elif defined(GLES3_1)
 #include <GLES3/gl31.h>
 #include <GLES3/gl3ext.h>
 #define GLESX
 #define GL_IMAGE_TEXTURES_SUPPORT
 #define GL_MULTISAMPLING_SUPPORT
+#define GL_UNIFORMBLOCK_SUPPORT
 #else
 #define GL_GLEXT_PROTOTYPES
 #if defined(OS_MAC_OS_X)
@@ -38,6 +41,7 @@
 #include <GL/glext.h>
 #define GL_IMAGE_TEXTURES_SUPPORT
 #define GL_MULTISAMPLING_SUPPORT
+#define GL_UNIFORMBLOCK_SUPPORT
 #endif // OS_MAC_OS_X
 #endif // GLES2
 #ifdef USE_SDL

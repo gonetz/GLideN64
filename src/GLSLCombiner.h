@@ -116,6 +116,7 @@ private:
 	int m_nInputs;
 };
 
+#ifdef GL_UNIFORMBLOCK_SUPPORT
 class UniformBlock
 {
 public:
@@ -156,6 +157,7 @@ public:
 	void setColorData(ColorUniforms _index, u32 _dataSize, const void * _data);
 	void updateTextureParameters();
 	void updateLightParameters();
+	void updateUniforms(ShaderCombiner * _pCombiner) {}
 
 private:
 	void _initTextureBuffer(GLuint _program);
@@ -214,6 +216,84 @@ private:
 	std::vector<GLbyte> m_colorsBlockData;
 	std::vector<GLbyte> m_lightBlockData;
 };
+#else
+class UniformBlock
+{
+public:
+
+	UniformBlock() {}
+	~UniformBlock() {}
+
+	enum ColorUniforms {
+		cuFogColor,
+		cuCenterColor,
+		cuScaleColor,
+		cuBlendColor,
+		cuEnvColor,
+		cuPrimColor,
+		cuPrimLod,
+		cuK4,
+		cuK5,
+		cuTotal
+	};
+
+	void bindWithShaderCombiner(ShaderCombiner * _pCombiner);
+	void setColorData(ColorUniforms _index, u32 _dataSize, const void * _data) {}
+	void updateTextureParameters() {}
+	void updateLightParameters() {}
+	void updateUniforms(ShaderCombiner * _pCombiner);
+
+private:
+	struct fv3Uniform {
+		GLint loc;
+		float val[3];
+		void set(float * _pVal, bool _force) {
+			const size_t szData = sizeof(float)* 3;
+			if (loc >= 0 && (_force || memcmp(val, _pVal, szData) != 0)) {
+				memcpy(val, _pVal, szData);
+				glUniform3fv(loc, 1, _pVal);
+			}
+		}
+	};
+
+	struct fv4Uniform {
+		GLint loc;
+		float val[4];
+		void set(float * _pVal, bool _force) {
+			const size_t szData = sizeof(float)* 4;
+			if (loc >= 0 && (_force || memcmp(val, _pVal, szData) != 0)) {
+				memcpy(val, _pVal, szData);
+				glUniform4fv(loc, 1, _pVal);
+			}
+		}
+	};
+
+	struct UniformBlockLocation
+	{
+		UniformBlockLocation(GLuint _program) : m_program(_program) {}
+
+		GLuint m_program;
+
+		// Texture parameters
+		ShaderCombiner::fv2Uniform uTexScale, uTexMask[2], uTexOffset[2], uCacheScale[2], uCacheOffset[2], uCacheShiftScale[2];
+		ShaderCombiner::iv2Uniform uCacheFrameBuffer;
+
+		// Colors
+		fv4Uniform uFogColor, uCenterColor, uScaleColor, uBlendColor, uEnvColor, uPrimColor;
+		ShaderCombiner::fUniform uPrimLod, uK4, uK5;
+
+		// Lights
+		fv3Uniform uLightDirection[8], uLightColor[8];
+	};
+
+	void _updateColorUniforms(UniformBlockLocation & _location, bool _bForce);
+	void _updateTextureUniforms(UniformBlockLocation & _location, bool _bUsesT0, bool _bUsesT1, bool _bForce);
+	void _updateLightUniforms(UniformBlockLocation & _location, bool _bForce);
+
+	typedef std::map<u64, UniformBlockLocation> Uniforms;
+	Uniforms m_uniforms;
+};
+#endif // GL_UNIFORMBLOCK_SUPPORT
 
 void InitShaderCombiner();
 void DestroyShaderCombiner();

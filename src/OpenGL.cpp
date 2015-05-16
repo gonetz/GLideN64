@@ -624,6 +624,8 @@ void OGLRender::_updateStates(RENDER_STATE _renderState) const
 		_setBlendMode();
 		gDP.changed &= ~(CHANGED_RENDERMODE | CHANGED_CYCLETYPE);
 	}
+
+	cmbInfo.updateParameters();
 }
 
 void OGLRender::_setColorArray() const

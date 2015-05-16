@@ -137,6 +137,8 @@ public:
 
 	void updateTextureParameters();
 	void updateLightParameters();
+	// Update uniforms for GL without UniformBlock support
+	void updateParameters();
 
 private:
 	CombinerInfo() : m_bChanged(false), m_pCurrent(NULL) {}

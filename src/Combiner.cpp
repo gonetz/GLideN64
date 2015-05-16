@@ -293,3 +293,9 @@ void CombinerInfo::updateLightParameters()
 		m_pUniformBlock->updateLightParameters();
 	gSP.changed &= ~CHANGED_LIGHT;
 }
+
+void CombinerInfo::updateParameters()
+{
+	if (m_pUniformBlock != NULL)
+		m_pUniformBlock->updateUniforms(m_pCurrent);
+}

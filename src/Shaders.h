@@ -20,6 +20,7 @@ SHADER_VERSION
 "uniform lowp float uFogAlpha;						\n"
 "uniform mediump vec2 uFogScale;					\n"
 "													\n"
+#ifdef GL_UNIFORMBLOCK_SUPPORT
 "layout (std140) uniform TextureBlock {				\n"
 "  mediump vec2 uTexScale;							\n"
 "  mediump vec2 uTexMask[2];						\n"
@@ -29,6 +30,15 @@ SHADER_VERSION
 "  mediump vec2 uCacheShiftScale[2];				\n"
 "  lowp ivec2 uCacheFrameBuffer;					\n"
 "};													\n"
+#else
+"uniform mediump vec2 uTexScale;						\n"
+"uniform mediump vec2 uTexMask[2];						\n"
+"uniform mediump vec2 uTexOffset[2];					\n"
+"uniform mediump vec2 uCacheScale[2];					\n"
+"uniform mediump vec2 uCacheOffset[2];					\n"
+"uniform mediump vec2 uCacheShiftScale[2];				\n"
+"uniform lowp ivec2 uCacheFrameBuffer;					\n"
+#endif // GL_UNIFORMBLOCK_SUPPORT
 "out lowp vec4 vShadeColor;							\n"
 "out mediump vec2 vTexCoord0;						\n"
 "out mediump vec2 vTexCoord1;						\n"
@@ -168,6 +178,7 @@ SHADER_VERSION
 "uniform sampler2DMS uMSTex1;	\n"
 "uniform lowp ivec2 uMSTexEnabled;	\n"
 #endif
+#ifdef GL_UNIFORMBLOCK_SUPPORT
 "layout (std140) uniform ColorsBlock {\n"
 "  lowp vec4 uFogColor;			\n"
 "  lowp vec4 uCenterColor;		\n"
@@ -179,6 +190,17 @@ SHADER_VERSION
 "  lowp float uK4;				\n"
 "  lowp float uK5;				\n"
 "};								\n"
+#else
+"uniform lowp vec4 uFogColor;	\n"
+"uniform lowp vec4 uCenterColor;\n"
+"uniform lowp vec4 uScaleColor;	\n"
+"uniform lowp vec4 uBlendColor;	\n"
+"uniform lowp vec4 uEnvColor;	\n"
+"uniform lowp vec4 uPrimColor;	\n"
+"uniform lowp float uPrimLod;	\n"
+"uniform lowp float uK4;		\n"
+"uniform lowp float uK5;		\n"
+#endif // GL_UNIFORMBLOCK_SUPPORT
 #ifdef GLESX
 "uniform mediump vec2 uScreenScale;	\n"
 #endif
@@ -205,6 +227,7 @@ SHADER_VERSION
 
 static const char* fragment_shader_header_common_variables_notex =
 SHADER_VERSION
+#ifdef GL_UNIFORMBLOCK_SUPPORT
 "layout (std140) uniform ColorsBlock {\n"
 "  lowp vec4 uFogColor;			\n"
 "  lowp vec4 uCenterColor;		\n"
@@ -216,6 +239,17 @@ SHADER_VERSION
 "  lowp float uK4;				\n"
 "  lowp float uK5;				\n"
 "};								\n"
+#else
+"uniform lowp vec4 uFogColor;	\n"
+"uniform lowp vec4 uCenterColor;\n"
+"uniform lowp vec4 uScaleColor;	\n"
+"uniform lowp vec4 uBlendColor;	\n"
+"uniform lowp vec4 uEnvColor;	\n"
+"uniform lowp vec4 uPrimColor;	\n"
+"uniform lowp float uPrimLod;	\n"
+"uniform lowp float uK4;		\n"
+"uniform lowp float uK5;		\n"
+#endif // GL_UNIFORMBLOCK_SUPPORT
 #ifdef GLESX
 "uniform mediump vec2 uScreenScale;	\n"
 #endif
@@ -265,10 +299,15 @@ static const char* fragment_shader_calc_light =
 #ifndef GLESX
 SHADER_VERSION
 #endif
-"layout (std140) uniform LightBlock {				\n"
-"  mediump vec3 uLightDirection[8];	\n"
-"  lowp vec3 uLightColor[8];	\n"
-"};																\n"
+#ifdef GL_UNIFORMBLOCK_SUPPORT
+"layout (std140) uniform LightBlock {		\n"
+"  mediump vec3 uLightDirection[8];			\n"
+"  lowp vec3 uLightColor[8];				\n"
+"};											\n"
+#else
+"uniform mediump vec3 uLightDirection[8];	\n"
+"uniform lowp vec3 uLightColor[8];			\n"
+#endif // GL_UNIFORMBLOCK_SUPPORT
 "void calc_light(in lowp float fLights, in lowp vec3 input_color, out lowp vec3 output_color) {\n"
 "  output_color = input_color;									\n"
 "  lowp int nLights = int(floor(fLights + 0.5));				\n"
