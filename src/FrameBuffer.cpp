@@ -162,10 +162,17 @@ void FrameBuffer::_initTexture(u16 _format, u16 _size, CachedTexture *_pTexture)
 void FrameBuffer::_setAndAttachTexture(u16 _size, CachedTexture *_pTexture)
 {
 	glBindTexture(GL_TEXTURE_2D, _pTexture->glName);
+#ifdef GLES2
+	if (_size > G_IM_SIZ_8b)
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, _pTexture->realWidth, _pTexture->realHeight, 0, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, NULL);
+	else
+		glTexImage2D(GL_TEXTURE_2D, 0, monohromeInternalformat, _pTexture->realWidth, _pTexture->realHeight, 0, monohromeformat, GL_UNSIGNED_BYTE, NULL);
+#else
 	if (_size > G_IM_SIZ_8b)
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, _pTexture->realWidth, _pTexture->realHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
 	else
 		glTexImage2D(GL_TEXTURE_2D, 0, monohromeInternalformat, _pTexture->realWidth, _pTexture->realHeight, 0, monohromeformat, GL_UNSIGNED_BYTE, NULL);
+#endif
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
