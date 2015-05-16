@@ -148,6 +148,7 @@ void RSP_ProcessDList()
 
 	RSP.halt = FALSE;
 	RSP.busy = TRUE;
+	RSP.firstDlist = true;
 
 	gSP.matrix.stackSize = min( 32U, *(u32*)&DMEM[0x0FE4] >> 6 );
 	if (gSP.matrix.stackSize == 0)
@@ -284,6 +285,7 @@ void RSP_Init()
 	RDRAMSize = 1024 * 1024 * 8 - 1;
 #endif // OS_WINDOWS
 
+	RSP.firstDlist = false;
 	RSP.DList = 0;
 	RSP.uc_start = RSP.uc_dstart = 0;
 	RSP.bLLE = false;
