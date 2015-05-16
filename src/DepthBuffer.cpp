@@ -140,9 +140,9 @@ void DepthBuffer::_initDepthBufferTexture(FrameBuffer * _pBuffer, CachedTexture 
 	{
 		glBindTexture(GL_TEXTURE_2D, _pTexture->glName);
 		if (_pBuffer != NULL)
-			glTexImage2D(GL_TEXTURE_2D, 0, DEPTH_COMPONENT_FORMAT, _pBuffer->m_pTexture->realWidth, _pBuffer->m_pTexture->realHeight, 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+			glTexImage2D(GL_TEXTURE_2D, 0, DEPTH_COMPONENT_FORMAT, _pBuffer->m_pTexture->realWidth, _pBuffer->m_pTexture->realHeight, 0, GL_DEPTH_COMPONENT, DEPTH_COMPONENT_TYPE, NULL);
 		else
-			glTexImage2D(GL_TEXTURE_2D, 0, DEPTH_COMPONENT_FORMAT, video().getWidth(), video().getHeight(), 0, GL_DEPTH_COMPONENT, GL_FLOAT, NULL);
+			glTexImage2D(GL_TEXTURE_2D, 0, DEPTH_COMPONENT_FORMAT, video().getWidth(), video().getHeight(), 0, GL_DEPTH_COMPONENT, DEPTH_COMPONENT_TYPE, NULL);
 
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
