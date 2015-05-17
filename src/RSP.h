@@ -7,7 +7,7 @@ typedef struct
 {
 	u32 PC[18], PCi, busy, halt, close, DList, uc_start, uc_dstart, cmd, nextCmd;
 	s32 count;
-	bool bLLE;
+	bool bLLE, bfirstDlist;
 	char romname[21];
 	wchar_t pluginpath[PLUGIN_PATH_SIZE];
 } RSPInfo;
