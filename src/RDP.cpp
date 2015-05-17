@@ -561,6 +561,7 @@ void RDP_ProcessRDPList()
 	if (dp_end <= dp_current) return;
 
 	RSP.bLLE = true;
+	RSP.bfirstDlist = true;
 
 	// load command data
 	for (u32 i = 0; i < length; i += 4) {
