@@ -138,7 +138,7 @@ void PluginAPI::RomOpen()
 
 void PluginAPI::ShowCFB()
 {
-	gSP.changed |= CHANGED_CPU_FB_WRITE;
+	gDP.changed |= CHANGED_CPU_FB_WRITE;
 }
 
 void PluginAPI::UpdateScreen()

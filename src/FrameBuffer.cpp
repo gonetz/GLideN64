@@ -1311,7 +1311,7 @@ void RDRAMtoFrameBuffer::CopyFromRDRAM( u32 _address, bool _bUseAlpha)
 	currentCombiner()->updateFBInfo();
 
 	glDisable(GL_DEPTH_TEST);
-	const u32 gspChanged = gSP.changed & CHANGED_CPU_FB_WRITE;
+	const u32 gdpChanged = gDP.changed & CHANGED_CPU_FB_WRITE;
 	gSP.changed = gDP.changed = 0;
 
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, pBuffer->m_FBO);
@@ -1321,7 +1321,7 @@ void RDRAMtoFrameBuffer::CopyFromRDRAM( u32 _address, bool _bUseAlpha)
 
 	gSP.textureTile[0] = pTile0;
 
-	gDP.changed |= CHANGED_RENDERMODE | CHANGED_COMBINE;
+	gDP.changed |= gdpChanged | CHANGED_RENDERMODE | CHANGED_COMBINE;
 }
 
 void FrameBuffer_CopyFromRDRAM( u32 address, bool bUseAlpha )

@@ -114,7 +114,7 @@ void OGLVideoMupenPlus::_swapBuffers()
 			gSP.changed |= CHANGED_VIEWPORT;
 		}
 		gDP.changed |= CHANGED_COMBINE;
-		(*renderCallback)((gSP.changed&CHANGED_CPU_FB_WRITE) == 0 ? 1 : 0);
+		(*renderCallback)((gDP.changed&CHANGED_CPU_FB_WRITE) == 0 ? 1 : 0);
 	}
 	CoreVideo_GL_SwapBuffers();
 }
