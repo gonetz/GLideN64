@@ -211,7 +211,7 @@ void RSP_ProcessDList()
 		FrameBuffer_CopyDepthBuffer( gDP.colorImage.address );
 
 	RSP.busy = FALSE;
-	gSP.changed |= CHANGED_COLORBUFFER;
+	gDP.changed |= CHANGED_COLORBUFFER;
 }
 
 static

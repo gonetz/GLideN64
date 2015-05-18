@@ -155,9 +155,9 @@ void VI_UpdateScreen()
 		}
 	}
 	else {
-		if (gSP.changed & CHANGED_COLORBUFFER) {
+		if (gDP.changed & CHANGED_COLORBUFFER) {
 			ogl.swapBuffers();
-			gSP.changed &= ~CHANGED_COLORBUFFER;
+			gDP.changed &= ~CHANGED_COLORBUFFER;
 #ifdef DEBUG
 			while (Debug.paused && !Debug.step);
 			Debug.step = FALSE;
