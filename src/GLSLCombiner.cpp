@@ -547,10 +547,18 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 				strFragmentShader.append("  lowp vec4 readtex1 = readTex(uTex1, vTexCoord1, uFb8Bit[1] != 0, uFbFixedAlpha[1] != 0); \n");
 		}
 #else
-		if (usesTile(0))
+		if (usesTile(0)) {
+#ifdef GLES2
+			strFragmentShader.append("  nCurrentTile = 0; \n");
+#endif
 			strFragmentShader.append("  lowp vec4 readtex0 = readTex(uTex0, vTexCoord0, uFb8Bit[0] != 0, uFbFixedAlpha[0] != 0); \n");
-		if (usesTile(1))
+		}
+		if (usesTile(1)) {
+#ifdef GLES2
+			strFragmentShader.append("  nCurrentTile = 1; \n");
+#endif
 			strFragmentShader.append("  lowp vec4 readtex1 = readTex(uTex1, vTexCoord1, uFb8Bit[1] != 0, uFbFixedAlpha[1] != 0); \n");
+		}
 #endif // GL_MULTISAMPLING_SUPPORT
 	}
 	const bool bUseHWLight = config.generalEmulation.enableHWLighting != 0 && GBI.isHWLSupported() && usesShadeColor();
@@ -568,29 +576,27 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 		"  }										\n"
 		);
 
+#ifndef GLES2
 	if (config.generalEmulation.enableNoise != 0) {
 		strFragmentShader.append(
 			"  if (uColorDitherMode == 2) colorNoiseDither(snoise(), color2);	\n"
 			"  if (uAlphaDitherMode == 2) alphaNoiseDither(snoise(), alpha2);	\n"
 		);
 	}
+#endif
 
+#ifndef PowerVR_SGX_540
 	strFragmentShader.append(
-		"  switch (uFogUsage&255) {								\n"
-		"	case 2:												\n"
-		"		fragColor = vec4(color2, uFogColor.a);			\n"
-		"	break;												\n"
-		"	case 3:												\n"
-		"		fragColor = uFogColor;							\n"
-		"	break;												\n"
-		"	case 4:												\n"
-		"		fragColor = vec4(color2, uFogColor.a*alpha2);	\n"
-		"	break;												\n"
-		"	default:											\n"
-		"		fragColor = vec4(color2, alpha2);				\n"
-		"	break;												\n"
-		"  }													\n"
+		"  lowp int fogUsage = uFogUsage;			\n"
+		"  if (fogUsage >= 256) fogUsage -= 256;	\n"
+		"  if (fogUsage == 2) fragColor = vec4(color2, uFogColor.a);				\n"
+		"  else if (fogUsage == 3) fragColor = uFogColor;							\n"
+		"  else if (fogUsage == 4) fragColor = vec4(color2, uFogColor.a*alpha2);	\n"
+		"  else fragColor = vec4(color2, alpha2);									\n"
 	);
+#else
+	strFragmentShader.append("  fragColor = vec4(color2, alpha2); \n");
+#endif
 
 	if (video().getRender().isImageTexturesSupported() && config.frameBufferEmulation.N64DepthCompare != 0)
 		strFragmentShader.append("  if (!depth_compare()) discard; \n");
@@ -599,11 +605,14 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 	strFragmentShader.append("  toonify(intensity); \n");
 #endif
 	strFragmentShader.append(
-		"	if (uFogUsage == 257) \n"
-		"		fragColor = vec4(mix(fragColor.rgb, uFogColor.rgb, vFogFragCoord), fragColor.a); \n"
-		"	if (uGammaCorrectionEnabled != 0) \n"
-		"		fragColor = vec4(sqrt(fragColor.rgb), fragColor.a); \n"
-	);
+		"  if (uFogUsage == 257) \n"
+		"    fragColor.rgb = mix(fragColor.rgb, uFogColor.rgb, vFogFragCoord); \n"
+		"  if (uGammaCorrectionEnabled != 0) \n"
+		"    fragColor.rgb = sqrt(fragColor.rgb); \n"
+#ifdef GLES2
+		"  gl_FragColor = fragColor; \n"
+#endif
+		);
 
 	strFragmentShader.append(fragment_shader_end);
 
@@ -627,7 +636,9 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 #endif
 	if (config.generalEmulation.enableNoise != 0) {
 		strFragmentShader.append(fragment_shader_noise);
+#ifndef GLES2
 		strFragmentShader.append(fragment_shader_dither);
+#endif
 	}
 #endif
 
@@ -1274,6 +1285,8 @@ void UniformBlock::bindWithShaderCombiner(ShaderCombiner * _pCombiner)
 		LocateUniform2(uCacheShiftScale[0]);
 		LocateUniform2(uCacheShiftScale[1]);
 		LocateUniform2(uCacheFrameBuffer);
+		LocateUniform2(uTextureSize[0]);
+		LocateUniform2(uTextureSize[1]);
 		_updateTextureUniforms(location, _pCombiner->usesTile(0), _pCombiner->usesTile(1), true);
 	}
 
@@ -1347,6 +1360,7 @@ void UniformBlock::_updateTextureUniforms(UniformBlockLocation & _location, bool
 			_location.uCacheShiftScale[t].set(shiftScaleS, shiftScaleT, _bForce);
 			_location.uCacheScale[t].set(cache.current[t]->scaleS, cache.current[t]->scaleT, _bForce);
 			_location.uCacheOffset[t].set(cache.current[t]->offsetS, cache.current[t]->offsetT, _bForce);
+			_location.uTextureSize[t].set(cache.current[t]->realWidth, cache.current[t]->realHeight, _bForce);
 			nFB[t] = cache.current[t]->frameBufferTexture;
 		}
 	}

@@ -276,7 +276,7 @@ private:
 
 		// Texture parameters
 		ShaderCombiner::fv2Uniform uTexScale, uTexMask[2], uTexOffset[2], uCacheScale[2], uCacheOffset[2], uCacheShiftScale[2];
-		ShaderCombiner::iv2Uniform uCacheFrameBuffer;
+		ShaderCombiner::iv2Uniform uCacheFrameBuffer, uTextureSize[2];
 
 		// Colors
 		fv4Uniform uFogColor, uCenterColor, uScaleColor, uBlendColor, uEnvColor, uPrimColor;

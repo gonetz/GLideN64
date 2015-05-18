@@ -6,6 +6,7 @@
 #include "../gDP.h"
 #include "../Config.h"
 #include "../Revision.h"
+#include "../Log.h"
 
 #ifndef OS_WINDOWS
 
@@ -41,6 +42,7 @@ void OGLVideoMupenPlus::_setAttributes()
 #ifdef GLES2
 	CoreVideo_GL_SetAttribute(M64P_GL_CONTEXT_MAJOR_VERSION, 2);
 	CoreVideo_GL_SetAttribute(M64P_GL_CONTEXT_MINOR_VERSION, 0);
+	LOG(LOG_VERBOSE, "[gles2GlideN64]: _setAttributes\n");
 #elif defined(GLES3)
 	CoreVideo_GL_SetAttribute(M64P_GL_CONTEXT_MAJOR_VERSION, 3);
 	CoreVideo_GL_SetAttribute(M64P_GL_CONTEXT_MINOR_VERSION, 0);
@@ -83,10 +85,12 @@ bool OGLVideoMupenPlus::_start()
 	printf("(II) Setting video mode %dx%d...\n", m_screenWidth, m_screenHeight);
 	const m64p_video_flags flags = M64VIDEOFLAG_SUPPORT_RESIZING;
 	if (CoreVideo_SetVideoMode(m_screenWidth, m_screenHeight, 0, m_bFullscreen ? M64VIDEO_FULLSCREEN : M64VIDEO_WINDOWED, flags) != M64ERR_SUCCESS) {
-		printf("(EE) Error setting videomode %dx%d\n", m_screenWidth, m_screenHeight);
+		//printf("(EE) Error setting videomode %dx%d\n", m_screenWidth, m_screenHeight);
+		LOG(LOG_ERROR, "[gles2GlideN64]: Error setting videomode %dx%d\n", m_screenWidth, m_screenHeight);
 		CoreVideo_Quit();
 		return false;
 	}
+	LOG(LOG_VERBOSE, "[gles2GlideN64]: Create setting videomode %dx%d\n", m_screenWidth, m_screenHeight);
 
 	char caption[128];
 # ifdef _DEBUG
