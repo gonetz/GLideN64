@@ -19,6 +19,7 @@
 #include "RSP.h"
 #include "Config.h"
 #include "GLSLCombiner.h"
+#include "ShaderUtils.h"
 
 struct point {
 	GLfloat x;

@@ -36,6 +36,7 @@ set(GLideN64_SOURCES
   S2DEX.cpp
   Turbo3D.cpp
   ZSort.cpp
+  ShaderUtils.cpp
   Textures.cpp
   TextDrawer.cpp
   PostProcessor.cpp

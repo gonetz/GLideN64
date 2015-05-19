@@ -197,6 +197,9 @@
     <ClCompile Include="..\..\src\OGL3X\UniformBlock.cpp">
       <Filter>Source Files\OGL3X</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\ShaderUtils.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\3DMath.h">
@@ -345,6 +348,9 @@
     </ClInclude>
     <ClInclude Include="..\..\src\OGL3X\UniformBlock.h">
       <Filter>OGL3X</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\ShaderUtils.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

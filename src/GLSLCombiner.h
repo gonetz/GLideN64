@@ -125,10 +125,6 @@ void SetDepthFogCombiner();
 void SetMonochromeCombiner();
 #endif // GL_IMAGE_TEXTURES_SUPPORT
 
-GLuint createShaderProgram(const char * _strVertex, const char * _strFragment);
-bool checkShaderCompileStatus(GLuint obj);
-bool checkProgramLinkStatus(GLuint obj);
-
 //#define USE_TOONIFY
 
 #endif //GLSL_COMBINER_H
