@@ -287,6 +287,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\src\N64.cpp" />
+    <ClCompile Include="..\..\src\OGL3X\UniformBlock.cpp" />
     <ClCompile Include="..\..\src\OpenGL.cpp" />
     <ClCompile Include="..\..\src\PostProcessor.cpp" />
     <ClCompile Include="..\..\src\RDP.CPP" />
@@ -358,6 +359,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="..\..\src\N64.h" />
+    <ClInclude Include="..\..\src\OGL3X\UniformBlock.h" />
     <ClInclude Include="..\..\src\OpenGL.h" />
     <ClInclude Include="..\..\src\PluginAPI.h" />
     <ClInclude Include="..\..\src\PostProcessor.h" />
@@ -368,6 +370,7 @@
     <ClInclude Include="..\..\src\Textures.h" />
     <ClInclude Include="..\..\src\Turbo3D.h" />
     <ClInclude Include="..\..\src\Types.h" />
+    <ClInclude Include="..\..\src\UniformCollection.h" />
     <ClInclude Include="..\..\src\VI.h" />
     <ClInclude Include="..\..\src\F3D.h" />
     <ClInclude Include="..\..\src\F3DDKR.h" />

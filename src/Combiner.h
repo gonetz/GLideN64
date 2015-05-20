@@ -114,7 +114,7 @@ struct CombineCycle
 };
 
 class ShaderCombiner;
-class UniformBlock;
+class UniformCollection;
 class CombinerInfo
 {
 public:
@@ -150,7 +150,7 @@ private:
 	ShaderCombiner * m_pCurrent;
 	typedef std::map<u64, ShaderCombiner *> Combiners;
 	Combiners m_combiners;
-	UniformBlock * m_pUniformBlock;
+	UniformCollection * m_pUniformCollection;
 };
 
 inline

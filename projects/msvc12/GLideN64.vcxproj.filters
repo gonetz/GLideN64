@@ -36,6 +36,12 @@
     <Filter Include="Source Files\mupenplus">
       <UniqueIdentifier>{b10a85f0-0fbb-4f8e-b6d8-78ee2a6394bf}</UniqueIdentifier>
     </Filter>
+    <Filter Include="OGL3X">
+      <UniqueIdentifier>{b3016e90-1a88-4a28-9ca4-fbebf41e10ee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\OGL3X">
+      <UniqueIdentifier>{32bbb389-ea50-4ac9-bb55-84e4f066fe94}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Combiner.cpp">
@@ -188,6 +194,9 @@
     <ClCompile Include="..\..\src\windows\GLFunctions_windows.cpp">
       <Filter>Source Files\windows</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\OGL3X\UniformBlock.cpp">
+      <Filter>Source Files\OGL3X</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\3DMath.h">
@@ -330,6 +339,12 @@
     </ClInclude>
     <ClInclude Include="..\..\src\Keys.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\UniformCollection.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\OGL3X\UniformBlock.h">
+      <Filter>OGL3X</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

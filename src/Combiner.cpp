@@ -1,6 +1,7 @@
 #include "OpenGL.h"
 #include "Combiner.h"
 #include "GLSLCombiner.h"
+#include "UniformCollection.h"
 #include "Debug.h"
 #include "gDP.h"
 
@@ -85,13 +86,13 @@ CombinerInfo & CombinerInfo::get()
 void CombinerInfo::init()
 {
 	m_pCurrent = NULL;
-	m_pUniformBlock = new UniformBlock;
+	m_pUniformCollection = createUniformCollection();
 }
 
 void CombinerInfo::destroy()
 {
-	delete m_pUniformBlock;
-	m_pUniformBlock = NULL;
+	delete m_pUniformCollection;
+	m_pUniformCollection = NULL;
 	m_pCurrent = NULL;
 	for (Combiners::iterator cur = m_combiners.begin(); cur != m_combiners.end(); ++cur)
 		delete cur->second;
@@ -237,7 +238,7 @@ void CombinerInfo::setCombine(u64 _mux )
 	} else {
 		m_pCurrent = _compile(_mux);
 		m_pCurrent->update(true);
-		m_pUniformBlock->bindWithShaderCombiner(m_pCurrent);
+		m_pUniformCollection->bindWithShaderCombiner(m_pCurrent);
 		m_combiners[_mux] = m_pCurrent;
 	}
 	m_bChanged = true;
@@ -245,57 +246,57 @@ void CombinerInfo::setCombine(u64 _mux )
 
 void CombinerInfo::updatePrimColor()
 {
-	if (m_pUniformBlock != NULL)
-		m_pUniformBlock->setColorData(UniformBlock::cuPrimColor, sizeof(f32)* 5, &gDP.primColor.r);
+	if (m_pUniformCollection != NULL)
+		m_pUniformCollection->setColorData(UniformCollection::cuPrimColor, sizeof(f32)* 5, &gDP.primColor.r);
 }
 
 void CombinerInfo::updateEnvColor()
 {
-	if (m_pUniformBlock != NULL)
-		m_pUniformBlock->setColorData(UniformBlock::cuEnvColor, sizeof(f32)* 4, &gDP.envColor.r);
+	if (m_pUniformCollection != NULL)
+		m_pUniformCollection->setColorData(UniformCollection::cuEnvColor, sizeof(f32)* 4, &gDP.envColor.r);
 }
 
 void CombinerInfo::updateFogColor()
 {
-	if (m_pUniformBlock != NULL)
-		m_pUniformBlock->setColorData(UniformBlock::cuFogColor, sizeof(f32)* 4, &gDP.fogColor.r);
+	if (m_pUniformCollection != NULL)
+		m_pUniformCollection->setColorData(UniformCollection::cuFogColor, sizeof(f32)* 4, &gDP.fogColor.r);
 }
 
 void CombinerInfo::updateBlendColor()
 {
-	if (m_pUniformBlock != NULL)
-		m_pUniformBlock->setColorData(UniformBlock::cuBlendColor, sizeof(f32)* 4, &gDP.blendColor.r);
+	if (m_pUniformCollection != NULL)
+		m_pUniformCollection->setColorData(UniformCollection::cuBlendColor, sizeof(f32)* 4, &gDP.blendColor.r);
 }
 
 void CombinerInfo::updateKeyColor()
 {
-	if (m_pUniformBlock != NULL)
-		m_pUniformBlock->setColorData(UniformBlock::cuCenterColor, sizeof(f32)* 8, &gDP.key.center.r);
+	if (m_pUniformCollection != NULL)
+		m_pUniformCollection->setColorData(UniformCollection::cuCenterColor, sizeof(f32)* 8, &gDP.key.center.r);
 }
 
 void CombinerInfo::updateConvertColor()
 {
-	if (m_pUniformBlock == NULL)
+	if (m_pUniformCollection == NULL)
 		return;
 	f32 convert[2] = { gDP.convert.k4*0.0039215689f, gDP.convert.k5*0.0039215689f };
-	m_pUniformBlock->setColorData(UniformBlock::cuK4, sizeof(convert), convert);
+	m_pUniformCollection->setColorData(UniformCollection::cuK4, sizeof(convert), convert);
 }
 
 void CombinerInfo::updateTextureParameters()
 {
-	if (m_pUniformBlock != NULL)
-		m_pUniformBlock->updateTextureParameters();
+	if (m_pUniformCollection != NULL)
+		m_pUniformCollection->updateTextureParameters();
 }
 
 void CombinerInfo::updateLightParameters()
 {
-	if (m_pUniformBlock != NULL)
-		m_pUniformBlock->updateLightParameters();
+	if (m_pUniformCollection != NULL)
+		m_pUniformCollection->updateLightParameters();
 	gSP.changed &= ~CHANGED_LIGHT;
 }
 
 void CombinerInfo::updateParameters()
 {
-	if (m_pUniformBlock != NULL)
-		m_pUniformBlock->updateUniforms(m_pCurrent);
+	if (m_pUniformCollection != NULL)
+		m_pUniformCollection->updateUniforms(m_pCurrent);
 }

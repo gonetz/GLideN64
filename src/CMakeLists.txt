@@ -41,6 +41,7 @@ set(GLideN64_SOURCES
   PostProcessor.cpp
   VI.cpp
   common/CommonAPIImpl_common.cpp
+  OGL3X/UniformBlock.cpp
 )
 
 if(MUPENPLUSAPI)
