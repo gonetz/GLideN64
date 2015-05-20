@@ -24,6 +24,7 @@ static GLuint  g_calc_mipmap_shader_object;
 static GLuint  g_calc_noise_shader_object;
 static GLuint  g_calc_depth_shader_object;
 static GLuint  g_readtex_shader_object;
+static GLuint  g_readtex_ms_shader_object;
 static GLuint  g_dither_shader_object;
 
 GLuint g_monochrome_image_program = 0;
@@ -215,7 +216,8 @@ void InitShaderCombiner()
 	g_calc_light_shader_object = _createShader(GL_FRAGMENT_SHADER, fragment_shader_calc_light);
 	g_calc_mipmap_shader_object = _createShader(GL_FRAGMENT_SHADER, fragment_shader_mipmap);
 	g_calc_noise_shader_object = _createShader(GL_FRAGMENT_SHADER, fragment_shader_noise);
-	g_readtex_shader_object = _createShader(GL_FRAGMENT_SHADER, fragment_shader_readtex);
+	g_readtex_shader_object = _createShader(GL_FRAGMENT_SHADER, config.texture.bilinearMode == BILINEAR_3POINT ? fragment_shader_readtex_3point : fragment_shader_readtex);
+	g_readtex_ms_shader_object = _createShader(GL_FRAGMENT_SHADER, fragment_shader_readtex_ms);
 	g_dither_shader_object = _createShader(GL_FRAGMENT_SHADER, fragment_shader_dither);
 #endif // GLESX
 
@@ -244,6 +246,8 @@ void DestroyShaderCombiner() {
 	g_calc_mipmap_shader_object = 0;
 	glDeleteShader(g_readtex_shader_object);
 	g_readtex_shader_object = 0;
+	glDeleteShader(g_readtex_ms_shader_object);
+	g_readtex_ms_shader_object = 0;
 	glDeleteShader(g_calc_noise_shader_object);
 	g_calc_noise_shader_object = 0;
 	glDeleteShader(g_dither_shader_object);
@@ -336,9 +340,6 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 	if (video().getRender().isImageTexturesSupported() && config.frameBufferEmulation.N64DepthCompare != 0)
 		strFragmentShader.append("  if (!depth_compare()) discard; \n");
 
-#ifdef USE_TOONIFY
-	strFragmentShader.append("  toonify(intensity); \n");
-#endif
 	strFragmentShader.append(
 		"  if (uFogUsage == 257) \n"
 		"    fragColor.rgb = mix(fragColor.rgb, uFogColor.rgb, vFogFragCoord); \n"
@@ -351,17 +352,18 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 	if (config.generalEmulation.enableNoise == 0)
 		strFragmentShader.append(fragment_shader_dummy_noise);
 
-#ifdef USE_TOONIFY
-	strFragmentShader.append(fragment_shader_toonify);
-#endif
-
 #ifdef GLESX
 	if (bUseHWLight)
 		strFragmentShader.append(fragment_shader_calc_light);
 	if (bUseLod)
 		strFragmentShader.append(fragment_shader_mipmap);
-	else if (usesTexture())
-		strFragmentShader.append(fragment_shader_readtex);
+	else if (usesTexture()) {
+		strFragmentShader.append(config.texture.bilinearMode == BILINEAR_3POINT ? fragment_shader_readtex_3point : fragment_shader_readtex);
+#ifdef GL_MULTISAMPLING_SUPPORT
+		if (config.video.multisampling > 0)
+			strFragmentShader.append(fragment_shader_readtex_ms);
+#endif
+	}
 #ifdef GL_IMAGE_TEXTURES_SUPPORT
 	if (video().getRender().isImageTexturesSupported() && config.frameBufferEmulation.N64DepthCompare != 0)
 		strFragmentShader.append(depth_compare_shader_float);
@@ -391,8 +393,11 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 		glAttachShader(m_program, g_calc_light_shader_object);
 	if (bUseLod)
 		glAttachShader(m_program, g_calc_mipmap_shader_object);
-	else if (usesTexture())
+	else if (usesTexture()) {
 		glAttachShader(m_program, g_readtex_shader_object);
+		if (config.video.multisampling > 0)
+			glAttachShader(m_program, g_readtex_ms_shader_object);
+	}
 	if (video().getRender().isImageTexturesSupported() && config.frameBufferEmulation.N64DepthCompare != 0)
 		glAttachShader(m_program, g_calc_depth_shader_object);
 	if (config.generalEmulation.enableNoise != 0) {
@@ -628,7 +633,8 @@ void ShaderCombiner::updateLOD(bool _bForce)
 
 void ShaderCombiner::updateTextureInfo(bool _bForce) {
 	m_uniforms.uTexturePersp.set(gDP.otherMode.texturePersp, _bForce);
-	m_uniforms.uTextureFilterMode.set(config.texture.bilinearMode == BILINEAR_3POINT ? gDP.otherMode.textureFilter | (gSP.objRendermode&G_OBJRM_BILERP) : 0, _bForce);
+	if (config.texture.bilinearMode == BILINEAR_3POINT)
+		m_uniforms.uTextureFilterMode.set(gDP.otherMode.textureFilter | (gSP.objRendermode&G_OBJRM_BILERP), _bForce);
 }
 
 void ShaderCombiner::updateFBInfo(bool _bForce) {

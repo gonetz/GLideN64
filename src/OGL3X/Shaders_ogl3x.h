@@ -400,6 +400,17 @@ AUXILIARY_SHADER_VERSION
 
 static const char* fragment_shader_readtex =
 AUXILIARY_SHADER_VERSION
+"lowp vec4 readTex(in sampler2D tex, in mediump vec2 texCoord, in bool fb8bit, in bool fbFixedAlpha)	\n"
+"{												\n"
+"  lowp vec4 texColor = texture(tex, texCoord);	\n"
+"  if (fb8bit) texColor = vec4(texColor.r);		\n"
+"  if (fbFixedAlpha) texColor.a = 0.825;		\n"
+"  return texColor;								\n"
+"}												\n"
+;
+
+static const char* fragment_shader_readtex_3point =
+AUXILIARY_SHADER_VERSION
 "uniform lowp int uTextureFilterMode;								\n"
 // 3 point texture filtering.
 // Original author: ArthurCarvalho
@@ -424,7 +435,11 @@ AUXILIARY_SHADER_VERSION
 "  if (fbFixedAlpha) texColor.a = 0.825;									\n"
 "  return texColor;															\n"
 "}																			\n"
+;
+
 #ifdef GL_MULTISAMPLING_SUPPORT
+static const char* fragment_shader_readtex_ms =
+AUXILIARY_SHADER_VERSION
 "uniform lowp int uMSAASamples;	\n"
 "uniform lowp float uMSAAScale;	\n"
 "lowp vec4 sampleMS(in sampler2DMS mstex, in mediump ivec2 ipos)			\n"
@@ -444,8 +459,8 @@ AUXILIARY_SHADER_VERSION
 "  if (fbFixedAlpha) texColor.a = 0.825;									\n"
 "  return texColor;															\n"
 "}																			\n"
-#endif // GL_MULTISAMPLING_SUPPORT
 ;
+#endif // GL_MULTISAMPLING_SUPPORT
 
 static const char* fragment_shader_noise =
 AUXILIARY_SHADER_VERSION
