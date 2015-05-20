@@ -2,18 +2,18 @@
 #include <stdio.h>
 #include <string>
 
-#include "N64.h"
-#include "OpenGL.h"
-#include "Config.h"
-#include "GLSLCombiner.h"
-#include "ShaderUtils.h"
-#include "FrameBuffer.h"
-#include "DepthBuffer.h"
-#include "RSP.h"
-#include "VI.h"
-#include "Log.h"
+#include "../N64.h"
+#include "../OpenGL.h"
+#include "../Config.h"
+#include "../GLSLCombiner.h"
+#include "../ShaderUtils.h"
+#include "../FrameBuffer.h"
+#include "../DepthBuffer.h"
+#include "../RSP.h"
+#include "../VI.h"
+#include "../Log.h"
 
-#include "Shaders.h"
+#include "Shaders_ogl3x.h"
 
 using namespace std;
 
@@ -52,11 +52,7 @@ public:
 
 private:
 	CachedTexture * m_pTexture;
-#ifndef GLES2
 	GLuint m_PBO;
-#else
-	GLubyte* m_PBO;
-#endif
 	u32 m_DList;
 } noiseTex;
 
@@ -76,19 +72,13 @@ void NoiseTexture::init()
 	m_pTexture->textureBytes = m_pTexture->realWidth * m_pTexture->realHeight;
 	textureCache().addFrameBufferTextureSize(m_pTexture->textureBytes);
 	glBindTexture(GL_TEXTURE_2D, m_pTexture->glName);
-#ifdef GLES2
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE, m_pTexture->realWidth, m_pTexture->realHeight, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, NULL);
-#else
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, m_pTexture->realWidth, m_pTexture->realHeight, 0, GL_RED, GL_UNSIGNED_BYTE, NULL);
-#endif
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glBindTexture(GL_TEXTURE_2D, 0);
 
 	// Generate Pixel Buffer Object. Initialize it later
-#ifndef GLES2
 	glGenBuffers(1, &m_PBO);
-#endif
 }
 
 void NoiseTexture::destroy()
@@ -97,10 +87,8 @@ void NoiseTexture::destroy()
 		textureCache().removeFrameBufferTexture(m_pTexture);
 		m_pTexture = NULL;
 	}
-#ifndef GLES2
 	glDeleteBuffers(1, &m_PBO);
 	m_PBO = 0;
-#endif
 }
 
 void NoiseTexture::update()
@@ -110,34 +98,22 @@ void NoiseTexture::update()
 	const u32 dataSize = VI.width*VI.height;
 	if (dataSize == 0)
 		return;
-#ifndef GLES2
 	PBOBinder binder(GL_PIXEL_UNPACK_BUFFER, m_PBO);
 	glBufferData(GL_PIXEL_UNPACK_BUFFER, dataSize, NULL, GL_DYNAMIC_DRAW);
 	isGLError();
 	GLubyte* ptr = (GLubyte*)glMapBufferRange(GL_PIXEL_UNPACK_BUFFER, 0, dataSize, GL_MAP_WRITE_BIT);
 	isGLError();
-#else
-	m_PBO = (GLubyte*)malloc(dataSize);
-	GLubyte* ptr = m_PBO;
-	PBOBinder binder(m_PBO);
-#endif // GLES2
 	if (ptr == NULL)
 		return;
 	for (u32 y = 0; y < VI.height; ++y)	{
 		for (u32 x = 0; x < VI.width; ++x)
 			ptr[x + y*VI.width] = rand()&0xFF;
 	}
-#ifndef GLES2
 	glUnmapBuffer(GL_PIXEL_UNPACK_BUFFER); // release the mapped buffer
-#endif
 
 	glActiveTexture(GL_TEXTURE0 + g_noiseTexIndex);
 	glBindTexture(GL_TEXTURE_2D, m_pTexture->glName);
-#ifndef GLES2
 	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, VI.width, VI.height, GL_RED, GL_UNSIGNED_BYTE, 0);
-#else
-	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, VI.width, VI.height, GL_LUMINANCE, GL_UNSIGNED_BYTE, m_PBO);
-#endif
 	m_DList = RSP.DList;
 }
 
@@ -283,185 +259,10 @@ void DestroyShaderCombiner() {
 #endif // GL_IMAGE_TEXTURES_SUPPORT
 }
 
-const char *ColorInput[] = {
-	"combined_color.rgb",
-	"readtex0.rgb",
-	"readtex1.rgb",
-	"uPrimColor.rgb",
-	"vec_color.rgb",
-	"uEnvColor.rgb",
-	"uCenterColor.rgb",
-	"uScaleColor.rgb",
-	"combined_color.a",
-	"vec3(readtex0.a)",
-	"vec3(readtex1.a)",
-	"vec3(uPrimColor.a)",
-	"vec3(vec_color.a)",
-	"vec3(uEnvColor.a)",
-	"vec3(lod_frac)",
-	"vec3(uPrimLod)",
-	"vec3(0.5 + 0.5*snoise())",
-	"vec3(uK4)",
-	"vec3(uK5)",
-	"vec3(1.0)",
-	"vec3(0.0)"
-};
-
-const char *AlphaInput[] = {
-	"combined_color.a",
-	"readtex0.a",
-	"readtex1.a",
-	"uPrimColor.a",
-	"vec_color.a",
-	"uEnvColor.a",
-	"uCenterColor.a",
-	"uScaleColor.a",
-	"combined_color.a",
-	"readtex0.a",
-	"readtex1.a",
-	"uPrimColor.a",
-	"vec_color.a",
-	"uEnvColor.a",
-	"lod_frac",
-	"uPrimLod",
-	"0.5 + 0.5*snoise()",
-	"uK4",
-	"uK5",
-	"1.0",
-	"0.0"
-};
-
-inline
-int CorrectFirstStageParam(int _param)
-{
-	switch (_param) {
-		case TEXEL1:
-		return TEXEL0;
-		case TEXEL1_ALPHA:
-		return TEXEL0_ALPHA;
-	}
-	return _param;
-}
-
-static
-void CorrectFirstStageParams(CombinerStage & _stage)
-{
-	for (int i = 0; i < _stage.numOps; ++i) {
-		_stage.op[i].param1 = CorrectFirstStageParam(_stage.op[i].param1);
-		_stage.op[i].param2 = CorrectFirstStageParam(_stage.op[i].param2);
-		_stage.op[i].param3 = CorrectFirstStageParam(_stage.op[i].param3);
-	}
-}
-
-inline
-int CorrectSecondStageParam(int _param)
-{
-	switch (_param) {
-		case TEXEL0:
-			return TEXEL1;
-		case TEXEL1:
-			return TEXEL0;
-		case TEXEL0_ALPHA:
-			return TEXEL1_ALPHA;
-		case TEXEL1_ALPHA:
-			return TEXEL0_ALPHA;
-	}
-	return _param;
-}
-
-static
-void CorrectSecondStageParams(CombinerStage & _stage) {
-	for (int i = 0; i < _stage.numOps; ++i) {
-		_stage.op[i].param1 = CorrectSecondStageParam(_stage.op[i].param1);
-		_stage.op[i].param2 = CorrectSecondStageParam(_stage.op[i].param2);
-		_stage.op[i].param3 = CorrectSecondStageParam(_stage.op[i].param3);
-	}
-}
-
-static
-int CompileCombiner(const CombinerStage & _stage, const char** _Input, char * _strCombiner) {
-	char buf[128];
-	bool bBracketOpen = false;
-	int nRes = 0;
-	for (int i = 0; i < _stage.numOps; ++i) {
-		switch(_stage.op[i].op) {
-			case LOAD:
-				sprintf(buf, "(%s ", _Input[_stage.op[i].param1]);
-				strcat(_strCombiner, buf);
-				bBracketOpen = true;
-				nRes |= 1 << _stage.op[i].param1;
-				break;
-			case SUB:
-				if (bBracketOpen) {
-					sprintf(buf, "- %s)", _Input[_stage.op[i].param1]);
-					bBracketOpen = false;
-				} else
-					sprintf(buf, "- %s", _Input[_stage.op[i].param1]);
-				strcat(_strCombiner, buf);
-				nRes |= 1 << _stage.op[i].param1;
-				break;
-			case ADD:
-				if (bBracketOpen) {
-					sprintf(buf, "+ %s)", _Input[_stage.op[i].param1]);
-					bBracketOpen = false;
-				} else
-					sprintf(buf, "+ %s", _Input[_stage.op[i].param1]);
-				strcat(_strCombiner, buf);
-				nRes |= 1 << _stage.op[i].param1;
-				break;
-			case MUL:
-				if (bBracketOpen) {
-					sprintf(buf, ")*%s", _Input[_stage.op[i].param1]);
-					bBracketOpen = false;
-				} else
-					sprintf(buf, "*%s", _Input[_stage.op[i].param1]);
-				strcat(_strCombiner, buf);
-				nRes |= 1 << _stage.op[i].param1;
-				break;
-			case INTER:
-				sprintf(buf, "mix(%s, %s, %s)", _Input[_stage.op[0].param2], _Input[_stage.op[0].param1], _Input[_stage.op[0].param3]);
-				strcat(_strCombiner, buf);
-				nRes |= 1 << _stage.op[i].param1;
-				nRes |= 1 << _stage.op[i].param2;
-				nRes |= 1 << _stage.op[i].param3;
-				break;
-
-				//			default:
-				//				assert(false);
-		}
-	}
-	if (bBracketOpen)
-		strcat(_strCombiner, ")");
-	strcat(_strCombiner, "; \n");
-	return nRes;
-}
-
 ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCombine & _combine) : m_combine(_combine)
 {
-	if (gDP.otherMode.cycleType == G_CYC_1CYCLE) {
-		CorrectFirstStageParams(_alpha.stage[0]);
-		CorrectFirstStageParams(_color.stage[0]);
-	}
 	char strCombiner[1024];
-	strcpy(strCombiner, "  alpha1 = ");
-	m_nInputs = CompileCombiner(_alpha.stage[0], AlphaInput, strCombiner);
-	strcat(strCombiner, "  color1 = ");
-	m_nInputs |= CompileCombiner(_color.stage[0], ColorInput, strCombiner);
-	strcat(strCombiner, fragment_shader_blender);
-
-	strcat(strCombiner, "  combined_color = vec4(color1, alpha1); \n");
-	if (_alpha.numStages == 2) {
-		strcat(strCombiner, "  alpha2 = ");
-		CorrectSecondStageParams(_alpha.stage[1]);
-		m_nInputs |= CompileCombiner(_alpha.stage[1], AlphaInput, strCombiner);
-	} else
-		strcat(strCombiner, "  alpha2 = alpha1; \n");
-	if (_color.numStages == 2) {
-		strcat(strCombiner, "  color2 = ");
-		CorrectSecondStageParams(_color.stage[1]);
-		m_nInputs |= CompileCombiner(_color.stage[1], ColorInput, strCombiner);
-	} else
-		strcat(strCombiner, "  color2 = color1; \n");
+	m_nInputs = compileCombiner(_color, _alpha, strCombiner);
 
 	if (usesTexture()) {
 		strFragmentShader.assign(fragment_shader_header_common_variables);
@@ -495,18 +296,10 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 				strFragmentShader.append("  lowp vec4 readtex1 = readTex(uTex1, vTexCoord1, uFb8Bit[1] != 0, uFbFixedAlpha[1] != 0); \n");
 		}
 #else
-		if (usesTile(0)) {
-#ifdef GLES2
-			strFragmentShader.append("  nCurrentTile = 0; \n");
-#endif
+		if (usesTile(0))
 			strFragmentShader.append("  lowp vec4 readtex0 = readTex(uTex0, vTexCoord0, uFb8Bit[0] != 0, uFbFixedAlpha[0] != 0); \n");
-		}
-		if (usesTile(1)) {
-#ifdef GLES2
-			strFragmentShader.append("  nCurrentTile = 1; \n");
-#endif
+		if (usesTile(1))
 			strFragmentShader.append("  lowp vec4 readtex1 = readTex(uTex1, vTexCoord1, uFb8Bit[1] != 0, uFbFixedAlpha[1] != 0); \n");
-		}
 #endif // GL_MULTISAMPLING_SUPPORT
 	}
 	const bool bUseHWLight = config.generalEmulation.enableHWLighting != 0 && GBI.isHWLSupported() && usesShadeColor();
@@ -524,16 +317,13 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 		"  }										\n"
 		);
 
-#ifndef GLES2
 	if (config.generalEmulation.enableNoise != 0) {
 		strFragmentShader.append(
 			"  if (uColorDitherMode == 2) colorNoiseDither(snoise(), color2);	\n"
 			"  if (uAlphaDitherMode == 2) alphaNoiseDither(snoise(), alpha2);	\n"
 		);
 	}
-#endif
 
-#ifndef PowerVR_SGX_540
 	strFragmentShader.append(
 		"  lowp int fogUsage = uFogUsage;			\n"
 		"  if (fogUsage >= 256) fogUsage -= 256;	\n"
@@ -542,9 +332,6 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 		"  else if (fogUsage == 4) fragColor = vec4(color2, uFogColor.a*alpha2);	\n"
 		"  else fragColor = vec4(color2, alpha2);									\n"
 	);
-#else
-	strFragmentShader.append("  fragColor = vec4(color2, alpha2); \n");
-#endif
 
 	if (video().getRender().isImageTexturesSupported() && config.frameBufferEmulation.N64DepthCompare != 0)
 		strFragmentShader.append("  if (!depth_compare()) discard; \n");
@@ -557,9 +344,6 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 		"    fragColor.rgb = mix(fragColor.rgb, uFogColor.rgb, vFogFragCoord); \n"
 		"  if (uGammaCorrectionEnabled != 0) \n"
 		"    fragColor.rgb = sqrt(fragColor.rgb); \n"
-#ifdef GLES2
-		"  gl_FragColor = fragColor; \n"
-#endif
 		);
 
 	strFragmentShader.append(fragment_shader_end);
@@ -584,9 +368,7 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 #endif
 	if (config.generalEmulation.enableNoise != 0) {
 		strFragmentShader.append(fragment_shader_noise);
-#ifndef GLES2
 		strFragmentShader.append(fragment_shader_dither);
-#endif
 	}
 #endif
 
@@ -961,6 +743,11 @@ void SetDepthFogCombiner()
 #endif // GL_IMAGE_TEXTURES_SUPPORT
 
 void SetMonochromeCombiner() {
+	static int texLoc = -1;
+	if (texLoc < 0) {
+		texLoc = glGetUniformLocation(g_monochrome_image_program, "uColorImage");
+		glUniform1i(texLoc, 0);
+	}
 	glUseProgram(g_monochrome_image_program);
 	gDP.changed |= CHANGED_COMBINE;
 }
