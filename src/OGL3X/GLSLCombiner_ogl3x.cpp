@@ -26,8 +26,8 @@ static GLuint  g_calc_depth_shader_object;
 static GLuint  g_readtex_shader_object;
 static GLuint  g_readtex_ms_shader_object;
 static GLuint  g_dither_shader_object;
+static GLuint  g_monochrome_image_program = 0;
 
-GLuint g_monochrome_image_program = 0;
 #ifdef GL_IMAGE_TEXTURES_SUPPORT
 GLuint g_draw_shadow_map_program = 0;
 static GLuint g_zlut_tex = 0;
