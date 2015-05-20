@@ -306,7 +306,7 @@ bool FrameBuffer::isValid() const
 			if ((pData[i] & 0xFFFEFFFE) != color)
 				++wrongPixels;
 		}
-		return wrongPixels < (m_endAddress - m_startAddress) / 400; // treshold level 1% of dwords
+		return wrongPixels < (m_endAddress - m_startAddress) / 800; // treshold level 0,5% of dwords
 	} else if (!m_RdramCopy.empty()) {
 		const u32 * const pCopy = (const u32*)m_RdramCopy.data();
 		const u32 size = m_RdramCopy.size();
@@ -317,7 +317,7 @@ bool FrameBuffer::isValid() const
 			if ((pData[start++] & 0xFFFEFFFE) != (pCopy[i] & 0xFFFEFFFE))
 				++wrongPixels;
 		}
-		return wrongPixels < size / 400; // treshold level 1% of dwords
+		return wrongPixels < size / 800; // treshold level 0,5% of dwords
 	}
 	return true; // No data to decide
 }
