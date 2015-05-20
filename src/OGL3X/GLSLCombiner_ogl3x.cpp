@@ -167,7 +167,6 @@ void InitShadowMapShader()
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RED16, 256, 1, 0, GL_RED, GL_UNSIGNED_SHORT, NULL);
 
 	g_draw_shadow_map_program = createShaderProgram(default_vertex_shader, shadow_map_fragment_shader_float);
-	g_monochrome_image_program = createShaderProgram(default_vertex_shader, zelda_monochrome_fragment_shader);
 }
 
 static
@@ -185,8 +184,6 @@ void DestroyShadowMapShader()
 	}
 	glDeleteProgram(g_draw_shadow_map_program);
 	g_draw_shadow_map_program = 0;
-	glDeleteProgram(g_monochrome_image_program);
-	g_monochrome_image_program = 0;
 }
 #endif // GL_IMAGE_TEXTURES_SUPPORT
 
@@ -221,13 +218,15 @@ void InitShaderCombiner()
 	g_dither_shader_object = _createShader(GL_FRAGMENT_SHADER, fragment_shader_dither);
 #endif // GLESX
 
+	noiseTex.init();
+	g_monochrome_image_program = createShaderProgram(default_vertex_shader, zelda_monochrome_fragment_shader);
+
 #ifdef GL_IMAGE_TEXTURES_SUPPORT
 	if (video().getRender().isImageTexturesSupported() && config.frameBufferEmulation.N64DepthCompare != 0)
 		g_calc_depth_shader_object = _createShader(GL_FRAGMENT_SHADER, depth_compare_shader_float);
 
 	InitZlutTexture();
 	InitShadowMapShader();
-	noiseTex.init();
 #endif // GL_IMAGE_TEXTURES_SUPPORT
 }
 
@@ -256,8 +255,11 @@ void DestroyShaderCombiner() {
 	g_calc_depth_shader_object = 0;
 #endif // GLESX
 
-#ifdef GL_IMAGE_TEXTURES_SUPPORT
+	glDeleteProgram(g_monochrome_image_program);
+	g_monochrome_image_program = 0;
 	noiseTex.destroy();
+
+#ifdef GL_IMAGE_TEXTURES_SUPPORT
 	DestroyZlutTexture();
 	DestroyShadowMapShader();
 #endif // GL_IMAGE_TEXTURES_SUPPORT
