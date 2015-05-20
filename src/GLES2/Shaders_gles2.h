@@ -305,7 +305,16 @@ static const char* fragment_shader_mipmap =
 ;
 
 static const char* fragment_shader_readtex =
-"#define texture texture2D											\n"
+"lowp vec4 readTex(in sampler2D tex, in mediump vec2 texCoord, in bool fb8bit, in bool fbFixedAlpha)	\n"
+"{																			\n"
+"  lowp vec4 texColor = texture2D(tex, texCoord); 							\n"
+"  if (fb8bit) texColor = vec4(texColor.r);									\n"
+"  if (fbFixedAlpha) texColor.a = 0.825;									\n"
+"  return texColor;															\n"
+"}																			\n"
+;
+
+static const char* fragment_shader_readtex_3point =
 "uniform mediump ivec2 uTextureSize[2];								\n"
 "mediump ivec2 textureSize(in sampler2D tex, in lowp int level) {	\n"
 "   if (nCurrentTile == 0) return uTextureSize[0];						\n"
@@ -315,7 +324,7 @@ static const char* fragment_shader_readtex =
 // 3 point texture filtering.
 // Original author: ArthurCarvalho
 // GLSL implementation: twinaphex, mupen64plus-libretro project.
-"#define TEX_OFFSET(off) texture(tex, texCoord - (off)/texSize)	\n"
+"#define TEX_OFFSET(off) texture2D(tex, texCoord - (off)/texSize)	\n"
 "lowp vec4 filter3point(in sampler2D tex, in mediump vec2 texCoord)			\n"
 "{																			\n"
 "  mediump vec2 texSize = vec2(textureSize(tex,0));							\n"
@@ -328,7 +337,7 @@ static const char* fragment_shader_readtex =
 "}																			\n"
 "lowp vec4 readTex(in sampler2D tex, in mediump vec2 texCoord, in bool fb8bit, in bool fbFixedAlpha)	\n"
 "{																			\n"
-"  lowp vec4 texStandard = texture(tex, texCoord); 							\n"
+"  lowp vec4 texStandard = texture2D(tex, texCoord); 							\n"
 "  lowp vec4 tex3Point = filter3point(tex, texCoord); 						\n"
 "  lowp vec4 texColor = uTextureFilterMode == 0 ? texStandard : tex3Point;	\n"
 "  if (fb8bit) texColor = vec4(texColor.r);									\n"

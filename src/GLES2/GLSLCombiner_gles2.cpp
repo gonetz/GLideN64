@@ -206,8 +206,12 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 		strFragmentShader.append(fragment_shader_calc_light);
 	if (bUseLod)
 		strFragmentShader.append(fragment_shader_mipmap);
-	else if (usesTexture())
-		strFragmentShader.append(fragment_shader_readtex);
+	else if (usesTexture()) {
+		if (config.texture.bilinearMode == BILINEAR_3POINT)
+			strFragmentShader.append(fragment_shader_readtex_3point);
+		else
+			strFragmentShader.append(fragment_shader_readtex);
+	}
 	if (config.generalEmulation.enableNoise != 0)
 		strFragmentShader.append(fragment_shader_noise);
 
@@ -428,7 +432,8 @@ void ShaderCombiner::updateLOD(bool _bForce)
 
 void ShaderCombiner::updateTextureInfo(bool _bForce) {
 	m_uniforms.uTexturePersp.set(gDP.otherMode.texturePersp, _bForce);
-	m_uniforms.uTextureFilterMode.set(config.texture.bilinearMode == BILINEAR_3POINT ? gDP.otherMode.textureFilter | (gSP.objRendermode&G_OBJRM_BILERP) : 0, _bForce);
+	if (config.texture.bilinearMode == BILINEAR_3POINT)
+		m_uniforms.uTextureFilterMode.set(gDP.otherMode.textureFilter | (gSP.objRendermode&G_OBJRM_BILERP), _bForce);
 }
 
 void ShaderCombiner::updateFBInfo(bool _bForce) {
