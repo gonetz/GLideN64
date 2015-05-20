@@ -287,6 +287,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\src\N64.cpp" />
+    <ClCompile Include="..\..\src\OGL3X\GLSLCombiner_ogl3x.cpp" />
     <ClCompile Include="..\..\src\OGL3X\UniformBlock.cpp" />
     <ClCompile Include="..\..\src\OpenGL.cpp" />
     <ClCompile Include="..\..\src\PostProcessor.cpp" />
@@ -308,7 +309,6 @@
     <ClCompile Include="..\..\src\L3DEX2.cpp" />
     <ClCompile Include="..\..\src\S2DEX.cpp" />
     <ClCompile Include="..\..\src\S2DEX2.cpp" />
-    <ClCompile Include="..\..\src\GLSLCombiner.cpp" />
     <ClCompile Include="..\..\src\windows\CommonAPIImpl_windows.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_mupenplus|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_mupenplus|Win32'">true</ExcludedFromBuild>
@@ -352,6 +352,7 @@
     <ClInclude Include="..\..\src\glext.h" />
     <ClInclude Include="..\..\src\GLideN64.h" />
     <ClInclude Include="..\..\src\GLideNHQ\Ext_TxFilter.h" />
+    <ClInclude Include="..\..\src\GLSLCombiner.h" />
     <ClInclude Include="..\..\src\gSP.h" />
     <ClInclude Include="..\..\src\Keys.h" />
     <ClInclude Include="..\..\src\Log.h" />
@@ -360,13 +361,13 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="..\..\src\N64.h" />
+    <ClInclude Include="..\..\src\OGL3X\Shaders_ogl3x.h" />
     <ClInclude Include="..\..\src\OGL3X\UniformBlock.h" />
     <ClInclude Include="..\..\src\OpenGL.h" />
     <ClInclude Include="..\..\src\PluginAPI.h" />
     <ClInclude Include="..\..\src\PostProcessor.h" />
     <ClInclude Include="..\..\src\RDP.h" />
     <ClInclude Include="..\..\src\RSP.h" />
-    <ClInclude Include="..\..\src\Shaders.h" />
     <ClInclude Include="..\..\src\ShaderUtils.h" />
     <ClInclude Include="..\..\src\TextDrawer.h" />
     <ClInclude Include="..\..\src\Textures.h" />
@@ -385,7 +386,6 @@
     <ClInclude Include="..\..\src\L3DEX2.h" />
     <ClInclude Include="..\..\src\S2DEX.h" />
     <ClInclude Include="..\..\src\S2DEX2.h" />
-    <ClInclude Include="..\..\src\GLSLCombiner.h" />
     <ClInclude Include="..\..\src\windows\GLFunctions.h" />
     <ClInclude Include="..\..\src\windows\GLideN64_windows.h" />
     <ClInclude Include="..\..\src\ZilmarGFX_1_3.h">

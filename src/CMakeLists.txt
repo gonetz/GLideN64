@@ -21,7 +21,6 @@ set(GLideN64_SOURCES
   GBI.cpp
   gDP.cpp
   GLideN64.cpp
-  GLSLCombiner.cpp
   glState.cpp
   gSP.cpp
   Keys.cpp
@@ -42,6 +41,7 @@ set(GLideN64_SOURCES
   PostProcessor.cpp
   VI.cpp
   common/CommonAPIImpl_common.cpp
+  OGL3X/GLSLCombiner_ogl3x.cpp
   OGL3X/UniformBlock.cpp
 )
 
