@@ -35,19 +35,24 @@
 #ifdef OS_WINDOWS
 #include <GL/gl.h>
 #include "glext.h"
-#else
-#ifdef GLES2
+#elif defined(GLES2)
 #include <GLES2/gl2.h>
 #include <GLES2/gl2ext.h>
-#else
-#if defined(OS_MAC_OS_X)
+#define GL_COLOR_INDEX8_EXT  0x80E5
+#elif defined(GLES3)
+#include <GLES3/gl3.h>
+#include <GLES3/gl3ext.h>
+#define GL_COLOR_INDEX8_EXT  0x80E5
+#elif defined(GLES3_1)
+#include <GLES3/gl31.h>
+#include <GLES3/gl3ext.h>
+#define GL_COLOR_INDEX8_EXT  0x80E5
+#elif defined(OS_MAC_OS_X)
 #include <OpenGL/gl.h>
 #include <OpenGL/glext.h>
 #elif defined(OS_LINUX)
 #include <GL/gl.h>
 #include <GL/glext.h>
-#endif // OS_MAC_OS_X
-#endif // GLES2
 #endif // OS_WINDOWS
 
 /* in-memory zlib texture compression */
