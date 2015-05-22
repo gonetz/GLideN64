@@ -173,14 +173,16 @@ inline u32 GetCI16IA_RGBA4444(u64 *src, u16 x, u16 i, u8 palette)
 
 inline u32 GetCI16RGBA_RGBA8888(u64 *src, u16 x, u16 i, u8 palette)
 {
-	const u16 tex = ((u16*)src)[x^i];
-	return RGBA5551_RGBA8888(*(u16*)&TMEM[256 + (tex >> 8)]);
+	u16 tex = ((u16*)src)[x^i];
+	tex = (tex >> 8) | ((tex & 0xff) << 8);
+	return RGBA5551_RGBA8888(((u16*)&TMEM[256])[((tex >> 6) & ~3)]);
 }
 
 inline u32 GetCI16RGBA_RGBA5551(u64 *src, u16 x, u16 i, u8 palette)
 {
-	const u16 tex = ((u16*)src)[x^i];
-	return RGBA5551_RGBA5551(*(u16*)&TMEM[256 + (tex >> 8)]);
+	u16 tex = ((u16*)src)[x^i];
+	tex = (tex >> 8) | ((tex & 0xff) << 8);
+	return RGBA5551_RGBA5551(((u16*)&TMEM[256])[((tex >> 6) & ~3)]);
 }
 
 inline u32 GetRGBA5551_RGBA8888(u64 *src, u16 x, u16 i, u8 palette)
