@@ -490,6 +490,7 @@ int
 TxUtil::getNumberofProcessors()
 {
 	int numcore = 1;
+#ifndef ANDROID
 	try {
 #if defined (OS_WINDOWS)
 		SYSTEM_INFO sysinfo;
@@ -517,7 +518,7 @@ TxUtil::getNumberofProcessors()
 	}
 
 	if (numcore > MAX_NUMCORE) numcore = MAX_NUMCORE;
-
+#endif // ANDROID
 	DBG_INFO(80, L"Number of processors : %d\n", numcore);
 
 	return numcore;
