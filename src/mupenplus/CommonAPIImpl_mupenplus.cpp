@@ -1,3 +1,4 @@
+#include "GLideN64_mupenplus.h"
 #include "../PluginAPI.h"
 #include "../OpenGL.h"
 #include "../RSP.h"
@@ -9,30 +10,52 @@ int PluginAPI::InitiateGFX(const GFX_INFO & _gfxInfo)
 	return TRUE;
 }
 
+static
+void _cutLastPathSeparator(wchar_t * _strPath)
+{
+	std::wstring pluginPath(_strPath);
+	std::wstring::size_type pos = pluginPath.find_last_of(L"\\/");
+	wcscpy(_strPath, pluginPath.substr(0, pos).c_str());
+}
+
+static
+void _getWSPath(const char * _path, wchar_t * _strPath)
+{
+	::mbstowcs(_strPath, _path, PLUGIN_PATH_SIZE);
+	_cutLastPathSeparator(_strPath);
+}
+
+void PluginAPI::GetUserDataPath(wchar_t * _strPath)
+{
+	_getWSPath(ConfigGetUserDataPath(), _strPath);
+}
+
+void PluginAPI::GetUserCachePath(wchar_t * _strPath)
+{
+	_getWSPath(ConfigGetUserCachePath(), _strPath);
+}
+
 void PluginAPI::FindPluginPath(wchar_t * _strPath)
 {
 	if (_strPath == NULL)
 		return;
 #ifdef OS_WINDOWS
 	GetModuleFileNameW(NULL, _strPath, PLUGIN_PATH_SIZE);
-#elif OS_LINUX
+	_cutLastPathSeparator(_strPath);
+#elif defined(OS_LINUX)
 	char path[512];
 	int res = readlink("/proc/self/exe", path, 510);
 	if (res != -1) {
 		path[res] = 0;
-		::mbstowcs(_strPath, path, PLUGIN_PATH_SIZE);
+		_getWSPath(path, _strPath);
 	}
-#elif OS_MAC_OS_X
+#elif defined(OS_MAC_OS_X)
 	char path[MAXPATHLEN];
 	uint32_t pathLen = MAXPATHLEN * 2;
 	if (_NSGetExecutablePath(path, pathLen) == 0) {
-		::mbstowcs(_strPath, path, PLUGIN_PATH_SIZE);
+		_getWSPath(path, _strPath);
 	}
-#else
-	// TODO: Android implementation
-	::mbstowcs(_strPath, "Plugin", PLUGIN_PATH_SIZE);
+#elif defined(ANDROID)
+	GetUserCachePath(_strPath);
 #endif
-	std::wstring pluginPath(_strPath);
-	std::wstring::size_type pos = pluginPath.find_last_of(L"\\/");
-	wcscpy(_strPath, pluginPath.substr(0, pos).c_str());
 }

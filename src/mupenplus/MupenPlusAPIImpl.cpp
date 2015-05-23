@@ -11,6 +11,8 @@
 
 ptr_ConfigGetSharedDataFilepath ConfigGetSharedDataFilepath = NULL;
 ptr_ConfigGetUserConfigPath ConfigGetUserConfigPath = NULL;
+ptr_ConfigGetUserDataPath ConfigGetUserDataPath = NULL;
+ptr_ConfigGetUserCachePath ConfigGetUserCachePath = NULL;
 ptr_ConfigOpenSection      ConfigOpenSection = NULL;
 ptr_ConfigDeleteSection ConfigDeleteSection = NULL;
 ptr_ConfigSaveSection ConfigSaveSection = NULL;
@@ -41,6 +43,9 @@ m64p_error PluginAPI::PluginStartup(m64p_dynlib_handle _CoreLibHandle)
 {
 	ConfigGetSharedDataFilepath = (ptr_ConfigGetSharedDataFilepath)	DLSYM(_CoreLibHandle, "ConfigGetSharedDataFilepath");
 	ConfigGetUserConfigPath = (ptr_ConfigGetUserConfigPath)	DLSYM(_CoreLibHandle, "ConfigGetUserConfigPath");
+	ConfigGetUserCachePath = (ptr_ConfigGetUserCachePath)DLSYM(_CoreLibHandle, "ConfigGetUserCachePath");
+	ConfigGetUserDataPath = (ptr_ConfigGetUserDataPath)DLSYM(_CoreLibHandle, "ConfigGetUserDataPath");
+
 	ConfigOpenSection = (ptr_ConfigOpenSection)DLSYM(_CoreLibHandle, "ConfigOpenSection");
 	ConfigDeleteSection = (ptr_ConfigDeleteSection)DLSYM(_CoreLibHandle, "ConfigDeleteSection");
 	ConfigSaveSection = (ptr_ConfigSaveSection)DLSYM(_CoreLibHandle, "ConfigSaveSection");

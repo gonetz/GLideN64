@@ -34,14 +34,19 @@ void PluginAPI::FindPluginPath(wchar_t * _strPath)
 {
 	if (_strPath == NULL)
 		return;
-#ifdef OS_WINDOWS
 	::GetModuleFileName((HINSTANCE)&__ImageBase, _strPath, PLUGIN_PATH_SIZE);
-#else
-	// TODO: for other OS
-	return;
-#endif
 	std::wstring pluginPath(_strPath);
 	std::replace(pluginPath.begin(), pluginPath.end(), L'\\', L'/');
 	std::wstring::size_type pos = pluginPath.find_last_of(L"/");
 	wcscpy(_strPath, pluginPath.substr(0, pos).c_str());
+}
+
+void PluginAPI::GetUserDataPath(wchar_t * _strPath)
+{
+	FindPluginPath(_strPath);
+}
+
+void PluginAPI::GetUserCachePath(wchar_t * _strPath)
+{
+	FindPluginPath(_strPath);
 }

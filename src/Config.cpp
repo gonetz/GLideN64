@@ -52,11 +52,11 @@ void Config::resetToDefaults()
 	textureFilter.txForce16bpp = 0;
 	textureFilter.txSaveCache = 1;
 
-	api().FindPluginPath(textureFilter.txPath);
+	api().GetUserDataPath(textureFilter.txPath);
 	wcscat(textureFilter.txPath, L"/hires_texture");
 
 #ifdef OS_WINDOWS
-	font.name = "arial.ttf";
+	font.name.assign("arial.ttf");
 #else
 	font.name = "FreeSans.ttf";
 #endif

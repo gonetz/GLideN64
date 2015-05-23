@@ -45,6 +45,8 @@ public:
 	void ChangeWindow();
 
 	void FindPluginPath(wchar_t * _strPath);
+	void GetUserDataPath(wchar_t * _strPath);
+	void GetUserCachePath(wchar_t * _strPath);
 
 #ifndef MUPENPLUSAPI
 	// Zilmar
