@@ -141,6 +141,7 @@ bool OGLVideoMupenPlus::_resizeWindow()
 		CoreVideo_Quit();
 		return false;
 	}
+	_setBufferSize();
 	return true;
 }
 
