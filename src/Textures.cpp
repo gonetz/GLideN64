@@ -895,8 +895,10 @@ void TextureCache::_load(u32 _tile, CachedTexture *_pTexture)
 	pDest = (u32*)malloc(_pTexture->textureBytes);
 
 	GLint mipLevel = 0, maxLevel = 0;
+#ifndef GLES2
 	if (config.generalEmulation.enableLOD != 0 && gSP.texture.level > gSP.texture.tile + 1)
 		maxLevel = _tile == 0 ? 0 : gSP.texture.level - gSP.texture.tile - 1;
+#endif
 
 	_pTexture->max_level = maxLevel;
 
@@ -1021,7 +1023,7 @@ void TextureCache::_load(u32 _tile, CachedTexture *_pTexture)
 			if (tmptex.realWidth % 2 != 0 && glInternalFormat != GL_RGBA && m_curUnpackAlignment > 1)
 				glPixelStorei(GL_UNPACK_ALIGNMENT, 2);
 #ifdef GLES2
-			glTexImage2D(GL_TEXTURE_2D, mipLevel, GL_RGBA, tmptex.realWidth, tmptex.realHeight, 0, GL_RGBA, glType, pDest);
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, tmptex.realWidth, tmptex.realHeight, 0, GL_RGBA, glType, pDest);
 #else
 			glTexImage2D(GL_TEXTURE_2D, mipLevel, glInternalFormat, tmptex.realWidth, tmptex.realHeight, 0, GL_RGBA, glType, pDest);
 #endif
