@@ -141,6 +141,8 @@ bool OGLVideoMupenPlus::_resizeWindow()
 		CoreVideo_Quit();
 		return false;
 	}
+	_setBufferSize();
+	isGLError(); // reset GL error.
 	return true;
 }
 
