@@ -792,7 +792,11 @@ void TextureCache::_loadBackground(CachedTexture *pTexture)
 	if (!bLoaded) {
 		if (pTexture->realWidth % 2 != 0 && glInternalFormat != GL_RGBA)
 			glPixelStorei(GL_UNPACK_ALIGNMENT, 2);
+#ifdef GLES2
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, pTexture->realWidth, pTexture->realHeight, 0, GL_RGBA, glType, pDest);
+#else
 		glTexImage2D(GL_TEXTURE_2D, 0, glInternalFormat, pTexture->realWidth, pTexture->realHeight, 0, GL_RGBA, glType, pDest);
+#endif
 	}
 	if (m_curUnpackAlignment > 1)
 		glPixelStorei(GL_UNPACK_ALIGNMENT, m_curUnpackAlignment);
@@ -843,7 +847,11 @@ bool TextureCache::_loadHiresTexture(u32 _tile, CachedTexture *_pTexture, u64 & 
 	_ricecrc = txfilter_checksum(addr, tile_width, tile_height, (unsigned short)(_pTexture->format << 8 | _pTexture->size), bpl, paladdr);
 	GHQTexInfo ghqTexInfo;
 	if (txfilter_hirestex(_pTexture->crc, _ricecrc, palette, &ghqTexInfo)) {
+#ifdef GLES2
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, ghqTexInfo.width, ghqTexInfo.height, 0, GL_RGBA, ghqTexInfo.pixel_type, ghqTexInfo.data);
+#else
 		glTexImage2D(GL_TEXTURE_2D, 0, ghqTexInfo.format, ghqTexInfo.width, ghqTexInfo.height, 0, ghqTexInfo.texture_format, ghqTexInfo.pixel_type, ghqTexInfo.data);
+#endif
 		assert(!isGLError());
 		_updateCachedTexture(ghqTexInfo, _pTexture);
 		return true;
@@ -1000,7 +1008,11 @@ void TextureCache::_load(u32 _tile, CachedTexture *_pTexture)
 		{
 			GHQTexInfo ghqTexInfo;
 			if (txfilter_filter((u8*)pDest, tmptex.realWidth, tmptex.realHeight, glInternalFormat, (uint64)_pTexture->crc, &ghqTexInfo) != 0 && ghqTexInfo.data != NULL) {
+#ifdef GLES2
+				glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, ghqTexInfo.width, ghqTexInfo.height, 0, GL_RGBA, ghqTexInfo.pixel_type, ghqTexInfo.data);
+#else
 				glTexImage2D(GL_TEXTURE_2D, 0, ghqTexInfo.format, ghqTexInfo.width, ghqTexInfo.height, 0, ghqTexInfo.texture_format, ghqTexInfo.pixel_type, ghqTexInfo.data);
+#endif
 				_updateCachedTexture(ghqTexInfo, _pTexture);
 				bLoaded = true;
 			}
@@ -1008,7 +1020,11 @@ void TextureCache::_load(u32 _tile, CachedTexture *_pTexture)
 		if (!bLoaded) {
 			if (tmptex.realWidth % 2 != 0 && glInternalFormat != GL_RGBA && m_curUnpackAlignment > 1)
 				glPixelStorei(GL_UNPACK_ALIGNMENT, 2);
+#ifdef GLES2
+			glTexImage2D(GL_TEXTURE_2D, mipLevel, GL_RGBA, tmptex.realWidth, tmptex.realHeight, 0, GL_RGBA, glType, pDest);
+#else
 			glTexImage2D(GL_TEXTURE_2D, mipLevel, glInternalFormat, tmptex.realWidth, tmptex.realHeight, 0, GL_RGBA, glType, pDest);
+#endif
 		}
 		if (mipLevel == maxLevel)
 			break;
