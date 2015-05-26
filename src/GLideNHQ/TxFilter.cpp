@@ -27,8 +27,9 @@
 
 #include <functional>
 #include <thread>
-#include <boost/format.hpp>
+#include <stdlib.h>
 
+#include "osal_files.h"
 #include "TxFilter.h"
 #include "TextureFilters.h"
 #include "TxDbg.h"
@@ -574,26 +575,19 @@ TxFilter::dmptx(uint8 *src, int width, int height, int rowStridePixel, uint16 gf
 
 		/* create directories */
 		tmpbuf.assign(_path + L"/texture_dump");
-		if (!boost::filesystem::exists(tmpbuf) &&
-				!boost::filesystem::create_directory(tmpbuf))
-			return 0;
-
 		tmpbuf.append(L"/" + _ident);
-		if (!boost::filesystem::exists(tmpbuf) &&
-				!boost::filesystem::create_directory(tmpbuf))
-			return 0;
-
 		tmpbuf.append(L"/GLideNHQ");
-		if (!boost::filesystem::exists(tmpbuf) &&
-				!boost::filesystem::create_directory(tmpbuf))
+		if (!osal_path_existsW(tmpbuf.c_str()) && !osal_mkdirp(tmpbuf.c_str()))
 			return 0;
 
 		if ((n64fmt >> 8) == 0x2) {
-			tmpbuf.append(boost::str(boost::wformat(L"/%ls#%08X#%01X#%01X#%08X_ciByRGBA.png")
-									 % _ident.c_str() % (uint32)(r_crc64 & 0xffffffff) % (n64fmt >> 8) % (n64fmt & 0xf) % (uint32)(r_crc64 >> 32)));
+			wchar_t wbuf[256];
+			swprintf(wbuf, 256, L"/%ls#%08X#%01X#%01X#%08X_ciByRGBA.png", _ident.c_str(), (uint32)(r_crc64 & 0xffffffff), (n64fmt >> 8), (n64fmt & 0xf), (uint32)(r_crc64 >> 32));
+			tmpbuf.append(wbuf);
 		} else {
-			tmpbuf.append(boost::str(boost::wformat(L"/%ls#%08X#%01X#%01X_all.png")
-									 % _ident.c_str() % (uint32)(r_crc64 & 0xffffffff) % (n64fmt >> 8) % (n64fmt & 0xf)));
+			wchar_t wbuf[256];
+			swprintf(wbuf, 256, L"/%ls#%08X#%01X#%01X_all.png", _ident.c_str(), (uint32)(r_crc64 & 0xffffffff), (n64fmt >> 8), (n64fmt & 0xf));
+			tmpbuf.append(wbuf);
 		}
 
 #ifdef WIN32

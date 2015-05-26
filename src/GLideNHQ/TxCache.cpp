@@ -27,8 +27,10 @@
 
 #include "TxCache.h"
 #include "TxDbg.h"
+#include "osal_files.h"
 #include <zlib.h>
-#include <boost/filesystem.hpp>
+#include <memory.h>
+#include <stdlib.h>
 
 TxCache::~TxCache()
 {
@@ -227,18 +229,17 @@ TxCache::save(const wchar_t *path, const wchar_t *filename, int config)
 	/* dump cache to disk */
 	char cbuf[MAX_PATH];
 
-	boost::filesystem::wpath cachepath(path);
-	boost::filesystem::create_directory(cachepath);
+	osal_mkdirp(path);
 
 	/* Ugly hack to enable fopen/gzopen in Win9x */
 #ifdef WIN32
 	wchar_t curpath[MAX_PATH];
 	GETCWD(MAX_PATH, curpath);
-	CHDIR(cachepath.wstring().c_str());
+	CHDIR(path);
 #else
 	char curpath[MAX_PATH];
-    wcstombs(cbuf, cachepath.wstring().c_str(), MAX_PATH);
 	GETCWD(MAX_PATH, curpath);
+	wcstombs(cbuf, path, MAX_PATH);
 	CHDIR(cbuf);
 #endif
 
@@ -309,16 +310,14 @@ TxCache::load(const wchar_t *path, const wchar_t *filename, int config)
 	/* find it on disk */
 	char cbuf[MAX_PATH];
 
-	boost::filesystem::wpath cachepath(path);
-
 #ifdef WIN32
 	wchar_t curpath[MAX_PATH];
 	GETCWD(MAX_PATH, curpath);
-	CHDIR(cachepath.wstring().c_str());
+	CHDIR(path);
 #else
 	char curpath[MAX_PATH];
-    wcstombs(cbuf, cachepath.wstring().c_str(), MAX_PATH);
 	GETCWD(MAX_PATH, curpath);
+	wcstombs(cbuf, path, MAX_PATH);
 	CHDIR(cbuf);
 #endif
 

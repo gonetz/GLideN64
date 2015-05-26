@@ -47,9 +47,11 @@
 
 #include "TxHiResCache.h"
 #include "TxDbg.h"
+#include "osal_files.h"
 #include <zlib.h>
 #include <string>
 #include <math.h>
+#include <stdlib.h>
 
 TxHiResCache::~TxHiResCache()
 {
@@ -57,11 +59,12 @@ TxHiResCache::~TxHiResCache()
   if ((_options & DUMP_HIRESTEXCACHE) && !_haveCache && !_abortLoad) {
 	/* dump cache to disk */
 	std::wstring filename = _ident + L"_HIRESTEXTURES." + TEXCACHE_EXT;
-	boost::filesystem::wpath cachepath(_path);
-	cachepath /= boost::filesystem::wpath(L"cache");
+	std::wstring cachepath(_path);
+	cachepath += OSAL_DIR_SEPARATOR_CHAR;
+	cachepath += L"cache";
 	int config = _options & (HIRESTEXTURES_MASK|TILE_HIRESTEX|FORCE16BPP_HIRESTEX|GZ_HIRESTEXCACHE|LET_TEXARTISTS_FLY);
 
-	TxCache::save(cachepath.wstring().c_str(), filename.c_str(), config);
+	TxCache::save(cachepath.c_str(), filename.c_str(), config);
   }
 #endif
 
@@ -98,11 +101,12 @@ TxHiResCache::TxHiResCache(int maxwidth, int maxheight, int maxbpp, int options,
   if (_options & DUMP_HIRESTEXCACHE) {
 	/* find it on disk */
 	std::wstring filename = _ident + L"_HIRESTEXTURES." + TEXCACHE_EXT;
-	boost::filesystem::wpath cachepath(_path);
-	cachepath /= boost::filesystem::wpath(L"cache");
+	std::wstring cachepath(_path);
+	cachepath += OSAL_DIR_SEPARATOR_CHAR;
+	cachepath += L"cache";
 	int config = _options & (HIRESTEXTURES_MASK|TILE_HIRESTEX|FORCE16BPP_HIRESTEX|GZ_HIRESTEXCACHE|LET_TEXARTISTS_FLY);
 
-	_haveCache = TxCache::load(cachepath.wstring().c_str(), filename.c_str(), config);
+	_haveCache = TxCache::load(cachepath.c_str(), filename.c_str(), config);
   }
 #endif
 
@@ -123,7 +127,7 @@ TxHiResCache::load(boolean replace) /* 0 : reload, 1 : replace partial */
 
 	if (!replace) TxCache::clear();
 
-	boost::filesystem::wpath dir_path(_texPackPath);
+	std::wstring dir_path(_texPackPath);
 
 	switch (_options & HIRESTEXTURES_MASK) {
 	case GHQ_HIRESTEXTURES:
@@ -140,8 +144,10 @@ TxHiResCache::load(boolean replace) /* 0 : reload, 1 : replace partial */
 	  INFO(80, L"  usage of only 2) and 3) highly recommended!\n");
 	  INFO(80, L"  folder names must be in US-ASCII characters!\n");
 
-	  dir_path /= boost::filesystem::wpath(_ident);
-	  loadHiResTextures(dir_path, replace);
+	  dir_path += OSAL_DIR_SEPARATOR_CHAR;
+	  dir_path += _ident;
+
+	  loadHiResTextures(dir_path.c_str(), replace);
 	  break;
 	case JABO_HIRESTEXTURES:
 	  ;
@@ -154,13 +160,13 @@ TxHiResCache::load(boolean replace) /* 0 : reload, 1 : replace partial */
 }
 
 boolean
-TxHiResCache::loadHiResTextures(boost::filesystem::wpath dir_path, boolean replace)
+TxHiResCache::loadHiResTextures(const wchar_t * dir_path, boolean replace)
 {
   DBG_INFO(80, L"-----\n");
-  DBG_INFO(80, L"path: %ls\n", dir_path.string().c_str());
+  DBG_INFO(80, L"path: %ls\n", dir_path);
 
   /* find it on disk */
-  if (!boost::filesystem::exists(dir_path)) {
+  if (!osal_path_existsW(dir_path)) {
 	INFO(80, L"Error: path not found!\n");
 	return 0;
   }
@@ -173,28 +179,21 @@ TxHiResCache::loadHiResTextures(boost::filesystem::wpath dir_path, boolean repla
 #ifdef WIN32
   wchar_t curpath[MAX_PATH];
   GETCWD(MAX_PATH, curpath);
-  CHDIR(dir_path.wstring().c_str());
+  CHDIR(dir_path);
 #else
   char curpath[MAX_PATH];
   char cbuf[MAX_PATH];
-  wcstombs(cbuf, dir_path.wstring().c_str(), MAX_PATH);
+  wcstombs(cbuf, dir_path, MAX_PATH);
   GETCWD(MAX_PATH, curpath);
   CHDIR(cbuf);
 #endif
 
-  /* NOTE: I could use the boost::wdirectory_iterator and boost::wpath
-   * to resolve UNICODE file names and paths. But then, _wfopen() is
-   * required to get the file descriptor for MS Windows to pass into
-   * libpng, which is incompatible with Win9x. Win9x's fopen() cannot
-   * handle UNICODE names. UNICODE capable boost::filesystem is available
-   * with Boost1.34.1 built with VC8.0 (bjam --toolset=msvc-8.0 stage).
-   *
-   * RULE OF THUMB: NEVER save texture packs in NON-ASCII names!!
-   */
-  boost::filesystem::directory_iterator it(dir_path);
-  boost::filesystem::directory_iterator end_it; /* default construction yields past-the-end */
+  void *dir = osal_search_dir_open(dir_path);
+  const wchar_t *foundfilename;
+  // the path of the texture
+  std::wstring texturefilename;
 
-  for (; it != end_it; ++it) {
+  do {
 
 	if (KBHIT(0x1B)) {
 	  _abortLoad = 1;
@@ -203,14 +202,26 @@ TxHiResCache::loadHiResTextures(boost::filesystem::wpath dir_path, boolean repla
 	}
 	if (_abortLoad) break;
 
+	foundfilename = osal_search_dir_read_next(dir);
+	// The array is empty,  break the current operation
+	if (foundfilename == NULL)
+		break;
+	// The current file is a hidden one
+	if (foundfilename[0] == L'.')
+		// These files we don't need
+		continue;
+	texturefilename.assign(dir_path);
+	texturefilename += OSAL_DIR_SEPARATOR_CHAR;
+	texturefilename += foundfilename;
+
 	/* recursive read into sub-directory */
-	if (boost::filesystem::is_directory(it->status())) {
-	  loadHiResTextures(it->path(), replace);
+	if (osal_is_directory(texturefilename.c_str())) {
+		loadHiResTextures(texturefilename.c_str(), replace);
 	  continue;
 	}
 
 	DBG_INFO(80, L"-----\n");
-	DBG_INFO(80, L"file: %ls\n", it->path().leaf().c_str());
+	DBG_INFO(80, L"file: %ls\n", foundfilename);
 
 	int width = 0, height = 0;
 	uint16 format = 0;
@@ -242,7 +253,7 @@ TxHiResCache::loadHiResTextures(boost::filesystem::wpath dir_path, boolean repla
 	/* read in Rice's file naming convention */
 #define CRCFMTSIZ_LEN 13
 #define PALCRC_LEN 9
-    wcstombs(fname, it->path().leaf().wstring().c_str(), MAX_PATH);
+	wcstombs(fname, foundfilename, MAX_PATH);
 	/* XXX case sensitivity fiasco!
 	 * files must use _a, _rgb, _all, _allciByRGBA, _ciByRGBA, _ci
 	 * and file extensions must be in lower case letters! */
@@ -277,8 +288,8 @@ TxHiResCache::loadHiResTextures(boost::filesystem::wpath dir_path, boolean repla
 	if (!pfname) {
 #if !DEBUG
 	  INFO(80, L"-----\n");
-	  INFO(80, L"path: %ls\n", dir_path.string().c_str());
-	  INFO(80, L"file: %ls\n", it->path().leaf().c_str());
+	  INFO(80, L"path: %ls\n", dir_path);
+	  INFO(80, L"file: %ls\n", foundfilename);
 #endif
 	  INFO(80, L"Error: not Rice texture naming convention!\n");
 	  continue;
@@ -332,9 +343,9 @@ TxHiResCache::loadHiResTextures(boost::filesystem::wpath dir_path, boolean repla
 	 */
 	if (pfname == strstr(fname, "_rgb.") || pfname == strstr(fname, "_a.")) {
 	  strcpy(pfname, "_rgb.png");
-	  if (!boost::filesystem::exists(fname)) {
+	  if (!osal_path_existsA(fname)) {
 		strcpy(pfname, "_rgb.bmp");
-		if (!boost::filesystem::exists(fname)) {
+		if (!osal_path_existsA(fname)) {
 #if !DEBUG
 		  INFO(80, L"-----\n");
 		  INFO(80, L"path: %ls\n", dir_path.string().c_str());
@@ -746,7 +757,8 @@ TxHiResCache::loadHiResTextures(boost::filesystem::wpath dir_path, boolean repla
 	  free(tex);
 	}
 
-  }
+  } while (foundfilename != NULL);
+  osal_search_dir_close(dir);
 
   CHDIR(curpath);
 

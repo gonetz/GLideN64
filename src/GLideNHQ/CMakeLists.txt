@@ -23,13 +23,8 @@ set(GLideNHQ_SOURCES
 include_directories( inc )
 LINK_DIRECTORIES( ${CMAKE_CURRENT_SOURCE_DIR}/lib )
 
-set(Boost_USE_STATIC_LIBS ON)
-set(Boost_USE_MULTITHREADED ON)
-find_package(Boost REQUIRED COMPONENTS filesystem system )
-include_directories(${Boost_INCLUDE_DIRS})
-link_directories(${Boost_LIBRARY_DIRS})
-
 if(UNIX)
+  list(APPEND GLideNHQ_SOURCES osal/osal_files_unix.c)
   add_definitions(
     -DNDEBUG
     -DOS_LINUX
@@ -37,6 +32,7 @@ if(UNIX)
 endif(UNIX)
 
 if(WIN32)
+  list(APPEND GLideNHQ_SOURCES osal/osal_files_win32.c)
   LINK_DIRECTORIES( ${CMAKE_CURRENT_SOURCE_DIR}/lib )
   add_definitions(
 	-DWIN32
@@ -75,6 +71,7 @@ if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
     SET(GCC_CPP11_COMPILE_FLAGS "-std=c++0x")
     if( NOT GHQCHK )
       SET( CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} ${GCC_CPP11_COMPILE_FLAGS} -static -fPIC " )
+      SET( CMAKE_C_FLAGS  "${CMAKE_C_FLAGS} -static -fPIC " )
     else( NOT GHQCHK )
       SET( CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} ${GCC_CPP11_COMPILE_FLAGS}" )
     endif( NOT GHQCHK )
@@ -91,13 +88,9 @@ if( NOT GHQCHK )
       set_target_properties(GLideNHQd PROPERTIES LINK_SEARCH_START_STATIC 1)
       set_target_properties(GLideNHQd PROPERTIES LINK_SEARCH_END_STATIC 1)
 
-#          target_link_libraries( GLideNHQd PRIVATE png z ${Boost_LIBRARIES} )
-#      target_link_libraries(GLideNHQd ${CMAKE_CURRENT_SOURCE_DIR}/lib/libpng.a ${CMAKE_CURRENT_SOURCE_DIR}/lib/libz.a ${BOOSTSYSTEMLIB} ${BOOSTFILESYSTEMLIB})
       target_link_libraries(GLideNHQd PRIVATE
             ${CMAKE_CURRENT_SOURCE_DIR}/lib/libpng.a
             ${CMAKE_CURRENT_SOURCE_DIR}/lib/libz.a
-            ${CMAKE_CURRENT_SOURCE_DIR}/lib/libboost_system.a
-            ${CMAKE_CURRENT_SOURCE_DIR}/lib/libboost_filesystem.a
        )
     endif( CMAKE_BUILD_TYPE STREQUAL "Debug")
 
@@ -109,12 +102,9 @@ if( NOT GHQCHK )
 #      set(CMAKE_FIND_LIBRARY_SUFFIXES ".a")
 #      find_library(PNGLIB libpng.a)
 
-#          target_link_libraries(libGLideNHQ pthread png z ${Boost_LIBRARIES} )
       target_link_libraries(GLideNHQ PRIVATE
             ${CMAKE_CURRENT_SOURCE_DIR}/lib/libpng.a
             ${CMAKE_CURRENT_SOURCE_DIR}/lib/libz.a
-            ${CMAKE_CURRENT_SOURCE_DIR}/lib/libboost_system.a
-            ${CMAKE_CURRENT_SOURCE_DIR}/lib/libboost_filesystem.a
        )
     endif( CMAKE_BUILD_TYPE STREQUAL "Release")
 else( NOT GHQCHK )
@@ -131,10 +121,10 @@ else( NOT GHQCHK )
       )
 
     if( CMAKE_BUILD_TYPE STREQUAL "Debug")
-    target_link_libraries(ghqchk ${OPENGL_LIBRARIES} ${Boost_LIBRARIES} png z )
+    target_link_libraries(ghqchk ${OPENGL_LIBRARIES} png z )
     endif( CMAKE_BUILD_TYPE STREQUAL "Debug")
 
     if( CMAKE_BUILD_TYPE STREQUAL "Release")
-    target_link_libraries(ghqchk ${OPENGL_LIBRARIES} ${Boost_LIBRARIES} png z )
+    target_link_libraries(ghqchk ${OPENGL_LIBRARIES} png z )
     endif( CMAKE_BUILD_TYPE STREQUAL "Release")
 endif( NOT GHQCHK )

@@ -35,6 +35,7 @@
 #else
 #include <iostream>
 #include <dlfcn.h>
+#include <unistd.h>
 #define MAX_PATH 4095
 #define TXHMODULE void*
 #define DLOPEN(a) dlopen(a, RTLD_LAZY|RTLD_GLOBAL)

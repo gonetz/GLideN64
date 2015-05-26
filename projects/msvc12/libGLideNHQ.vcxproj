@@ -94,7 +94,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>..\..\src\inc;..\..\src\GLideNHQ\inc;C:\Tools\boost\boost_1_57_0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\src\inc;..\..\src\GLideNHQ\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>Debug/</AssemblerListingLocation>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <CompileAs>CompileAsCpp</CompileAs>
@@ -106,7 +106,7 @@
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>TXFILTER_LIB;WIN32;_WINDOWS;_DEBUG;WIN32;OS_WINDOWS;_CRT_SECURE_NO_WARNINGS;DEBUG;__MSC__;CMAKE_INTDIR="Debug";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>UNICODE;WIN32;_WINDOWS;_DEBUG;WIN32;OS_WINDOWS;_CRT_SECURE_NO_WARNINGS;DEBUG;__MSC__;CMAKE_INTDIR="Debug";%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ObjectFileName>$(IntDir)</ObjectFileName>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
@@ -123,15 +123,15 @@
       <ProxyFileName>%(Filename)_p.c</ProxyFileName>
     </Midl>
     <Lib>
-      <AdditionalDependencies>libpngd.lib;zlibd.lib;libboost_filesystem-vc120-mt-sgd-1_57.lib</AdditionalDependencies>
+      <AdditionalDependencies>libpngd.lib;zlibd.lib</AdditionalDependencies>
     </Lib>
     <Lib>
-      <AdditionalLibraryDirectories>%BOOST_ROOT%/lib32-msvc-12.0;../../src/GLideNHQ/lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>../../src/GLideNHQ/lib</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>..\..\src\inc;..\..\src\GLideNHQ\inc;C:\Tools\boost\boost_1_57_0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\src\inc;..\..\src\GLideNHQ\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>Release/</AssemblerListingLocation>
       <CompileAs>CompileAsCpp</CompileAs>
       <ExceptionHandling>Sync</ExceptionHandling>
@@ -143,7 +143,7 @@
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>
       </DebugInformationFormat>
-      <PreprocessorDefinitions>TXFILTER_DLL;WIN32;_WINDOWS;NDEBUG;WIN32;OS_WINDOWS;_CRT_SECURE_NO_WARNINGS;DEBUG;__MSC__;CMAKE_INTDIR="Release";%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>UNICODE;WIN32;_WINDOWS;NDEBUG;WIN32;OS_WINDOWS;_CRT_SECURE_NO_WARNINGS;DEBUG;__MSC__;CMAKE_INTDIR="Release";%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ObjectFileName>$(IntDir)</ObjectFileName>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
@@ -160,8 +160,8 @@
       <ProxyFileName>%(Filename)_p.c</ProxyFileName>
     </Midl>
     <Lib>
-      <AdditionalDependencies>libpng.lib;zlib.lib;libboost_filesystem-vc120-mt-s-1_57.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>%BOOST_ROOT%/lib32-msvc-12.0;../../src/GLideNHQ/lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>libpng.lib;zlib.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>../../src/GLideNHQ/lib</AdditionalLibraryDirectories>
     </Lib>
     <Link>
       <AdditionalLibraryDirectories>%BOOST_ROOT%/lib32-msvc-12.0;../lib</AdditionalLibraryDirectories>
@@ -267,6 +267,7 @@
     </Midl>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\src\GLideNHQ\osal\osal_files_win32.c" />
     <ClCompile Include="..\..\src\GLideNHQ\TextureFilters.cpp" />
     <ClCompile Include="..\..\src\GLideNHQ\TextureFilters_2xsai.cpp" />
     <ClCompile Include="..\..\src\GLideNHQ\TextureFilters_hq2x.cpp" />
