@@ -25,6 +25,8 @@
 #define __INTERNAL_H__
 
 #include "Ext_TxFilter.h"
+#include "txWidestringWrapper.h"
+
 
 #ifdef WIN32
 #define KBHIT(key) ((GetAsyncKeyState(key) & 0x8001) == 0x8001)

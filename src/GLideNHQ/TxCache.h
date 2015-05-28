@@ -28,7 +28,6 @@
 #include "TxUtil.h"
 #include <list>
 #include <map>
-#include <string>
 
 class TxCache
 {
@@ -39,8 +38,8 @@ private:
   uint32 _gzdestLen;
 protected:
   int _options;
-  std::wstring _ident;
-  std::wstring _path;
+  tx_wstring _ident;
+  tx_wstring _path;
   dispInfoFuncExt _callback;
   TxUtil *_txUtil;
   struct TXCACHE {

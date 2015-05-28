@@ -46,7 +46,7 @@ private:
   TxImage *_txImage;
   TxQuantize *_txQuantize;
   TxReSample *_txReSample;
-  std::wstring _texPackPath;
+  tx_wstring _texPackPath;
   boolean loadHiResTextures(const wchar_t * dir_path, boolean replace);
 public:
   ~TxHiResCache();

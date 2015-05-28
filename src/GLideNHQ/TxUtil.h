@@ -27,11 +27,10 @@
 /* maximum number of CPU cores allowed */
 #define MAX_NUMCORE 8
 
-/* extension for cache files */
-#define TEXCACHE_EXT L"htc"
-
 #include "TxInternal.h"
-#include <string>
+
+/* extension for cache files */
+#define TEXCACHE_EXT wst("htc")
 
 class TxUtil
 {

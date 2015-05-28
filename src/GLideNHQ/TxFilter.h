@@ -30,7 +30,6 @@
 #include "TxTexCache.h"
 #include "TxUtil.h"
 #include "TxImage.h"
-#include <string>
 
 class TxFilter
 {
@@ -44,8 +43,8 @@ private:
   int _maxbpp;
   int _options;
   int _cacheSize;
-  std::wstring _ident;
-  std::wstring _path;
+  tx_wstring _ident;
+  tx_wstring _path;
   TxQuantize *_txQuantize;
   TxTexCache *_txTexCache;
   TxHiResCache *_txHiResCache;

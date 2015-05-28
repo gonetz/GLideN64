@@ -70,7 +70,7 @@ TxUtil::sizeofTx(int width, int height, uint16 format)
 	break;
 	default:
 		/* unsupported format */
-		DBG_INFO(80, L"Error: cannot get size. unsupported gfmt:%x\n", format);
+		DBG_INFO(80, wst("Error: cannot get size. unsupported gfmt:%x\n"), format);
 		;
 	}
 
@@ -206,7 +206,7 @@ loop1:
 		}
 #endif
 	} catch(...) {
-		DBG_INFO(80, L"Error: RiceCRC32 exception!\n");
+		DBG_INFO(80, wst("Error: RiceCRC32 exception!\n"));
 	}
 
 	return crc32Ret;
@@ -375,7 +375,7 @@ findmax0:
 		cimaxRet = CalculateMaxCI4b(src, width, height, rowStride);
 #endif
 	} catch(...) {
-		DBG_INFO(80, L"Error: RiceCRC32 exception!\n");
+		DBG_INFO(80, wst("Error: RiceCRC32 exception!\n"));
 	}
 
 	*crc32 = crc32Ret;
@@ -477,7 +477,7 @@ findmax0:
 		cimaxRet = CalculateMaxCI8b(src, width, height, rowStride);
 #endif
 	} catch(...) {
-		DBG_INFO(80, L"Error: RiceCRC32 exception!\n");
+		DBG_INFO(80, wst("Error: RiceCRC32 exception!\n"));
 	}
 
 	*crc32 = crc32Ret;
@@ -514,12 +514,12 @@ TxUtil::getNumberofProcessors()
 		numcore = sysconf(_SC_NPROCESSORS_ONLN);
 #endif
 	} catch (...) {
-		DBG_INFO(80, L"Error: number of processor detection failed!\n");
+		DBG_INFO(80, wst("Error: number of processor detection failed!\n"));
 	}
 
 	if (numcore > MAX_NUMCORE) numcore = MAX_NUMCORE;
 #endif // ANDROID
-	DBG_INFO(80, L"Number of processors : %d\n", numcore);
+	DBG_INFO(80, wst("Number of processors : %d\n"), numcore);
 
 	return numcore;
 }

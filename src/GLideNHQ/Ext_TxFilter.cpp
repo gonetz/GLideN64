@@ -76,17 +76,17 @@ boolean ext_ghq_init(int maxwidth, int maxheight, int maxbpp, int options, int c
 	wcscpy(curpath, path);
 #ifdef WIN32
 #ifdef GHQCHK
-	wcscat(curpath, L"\\ghqchk.dll");
+	wcscat(curpath, wst("\\ghqchk.dll"));
 #else
-	wcscat(curpath, L"\\GlideHQ.dll");
+	wcscat(curpath, wst("\\GlideHQ.dll"));
 #endif
 	txfilter.lib = DLOPEN(curpath);
 #else
 	char cbuf[MAX_PATH];
 #ifdef GHQCHK
-	wcscat(curpath, L"/ghqchk.so");
+	wcscat(curpath, wst("/ghqchk.so"));
 #else
-	wcscat(curpath, L"/GlideHQ.so");
+	wcscat(curpath, wst("/GlideHQ.so"));
 #endif
 	wcstombs(cbuf, curpath, MAX_PATH);
 	txfilter.lib = DLOPEN(cbuf);

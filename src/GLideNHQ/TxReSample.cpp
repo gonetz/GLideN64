@@ -91,14 +91,14 @@ TxReSample::nextPow2(uint8** image, int* width, int* height, int bpp, boolean us
 				row_bytes = (n_width * bpp) >> 3;
 			}
 		}
-		DBG_INFO(80, L"using 3dfx W:H aspect ratio range (8:1 - 1:8).\n");
+		DBG_INFO(80, wst("using 3dfx W:H aspect ratio range (8:1 - 1:8).\n"));
 	}
 
 	/* do we really need to do this ? */
 	if (o_width == n_width && o_height == n_height)
 		return 1; /* nope */
 
-	DBG_INFO(80, L"expand image to next power of 2 dimensions. %d x %d -> %d x %d\n",
+	DBG_INFO(80, wst("expand image to next power of 2 dimensions. %d x %d -> %d x %d\n"),
 			 o_width, o_height, n_width, n_height);
 
 	if (o_width > n_width)
@@ -355,7 +355,7 @@ TxReSample::minify(uint8 **src, int *width, int *height, int ratio)
 	*width = tmpwidth;
 	*height = tmpheight;
 
-	DBG_INFO(80, L"minification ratio:%d -> %d x %d\n", ratio, *width, *height);
+	DBG_INFO(80, wst("minification ratio:%d -> %d x %d\n"), ratio, *width, *height);
 
 	return 1;
 }

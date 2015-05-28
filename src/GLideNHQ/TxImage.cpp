@@ -61,7 +61,7 @@ TxImage::getPNGInfo(FILE *fp, png_structp *png_ptr, png_infop *info_ptr)
 	}
 
 	if (setjmp(png_jmpbuf(*png_ptr))) {
-		DBG_INFO(80, L"error reading png!\n");
+		DBG_INFO(80, wst("error reading png!\n"));
 		png_destroy_read_struct(png_ptr, info_ptr, NULL);
 		return 0;
 	}
@@ -94,7 +94,7 @@ TxImage::readPNG(FILE* fp, int* width, int* height, uint16* format)
 		return NULL;
 
 	if (!getPNGInfo(fp, &png_ptr, &info_ptr)) {
-		INFO(80, L"error reading png file! png image is corrupt.\n");
+		INFO(80, wst("error reading png file! png image is corrupt.\n"));
 		return NULL;
 	}
 
@@ -102,7 +102,7 @@ TxImage::readPNG(FILE* fp, int* width, int* height, uint16* format)
 				 (png_uint_32*)&o_width, (png_uint_32*)&o_height, &bit_depth, &color_type,
 				 &interlace_type, &compression_type, &filter_type);
 
-	DBG_INFO(80, L"png format %d x %d bitdepth:%d color:%x interlace:%x compression:%x filter:%x\n",
+	DBG_INFO(80, wst("png format %d x %d bitdepth:%d color:%x interlace:%x compression:%x filter:%x\n"),
 			 o_width, o_height, bit_depth, color_type,
 			 interlace_type, compression_type, filter_type);
 
@@ -158,7 +158,7 @@ TxImage::readPNG(FILE* fp, int* width, int* height, uint16* format)
 	/* punt invalid formats */
 	if (color_type != PNG_COLOR_TYPE_RGB_ALPHA) {
 		png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
-		DBG_INFO(80, L"Error: not PNG_COLOR_TYPE_RGB_ALPHA format!\n");
+		DBG_INFO(80, wst("Error: not PNG_COLOR_TYPE_RGB_ALPHA format!\n"));
 		return NULL;
 	}
 
@@ -236,7 +236,7 @@ TxImage::readPNG(FILE* fp, int* width, int* height, uint16* format)
 
 #ifdef DEBUG
 	if (!image) {
-		DBG_INFO(80, L"Error: failed to load png image!\n");
+		DBG_INFO(80, wst("Error: failed to load png image!\n"));
 	}
 #endif
 
@@ -511,11 +511,11 @@ TxImage::readBMP(FILE* fp, int* width, int* height, uint16* format)
 		return NULL;
 
 	if (!getBMPInfo(fp, &bmp_fhdr, &bmp_ihdr)) {
-		INFO(80, L"error reading bitmap file! bitmap image is corrupt.\n");
+		INFO(80, wst("error reading bitmap file! bitmap image is corrupt.\n"));
 		return NULL;
 	}
 
-	DBG_INFO(80, L"bmp format %d x %d bitdepth:%d compression:%x offset:%d\n",
+	DBG_INFO(80, wst("bmp format %d x %d bitdepth:%d compression:%x offset:%d\n"),
 			 bmp_ihdr.biWidth, bmp_ihdr.biHeight, bmp_ihdr.biBitCount,
 			 bmp_ihdr.biCompression, bmp_fhdr.bfOffBits);
 
@@ -527,7 +527,7 @@ TxImage::readBMP(FILE* fp, int* width, int* height, uint16* format)
 	/* Rice hi-res textures */
 	if (!(bmp_ihdr.biBitCount == 8 || bmp_ihdr.biBitCount == 4 || bmp_ihdr.biBitCount == 32 || bmp_ihdr.biBitCount == 24) ||
 			bmp_ihdr.biCompression != 0) {
-		DBG_INFO(80, L"Error: incompatible bitmap format!\n");
+		DBG_INFO(80, wst("Error: incompatible bitmap format!\n"));
 		return NULL;
 	}
 
@@ -646,7 +646,7 @@ TxImage::readBMP(FILE* fp, int* width, int* height, uint16* format)
 
 #ifdef DEBUG
 	if (!image) {
-		DBG_INFO(80, L"Error: failed to load bmp image!\n");
+		DBG_INFO(80, wst("Error: failed to load bmp image!\n"));
 	}
 #endif
 

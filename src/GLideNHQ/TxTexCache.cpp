@@ -32,17 +32,16 @@
 #include "TxDbg.h"
 #include "osal_files.h"
 #include <zlib.h>
-#include <string>
 
 TxTexCache::~TxTexCache()
 {
 #if DUMP_CACHE
 	if (_options & DUMP_TEXCACHE) {
 		/* dump cache to disk */
-		std::wstring filename = _ident + L"_MEMORYCACHE." + TEXCACHE_EXT;
-		std::wstring cachepath(_path);
-		cachepath += OSAL_DIR_SEPARATOR_CHAR;
-		cachepath += L"cache";
+		tx_wstring filename = _ident + wst("_MEMORYCACHE.") + TEXCACHE_EXT;
+		tx_wstring cachepath(_path);
+		cachepath += OSAL_DIR_SEPARATOR_STR;
+		cachepath += wst("cache");
 		int config = _options & (FILTER_MASK | ENHANCEMENT_MASK | FORCE16BPP_TEX | GZ_TEXCACHE);
 
 		TxCache::save(cachepath.c_str(), filename.c_str(), config);
@@ -61,10 +60,10 @@ TxTexCache::TxTexCache(int options, int cachesize, const wchar_t *path, const wc
 #if DUMP_CACHE
 	if (_options & DUMP_TEXCACHE) {
 		/* find it on disk */
-		std::wstring filename = _ident + L"_MEMORYCACHE." + TEXCACHE_EXT;
-		std::wstring cachepath(_path);
-		cachepath += OSAL_DIR_SEPARATOR_CHAR;
-		cachepath += L"cache";
+		tx_wstring filename = _ident + wst("_MEMORYCACHE.") + TEXCACHE_EXT;
+		tx_wstring cachepath(_path);
+		cachepath += OSAL_DIR_SEPARATOR_STR;
+		cachepath += wst("cache");
 		int config = _options & (FILTER_MASK | ENHANCEMENT_MASK | FORCE16BPP_TEX | GZ_TEXCACHE);
 
 		TxCache::load(cachepath.c_str(), filename.c_str(), config);

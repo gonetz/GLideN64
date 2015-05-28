@@ -24,7 +24,6 @@
 #define DBG_LEVEL 80
 
 #include "TxDbg.h"
-#include <string.h>
 #include <stdarg.h>
 #include <stdio.h>
 
@@ -88,7 +87,7 @@ TxDbg::output(const int level, const wchar_t *format, ...)
 	wchar_t newformat[4095];
 
 	va_start(args, format);
-	swprintf(newformat, 4095, L"%d:\t", level);
+	tx_swprintf(newformat, 4095, wst("%d:\t"), level);
 	wcscat(newformat, format);
 	vfwprintf(_dbgfile, newformat, args);
 	fflush(_dbgfile);
