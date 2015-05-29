@@ -20,7 +20,7 @@ set(GLideNHQ_SOURCES
   TxUtil.cpp
 )
 
-include_directories( inc )
+include_directories( inc osal )
 LINK_DIRECTORIES( ${CMAKE_CURRENT_SOURCE_DIR}/lib )
 
 if(UNIX)
