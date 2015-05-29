@@ -1,4 +1,5 @@
 #include "GLideN64_mupenplus.h"
+#include <algorithm>
 #include "../PluginAPI.h"
 #include "../OpenGL.h"
 #include "../RSP.h"
@@ -13,9 +14,19 @@ int PluginAPI::InitiateGFX(const GFX_INFO & _gfxInfo)
 static
 void _cutLastPathSeparator(wchar_t * _strPath)
 {
+#ifdef ANDROID
+	const u32 bufSize = 512;
+	char cbuf[bufSize];
+	wcstombs(cbuf, _strPath, bufSize);
+	std::string pluginPath(cbuf);
+	std::string::size_type pos = pluginPath.find_last_of("/");
+	mbstowcs(_strPath, pluginPath.c_str(), PLUGIN_PATH_SIZE);
+#else
 	std::wstring pluginPath(_strPath);
-	std::wstring::size_type pos = pluginPath.find_last_of(L"\\/");
+	std::replace(pluginPath.begin(), pluginPath.end(), L'\\', L'/');
+	std::wstring::size_type pos = pluginPath.find_last_of(L"/");
 	wcscpy(_strPath, pluginPath.substr(0, pos).c_str());
+#endif
 }
 
 static
