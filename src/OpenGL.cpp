@@ -25,6 +25,7 @@
 #include "GLideNHQ/Ext_TxFilter.h"
 #include "VI.h"
 #include "Config.h"
+#include "wst.h"
 #include "Log.h"
 #include "TextDrawer.h"
 #include "PluginAPI.h"
@@ -1352,7 +1353,7 @@ void TextureFilterHandler::init()
 			wchar_t * pTexPackPath = config.textureFilter.txPath;
 			if (::wcslen(config.textureFilter.txPath) == 0) {
 				api().GetUserDataPath(txPath);
-				wcscat(txPath, L"/hires_texture");
+				gln_wcscat(txPath, wst("/hires_texture"));
 				pTexPackPath = txPath;
 			}
 			wchar_t txCachePath[PLUGIN_PATH_SIZE];

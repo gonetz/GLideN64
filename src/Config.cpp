@@ -6,6 +6,7 @@
 #include "RSP.h"
 #include "PluginAPI.h"
 #include "Config.h"
+#include "wst.h"
 
 void Config::resetToDefaults()
 {
@@ -53,7 +54,7 @@ void Config::resetToDefaults()
 	textureFilter.txSaveCache = 1;
 
 	api().GetUserDataPath(textureFilter.txPath);
-	wcscat(textureFilter.txPath, L"/hires_texture");
+	gln_wcscat(textureFilter.txPath, wst("/hires_texture"));
 
 #ifdef OS_WINDOWS
 	font.name.assign("arial.ttf");

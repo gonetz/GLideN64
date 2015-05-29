@@ -388,6 +388,7 @@
     <ClInclude Include="..\..\src\S2DEX2.h" />
     <ClInclude Include="..\..\src\windows\GLFunctions.h" />
     <ClInclude Include="..\..\src\windows\GLideN64_windows.h" />
+    <ClInclude Include="..\..\src\wst.h" />
     <ClInclude Include="..\..\src\ZilmarGFX_1_3.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_mupenplus|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_mupenplus|Win32'">true</ExcludedFromBuild>
