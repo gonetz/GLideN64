@@ -419,7 +419,7 @@ void ShaderCombiner::updateDitherMode(bool _bForce)
 void ShaderCombiner::updateLOD(bool _bForce)
 {
 	if (usesLOD()) {
-		int uCalcLOD = (config.generalEmulation.enableLOD && gDP.otherMode.textureLOD == G_TL_LOD) ? 1 : 0;
+		int uCalcLOD = (gDP.otherMode.textureLOD == G_TL_LOD) ? 1 : 0;
 		m_uniforms.uEnableLod.set(uCalcLOD, _bForce);
 		if (uCalcLOD) {
 			m_uniforms.uScreenScale.set(video().getScaleX(), video().getScaleY(), _bForce);
