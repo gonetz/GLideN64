@@ -33,11 +33,34 @@ struct point {
 // Maximum texture width
 #define MAXWIDTH 1024
 
+#if defined(GLES3_1)
+#define SHADER_VERSION "#version 330 core \n"
+#elif defined(GLES3)
+#define SHADER_VERSION "#version 300 es \n"
+#elif defined(GLES2)
+#define SHADER_VERSION "#version 100 \n"
+#else
+#define SHADER_VERSION "#version 330 core \n"
+#endif
+
+#ifdef GLES2
+const GLenum monohromeformat = GL_LUMINANCE;
+#else
+const GLenum monohromeformat = GL_RED;
+#endif // GLES2
+
 static
 const char * strDrawTextVertexShader =
-"#version 330 core							\n"
-"in highp vec4 aPosition;					\n"
-"varying mediump vec2 texpos;				\n"
+SHADER_VERSION
+"#if (__VERSION__ > 120)						\n"
+"# define IN in									\n"
+"# define OUT out								\n"
+"#else											\n"
+"# define IN attribute							\n"
+"# define OUT varying							\n"
+"#endif // __VERSION							\n"
+"IN highp vec4 aPosition;					\n"
+"OUT mediump vec2 texpos;					\n"
 "void main(void) {							\n"
 "  gl_Position = vec4(aPosition.xy, 0, 1);	\n"
 "  texpos = aPosition.zw;					\n"
@@ -46,13 +69,23 @@ const char * strDrawTextVertexShader =
 
 static
 const char * strDrawTextFragmentShader =
-"#version 330 core									\n"
-"varying mediump vec2 texpos;						\n"
+SHADER_VERSION
+"#if (__VERSION__ > 120)		\n"
+"# define IN in					\n"
+"# define OUT out				\n"
+"#else							\n"
+"# define IN varying			\n"
+"# define OUT					\n"
+"#endif // __VERSION __			\n"
+"IN mediump vec2 texpos;							\n"
 "uniform sampler2D uTex;							\n"
-"uniform vec4 uColor;								\n"
-"out lowp vec4 fragColor;							\n"
+"uniform lowp vec4 uColor;							\n"
+"OUT lowp vec4 fragColor;							\n"
 "void main(void) {									\n"
 "  fragColor = texture2D(uTex, texpos).r * uColor;	\n"
+#ifdef GLES2
+"  gl_FragColor = fragColor;						\n"
+#endif
 "}													\n"
 ;
 
@@ -119,7 +152,7 @@ struct Atlas {
 		glGenTextures(1, &tex);
 		glBindTexture(GL_TEXTURE_2D, tex);
 
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, w, h, 0, GL_RED, GL_UNSIGNED_BYTE, 0);
+		glTexImage2D(GL_TEXTURE_2D, 0, monohromeformat, w, h, 0, monohromeformat, GL_UNSIGNED_BYTE, 0);
 
 		/* We require 1 byte alignment when uploading texture data */
 		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
@@ -150,7 +183,7 @@ struct Atlas {
 				ox = 0;
 			}
 
-			glTexSubImage2D(GL_TEXTURE_2D, 0, ox, oy, g->bitmap.width, g->bitmap.rows, GL_RED, GL_UNSIGNED_BYTE, g->bitmap.buffer);
+			glTexSubImage2D(GL_TEXTURE_2D, 0, ox, oy, g->bitmap.width, g->bitmap.rows, monohromeformat, GL_UNSIGNED_BYTE, g->bitmap.buffer);
 			c[i].ax = _FIXED2FLOAT(g->advance.x, 6);
 			c[i].ay = _FIXED2FLOAT(g->advance.y, 6);
 
@@ -192,6 +225,8 @@ bool getFontFileName(char * _strName)
 	if (pSysPath == NULL)
 		return false;
 	sprintf(_strName, "%s/Fonts/%s", pSysPath, config.font.name.c_str());
+#elif defined (ANDROID)
+	sprintf(_strName, "/system/fonts/%s", config.font.name.c_str());
 #else
     sprintf(_strName, "/usr/share/fonts/truetype/freefont/%s", config.font.name.c_str());
 #endif

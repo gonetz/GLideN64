@@ -1305,9 +1305,20 @@ void displayLoadProgress(const wchar_t *format, ...)
 	char buf[INFO_BUF];
 
 	// process input
+#ifdef ANDROID
+	const u32 bufSize = 2048;
+	char cbuf[bufSize];
+	char fmt[bufSize];
+	wcstombs(fmt, format, bufSize);
+	va_start(args, format);
+	vsprintf(cbuf, fmt, args);
+	va_end(args);
+	mbstowcs(wbuf, cbuf, INFO_BUF);
+#else
 	va_start(args, format);
 	vswprintf(wbuf, INFO_BUF, format, args);
 	va_end(args);
+#endif
 
 	// XXX: convert to multibyte
 	wcstombs(buf, wbuf, INFO_BUF);

@@ -58,6 +58,8 @@ void Config::resetToDefaults()
 
 #ifdef OS_WINDOWS
 	font.name.assign("arial.ttf");
+#elif defined (ANDROID)
+	font.name.assign("DroidSans.ttf");
 #else
 	font.name = "FreeSans.ttf";
 #endif
