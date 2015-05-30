@@ -745,18 +745,20 @@ void FrameBufferList::renderBuffer(u32 _address)
 	if (pBuffer == NULL)
 		return;
 
-	CombinerInfo::get().setCombine( EncodeCombineMode( 0, 0, 0, TEXEL0, 0, 0, 0, 1, 0, 0, 0, TEXEL0, 0, 0, 0, 1 ) );
+	OGLVideo & ogl = video();
+	ogl.getRender().updateScissor(pBuffer);
+	PostProcessor::get().process(pBuffer);
+	gSP.changed = gDP.changed = 0;
+
+	CombinerInfo::get().setCombine(EncodeCombineMode(0, 0, 0, TEXEL0, 0, 0, 0, 1, 0, 0, 0, TEXEL0, 0, 0, 0, 1));
 	glDisable( GL_BLEND );
-	glDisable(GL_SCISSOR_TEST);
 	glDisable(GL_DEPTH_TEST);
 	glDisable( GL_CULL_FACE );
 	glDisable( GL_POLYGON_OFFSET_FILL );
-	gSP.changed = gDP.changed = 0;
 
 	const u32 width = pBuffer->m_width;
 	const u32 height = pBuffer->m_height;
 
-	OGLVideo & ogl = video();
 	pBuffer->m_pTexture->scaleS = ogl.getScaleX() / (float)pBuffer->m_pTexture->realWidth;
 	pBuffer->m_pTexture->scaleT = ogl.getScaleY() / (float)pBuffer->m_pTexture->realHeight;
 	pBuffer->m_pTexture->shiftScaleS = 1.0f;
@@ -767,14 +769,19 @@ void FrameBufferList::renderBuffer(u32 _address)
 	gSP.textureTile[0]->fuls = gSP.textureTile[0]->fult = 0.0f;
 	currentCombiner()->updateTextureInfo(true);
 
+	glScissor(0, 0, ogl.getScreenWidth(), ogl.getScreenHeight() + ogl.getHeightOffset());
+
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	OGLRender::TexturedRectParams params(0.0f, 0.0f, width, height, 0.0f, 0.0f, width - 1.0f, height - 1.0f, false);
 	ogl.getRender().drawTexturedRect(params);
+
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
+	if (m_pCurrent != NULL)
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_pCurrent->m_FBO);
 	ogl.swapBuffers();
-	glEnable(GL_SCISSOR_TEST);
-	glBindFramebuffer(GL_FRAMEBUFFER, m_pCurrent->m_FBO);
+
 	gSP.changed |= CHANGED_VIEWPORT;
-	gDP.changed |= CHANGED_COMBINE;
+	gDP.changed |= CHANGED_COMBINE | CHANGED_SCISSOR;
 }
 #endif
 
