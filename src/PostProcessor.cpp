@@ -8,17 +8,34 @@
 #include "ShaderUtils.h"
 #include "Config.h"
 
-#ifdef GLES3
+#if defined(GLES3_1)
+#define SHADER_VERSION "#version 330 core \n"
+#elif defined(GLES3)
 #define SHADER_VERSION "#version 300 es \n"
+#elif defined(GLES2)
+#define SHADER_VERSION "#version 100 \n"
 #else
 #define SHADER_VERSION "#version 330 core \n"
 #endif
 
+#ifdef GLES2
+#define FRAGMENT_SHADER_END "  gl_FragColor = fragColor; \n"
+#else
+#define FRAGMENT_SHADER_END "\n"
+#endif
+
 static const char * vertexShader =
 SHADER_VERSION
-"in highp vec2 aPosition;								\n"
-"in highp vec2 aTexCoord;								\n"
-"out mediump vec2 vTexCoord;							\n"
+"#if (__VERSION__ > 120)						\n"
+"# define IN in									\n"
+"# define OUT out								\n"
+"#else											\n"
+"# define IN attribute							\n"
+"# define OUT varying							\n"
+"#endif // __VERSION							\n"
+"IN highp vec2 aPosition;								\n"
+"IN highp vec2 aTexCoord;								\n"
+"OUT mediump vec2 vTexCoord;							\n"
 "void main(){                                           \n"
 "gl_Position = vec4(aPosition.x, aPosition.y, 0.0, 1.0);\n"
 "vTexCoord = aTexCoord;                                 \n"
@@ -27,21 +44,36 @@ SHADER_VERSION
 
 static const char* copyShader =
 SHADER_VERSION
-"in mediump vec2 vTexCoord;                             \n"
+"#if (__VERSION__ > 120)		\n"
+"# define IN in					\n"
+"# define OUT out				\n"
+"#else							\n"
+"# define IN varying			\n"
+"# define OUT					\n"
+"#endif // __VERSION __			\n"
+"IN mediump vec2 vTexCoord;                             \n"
 "uniform sampler2D Sample0;				                \n"
-"out lowp vec4 fragColor;								\n"
+"OUT lowp vec4 fragColor;								\n"
 "                                                       \n"
 "void main()                                            \n"
 "{                                                      \n"
 "    fragColor = texture2D(Sample0, vTexCoord);         \n"
+FRAGMENT_SHADER_END
 "}							                            \n"
 ;
 
 static const char* extractBloomShader =
 SHADER_VERSION
-"in mediump vec2 vTexCoord;                               \n"
+"#if (__VERSION__ > 120)		\n"
+"# define IN in					\n"
+"# define OUT out				\n"
+"#else							\n"
+"# define IN varying			\n"
+"# define OUT					\n"
+"#endif // __VERSION __			\n"
+"IN mediump vec2 vTexCoord;                               \n"
 "uniform sampler2D Sample0;				               \n"
-"out lowp vec4 fragColor;								\n"
+"OUT lowp vec4 fragColor;								\n"
 "                                                         \n"
 "uniform lowp int ThresholdLevel;                         \n"
 "                                                         \n"
@@ -56,6 +88,7 @@ SHADER_VERSION
 "     scale *= lum;												\n"
 "    fragColor = scale*color;									\n"
 "	fragColor.a = 1.0;											\n"
+FRAGMENT_SHADER_END
 "}							                                    \n"
 ;
 
@@ -67,6 +100,13 @@ static const char* seperableBlurShader =
 ///
 /// Fragment shader for performing a seperable blur on the specified texture.
 SHADER_VERSION
+"#if (__VERSION__ > 120)		\n"
+"# define IN in					\n"
+"# define OUT out				\n"
+"#else							\n"
+"# define IN varying			\n"
+"# define OUT					\n"
+"#endif // __VERSION __			\n"
 // Uniform variables.
 "uniform sampler2D Sample0;																                                                            \n"
 "uniform mediump vec2 TexelSize;                                                                                                                    \n"
@@ -76,8 +116,8 @@ SHADER_VERSION
 "uniform lowp float BlurScale;                                                                                                                      \n"
 "uniform lowp float BlurStrength;                                                                                                                   \n"
 "                                                                                                                                                   \n"
-"in mediump vec2 vTexCoord;																								                            \n"
-"out lowp vec4 fragColor;																															\n"
+"IN mediump vec2 vTexCoord;																								                            \n"
+"OUT lowp vec4 fragColor;																															\n"
 "                                                                                                                                                   \n"
 // Gets the Gaussian value in the first dimension.
 // "x" Distance from origin on the x-axis.
@@ -103,7 +143,7 @@ SHADER_VERSION
 "	if ( Orientation == 0 )                                                                                                                     \n"
 "	{                                                                                                                                           \n"
 "		// Horizontal blur                                                                                                                  \n"
-"		for (int i = 0; i < BlurAmount; ++i)                                                                                                \n"
+"		for (lowp int i = 0; i < BlurAmount; ++i)                                                                                                \n"
 "		{                                                                                                                                   \n"
 "			mediump float offset = float(i) - halfBlur;                                                                                     \n"
 "			colour += texture2D(Sample0, vTexCoord + vec2(offset * TexelSize.x * BlurScale, 0.0)) * Gaussian(offset * strength, deviation); \n"
@@ -112,7 +152,7 @@ SHADER_VERSION
 "	else                                                                                                                                    \n"
 "	{                                                                                                                                       \n"
 "		// Vertical blur                                                                                                                    \n"
-"		for (int i = 0; i < BlurAmount; ++i)                                                                                                \n"
+"		for (lowp int i = 0; i < BlurAmount; ++i)                                                                                                \n"
 "		{                                                                                                                                   \n"
 "			mediump float offset = float(i) - halfBlur;                                                                                     \n"
 "			colour += texture2D(Sample0, vTexCoord + vec2(0.0, offset * TexelSize.y * BlurScale)) * Gaussian(offset * strength, deviation); \n"
@@ -122,6 +162,7 @@ SHADER_VERSION
 "	// Apply colour                                                                                                                         \n"
 "	fragColor = clamp(colour, 0.0, 1.0);                                                                                                    \n"
 "	fragColor.a = 1.0;                                                                                                                      \n"
+FRAGMENT_SHADER_END
 "}                                                                                                                                          \n"
 ;
 
@@ -133,13 +174,20 @@ static const char* glowShader =
 ///
 /// Fragment shader for blending two textures using an algorithm that overlays the glowmap.
 SHADER_VERSION
+"#if (__VERSION__ > 120)		\n"
+"# define IN in					\n"
+"# define OUT out				\n"
+"#else							\n"
+"# define IN varying			\n"
+"# define OUT					\n"
+"#endif // __VERSION __			\n"
 // Uniform variables.
 "uniform sampler2D Sample0;						                                                         \n"
 "uniform sampler2D Sample1;											                                      \n"
 "uniform lowp int BlendMode;                                                                              \n"
 "                                                                                                         \n"
-"in mediump vec2 vTexCoord;														                            \n"
-"out lowp vec4 fragColor;																					\n"
+"IN mediump vec2 vTexCoord;														                            \n"
+"OUT lowp vec4 fragColor;																					\n"
 "                                                                                                         \n"
 // Fragment shader entry.
 "void main ()                                                                                             \n"
@@ -147,17 +195,14 @@ SHADER_VERSION
 "	lowp vec4 dst = texture2D(Sample0, vTexCoord); // rendered scene                                      \n"
 "	lowp vec4 src = texture2D(Sample1, vTexCoord); // glowmap                                             \n"
 "                                                                                                         \n"
-"   switch (BlendMode) {																								\n"
-"      case 0:																											\n"
+"   if (BlendMode == 0) {																								\n"
 "		// Additive blending (strong result, high overexposure)															\n"
 "	     fragColor = min(src + dst, 1.0);																				\n"
 "		 fragColor.a = 1.0;																								\n"
-"      break;																											\n"
-"      case 1:																											\n"
+"   } else if (BlendMode == 1) {																						\n"
 "		 fragColor = clamp((src + dst) - (src * dst), 0.0, 1.0);														\n"
 "		 fragColor.a = 1.0;																							    \n"
-"      break;																											\n"
-"      case 2:																											\n"
+"   } else if (BlendMode == 2) {																						\n"
 "		 src = (src * 0.5) + 0.5;																						\n"
 "																														\n"
 "        if (src.x <= 0.5)																								\n"
@@ -179,12 +224,11 @@ SHADER_VERSION
 "        else																											\n"
 "          fragColor.z = dst.z + (2.0 * src.z - 1.0) * (sqrt(dst.z) - dst.z);											\n"
 "		 fragColor.a = 1.0;																								\n"
-"      break;																											\n"
-"      default:																											\n"
+"   } else  {																											\n"
 "		// Show just the glow map																						\n"
 "		 fragColor = src;																								\n"
-"      break;																											\n"
 "	}																													\n"
+FRAGMENT_SHADER_END
 "}																														\n"
 ;
 
