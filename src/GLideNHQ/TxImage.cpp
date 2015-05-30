@@ -32,6 +32,7 @@
 #include "TxReSample.h"
 #include "TxDbg.h"
 #include <stdlib.h>
+#include <string.h>
 
 boolean
 TxImage::getPNGInfo(FILE *fp, png_structp *png_ptr, png_infop *info_ptr)
