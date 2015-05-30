@@ -2,6 +2,7 @@
 #define WST_H
 
 #ifdef ANDROID
+static
 void gln_wcscat(wchar_t* destination, const wchar_t* source)
 {
 	const u32 bufSize = 512;
