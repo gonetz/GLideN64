@@ -151,14 +151,14 @@ struct Atlas {
 			}
 
 			glTexSubImage2D(GL_TEXTURE_2D, 0, ox, oy, g->bitmap.width, g->bitmap.rows, GL_RED, GL_UNSIGNED_BYTE, g->bitmap.buffer);
-			c[i].ax = g->advance.x >> 6;
-			c[i].ay = g->advance.y >> 6;
+			c[i].ax = _FIXED2FLOAT(g->advance.x, 6);
+			c[i].ay = _FIXED2FLOAT(g->advance.y, 6);
 
-			c[i].bw = g->bitmap.width;
-			c[i].bh = g->bitmap.rows;
+			c[i].bw = (float)g->bitmap.width;
+			c[i].bh = (float)g->bitmap.rows;
 
-			c[i].bl = g->bitmap_left;
-			c[i].bt = g->bitmap_top;
+			c[i].bl = (float)g->bitmap_left;
+			c[i].bt = (float)g->bitmap_top;
 
 			c[i].tx = ox / (float)w;
 			c[i].ty = oy / (float)h;
@@ -266,8 +266,8 @@ void TextDrawer::renderText(const char *_pText, float _x, float _y) const
 	if (m_pAtlas == NULL)
 		return;
 	OGLVideo & ogl = video();
-	const float sx = 2.0 / ogl.getWidth();
-	const float sy = 2.0 / ogl.getHeight();
+	const float sx = 2.0f / ogl.getWidth();
+	const float sy = 2.0f / ogl.getHeight();
 
 	const u8 *p;
 
