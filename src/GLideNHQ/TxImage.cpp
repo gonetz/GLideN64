@@ -269,7 +269,7 @@ TxImage::writePNG(uint8* src, FILE* fp, int width, int height, int rowStride, ui
 		return 0;
 	}
 
-	if (setjmp(png_ptr->jmpbuf)) {
+	if (setjmp(png_jmpbuf(png_ptr))) {
 		png_destroy_write_struct(&png_ptr, &info_ptr);
 		return 0;
 	}
