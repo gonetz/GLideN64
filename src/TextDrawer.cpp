@@ -227,6 +227,8 @@ bool getFontFileName(char * _strName)
 	sprintf(_strName, "%s/Fonts/%s", pSysPath, config.font.name.c_str());
 #elif defined (ANDROID)
 	sprintf(_strName, "/system/fonts/%s", config.font.name.c_str());
+#elif defined (PANDORA)
+	sprintf(_strName, "/usr/share/fonts/truetype/%s", config.font.name.c_str());
 #else
     sprintf(_strName, "/usr/share/fonts/truetype/freefont/%s", config.font.name.c_str());
 #endif
