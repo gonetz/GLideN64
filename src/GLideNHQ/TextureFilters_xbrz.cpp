@@ -609,6 +609,7 @@ void scalePixel(const Kernel_3x3& ker,
 				unsigned char blendInfo, //result of preprocessing all four corners of pixel "e"
 				const xbrz::ScalerCfg& cfg)
 {
+#if 0 	//PANDORA disable
 #define a get_a<rotDeg>(ker)
 #define b get_b<rotDeg>(ker)
 #define c get_c<rotDeg>(ker)
@@ -689,6 +690,7 @@ void scalePixel(const Kernel_3x3& ker,
 #undef g
 #undef h
 #undef i
+#endif
 }
 
 

@@ -20,7 +20,11 @@ set(GLideNHQ_SOURCES
   TxUtil.cpp
 )
 
+if(PANDORA)
+include_directories( osal )
+else(PANDORA)
 include_directories( inc osal )
+endif(PANDORA)
 LINK_DIRECTORIES( ${CMAKE_CURRENT_SOURCE_DIR}/lib )
 
 if(UNIX)
@@ -102,10 +106,17 @@ if( NOT GHQCHK )
 #      set(CMAKE_FIND_LIBRARY_SUFFIXES ".a")
 #      find_library(PNGLIB libpng.a)
 
-      target_link_libraries(GLideNHQ PRIVATE
-            ${CMAKE_CURRENT_SOURCE_DIR}/lib/libpng.a
-            ${CMAKE_CURRENT_SOURCE_DIR}/lib/libz.a
-       )
+      if(PANDORA)
+        target_link_libraries(GLideNHQ PRIVATE
+              /mnt/utmp/codeblocks/usr/lib/libpng.a
+              /mnt/utmp/codeblocks/usr/lib/libz.a
+         )
+      else(PANDORA)
+        target_link_libraries(GLideNHQ PRIVATE
+              ${CMAKE_CURRENT_SOURCE_DIR}/lib/libpng.a
+              ${CMAKE_CURRENT_SOURCE_DIR}/lib/libz.a
+         )
+      endif(PANDORA)
     endif( CMAKE_BUILD_TYPE STREQUAL "Release")
 else( NOT GHQCHK )
     add_definitions(-DGHQCHK)

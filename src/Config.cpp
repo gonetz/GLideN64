@@ -12,8 +12,13 @@ void Config::resetToDefaults()
 {
 	version = CONFIG_VERSION_CURRENT;
 
+	#ifdef PANDORA
+	video.fullscreen = 1;
+	video.fullscreenWidth = video.windowedWidth = 800;
+	#else
 	video.fullscreen = 0;
 	video.fullscreenWidth = video.windowedWidth = 640;
+	#endif
 	video.fullscreenHeight = video.windowedHeight = 480;
 	video.fullscreenRefresh = 60;
 	video.multisampling = 0;
@@ -60,6 +65,8 @@ void Config::resetToDefaults()
 	font.name.assign("arial.ttf");
 #elif defined (ANDROID)
 	font.name.assign("DroidSans.ttf");
+#elif defined (PANDORA)
+	font.name.assign("LiberationMono-Regular.ttf");
 #else
 	font.name = "FreeSans.ttf";
 #endif
