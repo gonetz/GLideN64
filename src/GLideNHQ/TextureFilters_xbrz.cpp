@@ -609,7 +609,6 @@ void scalePixel(const Kernel_3x3& ker,
 				unsigned char blendInfo, //result of preprocessing all four corners of pixel "e"
 				const xbrz::ScalerCfg& cfg)
 {
-#if 0 	//PANDORA disable
 #define a get_a<rotDeg>(ker)
 #define b get_b<rotDeg>(ker)
 #define c get_c<rotDeg>(ker)
@@ -629,8 +628,27 @@ void scalePixel(const Kernel_3x3& ker,
 
 	if (getBottomR(blend) >= BLEND_NORMAL)
 	{
+#if __GNUC__ >= 5
+		#define eq(pix1, pix2) (ColorDistance::dist(pix1, pix2, cfg.luminanceWeight_) < cfg.equalColorTolerance_)
+		#define dist_(pix1, pix2) ColorDistance::dist(pix1, pix2, cfg.luminanceWeight_)
+		bool doLineBlend = true;
+			if (getBottomR(blend) >= BLEND_DOMINANT)
+				doLineBlend = true;
+			else
+			//make sure there is no second blending in an adjacent rotation for this pixel: handles insular pixels, mario eyes
+			if (getTopR(blend) != BLEND_NONE && !eq(e, g)) //but support double-blending for 90° corners
+				doLineBlend = false;
+			else
+			if (getBottomL(blend) != BLEND_NONE && !eq(e, c))
+				doLineBlend = false;
+
+			//no full blending for L-shapes; blend corner only (handles "mario mushroom eyes")
+			else
+			if (eq(g, h) &&  eq(h , i) && eq(i, f) && eq(f, c) && !eq(e, i))
+				doLineBlend = false;
+#else
 		auto eq   = [&](uint32_t pix1, uint32_t pix2) { return ColorDistance::dist(pix1, pix2, cfg.luminanceWeight_) < cfg.equalColorTolerance_; };
-		auto dist = [&](uint32_t pix1, uint32_t pix2) { return ColorDistance::dist(pix1, pix2, cfg.luminanceWeight_); };
+		auto dist_ = [&](uint32_t pix1, uint32_t pix2) { return ColorDistance::dist(pix1, pix2, cfg.luminanceWeight_); };
 
 		const bool doLineBlend = [&]() -> bool
 		{
@@ -649,15 +667,16 @@ void scalePixel(const Kernel_3x3& ker,
 
 			return true;
 		}();
+#endif
 
-		const uint32_t px = dist(e, f) <= dist(e, h) ? f : h; //choose most similar color
+		const uint32_t px = dist_(e, f) <= dist_(e, h) ? f : h; //choose most similar color
 
 		OutputMatrix<Scaler::scale, rotDeg> out(target, trgWidth);
 
 		if (doLineBlend)
 		{
-			const double fg = dist(f, g); //test sample: 70% of values max(fg, hc) / min(fg, hc) are between 1.1 and 3.7 with median being 1.9
-			const double hc = dist(h, c); //
+			const double fg = dist_(f, g); //test sample: 70% of values max(fg, hc) / min(fg, hc) are between 1.1 and 3.7 with median being 1.9
+			const double hc = dist_(h, c); //
 
 			const bool haveShallowLine = cfg.steepDirectionThreshold * fg <= hc && e != g && d != g;
 			const bool haveSteepLine   = cfg.steepDirectionThreshold * hc <= fg && e != c && b != c;
@@ -680,6 +699,10 @@ void scalePixel(const Kernel_3x3& ker,
 		else
 			Scaler::blendCorner(px, out);
 	}
+#if __GNUC__ >= 5
+#undef eq
+#undef dist_
+#endif
 
 #undef a
 #undef b
@@ -690,7 +713,6 @@ void scalePixel(const Kernel_3x3& ker,
 #undef g
 #undef h
 #undef i
-#endif
 }
 
 
