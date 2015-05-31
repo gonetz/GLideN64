@@ -48,8 +48,8 @@ private:
 		GLuint m_program;
 
 		// Texture parameters
-		ShaderCombiner::fv2Uniform uTexScale, uTexMask[2], uTexOffset[2], uCacheScale[2], uCacheOffset[2], uCacheShiftScale[2];
-		ShaderCombiner::iv2Uniform uCacheFrameBuffer, uTextureSize[2];
+		ShaderCombiner::fv2Uniform uTexScale, uTexMask[2], uTexOffset[2], uCacheScale[2], uCacheOffset[2], uCacheShiftScale[2], uTextureSize[2];
+		ShaderCombiner::iv2Uniform uCacheFrameBuffer;
 
 		// Colors
 		fv4Uniform uFogColor, uCenterColor, uScaleColor, uBlendColor, uEnvColor, uPrimColor;
@@ -61,6 +61,7 @@ private:
 
 	void _updateColorUniforms(UniformSetLocation & _location, bool _bForce);
 	void _updateTextureUniforms(UniformSetLocation & _location, bool _bUsesT0, bool _bUsesT1, bool _bForce);
+	void _updateTextureSize(UniformSetLocation & _location, bool _bUsesT0, bool _bUsesT1, bool _bForce);
 	void _updateLightUniforms(UniformSetLocation & _location, bool _bForce);
 
 	typedef std::map<u64, UniformSetLocation> Uniforms;

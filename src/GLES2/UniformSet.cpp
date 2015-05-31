@@ -101,13 +101,21 @@ void UniformSet::_updateTextureUniforms(UniformSetLocation & _location, bool _bU
 			_location.uCacheShiftScale[t].set(shiftScaleS, shiftScaleT, _bForce);
 			_location.uCacheScale[t].set(cache.current[t]->scaleS, cache.current[t]->scaleT, _bForce);
 			_location.uCacheOffset[t].set(cache.current[t]->offsetS, cache.current[t]->offsetT, _bForce);
-			_location.uTextureSize[t].set(cache.current[t]->realWidth, cache.current[t]->realHeight, _bForce);
 			nFB[t] = cache.current[t]->frameBufferTexture;
 		}
 	}
 
 	_location.uCacheFrameBuffer.set(nFB[0], nFB[1], _bForce);
 	_location.uTexScale.set(gSP.texture.scales, gSP.texture.scalet, _bForce);
+}
+
+void UniformSet::_updateTextureSize(UniformSetLocation & _location, bool _bUsesT0, bool _bUsesT1, bool _bForce)
+{
+	TextureCache & cache = textureCache();
+	if (_bUsesT0 && cache.current[0] != NULL)
+		_location.uTextureSize[0].set((float)cache.current[0]->realWidth, (float)cache.current[0]->realHeight, _bForce);
+	if (_bUsesT1 && cache.current[1] != NULL)
+		_location.uTextureSize[1].set((float)cache.current[1]->realWidth, (float)cache.current[1]->realHeight, _bForce);
 }
 
 void UniformSet::_updateLightUniforms(UniformSetLocation & _location, bool _bForce)
@@ -127,6 +135,9 @@ void UniformSet::updateUniforms(ShaderCombiner * _pCombiner)
 	OGLRender::RENDER_STATE rs = video().getRender().getRenderState();
 	if ((rs == OGLRender::rsTriangle || rs == OGLRender::rsLine) && _pCombiner->usesTexture())
 		_updateTextureUniforms(location, _pCombiner->usesTile(0), _pCombiner->usesTile(1), false);
+
+	if (_pCombiner->usesTexture())
+		_updateTextureSize(location, _pCombiner->usesTile(0), _pCombiner->usesTile(1), false);
 
 	if (config.generalEmulation.enableHWLighting != 0 && GBI.isHWLSupported() && _pCombiner->usesShadeColor())
 		_updateLightUniforms(location, false);

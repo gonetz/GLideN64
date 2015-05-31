@@ -315,11 +315,7 @@ static const char* fragment_shader_readtex =
 ;
 
 static const char* fragment_shader_readtex_3point =
-"uniform mediump ivec2 uTextureSize[2];								\n"
-"mediump ivec2 textureSize(in sampler2D tex, in lowp int level) {	\n"
-"   if (nCurrentTile == 0) return uTextureSize[0];						\n"
-"   return uTextureSize[1];											\n"
-"}																	\n"
+"uniform mediump vec2 uTextureSize[2];								\n"
 "uniform lowp int uTextureFilterMode;								\n"
 // 3 point texture filtering.
 // Original author: ArthurCarvalho
@@ -327,7 +323,7 @@ static const char* fragment_shader_readtex_3point =
 "#define TEX_OFFSET(off) texture2D(tex, texCoord - (off)/texSize)	\n"
 "lowp vec4 filter3point(in sampler2D tex, in mediump vec2 texCoord)			\n"
 "{																			\n"
-"  mediump vec2 texSize = vec2(textureSize(tex,0));							\n"
+"  mediump vec2 texSize = uTextureSize[nCurrentTile];						\n"
 "  mediump vec2 offset = fract(texCoord*texSize - vec2(0.5));	\n"
 "  offset -= step(1.0, offset.x + offset.y);								\n"
 "  lowp vec4 c0 = TEX_OFFSET(offset);										\n"
