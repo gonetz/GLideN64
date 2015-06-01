@@ -1182,12 +1182,10 @@ void OGLRender::_initExtensions()
 #endif
 	LOG(LOG_VERBOSE, "ImageTexture support: %s\n", m_bImageTexture ? "yes" : "no");
 
-#ifndef GLESX
-	if (config.texture.maxAnisotropy != 0) {
+	if (config.texture.maxAnisotropy != 0 && strstr((const char *)glGetString(GL_EXTENSIONS), "GL_EXT_texture_filter_anisotropic") != NULL) {
 		glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &config.texture.maxAnisotropyF);
 		config.texture.maxAnisotropyF = min(config.texture.maxAnisotropyF, (f32)config.texture.maxAnisotropy);
 	} else
-#endif
 		config.texture.maxAnisotropyF = 0.0f;
 	LOG(LOG_VERBOSE, "Max Anisotropy: %f\n", config.texture.maxAnisotropyF);
 }

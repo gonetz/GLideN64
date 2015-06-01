@@ -51,6 +51,10 @@ typedef char GLchar;
 #include <SDL.h>
 #endif // USE_SDL
 #endif // OS_WINDOWS
+#ifndef GL_EXT_texture_filter_anisotropic
+#define GL_TEXTURE_MAX_ANISOTROPY_EXT     0x84FE
+#define GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT 0x84FF
+#endif
 
 #include "glState.h"
 #include "gSP.h"
