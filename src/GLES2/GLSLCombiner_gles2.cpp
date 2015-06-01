@@ -22,6 +22,8 @@ static GLuint  g_vertex_shader_object_notex;
 
 GLuint g_monochrome_image_program = 0;
 
+static bool g_weakGLSL = false;
+
 #define GL_RED16 GL_R16UI
 
 static std::string strFragmentShader;
@@ -105,6 +107,14 @@ GLuint _createShader(GLenum _type, const char * _strShader)
 
 void InitShaderCombiner()
 {
+	if (strstr((const char*)glGetString(GL_VERSION), "OpenGL ES 2") != NULL) {
+		const char * strRenderer = reinterpret_cast<const char*>(glGetString(GL_RENDERER));
+		if (strstr(strRenderer, "PowerVR") != NULL || strstr(strRenderer, "Adreno") != NULL) {
+			g_weakGLSL = true;
+			LOG(LOG_MINIMAL, "GPU with week GLSL detected: %s\n", strRenderer);
+		}
+	}
+
 	glActiveTexture(GL_TEXTURE0);
 	glEnable(GL_TEXTURE_2D);
 	glActiveTexture(GL_TEXTURE1);
@@ -176,18 +186,17 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 		"  }										\n"
 		);
 
-#ifndef PowerVR_SGX_540
-	strFragmentShader.append(
-		"  lowp int fogUsage = uFogUsage;			\n"
-		"  if (fogUsage >= 256) fogUsage -= 256;	\n"
-		"  if (fogUsage == 2) fragColor = vec4(color2, uFogColor.a);				\n"
-		"  else if (fogUsage == 3) fragColor = uFogColor;							\n"
-		"  else if (fogUsage == 4) fragColor = vec4(color2, uFogColor.a*alpha2);	\n"
-		"  else fragColor = vec4(color2, alpha2);									\n"
-	);
-#else
-	strFragmentShader.append("  fragColor = vec4(color2, alpha2); \n");
-#endif
+	if (!g_weakGLSL) {
+		strFragmentShader.append(
+			"  lowp int fogUsage = uFogUsage;			\n"
+			"  if (fogUsage >= 256) fogUsage -= 256;	\n"
+			"  if (fogUsage == 2) fragColor = vec4(color2, uFogColor.a);				\n"
+			"  else if (fogUsage == 3) fragColor = uFogColor;							\n"
+			"  else if (fogUsage == 4) fragColor = vec4(color2, uFogColor.a*alpha2);	\n"
+			"  else fragColor = vec4(color2, alpha2);									\n"
+		);
+	} else
+		strFragmentShader.append("  fragColor = vec4(color2, alpha2); \n");
 
 	strFragmentShader.append(
 		"  if (uFogUsage == 257) \n"
