@@ -117,7 +117,7 @@ bool isKeyPressed(int _key, int _mask)
 {
 	static Glide64Keys g64Keys;
 #ifdef OS_WINDOWS
-	return (GetAsyncKeyState(g64Keys[_key]) & _mask);
+	return (GetAsyncKeyState(g64Keys[_key]) & _mask) != 0;
 #else
 	// TODO
 #endif
