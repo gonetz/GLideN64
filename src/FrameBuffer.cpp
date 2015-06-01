@@ -739,8 +739,9 @@ void FrameBufferList::renderBuffer(u32 _address)
 
 void FrameBufferList::renderBuffer(u32 _address)
 {
-	if (VI.width == 0) // H width is zero. Don't draw
+	if (VI.width == 0 || *REG.VI_WIDTH == 0 || *REG.VI_H_START == 0) // H width is zero. Don't draw
 		return;
+
 	FrameBuffer *pBuffer = findBuffer(_address);
 	if (pBuffer == NULL)
 		return;
@@ -748,6 +749,7 @@ void FrameBufferList::renderBuffer(u32 _address)
 	OGLVideo & ogl = video();
 	ogl.getRender().updateScissor(pBuffer);
 	PostProcessor::get().process(pBuffer);
+	ogl.getRender().dropRenderState();
 	gSP.changed = gDP.changed = 0;
 
 	CombinerInfo::get().setCombine(EncodeCombineMode(0, 0, 0, TEXEL0, 0, 0, 0, 1, 0, 0, 0, TEXEL0, 0, 0, 0, 1));
@@ -773,8 +775,12 @@ void FrameBufferList::renderBuffer(u32 _address)
 	glScissor(0, 0, ogl.getScreenWidth(), ogl.getScreenHeight() + ogl.getHeightOffset());
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	FrameBuffer * pCurrent = m_pCurrent;
+	m_pCurrent = pBuffer;
 	OGLRender::TexturedRectParams params(0.0f, 0.0f, width, height, 0.0f, 0.0f, width - 1.0f, height - 1.0f, false);
 	ogl.getRender().drawTexturedRect(params);
+	m_pCurrent = pCurrent;
 
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
 	if (m_pCurrent != NULL)
