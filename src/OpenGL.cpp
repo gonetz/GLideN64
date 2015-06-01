@@ -1155,15 +1155,21 @@ void OGLRender::clearColorBuffer(float *_pColor )
 
 void OGLRender::_initExtensions()
 {
+	LOG(LOG_VERBOSE, "OpenGL version string: %s\n", glGetString(GL_VERSION));
+	LOG(LOG_VERBOSE, "OpenGL vendor: %s\n", glGetString(GL_VENDOR));
+	LOG(LOG_VERBOSE, "OpenGL renderer: %s\n", glGetString(GL_RENDERER));
+
 #ifndef GLES2
 	GLint majorVersion = 0;
 	glGetIntegerv(GL_MAJOR_VERSION, &majorVersion);
+	LOG(LOG_VERBOSE, "OpenGL major version: %d\n", majorVersion);
 	assert(majorVersion >= 3 && "Plugin requires GL version 3 or higher.");
 #endif
 
 #ifdef GL_IMAGE_TEXTURES_SUPPORT
 	GLint minorVersion = 0;
 	glGetIntegerv(GL_MINOR_VERSION, &minorVersion);
+	LOG(LOG_VERBOSE, "OpenGL minor version: %d\n", minorVersion);
 #ifndef GLESX
 	m_bImageTexture = (majorVersion >= 4) && (minorVersion >= 3) && (glBindImageTexture != NULL);
 #elif defined(GLES3_1)
@@ -1174,6 +1180,7 @@ void OGLRender::_initExtensions()
 #else
 	m_bImageTexture = false;
 #endif
+	LOG(LOG_VERBOSE, "ImageTexture support: %s\n", m_bImageTexture ? "yes" : "no");
 
 #ifndef GLESX
 	if (config.texture.maxAnisotropy != 0) {
@@ -1182,6 +1189,7 @@ void OGLRender::_initExtensions()
 	} else
 #endif
 		config.texture.maxAnisotropyF = 0.0f;
+	LOG(LOG_VERBOSE, "Max Anisotropy: %f\n", config.texture.maxAnisotropyF);
 }
 
 void OGLRender::_initStates()
