@@ -276,7 +276,12 @@ static const char* fragment_shader_header_main =
 "									\n"
 "void main()						\n"
 "{									\n"
-#ifndef GLESX
+#ifdef GLESX
+"#ifdef GL_NV_fragdepth			\n"
+"    #extension GL_NV_fragdepth : enable \n"
+"  gl_FragDepth = clamp((gl_FragCoord.z * 2.0 - 1.0) * uDepthScale.s + uDepthScale.t, 0.0, 1.0);   \n"
+"#endif										\n"
+#else
 "  gl_FragDepth = clamp((gl_FragCoord.z * 2.0 - 1.0) * uDepthScale.s + uDepthScale.t, 0.0, 1.0);   \n"
 #endif
 "  lowp vec4 vec_color, combined_color;	\n"
