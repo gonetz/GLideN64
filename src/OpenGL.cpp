@@ -427,7 +427,7 @@ void OGLRender::_setBlendMode() const
 
 
 			default:
-				LOG(LOG_VERBOSE, "Unhandled blend mode=%x", gDP.otherMode.l >> 16);
+				//LOG(LOG_VERBOSE, "Unhandled blend mode=%x", gDP.otherMode.l >> 16);
 				glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
 				break;
 		}
@@ -1153,11 +1153,102 @@ void OGLRender::clearColorBuffer(float *_pColor )
 	glEnable( GL_SCISSOR_TEST );
 }
 
+FBOTextureFormats fboFormats;
+
+void FBOTextureFormats::init()
+{
+#ifdef GLES2
+	monochromeInternalFormat = GL_RGB;
+	monochromeFormat = GL_RGB;
+	monochromeType = GL_UNSIGNED_SHORT_5_6_5;
+	monochromeFormatBytes = 2;
+
+	const char * extensions = (const char *)glGetString(GL_EXTENSIONS);
+
+	if (strstr((const char *)glGetString(GL_RENDERER), "Mali-400") != NULL)
+	{
+		if (strstr(extensions, "GL_OES_rgb8_rgba8") != NULL) {
+			colorInternalFormat = GL_RGBA;
+			colorFormat = GL_RGBA;
+			colorType = GL_UNSIGNED_BYTE;
+			colorFormatBytes = 4;
+		} else {
+			colorInternalFormat = GL_RGB;
+			colorFormat = GL_RGB;
+			colorType = GL_UNSIGNED_SHORT_5_6_5;
+			colorFormatBytes = 2;
+		}
+
+		depthInternalFormat = GL_DEPTH_COMPONENT;
+		depthFormat = GL_DEPTH_COMPONENT;
+		depthType = GL_UNSIGNED_INT;
+		depthFormatBytes = 2;
+		return;
+	}
+
+	if (strstr(extensions, "GL_OES_rgb8_rgba8") != NULL) {
+		colorInternalFormat = GL_RGBA8_OES;
+		colorFormat = GL_RGBA;
+		colorType = GL_UNSIGNED_BYTE;
+		colorFormatBytes = 4;
+	} else {
+		colorInternalFormat = GL_RGB5_A1;
+		colorFormat = GL_RGBA;
+		colorType = GL_UNSIGNED_SHORT_5_5_5_1;
+		colorFormatBytes = 2;
+	}
+
+	if (strstr(extensions, "GL_OES_depth24") != NULL) {
+		depthInternalFormat = GL_DEPTH_COMPONENT24_OES;
+		depthFormat = GL_DEPTH_COMPONENT;
+		depthType = GL_UNSIGNED_INT;
+		depthFormatBytes = 3;
+	} else {
+		depthInternalFormat = GL_DEPTH_COMPONENT16;
+		depthFormat = GL_DEPTH_COMPONENT;
+		depthType = GL_UNSIGNED_INT;
+		depthFormatBytes = 2;
+	}
+#elif defined(GLES3) || defined (GLES3_1)
+	colorInternalFormat = GL_RGBA;
+	colorFormat = GL_RGBA;
+	colorType = GL_UNSIGNED_BYTE;
+	colorFormatBytes = 4;
+
+	monochromeInternalFormat = GL_RED;
+	monochromeFormat = GL_RED;
+	monochromeType = GL_UNSIGNED_BYTE;
+	monochromeFormatBytes = 1;
+
+	depthInternalFormat = GL_DEPTH_COMPONENT32F;
+	depthFormat = GL_DEPTH_COMPONENT;
+	depthType = GL_FLOAT;
+	depthFormatBytes = 4;
+#else
+	colorInternalFormat = GL_RGBA;
+	colorFormat = GL_RGBA;
+	colorType = GL_UNSIGNED_BYTE;
+	colorFormatBytes = 4;
+
+	monochromeInternalFormat = GL_RED;
+	monochromeFormat = GL_RED;
+	monochromeType = GL_UNSIGNED_BYTE;
+	monochromeFormatBytes = 1;
+
+	depthInternalFormat = GL_DEPTH_COMPONENT;
+	depthFormat = GL_DEPTH_COMPONENT;
+	depthType = GL_FLOAT;
+	depthFormatBytes = 4;
+#endif
+}
+
 void OGLRender::_initExtensions()
 {
 	LOG(LOG_VERBOSE, "OpenGL version string: %s\n", glGetString(GL_VERSION));
 	LOG(LOG_VERBOSE, "OpenGL vendor: %s\n", glGetString(GL_VENDOR));
 	LOG(LOG_VERBOSE, "OpenGL renderer: %s\n", glGetString(GL_RENDERER));
+
+	fboFormats.init();
 
 #ifndef GLES2
 	GLint majorVersion = 0;

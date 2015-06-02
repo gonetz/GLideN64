@@ -219,6 +219,30 @@ private:
 	virtual bool _resizeWindow() = 0;
 };
 
+struct FBOTextureFormats
+{
+	GLint colorInternalFormat;
+	GLenum colorFormat;
+	GLenum colorType;
+	u32 colorFormatBytes;
+
+	GLint monochromeInternalFormat;
+	GLenum monochromeFormat;
+	GLenum monochromeType;
+	u32 monochromeFormatBytes;
+
+	GLint depthInternalFormat;
+	GLenum depthFormat;
+	GLenum depthType;
+	u32 depthFormatBytes;
+
+	u32 pad[4];
+
+	void init();
+};
+
+extern FBOTextureFormats fboFormats;
+
 inline
 OGLVideo & video()
 {
