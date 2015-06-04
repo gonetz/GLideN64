@@ -9,6 +9,8 @@
 #include "FrameBuffer.h"
 #include "DepthBuffer.h"
 #include "VI.h"
+#include "RDP.h"
+#include "N64.h"
 #include "Config.h"
 #include "Debug.h"
 
@@ -351,4 +353,82 @@ void DepthBuffer_Init()
 void DepthBuffer_Destroy()
 {
 	depthBufferList().destroy();
+}
+
+/*------------------------DepthBufferCopyRect---------------------------------*/
+class DepthBufferCopyRect
+{
+public:
+	void addData(const OGLRender::TexturedRectParams & _params)
+	{
+		m_vecData.push_back(DepthBufferCopyRectData(_params));
+	}
+
+	void flush()
+	{
+		if (m_vecData.empty())
+			return;
+		FrameBuffer_CopyDepthBuffer(gDP.colorImage.address);
+
+		for (RectData::iterator it = m_vecData.begin(); it != m_vecData.end(); ++it) {
+			gDPTile & tile = gDP.tiles[_SHIFTR(it->w1, 24, 3)];
+			tile.tmem = it->tmem;
+			tile.size = it->size;
+			gDP.textureImage.bpl = it->bpl;
+			gDP.textureImage.size = it->size;
+			gDP.textureImage.address = it->texAddress;
+			RDP_LoadBlock(it->w0, it->w1);
+
+			const u32 width = (u32)(it->lrx - it->ulx);
+			const u32 ulx = (u32)it->ulx;
+			u16 * pSrc = ((u16*)TMEM) + (u32)floorf(it->uls + 0.5f);
+			u16 *pDst = (u16*)(RDRAM + it->address);
+			for (u32 x = 0; x < width; ++x)
+				pDst[(ulx + x) ^ 1] = swapword(pSrc[x]);
+		}
+		m_vecData.clear();
+	}
+
+	static DepthBufferCopyRect & get()
+	{
+		static DepthBufferCopyRect dbcr;
+		return dbcr;
+	}
+private:
+	DepthBufferCopyRect() {}
+	~DepthBufferCopyRect() {}
+
+	struct DepthBufferCopyRectData
+	{
+		float ulx, lrx, uls;
+		u32 w0, w1;
+		u32 address;
+		u32 tmem, bpl, size, texAddress;
+
+		DepthBufferCopyRectData(const OGLRender::TexturedRectParams & _params)
+		{
+			ulx = _params.ulx;
+			lrx = _params.lrx;
+			uls = _params.uls;
+			RDP_GetLastLoadBlockParams(w0, w1);
+			address = gDP.colorImage.address;
+			tmem = gDP.tiles[_SHIFTR(w1, 24, 3)].tmem;
+			bpl = gDP.textureImage.bpl;
+			size = gDP.textureImage.size;
+			texAddress = gDP.textureImage.address;
+		}
+	};
+
+	typedef std::vector<DepthBufferCopyRectData> RectData;
+	RectData m_vecData;
+};
+
+void AddDepthBufferCopyRectData(const OGLRender::TexturedRectParams & _params)
+{
+	DepthBufferCopyRect::get().addData(_params);
+}
+
+void FlushDepthBufferCopyRects()
+{
+	DepthBufferCopyRect::get().flush();
 }

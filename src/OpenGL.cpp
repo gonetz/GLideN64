@@ -885,16 +885,7 @@ bool texturedRectDepthBufferCopy(const OGLRender::TexturedRectParams & _params)
 		pBuffer->m_cleared = true;
 		if (config.frameBufferEmulation.copyDepthToRDRAM == 0)
 			return true;
-		if (FrameBuffer_CopyDepthBuffer(gDP.colorImage.address))
-			RDP_RepeatLastLoadBlock();
-
-		const u32 width = (u32)(_params.lrx - _params.ulx);
-		const u32 ulx = (u32)_params.ulx;
-		u16 * pSrc = ((u16*)TMEM) + (u32)floorf(_params.uls + 0.5f);
-		u16 *pDst = (u16*)(RDRAM + gDP.colorImage.address);
-		for (u32 x = 0; x < width; ++x)
-			pDst[(ulx + x) ^ 1] = swapword(pSrc[x]);
-
+		AddDepthBufferCopyRectData(_params);
 		return true;
 	}
 	return false;

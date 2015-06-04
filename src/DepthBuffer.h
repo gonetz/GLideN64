@@ -72,4 +72,7 @@ extern const GLuint depthImageUnit;
 void DepthBuffer_Init();
 void DepthBuffer_Destroy();
 
+void AddDepthBufferCopyRectData(const OGLRender::TexturedRectParams & _params);
+void FlushDepthBufferCopyRects();
+
 #endif
