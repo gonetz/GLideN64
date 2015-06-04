@@ -879,9 +879,10 @@ bool texturedRectDepthBufferCopy(const OGLRender::TexturedRectParams & _params)
 	// Load of arbitrary data to that area causes weird camera rotation in CBFD.
 	const gDPTile * pTile = gSP.textureTile[0];
 	if (pTile->loadType == LOADTYPE_BLOCK && gDP.textureImage.size == 2 && gDP.textureImage.address >= gDP.depthImageAddress &&  gDP.textureImage.address < (gDP.depthImageAddress + gDP.colorImage.width*gDP.colorImage.width * 6 / 4)) {
-		if (config.frameBufferEmulation.enable == 0)
+		FrameBuffer * pBuffer = frameBufferList().getCurrent();
+		if (pBuffer == NULL)
 			return true;
-		frameBufferList().getCurrent()->m_cleared = true;
+		pBuffer->m_cleared = true;
 		if (config.frameBufferEmulation.copyDepthToRDRAM == 0)
 			return true;
 		if (FrameBuffer_CopyDepthBuffer(gDP.colorImage.address))
