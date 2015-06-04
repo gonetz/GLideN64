@@ -40,4 +40,20 @@ inline void LOG( u16 type, const char * format, ... ) {
 
 #endif
 
+#ifdef OS_WINDOWS
+#include "windows/GLideN64_Windows.h"
+#include <stdio.h>
+
+inline void debugPrint(const char * format, ...) {
+	char text[256];
+	wchar_t wtext[256];
+	va_list va;
+	va_start(va, format);
+	vsprintf(text, format, va);
+	mbstowcs(wtext, text, 256);
+	OutputDebugString(wtext);
+	va_end(va);
+}
+#endif
+
 #endif
