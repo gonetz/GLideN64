@@ -4,6 +4,7 @@
 #include <malloc.h>
 #endif
 #include <assert.h>
+#include <math.h>
 #include "OpenGL.h"
 #include "Combiner.h"
 #include "FrameBuffer.h"

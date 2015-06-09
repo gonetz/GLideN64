@@ -1,5 +1,4 @@
 #include <assert.h>
-#include <math.h>
 #include <stdio.h>
 #include <time.h>       /* time_t, struct tm, difftime, time, mktime */
 
