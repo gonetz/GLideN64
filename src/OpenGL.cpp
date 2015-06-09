@@ -1154,51 +1154,21 @@ void FBOTextureFormats::init()
 	monochromeType = GL_UNSIGNED_SHORT_5_6_5;
 	monochromeFormatBytes = 2;
 
-	const char * extensions = (const char *)glGetString(GL_EXTENSIONS);
+	depthInternalFormat = GL_DEPTH_COMPONENT;
+	depthFormat = GL_DEPTH_COMPONENT;
+	depthType = GL_UNSIGNED_INT;
+	depthFormatBytes = 4;
 
-	if (strstr((const char *)glGetString(GL_RENDERER), "Mali-400") != NULL)
-	{
-		if (strstr(extensions, "GL_OES_rgb8_rgba8") != NULL) {
-			colorInternalFormat = GL_RGBA;
-			colorFormat = GL_RGBA;
-			colorType = GL_UNSIGNED_BYTE;
-			colorFormatBytes = 4;
-		} else {
-			colorInternalFormat = GL_RGB;
-			colorFormat = GL_RGB;
-			colorType = GL_UNSIGNED_SHORT_5_6_5;
-			colorFormatBytes = 2;
-		}
-
-		depthInternalFormat = GL_DEPTH_COMPONENT;
-		depthFormat = GL_DEPTH_COMPONENT;
-		depthType = GL_UNSIGNED_INT;
-		depthFormatBytes = 2;
-		return;
-	}
-
-	if (strstr(extensions, "GL_OES_rgb8_rgba8") != NULL) {
-		colorInternalFormat = GL_RGBA8_OES;
+	if (strstr((const char *)glGetString(GL_EXTENSIONS), "GL_OES_rgb8_rgba8") != NULL) {
+		colorInternalFormat = GL_RGBA;
 		colorFormat = GL_RGBA;
 		colorType = GL_UNSIGNED_BYTE;
 		colorFormatBytes = 4;
 	} else {
-		colorInternalFormat = GL_RGB5_A1;
-		colorFormat = GL_RGBA;
-		colorType = GL_UNSIGNED_SHORT_5_5_5_1;
+		colorInternalFormat = GL_RGB;
+		colorFormat = GL_RGB;
+		colorType = GL_UNSIGNED_SHORT_5_6_5;
 		colorFormatBytes = 2;
-	}
-
-	if (strstr(extensions, "GL_OES_depth24") != NULL) {
-		depthInternalFormat = GL_DEPTH_COMPONENT24_OES;
-		depthFormat = GL_DEPTH_COMPONENT;
-		depthType = GL_UNSIGNED_INT;
-		depthFormatBytes = 3;
-	} else {
-		depthInternalFormat = GL_DEPTH_COMPONENT16;
-		depthFormat = GL_DEPTH_COMPONENT;
-		depthType = GL_UNSIGNED_INT;
-		depthFormatBytes = 2;
 	}
 #elif defined(GLES3) || defined (GLES3_1)
 	colorInternalFormat = GL_RGBA;
