@@ -101,9 +101,7 @@ void NoiseTexture::update()
 		return;
 	PBOBinder binder(GL_PIXEL_UNPACK_BUFFER, m_PBO);
 	glBufferData(GL_PIXEL_UNPACK_BUFFER, dataSize, NULL, GL_DYNAMIC_DRAW);
-	isGLError();
 	GLubyte* ptr = (GLubyte*)glMapBufferRange(GL_PIXEL_UNPACK_BUFFER, 0, dataSize, GL_MAP_WRITE_BIT);
-	isGLError();
 	if (ptr == NULL)
 		return;
 	for (u32 y = 0; y < VI.height; ++y)	{
