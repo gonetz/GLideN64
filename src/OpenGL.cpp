@@ -1186,6 +1186,11 @@ void FBOTextureFormats::init()
 	depthType = GL_FLOAT;
 	depthFormatBytes = 4;
 
+	depthImageInternalFormat = GL_RGBA32F;
+	depthImageFormat = GL_RGBA;
+	depthImageType = GL_FLOAT;
+	depthImageFormatBytes = 16;
+
 	lutInternalFormat = GL_R32UI;
 	lutFormat = GL_RED;
 	lutType = GL_UNSIGNED_INT;
@@ -1205,6 +1210,11 @@ void FBOTextureFormats::init()
 	depthFormat = GL_DEPTH_COMPONENT;
 	depthType = GL_FLOAT;
 	depthFormatBytes = 4;
+
+	depthImageInternalFormat = GL_RG32F;
+	depthImageFormat = GL_RG;
+	depthImageType = GL_FLOAT;
+	depthImageFormatBytes = 8;
 
 	lutInternalFormat = GL_R16;
 	lutFormat = GL_RED;

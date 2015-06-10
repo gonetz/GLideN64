@@ -499,6 +499,9 @@ static const char* fragment_shader_dummy_noise =
 static const char* depth_compare_shader_float =
 #ifndef GLESX
 "#version 430								\n"
+"layout(binding = 2, rg32f) uniform coherent image2D uDepthImage;\n"
+#else
+"layout(binding = 2, rgba32f) highp uniform coherent image2D uDepthImage;\n"
 #endif
 //"uniform int uEnableDepth;				\n"
 "uniform lowp int uDepthMode;				\n"
@@ -506,7 +509,6 @@ static const char* depth_compare_shader_float =
 "uniform lowp int uEnableDepthCompare;		\n"
 "uniform lowp int uEnableDepthUpdate;		\n"
 "uniform mediump float uDeltaZ;				\n"
-"layout(binding = 2, rg32f) uniform coherent image2D uDepthImage;\n"
 "bool depth_compare()									\n"
 "{														\n"
 //"  if (uEnableDepth == 0) return true;					\n"
@@ -521,10 +523,10 @@ static const char* depth_compare_shader_float =
 "    dz = 4.0*fwidth(gl_FragDepth);						\n"
 "    dzMin = min(dz, depth.g);							\n"
 "  }													\n"
-"  const bool bInfront = curZ < bufZ;					\n"
-"  const bool bFarther = (curZ + dzMin) >= bufZ;		\n"
-"  const bool bNearer = (curZ - dzMin) <= bufZ;			\n"
-"  const bool bMax = bufZ == 1.0;						\n"
+"  bool bInfront = curZ < bufZ;							\n"
+"  bool bFarther = (curZ + dzMin) >= bufZ;				\n"
+"  bool bNearer = (curZ - dzMin) <= bufZ;				\n"
+"  bool bMax = bufZ == 1.0;								\n"
 "  bool bRes;											\n"
 "  switch (uDepthMode) {								\n"
 "     case 1:											\n"
@@ -576,7 +578,7 @@ MAIN_SHADER_VERSION
 "  highp float n64z = clamp(float(iN64z)/65532.0, 0.0, 1.0);\n"
 "  highp int index = min(255, int(n64z*255.0));				\n"
 "  highp uint iAlpha = imageLoad(uTlutImage,ivec2(index,0)).r;\n"
-"  return float(iAlpha/uint(256))/255.0;							\n"
+"  return float(iAlpha>>8)/255.0;							\n"
 "}															\n"
 "void main()												\n"
 "{															\n"
