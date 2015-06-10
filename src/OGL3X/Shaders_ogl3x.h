@@ -1,5 +1,5 @@
 #if defined(GLES3_1)
-#define MAIN_SHADER_VERSION "#version 330 core \n"
+#define MAIN_SHADER_VERSION "#version 310 es \n"
 #define AUXILIARY_SHADER_VERSION "\n"
 #elif defined(GLES3)
 #define MAIN_SHADER_VERSION "#version 300 es \n"
@@ -150,11 +150,14 @@ MAIN_SHADER_VERSION
 
 static const char* fragment_shader_header_common_variables =
 MAIN_SHADER_VERSION
+"#ifdef GL_NV_fragdepth			\n"
+"    #extension GL_NV_fragdepth : enable \n"
+"#endif										\n"
 "uniform sampler2D uTex0;		\n"
 "uniform sampler2D uTex1;		\n"
 #ifdef GL_MULTISAMPLING_SUPPORT
-"uniform sampler2DMS uMSTex0;	\n"
-"uniform sampler2DMS uMSTex1;	\n"
+"uniform lowp sampler2DMS uMSTex0;	\n"
+"uniform lowp sampler2DMS uMSTex1;	\n"
 "uniform lowp ivec2 uMSTexEnabled;	\n"
 #endif
 "layout (std140) uniform ColorsBlock {\n"
@@ -194,6 +197,9 @@ MAIN_SHADER_VERSION
 
 static const char* fragment_shader_header_common_variables_notex =
 MAIN_SHADER_VERSION
+"#ifdef GL_NV_fragdepth			\n"
+"    #extension GL_NV_fragdepth : enable \n"
+"#endif										\n"
 "layout (std140) uniform ColorsBlock {\n"
 "  lowp vec4 uFogColor;			\n"
 "  lowp vec4 uCenterColor;		\n"
@@ -231,7 +237,7 @@ static const char* fragment_shader_header_common_functions =
 "mediump float mipmap(out lowp vec4 readtex0, out lowp vec4 readtex1);		\n"
 "lowp vec4 readTex(in sampler2D tex, in mediump vec2 texCoord, in bool fb8bit, in bool fbFixedAlpha);	\n"
 #ifdef GL_MULTISAMPLING_SUPPORT
-"lowp vec4 readTexMS(in sampler2DMS mstex, in mediump vec2 texCoord, in bool fb8bit, in bool fbFixedAlpha);	\n"
+"lowp vec4 readTexMS(in lowp sampler2DMS mstex, in mediump vec2 texCoord, in bool fb8bit, in bool fbFixedAlpha);	\n"
 #endif // GL_MULTISAMPLING_SUPPORT
 "bool depth_compare();										\n"
 "void colorNoiseDither(in lowp float _noise, inout lowp vec3 _color);	\n"
@@ -278,7 +284,6 @@ static const char* fragment_shader_header_main =
 "{									\n"
 #ifdef GLESX
 "#ifdef GL_NV_fragdepth			\n"
-"    #extension GL_NV_fragdepth : enable \n"
 "  gl_FragDepth = clamp((gl_FragCoord.z * 2.0 - 1.0) * uDepthScale.s + uDepthScale.t, 0.0, 1.0);   \n"
 "#endif										\n"
 #else
@@ -447,7 +452,7 @@ static const char* fragment_shader_readtex_ms =
 AUXILIARY_SHADER_VERSION
 "uniform lowp int uMSAASamples;	\n"
 "uniform lowp float uMSAAScale;	\n"
-"lowp vec4 sampleMS(in sampler2DMS mstex, in mediump ivec2 ipos)			\n"
+"lowp vec4 sampleMS(in lowp sampler2DMS mstex, in mediump ivec2 ipos)			\n"
 "{																			\n"
 "  lowp vec4 texel = vec4(0.0);												\n"
 "  for (int i = 0; i < uMSAASamples; ++i)									\n"
@@ -455,7 +460,7 @@ AUXILIARY_SHADER_VERSION
 "  return texel * uMSAAScale;												\n"
 "}																			\n"
 "																			\n"
-"lowp vec4 readTexMS(in sampler2DMS mstex, in mediump vec2 texCoord, in bool fb8bit, in bool fbFixedAlpha)	\n"
+"lowp vec4 readTexMS(in lowp sampler2DMS mstex, in mediump vec2 texCoord, in bool fb8bit, in bool fbFixedAlpha)	\n"
 "{																			\n"
 "  mediump vec2 msTexSize = vec2(textureSize(mstex));						\n"
 "  mediump ivec2 itexCoord = ivec2(msTexSize * texCoord);					\n"
@@ -616,8 +621,8 @@ MAIN_SHADER_VERSION
 "out lowp vec4 fragColor;								\n"
 "void main()											\n"
 "{														\n"
-"  ivec2 coord = ivec2(gl_FragCoord.xy);				\n"
-"  vec4 tex = texelFetch(uColorImage, coord, 0);		\n"
+"  mediump ivec2 coord = ivec2(gl_FragCoord.xy);				\n"
+"  lowp vec4 tex = texelFetch(uColorImage, coord, 0);		\n"
 //"  lowp float c = (tex.r + tex.g + tex.b) / 3.0f;		\n"
 "  lowp float c = dot(vec4(0.2126, 0.7152, 0.0722, 0.0), tex);\n"
 "  fragColor = vec4(c, c, c, 1.0);						\n"

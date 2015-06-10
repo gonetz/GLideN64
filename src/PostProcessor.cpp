@@ -9,7 +9,7 @@
 #include "Config.h"
 
 #if defined(GLES3_1)
-#define SHADER_VERSION "#version 330 core \n"
+#define SHADER_VERSION "#version 310 es \n"
 #elif defined(GLES3)
 #define SHADER_VERSION "#version 300 es \n"
 #elif defined(GLES2)
@@ -47,6 +47,7 @@ SHADER_VERSION
 "#if (__VERSION__ > 120)		\n"
 "# define IN in					\n"
 "# define OUT out				\n"
+"# define texture2D texture		\n"
 "#else							\n"
 "# define IN varying			\n"
 "# define OUT					\n"
@@ -67,6 +68,7 @@ SHADER_VERSION
 "#if (__VERSION__ > 120)		\n"
 "# define IN in					\n"
 "# define OUT out				\n"
+"# define texture2D texture		\n"
 "#else							\n"
 "# define IN varying			\n"
 "# define OUT					\n"
@@ -103,6 +105,7 @@ SHADER_VERSION
 "#if (__VERSION__ > 120)		\n"
 "# define IN in					\n"
 "# define OUT out				\n"
+"# define texture2D texture		\n"
 "#else							\n"
 "# define IN varying			\n"
 "# define OUT					\n"
@@ -177,6 +180,7 @@ SHADER_VERSION
 "#if (__VERSION__ > 120)		\n"
 "# define IN in					\n"
 "# define OUT out				\n"
+"# define texture2D texture		\n"
 "#else							\n"
 "# define IN varying			\n"
 "# define OUT					\n"
