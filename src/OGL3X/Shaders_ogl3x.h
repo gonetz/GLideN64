@@ -153,6 +153,9 @@ MAIN_SHADER_VERSION
 "#ifdef GL_NV_fragdepth			\n"
 "    #extension GL_NV_fragdepth : enable \n"
 "#endif										\n"
+"#ifdef GL_OES_standard_derivatives			\n"
+"    #extension GL_OES_standard_derivatives : enable \n"
+"#endif										\n"
 "uniform sampler2D uTex0;		\n"
 "uniform sampler2D uTex1;		\n"
 #ifdef GL_MULTISAMPLING_SUPPORT
@@ -199,6 +202,9 @@ static const char* fragment_shader_header_common_variables_notex =
 MAIN_SHADER_VERSION
 "#ifdef GL_NV_fragdepth			\n"
 "    #extension GL_NV_fragdepth : enable \n"
+"#endif										\n"
+"#ifdef GL_OES_standard_derivatives			\n"
+"    #extension GL_OES_standard_derivatives : enable \n"
 "#endif										\n"
 "layout (std140) uniform ColorsBlock {\n"
 "  lowp vec4 uFogColor;			\n"
@@ -340,10 +346,6 @@ AUXILIARY_SHADER_VERSION
 "uniform sampler2D uTex0;			\n"
 "uniform sampler2D uTex1;			\n"
 "uniform mediump vec2 uScreenScale;	\n"
-#else
-"#ifdef GL_OES_standard_derivatives			\n"
-"    #extension GL_OES_standard_derivatives : enable \n"
-"#endif										\n"
 #endif
 "uniform lowp float uPrimitiveLod;		\n"
 "uniform lowp int uEnableLod;		\n"
@@ -497,10 +499,6 @@ static const char* fragment_shader_dummy_noise =
 static const char* depth_compare_shader_float =
 #ifndef GLESX
 "#version 430								\n"
-#else
-"#ifdef GL_OES_standard_derivatives			\n"
-"    #extension GL_OES_standard_derivatives : enable \n"
-"#endif										\n"
 #endif
 //"uniform int uEnableDepth;				\n"
 "uniform lowp int uDepthMode;				\n"
@@ -555,29 +553,35 @@ static const char* depth_compare_shader_float =
 ;
 
 static const char* shadow_map_fragment_shader_float =
+#ifndef GLESX
 "#version 420 core											\n"
-"layout(binding = 0) uniform sampler2D uDepthImage;		\n"
 "layout(binding = 0, r16ui) uniform readonly uimage2D uZlutImage;\n"
 "layout(binding = 1, r16ui) uniform readonly uimage2D uTlutImage;\n"
+#else
+MAIN_SHADER_VERSION
+"layout(binding = 0, r32ui) highp uniform readonly uimage2D uZlutImage;\n"
+"layout(binding = 1, r32ui) highp uniform readonly uimage2D uTlutImage;\n"
+#endif
+"layout(binding = 0) uniform sampler2D uDepthImage;		\n"
 "uniform lowp vec4 uFogColor;								\n"
 "out lowp vec4 fragColor;									\n"
 "lowp float get_alpha()										\n"
 "{															\n"
-"  ivec2 coord = ivec2(gl_FragCoord.xy);					\n"
+"  mediump ivec2 coord = ivec2(gl_FragCoord.xy);			\n"
 "  highp float bufZ = texelFetch(uDepthImage,coord, 0).r;	\n"
-"  const highp int iZ = bufZ > 0.999 ? 262143 : int(floor(bufZ * 262143.0));\n"
-"  int y0 = clamp(iZ/512, 0, 511);							\n"
-"  int x0 = iZ - 512*y0;									\n"
-"  uint iN64z = imageLoad(uZlutImage,ivec2(x0,y0)).r;		\n"
+"  highp int iZ = bufZ > 0.999 ? 262143 : int(floor(bufZ * 262143.0));\n"
+"  mediump int y0 = clamp(iZ/512, 0, 511);					\n"
+"  mediump int x0 = iZ - 512*y0;							\n"
+"  highp uint iN64z = imageLoad(uZlutImage,ivec2(x0,y0)).r;		\n"
 "  highp float n64z = clamp(float(iN64z)/65532.0, 0.0, 1.0);\n"
-"  int index = min(255, int(n64z*255.0));					\n"
-"  uint iAlpha = imageLoad(uTlutImage,ivec2(index,0)).r;			\n"
-"  return float(iAlpha/256)/255.0;						\n"
-"}														\n"
-"void main()											\n"
-"{														\n"
-"  fragColor = vec4(uFogColor.rgb, get_alpha());		\n"
-"}														\n"
+"  highp int index = min(255, int(n64z*255.0));				\n"
+"  highp uint iAlpha = imageLoad(uTlutImage,ivec2(index,0)).r;\n"
+"  return float(iAlpha/uint(256))/255.0;							\n"
+"}															\n"
+"void main()												\n"
+"{															\n"
+"  fragColor = vec4(uFogColor.rgb, get_alpha());			\n"
+"}															\n"
 ;
 #endif // GL_IMAGE_TEXTURES_SUPPORT
 

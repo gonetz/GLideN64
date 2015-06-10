@@ -1,6 +1,7 @@
 #include <assert.h>
 #include <stdio.h>
 #include <string>
+#include <vector>
 
 #include "../N64.h"
 #include "../OpenGL.h"
@@ -34,12 +35,6 @@ static GLuint g_zlut_tex = 0;
 GLuint g_tlut_tex = 0;
 static u32 g_paletteCRC256 = 0;
 #endif // GL_IMAGE_TEXTURES_SUPPORT
-
-#ifndef GLESX
-#define GL_RED16 GL_R16
-#else
-#define GL_RED16 GL_R16UI
-#endif
 
 static std::string strFragmentShader;
 
@@ -124,17 +119,25 @@ void InitZlutTexture()
 	if (!video().getRender().isImageTexturesSupported())
 		return;
 
+#ifdef GLESX
+	std::vector<u32> vecZLUT(0x40000);
+	const u16 * const zLUT16 = depthBufferList().getZLUT();
+	for (u32 i = 0; i < 0x40000; ++i)
+		vecZLUT[i] = zLUT16[i];
+	const u32 * zLUT = vecZLUT.data();
+#else
 	const u16 * const zLUT = depthBufferList().getZLUT();
+#endif
 	glGenTextures(1, &g_zlut_tex);
 	glBindTexture(GL_TEXTURE_2D, g_zlut_tex);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RED16,
-		512, 512, 0, GL_RED, GL_UNSIGNED_SHORT,
+	glTexImage2D(GL_TEXTURE_2D, 0, fboFormats.lutInternalFormat,
+		512, 512, 0, fboFormats.lutFormat, fboFormats.lutType,
 		zLUT);
-	glBindImageTexture(ZlutImageUnit, g_zlut_tex, 0, GL_FALSE, 0, GL_READ_ONLY, GL_R16UI);
+	glBindImageTexture(ZlutImageUnit, g_zlut_tex, 0, GL_FALSE, 0, GL_READ_ONLY, fboFormats.lutInternalFormat);
 }
 
 static
@@ -142,7 +145,7 @@ void DestroyZlutTexture()
 {
 	if (!video().getRender().isImageTexturesSupported())
 		return;
-	glBindImageTexture(ZlutImageUnit, 0, 0, GL_FALSE, 0, GL_READ_ONLY, GL_R16UI);
+	glBindImageTexture(ZlutImageUnit, 0, 0, GL_FALSE, 0, GL_READ_ONLY, fboFormats.lutInternalFormat);
 	if (g_zlut_tex > 0) {
 		glBindTexture(GL_TEXTURE_2D, 0);
 		glDeleteTextures(1, &g_zlut_tex);
@@ -162,7 +165,7 @@ void InitShadowMapShader()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RED16, 256, 1, 0, GL_RED, GL_UNSIGNED_SHORT, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, fboFormats.lutInternalFormat, 256, 1, 0, fboFormats.lutFormat, fboFormats.lutType, NULL);
 
 	g_draw_shadow_map_program = createShaderProgram(default_vertex_shader, shadow_map_fragment_shader_float);
 }
@@ -173,7 +176,7 @@ void DestroyShadowMapShader()
 	if (!video().getRender().isImageTexturesSupported())
 		return;
 
-	glBindImageTexture(TlutImageUnit, 0, 0, GL_FALSE, 0, GL_READ_ONLY, GL_R16UI);
+	glBindImageTexture(TlutImageUnit, 0, 0, GL_FALSE, 0, GL_READ_ONLY, fboFormats.lutInternalFormat);
 
 	if (g_tlut_tex > 0) {
 		glBindTexture(GL_TEXTURE_2D, 0);
@@ -728,15 +731,20 @@ void SetDepthFogCombiner()
 
 	if (g_paletteCRC256 != gDP.paletteCRC256) {
 		g_paletteCRC256 = gDP.paletteCRC256;
+
+#ifdef GLESX
+		u32 palette[256];
+#else
 		u16 palette[256];
+#endif
 		u16 *src = (u16*)&TMEM[256];
 		for (int i = 0; i < 256; ++i)
 			palette[i] = swapword(src[i*4]);
-		glBindImageTexture(TlutImageUnit, 0, 0, GL_FALSE, 0, GL_READ_ONLY, GL_R16UI);
+		glBindImageTexture(TlutImageUnit, 0, 0, GL_FALSE, 0, GL_READ_ONLY, fboFormats.lutInternalFormat);
 		glBindTexture(GL_TEXTURE_2D, g_tlut_tex);
-		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 256, 1, GL_RED, GL_UNSIGNED_SHORT, palette);
+		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 256, 1, fboFormats.lutFormat, fboFormats.lutType, palette);
 		glBindTexture(GL_TEXTURE_2D, 0);
-		glBindImageTexture(TlutImageUnit, g_tlut_tex, 0, GL_FALSE, 0, GL_READ_ONLY, GL_R16UI);
+		glBindImageTexture(TlutImageUnit, g_tlut_tex, 0, GL_FALSE, 0, GL_READ_ONLY, fboFormats.lutInternalFormat);
 	}
 
 	glUseProgram(g_draw_shadow_map_program);
