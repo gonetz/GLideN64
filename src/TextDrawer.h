@@ -4,13 +4,15 @@
 
 class TextDrawer
 {
-	friend class OGLRender;
-	TextDrawer();
 	void init();
 	void destroy();
 	void renderText(const char *_pText, float x, float y) const;
 	static TextDrawer & get();
 
+private:
+	TextDrawer();
+	TextDrawer(const TextDrawer &);
+	friend class OGLRender;
 	struct Atlas * m_pAtlas;
 	GLuint m_program;
 	GLint m_uTex;
