@@ -47,7 +47,7 @@ class DepthBufferToRDRAM
 {
 public:
 	DepthBufferToRDRAM() :
-		m_FBO(0), m_PBO(0), m_pColorTexture(NULL), m_pDepthTexture(NULL), m_lastDList(0)
+		m_FBO(0), m_PBO(0), m_pColorTexture(NULL), m_pDepthTexture(NULL)
 	{}
 
 	void Init();
@@ -60,7 +60,6 @@ private:
 	GLuint m_PBO;
 	CachedTexture * m_pColorTexture;
 	CachedTexture * m_pDepthTexture;
-	u32 m_lastDList;
 };
 #endif // GLES2
 
@@ -1096,13 +1095,10 @@ void DepthBufferToRDRAM::Destroy() {
 bool DepthBufferToRDRAM::CopyToRDRAM( u32 _address) {
 	if (VI.width == 0) // H width is zero. Don't copy
 		return false;
-	if (m_lastDList == RSP.DList) // Already read;
-		return true;
 	FrameBuffer *pBuffer = frameBufferList().findBuffer(_address);
 	if (pBuffer == NULL || pBuffer->m_width < VI.width || pBuffer->m_pDepthBuffer == NULL || !pBuffer->m_pDepthBuffer->m_cleared)
 		return false;
 
-	m_lastDList = RSP.DList;
 	DepthBuffer * pDepthBuffer = pBuffer->m_pDepthBuffer;
 	const u32 address = pDepthBuffer->m_address;
 	if (address + VI.width*VI.height*2 > RDRAMSize)
