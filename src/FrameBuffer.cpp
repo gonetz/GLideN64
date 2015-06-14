@@ -1096,6 +1096,8 @@ void DepthBufferToRDRAM::Destroy() {
 bool DepthBufferToRDRAM::CopyToRDRAM( u32 _address) {
 	if (VI.width == 0) // H width is zero. Don't copy
 		return false;
+	if (m_lastDList == RSP.DList) // Already read;
+		return true;
 	FrameBuffer *pBuffer = frameBufferList().findBuffer(_address);
 	if (pBuffer == NULL || pBuffer->m_width < VI.width || pBuffer->m_pDepthBuffer == NULL || !pBuffer->m_pDepthBuffer->m_cleared)
 		return false;

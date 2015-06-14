@@ -137,10 +137,9 @@ void RDP_LoadBlock( u32 w0, u32 w1 )
 				  _SHIFTR( w1,  0, 12 ) );	// dxt
 }
 
-void RDP_GetLastLoadBlockParams(u32 & _w0, u32 & _w1)
+void RDP_RepeatLastLoadBlock()
 {
-	_w0 = lbw0;
-	_w1 = lbw1;
+	RDP_LoadBlock(lbw0, lbw1);
 }
 
 void RDP_SetTileSize( u32 w0, u32 w1 )
