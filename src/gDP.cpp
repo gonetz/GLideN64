@@ -276,7 +276,7 @@ void gDPGetFillColor(f32 _fillColor[4])
 
 void gDPSetPrimColor( u32 m, u32 l, u32 r, u32 g, u32 b, u32 a )
 {
-	gDP.primColor.m = m * 0.0039215689f;
+	gDP.primColor.m = m * 0.0312500000;
 	gDP.primColor.l = l * 0.0039215689f;
 	gDP.primColor.r = r * 0.0039215689f;
 	gDP.primColor.g = g * 0.0039215689f;
