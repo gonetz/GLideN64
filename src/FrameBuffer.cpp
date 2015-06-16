@@ -958,9 +958,7 @@ void FrameBufferToRDRAM::CopyToRDRAM(u32 _address)
 #ifndef GLES2
 	PBOBinder binder(GL_PIXEL_PACK_BUFFER, m_PBO);
 	glReadPixels(0, 0, VI.width, VI.height, GL_RGBA, GL_UNSIGNED_BYTE, 0);
-	isGLError();
 	GLubyte* pixelData = (GLubyte*)glMapBufferRange(GL_PIXEL_PACK_BUFFER, 0, VI.width * VI.height * 4, GL_MAP_READ_BIT);
-	isGLError();
 	if(pixelData == NULL)
 		return;
 #else
