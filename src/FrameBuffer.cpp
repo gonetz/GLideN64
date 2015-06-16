@@ -34,8 +34,11 @@ public:
 private:
 	void _copyWhite(FrameBuffer * _pBuffer);
 
-	struct RGBA {
-		u8 r, g, b, a;
+	union RGBA {
+		struct {
+			u8 r, g, b, a;
+		};
+		u32 raw;
 	};
 
 	GLuint m_FBO;
@@ -983,11 +986,12 @@ void FrameBufferToRDRAM::CopyToRDRAM(u32 _address)
 		}
 	} else {
 		u16 *ptr_dst = (u16*)(RDRAM + _address);
-		RGBA * ptr_src = (RGBA*)pixelData;
+		u32 * ptr_src = (u32*)pixelData;
+		RGBA c;
 
 		for (u32 y = 0; y < height; ++y) {
 			for (u32 x = 0; x < VI.width; ++x) {
-				const RGBA & c = ptr_src[x + (height - y - 1)*VI.width];
+				c.raw = ptr_src[x + (height - y - 1)*VI.width];
 				ptr_dst[(x + y*VI.width)^1] = ((c.r>>3)<<11) | ((c.g>>3)<<6) | ((c.b>>3)<<1) | (c.a == 0 ? 0 : 1);
 			}
 		}
