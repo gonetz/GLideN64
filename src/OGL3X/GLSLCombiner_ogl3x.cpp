@@ -451,7 +451,6 @@ void ShaderCombiner::_locateUniforms() {
 	LocateUniform(uSpecialBlendMode);
 
 	LocateUniform(uFogAlpha);
-	LocateUniform(uPrimitiveLod);
 	LocateUniform(uMinLod);
 	LocateUniform(uDeltaZ);
 	LocateUniform(uAlphaTestValue);
@@ -626,9 +625,8 @@ void ShaderCombiner::updateLOD(bool _bForce)
 		m_uniforms.uEnableLod.set(uCalcLOD, _bForce);
 		if (uCalcLOD) {
 			m_uniforms.uScreenScale.set(video().getScaleX(), video().getScaleY(), _bForce);
-			m_uniforms.uPrimitiveLod.set(gDP.primColor.l, _bForce);
 			m_uniforms.uMinLod.set(gDP.primColor.m, _bForce);
-			m_uniforms.uMaxTile.set(gSP.texture.level, _bForce);
+			m_uniforms.uMaxTile.set(gSP.texture.level - gSP.texture.tile, _bForce);
 			m_uniforms.uTextureDetail.set(gDP.otherMode.textureDetail, _bForce);
 		}
 	}

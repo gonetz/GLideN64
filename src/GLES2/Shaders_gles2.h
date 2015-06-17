@@ -283,23 +283,15 @@ static const char* fragment_shader_end =
 ;
 
 static const char* fragment_shader_mipmap =
-"#if (__VERSION__ < 120)			\n"
-"#define texture texture2D			\n"
-"#endif // __VERSION				\n"
 "uniform lowp float uPrimitiveLod;		\n"
 "uniform lowp int uEnableLod;		\n"
 "uniform mediump float uMinLod;		\n"
 "uniform lowp int uMaxTile;			\n"
 "														\n"
 "mediump float mipmap(out lowp vec4 readtex0, out lowp vec4 readtex1) {	\n"
-"  readtex0 = texture(uTex0, vTexCoord0);				\n"
-"  readtex1 = texture(uTex1, vTexCoord1);				\n"
-"  if (uEnableLod == 0)									\n"
-"    return uPrimitiveLod;								\n"
-"  if (uMaxTile == 0) {									\n"
-"    readtex1 = readtex0;								\n"
-"    return uMinLod;									\n"
-"  }													\n"
+"  readtex0 = texture2D(uTex0, vTexCoord0);				\n"
+"  readtex1 = texture2D(uTex1, vTexCoord1);				\n"
+"  if (uMaxTile == 0) return 1.0;						\n"
 "  return uPrimitiveLod;								\n"
 "}														\n"
 ;
