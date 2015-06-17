@@ -1,5 +1,6 @@
 #include <assert.h>
 #include <stdio.h>
+#include <math.h>
 #include <time.h>       /* time_t, struct tm, difftime, time, mktime */
 
 //// paulscode, added for SDL linkage:
