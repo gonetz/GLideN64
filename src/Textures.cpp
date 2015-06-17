@@ -1433,6 +1433,9 @@ void getTextureShiftScale(u32 t, const TextureCache & cache, f32 & shiftScaleS, 
 		return;
 	}
 
+	if (gDP.otherMode.textureLOD == G_TL_LOD && gSP.texture.level == gSP.texture.tile)
+		t = 0;
+
 	if (gSP.textureTile[t]->shifts > 10)
 		shiftScaleS = (f32)(1 << (16 - gSP.textureTile[t]->shifts));
 	else if (gSP.textureTile[t]->shifts > 0)
