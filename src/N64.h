@@ -5,12 +5,6 @@
 
 #define MI_INTR_DP		0x20		// Bit 5: DP intr
 
-// Actual TMEM size is 512 QWORDS. However, some load operations load more data that TMEM can take.
-// We can either cut the surplus data, or increase the buffer and load everything.
-// The second option is more simple and safe. Actual texture load will use correct TMEM size.
-#define TMEM_SIZE 1024
-#define TMEM_SIZE_BYTES 8192
-
 struct N64Regs
 {
 	u32 *MI_INTR;
@@ -45,7 +39,7 @@ extern u8 *HEADER;
 extern u8 *DMEM;
 extern u8 *IMEM;
 extern u8 *RDRAM;
-extern u64 TMEM[TMEM_SIZE];
+extern u64 TMEM[512];
 extern u32 RDRAMSize;
 extern bool ConfigOpen;
 

@@ -486,21 +486,11 @@ void gDPLoadTile(u32 tile, u32 uls, u32 ult, u32 lrs, u32 lrt)
 	if (gDP.loadTile->line == 0)
 		return;
 
-	const u32 address = gDP.textureImage.address + gDP.loadTile->ult * gDP.textureImage.bpl + (gDP.loadTile->uls << gDP.textureImage.size >> 1);
+	u32 address = gDP.textureImage.address + gDP.loadTile->ult * gDP.textureImage.bpl + (gDP.loadTile->uls << gDP.textureImage.size >> 1);
 	if ((address + height * gDP.textureImage.bpl) > RDRAMSize)
 		return;
 
 	const u32 bpl = gDP.loadTile->line << 3;
-	if (((gDP.loadTile->tmem << 3) + height * bpl) > TMEM_SIZE_BYTES) // Stay within TMEM
-	{
-#ifdef DEBUG
-		DebugMsg( DEBUG_HIGH | DEBUG_ERROR | DEBUG_TEXTURE, "// Attempting to load texture tile out of range\n" );
-		DebugMsg( DEBUG_HIGH | DEBUG_HANDLED | DEBUG_TEXTURE, "gDPLoadTile( %i, %i, %i, %i, %i );\n",
-			tile, gDP.loadTile->uls, gDP.loadTile->ult, gDP.loadTile->lrs, gDP.loadTile->lrt );
-#endif
-		height = (TMEM_SIZE_BYTES - (gDP.loadTile->tmem << 3)) / bpl;
-	}
-
 	u32 bpl2 = bpl;
 	if (gDP.loadTile->lrs > gDP.textureImage.width)
 		bpl2 = (gDP.textureImage.width - gDP.loadTile->uls);
@@ -513,15 +503,15 @@ void gDPLoadTile(u32 tile, u32 uls, u32 ult, u32 lrs, u32 lrt)
 	if (gDP.loadTile->size == G_IM_SIZ_32b)
 		gDPLoadTile32b(gDP.loadTile->uls, gDP.loadTile->ult, gDP.loadTile->lrs, gDP.loadTile->lrt);
 	else {
-		u64 * dest = &TMEM[gDP.loadTile->tmem];
-		u8 * src = &RDRAM[address];
+		u32 tmemAddr = gDP.loadTile->tmem;
 		const u32 line = gDP.loadTile->line;
 		for (u32 y = 0; y < height; ++y) {
-			UnswapCopy(src, dest, bpl);
-			if (y & 1) DWordInterleave(dest, line);
+			UnswapCopyWrap(RDRAM, address, (u8*)TMEM, tmemAddr << 3, 0xFFF, bpl);
+			if (y & 1)
+				DWordInterleaveWrap((u32*)TMEM, tmemAddr << 1, 0x3FF, line);
 
-			src += gDP.textureImage.bpl;
-			dest += line;
+			address += gDP.textureImage.bpl;
+			tmemAddr += line;
 		}
 	}
 #ifdef DEBUG
@@ -606,8 +596,6 @@ void gDPLoadBlock(u32 tile, u32 uls, u32 ult, u32 lrs, u32 dxt)
 	info.loadType = LOADTYPE_BLOCK;
 
 	u32 bytes = (lrs - uls + 1) << gDP.loadTile->size >> 1;
-	if (((gDP.loadTile->tmem << 3) + bytes) > TMEM_SIZE_BYTES) // Stay within TMEM
-		bytes = TMEM_SIZE_BYTES - (gDP.loadTile->tmem << 3);
 	if ((bytes & 7) != 0)
 		bytes = (bytes & (~7)) + 8;
 	u32 address = gDP.textureImage.address + ult * gDP.textureImage.bpl + (uls << gDP.textureImage.size >> 1);
@@ -629,8 +617,7 @@ void gDPLoadBlock(u32 tile, u32 uls, u32 ult, u32 lrs, u32 dxt)
 	else if (gDP.loadTile->format == G_IM_FMT_YUV)
 		memcpy(TMEM, &RDRAM[address], bytes); // HACK!
 	else {
-		u64* src = (u64*)&RDRAM[address];
-		u64* dest = &TMEM[gDP.loadTile->tmem];
+		u32 tmemAddr = gDP.loadTile->tmem;
 
 		if (dxt > 0) {
 			u32 line = (2047 + dxt) / dxt;
@@ -638,14 +625,14 @@ void gDPLoadBlock(u32 tile, u32 uls, u32 ult, u32 lrs, u32 dxt)
 			u32 height = bytes / bpl;
 
 			for (u32 y = 0; y < height; ++y) {
-				UnswapCopy(src, dest, bpl);
-				if (y & 1) DWordInterleave(dest, line);
-
-				src += line;
-				dest += line;
+				UnswapCopyWrap(RDRAM, address, (u8*)TMEM, tmemAddr << 3, 0xFFF, bpl);
+				if (y & 1)
+					DWordInterleaveWrap((u32*)TMEM, tmemAddr << 1, 0x3FF, line);
+				address += bpl;
+				tmemAddr += line;
 			}
 		} else
-			UnswapCopy(src, dest, bytes);
+			UnswapCopyWrap(RDRAM, address, (u8*)TMEM, tmemAddr << 3, 0xFFF, bytes);
 	}
 #ifdef DEBUG
 	DebugMsg( DEBUG_HIGH | DEBUG_HANDLED | DEBUG_TEXTURE, "gDPLoadBlock( %i, %i, %i, %i, %i );\n",

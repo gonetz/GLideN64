@@ -102,148 +102,57 @@ const volatile unsigned char One2Eight[2] =
 	255, // 1 = 11111111
 };
 
-static inline void UnswapCopy( void *src, void *dest, u32 numBytes )
+static inline void UnswapCopyWrap(const u8 *src, u32 srcIdx, u8 *dest, u32 destIdx, u32 destMask, u32 numBytes)
 {
-#ifdef WIN32_ASM
-	__asm
-	{
-		mov		ecx, 0
-		mov		esi, dword ptr [src]
-		mov		edi, dword ptr [dest]
-
-		mov		ebx, esi
-		and		ebx, 3			// ebx = number of leading bytes
-
-		cmp		ebx, 0
- 		jz		StartDWordLoop
-		neg		ebx
-		add		ebx, 4
-
-		cmp		ebx, [numBytes]
-		jle		NotGreater
-		mov		ebx, [numBytes]
-NotGreater:
-		mov		ecx, ebx
-		xor		esi, 3
-LeadingLoop:				// Copies leading bytes, in reverse order (un-swaps)
-		mov		al, byte ptr [esi]
-		mov		byte ptr [edi], al
-		sub		esi, 1
-		add		edi, 1
-		loop	LeadingLoop
-		add		esi, 5
-
-StartDWordLoop:
-		mov		ecx, dword ptr [numBytes]
-		sub		ecx, ebx		// Don't copy what's already been copied
-
-		mov		ebx, ecx
-		and		ebx, 3
-//		add		ecx, 3			// Round up to nearest dword
-		shr		ecx, 2
-
-		cmp		ecx, 0			// If there's nothing to do, don't do it
-		jle		StartTrailingLoop
-
-		// Copies from source to destination, bswap-ing first
-DWordLoop:
-		mov		eax, dword ptr [esi]
-		bswap	eax
-		mov		dword ptr [edi], eax
-		add		esi, 4
-		add		edi, 4
-		loop	DWordLoop
-StartTrailingLoop:
-		cmp		ebx, 0
-		jz		Done
-		mov		ecx, ebx
-		xor		esi, 3
-
-TrailingLoop:
-		mov		al, byte ptr [esi]
-		mov		byte ptr [edi], al
-		sub		esi, 1
-		add		edi, 1
-		loop	TrailingLoop
-Done:
-	}
-# else // WIN32_ASM
 	// copy leading bytes
-	int leadingBytes = ((long)src) & 3;
-	if (leadingBytes != 0)
-	{
-		leadingBytes = 4-leadingBytes;
-		if ((unsigned int)leadingBytes > numBytes)
+	u32 leadingBytes = srcIdx & 3;
+	if (leadingBytes != 0) {
+		leadingBytes = 4 - leadingBytes;
+		if ((u32)leadingBytes > numBytes)
 			leadingBytes = numBytes;
 		numBytes -= leadingBytes;
 
-		src = (void *)((long)src ^ 3);
-		for (int i = 0; i < leadingBytes; i++)
-		{
-			*(u8 *)(dest) = *(u8 *)(src);
-			dest = (void *)((long)dest+1);
-			src  = (void *)((long)src -1);
+		srcIdx ^= 3;
+		for (int i = 0; i < leadingBytes; i++) {
+			dest[destIdx&destMask] = src[srcIdx];
+			++destIdx;
+			--srcIdx;
 		}
-		src = (void *)((long)src+5);
+		srcIdx += 5;
 	}
 
 	// copy dwords
 	int numDWords = numBytes >> 2;
-	while (numDWords--)
-	{
-		u32 dword = *(u32 *)src;
-#ifdef ARM_ASM
-		asm("rev %0, %0" : "+r"(dword)::);
-#else
-		dword = ((dword<<24)|((dword<<8)&0x00FF0000)|((dword>>8)&0x0000FF00)|(dword>>24));
-#endif
-		*(u32 *)dest = dword;
-		dest = (void *)((long)dest+4);
-		src  = (void *)((long)src +4);
+	while (numDWords--) {
+		dest[(destIdx + 3) & destMask] = src[srcIdx++];
+		dest[(destIdx + 2) & destMask] = src[srcIdx++];
+		dest[(destIdx + 1) & destMask] = src[srcIdx++];
+		dest[(destIdx + 0) & destMask] = src[srcIdx++];
+		destIdx += 4;
 	}
 
 	// copy trailing bytes
 	int trailingBytes = numBytes & 3;
-	if (trailingBytes)
-	{
-		src = (void *)((long)src ^ 3);
-		for (int i = 0; i < trailingBytes; i++)
-		{
-			*(u8 *)(dest) = *(u8 *)(src);
-			dest = (void *)((long)dest+1);
-			src  = (void *)((long)src -1);
+	if (trailingBytes) {
+		srcIdx ^= 3;
+		for (int i = 0; i < trailingBytes; i++) {
+			dest[destIdx&destMask] = src[srcIdx];
+			++destIdx;
+			--srcIdx;
 		}
 	}
-#endif // WIN32_ASM
 }
 
-static inline void DWordInterleave( void *mem, u32 numDWords )
+static inline void DWordInterleaveWrap(u32 *src, u32 srcIdx, u32 srcMask, u32 numQWords)
 {
-#ifdef WIN32_ASM
-	__asm {
-		mov		esi, dword ptr [mem]
-		mov		edi, dword ptr [mem]
-		add		edi, 4
-		mov		ecx, dword ptr [numDWords]
-DWordInterleaveLoop:
-		mov		eax, dword ptr [esi]
-		mov		ebx, dword ptr [edi]
-		mov		dword ptr [esi], ebx
-		mov		dword ptr [edi], eax
-		add		esi, 8
-		add		edi, 8
-		loop	DWordInterleaveLoop
+	u32 tmp;
+	while (numQWords--)	{
+		tmp = src[srcIdx & srcMask];
+		src[srcIdx & srcMask] = src[(srcIdx + 1) & srcMask];
+		++srcIdx;
+		src[srcIdx & srcMask] = tmp;
+		++srcIdx;
 	}
-#else // WIN32_ASM
-	int tmp;
-	while( numDWords-- )
-	{
-		tmp = *(int *)((long)mem + 0);
-		*(int *)((long)mem + 0) = *(int *)((long)mem + 4);
-		*(int *)((long)mem + 4) = tmp;
-		mem = (void *)((long)mem + 8);
-	}
-#endif // WIN32_ASM
 }
 
 inline u16 swapword( u16 value )
