@@ -263,7 +263,6 @@ void ShaderCombiner::_locateUniforms() {
 	LocateUniform(uFogUsage);
 	LocateUniform(uAlphaCompareMode);
 	LocateUniform(uGammaCorrectionEnabled);
-	LocateUniform(uEnableLod);
 	LocateUniform(uEnableAlphaTest);
 	LocateUniform(uEnableDepth);
 	LocateUniform(uEnableDepthCompare)
@@ -279,7 +278,6 @@ void ShaderCombiner::_locateUniforms() {
 
 	LocateUniform(uFogAlpha);
 	LocateUniform(uPrimitiveLod);
-	LocateUniform(uMinLod);
 	LocateUniform(uDeltaZ);
 	LocateUniform(uAlphaTestValue);
 
@@ -429,11 +427,9 @@ void ShaderCombiner::updateLOD(bool _bForce)
 {
 	if (usesLOD()) {
 		int uCalcLOD = (gDP.otherMode.textureLOD == G_TL_LOD) ? 1 : 0;
-		m_uniforms.uEnableLod.set(uCalcLOD, _bForce);
 		if (uCalcLOD) {
 			m_uniforms.uScreenScale.set(video().getScaleX(), video().getScaleY(), _bForce);
 			m_uniforms.uPrimitiveLod.set(gDP.primColor.l, _bForce);
-			m_uniforms.uMinLod.set(gDP.primColor.m, _bForce);
 			m_uniforms.uMaxTile.set(gSP.texture.level, _bForce);
 		}
 	}

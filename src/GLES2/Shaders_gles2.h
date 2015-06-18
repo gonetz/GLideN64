@@ -284,8 +284,6 @@ static const char* fragment_shader_end =
 
 static const char* fragment_shader_mipmap =
 "uniform lowp float uPrimitiveLod;		\n"
-"uniform lowp int uEnableLod;		\n"
-"uniform mediump float uMinLod;		\n"
 "uniform lowp int uMaxTile;			\n"
 "														\n"
 "mediump float mipmap(out lowp vec4 readtex0, out lowp vec4 readtex1) {	\n"
