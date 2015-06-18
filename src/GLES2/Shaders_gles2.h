@@ -282,15 +282,15 @@ static const char* fragment_shader_end =
 "}                               \n"
 ;
 
-static const char* fragment_shader_mipmap =
-"uniform lowp float uPrimitiveLod;		\n"
+static const char* fragment_shader_fake_mipmap =
 "uniform lowp int uMaxTile;			\n"
+"uniform mediump float uMinLod;		\n"
 "														\n"
 "mediump float mipmap(out lowp vec4 readtex0, out lowp vec4 readtex1) {	\n"
 "  readtex0 = texture2D(uTex0, vTexCoord0);				\n"
 "  readtex1 = texture2D(uTex1, vTexCoord1);				\n"
 "  if (uMaxTile == 0) return 1.0;						\n"
-"  return uPrimitiveLod;								\n"
+"  return uMinLod;										\n"
 "}														\n"
 ;
 

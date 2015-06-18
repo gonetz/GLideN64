@@ -411,6 +411,18 @@ AUXILIARY_SHADER_VERSION
 "}														\n"
 ;
 
+static const char* fragment_shader_fake_mipmap =
+"uniform lowp int uMaxTile;			\n"
+"uniform mediump float uMinLod;		\n"
+"														\n"
+"mediump float mipmap(out lowp vec4 readtex0, out lowp vec4 readtex1) {	\n"
+"  readtex0 = texture(uTex0, vTexCoord0);				\n"
+"  readtex1 = texture(uTex1, vTexCoord1);				\n"
+"  if (uMaxTile == 0) return 1.0;						\n"
+"  return uMinLod;										\n"
+"}														\n"
+;
+
 static const char* fragment_shader_readtex =
 AUXILIARY_SHADER_VERSION
 "lowp vec4 readTex(in sampler2D tex, in mediump vec2 texCoord, in bool fb8bit, in bool fbFixedAlpha)	\n"

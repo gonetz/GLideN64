@@ -214,7 +214,7 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 	if (bUseHWLight)
 		strFragmentShader.append(fragment_shader_calc_light);
 	if (bUseLod)
-		strFragmentShader.append(fragment_shader_mipmap);
+		strFragmentShader.append(fragment_shader_fake_mipmap);
 	else if (usesTexture()) {
 		if (config.texture.bilinearMode == BILINEAR_3POINT)
 			strFragmentShader.append(fragment_shader_readtex_3point);
@@ -277,7 +277,7 @@ void ShaderCombiner::_locateUniforms() {
 	LocateUniform(uSpecialBlendMode);
 
 	LocateUniform(uFogAlpha);
-	LocateUniform(uPrimitiveLod);
+	LocateUniform(uMinLod);
 	LocateUniform(uDeltaZ);
 	LocateUniform(uAlphaTestValue);
 
@@ -426,12 +426,8 @@ void ShaderCombiner::updateDitherMode(bool _bForce)
 void ShaderCombiner::updateLOD(bool _bForce)
 {
 	if (usesLOD()) {
-		int uCalcLOD = (gDP.otherMode.textureLOD == G_TL_LOD) ? 1 : 0;
-		if (uCalcLOD) {
-			m_uniforms.uScreenScale.set(video().getScaleX(), video().getScaleY(), _bForce);
-			m_uniforms.uPrimitiveLod.set(gDP.primColor.l, _bForce);
-			m_uniforms.uMaxTile.set(gSP.texture.level, _bForce);
-		}
+		m_uniforms.uMinLod.set(gDP.primColor.m, _bForce);
+		m_uniforms.uMaxTile.set(gSP.texture.level, _bForce);
 	}
 }
 

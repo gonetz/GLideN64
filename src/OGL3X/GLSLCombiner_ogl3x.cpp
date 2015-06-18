@@ -355,12 +355,16 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 	if (config.generalEmulation.enableNoise == 0)
 		strFragmentShader.append(fragment_shader_dummy_noise);
 
+	if (bUseLod && config.generalEmulation.enableLOD == 0)
+		strFragmentShader.append(fragment_shader_fake_mipmap);
+
 #ifdef GLESX
 	if (bUseHWLight)
 		strFragmentShader.append(fragment_shader_calc_light);
-	if (bUseLod)
-		strFragmentShader.append(fragment_shader_mipmap);
-	else if (usesTexture()) {
+	if (bUseLod) {
+		if (config.generalEmulation.enableLOD != 0)
+			strFragmentShader.append(fragment_shader_mipmap);
+	} else if (usesTexture()) {
 		strFragmentShader.append(config.texture.bilinearMode == BILINEAR_3POINT ? fragment_shader_readtex_3point : fragment_shader_readtex);
 #ifdef GL_MULTISAMPLING_SUPPORT
 		if (config.video.multisampling > 0)
@@ -394,9 +398,10 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 #ifndef GLESX
 	if (bUseHWLight)
 		glAttachShader(m_program, g_calc_light_shader_object);
-	if (bUseLod)
-		glAttachShader(m_program, g_calc_mipmap_shader_object);
-	else if (usesTexture()) {
+	if (bUseLod) {
+		if (config.generalEmulation.enableLOD != 0)
+			glAttachShader(m_program, g_calc_mipmap_shader_object);
+	} else if (usesTexture()) {
 		glAttachShader(m_program, g_readtex_shader_object);
 		if (config.video.multisampling > 0)
 			glAttachShader(m_program, g_readtex_ms_shader_object);
@@ -620,15 +625,17 @@ void ShaderCombiner::updateDitherMode(bool _bForce)
 
 void ShaderCombiner::updateLOD(bool _bForce)
 {
-	if (usesLOD()) {
-		int uCalcLOD = (config.generalEmulation.enableLOD && gDP.otherMode.textureLOD == G_TL_LOD) ? 1 : 0;
+	if (!usesLOD())
+		return;
+
+	m_uniforms.uMinLod.set(gDP.primColor.m, _bForce);
+	m_uniforms.uMaxTile.set(gSP.texture.level, _bForce);
+
+	if (config.generalEmulation.enableLOD != 0) {
+		const int uCalcLOD = (gDP.otherMode.textureLOD == G_TL_LOD) ? 1 : 0;
 		m_uniforms.uEnableLod.set(uCalcLOD, _bForce);
-		if (uCalcLOD) {
-			m_uniforms.uScreenScale.set(video().getScaleX(), video().getScaleY(), _bForce);
-			m_uniforms.uMinLod.set(gDP.primColor.m, _bForce);
-			m_uniforms.uMaxTile.set(gSP.texture.level - gSP.texture.tile, _bForce);
-			m_uniforms.uTextureDetail.set(gDP.otherMode.textureDetail, _bForce);
-		}
+		m_uniforms.uScreenScale.set(video().getScaleX(), video().getScaleY(), _bForce);
+		m_uniforms.uTextureDetail.set(gDP.otherMode.textureDetail, _bForce);
 	}
 }
 
