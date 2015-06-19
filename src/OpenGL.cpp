@@ -425,6 +425,9 @@ void OGLRender::_setBlendMode() const
 				glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
 				break;
 
+			case 0x5000: // V8 explosions
+				glBlendFunc(GL_ONE_MINUS_SRC_ALPHA, GL_SRC_ALPHA);
+				break;
 
 			default:
 				//LOG(LOG_VERBOSE, "Unhandled blend mode=%x", gDP.otherMode.l >> 16);
