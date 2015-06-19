@@ -224,7 +224,7 @@ static const char* fragment_shader_header_common_functions =
 "lowp float snoise();						\n"
 "void calc_light(in lowp float fLights, in lowp vec3 input_color, out lowp vec3 output_color);\n"
 "mediump float mipmap(out lowp vec4 readtex0, out lowp vec4 readtex1);		\n"
-"lowp vec4 readTex(in sampler2D tex, in mediump vec2 texCoord, in bool fb8bit, in bool fbFixedAlpha);	\n"
+"lowp vec4 readTex(in sampler2D tex, in mediump vec2 texCoord, in lowp int fb8bit, in bool fbFixedAlpha);	\n"
 #ifdef USE_TOONIFY
 "void toonify(in mediump float intensity);	\n"
 #endif
@@ -295,13 +295,17 @@ static const char* fragment_shader_fake_mipmap =
 ;
 
 static const char* fragment_shader_readtex =
-"lowp vec4 readTex(in sampler2D tex, in mediump vec2 texCoord, in bool fb8bit, in bool fbFixedAlpha)	\n"
-"{																			\n"
-"  lowp vec4 texColor = texture2D(tex, texCoord); 							\n"
-"  if (fb8bit) texColor = vec4(texColor.r);									\n"
-"  if (fbFixedAlpha) texColor.a = 0.825;									\n"
-"  return texColor;															\n"
-"}																			\n"
+"lowp vec4 readTex(in sampler2D tex, in mediump vec2 texCoord, in lowp int fb8bit, in bool fbFixedAlpha)	\n"
+"{														\n"
+"  lowp vec4 texColor = texture2D(tex, texCoord); 		\n"
+"  if (fb8bit == 2) {									\n"
+"     texColor.a = mod(texColor.r*255.0, 16.0)/15.0;	\n"
+"     texColor.rgb = vec3(texColor.r*240.0/255.0);		\n"
+"  } else if (fb8bit == 1)								\n"
+"     texColor = vec4(texColor.r);						\n"
+"  if (fbFixedAlpha) texColor.a = 0.825;				\n"
+"  return texColor;										\n"
+"}														\n"
 ;
 
 static const char* fragment_shader_readtex_3point =
@@ -321,12 +325,16 @@ static const char* fragment_shader_readtex_3point =
 "  lowp vec4 c2 = TEX_OFFSET(vec2(offset.x, offset.y - sign(offset.y)));	\n"
 "  return c0 + abs(offset.x)*(c1-c0) + abs(offset.y)*(c2-c0);				\n"
 "}																			\n"
-"lowp vec4 readTex(in sampler2D tex, in mediump vec2 texCoord, in bool fb8bit, in bool fbFixedAlpha)	\n"
+"lowp vec4 readTex(in sampler2D tex, in mediump vec2 texCoord, in lowp int fb8bit, in bool fbFixedAlpha)	\n"
 "{																			\n"
 "  lowp vec4 texStandard = texture2D(tex, texCoord); 							\n"
 "  lowp vec4 tex3Point = filter3point(tex, texCoord); 						\n"
 "  lowp vec4 texColor = uTextureFilterMode == 0 ? texStandard : tex3Point;	\n"
-"  if (fb8bit) texColor = vec4(texColor.r);									\n"
+"  if (fb8bit == 2) {														\n"
+"     texColor.a = mod(texColor.r*255.0, 16.0)/15.0;						\n"
+"     texColor.rgb = vec3(texColor.r*240.0/255.0);							\n"
+"  } else if (fb8bit == 1)													\n"
+"     texColor = vec4(texColor.r);											\n"
 "  if (fbFixedAlpha) texColor.a = 0.825;									\n"
 "  return texColor;															\n"
 "}																			\n"
