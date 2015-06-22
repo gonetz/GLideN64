@@ -8,7 +8,7 @@
 #include "../Revision.h"
 #include "../Log.h"
 
-#ifndef OS_WINDOWS
+#if !defined(OS_WINDOWS) || defined(GLES2) || defined(GLES3) || defined(GLES3_1)
 
 void initGLFunctions()
 {
