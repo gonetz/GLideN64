@@ -2,16 +2,13 @@
 #define OPENGL_H
 
 #include <vector>
+
 #ifdef OS_WINDOWS
 #include <windows.h>
-#include <GL/gl.h>
-#include "glext.h"
-#include "windows/GLFunctions.h"
-#define GL_IMAGE_TEXTURES_SUPPORT
-#define GL_MULTISAMPLING_SUPPORT
-#define GL_UNIFORMBLOCK_SUPPORT
 #else
 #include "winlnxdefs.h"
+#endif
+
 #ifdef GLES2
 #include <GLES2/gl2.h>
 #include <GLES2/gl2ext.h>
@@ -34,23 +31,32 @@ typedef char GLchar;
 #define GL_MULTISAMPLING_SUPPORT
 #define GL_UNIFORMBLOCK_SUPPORT
 #else
-#define GL_GLEXT_PROTOTYPES
 #if defined(OS_MAC_OS_X)
+#define GL_GLEXT_PROTOTYPES
 #include <OpenGL/OpenGL.h>
 #include <OpenGL/gl.h>
 #include <OpenGL/glext.h>
 #elif defined(OS_LINUX)
+#define GL_GLEXT_PROTOTYPES
 #include <GL/gl.h>
 #include <GL/glext.h>
 #define GL_IMAGE_TEXTURES_SUPPORT
 #define GL_MULTISAMPLING_SUPPORT
 #define GL_UNIFORMBLOCK_SUPPORT
+#elif defined(OS_WINDOWS)
+#include <GL/gl.h>
+#include "glext.h"
+#include "windows/GLFunctions.h"
+#define GL_IMAGE_TEXTURES_SUPPORT
+#define GL_MULTISAMPLING_SUPPORT
+#define GL_UNIFORMBLOCK_SUPPORT
 #endif // OS_MAC_OS_X
 #endif // GLES2
+
 #ifdef USE_SDL
 #include <SDL.h>
 #endif // USE_SDL
-#endif // OS_WINDOWS
+
 #ifndef GL_EXT_texture_filter_anisotropic
 #define GL_TEXTURE_MAX_ANISOTROPY_EXT     0x84FE
 #define GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT 0x84FF
