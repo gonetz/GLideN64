@@ -289,24 +289,24 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 		if (usesTile(0)) {
 			if (config.video.multisampling > 0) {
 				strFragmentShader.append("  lowp vec4 readtex0; \n");
-				strFragmentShader.append("  if (uMSTexEnabled[0] == 0) readtex0 = readTex(uTex0, vTexCoord0, uFb8Bit[0], uFbFixedAlpha[0] != 0); \n");
-				strFragmentShader.append("  else readtex0 = readTexMS(uMSTex0, vTexCoord0, uFb8Bit[0], uFbFixedAlpha[0] != 0); \n");
+				strFragmentShader.append("  if (uMSTexEnabled[0] == 0) readtex0 = readTex(uTex0, vTexCoord0, uFb8Bit[0] != 0, uFbFixedAlpha[0] != 0); \n");
+				strFragmentShader.append("  else readtex0 = readTexMS(uMSTex0, vTexCoord0, uFb8Bit[0] != 0, uFbFixedAlpha[0] != 0); \n");
 			} else
-				strFragmentShader.append("  lowp vec4 readtex0 = readTex(uTex0, vTexCoord0, uFb8Bit[0], uFbFixedAlpha[0] != 0); \n");
+				strFragmentShader.append("  lowp vec4 readtex0 = readTex(uTex0, vTexCoord0, uFb8Bit[0] != 0, uFbFixedAlpha[0] != 0); \n");
 		}
 		if (usesTile(1)) {
 			if (config.video.multisampling > 0) {
 				strFragmentShader.append("  lowp vec4 readtex1; \n");
-				strFragmentShader.append("  if (uMSTexEnabled[1] == 0) readtex1 = readTex(uTex1, vTexCoord1, uFb8Bit[1], uFbFixedAlpha[1] != 0); \n");
-				strFragmentShader.append("  else readtex1 = readTexMS(uMSTex1, vTexCoord1, uFb8Bit[1], uFbFixedAlpha[1] != 0); \n");
+				strFragmentShader.append("  if (uMSTexEnabled[1] == 0) readtex1 = readTex(uTex1, vTexCoord1, uFb8Bit[1] != 0, uFbFixedAlpha[1] != 0); \n");
+				strFragmentShader.append("  else readtex1 = readTexMS(uMSTex1, vTexCoord1, uFb8Bit[1] != 0, uFbFixedAlpha[1] != 0); \n");
 			} else
-				strFragmentShader.append("  lowp vec4 readtex1 = readTex(uTex1, vTexCoord1, uFb8Bit[1], uFbFixedAlpha[1] != 0); \n");
+				strFragmentShader.append("  lowp vec4 readtex1 = readTex(uTex1, vTexCoord1, uFb8Bit[1] != 0, uFbFixedAlpha[1] != 0); \n");
 		}
 #else
 		if (usesTile(0))
-			strFragmentShader.append("  lowp vec4 readtex0 = readTex(uTex0, vTexCoord0, uFb8Bit[0], uFbFixedAlpha[0] != 0); \n");
+			strFragmentShader.append("  lowp vec4 readtex0 = readTex(uTex0, vTexCoord0, uFb8Bit[0] != 0, uFbFixedAlpha[0] != 0); \n");
 		if (usesTile(1))
-			strFragmentShader.append("  lowp vec4 readtex1 = readTex(uTex1, vTexCoord1, uFb8Bit[1], uFbFixedAlpha[1] != 0); \n");
+			strFragmentShader.append("  lowp vec4 readtex1 = readTex(uTex1, vTexCoord1, uFb8Bit[1] != 0, uFbFixedAlpha[1] != 0); \n");
 #endif // GL_MULTISAMPLING_SUPPORT
 	}
 	const bool bUseHWLight = config.generalEmulation.enableHWLighting != 0 && GBI.isHWLSupported() && usesShadeColor();
@@ -655,7 +655,7 @@ void ShaderCombiner::updateFBInfo(bool _bForce) {
 	TextureCache & cache = textureCache();
 	if (cache.current[0] != NULL && cache.current[0]->frameBufferTexture != CachedTexture::fbNone) {
 		if (cache.current[0]->size == G_IM_SIZ_8b) {
-			nFb8bitMode0 = gSP.textureTile[0]->format == G_IM_FMT_IA ? 2 : 1;
+			nFb8bitMode0 = 1;
 			if (gDP.otherMode.imageRead == 0)
 				nFbFixedAlpha0 = 1;
 		}
@@ -663,7 +663,7 @@ void ShaderCombiner::updateFBInfo(bool _bForce) {
 	}
 	if (cache.current[1] != NULL && cache.current[1]->frameBufferTexture != CachedTexture::fbNone) {
 		if (cache.current[1]->size == G_IM_SIZ_8b) {
-			nFb8bitMode1 = gSP.textureTile[1]->format == G_IM_FMT_IA ? 2 : 1;
+			nFb8bitMode1 = 1;
 			if (gDP.otherMode.imageRead == 0)
 				nFbFixedAlpha1 = 1;
 		}
