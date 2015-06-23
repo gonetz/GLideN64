@@ -295,8 +295,8 @@ void CombinerInfo::updateLightParameters()
 	gSP.changed &= ~CHANGED_LIGHT;
 }
 
-void CombinerInfo::updateParameters()
+void CombinerInfo::updateParameters(OGLRender::RENDER_STATE _renderState)
 {
 	if (m_pUniformCollection != NULL)
-		m_pUniformCollection->updateUniforms(m_pCurrent);
+		m_pUniformCollection->updateUniforms(m_pCurrent, _renderState);
 }

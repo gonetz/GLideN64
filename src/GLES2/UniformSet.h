@@ -14,7 +14,7 @@ public:
 	virtual void setColorData(ColorUniforms _index, u32 _dataSize, const void * _data) {}
 	virtual void updateTextureParameters() {}
 	virtual void updateLightParameters() {}
-	virtual void updateUniforms(ShaderCombiner * _pCombiner);
+	virtual void updateUniforms(ShaderCombiner * _pCombiner, OGLRender::RENDER_STATE _renderState);
 
 private:
 	struct fv3Uniform {

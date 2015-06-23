@@ -138,7 +138,7 @@ public:
 	void updateTextureParameters();
 	void updateLightParameters();
 	// Update uniforms for GL without UniformBlock support
-	void updateParameters();
+	void updateParameters(OGLRender::RENDER_STATE _renderState);
 
 private:
 	CombinerInfo() : m_bChanged(false), m_pCurrent(NULL) {}

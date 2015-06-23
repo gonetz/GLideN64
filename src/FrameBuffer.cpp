@@ -763,7 +763,7 @@ void FrameBufferList::renderBuffer(u32 _address)
 	textureCache().activateTexture(0, pBuffer->m_pTexture);
 	gSP.textureTile[0]->fuls = gSP.textureTile[0]->fult = 0.0f;
 	currentCombiner()->updateTextureInfo(true);
-	CombinerInfo::get().updateParameters();
+	CombinerInfo::get().updateParameters(OGLRender::rsTexRect);
 
 	glScissor(0, 0, ogl.getScreenWidth(), ogl.getScreenHeight() + ogl.getHeightOffset());
 

@@ -126,14 +126,13 @@ void UniformSet::_updateLightUniforms(UniformSetLocation & _location, bool _bFor
 	}
 }
 
-void UniformSet::updateUniforms(ShaderCombiner * _pCombiner)
+void UniformSet::updateUniforms(ShaderCombiner * _pCombiner, OGLRender::RENDER_STATE _renderState)
 {
 	UniformSetLocation & location = m_uniforms.at(_pCombiner->getMux());
 
 	_updateColorUniforms(location, false);
 
-	OGLRender::RENDER_STATE rs = video().getRender().getRenderState();
-	if ((rs == OGLRender::rsTriangle || rs == OGLRender::rsLine) && _pCombiner->usesTexture())
+	if ((_renderState == OGLRender::rsTriangle || _renderState == OGLRender::rsLine) && _pCombiner->usesTexture())
 		_updateTextureUniforms(location, _pCombiner->usesTile(0), _pCombiner->usesTile(1), false);
 
 	if (_pCombiner->usesTexture())
