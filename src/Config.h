@@ -119,6 +119,7 @@ struct Config
 #define hack_subscreen				(1<<6)  //Fix subscreen delay in Zelda OOT
 #define hack_legoRacers				(1<<7)  //LEGO racers course map
 #define hack_blastCorps				(1<<8)  //Blast Corps black polygons
+#define hack_ignoreVIHeightChange	(1<<9)  //Do not reset FBO when VI height is changed. Space Invaders need it.
 
 extern Config config;
 

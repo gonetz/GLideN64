@@ -328,6 +328,8 @@ void RSP_Init()
 		config.generalEmulation.hacks |= hack_legoRacers;
 	else if (strstr(RSP.romname, (const char *)"Blast") != NULL)
 		config.generalEmulation.hacks |= hack_blastCorps;
+	else if (strstr(RSP.romname, (const char *)"SPACE INVADERS") != NULL)
+		config.generalEmulation.hacks |= hack_ignoreVIHeightChange;
 
 	api().FindPluginPath(RSP.pluginpath);
 
