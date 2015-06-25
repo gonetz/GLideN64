@@ -18,7 +18,6 @@
 
 using namespace std;
 
-#ifndef GLES2
 class FrameBufferToRDRAM
 {
 public:
@@ -46,6 +45,7 @@ private:
 	CachedTexture * m_pTexture;
 };
 
+#ifndef GLES2
 class DepthBufferToRDRAM
 {
 public:
@@ -85,8 +85,8 @@ private:
 #endif
 };
 
-#ifndef GLES2
 FrameBufferToRDRAM g_fbToRDRAM;
+#ifndef GLES2
 DepthBufferToRDRAM g_dbToRDRAM;
 #endif
 RDRAMtoFrameBuffer g_RDRAMtoFB;
@@ -574,8 +574,8 @@ void FrameBuffer_Init()
 {
 	frameBufferList().init();
 	if (config.frameBufferEmulation.enable != 0) {
-#ifndef GLES2
 	g_fbToRDRAM.Init();
+#ifndef GLES2
 	g_dbToRDRAM.Init();
 #endif
 	g_RDRAMtoFB.Init();
@@ -588,8 +588,8 @@ void FrameBuffer_Destroy()
 	g_RDRAMtoFB.Destroy();
 #ifndef GLES2
 	g_dbToRDRAM.Destroy();
-	g_fbToRDRAM.Destroy();
 #endif
+	g_fbToRDRAM.Destroy();
 	}
 	frameBufferList().destroy();
 }
@@ -847,9 +847,9 @@ void FrameBuffer_ActivateBufferTextureBG(s16 t, FrameBuffer *pBuffer )
 	gDP.changed |= CHANGED_FB_TEXTURE;
 }
 
-#ifndef GLES2
 void FrameBufferToRDRAM::Init()
 {
+#ifndef GLES2
 	// generate a framebuffer
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 	glGenFramebuffers(1, &m_FBO);
@@ -884,9 +884,11 @@ void FrameBufferToRDRAM::Init()
 	glBindBuffer(GL_PIXEL_PACK_BUFFER, m_PBO);
 	glBufferData(GL_PIXEL_PACK_BUFFER, m_pTexture->textureBytes, NULL, GL_DYNAMIC_READ);
 	glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
+#endif // GLES2
 }
 
 void FrameBufferToRDRAM::Destroy() {
+#ifndef GLES2
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 	if (m_FBO != 0) {
 		glDeleteFramebuffers(1, &m_FBO);
@@ -900,6 +902,7 @@ void FrameBufferToRDRAM::Destroy() {
 		glDeleteBuffers(1, &m_PBO);
 		m_PBO = 0;
 	}
+#endif // GLES2
 }
 
 void FrameBufferToRDRAM::_copyWhite(FrameBuffer * _pBuffer)
@@ -940,6 +943,7 @@ void FrameBufferToRDRAM::CopyToRDRAM(u32 _address)
 		return;
 	}
 
+#ifndef GLES2
 	_address = pBuffer->m_startAddress;
 	if (config.video.multisampling != 0) {
 		pBuffer->resolveMultisampledTexture();
@@ -1006,14 +1010,12 @@ void FrameBufferToRDRAM::CopyToRDRAM(u32 _address)
 #endif
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
 	gDP.changed |= CHANGED_SCISSOR;
-}
 #endif // GLES2
+}
 
 void FrameBuffer_CopyToRDRAM(u32 _address)
 {
-#ifndef GLES2
 	g_fbToRDRAM.CopyToRDRAM(_address);
-#endif
 }
 
 #ifndef GLES2
