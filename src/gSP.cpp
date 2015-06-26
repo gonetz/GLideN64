@@ -560,8 +560,11 @@ void gSPProcessVertex(u32 v)
 	float vPos[3] = {(float)vtx.x, (float)vtx.y, (float)vtx.z};
 	gSPTransformVertex( &vtx.x, gSP.matrix.combined );
 
-	if (ogl.isAdjustScreen() && (gDP.colorImage.width > VI.width * 98 / 100))
-			vtx.x *= ogl.getAdjustScale();
+	if (ogl.isAdjustScreen() && (gDP.colorImage.width > VI.width * 98 / 100)) {
+		vtx.x *= ogl.getAdjustScale();
+		if (gSP.matrix.projection[3][2] == -1.f)
+			vtx.w *= ogl.getAdjustScale();
+	}
 
 	if (gSP.viewport.vscale[0] < 0)
 		vtx.x = -vtx.x;
