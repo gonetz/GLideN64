@@ -3,12 +3,6 @@
 #include <math.h>
 #include <time.h>       /* time_t, struct tm, difftime, time, mktime */
 
-//// paulscode, added for SDL linkage:
-#if defined(GLESX)
-#include "ae_bridge.h"
-#endif // GLESX
-////
-
 #include "Types.h"
 #include "GLideN64.h"
 #include "OpenGL.h"

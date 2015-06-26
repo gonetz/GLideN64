@@ -11,7 +11,6 @@
 
 #ifdef GLES2
 #include <GLES2/gl2.h>
-#include <GLES2/gl2ext.h>
 #define GL_DRAW_FRAMEBUFFER GL_FRAMEBUFFER
 #define GL_READ_FRAMEBUFFER GL_FRAMEBUFFER
 #define GLESX
@@ -20,12 +19,10 @@ typedef char GLchar;
 #endif
 #elif defined(GLES3)
 #include <GLES3/gl3.h>
-#include <GLES3/gl3ext.h>
 #define GLESX
 #define GL_UNIFORMBLOCK_SUPPORT
 #elif defined(GLES3_1)
 #include <GLES3/gl31.h>
-#include <GLES3/gl3ext.h>
 #define GLESX
 #define GL_IMAGE_TEXTURES_SUPPORT
 #define GL_MULTISAMPLING_SUPPORT
