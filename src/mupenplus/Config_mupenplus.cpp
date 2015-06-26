@@ -6,6 +6,7 @@
 
 #include "../Config.h"
 #include "../GLideN64.h"
+#include "../OpenGL.h"
 #include "../GBI.h"
 #include "../RSP.h"
 #include "../Log.h"
@@ -156,7 +157,11 @@ void Config_LoadConfig()
 	config.video.windowedHeight = ConfigGetParamInt(g_configVideoGeneral, "ScreenHeight");
 	config.video.verticalSync = ConfigGetParamBool(g_configVideoGeneral, "VerticalSync");
 
+#ifdef GL_MULTISAMPLING_SUPPORT
 	config.video.multisampling = ConfigGetParamInt(g_configVideoGliden64, "MultiSampling");
+#else
+	config.video.multisampling = 0;
+#endif
 	config.frameBufferEmulation.aspect = ConfigGetParamInt(g_configVideoGliden64, "AspectRatio");
 
 	//#Texture Settings
