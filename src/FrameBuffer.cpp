@@ -760,6 +760,7 @@ void FrameBufferList::renderBuffer(u32 _address)
 	pBuffer->m_pTexture->offsetT = (float)height;
 	textureCache().activateTexture(0, pBuffer->m_pTexture);
 	gSP.textureTile[0]->fuls = gSP.textureTile[0]->fult = 0.0f;
+	gSP.textureTile[0]->shifts = gSP.textureTile[0]->shiftt = 0;
 	currentCombiner()->updateTextureInfo(true);
 	CombinerInfo::get().updateParameters(OGLRender::rsTexRect);
 
