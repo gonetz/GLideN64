@@ -120,6 +120,7 @@ struct Config
 #define hack_legoRacers				(1<<7)  //LEGO racers course map
 #define hack_blastCorps				(1<<8)  //Blast Corps black polygons
 #define hack_ignoreVIHeightChange	(1<<9)  //Do not reset FBO when VI height is changed. Space Invaders need it.
+#define hack_VIUpdateOnCIChange		(1<<10) //Update frame if color buffer changed. Needed for Quake II underwater.
 
 extern Config config;
 

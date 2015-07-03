@@ -110,7 +110,7 @@ void VI_UpdateScreen()
 
 	if (config.frameBufferEmulation.enable) {
 		const bool bCFB = (gDP.changed&CHANGED_CPU_FB_WRITE) == CHANGED_CPU_FB_WRITE;
-		const bool bNeedUpdate = gDP.colorImage.changed != 0 || (bCFB ? true : (*REG.VI_ORIGIN != VI.lastOrigin));
+		const bool bNeedUpdate = (bCFB ? true : (*REG.VI_ORIGIN != VI.lastOrigin)) || ((config.generalEmulation.hacks & hack_VIUpdateOnCIChange) != 0 && gDP.colorImage.changed != 0);
 
 		if (bNeedUpdate) {
 			if (bCFB) {

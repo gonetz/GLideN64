@@ -330,6 +330,8 @@ void RSP_Init()
 		config.generalEmulation.hacks |= hack_blastCorps;
 	else if (strstr(RSP.romname, (const char *)"SPACE INVADERS") != NULL)
 		config.generalEmulation.hacks |= hack_ignoreVIHeightChange;
+	else if (strstr(RSP.romname, (const char *)"QUAKE II") != NULL)
+		config.generalEmulation.hacks |= hack_VIUpdateOnCIChange;
 
 	api().FindPluginPath(RSP.pluginpath);
 
