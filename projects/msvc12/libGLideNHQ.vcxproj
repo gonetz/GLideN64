@@ -96,7 +96,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>..\..\src\inc;..\..\src\GLideNHQ\osal;..\..\src\GLideNHQ\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\src\inc;..\..\src\GLideNHQ\osal;..\..\..\GLideN64-win32-deps\zlib\include;..\..\..\GLideN64-win32-deps\libpng\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>Debug/</AssemblerListingLocation>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <CompileAs>CompileAsCpp</CompileAs>
@@ -128,12 +128,12 @@
       <AdditionalDependencies>libpngd.lib;zlibd.lib</AdditionalDependencies>
     </Lib>
     <Lib>
-      <AdditionalLibraryDirectories>../../src/GLideNHQ/lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\..\..\GLideN64-win32-deps\libpng\lib;..\..\..\GLideN64-win32-deps\zlib\lib</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>..\..\src\inc;..\..\src\GLideNHQ\osal;..\..\src\GLideNHQ\inc;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\src\inc;..\..\src\GLideNHQ\osal;..\..\..\GLideN64-win32-deps\zlib\include;..\..\..\GLideN64-win32-deps\libpng\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>Release/</AssemblerListingLocation>
       <CompileAs>CompileAsCpp</CompileAs>
       <ExceptionHandling>Sync</ExceptionHandling>
@@ -163,7 +163,7 @@
     </Midl>
     <Lib>
       <AdditionalDependencies>libpng.lib;zlib.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>../../src/GLideNHQ/lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\..\..\GLideN64-win32-deps\libpng\lib;..\..\..\GLideN64-win32-deps\zlib\lib</AdditionalLibraryDirectories>
     </Lib>
     <Link>
       <AdditionalLibraryDirectories>%BOOST_ROOT%/lib32-msvc-12.0;../lib</AdditionalLibraryDirectories>
@@ -172,7 +172,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_dll|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>%USERPROFILE%\WS\GLideN64\GLideNHQ\inc;C:\Tools\boost\boost_1_57_0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\src\inc;..\..\src\GLideNHQ\osal;..\..\..\GLideN64-win32-deps\zlib\include;..\..\..\GLideN64-win32-deps\libpng\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>Release/</AssemblerListingLocation>
       <CompileAs>CompileAsCpp</CompileAs>
       <ExceptionHandling>Sync</ExceptionHandling>
@@ -205,13 +205,13 @@
       <AdditionalLibraryDirectories>%BOOST_ROOT%/lib32-msvc-12.0;../lib</AdditionalLibraryDirectories>
     </Lib>
     <Link>
-      <AdditionalLibraryDirectories>%BOOST_ROOT%/lib32-msvc-12.0;../lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>..\..\..\GLideN64-win32-deps\libpng\lib;..\..\..\GLideN64-win32-deps\zlib\lib</AdditionalLibraryDirectories>
       <AdditionalDependencies>libpng.lib;zlib.lib;libboost_filesystem-vc120-mt-s-1_57.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>C:\Users\Sergey\Glide64\GLideN64\GLideNHQ\inc;C:\Tools\boost\boost_1_57_0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\src\inc;..\..\src\GLideNHQ\osal;..\..\..\GLideN64-win32-deps\zlib\include;..\..\..\GLideN64-win32-deps\libpng\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>MinSizeRel/</AssemblerListingLocation>
       <CompileAs>CompileAsCpp</CompileAs>
       <ExceptionHandling>Sync</ExceptionHandling>
@@ -238,10 +238,13 @@
       <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
       <ProxyFileName>%(Filename)_p.c</ProxyFileName>
     </Midl>
+    <Lib>
+      <AdditionalLibraryDirectories>..\..\..\GLideN64-win32-deps\libpng\lib;..\..\..\GLideN64-win32-deps\zlib\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>C:\Users\Sergey\Glide64\GLideN64\GLideNHQ\inc;C:\Tools\boost\boost_1_57_0;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\src\inc;..\..\src\GLideNHQ\osal;..\..\..\GLideN64-win32-deps\zlib\include;..\..\..\GLideN64-win32-deps\libpng\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>RelWithDebInfo/</AssemblerListingLocation>
       <CompileAs>CompileAsCpp</CompileAs>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
@@ -267,6 +270,9 @@
       <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
       <ProxyFileName>%(Filename)_p.c</ProxyFileName>
     </Midl>
+    <Lib>
+      <AdditionalLibraryDirectories>..\..\..\GLideN64-win32-deps\libpng\lib;..\..\..\GLideN64-win32-deps\zlib\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\GLideNHQ\osal\osal_files_win32.c" />
