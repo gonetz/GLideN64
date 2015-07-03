@@ -318,6 +318,15 @@ void OGLRender::addTriangle(int _v0, int _v1, int _v2)
 			vtx.z = gDP.primDepth.z * vtx.w;
 		}
 	}
+
+#ifdef GLESX
+	if (GBI.isNoN() && gDP.otherMode.depthCompare == 0 && gDP.otherMode.depthUpdate == 0) {
+		for (u32 i = triangles.num - 3; i < triangles.num; ++i) {
+			SPVertex & vtx = triangles.vertices[triangles.elements[i]];
+			vtx.z = 0.0f;
+		}
+	}
+#endif
 }
 
 void OGLRender::_setBlendMode() const
