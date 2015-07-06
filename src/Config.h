@@ -45,6 +45,11 @@ struct Config
 		u32 enableHWLighting;
 		u32 enableCustomSettings;
 		u32 hacks;
+#ifdef ANDROID
+		u32 forcePolygonOffset;
+		f32 polygonOffsetFactor;
+		f32 polygonOffsetUnits;
+#endif
 	} generalEmulation;
 
 	enum Aspect {

@@ -35,6 +35,11 @@ void Config::resetToDefaults()
 	generalEmulation.enableHWLighting = 0;
 	generalEmulation.enableCustomSettings = 1;
 	generalEmulation.hacks = 0;
+#ifdef ANDROID
+	generalEmulation.forcePolygonOffset = 0;
+	generalEmulation.polygonOffsetFactor = 0.0f;
+	generalEmulation.polygonOffsetUnits = 0.0f;
+#endif
 
 	frameBufferEmulation.enable = 1;
 	frameBufferEmulation.copyDepthToRDRAM = 1;
