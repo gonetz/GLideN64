@@ -1298,8 +1298,14 @@ void OGLRender::_initStates()
 		glDisable( GL_POLYGON_OFFSET_FILL );
 		glDepthFunc( GL_ALWAYS );
 		glDepthMask( FALSE );
-	} else
-		glPolygonOffset( -3.0f, -3.0f );
+	} else {
+#ifdef ANDROID
+		if(config.generalEmulation.forcePolygonOffset != 0)
+			glPolygonOffset(config.generalEmulation.polygonOffsetFactor, config.generalEmulation.polygonOffsetUnits);
+		else
+#endif
+			glPolygonOffset(-3.0f, -3.0f);
+	}
 
 	OGLVideo & ogl = video();
 	glViewport(0, ogl.getHeightOffset(), ogl.getScreenWidth(), ogl.getScreenHeight());

@@ -18,9 +18,11 @@ ptr_ConfigDeleteSection ConfigDeleteSection = NULL;
 ptr_ConfigSaveSection ConfigSaveSection = NULL;
 ptr_ConfigSaveFile ConfigSaveFile = NULL;
 ptr_ConfigSetDefaultInt    ConfigSetDefaultInt = NULL;
+ptr_ConfigSetDefaultFloat  ConfigSetDefaultFloat = NULL;
 ptr_ConfigSetDefaultBool   ConfigSetDefaultBool = NULL;
 ptr_ConfigSetDefaultString ConfigSetDefaultString = NULL;
 ptr_ConfigGetParamInt      ConfigGetParamInt = NULL;
+ptr_ConfigGetParamFloat    ConfigGetParamFloat = NULL;
 ptr_ConfigGetParamBool     ConfigGetParamBool = NULL;
 ptr_ConfigGetParamString   ConfigGetParamString = NULL;
 
@@ -51,9 +53,11 @@ m64p_error PluginAPI::PluginStartup(m64p_dynlib_handle _CoreLibHandle)
 	ConfigSaveSection = (ptr_ConfigSaveSection)DLSYM(_CoreLibHandle, "ConfigSaveSection");
 	ConfigSaveFile = (ptr_ConfigSaveFile)DLSYM(_CoreLibHandle, "ConfigSaveFile");
 	ConfigSetDefaultInt = (ptr_ConfigSetDefaultInt)DLSYM(_CoreLibHandle, "ConfigSetDefaultInt");
+	ConfigSetDefaultFloat = (ptr_ConfigSetDefaultFloat)DLSYM(_CoreLibHandle, "ConfigSetDefaultFloat");
 	ConfigSetDefaultBool = (ptr_ConfigSetDefaultBool)DLSYM(_CoreLibHandle, "ConfigSetDefaultBool");
 	ConfigSetDefaultString = (ptr_ConfigSetDefaultString)DLSYM(_CoreLibHandle, "ConfigSetDefaultString");
 	ConfigGetParamInt = (ptr_ConfigGetParamInt)DLSYM(_CoreLibHandle, "ConfigGetParamInt");
+	ConfigGetParamFloat = (ptr_ConfigGetParamFloat)DLSYM(_CoreLibHandle, "ConfigGetParamFloat");
 	ConfigGetParamBool = (ptr_ConfigGetParamBool)DLSYM(_CoreLibHandle, "ConfigGetParamBool");
 	ConfigGetParamString = (ptr_ConfigGetParamString)DLSYM(_CoreLibHandle, "ConfigGetParamString");
 
