@@ -882,6 +882,8 @@ void gDPFullSync()
 {
 	if (config.frameBufferEmulation.copyToRDRAM)
 		FrameBuffer_CopyToRDRAM(gDP.colorImage.address);
+	if (config.frameBufferEmulation.copyDepthToRDRAM)
+		FrameBuffer_CopyDepthBuffer(gDP.colorImage.address);
 
 	*REG.MI_INTR |= MI_INTR_DP;
 
