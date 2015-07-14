@@ -315,7 +315,8 @@ void RSP_Init()
 	else if (strstr(RSP.romname, (const char *)"Pilot Wings64") != NULL)
 		config.generalEmulation.hacks |= hack_pilotWings;
 	else if (strstr(RSP.romname, (const char *)"THE LEGEND OF ZELDA") != NULL ||
-		strstr(RSP.romname, (const char *)"ZELDA MASTER QUEST") != NULL
+		strstr(RSP.romname, (const char *)"ZELDA MASTER QUEST") != NULL ||
+		strstr(RSP.romname, (const char *)"DOUBUTSUNOMORI") != NULL
 		)
 		config.generalEmulation.hacks |= hack_subscreen;
 	else if (strstr(RSP.romname, (const char *)"LEGORacers") != NULL)
