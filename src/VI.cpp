@@ -94,9 +94,6 @@ void VI_UpdateScreen()
 	if (ConfigOpen)
 		return;
 
-	if (gDP.colorImage.changed)
-		VI.needRDRAMcopy = true;
-
 	OGLVideo & ogl = video();
 	if (ogl.changeWindow())
 		return;

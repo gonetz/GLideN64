@@ -9,7 +9,6 @@ struct VIInfo
 	u32 lastOrigin;
 	bool interlaced;
 	bool PAL;
-	bool needRDRAMcopy;
 
 	VIInfo() :
 		width(0), widthPrev(0), height(0), real_height(0),
