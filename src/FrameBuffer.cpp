@@ -187,7 +187,7 @@ void FrameBuffer::init(u32 _address, u32 _endAddress, u16 _format, u16 _size, u1
 	m_size = _size;
 	m_scaleX = ogl.getScaleX();
 	m_scaleY = ogl.getScaleY();
-	m_fillcolor = 0;
+	m_fillcolor = 0xd456;
 	m_cfb = _cfb;
 	m_needHeightCorrection = _width != VI.width && _width != *REG.VI_WIDTH;
 	m_cleared = false;
