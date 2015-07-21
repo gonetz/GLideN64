@@ -269,7 +269,7 @@ void FrameBuffer::copyRdram()
 			u32 start = m_startAddress >> 2;
 			u32 * pData = (u32*)RDRAM;
 			for (u32 i = 0; i < twoPercent; ++i)
-				pData[start++] = m_startAddress;
+				pData[start++] = m_fillcolor;
 		}
 	}
 
@@ -295,6 +295,20 @@ bool FrameBuffer::isValid() const
 		}
 		return wrongPixels < (m_endAddress - m_startAddress) / 400; // treshold level 1% of dwords
 	} else if (!m_RdramCopy.empty()) {
+		if (m_width != VI.width && config.frameBufferEmulation.validityCheckMethod == Config::vcFingerprint) {
+			// Auxiliary frame buffer
+			//check if our fingerprint is still there
+			const u32 stride = m_width << m_size >> 1;
+			const u32 height = _cutHeight(m_startAddress, m_height, stride);
+			const u32 dataSize = stride * height;
+			const u32 color = m_fillcolor & 0xFFFEFFFE;
+			const u32 twoPercent = dataSize / 200;;
+			u32 start = m_startAddress >> 2;
+			for (u32 i = 0; i < twoPercent; ++i)
+				if ((pData[start++] & 0xFFFEFFFE) != color)
+					return false;
+			return true;
+		}
 		const u32 * const pCopy = (const u32*)m_RdramCopy.data();
 		const u32 size = m_RdramCopy.size();
 		const u32 size_dwords = size >> 2;
