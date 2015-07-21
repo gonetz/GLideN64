@@ -265,11 +265,13 @@ void FrameBuffer::copyRdram()
 			// Thus content of RDRAM on moment of buffer creation will be the same as when buffer becomes obsolete.
 			// Validity check will see that the RDRAM is the same and thus the buffer is valid, which is false.
 			// It can be enough to write data just little more than treshold level, but more safe to write twice as much in case that some values in buffer match our fingerprint.
-			const u32 twoPercent = dataSize / 200;
-			u32 start = m_startAddress >> 2;
-			u32 * pData = (u32*)RDRAM;
-			for (u32 i = 0; i < twoPercent; ++i)
-				pData[start++] = m_fillcolor;
+			//if (dataSize > ) {
+			//todo: make sure buffer is bigger than the fingerprint
+				u32 start = m_startAddress >> 2;
+				u32 * pData = (u32*)RDRAM;
+				for (u32 i = 0; i < 4; ++i)
+					pData[start++] = fingerprint[i];
+			//}
 		}
 	}
 
@@ -301,11 +303,9 @@ bool FrameBuffer::isValid() const
 			const u32 stride = m_width << m_size >> 1;
 			const u32 height = _cutHeight(m_startAddress, m_height, stride);
 			const u32 dataSize = stride * height;
-			const u32 color = m_fillcolor & 0xFFFEFFFE;
-			const u32 twoPercent = dataSize / 200;;
 			u32 start = m_startAddress >> 2;
-			for (u32 i = 0; i < twoPercent; ++i)
-				if ((pData[start++] & 0xFFFEFFFE) != color)
+			for (u32 i = 0; i < 4; ++i)
+				if ((pData[start++] & 0xFFFEFFFE) != (fingerprint[i] & 0xFFFEFFFE))
 					return false;
 			return true;
 		}
