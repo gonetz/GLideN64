@@ -265,6 +265,9 @@ void FrameBuffer::copyRdram()
 			// Thus content of RDRAM on moment of buffer creation will be the same as when buffer becomes obsolete.
 			// Validity check will see that the RDRAM is the same and thus the buffer is valid, which is false.
 			// It can be enough to write data just little more than treshold level, but more safe to write twice as much in case that some values in buffer match our fingerprint.
+			FrameBuffer * pCurrentBuffer = frameBufferList().getCurrent();
+			if (pCurrentBuffer != NULL)
+				pCurrentBuffer->m_cleared = false;
 			const u32 twoPercent = dataSize / 200;
 			u32 start = m_startAddress >> 2;
 			u32 * pData = (u32*)RDRAM;
