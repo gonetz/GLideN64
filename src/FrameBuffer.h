@@ -9,6 +9,8 @@
 struct gDPTile;
 struct DepthBuffer;
 
+const int fingerprint[4] = { 2, 6, 4, 3 };
+
 struct FrameBuffer
 {
 	FrameBuffer();
