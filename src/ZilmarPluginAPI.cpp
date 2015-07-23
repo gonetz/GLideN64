@@ -8,6 +8,11 @@
 
 extern "C" {
 
+EXPORT void CALL RomOpen (void)
+{
+	api().RomOpen();
+}
+
 EXPORT void CALL CaptureScreen ( char * Directory )
 {
 	api().CaptureScreen(Directory);

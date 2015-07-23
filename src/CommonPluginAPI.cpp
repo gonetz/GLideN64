@@ -33,11 +33,6 @@ EXPORT void CALL RomClosed (void)
 	api().RomClosed();
 }
 
-EXPORT void CALL RomOpen (void)
-{
-	api().RomOpen();
-}
-
 EXPORT void CALL ShowCFB (void)
 {
 	api().ShowCFB();

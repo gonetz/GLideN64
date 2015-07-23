@@ -3,6 +3,12 @@
 
 extern "C" {
 
+EXPORT int CALL RomOpen(void)
+{
+	api().RomOpen();
+	return 1;
+}
+
 EXPORT m64p_error CALL PluginGetVersion(
 	m64p_plugin_type * _PluginType,
 	int * _PluginVersion,
