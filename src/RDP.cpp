@@ -7,6 +7,7 @@
 #include "GBI.h"
 #include "gDP.h"
 #include "gSP.h"
+#include "OpenGL.h"
 #include "Debug.h"
 
 void RDP_Unknown( u32 w0, u32 w1 )
@@ -552,7 +553,12 @@ inline u32 READ_RDP_DATA(u32 address)
 
 void RDP_ProcessRDPList()
 {
-	DebugMsg(DEBUG_HIGH | DEBUG_HANDLED, "ProcessRDPList()\n");
+	if (ConfigOpen || video().isResizeWindow()) {
+		dp_status &= ~0x0002;
+		dp_start = dp_current = dp_end;
+		gDPFullSync();
+		return;
+	}
 
 	const u32 length = dp_end - dp_current;
 

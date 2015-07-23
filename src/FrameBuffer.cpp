@@ -582,13 +582,11 @@ void FrameBuffer_Init()
 
 void FrameBuffer_Destroy()
 {
-	if (config.frameBufferEmulation.enable != 0) {
 	g_RDRAMtoFB.Destroy();
 #ifndef GLES2
 	g_dbToRDRAM.Destroy();
 	g_fbToRDRAM.Destroy();
 #endif
-	}
 	frameBufferList().destroy();
 }
 
@@ -1099,8 +1097,10 @@ void DepthBufferToRDRAM::Destroy() {
 		textureCache().removeFrameBufferTexture(m_pDepthTexture);
 		m_pDepthTexture = NULL;
 	}
-	glDeleteBuffers(1, &m_PBO);
-	m_PBO = 0;
+	if (m_PBO != 0) {
+		glDeleteBuffers(1, &m_PBO);
+		m_PBO = 0;
+	}
 }
 
 bool DepthBufferToRDRAM::CopyToRDRAM( u32 _address) {
@@ -1209,8 +1209,10 @@ void RDRAMtoFrameBuffer::Destroy()
 		m_pTexture = NULL;
 	}
 #ifndef GLES2
-	glDeleteBuffers(1, &m_PBO);
-	m_PBO = 0;
+	if (m_PBO != 0) {
+		glDeleteBuffers(1, &m_PBO);
+		m_PBO = 0;
+	}
 #endif
 }
 

@@ -137,7 +137,7 @@ void RSP_CheckDLCounter()
 
 void RSP_ProcessDList()
 {
-	if (ConfigOpen) {
+	if (ConfigOpen || video().isResizeWindow()) {
 		gDPFullSync();
 		return;
 	}
