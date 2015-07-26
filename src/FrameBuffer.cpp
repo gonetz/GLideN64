@@ -265,6 +265,9 @@ void FrameBuffer::copyRdram()
 			// Thus content of RDRAM on moment of buffer creation will be the same as when buffer becomes obsolete.
 			// Validity check will see that the RDRAM is the same and thus the buffer is valid, which is false.
 			// It can be enough to write data just little more than treshold level, but more safe to write twice as much in case that some values in buffer match our fingerprint.
+			FrameBuffer * pCurrentBuffer = frameBufferList().getCurrent();
+			if (pCurrentBuffer != NULL)
+				pCurrentBuffer->m_cleared = false;
 			const u32 twoPercent = dataSize / 200;
 			u32 start = m_startAddress >> 2;
 			u32 * pData = (u32*)RDRAM;
@@ -446,8 +449,8 @@ void FrameBufferList::saveBuffer(u32 _address, u16 _format, u16 _size, u16 _widt
 			if (m_pCurrent->m_width == VI.width)
 				gDP.colorImage.height = min(gDP.colorImage.height, VI.height);
 			m_pCurrent->m_endAddress = min(RDRAMSize, m_pCurrent->m_startAddress + (((m_pCurrent->m_width * gDP.colorImage.height) << m_pCurrent->m_size >> 1) - 1));
-			if (!config.frameBufferEmulation.copyFromRDRAM && !m_pCurrent->_isMarioTennisScoreboard() && !m_pCurrent->m_isDepthBuffer && !m_pCurrent->m_copiedToRdram && !m_pCurrent->m_cfb && !m_pCurrent->m_cleared && m_pCurrent->m_RdramCopy.empty() && gDP.colorImage.height > 1) {
-				m_pCurrent->copyRdram();
+			if (!m_pCurrent->_isMarioTennisScoreboard() && !m_pCurrent->m_isDepthBuffer && !m_pCurrent->m_copiedToRdram && !m_pCurrent->m_cfb && gDP.colorImage.height > 1) {
+			m_pCurrent->copyRdram();
 			}
 		}
 		m_pCurrent = _findBuffer(m_pCurrent->m_startAddress, m_pCurrent->m_endAddress, m_pCurrent->m_width);
