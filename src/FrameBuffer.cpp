@@ -257,6 +257,9 @@ void FrameBuffer::copyRdram()
 	if (m_width != VI.width) {
 		if (config.frameBufferEmulation.validityCheckMethod == Config::vcFill) {
 			gDPFillRDRAM(m_startAddress, 0, 0, m_width, height, m_width, m_size, m_fillcolor, false);
+
+			if (!m_RdramCopy.empty())
+				m_RdramCopy.clear();
 			return;
 		}
 		if (config.frameBufferEmulation.validityCheckMethod == Config::vcFingerprint) {
@@ -270,11 +273,19 @@ void FrameBuffer::copyRdram()
 			u32 * pData = (u32*)RDRAM;
 			for (u32 i = 0; i < twoPercent; ++i)
 				pData[start++] = m_startAddress;
+			m_cleared = false;
+
+			m_RdramCopy.resize(dataSize);
+			memcpy(m_RdramCopy.data(), RDRAM + m_startAddress, dataSize);
+			return;
 		}
 	}
 
-	m_RdramCopy.resize(dataSize);
-	memcpy(m_RdramCopy.data(), RDRAM + m_startAddress, dataSize);
+	if (!m_cleared && m_RdramCopy.empty())
+	{
+		m_RdramCopy.resize(dataSize);
+		memcpy(m_RdramCopy.data(), RDRAM + m_startAddress, dataSize);
+	}
 }
 
 bool FrameBuffer::isValid() const
@@ -446,7 +457,7 @@ void FrameBufferList::saveBuffer(u32 _address, u16 _format, u16 _size, u16 _widt
 			if (m_pCurrent->m_width == VI.width)
 				gDP.colorImage.height = min(gDP.colorImage.height, VI.height);
 			m_pCurrent->m_endAddress = min(RDRAMSize, m_pCurrent->m_startAddress + (((m_pCurrent->m_width * gDP.colorImage.height) << m_pCurrent->m_size >> 1) - 1));
-			if (!config.frameBufferEmulation.copyFromRDRAM && !m_pCurrent->_isMarioTennisScoreboard() && !m_pCurrent->m_isDepthBuffer && !m_pCurrent->m_copiedToRdram && !m_pCurrent->m_cfb && !m_pCurrent->m_cleared && m_pCurrent->m_RdramCopy.empty() && gDP.colorImage.height > 1) {
+			if (!m_pCurrent->_isMarioTennisScoreboard() && !m_pCurrent->m_isDepthBuffer && !m_pCurrent->m_copiedToRdram && !m_pCurrent->m_cfb && gDP.colorImage.height > 1) {
 				m_pCurrent->copyRdram();
 			}
 		}
