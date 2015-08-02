@@ -264,14 +264,18 @@ void FrameBuffer::copyRdram()
 			// This is necessary for auxilary buffers: game can restore content of RDRAM when buffer is not needed anymore
 			// Thus content of RDRAM on moment of buffer creation will be the same as when buffer becomes obsolete.
 			// Validity check will see that the RDRAM is the same and thus the buffer is valid, which is false.
-			// It can be enough to write data just little more than treshold level, but more safe to write twice as much in case that some values in buffer match our fingerprint.
-			//if (dataSize > ) {
-			//todo: make sure buffer is bigger than the fingerprint
-				u32 start = m_startAddress >> 2;
-				u32 * pData = (u32*)RDRAM;
-				for (u32 i = 0; i < 4; ++i)
+			const u32 twoPercent = dataSize / 200;
+			u32 start = m_startAddress >> 2;
+			u32 * pData = (u32*)RDRAM;
+			for (u32 i = 0; i < twoPercent; ++i)
+			{
+				if (i < 4)
 					pData[start++] = fingerprint[i];
-			//}
+				else
+					pData[start++] = 0;
+			}
+			m_cleared = false;
+			return;
 		}
 	}
 
@@ -296,8 +300,8 @@ bool FrameBuffer::isValid() const
 				++wrongPixels;
 		}
 		return wrongPixels < (m_endAddress - m_startAddress) / 400; // treshold level 1% of dwords
-	} else if (!m_RdramCopy.empty()) {
-		if (m_width != VI.width && config.frameBufferEmulation.validityCheckMethod == Config::vcFingerprint) {
+	}
+	else if (m_width != VI.width) {
 			// Auxiliary frame buffer
 			//check if our fingerprint is still there
 			const u32 stride = m_width << m_size >> 1;
@@ -308,7 +312,8 @@ bool FrameBuffer::isValid() const
 				if ((pData[start++] & 0xFFFEFFFE) != (fingerprint[i] & 0xFFFEFFFE))
 					return false;
 			return true;
-		}
+	}
+	else if (!m_RdramCopy.empty()) {
 		const u32 * const pCopy = (const u32*)m_RdramCopy.data();
 		const u32 size = m_RdramCopy.size();
 		const u32 size_dwords = size >> 2;
