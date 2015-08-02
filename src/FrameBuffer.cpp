@@ -89,7 +89,7 @@ DepthBufferToRDRAM g_dbToRDRAM;
 #endif
 RDRAMtoFrameBuffer g_RDRAMtoFB;
 
-FrameBuffer::FrameBuffer() : m_validityChecked(0), m_cleared(false), m_changed(false), m_isDepthBuffer(false),
+FrameBuffer::FrameBuffer() : m_validityChecked(0), m_cleared(false), m_fingerprint(false), m_changed(false), m_isDepthBuffer(false),
 	m_needHeightCorrection(false), m_postProcessed(false), m_pLoadTile(NULL), m_pDepthBuffer(NULL),
 	m_pResolveTexture(NULL), m_resolveFBO(0), m_copiedToRdram(false), m_resolved(false)
 {
@@ -191,6 +191,7 @@ void FrameBuffer::init(u32 _address, u32 _endAddress, u16 _format, u16 _size, u1
 	m_cfb = _cfb;
 	m_needHeightCorrection = _width != VI.width && _width != *REG.VI_WIDTH;
 	m_cleared = false;
+	m_fingerprint = false;
 
 	_initTexture(_format, _size, m_pTexture);
 	glBindFramebuffer(GL_FRAMEBUFFER, m_FBO);
@@ -275,6 +276,7 @@ void FrameBuffer::copyRdram()
 					pData[start++] = 0;
 			}
 			m_cleared = false;
+			m_fingerprint = true;
 			return;
 		}
 	}
@@ -301,8 +303,7 @@ bool FrameBuffer::isValid() const
 		}
 		return wrongPixels < (m_endAddress - m_startAddress) / 400; // treshold level 1% of dwords
 	}
-	else if (m_width != VI.width) {
-			// Auxiliary frame buffer
+	else if (m_fingerprint) {
 			//check if our fingerprint is still there
 			const u32 stride = m_width << m_size >> 1;
 			const u32 height = _cutHeight(m_startAddress, m_height, stride);
@@ -1177,7 +1178,10 @@ bool DepthBufferToRDRAM::CopyToRDRAM( u32 _address) {
 	pDepthBuffer->m_cleared = false;
 	pBuffer = frameBufferList().findBuffer(pDepthBuffer->m_address);
 	if (pBuffer != NULL)
+	{
 		pBuffer->m_cleared = false;
+		pBuffer->m_fingerprint = false;
+	}
 
 	glUnmapBuffer(GL_PIXEL_PACK_BUFFER);
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
