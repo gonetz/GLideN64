@@ -327,6 +327,8 @@ void RSP_Init()
 		config.generalEmulation.hacks |= hack_ignoreVIHeightChange;
 	else if (strstr(RSP.romname, (const char *)"QUAKE II") != NULL)
 		config.generalEmulation.hacks |= hack_VIUpdateOnCIChange;
+	else if (strstr(RSP.romname, (const char *)"DONKEY KONG") != NULL)
+		config.generalEmulation.hacks |= hack_DonkeyKong;
 
 	api().FindPluginPath(RSP.pluginpath);
 
