@@ -40,6 +40,7 @@ SpecialMicrocodeInfo specialMicrocodes[] =
 	{ F3DSWSE,	FALSE,	0x94c4c833, "RSP SW Version: 2.0D, 04-01-96" },
 	{ F3DEX,	TRUE,	0x637b4b58, "RSP SW Version: 2.0D, 04-01-96" },
 	{ F3D,		TRUE,	0x54c558ba, "RSP SW Version: 2.0D, 04-01-96" }, // Pilot Wings
+	{ F3D,		TRUE,	0x302bca09, "RSP SW Version: 2.0G, 09-30-96" }, // GoldenEye
 
 	{ S2DEX,	FALSE,	0x9df31081, "RSP Gfx ucode S2DEX  1.06 Yoshitaka Yasumoto Nintendo." },
 
