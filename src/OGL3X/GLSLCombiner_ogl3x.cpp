@@ -221,6 +221,10 @@ void InitShaderCombiner()
 
 	noiseTex.init();
 	g_monochrome_image_program = createShaderProgram(default_vertex_shader, zelda_monochrome_fragment_shader);
+	glUseProgram(g_monochrome_image_program);
+	const int texLoc = glGetUniformLocation(g_monochrome_image_program, "uColorImage");
+	glUniform1i(texLoc, 0);
+	glUseProgram(0);
 
 #ifdef GL_IMAGE_TEXTURES_SUPPORT
 	if (video().getRender().isImageTexturesSupported() && config.frameBufferEmulation.N64DepthCompare != 0)
@@ -765,11 +769,6 @@ void SetDepthFogCombiner()
 #endif // GL_IMAGE_TEXTURES_SUPPORT
 
 void SetMonochromeCombiner() {
-	static int texLoc = -1;
-	if (texLoc < 0) {
-		texLoc = glGetUniformLocation(g_monochrome_image_program, "uColorImage");
-		glUniform1i(texLoc, 0);
-	}
 	glUseProgram(g_monochrome_image_program);
 	gDP.changed |= CHANGED_COMBINE;
 }
