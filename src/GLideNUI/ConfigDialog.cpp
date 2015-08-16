@@ -45,7 +45,7 @@ static const char * cmbTexFilter_choices[numFilters] = {
 	"Sharp filtering 2"
 };
 
-static const unsigned int numEnhancements = 13U;
+static const unsigned int numEnhancements = 14U;
 static const char * cmbTexEnhancement_choices[numEnhancements] = {
 	"None",
 	"Store",
@@ -59,7 +59,8 @@ static const char * cmbTexEnhancement_choices[numEnhancements] = {
 	"2xBRZ",
 	"3xBRZ",
 	"4xBRZ",
-	"5xBRZ"
+	"5xBRZ",
+	"6xBRZ"
 };
 
 void ConfigDialog::_init()

@@ -1401,7 +1401,8 @@ u32 textureEnhancements[] = {
 	BRZ2X_ENHANCEMENT, //"2XBRZ"
 	BRZ3X_ENHANCEMENT, //"3XBRZ"
 	BRZ4X_ENHANCEMENT, //"4XBRZ"
-	BRZ5X_ENHANCEMENT  //"5XBRZ"
+	BRZ5X_ENHANCEMENT, //"5XBRZ"
+	BRZ6X_ENHANCEMENT  //"6XBRZ"
 };
 
 void displayLoadProgress(const wchar_t *format, ...)
