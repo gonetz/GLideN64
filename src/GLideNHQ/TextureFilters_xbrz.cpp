@@ -1,6 +1,6 @@
 // ****************************************************************************
 // * This file is part of the HqMAME project. It is distributed under         *
-// * GNU General Public License: http://www.gnu.org/licenses/gpl.html         *
+// * GNU General Public License: http://www.gnu.org/licenses/gpl-3.0          *
 // * Copyright (C) Zenju (zenju AT gmx DOT de) - All Rights Reserved          *
 // *                                                                          *
 // * Additionally and as a special exception, the author gives permission     *
@@ -16,41 +16,56 @@
 #include "TextureFilters_xbrz.h"
 #include <cassert>
 #include <algorithm>
+#include <vector>
 
 namespace
 {
 template <uint32_t N> inline
 unsigned char getByte(uint32_t val) { return static_cast<unsigned char>((val >> (8 * N)) & 0xff); }
 
-inline unsigned char getAlpha(uint32_t val) { return getByte<3>(val); }
-inline unsigned char getBlue (uint32_t val) { return getByte<2>(val); }
-inline unsigned char getGreen(uint32_t val) { return getByte<1>(val); }
-inline unsigned char getRed  (uint32_t val) { return getByte<0>(val); }
+inline unsigned char getAlpha(uint32_t pix) { return getByte<3>(pix); }
+inline unsigned char getBlue (uint32_t pix) { return getByte<2>(pix); }
+inline unsigned char getGreen(uint32_t pix) { return getByte<1>(pix); }
+inline unsigned char getRed  (uint32_t pix) { return getByte<0>(pix); }
 
 
-template <class T> inline
-T abs(T value)
+inline uint32_t makePixel(unsigned char b, unsigned char g, unsigned char r) { return             (b << 16) | (g << 8) | r; }
+inline uint32_t makePixel(unsigned char a, unsigned char b, unsigned char g, unsigned char r) { return (a << 24) | (b << 16) | (g << 8) | r; }
+
+
+template <unsigned int M, unsigned int N> inline
+uint32_t gradientBGR(uint32_t pixFront, uint32_t pixBack) //blend front color with opacity M / N over opaque background: http://en.wikipedia.org/wiki/Alpha_compositing#Alpha_blending
 {
-	static_assert(std::is_signed<T>::value, "abs() requires signed types");
-	return value < 0 ? -value : value;
+	static_assert(0 < M && M < N && N <= 1000, "");
+
+	auto calcColor = [](unsigned char colFront, unsigned char colBack) -> unsigned char { return (colFront * M + colBack * (N - M)) / N; };
+
+	return makePixel(calcColor(getBlue(pixFront), getBlue(pixBack)),
+		calcColor(getGreen(pixFront), getGreen(pixBack)),
+		calcColor(getRed(pixFront), getRed(pixBack)));
 }
 
 
 template <unsigned int M, unsigned int N> inline
-void alphaBlend(uint32_t& dst, uint32_t col) //blend color over destination with opacity M / N
+uint32_t gradientABGR(uint32_t pixFront, uint32_t pixBack) //find intermediate color between two colors with alpha channels (=> NO alpha blending!!!)
 {
-	static_assert(0 < M && M < N && N <= 256, "possible overflow of (col & byte1Mask) * M + (dst & byte1Mask) * (N - M)");
+	static_assert(0 < M && M < N && N <= 1000, "");
 
-	const uint32_t byte1Mask = 0x000000ff;
-	const uint32_t byte2Mask = 0x0000ff00;
-	const uint32_t byte3Mask = 0x00ff0000;
-	const uint32_t byte4Mask = 0xff000000;
+	const unsigned int weightFront = getAlpha(pixFront) * M;
+	const unsigned int weightBack = getAlpha(pixBack) * (N - M);
+	const unsigned int weightSum = weightFront + weightBack;
+	if (weightSum == 0)
+		return 0;
 
-	dst = (byte1Mask & (((col & byte1Mask) * M + (dst & byte1Mask) * (N - M)) / N)) | //
-		  (byte2Mask & (((col & byte2Mask) * M + (dst & byte2Mask) * (N - M)) / N)) | //this works because next higher 8 bits are free
-		  (byte3Mask & (((col & byte3Mask) * M + (dst & byte3Mask) * (N - M)) / N)) | //
-		  (byte4Mask & (((((col & byte4Mask) >> 8) * M + ((dst & byte4Mask) >> 8) * (N - M)) / N) << 8)); //next 8 bits are not free, so shift
-	//the last row operating on a potential alpha channel costs only ~1% perf => negligible!
+	auto calcColor = [=](unsigned char colFront, unsigned char colBack)
+	{
+		return static_cast<unsigned char>((colFront * weightFront + colBack * weightBack) / weightSum);
+	};
+
+	return makePixel(static_cast<unsigned char>(weightSum / N),
+		calcColor(getBlue(pixFront), getBlue(pixBack)),
+		calcColor(getGreen(pixFront), getGreen(pixBack)),
+		calcColor(getRed(pixFront), getRed(pixBack)));
 }
 
 
@@ -66,17 +81,8 @@ void alphaBlend(uint32_t& dst, uint32_t col) //blend color over destination with
 //
 
 
-//inline
-//uint32_t alphaBlend2(uint32_t pix1, uint32_t pix2, double alpha)
-//{
-//    return (redMask   & static_cast<uint32_t>((pix1 & redMask  ) * alpha + (pix2 & redMask  ) * (1 - alpha))) |
-//           (greenMask & static_cast<uint32_t>((pix1 & greenMask) * alpha + (pix2 & greenMask) * (1 - alpha))) |
-//           (blueMask  & static_cast<uint32_t>((pix1 & blueMask ) * alpha + (pix2 & blueMask ) * (1 - alpha)));
-//}
-
-
-uint32_t*       byteAdvance(      uint32_t* ptr, int bytes) { return reinterpret_cast<      uint32_t*>(reinterpret_cast<      char*>(ptr) + bytes); }
-const uint32_t* byteAdvance(const uint32_t* ptr, int bytes) { return reinterpret_cast<const uint32_t*>(reinterpret_cast<const char*>(ptr) + bytes); }
+uint32_t*       byteAdvance(uint32_t* ptr, int bytes) { return reinterpret_cast<      uint32_t*>(reinterpret_cast<      char*>(ptr)+bytes); }
+const uint32_t* byteAdvance(const uint32_t* ptr, int bytes) { return reinterpret_cast<const uint32_t*>(reinterpret_cast<const char*>(ptr)+bytes); }
 
 
 //fill block  with the given color
@@ -87,8 +93,8 @@ void fillBlock(uint32_t* trg, int pitch, uint32_t col, int blockWidth, int block
 	//    std::fill(trg, trg + blockWidth, col);
 
 	for (int y = 0; y < blockHeight; ++y, trg = byteAdvance(trg, pitch))
-		for (int x = 0; x < blockWidth; ++x)
-			trg[x] = col;
+	for (int x = 0; x < blockWidth; ++x)
+		trg[x] = col;
 }
 
 inline
@@ -127,7 +133,7 @@ template <RotationDegree rotDeg, size_t I, size_t J, size_t N> //(i, j) = (row, 
 struct MatrixRotation
 {
 	static const size_t I_old = N - 1 - MatrixRotation<static_cast<RotationDegree>(rotDeg - 1), I, J, N>::J_old; //old coordinates before rotation!
-	static const size_t J_old =         MatrixRotation<static_cast<RotationDegree>(rotDeg - 1), I, J, N>::I_old; //
+	static const size_t J_old = MatrixRotation<static_cast<RotationDegree>(rotDeg - 1), I, J, N>::I_old; //
 };
 
 
@@ -157,222 +163,16 @@ template <class T> inline
 T square(T value) { return value * value; }
 
 
-/*
-inline
-void rgbtoLuv(uint32_t c, double& L, double& u, double& v)
-{
-	//http://www.easyrgb.com/index.php?X=MATH&H=02#text2
-	double r = getRed  (c) / 255.0;
-	double g = getGreen(c) / 255.0;
-	double b = getBlue (c) / 255.0;
-
-	if ( r > 0.04045 )
-		r = std::pow(( ( r + 0.055 ) / 1.055 ) , 2.4);
-	else
-		r /= 12.92;
-	if ( g > 0.04045 )
-		g = std::pow(( ( g + 0.055 ) / 1.055 ) , 2.4);
-	else
-		g /=  12.92;
-	if ( b > 0.04045 )
-		b  = std::pow(( ( b + 0.055 ) / 1.055 ) , 2.4);
-	else
-		b /=  12.92;
-
-	r *= 100;
-	g *= 100;
-	b *= 100;
-
-	double x = 0.4124564 * r + 0.3575761 * g + 0.1804375 * b;
-	double y = 0.2126729 * r + 0.7151522 * g + 0.0721750 * b;
-	double z = 0.0193339 * r + 0.1191920 * g + 0.9503041 * b;
-	//---------------------
-	double var_U =  4 * x  / ( x +  15 * y  +  3 * z  );
-	double var_V =  9 * y  / ( x +  15 * y  +  3 * z  );
-	double var_Y = y / 100;
-
-	if ( var_Y > 0.008856 ) var_Y = std::pow(var_Y , 1.0/3 );
-	else                    var_Y =  7.787 * var_Y  +  16.0 / 116;
-
-	const double ref_X =  95.047;        //Observer= 2°, Illuminant= D65
-	const double ref_Y = 100.000;
-	const double ref_Z = 108.883;
-
-	const double ref_U = ( 4 * ref_X ) / ( ref_X + ( 15 * ref_Y ) + ( 3 * ref_Z ) );
-	const double ref_V = ( 9 * ref_Y ) / ( ref_X + ( 15 * ref_Y ) + ( 3 * ref_Z ) );
-
-	L = ( 116 * var_Y ) - 16;
-	u = 13 * L * ( var_U - ref_U );
-	v = 13 * L * ( var_V - ref_V );
-}
-*/
-
-inline
-void rgbtoLab(uint32_t c, unsigned char& L, signed char& A, signed char& B)
-{
-	//code: http://www.easyrgb.com/index.php?X=MATH
-	//test: http://www.workwithcolor.com/color-converter-01.htm
-	//------RGB to XYZ------
-	double r = getRed  (c) / 255.0;
-	double g = getGreen(c) / 255.0;
-	double b = getBlue (c) / 255.0;
-
-	r = r > 0.04045 ? std::pow(( r + 0.055 ) / 1.055, 2.4) : r / 12.92;
-	r = g > 0.04045 ? std::pow(( g + 0.055 ) / 1.055, 2.4) : g / 12.92;
-	r = b > 0.04045 ? std::pow(( b + 0.055 ) / 1.055, 2.4) : b / 12.92;
-
-	r *= 100;
-	g *= 100;
-	b *= 100;
-
-	double x = 0.4124564 * r + 0.3575761 * g + 0.1804375 * b;
-	double y = 0.2126729 * r + 0.7151522 * g + 0.0721750 * b;
-	double z = 0.0193339 * r + 0.1191920 * g + 0.9503041 * b;
-	//------XYZ to Lab------
-	const double refX = 95.047;  //
-	const double refY = 100.000; //Observer= 2°, Illuminant= D65
-	const double refZ = 108.883; //
-	double var_X = x / refX;
-	double var_Y = y / refY;
-	double var_Z = z / refZ;
-
-	var_X = var_X > 0.008856 ? std::pow(var_X, 1.0 / 3) : 7.787 * var_X + 4.0 / 29;
-	var_Y = var_Y > 0.008856 ? std::pow(var_Y, 1.0 / 3) : 7.787 * var_Y + 4.0 / 29;
-	var_Z = var_Z > 0.008856 ? std::pow(var_Z, 1.0 / 3) : 7.787 * var_Z + 4.0 / 29;
-
-	L = static_cast<unsigned char>(116 * var_Y  - 16);
-	A = static_cast<  signed char>(500 * (var_X - var_Y));
-	B = static_cast<  signed char>(200 * (var_Y - var_Z));
-};
-
-
-inline
-double distLAB(uint32_t pix1, uint32_t pix2)
-{
-	unsigned char L1 = 0; //[0, 100]
-	signed   char a1 = 0; //[-128, 127]
-	signed   char b1 = 0; //[-128, 127]
-	rgbtoLab(pix1, L1, a1, b1);
-
-	unsigned char L2 = 0;
-	signed   char a2 = 0;
-	signed   char b2 = 0;
-	rgbtoLab(pix2, L2, a2, b2);
-
-	//-----------------------------
-	//http://www.easyrgb.com/index.php?X=DELT
-
-	//Delta E/CIE76
-	return std::sqrt(square(1.0 * L1 - L2) +
-					 square(1.0 * a1 - a2) +
-					 square(1.0 * b1 - b2));
-}
-
-
-/*
-inline
-void rgbtoHsl(uint32_t c, double& h, double& s, double& l)
-{
-	//http://www.easyrgb.com/index.php?X=MATH&H=18#text18
-	const int r = getRed  (c);
-	const int g = getGreen(c);
-	const int b = getBlue (c);
-
-	const int varMin = numeric::min(r, g, b);
-	const int varMax = numeric::max(r, g, b);
-	const int delMax = varMax - varMin;
-
-	l = (varMax + varMin) / 2.0 / 255.0;
-
-	if (delMax == 0) //gray, no chroma...
-	{
-		h = 0;
-		s = 0;
-	}
-	else
-	{
-		s = l < 0.5 ?
-			delMax / (1.0 * varMax + varMin) :
-			delMax / (2.0 * 255 - varMax - varMin);
-
-		double delR = ((varMax - r) / 6.0 + delMax / 2.0) / delMax;
-		double delG = ((varMax - g) / 6.0 + delMax / 2.0) / delMax;
-		double delB = ((varMax - b) / 6.0 + delMax / 2.0) / delMax;
-
-		if (r == varMax)
-			h = delB - delG;
-		else if (g == varMax)
-			h = 1 / 3.0 + delR - delB;
-		else if (b == varMax)
-			h = 2 / 3.0 + delG - delR;
-
-		if (h < 0)
-			h += 1;
-		if (h > 1)
-			h -= 1;
-	}
-}
-
-inline
-double distHSL(uint32_t pix1, uint32_t pix2, double lightningWeight)
-{
-	double h1 = 0;
-	double s1 = 0;
-	double l1 = 0;
-	rgbtoHsl(pix1, h1, s1, l1);
-	double h2 = 0;
-	double s2 = 0;
-	double l2 = 0;
-	rgbtoHsl(pix2, h2, s2, l2);
-
-	//HSL is in cylindric coordinatates where L represents height, S radius, H angle,
-	//however we interpret the cylinder as a bi-conic solid with top/bottom radius 0, middle radius 1
-	assert(0 <= h1 && h1 <= 1);
-	assert(0 <= h2 && h2 <= 1);
-
-	double r1 = l1 < 0.5 ?
-				l1 * 2 :
-				2 - l1 * 2;
-
-	double x1 = r1 * s1 * std::cos(h1 * 2 * numeric::pi);
-	double y1 = r1 * s1 * std::sin(h1 * 2 * numeric::pi);
-	double z1 = l1;
-
-	double r2 = l2 < 0.5 ?
-				l2 * 2 :
-				2 - l2 * 2;
-
-	double x2 = r2 * s2 * std::cos(h2 * 2 * numeric::pi);
-	double y2 = r2 * s2 * std::sin(h2 * 2 * numeric::pi);
-	double z2 = l2;
-
-	return 255 * std::sqrt(square(x1 - x2) + square(y1 - y2) +  square(lightningWeight * (z1 - z2)));
-}
-*/
-
 
 inline
 double distRGB(uint32_t pix1, uint32_t pix2)
 {
-	const double r_diff = static_cast<int>(getRed  (pix1)) - getRed  (pix2);
+	const double r_diff = static_cast<int>(getRed(pix1)) - getRed(pix2);
 	const double g_diff = static_cast<int>(getGreen(pix1)) - getGreen(pix2);
-	const double b_diff = static_cast<int>(getBlue (pix1)) - getBlue (pix2);
+	const double b_diff = static_cast<int>(getBlue(pix1)) - getBlue(pix2);
 
 	//euklidean RGB distance
 	return std::sqrt(square(r_diff) + square(g_diff) + square(b_diff));
-}
-
-
-inline
-double distNonLinearRGB(uint32_t pix1, uint32_t pix2)
-{
-	//non-linear rgb: http://www.compuphase.com/cmetric.htm
-	const double r_diff = static_cast<int>(getRed  (pix1)) - getRed  (pix2);
-	const double g_diff = static_cast<int>(getGreen(pix1)) - getGreen(pix2);
-	const double b_diff = static_cast<int>(getBlue (pix1)) - getBlue (pix2);
-
-	const double r_avg = (static_cast<double>(getRed(pix1)) + getRed(pix2)) / 2;
-	return std::sqrt((2 + r_avg / 255) * square(r_diff) + 4 * square(g_diff) + (2 + (255 - r_avg) / 255) * square(b_diff));
 }
 
 
@@ -381,9 +181,9 @@ double distYCbCr(uint32_t pix1, uint32_t pix2, double lumaWeight)
 {
 	//http://en.wikipedia.org/wiki/YCbCr#ITU-R_BT.601_conversion
 	//YCbCr conversion is a matrix multiplication => take advantage of linearity by subtracting first!
-	const int r_diff = static_cast<int>(getRed  (pix1)) - getRed  (pix2); //we may delay division by 255 to after matrix multiplication
+	const int r_diff = static_cast<int>(getRed(pix1)) - getRed(pix2); //we may delay division by 255 to after matrix multiplication
 	const int g_diff = static_cast<int>(getGreen(pix1)) - getGreen(pix2); //
-	const int b_diff = static_cast<int>(getBlue (pix1)) - getBlue (pix2); //substraction for int is noticeable faster than for double!
+	const int b_diff = static_cast<int>(getBlue(pix1)) - getBlue(pix2); //substraction for int is noticeable faster than for double!
 
 	//const double k_b = 0.0722; //ITU-R BT.709 conversion
 	//const double k_r = 0.2126; //
@@ -394,66 +194,68 @@ double distYCbCr(uint32_t pix1, uint32_t pix2, double lumaWeight)
 	const double scale_b = 0.5 / (1 - k_b);
 	const double scale_r = 0.5 / (1 - k_r);
 
-	const double y   = k_r * r_diff + k_g * g_diff + k_b * b_diff; //[!], analog YCbCr!
+	const double y = k_r * r_diff + k_g * g_diff + k_b * b_diff; //[!], analog YCbCr!
 	const double c_b = scale_b * (b_diff - y);
 	const double c_r = scale_r * (r_diff - y);
 
 	//we skip division by 255 to have similar range like other distance functions
-	return std::sqrt(square(lumaWeight * y) + square(c_b) +  square(c_r));
+	return std::sqrt(square(lumaWeight * y) + square(c_b) + square(c_r));
 }
 
-
-inline
-double distYCbCrAlpha(uint32_t pix1, uint32_t pix2, double lumaWeight)
+struct DistYCbCrBuffer //30% perf boost compared to distYCbCr()!
 {
-	const double a1 = getAlpha(pix1) / 255.0 ;
-	const double a2 = getAlpha(pix2) / 255.0 ;
+public:
+	static double dist(uint32_t pix1, uint32_t pix2)
+	{
+//#if defined _MSC_VER && _MSC_VER < 1900
+//#error function scope static initialization is not yet thread-safe!
+//#endif
+		static const DistYCbCrBuffer inst;
+		return inst.distImpl(pix1, pix2);
+	}
 
-	/*
-	Requirements for a color distance handling alpha channel: with a1, a2 in [0, 1]
+private:
+	DistYCbCrBuffer() : buffer(256 * 256 * 256)
+	{
+		for (uint32_t i = 0; i < 256 * 256 * 256; ++i) //startup time: 114 ms on Intel Core i5 (four cores)
+		{
+			const int r_diff = getByte<2>(i) * 2 - 255;
+			const int g_diff = getByte<1>(i) * 2 - 255;
+			const int b_diff = getByte<0>(i) * 2 - 255;
 
-		1. if a1 = a2, distance should be: a1 * distYCbCr()
-		2. if a1 = 0,  distance should be: a2 * distYCbCr(black, white) = a2 * 255
-		3. if a1 = 1,  distance should be: 255 * (1 - a2) + a2 * distYCbCr()
-	*/
-	return std::min(a1, a2) * distYCbCr(pix1, pix2, lumaWeight) + 255 * abs(a1 - a2);
-}
+			const double k_b = 0.0593; //ITU-R BT.2020 conversion
+			const double k_r = 0.2627; //
+			const double k_g = 1 - k_b - k_r;
 
+			const double scale_b = 0.5 / (1 - k_b);
+			const double scale_r = 0.5 / (1 - k_r);
 
-inline
-double distYUV(uint32_t pix1, uint32_t pix2, double luminanceWeight)
-{
-	//perf: it's not worthwhile to buffer the YUV-conversion, the direct code is faster by ~ 6%
-	//since RGB -> YUV conversion is essentially a matrix multiplication, we can calculate the RGB diff before the conversion (distributive property)
-	const double r_diff = static_cast<int>(getRed  (pix1)) - getRed  (pix2);
-	const double g_diff = static_cast<int>(getGreen(pix1)) - getGreen(pix2);
-	const double b_diff = static_cast<int>(getBlue (pix1)) - getBlue (pix2);
+			const double y = k_r * r_diff + k_g * g_diff + k_b * b_diff; //[!], analog YCbCr!
+			const double c_b = scale_b * (b_diff - y);
+			const double c_r = scale_r * (r_diff - y);
 
-	//http://en.wikipedia.org/wiki/YUV#Conversion_to.2Ffrom_RGB
-	const double w_b = 0.114;
-	const double w_r = 0.299;
-	const double w_g = 1 - w_r - w_b;
+			buffer[i] = static_cast<float>(std::sqrt(square(y) + square(c_b) + square(c_r)));
+		}
+	}
 
-	const double u_max = 0.436;
-	const double v_max = 0.615;
+	double distImpl(uint32_t pix1, uint32_t pix2) const
+	{
+		//if (pix1 == pix2) -> 8% perf degradation!
+		//    return 0;
+		//if (pix1 > pix2)
+		//	  std::swap(pix1, pix2); -> 30% perf degradation!!!
 
-	const double scale_u = u_max / (1 - w_b);
-	const double scale_v = v_max / (1 - w_r);
+		const int r_diff = static_cast<int>(getRed(pix1)) - getRed(pix2);
+		const int g_diff = static_cast<int>(getGreen(pix1)) - getGreen(pix2);
+		const int b_diff = static_cast<int>(getBlue(pix1)) - getBlue(pix2);
 
-	double y = w_r * r_diff + w_g * g_diff + w_b * b_diff;//value range: 255 * [-1, 1]
-	double u = scale_u * (b_diff - y);					  //value range: 255 * 2 * u_max * [-1, 1]
-	double v = scale_v * (r_diff - y);					  //value range: 255 * 2 * v_max * [-1, 1]
+		return buffer[(((b_diff + 255) / 2) << 16) | //slightly reduce precision (division by 2) to squeeze value into single byte
+			(((g_diff + 255) / 2) << 8) |
+			((r_diff + 255) / 2)];
+	}
 
-#ifndef NDEBUG
-	const double eps = 0.5;
-#endif
-	assert(abs(y) <= 255 + eps);
-	assert(abs(u) <= 255 * 2 * u_max + eps);
-	assert(abs(v) <= 255 * 2 * v_max + eps);
-
-	return std::sqrt(square(luminanceWeight * y) + square(u) +  square(v));
-}
-
+	std::vector<float> buffer; //consumes 64 MB memory; using double is only 2% faster, but takes 128 MB
+};
 
 enum BlendType
 {
@@ -485,7 +287,7 @@ input kernel area naming convention:
 -----------------
 | A | B | C | D |
 ----|---|---|---|
-| E | F | G | H |   //evalute the four corners between F, G, J, K
+| E | F | G | H |   //evaluate the four corners between F, G, J, K
 ----|---|---|---|   //input pixel is at position F
 | I | J | K | L |
 ----|---|---|---|
@@ -499,12 +301,12 @@ BlendResult preProcessCorners(const Kernel_4x4& ker, const xbrz::ScalerCfg& cfg)
 	BlendResult result = {};
 
 	if ((ker.f == ker.g &&
-		 ker.j == ker.k) ||
+		ker.j == ker.k) ||
 		(ker.f == ker.j &&
-		 ker.g == ker.k))
+		ker.g == ker.k))
 		return result;
 
-	auto dist = [&](uint32_t pix1, uint32_t pix2) { return ColorDistance::dist(pix1, pix2, cfg.luminanceWeight_); };
+	auto dist = [&](uint32_t pix1, uint32_t pix2) { return ColorDistance::dist(pix1, pix2, cfg.luminanceWeight); };
 
 	const int weight = 4;
 	double jg = dist(ker.i, ker.f) + dist(ker.f, ker.c) + dist(ker.n, ker.k) + dist(ker.k, ker.h) + weight * dist(ker.j, ker.g);
@@ -534,9 +336,9 @@ BlendResult preProcessCorners(const Kernel_4x4& ker, const xbrz::ScalerCfg& cfg)
 struct Kernel_3x3
 {
 	uint32_t
-	/**/a,  b,  c,
-	/**/d,  e,  f,
-	/**/g,  h,  i;
+	/**/a, b, c,
+	/**/d, e, f,
+	/**/g, h, i;
 };
 
 #define DEF_GETTER(x) template <RotationDegree rotDeg> uint32_t inline get_##x(const Kernel_3x3& ker) { return ker.x; }
@@ -561,18 +363,18 @@ DEF_GETTER(g, c) DEF_GETTER(h, b) DEF_GETTER(i, a)
 #define DEF_GETTER(x, y) template <> inline uint32_t get_##x<ROT_270>(const Kernel_3x3& ker) { return ker.y; }
 DEF_GETTER(a, c) DEF_GETTER(b, f) DEF_GETTER(c, i)
 DEF_GETTER(d, b) DEF_GETTER(e, e) DEF_GETTER(f, h)
-DEF_GETTER(g, a) DEF_GETTER(h, d) DEF_GETTER(i,	g)
+DEF_GETTER(g, a) DEF_GETTER(h, d) DEF_GETTER(i, g)
 #undef DEF_GETTER
 
 
 //compress four blend types into a single byte
-inline BlendType getTopL   (unsigned char b) { return static_cast<BlendType>(0x3 & b); }
-inline BlendType getTopR   (unsigned char b) { return static_cast<BlendType>(0x3 & (b >> 2)); }
+inline BlendType getTopL(unsigned char b) { return static_cast<BlendType>(0x3 & b); }
+inline BlendType getTopR(unsigned char b) { return static_cast<BlendType>(0x3 & (b >> 2)); }
 inline BlendType getBottomR(unsigned char b) { return static_cast<BlendType>(0x3 & (b >> 4)); }
 inline BlendType getBottomL(unsigned char b) { return static_cast<BlendType>(0x3 & (b >> 6)); }
 
-inline void setTopL   (unsigned char& b, BlendType bt) { b |= bt; } //buffer is assumed to be initialized before preprocessing!
-inline void setTopR   (unsigned char& b, BlendType bt) { b |= (bt << 2); }
+inline void setTopL(unsigned char& b, BlendType bt) { b |= bt; } //buffer is assumed to be initialized before preprocessing!
+inline void setTopR(unsigned char& b, BlendType bt) { b |= (bt << 2); }
 inline void setBottomR(unsigned char& b, BlendType bt) { b |= (bt << 4); }
 inline void setBottomL(unsigned char& b, BlendType bt) { b |= (bt << 6); }
 
@@ -587,8 +389,8 @@ template <> inline unsigned char rotateBlendInfo<ROT_270>(unsigned char b) { ret
 
 #ifndef NDEBUG
 int debugPixelX = -1;
-int debugPixelY = 84;
-bool breakIntoDebugger = false;
+int debugPixelY = 12;
+__declspec(thread) bool breakIntoDebugger = false;
 #endif
 
 
@@ -604,10 +406,10 @@ input kernel area naming convention:
 */
 template <class Scaler, class ColorDistance, RotationDegree rotDeg>
 FORCE_INLINE //perf: quite worth it!
-void scalePixel(const Kernel_3x3& ker,
-				uint32_t* target, int trgWidth,
-				unsigned char blendInfo, //result of preprocessing all four corners of pixel "e"
-				const xbrz::ScalerCfg& cfg)
+void blendPixel(const Kernel_3x3& ker,
+uint32_t* target, int trgWidth,
+unsigned char blendInfo, //result of preprocessing all four corners of pixel "e"
+const xbrz::ScalerCfg& cfg)
 {
 #define a get_a<rotDeg>(ker)
 #define b get_b<rotDeg>(ker)
@@ -628,27 +430,8 @@ void scalePixel(const Kernel_3x3& ker,
 
 	if (getBottomR(blend) >= BLEND_NORMAL)
 	{
-#if __GNUC__ >= 5
-		#define eq(pix1, pix2) (ColorDistance::dist(pix1, pix2, cfg.luminanceWeight_) < cfg.equalColorTolerance_)
-		#define dist_(pix1, pix2) ColorDistance::dist(pix1, pix2, cfg.luminanceWeight_)
-		bool doLineBlend = true;
-			if (getBottomR(blend) >= BLEND_DOMINANT)
-				doLineBlend = true;
-			else
-			//make sure there is no second blending in an adjacent rotation for this pixel: handles insular pixels, mario eyes
-			if (getTopR(blend) != BLEND_NONE && !eq(e, g)) //but support double-blending for 90° corners
-				doLineBlend = false;
-			else
-			if (getBottomL(blend) != BLEND_NONE && !eq(e, c))
-				doLineBlend = false;
-
-			//no full blending for L-shapes; blend corner only (handles "mario mushroom eyes")
-			else
-			if (eq(g, h) &&  eq(h , i) && eq(i, f) && eq(f, c) && !eq(e, i))
-				doLineBlend = false;
-#else
-		auto eq   = [&](uint32_t pix1, uint32_t pix2) { return ColorDistance::dist(pix1, pix2, cfg.luminanceWeight_) < cfg.equalColorTolerance_; };
-		auto dist_ = [&](uint32_t pix1, uint32_t pix2) { return ColorDistance::dist(pix1, pix2, cfg.luminanceWeight_); };
+		auto eq = [&](uint32_t pix1, uint32_t pix2) { return ColorDistance::dist(pix1, pix2, cfg.luminanceWeight) < cfg.equalColorTolerance; };
+		auto dist = [&](uint32_t pix1, uint32_t pix2) { return ColorDistance::dist(pix1, pix2, cfg.luminanceWeight); };
 
 		const bool doLineBlend = [&]() -> bool
 		{
@@ -662,24 +445,23 @@ void scalePixel(const Kernel_3x3& ker,
 				return false;
 
 			//no full blending for L-shapes; blend corner only (handles "mario mushroom eyes")
-			if (eq(g, h) &&  eq(h , i) && eq(i, f) && eq(f, c) && !eq(e, i))
+			if (!eq(e, i) && eq(g, h) && eq(h, i) && eq(i, f) && eq(f, c))
 				return false;
 
 			return true;
 		}();
-#endif
 
-		const uint32_t px = dist_(e, f) <= dist_(e, h) ? f : h; //choose most similar color
+		const uint32_t px = dist(e, f) <= dist(e, h) ? f : h; //choose most similar color
 
 		OutputMatrix<Scaler::scale, rotDeg> out(target, trgWidth);
 
 		if (doLineBlend)
 		{
-			const double fg = dist_(f, g); //test sample: 70% of values max(fg, hc) / min(fg, hc) are between 1.1 and 3.7 with median being 1.9
-			const double hc = dist_(h, c); //
+			const double fg = dist(f, g); //test sample: 70% of values max(fg, hc) / min(fg, hc) are between 1.1 and 3.7 with median being 1.9
+			const double hc = dist(h, c); //
 
 			const bool haveShallowLine = cfg.steepDirectionThreshold * fg <= hc && e != g && d != g;
-			const bool haveSteepLine   = cfg.steepDirectionThreshold * hc <= fg && e != c && b != c;
+			const bool haveSteepLine = cfg.steepDirectionThreshold * hc <= fg && e != c && b != c;
 
 			if (haveShallowLine)
 			{
@@ -693,16 +475,12 @@ void scalePixel(const Kernel_3x3& ker,
 				if (haveSteepLine)
 					Scaler::blendLineSteep(px, out);
 				else
-					Scaler::blendLineDiagonal(px,out);
+					Scaler::blendLineDiagonal(px, out);
 			}
 		}
 		else
 			Scaler::blendCorner(px, out);
 	}
-#if __GNUC__ >= 5
-#undef eq
-#undef dist_
-#endif
 
 #undef a
 #undef b
@@ -720,7 +498,7 @@ template <class Scaler, class ColorDistance> //scaler policy: see "Scaler2x" ref
 void scaleImage(const uint32_t* src, uint32_t* trg, int srcWidth, int srcHeight, const xbrz::ScalerCfg& cfg, int yFirst, int yLast)
 {
 	yFirst = std::max(yFirst, 0);
-	yLast  = std::min(yLast, srcHeight);
+	yLast = std::min(yLast, srcHeight);
 	if (yFirst >= yLast || srcWidth <= 0)
 		return;
 
@@ -733,14 +511,14 @@ void scaleImage(const uint32_t* src, uint32_t* trg, int srcWidth, int srcHeight,
 	std::fill(preProcBuffer, preProcBuffer + bufferSize, 0);
 	static_assert(BLEND_NONE == 0, "");
 
-	//initialize preprocessing buffer for first row: detect upper left and right corner blending
+	//initialize preprocessing buffer for first row of current stripe: detect upper left and right corner blending
 	//this cannot be optimized for adjacent processing stripes; we must not allow for a memory race condition!
 	if (yFirst > 0)
 	{
 		const int y = yFirst - 1;
 
 		const uint32_t* s_m1 = src + srcWidth * std::max(y - 1, 0);
-		const uint32_t* s_0  = src + srcWidth * y; //center line
+		const uint32_t* s_0 = src + srcWidth * y; //center line
 		const uint32_t* s_p1 = src + srcWidth * std::min(y + 1, srcHeight - 1);
 		const uint32_t* s_p2 = src + srcWidth * std::min(y + 2, srcHeight - 1);
 
@@ -782,7 +560,7 @@ void scaleImage(const uint32_t* src, uint32_t* trg, int srcWidth, int srcHeight,
 			*/
 			setTopR(preProcBuffer[x], res.blend_j);
 
-			if (x + 1 < srcWidth)
+			if (x + 1 < bufferSize)
 				setTopL(preProcBuffer[x + 1], res.blend_k);
 		}
 	}
@@ -793,7 +571,7 @@ void scaleImage(const uint32_t* src, uint32_t* trg, int srcWidth, int srcHeight,
 		uint32_t* out = trg + Scaler::scale * y * trgWidth; //consider MT "striped" access
 
 		const uint32_t* s_m1 = src + srcWidth * std::max(y - 1, 0);
-		const uint32_t* s_0  = src + srcWidth * y; //center line
+		const uint32_t* s_0 = src + srcWidth * y; //center line
 		const uint32_t* s_p1 = src + srcWidth * std::min(y + 1, srcHeight - 1);
 		const uint32_t* s_p2 = src + srcWidth * std::min(y + 2, srcHeight - 1);
 
@@ -809,31 +587,32 @@ void scaleImage(const uint32_t* src, uint32_t* trg, int srcWidth, int srcHeight,
 			const int x_p1 = std::min(x + 1, srcWidth - 1);
 			const int x_p2 = std::min(x + 2, srcWidth - 1);
 
+			Kernel_4x4 ker4 = {}; //perf: initialization is negligible
+
+			ker4.a = s_m1[x_m1]; //read sequentially from memory as far as possible
+			ker4.b = s_m1[x];
+			ker4.c = s_m1[x_p1];
+			ker4.d = s_m1[x_p2];
+
+			ker4.e = s_0[x_m1];
+			ker4.f = s_0[x];
+			ker4.g = s_0[x_p1];
+			ker4.h = s_0[x_p2];
+
+			ker4.i = s_p1[x_m1];
+			ker4.j = s_p1[x];
+			ker4.k = s_p1[x_p1];
+			ker4.l = s_p1[x_p2];
+
+			ker4.m = s_p2[x_m1];
+			ker4.n = s_p2[x];
+			ker4.o = s_p2[x_p1];
+			ker4.p = s_p2[x_p2];
+
 			//evaluate the four corners on bottom-right of current pixel
 			unsigned char blend_xy = 0; //for current (x, y) position
 			{
-				Kernel_4x4 ker = {}; //perf: initialization is negligible
-				ker.a = s_m1[x_m1]; //read sequentially from memory as far as possible
-				ker.b = s_m1[x];
-				ker.c = s_m1[x_p1];
-				ker.d = s_m1[x_p2];
-
-				ker.e = s_0[x_m1];
-				ker.f = s_0[x];
-				ker.g = s_0[x_p1];
-				ker.h = s_0[x_p2];
-
-				ker.i = s_p1[x_m1];
-				ker.j = s_p1[x];
-				ker.k = s_p1[x_p1];
-				ker.l = s_p1[x_p2];
-
-				ker.m = s_p2[x_m1];
-				ker.n = s_p2[x];
-				ker.o = s_p2[x_p1];
-				ker.p = s_p2[x_p2];
-
-				const BlendResult res = preProcessCorners<ColorDistance>(ker, cfg);
+				const BlendResult res = preProcessCorners<ColorDistance>(ker4, cfg);
 				/*
 				preprocessing blend result:
 				---------
@@ -851,34 +630,34 @@ void scaleImage(const uint32_t* src, uint32_t* trg, int srcWidth, int srcHeight,
 				blend_xy1 = 0;
 				setTopL(blend_xy1, res.blend_k); //set 1st known corner for (x + 1, y + 1) and buffer for use on next column
 
-				if (x + 1 < srcWidth) //set 3rd known corner for (x + 1, y)
+				if (x + 1 < bufferSize) //set 3rd known corner for (x + 1, y)
 					setBottomL(preProcBuffer[x + 1], res.blend_g);
 			}
 
 			//fill block of size scale * scale with the given color
-			fillBlock(out, trgWidth * sizeof(uint32_t), s_0[x], Scaler::scale); //place *after* preprocessing step, to not overwrite the results while processing the the last pixel!
+			fillBlock(out, trgWidth * sizeof(uint32_t), ker4.f, Scaler::scale); //place *after* preprocessing step, to not overwrite the results while processing the the last pixel!
 
 			//blend four corners of current pixel
-			if (blendingNeeded(blend_xy)) //good 20% perf-improvement
+			if (blendingNeeded(blend_xy)) //good 5% perf-improvement
 			{
-				Kernel_3x3 ker = {}; //perf: initialization is negligible
+				Kernel_3x3 ker3 = {}; //perf: initialization is negligible
 
-				ker.a = s_m1[x_m1]; //read sequentially from memory as far as possible
-				ker.b = s_m1[x];
-				ker.c = s_m1[x_p1];
+				ker3.a = ker4.a;
+				ker3.b = ker4.b;
+				ker3.c = ker4.c;
 
-				ker.d = s_0[x_m1];
-				ker.e = s_0[x];
-				ker.f = s_0[x_p1];
+				ker3.d = ker4.e;
+				ker3.e = ker4.f;
+				ker3.f = ker4.g;
 
-				ker.g = s_p1[x_m1];
-				ker.h = s_p1[x];
-				ker.i = s_p1[x_p1];
+				ker3.g = ker4.i;
+				ker3.h = ker4.j;
+				ker3.i = ker4.k;
 
-				scalePixel<Scaler, ColorDistance, ROT_0  >(ker, out, trgWidth, blend_xy, cfg);
-				scalePixel<Scaler, ColorDistance, ROT_90 >(ker, out, trgWidth, blend_xy, cfg);
-				scalePixel<Scaler, ColorDistance, ROT_180>(ker, out, trgWidth, blend_xy, cfg);
-				scalePixel<Scaler, ColorDistance, ROT_270>(ker, out, trgWidth, blend_xy, cfg);
+				blendPixel<Scaler, ColorDistance, ROT_0  >(ker3, out, trgWidth, blend_xy, cfg);
+				blendPixel<Scaler, ColorDistance, ROT_90 >(ker3, out, trgWidth, blend_xy, cfg);
+				blendPixel<Scaler, ColorDistance, ROT_180>(ker3, out, trgWidth, blend_xy, cfg);
+				blendPixel<Scaler, ColorDistance, ROT_270>(ker3, out, trgWidth, blend_xy, cfg);
 			}
 		}
 	}
@@ -886,112 +665,127 @@ void scaleImage(const uint32_t* src, uint32_t* trg, int srcWidth, int srcHeight,
 
 //------------------------------------------------------------------------------------
 
-struct Scaler2x
+template <class ColorGradient>
+struct Scaler2x : public ColorGradient
 {
 	static const int scale = 2;
+
+	template <unsigned int M, unsigned int N> //bring template function into scope for GCC
+	static void alphaGrad(uint32_t& pixBack, uint32_t pixFront) { ColorGradient::template alphaGrad<M, N>(pixBack, pixFront); }
+
 
 	template <class OutputMatrix>
 	static void blendLineShallow(uint32_t col, OutputMatrix& out)
 	{
-		alphaBlend<1, 4>(out.template ref<scale - 1, 0>(), col);
-		alphaBlend<3, 4>(out.template ref<scale - 1, 1>(), col);
+		alphaGrad<1, 4>(out.template ref<scale - 1, 0>(), col);
+		alphaGrad<3, 4>(out.template ref<scale - 1, 1>(), col);
 	}
 
 	template <class OutputMatrix>
 	static void blendLineSteep(uint32_t col, OutputMatrix& out)
 	{
-		alphaBlend<1, 4>(out.template ref<0, scale - 1>(), col);
-		alphaBlend<3, 4>(out.template ref<1, scale - 1>(), col);
+		alphaGrad<1, 4>(out.template ref<0, scale - 1>(), col);
+		alphaGrad<3, 4>(out.template ref<1, scale - 1>(), col);
 	}
 
 	template <class OutputMatrix>
 	static void blendLineSteepAndShallow(uint32_t col, OutputMatrix& out)
 	{
-		alphaBlend<1, 4>(out.template ref<1, 0>(), col);
-		alphaBlend<1, 4>(out.template ref<0, 1>(), col);
-		alphaBlend<5, 6>(out.template ref<1, 1>(), col); //[!] fixes 7/8 used in xBR
+		alphaGrad<1, 4>(out.template ref<1, 0>(), col);
+		alphaGrad<1, 4>(out.template ref<0, 1>(), col);
+		alphaGrad<5, 6>(out.template ref<1, 1>(), col); //[!] fixes 7/8 used in xBR
 	}
 
 	template <class OutputMatrix>
 	static void blendLineDiagonal(uint32_t col, OutputMatrix& out)
 	{
-		alphaBlend<1, 2>(out.template ref<1, 1>(), col);
+		alphaGrad<1, 2>(out.template ref<1, 1>(), col);
 	}
 
 	template <class OutputMatrix>
 	static void blendCorner(uint32_t col, OutputMatrix& out)
 	{
 		//model a round corner
-		alphaBlend<21, 100>(out.template ref<1, 1>(), col); //exact: 1 - pi/4 = 0.2146018366
+		alphaGrad<21, 100>(out.template ref<1, 1>(), col); //exact: 1 - pi/4 = 0.2146018366
 	}
 };
 
 
-struct Scaler3x
+template <class ColorGradient>
+struct Scaler3x : public ColorGradient
 {
 	static const int scale = 3;
+
+	template <unsigned int M, unsigned int N> //bring template function into scope for GCC
+	static void alphaGrad(uint32_t& pixBack, uint32_t pixFront) { ColorGradient::template alphaGrad<M, N>(pixBack, pixFront); }
+
 
 	template <class OutputMatrix>
 	static void blendLineShallow(uint32_t col, OutputMatrix& out)
 	{
-		alphaBlend<1, 4>(out.template ref<scale - 1, 0>(), col);
-		alphaBlend<1, 4>(out.template ref<scale - 2, 2>(), col);
+		alphaGrad<1, 4>(out.template ref<scale - 1, 0>(), col);
+		alphaGrad<1, 4>(out.template ref<scale - 2, 2>(), col);
 
-		alphaBlend<3, 4>(out.template ref<scale - 1, 1>(), col);
+		alphaGrad<3, 4>(out.template ref<scale - 1, 1>(), col);
 		out.template ref<scale - 1, 2>() = col;
 	}
 
 	template <class OutputMatrix>
 	static void blendLineSteep(uint32_t col, OutputMatrix& out)
 	{
-		alphaBlend<1, 4>(out.template ref<0, scale - 1>(), col);
-		alphaBlend<1, 4>(out.template ref<2, scale - 2>(), col);
+		alphaGrad<1, 4>(out.template ref<0, scale - 1>(), col);
+		alphaGrad<1, 4>(out.template ref<2, scale - 2>(), col);
 
-		alphaBlend<3, 4>(out.template ref<1, scale - 1>(), col);
+		alphaGrad<3, 4>(out.template ref<1, scale - 1>(), col);
 		out.template ref<2, scale - 1>() = col;
 	}
 
 	template <class OutputMatrix>
 	static void blendLineSteepAndShallow(uint32_t col, OutputMatrix& out)
 	{
-		alphaBlend<1, 4>(out.template ref<2, 0>(), col);
-		alphaBlend<1, 4>(out.template ref<0, 2>(), col);
-		alphaBlend<3, 4>(out.template ref<2, 1>(), col);
-		alphaBlend<3, 4>(out.template ref<1, 2>(), col);
+		alphaGrad<1, 4>(out.template ref<2, 0>(), col);
+		alphaGrad<1, 4>(out.template ref<0, 2>(), col);
+		alphaGrad<3, 4>(out.template ref<2, 1>(), col);
+		alphaGrad<3, 4>(out.template ref<1, 2>(), col);
 		out.template ref<2, 2>() = col;
 	}
 
 	template <class OutputMatrix>
 	static void blendLineDiagonal(uint32_t col, OutputMatrix& out)
 	{
-		alphaBlend<1, 8>(out.template ref<1, 2>(), col);
-		alphaBlend<1, 8>(out.template ref<2, 1>(), col);
-		alphaBlend<7, 8>(out.template ref<2, 2>(), col);
+		alphaGrad<1, 8>(out.template ref<1, 2>(), col); //conflict with other rotations for this odd scale
+		alphaGrad<1, 8>(out.template ref<2, 1>(), col);
+		alphaGrad<7, 8>(out.template ref<2, 2>(), col); //
 	}
 
 	template <class OutputMatrix>
 	static void blendCorner(uint32_t col, OutputMatrix& out)
 	{
 		//model a round corner
-		alphaBlend<45, 100>(out.template ref<2, 2>(), col); //exact: 0.4545939598
-		//alphaBlend<14, 1000>(out.template ref<2, 1>(), col); //0.01413008627 -> negligible
-		//alphaBlend<14, 1000>(out.template ref<1, 2>(), col); //0.01413008627
+		alphaGrad<45, 100>(out.template ref<2, 2>(), col); //exact: 0.4545939598
+		//alphaGrad<7, 256>(out.template ref<2, 1>(), col); //0.02826017254 -> negligible + avoid conflicts with other rotations for this odd scale
+		//alphaGrad<7, 256>(out.template ref<1, 2>(), col); //0.02826017254
 	}
 };
 
 
-struct Scaler4x
+template <class ColorGradient>
+struct Scaler4x : public ColorGradient
 {
 	static const int scale = 4;
+
+	template <unsigned int M, unsigned int N> //bring template function into scope for GCC
+	static void alphaGrad(uint32_t& pixBack, uint32_t pixFront) { ColorGradient::template alphaGrad<M, N>(pixBack, pixFront); }
+
 
 	template <class OutputMatrix>
 	static void blendLineShallow(uint32_t col, OutputMatrix& out)
 	{
-		alphaBlend<1, 4>(out.template ref<scale - 1, 0>(), col);
-		alphaBlend<1, 4>(out.template ref<scale - 2, 2>(), col);
+		alphaGrad<1, 4>(out.template ref<scale - 1, 0>(), col);
+		alphaGrad<1, 4>(out.template ref<scale - 2, 2>(), col);
 
-		alphaBlend<3, 4>(out.template ref<scale - 1, 1>(), col);
-		alphaBlend<3, 4>(out.template ref<scale - 2, 3>(), col);
+		alphaGrad<3, 4>(out.template ref<scale - 1, 1>(), col);
+		alphaGrad<3, 4>(out.template ref<scale - 2, 3>(), col);
 
 		out.template ref<scale - 1, 2>() = col;
 		out.template ref<scale - 1, 3>() = col;
@@ -1000,11 +794,11 @@ struct Scaler4x
 	template <class OutputMatrix>
 	static void blendLineSteep(uint32_t col, OutputMatrix& out)
 	{
-		alphaBlend<1, 4>(out.template ref<0, scale - 1>(), col);
-		alphaBlend<1, 4>(out.template ref<2, scale - 2>(), col);
+		alphaGrad<1, 4>(out.template ref<0, scale - 1>(), col);
+		alphaGrad<1, 4>(out.template ref<2, scale - 2>(), col);
 
-		alphaBlend<3, 4>(out.template ref<1, scale - 1>(), col);
-		alphaBlend<3, 4>(out.template ref<3, scale - 2>(), col);
+		alphaGrad<3, 4>(out.template ref<1, scale - 1>(), col);
+		alphaGrad<3, 4>(out.template ref<3, scale - 2>(), col);
 
 		out.template ref<2, scale - 1>() = col;
 		out.template ref<3, scale - 1>() = col;
@@ -1013,19 +807,23 @@ struct Scaler4x
 	template <class OutputMatrix>
 	static void blendLineSteepAndShallow(uint32_t col, OutputMatrix& out)
 	{
-		alphaBlend<3, 4>(out.template ref<3, 1>(), col);
-		alphaBlend<3, 4>(out.template ref<1, 3>(), col);
-		alphaBlend<1, 4>(out.template ref<3, 0>(), col);
-		alphaBlend<1, 4>(out.template ref<0, 3>(), col);
-		alphaBlend<1, 3>(out.template ref<2, 2>(), col); //[!] fixes 1/4 used in xBR
-		out.template ref<3, 3>() = out.template ref<3, 2>() = out.template ref<2, 3>() = col;
+		alphaGrad<3, 4>(out.template ref<3, 1>(), col);
+		alphaGrad<3, 4>(out.template ref<1, 3>(), col);
+		alphaGrad<1, 4>(out.template ref<3, 0>(), col);
+		alphaGrad<1, 4>(out.template ref<0, 3>(), col);
+
+		alphaGrad<1, 3>(out.template ref<2, 2>(), col); //[!] fixes 1/4 used in xBR
+
+		out.template ref<3, 3>() = col;
+		out.template ref<3, 2>() = col;
+		out.template ref<2, 3>() = col;
 	}
 
 	template <class OutputMatrix>
 	static void blendLineDiagonal(uint32_t col, OutputMatrix& out)
 	{
-		alphaBlend<1, 2>(out.template ref<scale - 1, scale / 2    >(), col);
-		alphaBlend<1, 2>(out.template ref<scale - 2, scale / 2 + 1>(), col);
+		alphaGrad<1, 2>(out.template ref<scale - 1, scale / 2    >(), col);
+		alphaGrad<1, 2>(out.template ref<scale - 2, scale / 2 + 1>(), col);
 		out.template ref<scale - 1, scale - 1>() = col;
 	}
 
@@ -1033,26 +831,31 @@ struct Scaler4x
 	static void blendCorner(uint32_t col, OutputMatrix& out)
 	{
 		//model a round corner
-		alphaBlend<68, 100>(out.template ref<3, 3>(), col); //exact: 0.6848532563
-		alphaBlend< 9, 100>(out.template ref<3, 2>(), col); //0.08677704501
-		alphaBlend< 9, 100>(out.template ref<2, 3>(), col); //0.08677704501
+		alphaGrad<68, 100>(out.template ref<3, 3>(), col); //exact: 0.6848532563
+		alphaGrad< 9, 100>(out.template ref<3, 2>(), col); //0.08677704501
+		alphaGrad< 9, 100>(out.template ref<2, 3>(), col); //0.08677704501
 	}
 };
 
 
-struct Scaler5x
+template <class ColorGradient>
+struct Scaler5x : public ColorGradient
 {
 	static const int scale = 5;
+
+	template <unsigned int M, unsigned int N> //bring template function into scope for GCC
+	static void alphaGrad(uint32_t& pixBack, uint32_t pixFront) { ColorGradient::template alphaGrad<M, N>(pixBack, pixFront); }
+
 
 	template <class OutputMatrix>
 	static void blendLineShallow(uint32_t col, OutputMatrix& out)
 	{
-		alphaBlend<1, 4>(out.template ref<scale - 1, 0>(), col);
-		alphaBlend<1, 4>(out.template ref<scale - 2, 2>(), col);
-		alphaBlend<1, 4>(out.template ref<scale - 3, 4>(), col);
+		alphaGrad<1, 4>(out.template ref<scale - 1, 0>(), col);
+		alphaGrad<1, 4>(out.template ref<scale - 2, 2>(), col);
+		alphaGrad<1, 4>(out.template ref<scale - 3, 4>(), col);
 
-		alphaBlend<3, 4>(out.template ref<scale - 1, 1>(), col);
-		alphaBlend<3, 4>(out.template ref<scale - 2, 3>(), col);
+		alphaGrad<3, 4>(out.template ref<scale - 1, 1>(), col);
+		alphaGrad<3, 4>(out.template ref<scale - 2, 3>(), col);
 
 		out.template ref<scale - 1, 2>() = col;
 		out.template ref<scale - 1, 3>() = col;
@@ -1063,12 +866,12 @@ struct Scaler5x
 	template <class OutputMatrix>
 	static void blendLineSteep(uint32_t col, OutputMatrix& out)
 	{
-		alphaBlend<1, 4>(out.template ref<0, scale - 1>(), col);
-		alphaBlend<1, 4>(out.template ref<2, scale - 2>(), col);
-		alphaBlend<1, 4>(out.template ref<4, scale - 3>(), col);
+		alphaGrad<1, 4>(out.template ref<0, scale - 1>(), col);
+		alphaGrad<1, 4>(out.template ref<2, scale - 2>(), col);
+		alphaGrad<1, 4>(out.template ref<4, scale - 3>(), col);
 
-		alphaBlend<3, 4>(out.template ref<1, scale - 1>(), col);
-		alphaBlend<3, 4>(out.template ref<3, scale - 2>(), col);
+		alphaGrad<3, 4>(out.template ref<1, scale - 1>(), col);
+		alphaGrad<3, 4>(out.template ref<3, scale - 2>(), col);
 
 		out.template ref<2, scale - 1>() = col;
 		out.template ref<3, scale - 1>() = col;
@@ -1079,34 +882,33 @@ struct Scaler5x
 	template <class OutputMatrix>
 	static void blendLineSteepAndShallow(uint32_t col, OutputMatrix& out)
 	{
-		alphaBlend<1, 4>(out.template ref<0, scale - 1>(), col);
-		alphaBlend<1, 4>(out.template ref<2, scale - 2>(), col);
-		alphaBlend<3, 4>(out.template ref<1, scale - 1>(), col);
+		alphaGrad<1, 4>(out.template ref<0, scale - 1>(), col);
+		alphaGrad<1, 4>(out.template ref<2, scale - 2>(), col);
+		alphaGrad<3, 4>(out.template ref<1, scale - 1>(), col);
 
-		alphaBlend<1, 4>(out.template ref<scale - 1, 0>(), col);
-		alphaBlend<1, 4>(out.template ref<scale - 2, 2>(), col);
-		alphaBlend<3, 4>(out.template ref<scale - 1, 1>(), col);
+		alphaGrad<1, 4>(out.template ref<scale - 1, 0>(), col);
+		alphaGrad<1, 4>(out.template ref<scale - 2, 2>(), col);
+		alphaGrad<3, 4>(out.template ref<scale - 1, 1>(), col);
+
+		alphaGrad<2, 3>(out.template ref<3, 3>(), col);
 
 		out.template ref<2, scale - 1>() = col;
 		out.template ref<3, scale - 1>() = col;
+		out.template ref<4, scale - 1>() = col;
 
 		out.template ref<scale - 1, 2>() = col;
 		out.template ref<scale - 1, 3>() = col;
-
-		out.template ref<4, scale - 1>() = col;
-
-		alphaBlend<2, 3>(out.template ref<3, 3>(), col);
 	}
 
 	template <class OutputMatrix>
 	static void blendLineDiagonal(uint32_t col, OutputMatrix& out)
 	{
-		alphaBlend<1, 8>(out.template ref<scale - 1, scale / 2    >(), col);
-		alphaBlend<1, 8>(out.template ref<scale - 2, scale / 2 + 1>(), col);
-		alphaBlend<1, 8>(out.template ref<scale - 3, scale / 2 + 2>(), col);
+		alphaGrad<1, 8>(out.template ref<scale - 1, scale / 2    >(), col); //conflict with other rotations for this odd scale
+		alphaGrad<1, 8>(out.template ref<scale - 2, scale / 2 + 1>(), col);
+		alphaGrad<1, 8>(out.template ref<scale - 3, scale / 2 + 2>(), col); //
 
-		alphaBlend<7, 8>(out.template ref<4, 3>(), col);
-		alphaBlend<7, 8>(out.template ref<3, 4>(), col);
+		alphaGrad<7, 8>(out.template ref<4, 3>(), col);
+		alphaGrad<7, 8>(out.template ref<3, 4>(), col);
 
 		out.template ref<4, 4>() = col;
 	}
@@ -1115,66 +917,217 @@ struct Scaler5x
 	static void blendCorner(uint32_t col, OutputMatrix& out)
 	{
 		//model a round corner
-		alphaBlend<86, 100>(out.template ref<4, 4>(), col); //exact: 0.8631434088
-		alphaBlend<23, 100>(out.template ref<4, 3>(), col); //0.2306749731
-		alphaBlend<23, 100>(out.template ref<3, 4>(), col); //0.2306749731
-		//alphaBlend<8, 1000>(out.template ref<4, 2>(), col); //0.008384061834 -> negligible
-		//alphaBlend<8, 1000>(out.template ref<2, 4>(), col); //0.008384061834
+		alphaGrad<86, 100>(out.template ref<4, 4>(), col); //exact: 0.8631434088
+		alphaGrad<23, 100>(out.template ref<4, 3>(), col); //0.2306749731
+		alphaGrad<23, 100>(out.template ref<3, 4>(), col); //0.2306749731
+		//alphaGrad<1, 64>(out.template ref<4, 2>(), col); //0.01676812367 -> negligible + avoid conflicts with other rotations for this odd scale
+		//alphaGrad<1, 64>(out.template ref<2, 4>(), col); //0.01676812367
+	}
+};
+
+
+template <class ColorGradient>
+struct Scaler6x : public ColorGradient
+{
+	static const int scale = 6;
+
+	template <unsigned int M, unsigned int N> //bring template function into scope for GCC
+	static void alphaGrad(uint32_t& pixBack, uint32_t pixFront) { ColorGradient::template alphaGrad<M, N>(pixBack, pixFront); }
+
+
+	template <class OutputMatrix>
+	static void blendLineShallow(uint32_t col, OutputMatrix& out)
+	{
+		alphaGrad<1, 4>(out.template ref<scale - 1, 0>(), col);
+		alphaGrad<1, 4>(out.template ref<scale - 2, 2>(), col);
+		alphaGrad<1, 4>(out.template ref<scale - 3, 4>(), col);
+
+		alphaGrad<3, 4>(out.template ref<scale - 1, 1>(), col);
+		alphaGrad<3, 4>(out.template ref<scale - 2, 3>(), col);
+		alphaGrad<3, 4>(out.template ref<scale - 3, 5>(), col);
+
+		out.template ref<scale - 1, 2>() = col;
+		out.template ref<scale - 1, 3>() = col;
+		out.template ref<scale - 1, 4>() = col;
+		out.template ref<scale - 1, 5>() = col;
+
+		out.template ref<scale - 2, 4>() = col;
+		out.template ref<scale - 2, 5>() = col;
+	}
+
+	template <class OutputMatrix>
+	static void blendLineSteep(uint32_t col, OutputMatrix& out)
+	{
+		alphaGrad<1, 4>(out.template ref<0, scale - 1>(), col);
+		alphaGrad<1, 4>(out.template ref<2, scale - 2>(), col);
+		alphaGrad<1, 4>(out.template ref<4, scale - 3>(), col);
+
+		alphaGrad<3, 4>(out.template ref<1, scale - 1>(), col);
+		alphaGrad<3, 4>(out.template ref<3, scale - 2>(), col);
+		alphaGrad<3, 4>(out.template ref<5, scale - 3>(), col);
+
+		out.template ref<2, scale - 1>() = col;
+		out.template ref<3, scale - 1>() = col;
+		out.template ref<4, scale - 1>() = col;
+		out.template ref<5, scale - 1>() = col;
+
+		out.template ref<4, scale - 2>() = col;
+		out.template ref<5, scale - 2>() = col;
+	}
+
+	template <class OutputMatrix>
+	static void blendLineSteepAndShallow(uint32_t col, OutputMatrix& out)
+	{
+		alphaGrad<1, 4>(out.template ref<0, scale - 1>(), col);
+		alphaGrad<1, 4>(out.template ref<2, scale - 2>(), col);
+		alphaGrad<3, 4>(out.template ref<1, scale - 1>(), col);
+		alphaGrad<3, 4>(out.template ref<3, scale - 2>(), col);
+
+		alphaGrad<1, 4>(out.template ref<scale - 1, 0>(), col);
+		alphaGrad<1, 4>(out.template ref<scale - 2, 2>(), col);
+		alphaGrad<3, 4>(out.template ref<scale - 1, 1>(), col);
+		alphaGrad<3, 4>(out.template ref<scale - 2, 3>(), col);
+
+		out.template ref<2, scale - 1>() = col;
+		out.template ref<3, scale - 1>() = col;
+		out.template ref<4, scale - 1>() = col;
+		out.template ref<5, scale - 1>() = col;
+
+		out.template ref<4, scale - 2>() = col;
+		out.template ref<5, scale - 2>() = col;
+
+		out.template ref<scale - 1, 2>() = col;
+		out.template ref<scale - 1, 3>() = col;
+	}
+
+	template <class OutputMatrix>
+	static void blendLineDiagonal(uint32_t col, OutputMatrix& out)
+	{
+		alphaGrad<1, 2>(out.template ref<scale - 1, scale / 2    >(), col);
+		alphaGrad<1, 2>(out.template ref<scale - 2, scale / 2 + 1>(), col);
+		alphaGrad<1, 2>(out.template ref<scale - 3, scale / 2 + 2>(), col);
+
+		out.template ref<scale - 2, scale - 1>() = col;
+		out.template ref<scale - 1, scale - 1>() = col;
+		out.template ref<scale - 1, scale - 2>() = col;
+	}
+
+	template <class OutputMatrix>
+	static void blendCorner(uint32_t col, OutputMatrix& out)
+	{
+		//model a round corner
+		alphaGrad<97, 100>(out.template ref<5, 5>(), col); //exact: 0.9711013910
+		alphaGrad<42, 100>(out.template ref<4, 5>(), col); //0.4236372243
+		alphaGrad<42, 100>(out.template ref<5, 4>(), col); //0.4236372243
+		alphaGrad< 6, 100>(out.template ref<5, 3>(), col); //0.05652034508
+		alphaGrad< 6, 100>(out.template ref<3, 5>(), col); //0.05652034508
 	}
 };
 
 //------------------------------------------------------------------------------------
 
-struct ColorDistanceRGB
+struct ColorDistanceBGR
 {
 	static double dist(uint32_t pix1, uint32_t pix2, double luminanceWeight)
 	{
-		if (pix1 == pix2) //about 8% perf boost
-			return 0;
-		return distYCbCr(pix1, pix2, luminanceWeight);
+		return DistYCbCrBuffer::dist(pix1, pix2);
+
+		//if (pix1 == pix2) //about 4% perf boost
+		//    return 0;
+		//return distYCbCr(pix1, pix2, luminanceWeight);
 	}
 };
 
-struct ColorDistanceARGB
+struct ColorDistanceABGR
 {
 	static double dist(uint32_t pix1, uint32_t pix2, double luminanceWeight)
 	{
-		if (pix1 == pix2)
-			return 0;
-		return distYCbCrAlpha(pix1, pix2, luminanceWeight);
+		const double a1 = getAlpha(pix1) / 255.0;
+		const double a2 = getAlpha(pix2) / 255.0;
+		/*
+		Requirements for a color distance handling alpha channel: with a1, a2 in [0, 1]
+
+		1. if a1 = a2, distance should be: a1 * distYCbCr()
+		2. if a1 = 0,  distance should be: a2 * distYCbCr(black, white) = a2 * 255
+		3. if a1 = 1,  ??? maybe: 255 * (1 - a2) + a2 * distYCbCr()
+		*/
+
+		//return std::min(a1, a2) * DistYCbCrBuffer::dist(pix1, pix2) + 255 * abs(a1 - a2);
+		//=> following code is 15% faster:
+		const double d = DistYCbCrBuffer::dist(pix1, pix2);
+		if (a1 < a2)
+			return a1 * d + 255 * (a2 - a1);
+		else
+			return a2 * d + 255 * (a1 - a2);
+
+		//alternative? return std::sqrt(a1 * a2 * square(DistYCbCrBuffer::dist(pix1, pix2)) + square(255 * (a1 - a2)));
+	}
+};
+
+
+struct ColorGradientBGR
+{
+	template <unsigned int M, unsigned int N>
+	static void alphaGrad(uint32_t& pixBack, uint32_t pixFront)
+	{
+		pixBack = gradientBGR<M, N>(pixFront, pixBack);
+	}
+};
+
+struct ColorGradientABGR
+{
+	template <unsigned int M, unsigned int N>
+	static void alphaGrad(uint32_t& pixBack, uint32_t pixFront)
+	{
+		pixBack = gradientABGR<M, N>(pixFront, pixBack);
 	}
 };
 }
 
+void xbrz::init()
+{
+	static bool inited = false;
+	if (!inited) {
+		DistYCbCrBuffer::dist(0, 0);
+		inited = true;
+	}
+}
 
-void xbrz::xbrz_scale(size_t factor, const uint32_t* src, uint32_t* trg, int srcWidth, int srcHeight, ColorFormat colFmt, const xbrz::ScalerCfg& cfg, int yFirst, int yLast)
+void xbrz::scale(size_t factor, const uint32_t* src, uint32_t* trg, int srcWidth, int srcHeight, ColorFormat colFmt, const xbrz::ScalerCfg& cfg, int yFirst, int yLast)
 {
 	switch (colFmt)
 	{
-		case ColorFormat::ABGR:
-			switch (factor)
-			{
-				case 2:
-					return scaleImage<Scaler2x, ColorDistanceARGB>(src, trg, srcWidth, srcHeight, cfg, yFirst, yLast);
-				case 3:
-					return scaleImage<Scaler3x, ColorDistanceARGB>(src, trg, srcWidth, srcHeight, cfg, yFirst, yLast);
-				case 4:
-					return scaleImage<Scaler4x, ColorDistanceARGB>(src, trg, srcWidth, srcHeight, cfg, yFirst, yLast);
-				case 5:
-					return scaleImage<Scaler5x, ColorDistanceARGB>(src, trg, srcWidth, srcHeight, cfg, yFirst, yLast);
-			}
-		case ColorFormat::BGR:
-			switch (factor)
-			{
-				case 2:
-					return scaleImage<Scaler2x, ColorDistanceRGB>(src, trg, srcWidth, srcHeight, cfg, yFirst, yLast);
-				case 3:
-					return scaleImage<Scaler3x, ColorDistanceRGB>(src, trg, srcWidth, srcHeight, cfg, yFirst, yLast);
-				case 4:
-					return scaleImage<Scaler4x, ColorDistanceRGB>(src, trg, srcWidth, srcHeight, cfg, yFirst, yLast);
-				case 5:
-					return scaleImage<Scaler5x, ColorDistanceRGB>(src, trg, srcWidth, srcHeight, cfg, yFirst, yLast);
-			}
+	case ColorFormat::ABGR:
+		switch (factor)
+		{
+		case 2:
+			return scaleImage<Scaler2x<ColorGradientABGR>, ColorDistanceABGR>(src, trg, srcWidth, srcHeight, cfg, yFirst, yLast);
+		case 3:
+			return scaleImage<Scaler3x<ColorGradientABGR>, ColorDistanceABGR>(src, trg, srcWidth, srcHeight, cfg, yFirst, yLast);
+		case 4:
+			return scaleImage<Scaler4x<ColorGradientABGR>, ColorDistanceABGR>(src, trg, srcWidth, srcHeight, cfg, yFirst, yLast);
+		case 5:
+			return scaleImage<Scaler5x<ColorGradientABGR>, ColorDistanceABGR>(src, trg, srcWidth, srcHeight, cfg, yFirst, yLast);
+		case 6:
+			return scaleImage<Scaler6x<ColorGradientABGR>, ColorDistanceABGR>(src, trg, srcWidth, srcHeight, cfg, yFirst, yLast);
+		}
+		break;
+
+	case ColorFormat::BGR:
+		switch (factor)
+		{
+		case 2:
+			return scaleImage<Scaler2x<ColorGradientBGR>, ColorDistanceBGR>(src, trg, srcWidth, srcHeight, cfg, yFirst, yLast);
+		case 3:
+			return scaleImage<Scaler3x<ColorGradientBGR>, ColorDistanceBGR>(src, trg, srcWidth, srcHeight, cfg, yFirst, yLast);
+		case 4:
+			return scaleImage<Scaler4x<ColorGradientBGR>, ColorDistanceBGR>(src, trg, srcWidth, srcHeight, cfg, yFirst, yLast);
+		case 5:
+			return scaleImage<Scaler5x<ColorGradientBGR>, ColorDistanceBGR>(src, trg, srcWidth, srcHeight, cfg, yFirst, yLast);
+		case 6:
+			return scaleImage<Scaler6x<ColorGradientBGR>, ColorDistanceBGR>(src, trg, srcWidth, srcHeight, cfg, yFirst, yLast);
+		}
+		break;
 	}
 	assert(false);
 }
@@ -1184,11 +1137,11 @@ bool xbrz::equalColorTest(uint32_t col1, uint32_t col2, ColorFormat colFmt, doub
 {
 	switch (colFmt)
 	{
-		case ColorFormat::ABGR:
-			return ColorDistanceARGB::dist(col1, col2, luminanceWeight) < equalColorTolerance;
+	case ColorFormat::ABGR:
+		return ColorDistanceABGR::dist(col1, col2, luminanceWeight) < equalColorTolerance;
 
-		case ColorFormat::BGR:
-			return ColorDistanceRGB::dist(col1, col2, luminanceWeight) < equalColorTolerance;
+	case ColorFormat::BGR:
+		return ColorDistanceBGR::dist(col1, col2, luminanceWeight) < equalColorTolerance;
 	}
 	assert(false);
 	return false;
@@ -1196,10 +1149,10 @@ bool xbrz::equalColorTest(uint32_t col1, uint32_t col2, ColorFormat colFmt, doub
 
 
 void xbrz::nearestNeighborScale(const uint32_t* src, int srcWidth, int srcHeight, int srcPitch,
-								uint32_t* trg, int trgWidth, int trgHeight, int trgPitch,
-								SliceType st, int yFirst, int yLast)
+	uint32_t* trg, int trgWidth, int trgHeight, int trgPitch,
+	SliceType st, int yFirst, int yLast)
 {
-	if (srcPitch < srcWidth * static_cast<int>(sizeof(uint32_t))  ||
+	if (srcPitch < srcWidth * static_cast<int>(sizeof(uint32_t)) ||
 		trgPitch < trgWidth * static_cast<int>(sizeof(uint32_t)))
 	{
 		assert(false);
@@ -1208,60 +1161,60 @@ void xbrz::nearestNeighborScale(const uint32_t* src, int srcWidth, int srcHeight
 
 	switch (st)
 	{
-		case NN_SCALE_SLICE_SOURCE:
-			//nearest-neighbor (going over source image - fast for upscaling, since source is read only once
-			yFirst = std::max(yFirst, 0);
-			yLast  = std::min(yLast, srcHeight);
-			if (yFirst >= yLast || trgWidth <= 0 || trgHeight <= 0) return;
+	case NN_SCALE_SLICE_SOURCE:
+		//nearest-neighbor (going over source image - fast for upscaling, since source is read only once
+		yFirst = std::max(yFirst, 0);
+		yLast = std::min(yLast, srcHeight);
+		if (yFirst >= yLast || trgWidth <= 0 || trgHeight <= 0) return;
 
-			for (int y = yFirst; y < yLast; ++y)
+		for (int y = yFirst; y < yLast; ++y)
+		{
+			//mathematically: ySrc = floor(srcHeight * yTrg / trgHeight)
+			// => search for integers in: [ySrc, ySrc + 1) * trgHeight / srcHeight
+
+			//keep within for loop to support MT input slices!
+			const int yTrg_first = (y      * trgHeight + srcHeight - 1) / srcHeight; //=ceil(y * trgHeight / srcHeight)
+			const int yTrg_last = ((y + 1) * trgHeight + srcHeight - 1) / srcHeight; //=ceil(((y + 1) * trgHeight) / srcHeight)
+			const int blockHeight = yTrg_last - yTrg_first;
+
+			if (blockHeight > 0)
 			{
-				//mathematically: ySrc = floor(srcHeight * yTrg / trgHeight)
-				// => search for integers in: [ySrc, ySrc + 1) * trgHeight / srcHeight
+				const uint32_t* srcLine = byteAdvance(src, y * srcPitch);
+				uint32_t* trgLine = byteAdvance(trg, yTrg_first * trgPitch);
+				int xTrg_first = 0;
 
-				//keep within for loop to support MT input slices!
-				const int yTrg_first = ( y      * trgHeight + srcHeight - 1) / srcHeight; //=ceil(y * trgHeight / srcHeight)
-				const int yTrg_last  = ((y + 1) * trgHeight + srcHeight - 1) / srcHeight; //=ceil(((y + 1) * trgHeight) / srcHeight)
-				const int blockHeight = yTrg_last - yTrg_first;
-
-				if (blockHeight > 0)
+				for (int x = 0; x < srcWidth; ++x)
 				{
-					const uint32_t* srcLine = byteAdvance(src, y * srcPitch);
-					uint32_t* trgLine  = byteAdvance(trg, yTrg_first * trgPitch);
-					int xTrg_first = 0;
-
-					for (int x = 0; x < srcWidth; ++x)
+					int xTrg_last = ((x + 1) * trgWidth + srcWidth - 1) / srcWidth;
+					const int blockWidth = xTrg_last - xTrg_first;
+					if (blockWidth > 0)
 					{
-						int xTrg_last = ((x + 1) * trgWidth + srcWidth - 1) / srcWidth;
-						const int blockWidth = xTrg_last - xTrg_first;
-						if (blockWidth > 0)
-						{
-							xTrg_first = xTrg_last;
-							fillBlock(trgLine, trgPitch, srcLine[x], blockWidth, blockHeight);
-							trgLine += blockWidth;
-						}
+						xTrg_first = xTrg_last;
+						fillBlock(trgLine, trgPitch, srcLine[x], blockWidth, blockHeight);
+						trgLine += blockWidth;
 					}
 				}
 			}
-			break;
+		}
+		break;
 
-		case NN_SCALE_SLICE_TARGET:
-			//nearest-neighbor (going over target image - slow for upscaling, since source is read multiple times missing out on cache! Fast for similar image sizes!)
-			yFirst = std::max(yFirst, 0);
-			yLast  = std::min(yLast, trgHeight);
-			if (yFirst >= yLast || srcHeight <= 0 || srcWidth <= 0) return;
+	case NN_SCALE_SLICE_TARGET:
+		//nearest-neighbor (going over target image - slow for upscaling, since source is read multiple times missing out on cache! Fast for similar image sizes!)
+		yFirst = std::max(yFirst, 0);
+		yLast = std::min(yLast, trgHeight);
+		if (yFirst >= yLast || srcHeight <= 0 || srcWidth <= 0) return;
 
-			for (int y = yFirst; y < yLast; ++y)
+		for (int y = yFirst; y < yLast; ++y)
+		{
+			uint32_t* trgLine = byteAdvance(trg, y * trgPitch);
+			const int ySrc = srcHeight * y / trgHeight;
+			const uint32_t* srcLine = byteAdvance(src, ySrc * srcPitch);
+			for (int x = 0; x < trgWidth; ++x)
 			{
-				uint32_t* trgLine = byteAdvance(trg, y * trgPitch);
-				const int ySrc = srcHeight * y / trgHeight;
-				const uint32_t* srcLine = byteAdvance(src, ySrc * srcPitch);
-				for (int x = 0; x < trgWidth; ++x)
-				{
-					const int xSrc = srcWidth * x / trgWidth;
-					trgLine[x] = srcLine[xSrc];
-				}
+				const int xSrc = srcWidth * x / trgWidth;
+				trgLine[x] = srcLine[xSrc];
 			}
-			break;
+		}
+		break;
 	}
 }

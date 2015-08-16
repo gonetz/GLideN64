@@ -1,6 +1,6 @@
 // ****************************************************************************
 // * This file is part of the HqMAME project. It is distributed under         *
-// * GNU General Public License: http://www.gnu.org/licenses/gpl.html         *
+// * GNU General Public License: http://www.gnu.org/licenses/gpl-3.0          *
 // * Copyright (C) Zenju (zenju AT gmx DOT de) - All Rights Reserved          *
 // *                                                                          *
 // * Additionally and as a special exception, the author gives permission     *
@@ -11,6 +11,13 @@
 // * If you modify this file, you may extend this exception to your version   *
 // * of the file, but you are not obligated to do so. If you do not wish to   *
 // * do so, delete this exception statement from your version.                *
+// ****************************************************************************
+
+// ****************************************************************************
+// Minor modifications for GLideN64 project by Sergey Lipskiy (gonetz AT ngs DOT ru)
+// Changes: color formats changed from RGB/ARGB to BGR/ABGR
+//          added init() function.
+//          ScalerCfg moved to this file
 // ****************************************************************************
 
 #ifndef XBRZ_HEADER_3847894708239054
@@ -29,26 +36,21 @@ namespace xbrz
 using a modified approach of xBR:
 http://board.byuu.org/viewtopic.php?f=10&t=2248
 - new rule set preserving small image features
+- highly optimized for performance
 - support alpha channel
 - support multithreading
 - support 64-bit architectures
 - support processing image slices
+- support scaling up to 6xBRZ
 */
 
 struct ScalerCfg
 {
-	ScalerCfg() :
-		luminanceWeight_(1),
-		equalColorTolerance_(30),
-		dominantDirectionThreshold(3.6),
-		steepDirectionThreshold(2.2),
-		newTestAttribute_(0) {}
-
-	double luminanceWeight_;
-	double equalColorTolerance_;
-	double dominantDirectionThreshold;
-	double steepDirectionThreshold;
-	double newTestAttribute_; //unused; test new parameters
+    double luminanceWeight            = 1;
+    double equalColorTolerance        = 30;
+    double dominantDirectionThreshold = 3.6;
+    double steepDirectionThreshold    = 2.2;
+    double newTestAttribute           = 0; //unused; test new parameters
 };
 
 enum class ColorFormat //from high bits -> low bits, 8 bit per channel
@@ -56,6 +58,13 @@ enum class ColorFormat //from high bits -> low bits, 8 bit per channel
 	ABGR, //including alpha channel
 	BGR,  //8 bit for each red, green, blue, upper 8 bits unused
 };
+
+/*
+   Initialization of static members to avoid
+   #error function scope static initialization is not yet thread-safe!
+   with my compiler.
+*/
+void init();
 
 /*
 -> map source (srcWidth * srcHeight) to target (scale * width x scale * height) image, optionally processing a half-open slice of rows [yFirst, yLast) only
@@ -68,7 +77,7 @@ enum class ColorFormat //from high bits -> low bits, 8 bit per channel
 THREAD-SAFETY: - parts of the same image may be scaled by multiple threads as long as the [yFirst, yLast) ranges do not overlap!
 			   - there is a minor inefficiency for the first row of a slice, so avoid processing single rows only
 */
-void xbrz_scale(size_t factor, //valid range: 2 - 5
+void scale(size_t factor, //valid range: 2 - 6
 		   const uint32_t* src, uint32_t* trg, int srcWidth, int srcHeight,
 		   ColorFormat colFmt,
 		   const ScalerCfg& cfg = ScalerCfg(),

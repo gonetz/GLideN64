@@ -678,17 +678,20 @@ void SmoothFilter_4444(uint16 *src, uint32 srcwidth, uint32 srcheight, uint16 *d
 void filter_8888(uint32 *src, uint32 srcwidth, uint32 srcheight, uint32 *dest, uint32 filter) {
 	switch (filter & ENHANCEMENT_MASK) {
 	case BRZ2X_ENHANCEMENT:
-		xbrz::xbrz_scale(2, (const uint32_t *)const_cast<const uint32 *>(src), (uint32_t *)dest, srcwidth, srcheight, xbrz::ColorFormat::ABGR);
+		xbrz::scale(2, (const uint32_t *)const_cast<const uint32 *>(src), (uint32_t *)dest, srcwidth, srcheight, xbrz::ColorFormat::ABGR);
 	return;
 	case BRZ3X_ENHANCEMENT:
-		xbrz::xbrz_scale(3, (const uint32_t *)const_cast<const uint32 *>(src), (uint32_t *)dest, srcwidth, srcheight, xbrz::ColorFormat::ABGR);
+		xbrz::scale(3, (const uint32_t *)const_cast<const uint32 *>(src), (uint32_t *)dest, srcwidth, srcheight, xbrz::ColorFormat::ABGR);
 	return;
 	case BRZ4X_ENHANCEMENT:
-		xbrz::xbrz_scale(4, (const uint32_t *)const_cast<const uint32 *>(src), (uint32_t *)dest, srcwidth, srcheight, xbrz::ColorFormat::ABGR);
+		xbrz::scale(4, (const uint32_t *)const_cast<const uint32 *>(src), (uint32_t *)dest, srcwidth, srcheight, xbrz::ColorFormat::ABGR);
 	return;
 	case BRZ5X_ENHANCEMENT:
-		xbrz::xbrz_scale(5, (const uint32_t *)const_cast<const uint32 *>(src), (uint32_t *)dest, srcwidth, srcheight, xbrz::ColorFormat::ABGR);
+		xbrz::scale(5, (const uint32_t *)const_cast<const uint32 *>(src), (uint32_t *)dest, srcwidth, srcheight, xbrz::ColorFormat::ABGR);
 	return;
+	case BRZ6X_ENHANCEMENT:
+		xbrz::scale(6, (const uint32_t *)const_cast<const uint32 *>(src), (uint32_t *)dest, srcwidth, srcheight, xbrz::ColorFormat::ABGR);
+		return;
 	case HQ4X_ENHANCEMENT:
 		hq4x_8888((uint8*)src, (uint8*)dest, srcwidth, srcheight, srcwidth, (srcwidth << 4));
 	return;
