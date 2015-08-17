@@ -302,19 +302,14 @@ bool FrameBuffer::isValid() const
 				++wrongPixels;
 		}
 		return wrongPixels < (m_endAddress - m_startAddress) / 400; // treshold level 1% of dwords
-	}
-	else if (m_fingerprint) {
+	} else if (m_fingerprint) {
 			//check if our fingerprint is still there
-			const u32 stride = m_width << m_size >> 1;
-			const u32 height = _cutHeight(m_startAddress, m_height, stride);
-			const u32 dataSize = stride * height;
 			u32 start = m_startAddress >> 2;
 			for (u32 i = 0; i < 4; ++i)
 				if ((pData[start++] & 0xFFFEFFFE) != (fingerprint[i] & 0xFFFEFFFE))
 					return false;
 			return true;
-	}
-	else if (!m_RdramCopy.empty()) {
+	} else if (!m_RdramCopy.empty()) {
 		const u32 * const pCopy = (const u32*)m_RdramCopy.data();
 		const u32 size = m_RdramCopy.size();
 		const u32 size_dwords = size >> 2;
