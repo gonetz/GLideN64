@@ -31,7 +31,6 @@ void RSP_ThreadProc(std::mutex * _pRspThreadMtx, std::mutex * _pPluginThreadMtx,
 	GBI.init();
 	Config_LoadConfig();
 	video().start();
-	TFH.init();
 	assert(!isGLError());
 
 	while (true) {

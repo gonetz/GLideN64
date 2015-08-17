@@ -1349,6 +1349,8 @@ void OGLRender::_destroyData()
 	m_renderState = rsNone;
 	if (config.bloomFilter.enable != 0)
 		PostProcessor::get().destroy();
+	if (TFH.optionsChanged())
+		TFH.shutdown();
 	TextDrawer::get().destroy();
 	Combiner_Destroy();
 	FrameBuffer_Destroy();
@@ -1444,57 +1446,66 @@ void displayLoadProgress(const wchar_t *format, ...)
 		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, pBuffer->m_FBO);
 }
 
+u32 TextureFilterHandler::_getConfigOptions() const
+{
+	u32 options = textureFilters[config.textureFilter.txFilterMode] | textureEnhancements[config.textureFilter.txEnhancementMode];
+	if (config.textureFilter.txHiresEnable)
+		options |= RICE_HIRESTEXTURES;
+	if (config.textureFilter.txForce16bpp)
+		options |= FORCE16BPP_TEX | FORCE16BPP_HIRESTEX;
+	if (config.textureFilter.txCacheCompression)
+		options |= GZ_TEXCACHE | GZ_HIRESTEXCACHE;
+	if (config.textureFilter.txSaveCache)
+		options |= (DUMP_TEXCACHE | DUMP_HIRESTEXCACHE);
+	if (config.textureFilter.txHiresFullAlphaChannel)
+		options |= LET_TEXARTISTS_FLY;
+	if (config.textureFilter.txDump)
+		options |= DUMP_TEX;
+	return options;
+}
+
 void TextureFilterHandler::init()
 {
-	if (!isInited()) {
-		m_inited = config.textureFilter.txFilterMode | config.textureFilter.txEnhancementMode | config.textureFilter.txHiresEnable;
-		if (m_inited != 0) {
-			u32 options = textureFilters[config.textureFilter.txFilterMode] | textureEnhancements[config.textureFilter.txEnhancementMode];
-			if (config.textureFilter.txHiresEnable)
-				options |= RICE_HIRESTEXTURES;
-			if (config.textureFilter.txForce16bpp)
-				options |= FORCE16BPP_TEX | FORCE16BPP_HIRESTEX;
-			if (config.textureFilter.txCacheCompression)
-				options |= GZ_TEXCACHE | GZ_HIRESTEXCACHE;
-			if (config.textureFilter.txSaveCache)
-				options |= (DUMP_TEXCACHE | DUMP_HIRESTEXCACHE);
-			if (config.textureFilter.txHiresFullAlphaChannel)
-				options |= LET_TEXARTISTS_FLY;
-			if (config.textureFilter.txDump)
-				options |= DUMP_TEX;
+	if (isInited())
+		return;
 
-			GLint maxTextureSize;
-			glGetIntegerv(GL_MAX_TEXTURE_SIZE, &maxTextureSize);
-			wchar_t wRomName[32];
-			::mbstowcs(wRomName, RSP.romname, 32);
-			wchar_t txPath[PLUGIN_PATH_SIZE+16];
-			wchar_t * pTexPackPath = config.textureFilter.txPath;
-			if (::wcslen(config.textureFilter.txPath) == 0) {
-				api().GetUserDataPath(txPath);
-				gln_wcscat(txPath, wst("/hires_texture"));
-				pTexPackPath = txPath;
-			}
-			wchar_t txCachePath[PLUGIN_PATH_SIZE];
-			api().GetUserCachePath(txCachePath);
+	m_inited = config.textureFilter.txFilterMode | config.textureFilter.txEnhancementMode | config.textureFilter.txHiresEnable;
+	if (m_inited == 0)
+		return;
 
-			m_inited = txfilter_init(maxTextureSize, // max texture width supported by hardware
-				maxTextureSize, // max texture height supported by hardware
-				32, // max texture bpp supported by hardware
-				options,
-				config.textureFilter.txCacheSize, // cache texture to system memory
-				txCachePath, // path to store cache files
-				pTexPackPath, // path to texture packs folder
-				wRomName, // name of ROM. must be no longer than 256 characters
-				displayLoadProgress);
-		}
+	m_options = _getConfigOptions();
+
+	GLint maxTextureSize;
+	glGetIntegerv(GL_MAX_TEXTURE_SIZE, &maxTextureSize);
+	wchar_t wRomName[32];
+	::mbstowcs(wRomName, RSP.romname, 32);
+	wchar_t txPath[PLUGIN_PATH_SIZE + 16];
+	wchar_t * pTexPackPath = config.textureFilter.txPath;
+	if (::wcslen(config.textureFilter.txPath) == 0) {
+		api().GetUserDataPath(txPath);
+		gln_wcscat(txPath, wst("/hires_texture"));
+		pTexPackPath = txPath;
 	}
+	wchar_t txCachePath[PLUGIN_PATH_SIZE];
+	api().GetUserCachePath(txCachePath);
+
+	m_inited = txfilter_init(maxTextureSize, // max texture width supported by hardware
+		maxTextureSize, // max texture height supported by hardware
+		32, // max texture bpp supported by hardware
+		m_options,
+		config.textureFilter.txCacheSize, // cache texture to system memory
+		txCachePath, // path to store cache files
+		pTexPackPath, // path to texture packs folder
+		wRomName, // name of ROM. must be no longer than 256 characters
+		displayLoadProgress);
+
 }
 
 void TextureFilterHandler::shutdown()
 {
 	if (isInited()) {
 		txfilter_shutdown();
-		m_inited = 0;
+		m_inited = m_options = 0;
 	}
 }
 
