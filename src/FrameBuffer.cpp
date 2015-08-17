@@ -89,7 +89,7 @@ DepthBufferToRDRAM g_dbToRDRAM;
 #endif
 RDRAMtoFrameBuffer g_RDRAMtoFB;
 
-FrameBuffer::FrameBuffer() : m_validityChecked(0), m_cleared(false), m_changed(false), m_isDepthBuffer(false),
+FrameBuffer::FrameBuffer() : m_validityChecked(0), m_cleared(false), m_fingerprint(false), m_changed(false), m_isDepthBuffer(false),
 	m_needHeightCorrection(false), m_postProcessed(false), m_pLoadTile(NULL), m_pDepthBuffer(NULL),
 	m_pResolveTexture(NULL), m_resolveFBO(0), m_copiedToRdram(false), m_resolved(false)
 {
@@ -191,6 +191,7 @@ void FrameBuffer::init(u32 _address, u32 _endAddress, u16 _format, u16 _size, u1
 	m_cfb = _cfb;
 	m_needHeightCorrection = _width != VI.width && _width != *REG.VI_WIDTH;
 	m_cleared = false;
+	m_fingerprint = false;
 
 	_initTexture(_format, _size, m_pTexture);
 	glBindFramebuffer(GL_FRAMEBUFFER, m_FBO);
@@ -264,12 +265,19 @@ void FrameBuffer::copyRdram()
 			// This is necessary for auxilary buffers: game can restore content of RDRAM when buffer is not needed anymore
 			// Thus content of RDRAM on moment of buffer creation will be the same as when buffer becomes obsolete.
 			// Validity check will see that the RDRAM is the same and thus the buffer is valid, which is false.
-			// It can be enough to write data just little more than treshold level, but more safe to write twice as much in case that some values in buffer match our fingerprint.
 			const u32 twoPercent = dataSize / 200;
 			u32 start = m_startAddress >> 2;
 			u32 * pData = (u32*)RDRAM;
 			for (u32 i = 0; i < twoPercent; ++i)
-				pData[start++] = m_startAddress;
+			{
+				if (i < 4)
+					pData[start++] = fingerprint[i];
+				else
+					pData[start++] = 0;
+			}
+			m_cleared = false;
+			m_fingerprint = true;
+			return;
 		}
 	}
 
@@ -294,7 +302,19 @@ bool FrameBuffer::isValid() const
 				++wrongPixels;
 		}
 		return wrongPixels < (m_endAddress - m_startAddress) / 400; // treshold level 1% of dwords
-	} else if (!m_RdramCopy.empty()) {
+	}
+	else if (m_fingerprint) {
+			//check if our fingerprint is still there
+			const u32 stride = m_width << m_size >> 1;
+			const u32 height = _cutHeight(m_startAddress, m_height, stride);
+			const u32 dataSize = stride * height;
+			u32 start = m_startAddress >> 2;
+			for (u32 i = 0; i < 4; ++i)
+				if ((pData[start++] & 0xFFFEFFFE) != (fingerprint[i] & 0xFFFEFFFE))
+					return false;
+			return true;
+	}
+	else if (!m_RdramCopy.empty()) {
 		const u32 * const pCopy = (const u32*)m_RdramCopy.data();
 		const u32 size = m_RdramCopy.size();
 		const u32 size_dwords = size >> 2;
@@ -1158,7 +1178,10 @@ bool DepthBufferToRDRAM::CopyToRDRAM( u32 _address) {
 	pDepthBuffer->m_cleared = false;
 	pBuffer = frameBufferList().findBuffer(pDepthBuffer->m_address);
 	if (pBuffer != NULL)
+	{
 		pBuffer->m_cleared = false;
+		pBuffer->m_fingerprint = false;
+	}
 
 	glUnmapBuffer(GL_PIXEL_PACK_BUFFER);
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);

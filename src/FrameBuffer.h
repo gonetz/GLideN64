@@ -9,6 +9,8 @@
 struct gDPTile;
 struct DepthBuffer;
 
+const int fingerprint[4] = { 2, 6, 4, 3 };
+
 struct FrameBuffer
 {
 	FrameBuffer();
@@ -26,6 +28,7 @@ struct FrameBuffer
 	u32 m_size, m_width, m_height, m_fillcolor, m_validityChecked;
 	float m_scaleX, m_scaleY;
 	bool m_copiedToRdram;
+	bool m_fingerprint;
 	bool m_cleared;
 	bool m_changed;
 	bool m_cfb;
