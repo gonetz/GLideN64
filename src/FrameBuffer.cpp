@@ -100,7 +100,7 @@ FrameBuffer::FrameBuffer() : m_validityChecked(0), m_cleared(false), m_fingerpri
 FrameBuffer::FrameBuffer(FrameBuffer && _other) :
 	m_startAddress(_other.m_startAddress), m_endAddress(_other.m_endAddress),
 	m_size(_other.m_size), m_width(_other.m_width), m_height(_other.m_height), m_fillcolor(_other.m_fillcolor),
-	m_scaleX(_other.m_scaleX), m_scaleY(_other.m_scaleY), m_cleared(_other.m_cleared), m_changed(_other.m_changed), m_cfb(_other.m_cfb), m_isDepthBuffer(_other.m_isDepthBuffer),
+	m_scaleX(_other.m_scaleX), m_scaleY(_other.m_scaleY), m_cleared(_other.m_cleared), m_fingerprint(_other.m_fingerprint), m_changed(_other.m_changed), m_cfb(_other.m_cfb), m_isDepthBuffer(_other.m_isDepthBuffer),
 	m_copiedToRdram(_other.m_copiedToRdram), m_needHeightCorrection(_other.m_needHeightCorrection), m_postProcessed(_other.m_postProcessed), m_validityChecked(_other.m_validityChecked),
 	m_FBO(_other.m_FBO), m_pLoadTile(_other.m_pLoadTile), m_pTexture(_other.m_pTexture), m_pDepthBuffer(_other.m_pDepthBuffer),
 	m_pResolveTexture(_other.m_pResolveTexture), m_resolveFBO(_other.m_resolveFBO), m_resolved(_other.m_resolved), m_RdramCopy(_other.m_RdramCopy)
@@ -256,31 +256,23 @@ void FrameBuffer::copyRdram()
 
 	// Auxiliary frame buffer
 	if (m_width != VI.width) {
-		if (config.frameBufferEmulation.validityCheckMethod == Config::vcFill) {
-			gDPFillRDRAM(m_startAddress, 0, 0, m_width, height, m_width, m_size, m_fillcolor, false);
-			return;
+		// Write small amount of data to the start of the buffer.
+		// This is necessary for auxilary buffers: game can restore content of RDRAM when buffer is not needed anymore
+		// Thus content of RDRAM on moment of buffer creation will be the same as when buffer becomes obsolete.
+		// Validity check will see that the RDRAM is the same and thus the buffer is valid, which is false.
+		const u32 twoPercent = dataSize / 200;
+		u32 start = m_startAddress >> 2;
+		u32 * pData = (u32*)RDRAM;
+		for (u32 i = 0; i < twoPercent; ++i) {
+			if (i < 4)
+				pData[start++] = fingerprint[i];
+			else
+				pData[start++] = 0;
 		}
-		if (config.frameBufferEmulation.validityCheckMethod == Config::vcFingerprint) {
-			// Write small amount of data to the start of the buffer.
-			// This is necessary for auxilary buffers: game can restore content of RDRAM when buffer is not needed anymore
-			// Thus content of RDRAM on moment of buffer creation will be the same as when buffer becomes obsolete.
-			// Validity check will see that the RDRAM is the same and thus the buffer is valid, which is false.
-			const u32 twoPercent = dataSize / 200;
-			u32 start = m_startAddress >> 2;
-			u32 * pData = (u32*)RDRAM;
-			for (u32 i = 0; i < twoPercent; ++i)
-			{
-				if (i < 4)
-					pData[start++] = fingerprint[i];
-				else
-					pData[start++] = 0;
-			}
-			m_cleared = false;
-			m_fingerprint = true;
-			return;
-		}
+		m_cleared = false;
+		m_fingerprint = true;
+		return;
 	}
-
 	m_RdramCopy.resize(dataSize);
 	memcpy(m_RdramCopy.data(), RDRAM + m_startAddress, dataSize);
 }
@@ -1178,10 +1170,7 @@ bool DepthBufferToRDRAM::CopyToRDRAM( u32 _address) {
 	pDepthBuffer->m_cleared = false;
 	pBuffer = frameBufferList().findBuffer(pDepthBuffer->m_address);
 	if (pBuffer != NULL)
-	{
 		pBuffer->m_cleared = false;
-		pBuffer->m_fingerprint = false;
-	}
 
 	glUnmapBuffer(GL_PIXEL_PACK_BUFFER);
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
