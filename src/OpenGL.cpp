@@ -176,6 +176,7 @@ bool OGLVideo::resizeWindow()
 	m_render._destroyData();
 	if (!_resizeWindow())
 		_start();
+	updateScale();
 	m_render._initData();
 	m_bResizeWindow = false;
 	return true;
