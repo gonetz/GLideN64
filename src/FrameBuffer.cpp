@@ -452,7 +452,7 @@ FrameBuffer * FrameBufferList::findTmpBuffer(u32 _address)
 
 void FrameBufferList::saveBuffer(u32 _address, u16 _format, u16 _size, u16 _width, u16 _height, bool _cfb)
 {
-	if (VI.width == 0 || _height == 0)
+	if (VI.width == 0)
 		return;
 
 	OGLVideo & ogl = video();
