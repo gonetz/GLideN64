@@ -326,7 +326,9 @@ void RSP_Init()
 	else if (strstr(RSP.romname, (const char *)"SPACE INVADERS") != NULL)
 		config.generalEmulation.hacks |= hack_ignoreVIHeightChange;
 	else if (strstr(RSP.romname, (const char *)"QUAKE II") != NULL ||
-		strstr(RSP.romname, (const char *)"Quake") != NULL
+		strstr(RSP.romname, (const char *)"Quake") != NULL ||
+		strstr(RSP.romname, (const char *)"Perfect Dark") ||
+		strstr(RSP.romname, (const char *)"PERFECT DARK")
 		)
 		config.generalEmulation.hacks |= hack_VIUpdateOnCIChange;
 
