@@ -7,7 +7,8 @@
 #define CONFIG_VERSION_ONE 1U
 #define CONFIG_VERSION_TWO 2U
 #define CONFIG_VERSION_THREE 3U
-#define CONFIG_VERSION_CURRENT CONFIG_VERSION_THREE
+#define CONFIG_VERSION_FOUR 4U		// Remove ValidityCheckMethod setting
+#define CONFIG_VERSION_CURRENT CONFIG_VERSION_FOUR
 
 #define BILINEAR_3POINT   0
 #define BILINEAR_STANDARD 1
@@ -60,12 +61,6 @@ struct Config
 		aTotal = 4
 	};
 
-	enum ValidityCheckMethod {
-		vcFingerprint = 0,
-		vcFill = 1,
-		vcTotal = 2
-	};
-
 	struct {
 		u32 enable;
 		u32 copyToRDRAM;
@@ -74,7 +69,6 @@ struct Config
 		u32 detectCFB;
 		u32 N64DepthCompare;
 		u32 aspect; // 0: stretch ; 1: 4/3 ; 2: 16/9; 3: adjust
-		u32 validityCheckMethod; // 0=write fingerprint to the buffer, 1=fill whole buffer in RDRAM with test value
 	} frameBufferEmulation;
 
 	struct
