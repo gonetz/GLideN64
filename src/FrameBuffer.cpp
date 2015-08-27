@@ -618,6 +618,7 @@ void FrameBufferList::renderBuffer(u32 _address)
 		return;
 
 	OGLVideo & ogl = video();
+	OGLRender & render = ogl.getRender();
 	GLint srcY0, srcY1, dstY0, dstY1;
 	GLint X0, X1, Xwidth;
 	GLint srcPartHeight = 0;
@@ -649,7 +650,7 @@ void FrameBufferList::renderBuffer(u32 _address)
 	srcY0 = ((_address - pBuffer->m_startAddress) << 1 >> pBuffer->m_size) / (*REG.VI_WIDTH);
 	if (isLowerField) {
 		if (srcY0 > 0)
-		--srcY0;
+			--srcY0;
 		if (dstY0 > 0)
 			--dstY0;
 	}
@@ -685,15 +686,19 @@ void FrameBufferList::renderBuffer(u32 _address)
 		return;
 	}
 	GLint dstCoord[4] = { X0 + hOffset, vOffset + (GLint)(dstY0*dstScaleY), hOffset + X1, vOffset + (GLint)(dstY1*dstScaleY) };
+#ifdef GLESX
+	if (render.getRenderer() == OGLRender::glrAdreno)
+		dstCoord[0] += 1; // workaround for Adreno's issue with glBindFramebuffer;
+#endif // GLESX
 
-	ogl.getRender().updateScissor(pBuffer);
+	render.updateScissor(pBuffer);
 	PostProcessor::get().process(pBuffer);
 	// glDisable(GL_SCISSOR_TEST) does not affect glBlitFramebuffer, at least on AMD
 	glScissor(0, 0, ogl.getScreenWidth(), ogl.getScreenHeight() + ogl.getHeightOffset());
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 	//glDrawBuffer( GL_BACK );
 	float clearColor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
-	ogl.getRender().clearColorBuffer(clearColor);
+	render.clearColorBuffer(clearColor);
 
 	GLenum filter = GL_LINEAR;
 	if (config.video.multisampling != 0) {
