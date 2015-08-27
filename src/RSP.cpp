@@ -204,6 +204,12 @@ void RSP_ProcessDList()
 			RSP_CheckDLCounter();
 		}
 	}
+
+	if (config.frameBufferEmulation.copyToRDRAM)
+		FrameBuffer_CopyToRDRAM(gDP.colorImage.address);
+	if (config.frameBufferEmulation.copyDepthToRDRAM)
+		FrameBuffer_CopyDepthBuffer(gDP.colorImage.address);
+
 	RSP.busy = FALSE;
 	gDP.changed |= CHANGED_COLORBUFFER;
 }
