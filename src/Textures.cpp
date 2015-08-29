@@ -1208,10 +1208,10 @@ void TextureCache::_updateBackground()
 	Textures::iterator iter = m_textures.find(crc);
 	if (iter != m_textures.end()) {
 		CachedTexture & current = iter->second;
-		assert((current.width == gSP.bgImage.width) &&
-			(current.height == gSP.bgImage.height) &&
-			(current.format == gSP.bgImage.format) &&
-			(current.size == gSP.bgImage.size));
+		assert(current.width == gSP.bgImage.width);
+		assert(current.height == gSP.bgImage.height);
+		assert(current.format == gSP.bgImage.format);
+		assert(current.size == gSP.bgImage.size);
 
 		activateTexture(0, &current);
 		m_hits++;
@@ -1353,19 +1353,18 @@ void TextureCache::update(u32 _t)
 	Textures::iterator iter = m_textures.find(crc);
 	if (iter != m_textures.end()) {
 		CachedTexture & current = iter->second;
-		assert((current.width == sizes.width) &&
-			(current.height == sizes.height) &&
-			(current.clampWidth == sizes.clampWidth) &&
-			(current.clampHeight == sizes.clampHeight) &&
-			(current.maskS == gSP.textureTile[_t]->masks) &&
-			(current.maskT == gSP.textureTile[_t]->maskt) &&
-			(current.mirrorS == gSP.textureTile[_t]->mirrors) &&
-			(current.mirrorT == gSP.textureTile[_t]->mirrort) &&
-			(current.clampS == gSP.textureTile[_t]->clamps) &&
-			(current.clampT == gSP.textureTile[_t]->clampt) &&
-			(current.format == gSP.textureTile[_t]->format) &&
-			(current.size == gSP.textureTile[_t]->size)
-		);
+		assert(current.width == sizes.width);
+		assert(current.height == sizes.height);
+		assert(current.clampWidth == sizes.clampWidth);
+		assert(current.clampHeight == sizes.clampHeight);
+		assert(current.maskS == gSP.textureTile[_t]->masks);
+		assert(current.maskT == gSP.textureTile[_t]->maskt);
+		assert(current.mirrorS == gSP.textureTile[_t]->mirrors);
+		assert(current.mirrorT == gSP.textureTile[_t]->mirrort);
+		assert(current.clampS == gSP.textureTile[_t]->clamps);
+		assert(current.clampT == gSP.textureTile[_t]->clampt);
+		assert(current.format == gSP.textureTile[_t]->format);
+		assert(current.size == gSP.textureTile[_t]->size);
 
 		activateTexture(_t, &current);
 		m_hits++;
