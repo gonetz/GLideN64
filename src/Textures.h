@@ -9,6 +9,8 @@
 extern const GLuint g_noiseTexIndex;
 extern const GLuint g_MSTex0Index;
 
+typedef u32 (*GetTexelFunc)( u64 *src, u16 x, u16 i, u8 palette );
+
 struct CachedTexture
 {
 	CachedTexture(GLuint _glName) : glName(_glName), max_level(0), frameBufferTexture(fbNone) {}
@@ -78,6 +80,7 @@ private:
 	void _updateBackground();
 	void _clear();
 	void _initDummyTexture(CachedTexture * _pDummy);
+	void _getTextureDestData(CachedTexture& tmptex, u32* pDest, GLuint glInternalFormat, GetTexelFunc GetTexel, u16* pLine);
 
 	typedef std::map<u32, CachedTexture> Textures;
 	Textures m_textures;

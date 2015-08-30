@@ -22,8 +22,6 @@ using namespace std;
 const GLuint g_noiseTexIndex = 2;
 const GLuint g_MSTex0Index = g_noiseTexIndex + 1;
 
-typedef u32 (*GetTexelFunc)( u64 *src, u16 x, u16 i, u8 palette );
-
 inline u32 GetNone( u64 *src, u16 x, u16 i, u8 palette )
 {
 	return 0x00000000;
@@ -858,6 +856,119 @@ bool TextureCache::_loadHiresTexture(u32 _tile, CachedTexture *_pTexture, u64 & 
 	return false;
 }
 
+/*
+ * Worker function for _load
+*/
+void TextureCache::_getTextureDestData(CachedTexture& tmptex, u32* pDest, GLuint glInternalFormat, GetTexelFunc GetTexel, u16* pLine)
+{
+	u16 mirrorSBit, maskSMask, clampSClamp;
+	u16 mirrorTBit, maskTMask, clampTClamp;
+	u16 x, y, i, j, tx, ty;
+	u64 *pSrc;
+	if (tmptex.maskS > 0) {
+		clampSClamp = tmptex.clampS ? tmptex.clampWidth - 1 : (tmptex.mirrorS ? (tmptex.width << 1) - 1 : tmptex.width - 1);
+		maskSMask = (1 << tmptex.maskS) - 1;
+		mirrorSBit = (tmptex.mirrorS != 0 || tmptex.realWidth/tmptex.width == 2) ? 1 << tmptex.maskS : 0;
+	} else {
+		clampSClamp = min(tmptex.clampWidth, tmptex.width) - 1;
+		maskSMask = 0xFFFF;
+		mirrorSBit = 0x0000;
+	}
+
+	if (tmptex.maskT > 0) {
+		clampTClamp = tmptex.clampT ? tmptex.clampHeight - 1 : (tmptex.mirrorT ? (tmptex.height << 1) - 1 : tmptex.height - 1);
+		maskTMask = (1 << tmptex.maskT) - 1;
+		mirrorTBit = (tmptex.mirrorT != 0 || tmptex.realHeight/tmptex.height == 2) ? 1 << tmptex.maskT : 0;
+	} else {
+		clampTClamp = min(tmptex.clampHeight, tmptex.height) - 1;
+		maskTMask = 0xFFFF;
+		mirrorTBit = 0x0000;
+	}
+
+	if (tmptex.size == G_IM_SIZ_32b) {
+		const u16 * tmem16 = (u16*)TMEM;
+		const u32 tbase = tmptex.tMem << 2;
+
+		int wid_64 = (tmptex.clampWidth) << 2;
+		if (wid_64 & 15) {
+			wid_64 += 16;
+		}
+		wid_64 &= 0xFFFFFFF0;
+		wid_64 >>= 3;
+		int line32 = tmptex.line << 1;
+		line32 = (line32 - wid_64) << 3;
+		if (wid_64 < 1) {
+			wid_64 = 1;
+		}
+		int width = wid_64 << 1;
+		line32 = width + (line32 >> 2);
+
+		u16 gr, ab;
+
+		j = 0;
+		for (y = 0; y < tmptex.realHeight; ++y) {
+			ty = min(y, clampTClamp) & maskTMask;
+			if (y & mirrorTBit) {
+				ty ^= maskTMask;
+			}
+
+			u32 tline = tbase + line32 * ty;
+			u32 xorval = (ty & 1) ? 3 : 1;
+
+			for (x = 0; x < tmptex.realWidth; ++x) {
+				tx = min(x, clampSClamp) & maskSMask;
+				if (x & mirrorSBit) {
+					tx ^= maskSMask;
+				}
+
+				u32 taddr = ((tline + tx) ^ xorval) & 0x3ff;
+				gr = swapword(tmem16[taddr]);
+				ab = swapword(tmem16[taddr | 0x400]);
+				pDest[j++] = (ab << 16) | gr;
+			}
+		}
+	} else if (tmptex.format == G_IM_FMT_YUV) {
+		j = 0;
+		*pLine <<= 1;
+		for (y = 0; y < tmptex.realHeight; ++y) {
+			pSrc = &TMEM[tmptex.tMem] + *pLine * y;
+			for (x = 0; x < tmptex.realWidth / 2; x++) {
+				if (glInternalFormat == GL_RGBA) {
+					GetYUV_RGBA8888(pSrc, pDest + j, x);
+				} else {
+					GetYUV_RGBA4444(pSrc, (u16*)pDest + j, x);
+				}
+				j += 2;
+			}
+		}
+	} else {
+		j = 0;
+		for (y = 0; y < tmptex.realHeight; ++y) {
+			ty = min(y, clampTClamp) & maskTMask;
+
+			if (y & mirrorTBit)
+			ty ^= maskTMask;
+
+			pSrc = &TMEM[(tmptex.tMem + *pLine * ty) & 0x1FF];
+
+			i = (ty & 1) << 1;
+			for (x = 0; x < tmptex.realWidth; ++x) {
+				tx = min(x, clampSClamp) & maskSMask;
+
+				if (x & mirrorSBit) {
+					tx ^= maskSMask;
+				}
+
+				if (glInternalFormat == GL_RGBA) {
+					pDest[j++] = GetTexel(pSrc, tx, i, tmptex.palette);
+				} else {
+					((u16*)pDest)[j++] = GetTexel(pSrc, tx, i, tmptex.palette);
+				}
+			}
+		}
+	}
+}
+
 void TextureCache::_load(u32 _tile, CachedTexture *_pTexture)
 {
 	u64 ricecrc = 0;
@@ -866,10 +977,7 @@ void TextureCache::_load(u32 _tile, CachedTexture *_pTexture)
 
 	u32 *pDest;
 
-	u64 *pSrc;
-	u16 x, y, i, j, tx, ty, line;
-	u16 mirrorSBit, maskSMask, clampSClamp;
-	u16 mirrorTBit, maskTMask, clampTClamp;
+	u16 line;
 	GetTexelFunc GetTexel;
 	GLuint glInternalFormat;
 	GLenum glType;
@@ -906,99 +1014,7 @@ void TextureCache::_load(u32 _tile, CachedTexture *_pTexture)
 	line = tmptex.line;
 
 	while (true) {
-		if (tmptex.maskS > 0) {
-			clampSClamp = tmptex.clampS ? tmptex.clampWidth - 1 : (tmptex.mirrorS ? (tmptex.width << 1) - 1 : tmptex.width - 1);
-			maskSMask = (1 << tmptex.maskS) - 1;
-			mirrorSBit = (tmptex.mirrorS != 0 || tmptex.realWidth/tmptex.width == 2) ? 1 << tmptex.maskS : 0;
-		} else {
-			clampSClamp = min(tmptex.clampWidth, tmptex.width) - 1;
-			maskSMask = 0xFFFF;
-			mirrorSBit = 0x0000;
-		}
-
-		if (tmptex.maskT > 0) {
-			clampTClamp = tmptex.clampT ? tmptex.clampHeight - 1 : (tmptex.mirrorT ? (tmptex.height << 1) - 1 : tmptex.height - 1);
-			maskTMask = (1 << tmptex.maskT) - 1;
-			mirrorTBit = (tmptex.mirrorT != 0 || tmptex.realHeight/tmptex.height == 2) ? 1 << tmptex.maskT : 0;
-		} else {
-			clampTClamp = min(tmptex.clampHeight, tmptex.height) - 1;
-			maskTMask = 0xFFFF;
-			mirrorTBit = 0x0000;
-		}
-
-		if (tmptex.size == G_IM_SIZ_32b) {
-			const u16 * tmem16 = (u16*)TMEM;
-			const u32 tbase = tmptex.tMem << 2;
-
-			int wid_64 = (tmptex.clampWidth) << 2;
-			if (wid_64 & 15) wid_64 += 16;
-			wid_64 &= 0xFFFFFFF0;
-			wid_64 >>= 3;
-			int line32 = tmptex.line << 1;
-			line32 = (line32 - wid_64) << 3;
-			if (wid_64 < 1) wid_64 = 1;
-			int width = wid_64 << 1;
-			line32 = width + (line32 >> 2);
-
-			u16 gr, ab;
-
-			j = 0;
-			for (y = 0; y < tmptex.realHeight; ++y) {
-				ty = min(y, clampTClamp) & maskTMask;
-				if (y & mirrorTBit)
-					ty ^= maskTMask;
-
-				u32 tline = tbase + line32 * ty;
-				u32 xorval = (ty & 1) ? 3 : 1;
-
-				for (x = 0; x < tmptex.realWidth; ++x) {
-					tx = min(x, clampSClamp) & maskSMask;
-					if (x & mirrorSBit)
-						tx ^= maskSMask;
-
-					u32 taddr = ((tline + tx) ^ xorval) & 0x3ff;
-					gr = swapword(tmem16[taddr]);
-					ab = swapword(tmem16[taddr | 0x400]);
-					pDest[j++] = (ab << 16) | gr;
-				}
-			}
-		} else if (tmptex.format == G_IM_FMT_YUV) {
-			j = 0;
-			line <<= 1;
-			for (y = 0; y < tmptex.realHeight; ++y) {
-				pSrc = &TMEM[tmptex.tMem] + line * y;
-				for (x = 0; x < tmptex.realWidth / 2; x++) {
-					if (glInternalFormat == GL_RGBA)
-						GetYUV_RGBA8888(pSrc, pDest + j, x);
-					else
-						GetYUV_RGBA4444(pSrc, (u16*)pDest + j, x);
-					j += 2;
-				}
-			}
-		} else {
-			j = 0;
-			for (y = 0; y < tmptex.realHeight; ++y) {
-				ty = min(y, clampTClamp) & maskTMask;
-
-				if (y & mirrorTBit)
-					ty ^= maskTMask;
-
-				pSrc = &TMEM[(tmptex.tMem + line * ty) & 0x1FF];
-
-				i = (ty & 1) << 1;
-				for (x = 0; x < tmptex.realWidth; ++x) {
-					tx = min(x, clampSClamp) & maskSMask;
-
-					if (x & mirrorSBit)
-						tx ^= maskSMask;
-
-					if (glInternalFormat == GL_RGBA)
-						pDest[j++] = GetTexel(pSrc, tx, i, tmptex.palette);
-					else
-						((u16*)pDest)[j++] = GetTexel(pSrc, tx, i, tmptex.palette);
-				}
-			}
-		}
+		_getTextureDestData(tmptex, pDest, glInternalFormat, GetTexel, &line);
 
 		bool bLoaded = false;
 		if (m_toggleDumpTex && config.textureFilter.txHiresEnable != 0 && config.textureFilter.txDump != 0) {
