@@ -999,6 +999,7 @@ void TextureCache::_load(u32 _tile, CachedTexture *_pTexture)
 	}
 
 	pDest = (u32*)malloc(_pTexture->textureBytes);
+	assert(pDest != NULL);
 
 	GLint mipLevel = 0, maxLevel = 0;
 #ifndef GLES2
