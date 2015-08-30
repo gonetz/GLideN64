@@ -1065,7 +1065,7 @@ void TextureCache::_load(u32 _tile, CachedTexture *_pTexture)
 		if (tmptex.realHeight > 1)
 			tmptex.realHeight >>= 1;
 		_pTexture->textureBytes += (tmptex.realWidth * tmptex.realHeight) << sizeShift;
-	};
+	}
 	if (m_curUnpackAlignment > 1)
 		glPixelStorei(GL_UNPACK_ALIGNMENT, m_curUnpackAlignment);
 	free(pDest);
