@@ -150,12 +150,6 @@ MAIN_SHADER_VERSION
 
 static const char* fragment_shader_header_common_variables =
 MAIN_SHADER_VERSION
-"#ifdef GL_NV_fragdepth			\n"
-"    #extension GL_NV_fragdepth : enable \n"
-"#endif										\n"
-"#ifdef GL_OES_standard_derivatives			\n"
-"    #extension GL_OES_standard_derivatives : enable \n"
-"#endif										\n"
 "uniform sampler2D uTex0;		\n"
 "uniform sampler2D uTex1;		\n"
 #ifdef GL_MULTISAMPLING_SUPPORT
@@ -200,12 +194,6 @@ MAIN_SHADER_VERSION
 
 static const char* fragment_shader_header_common_variables_notex =
 MAIN_SHADER_VERSION
-"#ifdef GL_NV_fragdepth			\n"
-"    #extension GL_NV_fragdepth : enable \n"
-"#endif										\n"
-"#ifdef GL_OES_standard_derivatives			\n"
-"    #extension GL_OES_standard_derivatives : enable \n"
-"#endif										\n"
 "layout (std140) uniform ColorsBlock {\n"
 "  lowp vec4 uFogColor;			\n"
 "  lowp vec4 uCenterColor;		\n"

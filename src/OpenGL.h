@@ -109,10 +109,16 @@ public:
 	};
 	RENDER_STATE getRenderState() const {return m_renderState;}
 
+	enum OGL_RENDERER {
+		glrOther,
+		glrAdreno
+	};
+	OGL_RENDERER getRenderer() const { return m_oglRenderer; }
+
 	void dropRenderState() {m_renderState = rsNone;}
 
 private:
-	OGLRender() : m_bImageTexture(false), m_bFlatColors(false) {}
+	OGLRender() : m_oglRenderer(glrOther), m_bImageTexture(false), m_bFlatColors(false) {}
 	OGLRender(const OGLRender &);
 	friend class OGLVideo;
 
@@ -150,6 +156,7 @@ private:
 	};
 
 	RENDER_STATE m_renderState;
+	OGL_RENDERER m_oglRenderer;
 	GLVertex m_rect[4];
 	bool m_bImageTexture;
 	bool m_bFlatColors;

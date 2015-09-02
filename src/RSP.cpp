@@ -204,6 +204,12 @@ void RSP_ProcessDList()
 			RSP_CheckDLCounter();
 		}
 	}
+
+	if (config.frameBufferEmulation.copyToRDRAM)
+		FrameBuffer_CopyToRDRAM(gDP.colorImage.address);
+	if (config.frameBufferEmulation.copyDepthToRDRAM)
+		FrameBuffer_CopyDepthBuffer(gDP.colorImage.address);
+
 	RSP.busy = FALSE;
 	gDP.changed |= CHANGED_COLORBUFFER;
 }
@@ -326,7 +332,9 @@ void RSP_Init()
 	else if (strstr(RSP.romname, (const char *)"SPACE INVADERS") != NULL)
 		config.generalEmulation.hacks |= hack_ignoreVIHeightChange;
 	else if (strstr(RSP.romname, (const char *)"QUAKE II") != NULL ||
-		strstr(RSP.romname, (const char *)"Quake") != NULL
+		strstr(RSP.romname, (const char *)"Quake") != NULL ||
+		strstr(RSP.romname, (const char *)"Perfect Dark") ||
+		strstr(RSP.romname, (const char *)"PERFECT DARK")
 		)
 		config.generalEmulation.hacks |= hack_VIUpdateOnCIChange;
 
