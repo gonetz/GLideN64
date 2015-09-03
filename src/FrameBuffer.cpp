@@ -391,10 +391,7 @@ void FrameBufferList::correctHeight()
 		return;
 	}
 	if (m_pCurrent->m_needHeightCorrection && m_pCurrent->m_width == gDP.scissor.lrx) {
-		if (m_pCurrent->m_height < (u32)gDP.scissor.lry)
-			m_pCurrent->reinit((u32)gDP.scissor.lry);
-		else
-			m_pCurrent->m_height = (u32)gDP.scissor.lry;
+		m_pCurrent->reinit((u32)gDP.scissor.lry);
 
 		if (m_pCurrent->_isMarioTennisScoreboard())
 			g_RDRAMtoFB.CopyFromRDRAM(m_pCurrent->m_startAddress + 4, false);
