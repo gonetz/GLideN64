@@ -880,10 +880,12 @@ void gDPTextureRectangleFlip( f32 ulx, f32 uly, f32 lrx, f32 lry, s32 tile, f32 
 
 void gDPFullSync()
 {
-	if (config.frameBufferEmulation.copyToRDRAM)
-		FrameBuffer_CopyToRDRAM(gDP.colorImage.address);
-	if (config.frameBufferEmulation.copyDepthToRDRAM)
-		FrameBuffer_CopyDepthBuffer(gDP.colorImage.address);
+	if (RSP.bLLE) {
+		if (config.frameBufferEmulation.copyToRDRAM)
+			FrameBuffer_CopyToRDRAM(gDP.colorImage.address);
+		if (config.frameBufferEmulation.copyDepthToRDRAM)
+			FrameBuffer_CopyDepthBuffer(gDP.colorImage.address);
+	}
 
 	*REG.MI_INTR |= MI_INTR_DP;
 

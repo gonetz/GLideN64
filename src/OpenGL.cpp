@@ -176,6 +176,7 @@ bool OGLVideo::resizeWindow()
 	m_render._destroyData();
 	if (!_resizeWindow())
 		_start();
+	updateScale();
 	m_render._initData();
 	m_bResizeWindow = false;
 	return true;
@@ -1249,7 +1250,10 @@ void OGLRender::_initExtensions()
 {
 	LOG(LOG_VERBOSE, "OpenGL version string: %s\n", glGetString(GL_VERSION));
 	LOG(LOG_VERBOSE, "OpenGL vendor: %s\n", glGetString(GL_VENDOR));
-	LOG(LOG_VERBOSE, "OpenGL renderer: %s\n", glGetString(GL_RENDERER));
+	const GLubyte * strRenderer = glGetString(GL_RENDERER);
+	if (strstr((const char*)strRenderer, "Adreno") != NULL)
+		m_oglRenderer = glrAdreno;
+	LOG(LOG_VERBOSE, "OpenGL renderer: %s\n", strRenderer);
 
 	fboFormats.init();
 

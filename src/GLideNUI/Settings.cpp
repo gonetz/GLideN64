@@ -51,7 +51,6 @@ void _loadSettings(QSettings & settings)
 	config.frameBufferEmulation.detectCFB = settings.value("detectCFB", config.frameBufferEmulation.detectCFB).toInt();
 	config.frameBufferEmulation.N64DepthCompare = settings.value("N64DepthCompare", config.frameBufferEmulation.N64DepthCompare).toInt();
 	config.frameBufferEmulation.aspect = settings.value("aspect", config.frameBufferEmulation.aspect).toInt();
-	config.frameBufferEmulation.validityCheckMethod = settings.value("validityCheckMethod", config.frameBufferEmulation.validityCheckMethod).toInt();
 	settings.endGroup();
 
 	settings.beginGroup("textureFilter");
@@ -154,7 +153,6 @@ void writeSettings(const QString & _strIniFolder)
 	settings.setValue("detectCFB", config.frameBufferEmulation.detectCFB);
 	settings.setValue("N64DepthCompare", config.frameBufferEmulation.N64DepthCompare);
 	settings.setValue("aspect", config.frameBufferEmulation.aspect);
-	settings.setValue("validityCheckMethod", config.frameBufferEmulation.validityCheckMethod);
 	settings.endGroup();
 
 	settings.beginGroup("textureFilter");
