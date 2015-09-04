@@ -546,6 +546,8 @@ void FrameBufferList::attachDepthBuffer()
 {
 	if (m_pCurrent == NULL)
 		return;
+	if (m_pCurrent->m_height == 0)
+		return;
 
 	DepthBuffer * pDepthBuffer = depthBufferList().getCurrent();
 	if (m_pCurrent->m_FBO > 0 && pDepthBuffer != NULL) {
