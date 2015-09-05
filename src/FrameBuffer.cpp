@@ -283,20 +283,16 @@ bool FrameBuffer::isValid() const
 		return true; // Already checked
 
 	const u32 * const pData = (const u32*)RDRAM;
+	u32 start = m_startAddress >> 2;
 
 	if (m_cleared) {
 		const u32 color = m_fillcolor & 0xFFFEFFFE;
-		const u32 start = m_startAddress >> 2;
-		const u32 end = m_endAddress >> 2;
-		u32 wrongPixels = 0;
-		for (u32 i = start; i < end; ++i) {
-			if ((pData[i] & 0xFFFEFFFE) != color)
-				++wrongPixels;
-		}
-		return wrongPixels < (m_endAddress - m_startAddress) / 400; // treshold level 1% of dwords
+		for (u32 i = 0; i < 4; ++i)
+			if ((pData[start++] & 0xFFFEFFFE) != color)
+				return false;
+		return true;
 	} else if (m_fingerprint) {
 			//check if our fingerprint is still there
-			u32 start = m_startAddress >> 2;
 			for (u32 i = 0; i < 4; ++i)
 				if ((pData[start++] & 0xFFFEFFFE) != (fingerprint[i] & 0xFFFEFFFE))
 					return false;
@@ -305,7 +301,6 @@ bool FrameBuffer::isValid() const
 		const u32 * const pCopy = (const u32*)m_RdramCopy.data();
 		const u32 size = m_RdramCopy.size();
 		const u32 size_dwords = size >> 2;
-		u32 start = m_startAddress >> 2;
 		u32 wrongPixels = 0;
 		for (u32 i = 0; i < size_dwords; ++i) {
 			if ((pData[start++] & 0xFFFEFFFE) != (pCopy[i] & 0xFFFEFFFE))
