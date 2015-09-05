@@ -481,24 +481,26 @@ void TextureCache::init()
 	current[0] = current[1] = NULL;
 
 #ifdef GL_MULTISAMPLING_SUPPORT
-	m_pMSDummy = addFrameBufferTexture(); // we don't want to remove dummy texture
-	_initDummyTexture(m_pMSDummy);
+	if (config.video.multisampling != 0) {
+		m_pMSDummy = addFrameBufferTexture(); // we don't want to remove dummy texture
+		_initDummyTexture(m_pMSDummy);
 
-	glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, m_pMSDummy->glName);
+		glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, m_pMSDummy->glName);
 
 #if defined(GLES3_1)
-	glTexStorage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, config.video.multisampling,
-				GL_RGBA8, m_pMSDummy->realWidth, m_pMSDummy->realHeight, false);
+		glTexStorage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, config.video.multisampling,
+					GL_RGBA8, m_pMSDummy->realWidth, m_pMSDummy->realHeight, false);
 #else
-	glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, config.video.multisampling,
-				GL_RGBA8, m_pMSDummy->realWidth, m_pMSDummy->realHeight, false);
+		glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, config.video.multisampling,
+					GL_RGBA8, m_pMSDummy->realWidth, m_pMSDummy->realHeight, false);
 #endif
 
-	activateMSDummy(0);
-	activateMSDummy(1);
-#else
-	m_pMSDummy = NULL;
+		activateMSDummy(0);
+		activateMSDummy(1);
+	} else
 #endif
+	m_pMSDummy = NULL;
+	assert(!isGLError());
 }
 
 void TextureCache::destroy()
