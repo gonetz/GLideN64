@@ -370,7 +370,6 @@ void FrameBufferList::setBufferChanged()
 	if (m_pCurrent != NULL) {
 		m_pCurrent->m_changed = true;
 		m_pCurrent->m_copiedToRdram = false;
-		m_pCurrent->m_validityChecked = 0;
 	}
 }
 
