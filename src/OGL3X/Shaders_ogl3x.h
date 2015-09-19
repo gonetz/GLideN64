@@ -301,7 +301,8 @@ AUXILIARY_SHADER_VERSION
 "void alphaNoiseDither(in lowp float _noise, inout lowp float _alpha)	\n"
 "{															\n"
 "    mediump float tmpAlpha = _alpha*255.0;					\n"
-"    mediump int iAlpha = int(tmpAlpha)&248;				\n"
+"    mediump int iAlpha = int(tmpAlpha);					\n"
+//"    iAlpha &= 248;											\n" // causes issue #518. need further investigation
 "    iAlpha |= int(tmpAlpha*_noise)&7;						\n"
 "    _alpha = float(iAlpha)/255.0;							\n"
 "}															\n"
