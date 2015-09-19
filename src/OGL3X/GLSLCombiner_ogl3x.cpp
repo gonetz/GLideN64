@@ -89,7 +89,7 @@ void NoiseTexture::destroy()
 
 void NoiseTexture::update()
 {
-	if (m_DList == RSP.DList)
+	if (m_DList == RSP.DList || config.generalEmulation.enableNoise == 0)
 		return;
 	const u32 dataSize = VI.width*VI.height;
 	if (dataSize == 0)
