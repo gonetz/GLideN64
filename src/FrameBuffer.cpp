@@ -382,13 +382,14 @@ void FrameBufferList::correctHeight()
 		return;
 	}
 	if (m_pCurrent->m_needHeightCorrection && m_pCurrent->m_width == gDP.scissor.lrx) {
-		m_pCurrent->reinit((u32)gDP.scissor.lry);
+		if (m_pCurrent->m_height != gDP.scissor.lry) {
+			m_pCurrent->reinit((u32)gDP.scissor.lry);
 
-		if (m_pCurrent->_isMarioTennisScoreboard())
-			g_RDRAMtoFB.CopyFromRDRAM(m_pCurrent->m_startAddress + 4, false);
-
+			if (m_pCurrent->_isMarioTennisScoreboard())
+				g_RDRAMtoFB.CopyFromRDRAM(m_pCurrent->m_startAddress + 4, false);
+			gSP.changed |= CHANGED_VIEWPORT;
+		}
 		m_pCurrent->m_needHeightCorrection = false;
-		gSP.changed |= CHANGED_VIEWPORT;
 	}
 }
 
@@ -440,15 +441,19 @@ FrameBuffer * FrameBufferList::findTmpBuffer(u32 _address)
 
 void FrameBufferList::saveBuffer(u32 _address, u16 _format, u16 _size, u16 _width, u16 _height, bool _cfb)
 {
-	if (VI.width == 0 || _height == 0)
+	if (VI.width == 0 || _height == 0) {
+		m_pCurrent = NULL;
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 		return;
+	}
 
 	OGLVideo & ogl = video();
 	if (m_pCurrent != NULL) {
 		if (gDP.colorImage.height > 0) {
-			if (m_pCurrent->m_width == VI.width)
+			if (m_pCurrent->m_width == VI.width || m_pCurrent->m_needHeightCorrection) {
 				gDP.colorImage.height = min(gDP.colorImage.height, VI.height);
-			m_pCurrent->m_endAddress = min(RDRAMSize, m_pCurrent->m_startAddress + (((m_pCurrent->m_width * gDP.colorImage.height) << m_pCurrent->m_size >> 1) - 1));
+				m_pCurrent->m_endAddress = min(RDRAMSize, m_pCurrent->m_startAddress + (((m_pCurrent->m_width * gDP.colorImage.height) << m_pCurrent->m_size >> 1) - 1));
+			}
 			if (!m_pCurrent->_isMarioTennisScoreboard() && !m_pCurrent->m_isDepthBuffer && !m_pCurrent->m_copiedToRdram && !m_pCurrent->m_cfb && !m_pCurrent->m_cleared && m_pCurrent->m_RdramCopy.empty() && gDP.colorImage.height > 1) {
 				m_pCurrent->copyRdram();
 			}
@@ -456,7 +461,7 @@ void FrameBufferList::saveBuffer(u32 _address, u16 _format, u16 _size, u16 _widt
 		m_pCurrent = _findBuffer(m_pCurrent->m_startAddress, m_pCurrent->m_endAddress, m_pCurrent->m_width);
 	}
 
-	const u32 endAddress = _address + ((_width * (_height - 1)) << _size >> 1) - 1;
+	const u32 endAddress = _address + ((_width * _height) << _size >> 1) - 1;
 	if (m_pCurrent == NULL || m_pCurrent->m_startAddress != _address || m_pCurrent->m_width != _width)
 		m_pCurrent = findBuffer(_address);
 	if (m_pCurrent != NULL) {
@@ -935,7 +940,8 @@ void FrameBufferToRDRAM::Destroy() {
 
 void FrameBufferToRDRAM::CopyToRDRAM(u32 _address)
 {
-	if (VI.width == 0 || frameBufferList().getCurrent() == NULL) // H width is zero or no current buffer. Don't copy
+	const u32 numPixels = VI.width * VI.height;
+	if (numPixels == 0 || frameBufferList().getCurrent() == NULL) // Incorrect buffer size or no current buffer. Don't copy
 		return;
 	FrameBuffer *pBuffer = frameBufferList().findBuffer(_address);
 	if (pBuffer == NULL || pBuffer->m_width < VI.width || pBuffer->m_isOBScreen)
@@ -967,13 +973,13 @@ void FrameBufferToRDRAM::CopyToRDRAM(u32 _address)
 #ifndef GLES2
 	PBOBinder binder(GL_PIXEL_PACK_BUFFER, m_PBO);
 	glReadPixels(0, 0, VI.width, VI.height, GL_RGBA, GL_UNSIGNED_BYTE, 0);
-	GLubyte* pixelData = (GLubyte*)glMapBufferRange(GL_PIXEL_PACK_BUFFER, 0, VI.width * VI.height * 4, GL_MAP_READ_BIT);
+	GLubyte* pixelData = (GLubyte*)glMapBufferRange(GL_PIXEL_PACK_BUFFER, 0, numPixels * 4, GL_MAP_READ_BIT);
 	if(pixelData == NULL)
 		return;
 #else
 	m_curIndex = 0;
 	const u32 nextIndex = 0;
-	GLubyte* pixelData = (GLubyte* )malloc(VI.width*VI.height*4);
+	GLubyte* pixelData = (GLubyte* )malloc(numPixels * 4);
 	if(pixelData == NULL)
 		return;
 	glReadPixels( 0, 0, VI.width, VI.height, GL_RGBA, GL_UNSIGNED_BYTE, pixelData );
@@ -1112,7 +1118,8 @@ void DepthBufferToRDRAM::Destroy() {
 }
 
 bool DepthBufferToRDRAM::CopyToRDRAM( u32 _address) {
-	if (VI.width == 0) // H width is zero. Don't copy
+	const u32 numPixels = VI.width * VI.height;
+	if (numPixels == 0) // Incorrect buffer size. Don't copy
 		return false;
 	FrameBuffer *pBuffer = frameBufferList().findBuffer(_address);
 	if (pBuffer == NULL || pBuffer->m_width < VI.width || pBuffer->m_pDepthBuffer == NULL || !pBuffer->m_pDepthBuffer->m_cleared)
@@ -1120,7 +1127,7 @@ bool DepthBufferToRDRAM::CopyToRDRAM( u32 _address) {
 
 	DepthBuffer * pDepthBuffer = pBuffer->m_pDepthBuffer;
 	const u32 address = pDepthBuffer->m_address;
-	if (address + VI.width*VI.height*2 > RDRAMSize)
+	if (address + numPixels * 2 > RDRAMSize)
 		return false;
 
 	if (config.video.multisampling == 0)
@@ -1142,7 +1149,7 @@ bool DepthBufferToRDRAM::CopyToRDRAM( u32 _address) {
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, m_FBO);
 	glReadPixels(0, 0, VI.width, VI.height, GL_DEPTH_COMPONENT, GL_FLOAT, 0);
 
-	GLubyte* pixelData = (GLubyte*)glMapBufferRange(GL_PIXEL_PACK_BUFFER, 0, VI.width * VI.height * 4, GL_MAP_READ_BIT);
+	GLubyte* pixelData = (GLubyte*)glMapBufferRange(GL_PIXEL_PACK_BUFFER, 0, numPixels * 4, GL_MAP_READ_BIT);
 	if(pixelData == NULL)
 		return false;
 
