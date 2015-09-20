@@ -456,7 +456,7 @@ void FrameBufferList::saveBuffer(u32 _address, u16 _format, u16 _size, u16 _widt
 		m_pCurrent = _findBuffer(m_pCurrent->m_startAddress, m_pCurrent->m_endAddress, m_pCurrent->m_width);
 	}
 
-	const u32 endAddress = _address + ((_width * (_height - 1)) << _size >> 1) - 1;
+	const u32 endAddress = _address + ((_width * _height) << _size >> 1) - 1;
 	if (m_pCurrent == NULL || m_pCurrent->m_startAddress != _address || m_pCurrent->m_width != _width)
 		m_pCurrent = findBuffer(_address);
 	if (m_pCurrent != NULL) {
