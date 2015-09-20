@@ -935,7 +935,8 @@ void FrameBufferToRDRAM::Destroy() {
 
 void FrameBufferToRDRAM::CopyToRDRAM(u32 _address)
 {
-	if (VI.width == 0 || frameBufferList().getCurrent() == NULL) // H width is zero or no current buffer. Don't copy
+	const u32 numPixels = VI.width * VI.height;
+	if (numPixels == 0 || frameBufferList().getCurrent() == NULL) // Incorrect buffer size or no current buffer. Don't copy
 		return;
 	FrameBuffer *pBuffer = frameBufferList().findBuffer(_address);
 	if (pBuffer == NULL || pBuffer->m_width < VI.width || pBuffer->m_isOBScreen)
@@ -967,13 +968,13 @@ void FrameBufferToRDRAM::CopyToRDRAM(u32 _address)
 #ifndef GLES2
 	PBOBinder binder(GL_PIXEL_PACK_BUFFER, m_PBO);
 	glReadPixels(0, 0, VI.width, VI.height, GL_RGBA, GL_UNSIGNED_BYTE, 0);
-	GLubyte* pixelData = (GLubyte*)glMapBufferRange(GL_PIXEL_PACK_BUFFER, 0, VI.width * VI.height * 4, GL_MAP_READ_BIT);
+	GLubyte* pixelData = (GLubyte*)glMapBufferRange(GL_PIXEL_PACK_BUFFER, 0, numPixels * 4, GL_MAP_READ_BIT);
 	if(pixelData == NULL)
 		return;
 #else
 	m_curIndex = 0;
 	const u32 nextIndex = 0;
-	GLubyte* pixelData = (GLubyte* )malloc(VI.width*VI.height*4);
+	GLubyte* pixelData = (GLubyte* )malloc(numPixels * 4);
 	if(pixelData == NULL)
 		return;
 	glReadPixels( 0, 0, VI.width, VI.height, GL_RGBA, GL_UNSIGNED_BYTE, pixelData );
@@ -1112,7 +1113,8 @@ void DepthBufferToRDRAM::Destroy() {
 }
 
 bool DepthBufferToRDRAM::CopyToRDRAM( u32 _address) {
-	if (VI.width == 0) // H width is zero. Don't copy
+	const u32 numPixels = VI.width * VI.height;
+	if (numPixels == 0) // Incorrect buffer size. Don't copy
 		return false;
 	FrameBuffer *pBuffer = frameBufferList().findBuffer(_address);
 	if (pBuffer == NULL || pBuffer->m_width < VI.width || pBuffer->m_pDepthBuffer == NULL || !pBuffer->m_pDepthBuffer->m_cleared)
@@ -1120,7 +1122,7 @@ bool DepthBufferToRDRAM::CopyToRDRAM( u32 _address) {
 
 	DepthBuffer * pDepthBuffer = pBuffer->m_pDepthBuffer;
 	const u32 address = pDepthBuffer->m_address;
-	if (address + VI.width*VI.height*2 > RDRAMSize)
+	if (address + numPixels * 2 > RDRAMSize)
 		return false;
 
 	if (config.video.multisampling == 0)
@@ -1142,7 +1144,7 @@ bool DepthBufferToRDRAM::CopyToRDRAM( u32 _address) {
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, m_FBO);
 	glReadPixels(0, 0, VI.width, VI.height, GL_DEPTH_COMPONENT, GL_FLOAT, 0);
 
-	GLubyte* pixelData = (GLubyte*)glMapBufferRange(GL_PIXEL_PACK_BUFFER, 0, VI.width * VI.height * 4, GL_MAP_READ_BIT);
+	GLubyte* pixelData = (GLubyte*)glMapBufferRange(GL_PIXEL_PACK_BUFFER, 0, numPixels * 4, GL_MAP_READ_BIT);
 	if(pixelData == NULL)
 		return false;
 
