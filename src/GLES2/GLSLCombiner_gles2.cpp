@@ -1,6 +1,7 @@
 #include <assert.h>
 #include <stdio.h>
 #include <string>
+#include <memory>
 
 #include "../N64.h"
 #include "../OpenGL.h"
@@ -31,14 +32,14 @@ static std::string strFragmentShader;
 class NoiseTexture
 {
 public:
-	NoiseTexture() : m_pTexture(NULL), m_PBO(0), m_DList(0) {}
+	NoiseTexture() : m_pTexture(nullptr), m_pData(nullptr), m_PBO(0), m_DList(0) {}
 	void init();
 	void destroy();
 	void update();
 
 private:
 	CachedTexture * m_pTexture;
-	GLubyte* m_PBO;
+	std::unique_ptr<GLubyte[]> m_pData;
 	u32 m_DList;
 } noiseTex;
 
@@ -62,13 +63,14 @@ void NoiseTexture::init()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glBindTexture(GL_TEXTURE_2D, 0);
+	m_pData.reset(new GLubyte[640 * 580]);
 }
 
 void NoiseTexture::destroy()
 {
-	if (m_pTexture != NULL) {
+	if (m_pTexture != nullptr) {
 		textureCache().removeFrameBufferTexture(m_pTexture);
-		m_pTexture = NULL;
+		m_pTexture = nullptr;
 	}
 }
 
@@ -76,22 +78,18 @@ void NoiseTexture::update()
 {
 	if (m_DList == RSP.DList || config.generalEmulation.enableNoise == 0)
 		return;
-	const u32 dataSize = VI.width*VI.height;
-	if (dataSize == 0)
+
+	if (VI.width*VI.height == 0)
 		return;
-	m_PBO = (GLubyte*)malloc(dataSize);
-	GLubyte* ptr = m_PBO;
-	PBOBinder binder(m_PBO);
-	if (ptr == NULL)
-		return;
+
 	for (u32 y = 0; y < VI.height; ++y)	{
 		for (u32 x = 0; x < VI.width; ++x)
-			ptr[x + y*VI.width] = rand()&0xFF;
+			m_pData[x + y*VI.width] = rand() & 0xFF;
 	}
 
 	glActiveTexture(GL_TEXTURE0 + g_noiseTexIndex);
 	glBindTexture(GL_TEXTURE_2D, m_pTexture->glName);
-	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, VI.width, VI.height, GL_LUMINANCE, GL_UNSIGNED_BYTE, m_PBO);
+	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, VI.width, VI.height, GL_LUMINANCE, GL_UNSIGNED_BYTE, m_pData.get());
 	m_DList = RSP.DList;
 }
 

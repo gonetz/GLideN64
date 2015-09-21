@@ -73,8 +73,10 @@ void NoiseTexture::init()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glBindTexture(GL_TEXTURE_2D, 0);
 
-	// Generate Pixel Buffer Object. Initialize it later
+	// Generate Pixel Buffer Object. Initialize it with max buffer size.
 	glGenBuffers(1, &m_PBO);
+	PBOBinder binder(GL_PIXEL_UNPACK_BUFFER, m_PBO);
+	glBufferData(GL_PIXEL_UNPACK_BUFFER, 640*580, NULL, GL_DYNAMIC_DRAW);
 }
 
 void NoiseTexture::destroy()
@@ -95,7 +97,6 @@ void NoiseTexture::update()
 	if (dataSize == 0)
 		return;
 	PBOBinder binder(GL_PIXEL_UNPACK_BUFFER, m_PBO);
-	glBufferData(GL_PIXEL_UNPACK_BUFFER, dataSize, NULL, GL_DYNAMIC_DRAW);
 	GLubyte* ptr = (GLubyte*)glMapBufferRange(GL_PIXEL_UNPACK_BUFFER, 0, dataSize, GL_MAP_WRITE_BIT);
 	if (ptr == NULL)
 		return;
