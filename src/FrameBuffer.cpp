@@ -441,6 +441,8 @@ FrameBuffer * FrameBufferList::findTmpBuffer(u32 _address)
 
 void FrameBufferList::saveBuffer(u32 _address, u16 _format, u16 _size, u16 _width, u16 _height, bool _cfb)
 {
+	if (_width != VI.width && _height == 0)
+		return;
 	if (VI.width == 0 || _height == 0) {
 		m_pCurrent = NULL;
 		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
