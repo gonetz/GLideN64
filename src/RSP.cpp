@@ -141,6 +141,10 @@ void RSP_ProcessDList()
 		gDPFullSync();
 		return;
 	}
+	if (*REG.VI_ORIGIN != VI.lastOrigin) {
+		VI_UpdateSize();
+		video().updateScale();
+	}
 
 	RSP.PC[0] = *(u32*)&DMEM[0x0FF0];
 	RSP.PCi = 0;
