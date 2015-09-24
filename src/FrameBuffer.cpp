@@ -358,12 +358,14 @@ void FrameBufferList::init()
 {
 	 m_pCurrent = NULL;
 	 m_pCopy = NULL;
+	 glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 }
 
 void FrameBufferList::destroy() {
 	m_list.clear();
 	m_pCurrent = NULL;
 	m_pCopy = NULL;
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 }
 
 void FrameBufferList::setBufferChanged()
@@ -527,8 +529,10 @@ void FrameBufferList::removeBuffer(u32 _address )
 {
 	for (FrameBuffers::iterator iter = m_list.begin(); iter != m_list.end(); ++iter)
 		if (iter->m_startAddress == _address) {
-			if (&(*iter) == m_pCurrent)
+			if (&(*iter) == m_pCurrent) {
 				m_pCurrent = NULL;
+				glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+			}
 			m_list.erase(iter);
 			return;
 		}
@@ -539,8 +543,10 @@ void FrameBufferList::removeBuffers(u32 _width)
 	m_pCurrent = NULL;
 	for (FrameBuffers::iterator iter = m_list.begin(); iter != m_list.end(); ++iter) {
 		while (iter->m_width == _width) {
-			if (&(*iter) == m_pCurrent)
+			if (&(*iter) == m_pCurrent) {
 				m_pCurrent = NULL;
+				glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+			}
 			iter = m_list.erase(iter);
 			if (iter == m_list.end())
 				return;
