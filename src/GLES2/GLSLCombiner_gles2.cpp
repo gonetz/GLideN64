@@ -32,7 +32,7 @@ static std::string strFragmentShader;
 class NoiseTexture
 {
 public:
-	NoiseTexture() : m_pTexture(nullptr), m_pData(nullptr), m_PBO(0), m_DList(0) {}
+	NoiseTexture() : m_pTexture(nullptr), m_pData(nullptr), m_DList(0) {}
 	void init();
 	void destroy();
 	void update();
