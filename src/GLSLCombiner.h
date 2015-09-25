@@ -96,7 +96,7 @@ private:
 
 		fv2Uniform uScreenScale, uDepthScale, uFogScale;
 
-		iv2Uniform uMSTexEnabled, uFb8Bit, uFbFixedAlpha;
+		iv2Uniform uMSTexEnabled, uFbMonochrome, uFbFixedAlpha;
 	};
 
 #ifdef OS_MAC_OS_X
