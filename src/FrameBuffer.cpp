@@ -943,6 +943,10 @@ void FrameBufferToRDRAM::CopyToRDRAM(u32 _address)
 	const u32 numPixels = VI.width * VI.height;
 	if (numPixels == 0 || frameBufferList().getCurrent() == NULL) // Incorrect buffer size or no current buffer. Don't copy
 		return;
+
+	if ((config.generalEmulation.hacks & hack_DonkeyKong) !=0 && VI.width < (VI.height *1.18))
+		return;
+
 	FrameBuffer *pBuffer = frameBufferList().findBuffer(_address);
 	if (pBuffer == NULL || pBuffer->m_width < VI.width || pBuffer->m_isOBScreen)
 		return;

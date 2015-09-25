@@ -337,6 +337,8 @@ void RSP_Init()
 		strstr(RSP.romname, (const char *)"PERFECT DARK")
 		)
 		config.generalEmulation.hacks |= hack_VIUpdateOnCIChange;
+	else if (strstr(RSP.romname, (const char *)"DONKEY KONG") != NULL)
+		config.generalEmulation.hacks |= hack_DonkeyKong;
 
 	api().FindPluginPath(RSP.pluginpath);
 
