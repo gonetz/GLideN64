@@ -229,7 +229,7 @@ void FrameBuffer::init(u32 _address, u32 _endAddress, u16 _format, u16 _size, u1
 void FrameBuffer::reinit(u16 _height)
 {
 	const u16 format = m_pTexture->format;
-	const u32 endAddress = m_startAddress + ((m_width * (_height - 1)) << m_size >> 1) - 1;
+	const u32 endAddress = m_startAddress + ((m_width * _height) << m_size >> 1) - 1;
 	if (m_pTexture != NULL)
 		textureCache().removeFrameBufferTexture(m_pTexture);
 	if (m_resolveFBO != 0)
