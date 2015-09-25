@@ -1010,7 +1010,7 @@ void OGLRender::drawTexturedRect(const TexturedRectParams & _params)
 #ifdef RENDERSTATE_TEST
 		StateChanges++;
 #endif
-		glVertexAttrib4f(SC_COLOR, 0, 0, 0, 0);
+		glVertexAttrib4f(SC_COLOR, 0, 0, 0, 1);
 		glVertexAttribPointer(SC_POSITION, 4, GL_FLOAT, GL_FALSE, sizeof(GLVertex), &m_rect[0].x);
 		glVertexAttribPointer(SC_TEXCOORD0, 2, GL_FLOAT, GL_FALSE, sizeof(GLVertex), &m_rect[0].s0);
 		glVertexAttribPointer(SC_TEXCOORD1, 2, GL_FLOAT, GL_FALSE, sizeof(GLVertex), &m_rect[0].s1);
