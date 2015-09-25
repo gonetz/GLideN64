@@ -446,20 +446,20 @@ void ShaderCombiner::updateFBInfo(bool _bForce) {
 	int nMSTex0Enabled = 0, nMSTex1Enabled = 0;
 	TextureCache & cache = textureCache();
 	if (cache.current[0] != NULL && cache.current[0]->frameBufferTexture != CachedTexture::fbNone) {
-		if (cache.current[0]->size == G_IM_SIZ_8b)
+		if (cache.current[0]->size == G_IM_SIZ_8b) {
 			nFbMonochromeMode0 = 1;
-		else if (gSP.textureTile[0]->size == G_IM_SIZ_16b && gSP.textureTile[0]->format == G_IM_FMT_IA)
+			if (gDP.otherMode.imageRead == 0)
+				nFbFixedAlpha0 = 1;
+		} else if (gSP.textureTile[0]->size == G_IM_SIZ_16b && gSP.textureTile[0]->format == G_IM_FMT_IA)
 			nFbMonochromeMode0 = 2;
-		if (gDP.otherMode.imageRead == 0)
-			nFbFixedAlpha0 = 1;
 	}
 	if (cache.current[1] != NULL && cache.current[1]->frameBufferTexture != CachedTexture::fbNone) {
-		if (cache.current[1]->size == G_IM_SIZ_8b)
+		if (cache.current[1]->size == G_IM_SIZ_8b) {
 			nFbMonochromeMode1 = 1;
-		else if (gSP.textureTile[1]->size == G_IM_SIZ_16b && gSP.textureTile[1]->format == G_IM_FMT_IA)
+			if (gDP.otherMode.imageRead == 0)
+				nFbFixedAlpha1 = 1;
+		} else if (gSP.textureTile[1]->size == G_IM_SIZ_16b && gSP.textureTile[1]->format == G_IM_FMT_IA)
 			nFbMonochromeMode1 = 2;
-		if (gDP.otherMode.imageRead == 0)
-			nFbFixedAlpha1 = 1;
 	}
 	m_uniforms.uFbMonochrome.set(nFbMonochromeMode0, nFbMonochromeMode1, _bForce);
 	m_uniforms.uFbFixedAlpha.set(nFbFixedAlpha0, nFbFixedAlpha1, _bForce);
