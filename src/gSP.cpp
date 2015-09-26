@@ -2124,13 +2124,13 @@ void gSPBgRect1Cyc( u32 _bg )
 	uObjScaleBg *objScaleBg = (uObjScaleBg*)&RDRAM[address];
 	_loadBGImage(objScaleBg, true);
 
-#ifdef GL_IMAGE_TEXTURES_SUPPORT
+#ifndef GLES2
 	if (gSP.bgImage.address == gDP.depthImageAddress || depthBufferList().findBuffer(gSP.bgImage.address) != NULL)
 		_copyDepthBuffer();
 	// Zelda MM uses depth buffer copy in LoT and in pause screen.
 	// In later case depth buffer is used as temporal color buffer, and usual rendering must be used.
 	// Since both situations are hard to distinguish, do the both depth buffer copy and bg rendering.
-#endif // GL_IMAGE_TEXTURES_SUPPORT
+#endif // GLES2
 
 	gDP.otherMode.cycleType = G_CYC_1CYCLE;
 	gDP.changed |= CHANGED_CYCLETYPE;
