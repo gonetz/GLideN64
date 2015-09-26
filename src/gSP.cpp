@@ -2058,17 +2058,19 @@ void _copyDepthBuffer()
 	// OpenGL has different format for color and depth buffers, so this trick can't be performed directly
 	// To do that, depth buffer with address of current color buffer created and attached to the current FBO
 	// It will be copy depth buffer
-	depthBufferList().saveBuffer(gDP.colorImage.address);
+	DepthBufferList & dbList = depthBufferList();
+	dbList.saveBuffer(gDP.colorImage.address);
 	// Take any frame buffer and attach source depth buffer to it, to blit it into copy depth buffer
-	FrameBuffer * pTmpBuffer = frameBufferList().findTmpBuffer(frameBufferList().getCurrent()->m_startAddress);
+	FrameBufferList & fbList = frameBufferList();
+	FrameBuffer * pTmpBuffer = fbList.findTmpBuffer(fbList.getCurrent()->m_startAddress);
 	if (pTmpBuffer == NULL)
 		return;
-	DepthBuffer * pCopyBufferDepth = depthBufferList().findBuffer(gSP.bgImage.address);
+	DepthBuffer * pCopyBufferDepth = dbList.findBuffer(gSP.bgImage.address);
 	if (pCopyBufferDepth == NULL)
 		return;
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, pTmpBuffer->m_FBO);
 	pCopyBufferDepth->setDepthAttachment(GL_READ_FRAMEBUFFER);
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, frameBufferList().getCurrent()->m_FBO);
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, fbList.getCurrent()->m_FBO);
 	OGLVideo & ogl = video();
 	glBlitFramebuffer(
 		0, 0, ogl.getWidth(), ogl.getHeight(),
@@ -2080,7 +2082,7 @@ void _copyDepthBuffer()
 		pTmpBuffer->m_pDepthBuffer->setDepthAttachment(GL_READ_FRAMEBUFFER);
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
 	// Set back current depth buffer
-	depthBufferList().saveBuffer(gDP.depthImageAddress);
+	dbList.saveBuffer(gDP.depthImageAddress);
 }
 #endif // GLES2
 
