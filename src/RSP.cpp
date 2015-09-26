@@ -337,6 +337,8 @@ void RSP_Init()
 		strstr(RSP.romname, (const char *)"PERFECT DARK")
 		)
 		config.generalEmulation.hacks |= hack_VIUpdateOnCIChange;
+	else if (strstr(RSP.romname, (const char *)"MASK") != NULL) // Zelda MM
+		config.generalEmulation.hacks |= hack_skipVIChangeCheck;
 
 	api().FindPluginPath(RSP.pluginpath);
 
