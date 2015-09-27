@@ -717,9 +717,16 @@ void OGLRender::_prepareDrawTriangle(bool _dma)
 	}
 }
 
+bool OGLRender::_canDraw() const
+{
+	if (config.frameBufferEmulation.enable == 0)
+		return true;
+	return frameBufferList().getCurrent() != NULL;
+}
+
 void OGLRender::drawLLETriangle(u32 _numVtx)
 {
-	if (_numVtx == 0)
+	if (_numVtx == 0 || !_canDraw())
 		return;
 
 	gSP.changed &= ~CHANGED_GEOMETRYMODE; // Don't update cull mode
@@ -759,7 +766,7 @@ void OGLRender::drawLLETriangle(u32 _numVtx)
 
 void OGLRender::drawDMATriangles(u32 _numVtx)
 {
-	if (_numVtx == 0)
+	if (_numVtx == 0 || !_canDraw())
 		return;
 	_prepareDrawTriangle(true);
 	glDrawArrays(GL_TRIANGLES, 0, _numVtx);
@@ -767,7 +774,10 @@ void OGLRender::drawDMATriangles(u32 _numVtx)
 
 void OGLRender::drawTriangles()
 {
-	if (triangles.num == 0) return;
+	if (triangles.num == 0 || !_canDraw()) {
+		triangles.num = 0;
+		return;
+	}
 
 	_prepareDrawTriangle(false);
 	glDrawElements(GL_TRIANGLES, triangles.num, GL_UNSIGNED_BYTE, triangles.elements);
@@ -776,6 +786,11 @@ void OGLRender::drawTriangles()
 
 void OGLRender::drawLine(int _v0, int _v1, float _width)
 {
+	if (triangles.num == 0 || !_canDraw()) {
+		triangles.num = 0;
+		return;
+	}
+
 	if (gSP.changed || gDP.changed)
 		_updateStates(rsLine);
 
@@ -802,6 +817,8 @@ void OGLRender::drawLine(int _v0, int _v1, float _width)
 
 void OGLRender::drawRect(int _ulx, int _uly, int _lrx, int _lry, float *_pColor)
 {
+	if (!_canDraw())
+		return;
 	gSP.changed &= ~CHANGED_GEOMETRYMODE; // Don't update cull mode
 	if (gSP.changed || gDP.changed)
 		_updateStates(rsRect);
@@ -1022,6 +1039,9 @@ void OGLRender::drawTexturedRect(const TexturedRectParams & _params)
 		return;
 	}
 
+	if (!_canDraw())
+		return;
+
 	FrameBuffer * pCurrentBuffer = frameBufferList().getCurrent();
 	OGLVideo & ogl = video();
 	if (pCurrentBuffer == NULL)
@@ -1145,7 +1165,7 @@ void OGLRender::drawText(const char *_pText, float x, float y)
 
 void OGLRender::clearDepthBuffer(u32 _uly, u32 _lry)
 {
-	if (config.frameBufferEmulation.enable && frameBufferList().getCurrent() == NULL)
+	if (!_canDraw())
 		return;
 
 	depthBufferList().clearBuffer(_uly, _lry);
@@ -1161,7 +1181,10 @@ void OGLRender::clearDepthBuffer(u32 _uly, u32 _lry)
 
 void OGLRender::clearColorBuffer(float *_pColor )
 {
-	glDisable( GL_SCISSOR_TEST );
+	if (!_canDraw())
+		return;
+
+	glDisable(GL_SCISSOR_TEST);
 
 	glClearColor( _pColor[0], _pColor[1], _pColor[2], _pColor[3] );
 	glClear( GL_COLOR_BUFFER_BIT );

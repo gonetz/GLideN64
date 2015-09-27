@@ -137,6 +137,7 @@ private:
 	void _updateDepthUpdate() const;
 	void _updateStates(RENDER_STATE _renderState) const;
 	void _prepareDrawTriangle(bool _dma);
+	bool _canDraw() const;
 
 	struct {
 		SPVertex vertices[VERTBUFF_SIZE];
