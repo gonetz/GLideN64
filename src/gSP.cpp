@@ -2114,6 +2114,11 @@ void _loadBGImage(const uObjScaleBg * _bgInfo, bool _loadScale)
 			gDP.tiles[0].textureMode = TEXTUREMODE_FRAMEBUFFER_BG;
 			gDP.tiles[0].loadType = LOADTYPE_TILE;
 			gDP.changed |= CHANGED_TMEM;
+
+			if ((config.generalEmulation.hacks & hack_ZeldaCamera) != 0) {
+				if (gDP.colorImage.address == gDP.depthImageAddress)
+					frameBufferList().setCopyBuffer(frameBufferList().getCurrent());
+			}
 		}
 	}
 }

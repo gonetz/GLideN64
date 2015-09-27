@@ -71,10 +71,13 @@ public:
 	void correctHeight();
 	void clearBuffersChanged();
 
+	FrameBuffer * getCopyBuffer() const { return m_pCopy; }
+	void setCopyBuffer(FrameBuffer * _pBuffer) { m_pCopy = _pBuffer; }
+
 	static FrameBufferList & get();
 
 private:
-	FrameBufferList() : m_pCurrent(NULL) {}
+	FrameBufferList() : m_pCurrent(NULL), m_pCopy(NULL) {}
 	FrameBufferList(const FrameBufferList &);
 
 	FrameBuffer * _findBuffer(u32 _startAddress, u32 _endAddress, u32 _width);
@@ -82,6 +85,7 @@ private:
 	typedef std::list<FrameBuffer> FrameBuffers;
 	FrameBuffers m_list;
 	FrameBuffer * m_pCurrent;
+	FrameBuffer * m_pCopy;
 };
 
 struct PBOBinder {

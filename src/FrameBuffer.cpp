@@ -357,11 +357,13 @@ FrameBufferList & FrameBufferList::get()
 void FrameBufferList::init()
 {
 	 m_pCurrent = NULL;
+	 m_pCopy = NULL;
 }
 
 void FrameBufferList::destroy() {
 	m_list.clear();
 	m_pCurrent = NULL;
+	m_pCopy = NULL;
 }
 
 void FrameBufferList::setBufferChanged()
@@ -1184,7 +1186,15 @@ bool DepthBufferToRDRAM::CopyToRDRAM( u32 _address) {
 
 bool FrameBuffer_CopyDepthBuffer( u32 address ) {
 #ifndef GLES2
-	return g_dbToRDRAM.CopyToRDRAM(address);
+	FrameBuffer * pCopyBuffer = frameBufferList().getCopyBuffer();
+	if (pCopyBuffer != NULL) {
+		// This code is mainly to emulate Zelda MM camera.
+		g_fbToRDRAM.CopyToRDRAM(pCopyBuffer->m_startAddress);
+		pCopyBuffer->m_RdramCopy.resize(0); // To disable validity check by RDRAM content. CPU may change content of the buffer for some unknown reason.
+		frameBufferList().setCopyBuffer(NULL);
+		return true;
+	} else
+		return g_dbToRDRAM.CopyToRDRAM(address);
 #else
 	return false;
 #endif

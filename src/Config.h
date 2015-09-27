@@ -121,6 +121,7 @@ struct Config
 #define hack_ignoreVIHeightChange	(1<<9)  //Do not reset FBO when VI height is changed. Space Invaders need it.
 #define hack_VIUpdateOnCIChange		(1<<10) //Update frame if color buffer changed. Needed for Quake II underwater.
 #define hack_skipVIChangeCheck		(1<<11) //Don't reset FBO when VI parameters changed. Zelda MM
+#define hack_ZeldaCamera			(1<<12) //Special hack to detect and process Zelda MM camera.
 
 extern Config config;
 

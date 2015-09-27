@@ -338,7 +338,7 @@ void RSP_Init()
 		)
 		config.generalEmulation.hacks |= hack_VIUpdateOnCIChange;
 	else if (strstr(RSP.romname, (const char *)"MASK") != NULL) // Zelda MM
-		config.generalEmulation.hacks |= hack_skipVIChangeCheck;
+		config.generalEmulation.hacks |= hack_skipVIChangeCheck | hack_ZeldaCamera;
 
 	api().FindPluginPath(RSP.pluginpath);
 
