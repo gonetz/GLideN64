@@ -66,4 +66,8 @@ extern PFNGLGETACTIVEUNIFORMSIVPROC glGetActiveUniformsiv;
 extern PFNGLBINDBUFFERBASEPROC glBindBufferBase;
 extern PFNGLBUFFERSUBDATAPROC glBufferSubData;
 
+extern PFNGLGETPROGRAMBINARYPROC glGetProgramBinary;
+extern PFNGLPROGRAMBINARYPROC glProgramBinary;
+extern PFNGLPROGRAMPARAMETERIPROC glProgramParameteri;
+
 #endif // GLFUNCTIONS_H

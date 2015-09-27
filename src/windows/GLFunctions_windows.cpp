@@ -68,6 +68,10 @@ PFNGLGETACTIVEUNIFORMSIVPROC glGetActiveUniformsiv;
 PFNGLBINDBUFFERBASEPROC glBindBufferBase;
 PFNGLBUFFERSUBDATAPROC glBufferSubData;
 
+PFNGLGETPROGRAMBINARYPROC glGetProgramBinary;
+PFNGLPROGRAMBINARYPROC glProgramBinary;
+PFNGLPROGRAMPARAMETERIPROC glProgramParameteri;
+
 void initGLFunctions()
 {
 	glCreateShader = (PFNGLCREATESHADERPROC)wglGetProcAddress("glCreateShader");
@@ -134,4 +138,8 @@ void initGLFunctions()
 	glGetActiveUniformsiv = (PFNGLGETACTIVEUNIFORMSIVPROC)wglGetProcAddress("glGetActiveUniformsiv");
 	glBindBufferBase = (PFNGLBINDBUFFERBASEPROC)wglGetProcAddress("glBindBufferBase");
 	glBufferSubData = (PFNGLBUFFERSUBDATAPROC)wglGetProcAddress("glBufferSubData");
+
+	glGetProgramBinary = (PFNGLGETPROGRAMBINARYPROC)wglGetProcAddress("glGetProgramBinary");
+	glProgramBinary = (PFNGLPROGRAMBINARYPROC)wglGetProcAddress("glProgramBinary");
+	glProgramParameteri = (PFNGLPROGRAMPARAMETERIPROC)wglGetProcAddress("glProgramParameteri");
 }
