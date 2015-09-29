@@ -784,10 +784,8 @@ void OGLRender::drawTriangles()
 
 void OGLRender::drawLine(int _v0, int _v1, float _width)
 {
-	if (triangles.num == 0 || !_canDraw()) {
-		triangles.num = 0;
+	if (!_canDraw())
 		return;
-	}
 
 	if (gSP.changed || gDP.changed)
 		_updateStates(rsLine);
