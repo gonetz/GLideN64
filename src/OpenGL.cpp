@@ -719,9 +719,7 @@ void OGLRender::_prepareDrawTriangle(bool _dma)
 
 bool OGLRender::_canDraw() const
 {
-	if (config.frameBufferEmulation.enable == 0)
-		return true;
-	return frameBufferList().getCurrent() != NULL;
+	return config.frameBufferEmulation.enable == 0 || frameBufferList().getCurrent() != NULL;
 }
 
 void OGLRender::drawLLETriangle(u32 _numVtx)
