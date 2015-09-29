@@ -96,7 +96,7 @@ void CombinerInfo::init()
 {
 	m_pCurrent = NULL;
 	m_pUniformCollection = createUniformCollection();
-	m_bShaderCacheSupported = config.generalEmulation.shaderStorage != Config::ssDoNotUse && OGLVideo::isExtensionSupported("GL_ARB_get_program_binary");
+	m_bShaderCacheSupported = config.generalEmulation.shaderStorage != Config::ssDoNotUse && OGLVideo::isExtensionSupported(GET_PROGRAM_BINARY_EXTENSION);
 
 	m_shadersLoaded = 0;
 	if (m_bShaderCacheSupported && !_loadCombinersCache()) {

@@ -50,6 +50,12 @@ typedef char GLchar;
 #endif // OS_MAC_OS_X
 #endif // GLES2
 
+#ifdef GLESX
+#define GET_PROGRAM_BINARY_EXTENSION "GL_OES_get_program_binary"
+#else
+#define GET_PROGRAM_BINARY_EXTENSION "GL_ARB_get_program_binary"
+#endif
+
 #ifdef USE_SDL
 #include <SDL.h>
 #endif // USE_SDL
