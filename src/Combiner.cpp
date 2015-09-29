@@ -97,7 +97,7 @@ void CombinerInfo::init()
 {
 	m_pCurrent = NULL;
 	m_pUniformCollection = createUniformCollection();
-	m_bShaderCacheSupported = config.generalEmulation.shaderStorage != Config::ssDoNotUse && OGLVideo::isExtensionSupported(GET_PROGRAM_BINARY_EXTENSION);
+	m_bShaderCacheSupported = config.generalEmulation.shaderStorage != 0 && OGLVideo::isExtensionSupported(GET_PROGRAM_BINARY_EXTENSION);
 
 	m_shadersLoaded = 0;
 	if (m_bShaderCacheSupported && !_loadCombinersCache()) {
@@ -336,7 +336,7 @@ void getStorageFileName(wchar_t * _fileName)
 		if (osal_mkdirp(strShaderFolderPath) != 0)
 			pPath = strCacheFolderPath;
 	}
-	swprintf(_fileName, PLUGIN_PATH_SIZE, L"%ls/GLideN64.%08lx.shaders", pPath, config.generalEmulation.shaderStorage == Config::ssUseOneCommon ? 0 : std::hash<std::string>()(RSP.romname));
+	swprintf(_fileName, PLUGIN_PATH_SIZE, L"%ls/GLideN64.%08lx.shaders", pPath, std::hash<std::string>()(RSP.romname));
 }
 
 /*

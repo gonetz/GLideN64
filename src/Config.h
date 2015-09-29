@@ -40,12 +40,6 @@ struct Config
 		u32 screenShotFormat;
 	} texture;
 
-	enum ShaderStorage {
-		ssDoNotUse = 0,  // Do not use shaders storage
-		ssUseOneCommon,  // Use one shader storage for all games
-		ssUseOnePerGame  // Use shader storage per game.
-	};
-
 	struct {
 		u32 enableFog;
 		u32 enableNoise;

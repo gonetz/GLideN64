@@ -66,7 +66,7 @@ bool Config_SetDefault()
 	assert(res == M64ERR_SUCCESS);
 	res = ConfigSetDefaultBool(g_configVideoGliden64, "EnableHWLighting", config.generalEmulation.enableHWLighting, "Enable hardware per-pixel lighting.");
 	assert(res == M64ERR_SUCCESS);
-	res = ConfigSetDefaultInt(g_configVideoGliden64, "ShaderStorage", config.generalEmulation.shaderStorage, "Use persistent storage for compiled shaders (0=not use, 1=use one for all, 2=use one per game)");
+	res = ConfigSetDefaultBool(g_configVideoGliden64, "EnableShaderStorage", config.generalEmulation.shaderStorage, "Use persistent storage for compiled shaders.");
 	assert(res == M64ERR_SUCCESS);
 #ifdef ANDROID
 	res = ConfigSetDefaultBool(g_configVideoGliden64, "ForcePolygonOffset", config.generalEmulation.forcePolygonOffset, "If true, use polygon offset values specified below");
@@ -181,7 +181,7 @@ void Config_LoadConfig()
 	config.generalEmulation.enableNoise = ConfigGetParamBool(g_configVideoGliden64, "EnableNoise");
 	config.generalEmulation.enableLOD = ConfigGetParamBool(g_configVideoGliden64, "EnableLOD");
 	config.generalEmulation.enableHWLighting = ConfigGetParamBool(g_configVideoGliden64, "EnableHWLighting");
-	config.generalEmulation.shaderStorage = ConfigGetParamInt(g_configVideoGliden64, "ShaderStorage");
+	config.generalEmulation.shaderStorage = ConfigGetParamBool(g_configVideoGliden64, "EnableShaderStorage");
 #ifdef ANDROID
 	config.generalEmulation.forcePolygonOffset = ConfigGetParamBool(g_configVideoGliden64, "ForcePolygonOffset");
 	config.generalEmulation.polygonOffsetFactor = ConfigGetParamFloat(g_configVideoGliden64, "PolygonOffsetFactor");
