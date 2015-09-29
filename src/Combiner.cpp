@@ -403,33 +403,39 @@ bool CombinerInfo::_loadCombinersCache()
 	if (!fin)
 		return false;
 
-	u32 version;
-	fin.read((char*)&version, sizeof(version));
-	if (version != CombinersCacheFormatVersion)
-		return false;
+	try {
+		u32 version;
+		fin.read((char*)&version, sizeof(version));
+		if (version != CombinersCacheFormatVersion)
+			return false;
 
-	const char * strRenderer = reinterpret_cast<const char *>(glGetString(GL_RENDERER));
-	u32 len;
-	fin.read((char*)&len, sizeof(len));
-	std::vector<char> strBuf(len);
-	fin.read(strBuf.data(), len);
-	if (strncmp(strRenderer, strBuf.data(), len) != 0)
-		return false;
+		const char * strRenderer = reinterpret_cast<const char *>(glGetString(GL_RENDERER));
+		u32 len;
+		fin.read((char*)&len, sizeof(len));
+		std::vector<char> strBuf(len);
+		fin.read(strBuf.data(), len);
+		if (strncmp(strRenderer, strBuf.data(), len) != 0)
+			return false;
 
-	const char * strGLVersion = reinterpret_cast<const char *>(glGetString(GL_VERSION));
-	fin.read((char*)&len, sizeof(len));
-	strBuf.resize(len);
-	fin.read(strBuf.data(), len);
-	if (strncmp(strGLVersion, strBuf.data(), len) != 0)
-		return false;
+		const char * strGLVersion = reinterpret_cast<const char *>(glGetString(GL_VERSION));
+		fin.read((char*)&len, sizeof(len));
+		strBuf.resize(len);
+		fin.read(strBuf.data(), len);
+		if (strncmp(strGLVersion, strBuf.data(), len) != 0)
+			return false;
 
-	fin.read((char*)&len, sizeof(len));
-	for (u32 i = 0; i < len; ++i) {
-		m_pCurrent = new ShaderCombiner();
-		fin >> *m_pCurrent;
-		m_pCurrent->update(true);
-		m_pUniformCollection->bindWithShaderCombiner(m_pCurrent);
-		m_combiners[m_pCurrent->getMux()] = m_pCurrent;
+		fin.read((char*)&len, sizeof(len));
+		for (u32 i = 0; i < len; ++i) {
+			m_pCurrent = new ShaderCombiner();
+			fin >> *m_pCurrent;
+			m_pCurrent->update(true);
+			m_pUniformCollection->bindWithShaderCombiner(m_pCurrent);
+			m_combiners[m_pCurrent->getMux()] = m_pCurrent;
+		}
+	}
+	catch (...) {
+		m_shadersLoaded = 0;
+		return false;
 	}
 
 	m_shadersLoaded = m_combiners.size();
