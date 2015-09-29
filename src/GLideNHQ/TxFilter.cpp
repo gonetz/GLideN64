@@ -594,7 +594,7 @@ TxFilter::dmptx(uint8 *src, int width, int height, int rowStridePixel, uint16 gf
 		tmpbuf.append(wst("/"));
 		tmpbuf.append(_ident);
 		tmpbuf.append(wst("/GLideNHQ"));
-		if (!osal_path_existsW(tmpbuf.c_str()) && !osal_mkdirp(tmpbuf.c_str()))
+		if (!osal_path_existsW(tmpbuf.c_str()) && osal_mkdirp(tmpbuf.c_str()) != 0)
 			return 0;
 
 		if ((n64fmt >> 8) == 0x2) {
