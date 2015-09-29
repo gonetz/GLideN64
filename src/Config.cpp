@@ -42,7 +42,7 @@ void Config::resetToDefaults()
 #endif
 
 	frameBufferEmulation.enable = 1;
-	frameBufferEmulation.copyDepthToRDRAM = 1;
+	frameBufferEmulation.copyDepthToRDRAM = 0;
 	frameBufferEmulation.copyFromRDRAM = 0;
 	frameBufferEmulation.copyToRDRAM = 1;
 	frameBufferEmulation.detectCFB = 0;
