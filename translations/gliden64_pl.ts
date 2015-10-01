@@ -644,7 +644,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location filename="configDialog.ui" line="699"/>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Use shadres to emulate N64 depth compare modes. &lt;span style=&quot; font-weight:600;&quot;&gt;Experimantal!&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Use shaders to emulate N64 depth compare modes. &lt;span style=&quot; font-weight:600;&quot;&gt;Experimantal!&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Używaj shaderów do emulacji trybów porównania głębi N64 (N64 depth compare modes). &lt;span style=&quot; font-weight:600;&quot;&gt;Funkcja eksperymentalna!&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
