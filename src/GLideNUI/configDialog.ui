@@ -673,7 +673,7 @@
           <item>
            <widget class="QCheckBox" name="n64DepthCompareCheckBox">
             <property name="toolTip">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Use shadres to emulate N64 depth compare modes. &lt;span style=&quot; font-weight:600;&quot;&gt;Experimantal!&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Use shaders to emulate N64 depth compare modes. &lt;span style=&quot; font-weight:600;&quot;&gt;Experimantal!&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
             <property name="text">
              <string>Emulate N64 depth compare</string>
