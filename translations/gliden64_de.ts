@@ -636,7 +636,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <location filename="configDialog.ui" line="676"/>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Use shadres to emulate N64 depth compare modes. &lt;span style=&quot; font-weight:600;&quot;&gt;Experimantal!&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Use shaders to emulate N64 depth compare modes. &lt;span style=&quot; font-weight:600;&quot;&gt;Experimantal!&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Depth-Compare emulieren:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Diese Option nutzt Shader, um Depth-Compare-Modi zu emulieren.&lt;p&gt;[Empfehlung: Deaktiviert (Experimentell)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
