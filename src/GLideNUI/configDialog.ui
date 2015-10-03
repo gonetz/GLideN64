@@ -641,14 +641,57 @@
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_10">
           <item>
-           <widget class="QCheckBox" name="copyFrameCheckBox">
-            <property name="toolTip">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Copy frame buffer to RDRAM:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;In some games plugin can't detect frame buffer usage. In such cases you need to enable this option to see frame buffer effects. Every drawn frame will be read from video card and copied into RDRAM area.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;mostly off (needed only for a few games)&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-            </property>
-            <property name="text">
-             <string>Copy frame buffer to RDRAM</string>
-            </property>
-           </widget>
+           <layout class="QHBoxLayout" name="horizontalLayout_10">
+            <item>
+             <widget class="QLabel" name="label_14">
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Copy color buffer to RDRAM:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;In some games plugin can't detect frame buffer usage. In such cases you need to enable this option to see frame buffer effects. Every drawn frame will be read from video card and copied into RDRAM area.&lt;/p&gt;&lt;p&gt;* disable - do not copy buffer&lt;/p&gt;&lt;p&gt;* sync - copy buffer in sync mode. Can be slow, but works for all games&lt;/p&gt;&lt;p&gt;* async - copy buffer in async mode. Can be up to 10 times faster than sync mode, but is incompatible with some games.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;mostly async (sync needed only for a few games)&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="text">
+               <string>Copy frame buffer to RDRAM</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QRadioButton" name="copyBufferDisableRadioButton">
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Copy color buffer to RDRAM:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;In some games plugin can't detect frame buffer usage. In such cases you need to enable this option to see frame buffer effects. Every drawn frame will be read from video card and copied into RDRAM area.&lt;/p&gt;&lt;p&gt;* disable - do not copy buffer&lt;/p&gt;&lt;p&gt;* sync - copy buffer in sync mode. Can be slow, but works for all games&lt;/p&gt;&lt;p&gt;* async - copy buffer in async mode. Can be up to 10 times faster than sync mode, but is incompatible with some games.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;mostly async (sync needed only for a few games)&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="text">
+               <string>disable</string>
+              </property>
+              <attribute name="buttonGroup">
+               <string notr="true">copyFrameBufferButtonGroup</string>
+              </attribute>
+             </widget>
+            </item>
+            <item>
+             <widget class="QRadioButton" name="copyBufferSyncRadioButton">
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Copy color buffer to RDRAM:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;In some games plugin can't detect frame buffer usage. In such cases you need to enable this option to see frame buffer effects. Every drawn frame will be read from video card and copied into RDRAM area.&lt;/p&gt;&lt;p&gt;* disable - do not copy buffer&lt;/p&gt;&lt;p&gt;* sync - copy buffer in sync mode. Can be slow, but works for all games&lt;/p&gt;&lt;p&gt;* async - copy buffer in async mode. Can be up to 10 times faster than sync mode, but is incompatible with some games.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;mostly async (sync needed only for a few games)&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="text">
+               <string>sync</string>
+              </property>
+              <attribute name="buttonGroup">
+               <string notr="true">copyFrameBufferButtonGroup</string>
+              </attribute>
+             </widget>
+            </item>
+            <item>
+             <widget class="QRadioButton" name="copyBufferAsyncRadioButton">
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Copy color buffer to RDRAM:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;In some games plugin can't detect frame buffer usage. In such cases you need to enable this option to see frame buffer effects. Every drawn frame will be read from video card and copied into RDRAM area.&lt;/p&gt;&lt;p&gt;* disable - do not copy buffer&lt;/p&gt;&lt;p&gt;* sync - copy buffer in sync mode. Can be slow, but works for all games&lt;/p&gt;&lt;p&gt;* async - copy buffer in async mode. Can be up to 10 times faster than sync mode, but is incompatible with some games.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;mostly async (sync needed only for a few games)&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="text">
+               <string>async</string>
+              </property>
+              <attribute name="buttonGroup">
+               <string notr="true">copyFrameBufferButtonGroup</string>
+              </attribute>
+             </widget>
+            </item>
+           </layout>
           </item>
           <item>
            <widget class="QCheckBox" name="RenderFBCheckBox">
@@ -1344,8 +1387,9 @@
  </connections>
  <buttongroups>
   <buttongroup name="bilinearButtonGroup"/>
+  <buttongroup name="screenshotButtonGroup"/>
   <buttongroup name="bloomBlendModeButtonGroup"/>
   <buttongroup name="aspectButtonGroup"/>
-  <buttongroup name="screenshotButtonGroup"/>
+  <buttongroup name="copyFrameBufferButtonGroup"/>
  </buttongroups>
 </ui>

@@ -115,7 +115,17 @@ void ConfigDialog::_init()
 	ui->customSettingsCheckBox->setChecked(config.generalEmulation.enableCustomSettings != 0);
 
 	ui->frameBufferGroupBox->setChecked(config.frameBufferEmulation.enable != 0);
-	ui->copyFrameCheckBox->setChecked(config.frameBufferEmulation.copyToRDRAM != 0);
+	switch (config.frameBufferEmulation.copyToRDRAM) {
+	case Config::ctDisable:
+		ui->copyBufferDisableRadioButton->setChecked(true);
+		break;
+	case Config::ctSync:
+		ui->copyBufferSyncRadioButton->setChecked(true);
+		break;
+	case Config::ctAsync:
+		ui->copyBufferAsyncRadioButton->setChecked(true);
+		break;
+	}
 	ui->RenderFBCheckBox->setChecked(config.frameBufferEmulation.copyFromRDRAM != 0);
 	ui->detectCPUWritesCheckBox->setChecked(config.frameBufferEmulation.detectCFB != 0);
 	ui->CopyDepthCheckBox->setChecked(config.frameBufferEmulation.copyDepthToRDRAM != 0);
@@ -285,7 +295,12 @@ void ConfigDialog::accept()
 	config.generalEmulation.enableCustomSettings = ui->customSettingsCheckBox->isChecked() ? 1 : 0;
 
 	config.frameBufferEmulation.enable = ui->frameBufferGroupBox->isChecked() ? 1 : 0;
-	config.frameBufferEmulation.copyToRDRAM = ui->copyFrameCheckBox->isChecked() ? 1 : 0;
+	if (ui->copyBufferDisableRadioButton->isChecked())
+		config.frameBufferEmulation.copyToRDRAM = Config::ctDisable;
+	else if (ui->copyBufferSyncRadioButton->isChecked())
+		config.frameBufferEmulation.copyToRDRAM = Config::ctSync;
+	else if (ui->copyBufferAsyncRadioButton->isChecked())
+		config.frameBufferEmulation.copyToRDRAM = Config::ctAsync;
 	config.frameBufferEmulation.copyFromRDRAM = ui->RenderFBCheckBox->isChecked() ? 1 : 0;
 	config.frameBufferEmulation.detectCFB = ui->detectCPUWritesCheckBox->isChecked() ? 1 : 0;
 	config.frameBufferEmulation.copyDepthToRDRAM = ui->CopyDepthCheckBox->isChecked() ? 1 : 0;
