@@ -46,7 +46,7 @@ struct Config
 		u32 enableLOD;
 		u32 enableHWLighting;
 		u32 enableCustomSettings;
-		u32 shaderStorage;
+		u32 enableShadersStorage;
 		u32 hacks;
 #ifdef ANDROID
 		u32 forcePolygonOffset;
