@@ -609,6 +609,16 @@
            </widget>
           </item>
           <item>
+           <widget class="QCheckBox" name="enableShadersStorageCheckBox">
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Shaders storage:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Use persistent storage for compiled shader programs.&lt;br/&gt;&lt;/p&gt;&lt;p&gt;Each game uses set of combiners. Combiner is an equation, which defines how to build output color from various color inputs. The plugin translates combiners to &lt;a href=&quot;https://www.opengl.org/wiki/Shader&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;shaders&lt;/span&gt;&lt;/a&gt;. Shader compiler builds programs from them on fly. Shaders are large and complex. If new scene uses several new combiners, compilation of new shaders will take time and you will notice that as some stuttering. If you have shader storage enabled, all shaders will be compiled only once. Next time you run the game, plugin will not spend time on compilation of shaders, which you already met.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;on&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="text">
+             <string>Enable shaders storage</string>
+            </property>
+           </widget>
+          </item>
+          <item>
            <widget class="QCheckBox" name="customSettingsCheckBox">
             <property name="toolTip">
              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Custom game settings:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Ini file may contain custom settings for particular game. These settings provide optimal performance for the game. Custom settings will override user's settings when this option is enabled. Disable to ignore custom settings.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;on&lt;/span&gt;]&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
