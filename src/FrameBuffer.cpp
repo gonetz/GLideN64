@@ -23,8 +23,10 @@ class FrameBufferToRDRAM
 {
 public:
 	FrameBufferToRDRAM() :
-		m_FBO(0), m_PBO(0), m_pTexture(NULL)
-	{}
+		m_bSync(true), m_FBO(0), m_pTexture(NULL), m_curIndex(0)
+	{
+		m_aPBO[0] = m_aPBO[1] = 0;
+	}
 
 	void Init();
 	void Destroy();
@@ -39,9 +41,11 @@ private:
 		u32 raw;
 	};
 
+	bool m_bSync;
 	GLuint m_FBO;
-	GLuint m_PBO;
 	CachedTexture * m_pTexture;
+	u32 m_curIndex;
+	GLuint m_aPBO[2];
 };
 
 class DepthBufferToRDRAM
@@ -924,10 +928,14 @@ void FrameBufferToRDRAM::Init()
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 
 	// Generate and initialize Pixel Buffer Objects
-	glGenBuffers(1, &m_PBO);
-	glBindBuffer(GL_PIXEL_PACK_BUFFER, m_PBO);
+	glGenBuffers(2, m_aPBO);
+	glBindBuffer(GL_PIXEL_PACK_BUFFER, m_aPBO[0]);
+	glBufferData(GL_PIXEL_PACK_BUFFER, m_pTexture->textureBytes, NULL, GL_DYNAMIC_READ);
+	glBindBuffer(GL_PIXEL_PACK_BUFFER, m_aPBO[1]);
 	glBufferData(GL_PIXEL_PACK_BUFFER, m_pTexture->textureBytes, NULL, GL_DYNAMIC_READ);
 	glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
+	m_bSync = true;
+	m_curIndex = 0;
 }
 
 void FrameBufferToRDRAM::Destroy() {
@@ -940,10 +948,8 @@ void FrameBufferToRDRAM::Destroy() {
 		textureCache().removeFrameBufferTexture(m_pTexture);
 		m_pTexture = NULL;
 	}
-	if (m_PBO != 0) {
-		glDeleteBuffers(1, &m_PBO);
-		m_PBO = 0;
-	}
+	glDeleteBuffers(2, m_aPBO);
+	m_aPBO[0] = m_aPBO[1] = 0;
 }
 
 void FrameBufferToRDRAM::CopyToRDRAM(u32 _address)
@@ -979,14 +985,17 @@ void FrameBufferToRDRAM::CopyToRDRAM(u32 _address)
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, m_FBO);
 	glReadBuffer(GL_COLOR_ATTACHMENT0);
 #ifndef GLES2
-	PBOBinder binder(GL_PIXEL_PACK_BUFFER, m_PBO);
+	// If Sync, read pixels from the buffer, copy them to RDRAM.
+	// If not Sync, read pixels from the buffer, copy pixels from the previous buffer to RDRAM.
+	m_curIndex ^= 1;
+	const u32 nextIndex = m_bSync ? m_curIndex : m_curIndex^1;
+	glBindBuffer(GL_PIXEL_PACK_BUFFER, m_aPBO[m_curIndex]);
 	glReadPixels(0, 0, VI.width, VI.height, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+	PBOBinder binder(GL_PIXEL_PACK_BUFFER, m_aPBO[nextIndex]);
 	GLubyte* pixelData = (GLubyte*)glMapBufferRange(GL_PIXEL_PACK_BUFFER, 0, numPixels * 4, GL_MAP_READ_BIT);
 	if(pixelData == NULL)
 		return;
 #else
-	m_curIndex = 0;
-	const u32 nextIndex = 0;
 	GLubyte* pixelData = (GLubyte* )malloc(numPixels * 4);
 	if(pixelData == NULL)
 		return;
