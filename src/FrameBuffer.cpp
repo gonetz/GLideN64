@@ -934,7 +934,7 @@ void FrameBufferToRDRAM::Init()
 	glBindBuffer(GL_PIXEL_PACK_BUFFER, m_aPBO[1]);
 	glBufferData(GL_PIXEL_PACK_BUFFER, m_pTexture->textureBytes, NULL, GL_DYNAMIC_READ);
 	glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
-	m_bSync = true;
+	m_bSync = config.frameBufferEmulation.copyToRDRAM == Config::ctSync;
 	m_curIndex = 0;
 }
 

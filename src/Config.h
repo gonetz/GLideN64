@@ -63,6 +63,12 @@ struct Config
 		aTotal = 4
 	};
 
+	enum CopyToRDRAM {
+		ctDisable = 0,
+		ctSync,
+		ctAsync
+	};
+
 	struct {
 		u32 enable;
 		u32 copyToRDRAM;
