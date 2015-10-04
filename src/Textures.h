@@ -82,9 +82,12 @@ private:
 	void _initDummyTexture(CachedTexture * _pDummy);
 	void _getTextureDestData(CachedTexture& tmptex, u32* pDest, GLuint glInternalFormat, GetTexelFunc GetTexel, u16* pLine);
 
-	typedef std::map<u32, CachedTexture> Textures;
+	typedef std::list<CachedTexture> Textures;
+	typedef std::map<u32, Textures::iterator> Texture_Locations;
+	typedef std::map<u32, CachedTexture> FBTextures;
 	Textures m_textures;
-	Textures m_fbTextures;
+	Texture_Locations m_lruTextureLocations;
+	FBTextures m_fbTextures;
 	CachedTexture * m_pDummy;
 	CachedTexture * m_pMSDummy;
 	u32 m_hits, m_misses;
