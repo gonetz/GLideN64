@@ -38,6 +38,8 @@ public:
 	friend std::ostream & operator<< (std::ostream & _os, const ShaderCombiner & _combiner);
 	friend std::istream & operator>> (std::istream & _os, ShaderCombiner & _combiner);
 
+	static void getShaderCombinerOptionsSet(std::vector<u32> & _vecOptions);
+
 private:
 	friend class UniformBlock;
 	friend class UniformSet;

@@ -148,6 +148,7 @@ private:
 
 	void _saveShadersStorage() const;
 	bool _loadShadersStorage();
+	u32 _getConfigOptionsBitSet() const;
 	ShaderCombiner * _compile(u64 mux) const;
 
 	bool m_bChanged;

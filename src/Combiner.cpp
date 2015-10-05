@@ -339,9 +339,20 @@ void getStorageFileName(wchar_t * _fileName)
 	swprintf(_fileName, PLUGIN_PATH_SIZE, L"%ls/GLideN64.%08lx.shaders", pPath, std::hash<std::string>()(RSP.romname));
 }
 
+u32 CombinerInfo::_getConfigOptionsBitSet() const
+{
+	std::vector<u32> vecOptions;
+	ShaderCombiner::getShaderCombinerOptionsSet(vecOptions);
+	u32 optionsSet = 0;
+	for (u32 i = 0; i < vecOptions.size(); ++i)
+		optionsSet |= vecOptions[i] << i;
+	return optionsSet;
+}
+
 /*
 Storage format:
   uint32 - format version;
+  uint32 - bitset of config options, which may change how shader is created.
   uint32 - len of renderer string
   char * - renderer string
   uint32 - len of GL version string
@@ -349,7 +360,7 @@ Storage format:
   uint32 - number of shaders
   shaders in binary form
 */
-static const u32 CombinersCacheFormatVersion = 0x01U;
+static const u32 CombinersCacheFormatVersion = 0x02U;
 void CombinerInfo::_saveShadersStorage() const
 {
 	if (m_shadersLoaded >= m_combiners.size())
@@ -369,6 +380,9 @@ void CombinerInfo::_saveShadersStorage() const
 		return;
 
 	fout.write((char*)&CombinersCacheFormatVersion, sizeof(CombinersCacheFormatVersion));
+
+	const u32 optionsSet = _getConfigOptionsBitSet();
+	fout.write((char*)&optionsSet, sizeof(optionsSet));
 
 	const char * strRenderer = reinterpret_cast<const char *>(glGetString(GL_RENDERER));
 	u32 len = strlen(strRenderer);
@@ -407,6 +421,11 @@ bool CombinerInfo::_loadShadersStorage()
 		u32 version;
 		fin.read((char*)&version, sizeof(version));
 		if (version != CombinersCacheFormatVersion)
+			return false;
+
+		u32 optionsSet;
+		fin.read((char*)&optionsSet, sizeof(optionsSet));
+		if (optionsSet != _getConfigOptionsBitSet())
 			return false;
 
 		const char * strRenderer = reinterpret_cast<const char *>(glGetString(GL_RENDERER));

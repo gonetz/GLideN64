@@ -791,6 +791,17 @@ std::istream & operator>> (std::istream & _is, ShaderCombiner & _combiner)
 	return _is;
 }
 
+void ShaderCombiner::getShaderCombinerOptionsSet(std::vector<u32> & _vecOptions)
+{
+	// WARNING: Shader Storage format version must be increased after any change in this function.
+	_vecOptions.push_back(config.video.multisampling > 0 ? 1 : 0);
+	_vecOptions.push_back(config.texture.bilinearMode);
+	_vecOptions.push_back(config.generalEmulation.enableHWLighting);
+	_vecOptions.push_back(config.generalEmulation.enableNoise);
+	_vecOptions.push_back(config.generalEmulation.enableLOD);
+	_vecOptions.push_back(config.frameBufferEmulation.N64DepthCompare);
+}
+
 #ifdef GL_IMAGE_TEXTURES_SUPPORT
 void SetDepthFogCombiner()
 {
