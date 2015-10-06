@@ -524,15 +524,15 @@ void TextureCache::_checkCacheSize()
 	if (m_cachedBytes <= m_maxBytes)
 		return;
 
-	Textures::const_iterator iter = m_textures.cend();
+	Textures::iterator iter = m_textures.end();
 	do {
 		--iter;
-		const CachedTexture& tex = *iter;
+		CachedTexture& tex = *iter;
 		m_cachedBytes -= tex.textureBytes;
 		glDeleteTextures(1, &tex.glName);
 		m_lruTextureLocations.erase(tex.crc);
 	} while (m_cachedBytes > m_maxBytes && iter != m_textures.cbegin());
-	m_textures.erase(iter, m_textures.cend());
+	m_textures.erase(iter, m_textures.end());
 }
 
 CachedTexture * TextureCache::_addTexture(u32 _crc32)
