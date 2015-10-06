@@ -2,7 +2,6 @@
 #define TEXTURES_H
 
 #include <map>
-#include <deque>
 
 #include "CRC.h"
 #include "convert.h"
