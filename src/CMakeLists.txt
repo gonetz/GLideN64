@@ -47,6 +47,28 @@ set(GLideN64_SOURCES
   common/CommonAPIImpl_common.cpp
 )
 
+#check if we're running on Raspberry Pi
+MESSAGE("Looking for bcm_host.h")
+if(EXISTS "/opt/vc/include/bcm_host.h")
+  MESSAGE("bcm_host.h found")
+  set(BCMHOST ON)
+  set(GLES2 ON)
+  add_definitions(
+    -DVC
+  )
+  include_directories(
+    "/opt/vc/include"
+    "/opt/vc/include/interface/vcos"
+    "/opt/vc/include/interface/vmcs_host/linux"
+    "/opt/vc/include/interface/vcos/pthreads"
+  )
+  link_directories(
+    "/opt/vc/lib"
+  )
+else(EXISTS "/opt/vc/include/bcm_host.h")
+  MESSAGE("bcm_host.h not found")
+endif(EXISTS "/opt/vc/include/bcm_host.h")
+
 if(MUPENPLUSAPI)
   add_definitions(
 	-DMUPENPLUSAPI
@@ -126,7 +148,11 @@ if(PANDORA)
    )
 endif(PANDORA)
 
-SET( ENV{FREETYPE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/../../freetype )
+if(BCMHOST)
+  SET( FREETYPE_INCLUDE_DIRS "/usr/include/freetype2/" )
+else(BCMHOST)
+  SET( ENV{FREETYPE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/../../freetype )
+endif(BCMHOST)
 FIND_PACKAGE( Freetype REQUIRED )
 include_directories( ${FREETYPE_INCLUDE_DIRS} )
 
@@ -218,7 +244,7 @@ if( CMAKE_BUILD_TYPE STREQUAL "Release")
   if(SDL)
 	target_link_libraries(${GLideN64_DLL_NAME} ${OPENGL_LIBRARIES} ${SDL_LIBRARIES} ${FREETYPE_LIBRARIES} GLideNHQ )
   else(SDL)
-	target_link_libraries(${GLideN64_DLL_NAME} PRIVATE ${OPENGL_LIBRARIES} ${FREETYPE_LIBRARIES} GLideNHQ )
+	target_link_libraries(${GLideN64_DLL_NAME} ${OPENGL_LIBRARIES} ${FREETYPE_LIBRARIES} GLideNHQ )
   endif(SDL)
 endif( CMAKE_BUILD_TYPE STREQUAL "Release")
 
