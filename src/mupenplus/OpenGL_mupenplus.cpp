@@ -8,6 +8,10 @@
 #include "../Revision.h"
 #include "../Log.h"
 
+#ifdef VC
+#include <bcm_host.h>
+#endif
+
 #if !defined(OS_WINDOWS) || defined(GLES2) || defined(GLES3) || defined(GLES3_1)
 
 void initGLFunctions()
@@ -80,6 +84,19 @@ bool OGLVideoMupenPlus::_start()
 	m_bFullscreen = config.video.fullscreen > 0;
 	m_screenWidth = config.video.windowedWidth;
 	m_screenHeight = config.video.windowedHeight;
+#ifdef VC
+	if( m_bFullscreen > 0 ) {
+		// Use VC get_display_size function to get the current screen resolution
+		unsigned g_fb_width;
+		unsigned g_fb_height;
+		if (graphics_get_display_size(0 /* LCD */, &g_fb_width, &g_fb_height) < 0)
+			printf("ERROR: Failed to get display size\n");
+		else {
+			m_screenWidth = g_fb_width;
+			m_screenHeight = g_fb_height;
+		}
+	}
+#endif
 	_setBufferSize();
 
 	printf("(II) Setting video mode %dx%d...\n", m_screenWidth, m_screenHeight);
