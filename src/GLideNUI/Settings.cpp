@@ -78,7 +78,7 @@ void _loadSettings(QSettings & settings)
 	config.font.color[0] = fontColor.red();
 	config.font.color[1] = fontColor.green();
 	config.font.color[2] = fontColor.blue();
-	config.font.color[4] = fontColor.alpha();
+	config.font.color[3] = fontColor.alpha();
 	config.font.colorf[0] = _FIXED2FLOAT(config.font.color[0], 8);
 	config.font.colorf[1] = _FIXED2FLOAT(config.font.color[1], 8);
 	config.font.colorf[2] = _FIXED2FLOAT(config.font.color[2], 8);
