@@ -26,6 +26,7 @@ public:
 
 private:
 	void _setAttributes();
+	void _getDisplaySize();
 
 	virtual bool _start();
 	virtual void _stop();
@@ -33,7 +34,6 @@ private:
 	virtual void _saveScreenshot();
 	virtual bool _resizeWindow();
 	virtual void _changeWindow();
-	virtual void _getDisplaySize();
 };
 
 OGLVideo & OGLVideo::get()
@@ -156,7 +156,6 @@ void OGLVideoMupenPlus::_changeWindow()
 {
 	CoreVideo_ToggleFullScreen();
 }
-
 
 void OGLVideoMupenPlus::_getDisplaySize()
 {
