@@ -35,13 +35,17 @@
 
 /* global functions */
 
-int osal_path_existsA(const char *path)
+#ifdef __cplusplus
+extern "C"{
+#endif
+
+EXPORT int CALL osal_path_existsA(const char *path)
 {
     struct stat fileinfo;
     return stat(path, &fileinfo) == 0 ? 1 : 0;
 }
 
-int osal_path_existsW(const wchar_t *_path)
+EXPORT int CALL osal_path_existsW(const wchar_t *_path)
 {
     char path[PATH_MAX];
     wcstombs(path, _path, PATH_MAX);
@@ -49,7 +53,7 @@ int osal_path_existsW(const wchar_t *_path)
     return stat(path, &fileinfo) == 0 ? 1 : 0;
 }
 
-int osal_is_directory(const wchar_t * _name)
+EXPORT int CALL osal_is_directory(const wchar_t * _name)
 {
     char name[PATH_MAX + 1];
     wcstombs(name, _name, PATH_MAX);
@@ -63,7 +67,7 @@ int osal_is_directory(const wchar_t * _name)
     return 0;
 }
 
-int osal_mkdirp(const wchar_t *_dirpath)
+EXPORT int CALL osal_mkdirp(const wchar_t *_dirpath)
 {
     char dirpath[PATH_MAX];
     wcstombs(dirpath, _dirpath, PATH_MAX);
@@ -109,7 +113,7 @@ int osal_mkdirp(const wchar_t *_dirpath)
     return 0;
 }
 
-void * osal_search_dir_open(const wchar_t *_pathname)
+EXPORT void * CALL osal_search_dir_open(const wchar_t *_pathname)
 {
     char pathname[PATH_MAX];
     wcstombs(pathname, _pathname, PATH_MAX);
@@ -118,7 +122,7 @@ void * osal_search_dir_open(const wchar_t *_pathname)
     return dir;
 }
 
-const wchar_t *osal_search_dir_read_next(void * dir_handle)
+EXPORT const wchar_t * CALL osal_search_dir_read_next(void * dir_handle)
 {
     static wchar_t last_filename[PATH_MAX];
     DIR *dir = (DIR *) dir_handle;
@@ -131,8 +135,11 @@ const wchar_t *osal_search_dir_read_next(void * dir_handle)
     return last_filename;
 }
 
-void osal_search_dir_close(void * dir_handle)
+EXPORT void CALL osal_search_dir_close(void * dir_handle)
 {
     closedir((DIR *) dir_handle);
 }
 
+#ifdef __cplusplus
+}
+#endif

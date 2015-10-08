@@ -21,14 +21,13 @@ set(GLideNHQ_SOURCES
 )
 
 if(PANDORA)
-include_directories( osal )
+include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/../osal )
 else(PANDORA)
-include_directories( inc osal )
+include_directories( inc ${CMAKE_CURRENT_SOURCE_DIR}/../osal )
 endif(PANDORA)
 LINK_DIRECTORIES( ${CMAKE_CURRENT_SOURCE_DIR}/lib )
 
 if(UNIX)
-  list(APPEND GLideNHQ_SOURCES osal/osal_files_unix.c)
   add_definitions(
     -DNDEBUG
     -DOS_LINUX
@@ -36,7 +35,6 @@ if(UNIX)
 endif(UNIX)
 
 if(WIN32)
-  list(APPEND GLideNHQ_SOURCES osal/osal_files_win32.c)
   LINK_DIRECTORIES( ${CMAKE_CURRENT_SOURCE_DIR}/lib )
   add_definitions(
 	-DWIN32

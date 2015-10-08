@@ -33,23 +33,33 @@ extern "C" {
 #define OSAL_DIR_SEPARATOR_STR       L"/"
 #define OSAL_DIR_SEPARATOR_CHAR      L'/'
 
-#if defined(WIN32)
-  #define PATH_MAX _MAX_PATH
-  #define strdup _strdup
+#if defined(OS_WINDOWS)
+#define EXPORT	__declspec(dllexport)
+#define CALL		__cdecl
+#define PATH_MAX _MAX_PATH
+#define strdup _strdup
 #else  /* Not WIN32 */
-  #ifndef PATH_MAX
-    #define PATH_MAX 260
-  #endif
+#define EXPORT 	__attribute__((visibility("default")))
+#define CALL
+#ifndef PATH_MAX
+#define PATH_MAX 260
+#endif
 #endif
 
-int osal_is_directory(const wchar_t* name);
-int osal_mkdirp(const wchar_t *dirpath);
-int osal_path_existsA(const char *path);
-int osal_path_existsW(const wchar_t *path);
+// Returns 1 if name contains path to a directory, 0 otherwise
+EXPORT int CALL osal_is_directory(const wchar_t* name);
+// Returns 1 if path points to file or directory, 0 otherwise
+EXPORT int CALL osal_path_existsA(const char *path);
+// Returns 1 if path points to file or directory, 0 otherwise
+EXPORT int CALL osal_path_existsW(const wchar_t *path);
+// Returns 0 if all directories on the path exist or successfully created
+// Returns 1 if path is bad
+// Returns 2 if we can't create some directory on the path
+EXPORT int CALL osal_mkdirp(const wchar_t *dirpath);
 
-void * osal_search_dir_open(const wchar_t *_pathname);
-const wchar_t *osal_search_dir_read_next(void * dir_handle);
-void osal_search_dir_close(void * dir_handle);
+EXPORT void * CALL osal_search_dir_open(const wchar_t *_pathname);
+EXPORT const wchar_t * CALL osal_search_dir_read_next(void * dir_handle);
+EXPORT void CALL osal_search_dir_close(void * dir_handle);
 
 #ifdef __cplusplus
 }

@@ -35,19 +35,23 @@
 
 /* global functions */
 
-int osal_path_existsA(const char *path)
+#ifdef __cplusplus
+extern "C"{
+#endif
+
+EXPORT int CALL osal_path_existsA(const char *path)
 {
     struct _stat fileinfo;
     return _stat(path, &fileinfo) == 0 ? 1 : 0;
 }
 
-int osal_path_existsW(const wchar_t *path)
+EXPORT int CALL osal_path_existsW(const wchar_t *path)
 {
     struct _stat fileinfo;
     return _wstat(path, &fileinfo) == 0 ? 1 : 0;
 }
 
-int osal_is_directory(const wchar_t* _name)
+EXPORT int CALL osal_is_directory(const wchar_t* _name)
 {
     wchar_t DirName[MAX_PATH + 1];
     int namelen = 0;
@@ -61,7 +65,7 @@ int osal_is_directory(const wchar_t* _name)
     return (GetFileAttributes(DirName) & FILE_ATTRIBUTE_DIRECTORY);
 }
 
-int osal_mkdirp(const wchar_t * dirpath)
+EXPORT int CALL osal_mkdirp(const wchar_t * dirpath)
 {
     struct _stat fileinfo;
 	size_t dirpathlen = wcslen(dirpath);
@@ -102,7 +106,7 @@ typedef struct {
     WIN32_FIND_DATA find_data;
 } dir_search_info;
 
-void * osal_search_dir_open(const wchar_t *pathname)
+EXPORT void * CALL osal_search_dir_open(const wchar_t *pathname)
 {
     wchar_t SearchString[MAX_PATH + 1];
     dir_search_info *pInfo = (dir_search_info *)malloc(sizeof(dir_search_info));
@@ -123,7 +127,7 @@ void * osal_search_dir_open(const wchar_t *pathname)
     return (void *) pInfo;
 }
 
-const wchar_t *osal_search_dir_read_next(void * search_info)
+EXPORT const wchar_t * CALL osal_search_dir_read_next(void * search_info)
 {
     static wchar_t last_filename[_MAX_PATH];
     dir_search_info *pInfo = (dir_search_info *) search_info;
@@ -141,7 +145,7 @@ const wchar_t *osal_search_dir_read_next(void * search_info)
     return last_filename;
 }
 
-void osal_search_dir_close(void * search_info)
+EXPORT void CALL osal_search_dir_close(void * search_info)
 {
     dir_search_info *pInfo = (dir_search_info *) search_info;
 
@@ -152,3 +156,7 @@ void osal_search_dir_close(void * search_info)
         free(pInfo);
     }
 }
+
+#ifdef __cplusplus
+}
+#endif

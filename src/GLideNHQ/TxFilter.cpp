@@ -29,7 +29,7 @@
 #include <thread>
 #include <stdlib.h>
 
-#include "osal_files.h"
+#include <osal_files.h>
 #include "TxFilter.h"
 #include "TextureFilters.h"
 #include "TxDbg.h"

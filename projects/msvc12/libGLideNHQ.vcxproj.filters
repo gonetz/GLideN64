@@ -46,9 +46,6 @@
     <ClCompile Include="..\..\src\GLideNHQ\TextureFilters.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\GLideNHQ\osal\osal_files_win32.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Source Files">
