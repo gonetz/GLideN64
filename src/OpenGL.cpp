@@ -108,6 +108,31 @@ bool isGLError()
 	return false;
 }
 
+bool OGLVideo::isExtensionSupported(const char *extension)
+{
+	GLubyte *where = (GLubyte *)strchr(extension, ' ');
+	if (where || *extension == '\0')
+		return false;
+
+	const GLubyte *extensions = glGetString(GL_EXTENSIONS);
+
+	const GLubyte *start = extensions;
+	for (;;) {
+		where = (GLubyte *)strstr((const char *)start, extension);
+		if (where == NULL)
+			break;
+
+		GLubyte *terminator = where + strlen(extension);
+		if (where == start || *(where - 1) == ' ')
+		if (*terminator == ' ' || *terminator == '\0')
+			return true;
+
+		start = terminator;
+	}
+
+	return false;
+}
+
 void OGLVideo::start()
 {
 	_start(); // TODO: process initialization error
@@ -1203,7 +1228,7 @@ void FBOTextureFormats::init()
 	depthType = GL_UNSIGNED_INT;
 	depthFormatBytes = 4;
 
-	if (strstr((const char *)glGetString(GL_EXTENSIONS), "GL_OES_rgb8_rgba8") != NULL) {
+	if (OGLVideo::isExtensionSupported("GL_OES_rgb8_rgba8")) {
 		colorInternalFormat = GL_RGBA;
 		colorFormat = GL_RGBA;
 		colorType = GL_UNSIGNED_BYTE;
@@ -1302,7 +1327,7 @@ void OGLRender::_initExtensions()
 #endif
 	LOG(LOG_VERBOSE, "ImageTexture support: %s\n", m_bImageTexture ? "yes" : "no");
 
-	if (config.texture.maxAnisotropy != 0 && strstr((const char *)glGetString(GL_EXTENSIONS), "GL_EXT_texture_filter_anisotropic") != NULL) {
+	if (config.texture.maxAnisotropy != 0 && OGLVideo::isExtensionSupported("GL_EXT_texture_filter_anisotropic")) {
 		glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &config.texture.maxAnisotropyF);
 		config.texture.maxAnisotropyF = min(config.texture.maxAnisotropyF, (f32)config.texture.maxAnisotropy);
 	} else

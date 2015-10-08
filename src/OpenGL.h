@@ -195,6 +195,7 @@ public:
 	OGLRender & getRender() {return m_render;}
 
 	static OGLVideo & get();
+	static bool isExtensionSupported(const char * extension);
 
 protected:
 	OGLVideo() :
