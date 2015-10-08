@@ -34,6 +34,7 @@ void Config::resetToDefaults()
 	generalEmulation.enableNoise = 1;
 	generalEmulation.enableHWLighting = 0;
 	generalEmulation.enableCustomSettings = 1;
+	generalEmulation.shaderStorage = ssDoNotUse;
 	generalEmulation.hacks = 0;
 #ifdef ANDROID
 	generalEmulation.forcePolygonOffset = 0;

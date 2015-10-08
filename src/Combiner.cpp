@@ -1,4 +1,6 @@
 #include <fstream>
+#include <functional>
+#include <stdio.h>
 
 #include "OpenGL.h"
 #include "Combiner.h"
@@ -6,7 +8,9 @@
 #include "UniformCollection.h"
 #include "Debug.h"
 #include "gDP.h"
+#include "Config.h"
 #include "PluginAPI.h"
+#include "RSP.h"
 
 static int saRGBExpanded[] =
 {
@@ -92,10 +96,10 @@ void CombinerInfo::init()
 {
 	m_pCurrent = NULL;
 	m_pUniformCollection = createUniformCollection();
-	m_bShaderCacheSupported = OGLVideo::isExtensionSupported("GL_ARB_get_program_binary");
+	m_bShaderCacheSupported = config.generalEmulation.shaderStorage != Config::ssDoNotUse && OGLVideo::isExtensionSupported("GL_ARB_get_program_binary");
 
 	m_shadersLoaded = 0;
-	if (!_loadCombinersCache()) {
+	if (m_bShaderCacheSupported && !_loadCombinersCache()) {
 		for (Combiners::iterator cur = m_combiners.begin(); cur != m_combiners.end(); ++cur)
 			delete cur->second;
 		m_combiners.clear();
@@ -107,7 +111,9 @@ void CombinerInfo::destroy()
 	delete m_pUniformCollection;
 	m_pUniformCollection = NULL;
 	m_pCurrent = NULL;
-	_saveCombinersCache();
+	if (m_bShaderCacheSupported)
+		_saveCombinersCache();
+	m_shadersLoaded = 0;
 	for (Combiners::iterator cur = m_combiners.begin(); cur != m_combiners.end(); ++cur)
 		delete cur->second;
 	m_combiners.clear();
@@ -315,6 +321,15 @@ void CombinerInfo::updateParameters(OGLRender::RENDER_STATE _renderState)
 		m_pUniformCollection->updateUniforms(m_pCurrent, _renderState);
 }
 
+#ifndef GLES2
+static
+void getStorageFileName(wchar_t * _fileName)
+{
+	wchar_t strIniFolderPath[PLUGIN_PATH_SIZE];
+	api().GetUserCachePath(strIniFolderPath);
+	swprintf(_fileName, PLUGIN_PATH_SIZE, L"%ls/GLideN64.%08lx.shaders", strIniFolderPath, config.generalEmulation.shaderStorage == Config::ssUseOneCommon ? 0 : std::hash<std::string>()(RSP.romname));
+}
+
 /*
 Storage format:
   uint32 - format version;
@@ -328,26 +343,34 @@ Storage format:
 static const u32 CombinersCacheFormatVersion = 0x01U;
 void CombinerInfo::_saveCombinersCache() const
 {
-	if (!m_bShaderCacheSupported || m_shadersLoaded >= m_combiners.size())
+	if (m_shadersLoaded >= m_combiners.size())
 		return;
 
-	wchar_t strIniFolderPath[PLUGIN_PATH_SIZE];
-	api().FindPluginPath(strIniFolderPath);
-	std::wstring fileName(strIniFolderPath);
-	fileName += L"/GLideN64.shaders.bin";
+	wchar_t fileName[PLUGIN_PATH_SIZE];
+	getStorageFileName(fileName);
+
+#ifdef OS_WINDOWS
 	std::ofstream fout(fileName, std::ofstream::binary | std::ofstream::trunc);
+#else
+	char fileName_c[PATH_MAX];
+	wcstombs(fileName_c, fileName, PATH_MAX);
+	std::ofstream fout(fileName_c, std::ofstream::binary | std::ofstream::trunc);
+#endif
 	if (!fout)
 		return;
 
 	fout.write((char*)&CombinersCacheFormatVersion, sizeof(CombinersCacheFormatVersion));
+
 	const char * strRenderer = reinterpret_cast<const char *>(glGetString(GL_RENDERER));
 	u32 len = strlen(strRenderer);
 	fout.write((char*)&len, sizeof(len));
 	fout.write(strRenderer, len);
+
 	const char * strGLVersion = reinterpret_cast<const char *>(glGetString(GL_VERSION));
 	len = strlen(strGLVersion);
 	fout.write((char*)&len, sizeof(len));
 	fout.write(strGLVersion, len);
+
 	len = m_combiners.size();
 	fout.write((char*)&len, sizeof(len));
 	for (Combiners::const_iterator cur = m_combiners.begin(); cur != m_combiners.end(); ++cur)
@@ -358,14 +381,16 @@ void CombinerInfo::_saveCombinersCache() const
 
 bool CombinerInfo::_loadCombinersCache()
 {
-	if (!m_bShaderCacheSupported)
-		return false;
+	wchar_t fileName[PLUGIN_PATH_SIZE];
+	getStorageFileName(fileName);
 
-	wchar_t strIniFolderPath[PLUGIN_PATH_SIZE];
-	api().FindPluginPath(strIniFolderPath);
-	std::wstring fileName(strIniFolderPath);
-	fileName += L"/GLideN64.shaders.bin";
+#ifdef OS_WINDOWS
 	std::ifstream fin(fileName, std::ofstream::binary);
+#else
+	char fileName_c[PATH_MAX];
+	wcstombs(fileName_c, fileName, PATH_MAX);
+	std::ifstream fin(fileName_c, std::ofstream::binary);
+#endif
 	if (!fin)
 		return false;
 
@@ -397,7 +422,17 @@ bool CombinerInfo::_loadCombinersCache()
 		m_pUniformCollection->bindWithShaderCombiner(m_pCurrent);
 		m_combiners[m_pCurrent->getMux()] = m_pCurrent;
 	}
+
 	m_shadersLoaded = m_combiners.size();
 	fin.close();
 	return !isGLError();
 }
+#else // GLES2
+void CombinerInfo::_saveCombinersCache() const
+{}
+
+bool CombinerInfo::_loadCombinersCache()
+{
+	return true;
+}
+#endif //GLES2
