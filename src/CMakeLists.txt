@@ -199,15 +199,12 @@ else(GLES2)
   )
 endif(GLES2)
 
-if(CMAKE_COMPILER_IS_GNUCXX)
+if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
     #check for G++ 4.8+
     execute_process(COMMAND ${CMAKE_CXX_COMPILER} -dumpversion OUTPUT_VARIABLE G++_VERSION)
     if (G++_VERSION VERSION_LESS 4.8)
-        message(SEND_ERROR "You need at least G++ 4.8 to compile EmulationStation!")
+        message(SEND_ERROR "You need at least G++ 4.8 to compile GLideN64!")
     endif()
-endif()
-
-if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
 	SET(GCC_CPP11_COMPILE_FLAGS "-std=c++0x -static-libgcc -static-libstdc++")
 	SET( CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} ${GCC_CPP11_COMPILE_FLAGS}" )
 	SET(GCC_STATIC_LINK_FLAGS "-static-libgcc -static-libstdc++")
