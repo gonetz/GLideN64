@@ -100,7 +100,7 @@ void CombinerInfo::init()
 	m_bShaderCacheSupported = config.generalEmulation.enableShadersStorage != 0 && OGLVideo::isExtensionSupported(GET_PROGRAM_BINARY_EXTENSION);
 
 	m_shadersLoaded = 0;
-	if (m_bShaderCacheSupported && !_loadCombinersCache()) {
+	if (m_bShaderCacheSupported && !_loadShadersStorage()) {
 		for (Combiners::iterator cur = m_combiners.begin(); cur != m_combiners.end(); ++cur)
 			delete cur->second;
 		m_combiners.clear();
@@ -113,7 +113,7 @@ void CombinerInfo::destroy()
 	m_pUniformCollection = NULL;
 	m_pCurrent = NULL;
 	if (m_bShaderCacheSupported)
-		_saveCombinersCache();
+		_saveShadersStorage();
 	m_shadersLoaded = 0;
 	for (Combiners::iterator cur = m_combiners.begin(); cur != m_combiners.end(); ++cur)
 		delete cur->second;
@@ -350,7 +350,7 @@ Storage format:
   shaders in binary form
 */
 static const u32 CombinersCacheFormatVersion = 0x01U;
-void CombinerInfo::_saveCombinersCache() const
+void CombinerInfo::_saveShadersStorage() const
 {
 	if (m_shadersLoaded >= m_combiners.size())
 		return;
@@ -388,7 +388,7 @@ void CombinerInfo::_saveCombinersCache() const
 	fout.close();
 }
 
-bool CombinerInfo::_loadCombinersCache()
+bool CombinerInfo::_loadShadersStorage()
 {
 	wchar_t fileName[PLUGIN_PATH_SIZE];
 	getStorageFileName(fileName);
@@ -443,10 +443,10 @@ bool CombinerInfo::_loadCombinersCache()
 	return !isGLError();
 }
 #else // GLES2
-void CombinerInfo::_saveCombinersCache() const
+void CombinerInfo::_saveShadersStorage() const
 {}
 
-bool CombinerInfo::_loadCombinersCache()
+bool CombinerInfo::_loadShadersStorage()
 {
 	return true;
 }

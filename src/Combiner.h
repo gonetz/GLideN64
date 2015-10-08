@@ -146,8 +146,8 @@ private:
 	CombinerInfo() : m_bChanged(false), m_bShaderCacheSupported(false), m_shadersLoaded(0), m_pCurrent(NULL) {}
 	CombinerInfo(const CombinerInfo &);
 
-	void _saveCombinersCache() const;
-	bool _loadCombinersCache();
+	void _saveShadersStorage() const;
+	bool _loadShadersStorage();
 	ShaderCombiner * _compile(u64 mux) const;
 
 	bool m_bChanged;
