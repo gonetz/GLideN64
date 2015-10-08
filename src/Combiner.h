@@ -125,6 +125,8 @@ public:
 
 	ShaderCombiner * getCurrent() const {return m_pCurrent;}
 	bool isChanged() const {return m_bChanged;}
+	bool isShaderCacheSupported() const { return m_bShaderCacheSupported; }
+	size_t getCombinersNumber() const { return m_combiners.size();  }
 
 	static CombinerInfo & get();
 
@@ -141,12 +143,17 @@ public:
 	void updateParameters(OGLRender::RENDER_STATE _renderState);
 
 private:
-	CombinerInfo() : m_bChanged(false), m_pCurrent(NULL) {}
+	CombinerInfo() : m_bChanged(false), m_bShaderCacheSupported(false), m_shadersLoaded(0), m_pCurrent(NULL) {}
 	CombinerInfo(const CombinerInfo &);
 
+	void _saveCombinersCache() const;
+	bool _loadCombinersCache();
 	ShaderCombiner * _compile(u64 mux) const;
 
 	bool m_bChanged;
+	bool m_bShaderCacheSupported;
+	u32 m_shadersLoaded;
+
 	ShaderCombiner * m_pCurrent;
 	typedef std::map<u64, ShaderCombiner *> Combiners;
 	Combiners m_combiners;

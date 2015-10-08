@@ -273,6 +273,12 @@ void DestroyShaderCombiner() {
 #endif // GL_IMAGE_TEXTURES_SUPPORT
 }
 
+ShaderCombiner::ShaderCombiner()
+{
+	m_program = glCreateProgram();
+	_locate_attributes();
+}
+
 ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCombine & _combine) : m_combine(_combine)
 {
 	char strCombiner[1024];
@@ -420,6 +426,8 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 		glAttachShader(m_program, g_dither_shader_object);
 	}
 #endif
+	if (CombinerInfo::get().isShaderCacheSupported())
+		glProgramParameteri(m_program, GL_PROGRAM_BINARY_RETRIEVABLE_HINT, GL_TRUE);
 	glLinkProgram(m_program);
 	assert(checkProgramLinkStatus(m_program));
 	glDeleteShader(fragmentShader);
@@ -738,6 +746,49 @@ void ShaderCombiner::updateAlphaTestInfo(bool _bForce) {
 		m_uniforms.uEnableAlphaTest.set(0, _bForce);
 		m_uniforms.uAlphaTestValue.set(0.0f, _bForce);
 	}
+}
+
+std::ostream & operator<< (std::ostream & _os, const ShaderCombiner & _combiner)
+{
+	GLint  binaryLength;
+	glGetProgramiv(_combiner.m_program, GL_PROGRAM_BINARY_LENGTH, &binaryLength);
+
+	if (binaryLength < 1)
+		return _os;
+
+	std::vector<char> binary(binaryLength);
+
+	if (binary.size() == 0)
+		return _os;
+
+	GLenum binaryFormat;
+	glGetProgramBinary(_combiner.m_program, binaryLength, &binaryLength, &binaryFormat, binary.data());
+	if (isGLError())
+		return _os;
+
+	_os.write((char*)&_combiner.m_combine.mux, sizeof(_combiner.m_combine.mux));
+	_os.write((char*)&_combiner.m_nInputs, sizeof(_combiner.m_nInputs));
+	_os.write((char*)&binaryFormat, sizeof(binaryFormat));
+	_os.write((char*)&binaryLength, sizeof(binaryLength));
+	_os.write(binary.data(), binaryLength);
+	return _os;
+}
+
+std::istream & operator>> (std::istream & _is, ShaderCombiner & _combiner)
+{
+	_is.read((char*)&_combiner.m_combine.mux, sizeof(_combiner.m_combine.mux));
+	_is.read((char*)&_combiner.m_nInputs, sizeof(_combiner.m_nInputs));
+	GLenum binaryFormat;
+	GLint  binaryLength;
+	_is.read((char*)&binaryFormat, sizeof(binaryFormat));
+	_is.read((char*)&binaryLength, sizeof(binaryLength));
+	std::vector<char> binary(binaryLength);
+	_is.read(binary.data(), binaryLength);
+
+	glProgramBinary(_combiner.m_program, binaryFormat, binary.data(), binaryLength);
+	assert(checkProgramLinkStatus(_combiner.m_program));
+	_combiner._locateUniforms();
+	return _is;
 }
 
 #ifdef GL_IMAGE_TEXTURES_SUPPORT

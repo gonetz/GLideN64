@@ -1,9 +1,12 @@
+#include <fstream>
+
 #include "OpenGL.h"
 #include "Combiner.h"
 #include "GLSLCombiner.h"
 #include "UniformCollection.h"
 #include "Debug.h"
 #include "gDP.h"
+#include "PluginAPI.h"
 
 static int saRGBExpanded[] =
 {
@@ -68,8 +71,10 @@ void Combiner_Init() {
 	cmbInfo.init();
 	InitShaderCombiner();
 	gDP.otherMode.cycleType = G_CYC_1CYCLE;
-	cmbInfo.setCombine(EncodeCombineMode(0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0));
-	cmbInfo.setCombine(EncodeCombineMode(0, 0, 0, TEXEL0, 0, 0, 0, 1, 0, 0, 0, TEXEL0, 0, 0, 0, 1));
+	if (cmbInfo.getCombinersNumber() == 0) {
+		cmbInfo.setCombine(EncodeCombineMode(0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0));
+		cmbInfo.setCombine(EncodeCombineMode(0, 0, 0, TEXEL0, 0, 0, 0, 1, 0, 0, 0, TEXEL0, 0, 0, 0, 1));
+	}
 }
 
 void Combiner_Destroy() {
@@ -87,6 +92,14 @@ void CombinerInfo::init()
 {
 	m_pCurrent = NULL;
 	m_pUniformCollection = createUniformCollection();
+	m_bShaderCacheSupported = OGLVideo::isExtensionSupported("GL_ARB_get_program_binary");
+
+	m_shadersLoaded = 0;
+	if (!_loadCombinersCache()) {
+		for (Combiners::iterator cur = m_combiners.begin(); cur != m_combiners.end(); ++cur)
+			delete cur->second;
+		m_combiners.clear();
+	}
 }
 
 void CombinerInfo::destroy()
@@ -94,6 +107,7 @@ void CombinerInfo::destroy()
 	delete m_pUniformCollection;
 	m_pUniformCollection = NULL;
 	m_pCurrent = NULL;
+	_saveCombinersCache();
 	for (Combiners::iterator cur = m_combiners.begin(); cur != m_combiners.end(); ++cur)
 		delete cur->second;
 	m_combiners.clear();
@@ -299,4 +313,91 @@ void CombinerInfo::updateParameters(OGLRender::RENDER_STATE _renderState)
 {
 	if (m_pUniformCollection != NULL)
 		m_pUniformCollection->updateUniforms(m_pCurrent, _renderState);
+}
+
+/*
+Storage format:
+  uint32 - format version;
+  uint32 - len of renderer string
+  char * - renderer string
+  uint32 - len of GL version string
+  char * - GL version string
+  uint32 - number of shaders
+  shaders in binary form
+*/
+static const u32 CombinersCacheFormatVersion = 0x01U;
+void CombinerInfo::_saveCombinersCache() const
+{
+	if (!m_bShaderCacheSupported || m_shadersLoaded >= m_combiners.size())
+		return;
+
+	wchar_t strIniFolderPath[PLUGIN_PATH_SIZE];
+	api().FindPluginPath(strIniFolderPath);
+	std::wstring fileName(strIniFolderPath);
+	fileName += L"/GLideN64.shaders.bin";
+	std::ofstream fout(fileName, std::ofstream::binary | std::ofstream::trunc);
+	if (!fout)
+		return;
+
+	fout.write((char*)&CombinersCacheFormatVersion, sizeof(CombinersCacheFormatVersion));
+	const char * strRenderer = reinterpret_cast<const char *>(glGetString(GL_RENDERER));
+	u32 len = strlen(strRenderer);
+	fout.write((char*)&len, sizeof(len));
+	fout.write(strRenderer, len);
+	const char * strGLVersion = reinterpret_cast<const char *>(glGetString(GL_VERSION));
+	len = strlen(strGLVersion);
+	fout.write((char*)&len, sizeof(len));
+	fout.write(strGLVersion, len);
+	len = m_combiners.size();
+	fout.write((char*)&len, sizeof(len));
+	for (Combiners::const_iterator cur = m_combiners.begin(); cur != m_combiners.end(); ++cur)
+		fout << *(cur->second);
+	fout.flush();
+	fout.close();
+}
+
+bool CombinerInfo::_loadCombinersCache()
+{
+	if (!m_bShaderCacheSupported)
+		return false;
+
+	wchar_t strIniFolderPath[PLUGIN_PATH_SIZE];
+	api().FindPluginPath(strIniFolderPath);
+	std::wstring fileName(strIniFolderPath);
+	fileName += L"/GLideN64.shaders.bin";
+	std::ifstream fin(fileName, std::ofstream::binary);
+	if (!fin)
+		return false;
+
+	u32 version;
+	fin.read((char*)&version, sizeof(version));
+	if (version != CombinersCacheFormatVersion)
+		return false;
+
+	const char * strRenderer = reinterpret_cast<const char *>(glGetString(GL_RENDERER));
+	u32 len;
+	fin.read((char*)&len, sizeof(len));
+	std::vector<char> strBuf(len);
+	fin.read(strBuf.data(), len);
+	if (strncmp(strRenderer, strBuf.data(), len) != 0)
+		return false;
+
+	const char * strGLVersion = reinterpret_cast<const char *>(glGetString(GL_VERSION));
+	fin.read((char*)&len, sizeof(len));
+	strBuf.resize(len);
+	fin.read(strBuf.data(), len);
+	if (strncmp(strGLVersion, strBuf.data(), len) != 0)
+		return false;
+
+	fin.read((char*)&len, sizeof(len));
+	for (u32 i = 0; i < len; ++i) {
+		m_pCurrent = new ShaderCombiner();
+		fin >> *m_pCurrent;
+		m_pCurrent->update(true);
+		m_pUniformCollection->bindWithShaderCombiner(m_pCurrent);
+		m_combiners[m_pCurrent->getMux()] = m_pCurrent;
+	}
+	m_shadersLoaded = m_combiners.size();
+	fin.close();
+	return !isGLError();
 }
