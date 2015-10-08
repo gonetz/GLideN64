@@ -33,6 +33,7 @@ private:
 	virtual void _saveScreenshot();
 	virtual bool _resizeWindow();
 	virtual void _changeWindow();
+	virtual void _getDisplaySize();
 };
 
 OGLVideo & OGLVideo::get()
@@ -84,19 +85,7 @@ bool OGLVideoMupenPlus::_start()
 	m_bFullscreen = config.video.fullscreen > 0;
 	m_screenWidth = config.video.windowedWidth;
 	m_screenHeight = config.video.windowedHeight;
-#ifdef VC
-	if( m_bFullscreen > 0 ) {
-		// Use VC get_display_size function to get the current screen resolution
-		unsigned g_fb_width;
-		unsigned g_fb_height;
-		if (graphics_get_display_size(0 /* LCD */, &g_fb_width, &g_fb_height) < 0)
-			printf("ERROR: Failed to get display size\n");
-		else {
-			m_screenWidth = g_fb_width;
-			m_screenHeight = g_fb_height;
-		}
-	}
-#endif
+	_getDisplaySize();
 	_setBufferSize();
 
 	printf("(II) Setting video mode %dx%d...\n", m_screenWidth, m_screenHeight);
@@ -166,4 +155,22 @@ bool OGLVideoMupenPlus::_resizeWindow()
 void OGLVideoMupenPlus::_changeWindow()
 {
 	CoreVideo_ToggleFullScreen();
+}
+
+
+void OGLVideoMupenPlus::_getDisplaySize()
+{
+#ifdef VC
+	if( m_bFullscreen ) {
+		// Use VC get_display_size function to get the current screen resolution
+		u32 fb_width;
+		u32 fb_height;
+		if (graphics_get_display_size(0 /* LCD */, &fb_width, &fb_height) < 0)
+			printf("ERROR: Failed to get display size\n");
+		else {
+			m_screenWidth = fb_width;
+			m_screenHeight = fb_height;
+		}
+	}
+#endif
 }
