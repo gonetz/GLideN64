@@ -97,7 +97,11 @@ void CombinerInfo::init()
 {
 	m_pCurrent = NULL;
 	m_pUniformCollection = createUniformCollection();
-	m_bShaderCacheSupported = config.generalEmulation.enableShadersStorage != 0 && OGLVideo::isExtensionSupported(GET_PROGRAM_BINARY_EXTENSION);
+	int numBinaryFormats;
+	glGetIntegerv(GL_NUM_PROGRAM_BINARY_FORMATS, &numBinaryFormats);
+	m_bShaderCacheSupported = config.generalEmulation.enableShadersStorage != 0 &&
+								OGLVideo::isExtensionSupported(GET_PROGRAM_BINARY_EXTENSION) &&
+								numBinaryFormats > 0;
 
 	m_shadersLoaded = 0;
 	if (m_bShaderCacheSupported && !_loadShadersStorage()) {
