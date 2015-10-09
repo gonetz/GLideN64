@@ -96,11 +96,13 @@ if( NOT GHQCHK )
         target_link_libraries(GLideNHQd
           ${PNG_LIBRARIES}
           ${ZLIB_LIBRARIES}
+          osald
         )
       else(BCMHOST)
         target_link_libraries(GLideNHQd PRIVATE
           ${CMAKE_CURRENT_SOURCE_DIR}/lib/libpng.a
           ${CMAKE_CURRENT_SOURCE_DIR}/lib/libz.a
+          osald
         )
       endif(BCMHOST)
     endif( CMAKE_BUILD_TYPE STREQUAL "Debug")
@@ -115,21 +117,24 @@ if( NOT GHQCHK )
 
       if(PANDORA)
         target_link_libraries(GLideNHQ PRIVATE
-              /mnt/utmp/codeblocks/usr/lib/libpng.a
-              /mnt/utmp/codeblocks/usr/lib/libz.a
-         )
+          /mnt/utmp/codeblocks/usr/lib/libpng.a
+          /mnt/utmp/codeblocks/usr/lib/libz.a
+          osal
+        )
       elseif(BCMHOST)
         FIND_PACKAGE( ZLIB REQUIRED )
         FIND_PACKAGE( PNG REQUIRED )
         target_link_libraries(GLideNHQ
           ${PNG_LIBRARIES}
           ${ZLIB_LIBRARIES}
+          osal
         )
       else(PANDORA)
         target_link_libraries(GLideNHQ PRIVATE
-              ${CMAKE_CURRENT_SOURCE_DIR}/lib/libpng.a
-              ${CMAKE_CURRENT_SOURCE_DIR}/lib/libz.a
-         )
+          ${CMAKE_CURRENT_SOURCE_DIR}/lib/libpng.a
+          ${CMAKE_CURRENT_SOURCE_DIR}/lib/libz.a
+          osal
+        )
       endif(PANDORA)
     endif( CMAKE_BUILD_TYPE STREQUAL "Release")
 else( NOT GHQCHK )
@@ -153,3 +158,4 @@ else( NOT GHQCHK )
     target_link_libraries(ghqchk ${OPENGL_LIBRARIES} png z )
     endif( CMAKE_BUILD_TYPE STREQUAL "Release")
 endif( NOT GHQCHK )
+
