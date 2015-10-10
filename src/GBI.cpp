@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <assert.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -211,14 +212,23 @@ bool _isDigit(char _c)
 	return _c >= '0' && _c <= '9';
 }
 
+bool GBIInfo::_makeExistingMicrocodeCurrent(u32 uc_start, u32 uc_dstart, u32 uc_dsize)
+{
+	auto iter = std::find_if(m_list.begin(), m_list.end(), [=](const MicrocodeInfo& info) {
+		return info.address == uc_start && info.dataAddress == uc_dstart && info.dataSize == uc_dsize;
+	});
+
+	if (iter == m_list.end())
+		return false;
+
+	_makeCurrent(&*iter);
+	return true;
+}
+
 void GBIInfo::loadMicrocode(u32 uc_start, u32 uc_dstart, u16 uc_dsize)
 {
-	for (Microcodes::iterator iter = m_list.begin(); iter != m_list.end(); ++iter) {
-		if (iter->address == uc_start && iter->dataAddress == uc_dstart && iter->dataSize == uc_dsize) {
-			_makeCurrent(&(*iter));
-			return;
-		}
-	}
+	if (_makeExistingMicrocodeCurrent(uc_start, uc_dstart, uc_dsize))
+		return;
 
 	m_list.emplace_front();
 	MicrocodeInfo & current = m_list.front();

@@ -699,6 +699,7 @@ struct GBIInfo
 
 private:
 	void _makeCurrent(MicrocodeInfo * _pCurrent);
+	bool _makeExistingMicrocodeCurrent(u32 uc_start, u32 uc_dstart, u32 uc_dsize);
 
 	MicrocodeInfo * m_pCurrent;
 
