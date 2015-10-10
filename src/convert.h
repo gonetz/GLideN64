@@ -164,7 +164,7 @@ inline u16 swapword( u16 value )
 		xchg	ah, al
 	}
 #else // WIN32_ASM
-#ifdef __arm__
+#ifdef ARM_ASM
 	asm("rev16 %0, %0" : "+r"(value)::);
 	return value;
 #else
