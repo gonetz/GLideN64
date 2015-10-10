@@ -698,6 +698,8 @@ struct GBIInfo
 	bool isBranchLessZ() const { return m_pCurrent != NULL ? m_pCurrent->branchLessZ : true; }
 
 private:
+	void _flushCommands();
+
 	void _makeCurrent(MicrocodeInfo * _pCurrent);
 	bool _makeExistingMicrocodeCurrent(u32 uc_start, u32 uc_dstart, u32 uc_dsize);
 

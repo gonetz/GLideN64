@@ -119,8 +119,7 @@ void GBI_Unknown( u32 w0, u32 w1 )
 void GBIInfo::init()
 {
 	m_pCurrent = NULL;
-	for (u32 i = 0; i <= 0xFF; ++i)
-		cmd[i] = GBI_Unknown;
+	_flushCommands();
 }
 
 void GBIInfo::destroy()
@@ -144,6 +143,11 @@ bool GBIInfo::isHWLSupported() const
 	return true;
 }
 
+void GBIInfo::_flushCommands()
+{
+	std::fill(std::begin(cmd), std::end(cmd), GBI_Unknown);
+}
+
 void GBIInfo::_makeCurrent(MicrocodeInfo * _pCurrent)
 {
 	if (_pCurrent->type == NONE) {
@@ -153,8 +157,7 @@ void GBIInfo::_makeCurrent(MicrocodeInfo * _pCurrent)
 
 	if (m_pCurrent == NULL || (m_pCurrent->type != _pCurrent->type)) {
 		m_pCurrent = _pCurrent;
-		for (int i = 0; i <= 0xFF; ++i)
-			cmd[i] = GBI_Unknown;
+		_flushCommands();
 
 		RDP_Init();
 
