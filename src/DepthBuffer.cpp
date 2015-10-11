@@ -26,7 +26,7 @@ DepthBuffer::DepthBuffer() : m_address(0), m_width(0), m_uly(0), m_lry(0),
 DepthBuffer::DepthBuffer(DepthBuffer && _other) :
 	m_address(_other.m_address), m_width(_other.m_width), m_uly(_other.m_uly), m_lry(_other.m_lry),
 	m_FBO(_other.m_FBO), m_pDepthImageTexture(_other.m_pDepthImageTexture), m_pDepthBufferTexture(_other.m_pDepthBufferTexture),
-	m_pResolveDepthBufferTexture(_other.m_pResolveDepthBufferTexture), m_resolved(_other.m_resolved)
+	m_cleared(_other.m_cleared), m_pResolveDepthBufferTexture(_other.m_pResolveDepthBufferTexture), m_resolved(_other.m_resolved)
 {
 	_other.m_FBO = 0;
 	_other.m_pDepthImageTexture = NULL;
