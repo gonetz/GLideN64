@@ -103,6 +103,7 @@ void CombinerInfo::init()
 #endif
 	m_bShaderCacheSupported = config.generalEmulation.enableShadersStorage != 0 &&
 								OGLVideo::isExtensionSupported(GET_PROGRAM_BINARY_EXTENSION) &&
+								glGetProgramBinary != NULL &&
 								numBinaryFormats > 0;
 
 	m_shadersLoaded = 0;
