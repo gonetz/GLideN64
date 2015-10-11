@@ -88,8 +88,8 @@ void UniformSet::_updateTextureUniforms(UniformSetLocation & _location, bool _bU
 			else {
 				_location.uTexOffset[t].set(gSP.textureTile[t]->fuls, gSP.textureTile[t]->fult, _bForce);
 				_location.uTexMask[t].set(
-					gSP.textureTile[t]->clamps == 0 && gSP.textureTile[t]->masks > 0 ? (float)(1 << gSP.textureTile[t]->masks) : 0.0f,
-					gSP.textureTile[t]->clampt == 0 && gSP.textureTile[t]->maskt > 0 ? (float)(1 << gSP.textureTile[t]->maskt) : 0.0f,
+					gSP.textureTile[t]->masks > 0 ? (float)(1 << gSP.textureTile[t]->masks) : 0.0f,
+					gSP.textureTile[t]->maskt > 0 ? (float)(1 << gSP.textureTile[t]->maskt) : 0.0f,
 					_bForce);
 			}
 		}
