@@ -48,7 +48,7 @@ private:
 		GLuint m_program;
 
 		// Texture parameters
-		ShaderCombiner::fv2Uniform uTexScale, uTexMask[2], uTexOffset[2], uCacheScale[2], uCacheOffset[2], uCacheShiftScale[2], uTextureSize[2];
+		ShaderCombiner::fv2Uniform uTexScale, uTexOffset[2], uCacheScale[2], uCacheOffset[2], uCacheShiftScale[2], uTextureSize[2];
 		ShaderCombiner::iv2Uniform uCacheFrameBuffer;
 
 		// Colors

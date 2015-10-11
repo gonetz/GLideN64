@@ -15,8 +15,6 @@ void UniformSet::bindWithShaderCombiner(ShaderCombiner * _pCombiner)
 	// Texture parameters
 	if (_pCombiner->usesTexture()) {
 		LocateUniform2(uTexScale);
-		LocateUniform2(uTexMask[0]);
-		LocateUniform2(uTexMask[1]);
 		LocateUniform2(uTexOffset[0]);
 		LocateUniform2(uTexOffset[1]);
 		LocateUniform2(uCacheScale[0]);
@@ -81,16 +79,19 @@ void UniformSet::_updateTextureUniforms(UniformSetLocation & _location, bool _bU
 			continue;
 
 		if (gSP.textureTile[t] != NULL) {
-			if (gSP.textureTile[t]->textureMode == TEXTUREMODE_BGIMAGE || gSP.textureTile[t]->textureMode == TEXTUREMODE_FRAMEBUFFER_BG) {
+			if (gSP.textureTile[t]->textureMode == TEXTUREMODE_BGIMAGE || gSP.textureTile[t]->textureMode == TEXTUREMODE_FRAMEBUFFER_BG)
 				_location.uTexOffset[t].set(0.0f, 0.0f, _bForce);
-				_location.uTexMask[t].set(0.0f, 0.0f, _bForce);
-			}
 			else {
-				_location.uTexOffset[t].set(gSP.textureTile[t]->fuls, gSP.textureTile[t]->fult, _bForce);
-				_location.uTexMask[t].set(
-					gSP.textureTile[t]->masks > 0 ? (float)(1 << gSP.textureTile[t]->masks) : 0.0f,
-					gSP.textureTile[t]->maskt > 0 ? (float)(1 << gSP.textureTile[t]->maskt) : 0.0f,
-					_bForce);
+				float fuls = gSP.textureTile[t]->fuls;
+				float fult = gSP.textureTile[t]->fult;
+				FrameBuffer * pBuffer = gSP.textureTile[t]->frameBuffer;
+				if (pBuffer != NULL) {
+					if (gSP.textureTile[t]->masks > 0 && gSP.textureTile[t]->clamps == 0)
+						fuls = float(gSP.textureTile[t]->uls % (1 << gSP.textureTile[t]->masks));
+					if (gSP.textureTile[t]->maskt > 0 && gSP.textureTile[t]->clampt == 0)
+						fult = float(gSP.textureTile[t]->ult % (1 << gSP.textureTile[t]->maskt));
+				}
+				_location.uTexOffset[t].set(fuls, fult, _bForce);
 			}
 		}
 

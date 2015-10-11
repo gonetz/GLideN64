@@ -7,7 +7,6 @@ class UniformCollection {
 public:
 	enum TextureUniforms {
 		tuTexScale,
-		tuTexMask,
 		tuTexOffset,
 		tuCacheScale,
 		tuCacheOffset,
