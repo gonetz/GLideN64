@@ -366,7 +366,7 @@ Storage format:
   uint32 - number of shaders
   shaders in binary form
 */
-static const u32 CombinersCacheFormatVersion = 0x02U;
+static const u32 ShaderStorageFormatVersion = 0x02U;
 void CombinerInfo::_saveShadersStorage() const
 {
 	if (m_shadersLoaded >= m_combiners.size())
@@ -385,7 +385,7 @@ void CombinerInfo::_saveShadersStorage() const
 	if (!fout)
 		return;
 
-	fout.write((char*)&CombinersCacheFormatVersion, sizeof(CombinersCacheFormatVersion));
+	fout.write((char*)&ShaderStorageFormatVersion, sizeof(ShaderStorageFormatVersion));
 
 	const u32 optionsSet = _getConfigOptionsBitSet();
 	fout.write((char*)&optionsSet, sizeof(optionsSet));
@@ -426,7 +426,7 @@ bool CombinerInfo::_loadShadersStorage()
 	try {
 		u32 version;
 		fin.read((char*)&version, sizeof(version));
-		if (version != CombinersCacheFormatVersion)
+		if (version != ShaderStorageFormatVersion)
 			return false;
 
 		u32 optionsSet;
