@@ -1,4 +1,6 @@
+#include <algorithm>
 #include <assert.h>
+#include <cctype>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -117,8 +119,7 @@ void GBI_Unknown( u32 w0, u32 w1 )
 void GBIInfo::init()
 {
 	m_pCurrent = NULL;
-	for (u32 i = 0; i <= 0xFF; ++i)
-		cmd[i] = GBI_Unknown;
+	_flushCommands();
 }
 
 void GBIInfo::destroy()
@@ -142,6 +143,11 @@ bool GBIInfo::isHWLSupported() const
 	return true;
 }
 
+void GBIInfo::_flushCommands()
+{
+	std::fill(std::begin(cmd), std::end(cmd), GBI_Unknown);
+}
+
 void GBIInfo::_makeCurrent(MicrocodeInfo * _pCurrent)
 {
 	if (_pCurrent->type == NONE) {
@@ -151,8 +157,7 @@ void GBIInfo::_makeCurrent(MicrocodeInfo * _pCurrent)
 
 	if (m_pCurrent == NULL || (m_pCurrent->type != _pCurrent->type)) {
 		m_pCurrent = _pCurrent;
-		for (int i = 0; i <= 0xFF; ++i)
-			cmd[i] = GBI_Unknown;
+		_flushCommands();
 
 		RDP_Init();
 
@@ -205,20 +210,23 @@ void GBIInfo::_makeCurrent(MicrocodeInfo * _pCurrent)
 	m_pCurrent = _pCurrent;
 }
 
-inline
-bool _isDigit(char _c)
+bool GBIInfo::_makeExistingMicrocodeCurrent(u32 uc_start, u32 uc_dstart, u32 uc_dsize)
 {
-	return _c >= '0' && _c <= '9';
+	auto iter = std::find_if(m_list.begin(), m_list.end(), [=](const MicrocodeInfo& info) {
+		return info.address == uc_start && info.dataAddress == uc_dstart && info.dataSize == uc_dsize;
+	});
+
+	if (iter == m_list.end())
+		return false;
+
+	_makeCurrent(&*iter);
+	return true;
 }
 
 void GBIInfo::loadMicrocode(u32 uc_start, u32 uc_dstart, u16 uc_dsize)
 {
-	for (Microcodes::iterator iter = m_list.begin(); iter != m_list.end(); ++iter) {
-		if (iter->address == uc_start && iter->dataAddress == uc_dstart && iter->dataSize == uc_dsize) {
-			_makeCurrent(&(*iter));
-			return;
-		}
-	}
+	if (_makeExistingMicrocodeCurrent(uc_start, uc_dstart, uc_dsize))
+		return;
 
 	m_list.emplace_front();
 	MicrocodeInfo & current = m_list.front();
@@ -277,7 +285,7 @@ void GBIInfo::loadMicrocode(u32 uc_start, u32 uc_dstart, u16 uc_dsize)
 				}
 				else if (strncmp( &uc_str[14], "L3D", 3 ) == 0) {
 					u32 t = 22;
-					while (!_isDigit(uc_str[t]) && t++ < j);
+					while (!std::isdigit(uc_str[t]) && t++ < j);
 					if (uc_str[t] == '1')
 						type = L3DEX;
 					else if (uc_str[t] == '2')
@@ -285,7 +293,7 @@ void GBIInfo::loadMicrocode(u32 uc_start, u32 uc_dstart, u16 uc_dsize)
 				}
 				else if (strncmp( &uc_str[14], "S2D", 3 ) == 0) {
 					u32 t = 20;
-					while (!_isDigit(uc_str[t]) && t++ < j);
+					while (!std::isdigit(uc_str[t]) && t++ < j);
 					if (uc_str[t] == '1')
 						type = S2DEX;
 					else if (uc_str[t] == '2')
