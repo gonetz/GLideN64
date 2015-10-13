@@ -27,7 +27,6 @@ MAIN_SHADER_VERSION
 "													\n"
 "layout (std140) uniform TextureBlock {				\n"
 "  mediump vec2 uTexScale;							\n"
-"  mediump vec2 uTexMask[2];						\n"
 "  mediump vec2 uTexOffset[2];						\n"
 "  mediump vec2 uCacheScale[2];						\n"
 "  mediump vec2 uCacheOffset[2];					\n"
