@@ -78,7 +78,7 @@ void NoiseTexture::destroy()
 
 void NoiseTexture::update()
 {
-	if (m_DList == RSP.DList || config.generalEmulation.enableNoise == 0)
+	if (m_DList == video().getBuffersSwapCount() || config.generalEmulation.enableNoise == 0)
 		return;
 
 	if (VI.width*VI.height == 0)
@@ -92,7 +92,7 @@ void NoiseTexture::update()
 	glActiveTexture(GL_TEXTURE0 + g_noiseTexIndex);
 	glBindTexture(GL_TEXTURE_2D, m_pTexture->glName);
 	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, VI.width, VI.height, GL_LUMINANCE, GL_UNSIGNED_BYTE, m_pData.get());
-	m_DList = RSP.DList;
+	m_DList = video().getBuffersSwapCount();
 }
 
 static

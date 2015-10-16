@@ -189,6 +189,7 @@ public:
 	f32 getScaleX() const {return m_scaleX;}
 	f32 getScaleY() const {return m_scaleY;}
 	f32 getAdjustScale() const {return m_adjustScale;}
+	u32 getBuffersSwapCount() const {return m_buffersSwapCount;}
 	u32 getWidth() const { return m_width; }
 	u32 getHeight() const {return m_height;}
 	u32 getScreenWidth() const {return m_screenWidth;}
@@ -219,6 +220,7 @@ protected:
 	bool m_bFullscreen;
 	bool m_bAdjustScreen;
 
+	u32 m_buffersSwapCount;
 	u32 m_width, m_height, m_heightOffset;
 	u32 m_screenWidth, m_screenHeight;
 	u32 m_resizeWidth, m_resizeHeight;
