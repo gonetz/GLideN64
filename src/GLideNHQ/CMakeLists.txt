@@ -102,6 +102,7 @@ if( NOT GHQCHK )
         target_link_libraries(GLideNHQd PRIVATE
           ${CMAKE_CURRENT_SOURCE_DIR}/lib/libpng.a
           ${CMAKE_CURRENT_SOURCE_DIR}/lib/libz.a
+          dl
           osald
         )
       endif(BCMHOST)
@@ -133,6 +134,7 @@ if( NOT GHQCHK )
         target_link_libraries(GLideNHQ PRIVATE
           ${CMAKE_CURRENT_SOURCE_DIR}/lib/libpng.a
           ${CMAKE_CURRENT_SOURCE_DIR}/lib/libz.a
+          dl
           osal
         )
       endif(PANDORA)
