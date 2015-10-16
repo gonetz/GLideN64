@@ -156,7 +156,7 @@ void OGLVideo::swapBuffers()
 	_swapBuffers();
 	gDP.otherMode.l = 0;
 	gDPSetTextureLUT(G_TT_NONE);
-	++RSP.DList;
+	++RSP.buffer_count;
 }
 
 void OGLVideo::setCaptureScreen(const char * const _strDirectory)
@@ -934,8 +934,8 @@ bool texturedRectDepthBufferCopy(const OGLRender::TexturedRectParams & _params)
 		if (pBuffer == NULL)
 			return true;
 		pBuffer->m_cleared = true;
-		if (lastDList != RSP.DList) {
-			lastDList = RSP.DList;
+		if (lastDList != RSP.buffer_count) {
+			lastDList = RSP.buffer_count;
 			if (!FrameBuffer_CopyDepthBuffer(gDP.colorImage.address))
 				return true;
 		}

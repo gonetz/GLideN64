@@ -413,7 +413,7 @@ bool CheckForFrameBufferTexture(u32 _address, u32 _bytes)
 		if (bRes) {
 			bRes = pBuffer->isValid();
 			if (bRes)
-				pBuffer->m_validityChecked = RSP.DList;
+				pBuffer->m_validityChecked = RSP.buffer_count;
 			else
 				fbList.removeBuffer(pBuffer->m_startAddress);
 		}

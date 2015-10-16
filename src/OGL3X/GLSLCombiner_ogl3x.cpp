@@ -93,7 +93,7 @@ void NoiseTexture::destroy()
 
 void NoiseTexture::update()
 {
-	if (m_DList == RSP.DList || config.generalEmulation.enableNoise == 0)
+	if (m_DList == RSP.buffer_count || config.generalEmulation.enableNoise == 0)
 		return;
 	const u32 dataSize = VI.width*VI.height;
 	if (dataSize == 0)
@@ -111,7 +111,7 @@ void NoiseTexture::update()
 	glActiveTexture(GL_TEXTURE0 + g_noiseTexIndex);
 	glBindTexture(GL_TEXTURE_2D, m_pTexture->glName);
 	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, VI.width, VI.height, GL_RED, GL_UNSIGNED_BYTE, 0);
-	m_DList = RSP.DList;
+	m_DList = RSP.buffer_count;
 }
 
 

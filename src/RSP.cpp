@@ -288,7 +288,7 @@ void RSP_Init()
 	RDRAMSize = 1024 * 1024 * 8 - 1;
 #endif // OS_WINDOWS
 
-	RSP.DList = 0;
+	RSP.buffer_count = 0;
 	RSP.uc_start = RSP.uc_dstart = 0;
 	RSP.bLLE = false;
 
