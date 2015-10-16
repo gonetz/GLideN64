@@ -287,7 +287,7 @@ void FrameBuffer::copyRdram()
 
 bool FrameBuffer::isValid() const
 {
-	if (m_validityChecked == RSP.buffer_count)
+	if (m_validityChecked == video().getBuffersSwapCount())
 		return true; // Already checked
 
 	const u32 * const pData = (const u32*)RDRAM;

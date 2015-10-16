@@ -1224,7 +1224,7 @@ void TextureCache::activateTexture(u32 _t, CachedTexture *_pTexture)
 	if (video().getRender().getRenderState() == OGLRender::rsTriangle && config.texture.maxAnisotropyF > 0.0f)
 		glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, config.texture.maxAnisotropyF);
 
-	_pTexture->lastDList = RSP.buffer_count;
+	_pTexture->lastDList = video().getBuffersSwapCount();
 
 	current[_t] = _pTexture;
 }
@@ -1312,7 +1312,7 @@ void TextureCache::_updateBackground()
 	pCurrent->clampT = 0;
 	pCurrent->line = 0;
 	pCurrent->tMem = 0;
-	pCurrent->lastDList = RSP.buffer_count;
+	pCurrent->lastDList = video().getBuffersSwapCount();
 	pCurrent->frameBufferTexture = CachedTexture::fbNone;
 
 	pCurrent->realWidth = gSP.bgImage.width;
@@ -1481,7 +1481,7 @@ void TextureCache::update(u32 _t)
 	pCurrent->clampT = gSP.textureTile[_t]->clampt;
 	pCurrent->line = gSP.textureTile[_t]->line;
 	pCurrent->tMem = gSP.textureTile[_t]->tmem;
-	pCurrent->lastDList = RSP.buffer_count;
+	pCurrent->lastDList = video().getBuffersSwapCount();
 	pCurrent->frameBufferTexture = CachedTexture::fbNone;
 
 	pCurrent->realWidth = sizes.realWidth;

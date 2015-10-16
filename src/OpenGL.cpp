@@ -138,6 +138,7 @@ void OGLVideo::start()
 	_start(); // TODO: process initialization error
 	initGLFunctions();
 	m_render._initData();
+	m_buffersSwapCount = 0;
 }
 
 void OGLVideo::stop()
@@ -156,7 +157,7 @@ void OGLVideo::swapBuffers()
 	_swapBuffers();
 	gDP.otherMode.l = 0;
 	gDPSetTextureLUT(G_TT_NONE);
-	++RSP.buffer_count;
+	++m_buffersSwapCount;
 }
 
 void OGLVideo::setCaptureScreen(const char * const _strDirectory)
@@ -934,8 +935,8 @@ bool texturedRectDepthBufferCopy(const OGLRender::TexturedRectParams & _params)
 		if (pBuffer == NULL)
 			return true;
 		pBuffer->m_cleared = true;
-		if (lastDList != RSP.buffer_count) {
-			lastDList = RSP.buffer_count;
+		if (lastDList != video().getBuffersSwapCount()) {
+			lastDList = video().getBuffersSwapCount();
 			if (!FrameBuffer_CopyDepthBuffer(gDP.colorImage.address))
 				return true;
 		}
