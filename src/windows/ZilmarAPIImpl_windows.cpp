@@ -8,10 +8,12 @@
 
 void PluginAPI::DllAbout(/*HWND _hParent*/)
 {
+#ifndef NO_UI
 	Config_LoadConfig();
 	wchar_t strIniFolderPath[PLUGIN_PATH_SIZE];
 	api().FindPluginPath(strIniFolderPath);
 	RunAbout(strIniFolderPath);
+#endif
 }
 
 void PluginAPI::CaptureScreen(char * _Directory)
@@ -21,7 +23,9 @@ void PluginAPI::CaptureScreen(char * _Directory)
 
 void PluginAPI::DllConfig(HWND _hParent)
 {
+#ifndef NO_UI
 	Config_DoConfig(/*_hParent*/);
+#endif
 }
 
 void PluginAPI::GetDllInfo(PLUGIN_INFO * PluginInfo)

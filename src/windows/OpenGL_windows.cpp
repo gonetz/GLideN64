@@ -15,7 +15,9 @@ private:
 	virtual bool _start();
 	virtual void _stop();
 	virtual void _swapBuffers();
+#ifndef NO_UI
 	virtual void _saveScreenshot();
+#endif
 	virtual bool _resizeWindow();
 	virtual void _changeWindow();
 
@@ -112,6 +114,7 @@ void OGLVideoWindows::_swapBuffers()
 		SwapBuffers( hDC );
 }
 
+#ifndef NO_UI
 void OGLVideoWindows::_saveScreenshot()
 {
 	unsigned char *pixelData = (unsigned char*)malloc(m_screenWidth * m_screenHeight * 3);
@@ -124,6 +127,7 @@ void OGLVideoWindows::_saveScreenshot()
 	SaveScreenshot(m_strScreenDirectory, RSP.romname, m_screenWidth, m_screenHeight, pixelData);
 	free( pixelData );
 }
+#endif
 
 void OGLVideoWindows::_changeWindow()
 {

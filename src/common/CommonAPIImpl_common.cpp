@@ -29,7 +29,11 @@ void RSP_ThreadProc(std::mutex * _pRspThreadMtx, std::mutex * _pPluginThreadMtx,
 	_pRspThreadMtx->lock();
 	RSP_Init();
 	GBI.init();
+#ifndef NO_UI
 	Config_LoadConfig();
+#else
+	config.resetToDefaults();
+#endif
 	video().start();
 	assert(!isGLError());
 

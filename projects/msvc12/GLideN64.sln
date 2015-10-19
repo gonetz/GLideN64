@@ -20,6 +20,7 @@ Global
 		MinSizeRel|Win32 = MinSizeRel|Win32
 		Release_dll|Win32 = Release_dll|Win32
 		Release_mupenplus|Win32 = Release_mupenplus|Win32
+		Release_noUI|Win32 = Release_noUI|Win32
 		Release|Win32 = Release|Win32
 		RelWithDebInfo|Win32 = RelWithDebInfo|Win32
 	EndGlobalSection
@@ -34,6 +35,8 @@ Global
 		{37D31D7F-C4E7-45B0-AEF6-D6824A243CF7}.Release_dll|Win32.Build.0 = Release|Win32
 		{37D31D7F-C4E7-45B0-AEF6-D6824A243CF7}.Release_mupenplus|Win32.ActiveCfg = Release_mupenplus|Win32
 		{37D31D7F-C4E7-45B0-AEF6-D6824A243CF7}.Release_mupenplus|Win32.Build.0 = Release_mupenplus|Win32
+		{37D31D7F-C4E7-45B0-AEF6-D6824A243CF7}.Release_noUI|Win32.ActiveCfg = Release_noUI|Win32
+		{37D31D7F-C4E7-45B0-AEF6-D6824A243CF7}.Release_noUI|Win32.Build.0 = Release_noUI|Win32
 		{37D31D7F-C4E7-45B0-AEF6-D6824A243CF7}.Release|Win32.ActiveCfg = Release|Win32
 		{37D31D7F-C4E7-45B0-AEF6-D6824A243CF7}.Release|Win32.Build.0 = Release|Win32
 		{37D31D7F-C4E7-45B0-AEF6-D6824A243CF7}.RelWithDebInfo|Win32.ActiveCfg = Release|Win32
@@ -48,6 +51,8 @@ Global
 		{DA965BCF-2219-47AF-ACE7-EAF76D5D4756}.Release_dll|Win32.Build.0 = Release_dll|Win32
 		{DA965BCF-2219-47AF-ACE7-EAF76D5D4756}.Release_mupenplus|Win32.ActiveCfg = Release|Win32
 		{DA965BCF-2219-47AF-ACE7-EAF76D5D4756}.Release_mupenplus|Win32.Build.0 = Release|Win32
+		{DA965BCF-2219-47AF-ACE7-EAF76D5D4756}.Release_noUI|Win32.ActiveCfg = Release|Win32
+		{DA965BCF-2219-47AF-ACE7-EAF76D5D4756}.Release_noUI|Win32.Build.0 = Release|Win32
 		{DA965BCF-2219-47AF-ACE7-EAF76D5D4756}.Release|Win32.ActiveCfg = Release|Win32
 		{DA965BCF-2219-47AF-ACE7-EAF76D5D4756}.Release|Win32.Build.0 = Release|Win32
 		{DA965BCF-2219-47AF-ACE7-EAF76D5D4756}.RelWithDebInfo|Win32.ActiveCfg = RelWithDebInfo|Win32
@@ -62,6 +67,8 @@ Global
 		{7BF6F100-31DB-44AE-A2A5-5DDEED9A909C}.Release_dll|Win32.Build.0 = Release|Win32
 		{7BF6F100-31DB-44AE-A2A5-5DDEED9A909C}.Release_mupenplus|Win32.ActiveCfg = Release|Win32
 		{7BF6F100-31DB-44AE-A2A5-5DDEED9A909C}.Release_mupenplus|Win32.Build.0 = Release|Win32
+		{7BF6F100-31DB-44AE-A2A5-5DDEED9A909C}.Release_noUI|Win32.ActiveCfg = Release|Win32
+		{7BF6F100-31DB-44AE-A2A5-5DDEED9A909C}.Release_noUI|Win32.Build.0 = Release|Win32
 		{7BF6F100-31DB-44AE-A2A5-5DDEED9A909C}.Release|Win32.ActiveCfg = Release|Win32
 		{7BF6F100-31DB-44AE-A2A5-5DDEED9A909C}.Release|Win32.Build.0 = Release|Win32
 		{7BF6F100-31DB-44AE-A2A5-5DDEED9A909C}.RelWithDebInfo|Win32.ActiveCfg = Release|Win32
