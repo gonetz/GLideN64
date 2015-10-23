@@ -23,15 +23,15 @@ class FrameBufferToRDRAM
 {
 public:
 	FrameBufferToRDRAM() :
-		m_bSync(true), m_FBO(0), m_pTexture(NULL), m_curIndex(0)
+		m_FBO(0), m_pTexture(NULL)
 	{
-		m_aPBO[0] = m_aPBO[1] = 0;
+		m_PBO[0] = m_PBO[1] = m_PBO[2] = 0;
 	}
 
 	void Init();
 	void Destroy();
 
-	void CopyToRDRAM(u32 _address);
+	void CopyToRDRAM(u32 _address, u32 readPBO, u32 writePBO);
 
 private:
 	union RGBA {
@@ -41,11 +41,9 @@ private:
 		u32 raw;
 	};
 
-	bool m_bSync;
 	GLuint m_FBO;
 	CachedTexture * m_pTexture;
-	u32 m_curIndex;
-	GLuint m_aPBO[2];
+	GLuint m_PBO[3];
 };
 
 class DepthBufferToRDRAM
@@ -537,7 +535,7 @@ void FrameBufferList::toRDRAM()
 {
 	for (FrameBuffers::iterator iter = m_list.begin(); iter != m_list.end(); ++iter) {
 		if (iter->m_width != VI.width && iter->m_height != VI.height) {
-			FrameBuffer_CopyToRDRAM(iter->m_startAddress);
+			FrameBuffer_CopyToRDRAM(iter->m_startAddress, 3, 3);
 			m_list.erase(iter);
 		}
 	}
@@ -942,14 +940,16 @@ void FrameBufferToRDRAM::Init()
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 
 	// Generate and initialize Pixel Buffer Objects
-	glGenBuffers(2, m_aPBO);
-	glBindBuffer(GL_PIXEL_PACK_BUFFER, m_aPBO[0]);
+	glGenBuffers(3, m_PBO);
+	glBindBuffer(GL_PIXEL_PACK_BUFFER, m_PBO[0]);
 	glBufferData(GL_PIXEL_PACK_BUFFER, m_pTexture->textureBytes, NULL, GL_DYNAMIC_READ);
-	glBindBuffer(GL_PIXEL_PACK_BUFFER, m_aPBO[1]);
+	glBindBuffer(GL_PIXEL_PACK_BUFFER, m_PBO[1]);
+	glBufferData(GL_PIXEL_PACK_BUFFER, m_pTexture->textureBytes, NULL, GL_DYNAMIC_READ);
+	glBindBuffer(GL_PIXEL_PACK_BUFFER, m_PBO[2]);
 	glBufferData(GL_PIXEL_PACK_BUFFER, m_pTexture->textureBytes, NULL, GL_DYNAMIC_READ);
 	glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
-	m_bSync = config.frameBufferEmulation.copyToRDRAM == Config::ctSync;
-	m_curIndex = 0;
+	gDP.colorImage.sync = config.frameBufferEmulation.copyToRDRAM == Config::ctSync;
+	gDP.colorImage.curIndex = 0;
 }
 
 void FrameBufferToRDRAM::Destroy() {
@@ -962,11 +962,11 @@ void FrameBufferToRDRAM::Destroy() {
 		textureCache().removeFrameBufferTexture(m_pTexture);
 		m_pTexture = NULL;
 	}
-	glDeleteBuffers(2, m_aPBO);
-	m_aPBO[0] = m_aPBO[1] = 0;
+	glDeleteBuffers(3, m_PBO);
+	m_PBO[0] = m_PBO[1] = m_PBO[2] = 0;
 }
 
-void FrameBufferToRDRAM::CopyToRDRAM(u32 _address)
+void FrameBufferToRDRAM::CopyToRDRAM(u32 _address, u32 readPBO, u32 writePBO)
 {
 	const u32 numPixels = VI.width * VI.height;
 	if (numPixels == 0 || frameBufferList().getCurrent() == NULL) // Incorrect buffer size or no current buffer. Don't copy
@@ -999,13 +999,9 @@ void FrameBufferToRDRAM::CopyToRDRAM(u32 _address)
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, m_FBO);
 	glReadBuffer(GL_COLOR_ATTACHMENT0);
 #ifndef GLES2
-	// If Sync, read pixels from the buffer, copy them to RDRAM.
-	// If not Sync, read pixels from the buffer, copy pixels from the previous buffer to RDRAM.
-	//m_curIndex ^= 1;
-	//const u32 nextIndex = m_bSync ? m_curIndex : m_curIndex^1;
-	glBindBuffer(GL_PIXEL_PACK_BUFFER, m_aPBO[0]);
+	glBindBuffer(GL_PIXEL_PACK_BUFFER, m_PBO[readPBO]);
 	glReadPixels(0, 0, pBuffer->m_width, pBuffer->m_height, GL_RGBA, GL_UNSIGNED_BYTE, 0);
-	PBOBinder binder(GL_PIXEL_PACK_BUFFER, m_aPBO[0]);
+	PBOBinder binder(GL_PIXEL_PACK_BUFFER, m_PBO[writePBO]);
 	GLubyte* pixelData = (GLubyte*)glMapBufferRange(GL_PIXEL_PACK_BUFFER, 0, numPixels * 4, GL_MAP_READ_BIT);
 	if(pixelData == NULL)
 		return;
@@ -1052,10 +1048,10 @@ void FrameBufferToRDRAM::CopyToRDRAM(u32 _address)
 }
 #endif // GLES2
 
-void FrameBuffer_CopyToRDRAM(u32 _address)
+void FrameBuffer_CopyToRDRAM(u32 _address, u32 readPBO, u32 writePBO)
 {
 #ifndef GLES2
-	g_fbToRDRAM.CopyToRDRAM(_address);
+	g_fbToRDRAM.CopyToRDRAM(_address, readPBO, writePBO);
 #else
 	if ((config.generalEmulation.hacks & hack_subscreen) == 0)
 		return;
@@ -1218,7 +1214,7 @@ bool FrameBuffer_CopyDepthBuffer( u32 address ) {
 	FrameBuffer * pCopyBuffer = frameBufferList().getCopyBuffer();
 	if (pCopyBuffer != NULL) {
 		// This code is mainly to emulate Zelda MM camera.
-		g_fbToRDRAM.CopyToRDRAM(pCopyBuffer->m_startAddress);
+		g_fbToRDRAM.CopyToRDRAM(pCopyBuffer->m_startAddress, 3, 3);
 		pCopyBuffer->m_RdramCopy.resize(0); // To disable validity check by RDRAM content. CPU may change content of the buffer for some unknown reason.
 		frameBufferList().setCopyBuffer(NULL);
 		return true;
