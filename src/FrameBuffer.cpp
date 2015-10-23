@@ -533,6 +533,16 @@ void FrameBufferList::saveBuffer(u32 _address, u16 _format, u16 _size, u16 _widt
 	m_pCurrent->m_postProcessed = false;
 }
 
+void FrameBufferList::toRDRAM()
+{
+	for (FrameBuffers::iterator iter = m_list.begin(); iter != m_list.end(); ++iter) {
+		if (iter->m_width != VI.width && iter->m_height != VI.height) {
+			FrameBuffer_CopyToRDRAM(iter->m_startAddress);
+			m_list.erase(iter);
+		}
+	}
+}
+
 void FrameBufferList::removeBuffer(u32 _address )
 {
 	for (FrameBuffers::iterator iter = m_list.begin(); iter != m_list.end(); ++iter)
@@ -962,7 +972,7 @@ void FrameBufferToRDRAM::CopyToRDRAM(u32 _address)
 	if (numPixels == 0 || frameBufferList().getCurrent() == NULL) // Incorrect buffer size or no current buffer. Don't copy
 		return;
 	FrameBuffer *pBuffer = frameBufferList().findBuffer(_address);
-	if (pBuffer == NULL || pBuffer->m_width < VI.width || pBuffer->m_isOBScreen)
+	if (pBuffer == NULL || pBuffer->m_isOBScreen)
 		return;
 
 	if ((config.generalEmulation.hacks & hack_subscreen) != 0) {
@@ -991,11 +1001,11 @@ void FrameBufferToRDRAM::CopyToRDRAM(u32 _address)
 #ifndef GLES2
 	// If Sync, read pixels from the buffer, copy them to RDRAM.
 	// If not Sync, read pixels from the buffer, copy pixels from the previous buffer to RDRAM.
-	m_curIndex ^= 1;
-	const u32 nextIndex = m_bSync ? m_curIndex : m_curIndex^1;
-	glBindBuffer(GL_PIXEL_PACK_BUFFER, m_aPBO[m_curIndex]);
-	glReadPixels(0, 0, VI.width, VI.height, GL_RGBA, GL_UNSIGNED_BYTE, 0);
-	PBOBinder binder(GL_PIXEL_PACK_BUFFER, m_aPBO[nextIndex]);
+	//m_curIndex ^= 1;
+	//const u32 nextIndex = m_bSync ? m_curIndex : m_curIndex^1;
+	glBindBuffer(GL_PIXEL_PACK_BUFFER, m_aPBO[0]);
+	glReadPixels(0, 0, pBuffer->m_width, pBuffer->m_height, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+	PBOBinder binder(GL_PIXEL_PACK_BUFFER, m_aPBO[0]);
 	GLubyte* pixelData = (GLubyte*)glMapBufferRange(GL_PIXEL_PACK_BUFFER, 0, numPixels * 4, GL_MAP_READ_BIT);
 	if(pixelData == NULL)
 		return;
@@ -1007,15 +1017,15 @@ void FrameBufferToRDRAM::CopyToRDRAM(u32 _address)
 #endif // GLES2
 
 	const u32 stride = pBuffer->m_width << pBuffer->m_size >> 1;
-	const u32 height = _cutHeight(_address, VI.height, stride);
+	const u32 height = _cutHeight(_address, pBuffer->m_height, stride);
 
 	if (pBuffer->m_size == G_IM_SIZ_32b) {
 		u32 *ptr_dst = (u32*)(RDRAM + _address);
 		u32 *ptr_src = (u32*)pixelData;
 
 		for (u32 y = 0; y < height; ++y) {
-			for (u32 x = 0; x < VI.width; ++x)
-				ptr_dst[x + y*VI.width] = ptr_src[x + (height - y - 1)*VI.width];
+			for (u32 x = 0; x < pBuffer->m_width; ++x)
+				ptr_dst[x + y*pBuffer->m_width] = ptr_src[x + (height - y - 1)*pBuffer->m_width];
 		}
 	} else {
 		u16 *ptr_dst = (u16*)(RDRAM + _address);
@@ -1023,9 +1033,9 @@ void FrameBufferToRDRAM::CopyToRDRAM(u32 _address)
 		RGBA c;
 
 		for (u32 y = 0; y < height; ++y) {
-			for (u32 x = 0; x < VI.width; ++x) {
-				c.raw = ptr_src[x + (height - y - 1)*VI.width];
-				ptr_dst[(x + y*VI.width)^1] = ((c.r>>3)<<11) | ((c.g>>3)<<6) | ((c.b>>3)<<1) | (c.a == 0 ? 0 : 1);
+			for (u32 x = 0; x < pBuffer->m_width; ++x) {
+				c.raw = ptr_src[x + (height - y - 1)*pBuffer->m_width];
+				ptr_dst[(x + y*pBuffer->m_width) ^ 1] = ((c.r >> 3) << 11) | ((c.g >> 3) << 6) | ((c.b >> 3) << 1) | (c.a == 0 ? 0 : 1);
 			}
 		}
 	}
