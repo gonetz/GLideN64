@@ -261,7 +261,7 @@ void FrameBuffer::copyRdram()
 	const u32 dataSize = stride * height;
 
 	// Auxiliary frame buffer
-	if (m_width != VI.width) {
+	if (m_width != VI.width && !config.frameBufferEmulation.copyAuxiliary) {
 		// Write small amount of data to the start of the buffer.
 		// This is necessary for auxilary buffers: game can restore content of RDRAM when buffer is not needed anymore
 		// Thus content of RDRAM on moment of buffer creation will be the same as when buffer becomes obsolete.
