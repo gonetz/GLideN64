@@ -71,6 +71,7 @@ struct Config
 
 	struct {
 		u32 enable;
+		u32 copyAuxiliary;
 		u32 copyToRDRAM;
 		u32 copyDepthToRDRAM;
 		u32 copyFromRDRAM;
