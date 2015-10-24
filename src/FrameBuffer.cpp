@@ -531,12 +531,25 @@ void FrameBufferList::saveBuffer(u32 _address, u16 _format, u16 _size, u16 _widt
 	m_pCurrent->m_postProcessed = false;
 }
 
-void FrameBufferList::toRDRAM()
+void FrameBufferList::copyAux()
 {
 	for (FrameBuffers::iterator iter = m_list.begin(); iter != m_list.end(); ++iter) {
-		if (iter->m_width != VI.width && iter->m_height != VI.height) {
+		if (iter->m_width != VI.width && iter->m_height != VI.height)
 			FrameBuffer_CopyToRDRAM(iter->m_startAddress, 3, 3);
-			m_list.erase(iter);
+	}
+}
+
+void FrameBufferList::removeAux()
+{
+	for (FrameBuffers::iterator iter = m_list.begin(); iter != m_list.end(); ++iter) {
+		while (iter->m_width != VI.width && iter->m_height != VI.height) {
+			if (&(*iter) == m_pCurrent) {
+				m_pCurrent = NULL;
+				glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+			}
+			iter = m_list.erase(iter);
+			if (iter == m_list.end())
+				return;
 		}
 	}
 }
