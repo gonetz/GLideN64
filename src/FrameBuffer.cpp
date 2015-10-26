@@ -1044,7 +1044,8 @@ void FrameBufferToRDRAM::CopyToRDRAM(u32 _address, u32 readPBO, u32 writePBO)
 		for (u32 y = 0; y < height; ++y) {
 			for (u32 x = 0; x < pBuffer->m_width; ++x) {
 				c.raw = ptr_src[x + (height - y - 1)*pBuffer->m_width];
-				ptr_dst[(x + y*pBuffer->m_width) ^ 1] = ((c.r >> 3) << 11) | ((c.g >> 3) << 6) | ((c.b >> 3) << 1) | (c.a == 0 ? 0 : 1);
+				if (c.a)
+					ptr_dst[(x + y*pBuffer->m_width) ^ 1] = ((c.r >> 3) << 11) | ((c.g >> 3) << 6) | ((c.b >> 3) << 1) | 1;
 			}
 		}
 	}
