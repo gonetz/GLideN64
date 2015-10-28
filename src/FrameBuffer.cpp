@@ -981,14 +981,18 @@ void FrameBufferToRDRAM::Destroy() {
 
 void FrameBufferToRDRAM::CopyToRDRAM(u32 _address, u32 readPBO, u32 writePBO)
 {
-	const u32 numPixels = VI.width * VI.height;
-	if (numPixels == 0 || frameBufferList().getCurrent() == NULL) // Incorrect buffer size or no current buffer. Don't copy
+	if (VI.width == 0 || frameBufferList().getCurrent() == NULL)
 		return;
+
 	FrameBuffer *pBuffer = frameBufferList().findBuffer(_address);
 	if (pBuffer == NULL || pBuffer->m_isOBScreen)
 		return;
 
-	if ((config.generalEmulation.hacks & hack_subscreen) != 0) {
+	const u32 numPixels = pBuffer->m_width * pBuffer->m_height;
+	if (numPixels == 0)
+		return;
+
+	if ((config.generalEmulation.hacks & hack_subscreen) != 0 && pBuffer->m_width == VI.width && pBuffer->m_height == VI.height) {
 		copyWhiteToRDRAM(pBuffer);
 		return;
 	}
@@ -1003,8 +1007,8 @@ void FrameBufferToRDRAM::CopyToRDRAM(u32 _address, u32 readPBO, u32 writePBO)
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_FBO);
 	glScissor(0, 0, pBuffer->m_pTexture->realWidth, pBuffer->m_pTexture->realHeight);
 	glBlitFramebuffer(
-		0, 0, video().getWidth(), video().getHeight(),
-		0, 0, VI.width, VI.height,
+		0, 0, pBuffer->m_width * pBuffer->m_scaleX, pBuffer->m_height * pBuffer->m_scaleY,
+		0, 0, pBuffer->m_width, pBuffer->m_height,
 		GL_COLOR_BUFFER_BIT, GL_NEAREST
 	);
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, frameBufferList().getCurrent()->m_FBO);
