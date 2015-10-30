@@ -46,8 +46,8 @@ void VI_UpdateSize()
 		}
 		if (VI.real_height % 2 == 1)
 			--VI.real_height;
-	} else if (hEnd != 0 && *REG.VI_WIDTH != 0)
-		VI.width = min((u32)floorf((hEnd - hStart)*xScale + 0.5f), *REG.VI_WIDTH);
+	} //else if (hEnd != 0 && *REG.VI_WIDTH != 0)
+		//VI.width = min((u32)floorf((hEnd - hStart)*xScale + 0.5f), *REG.VI_WIDTH);
 
 	VI.PAL = (*REG.VI_V_SYNC & 0x3ff) > 550;
 	if (VI.PAL && (vEnd - vStart) > 478) {
