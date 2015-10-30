@@ -99,7 +99,7 @@ private:
 			uMaxTile, uTextureDetail, uTexturePersp, uTextureFilterMode, uMSAASamples,
 			uAlphaCompareMode, uAlphaDitherMode, uColorDitherMode, uGammaCorrectionEnabled;
 
-		fUniform uFogAlpha, uMinLod, uDeltaZ, uAlphaTestValue, uMSAAScale;
+		fUniform uFogAlpha, uMinLod, uDeltaZ, uAlphaTestValue, uMSAAScale, uGammaCorrectionLevel;
 
 		fv2Uniform uScreenScale, uDepthScale, uFogScale;
 

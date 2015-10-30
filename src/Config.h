@@ -48,6 +48,8 @@ struct Config
 		u32 enableCustomSettings;
 		u32 enableShadersStorage;
 		u32 hacks;
+		u32 forceGammaCorrection;
+		f32 gammaCorrectionLevel;
 #ifdef ANDROID
 		u32 forcePolygonOffset;
 		f32 polygonOffsetFactor;

@@ -36,6 +36,8 @@ void Config::resetToDefaults()
 	generalEmulation.enableCustomSettings = 1;
 	generalEmulation.enableShadersStorage = 1;
 	generalEmulation.hacks = 0;
+	generalEmulation.forceGammaCorrection = 0;
+	generalEmulation.gammaCorrectionLevel = 2.0f;
 #ifdef ANDROID
 	generalEmulation.forcePolygonOffset = 0;
 	generalEmulation.polygonOffsetFactor = 0.0f;
