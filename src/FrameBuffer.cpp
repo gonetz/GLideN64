@@ -1047,7 +1047,8 @@ void FrameBufferToRDRAM::CopyToRDRAM(u32 _address, u32 readPBO, u32 writePBO)
 			for (u32 x = 0; x < pBuffer->m_width; ++x)
 				ptr_dst[x + y*pBuffer->m_width] = ptr_src[x + (height - y - 1)*pBuffer->m_width];
 		}
-	} else {
+	}
+	else if (pBuffer->m_size == G_IM_SIZ_16b){
 		u16 *ptr_dst = (u16*)(RDRAM + _address);
 		u32 * ptr_src = (u32*)pixelData;
 		RGBA c;
