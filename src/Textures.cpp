@@ -820,6 +820,7 @@ void TextureCache::_loadBackground(CachedTexture *pTexture)
 	}
 	if (m_curUnpackAlignment > 1)
 		glPixelStorei(GL_UNPACK_ALIGNMENT, m_curUnpackAlignment);
+	free(pSwapped);
 	free(pDest);
 }
 
