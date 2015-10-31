@@ -269,7 +269,7 @@ void FrameBuffer::copyRdram()
 	const u32 dataSize = stride * height;
 
 	// Auxiliary frame buffer
-	if (m_width != VI.width) {
+	if (m_width != VI.width && config.frameBufferEmulation.copyAuxToRDRAM == 0) {
 		// Write small amount of data to the start of the buffer.
 		// This is necessary for auxilary buffers: game can restore content of RDRAM when buffer is not needed anymore
 		// Thus content of RDRAM on moment of buffer creation will be the same as when buffer becomes obsolete.
@@ -537,6 +537,29 @@ void FrameBufferList::saveBuffer(u32 _address, u16 _format, u16 _size, u16 _widt
 	m_pCurrent->m_isDepthBuffer = _address == gDP.depthImageAddress;
 	m_pCurrent->m_isPauseScreen = m_pCurrent->m_isOBScreen = false;
 	m_pCurrent->m_postProcessed = false;
+}
+
+void FrameBufferList::copyAux()
+{
+	for (FrameBuffers::iterator iter = m_list.begin(); iter != m_list.end(); ++iter) {
+		if (iter->m_width != VI.width && iter->m_height != VI.height)
+			FrameBuffer_CopyToRDRAM(iter->m_startAddress);
+	}
+}
+
+void FrameBufferList::removeAux()
+{
+	for (FrameBuffers::iterator iter = m_list.begin(); iter != m_list.end(); ++iter) {
+		while (iter->m_width != VI.width && iter->m_height != VI.height) {
+			if (&(*iter) == m_pCurrent) {
+				m_pCurrent = NULL;
+				glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+			}
+			iter = m_list.erase(iter);
+			if (iter == m_list.end())
+				return;
+		}
+	}
 }
 
 void FrameBufferList::removeBuffer(u32 _address )
