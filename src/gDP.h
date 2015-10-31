@@ -210,7 +210,6 @@ struct gDPInfo
 
 	struct
 	{
-		u32 curIndex, sync;
 		u32 format, size, width, height, bpl;
 		u32 address, changed;
 		u32 depthImage;
