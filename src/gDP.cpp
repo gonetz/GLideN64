@@ -882,7 +882,7 @@ void gDPTextureRectangleFlip( f32 ulx, f32 uly, f32 lrx, f32 lry, s32 tile, f32 
 
 void gDPFullSync()
 {
-	if (config.frameBufferEmulation.copyAuxiliary) {
+	if (config.frameBufferEmulation.copyAuxiliary != 0) {
 		frameBufferList().copyAux();
 		frameBufferList().removeAux();
 	}
