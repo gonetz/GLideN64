@@ -887,9 +887,11 @@ void gDPFullSync()
 		frameBufferList().removeAux();
 	}
 
+	const bool sync = config.frameBufferEmulation.copyToRDRAM == Config::ctSync;
+	if (config.frameBufferEmulation.copyToRDRAM != Config::ctDisable)
+		FrameBuffer_CopyToRDRAM(gDP.colorImage.address, sync);
+
 	if (RSP.bLLE) {
-		if (config.frameBufferEmulation.copyToRDRAM != Config::ctDisable)
-			FrameBuffer_CopyToRDRAM(gDP.colorImage.address);
 		if (config.frameBufferEmulation.copyDepthToRDRAM != Config::ctDisable)
 			FrameBuffer_CopyDepthBuffer(gDP.colorImage.address);
 	}

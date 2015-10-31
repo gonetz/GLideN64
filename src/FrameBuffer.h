@@ -115,7 +115,7 @@ FrameBufferList & frameBufferList()
 
 void FrameBuffer_Init();
 void FrameBuffer_Destroy();
-void FrameBuffer_CopyToRDRAM( u32 _address );
+void FrameBuffer_CopyToRDRAM( u32 _address , bool _sync );
 void FrameBuffer_CopyFromRDRAM( u32 address, bool bUseAlpha );
 bool FrameBuffer_CopyDepthBuffer( u32 address );
 void FrameBuffer_ActivateBufferTexture(s16 t, FrameBuffer *pBuffer);
