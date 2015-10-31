@@ -193,8 +193,14 @@ void FrameBuffer::init(u32 _address, u32 _endAddress, u16 _format, u16 _size, u1
 	m_width = _width;
 	m_height = _height;
 	m_size = _size;
-	m_scaleX = ogl.getScaleX();
-	m_scaleY = ogl.getScaleY();
+	if (m_width != VI.width && config.frameBufferEmulation.copyAuxToRDRAM == 1) {
+		m_scaleX = 1;
+		m_scaleY = 1;
+	}
+	else {
+		m_scaleX = ogl.getScaleX();
+		m_scaleY = ogl.getScaleY();
+	}
 	m_fillcolor = 0;
 	m_cfb = _cfb;
 	m_needHeightCorrection = _width != VI.width && _width != *REG.VI_WIDTH;
@@ -980,18 +986,20 @@ void FrameBufferToRDRAM::CopyToRDRAM(u32 _address)
 		glBindFramebuffer(GL_READ_FRAMEBUFFER, pBuffer->m_resolveFBO);
 	} else
 		glBindFramebuffer(GL_READ_FRAMEBUFFER, pBuffer->m_FBO);
-	glReadBuffer(GL_COLOR_ATTACHMENT0);
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_FBO);
-	glScissor(0, 0, pBuffer->m_pTexture->realWidth, pBuffer->m_pTexture->realHeight);
-	glBlitFramebuffer(
-		0, 0, video().getWidth(), video().getHeight(),
-		0, 0, VI.width, VI.height,
-		GL_COLOR_BUFFER_BIT, GL_NEAREST
-	);
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, frameBufferList().getCurrent()->m_FBO);
 
-	glBindFramebuffer(GL_READ_FRAMEBUFFER, m_FBO);
-	glReadBuffer(GL_COLOR_ATTACHMENT0);
+	if (pBuffer->m_scaleX != 1) {
+		glReadBuffer(GL_COLOR_ATTACHMENT0);
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_FBO);
+		glScissor(0, 0, pBuffer->m_pTexture->realWidth, pBuffer->m_pTexture->realHeight);
+		glBlitFramebuffer(
+			0, 0, video().getWidth(), video().getHeight(),
+			0, 0, VI.width, VI.height,
+			GL_COLOR_BUFFER_BIT, GL_NEAREST
+			);
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, frameBufferList().getCurrent()->m_FBO);
+		glBindFramebuffer(GL_READ_FRAMEBUFFER, m_FBO);
+		glReadBuffer(GL_COLOR_ATTACHMENT0);
+	}
 #ifndef GLES2
 	// If Sync, read pixels from the buffer, copy them to RDRAM.
 	// If not Sync, read pixels from the buffer, copy pixels from the previous buffer to RDRAM.
