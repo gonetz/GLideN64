@@ -458,6 +458,13 @@ FrameBuffer * FrameBufferList::findTmpBuffer(u32 _address)
 
 void FrameBufferList::saveBuffer(u32 _address, u16 _format, u16 _size, u16 _width, u16 _height, bool _cfb)
 {
+	if (m_pCurrent != NULL && config.frameBufferEmulation.copyAuxToRDRAM != 0) {
+		if (m_pCurrent->m_width != VI.width) {
+			FrameBuffer_CopyToRDRAM(m_pCurrent->m_startAddress);
+			removeBuffer(m_pCurrent->m_startAddress);
+		}
+	}
+
 	if (VI.width == 0 || _height == 0) {
 		m_pCurrent = NULL;
 		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
