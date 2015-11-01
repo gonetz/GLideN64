@@ -882,9 +882,16 @@ void gDPTextureRectangleFlip( f32 ulx, f32 uly, f32 lrx, f32 lry, s32 tile, f32 
 
 void gDPFullSync()
 {
+	if (config.frameBufferEmulation.copyAuxiliary != 0) {
+		frameBufferList().copyAux();
+		frameBufferList().removeAux();
+	}
+
+	u32 sync = config.frameBufferEmulation.copyToRDRAM == Config::ctSync;
+	if (config.frameBufferEmulation.copyToRDRAM != Config::ctDisable)
+		FrameBuffer_CopyToRDRAM(gDP.colorImage.address, !sync);
+
 	if (RSP.bLLE) {
-		if (config.frameBufferEmulation.copyToRDRAM != Config::ctDisable)
-			FrameBuffer_CopyToRDRAM(gDP.colorImage.address);
 		if (config.frameBufferEmulation.copyDepthToRDRAM != Config::ctDisable)
 			FrameBuffer_CopyDepthBuffer(gDP.colorImage.address);
 	}
