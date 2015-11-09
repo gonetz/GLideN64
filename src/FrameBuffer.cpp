@@ -23,15 +23,15 @@ class FrameBufferToRDRAM
 {
 public:
 	FrameBufferToRDRAM() :
-		m_bSync(true), m_FBO(0), m_pTexture(NULL), m_curIndex(0)
+		m_FBO(0), m_pTexture(NULL), m_curIndex(0)
 	{
-		m_aPBO[0] = m_aPBO[1] = 0;
+		m_PBO[0] = m_PBO[1] = m_PBO[2] = 0;
 	}
 
 	void Init();
 	void Destroy();
 
-	void CopyToRDRAM(u32 _address);
+	void CopyToRDRAM(u32 _address, bool _sync);
 
 private:
 	union RGBA {
@@ -41,11 +41,10 @@ private:
 		u32 raw;
 	};
 
-	bool m_bSync;
 	GLuint m_FBO;
 	CachedTexture * m_pTexture;
 	u32 m_curIndex;
-	GLuint m_aPBO[2];
+	GLuint m_PBO[3];
 };
 
 class DepthBufferToRDRAM
@@ -193,8 +192,14 @@ void FrameBuffer::init(u32 _address, u32 _endAddress, u16 _format, u16 _size, u1
 	m_width = _width;
 	m_height = _height;
 	m_size = _size;
-	m_scaleX = ogl.getScaleX();
-	m_scaleY = ogl.getScaleY();
+	if (m_width != VI.width && config.frameBufferEmulation.copyAuxToRDRAM == 1) {
+		m_scaleX = 1;
+		m_scaleY = 1;
+	}
+	else {
+		m_scaleX = ogl.getScaleX();
+		m_scaleY = ogl.getScaleY();
+	}
 	m_fillcolor = 0;
 	m_cfb = _cfb;
 	m_needHeightCorrection = _width != VI.width && _width != *REG.VI_WIDTH;
@@ -263,7 +268,7 @@ void FrameBuffer::copyRdram()
 	const u32 dataSize = stride * height;
 
 	// Auxiliary frame buffer
-	if (m_width != VI.width) {
+	if (m_width != VI.width && config.frameBufferEmulation.copyAuxToRDRAM == 0) {
 		// Write small amount of data to the start of the buffer.
 		// This is necessary for auxilary buffers: game can restore content of RDRAM when buffer is not needed anymore
 		// Thus content of RDRAM on moment of buffer creation will be the same as when buffer becomes obsolete.
@@ -453,6 +458,13 @@ FrameBuffer * FrameBufferList::findTmpBuffer(u32 _address)
 
 void FrameBufferList::saveBuffer(u32 _address, u16 _format, u16 _size, u16 _width, u16 _height, bool _cfb)
 {
+	if (m_pCurrent != NULL && config.frameBufferEmulation.copyAuxToRDRAM != 0) {
+		if (m_pCurrent->m_width != VI.width) {
+			FrameBuffer_CopyToRDRAM(m_pCurrent->m_startAddress, true);
+			removeBuffer(m_pCurrent->m_startAddress);
+		}
+	}
+
 	if (VI.width == 0 || _height == 0) {
 		m_pCurrent = NULL;
 		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
@@ -531,6 +543,29 @@ void FrameBufferList::saveBuffer(u32 _address, u16 _format, u16 _size, u16 _widt
 	m_pCurrent->m_isDepthBuffer = _address == gDP.depthImageAddress;
 	m_pCurrent->m_isPauseScreen = m_pCurrent->m_isOBScreen = false;
 	m_pCurrent->m_postProcessed = false;
+}
+
+void FrameBufferList::copyAux()
+{
+	for (FrameBuffers::iterator iter = m_list.begin(); iter != m_list.end(); ++iter) {
+		if (iter->m_width != VI.width && iter->m_height != VI.height)
+			FrameBuffer_CopyToRDRAM(iter->m_startAddress, true);
+	}
+}
+
+void FrameBufferList::removeAux()
+{
+	for (FrameBuffers::iterator iter = m_list.begin(); iter != m_list.end(); ++iter) {
+		while (iter->m_width != VI.width && iter->m_height != VI.height) {
+			if (&(*iter) == m_pCurrent) {
+				m_pCurrent = NULL;
+				glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+			}
+			iter = m_list.erase(iter);
+			if (iter == m_list.end())
+				return;
+		}
+	}
 }
 
 void FrameBufferList::removeBuffer(u32 _address )
@@ -932,13 +967,14 @@ void FrameBufferToRDRAM::Init()
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 
 	// Generate and initialize Pixel Buffer Objects
-	glGenBuffers(2, m_aPBO);
-	glBindBuffer(GL_PIXEL_PACK_BUFFER, m_aPBO[0]);
+	glGenBuffers(3, m_PBO);
+	glBindBuffer(GL_PIXEL_PACK_BUFFER, m_PBO[0]);
 	glBufferData(GL_PIXEL_PACK_BUFFER, m_pTexture->textureBytes, NULL, GL_DYNAMIC_READ);
-	glBindBuffer(GL_PIXEL_PACK_BUFFER, m_aPBO[1]);
+	glBindBuffer(GL_PIXEL_PACK_BUFFER, m_PBO[1]);
+	glBufferData(GL_PIXEL_PACK_BUFFER, m_pTexture->textureBytes, NULL, GL_DYNAMIC_READ);
+	glBindBuffer(GL_PIXEL_PACK_BUFFER, m_PBO[2]);
 	glBufferData(GL_PIXEL_PACK_BUFFER, m_pTexture->textureBytes, NULL, GL_DYNAMIC_READ);
 	glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
-	m_bSync = config.frameBufferEmulation.copyToRDRAM == Config::ctSync;
 	m_curIndex = 0;
 }
 
@@ -952,20 +988,24 @@ void FrameBufferToRDRAM::Destroy() {
 		textureCache().removeFrameBufferTexture(m_pTexture);
 		m_pTexture = NULL;
 	}
-	glDeleteBuffers(2, m_aPBO);
-	m_aPBO[0] = m_aPBO[1] = 0;
+	glDeleteBuffers(3, m_PBO);
+	m_PBO[0] = m_PBO[1] = m_PBO[2] = 0;
 }
 
-void FrameBufferToRDRAM::CopyToRDRAM(u32 _address)
+void FrameBufferToRDRAM::CopyToRDRAM(u32 _address, bool _sync)
 {
-	const u32 numPixels = VI.width * VI.height;
-	if (numPixels == 0 || frameBufferList().getCurrent() == NULL) // Incorrect buffer size or no current buffer. Don't copy
-		return;
-	FrameBuffer *pBuffer = frameBufferList().findBuffer(_address);
-	if (pBuffer == NULL || pBuffer->m_width < VI.width || pBuffer->m_isOBScreen)
+	if (VI.width == 0 || frameBufferList().getCurrent() == NULL)
 		return;
 
-	if ((config.generalEmulation.hacks & hack_subscreen) != 0) {
+	FrameBuffer *pBuffer = frameBufferList().findBuffer(_address);
+	if (pBuffer == NULL || pBuffer->m_isOBScreen)
+		return;
+
+	const u32 numPixels = pBuffer->m_width * pBuffer->m_height;
+	if (numPixels == 0)
+		return;
+
+	if ((config.generalEmulation.hacks & hack_subscreen) != 0 && pBuffer->m_width == VI.width && pBuffer->m_height == VI.height) {
 		copyWhiteToRDRAM(pBuffer);
 		return;
 	}
@@ -976,56 +1016,64 @@ void FrameBufferToRDRAM::CopyToRDRAM(u32 _address)
 		glBindFramebuffer(GL_READ_FRAMEBUFFER, pBuffer->m_resolveFBO);
 	} else
 		glBindFramebuffer(GL_READ_FRAMEBUFFER, pBuffer->m_FBO);
-	glReadBuffer(GL_COLOR_ATTACHMENT0);
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_FBO);
-	glScissor(0, 0, pBuffer->m_pTexture->realWidth, pBuffer->m_pTexture->realHeight);
-	glBlitFramebuffer(
-		0, 0, video().getWidth(), video().getHeight(),
-		0, 0, VI.width, VI.height,
-		GL_COLOR_BUFFER_BIT, GL_NEAREST
-	);
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, frameBufferList().getCurrent()->m_FBO);
 
-	glBindFramebuffer(GL_READ_FRAMEBUFFER, m_FBO);
-	glReadBuffer(GL_COLOR_ATTACHMENT0);
+	if (pBuffer->m_scaleX != 1) {
+		glReadBuffer(GL_COLOR_ATTACHMENT0);
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_FBO);
+		glScissor(0, 0, pBuffer->m_pTexture->realWidth, pBuffer->m_pTexture->realHeight);
+		glBlitFramebuffer(
+			0, 0, video().getWidth(), video().getHeight(),
+			0, 0, VI.width, VI.height,
+			GL_COLOR_BUFFER_BIT, GL_NEAREST
+			);
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, frameBufferList().getCurrent()->m_FBO);
+		glBindFramebuffer(GL_READ_FRAMEBUFFER, m_FBO);
+		glReadBuffer(GL_COLOR_ATTACHMENT0);
+	}
 #ifndef GLES2
 	// If Sync, read pixels from the buffer, copy them to RDRAM.
 	// If not Sync, read pixels from the buffer, copy pixels from the previous buffer to RDRAM.
-	m_curIndex ^= 1;
-	const u32 nextIndex = m_bSync ? m_curIndex : m_curIndex^1;
-	glBindBuffer(GL_PIXEL_PACK_BUFFER, m_aPBO[m_curIndex]);
-	glReadPixels(0, 0, VI.width, VI.height, GL_RGBA, GL_UNSIGNED_BYTE, 0);
-	PBOBinder binder(GL_PIXEL_PACK_BUFFER, m_aPBO[nextIndex]);
+	if (!_sync) {
+		m_curIndex ^= 1;
+		const u32 nextIndex = m_curIndex^1;
+		glBindBuffer(GL_PIXEL_PACK_BUFFER, m_PBO[m_curIndex]);
+		glReadPixels(0, 0, pBuffer->m_width, pBuffer->m_height, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+		glBindBuffer(GL_PIXEL_PACK_BUFFER, m_PBO[nextIndex]);
+	} else {
+		glBindBuffer(GL_PIXEL_PACK_BUFFER, m_PBO[2]);
+		glReadPixels(0, 0, pBuffer->m_width, pBuffer->m_height, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+	}
+
 	GLubyte* pixelData = (GLubyte*)glMapBufferRange(GL_PIXEL_PACK_BUFFER, 0, numPixels * 4, GL_MAP_READ_BIT);
-	if(pixelData == NULL)
+	if (pixelData == NULL)
 		return;
 #else
 	GLubyte* pixelData = (GLubyte* )malloc(numPixels * 4);
-	if(pixelData == NULL)
+	if (pixelData == NULL)
 		return;
-	glReadPixels( 0, 0, VI.width, VI.height, GL_RGBA, GL_UNSIGNED_BYTE, pixelData );
+	glReadPixels(0, 0, VI.width, VI.height, GL_RGBA, GL_UNSIGNED_BYTE, pixelData);
 #endif // GLES2
 
 	const u32 stride = pBuffer->m_width << pBuffer->m_size >> 1;
-	const u32 height = _cutHeight(_address, VI.height, stride);
+	const u32 height = _cutHeight(_address, pBuffer->m_height, stride);
 
 	if (pBuffer->m_size == G_IM_SIZ_32b) {
 		u32 *ptr_dst = (u32*)(RDRAM + _address);
 		u32 *ptr_src = (u32*)pixelData;
 
 		for (u32 y = 0; y < height; ++y) {
-			for (u32 x = 0; x < VI.width; ++x)
-				ptr_dst[x + y*VI.width] = ptr_src[x + (height - y - 1)*VI.width];
+			for (u32 x = 0; x < pBuffer->m_width; ++x)
+				ptr_dst[x + y*pBuffer->m_width] = ptr_src[x + (height - y - 1)*pBuffer->m_width];
 		}
-	} else {
+	} else if (pBuffer->m_size == G_IM_SIZ_16b) {
 		u16 *ptr_dst = (u16*)(RDRAM + _address);
 		u32 * ptr_src = (u32*)pixelData;
 		RGBA c;
 
 		for (u32 y = 0; y < height; ++y) {
-			for (u32 x = 0; x < VI.width; ++x) {
-				c.raw = ptr_src[x + (height - y - 1)*VI.width];
-				ptr_dst[(x + y*VI.width)^1] = ((c.r>>3)<<11) | ((c.g>>3)<<6) | ((c.b>>3)<<1) | (c.a == 0 ? 0 : 1);
+			for (u32 x = 0; x < pBuffer->m_width; ++x) {
+				c.raw = ptr_src[x + (height - y - 1)*pBuffer->m_width];
+				ptr_dst[(x + y*pBuffer->m_width) ^ 1] = ((c.r >> 3) << 11) | ((c.g >> 3) << 6) | ((c.b >> 3) << 1) | (c.a == 0 ? 0 : 1);
 			}
 		}
 	}
@@ -1042,10 +1090,10 @@ void FrameBufferToRDRAM::CopyToRDRAM(u32 _address)
 }
 #endif // GLES2
 
-void FrameBuffer_CopyToRDRAM(u32 _address)
+void FrameBuffer_CopyToRDRAM(u32 _address, bool _sync)
 {
 #ifndef GLES2
-	g_fbToRDRAM.CopyToRDRAM(_address);
+	g_fbToRDRAM.CopyToRDRAM(_address, _sync);
 #else
 	if ((config.generalEmulation.hacks & hack_subscreen) == 0)
 		return;
@@ -1208,7 +1256,7 @@ bool FrameBuffer_CopyDepthBuffer( u32 address ) {
 	FrameBuffer * pCopyBuffer = frameBufferList().getCopyBuffer();
 	if (pCopyBuffer != NULL) {
 		// This code is mainly to emulate Zelda MM camera.
-		g_fbToRDRAM.CopyToRDRAM(pCopyBuffer->m_startAddress);
+		g_fbToRDRAM.CopyToRDRAM(pCopyBuffer->m_startAddress, true);
 		pCopyBuffer->m_RdramCopy.resize(0); // To disable validity check by RDRAM content. CPU may change content of the buffer for some unknown reason.
 		frameBufferList().setCopyBuffer(NULL);
 		return true;
