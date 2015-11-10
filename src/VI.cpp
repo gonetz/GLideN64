@@ -86,8 +86,6 @@ void VI_UpdateSize()
 
 void VI_UpdateScreen()
 {
-	static u32 uNumCurFrameIsShown = 0;
-
 	if (VI.lastOrigin == -1) // Workaround for Mupen64Plus issue with initialization
 		isGLError();
 
@@ -109,12 +107,20 @@ void VI_UpdateScreen()
 	}
 
 	if (config.frameBufferEmulation.enable) {
+
+		FrameBuffer * pBuffer = frameBufferList().findBuffer(*REG.VI_ORIGIN);
+		if (pBuffer == NULL)
+			gDP.changed |= CHANGED_CPU_FB_WRITE;
+		else if (!pBuffer->isValid()) {
+			gDP.changed |= CHANGED_CPU_FB_WRITE;
+			frameBufferList().removeBuffer(pBuffer->m_startAddress);
+		}
+
 		const bool bCFB = (gDP.changed&CHANGED_CPU_FB_WRITE) == CHANGED_CPU_FB_WRITE;
 		const bool bNeedUpdate = (bCFB ? true : (*REG.VI_ORIGIN != VI.lastOrigin)) || ((config.generalEmulation.hacks & hack_VIUpdateOnCIChange) != 0 && gDP.colorImage.changed != 0);
 
 		if (bNeedUpdate) {
 			if (bCFB) {
-				FrameBuffer * pBuffer = frameBufferList().findBuffer(*REG.VI_ORIGIN);
 				if (pBuffer == NULL || pBuffer->m_width != VI.width) {
 					if (!bVIUpdated) {
 						VI_UpdateSize();
@@ -134,25 +140,13 @@ void VI_UpdateScreen()
 				FrameBuffer_CopyFromRDRAM(*REG.VI_ORIGIN, config.frameBufferEmulation.copyFromRDRAM && !bCFB);
 			}
 			frameBufferList().renderBuffer(*REG.VI_ORIGIN);
-
-			if (gDP.colorImage.changed)
-				uNumCurFrameIsShown = 0;
-			else if (config.frameBufferEmulation.detectCFB != 0) {
-				uNumCurFrameIsShown++;
-				if (uNumCurFrameIsShown > 25)
-					gDP.changed |= CHANGED_CPU_FB_WRITE;
-			}
 			frameBufferList().clearBuffersChanged();
 			VI.lastOrigin = *REG.VI_ORIGIN;
 #ifdef DEBUG
 			while (Debug.paused && !Debug.step);
 			Debug.step = FALSE;
 #endif
-		} else if (config.frameBufferEmulation.detectCFB != 0) {
-			uNumCurFrameIsShown++;
-			if (uNumCurFrameIsShown > 25)
-				gDP.changed |= CHANGED_CPU_FB_WRITE;
-		}
+		} 
 	}
 	else {
 		if (gDP.changed & CHANGED_COLORBUFFER) {
