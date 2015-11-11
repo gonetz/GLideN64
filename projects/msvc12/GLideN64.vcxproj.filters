@@ -36,6 +36,9 @@
     <Filter Include="Source Files\OGL3X">
       <UniqueIdentifier>{32bbb389-ea50-4ac9-bb55-84e4f066fe94}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ini">
+      <UniqueIdentifier>{866f7f11-ca7f-474c-89a2-a16eb167f8b3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Combiner.cpp">
@@ -349,5 +352,13 @@
     <ClInclude Include="..\..\src\wst.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\..\ini\GLideN64.custom.ini">
+      <Filter>ini</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\ini\GLideN64.ini">
+      <Filter>ini</Filter>
+    </CustomBuild>
   </ItemGroup>
 </Project>

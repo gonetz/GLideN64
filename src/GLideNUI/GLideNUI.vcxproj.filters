@@ -55,6 +55,9 @@
       <Extensions>cpp;moc</Extensions>
       <SourceControlFiles>False</SourceControlFiles>
     </Filter>
+    <Filter Include="translations">
+      <UniqueIdentifier>{984bda81-6fab-4f9e-9250-5ac272d059f6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="AboutDialog.cpp">
@@ -107,6 +110,24 @@
     <ClInclude Include="Settings.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <CustomBuild Include="..\..\translations\gliden64_de.ts">
+      <Filter>translations</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\translations\gliden64_es.ts">
+      <Filter>translations</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\translations\gliden64_fr.ts">
+      <Filter>translations</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\translations\gliden64_it.ts">
+      <Filter>translations</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\translations\gliden64_pl.ts">
+      <Filter>translations</Filter>
+    </CustomBuild>
+    <CustomBuild Include="..\..\translations\gliden64_pt_BR.ts">
+      <Filter>translations</Filter>
+    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="AboutDialog.ui">
