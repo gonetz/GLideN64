@@ -77,7 +77,7 @@
     <Lib>
       <OutputFile>$(OutDir)\GLideNUI.lib</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <AdditionalDependencies>dwrite.lib;qtpcre.lib;imm32.lib;Ws2_32.lib;qtmain.lib;qwindows.lib;qtharfbuzzng.lib;Qt5Core.lib;Qt5Gui.lib;Qt5Widgets.lib;Qt5PlatformSupport.lib</AdditionalDependencies>
+      <AdditionalDependencies>dwrite.lib;imm32.lib;Ws2_32.lib;qtmain.lib;qwindows.lib;qtharfbuzzng.lib;qtpcre.lib;Qt5Core.lib;Qt5Gui.lib;Qt5Widgets.lib;Qt5PlatformSupport.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>"$(QTDIR)\lib";"$(QTDIR)\plugins\platforms"</AdditionalLibraryDirectories>
     </Lib>
     <Midl>
