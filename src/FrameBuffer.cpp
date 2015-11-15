@@ -255,8 +255,10 @@ void FrameBuffer::reinit(u16 _height)
 inline
 u32 _cutHeight(u32 _address, u32 _height, u32 _stride)
 {
+	if (_address > RDRAMSize)
+		return 0;
 	if (_address + _stride * _height > RDRAMSize)
-		_height = (RDRAMSize - _address) / _stride;
+		return (RDRAMSize - _address) / _stride;
 	return _height;
 }
 
@@ -264,6 +266,8 @@ void FrameBuffer::copyRdram()
 {
 	const u32 stride = m_width << m_size >> 1;
 	const u32 height = _cutHeight(m_startAddress, m_height, stride);
+	if (height == 0)
+		return;
 	const u32 dataSize = stride * height;
 
 	// Auxiliary frame buffer
@@ -1002,6 +1006,11 @@ void FrameBufferToRDRAM::CopyToRDRAM(u32 _address, bool _sync)
 	if (numPixels == 0)
 		return;
 
+	const u32 stride = pBuffer->m_width << pBuffer->m_size >> 1;
+	const u32 height = _cutHeight(_address, pBuffer->m_height, stride);
+	if (height == 0)
+		return;
+
 	if ((config.generalEmulation.hacks & hack_subscreen) != 0 && pBuffer->m_width == VI.width && pBuffer->m_height == VI.height) {
 		copyWhiteToRDRAM(pBuffer);
 		return;
@@ -1048,9 +1057,6 @@ void FrameBufferToRDRAM::CopyToRDRAM(u32 _address, bool _sync)
 		return;
 	glReadPixels(0, 0, VI.width, VI.height, GL_RGBA, GL_UNSIGNED_BYTE, pixelData);
 #endif // GLES2
-
-	const u32 stride = pBuffer->m_width << pBuffer->m_size >> 1;
-	const u32 height = _cutHeight(_address, pBuffer->m_height, stride);
 
 	if (pBuffer->m_size == G_IM_SIZ_32b) {
 		u32 *ptr_dst = (u32*)(RDRAM + _address);
@@ -1195,6 +1201,10 @@ bool DepthBufferToRDRAM::CopyToRDRAM( u32 _address) {
 	if (address + numPixels * 2 > RDRAMSize)
 		return false;
 
+	const u32 height = _cutHeight(address, min(VI.height, pDepthBuffer->m_lry), pBuffer->m_width * 2);
+	if (height == 0)
+		return false;
+
 	if (config.video.multisampling == 0)
 		glBindFramebuffer(GL_READ_FRAMEBUFFER, pBuffer->m_FBO);
 	else {
@@ -1221,7 +1231,6 @@ bool DepthBufferToRDRAM::CopyToRDRAM( u32 _address) {
 	f32 * ptr_src = (f32*)pixelData;
 	u16 *ptr_dst = (u16*)(RDRAM + address);
 	const u16 * const zLUT = depthBufferList().getZLUT();
-	const u32 height = _cutHeight(address, min(VI.height, pDepthBuffer->m_lry), pBuffer->m_width * 2);
 
 	for (u32 y = pDepthBuffer->m_uly; y < height; ++y) {
 		for (u32 x = 0; x < VI.width; ++x) {
@@ -1315,7 +1324,10 @@ void RDRAMtoFrameBuffer::CopyFromRDRAM( u32 _address, bool _bUseAlpha)
 	const bool bUseAlpha = _bUseAlpha && pBuffer->m_changed;
 	const u32 address = pBuffer->m_startAddress;
 	const u32 width = pBuffer->m_width;
-	const u32 height = pBuffer->m_startAddress == _address ? VI.real_height : pBuffer->m_height;
+	const u32 height = _cutHeight(address, pBuffer->m_startAddress == _address ? VI.real_height : pBuffer->m_height, pBuffer->m_width * 2);
+	if (height == 0)
+		return;
+
 	m_pTexture->width = width;
 	m_pTexture->height = height;
 	const u32 dataSize = width*height*4;
