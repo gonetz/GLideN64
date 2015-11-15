@@ -332,13 +332,6 @@ void RSP_Init()
 		config.generalEmulation.hacks |= hack_blastCorps;
 	else if (strstr(RSP.romname, (const char *)"SPACE INVADERS") != NULL)
 		config.generalEmulation.hacks |= hack_ignoreVIHeightChange;
-	else if (strstr(RSP.romname, (const char *)"QUAKE II") != NULL ||
-		strstr(RSP.romname, (const char *)"Quake") != NULL ||
-		strstr(RSP.romname, (const char *)"Perfect Dark") ||
-		strstr(RSP.romname, (const char *)"PERFECT DARK") ||
-		strstr(RSP.romname, (const char *)"POKEMON SNAP")
-		)
-		config.generalEmulation.hacks |= hack_VIUpdateOnCIChange;
 	else if (strstr(RSP.romname, (const char *)"MASK") != NULL) // Zelda MM
 		config.generalEmulation.hacks |= hack_skipVIChangeCheck | hack_ZeldaCamera;
 

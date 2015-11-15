@@ -117,9 +117,20 @@ void VI_UpdateScreen()
 		}
 
 		const bool bCFB = (gDP.changed&CHANGED_CPU_FB_WRITE) == CHANGED_CPU_FB_WRITE;
-		const bool bNeedUpdate = (bCFB ? true : (*REG.VI_ORIGIN != VI.lastOrigin)) || ((config.generalEmulation.hacks & hack_VIUpdateOnCIChange) != 0 && gDP.colorImage.changed != 0);
+		bool bNeedSwap = false;
+		switch (config.frameBufferEmulation.bufferSwapMode) {
+		case Config::bsOnVIUpdate:
+			bNeedSwap = true;
+			break;
+		case Config::bsOnVIOriginChange:
+			bNeedSwap = bCFB ? true : (*REG.VI_ORIGIN != VI.lastOrigin);
+			break;
+		case Config::bsOnColorImageChange:
+			bNeedSwap = gDP.colorImage.changed != 0;
+			break;
+		}
 
-		if (bNeedUpdate) {
+		if (bNeedSwap) {
 			if (bCFB) {
 				if (pBuffer == NULL || pBuffer->m_width != VI.width) {
 					if (!bVIUpdated) {

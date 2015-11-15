@@ -56,6 +56,7 @@ void Config::resetToDefaults()
 	frameBufferEmulation.detectCFB = 0;
 	frameBufferEmulation.N64DepthCompare = 0;
 	frameBufferEmulation.aspect = 1;
+	frameBufferEmulation.bufferSwapMode = 0;
 
 	textureFilter.txCacheSize = 100 * gc_uMegabyte;
 	textureFilter.txDump = 0;
