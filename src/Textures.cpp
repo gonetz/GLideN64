@@ -688,6 +688,7 @@ void _updateCachedTexture(const GHQTexInfo & _info, CachedTexture *_pTexture)
 	}
 	_pTexture->realWidth = _info.width;
 	_pTexture->realHeight = _info.height;
+	_pTexture->bHDTexture = true;
 	/*
 	_pTexture->scaleS = 1.0f / (f32)(_pTexture->realWidth);
 	_pTexture->scaleT = 1.0f / (f32)(_pTexture->realHeight);
