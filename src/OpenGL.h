@@ -210,7 +210,8 @@ private:
 	private:
 		u32 m_numRects;
 		u64 m_otherMode;
-		float m_ulx, m_lrx, m_uly, m_lry, m_Z;
+		f32 m_ulx, m_lrx, m_uly, m_lry, m_Z;
+		f32 m_max_lrx, m_max_lry;
 		GLuint m_FBO;
 		GLuint m_programTex;
 		GLuint m_programClean;

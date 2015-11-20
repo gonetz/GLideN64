@@ -446,8 +446,8 @@ void OGLRender::TexrectDrawer::add()
 
 		m_ulx = pRect[0].x;
 		m_uly = pRect[0].y;
-		m_lrx = pRect[3].x;
-		m_lry = pRect[3].y;
+		m_lrx = m_max_lrx = pRect[3].x;
+		m_lry = m_max_lry = pRect[3].y;
 	}
 
 	if (bDownUp) {
@@ -456,6 +456,8 @@ void OGLRender::TexrectDrawer::add()
 	} else {
 		m_lrx = pRect[3].x;
 		m_lry = pRect[3].y;
+		m_max_lrx = max(m_max_lrx, m_lrx);
+		m_max_lry = max(m_max_lry, m_lry);
 	}
 
 	glDisable(GL_DEPTH_TEST);
@@ -505,6 +507,9 @@ bool OGLRender::TexrectDrawer::draw()
 			enableAlphaTest = 1;
 		break;
 	}
+
+	m_lrx = m_max_lrx;
+	m_lry = m_max_lry;
 
 	GLVertex * rect = render.m_rect;
 
