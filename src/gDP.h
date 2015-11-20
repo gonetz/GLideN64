@@ -108,6 +108,12 @@ struct gDPLoadTileInfo {
 	u32 dxt;
 };
 
+struct gDPScissor
+{
+	u32 mode;
+	f32 ulx, uly, lrx, lry;
+};
+
 struct gDPInfo
 {
 	struct
@@ -218,11 +224,7 @@ struct gDPInfo
 
 	u32	depthImageAddress;
 
-	struct
-	{
-		u32 mode;
-		f32 ulx, uly, lrx, lry;
-	} scissor;
+	gDPScissor scissor;
 
 	struct
 	{
