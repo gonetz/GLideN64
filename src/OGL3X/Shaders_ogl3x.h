@@ -740,6 +740,7 @@ const char * strTexrectDrawerFragmentShaderTex =
 "uniform sampler2D uTex0;																						\n"
 "uniform lowp int uEnableAlphaTest;																				\n"
 "uniform mediump vec2 uDepthScale;																				\n"
+"uniform lowp vec4 uTestColor = vec4(4.0/255.0, 2.0/255.0, 1.0/255.0, 0.0);										\n"
 "in mediump vec2 vTexCoord0;																					\n"
 "out lowp vec4 fragColor;																						\n"
 "void main()																									\n"
@@ -752,15 +753,17 @@ const char * strTexrectDrawerFragmentShaderTex =
 "  gl_FragDepth = clamp((gl_FragCoord.z * 2.0 - 1.0) * uDepthScale.s + uDepthScale.t, 0.0, 1.0);				\n"
 #endif
 "  fragColor = filter(uTex0, vTexCoord0);																		\n"
-"  if (uEnableAlphaTest != 0 && !(fragColor.a > 0.0)) discard;													\n"
+"  if (fragColor == uTestColor) discard;																		\n"
+"  if (uEnableAlphaTest == 1 && !(fragColor.a > 0.0)) discard;													\n"
 "}																												\n"
 ;
 
 const char * strTexrectDrawerFragmentShaderClean =
 MAIN_SHADER_VERSION
-"out lowp vec4 fragColor;					\n"
-"void main()								\n"
-"{											\n"
-"  fragColor = vec4(0.0);					\n"
-"}											\n"
+"uniform lowp vec4 uTestColor = vec4(4.0/255.0, 2.0/255.0, 1.0/255.0, 0.0);	\n"
+"out lowp vec4 fragColor;													\n"
+"void main()																\n"
+"{																			\n"
+"  fragColor = uTestColor;													\n"
+"}																			\n"
 ;
