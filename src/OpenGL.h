@@ -81,8 +81,9 @@ typedef char GLchar;
 #define ELEMBUFF_SIZE 1024U
 
 extern const char * strTexrectDrawerVertexShader;
-extern const char * strTexrectDrawerFragmentShaderTex3Point;
-extern const char * strTexrectDrawerFragmentShaderTexBilinear;
+extern const char * strTexrectDrawerTex3PointFilter;
+extern const char * strTexrectDrawerTexBilinearFilter;
+extern const char * strTexrectDrawerFragmentShaderTex;
 extern const char * strTexrectDrawerFragmentShaderClean;
 
 class CachedTexture;
@@ -217,7 +218,6 @@ private:
 		GLuint m_programTex;
 		GLuint m_programClean;
 		GLint m_enableAlphaTestLoc;
-		GLint m_textureFilterModeLoc;
 		GLint m_textureBoundsLoc;
 		GLint m_depthScaleLoc;
 		gDPScissor m_scissor;

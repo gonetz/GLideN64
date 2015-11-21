@@ -370,7 +370,9 @@ void OGLRender::TexrectDrawer::init()
 	assert(checkFBO());
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 
-	m_programTex = createShaderProgram(strTexrectDrawerVertexShader, (config.texture.bilinearMode == BILINEAR_STANDARD) ? strTexrectDrawerFragmentShaderTexBilinear : strTexrectDrawerFragmentShaderTex3Point);
+	std::string fragmentShader(config.texture.bilinearMode == BILINEAR_STANDARD ? strTexrectDrawerTexBilinearFilter : strTexrectDrawerTex3PointFilter);
+	fragmentShader += strTexrectDrawerFragmentShaderTex;
+	m_programTex = createShaderProgram(strTexrectDrawerVertexShader, fragmentShader.c_str());
 	m_programClean = createShaderProgram(strTexrectDrawerVertexShader, strTexrectDrawerFragmentShaderClean);
 
 	glUseProgram(m_programTex);
@@ -381,8 +383,6 @@ void OGLRender::TexrectDrawer::init()
 	if (loc >= 0)
 		glUniform2f(loc, m_pTexture->realWidth, m_pTexture->realHeight);
 
-	m_textureFilterModeLoc = glGetUniformLocation(m_programTex, "uTextureFilterMode");
-	assert(m_textureFilterModeLoc >= 0);
 	m_textureBoundsLoc = glGetUniformLocation(m_programTex, "uTextureBounds");
 	assert(m_textureBoundsLoc >= 0);
 	m_enableAlphaTestLoc = glGetUniformLocation(m_programTex, "uEnableAlphaTest");
@@ -539,7 +539,6 @@ bool OGLRender::TexrectDrawer::draw()
 
 	glUseProgram(m_programTex);
 	glUniform1i(m_enableAlphaTestLoc, enableAlphaTest);
-	glUniform1i(m_textureFilterModeLoc, gDP.otherMode.textureFilter);
 	float texBounds[4] = { s0, t0, s1, t1 };
 	glUniform4fv(m_textureBoundsLoc, 1, texBounds);
 	if (RSP.bLLE)

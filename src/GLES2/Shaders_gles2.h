@@ -404,7 +404,7 @@ SHADER_VERSION
 "}								\n"
 ;
 
-const char * strTexrectDrawerFragmentShaderTex3Point =
+const char * strTexrectDrawerTex3PointFilter =
 SHADER_VERSION
 "#if (__VERSION__ > 120)																						\n"
 "# define IN in																									\n"
@@ -413,14 +413,13 @@ SHADER_VERSION
 "# define IN varying																							\n"
 "# define OUT																									\n"
 "#endif // __VERSION __																							\n"
-"uniform lowp int uTextureFilterMode;																			\n"
-"uniform lowp vec4 uTextureBounds;																				\n"
+"uniform mediump vec4 uTextureBounds;																			\n"
 "uniform mediump vec2 uTextureSize;																				\n"
 // 3 point texture filtering.
 // Original author: ArthurCarvalho
 // GLSL implementation: twinaphex, mupen64plus-libretro project.
 "#define TEX_OFFSET(off) texture2D(tex, texCoord - (off)/texSize)												\n"
-"lowp vec4 filter3point(in sampler2D tex, in mediump vec2 texCoord)												\n"
+"lowp vec4 filter(in sampler2D tex, in mediump vec2 texCoord)													\n"
 "{																												\n"
 "  mediump vec2 texSize = uTextureSize;																			\n"
 "  mediump vec2 texelSize = vec2(1.0) / texSize;																\n"
@@ -436,32 +435,10 @@ SHADER_VERSION
 "  lowp vec4 c2 = TEX_OFFSET(vec2(offset.x, offset.y - sign(offset.y)));										\n"
 "  return c0 + abs(offset.x)*(c1-c0) + abs(offset.y)*(c2-c0);													\n"
 "}																												\n"
-"																											    \n"
-"lowp vec4 readTex(in sampler2D tex, in mediump vec2 texCoord, in lowp int fbMonochrome, in bool fbFixedAlpha)	\n"
-"{																												\n"
-"  lowp vec4 texStandard = texture2D(tex, texCoord);								 							\n"
-"  lowp vec4 tex3Point = filter3point(tex, texCoord); 															\n"
-"  lowp vec4 texColor = uTextureFilterMode == 0 ? texStandard : tex3Point;										\n"
-"  if (fbMonochrome == 1) texColor = vec4(texColor.r);															\n"
-"  else if (fbMonochrome == 2) 																					\n"
-"    texColor.rgb = vec3(dot(vec3(0.2126, 0.7152, 0.0722), texColor.rgb));										\n"
-"  if (fbFixedAlpha) texColor.a = 0.825;																		\n"
-"  return texColor;																								\n"
-"}																												\n"
 "																												\n"
-"uniform sampler2D uTex0;																						\n"
-"uniform lowp int uEnableAlphaTest;																				\n"
-"IN mediump vec2 vTexCoord0;																					\n"
-"OUT lowp vec4 fragColor;																						\n"
-"void main()																									\n"
-"{																												\n"
-"  fragColor = readTex(uTex0, vTexCoord0, 0, false);															\n"
-"  if (uEnableAlphaTest != 0 && !(fragColor.a > 0.0)) discard;													\n"
-"  gl_FragColor = fragColor;																					\n"
-"}																												\n"
 ;
 
-const char * strTexrectDrawerFragmentShaderTexBilinear =
+const char * strTexrectDrawerTexBilinearFilter =
 SHADER_VERSION
 "#if (__VERSION__ > 120)																						\n"
 "# define IN in																									\n"
@@ -470,11 +447,10 @@ SHADER_VERSION
 "# define IN varying																							\n"
 "# define OUT																									\n"
 "#endif // __VERSION __																							\n"
-"uniform lowp int uTextureFilterMode;																			\n"
-"uniform lowp vec4 uTextureBounds;																				\n"
+"uniform mediump vec4 uTextureBounds;																			\n"
 "uniform mediump vec2 uTextureSize;																				\n"
 "#define TEX_OFFSET(off) texture2D(tex, texCoord - (off)/texSize)												\n"
-"lowp vec4 filterBiLinear(in sampler2D tex, in mediump vec2 texCoord)											\n"
+"lowp vec4 filter(in sampler2D tex, in mediump vec2 texCoord)													\n"
 "{																												\n"
 "  mediump vec2 texSize = uTextureSize;																			\n"
 "  mediump vec2 texelSize = vec2(1.0) / texSize;																\n"
@@ -497,26 +473,16 @@ SHADER_VERSION
 "  lowp vec4 pInterp_q1 = mix( p0q1, p1q1, interpolationFactor.x ); // Interpolates bottom row in X direction.	\n"
 "  return mix( pInterp_q0, pInterp_q1, interpolationFactor.y ); // Interpolate in Y direction.					\n"
 "}																												\n"
-"																												\n"
-"lowp vec4 readTex(in sampler2D tex, in mediump vec2 texCoord, in lowp int fbMonochrome, in bool fbFixedAlpha)	\n"
-"{																												\n"
-"  lowp vec4 texStandard = texture2D(tex, texCoord);															\n"
-"  lowp vec4 texBilinear = filterBiLinear(tex, texCoord);														\n"
-"  lowp vec4 texColor = uTextureFilterMode == 0 ? texStandard : texBilinear;									\n"
-"  if (fbMonochrome == 1) texColor = vec4(texColor.r);															\n"
-"  else if (fbMonochrome == 2) 																					\n"
-"    texColor.rgb = vec3(dot(vec3(0.2126, 0.7152, 0.0722), texColor.rgb));										\n"
-"  if (fbFixedAlpha) texColor.a = 0.825;																		\n"
-"  return texColor;																								\n"
-"}																												\n"
-"																												\n"
+;
+
+const char * strTexrectDrawerFragmentShaderTex =
 "uniform sampler2D uTex0;																						\n"
 "uniform lowp int uEnableAlphaTest;																				\n"
 "IN mediump vec2 vTexCoord0;																					\n"
 "OUT lowp vec4 fragColor;																						\n"
 "void main()																									\n"
 "{																												\n"
-"  fragColor = readTex(uTex0, vTexCoord0, 0, false);															\n"
+"  fragColor = filter(uTex0, vTexCoord0);																		\n"
 "  if (uEnableAlphaTest != 0 && !(fragColor.a > 0.0)) discard;													\n"
 "  gl_FragColor = fragColor;																					\n"
 "}																												\n"
