@@ -122,6 +122,7 @@ private:
 	UniformLocation m_uniforms;
 	GLuint m_program;
 	int m_nInputs;
+	bool m_bNeedUpdate;
 };
 
 void InitShaderCombiner();

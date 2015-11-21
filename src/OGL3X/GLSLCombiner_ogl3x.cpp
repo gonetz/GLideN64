@@ -273,13 +273,13 @@ void DestroyShaderCombiner() {
 #endif // GL_IMAGE_TEXTURES_SUPPORT
 }
 
-ShaderCombiner::ShaderCombiner()
+ShaderCombiner::ShaderCombiner() : m_bNeedUpdate(true)
 {
 	m_program = glCreateProgram();
 	_locate_attributes();
 }
 
-ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCombine & _combine) : m_combine(_combine)
+ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCombine & _combine) : m_combine(_combine), m_bNeedUpdate(true)
 {
 	char strCombiner[1024];
 	m_nInputs = compileCombiner(_color, _alpha, strCombiner);
@@ -500,6 +500,8 @@ void ShaderCombiner::_locate_attributes() const {
 }
 
 void ShaderCombiner::update(bool _bForce) {
+	_bForce |= m_bNeedUpdate;
+	m_bNeedUpdate = false;
 	glUseProgram(m_program);
 
 	if (_bForce) {
