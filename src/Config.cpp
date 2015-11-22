@@ -52,7 +52,7 @@ void Config::resetToDefaults()
 	frameBufferEmulation.copyDepthToRDRAM = ctDisable;
 	frameBufferEmulation.copyFromRDRAM = 0;
 	frameBufferEmulation.copyAuxToRDRAM = 0;
-	frameBufferEmulation.copyToRDRAM = ctAsync;
+	frameBufferEmulation.copyToRDRAM = ctDisable;
 	frameBufferEmulation.detectCFB = 0;
 	frameBufferEmulation.N64DepthCompare = 0;
 	frameBufferEmulation.aspect = 1;

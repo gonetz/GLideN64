@@ -309,7 +309,7 @@ bool FrameBuffer::isValid() const
 			if ((pData[i] & 0xFFFEFFFE) != color)
 				++wrongPixels;
 		}
-		return wrongPixels < (m_endAddress - m_startAddress) / 400; // treshold level 1% of dwords
+		return wrongPixels < (m_endAddress - m_startAddress) / 400; // threshold level 1% of dwords
 	} else if (m_fingerprint) {
 			//check if our fingerprint is still there
 			u32 start = m_startAddress >> 2;
@@ -327,7 +327,7 @@ bool FrameBuffer::isValid() const
 			if ((pData[start++] & 0xFFFEFFFE) != (pCopy[i] & 0xFFFEFFFE))
 				++wrongPixels;
 		}
-		return wrongPixels < size / 400; // treshold level 1% of dwords
+		return wrongPixels < size / 400; // threshold level 1% of dwords
 	}
 	return true; // No data to decide
 }
