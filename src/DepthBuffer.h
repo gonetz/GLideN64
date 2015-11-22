@@ -50,7 +50,7 @@ public:
 
 private:
 	DepthBufferList();
-	DepthBufferList(const FrameBufferList &);
+	DepthBufferList(const DepthBufferList &);
 	~DepthBufferList();
 
 	typedef std::list<DepthBuffer> DepthBuffers;
