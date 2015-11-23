@@ -3,6 +3,7 @@
 #include "OpenGL.h"
 #include "FrameBuffer.h"
 #include "DepthBuffer.h"
+#include "RSP.h"
 #include "VI.h"
 #include "Log.h"
 
@@ -20,7 +21,17 @@ void FrameBufferWriteList(FrameBufferModifyEntry *plist, u32 size)
 
 void FrameBufferRead(u32 addr)
 {
+	// TODO: remove debug print
 	debugPrint("FBRead addr=%08lx \n", addr);
+
+	const u32 address = RSP_SegmentToPhysical(addr);
+	FrameBuffer * pBuffer = frameBufferList().findBuffer(address);
+	if (pBuffer == nullptr)
+		return;
+	if (pBuffer->m_isDepthBuffer)
+		FrameBuffer_CopyDepthBufferChunk(address);
+	else
+		FrameBuffer_CopyChunkToRDRAM(address);
 }
 
 void FrameBufferGetInfo(void *pinfo)
