@@ -12,13 +12,7 @@
 #endif
 #include "FrameBufferInfoAPI.h"
 
-enum API_COMMAND {
-	acNone = 0,
-	acProcessDList,
-	acProcessRDPList,
-	acUpdateScreen,
-	acRomClosed
-};
+class APICommand;
 
 class PluginAPI
 {
@@ -92,7 +86,7 @@ public:
 private:
 	PluginAPI()
 #ifdef RSPTHREAD
-		: m_pRspThread(NULL), m_command(acNone)
+		: m_pRspThread(NULL), m_pCommand(nullptr)
 #endif
 	{}
 	PluginAPI(const PluginAPI &);
@@ -100,13 +94,13 @@ private:
 	void _initiateGFX(const GFX_INFO & _gfxInfo) const;
 
 #ifdef RSPTHREAD
-	void _callAPICommand(API_COMMAND _command);
+	void _callAPICommand(APICommand & _command);
 	std::mutex m_rspThreadMtx;
 	std::mutex m_pluginThreadMtx;
 	std::condition_variable_any m_rspThreadCv;
 	std::condition_variable_any m_pluginThreadCv;
 	std::thread * m_pRspThread;
-	API_COMMAND m_command;
+	APICommand * m_pCommand;
 #endif
 };
 
