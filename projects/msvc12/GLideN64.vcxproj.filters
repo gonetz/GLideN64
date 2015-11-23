@@ -194,6 +194,9 @@
     <ClCompile Include="..\..\src\OGL3X\GLSLCombiner_ogl3x.cpp">
       <Filter>Source Files\OGL3X</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\FrameBufferInfo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\3DMath.h">
@@ -347,6 +350,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\wst.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\FrameBufferInfo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\FrameBufferInfoAPI.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

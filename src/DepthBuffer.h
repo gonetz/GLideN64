@@ -4,6 +4,7 @@
 #include "Types.h"
 #include "Textures.h"
 
+struct FrameBuffer;
 struct DepthBuffer
 {
 	DepthBuffer();

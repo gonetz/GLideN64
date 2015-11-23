@@ -224,6 +224,7 @@
     <ClCompile Include="..\..\src\F3DEX2CBFD.cpp" />
     <ClCompile Include="..\..\src\F3DSWSE.cpp" />
     <ClCompile Include="..\..\src\FrameBuffer.cpp" />
+    <ClCompile Include="..\..\src\FrameBufferInfo.cpp" />
     <ClCompile Include="..\..\src\GBI.cpp" />
     <ClCompile Include="..\..\src\gDP.cpp" />
     <ClCompile Include="..\..\src\GLideN64.cpp" />
@@ -311,6 +312,8 @@
     <ClInclude Include="..\..\src\F3DEX2CBFD.h" />
     <ClInclude Include="..\..\src\F3DSWSE.h" />
     <ClInclude Include="..\..\src\FrameBuffer.h" />
+    <ClInclude Include="..\..\src\FrameBufferInfo.h" />
+    <ClInclude Include="..\..\src\FrameBufferInfoAPI.h" />
     <ClInclude Include="..\..\src\GBI.h" />
     <ClInclude Include="..\..\src\gDP.h" />
     <ClInclude Include="..\..\src\glext.h" />

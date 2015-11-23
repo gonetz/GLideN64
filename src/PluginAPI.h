@@ -10,6 +10,7 @@
 #include "ZilmarGFX_1_3.h"
 #define RSPTHREAD
 #endif
+#include "FrameBufferInfoAPI.h"
 
 enum API_COMMAND {
 	acNone = 0,
@@ -47,6 +48,12 @@ public:
 	void FindPluginPath(wchar_t * _strPath);
 	void GetUserDataPath(wchar_t * _strPath);
 	void GetUserCachePath(wchar_t * _strPath);
+
+	// FrameBufferInfo extension
+	void FBWrite(unsigned int addr, unsigned int size);
+	void FBWList(FrameBufferModifyEntry *plist, unsigned int size);
+	void FBRead(unsigned int addr);
+	void FBGetFrameBufferInfo(void *pinfo);
 
 #ifndef MUPENPLUSAPI
 	// Zilmar
