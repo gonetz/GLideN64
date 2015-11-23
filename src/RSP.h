@@ -2,6 +2,7 @@
 #define RSP_H
 
 #include "Types.h"
+#include "N64.h"
 
 typedef struct
 {
