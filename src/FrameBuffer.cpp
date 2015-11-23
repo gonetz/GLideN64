@@ -15,6 +15,7 @@
 #include "Config.h"
 #include "Debug.h"
 #include "PostProcessor.h"
+#include "FrameBufferInfo.h"
 
 using namespace std;
 
@@ -629,6 +630,21 @@ void FrameBufferList::removeBuffers(u32 _width)
 	}
 }
 
+void FrameBufferList::fillBufferInfo(FrameBufferInfo * _pinfo, u32 _size)
+{
+	u32 idx = 0;
+	for (FrameBuffers::iterator iter = m_list.begin(); iter != m_list.end(); ++iter) {
+		if (iter->m_width == VI.width && !iter->m_cfb) {
+			_pinfo[idx].addr = iter->m_startAddress;
+			_pinfo[idx].width = iter->m_width;
+			_pinfo[idx].height = iter->m_height;
+			_pinfo[idx++].size = iter->m_size;
+			if (idx >= _size)
+				return;
+		}
+	}
+}
+
 void FrameBufferList::attachDepthBuffer()
 {
 	if (m_pCurrent == NULL)
@@ -877,6 +893,8 @@ void FrameBufferList::renderBuffer(u32 _address)
 	gDP.changed |= CHANGED_COMBINE | CHANGED_SCISSOR;
 }
 #endif
+
+
 
 void FrameBuffer_ActivateBufferTexture(s16 t, FrameBuffer *pBuffer)
 {

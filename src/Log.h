@@ -54,6 +54,8 @@ inline void debugPrint(const char * format, ...) {
 	OutputDebugString(wtext);
 	va_end(va);
 }
+#else
+#define debugPrint(A, ...)
 #endif
 
 #endif
