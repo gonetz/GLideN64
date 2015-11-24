@@ -44,24 +44,4 @@ EXPORT void CALL SetRenderingCallback(void (*callback)(int))
 	api().SetRenderingCallback(callback);
 }
 
-EXPORT void CALL FBRead(u32 addr)
-{
-	api().FBRead(addr);
-}
-
-EXPORT void CALL FBWrite(u32 addr, u32 size)
-{
-	api().FBWrite(addr, size);
-}
-
-EXPORT void CALL FBGetFrameBufferInfo(void *p)
-{
-	api().FBGetFrameBufferInfo(p);
-}
-
-EXPORT void CALL ResizeVideoOutput(int Width, int Height)
-{
-	api().ResizeVideoOutput(Width, Height);
-}
-
 } // extern "C"

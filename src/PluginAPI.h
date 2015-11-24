@@ -63,9 +63,6 @@ public:
 	void DllAbout(/*HWND _hParent*/);
 #else
 	// MupenPlus
-	void FBRead(unsigned int _addr) {}
-	void FBWrite(unsigned int addr, unsigned int size) {}
-	void FBGetFrameBufferInfo(void * _p) {}
 	void ResizeVideoOutput(int _Width, int _Height);
 	void ReadScreen2(void * _dest, int * _width, int * _height, int _front);
 
