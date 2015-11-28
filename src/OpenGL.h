@@ -214,6 +214,7 @@ private:
 	private:
 		u32 m_numRects;
 		u64 m_otherMode;
+		u64 m_mux;
 		f32 m_ulx, m_lrx, m_uly, m_lry, m_Z;
 		f32 m_max_lrx, m_max_lry;
 		GLuint m_FBO;
@@ -225,6 +226,11 @@ private:
 		gDPScissor m_scissor;
 		CachedTexture * m_pTexture;
 		FrameBuffer * m_pBuffer;
+
+		struct RectCoords {
+			f32 x, y;
+		};
+		std::vector<RectCoords> m_vecRectCoords;
 	};
 
 	RENDER_STATE m_renderState;

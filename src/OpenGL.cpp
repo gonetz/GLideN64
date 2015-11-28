@@ -335,8 +335,20 @@ void OGLVideo::readScreen2(void * _dest, int * _width, int * _height, int _front
 
 /*---------------OGLRender::TexrectDrawer-------------*/
 
-OGLRender::TexrectDrawer::TexrectDrawer() :
-m_numRects(0), m_otherMode(0), m_ulx(0), m_lrx(0), m_uly(0), m_lry(0), m_Z(0), m_FBO(0), m_programTex(0), m_programClean(0), m_pTexture(NULL), m_pBuffer(NULL)
+OGLRender::TexrectDrawer::TexrectDrawer()
+	: m_numRects(0)
+	, m_otherMode(0)
+	, m_mux(0)
+	, m_ulx(0)
+	, m_lrx(0)
+	, m_uly(0)
+	, m_lry(0)
+	, m_Z(0)
+	, m_FBO(0)
+	, m_programTex(0)
+	, m_programClean(0)
+	, m_pTexture(NULL)
+	, m_pBuffer(NULL)
 {}
 
 void OGLRender::TexrectDrawer::init()
@@ -390,6 +402,8 @@ void OGLRender::TexrectDrawer::init()
 	m_depthScaleLoc = glGetUniformLocation(m_programTex, "uDepthScale");
 	assert(m_depthScaleLoc >= 0);
 	glUseProgram(0);
+
+	m_vecRectCoords.reserve(256);
 }
 
 void OGLRender::TexrectDrawer::destroy()
@@ -420,17 +434,21 @@ void OGLRender::TexrectDrawer::add()
 	bool bDownUp = false;
 	if (m_numRects != 0) {
 		bool bContinue = false;
-		const float scaleY = (m_pBuffer != NULL ? m_pBuffer->m_height : VI.height) / 2.0f;
-		if (m_ulx == pRect[0].x) {
-//			bContinue = m_lry == pRect[0].y;
-			bContinue = fabs((m_lry - pRect[0].y) * scaleY) < 1.1f; // Fix for Mario Kart
-			bDownUp = m_uly == pRect[3].y;
-			bContinue |= bDownUp;
-		} else if (m_lrx == pRect[2].x) {
-			bContinue = m_lry == pRect[2].y;
-			bContinue |= m_uly == pRect[0].y;
-		} else if (m_lrx == pRect[1].x) {
-			bContinue = m_lry == pRect[1].y;
+		if (m_otherMode == gDP.otherMode._u64 && m_mux == gDP.combine.mux) {
+			const float scaleY = (m_pBuffer != NULL ? m_pBuffer->m_height : VI.height) / 2.0f;
+			if (m_ulx == pRect[0].x) {
+				//			bContinue = m_lry == pRect[0].y;
+				bContinue = fabs((m_lry - pRect[0].y) * scaleY) < 1.1f; // Fix for Mario Kart
+				bDownUp = m_uly == pRect[3].y;
+				bContinue |= bDownUp;
+			} else {
+				for (auto iter = m_vecRectCoords.crbegin(); iter != m_vecRectCoords.crend(); ++iter) {
+					if (iter->x == pRect[0].x && iter->y == pRect[0].y) {
+						bContinue = true;
+						break;
+					}
+				}
+			}
 		}
 		if (!bContinue) {
 			GLVertex rect[4];
@@ -444,6 +462,7 @@ void OGLRender::TexrectDrawer::add()
 	if (m_numRects == 0) {
 		m_pBuffer = frameBufferList().getCurrent();
 		m_otherMode = gDP.otherMode._u64;
+		m_mux = gDP.combine.mux;
 		m_Z = (gDP.otherMode.depthSource == G_ZS_PRIM) ? gDP.primDepth.z : gSP.viewport.nearz;
 		m_scissor = gDP.scissor;
 
@@ -478,6 +497,15 @@ void OGLRender::TexrectDrawer::add()
 	}
 
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+	RectCoords coords;
+	coords.x = pRect[1].x;
+	coords.y = pRect[1].y;
+	m_vecRectCoords.push_back(coords);
+	coords.x = pRect[3].x;
+	coords.y = pRect[3].y;
+	m_vecRectCoords.push_back(coords);
+
 	++m_numRects;
 }
 
@@ -597,6 +625,7 @@ bool OGLRender::TexrectDrawer::draw()
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_pBuffer != NULL ? m_pBuffer->m_FBO : 0);
 
 	m_numRects = 0;
+	m_vecRectCoords.clear();
 	gDP.otherMode._u64 = otherMode;
 	gDP.scissor = scissor;
 	gDP.changed |= CHANGED_COMBINE | CHANGED_SCISSOR | CHANGED_RENDERMODE;
@@ -1462,8 +1491,9 @@ void OGLRender::drawTexturedRect(const TexturedRectParams & _params)
 	const bool bUseTexrectDrawer = bUseBilinear
 		&& pCurrentCombiner->usesTexture()
 		&& (pCurrentBuffer == NULL || !pCurrentBuffer->m_cfb)
+		&& (cache.current[0] != NULL)
 //		&& (cache.current[0] == NULL || cache.current[0]->format == G_IM_FMT_RGBA || cache.current[0]->format == G_IM_FMT_CI)
-		&& (cache.current[0] == NULL || (cache.current[0]->frameBufferTexture == CachedTexture::fbNone && !cache.current[0]->bHDTexture))
+		&& ((cache.current[0]->frameBufferTexture == CachedTexture::fbNone && !cache.current[0]->bHDTexture))
 		&& (cache.current[1] == NULL || (cache.current[1]->frameBufferTexture == CachedTexture::fbNone && !cache.current[1]->bHDTexture));
 
 	const float scaleX = pCurrentBuffer != NULL ? 1.0f / pCurrentBuffer->m_width : VI.rwidth;
