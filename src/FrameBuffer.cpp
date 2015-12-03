@@ -1110,7 +1110,7 @@ void _writeToRdram(TSrc* _src, TDst* _dst, TDst(*converter)(TSrc _c), TSrc _test
 		for (u32 x = chunkStart; x < _width; ++x) {
 			c = _src[x + (_height - 1)*_width];
 			if (c != _testValue)
-				_dst[x ^ _xor] = converter(c);
+				_dst[numStored ^ _xor] = converter(c);
 			++numStored;
 		}
 		++y;
@@ -1157,9 +1157,10 @@ void FrameBufferToRDRAM::_copy(u32 _startAddress, u32 _endAddress, bool _sync)
 	}
 
 	const GLsizei width = m_pCurFrameBuffer->m_width;
-	const GLsizei height = numPixels / width + ((numPixels % width) > 0 ? 1 : 0);
 	const GLint x0 = 0;
-	const GLint y0 = max_height - (_startAddress - m_pCurFrameBuffer->m_startAddress) / width - height;
+	const GLint y0 = max_height - (_endAddress - m_pCurFrameBuffer->m_startAddress) / stride;
+	const GLint y1 = max_height - (_startAddress - m_pCurFrameBuffer->m_startAddress) / stride;
+	const GLsizei height = 1 + y1 - y0;
 
 	GLenum colorFormat, colorType, colorFormatBytes;
 	if (m_pCurFrameBuffer->m_size > G_IM_SIZ_8b) {
@@ -1405,9 +1406,10 @@ bool DepthBufferToRDRAM::_copy(u32 _startAddress, u32 _endAddress)
 	}
 
 	const GLsizei width = m_pCurDepthBuffer->m_width;
-	const GLsizei height = numPixels / width + ((numPixels % width) > 0 ? 1 : 0);
 	const GLint x0 = 0;
-	const GLint y0 = max_height - (_startAddress - m_pCurDepthBuffer->m_address) / stride - height;
+	const GLint y0 = max_height - (_endAddress - m_pCurDepthBuffer->m_address) / stride;
+	const GLint y1 = max_height - (_startAddress - m_pCurDepthBuffer->m_address) / stride;
+	const GLsizei height = 1 + y1 - y0;
 
 	PBOBinder binder(GL_PIXEL_PACK_BUFFER, m_PBO);
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, m_FBO);
