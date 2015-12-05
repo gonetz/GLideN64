@@ -7,12 +7,16 @@
 #include "VI.h"
 #include "Log.h"
 
+static const FrameBuffer * s_pWriteBuffer = nullptr;
+
 void FrameBufferWrite(u32 addr, u32 size)
 {
 	// TODO: remove debug print
 	debugPrint("FBWrite addr=%08lx size=%u\n", addr, size);
 
-	FrameBuffer_AddAddress(RSP_SegmentToPhysical(addr));
+	const u32 address = RSP_SegmentToPhysical(addr);
+	s_pWriteBuffer = frameBufferList().findBuffer(address);
+	FrameBuffer_AddAddress(address);
 }
 
 void FrameBufferWriteList(FrameBufferModifyEntry *plist, u32 size)
@@ -20,6 +24,8 @@ void FrameBufferWriteList(FrameBufferModifyEntry *plist, u32 size)
 	debugPrint("FBWList size=%u\n", size);
 	for (u32 i = 0; i < size; ++i)
 		debugPrint(" plist[%u] addr=%08lx val=%08lx size=%u\n", i, plist[i].addr, plist[i].val, plist[i].size);
+	const u32 address = RSP_SegmentToPhysical(plist[0].addr);
+	s_pWriteBuffer = frameBufferList().findBuffer(address);
 }
 
 void FrameBufferRead(u32 addr)
@@ -29,7 +35,7 @@ void FrameBufferRead(u32 addr)
 
 	const u32 address = RSP_SegmentToPhysical(addr);
 	FrameBuffer * pBuffer = frameBufferList().findBuffer(address);
-	if (pBuffer == nullptr)
+	if (pBuffer == nullptr || pBuffer == s_pWriteBuffer)
 		return;
 	if (pBuffer->m_isDepthBuffer)
 		FrameBuffer_CopyDepthBufferChunk(address);
@@ -50,4 +56,6 @@ void FrameBufferGetInfo(void *pinfo)
 		pFBInfo[idx++].size = 2;
 	}
 	frameBufferList().fillBufferInfo(&pFBInfo[idx], 6 - idx);
+
+	s_pWriteBuffer = nullptr;
 }
