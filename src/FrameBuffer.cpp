@@ -1183,7 +1183,7 @@ void FrameBufferToRDRAM::_copy(u32 _startAddress, u32 _endAddress, bool _sync)
 	const GLint x0 = 0;
 	const GLint y0 = max_height - (_endAddress - m_pCurFrameBuffer->m_startAddress) / stride;
 	const GLint y1 = max_height - (_startAddress - m_pCurFrameBuffer->m_startAddress) / stride;
-	const GLsizei height = min(max_height, 1 + y1 - y0);
+	const GLsizei height = std::min(max_height, 1u + y1 - y0);
 
 	GLenum colorFormat, colorType, colorFormatBytes;
 	if (m_pCurFrameBuffer->m_size > G_IM_SIZ_8b) {
@@ -1432,7 +1432,7 @@ bool DepthBufferToRDRAM::_copy(u32 _startAddress, u32 _endAddress)
 	const GLint x0 = 0;
 	const GLint y0 = max_height - (_endAddress - m_pCurDepthBuffer->m_address) / stride;
 	const GLint y1 = max_height - (_startAddress - m_pCurDepthBuffer->m_address) / stride;
-	const GLsizei height = min(max_height, 1 + y1 - y0);
+	const GLsizei height = std::min(max_height, 1u + y1 - y0);
 
 	PBOBinder binder(GL_PIXEL_PACK_BUFFER, m_PBO);
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, m_FBO);
