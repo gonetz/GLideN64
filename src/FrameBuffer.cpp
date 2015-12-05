@@ -1067,13 +1067,14 @@ void FrameBufferToRDRAM::Destroy() {
 bool FrameBufferToRDRAM::_prepareCopy(u32 _address)
 {
 	const u32 curFrame = video().getBuffersSwapCount();
-	if (m_frameCount == curFrame)
+	FrameBuffer * pBuffer = frameBufferList().findBuffer(_address);
+	if (m_frameCount == curFrame && pBuffer == m_pCurFrameBuffer)
 		return true;
 
 	if (VI.width == 0 || frameBufferList().getCurrent() == NULL)
 		return false;
 
-	m_pCurFrameBuffer = frameBufferList().findBuffer(_address);
+	m_pCurFrameBuffer = pBuffer;
 	if (m_pCurFrameBuffer == NULL || m_pCurFrameBuffer->m_isOBScreen)
 		return false;
 
