@@ -1450,6 +1450,7 @@ void OGLRender::drawTexturedRect(const TexturedRectParams & _params)
 	} else {
 		if (_params.texrectCmd && (gSP.changed | gDP.changed) != 0)
 			_updateStates(rsTexRect);
+		glDisable(GL_CULL_FACE);
 
 		const bool updateArrays = m_renderState != rsTexRect;
 		if (updateArrays || CombinerInfo::get().isChanged()) {
@@ -1642,7 +1643,6 @@ void OGLRender::drawTexturedRect(const TexturedRectParams & _params)
 			glViewport(0, ogl.getHeightOffset(), ogl.getScreenWidth(), ogl.getScreenHeight());
 		else
 			glViewport(0, 0, pCurrentBuffer->m_width*pCurrentBuffer->m_scaleX, pCurrentBuffer->m_height*pCurrentBuffer->m_scaleY);
-		glDisable(GL_CULL_FACE);
 		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 		gSP.changed |= CHANGED_GEOMETRYMODE | CHANGED_VIEWPORT;
 	}
