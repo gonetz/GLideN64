@@ -51,6 +51,8 @@ void _loadSettings(QSettings & settings)
 	config.frameBufferEmulation.copyFromRDRAM = settings.value("copyFromRDRAM", config.frameBufferEmulation.copyFromRDRAM).toInt();
 	config.frameBufferEmulation.N64DepthCompare = settings.value("N64DepthCompare", config.frameBufferEmulation.N64DepthCompare).toInt();
 	config.frameBufferEmulation.aspect = settings.value("aspect", config.frameBufferEmulation.aspect).toInt();
+	config.frameBufferEmulation.bufferSwapMode = settings.value("bufferSwapMode", config.frameBufferEmulation.bufferSwapMode).toInt();
+
 	settings.endGroup();
 
 	settings.beginGroup("textureFilter");
@@ -153,6 +155,7 @@ void writeSettings(const QString & _strIniFolder)
 	settings.setValue("copyFromRDRAM", config.frameBufferEmulation.copyFromRDRAM);
 	settings.setValue("N64DepthCompare", config.frameBufferEmulation.N64DepthCompare);
 	settings.setValue("aspect", config.frameBufferEmulation.aspect);
+	settings.setValue("bufferSwapMode", config.frameBufferEmulation.bufferSwapMode);
 	settings.endGroup();
 
 	settings.beginGroup("textureFilter");

@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>372</width>
-    <height>531</height>
+    <width>493</width>
+    <height>612</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -641,6 +641,42 @@
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_10">
           <item>
+           <layout class="QHBoxLayout" name="bufferSwapHorizontalLayout">
+            <item>
+             <widget class="QLabel" name="label_24">
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Buffer swap mode:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;With this option you may control how often plugin will update main frame buffer. There are three modes:&lt;/p&gt;&lt;p&gt;* on Vertical Interrupt. Number of buffer updates will be equal to Vertical Interrupts per Second (VI/s). VI/s is 50 for PAL and 60 for NTSC games. This is most compatible option. Use it if your system can handle it.&lt;/p&gt;&lt;p&gt;* on Video Interface origin change. The origin change means that game switched to another color buffer and buffers swap needed. This mode corresponds to Frames Per Seconds (FPS). FPS is between 20 and 30 for most games, thus buffers swap less often than in the first mode. This mode works well if game uses double or triple buffering. If game uses single buffer (very rare case), it does not work.&lt;/p&gt;&lt;p&gt;* on color image change. Buffers will swap only if frame buffer is actually modified. This mode is optimal for performance because it eliminates empty swaps. However, there are rare cases, where it does not work.&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="text">
+               <string>Buffer swap mode:</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QComboBox" name="bufferSwapComboBox">
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Buffer swap mode:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;With this option you may control how often plugin will update main frame buffer. There are three modes:&lt;/p&gt;&lt;p&gt;* on Vertical Interrupt. Number of buffer updates will be equal to Vertical Interrupts per Second (VI/s). VI/s is 50 for PAL and 60 for NTSC games. This is most compatible option. Use it if your system can handle it.&lt;/p&gt;&lt;p&gt;* on Video Interface origin change. The origin change means that game switched to another color buffer and buffers swap needed. This mode corresponds to Frames Per Seconds (FPS). FPS is between 20 and 30 for most games, thus buffers swap less often than in the first mode. This mode works well if game uses double or triple buffering. If game uses single buffer (very rare case), it does not work.&lt;/p&gt;&lt;p&gt;* on color image change. Buffers will swap only if frame buffer is actually modified. This mode is optimal for performance because it eliminates empty swaps. However, there are rare cases, where it does not work.&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <item>
+               <property name="text">
+                <string>On Vertical Interrupt</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>On VI origin change</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>On color buffer change</string>
+               </property>
+              </item>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
            <layout class="QHBoxLayout" name="horizontalLayout_10">
             <item>
              <widget class="QLabel" name="label_14">
@@ -694,32 +730,22 @@
            </layout>
           </item>
           <item>
-           <widget class="QCheckBox" name="RenderFBCheckBox">
-            <property name="toolTip">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Render N64 frame buffer as texture:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;When this option is enabled, content of each N64 frame buffer is rendered as texture over the frame, rendered by the plugin. This prevents graphics lost, but may cause slowdowns and various glitches in some games.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;mostly off&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-            </property>
-            <property name="text">
-             <string>Render frame buffer as texture</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QCheckBox" name="detectCPUWritesCheckBox">
-            <property name="toolTip">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Detect CPU write to the N64 frame buffer:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;This option works as the previous options, but the plugin is trying to detect, when game uses CPU writes to N64 frame buffer. The N64 frame buffer is rendered only when CPU writes is detected. Use this option for those games, in which you see still image or no image at all for some time with no reason.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;mostly off&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-            </property>
-            <property name="text">
-             <string>Detect CPU writes to the frame buffer</string>
-            </property>
-           </widget>
-          </item>
-          <item>
            <widget class="QCheckBox" name="CopyDepthCheckBox">
             <property name="toolTip">
              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Copy depth buffer to RDRAM:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;This option is required for correct emulation of depth buffer based effects, e.g. coronas. Content of video card's depth buffer is copied into RDRAM area each frame.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;on&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
             <property name="text">
              <string>Copy depth buffer to RDRAM</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="RenderFBCheckBox">
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Render N64 frame buffer as texture:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;When this option is enabled, content of each N64 frame buffer is rendered as texture over the frame, rendered by the plugin. This prevents graphics lost, but may cause slowdowns and various glitches in some games.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;mostly off&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="text">
+             <string>Render frame buffer as texture</string>
             </property>
            </widget>
           </item>
@@ -1386,10 +1412,10 @@
   </connection>
  </connections>
  <buttongroups>
-  <buttongroup name="bilinearButtonGroup"/>
-  <buttongroup name="screenshotButtonGroup"/>
-  <buttongroup name="bloomBlendModeButtonGroup"/>
   <buttongroup name="aspectButtonGroup"/>
+  <buttongroup name="screenshotButtonGroup"/>
+  <buttongroup name="bilinearButtonGroup"/>
+  <buttongroup name="bloomBlendModeButtonGroup"/>
   <buttongroup name="copyFrameBufferButtonGroup"/>
  </buttongroups>
 </ui>

@@ -114,6 +114,7 @@ void ConfigDialog::_init()
 	ui->enableShadersStorageCheckBox->setChecked(config.generalEmulation.enableShadersStorage != 0);
 	ui->customSettingsCheckBox->setChecked(config.generalEmulation.enableCustomSettings != 0);
 
+	ui->bufferSwapComboBox->setCurrentIndex(config.frameBufferEmulation.bufferSwapMode);
 	ui->frameBufferGroupBox->setChecked(config.frameBufferEmulation.enable != 0);
 	switch (config.frameBufferEmulation.copyToRDRAM) {
 	case Config::ctDisable:
@@ -293,6 +294,7 @@ void ConfigDialog::accept()
 	config.generalEmulation.enableShadersStorage = ui->enableShadersStorageCheckBox->isChecked() ? 1 : 0;
 	config.generalEmulation.enableCustomSettings = ui->customSettingsCheckBox->isChecked() ? 1 : 0;
 
+	config.frameBufferEmulation.bufferSwapMode = ui->bufferSwapComboBox->currentIndex();
 	config.frameBufferEmulation.enable = ui->frameBufferGroupBox->isChecked() ? 1 : 0;
 	if (ui->copyBufferDisableRadioButton->isChecked())
 		config.frameBufferEmulation.copyToRDRAM = Config::ctDisable;
