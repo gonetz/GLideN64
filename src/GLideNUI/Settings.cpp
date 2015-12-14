@@ -49,7 +49,6 @@ void _loadSettings(QSettings & settings)
 	config.frameBufferEmulation.copyToRDRAM = settings.value("copyToRDRAM", config.frameBufferEmulation.copyToRDRAM).toInt();
 	config.frameBufferEmulation.copyDepthToRDRAM = settings.value("copyDepthToRDRAM", config.frameBufferEmulation.copyDepthToRDRAM).toInt();
 	config.frameBufferEmulation.copyFromRDRAM = settings.value("copyFromRDRAM", config.frameBufferEmulation.copyFromRDRAM).toInt();
-	config.frameBufferEmulation.detectCFB = settings.value("detectCFB", config.frameBufferEmulation.detectCFB).toInt();
 	config.frameBufferEmulation.N64DepthCompare = settings.value("N64DepthCompare", config.frameBufferEmulation.N64DepthCompare).toInt();
 	config.frameBufferEmulation.aspect = settings.value("aspect", config.frameBufferEmulation.aspect).toInt();
 	settings.endGroup();
@@ -152,7 +151,6 @@ void writeSettings(const QString & _strIniFolder)
 	settings.setValue("copyToRDRAM", config.frameBufferEmulation.copyToRDRAM);
 	settings.setValue("copyDepthToRDRAM", config.frameBufferEmulation.copyDepthToRDRAM);
 	settings.setValue("copyFromRDRAM", config.frameBufferEmulation.copyFromRDRAM);
-	settings.setValue("detectCFB", config.frameBufferEmulation.detectCFB);
 	settings.setValue("N64DepthCompare", config.frameBufferEmulation.N64DepthCompare);
 	settings.setValue("aspect", config.frameBufferEmulation.aspect);
 	settings.endGroup();

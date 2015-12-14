@@ -127,7 +127,6 @@ void ConfigDialog::_init()
 		break;
 	}
 	ui->RenderFBCheckBox->setChecked(config.frameBufferEmulation.copyFromRDRAM != 0);
-	ui->detectCPUWritesCheckBox->setChecked(config.frameBufferEmulation.detectCFB != 0);
 	ui->CopyDepthCheckBox->setChecked(config.frameBufferEmulation.copyDepthToRDRAM != 0);
 	ui->n64DepthCompareCheckBox->setChecked(config.frameBufferEmulation.N64DepthCompare != 0);
 	switch (config.frameBufferEmulation.aspect) {
@@ -302,7 +301,6 @@ void ConfigDialog::accept()
 	else if (ui->copyBufferAsyncRadioButton->isChecked())
 		config.frameBufferEmulation.copyToRDRAM = Config::ctAsync;
 	config.frameBufferEmulation.copyFromRDRAM = ui->RenderFBCheckBox->isChecked() ? 1 : 0;
-	config.frameBufferEmulation.detectCFB = ui->detectCPUWritesCheckBox->isChecked() ? 1 : 0;
 	config.frameBufferEmulation.copyDepthToRDRAM = ui->CopyDepthCheckBox->isChecked() ? 1 : 0;
 	config.frameBufferEmulation.N64DepthCompare = ui->n64DepthCompareCheckBox->isChecked() ? 1 : 0;
 	if (ui->aspectStretchRadioButton->isChecked())

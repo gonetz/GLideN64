@@ -93,8 +93,6 @@ bool Config_SetDefault()
 	assert(res == M64ERR_SUCCESS);
 	res = ConfigSetDefaultBool(g_configVideoGliden64, "EnableCopyColorFromRDRAM", config.frameBufferEmulation.copyFromRDRAM, "Enable color buffer copy from RDRAM.");
 	assert(res == M64ERR_SUCCESS);
-	res = ConfigSetDefaultBool(g_configVideoGliden64, "EnableDetectCFB", config.frameBufferEmulation.detectCFB, "Detect CPU writes to frame buffer.");
-	assert(res == M64ERR_SUCCESS);
 	res = ConfigSetDefaultBool(g_configVideoGliden64, "EnableN64DepthCompare", config.frameBufferEmulation.N64DepthCompare, "Enable N64 depth compare instead of OpenGL standard one. Experimental.");
 	assert(res == M64ERR_SUCCESS);
 	//#Texture filter settings
@@ -204,7 +202,6 @@ void Config_LoadConfig()
 	config.frameBufferEmulation.copyToRDRAM = ConfigGetParamInt(g_configVideoGliden64, "EnableCopyColorToRDRAM");
 	config.frameBufferEmulation.copyDepthToRDRAM = ConfigGetParamBool(g_configVideoGliden64, "EnableCopyDepthToRDRAM");
 	config.frameBufferEmulation.copyFromRDRAM = ConfigGetParamBool(g_configVideoGliden64, "EnableCopyColorFromRDRAM");
-	config.frameBufferEmulation.detectCFB = ConfigGetParamBool(g_configVideoGliden64, "EnableDetectCFB");
 	config.frameBufferEmulation.N64DepthCompare = ConfigGetParamBool(g_configVideoGliden64, "EnableN64DepthCompare");
 	//#Texture filter settings
 	config.textureFilter.txFilterMode = ConfigGetParamInt(g_configVideoGliden64, "txFilterMode");

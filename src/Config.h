@@ -83,7 +83,6 @@ struct Config
 		u32 copyToRDRAM;
 		u32 copyDepthToRDRAM;
 		u32 copyFromRDRAM;
-		u32 detectCFB;
 		u32 N64DepthCompare;
 		u32 aspect; // 0: stretch ; 1: 4/3 ; 2: 16/9; 3: adjust
 		u32 bufferSwapMode; // 0: on VI update call; 1: on VI origin change; 2: on main frame buffer update
