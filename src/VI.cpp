@@ -119,7 +119,7 @@ void VI_UpdateScreen()
 		const bool bCFB = (gDP.changed&CHANGED_CPU_FB_WRITE) == CHANGED_CPU_FB_WRITE;
 		bool bNeedSwap = false;
 		switch (config.frameBufferEmulation.bufferSwapMode) {
-		case Config::bsOnVIUpdate:
+		case Config::bsOnVerticalInterrupt:
 			bNeedSwap = true;
 			break;
 		case Config::bsOnVIOriginChange:

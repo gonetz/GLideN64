@@ -72,7 +72,7 @@ struct Config
 	};
 
 	enum BufferSwapMode {
-		bsOnVIUpdate = 0,
+		bsOnVerticalInterrupt = 0,
 		bsOnVIOriginChange,
 		bsOnColorImageChange
 	};
