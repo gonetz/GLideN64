@@ -113,7 +113,8 @@ void VI_UpdateScreen()
 			gDP.changed |= CHANGED_CPU_FB_WRITE;
 		else if (!pBuffer->isValid()) {
 			gDP.changed |= CHANGED_CPU_FB_WRITE;
-			frameBufferList().removeBuffer(pBuffer->m_startAddress);
+			if (config.frameBufferEmulation.copyToRDRAM == 0)
+				pBuffer->copyRdram();
 		}
 
 		const bool bCFB = (gDP.changed&CHANGED_CPU_FB_WRITE) == CHANGED_CPU_FB_WRITE;
