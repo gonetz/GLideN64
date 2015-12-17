@@ -1327,6 +1327,10 @@ void OGLRender::_initExtensions()
 	m_bImageTexture = false;
 #endif
 	LOG(LOG_VERBOSE, "ImageTexture support: %s\n", m_bImageTexture ? "yes" : "no");
+	if (m_bImageTexture == false)
+	{
+		LOG(LOG_WARNING, "Image Textures not supported. Without OpenGL >= 4.3 or GLES >= 3.1, depth buffer emulation will not work");
+	}
 
 	if (config.texture.maxAnisotropy != 0 && OGLVideo::isExtensionSupported("GL_EXT_texture_filter_anisotropic")) {
 		glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &config.texture.maxAnisotropyF);
