@@ -359,8 +359,6 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 	strFragmentShader.append(
 		"  if (uFogUsage == 257) \n"
 		"    fragColor.rgb = mix(fragColor.rgb, uFogColor.rgb, vFogFragCoord); \n"
-		"  if (uGammaCorrectionEnabled != 0) \n"
-		"    fragColor.rgb = pow(fragColor.rgb, vec3(1.0 / uGammaCorrectionLevel)); \n"
 		);
 
 	strFragmentShader.append(fragment_shader_end);
@@ -454,8 +452,6 @@ void ShaderCombiner::_locateUniforms() {
 	LocateUniform(uAlphaCompareMode);
 	LocateUniform(uAlphaDitherMode);
 	LocateUniform(uColorDitherMode);
-	LocateUniform(uGammaCorrectionEnabled);
-	LocateUniform(uGammaCorrectionLevel);
 	LocateUniform(uEnableLod);
 	LocateUniform(uEnableAlphaTest);
 	LocateUniform(uEnableDepth);
@@ -522,7 +518,6 @@ void ShaderCombiner::update(bool _bForce) {
 		updateRenderState(true);
 	}
 
-	updateGammaCorrection(_bForce);
 	updateFogMode(_bForce);
 	updateDitherMode(_bForce);
 	updateLOD(_bForce);
@@ -534,14 +529,6 @@ void ShaderCombiner::update(bool _bForce) {
 void ShaderCombiner::updateRenderState(bool _bForce)
 {
 	m_uniforms.uRenderState.set(video().getRender().getRenderState(), _bForce);
-}
-
-void ShaderCombiner::updateGammaCorrection(bool _bForce)
-{
-	m_uniforms.uGammaCorrectionEnabled.set(((*REG.VI_STATUS & 8)|config.generalEmulation.forceGammaCorrection), _bForce);
-
-	f32 gammaLevel = (config.generalEmulation.forceGammaCorrection != 0) ? config.generalEmulation.gammaCorrectionLevel : 2.0f;
-	m_uniforms.uGammaCorrectionLevel.set(gammaLevel, _bForce);
 }
 
 void ShaderCombiner::updateFogMode(bool _bForce)

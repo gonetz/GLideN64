@@ -9,7 +9,8 @@
 #define CONFIG_VERSION_THREE 3U
 #define CONFIG_VERSION_FOUR 4U		// Remove ValidityCheckMethod setting
 #define CONFIG_VERSION_FIVE 5U		// Add shader storage option
-#define CONFIG_VERSION_CURRENT CONFIG_VERSION_FIVE
+#define CONFIG_VERSION_SIX 6U		// Change gamma correction options
+#define CONFIG_VERSION_CURRENT CONFIG_VERSION_SIX
 
 #define BILINEAR_3POINT   0
 #define BILINEAR_STANDARD 1
@@ -48,8 +49,6 @@ struct Config
 		u32 enableCustomSettings;
 		u32 enableShadersStorage;
 		u32 hacks;
-		u32 forceGammaCorrection;
-		f32 gammaCorrectionLevel;
 #ifdef ANDROID
 		u32 forcePolygonOffset;
 		f32 polygonOffsetFactor;
@@ -122,6 +121,11 @@ struct Config
 		u32 blurAmount;
 		u32 blurStrength;
 	} bloomFilter;
+
+	struct {
+		u32 force;
+		f32 level;
+	} gammaCorrection;
 
 	void resetToDefaults();
 };

@@ -70,10 +70,6 @@ bool Config_SetDefault()
 	assert(res == M64ERR_SUCCESS);
 	res = ConfigSetDefaultBool(g_configVideoGliden64, "EnableShadersStorage", config.generalEmulation.enableShadersStorage, "Use persistent storage for compiled shaders.");
 	assert(res == M64ERR_SUCCESS);
-	res = ConfigSetDefaultBool(g_configVideoGliden64, "ForceGammaCorrection", config.generalEmulation.forceGammaCorrection, "Force gamma correction.");
-	assert(res == M64ERR_SUCCESS);
-	res = ConfigSetDefaultFloat(g_configVideoGliden64, "GammaCorrectionLevel", config.generalEmulation.gammaCorrectionLevel, "Gamma correction level.");
-	assert(res == M64ERR_SUCCESS);
 #ifdef ANDROID
 	res = ConfigSetDefaultBool(g_configVideoGliden64, "ForcePolygonOffset", config.generalEmulation.forcePolygonOffset, "If true, use polygon offset values specified below");
 	assert(res == M64ERR_SUCCESS);
@@ -143,6 +139,12 @@ bool Config_SetDefault()
 	res = ConfigSetDefaultInt(g_configVideoGliden64, "blurStrength", config.bloomFilter.blurStrength, "Blur strength. Values [10, 100]");
 	assert(res == M64ERR_SUCCESS);
 
+	//#Gamma correction settings
+	res = ConfigSetDefaultBool(g_configVideoGliden64, "ForceGammaCorrection", config.gammaCorrection.force, "Force gamma correction.");
+	assert(res == M64ERR_SUCCESS);
+	res = ConfigSetDefaultFloat(g_configVideoGliden64, "GammaCorrectionLevel", config.gammaCorrection.level, "Gamma correction level.");
+	assert(res == M64ERR_SUCCESS);
+
 	return ConfigSaveSection("Video-GLideN64") == M64ERR_SUCCESS;
 }
 
@@ -189,8 +191,6 @@ void Config_LoadConfig()
 	config.generalEmulation.enableLOD = ConfigGetParamBool(g_configVideoGliden64, "EnableLOD");
 	config.generalEmulation.enableHWLighting = ConfigGetParamBool(g_configVideoGliden64, "EnableHWLighting");
 	config.generalEmulation.enableShadersStorage = ConfigGetParamBool(g_configVideoGliden64, "EnableShadersStorage");
-	config.generalEmulation.forceGammaCorrection = ConfigGetParamBool(g_configVideoGliden64, "ForceGammaCorrection");
-	config.generalEmulation.gammaCorrectionLevel = ConfigGetParamFloat(g_configVideoGliden64, "GammaCorrectionLevel");
 #ifdef ANDROID
 	config.generalEmulation.forcePolygonOffset = ConfigGetParamBool(g_configVideoGliden64, "ForcePolygonOffset");
 	config.generalEmulation.polygonOffsetFactor = ConfigGetParamFloat(g_configVideoGliden64, "PolygonOffsetFactor");
@@ -243,6 +243,10 @@ void Config_LoadConfig()
 	config.bloomFilter.blendMode = ConfigGetParamInt(g_configVideoGliden64, "bloomBlendMode");
 	config.bloomFilter.blurAmount = ConfigGetParamInt(g_configVideoGliden64, "blurAmount");
 	config.bloomFilter.blurStrength = ConfigGetParamInt(g_configVideoGliden64, "blurStrength");
+
+	//#Gamma correction settings
+	config.gammaCorrection.force = ConfigGetParamBool(g_configVideoGliden64, "ForceGammaCorrection");
+	config.gammaCorrection.level = ConfigGetParamFloat(g_configVideoGliden64, "GammaCorrectionLevel");
 
 	config.generalEmulation.hacks = hacks;
 }

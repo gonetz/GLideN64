@@ -36,8 +36,6 @@ void Config::resetToDefaults()
 	generalEmulation.enableCustomSettings = 1;
 	generalEmulation.enableShadersStorage = 1;
 	generalEmulation.hacks = 0;
-	generalEmulation.forceGammaCorrection = 0;
-	generalEmulation.gammaCorrectionLevel = 2.0f;
 #ifdef ANDROID
 	generalEmulation.forcePolygonOffset = 0;
 	generalEmulation.polygonOffsetFactor = 0.0f;
@@ -95,4 +93,7 @@ void Config::resetToDefaults()
 	bloomFilter.blendMode = 0;
 	bloomFilter.blurAmount = 10;
 	bloomFilter.blurStrength = 20;
+
+	gammaCorrection.force = 0;
+	gammaCorrection.level = 2.0f;
 }
