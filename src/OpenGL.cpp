@@ -1393,8 +1393,7 @@ void OGLRender::_initData()
 	Combiner_Init();
 	TextDrawer::get().init();
 	TFH.init();
-	if (config.bloomFilter.enable != 0)
-		PostProcessor::get().init();
+	PostProcessor::get().init();
 	m_renderState = rsNone;
 
 	gSP.changed = gDP.changed = 0xFFFFFFFF;

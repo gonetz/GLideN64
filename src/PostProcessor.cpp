@@ -297,7 +297,7 @@ GLuint _createFBO(CachedTexture * _pTexture)
 	return FBO;
 }
 
-void PostProcessor::init()
+void PostProcessor::_initBlur()
 {
 	m_pTextureOriginal = _createTexture();
 	m_FBO_original = _createFBO(m_pTextureOriginal);
@@ -362,7 +362,13 @@ void PostProcessor::init()
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 }
 
-void PostProcessor::destroy()
+void PostProcessor::init()
+{
+	if (config.bloomFilter.enable != 0)
+		_initBlur();
+}
+
+void PostProcessor::_destroyBlur()
 {
 	if (m_copyProgram != 0)
 		glDeleteProgram(m_copyProgram);
@@ -401,6 +407,12 @@ void PostProcessor::destroy()
 	m_pTextureBlur = NULL;
 }
 
+
+void PostProcessor::destroy()
+{
+	_destroyBlur();
+}
+
 PostProcessor & PostProcessor::get()
 {
 	static PostProcessor processor;
@@ -431,15 +443,15 @@ void _setGLState() {
 	gDP.changed |= CHANGED_RENDERMODE;
 }
 
-void PostProcessor::process(FrameBuffer * _pBuffer)
+void PostProcessor::doBlur(FrameBuffer * _pBuffer)
 {
 	if (config.bloomFilter.enable == 0)
 		return;
 
-	if (_pBuffer == NULL || _pBuffer->m_postProcessed)
+	if (_pBuffer == NULL || (_pBuffer->m_postProcessed&PostProcessor::postEffectBlur) == PostProcessor::postEffectBlur)
 		return;
 
-	_pBuffer->m_postProcessed = true;
+	_pBuffer->m_postProcessed |= PostProcessor::postEffectBlur;
 
 	_setGLState();
 	OGLVideo & ogl = video();

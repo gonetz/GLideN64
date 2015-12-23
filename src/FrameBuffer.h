@@ -36,7 +36,7 @@ struct FrameBuffer
 	bool m_isPauseScreen;
 	bool m_isOBScreen;
 	bool m_needHeightCorrection;
-	bool m_postProcessed;
+	u32 m_postProcessed;
 
 	GLuint m_FBO;
 	gDPTile *m_pLoadTile;

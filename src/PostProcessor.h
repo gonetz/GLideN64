@@ -10,9 +10,11 @@ public:
 	void init();
 	void destroy();
 
-	void process(FrameBuffer * _pBuffer);
+	void doBlur(FrameBuffer * _pBuffer);
 
 	static PostProcessor & get();
+
+	static const u32 postEffectBlur = 1U;
 
 private:
 	PostProcessor() :
@@ -20,6 +22,8 @@ private:
 		m_FBO_original(0), m_FBO_glowMap(0), m_FBO_blur(0),
 		m_pTextureOriginal(NULL), m_pTextureGlowMap(NULL), m_pTextureBlur(NULL) {}
 	PostProcessor(const PostProcessor & _other);
+	void _initBlur();
+	void _destroyBlur();
 
 	GLuint m_extractBloomProgram;
 	GLuint m_seperableBlurProgram;

@@ -97,7 +97,7 @@ FrameBuffer::FrameBuffer() :
 	m_scaleX(0), m_scaleY(0),
 	m_copiedToRdram(false), m_fingerprint(false), m_cleared(false), m_changed(false), m_cfb(false),
 	m_isDepthBuffer(false), m_isPauseScreen(false), m_isOBScreen(false), m_needHeightCorrection(false),
-	m_postProcessed(false), m_pLoadTile(NULL),
+	m_postProcessed(0), m_pLoadTile(NULL),
 	m_pDepthBuffer(NULL), m_pResolveTexture(NULL), m_resolveFBO(0), m_resolved(false)
 {
 	m_pTexture = textureCache().addFrameBufferTexture();
@@ -545,7 +545,7 @@ void FrameBufferList::saveBuffer(u32 _address, u16 _format, u16 _size, u16 _widt
 
 	m_pCurrent->m_isDepthBuffer = _address == gDP.depthImageAddress;
 	m_pCurrent->m_isPauseScreen = m_pCurrent->m_isOBScreen = false;
-	m_pCurrent->m_postProcessed = false;
+	m_pCurrent->m_postProcessed = 0;
 }
 
 void FrameBufferList::copyAux()
@@ -739,7 +739,7 @@ void FrameBufferList::renderBuffer(u32 _address)
 #endif // GLESX
 
 	render.updateScissor(pBuffer);
-	PostProcessor::get().process(pBuffer);
+	PostProcessor::get().doBlur(pBuffer);
 	// glDisable(GL_SCISSOR_TEST) does not affect glBlitFramebuffer, at least on AMD
 	glScissor(0, 0, ogl.getScreenWidth(), ogl.getScreenHeight() + ogl.getHeightOffset());
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
@@ -804,7 +804,7 @@ void FrameBufferList::renderBuffer(u32 _address)
 
 	OGLVideo & ogl = video();
 	ogl.getRender().updateScissor(pBuffer);
-	PostProcessor::get().process(pBuffer);
+	PostProcessor::get().doBlur(pBuffer);
 	ogl.getRender().dropRenderState();
 	gSP.changed = gDP.changed = 0;
 
