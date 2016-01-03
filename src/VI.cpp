@@ -127,7 +127,7 @@ void VI_UpdateScreen()
 			bNeedSwap = bCFB ? true : (*REG.VI_ORIGIN != VI.lastOrigin);
 			break;
 		case Config::bsOnColorImageChange:
-			bNeedSwap = gDP.colorImage.changed != 0;
+			bNeedSwap = bCFB ? true : (gDP.colorImage.changed != 0);
 			break;
 		}
 
