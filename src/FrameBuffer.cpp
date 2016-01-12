@@ -528,7 +528,7 @@ void FrameBufferList::saveBuffer(u32 _address, u16 _format, u16 _size, u16 _widt
 		buffer.init(_address, endAddress, _format, _size, _width, _height, _cfb);
 		m_pCurrent = &buffer;
 
-		if (m_pCurrent->_isMarioTennisScoreboard() || ((config.generalEmulation.hacks & hack_legoRacers) != 0 && _width == VI.width))
+		if (m_pCurrent->_isMarioTennisScoreboard())
 			g_RDRAMtoFB.CopyFromRDRAM(m_pCurrent->m_startAddress + 4, false);
 	}
 
