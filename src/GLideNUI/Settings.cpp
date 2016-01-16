@@ -93,6 +93,11 @@ void _loadSettings(QSettings & settings)
 	config.bloomFilter.blurAmount = settings.value("blurAmount", config.bloomFilter.blurAmount).toInt();
 	config.bloomFilter.blurStrength = settings.value("blurStrength", config.bloomFilter.blurStrength).toInt();
 	settings.endGroup();
+
+	settings.beginGroup("gammaCorrection");
+	config.gammaCorrection.force = settings.value("force", config.gammaCorrection.force).toInt();
+	config.gammaCorrection.level = settings.value("level", config.gammaCorrection.level).toFloat();
+	settings.endGroup();
 }
 
 void loadSettings(const QString & _strIniFolder)
@@ -185,6 +190,11 @@ void writeSettings(const QString & _strIniFolder)
 	settings.setValue("blendMode", config.bloomFilter.blendMode);
 	settings.setValue("blurAmount", config.bloomFilter.blurAmount);
 	settings.setValue("blurStrength", config.bloomFilter.blurStrength);
+	settings.endGroup();
+
+	settings.beginGroup("gammaCorrection");
+	settings.setValue("force", config.gammaCorrection.force);
+	settings.setValue("level", config.gammaCorrection.level);
 	settings.endGroup();
 }
 

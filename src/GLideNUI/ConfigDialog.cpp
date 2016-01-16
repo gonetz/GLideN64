@@ -202,6 +202,10 @@ void ConfigDialog::_init()
 	ui->bloomThresholdSlider->setValue(config.bloomFilter.thresholdLevel);
 	ui->blurAmountSlider->setValue(config.bloomFilter.blurAmount);
 	ui->blurStrengthSlider->setValue(config.bloomFilter.blurStrength);
+
+	ui->forceGammaCorrectionCheckBox->setChecked(config.gammaCorrection.force  != 0);
+	ui->gammaLevelSpinBox->setValue(config.gammaCorrection.level);
+	ui->gammaLevelSpinBox->setEnabled(ui->forceGammaCorrectionCheckBox->isChecked());
 }
 
 void ConfigDialog::_getTranslations(QStringList & _translationFiles) const
@@ -361,6 +365,9 @@ void ConfigDialog::accept()
 	config.bloomFilter.thresholdLevel = ui->bloomThresholdSlider->value();
 	config.bloomFilter.blurAmount = ui->blurAmountSlider->value();
 	config.bloomFilter.blurStrength = ui->blurStrengthSlider->value();
+
+	config.gammaCorrection.force = ui->forceGammaCorrectionCheckBox->isChecked() ? 1 : 0;
+	config.gammaCorrection.level = ui->gammaLevelSpinBox->value();
 
 	writeSettings(m_strIniPath);
 
