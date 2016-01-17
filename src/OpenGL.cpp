@@ -1104,19 +1104,19 @@ void OGLRender::drawTexturedRect(const TexturedRectParams & _params)
 			f32 shiftScaleS = 1.0f;
 			f32 shiftScaleT = 1.0f;
 			getTextureShiftScale(t, cache, shiftScaleS, shiftScaleT);
-			if (_params.uls < _params.lrs) {
-				texST[t].s0 = _params.uls * shiftScaleS - gSP.textureTile[t]->fuls;
-				texST[t].s1 = (_params.lrs + 1.0f) * shiftScaleS - gSP.textureTile[t]->fuls;
-			} else {
+			if (_params.uls > _params.lrs) {
 				texST[t].s0 = (_params.uls + 1.0f) * shiftScaleS - gSP.textureTile[t]->fuls;
 				texST[t].s1 = _params.lrs * shiftScaleS - gSP.textureTile[t]->fuls;
-			}
-			if (_params.ult < _params.lrt) {
-				texST[t].t0 = _params.ult * shiftScaleT - gSP.textureTile[t]->fult;
-				texST[t].t1 = (_params.lrt + 1.0f) * shiftScaleT - gSP.textureTile[t]->fult;
 			} else {
+				texST[t].s0 = _params.uls * shiftScaleS - gSP.textureTile[t]->fuls;
+				texST[t].s1 = (_params.lrs + 1.0f) * shiftScaleS - gSP.textureTile[t]->fuls;
+			}
+			if (_params.ult > _params.lrt) {
 				texST[t].t0 = (_params.ult + 1.0f) * shiftScaleT - gSP.textureTile[t]->fult;
 				texST[t].t1 = _params.lrt * shiftScaleT - gSP.textureTile[t]->fult;
+			} else {
+				texST[t].t0 = _params.ult * shiftScaleT - gSP.textureTile[t]->fult;
+				texST[t].t1 = (_params.lrt + 1.0f) * shiftScaleT - gSP.textureTile[t]->fult;
 			}
 
 			if (cache.current[t]->frameBufferTexture) {
