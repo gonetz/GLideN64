@@ -659,7 +659,7 @@ void FrameBufferList::fillBufferInfo(FrameBufferInfo * _pinfo, u32 _size)
 {
 	u32 idx = 0;
 	for (FrameBuffers::iterator iter = m_list.begin(); iter != m_list.end(); ++iter) {
-		if (iter->m_width == VI.width && !iter->m_cfb) {
+		if (iter->m_width == VI.width && !iter->m_cfb && !iter->m_isDepthBuffer) {
 			_pinfo[idx].addr = iter->m_startAddress;
 			_pinfo[idx].width = iter->m_width;
 			_pinfo[idx].height = iter->m_height;
