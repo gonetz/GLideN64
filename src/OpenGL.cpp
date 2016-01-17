@@ -655,7 +655,7 @@ void OGLRender::_updateStates(RENDER_STATE _renderState) const
 				else
 					textureCache().activateDummy(t);
 			}
-			pCurrentCombiner->updateFBInfo();
+			pCurrentCombiner->updateFrameBufferInfo();
 		}
 		if (_renderState == rsTriangle || _renderState == rsLine)
 			cmbInfo.updateTextureParameters();
