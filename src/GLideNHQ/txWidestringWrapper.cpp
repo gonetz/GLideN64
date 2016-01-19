@@ -1,6 +1,7 @@
 #ifdef ANDROID
 
 #include <stdarg.h>
+#include <stdlib.h>
 #include <stdio.h>
 #include "txWidestringWrapper.h"
 

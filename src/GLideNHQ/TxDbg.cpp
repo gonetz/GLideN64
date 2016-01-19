@@ -28,6 +28,8 @@
 #include <stdio.h>
 
 #ifdef ANDROID
+
+#include <stdlib.h>
 #include <android/log.h>
 
 TxDbg::TxDbg()
