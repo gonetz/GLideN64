@@ -312,8 +312,8 @@ u32 _cutHeight(u32 _address, u32 _height, u32 _stride)
 {
 	if (_address > RDRAMSize)
 		return 0;
-	if (_address + _stride * _height > RDRAMSize)
-		return (RDRAMSize - _address) / _stride;
+	if (_address + _stride * _height > (RDRAMSize + 1))
+		return (RDRAMSize + 1 - _address) / _stride;
 	return _height;
 }
 
