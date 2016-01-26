@@ -49,9 +49,10 @@ void _loadSettings(QSettings & settings)
 	config.frameBufferEmulation.copyToRDRAM = settings.value("copyToRDRAM", config.frameBufferEmulation.copyToRDRAM).toInt();
 	config.frameBufferEmulation.copyDepthToRDRAM = settings.value("copyDepthToRDRAM", config.frameBufferEmulation.copyDepthToRDRAM).toInt();
 	config.frameBufferEmulation.copyFromRDRAM = settings.value("copyFromRDRAM", config.frameBufferEmulation.copyFromRDRAM).toInt();
-	config.frameBufferEmulation.detectCFB = settings.value("detectCFB", config.frameBufferEmulation.detectCFB).toInt();
 	config.frameBufferEmulation.N64DepthCompare = settings.value("N64DepthCompare", config.frameBufferEmulation.N64DepthCompare).toInt();
 	config.frameBufferEmulation.aspect = settings.value("aspect", config.frameBufferEmulation.aspect).toInt();
+	config.frameBufferEmulation.bufferSwapMode = settings.value("bufferSwapMode", config.frameBufferEmulation.bufferSwapMode).toInt();
+
 	settings.endGroup();
 
 	settings.beginGroup("textureFilter");
@@ -91,6 +92,11 @@ void _loadSettings(QSettings & settings)
 	config.bloomFilter.blendMode = settings.value("blendMode", config.bloomFilter.blendMode).toInt();
 	config.bloomFilter.blurAmount = settings.value("blurAmount", config.bloomFilter.blurAmount).toInt();
 	config.bloomFilter.blurStrength = settings.value("blurStrength", config.bloomFilter.blurStrength).toInt();
+	settings.endGroup();
+
+	settings.beginGroup("gammaCorrection");
+	config.gammaCorrection.force = settings.value("force", config.gammaCorrection.force).toInt();
+	config.gammaCorrection.level = settings.value("level", config.gammaCorrection.level).toFloat();
 	settings.endGroup();
 }
 
@@ -152,9 +158,9 @@ void writeSettings(const QString & _strIniFolder)
 	settings.setValue("copyToRDRAM", config.frameBufferEmulation.copyToRDRAM);
 	settings.setValue("copyDepthToRDRAM", config.frameBufferEmulation.copyDepthToRDRAM);
 	settings.setValue("copyFromRDRAM", config.frameBufferEmulation.copyFromRDRAM);
-	settings.setValue("detectCFB", config.frameBufferEmulation.detectCFB);
 	settings.setValue("N64DepthCompare", config.frameBufferEmulation.N64DepthCompare);
 	settings.setValue("aspect", config.frameBufferEmulation.aspect);
+	settings.setValue("bufferSwapMode", config.frameBufferEmulation.bufferSwapMode);
 	settings.endGroup();
 
 	settings.beginGroup("textureFilter");
@@ -184,6 +190,11 @@ void writeSettings(const QString & _strIniFolder)
 	settings.setValue("blendMode", config.bloomFilter.blendMode);
 	settings.setValue("blurAmount", config.bloomFilter.blurAmount);
 	settings.setValue("blurStrength", config.bloomFilter.blurStrength);
+	settings.endGroup();
+
+	settings.beginGroup("gammaCorrection");
+	settings.setValue("force", config.gammaCorrection.force);
+	settings.setValue("level", config.gammaCorrection.level);
 	settings.endGroup();
 }
 

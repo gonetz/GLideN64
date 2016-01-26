@@ -3,7 +3,9 @@
 #include "../GLideN64.h"
 #include "../Config.h"
 #include "../OpenGL.h"
+#include "../N64.h"
 #include "../RSP.h"
+#include "../FrameBuffer.h"
 #include "../GLideNUI/GLideNUI.h"
 
 class OGLVideoWindows : public OGLVideo
@@ -114,14 +116,24 @@ void OGLVideoWindows::_swapBuffers()
 
 void OGLVideoWindows::_saveScreenshot()
 {
-	unsigned char *pixelData = (unsigned char*)malloc(m_screenWidth * m_screenHeight * 3);
-	GLint oldMode;
-	glGetIntegerv( GL_READ_BUFFER, &oldMode );
-	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
-	glReadBuffer( GL_FRONT );
-	glReadPixels(0, m_heightOffset, m_screenWidth, m_screenHeight, GL_RGB, GL_UNSIGNED_BYTE, pixelData);
-	glReadBuffer( oldMode );
-	SaveScreenshot(m_strScreenDirectory, RSP.romname, m_screenWidth, m_screenHeight, pixelData);
+	unsigned char * pixelData = NULL;
+	FrameBuffer * pBuffer = frameBufferList().findBuffer(*REG.VI_ORIGIN);
+	if (pBuffer == nullptr) {
+		GLint oldMode;
+		glGetIntegerv(GL_READ_BUFFER, &oldMode);
+		glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
+		glReadBuffer(GL_FRONT);
+		pixelData = (unsigned char*)malloc(m_screenWidth * m_screenHeight * 3);
+		glReadPixels(0, m_heightOffset, m_screenWidth, m_screenHeight, GL_RGB, GL_UNSIGNED_BYTE, pixelData);
+		glReadBuffer(oldMode);
+		SaveScreenshot(m_strScreenDirectory, RSP.romname, m_screenWidth, m_screenHeight, pixelData);
+	}
+	else {
+		glBindFramebuffer(GL_READ_FRAMEBUFFER, pBuffer->m_FBO);
+		pixelData = (unsigned char*)malloc(pBuffer->m_pTexture->realWidth * pBuffer->m_pTexture->realHeight * 3);
+		glReadPixels(0, m_heightOffset, pBuffer->m_pTexture->realWidth, pBuffer->m_pTexture->realHeight, GL_RGB, GL_UNSIGNED_BYTE, pixelData);
+		SaveScreenshot(m_strScreenDirectory, RSP.romname, pBuffer->m_pTexture->realWidth, pBuffer->m_pTexture->realHeight, pixelData);
+	}
 	free( pixelData );
 }
 

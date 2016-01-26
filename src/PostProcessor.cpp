@@ -236,16 +236,39 @@ FRAGMENT_SHADER_END
 "}																														\n"
 ;
 
+static const char* gammaCorrectionShader =
+SHADER_VERSION
+"#if (__VERSION__ > 120)													\n"
+"# define IN in																\n"
+"# define OUT out															\n"
+"# define texture2D texture													\n"
+"#else																		\n"
+"# define IN varying														\n"
+"# define OUT																\n"
+"#endif // __VERSION __														\n"
+"IN mediump vec2 vTexCoord;													\n"
+"uniform sampler2D Sample0;													\n"
+"uniform lowp float uGammaCorrectionLevel;									\n"
+"OUT lowp vec4 fragColor;													\n"
+"																			\n"
+"void main()																\n"
+"{																			\n"
+"    fragColor = texture2D(Sample0, vTexCoord);								\n"
+"    fragColor.rgb = pow(fragColor.rgb, vec3(1.0 / uGammaCorrectionLevel));	\n"
+FRAGMENT_SHADER_END
+"}																			\n"
+;
+
 static
 GLuint _createShaderProgram(const char * _strVertex, const char * _strFragment)
 {
 	GLuint vertex_shader_object = glCreateShader(GL_VERTEX_SHADER);
-	glShaderSource(vertex_shader_object, 1, &_strVertex, NULL);
+	glShaderSource(vertex_shader_object, 1, &_strVertex, nullptr);
 	glCompileShader(vertex_shader_object);
 	assert(checkShaderCompileStatus(vertex_shader_object));
 
 	GLuint fragment_shader_object = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(fragment_shader_object, 1, &_strFragment, NULL);
+	glShaderSource(fragment_shader_object, 1, &_strFragment, nullptr);
 	glCompileShader(fragment_shader_object);
 	assert(checkShaderCompileStatus(fragment_shader_object));
 
@@ -279,7 +302,7 @@ CachedTexture * _createTexture()
 	textureCache().addFrameBufferTextureSize(pTexture->textureBytes);
 	glBindTexture(GL_TEXTURE_2D, pTexture->glName);
 
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, pTexture->realWidth, pTexture->realHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, pTexture->realWidth, pTexture->realHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glBindTexture(GL_TEXTURE_2D, 0);
@@ -297,11 +320,39 @@ GLuint _createFBO(CachedTexture * _pTexture)
 	return FBO;
 }
 
-void PostProcessor::init()
+void PostProcessor::_initCommon()
 {
 	m_pTextureOriginal = _createTexture();
 	m_FBO_original = _createFBO(m_pTextureOriginal);
 
+#ifdef GLES2
+	m_copyProgram = _createShaderProgram(vertexShader, copyShader);
+	glUseProgram(m_copyProgram);
+	int loc = glGetUniformLocation(m_copyProgram, "Sample0");
+	assert(loc >= 0);
+	glUniform1i(loc, 0);
+	glUseProgram(0);
+#endif
+
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+}
+
+void PostProcessor::_initGammaCorrection()
+{
+	m_gammaCorrectionProgram = _createShaderProgram(vertexShader, gammaCorrectionShader);
+	glUseProgram(m_gammaCorrectionProgram);
+	int loc = glGetUniformLocation(m_gammaCorrectionProgram, "Sample0");
+	assert(loc >= 0);
+	glUniform1i(loc, 0);
+	loc = glGetUniformLocation(m_gammaCorrectionProgram, "uGammaCorrectionLevel");
+	assert(loc >= 0);
+	const f32 gammaLevel = (config.gammaCorrection.force != 0) ? config.gammaCorrection.level : 2.0f;
+	glUniform1f(loc, gammaLevel);
+	glUseProgram(0);
+}
+
+void PostProcessor::_initBlur()
+{
 	m_extractBloomProgram = _createShaderProgram(vertexShader, extractBloomShader);
 	glUseProgram(m_extractBloomProgram);
 	int loc = glGetUniformLocation(m_extractBloomProgram, "Sample0");
@@ -310,14 +361,6 @@ void PostProcessor::init()
 	loc = glGetUniformLocation(m_extractBloomProgram, "ThresholdLevel");
 	assert(loc >= 0);
 	glUniform1i(loc, config.bloomFilter.thresholdLevel);
-
-#ifdef GLES2
-	m_copyProgram = _createShaderProgram(vertexShader, copyShader);
-	glUseProgram(m_copyProgram);
-	loc = glGetUniformLocation(m_copyProgram, "Sample0");
-	assert(loc >= 0);
-	glUniform1i(loc, 0);
-#endif
 
 	m_seperableBlurProgram = _createShaderProgram(vertexShader, seperableBlurShader);
 	glUseProgram(m_seperableBlurProgram);
@@ -359,14 +402,39 @@ void PostProcessor::init()
 	m_FBO_blur = _createFBO(m_pTextureBlur);
 
 	glUseProgram(0);
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 }
 
-void PostProcessor::destroy()
+void PostProcessor::init()
+{
+	_initCommon();
+	_initGammaCorrection();
+	if (config.bloomFilter.enable != 0)
+		_initBlur();
+}
+
+void PostProcessor::_destroyCommon()
 {
 	if (m_copyProgram != 0)
 		glDeleteProgram(m_copyProgram);
 	m_copyProgram = 0;
+
+	if (m_FBO_original != 0)
+		glDeleteFramebuffers(1, &m_FBO_original);
+	m_FBO_original = 0;
+
+	if (m_pTextureOriginal != nullptr)
+		textureCache().removeFrameBufferTexture(m_pTextureOriginal);
+}
+
+void PostProcessor::_destroyGammaCorrection()
+{
+	if (m_gammaCorrectionProgram != 0)
+		glDeleteProgram(m_gammaCorrectionProgram);
+	m_gammaCorrectionProgram = 0;
+}
+
+void PostProcessor::_destroyBlur()
+{
 	if (m_extractBloomProgram != 0)
 		glDeleteProgram(m_extractBloomProgram);
 	m_extractBloomProgram = 0;
@@ -380,9 +448,6 @@ void PostProcessor::destroy()
 		glDeleteProgram(m_bloomProgram);
 	m_bloomProgram = 0;
 
-	if (m_FBO_original != 0)
-		glDeleteFramebuffers(1, &m_FBO_original);
-	m_FBO_original = 0;
 	if (m_FBO_glowMap != 0)
 		glDeleteFramebuffers(1, &m_FBO_glowMap);
 	m_FBO_glowMap = 0;
@@ -390,15 +455,21 @@ void PostProcessor::destroy()
 		glDeleteFramebuffers(1, &m_FBO_blur);
 	m_FBO_blur = 0;
 
-	if (m_pTextureOriginal != NULL)
-		textureCache().removeFrameBufferTexture(m_pTextureOriginal);
-	m_pTextureOriginal = NULL;
-	if (m_pTextureGlowMap != NULL)
+	m_pTextureOriginal = nullptr;
+	if (m_pTextureGlowMap != nullptr)
 		textureCache().removeFrameBufferTexture(m_pTextureGlowMap);
-	m_pTextureGlowMap = NULL;
-	if (m_pTextureBlur != NULL)
+	m_pTextureGlowMap = nullptr;
+	if (m_pTextureBlur != nullptr)
 		textureCache().removeFrameBufferTexture(m_pTextureBlur);
-	m_pTextureBlur = NULL;
+	m_pTextureBlur = nullptr;
+}
+
+
+void PostProcessor::destroy()
+{
+	_destroyBlur();
+	_destroyGammaCorrection();
+	_destroyCommon();
 }
 
 PostProcessor & PostProcessor::get()
@@ -431,16 +502,8 @@ void _setGLState() {
 	gDP.changed |= CHANGED_RENDERMODE;
 }
 
-void PostProcessor::process(FrameBuffer * _pBuffer)
+void PostProcessor::_preDraw(FrameBuffer * _pBuffer)
 {
-	if (config.bloomFilter.enable == 0)
-		return;
-
-	if (_pBuffer == NULL || _pBuffer->m_postProcessed)
-		return;
-
-	_pBuffer->m_postProcessed = true;
-
 	_setGLState();
 	OGLVideo & ogl = video();
 
@@ -460,6 +523,26 @@ void PostProcessor::process(FrameBuffer * _pBuffer)
 #endif
 
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
+}
+
+void PostProcessor::_postDraw()
+{
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+	video().getRender().dropRenderState();
+	glUseProgram(0);
+}
+
+void PostProcessor::doBlur(FrameBuffer * _pBuffer)
+{
+	if (config.bloomFilter.enable == 0)
+		return;
+
+	if (_pBuffer == nullptr || (_pBuffer->m_postProcessed&PostProcessor::postEffectBlur) == PostProcessor::postEffectBlur)
+		return;
+
+	_pBuffer->m_postProcessed |= PostProcessor::postEffectBlur;
+
+	_preDraw(_pBuffer);
 
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_FBO_glowMap);
 	textureCache().activateTexture(0, m_pTextureOriginal);
@@ -485,7 +568,27 @@ void PostProcessor::process(FrameBuffer * _pBuffer)
 	glUseProgram(m_glowProgram);
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-	video().getRender().dropRenderState();
-	glUseProgram(0);
+	_postDraw();
+}
+
+
+
+void PostProcessor::doGammaCorrection(FrameBuffer * _pBuffer)
+{
+	if (((*REG.VI_STATUS & 8)|config.gammaCorrection.force) == 0)
+		return;
+
+	if (_pBuffer == nullptr || (_pBuffer->m_postProcessed&PostProcessor::postEffectGammaCorrection) == PostProcessor::postEffectGammaCorrection)
+		return;
+
+	_pBuffer->m_postProcessed |= PostProcessor::postEffectGammaCorrection;
+
+	_preDraw(_pBuffer);
+
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, _pBuffer->m_FBO);
+	textureCache().activateTexture(0, m_pTextureOriginal);
+	glUseProgram(m_gammaCorrectionProgram);
+	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+	_postDraw();
 }

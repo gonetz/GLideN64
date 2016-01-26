@@ -49,10 +49,11 @@ void Config::resetToDefaults()
 #endif
 	frameBufferEmulation.copyDepthToRDRAM = ctDisable;
 	frameBufferEmulation.copyFromRDRAM = 0;
+	frameBufferEmulation.copyAuxToRDRAM = 0;
 	frameBufferEmulation.copyToRDRAM = ctAsync;
-	frameBufferEmulation.detectCFB = 0;
 	frameBufferEmulation.N64DepthCompare = 0;
 	frameBufferEmulation.aspect = 1;
+	frameBufferEmulation.bufferSwapMode = bsOnVerticalInterrupt;
 
 	textureFilter.txCacheSize = 100 * gc_uMegabyte;
 	textureFilter.txDump = 0;
@@ -92,4 +93,7 @@ void Config::resetToDefaults()
 	bloomFilter.blendMode = 0;
 	bloomFilter.blurAmount = 10;
 	bloomFilter.blurStrength = 20;
+
+	gammaCorrection.force = 0;
+	gammaCorrection.level = 2.0f;
 }

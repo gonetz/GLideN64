@@ -9,7 +9,8 @@
 #define CONFIG_VERSION_THREE 3U
 #define CONFIG_VERSION_FOUR 4U		// Remove ValidityCheckMethod setting
 #define CONFIG_VERSION_FIVE 5U		// Add shader storage option
-#define CONFIG_VERSION_CURRENT CONFIG_VERSION_FIVE
+#define CONFIG_VERSION_SIX 6U		// Change gamma correction options
+#define CONFIG_VERSION_CURRENT CONFIG_VERSION_SIX
 
 #define BILINEAR_3POINT   0
 #define BILINEAR_STANDARD 1
@@ -69,14 +70,21 @@ struct Config
 		ctAsync
 	};
 
+	enum BufferSwapMode {
+		bsOnVerticalInterrupt = 0,
+		bsOnVIOriginChange,
+		bsOnColorImageChange
+	};
+
 	struct {
 		u32 enable;
+		u32 copyAuxToRDRAM;
 		u32 copyToRDRAM;
 		u32 copyDepthToRDRAM;
 		u32 copyFromRDRAM;
-		u32 detectCFB;
 		u32 N64DepthCompare;
 		u32 aspect; // 0: stretch ; 1: 4/3 ; 2: 16/9; 3: adjust
+		u32 bufferSwapMode; // 0: on VI update call; 1: on VI origin change; 2: on main frame buffer update
 	} frameBufferEmulation;
 
 	struct
@@ -114,6 +122,11 @@ struct Config
 		u32 blurStrength;
 	} bloomFilter;
 
+	struct {
+		u32 force;
+		f32 level;
+	} gammaCorrection;
+
 	void resetToDefaults();
 };
 
@@ -124,10 +137,8 @@ struct Config
 #define hack_scoreboardJ			(1<<4)  //Copy data from RDRAM to auxilary frame buffer. Scoreboard in Mario Tennis (J).
 #define hack_pilotWings				(1<<5)  //Special blend mode for PilotWings.
 #define hack_subscreen				(1<<6)  //Fix subscreen delay in Zelda OOT and Doubutsu no Mori
-#define hack_legoRacers				(1<<7)  //LEGO racers course map
 #define hack_blastCorps				(1<<8)  //Blast Corps black polygons
 #define hack_ignoreVIHeightChange	(1<<9)  //Do not reset FBO when VI height is changed. Space Invaders need it.
-#define hack_VIUpdateOnCIChange		(1<<10) //Update frame if color buffer changed. Needed for Quake II underwater.
 #define hack_skipVIChangeCheck		(1<<11) //Don't reset FBO when VI parameters changed. Zelda MM
 #define hack_ZeldaCamera			(1<<12) //Special hack to detect and process Zelda MM camera.
 

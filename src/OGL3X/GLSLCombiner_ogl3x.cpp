@@ -273,13 +273,13 @@ void DestroyShaderCombiner() {
 #endif // GL_IMAGE_TEXTURES_SUPPORT
 }
 
-ShaderCombiner::ShaderCombiner()
+ShaderCombiner::ShaderCombiner() : m_bNeedUpdate(true)
 {
 	m_program = glCreateProgram();
 	_locate_attributes();
 }
 
-ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCombine & _combine) : m_combine(_combine)
+ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCombine & _combine) : m_combine(_combine), m_bNeedUpdate(true)
 {
 	char strCombiner[1024];
 	m_nInputs = compileCombiner(_color, _alpha, strCombiner);
@@ -359,8 +359,6 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 	strFragmentShader.append(
 		"  if (uFogUsage == 257) \n"
 		"    fragColor.rgb = mix(fragColor.rgb, uFogColor.rgb, vFogFragCoord); \n"
-		"  if (uGammaCorrectionEnabled != 0) \n"
-		"    fragColor.rgb = sqrt(fragColor.rgb); \n"
 		);
 
 	strFragmentShader.append(fragment_shader_end);
@@ -454,7 +452,6 @@ void ShaderCombiner::_locateUniforms() {
 	LocateUniform(uAlphaCompareMode);
 	LocateUniform(uAlphaDitherMode);
 	LocateUniform(uColorDitherMode);
-	LocateUniform(uGammaCorrectionEnabled);
 	LocateUniform(uEnableLod);
 	LocateUniform(uEnableAlphaTest);
 	LocateUniform(uEnableDepth);
@@ -499,6 +496,8 @@ void ShaderCombiner::_locate_attributes() const {
 }
 
 void ShaderCombiner::update(bool _bForce) {
+	_bForce |= m_bNeedUpdate;
+	m_bNeedUpdate = false;
 	glUseProgram(m_program);
 
 	if (_bForce) {
@@ -519,7 +518,6 @@ void ShaderCombiner::update(bool _bForce) {
 		updateRenderState(true);
 	}
 
-	updateGammaCorrection(_bForce);
 	updateFogMode(_bForce);
 	updateDitherMode(_bForce);
 	updateLOD(_bForce);
@@ -531,11 +529,6 @@ void ShaderCombiner::update(bool _bForce) {
 void ShaderCombiner::updateRenderState(bool _bForce)
 {
 	m_uniforms.uRenderState.set(video().getRender().getRenderState(), _bForce);
-}
-
-void ShaderCombiner::updateGammaCorrection(bool _bForce)
-{
-	m_uniforms.uGammaCorrectionEnabled.set(*REG.VI_STATUS & 8, _bForce);
 }
 
 void ShaderCombiner::updateFogMode(bool _bForce)

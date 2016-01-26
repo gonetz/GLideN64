@@ -114,6 +114,7 @@ void ConfigDialog::_init()
 	ui->enableShadersStorageCheckBox->setChecked(config.generalEmulation.enableShadersStorage != 0);
 	ui->customSettingsCheckBox->setChecked(config.generalEmulation.enableCustomSettings != 0);
 
+	ui->bufferSwapComboBox->setCurrentIndex(config.frameBufferEmulation.bufferSwapMode);
 	ui->frameBufferGroupBox->setChecked(config.frameBufferEmulation.enable != 0);
 	switch (config.frameBufferEmulation.copyToRDRAM) {
 	case Config::ctDisable:
@@ -127,7 +128,6 @@ void ConfigDialog::_init()
 		break;
 	}
 	ui->RenderFBCheckBox->setChecked(config.frameBufferEmulation.copyFromRDRAM != 0);
-	ui->detectCPUWritesCheckBox->setChecked(config.frameBufferEmulation.detectCFB != 0);
 	ui->CopyDepthCheckBox->setChecked(config.frameBufferEmulation.copyDepthToRDRAM != 0);
 	ui->n64DepthCompareCheckBox->setChecked(config.frameBufferEmulation.N64DepthCompare != 0);
 	switch (config.frameBufferEmulation.aspect) {
@@ -202,6 +202,10 @@ void ConfigDialog::_init()
 	ui->bloomThresholdSlider->setValue(config.bloomFilter.thresholdLevel);
 	ui->blurAmountSlider->setValue(config.bloomFilter.blurAmount);
 	ui->blurStrengthSlider->setValue(config.bloomFilter.blurStrength);
+
+	ui->forceGammaCorrectionCheckBox->setChecked(config.gammaCorrection.force  != 0);
+	ui->gammaLevelSpinBox->setValue(config.gammaCorrection.level);
+	ui->gammaLevelSpinBox->setEnabled(ui->forceGammaCorrectionCheckBox->isChecked());
 }
 
 void ConfigDialog::_getTranslations(QStringList & _translationFiles) const
@@ -294,6 +298,7 @@ void ConfigDialog::accept()
 	config.generalEmulation.enableShadersStorage = ui->enableShadersStorageCheckBox->isChecked() ? 1 : 0;
 	config.generalEmulation.enableCustomSettings = ui->customSettingsCheckBox->isChecked() ? 1 : 0;
 
+	config.frameBufferEmulation.bufferSwapMode = ui->bufferSwapComboBox->currentIndex();
 	config.frameBufferEmulation.enable = ui->frameBufferGroupBox->isChecked() ? 1 : 0;
 	if (ui->copyBufferDisableRadioButton->isChecked())
 		config.frameBufferEmulation.copyToRDRAM = Config::ctDisable;
@@ -302,7 +307,6 @@ void ConfigDialog::accept()
 	else if (ui->copyBufferAsyncRadioButton->isChecked())
 		config.frameBufferEmulation.copyToRDRAM = Config::ctAsync;
 	config.frameBufferEmulation.copyFromRDRAM = ui->RenderFBCheckBox->isChecked() ? 1 : 0;
-	config.frameBufferEmulation.detectCFB = ui->detectCPUWritesCheckBox->isChecked() ? 1 : 0;
 	config.frameBufferEmulation.copyDepthToRDRAM = ui->CopyDepthCheckBox->isChecked() ? 1 : 0;
 	config.frameBufferEmulation.N64DepthCompare = ui->n64DepthCompareCheckBox->isChecked() ? 1 : 0;
 	if (ui->aspectStretchRadioButton->isChecked())
@@ -361,6 +365,9 @@ void ConfigDialog::accept()
 	config.bloomFilter.thresholdLevel = ui->bloomThresholdSlider->value();
 	config.bloomFilter.blurAmount = ui->blurAmountSlider->value();
 	config.bloomFilter.blurStrength = ui->blurStrengthSlider->value();
+
+	config.gammaCorrection.force = ui->forceGammaCorrectionCheckBox->isChecked() ? 1 : 0;
+	config.gammaCorrection.level = ui->gammaLevelSpinBox->value();
 
 	writeSettings(m_strIniPath);
 

@@ -10,7 +10,7 @@ extern "C" {
 #define CALL		__cdecl
 #else
 #define EXPORT 	__attribute__((visibility("default")))
-#define CALL          _cdecl
+#define CALL
 #endif
 
 EXPORT bool CALL RunConfig(const wchar_t * _strFileName);

@@ -21,7 +21,6 @@ public:
 	void updateAlphaTestInfo(bool _bForce = false);
 	void updateTextureInfo(bool _bForce = false);
 	void updateRenderState(bool _bForce = false);
-	void updateGammaCorrection(bool _bForce = false);
 
 	u64 getMux() const {return m_combine.mux;}
 
@@ -97,7 +96,7 @@ private:
 			uEnableDepth, uEnableDepthCompare, uEnableDepthUpdate,
 			uDepthMode, uDepthSource, uRenderState, uSpecialBlendMode,
 			uMaxTile, uTextureDetail, uTexturePersp, uTextureFilterMode, uMSAASamples,
-			uAlphaCompareMode, uAlphaDitherMode, uColorDitherMode, uGammaCorrectionEnabled;
+			uAlphaCompareMode, uAlphaDitherMode, uColorDitherMode;
 
 		fUniform uFogAlpha, uMinLod, uDeltaZ, uAlphaTestValue, uMSAAScale;
 
@@ -122,6 +121,7 @@ private:
 	UniformLocation m_uniforms;
 	GLuint m_program;
 	int m_nInputs;
+	bool m_bNeedUpdate;
 };
 
 void InitShaderCombiner();

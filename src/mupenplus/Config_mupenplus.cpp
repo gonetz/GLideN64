@@ -49,6 +49,8 @@ bool Config_SetDefault()
 	assert(res == M64ERR_SUCCESS);
 	res = ConfigSetDefaultInt(g_configVideoGliden64, "AspectRatio", config.frameBufferEmulation.aspect, "Screen aspect ratio (0=stretch, 1=force 4:3, 2=force 16:9, 3=adjust)");
 	assert(res == M64ERR_SUCCESS);
+	res = ConfigSetDefaultInt(g_configVideoGliden64, "BufferSwapMode", config.frameBufferEmulation.bufferSwapMode, "Swap frame buffers (0=On VI update call, 1=On VI origin change, 2=On buffer update)");
+	assert(res == M64ERR_SUCCESS);
 
 	//#Texture Settings
 	res = ConfigSetDefaultBool(g_configVideoGliden64, "bilinearMode", config.texture.bilinearMode, "Bilinear filtering mode (0=N64 3point, 1=standard)");
@@ -79,13 +81,13 @@ bool Config_SetDefault()
 	//#Frame Buffer Settings:"
 	res = ConfigSetDefaultBool(g_configVideoGliden64, "EnableFBEmulation", config.frameBufferEmulation.enable, "Enable frame and|or depth buffer emulation.");
 	assert(res == M64ERR_SUCCESS);
+	res = ConfigSetDefaultBool(g_configVideoGliden64, "EnableCopyAuxiliaryToRDRAM", config.frameBufferEmulation.copyAuxToRDRAM, "Copy auxiliary buffers to RDRAM");
+	assert(res == M64ERR_SUCCESS);
 	res = ConfigSetDefaultInt(g_configVideoGliden64, "EnableCopyColorToRDRAM", config.frameBufferEmulation.copyToRDRAM, "Enable color buffer copy to RDRAM (0=do not copy, 1=copy in sync mode, 2=copy in async mode)");
 	assert(res == M64ERR_SUCCESS);
 	res = ConfigSetDefaultBool(g_configVideoGliden64, "EnableCopyDepthToRDRAM", config.frameBufferEmulation.copyDepthToRDRAM, "Enable depth buffer copy to RDRAM.");
 	assert(res == M64ERR_SUCCESS);
 	res = ConfigSetDefaultBool(g_configVideoGliden64, "EnableCopyColorFromRDRAM", config.frameBufferEmulation.copyFromRDRAM, "Enable color buffer copy from RDRAM.");
-	assert(res == M64ERR_SUCCESS);
-	res = ConfigSetDefaultBool(g_configVideoGliden64, "EnableDetectCFB", config.frameBufferEmulation.detectCFB, "Detect CPU writes to frame buffer.");
 	assert(res == M64ERR_SUCCESS);
 	res = ConfigSetDefaultBool(g_configVideoGliden64, "EnableN64DepthCompare", config.frameBufferEmulation.N64DepthCompare, "Enable N64 depth compare instead of OpenGL standard one. Experimental.");
 	assert(res == M64ERR_SUCCESS);
@@ -137,6 +139,12 @@ bool Config_SetDefault()
 	res = ConfigSetDefaultInt(g_configVideoGliden64, "blurStrength", config.bloomFilter.blurStrength, "Blur strength. Values [10, 100]");
 	assert(res == M64ERR_SUCCESS);
 
+	//#Gamma correction settings
+	res = ConfigSetDefaultBool(g_configVideoGliden64, "ForceGammaCorrection", config.gammaCorrection.force, "Force gamma correction.");
+	assert(res == M64ERR_SUCCESS);
+	res = ConfigSetDefaultFloat(g_configVideoGliden64, "GammaCorrectionLevel", config.gammaCorrection.level, "Gamma correction level.");
+	assert(res == M64ERR_SUCCESS);
+
 	return ConfigSaveSection("Video-GLideN64") == M64ERR_SUCCESS;
 }
 
@@ -171,6 +179,7 @@ void Config_LoadConfig()
 	config.video.multisampling = 0;
 #endif
 	config.frameBufferEmulation.aspect = ConfigGetParamInt(g_configVideoGliden64, "AspectRatio");
+	config.frameBufferEmulation.bufferSwapMode = ConfigGetParamInt(g_configVideoGliden64, "BufferSwapMode");
 
 	//#Texture Settings
 	config.texture.bilinearMode = ConfigGetParamBool(g_configVideoGliden64, "bilinearMode");
@@ -189,10 +198,10 @@ void Config_LoadConfig()
 #endif
 	//#Frame Buffer Settings:"
 	config.frameBufferEmulation.enable = ConfigGetParamBool(g_configVideoGliden64, "EnableFBEmulation");
+	config.frameBufferEmulation.copyAuxToRDRAM = ConfigGetParamBool(g_configVideoGliden64, "EnableCopyAuxiliaryToRDRAM");
 	config.frameBufferEmulation.copyToRDRAM = ConfigGetParamInt(g_configVideoGliden64, "EnableCopyColorToRDRAM");
 	config.frameBufferEmulation.copyDepthToRDRAM = ConfigGetParamBool(g_configVideoGliden64, "EnableCopyDepthToRDRAM");
 	config.frameBufferEmulation.copyFromRDRAM = ConfigGetParamBool(g_configVideoGliden64, "EnableCopyColorFromRDRAM");
-	config.frameBufferEmulation.detectCFB = ConfigGetParamBool(g_configVideoGliden64, "EnableDetectCFB");
 	config.frameBufferEmulation.N64DepthCompare = ConfigGetParamBool(g_configVideoGliden64, "EnableN64DepthCompare");
 	//#Texture filter settings
 	config.textureFilter.txFilterMode = ConfigGetParamInt(g_configVideoGliden64, "txFilterMode");
@@ -234,6 +243,10 @@ void Config_LoadConfig()
 	config.bloomFilter.blendMode = ConfigGetParamInt(g_configVideoGliden64, "bloomBlendMode");
 	config.bloomFilter.blurAmount = ConfigGetParamInt(g_configVideoGliden64, "blurAmount");
 	config.bloomFilter.blurStrength = ConfigGetParamInt(g_configVideoGliden64, "blurStrength");
+
+	//#Gamma correction settings
+	config.gammaCorrection.force = ConfigGetParamBool(g_configVideoGliden64, "ForceGammaCorrection");
+	config.gammaCorrection.level = ConfigGetParamFloat(g_configVideoGliden64, "GammaCorrectionLevel");
 
 	config.generalEmulation.hacks = hacks;
 }
