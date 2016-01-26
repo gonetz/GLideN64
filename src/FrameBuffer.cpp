@@ -1255,7 +1255,7 @@ void FrameBufferToRDRAM::copyToRDRAM(u32 _address, bool _sync)
 {
 	if (!_prepareCopy(_address))
 		return;
-	_copy(m_pCurFrameBuffer->m_startAddress, m_pCurFrameBuffer->m_endAddress, _sync);
+	_copy(m_pCurFrameBuffer->m_startAddress, m_pCurFrameBuffer->m_endAddress + 1, _sync);
 }
 
 void FrameBufferToRDRAM::copyChunkToRDRAM(u32 _address)
