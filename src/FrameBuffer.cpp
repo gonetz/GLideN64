@@ -29,7 +29,8 @@ public:
 		m_pTexture(nullptr),
 		m_pCurFrameBuffer(nullptr),
 		m_curIndex(-1),
-		m_frameCount(-1)
+		m_frameCount(-1),
+		m_startAddress(-1)
 	{
 		m_PBO[0] = m_PBO[1] = m_PBO[2] = 0;
 	}
@@ -48,7 +49,7 @@ private:
 		u32 raw;
 	};
 
-	bool _prepareCopy(u32 _address);
+	bool _prepareCopy(u32 _startAddress);
 	void _copy(u32 _startAddress, u32 _endAddress, bool _sync);
 
 	// Convert pixel from video memory to N64 buffer format.
@@ -61,6 +62,7 @@ private:
 	FrameBuffer * m_pCurFrameBuffer;
 	u32 m_curIndex;
 	u32 m_frameCount;
+	u32 m_startAddress;
 	GLuint m_PBO[3];
 };
 
@@ -1067,11 +1069,11 @@ void FrameBufferToRDRAM::Destroy() {
 	m_PBO[0] = m_PBO[1] = m_PBO[2] = 0;
 }
 
-bool FrameBufferToRDRAM::_prepareCopy(u32 _address)
+bool FrameBufferToRDRAM::_prepareCopy(u32 _startAddress)
 {
 	const u32 curFrame = video().getBuffersSwapCount();
-	FrameBuffer * pBuffer = frameBufferList().findBuffer(_address);
-	if (m_frameCount == curFrame && pBuffer == m_pCurFrameBuffer)
+	FrameBuffer * pBuffer = frameBufferList().findBuffer(_startAddress);
+	if (m_frameCount == curFrame && pBuffer == m_pCurFrameBuffer && m_startAddress != _startAddress)
 		return true;
 
 	if (VI.width == 0 || frameBufferList().getCurrent() == NULL)
@@ -1086,7 +1088,7 @@ bool FrameBufferToRDRAM::_prepareCopy(u32 _address)
 		return false;
 
 	const u32 stride = m_pCurFrameBuffer->m_width << m_pCurFrameBuffer->m_size >> 1;
-	const u32 height = _cutHeight(_address, m_pCurFrameBuffer->m_height, stride);
+	const u32 height = _cutHeight(_startAddress, m_pCurFrameBuffer->m_height, stride);
 	if (height == 0)
 		return false;
 
@@ -1095,7 +1097,6 @@ bool FrameBufferToRDRAM::_prepareCopy(u32 _address)
 		return false;
 	}
 
-	_address = m_pCurFrameBuffer->m_startAddress;
 	if (config.video.multisampling != 0) {
 		m_pCurFrameBuffer->resolveMultisampledTexture();
 		glBindFramebuffer(GL_READ_FRAMEBUFFER, m_pCurFrameBuffer->m_resolveFBO);
@@ -1116,6 +1117,7 @@ bool FrameBufferToRDRAM::_prepareCopy(u32 _address)
 	}
 
 	m_frameCount = curFrame;
+	m_startAddress = _startAddress;
 	return true;
 }
 
@@ -1255,7 +1257,8 @@ void FrameBufferToRDRAM::copyToRDRAM(u32 _address, bool _sync)
 {
 	if (!_prepareCopy(_address))
 		return;
-	_copy(m_pCurFrameBuffer->m_startAddress, m_pCurFrameBuffer->m_endAddress + 1, _sync);
+	const u32 numBytes = (m_pCurFrameBuffer->m_width*m_pCurFrameBuffer->m_height) << m_pCurFrameBuffer->m_size >> 1;
+	_copy(m_pCurFrameBuffer->m_startAddress, m_pCurFrameBuffer->m_startAddress + numBytes, _sync);
 }
 
 void FrameBufferToRDRAM::copyChunkToRDRAM(u32 _address)
