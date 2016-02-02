@@ -9,7 +9,10 @@
 
 void FrameBufferWrite(u32 addr, u32 size)
 {
+	// TODO: remove debug print
 	debugPrint("FBWrite addr=%08lx size=%u\n", addr, size);
+
+	FrameBuffer_AddAddress(RSP_SegmentToPhysical(addr));
 }
 
 void FrameBufferWriteList(FrameBufferModifyEntry *plist, u32 size)

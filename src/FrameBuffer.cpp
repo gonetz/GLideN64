@@ -101,14 +101,38 @@ private:
 class RDRAMtoFrameBuffer
 {
 public:
-	RDRAMtoFrameBuffer() : m_pTexture(NULL), m_PBO(0) {}
+	RDRAMtoFrameBuffer()
+		: m_uly(0)
+		, m_lry(0)
+		, m_stride(0)
+		, m_pCurBuffer(nullptr)
+		, m_pTexture(nullptr)
+		, m_PBO(0) {
+	}
 
 	void Init();
 	void Destroy();
 
-	void CopyFromRDRAM( u32 _address, bool _bUseAlpha);
+	void AddAddress(u32 _address);
+	void CopyFromRDRAM(u32 _address, bool _bUseAlpha);
 
 private:
+	class Cleaner {
+	public:
+		Cleaner(RDRAMtoFrameBuffer * _p) : m_p(_p) {}
+		~Cleaner() {
+			m_p->m_uly = 0;
+			m_p->m_lry = 0;
+			m_p->m_stride = 0;
+			m_p->m_pCurBuffer = nullptr;
+		}
+	private:
+		RDRAMtoFrameBuffer * m_p;
+	};
+
+	u32 m_uly, m_lry;
+	u32 m_stride;
+	FrameBuffer * m_pCurBuffer;
 	CachedTexture * m_pTexture;
 #ifndef GLES2
 	GLuint m_PBO;
@@ -1521,6 +1545,24 @@ void RDRAMtoFrameBuffer::Destroy()
 #endif
 }
 
+void RDRAMtoFrameBuffer::AddAddress(u32 _address)
+{
+	if (m_pCurBuffer == nullptr) {
+		m_pCurBuffer = frameBufferList().findBuffer(_address);
+		if (m_pCurBuffer == nullptr)
+			return;
+		m_stride = m_pCurBuffer->m_width << m_pCurBuffer->m_size >> 1;
+		m_uly = m_lry = (_address - m_pCurBuffer->m_startAddress) / m_stride;
+		return;
+	}
+
+	const u32 y = (_address - m_pCurBuffer->m_startAddress) / m_stride;
+	if (y < m_uly)
+		m_uly = y;
+	else if (y > m_lry)
+		m_lry = y;
+}
+
 void RDRAMtoFrameBuffer::CopyFromRDRAM( u32 _address, bool _bUseAlpha)
 {
 	FrameBuffer *pBuffer = frameBufferList().findBuffer(_address);
@@ -1656,4 +1698,9 @@ void RDRAMtoFrameBuffer::CopyFromRDRAM( u32 _address, bool _bUseAlpha)
 void FrameBuffer_CopyFromRDRAM( u32 address, bool bUseAlpha )
 {
 	g_RDRAMtoFB.CopyFromRDRAM(address, bUseAlpha);
+}
+
+void FrameBuffer_AddAddress(u32 address)
+{
+	g_RDRAMtoFB.AddAddress(address);
 }
