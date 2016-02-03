@@ -144,6 +144,12 @@ void ConfigDialog::_init()
 		ui->aspectAdjustRadioButton->setChecked(true);
 		break;
 	}
+	ui->copyAuxBuffersCheckBox->setChecked(config.frameBufferEmulation.copyAuxToRDRAM != 0);
+	ui->fbInfoDisableCheckBox->setChecked(config.frameBufferEmulation.fbInfoDisabled != 0);
+	ui->readColorChunkCheckBox->setChecked(config.frameBufferEmulation.fbInfoReadColorChunk != 0);
+	ui->readColorChunkCheckBox->setEnabled(config.frameBufferEmulation.fbInfoDisabled == 0);
+	ui->readDepthChunkCheckBox->setChecked(config.frameBufferEmulation.fbInfoReadDepthChunk != 0);
+	ui->readDepthChunkCheckBox->setEnabled(config.frameBufferEmulation.fbInfoDisabled == 0);
 
 	// Texture filter settings
 	QStringList textureFiltersList;
@@ -317,6 +323,10 @@ void ConfigDialog::accept()
 		config.frameBufferEmulation.aspect = Config::a169;
 	else if (ui->aspectAdjustRadioButton->isChecked())
 		config.frameBufferEmulation.aspect = Config::aAdjust;
+	config.frameBufferEmulation.copyAuxToRDRAM = ui->copyAuxBuffersCheckBox->isChecked() ? 1 : 0;
+	config.frameBufferEmulation.fbInfoDisabled = ui->fbInfoDisableCheckBox->isChecked() ? 1: 0;
+	config.frameBufferEmulation.fbInfoReadColorChunk = ui->readColorChunkCheckBox->isChecked() ? 1 : 0;
+	config.frameBufferEmulation.fbInfoReadDepthChunk = ui->readDepthChunkCheckBox->isChecked() ? 1 : 0;
 
 	// Texture filter settings
 	config.textureFilter.txFilterMode = ui->filterComboBox->currentIndex();
@@ -438,4 +448,10 @@ void ConfigDialog::on_texPackPathButton_clicked()
 		options);
 	if (!directory.isEmpty())
 		ui->txPathLabel->setText(directory);
+}
+
+void ConfigDialog::on_fbInfoDisableCheckBox_toggled(bool checked)
+{
+	ui->readColorChunkCheckBox->setEnabled(!checked);
+	ui->readDepthChunkCheckBox->setEnabled(!checked);
 }

@@ -33,6 +33,8 @@ private slots:
 
 	void on_texPackPathButton_clicked();
 
+	void on_fbInfoDisableCheckBox_toggled(bool checked);
+
 private:
 	void _init();
 	void _getTranslations(QStringList & _translationFiles) const;

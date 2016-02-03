@@ -46,12 +46,16 @@ void _loadSettings(QSettings & settings)
 
 	settings.beginGroup("frameBufferEmulation");
 	config.frameBufferEmulation.enable = settings.value("enable", config.frameBufferEmulation.enable).toInt();
+	config.frameBufferEmulation.aspect = settings.value("aspect", config.frameBufferEmulation.aspect).toInt();
+	config.frameBufferEmulation.bufferSwapMode = settings.value("bufferSwapMode", config.frameBufferEmulation.bufferSwapMode).toInt();
+	config.frameBufferEmulation.N64DepthCompare = settings.value("N64DepthCompare", config.frameBufferEmulation.N64DepthCompare).toInt();
+	config.frameBufferEmulation.copyAuxToRDRAM = settings.value("copyAuxToRDRAM", config.frameBufferEmulation.copyAuxToRDRAM).toInt();
 	config.frameBufferEmulation.copyToRDRAM = settings.value("copyToRDRAM", config.frameBufferEmulation.copyToRDRAM).toInt();
 	config.frameBufferEmulation.copyDepthToRDRAM = settings.value("copyDepthToRDRAM", config.frameBufferEmulation.copyDepthToRDRAM).toInt();
 	config.frameBufferEmulation.copyFromRDRAM = settings.value("copyFromRDRAM", config.frameBufferEmulation.copyFromRDRAM).toInt();
-	config.frameBufferEmulation.N64DepthCompare = settings.value("N64DepthCompare", config.frameBufferEmulation.N64DepthCompare).toInt();
-	config.frameBufferEmulation.aspect = settings.value("aspect", config.frameBufferEmulation.aspect).toInt();
-	config.frameBufferEmulation.bufferSwapMode = settings.value("bufferSwapMode", config.frameBufferEmulation.bufferSwapMode).toInt();
+	config.frameBufferEmulation.fbInfoDisabled = settings.value("fbInfoDisabled", config.frameBufferEmulation.fbInfoDisabled).toInt();
+	config.frameBufferEmulation.fbInfoReadColorChunk = settings.value("fbInfoReadColorChunk", config.frameBufferEmulation.fbInfoReadColorChunk).toInt();
+	config.frameBufferEmulation.fbInfoReadDepthChunk = settings.value("fbInfoReadDepthChunk", config.frameBufferEmulation.fbInfoReadDepthChunk).toInt();
 
 	settings.endGroup();
 
@@ -155,12 +159,16 @@ void writeSettings(const QString & _strIniFolder)
 
 	settings.beginGroup("frameBufferEmulation");
 	settings.setValue("enable", config.frameBufferEmulation.enable);
-	settings.setValue("copyToRDRAM", config.frameBufferEmulation.copyToRDRAM);
-	settings.setValue("copyDepthToRDRAM", config.frameBufferEmulation.copyDepthToRDRAM);
-	settings.setValue("copyFromRDRAM", config.frameBufferEmulation.copyFromRDRAM);
-	settings.setValue("N64DepthCompare", config.frameBufferEmulation.N64DepthCompare);
 	settings.setValue("aspect", config.frameBufferEmulation.aspect);
 	settings.setValue("bufferSwapMode", config.frameBufferEmulation.bufferSwapMode);
+	settings.setValue("N64DepthCompare", config.frameBufferEmulation.N64DepthCompare);
+	settings.setValue("copyAuxToRDRAM", config.frameBufferEmulation.copyAuxToRDRAM);
+	settings.setValue("copyFromRDRAM", config.frameBufferEmulation.copyFromRDRAM);
+	settings.setValue("copyToRDRAM", config.frameBufferEmulation.copyToRDRAM);
+	settings.setValue("copyDepthToRDRAM", config.frameBufferEmulation.copyDepthToRDRAM);
+	settings.setValue("fbInfoDisabled", config.frameBufferEmulation.fbInfoDisabled);
+	settings.setValue("fbInfoReadColorChunk", config.frameBufferEmulation.fbInfoReadColorChunk);
+	settings.setValue("fbInfoReadDepthChunk", config.frameBufferEmulation.fbInfoReadDepthChunk);
 	settings.endGroup();
 
 	settings.beginGroup("textureFilter");

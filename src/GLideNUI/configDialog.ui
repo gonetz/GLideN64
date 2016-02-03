@@ -641,6 +641,55 @@
          </property>
          <layout class="QVBoxLayout" name="verticalLayout_10">
           <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_15">
+            <property name="spacing">
+             <number>0</number>
+            </property>
+            <item>
+             <widget class="Line" name="line_4">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="label_26">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text">
+               <string>General options</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="Line" name="line_5">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
            <layout class="QHBoxLayout" name="bufferSwapHorizontalLayout">
             <item>
              <widget class="QLabel" name="label_24">
@@ -672,6 +721,125 @@
                 <string>On color buffer change</string>
                </property>
               </item>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="n64DepthCompareCheckBox">
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Use shaders to emulate N64 depth compare modes. &lt;span style=&quot; font-weight:600;&quot;&gt;Experimental!&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="text">
+             <string>Emulate N64 depth compare</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="copyAuxBuffersCheckBox">
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Copy auxiliary color buffers to RDRAM:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;TODO: add description&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;mostly off&lt;/span&gt;]&lt;br/&gt;&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="text">
+             <string>Copy auxiliary color buffers to RDRAM</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_16">
+            <item>
+             <widget class="Line" name="line_6">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="label_27">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If emulator supports &lt;span style=&quot; font-style:italic;&quot;&gt;FBInfo&lt;/span&gt; API extension, plugin will rely on its help to read/write buffers only when game needs them.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="text">
+               <string>Buffers read/write with emulator help</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="Line" name="line_7">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="fbInfoDisableCheckBox">
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Do not use emulator help:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Depending on emulator, frame buffer usage notification may work imperfect and some frame buffer effects will not work. You may disable emulator help and force buffers copy.&lt;/p&gt;&lt;p&gt;[Recommended: off]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="text">
+             <string>Do not use emulator help</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_17">
+            <item>
+             <widget class="QCheckBox" name="readColorChunkCheckBox">
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Read color buffer by chunks:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;When enabled, color bufer will be read by 4kb chunks. Otherwise the buffer will be read as whole. Read of one chunk is much faster than read of the whole buffer, but if game needs to read the whole buffer, read it by chunks will be slow.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;mostly off, because color buffer usually read as whole&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="text">
+               <string>Read color buffer by chunks</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QCheckBox" name="readDepthChunkCheckBox">
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Read depth buffer by chunks:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;When enabled, depth bufer will be read by 4kb chunks. Otherwise the buffer will be read as whole. Read of one chunk is much faster than read of the whole buffer, but if game needs to read the whole buffer, read it by chunks will be slow.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;on, because depth buffer seldom read as whole&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="text">
+               <string>Read depth buffer by chunks</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_18">
+            <item>
+             <widget class="Line" name="line_8">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="label_28">
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If emulator does not support &lt;span style=&quot; font-style:italic;&quot;&gt;FBInfo&lt;/span&gt; API extension, plugin  have to read/write buffers each frame to emulate &lt;span style=&quot; font-style:italic;&quot;&gt;some&lt;/span&gt; frame buffer based effects. It can be slow and also can cause glitches or even crashes. Enable these options only for games, which really need them.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="text">
+               <string>Buffers read/write without emulator help</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="Line" name="line_9">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
              </widget>
             </item>
            </layout>
@@ -746,16 +914,6 @@
             </property>
             <property name="text">
              <string>Render frame buffer as texture</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QCheckBox" name="n64DepthCompareCheckBox">
-            <property name="toolTip">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Use shaders to emulate N64 depth compare modes. &lt;span style=&quot; font-weight:600;&quot;&gt;Experimental!&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-            </property>
-            <property name="text">
-             <string>Emulate N64 depth compare</string>
             </property>
            </widget>
           </item>
@@ -1524,10 +1682,10 @@
   </connection>
  </connections>
  <buttongroups>
-  <buttongroup name="screenshotButtonGroup"/>
-  <buttongroup name="copyFrameBufferButtonGroup"/>
-  <buttongroup name="bloomBlendModeButtonGroup"/>
   <buttongroup name="bilinearButtonGroup"/>
   <buttongroup name="aspectButtonGroup"/>
+  <buttongroup name="copyFrameBufferButtonGroup"/>
+  <buttongroup name="bloomBlendModeButtonGroup"/>
+  <buttongroup name="screenshotButtonGroup"/>
  </buttongroups>
 </ui>
