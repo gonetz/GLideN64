@@ -10,6 +10,11 @@
 
 FBInfo fbInfo;
 
+void FBInfo::reset() {
+	m_supported = false;
+	m_pWriteBuffer = nullptr;
+}
+
 void FBInfo::Write(u32 addr, u32 size)
 {
 	// TODO: remove debug print
@@ -62,4 +67,5 @@ void FBInfo::GetInfo(void *pinfo)
 	frameBufferList().fillBufferInfo(&pFBInfo[idx], 6 - idx);
 
 	m_pWriteBuffer = nullptr;
+	m_supported = true;
 }

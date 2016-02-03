@@ -17,6 +17,7 @@
 #include "GLSLCombiner.h"
 #include "FrameBuffer.h"
 #include "DepthBuffer.h"
+#include "FrameBufferInfo.h"
 #include "GLideNHQ/Ext_TxFilter.h"
 #include "VI.h"
 #include "Config.h"
@@ -1395,6 +1396,7 @@ void OGLRender::_initData()
 	TextDrawer::get().init();
 	TFH.init();
 	PostProcessor::get().init();
+	fbInfo.reset();
 	m_renderState = rsNone;
 
 	gSP.changed = gDP.changed = 0xFFFFFFFF;

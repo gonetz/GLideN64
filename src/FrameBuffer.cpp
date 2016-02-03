@@ -1634,11 +1634,9 @@ void RDRAMtoFrameBuffer::CopyFromRDRAM(u32 _address, bool _bCFB)
 	Cleaner cleaner(this);
 
 	if (m_pCurBuffer == nullptr) {
-		if (!_bCFB && config.frameBufferEmulation.copyFromRDRAM == 0)
-			return;
-		m_pCurBuffer = frameBufferList().findBuffer(_address);
-	}
-	else if (m_vecAddress.empty())
+		if (_bCFB || (config.frameBufferEmulation.copyFromRDRAM != 0 && !fbInfo.isSupported()))
+			m_pCurBuffer = frameBufferList().findBuffer(_address);
+	} else if (m_vecAddress.empty())
 		return;
 
 	if (m_pCurBuffer == nullptr || m_pCurBuffer->m_size < G_IM_SIZ_16b)

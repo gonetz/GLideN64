@@ -29,8 +29,13 @@ public:
 
 	void GetInfo(void *pinfo);
 
+	bool isSupported() const { return m_supported; }
+
+	void reset();
+
 private:
 	const FrameBuffer * m_pWriteBuffer;
+	bool m_supported;
 };
 
 extern FBInfo fbInfo;

@@ -9,6 +9,7 @@
 #include "RSP.h"
 #include "FrameBuffer.h"
 #include "DepthBuffer.h"
+#include "FrameBufferInfo.h"
 #include "Config.h"
 #include "Debug.h"
 
@@ -111,7 +112,7 @@ void VI_UpdateScreen()
 		FrameBuffer * pBuffer = frameBufferList().findBuffer(*REG.VI_ORIGIN);
 		if (pBuffer == NULL)
 			gDP.changed |= CHANGED_CPU_FB_WRITE;
-		else if (!pBuffer->isValid()) {
+		else if (!fbInfo.isSupported() && !pBuffer->isValid()) {
 			gDP.changed |= CHANGED_CPU_FB_WRITE;
 			if (config.frameBufferEmulation.copyToRDRAM == 0)
 				pBuffer->copyRdram();
