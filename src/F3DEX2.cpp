@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <assert.h>
 #include "GLideN64.h"
 #include "Debug.h"

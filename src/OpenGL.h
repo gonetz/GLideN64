@@ -4,6 +4,7 @@
 #include <vector>
 
 #ifdef OS_WINDOWS
+#define NOMINMAX
 #include <windows.h>
 #else
 #include "winlnxdefs.h"
