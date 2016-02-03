@@ -13,11 +13,12 @@ FBInfo fbInfo;
 void FBInfo::Write(u32 addr, u32 size)
 {
 	// TODO: remove debug print
-	debugPrint("FBWrite addr=%08lx size=%u\n", addr, size);
+	//debugPrint("FBWrite addr=%08lx size=%u\n", addr, size);
 
 	const u32 address = RSP_SegmentToPhysical(addr);
-	m_pWriteBuffer = frameBufferList().findBuffer(address);
-	FrameBuffer_AddAddress(address);
+	if (m_pWriteBuffer == nullptr)
+		m_pWriteBuffer = frameBufferList().findBuffer(address);
+	FrameBuffer_AddAddress(address, size);
 }
 
 void FBInfo::WriteList(FrameBufferModifyEntry *plist, u32 size)

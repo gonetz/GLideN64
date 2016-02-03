@@ -1,6 +1,7 @@
-#include <algorithm>
 #include <assert.h>
 #include <math.h>
+#include <algorithm>
+#include <vector>
 #include "OpenGL.h"
 #include "FrameBuffer.h"
 #include "DepthBuffer.h"
@@ -104,10 +105,7 @@ class RDRAMtoFrameBuffer
 {
 public:
 	RDRAMtoFrameBuffer()
-		: m_uly(0)
-		, m_lry(0)
-		, m_stride(0)
-		, m_pCurBuffer(nullptr)
+		: m_pCurBuffer(nullptr)
 		, m_pTexture(nullptr)
 		, m_PBO(0) {
 	}
@@ -115,32 +113,25 @@ public:
 	void Init();
 	void Destroy();
 
-	void AddAddress(u32 _address);
-	void CopyFromRDRAM(u32 _address, bool _bUseAlpha);
+	void AddAddress(u32 _address, u32 _size);
+	void CopyFromRDRAM(u32 _address, bool _bCFB);
 
 private:
 	class Cleaner {
 	public:
 		Cleaner(RDRAMtoFrameBuffer * _p) : m_p(_p) {}
 		~Cleaner() {
-			m_p->m_uly = 0;
-			m_p->m_lry = 0;
-			m_p->m_stride = 0;
 			m_p->m_pCurBuffer = nullptr;
+			m_p->m_vecAddress.clear();
 		}
 	private:
 		RDRAMtoFrameBuffer * m_p;
 	};
 
-	u32 m_uly, m_lry;
-	u32 m_stride;
 	FrameBuffer * m_pCurBuffer;
 	CachedTexture * m_pTexture;
-#ifndef GLES2
 	GLuint m_PBO;
-#else
-	GLubyte* m_PBO;
-#endif
+	std::vector<u32> m_vecAddress;
 };
 
 #ifndef GLES2
@@ -1548,116 +1539,176 @@ void RDRAMtoFrameBuffer::Destroy()
 #endif
 }
 
-void RDRAMtoFrameBuffer::AddAddress(u32 _address)
+void RDRAMtoFrameBuffer::AddAddress(u32 _address, u32 _size)
 {
 	if (m_pCurBuffer == nullptr) {
 		m_pCurBuffer = frameBufferList().findBuffer(_address);
 		if (m_pCurBuffer == nullptr)
 			return;
-		m_stride = m_pCurBuffer->m_width << m_pCurBuffer->m_size >> 1;
-		m_uly = m_lry = (_address - m_pCurBuffer->m_startAddress) / m_stride;
-		return;
 	}
 
-	const u32 y = (_address - m_pCurBuffer->m_startAddress) / m_stride;
-	if (y < m_uly)
-		m_uly = y;
-	else if (y > m_lry)
-		m_lry = y;
+	const u32 pixelSize = 1 << m_pCurBuffer->m_size >> 1;
+	if (_size != pixelSize && (_address%pixelSize) > 0)
+		return;
+	m_vecAddress.push_back(_address);
+	gDP.colorImage.changed = TRUE;
 }
 
-void RDRAMtoFrameBuffer::CopyFromRDRAM( u32 _address, bool _bUseAlpha)
+// Write the whole buffer
+template <typename TSrc>
+bool _copyBufferFromRdram(u32 _address, u32* _dst, u32(*converter)(TSrc _c, bool _bCFB), u32 _xor, u32 _x0, u32 _y0, u32 _width, u32 _height, bool _bCFB)
 {
-	FrameBuffer *pBuffer = frameBufferList().findBuffer(_address);
-	if (pBuffer == NULL || pBuffer->m_size < G_IM_SIZ_16b)
-		return;
-	if (pBuffer->m_startAddress == _address && gDP.colorImage.changed != 0)
+	TSrc * src = reinterpret_cast<TSrc*>(RDRAM + _address);
+	const u32 bound = (RDRAMSize + 1 - _address) >> (sizeof(TSrc) / 2);
+	TSrc col;
+	u32 idx;
+	u32 summ = 0;
+	u32 dsty = 0;
+	const u32 y1 = _y0 + _height;
+	for (u32 y = _y0; y < y1; ++y) {
+		for (u32 x = _x0; x < _width; ++x) {
+			idx = (x + (_height - y - 1)*_width) ^ _xor;
+			if (idx >= bound)
+				break;
+			col = src[idx];
+			summ += col;
+			_dst[x + dsty*_width] = converter(col, _bCFB);
+		}
+		++dsty;
+	}
+
+	return summ != 0;
+}
+
+// Write only pixels provided with FBWrite
+template <typename TSrc>
+bool _copyPixelsFromRdram(u32 _address, const vector<u32> & _vecAddress, u32* _dst, u32(*converter)(TSrc _c, bool _bCFB), u32 _xor, u32 _width, u32 _height, bool _bCFB)
+{
+	memset(_dst, 0, _width*_height*sizeof(u32));
+	TSrc * src = reinterpret_cast<TSrc*>(RDRAM + _address);
+	const u32 szPixel = sizeof(TSrc);
+	const size_t numPixels = _vecAddress.size();
+	TSrc col;
+	u32 summ = 0;
+	u32 idx, w, h;
+	for (size_t i = 0; i < numPixels; ++i) {
+		idx = (_vecAddress[i] - _address) / szPixel;
+		w = idx % _width;
+		h = idx / _width;
+		col = src[idx];
+		summ += col;
+		_dst[(w + (_height - h)*_width) ^ _xor] = converter(col, _bCFB);
+	}
+
+	return summ != 0;
+}
+
+u32 RGBA16ToABGR32(u16 col, bool _bCFB)
+{
+	u32 r, g, b, a;
+	r = ((col >> 11) & 31) << 3;
+	g = ((col >> 6) & 31) << 3;
+	b = ((col >> 1) & 31) << 3;
+	if (_bCFB)
+		a = 0xFF;
+	else
+		a = (col & 1) > 0 && (r | g | b) > 0 ? 0xFF : 0U;
+	return ((a << 24) | (b << 16) | (g << 8) | r);
+}
+
+u32 RGBA32ToABGR32(u32 col, bool _bCFB)
+{
+	u32 r, g, b, a;
+	r = (col >> 24) & 0xff;
+	g = (col >> 16) & 0xff;
+	b = (col >> 8) & 0xff;
+	if (_bCFB)
+		a = 0xFF;
+	else
+		a = (r | g | b) > 0 ? col & 0xFF : 0U;
+	return ((a << 24) | (b << 16) | (g << 8) | r);
+}
+
+void RDRAMtoFrameBuffer::CopyFromRDRAM(u32 _address, bool _bCFB)
+{
+	Cleaner cleaner(this);
+
+	if (m_pCurBuffer == nullptr) {
+		if (!_bCFB && config.frameBufferEmulation.copyFromRDRAM == 0)
+			return;
+		m_pCurBuffer = frameBufferList().findBuffer(_address);
+	}
+	else if (m_vecAddress.empty())
 		return;
 
-	const bool bUseAlpha = _bUseAlpha && pBuffer->m_changed;
-	const u32 address = pBuffer->m_startAddress;
-	const u32 width = pBuffer->m_width;
-	const u32 height = _cutHeight(address, pBuffer->m_startAddress == _address ? VI.real_height : pBuffer->m_height, pBuffer->m_width * 2);
+	if (m_pCurBuffer == nullptr || m_pCurBuffer->m_size < G_IM_SIZ_16b)
+		return;
+
+	if (m_pCurBuffer->m_startAddress == _address && gDP.colorImage.changed != 0)
+		return;
+
+	const u32 address = m_pCurBuffer->m_startAddress;
+
+	const u32 height = _cutHeight(address, m_pCurBuffer->m_startAddress == _address ? VI.real_height : m_pCurBuffer->m_height, m_pCurBuffer->m_width << m_pCurBuffer->m_size >> 1);
 	if (height == 0)
 		return;
 
+	const u32 width = m_pCurBuffer->m_width;
+
+	const u32 x0 = 0;
+	const u32 y0 = 0;
+	const u32 y1 = y0 + height;
+
+	const bool bUseAlpha = !_bCFB && m_pCurBuffer->m_changed;
+
 	m_pTexture->width = width;
 	m_pTexture->height = height;
-	const u32 dataSize = width*height*4;
+	const u32 dataSize = width*height * 4;
 #ifndef GLES2
 	PBOBinder binder(GL_PIXEL_UNPACK_BUFFER, m_PBO);
 	glBufferData(GL_PIXEL_UNPACK_BUFFER, dataSize, NULL, GL_DYNAMIC_DRAW);
 	GLubyte* ptr = (GLubyte*)glMapBufferRange(GL_PIXEL_UNPACK_BUFFER, 0, dataSize, GL_MAP_WRITE_BIT);
 #else
-	m_PBO = (GLubyte*)malloc(dataSize);
-	GLubyte* ptr = m_PBO;
-	PBOBinder binder(m_PBO);
+	GLubyte* ptr = (GLubyte*)malloc(dataSize);
+	PBOBinder binder(ptr);
 #endif // GLES2
 	if (ptr == NULL)
 		return;
 
-	u8 * image = RDRAM + address;
 	u32 * dst = (u32*)ptr;
-
-	u32 empty = 0;
-	u32 r, g, b, a, idx;
-	if (pBuffer->m_size == G_IM_SIZ_16b) {
-		u16 * src = (u16*)image;
-		u16 col;
-		const u32 bound = (RDRAMSize + 1 - address) >> 1;
-		for (u32 y = 0; y < height; y++)
-		{
-			for (u32 x = 0; x < width; x++)
-			{
-				idx = (x + (height - y - 1)*width)^1;
-				if (idx >= bound)
-					break;
-				col = src[idx];
-				if (bUseAlpha)
-					src[idx] = 0;
-				empty |= col;
-				r = ((col >> 11)&31)<<3;
-				g = ((col >> 6)&31)<<3;
-				b = ((col >> 1)&31)<<3;
-				a = (col&1) > 0 && (r|g|b) > 0 ? 0xff : 0U;
-				dst[x + y*width] = (a << 24) | (b << 16) | (g << 8) | r;
-			}
-		}
-	} else {
-		// 32 bit
-		u32 * src = (u32*)image;
-		u32 col;
-		const u32 bound = (RDRAMSize + 1 - address) >> 2;
-		for (u32 y=0; y < height; y++)
-		{
-			for (u32 x=0; x < width; x++)
-			{
-				idx = x + (height - y - 1)*width;
-				if (idx >= bound)
-					break;
-				col = src[idx];
-				if (bUseAlpha)
-					src[idx] = 0;
-				empty |= col;
-				r = (col >> 24) & 0xff;
-				g = (col >> 16) & 0xff;
-				b = (col >> 8) & 0xff;
-				a = (r|g|b) > 0 ? col & 0xff : 0U;
-				dst[x + y*width] = (a<<24)|(b<<16)|(g<<8)|r;
-			}
-		}
+	bool bCopy;
+	if (m_vecAddress.empty()) {
+		if (m_pCurBuffer->m_size == G_IM_SIZ_16b)
+			bCopy = _copyBufferFromRdram<u16>(address, dst, RGBA16ToABGR32, 1, x0, y0, width, height, _bCFB);
+		else
+			bCopy = _copyBufferFromRdram<u32>(address, dst, RGBA32ToABGR32, 0, x0, y0, width, height, _bCFB);
 	}
+	else {
+		if (m_pCurBuffer->m_size == G_IM_SIZ_16b)
+			bCopy = _copyPixelsFromRdram<u16>(address, m_vecAddress, dst, RGBA16ToABGR32, 1, width, height, _bCFB);
+		else
+			bCopy = _copyPixelsFromRdram<u32>(address, m_vecAddress, dst, RGBA32ToABGR32, 0, width, height, _bCFB);
+	}
+
+	if (bUseAlpha) {
+		u32 totalBytes = (width * height) << m_pCurBuffer->m_size >> 1;
+		if (address + totalBytes > RDRAMSize + 1)
+			totalBytes = RDRAMSize + 1 - address;
+		memset(RDRAM + address, 0, totalBytes);
+	}
+
 #ifndef GLES2
 	glUnmapBuffer(GL_PIXEL_UNPACK_BUFFER); // release the mapped buffer
 #endif
-	if (empty == 0)
+	if (!bCopy)
 		return;
 
 	glBindTexture(GL_TEXTURE_2D, m_pTexture->glName);
 #ifndef GLES2
 	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, 0);
 #else
-	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, m_PBO);
+	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, ptr);
+	free(ptr);
 #endif
 
 	m_pTexture->scaleS = 1.0f / (float)m_pTexture->realWidth;
@@ -1673,23 +1724,17 @@ void RDRAMtoFrameBuffer::CopyFromRDRAM( u32 _address, bool _bUseAlpha)
 	gDPTile * pTile0 = gSP.textureTile[0];
 	gSP.textureTile[0] = &tile0;
 
-	if (_bUseAlpha) {
-		CombinerInfo::get().setCombine(EncodeCombineMode(0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0));
-		glEnable(GL_BLEND);
-		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	}
-	else {
-		CombinerInfo::get().setCombine(EncodeCombineMode(0, 0, 0, TEXEL0, 0, 0, 0, 1, 0, 0, 0, TEXEL0, 0, 0, 0, 1));
-		glDisable(GL_BLEND);
-	}
+	CombinerInfo::get().setCombine(EncodeCombineMode(0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0));
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	currentCombiner()->updateFrameBufferInfo();
 
 	glDisable(GL_DEPTH_TEST);
 	const u32 gdpChanged = gDP.changed & CHANGED_CPU_FB_WRITE;
 	gSP.changed = gDP.changed = 0;
 
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, pBuffer->m_FBO);
-	OGLRender::TexturedRectParams params(0.0f, 0.0f, (float)width, (float)height, 0.0f, 0.0f, width - 1.0f, height - 1.0f, false);
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_pCurBuffer->m_FBO);
+	OGLRender::TexturedRectParams params((float)x0, (float)y0, (float)width, (float)height, 0.0f, 0.0f, width - 1.0f, height - 1.0f, false);
 	video().getRender().drawTexturedRect(params);
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, frameBufferList().getCurrent()->m_FBO);
 
@@ -1698,12 +1743,12 @@ void RDRAMtoFrameBuffer::CopyFromRDRAM( u32 _address, bool _bUseAlpha)
 	gDP.changed |= gdpChanged | CHANGED_RENDERMODE | CHANGED_COMBINE;
 }
 
-void FrameBuffer_CopyFromRDRAM( u32 address, bool bUseAlpha )
+void FrameBuffer_CopyFromRDRAM(u32 _address, bool _bCFB)
 {
-	g_RDRAMtoFB.CopyFromRDRAM(address, bUseAlpha);
+	g_RDRAMtoFB.CopyFromRDRAM(_address, _bCFB);
 }
 
-void FrameBuffer_AddAddress(u32 address)
+void FrameBuffer_AddAddress(u32 address, u32 _size)
 {
-	g_RDRAMtoFB.AddAddress(address);
+	g_RDRAMtoFB.AddAddress(address, _size);
 }

@@ -121,7 +121,7 @@ void FrameBuffer_Destroy();
 void FrameBuffer_CopyToRDRAM( u32 _address , bool _sync );
 void FrameBuffer_CopyChunkToRDRAM(u32 _address);
 void FrameBuffer_CopyFromRDRAM(u32 address, bool bUseAlpha);
-void FrameBuffer_AddAddress(u32 address);
+void FrameBuffer_AddAddress(u32 address, u32 _size);
 bool FrameBuffer_CopyDepthBuffer(u32 address);
 bool FrameBuffer_CopyDepthBufferChunk(u32 address);
 void FrameBuffer_ActivateBufferTexture(s16 t, FrameBuffer *pBuffer);
