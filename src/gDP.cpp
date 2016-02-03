@@ -14,6 +14,7 @@
 #include "CRC.h"
 #include "FrameBuffer.h"
 #include "DepthBuffer.h"
+#include "FrameBufferInfo.h"
 #include "VI.h"
 #include "Config.h"
 #include "Combiner.h"
@@ -883,11 +884,11 @@ void gDPFullSync()
 	}
 
 	const bool sync = config.frameBufferEmulation.copyToRDRAM == Config::ctSync;
-	if (config.frameBufferEmulation.copyToRDRAM != Config::ctDisable)
+	if (config.frameBufferEmulation.copyToRDRAM != Config::ctDisable && !fbInfo.isSupported())
 		FrameBuffer_CopyToRDRAM(gDP.colorImage.address, sync);
 
 	if (RSP.bLLE) {
-		if (config.frameBufferEmulation.copyDepthToRDRAM != Config::ctDisable)
+		if (config.frameBufferEmulation.copyDepthToRDRAM != Config::ctDisable && !fbInfo.isSupported())
 			FrameBuffer_CopyDepthBuffer(gDP.colorImage.address);
 	}
 

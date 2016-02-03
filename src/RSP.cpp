@@ -9,6 +9,7 @@
 #include "Combiner.h"
 #include "FrameBuffer.h"
 #include "DepthBuffer.h"
+#include "FrameBufferInfo.h"
 #include "GBI.h"
 #include "PluginAPI.h"
 #include "Config.h"
@@ -209,7 +210,7 @@ void RSP_ProcessDList()
 		}
 	}
 
-	if (config.frameBufferEmulation.copyDepthToRDRAM != Config::ctDisable)
+	if (config.frameBufferEmulation.copyDepthToRDRAM != Config::ctDisable && !fbInfo.isSupported())
 		FrameBuffer_CopyDepthBuffer(gDP.colorImage.address);
 
 	RSP.busy = FALSE;

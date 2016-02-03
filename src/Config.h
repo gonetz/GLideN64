@@ -10,7 +10,8 @@
 #define CONFIG_VERSION_FOUR 4U		// Remove ValidityCheckMethod setting
 #define CONFIG_VERSION_FIVE 5U		// Add shader storage option
 #define CONFIG_VERSION_SIX 6U		// Change gamma correction options
-#define CONFIG_VERSION_CURRENT CONFIG_VERSION_SIX
+#define CONFIG_VERSION_SEVEN 7U		// Add FBInfo options
+#define CONFIG_VERSION_CURRENT CONFIG_VERSION_SEVEN
 
 #define BILINEAR_3POINT   0
 #define BILINEAR_STANDARD 1
@@ -78,13 +79,19 @@ struct Config
 
 	struct {
 		u32 enable;
+		u32 aspect; // 0: stretch ; 1: 4/3 ; 2: 16/9; 3: adjust
+		u32 bufferSwapMode; // 0: on VI update call; 1: on VI origin change; 2: on main frame buffer update
+		u32 N64DepthCompare;
 		u32 copyAuxToRDRAM;
+		// Buffer read/write
 		u32 copyToRDRAM;
 		u32 copyDepthToRDRAM;
 		u32 copyFromRDRAM;
-		u32 N64DepthCompare;
-		u32 aspect; // 0: stretch ; 1: 4/3 ; 2: 16/9; 3: adjust
-		u32 bufferSwapMode; // 0: on VI update call; 1: on VI origin change; 2: on main frame buffer update
+		// FBInfo
+		u32 fbInfoSupported;
+		u32 fbInfoDisabled;
+		u32 fbInfoReadColorChunk;
+		u32 fbInfoReadDepthChunk;
 	} frameBufferEmulation;
 
 	struct

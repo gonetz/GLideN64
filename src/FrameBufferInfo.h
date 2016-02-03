@@ -35,6 +35,7 @@ public:
 
 private:
 	const FrameBuffer * m_pWriteBuffer;
+	const FrameBuffer * m_pReadBuffer;
 	bool m_supported;
 };
 

@@ -52,8 +52,11 @@ void Config::resetToDefaults()
 	frameBufferEmulation.copyAuxToRDRAM = 0;
 	frameBufferEmulation.copyToRDRAM = ctAsync;
 	frameBufferEmulation.N64DepthCompare = 0;
-	frameBufferEmulation.aspect = 1;
+	frameBufferEmulation.aspect = a43;
 	frameBufferEmulation.bufferSwapMode = bsOnVerticalInterrupt;
+	frameBufferEmulation.fbInfoDisabled = 0;
+	frameBufferEmulation.fbInfoReadColorChunk = 0;
+	frameBufferEmulation.fbInfoReadDepthChunk = 1;
 
 	textureFilter.txCacheSize = 100 * gc_uMegabyte;
 	textureFilter.txDump = 0;
