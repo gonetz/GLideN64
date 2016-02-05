@@ -765,11 +765,6 @@ void gDPFillRectangle( s32 ulx, s32 uly, s32 lrx, s32 lry )
 	if (gDP.otherMode.cycleType == G_CYC_FILL) {
 		if ((ulx == 0) && (uly == 0) && (lrx == gDP.scissor.lrx) && (lry == gDP.scissor.lry)) {
 			gDPFillRDRAM(gDP.colorImage.address, ulx, uly, lrx, lry, gDP.colorImage.width, gDP.colorImage.size, gDP.fillColor.color);
-			if ((*REG.VI_STATUS & 8) != 0) {
-				fillColor[0] = sqrtf(fillColor[0]);
-				fillColor[1] = sqrtf(fillColor[1]);
-				fillColor[2] = sqrtf(fillColor[2]);
-			}
 			render.clearColorBuffer(fillColor);
 			return;
 		}
