@@ -117,12 +117,14 @@ public:
 	void CopyFromRDRAM(u32 _address, bool _bCFB);
 
 private:
-	class Cleaner {
+	void Reset();
+	class Cleaner
+	{
 	public:
 		Cleaner(RDRAMtoFrameBuffer * _p) : m_p(_p) {}
-		~Cleaner() {
-			m_p->m_pCurBuffer = nullptr;
-			m_p->m_vecAddress.clear();
+		~Cleaner()
+		{
+			m_p->Reset();
 		}
 	private:
 		RDRAMtoFrameBuffer * m_p;
@@ -1739,6 +1741,12 @@ void RDRAMtoFrameBuffer::CopyFromRDRAM(u32 _address, bool _bCFB)
 	gSP.textureTile[0] = pTile0;
 
 	gDP.changed |= gdpChanged | CHANGED_RENDERMODE | CHANGED_COMBINE;
+}
+
+void RDRAMtoFrameBuffer::Reset()
+{
+	m_pCurBuffer = nullptr;
+	m_vecAddress.clear();
 }
 
 void FrameBuffer_CopyFromRDRAM(u32 _address, bool _bCFB)
