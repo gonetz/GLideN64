@@ -971,13 +971,14 @@ void TextureCache::_getTextureDestData(CachedTexture& tmptex,
 		}
 	} else {
 		j = 0;
+		const u32 tMemMask = gDP.otherMode.textureLUT == G_TT_NONE ? 0x1FF : 0xFF;
 		for (y = 0; y < tmptex.realHeight; ++y) {
 			ty = min(y, clampTClamp) & maskTMask;
 
 			if (y & mirrorTBit)
 			ty ^= maskTMask;
 
-			pSrc = &TMEM[(tmptex.tMem + *pLine * ty) & 0x1FF];
+			pSrc = &TMEM[(tmptex.tMem + *pLine * ty) & tMemMask];
 
 			i = (ty & 1) << 1;
 			for (x = 0; x < tmptex.realWidth; ++x) {
