@@ -235,6 +235,12 @@ int compileCombiner(Combiner & _color, Combiner & _alpha, char * _strShader)
 	}
 	strcpy(_strShader, "  alpha1 = ");
 	int nInputs = _compileCombiner(_alpha.stage[0], AlphaInput, _strShader);
+	strcat(_strShader,
+		"  if (uEnableAlphaTest != 0) {				\n"
+		"    lowp float alphaTestValue = (uAlphaCompareMode == 3 && alpha1 > 0.0) ? snoise() : uAlphaTestValue;	\n"
+		"    if  (alpha1 < alphaTestValue) discard;	\n"
+		"  }										\n"
+		);
 	strcat(_strShader, "  color1 = ");
 	nInputs |= _compileCombiner(_color.stage[0], ColorInput, _strShader);
 	strcat(_strShader, fragment_shader_blender);

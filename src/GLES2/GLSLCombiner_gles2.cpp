@@ -179,13 +179,6 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 	strFragmentShader.append("  vec_color = vec4(input_color, vShadeColor.a); \n");
 	strFragmentShader.append(strCombiner);
 
-	strFragmentShader.append(
-		"  if (uEnableAlphaTest != 0) {				\n"
-		"    lowp float alphaTestValue = (uAlphaCompareMode == 3 && alpha2 > 0.0) ? snoise() : uAlphaTestValue;	\n"
-		"    if  (alpha2 < alphaTestValue) discard;	\n"
-		"  }										\n"
-		);
-
 	if (!g_weakGLSL) {
 		strFragmentShader.append(
 			"  lowp int fogUsage = uFogUsage;			\n"
