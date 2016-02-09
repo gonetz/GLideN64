@@ -54,6 +54,7 @@ void Config::resetToDefaults()
 	frameBufferEmulation.N64DepthCompare = 0;
 	frameBufferEmulation.aspect = a43;
 	frameBufferEmulation.bufferSwapMode = bsOnVerticalInterrupt;
+	frameBufferEmulation.nativeResFactor = 0;
 	frameBufferEmulation.fbInfoDisabled = 0;
 	frameBufferEmulation.fbInfoReadColorChunk = 0;
 	frameBufferEmulation.fbInfoReadDepthChunk = 1;

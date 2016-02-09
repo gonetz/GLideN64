@@ -245,6 +245,8 @@ void FrameBuffer::init(u32 _address, u32 _endAddress, u16 _format, u16 _size, u1
 	if (m_width != VI.width && config.frameBufferEmulation.copyAuxToRDRAM != 0) {
 		m_scaleX = 1.0f;
 		m_scaleY = 1.0f;
+	} else if (config.frameBufferEmulation.nativeResFactor != 0) {
+		m_scaleX = m_scaleY = static_cast<float>(config.frameBufferEmulation.nativeResFactor);
 	} else {
 		m_scaleX = ogl.getScaleX();
 		m_scaleY = ogl.getScaleY();
@@ -541,13 +543,15 @@ void FrameBufferList::saveBuffer(u32 _address, u16 _format, u16 _size, u16 _widt
 	const u32 endAddress = _address + ((_width * _height) << _size >> 1) - 1;
 	if (m_pCurrent == NULL || m_pCurrent->m_startAddress != _address || m_pCurrent->m_width != _width)
 		m_pCurrent = findBuffer(_address);
+	const float scaleX = config.frameBufferEmulation.nativeResFactor == 0 ? ogl.getScaleX() : static_cast<float>(config.frameBufferEmulation.nativeResFactor);
+	const float scaleY = config.frameBufferEmulation.nativeResFactor == 0 ? ogl.getScaleY() : scaleX;
 	if (m_pCurrent != NULL) {
 		if ((m_pCurrent->m_startAddress != _address) ||
 			(m_pCurrent->m_width != _width) ||
 			//(current->height != height) ||
 			//(current->size != size) ||  // TODO FIX ME
-			(m_pCurrent->m_scaleX != ogl.getScaleX()) ||
-			(m_pCurrent->m_scaleY != ogl.getScaleY()))
+			(m_pCurrent->m_scaleX != scaleX) ||
+			(m_pCurrent->m_scaleY != scaleY))
 		{
 			removeBuffer(m_pCurrent->m_startAddress);
 			m_pCurrent = NULL;
@@ -782,15 +786,17 @@ void FrameBufferList::renderBuffer(u32 _address)
 		srcY1 = srcY0 + VI.real_height;
 	}
 
-	const f32 scaleX = _FIXED2FLOAT(_SHIFTR(*REG.VI_X_SCALE, 0, 12), 10);
+	const f32 viScaleX = _FIXED2FLOAT(_SHIFTR(*REG.VI_X_SCALE, 0, 12), 10);
+	const f32 srcScaleX = pBuffer->m_scaleX;
+	const f32 dstScaleX = ogl.getScaleX();
 	const s32 h0 = (isPAL ? 128 : 108);
 	const s32 hx0 = max(0, hStart - h0);
 	const s32 hx1 = max(0, h0 + 640 - hEnd);
-	X0 = (GLint)(hx0 * scaleX * ogl.getScaleX());
-	Xwidth = (GLint)((min((f32)VI.width, (hEnd - hStart)*scaleX)) * ogl.getScaleX());
-	X1 = ogl.getWidth() - (GLint)(hx1 *scaleX * ogl.getScaleX());
+	X0 = (GLint)(hx0 * viScaleX * dstScaleX);
+	Xwidth = (GLint)((min((f32)VI.width, (hEnd - hStart)*viScaleX)) * srcScaleX);
+	X1 = ogl.getWidth() - (GLint)(hx1 *viScaleX * dstScaleX);
 
-	const float srcScaleY = ogl.getScaleY();
+	const float srcScaleY = pBuffer->m_scaleY;
 	const GLint hOffset = (ogl.getScreenWidth() - ogl.getWidth()) / 2;
 	const GLint vOffset = (ogl.getScreenHeight() - ogl.getHeight()) / 2 + ogl.getHeightOffset();
 	CachedTexture * pBufferTexture = pBuffer->m_pTexture;
@@ -846,8 +852,8 @@ void FrameBufferList::renderBuffer(u32 _address)
 			dstY1 = dstY0 + dstPartHeight;
 			glBindFramebuffer(GL_READ_FRAMEBUFFER, pBuffer->m_FBO);
 			glBlitFramebuffer(
-				0, (GLint)(srcY0*srcScaleY), ogl.getWidth(), min((GLint)(srcY1*srcScaleY), (GLint)pBuffer->m_pTexture->realHeight),
-				hOffset, vOffset + (GLint)(dstY0*dstScaleY), hOffset + ogl.getWidth(), vOffset + (GLint)(dstY1*dstScaleY),
+				0, (GLint)(srcY0*srcScaleY), Xwidth, min((GLint)(srcY1*srcScaleY), (GLint)pBuffer->m_pTexture->realHeight),
+				hOffset, vOffset + (GLint)(dstY0*dstScaleY), hOffset + X1, vOffset + (GLint)(dstY1*dstScaleY),
 				GL_COLOR_BUFFER_BIT, filter
 			);
 		}

@@ -100,8 +100,13 @@ void DepthBuffer::_initDepthBufferTexture(FrameBuffer * _pBuffer, CachedTexture 
 		_pTexture->clampHeight = _pBuffer->m_height;
 	}
 	else {
-		_pTexture->width = video().getWidth();
-		_pTexture->height = video().getHeight();
+		if (config.frameBufferEmulation.nativeResFactor == 0) {
+			_pTexture->width = video().getWidth();
+			_pTexture->height = video().getHeight();
+		} else {
+			_pTexture->width = VI.width * config.frameBufferEmulation.nativeResFactor;
+			_pTexture->height = VI.height * config.frameBufferEmulation.nativeResFactor;
+		}
 		_pTexture->address = gDP.depthImageAddress;
 		_pTexture->clampWidth = VI.width;
 		_pTexture->clampHeight = VI.height;

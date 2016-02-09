@@ -51,6 +51,8 @@ bool Config_SetDefault()
 	assert(res == M64ERR_SUCCESS);
 	res = ConfigSetDefaultInt(g_configVideoGliden64, "BufferSwapMode", config.frameBufferEmulation.bufferSwapMode, "Swap frame buffers (0=On VI update call, 1=On VI origin change, 2=On buffer update)");
 	assert(res == M64ERR_SUCCESS);
+	res = ConfigSetDefaultInt(g_configVideoGliden64, "UseNativeResolutionFactor", config.frameBufferEmulation.nativeResFactor, "Frame buffer size is the factor of N64 native resolution.");
+	assert(res == M64ERR_SUCCESS);
 
 	//#Texture Settings
 	res = ConfigSetDefaultBool(g_configVideoGliden64, "bilinearMode", config.texture.bilinearMode, "Bilinear filtering mode (0=N64 3point, 1=standard)");
@@ -186,6 +188,7 @@ void Config_LoadConfig()
 #endif
 	config.frameBufferEmulation.aspect = ConfigGetParamInt(g_configVideoGliden64, "AspectRatio");
 	config.frameBufferEmulation.bufferSwapMode = ConfigGetParamInt(g_configVideoGliden64, "BufferSwapMode");
+	config.frameBufferEmulation.nativeResFactor = ConfigGetParamInt(g_configVideoGliden64, "UseNativeResolutionFactor");
 
 	//#Texture Settings
 	config.texture.bilinearMode = ConfigGetParamBool(g_configVideoGliden64, "bilinearMode");
