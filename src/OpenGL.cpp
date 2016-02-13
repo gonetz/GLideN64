@@ -1066,7 +1066,7 @@ void OGLRender::drawTexturedRect(const TexturedRectParams & _params)
 	if (!_canDraw())
 		return;
 
-	FrameBuffer * pCurrentBuffer = frameBufferList().getCurrent();
+	const FrameBuffer * pCurrentBuffer = _params.pBuffer;
 	OGLVideo & ogl = video();
 	if (pCurrentBuffer == NULL)
 		glViewport( 0, ogl.getHeightOffset(), ogl.getScreenWidth(), ogl.getScreenHeight());
