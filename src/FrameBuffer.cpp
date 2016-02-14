@@ -234,6 +234,11 @@ bool FrameBuffer::_isMarioTennisScoreboard() const
 	return (config.generalEmulation.hacks&hack_scoreboardJ) != 0 && (m_startAddress == 0x134080 || m_startAddress == 0x1332f8);
 }
 
+bool FrameBuffer::isAuxiliary() const
+{
+	return m_width != VI.width;
+}
+
 void FrameBuffer::init(u32 _address, u32 _endAddress, u16 _format, u16 _size, u16 _width, u16 _height, bool _cfb)
 {
 	OGLVideo & ogl = video();
@@ -242,7 +247,7 @@ void FrameBuffer::init(u32 _address, u32 _endAddress, u16 _format, u16 _size, u1
 	m_width = _width;
 	m_height = _height;
 	m_size = _size;
-	if (m_width != VI.width && config.frameBufferEmulation.copyAuxToRDRAM != 0) {
+	if (isAuxiliary() && config.frameBufferEmulation.copyAuxToRDRAM != 0) {
 		m_scaleX = 1.0f;
 		m_scaleY = 1.0f;
 	} else if (config.frameBufferEmulation.nativeResFactor != 0) {
@@ -323,7 +328,7 @@ void FrameBuffer::copyRdram()
 	const u32 dataSize = stride * height;
 
 	// Auxiliary frame buffer
-	if (m_width != VI.width && config.frameBufferEmulation.copyAuxToRDRAM == 0) {
+	if (isAuxiliary() && config.frameBufferEmulation.copyAuxToRDRAM == 0) {
 		// Write small amount of data to the start of the buffer.
 		// This is necessary for auxilary buffers: game can restore content of RDRAM when buffer is not needed anymore
 		// Thus content of RDRAM on moment of buffer creation will be the same as when buffer becomes obsolete.
@@ -427,6 +432,7 @@ void FrameBufferList::init()
 	 m_pCurrent = NULL;
 	 m_pCopy = NULL;
 	 glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+	 m_prevColorImageHeight = 0;
 }
 
 void FrameBufferList::destroy() {
@@ -514,7 +520,7 @@ FrameBuffer * FrameBufferList::findTmpBuffer(u32 _address)
 void FrameBufferList::saveBuffer(u32 _address, u16 _format, u16 _size, u16 _width, u16 _height, bool _cfb)
 {
 	if (m_pCurrent != NULL && config.frameBufferEmulation.copyAuxToRDRAM != 0) {
-		if (m_pCurrent->m_width != VI.width) {
+		if (m_pCurrent->isAuxiliary()) {
 			FrameBuffer_CopyToRDRAM(m_pCurrent->m_startAddress, true);
 			removeBuffer(m_pCurrent->m_startAddress);
 		}
@@ -528,15 +534,22 @@ void FrameBufferList::saveBuffer(u32 _address, u16 _format, u16 _size, u16 _widt
 
 	OGLVideo & ogl = video();
 	if (m_pCurrent != NULL) {
-		if (gDP.colorImage.height > 0) {
-			if (m_pCurrent->m_width == VI.width || m_pCurrent->m_needHeightCorrection) {
-				gDP.colorImage.height = min(gDP.colorImage.height, VI.height);
-				m_pCurrent->m_endAddress = min(RDRAMSize, m_pCurrent->m_startAddress + (((m_pCurrent->m_width * gDP.colorImage.height) << m_pCurrent->m_size >> 1) - 1));
-			}
-			if (!m_pCurrent->_isMarioTennisScoreboard() && !m_pCurrent->m_isDepthBuffer && !m_pCurrent->m_copiedToRdram && !m_pCurrent->m_cfb && !m_pCurrent->m_cleared && m_pCurrent->m_RdramCopy.empty() && gDP.colorImage.height > 1) {
-				m_pCurrent->copyRdram();
-			}
+		// Correct buffer's end address
+		if (!m_pCurrent->isAuxiliary()) {
+			if (gDP.colorImage.height != 0)
+				m_prevColorImageHeight = gDP.colorImage.height;
+			else
+				gDP.colorImage.height = m_prevColorImageHeight;
+			gDP.colorImage.height = min(gDP.colorImage.height, VI.height);
+			m_pCurrent->m_endAddress = min(RDRAMSize, m_pCurrent->m_startAddress + (((m_pCurrent->m_width * gDP.colorImage.height) << m_pCurrent->m_size >> 1) - 1));
+		} else if (m_pCurrent->m_needHeightCorrection && gDP.colorImage.height != 0) {
+			m_pCurrent->m_endAddress = min(RDRAMSize, m_pCurrent->m_startAddress + (((m_pCurrent->m_width * gDP.colorImage.height) << m_pCurrent->m_size >> 1) - 1));
 		}
+
+		if (!m_pCurrent->_isMarioTennisScoreboard() && !m_pCurrent->m_isDepthBuffer && !m_pCurrent->m_copiedToRdram && !m_pCurrent->m_cfb && !m_pCurrent->m_cleared && m_pCurrent->m_RdramCopy.empty() && gDP.colorImage.height > 1) {
+			m_pCurrent->copyRdram();
+		}
+
 		m_pCurrent = _findBuffer(m_pCurrent->m_startAddress, m_pCurrent->m_endAddress, m_pCurrent->m_width);
 	}
 
@@ -1388,7 +1401,7 @@ bool DepthBufferToRDRAM::_prepareCopy(u32 _address)
 	if (numPixels == 0) // Incorrect buffer size. Don't copy
 		return false;
 	FrameBuffer *pBuffer = frameBufferList().findBuffer(_address);
-	if (pBuffer == NULL || pBuffer->m_width < VI.width || pBuffer->m_pDepthBuffer == NULL || !pBuffer->m_pDepthBuffer->m_cleared)
+	if (pBuffer == NULL || pBuffer->isAuxiliary() || pBuffer->m_pDepthBuffer == NULL || !pBuffer->m_pDepthBuffer->m_cleared)
 		return false;
 
 	m_pCurDepthBuffer = pBuffer->m_pDepthBuffer;

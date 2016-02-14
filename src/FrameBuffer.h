@@ -23,6 +23,7 @@ struct FrameBuffer
 	void copyRdram();
 	bool isValid() const;
 	bool _isMarioTennisScoreboard() const;
+	bool isAuxiliary() const;
 
 	u32 m_startAddress, m_endAddress;
 	u32 m_size, m_width, m_height, m_fillcolor, m_validityChecked;
@@ -90,6 +91,7 @@ private:
 	FrameBuffers m_list;
 	FrameBuffer * m_pCurrent;
 	FrameBuffer * m_pCopy;
+	u32 m_prevColorImageHeight;
 };
 
 struct PBOBinder {
