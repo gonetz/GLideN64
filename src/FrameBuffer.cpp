@@ -1061,7 +1061,8 @@ void FrameBufferToRDRAM::Destroy() {
 
 bool FrameBufferToRDRAM::_prepareCopy(u32 _startAddress)
 {
-	const u32 curFrame = video().getBuffersSwapCount();
+	OGLVideo & ogl = video();
+	const u32 curFrame = ogl.getBuffersSwapCount();
 	FrameBuffer * pBuffer = frameBufferList().findBuffer(_startAddress);
 	if (m_frameCount == curFrame && pBuffer == m_pCurFrameBuffer && m_startAddress != _startAddress)
 		return true;
@@ -1097,8 +1098,15 @@ bool FrameBufferToRDRAM::_prepareCopy(u32 _startAddress)
 	if (m_pCurFrameBuffer->m_scaleX > 1.0f) {
 		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_FBO);
 		glScissor(0, 0, m_pCurFrameBuffer->m_pTexture->realWidth, m_pCurFrameBuffer->m_pTexture->realHeight);
+		const u32 screenWidth = ogl.getWidth();
+		u32 x0 = 0;
+		u32 width = screenWidth;
+		if (ogl.isAdjustScreen()) {
+			width = static_cast<u32>(screenWidth*ogl.getAdjustScale());
+			x0 = (screenWidth - width) / 2;
+		}
 		glBlitFramebuffer(
-			0, 0, video().getWidth(), video().getHeight(),
+			x0, 0, x0 + width, ogl.getHeight(),
 			0, 0, VI.width, VI.height,
 			GL_COLOR_BUFFER_BIT, GL_NEAREST
 			);
