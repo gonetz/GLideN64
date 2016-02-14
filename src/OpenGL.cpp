@@ -1181,7 +1181,10 @@ void OGLRender::drawTexturedRect(const TexturedRectParams & _params)
 		m_rect[2].t1 = texST[1].t1;
 	}
 
-	if (ogl.isAdjustScreen() && (gDP.colorImage.width > VI.width * 98 / 100) && (_params.lrx - _params.ulx < VI.width * 9 / 10)) {
+	if (ogl.isAdjustScreen() &&
+		(_params.forceAjustScale ||
+		((gDP.colorImage.width > VI.width * 98 / 100) && (_params.lrx - _params.ulx < VI.width * 9 / 10))))
+	{
 		const float scale = ogl.getAdjustScale();
 		for (u32 i = 0; i < 4; ++i)
 			m_rect[i].x *= scale;

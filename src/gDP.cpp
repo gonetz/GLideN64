@@ -848,7 +848,7 @@ void gDPTextureRectangle( f32 ulx, f32 uly, f32 lrx, f32 lry, s32 tile, f32 s, f
 		lrt = t + (lry - uly - 1) * dtdy;
 	}
 
-	OGLRender::TexturedRectParams params(ulx, uly, lrx, lry, s, t, lrs, lrt, (RSP.cmd == G_TEXRECTFLIP), frameBufferList().getCurrent());
+	OGLRender::TexturedRectParams params(ulx, uly, lrx, lry, s, t, lrs, lrt, (RSP.cmd == G_TEXRECTFLIP), false, frameBufferList().getCurrent());
 	video().getRender().drawTexturedRect(params);
 
 	gSP.textureTile[0] = textureTileOrg[0];
