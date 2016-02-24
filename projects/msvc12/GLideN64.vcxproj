@@ -50,18 +50,22 @@
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC70.props" />
+    <Import Project="Global User Macros Control.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release_mupenplus|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC70.props" />
+    <Import Project="Global User Macros Control.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC70.props" />
+    <Import Project="Global User Macros Control.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug_mupenplus|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="$(VCTargetsPath)Microsoft.CPP.UpgradeFromVC70.props" />
+    <Import Project="Global User Macros Control.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
@@ -115,7 +119,7 @@
     </ClCompile>
     <Link>
       <AdditionalDependencies>freetype253MT_D.lib;..\..\src\GLideNUI\debug\GLideNUI.lib;osal\Debug\osal.lib;GLideNHQ\Debug\libGLideNHQ.lib;opengl32.lib;glu32.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>c:\Games\N64\Plugin\GLideN64.dll</OutputFile>
+      <OutputFile>$(Release)\GLideN64.dll</OutputFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ProgramDatabaseFile>$(OutDir)New glNintendo64().pdb</ProgramDatabaseFile>
       <SubSystem>Windows</SubSystem>
@@ -142,7 +146,7 @@
     </ClCompile>
     <Link>
       <AdditionalDependencies>freetype253MT_D.lib;osal\Debug\osal.lib;GLideNHQ\Debug\libGLideNHQ.lib;opengl32.lib;glu32.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>c:\Games\N64\M64Py\mupen64plus-video-GLideN64.dll </OutputFile>
+      <OutputFile>$(Release)\mupen64plus-video-GLideN64.dll </OutputFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ProgramDatabaseFile>$(OutDir)New glNintendo64().pdb</ProgramDatabaseFile>
       <SubSystem>Windows</SubSystem>
@@ -172,7 +176,7 @@
     </ClCompile>
     <Link>
       <AdditionalDependencies>freetype253MT.lib;..\..\src\GLideNUI\release\GLideNUI.lib;osal\Release\osal.lib;GLideNHQ\Release\libGLideNHQ.lib;opengl32.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>c:\Games\N64\Plugin\GLideN64.dll</OutputFile>
+      <OutputFile>$(Release)\GLideN64.dll</OutputFile>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>
@@ -203,7 +207,7 @@
     </ClCompile>
     <Link>
       <AdditionalDependencies>freetype253MT.lib;osal\Release\osal.lib;GLideNHQ\Release\libGLideNHQ.lib;opengl32.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>c:\Games\N64\M64Py\mupen64plus-video-GLideN64.dll</OutputFile>
+      <OutputFile>$(Release)\mupen64plus-video-GLideN64.dll</OutputFile>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>
@@ -358,6 +362,32 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_mupenplus|Win32'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="..\..\src\ZSort.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\..\ini\GLideN64.custom.ini">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug_mupenplus|Win32'">cmd /c if not exist "$(Release)" mkdir "$(Release)" &amp;&amp; xcopy "%(Identity)" "$(Release)" /s /i /y</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release_mupenplus|Win32'">cmd /c if not exist "$(Release)" mkdir "$(Release)" &amp;&amp; xcopy "%(Identity)" "$(Release)" /s /i /y</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">cmd /c if not exist "$(Release)" mkdir "$(Release)" &amp;&amp; xcopy "%(Identity)" "$(Release)" /s /i /y</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">cmd /c if not exist "$(Release)" mkdir "$(Release)" &amp;&amp; xcopy "%(Identity)" "$(Release)" /s /i /y</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug_mupenplus|Win32'">%(Filename)%(Extension)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release_mupenplus|Win32'">%(Filename)%(Extension)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(Filename)%(Extension)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(Filename)%(Extension)</Outputs>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="..\..\ini\GLideN64.ini">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug_mupenplus|Win32'">cmd /c if not exist "$(Release)" mkdir "$(Release)" &amp;&amp; xcopy "%(Identity)" "$(Release)" /s /i /y</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release_mupenplus|Win32'">cmd /c if not exist "$(Release)" mkdir "$(Release)" &amp;&amp; xcopy "%(Identity)" "$(Release)" /s /i /y</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">cmd /c if not exist "$(Release)" mkdir "$(Release)" &amp;&amp; xcopy "%(Identity)" "$(Release)" /s /i /y</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">cmd /c if not exist "$(Release)" mkdir "$(Release)" &amp;&amp; xcopy "%(Identity)" "$(Release)" /s /i /y</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug_mupenplus|Win32'">%(Filename)%(Extension)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release_mupenplus|Win32'">%(Filename)%(Extension)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(Filename)%(Extension)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(Filename)%(Extension)</Outputs>
+    </CustomBuild>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -38,9 +38,11 @@
   <ImportGroup Label="ExtensionSettings" />
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
+    <Import Project="..\..\projects\msvc12\Global User Macros Control.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
+    <Import Project="..\..\projects\msvc12\Global User Macros Control.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
@@ -75,7 +77,7 @@
     <Lib>
       <OutputFile>$(OutDir)\GLideNUI.lib</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <AdditionalDependencies>imm32.lib;Ws2_32.lib;qtmain.lib;qwindows.lib;qtharfbuzzng.lib;Qt5Core.lib;Qt5Gui.lib;Qt5Widgets.lib;Qt5PlatformSupport.lib</AdditionalDependencies>
+      <AdditionalDependencies>dwrite.lib;imm32.lib;Ws2_32.lib;qtmain.lib;qwindows.lib;qtharfbuzzng.lib;qtpcre.lib;Qt5Core.lib;Qt5Gui.lib;Qt5Widgets.lib;Qt5PlatformSupport.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>"$(QTDIR)\lib";"$(QTDIR)\plugins\platforms"</AdditionalLibraryDirectories>
     </Lib>
     <Midl>
@@ -222,6 +224,60 @@ endlocal
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
+    <CustomBuild Include="..\..\translations\gliden64_de.ts">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">cmd /c if not exist "$(Release)" mkdir "$(Release)" &amp;&amp; "$(QTDIR)\bin\lrelease.exe" "%(FullPath)" -qm "$(Release)\%(Filename).qm"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">cmd /c if not exist "$(Release)" mkdir "$(Release)" &amp;&amp; "$(QTDIR)\bin\lrelease.exe" "%(FullPath)" -qm "$(Release)\%(Filename).qm"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(Filename)%(Extension)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(Filename)%(Extension)</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\lrelease.exe</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(QTDIR)\bin\lrelease.exe</AdditionalInputs>
+    </CustomBuild>
+    <CustomBuild Include="..\..\translations\gliden64_es.ts">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">cmd /c if not exist "$(Release)" mkdir "$(Release)" &amp;&amp; "$(QTDIR)\bin\lrelease.exe" "%(FullPath)" -qm "$(Release)\%(Filename).qm"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">cmd /c if not exist "$(Release)" mkdir "$(Release)" &amp;&amp; "$(QTDIR)\bin\lrelease.exe" "%(FullPath)" -qm "$(Release)\%(Filename).qm"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(Filename)%(Extension)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(Filename)%(Extension)</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\lrelease.exe</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(QTDIR)\bin\lrelease.exe</AdditionalInputs>
+    </CustomBuild>
+    <CustomBuild Include="..\..\translations\gliden64_fr.ts">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">cmd /c if not exist "$(Release)" mkdir "$(Release)" &amp;&amp; "$(QTDIR)\bin\lrelease.exe" "%(FullPath)" -qm "$(Release)\%(Filename).qm"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">cmd /c if not exist "$(Release)" mkdir "$(Release)" &amp;&amp; "$(QTDIR)\bin\lrelease.exe" "%(FullPath)" -qm "$(Release)\%(Filename).qm"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(Filename)%(Extension)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(Filename)%(Extension)</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\lrelease.exe</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(QTDIR)\bin\lrelease.exe</AdditionalInputs>
+    </CustomBuild>
+    <CustomBuild Include="..\..\translations\gliden64_it.ts">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">cmd /c if not exist "$(Release)" mkdir "$(Release)" &amp;&amp; "$(QTDIR)\bin\lrelease.exe" "%(FullPath)" -qm "$(Release)\%(Filename).qm"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">cmd /c if not exist "$(Release)" mkdir "$(Release)" &amp;&amp; "$(QTDIR)\bin\lrelease.exe" "%(FullPath)" -qm "$(Release)\%(Filename).qm"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(Filename)%(Extension)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(Filename)%(Extension)</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\lrelease.exe</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(QTDIR)\bin\lrelease.exe</AdditionalInputs>
+    </CustomBuild>
+    <CustomBuild Include="..\..\translations\gliden64_pl.ts">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">cmd /c if not exist "$(Release)" mkdir "$(Release)" &amp;&amp; "$(QTDIR)\bin\lrelease.exe" "%(FullPath)" -qm "$(Release)\%(Filename).qm"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">cmd /c if not exist "$(Release)" mkdir "$(Release)" &amp;&amp; "$(QTDIR)\bin\lrelease.exe" "%(FullPath)" -qm "$(Release)\%(Filename).qm"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(Filename)%(Extension)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(Filename)%(Extension)</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\lrelease.exe</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(QTDIR)\bin\lrelease.exe</AdditionalInputs>
+    </CustomBuild>
+    <CustomBuild Include="..\..\translations\gliden64_pt_BR.ts">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">cmd /c if not exist "$(Release)" mkdir "$(Release)" &amp;&amp; "$(QTDIR)\bin\lrelease.exe" "%(FullPath)" -qm "$(Release)\%(Filename).qm"</Command>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">cmd /c if not exist "$(Release)" mkdir "$(Release)" &amp;&amp; "$(QTDIR)\bin\lrelease.exe" "%(FullPath)" -qm "$(Release)\%(Filename).qm"</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(Filename)%(Extension)</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(Filename)%(Extension)</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(QTDIR)\bin\lrelease.exe</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(QTDIR)\bin\lrelease.exe</AdditionalInputs>
+    </CustomBuild>
     <None Include="Icon.png">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
