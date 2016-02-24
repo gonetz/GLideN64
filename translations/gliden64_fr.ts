@@ -533,12 +533,12 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="configDialog.ui" line="140"/>
         <source>4:3</source>
-        <translation></translation>
+        <translation>4:3</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="153"/>
         <source>16:9</source>
-        <translation></translation>
+        <translation>16:9</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="163"/>
@@ -554,13 +554,13 @@ p, li { white-space: pre-wrap; }
         <location filename="configDialog.ui" line="215"/>
         <location filename="configDialog.ui" line="319"/>
         <source>0</source>
-        <translation></translation>
+        <translation>0</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="222"/>
         <location filename="configDialog.ui" line="326"/>
         <source>X</source>
-        <translation></translation>
+        <translation>X</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="235"/>
@@ -618,12 +618,12 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="configDialog.ui" line="475"/>
         <source>bmp</source>
-        <translation></translation>
+        <translation>bmp</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="485"/>
         <source>jpeg</source>
-        <translation></translation>
+        <translation>jpeg</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="541"/>
@@ -687,7 +687,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="configDialog.ui" line="617"/>
         <source>Enable shaders storage</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Activer le Stockage des Shaders</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="624"/>
@@ -702,7 +702,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="configDialog.ui" line="637"/>
         <source>Emulate frame buffer</source>
-        <translation>Émuler le frame buffer</translation>
+        <translation>Émuler le tampon image</translation>
     </message>
     <message>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Copy frame buffer to RDRAM:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;In some games plugin can&apos;t detect frame buffer usage. In such cases you need to enable this option to see frame buffer effects. Every drawn frame will be read from video card and copied into RDRAM area.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;mostly off (needed only for a few games)&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
@@ -721,7 +721,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="configDialog.ui" line="748"/>
         <source>Render frame buffer as texture</source>
-        <translation>Restituer le frame buffer comme une texture</translation>
+        <translation>Restituer le tampon image comme une texture</translation>
     </message>
     <message>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Detect CPU write to the N64 frame buffer:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;This option works as the previous options, but the plugin is trying to detect, when game uses CPU writes to N64 frame buffer. The N64 frame buffer is rendered only when CPU writes is detected. Use this option for those games, in which you see still image or no image at all for some time with no reason.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;mostly off&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
@@ -729,7 +729,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Detect CPU writes to the frame buffer</source>
-        <translation type="vanished">Détecter les écritures CPU dans le frame buffer</translation>
+        <translation type="vanished">Détecter les écritures CPU dans le tampon image</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="735"/>
@@ -739,7 +739,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="configDialog.ui" line="738"/>
         <source>Copy depth buffer to RDRAM</source>
-        <translation>Copier le depth buffer dans la RAM</translation>
+        <translation>Copier le tampon de profondeur dans la RAM</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="755"/>
@@ -776,12 +776,12 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="configDialog.ui" line="651"/>
         <source>Buffer swap mode:</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Mode d'Echange du Tampon :</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="662"/>
         <source>On Vertical Interrupt</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Interrompre</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="667"/>
@@ -791,7 +791,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="configDialog.ui" line="672"/>
         <source>On color buffer change</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Changer le Tampon sur la couleur</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="684"/>
@@ -804,17 +804,17 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="configDialog.ui" line="697"/>
         <source>disable</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Désactiver</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="710"/>
         <source>sync</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Synchro</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="723"/>
         <source>async</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Asynchro</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="772"/>
@@ -1046,12 +1046,12 @@ p, li { white-space: pre-wrap; }
         <location filename="configDialog.ui" line="1253"/>
         <location filename="configDialog.ui" line="1266"/>
         <source> 0</source>
-        <translation></translation>
+        <translation>0</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="1284"/>
         <source>Gamma correction</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Correction Gamma</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="1290"/>
@@ -1061,7 +1061,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="configDialog.ui" line="1293"/>
         <source>Force gamma correction</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Forcer la Correction Gamma</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="1311"/>
@@ -1072,7 +1072,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="configDialog.ui" line="1314"/>
         <source>Gamma correction level:</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Niveau de correction du Gamma</translation>
     </message>
 </context>
 </TS>
