@@ -1218,9 +1218,6 @@ void OGLRender::clearDepthBuffer(u32 _uly, u32 _lry)
 
 void OGLRender::clearColorBuffer(float *_pColor )
 {
-	if (!_canDraw())
-		return;
-
 	glDisable(GL_SCISSOR_TEST);
 
 	glClearColor( _pColor[0], _pColor[1], _pColor[2], _pColor[3] );
