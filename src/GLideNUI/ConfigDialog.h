@@ -35,6 +35,8 @@ private slots:
 
 	void on_fbInfoDisableCheckBox_toggled(bool checked);
 
+	void on_windowedResolutionComboBox_currentIndexChanged(int index);
+
 private:
 	void _init();
 	void _getTranslations(QStringList & _translationFiles) const;

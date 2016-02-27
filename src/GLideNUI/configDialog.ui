@@ -104,6 +104,44 @@
              </property>
             </widget>
            </item>
+           <item row="2" column="2">
+            <layout class="QHBoxLayout" name="horizontalLayout_21">
+             <item>
+              <widget class="QLabel" name="label_32">
+               <property name="text">
+                <string>W:</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QSpinBox" name="windowWidthSpinBox">
+               <property name="minimum">
+                <number>320</number>
+               </property>
+               <property name="maximum">
+                <number>1920</number>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="label_30">
+               <property name="text">
+                <string>H:</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QSpinBox" name="windowHeightSpinBox">
+               <property name="minimum">
+                <number>240</number>
+               </property>
+               <property name="maximum">
+                <number>1080</number>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
           </layout>
          </item>
          <item>
