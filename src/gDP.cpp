@@ -884,11 +884,11 @@ void gDPFullSync()
 	}
 
 	const bool sync = config.frameBufferEmulation.copyToRDRAM == Config::ctSync;
-	if (config.frameBufferEmulation.copyToRDRAM != Config::ctDisable && !fbInfo.isSupported())
+	if (config.frameBufferEmulation.copyToRDRAM != Config::ctDisable && !FBInfo::fbInfo.isSupported())
 		FrameBuffer_CopyToRDRAM(gDP.colorImage.address, sync);
 
 	if (RSP.bLLE) {
-		if (config.frameBufferEmulation.copyDepthToRDRAM != Config::ctDisable && !fbInfo.isSupported())
+		if (config.frameBufferEmulation.copyDepthToRDRAM != Config::ctDisable && !FBInfo::fbInfo.isSupported())
 			FrameBuffer_CopyDepthBuffer(gDP.colorImage.address);
 	}
 

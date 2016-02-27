@@ -10,35 +10,46 @@
 #include "Types.h"
 #include "PluginAPI.h"
 
-struct FrameBufferInfo
-{
-	unsigned int addr;
-	unsigned int size;
-	unsigned int width;
-	unsigned int height;
-};
-
 struct FrameBuffer;
-class FBInfo {
-public:
-	void Write(u32 addr, u32 size);
 
-	void WriteList(FrameBufferModifyEntry *plist, u32 size);
+namespace FBInfo {
 
-	void Read(u32 addr);
+	struct FrameBufferInfo
+	{
+		unsigned int addr;
+		unsigned int size;
+		unsigned int width;
+		unsigned int height;
+	};
 
-	void GetInfo(void *pinfo);
+	struct FrameBufferModifyEntry
+	{
+		unsigned int addr;
+		unsigned int val;
+		unsigned int size;
+	};
 
-	bool isSupported() const { return m_supported; }
+	class FBInfo {
+	public:
+		void Write(u32 addr, u32 size);
 
-	void reset();
+		void WriteList(FrameBufferModifyEntry *plist, u32 size);
 
-private:
-	const FrameBuffer * m_pWriteBuffer;
-	const FrameBuffer * m_pReadBuffer;
-	bool m_supported;
-};
+		void Read(u32 addr);
 
-extern FBInfo fbInfo;
+		void GetInfo(void *pinfo);
+
+		bool isSupported() const { return m_supported; }
+
+		void reset();
+
+	private:
+		const FrameBuffer * m_pWriteBuffer;
+		const FrameBuffer * m_pReadBuffer;
+		bool m_supported;
+	};
+
+	extern FBInfo fbInfo;
+}
 
 #endif // _FRAME_BUFFER_INFO_H_

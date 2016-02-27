@@ -23,12 +23,7 @@ extern "C" {
 *******************************************************************/
 EXPORT void CALL FBWrite(unsigned int addr, unsigned int size);
 
-typedef struct
-{
-	unsigned int addr;
-	unsigned int val;
-	unsigned int size;
-} FrameBufferModifyEntry;
+struct FrameBufferModifyEntry;
 
 /******************************************************************
   Function: FrameBufferWriteList

@@ -1399,7 +1399,7 @@ void OGLRender::_initData()
 	TextDrawer::get().init();
 	TFH.init();
 	PostProcessor::get().init();
-	fbInfo.reset();
+	FBInfo::fbInfo.reset();
 	m_renderState = rsNone;
 
 	gSP.changed = gDP.changed = 0xFFFFFFFF;

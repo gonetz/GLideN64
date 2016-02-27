@@ -92,7 +92,7 @@ public:
 	}
 
 	bool run() {
-		fbInfo.Read(m_addr);
+		FBInfo::fbInfo.Read(m_addr);
 		return true;
 	}
 private:
@@ -250,12 +250,7 @@ void PluginAPI::ChangeWindow()
 
 void PluginAPI::FBWrite(unsigned int _addr, unsigned int _size)
 {
-	fbInfo.Write(_addr, _size);
-}
-
-void PluginAPI::FBWList(FrameBufferModifyEntry * _plist, unsigned int _size)
-{
-	fbInfo.WriteList(_plist, _size);
+	FBInfo::fbInfo.Write(_addr, _size);
 }
 
 void PluginAPI::FBRead(unsigned int _addr)
@@ -263,11 +258,18 @@ void PluginAPI::FBRead(unsigned int _addr)
 #ifdef RSPTHREAD
 	_callAPICommand(FBReadCommand(_addr));
 #else
-	fbInfo.Read(_addr);
+	FBInfo::fbInfo.Read(_addr);
 #endif
 }
 
 void PluginAPI::FBGetFrameBufferInfo(void * _pinfo)
 {
-	fbInfo.GetInfo(_pinfo);
+	FBInfo::fbInfo.GetInfo(_pinfo);
 }
+
+#ifndef MUPENPLUSAPI
+void PluginAPI::FBWList(FrameBufferModifyEntry * _plist, unsigned int _size)
+{
+	FBInfo::fbInfo.WriteList(reinterpret_cast<FBInfo::FrameBufferModifyEntry*>(_plist), _size);
+}
+#endif

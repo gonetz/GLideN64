@@ -63,11 +63,6 @@ EXPORT void CALL FBWrite(unsigned int addr, unsigned int size)
 	api().FBWrite(addr, size);
 }
 
-EXPORT void CALL FBWList(FrameBufferModifyEntry *plist, unsigned int size)
-{
-	api().FBWList(plist, size);
-}
-
 EXPORT void CALL FBRead(unsigned int addr)
 {
 	api().FBRead(addr);
@@ -78,4 +73,10 @@ EXPORT void CALL FBGetFrameBufferInfo(void *pinfo)
 	api().FBGetFrameBufferInfo(pinfo);
 }
 
+#ifndef MUPENPLUSAPI
+EXPORT void CALL FBWList(FrameBufferModifyEntry *plist, unsigned int size)
+{
+	api().FBWList(plist, size);
+}
+#endif
 }

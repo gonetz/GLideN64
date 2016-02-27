@@ -10,7 +10,6 @@ struct gDPTile;
 struct DepthBuffer;
 
 const int fingerprint[4] = { 2, 6, 4, 3 };
-struct FrameBufferInfo;
 
 struct FrameBuffer
 {
@@ -77,7 +76,7 @@ public:
 	FrameBuffer * getCopyBuffer() const { return m_pCopy; }
 	void setCopyBuffer(FrameBuffer * _pBuffer) { m_pCopy = _pBuffer; }
 
-	void fillBufferInfo(FrameBufferInfo * _pinfo, u32 _size);
+	void fillBufferInfo(void * _pinfo, u32 _size);
 
 	static FrameBufferList & get();
 

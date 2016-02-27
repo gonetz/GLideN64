@@ -196,7 +196,6 @@ EXPORT void CALL ResizeVideoOutput(int width, int height);
 #endif
 
 /* frame buffer plugin spec extension */
-#if 0 // The extension is moved to separate header.
 typedef struct
 {
    unsigned int addr;
@@ -212,7 +211,6 @@ EXPORT void CALL FBRead(unsigned int addr);
 EXPORT void CALL FBWrite(unsigned int addr, unsigned int size);
 EXPORT void CALL FBGetFrameBufferInfo(void *p);
 #endif
-#endif // 0
 
 /* audio plugin function pointers */
 typedef void (*ptr_AiDacrateChanged)(int SystemType);

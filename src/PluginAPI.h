@@ -8,9 +8,9 @@
 #include "m64p_plugin.h"
 #else
 #include "ZilmarGFX_1_3.h"
+#include "FrameBufferInfoAPI.h"
 #define RSPTHREAD
 #endif
-#include "FrameBufferInfoAPI.h"
 
 class APICommand;
 
@@ -43,12 +43,6 @@ public:
 	void GetUserDataPath(wchar_t * _strPath);
 	void GetUserCachePath(wchar_t * _strPath);
 
-	// FrameBufferInfo extension
-	void FBWrite(unsigned int addr, unsigned int size);
-	void FBWList(FrameBufferModifyEntry *plist, unsigned int size);
-	void FBRead(unsigned int addr);
-	void FBGetFrameBufferInfo(void *pinfo);
-
 #ifndef MUPENPLUSAPI
 	// Zilmar
 	void DllTest(HWND /*_hParent*/) {}
@@ -61,6 +55,12 @@ public:
 	void ReadScreen(void **_dest, long *_width, long *_height);
 
 	void DllAbout(/*HWND _hParent*/);
+
+	// FrameBufferInfo extension
+	void FBWrite(unsigned int addr, unsigned int size);
+	void FBWList(FrameBufferModifyEntry *plist, unsigned int size);
+	void FBRead(unsigned int addr);
+	void FBGetFrameBufferInfo(void *pinfo);
 #else
 	// MupenPlus
 	void ResizeVideoOutput(int _Width, int _Height);
@@ -76,6 +76,11 @@ public:
 		int * _Capabilities
 	);
 	void SetRenderingCallback(void (*callback)(int));
+
+	// FrameBufferInfo extension
+	void FBWrite(unsigned int addr, unsigned int size);
+	void FBRead(unsigned int addr);
+	void FBGetFrameBufferInfo(void *pinfo);
 #endif
 
 	static PluginAPI & get();

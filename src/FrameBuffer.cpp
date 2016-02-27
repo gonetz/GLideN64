@@ -650,15 +650,17 @@ void FrameBufferList::removeBuffers(u32 _width)
 	}
 }
 
-void FrameBufferList::fillBufferInfo(FrameBufferInfo * _pinfo, u32 _size)
+void FrameBufferList::fillBufferInfo(void * _pinfo, u32 _size)
 {
+	FBInfo::FrameBufferInfo* pInfo = reinterpret_cast<FBInfo::FrameBufferInfo*>(_pinfo);
+
 	u32 idx = 0;
 	for (FrameBuffers::iterator iter = m_list.begin(); iter != m_list.end(); ++iter) {
 		if (iter->m_width == VI.width && !iter->m_cfb && !iter->m_isDepthBuffer) {
-			_pinfo[idx].addr = iter->m_startAddress;
-			_pinfo[idx].width = iter->m_width;
-			_pinfo[idx].height = iter->m_height;
-			_pinfo[idx++].size = iter->m_size;
+			pInfo[idx].addr = iter->m_startAddress;
+			pInfo[idx].width = iter->m_width;
+			pInfo[idx].height = iter->m_height;
+			pInfo[idx++].size = iter->m_size;
 			if (idx >= _size)
 				return;
 		}
@@ -1641,7 +1643,7 @@ void RDRAMtoFrameBuffer::CopyFromRDRAM(u32 _address, bool _bCFB)
 	Cleaner cleaner(this);
 
 	if (m_pCurBuffer == nullptr) {
-		if (_bCFB || (config.frameBufferEmulation.copyFromRDRAM != 0 && !fbInfo.isSupported()))
+		if (_bCFB || (config.frameBufferEmulation.copyFromRDRAM != 0 && !FBInfo::fbInfo.isSupported()))
 			m_pCurBuffer = frameBufferList().findBuffer(_address);
 	} else if (m_vecAddress.empty())
 		return;
