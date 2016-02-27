@@ -144,6 +144,7 @@ void ConfigDialog::_init()
 		ui->aspectAdjustRadioButton->setChecked(true);
 		break;
 	}
+	ui->resolutionFactorSlider->setValue(config.frameBufferEmulation.nativeResFactor);
 	ui->copyAuxBuffersCheckBox->setChecked(config.frameBufferEmulation.copyAuxToRDRAM != 0);
 	ui->fbInfoDisableCheckBox->setChecked(config.frameBufferEmulation.fbInfoDisabled != 0);
 	ui->readColorChunkCheckBox->setChecked(config.frameBufferEmulation.fbInfoReadColorChunk != 0);
@@ -323,6 +324,7 @@ void ConfigDialog::accept()
 		config.frameBufferEmulation.aspect = Config::a169;
 	else if (ui->aspectAdjustRadioButton->isChecked())
 		config.frameBufferEmulation.aspect = Config::aAdjust;
+	config.frameBufferEmulation.nativeResFactor = ui->resolutionFactorSlider->value();
 	config.frameBufferEmulation.copyAuxToRDRAM = ui->copyAuxBuffersCheckBox->isChecked() ? 1 : 0;
 	config.frameBufferEmulation.fbInfoDisabled = ui->fbInfoDisableCheckBox->isChecked() ? 1: 0;
 	config.frameBufferEmulation.fbInfoReadColorChunk = ui->readColorChunkCheckBox->isChecked() ? 1 : 0;

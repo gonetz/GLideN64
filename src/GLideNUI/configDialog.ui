@@ -172,6 +172,73 @@
          <item>
           <layout class="QVBoxLayout" name="verticalLayout_5">
            <item>
+            <layout class="QVBoxLayout" name="verticalLayout_9">
+             <item>
+              <widget class="QLabel" name="label_29">
+               <property name="toolTip">
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Render at constant factor of native resolution.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;If frame buffer emulation enabled and factor is not zero, internal frame buffer size will be that factor of native N64 resolution. The buffer will be scaled to screen resolution when rendered to screen. If factor is zero (default), internal buffer size is equal to screen size. If factor is 1, the game will be rendered in native resolution and then up-scaled to screen resolution.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+               </property>
+               <property name="text">
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Render at constant factor of native resolution&lt;span style=&quot; vertical-align:super;&quot;&gt;*&lt;/span&gt;:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <layout class="QHBoxLayout" name="horizontalLayout_19">
+               <item>
+                <widget class="QSlider" name="resolutionFactorSlider">
+                 <property name="toolTip">
+                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Render at constant factor of native resolution.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;If frame buffer emulation enabled and factor is not zero, internal frame buffer size will be that factor of native N64 resolution. The buffer will be scaled to screen resolution when rendered to screen. If factor is zero (default), internal buffer size is equal to screen size. If factor is 1, the game will be rendered in native resolution and then up-scaled to screen resolution.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                 </property>
+                 <property name="maximum">
+                  <number>16</number>
+                 </property>
+                 <property name="pageStep">
+                  <number>2</number>
+                 </property>
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                 <property name="tickPosition">
+                  <enum>QSlider::TicksBelow</enum>
+                 </property>
+                 <property name="tickInterval">
+                  <number>1</number>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <layout class="QHBoxLayout" name="horizontalLayout_20">
+                 <property name="spacing">
+                  <number>0</number>
+                 </property>
+                 <item>
+                  <widget class="QLabel" name="factorLabelVal">
+                   <property name="toolTip">
+                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Render at constant factor of native resolution.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;If frame buffer emulation enabled and factor is not zero, internal frame buffer size will be that factor of native N64 resolution. The buffer will be scaled to screen resolution when rendered to screen. If factor is zero (default), internal buffer size is equal to screen size. If factor is 1, the game will be rendered in native resolution and then up-scaled to screen resolution.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                   </property>
+                   <property name="text">
+                    <string notr="true">0</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLabel" name="label_31">
+                   <property name="toolTip">
+                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Render at constant factor of native resolution.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;If frame buffer emulation enabled and factor is not zero, internal frame buffer size will be that factor of native N64 resolution. The buffer will be scaled to screen resolution when rendered to screen. If factor is zero (default), internal buffer size is equal to screen size. If factor is 1, the game will be rendered in native resolution and then up-scaled to screen resolution.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                   </property>
+                   <property name="text">
+                    <string notr="true">X</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+              </layout>
+             </item>
+            </layout>
+           </item>
+           <item>
             <layout class="QVBoxLayout" name="verticalLayout_6">
              <item>
               <widget class="QLabel" name="labelAliasing">
@@ -212,14 +279,14 @@
                  <item>
                   <widget class="QLabel" name="aliasingLabelVal">
                    <property name="text">
-                    <string>0</string>
+                    <string notr="true">0</string>
                    </property>
                   </widget>
                  </item>
                  <item>
                   <widget class="QLabel" name="label_5">
                    <property name="text">
-                    <string>X</string>
+                    <string notr="true">X</string>
                    </property>
                   </widget>
                  </item>
@@ -316,14 +383,14 @@
                  <item>
                   <widget class="QLabel" name="anisotropicLabelVal">
                    <property name="text">
-                    <string>0</string>
+                    <string notr="true">0</string>
                    </property>
                   </widget>
                  </item>
                  <item>
                   <widget class="QLabel" name="label_3">
                    <property name="text">
-                    <string>X</string>
+                    <string notr="true">X</string>
                    </property>
                   </widget>
                  </item>
@@ -1591,12 +1658,12 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>92</x>
-     <y>291</y>
+     <x>107</x>
+     <y>347</y>
     </hint>
     <hint type="destinationlabel">
      <x>459</x>
-     <y>290</y>
+     <y>346</y>
     </hint>
    </hints>
   </connection>
@@ -1607,12 +1674,12 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>92</x>
-     <y>187</y>
+     <x>107</x>
+     <y>243</y>
     </hint>
     <hint type="destinationlabel">
      <x>459</x>
-     <y>186</y>
+     <y>242</y>
     </hint>
    </hints>
   </connection>
@@ -1680,12 +1747,28 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>resolutionFactorSlider</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>factorLabelVal</receiver>
+   <slot>setNum(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>400</x>
+     <y>168</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>457</x>
+     <y>174</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <buttongroups>
-  <buttongroup name="bilinearButtonGroup"/>
-  <buttongroup name="aspectButtonGroup"/>
-  <buttongroup name="copyFrameBufferButtonGroup"/>
   <buttongroup name="bloomBlendModeButtonGroup"/>
+  <buttongroup name="copyFrameBufferButtonGroup"/>
+  <buttongroup name="aspectButtonGroup"/>
+  <buttongroup name="bilinearButtonGroup"/>
   <buttongroup name="screenshotButtonGroup"/>
  </buttongroups>
 </ui>
