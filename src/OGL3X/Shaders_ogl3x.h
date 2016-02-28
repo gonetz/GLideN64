@@ -336,7 +336,11 @@ AUXILIARY_SHADER_VERSION
 "mediump float mipmap(out lowp vec4 readtex0, out lowp vec4 readtex1) {	\n"
 "  readtex0 = texture(uTex0, vTexCoord0);				\n"
 "  readtex1 = textureLod(uTex1, vTexCoord1, 0.0);		\n"
-"  if (uMaxTile == 0) return 1.0;						\n"
+"  if (uMaxTile == 0) {									\n"
+"    if (uEnableLod != 0 && (uTextureDetail & 2) == 0)	\n"
+"      readtex1 = readtex0;								\n"
+"    return 1.0;										\n"
+"  }													\n"
 "														\n"
 "  mediump float fMaxTile = float(uMaxTile);			\n"
 #if 1
