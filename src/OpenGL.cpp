@@ -316,13 +316,14 @@ void OGLVideo::readScreen2(void * _dest, int * _width, int * _height, int _front
 
 void OGLRender::addTriangle(int _v0, int _v1, int _v2)
 {
+	const u32 firstIndex = triangles.num;
 	triangles.elements[triangles.num++] = _v0;
 	triangles.elements[triangles.num++] = _v1;
 	triangles.elements[triangles.num++] = _v2;
 
 	if ((gSP.geometryMode & G_SHADE) == 0) {
 		// Prim shading
-		for (u32 i = triangles.num - 3; i < triangles.num; ++i) {
+		for (u32 i = firstIndex; i < triangles.num; ++i) {
 			SPVertex & vtx = triangles.vertices[triangles.elements[i]];
 			vtx.flat_r = gDP.primColor.r;
 			vtx.flat_g = gDP.primColor.g;
@@ -331,18 +332,19 @@ void OGLRender::addTriangle(int _v0, int _v1, int _v2)
 		}
 	} else if ((gSP.geometryMode & G_SHADING_SMOOTH) == 0) {
 		// Flat shading
-		SPVertex & vtx0 = triangles.vertices[_v0];
-		for (u32 i = triangles.num - 3; i < triangles.num; ++i) {
+		SPVertex & vtx0 = triangles.vertices[firstIndex + ((RSP.w1 >> 24) & 3)];
+		for (u32 i = firstIndex; i < triangles.num; ++i) {
 			SPVertex & vtx = triangles.vertices[triangles.elements[i]];
-			vtx.flat_r = vtx0.r;
-			vtx.flat_g = vtx0.g;
-			vtx.flat_b = vtx0.b;
-			vtx.flat_a = vtx0.a;
+			vtx.r = vtx.flat_r = vtx0.r;
+			vtx.g = vtx.flat_g = vtx0.g;
+			vtx.b = vtx.flat_b = vtx0.b;
+			vtx.a = vtx.flat_a = vtx0.a;
+			vtx.a = vtx0.a;
 		}
 	}
 
 	if (gDP.otherMode.depthSource == G_ZS_PRIM) {
-		for (u32 i = triangles.num - 3; i < triangles.num; ++i) {
+		for (u32 i = firstIndex; i < triangles.num; ++i) {
 			SPVertex & vtx = triangles.vertices[triangles.elements[i]];
 			vtx.z = gDP.primDepth.z * vtx.w;
 		}
@@ -350,7 +352,7 @@ void OGLRender::addTriangle(int _v0, int _v1, int _v2)
 
 #ifdef GLESX
 	if (GBI.isNoN() && gDP.otherMode.depthCompare == 0 && gDP.otherMode.depthUpdate == 0) {
-		for (u32 i = triangles.num - 3; i < triangles.num; ++i) {
+		for (u32 i = firstIndex; i < triangles.num; ++i) {
 			SPVertex & vtx = triangles.vertices[triangles.elements[i]];
 			vtx.z = 0.0f;
 		}

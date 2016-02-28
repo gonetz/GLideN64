@@ -7,6 +7,7 @@
 typedef struct
 {
 	u32 PC[18], PCi, busy, halt, close, uc_start, uc_dstart, cmd, nextCmd;
+	u32 w0, w1;
 	s32 count;
 	bool bLLE;
 	char romname[21];
