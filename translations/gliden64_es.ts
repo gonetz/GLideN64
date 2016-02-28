@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1" language="es_ES">
+<TS version="2.0" language="es_ES">
 <context>
     <name>AboutDialog</name>
     <message>
         <location filename="AboutDialog.ui" line="35"/>
         <source>About GLideN64</source>
-        <translation>Sobre GlideN64</translation>
+        <translation>Acerca de GLideN64</translation>
     </message>
     <message>
         <location filename="AboutDialog.ui" line="66"/>
@@ -15,7 +15,7 @@
     </message>
     <message>
         <source>Sergey Lipskiy</source>
-        <translation type="vanished">Sergey Lipskiy</translation>
+        <translation>Sergey Lipskiy</translation>
     </message>
     <message>
         <location filename="AboutDialog.ui" line="94"/>
@@ -24,7 +24,7 @@
     </message>
     <message>
         <source>Olivieryuyu</source>
-        <translation type="vanished">Olivieryuyu</translation>
+        <translation>Olivieryuyu</translation>
     </message>
     <message>
         <location filename="AboutDialog.ui" line="120"/>
@@ -34,35 +34,35 @@
     <message>
         <location filename="AboutDialog.ui" line="136"/>
         <source>Main funders</source>
-        <translation>Principales financiadores</translation>
+        <translation>Financiadores principales</translation>
     </message>
     <message>
         <source>Anthony Heathcoat</source>
-        <translation type="vanished">Anthony Heathcoat</translation>
+        <translation>Anthony Heathcoat</translation>
     </message>
     <message>
         <source>Paul Lamb</source>
-        <translation type="vanished">Paul Lamb</translation>
+        <translation>Paul Lamb</translation>
     </message>
     <message>
         <source>daman6009</source>
-        <translation type="vanished">daman6009</translation>
+        <translation>daman6009</translation>
     </message>
     <message>
         <source>Mush Man</source>
-        <translation type="vanished">Mush Man</translation>
+        <translation>Mush Man</translation>
     </message>
     <message>
         <source>zolcos</source>
-        <translation type="vanished">zolcos</translation>
+        <translation>zolcos</translation>
     </message>
     <message>
         <source>zilmar</source>
-        <translation type="vanished">zilmar</translation>
+        <translation>zilmar</translation>
     </message>
     <message>
         <source>neko9876</source>
-        <translation type="vanished">neko9876</translation>
+        <translation>neko9876</translation>
     </message>
     <message>
         <location filename="AboutDialog.ui" line="294"/>
@@ -200,7 +200,135 @@ p, li { white-space: pre-wrap; }
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;sweatypickle&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;jeremydmiller&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;... and others&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;Ryan Rosser&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;Amadeus Sterl&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;Narann&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;camara_luiz&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;weinerschnitzel&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;microdev&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;Thomas Ginelli&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;ace977&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;patryk.szalanski&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;Detomine&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;itasovski&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;keithclark1985&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;josephrmoore&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;fckyourlies&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;dougforr&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;camdenfurse&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;grandslam810&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;rictic&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;Fred Lambes&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;David Vercruyssen&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;danielgormly&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;lukecool&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;rhilsky&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;phillipstuerzl&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;killjoy1337&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;ratop46 &lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;william.a.moore&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;RSP16&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;kzidek127&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;Dan Holberg&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;178amm&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;peterchrjoergensen&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;hill_jm&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;petercullenbryan&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;Christopher M Rock&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;Kenny.R.Mitchell&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;Kevin Grasso&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;mtgyure&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;Anthony Heathcoat&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;Liam Burns&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;Steven Impson&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;Gwyn.Whieldon&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;hipnotoad&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;shmuklidooha&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;bcanard123&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;Ben Slater&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;Mike Nagy&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;littlegreendude55&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;Jay Loring&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;Damion D&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;heranbago&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;baptiste.guilbert&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;shadowpower69&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;j.mcguirk72&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;Peter Greenwood&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;fla56&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;Sergio &lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;theboy_181&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;Jindo Fox&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;s1n.pcc&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;rafaelvasco &lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;copileo&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;hugues.fabien&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;seanmcm157&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;David Morris&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;Jason Lightner&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;olivier_crepin77&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;Paul Lamb&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;thegump2.0&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;Bates&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;cdoublejj&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;buddybenj&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;don.carmical&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;kyussgreen&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;info1092&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;YQ &lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;Allan Nordhøy&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;christian010&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;creuseur2patateradio&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;chrisbevanlee&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;theschklingen&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;Thomas Lindstrøm&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;Djipi &lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;Dartus &lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;Oscar Abraham &lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;nwstrathdee&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;will7046 &lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;Richard42 &lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;V1del &lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;AnthonyBentley&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;buddybenj&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;nickshooter251&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;sicurella12&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;jcspringer&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;Gru So&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;Vinícius dos Santos Oliveira&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;Jimmy Haugh&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;Malcolm &lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;Alex Strange&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;Espen Jensen&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;m.johnsondelta&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;alexzandar.toxic2&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;Ben Slater&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;WC-Predator &lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;Mush Man&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;Ben Slater&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;aznlucidx&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;Nathan Dick&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;paulanocom&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;Ryan Rosser&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;nekow42&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;mgos1&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;ian.macdonald996&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;itasovski&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;vikingpower1&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;DukeX007X&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;palaciosgabriel&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;Franz-Josef Haider&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;e-male&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;aweath&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;famicom4&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;Keith_at_UMR&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;sweatypickle&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;jeremydmiller&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;Y otros más...&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="AboutDialog.ui" line="468"/>
@@ -217,10 +345,10 @@ p, li { white-space: pre-wrap; }
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;Orkin&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt; - autor del plugin &lt;/span&gt;&lt;span style=&quot; font-size:10pt; text-decoration: underline;&quot;&gt;glN64&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt; original de gráficos&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;yongzh -&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt; autor de la conversión &lt;/span&gt;&lt;span style=&quot; font-size:10pt; text-decoration: underline;&quot;&gt;gles2n64&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;, de glN64 a GL ES 2.0&lt;br /&gt;&lt;/span&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;Hiroshi Morii&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt; - autor de &lt;/span&gt;&lt;span style=&quot; font-size:10pt; text-decoration: underline;&quot;&gt;GlideH&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;libreria de texturas Q&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;ziggy&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt; - autor del &lt;/span&gt;&lt;span style=&quot; font-size:10pt; text-decoration: underline;&quot;&gt;z64&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt; plugin LLE para OpenGLn&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;Nathaniel Meyer&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt; - autor del shader de desenfoque. Copyright: Nutty Software&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;Orkin&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;: Autor del plugin &lt;/span&gt;&lt;span style=&quot; font-size:10pt; text-decoration: underline;&quot;&gt;glN64&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt; de gráficos original&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;yongzh -&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;: Autor de &lt;/span&gt;&lt;span style=&quot; font-size:10pt; text-decoration: underline;&quot;&gt;gles2n64&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;, conversión de glN64 a GL ES 2.0&lt;br /&gt;&lt;/span&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;Hiroshi Morii&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;: Autor de la librería de texturas &lt;/span&gt;&lt;span style=&quot; font-size:10pt; text-decoration: underline;&quot;&gt;GlideHQ&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;ziggy&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;: Autor del plugin LLE de OpenGL &lt;/span&gt;&lt;span style=&quot; font-size:10pt; text-decoration: underline;&quot;&gt;z64&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;Nathaniel Meyer&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;: Autor del shader de difuminado. Copyright: Nutty Software&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:10pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
@@ -356,7 +484,7 @@ p, li { white-space: pre-wrap; }
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;sweatypickle&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;jeremydmiller&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;... and others&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="vanished">&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+        <translation>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
@@ -487,7 +615,7 @@ p, li { white-space: pre-wrap; }
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;Keith_at_UMR&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;sweatypickle&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;jeremydmiller&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;y otros...&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;Y otros más...&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="AboutDialog.ui" line="453"/>
@@ -655,7 +783,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="configDialog.ui" line="541"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Language select:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Press the button to invoke language selection dialog. Selected language will be activated after restart of the configuration dialog.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Selección de idioma:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Pulsa el botón para mostrar la ventana de selección de idioma. El idioma seleccionado se activará tras reabrir la ventana de configuración.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Selección de idioma:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Pulsa el botón para mostrar la ventana de selección de idioma. El idioma seleccionado se activará cuando vuelvas a abrir la ventana de configuración.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="544"/>
@@ -705,12 +833,12 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="configDialog.ui" line="614"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Shaders storage:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Use persistent storage for compiled shader programs.&lt;br/&gt;&lt;/p&gt;&lt;p&gt;Each game uses set of combiners. Combiner is an equation, which defines how to build output color from various color inputs. The plugin translates combiners to &lt;a href=&quot;https://www.opengl.org/wiki/Shader&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;shaders&lt;/span&gt;&lt;/a&gt;. Shader compiler builds programs from them on fly. Shaders are large and complex. If new scene uses several new combiners, compilation of new shaders will take time and you will notice that as some stuttering. If you have shader storage enabled, all shaders will be compiled only once. Next time you run the game, plugin will not spend time on compilation of shaders, which you already met.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;on&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Guardado de shaders:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Guarda de forma persistente los programas de shaders compilados.&lt;br/&gt;&lt;/p&gt;&lt;p&gt;Cada juego utiliza un conjunto de combinadores. Un combinador es una ecuación que define el color que se muestra a partir de varios colores de la imagen original. El plugin traduce los combinadores a un &lt;a href=&quot;https://www.opengl.org/wiki/Shader&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;shader&lt;/span&gt;&lt;/a&gt;. El compilador de shaders crea un programa al momento. Los shaders ocupan mucho espacio y son complejos. Si una escena nueva utiliza varios combinadores nuevos, se tardará más en compilar un shader nuevo y eso puede provocar trompicones. Si activas el guardado de shaders, todos los shaders se compilarán sólo una vez. La próxima vez que ejecutes el juego, el plugin no perderá tiempo compilando shaders porque ya estarán compilados.&lt;/p&gt;&lt;p&gt;[Recomendado: &lt;span style=&quot; font-style:italic;&quot;&gt;Activado&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="617"/>
         <source>Enable shaders storage</source>
-        <translation type="unfinished"></translation>
+        <translation>Activar guardado de shaders</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="624"/>
@@ -731,27 +859,27 @@ p, li { white-space: pre-wrap; }
         <location filename="configDialog.ui" line="648"/>
         <location filename="configDialog.ui" line="658"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Buffer swap mode:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;With this option you may control how often plugin will update main frame buffer. There are three modes:&lt;/p&gt;&lt;p&gt;* on Vertical Interrupt. Number of buffer updates will be equal to Vertical Interrupts per Second (VI/s). VI/s is 50 for PAL and 60 for NTSC games. This is most compatible option. Use it if your system can handle it.&lt;/p&gt;&lt;p&gt;* on Video Interface origin change. The origin change means that game switched to another color buffer and buffers swap needed. This mode corresponds to Frames Per Seconds (FPS). FPS is between 20 and 30 for most games, thus buffers swap less often than in the first mode. This mode works well if game uses double or triple buffering. If game uses single buffer (very rare case), it does not work.&lt;/p&gt;&lt;p&gt;* on color image change. Buffers will swap only if frame buffer is actually modified. This mode is optimal for performance because it eliminates empty swaps. However, there are rare cases, where it does not work.&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Tipo de cambio de búfer:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Con esta opción puedes controlar la frecuencia con la que el plugin actualizará el frame buffer principal. Hay tres formas:&lt;/p&gt;&lt;p&gt;* Por interrupción vertical. El número de actualizaciones del buffer será igual al número de Interrupciones Verticales por Segundo (VI/s). El VI/s es 50 en juegos PAL y 60 en juegos NTSC. Esta es la opción más compatible. Utilízala su tu equipo puede ejecutarla.&lt;/p&gt;&lt;p&gt;* Por cambio en el origen de la interfaz de vídeo. El cambio en el origen quiere decir que el juego ha cambiado a otro búfer de color y que hace falta cambiar el búfer. Este modo se corresponde a los Fotogramas por Segundo (FPS). Los FPS son entre 20 y 30 para la mayoría de los juegos, así que se cambia menos el búfer que con el primer modo. Este modo funciona bien si el juego utiliza doble o triple buffering. Si el juego utiliza un búfer simple (casos muy raros), no funcionará.&lt;/p&gt;&lt;p&gt;* Por cambio en el color de la imagen. Los búfers sólo cambiarán si se modifica el frame buffer. Este modo es ideal para mejorar el rendimiento porque elimina los cambios en vacio. Pero hay casos muy raros en los que no funcionará.&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="651"/>
         <source>Buffer swap mode:</source>
-        <translation type="unfinished"></translation>
+        <translation>Tipo de cambio de búfer:</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="662"/>
         <source>On Vertical Interrupt</source>
-        <translation type="unfinished"></translation>
+        <translation>Interrupción vertical</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="667"/>
         <source>On VI origin change</source>
-        <translation type="unfinished"></translation>
+        <translation>Cambio en origen de vídeo</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="672"/>
         <source>On color buffer change</source>
-        <translation type="unfinished"></translation>
+        <translation>Cambio en color del búfer</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="684"/>
@@ -759,37 +887,37 @@ p, li { white-space: pre-wrap; }
         <location filename="configDialog.ui" line="707"/>
         <location filename="configDialog.ui" line="720"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Copy color buffer to RDRAM:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;In some games plugin can&apos;t detect frame buffer usage. In such cases you need to enable this option to see frame buffer effects. Every drawn frame will be read from video card and copied into RDRAM area.&lt;/p&gt;&lt;p&gt;* disable - do not copy buffer&lt;/p&gt;&lt;p&gt;* sync - copy buffer in sync mode. Can be slow, but works for all games&lt;/p&gt;&lt;p&gt;* async - copy buffer in async mode. Can be up to 10 times faster than sync mode, but is incompatible with some games.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;mostly async (sync needed only for a few games)&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Copiar búfer de color a RDRAM:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;El plugin no podrá detectar el uso del frame buffer en algunos juegos. En tal caso, tendrás que activar esta opción para ver los efectos del frame buffer. Se leerán todos los fotogramas representados en la tarjeta gráfica y se copiarán a la zona de la RDRAM.&lt;/p&gt;&lt;p&gt;* Desactivar: No copiar el bufer.&lt;/p&gt;&lt;p&gt;* Síncrono: Copia el búfer en el modo síncrono. Puede ser lento, pero funcionará con todos los juegos.&lt;/p&gt;&lt;p&gt;* Asíncrono: Copia el búfer en el modo asíncrono. Puede llegar a ser diez veces más rápido que el modo síncrono, pero es incompatible con algunos juegos.&lt;/p&gt;&lt;p&gt;[Recomendado: &lt;span style=&quot; font-style:italic;&quot;&gt;Casi siempre asíncrono (El modo síncrono sólo es necesario para algunos juegos)&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="1284"/>
         <source>Gamma correction</source>
-        <translation type="unfinished"></translation>
+        <translation>Corrección gamma</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="1290"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Gamma correction.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Some N64 games use gamma correction. Gamma correction makes image brighter. N64 applies gamma correction in its Video Interface. &lt;/p&gt;&lt;p&gt;GLideN64 emulates gamma correction as post-processing effect. That is, it works only when frame buffer emulation enabled. Gamma correction enabled automatically for games, which use it on real N64. You may force gamma correction for all games and increase default level of gamma correction.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;use defaults&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Corrección gamma.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Algunos juegos de N64 utilizan la corrección gamma, que hace que la imagen sea más brillante. La N64 aplica la corrección gamma a su interfaz de video. &lt;/p&gt;&lt;p&gt;GLideN64 emula la corrección gamma como un efecto de posprocesado. Es decir, sólo funciona si se utiliza la emulación del frame buffer. La corrección gamma se activa automáticamente en los juegos que la utilizan en una N64 real. Puedes forzar la corrección gamma en todos los juegos y aumentar el nivel predeterminado de la misma.&lt;/p&gt;&lt;p&gt;[Recomendado: &lt;span style=&quot; font-style:italic;&quot;&gt;Utilizar el valor predeterminado&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="1293"/>
         <source>Force gamma correction</source>
-        <translation type="unfinished"></translation>
+        <translation>Forzar corrección gamma</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="1311"/>
         <location filename="configDialog.ui" line="1327"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Gamma correction.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Some N64 games use gamma correction. Gamma correction makes image brighter. N64 applies gamma correction in its Video Interface. &lt;/p&gt;&lt;p&gt;GLideN64 emulates gamma correction as post-processing effect. That is, it works only when frame buffer emulation enabled. Gamma correction enabled automatically for games, which use it on real N64. You may force gamma correction for all games. Default level of gamma correction is 2, as on N64.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;use defaults&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Corrección gamma.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Algunos juegos de N64 utilizan la corrección gamma, que hace que la imagen sea más brillante. La N64 aplica la corrección gamma a su interfaz de video. &lt;/p&gt;&lt;p&gt;GLideN64 emula la corrección gamma como un efecto de posprocesado. Es decir, sólo funciona si se utiliza la emulación del frame buffer. La corrección gamma se activa automáticamente en los juegos que la utilizan en una N64 real. Puedes forzar la corrección gamma en todos los juegos. El nivel predeterminado de corrección es 2, como en una N64 real.&lt;/p&gt;&lt;p&gt;[Recomendado: &lt;span style=&quot; font-style:italic;&quot;&gt;Utilizar el valor predeterminado&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="1314"/>
         <source>Gamma correction level:</source>
-        <translation type="unfinished"></translation>
+        <translation>Nivel de corrección gamma:</translation>
     </message>
     <message>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Copy frame buffer to RDRAM:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;In some games plugin can&apos;t detect frame buffer usage. In such cases you need to enable this option to see frame buffer effects. Every drawn frame will be read from video card and copied into RDRAM area.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;mostly off (needed only for a few games)&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="vanished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Copiar frame buffer a RDRAM:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;En algunos juegos, el plugin no puede detectar el uso de frame buffers. En tal caso tendrás que activar esta opción para ver los efectos de frame buffer. Cada fotograma dibujado se leerá desde la tarjeta gráfica y se copiará a la zona de la RDRAM.&lt;/p&gt;&lt;p&gt;[Recomendado: &lt;span style=&quot; font-style:italic;&quot;&gt;Generalmente desactivado (solo lo necesitan algunos juegos)&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Copiar frame buffer a RDRAM:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;El plugin no podrá detectar el uso del frame buffer en algunos juegos. En tal caso, tendrás que activar esta opción para ver los efectos del frame buffer. Se leerán todos los fotogramas representados en la tarjeta gráfica y se copiarán a la zona de la RDRAM.&lt;/p&gt;&lt;p&gt;[Recomendado: &lt;span style=&quot; font-style:italic;&quot;&gt;Generalmente desactivado (solo lo necesitan algunos juegos)&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="687"/>
@@ -799,17 +927,17 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="configDialog.ui" line="697"/>
         <source>disable</source>
-        <translation type="unfinished"></translation>
+        <translation>Desactivar</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="710"/>
         <source>sync</source>
-        <translation type="unfinished"></translation>
+        <translation>Síncrono</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="723"/>
         <source>async</source>
-        <translation type="unfinished"></translation>
+        <translation>Asíncrono</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="745"/>
@@ -823,11 +951,11 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Detect CPU write to the N64 frame buffer:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;This option works as the previous options, but the plugin is trying to detect, when game uses CPU writes to N64 frame buffer. The N64 frame buffer is rendered only when CPU writes is detected. Use this option for those games, in which you see still image or no image at all for some time with no reason.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;mostly off&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="vanished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Detectar escrituras de CPU al frame buffer:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Esta opción funciona igual que las anteriores, pero el plugin intentará detectar cuándo escribe la CPU al frame buffer de N64. El frame buffer de N64 se renderizará únicamente cuando se detecten las escrituras de CPU. Utiliza esta opción para aquellos juegos en los que veas imágenes fijas o no veas imágenes sin motivo aparente.&lt;/p&gt;&lt;p&gt;[Recomendado: &lt;span style=&quot; font-style:italic;&quot;&gt;Casi siempre desactivado&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Detectar escrituras de CPU al frame buffer:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Esta opción funciona igual que las anteriores, pero el plugin intentará detectar cuándo escribe la CPU al frame buffer de N64. El frame buffer de N64 se renderizará únicamente cuando se detecten las escrituras de CPU. Utiliza esta opción para aquellos juegos en los que veas imágenes fijas o no veas imágenes sin motivo aparente.&lt;/p&gt;&lt;p&gt;[Recomendado: &lt;span style=&quot; font-style:italic;&quot;&gt;Casi siempre desactivado&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <source>Detect CPU writes to the frame buffer</source>
-        <translation type="vanished">Detectar escrituras de CPU al frame buffer</translation>
+        <translation>Detectar escrituras de CPU al frame buffer</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="735"/>
@@ -837,7 +965,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="configDialog.ui" line="738"/>
         <source>Copy depth buffer to RDRAM</source>
-        <translation>Copiar depth bufffer a RDRAM</translation>
+        <translation>Copiar depth buffer a RDRAM</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="755"/>
@@ -851,19 +979,19 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Frame buffer validity check:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;For hardware, frame buffer emulation it is essential to know that hardware frame buffer is still valid and can be used as texture. Frame buffer validity means that corresponded area in RDRAM is still used for that buffer. Plugin checks RDRAM context for changes before use of hardware buffer. There are two methods to check RDRAM context:&lt;/p&gt;&lt;p&gt;1. Write fingerprint to RDRAM. The plugin writes smal portion of data (fingerprint) to buffer area in RDRAM. It helps plugin to detect changes in RDRAM context. Small portion of modifications makes possibility of game crash very low.&lt;/p&gt;&lt;p&gt;2. Fill RDRAM. Plugin fills RDRAM area for allocated frame buffer with some test value. Frame buffer is valid until all pixels inside the area match that value. it is recommended method for Legend of Zelda.&lt;br/&gt;Warning: This method may cause emulator&apos;s crash if actual frame buffer bounds are less than the ones detected by the plugin.&lt;/p&gt;&lt;p&gt;[Recommended: Write fingerprint to RDRAM]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="vanished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Método de validación del frame buffer:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Es esencial en la emulación del frame buffer saber que el frame buffer de hardware sigue siendo válido y puede utilizarse como textura. La validez del frame buffer significa que la zona correspondiente dentro de la RDRAM puede seguir utilizándose para ese búfer. El plugin comprueba que el contexto de la RDRAM tenga cambios antes de utilizar el búfer de hardware. Hay dos formas de comprobar el contexto de la RDRAM:&lt;/p&gt;&lt;p&gt;1. Escribir huella en la RDRAM. El plugin escribe una pequeña cantidad de datos (una huella) en la zona del búfer de la RDRAM, ayudando al plugin a detectar los cambios en el contexto de la RDRAM. Estas ligeras modificaciones tienen una probabilidad muy baja de interrumpir el juego.&lt;/p&gt;&lt;p&gt;2. Rellenar la RDRAM. El plugin rellena la zona de la RDRAM dedicada al frame buffer con un valor de pruebas. El frame buffer es válido hasta que todos los píxeles dentro de la zona tengan el mismo valor. Es el método recomendado para Legend of Zelda.&lt;br/&gt;Advertencia: Este método podría provocar un cuelgue del emulador si los límites del frame buffer son inferiores a los que detecta el plugin.&lt;/p&gt;&lt;p&gt;[Recomendado: Escribir huella en la RDRAM]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Método de validación del frame buffer:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Es esencial en la emulación del frame buffer saber que el frame buffer de hardware sigue siendo válido y puede utilizarse como textura. La validez del frame buffer significa que la zona correspondiente dentro de la RDRAM puede seguir utilizándose para ese búfer. El plugin comprueba que el contexto de la RDRAM tenga cambios antes de utilizar el búfer de hardware. Hay dos formas de comprobar el contexto de la RDRAM:&lt;/p&gt;&lt;p&gt;1. Escribir huella en la RDRAM. El plugin escribe una pequeña cantidad de datos (una huella) en la zona del búfer de la RDRAM, ayudando al plugin a detectar los cambios en el contexto de la RDRAM. Estas ligeras modificaciones tienen una probabilidad muy baja de interrumpir el juego.&lt;/p&gt;&lt;p&gt;2. Rellenar la RDRAM. El plugin rellena la zona de la RDRAM dedicada al frame buffer con un valor de pruebas. El frame buffer es válido hasta que todos los píxeles dentro de la zona tengan el mismo valor. Es el método recomendado para Legend of Zelda.&lt;br/&gt;Advertencia: Este método podría provocar un cuelgue del emulador si los límites del frame buffer son inferiores a los que detecta el plugin.&lt;/p&gt;&lt;p&gt;[Recomendado: Escribir huella en la RDRAM]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <source>Frame buffer validity check method:</source>
-        <translation type="vanished">Método de validación del frame buffer:</translation>
+        <translation>Método de validación del frame buffer:</translation>
     </message>
     <message>
         <source>fill buffer in RDRAM  with test value</source>
-        <translation type="vanished">Rellenar búfer de RDRAM con valor de pruebas</translation>
+        <translation>Rellenar búfer de RDRAM con valor de pruebas</translation>
     </message>
     <message>
         <source>write fingerprint to RDRAM</source>
-        <translation type="vanished">Escribir huella en la RDRAM</translation>
+        <translation>Escribir huella en la RDRAM</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="772"/>
@@ -879,7 +1007,7 @@ p, li { white-space: pre-wrap; }
         <location filename="configDialog.ui" line="786"/>
         <location filename="configDialog.ui" line="796"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Filter:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Apply a filter to either smooth or sharpen textures.There are 4 different smoothing filters and 2 different sharpening filters. The higher the number, the stronger the effect, i.e. &lt;span style=&quot; font-weight:600;&quot;&gt;Smoothing filter 4&lt;/span&gt; will have a much more noticeable effect than &lt;span style=&quot; font-weight:600;&quot;&gt;Smoothing filter 1&lt;/span&gt;.Be aware that performance may have an impact depending on the game and/or the PC.&lt;/p&gt;&lt;p&gt;[Recommended: your preference]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Filtro de texturas:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Aplica un filtro para suavizar o enfocar texturas. Hay cuatro filtros de suavizado distintos y dos filtros de enfoque distintos. A mayor número, mayor efecto, por ejemplo: el &lt;span style=&quot; font-weight:600;&quot;&gt;filtro de suavizado 4&lt;/span&gt; tendrá un efecto más visible que el &lt;span style=&quot; font-weight:600;&quot;&gt;filtro de suavizado 1&lt;/span&gt;. Ten en cuenta que podría afectar al rendimiento según el juego y/o tu equipo.&lt;/p&gt;&lt;p&gt;[Recomendado: Como tú quieras]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Filtro de texturas:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Aplica un filtro para suavizar o enfocar texturas. Hay cuatro filtros de suavizado distintos y dos filtros de enfoque distintos. A mayor número, mayor efecto, por ejemplo: el &lt;span style=&quot; font-weight:600;&quot;&gt;filtro de suavizado 4&lt;/span&gt; tendrá un efecto más visible que el &lt;span style=&quot; font-weight:600;&quot;&gt;filtro de suavizado 1&lt;/span&gt;. Ten en cuenta que podría afectar al rendimiento según el juego y/o tu equipo.&lt;/p&gt;&lt;p&gt;[Recomendado: A tu elección]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="789"/>
@@ -890,7 +1018,7 @@ p, li { white-space: pre-wrap; }
         <location filename="configDialog.ui" line="803"/>
         <location filename="configDialog.ui" line="813"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Texture enhancement:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;12 different filters are selectable here, each one with a distinctive look.Be aware of possible performance impacts.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;IMPORTANT:&lt;/span&gt; &apos;Store&apos; mode - saves textures in cache &apos;as is&apos;. It can improve performance in games, which load many textures. Disable &apos;Ignore backgrounds&apos; option for better result.&lt;/p&gt;&lt;p&gt;[Recommended: your preference]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Mejora de texturas:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Aquí puedes seleccionar hasta doce filtros distintos, cada uno con un aspecto único. Podrían afectar al rendimiento.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;IMPORTANTE:&lt;/span&gt; El modo &apos;Almacenar&apos; (Store) guarda las texturas en la caché tal cual estén. Puede mejorar el rendimiento de los juegos que carguen muchas texturas. Desactiva la opción &apos;Ignorar fondos&apos; para mejorar los resultados.&lt;/p&gt;&lt;p&gt;[Recomendado: Como tú quieras]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Mejora de texturas:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Aquí puedes seleccionar hasta doce filtros distintos, cada uno con un aspecto único. Podrían afectar al rendimiento.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;IMPORTANTE:&lt;/span&gt; El modo &apos;Almacenar&apos; (Store) guarda las texturas en la caché tal cual estén. Puede mejorar el rendimiento de los juegos que carguen muchas texturas. Desactiva la opción &apos;Ignorar fondos&apos; para mejorar los resultados.&lt;/p&gt;&lt;p&gt;[Recomendado: A tu elección]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="806"/>
@@ -902,7 +1030,7 @@ p, li { white-space: pre-wrap; }
         <location filename="configDialog.ui" line="846"/>
         <location filename="configDialog.ui" line="859"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Texture cache size:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Enhanced and filtered textures can be cached to aid performance. This setting will adjust how much PC memory will be dedicated for texture cache. This helps boost performance if there are subsequent requests for the same texture (usually the case). Normally, 128MB should be more than enough but there is a sweet spot for each game. Super Mario may not need more than 32megs, but Conker streams a lot of textures, so setting 256+ megs can boost performance. Adjust accordingly if you are encountering speed issues. &apos;0&apos; disables cache.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;PC and game dependant&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Tamaño de la caché de texturas:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Las texturas mejoradas y filtradas pueden guardarse en una caché para ayudar a mejorar el rendimiento. Aquí puedes seleccionar cuánta memoria del equipo se dedicará a la caché de texturas. Si hay peticiones repetidas de la misma textura (que suele ocurrir), mejorará el rendimiento. Normalmente 128 MB deberían bastar, pero cada juego tiene su preferencia. Super Mario quizás no necesite más de 32 MB, pero Conker trabaja con muchas texturas, así que más de 256 MB podría mejorar el rendimiento en su caso. Cambia este parámetro si tienes problemas de velocidad. &apos;0&apos; desactiva la caché.&lt;/p&gt;&lt;p&gt;[Recomendado: &lt;span style=&quot; font-style:italic;&quot;&gt;En función del juego y del equipo&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Tamaño de la caché de texturas:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Las texturas mejoradas y filtradas pueden guardarse en una caché para ayudar a mejorar el rendimiento. Aquí puedes seleccionar cuánta memoria del equipo se dedicará a la caché de texturas. Si hay peticiones repetidas de la misma textura (que suele ocurrir), mejorará el rendimiento. Normalmente deberían bastar 128 MB, pero cada juego tiene su valor ideal. Puede que Super Mario no necesite más de 32 MB, pero Conker trabaja con muchas texturas, así que en este caso podrías mejorar el rendimiento seleccionando más de 256 MB. Cambia este parámetro si tienes problemas de velocidad. &apos;0&apos; desactiva la caché.&lt;/p&gt;&lt;p&gt;[Recomendado: &lt;span style=&quot; font-style:italic;&quot;&gt;En función del juego y del equipo&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="833"/>
@@ -971,7 +1099,7 @@ p, li { white-space: pre-wrap; }
         <location filename="configDialog.ui" line="966"/>
         <location filename="configDialog.ui" line="1008"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select font and font size for text messages, displayed during texture cache or texture pack save/load.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Selecciona la fuente y su tamaño para los mensajes de texto que se mostrarán durante la carga o guardado de cachés o paquetes de texturas.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Selecciona el tipo y tamaño de la fuente de mensajes de texto que se mostrarán durante la carga o guardado de cachés o paquetes de texturas.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="959"/>
@@ -1073,7 +1201,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="configDialog.ui" line="1154"/>
         <source>Light</source>
-        <translation>Ligero</translation>
+        <translation>Suave</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="1187"/>
