@@ -96,7 +96,7 @@ else(MUPENPLUSAPI)
 	windows/Config_windows.cpp
 	windows/CommonAPIImpl_windows.cpp
 	windows/GLideN64_windows.cpp
-	windows/GLFunctions.cpp
+	windows/GLFunctions_windows.cpp
 	windows/OpenGL_windows.cpp
 	windows/ZilmarAPIImpl_windows.cpp
   )
