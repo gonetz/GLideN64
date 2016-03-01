@@ -6,7 +6,7 @@
     <message>
         <location filename="AboutDialog.ui" line="35"/>
         <source>About GLideN64</source>
-        <translation>A propos de GLideN64</translation>
+        <translation>A Propos De GLideN64</translation>
     </message>
     <message>
         <location filename="AboutDialog.ui" line="66"/>
@@ -157,22 +157,30 @@ p, li { white-space: pre-wrap; }
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;ziggy&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt; - author of &lt;/span&gt;&lt;span style=&quot; font-size:10pt; text-decoration: underline;&quot;&gt;z64&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt; OpenGL LLE plugin&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;Nathaniel Meyer&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt; - author of the blur shader. Copyright: Nutty Software&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:10pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;Orkin&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt; - author of original &lt;/span&gt;&lt;span style=&quot; font-size:10pt; text-decoration: underline;&quot;&gt;glN64&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt; Plugin Graphiques&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;yongzh -&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt; author of &lt;/span&gt;&lt;span style=&quot; font-size:10pt; text-decoration: underline;&quot;&gt;gles2n64&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;, Port de glN64 vers GL ES 2.0&lt;br /&gt;&lt;/span&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;Hiroshi Morii&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt; - author of &lt;/span&gt;&lt;span style=&quot; font-size:10pt; text-decoration: underline;&quot;&gt;GlideH&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;Bibliothèque de Texture Q&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;ziggy&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt; - author of &lt;/span&gt;&lt;span style=&quot; font-size:10pt; text-decoration: underline;&quot;&gt;z64&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt; Plugin OpenGL LLE&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;Nathaniel Meyer&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt; - auteur du shader de flou. Copyright: Nutty Software&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:10pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="AboutDialog.ui" line="94"/>
         <source>developer</source>
-        <translation>développeur</translation>
+        <translation>Développeur</translation>
     </message>
     <message>
         <location filename="AboutDialog.ui" line="120"/>
         <source>beta tester</source>
-        <translation>bêta testeur</translation>
+        <translation>Bêta Testeur</translation>
     </message>
     <message>
         <location filename="AboutDialog.ui" line="136"/>
         <source>Main funders</source>
-        <translation>Principaux donateurs</translation>
+        <translation>Principaux Donateurs</translation>
     </message>
     <message>
         <location filename="AboutDialog.ui" line="294"/>
@@ -463,7 +471,7 @@ p, li { white-space: pre-wrap; }
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;Orkin&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt; - Auteur du plugin  graphique originel glN64&lt;br /&gt;&lt;/span&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;Hiroshi Morii&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt; - Auteur de la bibliothèque de texture GlideHQ&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;Orkin&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt; - Auteur du Plugin  Graphique Originel glN64&lt;br /&gt;&lt;/span&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;Hiroshi Morii&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt; - Auteur de la Bibliothèque de Texture GlideHQ&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;Nathaniel Meyer&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt; - Auteur de l&apos;effet de flou. Copyright: Nutty Software&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:10pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
@@ -484,23 +492,23 @@ p, li { white-space: pre-wrap; }
         <location filename="configDialog.ui" line="53"/>
         <location filename="configDialog.ui" line="63"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Full screen resolution:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;This sets the full screen resolution. All the resolutions that your video card/monitor supports should be displayed.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;native (max) resolution of your monitor - unless performance becomes an issue&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Résolution plein-écran :&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Paramètre la résolution en mode plein-écran. Toutes les résolutions supportées par votre carte graphique / moniteur devraient être affichées.&lt;/p&gt;&lt;p&gt;[Recommandé : &lt;span style=&quot; font-style:italic;&quot;&gt;Résolution native (maximum) de votre moniteur - sauf si les performances sont dégradées&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Résolution Plein Ecran :&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Permet de Paramètrer la résolution en Mode Plein Ecran. Toutes les résolutions supportées par votre carte graphique / moniteur devraient être affichées.&lt;/p&gt;&lt;p&gt;[Recommandé : &lt;span style=&quot; font-style:italic;&quot;&gt;Résolution native (maximum) de votre moniteur - sauf si les performances sont dégradées&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="56"/>
         <source>Full screen resolution:</source>
-        <translation>Résolution plein-écran :</translation>
+        <translation>Résolution Plein Ecran :</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="70"/>
         <location filename="configDialog.ui" line="103"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Resolution:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;This option selects resolution for windowed mode.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;640x480, 800x600, 1024x768&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Résolution en mode fenêtre :&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Cette option définie la résolution en mode fenétré.&lt;/p&gt;&lt;p&gt;[Recommandé : &lt;span style=&quot; font-style:italic;&quot;&gt;640x480, 800x600, 1024x768&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Résolution en mode Fenêtré :&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Cette option définie la résolution en mode fenêtré.&lt;/p&gt;&lt;p&gt;[Recommandé : &lt;span style=&quot; font-style:italic;&quot;&gt;640x480, 800x600, 1024x768&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="73"/>
         <source>Windowed resolution:</source>
-        <translation>Résolution en mode fenêtre :</translation>
+        <translation>Résolution en Mode Fenêtré :</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="83"/>
@@ -565,12 +573,12 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="configDialog.ui" line="235"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;*requires frame buffer emulation enabled &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;*requiert l&apos;activation du &quot;frame buffer emulation&quot; &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;*nécessite l&apos;activation du &quot;de l'émulation du tampon émulation&quot; &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="283"/>
         <source>Anisotropic filtering:</source>
-        <translation>Filtrage anisotrope :</translation>
+        <translation>Filtrage Anisotropique :</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="343"/>
@@ -582,7 +590,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="configDialog.ui" line="346"/>
         <source>Texture bilinear filtering:</source>
-        <translation>Filtrage bilinéaire des textures :</translation>
+        <translation>Filtrage bilinéaire des Textures :</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="356"/>
@@ -657,12 +665,12 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="configDialog.ui" line="583"/>
         <source>Emulate mip-mapping</source>
-        <translation>Émuler le mip-mapping</translation>
+        <translation>Émuler le Mip-Mapping</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="590"/>
         <source>Emulate noise</source>
-        <translation>Émuler l&apos;effet de bruit</translation>
+        <translation>Émuler l&apos;Effet de Bruit</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="597"/>
@@ -672,7 +680,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="configDialog.ui" line="600"/>
         <source>Emulate fog</source>
-        <translation>Émuler l&apos;effet de brouillard</translation>
+        <translation>Émuler l&apos;Effet de Brouillard</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="607"/>
@@ -682,7 +690,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="configDialog.ui" line="614"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Shaders storage:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Use persistent storage for compiled shader programs.&lt;br/&gt;&lt;/p&gt;&lt;p&gt;Each game uses set of combiners. Combiner is an equation, which defines how to build output color from various color inputs. The plugin translates combiners to &lt;a href=&quot;https://www.opengl.org/wiki/Shader&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;shaders&lt;/span&gt;&lt;/a&gt;. Shader compiler builds programs from them on fly. Shaders are large and complex. If new scene uses several new combiners, compilation of new shaders will take time and you will notice that as some stuttering. If you have shader storage enabled, all shaders will be compiled only once. Next time you run the game, plugin will not spend time on compilation of shaders, which you already met.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;on&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Stockage des Shaders :&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Utiliser un stockage persistant pour les programmes de shader compilés.&lt;br/&gt;&lt;/p&gt;&lt;p&gt;Chaque jeu utilises un ensemble de combinateur. Le combinateur est une équation, lequel définie comment créer une sortie couleur depuis des entrées de couleur diverse. Le plugin traduit les combinateurs vers &lt;a href=&quot;https://www.opengl.org/wiki/Shader&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;shaders&lt;/span&gt;&lt;/a&gt;. Le compilateur de Shader crée des programmes à la volée. Les Shaders sont grand et complexe. Si une nouvelle scène utilise plusieurs nouveaux combinateurs, la compilation de nouveaux shaders prendra du temps et vous remarquerez des petits problèmes. Si le stockage de Shader est activé, tous les shaders seront compilés en une fois. Next time you run the game, plugin will not spend time on compilation of shaders, which you already met.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;on&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="617"/>
