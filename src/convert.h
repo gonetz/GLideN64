@@ -300,8 +300,8 @@ inline u16 IA88_RGBA4444( u16 color )
 		or		al, ch
 	}
 #else // WIN32_ASM
-	u8 i = color >> 12;
-	u8 a = (color >> 4) & 0x000F;
+	u8 a = color >> 12;
+	u8 i = (color >> 4) & 0x000F;
 	return (i << 12) | (i << 8) | (i << 4) | a;
 #endif // WIN32_ASM
 }
