@@ -1620,9 +1620,13 @@ bool _copyPixelsFromRdram(u32 _address, const vector<u32> & _vecAddress, u32* _d
 	u32 summ = 0;
 	u32 idx, w, h;
 	for (size_t i = 0; i < numPixels; ++i) {
+		if (_vecAddress[i] < _address)
+			return false;
 		idx = (_vecAddress[i] - _address) / szPixel;
 		w = idx % _width;
 		h = idx / _width;
+		if (h > _height)
+			return false;
 		col = src[idx];
 		summ += col;
 		_dst[(w + (_height - h)*_width) ^ _xor] = converter(col, _bCFB);
