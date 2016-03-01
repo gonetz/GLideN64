@@ -6,7 +6,7 @@
     <message>
         <location filename="AboutDialog.ui" line="35"/>
         <source>About GLideN64</source>
-        <translation>A propos de GLideN64</translation>
+        <translation>A Propos De GLideN64</translation>
     </message>
     <message>
         <location filename="AboutDialog.ui" line="66"/>
@@ -157,22 +157,30 @@ p, li { white-space: pre-wrap; }
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;ziggy&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt; - author of &lt;/span&gt;&lt;span style=&quot; font-size:10pt; text-decoration: underline;&quot;&gt;z64&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt; OpenGL LLE plugin&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;Nathaniel Meyer&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt; - author of the blur shader. Copyright: Nutty Software&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:10pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;Orkin&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt; - author of original &lt;/span&gt;&lt;span style=&quot; font-size:10pt; text-decoration: underline;&quot;&gt;glN64&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt; Plugin Graphiques&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;yongzh -&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt; author of &lt;/span&gt;&lt;span style=&quot; font-size:10pt; text-decoration: underline;&quot;&gt;gles2n64&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;, Port de glN64 vers GL ES 2.0&lt;br /&gt;&lt;/span&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;Hiroshi Morii&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt; - author of &lt;/span&gt;&lt;span style=&quot; font-size:10pt; text-decoration: underline;&quot;&gt;GlideH&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;Bibliothèque de Texture Q&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;ziggy&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt; - author of &lt;/span&gt;&lt;span style=&quot; font-size:10pt; text-decoration: underline;&quot;&gt;z64&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt; Plugin OpenGL LLE&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;Nathaniel Meyer&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt; - auteur du shader de flou. Copyright: Nutty Software&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:10pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="AboutDialog.ui" line="94"/>
         <source>developer</source>
-        <translation>développeur</translation>
+        <translation>Développeur</translation>
     </message>
     <message>
         <location filename="AboutDialog.ui" line="120"/>
         <source>beta tester</source>
-        <translation>bêta testeur</translation>
+        <translation>Bêta Testeur</translation>
     </message>
     <message>
         <location filename="AboutDialog.ui" line="136"/>
         <source>Main funders</source>
-        <translation>Principaux donateurs</translation>
+        <translation>Principaux Donateurs</translation>
     </message>
     <message>
         <location filename="AboutDialog.ui" line="294"/>
@@ -463,7 +471,7 @@ p, li { white-space: pre-wrap; }
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;Orkin&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt; - Auteur du plugin  graphique originel glN64&lt;br /&gt;&lt;/span&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;Hiroshi Morii&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt; - Auteur de la bibliothèque de texture GlideHQ&lt;/span&gt;&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;Orkin&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt; - Auteur du Plugin  Graphique Originel glN64&lt;br /&gt;&lt;/span&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;Hiroshi Morii&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt; - Auteur de la Bibliothèque de Texture GlideHQ&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt; font-weight:600;&quot;&gt;Nathaniel Meyer&lt;/span&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt; - Auteur de l&apos;effet de flou. Copyright: Nutty Software&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:10pt;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
@@ -484,23 +492,23 @@ p, li { white-space: pre-wrap; }
         <location filename="configDialog.ui" line="53"/>
         <location filename="configDialog.ui" line="63"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Full screen resolution:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;This sets the full screen resolution. All the resolutions that your video card/monitor supports should be displayed.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;native (max) resolution of your monitor - unless performance becomes an issue&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Résolution plein-écran :&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Paramètre la résolution en mode plein-écran. Toutes les résolutions supportées par votre carte graphique / moniteur devraient être affichées.&lt;/p&gt;&lt;p&gt;[Recommandé : &lt;span style=&quot; font-style:italic;&quot;&gt;Résolution native (maximum) de votre moniteur - sauf si les performances sont dégradées&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Résolution Plein Ecran :&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Permet de Paramètrer la résolution en Mode Plein Ecran. Toutes les résolutions supportées par votre carte graphique / moniteur devraient être affichées.&lt;/p&gt;&lt;p&gt;[Recommandé : &lt;span style=&quot; font-style:italic;&quot;&gt;Résolution native (maximum) de votre moniteur - sauf si les performances sont dégradées&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="56"/>
         <source>Full screen resolution:</source>
-        <translation>Résolution plein-écran :</translation>
+        <translation>Résolution Plein Ecran :</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="70"/>
         <location filename="configDialog.ui" line="103"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Resolution:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;This option selects resolution for windowed mode.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;640x480, 800x600, 1024x768&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Résolution en mode fenêtre :&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Cette option définie la résolution en mode fenétré.&lt;/p&gt;&lt;p&gt;[Recommandé : &lt;span style=&quot; font-style:italic;&quot;&gt;640x480, 800x600, 1024x768&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Résolution en mode Fenêtré :&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Cette option définie la résolution en mode fenêtré.&lt;/p&gt;&lt;p&gt;[Recommandé : &lt;span style=&quot; font-style:italic;&quot;&gt;640x480, 800x600, 1024x768&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="73"/>
         <source>Windowed resolution:</source>
-        <translation>Résolution en mode fenêtre :</translation>
+        <translation>Résolution en Mode Fenêtré :</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="83"/>
@@ -565,12 +573,12 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="configDialog.ui" line="235"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;*requires frame buffer emulation enabled &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;*requiert l&apos;activation du &quot;frame buffer emulation&quot; &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;*nécessite l&apos;activation du &quot;de l'émulation du tampon émulation&quot; &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="283"/>
         <source>Anisotropic filtering:</source>
-        <translation>Filtrage anisotrope :</translation>
+        <translation>Filtrage Anisotropique :</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="343"/>
@@ -582,7 +590,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="configDialog.ui" line="346"/>
         <source>Texture bilinear filtering:</source>
-        <translation>Filtrage bilinéaire des textures :</translation>
+        <translation>Filtrage bilinéaire des Textures :</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="356"/>
@@ -657,12 +665,12 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="configDialog.ui" line="583"/>
         <source>Emulate mip-mapping</source>
-        <translation>Émuler le mip-mapping</translation>
+        <translation>Émuler le Mip-Mapping</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="590"/>
         <source>Emulate noise</source>
-        <translation>Émuler l&apos;effet de bruit</translation>
+        <translation>Émuler l&apos;Effet de Bruit</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="597"/>
@@ -672,7 +680,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="configDialog.ui" line="600"/>
         <source>Emulate fog</source>
-        <translation>Émuler l&apos;effet de brouillard</translation>
+        <translation>Émuler l&apos;Effet de Brouillard</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="607"/>
@@ -682,7 +690,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="configDialog.ui" line="614"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Shaders storage:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Use persistent storage for compiled shader programs.&lt;br/&gt;&lt;/p&gt;&lt;p&gt;Each game uses set of combiners. Combiner is an equation, which defines how to build output color from various color inputs. The plugin translates combiners to &lt;a href=&quot;https://www.opengl.org/wiki/Shader&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;shaders&lt;/span&gt;&lt;/a&gt;. Shader compiler builds programs from them on fly. Shaders are large and complex. If new scene uses several new combiners, compilation of new shaders will take time and you will notice that as some stuttering. If you have shader storage enabled, all shaders will be compiled only once. Next time you run the game, plugin will not spend time on compilation of shaders, which you already met.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;on&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Stockage des Shaders :&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Utiliser un stockage persistant pour les programmes de shader compilés.&lt;br/&gt;&lt;/p&gt;&lt;p&gt;Chaque jeu utilises un ensemble de combinateur. Le combinateur est une équation, lequel définie comment créer une sortie couleur depuis des entrées de couleur diverse. Le plugin traduit les combinateurs vers &lt;a href=&quot;https://www.opengl.org/wiki/Shader&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;shaders&lt;/span&gt;&lt;/a&gt;. Le compilateur de Shader crée des programmes à la volée. Les Shaders sont grand et complexe. Si une nouvelle scène utilise plusieurs nouveaux combinateurs, la compilation de nouveaux shaders prendra du temps et vous remarquerez des petits problèmes. Si le stockage de Shader est activé, tous les shaders seront compilés en une fois. Next time you run the game, plugin will not spend time on compilation of shaders, which you already met.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;on&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="617"/>
@@ -697,21 +705,21 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="configDialog.ui" line="627"/>
         <source>Use custom per-game settings</source>
-        <translation>Utiliser les paramètres spécifiques</translation>
+        <translation>Utiliser les Paramètres Personnalisés Spécifiques</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="637"/>
         <source>Emulate frame buffer</source>
-        <translation>Émuler le tampon image</translation>
+        <translation>Émuler le Tampon Image</translation>
     </message>
     <message>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Copy frame buffer to RDRAM:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;In some games plugin can&apos;t detect frame buffer usage. In such cases you need to enable this option to see frame buffer effects. Every drawn frame will be read from video card and copied into RDRAM area.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;mostly off (needed only for a few games)&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="vanished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Copier le frame buffer dans la RAM :&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Dans certains jeux, le plugin ne peut pas détecter l&apos;utilisation du frame buffer. Dans de tels cas, vous devez activer cette option pour afficher les effets de frame buffer. Chaque trame sera lue depuis la carte graphique et copiée dans la RAM.&lt;/p&gt;&lt;p&gt;[Recommandé : &lt;span style=&quot; font-style:italic;&quot;&gt;principalement désactivé (seulement nécessaire pour quelques jeux)&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <translation type="vanished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Copier le frame buffer dans la RAM :&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Dans certains jeux, le plugin ne peut pas détecter l&apos;utilisation du tampon image. Dans de tels cas, vous devez activer cette option pour afficher les effets du tampon image. Chaque trame sera lue depuis la carte graphique et copiée dans la RAM.&lt;/p&gt;&lt;p&gt;[Recommandé : &lt;span style=&quot; font-style:italic;&quot;&gt;principalement désactivé (seulement nécessaire pour quelques jeux)&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="687"/>
         <source>Copy frame buffer to RDRAM</source>
-        <translation>Copier le frame buffer dans la RAM</translation>
+        <translation>Copier le Tampon Image dans la RDRAM</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="745"/>
@@ -721,25 +729,25 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="configDialog.ui" line="748"/>
         <source>Render frame buffer as texture</source>
-        <translation>Restituer le tampon image comme une texture</translation>
+        <translation>Restituer le Tampon Image comme une Texture</translation>
     </message>
     <message>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Detect CPU write to the N64 frame buffer:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;This option works as the previous options, but the plugin is trying to detect, when game uses CPU writes to N64 frame buffer. The N64 frame buffer is rendered only when CPU writes is detected. Use this option for those games, in which you see still image or no image at all for some time with no reason.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;mostly off&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="vanished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Détecter les écritures CPU dans le frame buffer :&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Cette  option fonctionne comme les précédentes, mais le plugin tente de détecter quand le jeu utilise des écritures CPU dans le frame buffer N64. Celui-ci est restitué uniquement quand une écriture CPU est détectée. Utilisez cette option dans les jeux où aucune image n&apos;apparaît ou uniquement des images fixes.&lt;/p&gt;&lt;p&gt;[Recommandé: &lt;span style=&quot; font-style:italic;&quot;&gt;principalement désactivé&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <translation type="vanished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Détecter les écritures CPU dans le tampon image :&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Cette  option fonctionne comme les précédentes, mais le plugin tente de détecter quand le jeu utilise des écritures CPU dans le tampon image de la N64. Celui-ci est restitué uniquement quand une écriture CPU est détectée. Utilisez cette option dans les jeux où aucune image n&apos;apparaît ou uniquement des images fixes.&lt;/p&gt;&lt;p&gt;[Recommandé: &lt;span style=&quot; font-style:italic;&quot;&gt;principalement désactivé&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <source>Detect CPU writes to the frame buffer</source>
-        <translation type="vanished">Détecter les écritures CPU dans le tampon image</translation>
+        <translation type="vanished">Détecter les écritures CPU dans le Tampon Image</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="735"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Copy depth buffer to RDRAM:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;This option is required for correct emulation of depth buffer based effects, e.g. coronas. Content of video card&apos;s depth buffer is copied into RDRAM area each frame.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;on&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Copier le depth buffer dans la RAM :&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Cette option est requise pour émuler correctement les effets basés sur le depth buffer, par exemple : les couronnes de feu. Le contenu du depth buffer de la carte graphique est copié dans la RAM à chaque trame.&lt;/p&gt;&lt;p&gt;[Recommandé : &lt;span style=&quot; font-style:italic;&quot;&gt;activé&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Copier le depth buffer dans la RAM :&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Cette option est requise pour émuler correctement les effets basés sur le depth buffer, par exemple : les couronnes de feu. Le contenu du tampon de profondeur de la carte graphique est copié dans la RAM à chaque trame.&lt;/p&gt;&lt;p&gt;[Recommandé : &lt;span style=&quot; font-style:italic;&quot;&gt;activé&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="738"/>
         <source>Copy depth buffer to RDRAM</source>
-        <translation>Copier le tampon de profondeur dans la RAM</translation>
+        <translation>Copier le Tampon de Profondeur dans la RDRAM</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="755"/>
@@ -749,7 +757,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="configDialog.ui" line="758"/>
         <source>Emulate N64 depth compare</source>
-        <translation>Émuler la comparaison de profondeur N64</translation>
+        <translation>Émuler la Comparaison de Profondeur de la N64</translation>
     </message>
     <message>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Frame buffer validity check:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;For hardware, frame buffer emulation it is essential to know that hardware frame buffer is still valid and can be used as texture. Frame buffer validity means that corresponded area in RDRAM is still used for that buffer. Plugin checks RDRAM context for changes before use of hardware buffer. There are two methods to check RDRAM context:&lt;/p&gt;&lt;p&gt;1. Write fingerprint to RDRAM. The plugin writes smal portion of data (fingerprint) to buffer area in RDRAM. It helps plugin to detect changes in RDRAM context. Small portion of modifications makes possibility of game crash very low.&lt;/p&gt;&lt;p&gt;2. Fill RDRAM. Plugin fills RDRAM area for allocated frame buffer with some test value. Frame buffer is valid until all pixels inside the area match that value. it is recommended method for Legend of Zelda.&lt;br/&gt;Warning: This method may cause emulator&apos;s crash if actual frame buffer bounds are less than the ones detected by the plugin.&lt;/p&gt;&lt;p&gt;[Recommended: Write fingerprint to RDRAM]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
@@ -757,21 +765,21 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Frame buffer validity check method:</source>
-        <translation type="vanished">Méthode de validation du frame buffer :</translation>
+        <translation type="vanished">Méthode de validation du Tampon Image :</translation>
     </message>
     <message>
         <source>fill buffer in RDRAM  with test value</source>
-        <translation type="vanished">Remplir le buffer dans la RAM avec une valeur de test</translation>
+        <translation type="vanished">Remplir le Tampon dans la RDRAM avec une Valeur de Test</translation>
     </message>
     <message>
         <source>write fingerprint to RDRAM</source>
-        <translation type="vanished">Écrire une empreinte dans la RAM</translation>
+        <translation type="vanished">Écrire une Empreinte dans la RDRAM</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="648"/>
         <location filename="configDialog.ui" line="658"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Buffer swap mode:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;With this option you may control how often plugin will update main frame buffer. There are three modes:&lt;/p&gt;&lt;p&gt;* on Vertical Interrupt. Number of buffer updates will be equal to Vertical Interrupts per Second (VI/s). VI/s is 50 for PAL and 60 for NTSC games. This is most compatible option. Use it if your system can handle it.&lt;/p&gt;&lt;p&gt;* on Video Interface origin change. The origin change means that game switched to another color buffer and buffers swap needed. This mode corresponds to Frames Per Seconds (FPS). FPS is between 20 and 30 for most games, thus buffers swap less often than in the first mode. This mode works well if game uses double or triple buffering. If game uses single buffer (very rare case), it does not work.&lt;/p&gt;&lt;p&gt;* on color image change. Buffers will swap only if frame buffer is actually modified. This mode is optimal for performance because it eliminates empty swaps. However, there are rare cases, where it does not work.&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Mode d'Echange du Tampon :&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Avec cette option vous pouvez contrôler combien de fois le plugin mettra à jour le tampon image. Il y a 3 modes :&lt;/p&gt;&lt;p&gt;* Sur l'Interruption Vertical. Le nombre de mise à jour du tampon sera égal aux Interruptions Vertical par Seconde (VI/s). VI/s est à 50 pour le PAL et 60 pour les jeux NTSC. Ceci est l'option la plus compatible. A utiliser si votre système peut la gérer.&lt;/p&gt;&lt;p&gt;* Sur le changement de l'origine de l'Interface Vidéo. Le changement d'origine veut dire que le jeu bascule vers un autre tampon couleur et que l'échange de tampons est nécessaire. Ce mode correspondt au Images par Secondes (FPS). Le FPS est entre 20 et 30 pour la plupart des jeux, ainsi il y a moins souvent d'échange de tampons que dans le premier mode. Ce mode fonctionne bien  si le jeu utilise le Double ou Triple Buffering. Si le jeu utilises une tampon unique (dans des cas très rare), cela ne fonctionnera pas.&lt;/p&gt;&lt;p&gt;* Sur le changement de l'image couleur. Les tampons seront échangés uniquement si le tampon image est modifié. Ce mode est optimal pour les performances car ils éliminent les échanges vides. Cependant, il y a des cas très rare ou cela ne fonctionne pas.&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="651"/>
@@ -781,17 +789,17 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="configDialog.ui" line="662"/>
         <source>On Vertical Interrupt</source>
-        <translation type="unfinished">Interrompre</translation>
+        <translation type="unfinished">Sur L'Interruption Vertical</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="667"/>
         <source>On VI origin change</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Sur le Changement de l'Origine VI</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="672"/>
         <source>On color buffer change</source>
-        <translation type="unfinished">Changer le Tampon sur la couleur</translation>
+        <translation type="unfinished">Sur le Changement du Tampon Couleur</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="684"/>
@@ -799,7 +807,7 @@ p, li { white-space: pre-wrap; }
         <location filename="configDialog.ui" line="707"/>
         <location filename="configDialog.ui" line="720"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Copy color buffer to RDRAM:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;In some games plugin can&apos;t detect frame buffer usage. In such cases you need to enable this option to see frame buffer effects. Every drawn frame will be read from video card and copied into RDRAM area.&lt;/p&gt;&lt;p&gt;* disable - do not copy buffer&lt;/p&gt;&lt;p&gt;* sync - copy buffer in sync mode. Can be slow, but works for all games&lt;/p&gt;&lt;p&gt;* async - copy buffer in async mode. Can be up to 10 times faster than sync mode, but is incompatible with some games.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;mostly async (sync needed only for a few games)&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Copier le Tampon Couleur vers la RDRAM:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Dans certains jeux, le plugin ne peut pas détecter l'utilisation du tampon image. Dans de tel cas, vous avez besoin d'activer cette option pour voir les effets du tampon image. Tous les dessins de l'image seront lu depuis la carte vidéo et copié dans la zone de la RDRAM .&lt;/p&gt;&lt;p&gt;* Désactiver - Ne pas Copier le Tampon&lt;/p&gt;&lt;p&gt;* Sync - copier le tampon en mode Sync. Peut être lent, mais fonctionne pour tous les jeux&lt;/p&gt;&lt;p&gt;* Async - copiper le tampon en moade Async. Peut être jusqu'à 10 fois plus rapide que le mode Sync, mais reste incompatible avec certains jeux.&lt;/p&gt;&lt;p&gt;[Recommendé : &lt;span style=&quot; font-style:italic;&quot;&gt;pratiquement Async (la sync est utile pour quelques jeux)&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="697"/>
@@ -824,7 +832,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="configDialog.ui" line="778"/>
         <source>Texture enhancement</source>
-        <translation>Améliorations des textures</translation>
+        <translation>Améliorations des Textures</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="786"/>
@@ -858,7 +866,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="configDialog.ui" line="833"/>
         <source>Texture cache:</source>
-        <translation>Cache de textures :</translation>
+        <translation>Cache de Texture :</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="873"/>
@@ -868,12 +876,12 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="configDialog.ui" line="876"/>
         <source>Ignore backgrounds</source>
-        <translation>Ignorer les arrières-plans</translation>
+        <translation>Ignorer les Arrières Plans</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="888"/>
         <source>Use texture pack</source>
-        <translation>Utiliser un pack de textures</translation>
+        <translation>Utiliser un Pack de Textures</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="897"/>
@@ -883,7 +891,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="configDialog.ui" line="900"/>
         <source>Use alpha channel fully</source>
-        <translation>Utiliser entièrement le canal alpha</translation>
+        <translation>Utiliser complétement le Canal Alpha</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="907"/>
@@ -893,7 +901,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="configDialog.ui" line="910"/>
         <source>Alternative CRC calculation</source>
-        <translation>Calcul CRC alternatif</translation>
+        <translation>Calcul du CRC Alternatif</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="920"/>
@@ -903,7 +911,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="configDialog.ui" line="923"/>
         <source>Texture dumping/editing mode</source>
-        <translation>Mode de dumping et d&apos;édition des textures</translation>
+        <translation>Mode de copie et Edition des Textures</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="940"/>
@@ -915,7 +923,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="configDialog.ui" line="943"/>
         <source>Message color:</source>
-        <translation>Couleur du message :</translation>
+        <translation>Couleur du Message :</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="956"/>
@@ -927,12 +935,12 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="configDialog.ui" line="959"/>
         <source>Message font:</source>
-        <translation>Police du message :</translation>
+        <translation>Police du Message :</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="969"/>
         <source>Arial</source>
-        <translation></translation>
+        <translation>Arial</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="982"/>
@@ -942,12 +950,12 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="configDialog.ui" line="995"/>
         <source>Pick</source>
-        <translation>Définir</translation>
+        <translation>Choisir</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="1011"/>
         <source>Select</source>
-        <translation>Sélectionnez</translation>
+        <translation>Sélectionner</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="1024"/>
@@ -959,7 +967,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="configDialog.ui" line="1027"/>
         <source>Texture pack path:</source>
-        <translation>Chemin des packs de textures :</translation>
+        <translation>Chemin des Packs de Textures :</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="1056"/>
@@ -974,7 +982,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="configDialog.ui" line="1073"/>
         <source>Force 16bpp textures</source>
-        <translation>Forcer les textures 16 bits</translation>
+        <translation>Forcer les Textures 16 bits</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="1080"/>
@@ -984,7 +992,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="configDialog.ui" line="1083"/>
         <source>Compress texture cache</source>
-        <translation>Compresser le cache de textures</translation>
+        <translation>Compresser le Cache de Texture</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="1090"/>
@@ -994,22 +1002,22 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="configDialog.ui" line="1093"/>
         <source>Save texture cache to hard disk</source>
-        <translation>Sauvegarder le cache de textures sur le disque</translation>
+        <translation>Sauvegarder le Cache de Texture sur le Disque Dur</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="1107"/>
         <source>Post filters</source>
-        <translation>Post-filtres</translation>
+        <translation>Post Filtre</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="1113"/>
         <source>Bloom</source>
-        <translation>Flou lumineux</translation>
+        <translation>Flou Lumineux</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="1127"/>
         <source>Bloom blend mode:</source>
-        <translation>Effet de flou lumineux :</translation>
+        <translation>Effet de Flou Lumineux :</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="1134"/>
@@ -1024,22 +1032,22 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="configDialog.ui" line="1154"/>
         <source>Light</source>
-        <translation>Faible</translation>
+        <translation>Léger</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="1187"/>
         <source>Blur amount:</source>
-        <translation>Quantité de flou :</translation>
+        <translation>Quantité de Flou :</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="1213"/>
         <source>Threshold level:</source>
-        <translation>Niveau de seuil :</translation>
+        <translation>Niveau de Seuil :</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="1220"/>
         <source>Blur strength:</source>
-        <translation>Force du flou :</translation>
+        <translation>Force du Flou :</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="1246"/>
@@ -1056,7 +1064,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="configDialog.ui" line="1290"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Gamma correction.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Some N64 games use gamma correction. Gamma correction makes image brighter. N64 applies gamma correction in its Video Interface. &lt;/p&gt;&lt;p&gt;GLideN64 emulates gamma correction as post-processing effect. That is, it works only when frame buffer emulation enabled. Gamma correction enabled automatically for games, which use it on real N64. You may force gamma correction for all games and increase default level of gamma correction.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;use defaults&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Correction Gamma.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Certains jeux N64 utilises la correction gamma. La correction gamma  rend l'iumage plus lumineuse. La N64 appliques la correction gamma dans son Interface Vidéo. &lt;/p&gt;&lt;p&gt;GLideN64 émules la correction gamma comme un effet de post processus. Il fonctionne seulement avec l'émulation du tampon image activé. La correction gamma est activé automatiquement pour les jeux, laquelle est utilisé sur la console N64. Vous pouvez forcer la correction gamma pour tous les jeux et augmenter le niveau par défaut de la correction gamma.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;Utiliser par Défaut&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="1293"/>
@@ -1067,12 +1075,12 @@ p, li { white-space: pre-wrap; }
         <location filename="configDialog.ui" line="1311"/>
         <location filename="configDialog.ui" line="1327"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Gamma correction.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Some N64 games use gamma correction. Gamma correction makes image brighter. N64 applies gamma correction in its Video Interface. &lt;/p&gt;&lt;p&gt;GLideN64 emulates gamma correction as post-processing effect. That is, it works only when frame buffer emulation enabled. Gamma correction enabled automatically for games, which use it on real N64. You may force gamma correction for all games. Default level of gamma correction is 2, as on N64.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;use defaults&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Correction Gamma.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Certains jeux N64 utilises la correction gamma. La correction gamme rends l'image plus lumineuse. La N64 appliques la correction gamma dans son interface Vidéo. &lt;/p&gt;&lt;p&gt;GLideN64 émules la correction gamma comme un effet de post-processing. il fonctionne seulement quand l'émulation du tampon image est activé. La correction gamma est activé automatiquement pour les jeux, laquelle est utilisé sur la console N64. Vous pouvez forcer la correction gamma pour tous les jeux. Le niveau par défaut de la correction gamma est à 2, sur une N64.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;use defaults&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="1314"/>
         <source>Gamma correction level:</source>
-        <translation type="unfinished">Niveau de correction du Gamma</translation>
+        <translation type="unfinished">Niveau de Correction du Gamma</translation>
     </message>
 </context>
 </TS>
