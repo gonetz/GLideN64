@@ -55,9 +55,13 @@ void Config::resetToDefaults()
 	frameBufferEmulation.aspect = a43;
 	frameBufferEmulation.bufferSwapMode = bsOnVerticalInterrupt;
 	frameBufferEmulation.nativeResFactor = 0;
-	frameBufferEmulation.fbInfoDisabled = 0;
 	frameBufferEmulation.fbInfoReadColorChunk = 0;
 	frameBufferEmulation.fbInfoReadDepthChunk = 1;
+#ifndef MUPENPLUSAPI
+	frameBufferEmulation.fbInfoDisabled = 0;
+#else
+	frameBufferEmulation.fbInfoDisabled = 1;
+#endif
 
 	textureFilter.txCacheSize = 100 * gc_uMegabyte;
 	textureFilter.txDump = 0;
