@@ -293,6 +293,8 @@ void FrameBuffer::init(u32 _address, u32 _endAddress, u16 _format, u16 _size, u1
 	} else
 #endif // GL_MULTISAMPLING_SUPPORT
 		_setAndAttachTexture(_size, m_pTexture);
+
+	ogl.getRender().clearColorBuffer(nullptr);
 }
 
 void FrameBuffer::reinit(u16 _height)
