@@ -1222,7 +1222,10 @@ void OGLRender::clearColorBuffer(float *_pColor )
 {
 	glDisable(GL_SCISSOR_TEST);
 
-	glClearColor( _pColor[0], _pColor[1], _pColor[2], _pColor[3] );
+	if (_pColor != nullptr)
+		glClearColor( _pColor[0], _pColor[1], _pColor[2], _pColor[3] );
+	else
+		glClearColor( 0.0f, 0.0f, 0.0f, 0.0f );
 	glClear( GL_COLOR_BUFFER_BIT );
 
 	glEnable( GL_SCISSOR_TEST );
@@ -1503,8 +1506,7 @@ void displayLoadProgress(const wchar_t *format, ...)
 		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 
 	OGLRender & render = video().getRender();
-	float black[4] = {0, 0, 0, 0};
-	render.clearColorBuffer(black);
+	render.clearColorBuffer(nullptr);
 	render.drawText(buf, -0.9f, 0);
 	video().swapBuffers();
 
