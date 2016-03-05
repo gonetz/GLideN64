@@ -604,7 +604,7 @@ void _calcTileSizes(u32 _t, TileSizes & _sizes, gDPTile * _pLoadTile)
 		if (pTile->masks && ((maskWidth * maskHeight) <= maxTexels))
 			width = maskWidth; // Use mask width if set and valid
 		else {
-			width = min(info.width, info.texWidth);
+			width = info.width;
 			if (info.size > pTile->size)
 				width <<= info.size - pTile->size;
 		}
