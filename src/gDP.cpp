@@ -834,7 +834,7 @@ void gDPTextureRectangle( f32 ulx, f32 uly, f32 lrx, f32 lry, s32 tile, f32 s, f
 	gSP.textureTile[1] = &gDP.tiles[(tile + 1) & 7];
 
 	// HACK ALERT!
-	if ((int(s) == 512) && (gDP.colorImage.width < 512))
+	if ((int(s) == 512) && (gDP.colorImage.width + gSP.textureTile[0]->uls < 512))
 		s = 0.0f;
 
 	f32 lrs, lrt;
