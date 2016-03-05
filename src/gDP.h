@@ -180,6 +180,7 @@ struct gDPInfo
 	gDPCombine combine;
 
 	gDPTile tiles[8], *loadTile;
+	u32 loadTileIdx;
 
 	struct Color
 	{

@@ -310,7 +310,7 @@ void gDPSetTile( u32 format, u32 size, u32 line, u32 tmem, u32 tile, u32 palette
 	if (!gDP.tiles[tile].maskt) gDP.tiles[tile].clampt = 1;
 
 	if (tile == gSP.texture.tile || tile == gSP.texture.tile + 1) {
-		u32 nTile = 7;
+		u32 nTile = gDP.loadTileIdx;
 		while(gDP.tiles[nTile].tmem != tmem && nTile > gSP.texture.tile + 1)
 			--nTile;
 		if (nTile > gSP.texture.tile + 1) {
@@ -469,6 +469,7 @@ void gDPLoadTile32b(u32 uls, u32 ult, u32 lrs, u32 lrt)
 void gDPLoadTile(u32 tile, u32 uls, u32 ult, u32 lrs, u32 lrt)
 {
 	gDPSetTileSize( tile, uls, ult, lrs, lrt );
+	gDP.loadTileIdx = tile;
 	gDP.loadTile = &gDP.tiles[tile];
 	gDP.loadTile->loadType = LOADTYPE_TILE;
 	gDP.loadTile->imageAddress = gDP.textureImage.address;
@@ -577,6 +578,7 @@ void gDPLoadBlock32(u32 uls,u32 lrs, u32 dxt)
 void gDPLoadBlock(u32 tile, u32 uls, u32 ult, u32 lrs, u32 dxt)
 {
 	gDPSetTileSize( tile, uls, ult, lrs, dxt );
+	gDP.loadTileIdx = tile;
 	gDP.loadTile = &gDP.tiles[tile];
 	gDP.loadTile->loadType = LOADTYPE_BLOCK;
 
