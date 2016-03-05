@@ -666,7 +666,7 @@ void _calcTileSizes(u32 _t, TileSizes & _sizes, gDPTile * _pLoadTile)
 	else
 		_sizes.realHeight = _sizes.height;
 
-	if (gSP.texture.level > gSP.texture.tile) {
+	if (gSP.texture.level > 0) {
 		_sizes.realWidth = pow2(_sizes.realWidth);
 		_sizes.realHeight = pow2(_sizes.realHeight);
 	}
@@ -1032,8 +1032,8 @@ void TextureCache::_load(u32 _tile, CachedTexture *_pTexture)
 
 	GLint mipLevel = 0, maxLevel = 0;
 #ifndef GLES2
-	if (config.generalEmulation.enableLOD != 0 && gSP.texture.level > gSP.texture.tile + 1)
-		maxLevel = _tile == 0 ? 0 : gSP.texture.level - gSP.texture.tile - 1;
+	if (config.generalEmulation.enableLOD != 0 && gSP.texture.level > 1)
+		maxLevel = _tile == 0 ? 0 : gSP.texture.level - 1;
 #endif
 
 	_pTexture->max_level = maxLevel;
@@ -1384,7 +1384,7 @@ void TextureCache::update(u32 _t)
 		return;
 	}
 
-	if (gDP.otherMode.textureLOD == G_TL_LOD && gSP.texture.level == gSP.texture.tile && _t == 1) {
+	if (gDP.otherMode.textureLOD == G_TL_LOD && gSP.texture.level == 0 && _t == 1) {
 		current[1] = current[0];
 		activateTexture(_t, current[_t]);
 		return;
@@ -1509,7 +1509,7 @@ void getTextureShiftScale(u32 t, const TextureCache & cache, f32 & shiftScaleS, 
 		return;
 	}
 
-	if (gDP.otherMode.textureLOD == G_TL_LOD && gSP.texture.level == gSP.texture.tile)
+	if (gDP.otherMode.textureLOD == G_TL_LOD && gSP.texture.level == 0)
 		t = 0;
 
 	if (gSP.textureTile[t]->shifts > 10)
