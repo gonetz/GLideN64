@@ -662,7 +662,7 @@ void OGLRender::_updateStates(RENDER_STATE _renderState) const
 			}
 			pCurrentCombiner->updateFrameBufferInfo();
 		}
-		if (_renderState == rsTriangle || _renderState == rsLine)
+		if (pCurrentCombiner->usesTexture() && (_renderState == rsTriangle || _renderState == rsLine))
 			cmbInfo.updateTextureParameters();
 		gDP.changed &= ~(CHANGED_TILE | CHANGED_TMEM);
 		gSP.changed &= ~(CHANGED_TEXTURE);
