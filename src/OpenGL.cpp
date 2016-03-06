@@ -1353,7 +1353,7 @@ void OGLRender::_initExtensions()
 	LOG(LOG_VERBOSE, "ImageTexture support: %s\n", m_bImageTexture ? "yes" : "no");
 	if (m_bImageTexture == false)
 	{
-		LOG(LOG_WARNING, "Image Textures not supported. Without OpenGL >= 4.3 or GLES >= 3.1, depth buffer emulation will not work");
+		LOG(LOG_WARNING, "N64 depth compare and depth based fog will not work without Image Textures support provided in OpenGL >= 4.3 or GLES >= 3.1");
 	}
 
 	if (config.texture.maxAnisotropy != 0 && OGLVideo::isExtensionSupported("GL_EXT_texture_filter_anisotropic")) {
