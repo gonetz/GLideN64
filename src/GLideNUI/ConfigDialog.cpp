@@ -69,7 +69,7 @@ void ConfigDialog::_init()
 	// Video settings
 	QStringList windowedModesList;
 	int windowedModesCurrent = numWindowedModes - 1;
-	for (int i = 0; i < numWindowedModes; ++i) {
+	for (int i = 0; i < numWindowedModes - 1; ++i) {
 		windowedModesList.append(WindowedModes[i].description);
 		if (WindowedModes[i].width == config.video.windowedWidth && WindowedModes[i].height == config.video.windowedHeight)
 			windowedModesCurrent = i;
