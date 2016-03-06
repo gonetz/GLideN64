@@ -716,6 +716,15 @@ void FrameBufferList::attachDepthBuffer()
 	assert(checkFBO());
 }
 
+void FrameBufferList::clearDepthBuffer(DepthBuffer * _pDepthBuffer)
+{
+	for (FrameBuffers::iterator iter = m_list.begin(); iter != m_list.end(); ++iter) {
+		if (iter->m_pDepthBuffer == _pDepthBuffer) {
+			iter->m_pDepthBuffer = NULL;
+		}
+	}
+}
+
 void FrameBuffer_Init()
 {
 	frameBufferList().init();

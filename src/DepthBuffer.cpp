@@ -282,6 +282,7 @@ void DepthBufferList::removeBuffer(u32 _address )
 {
 	for (DepthBuffers::iterator iter = m_list.begin(); iter != m_list.end(); ++iter)
 		if (iter->m_address == _address) {
+			frameBufferList().clearDepthBuffer(&(*iter));
 			m_list.erase(iter);
 			return;
 		}

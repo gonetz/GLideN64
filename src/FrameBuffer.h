@@ -66,6 +66,7 @@ public:
 	void removeBuffer(u32 _address);
 	void removeBuffers(u32 _width);
 	void attachDepthBuffer();
+	void clearDepthBuffer(DepthBuffer * _pDepthBuffer);
 	FrameBuffer * findBuffer(u32 _startAddress);
 	FrameBuffer * findTmpBuffer(u32 _address);
 	FrameBuffer * getCurrent() const {return m_pCurrent;}
