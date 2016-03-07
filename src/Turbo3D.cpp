@@ -112,6 +112,7 @@ void Turbo3D_LoadObject(u32 pstate, u32 pvtx, u32 ptri)
 		gSPForceMatrix(pstate + sizeof(T3DState));
 
 	gSPClearGeometryMode(G_LIGHTING);
+	gSPClearGeometryMode(G_FOG);
 	gSPSetGeometryMode(G_SHADING_SMOOTH);
 	if (pvtx != 0) //load vtx
 		gSPVertex(pvtx, ostate->vtxCount, ostate->vtxV0);
