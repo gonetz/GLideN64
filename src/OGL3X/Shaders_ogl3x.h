@@ -146,11 +146,6 @@ static const char* fragment_shader_header_common_variables =
 MAIN_SHADER_VERSION
 "uniform sampler2D uTex0;		\n"
 "uniform sampler2D uTex1;		\n"
-#ifdef GL_MULTISAMPLING_SUPPORT
-"uniform lowp sampler2DMS uMSTex0;	\n"
-"uniform lowp sampler2DMS uMSTex1;	\n"
-"uniform lowp ivec2 uMSTexEnabled;	\n"
-#endif
 "layout (std140) uniform ColorsBlock {\n"
 "  lowp vec4 uFogColor;			\n"
 "  lowp vec4 uCenterColor;		\n"
@@ -185,6 +180,19 @@ MAIN_SHADER_VERSION
 "out lowp vec4 fragColor;		\n"
 ;
 
+#ifdef GL_MULTISAMPLING_SUPPORT
+static const char* fragment_shader_header_common_variables_ms_enabled =
+	"uniform lowp ivec2 uMSTexEnabled;      \n";
+
+static const char* fragment_shader_header_common_variables_ms_tex0 =
+	"uniform lowp sampler2DMS uMSTex0;      \n";
+
+static const char* fragment_shader_header_common_variables_ms_tex1 =
+	"uniform lowp sampler2DMS uMSTex1;      \n";
+#endif
+
+
+
 static const char* fragment_shader_header_common_variables_notex =
 MAIN_SHADER_VERSION
 "layout (std140) uniform ColorsBlock {\n"
@@ -216,31 +224,29 @@ MAIN_SHADER_VERSION
 "out lowp vec4 fragColor;		\n"
 ;
 
-static const char* fragment_shader_header_common_functions =
-"															\n"
-"lowp float snoise();						\n"
-"void calc_light(in lowp float fLights, in lowp vec3 input_color, out lowp vec3 output_color);\n"
-"mediump float mipmap(out lowp vec4 readtex0, out lowp vec4 readtex1);		\n"
-"lowp vec4 readTex(in sampler2D tex, in mediump vec2 texCoord, in lowp int fbMonochrome, in bool fbFixedAlpha);	\n"
+static const char* fragment_shader_header_noise =
+	"lowp float snoise();\n";
+static const char* fragment_shader_header_calc_light =
+	"void calc_light(in lowp float fLights, in lowp vec3 input_color, out lowp vec3 output_color);\n";
+static const char* fragment_shader_header_mipmap =
+	"mediump float mipmap(out lowp vec4 readtex0, out lowp vec4 readtex1);\n";
+static const char* fragment_shader_header_readTex =
+	"lowp vec4 readTex(in sampler2D tex, in mediump vec2 texCoord, in lowp int fbMonochrome, in bool fbFixedAlpha);\n";
 #ifdef GL_MULTISAMPLING_SUPPORT
-"lowp vec4 readTexMS(in lowp sampler2DMS mstex, in mediump vec2 texCoord, in lowp int fbMonochrome, in bool fbFixedAlpha);	\n"
+static const char* fragment_shader_header_readTexMS =
+	"lowp vec4 readTexMS(in lowp sampler2DMS mstex, in mediump vec2 texCoord, in lowp int fbMonochrome, in bool fbFixedAlpha);\n";
 #endif // GL_MULTISAMPLING_SUPPORT
-"bool depth_compare();										\n"
-"void colorNoiseDither(in lowp float _noise, inout lowp vec3 _color);	\n"
-"void alphaNoiseDither(in lowp float _noise, inout lowp float _alpha);\n"
+#ifdef GL_IMAGE_TEXTURES_SUPPORT
+static const char* fragment_shader_header_depth_compare =
+	"bool depth_compare();\n";
+#endif  // GL_IMAGE_TEXTURES_SUPPORT
+static const char* fragment_shader_header_noise_dither =
+	"void colorNoiseDither(in lowp float _noise, inout lowp vec3 _color);\n"
+	"void alphaNoiseDither(in lowp float _noise, inout lowp float _alpha);\n";
 #ifdef USE_TOONIFY
-"void toonify(in mediump float intensity);	\n"
+static const char* fragment_shader_header_alpha_noise_toonify =
+	"void toonify(in mediump float intensity);\n"
 #endif
-;
-
-static const char* fragment_shader_header_common_functions_notex =
-"															\n"
-"lowp float snoise();						\n"
-"void calc_light(in lowp float fLights, in lowp vec3 input_color, out lowp vec3 output_color);\n"
-"bool depth_compare();										\n"
-"void colorNoiseDither(in lowp float _noise, inout lowp vec3 _color);	\n"
-"void alphaNoiseDither(in lowp float _noise, inout lowp float _alpha);\n"
-;
 
 static const char* fragment_shader_calc_light =
 AUXILIARY_SHADER_VERSION
