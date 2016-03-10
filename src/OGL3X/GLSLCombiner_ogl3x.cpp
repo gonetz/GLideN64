@@ -285,16 +285,82 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 	char strCombiner[1024];
 	m_nInputs = compileCombiner(_color, _alpha, strCombiner);
 
-	if (usesTexture()) {
-		strFragmentShader.assign(fragment_shader_header_common_variables);
-		strFragmentShader.append(fragment_shader_header_common_functions);
-	}
-	else {
-		strFragmentShader.assign(fragment_shader_header_common_variables_notex);
-		strFragmentShader.append(fragment_shader_header_common_functions_notex);
-	}
-	strFragmentShader.append(fragment_shader_header_main);
 	const bool bUseLod = usesLOD();
+	const bool bUseHWLight = config.generalEmulation.enableHWLighting != 0 && GBI.isHWLSupported() && usesShadeColor();
+
+	if (usesTexture ())
+	{
+		strFragmentShader.assign (fragment_shader_header_common_variables);
+
+#ifdef GL_MULTISAMPLING_SUPPORT
+		if (config.video.multisampling > 0)
+		{
+			if(usesTile(0) || usesTile(1))
+			{
+				strFragmentShader.append (fragment_shader_header_common_variables_ms_enabled);
+			}
+			if(usesTile(0))
+			{
+				strFragmentShader.append (fragment_shader_header_common_variables_ms_tex0);
+			}
+			if(usesTile(1))
+			{
+				strFragmentShader.append (fragment_shader_header_common_variables_ms_tex1);
+			}
+		}
+#endif
+
+		strFragmentShader.append (fragment_shader_header_noise);
+		strFragmentShader.append (fragment_shader_header_noise_dither);
+
+		if (bUseLod)
+		{
+			strFragmentShader.append (fragment_shader_header_mipmap);
+		}
+		else
+		{
+			strFragmentShader.append (fragment_shader_header_readTex);
+#ifdef GL_MULTISAMPLING_SUPPORT
+			if (config.video.multisampling > 0)
+			{
+				strFragmentShader.append(fragment_shader_header_readTexMS);
+			}
+
+#endif
+		}
+#ifdef GL_IMAGE_TEXTURES_SUPPORT
+		if (video().getRender().isImageTexturesSupported() && config.frameBufferEmulation.N64DepthCompare != 0)
+		{
+			strFragmentShader.append(fragment_shader_header_depth_compare);
+		}
+
+#endif
+
+		if (bUseHWLight)
+		{
+			strFragmentShader.append (fragment_shader_header_calc_light);
+		}
+	}
+	else
+	{
+		strFragmentShader.assign (fragment_shader_header_common_variables_notex);
+		strFragmentShader.append (fragment_shader_header_noise);
+		strFragmentShader.append (fragment_shader_header_noise_dither);
+
+#ifdef GL_IMAGE_TEXTURES_SUPPORT
+		if (video().getRender().isImageTexturesSupported() && config.frameBufferEmulation.N64DepthCompare != 0)
+		{
+			strFragmentShader.append(fragment_shader_header_depth_compare);
+		}
+#endif
+
+		if (bUseHWLight)
+		{
+			strFragmentShader.append (fragment_shader_header_calc_light);
+		}
+	}
+
+	strFragmentShader.append(fragment_shader_header_main);
 	if (bUseLod) {
 		strFragmentShader.append("  lowp vec4 readtex0, readtex1; \n");
 		strFragmentShader.append("  lowp float lod_frac = mipmap(readtex0, readtex1);	\n");
@@ -323,7 +389,6 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 			strFragmentShader.append("  lowp vec4 readtex1 = readTex(uTex1, vTexCoord1, uFbMonochrome[1], uFbFixedAlpha[1] != 0); \n");
 #endif // GL_MULTISAMPLING_SUPPORT
 	}
-	const bool bUseHWLight = config.generalEmulation.enableHWLighting != 0 && GBI.isHWLSupported() && usesShadeColor();
 	if (bUseHWLight)
 		strFragmentShader.append("  calc_light(vNumLights, vShadeColor.rgb, input_color); \n");
 	else
@@ -390,8 +455,27 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 	const GLchar * strShaderData = strFragmentShader.data();
 	glShaderSource(fragmentShader, 1, &strShaderData, NULL);
 	glCompileShader(fragmentShader);
-	if (!checkShaderCompileStatus(fragmentShader))
-		LOG(LOG_ERROR, "Error in fragment shader:\n%s\n", strFragmentShader.data());
+	if (!checkShaderCompileStatus(fragmentShader));
+	{
+		LOG(LOG_ERROR, "Error in fragment shader");
+
+		int pos = 0;
+		int max = 800;
+
+		while(pos < strFragmentShader.length() )
+		{
+			if(strFragmentShader.length() - pos < max)
+			{
+				LOG(LOG_ERROR, "%s", strFragmentShader.substr(pos).data());
+			}
+			else
+			{
+				LOG(LOG_ERROR, "%s", strFragmentShader.substr(pos, max).data());
+			}
+
+			pos += max;
+		}
+	}
 
 	m_program = glCreateProgram();
 	_locate_attributes();
