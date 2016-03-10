@@ -7,6 +7,7 @@
 GLuint createShaderProgram(const char * _strVertex, const char * _strFragment);
 bool checkShaderCompileStatus(GLuint obj);
 bool checkProgramLinkStatus(GLuint obj);
+void logErrorShader(GLenum _shaderType, const std::string & _strShader);
 int compileCombiner(Combiner & _color, Combiner & _alpha, char * _strShader);
 
 #endif // SHADER_UTILS_H

@@ -33,6 +33,24 @@ bool checkProgramLinkStatus(GLuint obj)
 	return true;
 }
 
+void logErrorShader(GLenum _shaderType, const std::string & _strShader)
+{
+	LOG(LOG_ERROR, "Error in %s shader", _shaderType == GL_VERTEX_SHADER ? "vertex" : "fragment");
+
+	const int max = 800;
+	int pos = 0;
+
+	while(pos < _strShader.length() ) {
+
+		if (_strShader.length() - pos < max) {
+			LOG(LOG_ERROR, "%s", _strShader.substr(pos).data());
+		} else {
+			LOG(LOG_ERROR, "%s", _strShader.substr(pos, max).data());
+		}
+		pos += max;
+	}
+}
+
 GLuint createShaderProgram(const char * _strVertex, const char * _strFragment)
 {
 	GLuint vertex_shader_object = glCreateShader(GL_VERTEX_SHADER);
