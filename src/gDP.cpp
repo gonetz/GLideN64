@@ -740,7 +740,10 @@ void gDPFillRDRAM(u32 address, s32 ulx, s32 uly, s32 lrx, s32 lry, u32 width, u3
 void gDPFillRectangle( s32 ulx, s32 uly, s32 lrx, s32 lry )
 {
 	OGLRender & render = video().getRender();
-	if (gDP.otherMode.cycleType == G_CYC_FILL || lry == uly)
+	if (gDP.otherMode.cycleType == G_CYC_FILL) {
+		++lrx;
+		++lry;
+	} else if (lry == uly)
 		++lry;
 
 	if (gDP.depthImageAddress == gDP.colorImage.address) {
@@ -823,6 +826,7 @@ void gDPTextureRectangle( f32 ulx, f32 uly, f32 lrx, f32 lry, s32 tile, f32 s, f
 {
 	if (gDP.otherMode.cycleType == G_CYC_COPY) {
 		dsdx = 1.0f;
+		lrx += 1.0f;
 		lry += 1.0f;
 	}
 	lry = max(lry, uly + 1.0f);
