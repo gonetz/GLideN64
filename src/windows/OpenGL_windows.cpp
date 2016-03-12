@@ -131,7 +131,7 @@ void OGLVideoWindows::_saveScreenshot()
 	else {
 		glBindFramebuffer(GL_READ_FRAMEBUFFER, pBuffer->m_FBO);
 		pixelData = (unsigned char*)malloc(pBuffer->m_pTexture->realWidth * pBuffer->m_pTexture->realHeight * 3);
-		glReadPixels(0, m_heightOffset, pBuffer->m_pTexture->realWidth, pBuffer->m_pTexture->realHeight, GL_RGB, GL_UNSIGNED_BYTE, pixelData);
+		glReadPixels(0, 0, pBuffer->m_pTexture->realWidth, pBuffer->m_pTexture->realHeight, GL_RGB, GL_UNSIGNED_BYTE, pixelData);
 		SaveScreenshot(m_strScreenDirectory, RSP.romname, pBuffer->m_pTexture->realWidth, pBuffer->m_pTexture->realHeight, pixelData);
 	}
 	free( pixelData );
