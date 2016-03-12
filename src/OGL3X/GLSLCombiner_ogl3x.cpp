@@ -680,7 +680,10 @@ void ShaderCombiner::updateLOD(bool _bForce)
 	if (config.generalEmulation.enableLOD != 0) {
 		const int uCalcLOD = (gDP.otherMode.textureLOD == G_TL_LOD) ? 1 : 0;
 		m_uniforms.uEnableLod.set(uCalcLOD, _bForce);
-		m_uniforms.uScreenScale.set(video().getScaleX(), video().getScaleY(), _bForce);
+		if (config.frameBufferEmulation.nativeResFactor == 0)
+			m_uniforms.uScreenScale.set(video().getScaleX(), video().getScaleY(), _bForce);
+		else
+			m_uniforms.uScreenScale.set(float(config.frameBufferEmulation.nativeResFactor), float(config.frameBufferEmulation.nativeResFactor), _bForce);
 		m_uniforms.uTextureDetail.set(gDP.otherMode.textureDetail, _bForce);
 	}
 }
