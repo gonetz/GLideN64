@@ -96,7 +96,8 @@ private:
 			uEnableDepth, uEnableDepthCompare, uEnableDepthUpdate,
 			uDepthMode, uDepthSource, uRenderState, uSpecialBlendMode,
 			uMaxTile, uTextureDetail, uTexturePersp, uTextureFilterMode, uMSAASamples,
-			uAlphaCompareMode, uAlphaDitherMode, uColorDitherMode;
+			uAlphaCompareMode, uAlphaDitherMode, uColorDitherMode,
+			uCvgXAlpha, uAlphaCvgSel;
 
 		fUniform uFogAlpha, uMinLod, uDeltaZ, uAlphaTestValue, uMSAAScale;
 

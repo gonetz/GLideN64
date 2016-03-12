@@ -145,7 +145,7 @@ void DestroyShaderCombiner() {
 
 ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCombine & _combine) : m_combine(_combine)
 {
-	char strCombiner[1024];
+	char strCombiner[2048];
 	m_nInputs = compileCombiner(_color, _alpha, strCombiner);
 
 	if (usesTexture()) {
@@ -178,6 +178,10 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 		strFragmentShader.append("  input_color = vShadeColor.rgb;\n");
 	strFragmentShader.append("  vec_color = vec4(input_color, vShadeColor.a); \n");
 	strFragmentShader.append(strCombiner);
+
+	strFragmentShader.append(
+		"  if (uCvgXAlpha != 0 && alpha2 == 0.0) discard; \n"
+		);
 
 	if (!g_weakGLSL) {
 		strFragmentShader.append(
@@ -253,6 +257,8 @@ void ShaderCombiner::_locateUniforms() {
 	LocateUniform(uFogMode);
 	LocateUniform(uFogUsage);
 	LocateUniform(uAlphaCompareMode);
+	LocateUniform(uCvgXAlpha);
+	LocateUniform(uAlphaCvgSel);
 	LocateUniform(uEnableAlphaTest);
 	LocateUniform(uEnableDepth);
 	LocateUniform(uEnableDepthCompare)
@@ -482,28 +488,23 @@ void ShaderCombiner::updateDepthInfo(bool _bForce) {
 void ShaderCombiner::updateAlphaTestInfo(bool _bForce) {
 	if (gDP.otherMode.cycleType == G_CYC_FILL) {
 		m_uniforms.uEnableAlphaTest.set(0, _bForce);
-		m_uniforms.uAlphaTestValue.set(0.0f, _bForce);
 	} else if (gDP.otherMode.cycleType == G_CYC_COPY) {
 		if (gDP.otherMode.alphaCompare & G_AC_THRESHOLD) {
 			m_uniforms.uEnableAlphaTest.set(1, _bForce);
+			m_uniforms.uAlphaCvgSel.set(0, _bForce);
 			m_uniforms.uAlphaTestValue.set(0.5f, _bForce);
 		} else {
 			m_uniforms.uEnableAlphaTest.set(0, _bForce);
-			m_uniforms.uAlphaTestValue.set(0.0f, _bForce);
 		}
-	} else if (((gDP.otherMode.alphaCompare & G_AC_THRESHOLD) != 0) && (gDP.otherMode.alphaCvgSel == 0) && (gDP.otherMode.forceBlender == 0 || gDP.blendColor.a > 0))	{
+	} else if ((gDP.otherMode.alphaCompare & G_AC_THRESHOLD) != 0) {
 		m_uniforms.uEnableAlphaTest.set(1, _bForce);
-		m_uniforms.uAlphaTestValue.set(max(gDP.blendColor.a, 1.0f / 256.0f), _bForce);
-	} else if ((gDP.otherMode.alphaCompare == G_AC_DITHER) && (gDP.otherMode.alphaCvgSel == 0))	{
-		m_uniforms.uEnableAlphaTest.set(1, _bForce);
-		m_uniforms.uAlphaTestValue.set(0.0f, _bForce);
-	} else if (gDP.otherMode.cvgXAlpha != 0)	{
-		m_uniforms.uEnableAlphaTest.set(1, _bForce);
-		m_uniforms.uAlphaTestValue.set(0.125f, _bForce);
+		m_uniforms.uAlphaTestValue.set(gDP.blendColor.a, _bForce);
+		m_uniforms.uAlphaCvgSel.set(gDP.otherMode.alphaCvgSel, _bForce);
 	} else {
 		m_uniforms.uEnableAlphaTest.set(0, _bForce);
-		m_uniforms.uAlphaTestValue.set(0.0f, _bForce);
 	}
+
+	m_uniforms.uCvgXAlpha.set(gDP.otherMode.cvgXAlpha, _bForce);
 }
 
 void SetMonochromeCombiner() {
