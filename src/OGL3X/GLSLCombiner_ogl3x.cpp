@@ -282,7 +282,7 @@ ShaderCombiner::ShaderCombiner() : m_bNeedUpdate(true)
 
 ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCombine & _combine) : m_combine(_combine), m_bNeedUpdate(true)
 {
-	char strCombiner[2048];
+	std::string strCombiner;
 	m_nInputs = compileCombiner(_color, _alpha, strCombiner);
 
 	const bool bUseLod = usesLOD();

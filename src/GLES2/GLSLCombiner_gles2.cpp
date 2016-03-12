@@ -145,7 +145,7 @@ void DestroyShaderCombiner() {
 
 ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCombine & _combine) : m_combine(_combine)
 {
-	char strCombiner[2048];
+	std::string strCombiner;
 	m_nInputs = compileCombiner(_color, _alpha, strCombiner);
 
 	if (usesTexture()) {
