@@ -180,7 +180,7 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 	strFragmentShader.append(strCombiner);
 
 	strFragmentShader.append(
-		"  if (uCvgXAlpha != 0 && alpha2 == 0.0) discard; \n"
+		"  if (uCvgXAlpha != 0 && alpha2 < 0.125) discard; \n"
 		);
 
 	if (!g_weakGLSL) {
