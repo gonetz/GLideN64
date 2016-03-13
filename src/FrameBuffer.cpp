@@ -1433,7 +1433,7 @@ bool DepthBufferToRDRAM::_prepareCopy(u32 _address)
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_FBO);
 	glScissor(0, 0, pBuffer->m_pTexture->realWidth, pBuffer->m_pTexture->realHeight);
 	glBlitFramebuffer(
-		0, 0, video().getWidth(), video().getHeight(),
+		0, 0, pBuffer->m_pTexture->realWidth, pBuffer->m_pTexture->realHeight,
 		0, 0, pBuffer->m_width, pBuffer->m_height,
 		GL_DEPTH_BUFFER_BIT, GL_NEAREST
 	);
