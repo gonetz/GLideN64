@@ -17,6 +17,7 @@ typedef struct
 extern RSPInfo RSP;
 
 extern u32 DepthClearColor;
+extern u32 rectDepthBufferCopyFrame;
 
 #define RSP_SegmentToPhysical( segaddr ) ((gSP.segment[(segaddr >> 24) & 0x0F] + (segaddr & RDRAMSize)) & RDRAMSize)
 

@@ -210,8 +210,15 @@ void RSP_ProcessDList()
 		}
 	}
 
-	if (config.frameBufferEmulation.copyDepthToRDRAM != Config::ctDisable && !FBInfo::fbInfo.isSupported())
-		FrameBuffer_CopyDepthBuffer(gDP.colorImage.address);
+	if (config.frameBufferEmulation.copyDepthToRDRAM != Config::ctDisable) {
+		if ((config.generalEmulation.hacks & hack_rectDepthBufferCopyCBFD) != 0) {
+			; // do nothing
+		} else if ((config.generalEmulation.hacks & hack_rectDepthBufferCopyPD) != 0) {
+			if (rectDepthBufferCopyFrame == video().getBuffersSwapCount())
+				FrameBuffer_CopyDepthBuffer(gDP.colorImage.address);
+		} else if (!FBInfo::fbInfo.isSupported())
+			FrameBuffer_CopyDepthBuffer(gDP.colorImage.address);
+	}
 
 	RSP.busy = FALSE;
 	gDP.changed |= CHANGED_COLORBUFFER;
@@ -309,12 +316,11 @@ void RSP_Init()
 	if (strstr(RSP.romname, (const char *)"OgreBattle64") != NULL)
 		config.generalEmulation.hacks |= hack_Ogre64;
 	else if (strstr(RSP.romname, (const char *)"MarioGolf64") != NULL ||
-		strstr(RSP.romname, (const char *)"F1 POLE POSITION 64") != NULL
-		)
+			 strstr(RSP.romname, (const char *)"F1 POLE POSITION 64") != NULL)
 		config.generalEmulation.hacks |= hack_noDepthFrameBuffers;
-	else if (strstr(RSP.romname, (const char *)"CONKER BFD") != NULL ||
-		strstr(RSP.romname, (const char *)"MICKEY USA") != NULL
-		)
+	else if (strstr(RSP.romname, (const char *)"CONKER BFD") != NULL)
+		config.generalEmulation.hacks |= hack_blurPauseScreen | hack_rectDepthBufferCopyCBFD;
+	else if (strstr(RSP.romname, (const char *)"MICKEY USA") != NULL)
 		config.generalEmulation.hacks |= hack_blurPauseScreen;
 	else if (strstr(RSP.romname, (const char *)"MarioTennis64") != NULL)
 		config.generalEmulation.hacks |= hack_scoreboardJ;
@@ -323,9 +329,8 @@ void RSP_Init()
 	else if (strstr(RSP.romname, (const char *)"Pilot Wings64") != NULL)
 		config.generalEmulation.hacks |= hack_pilotWings;
 	else if (strstr(RSP.romname, (const char *)"THE LEGEND OF ZELDA") != NULL ||
-		strstr(RSP.romname, (const char *)"ZELDA MASTER QUEST") != NULL ||
-		strstr(RSP.romname, (const char *)"DOUBUTSUNOMORI") != NULL
-		)
+			 strstr(RSP.romname, (const char *)"ZELDA MASTER QUEST") != NULL ||
+			 strstr(RSP.romname, (const char *)"DOUBUTSUNOMORI") != NULL)
 		config.generalEmulation.hacks |= hack_subscreen;
 	else if (strstr(RSP.romname, (const char *)"Blast") != NULL)
 		config.generalEmulation.hacks |= hack_blastCorps;
@@ -333,6 +338,9 @@ void RSP_Init()
 		config.generalEmulation.hacks |= hack_ignoreVIHeightChange;
 	else if (strstr(RSP.romname, (const char *)"MASK") != NULL) // Zelda MM
 		config.generalEmulation.hacks |= hack_skipVIChangeCheck | hack_ZeldaCamera;
+	else if (strstr(RSP.romname, (const char *)"Perfect Dark") != NULL ||
+			 strstr(RSP.romname, (const char *)"PERFECT DARK") != NULL)
+		config.generalEmulation.hacks |= hack_rectDepthBufferCopyPD;
 
 	api().FindPluginPath(RSP.pluginpath);
 

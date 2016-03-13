@@ -930,6 +930,7 @@ bool texturedRectShadowMap(const OGLRender::TexturedRectParams &)
 	return false;
 }
 
+u32 rectDepthBufferCopyFrame = 0xFFFFFFFF;
 static
 bool texturedRectDepthBufferCopy(const OGLRender::TexturedRectParams & _params)
 {
@@ -937,7 +938,6 @@ bool texturedRectDepthBufferCopy(const OGLRender::TexturedRectParams & _params)
 	// Data from depth buffer loaded into TMEM and then rendered to RDRAM by texrect.
 	// Works only with depth buffer emulation enabled.
 	// Load of arbitrary data to that area causes weird camera rotation in CBFD.
-	static u32 lastDList = 0xFFFFFFFF;
 	const gDPTile * pTile = gSP.textureTile[0];
 	if (pTile->loadType == LOADTYPE_BLOCK && gDP.textureImage.size == 2 && gDP.textureImage.address >= gDP.depthImageAddress &&  gDP.textureImage.address < (gDP.depthImageAddress + gDP.colorImage.width*gDP.colorImage.width * 6 / 4)) {
 		if (config.frameBufferEmulation.copyDepthToRDRAM == 0)
@@ -946,8 +946,8 @@ bool texturedRectDepthBufferCopy(const OGLRender::TexturedRectParams & _params)
 		if (pBuffer == NULL)
 			return true;
 		pBuffer->m_cleared = true;
-		if (lastDList != video().getBuffersSwapCount()) {
-			lastDList = video().getBuffersSwapCount();
+		if (rectDepthBufferCopyFrame != video().getBuffersSwapCount()) {
+			rectDepthBufferCopyFrame = video().getBuffersSwapCount();
 			if (!FrameBuffer_CopyDepthBuffer(gDP.colorImage.address))
 				return true;
 		}
