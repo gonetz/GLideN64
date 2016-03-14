@@ -341,6 +341,8 @@ void RSP_Init()
 	else if (strstr(RSP.romname, (const char *)"Perfect Dark") != NULL ||
 			 strstr(RSP.romname, (const char *)"PERFECT DARK") != NULL)
 		config.generalEmulation.hacks |= hack_rectDepthBufferCopyPD;
+	else if (strstr(RSP.romname, (const char *)"POKEMON STADIUM 2") != NULL)
+		config.generalEmulation.hacks |= hack_texrectVertexFullAlpha;
 
 	api().FindPluginPath(RSP.pluginpath);
 
