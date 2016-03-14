@@ -152,7 +152,7 @@ struct Config
 #define hack_rectDepthBufferCopyCBFD (1<<10) //Copy depth buffer only when game need it. Optimized for CBFD
 #define hack_skipVIChangeCheck		(1<<11) //Don't reset FBO when VI parameters changed. Zelda MM
 #define hack_ZeldaCamera			(1<<12) //Special hack to detect and process Zelda MM camera.
-#define hack_texrectVertexFullAlpha	(1<<13) //Special hack to detect and process Zelda MM camera.
+#define hack_texrectVertexFullAlpha	(1<<13) //Set texrect vertex alpha to 1
 
 extern Config config;
 
