@@ -625,9 +625,10 @@ void gDPLoadBlock(u32 tile, u32 uls, u32 ult, u32 lrs, u32 dxt)
 		u32 tmemAddr = gDP.loadTile->tmem;
 
 		if (dxt > 0) {
-			u32 line = (2047 + dxt) / dxt;
-			u32 bpl = line << 3;
-			u32 height = bytes / bpl;
+			const u32 widthInQWords = (bytes >> 3);
+			const u32 height = (widthInQWords * dxt) / 2048;
+			const u32 line = widthInQWords / height;
+			const u32 bpl = line << 3;
 
 			for (u32 y = 0; y < height; ++y) {
 				UnswapCopyWrap(RDRAM, address, (u8*)TMEM, tmemAddr << 3, 0xFFF, bpl);
