@@ -846,7 +846,10 @@ void OGLRender::drawLine(int _v0, int _v1, float _width)
 	unsigned short elem[2];
 	elem[0] = _v0;
 	elem[1] = _v1;
-	glLineWidth(_width * video().getScaleX());
+	if (config.frameBufferEmulation.nativeResFactor == 0)
+		glLineWidth(_width * video().getScaleX());
+	else
+		glLineWidth(_width * config.frameBufferEmulation.nativeResFactor);
 	glDrawElements(GL_LINES, 2, GL_UNSIGNED_SHORT, elem);
 
 }

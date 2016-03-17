@@ -664,7 +664,10 @@ void ShaderCombiner::updateDitherMode(bool _bForce)
 
 	const int nDither = (gDP.otherMode.cycleType < G_CYC_COPY) && (gDP.otherMode.colorDither == G_CD_NOISE || gDP.otherMode.alphaDither == G_AD_NOISE || gDP.otherMode.alphaCompare == G_AC_DITHER) ? 1 : 0;
 	if ((m_nInputs & (1 << NOISE)) + nDither != 0) {
-		m_uniforms.uScreenScale.set(video().getScaleX(), video().getScaleY(), _bForce);
+		if (config.frameBufferEmulation.nativeResFactor == 0)
+			m_uniforms.uScreenScale.set(video().getScaleX(), video().getScaleY(), _bForce);
+		else
+			m_uniforms.uScreenScale.set(float(config.frameBufferEmulation.nativeResFactor), float(config.frameBufferEmulation.nativeResFactor), _bForce);
 		noiseTex.update();
 	}
 }
