@@ -139,7 +139,8 @@ void RSP_CheckDLCounter()
 void RSP_ProcessDList()
 {
 	if (ConfigOpen || video().isResizeWindow()) {
-		gDPFullSync();
+		*REG.MI_INTR |= MI_INTR_DP;
+		CheckInterrupts();
 		return;
 	}
 	if (*REG.VI_ORIGIN != VI.lastOrigin) {
