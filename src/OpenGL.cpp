@@ -747,13 +747,24 @@ void OGLRender::_prepareDrawTriangle(bool _dma)
 			glEnableVertexAttribArray(SC_NUMLIGHTS);
 			glVertexAttribPointer(SC_NUMLIGHTS, 1, GL_BYTE, GL_FALSE, sizeof(SPVertex), &pVtx->HWLight);
 		}
-
+		glEnableVertexAttribArray(SC_MODIFY);
+		glVertexAttribPointer(SC_MODIFY, 4, GL_BYTE, GL_FALSE, sizeof(SPVertex), &pVtx->modify);
 	} else if (updateColorArrays) {
 		SPVertex * pVtx = _dma ? triangles.dmaVertices.data() : &triangles.vertices[0];
 		if (m_bFlatColors)
 			glVertexAttribPointer(SC_COLOR, 4, GL_FLOAT, GL_FALSE, sizeof(SPVertex), &pVtx->flat_r);
 		else
 			glVertexAttribPointer(SC_COLOR, 4, GL_FLOAT, GL_FALSE, sizeof(SPVertex), &pVtx->r);
+	}
+
+	if (triangles.vertices[0].modify != 0) {
+		OGLVideo & ogl = video();
+		FrameBuffer * pCurrentBuffer = frameBufferList().getCurrent();
+		if (pCurrentBuffer == NULL)
+			glViewport(0, ogl.getHeightOffset(), ogl.getScreenWidth(), ogl.getScreenHeight());
+		else
+			glViewport(0, 0, pCurrentBuffer->m_width*pCurrentBuffer->m_scaleX, pCurrentBuffer->m_height*pCurrentBuffer->m_scaleY);
+		gSP.changed |= CHANGED_VIEWPORT;
 	}
 }
 
@@ -767,39 +778,20 @@ void OGLRender::drawLLETriangle(u32 _numVtx)
 	if (_numVtx == 0 || !_canDraw())
 		return;
 
+	for (u32 i = 0; i < _numVtx; ++i) {
+		SPVertex & vtx = triangles.vertices[i];
+		vtx.modify = MODIFY_ALL;
+	}
+
 	gSP.changed &= ~CHANGED_GEOMETRYMODE; // Don't update cull mode
 	_prepareDrawTriangle(false);
 	glDisable(GL_CULL_FACE);
-
-	OGLVideo & ogl = video();
-	FrameBuffer * pCurrentBuffer = frameBufferList().getCurrent();
-	if (pCurrentBuffer == NULL)
-		glViewport( 0, ogl.getHeightOffset(), ogl.getScreenWidth(), ogl.getScreenHeight());
-	else
-		glViewport(0, 0, pCurrentBuffer->m_width*pCurrentBuffer->m_scaleX, pCurrentBuffer->m_height*pCurrentBuffer->m_scaleY);
-
-	const float scaleX = pCurrentBuffer != NULL ? 1.0f / pCurrentBuffer->m_width : VI.rwidth;
-	const float scaleY = pCurrentBuffer != NULL ? 1.0f / pCurrentBuffer->m_height : VI.rheight;
-
-	for (u32 i = 0; i < _numVtx; ++i) {
-		SPVertex & vtx = triangles.vertices[i];
-		vtx.HWLight = 0;
-		vtx.x = vtx.x * (2.0f * scaleX) - 1.0f;
-		vtx.x *= vtx.w;
-		vtx.y = vtx.y * (-2.0f * scaleY) + 1.0f;
-		vtx.y *= vtx.w;
-		vtx.z *= vtx.w;
-		if (gDP.otherMode.texturePersp == 0) {
-			vtx.s *= 2.0f;
-			vtx.t *= 2.0f;
-		}
-	}
 
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, _numVtx);
 	triangles.num = 0;
 
 	frameBufferList().setBufferChanged();
-	gSP.changed |= CHANGED_VIEWPORT | CHANGED_GEOMETRYMODE;
+	gSP.changed |= CHANGED_GEOMETRYMODE;
 }
 
 void OGLRender::drawDMATriangles(u32 _numVtx)
@@ -868,6 +860,8 @@ void OGLRender::drawRect(int _ulx, int _uly, int _lrx, int _lry, float *_pColor)
 		glDisableVertexAttribArray(SC_COLOR);
 		glDisableVertexAttribArray(SC_TEXCOORD0);
 		glDisableVertexAttribArray(SC_TEXCOORD1);
+		glDisableVertexAttribArray(SC_NUMLIGHTS);
+		glDisableVertexAttribArray(SC_MODIFY);
 	}
 
 	if (updateArrays)
@@ -1070,6 +1064,8 @@ void OGLRender::drawTexturedRect(const TexturedRectParams & _params)
 		glVertexAttribPointer(SC_POSITION, 4, GL_FLOAT, GL_FALSE, sizeof(GLVertex), &m_rect[0].x);
 		glVertexAttribPointer(SC_TEXCOORD0, 2, GL_FLOAT, GL_FALSE, sizeof(GLVertex), &m_rect[0].s0);
 		glVertexAttribPointer(SC_TEXCOORD1, 2, GL_FLOAT, GL_FALSE, sizeof(GLVertex), &m_rect[0].s1);
+		glDisableVertexAttribArray(SC_NUMLIGHTS);
+		glDisableVertexAttribArray(SC_MODIFY);
 	}
 	currentCombiner()->updateRenderState();
 

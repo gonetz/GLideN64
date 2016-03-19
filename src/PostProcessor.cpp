@@ -497,6 +497,7 @@ void _setGLState() {
 	glDisableVertexAttribArray(SC_COLOR);
 	glDisableVertexAttribArray(SC_TEXCOORD1);
 	glDisableVertexAttribArray(SC_NUMLIGHTS);
+	glDisableVertexAttribArray(SC_MODIFY);
 	glViewport(0, 0, video().getWidth(), video().getHeight());
 	gSP.changed |= CHANGED_VIEWPORT;
 	gDP.changed |= CHANGED_RENDERMODE;

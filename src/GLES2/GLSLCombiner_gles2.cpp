@@ -256,6 +256,7 @@ void ShaderCombiner::_locateUniforms() {
 	LocateUniform(uDepthImage);
 	LocateUniform(uFogMode);
 	LocateUniform(uFogUsage);
+	LocateUniform(uScreenCoordsScale);
 	LocateUniform(uAlphaCompareMode);
 	LocateUniform(uCvgXAlpha);
 	LocateUniform(uAlphaCvgSel);
@@ -290,6 +291,7 @@ void ShaderCombiner::_locate_attributes() const {
 	glBindAttribLocation(m_program, SC_TEXCOORD0, "aTexCoord0");
 	glBindAttribLocation(m_program, SC_TEXCOORD1, "aTexCoord1");
 	glBindAttribLocation(m_program, SC_NUMLIGHTS, "aNumLights");
+	glBindAttribLocation(m_program, SC_MODIFY, "aModify");
 }
 
 void ShaderCombiner::update(bool _bForce) {
@@ -311,11 +313,20 @@ void ShaderCombiner::update(bool _bForce) {
 	updateTextureInfo(_bForce);
 	updateAlphaTestInfo(_bForce);
 	updateDepthInfo(_bForce);
+	updateScreenCoordsScale(_bForce);
 }
 
 void ShaderCombiner::updateRenderState(bool _bForce)
 {
 	m_uniforms.uRenderState.set(video().getRender().getRenderState(), _bForce);
+}
+
+void ShaderCombiner::updateScreenCoordsScale(bool _bForce)
+{
+	FrameBuffer * pCurrentBuffer = frameBufferList().getCurrent();
+	const float scaleX = pCurrentBuffer != NULL ? 1.0f / pCurrentBuffer->m_width : VI.rwidth;
+	const float scaleY = pCurrentBuffer != NULL ? 1.0f / pCurrentBuffer->m_height : VI.rheight;
+	m_uniforms.uScreenCoordsScale.set(2.0f*scaleX, -2.0f*scaleY, _bForce);
 }
 
 void ShaderCombiner::updateFogMode(bool _bForce)

@@ -25,11 +25,18 @@
 
 #define CLIP_ALL	0x1F // CLIP_NEGX|CLIP_POSX|CLIP_NEGY|CLIP_POSY|CLIP_Z
 
+#define MODIFY_XY	0x000000FF
+#define MODIFY_Z	0x0000FF00
+#define MODIFY_ST	0x00FF0000
+#define MODIFY_RGBA	0xFF000000
+#define MODIFY_ALL	0xFFFFFFFF
+
 #define SC_POSITION             1
 #define SC_COLOR                2
 #define SC_TEXCOORD0            3
 #define SC_TEXCOORD1            4
 #define SC_NUMLIGHTS            5
+#define SC_MODIFY               6
 
 struct SPVertex
 {
@@ -38,9 +45,10 @@ struct SPVertex
 	f32 r, g, b, a;
 	f32 flat_r, flat_g, flat_b, flat_a;
 	f32 s, t;
+	u32 modify;
 	u8 HWLight;
+	u8 clip;
 	s16 flag;
-	u32 clip;
 };
 
 struct SPLight

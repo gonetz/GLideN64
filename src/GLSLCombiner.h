@@ -21,6 +21,7 @@ public:
 	void updateAlphaTestInfo(bool _bForce = false);
 	void updateTextureInfo(bool _bForce = false);
 	void updateRenderState(bool _bForce = false);
+	void updateScreenCoordsScale(bool _bForce = false);
 
 	u64 getMux() const {return m_combine.mux;}
 
@@ -101,7 +102,7 @@ private:
 
 		fUniform uFogAlpha, uMinLod, uDeltaZ, uAlphaTestValue, uMSAAScale;
 
-		fv2Uniform uScreenScale, uDepthScale, uFogScale;
+		fv2Uniform uScreenScale, uDepthScale, uFogScale, uScreenCoordsScale;
 
 		iv2Uniform uMSTexEnabled, uFbMonochrome, uFbFixedAlpha;
 	};

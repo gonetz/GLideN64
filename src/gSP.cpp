@@ -333,6 +333,7 @@ void gSPProcessVertex4(u32 v)
 		vPos[i][0] = vtx.x;
 		vPos[i][1] = vtx.y;
 		vPos[i][2] = vtx.z;
+		vtx.modify = 0;
 	}
 	gSPTransformVertex4(v, gSP.matrix.combined );
 
@@ -398,7 +399,7 @@ static void gSPTransformVertex_default(float vtx[4], float mtx[4][4])
 
 static void gSPLightVertex_default(SPVertex & _vtx)
 {
-	if (!config.generalEmulation.enableHWLighting) {
+	if (config.generalEmulation.enableHWLighting == 0) {
 		_vtx.HWLight = 0;
 		_vtx.r = gSP.lights[gSP.numLights].r;
 		_vtx.g = gSP.lights[gSP.numLights].g;
@@ -575,6 +576,7 @@ void gSPProcessVertex(u32 v)
 	}
 
 	gSPClipVertex(v);
+	vtx.modify = 0;
 
 	if (gSP.geometryMode & G_LIGHTING) {
 		TransformVectorNormalize( &vtx.nx, gSP.matrix.modelView[gSP.matrix.modelViewi] );
