@@ -534,6 +534,17 @@ void OGLRender::_updateViewport() const
 	gSP.changed &= ~CHANGED_VIEWPORT;
 }
 
+void OGLRender::_updateScreenCoordsViewport() const
+{
+	OGLVideo & ogl = video();
+	FrameBuffer * pCurrentBuffer = frameBufferList().getCurrent();
+	if (pCurrentBuffer == NULL)
+		glViewport(0, ogl.getHeightOffset(), ogl.getScreenWidth(), ogl.getScreenHeight());
+	else
+		glViewport(0, 0, pCurrentBuffer->m_width*pCurrentBuffer->m_scaleX, pCurrentBuffer->m_height*pCurrentBuffer->m_scaleY);
+	gSP.changed |= CHANGED_VIEWPORT;
+}
+
 inline
 void _adjustScissorX(f32 & _X0, f32 & _X1, float _scale)
 {
@@ -757,15 +768,8 @@ void OGLRender::_prepareDrawTriangle(bool _dma)
 			glVertexAttribPointer(SC_COLOR, 4, GL_FLOAT, GL_FALSE, sizeof(SPVertex), &pVtx->r);
 	}
 
-	if (triangles.vertices[0].modify != 0) {
-		OGLVideo & ogl = video();
-		FrameBuffer * pCurrentBuffer = frameBufferList().getCurrent();
-		if (pCurrentBuffer == NULL)
-			glViewport(0, ogl.getHeightOffset(), ogl.getScreenWidth(), ogl.getScreenHeight());
-		else
-			glViewport(0, 0, pCurrentBuffer->m_width*pCurrentBuffer->m_scaleX, pCurrentBuffer->m_height*pCurrentBuffer->m_scaleY);
-		gSP.changed |= CHANGED_VIEWPORT;
-	}
+	if ((triangles.vertices[0].modify & MODIFY_XY) != 0)
+		_updateScreenCoordsViewport();
 }
 
 bool OGLRender::_canDraw() const
@@ -819,8 +823,12 @@ void OGLRender::drawLine(int _v0, int _v1, float _width)
 	if (!_canDraw())
 		return;
 
+	if ((triangles.vertices[_v0].modify & MODIFY_XY) != 0)
+		gSP.changed &= ~CHANGED_VIEWPORT;
 	if (gSP.changed || gDP.changed)
 		_updateStates(rsLine);
+
+	FrameBuffer * pCurrentBuffer = frameBufferList().getCurrent();
 
 	if (m_renderState != rsLine || CombinerInfo::get().isChanged()) {
 		_setColorArray();
@@ -828,12 +836,15 @@ void OGLRender::drawLine(int _v0, int _v1, float _width)
 		glDisableVertexAttribArray(SC_TEXCOORD1);
 		glVertexAttribPointer(SC_POSITION, 4, GL_FLOAT, GL_FALSE, sizeof(SPVertex), &triangles.vertices[0].x);
 		glVertexAttribPointer(SC_COLOR, 4, GL_FLOAT, GL_FALSE, sizeof(SPVertex), &triangles.vertices[0].r);
+		glEnableVertexAttribArray(SC_MODIFY);
+		glVertexAttribPointer(SC_MODIFY, 1, GL_BYTE, GL_FALSE, sizeof(SPVertex), &triangles.vertices[0].modify);
 
-		_updateCullFace();
-		_updateViewport();
 		m_renderState = rsLine;
+		currentCombiner()->updateRenderState();
 	}
-	currentCombiner()->updateRenderState();
+
+	if ((triangles.vertices[_v0].modify & MODIFY_XY) != 0)
+		_updateScreenCoordsViewport();
 
 	unsigned short elem[2];
 	elem[0] = _v0;
@@ -843,7 +854,6 @@ void OGLRender::drawLine(int _v0, int _v1, float _width)
 	else
 		glLineWidth(_width * config.frameBufferEmulation.nativeResFactor);
 	glDrawElements(GL_LINES, 2, GL_UNSIGNED_SHORT, elem);
-
 }
 
 void OGLRender::drawRect(int _ulx, int _uly, int _lrx, int _lry, float *_pColor)
