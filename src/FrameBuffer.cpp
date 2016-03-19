@@ -538,9 +538,9 @@ void FrameBufferList::saveBuffer(u32 _address, u16 _format, u16 _size, u16 _widt
 	if (m_pCurrent != NULL) {
 		// Correct buffer's end address
 		if (!m_pCurrent->isAuxiliary()) {
-			if (gDP.colorImage.height != 0)
+			if (gDP.colorImage.height > 200)
 				m_prevColorImageHeight = gDP.colorImage.height;
-			else
+			else if (gDP.colorImage.height == 0)
 				gDP.colorImage.height = m_prevColorImageHeight;
 			gDP.colorImage.height = min(gDP.colorImage.height, VI.height);
 			m_pCurrent->m_endAddress = min(RDRAMSize, m_pCurrent->m_startAddress + (((m_pCurrent->m_width * gDP.colorImage.height) << m_pCurrent->m_size >> 1) - 1));
