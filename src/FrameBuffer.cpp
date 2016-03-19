@@ -838,8 +838,6 @@ void FrameBufferList::renderBuffer(u32 _address)
 	render.updateScissor(pBuffer);
 	PostProcessor::get().doGammaCorrection(pBuffer);
 	PostProcessor::get().doBlur(pBuffer);
-	// glDisable(GL_SCISSOR_TEST) does not affect glBlitFramebuffer, at least on AMD
-	glScissor(0, 0, ogl.getScreenWidth(), ogl.getScreenHeight() + ogl.getHeightOffset());
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 	//glDrawBuffer( GL_BACK );
 	float clearColor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
@@ -859,6 +857,9 @@ void FrameBufferList::renderBuffer(u32 _address)
 		}
 	} else
 		glBindFramebuffer(GL_READ_FRAMEBUFFER, pBuffer->m_FBO);
+
+	// glDisable(GL_SCISSOR_TEST) does not affect glBlitFramebuffer, at least on AMD
+	glScissor(0, 0, ogl.getScreenWidth(), ogl.getScreenHeight() + ogl.getHeightOffset());
 
 	glBlitFramebuffer(
 		srcCoord[0], srcCoord[1], srcCoord[2], srcCoord[3],
