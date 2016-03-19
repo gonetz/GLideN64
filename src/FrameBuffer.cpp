@@ -391,10 +391,10 @@ bool FrameBuffer::isValid() const
 	return true; // No data to decide
 }
 
-void FrameBuffer::resolveMultisampledTexture()
+void FrameBuffer::resolveMultisampledTexture(bool _bForce)
 {
 #ifdef GL_MULTISAMPLING_SUPPORT
-	if (m_resolved)
+	if (m_resolved && !_bForce)
 		return;
 	glScissor(0, 0, m_pTexture->realWidth, m_pTexture->realHeight);
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, m_FBO);
@@ -850,7 +850,7 @@ void FrameBufferList::renderBuffer(u32 _address)
 		if (X0 > 0 || dstPartHeight > 0 ||
 			(srcCoord[2] - srcCoord[0]) != (dstCoord[2] - dstCoord[0]) ||
 			(srcCoord[3] - srcCoord[1]) != (dstCoord[3] - dstCoord[1])) {
-			pBuffer->resolveMultisampledTexture();
+			pBuffer->resolveMultisampledTexture(true);
 			glBindFramebuffer(GL_READ_FRAMEBUFFER, pBuffer->m_resolveFBO);
 			glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 		} else {

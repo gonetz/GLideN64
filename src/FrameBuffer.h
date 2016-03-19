@@ -18,7 +18,7 @@ struct FrameBuffer
 	~FrameBuffer();
 	void init(u32 _address, u32 _endAddress, u16 _format, u16 _size, u16 _width, u16 _height, bool _cfb);
 	void reinit(u16 _height);
-	void resolveMultisampledTexture();
+	void resolveMultisampledTexture(bool _bForce = false);
 	CachedTexture * getTexture();
 	void copyRdram();
 	bool isValid() const;
