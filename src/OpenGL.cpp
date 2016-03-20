@@ -480,7 +480,7 @@ void OGLRender::_setBlendMode() const
 	} else if ((config.generalEmulation.hacks & hack_pilotWings) != 0 && (gDP.otherMode.l & 0x80) != 0) { //CLR_ON_CVG without FORCE_BL
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_ZERO, GL_ONE);
-	} else if ((config.generalEmulation.hacks & hack_blastCorps) != 0 && gSP.texture.on == 0 && currentCombiner()->usesTexture()) { // Blast Corps
+	} else if ((config.generalEmulation.hacks & hack_blastCorps) != 0 && gDP.otherMode.cycleType < G_CYC_COPY && gSP.texture.on == 0 && currentCombiner()->usesTexture()) { // Blast Corps
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_ZERO, GL_ONE);
 	} else {
