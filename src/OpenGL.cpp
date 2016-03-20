@@ -1064,13 +1064,21 @@ void OGLRender::drawTexturedRect(const TexturedRectParams & _params)
 		m_renderState = rsTexRect;
 		glDisableVertexAttribArray(SC_COLOR);
 		_setTexCoordArrays();
+
+		GLfloat alpha = 0.0f;
+		if (currentCombiner()->usesShade()) {
+			gDPCombine combine;
+			combine.mux = currentCombiner()->getMux();
+			if (combine.mA0 == G_ACMUX_0 && combine.aA0 == G_ACMUX_SHADE)
+				alpha = 1.0f;
+		}
+		glVertexAttrib4f(SC_COLOR, 0, 0, 0, alpha);
 	}
 
 	if (updateArrays) {
 #ifdef RENDERSTATE_TEST
 		StateChanges++;
 #endif
-		glVertexAttrib4f(SC_COLOR, 0, 0, 0, 1);
 		glVertexAttribPointer(SC_POSITION, 4, GL_FLOAT, GL_FALSE, sizeof(GLVertex), &m_rect[0].x);
 		glVertexAttribPointer(SC_TEXCOORD0, 2, GL_FLOAT, GL_FALSE, sizeof(GLVertex), &m_rect[0].s0);
 		glVertexAttribPointer(SC_TEXCOORD1, 2, GL_FLOAT, GL_FALSE, sizeof(GLVertex), &m_rect[0].s1);
