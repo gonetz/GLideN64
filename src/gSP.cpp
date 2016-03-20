@@ -2366,7 +2366,8 @@ void gSPSprite2DBase(u32 _base)
 		vtx3.s = lrs;
 		vtx3.t = lrt;
 
-		render.drawLLETriangle(4);
+		if (pSprite->stride > 0)
+			render.drawLLETriangle(4);
 	} while (RSP.nextCmd == 0xBD || RSP.nextCmd == 0xBE);
 }
 
