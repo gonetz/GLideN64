@@ -1070,7 +1070,7 @@ void OGLRender::drawTexturedRect(const TexturedRectParams & _params)
 #ifdef RENDERSTATE_TEST
 		StateChanges++;
 #endif
-		glVertexAttrib4f(SC_COLOR, 0, 0, 0, m_texrectVertexAlpha);
+		glVertexAttrib4f(SC_COLOR, 0, 0, 0, 1);
 		glVertexAttribPointer(SC_POSITION, 4, GL_FLOAT, GL_FALSE, sizeof(GLVertex), &m_rect[0].x);
 		glVertexAttribPointer(SC_TEXCOORD0, 2, GL_FLOAT, GL_FALSE, sizeof(GLVertex), &m_rect[0].s0);
 		glVertexAttribPointer(SC_TEXCOORD1, 2, GL_FLOAT, GL_FALSE, sizeof(GLVertex), &m_rect[0].s1);
@@ -1432,8 +1432,6 @@ void OGLRender::_initData()
 	for (u32 i = 0; i < VERTBUFF_SIZE; ++i)
 		triangles.vertices[i].w = 1.0f;
 	triangles.num = 0;
-	if ((config.generalEmulation.hacks & hack_texrectVertexFullAlpha) != 0)
-		m_texrectVertexAlpha = 1.0f;
 }
 
 void OGLRender::_destroyData()
