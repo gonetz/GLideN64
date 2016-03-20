@@ -755,28 +755,25 @@ void gDPFillRectangle( s32 ulx, s32 uly, s32 lrx, s32 lry )
 		if (gDP.fillColor.color == DepthClearColor) {
 			gDPFillRDRAM(gDP.colorImage.address, ulx, uly, lrx, lry, gDP.colorImage.width, gDP.colorImage.size, gDP.fillColor.color);
 			render.clearDepthBuffer(uly, lry);
-			return;
 		}
 	} else if (gDP.fillColor.color == DepthClearColor && gDP.otherMode.cycleType == G_CYC_FILL) {
 		depthBufferList().saveBuffer(gDP.colorImage.address);
 		gDPFillRDRAM(gDP.colorImage.address, ulx, uly, lrx, lry, gDP.colorImage.width, gDP.colorImage.size, gDP.fillColor.color);
 		render.clearDepthBuffer(uly, lry);
-		return;
+	} else {
+		frameBufferList().setBufferChanged();
+		f32 fillColor[4];
+		gDPGetFillColor(fillColor);
+
+		if (gDP.otherMode.cycleType == G_CYC_FILL) {
+			if ((ulx == 0) && (uly == 0) && (lrx == gDP.scissor.lrx) && (lry == gDP.scissor.lry)) {
+				gDPFillRDRAM(gDP.colorImage.address, ulx, uly, lrx, lry, gDP.colorImage.width, gDP.colorImage.size, gDP.fillColor.color);
+				render.clearColorBuffer(fillColor);
+			} else
+				render.drawRect(ulx, uly, lrx, lry, fillColor);
+		} else
+			render.drawRect(ulx, uly, lrx, lry, fillColor);
 	}
-
-	frameBufferList().setBufferChanged();
-
-	f32 fillColor[4];
-	gDPGetFillColor(fillColor);
-	if (gDP.otherMode.cycleType == G_CYC_FILL) {
-		if ((ulx == 0) && (uly == 0) && (lrx == gDP.scissor.lrx) && (lry == gDP.scissor.lry)) {
-			gDPFillRDRAM(gDP.colorImage.address, ulx, uly, lrx, lry, gDP.colorImage.width, gDP.colorImage.size, gDP.fillColor.color);
-			render.clearColorBuffer(fillColor);
-			return;
-		}
-	}
-
-	render.drawRect(ulx, uly, lrx, lry, fillColor);
 
 	if (gDP.otherMode.cycleType == G_CYC_FILL) {
 		if (lry > (u32)gDP.scissor.lry)
