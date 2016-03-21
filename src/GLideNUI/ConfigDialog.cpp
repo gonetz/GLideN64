@@ -68,10 +68,13 @@ void ConfigDialog::_init()
 {
 	// Video settings
 	QStringList windowedModesList;
-	int windowedModesCurrent = numWindowedModes - 1;
-	for (int i = 0; i < numWindowedModes - 1; ++i) {
+	const int windowedModesCustom = numWindowedModes - 1;
+	int windowedModesCurrent = windowedModesCustom;
+	for (int i = 0; i < numWindowedModes; ++i) {
 		windowedModesList.append(WindowedModes[i].description);
-		if (WindowedModes[i].width == config.video.windowedWidth && WindowedModes[i].height == config.video.windowedHeight)
+		if (i != windowedModesCustom &&
+			WindowedModes[i].width == config.video.windowedWidth &&
+			WindowedModes[i].height == config.video.windowedHeight)
 			windowedModesCurrent = i;
 	}
 	ui->windowedResolutionComboBox->insertItems(0, windowedModesList);
