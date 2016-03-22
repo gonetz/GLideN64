@@ -159,6 +159,7 @@ void RSP_ProcessDList()
 	if (gSP.matrix.stackSize == 0)
 		gSP.matrix.stackSize = 32;
 	gSP.matrix.modelViewi = 0;
+	gSP.status[0] = gSP.status[1] = gSP.status[2] = gSP.status[3] = 0;
 	gSP.changed |= CHANGED_MATRIX;
 	gDP.changed &= ~CHANGED_CPU_FB_WRITE;
 	gDPSetTexturePersp(G_TP_PERSP);
