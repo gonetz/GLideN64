@@ -387,8 +387,7 @@ void CombinerInfo::_saveShadersStorage() const
 
 	fout.write((char*)&ShaderStorageFormatVersion, sizeof(ShaderStorageFormatVersion));
 
-	const u32 optionsSet = _getConfigOptionsBitSet();
-	fout.write((char*)&optionsSet, sizeof(optionsSet));
+	fout.write((char*)&m_configOptionsBitSet, sizeof(m_configOptionsBitSet));
 
 	const char * strRenderer = reinterpret_cast<const char *>(glGetString(GL_RENDERER));
 	u32 len = strlen(strRenderer);
@@ -412,6 +411,7 @@ bool CombinerInfo::_loadShadersStorage()
 {
 	wchar_t fileName[PLUGIN_PATH_SIZE];
 	getStorageFileName(fileName);
+	m_configOptionsBitSet = _getConfigOptionsBitSet();
 
 #ifdef OS_WINDOWS
 	std::ifstream fin(fileName, std::ofstream::binary);
@@ -431,7 +431,7 @@ bool CombinerInfo::_loadShadersStorage()
 
 		u32 optionsSet;
 		fin.read((char*)&optionsSet, sizeof(optionsSet));
-		if (optionsSet != _getConfigOptionsBitSet())
+		if (optionsSet != m_configOptionsBitSet)
 			return false;
 
 		const char * strRenderer = reinterpret_cast<const char *>(glGetString(GL_RENDERER));

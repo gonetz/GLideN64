@@ -143,7 +143,12 @@ public:
 	void updateParameters(OGLRender::RENDER_STATE _renderState);
 
 private:
-	CombinerInfo() : m_bChanged(false), m_bShaderCacheSupported(false), m_shadersLoaded(0), m_pCurrent(NULL) {}
+	CombinerInfo()
+		: m_bChanged(false)
+		, m_bShaderCacheSupported(false)
+		, m_shadersLoaded(0)
+		, m_configOptionsBitSet(0)
+		, m_pCurrent(NULL) {}
 	CombinerInfo(const CombinerInfo &);
 
 	void _saveShadersStorage() const;
@@ -154,6 +159,7 @@ private:
 	bool m_bChanged;
 	bool m_bShaderCacheSupported;
 	u32 m_shadersLoaded;
+	u32 m_configOptionsBitSet;
 
 	ShaderCombiner * m_pCurrent;
 	typedef std::map<u64, ShaderCombiner *> Combiners;
