@@ -703,7 +703,8 @@ void ShaderCombiner::updateLOD(bool _bForce)
 }
 
 void ShaderCombiner::updateTextureInfo(bool _bForce) {
-	m_uniforms.uTexturePersp.set(gDP.otherMode.texturePersp, _bForce);
+	const u32 texturePersp = (RSP.bLLE || GBI.isTexturePersp()) ? gDP.otherMode.texturePersp : 1U;
+	m_uniforms.uTexturePersp.set(texturePersp, _bForce);
 	if (config.texture.bilinearMode == BILINEAR_3POINT)
 		m_uniforms.uTextureFilterMode.set(gDP.otherMode.textureFilter | (gSP.objRendermode&G_OBJRM_BILERP), _bForce);
 }

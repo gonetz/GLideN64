@@ -236,6 +236,7 @@ void GBIInfo::loadMicrocode(u32 uc_start, u32 uc_dstart, u16 uc_dsize)
 	current.dataSize = uc_dsize;
 	current.NoN = false;
 	current.textureGen = true;
+	current.texturePersp = true;
 	current.branchLessZ = true;
 	current.type = NONE;
 
@@ -283,6 +284,8 @@ void GBIInfo::loadMicrocode(u32 uc_start, u32 uc_dstart, u16 uc_dsize)
 						current.textureGen = false;
 					else if (strncmp(&uc_str[14], "F3DZ", 4) == 0)
 						current.branchLessZ = false;
+					else if (strncmp(&uc_str[14], "F3DLP.Rej", 9) == 0)
+						current.texturePersp = false;
 				}
 				else if (strncmp( &uc_str[14], "L3D", 3 ) == 0) {
 					u32 t = 22;
@@ -299,6 +302,7 @@ void GBIInfo::loadMicrocode(u32 uc_start, u32 uc_dstart, u16 uc_dsize)
 						type = S2DEX;
 					else if (uc_str[t] == '2')
 						type = S2DEX2;
+					current.texturePersp = false;
 				}
 				else if (strncmp(&uc_str[14], "ZSortp", 6) == 0) {
 					type = ZSortp;

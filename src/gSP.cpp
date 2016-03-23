@@ -1812,7 +1812,6 @@ void gSPSetSpriteTile(const uObjSprite *_pObjSprite)
 	gDPSetTile( _pObjSprite->imageFmt, _pObjSprite->imageSiz, _pObjSprite->imageStride, _pObjSprite->imageAdrs, 0, _pObjSprite->imagePal, G_TX_CLAMP, G_TX_CLAMP, 0, 0, 0, 0 );
 	gDPSetTileSize( 0, 0, 0, (w - 1) << 2, (h - 1) << 2 );
 	gSPTexture( 1.0f, 1.0f, 0, 0, TRUE );
-	gDP.otherMode.texturePersp = 1;
 }
 
 struct ObjData
@@ -2141,7 +2140,6 @@ void gSPBgRect1Cyc( u32 _bg )
 	gDP.otherMode.cycleType = G_CYC_1CYCLE;
 	gDP.changed |= CHANGED_CYCLETYPE;
 	gSPTexture(1.0f, 1.0f, 0, 0, TRUE);
-	gDP.otherMode.texturePersp = 1;
 
 	ObjCoordinates objCoords(objScaleBg);
 	gSPDrawObjRect(objCoords);
@@ -2160,7 +2158,6 @@ void gSPBgRectCopy( u32 _bg )
 #endif // GL_IMAGE_TEXTURES_SUPPORT
 
 	gSPTexture( 1.0f, 1.0f, 0, 0, TRUE );
-	gDP.otherMode.texturePersp = 1;
 
 	ObjCoordinates objCoords(objBg);
 	gSPDrawObjRect(objCoords);

@@ -679,6 +679,7 @@ struct MicrocodeInfo
 	u32 crc;
 	bool NoN;
 	bool textureGen;
+	bool texturePersp;
 	bool branchLessZ;
 };
 
@@ -695,6 +696,7 @@ struct GBIInfo
 	bool isHWLSupported() const;
 	bool isNoN() const { return m_pCurrent != NULL ? m_pCurrent->NoN : false; }
 	bool isTextureGen() const { return m_pCurrent != NULL ? m_pCurrent->textureGen: true; }
+	bool isTexturePersp() const { return m_pCurrent != NULL ? m_pCurrent->texturePersp: true; }
 	bool isBranchLessZ() const { return m_pCurrent != NULL ? m_pCurrent->branchLessZ : true; }
 
 private:
