@@ -1158,6 +1158,8 @@ u32 _calculateCRC(u32 t, const TextureParams & _params)
 		else if (gSP.textureTile[t]->size == G_IM_SIZ_8b)
 			crc = CRC_Calculate( crc, &gDP.paletteCRC256, 4 );
 	}
+	const u8 tlutMode = gDP.otherMode.textureLUT;
+	crc = CRC_Calculate(crc, &tlutMode, 1);
 
 	crc = CRC_Calculate(crc, &_params, sizeof(_params));
 
