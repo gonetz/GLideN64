@@ -1131,15 +1131,22 @@ bool FrameBufferToRDRAM::_prepareCopy(u32 _startAddress)
 	if (m_pCurFrameBuffer->m_scaleX > 1.0f) {
 		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_FBO);
 		glScissor(0, 0, m_pCurFrameBuffer->m_pTexture->realWidth, m_pCurFrameBuffer->m_pTexture->realHeight);
-		const u32 screenWidth = ogl.getWidth();
 		u32 x0 = 0;
-		u32 width = screenWidth;
-		if (ogl.isAdjustScreen()) {
-			width = static_cast<u32>(screenWidth*ogl.getAdjustScale());
-			x0 = (screenWidth - width) / 2;
+		u32 width, height;
+		if (config.frameBufferEmulation.nativeResFactor == 0) {
+			height = ogl.getHeight();
+			const u32 screenWidth = ogl.getWidth();
+			width = screenWidth;
+			if (ogl.isAdjustScreen()) {
+				width = static_cast<u32>(screenWidth*ogl.getAdjustScale());
+				x0 = (screenWidth - width) / 2;
+			}
+		} else {
+			width = m_pCurFrameBuffer->m_pTexture->realWidth;
+			height = m_pCurFrameBuffer->m_pTexture->realHeight;
 		}
 		glBlitFramebuffer(
-			x0, 0, x0 + width, ogl.getHeight(),
+			x0, 0, x0 + width, height,
 			0, 0, VI.width, VI.height,
 			GL_COLOR_BUFFER_BIT, GL_NEAREST
 			);
