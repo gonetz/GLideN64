@@ -27,6 +27,8 @@ inline void LOG( u16 type, const char * format, ... ) {
 	if (type > LOG_LEVEL)
 		return;
 	FILE *dumpFile = fopen( "gliden64.log", "a+" );
+	if (dumpFile == NULL)
+		return;
 	va_list va;
 	va_start( va, format );
 	vfprintf( dumpFile, format, va );
