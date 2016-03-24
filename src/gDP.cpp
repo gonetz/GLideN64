@@ -629,7 +629,9 @@ void gDPLoadBlock(u32 tile, u32 uls, u32 ult, u32 lrs, u32 dxt)
 			u32 height = (widthInQWords * dxt) / 2048;
 			if ((widthInQWords * dxt) % 2048 >= 1024)
 				++height;
-			const u32 line = widthInQWords / height;
+			u32 line = widthInQWords / height;
+			if (widthInQWords % height > height/2)
+				++line;
 			const u32 bpl = line << 3;
 
 			for (u32 y = 0; y < height; ++y) {
