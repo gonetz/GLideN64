@@ -145,13 +145,13 @@ static inline void UnswapCopyWrap(const u8 *src, u32 srcIdx, u8 *dest, u32 destI
 
 static inline void DWordInterleaveWrap(u32 *src, u32 srcIdx, u32 srcMask, u32 numQWords)
 {
-	u32 tmp;
+	u32 p0, idx0, idx1;
 	while (numQWords--)	{
-		tmp = src[srcIdx & srcMask];
-		src[srcIdx & srcMask] = src[(srcIdx + 1) & srcMask];
-		++srcIdx;
-		src[srcIdx & srcMask] = tmp;
-		++srcIdx;
+		idx0 = srcIdx++ & srcMask;
+		idx1 = srcIdx++ & srcMask;
+		p0 = src[idx0];
+		src[idx0] = src[idx1];
+		src[idx1] = p0;
 	}
 }
 

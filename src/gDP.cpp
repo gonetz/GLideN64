@@ -623,26 +623,33 @@ void gDPLoadBlock(u32 tile, u32 uls, u32 ult, u32 lrs, u32 dxt)
 		memcpy(TMEM, &RDRAM[address], bytes); // HACK!
 	else {
 		u32 tmemAddr = gDP.loadTile->tmem;
-
-		if (dxt > 0) {
-			const u32 widthInQWords = (bytes >> 3);
-			u32 height = (widthInQWords * dxt) / 2048;
-			if ((widthInQWords * dxt) % 2048 >= 1024)
-				++height;
-			u32 line = widthInQWords / height;
-			if (widthInQWords % height > height/2)
-				++line;
-			const u32 bpl = line << 3;
-
-			for (u32 y = 0; y < height; ++y) {
-				UnswapCopyWrap(RDRAM, address, (u8*)TMEM, tmemAddr << 3, 0xFFF, bpl);
-				if (y & 1)
-					DWordInterleaveWrap((u32*)TMEM, tmemAddr << 1, 0x3FF, line);
-				address += bpl;
+		UnswapCopyWrap(RDRAM, address, (u8*)TMEM, tmemAddr << 3, 0xFFF, bytes);
+		if (dxt != 0) {
+			u32 dxtCounter = 0;
+			u32 qwords = (bytes >> 3);
+			u32 line = 0;
+			while (true) {
+				do {
+					++tmemAddr;
+					--qwords;
+					if (qwords == 0)
+						goto end_dxt_test;
+					dxtCounter += dxt;
+				} while ((dxtCounter & 0x800) == 0);
+				do {
+					++line;
+					--qwords;
+					if (qwords == 0)
+						goto end_dxt_test;
+					dxtCounter += dxt;
+				} while ((dxtCounter & 0x800) != 0);
+				DWordInterleaveWrap((u32*)TMEM, tmemAddr << 1, 0x3FF, line);
 				tmemAddr += line;
+				line = 0;
 			}
-		} else
-			UnswapCopyWrap(RDRAM, address, (u8*)TMEM, tmemAddr << 3, 0xFFF, bytes);
+			end_dxt_test:
+				DWordInterleaveWrap((u32*)TMEM, tmemAddr << 1, 0x3FF, line);
+		}
 	}
 #ifdef DEBUG
 	DebugMsg( DEBUG_HIGH | DEBUG_HANDLED | DEBUG_TEXTURE, "gDPLoadBlock( %i, %i, %i, %i, %i );\n",
