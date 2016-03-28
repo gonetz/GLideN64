@@ -1532,9 +1532,19 @@ void gSPModifyVertex( u32 _vtx, u32 _where, u32 _val )
 		case G_MWO_POINT_XYSCREEN:
 		{
 			vtx0.x = _FIXED2FLOAT((s16)_SHIFTR(_val, 16, 16), 2);
+			bool outOfViewport = (vtx0.x < gSP.viewport.x || vtx0.x > gSP.viewport.width + gSP.viewport.x);
 			vtx0.y = _FIXED2FLOAT((s16)_SHIFTR(_val, 0, 16), 2);
+			outOfViewport |= (vtx0.y < gSP.viewport.y || vtx0.y > gSP.viewport.height + gSP.viewport.y);
+			if (!outOfViewport) {
+				vtx0.x = (vtx0.x - gSP.viewport.vtrans[0]) / gSP.viewport.vscale[0];
+				vtx0.x *= vtx0.w;
+				vtx0.y = -(vtx0.y - gSP.viewport.vtrans[1]) / gSP.viewport.vscale[1];
+				vtx0.y *= vtx0.w;
+			}
+			else {
+				vtx0.modify |= MODIFY_XY;
+			}
 			vtx0.clip &= ~(CLIP_POSX | CLIP_NEGX | CLIP_POSY | CLIP_NEGY);
-			vtx0.modify |= MODIFY_XY;
 		}
 		break;
 		case G_MWO_POINT_ZSCREEN:

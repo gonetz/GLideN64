@@ -130,7 +130,12 @@ public:
 	void dropRenderState() {m_renderState = rsNone;}
 
 private:
-	OGLRender() : m_oglRenderer(glrOther), m_bImageTexture(false), m_bFlatColors(false) {}
+	OGLRender()
+		: m_oglRenderer(glrOther)
+		, m_modifyVertices(0)
+		, m_bImageTexture(false)
+		, m_bFlatColors(false) {
+	}
 	OGLRender(const OGLRender &);
 	friend class OGLVideo;
 
@@ -172,6 +177,7 @@ private:
 	RENDER_STATE m_renderState;
 	OGL_RENDERER m_oglRenderer;
 	GLVertex m_rect[4];
+	u32 m_modifyVertices;
 	bool m_bImageTexture;
 	bool m_bFlatColors;
 };

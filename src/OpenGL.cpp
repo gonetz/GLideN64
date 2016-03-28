@@ -319,6 +319,9 @@ void OGLRender::addTriangle(int _v0, int _v1, int _v2)
 	triangles.elements[triangles.num++] = _v0;
 	triangles.elements[triangles.num++] = _v1;
 	triangles.elements[triangles.num++] = _v2;
+	m_modifyVertices |= triangles.vertices[_v0].modify |
+		triangles.vertices[_v1].modify |
+		triangles.vertices[_v2].modify;
 
 	if ((gSP.geometryMode & G_LIGHTING) == 0) {
 		if ((gSP.geometryMode & G_SHADE) == 0) {
@@ -729,6 +732,9 @@ void OGLRender::_prepareDrawTriangle(bool _dma)
 		glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 #endif // GL_IMAGE_TEXTURES_SUPPORT
 
+	if ((m_modifyVertices & MODIFY_XY) != 0)
+		gSP.changed &= ~CHANGED_VIEWPORT;
+
 	if (gSP.changed || gDP.changed)
 		_updateStates(rsTriangle);
 
@@ -771,8 +777,9 @@ void OGLRender::_prepareDrawTriangle(bool _dma)
 			glVertexAttribPointer(SC_COLOR, 4, GL_FLOAT, GL_FALSE, sizeof(SPVertex), &pVtx->r);
 	}
 
-	if ((triangles.vertices[0].modify & MODIFY_XY) != 0)
+	if ((m_modifyVertices & MODIFY_XY) != 0)
 		_updateScreenCoordsViewport();
+	m_modifyVertices = 0;
 }
 
 bool OGLRender::_canDraw() const
@@ -789,6 +796,7 @@ void OGLRender::drawLLETriangle(u32 _numVtx)
 		SPVertex & vtx = triangles.vertices[i];
 		vtx.modify = MODIFY_ALL;
 	}
+	m_modifyVertices = MODIFY_ALL;
 
 	gSP.changed &= ~CHANGED_GEOMETRYMODE; // Don't update cull mode
 	_prepareDrawTriangle(false);
