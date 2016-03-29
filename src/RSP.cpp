@@ -343,6 +343,8 @@ void RSP_Init()
 	else if (strstr(RSP.romname, (const char *)"Perfect Dark") != NULL ||
 			 strstr(RSP.romname, (const char *)"PERFECT DARK") != NULL)
 		config.generalEmulation.hacks |= hack_rectDepthBufferCopyPD;
+	else if (strstr(RSP.romname, (const char *)"Jeremy McGrath Super") != NULL)
+		config.generalEmulation.hacks |= hack_ModifyVertexXyInShader;
 
 	api().FindPluginPath(RSP.pluginpath);
 
