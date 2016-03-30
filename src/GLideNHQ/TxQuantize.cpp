@@ -119,16 +119,16 @@ TxQuantize::ARGB4444_ARGB8888(uint32* src, uint32* dest, int width, int height)
 	int siz = (width * height) >> 1;
 	int i;
 	for (i = 0; i < siz; i++) {
-		*dest = ((*src & 0x0000f000) << 12) |
-				((*src & 0x00000f00) << 8) |
-				((*src & 0x000000f0) << 4) |
-				(*src & 0x0000000f);
-		*dest |= (*dest << 4);
+		*dest = ((*src & 0x0000f000) >> 8 ) |
+				((*src & 0x00000f00) << 4 ) |
+				((*src & 0x000000f0) << 16) |
+				((*src & 0x0000000f) << 28);
+		*dest |= (*dest >> 4);
 		dest++;
-		*dest = ((*src & 0xf0000000) |
-				 ((*src & 0x0f000000) >> 4) |
-				 ((*src & 0x00f00000) >> 8) |
-				 ((*src & 0x000f0000) >> 12));
+		*dest =  ((*src & 0xf0000000) >> 24) |
+				 ((*src & 0x0f000000) >> 12) |
+				 ((*src & 0x00f00000) >> 0 ) |
+				 ((*src & 0x000f0000) << 12);
 		*dest |= (*dest >> 4);
 		dest++;
 		src++;
