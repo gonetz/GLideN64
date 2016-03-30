@@ -205,7 +205,10 @@ void RSP_ProcessDList()
 #endif
 
 			RSP.PC[RSP.PCi] += 8;
-			RSP.nextCmd = _SHIFTR(*(u32*)&RDRAM[RSP.PC[RSP.PCi]], 24, 8);
+			u32 pci = RSP.PCi;
+			if (RSP.count == 1)
+				--pci;
+			RSP.nextCmd = _SHIFTR(*(u32*)&RDRAM[RSP.PC[pci]], 24, 8);
 
 			GBI.cmd[RSP.cmd](RSP.w0, RSP.w1);
 			RSP_CheckDLCounter();
