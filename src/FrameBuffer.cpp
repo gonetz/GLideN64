@@ -835,7 +835,6 @@ void FrameBufferList::renderBuffer(u32 _address)
 		dstCoord[0] += 1; // workaround for Adreno's issue with glBindFramebuffer;
 #endif // GLESX
 
-	render.updateScissor(pBuffer);
 	PostProcessor::get().doGammaCorrection(pBuffer);
 	PostProcessor::get().doBlur(pBuffer);
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);

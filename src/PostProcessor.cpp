@@ -478,7 +478,7 @@ PostProcessor & PostProcessor::get()
 	return processor;
 }
 
-void _setGLState() {
+void _setGLState(FrameBuffer * _pBuffer) {
 	glDisable(GL_DEPTH_TEST);
 	glDisable(GL_BLEND);
 
@@ -499,13 +499,14 @@ void _setGLState() {
 	glDisableVertexAttribArray(SC_NUMLIGHTS);
 	glDisableVertexAttribArray(SC_MODIFY);
 	glViewport(0, 0, video().getWidth(), video().getHeight());
+	glScissor(0, 0, _pBuffer->m_pTexture->realWidth, _pBuffer->m_pTexture->realHeight);
 	gSP.changed |= CHANGED_VIEWPORT;
-	gDP.changed |= CHANGED_RENDERMODE;
+	gDP.changed |= CHANGED_RENDERMODE | CHANGED_SCISSOR;
 }
 
 void PostProcessor::_preDraw(FrameBuffer * _pBuffer)
 {
-	_setGLState();
+	_setGLState(_pBuffer);
 	OGLVideo & ogl = video();
 
 #ifdef GLES2
