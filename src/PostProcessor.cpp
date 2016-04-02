@@ -42,27 +42,6 @@ SHADER_VERSION
 "}                                                      \n"
 ;
 
-static const char* copyShader =
-SHADER_VERSION
-"#if (__VERSION__ > 120)		\n"
-"# define IN in					\n"
-"# define OUT out				\n"
-"# define texture2D texture		\n"
-"#else							\n"
-"# define IN varying			\n"
-"# define OUT					\n"
-"#endif // __VERSION __			\n"
-"IN mediump vec2 vTexCoord;                             \n"
-"uniform sampler2D Sample0;				                \n"
-"OUT lowp vec4 fragColor;								\n"
-"                                                       \n"
-"void main()                                            \n"
-"{                                                      \n"
-"    fragColor = texture2D(Sample0, vTexCoord);         \n"
-FRAGMENT_SHADER_END
-"}							                            \n"
-;
-
 static const char* extractBloomShader =
 SHADER_VERSION
 "#if (__VERSION__ > 120)		\n"
@@ -337,34 +316,27 @@ PostProcessor::PostProcessor()
 	, m_seperableBlurProgram(0)
 	, m_glowProgram(0)
 	, m_bloomProgram(0)
-	, m_copyProgram(0)
 	, m_gammaCorrectionProgram(0)
 	, m_pResultBuffer(nullptr)
-	, m_FBO_original(0)
+	, m_FBO_resolved(0)
 	, m_FBO_glowMap(0)
 	, m_FBO_blur(0)
 	, m_pTextureOriginal(nullptr)
+	, m_pTextureResolved(nullptr)
 	, m_pTextureGlowMap(nullptr)
 	, m_pTextureBlur(nullptr)
 {}
 
 void PostProcessor::_initCommon()
 {
-	m_pTextureOriginal = _createTexture();
-	m_FBO_original = _createFBO(m_pTextureOriginal);
+	if (config.video.multisampling != 0) {
+		m_pTextureResolved = _createTexture();
+		m_FBO_resolved = _createFBO(m_pTextureResolved);
+	}
 
 	m_pResultBuffer = new FrameBuffer();
 	_initTexture(m_pResultBuffer->m_pTexture);
 	_initFBO(m_pResultBuffer->m_FBO, m_pResultBuffer->m_pTexture);
-
-#ifdef GLES2
-	m_copyProgram = _createShaderProgram(vertexShader, copyShader);
-	glUseProgram(m_copyProgram);
-	int loc = glGetUniformLocation(m_copyProgram, "Sample0");
-	assert(loc >= 0);
-	glUniform1i(loc, 0);
-	glUseProgram(0);
-#endif
 
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 }
@@ -446,20 +418,18 @@ void PostProcessor::init()
 
 void PostProcessor::_destroyCommon()
 {
-	if (m_copyProgram != 0)
-		glDeleteProgram(m_copyProgram);
-	m_copyProgram = 0;
+	if (m_FBO_resolved != 0)
+		glDeleteFramebuffers(1, &m_FBO_resolved);
+	m_FBO_resolved = 0;
 
-	if (m_FBO_original != 0)
-		glDeleteFramebuffers(1, &m_FBO_original);
-	m_FBO_original = 0;
-
-	if (m_pTextureOriginal != nullptr)
-		textureCache().removeFrameBufferTexture(m_pTextureOriginal);
-	m_pTextureOriginal = nullptr;
+	if (m_pTextureResolved != nullptr)
+		textureCache().removeFrameBufferTexture(m_pTextureResolved);
+	m_pTextureResolved = nullptr;
 
 	delete m_pResultBuffer;
 	m_pResultBuffer = nullptr;
+
+	m_pTextureOriginal = nullptr;
 }
 
 void PostProcessor::_destroyGammaCorrection()
@@ -554,19 +524,19 @@ void PostProcessor::_preDraw(FrameBuffer * _pBuffer)
 	m_pResultBuffer->m_height = _pBuffer->m_height;
 	m_pResultBuffer->m_scaleX = _pBuffer->m_scaleX;
 	m_pResultBuffer->m_scaleY = _pBuffer->m_scaleY;
-
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_FBO_original);
-	textureCache().activateTexture(0, _pBuffer->m_pTexture);
-	glUseProgram(m_copyProgram);
-	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+	m_pTextureOriginal = _pBuffer->m_pTexture;
 #else
-	glBindFramebuffer(GL_READ_FRAMEBUFFER, _pBuffer->m_FBO);
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_FBO_original);
-	glBlitFramebuffer(
-		0, 0, ogl.getWidth(), ogl.getHeight(),
-		0, 0, ogl.getWidth(), ogl.getHeight(),
-		GL_COLOR_BUFFER_BIT, GL_LINEAR
-	);
+	if (config.video.multisampling != 0) {
+		glBindFramebuffer(GL_READ_FRAMEBUFFER, _pBuffer->m_FBO);
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_FBO_resolved);
+		glBlitFramebuffer(
+			0, 0, ogl.getWidth(), ogl.getHeight(),
+			0, 0, ogl.getWidth(), ogl.getHeight(),
+			GL_COLOR_BUFFER_BIT, GL_LINEAR
+			);
+		m_pTextureOriginal = m_pTextureResolved;
+	} else
+		m_pTextureOriginal = _pBuffer->m_pTexture;
 #endif
 
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);

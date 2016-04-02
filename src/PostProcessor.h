@@ -34,17 +34,17 @@ private:
 	GLuint m_seperableBlurProgram;
 	GLuint m_glowProgram;
 	GLuint m_bloomProgram;
-	GLuint m_copyProgram;
 
 	GLuint m_gammaCorrectionProgram;
 
 	FrameBuffer * m_pResultBuffer;
 
-	GLuint m_FBO_original;
+	GLuint m_FBO_resolved;
 	GLuint m_FBO_glowMap;
 	GLuint m_FBO_blur;
 
 	CachedTexture * m_pTextureOriginal;
+	CachedTexture * m_pTextureResolved;
 	CachedTexture * m_pTextureGlowMap;
 	CachedTexture * m_pTextureBlur;
 };
