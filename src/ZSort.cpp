@@ -459,7 +459,7 @@ void ZSort_SetTexture()
 	gSP.texture.on = 1;
 	gSP.texture.tile = 0;
 
-	gSPSetGeometryMode(0x0200);
+	gSPSetGeometryMode(G_SHADING_SMOOTH | G_SHADE);
 }
 
 void ZSort_MoveMem( u32 _w0, u32 _w1 )
