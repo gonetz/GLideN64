@@ -789,13 +789,16 @@ void gDPFillRectangle( s32 ulx, s32 uly, s32 lrx, s32 lry )
 			render.drawRect(ulx, uly, lrx, lry, fillColor);
 	}
 
-	if (gDP.otherMode.cycleType == G_CYC_FILL) {
-		if (lry > (u32)gDP.scissor.lry)
-			gDP.colorImage.height = (u32)max(gDP.colorImage.height, (u32)gDP.scissor.lry);
+	if (lrx == gDP.colorImage.width) {
+		if (gDP.otherMode.cycleType == G_CYC_FILL) {
+			if (lry > (u32)gDP.scissor.lry)
+				gDP.colorImage.height = (u32)max(gDP.colorImage.height, (u32)gDP.scissor.lry);
+			else
+				gDP.colorImage.height = (u32)max((s32)gDP.colorImage.height, lry);
+		}
 		else
-			gDP.colorImage.height = (u32)max((s32)gDP.colorImage.height, lry);
-	} else
-		gDP.colorImage.height = max( gDP.colorImage.height, (u32)gDP.scissor.lry );
+			gDP.colorImage.height = max(gDP.colorImage.height, (u32)gDP.scissor.lry);
+	}
 
 #ifdef DEBUG
 	DebugMsg( DEBUG_HIGH | DEBUG_HANDLED, "gDPFillRectangle( %i, %i, %i, %i );\n",
