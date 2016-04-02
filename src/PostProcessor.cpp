@@ -285,9 +285,8 @@ GLuint _createShaderProgram(const char * _strVertex, const char * _strFragment)
 }
 
 static
-CachedTexture * _createTexture()
+void _initTexture(CachedTexture * pTexture)
 {
-	CachedTexture * pTexture = textureCache().addFrameBufferTexture();
 	pTexture->format = G_IM_FMT_RGBA;
 	pTexture->clampS = 1;
 	pTexture->clampT = 1;
@@ -306,7 +305,22 @@ CachedTexture * _createTexture()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+static
+CachedTexture * _createTexture()
+{
+	CachedTexture * pTexture = textureCache().addFrameBufferTexture();
+	_initTexture(pTexture);
 	return pTexture;
+}
+
+static
+void _initFBO(GLuint _FBO, CachedTexture * _pTexture)
+{
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, _FBO);
+	glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _pTexture->glName, 0);
+	assert(checkFBO());
 }
 
 static
@@ -314,16 +328,34 @@ GLuint _createFBO(CachedTexture * _pTexture)
 {
 	GLuint FBO;
 	glGenFramebuffers(1, &FBO);
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, FBO);
-	glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _pTexture->glName, 0);
-	assert(checkFBO());
+	_initFBO(FBO, _pTexture);
 	return FBO;
 }
+
+PostProcessor::PostProcessor()
+	: m_extractBloomProgram(0)
+	, m_seperableBlurProgram(0)
+	, m_glowProgram(0)
+	, m_bloomProgram(0)
+	, m_copyProgram(0)
+	, m_gammaCorrectionProgram(0)
+	, m_pResultBuffer(nullptr)
+	, m_FBO_original(0)
+	, m_FBO_glowMap(0)
+	, m_FBO_blur(0)
+	, m_pTextureOriginal(nullptr)
+	, m_pTextureGlowMap(nullptr)
+	, m_pTextureBlur(nullptr)
+{}
 
 void PostProcessor::_initCommon()
 {
 	m_pTextureOriginal = _createTexture();
 	m_FBO_original = _createFBO(m_pTextureOriginal);
+
+	m_pResultBuffer = new FrameBuffer();
+	_initTexture(m_pResultBuffer->m_pTexture);
+	_initFBO(m_pResultBuffer->m_FBO, m_pResultBuffer->m_pTexture);
 
 #ifdef GLES2
 	m_copyProgram = _createShaderProgram(vertexShader, copyShader);
@@ -424,6 +456,10 @@ void PostProcessor::_destroyCommon()
 
 	if (m_pTextureOriginal != nullptr)
 		textureCache().removeFrameBufferTexture(m_pTextureOriginal);
+	m_pTextureOriginal = nullptr;
+
+	delete m_pResultBuffer;
+	m_pResultBuffer = nullptr;
 }
 
 void PostProcessor::_destroyGammaCorrection()
@@ -438,12 +474,15 @@ void PostProcessor::_destroyBlur()
 	if (m_extractBloomProgram != 0)
 		glDeleteProgram(m_extractBloomProgram);
 	m_extractBloomProgram = 0;
+
 	if (m_seperableBlurProgram != 0)
 		glDeleteProgram(m_seperableBlurProgram);
 	m_seperableBlurProgram = 0;
+
 	if (m_glowProgram != 0)
 		glDeleteProgram(m_glowProgram);
 	m_glowProgram = 0;
+
 	if (m_bloomProgram != 0)
 		glDeleteProgram(m_bloomProgram);
 	m_bloomProgram = 0;
@@ -451,14 +490,15 @@ void PostProcessor::_destroyBlur()
 	if (m_FBO_glowMap != 0)
 		glDeleteFramebuffers(1, &m_FBO_glowMap);
 	m_FBO_glowMap = 0;
+
 	if (m_FBO_blur != 0)
 		glDeleteFramebuffers(1, &m_FBO_blur);
 	m_FBO_blur = 0;
 
-	m_pTextureOriginal = nullptr;
 	if (m_pTextureGlowMap != nullptr)
 		textureCache().removeFrameBufferTexture(m_pTextureGlowMap);
 	m_pTextureGlowMap = nullptr;
+
 	if (m_pTextureBlur != nullptr)
 		textureCache().removeFrameBufferTexture(m_pTextureBlur);
 	m_pTextureBlur = nullptr;
@@ -510,6 +550,11 @@ void PostProcessor::_preDraw(FrameBuffer * _pBuffer)
 	OGLVideo & ogl = video();
 
 #ifdef GLES2
+	m_pResultBuffer->m_width = _pBuffer->m_width;
+	m_pResultBuffer->m_height = _pBuffer->m_height;
+	m_pResultBuffer->m_scaleX = _pBuffer->m_scaleX;
+	m_pResultBuffer->m_scaleY = _pBuffer->m_scaleY;
+
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_FBO_original);
 	textureCache().activateTexture(0, _pBuffer->m_pTexture);
 	glUseProgram(m_copyProgram);
@@ -534,13 +579,18 @@ void PostProcessor::_postDraw()
 	glUseProgram(0);
 }
 
-void PostProcessor::doBlur(FrameBuffer * _pBuffer)
+FrameBuffer * PostProcessor::doBlur(FrameBuffer * _pBuffer)
 {
-	if (config.bloomFilter.enable == 0)
-		return;
+	if (_pBuffer == nullptr)
+		return nullptr;
 
-	if (_pBuffer == nullptr || (_pBuffer->m_postProcessed&PostProcessor::postEffectBlur) == PostProcessor::postEffectBlur)
-		return;
+	m_pResultBuffer->m_postProcessed = _pBuffer->m_postProcessed;
+
+	if (config.bloomFilter.enable == 0)
+		return _pBuffer;
+
+	if ((_pBuffer->m_postProcessed&PostProcessor::postEffectBlur) == PostProcessor::postEffectBlur)
+		return m_pResultBuffer;
 
 	_pBuffer->m_postProcessed |= PostProcessor::postEffectBlur;
 
@@ -564,33 +614,40 @@ void PostProcessor::doBlur(FrameBuffer * _pBuffer)
 	glUniform1i(loc, 1);
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, _pBuffer->m_FBO);
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_pResultBuffer->m_FBO);
 	textureCache().activateTexture(0, m_pTextureOriginal);
 	textureCache().activateTexture(1, m_pTextureGlowMap);
 	glUseProgram(m_glowProgram);
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
 	_postDraw();
+	m_pResultBuffer->m_postProcessed = _pBuffer->m_postProcessed;
+	return m_pResultBuffer;
 }
 
-
-
-void PostProcessor::doGammaCorrection(FrameBuffer * _pBuffer)
+FrameBuffer * PostProcessor::doGammaCorrection(FrameBuffer * _pBuffer)
 {
-	if (((*REG.VI_STATUS & 8)|config.gammaCorrection.force) == 0)
-		return;
+	if (_pBuffer == nullptr)
+		return nullptr;
 
-	if (_pBuffer == nullptr || (_pBuffer->m_postProcessed&PostProcessor::postEffectGammaCorrection) == PostProcessor::postEffectGammaCorrection)
-		return;
+	m_pResultBuffer->m_postProcessed = _pBuffer->m_postProcessed;
+
+	if (((*REG.VI_STATUS & 8) | config.gammaCorrection.force) == 0)
+		return _pBuffer;
+
+	if ((_pBuffer->m_postProcessed&PostProcessor::postEffectGammaCorrection) == PostProcessor::postEffectGammaCorrection)
+		return m_pResultBuffer;
 
 	_pBuffer->m_postProcessed |= PostProcessor::postEffectGammaCorrection;
 
 	_preDraw(_pBuffer);
 
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, _pBuffer->m_FBO);
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_pResultBuffer->m_FBO);
 	textureCache().activateTexture(0, m_pTextureOriginal);
 	glUseProgram(m_gammaCorrectionProgram);
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
 	_postDraw();
+	m_pResultBuffer->m_postProcessed = _pBuffer->m_postProcessed;
+	return m_pResultBuffer;
 }
