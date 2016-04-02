@@ -153,6 +153,7 @@ struct Config
 #define hack_skipVIChangeCheck		(1<<11) //Don't reset FBO when VI parameters changed. Zelda MM
 #define hack_ZeldaCamera			(1<<12) //Special hack to detect and process Zelda MM camera.
 #define hack_ModifyVertexXyInShader	(1<<13) //Pass screen coordinates provided in gSPModifyVertex to vertes shader.
+#define hack_legoRacers				(1<<14)  //LEGO racers course map
 
 extern Config config;
 

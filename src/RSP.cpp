@@ -337,6 +337,8 @@ void RSP_Init()
 			 strstr(RSP.romname, (const char *)"ZELDA MASTER QUEST") != NULL ||
 			 strstr(RSP.romname, (const char *)"DOUBUTSUNOMORI") != NULL)
 		config.generalEmulation.hacks |= hack_subscreen;
+	else if (strstr(RSP.romname, (const char *)"LEGORacers") != NULL)
+		config.generalEmulation.hacks |= hack_legoRacers;
 	else if (strstr(RSP.romname, (const char *)"Blast") != NULL)
 		config.generalEmulation.hacks |= hack_blastCorps;
 	else if (strstr(RSP.romname, (const char *)"SPACE INVADERS") != NULL)
