@@ -466,7 +466,7 @@ void FrameBufferList::correctHeight()
 			m_pCurrent->reinit((u32)gDP.scissor.lry);
 
 			if (m_pCurrent->_isMarioTennisScoreboard())
-				g_RDRAMtoFB.CopyFromRDRAM(m_pCurrent->m_startAddress + 4, false);
+				g_RDRAMtoFB.CopyFromRDRAM(m_pCurrent->m_startAddress + 4, true);
 			gSP.changed |= CHANGED_VIEWPORT;
 		}
 		m_pCurrent->m_needHeightCorrection = false;
@@ -598,7 +598,7 @@ void FrameBufferList::saveBuffer(u32 _address, u16 _format, u16 _size, u16 _widt
 		m_pCurrent = &buffer;
 
 		if (m_pCurrent->_isMarioTennisScoreboard())
-			g_RDRAMtoFB.CopyFromRDRAM(m_pCurrent->m_startAddress + 4, false);
+			g_RDRAMtoFB.CopyFromRDRAM(m_pCurrent->m_startAddress + 4, true);
 	}
 
 	if (_address == gDP.depthImageAddress)
