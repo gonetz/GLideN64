@@ -344,8 +344,9 @@ TxFilter::filter(uint8 *src, int srcwidth, int srcheight, uint16 srcformat, uint
 			/*
 	   * texture (re)conversions
 	   */
-			if (destformat == GL_RGBA8) {
-				if (srcformat == GL_RGBA8 && (_maxbpp < 32 || _options & FORCE16BPP_TEX)) srcformat = GL_RGBA4;
+			if (destformat == GL_RGBA8 && (_maxbpp < 32 || _options & FORCE16BPP_TEX)) {
+				if (srcformat == GL_RGBA8)
+					srcformat = GL_RGBA4;
 				if (srcformat != GL_RGBA8) {
 					tmptex = (texture == _tex1) ? _tex2 : _tex1;
 					if (!_txQuantize->quantize(texture, tmptex, srcwidth, srcheight, GL_RGBA8, srcformat)) {
