@@ -116,9 +116,8 @@ TxQuantize::ARGB1555_ARGB8888(uint32* src, uint32* dest, int width, int height)
 void
 TxQuantize::ARGB4444_ARGB8888(uint32* src, uint32* dest, int width, int height)
 {
-	int siz = (width * height) >> 1;
-	int i;
-	for (i = 0; i < siz; i++) {
+	const int siz = (width * height) >> 1;
+	for (int i = 0; i < siz; ++i) {
 		*dest = ((*src & 0x0000f000) >> 8 ) |
 				((*src & 0x00000f00) << 4 ) |
 				((*src & 0x000000f0) << 16) |
@@ -257,18 +256,17 @@ TxQuantize::ARGB8888_ARGB1555(uint32* src, uint32* dest, int width, int height)
 void
 TxQuantize::ARGB8888_ARGB4444(uint32* src, uint32* dest, int width, int height)
 {
-	int siz = (width * height) >> 1;
-	int i;
-	for (i = 0; i < siz; i++) {
-		*dest = (((*src & 0xf0000000) >> 16) |
-				 ((*src & 0x00f00000) >> 12) |
-				 ((*src & 0x0000f000) >> 8) |
-				 ((*src & 0x000000f0) >> 4));
+	const int siz = (width * height) >> 1;
+	for (int i = 0; i < siz; ++i) {
+		*dest = (((*src & 0xf0000000) >> 28) |
+				 ((*src & 0x00f00000) >> 16) |
+				 ((*src & 0x0000f000) >> 4)  |
+				 ((*src & 0x000000f0) << 8));
 		src++;
-		*dest |= ((*src & 0xf0000000) |
-				  ((*src & 0x00f00000) << 4) |
-				  ((*src & 0x0000f000) << 8) |
-				  ((*src & 0x000000f0) << 12));
+		*dest |= (((*src & 0xf0000000) >> 12) |
+				  ((*src & 0x00f00000) << 0)  |
+				  ((*src & 0x0000f000) << 12) |
+				  ((*src & 0x000000f0) << 24));
 		src++;
 		dest++;
 	}
