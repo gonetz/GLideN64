@@ -210,7 +210,7 @@ boolean ext_ghq_reloadhirestex();
 
 typedef unsigned char  uint8;
 typedef unsigned short uint16;
-typedef unsigned long  uint32;
+typedef unsigned int  uint32;
 
 #ifdef __cplusplus
 extern "C"{

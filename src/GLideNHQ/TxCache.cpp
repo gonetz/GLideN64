@@ -91,7 +91,7 @@ TxCache::add(uint64 checksum, GHQTexInfo *info, int dataSize)
 
 		if (_options & (GZ_TEXCACHE|GZ_HIRESTEXCACHE)) {
 			/* zlib compress it. compression level:1 (best speed) */
-			uint32 destLen = _gzdestLen;
+			uLongf destLen = _gzdestLen;
 			dest = (dest == _gzdest0) ? _gzdest1 : _gzdest0;
 			if (compress2(dest, &destLen, info->data, dataSize, 1) != Z_OK) {
 				dest = info->data;
@@ -203,7 +203,7 @@ TxCache::get(uint64 checksum, GHQTexInfo *info)
 
 		/* zlib decompress it */
 		if (info->format & GL_TEXFMT_GZ) {
-			uint32 destLen = _gzdestLen;
+			uLongf destLen = _gzdestLen;
 			uint8 *dest = (_gzdest0 == info->data) ? _gzdest1 : _gzdest0;
 			if (uncompress(dest, &destLen, info->data, ((*itMap).second)->size) != Z_OK) {
 				DBG_INFO(80, wst("Error: zlib decompression failed!\n"));

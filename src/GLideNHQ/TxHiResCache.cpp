@@ -278,9 +278,9 @@ TxHiResCache::loadHiResTextures(const wchar_t * dir_path, boolean replace)
 	pfname = strstr(fname, ident.c_str());
 	if (pfname != fname) pfname = 0;
 	if (pfname) {
-      if (sscanf(pfname + ident.size(), "#%08lX#%01lX#%01lX#%08lX", &chksum, &fmt, &siz, &palchksum) == 4)
+	  if (sscanf(pfname + ident.size(), "#%08X#%01X#%01X#%08X", &chksum, &fmt, &siz, &palchksum) == 4)
 		pfname += (ident.size() + CRCFMTSIZ_LEN + PALCRC_LEN);
-      else if (sscanf(pfname + ident.size(), "#%08lX#%01lX#%01lX", &chksum, &fmt, &siz) == 3)
+	  else if (sscanf(pfname + ident.size(), "#%08X#%01X#%01X", &chksum, &fmt, &siz) == 3)
 		pfname += (ident.size() + CRCFMTSIZ_LEN);
 	  else
 		pfname = 0;
