@@ -1047,7 +1047,6 @@ void TextureCache::_load(u32 _tile, CachedTexture *_pTexture)
 	while (true) {
 		_getTextureDestData(tmptex, pDest, glInternalFormat, GetTexel, &line);
 
-		bool bLoaded = false;
 		if (m_toggleDumpTex &&
 				config.textureFilter.txHiresEnable != 0 &&
 				config.textureFilter.txDump != 0) {
@@ -1056,7 +1055,9 @@ void TextureCache::_load(u32 _tile, CachedTexture *_pTexture)
 					(unsigned short)(_pTexture->format << 8 | _pTexture->size),
 					ricecrc);
 		}
-		else if ((config.textureFilter.txEnhancementMode | config.textureFilter.txFilterMode) != 0 &&
+
+		bool bLoaded = false;
+		if ((config.textureFilter.txEnhancementMode | config.textureFilter.txFilterMode) != 0 &&
 				maxLevel == 0 &&
 				(config.textureFilter.txFilterIgnoreBG == 0 || (RSP.cmd != G_TEXRECT && RSP.cmd != G_TEXRECTFLIP)) &&
 				TFH.isInited())
