@@ -86,13 +86,16 @@ public:
 	{
 		float ulx, uly, lrx, lry;
 		float uls, ult, lrs, lrt;
+		float dsdx, dtdy;
 		bool flip, forceAjustScale;
 		const FrameBuffer * pBuffer;
 		TexturedRectParams(float _ulx, float _uly, float _lrx, float _lry,
 						   float _uls, float _ult, float _lrs, float _lrt,
+						   float _dsdx, float _dtdy,
 						   bool _flip, bool _forceAjustScale, const FrameBuffer * _pBuffer) :
 			ulx(_ulx), uly(_uly), lrx(_lrx), lry(_lry),
 			uls(_uls), ult(_ult), lrs(_lrs), lrt(_lrt),
+			dsdx(_dsdx), dtdy(_dtdy),
 			flip(_flip), forceAjustScale(_forceAjustScale), pBuffer(_pBuffer)
 		{}
 	};

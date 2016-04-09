@@ -932,7 +932,7 @@ void FrameBufferList::renderBuffer(u32 _address)
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-	OGLRender::TexturedRectParams params(0.0f, 0.0f, width, height, 0.0f, 0.0f, width - 1.0f, height - 1.0f, false, false, pFilteredBuffer);
+	OGLRender::TexturedRectParams params(0.0f, 0.0f, width, height, 0.0f, 0.0f, width - 1.0f, height - 1.0f, 1.0f, 1.0f, false, false, pFilteredBuffer);
 	ogl.getRender().drawTexturedRect(params);
 
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
@@ -1782,7 +1782,7 @@ void RDRAMtoFrameBuffer::CopyFromRDRAM(u32 _address, bool _bCFB)
 
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_pCurBuffer->m_FBO);
 	OGLRender::TexturedRectParams params((float)x0, (float)y0, (float)width, (float)height,
-										 0.0f, 0.0f, width - 1.0f, height - 1.0f,
+										 0.0f, 0.0f, width - 1.0f, height - 1.0f, 1.0f, 1.0f,
 										 false, true, m_pCurBuffer);
 	video().getRender().drawTexturedRect(params);
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, frameBufferList().getCurrent()->m_FBO);
