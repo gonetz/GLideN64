@@ -155,6 +155,7 @@ struct Config
 #define hack_ModifyVertexXyInShader	(1<<13) //Pass screen coordinates provided in gSPModifyVertex to vertes shader.
 #define hack_legoRacers				(1<<14) //LEGO racers course map
 #define hack_doNotResetTLUTmode		(1<<15) //Don't set TLUT mode to none after dlist end. Quake 64
+#define hack_LoadDepthTextures		(1<<16) //Load textures for depth buffer
 
 extern Config config;
 

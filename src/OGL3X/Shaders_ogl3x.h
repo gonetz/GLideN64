@@ -673,3 +673,19 @@ MAIN_SHADER_VERSION
 "}														\n"
 ;
 #endif
+
+static const char* depth_texture_fragment_shader =
+MAIN_SHADER_VERSION
+"uniform sampler2D uTex0;						\n"
+"in mediump vec2 vTexCoord0;					\n"
+"void main()									\n"
+"{												\n"
+#ifdef GLESX
+"#ifdef GL_NV_fragdepth							\n"
+"  gl_FragDepth = texture(uTex0, vTexCoord0).r;	\n"
+"#endif											\n"
+#else
+"  gl_FragDepth = texture(uTex0, vTexCoord0).r;	\n"
+#endif
+"}												\n"
+;

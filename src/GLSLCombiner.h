@@ -133,6 +133,7 @@ void DestroyShaderCombiner();
 void SetDepthFogCombiner();
 void SetMonochromeCombiner();
 #endif // GL_IMAGE_TEXTURES_SUPPORT
+bool SetDepthTextureCombiner();
 
 //#define USE_TOONIFY
 

@@ -989,6 +989,18 @@ bool texturedRectDepthBufferCopy(const OGLRender::TexturedRectParams & _params)
 }
 
 static
+bool texturedRectDepthBufferRender(const OGLRender::TexturedRectParams & _params)
+{
+	if (gDP.colorImage.address == gDP.depthImageAddress) {
+		FrameBuffer * pCurBuf = frameBufferList().getCurrent();
+		if (pCurBuf == nullptr || pCurBuf->m_pDepthBuffer == nullptr)
+			return true;
+		return !SetDepthTextureCombiner();
+	}
+	return false;
+}
+
+static
 bool texturedRectCopyToItself(const OGLRender::TexturedRectParams & _params)
 {
 	FrameBuffer * pCurrent = frameBufferList().getCurrent();
@@ -1485,6 +1497,8 @@ void OGLRender::_setSpecialTexrect() const
 		texturedRectSpecial = texturedRectPaletteMod;
 	else if (strstr(name, (const char *)"ZELDA"))
 		texturedRectSpecial = texturedRectMonochromeBackground;
+	else if (strstr(name, (const char *)"quarterback_club_98"))
+		texturedRectSpecial = texturedRectDepthBufferRender;
 	else
 		texturedRectSpecial = NULL;
 }

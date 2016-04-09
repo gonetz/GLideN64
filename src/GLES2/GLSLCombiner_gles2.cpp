@@ -535,3 +535,7 @@ void SetMonochromeCombiner() {
 	}
 	gDP.changed |= CHANGED_COMBINE;
 }
+
+bool SetDepthTextureCombiner() {
+	return false;
+}

@@ -77,6 +77,7 @@ private:
 	bool _loadHiresTexture(u32 _tile, CachedTexture *_pTexture, u64 & _ricecrc);
 	void _loadBackground(CachedTexture *pTexture);
 	bool _loadHiresBackground(CachedTexture *_pTexture);
+	void _loadDepthTexture(CachedTexture * _pTexture, u16* _pDest);
 	void _updateBackground();
 	void _clear();
 	void _initDummyTexture(CachedTexture * _pDummy);

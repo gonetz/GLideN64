@@ -352,6 +352,8 @@ void RSP_Init()
 		config.generalEmulation.hacks |= hack_ModifyVertexXyInShader;
 	else if (strstr(RSP.romname, (const char *)"Quake") != NULL)
 		config.generalEmulation.hacks |= hack_doNotResetTLUTmode;
+	else if (strstr(RSP.romname, (const char *)"quarterback_club_98") != NULL)
+		config.generalEmulation.hacks |= hack_LoadDepthTextures;
 
 	api().FindPluginPath(RSP.pluginpath);
 
