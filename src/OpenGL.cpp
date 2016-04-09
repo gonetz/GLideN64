@@ -335,7 +335,7 @@ void OGLRender::addTriangle(int _v0, int _v1, int _v2)
 			}
 		} else if ((gSP.geometryMode & G_SHADING_SMOOTH) == 0) {
 			// Flat shading
-			SPVertex & vtx0 = triangles.vertices[firstIndex + ((RSP.w1 >> 24) & 3)];
+			SPVertex & vtx0 = triangles.vertices[triangles.elements[firstIndex + ((RSP.w1 >> 24) & 3)]];
 			for (u32 i = firstIndex; i < triangles.num; ++i) {
 				SPVertex & vtx = triangles.vertices[triangles.elements[i]];
 				vtx.r = vtx.flat_r = vtx0.r;
