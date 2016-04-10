@@ -1096,8 +1096,13 @@ bool FrameBufferToRDRAM::_prepareCopy(u32 _startAddress)
 	OGLVideo & ogl = video();
 	const u32 curFrame = ogl.getBuffersSwapCount();
 	FrameBuffer * pBuffer = frameBufferList().findBuffer(_startAddress);
-	if (m_frameCount == curFrame && pBuffer == m_pCurFrameBuffer && m_startAddress != _startAddress)
-		return true;
+
+	if (m_frameCount == curFrame) {
+		if (pBuffer != m_pCurFrameBuffer)
+			return false;
+		if (m_startAddress != _startAddress)
+			return true;
+	}
 
 	if (VI.width == 0 || frameBufferList().getCurrent() == NULL)
 		return false;
