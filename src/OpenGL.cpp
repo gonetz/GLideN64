@@ -1184,10 +1184,17 @@ void OGLRender::drawTexturedRect(const TexturedRectParams & _params)
 
 			glActiveTexture(GL_TEXTURE0 + t);
 
-			if ((cache.current[t]->mirrorS == 0 && cache.current[t]->maskS == 0 && texST[t].s0 < texST[t].s1 && texST[t].s0 >= 0.0 && texST[t].s1 <= (float)cache.current[t]->width) || (cache.current[t]->maskS == 0 && (texST[t].s0 < -1024.0f || texST[t].s1 > 1023.99f)))
+			if ((cache.current[t]->mirrorS == 0 && cache.current[t]->maskS == 0 &&
+				(texST[t].s0 < texST[t].s1 ?
+				texST[t].s0 >= 0.0 && texST[t].s1 <= (float)cache.current[t]->width :
+				texST[t].s1 >= 0.0 && texST[t].s0 <= (float)cache.current[t]->width))
+				|| (cache.current[t]->maskS == 0 && (texST[t].s0 < -1024.0f || texST[t].s1 > 1023.99f)))
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 
-			if (cache.current[t]->mirrorT == 0 && texST[t].t0 < texST[t].t1 && texST[t].t0 >= 0.0f && texST[t].t1 <= (float)cache.current[t]->height)
+			if (cache.current[t]->mirrorT == 0 &&
+				(texST[t].t0 < texST[t].t1 ?
+				texST[t].t0 >= 0.0f && texST[t].t1 <= (float)cache.current[t]->height :
+				texST[t].t1 >= 0.0f && texST[t].t0 <= (float)cache.current[t]->height))
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
 			texST[t].s0 *= cache.current[t]->scaleS;
