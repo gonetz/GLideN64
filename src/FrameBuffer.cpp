@@ -542,10 +542,15 @@ void FrameBufferList::saveBuffer(u32 _address, u16 _format, u16 _size, u16 _widt
 				m_prevColorImageHeight = gDP.colorImage.height;
 			else if (gDP.colorImage.height == 0)
 				gDP.colorImage.height = m_prevColorImageHeight;
+
 			gDP.colorImage.height = min(gDP.colorImage.height, VI.height);
-			m_pCurrent->m_endAddress = min(RDRAMSize, m_pCurrent->m_startAddress + (((m_pCurrent->m_width * gDP.colorImage.height) << m_pCurrent->m_size >> 1) - 1));
-		} else if (m_pCurrent->m_needHeightCorrection && gDP.colorImage.height != 0) {
-			m_pCurrent->m_endAddress = min(RDRAMSize, m_pCurrent->m_startAddress + (((m_pCurrent->m_width * gDP.colorImage.height) << m_pCurrent->m_size >> 1) - 1));
+		}
+
+		//Non-auxiliary buffers are always corrected, auxiliary buffers are correct only if they need correction.
+		//Also, before making any adjustments, make sure gDP.colorImage.height has a valid value.
+		if((!m_pCurrent->isAuxiliary() || m_pCurrent->m_needHeightCorrection) && gDP.colorImage.height != 0)
+		{
+		    m_pCurrent->m_endAddress = min(RDRAMSize, m_pCurrent->m_startAddress + (((m_pCurrent->m_width * gDP.colorImage.height) << m_pCurrent->m_size >> 1) - 1));
 		}
 
 		if (!m_pCurrent->_isMarioTennisScoreboard() && !m_pCurrent->m_isDepthBuffer && !m_pCurrent->m_copiedToRdram && !m_pCurrent->m_cfb && !m_pCurrent->m_cleared && m_pCurrent->m_RdramCopy.empty() && gDP.colorImage.height > 1) {
