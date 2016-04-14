@@ -170,6 +170,7 @@ void ConfigDialog::_init()
 	ui->enhancementComboBox->setCurrentIndex(config.textureFilter.txEnhancementMode);
 
 	ui->textureFilterCacheSpinBox->setValue(config.textureFilter.txCacheSize / gc_uMegabyte);
+	ui->deposterizeCheckBox->setChecked(config.textureFilter.txDeposterize != 0);
 	ui->ignoreBackgroundsCheckBox->setChecked(config.textureFilter.txFilterIgnoreBG != 0);
 
 	ui->texturePackGroupBox->setChecked(config.textureFilter.txHiresEnable != 0);
@@ -339,6 +340,7 @@ void ConfigDialog::accept()
 	config.textureFilter.txEnhancementMode = ui->enhancementComboBox->currentIndex();
 
 	config.textureFilter.txCacheSize = ui->textureFilterCacheSpinBox->value() * gc_uMegabyte;
+	config.textureFilter.txDeposterize = ui->deposterizeCheckBox->isChecked() ? 1 : 0;
 	config.textureFilter.txFilterIgnoreBG = ui->ignoreBackgroundsCheckBox->isChecked() ? 1 : 0;
 
 	config.textureFilter.txHiresEnable = ui->texturePackGroupBox->isChecked() ? 1 : 0;

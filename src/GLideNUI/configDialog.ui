@@ -1131,6 +1131,13 @@
           <item>
            <layout class="QVBoxLayout" name="verticalLayout_12">
             <item>
+             <widget class="QCheckBox" name="deposterizeCheckBox">
+              <property name="text">
+               <string>Deposterize textures</string>
+              </property>
+             </widget>
+            </item>
+            <item>
              <widget class="QCheckBox" name="ignoreBackgroundsCheckBox">
               <property name="toolTip">
                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Ignore Backgrounds:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;It is used to skip enhancement for long narrow textures, usually used for backgrounds. This may save texture memory greatly and increase performance.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;on (off for 'Store' mode)&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -1804,9 +1811,9 @@
  </connections>
  <buttongroups>
   <buttongroup name="bloomBlendModeButtonGroup"/>
-  <buttongroup name="copyFrameBufferButtonGroup"/>
   <buttongroup name="aspectButtonGroup"/>
   <buttongroup name="bilinearButtonGroup"/>
+  <buttongroup name="copyFrameBufferButtonGroup"/>
   <buttongroup name="screenshotButtonGroup"/>
  </buttongroups>
 </ui>
