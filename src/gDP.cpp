@@ -142,10 +142,9 @@ void gDPSetColorImage( u32 format, u32 size, u32 width, u32 address )
 		else if (!RSP.bLLE && gSP.viewport.height > 0)
 			height = gSP.viewport.height;
 		else
-			height = gDP.scissor.lry;
+			height = VI.height > 0 ? VI.height : gDP.scissor.lry;
 
-		if (config.frameBufferEmulation.enable) // && address != gDP.depthImageAddress)
-		{
+		if (config.frameBufferEmulation.enable) {
 				frameBufferList().saveBuffer(address, (u16)format, (u16)size, (u16)width, height, false);
 				gDP.colorImage.height = 0;
 		} else
