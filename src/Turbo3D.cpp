@@ -62,7 +62,7 @@ void Turbo3D_ProcessRDP(u32 _cmds)
 			w0 = ((u32*)RDRAM)[addr++];
 			w1 = ((u32*)RDRAM)[addr++];
 			RSP.cmd = _SHIFTR( w0, 24, 8 );
-			if (RSP.cmd == 0xE4 || RSP.cmd == 0xE5) {
+			if (RSP.cmd == G_TEXRECT || RSP.cmd == G_TEXRECTFLIP) {
 				RDP.w2 = ((u32*)RDRAM)[addr++];
 				RDP.w3 = ((u32*)RDRAM)[addr++];
 			}

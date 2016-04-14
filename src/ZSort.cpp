@@ -46,7 +46,7 @@ void ZSort_RDPCMD( u32, u32 _w1 )
 			if (RSP.cmd == 0xDF)
 				break;
 			u32 w1 = ((u32*)RDRAM)[addr++];
-			if (RSP.cmd == 0xE4 || RSP.cmd == 0xE5) {
+			if (RSP.cmd == G_TEXRECT || RSP.cmd == G_TEXRECTFLIP) {
 				addr++;
 				RDP.w2 = ((u32*)RDRAM)[addr++];
 				addr++;
