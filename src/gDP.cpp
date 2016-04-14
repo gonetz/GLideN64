@@ -839,7 +839,7 @@ void gDPSetKeyGB(u32 cG, u32 sG, u32 wG, u32 cB, u32 sB, u32 wB )
 	CombinerInfo::get().updateKeyColor();
 }
 
-void gDPTextureRectangle( f32 ulx, f32 uly, f32 lrx, f32 lry, s32 tile, f32 s, f32 t, f32 dsdx, f32 dtdy )
+void gDPTextureRectangle(f32 ulx, f32 uly, f32 lrx, f32 lry, s32 tile, f32 s, f32 t, f32 dsdx, f32 dtdy , bool flip)
 {
 	if (gDP.otherMode.cycleType == G_CYC_COPY) {
 		dsdx = 1.0f;
@@ -859,7 +859,7 @@ void gDPTextureRectangle( f32 ulx, f32 uly, f32 lrx, f32 lry, s32 tile, f32 s, f
 		s = 0.0f;
 
 	f32 lrs, lrt;
-	if (RSP.cmd == G_TEXRECTFLIP) {
+	if (flip) {
 		lrs = s + (lry - uly - 1) * dsdx;
 		lrt = t + (lrx - ulx - 1) * dtdy;
 	} else {
@@ -868,7 +868,7 @@ void gDPTextureRectangle( f32 ulx, f32 uly, f32 lrx, f32 lry, s32 tile, f32 s, f
 	}
 
 	OGLRender::TexturedRectParams params(ulx, uly, lrx, lry, s, t, lrs, lrt, fabsf(dsdx), fabsf(dtdy),
-                                        (RSP.cmd == G_TEXRECTFLIP), false, frameBufferList().getCurrent());
+										flip, false, frameBufferList().getCurrent());
 	video().getRender().drawTexturedRect(params);
 
 	gSP.textureTile[0] = textureTileOrg[0];
@@ -881,18 +881,12 @@ void gDPTextureRectangle( f32 ulx, f32 uly, f32 lrx, f32 lry, s32 tile, f32 s, f
 		gDP.colorImage.height = max( gDP.colorImage.height, (u32)gDP.scissor.lry );
 
 #ifdef DEBUG
-	DebugMsg( DEBUG_HIGH | DEBUG_HANDLED, "gDPTextureRectangle( %f, %f, %f, %f, %i, %i, %f, %f, %f, %f );\n",
-		ulx, uly, lrx, lry, tile, s, t, dsdx, dtdy );
-#endif
-}
-
-void gDPTextureRectangleFlip( f32 ulx, f32 uly, f32 lrx, f32 lry, s32 tile, f32 s, f32 t, f32 dsdx, f32 dtdy )
-{
-	gDPTextureRectangle( ulx, uly, lrx, lry, tile, s, t, dsdx, dtdy );
-
-#ifdef DEBUG
-	DebugMsg( DEBUG_HIGH | DEBUG_HANDLED, "gDPTextureRectangleFlip( %f, %f, %f, %f, %i, %f, %f, %f, %f);\n",
-			  ulx, uly, lrx, lry, tile, s, t, dsdx, dtdy );
+	if (flip)
+		DebugMsg( DEBUG_HIGH | DEBUG_HANDLED, "gDPTextureRectangleFlip( %f, %f, %f, %f, %i, %f, %f, %f, %f);\n",
+				  ulx, uly, lrx, lry, tile, s, t, dsdx, dtdy );
+	else
+		DebugMsg( DEBUG_HIGH | DEBUG_HANDLED, "gDPTextureRectangle( %f, %f, %f, %f, %i, %i, %f, %f, %f, %f );\n",
+				  ulx, uly, lrx, lry, tile, s, t, dsdx, dtdy );
 #endif
 }
 

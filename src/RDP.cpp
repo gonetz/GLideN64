@@ -290,7 +290,7 @@ void RDP_TexRectFlip( u32 w0, u32 w1 )
 	const u32 lry = _SHIFTR(w0, 0, 12);
 	if ((lrx >> 2) < (ulx >> 2) || (lry >> 2) < (uly >> 2))
 		return;
-	gDPTextureRectangleFlip(
+	gDPTextureRectangle(
 		_FIXED2FLOAT(ulx, 2),
 		_FIXED2FLOAT(uly, 2),
 		_FIXED2FLOAT(lrx, 2),
@@ -299,7 +299,8 @@ void RDP_TexRectFlip( u32 w0, u32 w1 )
 		_FIXED2FLOAT((s16)_SHIFTR(w2, 16, 16), 5),	// s
 		_FIXED2FLOAT((s16)_SHIFTR(w2, 0, 16), 5),	// t
 		_FIXED2FLOAT((s16)_SHIFTR(w3, 16, 16), 10),	// dsdx
-		_FIXED2FLOAT((s16)_SHIFTR(w3, 0, 16), 10));	// dsdy
+		_FIXED2FLOAT((s16)_SHIFTR(w3, 0, 16), 10),	// dsdy
+		true);										//flip
 }
 
 void RDP_TexRect( u32 w0, u32 w1 )
@@ -321,7 +322,8 @@ void RDP_TexRect( u32 w0, u32 w1 )
 		_FIXED2FLOAT((s16)_SHIFTR(w2, 16, 16), 5),	// s
 		_FIXED2FLOAT((s16)_SHIFTR(w2, 0, 16), 5),	// t
 		_FIXED2FLOAT((s16)_SHIFTR(w3, 16, 16), 10),	// dsdx
-		_FIXED2FLOAT((s16)_SHIFTR(w3, 0, 16), 10));	// dsdy
+		_FIXED2FLOAT((s16)_SHIFTR(w3, 0, 16), 10),	// dsdy
+		false);										// flip
 }
 
 void RDP_TriFill( u32 _w0, u32 _w1 )
