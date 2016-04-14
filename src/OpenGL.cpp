@@ -1112,7 +1112,7 @@ void OGLRender::drawTexturedRect(const TexturedRectParams & _params)
 	}
 	currentCombiner()->updateRenderState();
 
-	if (RSP.cmd == G_TEXRECT && texturedRectSpecial != NULL && texturedRectSpecial(_params)) {
+	if (_params.texrectCmd && texturedRectSpecial != NULL && texturedRectSpecial(_params)) {
 		gSP.changed |= CHANGED_GEOMETRYMODE;
 		return;
 	}
