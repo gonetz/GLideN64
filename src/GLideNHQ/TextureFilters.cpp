@@ -23,6 +23,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include <string.h>
 #include "TextureFilters.h"
+#include "TxUtil.h"
 
 /************************************************************************/
 /* 2X filters                                                           */
@@ -675,7 +676,87 @@ void SmoothFilter_4444(uint16 *src, uint32 srcwidth, uint32 srcheight, uint16 *d
 }
 #endif /* !_16BPP_HACK */
 
+// deposterization: smoothes posterized gradients from low-color-depth (e.g. 444, 565, compressed) sources
+// Copyright (c) 2012- PPSSPP Project.
+static
+void deposterizeH(uint32* data, uint32* out, int w, int l, int u) {
+	static const int T = 8;
+	for (int y = l; y < u; ++y) {
+		for (int x = 0; x < w; ++x) {
+			int inpos = y*w + x;
+			uint32 center = data[inpos];
+			if (x == 0 || x == w - 1) {
+				out[y*w + x] = center;
+				continue;
+			}
+			uint32 left = data[inpos - 1];
+			uint32 right = data[inpos + 1];
+			out[y*w + x] = 0;
+			for (int c = 0; c < 4; ++c) {
+				uint8 lc = ((left >> c * 8) & 0xFF);
+				uint8 cc = ((center >> c * 8) & 0xFF);
+				uint8 rc = ((right >> c * 8) & 0xFF);
+				if ((lc != rc) && ((lc == cc && abs((int)((int)rc) - cc) <= T) || (rc == cc && abs((int)((int)lc) - cc) <= T))) {
+					// blend this component
+					out[y*w + x] |= ((rc + lc) / 2) << (c * 8);
+				}
+				else {
+					// no change for this component
+					out[y*w + x] |= cc << (c * 8);
+				}
+			}
+		}
+	}
+}
+
+static
+void deposterizeV(uint32* data, uint32* out, int w, int h, int l, int u) {
+	static const int BLOCK_SIZE = 32;
+	static const int T = 8;
+	for (int xb = 0; xb < w / BLOCK_SIZE + 1; ++xb) {
+		for (int y = l; y < u; ++y) {
+			for (int x = xb*BLOCK_SIZE; x < (xb + 1)*BLOCK_SIZE && x < w; ++x) {
+				uint32 center = data[y    * w + x];
+				if (y == 0 || y == h - 1) {
+					out[y*w + x] = center;
+					continue;
+				}
+				uint32 upper = data[(y - 1) * w + x];
+				uint32 lower = data[(y + 1) * w + x];
+				out[y*w + x] = 0;
+				for (int c = 0; c < 4; ++c) {
+					uint8 uc = ((upper >> c * 8) & 0xFF);
+					uint8 cc = ((center >> c * 8) & 0xFF);
+					uint8 lc = ((lower >> c * 8) & 0xFF);
+					if ((uc != lc) && ((uc == cc && abs((int)((int)lc) - cc) <= T) || (lc == cc && abs((int)((int)uc) - cc) <= T))) {
+						// blend this component
+						out[y*w + x] |= ((lc + uc) / 2) << (c * 8);
+					}
+					else {
+						// no change for this component
+						out[y*w + x] |= cc << (c * 8);
+					}
+				}
+			}
+		}
+	}
+}
+
+static
+void DePosterize(uint32* source, uint32* dest, int width, int height) {
+	uint32 * buf = (uint32*)TxMemBuf::getInstance()->get(3);
+	deposterizeH(source, buf, width, 0, height);
+	deposterizeV(buf, dest, width, height, 0, height);
+	deposterizeH(dest, buf, width, 0, height);
+	deposterizeV(buf, dest, width, height, 0, height);
+}
+
 void filter_8888(uint32 *src, uint32 srcwidth, uint32 srcheight, uint32 *dest, uint32 filter) {
+	if (filter & DEPOSTERIZE) {
+		uint32 * tex = (uint32*)TxMemBuf::getInstance()->get(2);
+		DePosterize(src, tex, srcwidth, srcheight);
+		src = tex;
+	}
 	switch (filter & ENHANCEMENT_MASK) {
 	case BRZ2X_ENHANCEMENT:
 		xbrz::scale(2, (const uint32_t *)const_cast<const uint32 *>(src), (uint32_t *)dest, srcwidth, srcheight, xbrz::ColorFormat::ABGR);

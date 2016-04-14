@@ -1592,6 +1592,8 @@ u32 TextureFilterHandler::_getConfigOptions() const
 		options |= LET_TEXARTISTS_FLY;
 	if (config.textureFilter.txDump)
 		options |= DUMP_TEX;
+	if (config.textureFilter.txDeposterize)
+		options |= DEPOSTERIZE;
 	return options;
 }
 

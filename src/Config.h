@@ -4,14 +4,7 @@
 #include <string>
 #include "Types.h"
 
-#define CONFIG_VERSION_ONE 1U
-#define CONFIG_VERSION_TWO 2U
-#define CONFIG_VERSION_THREE 3U
-#define CONFIG_VERSION_FOUR 4U		// Remove ValidityCheckMethod setting
-#define CONFIG_VERSION_FIVE 5U		// Add shader storage option
-#define CONFIG_VERSION_SIX 6U		// Change gamma correction options
-#define CONFIG_VERSION_SEVEN 7U		// Add FBInfo options
-#define CONFIG_VERSION_CURRENT CONFIG_VERSION_SEVEN
+#define CONFIG_VERSION_CURRENT 8U
 
 #define BILINEAR_3POINT   0
 #define BILINEAR_STANDARD 1
@@ -100,6 +93,7 @@ struct Config
 	{
 		u32 txFilterMode;				// Texture filtering mode, eg Sharpen
 		u32 txEnhancementMode;			// Texture enhancement mode, eg 2xSAI
+		u32 txDeposterize;				// Deposterize texture before enhancement
 		u32 txFilterIgnoreBG;			// Do not apply filtering to backgrounds textures
 		u32 txCacheSize;				// Cache size in Mbytes
 

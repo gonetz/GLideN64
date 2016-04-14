@@ -100,9 +100,8 @@ TxFilter::TxFilter(int maxwidth, int maxheight, int maxbpp, int options,
 	_tex1 = NULL;
 	_tex2 = NULL;
 
-	/* XXX: anything larger than 1024 * 1024 is overkill */
-	_maxwidth  = maxwidth  > 1024 ? 1024 : maxwidth;
-	_maxheight = maxheight > 1024 ? 1024 : maxheight;
+	_maxwidth  = maxwidth  > 4096 ? 4096 : maxwidth;
+	_maxheight = maxheight > 4096 ? 4096 : maxheight;
 	_maxbpp    = maxbpp;
 
 	_cacheSize = cachesize;
@@ -117,7 +116,7 @@ TxFilter::TxFilter(int maxwidth, int maxheight, int maxbpp, int options,
 	if (ident && wcscmp(ident, wst("DEFAULT")) != 0)
 		_ident.assign(ident);
 
-	if (TxMemBuf::getInstance()->init(_maxwidth, _maxheight)) {
+	if (TxMemBuf::getInstance()->init(_maxwidth, _maxheight, (_options & DEPOSTERIZE) ? 1 : 0)) {
 		if (!_tex1)
 			_tex1 = TxMemBuf::getInstance()->get(0);
 
@@ -284,6 +283,7 @@ TxFilter::filter(uint8 *src, int srcwidth, int srcheight, uint16 srcformat, uint
 				num_filters++;
 			}
 
+			filter |= _options & DEPOSTERIZE;
 			/*
 	   * execute texture enhancements and filters
 	   */

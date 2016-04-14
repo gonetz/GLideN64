@@ -56,8 +56,9 @@ public:
 class TxMemBuf
 {
 private:
-	uint8 *_tex[2];
-	uint32 _size[2];
+	uint8 *_tex[4];
+	uint32 _size[4];
+	uint32 _numBufs;
 	TxMemBuf();
 public:
 	static TxMemBuf* getInstance() {
@@ -65,7 +66,7 @@ public:
 		return &txMemBuf;
 	}
 	~TxMemBuf();
-	boolean init(int maxwidth, int maxheight);
+	boolean init(int maxwidth, int maxheight, boolean deposterize);
 	void shutdown(void);
 	uint8 *get(unsigned int num);
 	uint32 size_of(unsigned int num);
