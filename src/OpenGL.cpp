@@ -417,6 +417,12 @@ void OGLRender::_setBlendMode() const
 				glBlendFunc(GL_ONE, GL_ZERO);
 				break;
 
+			case 0x55f0:
+				// Bust-A-Move 3 DX
+				// CLR_MEM * A_FOG + CLR_FOG * 1MA
+				glBlendFunc(GL_ONE, GL_SRC_ALPHA);
+				break;
+
 			case 0x0F1A:
 				if (gDP.otherMode.cycleType == G_CYC_1CYCLE)
 					glBlendFunc(GL_ONE, GL_ZERO);

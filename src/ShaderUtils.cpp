@@ -77,14 +77,19 @@ GLuint createShaderProgram(const char * _strVertex, const char * _strFragment)
 static
 const char* fragment_shader_blender =
 // Mace
-"  if (uSpecialBlendMode == 1)													\n"
+"	if (uSpecialBlendMode == 1)													\n"
 "		color1 = color1 * alpha1 + uBlendColor.rgb * (1.0 - alpha1);			\n"
 // Bomberman2
-"  else if (uSpecialBlendMode == 2)												\n"
+"	else if (uSpecialBlendMode == 2)											\n"
 "		color1 = uBlendColor.rgb * uFogColor.a + color1 * (1.0 - uFogColor.a);	\n"
 // Conker BFD
-"  else if (uSpecialBlendMode == 3)												\n"
+"	else if (uSpecialBlendMode == 3)											\n"
 "		color1 = color1 * uFogColor.a + uFogColor.rgb * (1.0 - uFogColor.a);	\n"
+// Bust-A-Move 3 DX
+"	else if (uSpecialBlendMode == 4) {											\n"
+"		color1 = uFogColor.rgb * (1.0 - alpha1);								\n"
+"		alpha1 = uFogColor.a;													\n"
+"	}																			\n"
 ;
 
 static
