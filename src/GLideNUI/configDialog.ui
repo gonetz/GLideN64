@@ -733,6 +733,56 @@
             </property>
            </widget>
           </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_22">
+            <item>
+             <widget class="QLabel" name="label_33">
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Fix black lines between texrect:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Most games draw 2D backgrounds using texrect command. Texrect stands for textured rectangle. In some games, texrects coordinates not aligned: there is half-pixel split between adjacent texrects. It is not visible in native resolution, but resulted as black lines when image upscaled. This option enables texrect coordinates correction to avoid black lines issue.&lt;/p&gt;&lt;p&gt;* disable - do not correct texrect coordinates&lt;/p&gt;&lt;p&gt;* smart - apply correction only for polygons, which need it. Use it for games, which have black lines issue.&lt;/p&gt;&lt;p&gt;* force - apply correction for all texrects. Use it when &lt;span style=&quot; font-style:italic;&quot;&gt;smart&lt;/span&gt; does not help.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;game dependant, mostly off&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="text">
+               <string>Fix black lines between texrects</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QRadioButton" name="fixTexrectDisableRadioButton">
+              <property name="text">
+               <string>disable</string>
+              </property>
+              <attribute name="buttonGroup">
+               <string notr="true">fixTexrectCoordsButtonGroup</string>
+              </attribute>
+             </widget>
+            </item>
+            <item>
+             <widget class="QRadioButton" name="fixTexrectSmartRadioButton">
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Fix black lines between texrect:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Most games draw 2D backgrounds using texrect command. Texrect stands for textured rectangle. In some games, texrects coordinates not aligned: there is half-pixel split between adjacent texrects. It is not visible in native resolution, but resulted as black lines when image upscaled. This option enables texrect coordinates correction to avoid black lines issue.&lt;/p&gt;&lt;p&gt;* disable - do not correct texrect coordinates&lt;/p&gt;&lt;p&gt;* smart - apply correction only for polygons, which need it. Use it for games, which have black lines issue.&lt;/p&gt;&lt;p&gt;* force - apply correction for all texrects. Use it when &lt;span style=&quot; font-style:italic;&quot;&gt;smart&lt;/span&gt; does not help.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;game dependant, mostly off&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="text">
+               <string>smart</string>
+              </property>
+              <attribute name="buttonGroup">
+               <string notr="true">fixTexrectCoordsButtonGroup</string>
+              </attribute>
+             </widget>
+            </item>
+            <item>
+             <widget class="QRadioButton" name="fixTexrectForceRadioButton">
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Fix black lines between texrect:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Most games draw 2D backgrounds using texrect command. Texrect stands for textured rectangle. In some games, texrects coordinates not aligned: there is half-pixel split between adjacent texrects. It is not visible in native resolution, but resulted as black lines when image upscaled. This option enables texrect coordinates correction to avoid black lines issue.&lt;/p&gt;&lt;p&gt;* disable - do not correct texrect coordinates&lt;/p&gt;&lt;p&gt;* smart - apply correction only for polygons, which need it. Use it for games, which have black lines issue.&lt;/p&gt;&lt;p&gt;* force - apply correction for all texrects. Use it when &lt;span style=&quot; font-style:italic;&quot;&gt;smart&lt;/span&gt; does not help.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;game dependant, mostly off&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="text">
+               <string>force</string>
+              </property>
+              <attribute name="buttonGroup">
+               <string notr="true">fixTexrectCoordsButtonGroup</string>
+              </attribute>
+             </widget>
+            </item>
+           </layout>
+          </item>
          </layout>
         </widget>
        </item>
@@ -1810,10 +1860,11 @@
   </connection>
  </connections>
  <buttongroups>
-  <buttongroup name="bloomBlendModeButtonGroup"/>
+  <buttongroup name="screenshotButtonGroup"/>
   <buttongroup name="aspectButtonGroup"/>
   <buttongroup name="bilinearButtonGroup"/>
   <buttongroup name="copyFrameBufferButtonGroup"/>
-  <buttongroup name="screenshotButtonGroup"/>
+  <buttongroup name="bloomBlendModeButtonGroup"/>
+  <buttongroup name="fixTexrectCoordsButtonGroup"/>
  </buttongroups>
 </ui>

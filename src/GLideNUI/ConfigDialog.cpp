@@ -117,6 +117,17 @@ void ConfigDialog::_init()
 	ui->enableHWLightingCheckBox->setChecked(config.generalEmulation.enableHWLighting != 0);
 	ui->enableShadersStorageCheckBox->setChecked(config.generalEmulation.enableShadersStorage != 0);
 	ui->customSettingsCheckBox->setChecked(config.generalEmulation.enableCustomSettings != 0);
+	switch (config.generalEmulation.correctTexrectCoords) {
+	case Config::tcDisable:
+		ui->fixTexrectDisableRadioButton->setChecked(true);
+		break;
+	case Config::tcSmart:
+		ui->fixTexrectSmartRadioButton->setChecked(true);
+		break;
+	case Config::tcForce:
+		ui->fixTexrectForceRadioButton->setChecked(true);
+		break;
+	}
 
 	ui->bufferSwapComboBox->setCurrentIndex(config.frameBufferEmulation.bufferSwapMode);
 	ui->frameBufferGroupBox->setChecked(config.frameBufferEmulation.enable != 0);
@@ -309,6 +320,12 @@ void ConfigDialog::accept()
 	config.generalEmulation.enableHWLighting = ui->enableHWLightingCheckBox->isChecked() ? 1 : 0;
 	config.generalEmulation.enableShadersStorage = ui->enableShadersStorageCheckBox->isChecked() ? 1 : 0;
 	config.generalEmulation.enableCustomSettings = ui->customSettingsCheckBox->isChecked() ? 1 : 0;
+	if (ui->fixTexrectDisableRadioButton->isChecked())
+		config.generalEmulation.correctTexrectCoords = Config::tcDisable;
+	else if (ui->fixTexrectSmartRadioButton->isChecked())
+		config.generalEmulation.correctTexrectCoords = Config::tcSmart;
+	else if (ui->fixTexrectForceRadioButton->isChecked())
+		config.generalEmulation.correctTexrectCoords = Config::tcForce;
 
 	config.frameBufferEmulation.bufferSwapMode = ui->bufferSwapComboBox->currentIndex();
 	config.frameBufferEmulation.enable = ui->frameBufferGroupBox->isChecked() ? 1 : 0;
