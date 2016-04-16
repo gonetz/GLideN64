@@ -100,7 +100,13 @@ public:
 			flip(_flip), forceAjustScale(_forceAjustScale), texrectCmd(_texrectCmd),
 			pBuffer(_pBuffer)
 		{}
+	private:
+		friend class OGLRender;
+		TexturedRectParams() :
+			ulx(0), uly(0), lrx(0), lry(0)
+		{};
 	};
+	void correctTexturedRectParams(TexturedRectParams & _params);
 	void drawTexturedRect(const TexturedRectParams & _params);
 	void drawText(const char *_pText, float x, float y);
 	void clearDepthBuffer(u32 _uly, u32 _lry);
@@ -181,6 +187,7 @@ private:
 
 	RENDER_STATE m_renderState;
 	OGL_RENDERER m_oglRenderer;
+	TexturedRectParams m_texrectParams;
 	GLVertex m_rect[4];
 	u32 m_modifyVertices;
 	bool m_bImageTexture;

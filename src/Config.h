@@ -35,13 +35,20 @@ struct Config
 		u32 screenShotFormat;
 	} texture;
 
-	struct {
+    enum TexrectCorrectionMode {
+        tcDisable = 0,
+        tcSmart,
+        tcForce
+    };
+
+    struct {
 		u32 enableFog;
 		u32 enableNoise;
 		u32 enableLOD;
 		u32 enableHWLighting;
 		u32 enableCustomSettings;
 		u32 enableShadersStorage;
+		u32 correctTexrectCoords;
 		u32 hacks;
 #ifdef ANDROID
 		u32 forcePolygonOffset;

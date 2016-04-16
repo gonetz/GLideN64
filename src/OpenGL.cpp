@@ -1261,6 +1261,28 @@ void OGLRender::drawTexturedRect(const TexturedRectParams & _params)
 	gSP.changed |= CHANGED_GEOMETRYMODE | CHANGED_VIEWPORT;
 }
 
+void OGLRender::correctTexturedRectParams(TexturedRectParams & _params)
+{
+    if (config.generalEmulation.correctTexrectCoords == Config::tcSmart) {
+        if (_params.ulx == m_texrectParams.ulx && _params.lrx == m_texrectParams.lrx) {
+            if (fabsf(_params.uly - m_texrectParams.lry) < 0.51f)
+                _params.uly = m_texrectParams.lry;
+            else if (fabsf(_params.lry - m_texrectParams.uly) < 0.51f)
+                _params.lry = m_texrectParams.uly;
+        } else if (_params.uly == m_texrectParams.uly && _params.lry == m_texrectParams.lry) {
+            if (fabsf(_params.ulx - m_texrectParams.lrx) < 0.51f)
+                _params.ulx = m_texrectParams.lrx;
+            else if (fabsf(_params.lrx - m_texrectParams.ulx) < 0.51f)
+                _params.lrx = m_texrectParams.ulx;
+        }
+    } else if (config.generalEmulation.correctTexrectCoords == Config::tcForce) {
+        _params.lrx += 0.25f;
+        _params.lry += 0.25f;
+    }
+
+    m_texrectParams = _params;
+}
+
 void OGLRender::drawText(const char *_pText, float x, float y)
 {
 	m_renderState = rsNone;
