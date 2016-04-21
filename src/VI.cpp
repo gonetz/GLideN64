@@ -69,7 +69,7 @@ void VI_UpdateSize()
 	FrameBufferList & fbList = frameBufferList();
 	FrameBuffer * pBuffer = fbList.findBuffer(VI.lastOrigin);
 	DepthBuffer * pDepthBuffer = pBuffer != NULL ? pBuffer->m_pDepthBuffer : NULL;
-	if (config.frameBufferEmulation.enable && ((config.generalEmulation.hacks & hack_skipVIChangeCheck) == 0) &&
+	if (config.frameBufferEmulation.enable && ((config.generalEmulation.hacks & hack_ZeldaMM) == 0) &&
 		((interlacedPrev != VI.interlaced) ||
 		(VI.width > 0 && VI.width != VI.widthPrev) ||
 		(!VI.interlaced && pDepthBuffer != NULL && pDepthBuffer->m_width != VI.width) ||

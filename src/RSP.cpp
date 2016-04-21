@@ -344,7 +344,7 @@ void RSP_Init()
 	else if (strstr(RSP.romname, (const char *)"SPACE INVADERS") != NULL)
 		config.generalEmulation.hacks |= hack_ignoreVIHeightChange;
 	else if (strstr(RSP.romname, (const char *)"MASK") != NULL) // Zelda MM
-		config.generalEmulation.hacks |= hack_skipVIChangeCheck | hack_ZeldaCamera;
+		config.generalEmulation.hacks |= hack_ZeldaMM;
 	else if (strstr(RSP.romname, (const char *)"Perfect Dark") != NULL ||
 			 strstr(RSP.romname, (const char *)"PERFECT DARK") != NULL)
 		config.generalEmulation.hacks |= hack_rectDepthBufferCopyPD;
