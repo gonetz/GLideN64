@@ -18,6 +18,7 @@ public:
 private:
 	PostProcessor();
 	PostProcessor(const PostProcessor & _other);
+
 	void _initCommon();
 	void _destroyCommon();
 	void _initGammaCorrection();
@@ -43,6 +44,10 @@ private:
 	CachedTexture * m_pTextureOriginal;
 	CachedTexture * m_pTextureGlowMap;
 	CachedTexture * m_pTextureBlur;
+
+#ifdef ANDROID
+	static PostProcessor processor;
+#endif
 };
 
 #endif // POST_PROCESSOR_H
