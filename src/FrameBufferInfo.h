@@ -31,6 +31,8 @@ namespace FBInfo {
 
 	class FBInfo {
 	public:
+		FBInfo();
+
 		void Write(u32 addr, u32 size);
 
 		void WriteList(FrameBufferModifyEntry *plist, u32 size);

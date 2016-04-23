@@ -12,6 +12,12 @@ namespace FBInfo {
 
 	FBInfo fbInfo;
 
+	FBInfo::FBInfo()
+		: m_pWriteBuffer(nullptr)
+		, m_pReadBuffer(nullptr)
+		, m_supported(false)
+	{}
+
 	void FBInfo::reset() {
 		m_supported = false;
 		m_pWriteBuffer = m_pReadBuffer = nullptr;
