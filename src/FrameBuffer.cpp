@@ -1098,32 +1098,29 @@ void FrameBufferToRDRAM::Destroy() {
 
 bool FrameBufferToRDRAM::_prepareCopy(u32 _startAddress)
 {
+	if (VI.width == 0 || frameBufferList().getCurrent() == NULL)
+		return false;
+
 	OGLVideo & ogl = video();
 	const u32 curFrame = ogl.getBuffersSwapCount();
 	FrameBuffer * pBuffer = frameBufferList().findBuffer(_startAddress);
 
-	if (m_frameCount == curFrame) {
-		if (pBuffer != m_pCurFrameBuffer)
-			return false;
-		if (m_startAddress != _startAddress)
-			return true;
-	}
-
-	if (VI.width == 0 || frameBufferList().getCurrent() == NULL)
+	if (pBuffer == NULL || pBuffer->m_isOBScreen)
 		return false;
 
-	m_pCurFrameBuffer = pBuffer;
-	if (m_pCurFrameBuffer == NULL || m_pCurFrameBuffer->m_isOBScreen)
-		return false;
+	if (m_frameCount == curFrame && pBuffer == m_pCurFrameBuffer && m_startAddress != _startAddress)
+		return true;
 
-	const u32 numPixels = m_pCurFrameBuffer->m_width * m_pCurFrameBuffer->m_height;
+	const u32 numPixels = pBuffer->m_width * pBuffer->m_height;
 	if (numPixels == 0)
 		return false;
 
-	const u32 stride = m_pCurFrameBuffer->m_width << m_pCurFrameBuffer->m_size >> 1;
-	const u32 height = _cutHeight(_startAddress, m_pCurFrameBuffer->m_height, stride);
+	const u32 stride = pBuffer->m_width << pBuffer->m_size >> 1;
+	const u32 height = _cutHeight(_startAddress, pBuffer->m_height, stride);
 	if (height == 0)
 		return false;
+
+	m_pCurFrameBuffer = pBuffer;
 
 	if ((config.generalEmulation.hacks & hack_subscreen) != 0 && m_pCurFrameBuffer->m_width == VI.width && m_pCurFrameBuffer->m_height == VI.height) {
 		copyWhiteToRDRAM(m_pCurFrameBuffer);
