@@ -1108,7 +1108,7 @@ bool(*texturedRectSpecial)(const OGLRender::TexturedRectParams & _params) = NULL
 void OGLRender::drawTexturedRect(const TexturedRectParams & _params)
 {
 	gSP.changed &= ~CHANGED_GEOMETRYMODE; // Don't update cull mode
-	if (gSP.changed || gDP.changed)
+	if (_params.texrectCmd && (gSP.changed | gDP.changed) != 0)
 		_updateStates(rsTexRect);
 
 	const bool updateArrays = m_renderState != rsTexRect;
