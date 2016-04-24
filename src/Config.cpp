@@ -29,7 +29,6 @@ void Config::resetToDefaults()
 	texture.maxBytes = 500 * gc_uMegabyte;
 	texture.screenShotFormat = 0;
 
-	generalEmulation.enableFog = 1;
 	generalEmulation.enableLOD = 1;
 	generalEmulation.enableNoise = 1;
 	generalEmulation.enableHWLighting = 0;

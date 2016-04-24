@@ -4,7 +4,7 @@
 #include <string>
 #include "Types.h"
 
-#define CONFIG_VERSION_CURRENT 8U
+#define CONFIG_VERSION_CURRENT 9U
 
 #define BILINEAR_3POINT   0
 #define BILINEAR_STANDARD 1
@@ -42,7 +42,6 @@ struct Config
     };
 
     struct {
-		u32 enableFog;
 		u32 enableNoise;
 		u32 enableLOD;
 		u32 enableHWLighting;

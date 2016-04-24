@@ -36,7 +36,6 @@ void _loadSettings(QSettings & settings)
 	settings.endGroup();
 
 	settings.beginGroup("generalEmulation");
-	config.generalEmulation.enableFog = settings.value("enableFog", config.generalEmulation.enableFog).toInt();
 	config.generalEmulation.enableNoise = settings.value("enableNoise", config.generalEmulation.enableNoise).toInt();
 	config.generalEmulation.enableLOD = settings.value("enableLOD", config.generalEmulation.enableLOD).toInt();
 	config.generalEmulation.enableHWLighting = settings.value("enableHWLighting", config.generalEmulation.enableHWLighting).toInt();
@@ -152,7 +151,6 @@ void writeSettings(const QString & _strIniFolder)
 	settings.endGroup();
 
 	settings.beginGroup("generalEmulation");
-	settings.setValue("enableFog", config.generalEmulation.enableFog);
 	settings.setValue("enableNoise", config.generalEmulation.enableNoise);
 	settings.setValue("enableLOD", config.generalEmulation.enableLOD);
 	settings.setValue("enableHWLighting", config.generalEmulation.enableHWLighting);

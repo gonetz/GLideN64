@@ -697,16 +697,6 @@
            </widget>
           </item>
           <item>
-           <widget class="QCheckBox" name="emulateFogCheckBox">
-            <property name="toolTip">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Fog emulation:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Sets fog emulation on//off.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;on&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-            </property>
-            <property name="text">
-             <string>Emulate fog</string>
-            </property>
-           </widget>
-          </item>
-          <item>
            <widget class="QCheckBox" name="enableHWLightingCheckBox">
             <property name="text">
              <string>Enable hardware lighting</string>
@@ -1861,10 +1851,10 @@
  </connections>
  <buttongroups>
   <buttongroup name="screenshotButtonGroup"/>
-  <buttongroup name="aspectButtonGroup"/>
-  <buttongroup name="bilinearButtonGroup"/>
-  <buttongroup name="copyFrameBufferButtonGroup"/>
-  <buttongroup name="bloomBlendModeButtonGroup"/>
   <buttongroup name="fixTexrectCoordsButtonGroup"/>
+  <buttongroup name="bilinearButtonGroup"/>
+  <buttongroup name="bloomBlendModeButtonGroup"/>
+  <buttongroup name="aspectButtonGroup"/>
+  <buttongroup name="copyFrameBufferButtonGroup"/>
  </buttongroups>
 </ui>

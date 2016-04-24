@@ -62,8 +62,6 @@ bool Config_SetDefault()
 	res = ConfigSetDefaultInt(g_configVideoGliden64, "CacheSize", config.texture.maxBytes / uMegabyte, "Size of texture cache in megabytes. Good value is VRAM*3/4");
 	assert(res == M64ERR_SUCCESS);
 	//#Emulation Settings
-	res = ConfigSetDefaultBool(g_configVideoGliden64, "EnableFog", config.generalEmulation.enableFog, "Enable fog emulation.");
-	assert(res == M64ERR_SUCCESS);
 	res = ConfigSetDefaultBool(g_configVideoGliden64, "EnableNoise", config.generalEmulation.enableNoise, "Enable color noise emulation.");
 	assert(res == M64ERR_SUCCESS);
 	res = ConfigSetDefaultBool(g_configVideoGliden64, "EnableLOD", config.generalEmulation.enableLOD, "Enable LOD emulation.");
@@ -199,7 +197,6 @@ void Config_LoadConfig()
 	config.texture.maxAnisotropy = ConfigGetParamInt(g_configVideoGliden64, "MaxAnisotropy");
 	config.texture.maxBytes = ConfigGetParamInt(g_configVideoGliden64, "CacheSize") * uMegabyte;
 	//#Emulation Settings
-	config.generalEmulation.enableFog = ConfigGetParamBool(g_configVideoGliden64, "EnableFog");
 	config.generalEmulation.enableNoise = ConfigGetParamBool(g_configVideoGliden64, "EnableNoise");
 	config.generalEmulation.enableLOD = ConfigGetParamBool(g_configVideoGliden64, "EnableLOD");
 	config.generalEmulation.enableHWLighting = ConfigGetParamBool(g_configVideoGliden64, "EnableHWLighting");
