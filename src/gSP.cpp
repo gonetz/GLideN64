@@ -353,7 +353,7 @@ void gSPProcessVertex4(u32 v)
 		else
 			gSPLightVertex4(v);
 
-		if (GBI.isTextureGen() && gSP.geometryMode & G_TEXTURE_GEN) {
+		if (GBI.isTextureGen() && (gSP.geometryMode & G_TEXTURE_GEN) != 0) {
 			for(int i = 0; i < 4; ++i) {
 				SPVertex & vtx = render.getVertex(v+i);
 				f32 fLightDir[3] = {vtx.nx, vtx.ny, vtx.nz};
