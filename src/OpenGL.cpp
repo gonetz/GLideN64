@@ -689,7 +689,8 @@ void OGLRender::_updateStates(RENDER_STATE _renderState) const
 
 void OGLRender::_setColorArray() const
 {
-	if (currentCombiner()->usesShade())
+	if (currentCombiner()->usesShade() || gDP.otherMode.c1_m1b == 2)
+		// combiner uses shade or blender uses shade alpha
 		glEnableVertexAttribArray(SC_COLOR);
 	else
 		glDisableVertexAttribArray(SC_COLOR);
