@@ -586,6 +586,11 @@ void ShaderCombiner::updateScreenCoordsScale(bool _bForce)
 
 void ShaderCombiner::updateFogMode(bool _bForce)
 {
+	if (RSP.bLLE) {
+		m_uniforms.uFogUsage.set(0, _bForce);
+		return;
+	}
+
 	int nFogUsage = ((gSP.geometryMode & G_FOG) != 0) ? 1 : 0;
 	if (!GBI.isTextureGen())
 		// F-Zero ucode seems to always use fog mode when fog is used in blender.
