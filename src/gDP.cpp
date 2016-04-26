@@ -716,11 +716,8 @@ void gDPSetScissor( u32 mode, f32 ulx, f32 uly, f32 lrx, f32 lry )
 #endif
 }
 
-const bool g_bDepthClearOnly = false;
 void gDPFillRDRAM(u32 address, s32 ulx, s32 uly, s32 lrx, s32 lry, u32 width, u32 size, u32 color, bool scissor)
 {
-	if (g_bDepthClearOnly && color != DepthClearColor)
-		return;
 	FrameBuffer * pCurrentBuffer = frameBufferList().getCurrent();
 	if (pCurrentBuffer != NULL) {
 		pCurrentBuffer->m_cleared = true;
