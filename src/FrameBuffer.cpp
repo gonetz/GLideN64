@@ -924,7 +924,8 @@ void FrameBufferList::renderBuffer(u32 _address)
 	gSP.textureTile[0]->fuls = gSP.textureTile[0]->fult = 0.0f;
 	gSP.textureTile[0]->shifts = gSP.textureTile[0]->shiftt = 0;
 
-	CombinerInfo::get().setCombine(EncodeCombineMode(0, 0, 0, TEXEL0, 0, 0, 0, 1, 0, 0, 0, TEXEL0, 0, 0, 0, 1));
+	gDP.otherMode.cycleType = G_CYC_COPY;
+	CombinerInfo::get().setCombine(EncodeCombineMode(0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0));
 	CombinerInfo::get().updateParameters(OGLRender::rsTexRect);
 	currentCombiner()->disableBlending();
 	glDisable( GL_BLEND );
