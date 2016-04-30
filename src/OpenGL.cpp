@@ -1046,6 +1046,27 @@ bool texturedRectBGCopy(const OGLRender::TexturedRectParams & _params)
 static
 bool texturedRectPaletteMod(const OGLRender::TexturedRectParams & _params)
 {
+	if (gDP.textureImage.address == 0x400) {
+		// Paper Mario uses complex set of actions to prepare darkness texture.
+		// It includes manipulations with texture formats and drawing buffer into itsels.
+		// All that stuff is hardly possible to reproduce with GL, so I just use dirty hacks to emualte it.
+
+		if (gDP.colorImage.address == 0x400 && gDP.colorImage.width == 64) {
+			memcpy(RDRAM + 0x400, RDRAM + 0x14d500, 4096);
+			return true;
+		}
+
+		if (gDP.textureImage.width == 64) {
+			gDPTile & curTile = gDP.tiles[0];
+			curTile.frameBuffer = nullptr;
+			curTile.textureMode = TEXTUREMODE_NORMAL;
+			textureCache().update(0);
+			currentCombiner()->updateFrameBufferInfo();
+		}
+		return false;
+	}
+
+	// Modify palette for Paper Mario "2D lighting" effect
 	if (gDP.scissor.lrx != 16 || gDP.scissor.lry != 1 || _params.lrx != 16 || _params.lry != 1)
 		return false;
 	u8 envr = (u8)(gDP.envColor.r * 31.0f);
