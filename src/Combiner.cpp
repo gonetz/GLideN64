@@ -75,11 +75,13 @@ void Combiner_Init() {
 	CombinerInfo & cmbInfo = CombinerInfo::get();
 	cmbInfo.init();
 	InitShaderCombiner();
-	gDP.otherMode.cycleType = G_CYC_1CYCLE;
 	if (cmbInfo.getCombinersNumber() == 0) {
+		gDP.otherMode.cycleType = G_CYC_COPY;
 		cmbInfo.setCombine(EncodeCombineMode(0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0));
-		cmbInfo.setCombine(EncodeCombineMode(0, 0, 0, TEXEL0, 0, 0, 0, 1, 0, 0, 0, TEXEL0, 0, 0, 0, 1));
+		gDP.otherMode.cycleType = G_CYC_FILL;
+		cmbInfo.setCombine(EncodeCombineMode(0, 0, 0, SHADE, 0, 0, 0, SHADE, 0, 0, 0, SHADE, 0, 0, 0, SHADE));
 	}
+	gDP.otherMode.cycleType = G_CYC_1CYCLE;
 }
 
 void Combiner_Destroy() {
