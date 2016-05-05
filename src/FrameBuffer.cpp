@@ -911,12 +911,6 @@ void FrameBufferList::renderBuffer(u32 _address)
 	pBuffer->m_postProcessed = pFilteredBuffer->m_postProcessed;
 	ogl.getRender().dropRenderState();
 
-	CombinerInfo::get().setCombine(EncodeCombineMode(0, 0, 0, TEXEL0, 0, 0, 0, 1, 0, 0, 0, TEXEL0, 0, 0, 0, 1));
-	glDisable( GL_BLEND );
-	glDisable(GL_DEPTH_TEST);
-	glDisable( GL_CULL_FACE );
-	glDisable( GL_POLYGON_OFFSET_FILL );
-
 	const u32 width = pFilteredBuffer->m_width;
 	const u32 height = pFilteredBuffer->m_height;
 
@@ -929,8 +923,14 @@ void FrameBufferList::renderBuffer(u32 _address)
 	textureCache().activateTexture(0, pFilteredBuffer->m_pTexture);
 	gSP.textureTile[0]->fuls = gSP.textureTile[0]->fult = 0.0f;
 	gSP.textureTile[0]->shifts = gSP.textureTile[0]->shiftt = 0;
-	currentCombiner()->updateTextureInfo(true);
+
+	CombinerInfo::get().setCombine(EncodeCombineMode(0, 0, 0, TEXEL0, 0, 0, 0, 1, 0, 0, 0, TEXEL0, 0, 0, 0, 1));
 	CombinerInfo::get().updateParameters(OGLRender::rsTexRect);
+	currentCombiner()->disableBlending();
+	glDisable( GL_BLEND );
+	glDisable(GL_DEPTH_TEST);
+	glDisable( GL_CULL_FACE );
+	glDisable( GL_POLYGON_OFFSET_FILL );
 
 	glScissor(0, 0, ogl.getScreenWidth(), ogl.getScreenHeight() + ogl.getHeightOffset());
 
@@ -1777,7 +1777,11 @@ void RDRAMtoFrameBuffer::CopyFromRDRAM(u32 _address, bool _bCFB)
 	gDPTile * pTile0 = gSP.textureTile[0];
 	gSP.textureTile[0] = &tile0;
 
+	const u32 cycleType = gDP.otherMode.cycleType;
+	gDP.otherMode.cycleType = G_CYC_1CYCLE;
 	CombinerInfo::get().setCombine(EncodeCombineMode(0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0));
+	currentCombiner()->disableBlending();
+	gDP.otherMode.cycleType = cycleType;
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	currentCombiner()->updateFrameBufferInfo();

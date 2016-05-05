@@ -1,6 +1,7 @@
 #include <assert.h>
 #include <stdio.h>
 #include "ShaderUtils.h"
+#include "Config.h"
 #include "Log.h"
 
 static const GLsizei nShaderLogSize = 1024;
@@ -75,21 +76,26 @@ GLuint createShaderProgram(const char * _strVertex, const char * _strFragment)
 }
 
 static
-const char* fragment_shader_blender =
-// Mace
-"	if (uSpecialBlendMode == 1)													\n"
-"		color1 = color1 * alpha1 + uBlendColor.rgb * (1.0 - alpha1);			\n"
-// Bomberman2
-"	else if (uSpecialBlendMode == 2)											\n"
-"		color1 = uBlendColor.rgb * uFogColor.a + color1 * (1.0 - uFogColor.a);	\n"
-// Conker BFD
-"	else if (uSpecialBlendMode == 3)											\n"
-"		color1 = color1 * uFogColor.a + uFogColor.rgb * (1.0 - uFogColor.a);	\n"
-// Bust-A-Move 3 DX
-"	else if (uSpecialBlendMode == 4) {											\n"
-"		color1 = uFogColor.rgb * (1.0 - alpha1);								\n"
-"		alpha1 = uFogColor.a;													\n"
-"	}																			\n"
+const char* fragment_shader_blender1 =
+"  if (uForceBlendCycle1 != 0) {						\n"
+"    muxPM[0] = clamp(vec4(color2, alpha2), 0.0, 1.0);	\n"
+"    muxA[0] = muxPM[0].a;								\n"
+"    muxB[0] = 1.0 - muxA[uBlendMux1[1]];				\n"
+"    lowp vec4 blend1 = (muxPM[uBlendMux1[0]] * muxA[uBlendMux1[1]]) + (muxPM[uBlendMux1[2]] * muxB[uBlendMux1[3]]);	\n"
+"    color2 = clamp(blend1.rgb, 0.0, 1.0);				\n"
+"    alpha2 = muxA[0];									\n"
+"  }													\n"
+;
+
+static
+const char* fragment_shader_blender2 =
+"  if (uForceBlendCycle2 != 0) {				\n"
+"    muxPM[0] = vec4(color2, alpha2);			\n"
+"    muxA[0] = alpha2;							\n"
+"    muxB[0] = 1.0 - muxA[uBlendMux2[1]];		\n"
+"    lowp vec4 blend2 = muxPM[uBlendMux2[0]] * muxA[uBlendMux2[1]] + muxPM[uBlendMux2[2]] * muxB[uBlendMux2[3]];	\n"
+"    color2 = clamp(blend2.rgb, 0.0, 1.0);		\n"
+"  }											\n"
 ;
 
 static
@@ -252,7 +258,7 @@ int _compileCombiner(const CombinerStage & _stage, const char** _Input, std::str
 
 int compileCombiner(Combiner & _color, Combiner & _alpha, std::string & _strShader)
 {
-	if (gDP.otherMode.cycleType == G_CYC_1CYCLE) {
+	if (gDP.otherMode.cycleType != G_CYC_2CYCLE) {
 		_correctFirstStageParams(_alpha.stage[0]);
 		_correctFirstStageParams(_color.stage[0]);
 	}
@@ -272,7 +278,6 @@ int compileCombiner(Combiner & _color, Combiner & _alpha, std::string & _strShad
 
 	_strShader.append("  color1 = ");
 	nInputs |= _compileCombiner(_color.stage[0], ColorInput, _strShader);
-	_strShader.append(fragment_shader_blender);
 
 	_strShader.append("  combined_color = vec4(color1, alpha1); \n");
 	if (_alpha.numStages == 2) {
@@ -282,6 +287,9 @@ int compileCombiner(Combiner & _color, Combiner & _alpha, std::string & _strShad
 	}
 	else
 		_strShader.append("  alpha2 = alpha1; \n");
+
+	_strShader.append("  if (uCvgXAlpha != 0 && alpha2 < 0.125) discard; \n");
+
 	if (_color.numStages == 2) {
 		_strShader.append("  color2 = ");
 		_correctSecondStageParams(_color.stage[1]);
@@ -289,5 +297,24 @@ int compileCombiner(Combiner & _color, Combiner & _alpha, std::string & _strShad
 	}
 	else
 		_strShader.append("  color2 = color1; \n");
+
+
+#ifndef GLES2
+	if (config.generalEmulation.enableNoise != 0) {
+		_strShader.append(
+			"  if (uColorDitherMode == 2) colorNoiseDither(snoise(), color2);	\n"
+			"  if (uAlphaDitherMode == 2) alphaNoiseDither(snoise(), alpha2);	\n"
+			);
+	}
+#endif
+
+	_strShader.append(fragment_shader_blender1);
+	if (gDP.otherMode.cycleType == G_CYC_2CYCLE)
+		_strShader.append(fragment_shader_blender2);
+
+	_strShader.append(
+		"  fragColor = vec4(color2, alpha2);	\n"
+		);
+
 	return nInputs;
 }

@@ -14,6 +14,7 @@ PFNGLUNIFORM1IPROC glUniform1i;
 PFNGLUNIFORM1FPROC glUniform1f;
 PFNGLUNIFORM2FPROC glUniform2f;
 PFNGLUNIFORM2IPROC glUniform2i;
+PFNGLUNIFORM4IPROC glUniform4i;
 PFNGLUNIFORM4FPROC glUniform4f;
 PFNGLUNIFORM3FVPROC glUniform3fv;
 PFNGLUNIFORM4FVPROC glUniform4fv;
@@ -36,6 +37,7 @@ PFNGLVERTEXATTRIB4FVPROC glVertexAttrib4fv;
 PFNGLACTIVETEXTUREPROC glActiveTexture;
 PFNGLDEPTHRANGEFPROC glDepthRangef;
 PFNGLCLEARDEPTHFPROC glClearDepthf;
+PFNGLBLENDCOLORPROC glBlendColor;
 
 PFNGLDRAWBUFFERSPROC glDrawBuffers;
 PFNGLBINDFRAMEBUFFERPROC glBindFramebuffer;
@@ -86,6 +88,7 @@ void initGLFunctions()
 	glUniform1f = (PFNGLUNIFORM1FPROC)wglGetProcAddress("glUniform1f");
 	glUniform2f = (PFNGLUNIFORM2FPROC)wglGetProcAddress("glUniform2f");
 	glUniform2i = (PFNGLUNIFORM2IPROC)wglGetProcAddress("glUniform2i");
+	glUniform4i = (PFNGLUNIFORM4IPROC)wglGetProcAddress("glUniform4i");
 	glUniform4f = (PFNGLUNIFORM4FPROC)wglGetProcAddress("glUniform4f");
 	glUniform3fv = (PFNGLUNIFORM3FVPROC)wglGetProcAddress("glUniform3fv");
 	glUniform4fv = (PFNGLUNIFORM4FVPROC)wglGetProcAddress("glUniform4fv");
@@ -107,6 +110,7 @@ void initGLFunctions()
 	glActiveTexture	= (PFNGLACTIVETEXTUREPROC)wglGetProcAddress( "glActiveTexture" );
 	glDepthRangef = (PFNGLDEPTHRANGEFPROC)wglGetProcAddress( "glDepthRangef" );
 	glClearDepthf = (PFNGLCLEARDEPTHFPROC)wglGetProcAddress( "glClearDepthf" );
+	glBlendColor = (PFNGLBLENDCOLORPROC)wglGetProcAddress( "glBlendColor" );
 
 	glDrawBuffers = (PFNGLDRAWBUFFERSPROC)wglGetProcAddress( "glDrawBuffers" );
 	glBindFramebuffer = (PFNGLBINDFRAMEBUFFERPROC)wglGetProcAddress( "glBindFramebuffer" );

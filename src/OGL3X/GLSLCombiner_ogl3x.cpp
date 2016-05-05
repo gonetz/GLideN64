@@ -311,6 +311,8 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 
 	if (usesTexture()) {
 		strFragmentShader.assign(fragment_shader_header_common_variables);
+		if (gDP.otherMode.cycleType == G_CYC_2CYCLE)
+			strFragmentShader.append(fragment_shader_header_common_variables_blend_mux_2cycle);
 
 #ifdef GL_MULTISAMPLING_SUPPORT
 		if (config.video.multisampling > 0) {
@@ -341,6 +343,8 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 
 	} else {
 		strFragmentShader.assign(fragment_shader_header_common_variables_notex);
+		if (gDP.otherMode.cycleType == G_CYC_2CYCLE)
+			strFragmentShader.append(fragment_shader_header_common_variables_blend_mux_2cycle);
 		strFragmentShader.append(fragment_shader_header_noise);
 		strFragmentShader.append(fragment_shader_header_noise_dither);
 
@@ -355,6 +359,7 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 		strFragmentShader.append(fragment_shader_header_calc_light);
 
 	strFragmentShader.append(fragment_shader_header_main);
+
 	if (bUseLod) {
 		strFragmentShader.append("  lowp vec4 readtex0, readtex1; \n");
 		strFragmentShader.append("  lowp float lod_frac = mipmap(readtex0, readtex1);	\n");
@@ -390,33 +395,8 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 	strFragmentShader.append("  vec_color = vec4(input_color, vShadeColor.a); \n");
 	strFragmentShader.append(strCombiner);
 
-	strFragmentShader.append(
-		"  if (uCvgXAlpha != 0 && alpha2 < 0.125) discard; \n"
-		);
-
-	if (config.generalEmulation.enableNoise != 0) {
-		strFragmentShader.append(
-			"  if (uColorDitherMode == 2) colorNoiseDither(snoise(), color2);	\n"
-			"  if (uAlphaDitherMode == 2) alphaNoiseDither(snoise(), alpha2);	\n"
-		);
-	}
-
-	strFragmentShader.append(
-		"  lowp int fogUsage = uFogUsage;			\n"
-		"  if (fogUsage >= 256) fogUsage -= 256;	\n"
-		"  if (fogUsage == 2) fragColor = vec4(color2, uFogColor.a);				\n"
-		"  else if (fogUsage == 3) fragColor = uFogColor;							\n"
-		"  else if (fogUsage == 4) fragColor = vec4(color2, uFogColor.a*alpha2);	\n"
-		"  else fragColor = vec4(color2, alpha2);									\n"
-	);
-
 	if (video().getRender().isImageTexturesSupported() && config.frameBufferEmulation.N64DepthCompare != 0)
 		strFragmentShader.append("  if (!depth_compare()) discard; \n");
-
-	strFragmentShader.append(
-		"  if (uFogUsage == 257) \n"
-		"    fragColor.rgb = mix(fragColor.rgb, uFogColor.rgb, vFogFragCoord); \n"
-		);
 
 	strFragmentShader.append(fragment_shader_end);
 
@@ -504,7 +484,6 @@ void ShaderCombiner::_locateUniforms() {
 	LocateUniform(uTlutImage);
 	LocateUniform(uZlutImage);
 	LocateUniform(uDepthImage);
-	LocateUniform(uFogMode);
 	LocateUniform(uFogUsage);
 	LocateUniform(uAlphaCompareMode);
 	LocateUniform(uAlphaDitherMode);
@@ -524,9 +503,9 @@ void ShaderCombiner::_locateUniforms() {
 	LocateUniform(uTextureDetail);
 	LocateUniform(uTexturePersp);
 	LocateUniform(uTextureFilterMode);
-	LocateUniform(uSpecialBlendMode);
+	LocateUniform(uForceBlendCycle1);
+	LocateUniform(uForceBlendCycle2);
 
-	LocateUniform(uFogAlpha);
 	LocateUniform(uMinLod);
 	LocateUniform(uDeltaZ);
 	LocateUniform(uAlphaTestValue);
@@ -537,6 +516,9 @@ void ShaderCombiner::_locateUniforms() {
 	LocateUniform(uDepthScale);
 	LocateUniform(uFogScale);
 	LocateUniform(uScreenCoordsScale);
+
+	LocateUniform(uBlendMux1);
+	LocateUniform(uBlendMux2);
 
 #ifdef GL_MULTISAMPLING_SUPPORT
 	LocateUniform(uMSTex0);
@@ -580,6 +562,7 @@ void ShaderCombiner::update(bool _bForce) {
 	}
 
 	updateFogMode(_bForce);
+	updateBlendMode();
 	updateDitherMode(_bForce);
 	updateLOD(_bForce);
 	updateTextureInfo(_bForce);
@@ -603,90 +586,41 @@ void ShaderCombiner::updateScreenCoordsScale(bool _bForce)
 
 void ShaderCombiner::updateFogMode(bool _bForce)
 {
-	const u32 blender = (gDP.otherMode.l >> 16);
-	const int nFogBlendEnabled = config.generalEmulation.enableFog != 0 && gSP.fog.multiplier >= 0 && (gDP.otherMode.c1_m1a == 3 || gDP.otherMode.c1_m2a == 3 || gDP.otherMode.c2_m1a == 3 || gDP.otherMode.c2_m2a == 3) ? 256 : 0;
 	int nFogUsage = ((gSP.geometryMode & G_FOG) != 0) ? 1 : 0;
-	int nSpecialBlendMode = 0;
-	switch (blender) {
-	case 0x0150:
-	case 0x0D18:
-		nFogUsage = gDP.otherMode.cycleType == G_CYC_2CYCLE ? 2 : 0;
-		break;
-	case 0x0440:
-		nFogUsage = gDP.otherMode.cycleType == G_CYC_1CYCLE ? 2 : 0;
-		break;
-	case 0xC912:
-		nFogUsage = 2;
-		break;
-	case 0xF550:
-		nFogUsage = 3;
-		break;
-	case 0x0550:
-		nFogUsage = 4;
-		break;
-	case 0x0382:
-	case 0x0091:
-		// Mace
-		// CLR_IN * A_IN + CLR_BL * 1MA
-		if (gDP.otherMode.cycleType == G_CYC_2CYCLE)
-			nSpecialBlendMode = 1;
-		break;
-	case 0xA500:
-		// Bomberman 2
-		// CLR_BL * A_FOG + CLR_IN * 1MA
-		if (gDP.otherMode.cycleType == G_CYC_1CYCLE) {
-			nSpecialBlendMode = 2;
-			nFogUsage = 5;
-		}
-		break;
-	case 0x07C2:
-		// Conker BFD shadow
-		// CLR_IN * A_FOG + CLR_FOG * 1MA
+	m_uniforms.uFogUsage.set(nFogUsage, _bForce);
+	m_uniforms.uFogScale.set((float)gSP.fog.multiplier / 256.0f, (float)gSP.fog.offset / 256.0f, _bForce);
+}
+
+void ShaderCombiner::updateBlendMode(bool _bForce)
+{
+	m_uniforms.uBlendMux1.set(gDP.otherMode.c1_m1a,
+							  gDP.otherMode.c1_m1b,
+							  gDP.otherMode.c1_m2a,
+							  gDP.otherMode.c1_m2b,
+							  _bForce);
+	int forceBlend1 = gDP.otherMode.cycleType == G_CYC_2CYCLE ? 1 : 0;
+	int forceBlend2 = 0;
+
+	if (gDP.otherMode.forceBlender != 0 && gDP.otherMode.cycleType < G_CYC_COPY) {
+		forceBlend1 = 1;
 		if (gDP.otherMode.cycleType == G_CYC_2CYCLE) {
-			nSpecialBlendMode = 3;
-			nFogUsage = 5;
-		}
-		break;
-	case 0x55f0:
-		// CLR_MEM * A_FOG + CLR_FOG * 1MA
-		if (gDP.otherMode.cycleType == G_CYC_1CYCLE) {
-			nSpecialBlendMode = 4;
-			nFogUsage = 5;
-		}
-		break;
-		/* Brings troubles with Roadsters sky
-		case 0xc702:
-		// Donald Duck
-		// clr_fog*a_fog + clr_in*1ma
-		nFogUsage = 5;
-		nSpecialBlendMode = 2;
-		break;
-		*/
-	}
-
-	int nFogMode = 0; // Normal
-	if (nFogUsage == 0) {
-		switch (blender) {
-		case 0xC410:
-		case 0xC411:
-		case 0xF500:
-			nFogMode = 1; // fog blend
-			nFogUsage = 1;
-			break;
-		case 0x04D1:
-			nFogMode = 2; // inverse fog blend
-			nFogUsage = 1;
-			break;
+			forceBlend2 = 1;
+			m_uniforms.uBlendMux2.set(gDP.otherMode.c2_m1a,
+									  gDP.otherMode.c2_m1b,
+									  gDP.otherMode.c2_m2a,
+									  gDP.otherMode.c2_m2b,
+									  _bForce);
 		}
 	}
 
-	m_uniforms.uSpecialBlendMode.set(nSpecialBlendMode, _bForce);
-	m_uniforms.uFogUsage.set(nFogUsage | nFogBlendEnabled, _bForce);
-	m_uniforms.uFogMode.set(nFogMode, _bForce);
-	if (nFogUsage + nFogMode != 0) {
-		m_uniforms.uFogScale.set((float)gSP.fog.multiplier / 256.0f, (float)gSP.fog.offset / 256.0f, _bForce);
-		m_uniforms.uFogAlpha.set(gDP.fogColor.a, _bForce);
-	}
+	m_uniforms.uForceBlendCycle1.set(forceBlend1, _bForce);
+	m_uniforms.uForceBlendCycle2.set(forceBlend2, _bForce);
+}
+
+void ShaderCombiner::disableBlending()
+{
+	m_uniforms.uForceBlendCycle1.set(0, false);
+	m_uniforms.uForceBlendCycle2.set(0, false);
 }
 
 void ShaderCombiner::updateDitherMode(bool _bForce)
@@ -902,6 +836,7 @@ void SetDepthFogCombiner()
 	int loc = glGetUniformLocation(g_draw_shadow_map_program, "uFogColor");
 	if (loc >= 0)
 		glUniform4fv(loc, 1, &gDP.fogColor.r);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	gDP.changed |= CHANGED_COMBINE;
 }

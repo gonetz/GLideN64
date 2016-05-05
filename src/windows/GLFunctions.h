@@ -13,6 +13,8 @@ extern PFNGLUNIFORM1IPROC glUniform1i;
 extern PFNGLUNIFORM1FPROC glUniform1f;
 extern PFNGLUNIFORM2FPROC glUniform2f;
 extern PFNGLUNIFORM2IPROC glUniform2i;
+extern PFNGLUNIFORM4IPROC glUniform4i;
+
 extern PFNGLUNIFORM4FPROC glUniform4f;
 extern PFNGLUNIFORM3FVPROC glUniform3fv;
 extern PFNGLUNIFORM4FVPROC glUniform4fv;
@@ -34,6 +36,7 @@ extern PFNGLVERTEXATTRIB4FVPROC glVertexAttrib4fv;
 extern PFNGLACTIVETEXTUREPROC glActiveTexture;
 extern PFNGLDEPTHRANGEFPROC glDepthRangef;
 extern PFNGLCLEARDEPTHFPROC glClearDepthf;
+extern PFNGLBLENDCOLORPROC glBlendColor;
 
 extern PFNGLDRAWBUFFERSPROC glDrawBuffers;
 extern PFNGLGENFRAMEBUFFERSPROC glGenFramebuffers;

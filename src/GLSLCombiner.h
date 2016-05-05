@@ -22,6 +22,8 @@ public:
 	void updateTextureInfo(bool _bForce = false);
 	void updateRenderState(bool _bForce = false);
 	void updateScreenCoordsScale(bool _bForce = false);
+	void updateBlendMode(bool _bForce = false);
+	void disableBlending();
 
 	u64 getKey() const {return m_key;}
 
@@ -90,21 +92,40 @@ private:
 		}
 	};
 
+	struct i4Uniform {
+		GLint loc;
+		int val0, val1, val2, val3;
+		void set(int _val0, int _val1, int _val2, int _val3, bool _force) {
+			if (loc < 0)
+				return;
+			if (_force || _val0 != val0 || _val1 != val1 || _val2 != val2 || _val3 != val3) {
+				val0 = _val0;
+				val1 = _val1;
+				val2 = _val2;
+				val3 = _val3;
+				glUniform4i(loc, val0, val1, val2, val3);
+			}
+		}
+	};
+
 	struct UniformLocation
 	{
 		iUniform uTex0, uTex1, uMSTex0, uMSTex1, uTexNoise, uTlutImage, uZlutImage, uDepthImage,
-			uFogMode, uFogUsage, uEnableLod, uEnableAlphaTest,
+			uFogUsage, uEnableLod, uEnableAlphaTest,
 			uEnableDepth, uEnableDepthCompare, uEnableDepthUpdate,
-			uDepthMode, uDepthSource, uRenderState, uSpecialBlendMode,
+			uDepthMode, uDepthSource, uRenderState,
 			uMaxTile, uTextureDetail, uTexturePersp, uTextureFilterMode, uMSAASamples,
 			uAlphaCompareMode, uAlphaDitherMode, uColorDitherMode,
-			uCvgXAlpha, uAlphaCvgSel;
+			uCvgXAlpha, uAlphaCvgSel,
+			uForceBlendCycle1, uForceBlendCycle2;
 
-		fUniform uFogAlpha, uMinLod, uDeltaZ, uAlphaTestValue, uMSAAScale;
+		fUniform uMinLod, uDeltaZ, uAlphaTestValue, uMSAAScale;
 
 		fv2Uniform uScreenScale, uDepthScale, uFogScale, uScreenCoordsScale;
 
 		iv2Uniform uMSTexEnabled, uFbMonochrome, uFbFixedAlpha;
+
+		i4Uniform uBlendMux1, uBlendMux2;
 	};
 
 #ifdef OS_MAC_OS_X
