@@ -7,7 +7,7 @@
 
 void UniformSet::bindWithShaderCombiner(ShaderCombiner * _pCombiner)
 {
-	const u64 mux = _pCombiner->getMux();
+	const u64 mux = _pCombiner->getKey();
 	const GLuint program = _pCombiner->m_program;
 	m_uniforms.emplace(mux, program);
 	UniformSetLocation & location = m_uniforms.at(mux);
@@ -129,7 +129,7 @@ void UniformSet::_updateLightUniforms(UniformSetLocation & _location, bool _bFor
 
 void UniformSet::updateUniforms(ShaderCombiner * _pCombiner, OGLRender::RENDER_STATE _renderState)
 {
-	UniformSetLocation & location = m_uniforms.at(_pCombiner->getMux());
+	UniformSetLocation & location = m_uniforms.at(_pCombiner->getKey());
 
 	_updateColorUniforms(location, false);
 

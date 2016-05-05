@@ -253,12 +253,13 @@ void CombinerInfo::update()
 
 void CombinerInfo::setCombine(u64 _mux )
 {
-	if (m_pCurrent != NULL && m_pCurrent->getMux() == _mux) {
+	const u64 key = getCombinerKey(_mux);
+	if (m_pCurrent != NULL && m_pCurrent->getKey() == key) {
 		m_bChanged = false;
 		m_pCurrent->update(false);
 		return;
 	}
-	Combiners::const_iterator iter = m_combiners.find(_mux);
+	Combiners::const_iterator iter = m_combiners.find(key);
 	if (iter != m_combiners.end()) {
 		m_pCurrent = iter->second;
 		m_pCurrent->update(false);
@@ -266,7 +267,7 @@ void CombinerInfo::setCombine(u64 _mux )
 		m_pCurrent = _compile(_mux);
 		m_pCurrent->update(true);
 		m_pUniformCollection->bindWithShaderCombiner(m_pCurrent);
-		m_combiners[_mux] = m_pCurrent;
+		m_combiners[m_pCurrent->getKey()] = m_pCurrent;
 	}
 	m_bChanged = true;
 }
@@ -455,7 +456,7 @@ bool CombinerInfo::_loadShadersStorage()
 			fin >> *m_pCurrent;
 			m_pCurrent->update(true);
 			m_pUniformCollection->bindWithShaderCombiner(m_pCurrent);
-			m_combiners[m_pCurrent->getMux()] = m_pCurrent;
+			m_combiners[m_pCurrent->getKey()] = m_pCurrent;
 		}
 	}
 	catch (...) {

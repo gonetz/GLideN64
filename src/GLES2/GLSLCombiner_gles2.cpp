@@ -143,7 +143,7 @@ void DestroyShaderCombiner() {
 	noiseTex.destroy();
 }
 
-ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCombine & _combine) : m_combine(_combine)
+ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCombine & _combine) : m_key(getCombinerKey(_combine.mux))
 {
 	std::string strCombiner;
 	m_nInputs = compileCombiner(_color, _alpha, strCombiner);

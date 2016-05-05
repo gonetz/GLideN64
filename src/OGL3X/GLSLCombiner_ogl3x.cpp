@@ -301,7 +301,7 @@ ShaderCombiner::ShaderCombiner() : m_bNeedUpdate(true)
 	_locate_attributes();
 }
 
-ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCombine & _combine) : m_combine(_combine), m_bNeedUpdate(true)
+ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCombine & _combine) : m_key(getCombinerKey(_combine.mux)), m_bNeedUpdate(true)
 {
 	std::string strCombiner;
 	m_nInputs = compileCombiner(_color, _alpha, strCombiner);
@@ -838,7 +838,7 @@ std::ostream & operator<< (std::ostream & _os, const ShaderCombiner & _combiner)
 	if (isGLError())
 		return _os;
 
-	_os.write((char*)&_combiner.m_combine.mux, sizeof(_combiner.m_combine.mux));
+	_os.write((char*)&_combiner.m_key, sizeof(_combiner.m_key));
 	_os.write((char*)&_combiner.m_nInputs, sizeof(_combiner.m_nInputs));
 	_os.write((char*)&binaryFormat, sizeof(binaryFormat));
 	_os.write((char*)&binaryLength, sizeof(binaryLength));
@@ -848,7 +848,7 @@ std::ostream & operator<< (std::ostream & _os, const ShaderCombiner & _combiner)
 
 std::istream & operator>> (std::istream & _is, ShaderCombiner & _combiner)
 {
-	_is.read((char*)&_combiner.m_combine.mux, sizeof(_combiner.m_combine.mux));
+	_is.read((char*)&_combiner.m_key, sizeof(_combiner.m_key));
 	_is.read((char*)&_combiner.m_nInputs, sizeof(_combiner.m_nInputs));
 	GLenum binaryFormat;
 	GLint  binaryLength;

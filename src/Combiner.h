@@ -175,5 +175,14 @@ ShaderCombiner * currentCombiner() {
 void Combiner_Init();
 void Combiner_Destroy();
 
+inline
+u64 getCombinerKey(u64 _mux)
+{
+	gDPCombine cmb;
+	cmb.mux = _mux;
+	cmb.muxs0 |= (gDP.otherMode.cycleType<<24);
+	return cmb.mux;
+}
+
 #endif
 

@@ -23,7 +23,7 @@ public:
 	void updateRenderState(bool _bForce = false);
 	void updateScreenCoordsScale(bool _bForce = false);
 
-	u64 getMux() const {return m_combine.mux;}
+	u64 getKey() const {return m_key;}
 
 	bool usesTile(u32 _t) const {
 		if (_t == 0)
@@ -119,7 +119,7 @@ private:
 	void _locate_attributes() const;
 	void _locateUniforms();
 
-	gDPCombine m_combine;
+	u64 m_key;
 	UniformLocation m_uniforms;
 	GLuint m_program;
 	int m_nInputs;
