@@ -1186,7 +1186,7 @@ void OGLRender::drawTexturedRect(const TexturedRectParams & _params)
 				texST[t].t1 = (_params.lrt + _params.dtdy) * shiftScaleT - gSP.textureTile[t]->fult;
 			}
 
-			if (cache.current[t]->frameBufferTexture) {
+			if (cache.current[t]->frameBufferTexture != CachedTexture::fbNone) {
 				texST[t].s0 = cache.current[t]->offsetS + texST[t].s0;
 				texST[t].t0 = cache.current[t]->offsetT - texST[t].t0;
 				texST[t].s1 = cache.current[t]->offsetS + texST[t].s1;
