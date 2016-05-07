@@ -335,7 +335,7 @@ void FrameBuffer::copyRdram()
 		// This is necessary for auxilary buffers: game can restore content of RDRAM when buffer is not needed anymore
 		// Thus content of RDRAM on moment of buffer creation will be the same as when buffer becomes obsolete.
 		// Validity check will see that the RDRAM is the same and thus the buffer is valid, which is false.
-		const u32 twoPercent = dataSize / 200;
+		const u32 twoPercent = max(4U, dataSize / 200);
 		u32 start = m_startAddress >> 2;
 		u32 * pData = (u32*)RDRAM;
 		for (u32 i = 0; i < twoPercent; ++i) {
