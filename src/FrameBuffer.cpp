@@ -976,17 +976,15 @@ void FrameBuffer_ActivateBufferTexture(s16 t, FrameBuffer *pBuffer)
 	else
 		pTexture->shiftScaleT = 1.0f;
 
-	const u32 shift = gSP.textureTile[t]->imageAddress - pBuffer->m_startAddress;
-	const u32 factor = pBuffer->m_width << pBuffer->m_size >> 1;
-	if (gSP.textureTile[t]->loadType == LOADTYPE_TILE)
-	{
-		pTexture->offsetS = (float)(pBuffer->m_pLoadTile->uls + ((shift % factor) >> pBuffer->m_size << 1));
-		pTexture->offsetT = (float)(pBuffer->m_height - (pBuffer->m_pLoadTile->ult + shift/factor));
+	const u32 shift = (gSP.textureTile[t]->imageAddress - pBuffer->m_startAddress) >> (pBuffer->m_size - 1);
+	const u32 factor = pBuffer->m_width;
+	if (gSP.textureTile[t]->loadType == LOADTYPE_TILE) {
+		pTexture->offsetS = (float)(pBuffer->m_pLoadTile->uls + (shift % factor));
+		pTexture->offsetT = (float)(pBuffer->m_height - (pBuffer->m_pLoadTile->ult + shift / factor));
 	}
-	else
-	{
-		pTexture->offsetS = (float)((shift % factor) >> pBuffer->m_size << 1);
-		pTexture->offsetT = (float)(pBuffer->m_height - shift/factor);
+	else {
+		pTexture->offsetS = (float)(shift % factor);
+		pTexture->offsetT = (float)(pBuffer->m_height - shift / factor);
 	}
 
 //	frameBufferList().renderBuffer(pBuffer->m_startAddress);
