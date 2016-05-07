@@ -980,7 +980,7 @@ void FrameBuffer_ActivateBufferTexture(s16 t, FrameBuffer *pBuffer)
 	const u32 factor = pBuffer->m_width << pBuffer->m_size >> 1;
 	if (gSP.textureTile[t]->loadType == LOADTYPE_TILE)
 	{
-		pTexture->offsetS = (float)pBuffer->m_pLoadTile->uls;
+		pTexture->offsetS = (float)(pBuffer->m_pLoadTile->uls + ((shift % factor) >> pBuffer->m_size << 1));
 		pTexture->offsetT = (float)(pBuffer->m_height - (pBuffer->m_pLoadTile->ult + shift/factor));
 	}
 	else
