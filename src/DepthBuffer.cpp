@@ -345,7 +345,7 @@ void DepthBufferList::clearBuffer(u32 _uly, u32 _lry)
 	video().getRender().drawRect(0,0,VI.width, VI.height, color);
 	gDP.otherMode.cycleType = cycleType;
 	glBindImageTexture(depthImageUnit, m_pCurrent->m_pDepthImageTexture->glName, 0, GL_FALSE, 0, GL_READ_WRITE, fboFormats.depthImageInternalFormat);
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, frameBufferList().getCurrent()->m_FBO);
+	frameBufferList().setCurrentDrawBuffer();
 #endif // GL_IMAGE_TEXTURES_SUPPORT
 }
 

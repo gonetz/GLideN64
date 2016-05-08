@@ -406,7 +406,7 @@ void FrameBuffer::resolveMultisampledTexture(bool _bForce)
 		GL_COLOR_BUFFER_BIT, GL_NEAREST
 		);
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, frameBufferList().getCurrent()->m_FBO);
+	frameBufferList().setCurrentDrawBuffer();
 	gDP.changed |= CHANGED_SCISSOR;
 	m_resolved = true;
 #endif
@@ -479,6 +479,12 @@ void FrameBufferList::clearBuffersChanged()
 	FrameBuffer * pBuffer = frameBufferList().findBuffer(*REG.VI_ORIGIN);
 	if (pBuffer != NULL)
 		pBuffer->m_changed = false;
+}
+
+void FrameBufferList::setCurrentDrawBuffer() const
+{
+	if (m_pCurrent != nullptr)
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_pCurrent->m_FBO);
 }
 
 FrameBuffer * FrameBufferList::findBuffer(u32 _startAddress)
@@ -1154,8 +1160,8 @@ bool FrameBufferToRDRAM::_prepareCopy(u32 _startAddress)
 			0, 0, VI.width, VI.height,
 			GL_COLOR_BUFFER_BIT, GL_NEAREST
 			);
-		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, frameBufferList().getCurrent()->m_FBO);
 		glBindFramebuffer(GL_READ_FRAMEBUFFER, m_FBO);
+		frameBufferList().setCurrentDrawBuffer();
 	}
 
 	m_frameCount = curFrame;
@@ -1449,7 +1455,7 @@ bool DepthBufferToRDRAM::_prepareCopy(u32 _address, bool _copyChunk)
 		0, 0, pBuffer->m_width, pBuffer->m_height,
 		GL_DEPTH_BUFFER_BIT, GL_NEAREST
 	);
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, frameBufferList().getCurrent()->m_FBO);
+	frameBufferList().setCurrentDrawBuffer();
 	m_frameCount = curFrame;
 	return true;
 }
@@ -1792,7 +1798,7 @@ void RDRAMtoFrameBuffer::CopyFromRDRAM(u32 _address, bool _bCFB)
 										 0.0f, 0.0f, width - 1.0f, height - 1.0f, 1.0f, 1.0f,
 										 false, true, false, m_pCurBuffer);
 	video().getRender().drawTexturedRect(params);
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, frameBufferList().getCurrent()->m_FBO);
+	frameBufferList().setCurrentDrawBuffer();
 
 	gSP.textureTile[0] = pTile0;
 

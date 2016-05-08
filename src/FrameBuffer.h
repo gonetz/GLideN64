@@ -74,6 +74,7 @@ public:
 	void setBufferChanged();
 	void correctHeight();
 	void clearBuffersChanged();
+	void setCurrentDrawBuffer() const;
 
 	FrameBuffer * getCopyBuffer() const { return m_pCopy; }
 	void setCopyBuffer(FrameBuffer * _pBuffer) { m_pCopy = _pBuffer; }
