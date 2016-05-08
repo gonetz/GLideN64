@@ -19,7 +19,8 @@ struct FrameBuffer
 	void init(u32 _address, u32 _endAddress, u16 _format, u16 _size, u16 _width, u16 _height, bool _cfb);
 	void reinit(u16 _height);
 	void resolveMultisampledTexture(bool _bForce = false);
-	CachedTexture * getTexture();
+	CachedTexture * getTexture(u32 _t);
+	CachedTexture * getTextureBG(u32 _t);
 	void copyRdram();
 	bool isValid() const;
 	bool _isMarioTennisScoreboard() const;
@@ -43,16 +44,23 @@ struct FrameBuffer
 	gDPTile *m_pLoadTile;
 	CachedTexture *m_pTexture;
 	DepthBuffer *m_pDepthBuffer;
+
 	// multisampling
-	CachedTexture *m_pResolveTexture;
 	GLuint m_resolveFBO;
+	CachedTexture *m_pResolveTexture;
 	bool m_resolved;
+
+	// subtexture
+	GLuint m_SubFBO;
+	CachedTexture *m_pSubTexture;
 
 	std::vector<u8> m_RdramCopy;
 
 private:
-	void _initTexture(u16 _format, u16 _size, CachedTexture *_pTexture);
+	void _initTexture(u16 _width, u16 _height, u16 _format, u16 _size, CachedTexture *_pTexture);
 	void _setAndAttachTexture(u16 _size, CachedTexture *_pTexture);
+	bool _initSubTexture(u32 _t);
+	CachedTexture * _getSubTexture(u32 _t);
 };
 
 class FrameBufferList
@@ -127,7 +135,7 @@ void FrameBuffer_CopyFromRDRAM(u32 address, bool bUseAlpha);
 void FrameBuffer_AddAddress(u32 address, u32 _size);
 bool FrameBuffer_CopyDepthBuffer(u32 address);
 bool FrameBuffer_CopyDepthBufferChunk(u32 address);
-void FrameBuffer_ActivateBufferTexture(s16 t, FrameBuffer *pBuffer);
-void FrameBuffer_ActivateBufferTextureBG(s16 t, FrameBuffer *pBuffer);
+void FrameBuffer_ActivateBufferTexture(u32 t, FrameBuffer *pBuffer);
+void FrameBuffer_ActivateBufferTextureBG(u32 t, FrameBuffer *pBuffer);
 
 #endif
