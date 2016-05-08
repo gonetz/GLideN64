@@ -20,7 +20,8 @@
 using namespace std;
 
 const GLuint g_noiseTexIndex = 2;
-const GLuint g_MSTex0Index = g_noiseTexIndex + 1;
+const GLuint g_depthTexIndex = g_noiseTexIndex + 1;
+const GLuint g_MSTex0Index = g_depthTexIndex + 1;
 
 inline u32 GetNone( u64 *src, u16 x, u16 i, u8 palette )
 {

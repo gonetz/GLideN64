@@ -21,6 +21,7 @@ public:
 	void updateAlphaTestInfo(bool _bForce = false);
 	void updateTextureInfo(bool _bForce = false);
 	void updateRenderState(bool _bForce = false);
+	void updateRenderTarget(bool _bForce = false);
 	void updateScreenCoordsScale(bool _bForce = false);
 	void updateBlendMode(bool _bForce = false);
 	void disableBlending();
@@ -110,13 +111,14 @@ private:
 
 	struct UniformLocation
 	{
-		iUniform uTex0, uTex1, uMSTex0, uMSTex1, uTexNoise, uTlutImage, uZlutImage, uDepthImage,
+		iUniform uTex0, uTex1, uMSTex0, uMSTex1, uDepthTex,
+			uTexNoise, uTlutImage, uZlutImage, uDepthImage,
 			uFogUsage, uEnableLod, uEnableAlphaTest,
 			uEnableDepth, uEnableDepthCompare, uEnableDepthUpdate,
 			uDepthMode, uDepthSource, uRenderState,
 			uMaxTile, uTextureDetail, uTexturePersp, uTextureFilterMode, uMSAASamples,
 			uAlphaCompareMode, uAlphaDitherMode, uColorDitherMode,
-			uCvgXAlpha, uAlphaCvgSel,
+			uCvgXAlpha, uAlphaCvgSel, uRenderTarget,
 			uForceBlendCycle1, uForceBlendCycle2;
 
 		fUniform uMinLod, uDeltaZ, uAlphaTestValue, uMSAAScale;

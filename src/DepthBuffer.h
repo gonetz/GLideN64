@@ -13,6 +13,7 @@ struct DepthBuffer
 	void initDepthImageTexture(FrameBuffer * _pBuffer);
 	void initDepthBufferTexture(FrameBuffer * _pBuffer);
 	CachedTexture * resolveDepthBufferTexture(FrameBuffer * _pBuffer);
+	CachedTexture * copyDepthBufferTexture(FrameBuffer * _pBuffer);
 
 	void setDepthAttachment(GLenum _target);
 	void activateDepthBufferTexture(FrameBuffer * _pBuffer);
@@ -21,16 +22,21 @@ struct DepthBuffer
 
 	u32 m_address, m_width;
 	u32 m_uly, m_lry; // Top and bottom bounds of fillrect command.
-	GLuint m_FBO;
+	GLuint m_depthImageFBO;
 	CachedTexture *m_pDepthImageTexture;
 	CachedTexture *m_pDepthBufferTexture;
 	bool m_cleared;
 	// multisampling
 	CachedTexture *m_pResolveDepthBufferTexture;
 	bool m_resolved;
+	// render to depth buffer
+	GLuint m_copyFBO;
+	CachedTexture *m_pDepthBufferCopyTexture;
+	bool m_copied;
 
 private:
 	void _initDepthBufferTexture(FrameBuffer * _pBuffer, CachedTexture *_pTexture, bool _multisample);
+	void _DepthBufferTexture(FrameBuffer * _pBuffer);
 };
 
 class DepthBufferList

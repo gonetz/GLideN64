@@ -398,6 +398,22 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 	if (video().getRender().isImageTexturesSupported() && config.frameBufferEmulation.N64DepthCompare != 0)
 		strFragmentShader.append("  if (!depth_compare()) discard; \n");
 
+	strFragmentShader.append(
+#ifdef GLESX
+		"#ifdef GL_NV_fragdepth							\n"
+#endif
+		"  if (uRenderTarget != 0) {					\n"
+		"    if (uRenderTarget > 1) {					\n"
+		"      ivec2 coord = ivec2(gl_FragCoord.xy);	\n"
+		"      if (gl_FragDepth >= texelFetch(uDepthTex, coord, 0).r) discard;	\n"
+		"    }											\n"
+		"    gl_FragDepth = fragColor.r;				\n"
+		"  }											\n"
+#ifdef GLESX
+		"#endif											\n"
+#endif
+	);
+
 	strFragmentShader.append(fragment_shader_end);
 
 	if (config.generalEmulation.enableNoise == 0)
@@ -480,6 +496,7 @@ ShaderCombiner::~ShaderCombiner() {
 void ShaderCombiner::_locateUniforms() {
 	LocateUniform(uTex0);
 	LocateUniform(uTex1);
+	LocateUniform(uDepthTex);
 	LocateUniform(uTexNoise);
 	LocateUniform(uTlutImage);
 	LocateUniform(uZlutImage);
@@ -490,6 +507,7 @@ void ShaderCombiner::_locateUniforms() {
 	LocateUniform(uColorDitherMode);
 	LocateUniform(uCvgXAlpha);
 	LocateUniform(uAlphaCvgSel);
+	LocateUniform(uRenderTarget);
 	LocateUniform(uEnableLod);
 	LocateUniform(uEnableAlphaTest);
 	LocateUniform(uEnableDepth);
@@ -545,6 +563,7 @@ void ShaderCombiner::update(bool _bForce) {
 
 	if (_bForce) {
 		m_uniforms.uTexNoise.set(g_noiseTexIndex, true);
+		m_uniforms.uDepthTex.set(g_depthTexIndex, true);
 		if (usesTexture()) {
 			m_uniforms.uTex0.set(0, true);
 			m_uniforms.uTex1.set(1, true);
@@ -568,12 +587,27 @@ void ShaderCombiner::update(bool _bForce) {
 	updateTextureInfo(_bForce);
 	updateAlphaTestInfo(_bForce);
 	updateDepthInfo(_bForce);
+	updateRenderTarget(_bForce);
 	updateScreenCoordsScale(_bForce);
 }
 
 void ShaderCombiner::updateRenderState(bool _bForce)
 {
 	m_uniforms.uRenderState.set(video().getRender().getRenderState(), _bForce);
+}
+
+void ShaderCombiner::updateRenderTarget(bool _bForce)
+{
+	int renderTarget = 0;
+	if (gDP.colorImage.address == gDP.depthImageAddress &&
+		gDP.otherMode.cycleType != G_CYC_FILL &&
+		(config.generalEmulation.hacks & hack_ZeldaMM) == 0
+	) {
+		FrameBuffer * pCurBuf = frameBufferList().getCurrent();
+		if (pCurBuf != nullptr && pCurBuf->m_pDepthBuffer != nullptr)
+			renderTarget = gDP.otherMode.depthCompare + 1;
+	}
+	m_uniforms.uRenderTarget.set(renderTarget, _bForce);
 }
 
 void ShaderCombiner::updateScreenCoordsScale(bool _bForce)

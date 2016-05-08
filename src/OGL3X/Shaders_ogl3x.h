@@ -142,6 +142,7 @@ static const char* fragment_shader_header_common_variables =
 MAIN_SHADER_VERSION
 "uniform sampler2D uTex0;		\n"
 "uniform sampler2D uTex1;		\n"
+"uniform sampler2D uDepthTex;	\n"
 "layout (std140) uniform ColorsBlock {\n"
 "  lowp vec4 uFogColor;			\n"
 "  lowp vec4 uCenterColor;		\n"
@@ -164,6 +165,7 @@ MAIN_SHADER_VERSION
 "uniform lowp int uEnableAlphaTest;	\n"
 "uniform lowp int uCvgXAlpha;		\n"
 "uniform lowp int uAlphaCvgSel;		\n"
+"uniform lowp int uRenderTarget;	\n"
 "uniform lowp float uAlphaTestValue;\n"
 "uniform mediump vec2 uDepthScale;	\n"
 "uniform lowp ivec4 uBlendMux1;		\n"
@@ -189,6 +191,7 @@ static const char* fragment_shader_header_common_variables_ms_tex1 =
 
 static const char* fragment_shader_header_common_variables_notex =
 MAIN_SHADER_VERSION
+"uniform sampler2D uDepthTex;	\n"
 "layout (std140) uniform ColorsBlock {\n"
 "  lowp vec4 uFogColor;			\n"
 "  lowp vec4 uCenterColor;		\n"
@@ -209,6 +212,7 @@ MAIN_SHADER_VERSION
 "uniform lowp int uEnableAlphaTest;	\n"
 "uniform lowp int uCvgXAlpha;		\n"
 "uniform lowp int uAlphaCvgSel;		\n"
+"uniform lowp int uRenderTarget;	\n"
 "uniform lowp float uAlphaTestValue;\n"
 "uniform mediump vec2 uDepthScale;	\n"
 "uniform lowp ivec4 uBlendMux1;		\n"

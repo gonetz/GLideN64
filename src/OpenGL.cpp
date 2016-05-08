@@ -685,6 +685,31 @@ void OGLRender::_updateStates(RENDER_STATE _renderState) const
 	}
 
 	cmbInfo.updateParameters(_renderState);
+
+#ifndef GLES2
+	if (gDP.colorImage.address == gDP.depthImageAddress &&
+		gDP.otherMode.cycleType != G_CYC_FILL &&
+		(config.generalEmulation.hacks & hack_ZeldaMM) == 0
+	) {
+		FrameBuffer * pCurBuf = frameBufferList().getCurrent();
+		if (pCurBuf != nullptr && pCurBuf->m_pDepthBuffer != nullptr) {
+			if (gDP.otherMode.depthCompare != 0) {
+				CachedTexture * pDepthTexture = pCurBuf->m_pDepthBuffer->copyDepthBufferTexture(pCurBuf);
+				if (pDepthTexture == nullptr)
+					return;
+				glActiveTexture(GL_TEXTURE0 + g_depthTexIndex);
+				glBindTexture(GL_TEXTURE_2D, pDepthTexture->glName);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+			}
+			glEnable(GL_DEPTH_TEST);
+			glDepthFunc(GL_ALWAYS);
+			glDepthMask(TRUE);
+			gDP.changed |= CHANGED_RENDERMODE;
+		}
+	}
+#endif
 }
 
 void OGLRender::_setColorArray() const
@@ -818,6 +843,7 @@ void OGLRender::drawTriangles()
 
 	_prepareDrawTriangle(false);
 	glDrawElements(GL_TRIANGLES, triangles.num, GL_UNSIGNED_BYTE, triangles.elements);
+//	glMemoryBarrier(GL_FRAMEBUFFER_BARRIER_BIT);
 	triangles.num = 0;
 }
 
@@ -974,18 +1000,6 @@ bool texturedRectDepthBufferCopy(const OGLRender::TexturedRectParams & _params)
 			pDst[(ulx + x) ^ 1] = swapword(pSrc[x]);
 
 		return true;
-	}
-	return false;
-}
-
-static
-bool texturedRectDepthBufferRender(const OGLRender::TexturedRectParams & _params)
-{
-	if (gDP.colorImage.address == gDP.depthImageAddress) {
-		FrameBuffer * pCurBuf = frameBufferList().getCurrent();
-		if (pCurBuf == nullptr || pCurBuf->m_pDepthBuffer == nullptr)
-			return true;
-		return !SetDepthTextureCombiner();
 	}
 	return false;
 }
@@ -1537,8 +1551,6 @@ void OGLRender::_setSpecialTexrect() const
 		texturedRectSpecial = texturedRectPaletteMod;
 	else if (strstr(name, (const char *)"ZELDA"))
 		texturedRectSpecial = texturedRectMonochromeBackground;
-	else if (strstr(name, (const char *)"quarterback_club_98"))
-		texturedRectSpecial = texturedRectDepthBufferRender;
 	else
 		texturedRectSpecial = NULL;
 }
