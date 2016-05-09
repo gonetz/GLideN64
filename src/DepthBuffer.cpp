@@ -139,25 +139,16 @@ void DepthBuffer::_initDepthBufferTexture(FrameBuffer * _pBuffer, CachedTexture 
 	if (_multisample) {
 		glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, _pTexture->glName);
 #if defined(GLES3_1)
-		if (_pBuffer != NULL)
-			glTexStorage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, config.video.multisampling, GL_DEPTH_COMPONENT, _pBuffer->m_pTexture->realWidth, _pBuffer->m_pTexture->realHeight, false);
-		else
-			glTexStorage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, config.video.multisampling, GL_DEPTH_COMPONENT, video().getWidth(), video().getHeight(), false);
+		glTexStorage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, config.video.multisampling, GL_DEPTH_COMPONENT, _pTexture->realWidth, _pTexture->realHeight, false);
 #else
-		if (_pBuffer != NULL)
-			glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, config.video.multisampling, GL_DEPTH_COMPONENT, _pBuffer->m_pTexture->realWidth, _pBuffer->m_pTexture->realHeight, false);
-		else
-			glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, config.video.multisampling, GL_DEPTH_COMPONENT, video().getWidth(), video().getHeight(), false);
+		glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, config.video.multisampling, GL_DEPTH_COMPONENT, _pTexture->realWidth, _pTexture->realHeight, false);
 #endif
 		_pTexture->frameBufferTexture = CachedTexture::fbMultiSample;
 	} else
 #endif // GL_MULTISAMPLING_SUPPORT
 	{
 		glBindTexture(GL_TEXTURE_2D, _pTexture->glName);
-		if (_pBuffer != NULL)
-			glTexImage2D(GL_TEXTURE_2D, 0, fboFormats.depthInternalFormat, _pBuffer->m_pTexture->realWidth, _pBuffer->m_pTexture->realHeight, 0, GL_DEPTH_COMPONENT, fboFormats.depthType, NULL);
-		else
-			glTexImage2D(GL_TEXTURE_2D, 0, fboFormats.depthInternalFormat, video().getWidth(), video().getHeight(), 0, GL_DEPTH_COMPONENT, fboFormats.depthType, NULL);
+		glTexImage2D(GL_TEXTURE_2D, 0, fboFormats.depthInternalFormat, _pTexture->realWidth, _pTexture->realHeight, 0, GL_DEPTH_COMPONENT, fboFormats.depthType, NULL);
 
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
