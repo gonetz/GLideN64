@@ -533,8 +533,8 @@ CachedTexture * FrameBuffer::getTexture(u32 _t)
 
 CachedTexture * FrameBuffer::getTextureBG(u32 _t)
 {
-	m_pTexture->scaleS = video().getScaleX() / (float)m_pTexture->realWidth;
-	m_pTexture->scaleT = video().getScaleY() / (float)m_pTexture->realHeight;
+	m_pTexture->scaleS = m_scaleX / (float)m_pTexture->realWidth;
+	m_pTexture->scaleT = m_scaleY / (float)m_pTexture->realHeight;
 
 	m_pTexture->shiftScaleS = 1.0f;
 	m_pTexture->shiftScaleT = 1.0f;
