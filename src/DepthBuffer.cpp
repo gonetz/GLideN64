@@ -238,6 +238,8 @@ CachedTexture * DepthBuffer::copyDepthBufferTexture(FrameBuffer * _pBuffer)
 	glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER,
 						   GL_COLOR_ATTACHMENT0,
 						   textarget,
+						   _pBuffer->m_pTexture->frameBufferTexture == CachedTexture::fbMultiSample ?
+						   _pBuffer->m_pResolveTexture->glName :
 						   _pBuffer->m_pTexture->glName,
 						   0);
 	glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, m_pDepthBufferCopyTexture->glName, 0);
