@@ -1881,6 +1881,7 @@ void RDRAMtoFrameBuffer::CopyFromRDRAM(u32 _address, bool _bCFB)
 	currentCombiner()->updateFrameBufferInfo();
 
 	glDisable(GL_DEPTH_TEST);
+	glDisable(GL_SCISSOR_TEST);
 
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_pCurBuffer->m_FBO);
 	OGLRender::TexturedRectParams params((float)x0, (float)y0, (float)width, (float)height,
@@ -1891,7 +1892,7 @@ void RDRAMtoFrameBuffer::CopyFromRDRAM(u32 _address, bool _bCFB)
 
 	gSP.textureTile[0] = pTile0;
 
-	gDP.changed |= CHANGED_RENDERMODE | CHANGED_COMBINE;
+	gDP.changed |= CHANGED_RENDERMODE | CHANGED_COMBINE | CHANGED_SCISSOR;
 }
 
 void RDRAMtoFrameBuffer::Reset()
