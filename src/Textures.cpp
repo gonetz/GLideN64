@@ -1411,6 +1411,12 @@ void TextureCache::update(u32 _t)
 		return;
 	}
 
+	if (gDP.otherMode.textureLOD == G_TL_LOD && gSP.texture.level == 0 && !currentCombiner()->usesLOD() && _t == 1) {
+		current[1] = current[0];
+		activateTexture(_t, current[_t]);
+		return;
+	}
+
 	if (gSP.texture.tile == 7 &&
 			_t == 0 &&
 			gSP.textureTile[0] == gDP.loadTile &&
@@ -1529,6 +1535,9 @@ void getTextureShiftScale(u32 t, const TextureCache & cache, f32 & shiftScaleS, 
 		shiftScaleT = cache.current[t]->shiftScaleT;
 		return;
 	}
+
+	if (gDP.otherMode.textureLOD == G_TL_LOD && gSP.texture.level == 0 && !currentCombiner()->usesLOD())
+		t = 0;
 
 	if (gSP.textureTile[t]->shifts > 10)
 		shiftScaleS = (f32)(1 << (16 - gSP.textureTile[t]->shifts));
