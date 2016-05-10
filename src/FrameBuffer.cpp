@@ -147,10 +147,11 @@ FrameBuffer::FrameBuffer() :
 	m_scaleX(0), m_scaleY(0),
 	m_copiedToRdram(false), m_fingerprint(false), m_cleared(false), m_changed(false), m_cfb(false),
 	m_isDepthBuffer(false), m_isPauseScreen(false), m_isOBScreen(false), m_needHeightCorrection(false),
-	m_postProcessed(0), m_pLoadTile(NULL),
-	m_pDepthBuffer(NULL), m_resolveFBO(0), m_pResolveTexture(NULL), m_resolved(false),
+	m_postProcessed(0), m_loadType(LOADTYPE_BLOCK), m_pDepthBuffer(NULL),
+	m_resolveFBO(0), m_pResolveTexture(NULL), m_resolved(false),
 	m_SubFBO(0), m_pSubTexture(NULL)
 {
+	m_loadTileOrigin.uls = m_loadTileOrigin.ult = 0;
 	m_pTexture = textureCache().addFrameBufferTexture();
 	glGenFramebuffers(1, &m_FBO);
 }
@@ -161,15 +162,15 @@ FrameBuffer::FrameBuffer(FrameBuffer && _other) :
 	m_validityChecked(_other.m_validityChecked), m_scaleX(_other.m_scaleX), m_scaleY(_other.m_scaleY), m_copiedToRdram(_other.m_copiedToRdram),
 	m_fingerprint(_other.m_fingerprint), m_cleared(_other.m_cleared), m_changed(_other.m_changed),
 	m_cfb(_other.m_cfb), m_isDepthBuffer(_other.m_isDepthBuffer), m_isPauseScreen(_other.m_isPauseScreen),
-	m_isOBScreen(_other.m_isOBScreen), m_needHeightCorrection(_other.m_needHeightCorrection), m_postProcessed(_other.m_postProcessed),
-	m_FBO(_other.m_FBO), m_pLoadTile(_other.m_pLoadTile), m_pTexture(_other.m_pTexture), m_pDepthBuffer(_other.m_pDepthBuffer),
+	m_isOBScreen(_other.m_isOBScreen), m_needHeightCorrection(_other.m_needHeightCorrection),
+	m_postProcessed(_other.m_postProcessed), m_loadTileOrigin(_other.m_loadTileOrigin), m_loadType(_other.m_loadType),
+	m_FBO(_other.m_FBO), m_pTexture(_other.m_pTexture), m_pDepthBuffer(_other.m_pDepthBuffer),
 	m_resolveFBO(_other.m_resolveFBO), m_pResolveTexture(_other.m_pResolveTexture), m_resolved(_other.m_resolved),
 	m_SubFBO(_other.m_SubFBO), m_pSubTexture(_other.m_pSubTexture),
 	m_RdramCopy(_other.m_RdramCopy)
 {
 	_other.m_FBO = 0;
 	_other.m_pTexture = NULL;
-	_other.m_pLoadTile = NULL;
 	_other.m_pDepthBuffer = NULL;
 	_other.m_pResolveTexture = NULL;
 	_other.m_resolveFBO = 0;
@@ -498,9 +499,9 @@ CachedTexture * FrameBuffer::getTexture(u32 _t)
 {
 	const u32 shift = (gSP.textureTile[_t]->imageAddress - m_startAddress) >> (m_size - 1);
 	const u32 factor = m_width;
-	if (gSP.textureTile[_t]->loadType == LOADTYPE_TILE) {
-		m_pTexture->offsetS = (float)(m_pLoadTile->uls + (shift % factor));
-		m_pTexture->offsetT = (float)(m_height - (m_pLoadTile->ult + shift / factor));
+	if (m_loadType == LOADTYPE_TILE) {
+		m_pTexture->offsetS = (float)(m_loadTileOrigin.uls + (shift % factor));
+		m_pTexture->offsetT = (float)(m_height - (m_loadTileOrigin.ult + shift / factor));
 	} else {
 		m_pTexture->offsetS = (float)(shift % factor);
 		m_pTexture->offsetT = (float)(m_height - shift / factor);

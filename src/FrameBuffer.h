@@ -40,8 +40,12 @@ struct FrameBuffer
 	bool m_needHeightCorrection;
 	u32 m_postProcessed;
 
+	struct {
+		u32 uls, ult;
+	} m_loadTileOrigin;
+	u32 m_loadType;
+
 	GLuint m_FBO;
-	gDPTile *m_pLoadTile;
 	CachedTexture *m_pTexture;
 	DepthBuffer *m_pDepthBuffer;
 
