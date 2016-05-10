@@ -216,11 +216,10 @@ ShaderCombiner * CombinerInfo::_compile(u64 mux) const
 	ac[1].a  = aAExpanded[combine.aA1];
 
 	// Simplify each RDP combiner cycle into a combiner stage
-	if (gDP.otherMode.cycleType == G_CYC_1CYCLE) {
+	if (gDP.otherMode.cycleType != G_CYC_2CYCLE) {
 		SimplifyCycle(&cc[1], &color.stage[0]);
 		SimplifyCycle(&ac[1], &alpha.stage[0]);
-	}
-	else {
+	} else {
 		cc[0].sa = saRGBExpanded[combine.saRGB0];
 		cc[0].sb = sbRGBExpanded[combine.sbRGB0];
 		cc[0].m = mRGBExpanded[combine.mRGB0];
@@ -232,8 +231,15 @@ ShaderCombiner * CombinerInfo::_compile(u64 mux) const
 
 		SimplifyCycle(&cc[0], &color.stage[0]);
 		SimplifyCycle(&ac[0], &alpha.stage[0]);
-		SimplifyCycle(&cc[1], &color.stage[1]);
-		SimplifyCycle(&ac[1], &alpha.stage[1]);
+
+		const bool equalStages = (memcmp(cc, cc + 1, sizeof(CombineCycle)) | memcmp(ac, ac + 1, sizeof(CombineCycle))) == 0;
+		if (!equalStages) {
+			SimplifyCycle(&cc[1], &color.stage[1]);
+			SimplifyCycle(&ac[1], &alpha.stage[1]);
+		} else {
+			color.numStages = 1;
+			alpha.numStages = 1;
+		}
 	}
 
 	return new ShaderCombiner( color, alpha, combine );
