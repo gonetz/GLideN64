@@ -605,14 +605,11 @@ void OGLRender::_updateStates(RENDER_STATE _renderState) const
 		if (((gSP.geometryMode & G_ZBUFFER) || gDP.otherMode.depthSource == G_ZS_PRIM) && gDP.otherMode.cycleType <= G_CYC_2CYCLE) {
 			if (gDP.otherMode.depthCompare != 0) {
 				switch (gDP.otherMode.depthMode) {
-					case ZMODE_OPA:
-					glDisable(GL_POLYGON_OFFSET_FILL);
-					glDepthFunc(GL_LEQUAL);
-					break;
 					case ZMODE_INTER:
 					glDisable(GL_POLYGON_OFFSET_FILL);
 					glDepthFunc(GL_LEQUAL);
 					break;
+					case ZMODE_OPA:
 					case ZMODE_XLU:
 					// Max || Infront;
 					glDisable(GL_POLYGON_OFFSET_FILL);
