@@ -15,9 +15,6 @@ public:
 
 	static PostProcessor & get();
 
-	static const u32 postEffectBlur = 1U;
-	static const u32 postEffectGammaCorrection = 2U;
-
 private:
 	PostProcessor();
 	PostProcessor(const PostProcessor & _other);

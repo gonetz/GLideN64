@@ -147,7 +147,7 @@ FrameBuffer::FrameBuffer() :
 	m_scaleX(0), m_scaleY(0),
 	m_copiedToRdram(false), m_fingerprint(false), m_cleared(false), m_changed(false), m_cfb(false),
 	m_isDepthBuffer(false), m_isPauseScreen(false), m_isOBScreen(false), m_needHeightCorrection(false),
-	m_postProcessed(0), m_loadType(LOADTYPE_BLOCK), m_pDepthBuffer(NULL),
+	m_loadType(LOADTYPE_BLOCK), m_pDepthBuffer(NULL),
 	m_resolveFBO(0), m_pResolveTexture(NULL), m_resolved(false),
 	m_SubFBO(0), m_pSubTexture(NULL)
 {
@@ -163,7 +163,7 @@ FrameBuffer::FrameBuffer(FrameBuffer && _other) :
 	m_fingerprint(_other.m_fingerprint), m_cleared(_other.m_cleared), m_changed(_other.m_changed),
 	m_cfb(_other.m_cfb), m_isDepthBuffer(_other.m_isDepthBuffer), m_isPauseScreen(_other.m_isPauseScreen),
 	m_isOBScreen(_other.m_isOBScreen), m_needHeightCorrection(_other.m_needHeightCorrection),
-	m_postProcessed(_other.m_postProcessed), m_loadTileOrigin(_other.m_loadTileOrigin), m_loadType(_other.m_loadType),
+	m_loadTileOrigin(_other.m_loadTileOrigin), m_loadType(_other.m_loadType),
 	m_FBO(_other.m_FBO), m_pTexture(_other.m_pTexture), m_pDepthBuffer(_other.m_pDepthBuffer),
 	m_resolveFBO(_other.m_resolveFBO), m_pResolveTexture(_other.m_pResolveTexture), m_resolved(_other.m_resolved),
 	m_SubFBO(_other.m_SubFBO), m_pSubTexture(_other.m_pSubTexture),
@@ -749,7 +749,6 @@ void FrameBufferList::saveBuffer(u32 _address, u16 _format, u16 _size, u16 _widt
 
 	m_pCurrent->m_isDepthBuffer = _address == gDP.depthImageAddress;
 	m_pCurrent->m_isPauseScreen = m_pCurrent->m_isOBScreen = false;
-	m_pCurrent->m_postProcessed = 0;
 }
 
 void FrameBufferList::copyAux()
@@ -971,7 +970,6 @@ void FrameBufferList::renderBuffer(u32 _address)
 #endif // GLESX
 
 	FrameBuffer * pFilteredBuffer = PostProcessor::get().doBlur(PostProcessor::get().doGammaCorrection(pBuffer));
-	pBuffer->m_postProcessed = pFilteredBuffer->m_postProcessed;
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 	//glDrawBuffer( GL_BACK );
 	float clearColor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
@@ -1038,7 +1036,6 @@ void FrameBufferList::renderBuffer(u32 _address)
 	OGLVideo & ogl = video();
 	ogl.getRender().updateScissor(pBuffer);
 	FrameBuffer * pFilteredBuffer = PostProcessor::get().doBlur(PostProcessor::get().doGammaCorrection(pBuffer));
-	pBuffer->m_postProcessed = pFilteredBuffer->m_postProcessed;
 	ogl.getRender().dropRenderState();
 
 	const u32 width = pFilteredBuffer->m_width;

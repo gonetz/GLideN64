@@ -554,15 +554,8 @@ FrameBuffer * PostProcessor::doBlur(FrameBuffer * _pBuffer)
 	if (_pBuffer == nullptr)
 		return nullptr;
 
-	m_pResultBuffer->m_postProcessed = _pBuffer->m_postProcessed;
-
 	if (config.bloomFilter.enable == 0)
 		return _pBuffer;
-
-	if ((_pBuffer->m_postProcessed&PostProcessor::postEffectBlur) == PostProcessor::postEffectBlur)
-		return m_pResultBuffer;
-
-	_pBuffer->m_postProcessed |= PostProcessor::postEffectBlur;
 
 	_preDraw(_pBuffer);
 
@@ -591,7 +584,6 @@ FrameBuffer * PostProcessor::doBlur(FrameBuffer * _pBuffer)
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
 	_postDraw();
-	m_pResultBuffer->m_postProcessed = _pBuffer->m_postProcessed;
 	return m_pResultBuffer;
 }
 
@@ -600,15 +592,9 @@ FrameBuffer * PostProcessor::doGammaCorrection(FrameBuffer * _pBuffer)
 	if (_pBuffer == nullptr)
 		return nullptr;
 
-	m_pResultBuffer->m_postProcessed = _pBuffer->m_postProcessed;
-
 	if (((*REG.VI_STATUS & 8) | config.gammaCorrection.force) == 0)
 		return _pBuffer;
 
-	if ((_pBuffer->m_postProcessed&PostProcessor::postEffectGammaCorrection) == PostProcessor::postEffectGammaCorrection)
-		return m_pResultBuffer;
-
-	_pBuffer->m_postProcessed |= PostProcessor::postEffectGammaCorrection;
 
 	_preDraw(_pBuffer);
 
@@ -618,6 +604,5 @@ FrameBuffer * PostProcessor::doGammaCorrection(FrameBuffer * _pBuffer)
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
 	_postDraw();
-	m_pResultBuffer->m_postProcessed = _pBuffer->m_postProcessed;
 	return m_pResultBuffer;
 }
