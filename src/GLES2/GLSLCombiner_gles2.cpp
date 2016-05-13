@@ -330,15 +330,17 @@ void ShaderCombiner::updateFogMode(bool _bForce)
 
 void ShaderCombiner::updateBlendMode(bool _bForce)
 {
-	m_uniforms.uBlendMux1.set(gDP.otherMode.c1_m1a,
-							  gDP.otherMode.c1_m1b,
-							  gDP.otherMode.c1_m2a,
-							  gDP.otherMode.c1_m2b,
-							  _bForce);
+	if (gDP.otherMode.cycleType <= G_CYC_2CYCLE) {
+		m_uniforms.uBlendMux1.set(gDP.otherMode.c1_m1a,
+								  gDP.otherMode.c1_m1b,
+								  gDP.otherMode.c1_m2a,
+								  gDP.otherMode.c1_m2b,
+								  _bForce);
+	}
 	int forceBlend1 = gDP.otherMode.cycleType == G_CYC_2CYCLE ? 1 : 0;
 	int forceBlend2 = 0;
 
-	if (gDP.otherMode.forceBlender != 0 && gDP.otherMode.cycleType < G_CYC_COPY) {
+	if (gDP.otherMode.forceBlender != 0 && gDP.otherMode.cycleType <= G_CYC_2CYCLE) {
 		forceBlend1 = 1;
 		if (gDP.otherMode.cycleType == G_CYC_2CYCLE) {
 			forceBlend2 = 1;
