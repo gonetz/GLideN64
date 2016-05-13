@@ -944,8 +944,10 @@ void FrameBufferList::renderBuffer(u32 _address)
 		srcY1 = srcY0 + VI.real_height;
 	}
 
+	FrameBuffer * pFilteredBuffer = PostProcessor::get().doBlur(PostProcessor::get().doGammaCorrection(pBuffer));
+
 	const f32 viScaleX = _FIXED2FLOAT(_SHIFTR(*REG.VI_X_SCALE, 0, 12), 10);
-	const f32 srcScaleX = pBuffer->m_scaleX;
+	const f32 srcScaleX = pFilteredBuffer->m_scaleX;
 	const f32 dstScaleX = ogl.getScaleX();
 	const s32 h0 = (isPAL ? 128 : 108);
 	const s32 hx0 = max(0, hStart - h0);
@@ -954,10 +956,10 @@ void FrameBufferList::renderBuffer(u32 _address)
 	Xwidth = (GLint)((min((f32)VI.width, (hEnd - hStart)*viScaleX)) * srcScaleX);
 	X1 = ogl.getWidth() - (GLint)(hx1 *viScaleX * dstScaleX);
 
-	const float srcScaleY = pBuffer->m_scaleY;
+	const f32 srcScaleY = pFilteredBuffer->m_scaleY;
 	const GLint hOffset = (ogl.getScreenWidth() - ogl.getWidth()) / 2;
 	const GLint vOffset = (ogl.getScreenHeight() - ogl.getHeight()) / 2 + ogl.getHeightOffset();
-	CachedTexture * pBufferTexture = pBuffer->m_pTexture;
+	CachedTexture * pBufferTexture = pFilteredBuffer->m_pTexture;
 	GLint srcCoord[4] = { 0, (GLint)(srcY0*srcScaleY), Xwidth, min((GLint)(srcY1*srcScaleY), (GLint)pBufferTexture->realHeight) };
 	if (srcCoord[2] > pBufferTexture->realWidth || srcCoord[3] > pBufferTexture->realHeight) {
 		removeBuffer(pBuffer->m_startAddress);
@@ -969,7 +971,6 @@ void FrameBufferList::renderBuffer(u32 _address)
 		dstCoord[0] += 1; // workaround for Adreno's issue with glBindFramebuffer;
 #endif // GLESX
 
-	FrameBuffer * pFilteredBuffer = PostProcessor::get().doBlur(PostProcessor::get().doGammaCorrection(pBuffer));
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 	//glDrawBuffer( GL_BACK );
 	float clearColor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };

@@ -488,7 +488,7 @@ PostProcessor & PostProcessor::get()
 	return processor;
 }
 
-void _setGLState(FrameBuffer * _pBuffer) {
+void PostProcessor::_setGLState() {
 	glDisable(GL_DEPTH_TEST);
 	glDisable(GL_BLEND);
 
@@ -509,20 +509,20 @@ void _setGLState(FrameBuffer * _pBuffer) {
 	glDisableVertexAttribArray(SC_NUMLIGHTS);
 	glDisableVertexAttribArray(SC_MODIFY);
 	glViewport(0, 0, video().getWidth(), video().getHeight());
-	glScissor(0, 0, _pBuffer->m_pTexture->realWidth, _pBuffer->m_pTexture->realHeight);
+	glScissor(0, 0, m_pResultBuffer->m_pTexture->realWidth, m_pResultBuffer->m_pTexture->realHeight);
 	gSP.changed |= CHANGED_VIEWPORT;
 	gDP.changed |= CHANGED_RENDERMODE | CHANGED_SCISSOR;
 }
 
 void PostProcessor::_preDraw(FrameBuffer * _pBuffer)
 {
-	_setGLState(_pBuffer);
+	_setGLState();
 	OGLVideo & ogl = video();
 
 	m_pResultBuffer->m_width = _pBuffer->m_width;
 	m_pResultBuffer->m_height = _pBuffer->m_height;
-	m_pResultBuffer->m_scaleX = _pBuffer->m_scaleX;
-	m_pResultBuffer->m_scaleY = _pBuffer->m_scaleY;
+	m_pResultBuffer->m_scaleX = ogl.getScaleX();
+	m_pResultBuffer->m_scaleY = ogl.getScaleY();
 #ifdef GLES2
 	m_pTextureOriginal = _pBuffer->m_pTexture;
 #else
@@ -530,8 +530,8 @@ void PostProcessor::_preDraw(FrameBuffer * _pBuffer)
 		glBindFramebuffer(GL_READ_FRAMEBUFFER, _pBuffer->m_FBO);
 		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_FBO_resolved);
 		glBlitFramebuffer(
-			0, 0, ogl.getWidth(), ogl.getHeight(),
-			0, 0, ogl.getWidth(), ogl.getHeight(),
+			0, 0, _pBuffer->m_pTexture->realWidth, _pBuffer->m_pTexture->realHeight,
+			0, 0, m_pTextureResolved->realWidth, m_pTextureResolved->realHeight,
 			GL_COLOR_BUFFER_BIT, GL_LINEAR
 			);
 		m_pTextureOriginal = m_pTextureResolved;

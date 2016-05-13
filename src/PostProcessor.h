@@ -24,6 +24,7 @@ private:
 	void _destroyGammaCorrection();
 	void _initBlur();
 	void _destroyBlur();
+	void _setGLState();
 	void _preDraw(FrameBuffer * _pBuffer);
 	void _postDraw();
 
