@@ -977,15 +977,15 @@ void FrameBufferList::renderBuffer(u32 _address)
 	render.clearColorBuffer(clearColor);
 
 	GLenum filter = GL_LINEAR;
-	if (config.video.multisampling != 0 && pFilteredBuffer == pBuffer) {
+	if (pFilteredBuffer->m_pTexture->frameBufferTexture == CachedTexture::fbMultiSample) {
 		if (X0 > 0 || dstPartHeight > 0 ||
 			(srcCoord[2] - srcCoord[0]) != (dstCoord[2] - dstCoord[0]) ||
 			(srcCoord[3] - srcCoord[1]) != (dstCoord[3] - dstCoord[1])) {
-			pBuffer->resolveMultisampledTexture(true);
-			glBindFramebuffer(GL_READ_FRAMEBUFFER, pBuffer->m_resolveFBO);
+			pFilteredBuffer->resolveMultisampledTexture(true);
+			glBindFramebuffer(GL_READ_FRAMEBUFFER, pFilteredBuffer->m_resolveFBO);
 			glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 		} else {
-			glBindFramebuffer(GL_READ_FRAMEBUFFER, pBuffer->m_FBO);
+			glBindFramebuffer(GL_READ_FRAMEBUFFER, pFilteredBuffer->m_FBO);
 			filter = GL_NEAREST;
 		}
 	} else
