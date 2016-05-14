@@ -37,12 +37,10 @@ private:
 
 	FrameBuffer * m_pResultBuffer;
 
-	GLuint m_FBO_resolved;
 	GLuint m_FBO_glowMap;
 	GLuint m_FBO_blur;
 
 	CachedTexture * m_pTextureOriginal;
-	CachedTexture * m_pTextureResolved;
 	CachedTexture * m_pTextureGlowMap;
 	CachedTexture * m_pTextureBlur;
 };
