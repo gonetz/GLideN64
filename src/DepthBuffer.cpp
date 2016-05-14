@@ -190,7 +190,6 @@ CachedTexture * DepthBuffer::resolveDepthBufferTexture(FrameBuffer * _pBuffer)
 		return m_pDepthBufferTexture;
 	if (m_resolved)
 		return m_pResolveDepthBufferTexture;
-	glScissor(0, 0, m_pDepthBufferTexture->realWidth, m_pDepthBufferTexture->realHeight);
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, _pBuffer->m_FBO);
 	glReadBuffer(GL_COLOR_ATTACHMENT0);
 	GLuint attachment = GL_COLOR_ATTACHMENT0;
@@ -199,15 +198,16 @@ CachedTexture * DepthBuffer::resolveDepthBufferTexture(FrameBuffer * _pBuffer)
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, _pBuffer->m_resolveFBO);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, m_pResolveDepthBufferTexture->glName, 0);
 	assert(checkFBO());
+	glDisable(GL_SCISSOR_TEST);
 	glBlitFramebuffer(
 		0, 0, m_pDepthBufferTexture->realWidth, m_pDepthBufferTexture->realHeight,
 		0, 0, m_pResolveDepthBufferTexture->realWidth, m_pResolveDepthBufferTexture->realHeight,
 		GL_DEPTH_BUFFER_BIT, GL_NEAREST
 		);
+	glEnable(GL_SCISSOR_TEST);
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, _pBuffer->m_FBO);
 	m_resolved = true;
-	gDP.changed |= CHANGED_SCISSOR;
 	return m_pResolveDepthBufferTexture;
 #else
 	return m_pDepthBufferTexture;
@@ -225,7 +225,6 @@ CachedTexture * DepthBuffer::copyDepthBufferTexture(FrameBuffer * _pBuffer)
 		_initDepthBufferTexture(_pBuffer, m_pDepthBufferCopyTexture, false);
 	}
 
-	glScissor(0, 0, m_pDepthBufferTexture->realWidth, m_pDepthBufferTexture->realHeight);
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, _pBuffer->m_FBO);
 	glReadBuffer(GL_COLOR_ATTACHMENT0);
 	assert(checkFBO());
@@ -244,15 +243,16 @@ CachedTexture * DepthBuffer::copyDepthBufferTexture(FrameBuffer * _pBuffer)
 						   0);
 	glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, m_pDepthBufferCopyTexture->glName, 0);
 	assert(checkFBO());
+	glDisable(GL_SCISSOR_TEST);
 	glBlitFramebuffer(
 		0, 0, m_pDepthBufferTexture->realWidth, m_pDepthBufferTexture->realHeight,
 		0, 0, m_pDepthBufferTexture->realWidth, m_pDepthBufferTexture->realHeight,
 		GL_DEPTH_BUFFER_BIT, GL_NEAREST
 		);
+	glEnable(GL_SCISSOR_TEST);
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, _pBuffer->m_FBO);
 	m_copied = true;
-	gDP.changed |= CHANGED_SCISSOR;
 	return m_pDepthBufferCopyTexture;
 }
 #endif

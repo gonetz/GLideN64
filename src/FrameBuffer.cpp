@@ -408,18 +408,18 @@ void FrameBuffer::resolveMultisampledTexture(bool _bForce)
 #ifdef GL_MULTISAMPLING_SUPPORT
 	if (m_resolved && !_bForce)
 		return;
-	glScissor(0, 0, m_pTexture->realWidth, m_pTexture->realHeight);
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, m_FBO);
 	glReadBuffer(GL_COLOR_ATTACHMENT0);
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_resolveFBO);
+	glDisable(GL_SCISSOR_TEST);
 	glBlitFramebuffer(
 		0, 0, m_pTexture->realWidth, m_pTexture->realHeight,
 		0, 0, m_pResolveTexture->realWidth, m_pResolveTexture->realHeight,
 		GL_COLOR_BUFFER_BIT, GL_NEAREST
 		);
+	glEnable(GL_SCISSOR_TEST);
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
 	frameBufferList().setCurrentDrawBuffer();
-	gDP.changed |= CHANGED_SCISSOR;
 	m_resolved = true;
 #endif
 }
@@ -1230,7 +1230,6 @@ bool FrameBufferToRDRAM::_prepareCopy(u32 _startAddress)
 
 	if (m_pCurFrameBuffer->m_scaleX > 1.0f) {
 		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_FBO);
-		glScissor(0, 0, m_pCurFrameBuffer->m_pTexture->realWidth, m_pCurFrameBuffer->m_pTexture->realHeight);
 		u32 x0 = 0;
 		u32 width, height;
 		if (config.frameBufferEmulation.nativeResFactor == 0) {
@@ -1245,11 +1244,13 @@ bool FrameBufferToRDRAM::_prepareCopy(u32 _startAddress)
 			width = m_pCurFrameBuffer->m_pTexture->realWidth;
 			height = m_pCurFrameBuffer->m_pTexture->realHeight;
 		}
+		glDisable(GL_SCISSOR_TEST);
 		glBlitFramebuffer(
 			x0, 0, x0 + width, height,
 			0, 0, VI.width, VI.height,
 			GL_COLOR_BUFFER_BIT, GL_NEAREST
 			);
+		glEnable(GL_SCISSOR_TEST);
 		glBindFramebuffer(GL_READ_FRAMEBUFFER, m_FBO);
 		frameBufferList().setCurrentDrawBuffer();
 	}
@@ -1539,12 +1540,13 @@ bool DepthBufferToRDRAM::_prepareCopy(u32 _address, bool _copyChunk)
 		glBindFramebuffer(GL_READ_FRAMEBUFFER, pBuffer->m_resolveFBO);
 	}
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_FBO);
-	glScissor(0, 0, pBuffer->m_pTexture->realWidth, pBuffer->m_pTexture->realHeight);
+	glDisable(GL_SCISSOR_TEST);
 	glBlitFramebuffer(
 		0, 0, pBuffer->m_pTexture->realWidth, pBuffer->m_pTexture->realHeight,
 		0, 0, pBuffer->m_width, pBuffer->m_height,
 		GL_DEPTH_BUFFER_BIT, GL_NEAREST
 	);
+	glEnable(GL_SCISSOR_TEST);
 	frameBufferList().setCurrentDrawBuffer();
 	m_frameCount = curFrame;
 	return true;
