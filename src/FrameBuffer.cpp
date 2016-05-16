@@ -1369,15 +1369,21 @@ void FrameBufferToRDRAM::_copy(u32 _startAddress, u32 _endAddress, bool _sync)
 	if (m_pCurFrameBuffer->m_size == G_IM_SIZ_32b) {
 		u32 *ptr_src = (u32*)pixelData;
 		u32 *ptr_dst = (u32*)(RDRAM + _startAddress);
-		_writeToRdram<u32, u32>(ptr_src, ptr_dst, &FrameBufferToRDRAM::_RGBAtoRGBA32, 0, 0, width, height, numPixels, _startAddress, m_pCurFrameBuffer->m_startAddress, m_pCurFrameBuffer->m_size);
+		std::vector<u32> srcBuf(width * height);
+		memcpy(srcBuf.data(), ptr_src, width * height*sizeof(u32));
+		_writeToRdram<u32, u32>(srcBuf.data(), ptr_dst, &FrameBufferToRDRAM::_RGBAtoRGBA32, 0, 0, width, height, numPixels, _startAddress, m_pCurFrameBuffer->m_startAddress, m_pCurFrameBuffer->m_size);
 	} else if (m_pCurFrameBuffer->m_size == G_IM_SIZ_16b) {
 		u32 *ptr_src = (u32*)pixelData;
 		u16 *ptr_dst = (u16*)(RDRAM + _startAddress);
-		_writeToRdram<u32, u16>(ptr_src, ptr_dst, &FrameBufferToRDRAM::_RGBAtoRGBA16, 0, 1, width, height, numPixels, _startAddress, m_pCurFrameBuffer->m_startAddress, m_pCurFrameBuffer->m_size);
+		std::vector<u32> srcBuf(width * height);
+		memcpy(srcBuf.data(), ptr_src, width * height*sizeof(u32));
+		_writeToRdram<u32, u16>(srcBuf.data(), ptr_dst, &FrameBufferToRDRAM::_RGBAtoRGBA16, 0, 1, width, height, numPixels, _startAddress, m_pCurFrameBuffer->m_startAddress, m_pCurFrameBuffer->m_size);
 	}	else if (m_pCurFrameBuffer->m_size == G_IM_SIZ_8b) {
 		u8 *ptr_src = (u8*)pixelData;
 		u8 *ptr_dst = RDRAM + _startAddress;
-		_writeToRdram<u8, u8>(ptr_src, ptr_dst, &FrameBufferToRDRAM::_RGBAtoR8, 0, 3, width, height, numPixels, _startAddress, m_pCurFrameBuffer->m_startAddress, m_pCurFrameBuffer->m_size);
+		std::vector<u8> srcBuf(width * height);
+		memcpy(srcBuf.data(), ptr_src, width * height*sizeof(u8));
+		_writeToRdram<u8, u8>(srcBuf.data(), ptr_dst, &FrameBufferToRDRAM::_RGBAtoR8, 0, 3, width, height, numPixels, _startAddress, m_pCurFrameBuffer->m_startAddress, m_pCurFrameBuffer->m_size);
 	}
 
 	m_pCurFrameBuffer->m_copiedToRdram = true;
@@ -1590,7 +1596,10 @@ bool DepthBufferToRDRAM::_copy(u32 _startAddress, u32 _endAddress)
 
 	f32 * ptr_src = (f32*)pixelData;
 	u16 *ptr_dst = (u16*)(RDRAM + _startAddress);
-	_writeToRdram<f32, u16>(ptr_src, ptr_dst, &DepthBufferToRDRAM::_FloatToUInt16, 2.0f, 1, width, height, numPixels, _startAddress, m_pCurDepthBuffer->m_address, G_IM_SIZ_16b);
+
+	std::vector<f32> srcBuf(width * height);
+	memcpy(srcBuf.data(), ptr_src, width * height*sizeof(f32));
+	_writeToRdram<f32, u16>(srcBuf.data(), ptr_dst, &DepthBufferToRDRAM::_FloatToUInt16, 2.0f, 1, width, height, numPixels, _startAddress, m_pCurDepthBuffer->m_address, G_IM_SIZ_16b);
 
 	m_pCurDepthBuffer->m_cleared = false;
 	FrameBuffer * pBuffer = frameBufferList().findBuffer(m_pCurDepthBuffer->m_address);
