@@ -496,9 +496,6 @@ void gDPLoadTile(u32 tile, u32 uls, u32 ult, u32 lrs, u32 lrt)
 		return;
 
 	u32 address = gDP.textureImage.address + gDP.loadTile->ult * gDP.textureImage.bpl + (gDP.loadTile->uls << gDP.textureImage.size >> 1);
-	if ((address + height * gDP.textureImage.bpl) > RDRAMSize)
-		return;
-
 	const u32 bpl = gDP.loadTile->line << 3;
 	u32 bpl2 = bpl;
 	if (gDP.loadTile->lrs > gDP.textureImage.width)
@@ -506,7 +503,11 @@ void gDPLoadTile(u32 tile, u32 uls, u32 ult, u32 lrs, u32 lrt)
 	u32 height2 = height;
 	if (gDP.loadTile->lrt > gDP.scissor.lry)
 		height2 = gDP.scissor.lry - gDP.loadTile->ult;
+
 	if (CheckForFrameBufferTexture(address, bpl2*height2))
+		return;
+
+	if ((address + height * gDP.textureImage.bpl) > RDRAMSize)
 		return;
 
 	if (gDP.loadTile->size == G_IM_SIZ_32b)
