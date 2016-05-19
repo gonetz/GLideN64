@@ -4,6 +4,10 @@
 #include "Config.h"
 #include "Log.h"
 
+#ifdef VC
+#include "RaspberryPi/ShaderUtils_VC.h"
+#endif
+
 static const GLsizei nShaderLogSize = 1024;
 bool checkShaderCompileStatus(GLuint obj)
 {
@@ -75,6 +79,7 @@ GLuint createShaderProgram(const char * _strVertex, const char * _strFragment)
 	return program;
 }
 
+#ifndef VC
 static
 const char* fragment_shader_blender1 =
 "  if (uForceBlendCycle1 != 0) {						\n"
@@ -97,6 +102,7 @@ const char* fragment_shader_blender2 =
 "    color2 = clamp(blend2.rgb, 0.0, 1.0);		\n"
 "  }											\n"
 ;
+#endif
 
 static
 const char *ColorInput[] = {
