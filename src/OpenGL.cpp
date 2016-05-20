@@ -437,6 +437,7 @@ void OGLRender::TexrectDrawer::add()
 			memcpy(rect, pRect, sizeof(rect));
 			draw();
 			memcpy(pRect, rect, sizeof(rect));
+			render._updateTextures(rsTexRect);
 		}
 	}
 
@@ -450,6 +451,20 @@ void OGLRender::TexrectDrawer::add()
 		m_uly = pRect[0].y;
 		m_lrx = m_max_lrx = pRect[3].x;
 		m_lry = m_max_lry = pRect[3].y;
+
+		CombinerInfo::get().update();
+		glDisable(GL_DEPTH_TEST);
+		glDepthMask(FALSE);
+		glDisable(GL_BLEND);
+
+		if (m_pBuffer == NULL)
+			glViewport(0, 0, VI.width, VI.height);
+		else
+			glViewport(0, 0, m_pBuffer->m_width, m_pBuffer->m_height);
+
+		glScissor(gDP.scissor.ulx, gDP.scissor.uly, gDP.scissor.lrx - gDP.scissor.ulx, gDP.scissor.lry - gDP.scissor.uly);
+
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_FBO);
 	}
 
 	if (bDownUp) {
@@ -462,22 +477,8 @@ void OGLRender::TexrectDrawer::add()
 		m_max_lry = max(m_max_lry, m_lry);
 	}
 
-	glDisable(GL_DEPTH_TEST);
-	glDepthMask(FALSE);
-	glDisable(GL_BLEND);
-	if (m_pBuffer == NULL)
-		glViewport(0, 0, VI.width, VI.height);
-	else
-		glViewport(0, 0, m_pBuffer->m_width, m_pBuffer->m_height);
-
-	glScissor(gDP.scissor.ulx, gDP.scissor.uly, gDP.scissor.lrx - gDP.scissor.ulx, gDP.scissor.lry - gDP.scissor.uly);
-
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_FBO);
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 	++m_numRects;
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_pBuffer != NULL ? m_pBuffer->m_FBO : 0);
-	gSP.changed |= CHANGED_VIEWPORT;
-	gDP.changed |= CHANGED_SCISSOR;
 }
 
 bool OGLRender::TexrectDrawer::draw()
@@ -531,7 +532,6 @@ bool OGLRender::TexrectDrawer::draw()
 	else
 		glViewport(0, 0, m_pBuffer->m_width*m_pBuffer->m_scaleX, m_pBuffer->m_height*m_pBuffer->m_scaleY);
 
-	CachedTexture * pCurTex0 = textureCache().current[0];
 	textureCache().activateTexture(0, m_pTexture);
 	// Disable filtering to avoid black outlines
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -600,9 +600,12 @@ bool OGLRender::TexrectDrawer::draw()
 	gDP.otherMode._u64 = otherMode;
 	gDP.scissor = scissor;
 	gDP.changed |= CHANGED_COMBINE | CHANGED_SCISSOR | CHANGED_RENDERMODE;
-	textureCache().activateTexture(0, pCurTex0);
-	CombinerInfo::get().update();
+	gSP.changed |= CHANGED_VIEWPORT | CHANGED_TEXTURE;
 	return true;
+}
+
+bool OGLRender::TexrectDrawer::isEmpty() {
+	return m_numRects == 0;
 }
 
 /*---------------OGLRender-------------*/
@@ -929,6 +932,27 @@ void OGLRender::_updateDepthCompare() const
 	}
 }
 
+void OGLRender::_updateTextures(RENDER_STATE _renderState) const
+{
+	//For some reason updating the texture cache on the first frame of LOZ:OOT causes a NULL Pointer exception...
+	CombinerInfo & cmbInfo = CombinerInfo::get();
+	ShaderCombiner * pCurrentCombiner = cmbInfo.getCurrent();
+	if (pCurrentCombiner != NULL) {
+		for (u32 t = 0; t < 2; ++t) {
+			if (pCurrentCombiner->usesTile(t))
+				textureCache().update(t);
+			else
+				textureCache().activateDummy(t);
+		}
+		pCurrentCombiner->updateFrameBufferInfo();
+	}
+	if (pCurrentCombiner->usesTexture() && (_renderState == rsTriangle || _renderState == rsLine))
+		cmbInfo.updateTextureParameters();
+	gDP.changed &= ~(CHANGED_TILE | CHANGED_TMEM);
+	gSP.changed &= ~(CHANGED_TEXTURE);
+}
+
+
 void OGLRender::_updateStates(RENDER_STATE _renderState) const
 {
 	OGLVideo & ogl = video();
@@ -956,21 +980,7 @@ void OGLRender::_updateStates(RENDER_STATE _renderState) const
 		(gDP.changed & (CHANGED_TILE|CHANGED_TMEM)) ||
 		cmbInfo.isChanged() ||
 		_renderState == rsTexRect) {
-		//For some reason updating the texture cache on the first frame of LOZ:OOT causes a NULL Pointer exception...
-		ShaderCombiner * pCurrentCombiner = cmbInfo.getCurrent();
-		if (pCurrentCombiner != NULL) {
-			for (u32 t = 0; t < 2; ++t) {
-				if (pCurrentCombiner->usesTile(t))
-					textureCache().update(t);
-				else
-					textureCache().activateDummy(t);
-			}
-			pCurrentCombiner->updateFrameBufferInfo();
-		}
-		if (pCurrentCombiner->usesTexture() && (_renderState == rsTriangle || _renderState == rsLine))
-			cmbInfo.updateTextureParameters();
-		gDP.changed &= ~(CHANGED_TILE | CHANGED_TMEM);
-		gSP.changed &= ~(CHANGED_TEXTURE);
+		_updateTextures(_renderState);
 	}
 
 	if ((gDP.changed & (CHANGED_RENDERMODE | CHANGED_CYCLETYPE))) {
@@ -1403,7 +1413,9 @@ bool(*texturedRectSpecial)(const OGLRender::TexturedRectParams & _params) = NULL
 void OGLRender::drawTexturedRect(const TexturedRectParams & _params)
 {
 	gSP.changed &= ~CHANGED_GEOMETRYMODE; // Don't update cull mode
-	if (_params.texrectCmd && (gSP.changed | gDP.changed) != 0)
+	if (!m_texrectDrawer.isEmpty())
+		_updateTextures(rsTexRect);
+	else if (_params.texrectCmd && (gSP.changed | gDP.changed) != 0)
 		_updateStates(rsTexRect);
 
 	const bool updateArrays = m_renderState != rsTexRect;
@@ -1444,12 +1456,6 @@ void OGLRender::drawTexturedRect(const TexturedRectParams & _params)
 
 	const FrameBuffer * pCurrentBuffer = _params.pBuffer;
 	OGLVideo & ogl = video();
-	if (pCurrentBuffer == NULL)
-		glViewport( 0, ogl.getHeightOffset(), ogl.getScreenWidth(), ogl.getScreenHeight());
-	else
-		glViewport(0, 0, pCurrentBuffer->m_width*pCurrentBuffer->m_scaleX, pCurrentBuffer->m_height*pCurrentBuffer->m_scaleY);
-	glDisable( GL_CULL_FACE );
-
 	ShaderCombiner * pCurrentCombiner = currentCombiner();
 	TextureCache & cache = textureCache();
 	const bool bUseBilinear = (gDP.otherMode.textureFilter | (gSP.objRendermode&G_OBJRM_BILERP)) != 0;
@@ -1602,8 +1608,8 @@ void OGLRender::drawTexturedRect(const TexturedRectParams & _params)
 			glViewport(0, 0, pCurrentBuffer->m_width*pCurrentBuffer->m_scaleX, pCurrentBuffer->m_height*pCurrentBuffer->m_scaleY);
 		glDisable(GL_CULL_FACE);
 		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+		gSP.changed |= CHANGED_GEOMETRYMODE | CHANGED_VIEWPORT;
 	}
-	gSP.changed |= CHANGED_GEOMETRYMODE | CHANGED_VIEWPORT;
 }
 
 void OGLRender::correctTexturedRectParams(TexturedRectParams & _params)
