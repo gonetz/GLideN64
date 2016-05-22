@@ -1008,7 +1008,12 @@ void FrameBufferList::renderBuffer(u32 _address)
 			srcY1 = srcPartHeight;
 			dstY0 = dstY1;
 			dstY1 = dstY0 + dstPartHeight;
-			glBindFramebuffer(GL_READ_FRAMEBUFFER, pBuffer->m_FBO);
+			if (config.video.multisampling != 0) {
+				pBuffer->resolveMultisampledTexture();
+				glBindFramebuffer(GL_READ_FRAMEBUFFER, pBuffer->m_resolveFBO);
+				glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+			} else
+				glBindFramebuffer(GL_READ_FRAMEBUFFER, pBuffer->m_FBO);
 			glBlitFramebuffer(
 				0, (GLint)(srcY0*srcScaleY), Xwidth, min((GLint)(srcY1*srcScaleY), (GLint)pBuffer->m_pTexture->realHeight),
 				hOffset, vOffset + (GLint)(dstY0*dstScaleY), hOffset + X1, vOffset + (GLint)(dstY1*dstScaleY),
