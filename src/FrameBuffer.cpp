@@ -1004,13 +1004,19 @@ void FrameBufferList::renderBuffer(u32 _address)
 		const u32 size = *REG.VI_STATUS & 3;
 		pBuffer = findBuffer(_address + (((*REG.VI_WIDTH)*VI.height)<<size>>1));
 		if (pBuffer != NULL) {
+			pFilteredBuffer = PostProcessor::get().doBlur(PostProcessor::get().doGammaCorrection(pBuffer));
 			srcY0 = 0;
 			srcY1 = srcPartHeight;
 			dstY0 = dstY1;
 			dstY1 = dstY0 + dstPartHeight;
-			glBindFramebuffer(GL_READ_FRAMEBUFFER, pBuffer->m_FBO);
+			if (pFilteredBuffer->m_pTexture->frameBufferTexture == CachedTexture::fbMultiSample) {
+				pFilteredBuffer->resolveMultisampledTexture();
+				glBindFramebuffer(GL_READ_FRAMEBUFFER, pFilteredBuffer->m_resolveFBO);
+				glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+			} else
+				glBindFramebuffer(GL_READ_FRAMEBUFFER, pFilteredBuffer->m_FBO);
 			glBlitFramebuffer(
-				0, (GLint)(srcY0*srcScaleY), Xwidth, min((GLint)(srcY1*srcScaleY), (GLint)pBuffer->m_pTexture->realHeight),
+				0, (GLint)(srcY0*srcScaleY), Xwidth, min((GLint)(srcY1*srcScaleY), (GLint)pFilteredBuffer->m_pTexture->realHeight),
 				hOffset, vOffset + (GLint)(dstY0*dstScaleY), hOffset + X1, vOffset + (GLint)(dstY1*dstScaleY),
 				GL_COLOR_BUFFER_BIT, filter
 			);
