@@ -116,9 +116,7 @@ void InitShaderCombiner()
 	}
 
 	glActiveTexture(GL_TEXTURE0);
-	glEnable(GL_TEXTURE_2D);
 	glActiveTexture(GL_TEXTURE1);
-	glEnable(GL_TEXTURE_2D);
 
 	g_vertex_shader_object = _createShader(GL_VERTEX_SHADER, vertex_shader);
 	g_vertex_shader_object_notex = _createShader(GL_VERTEX_SHADER, vertex_shader_notex);
