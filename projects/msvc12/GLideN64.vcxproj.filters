@@ -36,6 +36,12 @@
     <Filter Include="Source Files\OGL3X">
       <UniqueIdentifier>{32bbb389-ea50-4ac9-bb55-84e4f066fe94}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\BufferCopy">
+      <UniqueIdentifier>{e9bcfc4d-06e5-496a-a069-3d28e2fcd559}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\BufferCopy">
+      <UniqueIdentifier>{03c90b24-47cf-4a72-8652-837470d2a641}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Combiner.cpp">
@@ -197,6 +203,15 @@
     <ClCompile Include="..\..\src\FrameBufferInfo.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\BufferCopy\ColorBufferToRDRAM.cpp">
+      <Filter>Source Files\BufferCopy</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\BufferCopy\DepthBufferToRDRAM.cpp">
+      <Filter>Source Files\BufferCopy</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\BufferCopy\RDRAMtoColorBuffer.cpp">
+      <Filter>Source Files\BufferCopy</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\3DMath.h">
@@ -357,6 +372,18 @@
     </ClInclude>
     <ClInclude Include="..\..\src\FrameBufferInfoAPI.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\BufferCopy\ColorBufferToRDRAM.h">
+      <Filter>Header Files\BufferCopy</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\BufferCopy\DepthBufferToRDRAM.h">
+      <Filter>Header Files\BufferCopy</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\BufferCopy\RDRAMtoColorBuffer.h">
+      <Filter>Header Files\BufferCopy</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\BufferCopy\WriteToRDRAM.h">
+      <Filter>Header Files\BufferCopy</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

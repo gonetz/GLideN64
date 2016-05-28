@@ -111,7 +111,7 @@
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <ExceptionHandling>Async</ExceptionHandling>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <AdditionalIncludeDirectories>../../src/inc;../../src/osal;../../../freetype/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../src;../../src/inc;../../src/osal;../../../freetype/include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <AdditionalDependencies>freetype253MT_D.lib;..\..\src\GLideNUI\debug\GLideNUI.lib;osal\Debug\osal.lib;GLideNHQ\Debug\libGLideNHQ.lib;opengl32.lib;glu32.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -136,7 +136,7 @@
       <PrecompiledHeaderFile>glN64.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
-      <AdditionalIncludeDirectories>../../src/inc;../../src/osal;../../../freetype/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../src;../../src/inc;../../src/osal;../../../freetype/include</AdditionalIncludeDirectories>
       <ExceptionHandling>Async</ExceptionHandling>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
@@ -168,7 +168,7 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <ExceptionHandling>Async</ExceptionHandling>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <AdditionalIncludeDirectories>../../src/inc;../../src/osal;../../../freetype/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../src;../../src/inc;../../src/osal;../../../freetype/include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <AdditionalDependencies>freetype253MT.lib;..\..\src\GLideNUI\release\GLideNUI.lib;osal\Release\osal.lib;GLideNHQ\Release\libGLideNHQ.lib;opengl32.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -197,7 +197,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>../../src/inc;../../src/osal;../../../freetype/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../src;../../src/inc;../../src/osal;../../../freetype/include</AdditionalIncludeDirectories>
       <ExceptionHandling>Async</ExceptionHandling>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
@@ -215,6 +215,9 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\3DMath.cpp" />
+    <ClCompile Include="..\..\src\BufferCopy\ColorBufferToRDRAM.cpp" />
+    <ClCompile Include="..\..\src\BufferCopy\DepthBufferToRDRAM.cpp" />
+    <ClCompile Include="..\..\src\BufferCopy\RDRAMtoColorBuffer.cpp" />
     <ClCompile Include="..\..\src\Combiner.cpp" />
     <ClCompile Include="..\..\src\CommonPluginAPI.cpp" />
     <ClCompile Include="..\..\src\common\CommonAPIImpl_common.cpp" />
@@ -303,6 +306,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\3DMath.h" />
+    <ClInclude Include="..\..\src\BufferCopy\ColorBufferToRDRAM.h" />
+    <ClInclude Include="..\..\src\BufferCopy\DepthBufferToRDRAM.h" />
+    <ClInclude Include="..\..\src\BufferCopy\RDRAMtoColorBuffer.h" />
+    <ClInclude Include="..\..\src\BufferCopy\WriteToRDRAM.h" />
     <ClInclude Include="..\..\src\Combiner.h" />
     <ClInclude Include="..\..\src\Config.h" />
     <ClInclude Include="..\..\src\convert.h" />

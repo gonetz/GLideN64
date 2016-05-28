@@ -130,6 +130,8 @@ FrameBufferList & frameBufferList()
 	return FrameBufferList::get();
 }
 
+u32 cutHeight(u32 _address, u32 _height, u32 _stride);
+
 void FrameBuffer_Init();
 void FrameBuffer_Destroy();
 void FrameBuffer_CopyToRDRAM( u32 _address , bool _sync );
