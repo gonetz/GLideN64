@@ -1,6 +1,36 @@
 #ifndef GLFUNCTIONS_H
 #define GLFUNCTIONS_H
 
+#ifdef EGL
+extern PFNGLBLENDFUNCPROC glBlendFunc;
+extern PFNGLPIXELSTOREIPROC glPixelStorei;
+extern PFNGLCLEARCOLORPROC glClearColor;
+extern PFNGLCULLFACEPROC glCullFace;
+extern PFNGLDEPTHFUNCPROC glDepthFunc;
+extern PFNGLDEPTHMASKPROC glDepthMask;
+extern PFNGLDISABLEPROC glDisable;
+extern PFNGLENABLEPROC glEnable;
+extern PFNGLPOLYGONOFFSETPROC glPolygonOffset;
+extern PFNGLSCISSORPROC glScissor;
+extern PFNGLVIEWPORTPROC glViewport;
+extern PFNGLBINDTEXTUREPROC glBindTexture;
+extern PFNGLTEXIMAGE2DPROC glTexImage2D;
+extern PFNGLTEXPARAMETERIPROC glTexParameteri;
+extern PFNGLGETINTEGERVPROC glGetIntegerv;
+extern PFNGLGETSTRINGPROC glGetString;
+extern PFNGLREADPIXELSPROC glReadPixels;
+extern PFNGLTEXSUBIMAGE2DPROC glTexSubImage2D;
+extern PFNGLDRAWARRAYSPROC glDrawArrays;
+extern PFNGLGETERRORPROC glGetError;
+extern PFNGLDRAWELEMENTSPROC glDrawElements;
+extern PFNGLLINEWIDTHPROC glLineWidth;
+extern PFNGLCLEARPROC glClear;
+extern PFNGLGETFLOATVPROC glGetFloatv;
+extern PFNGLDELETETEXTURESPROC glDeleteTextures;
+extern PFNGLGENTEXTURESPROC glGenTextures;
+extern PFNGLTEXPARAMETERFPROC glTexParameterf;
+#endif
+
 extern PFNGLCREATESHADERPROC glCreateShader;
 extern PFNGLCOMPILESHADERPROC glCompileShader;
 extern PFNGLSHADERSOURCEPROC glShaderSource;

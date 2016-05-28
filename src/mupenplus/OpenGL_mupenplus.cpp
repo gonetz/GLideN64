@@ -12,11 +12,13 @@
 #include <bcm_host.h>
 #endif
 
+#ifndef EGL
 #if !defined(OS_WINDOWS) || defined(GLES2) || defined(GLES3) || defined(GLES3_1)
 
 void initGLFunctions()
 {
 }
+#endif
 #endif
 
 class OGLVideoMupenPlus : public OGLVideo

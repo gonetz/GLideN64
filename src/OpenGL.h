@@ -28,6 +28,13 @@ typedef char GLchar;
 #define GL_IMAGE_TEXTURES_SUPPORT
 #define GL_MULTISAMPLING_SUPPORT
 #define GL_UNIFORMBLOCK_SUPPORT
+#elif defined(EGL)
+#include <GL/glcorearb.h>
+#include "common/GLFunctions.h"
+#include <GL/glext.h>
+#define GL_IMAGE_TEXTURES_SUPPORT
+#define GL_MULTISAMPLING_SUPPORT
+#define GL_UNIFORMBLOCK_SUPPORT
 #else
 #if defined(OS_MAC_OS_X)
 #define GL_GLEXT_PROTOTYPES
@@ -44,7 +51,7 @@ typedef char GLchar;
 #elif defined(OS_WINDOWS)
 #include <GL/gl.h>
 #include "glext.h"
-#include "windows/GLFunctions.h"
+#include "common/GLFunctions.h"
 #define GL_IMAGE_TEXTURES_SUPPORT
 #define GL_MULTISAMPLING_SUPPORT
 #define GL_UNIFORMBLOCK_SUPPORT
