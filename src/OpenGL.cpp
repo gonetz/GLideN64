@@ -301,6 +301,9 @@ void OGLVideo::readScreen2(void * _dest, int * _width, int * _height, int _front
 	if (_dest == NULL)
 		return;
 
+    unsigned char *frameBuffer = (unsigned char *)malloc((*_width)*(*_height)*4);
+    unsigned char *line = (unsigned char *)_dest;
+
 #ifndef GLES2
 	GLint oldMode;
 	glGetIntegerv(GL_READ_BUFFER, &oldMode);
@@ -308,11 +311,27 @@ void OGLVideo::readScreen2(void * _dest, int * _width, int * _height, int _front
 		glReadBuffer(GL_FRONT);
 	else
 		glReadBuffer(GL_BACK);
-	glReadPixels(0, m_heightOffset, m_screenWidth, m_screenHeight, GL_RGB, GL_UNSIGNED_BYTE, _dest);
+	glReadPixels(0, m_heightOffset, m_screenWidth, m_screenHeight, GL_RGBA, GL_UNSIGNED_BYTE, frameBuffer);
 	glReadBuffer(oldMode);
 #else
-	glReadPixels(0, m_heightOffset, m_screenWidth, m_screenHeight, GL_RGB, GL_UNSIGNED_BYTE, _dest);
+	glReadPixels(0, m_heightOffset, m_screenWidth, m_screenHeight, GL_RGBA, GL_UNSIGNED_BYTE, frameBuffer);
 #endif
+
+	//Convert RGBA to RGB
+	for (Uint32 y = 0; y < *_height; y++)
+	{
+		unsigned char *ptr = (unsigned char *) frameBuffer + (*_width * 4 * y);
+		for (Uint32 x=0; x < *_width; x++)
+		{
+			line[x*3] = ptr[0]; // red
+			line[x*3+1] = ptr[1]; // green
+			line[x*3+2] = ptr[2]; // blue
+			ptr += 4;
+		}
+		line += *_width * 3;
+	}
+
+	free(frameBuffer);
 }
 
 void OGLRender::addTriangle(int _v0, int _v1, int _v2)
