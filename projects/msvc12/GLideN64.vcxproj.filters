@@ -212,6 +212,9 @@
     <ClCompile Include="..\..\src\BufferCopy\RDRAMtoColorBuffer.cpp">
       <Filter>Source Files\BufferCopy</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\BufferCopy\ColorBufferToRDRAMDesktop.cpp">
+      <Filter>Source Files\BufferCopy</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\3DMath.h">

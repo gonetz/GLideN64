@@ -14,21 +14,13 @@ ColorBufferToRDRAM::ColorBufferToRDRAM()
 	: m_FBO(0)
 	, m_pTexture(nullptr)
 	, m_pCurFrameBuffer(nullptr)
-	, m_curIndex(-1)
 	, m_frameCount(-1)
 	, m_startAddress(-1)
 {
-	m_PBO[0] = m_PBO[1] = m_PBO[2] = 0;
 }
 
 ColorBufferToRDRAM::~ColorBufferToRDRAM()
 {
-}
-
-ColorBufferToRDRAM & ColorBufferToRDRAM::get()
-{
-	static ColorBufferToRDRAM cbCopy;
-	return cbCopy;
 }
 
 #ifndef GLES2
@@ -64,28 +56,12 @@ void ColorBufferToRDRAM::init()
 	assert(checkFBO());
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 
-#ifdef ANDROID
-	m_window = new GraphicBuffer(m_pTexture->realWidth, m_pTexture->realHeight,
-		PIXEL_FORMAT_RGBA_8888, GraphicBuffer::USAGE_SW_READ_OFTEN | GraphicBuffer::USAGE_HW_TEXTURE);
-
-	EGLint eglImgAttrs[] = { EGL_IMAGE_PRESERVED_KHR, EGL_TRUE, EGL_NONE, EGL_NONE };
-	m_image = eglCreateImageKHR(eglGetDisplay(EGL_DEFAULT_DISPLAY), EGL_NO_CONTEXT,
-		EGL_NATIVE_BUFFER_ANDROID, (EGLClientBuffer)m_window->getNativeBuffer(), eglImgAttrs);
-
-	m_glEGLImageTargetTexture2DOES = (PFNGLEGLIMAGETARGETTEXTURE2DOESPROC)eglGetProcAddress("glEGLImageTargetTexture2DOES");
-#else
-	// Generate and initialize Pixel Buffer Objects
-	glGenBuffers(3, m_PBO);
-	for (u32 i = 0; i < 3; ++i) {
-		glBindBuffer(GL_PIXEL_PACK_BUFFER, m_PBO[i]);
-		glBufferData(GL_PIXEL_PACK_BUFFER, m_pTexture->textureBytes, NULL, GL_DYNAMIC_READ);
-	}
-	glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
-	m_curIndex = 0;
-#endif
+//	_init(m_pTexture->realWidth, m_pTexture->realHeight, m_pTexture->textureBytes);
+	_init();
 }
 
 void ColorBufferToRDRAM::destroy() {
+	_destroy();
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 	if (m_FBO != 0) {
 		glDeleteFramebuffers(1, &m_FBO);
@@ -95,13 +71,6 @@ void ColorBufferToRDRAM::destroy() {
 		textureCache().removeFrameBufferTexture(m_pTexture);
 		m_pTexture = NULL;
 	}
-
-#ifdef ANDROID
-	eglDestroyImageKHR(eglGetDisplay(EGL_DEFAULT_DISPLAY), m_image);
-#else
-	glDeleteBuffers(3, m_PBO);
-	m_PBO[0] = m_PBO[1] = m_PBO[2] = 0;
-#endif
 }
 
 bool ColorBufferToRDRAM::_prepareCopy(u32 _startAddress)
@@ -191,98 +160,6 @@ u32 ColorBufferToRDRAM::_RGBAtoRGBA32(u32 _c) {
 	return (c.r << 24) | (c.g << 16) | (c.b << 8) | c.a;
 }
 
-#ifdef ANDROID
-GLubyte* ColorBufferToRDRAM::getPixels(GLint _x0, GLint _y0, GLsizei _width, GLsizei _height, bool _sync)
-{
-	GLenum colorFormat, colorType, colorFormatBytes;
-	if (m_pCurFrameBuffer->m_size > G_IM_SIZ_8b) {
-		colorFormat = fboFormats.colorFormat;
-		colorType = fboFormats.colorType;
-		colorFormatBytes = fboFormats.colorFormatBytes;
-	}
-	else {
-		colorFormat = fboFormats.monochromeFormat;
-		colorType = fboFormats.monochromeType;
-		colorFormatBytes = fboFormats.monochromeFormatBytes;
-	}
-
-	GLubyte* pixelData = (GLubyte*)malloc(m_pTexture->realWidth * m_pTexture->realHeight * colorFormatBytes);
-
-	if (!_sync) {
-		void* ptr;
-
-		glBindTexture(GL_TEXTURE_2D, m_pTexture->glName);
-		m_glEGLImageTargetTexture2DOES(GL_TEXTURE_2D, m_image);
-		glBindTexture(GL_TEXTURE_2D, 0);
-
-		m_window->lock(GraphicBuffer::USAGE_SW_READ_OFTEN, &ptr);
-		memcpy(pixelData, ptr, m_pTexture->realWidth * m_pTexture->realHeight * colorFormatBytes);
-		m_window->unlock();
-
-		int widthBytes = _width*colorFormatBytes;
-		int strideBytes = m_pTexture->realWidth*colorFormatBytes;
-		for (unsigned int lnIndex = 0; lnIndex < _height; ++lnIndex)
-		{
-			memmove(pixelData + lnIndex*widthBytes, pixelData + ((lnIndex + _y0)*strideBytes), widthBytes);
-		}
-	}
-	else {
-		glReadPixels(_x0, _y0, _width, _height, colorFormat, colorType, pixelData);
-	}
-
-	return pixelData;
-}
-
-void ColorBufferToRDRAM::cleanUpPixels(GLubyte* pixelData)
-{
-	free(pixelData);
-}
-
-#else
-
-GLubyte* ColorBufferToRDRAM::getPixels(GLint _x0, GLint _y0, GLsizei _width, GLsizei _height, bool _sync)
-{
-	GLenum colorFormat, colorType, colorFormatBytes;
-	if (m_pCurFrameBuffer->m_size > G_IM_SIZ_8b) {
-		colorFormat = fboFormats.colorFormat;
-		colorType = fboFormats.colorType;
-		colorFormatBytes = fboFormats.colorFormatBytes;
-	}
-	else {
-		colorFormat = fboFormats.monochromeFormat;
-		colorType = fboFormats.monochromeType;
-		colorFormatBytes = fboFormats.monochromeFormatBytes;
-	}
-
-	// If Sync, read pixels from the buffer, copy them to RDRAM.
-	// If not Sync, read pixels from the buffer, copy pixels from the previous buffer to RDRAM.
-	if (!_sync) {
-		m_curIndex ^= 1;
-		const u32 nextIndex = m_curIndex ^ 1;
-		glBindBuffer(GL_PIXEL_PACK_BUFFER, m_PBO[m_curIndex]);
-		glReadPixels(_x0, _y0, _width, _height, colorFormat, colorType, 0);
-		glBindBuffer(GL_PIXEL_PACK_BUFFER, m_PBO[nextIndex]);
-	}
-	else {
-		glBindBuffer(GL_PIXEL_PACK_BUFFER, m_PBO[2]);
-		glReadPixels(_x0, _y0, _width, _height, colorFormat, colorType, 0);
-	}
-
-	GLubyte* pixelData = (GLubyte*)glMapBufferRange(GL_PIXEL_PACK_BUFFER, 0, _width * _height * colorFormatBytes, GL_MAP_READ_BIT);
-	if (pixelData == NULL)
-		return NULL;
-
-	return pixelData;
-}
-
-void ColorBufferToRDRAM::cleanUpPixels(GLubyte* pixelData)
-{
-	glUnmapBuffer(GL_PIXEL_PACK_BUFFER);
-	glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
-}
-#endif //ANDROID
-
-
 void ColorBufferToRDRAM::_copy(u32 _startAddress, u32 _endAddress, bool _sync)
 {
 	const u32 stride = m_pCurFrameBuffer->m_width << m_pCurFrameBuffer->m_size >> 1;
@@ -300,7 +177,7 @@ void ColorBufferToRDRAM::_copy(u32 _startAddress, u32 _endAddress, bool _sync)
 	const GLint y1 = max_height - (_startAddress - m_pCurFrameBuffer->m_startAddress) / stride;
 	const GLsizei height = std::min(max_height, 1u + y1 - y0);
 
-	GLubyte* pixelData = getPixels(x0, y0, width, height, _sync);
+	GLubyte* pixelData = _getPixels(x0, y0, width, height, m_pCurFrameBuffer->m_size, _sync);
 
 	if (m_pCurFrameBuffer->m_size == G_IM_SIZ_32b) {
 		u32 *ptr_src = (u32*)pixelData;
@@ -322,7 +199,7 @@ void ColorBufferToRDRAM::_copy(u32 _startAddress, u32 _endAddress, bool _sync)
 	m_pCurFrameBuffer->copyRdram();
 	m_pCurFrameBuffer->m_cleared = false;
 
-	cleanUpPixels(pixelData);
+	_cleanUpPixels(pixelData);
 
 	gDP.changed |= CHANGED_SCISSOR;
 }

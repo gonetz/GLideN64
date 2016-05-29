@@ -8,13 +8,11 @@ project( GLideN64 )
 
 set(GLideN64_SOURCES
   3DMath.cpp
-  BufferCopy/ColorBufferToRDRAM.cpp
   Combiner.cpp
   CommonPluginAPI.cpp
   Config.cpp
   CRC.cpp
   DepthBuffer.cpp
-  BufferCopy/DepthBufferToRDRAM.cpp
   F3D.cpp
   F3DDKR.cpp
   F3DEX.cpp
@@ -37,7 +35,6 @@ set(GLideN64_SOURCES
   N64.cpp
   OpenGL.cpp
   RDP.cpp
-  BufferCopy/RDRAMtoColorBuffer.cpp
   RSP.cpp
   S2DEX2.cpp
   S2DEX.cpp
@@ -48,6 +45,9 @@ set(GLideN64_SOURCES
   TextDrawer.cpp
   PostProcessor.cpp
   VI.cpp
+  BufferCopy/ColorBufferToRDRAM.cpp
+  BufferCopy/DepthBufferToRDRAM.cpp
+  BufferCopy/RDRAMtoColorBuffer.cpp
   common/CommonAPIImpl_common.cpp
 )
 
@@ -86,6 +86,17 @@ if(MUPENPLUSAPI)
 	mupenplus/MupenPlusAPIImpl.cpp
 	mupenplus/OpenGL_mupenplus.cpp
   )
+
+  if(BCMHOST)
+    set(GLideN64_SOURCES_UNIX ${GLideN64_SOURCES_UNIX}
+        BufferCopy/ColorBufferToRDRAMStub.cpp
+    )
+  else(BCMHOST)
+    set(GLideN64_SOURCES_UNIX ${GLideN64_SOURCES_UNIX}
+        BufferCopy/ColorBufferToRDRAMDesktop.cpp
+    )
+  endif(BCMHOST)
+
   set(GLideN64_SOURCES_WIN ${GLideN64_SOURCES_UNIX}
 	windows/GLFunctions_windows.cpp
   )
