@@ -188,9 +188,6 @@
     <ClCompile Include="..\..\src\Keys.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\windows\GLFunctions_windows.cpp">
-      <Filter>Source Files\windows</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\OGL3X\UniformBlock.cpp">
       <Filter>Source Files\OGL3X</Filter>
     </ClCompile>
@@ -214,6 +211,9 @@
     </ClCompile>
     <ClCompile Include="..\..\src\BufferCopy\ColorBufferToRDRAMDesktop.cpp">
       <Filter>Source Files\BufferCopy</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\common\GLFunctions.cpp">
+      <Filter>Source Files\common</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
