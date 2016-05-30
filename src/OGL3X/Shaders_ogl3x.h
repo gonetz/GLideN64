@@ -771,10 +771,18 @@ MAIN_SHADER_VERSION
 "																												\n"
 "uniform sampler2D uTex0;																						\n"
 "uniform lowp int uEnableAlphaTest;																				\n"
+"uniform mediump vec2 uDepthScale;																				\n"
 "in mediump vec2 vTexCoord0;																					\n"
 "out lowp vec4 fragColor;																						\n"
 "void main()																									\n"
 "{																												\n"
+#ifdef GLESX
+"#ifdef GL_NV_fragdepth			\n"
+"  gl_FragDepth = clamp((gl_FragCoord.z * 2.0 - 1.0) * uDepthScale.s + uDepthScale.t, 0.0, 1.0);   \n"
+"#endif										\n"
+#else
+"  gl_FragDepth = clamp((gl_FragCoord.z * 2.0 - 1.0) * uDepthScale.s + uDepthScale.t, 0.0, 1.0);   \n"
+#endif
 "  fragColor = readTex(uTex0, vTexCoord0, 0, false);															\n"
 "  if (uEnableAlphaTest != 0 && !(fragColor.a > 0.0)) discard;													\n"
 "}																												\n"

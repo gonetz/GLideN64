@@ -387,6 +387,8 @@ void OGLRender::TexrectDrawer::init()
 	assert(m_textureBoundsLoc >= 0);
 	m_enableAlphaTestLoc = glGetUniformLocation(m_programTex, "uEnableAlphaTest");
 	assert(m_enableAlphaTestLoc >= 0);
+	m_depthScaleLoc = glGetUniformLocation(m_programTex, "uDepthScale");
+	assert(m_depthScaleLoc >= 0);
 	glUseProgram(0);
 }
 
@@ -490,6 +492,8 @@ bool OGLRender::TexrectDrawer::draw()
 	OGLVideo & ogl = video();
 	OGLRender & render = ogl.getRender();
 	render._setBlendMode();
+	gDP.changed |= CHANGED_RENDERMODE;  // Force update of depth compare parameters
+	render._updateDepthCompare();
 
 	int enableAlphaTest = 0;
 	switch (gDP.otherMode.cycleType) {
@@ -538,6 +542,10 @@ bool OGLRender::TexrectDrawer::draw()
 	glUniform1i(m_textureFilterModeLoc, gDP.otherMode.textureFilter);
 	float texBounds[4] = { s0, t0, s1, t1 };
 	glUniform4fv(m_textureBoundsLoc, 1, texBounds);
+	if (RSP.bLLE)
+		glUniform2f(m_depthScaleLoc, 0.5f, 0.5f);
+	else
+		glUniform2f(m_depthScaleLoc, gSP.viewport.vscale[2], gSP.viewport.vtrans[2]);
 	glEnableVertexAttribArray(SC_TEXCOORD0);
 
 	rect[0].x = m_ulx;

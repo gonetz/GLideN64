@@ -219,6 +219,7 @@ private:
 		GLint m_enableAlphaTestLoc;
 		GLint m_textureFilterModeLoc;
 		GLint m_textureBoundsLoc;
+		GLint m_depthScaleLoc;
 		gDPScissor m_scissor;
 		CachedTexture * m_pTexture;
 		FrameBuffer * m_pBuffer;
