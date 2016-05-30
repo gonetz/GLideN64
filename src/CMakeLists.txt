@@ -98,7 +98,7 @@ if(MUPENPLUSAPI)
   endif(BCMHOST)
 
   set(GLideN64_SOURCES_WIN ${GLideN64_SOURCES_UNIX}
-	windows/GLFunctions_windows.cpp
+	common/GLFunctions.cpp
   )
   set(GLideN64_DLL_NAME mupen64plus-video-GLideN64)
 else(MUPENPLUSAPI)
@@ -110,7 +110,7 @@ else(MUPENPLUSAPI)
 	windows/Config_windows.cpp
 	windows/CommonAPIImpl_windows.cpp
 	windows/GLideN64_windows.cpp
-	windows/GLFunctions_windows.cpp
+	common/GLFunctions.cpp
 	windows/OpenGL_windows.cpp
 	windows/ZilmarAPIImpl_windows.cpp
   )
