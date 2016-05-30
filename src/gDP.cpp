@@ -873,7 +873,7 @@ void gDPTextureRectangle(f32 ulx, f32 uly, f32 lrx, f32 lry, s32 tile, f32 s, f3
 	OGLRender::TexturedRectParams params(ulx, uly, lrx, lry, s, t, lrs, lrt, fabsf(dsdx), fabsf(dtdy),
 										 flip, false, true, frameBufferList().getCurrent());
 	OGLRender & render = video().getRender();
-	if (config.generalEmulation.correctTexrectCoords != Config::tcDisable)
+	if (config.generalEmulation.enableNativeResTexrects == 0 && config.generalEmulation.correctTexrectCoords != Config::tcDisable)
 		render.correctTexturedRectParams(params);
 	render.drawTexturedRect(params);
 

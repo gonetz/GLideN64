@@ -35,6 +35,7 @@ void Config::resetToDefaults()
 	generalEmulation.enableCustomSettings = 1;
 	generalEmulation.enableShadersStorage = 1;
 	generalEmulation.correctTexrectCoords = tcDisable;
+	generalEmulation.enableNativeResTexrects = 0;
 	generalEmulation.hacks = 0;
 #ifdef ANDROID
 	generalEmulation.forcePolygonOffset = 0;

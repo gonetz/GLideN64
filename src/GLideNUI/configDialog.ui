@@ -724,9 +724,43 @@
            </widget>
           </item>
           <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_22">
+           <layout class="QHBoxLayout" name="horizontalLayout_24">
             <item>
-             <widget class="QLabel" name="label_33">
+             <widget class="Line" name="line_11">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="label_34">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="text">
+               <string>2D Fixes</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="Line" name="line_10">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="texrectsBlackLinesHorizontalLayout">
+            <item>
+             <widget class="QLabel" name="texrectsBlackLinesLabel">
               <property name="toolTip">
                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Fix black lines between texrect:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Most games draw 2D backgrounds using texrect command. Texrect stands for textured rectangle. In some games, texrects coordinates not aligned: there is half-pixel split between adjacent texrects. It is not visible in native resolution, but resulted as black lines when image upscaled. This option enables texrect coordinates correction to avoid black lines issue.&lt;/p&gt;&lt;p&gt;* disable - do not correct texrect coordinates&lt;/p&gt;&lt;p&gt;* smart - apply correction only for polygons, which need it. Use it for games, which have black lines issue.&lt;/p&gt;&lt;p&gt;* force - apply correction for all texrects. Use it when &lt;span style=&quot; font-style:italic;&quot;&gt;smart&lt;/span&gt; does not help.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;game dependant, mostly off&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
               </property>
@@ -772,6 +806,16 @@
              </widget>
             </item>
            </layout>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="nativeRes2D_checkBox">
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Render texrects in native resolution:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Most games draw 2D backgrounds and other 2D graphics using texrect command. Texrect stands for textured rectangle. 2D images represented by texrects often look distorted and unaligned in high resolution because of texture filtering. When this option is on, plugin renders texrects in native resolution and then copies the result to main buffer. Rendering in native resolution eliminates issues with 2D, but hardware load increases noticably.&lt;/p&gt;&lt;p&gt;Note: this option uses heuristics to detect adjucent texrects. The heuristics do not work for some games.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;mostly on, if your hardware can handle it&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="text">
+             <string>Render texrects in native resolution</string>
+            </property>
+           </widget>
           </item>
          </layout>
         </widget>
@@ -1851,10 +1895,10 @@
  </connections>
  <buttongroups>
   <buttongroup name="screenshotButtonGroup"/>
-  <buttongroup name="fixTexrectCoordsButtonGroup"/>
-  <buttongroup name="bilinearButtonGroup"/>
-  <buttongroup name="bloomBlendModeButtonGroup"/>
   <buttongroup name="aspectButtonGroup"/>
+  <buttongroup name="bilinearButtonGroup"/>
+  <buttongroup name="fixTexrectCoordsButtonGroup"/>
   <buttongroup name="copyFrameBufferButtonGroup"/>
+  <buttongroup name="bloomBlendModeButtonGroup"/>
  </buttongroups>
 </ui>

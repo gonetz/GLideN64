@@ -1495,7 +1495,8 @@ void OGLRender::drawTexturedRect(const TexturedRectParams & _params)
 	OGLVideo & ogl = video();
 	TextureCache & cache = textureCache();
 	const bool bUseBilinear = (gDP.otherMode.textureFilter | (gSP.objRendermode&G_OBJRM_BILERP)) != 0;
-	const bool bUseTexrectDrawer = bUseBilinear
+	const bool bUseTexrectDrawer = config.generalEmulation.enableNativeResTexrects != 0
+		&& bUseBilinear
 		&& pCurrentCombiner->usesTexture()
 		&& (pCurrentBuffer == NULL || !pCurrentBuffer->m_cfb)
 		&& (cache.current[0] != NULL)

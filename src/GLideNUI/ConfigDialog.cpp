@@ -127,6 +127,13 @@ void ConfigDialog::_init()
 		ui->fixTexrectForceRadioButton->setChecked(true);
 		break;
 	}
+	ui->nativeRes2D_checkBox->setChecked(config.generalEmulation.enableNativeResTexrects != 0);
+	if (ui->nativeRes2D_checkBox->isChecked()) {
+		ui->texrectsBlackLinesLabel->setEnabled(false);
+		ui->fixTexrectDisableRadioButton->setEnabled(false);
+		ui->fixTexrectSmartRadioButton->setEnabled(false);
+		ui->fixTexrectForceRadioButton->setEnabled(false);
+	}
 
 	ui->bufferSwapComboBox->setCurrentIndex(config.frameBufferEmulation.bufferSwapMode);
 	ui->frameBufferGroupBox->setChecked(config.frameBufferEmulation.enable != 0);
@@ -324,6 +331,7 @@ void ConfigDialog::accept()
 		config.generalEmulation.correctTexrectCoords = Config::tcSmart;
 	else if (ui->fixTexrectForceRadioButton->isChecked())
 		config.generalEmulation.correctTexrectCoords = Config::tcForce;
+	config.generalEmulation.enableNativeResTexrects = ui->nativeRes2D_checkBox->isChecked() ? 1 : 0;
 
 	config.frameBufferEmulation.bufferSwapMode = ui->bufferSwapComboBox->currentIndex();
 	config.frameBufferEmulation.enable = ui->frameBufferGroupBox->isChecked() ? 1 : 0;
@@ -486,4 +494,12 @@ void ConfigDialog::on_windowedResolutionComboBox_currentIndexChanged(int index)
 	ui->windowWidthSpinBox->setEnabled(bCustom);
 	ui->windowHeightSpinBox->setValue(bCustom ? config.video.windowedHeight : WindowedModes[index].height);
 	ui->windowHeightSpinBox->setEnabled(bCustom);
+}
+
+void ConfigDialog::on_nativeRes2D_checkBox_toggled(bool checked)
+{
+	ui->texrectsBlackLinesLabel->setEnabled(!checked);
+	ui->fixTexrectDisableRadioButton->setEnabled(!checked);
+	ui->fixTexrectSmartRadioButton->setEnabled(!checked);
+	ui->fixTexrectForceRadioButton->setEnabled(!checked);
 }

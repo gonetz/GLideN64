@@ -42,6 +42,7 @@ void _loadSettings(QSettings & settings)
 	config.generalEmulation.enableShadersStorage = settings.value("enableShadersStorage", config.generalEmulation.enableShadersStorage).toInt();
 	config.generalEmulation.enableCustomSettings = settings.value("enableCustomSettings", config.generalEmulation.enableCustomSettings).toInt();
 	config.generalEmulation.correctTexrectCoords = settings.value("correctTexrectCoords", config.generalEmulation.correctTexrectCoords).toInt();
+	config.generalEmulation.enableNativeResTexrects = settings.value("enableNativeResTexrects", config.generalEmulation.enableNativeResTexrects).toInt();
 	settings.endGroup();
 
 	settings.beginGroup("frameBufferEmulation");
@@ -157,6 +158,7 @@ void writeSettings(const QString & _strIniFolder)
 	settings.setValue("enableShadersStorage", config.generalEmulation.enableShadersStorage);
 	settings.setValue("enableCustomSettings", config.generalEmulation.enableCustomSettings);
 	settings.setValue("correctTexrectCoords", config.generalEmulation.correctTexrectCoords);
+	settings.setValue("enableNativeResTexrects", config.generalEmulation.enableNativeResTexrects);
 	settings.endGroup();
 
 	settings.beginGroup("frameBufferEmulation");

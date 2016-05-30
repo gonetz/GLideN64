@@ -37,6 +37,8 @@ private slots:
 
 	void on_windowedResolutionComboBox_currentIndexChanged(int index);
 
+	void on_nativeRes2D_checkBox_toggled(bool checked);
+
 private:
 	void _init();
 	void _getTranslations(QStringList & _translationFiles) const;
