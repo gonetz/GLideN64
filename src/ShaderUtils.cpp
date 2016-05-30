@@ -70,6 +70,8 @@ GLuint createShaderProgram(const char * _strVertex, const char * _strFragment)
 
 	GLuint program = glCreateProgram();
 	glBindAttribLocation(program, SC_POSITION, "aPosition");
+	glBindAttribLocation(program, SC_TEXCOORD0, "aTexCoord0");
+	glBindAttribLocation(program, SC_TEXCOORD1, "aTexCoord1");
 	glAttachShader(program, vertex_shader_object);
 	glAttachShader(program, fragment_shader_object);
 	glLinkProgram(program);

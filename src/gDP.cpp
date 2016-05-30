@@ -915,6 +915,7 @@ void gDPFullSync()
 		if (config.frameBufferEmulation.copyDepthToRDRAM != Config::ctDisable && !FBInfo::fbInfo.isSupported())
 			FrameBuffer_CopyDepthBuffer(gDP.colorImage.address);
 	}
+	video().getRender().flush();
 
 	*REG.MI_INTR |= MI_INTR_DP;
 

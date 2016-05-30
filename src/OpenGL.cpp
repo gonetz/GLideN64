@@ -26,6 +26,7 @@
 #include "TextDrawer.h"
 #include "PluginAPI.h"
 #include "PostProcessor.h"
+#include "ShaderUtils.h"
 
 using namespace std;
 
@@ -331,6 +332,264 @@ void OGLVideo::readScreen2(void * _dest, int * _width, int * _height, int _front
 
 	free(pBufferData);
 }
+
+/*---------------OGLRender::TexrectDrawer-------------*/
+
+OGLRender::TexrectDrawer::TexrectDrawer() :
+m_numRects(0), m_otherMode(0), m_ulx(0), m_lrx(0), m_uly(0), m_lry(0), m_Z(0), m_FBO(0), m_programTex(0), m_programClean(0), m_pTexture(NULL), m_pBuffer(NULL)
+{}
+
+void OGLRender::TexrectDrawer::init()
+{
+	// generate a framebuffer
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+	glGenFramebuffers(1, &m_FBO);
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_FBO);
+
+	m_pTexture = textureCache().addFrameBufferTexture();
+	m_pTexture->format = G_IM_FMT_RGBA;
+	m_pTexture->clampS = 1;
+	m_pTexture->clampT = 1;
+	m_pTexture->frameBufferTexture = CachedTexture::fbOneSample;
+	m_pTexture->maskS = 0;
+	m_pTexture->maskT = 0;
+	m_pTexture->mirrorS = 0;
+	m_pTexture->mirrorT = 0;
+	m_pTexture->realWidth = 640;
+	m_pTexture->realHeight = 580;
+	m_pTexture->textureBytes = m_pTexture->realWidth * m_pTexture->realHeight * 4;
+	textureCache().addFrameBufferTextureSize(m_pTexture->textureBytes);
+	glBindTexture(GL_TEXTURE_2D, m_pTexture->glName);
+	glTexImage2D(GL_TEXTURE_2D, 0, fboFormats.colorInternalFormat, m_pTexture->realWidth, m_pTexture->realHeight, 0, fboFormats.colorFormat, fboFormats.colorType, NULL);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+	glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_pTexture->glName, 0);
+	// check if everything is OK
+	assert(checkFBO());
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+
+	m_programTex = createShaderProgram(strTexrectDrawerVertexShader, (config.texture.bilinearMode == BILINEAR_STANDARD) ? strTexrectDrawerFragmentShaderTexBilinear : strTexrectDrawerFragmentShaderTex3Point);
+	m_programClean = createShaderProgram(strTexrectDrawerVertexShader, strTexrectDrawerFragmentShaderClean);
+
+	glUseProgram(m_programTex);
+	GLint loc = glGetUniformLocation(m_programTex, "uTex0");
+	assert(loc >= 0);
+	glUniform1i(loc, 0);
+	loc = glGetUniformLocation(m_programTex, "uTextureSize");
+	if (loc >= 0)
+		glUniform2f(loc, m_pTexture->realWidth, m_pTexture->realHeight);
+
+	m_textureFilterModeLoc = glGetUniformLocation(m_programTex, "uTextureFilterMode");
+	assert(m_textureFilterModeLoc >= 0);
+	m_textureBoundsLoc = glGetUniformLocation(m_programTex, "uTextureBounds");
+	assert(m_textureBoundsLoc >= 0);
+	m_enableAlphaTestLoc = glGetUniformLocation(m_programTex, "uEnableAlphaTest");
+	assert(m_enableAlphaTestLoc >= 0);
+	glUseProgram(0);
+}
+
+void OGLRender::TexrectDrawer::destroy()
+{
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+	if (m_FBO != 0) {
+		glDeleteFramebuffers(1, &m_FBO);
+		m_FBO = 0;
+	}
+	if (m_pTexture != NULL) {
+		textureCache().removeFrameBufferTexture(m_pTexture);
+		m_pTexture = NULL;
+	}
+	if (m_programTex != 0)
+		glDeleteProgram(m_programTex);
+	m_programTex = 0;
+	if (m_programClean != 0)
+		glDeleteProgram(m_programClean);
+	m_programClean = 0;
+}
+
+void OGLRender::TexrectDrawer::add()
+{
+	OGLVideo & ogl = video();
+	OGLRender & render = ogl.getRender();
+	GLVertex * pRect = render.m_rect;
+
+	bool bDownUp = false;
+	if (m_numRects != 0) {
+		bool bContinue = false;
+		const float scaleY = (m_pBuffer != NULL ? m_pBuffer->m_height : VI.height) / 2.0f;
+		if (m_ulx == pRect[0].x) {
+//			bContinue = m_lry == pRect[0].y;
+			bContinue = fabs((m_lry - pRect[0].y) * scaleY) < 1.1f; // Fix for Mario Kart
+			bDownUp = m_uly == pRect[3].y;
+			bContinue |= bDownUp;
+		} else if (m_lrx == pRect[2].x) {
+			bContinue = m_lry == pRect[2].y;
+			bContinue |= m_uly == pRect[0].y;
+		} else if (m_lrx == pRect[1].x) {
+			bContinue = m_lry == pRect[1].y;
+		}
+		if (!bContinue) {
+			GLVertex rect[4];
+			memcpy(rect, pRect, sizeof(rect));
+			draw();
+			memcpy(pRect, rect, sizeof(rect));
+		}
+	}
+
+	if (m_numRects == 0) {
+		m_pBuffer = frameBufferList().getCurrent();
+		m_otherMode = gDP.otherMode._u64;
+		m_Z = (gDP.otherMode.depthSource == G_ZS_PRIM) ? gDP.primDepth.z : gSP.viewport.nearz;
+
+		m_ulx = pRect[0].x;
+		m_uly = pRect[0].y;
+		m_lrx = pRect[3].x;
+		m_lry = pRect[3].y;
+	}
+
+	if (bDownUp) {
+		m_ulx = pRect[0].x;
+		m_uly = pRect[0].y;
+	} else {
+		m_lrx = pRect[3].x;
+		m_lry = pRect[3].y;
+	}
+
+	glDisable(GL_DEPTH_TEST);
+	glDepthMask(FALSE);
+	glDisable(GL_BLEND);
+	if (m_pBuffer == NULL)
+		glViewport(0, 0, VI.width, VI.height);
+	else
+		glViewport(0, 0, m_pBuffer->m_width, m_pBuffer->m_height);
+
+	glScissor(gDP.scissor.ulx, gDP.scissor.uly, gDP.scissor.lrx - gDP.scissor.ulx, gDP.scissor.lry - gDP.scissor.uly);
+
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_FBO);
+	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+	++m_numRects;
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_pBuffer != NULL ? m_pBuffer->m_FBO : 0);
+	gSP.changed |= CHANGED_VIEWPORT;
+	gDP.changed |= CHANGED_SCISSOR;
+}
+
+bool OGLRender::TexrectDrawer::draw()
+{
+	if (m_numRects == 0)
+		return false;
+
+	const u64 otherMode = gDP.otherMode._u64;
+	gDP.otherMode._u64 = m_otherMode;
+	OGLVideo & ogl = video();
+	OGLRender & render = ogl.getRender();
+	render._setBlendMode();
+
+	int enableAlphaTest = 0;
+	switch (gDP.otherMode.cycleType) {
+	case G_CYC_COPY:
+		if (gDP.otherMode.alphaCompare & G_AC_THRESHOLD)
+			enableAlphaTest = 1;
+		break;
+	case G_CYC_1CYCLE:
+	case G_CYC_2CYCLE:
+		if (((gDP.otherMode.alphaCompare & G_AC_THRESHOLD) != 0) && (gDP.otherMode.alphaCvgSel == 0) && (gDP.otherMode.forceBlender == 0 || gDP.blendColor.a > 0))
+			enableAlphaTest = 1;
+		else if ((gDP.otherMode.alphaCompare == G_AC_DITHER) && (gDP.otherMode.alphaCvgSel == 0))
+			enableAlphaTest = 1;
+		else if (gDP.otherMode.cvgXAlpha != 0)
+			enableAlphaTest = 1;
+		break;
+	}
+
+	GLVertex * rect = render.m_rect;
+
+	const float scaleX = (m_pBuffer != NULL ? 1.0f / m_pBuffer->m_width : VI.rwidth) * 2.0f;
+	const float scaleY = (m_pBuffer != NULL ? 1.0f / m_pBuffer->m_height : VI.rheight) * 2.0f;
+
+	const float s0 = (m_ulx + 1.0f) / scaleX / (float)m_pTexture->realWidth;
+	const float t1 = (m_uly + 1.0f) / scaleY / (float)m_pTexture->realHeight;
+	const float s1 = (m_lrx + 1.0f) / scaleX / (float)m_pTexture->realWidth;
+	const float t0 = (m_lry + 1.0f) / scaleY / (float)m_pTexture->realHeight;
+	const float W = 1.0f;
+
+	if (m_pBuffer == NULL)
+		glViewport(0, ogl.getHeightOffset(), ogl.getScreenWidth(), ogl.getScreenHeight());
+	else
+		glViewport(0, 0, m_pBuffer->m_width*m_pBuffer->m_scaleX, m_pBuffer->m_height*m_pBuffer->m_scaleY);
+
+	CachedTexture * pCurTex0 = textureCache().current[0];
+	textureCache().activateTexture(0, m_pTexture);
+	// Disable filtering to avoid black outlines
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+	glUseProgram(m_programTex);
+	glUniform1i(m_enableAlphaTestLoc, enableAlphaTest);
+	glUniform1i(m_textureFilterModeLoc, gDP.otherMode.textureFilter);
+	float texBounds[4] = { s0, t0, s1, t1 };
+	glUniform4fv(m_textureBoundsLoc, 1, texBounds);
+	glEnableVertexAttribArray(SC_TEXCOORD0);
+
+	rect[0].x = m_ulx;
+	rect[0].y = -m_lry;
+	rect[0].z = m_Z;
+	rect[0].w = W;
+	rect[0].s0 = s0;
+	rect[0].t0 = t0;
+	rect[1].x = m_lrx;
+	rect[1].y = -m_lry;
+	rect[1].z = m_Z;
+	rect[1].w = W;
+	rect[1].s0 = s1;
+	rect[1].t0 = t0;
+	rect[2].x = m_ulx;
+	rect[2].y = -m_uly;
+	rect[2].z = m_Z;
+	rect[2].w = W;
+	rect[2].s0 = s0;
+	rect[2].t0 = t1;
+	rect[3].x = m_lrx;
+	rect[3].y = -m_uly;
+	rect[3].z = m_Z;
+	rect[3].w = W;
+	rect[3].s0 = s1;
+	rect[3].t0 = t1;
+
+	render.updateScissor(m_pBuffer);
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_pBuffer != NULL ? m_pBuffer->m_FBO : 0);
+	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_FBO);
+	glUseProgram(m_programClean);
+	rect[0].y = m_uly;
+	rect[1].y = m_uly;
+	rect[2].y = m_lry;
+	rect[3].y = m_lry;
+
+	if (m_pBuffer == NULL)
+		glViewport(0, 0, VI.width, VI.height);
+	else
+		glViewport(0, 0, m_pBuffer->m_width, m_pBuffer->m_height);
+
+	glDisable(GL_BLEND);
+	glDisable(GL_SCISSOR_TEST);
+	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+	glEnable(GL_SCISSOR_TEST);
+
+	m_pBuffer = frameBufferList().getCurrent();
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_pBuffer != NULL ? m_pBuffer->m_FBO : 0);
+
+	m_numRects = 0;
+	gDP.otherMode._u64 = otherMode;
+	gDP.changed |= CHANGED_COMBINE | CHANGED_SCISSOR | CHANGED_RENDERMODE;
+	textureCache().activateTexture(0, pCurTex0);
+	CombinerInfo::get().update();
+	return true;
+}
+
+/*---------------OGLRender-------------*/
 
 void OGLRender::addTriangle(int _v0, int _v1, int _v2)
 {
@@ -758,6 +1017,8 @@ void OGLRender::_setTexCoordArrays() const
 
 void OGLRender::_prepareDrawTriangle(bool _dma)
 {
+	m_texrectDrawer.draw();
+
 #ifdef GL_IMAGE_TEXTURES_SUPPORT
 	if (m_bImageTexture && config.frameBufferEmulation.N64DepthCompare != 0)
 		glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
@@ -901,6 +1162,7 @@ void OGLRender::drawLine(int _v0, int _v1, float _width)
 
 void OGLRender::drawRect(int _ulx, int _uly, int _lrx, int _lry, float *_pColor)
 {
+	m_texrectDrawer.draw();
 	if (!_canDraw())
 		return;
 	gSP.changed &= ~CHANGED_GEOMETRYMODE; // Don't update cull mode
@@ -1167,12 +1429,33 @@ void OGLRender::drawTexturedRect(const TexturedRectParams & _params)
 		glViewport(0, 0, pCurrentBuffer->m_width*pCurrentBuffer->m_scaleX, pCurrentBuffer->m_height*pCurrentBuffer->m_scaleY);
 	glDisable( GL_CULL_FACE );
 
+	ShaderCombiner * pCurrentCombiner = currentCombiner();
+	TextureCache & cache = textureCache();
+	const bool bUseBilinear = (gDP.otherMode.textureFilter | (gSP.objRendermode&G_OBJRM_BILERP)) != 0;
+	const bool bUseTexrectDrawer = bUseBilinear
+		&& pCurrentCombiner->usesTexture()
+		&& (pCurrentBuffer == NULL || !pCurrentBuffer->m_cfb)
+//		&& (cache.current[0] == NULL || cache.current[0]->format == G_IM_FMT_RGBA || cache.current[0]->format == G_IM_FMT_CI)
+		&& (cache.current[0] == NULL || (cache.current[0]->frameBufferTexture == CachedTexture::fbNone && !cache.current[0]->bHDTexture))
+		&& (cache.current[1] == NULL || (cache.current[1]->frameBufferTexture == CachedTexture::fbNone && !cache.current[1]->bHDTexture));
+
 	const float scaleX = pCurrentBuffer != NULL ? 1.0f / pCurrentBuffer->m_width : VI.rwidth;
 	const float scaleY = pCurrentBuffer != NULL ? 1.0f / pCurrentBuffer->m_height : VI.rheight;
 	const float Z = (gDP.otherMode.depthSource == G_ZS_PRIM) ? gDP.primDepth.z : gSP.viewport.nearz;
 	const float W = 1.0f;
+	f32 uly, lry;
+	if (bUseTexrectDrawer) {
+		uly = (float)_params.uly * (2.0f * scaleY) - 1.0f;
+		lry = (float)_params.lry * (2.0f * scaleY) - 1.0f;
+	} else {
+		uly = (float)_params.uly * (-2.0f * scaleY) + 1.0f;
+		lry = (float)(_params.lry) * (-2.0f * scaleY) + 1.0f;
+		// Flush text drawer
+		if (m_texrectDrawer.draw())
+			_updateStates(rsTexRect);
+	}
 	m_rect[0].x = (float)_params.ulx * (2.0f * scaleX) - 1.0f;
-	m_rect[0].y = (float)_params.uly * (-2.0f * scaleY) + 1.0f;
+	m_rect[0].y = uly;
 	m_rect[0].z = Z;
 	m_rect[0].w = W;
 	m_rect[1].x = (float)(_params.lrx) * (2.0f * scaleX) - 1.0f;
@@ -1180,7 +1463,7 @@ void OGLRender::drawTexturedRect(const TexturedRectParams & _params)
 	m_rect[1].z = Z;
 	m_rect[1].w = W;
 	m_rect[2].x = m_rect[0].x;
-	m_rect[2].y = (float)(_params.lry) * (-2.0f * scaleY) + 1.0f;
+	m_rect[2].y = lry;
 	m_rect[2].z = Z;
 	m_rect[2].w = W;
 	m_rect[3].x = m_rect[1].x;
@@ -1188,14 +1471,13 @@ void OGLRender::drawTexturedRect(const TexturedRectParams & _params)
 	m_rect[3].z = Z;
 	m_rect[3].w = W;
 
-	TextureCache & cache = textureCache();
 	struct
 	{
 		float s0, t0, s1, t1;
 	} texST[2] = { { 0, 0, 0, 0 }, { 0, 0, 0, 0 } }; //struct for texture coordinates
 
 	for (u32 t = 0; t < 2; ++t) {
-		if (currentCombiner()->usesTile(t) && cache.current[t] && gSP.textureTile[t]) {
+		if (pCurrentCombiner->usesTile(t) && cache.current[t] && gSP.textureTile[t]) {
 			f32 shiftScaleS = 1.0f;
 			f32 shiftScaleT = 1.0f;
 			getTextureShiftScale(t, cache, shiftScaleS, shiftScaleT);
@@ -1290,7 +1572,16 @@ void OGLRender::drawTexturedRect(const TexturedRectParams & _params)
 			m_rect[i].x *= scale;
 	}
 
-	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+	if (bUseTexrectDrawer)
+		m_texrectDrawer.add();
+	else {
+		if (pCurrentBuffer == NULL)
+			glViewport(0, ogl.getHeightOffset(), ogl.getScreenWidth(), ogl.getScreenHeight());
+		else
+			glViewport(0, 0, pCurrentBuffer->m_width*pCurrentBuffer->m_scaleX, pCurrentBuffer->m_height*pCurrentBuffer->m_scaleY);
+		glDisable(GL_CULL_FACE);
+		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+	}
 	gSP.changed |= CHANGED_GEOMETRYMODE | CHANGED_VIEWPORT;
 }
 
@@ -1524,6 +1815,7 @@ void OGLRender::_initData()
 	TFH.init();
 	PostProcessor::get().init();
 	FBInfo::fbInfo.reset();
+	m_texrectDrawer.init();
 	m_renderState = rsNone;
 
 	gSP.changed = gDP.changed = 0xFFFFFFFF;
@@ -1538,6 +1830,7 @@ void OGLRender::_initData()
 void OGLRender::_destroyData()
 {
 	m_renderState = rsNone;
+	m_texrectDrawer.destroy();
 	if (config.bloomFilter.enable != 0)
 		PostProcessor::get().destroy();
 	if (TFH.optionsChanged())

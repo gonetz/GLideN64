@@ -80,6 +80,12 @@ typedef char GLchar;
 #define VERTBUFF_SIZE 256U
 #define ELEMBUFF_SIZE 1024U
 
+extern const char * strTexrectDrawerVertexShader;
+extern const char * strTexrectDrawerFragmentShaderTex3Point;
+extern const char * strTexrectDrawerFragmentShaderTexBilinear;
+extern const char * strTexrectDrawerFragmentShaderClean;
+
+class CachedTexture;
 class OGLRender
 {
 public:
@@ -129,6 +135,7 @@ public:
 	void setDMAVerticesSize(u32 _size) { if (triangles.dmaVertices.size() < _size) triangles.dmaVertices.resize(_size); }
 	SPVertex * getDMAVerticesData() { return triangles.dmaVertices.data(); }
 	void updateScissor(FrameBuffer * _pBuffer) const;
+	void flush() { m_texrectDrawer.draw(); }
 
 	enum RENDER_STATE {
 		rsNone = 0,
@@ -192,6 +199,28 @@ private:
 		float s0, t0, s1, t1;
 	};
 
+	class TexrectDrawer
+	{
+	public:
+		TexrectDrawer();
+		void init();
+		void destroy();
+		void add();
+		bool draw();
+	private:
+		u32 m_numRects;
+		u64 m_otherMode;
+		float m_ulx, m_lrx, m_uly, m_lry, m_Z;
+		GLuint m_FBO;
+		GLuint m_programTex;
+		GLuint m_programClean;
+		GLint m_enableAlphaTestLoc;
+		GLint m_textureFilterModeLoc;
+		GLint m_textureBoundsLoc;
+		CachedTexture * m_pTexture;
+		FrameBuffer * m_pBuffer;
+	};
+
 	RENDER_STATE m_renderState;
 	OGL_RENDERER m_oglRenderer;
 	TexturedRectParams m_texrectParams;
@@ -199,6 +228,7 @@ private:
 	u32 m_modifyVertices;
 	bool m_bImageTexture;
 	bool m_bFlatColors;
+	TexrectDrawer m_texrectDrawer;
 };
 
 class OGLVideo
