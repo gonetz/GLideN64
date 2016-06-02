@@ -1,4 +1,5 @@
 #include <assert.h>
+#include <math.h>
 #include <algorithm>
 
 #include "DepthBufferToRDRAM.h"
