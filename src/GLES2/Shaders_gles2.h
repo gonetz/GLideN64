@@ -311,7 +311,15 @@ static const char* fragment_shader_readtex_3point =
 "#define TEX_OFFSET(off) texture2D(tex, texCoord - (off)/texSize)	\n"
 "lowp vec4 filter3point(in sampler2D tex, in mediump vec2 texCoord)			\n"
 "{																			\n"
+#ifndef VC
 "  mediump vec2 texSize = uTextureSize[nCurrentTile];						\n"
+#else
+"  mediump vec2 texSize;		\n"
+"  if (nCurrentTile == 0)		\n"
+"    texSize = uTextureSize[0];		\n"
+"  else if (nCurrentTile == 1)		\n"
+"    texSize = uTextureSize[1];		\n"
+#endif
 "  mediump vec2 offset = fract(texCoord*texSize - vec2(0.5));	\n"
 "  offset -= step(1.0, offset.x + offset.y);								\n"
 "  lowp vec4 c0 = TEX_OFFSET(offset);										\n"
