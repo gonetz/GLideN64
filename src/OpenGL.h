@@ -178,6 +178,7 @@ private:
 	void _updateViewport() const;
 	void _updateScreenCoordsViewport() const;
 	void _updateDepthUpdate() const;
+	void _updateDepthCompare() const;
 	void _updateStates(RENDER_STATE _renderState) const;
 	void _prepareDrawTriangle(bool _dma);
 	bool _canDraw() const;

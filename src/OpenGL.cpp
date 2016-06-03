@@ -871,18 +871,8 @@ void OGLRender::_updateDepthUpdate() const
 		glDepthMask( FALSE );
 }
 
-void OGLRender::_updateStates(RENDER_STATE _renderState) const
+void OGLRender::_updateDepthCompare() const
 {
-	OGLVideo & ogl = video();
-
-	CombinerInfo & cmbInfo = CombinerInfo::get();
-	cmbInfo.update();
-
-	if (gSP.changed & CHANGED_GEOMETRYMODE) {
-		_updateCullFace();
-		gSP.changed &= ~CHANGED_GEOMETRYMODE;
-	}
-
 	if (config.frameBufferEmulation.N64DepthCompare) {
 		glDisable( GL_DEPTH_TEST );
 		glDepthMask( FALSE );
@@ -930,6 +920,21 @@ void OGLRender::_updateStates(RENDER_STATE _renderState) const
 #endif
 		}
 	}
+}
+
+void OGLRender::_updateStates(RENDER_STATE _renderState) const
+{
+	OGLVideo & ogl = video();
+
+	CombinerInfo & cmbInfo = CombinerInfo::get();
+	cmbInfo.update();
+
+	if (gSP.changed & CHANGED_GEOMETRYMODE) {
+		_updateCullFace();
+		gSP.changed &= ~CHANGED_GEOMETRYMODE;
+	}
+
+	_updateDepthCompare();
 
 	if (gDP.changed & CHANGED_SCISSOR)
 		updateScissor(frameBufferList().getCurrent());
