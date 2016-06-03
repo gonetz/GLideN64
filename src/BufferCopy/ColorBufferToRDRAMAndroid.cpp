@@ -79,16 +79,18 @@ GLubyte* ColorBufferToRDRAMAndroid::_getPixels(GLint _x0, GLint _y0, GLsizei _wi
 		glBindTexture(GL_TEXTURE_2D, m_pTexture->glName);
 		m_glEGLImageTargetTexture2DOES(GL_TEXTURE_2D, m_image);
 		glBindTexture(GL_TEXTURE_2D, 0);
-
-		m_window->lock(GraphicBuffer::USAGE_SW_READ_OFTEN, &ptr);
-		memcpy(pixelData, ptr, m_pTexture->realWidth * m_pTexture->realHeight * colorFormatBytes);
-		m_window->unlock();
-
 		int widthBytes = _width*colorFormatBytes;
 		int strideBytes = m_pTexture->realWidth * colorFormatBytes;
+
+		m_window->lock(GraphicBuffer::USAGE_SW_READ_OFTEN, &ptr);
+
 		for (unsigned int lnIndex = 0; lnIndex < _height; ++lnIndex) {
-			memmove(pixelData + lnIndex*widthBytes, pixelData + ((lnIndex + _y0)*strideBytes), widthBytes);
+			memcpy(pixelData + lnIndex*widthBytes, reinterpret_cast<char*>(ptr) + ((lnIndex + _y0)*strideBytes), widthBytes);
 		}
+
+		m_window->unlock();
+
+
 	} else {
 		glReadPixels(_x0, _y0, _width, _height, colorFormat, colorType, pixelData);
 	}
