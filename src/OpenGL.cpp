@@ -1442,50 +1442,56 @@ bool(*texturedRectSpecial)(const OGLRender::TexturedRectParams & _params) = NULL
 void OGLRender::drawTexturedRect(const TexturedRectParams & _params)
 {
 	gSP.changed &= ~CHANGED_GEOMETRYMODE; // Don't update cull mode
-	if (!m_texrectDrawer.isEmpty())
+	if (!m_texrectDrawer.isEmpty()) {
+		CombinerInfo::get().update();
 		_updateTextures(rsTexRect);
-	else if (_params.texrectCmd && (gSP.changed | gDP.changed) != 0)
-		_updateStates(rsTexRect);
+		if (CombinerInfo::get().isChanged())
+			_setTexCoordArrays();
+	} else {
+		if (_params.texrectCmd && (gSP.changed | gDP.changed) != 0)
+			_updateStates(rsTexRect);
 
-	const bool updateArrays = m_renderState != rsTexRect;
-	if (updateArrays || CombinerInfo::get().isChanged()) {
-		m_renderState = rsTexRect;
-		glDisableVertexAttribArray(SC_COLOR);
-		_setTexCoordArrays();
+		const bool updateArrays = m_renderState != rsTexRect;
+		if (updateArrays || CombinerInfo::get().isChanged()) {
+			m_renderState = rsTexRect;
+			glDisableVertexAttribArray(SC_COLOR);
+			_setTexCoordArrays();
 
-		GLfloat alpha = 0.0f;
-		if (currentCombiner()->usesShade()) {
-			gDPCombine combine;
-			combine.mux = currentCombiner()->getKey();
-			if (combine.mA0 == G_ACMUX_0 && combine.aA0 == G_ACMUX_SHADE)
-				alpha = 1.0f;
+			GLfloat alpha = 0.0f;
+			if (currentCombiner()->usesShade()) {
+				gDPCombine combine;
+				combine.mux = currentCombiner()->getKey();
+				if (combine.mA0 == G_ACMUX_0 && combine.aA0 == G_ACMUX_SHADE)
+					alpha = 1.0f;
+			}
+			glVertexAttrib4f(SC_COLOR, 0, 0, 0, alpha);
 		}
-		glVertexAttrib4f(SC_COLOR, 0, 0, 0, alpha);
-	}
 
-	if (updateArrays) {
+		if (updateArrays) {
 #ifdef RENDERSTATE_TEST
-		StateChanges++;
+			StateChanges++;
 #endif
-		glVertexAttribPointer(SC_POSITION, 4, GL_FLOAT, GL_FALSE, sizeof(GLVertex), &m_rect[0].x);
-		glVertexAttribPointer(SC_TEXCOORD0, 2, GL_FLOAT, GL_FALSE, sizeof(GLVertex), &m_rect[0].s0);
-		glVertexAttribPointer(SC_TEXCOORD1, 2, GL_FLOAT, GL_FALSE, sizeof(GLVertex), &m_rect[0].s1);
-		glDisableVertexAttribArray(SC_NUMLIGHTS);
-		glDisableVertexAttribArray(SC_MODIFY);
-	}
-	currentCombiner()->updateRenderState();
+			glVertexAttribPointer(SC_POSITION, 4, GL_FLOAT, GL_FALSE, sizeof(GLVertex), &m_rect[0].x);
+			glVertexAttribPointer(SC_TEXCOORD0, 2, GL_FLOAT, GL_FALSE, sizeof(GLVertex), &m_rect[0].s0);
+			glVertexAttribPointer(SC_TEXCOORD1, 2, GL_FLOAT, GL_FALSE, sizeof(GLVertex), &m_rect[0].s1);
+			glDisableVertexAttribArray(SC_NUMLIGHTS);
+			glDisableVertexAttribArray(SC_MODIFY);
+		}
 
-	if (_params.texrectCmd && texturedRectSpecial != NULL && texturedRectSpecial(_params)) {
-		gSP.changed |= CHANGED_GEOMETRYMODE;
-		return;
+		if (_params.texrectCmd && texturedRectSpecial != NULL && texturedRectSpecial(_params)) {
+			gSP.changed |= CHANGED_GEOMETRYMODE;
+			return;
+		}
+
+		if (!_canDraw())
+			return;
 	}
 
-	if (!_canDraw())
-		return;
+	ShaderCombiner * pCurrentCombiner = currentCombiner();
+	pCurrentCombiner->updateRenderState();
 
 	const FrameBuffer * pCurrentBuffer = _params.pBuffer;
 	OGLVideo & ogl = video();
-	ShaderCombiner * pCurrentCombiner = currentCombiner();
 	TextureCache & cache = textureCache();
 	const bool bUseBilinear = (gDP.otherMode.textureFilter | (gSP.objRendermode&G_OBJRM_BILERP)) != 0;
 	const bool bUseTexrectDrawer = bUseBilinear
