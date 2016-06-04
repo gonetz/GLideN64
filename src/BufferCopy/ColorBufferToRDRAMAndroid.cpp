@@ -24,6 +24,8 @@ private:
 	void _destroy() override;
 	GLubyte* _getPixels(GLint _x0, GLint _y0, GLsizei _width, GLsizei _height, u32 _size, bool _sync)  override;
 	void _cleanUpPixels(GLubyte* pixelData)  override;
+	void _initBuffers(void) override;
+	void _destroyBuffers(void) override;
 
 	GraphicBuffer* m_window;
 	EGLImageKHR m_image;
@@ -37,25 +39,39 @@ ColorBufferToRDRAM & ColorBufferToRDRAM::get()
 }
 
 ColorBufferToRDRAMAndroid::ColorBufferToRDRAMAndroid() 
-	: ColorBufferToRDRAM()
+	: ColorBufferToRDRAM(),
+	m_window(nullptr),
+	m_image(0)
 {
 }
 
 void ColorBufferToRDRAMAndroid::_init()
 {
-	m_window = new GraphicBuffer(m_pTexture->realWidth, m_pTexture->realHeight,
-		PIXEL_FORMAT_RGBA_8888, GraphicBuffer::USAGE_SW_READ_OFTEN | GraphicBuffer::USAGE_HW_TEXTURE);
-
-	EGLint eglImgAttrs[] = { EGL_IMAGE_PRESERVED_KHR, EGL_TRUE, EGL_NONE, EGL_NONE };
-	m_image = eglCreateImageKHR(eglGetDisplay(EGL_DEFAULT_DISPLAY), EGL_NO_CONTEXT,
-		EGL_NATIVE_BUFFER_ANDROID, (EGLClientBuffer)m_window->getNativeBuffer(), eglImgAttrs);
-
 	m_glEGLImageTargetTexture2DOES = (PFNGLEGLIMAGETARGETTEXTURE2DOESPROC)eglGetProcAddress("glEGLImageTargetTexture2DOES");
+
+	m_window = new GraphicBuffer();
 }
 
 void ColorBufferToRDRAMAndroid::_destroy()
 {
-	eglDestroyImageKHR(eglGetDisplay(EGL_DEFAULT_DISPLAY), m_image);
+}
+
+void ColorBufferToRDRAMAndroid::_initBuffers(void)
+{
+	m_window->reallocate(m_pTexture->realWidth, m_pTexture->realHeight,
+		PIXEL_FORMAT_RGBA_8888, GraphicBuffer::USAGE_SW_READ_OFTEN | GraphicBuffer::USAGE_HW_TEXTURE);
+	EGLint eglImgAttrs[] = { EGL_IMAGE_PRESERVED_KHR, EGL_TRUE, EGL_NONE, EGL_NONE };
+	m_image = eglCreateImageKHR(eglGetDisplay(EGL_DEFAULT_DISPLAY), EGL_NO_CONTEXT,
+		EGL_NATIVE_BUFFER_ANDROID, (EGLClientBuffer)m_window->getNativeBuffer(), eglImgAttrs);
+}
+
+void ColorBufferToRDRAMAndroid::_destroyBuffers(void)
+{
+	if(m_image != 0)
+	{
+	    eglDestroyImageKHR(eglGetDisplay(EGL_DEFAULT_DISPLAY), m_image);
+	    m_image = 0;
+	}
 }
 
 GLubyte* ColorBufferToRDRAMAndroid::_getPixels(GLint _x0, GLint _y0, GLsizei _width, GLsizei _height, u32 _size, bool _sync)
