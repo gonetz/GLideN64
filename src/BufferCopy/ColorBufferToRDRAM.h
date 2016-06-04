@@ -2,6 +2,7 @@
 #define ColorBufferToRDRAM_H
 
 #include <OpenGL.h>
+#include <array>
 
 struct CachedTexture;
 struct FrameBuffer;
@@ -27,6 +28,8 @@ protected:
 private:
 	virtual void _init() = 0;
 	virtual void _destroy() = 0;
+	virtual void _initBuffers(void) = 0;
+	virtual void _destroyBuffers(void) = 0;
 	virtual GLubyte* _getPixels(GLint _x0, GLint _y0, GLsizei _width, GLsizei _height, u32 _size, bool _sync) = 0;
 	virtual void _cleanUpPixels(GLubyte* pixelData) = 0;
 
@@ -37,9 +40,15 @@ private:
 		u32 raw;
 	};
 
+	void _initFBTexture(void);
+
+	void _destroyFBTexure(void);
+
 	bool _prepareCopy(u32 _startAddress);
 
 	void _copy(u32 _startAddress, u32 _endAddress, bool _sync);
+
+	u32 _getRealWidth(u32 _viWidth);
 
 	// Convert pixel from video memory to N64 buffer format.
 	static u8 _RGBAtoR8(u8 _c);
@@ -50,6 +59,11 @@ private:
 	FrameBuffer * m_pCurFrameBuffer;
 	u32 m_frameCount;
 	u32 m_startAddress;
+
+	u32 m_lastVIWidth;
+	u32 m_lastVIHeight;
+
+	std::array<u32, 3> m_allowedRealWidths;
 };
 
 void copyWhiteToRDRAM(FrameBuffer * _pBuffer);
