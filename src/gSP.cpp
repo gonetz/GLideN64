@@ -317,7 +317,7 @@ void gSPClipVertex4(u32 v)
 		if (vtx.x < -vtx.w) vtx.clip |= CLIP_NEGX;
 		if (vtx.y > +vtx.w) vtx.clip |= CLIP_POSY;
 		if (vtx.y < -vtx.w) vtx.clip |= CLIP_NEGY;
-		if (vtx.w < 0.01f) vtx.clip |= CLIP_Z;
+		if (vtx.w < 0.01f) vtx.clip |= CLIP_W;
 	}
 }
 
@@ -547,7 +547,7 @@ void gSPClipVertex(u32 v)
 	if (vtx.x < -vtx.w) vtx.clip |= CLIP_NEGX;
 	if (vtx.y > +vtx.w) vtx.clip |= CLIP_POSY;
 	if (vtx.y < -vtx.w) vtx.clip |= CLIP_NEGY;
-	if (vtx.w < 0.01f)  vtx.clip |= CLIP_Z;
+	if (vtx.w < 0.01f)  vtx.clip |= CLIP_W;
 }
 
 void gSPProcessVertex(u32 v)
@@ -1548,7 +1548,7 @@ void gSPModifyVertex( u32 _vtx, u32 _where, u32 _val )
 		{
 			f32 scrZ = _FIXED2FLOAT((s16)_SHIFTR(_val, 16, 16), 15);
 			vtx0.z = (scrZ - gSP.viewport.vtrans[2]) / (gSP.viewport.vscale[2]);
-			vtx0.clip &= ~CLIP_Z;
+			vtx0.clip &= ~CLIP_W;
 			vtx0.modify |= MODIFY_Z;
 		}
 		break;
