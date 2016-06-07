@@ -478,7 +478,7 @@ SHADER_VERSION
 const char * strTexrectDrawerFragmentShaderTex =
 "uniform sampler2D uTex0;																						\n"
 "uniform lowp int uEnableAlphaTest;																				\n"
-"uniform lowp vec4 uTestColor = vec4(4.0/255.0, 2.0/255.0, 1.0/255.0, 0.0);										\n"
+"lowp vec4 uTestColor = vec4(4.0/255.0, 2.0/255.0, 1.0/255.0, 0.0);										\n"
 "IN mediump vec2 vTexCoord0;																					\n"
 "OUT lowp vec4 fragColor;																						\n"
 "void main()																									\n"
@@ -492,7 +492,7 @@ const char * strTexrectDrawerFragmentShaderTex =
 
 const char * strTexrectDrawerFragmentShaderClean =
 SHADER_VERSION
-"uniform lowp vec4 uTestColor = vec4(4.0/255.0, 2.0/255.0, 1.0/255.0, 0.0);	\n"
+"lowp vec4 uTestColor = vec4(4.0/255.0, 2.0/255.0, 1.0/255.0, 0.0);	\n"
 "void main()																\n"
 "{																			\n"
 "  gl_FragColor = uTestColor;												\n"
