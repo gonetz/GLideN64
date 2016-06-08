@@ -13,11 +13,11 @@ typedef void (GL_APIENTRY* PFNGLEGLIMAGETARGETRENDERBUFFERSTORAGEOESPROC) (GLenu
 
 using namespace android;
 
-class ColorBufferToRDRAMAndroid : public ColorBufferToRDRAM
+class ColorBufferToRDRAM_GLES : public ColorBufferToRDRAM
 {
 public:
-	ColorBufferToRDRAMAndroid();
-	~ColorBufferToRDRAMAndroid() {};
+	ColorBufferToRDRAM_GLES();
+	~ColorBufferToRDRAM_GLES() {};
 
 private:
 	void _init() override;
@@ -34,29 +34,29 @@ private:
 
 ColorBufferToRDRAM & ColorBufferToRDRAM::get()
 {
-	static ColorBufferToRDRAMAndroid cbCopy;
+	static ColorBufferToRDRAM_GLES cbCopy;
 	return cbCopy;
 }
 
-ColorBufferToRDRAMAndroid::ColorBufferToRDRAMAndroid() 
+ColorBufferToRDRAM_GLES::ColorBufferToRDRAM_GLES() 
 	: ColorBufferToRDRAM(),
 	m_window(nullptr),
 	m_image(0)
 {
 }
 
-void ColorBufferToRDRAMAndroid::_init()
+void ColorBufferToRDRAM_GLES::_init()
 {
 	m_glEGLImageTargetTexture2DOES = (PFNGLEGLIMAGETARGETTEXTURE2DOESPROC)eglGetProcAddress("glEGLImageTargetTexture2DOES");
 
 	m_window = new GraphicBuffer();
 }
 
-void ColorBufferToRDRAMAndroid::_destroy()
+void ColorBufferToRDRAM_GLES::_destroy()
 {
 }
 
-void ColorBufferToRDRAMAndroid::_initBuffers(void)
+void ColorBufferToRDRAM_GLES::_initBuffers(void)
 {
 	m_window->reallocate(m_pTexture->realWidth, m_pTexture->realHeight,
 		PIXEL_FORMAT_RGBA_8888, GraphicBuffer::USAGE_SW_READ_OFTEN | GraphicBuffer::USAGE_HW_TEXTURE);
@@ -65,7 +65,7 @@ void ColorBufferToRDRAMAndroid::_initBuffers(void)
 		EGL_NATIVE_BUFFER_ANDROID, (EGLClientBuffer)m_window->getNativeBuffer(), eglImgAttrs);
 }
 
-void ColorBufferToRDRAMAndroid::_destroyBuffers(void)
+void ColorBufferToRDRAM_GLES::_destroyBuffers(void)
 {
 	if(m_image != 0)
 	{
@@ -74,7 +74,7 @@ void ColorBufferToRDRAMAndroid::_destroyBuffers(void)
 	}
 }
 
-bool ColorBufferToRDRAMAndroid::_readPixels(GLint _x0, GLint _y0, GLsizei _width, GLsizei _height, u32 _size, bool _sync)
+bool ColorBufferToRDRAM_GLES::_readPixels(GLint _x0, GLint _y0, GLsizei _width, GLsizei _height, u32 _size, bool _sync)
 {
 	GLenum colorFormat, colorType, colorFormatBytes;
 	if (_size > G_IM_SIZ_8b) {
@@ -114,6 +114,6 @@ bool ColorBufferToRDRAMAndroid::_readPixels(GLint _x0, GLint _y0, GLsizei _width
 	return true;
 }
 
-void ColorBufferToRDRAMAndroid::_cleanUp()
+void ColorBufferToRDRAM_GLES::_cleanUp()
 {
 }

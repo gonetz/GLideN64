@@ -93,7 +93,7 @@ if(MUPENPLUSAPI)
     )
   else(BCMHOST)
     set(GLideN64_SOURCES_UNIX ${GLideN64_SOURCES_UNIX}
-        BufferCopy/ColorBufferToRDRAMDesktop.cpp
+        BufferCopy/ColorBufferToRDRAM_GL.cpp
     )
   endif(BCMHOST)
 

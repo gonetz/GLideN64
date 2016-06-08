@@ -2,11 +2,11 @@
 
 #include <Textures.h>
 
-class ColorBufferToRDRAMDesktop : public ColorBufferToRDRAM
+class ColorBufferToRDRAM_GL : public ColorBufferToRDRAM
 {
 public:
-	ColorBufferToRDRAMDesktop();
-	~ColorBufferToRDRAMDesktop() {};
+	ColorBufferToRDRAM_GL();
+	~ColorBufferToRDRAM_GL() {};
 
 private:
 	void _init() override;
@@ -22,11 +22,11 @@ private:
 
 ColorBufferToRDRAM & ColorBufferToRDRAM::get()
 {
-	static ColorBufferToRDRAMDesktop cbCopy;
+	static ColorBufferToRDRAM_GL cbCopy;
 	return cbCopy;
 }
 
-ColorBufferToRDRAMDesktop::ColorBufferToRDRAMDesktop() 
+ColorBufferToRDRAM_GL::ColorBufferToRDRAM_GL()
 	: ColorBufferToRDRAM()
 	, m_curIndex(-1)
 {
@@ -34,14 +34,14 @@ ColorBufferToRDRAMDesktop::ColorBufferToRDRAMDesktop()
 		m_PBO[index] = 0;
 }
 
-void ColorBufferToRDRAMDesktop::_init()
+void ColorBufferToRDRAM_GL::_init()
 {
 	// Generate Pixel Buffer Objects
 	glGenBuffers(_numPBO, m_PBO);
 	m_curIndex = 0;
 }
 
-void ColorBufferToRDRAMDesktop::_destroy()
+void ColorBufferToRDRAM_GL::_destroy()
 {
 	glDeleteBuffers(_numPBO, m_PBO);
 
@@ -49,7 +49,7 @@ void ColorBufferToRDRAMDesktop::_destroy()
 		m_PBO[index] = 0;
 }
 
-void ColorBufferToRDRAMDesktop::_initBuffers(void)
+void ColorBufferToRDRAM_GL::_initBuffers(void)
 {
 	// Initialize Pixel Buffer Objects
 	for (u32 i = 0; i < _numPBO; ++i) {
@@ -59,11 +59,11 @@ void ColorBufferToRDRAMDesktop::_initBuffers(void)
 	glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
 }
 
-void ColorBufferToRDRAMDesktop::_destroyBuffers(void)
+void ColorBufferToRDRAM_GL::_destroyBuffers(void)
 {
 }
 
-bool ColorBufferToRDRAMDesktop::_readPixels(GLint _x0, GLint _y0, GLsizei _width, GLsizei _height, u32 _size, bool _sync)
+bool ColorBufferToRDRAM_GL::_readPixels(GLint _x0, GLint _y0, GLsizei _width, GLsizei _height, u32 _size, bool _sync)
 {
 	GLenum colorFormat, colorType, colorFormatBytes;
 	if (_size > G_IM_SIZ_8b) {
@@ -103,7 +103,7 @@ bool ColorBufferToRDRAMDesktop::_readPixels(GLint _x0, GLint _y0, GLsizei _width
 	return true;
 }
 
-void ColorBufferToRDRAMDesktop::_cleanUp()
+void ColorBufferToRDRAM_GL::_cleanUp()
 {
 	glUnmapBuffer(GL_PIXEL_PACK_BUFFER);
 	glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);

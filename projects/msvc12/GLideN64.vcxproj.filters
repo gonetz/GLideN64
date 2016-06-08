@@ -209,11 +209,11 @@
     <ClCompile Include="..\..\src\BufferCopy\RDRAMtoColorBuffer.cpp">
       <Filter>Source Files\BufferCopy</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\BufferCopy\ColorBufferToRDRAMDesktop.cpp">
-      <Filter>Source Files\BufferCopy</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\common\GLFunctions.cpp">
       <Filter>Source Files\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\BufferCopy\ColorBufferToRDRAM_GL.cpp">
+      <Filter>Source Files\BufferCopy</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

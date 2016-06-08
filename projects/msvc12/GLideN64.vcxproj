@@ -216,7 +216,7 @@
   <ItemGroup>
     <ClCompile Include="..\..\src\3DMath.cpp" />
     <ClCompile Include="..\..\src\BufferCopy\ColorBufferToRDRAM.cpp" />
-    <ClCompile Include="..\..\src\BufferCopy\ColorBufferToRDRAMDesktop.cpp" />
+    <ClCompile Include="..\..\src\BufferCopy\ColorBufferToRDRAM_GL.cpp" />
     <ClCompile Include="..\..\src\BufferCopy\DepthBufferToRDRAM.cpp" />
     <ClCompile Include="..\..\src\BufferCopy\RDRAMtoColorBuffer.cpp" />
     <ClCompile Include="..\..\src\Combiner.cpp" />
