@@ -259,7 +259,6 @@ void ShaderCombiner::_locateUniforms() {
 	LocateUniform(uRenderState);
 
 	LocateUniform(uScreenScale);
-	LocateUniform(uDepthScale);
 	LocateUniform(uFogScale);
 
 	LocateUniform(uBlendMux1);
@@ -422,11 +421,6 @@ void ShaderCombiner::updateFrameBufferInfo(bool _bForce) {
 }
 
 void ShaderCombiner::updateDepthInfo(bool _bForce) {
-	if (RSP.bLLE)
-		m_uniforms.uDepthScale.set(0.5f, 0.5f, _bForce);
-	else
-		m_uniforms.uDepthScale.set(gSP.viewport.vscale[2], gSP.viewport.vtrans[2], _bForce);
-
 	if (config.frameBufferEmulation.N64DepthCompare == 0 || !video().getRender().isImageTexturesSupported())
 		return;
 
