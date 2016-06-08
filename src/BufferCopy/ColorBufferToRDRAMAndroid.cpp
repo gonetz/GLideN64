@@ -22,8 +22,8 @@ public:
 private:
 	void _init() override;
 	void _destroy() override;
-	GLubyte* _getPixels(GLint _x0, GLint _y0, GLsizei _width, GLsizei _height, u32 _size, bool _sync)  override;
-	void _cleanUpPixels(GLubyte* pixelData)  override;
+	bool _readPixels(GLint _x0, GLint _y0, GLsizei _width, GLsizei _height, u32 _size, bool _sync)  override;
+	void _cleanUp()  override;
 	void _initBuffers(void) override;
 	void _destroyBuffers(void) override;
 
@@ -74,7 +74,7 @@ void ColorBufferToRDRAMAndroid::_destroyBuffers(void)
 	}
 }
 
-GLubyte* ColorBufferToRDRAMAndroid::_getPixels(GLint _x0, GLint _y0, GLsizei _width, GLsizei _height, u32 _size, bool _sync)
+bool ColorBufferToRDRAMAndroid::_readPixels(GLint _x0, GLint _y0, GLsizei _width, GLsizei _height, u32 _size, bool _sync)
 {
 	GLenum colorFormat, colorType, colorFormatBytes;
 	if (_size > G_IM_SIZ_8b) {
@@ -87,7 +87,7 @@ GLubyte* ColorBufferToRDRAMAndroid::_getPixels(GLint _x0, GLint _y0, GLsizei _wi
 		colorFormatBytes = fboFormats.monochromeFormatBytes;
 	}
 
-	GLubyte* pixelData = (GLubyte*)malloc(m_pTexture->realWidth * m_pTexture->realHeight * colorFormatBytes);
+	GLubyte* pixelData = m_pixelData.data();
 
 	if (!_sync) {
 		void* ptr;
@@ -111,10 +111,9 @@ GLubyte* ColorBufferToRDRAMAndroid::_getPixels(GLint _x0, GLint _y0, GLsizei _wi
 		glReadPixels(_x0, _y0, _width, _height, colorFormat, colorType, pixelData);
 	}
 
-	return pixelData;
+	return true;
 }
 
-void ColorBufferToRDRAMAndroid::_cleanUpPixels(GLubyte* pixelData)
+void ColorBufferToRDRAMAndroid::_cleanUp()
 {
-	free(pixelData);
 }

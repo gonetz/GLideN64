@@ -125,6 +125,7 @@ bool ColorBufferToRDRAM::_prepareCopy(u32 _startAddress)
 		m_lastVIWidth = VI.width;
 		m_lastVIHeight = VI.height;
 		_initFBTexture();
+		m_pixelData.resize(m_pTexture->realWidth * m_pTexture->realHeight * fboFormats.colorFormatBytes);
 	}
 
 	m_pCurFrameBuffer = pBuffer;
@@ -207,20 +208,21 @@ void ColorBufferToRDRAM::_copy(u32 _startAddress, u32 _endAddress, bool _sync)
 	const GLint y1 = max_height - (_startAddress - m_pCurFrameBuffer->m_startAddress) / stride;
 	const GLsizei height = std::min(max_height, 1u + y1 - y0);
 
-	GLubyte* pixelData = _getPixels(x0, y0, width, height, m_pCurFrameBuffer->m_size, _sync);
+	if (!_readPixels(x0, y0, width, height, m_pCurFrameBuffer->m_size, _sync))
+		return;
 
 	if (m_pCurFrameBuffer->m_size == G_IM_SIZ_32b) {
-		u32 *ptr_src = (u32*)pixelData;
+		u32 *ptr_src = (u32*)m_pixelData.data();
 		u32 *ptr_dst = (u32*)(RDRAM + _startAddress);
 		writeToRdram<u32, u32>(ptr_src, ptr_dst, &ColorBufferToRDRAM::_RGBAtoRGBA32, 0, 0, width, height, numPixels, _startAddress, m_pCurFrameBuffer->m_startAddress, m_pCurFrameBuffer->m_size);
 	}
 	else if (m_pCurFrameBuffer->m_size == G_IM_SIZ_16b) {
-		u32 *ptr_src = (u32*)pixelData;
+		u32 *ptr_src = (u32*)m_pixelData.data();
 		u16 *ptr_dst = (u16*)(RDRAM + _startAddress);
 		writeToRdram<u32, u16>(ptr_src, ptr_dst, &ColorBufferToRDRAM::_RGBAtoRGBA16, 0, 1, width, height, numPixels, _startAddress, m_pCurFrameBuffer->m_startAddress, m_pCurFrameBuffer->m_size);
 	}
 	else if (m_pCurFrameBuffer->m_size == G_IM_SIZ_8b) {
-		u8 *ptr_src = (u8*)pixelData;
+		u8 *ptr_src = (u8*)m_pixelData.data();
 		u8 *ptr_dst = RDRAM + _startAddress;
 		writeToRdram<u8, u8>(ptr_src, ptr_dst, &ColorBufferToRDRAM::_RGBAtoR8, 0, 3, width, height, numPixels, _startAddress, m_pCurFrameBuffer->m_startAddress, m_pCurFrameBuffer->m_size);
 	}
@@ -229,7 +231,7 @@ void ColorBufferToRDRAM::_copy(u32 _startAddress, u32 _endAddress, bool _sync)
 	m_pCurFrameBuffer->copyRdram();
 	m_pCurFrameBuffer->m_cleared = false;
 
-	_cleanUpPixels(pixelData);
+	_cleanUp();
 
 	gDP.changed |= CHANGED_SCISSOR;
 }

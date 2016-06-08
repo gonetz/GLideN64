@@ -11,8 +11,8 @@ public:
 private:
 	void _init() override;
 	void _destroy() override;
-	GLubyte* _getPixels(GLint _x0, GLint _y0, GLsizei _width, GLsizei _height, u32 _size, bool _sync)  override;
-	void _cleanUpPixels(GLubyte* pixelData)  override;
+	bool _readPixels(GLint _x0, GLint _y0, GLsizei _width, GLsizei _height, u32 _size, bool _sync)  override;
+	void _cleanUp()  override;
 	void _initBuffers(void) override;
 	void _destroyBuffers(void) override;
 	static const int _numPBO = 3;
@@ -31,9 +31,7 @@ ColorBufferToRDRAMDesktop::ColorBufferToRDRAMDesktop()
 	, m_curIndex(-1)
 {
 	for(int index = 0; index < _numPBO; ++index)
-	{
 		m_PBO[index] = 0;
-	}
 }
 
 void ColorBufferToRDRAMDesktop::_init()
@@ -48,9 +46,7 @@ void ColorBufferToRDRAMDesktop::_destroy()
 	glDeleteBuffers(_numPBO, m_PBO);
 
 	for(int index = 0; index < _numPBO; ++index)
-	{
 		m_PBO[index] = 0;
-	}
 }
 
 void ColorBufferToRDRAMDesktop::_initBuffers(void)
@@ -65,10 +61,9 @@ void ColorBufferToRDRAMDesktop::_initBuffers(void)
 
 void ColorBufferToRDRAMDesktop::_destroyBuffers(void)
 {
-
 }
 
-GLubyte* ColorBufferToRDRAMDesktop::_getPixels(GLint _x0, GLint _y0, GLsizei _width, GLsizei _height, u32 _size, bool _sync)
+bool ColorBufferToRDRAMDesktop::_readPixels(GLint _x0, GLint _y0, GLsizei _width, GLsizei _height, u32 _size, bool _sync)
 {
 	GLenum colorFormat, colorType, colorFormatBytes;
 	if (_size > G_IM_SIZ_8b) {
@@ -95,22 +90,21 @@ GLubyte* ColorBufferToRDRAMDesktop::_getPixels(GLint _x0, GLint _y0, GLsizei _wi
 	}
 
 	GLubyte* pixelData = (GLubyte*)glMapBufferRange(GL_PIXEL_PACK_BUFFER, 0, m_pTexture->realWidth * _height * colorFormatBytes, GL_MAP_READ_BIT);
-	if (pixelData == NULL)
-		return NULL;
+	if (pixelData == nullptr)
+		return false;
 
 	int widthBytes = _width*colorFormatBytes;
 	int strideBytes = m_pTexture->realWidth * colorFormatBytes;
-	GLubyte* pixelDataAlloc = (GLubyte*)malloc(_width * _height * colorFormatBytes);
+
+	GLubyte* pixelDataAlloc = m_pixelData.data();
 	for (unsigned int lnIndex = 0; lnIndex < _height; ++lnIndex) {
 		memcpy(pixelDataAlloc + lnIndex*widthBytes, pixelData + (lnIndex*strideBytes), widthBytes);
 	}
-	return pixelDataAlloc;
+	return true;
 }
 
-void ColorBufferToRDRAMDesktop::_cleanUpPixels(GLubyte* pixelData)
+void ColorBufferToRDRAMDesktop::_cleanUp()
 {
 	glUnmapBuffer(GL_PIXEL_PACK_BUFFER);
 	glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
-
-	free(pixelData);
 }
