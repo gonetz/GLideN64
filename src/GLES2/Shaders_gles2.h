@@ -417,7 +417,7 @@ SHADER_VERSION
 // Original author: ArthurCarvalho
 // GLSL implementation: twinaphex, mupen64plus-libretro project.
 "#define TEX_OFFSET(off) texture2D(tex, texCoord - (off)/texSize)												\n"
-"lowp vec4 filter(in sampler2D tex, in mediump vec2 texCoord)													\n"
+"lowp vec4 texFilter(in sampler2D tex, in mediump vec2 texCoord)												\n"
 "{																												\n"
 "  mediump vec2 texSize = uTextureSize;																			\n"
 "  mediump vec2 texelSize = vec2(1.0) / texSize;																\n"
@@ -448,7 +448,7 @@ SHADER_VERSION
 "uniform mediump vec4 uTextureBounds;																			\n"
 "uniform mediump vec2 uTextureSize;																				\n"
 "#define TEX_OFFSET(off) texture2D(tex, texCoord - (off)/texSize)												\n"
-"lowp vec4 filter(in sampler2D tex, in mediump vec2 texCoord)													\n"
+"lowp vec4 texFilter(in sampler2D tex, in mediump vec2 texCoord)												\n"
 "{																												\n"
 "  mediump vec2 texSize = uTextureSize;																			\n"
 "  mediump vec2 texelSize = vec2(1.0) / texSize;																\n"
@@ -481,7 +481,7 @@ const char * strTexrectDrawerFragmentShaderTex =
 "OUT lowp vec4 fragColor;																						\n"
 "void main()																									\n"
 "{																												\n"
-"  fragColor = filter(uTex0, vTexCoord0);																		\n"
+"  fragColor = texFilter(uTex0, vTexCoord0);																	\n"
 "  if (fragColor == uTestColor) discard;																		\n"
 "  if (uEnableAlphaTest != 0 && !(fragColor.a > 0.0)) discard;													\n"
 "  gl_FragColor = fragColor;																					\n"
