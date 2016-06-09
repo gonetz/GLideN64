@@ -41,6 +41,7 @@ set(GLideN64_SOURCES
   Turbo3D.cpp
   ZSort.cpp
   ShaderUtils.cpp
+  SoftwareRender.cpp
   Textures.cpp
   TextDrawer.cpp
   TextureFilterHandler.cpp
@@ -49,6 +50,8 @@ set(GLideN64_SOURCES
   BufferCopy/ColorBufferToRDRAM.cpp
   BufferCopy/DepthBufferToRDRAM.cpp
   BufferCopy/RDRAMtoColorBuffer.cpp
+  DepthBufferRender/ClipPolygon.cpp
+  DepthBufferRender/DepthBufferRender.cpp
   common/CommonAPIImpl_common.cpp
 )
 

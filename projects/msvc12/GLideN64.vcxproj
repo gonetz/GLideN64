@@ -226,6 +226,8 @@
     <ClCompile Include="..\..\src\Config.cpp" />
     <ClCompile Include="..\..\src\CRC.cpp" />
     <ClCompile Include="..\..\src\DepthBuffer.cpp" />
+    <ClCompile Include="..\..\src\DepthBufferRender\ClipPolygon.cpp" />
+    <ClCompile Include="..\..\src\DepthBufferRender\DepthBufferRender.cpp" />
     <ClCompile Include="..\..\src\F3DEX2CBFD.cpp" />
     <ClCompile Include="..\..\src\F3DSWSE.cpp" />
     <ClCompile Include="..\..\src\FrameBuffer.cpp" />
@@ -264,6 +266,7 @@
     <ClCompile Include="..\..\src\RDP.CPP" />
     <ClCompile Include="..\..\src\RSP.cpp" />
     <ClCompile Include="..\..\src\ShaderUtils.cpp" />
+    <ClCompile Include="..\..\src\SoftwareRender.cpp" />
     <ClCompile Include="..\..\src\TextDrawer.cpp" />
     <ClCompile Include="..\..\src\TextureFilterHandler.cpp" />
     <ClCompile Include="..\..\src\Textures.cpp" />
@@ -318,6 +321,8 @@
     <ClInclude Include="..\..\src\CRC.h" />
     <ClInclude Include="..\..\src\Debug.h" />
     <ClInclude Include="..\..\src\DepthBuffer.h" />
+    <ClInclude Include="..\..\src\DepthBufferRender\ClipPolygon.h" />
+    <ClInclude Include="..\..\src\DepthBufferRender\DepthBufferRender.h" />
     <ClInclude Include="..\..\src\F3DEX2CBFD.h" />
     <ClInclude Include="..\..\src\F3DSWSE.h" />
     <ClInclude Include="..\..\src\FrameBuffer.h" />
@@ -345,6 +350,7 @@
     <ClInclude Include="..\..\src\RDP.h" />
     <ClInclude Include="..\..\src\RSP.h" />
     <ClInclude Include="..\..\src\ShaderUtils.h" />
+    <ClInclude Include="..\..\src\SoftwareRender.h" />
     <ClInclude Include="..\..\src\TextDrawer.h" />
     <ClInclude Include="..\..\src\TextureFilterHandler.h" />
     <ClInclude Include="..\..\src\Textures.h" />

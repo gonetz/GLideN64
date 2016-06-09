@@ -23,6 +23,7 @@
 #include "TextDrawer.h"
 #include "PostProcessor.h"
 #include "ShaderUtils.h"
+#include "SoftwareRender.h"
 #include "TextureFilterHandler.h"
 
 using namespace std;
@@ -1178,6 +1179,10 @@ void OGLRender::drawTriangles()
 	_prepareDrawTriangle(false);
 	glDrawElements(GL_TRIANGLES, triangles.num, GL_UNSIGNED_BYTE, triangles.elements);
 //	glMemoryBarrier(GL_FRAMEBUFFER_BARRIER_BIT);
+
+	if (config.frameBufferEmulation.copyDepthToRDRAM == Config::cdSoftwareRender && gDP.otherMode.depthUpdate != 0)
+		renderTriangles(triangles.vertices, triangles.elements, triangles.num);
+
 	triangles.num = 0;
 }
 
@@ -1314,18 +1319,20 @@ bool texturedRectDepthBufferCopy(const OGLRender::TexturedRectParams & _params)
 	// Load of arbitrary data to that area causes weird camera rotation in CBFD.
 	const gDPTile * pTile = gSP.textureTile[0];
 	if (pTile->loadType == LOADTYPE_BLOCK && gDP.textureImage.size == 2 && gDP.textureImage.address >= gDP.depthImageAddress &&  gDP.textureImage.address < (gDP.depthImageAddress + gDP.colorImage.width*gDP.colorImage.width * 6 / 4)) {
-		if (config.frameBufferEmulation.copyDepthToRDRAM == 0)
+		if (config.frameBufferEmulation.copyDepthToRDRAM == Config::cdDisable)
 			return true;
 		FrameBuffer * pBuffer = frameBufferList().getCurrent();
 		if (pBuffer == nullptr)
 			return true;
 		pBuffer->m_cleared = true;
-		if (rectDepthBufferCopyFrame != video().getBuffersSwapCount()) {
-			rectDepthBufferCopyFrame = video().getBuffersSwapCount();
-			if (!FrameBuffer_CopyDepthBuffer(gDP.colorImage.address))
-				return true;
+		if (config.frameBufferEmulation.copyDepthToRDRAM == Config::cdCopyFromVRam) {
+			if (rectDepthBufferCopyFrame != video().getBuffersSwapCount()) {
+				rectDepthBufferCopyFrame = video().getBuffersSwapCount();
+				if (!FrameBuffer_CopyDepthBuffer(gDP.colorImage.address))
+					return true;
+			}
+			RDP_RepeatLastLoadBlock();
 		}
-		RDP_RepeatLastLoadBlock();
 
 		const u32 width = (u32)(_params.lrx - _params.ulx);
 		const u32 ulx = (u32)_params.ulx;

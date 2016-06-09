@@ -4,7 +4,7 @@
 #include <string>
 #include "Types.h"
 
-#define CONFIG_VERSION_CURRENT 10U
+#define CONFIG_VERSION_CURRENT 11U
 
 #define BILINEAR_3POINT   0
 #define BILINEAR_STANDARD 1
@@ -75,6 +75,12 @@ struct Config
 		bsOnVerticalInterrupt = 0,
 		bsOnVIOriginChange,
 		bsOnColorImageChange
+	};
+
+	enum CopyDepthMode {
+		cdDisable = 0,
+		cdCopyFromVRam = 1,
+		cdSoftwareRender = 2
 	};
 
 	struct {

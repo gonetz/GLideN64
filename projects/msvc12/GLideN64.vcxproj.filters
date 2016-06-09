@@ -42,6 +42,12 @@
     <Filter Include="Source Files\BufferCopy">
       <UniqueIdentifier>{03c90b24-47cf-4a72-8652-837470d2a641}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\DepthBufferRender">
+      <UniqueIdentifier>{763fe27e-e0ab-4884-9794-727c47a9dd24}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\DepthBufferRender">
+      <UniqueIdentifier>{ac6b6e3c-c470-4a66-ad6c-d4ad388ec793}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Combiner.cpp">
@@ -218,6 +224,15 @@
     <ClCompile Include="..\..\src\TextureFilterHandler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\SoftwareRender.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\DepthBufferRender\ClipPolygon.cpp">
+      <Filter>Source Files\DepthBufferRender</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\DepthBufferRender\DepthBufferRender.cpp">
+      <Filter>Source Files\DepthBufferRender</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\3DMath.h">
@@ -393,6 +408,15 @@
     </ClInclude>
     <ClInclude Include="..\..\src\TextureFilterHandler.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\SoftwareRender.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\DepthBufferRender\ClipPolygon.h">
+      <Filter>Header Files\DepthBufferRender</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\DepthBufferRender\DepthBufferRender.h">
+      <Filter>Header Files\DepthBufferRender</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
