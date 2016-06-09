@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>493</width>
-    <height>612</height>
+    <width>421</width>
+    <height>610</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -1087,14 +1087,57 @@
            </layout>
           </item>
           <item>
-           <widget class="QCheckBox" name="CopyDepthCheckBox">
-            <property name="toolTip">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Copy depth buffer to RDRAM:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;This option is required for correct emulation of depth buffer based effects, e.g. coronas. Content of video card's depth buffer is copied into RDRAM area each frame.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;on&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-            </property>
-            <property name="text">
-             <string>Copy depth buffer to RDRAM</string>
-            </property>
-           </widget>
+           <layout class="QHBoxLayout" name="horizontalLayout_22">
+            <item>
+             <widget class="QLabel" name="label_33">
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Copy depth buffer to RDRAM:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;This option is required for correct emulation of depth buffer based effects, e.g. coronas.&lt;/p&gt;&lt;p&gt;* disable - do not copy buffer&lt;/p&gt;&lt;p&gt;* from VRAM - Content of video card's depth buffer is copied into RDRAM area each frame. Can be slow on some games.&lt;/p&gt;&lt;p&gt;* software render - use software rendering. Generally faster than copy from video memory, but the result can be imperfect.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;software render&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="text">
+               <string>Copy depth buffer to RDRAM</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QRadioButton" name="copyDepthDisableRadioButton">
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Copy depth buffer to RDRAM:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;This option is required for correct emulation of depth buffer based effects, e.g. coronas.&lt;/p&gt;&lt;p&gt;* disable - do not copy buffer&lt;/p&gt;&lt;p&gt;* from VRAM - Content of video card's depth buffer is copied into RDRAM area each frame. Can be slow on some games.&lt;/p&gt;&lt;p&gt;* software render - use software rendering. Generally faster than copy from video memory, but the result can be imperfect.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;software render&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="text">
+               <string>disable</string>
+              </property>
+              <attribute name="buttonGroup">
+               <string notr="true">copyDepthBufferButtonGroup</string>
+              </attribute>
+             </widget>
+            </item>
+            <item>
+             <widget class="QRadioButton" name="copyDepthVRamRadioButton">
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Copy depth buffer to RDRAM:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;This option is required for correct emulation of depth buffer based effects, e.g. coronas.&lt;/p&gt;&lt;p&gt;* disable - do not copy buffer&lt;/p&gt;&lt;p&gt;* from VRAM - Content of video card's depth buffer is copied into RDRAM area each frame. Can be slow on some games.&lt;/p&gt;&lt;p&gt;* software render - use software rendering. Generally faster than copy from video memory, but the result can be imperfect.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;software render&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="text">
+               <string>from VRAM</string>
+              </property>
+              <attribute name="buttonGroup">
+               <string notr="true">copyDepthBufferButtonGroup</string>
+              </attribute>
+             </widget>
+            </item>
+            <item>
+             <widget class="QRadioButton" name="copyDepthSoftwareRadioButton">
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Copy depth buffer to RDRAM:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;This option is required for correct emulation of depth buffer based effects, e.g. coronas.&lt;/p&gt;&lt;p&gt;* disable - do not copy buffer&lt;/p&gt;&lt;p&gt;* from VRAM - Content of video card's depth buffer is copied into RDRAM area each frame. Can be slow on some games.&lt;/p&gt;&lt;p&gt;* software render - use software rendering. Generally faster than copy from video memory, but the result can be imperfect.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;software render&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="text">
+               <string>software</string>
+              </property>
+              <attribute name="buttonGroup">
+               <string notr="true">copyDepthBufferButtonGroup</string>
+              </attribute>
+             </widget>
+            </item>
+           </layout>
           </item>
           <item>
            <widget class="QCheckBox" name="RenderFBCheckBox">
@@ -1895,10 +1938,11 @@
  </connections>
  <buttongroups>
   <buttongroup name="screenshotButtonGroup"/>
-  <buttongroup name="aspectButtonGroup"/>
   <buttongroup name="bilinearButtonGroup"/>
-  <buttongroup name="fixTexrectCoordsButtonGroup"/>
   <buttongroup name="copyFrameBufferButtonGroup"/>
+  <buttongroup name="copyDepthBufferButtonGroup"/>
+  <buttongroup name="aspectButtonGroup"/>
   <buttongroup name="bloomBlendModeButtonGroup"/>
+  <buttongroup name="fixTexrectCoordsButtonGroup"/>
  </buttongroups>
 </ui>

@@ -149,7 +149,17 @@ void ConfigDialog::_init()
 		break;
 	}
 	ui->RenderFBCheckBox->setChecked(config.frameBufferEmulation.copyFromRDRAM != 0);
-	ui->CopyDepthCheckBox->setChecked(config.frameBufferEmulation.copyDepthToRDRAM != 0);
+	switch (config.frameBufferEmulation.copyDepthToRDRAM) {
+	case Config::cdDisable:
+		ui->copyDepthDisableRadioButton->setChecked(true);
+		break;
+	case Config::cdCopyFromVRam:
+		ui->copyDepthVRamRadioButton->setChecked(true);
+		break;
+	case Config::cdSoftwareRender:
+		ui->copyDepthSoftwareRadioButton->setChecked(true);
+		break;
+	}
 	ui->n64DepthCompareCheckBox->setChecked(config.frameBufferEmulation.N64DepthCompare != 0);
 	switch (config.frameBufferEmulation.aspect) {
 	case Config::aStretch:
@@ -175,13 +185,13 @@ void ConfigDialog::_init()
 
 	// Texture filter settings
 	QStringList textureFiltersList;
-	for (int i = 0; i < numFilters; ++i)
+	for (unsigned int i = 0; i < numFilters; ++i)
 		textureFiltersList.append(cmbTexFilter_choices[i]);
 	ui->filterComboBox->insertItems(0, textureFiltersList);
 	ui->filterComboBox->setCurrentIndex(config.textureFilter.txFilterMode);
 
 	QStringList textureEnhancementList;
-	for (int i = 0; i < numEnhancements; ++i)
+	for (unsigned int i = 0; i < numEnhancements; ++i)
 		textureEnhancementList.append(cmbTexEnhancement_choices[i]);
 	ui->enhancementComboBox->insertItems(0, textureEnhancementList);
 	ui->enhancementComboBox->setCurrentIndex(config.textureFilter.txEnhancementMode);
@@ -342,7 +352,12 @@ void ConfigDialog::accept()
 	else if (ui->copyBufferAsyncRadioButton->isChecked())
 		config.frameBufferEmulation.copyToRDRAM = Config::ctAsync;
 	config.frameBufferEmulation.copyFromRDRAM = ui->RenderFBCheckBox->isChecked() ? 1 : 0;
-	config.frameBufferEmulation.copyDepthToRDRAM = ui->CopyDepthCheckBox->isChecked() ? 1 : 0;
+	if (ui->copyDepthDisableRadioButton->isChecked())
+		config.frameBufferEmulation.copyDepthToRDRAM = Config::cdDisable;
+	else if (ui->copyDepthVRamRadioButton->isChecked())
+		config.frameBufferEmulation.copyDepthToRDRAM = Config::cdCopyFromVRam;
+	else if (ui->copyDepthSoftwareRadioButton->isChecked())
+		config.frameBufferEmulation.copyDepthToRDRAM = Config::cdSoftwareRender;
 	config.frameBufferEmulation.N64DepthCompare = ui->n64DepthCompareCheckBox->isChecked() ? 1 : 0;
 	if (ui->aspectStretchRadioButton->isChecked())
 		config.frameBufferEmulation.aspect = Config::aStretch;
