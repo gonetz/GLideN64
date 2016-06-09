@@ -27,6 +27,12 @@ else(PANDORA OR BCMHOST)
 endif(PANDORA OR BCMHOST)
 LINK_DIRECTORIES( ${CMAKE_CURRENT_SOURCE_DIR}/lib )
 
+if(GLES2)
+  add_definitions(
+    -DGLES2
+   )
+endif(GLES2)
+
 if(UNIX)
   add_definitions(
     -DNDEBUG

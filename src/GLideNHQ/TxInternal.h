@@ -40,6 +40,9 @@
 #elif defined(GLES2)
 #include <GLES2/gl2.h>
 #include <GLES2/gl2ext.h>
+#ifndef GL_RGBA8
+#define GL_RGBA8 0x8058
+#endif
 #define GL_COLOR_INDEX8_EXT  0x80E5
 #elif defined(GLES3)
 #include <GLES3/gl3.h>
