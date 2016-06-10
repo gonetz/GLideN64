@@ -16,6 +16,7 @@
 #include "FrameBuffer.h"
 #include "DepthBuffer.h"
 #include "FrameBufferInfo.h"
+#include "TextureFilterHandler.h"
 #include "VI.h"
 #include "Config.h"
 #include "Combiner.h"

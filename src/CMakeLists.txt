@@ -43,6 +43,7 @@ set(GLideN64_SOURCES
   ShaderUtils.cpp
   Textures.cpp
   TextDrawer.cpp
+  TextureFilterHandler.cpp
   PostProcessor.cpp
   VI.cpp
   BufferCopy/ColorBufferToRDRAM.cpp

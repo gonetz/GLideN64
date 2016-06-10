@@ -16,6 +16,7 @@
 #include "Config.h"
 #include "Keys.h"
 #include "GLideNHQ/Ext_TxFilter.h"
+#include "TextureFilterHandler.h"
 
 using namespace std;
 

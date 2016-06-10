@@ -215,6 +215,9 @@
     <ClCompile Include="..\..\src\BufferCopy\ColorBufferToRDRAM_GL.cpp">
       <Filter>Source Files\BufferCopy</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\TextureFilterHandler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\3DMath.h">
@@ -387,6 +390,9 @@
     </ClInclude>
     <ClInclude Include="..\..\src\BufferCopy\WriteToRDRAM.h">
       <Filter>Header Files\BufferCopy</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\TextureFilterHandler.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

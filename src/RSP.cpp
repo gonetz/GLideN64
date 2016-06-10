@@ -13,6 +13,7 @@
 #include "GBI.h"
 #include "PluginAPI.h"
 #include "Config.h"
+#include "TextureFilterHandler.h"
 
 using namespace std;
 
