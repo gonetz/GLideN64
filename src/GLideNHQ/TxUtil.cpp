@@ -502,11 +502,11 @@ TxUtil::getNumberofProcessors()
 		uint32_t count;
 
 		nm[0] = CTL_HW; nm[1] = HW_AVAILCPU;
-		sysctl(nm, 2, &count, &len, NULL, 0);
+		sysctl(nm, 2, &count, &len, nullptr, 0);
 
 		if (count < 1) {
 			nm[1] = HW_NCPU;
-			sysctl(nm, 2, &count, &len, NULL, 0);
+			sysctl(nm, 2, &count, &len, nullptr, 0);
 			if (count < 1) { count = 1; }
 		}
 		numcore = count;
@@ -531,7 +531,7 @@ TxMemBuf::TxMemBuf()
 {
 	int i;
 	for (i = 0; i < 4; i++) {
-		_tex[i] = NULL;
+		_tex[i] = nullptr;
 		_size[i] = 0;
 	}
 }
@@ -565,7 +565,7 @@ TxMemBuf::shutdown()
 	int i;
 	for (i = 0; i < _numBufs; i++) {
 		if (_tex[i]) free(_tex[i]);
-		_tex[i] = NULL;
+		_tex[i] = nullptr;
 		_size[i] = 0;
 	}
 }
@@ -573,7 +573,7 @@ TxMemBuf::shutdown()
 uint8*
 TxMemBuf::get(unsigned int num)
 {
-	return ((num < _numBufs) ? _tex[num] : NULL);
+	return ((num < _numBufs) ? _tex[num] : nullptr);
 }
 
 uint32

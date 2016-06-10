@@ -27,7 +27,7 @@
 
 #include "TxFilter.h"
 
-TxFilter *txFilter = NULL;
+TxFilter *txFilter = nullptr;
 
 #ifdef __cplusplus
 extern "C"{
@@ -51,7 +51,7 @@ txfilter_shutdown(void)
 {
   if (txFilter) delete txFilter;
 
-  txFilter = NULL;
+  txFilter = nullptr;
 }
 
 TAPI boolean TAPIENTRY

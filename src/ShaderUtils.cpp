@@ -59,12 +59,12 @@ void logErrorShader(GLenum _shaderType, const std::string & _strShader)
 GLuint createShaderProgram(const char * _strVertex, const char * _strFragment)
 {
 	GLuint vertex_shader_object = glCreateShader(GL_VERTEX_SHADER);
-	glShaderSource(vertex_shader_object, 1, &_strVertex, NULL);
+	glShaderSource(vertex_shader_object, 1, &_strVertex, nullptr);
 	glCompileShader(vertex_shader_object);
 	assert(checkShaderCompileStatus(vertex_shader_object));
 
 	GLuint fragment_shader_object = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(fragment_shader_object, 1, &_strFragment, NULL);
+	glShaderSource(fragment_shader_object, 1, &_strFragment, nullptr);
 	glCompileShader(fragment_shader_object);
 	assert(checkShaderCompileStatus(fragment_shader_object));
 

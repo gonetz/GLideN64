@@ -65,10 +65,10 @@ struct TextureCache
 	static TextureCache & get();
 
 private:
-	TextureCache() : m_pDummy(NULL), m_hits(0), m_misses(0), m_maxBytes(0), m_cachedBytes(0), m_curUnpackAlignment(4), m_toggleDumpTex(false)
+	TextureCache() : m_pDummy(nullptr), m_hits(0), m_misses(0), m_maxBytes(0), m_cachedBytes(0), m_curUnpackAlignment(4), m_toggleDumpTex(false)
 	{
-		current[0] = NULL;
-		current[1] = NULL;
+		current[0] = nullptr;
+		current[1] = nullptr;
 		CRC_BuildTable();
 	}
 	TextureCache(const TextureCache &);

@@ -31,9 +31,9 @@ FrameBuffer::FrameBuffer() :
 	m_scaleX(0), m_scaleY(0),
 	m_copiedToRdram(false), m_fingerprint(false), m_cleared(false), m_changed(false), m_cfb(false),
 	m_isDepthBuffer(false), m_isPauseScreen(false), m_isOBScreen(false), m_needHeightCorrection(false),
-	m_loadType(LOADTYPE_BLOCK), m_pDepthBuffer(NULL),
-	m_resolveFBO(0), m_pResolveTexture(NULL), m_resolved(false),
-	m_SubFBO(0), m_pSubTexture(NULL)
+	m_loadType(LOADTYPE_BLOCK), m_pDepthBuffer(nullptr),
+	m_resolveFBO(0), m_pResolveTexture(nullptr), m_resolved(false),
+	m_SubFBO(0), m_pSubTexture(nullptr)
 {
 	m_loadTileOrigin.uls = m_loadTileOrigin.ult = 0;
 	m_pTexture = textureCache().addFrameBufferTexture();
@@ -54,13 +54,13 @@ FrameBuffer::FrameBuffer(FrameBuffer && _other) :
 	m_RdramCopy(_other.m_RdramCopy)
 {
 	_other.m_FBO = 0;
-	_other.m_pTexture = NULL;
-	_other.m_pDepthBuffer = NULL;
-	_other.m_pResolveTexture = NULL;
+	_other.m_pTexture = nullptr;
+	_other.m_pDepthBuffer = nullptr;
+	_other.m_pResolveTexture = nullptr;
 	_other.m_resolveFBO = 0;
 	_other.m_RdramCopy.clear();
 	_other.m_SubFBO = 0;
-	_other.m_pSubTexture = NULL;
+	_other.m_pSubTexture = nullptr;
 }
 
 
@@ -68,15 +68,15 @@ FrameBuffer::~FrameBuffer()
 {
 	if (m_FBO != 0)
 		glDeleteFramebuffers(1, &m_FBO);
-	if (m_pTexture != NULL)
+	if (m_pTexture != nullptr)
 		textureCache().removeFrameBufferTexture(m_pTexture);
 	if (m_resolveFBO != 0)
 		glDeleteFramebuffers(1, &m_resolveFBO);
-	if (m_pResolveTexture != NULL)
+	if (m_pResolveTexture != nullptr)
 		textureCache().removeFrameBufferTexture(m_pResolveTexture);
 	if (m_SubFBO != 0)
 		glDeleteFramebuffers(1, &m_SubFBO);
-	if (m_pSubTexture != NULL)
+	if (m_pSubTexture != nullptr)
 		textureCache().removeFrameBufferTexture(m_pSubTexture);
 }
 
@@ -110,9 +110,9 @@ void FrameBuffer::_setAndAttachTexture(u16 _size, CachedTexture *_pTexture)
 {
 	glBindTexture(GL_TEXTURE_2D, _pTexture->glName);
 	if (_size > G_IM_SIZ_8b)
-		glTexImage2D(GL_TEXTURE_2D, 0, fboFormats.colorInternalFormat, _pTexture->realWidth, _pTexture->realHeight, 0, fboFormats.colorFormat, fboFormats.colorType, NULL);
+		glTexImage2D(GL_TEXTURE_2D, 0, fboFormats.colorInternalFormat, _pTexture->realWidth, _pTexture->realHeight, 0, fboFormats.colorFormat, fboFormats.colorType, nullptr);
 	else
-		glTexImage2D(GL_TEXTURE_2D, 0, fboFormats.monochromeInternalFormat, _pTexture->realWidth, _pTexture->realHeight, 0, fboFormats.monochromeFormat, fboFormats.monochromeType, NULL);
+		glTexImage2D(GL_TEXTURE_2D, 0, fboFormats.monochromeInternalFormat, _pTexture->realWidth, _pTexture->realHeight, 0, fboFormats.monochromeFormat, fboFormats.monochromeType, nullptr);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
@@ -197,11 +197,11 @@ void FrameBuffer::reinit(u16 _height)
 {
 	const u16 format = m_pTexture->format;
 	const u32 endAddress = m_startAddress + ((m_width * _height) << m_size >> 1) - 1;
-	if (m_pTexture != NULL)
+	if (m_pTexture != nullptr)
 		textureCache().removeFrameBufferTexture(m_pTexture);
 	if (m_resolveFBO != 0)
 		glDeleteFramebuffers(1, &m_resolveFBO);
-	if (m_pResolveTexture != NULL)
+	if (m_pResolveTexture != nullptr)
 		textureCache().removeFrameBufferTexture(m_pResolveTexture);
 	m_pTexture = textureCache().addFrameBufferTexture();
 	init(m_startAddress, endAddress, format, m_size, m_width, _height, m_cfb);
@@ -324,7 +324,7 @@ bool FrameBuffer::_initSubTexture(u32 _t)
 	const u32 width = pTile->lrs - pTile->uls + 1;
 	const u32 height = pTile->lrt - pTile->ult + 1;
 
-	if (m_pSubTexture != NULL) {
+	if (m_pSubTexture != nullptr) {
 		if (m_pSubTexture->size == m_pTexture->size &&
 			m_pSubTexture->clampWidth == width &&
 			m_pSubTexture->clampHeight == height)
@@ -343,9 +343,9 @@ bool FrameBuffer::_initSubTexture(u32 _t)
 	glActiveTexture(GL_TEXTURE0 + _t);
 	glBindTexture(GL_TEXTURE_2D, m_pSubTexture->glName);
 	if (m_pSubTexture->size > G_IM_SIZ_8b)
-		glTexImage2D(GL_TEXTURE_2D, 0, fboFormats.colorInternalFormat, m_pSubTexture->realWidth, m_pSubTexture->realHeight, 0, fboFormats.colorFormat, fboFormats.colorType, NULL);
+		glTexImage2D(GL_TEXTURE_2D, 0, fboFormats.colorInternalFormat, m_pSubTexture->realWidth, m_pSubTexture->realHeight, 0, fboFormats.colorFormat, fboFormats.colorType, nullptr);
 	else
-		glTexImage2D(GL_TEXTURE_2D, 0, fboFormats.monochromeInternalFormat, m_pSubTexture->realWidth, m_pSubTexture->realHeight, 0, fboFormats.monochromeFormat, fboFormats.monochromeType, NULL);
+		glTexImage2D(GL_TEXTURE_2D, 0, fboFormats.monochromeInternalFormat, m_pSubTexture->realWidth, m_pSubTexture->realHeight, 0, fboFormats.monochromeFormat, fboFormats.monochromeType, nullptr);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
@@ -444,23 +444,23 @@ FrameBufferList & FrameBufferList::get()
 
 void FrameBufferList::init()
 {
-	 m_pCurrent = NULL;
-	 m_pCopy = NULL;
+	 m_pCurrent = nullptr;
+	 m_pCopy = nullptr;
 	 glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 	 m_prevColorImageHeight = 0;
 }
 
 void FrameBufferList::destroy() {
 	m_list.clear();
-	m_pCurrent = NULL;
-	m_pCopy = NULL;
+	m_pCurrent = nullptr;
+	m_pCopy = nullptr;
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 }
 
 void FrameBufferList::setBufferChanged()
 {
 	gDP.colorImage.changed = TRUE;
-	if (m_pCurrent != NULL) {
+	if (m_pCurrent != nullptr) {
 		m_pCurrent->m_changed = true;
 		m_pCurrent->m_copiedToRdram = false;
 	}
@@ -468,7 +468,7 @@ void FrameBufferList::setBufferChanged()
 
 void FrameBufferList::correctHeight()
 {
-	if (m_pCurrent == NULL)
+	if (m_pCurrent == nullptr)
 		return;
 	if (m_pCurrent->m_changed) {
 		m_pCurrent->m_needHeightCorrection = false;
@@ -490,7 +490,7 @@ void FrameBufferList::clearBuffersChanged()
 {
 	gDP.colorImage.changed = FALSE;
 	FrameBuffer * pBuffer = frameBufferList().findBuffer(*REG.VI_ORIGIN);
-	if (pBuffer != NULL)
+	if (pBuffer != nullptr)
 		pBuffer->m_changed = false;
 }
 
@@ -505,13 +505,13 @@ FrameBuffer * FrameBufferList::findBuffer(u32 _startAddress)
 	for (FrameBuffers::iterator iter = m_list.begin(); iter != m_list.end(); ++iter)
 	if (iter->m_startAddress <= _startAddress && iter->m_endAddress >= _startAddress) // [  {  ]
 		return &(*iter);
-	return NULL;
+	return nullptr;
 }
 
 FrameBuffer * FrameBufferList::_findBuffer(u32 _startAddress, u32 _endAddress, u32 _width)
 {
 	if (m_list.empty())
-		return NULL;
+		return nullptr;
 
 	FrameBuffers::iterator iter = m_list.end();
 	do {
@@ -527,7 +527,7 @@ FrameBuffer * FrameBufferList::_findBuffer(u32 _startAddress, u32 _endAddress, u
 			return &(*iter);
 		}
 	} while (iter != m_list.begin());
-	return NULL;
+	return nullptr;
 }
 
 FrameBuffer * FrameBufferList::findTmpBuffer(u32 _address)
@@ -535,12 +535,12 @@ FrameBuffer * FrameBufferList::findTmpBuffer(u32 _address)
 	for (FrameBuffers::iterator iter = m_list.begin(); iter != m_list.end(); ++iter)
 		if (iter->m_startAddress > _address || iter->m_endAddress < _address)
 				return &(*iter);
-	return NULL;
+	return nullptr;
 }
 
 void FrameBufferList::saveBuffer(u32 _address, u16 _format, u16 _size, u16 _width, u16 _height, bool _cfb)
 {
-	if (m_pCurrent != NULL && config.frameBufferEmulation.copyAuxToRDRAM != 0) {
+	if (m_pCurrent != nullptr && config.frameBufferEmulation.copyAuxToRDRAM != 0) {
 		if (m_pCurrent->isAuxiliary()) {
 			FrameBuffer_CopyToRDRAM(m_pCurrent->m_startAddress, true);
 			removeBuffer(m_pCurrent->m_startAddress);
@@ -548,13 +548,13 @@ void FrameBufferList::saveBuffer(u32 _address, u16 _format, u16 _size, u16 _widt
 	}
 
 	if (VI.width == 0 || _height == 0) {
-		m_pCurrent = NULL;
+		m_pCurrent = nullptr;
 		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 		return;
 	}
 
 	OGLVideo & ogl = video();
-	if (m_pCurrent != NULL) {
+	if (m_pCurrent != nullptr) {
 		// Correct buffer's end address
 		if (!m_pCurrent->isAuxiliary()) {
 			if (gDP.colorImage.height > 200)
@@ -580,11 +580,11 @@ void FrameBufferList::saveBuffer(u32 _address, u16 _format, u16 _size, u16 _widt
 	}
 
 	const u32 endAddress = _address + ((_width * _height) << _size >> 1) - 1;
-	if (m_pCurrent == NULL || m_pCurrent->m_startAddress != _address || m_pCurrent->m_width != _width)
+	if (m_pCurrent == nullptr || m_pCurrent->m_startAddress != _address || m_pCurrent->m_width != _width)
 		m_pCurrent = findBuffer(_address);
 	const float scaleX = config.frameBufferEmulation.nativeResFactor == 0 ? ogl.getScaleX() : static_cast<float>(config.frameBufferEmulation.nativeResFactor);
 	const float scaleY = config.frameBufferEmulation.nativeResFactor == 0 ? ogl.getScaleY() : scaleX;
-	if (m_pCurrent != NULL) {
+	if (m_pCurrent != nullptr) {
 		if ((m_pCurrent->m_startAddress != _address) ||
 			(m_pCurrent->m_width != _width) ||
 			//(current->height != height) ||
@@ -593,7 +593,7 @@ void FrameBufferList::saveBuffer(u32 _address, u16 _format, u16 _size, u16 _widt
 			(m_pCurrent->m_scaleY != scaleY))
 		{
 			removeBuffer(m_pCurrent->m_startAddress);
-			m_pCurrent = NULL;
+			m_pCurrent = nullptr;
 		} else {
 			m_pCurrent->m_resolved = false;
 			glBindFramebuffer(GL_FRAMEBUFFER, m_pCurrent->m_FBO);
@@ -604,7 +604,7 @@ void FrameBufferList::saveBuffer(u32 _address, u16 _format, u16 _size, u16 _widt
 				m_pCurrent->m_size = _size;
 				m_pCurrent->m_pTexture->format = _format;
 				m_pCurrent->m_pTexture->size = _size;
-				if (m_pCurrent->m_pResolveTexture != NULL) {
+				if (m_pCurrent->m_pResolveTexture != nullptr) {
 					m_pCurrent->m_pResolveTexture->format = _format;
 					m_pCurrent->m_pResolveTexture->size = _size;
 				}
@@ -613,7 +613,7 @@ void FrameBufferList::saveBuffer(u32 _address, u16 _format, u16 _size, u16 _widt
 			}
 		}
 	}
-	const bool bNew = m_pCurrent == NULL;
+	const bool bNew = m_pCurrent == nullptr;
 	if  (bNew) {
 		// Wasn't found or removed, create a new one
 		m_list.emplace_front();
@@ -632,7 +632,7 @@ void FrameBufferList::saveBuffer(u32 _address, u16 _format, u16 _size, u16 _widt
 
 #ifdef DEBUG
 	DebugMsg( DEBUG_HIGH | DEBUG_HANDLED, "FrameBuffer_SaveBuffer( 0x%08X ); depth buffer is 0x%08X\n",
-		address, (depthBuffer.top != NULL && depthBuffer.top->renderbuf > 0) ? depthBuffer.top->address : 0
+		address, (depthBuffer.top != nullptr && depthBuffer.top->renderbuf > 0) ? depthBuffer.top->address : 0
 	);
 #endif
 
@@ -653,7 +653,7 @@ void FrameBufferList::removeAux()
 	for (FrameBuffers::iterator iter = m_list.begin(); iter != m_list.end(); ++iter) {
 		while (iter->m_width != VI.width && iter->m_height != VI.height) {
 			if (&(*iter) == m_pCurrent) {
-				m_pCurrent = NULL;
+				m_pCurrent = nullptr;
 				glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 			}
 			iter = m_list.erase(iter);
@@ -668,7 +668,7 @@ void FrameBufferList::removeBuffer(u32 _address )
 	for (FrameBuffers::iterator iter = m_list.begin(); iter != m_list.end(); ++iter)
 		if (iter->m_startAddress == _address) {
 			if (&(*iter) == m_pCurrent) {
-				m_pCurrent = NULL;
+				m_pCurrent = nullptr;
 				glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 			}
 			m_list.erase(iter);
@@ -678,11 +678,11 @@ void FrameBufferList::removeBuffer(u32 _address )
 
 void FrameBufferList::removeBuffers(u32 _width)
 {
-	m_pCurrent = NULL;
+	m_pCurrent = nullptr;
 	for (FrameBuffers::iterator iter = m_list.begin(); iter != m_list.end(); ++iter) {
 		while (iter->m_width == _width) {
 			if (&(*iter) == m_pCurrent) {
-				m_pCurrent = NULL;
+				m_pCurrent = nullptr;
 				glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 			}
 			iter = m_list.erase(iter);
@@ -711,11 +711,11 @@ void FrameBufferList::fillBufferInfo(void * _pinfo, u32 _size)
 
 void FrameBufferList::attachDepthBuffer()
 {
-	if (m_pCurrent == NULL)
+	if (m_pCurrent == nullptr)
 		return;
 
 	DepthBuffer * pDepthBuffer = depthBufferList().getCurrent();
-	if (m_pCurrent->m_FBO > 0 && pDepthBuffer != NULL) {
+	if (m_pCurrent->m_FBO > 0 && pDepthBuffer != nullptr) {
 		pDepthBuffer->initDepthImageTexture(m_pCurrent);
 		pDepthBuffer->initDepthBufferTexture(m_pCurrent);
 #ifdef GLES2
@@ -728,9 +728,9 @@ void FrameBufferList::attachDepthBuffer()
 			if (video().getRender().isImageTexturesSupported() && config.frameBufferEmulation.N64DepthCompare != 0)
 				pDepthBuffer->bindDepthImageTexture();
 		} else
-			m_pCurrent->m_pDepthBuffer = NULL;
+			m_pCurrent->m_pDepthBuffer = nullptr;
 	} else
-		m_pCurrent->m_pDepthBuffer = NULL;
+		m_pCurrent->m_pDepthBuffer = nullptr;
 
 #ifndef GLES2
 	GLuint attachments[1] = { GL_COLOR_ATTACHMENT0 };
@@ -743,7 +743,7 @@ void FrameBufferList::clearDepthBuffer(DepthBuffer * _pDepthBuffer)
 {
 	for (FrameBuffers::iterator iter = m_list.begin(); iter != m_list.end(); ++iter) {
 		if (iter->m_pDepthBuffer == _pDepthBuffer) {
-			iter->m_pDepthBuffer = NULL;
+			iter->m_pDepthBuffer = nullptr;
 		}
 	}
 }
@@ -779,7 +779,7 @@ void FrameBufferList::renderBuffer(u32 _address)
 		return;
 
 	FrameBuffer *pBuffer = findBuffer(_address);
-	if (pBuffer == NULL)
+	if (pBuffer == nullptr)
 		return;
 
 	OGLVideo & ogl = video();
@@ -892,7 +892,7 @@ void FrameBufferList::renderBuffer(u32 _address)
 	if (dstPartHeight > 0) {
 		const u32 size = *REG.VI_STATUS & 3;
 		pBuffer = findBuffer(_address + (((*REG.VI_WIDTH)*VI.height)<<size>>1));
-		if (pBuffer != NULL) {
+		if (pBuffer != nullptr) {
 			pFilteredBuffer = PostProcessor::get().doBlur(PostProcessor::get().doGammaCorrection(pBuffer));
 			srcY0 = 0;
 			srcY1 = srcPartHeight;
@@ -913,7 +913,7 @@ void FrameBufferList::renderBuffer(u32 _address)
 	}
 
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
-	if (m_pCurrent != NULL)
+	if (m_pCurrent != nullptr)
 		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_pCurrent->m_FBO);
 	ogl.swapBuffers();
 	gDP.changed |= CHANGED_SCISSOR;
@@ -926,7 +926,7 @@ void FrameBufferList::renderBuffer(u32 _address)
 		return;
 
 	FrameBuffer *pBuffer = findBuffer(_address);
-	if (pBuffer == NULL)
+	if (pBuffer == nullptr)
 		return;
 
 	OGLVideo & ogl = video();
@@ -964,7 +964,7 @@ void FrameBufferList::renderBuffer(u32 _address)
 	ogl.getRender().drawTexturedRect(params);
 
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
-	if (m_pCurrent != NULL)
+	if (m_pCurrent != nullptr)
 		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_pCurrent->m_FBO);
 	ogl.swapBuffers();
 
@@ -977,11 +977,11 @@ void FrameBufferList::renderBuffer(u32 _address)
 
 void FrameBuffer_ActivateBufferTexture(u32 t, FrameBuffer *pBuffer)
 {
-	if (pBuffer == NULL)
+	if (pBuffer == nullptr)
 		return;
 
 	CachedTexture *pTexture = pBuffer->getTexture(t);
-	if (pTexture == NULL)
+	if (pTexture == nullptr)
 		return;
 
 //	frameBufferList().renderBuffer(pBuffer->m_startAddress);
@@ -991,11 +991,11 @@ void FrameBuffer_ActivateBufferTexture(u32 t, FrameBuffer *pBuffer)
 
 void FrameBuffer_ActivateBufferTextureBG(u32 t, FrameBuffer *pBuffer )
 {
-	if (pBuffer == NULL)
+	if (pBuffer == nullptr)
 		return;
 
 	CachedTexture *pTexture = pBuffer->getTextureBG(t);
-	if (pTexture == NULL)
+	if (pTexture == nullptr)
 		return;
 
 //	frameBufferList().renderBuffer(pBuffer->m_startAddress);
@@ -1010,10 +1010,10 @@ void FrameBuffer_CopyToRDRAM(u32 _address, bool _sync)
 #else
 	if ((config.generalEmulation.hacks & hack_subscreen) == 0)
 		return;
-	if (VI.width == 0 || frameBufferList().getCurrent() == NULL)
+	if (VI.width == 0 || frameBufferList().getCurrent() == nullptr)
 		return;
 	FrameBuffer *pBuffer = frameBufferList().findBuffer(_address);
-	if (pBuffer == NULL || pBuffer->m_width < VI.width || pBuffer->m_isOBScreen)
+	if (pBuffer == nullptr || pBuffer->m_width < VI.width || pBuffer->m_isOBScreen)
 		return;
 	copyWhiteToRDRAM(pBuffer);
 #endif
@@ -1030,11 +1030,11 @@ bool FrameBuffer_CopyDepthBuffer( u32 address )
 {
 #ifndef GLES2
 	FrameBuffer * pCopyBuffer = frameBufferList().getCopyBuffer();
-	if (pCopyBuffer != NULL) {
+	if (pCopyBuffer != nullptr) {
 		// This code is mainly to emulate Zelda MM camera.
 		ColorBufferToRDRAM::get().copyToRDRAM(pCopyBuffer->m_startAddress, true);
 		pCopyBuffer->m_RdramCopy.resize(0); // To disable validity check by RDRAM content. CPU may change content of the buffer for some unknown reason.
-		frameBufferList().setCopyBuffer(NULL);
+		frameBufferList().setCopyBuffer(nullptr);
 		return true;
 	} else
 		return DepthBufferToRDRAM::get().copyToRDRAM(address);

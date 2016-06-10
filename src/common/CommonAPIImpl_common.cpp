@@ -161,7 +161,7 @@ void PluginAPI::RomClosed()
 					&m_pluginThreadCv)
 	);
 	delete m_pRspThread;
-	m_pRspThread = NULL;
+	m_pRspThread = nullptr;
 #else
 	TFH.shutdown();
 	video().stop();

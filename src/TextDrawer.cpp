@@ -210,7 +210,7 @@ struct Atlas {
 };
 
 TextDrawer::TextDrawer() :
-	m_pAtlas(NULL), m_program(0), m_uTex(0), m_uColor(0), m_vbo(0)
+	m_pAtlas(nullptr), m_program(0), m_uTex(0), m_uColor(0), m_vbo(0)
 {}
 
 TextDrawer & TextDrawer::get() {
@@ -223,7 +223,7 @@ bool getFontFileName(char * _strName)
 {
 #ifdef OS_WINDOWS
 	char * pSysPath = getenv("WINDIR");
-	if (pSysPath == NULL)
+	if (pSysPath == nullptr)
 		return false;
 	sprintf(_strName, "%s/Fonts/%s", pSysPath, config.font.name.c_str());
 #elif defined (ANDROID)
@@ -241,7 +241,7 @@ FT_Face face;
 
 void TextDrawer::init()
 {
-	if (m_pAtlas != NULL)
+	if (m_pAtlas != nullptr)
 		return;
 
 	char strBuffer[PLUGIN_PATH_SIZE];
@@ -282,10 +282,10 @@ void TextDrawer::init()
 
 void TextDrawer::destroy()
 {
-	if (m_pAtlas == NULL)
+	if (m_pAtlas == nullptr)
 		return;
 	delete m_pAtlas;
-	m_pAtlas = NULL;
+	m_pAtlas = nullptr;
 	glDeleteBuffers(1, &m_vbo);
 	m_vbo = 0;
 	glDeleteProgram(m_program);
@@ -301,7 +301,7 @@ void TextDrawer::destroy()
  */
 void TextDrawer::renderText(const char *_pText, float _x, float _y) const
 {
-	if (m_pAtlas == NULL)
+	if (m_pAtlas == nullptr)
 		return;
 	OGLVideo & ogl = video();
 	const float sx = 2.0f / ogl.getWidth();

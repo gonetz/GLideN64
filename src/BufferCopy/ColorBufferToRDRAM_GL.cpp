@@ -54,7 +54,7 @@ void ColorBufferToRDRAM_GL::_initBuffers(void)
 	// Initialize Pixel Buffer Objects
 	for (u32 i = 0; i < _numPBO; ++i) {
 		glBindBuffer(GL_PIXEL_PACK_BUFFER, m_PBO[i]);
-		glBufferData(GL_PIXEL_PACK_BUFFER, m_pTexture->textureBytes, NULL, GL_DYNAMIC_READ);
+		glBufferData(GL_PIXEL_PACK_BUFFER, m_pTexture->textureBytes, nullptr, GL_DYNAMIC_READ);
 	}
 	glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
 }

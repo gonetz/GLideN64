@@ -329,8 +329,8 @@ void ZSort_MTXRNSP( u32, u32 )
 
 void ZSort_MTXCAT(u32 _w0, u32 _w1)
 {
-	M44 *s = NULL;
-	M44 *t = NULL;
+	M44 *s = nullptr;
+	M44 *t = nullptr;
 	u32 S = _SHIFTR(_w0, 0, 4);
 	u32 T = _SHIFTR(_w1, 16, 4);
 	u32 D = _SHIFTR(_w1, 0, 4);
@@ -356,7 +356,7 @@ void ZSort_MTXCAT(u32 _w0, u32 _w1)
 		t = (M44*)gSP.matrix.combined;
 	break;
 	}
-	assert(s != NULL && t != NULL);
+	assert(s != nullptr && t != nullptr);
 	f32 m[4][4];
 	MultMatrix(*s, *t, m);
 

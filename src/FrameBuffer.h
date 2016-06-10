@@ -95,7 +95,7 @@ public:
 	static FrameBufferList & get();
 
 private:
-	FrameBufferList() : m_pCurrent(NULL), m_pCopy(NULL) {}
+	FrameBufferList() : m_pCurrent(nullptr), m_pCopy(nullptr) {}
 	FrameBufferList(const FrameBufferList &);
 
 	FrameBuffer * _findBuffer(u32 _startAddress, u32 _endAddress, u32 _width);

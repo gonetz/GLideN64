@@ -175,7 +175,7 @@ static void gSPLightVertex4_default(u32 v)
 
 static void gSPPointLightVertex4_default(u32 v, float _vPos[4][3])
 {
-	assert(_vPos != NULL);
+	assert(_vPos != nullptr);
 	gSPTransformNormal4(v, gSP.matrix.modelView[gSP.matrix.modelViewi]);
 	OGLRender & render = video().getRender();
 	for(int j = 0; j < 4; ++j) {
@@ -425,7 +425,7 @@ static void gSPLightVertex_default(SPVertex & _vtx)
 
 static void gSPPointLightVertex_default(SPVertex & _vtx, float * _vPos)
 {
-	assert(_vPos != NULL);
+	assert(_vPos != nullptr);
 	float light_intensity = 0.0f;
 	_vtx.HWLight = 0;
 	_vtx.r = gSP.lights[gSP.numLights].r;
@@ -2030,7 +2030,7 @@ void _drawYUVImageToFrameBuffer(const ObjCoordinates & _objCoords)
 		dst += ci_width - 16;
 	}
 	FrameBuffer *pBuffer = frameBufferList().getCurrent();
-	if (pBuffer != NULL)
+	if (pBuffer != nullptr)
 		pBuffer->m_isOBScreen = true;
 }
 
@@ -2070,10 +2070,10 @@ void _copyDepthBuffer()
 	// Take any frame buffer and attach source depth buffer to it, to blit it into copy depth buffer
 	FrameBufferList & fbList = frameBufferList();
 	FrameBuffer * pTmpBuffer = fbList.findTmpBuffer(fbList.getCurrent()->m_startAddress);
-	if (pTmpBuffer == NULL)
+	if (pTmpBuffer == nullptr)
 		return;
 	DepthBuffer * pCopyBufferDepth = dbList.findBuffer(gSP.bgImage.address);
-	if (pCopyBufferDepth == NULL)
+	if (pCopyBufferDepth == nullptr)
 		return;
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, pTmpBuffer->m_FBO);
 	pCopyBufferDepth->setDepthAttachment(GL_READ_FRAMEBUFFER);
@@ -2085,7 +2085,7 @@ void _copyDepthBuffer()
 		GL_DEPTH_BUFFER_BIT, GL_NEAREST
 	);
 	// Restore objects
-	if (pTmpBuffer->m_pDepthBuffer != NULL)
+	if (pTmpBuffer->m_pDepthBuffer != nullptr)
 		pTmpBuffer->m_pDepthBuffer->setDepthAttachment(GL_READ_FRAMEBUFFER);
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
 	// Set back current depth buffer
@@ -2116,7 +2116,7 @@ void _loadBGImage(const uObjScaleBg * _bgInfo, bool _loadScale)
 
 	if (config.frameBufferEmulation.enable) {
 		FrameBuffer *pBuffer = frameBufferList().findBuffer(gSP.bgImage.address);
-		if ((pBuffer != NULL) && pBuffer->m_size == gSP.bgImage.size && (!pBuffer->m_isDepthBuffer || pBuffer->m_changed)) {
+		if ((pBuffer != nullptr) && pBuffer->m_size == gSP.bgImage.size && (!pBuffer->m_isDepthBuffer || pBuffer->m_changed)) {
 			gDP.tiles[0].frameBuffer = pBuffer;
 			gDP.tiles[0].textureMode = TEXTUREMODE_FRAMEBUFFER_BG;
 			gDP.tiles[0].loadType = LOADTYPE_TILE;
@@ -2141,7 +2141,7 @@ void gSPBgRect1Cyc( u32 _bg )
 	// In later case depth buffer is used as temporal color buffer, and usual rendering must be used.
 	// Since both situations are hard to distinguish, do the both depth buffer copy and bg rendering.
 	if ((config.generalEmulation.hacks & hack_ZeldaMM) != 0 &&
-		(gSP.bgImage.address == gDP.depthImageAddress || depthBufferList().findBuffer(gSP.bgImage.address) != NULL)
+		(gSP.bgImage.address == gDP.depthImageAddress || depthBufferList().findBuffer(gSP.bgImage.address) != nullptr)
 	)
 		_copyDepthBuffer();
 #endif // GLES2
@@ -2163,7 +2163,7 @@ void gSPBgRectCopy( u32 _bg )
 #ifdef GL_IMAGE_TEXTURES_SUPPORT
 	// See comment to gSPBgRect1Cyc
 	if ((config.generalEmulation.hacks & hack_ZeldaMM) != 0 &&
-		(gSP.bgImage.address == gDP.depthImageAddress || depthBufferList().findBuffer(gSP.bgImage.address) != NULL)
+		(gSP.bgImage.address == gDP.depthImageAddress || depthBufferList().findBuffer(gSP.bgImage.address) != nullptr)
 	)
 		_copyDepthBuffer();
 #endif // GL_IMAGE_TEXTURES_SUPPORT
@@ -2254,7 +2254,7 @@ void _loadSpriteImage(const uSprite *_pSprite)
 	if (config.frameBufferEmulation.enable != 0)
 	{
 		FrameBuffer *pBuffer = frameBufferList().findBuffer(gSP.bgImage.address);
-		if (pBuffer != NULL) {
+		if (pBuffer != nullptr) {
 			gDP.tiles[0].frameBuffer = pBuffer;
 			gDP.tiles[0].textureMode = TEXTUREMODE_FRAMEBUFFER_BG;
 			gDP.tiles[0].loadType = LOADTYPE_TILE;

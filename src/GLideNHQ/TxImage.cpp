@@ -51,19 +51,19 @@ TxImage::getPNGInfo(FILE *fp, png_structp *png_ptr, png_infop *info_ptr)
 		return 0;
 
 	/* get PNG file info */
-	*png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
+	*png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, nullptr, nullptr, nullptr);
 	if (!*png_ptr)
 		return 0;
 
 	*info_ptr = png_create_info_struct(*png_ptr);
 	if (!*info_ptr) {
-		png_destroy_read_struct(png_ptr, NULL, NULL);
+		png_destroy_read_struct(png_ptr, nullptr, nullptr);
 		return 0;
 	}
 
 	if (setjmp(png_jmpbuf(*png_ptr))) {
 		DBG_INFO(80, wst("error reading png!\n"));
-		png_destroy_read_struct(png_ptr, info_ptr, NULL);
+		png_destroy_read_struct(png_ptr, info_ptr, nullptr);
 		return 0;
 	}
 
@@ -81,7 +81,7 @@ TxImage::readPNG(FILE* fp, int* width, int* height, uint16* format)
 
 	png_structp png_ptr;
 	png_infop info_ptr;
-	uint8 *image = NULL;
+	uint8 *image = nullptr;
 	int bit_depth, color_type, interlace_type, compression_type, filter_type,
 			row_bytes, o_width, o_height, num_pas;
 
@@ -92,11 +92,11 @@ TxImage::readPNG(FILE* fp, int* width, int* height, uint16* format)
 
 	/* check if we have a valid png file */
 	if (!fp)
-		return NULL;
+		return nullptr;
 
 	if (!getPNGInfo(fp, &png_ptr, &info_ptr)) {
 		INFO(80, wst("error reading png file! png image is corrupt.\n"));
-		return NULL;
+		return nullptr;
 	}
 
 	png_get_IHDR(png_ptr, info_ptr,
@@ -158,9 +158,9 @@ TxImage::readPNG(FILE* fp, int* width, int* height, uint16* format)
 
 	/* punt invalid formats */
 	if (color_type != PNG_COLOR_TYPE_RGB_ALPHA) {
-		png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
+		png_destroy_read_struct(&png_ptr, &info_ptr, nullptr);
 		DBG_INFO(80, wst("Error: not PNG_COLOR_TYPE_RGB_ALPHA format!\n"));
-		return NULL;
+		return nullptr;
 	}
 
 	/*png_color_8p sig_bit;
@@ -193,7 +193,7 @@ TxImage::readPNG(FILE* fp, int* width, int* height, uint16* format)
 
 			for (i = 0; i < o_height; i++) {
 				/* copy row */
-				png_read_rows(png_ptr, &tmpimage, NULL, 1);
+				png_read_rows(png_ptr, &tmpimage, nullptr, 1);
 				tmpimage += row_bytes;
 			}
 		}
@@ -220,7 +220,7 @@ TxImage::readPNG(FILE* fp, int* width, int* height, uint16* format)
 #endif
 			if (image) {
 				free(image);
-				image = NULL;
+				image = nullptr;
 			}
 			*width = 0;
 			*height = 0;
@@ -233,7 +233,7 @@ TxImage::readPNG(FILE* fp, int* width, int* height, uint16* format)
 	}
 
 	/* clean up */
-	png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
+	png_destroy_read_struct(&png_ptr, &info_ptr, nullptr);
 
 #ifdef DEBUG
 	if (!image) {
@@ -247,11 +247,11 @@ TxImage::readPNG(FILE* fp, int* width, int* height, uint16* format)
 boolean
 TxImage::writePNG(uint8* src, FILE* fp, int width, int height, int rowStride, uint16 format, uint8 *palette)
 {
-	png_structp png_ptr = NULL;
-	png_infop info_ptr = NULL;
+	png_structp png_ptr = nullptr;
+	png_infop info_ptr = nullptr;
 	png_color_8 sig_bit;
-	png_colorp palette_ptr = NULL;
-	png_bytep trans_ptr = NULL;//, tex_ptr;
+	png_colorp palette_ptr = nullptr;
+	png_bytep trans_ptr = nullptr;//, tex_ptr;
 	int bit_depth = 0, color_type = 0, row_bytes = 0, num_palette = 0;
 	int i = 0;
 	//uint16 srcfmt, destfmt;
@@ -259,13 +259,13 @@ TxImage::writePNG(uint8* src, FILE* fp, int width, int height, int rowStride, ui
 	if (!src || !fp)
 		return 0;
 
-	png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
-	if (png_ptr == NULL)
+	png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING, nullptr, nullptr, nullptr);
+	if (png_ptr == nullptr)
 		return 0;
 
 	info_ptr = png_create_info_struct(png_ptr);
-	if (info_ptr == NULL) {
-		png_destroy_write_struct(&png_ptr, NULL);
+	if (info_ptr == nullptr) {
+		png_destroy_write_struct(&png_ptr, nullptr);
 		return 0;
 	}
 
@@ -494,9 +494,9 @@ TxImage::readBMP(FILE* fp, int* width, int* height, uint16* format)
    *       24, 32bit bmp -> GL_RGBA8
    */
 
-	uint8 *image = NULL;
-	uint8 *image_row = NULL;
-	uint8 *tmpimage = NULL;
+	uint8 *image = nullptr;
+	uint8 *image_row = nullptr;
+	uint8 *tmpimage = nullptr;
 	int row_bytes, pos, i, j;
 	/* Windows Bitmap */
 	BITMAPFILEHEADER bmp_fhdr;
@@ -509,11 +509,11 @@ TxImage::readBMP(FILE* fp, int* width, int* height, uint16* format)
 
 	/* check if we have a valid bmp file */
 	if (!fp)
-		return NULL;
+		return nullptr;
 
 	if (!getBMPInfo(fp, &bmp_fhdr, &bmp_ihdr)) {
 		INFO(80, wst("error reading bitmap file! bitmap image is corrupt.\n"));
-		return NULL;
+		return nullptr;
 	}
 
 	DBG_INFO(80, wst("bmp format %d x %d bitdepth:%d compression:%x offset:%d\n"),
@@ -529,7 +529,7 @@ TxImage::readBMP(FILE* fp, int* width, int* height, uint16* format)
 	if (!(bmp_ihdr.biBitCount == 8 || bmp_ihdr.biBitCount == 4 || bmp_ihdr.biBitCount == 32 || bmp_ihdr.biBitCount == 24) ||
 			bmp_ihdr.biCompression != 0) {
 		DBG_INFO(80, wst("Error: incompatible bitmap format!\n"));
-		return NULL;
+		return nullptr;
 	}
 
 	switch (bmp_ihdr.biBitCount) {
@@ -572,7 +572,7 @@ TxImage::readBMP(FILE* fp, int* width, int* height, uint16* format)
 		} else {
 			if (image_row) free(image_row);
 			if (image) free(image);
-			image = NULL;
+			image = nullptr;
 		}
 	break;
 	case 24:
@@ -600,7 +600,7 @@ TxImage::readBMP(FILE* fp, int* width, int* height, uint16* format)
 		} else {
 			if (image_row) free(image_row);
 			if (image) free(image);
-			image = NULL;
+			image = nullptr;
 		}
 	}
 
@@ -633,7 +633,7 @@ TxImage::readBMP(FILE* fp, int* width, int* height, uint16* format)
 #endif
 			if (image) {
 				free(image);
-				image = NULL;
+				image = nullptr;
 			}
 			*width = 0;
 			*height = 0;

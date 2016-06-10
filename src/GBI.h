@@ -692,12 +692,12 @@ struct GBIInfo
 	void init();
 	void destroy();
 	void loadMicrocode(u32 uc_start, u32 uc_dstart, u16 uc_dsize);
-	u32 getMicrocodeType() const {return m_pCurrent != NULL ? m_pCurrent->type : NONE;}
+	u32 getMicrocodeType() const {return m_pCurrent != nullptr ? m_pCurrent->type : NONE;}
 	bool isHWLSupported() const;
-	bool isNoN() const { return m_pCurrent != NULL ? m_pCurrent->NoN : false; }
-	bool isTextureGen() const { return m_pCurrent != NULL ? m_pCurrent->textureGen: true; }
-	bool isTexturePersp() const { return m_pCurrent != NULL ? m_pCurrent->texturePersp: true; }
-	bool isBranchLessZ() const { return m_pCurrent != NULL ? m_pCurrent->branchLessZ : true; }
+	bool isNoN() const { return m_pCurrent != nullptr ? m_pCurrent->NoN : false; }
+	bool isTextureGen() const { return m_pCurrent != nullptr ? m_pCurrent->textureGen: true; }
+	bool isTexturePersp() const { return m_pCurrent != nullptr ? m_pCurrent->texturePersp: true; }
+	bool isBranchLessZ() const { return m_pCurrent != nullptr ? m_pCurrent->branchLessZ : true; }
 
 private:
 	void _flushCommands();

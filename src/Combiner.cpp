@@ -97,7 +97,7 @@ CombinerInfo & CombinerInfo::get()
 
 void CombinerInfo::init()
 {
-	m_pCurrent = NULL;
+	m_pCurrent = nullptr;
 	m_pUniformCollection = createUniformCollection();
 	GLint numBinaryFormats = 0;
 #ifdef GL_NUM_PROGRAM_BINARY_FORMATS
@@ -118,8 +118,8 @@ void CombinerInfo::init()
 void CombinerInfo::destroy()
 {
 	delete m_pUniformCollection;
-	m_pUniformCollection = NULL;
-	m_pCurrent = NULL;
+	m_pUniformCollection = nullptr;
+	m_pCurrent = nullptr;
 	if (m_bShaderCacheSupported)
 		_saveShadersStorage();
 	m_shadersLoaded = 0;
@@ -262,7 +262,7 @@ void CombinerInfo::update()
 void CombinerInfo::setCombine(u64 _mux )
 {
 	const u64 key = getCombinerKey(_mux);
-	if (m_pCurrent != NULL && m_pCurrent->getKey() == key) {
+	if (m_pCurrent != nullptr && m_pCurrent->getKey() == key) {
 		m_bChanged = false;
 		m_pCurrent->update(false);
 		return;
@@ -282,37 +282,37 @@ void CombinerInfo::setCombine(u64 _mux )
 
 void CombinerInfo::updatePrimColor()
 {
-	if (m_pUniformCollection != NULL)
+	if (m_pUniformCollection != nullptr)
 		m_pUniformCollection->setColorData(UniformCollection::cuPrimColor, sizeof(f32)* 5, &gDP.primColor.r);
 }
 
 void CombinerInfo::updateEnvColor()
 {
-	if (m_pUniformCollection != NULL)
+	if (m_pUniformCollection != nullptr)
 		m_pUniformCollection->setColorData(UniformCollection::cuEnvColor, sizeof(f32)* 4, &gDP.envColor.r);
 }
 
 void CombinerInfo::updateFogColor()
 {
-	if (m_pUniformCollection != NULL)
+	if (m_pUniformCollection != nullptr)
 		m_pUniformCollection->setColorData(UniformCollection::cuFogColor, sizeof(f32)* 4, &gDP.fogColor.r);
 }
 
 void CombinerInfo::updateBlendColor()
 {
-	if (m_pUniformCollection != NULL)
+	if (m_pUniformCollection != nullptr)
 		m_pUniformCollection->setColorData(UniformCollection::cuBlendColor, sizeof(f32)* 4, &gDP.blendColor.r);
 }
 
 void CombinerInfo::updateKeyColor()
 {
-	if (m_pUniformCollection != NULL)
+	if (m_pUniformCollection != nullptr)
 		m_pUniformCollection->setColorData(UniformCollection::cuCenterColor, sizeof(f32)* 8, &gDP.key.center.r);
 }
 
 void CombinerInfo::updateConvertColor()
 {
-	if (m_pUniformCollection == NULL)
+	if (m_pUniformCollection == nullptr)
 		return;
 	f32 convert[2] = { gDP.convert.k4*0.0039215689f, gDP.convert.k5*0.0039215689f };
 	m_pUniformCollection->setColorData(UniformCollection::cuK4, sizeof(convert), convert);
@@ -320,20 +320,20 @@ void CombinerInfo::updateConvertColor()
 
 void CombinerInfo::updateTextureParameters()
 {
-	if (m_pUniformCollection != NULL)
+	if (m_pUniformCollection != nullptr)
 		m_pUniformCollection->updateTextureParameters();
 }
 
 void CombinerInfo::updateLightParameters()
 {
-	if (m_pUniformCollection != NULL)
+	if (m_pUniformCollection != nullptr)
 		m_pUniformCollection->updateLightParameters();
 	gSP.changed &= ~CHANGED_LIGHT;
 }
 
 void CombinerInfo::updateParameters(OGLRender::RENDER_STATE _renderState)
 {
-	if (m_pUniformCollection != NULL)
+	if (m_pUniformCollection != nullptr)
 		m_pUniformCollection->updateUniforms(m_pCurrent, _renderState);
 }
 

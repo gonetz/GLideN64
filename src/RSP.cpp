@@ -268,11 +268,11 @@ u32 DepthClearColor = 0xfffcfffc;
 static
 void setDepthClearColor()
 {
-	if (strstr(RSP.romname, (const char *)"Elmo's") != NULL)
+	if (strstr(RSP.romname, (const char *)"Elmo's") != nullptr)
 		DepthClearColor = 0xFFFFFFFF;
-	else if (strstr(RSP.romname, (const char *)"Taz Express") != NULL)
+	else if (strstr(RSP.romname, (const char *)"Taz Express") != nullptr)
 		DepthClearColor = 0xFFBCFFBC;
-	else if (strstr(RSP.romname, (const char *)"NFL QBC 2000") != NULL || strstr(RSP.romname, (const char *)"NFL Quarterback Club") != NULL || strstr(RSP.romname, (const char *)"Jeremy McGrath Super") != NULL)
+	else if (strstr(RSP.romname, (const char *)"NFL QBC 2000") != nullptr || strstr(RSP.romname, (const char *)"NFL Quarterback Club") != nullptr || strstr(RSP.romname, (const char *)"Jeremy McGrath Super") != nullptr)
 		DepthClearColor = 0xFFFDFFFC;
 	else
 		DepthClearColor = 0xFFFCFFFC;
@@ -318,42 +318,42 @@ void RSP_Init()
 	strncpy(RSP.romname, romname, 21);
 	setDepthClearColor();
 	config.generalEmulation.hacks = 0;
-	if (strstr(RSP.romname, (const char *)"OgreBattle64") != NULL)
+	if (strstr(RSP.romname, (const char *)"OgreBattle64") != nullptr)
 		config.generalEmulation.hacks |= hack_Ogre64;
-	else if (strstr(RSP.romname, (const char *)"MarioGolf64") != NULL ||
-			 strstr(RSP.romname, (const char *)"F1 POLE POSITION 64") != NULL)
+	else if (strstr(RSP.romname, (const char *)"MarioGolf64") != nullptr ||
+			 strstr(RSP.romname, (const char *)"F1 POLE POSITION 64") != nullptr)
 		config.generalEmulation.hacks |= hack_noDepthFrameBuffers;
-	else if (strstr(RSP.romname, (const char *)"CONKER BFD") != NULL)
+	else if (strstr(RSP.romname, (const char *)"CONKER BFD") != nullptr)
 		config.generalEmulation.hacks |= hack_blurPauseScreen | hack_rectDepthBufferCopyCBFD;
-	else if (strstr(RSP.romname, (const char *)"MICKEY USA") != NULL)
+	else if (strstr(RSP.romname, (const char *)"MICKEY USA") != nullptr)
 		config.generalEmulation.hacks |= hack_blurPauseScreen;
-	else if (strstr(RSP.romname, (const char *)"MarioTennis64") != NULL)
+	else if (strstr(RSP.romname, (const char *)"MarioTennis64") != nullptr)
 		config.generalEmulation.hacks |= hack_scoreboardJ;
-	else if (strstr(RSP.romname, (const char *)"MarioTennis") != NULL)
+	else if (strstr(RSP.romname, (const char *)"MarioTennis") != nullptr)
 		config.generalEmulation.hacks |= hack_scoreboard;
-	else if (strstr(RSP.romname, (const char *)"Pilot Wings64") != NULL)
+	else if (strstr(RSP.romname, (const char *)"Pilot Wings64") != nullptr)
 		config.generalEmulation.hacks |= hack_pilotWings;
-	else if (strstr(RSP.romname, (const char *)"THE LEGEND OF ZELDA") != NULL ||
-			 strstr(RSP.romname, (const char *)"ZELDA MASTER QUEST") != NULL ||
-			 strstr(RSP.romname, (const char *)"DOUBUTSUNOMORI") != NULL)
+	else if (strstr(RSP.romname, (const char *)"THE LEGEND OF ZELDA") != nullptr ||
+			 strstr(RSP.romname, (const char *)"ZELDA MASTER QUEST") != nullptr ||
+			 strstr(RSP.romname, (const char *)"DOUBUTSUNOMORI") != nullptr)
 		config.generalEmulation.hacks |= hack_subscreen;
-	else if (strstr(RSP.romname, (const char *)"LEGORacers") != NULL)
+	else if (strstr(RSP.romname, (const char *)"LEGORacers") != nullptr)
 		config.generalEmulation.hacks |= hack_legoRacers;
-	else if (strstr(RSP.romname, (const char *)"Blast") != NULL)
+	else if (strstr(RSP.romname, (const char *)"Blast") != nullptr)
 		config.generalEmulation.hacks |= hack_blastCorps;
-	else if (strstr(RSP.romname, (const char *)"SPACE INVADERS") != NULL)
+	else if (strstr(RSP.romname, (const char *)"SPACE INVADERS") != nullptr)
 		config.generalEmulation.hacks |= hack_ignoreVIHeightChange;
-	else if (strstr(RSP.romname, (const char *)"MASK") != NULL) // Zelda MM
+	else if (strstr(RSP.romname, (const char *)"MASK") != nullptr) // Zelda MM
 		config.generalEmulation.hacks |= hack_ZeldaMM;
-	else if (strstr(RSP.romname, (const char *)"Perfect Dark") != NULL ||
-			 strstr(RSP.romname, (const char *)"PERFECT DARK") != NULL)
+	else if (strstr(RSP.romname, (const char *)"Perfect Dark") != nullptr ||
+			 strstr(RSP.romname, (const char *)"PERFECT DARK") != nullptr)
 		config.generalEmulation.hacks |= hack_rectDepthBufferCopyPD;
-	else if (strstr(RSP.romname, (const char *)"Jeremy McGrath Super") != NULL)
+	else if (strstr(RSP.romname, (const char *)"Jeremy McGrath Super") != nullptr)
 		config.generalEmulation.hacks |= hack_ModifyVertexXyInShader;
-	else if (strstr(RSP.romname, (const char *)"Quake") != NULL ||
-			 strstr(RSP.romname, (const char *)"QUAKE II") != NULL)
+	else if (strstr(RSP.romname, (const char *)"Quake") != nullptr ||
+			 strstr(RSP.romname, (const char *)"QUAKE II") != nullptr)
 		config.generalEmulation.hacks |= hack_doNotResetTLUTmode;
-	else if (strstr(RSP.romname, (const char *)"quarterback_club_98") != NULL)
+	else if (strstr(RSP.romname, (const char *)"quarterback_club_98") != nullptr)
 		config.generalEmulation.hacks |= hack_LoadDepthTextures;
 
 	api().FindPluginPath(RSP.pluginpath);

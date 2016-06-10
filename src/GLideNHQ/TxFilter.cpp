@@ -60,7 +60,7 @@ TxFilter::~TxFilter()
 TxFilter::TxFilter(int maxwidth, int maxheight, int maxbpp, int options,
 	int cachesize, const wchar_t * path, const wchar_t * texPackPath, const wchar_t * ident,
 				   dispInfoFuncExt callback) :
-	_tex1(NULL), _tex2(NULL), _txQuantize(NULL), _txTexCache(NULL), _txHiResCache(NULL), _txUtil(NULL), _txImage(NULL)
+	_tex1(nullptr), _tex2(nullptr), _txQuantize(nullptr), _txTexCache(nullptr), _txHiResCache(nullptr), _txUtil(nullptr), _txImage(nullptr)
 {
 	/* HACKALERT: the emulator misbehaves and sometimes forgets to shutdown */
 	if ((ident && wcscmp(ident, wst("DEFAULT")) != 0 && _ident.compare(ident) == 0) &&
@@ -97,8 +97,8 @@ TxFilter::TxFilter(int maxwidth, int maxheight, int maxbpp, int options,
 
 	_initialized = 0;
 
-	_tex1 = NULL;
-	_tex2 = NULL;
+	_tex1 = nullptr;
+	_tex2 = nullptr;
 
 	_maxwidth  = maxwidth  > 4096 ? 4096 : maxwidth;
 	_maxheight = maxheight > 4096 ? 4096 : maxheight;
@@ -587,7 +587,7 @@ TxFilter::dmptx(uint8 *src, int width, int height, int rowStridePixel, uint16 gf
 
 	if (!_path.empty() && !_ident.empty()) {
 		/* dump it to disk */
-		FILE *fp = NULL;
+		FILE *fp = nullptr;
 		tx_wstring tmpbuf;
 
 		/* create directories */
@@ -609,11 +609,11 @@ TxFilter::dmptx(uint8 *src, int width, int height, int rowStridePixel, uint16 gf
 		}
 
 #ifdef WIN32
-		if ((fp = _wfopen(tmpbuf.c_str(), wst("wb"))) != NULL) {
+		if ((fp = _wfopen(tmpbuf.c_str(), wst("wb"))) != nullptr) {
 #else
 		char cbuf[MAX_PATH];
 		wcstombs(cbuf, tmpbuf.c_str(), MAX_PATH);
-		if ((fp = fopen(cbuf, "wb")) != NULL) {
+		if ((fp = fopen(cbuf, "wb")) != nullptr) {
 #endif
 			_txImage->writePNG(src, fp, width, height, (rowStridePixel << 2), 0x0003, 0);
 			fclose(fp);

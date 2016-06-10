@@ -48,10 +48,10 @@ void PluginAPI::GetUserCachePath(wchar_t * _strPath)
 
 void PluginAPI::FindPluginPath(wchar_t * _strPath)
 {
-	if (_strPath == NULL)
+	if (_strPath == nullptr)
 		return;
 #ifdef OS_WINDOWS
-	GetModuleFileNameW(NULL, _strPath, PLUGIN_PATH_SIZE);
+	GetModuleFileNameW(nullptr, _strPath, PLUGIN_PATH_SIZE);
 	_cutLastPathSeparator(_strPath);
 #elif defined(OS_LINUX)
 	char path[512];

@@ -164,12 +164,12 @@ void UniformBlock::updateTextureParameters()
 	memcpy(pData + m_textureBlock.m_offsets[tuTexScale], texScale, m_textureBlock.m_offsets[tuTexOffset] - m_textureBlock.m_offsets[tuTexScale]);
 
 	f32 texOffset[8] = { 0, 0, 0, 0, 0, 0, 0, 0 };
-	if (gSP.textureTile[0] != NULL) {
+	if (gSP.textureTile[0] != nullptr) {
 		if (gSP.textureTile[0]->textureMode != TEXTUREMODE_BGIMAGE && gSP.textureTile[0]->textureMode != TEXTUREMODE_FRAMEBUFFER_BG) {
 			texOffset[0] = gSP.textureTile[0]->fuls;
 			texOffset[1] = gSP.textureTile[0]->fult;
 			FrameBuffer * pBuffer = gSP.textureTile[0]->frameBuffer;
-			if (pBuffer != NULL) {
+			if (pBuffer != nullptr) {
 				if (gSP.textureTile[0]->masks > 0 && gSP.textureTile[0]->clamps == 0)
 					texOffset[0] = float(gSP.textureTile[0]->uls % (1 << gSP.textureTile[0]->masks));
 				if (gSP.textureTile[0]->maskt > 0 && gSP.textureTile[0]->clampt == 0)
@@ -181,7 +181,7 @@ void UniformBlock::updateTextureParameters()
 		texOffset[4] = gSP.textureTile[1]->fuls;
 		texOffset[5] = gSP.textureTile[1]->fult;
 		FrameBuffer * pBuffer = gSP.textureTile[1]->frameBuffer;
-		if (pBuffer != NULL) {
+		if (pBuffer != nullptr) {
 			if (gSP.textureTile[1]->masks > 0 && gSP.textureTile[1]->clamps == 0)
 				texOffset[4] = float(gSP.textureTile[1]->uls % (1 << gSP.textureTile[1]->masks));
 			if (gSP.textureTile[1]->maskt > 0 && gSP.textureTile[1]->clampt == 0)

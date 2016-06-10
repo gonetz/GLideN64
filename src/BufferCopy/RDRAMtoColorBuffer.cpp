@@ -37,7 +37,7 @@ void RDRAMtoColorBuffer::init()
 	m_pTexture->textureBytes = m_pTexture->realWidth * m_pTexture->realHeight * 4;
 	textureCache().addFrameBufferTextureSize(m_pTexture->textureBytes);
 	glBindTexture( GL_TEXTURE_2D, m_pTexture->glName );
-	glTexImage2D(GL_TEXTURE_2D, 0, fboFormats.colorInternalFormat, m_pTexture->realWidth, m_pTexture->realHeight, 0, fboFormats.colorFormat, fboFormats.colorType, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, fboFormats.colorInternalFormat, m_pTexture->realWidth, m_pTexture->realHeight, 0, fboFormats.colorFormat, fboFormats.colorType, nullptr);
 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
 	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
 	glBindTexture(GL_TEXTURE_2D, 0);
@@ -50,9 +50,9 @@ void RDRAMtoColorBuffer::init()
 
 void RDRAMtoColorBuffer::destroy()
 {
-	if (m_pTexture != NULL) {
+	if (m_pTexture != nullptr) {
 		textureCache().removeFrameBufferTexture(m_pTexture);
-		m_pTexture = NULL;
+		m_pTexture = nullptr;
 	}
 #ifndef GLES2
 	if (m_PBO != 0) {
@@ -193,13 +193,13 @@ void RDRAMtoColorBuffer::copyFromRDRAM(u32 _address, bool _bCFB)
 	const u32 dataSize = width*height * 4;
 #ifndef GLES2
 	PBOBinder binder(GL_PIXEL_UNPACK_BUFFER, m_PBO);
-	glBufferData(GL_PIXEL_UNPACK_BUFFER, dataSize, NULL, GL_DYNAMIC_DRAW);
+	glBufferData(GL_PIXEL_UNPACK_BUFFER, dataSize, nullptr, GL_DYNAMIC_DRAW);
 	GLubyte* ptr = (GLubyte*)glMapBufferRange(GL_PIXEL_UNPACK_BUFFER, 0, dataSize, GL_MAP_WRITE_BIT);
 #else
 	GLubyte* ptr = (GLubyte*)malloc(dataSize);
 	PBOBinder binder(ptr);
 #endif // GLES2
-	if (ptr == NULL)
+	if (ptr == nullptr)
 		return;
 
 	u32 * dst = (u32*)ptr;

@@ -70,12 +70,12 @@ void DepthBufferToRDRAM::init()
 	textureCache().addFrameBufferTextureSize(m_pDepthTexture->textureBytes);
 
 	glBindTexture(GL_TEXTURE_2D, m_pColorTexture->glName);
-	glTexImage2D(GL_TEXTURE_2D, 0, fboFormats.monochromeInternalFormat, m_pColorTexture->realWidth, m_pColorTexture->realHeight, 0, fboFormats.monochromeFormat, fboFormats.monochromeType, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, fboFormats.monochromeInternalFormat, m_pColorTexture->realWidth, m_pColorTexture->realHeight, 0, fboFormats.monochromeFormat, fboFormats.monochromeType, nullptr);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
 	glBindTexture(GL_TEXTURE_2D, m_pDepthTexture->glName);
-	glTexImage2D(GL_TEXTURE_2D, 0, fboFormats.depthInternalFormat, m_pDepthTexture->realWidth, m_pDepthTexture->realHeight, 0, GL_DEPTH_COMPONENT, fboFormats.depthType, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, fboFormats.depthInternalFormat, m_pDepthTexture->realWidth, m_pDepthTexture->realHeight, 0, GL_DEPTH_COMPONENT, fboFormats.depthType, nullptr);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
@@ -91,7 +91,7 @@ void DepthBufferToRDRAM::init()
 	// Generate and initialize Pixel Buffer Objects
 	glGenBuffers(1, &m_PBO);
 	glBindBuffer(GL_PIXEL_PACK_BUFFER, m_PBO);
-	glBufferData(GL_PIXEL_PACK_BUFFER, m_pDepthTexture->realWidth * m_pDepthTexture->realHeight * sizeof(float), NULL, GL_DYNAMIC_READ);
+	glBufferData(GL_PIXEL_PACK_BUFFER, m_pDepthTexture->realWidth * m_pDepthTexture->realHeight * sizeof(float), nullptr, GL_DYNAMIC_READ);
 	glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
 }
 
@@ -99,13 +99,13 @@ void DepthBufferToRDRAM::destroy() {
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 	glDeleteFramebuffers(1, &m_FBO);
 	m_FBO = 0;
-	if (m_pColorTexture != NULL) {
+	if (m_pColorTexture != nullptr) {
 		textureCache().removeFrameBufferTexture(m_pColorTexture);
-		m_pColorTexture = NULL;
+		m_pColorTexture = nullptr;
 	}
-	if (m_pDepthTexture != NULL) {
+	if (m_pDepthTexture != nullptr) {
 		textureCache().removeFrameBufferTexture(m_pDepthTexture);
-		m_pDepthTexture = NULL;
+		m_pDepthTexture = nullptr;
 	}
 	if (m_PBO != 0) {
 		glDeleteBuffers(1, &m_PBO);
@@ -123,7 +123,7 @@ bool DepthBufferToRDRAM::_prepareCopy(u32 _address, bool _copyChunk)
 	if (numPixels == 0) // Incorrect buffer size. Don't copy
 		return false;
 	FrameBuffer *pBuffer = frameBufferList().findBuffer(_address);
-	if (pBuffer == NULL || pBuffer->isAuxiliary() || pBuffer->m_pDepthBuffer == NULL || !pBuffer->m_pDepthBuffer->m_cleared)
+	if (pBuffer == nullptr || pBuffer->isAuxiliary() || pBuffer->m_pDepthBuffer == nullptr || !pBuffer->m_pDepthBuffer->m_cleared)
 		return false;
 
 	m_pCurDepthBuffer = pBuffer->m_pDepthBuffer;
@@ -187,7 +187,7 @@ bool DepthBufferToRDRAM::_copy(u32 _startAddress, u32 _endAddress)
 	glReadPixels(x0, y0, width, height, fboFormats.depthFormat, fboFormats.depthType, 0);
 
 	GLubyte* pixelData = (GLubyte*)glMapBufferRange(GL_PIXEL_PACK_BUFFER, 0, width * height * fboFormats.depthFormatBytes, GL_MAP_READ_BIT);
-	if (pixelData == NULL)
+	if (pixelData == nullptr)
 		return false;
 
 	f32 * ptr_src = (f32*)pixelData;
@@ -199,7 +199,7 @@ bool DepthBufferToRDRAM::_copy(u32 _startAddress, u32 _endAddress)
 
 	m_pCurDepthBuffer->m_cleared = false;
 	FrameBuffer * pBuffer = frameBufferList().findBuffer(m_pCurDepthBuffer->m_address);
-	if (pBuffer != NULL)
+	if (pBuffer != nullptr)
 		pBuffer->m_cleared = false;
 
 	glUnmapBuffer(GL_PIXEL_PACK_BUFFER);

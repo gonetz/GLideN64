@@ -70,7 +70,7 @@ void ColorBufferToRDRAM::_initFBTexture(void)
 	m_pTexture->textureBytes = m_pTexture->realWidth * m_pTexture->realHeight * 4;
 	textureCache().addFrameBufferTextureSize(m_pTexture->textureBytes);
 	glBindTexture(GL_TEXTURE_2D, m_pTexture->glName);
-	glTexImage2D(GL_TEXTURE_2D, 0, fboFormats.colorInternalFormat, m_pTexture->realWidth, m_pTexture->realHeight, 0, fboFormats.colorFormat, fboFormats.colorType, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, fboFormats.colorInternalFormat, m_pTexture->realWidth, m_pTexture->realHeight, 0, fboFormats.colorFormat, fboFormats.colorType, nullptr);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glBindTexture(GL_TEXTURE_2D, 0);
@@ -95,14 +95,14 @@ void ColorBufferToRDRAM::_destroyFBTexure(void)
 
 bool ColorBufferToRDRAM::_prepareCopy(u32 _startAddress)
 {
-	if (VI.width == 0 || frameBufferList().getCurrent() == NULL)
+	if (VI.width == 0 || frameBufferList().getCurrent() == nullptr)
 		return false;
 
 	OGLVideo & ogl = video();
 	const u32 curFrame = ogl.getBuffersSwapCount();
 	FrameBuffer * pBuffer = frameBufferList().findBuffer(_startAddress);
 
-	if (pBuffer == NULL || pBuffer->m_isOBScreen)
+	if (pBuffer == nullptr || pBuffer->m_isOBScreen)
 		return false;
 
 	if (m_frameCount == curFrame && pBuffer == m_pCurFrameBuffer && m_startAddress != _startAddress)

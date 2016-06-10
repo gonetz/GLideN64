@@ -119,19 +119,19 @@ void GBI_Unknown( u32 w0, u32 w1 )
 
 void GBIInfo::init()
 {
-	m_pCurrent = NULL;
+	m_pCurrent = nullptr;
 	_flushCommands();
 }
 
 void GBIInfo::destroy()
 {
-	m_pCurrent = NULL;
+	m_pCurrent = nullptr;
 	m_list.clear();
 }
 
 bool GBIInfo::isHWLSupported() const
 {
-	if (m_pCurrent == NULL)
+	if (m_pCurrent == nullptr)
 		return false;
 	switch (m_pCurrent->type) {
 		case S2DEX:
@@ -156,7 +156,7 @@ void GBIInfo::_makeCurrent(MicrocodeInfo * _pCurrent)
 		return;
 	}
 
-	if (m_pCurrent == NULL || (m_pCurrent->type != _pCurrent->type)) {
+	if (m_pCurrent == nullptr || (m_pCurrent->type != _pCurrent->type)) {
 		m_pCurrent = _pCurrent;
 		_flushCommands();
 
@@ -273,7 +273,7 @@ void GBIInfo::loadMicrocode(u32 uc_start, u32 uc_dstart, u16 uc_dsize)
 			if (strncmp( &uc_str[4], "SW", 2 ) == 0)
 				type = F3D;
 			else if (strncmp( &uc_str[4], "Gfx", 3 ) == 0) {
-				current.NoN = (strstr( uc_str + 4, ".NoN") != NULL);
+				current.NoN = (strstr( uc_str + 4, ".NoN") != nullptr);
 
 				if (strncmp( &uc_str[14], "F3D", 3 ) == 0) {
 					if (uc_str[28] == '1' || strncmp(&uc_str[28], "0.95", 4) == 0 || strncmp(&uc_str[28], "0.96", 4) == 0)

@@ -16,8 +16,8 @@ Config config;
 static
 const u32 uMegabyte = 1024U*1024U;
 
-static m64p_handle g_configVideoGeneral = NULL;
-static m64p_handle g_configVideoGliden64 = NULL;
+static m64p_handle g_configVideoGeneral = nullptr;
+static m64p_handle g_configVideoGliden64 = nullptr;
 
 static
 bool Config_SetDefault()
@@ -241,7 +241,7 @@ void Config_LoadConfig()
 		config.font.name = "arial.ttf";
 	char buf[16];
 	sprintf(buf, "0x%s", ConfigGetParamString(g_configVideoGliden64, "fontColor"));
-	long int uColor = strtol(buf, NULL, 16);
+	long int uColor = strtol(buf, nullptr, 16);
 	if (uColor != 0) {
 		config.font.color[0] = _SHIFTR(uColor, 16, 8);
 		config.font.color[1] = _SHIFTR(uColor, 8, 8);

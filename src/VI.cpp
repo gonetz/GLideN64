@@ -68,12 +68,12 @@ void VI_UpdateSize()
 //	const int divot = ((*REG.VI_STATUS) >> 4) & 1;
 	FrameBufferList & fbList = frameBufferList();
 	FrameBuffer * pBuffer = fbList.findBuffer(VI.lastOrigin);
-	DepthBuffer * pDepthBuffer = pBuffer != NULL ? pBuffer->m_pDepthBuffer : NULL;
+	DepthBuffer * pDepthBuffer = pBuffer != nullptr ? pBuffer->m_pDepthBuffer : nullptr;
 	if (config.frameBufferEmulation.enable && ((config.generalEmulation.hacks & hack_ZeldaMM) == 0) &&
 		((interlacedPrev != VI.interlaced) ||
 		(VI.width > 0 && VI.width != VI.widthPrev) ||
-		(!VI.interlaced && pDepthBuffer != NULL && pDepthBuffer->m_width != VI.width) ||
-		((config.generalEmulation.hacks & hack_ignoreVIHeightChange) == 0 && pBuffer != NULL && pBuffer->m_height != VI.height))
+		(!VI.interlaced && pDepthBuffer != nullptr && pDepthBuffer->m_width != VI.width) ||
+		((config.generalEmulation.hacks & hack_ignoreVIHeightChange) == 0 && pBuffer != nullptr && pBuffer->m_height != VI.height))
 	) {
 		fbList.removeBuffers(VI.widthPrev);
 		fbList.removeBuffers(VI.width);
@@ -110,7 +110,7 @@ void VI_UpdateScreen()
 	if (config.frameBufferEmulation.enable) {
 
 		FrameBuffer * pBuffer = frameBufferList().findBuffer(*REG.VI_ORIGIN);
-		if (pBuffer == NULL)
+		if (pBuffer == nullptr)
 			gDP.changed |= CHANGED_CPU_FB_WRITE;
 		else if (!FBInfo::fbInfo.isSupported() && !pBuffer->isValid()) {
 			gDP.changed |= CHANGED_CPU_FB_WRITE;
@@ -134,7 +134,7 @@ void VI_UpdateScreen()
 
 		if (bNeedSwap) {
 			if (bCFB) {
-				if (pBuffer == NULL || pBuffer->m_width != VI.width) {
+				if (pBuffer == nullptr || pBuffer->m_width != VI.width) {
 					if (!bVIUpdated) {
 						VI_UpdateSize();
 						ogl.updateScale();

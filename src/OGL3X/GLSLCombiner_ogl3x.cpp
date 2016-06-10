@@ -43,7 +43,7 @@ static std::string strFragmentShader;
 class NoiseTexture
 {
 public:
-	NoiseTexture() : m_pTexture(NULL), m_PBO(0), m_DList(0) {}
+	NoiseTexture() : m_pTexture(nullptr), m_PBO(0), m_DList(0) {}
 	void init();
 	void destroy();
 	void update();
@@ -72,7 +72,7 @@ void NoiseTexture::init()
 	m_pTexture->textureBytes = m_pTexture->realWidth * m_pTexture->realHeight;
 	textureCache().addFrameBufferTextureSize(m_pTexture->textureBytes);
 	glBindTexture(GL_TEXTURE_2D, m_pTexture->glName);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, m_pTexture->realWidth, m_pTexture->realHeight, 0, GL_RED, GL_UNSIGNED_BYTE, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, m_pTexture->realWidth, m_pTexture->realHeight, 0, GL_RED, GL_UNSIGNED_BYTE, nullptr);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glBindTexture(GL_TEXTURE_2D, 0);
@@ -80,14 +80,14 @@ void NoiseTexture::init()
 	// Generate Pixel Buffer Object. Initialize it with max buffer size.
 	glGenBuffers(1, &m_PBO);
 	PBOBinder binder(GL_PIXEL_UNPACK_BUFFER, m_PBO);
-	glBufferData(GL_PIXEL_UNPACK_BUFFER, 640*580, NULL, GL_DYNAMIC_DRAW);
+	glBufferData(GL_PIXEL_UNPACK_BUFFER, 640*580, nullptr, GL_DYNAMIC_DRAW);
 }
 
 void NoiseTexture::destroy()
 {
-	if (m_pTexture != NULL) {
+	if (m_pTexture != nullptr) {
 		textureCache().removeFrameBufferTexture(m_pTexture);
-		m_pTexture = NULL;
+		m_pTexture = nullptr;
 	}
 	glDeleteBuffers(1, &m_PBO);
 	m_PBO = 0;
@@ -102,7 +102,7 @@ void NoiseTexture::update()
 		return;
 	PBOBinder binder(GL_PIXEL_UNPACK_BUFFER, m_PBO);
 	GLubyte* ptr = (GLubyte*)glMapBufferRange(GL_PIXEL_UNPACK_BUFFER, 0, dataSize, GL_MAP_WRITE_BIT);
-	if (ptr == NULL)
+	if (ptr == nullptr)
 		return;
 	for (u32 y = 0; y < VI.height; ++y)	{
 		for (u32 x = 0; x < VI.width; ++x)
@@ -170,7 +170,7 @@ void InitShadowMapShader()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexImage2D(GL_TEXTURE_2D, 0, fboFormats.lutInternalFormat, 256, 1, 0, fboFormats.lutFormat, fboFormats.lutType, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, fboFormats.lutInternalFormat, 256, 1, 0, fboFormats.lutFormat, fboFormats.lutType, nullptr);
 
 	g_draw_shadow_map_program = createShaderProgram(default_vertex_shader, shadow_map_fragment_shader_float);
 }
@@ -197,7 +197,7 @@ static
 GLuint _createShader(GLenum _type, const char * _strShader)
 {
 	GLuint shader_object = glCreateShader(_type);
-	glShaderSource(shader_object, 1, &_strShader, NULL);
+	glShaderSource(shader_object, 1, &_strShader, nullptr);
 	glCompileShader(shader_object);
 	assert(checkShaderCompileStatus(shader_object));
 	return shader_object;
@@ -447,7 +447,7 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 
 	GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
 	const GLchar * strShaderData = strFragmentShader.data();
-	glShaderSource(fragmentShader, 1, &strShaderData, NULL);
+	glShaderSource(fragmentShader, 1, &strShaderData, nullptr);
 	glCompileShader(fragmentShader);
 	if (!checkShaderCompileStatus(fragmentShader))
 		logErrorShader(GL_FRAGMENT_SHADER, strFragmentShader);
@@ -613,8 +613,8 @@ void ShaderCombiner::updateRenderTarget(bool _bForce)
 void ShaderCombiner::updateScreenCoordsScale(bool _bForce)
 {
 	FrameBuffer * pCurrentBuffer = frameBufferList().getCurrent();
-	const float scaleX = pCurrentBuffer != NULL ? 1.0f / pCurrentBuffer->m_width : VI.rwidth;
-	const float scaleY = pCurrentBuffer != NULL ? 1.0f / pCurrentBuffer->m_height : VI.rheight;
+	const float scaleX = pCurrentBuffer != nullptr ? 1.0f / pCurrentBuffer->m_width : VI.rwidth;
+	const float scaleY = pCurrentBuffer != nullptr ? 1.0f / pCurrentBuffer->m_height : VI.rheight;
 	m_uniforms.uScreenCoordsScale.set(2.0f*scaleX, -2.0f*scaleY, _bForce);
 }
 
@@ -723,7 +723,7 @@ void ShaderCombiner::updateFrameBufferInfo(bool _bForce) {
 	int nFbFixedAlpha0 = 0, nFbFixedAlpha1 = 0;
 	int nMSTex0Enabled = 0, nMSTex1Enabled = 0;
 	TextureCache & cache = textureCache();
-	if (cache.current[0] != NULL && cache.current[0]->frameBufferTexture != CachedTexture::fbNone) {
+	if (cache.current[0] != nullptr && cache.current[0]->frameBufferTexture != CachedTexture::fbNone) {
 		if (cache.current[0]->size == G_IM_SIZ_8b) {
 			nFbMonochromeMode0 = 1;
 			if (gDP.otherMode.imageRead == 0)
@@ -732,7 +732,7 @@ void ShaderCombiner::updateFrameBufferInfo(bool _bForce) {
 			nFbMonochromeMode0 = 2;
 		nMSTex0Enabled = cache.current[0]->frameBufferTexture == CachedTexture::fbMultiSample ? 1 : 0;
 	}
-	if (cache.current[1] != NULL && cache.current[1]->frameBufferTexture != CachedTexture::fbNone) {
+	if (cache.current[1] != nullptr && cache.current[1]->frameBufferTexture != CachedTexture::fbNone) {
 		if (cache.current[1]->size == G_IM_SIZ_8b) {
 			nFbMonochromeMode1 = 1;
 			if (gDP.otherMode.imageRead == 0)
@@ -758,7 +758,7 @@ void ShaderCombiner::updateDepthInfo(bool _bForce) {
 		return;
 
 	FrameBuffer * pBuffer = frameBufferList().getCurrent();
-	if (pBuffer == NULL || pBuffer->m_pDepthBuffer == NULL)
+	if (pBuffer == nullptr || pBuffer->m_pDepthBuffer == nullptr)
 		return;
 
 	const int nDepthEnabled = (gSP.geometryMode & G_ZBUFFER) > 0 ? 1 : 0;

@@ -9,37 +9,37 @@
 #define DLSYM(a, b) dlsym(a, b)
 #endif // OS_WINDOWS
 
-ptr_ConfigGetSharedDataFilepath ConfigGetSharedDataFilepath = NULL;
-ptr_ConfigGetUserConfigPath ConfigGetUserConfigPath = NULL;
-ptr_ConfigGetUserDataPath ConfigGetUserDataPath = NULL;
-ptr_ConfigGetUserCachePath ConfigGetUserCachePath = NULL;
-ptr_ConfigOpenSection      ConfigOpenSection = NULL;
-ptr_ConfigDeleteSection ConfigDeleteSection = NULL;
-ptr_ConfigSaveSection ConfigSaveSection = NULL;
-ptr_ConfigSaveFile ConfigSaveFile = NULL;
-ptr_ConfigSetDefaultInt    ConfigSetDefaultInt = NULL;
-ptr_ConfigSetDefaultFloat  ConfigSetDefaultFloat = NULL;
-ptr_ConfigSetDefaultBool   ConfigSetDefaultBool = NULL;
-ptr_ConfigSetDefaultString ConfigSetDefaultString = NULL;
-ptr_ConfigGetParamInt      ConfigGetParamInt = NULL;
-ptr_ConfigGetParamFloat    ConfigGetParamFloat = NULL;
-ptr_ConfigGetParamBool     ConfigGetParamBool = NULL;
-ptr_ConfigGetParamString   ConfigGetParamString = NULL;
+ptr_ConfigGetSharedDataFilepath ConfigGetSharedDataFilepath = nullptr;
+ptr_ConfigGetUserConfigPath ConfigGetUserConfigPath = nullptr;
+ptr_ConfigGetUserDataPath ConfigGetUserDataPath = nullptr;
+ptr_ConfigGetUserCachePath ConfigGetUserCachePath = nullptr;
+ptr_ConfigOpenSection      ConfigOpenSection = nullptr;
+ptr_ConfigDeleteSection ConfigDeleteSection = nullptr;
+ptr_ConfigSaveSection ConfigSaveSection = nullptr;
+ptr_ConfigSaveFile ConfigSaveFile = nullptr;
+ptr_ConfigSetDefaultInt    ConfigSetDefaultInt = nullptr;
+ptr_ConfigSetDefaultFloat  ConfigSetDefaultFloat = nullptr;
+ptr_ConfigSetDefaultBool   ConfigSetDefaultBool = nullptr;
+ptr_ConfigSetDefaultString ConfigSetDefaultString = nullptr;
+ptr_ConfigGetParamInt      ConfigGetParamInt = nullptr;
+ptr_ConfigGetParamFloat    ConfigGetParamFloat = nullptr;
+ptr_ConfigGetParamBool     ConfigGetParamBool = nullptr;
+ptr_ConfigGetParamString   ConfigGetParamString = nullptr;
 
 /* definitions of pointers to Core video extension functions */
-ptr_VidExt_Init                  CoreVideo_Init = NULL;
-ptr_VidExt_Quit                  CoreVideo_Quit = NULL;
-ptr_VidExt_ListFullscreenModes   CoreVideo_ListFullscreenModes = NULL;
-ptr_VidExt_SetVideoMode          CoreVideo_SetVideoMode = NULL;
-ptr_VidExt_SetCaption            CoreVideo_SetCaption = NULL;
-ptr_VidExt_ToggleFullScreen      CoreVideo_ToggleFullScreen = NULL;
-ptr_VidExt_ResizeWindow          CoreVideo_ResizeWindow = NULL;
-ptr_VidExt_GL_GetProcAddress     CoreVideo_GL_GetProcAddress = NULL;
-ptr_VidExt_GL_SetAttribute       CoreVideo_GL_SetAttribute = NULL;
-ptr_VidExt_GL_GetAttribute       CoreVideo_GL_GetAttribute = NULL;
-ptr_VidExt_GL_SwapBuffers        CoreVideo_GL_SwapBuffers = NULL;
+ptr_VidExt_Init                  CoreVideo_Init = nullptr;
+ptr_VidExt_Quit                  CoreVideo_Quit = nullptr;
+ptr_VidExt_ListFullscreenModes   CoreVideo_ListFullscreenModes = nullptr;
+ptr_VidExt_SetVideoMode          CoreVideo_SetVideoMode = nullptr;
+ptr_VidExt_SetCaption            CoreVideo_SetCaption = nullptr;
+ptr_VidExt_ToggleFullScreen      CoreVideo_ToggleFullScreen = nullptr;
+ptr_VidExt_ResizeWindow          CoreVideo_ResizeWindow = nullptr;
+ptr_VidExt_GL_GetProcAddress     CoreVideo_GL_GetProcAddress = nullptr;
+ptr_VidExt_GL_SetAttribute       CoreVideo_GL_SetAttribute = nullptr;
+ptr_VidExt_GL_GetAttribute       CoreVideo_GL_GetAttribute = nullptr;
+ptr_VidExt_GL_SwapBuffers        CoreVideo_GL_SwapBuffers = nullptr;
 
-void(*renderCallback)(int) = NULL;
+void(*renderCallback)(int) = nullptr;
 
 m64p_error PluginAPI::PluginStartup(m64p_dynlib_handle _CoreLibHandle)
 {
@@ -82,7 +82,7 @@ m64p_error PluginAPI::PluginShutdown()
 #ifdef RSPTHREAD
 	_callAPICommand(acRomClosed);
 	delete m_pRspThread;
-	m_pRspThread = NULL;
+	m_pRspThread = nullptr;
 #else
 	video().stop();
 #endif
@@ -98,19 +98,19 @@ m64p_error PluginAPI::PluginGetVersion(
 )
 {
 	/* set version info */
-	if (_PluginType != NULL)
+	if (_PluginType != nullptr)
 		*_PluginType = M64PLUGIN_GFX;
 
-	if (_PluginVersion != NULL)
+	if (_PluginVersion != nullptr)
 		*_PluginVersion = PLUGIN_VERSION;
 
-	if (_APIVersion != NULL)
+	if (_APIVersion != nullptr)
 		*_APIVersion = VIDEO_PLUGIN_API_VERSION;
 
-	if (_PluginNamePtr != NULL)
+	if (_PluginNamePtr != nullptr)
 		*_PluginNamePtr = pluginName;
 
-	if (_Capabilities != NULL)
+	if (_Capabilities != nullptr)
 	{
 		*_Capabilities = 0;
 	}

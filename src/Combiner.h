@@ -148,7 +148,7 @@ private:
 		, m_bShaderCacheSupported(false)
 		, m_shadersLoaded(0)
 		, m_configOptionsBitSet(0)
-		, m_pCurrent(NULL) {}
+		, m_pCurrent(nullptr) {}
 	CombinerInfo(const CombinerInfo &);
 
 	void _saveShadersStorage() const;
