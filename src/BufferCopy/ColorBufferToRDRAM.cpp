@@ -17,8 +17,8 @@ ColorBufferToRDRAM::ColorBufferToRDRAM()
 	, m_pCurFrameBuffer(nullptr)
 	, m_frameCount(-1)
 	, m_startAddress(-1)
-	, m_lastVIWidth(-1)
-	, m_lastVIHeight(-1)
+	, m_lastBufferWidth(-1)
+	, m_lastBufferHeight(-1)
 {
 	m_allowedRealWidths[0] = 320;
 	m_allowedRealWidths[1] = 480;
@@ -65,8 +65,8 @@ void ColorBufferToRDRAM::_initFBTexture(void)
 	m_pTexture->mirrorT = 0;
 	//The actual VI width is not used for texture width because most texture widths
 	//cause slowdowns in the glReadPixels call, at least on Android
-	m_pTexture->realWidth = _getRealWidth(m_lastVIWidth);
-	m_pTexture->realHeight = m_lastVIHeight;
+	m_pTexture->realWidth = _getRealWidth(m_lastBufferWidth);
+	m_pTexture->realHeight = m_lastBufferHeight;
 	m_pTexture->textureBytes = m_pTexture->realWidth * m_pTexture->realHeight * 4;
 	textureCache().addFrameBufferTextureSize(m_pTexture->textureBytes);
 	glBindTexture(GL_TEXTURE_2D, m_pTexture->glName);
@@ -118,12 +118,12 @@ bool ColorBufferToRDRAM::_prepareCopy(u32 _startAddress)
 		return false;
 
 	if(m_pTexture == nullptr ||
-		(m_lastVIWidth != VI.width || m_lastVIHeight != VI.height))
+		(m_lastBufferWidth != pBuffer->m_width || m_lastBufferHeight != pBuffer->m_height))
 	{
 		_destroyFBTexure();
 
-		m_lastVIWidth = VI.width;
-		m_lastVIHeight = VI.height;
+		m_lastBufferWidth = pBuffer->m_width;
+		m_lastBufferHeight = pBuffer->m_height;
 		_initFBTexture();
 		m_pixelData.resize(m_pTexture->realWidth * m_pTexture->realHeight * fboFormats.colorFormatBytes);
 	}

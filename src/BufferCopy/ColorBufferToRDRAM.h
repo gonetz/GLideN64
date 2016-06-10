@@ -62,8 +62,8 @@ private:
 	u32 m_frameCount;
 	u32 m_startAddress;
 
-	u32 m_lastVIWidth;
-	u32 m_lastVIHeight;
+	u32 m_lastBufferWidth;
+	u32 m_lastBufferHeight;
 
 	std::array<u32, 3> m_allowedRealWidths;
 };
