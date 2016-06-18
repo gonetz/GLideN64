@@ -1180,8 +1180,12 @@ void OGLRender::drawTriangles()
 	glDrawElements(GL_TRIANGLES, triangles.num, GL_UNSIGNED_BYTE, triangles.elements);
 //	glMemoryBarrier(GL_FRAMEBUFFER_BARRIER_BIT);
 
-	if (config.frameBufferEmulation.copyDepthToRDRAM == Config::cdSoftwareRender && gDP.otherMode.depthUpdate != 0)
+	if (config.frameBufferEmulation.copyDepthToRDRAM == Config::cdSoftwareRender && gDP.otherMode.depthUpdate != 0) {
 		renderTriangles(triangles.vertices, triangles.elements, triangles.num);
+		FrameBuffer * pCurrentDepthBuffer = frameBufferList().findBuffer(gDP.depthImageAddress);
+		if (pCurrentDepthBuffer != nullptr)
+			pCurrentDepthBuffer->m_cleared = false;
+	}
 
 	triangles.num = 0;
 }
