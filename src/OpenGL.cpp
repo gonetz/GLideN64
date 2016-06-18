@@ -1477,6 +1477,7 @@ void OGLRender::drawTexturedRect(const TexturedRectParams & _params)
 			glDisableVertexAttribArray(SC_NUMLIGHTS);
 			glDisableVertexAttribArray(SC_MODIFY);
 		}
+		currentCombiner()->updateRenderState();
 
 		if (_params.texrectCmd && texturedRectSpecial != nullptr && texturedRectSpecial(_params)) {
 			gSP.changed |= CHANGED_GEOMETRYMODE;
@@ -1488,8 +1489,6 @@ void OGLRender::drawTexturedRect(const TexturedRectParams & _params)
 	}
 
 	ShaderCombiner * pCurrentCombiner = currentCombiner();
-	pCurrentCombiner->updateRenderState();
-
 	const FrameBuffer * pCurrentBuffer = _params.pBuffer;
 	OGLVideo & ogl = video();
 	TextureCache & cache = textureCache();
