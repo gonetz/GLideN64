@@ -10,7 +10,10 @@
 #include "winlnxdefs.h"
 #endif
 
-#ifdef GLES2
+#ifdef __LIBRETRO__
+#include <glsm/glsmsym.h>
+#include <GLideN64_libretro.h>
+#elif GLES2
 #include <GLES2/gl2.h>
 #define GL_DRAW_FRAMEBUFFER GL_FRAMEBUFFER
 #define GL_READ_FRAMEBUFFER GL_FRAMEBUFFER
@@ -73,7 +76,9 @@ typedef char GLchar;
 #define GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT 0x84FF
 #endif
 
+#ifndef __LIBRETRO__
 #include "glState.h"
+#endif
 #include "gSP.h"
 
 #define INDEXMAP_SIZE 80U
