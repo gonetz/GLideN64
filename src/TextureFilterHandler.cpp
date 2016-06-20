@@ -1,13 +1,13 @@
 #include <stdarg.h>
 #include "GLideNHQ/Ext_TxFilter.h"
 
-#include "wst.h"
 #include "RSP.h"
 #include "OpenGL.h"
 #include "Config.h"
 #include "PluginAPI.h"
 #include "FrameBuffer.h"
 #include "TextureFilterHandler.h"
+#include "wst.h"
 
 static
 u32 textureFilters[] = {
