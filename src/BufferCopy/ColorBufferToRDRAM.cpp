@@ -4,6 +4,7 @@
 #include "ColorBufferToRDRAM.h"
 #include "WriteToRDRAM.h"
 
+#include <FBOTextureFormats.h>
 #include <FrameBuffer.h>
 #include <Textures.h>
 #include <Config.h>

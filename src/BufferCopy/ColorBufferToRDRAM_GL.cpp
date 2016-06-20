@@ -1,6 +1,7 @@
 #include "ColorBufferToRDRAM.h"
 
 #include <Textures.h>
+#include <FBOTextureFormats.h>
 
 class ColorBufferToRDRAM_GL : public ColorBufferToRDRAM
 {

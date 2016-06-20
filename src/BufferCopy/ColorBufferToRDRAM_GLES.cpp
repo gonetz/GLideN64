@@ -2,6 +2,7 @@
 #include "ColorBufferToRDRAM.h"
 
 #include <Textures.h>
+#include <FBOTextureFormats.h>
 
 #include <ui/GraphicBuffer.h>
 #include <android/native_window.h>

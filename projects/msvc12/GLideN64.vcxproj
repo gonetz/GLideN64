@@ -230,6 +230,7 @@
     <ClCompile Include="..\..\src\DepthBufferRender\DepthBufferRender.cpp" />
     <ClCompile Include="..\..\src\F3DEX2CBFD.cpp" />
     <ClCompile Include="..\..\src\F3DSWSE.cpp" />
+    <ClCompile Include="..\..\src\FBOTextureFormats.cpp" />
     <ClCompile Include="..\..\src\FrameBuffer.cpp" />
     <ClCompile Include="..\..\src\FrameBufferInfo.cpp" />
     <ClCompile Include="..\..\src\GBI.cpp" />
@@ -325,6 +326,7 @@
     <ClInclude Include="..\..\src\DepthBufferRender\DepthBufferRender.h" />
     <ClInclude Include="..\..\src\F3DEX2CBFD.h" />
     <ClInclude Include="..\..\src\F3DSWSE.h" />
+    <ClInclude Include="..\..\src\FBOTextureFormats.h" />
     <ClInclude Include="..\..\src\FrameBuffer.h" />
     <ClInclude Include="..\..\src\FrameBufferInfo.h" />
     <ClInclude Include="..\..\src\FrameBufferInfoAPI.h" />

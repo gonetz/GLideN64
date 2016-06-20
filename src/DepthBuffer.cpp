@@ -11,6 +11,7 @@
 #include "VI.h"
 #include "Config.h"
 #include "Debug.h"
+#include "FBOTextureFormats.h"
 
 const GLuint ZlutImageUnit = 0;
 const GLuint TlutImageUnit = 1;

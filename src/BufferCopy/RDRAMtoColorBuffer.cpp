@@ -1,5 +1,6 @@
 #include "RDRAMtoColorBuffer.h"
 
+#include <FBOTextureFormats.h>
 #include <FrameBufferInfo.h>
 #include <GLSLCombiner.h>
 #include <FrameBuffer.h>

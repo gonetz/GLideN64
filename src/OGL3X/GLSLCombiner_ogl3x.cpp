@@ -4,16 +4,17 @@
 #include <string>
 #include <vector>
 
-#include "../N64.h"
-#include "../OpenGL.h"
-#include "../Config.h"
-#include "../GLSLCombiner.h"
-#include "../ShaderUtils.h"
-#include "../FrameBuffer.h"
-#include "../DepthBuffer.h"
-#include "../RSP.h"
-#include "../VI.h"
-#include "../Log.h"
+#include <N64.h>
+#include <OpenGL.h>
+#include <Config.h>
+#include <GLSLCombiner.h>
+#include <ShaderUtils.h>
+#include <FrameBuffer.h>
+#include <DepthBuffer.h>
+#include <RSP.h>
+#include <VI.h>
+#include <Log.h>
+#include <FBOTextureFormats.h>
 
 #include "Shaders_ogl3x.h"
 

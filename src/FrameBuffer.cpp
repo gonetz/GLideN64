@@ -18,6 +18,7 @@
 #include "Debug.h"
 #include "PostProcessor.h"
 #include "FrameBufferInfo.h"
+#include "FBOTextureFormats.h"
 #include "Log.h"
 
 #include "BufferCopy/ColorBufferToRDRAM.h"

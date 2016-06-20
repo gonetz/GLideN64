@@ -21,6 +21,7 @@ set(GLideN64_SOURCES
   F3DSWSE.cpp
   F3DEX2.cpp
   F3DEX2CBFD.cpp
+  FBOTextureFormats.cpp
   FrameBuffer.cpp
   FrameBufferInfo.cpp
   GBI.cpp

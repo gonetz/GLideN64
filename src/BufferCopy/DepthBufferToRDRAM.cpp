@@ -5,6 +5,7 @@
 #include "DepthBufferToRDRAM.h"
 #include "WriteToRDRAM.h"
 
+#include <FBOTextureFormats.h>
 #include <FrameBuffer.h>
 #include <DepthBuffer.h>
 #include <Textures.h>
