@@ -25,6 +25,8 @@ struct DepthBuffer
 	GLuint m_depthImageFBO;
 	CachedTexture *m_pDepthImageTexture;
 	CachedTexture *m_pDepthBufferTexture;
+	GLuint m_depthRenderbuffer;
+	u32 m_depthRenderbufferWidth;
 	bool m_cleared;
 	// multisampling
 	CachedTexture *m_pResolveDepthBufferTexture;
@@ -36,6 +38,7 @@ struct DepthBuffer
 
 private:
 	void _initDepthBufferTexture(FrameBuffer * _pBuffer, CachedTexture *_pTexture, bool _multisample);
+	void _initDepthBufferRenderbuffer(FrameBuffer * _pBuffer);
 	void _DepthBufferTexture(FrameBuffer * _pBuffer);
 };
 
