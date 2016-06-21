@@ -707,16 +707,24 @@ void FrameBufferList::attachDepthBuffer()
 {
 	if (m_pCurrent == nullptr)
 		return;
+#ifdef VC
+	const GLenum discards[]  = {GL_DEPTH_ATTACHMENT};
+	glDiscardFramebufferEXT(GL_FRAMEBUFFER, 1, discards);
+#endif
 
 	DepthBuffer * pDepthBuffer = depthBufferList().getCurrent();
 	if (m_pCurrent->m_FBO > 0 && pDepthBuffer != nullptr) {
 		pDepthBuffer->initDepthImageTexture(m_pCurrent);
 		pDepthBuffer->initDepthBufferTexture(m_pCurrent);
+#ifndef USE_DEPTH_RENDERBUFFER
 #ifdef GLES2
 		if (pDepthBuffer->m_pDepthBufferTexture->realWidth == m_pCurrent->m_pTexture->realWidth) {
 #else
 		if (pDepthBuffer->m_pDepthBufferTexture->realWidth >= m_pCurrent->m_pTexture->realWidth) {
-#endif
+#endif // GLES2
+#else
+		if (pDepthBuffer->m_depthRenderbufferWidth == m_pCurrent->m_pTexture->realWidth) {
+#endif // USE_DEPTH_RENDERBUFFER
 			m_pCurrent->m_pDepthBuffer = pDepthBuffer;
 			pDepthBuffer->setDepthAttachment(GL_DRAW_FRAMEBUFFER);
 			if (video().getRender().isImageTexturesSupported() && config.frameBufferEmulation.N64DepthCompare != 0)

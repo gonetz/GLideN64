@@ -64,6 +64,7 @@ if(EXISTS "/opt/vc/include/bcm_host.h")
   set(GLES2 ON)
   add_definitions(
     -DVC
+    -DUSE_DEPTH_RENDERBUFFER
   )
   include_directories(
     "/opt/vc/include"
