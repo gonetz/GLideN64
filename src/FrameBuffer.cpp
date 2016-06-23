@@ -368,21 +368,14 @@ CachedTexture * FrameBuffer::_getSubTexture(u32 _t)
 	if (y0 + copyHeight > m_pTexture->realHeight)
 		copyHeight = m_pTexture->realHeight - y0;
 
-#ifdef GLES2
-	glBindFramebuffer(GL_READ_FRAMEBUFFER, m_FBO);
-	glCopyTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, x0, y0, copyWidth, copyHeight, 0);
-	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
-#else
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, m_FBO);
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_SubFBO);
-	glDisable(GL_SCISSOR_TEST);
-	glBlitFramebuffer(x0, y0, x0 + copyWidth, y0 + copyHeight,
-		0, 0, copyWidth, copyHeight,
-		GL_COLOR_BUFFER_BIT, GL_NEAREST);
-	glEnable(GL_SCISSOR_TEST);
+	video().getRender().copyTexturedRect(x0, y0, x0 + copyWidth, y0 + copyHeight,
+										 m_pTexture->realWidth,m_pTexture->realHeight, m_pTexture->glName,
+										 0, 0, copyWidth, copyHeight,
+										 m_pSubTexture->realWidth, m_pSubTexture->realHeight, GL_NEAREST);
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
 	frameBufferList().setCurrentDrawBuffer();
-#endif
 
 	return m_pSubTexture;
 }
