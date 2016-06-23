@@ -746,8 +746,8 @@ void FrameBuffer_Init()
 {
 	frameBufferList().init();
 	if (config.frameBufferEmulation.enable != 0) {
-#ifndef GLES2
 	ColorBufferToRDRAM::get().init();
+#ifndef GLES2
 	DepthBufferToRDRAM::get().init();
 #endif
 	RDRAMtoColorBuffer::get().init();
@@ -941,25 +941,12 @@ void FrameBuffer_ActivateBufferTextureBG(u32 t, FrameBuffer *pBuffer )
 
 void FrameBuffer_CopyToRDRAM(u32 _address, bool _sync)
 {
-#ifndef GLES2
 	ColorBufferToRDRAM::get().copyToRDRAM(_address, _sync);
-#else
-	if ((config.generalEmulation.hacks & hack_subscreen) == 0)
-		return;
-	if (VI.width == 0 || frameBufferList().getCurrent() == nullptr)
-		return;
-	FrameBuffer *pBuffer = frameBufferList().findBuffer(_address);
-	if (pBuffer == nullptr || pBuffer->m_width < VI.width || pBuffer->m_isOBScreen)
-		return;
-	copyWhiteToRDRAM(pBuffer);
-#endif
 }
 
 void FrameBuffer_CopyChunkToRDRAM(u32 _address)
 {
-#ifndef GLES2
 	ColorBufferToRDRAM::get().copyChunkToRDRAM(_address);
-#endif
 }
 
 bool FrameBuffer_CopyDepthBuffer( u32 address )

@@ -30,8 +30,6 @@ ColorBufferToRDRAM::~ColorBufferToRDRAM()
 {
 }
 
-#ifndef GLES2
-
 void ColorBufferToRDRAM::init()
 {
 	// generate a framebuffer
@@ -160,15 +158,14 @@ bool ColorBufferToRDRAM::_prepareCopy(u32 _startAddress)
 			width = m_pCurFrameBuffer->m_pTexture->realWidth;
 			height = m_pCurFrameBuffer->m_pTexture->realHeight;
 		}
-		glDisable(GL_SCISSOR_TEST);
-		glBlitFramebuffer(
-			x0, 0, x0 + width, height,
-			0, 0, VI.width, VI.height,
-			GL_COLOR_BUFFER_BIT, GL_NEAREST
-			);
-		glEnable(GL_SCISSOR_TEST);
+
+		CachedTexture * pInputTexture = frameBufferList().getCurrent()->m_pTexture;
+		ogl.getRender().copyTexturedRect(x0, 0, x0 + width, height,
+										 pInputTexture->realWidth, pInputTexture->realHeight, pInputTexture->glName,
+										 0, 0, VI.width, VI.height,
+										 m_pTexture->realWidth, m_pTexture->realHeight, GL_NEAREST);
+
 		glBindFramebuffer(GL_READ_FRAMEBUFFER, m_FBO);
-		frameBufferList().setCurrentDrawBuffer();
 	}
 
 	m_frameCount = curFrame;
@@ -209,7 +206,9 @@ void ColorBufferToRDRAM::_copy(u32 _startAddress, u32 _endAddress, bool _sync)
 	const GLint y1 = max_height - (_startAddress - m_pCurFrameBuffer->m_startAddress) / stride;
 	const GLsizei height = std::min(max_height, 1u + y1 - y0);
 
-	if (!_readPixels(x0, y0, width, height, m_pCurFrameBuffer->m_size, _sync))
+	const bool pixelsRead = _readPixels(x0, y0, width, height, m_pCurFrameBuffer->m_size, _sync);
+	frameBufferList().setCurrentDrawBuffer();
+	if (!pixelsRead)
 		return;
 
 	if (m_pCurFrameBuffer->m_size == G_IM_SIZ_32b) {
@@ -262,8 +261,6 @@ void ColorBufferToRDRAM::copyChunkToRDRAM(u32 _address)
 		return;
 	_copy(_address, _address + 0x1000, true);
 }
-
-#endif // GLES2
 
 void copyWhiteToRDRAM(FrameBuffer * _pBuffer)
 {
