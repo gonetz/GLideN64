@@ -767,3 +767,15 @@ MAIN_SHADER_VERSION
 "  fragColor = uTestColor;													\n"
 "}																			\n"
 ;
+
+const char* strTextureCopyShader =
+MAIN_SHADER_VERSION
+"in mediump vec2 vTexCoord0;                            \n"
+"uniform sampler2D uTex0;				                \n"
+"out lowp vec4 fragColor;								\n"
+"                                                       \n"
+"void main()                                            \n"
+"{                                                      \n"
+"    fragColor = texture(uTex0, vTexCoord0);	        \n"
+"}							                            \n"
+;

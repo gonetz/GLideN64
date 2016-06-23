@@ -496,3 +496,19 @@ SHADER_VERSION
 "  gl_FragColor = uTestColor;												\n"
 "}																			\n"
 ;
+
+const char* strTextureCopyShader =
+SHADER_VERSION
+"#if (__VERSION__ > 120)								\n"
+"# define IN in											\n"
+"#else													\n"
+"# define IN varying									\n"
+"#endif // __VERSION __									\n"
+"IN mediump vec2 vTexCoord0;                            \n"
+"uniform sampler2D uTex0;				                \n"
+"                                                       \n"
+"void main()                                            \n"
+"{                                                      \n"
+"    gl_FragColor = texture2D(uTex0, vTexCoord0);       \n"
+"}							                            \n"
+;

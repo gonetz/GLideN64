@@ -1819,10 +1819,24 @@ void OGLRender::_initData()
 	for (u32 i = 0; i < VERTBUFF_SIZE; ++i)
 		triangles.vertices[i].w = 1.0f;
 	triangles.num = 0;
+
+#ifdef NO_BLIT_BUFFER_COPY
+	m_programCopyTex = createShaderProgram(strTexrectDrawerVertexShader, strTextureCopyShader);
+	glUseProgram(m_programCopyTex);
+	GLint loc = glGetUniformLocation(m_programCopyTex, "uTex0");
+	assert(loc >= 0);
+	glUniform1i(loc, 0);
+	glUseProgram(0);
+#endif
 }
 
 void OGLRender::_destroyData()
 {
+#ifdef NO_BLIT_BUFFER_COPY
+	glDeleteProgram(m_programCopyTex);
+	m_programCopyTex = 0;
+#endif
+
 	m_renderState = rsNone;
 	m_texrectDrawer.destroy();
 	if (config.bloomFilter.enable != 0)
@@ -1855,3 +1869,97 @@ void OGLRender::_setSpecialTexrect() const
 	else
 		texturedRectSpecial = nullptr;
 }
+
+#ifdef NO_BLIT_BUFFER_COPY
+void OGLRender::copyTexturedRect(GLint _srcX0, GLint _srcY0, GLint _srcX1, GLint _srcY1,
+								 GLuint _srcWidth, GLuint _srcHeight, GLuint _srcTex,
+								 GLint _dstX0, GLint _dstY0, GLint _dstX1, GLint _dstY1,
+								 GLuint _dstWidth, GLuint _dstHeight, GLenum _filter)
+{
+	glDisableVertexAttribArray(SC_COLOR);
+	glDisableVertexAttribArray(SC_TEXCOORD1);
+	glDisableVertexAttribArray(SC_NUMLIGHTS);
+	glDisableVertexAttribArray(SC_MODIFY);
+	glEnableVertexAttribArray(SC_TEXCOORD0);
+	glVertexAttribPointer(SC_POSITION, 4, GL_FLOAT, GL_FALSE, sizeof(GLVertex), &m_rect[0].x);
+	glVertexAttribPointer(SC_TEXCOORD0, 2, GL_FLOAT, GL_FALSE, sizeof(GLVertex), &m_rect[0].s0);
+	glUseProgram(m_programCopyTex);
+
+	const float scaleX = 1.0f / _dstWidth;
+	const float scaleY = 1.0f / _dstHeight;
+	const float X0 = _dstX0 * (2.0f * scaleX) - 1.0f;
+	const float Y0 = _dstY0 * (2.0f * scaleY) - 1.0f;
+	const float X1 = _dstX1 * (2.0f * scaleX) - 1.0f;
+	const float Y1 = _dstY1 * (2.0f * scaleY) - 1.0f;
+	const float Z = 1.0f;
+	const float W = 1.0f;
+
+	m_rect[0].x = X0;
+	m_rect[0].y = Y0;
+	m_rect[0].z = Z;
+	m_rect[0].w = W;
+	m_rect[1].x = X1;
+	m_rect[1].y = Y0;
+	m_rect[1].z = Z;
+	m_rect[1].w = W;
+	m_rect[2].x = X0;
+	m_rect[2].y = Y1;
+	m_rect[2].z = Z;
+	m_rect[2].w = W;
+	m_rect[3].x = X1;
+	m_rect[3].y = Y1;
+	m_rect[3].z = Z;
+	m_rect[3].w = W;
+
+	const float scaleS = 1.0f / _srcWidth;
+	const float scaleT = 1.0f / _srcHeight;
+
+	const float S0 = _srcX0 * scaleS;
+	const float S1 = _srcX1 * scaleS;
+	const float T0 = _srcY0 * scaleT;
+	const float T1 = _srcY1 * scaleT;
+
+	m_rect[0].s0 = S0;
+	m_rect[0].t0 = T0;
+	m_rect[1].s0 = S1;
+	m_rect[1].t0 = T0;
+	m_rect[2].s0 = S0;
+	m_rect[2].t0 = T1;
+	m_rect[3].s0 = S1;
+	m_rect[3].t0 = T1;
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, _srcTex);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, _filter);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, _filter);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+	glViewport(0, 0, _dstWidth, _dstHeight);
+	glDisable(GL_CULL_FACE);
+	glDisable(GL_BLEND);
+	glDisable(GL_DEPTH_TEST);
+	glDepthMask(FALSE);
+	glDisable(GL_SCISSOR_TEST);
+	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+	glEnable(GL_SCISSOR_TEST);
+
+	gSP.changed |= CHANGED_GEOMETRYMODE | CHANGED_VIEWPORT;
+	gDP.changed |= CHANGED_RENDERMODE | CHANGED_TEXTURE;
+	m_renderState = rsNone;
+}
+#else
+void OGLRender::copyTexturedRect(GLint _srcX0, GLint _srcY0, GLint _srcX1, GLint _srcY1,
+								 GLuint _srcWidth, GLuint _srcHeight, GLuint _srcTex,
+								 GLint _dstX0, GLint _dstY0, GLint _dstX1, GLint _dstY1,
+								 GLuint _dstWidth, GLuint _dstHeight, GLenum _filter)
+{
+	glDisable(GL_SCISSOR_TEST);
+	glBlitFramebuffer(
+		_srcX0, _srcY0, _srcX1, _srcY1,
+		_dstX0, _dstY0, _dstX1, _dstY1,
+		GL_COLOR_BUFFER_BIT, _filter
+		);
+	glEnable(GL_SCISSOR_TEST);
+}
+#endif

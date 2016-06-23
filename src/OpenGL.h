@@ -90,6 +90,7 @@ extern const char * strTexrectDrawerTex3PointFilter;
 extern const char * strTexrectDrawerTexBilinearFilter;
 extern const char * strTexrectDrawerFragmentShaderTex;
 extern const char * strTexrectDrawerFragmentShaderClean;
+extern const char * strTextureCopyShader;
 
 class CachedTexture;
 class OGLRender
@@ -108,16 +109,21 @@ public:
 		float dsdx, dtdy;
 		bool flip, forceAjustScale, texrectCmd;
 		const FrameBuffer * pBuffer;
+		const CachedTexture * pInputTexture;
+		const CachedTexture * pOutputTexture;
 		TexturedRectParams(float _ulx, float _uly, float _lrx, float _lry,
 						   float _uls, float _ult, float _lrs, float _lrt,
 						   float _dsdx, float _dtdy,
 						   bool _flip, bool _forceAjustScale, bool _texrectCmd,
-						   const FrameBuffer * _pBuffer) :
+						   const FrameBuffer * _pBuffer,
+						   const CachedTexture * _pInputTexture = 0,
+						   const CachedTexture * _pOutputTexture = 0
+						   ) :
 			ulx(_ulx), uly(_uly), lrx(_lrx), lry(_lry),
 			uls(_uls), ult(_ult), lrs(_lrs), lrt(_lrt),
 			dsdx(_dsdx), dtdy(_dtdy),
 			flip(_flip), forceAjustScale(_forceAjustScale), texrectCmd(_texrectCmd),
-			pBuffer(_pBuffer)
+			pBuffer(_pBuffer), pInputTexture(_pInputTexture), pOutputTexture(_pOutputTexture)
 		{}
 	private:
 		friend class OGLRender;
@@ -127,6 +133,10 @@ public:
 	};
 	void correctTexturedRectParams(TexturedRectParams & _params);
 	void drawTexturedRect(const TexturedRectParams & _params);
+	void copyTexturedRect(GLint _srcX0, GLint _srcY0, GLint _srcX1, GLint _srcY1,
+						  GLuint _srcWidth, GLuint _srcHeight, GLuint _srcTex,
+						  GLint _dstX0, GLint _dstY0, GLint _dstX1, GLint _dstY1,
+						  GLuint _dstWidth, GLuint _dstHeight, GLenum _filter);
 	void drawText(const char *_pText, float x, float y);
 	void clearDepthBuffer(u32 _uly, u32 _lry);
 	void clearColorBuffer( float * _pColor );
@@ -246,6 +256,8 @@ private:
 	bool m_bImageTexture;
 	bool m_bFlatColors;
 	TexrectDrawer m_texrectDrawer;
+
+	GLuint m_programCopyTex;
 };
 
 class OGLVideo
