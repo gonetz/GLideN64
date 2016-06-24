@@ -63,7 +63,7 @@ private:
 	};
 
 	GLuint m_currentBuffer;
-	OGLRender::OGL_RENDERER m_renderer;
+	bool m_isBufferSubDataSupported;
 
 	UniformBlockData<tuTotal, 1> m_textureBlock;
 	UniformBlockData<cuTotal, 2> m_colorsBlock;
