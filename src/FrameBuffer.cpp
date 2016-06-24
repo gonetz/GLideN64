@@ -2,6 +2,10 @@
 #include <math.h>
 #include <algorithm>
 #include <vector>
+#ifdef GLES2
+#define GL_GLEXT_PROTOTYPES
+#include <GLES2/gl2ext.h>
+#endif
 #include "OpenGL.h"
 #include "FrameBuffer.h"
 #include "DepthBuffer.h"
@@ -591,6 +595,11 @@ void FrameBufferList::saveBuffer(u32 _address, u16 _format, u16 _size, u16 _widt
 		} else {
 			m_pCurrent->m_resolved = false;
 			glBindFramebuffer(GL_FRAMEBUFFER, m_pCurrent->m_FBO);
+			
+			//Needed for some devices
+			if (_address == gDP.depthImageAddress)
+				glClear(GL_DEPTH_BUFFER_BIT);
+			 
 			if (m_pCurrent->m_size != _size) {
 				f32 fillColor[4];
 				gDPGetFillColor(fillColor);
@@ -707,6 +716,14 @@ void FrameBufferList::attachDepthBuffer()
 {
 	if (m_pCurrent == nullptr)
 		return;
+
+	//Needed by some devices
+	const GLenum discards[]  = {GL_DEPTH_ATTACHMENT};
+#ifdef GLES2
+	glDiscardFramebufferEXT(GL_FRAMEBUFFER, 1, discards);
+#else
+	glInvalidateFramebuffer(GL_FRAMEBUFFER, 1, discards);
+#endif
 
 	DepthBuffer * pDepthBuffer = depthBufferList().getCurrent();
 	if (m_pCurrent->m_FBO > 0 && pDepthBuffer != nullptr) {
