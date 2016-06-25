@@ -1723,6 +1723,10 @@ void OGLRender::_initExtensions()
 	const GLubyte * strRenderer = glGetString(GL_RENDERER);
 	if (strstr((const char*)strRenderer, "Adreno") != nullptr)
 		m_oglRenderer = glrAdreno;
+	else if (strstr((const char*)strRenderer, "PowerVR") != nullptr)
+		m_oglRenderer = glrPowerVR;
+	else if (strstr((const char*)strRenderer, "Mali") != nullptr)
+		m_oglRenderer = glrMali;
 	LOG(LOG_VERBOSE, "OpenGL renderer: %s\n", strRenderer);
 
 	fboFormats.init();

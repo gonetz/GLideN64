@@ -165,7 +165,9 @@ public:
 
 	enum OGL_RENDERER {
 		glrOther,
-		glrAdreno
+		glrAdreno,
+		glrPowerVR,
+		glrMali
 	};
 	OGL_RENDERER getRenderer() const { return m_oglRenderer; }
 
