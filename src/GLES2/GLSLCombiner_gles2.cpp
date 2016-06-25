@@ -289,7 +289,7 @@ void ShaderCombiner::update(bool _bForce) {
 	}
 
 	updateFogMode(_bForce);
-	updateBlendMode();
+	updateBlendMode(_bForce);
 	updateDitherMode(_bForce);
 	updateLOD(_bForce);
 	updateTextureInfo(_bForce);
