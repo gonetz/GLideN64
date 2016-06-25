@@ -10,10 +10,16 @@ void FBOTextureFormats::init()
 	monochromeType = GL_UNSIGNED_SHORT_5_6_5;
 	monochromeFormatBytes = 2;
 
+#ifndef VC
+	depthInternalFormat = GL_DEPTH_COMPONENT;
+	depthFormatBytes = 4;
+#else
 	depthInternalFormat = GL_DEPTH_COMPONENT16;
+	depthFormatBytes = 2;
+#endif
+
 	depthFormat = GL_DEPTH_COMPONENT;
 	depthType = GL_UNSIGNED_INT;
-	depthFormatBytes = 2;
 
 	if (OGLVideo::isExtensionSupported("GL_OES_rgb8_rgba8")) {
 		colorInternalFormat = GL_RGBA;
