@@ -4,8 +4,16 @@
 #include <string.h>
 
 void MultMatrix( float m0[4][4], float m1[4][4], float dest[4][4]);
-void MultMatrix2(float m0[4][4], float m1[4][4] );
 void TransformVectorNormalize(float vec[3], float mtx[4][4]);
+void Normalize(float v[3]);
+float DotProduct(const float v0[3], const float v1[3]);
+
+inline void MultMatrix2(float m0[4][4], float m1[4][4])
+{
+	float dst[4][4];
+	MultMatrix(m0, m1, dst);
+	memcpy( m0, dst, sizeof(float) * 16 );
+}
 
 inline void CopyMatrix( float m0[4][4], float m1[4][4] )
 {
@@ -92,78 +100,6 @@ inline void Transpose3x3Matrix( float mtx[4][4] )
 	mtx[1][2] = mtx[2][1];
 	mtx[2][1] = tmp;
 #endif // WIN32_ASM
-}
-
-inline void Normalize(float v[3])
-{
-#ifdef WIN32_ASM
-	__asm {
-		mov		esi, dword ptr [v]
-										//	ST(6)			ST(5)			ST(4)			ST(3)			ST(2)			ST(1)			ST
-		fld		dword ptr [esi+08h]		//																									v2
-		fld		dword ptr [esi+04h]		//																					v2				v1
-		fld		dword ptr [esi]			//																	v2				v1				v0
-		fld1							//													v2				v1				v0				1.0
-		fld		ST(3)					//									v2				v1				v0				1.0				v2
-		fmul	ST, ST					//									v2				v1				v0				1.0				v2*v2
-		fld		ST(3)					//					v2				v1				v0				1.0				v2*v2			v1
-		fmul	ST, ST					//					v2				v1				v0				1.0				v2*v2			v1*v1
-		fld		ST(3)					//	v2				v1				v0				1.0				v2*v2			v1*v1			v0
-		fmul	ST, ST					//	v2				v1				v0				1.0				v2*v2			v1*v1			v0*v0
-		fadd							//					v2				v1				v0				1.0				v2*v2			v1*v1+v0*v0
-		fadd							//									v2				v1				v0				1.0				v2*v2+v1*v1+v0*v0
-		ftst							// Compare ST to 0
-		fstsw	ax						// Store FPU status word in ax
-		sahf							// Transfer ax to flags register
-		jz		End						// Skip if length is zero
-		fsqrt							//									v2				v1				v0				1.0				len
-		fdiv							//													v2				v1				v0				1.0/len
-		fmul	ST(3), ST				//													v2*(1.0/len)	v1				v0				1.0/len
-		fmul	ST(2), ST				//													v2*(1.0/len)	v1*(1.0/len)	v0				1.0/len
-		fmul							//																	v2*(1.0/len)	v1*(1.0/len)	v0*(1.0/len)
-		fstp	dword ptr [esi]			//																					v2*(1.0/len)	v1*(1.0/len)
-		fstp	dword ptr [esi+04h]		//																									v2*(1.0/len)
-		fstp	dword ptr [esi+08h]		//
-End:
-		finit
-	}
-#else // WIN32_ASM
-	float len;
-
-	len = v[0]*v[0] + v[1]*v[1] + v[2]*v[2];
-	if (len != 0.0)	{
-		len = sqrtf( len );
-		v[0] /= len;
-		v[1] /= len;
-		v[2] /= len;
-	}
-#endif // WIN32_ASM
-}
-
-
-inline float DotProduct(const float v0[3], const float v1[3])
-{
-	float	dot;
-#ifdef WIN32_ASM
-	__asm {
-		mov		esi, dword ptr [v0]
-		mov		edi, dword ptr [v1]
-		lea		ebx, [dot]
-
-		fld		dword ptr [esi]
-		fmul	dword ptr [edi]
-		fld		dword ptr [esi+04h]
-		fmul	dword ptr [edi+04h]
-		fld		dword ptr [esi+08h]
-		fmul	dword ptr [edi+08h]
-		fadd
-		fadd
-		fstp	dword ptr [ebx]
-	}
-#else // WIN32_ASM
-	dot = v0[0]*v1[0] + v0[1]*v1[1] + v0[2]*v1[2];
-#endif // WIN32_ASM
-	return dot;
 }
 
 #endif

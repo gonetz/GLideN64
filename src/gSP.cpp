@@ -381,7 +381,8 @@ void gSPProcessVertex4(u32 v)
 
 	gSPClipVertex4(v);
 }
-#endif
+
+#endif //__VEC4_OPT
 
 static void gSPTransformVertex_default(float vtx[4], float mtx[4][4])
 {
@@ -2427,15 +2428,30 @@ void gSPObjRendermode(u32 _mode)
 	gSP.objRendermode = _mode;
 }
 
+
+#ifdef __NEON_OPT
+void gSPTransformVertex4NEON(u32 v, float mtx[4][4]);
+void gSPTransformNormal4NEON(u32 v, float mtx[4][4]);
+void gSPBillboardVertex4NEON(u32 v);
+#endif //__NEON_OPT
+
 #ifdef __VEC4_OPT
-void (*gSPTransformVertex4)(u32 v, float mtx[4][4]) =
-		gSPTransformVertex4_default;
-void (*gSPTransformNormal4)(u32 v, float mtx[4][4]) =
-		gSPTransformNormal4_default;
+#ifndef __NEON_OPT
+void (*gSPTransformVertex4)(u32 v, float mtx[4][4]) = gSPTransformVertex4_default;
+void (*gSPTransformNormal4)(u32 v, float mtx[4][4]) = gSPTransformNormal4_default;
+void (*gSPBillboardVertex4)(u32 v) = gSPBillboardVertex4_default;
+#else
+void (*gSPTransformVertex4)(u32 v, float mtx[4][4]) = gSPTransformVertex4NEON;
+void (*gSPTransformNormal4)(u32 v, float mtx[4][4]) = gSPTransformNormal4NEON;
+void (*gSPBillboardVertex4)(u32 v) = gSPBillboardVertex4NEON;
+#endif
+
 void (*gSPLightVertex4)(u32 v) = gSPLightVertex4_default;
 void (*gSPPointLightVertex4)(u32 v, float _vPos[4][3]) = gSPPointLightVertex4_default;
-void (*gSPBillboardVertex4)(u32 v) = gSPBillboardVertex4_default;
+
 #endif
+
+
 void (*gSPTransformVertex)(float vtx[4], float mtx[4][4]) =
 		gSPTransformVertex_default;
 void (*gSPLightVertex)(SPVertex & _vtx) = gSPLightVertex_default;
@@ -2445,6 +2461,7 @@ void (*gSPBillboardVertex)(u32 v, u32 i) = gSPBillboardVertex_default;
 void gSPSetupFunctions()
 {
 	if (GBI.getMicrocodeType() != F3DEX2CBFD) {
+
 #ifdef __VEC4_OPT
 		gSPLightVertex4 = gSPLightVertex4_default;
 		gSPPointLightVertex4 = gSPPointLightVertex4_default;
