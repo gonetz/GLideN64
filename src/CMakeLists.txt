@@ -93,16 +93,6 @@ if(MUPENPLUSAPI)
 	mupenplus/OpenGL_mupenplus.cpp
   )
 
-  if(BCMHOST)
-    set(GLideN64_SOURCES_UNIX ${GLideN64_SOURCES_UNIX}
-        BufferCopy/ColorBufferToRDRAMStub.cpp
-    )
-  else(BCMHOST)
-    set(GLideN64_SOURCES_UNIX ${GLideN64_SOURCES_UNIX}
-        BufferCopy/ColorBufferToRDRAM_GL.cpp
-    )
-  endif(BCMHOST)
-
   set(GLideN64_SOURCES_WIN ${GLideN64_SOURCES_UNIX}
 	common/GLFunctions.cpp
   )
@@ -213,6 +203,7 @@ if(GLES2)
    list(APPEND GLideN64_SOURCES 
     GLES2/GLSLCombiner_gles2.cpp
     GLES2/UniformSet.cpp
+    BufferCopy/ColorBufferToRDRAMStub.cpp
    )
    SET(OPENGL_LIBRARIES -lGLESv2 -lEGL)
 else(GLES2)
@@ -226,6 +217,7 @@ else(GLES2)
   list(APPEND GLideN64_SOURCES 
     OGL3X/GLSLCombiner_ogl3x.cpp
     OGL3X/UniformBlock.cpp
+    BufferCopy/ColorBufferToRDRAM_GL.cpp
   )
 endif(GLES2)
 
