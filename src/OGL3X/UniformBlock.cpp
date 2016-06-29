@@ -156,7 +156,8 @@ void UniformBlock::updateTextureParameters()
 	if (m_textureBlock.m_buffer == 0)
 		return;
 
-	GLbyte * pData = m_textureBlockData.data();
+	std::vector<GLbyte> temp(m_textureBlockData.size(), 0);
+	GLbyte * pData = temp.data();
 	f32 texScale[4] = { gSP.texture.scales, gSP.texture.scalet, 0, 0 };
 	memcpy(pData + m_textureBlock.m_offsets[tuTexScale], texScale, m_textureBlock.m_offsets[tuTexOffset] - m_textureBlock.m_offsets[tuTexScale]);
 
@@ -228,7 +229,10 @@ void UniformBlock::updateTextureParameters()
 		glBindBuffer(GL_UNIFORM_BUFFER, m_textureBlock.m_buffer);
 	}
 
-	glBufferSubData(GL_UNIFORM_BUFFER, m_textureBlock.m_offsets[tuTexScale], m_textureBlockData.size(), pData);
+	if(temp != m_textureBlockData) {
+		m_textureBlockData = temp;
+		glBufferSubData(GL_UNIFORM_BUFFER, m_textureBlock.m_offsets[tuTexScale], m_textureBlockData.size(), pData);
+	}
 }
 
 void UniformBlock::updateLightParameters()
