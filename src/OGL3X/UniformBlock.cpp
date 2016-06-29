@@ -31,8 +31,7 @@ const char * strLightUniforms[UniformBlock::luTotal] = {
 	"uLightColor"
 };
 
-UniformBlock::UniformBlock() : m_currentBuffer(0),
-	m_isBufferSubDataSupported(video().getRender().isBufferSubDataSupported())
+UniformBlock::UniformBlock() : m_currentBuffer(0), m_renderer(video().getRender().getRenderer())
 {
 }
 
@@ -149,7 +148,7 @@ void UniformBlock::setColorData(ColorUniforms _index, u32 _dataSize, const void 
 		glBindBuffer(GL_UNIFORM_BUFFER, m_colorsBlock.m_buffer);
 	}
 
-	if (m_isBufferSubDataSupported)
+	if (m_renderer != OGLRender::glrAdreno)
 		glBufferSubData(GL_UNIFORM_BUFFER, m_colorsBlock.m_offsets[_index], _dataSize, _data);
 	else
 		glBufferData(GL_UNIFORM_BUFFER, m_colorsBlockData.size(), m_colorsBlockData.data(), GL_STATIC_DRAW);
@@ -160,8 +159,7 @@ void UniformBlock::updateTextureParameters()
 	if (m_textureBlock.m_buffer == 0)
 		return;
 
-	std::vector<GLbyte> temp(m_textureBlockData.size(), 0);
-	GLbyte * pData = temp.data();
+	GLbyte * pData = m_textureBlockData.data();
 	f32 texScale[4] = { gSP.texture.scales, gSP.texture.scalet, 0, 0 };
 	memcpy(pData + m_textureBlock.m_offsets[tuTexScale], texScale, m_textureBlock.m_offsets[tuTexOffset] - m_textureBlock.m_offsets[tuTexScale]);
 
@@ -232,14 +230,11 @@ void UniformBlock::updateTextureParameters()
 		m_currentBuffer = m_textureBlock.m_buffer;
 		glBindBuffer(GL_UNIFORM_BUFFER, m_textureBlock.m_buffer);
 	}
-	
-	if(temp != m_textureBlockData) {
-		m_textureBlockData = temp;
-		if (m_isBufferSubDataSupported)
-			glBufferSubData(GL_UNIFORM_BUFFER, m_textureBlock.m_offsets[tuTexScale], m_textureBlockData.size(), pData);
-		else
-			glBufferData(GL_UNIFORM_BUFFER, m_textureBlockData.size(), m_textureBlockData.data(), GL_STATIC_DRAW);
-	}
+
+	if (m_renderer != OGLRender::glrAdreno)
+		glBufferSubData(GL_UNIFORM_BUFFER, m_textureBlock.m_offsets[tuTexScale], m_textureBlockData.size(), pData);
+	else
+		glBufferData(GL_UNIFORM_BUFFER, m_textureBlockData.size(), m_textureBlockData.data(), GL_STATIC_DRAW);
 }
 
 void UniformBlock::updateLightParameters()
@@ -258,7 +253,7 @@ void UniformBlock::updateLightParameters()
 		glBindBuffer(GL_UNIFORM_BUFFER, m_lightBlock.m_buffer);
 	}
 
-	if (m_isBufferSubDataSupported)
+	if (m_renderer != OGLRender::glrAdreno)
 		glBufferSubData(GL_UNIFORM_BUFFER, m_lightBlock.m_offsets[luLightDirection], m_lightBlockData.size(), pData);
 	else
 		glBufferData(GL_UNIFORM_BUFFER, m_lightBlockData.size(), m_lightBlockData.data(), GL_STATIC_DRAW);

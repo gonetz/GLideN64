@@ -166,13 +166,9 @@ public:
 
 	enum OGL_RENDERER {
 		glrOther,
-		glrAdreno,
-		glrPowerVR,
-		glrMali
+		glrAdreno
 	};
 	OGL_RENDERER getRenderer() const { return m_oglRenderer; }
-
-	bool isBufferSubDataSupported() const {return m_isBufferSubDataSupported;}
 
 	void dropRenderState() {m_renderState = rsNone;}
 
@@ -181,8 +177,7 @@ private:
 		: m_oglRenderer(glrOther)
 		, m_modifyVertices(0)
 		, m_bImageTexture(false)
-		, m_bFlatColors(false)
-		, m_isBufferSubDataSupported(true){
+		, m_bFlatColors(false) {
 	}
 	OGLRender(const OGLRender &);
 	friend class OGLVideo;
@@ -265,8 +260,6 @@ private:
 	TexrectDrawer m_texrectDrawer;
 
 	GLuint m_programCopyTex;
-
-	bool m_isBufferSubDataSupported;
 };
 
 class OGLVideo
