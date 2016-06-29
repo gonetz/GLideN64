@@ -239,6 +239,9 @@
     <ClCompile Include="..\..\src\FBOTextureFormats.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\GLUniforms\UniformSet.cpp">
+      <Filter>Source Files\GLUniforms</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\src\GLUniforms\UniformBlock.cpp">
       <Filter>Source Files\GLUniforms</Filter>
     </ClCompile>
@@ -426,6 +429,9 @@
     </ClInclude>
     <ClInclude Include="..\..\src\FBOTextureFormats.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\GLUniforms\UniformSet.h">
+      <Filter>Header Files\GLUniforms</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\GLUniforms\UniformBlock.h">
       <Filter>Header Files\GLUniforms</Filter>
