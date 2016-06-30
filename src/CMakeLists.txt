@@ -196,13 +196,25 @@ if( CMAKE_BUILD_TYPE STREQUAL "Debug")
 #	)
 endif( CMAKE_BUILD_TYPE STREQUAL "Debug")
 
+if (USE_UNIFORMBLOCK)
+  add_definitions(
+	-DGL_USE_UNIFORMBLOCK
+   )
+  list(APPEND GLideN64_SOURCES
+	GLUniforms/UniformBlock.cpp
+  )
+else (USE_UNIFORMBLOCK)
+  list(APPEND GLideN64_SOURCES
+	GLUniforms/UniformSet.cpp
+  )
+endif (USE_UNIFORMBLOCK)
+
 if(GLES2)
   add_definitions(
     -DGLES2
    )
    list(APPEND GLideN64_SOURCES 
     GLES2/GLSLCombiner_gles2.cpp
-    GLES2/UniformSet.cpp
     BufferCopy/ColorBufferToRDRAMStub.cpp
    )
    SET(OPENGL_LIBRARIES -lGLESv2 -lEGL)
@@ -216,7 +228,6 @@ else(GLES2)
   endif(NOT OPENGL_FOUND)
   list(APPEND GLideN64_SOURCES 
     OGL3X/GLSLCombiner_ogl3x.cpp
-    OGL3X/UniformBlock.cpp
     BufferCopy/ColorBufferToRDRAM_GL.cpp
   )
 endif(GLES2)

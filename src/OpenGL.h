@@ -26,20 +26,17 @@ typedef char GLchar;
 #elif defined(GLES3)
 #include <GLES3/gl3.h>
 #define GLESX
-#define GL_UNIFORMBLOCK_SUPPORT
 #elif defined(GLES3_1)
 #include <GLES3/gl31.h>
 #define GLESX
 #define GL_IMAGE_TEXTURES_SUPPORT
 #define GL_MULTISAMPLING_SUPPORT
-#define GL_UNIFORMBLOCK_SUPPORT
 #elif defined(EGL)
 #include <GL/glcorearb.h>
 #include "common/GLFunctions.h"
 #include <GL/glext.h>
 #define GL_IMAGE_TEXTURES_SUPPORT
 #define GL_MULTISAMPLING_SUPPORT
-#define GL_UNIFORMBLOCK_SUPPORT
 #else
 #if defined(OS_MAC_OS_X)
 #define GL_GLEXT_PROTOTYPES
@@ -52,14 +49,12 @@ typedef char GLchar;
 #include <GL/glext.h>
 #define GL_IMAGE_TEXTURES_SUPPORT
 #define GL_MULTISAMPLING_SUPPORT
-#define GL_UNIFORMBLOCK_SUPPORT
 #elif defined(OS_WINDOWS)
 #include <GL/gl.h>
 #include "glext.h"
 #include "common/GLFunctions.h"
 #define GL_IMAGE_TEXTURES_SUPPORT
 #define GL_MULTISAMPLING_SUPPORT
-#define GL_UNIFORMBLOCK_SUPPORT
 #endif // OS_MAC_OS_X
 #endif // GLES2
 

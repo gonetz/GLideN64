@@ -48,6 +48,12 @@
     <Filter Include="Source Files\DepthBufferRender">
       <UniqueIdentifier>{ac6b6e3c-c470-4a66-ad6c-d4ad388ec793}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\GLUniforms">
+      <UniqueIdentifier>{b4b4d718-d4cf-4851-bd8f-fe0646df3d76}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\GLUniforms">
+      <UniqueIdentifier>{6207c101-59f4-44f2-9022-0b5d14645d92}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Combiner.cpp">
@@ -194,9 +200,6 @@
     <ClCompile Include="..\..\src\Keys.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\OGL3X\UniformBlock.cpp">
-      <Filter>Source Files\OGL3X</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\ShaderUtils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -235,6 +238,9 @@
     </ClCompile>
     <ClCompile Include="..\..\src\FBOTextureFormats.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\GLUniforms\UniformBlock.cpp">
+      <Filter>Source Files\GLUniforms</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -376,9 +382,6 @@
     <ClInclude Include="..\..\src\UniformCollection.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\OGL3X\UniformBlock.h">
-      <Filter>OGL3X</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\ShaderUtils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -423,6 +426,9 @@
     </ClInclude>
     <ClInclude Include="..\..\src\FBOTextureFormats.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\GLUniforms\UniformBlock.h">
+      <Filter>Header Files\GLUniforms</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
