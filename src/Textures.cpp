@@ -1157,48 +1157,35 @@ void TextureCache::_load(u32 _tile, CachedTexture *_pTexture)
 	free(pDest);
 }
 
-struct TextureParams
-{
-	u16 width;
-	u16 height;
-	u16 clampWidth;
-	u16 clampHeight;
-	u8 maskS;
-	u8 maskT;
-	u8 mirrorS;
-	u8 mirrorT;
-	u8 clampS;
-	u8 clampT;
-	u8 format;
-	u8 size;
-};
-
 static
-u32 _calculateCRC(u32 t, const TextureParams & _params)
+u32 _calculateCRC(u32 t, u32 width, u32 height)
 {
-	const u32 line = gSP.textureTile[t]->line;
-	const u32 lineBytes = line << 3;
+	u32 crc;
+	u32 y, /*i,*/ bpl, lineBytes, line;
+	void *src;
 
-	const u64 *src = (u64*)&TMEM[gSP.textureTile[t]->tmem];
-	u32 crc = 0xFFFFFFFF;
-	crc = CRC_Calculate(crc, src, _params.height*lineBytes);
+	bpl = width << gSP.textureTile[t]->size >> 1;
+	lineBytes = gSP.textureTile[t]->line << 3;
 
-	if (gSP.textureTile[t]->size == G_IM_SIZ_32b) {
-		src = (u64*)&TMEM[gSP.textureTile[t]->tmem + 256];
-		crc = CRC_Calculate(crc, src, _params.height*lineBytes);
+	line = gSP.textureTile[t]->line;
+	if (gSP.textureTile[t]->size == G_IM_SIZ_32b)
+		line <<= 1;
+
+	crc = 0xFFFFFFFF;
+
+	for (y = 0; y < height; y += 1)
+	{
+		src = (void*) &TMEM[(gSP.textureTile[t]->tmem + (y * line)) & 511];
+		crc = Hash_Calculate( crc, src, bpl );
 	}
 
-	if (gDP.otherMode.textureLUT != G_TT_NONE || gSP.textureTile[t]->format == G_IM_FMT_CI) {
+	if (gSP.textureTile[t]->format == G_IM_FMT_CI)
+	{
 		if (gSP.textureTile[t]->size == G_IM_SIZ_4b)
-			crc = CRC_Calculate( crc, &gDP.paletteCRC16[gSP.textureTile[t]->palette], 4 );
+			crc = Hash_Calculate( crc, &gDP.paletteCRC16[gSP.textureTile[t]->palette], 4 );
 		else if (gSP.textureTile[t]->size == G_IM_SIZ_8b)
-			crc = CRC_Calculate( crc, &gDP.paletteCRC256, 4 );
+			crc = Hash_Calculate( crc, &gDP.paletteCRC256, 4 );
 	}
-	const u8 tlutMode = gDP.otherMode.textureLUT;
-	crc = CRC_Calculate(crc, &tlutMode, 1);
-
-	crc = CRC_Calculate(crc, &_params, sizeof(_params));
-
 	return crc;
 }
 
@@ -1298,17 +1285,17 @@ void TextureCache::_updateBackground()
 	u32 numBytes = gSP.bgImage.width * gSP.bgImage.height << gSP.bgImage.size >> 1;
 	u32 crc;
 
-	crc = CRC_Calculate( 0xFFFFFFFF, &RDRAM[gSP.bgImage.address], numBytes );
+	crc = Hash_Calculate( 0xFFFFFFFF, &RDRAM[gSP.bgImage.address], numBytes );
 
 	if (gDP.otherMode.textureLUT != G_TT_NONE || gSP.bgImage.format == G_IM_FMT_CI) {
 		if (gSP.bgImage.size == G_IM_SIZ_4b)
-			crc = CRC_Calculate( crc, &gDP.paletteCRC16[gSP.bgImage.palette], 4 );
+			crc = Hash_Calculate( crc, &gDP.paletteCRC16[gSP.bgImage.palette], 4 );
 		else if (gSP.bgImage.size == G_IM_SIZ_8b)
-			crc = CRC_Calculate( crc, &gDP.paletteCRC256, 4 );
+			crc = Hash_Calculate( crc, &gDP.paletteCRC256, 4 );
 	}
 
 	u32 params[4] = {gSP.bgImage.width, gSP.bgImage.height, gSP.bgImage.format, gSP.bgImage.size};
-	crc = CRC_Calculate(crc, params, sizeof(u32)*4);
+	crc = Hash_Calculate(crc, params, sizeof(u32)*4);
 
 	Texture_Locations::iterator locations_iter = m_lruTextureLocations.find(crc);
 	if (locations_iter != m_lruTextureLocations.end()) {
@@ -1439,24 +1426,7 @@ void TextureCache::update(u32 _t)
 	TileSizes sizes;
 	_calcTileSizes(_t, sizes, gDP.loadTile);
 
-	u32 crc;
-	{
-	TextureParams params;
-	params.width = sizes.width;
-	params.height = sizes.height;
-	params.clampWidth = sizes.clampWidth;
-	params.clampHeight = sizes.clampHeight;
-	params.maskS = gSP.textureTile[_t]->masks;
-	params.maskT = gSP.textureTile[_t]->maskt;
-	params.mirrorS = gSP.textureTile[_t]->mirrors;
-	params.mirrorT = gSP.textureTile[_t]->mirrort;
-	params.clampS = gSP.textureTile[_t]->clamps;
-	params.clampT = gSP.textureTile[_t]->clampt;
-	params.format = gSP.textureTile[_t]->format;
-	params.size = gSP.textureTile[_t]->size;
-
-	crc = _calculateCRC( _t, params );
-	}
+	u32 crc = _calculateCRC( _t, sizes.width, sizes.height );
 
 	if (current[_t] != nullptr && current[_t]->crc == crc) {
 		activateTexture(_t, current[_t]);
@@ -1471,14 +1441,6 @@ void TextureCache::update(u32 _t)
 
 		assert(current.width == sizes.width);
 		assert(current.height == sizes.height);
-		assert(current.clampWidth == sizes.clampWidth);
-		assert(current.clampHeight == sizes.clampHeight);
-		assert(current.maskS == gSP.textureTile[_t]->masks);
-		assert(current.maskT == gSP.textureTile[_t]->maskt);
-		assert(current.mirrorS == gSP.textureTile[_t]->mirrors);
-		assert(current.mirrorT == gSP.textureTile[_t]->mirrort);
-		assert(current.clampS == gSP.textureTile[_t]->clamps);
-		assert(current.clampT == gSP.textureTile[_t]->clampt);
 		assert(current.format == gSP.textureTile[_t]->format);
 		assert(current.size == gSP.textureTile[_t]->size);
 

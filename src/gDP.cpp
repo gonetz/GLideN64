@@ -682,11 +682,11 @@ void gDPLoadTLUT( u32 tile, u32 uls, u32 ult, u32 lrs, u32 lrt )
 			dest += 4;
 		}
 
-		gDP.paletteCRC16[pal] = CRC_CalculatePalette(0xFFFFFFFF, &TMEM[256 + (pal << 4)], 16);
+		gDP.paletteCRC16[pal] = Hash_CalculatePalette(&TMEM[256 + (pal << 4)], 16);
 		++pal;
 	}
 
-	gDP.paletteCRC256 = CRC_Calculate(0xFFFFFFFF, gDP.paletteCRC16, 64);
+	gDP.paletteCRC256 = Hash_Calculate(0xFFFFFFFF, gDP.paletteCRC16, 64);
 
 	if (TFH.isInited()) {
 		const u16 start = gDP.tiles[tile].tmem - 256; // starting location in the palettes
