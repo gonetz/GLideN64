@@ -835,8 +835,6 @@ void TextureCache::_loadBackground(CachedTexture *pTexture)
 		} else {
 			Textures::iterator iter = locations_iter->second;
 			glDeleteTextures(1, &pTexture->glName);
-			m_lruTextureLocations.erase(pTexture->crc);
-			m_textures.pop_front();
 			*pTexture = *iter;
 			m_cachedBytes -= pTexture->textureBytes;
 		}
@@ -1146,8 +1144,6 @@ void TextureCache::_load(u32 _tile, CachedTexture *_pTexture)
 			} else {
 				Textures::iterator iter = locations_iter->second;
 				glDeleteTextures(1, &_pTexture->glName);
-				m_lruTextureLocations.erase(_pTexture->crc);
-				m_textures.pop_front();
 				*_pTexture = *iter;
 				m_cachedBytes -= _pTexture->textureBytes;
 			}
