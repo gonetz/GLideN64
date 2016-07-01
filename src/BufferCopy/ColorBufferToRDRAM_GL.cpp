@@ -15,7 +15,6 @@ private:
 	bool _readPixels(GLint _x0, GLint _y0, GLsizei _width, GLsizei _height, u32 _size, bool _sync)  override;
 	void _cleanUp()  override;
 	void _initBuffers(void) override;
-	void _destroyBuffers(void) override;
 	static const int _numPBO = 3;
 	GLuint m_PBO[_numPBO];
 	u32 m_curIndex;
@@ -58,10 +57,6 @@ void ColorBufferToRDRAM_GL::_initBuffers(void)
 		glBufferData(GL_PIXEL_PACK_BUFFER, m_pTexture->textureBytes, nullptr, GL_DYNAMIC_READ);
 	}
 	glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
-}
-
-void ColorBufferToRDRAM_GL::_destroyBuffers(void)
-{
 }
 
 bool ColorBufferToRDRAM_GL::_readPixels(GLint _x0, GLint _y0, GLsizei _width, GLsizei _height, u32 _size, bool _sync)
