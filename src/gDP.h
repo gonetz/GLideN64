@@ -106,6 +106,7 @@ struct gDPLoadTileInfo {
 	u16 texWidth;
 	u32 texAddress;
 	u32 dxt;
+	u32 bytes;
 };
 
 struct gDPScissor

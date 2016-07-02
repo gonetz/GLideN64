@@ -89,7 +89,7 @@ extern const char * strTexrectDrawerFragmentShaderTex;
 extern const char * strTexrectDrawerFragmentShaderClean;
 extern const char * strTextureCopyShader;
 
-class CachedTexture;
+struct CachedTexture;
 class OGLRender
 {
 public:

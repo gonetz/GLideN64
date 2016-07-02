@@ -481,7 +481,8 @@ void gDPLoadTile(u32 tile, u32 uls, u32 ult, u32 lrs, u32 lrt)
 		return;
 
 	const u32 width = (gDP.loadTile->lrs - gDP.loadTile->uls + 1) & 0x03FF;
-	u32 height = (gDP.loadTile->lrt - gDP.loadTile->ult + 1) & 0x03FF;
+	const u32 height = (gDP.loadTile->lrt - gDP.loadTile->ult + 1) & 0x03FF;
+	const u32 bpl = gDP.loadTile->line << 3;
 
 	gDPLoadTileInfo &info = gDP.loadInfo[gDP.loadTile->tmem];
 	info.texAddress = gDP.loadTile->imageAddress;
@@ -492,12 +493,12 @@ void gDPLoadTile(u32 tile, u32 uls, u32 ult, u32 lrs, u32 lrt)
 	info.texWidth = gDP.textureImage.width;
 	info.size = gDP.textureImage.size;
 	info.loadType = LOADTYPE_TILE;
+	info.bytes = bpl * height;
 
 	if (gDP.loadTile->line == 0)
 		return;
 
 	u32 address = gDP.textureImage.address + gDP.loadTile->ult * gDP.textureImage.bpl + (gDP.loadTile->uls << gDP.textureImage.size >> 1);
-	const u32 bpl = gDP.loadTile->line << 3;
 	u32 bpl2 = bpl;
 	if (gDP.loadTile->lrs > gDP.textureImage.width)
 		bpl2 = (gDP.textureImage.width - gDP.loadTile->uls);
@@ -610,6 +611,8 @@ void gDPLoadBlock(u32 tile, u32 uls, u32 ult, u32 lrs, u32 dxt)
 	u32 bytes = (lrs - uls + 1) << gDP.loadTile->size >> 1;
 	if ((bytes & 7) != 0)
 		bytes = (bytes & (~7)) + 8;
+
+	info.bytes = bytes;
 	u32 address = gDP.textureImage.address + ult * gDP.textureImage.bpl + (uls << gDP.textureImage.size >> 1);
 
 	if (bytes == 0 || (address + bytes) > RDRAMSize) {
