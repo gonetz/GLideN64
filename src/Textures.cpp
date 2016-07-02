@@ -524,14 +524,15 @@ void TextureCache::destroy()
 void TextureCache::_checkCacheSize()
 {
 #ifdef VC
-	if (m_textures.size() > 15000) {
-		CachedTexture& piTex = m_textures.back();
-		m_cachedBytes -= piTex.textureBytes;
-		glDeleteTextures(1, &piTex.glName);
-		m_lruTextureLocations.erase(piTex.crc);
-		m_textures.pop_back();
-	}
+	const size_t maxCacheSize = 15000;
+#else
+	const size_t maxCacheSize = 128000;
 #endif
+	// Clear cache if its size is too large.
+	if (m_textures.size() >= maxCacheSize) {
+		_clear();
+		return;
+	}
 
 	if (m_cachedBytes <= m_maxBytes)
 		return;
