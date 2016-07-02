@@ -1368,10 +1368,13 @@ void TextureCache::_clear()
 {
 	current[0] = current[1] = nullptr;
 
+	std::vector<GLuint> textureNames;
+	textureNames.reserve(m_textures.size());
 	for (Textures::const_iterator cur = m_textures.cbegin(); cur != m_textures.cend(); ++cur) {
 		m_cachedBytes -= cur->textureBytes;
-		glDeleteTextures(1, &cur->glName);
+		textureNames.push_back(cur->glName);
 	}
+	glDeleteTextures(textureNames.size(), textureNames.data());
 	m_textures.clear();
 	m_lruTextureLocations.clear();
 }
