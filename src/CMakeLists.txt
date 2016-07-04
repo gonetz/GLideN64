@@ -74,6 +74,7 @@ if(EXISTS "/opt/vc/include/bcm_host.h")
   )
   link_directories(
     "/opt/vc/lib"
+    "/opt/vc/lib/GL"
   )
 else(EXISTS "/opt/vc/include/bcm_host.h")
   MESSAGE("bcm_host.h not found")
