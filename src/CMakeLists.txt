@@ -178,9 +178,25 @@ FIND_PACKAGE( Freetype REQUIRED )
 include_directories( ${FREETYPE_INCLUDE_DIRS} )
 
 if(OPT)
-	add_definitions(
-	-D__VEC4_OPT
-	)
+  add_definitions(
+    -D__VEC4_OPT
+  )
+  if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+    EXEC_PROGRAM(cat ARGS "/proc/cpuinfo" OUTPUT_VARIABLE CPUINFO)
+    STRING(REGEX REPLACE "^.*(neon).*$" "\\1" NEON_THERE ${CPUINFO})
+    if(NEON_THERE STREQUAL "neon")
+      add_definitions(
+        -D__NEON_OPT
+      )
+      list(APPEND GLideN64_SOURCES
+        3DMathNeon.cpp
+        gSPNeon.cpp
+      )
+      list(REMOVE_ITEM GLideN64_SOURCES
+        3DMath.cpp
+      )
+    endif(NEON_THERE STREQUAL "neon")
+  endif(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 endif(OPT)
 
 # Build type
