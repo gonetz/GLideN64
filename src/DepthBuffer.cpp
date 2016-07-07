@@ -398,7 +398,10 @@ void DepthBufferList::saveBuffer(u32 _address)
 
 		m_pCurrent = &buffer;
 	}
-
+#ifdef ANDROID
+	//Fixes issues with PowerVR devices and potentially other Android devices
+	glClear( GL_DEPTH_BUFFER_BIT );
+#endif
 	frameBufferList().attachDepthBuffer();
 
 #ifdef DEBUG
