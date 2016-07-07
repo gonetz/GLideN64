@@ -181,6 +181,12 @@ if(OPT)
   add_definitions(
     -D__VEC4_OPT
   )
+  list(APPEND GLideN64_SOURCES
+    CRC_OPT.cpp
+  )
+  list(REMOVE_ITEM GLideN64_SOURCES
+    CRC.cpp
+  )
   if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
     EXEC_PROGRAM(cat ARGS "/proc/cpuinfo" OUTPUT_VARIABLE CPUINFO)
     STRING(REGEX REPLACE "^.*(neon).*$" "\\1" NEON_THERE ${CPUINFO})
