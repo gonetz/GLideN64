@@ -1,4 +1,4 @@
-#include "Types.h"
+#include "CRC.h"
 
 void CRC_BuildTable()
 {

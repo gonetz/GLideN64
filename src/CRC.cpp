@@ -1,4 +1,4 @@
-#include "Types.h"
+#include "CRC.h"
 
 #define CRC32_POLYNOMIAL     0x04C11DB7
 
@@ -57,26 +57,4 @@ u32 CRC_CalculatePalette(u32 crc, const void * buffer, u32 count )
 	}
 
 	return crc ^ orig;
-}
-
-u32 textureCRC(u8 * addr, u32 height, u32 stride)
-{
-	const u32 width = stride / 8;
-	const u32 line = stride % 8;
-	u64 crc = 0;
-	u64 twopixel_crc;
-
-	u32 *  pixelpos = (u32*)addr;
-	for (; height; height--) {
-		int col = 0;
-		for (u32 i = width; i; --i) {
-			twopixel_crc = i * ((u64)(pixelpos[1] & 0xFFFEFFFE) + (u64)(pixelpos[0] & 0xFFFEFFFE) + crc);
-			crc = (twopixel_crc >> 32) + twopixel_crc;
-			pixelpos += 2;
-		}
-		crc = (height * crc >> 32) + height * crc;
-		pixelpos = (u32*)((u8*)pixelpos + line);
-	}
-
-	return crc&0xFFFFFFFF;
 }
