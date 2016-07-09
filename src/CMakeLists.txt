@@ -177,16 +177,22 @@ endif(UNIX OR BCMHOST)
 FIND_PACKAGE( Freetype REQUIRED )
 include_directories( ${FREETYPE_INCLUDE_DIRS} )
 
-if(OPT)
+if(VEC4_OPT)
   add_definitions(
     -D__VEC4_OPT
   )
+endif(VEC4_OPT)
+
+if(CRC_OPT)
   list(APPEND GLideN64_SOURCES
     CRC_OPT.cpp
   )
   list(REMOVE_ITEM GLideN64_SOURCES
     CRC.cpp
   )
+endif(CRC_OPT)
+
+if(NEON_OPT)
   if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
     EXEC_PROGRAM(cat ARGS "/proc/cpuinfo" OUTPUT_VARIABLE CPUINFO)
     STRING(REGEX REPLACE "^.*(neon).*$" "\\1" NEON_THERE ${CPUINFO})
@@ -203,7 +209,7 @@ if(OPT)
       )
     endif(NEON_THERE STREQUAL "neon")
   endif(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
-endif(OPT)
+endif(NEON_OPT)
 
 # Build type
 
