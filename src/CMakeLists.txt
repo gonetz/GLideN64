@@ -193,22 +193,16 @@ if(CRC_OPT)
 endif(CRC_OPT)
 
 if(NEON_OPT)
-  if(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
-    EXEC_PROGRAM(cat ARGS "/proc/cpuinfo" OUTPUT_VARIABLE CPUINFO)
-    STRING(REGEX REPLACE "^.*(neon).*$" "\\1" NEON_THERE ${CPUINFO})
-    if(NEON_THERE STREQUAL "neon")
-      add_definitions(
-        -D__NEON_OPT
-      )
-      list(APPEND GLideN64_SOURCES
-        3DMathNeon.cpp
-        gSPNeon.cpp
-      )
-      list(REMOVE_ITEM GLideN64_SOURCES
-        3DMath.cpp
-      )
-    endif(NEON_THERE STREQUAL "neon")
-  endif(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+  add_definitions(
+    -D__NEON_OPT
+  )
+  list(APPEND GLideN64_SOURCES
+    3DMathNeon.cpp
+    gSPNeon.cpp
+  )
+  list(REMOVE_ITEM GLideN64_SOURCES
+    3DMath.cpp
+  )
 endif(NEON_OPT)
 
 # Build type
