@@ -1164,7 +1164,7 @@ struct TextureParams
 {
 	u16 width;
 	u16 height;
-	u16 flags;
+	u32 flags;
 };
 
 static
@@ -1436,7 +1436,9 @@ void TextureCache::update(u32 _t)
 		(pTile->mirrors << 8) |
 		(pTile->mirrort << 9) |
 		(pTile->clamps << 10) |
-		(pTile->clampt << 11);
+		(pTile->clampt << 11) |
+		(pTile->size   << 12) |
+		(pTile->format << 14);
 	TileSizes sizes;
 	_calcTileSizes(_t, sizes, gDP.loadTile);
 	params.width = sizes.realWidth;
