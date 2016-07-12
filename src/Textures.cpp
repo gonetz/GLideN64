@@ -1185,8 +1185,6 @@ u32 _calculateCRC(u32 _t, const TextureParams & _params, u32 _bytes)
 		else if (gSP.textureTile[_t]->size == G_IM_SIZ_8b)
 			crc = CRC_Calculate( crc, &gDP.paletteCRC256, 4 );
 	}
-	const u8 tlutMode = gDP.otherMode.textureLUT;
-	crc = CRC_Calculate(crc, &tlutMode, 1);
 
 	crc = CRC_Calculate(crc, &_params, sizeof(_params));
 
@@ -1431,14 +1429,15 @@ void TextureCache::update(u32 _t)
 		gSP.textureTile[0] = gSP.textureTile[1];
 
 	TextureParams params;
-	params.flags = pTile->masks |
-		(pTile->maskt << 4) |
-		(pTile->mirrors << 8) |
-		(pTile->mirrort << 9) |
-		(pTile->clamps << 10) |
-		(pTile->clampt << 11) |
-		(pTile->size   << 12) |
-		(pTile->format << 14);
+	params.flags = pTile->masks	|
+		(pTile->maskt   << 4)	|
+		(pTile->mirrors << 8)	|
+		(pTile->mirrort << 9)	|
+		(pTile->clamps << 10)	|
+		(pTile->clampt << 11)	|
+		(pTile->size   << 12)	|
+		(pTile->format << 14)	|
+		(gDP.otherMode.textureLUT << 17);
 	TileSizes sizes;
 	_calcTileSizes(_t, sizes, gDP.loadTile);
 	params.width = sizes.realWidth;
