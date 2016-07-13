@@ -163,7 +163,7 @@ int clipW(const SPVertex ** _vsrc, SPVertex * _vdst)
 
 void renderTriangles(const SPVertex * _pVertices, const GLubyte * _pElements, u32 _numElements)
 {
-	vertexclip vclip[12];
+	vertexclip vclip[16];
 	vertexi vdraw[12];
 	const SPVertex * vsrc[4];
 	SPVertex vdata[6];
