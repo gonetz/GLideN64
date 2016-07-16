@@ -242,9 +242,6 @@ u32 Adler32(u32 crc, const void *buffer, u32 count)
 void loadCustomRomSettings(const QString & _strIniFolder, const char * _strRomName)
 {
 	QSettings settings(_strIniFolder + "/" + strCustomSettingsFileName, QSettings::IniFormat);
-	config.version = settings.value("version").toInt();
-	if (config.version != CONFIG_VERSION_CURRENT)
-		return;
 
 	const QByteArray bytes(_strRomName);
 	bool bASCII = true;
