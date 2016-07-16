@@ -271,10 +271,10 @@ static const char* fragment_shader_header_calc_light =
 static const char* fragment_shader_header_mipmap =
 	"mediump float mipmap(out lowp vec4 readtex0, out lowp vec4 readtex1);\n";
 static const char* fragment_shader_header_readTex =
-	"lowp vec4 readTex(in sampler2D tex, in mediump vec2 texCoord, in lowp int fbMonochrome, in bool fbFixedAlpha);\n";
+	"lowp vec4 readTex(in sampler2D tex, in mediump vec2 texCoord, in lowp int fbMonochrome, in lowp int fbFixedAlpha);\n";
 #ifdef GL_MULTISAMPLING_SUPPORT
 static const char* fragment_shader_header_readTexMS =
-	"lowp vec4 readTexMS(in lowp sampler2DMS mstex, in mediump vec2 texCoord, in lowp int fbMonochrome, in bool fbFixedAlpha);\n";
+	"lowp vec4 readTexMS(in lowp sampler2DMS mstex, in mediump vec2 texCoord, in lowp int fbMonochrome, in lowp int fbFixedAlpha);\n";
 #endif // GL_MULTISAMPLING_SUPPORT
 #ifdef GL_IMAGE_TEXTURES_SUPPORT
 static const char* fragment_shader_header_depth_compare =
@@ -458,13 +458,13 @@ static const char* fragment_shader_fake_mipmap =
 
 static const char* fragment_shader_readtex =
 AUXILIARY_SHADER_VERSION
-"lowp vec4 readTex(in sampler2D tex, in mediump vec2 texCoord, in lowp int fbMonochrome, in bool fbFixedAlpha)	\n"
+"lowp vec4 readTex(in sampler2D tex, in mediump vec2 texCoord, in lowp int fbMonochrome, in lowp int fbFixedAlpha)	\n"
 "{												\n"
 "  lowp vec4 texColor = texture(tex, texCoord);	\n"
 "  if (fbMonochrome == 1) texColor = vec4(texColor.r);	\n"
 "  else if (fbMonochrome == 2) 						\n"
 "    texColor.rgb = vec3(dot(vec3(0.2126, 0.7152, 0.0722), texColor.rgb));	\n"
-"  if (fbFixedAlpha) texColor.a = 0.825;		\n"
+"  if (fbFixedAlpha == 1) texColor.a = 0.825;		\n"
 "  return texColor;								\n"
 "}												\n"
 ;
@@ -486,7 +486,7 @@ AUXILIARY_SHADER_VERSION
 "  lowp vec4 c2 = TEX_OFFSET(vec2(offset.x, offset.y - sign(offset.y)));	\n"
 "  return c0 + abs(offset.x)*(c1-c0) + abs(offset.y)*(c2-c0);				\n"
 "}																			\n"
-"lowp vec4 readTex(in sampler2D tex, in mediump vec2 texCoord, in lowp int fbMonochrome, in bool fbFixedAlpha)	\n"
+"lowp vec4 readTex(in sampler2D tex, in mediump vec2 texCoord, in lowp int fbMonochrome, in lowp int fbFixedAlpha)	\n"
 "{																			\n"
 "  lowp vec4 texStandard = texture(tex, texCoord); 							\n"
 "  lowp vec4 tex3Point = filter3point(tex, texCoord); 						\n"
@@ -494,7 +494,7 @@ AUXILIARY_SHADER_VERSION
 "  if (fbMonochrome == 1) texColor = vec4(texColor.r);						\n"
 "  else if (fbMonochrome == 2) 												\n"
 "    texColor.rgb = vec3(dot(vec3(0.2126, 0.7152, 0.0722), texColor.rgb));	\n"
-"  if (fbFixedAlpha) texColor.a = 0.825;									\n"
+"  if (fbFixedAlpha == 1) texColor.a = 0.825;									\n"
 "  return texColor;															\n"
 "}																			\n"
 ;
@@ -512,7 +512,7 @@ AUXILIARY_SHADER_VERSION
 "  return texel * uMSAAScale;												\n"
 "}																			\n"
 "																			\n"
-"lowp vec4 readTexMS(in lowp sampler2DMS mstex, in mediump vec2 texCoord, in lowp int fbMonochrome, in bool fbFixedAlpha)	\n"
+"lowp vec4 readTexMS(in lowp sampler2DMS mstex, in mediump vec2 texCoord, in lowp int fbMonochrome, in lowp int fbFixedAlpha)	\n"
 "{																			\n"
 "  mediump vec2 msTexSize = vec2(textureSize(mstex));						\n"
 "  mediump ivec2 itexCoord = ivec2(msTexSize * texCoord);					\n"
@@ -520,7 +520,7 @@ AUXILIARY_SHADER_VERSION
 "  if (fbMonochrome == 1) texColor = vec4(texColor.r);						\n"
 "  else if (fbMonochrome == 2) 												\n"
 "    texColor.rgb = vec3(dot(vec3(0.2126, 0.7152, 0.0722), texColor.rgb));	\n"
-"  if (fbFixedAlpha) texColor.a = 0.825;									\n"
+"  if (fbFixedAlpha == 1) texColor.a = 0.825;									\n"
 "  return texColor;															\n"
 "}																			\n"
 ;
