@@ -1455,6 +1455,7 @@ void OGLRender::drawTexturedRect(const TexturedRectParams & _params)
 	gSP.changed &= ~CHANGED_GEOMETRYMODE; // Don't update cull mode
 	if (!m_texrectDrawer.isEmpty()) {
 		CombinerInfo::get().update();
+		currentCombiner()->updateRenderState();
 		_updateTextures(rsTexRect);
 		if (CombinerInfo::get().isChanged())
 			_setTexCoordArrays();
