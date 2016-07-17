@@ -375,7 +375,7 @@ Storage format:
   uint32 - number of shaders
   shaders in binary form
 */
-static const u32 ShaderStorageFormatVersion = 0x07U;
+static const u32 ShaderStorageFormatVersion = 0x08U;
 void CombinerInfo::_saveShadersStorage() const
 {
 	if (m_shadersLoaded >= m_combiners.size())

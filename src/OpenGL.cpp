@@ -691,8 +691,148 @@ void OGLRender::addTriangle(int _v0, int _v1, int _v2)
 #endif
 }
 
+void OGLRender::_legacySetBlendMode() const
+{
+	const u32 blendmode = gDP.otherMode.l >> 16;
+	// 0x7000 = CVG_X_ALPHA|ALPHA_CVG_SEL|FORCE_BL
+	if (gDP.otherMode.alphaCvgSel != 0 && (gDP.otherMode.l & 0x7000) != 0x7000) {
+		switch (blendmode) {
+		case 0x4055: // Mario Golf
+		case 0x5055: // Paper Mario intro clr_mem * a_in + clr_mem * a_mem
+			glEnable(GL_BLEND);
+			glBlendFunc(GL_ZERO, GL_ONE);
+			break;
+		default:
+			glDisable(GL_BLEND);
+		}
+		return;
+	}
+
+	if (gDP.otherMode.forceBlender != 0 && gDP.otherMode.cycleType < G_CYC_COPY) {
+		glEnable(GL_BLEND);
+
+		switch (blendmode)
+		{
+			// Mace objects
+		case 0x0382:
+			// Mace special blend mode, see GLSLCombiner.cpp
+		case 0x0091:
+			// 1080 Sky
+		case 0x0C08:
+			// Used LOTS of places
+		case 0x0F0A:
+			//DK64 blue prints
+		case 0x0302:
+			// Bomberman 2 special blend mode, see GLSLCombiner.cpp
+		case 0xA500:
+			//Sin and Punishment
+		case 0xCB02:
+			// Battlezone
+			// clr_in * a + clr_in * (1-a)
+		case 0xC800:
+			// Conker BFD
+			// clr_in * a_fog + clr_fog * (1-a)
+			// clr_in * 0 + clr_in * 1
+		case 0x07C2:
+		case 0x00C0:
+			//ISS64
+		case 0xC302:
+			// Donald Duck
+		case 0xC702:
+			glBlendFunc(GL_ONE, GL_ZERO);
+			break;
+
+		case 0x55f0:
+			// Bust-A-Move 3 DX
+			// CLR_MEM * A_FOG + CLR_FOG * 1MA
+			glBlendFunc(GL_ONE, GL_SRC_ALPHA);
+			break;
+
+		case 0x0F1A:
+			if (gDP.otherMode.cycleType == G_CYC_1CYCLE)
+				glBlendFunc(GL_ONE, GL_ZERO);
+			else
+				glBlendFunc(GL_ZERO, GL_ONE);
+			break;
+
+			//Space Invaders
+		case 0x0448: // Add
+		case 0x055A:
+			glBlendFunc(GL_ONE, GL_ONE);
+			break;
+
+		case 0xc712: // Pokemon Stadium?
+		case 0xAF50: // LOT in Zelda: MM
+		case 0x0F5A: // LOT in Zelda: MM
+		case 0x0FA5: // Seems to be doing just blend color - maybe combiner can be used for this?
+		case 0x5055: // Used in Paper Mario intro, I'm not sure if this is right...
+			//clr_in * 0 + clr_mem * 1
+			glBlendFunc(GL_ZERO, GL_ONE);
+			break;
+
+		case 0x5F50: //clr_mem * 0 + clr_mem * (1-a)
+			glBlendFunc(GL_ZERO, GL_ONE_MINUS_SRC_ALPHA);
+			break;
+
+		case 0xF550: //clr_fog * a_fog + clr_mem * (1-a)
+		case 0x0150: // spiderman
+		case 0x0550: // bomberman 64
+		case 0x0D18: //clr_in * a_fog + clr_mem * (1-a)
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+			break;
+
+		case 0xC912: //40 winks, clr_in * a_fog + clr_mem * 1
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+			break;
+
+		case 0x0040: // Fzero
+		case 0xC810: // Blends fog
+		case 0x0C18: // Standard interpolated blend
+		case 0x0050: // Standard interpolated blend
+		case 0x0051: // Standard interpolated blend
+		case 0x0055: // Used for antialiasing
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+			break;
+
+		case 0x0C19: // Used for antialiasing
+		case 0xC811: // Blends fog
+			glBlendFunc(GL_SRC_ALPHA, GL_DST_ALPHA);
+			break;
+
+		case 0x5000: // V8 explosions
+			glBlendFunc(GL_ONE_MINUS_SRC_ALPHA, GL_SRC_ALPHA);
+			break;
+
+		case 0xFA00: // Bomberman second attack
+			glBlendFunc(GL_ONE, GL_ZERO);
+			break;
+
+		default:
+			//LOG(LOG_VERBOSE, "Unhandled blend mode=%x", gDP.otherMode.l >> 16);
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+			break;
+		}
+	}
+	else if ((config.generalEmulation.hacks & hack_pilotWings) != 0 && (gDP.otherMode.l & 0x80) != 0) { //CLR_ON_CVG without FORCE_BL
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_ZERO, GL_ONE);
+	}
+	else if ((config.generalEmulation.hacks & hack_blastCorps) != 0 && gDP.otherMode.cycleType < G_CYC_COPY && gSP.texture.on == 0 && currentCombiner()->usesTexture()) { // Blast Corps
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_ZERO, GL_ONE);
+	}
+	else {
+		glDisable(GL_BLEND);
+	}
+}
+
 void OGLRender::_setBlendMode() const
 {
+	if (config.generalEmulation.enableLegacyBlending != 0) {
+		_legacySetBlendMode();
+		return;
+	}
+
 	if (gDP.otherMode.forceBlender != 0 && gDP.otherMode.cycleType < G_CYC_COPY) {
 		GLenum srcFactor = GL_ONE;
 		GLenum dstFactor = GL_ZERO;

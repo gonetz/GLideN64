@@ -316,14 +316,22 @@ int compileCombiner(Combiner & _color, Combiner & _alpha, std::string & _strShad
 	}
 #endif
 
-	if (gDP.otherMode.cycleType <= G_CYC_2CYCLE)
-		_strShader.append(fragment_shader_blender1);
-	if (gDP.otherMode.cycleType == G_CYC_2CYCLE)
-		_strShader.append(fragment_shader_blender2);
+	if (config.generalEmulation.enableLegacyBlending == 0) {
+		if (gDP.otherMode.cycleType <= G_CYC_2CYCLE)
+			_strShader.append(fragment_shader_blender1);
+		if (gDP.otherMode.cycleType == G_CYC_2CYCLE)
+			_strShader.append(fragment_shader_blender2);
 
-	_strShader.append(
-		"  fragColor = vec4(color2, alpha2);	\n"
-	);
+		_strShader.append(
+			"  fragColor = vec4(color2, alpha2);	\n"
+			);
+	} else {
+		_strShader.append(
+			"  fragColor = vec4(color2, alpha2);	\n"
+			"  if (uFogUsage == 1) \n"
+			"    fragColor.rgb = mix(fragColor.rgb, uFogColor.rgb, vShadeColor.a); \n"
+			);
+	}
 
 	return nInputs;
 }

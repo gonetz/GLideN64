@@ -187,6 +187,7 @@ private:
 	void _setColorArray() const;
 	void _setTexCoordArrays() const;
 	void _setBlendMode() const;
+	void _legacySetBlendMode() const;
 	void _updateCullFace() const;
 	void _updateViewport() const;
 	void _updateScreenCoordsViewport() const;

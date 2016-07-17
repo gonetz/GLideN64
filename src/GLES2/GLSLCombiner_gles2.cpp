@@ -149,12 +149,12 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 
 	if (usesTexture()) {
 		strFragmentShader.assign(fragment_shader_header_common_variables);
-		if (gDP.otherMode.cycleType == G_CYC_2CYCLE)
+		if (gDP.otherMode.cycleType == G_CYC_2CYCLE && config.generalEmulation.enableLegacyBlending == 0)
 			strFragmentShader.append(fragment_shader_header_common_variables_blend_mux_2cycle);
 		strFragmentShader.append(fragment_shader_header_common_functions);
 	} else {
 		strFragmentShader.assign(fragment_shader_header_common_variables_notex);
-		if (gDP.otherMode.cycleType == G_CYC_2CYCLE)
+		if (gDP.otherMode.cycleType == G_CYC_2CYCLE && config.generalEmulation.enableLegacyBlending == 0)
 			strFragmentShader.append(fragment_shader_header_common_variables_blend_mux_2cycle);
 		strFragmentShader.append(fragment_shader_header_common_functions_notex);
 	}
@@ -328,6 +328,9 @@ void ShaderCombiner::updateFogMode(bool _bForce)
 
 void ShaderCombiner::updateBlendMode(bool _bForce)
 {
+	if (config.generalEmulation.enableLegacyBlending != 0)
+		return;
+
 	if (gDP.otherMode.cycleType <= G_CYC_2CYCLE) {
 		m_uniforms.uBlendMux1.set(gDP.otherMode.c1_m1a,
 								  gDP.otherMode.c1_m1b,
@@ -356,6 +359,9 @@ void ShaderCombiner::updateBlendMode(bool _bForce)
 
 void ShaderCombiner::disableBlending()
 {
+	if (config.generalEmulation.enableLegacyBlending != 0)
+		return;
+
 	m_uniforms.uForceBlendCycle1.set(0, false);
 	m_uniforms.uForceBlendCycle2.set(0, false);
 }

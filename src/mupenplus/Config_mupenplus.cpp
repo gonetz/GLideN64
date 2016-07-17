@@ -74,6 +74,8 @@ bool Config_SetDefault()
 	assert(res == M64ERR_SUCCESS);
 	res = ConfigSetDefaultBool(g_configVideoGliden64, "enableNativeResTexrects", config.generalEmulation.enableNativeResTexrects, "Render 2D texrects in native resolution to fix misalignment between parts of 2D image.");
 	assert(res == M64ERR_SUCCESS);
+	res = ConfigSetDefaultBool(g_configVideoGliden64, "enableLegacyBlending", config.generalEmulation.enableLegacyBlending, "Do not use shaders to emulate N64 blending modes. Works faster on slow GPU. Can cause glitches.");
+	assert(res == M64ERR_SUCCESS);
 #ifdef ANDROID
 	res = ConfigSetDefaultBool(g_configVideoGliden64, "ForcePolygonOffset", config.generalEmulation.forcePolygonOffset, "If true, use polygon offset values specified below");
 	assert(res == M64ERR_SUCCESS);
@@ -205,6 +207,7 @@ void Config_LoadConfig()
 	config.generalEmulation.enableShadersStorage = ConfigGetParamBool(g_configVideoGliden64, "EnableShadersStorage");
 	config.generalEmulation.correctTexrectCoords = ConfigGetParamInt(g_configVideoGliden64, "CorrectTexrectCoords");
 	config.generalEmulation.enableNativeResTexrects = ConfigGetParamBool(g_configVideoGliden64, "enableNativeResTexrects");
+	config.generalEmulation.enableLegacyBlending = ConfigGetParamBool(g_configVideoGliden64, "enableLegacyBlending");
 #ifdef ANDROID
 	config.generalEmulation.forcePolygonOffset = ConfigGetParamBool(g_configVideoGliden64, "ForcePolygonOffset");
 	config.generalEmulation.polygonOffsetFactor = ConfigGetParamFloat(g_configVideoGliden64, "PolygonOffsetFactor");
