@@ -712,6 +712,10 @@ void FrameBufferList::attachDepthBuffer()
 	if (m_pCurrent == nullptr)
 		return;
 
+#ifdef VC
+	const GLenum discards[]  = {GL_DEPTH_ATTACHMENT};
+	glDiscardFramebufferEXT(GL_FRAMEBUFFER, 1, discards);
+#endif
 	DepthBuffer * pDepthBuffer = depthBufferList().getCurrent();
 	if (m_pCurrent->m_FBO > 0 && pDepthBuffer != nullptr) {
 		pDepthBuffer->initDepthImageTexture(m_pCurrent);
