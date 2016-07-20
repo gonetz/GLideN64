@@ -1129,11 +1129,10 @@ void gSPCBFDVertex( u32 a, u32 n, u32 v0 )
 				vtx.s = _FIXED2FLOAT( vertex->s, 5 );
 				vtx.t = _FIXED2FLOAT( vertex->t, 5 );
 				if (gSP.geometryMode & G_LIGHTING) {
-					const u32 normaleAddrOffset = ((v0+v+j)<<1);
+					const u32 normaleAddrOffset = ((v+j)<<1);
 					vtx.nx = (float)(((s8*)RDRAM)[(gSP.vertexNormalBase + normaleAddrOffset + 0)^3]);
 					vtx.ny = (float)(((s8*)RDRAM)[(gSP.vertexNormalBase + normaleAddrOffset + 1)^3]);
-					vtx.nz = (float)((s16)(vertex->flag&0xFF));
-					vtx.a = vertex->color.a * 0.0039215689f;
+					vtx.nz = (float)((s8)(vertex->flag&0xFF));
 				}
 				vtx.r = vertex->color.r * 0.0039215689f;
 				vtx.g = vertex->color.g * 0.0039215689f;
