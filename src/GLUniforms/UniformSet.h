@@ -57,6 +57,9 @@ private:
 
 		// Lights
 		fv3Uniform uLightDirection[8], uLightColor[8];
+#ifdef VC
+		fv3Uniform uLightColor_VC;
+#endif
 	};
 
 	void _updateColorUniforms(UniformSetLocation & _location, bool _bForce);
