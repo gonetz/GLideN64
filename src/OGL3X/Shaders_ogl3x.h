@@ -175,6 +175,7 @@ MAIN_SHADER_VERSION
 "uniform lowp float uK4;		\n"
 "uniform lowp float uK5;		\n"
 #endif // GL_USE_UNIFORMBLOCK
+"uniform mediump vec2 uTexOffset2[2];				\n"
 #ifdef GLESX
 "uniform mediump vec2 uScreenScale;	\n"
 #endif
@@ -269,7 +270,7 @@ static const char* fragment_shader_header_calc_light =
 static const char* fragment_shader_header_mipmap =
 	"mediump float mipmap(out lowp vec4 readtex0, out lowp vec4 readtex1);\n";
 static const char* fragment_shader_header_readTex =
-	"lowp vec4 readTex(in sampler2D tex, in mediump vec2 texCoord, in lowp int fbMonochrome, in bool fbFixedAlpha);\n";
+	"lowp vec4 readTex(in sampler2D tex, in mediump vec2 texCoord, in mediump vec2 texOffset, in lowp int fbMonochrome, in bool fbFixedAlpha);\n";
 #ifdef GL_MULTISAMPLING_SUPPORT
 static const char* fragment_shader_header_readTexMS =
 	"lowp vec4 readTexMS(in lowp sampler2DMS mstex, in mediump vec2 texCoord, in lowp int fbMonochrome, in bool fbFixedAlpha);\n";
@@ -462,9 +463,20 @@ static const char* fragment_shader_fake_mipmap =
 
 static const char* fragment_shader_readtex =
 AUXILIARY_SHADER_VERSION
-"lowp vec4 readTex(in sampler2D tex, in mediump vec2 texCoord, in lowp int fbMonochrome, in bool fbFixedAlpha)	\n"
+"uniform mediump vec2 uTexDelta;	\n"
+"uniform mediump vec2 uTexOrigin;	\n"
+"uniform lowp int uRenderState;							\n"
+"uniform lowp int uTextureFilterMode;								\n"
+"lowp vec4 readTex(in sampler2D tex, in mediump vec2 texCoord, in mediump vec2 texOffset, in lowp int fbMonochrome, in bool fbFixedAlpha)	\n"
 "{												\n"
 "  lowp vec4 texColor = texture(tex, texCoord);	\n"
+"  if (uRenderState == 4) {						\n"
+"  mediump vec2 texCorrection = (uTextureFilterMode == 0) ? uTexDelta*vec2(0.5) : vec2(0.0); \n"
+"  mediump vec2 texSize = vec2(textureSize(tex,0));							\n"
+"  texColor = texture(tex, ((uTexOrigin - texOffset) + texCoord*uTexDelta - texCorrection)/texSize);	\n"
+//"    mediump ivec2 iCoords = ivec2((uTexOrigin - texOffset) + texCoord*uTexDelta);  \n"
+//"    texColor = texelFetch(tex, iCoords, 0);    \n"
+"  }													\n"
 "  if (fbMonochrome == 1) texColor = vec4(texColor.r);	\n"
 "  else if (fbMonochrome == 2) 						\n"
 "    texColor.rgb = vec3(dot(vec3(0.2126, 0.7152, 0.0722), texColor.rgb));	\n"

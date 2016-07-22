@@ -244,7 +244,9 @@ struct gDPInfo
 	u32 paletteCRC256;
 	u32 half_1, half_2;
 
-	 gDPLoadTileInfo loadInfo[512];
+	gDPLoadTileInfo loadInfo[512];
+	f32 dsdx, dtdy;
+	f32 s0, t0;
 };
 
 extern gDPInfo gDP;

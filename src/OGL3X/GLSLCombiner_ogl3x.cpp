@@ -370,7 +370,7 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 				strFragmentShader.append("  if (uMSTexEnabled[0] == 0) readtex0 = readTex(uTex0, vTexCoord0, uFbMonochrome[0], uFbFixedAlpha[0] != 0); \n");
 				strFragmentShader.append("  else readtex0 = readTexMS(uMSTex0, vTexCoord0, uFbMonochrome[0], uFbFixedAlpha[0] != 0); \n");
 			} else
-				strFragmentShader.append("  lowp vec4 readtex0 = readTex(uTex0, vTexCoord0, uFbMonochrome[0], uFbFixedAlpha[0] != 0); \n");
+				strFragmentShader.append("  lowp vec4 readtex0 = readTex(uTex0, vTexCoord0, uTexOffset2[0], uFbMonochrome[0], uFbFixedAlpha[0] != 0); \n");
 		}
 		if (usesTile(1)) {
 			if (config.video.multisampling > 0) {
@@ -378,7 +378,7 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 				strFragmentShader.append("  if (uMSTexEnabled[1] == 0) readtex1 = readTex(uTex1, vTexCoord1, uFbMonochrome[1], uFbFixedAlpha[1] != 0); \n");
 				strFragmentShader.append("  else readtex1 = readTexMS(uMSTex1, vTexCoord1, uFbMonochrome[1], uFbFixedAlpha[1] != 0); \n");
 			} else
-				strFragmentShader.append("  lowp vec4 readtex1 = readTex(uTex1, vTexCoord1, uFbMonochrome[1], uFbFixedAlpha[1] != 0); \n");
+				strFragmentShader.append("  lowp vec4 readtex1 = readTex(uTex1, vTexCoord1, uTexOffset2[1], uFbMonochrome[1], uFbFixedAlpha[1] != 0); \n");
 		}
 #else
 		if (usesTile(0))
@@ -531,7 +531,11 @@ void ShaderCombiner::_locateUniforms() {
 
 	LocateUniform(uScreenScale);
 	LocateUniform(uDepthScale);
+	LocateUniform(uTexDelta);
+	LocateUniform(uTexOrigin);
 	LocateUniform(uFogScale);
+	LocateUniform(uTexOffset2[0]);
+	LocateUniform(uTexOffset2[1]);
 	LocateUniform(uScreenCoordsScale);
 
 	LocateUniform(uBlendMux1);
@@ -716,8 +720,15 @@ void ShaderCombiner::updateLOD(bool _bForce)
 void ShaderCombiner::updateTextureInfo(bool _bForce) {
 	const u32 texturePersp = (RSP.bLLE || GBI.isTexturePersp()) ? gDP.otherMode.texturePersp : 1U;
 	m_uniforms.uTexturePersp.set(texturePersp, _bForce);
-	if (config.texture.bilinearMode == BILINEAR_3POINT)
+	m_uniforms.uTexDelta.set(gDP.dsdx, gDP.dtdy, _bForce);
+	m_uniforms.uTexOrigin.set(gDP.s0, gDP.t0, _bForce);
+//	if (config.texture.bilinearMode == BILINEAR_3POINT)
 		m_uniforms.uTextureFilterMode.set(gDP.otherMode.textureFilter | (gSP.objRendermode&G_OBJRM_BILERP), _bForce);
+	for (u32 t = 0; t < 2; ++t) {
+		float fuls = gSP.textureTile[t]->fuls;
+		float fult = gSP.textureTile[t]->fult;
+		m_uniforms.uTexOffset2[t].set(fuls, fult, _bForce);
+	}
 }
 
 void ShaderCombiner::updateFrameBufferInfo(bool _bForce) {

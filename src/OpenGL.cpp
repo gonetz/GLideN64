@@ -1697,6 +1697,7 @@ void OGLRender::drawTexturedRect(const TexturedRectParams & _params)
 			f32 shiftScaleS = 1.0f;
 			f32 shiftScaleT = 1.0f;
 			getTextureShiftScale(t, cache, shiftScaleS, shiftScaleT);
+			/*
 			if (_params.uls > _params.lrs) {
 				texST[t].s0 = (_params.uls + _params.dsdx) * shiftScaleS - gSP.textureTile[t]->fuls;
 				texST[t].s1 = _params.lrs * shiftScaleS - gSP.textureTile[t]->fuls;
@@ -1711,6 +1712,12 @@ void OGLRender::drawTexturedRect(const TexturedRectParams & _params)
 				texST[t].t0 = _params.ult * shiftScaleT - gSP.textureTile[t]->fult;
 				texST[t].t1 = (_params.lrt + _params.dtdy) * shiftScaleT - gSP.textureTile[t]->fult;
 			}
+			*/
+
+			texST[t].s0 = 0;
+			texST[t].s1 = _params.lrx - _params.ulx;
+			texST[t].t0 = 0;
+			texST[t].t1 = _params.lry - _params.uly;
 
 			if (cache.current[t]->frameBufferTexture != CachedTexture::fbNone) {
 				texST[t].s0 = cache.current[t]->offsetS + texST[t].s0;
@@ -1734,10 +1741,10 @@ void OGLRender::drawTexturedRect(const TexturedRectParams & _params)
 				texST[t].t1 >= 0.0f && texST[t].t0 <= (float)cache.current[t]->height))
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-			texST[t].s0 *= cache.current[t]->scaleS;
-			texST[t].t0 *= cache.current[t]->scaleT;
-			texST[t].s1 *= cache.current[t]->scaleS;
-			texST[t].t1 *= cache.current[t]->scaleT;
+//			texST[t].s0 *= cache.current[t]->scaleS;
+//			texST[t].t0 *= cache.current[t]->scaleT;
+//			texST[t].s1 *= cache.current[t]->scaleS;
+//			texST[t].t1 *= cache.current[t]->scaleT;
 		}
 	}
 

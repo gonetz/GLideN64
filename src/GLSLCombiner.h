@@ -123,7 +123,7 @@ private:
 
 		fUniform uMinLod, uDeltaZ, uAlphaTestValue, uMSAAScale;
 
-		fv2Uniform uScreenScale, uDepthScale, uFogScale, uScreenCoordsScale;
+		fv2Uniform uScreenScale, uDepthScale, uFogScale, uScreenCoordsScale, uTexDelta, uTexOrigin, uTexOffset2[2];
 
 		iv2Uniform uMSTexEnabled, uFbMonochrome, uFbFixedAlpha;
 
