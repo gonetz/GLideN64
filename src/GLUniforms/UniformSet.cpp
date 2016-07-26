@@ -51,6 +51,9 @@ void UniformSet::bindWithShaderCombiner(ShaderCombiner * _pCombiner)
 			sprintf(buf, "uLightColor[%d]", i);
 			location.uLightColor[i].loc = glGetUniformLocation(program, buf);
 		}
+#ifdef VC
+		location.uLightColor_VC.loc = glGetUniformLocation(program, "uLightColor_VC");
+#endif
 		_updateLightUniforms(location, true);
 	}
 }
@@ -125,6 +128,15 @@ void UniformSet::_updateLightUniforms(UniformSetLocation & _location, bool _bFor
 		_location.uLightDirection[i].set(&gSP.lights[i].x, _bForce);
 		_location.uLightColor[i].set(&gSP.lights[i].r, _bForce);
 	}
+
+#ifdef VC
+	_location.uLightColor_VC.set(&gSP.lights[gSP.numLights].r, _bForce);
+
+	// Clear unused and the last light's color to black so they don't add to the lighting
+	static const float black[3] = { 0.0f, 0.0f, 0.0f };
+	for (s32 i = gSP.numLights; i < 8; i++)
+		_location.uLightColor[i].set((float*)&black, _bForce);
+#endif
 }
 
 void UniformSet::updateUniforms(ShaderCombiner * _pCombiner, OGLRender::RENDER_STATE _renderState)

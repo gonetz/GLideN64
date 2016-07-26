@@ -232,7 +232,11 @@ static const char* fragment_shader_header_common_functions_notex =
 static const char* fragment_shader_calc_light =
 "uniform mediump vec3 uLightDirection[8];	\n"
 "uniform lowp vec3 uLightColor[8];			\n"
+#ifdef VC
+"uniform lowp vec3 uLightColor_VC;\n"
+#endif
 "void calc_light(in lowp float fLights, in lowp vec3 input_color, out lowp vec3 output_color) {\n"
+#ifndef VC
 "  output_color = input_color;									\n"
 "  lowp int nLights = int(floor(fLights + 0.5));				\n"
 "  if (nLights == 0)											\n"
@@ -244,6 +248,22 @@ static const char* fragment_shader_calc_light =
 "    intensity = max(dot(n, uLightDirection[i]), 0.0);			\n"
 "    output_color += intensity*uLightColor[i];					\n"
 "  };															\n"
+#else
+"  output_color = input_color;\n"
+"  lowp int nLights = int(floor(fLights + 0.5));\n"
+"  if(nLights == 0) return;\n"
+"  output_color = uLightColor_VC;\n"
+"  mediump vec3 n = normalize(input_color);\n"
+"  output_color += max(dot(n, uLightDirection[0]), 0.0)*uLightColor[0];\n"
+"  output_color += max(dot(n, uLightDirection[1]), 0.0)*uLightColor[1];\n"
+"  output_color += max(dot(n, uLightDirection[2]), 0.0)*uLightColor[2];\n"
+"  output_color += max(dot(n, uLightDirection[3]), 0.0)*uLightColor[3];\n"
+"  output_color += max(dot(n, uLightDirection[4]), 0.0)*uLightColor[4];\n"
+"  output_color += max(dot(n, uLightDirection[5]), 0.0)*uLightColor[5];\n"
+"  output_color += max(dot(n, uLightDirection[6]), 0.0)*uLightColor[6];\n"
+//"  output_color += max(dot(n, uLightDirection[7]), 0.0)*uLightColor[7];\n"
+// This light is unreachable?
+#endif
 "  clamp(output_color, 0.0, 1.0);								\n"
 "}																\n"
 ;
