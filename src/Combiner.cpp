@@ -351,7 +351,16 @@ void getStorageFileName(wchar_t * _fileName)
 		if (osal_mkdirp(strShaderFolderPath) != 0)
 			pPath = strCacheFolderPath;
 	}
-	swprintf(_fileName, PLUGIN_PATH_SIZE, L"%ls/GLideN64.%08lx.shaders", pPath, std::hash<std::string>()(RSP.romname));
+
+#ifdef GLES3
+	const wchar_t* strOpenGLType = L"GLES3";
+#elif GLES3_1
+	const wchar_t* strOpenGLType = L"GLES3_1";
+#else
+	const wchar_t* strOpenGLType = L"OpenGL";
+#endif
+
+	swprintf(_fileName, PLUGIN_PATH_SIZE, L"%ls/GLideN64.%08lx.%ls.shaders", pPath, std::hash<std::string>()(RSP.romname), strOpenGLType);
 }
 
 u32 CombinerInfo::_getConfigOptionsBitSet() const
