@@ -12,6 +12,7 @@
 #include "Config.h"
 #include "PluginAPI.h"
 #include "RSP.h"
+#include "Log.h"
 
 static int saRGBExpanded[] =
 {
@@ -468,13 +469,12 @@ bool CombinerInfo::_loadShadersStorage()
 		}
 	}
 	catch (...) {
-		m_shadersLoaded = 0;
-		return false;
+		LOG(LOG_ERROR, "Stream error while loading shader cache! Buffer is probably not big enough");
 	}
 
 	m_shadersLoaded = m_combiners.size();
 	fin.close();
-	return !isGLError();
+	return true;
 }
 #else // GLES2
 void CombinerInfo::_saveShadersStorage() const
