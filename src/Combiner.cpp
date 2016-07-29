@@ -410,9 +410,28 @@ void CombinerInfo::_saveShadersStorage() const
 	fout.write(strGLVersion, len);
 
 	len = m_combiners.size();
-	fout.write((char*)&len, sizeof(len));
+
+	u32 totalWritten = 0;
+	std::vector<char> allShaderData;
+
 	for (Combiners::const_iterator cur = m_combiners.begin(); cur != m_combiners.end(); ++cur)
-		fout << *(cur->second);
+	{
+		std::vector<char> data;
+		if(cur->second->getShaderCacheBinary(data))
+		{
+			allShaderData.insert(allShaderData.end(), data.begin(), data.end());
+			++totalWritten;
+		}
+		else
+		{
+			LOG(LOG_ERROR, "Error while writing shader with key key=0x%016lX",
+				static_cast<long unsigned int>(cur->second->getKey()));
+		}
+	}
+
+	fout.write((char*)&totalWritten, sizeof(totalWritten));
+	fout.write(allShaderData.data(), allShaderData.size());
+
 	fout.flush();
 	fout.close();
 }
