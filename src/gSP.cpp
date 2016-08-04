@@ -326,7 +326,8 @@ void gSPProcessVertex4(u32 v)
 	if (gSP.changed & CHANGED_MATRIX)
 		gSPCombineMatrices();
 
-	OGLRender & render = video().getRender();
+	OGLVideo & ogl = video();
+	OGLRender & render = ogl.getRender();
 	float vPos[4][3];
 	for(int i = 0; i < 4; ++i) {
 		SPVertex & vtx = render.getVertex(v+i);
@@ -336,6 +337,15 @@ void gSPProcessVertex4(u32 v)
 		vtx.modify = 0;
 	}
 	gSPTransformVertex4(v, gSP.matrix.combined );
+
+	if (ogl.isAdjustScreen() && (gDP.colorImage.width > VI.width * 98 / 100)) {
+		for(int i = 0; i < 4; ++i) {
+			SPVertex & vtx = render.getVertex(v+i);
+			vtx.x *= ogl.getAdjustScale();
+			if (gSP.matrix.projection[3][2] == -1.f)
+				vtx.w *= ogl.getAdjustScale();
+		}
+	}
 
 	if (gSP.viewport.vscale[0] < 0) {
 		for(int i = 0; i < 4; ++i) {
