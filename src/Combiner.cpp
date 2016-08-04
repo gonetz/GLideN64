@@ -417,7 +417,7 @@ void CombinerInfo::_saveShadersStorage() const
 	for (Combiners::const_iterator cur = m_combiners.begin(); cur != m_combiners.end(); ++cur)
 	{
 		std::vector<char> data;
-		if(cur->second->getShaderCacheBinary(data))
+		if(cur->second->convertShaderCacheToBinary(data))
 		{
 			allShaderData.insert(allShaderData.end(), data.begin(), data.end());
 			++totalWritten;
@@ -481,7 +481,7 @@ bool CombinerInfo::_loadShadersStorage()
 		fin.read((char*)&len, sizeof(len));
 		for (u32 i = 0; i < len; ++i) {
 			m_pCurrent = new ShaderCombiner();
-			fin >> *m_pCurrent;
+			m_pCurrent->readShaderCacheFromFile(fin);
 			m_pCurrent->update(true);
 			m_pUniformCollection->bindWithShaderCombiner(m_pCurrent);
 			m_combiners[m_pCurrent->getKey()] = m_pCurrent;

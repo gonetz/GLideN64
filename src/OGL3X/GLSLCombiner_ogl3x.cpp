@@ -803,7 +803,7 @@ void ShaderCombiner::updateAlphaTestInfo(bool _bForce) {
 	m_uniforms.uCvgXAlpha.set(gDP.otherMode.cvgXAlpha, _bForce);
 }
 
-bool ShaderCombiner::getShaderCacheBinary(std::vector<char> & _shaderCache)
+bool ShaderCombiner::convertShaderCacheToBinary(std::vector<char> & _shaderCache)
 {
 	GLint  binaryLength;
 	glGetProgramiv(m_program, GL_PROGRAM_BINARY_LENGTH, &binaryLength);
@@ -846,10 +846,10 @@ bool ShaderCombiner::getShaderCacheBinary(std::vector<char> & _shaderCache)
 	return true;
 }
 
-std::istream & operator>> (std::istream & _is, ShaderCombiner & _combiner)
+void ShaderCombiner::readShaderCacheFromFile(std::istream & _is)
 {
-	_is.read((char*)&_combiner.m_key, sizeof(_combiner.m_key));
-	_is.read((char*)&_combiner.m_nInputs, sizeof(_combiner.m_nInputs));
+	_is.read((char*)&m_key, sizeof(m_key));
+	_is.read((char*)&m_nInputs, sizeof(m_nInputs));
 	GLenum binaryFormat;
 	GLint  binaryLength;
 	_is.read((char*)&binaryFormat, sizeof(binaryFormat));
@@ -857,10 +857,9 @@ std::istream & operator>> (std::istream & _is, ShaderCombiner & _combiner)
 	std::vector<char> binary(binaryLength);
 	_is.read(binary.data(), binaryLength);
 
-	glProgramBinary(_combiner.m_program, binaryFormat, binary.data(), binaryLength);
-	assert(checkProgramLinkStatus(_combiner.m_program));
-	_combiner._locateUniforms();
-	return _is;
+	glProgramBinary(m_program, binaryFormat, binary.data(), binaryLength);
+	assert(checkProgramLinkStatus(m_program));
+	_locateUniforms();
 }
 
 void ShaderCombiner::getShaderCombinerOptionsSet(std::vector<u32> & _vecOptions)

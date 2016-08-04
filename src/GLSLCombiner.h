@@ -38,8 +38,8 @@ public:
 	bool usesShade() const { return (m_nInputs & ((1 << SHADE) | (1 << SHADE_ALPHA))) != 0; }
 	bool usesShadeColor() const { return (m_nInputs & (1 << SHADE)) != 0; }
 
-	bool getShaderCacheBinary(std::vector<char> & _shaderCache);
-	friend std::istream & operator>> (std::istream & _os, ShaderCombiner & _combiner);
+	bool convertShaderCacheToBinary(std::vector<char> & _shaderCache);
+	void readShaderCacheFromFile(std::istream & _is);
 
 	static void getShaderCombinerOptionsSet(std::vector<u32> & _vecOptions);
 
