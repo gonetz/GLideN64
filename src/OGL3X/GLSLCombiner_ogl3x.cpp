@@ -206,9 +206,6 @@ GLuint _createShader(GLenum _type, const char * _strShader)
 
 void InitShaderCombiner()
 {
-	glActiveTexture(GL_TEXTURE0);
-	glActiveTexture(GL_TEXTURE1);
-
 	g_vertex_shader_object = _createShader(GL_VERTEX_SHADER, vertex_shader);
 	g_vertex_shader_object_notex = _createShader(GL_VERTEX_SHADER, vertex_shader_notex);
 
