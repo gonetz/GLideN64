@@ -18,7 +18,7 @@ public:
 
 private:
 	struct fv3Uniform {
-		GLint loc;
+		GLint loc = -1;
 		float val[3];
 		void set(float * _pVal, bool _force) {
 			const size_t szData = sizeof(float)* 3;
@@ -30,7 +30,7 @@ private:
 	};
 
 	struct fv4Uniform {
-		GLint loc;
+		GLint loc = -1;
 		float val[4];
 		void set(float * _pVal, bool _force) {
 			const size_t szData = sizeof(float)* 4;
