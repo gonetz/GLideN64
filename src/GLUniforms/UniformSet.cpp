@@ -42,7 +42,7 @@ void UniformSet::bindWithShaderCombiner(ShaderCombiner * _pCombiner)
 	_updateColorUniforms(location, true);
 
 	// Lights
-	if (config.generalEmulation.enableHWLighting != 0 && GBI.isHWLSupported() && _pCombiner->usesShadeColor()) {
+	if (_pCombiner->usesHwLighting()) {
 		// locate lights uniforms
 		char buf[32];
 		for (s32 i = 0; i < 8; ++i) {

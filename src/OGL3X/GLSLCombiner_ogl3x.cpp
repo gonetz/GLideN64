@@ -308,6 +308,9 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 	const bool bUseLod = usesLOD();
 	const bool bUseHWLight = config.generalEmulation.enableHWLighting != 0 && GBI.isHWLSupported() && usesShadeColor();
 
+	if( bUseHWLight )
+		m_nInputs |= 1 << HW_LIGHT;
+
 	if (usesTexture()) {
 		strFragmentShader.assign(fragment_shader_header_common_variables);
 		if (gDP.otherMode.cycleType == G_CYC_2CYCLE && config.generalEmulation.enableLegacyBlending == 0)

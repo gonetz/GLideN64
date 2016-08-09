@@ -37,6 +37,7 @@ public:
 	bool usesLOD() const { return (m_nInputs & (1 << LOD_FRACTION)) != 0; }
 	bool usesShade() const { return (m_nInputs & ((1 << SHADE) | (1 << SHADE_ALPHA))) != 0; }
 	bool usesShadeColor() const { return (m_nInputs & (1 << SHADE)) != 0; }
+	bool usesHwLighting() const { return (m_nInputs & (1 << HW_LIGHT)) != 0; }
 
 	friend std::ostream & operator<< (std::ostream & _os, const ShaderCombiner & _combiner);
 	friend std::istream & operator>> (std::istream & _os, ShaderCombiner & _combiner);
