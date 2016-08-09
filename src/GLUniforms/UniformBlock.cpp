@@ -125,7 +125,7 @@ void UniformBlock::bindWithShaderCombiner(ShaderCombiner * _pCombiner)
 			glUniformBlockBinding(program, blockIndex, m_colorsBlock.m_blockBindingPoint);
 	}
 
-	if (_pCombiner->usesShadeColor() && config.generalEmulation.enableHWLighting != 0) {
+	if (_pCombiner->usesHwLighting()) {
 		if (m_lightBlock.m_buffer == 0)
 			_initLightBuffer(program);
 		else {

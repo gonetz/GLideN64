@@ -87,6 +87,7 @@
 #define ONE				19
 #define ZERO			20
 #define LIGHT			21
+#define HW_LIGHT		22
 
 struct CombinerOp
 {
