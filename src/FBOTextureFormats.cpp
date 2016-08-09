@@ -38,7 +38,7 @@ void FBOTextureFormats::init()
 	colorType = GL_UNSIGNED_BYTE;
 	colorFormatBytes = 4;
 
-	monochromeInternalFormat = GL_RED;
+	monochromeInternalFormat = GL_R8;
 	monochromeFormat = GL_RED;
 	monochromeType = GL_UNSIGNED_BYTE;
 	monochromeFormatBytes = 1;
