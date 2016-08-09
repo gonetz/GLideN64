@@ -83,8 +83,6 @@ m64p_error PluginAPI::PluginShutdown()
 	_callAPICommand(acRomClosed);
 	delete m_pRspThread;
 	m_pRspThread = nullptr;
-#else
-	video().stop();
 #endif
 	return M64ERR_SUCCESS;
 }
