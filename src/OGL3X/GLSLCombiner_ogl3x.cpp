@@ -748,8 +748,9 @@ void ShaderCombiner::updateFrameBufferInfo(bool _bForce) {
 	}
 	m_uniforms.uFbMonochrome.set(nFbMonochromeMode0, nFbMonochromeMode1, _bForce);
 	m_uniforms.uFbFixedAlpha.set(nFbFixedAlpha0, nFbFixedAlpha1, _bForce);
+#ifdef GL_MULTISAMPLING_SUPPORT
 	m_uniforms.uMSTexEnabled.set(nMSTex0Enabled, nMSTex1Enabled, _bForce);
-
+#endif
 	gDP.changed &= ~CHANGED_FB_TEXTURE;
 }
 
