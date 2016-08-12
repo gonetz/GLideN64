@@ -398,10 +398,7 @@ void OGLRender::TexrectDrawer::init()
 	assert(m_textureBoundsLoc >= 0);
 	m_enableAlphaTestLoc = glGetUniformLocation(m_programTex, "uEnableAlphaTest");
 	assert(m_enableAlphaTestLoc >= 0);
-#ifndef GLES2
-	m_depthScaleLoc = glGetUniformLocation(m_programTex, "uDepthScale");
-	assert(m_depthScaleLoc >= 0);
-#endif
+
 	glUseProgram(0);
 
 	m_vecRectCoords.reserve(256);
@@ -570,10 +567,7 @@ bool OGLRender::TexrectDrawer::draw()
 	glUniform1i(m_enableAlphaTestLoc, enableAlphaTest);
 	float texBounds[4] = { s0, t0, s1, t1 };
 	glUniform4fv(m_textureBoundsLoc, 1, texBounds);
-	if (RSP.bLLE)
-		glUniform2f(m_depthScaleLoc, 0.5f, 0.5f);
-	else
-		glUniform2f(m_depthScaleLoc, gSP.viewport.vscale[2], gSP.viewport.vtrans[2]);
+	
 	glEnableVertexAttribArray(SC_TEXCOORD0);
 
 	rect[0].x = m_ulx;

@@ -37,6 +37,7 @@ void Config::resetToDefaults()
 	generalEmulation.correctTexrectCoords = tcDisable;
 	generalEmulation.enableNativeResTexrects = 0;
 	generalEmulation.enableLegacyBlending = 0;
+	generalEmulation.enableFragmentDepthWrite = 1;
 	generalEmulation.hacks = 0;
 #ifdef ANDROID
 	generalEmulation.forcePolygonOffset = 0;
