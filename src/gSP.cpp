@@ -258,7 +258,7 @@ static void gSPPointLightVertex4_CBFD(u32 v, float _vPos[4][3])
 		for (u32 l = 0; l < gSP.numLights-1; ++l) {
 			const SPLight & light = gSP.lights[l];
 			intensity = DotProduct( &vtx.nx, &light.x );
-			if (intensity < 0.0f)
+			if ((light.r == 0.0 && light.g == 0.0 && light.b == 0.0) || intensity < 0)
 				continue;
 			if (light.ca > 0.0f) {
 				const f32 vx = (vtx.x + gSP.vertexCoordMod[ 8])*gSP.vertexCoordMod[12] - light.posx;
@@ -276,7 +276,7 @@ static void gSPPointLightVertex4_CBFD(u32 v, float _vPos[4][3])
 		}
 		const SPLight & light = gSP.lights[gSP.numLights-1];
 		intensity = DotProduct( &vtx.nx, &light.x );
-		if (intensity > 0.0f) {
+		if ((light.r != 0.0 || light.g != 0.0 || light.b != 0.0) && intensity > 0) {
 			r += light.r * intensity;
 			g += light.g * intensity;
 			b += light.b * intensity;
@@ -495,7 +495,7 @@ static void gSPPointLightVertex_CBFD(SPVertex & _vtx, float * /*_vPos*/)
 	for (u32 l = 0; l < gSP.numLights-1; ++l) {
 		const SPLight & light = gSP.lights[l];
 		intensity = DotProduct( &_vtx.nx, &light.x );
-		if (intensity < 0.0f)
+		if ((light.r == 0.0 && light.g == 0.0 && light.b == 0.0) || intensity < 0)
 			continue;
 		if (light.ca > 0.0f) {
 			const f32 vx = (_vtx.x + gSP.vertexCoordMod[ 8])*gSP.vertexCoordMod[12] - light.posx;
@@ -513,7 +513,7 @@ static void gSPPointLightVertex_CBFD(SPVertex & _vtx, float * /*_vPos*/)
 	}
 	const SPLight & light = gSP.lights[gSP.numLights-1];
 	intensity = DotProduct( &_vtx.nx, &light.x );
-	if (intensity > 0.0f) {
+	if ((light.r != 0.0 || light.g != 0.0 || light.b != 0.0) && intensity > 0) {
 		r += light.r * intensity;
 		g += light.g * intensity;
 		b += light.b * intensity;
