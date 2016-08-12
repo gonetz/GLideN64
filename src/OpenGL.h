@@ -235,7 +235,7 @@ private:
 		GLuint m_programClean;
 		GLint m_enableAlphaTestLoc;
 		GLint m_textureBoundsLoc;
-		GLint m_depthScaleLoc;
+		GLint m_depthScaleLoc = -1;
 		gDPScissor m_scissor;
 		CachedTexture * m_pTexture;
 		FrameBuffer * m_pBuffer;
