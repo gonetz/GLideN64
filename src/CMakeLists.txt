@@ -65,6 +65,7 @@ if(EXISTS "/opt/vc/include/bcm_host.h")
   add_definitions(
     -DVC
     -DUSE_DEPTH_RENDERBUFFER
+    -DARM_ASM
   )
   include_directories(
     "/opt/vc/include"
@@ -166,6 +167,7 @@ if(PANDORA)
   -DPANDORA
   -DPowerVR_SGX_540
   -DGLES2
+  -DARM_ASM
    )
 endif(PANDORA)
 
