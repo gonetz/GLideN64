@@ -264,6 +264,8 @@ static const char* fragment_shader_header_common_variables_blend_mux_2cycle =
 
 static const char* fragment_shader_header_noise =
 	"lowp float snoise();\n";
+static const char* fragment_shader_header_write_depth =
+	"void writeDepth();\n";
 static const char* fragment_shader_header_calc_light =
 	"void calc_light(in lowp float fLights, in lowp vec3 input_color, out lowp vec3 output_color);\n";
 static const char* fragment_shader_header_mipmap =
@@ -317,13 +319,7 @@ static const char* fragment_shader_header_main =
 "									\n"
 "void main()						\n"
 "{									\n"
-#ifdef GLESX
-"#ifdef GL_NV_fragdepth			\n"
-"  gl_FragDepth = clamp((gl_FragCoord.z * 2.0 - 1.0) * uDepthScale.s + uDepthScale.t, 0.0, 1.0);	\n"
-"#endif										\n"
-#else
-"  gl_FragDepth = clamp((gl_FragCoord.z * 2.0 - 1.0) * uDepthScale.s + uDepthScale.t, 0.0, 1.0);	\n"
-#endif
+"  writeDepth();                                                                                    \n"
 "  lowp mat4 muxPM = mat4(vec4(0.0), vec4(0.0), uBlendColor, uFogColor);							\n"
 "  lowp vec4 muxA = vec4(0.0, uFogColor.a, vShadeColor.a, 0.0);										\n"
 "  lowp vec4 muxB = vec4(0.0, 1.0, 1.0, 0.0);														\n"
@@ -551,6 +547,23 @@ static const char* fragment_shader_dummy_noise =
 "}						\n"
 ;
 
+static const char* fragment_shader_depth =
+AUXILIARY_SHADER_VERSION
+#ifndef GLESX
+"uniform mediump vec2 uDepthScale;																	\n"
+#endif
+"void writeDepth()						        		\n"
+"{														\n"
+"  gl_FragDepth = clamp((gl_FragCoord.z * 2.0 - 1.0) * uDepthScale.s + uDepthScale.t, 0.0, 1.0);	\n"
+"}														\n"
+;
+
+static const char* fragment_shader_dummy_depth =
+"void writeDepth()	    \n"
+"{						\n"
+"}						\n"
+;
+
 #ifdef GL_IMAGE_TEXTURES_SUPPORT
 static const char* depth_compare_shader_float =
 #ifndef GLESX
@@ -698,13 +711,7 @@ MAIN_SHADER_VERSION
 "in mediump vec2 vTexCoord0;					\n"
 "void main()									\n"
 "{												\n"
-#ifdef GLESX
-"#ifdef GL_NV_fragdepth							\n"
 "  gl_FragDepth = texture(uTex0, vTexCoord0).r;	\n"
-"#endif											\n"
-#else
-"  gl_FragDepth = texture(uTex0, vTexCoord0).r;	\n"
-#endif
 "}												\n"
 ;
 
@@ -785,13 +792,7 @@ const char * strTexrectDrawerFragmentShaderTex =
 "out lowp vec4 fragColor;																						\n"
 "void main()																									\n"
 "{																												\n"
-#ifdef GLESX
-"#ifdef GL_NV_fragdepth																							\n"
-"  gl_FragDepth = clamp((gl_FragCoord.z * 2.0 - 1.0) * uDepthScale.s + uDepthScale.t, 0.0, 1.0);				\n"
-"#endif																											\n"
-#else
-"  gl_FragDepth = clamp((gl_FragCoord.z * 2.0 - 1.0) * uDepthScale.s + uDepthScale.t, 0.0, 1.0);				\n"
-#endif
+"  writeDepth();                                                                                                \n"
 "  fragColor = texFilter(uTex0, vTexCoord0);																	\n"
 "  if (fragColor == uTestColor) discard;																		\n"
 "  if (uEnableAlphaTest == 1 && !(fragColor.a > 0.0)) discard;													\n"
