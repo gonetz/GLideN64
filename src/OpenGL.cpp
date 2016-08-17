@@ -269,6 +269,11 @@ void OGLVideo::_setBufferSize()
 	} else {
 		m_width = m_screenWidth;
 		m_height = m_screenHeight;
+		if (config.frameBufferEmulation.aspect == Config::aAdjust && (m_screenWidth * 3 / 4 > m_screenHeight)) {
+			f32 width43 = m_screenHeight * 4.0f / 3.0f;
+			m_adjustScale = width43 / m_screenWidth;
+			m_bAdjustScreen = true;
+		}
 	}
 }
 
