@@ -100,6 +100,7 @@ PFNGLUNMAPBUFFERPROC glUnmapBuffer;
 PFNGLDELETEBUFFERSPROC glDeleteBuffers;
 PFNGLBINDIMAGETEXTUREPROC glBindImageTexture;
 PFNGLMEMORYBARRIERPROC glMemoryBarrier;
+PFNGLGETSTRINGIPROC glGetStringi;
 
 PFNGLGETUNIFORMBLOCKINDEXPROC glGetUniformBlockIndex;
 PFNGLUNIFORMBLOCKBINDINGPROC glUniformBlockBinding;
@@ -203,6 +204,7 @@ void initGLFunctions()
 	glDeleteBuffers = (PFNGLDELETEBUFFERSPROC)glGetProcAddress( "glDeleteBuffers" );
 	glBindImageTexture = (PFNGLBINDIMAGETEXTUREPROC)glGetProcAddress( "glBindImageTexture" );
 	glMemoryBarrier = (PFNGLMEMORYBARRIERPROC)glGetProcAddress( "glMemoryBarrier" );
+	glGetStringi = (PFNGLGETSTRINGIPROC)glGetProcAddress("glGetStringi");
 
 	glGetUniformBlockIndex = (PFNGLGETUNIFORMBLOCKINDEXPROC)glGetProcAddress("glGetUniformBlockIndex");
 	glUniformBlockBinding = (PFNGLUNIFORMBLOCKBINDINGPROC)glGetProcAddress("glUniformBlockBinding");
