@@ -370,7 +370,9 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 				strFragmentShader.append("  if (uMSTexEnabled[0] == 0) readtex0 = readTex(uTex0, vTexCoord0, uFbMonochrome[0], uFbFixedAlpha[0] != 0); \n");
 				strFragmentShader.append("  else readtex0 = readTexMS(uMSTex0, vTexCoord0, uFbMonochrome[0], uFbFixedAlpha[0] != 0); \n");
 			} else
-				strFragmentShader.append("  lowp vec4 readtex0 = readTex(uTex0, vTexCoord0, uTexOffset2[0], uFbMonochrome[0], uFbFixedAlpha[0] != 0); \n");
+				strFragmentShader.append("  lowp vec4 readtex0 = readTex(uTex0, vTexCoord0, uTexOffset2[0],"
+					"uSH[0], uSL[0], uTH[0], uTL[0], uMaskS[0], uMaskT[0], uClampS[0], uClampT[0], uMirrorS[0], uMirrorT[0],"
+					"uFbMonochrome[0], uFbFixedAlpha[0] != 0); \n");
 		}
 		if (usesTile(1)) {
 			if (config.video.multisampling > 0) {
@@ -378,7 +380,9 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 				strFragmentShader.append("  if (uMSTexEnabled[1] == 0) readtex1 = readTex(uTex1, vTexCoord1, uFbMonochrome[1], uFbFixedAlpha[1] != 0); \n");
 				strFragmentShader.append("  else readtex1 = readTexMS(uMSTex1, vTexCoord1, uFbMonochrome[1], uFbFixedAlpha[1] != 0); \n");
 			} else
-				strFragmentShader.append("  lowp vec4 readtex1 = readTex(uTex1, vTexCoord1, uTexOffset2[1], uFbMonochrome[1], uFbFixedAlpha[1] != 0); \n");
+				strFragmentShader.append("  lowp vec4 readtex1 = readTex(uTex1, vTexCoord1, uTexOffset2[1],"
+					"uSH[1], uSL[1], uTH[1], uTL[1], uMaskS[1], uMaskT[1], uClampS[1], uClampT[1], uMirrorS[1], uMirrorT[1],"
+					"uFbMonochrome[1], uFbFixedAlpha[1] != 0); \n");
 		}
 #else
 		if (usesTile(0))
@@ -537,6 +541,27 @@ void ShaderCombiner::_locateUniforms() {
 	LocateUniform(uTexOffset2[0]);
 	LocateUniform(uTexOffset2[1]);
 	LocateUniform(uScreenCoordsScale);
+	
+	LocateUniform(uSH[0]);
+	LocateUniform(uSH[1]);
+	LocateUniform(uSL[0]);
+	LocateUniform(uSL[1]);
+	LocateUniform(uTH[0]);
+	LocateUniform(uTH[1]);
+	LocateUniform(uTL[0]);
+	LocateUniform(uTL[1]); 
+	LocateUniform(uMaskS[0]);
+	LocateUniform(uMaskS[1]); 
+	LocateUniform(uMaskT[0]);
+	LocateUniform(uMaskT[1]);
+	LocateUniform(uClampS[0]);
+	LocateUniform(uClampS[1]);
+	LocateUniform(uClampT[0]);
+	LocateUniform(uClampT[1]);
+	LocateUniform(uMirrorS[0]);
+	LocateUniform(uMirrorS[1]);
+	LocateUniform(uMirrorT[0]);
+	LocateUniform(uMirrorT[1]);
 
 	LocateUniform(uBlendMux1);
 	LocateUniform(uBlendMux2);
@@ -722,12 +747,26 @@ void ShaderCombiner::updateTextureInfo(bool _bForce) {
 	m_uniforms.uTexturePersp.set(texturePersp, _bForce);
 	m_uniforms.uTexDelta.set(gDP.dsdx, gDP.dtdy, _bForce);
 	m_uniforms.uTexOrigin.set(gDP.s0, gDP.t0, _bForce);
+
+
 //	if (config.texture.bilinearMode == BILINEAR_3POINT)
 		m_uniforms.uTextureFilterMode.set(gDP.otherMode.textureFilter | (gSP.objRendermode&G_OBJRM_BILERP), _bForce);
 	for (u32 t = 0; t < 2; ++t) {
 		float fuls = gSP.textureTile[t]->fuls;
 		float fult = gSP.textureTile[t]->fult;
 		m_uniforms.uTexOffset2[t].set(fuls, fult, _bForce);
+
+		m_uniforms.uSH[t].set(gSP.textureTile[t]->lrs, _bForce);
+		m_uniforms.uSL[t].set(gSP.textureTile[t]->uls, _bForce);
+		m_uniforms.uTH[t].set(gSP.textureTile[t]->lrt, _bForce);
+		m_uniforms.uTL[t].set(gSP.textureTile[t]->ult, _bForce);
+		m_uniforms.uClampS[t].set(gSP.textureTile[t]->clamps, _bForce);
+		m_uniforms.uClampT[t].set(gSP.textureTile[t]->clampt, _bForce);
+		m_uniforms.uMaskS[t].set(gSP.textureTile[t]->masks, _bForce);
+		m_uniforms.uMaskT[t].set(gSP.textureTile[t]->maskt, _bForce);
+		m_uniforms.uMirrorS[t].set(gSP.textureTile[t]->mirrors, _bForce);
+		m_uniforms.uMirrorT[t].set(gSP.textureTile[t]->mirrort, _bForce);
+
 	}
 }
 

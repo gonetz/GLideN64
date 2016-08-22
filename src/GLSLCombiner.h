@@ -119,7 +119,9 @@ private:
 			uMaxTile, uTextureDetail, uTexturePersp, uTextureFilterMode, uMSAASamples,
 			uAlphaCompareMode, uAlphaDitherMode, uColorDitherMode,
 			uCvgXAlpha, uAlphaCvgSel, uRenderTarget,
-			uForceBlendCycle1, uForceBlendCycle2;
+			uForceBlendCycle1, uForceBlendCycle2,
+			uSH[2], uSL[2], uTH[2], uTL[2],
+			uMaskS[2], uMaskT[2], uClampS[2], uClampT[2], uMirrorS[2], uMirrorT[2];
 
 		fUniform uMinLod, uDeltaZ, uAlphaTestValue, uMSAAScale;
 

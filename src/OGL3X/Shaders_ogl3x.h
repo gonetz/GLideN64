@@ -176,6 +176,8 @@ MAIN_SHADER_VERSION
 "uniform lowp float uK5;		\n"
 #endif // GL_USE_UNIFORMBLOCK
 "uniform mediump vec2 uTexOffset2[2];				\n"
+"uniform mediump int uSH[2], uSL[2], uTH[2], uTL[2]; \n"
+"uniform mediump int uMaskS[2], uMaskT[2], uClampS[2], uClampT[2], uMirrorS[2], uMirrorT[2];"
 #ifdef GLESX
 "uniform mediump vec2 uScreenScale;	\n"
 #endif
@@ -270,7 +272,10 @@ static const char* fragment_shader_header_calc_light =
 static const char* fragment_shader_header_mipmap =
 	"mediump float mipmap(out lowp vec4 readtex0, out lowp vec4 readtex1);\n";
 static const char* fragment_shader_header_readTex =
-	"lowp vec4 readTex(in sampler2D tex, in mediump vec2 texCoord, in mediump vec2 texOffset, in lowp int fbMonochrome, in bool fbFixedAlpha);\n";
+"lowp vec4 readTex(in sampler2D tex, in mediump vec2 texCoord, in mediump vec2 texOffset,		\n"
+"    in mediump int sh, in mediump int sl, in mediump int th, in mediump int tl,				\n"
+"    in mediump int masks, in mediump int maskt, in mediump int clamps, in mediump int clampt, in mediump int mirrors, in mediump int mirrort, \n"
+"    in lowp int fbMonochrome, in bool fbFixedAlpha);	\n";
 #ifdef GL_MULTISAMPLING_SUPPORT
 static const char* fragment_shader_header_readTexMS =
 	"lowp vec4 readTexMS(in lowp sampler2DMS mstex, in mediump vec2 texCoord, in lowp int fbMonochrome, in bool fbFixedAlpha);\n";
@@ -463,20 +468,73 @@ static const char* fragment_shader_fake_mipmap =
 
 static const char* fragment_shader_readtex =
 AUXILIARY_SHADER_VERSION
-"uniform mediump vec2 uTexDelta;	\n"
-"uniform mediump vec2 uTexOrigin;	\n"
-"uniform lowp int uRenderState;							\n"
-"uniform lowp int uTextureFilterMode;								\n"
-"lowp vec4 readTex(in sampler2D tex, in mediump vec2 texCoord, in mediump vec2 texOffset, in lowp int fbMonochrome, in bool fbFixedAlpha)	\n"
+"uniform mediump vec2 uTexDelta;		\n"
+"uniform mediump vec2 uTexOrigin;		\n"
+"uniform lowp int uRenderState;			\n"
+"uniform lowp int uTextureFilterMode;	\n"
+
+"lowp ivec2 clamp_mirror_wrap(in mediump ivec2 coord,								\n"
+"    in mediump int sh, in mediump int sl, in mediump int th, in mediump int tl,				\n"
+"    in mediump int masks, in mediump int maskt, in mediump int clamps, in mediump int clampt, in mediump int mirrors, in mediump int mirrort) \n"
+"{																								\n"
+"  if (masks == 0){															\n"
+"    coord.x = (coord.x > sh-sl)? sh-sl:coord.x;								\n"
+"    coord.x = (coord.x < 0)? 0:coord.x;								\n"
+"  }																			\n"
+"  else {																		\n"
+"    if (clamps == 1){															\n"
+"      coord.x = (coord.x > sh-sl)? sh-sl:coord.x;							\n"
+"      coord.x = (coord.x < 0)? 0:coord.x;							\n"
+"    }																			\n"
+"    if ((mirrors == 1) && (((coord.x>>masks) & 1) == 1))					\n"
+"      coord.x = ~coord.x;													\n"
+"	 coord.x &= ((1<<masks)-1);												\n"
+"  }																			\n"
+
+"  if (maskt == 0){															\n"
+"    coord.y = (coord.y > th-tl)? th-tl:coord.y;								\n"
+"    coord.y = (coord.y < 0)? 0:coord.y;								\n"
+"  }																			\n"
+"  else {																		\n"
+"    if (clampt == 1){															\n"
+"      coord.y = (coord.y > th-tl)? th-tl:coord.y;							\n"
+"      coord.y = (coord.y < 0)? 0:coord.y;							\n"
+"    }																			\n"
+"    if ((mirrort == 1) && (((coord.y>>maskt) & 1) == 1))					\n"
+"      coord.y = ~coord.y;													\n"
+"	 coord.y &= ((1<<maskt)-1);												\n"
+"  }																			\n"
+"  return coord;"
+"}																				\n"
+
+"lowp vec4 readTex(in sampler2D tex, in mediump vec2 texCoord, in mediump vec2 texOffset,		\n"
+"    in mediump int sh, in mediump int sl, in mediump int th, in mediump int tl,				\n"
+"    in mediump int masks, in mediump int maskt, in mediump int clamps, in mediump int clampt, in mediump int mirrors, in mediump int mirrort, \n"
+"    in lowp int fbMonochrome, in bool fbFixedAlpha)	\n"
 "{												\n"
-"  lowp vec4 texColor = texture(tex, texCoord);	\n"
+"  lowp vec4 texColor = texture(tex, texCoord - 0.5/vec2(textureSize(tex,0)));	\n"
+//"  lowp vec4 texColor = texture(tex, texCoord);	\n"
 "  if (uRenderState == 4) {						\n"
-"  mediump vec2 texCorrection = (uTextureFilterMode == 0) ? uTexDelta*vec2(0.5) : vec2(0.0); \n"
-"  mediump vec2 texSize = vec2(textureSize(tex,0));							\n"
-"  texColor = texture(tex, ((uTexOrigin - texOffset) + texCoord*uTexDelta - texCorrection)/texSize);	\n"
-//"    mediump ivec2 iCoords = ivec2((uTexOrigin - texOffset) + texCoord*uTexDelta);  \n"
-//"    texColor = texelFetch(tex, iCoords, 0);    \n"
-"  }													\n"
+"  mediump vec2 coords = (uTexOrigin - texOffset) + floor(texCoord)*uTexDelta;				\n"
+//"  mediump vec2 coords = (uTexOrigin - texOffset) + (texCoord-0.5)*uTexDelta;				\n"
+"  mediump vec2 frac = fract(coords);														\n"
+"  mediump ivec2 iCoords00 = ivec2(coords);   \n"
+"  mediump ivec2 iCoords01 = iCoords00 + ivec2(0,1);										\n"
+"  mediump ivec2 iCoords10 = iCoords00 + ivec2(1,0);										\n"
+"  mediump ivec2 iCoords11 = iCoords00 + ivec2(1,1);										\n"
+"  iCoords00 = clamp_mirror_wrap(iCoords00,sh,sl,th,tl,masks,maskt,clamps,clampt,mirrors,mirrort);	\n"
+"  iCoords01 = clamp_mirror_wrap(iCoords01,sh,sl,th,tl,masks,maskt,clamps,clampt,mirrors,mirrort);	\n"
+"  iCoords10 = clamp_mirror_wrap(iCoords10,sh,sl,th,tl,masks,maskt,clamps,clampt,mirrors,mirrort);	\n"
+"  iCoords11 = clamp_mirror_wrap(iCoords11,sh,sl,th,tl,masks,maskt,clamps,clampt,mirrors,mirrort);	\n"
+
+"  if(uTextureFilterMode == 0)													\n"
+"      texColor = texelFetch(tex, iCoords00, 0);									\n"
+"  else{																			\n"
+"    texColor = (1-frac.x)*(1-frac.y)*texelFetch(tex,iCoords00,0) + frac.x*(1-frac.y)*texelFetch(tex,iCoords10,0) + \n"
+"               (1-frac.x)*frac.y*texelFetch(tex,iCoords01,0) + frac.x*frac.y*texelFetch(tex,iCoords11,0);"
+"  }																			\n"
+" }																			\n"
+
 "  if (fbMonochrome == 1) texColor = vec4(texColor.r);	\n"
 "  else if (fbMonochrome == 2) 						\n"
 "    texColor.rgb = vec3(dot(vec3(0.2126, 0.7152, 0.0722), texColor.rgb));	\n"
