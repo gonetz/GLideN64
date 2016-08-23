@@ -117,8 +117,10 @@ bool OGLVideo::isExtensionSupported(const char *extension)
 	glGetIntegerv(GL_NUM_EXTENSIONS, &count);
 	for (u32 i = 0; i < count; ++i) {
 		const char* name = (const char*)glGetStringi(GL_EXTENSIONS, i);
-		if (strcmp(extension, name) == 0)
-			return true;
+		if (name != 0) {
+			if (strcmp(extension, name) == 0)
+				return true;
+		}
 	}
 	return false;
 #else
