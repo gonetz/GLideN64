@@ -28,6 +28,14 @@
 PostProcessor PostProcessor::processor;
 #endif
 
+static const float vert[] =
+{
+	-1.0, -1.0, +0.0, +0.0,
+	+1.0, -1.0, +1.0, +0.0,
+	-1.0, +1.0, +0.0, +1.0,
+	+1.0, +1.0, +1.0, +1.0
+};
+
 static const char * vertexShader =
 SHADER_VERSION
 "#if (__VERSION__ > 120)						\n"
@@ -407,6 +415,11 @@ void PostProcessor::_initBlur()
 
 void PostProcessor::init()
 {
+#ifndef GLESX
+	glGenBuffers(1, &pp_vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, pp_vbo);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float)*16, vert, GL_STATIC_DRAW);
+#endif
 	_initCommon();
 	_initGammaCorrection();
 	if (config.bloomFilter.enable != 0)
@@ -415,6 +428,9 @@ void PostProcessor::init()
 
 void PostProcessor::_destroyCommon()
 {
+#ifndef GLESX
+	glDeleteBuffers(1, &pp_vbo);
+#endif
 	delete m_pResultBuffer;
 	m_pResultBuffer = nullptr;
 
@@ -483,18 +499,17 @@ void PostProcessor::_setGLState() {
 	glDisable(GL_DEPTH_TEST);
 	glDisable(GL_BLEND);
 
-	static const float vert[] =
-	{
-		-1.0, -1.0, +0.0, +0.0,
-		+1.0, -1.0, +1.0, +0.0,
-		-1.0, +1.0, +0.0, +1.0,
-		+1.0, +1.0, +1.0, +1.0
-	};
 
 	glEnableVertexAttribArray(SC_POSITION);
-	glVertexAttribPointer(SC_POSITION, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (float*)vert);
 	glEnableVertexAttribArray(SC_TEXCOORD0);
+#ifndef GLESX
+	glBindBuffer(GL_ARRAY_BUFFER, pp_vbo);
+	glVertexAttribPointer(SC_POSITION, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (float*)NULL);
+	glVertexAttribPointer(SC_TEXCOORD0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (float*)NULL + 2);
+#else
+	glVertexAttribPointer(SC_POSITION, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (float*)vert);
 	glVertexAttribPointer(SC_TEXCOORD0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (float*)vert + 2);
+#endif
 	glDisableVertexAttribArray(SC_COLOR);
 	glDisableVertexAttribArray(SC_TEXCOORD1);
 	glDisableVertexAttribArray(SC_NUMLIGHTS);

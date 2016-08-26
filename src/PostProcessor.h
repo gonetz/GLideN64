@@ -41,6 +41,8 @@ private:
 	GLuint m_FBO_glowMap;
 	GLuint m_FBO_blur;
 
+	GLuint pp_vbo;
+
 	CachedTexture * m_pTextureOriginal;
 	CachedTexture * m_pTextureGlowMap;
 	CachedTexture * m_pTextureBlur;

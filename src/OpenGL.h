@@ -2,6 +2,7 @@
 #define OPENGL_H
 
 #include <vector>
+#include <stddef.h>
 
 #ifdef OS_WINDOWS
 #define NOMINMAX
@@ -93,6 +94,7 @@ struct CachedTexture;
 class OGLRender
 {
 public:
+	void updateVBO(GLuint* type, GLsizeiptr length, void *pointer);
 	void addTriangle(int _v0, int _v1, int _v2);
 	void drawTriangles();
 	void drawLLETriangle(u32 _numVtx);
@@ -178,8 +180,10 @@ private:
 	friend class OGLVideo;
 
 	void _initExtensions();
+	void _initVBO();
 	void _initStates();
 	void _initData();
+	void _destroyVBO();
 	void _destroyData();
 
 	void _setSpecialTexrect() const;
@@ -195,7 +199,7 @@ private:
 	void _updateDepthCompare() const;
 	void _updateTextures(RENDER_STATE _renderState) const;
 	void _updateStates(RENDER_STATE _renderState) const;
-	void _prepareDrawTriangle(bool _dma);
+	void _prepareDrawTriangle(int _type, u32 numUpdate);
 	bool _canDraw() const;
 
 	struct {
@@ -252,6 +256,9 @@ private:
 	u32 m_modifyVertices;
 	bool m_bImageTexture;
 	bool m_bFlatColors;
+	GLuint tri_vbo, rect_vbo, vao;
+	u32 tri_offset, rect_offset, tri_size, rect_size, vbo_max_size;
+
 	TexrectDrawer m_texrectDrawer;
 
 	GLuint m_programCopyTex;
