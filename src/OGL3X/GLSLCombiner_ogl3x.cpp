@@ -97,6 +97,8 @@ void NoiseTexture::destroy()
 
 void NoiseTexture::update()
 {
+	if (m_PBO == 0 || m_pTexture == nullptr)
+		return;
 	if (m_DList == video().getBuffersSwapCount() || config.generalEmulation.enableNoise == 0)
 		return;
 	const u32 dataSize = VI.width*VI.height;
