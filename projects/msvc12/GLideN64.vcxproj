@@ -396,7 +396,6 @@
     <ClInclude Include="..\..\src\FrameBufferInfoAPI.h" />
     <ClInclude Include="..\..\src\GBI.h" />
     <ClInclude Include="..\..\src\gDP.h" />
-    <ClInclude Include="..\..\src\glext.h" />
     <ClInclude Include="..\..\src\GLideN64.h" />
     <ClInclude Include="..\..\src\GLideNHQ\Ext_TxFilter.h" />
     <ClInclude Include="..\..\src\GLSLCombiner.h" />
@@ -411,6 +410,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_mupenplus|Win32'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="..\..\src\gSP.h" />
+    <ClInclude Include="..\..\src\inc\glext.h" />
     <ClInclude Include="..\..\src\Keys.h" />
     <ClInclude Include="..\..\src\Log.h" />
     <ClInclude Include="..\..\src\mupenplus\GLideN64_mupenplus.h">

@@ -277,9 +277,6 @@
     <ClInclude Include="..\..\src\gDP.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\glext.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\GLideN64.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -435,6 +432,9 @@
     </ClInclude>
     <ClInclude Include="..\..\src\GLUniforms\UniformBlock.h">
       <Filter>Header Files\GLUniforms</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\inc\glext.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
