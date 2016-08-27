@@ -67,7 +67,7 @@
            <item row="2" column="0">
             <widget class="QLabel" name="windowedResolutionLabel">
              <property name="toolTip">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Resolution:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;This option selects resolution for windowed mode.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;640x480, 800x600, 1024x768&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Resolution:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;This option selects resolution for windowed mode. You also may select &lt;span style=&quot; font-style:italic;&quot;&gt;custom&lt;/span&gt; and enter necessary window sizes.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;640x480, 800x600, 1024x768&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
              </property>
              <property name="text">
               <string>Windowed resolution:</string>
@@ -100,7 +100,7 @@
            <item row="2" column="1">
             <widget class="QComboBox" name="windowedResolutionComboBox">
              <property name="toolTip">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Resolution:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;This option selects resolution for windowed mode.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;640x480, 800x600, 1024x768&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Resolution:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;This option selects resolution for windowed mode. You also may select &lt;span style=&quot; font-style:italic;&quot;&gt;custom&lt;/span&gt; and enter necessary window sizes.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;640x480, 800x600, 1024x768&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
              </property>
             </widget>
            </item>
@@ -115,6 +115,9 @@
              </item>
              <item>
               <widget class="QSpinBox" name="windowWidthSpinBox">
+               <property name="toolTip">
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Resolution:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;This option selects resolution for windowed mode. You also may select &lt;span style=&quot; font-style:italic;&quot;&gt;custom&lt;/span&gt; and enter necessary window sizes.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;640x480, 800x600, 1024x768&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+               </property>
                <property name="minimum">
                 <number>320</number>
                </property>
@@ -132,6 +135,9 @@
              </item>
              <item>
               <widget class="QSpinBox" name="windowHeightSpinBox">
+               <property name="toolTip">
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Resolution:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;This option selects resolution for windowed mode. You also may select &lt;span style=&quot; font-style:italic;&quot;&gt;custom&lt;/span&gt; and enter necessary window sizes.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;640x480, 800x600, 1024x768&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+               </property>
                <property name="minimum">
                 <number>240</number>
                </property>
@@ -149,7 +155,7 @@
            <item>
             <widget class="QLabel" name="label_10">
              <property name="toolTip">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Aspect ratio of the output.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Most N64 games use 4:3 aspect ratio, but some support widescreen too.You may select appropriate aspect here and set widescreen mode in game settings.In &lt;span style=&quot; font-weight:600;&quot;&gt;Stretch&lt;/span&gt; mode the output will be stretched to the entire screen, other modes may add black borders if necessary.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Aspect ratio of the output.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Most N64 games use 4:3 aspect ratio, but some support widescreen too.You may select appropriate aspect here and set widescreen mode in game settings. In &lt;span style=&quot; font-weight:600;&quot;&gt;Stretch&lt;/span&gt; mode the output will be stretched to the entire screen, other modes may add black borders if necessary.&lt;br/&gt;&lt;br/&gt;Special note: &lt;span style=&quot; font-weight:600;&quot;&gt;Adjust&lt;/span&gt; mode is so called &amp;quot;widescreen hack&amp;quot;. In that mode plugin tries to adjust viewport to fully use screen space, but without stretch of geometry. It may run games with native 4:3 aspect in widescreen. Some games look cool in that mode, some does not.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
              </property>
              <property name="text">
               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Aspect&lt;span style=&quot; vertical-align:super;&quot;&gt;*&lt;/span&gt;:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -159,7 +165,7 @@
            <item>
             <widget class="QRadioButton" name="aspectStretchRadioButton">
              <property name="toolTip">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Aspect ratio of the output.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Most N64 games use 4:3 aspect ratio, but some support widescreen too.You may select appropriate aspect here and set widescreen mode in game settings.In &lt;span style=&quot; font-weight:600;&quot;&gt;Stretch&lt;/span&gt; mode the output will be stretched to the entire screen, other modes may add black borders if necessary.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Aspect ratio of the output.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Most N64 games use 4:3 aspect ratio, but some support widescreen too.You may select appropriate aspect here and set widescreen mode in game settings. In &lt;span style=&quot; font-weight:600;&quot;&gt;Stretch&lt;/span&gt; mode the output will be stretched to the entire screen, other modes may add black borders if necessary.&lt;br/&gt;&lt;br/&gt;Special note: &lt;span style=&quot; font-weight:600;&quot;&gt;Adjust&lt;/span&gt; mode is so called &amp;quot;widescreen hack&amp;quot;. In that mode plugin tries to adjust viewport to fully use screen space, but without stretch of geometry. It may run games with native 4:3 aspect in widescreen. Some games look cool in that mode, some does not.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
              </property>
              <property name="text">
               <string>Stretch</string>
@@ -172,7 +178,7 @@
            <item>
             <widget class="QRadioButton" name="aspect43RadioButton">
              <property name="toolTip">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Aspect ratio of the output.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Most N64 games use 4:3 aspect ratio, but some support widescreen too.You may select appropriate aspect here and set widescreen mode in game settings.In &lt;span style=&quot; font-weight:600;&quot;&gt;Stretch&lt;/span&gt; mode the output will be stretched to the entire screen, other modes may add black borders if necessary.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Aspect ratio of the output.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Most N64 games use 4:3 aspect ratio, but some support widescreen too.You may select appropriate aspect here and set widescreen mode in game settings. In &lt;span style=&quot; font-weight:600;&quot;&gt;Stretch&lt;/span&gt; mode the output will be stretched to the entire screen, other modes may add black borders if necessary.&lt;br/&gt;&lt;br/&gt;Special note: &lt;span style=&quot; font-weight:600;&quot;&gt;Adjust&lt;/span&gt; mode is so called &amp;quot;widescreen hack&amp;quot;. In that mode plugin tries to adjust viewport to fully use screen space, but without stretch of geometry. It may run games with native 4:3 aspect in widescreen. Some games look cool in that mode, some does not.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
              </property>
              <property name="text">
               <string>4:3</string>
@@ -185,7 +191,7 @@
            <item>
             <widget class="QRadioButton" name="aspect169RadioButton">
              <property name="toolTip">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Aspect ratio of the output.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Most N64 games use 4:3 aspect ratio, but some support widescreen too.You may select appropriate aspect here and set widescreen mode in game settings.In &lt;span style=&quot; font-weight:600;&quot;&gt;Stretch&lt;/span&gt; mode the output will be stretched to the entire screen, other modes may add black borders if necessary.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Aspect ratio of the output.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Most N64 games use 4:3 aspect ratio, but some support widescreen too.You may select appropriate aspect here and set widescreen mode in game settings. In &lt;span style=&quot; font-weight:600;&quot;&gt;Stretch&lt;/span&gt; mode the output will be stretched to the entire screen, other modes may add black borders if necessary.&lt;br/&gt;&lt;br/&gt;Special note: &lt;span style=&quot; font-weight:600;&quot;&gt;Adjust&lt;/span&gt; mode is so called &amp;quot;widescreen hack&amp;quot;. In that mode plugin tries to adjust viewport to fully use screen space, but without stretch of geometry. It may run games with native 4:3 aspect in widescreen. Some games look cool in that mode, some does not.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
              </property>
              <property name="text">
               <string>16:9</string>
@@ -197,6 +203,9 @@
            </item>
            <item>
             <widget class="QRadioButton" name="aspectAdjustRadioButton">
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Aspect ratio of the output.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Most N64 games use 4:3 aspect ratio, but some support widescreen too.You may select appropriate aspect here and set widescreen mode in game settings. In &lt;span style=&quot; font-weight:600;&quot;&gt;Stretch&lt;/span&gt; mode the output will be stretched to the entire screen, other modes may add black borders if necessary.&lt;br/&gt;&lt;br/&gt;Special note: &lt;span style=&quot; font-weight:600;&quot;&gt;Adjust&lt;/span&gt; mode is so called &amp;quot;widescreen hack&amp;quot;. In that mode plugin tries to adjust viewport to fully use screen space, but without stretch of geometry. It may run games with native 4:3 aspect in widescreen. Some games look cool in that mode, some does not.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
              <property name="text">
               <string>Adjust</string>
              </property>
@@ -691,6 +700,9 @@
           </item>
           <item>
            <widget class="QCheckBox" name="emulateNoiseCheckBox">
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Emulate noise&lt;/span&gt;:&lt;/p&gt;&lt;p&gt;Enable emulation of various effects, which use random color input.&lt;/p&gt;&lt;p&gt;May cause slowdown in rare cases.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;on&lt;/span&gt;]&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
             <property name="text">
              <string>Emulate noise</string>
             </property>
@@ -698,8 +710,11 @@
           </item>
           <item>
            <widget class="QCheckBox" name="enableHWLightingCheckBox">
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enable hardware lighting:&lt;/p&gt;&lt;p&gt;Normally lighting calculated per vertex. This option enables per-pixel shader based lighting. It results in more smooth and correct shading of 3D objects.&lt;/p&gt;&lt;p&gt;Note: since in LLE mode vertex color calculated outside of graphics plugin, this option is only for HLE.&lt;br/&gt;&lt;br/&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;your preference&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
             <property name="text">
-             <string>Enable hardware lighting</string>
+             <string>Enable hardware lighting (HLE only!)</string>
             </property>
            </widget>
           </item>
@@ -927,7 +942,7 @@
           <item>
            <widget class="QCheckBox" name="copyAuxBuffersCheckBox">
             <property name="toolTip">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Copy auxiliary color buffers to RDRAM:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;TODO: add description&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;mostly off&lt;/span&gt;]&lt;br/&gt;&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Copy auxiliary color buffers to RDRAM:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;When enabled, auxiliary color buffer copied to RDRAM right after rendering into it is finished. It helps to correctly emulate frame buffer effects in some games.&lt;br/&gt;&lt;/p&gt;&lt;p&gt;Note: this option may noticeably reduce performance.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;mostly off&lt;/span&gt;]&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
             <property name="text">
              <string>Copy auxiliary color buffers to RDRAM</string>
@@ -1259,8 +1274,11 @@
            <layout class="QVBoxLayout" name="verticalLayout_12">
             <item>
              <widget class="QCheckBox" name="deposterizeCheckBox">
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Decrease color banding&lt;/span&gt;:&lt;/p&gt;&lt;p&gt;This option enables pre-processing step, which reduces posterization issues on enhanced textures.&lt;/p&gt;&lt;p&gt;[Recommended:&lt;span style=&quot; font-style:italic;&quot;&gt; on for xBRZ&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
               <property name="text">
-               <string>Deposterize textures</string>
+               <string>Decrease color banding</string>
               </property>
              </widget>
             </item>
@@ -1937,12 +1955,12 @@
   </connection>
  </connections>
  <buttongroups>
-  <buttongroup name="screenshotButtonGroup"/>
   <buttongroup name="bilinearButtonGroup"/>
-  <buttongroup name="copyFrameBufferButtonGroup"/>
   <buttongroup name="copyDepthBufferButtonGroup"/>
-  <buttongroup name="aspectButtonGroup"/>
   <buttongroup name="bloomBlendModeButtonGroup"/>
+  <buttongroup name="copyFrameBufferButtonGroup"/>
+  <buttongroup name="screenshotButtonGroup"/>
+  <buttongroup name="aspectButtonGroup"/>
   <buttongroup name="fixTexrectCoordsButtonGroup"/>
  </buttongroups>
 </ui>
