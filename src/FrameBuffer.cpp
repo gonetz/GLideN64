@@ -582,7 +582,7 @@ void FrameBufferList::saveBuffer(u32 _address, u16 _format, u16 _size, u16 _widt
 		if ((m_pCurrent->m_startAddress != _address) ||
 			(m_pCurrent->m_width != _width) ||
 			//(current->height != height) ||
-			//(current->size != size) ||  // TODO FIX ME
+			(m_pCurrent->m_size < _size) ||
 			(m_pCurrent->m_scaleX != scaleX) ||
 			(m_pCurrent->m_scaleY != scaleY))
 		{
