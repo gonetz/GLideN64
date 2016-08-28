@@ -139,7 +139,7 @@ bool ColorBufferToRDRAM::_prepareCopy(u32 _startAddress)
 	else
 		glBindFramebuffer(GL_READ_FRAMEBUFFER, m_pCurFrameBuffer->m_FBO);
 
-	if (m_pCurFrameBuffer->m_scaleX > 1.0f) {
+	if (m_pCurFrameBuffer->m_scaleX != 1.0f || m_pCurFrameBuffer->m_scaleY != 1.0f) {
 		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_FBO);
 		u32 x0 = 0;
 		u32 width, height;
