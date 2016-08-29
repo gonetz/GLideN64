@@ -792,6 +792,7 @@ void FrameBufferList::renderBuffer(u32 _address)
 	GLint srcY0, srcY1, dstY0, dstY1;
 	GLint X0, X1, Xwidth;
 	GLint Xoffset = 0;
+	GLint Xdivot = 0;
 	GLint srcPartHeight = 0;
 	GLint dstPartHeight = 0;
 
@@ -844,6 +845,11 @@ void FrameBufferList::renderBuffer(u32 _address)
 
 	FrameBuffer * pFilteredBuffer = PostProcessor::get().doBlur(PostProcessor::get().doGammaCorrection(pBuffer));
 
+	const bool vi_fsaa = (*REG.VI_STATUS & 512) == 0;
+	const bool vi_divot = (*REG.VI_STATUS & 16) != 0;
+	if (vi_fsaa && vi_divot)
+		Xdivot = 1;
+
 	const f32 viScaleX = _FIXED2FLOAT(_SHIFTR(*REG.VI_X_SCALE, 0, 12), 10);
 	const f32 srcScaleX = pFilteredBuffer->m_scaleX;
 	const f32 dstScaleX = ogl.getScaleX();
@@ -851,7 +857,7 @@ void FrameBufferList::renderBuffer(u32 _address)
 	const s32 hx0 = max(0, hStart - h0);
 	const s32 hx1 = max(0, h0 + 640 - hEnd);
 	X0 = (GLint)((hx0 * viScaleX + Xoffset) * dstScaleX);
-	Xwidth = (GLint)((min((f32)VI.width, (hEnd - hStart)*viScaleX - Xoffset)) * srcScaleX);
+	Xwidth = (GLint)((min((f32)VI.width, (hEnd - hStart)*viScaleX - Xoffset - Xdivot)) * srcScaleX);
 	X1 = ogl.getWidth() - (GLint)(hx1 *viScaleX * dstScaleX);
 
 	const f32 srcScaleY = pFilteredBuffer->m_scaleY;
