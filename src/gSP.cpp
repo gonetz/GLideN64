@@ -1521,11 +1521,9 @@ void gSPInsertMatrix( u32 where, u32 num )
 
 void gSPModifyVertex( u32 _vtx, u32 _where, u32 _val )
 {
-	s32 v = _vtx;
-
 	OGLRender & render = video().getRender();
 
-	SPVertex & vtx0 = render.getVertex(v);
+	SPVertex & vtx0 = render.getVertex(_vtx);
 	switch (_where) {
 		case G_MWO_POINT_RGBA:
 			vtx0.r = _SHIFTR( _val, 24, 8 ) * 0.0039215689f;
@@ -1540,7 +1538,6 @@ void gSPModifyVertex( u32 _vtx, u32 _where, u32 _val )
 			//vtx0.modify |= MODIFY_ST; // still neeed to divide by 2 in vertex shader if TexturePersp disabled
 		break;
 		case G_MWO_POINT_XYSCREEN:
-		{
 			vtx0.x = _FIXED2FLOAT((s16)_SHIFTR(_val, 16, 16), 2);
 			vtx0.y = _FIXED2FLOAT((s16)_SHIFTR(_val, 0, 16), 2);
 			if ((config.generalEmulation.hacks & hack_ModifyVertexXyInShader) == 0) {
@@ -1552,7 +1549,6 @@ void gSPModifyVertex( u32 _vtx, u32 _where, u32 _val )
 				vtx0.modify |= MODIFY_XY;
 			}
 			vtx0.clip &= ~(CLIP_POSX | CLIP_NEGX | CLIP_POSY | CLIP_NEGY);
-		}
 		break;
 		case G_MWO_POINT_ZSCREEN:
 		{
