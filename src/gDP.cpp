@@ -765,23 +765,25 @@ void gDPFillRectangle( s32 ulx, s32 uly, s32 lrx, s32 lry )
 	} else if (lry == uly)
 		++lry;
 
-	bool bClearBuffer = false;
+	bool bBufferCleared = false;
 	if (gDP.depthImageAddress == gDP.colorImage.address) {
 		// Game may use depth texture as auxilary color texture. Example: Mario Tennis
 		// If color is not depth clear color, that is most likely the case
 		if (gDP.fillColor.color == DepthClearColor) {
-			gDPFillRDRAM(gDP.colorImage.address, ulx, uly, lrx, lry, gDP.colorImage.width, gDP.colorImage.size, gDP.fillColor.color);
-			render.clearDepthBuffer(uly, lry);
-			bClearBuffer = true;
+			if ((ulx == 0) && (lrx == gDP.colorImage.width)) {
+				gDPFillRDRAM(gDP.colorImage.address, ulx, uly, lrx, lry, gDP.colorImage.width, gDP.colorImage.size, gDP.fillColor.color);
+				render.clearDepthBuffer(uly, lry);
+				bBufferCleared = true;
+			}
 		}
 	} else if (gDP.fillColor.color == DepthClearColor && gDP.otherMode.cycleType == G_CYC_FILL) {
 		depthBufferList().saveBuffer(gDP.colorImage.address);
 		gDPFillRDRAM(gDP.colorImage.address, ulx, uly, lrx, lry, gDP.colorImage.width, gDP.colorImage.size, gDP.fillColor.color);
 		render.clearDepthBuffer(uly, lry);
-		bClearBuffer = true;
+		bBufferCleared = true;
 	}
 
-	if (!bClearBuffer) {
+	if (!bBufferCleared) {
 		frameBufferList().setBufferChanged();
 		f32 fillColor[4];
 		gDPGetFillColor(fillColor);

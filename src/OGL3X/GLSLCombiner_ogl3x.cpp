@@ -613,7 +613,6 @@ void ShaderCombiner::updateRenderTarget(bool _bForce)
 {
 	int renderTarget = 0;
 	if (gDP.colorImage.address == gDP.depthImageAddress &&
-		gDP.otherMode.cycleType != G_CYC_FILL &&
 		(config.generalEmulation.hacks & hack_ZeldaMM) == 0
 	) {
 		FrameBuffer * pCurBuf = frameBufferList().getCurrent();
