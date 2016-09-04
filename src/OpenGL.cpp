@@ -472,6 +472,7 @@ void OGLRender::TexrectDrawer::add()
 			draw();
 			memcpy(pRect, rect, sizeof(rect));
 			render._updateTextures(rsTexRect);
+			CombinerInfo::get().updateParameters(rsTexRect);
 		}
 	}
 
@@ -1608,9 +1609,11 @@ void OGLRender::drawTexturedRect(const TexturedRectParams & _params)
 {
 	gSP.changed &= ~CHANGED_GEOMETRYMODE; // Don't update cull mode
 	if (!m_texrectDrawer.isEmpty()) {
-		CombinerInfo::get().update();
+		CombinerInfo & cmbInfo = CombinerInfo::get();
+		cmbInfo.update();
 		currentCombiner()->updateRenderState();
 		_updateTextures(rsTexRect);
+		cmbInfo.updateParameters(rsTexRect);
 		if (CombinerInfo::get().isChanged())
 			_setTexCoordArrays();
 	} else {
