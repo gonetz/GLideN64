@@ -51,7 +51,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_mupenplus_uniformset|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <CharacterSet>MultiByte</CharacterSet>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v120</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -191,7 +191,7 @@
     </ClCompile>
     <Link>
       <AdditionalDependencies>freetype253MT_D.lib;osal\Debug\osal.lib;GLideNHQ\Debug\libGLideNHQ.lib;opengl32.lib;glu32.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>C:\Users\lipskiy\WS\N64\M64Py\mupen64plus-video-GLideN64.dll </OutputFile>
+      <OutputFile>C:\Games\N64\M64Py\mupen64plus-video-GLideN64.dll </OutputFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <ProgramDatabaseFile>$(OutDir)New glNintendo64().pdb</ProgramDatabaseFile>
       <SubSystem>Windows</SubSystem>
