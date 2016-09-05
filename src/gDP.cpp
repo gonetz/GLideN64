@@ -770,7 +770,7 @@ void gDPFillRectangle( s32 ulx, s32 uly, s32 lrx, s32 lry )
 		// Game may use depth texture as auxilary color texture. Example: Mario Tennis
 		// If color is not depth clear color, that is most likely the case
 		if (gDP.fillColor.color == DepthClearColor) {
-			if ((ulx == 0) && (lrx == gDP.colorImage.width)) {
+			if ((ulx == 0) && (uly == 0) && (lrx == gDP.scissor.lrx) && (lry == gDP.scissor.lry)) {
 				gDPFillRDRAM(gDP.colorImage.address, ulx, uly, lrx, lry, gDP.colorImage.width, gDP.colorImage.size, gDP.fillColor.color);
 				render.clearDepthBuffer(uly, lry);
 				bBufferCleared = true;
