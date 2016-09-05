@@ -705,16 +705,6 @@ MAIN_SHADER_VERSION
 ;
 #endif
 
-static const char* depth_texture_fragment_shader =
-MAIN_SHADER_VERSION
-"uniform sampler2D uTex0;						\n"
-"in mediump vec2 vTexCoord0;					\n"
-"void main()									\n"
-"{												\n"
-"  gl_FragDepth = texture(uTex0, vTexCoord0).r;	\n"
-"}												\n"
-;
-
 const char * strTexrectDrawerVertexShader =
 MAIN_SHADER_VERSION
 "in highp vec4 aPosition;		\n"
