@@ -321,8 +321,7 @@ void RSP_Init()
 	config.generalEmulation.hacks = 0;
 	if (strstr(RSP.romname, (const char *)"OgreBattle64") != nullptr)
 		config.generalEmulation.hacks |= hack_Ogre64;
-	else if (strstr(RSP.romname, (const char *)"MarioGolf64") != nullptr ||
-			 strstr(RSP.romname, (const char *)"F1 POLE POSITION 64") != nullptr)
+	else if (strstr(RSP.romname, (const char *)"F1 POLE POSITION 64") != nullptr)
 		config.generalEmulation.hacks |= hack_noDepthFrameBuffers;
 	else if (strstr(RSP.romname, (const char *)"CONKER BFD") != nullptr)
 		config.generalEmulation.hacks |= hack_blurPauseScreen | hack_rectDepthBufferCopyCBFD;
