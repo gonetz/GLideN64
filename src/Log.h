@@ -42,8 +42,8 @@ inline void LOG( u16 type, const char * format, ... ) {
 
 #endif
 
-#ifdef OS_WINDOWS
-#include "windows/GLideN64_Windows.h"
+#if defined(OS_WINDOWS) && !defined(MINGW)
+#include "windows/GLideN64_windows.h"
 #include <stdio.h>
 
 inline void debugPrint(const char * format, ...) {

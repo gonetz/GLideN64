@@ -393,7 +393,7 @@ void CombinerInfo::_saveShadersStorage() const
 	wchar_t fileName[PLUGIN_PATH_SIZE];
 	getStorageFileName(fileName);
 
-#ifdef OS_WINDOWS
+#if defined(OS_WINDOWS) && !defined(MINGW)
 	std::ofstream fout(fileName, std::ofstream::binary | std::ofstream::trunc);
 #else
 	char fileName_c[PATH_MAX];
@@ -431,7 +431,7 @@ bool CombinerInfo::_loadShadersStorage()
 	getStorageFileName(fileName);
 	m_configOptionsBitSet = _getConfigOptionsBitSet();
 
-#ifdef OS_WINDOWS
+#if defined(OS_WINDOWS) && !defined(MINGW)
 	std::ifstream fin(fileName, std::ofstream::binary);
 #else
 	char fileName_c[PATH_MAX];
