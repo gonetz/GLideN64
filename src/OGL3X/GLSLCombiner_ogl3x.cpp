@@ -345,6 +345,8 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 		strFragmentShader.append(fragment_shader_header_calc_light);
 
 	strFragmentShader.append(fragment_shader_header_main);
+	if (config.generalEmulation.enableLegacyBlending == 0)
+		strFragmentShader.append(fragment_shader_blend_mux);
 
 	if (bUseLod) {
 		strFragmentShader.append("  lowp vec4 readtex0, readtex1; \n");
@@ -374,17 +376,19 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 			strFragmentShader.append("  lowp vec4 readtex1 = readTex(uTex1, vTexCoord1, uFbMonochrome[1], uFbFixedAlpha[1]); \n");
 #endif // GL_MULTISAMPLING_SUPPORT
 	}
+
 	if (bUseHWLight)
 		strFragmentShader.append("  calc_light(vNumLights, vShadeColor.rgb, input_color); \n");
 	else
 		strFragmentShader.append("  input_color = vShadeColor.rgb;\n");
+
 	strFragmentShader.append("  vec_color = vec4(input_color, vShadeColor.a); \n");
 	strFragmentShader.append(strCombiner);
 
 	if (video().getRender().isImageTexturesSupported() && config.frameBufferEmulation.N64DepthCompare != 0)
 		strFragmentShader.append("  if (!depth_compare()) discard; \n");
 
-	if (config.generalEmulation.enableFragmentDepthWrite != 0){
+	if (config.generalEmulation.enableFragmentDepthWrite != 0) {
 		strFragmentShader.append(
 			"  if (uRenderTarget != 0) {					\n"
 			"    if (uRenderTarget > 1) {					\n"

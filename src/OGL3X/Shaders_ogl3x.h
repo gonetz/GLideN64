@@ -320,12 +320,15 @@ static const char* fragment_shader_header_main =
 "void main()						\n"
 "{									\n"
 "  writeDepth();                                                                                    \n"
-"  lowp mat4 muxPM = mat4(vec4(0.0), vec4(0.0), uBlendColor, uFogColor);							\n"
-"  lowp vec4 muxA = vec4(0.0, uFogColor.a, vShadeColor.a, 0.0);										\n"
-"  lowp vec4 muxB = vec4(0.0, 1.0, 1.0, 0.0);														\n"
 "  lowp vec4 vec_color, combined_color;																\n"
 "  lowp float alpha1, alpha2;																		\n"
 "  lowp vec3 color1, color2, input_color;															\n"
+;
+
+static const char* fragment_shader_blend_mux =
+"  lowp mat4 muxPM = mat4(vec4(0.0), vec4(0.0), uBlendColor, uFogColor);							\n"
+"  lowp vec4 muxA = vec4(0.0, uFogColor.a, vShadeColor.a, 0.0);										\n"
+"  lowp vec4 muxB = vec4(0.0, 1.0, 1.0, 0.0);														\n"
 ;
 
 static const char* fragment_shader_dither =
