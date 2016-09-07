@@ -590,13 +590,14 @@ void ShaderCombiner::updateRenderState(bool _bForce)
 
 void ShaderCombiner::updateRenderTarget(bool _bForce)
 {
+	if (config.generalEmulation.enableFragmentDepthWrite == 0)
+		return;
+
 	int renderTarget = 0;
 	if (gDP.colorImage.address == gDP.depthImageAddress &&
 		(config.generalEmulation.hacks & hack_ZeldaMM) == 0
 	) {
-		FrameBuffer * pCurBuf = frameBufferList().getCurrent();
-		if (pCurBuf != nullptr && pCurBuf->m_pDepthBuffer != nullptr)
-			renderTarget = gDP.otherMode.depthCompare + 1;
+		renderTarget = gDP.otherMode.depthCompare + 1;
 	}
 	m_uniforms.uRenderTarget.set(renderTarget, _bForce);
 }

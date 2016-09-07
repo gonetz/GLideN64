@@ -1175,11 +1175,16 @@ void OGLRender::_updateStates(RENDER_STATE _renderState) const
 
 #ifndef GLES2
 	if (gDP.colorImage.address == gDP.depthImageAddress &&
+		config.generalEmulation.enableFragmentDepthWrite != 0 &&
 		(config.generalEmulation.hacks & hack_ZeldaMM) == 0
 	) {
-		FrameBuffer * pCurBuf = frameBufferList().getCurrent();
-		if (pCurBuf != nullptr && pCurBuf->m_pDepthBuffer != nullptr) {
-			if (gDP.otherMode.depthCompare != 0) {
+		// Current render target is depth buffer.
+		// Shader will set gl_FragDepth to shader color, see ShaderCombiner ctor
+		// Here we enable depth buffer write.
+		if (gDP.otherMode.depthCompare != 0) {
+			// Render to depth buffer with depth compare. Need to get copy of current depth buffer.
+			FrameBuffer * pCurBuf = frameBufferList().getCurrent();
+			if (pCurBuf != nullptr && pCurBuf->m_pDepthBuffer != nullptr) {
 				CachedTexture * pDepthTexture = pCurBuf->m_pDepthBuffer->copyDepthBufferTexture(pCurBuf);
 				if (pDepthTexture == nullptr)
 					return;
@@ -1189,11 +1194,11 @@ void OGLRender::_updateStates(RENDER_STATE _renderState) const
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 			}
-			glEnable(GL_DEPTH_TEST);
-			glDepthFunc(GL_ALWAYS);
-			glDepthMask(TRUE);
-			gDP.changed |= CHANGED_RENDERMODE;
 		}
+		glEnable(GL_DEPTH_TEST);
+		glDepthFunc(GL_ALWAYS);
+		glDepthMask(TRUE);
+		gDP.changed |= CHANGED_RENDERMODE;
 	}
 #endif
 }

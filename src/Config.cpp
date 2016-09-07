@@ -37,8 +37,12 @@ void Config::resetToDefaults()
 	generalEmulation.correctTexrectCoords = tcDisable;
 	generalEmulation.enableNativeResTexrects = 0;
 	generalEmulation.enableLegacyBlending = 0;
-	generalEmulation.enableFragmentDepthWrite = 1;
 	generalEmulation.hacks = 0;
+#ifdef GLES2
+	generalEmulation.enableFragmentDepthWrite = 0;
+#else
+	generalEmulation.enableFragmentDepthWrite = 1;
+#endif
 #ifdef ANDROID
 	generalEmulation.forcePolygonOffset = 0;
 	generalEmulation.polygonOffsetFactor = 0.0f;
