@@ -639,6 +639,9 @@ void FrameBufferList::saveBuffer(u32 _address, u16 _format, u16 _size, u16 _widt
 	);
 #endif
 
+	if (m_pCurrent->isAuxiliary())
+		ogl.getRender().clearDepthBuffer(0, 0);
+
 	m_pCurrent->m_isDepthBuffer = _address == gDP.depthImageAddress;
 	m_pCurrent->m_isPauseScreen = m_pCurrent->m_isOBScreen = false;
 }
