@@ -23,6 +23,8 @@ void Config::resetToDefaults()
 	video.fullscreenRefresh = 60;
 	video.multisampling = 0;
 	video.verticalSync = 0;
+	video.cropMode = cmDisable;
+	video.cropWidth = video.cropHeight = 0;
 
 	texture.maxAnisotropy = 0;
 	texture.bilinearMode = BILINEAR_STANDARD;

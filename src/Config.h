@@ -4,7 +4,7 @@
 #include <string>
 #include "Types.h"
 
-#define CONFIG_VERSION_CURRENT 13U
+#define CONFIG_VERSION_CURRENT 14U
 
 #define BILINEAR_3POINT   0
 #define BILINEAR_STANDARD 1
@@ -17,6 +17,12 @@ struct Config
 
 	std::string translationFile;
 
+	enum CropMode {
+		cmDisable = 0,
+		cmAuto,
+		cmCustom
+	};
+
 	struct
 	{
 		u32 fullscreen;
@@ -24,6 +30,9 @@ struct Config
 		u32 fullscreenWidth, fullscreenHeight, fullscreenRefresh;
 		u32 multisampling;
 		u32 verticalSync;
+		u32 cropMode;
+		u32 cropWidth;
+		u32 cropHeight;
 	} video;
 
 	struct
@@ -35,13 +44,13 @@ struct Config
 		u32 screenShotFormat;
 	} texture;
 
-    enum TexrectCorrectionMode {
-        tcDisable = 0,
-        tcSmart,
-        tcForce
-    };
+	enum TexrectCorrectionMode {
+		tcDisable = 0,
+		tcSmart,
+		tcForce
+	};
 
-    struct {
+	struct {
 		u32 enableNoise;
 		u32 enableLOD;
 		u32 enableHWLighting;

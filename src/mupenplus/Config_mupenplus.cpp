@@ -45,6 +45,13 @@ bool Config_SetDefault()
 	res = ConfigSetDefaultInt(g_configVideoGliden64, "configVersion", CONFIG_VERSION_CURRENT, "Settings version. Don't touch it.");
 	assert(res == M64ERR_SUCCESS);
 
+	res = ConfigSetDefaultInt(g_configVideoGliden64, "CropMode", config.video.cropMode, "Crop resulted image (0=disable, 1=auto crop, 2=user defined crop)");
+	assert(res == M64ERR_SUCCESS);
+	res = ConfigSetDefaultInt(g_configVideoGliden64, "CropWidth", config.video.cropWidth, "Crop width pixels from left and right of resulted image (in native resolution)");
+	assert(res == M64ERR_SUCCESS);
+	res = ConfigSetDefaultInt(g_configVideoGliden64, "CropHeight", config.video.cropHeight, "Crop height pixels from top and bottom of resulted image (in native resolution)");
+	assert(res == M64ERR_SUCCESS);
+
 	res = ConfigSetDefaultInt(g_configVideoGliden64, "MultiSampling", config.video.multisampling, "Enable/Disable MultiSampling (0=off, 2,4,8,16=quality)");
 	assert(res == M64ERR_SUCCESS);
 	res = ConfigSetDefaultInt(g_configVideoGliden64, "AspectRatio", config.frameBufferEmulation.aspect, "Screen aspect ratio (0=stretch, 1=force 4:3, 2=force 16:9, 3=adjust)");
@@ -190,6 +197,10 @@ void Config_LoadConfig()
 	config.video.windowedWidth = ConfigGetParamInt(g_configVideoGeneral, "ScreenWidth");
 	config.video.windowedHeight = ConfigGetParamInt(g_configVideoGeneral, "ScreenHeight");
 	config.video.verticalSync = ConfigGetParamBool(g_configVideoGeneral, "VerticalSync");
+
+	config.video.cropMode = ConfigGetParamInt(g_configVideoGliden64, "CropMode");
+	config.video.cropWidth = ConfigGetParamInt(g_configVideoGliden64, "CropWidth");
+	config.video.cropHeight = ConfigGetParamInt(g_configVideoGliden64, "CropHeight");
 
 #ifdef GL_MULTISAMPLING_SUPPORT
 	config.video.multisampling = ConfigGetParamInt(g_configVideoGliden64, "MultiSampling");

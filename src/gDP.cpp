@@ -715,6 +715,17 @@ void gDPSetScissor( u32 mode, f32 ulx, f32 uly, f32 lrx, f32 lry )
 
 	frameBufferList().correctHeight();
 
+	if (config.video.cropMode == Config::cmAuto && gDP.depthImageAddress != gDP.colorImage.address) {
+		const u32 maxCropH = VI.width / 16;
+		const u32 maxCropV = VI.height / 10;
+		if (ulx > 0 && ulx < maxCropH &&
+			uly > 0 && uly < maxCropV &&
+			(VI.width - lrx) < maxCropH && (VI.height - lry) < maxCropV) {
+			config.video.cropWidth = ulx;
+			config.video.cropHeight = uly;
+		}
+	}
+
 #ifdef DEBUG
 	DebugMsg( DEBUG_HIGH | DEBUG_IGNORED, "gDPSetScissor( %s, %.2f, %.2f, %.2f, %.2f );\n",
 		ScissorModeText[gDP.scissor.mode],

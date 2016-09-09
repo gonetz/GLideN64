@@ -881,15 +881,24 @@ void FrameBufferList::renderBuffer(u32 _address)
 	X1 = ogl.getWidth() - (GLint)(hx1 *viScaleX * dstScaleX);
 
 	const f32 srcScaleY = pFilteredBuffer->m_scaleY;
-	const GLint hOffset = (ogl.getScreenWidth() - ogl.getWidth()) / 2;
-	const GLint vOffset = (ogl.getScreenHeight() - ogl.getHeight()) / 2 + ogl.getHeightOffset();
 	CachedTexture * pBufferTexture = pFilteredBuffer->m_pTexture;
-	GLint srcCoord[4] = { 0, (GLint)(srcY0*srcScaleY), Xwidth, min((GLint)(srcY1*srcScaleY), (GLint)pBufferTexture->realHeight) };
+	const GLint hCrop = config.video.cropMode == Config::cmDisable ? 0 : GLint(config.video.cropWidth * srcScaleX);
+	const GLint vCrop = config.video.cropMode == Config::cmDisable ? 0 : GLint(config.video.cropHeight * srcScaleY);
+	GLint srcCoord[4] = { hCrop,
+						  vCrop + (GLint)(srcY0*srcScaleY),
+						  Xwidth - hCrop,
+						  min((GLint)(srcY1*srcScaleY), (GLint)pBufferTexture->realHeight) - vCrop };
 	if (srcCoord[2] > pBufferTexture->realWidth || srcCoord[3] > pBufferTexture->realHeight) {
 		removeBuffer(pBuffer->m_startAddress);
 		return;
 	}
-	GLint dstCoord[4] = { X0 + hOffset, vOffset + (GLint)(dstY0*dstScaleY), hOffset + X1, vOffset + (GLint)(dstY1*dstScaleY) };
+
+	const GLint hOffset = (ogl.getScreenWidth() - ogl.getWidth()) / 2;
+	const GLint vOffset = (ogl.getScreenHeight() - ogl.getHeight()) / 2 + ogl.getHeightOffset();
+	GLint dstCoord[4] = { X0 + hOffset,
+						  vOffset + (GLint)(dstY0*dstScaleY),
+						  hOffset + X1,
+						  vOffset + (GLint)(dstY1*dstScaleY) };
 #ifdef GLESX
 	if (render.getRenderer() == OGLRender::glrAdreno)
 		dstCoord[0] += 1; // workaround for Adreno's issue with glBindFramebuffer;
