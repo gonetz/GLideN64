@@ -1066,7 +1066,7 @@ void OGLRender::_updateDepthUpdate() const
 
 void OGLRender::_updateDepthCompare() const
 {
-	if (config.frameBufferEmulation.N64DepthCompare) {
+	if (config.frameBufferEmulation.N64DepthCompare != 0) {
 		glDisable( GL_DEPTH_TEST );
 		glDepthMask( FALSE );
 	} else if ((gDP.changed & (CHANGED_RENDERMODE | CHANGED_CYCLETYPE)) != 0) {
@@ -1176,6 +1176,7 @@ void OGLRender::_updateStates(RENDER_STATE _renderState) const
 #ifndef GLES2
 	if (gDP.colorImage.address == gDP.depthImageAddress &&
 		config.generalEmulation.enableFragmentDepthWrite != 0 &&
+		config.frameBufferEmulation.N64DepthCompare == 0 &&
 		(config.generalEmulation.hacks & hack_ZeldaMM) == 0
 	) {
 		// Current render target is depth buffer.

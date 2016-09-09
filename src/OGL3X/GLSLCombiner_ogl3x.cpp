@@ -27,6 +27,7 @@ static GLuint  g_calc_mipmap_shader_object;
 static GLuint  g_calc_noise_shader_object;
 static GLuint  g_write_depth_shader_object;
 static GLuint  g_calc_depth_shader_object;
+static GLuint  g_render_depth_shader_object;
 static GLuint  g_readtex_shader_object;
 static GLuint  g_readtex_ms_shader_object;
 static GLuint  g_dither_shader_object;
@@ -232,8 +233,10 @@ void InitShaderCombiner()
 	glUseProgram(0);
 
 #ifdef GL_IMAGE_TEXTURES_SUPPORT
-	if (video().getRender().isImageTexturesSupported() && config.frameBufferEmulation.N64DepthCompare != 0)
+	if (video().getRender().isImageTexturesSupported() && config.frameBufferEmulation.N64DepthCompare != 0) {
 		g_calc_depth_shader_object = _createShader(GL_FRAGMENT_SHADER, depth_compare_shader_float);
+		g_render_depth_shader_object = _createShader(GL_FRAGMENT_SHADER, depth_render_shader);
+	}
 
 	InitZlutTexture();
 	InitShadowMapShader();
@@ -263,6 +266,8 @@ void DestroyShaderCombiner() {
 	g_write_depth_shader_object = 0;
 	glDeleteShader(g_dither_shader_object);
 	g_dither_shader_object = 0;
+	glDeleteShader(g_render_depth_shader_object);
+	g_render_depth_shader_object = 0;
 	glDeleteShader(g_calc_depth_shader_object);
 	g_calc_depth_shader_object = 0;
 #endif // GLESX
@@ -385,10 +390,12 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 	strFragmentShader.append("  vec_color = vec4(input_color, vShadeColor.a); \n");
 	strFragmentShader.append(strCombiner);
 
-	if (video().getRender().isImageTexturesSupported() && config.frameBufferEmulation.N64DepthCompare != 0)
-		strFragmentShader.append("  if (!depth_compare()) discard; \n");
-
-	if (config.generalEmulation.enableFragmentDepthWrite != 0) {
+	if (video().getRender().isImageTexturesSupported() && config.frameBufferEmulation.N64DepthCompare != 0) {
+		strFragmentShader.append(
+			"  if (uRenderTarget != 0) { if (!depth_render(fragColor.r)) discard; } \n"
+			"  else if (!depth_compare()) discard; \n"
+		);
+	} else if (config.generalEmulation.enableFragmentDepthWrite != 0) {
 		strFragmentShader.append(
 			"  if (uRenderTarget != 0) {					\n"
 			"    if (uRenderTarget > 1) {					\n"
@@ -425,8 +432,10 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 #endif
 	}
 #ifdef GL_IMAGE_TEXTURES_SUPPORT
-	if (video().getRender().isImageTexturesSupported() && config.frameBufferEmulation.N64DepthCompare != 0)
+	if (video().getRender().isImageTexturesSupported() && config.frameBufferEmulation.N64DepthCompare != 0) {
 		strFragmentShader.append(depth_compare_shader_float);
+		strFragmentShader.append(depth_render_shader);
+	}
 #endif
 	if (config.generalEmulation.enableNoise != 0) {
 		strFragmentShader.append(fragment_shader_noise);
@@ -462,8 +471,10 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 		if (config.video.multisampling > 0)
 			glAttachShader(m_program, g_readtex_ms_shader_object);
 	}
-	if (video().getRender().isImageTexturesSupported() && config.frameBufferEmulation.N64DepthCompare != 0)
+	if (video().getRender().isImageTexturesSupported() && config.frameBufferEmulation.N64DepthCompare != 0) {
 		glAttachShader(m_program, g_calc_depth_shader_object);
+		glAttachShader(m_program, g_render_depth_shader_object);
+	}
 	if (config.generalEmulation.enableNoise != 0) {
 		glAttachShader(m_program, g_calc_noise_shader_object);
 		glAttachShader(m_program, g_dither_shader_object);

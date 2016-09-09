@@ -278,7 +278,8 @@ static const char* fragment_shader_header_readTexMS =
 #endif // GL_MULTISAMPLING_SUPPORT
 #ifdef GL_IMAGE_TEXTURES_SUPPORT
 static const char* fragment_shader_header_depth_compare =
-	"bool depth_compare();\n";
+"bool depth_compare();\n"
+"bool depth_render(highp float Z);\n";
 #endif  // GL_IMAGE_TEXTURES_SUPPORT
 static const char* fragment_shader_header_noise_dither =
 	"void colorNoiseDither(in lowp float _noise, inout lowp vec3 _color);\n"
@@ -622,6 +623,30 @@ static const char* depth_compare_shader_float =
 "  memoryBarrierImage();								\n"
 "  if (uEnableDepthCompare != 0)						\n"
 "    return bRes;										\n"
+"  return true;											\n"
+"}														\n"
+;
+
+static const char* depth_render_shader =
+#ifndef GLESX
+"#version 430								\n"
+"layout(binding = 2, rg32f) uniform coherent image2D uDepthImage;\n"
+#else
+"layout(binding = 2, rgba32f) highp uniform coherent image2D uDepthImage;\n"
+#endif
+"uniform lowp int uEnableDepthCompare;					\n"
+"bool depth_render(highp float Z)						\n"
+"{														\n"
+"  ivec2 coord = ivec2(gl_FragCoord.xy);				\n"
+"  if (uEnableDepthCompare != 0) {						\n"
+"    highp vec4 depth = imageLoad(uDepthImage,coord);	\n"
+"    highp float bufZ = depth.r;						\n"
+"    highp float curZ = gl_FragDepth;					\n"
+"    if (curZ >= bufZ) return false;					\n"
+"  }													\n"
+"  highp vec4 depth_out = vec4(Z, 0.0, 1.0, 1.0);		\n"
+"  imageStore(uDepthImage,coord, depth_out);			\n"
+"  memoryBarrierImage();								\n"
 "  return true;											\n"
 "}														\n"
 ;
