@@ -30,7 +30,7 @@ struct
 	{ 1440, 1080, "1440 x 1080" },
 	{ 1600, 1024, "1600 x 1024" },
 	{ 1600, 1200, "1600 x 1200" },
-	{ 640, 480, "custom" }
+	{ 640, 480, "Custom" }
 };
 static
 const unsigned int numWindowedModes = sizeof(WindowedModes) / sizeof(WindowedModes[0]);
@@ -79,6 +79,11 @@ void ConfigDialog::_init()
 	}
 	ui->windowedResolutionComboBox->insertItems(0, windowedModesList);
 	ui->windowedResolutionComboBox->setCurrentIndex(windowedModesCurrent);
+	ui->cropImageComboBox->setCurrentIndex(config.video.cropMode);
+	ui->cropImageWidthSpinBox->setValue(config.video.cropWidth);
+	ui->cropImageWidthSpinBox->setEnabled(config.video.cropMode == Config::cmCustom);
+	ui->cropImageHeightSpinBox->setValue(config.video.cropHeight);
+	ui->cropImageHeightSpinBox->setEnabled(config.video.cropMode == Config::cmCustom);
 
 	QStringList fullscreenModesList, fullscreenRatesList;
 	int fullscreenMode, fullscreenRate;
@@ -306,6 +311,10 @@ void ConfigDialog::accept()
 	getFullscreenResolutions(ui->fullScreenResolutionComboBox->currentIndex(), config.video.fullscreenWidth, config.video.fullscreenHeight);
 	getFullscreenRefreshRate(ui->fullScreenRefreshRateComboBox->currentIndex(), config.video.fullscreenRefresh);
 
+	config.video.cropMode = ui->cropImageComboBox->currentIndex();
+	config.video.cropWidth = ui->cropImageWidthSpinBox->value();
+	config.video.cropHeight = ui->cropImageHeightSpinBox->value();
+
 	config.video.multisampling = ui->aliasingSlider->value();
 	config.texture.maxAnisotropy = ui->anisotropicSlider->value();
 	config.texture.maxBytes = ui->cacheSizeSpinBox->value() * gc_uMegabyte;
@@ -517,4 +526,11 @@ void ConfigDialog::on_nativeRes2D_checkBox_toggled(bool checked)
 	ui->fixTexrectDisableRadioButton->setEnabled(!checked);
 	ui->fixTexrectSmartRadioButton->setEnabled(!checked);
 	ui->fixTexrectForceRadioButton->setEnabled(!checked);
+}
+
+void ConfigDialog::on_cropImageComboBox_currentIndexChanged(int index)
+{
+	const bool bCustom = index == Config::cmCustom;
+	ui->cropImageWidthSpinBox->setEnabled(bCustom);
+	ui->cropImageHeightSpinBox->setEnabled(bCustom);
 }

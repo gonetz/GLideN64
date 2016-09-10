@@ -39,6 +39,8 @@ private slots:
 
 	void on_nativeRes2D_checkBox_toggled(bool checked);
 
+	void on_cropImageComboBox_currentIndexChanged(int index);
+
 private:
 	void _init();
 	void _getTranslations(QStringList & _translationFiles) const;
