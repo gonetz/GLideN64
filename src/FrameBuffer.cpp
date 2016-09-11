@@ -385,7 +385,7 @@ CachedTexture * FrameBuffer::getTexture(u32 _t)
 	const bool getDepthTexture = m_isDepthBuffer &&
 								 gDP.colorImage.address == gDP.depthImageAddress &&
 								 m_pDepthBuffer != nullptr &&
-								 (config.generalEmulation.hacks & hack_ZeldaMM) != 0;
+								 (config.generalEmulation.hacks & hack_ZeldaMM) == 0;
 	CachedTexture *pTexture = getDepthTexture ? m_pDepthBuffer->m_pDepthBufferTexture : m_pTexture;
 
 	const u32 shift = (gSP.textureTile[_t]->imageAddress - m_startAddress) >> (m_size - 1);
