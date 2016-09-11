@@ -666,7 +666,7 @@ typedef void (*GBIFunc)( u32 w0, u32 w1 );
 struct SpecialMicrocodeInfo
 {
 	u32 type;
-	u32 NoN;
+	bool NoN;
 	u32 crc;
 	const char *text;
 };

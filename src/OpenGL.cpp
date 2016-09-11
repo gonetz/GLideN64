@@ -490,7 +490,7 @@ void OGLRender::TexrectDrawer::add()
 
 		CombinerInfo::get().update();
 		glDisable(GL_DEPTH_TEST);
-		glDepthMask(FALSE);
+		glDepthMask(GL_FALSE);
 		glDisable(GL_BLEND);
 
 		if (m_pBuffer == nullptr)
@@ -1059,16 +1059,16 @@ void OGLRender::updateScissor(FrameBuffer * _pBuffer) const
 void OGLRender::_updateDepthUpdate() const
 {
 	if (gDP.otherMode.depthUpdate != 0)
-		glDepthMask( TRUE );
+		glDepthMask( GL_TRUE );
 	else
-		glDepthMask( FALSE );
+		glDepthMask( GL_FALSE );
 }
 
 void OGLRender::_updateDepthCompare() const
 {
 	if (config.frameBufferEmulation.N64DepthCompare != 0) {
 		glDisable( GL_DEPTH_TEST );
-		glDepthMask( FALSE );
+		glDepthMask( GL_FALSE );
 	} else if ((gDP.changed & (CHANGED_RENDERMODE | CHANGED_CYCLETYPE)) != 0) {
 		if (((gSP.geometryMode & G_ZBUFFER) || gDP.otherMode.depthSource == G_ZS_PRIM) && gDP.otherMode.cycleType <= G_CYC_2CYCLE) {
 			if (gDP.otherMode.depthCompare != 0) {
@@ -1201,7 +1201,7 @@ void OGLRender::_updateStates(RENDER_STATE _renderState) const
 		}
 		glEnable(GL_DEPTH_TEST);
 		glDepthFunc(GL_ALWAYS);
-		glDepthMask(TRUE);
+		glDepthMask(GL_TRUE);
 		gDP.changed |= CHANGED_RENDERMODE;
 	}
 #endif
@@ -1863,11 +1863,11 @@ void OGLRender::clearDepthBuffer(u32 _ulx, u32 _uly, u32 _lrx, u32 _lry)
 	glDisable( GL_SCISSOR_TEST );
 
 #ifdef ANDROID
-	glDepthMask( FALSE );
+	glDepthMask( GL_FALSE );
 	glClear( GL_DEPTH_BUFFER_BIT );
 #endif
 
-	glDepthMask( TRUE );
+	glDepthMask( GL_TRUE );
 	glClear( GL_DEPTH_BUFFER_BIT );
 
 	_updateDepthUpdate();
@@ -1945,7 +1945,7 @@ void OGLRender::_initStates()
 		glDisable( GL_DEPTH_TEST );
 		glDisable( GL_POLYGON_OFFSET_FILL );
 		glDepthFunc( GL_ALWAYS );
-		glDepthMask( FALSE );
+		glDepthMask( GL_FALSE );
 	} else {
 #ifdef ANDROID
 		if(config.generalEmulation.forcePolygonOffset != 0)
@@ -2111,7 +2111,7 @@ void OGLRender::copyTexturedRect(GLint _srcX0, GLint _srcY0, GLint _srcX1, GLint
 	glDisable(GL_CULL_FACE);
 	glDisable(GL_BLEND);
 	glDisable(GL_DEPTH_TEST);
-	glDepthMask(FALSE);
+	glDepthMask(GL_FALSE);
 	glDisable(GL_SCISSOR_TEST);
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 	glEnable(GL_SCISSOR_TEST);

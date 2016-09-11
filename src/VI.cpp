@@ -158,20 +158,12 @@ void VI_UpdateScreen()
 			frameBufferList().renderBuffer(*REG.VI_ORIGIN);
 			frameBufferList().clearBuffersChanged();
 			VI.lastOrigin = *REG.VI_ORIGIN;
-#ifdef DEBUG
-			while (Debug.paused && !Debug.step);
-			Debug.step = FALSE;
-#endif
 		} 
 	}
 	else {
 		if (gDP.changed & CHANGED_COLORBUFFER) {
 			ogl.swapBuffers();
 			gDP.changed &= ~CHANGED_COLORBUFFER;
-#ifdef DEBUG
-			while (Debug.paused && !Debug.step);
-			Debug.step = FALSE;
-#endif
 			VI.lastOrigin = *REG.VI_ORIGIN;
 		}
 	}
