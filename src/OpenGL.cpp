@@ -1853,12 +1853,12 @@ void OGLRender::drawText(const char *_pText, float x, float y)
 	TextDrawer::get().renderText(_pText, x, y);
 }
 
-void OGLRender::clearDepthBuffer(u32 _uly, u32 _lry)
+void OGLRender::clearDepthBuffer(u32 _ulx, u32 _uly, u32 _lrx, u32 _lry)
 {
 	if (!_canDraw())
 		return;
 
-	depthBufferList().clearBuffer(_uly, _lry);
+	depthBufferList().clearBuffer(_ulx, _uly, _lrx, _lry);
 
 	glDisable( GL_SCISSOR_TEST );
 

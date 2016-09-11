@@ -135,7 +135,7 @@ public:
 						  GLint _dstX0, GLint _dstY0, GLint _dstX1, GLint _dstY1,
 						  GLuint _dstWidth, GLuint _dstHeight, GLenum _filter);
 	void drawText(const char *_pText, float x, float y);
-	void clearDepthBuffer(u32 _uly, u32 _lry);
+	void clearDepthBuffer(u32 _ulx, u32 _uly, u32 _lrx, u32 _lry);
 	void clearColorBuffer( float * _pColor );
 
 	int getTrianglesCount() const {return triangles.num;}
