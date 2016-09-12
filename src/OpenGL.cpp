@@ -1467,8 +1467,12 @@ bool texturedRectShadowMap(const OGLRender::TexturedRectParams &)
 	if (pCurrentBuffer != nullptr) {
 		if (gDP.textureImage.size == 2 && gDP.textureImage.address >= gDP.depthImageAddress &&  gDP.textureImage.address < (gDP.depthImageAddress + gDP.colorImage.width*gDP.colorImage.width * 6 / 4)) {
 #ifdef GL_IMAGE_TEXTURES_SUPPORT
-			pCurrentBuffer->m_pDepthBuffer->activateDepthBufferTexture(pCurrentBuffer);
-			SetDepthFogCombiner();
+			if (video().getRender().isImageTexturesSupported()) {
+				pCurrentBuffer->m_pDepthBuffer->activateDepthBufferTexture(pCurrentBuffer);
+				SetDepthFogCombiner();
+			}
+			else
+				return true;
 #else
 			return true;
 #endif
