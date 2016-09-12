@@ -39,9 +39,10 @@ void VI_UpdateSize()
 	VI.width = *REG.VI_WIDTH;
 	VI.interlaced = (*REG.VI_STATUS & 0x40) != 0;
 
-	const bool bCFB = (gDP.changed&CHANGED_CPU_FB_WRITE) == CHANGED_CPU_FB_WRITE;
-	if (VI.interlaced && !bCFB) {
-		f32 fullWidth = 640.0f*xScale;
+	if (VI.interlaced) {
+		f32 fullWidth = 640.0f;
+		if ((*REG.VI_X_SCALE) % 512 == 0)
+			fullWidth *= xScale;
 		if (*REG.VI_WIDTH > fullWidth) {
 			const u32 scale = (u32)floorf(*REG.VI_WIDTH / fullWidth + 0.5f);
 			VI.width /= scale;
