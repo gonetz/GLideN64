@@ -526,12 +526,14 @@ void TextureCache::_checkCacheSize()
 #ifdef VC
 	const size_t maxCacheSize = 15000;
 #else
-	const size_t maxCacheSize = 128000;
+	const size_t maxCacheSize = 16384;
 #endif
-	// Clear cache if its size is too large.
 	if (m_textures.size() >= maxCacheSize) {
-		_clear();
-		return;
+		CachedTexture& clsTex = m_textures.back();
+		m_cachedBytes -= clsTex.textureBytes;
+		glDeleteTextures(1, &clsTex.glName);
+		m_lruTextureLocations.erase(clsTex.crc);
+		m_textures.pop_back();
 	}
 
 	if (m_cachedBytes <= m_maxBytes)
