@@ -27,7 +27,7 @@ struct FrameBuffer
 	bool isAuxiliary() const;
 
 	u32 m_startAddress, m_endAddress;
-	u32 m_size, m_width, m_height, m_fillcolor, m_validityChecked;
+	u32 m_size, m_width, m_height, m_fillcolor;
 	float m_scaleX, m_scaleY;
 	bool m_copiedToRdram;
 	bool m_fingerprint;
@@ -64,6 +64,7 @@ private:
 	void _setAndAttachTexture(u16 _size, CachedTexture *_pTexture);
 	bool _initSubTexture(u32 _t);
 	CachedTexture * _getSubTexture(u32 _t);
+	mutable u32 m_validityChecked;
 };
 
 class FrameBufferList

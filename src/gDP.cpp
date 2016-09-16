@@ -414,9 +414,7 @@ bool CheckForFrameBufferTexture(u32 _address, u32 _bytes)
 
 		if (bRes) {
 			bRes = pBuffer->isValid();
-			if (bRes)
-				pBuffer->m_validityChecked = video().getBuffersSwapCount();
-			else
+			if (!bRes)
 				fbList.removeBuffer(pBuffer->m_startAddress);
 		}
 

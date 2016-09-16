@@ -258,6 +258,7 @@ bool FrameBuffer::isValid() const
 {
 	if (m_validityChecked == video().getBuffersSwapCount())
 		return true; // Already checked
+	m_validityChecked = video().getBuffersSwapCount();
 
 	const u32 * const pData = (const u32*)RDRAM;
 

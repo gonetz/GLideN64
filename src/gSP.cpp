@@ -2123,6 +2123,10 @@ void _loadBGImage(const uObjScaleBg * _bgInfo, bool _loadScale)
 	if (config.frameBufferEmulation.enable) {
 		FrameBuffer *pBuffer = frameBufferList().findBuffer(gSP.bgImage.address);
 		if ((pBuffer != nullptr) && pBuffer->m_size == gSP.bgImage.size && (!pBuffer->m_isDepthBuffer || pBuffer->m_changed)) {
+			if (!pBuffer->isValid()) {
+				frameBufferList().removeBuffer(pBuffer->m_startAddress);
+				return;
+			}
 			gDP.tiles[0].frameBuffer = pBuffer;
 			gDP.tiles[0].textureMode = TEXTUREMODE_FRAMEBUFFER_BG;
 			gDP.tiles[0].loadType = LOADTYPE_TILE;
