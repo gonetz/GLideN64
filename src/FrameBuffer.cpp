@@ -461,6 +461,7 @@ void FrameBufferList::setBufferChanged()
 {
 	gDP.colorImage.changed = TRUE;
 	if (m_pCurrent != nullptr) {
+		m_pCurrent->m_cfb = false;
 		m_pCurrent->m_changed = true;
 		m_pCurrent->m_copiedToRdram = false;
 	}
