@@ -1301,7 +1301,7 @@ bool OGLRender::_canDraw() const
 	return config.frameBufferEmulation.enable == 0 || frameBufferList().getCurrent() != nullptr;
 }
 
-void OGLRender::drawLLETriangle(u32 _numVtx)
+void OGLRender::drawScreenSpaceTriangle(u32 _numVtx)
 {
 	if (_numVtx == 0 || !_canDraw())
 		return;

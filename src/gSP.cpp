@@ -1971,7 +1971,7 @@ void gSPDrawObjRect(const ObjCoordinates & _coords)
 	vtx3.s = _coords.lrs;
 	vtx3.t = _coords.lrt;
 
-	render.drawLLETriangle(4);
+	render.drawScreenSpaceTriangle(4);
 	gDP.colorImage.height = (u32)(max(gDP.colorImage.height, (u32)gDP.scissor.lry));
 }
 
@@ -2240,7 +2240,7 @@ void gSPObjSprite(u32 _sp)
 	vtx3.s = lrs;
 	vtx3.t = lrt;
 
-	render.drawLLETriangle(4);
+	render.drawScreenSpaceTriangle(4);
 
 	frameBufferList().setBufferChanged();
 	gDP.colorImage.height = (u32)(max( gDP.colorImage.height, (u32)gDP.scissor.lry ));
@@ -2385,7 +2385,7 @@ void gSPSprite2DBase(u32 _base)
 		vtx3.t = lrt;
 
 		if (pSprite->stride > 0)
-			render.drawLLETriangle(4);
+			render.drawScreenSpaceTriangle(4);
 	} while (RSP.nextCmd == 0xBD || RSP.nextCmd == 0xBE);
 }
 

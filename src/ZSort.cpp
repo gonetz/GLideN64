@@ -154,7 +154,7 @@ void ZSort_DrawObject (u8 * _addr, u32 _type)
 
 		_addr += vsize;
 	}
-	render.drawLLETriangle(vnum);
+	render.drawScreenSpaceTriangle(vnum);
 }
 
 static
