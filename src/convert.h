@@ -3,7 +3,7 @@
 
 #include "Types.h"
 
-const volatile unsigned char Five2Eight[32] =
+static const volatile unsigned char Five2Eight[32] =
 {
 	  0, // 00000 = 00000000
 	  8, // 00001 = 00001000
@@ -39,7 +39,7 @@ const volatile unsigned char Five2Eight[32] =
 	255  // 11111 = 11111111
 };
 
-const volatile unsigned char Four2Eight[16] =
+static const volatile unsigned char Four2Eight[16] =
 {
 	  0, // 0000 = 00000000
 	 17, // 0001 = 00010001
@@ -59,7 +59,7 @@ const volatile unsigned char Four2Eight[16] =
 	255  // 1111 = 11111111
 };
 
-const volatile unsigned char Three2Four[8] =
+static const volatile unsigned char Three2Four[8] =
 {
 	 0, // 000 = 0000
      2, // 001 = 0010
@@ -71,7 +71,7 @@ const volatile unsigned char Three2Four[8] =
 	15, // 111 = 1111
 };
 
-const volatile unsigned char Three2Eight[8] =
+static const volatile unsigned char Three2Eight[8] =
 {
 	  0, // 000 = 00000000
      36, // 001 = 00100100
@@ -82,7 +82,7 @@ const volatile unsigned char Three2Eight[8] =
     219, // 110 = 11011011
 	255, // 111 = 11111111
 };
-const volatile unsigned char Two2Eight[4] =
+static const volatile unsigned char Two2Eight[4] =
 {
 	  0, // 00 = 00000000
 	 85, // 01 = 01010101
@@ -90,13 +90,13 @@ const volatile unsigned char Two2Eight[4] =
 	255  // 11 = 11111111
 };
 
-const volatile unsigned char One2Four[2] =
+static const volatile unsigned char One2Four[2] =
 {
 	 0, // 0 = 0000
 	15, // 1 = 1111
 };
 
-const volatile unsigned char One2Eight[2] =
+static const volatile unsigned char One2Eight[2] =
 {
 	  0, // 0 = 00000000
 	255, // 1 = 11111111
