@@ -197,6 +197,7 @@ private:
 	void _updateStates(RENDER_STATE _renderState) const;
 	void _prepareDrawTriangle(bool _dma);
 	bool _canDraw() const;
+	void _drawThickLine(int _v0, int _v1, float _width);
 
 	struct {
 		SPVertex vertices[VERTBUFF_SIZE];
@@ -250,6 +251,7 @@ private:
 	TexturedRectParams m_texrectParams;
 	GLVertex m_rect[4];
 	u32 m_modifyVertices;
+	GLfloat m_maxLineWidth;
 	bool m_bImageTexture;
 	bool m_bFlatColors;
 	bool m_bDmaVertices;

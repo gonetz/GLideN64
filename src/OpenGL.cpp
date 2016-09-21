@@ -682,7 +682,6 @@ void OGLRender::addTriangle(int _v0, int _v1, int _v2)
 				vtx.g = vtx.flat_g = vtx0.g;
 				vtx.b = vtx.flat_b = vtx0.b;
 				vtx.a = vtx.flat_a = vtx0.a;
-				vtx.a = vtx0.a;
 			}
 		}
 	}
@@ -1353,18 +1352,100 @@ void OGLRender::drawTriangles()
 	triangles.num = 0;
 }
 
+void OGLRender::_drawThickLine(int _v0, int _v1, float _width)
+{
+	if ((gSP.geometryMode & G_LIGHTING) == 0) {
+		if ((gSP.geometryMode & G_SHADE) == 0) {
+			SPVertex & vtx1 = triangles.vertices[_v0];
+			vtx1.flat_r = gDP.primColor.r;
+			vtx1.flat_g = gDP.primColor.g;
+			vtx1.flat_b = gDP.primColor.b;
+			vtx1.flat_a = gDP.primColor.a;
+			SPVertex & vtx2 = triangles.vertices[_v1];
+			vtx2.flat_r = gDP.primColor.r;
+			vtx2.flat_g = gDP.primColor.g;
+			vtx2.flat_b = gDP.primColor.b;
+			vtx2.flat_a = gDP.primColor.a;
+		} else if ((gSP.geometryMode & G_SHADING_SMOOTH) == 0) {
+			// Flat shading
+			SPVertex & vtx0 = triangles.vertices[_v0 + ((RSP.w1 >> 24) & 3)];
+			SPVertex & vtx1 = triangles.vertices[_v0];
+			vtx1.r = vtx1.flat_r = vtx0.r;
+			vtx1.g = vtx1.flat_g = vtx0.g;
+			vtx1.b = vtx1.flat_b = vtx0.b;
+			vtx1.a = vtx1.flat_a = vtx0.a;
+			SPVertex & vtx2 = triangles.vertices[_v1];
+			vtx2.r = vtx2.flat_r = vtx0.r;
+			vtx2.g = vtx2.flat_g = vtx0.g;
+			vtx2.b = vtx2.flat_b = vtx0.b;
+			vtx2.a = vtx2.flat_a = vtx0.a;
+		}
+	}
+
+	setDMAVerticesSize(4);
+	SPVertex * pVtx = getDMAVerticesData();
+	pVtx[0] = triangles.vertices[_v0];
+	pVtx[0].x = pVtx[0].x/pVtx[0].w * gSP.viewport.vscale[0] + gSP.viewport.vtrans[0];
+	pVtx[0].y = pVtx[0].y/pVtx[0].w * gSP.viewport.vscale[1] + gSP.viewport.vtrans[1];
+	pVtx[0].z = pVtx[0].z/pVtx[0].w * gSP.viewport.vscale[2] + gSP.viewport.vtrans[2];
+	pVtx[1] = pVtx[0];
+
+	pVtx[2] = triangles.vertices[_v1];
+	pVtx[2].x = pVtx[2].x/pVtx[2].w * gSP.viewport.vscale[0] + gSP.viewport.vtrans[0];
+	pVtx[2].y = pVtx[2].y/pVtx[2].w * gSP.viewport.vscale[1] + gSP.viewport.vtrans[1];
+	pVtx[2].z = pVtx[2].z/pVtx[2].w * gSP.viewport.vscale[2] + gSP.viewport.vtrans[2];
+	pVtx[3] = pVtx[2];
+
+	if (fabs(pVtx[0].y - pVtx[2].y) < 0.0001) {
+		const f32 Y = pVtx[0].y;
+		pVtx[0].y = pVtx[2].y = Y - _width;
+		pVtx[1].y = pVtx[3].y = Y + _width;
+	} else if (fabs(pVtx[0].x - pVtx[2].x) < 0.0001) {
+		const f32 X = pVtx[0].x;
+		pVtx[0].x = pVtx[2].x = X - _width;
+		pVtx[1].x = pVtx[3].x = X + _width;
+	} else {
+		const f32 X0 = pVtx[0].x;
+		const f32 Y0 = pVtx[0].y;
+		const f32 X1 = pVtx[2].x;
+		const f32 Y1 = pVtx[2].y;
+		const f32 dx = X1 - X0;
+		const f32 dy = Y1 - Y0;
+		const f32 len = sqrtf(dx*dx + dy*dy);
+		const f32 wx = dy * _width / len;
+		const f32 wy = dx * _width / len;
+		pVtx[0].x = X0 + wx;
+		pVtx[0].y = Y0 - wy;
+		pVtx[1].x = X0 - wx;
+		pVtx[1].y = Y0 + wy;
+		pVtx[2].x = X1 + wx;
+		pVtx[2].y = Y1 - wy;
+		pVtx[3].x = X1 - wx;
+		pVtx[3].y = Y1 + wy;
+	}
+	drawScreenSpaceTriangle(4);
+}
+
 void OGLRender::drawLine(int _v0, int _v1, float _width)
 {
 	m_texrectDrawer.draw();
 	if (!_canDraw())
 		return;
 
+	GLfloat lineWidth = _width;
+	if (config.frameBufferEmulation.nativeResFactor == 0)
+		lineWidth *= video().getScaleX();
+	else
+		lineWidth *= config.frameBufferEmulation.nativeResFactor;
+	if (lineWidth > m_maxLineWidth) {
+		_drawThickLine(_v0, _v1, _width * 0.5f);
+		return;
+	}
+
 	if ((triangles.vertices[_v0].modify & MODIFY_XY) != 0)
 		gSP.changed &= ~CHANGED_VIEWPORT;
 	if (gSP.changed || gDP.changed)
 		_updateStates(rsLine);
-
-	FrameBuffer * pCurrentBuffer = frameBufferList().getCurrent();
 
 	if (m_renderState != rsLine || CombinerInfo::get().isChanged()) {
 		_setColorArray();
@@ -1382,13 +1463,10 @@ void OGLRender::drawLine(int _v0, int _v1, float _width)
 	if ((triangles.vertices[_v0].modify & MODIFY_XY) != 0)
 		_updateScreenCoordsViewport();
 
+	glLineWidth(lineWidth);
 	unsigned short elem[2];
 	elem[0] = _v0;
 	elem[1] = _v1;
-	if (config.frameBufferEmulation.nativeResFactor == 0)
-		glLineWidth(_width * video().getScaleX());
-	else
-		glLineWidth(_width * config.frameBufferEmulation.nativeResFactor);
 	glDrawElements(GL_LINES, 2, GL_UNSIGNED_SHORT, elem);
 }
 
@@ -1902,6 +1980,10 @@ void OGLRender::_initExtensions()
 	LOG(LOG_VERBOSE, "OpenGL renderer: %s\n", strRenderer);
 
 	fboFormats.init();
+
+	GLfloat lineWidthRange[2] = {0.0f, 0.0f};
+	glGetFloatv(GL_ALIASED_LINE_WIDTH_RANGE, lineWidthRange);
+	m_maxLineWidth = lineWidthRange[1];
 
 #ifndef GLES2
 	GLint majorVersion = 0;
