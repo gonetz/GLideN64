@@ -252,6 +252,7 @@ private:
 	u32 m_modifyVertices;
 	bool m_bImageTexture;
 	bool m_bFlatColors;
+	bool m_bDmaVertices;
 	TexrectDrawer m_texrectDrawer;
 
 	GLuint m_programCopyTex;

@@ -1252,7 +1252,8 @@ void OGLRender::_prepareDrawTriangle(bool _dma)
 	if (gSP.changed || gDP.changed)
 		_updateStates(rsTriangle);
 
-	const bool updateArrays = m_renderState != rsTriangle;
+	const bool updateArrays = m_renderState != rsTriangle || m_bDmaVertices != _dma;
+	m_bDmaVertices = _dma;
 	if (updateArrays || CombinerInfo::get().isChanged()) {
 		m_renderState = rsTriangle;
 		_setColorArray();
@@ -1307,17 +1308,15 @@ void OGLRender::drawScreenSpaceTriangle(u32 _numVtx)
 		return;
 
 	for (u32 i = 0; i < _numVtx; ++i) {
-		SPVertex & vtx = triangles.vertices[i];
+		SPVertex & vtx = triangles.dmaVertices[i];
 		vtx.modify = MODIFY_ALL;
 	}
 	m_modifyVertices = MODIFY_ALL;
 
 	gSP.changed &= ~CHANGED_GEOMETRYMODE; // Don't update cull mode
-	_prepareDrawTriangle(false);
+	_prepareDrawTriangle(true);
 	glDisable(GL_CULL_FACE);
-
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, _numVtx);
-	triangles.num = 0;
 
 	frameBufferList().setBufferChanged();
 	gSP.changed |= CHANGED_GEOMETRYMODE;
@@ -1988,6 +1987,7 @@ void OGLRender::_initData()
 	FBInfo::fbInfo.reset();
 	m_texrectDrawer.init();
 	m_renderState = rsNone;
+	m_bDmaVertices = false;
 
 	gSP.changed = gDP.changed = 0xFFFFFFFF;
 

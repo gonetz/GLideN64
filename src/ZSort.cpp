@@ -133,8 +133,10 @@ void ZSort_DrawObject (u8 * _addr, u32 _type)
 	}
 
 	OGLRender & render = video().getRender();
+	render.setDMAVerticesSize(vnum);
+	SPVertex * pVtx = render.getDMAVerticesData();
 	for (u32 i = 0; i < vnum; ++i) {
-		SPVertex & vtx = render.getVertex(i);
+		SPVertex & vtx = pVtx[i];
 		vtx.x = _FIXED2FLOAT(((s16*)_addr)[0 ^ 1], 2);
 		vtx.y = _FIXED2FLOAT(((s16*)_addr)[1 ^ 1], 2);
 		vtx.z = 0.0f;
@@ -284,8 +286,10 @@ void ZSort_Lighting( u32 _w0, u32 _w1 )
 	int use_material = (csrs != 0x0ff0);
 	tdest >>= 1;
 	OGLRender & render = video().getRender();
+	render.setDMAVerticesSize(num);
+	SPVertex * pVtx = render.getDMAVerticesData();
 	for (u32 i = 0; i < num; i++) {
-		SPVertex & vtx = render.getVertex(i);
+		SPVertex & vtx = pVtx[i];
 
 		vtx.nx = ((s8*)DMEM)[(nsrs++)^3];
 		vtx.ny = ((s8*)DMEM)[(nsrs++)^3];
