@@ -8,6 +8,7 @@
 #include "gDP.h"
 #include "gSP.h"
 #include "OpenGL.h"
+#include "Config.h"
 #include "Debug.h"
 
 void RDP_Unknown( u32 w0, u32 w1 )
@@ -266,8 +267,11 @@ void _getTexRectParams(u32 & w2, u32 & w3)
 		RSP.PC[RSP.PCi] += 8;
 		break;
 	case gdpTexRect:
-		w2 = *(u32*)&RDRAM[RSP.PC[RSP.PCi] + 0];
-		w3 = *(u32*)&RDRAM[RSP.PC[RSP.PCi] + 4];
+		if ((config.generalEmulation.hacks & hack_WinBack) == 0) {
+			w2 = *(u32*)&RDRAM[RSP.PC[RSP.PCi] + 0];
+			w3 = *(u32*)&RDRAM[RSP.PC[RSP.PCi] + 4];
+		} else
+			w2 = w3 = 0;
 		RSP.PC[RSP.PCi] += 8;
 		break;
 	case halfTexRect:
@@ -285,6 +289,8 @@ void _TexRect( u32 w0, u32 w1, bool flip )
 {
 	u32 w2, w3;
 	_getTexRectParams(w2, w3);
+	if (w3 == 0)
+		return;
 	const u32 ulx = _SHIFTR(w1, 12, 12);
 	const u32 uly = _SHIFTR(w1, 0, 12);
 	const u32 lrx = _SHIFTR(w0, 12, 12);

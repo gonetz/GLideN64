@@ -355,6 +355,9 @@ void RSP_Init()
 		config.generalEmulation.hacks |= hack_doNotResetTLUTmode;
 	else if (strstr(RSP.romname, (const char *)"quarterback_club_98") != nullptr)
 		config.generalEmulation.hacks |= hack_LoadDepthTextures;
+	else if (strstr(RSP.romname, (const char *)"WIN BACK") != nullptr ||
+		strstr(RSP.romname, (const char *)"OPERATION WINBACK") != nullptr)
+		config.generalEmulation.hacks |= hack_WinBack;
 
 	api().FindPluginPath(RSP.pluginpath);
 

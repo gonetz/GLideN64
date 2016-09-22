@@ -159,6 +159,7 @@ struct Config
 #define hack_ignoreVIHeightChange	(1<<8)  //Do not reset FBO when VI height is changed. Space Invaders need it.
 #define hack_rectDepthBufferCopyPD	(1<<9)  //Copy depth buffer only when game need it. Optimized for PD
 #define hack_rectDepthBufferCopyCBFD (1<<10) //Copy depth buffer only when game need it. Optimized for CBFD
+#define hack_WinBack				(1<<11) //Hack for WinBack to remove gray rectangle in HLE mode
 #define hack_ZeldaMM				(1<<12) //Special hacks for Zelda MM
 #define hack_ModifyVertexXyInShader	(1<<13) //Pass screen coordinates provided in gSPModifyVertex to vertes shader.
 #define hack_legoRacers				(1<<14) //LEGO racers course map
