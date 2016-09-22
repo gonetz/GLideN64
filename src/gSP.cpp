@@ -1825,6 +1825,8 @@ void gSPSetSpriteTile(const uObjSprite *_pObjSprite)
 	gDPSetTile( _pObjSprite->imageFmt, _pObjSprite->imageSiz, _pObjSprite->imageStride, _pObjSprite->imageAdrs, 0, _pObjSprite->imagePal, G_TX_CLAMP, G_TX_CLAMP, 0, 0, 0, 0 );
 	gDPSetTileSize( 0, 0, 0, (w - 1) << 2, (h - 1) << 2 );
 	gSPTexture( 1.0f, 1.0f, 0, 0, TRUE );
+	gSP.textureTile[0]->textureMode = TEXTUREMODE_NORMAL;
+	gSP.textureTile[1]->textureMode = TEXTUREMODE_NORMAL;
 }
 
 struct ObjData
