@@ -245,6 +245,9 @@
     <ClCompile Include="..\..\src\GLUniforms\UniformBlock.cpp">
       <Filter>Source Files\GLUniforms</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\convert.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\3DMath.h">

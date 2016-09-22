@@ -273,6 +273,7 @@
     <ClCompile Include="..\..\src\common\CommonAPIImpl_common.cpp" />
     <ClCompile Include="..\..\src\common\GLFunctions.cpp" />
     <ClCompile Include="..\..\src\Config.cpp" />
+    <ClCompile Include="..\..\src\convert.cpp" />
     <ClCompile Include="..\..\src\CRC.cpp" />
     <ClCompile Include="..\..\src\DepthBuffer.cpp" />
     <ClCompile Include="..\..\src\DepthBufferRender\ClipPolygon.cpp" />

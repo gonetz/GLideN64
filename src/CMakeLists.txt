@@ -11,6 +11,7 @@ set(GLideN64_SOURCES
   Combiner.cpp
   CommonPluginAPI.cpp
   Config.cpp
+  convert.cpp
   CRC.cpp
   DepthBuffer.cpp
   F3D.cpp

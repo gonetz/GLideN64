@@ -27,6 +27,7 @@ MY_LOCAL_SRC_FILES :=                               \
     $(SRCDIR)/Combiner.cpp                          \
     $(SRCDIR)/CommonPluginAPI.cpp                   \
     $(SRCDIR)/Config.cpp                            \
+    $(SRCDIR)/convert.cpp                           \
     $(SRCDIR)/CRC.cpp                               \
     $(SRCDIR)/DepthBuffer.cpp                       \
     $(SRCDIR)/F3D.cpp                               \
@@ -53,7 +54,7 @@ MY_LOCAL_SRC_FILES :=                               \
     $(SRCDIR)/N64.cpp                               \
     $(SRCDIR)/OpenGL.cpp                            \
     $(SRCDIR)/PostProcessor.cpp                     \
-    $(SRCDIR)/SoftwareRender.cpp                     \
+    $(SRCDIR)/SoftwareRender.cpp                    \
     $(SRCDIR)/RDP.cpp                               \
     $(SRCDIR)/RSP.cpp                               \
     $(SRCDIR)/S2DEX2.cpp                            \
