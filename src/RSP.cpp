@@ -216,7 +216,7 @@ void RSP_ProcessDList()
 		}
 	}
 
-	if (config.frameBufferEmulation.copyDepthToRDRAM == Config::cdCopyFromVRam) {
+	if (config.frameBufferEmulation.copyDepthToRDRAM != Config::cdDisable) {
 		if ((config.generalEmulation.hacks & hack_rectDepthBufferCopyCBFD) != 0) {
 			; // do nothing
 		} else if ((config.generalEmulation.hacks & hack_rectDepthBufferCopyPD) != 0) {
