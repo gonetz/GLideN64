@@ -204,10 +204,6 @@ private:
 		std::vector<SPVertex> dmaVertices;
 		GLubyte elements[ELEMBUFF_SIZE];
 		int num;
-		u32 indexmap[INDEXMAP_SIZE];
-		u32 indexmapinv[VERTBUFF_SIZE];
-		u32 indexmap_prev;
-		u32 indexmap_nomap;
 	} triangles;
 
 	struct GLVertex
