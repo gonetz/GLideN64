@@ -135,6 +135,7 @@ public:
 						  GLint _dstX0, GLint _dstY0, GLint _dstX1, GLint _dstY1,
 						  GLuint _dstWidth, GLuint _dstHeight, GLenum _filter);
 	void drawText(const char *_pText, float x, float y);
+	void drawOSD();
 	void clearDepthBuffer(u32 _ulx, u32 _uly, u32 _lrx, u32 _lry);
 	void clearColorBuffer( float * _pColor );
 
@@ -198,6 +199,9 @@ private:
 	void _prepareDrawTriangle(bool _dma);
 	bool _canDraw() const;
 	void _drawThickLine(int _v0, int _v1, float _width);
+
+	void _getTextSize(const char *_pText, float & _w, float & _h) const;
+	void _drawOSD(const char *_pText, float _x, float & _y);
 
 	struct {
 		SPVertex vertices[VERTBUFF_SIZE];

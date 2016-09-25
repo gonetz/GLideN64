@@ -170,6 +170,18 @@ bool Config_SetDefault()
 	res = ConfigSetDefaultFloat(g_configVideoGliden64, "GammaCorrectionLevel", config.gammaCorrection.level, "Gamma correction level.");
 	assert(res == M64ERR_SUCCESS);
 
+	//#On screen display settings
+	res = ConfigSetDefaultBool(g_configVideoGliden64, "ShowFPS", config.onScreenDisplay.fps, "Show FPS counter.");
+	assert(res == M64ERR_SUCCESS);
+	res = ConfigSetDefaultBool(g_configVideoGliden64, "ShowVIS", config.onScreenDisplay.vis, "Show VI/S counter.");
+	assert(res == M64ERR_SUCCESS);
+	res = ConfigSetDefaultBool(g_configVideoGliden64, "ShowPercent", config.onScreenDisplay.percent, "Show percent counter.");
+	assert(res == M64ERR_SUCCESS);
+	res = ConfigSetDefaultInt(g_configVideoGliden64, "CountersHPos", config.onScreenDisplay.horisontalPos, "Counters horisontal position (0=left, 1=right)");
+	assert(res == M64ERR_SUCCESS);
+	res = ConfigSetDefaultInt(g_configVideoGliden64, "CountersVPos", config.onScreenDisplay.verticalPos, "Counters vertical position (0=bottom, 1=top)");
+	assert(res == M64ERR_SUCCESS);
+
 	return ConfigSaveSection("Video-GLideN64") == M64ERR_SUCCESS;
 }
 
@@ -286,6 +298,13 @@ void Config_LoadConfig()
 	//#Gamma correction settings
 	config.gammaCorrection.force = ConfigGetParamBool(g_configVideoGliden64, "ForceGammaCorrection");
 	config.gammaCorrection.level = ConfigGetParamFloat(g_configVideoGliden64, "GammaCorrectionLevel");
+
+	//#On screen display settings
+	config.onScreenDisplay.fps = ConfigGetParamBool(g_configVideoGliden64, "ShowFPS");
+	config.onScreenDisplay.vis = ConfigGetParamBool(g_configVideoGliden64, "ShowVIS");
+	config.onScreenDisplay.percent = ConfigGetParamBool(g_configVideoGliden64, "ShowPercent");
+	config.onScreenDisplay.horisontalPos = ConfigGetParamInt(g_configVideoGliden64, "CountersHPos");
+	config.onScreenDisplay.verticalPos = ConfigGetParamInt(g_configVideoGliden64, "CountersVPos");
 
 	config.generalEmulation.hacks = hacks;
 }

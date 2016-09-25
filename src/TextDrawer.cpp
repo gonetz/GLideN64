@@ -313,8 +313,10 @@ void TextDrawer::renderText(const char *_pText, float _x, float _y) const
 
 	/* Enable blending, necessary for our alpha texture */
 	glEnable(GL_BLEND);
-	glDisable(GL_CULL_FACE);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glDisable(GL_CULL_FACE);
+	glDisable(GL_DEPTH_TEST);
+	glDepthMask(GL_FALSE);
 
 	/* Set color */
 	glUniform4fv(m_uColor, 1, config.font.colorf);
@@ -323,6 +325,12 @@ void TextDrawer::renderText(const char *_pText, float _x, float _y) const
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, m_pAtlas->tex);
 	glUniform1i(m_uTex, 0);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
 
 	/* Set up the VBO for our vertex data */
 	glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
@@ -359,4 +367,25 @@ void TextDrawer::renderText(const char *_pText, float _x, float _y) const
 	glBufferData(GL_ARRAY_BUFFER, coords.size()*sizeof(point), coords.data(), GL_DYNAMIC_DRAW);
 	glDrawArrays(GL_TRIANGLES, 0, c);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
+}
+
+void TextDrawer::getTextSize(const char *_pText, float & _w, float & _h) const
+{
+	_w = _h = 0;
+	if (m_pAtlas == nullptr)
+		return;
+	OGLVideo & ogl = video();
+	const float sx = 2.0f / ogl.getWidth();
+	const float sy = 2.0f / ogl.getHeight();
+	float bw, bh;
+
+	for (const u8 *p = (const u8 *)_pText; *p; ++p) {
+		bw = m_pAtlas->c[*p].bw * sx;
+		bh = m_pAtlas->c[*p].bh * sy;
+
+		_w += m_pAtlas->c[*p].ax * sx;
+		_h += m_pAtlas->c[*p].ay * sy;
+	}
+	_w += bw;
+	_h += bh;
 }

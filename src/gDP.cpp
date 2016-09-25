@@ -20,6 +20,7 @@
 #include "VI.h"
 #include "Config.h"
 #include "Combiner.h"
+#include "Performance.h"
 
 using namespace std;
 
@@ -909,6 +910,8 @@ void gDPFullSync()
 		if (config.frameBufferEmulation.copyDepthToRDRAM != Config::cdDisable && !FBInfo::fbInfo.isSupported())
 			FrameBuffer_CopyDepthBuffer(gDP.colorImage.address);
 	}
+
+	perf.increaseFramesCount();
 
 	*REG.MI_INTR |= MI_INTR_DP;
 

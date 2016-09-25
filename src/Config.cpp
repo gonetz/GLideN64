@@ -111,4 +111,10 @@ void Config::resetToDefaults()
 
 	gammaCorrection.force = 0;
 	gammaCorrection.level = 2.0f;
+
+	onScreenDisplay.vis = 0;
+	onScreenDisplay.fps = 0;
+	onScreenDisplay.percent = 0;
+	onScreenDisplay.verticalPos = posBottom;
+	onScreenDisplay.horisontalPos = posLeft;
 }

@@ -36,6 +36,7 @@ set(GLideN64_SOURCES
   L3DEX.cpp
   N64.cpp
   OpenGL.cpp
+  Performance.cpp
   RDP.cpp
   RSP.cpp
   S2DEX2.cpp

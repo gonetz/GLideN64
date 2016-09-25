@@ -248,6 +248,9 @@
     <ClCompile Include="..\..\src\convert.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\Performance.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\3DMath.h">
@@ -437,6 +440,9 @@
       <Filter>Header Files\GLUniforms</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\inc\glext.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Performance.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

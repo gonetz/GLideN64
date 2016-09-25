@@ -7,6 +7,7 @@ class TextDrawer
 	void init();
 	void destroy();
 	void renderText(const char *_pText, float x, float y) const;
+	void getTextSize(const char *_pText, float & _w, float & _h) const;
 	static TextDrawer & get();
 
 private:

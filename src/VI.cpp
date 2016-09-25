@@ -11,6 +11,7 @@
 #include "DepthBuffer.h"
 #include "FrameBufferInfo.h"
 #include "Config.h"
+#include "Performance.h"
 #include "Debug.h"
 
 using namespace std;
@@ -96,6 +97,7 @@ void VI_UpdateScreen()
 	if (ConfigOpen)
 		return;
 
+	perf.increaseVICount();
 	OGLVideo & ogl = video();
 	if (ogl.changeWindow())
 		return;

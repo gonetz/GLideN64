@@ -53,6 +53,7 @@ MY_LOCAL_SRC_FILES :=                               \
     $(SRCDIR)/MupenPlusPluginAPI.cpp                \
     $(SRCDIR)/N64.cpp                               \
     $(SRCDIR)/OpenGL.cpp                            \
+    $(SRCDIR)/Performance.cpp                       \
     $(SRCDIR)/PostProcessor.cpp                     \
     $(SRCDIR)/SoftwareRender.cpp                    \
     $(SRCDIR)/RDP.cpp                               \

@@ -21,6 +21,7 @@
 #include "Config.h"
 #include "Log.h"
 #include "TextDrawer.h"
+#include "Performance.h"
 #include "PostProcessor.h"
 #include "ShaderUtils.h"
 #include "SoftwareRender.h"
@@ -169,6 +170,7 @@ void OGLVideo::restart()
 
 void OGLVideo::swapBuffers()
 {
+	m_render.drawOSD();
 	_swapBuffers();
 	gDP.otherMode.l = 0;
 	if ((config.generalEmulation.hacks & hack_doNotResetTLUTmode) == 0)
@@ -1944,6 +1946,72 @@ void OGLRender::drawText(const char *_pText, float x, float y)
 	TextDrawer::get().renderText(_pText, x, y);
 }
 
+void OGLRender::_getTextSize(const char *_pText, float & _w, float & _h) const
+{
+	TextDrawer::get().getTextSize(_pText, _w, _h);
+}
+
+void OGLRender::_drawOSD(const char *_pText, float _x, float & _y)
+{
+	float tW, tH;
+	_getTextSize(_pText, tW, tH);
+	if (config.onScreenDisplay.horisontalPos == config.posRight)
+		_x -= tW;
+	if (config.onScreenDisplay.verticalPos == config.posTop)
+		_y -= tH;
+	drawText(_pText, _x, _y);
+	if (config.onScreenDisplay.verticalPos == config.posTop)
+		_y -= tH * 0.5f;
+	else
+		_y += tH * 1.5f;
+}
+
+void OGLRender::drawOSD()
+{
+	if ((config.onScreenDisplay.fps | config.onScreenDisplay.vis | config.onScreenDisplay.percent) == 0)
+		return;
+
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+
+	OGLVideo & ogl = video();
+	const GLint X = (ogl.getScreenWidth() - ogl.getWidth()) / 2;
+	const GLint Y = ogl.getHeightOffset();
+	const GLint W = ogl.getWidth();
+	const GLint H = ogl.getHeight();
+	glViewport(X, Y, W, H);
+	glScissor(X, Y, W, H);
+	gSP.changed |= CHANGED_VIEWPORT;
+	gDP.changed |= CHANGED_SCISSOR;
+
+	const float hp = config.onScreenDisplay.horisontalPos == config.posLeft ? -1 : 1;
+	const float vp = config.onScreenDisplay.verticalPos == config.posBottom ? -1 : 1;
+
+	float hShift, vShift;
+	_getTextSize("0", hShift, vShift);
+	hShift *= 0.5f;
+	vShift *= 0.5f;
+	const float x = hp - hShift * hp;
+	float y = vp - vShift * vp;
+	char buf[16];
+
+	if (config.onScreenDisplay.fps) {
+		sprintf(buf, "%d FPS", int(perf.getFps()));
+		_drawOSD(buf, x, y);
+	}
+
+	if (config.onScreenDisplay.vis) {
+		sprintf(buf, "%d VI/S", int(perf.getVIs()));
+		_drawOSD(buf, x, y);
+	}
+
+	if (config.onScreenDisplay.percent) {
+		sprintf(buf, "%d %%", int(perf.getPercent()));
+		_drawOSD(buf, x, y);
+	}
+
+	frameBufferList().setCurrentDrawBuffer();
+}
+
 void OGLRender::clearDepthBuffer(u32 _ulx, u32 _uly, u32 _lrx, u32 _lry)
 {
 	if (!_canDraw())
@@ -2075,6 +2143,7 @@ void OGLRender::_initData()
 	TextDrawer::get().init();
 	TFH.init();
 	PostProcessor::get().init();
+	perf.reset();
 	FBInfo::fbInfo.reset();
 	m_texrectDrawer.init();
 	m_renderState = rsNone;

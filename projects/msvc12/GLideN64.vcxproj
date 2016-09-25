@@ -322,6 +322,7 @@
     <ClCompile Include="..\..\src\N64.cpp" />
     <ClCompile Include="..\..\src\OGL3X\GLSLCombiner_ogl3x.cpp" />
     <ClCompile Include="..\..\src\OpenGL.cpp" />
+    <ClCompile Include="..\..\src\Performance.cpp" />
     <ClCompile Include="..\..\src\PostProcessor.cpp" />
     <ClCompile Include="..\..\src\RDP.CPP" />
     <ClCompile Include="..\..\src\RSP.cpp" />
@@ -421,6 +422,7 @@
     <ClInclude Include="..\..\src\N64.h" />
     <ClInclude Include="..\..\src\OGL3X\Shaders_ogl3x.h" />
     <ClInclude Include="..\..\src\OpenGL.h" />
+    <ClInclude Include="..\..\src\Performance.h" />
     <ClInclude Include="..\..\src\PluginAPI.h" />
     <ClInclude Include="..\..\src\PostProcessor.h" />
     <ClInclude Include="..\..\src\RDP.h" />
