@@ -387,7 +387,7 @@ void DepthBufferList::saveBuffer(u32 _address)
 		pDepthBuffer = nullptr;
 	}
 
-	if (pDepthBuffer == nullptr) {
+	if (m_pCurrent == nullptr) {
 		m_list.emplace_front();
 		DepthBuffer & buffer = m_list.front();
 
@@ -396,13 +396,10 @@ void DepthBufferList::saveBuffer(u32 _address)
 
 		buffer.initDepthBufferTexture(pFrameBuffer);
 
-		pDepthBuffer = &buffer;
+		m_pCurrent = &buffer;
 	}
 
-	if (pDepthBuffer->m_address == gDP.depthImageAddress) {
-		m_pCurrent = pDepthBuffer;
-		frameBufferList().attachDepthBuffer();
-	}
+	frameBufferList().attachDepthBuffer();
 
 #ifdef DEBUG
 		DebugMsg( DEBUG_HIGH | DEBUG_HANDLED, "DepthBuffer_SetBuffer( 0x%08X ); color buffer is 0x%08X\n",
