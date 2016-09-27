@@ -169,9 +169,16 @@ void renderTriangles(const SPVertex * _pVertices, const GLubyte * _pElements, u3
 	SPVertex vdata[6];
 	for (u32 i = 0; i < _numElements; i += 3) {
 		u32 orbits = 0;
-		for (u32 j = 0; j < 3; ++j) {
-			vsrc[j] = &_pVertices[_pElements[i + j]];
-			orbits |= vsrc[j]->clip;
+		if (_pElements != nullptr) {
+			for (u32 j = 0; j < 3; ++j) {
+				vsrc[j] = &_pVertices[_pElements[i + j]];
+				orbits |= vsrc[j]->clip;
+			}
+		} else {
+			for (u32 j = 0; j < 3; ++j) {
+				vsrc[j] = &_pVertices[i + j];
+				orbits |= vsrc[j]->clip;
+			}
 		}
 		vsrc[3] = vsrc[0];
 

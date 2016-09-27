@@ -1327,6 +1327,15 @@ void OGLRender::drawDMATriangles(u32 _numVtx)
 		return;
 	_prepareDrawTriangle(true);
 	glDrawArrays(GL_TRIANGLES, 0, _numVtx);
+
+	if (config.frameBufferEmulation.enable != 0 &&
+		config.frameBufferEmulation.copyDepthToRDRAM == Config::cdSoftwareRender &&
+		gDP.otherMode.depthUpdate != 0) {
+		renderTriangles(triangles.dmaVertices.data(), nullptr, _numVtx);
+		FrameBuffer * pCurrentDepthBuffer = frameBufferList().findBuffer(gDP.depthImageAddress);
+		if (pCurrentDepthBuffer != nullptr)
+			pCurrentDepthBuffer->m_cleared = false;
+	}
 }
 
 void OGLRender::drawTriangles()
