@@ -28,7 +28,7 @@
 using namespace std;
 
 FrameBuffer::FrameBuffer() :
-	m_startAddress(0), m_endAddress(0), m_size(0), m_width(0), m_height(0), m_fillcolor(0), m_validityChecked(0),
+	m_startAddress(0), m_endAddress(0), m_size(0), m_width(0), m_height(0), m_validityChecked(0),
 	m_scaleX(0), m_scaleY(0),
 	m_copiedToRdram(false), m_fingerprint(false), m_cleared(false), m_changed(false), m_cfb(false),
 	m_isDepthBuffer(false), m_isPauseScreen(false), m_isOBScreen(false), m_needHeightCorrection(false),
@@ -40,30 +40,6 @@ FrameBuffer::FrameBuffer() :
 	m_pTexture = textureCache().addFrameBufferTexture();
 	glGenFramebuffers(1, &m_FBO);
 }
-
-FrameBuffer::FrameBuffer(FrameBuffer && _other) :
-	m_startAddress(_other.m_startAddress), m_endAddress(_other.m_endAddress),
-	m_size(_other.m_size), m_width(_other.m_width), m_height(_other.m_height), m_fillcolor(_other.m_fillcolor),
-	m_validityChecked(_other.m_validityChecked), m_scaleX(_other.m_scaleX), m_scaleY(_other.m_scaleY), m_copiedToRdram(_other.m_copiedToRdram),
-	m_fingerprint(_other.m_fingerprint), m_cleared(_other.m_cleared), m_changed(_other.m_changed),
-	m_cfb(_other.m_cfb), m_isDepthBuffer(_other.m_isDepthBuffer), m_isPauseScreen(_other.m_isPauseScreen),
-	m_isOBScreen(_other.m_isOBScreen), m_needHeightCorrection(_other.m_needHeightCorrection),
-	m_loadTileOrigin(_other.m_loadTileOrigin), m_loadType(_other.m_loadType),
-	m_FBO(_other.m_FBO), m_pTexture(_other.m_pTexture), m_pDepthBuffer(_other.m_pDepthBuffer),
-	m_resolveFBO(_other.m_resolveFBO), m_pResolveTexture(_other.m_pResolveTexture), m_resolved(_other.m_resolved),
-	m_SubFBO(_other.m_SubFBO), m_pSubTexture(_other.m_pSubTexture),
-	m_RdramCopy(_other.m_RdramCopy)
-{
-	_other.m_FBO = 0;
-	_other.m_pTexture = nullptr;
-	_other.m_pDepthBuffer = nullptr;
-	_other.m_pResolveTexture = nullptr;
-	_other.m_resolveFBO = 0;
-	_other.m_RdramCopy.clear();
-	_other.m_SubFBO = 0;
-	_other.m_pSubTexture = nullptr;
-}
-
 
 FrameBuffer::~FrameBuffer()
 {
@@ -153,7 +129,6 @@ void FrameBuffer::init(u32 _address, u32 _endAddress, u16 _format, u16 _size, u1
 		m_scaleX = ogl.getScaleX();
 		m_scaleY = ogl.getScaleY();
 	}
-	m_fillcolor = 0;
 	m_cfb = _cfb;
 	m_needHeightCorrection = _width != VI.width && _width != *REG.VI_WIDTH;
 	m_cleared = false;
@@ -223,6 +198,16 @@ u32 cutHeight(u32 _address, u32 _height, u32 _stride)
 	return _cutHeight(_address, _height, _stride);
 }
 
+void FrameBuffer::setBufferClearParams(u32 _fillcolor, s32 _ulx, s32 _uly, s32 _lrx, s32 _lry)
+{
+	m_cleared = true;
+	m_clearParams.fillcolor = _fillcolor;
+	m_clearParams.ulx = _ulx;
+	m_clearParams.lrx = _lrx;
+	m_clearParams.uly = _uly;
+	m_clearParams.lry = _lry;
+}
+
 void FrameBuffer::copyRdram()
 {
 	const u32 stride = m_width << m_size >> 1;
@@ -263,13 +248,17 @@ bool FrameBuffer::isValid() const
 	const u32 * const pData = (const u32*)RDRAM;
 
 	if (m_cleared) {
-		const u32 color = m_fillcolor & 0xFFFEFFFE;
-		const u32 start = m_startAddress >> 2;
-		const u32 end = m_endAddress >> 2;
+		const u32 testColor = m_clearParams.fillcolor & 0xFFFEFFFE;
+		const u32 ci_width_in_dwords = m_width >> (3 - m_size);
+		const u32 start = (m_startAddress >> 2) + m_clearParams.uly * ci_width_in_dwords;
+		const u32 * dst = pData + start;
 		u32 wrongPixels = 0;
-		for (u32 i = start; i < end; ++i) {
-			if ((pData[i] & 0xFFFEFFFE) != color)
-				++wrongPixels;
+		for (u32 y = m_clearParams.uly; y < m_clearParams.lry; ++y) {
+			for (u32 x = m_clearParams.ulx; x < m_clearParams.lrx; ++x) {
+				if ((dst[x] & 0xFFFEFFFE) != testColor)
+					++wrongPixels;
+			}
+			dst += ci_width_in_dwords;
 		}
 		return wrongPixels < (m_endAddress - m_startAddress) / 400; // threshold level 1% of dwords
 	} else if (m_fingerprint) {
@@ -954,6 +943,35 @@ void FrameBufferList::renderBuffer(u32 _address)
 	}
 	ogl.swapBuffers();
 	gDP.changed |= CHANGED_SCISSOR;
+}
+
+void FrameBufferList::fillRDRAM(s32 ulx, s32 uly, s32 lrx, s32 lry)
+{
+	if (m_pCurrent == nullptr)
+		return;
+
+	ulx = max(0, ulx);
+	lrx = min(gDP.colorImage.width, (u32)lrx);
+	uly = max(0, uly);
+	lry = min(max((float)lry, gDP.scissor.uly), gDP.scissor.lry);
+
+	const u32 stride = gDP.colorImage.width << gDP.colorImage.size >> 1;
+	const u32 lowerBound = gDP.colorImage.address + lry*stride;
+	if (lowerBound > RDRAMSize)
+		lry -= (lowerBound - RDRAMSize) / stride;
+	u32 ci_width_in_dwords = gDP.colorImage.width >> (3 - gDP.colorImage.size);
+	ulx >>= (3 - gDP.colorImage.size);
+	lrx >>= (3 - gDP.colorImage.size);
+	u32 * dst = (u32*)(RDRAM + gDP.colorImage.address);
+	dst += uly * ci_width_in_dwords;
+	for (u32 y = uly; y < lry; ++y) {
+		for (u32 x = ulx; x < lrx; ++x) {
+			dst[x] = gDP.fillColor.color;
+		}
+		dst += ci_width_in_dwords;
+	}
+
+	m_pCurrent->setBufferClearParams(gDP.fillColor.color, ulx, uly, lrx, lry);
 }
 
 void FrameBuffer_ActivateBufferTexture(u32 t, FrameBuffer *pBuffer)

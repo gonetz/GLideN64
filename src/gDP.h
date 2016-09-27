@@ -289,7 +289,5 @@ void gDPTriShadeZ( u32 w0, u32 w1 );
 void gDPTriTxtrZ( u32 w0, u32 w1 );
 void gDPTriShadeTxtrZ( u32 w0, u32 w1 );
 
-void gDPFillRDRAM( u32 address, s32 ulx, s32 uly, s32 lrx, s32 lry, u32 width, u32 size,  u32 color, bool scissor=true );
-
 #endif
 

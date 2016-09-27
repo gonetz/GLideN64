@@ -14,20 +14,20 @@ const int fingerprint[4] = { 2, 6, 4, 3 };
 struct FrameBuffer
 {
 	FrameBuffer();
-	FrameBuffer(FrameBuffer && _other);
 	~FrameBuffer();
 	void init(u32 _address, u32 _endAddress, u16 _format, u16 _size, u16 _width, u16 _height, bool _cfb);
 	void reinit(u16 _height);
 	void resolveMultisampledTexture(bool _bForce = false);
 	CachedTexture * getTexture(u32 _t);
 	CachedTexture * getTextureBG(u32 _t);
+	void setBufferClearParams(u32 _fillcolor, s32 _ulx, s32 _uly, s32 _lrx, s32 _lry);
 	void copyRdram();
 	bool isValid() const;
 	bool _isMarioTennisScoreboard() const;
 	bool isAuxiliary() const;
 
 	u32 m_startAddress, m_endAddress;
-	u32 m_size, m_width, m_height, m_fillcolor;
+	u32 m_size, m_width, m_height;
 	float m_scaleX, m_scaleY;
 	bool m_copiedToRdram;
 	bool m_fingerprint;
@@ -60,6 +60,11 @@ struct FrameBuffer
 	std::vector<u8> m_RdramCopy;
 
 private:
+	struct {
+		u32 fillcolor;
+		s32 ulx, uly, lrx, lry;
+	} m_clearParams;
+
 	void _initTexture(u16 _width, u16 _height, u16 _format, u16 _size, CachedTexture *_pTexture);
 	void _setAndAttachTexture(u16 _size, CachedTexture *_pTexture);
 	bool _initSubTexture(u32 _t);
@@ -87,6 +92,7 @@ public:
 	void correctHeight();
 	void clearBuffersChanged();
 	void setCurrentDrawBuffer() const;
+	void fillRDRAM(s32 ulx, s32 uly, s32 lrx, s32 lry);
 
 	FrameBuffer * getCopyBuffer() const { return m_pCopy; }
 	void setCopyBuffer(FrameBuffer * _pBuffer) { m_pCopy = _pBuffer; }

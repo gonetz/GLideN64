@@ -725,35 +725,6 @@ void gDPSetScissor( u32 mode, f32 ulx, f32 uly, f32 lrx, f32 lry )
 #endif
 }
 
-void gDPFillRDRAM(u32 address, s32 ulx, s32 uly, s32 lrx, s32 lry, u32 width, u32 size, u32 color, bool scissor)
-{
-	FrameBuffer * pCurrentBuffer = frameBufferList().getCurrent();
-	if (pCurrentBuffer != nullptr) {
-		pCurrentBuffer->m_cleared = true;
-		pCurrentBuffer->m_fillcolor = color;
-	}
-	if (scissor) {
-		ulx = min(max((float)ulx, gDP.scissor.ulx), gDP.scissor.lrx);
-		lrx = min(max((float)lrx, gDP.scissor.ulx), gDP.scissor.lrx);
-		uly = min(max((float)uly, gDP.scissor.uly), gDP.scissor.lry);
-		lry = min(max((float)lry, gDP.scissor.uly), gDP.scissor.lry);
-	}
-	const u32 stride = width << size >> 1;
-	const u32 lowerBound = address + lry*stride;
-	if (lowerBound > RDRAMSize)
-		lry -= (lowerBound - RDRAMSize) / stride;
-	u32 ci_width_in_dwords = width >> (3 - size);
-	ulx >>= (3 - size);
-	lrx >>= (3 - size);
-	u32 * dst = (u32*)(RDRAM + address);
-	dst += uly * ci_width_in_dwords;
-	for (u32 y = uly; y < lry; ++y) {
-		for (u32 x = ulx; x < lrx; ++x)
-			dst[x] = color;
-		dst += ci_width_in_dwords;
-	}
-}
-
 void gDPFillRectangle( s32 ulx, s32 uly, s32 lrx, s32 lry )
 {
 	OGLRender & render = video().getRender();
@@ -768,7 +739,7 @@ void gDPFillRectangle( s32 ulx, s32 uly, s32 lrx, s32 lry )
 		// Game may use depth texture as auxilary color texture. Example: Mario Tennis
 		// If color is not depth clear color, that is most likely the case
 		if (gDP.fillColor.color == DepthClearColor) {
-			gDPFillRDRAM(gDP.colorImage.address, ulx, uly, lrx, lry, gDP.colorImage.width, gDP.colorImage.size, gDP.fillColor.color);
+			frameBufferList().fillRDRAM(ulx, uly, lrx, lry);
 			if (config.generalEmulation.enableFragmentDepthWrite == 0 ||
 				(ulx == 0 && uly == 0 && lrx == gDP.scissor.lrx && lry == gDP.scissor.lry)) {
 				render.clearDepthBuffer(ulx, uly, lrx, lry);
@@ -778,7 +749,7 @@ void gDPFillRectangle( s32 ulx, s32 uly, s32 lrx, s32 lry )
 		}
 	} else if (gDP.fillColor.color == DepthClearColor && gDP.otherMode.cycleType == G_CYC_FILL) {
 		depthBufferList().saveBuffer(gDP.colorImage.address);
-		gDPFillRDRAM(gDP.colorImage.address, ulx, uly, lrx, lry, gDP.colorImage.width, gDP.colorImage.size, gDP.fillColor.color);
+		frameBufferList().fillRDRAM(ulx, uly, lrx, lry);
 		if (config.generalEmulation.enableFragmentDepthWrite == 0 ||
 			(ulx == 0 && uly == 0 && lrx == gDP.scissor.lrx && lry == gDP.scissor.lry)) {
 			render.clearDepthBuffer(ulx, uly, lrx, lry);
@@ -794,7 +765,7 @@ void gDPFillRectangle( s32 ulx, s32 uly, s32 lrx, s32 lry )
 
 		if (gDP.otherMode.cycleType == G_CYC_FILL) {
 			if ((ulx == 0) && (uly == 0) && (lrx == gDP.scissor.lrx) && (lry == gDP.scissor.lry)) {
-				gDPFillRDRAM(gDP.colorImage.address, ulx, uly, lrx, lry, gDP.colorImage.width, gDP.colorImage.size, gDP.fillColor.color);
+				frameBufferList().fillRDRAM(ulx, uly, lrx, lry);
 				render.clearColorBuffer(fillColor);
 			} else
 				render.drawRect(ulx, uly, lrx, lry, fillColor);
