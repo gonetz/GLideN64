@@ -231,12 +231,12 @@ void RDP_LoadSync( u32 w0, u32 w1 )
 }
 
 static
-void _getTexRectParams(u32 & w2, u32 & w3)
+bool _getTexRectParams(u32 & w2, u32 & w3)
 {
 	if (RSP.bLLE) {
 		w2 = RDP.w2;
 		w3 = RDP.w3;
-		return;
+		return true;
 	}
 
 	enum {
@@ -267,11 +267,12 @@ void _getTexRectParams(u32 & w2, u32 & w3)
 		RSP.PC[RSP.PCi] += 8;
 		break;
 	case gdpTexRect:
-		if ((config.generalEmulation.hacks & hack_WinBack) == 0) {
-			w2 = *(u32*)&RDRAM[RSP.PC[RSP.PCi] + 0];
-			w3 = *(u32*)&RDRAM[RSP.PC[RSP.PCi] + 4];
-		} else
-			w2 = w3 = 0;
+		if ((config.generalEmulation.hacks & hack_WinBack) != 0) {
+			RSP.PC[RSP.PCi] += 8;
+			return false;
+		}
+		w2 = *(u32*)&RDRAM[RSP.PC[RSP.PCi] + 0];
+		w3 = *(u32*)&RDRAM[RSP.PC[RSP.PCi] + 4];
 		RSP.PC[RSP.PCi] += 8;
 		break;
 	case halfTexRect:
@@ -282,14 +283,14 @@ void _getTexRectParams(u32 & w2, u32 & w3)
 	default:
 		assert(false && "Unknown texrect mode");
 	}
+	return true;
 }
 
 static
 void _TexRect( u32 w0, u32 w1, bool flip )
 {
 	u32 w2, w3;
-	_getTexRectParams(w2, w3);
-	if (w3 == 0)
+	if (!_getTexRectParams(w2, w3))
 		return;
 	const u32 ulx = _SHIFTR(w1, 12, 12);
 	const u32 uly = _SHIFTR(w1, 0, 12);
