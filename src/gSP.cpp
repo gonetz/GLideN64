@@ -1233,9 +1233,9 @@ void gSPBranchList( u32 dl )
 	RSP.nextCmd = _SHIFTR( *(u32*)&RDRAM[address], 24, 8 );
 }
 
-void gSPBranchLessZ( u32 branchdl, u32 vtx, f32 zval )
+void gSPBranchLessZ( u32 branchdl, u32 vtx, u32 zval )
 {
-	u32 address = RSP_SegmentToPhysical( branchdl );
+	const u32 address = RSP_SegmentToPhysical( branchdl );
 
 	if ((address + 8) > RDRAMSize) {
 #ifdef DEBUG
@@ -1247,8 +1247,8 @@ void gSPBranchLessZ( u32 branchdl, u32 vtx, f32 zval )
 	}
 
 	SPVertex & v = video().getRender().getVertex(vtx);
-	const float zTest = v.z / v.w;
-	if (zTest > 1.0f || zTest <= zval || !GBI.isBranchLessZ())
+	const u32 zTest = u32((v.z / v.w) * 1023.0f);
+	if (zTest > 0x03FF || zTest <= zval || !GBI.isBranchLessZ())
 		RSP.PC[RSP.PCi] = address;
 
 #ifdef DEBUG

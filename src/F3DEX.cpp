@@ -42,7 +42,7 @@ void F3DEX_Quad( u32 w0, u32 w1 )
 
 void F3DEX_Branch_Z( u32 w0, u32 w1 )
 {
-	gSPBranchLessZ( gDP.half_1, _SHIFTR( w0, 1, 11 ), (s32)w1 / 65535.0f / 1023.0f );
+	gSPBranchLessZ(gDP.half_1, _SHIFTR(w0, 1, 11), _SHIFTR(w1, 16, 16));
 }
 
 void F3DEX_Load_uCode( u32 w0, u32 w1 )
