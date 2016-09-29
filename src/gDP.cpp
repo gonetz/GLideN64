@@ -944,6 +944,7 @@ void gDPNoOp()
 
 void gDPLLETriangle(u32 _w1, u32 _w2, int _shade, int _texture, int _zbuffer, u32 * _pRdpCmd)
 {
+	gSP.texture.level = _SHIFTR(_w1, 19, 3);
 	const u32 tile = _SHIFTR(_w1, 16, 3);
 	gDPTile *textureTileOrg[2];
 	textureTileOrg[0] = gSP.textureTile[0];
