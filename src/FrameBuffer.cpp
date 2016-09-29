@@ -347,6 +347,9 @@ bool FrameBuffer::_initSubTexture(u32 _t)
 
 CachedTexture * FrameBuffer::_getSubTexture(u32 _t)
 {
+#ifdef GLES2
+	return m_pTexture;
+#else
 	if (!_initSubTexture(_t))
 		return m_pTexture;
 	GLint x0 = (GLint)(m_pTexture->offsetS * m_scaleX);
@@ -360,37 +363,45 @@ CachedTexture * FrameBuffer::_getSubTexture(u32 _t)
 
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, m_FBO);
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_SubFBO);
-	video().getRender().copyTexturedRect(x0, y0, x0 + copyWidth, y0 + copyHeight,
-										 m_pTexture->realWidth,m_pTexture->realHeight, m_pTexture->glName,
-										 0, 0, copyWidth, copyHeight,
-										 m_pSubTexture->realWidth, m_pSubTexture->realHeight, GL_NEAREST);
+	glDisable(GL_SCISSOR_TEST);
+	glBlitFramebuffer(
+		x0, y0, x0 + copyWidth, y0 + copyHeight,
+		0, 0, copyWidth, copyHeight,
+		GL_COLOR_BUFFER_BIT, GL_NEAREST
+		);
+	glEnable(GL_SCISSOR_TEST);
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
 	frameBufferList().setCurrentDrawBuffer();
 
 	return m_pSubTexture;
+#endif
 }
 
 CachedTexture * FrameBuffer::getTexture(u32 _t)
 {
+	CachedTexture *pTexture = m_pTexture;
+
 	const bool getDepthTexture = m_isDepthBuffer &&
 								 gDP.colorImage.address == gDP.depthImageAddress &&
 								 m_pDepthBuffer != nullptr &&
 								 (config.generalEmulation.hacks & hack_ZeldaMM) == 0;
-	CachedTexture *pTexture = getDepthTexture ? m_pDepthBuffer->m_pDepthBufferTexture : m_pTexture;
 
-	const u32 shift = (gSP.textureTile[_t]->imageAddress - m_startAddress) >> (m_size - 1);
-	const u32 factor = m_width;
-	if (m_loadType == LOADTYPE_TILE) {
-		pTexture->offsetS = (float)(m_loadTileOrigin.uls + (shift % factor));
-		pTexture->offsetT = (float)(m_height - (m_loadTileOrigin.ult + shift / factor));
-	} else {
-		pTexture->offsetS = (float)(shift % factor);
-		pTexture->offsetT = (float)(m_height - shift / factor);
-	}
-
-//	if (gSP.textureTile[_t]->loadType == LOADTYPE_TILE && pTexture->size > 1)
-	if (!getDepthTexture && (gSP.textureTile[_t]->clamps == 0 || gSP.textureTile[_t]->clampt == 0))
+	if (getDepthTexture)
+		pTexture = m_pDepthBuffer->m_pDepthBufferTexture;
+	else if (gSP.textureTile[_t]->clamps == 0 || gSP.textureTile[_t]->clampt == 0)
 		pTexture = _getSubTexture(_t);
+
+	if (pTexture != m_pSubTexture) {
+		const u32 shift = (gSP.textureTile[_t]->imageAddress - m_startAddress) >> (m_size - 1);
+		const u32 factor = m_width;
+		if (m_loadType == LOADTYPE_TILE) {
+			pTexture->offsetS = (float)(m_loadTileOrigin.uls + (shift % factor));
+			pTexture->offsetT = (float)(m_height - (m_loadTileOrigin.ult + shift / factor));
+		} else {
+			pTexture->offsetS = (float)(shift % factor);
+			pTexture->offsetT = (float)(m_height - shift / factor);
+		}
+	}
 
 	pTexture->scaleS = m_scaleX / (float)pTexture->realWidth;
 	pTexture->scaleT = m_scaleY / (float)pTexture->realHeight;
