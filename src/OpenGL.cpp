@@ -2213,7 +2213,7 @@ void OGLRender::copyTexturedRect(GLint _srcX0, GLint _srcY0, GLint _srcX1, GLint
 	glEnable(GL_SCISSOR_TEST);
 
 	gSP.changed |= CHANGED_GEOMETRYMODE | CHANGED_VIEWPORT;
-	gDP.changed |= CHANGED_RENDERMODE | CHANGED_TEXTURE;
+	gDP.changed |= CHANGED_RENDERMODE | CHANGED_TILE | CHANGED_COMBINE;
 	m_renderState = rsNone;
 }
 #else
