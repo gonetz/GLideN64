@@ -141,7 +141,7 @@ u32 RGBA16ToABGR32(u16 col, bool _bCFB)
 	if (_bCFB)
 		a = 0xFF;
 	else
-		a = (col & 1) > 0 && (r | g | b) > 0 ? 0xFF : 0U;
+		a = (col & 1) > 0 ? 0xFF : 0U;
 	return ((a << 24) | (b << 16) | (g << 8) | r);
 }
 
@@ -155,7 +155,7 @@ u32 RGBA32ToABGR32(u32 col, bool _bCFB)
 	if (_bCFB)
 		a = 0xFF;
 	else
-		a = (r | g | b) > 0 ? col & 0xFF : 0U;
+		a = col & 0xFF;
 	return ((a << 24) | (b << 16) | (g << 8) | r);
 }
 
