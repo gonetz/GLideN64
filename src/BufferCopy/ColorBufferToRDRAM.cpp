@@ -190,7 +190,7 @@ u32 ColorBufferToRDRAM::_RGBAtoRGBA32(u32 _c) {
 void ColorBufferToRDRAM::_copy(u32 _startAddress, u32 _endAddress, bool _sync)
 {
 	const u32 stride = m_pCurFrameBuffer->m_width << m_pCurFrameBuffer->m_size >> 1;
-	const u32 max_height = cutHeight(_startAddress, m_pCurFrameBuffer->m_height, stride);
+	const u32 max_height = std::min(480U, cutHeight(_startAddress, m_pCurFrameBuffer->m_height, stride));
 
 	u32 numPixels = (_endAddress - _startAddress) >> (m_pCurFrameBuffer->m_size - 1);
 	if (numPixels / m_pCurFrameBuffer->m_width > max_height) {
