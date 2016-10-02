@@ -492,7 +492,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="AboutDialog.ui" line="453"/>
         <source>Credits</source>
-        <translation>Kredits</translation>
+        <translation>Danksagung</translation>
     </message>
 </context>
 <context>
@@ -535,7 +535,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="configDialog.ui" line="83"/>
         <source>Refresh rate:</source>
-        <translation>Frequenz:</translation>
+        <translation>Aktualisierungsrate:</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="93"/>
@@ -545,21 +545,21 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="configDialog.ui" line="112"/>
         <source>W:</source>
-        <translation type="unfinished"></translation>
+        <translation>W:</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="132"/>
         <source>H:</source>
-        <translation type="unfinished"></translation>
+        <translation>H:</translation>
     </message>
     <message>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Aspect ratio of the output.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Most N64 games use 4:3 aspect ratio, but some support widescreen too.You may select appropriate aspect here and set widescreen mode in game settings.In &lt;span style=&quot; font-weight:600;&quot;&gt;Stretch&lt;/span&gt; mode the output will be stretched to the entire screen, other modes may add black borders if necessary.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="vanished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Seitenverhältniss:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Die meisten N64-Spiele nutzen ein 4:3 Seitenverhältniss aber manche unterstützen auch Widescreen. Stelle dafür diese Option hier &amp; im Spiel ein. Im Strecken-Modus wird das Bild der Fenster / Bildschirmgröße angepasst, andere Modi können schwarze Balken verursachen.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <translation type="vanished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Seitenverhältnis der Ausgabe:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Die meisten N64-Spiele nutzen ein 4:3 Seitenverhältnis aber manche unterstützen auch Widescreen. Stelle dafür diese Option hier &amp; im Spiel ein. Im Strecken-Modus wird das Bild der Fenster- / Bildschirmgröße angepasst. Andere Modi können schwarze Balken verursachen.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="161"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Aspect&lt;span style=&quot; vertical-align:super;&quot;&gt;*&lt;/span&gt;:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Seitenverhältniss:*&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Seitenverhältnis:*&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="171"/>
@@ -615,14 +615,14 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="configDialog.ui" line="397"/>
         <source>Anisotropic filtering:</source>
-        <translation>Anisotropische Filterung:</translation>
+        <translation>Anisotrope Filterung:</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="457"/>
         <location filename="configDialog.ui" line="467"/>
         <location filename="configDialog.ui" line="480"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Bilinear filtering:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;[standard] - standard texture filtering provided by PC hardware.&lt;/p&gt;&lt;p&gt;[N64 3point]- emulation of 3 point texture filtering used by the original hardware. Provides less smooth but more authentic look.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Bilineare Textur-Filterung:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;[Standard] Standard Texture-Filterung durch PC-Hardware.&lt;/p&gt;&lt;p&gt;[N64 3-Punkt] Emulation von 3-Punkt-Textur-Filterung, welche auch von der Original-Hardware genutzt wurde. Läuft weniger flüssig aber authentischer.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Bilineare Textur-Filterung:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;[Standard] Standard Texture-Filterung durch PC-Hardware.&lt;/p&gt;&lt;p&gt;[N64 3-Punkt] Emulation von 3-Punkt-Textur-Filterung, welche auch von der Original-Hardware genutzt wurde. Läuft langsamer aber authentischer.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="460"/>
@@ -708,7 +708,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="configDialog.ui" line="707"/>
         <source>Emulate noise</source>
-        <translation>Noise emulieren</translation>
+        <translation>Rauschen emulieren</translation>
     </message>
     <message>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Fog emulation:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Sets fog emulation on//off.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;on&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
@@ -720,7 +720,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Enable hardware lighting</source>
-        <translation type="vanished">Hardware-Belichtung aktivieren</translation>
+        <translation type="vanished">Hardware-Per-Pixel-Lighting aktivieren</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="724"/>
@@ -730,7 +730,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="configDialog.ui" line="727"/>
         <source>Enable shaders storage</source>
-        <translation type="unfinished"></translation>
+        <translation>Shader-Speicherung aktivieren </translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="734"/>
@@ -740,7 +740,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="configDialog.ui" line="737"/>
         <source>Use custom per-game settings</source>
-        <translation>Nutze angepasste Spieleinstellungen</translation>
+        <translation>Nutze spieleabhängige Einstellungen</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="759"/>
@@ -752,22 +752,22 @@ p, li { white-space: pre-wrap; }
         <location filename="configDialog.ui" line="800"/>
         <location filename="configDialog.ui" line="813"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Fix black lines between texrect:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Most games draw 2D backgrounds using texrect command. Texrect stands for textured rectangle. In some games, texrects coordinates not aligned: there is half-pixel split between adjacent texrects. It is not visible in native resolution, but resulted as black lines when image upscaled. This option enables texrect coordinates correction to avoid black lines issue.&lt;/p&gt;&lt;p&gt;* disable - do not correct texrect coordinates&lt;/p&gt;&lt;p&gt;* smart - apply correction only for polygons, which need it. Use it for games, which have black lines issue.&lt;/p&gt;&lt;p&gt;* force - apply correction for all texrects. Use it when &lt;span style=&quot; font-style:italic;&quot;&gt;smart&lt;/span&gt; does not help.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;game dependant, mostly off&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Behebe schwarze Linien zwischen Texrects:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Die meisten Spiele zeichnen 2D Hintergründe mit dem Texrect Befehl. Texrect steht für texturiertes Rechteck. In einigen Spielen sind Texrect Koordinaten nicht ausgerichtet: dort gibt es einen halben Pixel breiten Spalt zwischen benachbarten Texrects. Dieser Spalt ist bei der Originalauflösung nicht sichtbar. Bei höheren Auflösungen ist eine schwarze Linie sichtbar. Diese Option aktiviert die Korrektur der Texrect Koordinaten um Probleme mit schwarzen Linien zu vermeiden.&lt;/p&gt;&lt;p&gt;* disable - do not correct texrect coordinates&lt;/p&gt;&lt;p&gt;* smart - apply correction only for polygons, which need it. Use it for games, which have black lines issue.&lt;/p&gt;&lt;p&gt;* force - apply correction for all texrects. Use it when &lt;span style=&quot; font-style:italic;&quot;&gt;smart&lt;/span&gt; does not help.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;game dependant, mostly off&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="783"/>
         <source>Fix black lines between texrects</source>
-        <translation type="unfinished"></translation>
+        <translation>Behebe schwarze Linien zwischen Texrects</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="803"/>
         <source>smart</source>
-        <translation type="unfinished"></translation>
+        <translation>intelligent</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="816"/>
         <source>force</source>
-        <translation type="unfinished"></translation>
+        <translation>erzwingen</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="828"/>
@@ -777,7 +777,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="configDialog.ui" line="831"/>
         <source>Render texrects in native resolution</source>
-        <translation type="unfinished"></translation>
+        <translation>Stelle Texrects in Originalauflösung dar</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="841"/>
@@ -787,7 +787,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="configDialog.ui" line="874"/>
         <source>General options</source>
-        <translation type="unfinished"></translation>
+        <translation>Allgemeine Optionen</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="901"/>
@@ -838,7 +838,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="configDialog.ui" line="995"/>
         <source>Do not use emulator help</source>
-        <translation type="unfinished"></translation>
+        <translation>Emulatorenhilfe nicht verwenden</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="1004"/>
@@ -894,22 +894,22 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="configDialog.ui" line="1135"/>
         <source>from VRAM</source>
-        <translation type="unfinished"></translation>
+        <translation>vom VRAM</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="1148"/>
         <source>software</source>
-        <translation type="unfinished"></translation>
+        <translation>Software</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="1281"/>
         <source>Decrease color banding</source>
-        <translation type="unfinished"></translation>
+        <translation>Color Banding verringern</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="1699"/>
         <source>Gamma correction</source>
-        <translation type="unfinished"></translation>
+        <translation>Gammakorrektur</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="1705"/>
@@ -919,7 +919,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="configDialog.ui" line="1708"/>
         <source>Force gamma correction</source>
-        <translation type="unfinished"></translation>
+        <translation>Gammakorrektur erzwingen</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="1726"/>
@@ -955,17 +955,17 @@ p, li { white-space: pre-wrap; }
         <location filename="configDialog.ui" line="194"/>
         <location filename="configDialog.ui" line="207"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Aspect ratio of the output.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Most N64 games use 4:3 aspect ratio, but some support widescreen too.You may select appropriate aspect here and set widescreen mode in game settings. In &lt;span style=&quot; font-weight:600;&quot;&gt;Stretch&lt;/span&gt; mode the output will be stretched to the entire screen, other modes may add black borders if necessary.&lt;br/&gt;&lt;br/&gt;Special note: &lt;span style=&quot; font-weight:600;&quot;&gt;Adjust&lt;/span&gt; mode is so called &amp;quot;widescreen hack&amp;quot;. In that mode plugin tries to adjust viewport to fully use screen space, but without stretch of geometry. It may run games with native 4:3 aspect in widescreen. Some games look cool in that mode, some does not.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Seitenverhältnis der Ausgabe.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Die meisten N64 Spiele verwenden ein Seitenverhältnis von 4:3. Einige Spiele unterstützen auch Widescreen. Hier kann das entsprechende Seitenverhältnis eingestellt werden. Im Spiel kann dann der Widescreen Modus aktiviert werden. Bei aktiviertem &lt;span style=&quot; font-weight:600;&quot;&gt;Strecken&lt;/span&gt; Modus füllt die Ausgabe den kompletten Bildschirm. Andere Modi fügen wenn notwendig schwarze Ränder hinzu.&lt;br/&gt;&lt;br/&gt;Special note: &lt;span style=&quot; font-weight:600;&quot;&gt;Adjust&lt;/span&gt; mode is so called &amp;quot;widescreen hack&amp;quot;. In that mode plugin tries to adjust viewport to fully use screen space, but without stretch of geometry. It may run games with native 4:3 aspect in widescreen. Some games look cool in that mode, some does not.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="714"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enable hardware lighting:&lt;/p&gt;&lt;p&gt;Normally lighting calculated per vertex. This option enables per-pixel shader based lighting. It results in more smooth and correct shading of 3D objects.&lt;/p&gt;&lt;p&gt;Note: since in LLE mode vertex color calculated outside of graphics plugin, this option is only for HLE.&lt;br/&gt;&lt;br/&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;your preference&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Aktiviere hardware lighting:&lt;/p&gt;&lt;p&gt;Normalerweise wird die Beleuchtung per vertex berechnet. Diese Option aktiviert Per-Pixel Shader basierte Beleuchtung. Dies resultiert in ein glatteren und korrekteren Darstellung von 3D Objekten.&lt;/p&gt;&lt;p&gt;Hinweis: da im LLE Modus die Vertexfarbe außerhalb des Grafikplugins berechnet wird steht diese Option nur im HLE Modus zur Verfügung.&lt;br/&gt;&lt;br/&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;your preference&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="717"/>
         <source>Enable hardware lighting (HLE only!)</source>
-        <translation type="unfinished"></translation>
+        <translation>Aktiviere Hardware Lighting (nur HLE!)</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="945"/>
@@ -975,12 +975,12 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="configDialog.ui" line="1082"/>
         <source>sync</source>
-        <translation type="unfinished"></translation>
+        <translation>synchron</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="1095"/>
         <source>async</source>
-        <translation type="unfinished"></translation>
+        <translation>asynchron</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="1160"/>
@@ -990,15 +990,15 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="configDialog.ui" line="1163"/>
         <source>Render frame buffer as texture</source>
-        <translation>Rendere den Frame-Buffer als Textur</translation>
+        <translation>Stelle den Frame-Buffer als Textur dar</translation>
     </message>
     <message>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Detect CPU write to the N64 frame buffer:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;This option works as the previous options, but the plugin is trying to detect, when game uses CPU writes to N64 frame buffer. The N64 frame buffer is rendered only when CPU writes is detected. Use this option for those games, in which you see still image or no image at all for some time with no reason.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;mostly off&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="vanished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Erkenne CPU-Writes in den Frame-Buffer:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Diese Option arbeitet wie die Vorherige aber das Plugin versucht zu erkennen, ob das Spiel CPU-Writes in den Frame-Buffer nutzt. Der Frame-Buffer wird nur gerendert, wenn CPU-Writes erkannt werden. Nutze diese Option für die Spiele, in welchen sie ohne Grund ein eingefrorenes oder gar kein Bild bekommen.&lt;/p&gt;&lt;p&gt;[Empfehlung: Meistens deaktiviert]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <translation type="vanished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Erkenne CPU-Schreibvorgänge in den Frame-Buffer:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Diese Option arbeitet wie die Vorherige aber das Plugin versucht zu erkennen, ob das Spiel CPU-Schreibvorgänge in den Frame-Buffer nutzt. Der Frame-Buffer wird nur gerendert, wenn CPU-Schreibvorgänge erkannt werden. Nutze diese Option für die Spiele, in welchen sie ohne Grund ein eingefrorenes oder gar kein Bild bekommen.&lt;/p&gt;&lt;p&gt;[Empfehlung: Meistens deaktiviert]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <source>Detect CPU writes to the frame buffer</source>
-        <translation type="vanished">Erkenne CPU-Writes in den Frame-Buffer</translation>
+        <translation type="vanished">Erkenne CPU-Schreibvorgänge in den Frame-Buffer</translation>
     </message>
     <message>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Copy depth buffer to RDRAM:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;This option is required for correct emulation of depth buffer based effects, e.g. coronas. Content of video card&apos;s depth buffer is copied into RDRAM area each frame.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;on&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
@@ -1081,7 +1081,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="configDialog.ui" line="1278"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Decrease color banding&lt;/span&gt;:&lt;/p&gt;&lt;p&gt;This option enables pre-processing step, which reduces posterization issues on enhanced textures.&lt;/p&gt;&lt;p&gt;[Recommended:&lt;span style=&quot; font-style:italic;&quot;&gt; on for xBRZ&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Color-Banding verringern&lt;/span&gt;:&lt;/p&gt;&lt;p&gt;Diese Option aktiviert eine Vorverarbeitungsstufe, welche die Darstellung von hochaufgelösten Texturen verbessert.&lt;/p&gt;&lt;p&gt;[Recommended:&lt;span style=&quot; font-style:italic;&quot;&gt; on for xBRZ&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="1288"/>
@@ -1252,12 +1252,12 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="configDialog.ui" line="1602"/>
         <source>Blur amount:</source>
-        <translation>Unschärfe Menge:</translation>
+        <translation>Unschärfegrad:</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="1628"/>
         <source>Threshold level:</source>
-        <translation>Toleranz:</translation>
+        <translation>Schwelle:</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="1635"/>
