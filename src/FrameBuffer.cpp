@@ -961,9 +961,9 @@ void FrameBufferList::fillRDRAM(s32 ulx, s32 uly, s32 lrx, s32 lry)
 	if (m_pCurrent == nullptr)
 		return;
 
-	ulx = max(0, ulx);
-	lrx = min(gDP.colorImage.width, (u32)lrx);
-	uly = max(0, uly);
+	ulx = min(max((float)ulx, gDP.scissor.ulx), gDP.scissor.lrx);
+	lrx = min(max((float)lrx, gDP.scissor.ulx), gDP.scissor.lrx);
+	uly = min(max((float)uly, gDP.scissor.uly), gDP.scissor.lry);
 	lry = min(max((float)lry, gDP.scissor.uly), gDP.scissor.lry);
 
 	const u32 stride = gDP.colorImage.width << gDP.colorImage.size >> 1;
