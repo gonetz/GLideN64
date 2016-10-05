@@ -36,7 +36,6 @@ struct CachedTexture
 	f32		shiftScaleS, shiftScaleT; // Scale to shift
 	u32		textureBytes;
 
-	u32		lastDList;
 	u32		address;
 	u8		max_level;
 	enum {
