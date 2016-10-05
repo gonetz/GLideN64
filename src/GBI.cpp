@@ -284,8 +284,12 @@ void GBIInfo::loadMicrocode(u32 uc_start, u32 uc_dstart, u16 uc_dsize)
 						current.textureGen = false;
 					else if (strncmp(&uc_str[14], "F3DZ", 4) == 0)
 						current.branchLessZ = false;
-					else if (strncmp(&uc_str[14], "F3DLP.Rej", 9) == 0)
+					else if (strncmp(&uc_str[14], "F3DLX.Rej", 9) == 0)
+						current.NoN = true;
+					else if (strncmp(&uc_str[14], "F3DLP.Rej", 9) == 0) {
 						current.texturePersp = false;
+						current.NoN = true;
+					}
 				}
 				else if (strncmp( &uc_str[14], "L3D", 3 ) == 0) {
 					u32 t = 22;
