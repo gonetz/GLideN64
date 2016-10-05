@@ -22,7 +22,7 @@ struct FrameBuffer
 	CachedTexture * getTextureBG(u32 _t);
 	void setBufferClearParams(u32 _fillcolor, s32 _ulx, s32 _uly, s32 _lrx, s32 _lry);
 	void copyRdram();
-	bool isValid() const;
+	bool isValid(bool _forceCheck) const;
 	bool _isMarioTennisScoreboard() const;
 	bool isAuxiliary() const;
 

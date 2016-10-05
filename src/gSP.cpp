@@ -2130,7 +2130,7 @@ void _loadBGImage(const uObjScaleBg * _bgInfo, bool _loadScale)
 				return;
 			}
 
-			if (!pBuffer->isValid()) {
+			if (!pBuffer->isValid(false)) {
 				frameBufferList().removeBuffer(pBuffer->m_startAddress);
 				return;
 			}

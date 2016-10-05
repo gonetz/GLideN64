@@ -413,7 +413,7 @@ bool CheckForFrameBufferTexture(u32 _address, u32 _bytes)
 		}
 
 		if (bRes) {
-			bRes = pBuffer->isValid();
+			bRes = pBuffer->isValid(false);
 			if (!bRes)
 				fbList.removeBuffer(pBuffer->m_startAddress);
 		}

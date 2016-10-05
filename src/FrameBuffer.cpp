@@ -239,11 +239,13 @@ void FrameBuffer::copyRdram()
 	memcpy(m_RdramCopy.data(), RDRAM + m_startAddress, dataSize);
 }
 
-bool FrameBuffer::isValid() const
+bool FrameBuffer::isValid(bool _forceCheck) const
 {
-	if (m_validityChecked == video().getBuffersSwapCount())
-		return true; // Already checked
-	m_validityChecked = video().getBuffersSwapCount();
+	if (!_forceCheck) {
+		if (m_validityChecked == video().getBuffersSwapCount())
+			return true; // Already checked
+		m_validityChecked = video().getBuffersSwapCount();
+	}
 
 	const u32 * const pData = (const u32*)RDRAM;
 

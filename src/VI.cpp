@@ -115,7 +115,7 @@ void VI_UpdateScreen()
 		FrameBuffer * pBuffer = frameBufferList().findBuffer(*REG.VI_ORIGIN);
 		if (pBuffer == nullptr)
 			gDP.changed |= CHANGED_CPU_FB_WRITE;
-		else if (!FBInfo::fbInfo.isSupported() && !pBuffer->isValid()) {
+		else if (!FBInfo::fbInfo.isSupported() && !pBuffer->isValid(true)) {
 			gDP.changed |= CHANGED_CPU_FB_WRITE;
 			if (config.frameBufferEmulation.copyToRDRAM == 0)
 				pBuffer->copyRdram();
