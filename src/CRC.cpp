@@ -31,7 +31,7 @@ void CRC_BuildTable()
 	}
 }
 
-u32 CRC_Calculate( u32 crc, const void * buffer, u32 count )
+u32 CRC_Calculate_Strict( u32 crc, const void * buffer, u32 count )
 {
 	u8 *p;
 	u32 orig = crc;
@@ -41,6 +41,11 @@ u32 CRC_Calculate( u32 crc, const void * buffer, u32 count )
 		crc = (crc >> 8) ^ CRCTable[(crc & 0xFF) ^ *p++];
 
 	return crc ^ orig;
+}
+
+u32 CRC_Calculate( u32 crc, const void * buffer, u32 count )
+{
+        return CRC_Calculate_Strict(crc, buffer, count);
 }
 
 u32 CRC_CalculatePalette(u32 crc, const void * buffer, u32 count )
