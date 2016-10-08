@@ -745,7 +745,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="configDialog.ui" line="833"/>
         <source>2D Fixes</source>
-        <translation type="unfinished"></translation>
+        <translation>2D Fehlerbehebungen</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="854"/>
@@ -881,12 +881,12 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="configDialog.ui" line="1904"/>
         <source>Performance counters</source>
-        <translation type="unfinished"></translation>
+        <translation>Leistungsindikator</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="1910"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Show &lt;span style=&quot; font-weight:600;&quot;&gt;Frames Per Second&lt;/span&gt; counter&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Zeige &lt;span style=&quot; font-weight:600;&quot;&gt;Bilder pro Sekunde (FPS)&lt;/span&gt; Zähler&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="1913"/>
@@ -896,17 +896,17 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="configDialog.ui" line="1920"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Show &lt;span style=&quot; font-weight:600;&quot;&gt;Video Interrupts per second&lt;/span&gt; counter&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Zeige &lt;span style=&quot; font-weight:600;&quot;&gt;Video Interrupts pro Sekunde&lt;/span&gt; Zähler&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="1923"/>
         <source>VI/S</source>
-        <translation type="unfinished"></translation>
+        <translation>VI/s</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="1930"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Show &lt;span style=&quot; font-weight:600;&quot;&gt;Performance in percents&lt;/span&gt; counter&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Zeige &lt;span style=&quot; font-weight:600;&quot;&gt;Leistung in Prozent&lt;/span&gt; Zähler&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="1933"/>
@@ -918,44 +918,44 @@ p, li { white-space: pre-wrap; }
         <location filename="configDialog.ui" line="1962"/>
         <location filename="configDialog.ui" line="1988"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Counters displayed in a corner of the screen. Select left or right corner.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Zähler werden in einer Ecke des Bildschirms dargestellt. Wähle die linke oder rechte Ecke aus.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="1945"/>
         <source>Horisontal position:</source>
-        <translation type="unfinished"></translation>
+        <translation>Horizontale Position:</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="1952"/>
         <location filename="configDialog.ui" line="1975"/>
         <location filename="configDialog.ui" line="2001"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Counters displayed in a corner of the screen. Select top or bottom corner.&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Zähler werden in einer Ecke des Bildschirms dargestellt. Wähle die obere oder untere Ecke aus.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="1955"/>
         <source>Vertical position:</source>
-        <translation type="unfinished"></translation>
+        <translation>Vertikale Position:</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="1965"/>
         <source>left</source>
-        <translation type="unfinished"></translation>
+        <translation>links</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="1978"/>
         <source>top</source>
-        <translation type="unfinished"></translation>
+        <translation>oben</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="1991"/>
         <source>right</source>
-        <translation type="unfinished"></translation>
+        <translation>rechts</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="2004"/>
         <source>bottom</source>
-        <translation type="unfinished"></translation>
+        <translation>unten</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="1009"/>
@@ -1009,7 +1009,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="configDialog.ui" line="1719"/>
         <source>Gamma correction level:</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Gammakorrekturgrad</translation>
     </message>
     <message>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Copy frame buffer to RDRAM:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;In some games plugin can&apos;t detect frame buffer usage. In such cases you need to enable this option to see frame buffer effects. Every drawn frame will be read from video card and copied into RDRAM area.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;mostly off (needed only for a few games)&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
@@ -1025,7 +1025,7 @@ p, li { white-space: pre-wrap; }
         <location filename="configDialog.ui" line="1143"/>
         <location filename="configDialog.ui" line="1196"/>
         <source>disable</source>
-        <translation type="unfinished"></translation>
+        <translation>deaktivieren</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="232"/>
@@ -1180,7 +1180,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="configDialog.ui" line="1386"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Use Alpha channel fully:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;When this option is off, 16bit rgba textures will be loaded using RiceVideo style - with 1bit for alpha channel. When it is on, GlideHQ will check, how alpha channel is used by the hires texture, and select most appropriate format for it. This gives texture designers freedom to play with alpha, as they need, regardless of format of original N64 texture. For older and badly designed texture packs it can cause unwanted black borders.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;texture pack dependant&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Nutze vollen Alphakanal:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Wenn diese Option deaktiviert ist, werden 16bit-rgbam-Texturen mit RiceVideo-Style geladen, mit 1bit für den Alphakanal. Aktiviert überprüft GlideHQ, wie der Alphakanal von den Hires-Texturen genutzt wird &amp; wählt das geeigneste Format. Das gibt den Texture-Designern Freiheiten, um mit dem Alphakanal zu spielen, wie sie wollen &amp; ohne Rücksicht auf das Format der Original-N64-Textur zu nehmen. Bei alten &amp; schlecht-designten Texturpaketen können ungewollte schwarze Balken auftauchen.&lt;/p&gt;&lt;p&gt;[Empfehlung: Texturpaket-abhängig]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Nutze vollen Alphakanal:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Wenn diese Option deaktiviert ist, werden 16bit-rgba-Texturen mit RiceVideo-Style geladen, mit 1bit für den Alphakanal. Aktiviert überprüft GlideHQ, wie der Alphakanal von den Hires-Texturen genutzt wird &amp; wählt das geeigneste Format. Das gibt den Texture-Designern Freiheiten, um mit dem Alphakanal zu spielen, wie sie wollen &amp; ohne Rücksicht auf das Format der Original-N64-Textur zu nehmen. Bei alten &amp; schlecht-designten Texturpaketen können ungewollte schwarze Balken auftauchen.&lt;/p&gt;&lt;p&gt;[Empfehlung: Texturpaket-abhängig]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="1389"/>
@@ -1200,7 +1200,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="configDialog.ui" line="1409"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Texture dumping mode:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;In this mode, you have that ability to dump textures on screen to the appropriate folder. You can also reload textures while the game is running to see how they look instantly - big time saver!&lt;/p&gt;&lt;p&gt;Hotkeys: &lt;span style=&quot; font-weight:600;&quot;&gt;R&lt;/span&gt; reloads hires textures from the texture pack - &lt;span style=&quot; font-weight:600;&quot;&gt;D&lt;/span&gt; toggles texture dumps on/off.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Textur-Bearbeitungs-Modus:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;In diesem Modus hast du die Möglichkeit, die Texturen auf dem Bildschirm in den zugewiesenen Ordner zu kopieren. Du kannst die Texturen während des Spiels jederzeit neu laden &amp; sofort anschauen, wie die neue Textur aussieht (große Zeitersparniss)&lt;/p&gt;&lt;p&gt;Hotkeys: &quot;R&quot; lädt erreut die Hires-Textures aus dem Texturpaket. &quot;D&quot; Texturbearbeitungsmodus aktivieren / deaktivieren.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Textur-Bearbeitungs-Modus:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;In diesem Modus hast du die Möglichkeit, die Texturen auf dem Bildschirm in den zugewiesenen Ordner zu kopieren. Du kannst die Texturen während des Spiels jederzeit neu laden &amp; sofort anschauen, wie die neue Textur aussieht (große Zeitersparnis)&lt;/p&gt;&lt;p&gt;Hotkeys: &quot;R&quot; lädt erneut die Hires-Textures aus dem Texturpaket. &quot;D&quot; Texturbearbeitungsmodus aktivieren / deaktivieren.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="1412"/>
@@ -1210,26 +1210,26 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="configDialog.ui" line="1783"/>
         <source>On screen display</source>
-        <translation type="unfinished"></translation>
+        <translation>Bildschirmanzeige (OSD)</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="1795"/>
         <source>Font parameters</source>
-        <translation type="unfinished"></translation>
+        <translation>Schrifteinstellungen</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="1809"/>
         <location filename="configDialog.ui" line="1822"/>
         <location filename="configDialog.ui" line="1889"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select color of text messages.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Wähle die Farbe für die Text-Nachrichten.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Wähle die Farbe für Text-Nachrichten.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="1838"/>
         <location filename="configDialog.ui" line="1854"/>
         <location filename="configDialog.ui" line="1870"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select font and font size for on screen text messages.&lt;br/&gt;Warning: not all fonts installed in your system can be used. If you do not see OSD messages, switch back to default font.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Wähle Schrift &amp; Schriftgröße für die Bildschirmanzeige.&lt;br/&gt;Warnung: es können nicht alle installierten Schriftarten verwendet werden. Wähle eine andere Schriftart, wenn die Bildschirmanzeige nicht dargestellt wird.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="1892"/>
@@ -1238,7 +1238,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select font and font size for text messages, displayed during texture cache or texture pack save/load.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="vanished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Wähle Schrift &amp; Schriftgröße für die Text-Nachrichten, während des Texture-Cachings oder während des speicherns / ladens des Texturpakets zu sehen.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <translation type="vanished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Wähle Schrift &amp; Schriftgröße für die Text-Nachrichten, welche während des Texture-Cachings oder während des Speicherns / Ladens des Texturpakets zu sehen sind.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="1857"/>
@@ -1278,28 +1278,28 @@ p, li { white-space: pre-wrap; }
         <location filename="configDialog.ui" line="187"/>
         <location filename="configDialog.ui" line="200"/>
         <location filename="configDialog.ui" line="213"/>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Crop image:&lt;/span&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;This option allows user to crop black boarders from resulted image. It has two modes:&lt;br/&gt;&lt;br/&gt;* Auto - plugin sets crop automatically using game&apos;s frame scissor.&lt;/p&gt;&lt;p&gt;* Custom - crop using user defined vaules. User should set number of pixels to crop from original native-res image.&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Crop image:&lt;/span&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;This option allows user to crop black boarders from resulted image. It has two modes:&lt;br/&gt;&lt;br/&gt;* Auto - plugin sets crop automatically using game&apos;s frame scissor.&lt;/p&gt;&lt;p&gt;* Custom - crop using user defined values. User should set number of pixels to crop from original native-res image.&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Bild zuschneiden:&lt;/span&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;Diese Option erlaubt es dem Benutzer schwarze Fensterränder zu beschneiden. Es gibt zwei Modi:&lt;br/&gt;&lt;br/&gt;* Auto - das Plugin beschneidet automatisch nach Spielvorgabe.&lt;/p&gt;&lt;p&gt;* Custom - der Rand wird nach Benutzervorgabe beschnitten. Der Benutzer muss die zu beschneidende Pixelanzahl angeben.&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="140"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Crop image&lt;span style=&quot; vertical-align:super;&quot;&gt;*:&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Bild zuschneiden&lt;span style=&quot; vertical-align:super;&quot;&gt;*:&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="154"/>
         <source>Disable</source>
-        <translation type="unfinished"></translation>
+        <translation>Deaktivieren</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="159"/>
         <source>Auto</source>
-        <translation type="unfinished"></translation>
+        <translation>Automatisch</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="164"/>
         <source>Custom</source>
-        <translation type="unfinished"></translation>
+        <translation>Anpassung</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="1430"/>
