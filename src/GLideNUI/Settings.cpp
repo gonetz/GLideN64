@@ -108,6 +108,14 @@ void _loadSettings(QSettings & settings)
 	config.gammaCorrection.force = settings.value("force", config.gammaCorrection.force).toInt();
 	config.gammaCorrection.level = settings.value("level", config.gammaCorrection.level).toFloat();
 	settings.endGroup();
+
+	settings.beginGroup("onScreenDispaly");
+	config.onScreenDisplay.fps = settings.value("showFPS", config.onScreenDisplay.fps).toInt();
+	config.onScreenDisplay.vis = settings.value("showVIS", config.onScreenDisplay.vis).toInt();
+	config.onScreenDisplay.percent = settings.value("showPercent", config.onScreenDisplay.percent).toInt();
+	config.onScreenDisplay.horisontalPos = settings.value("osdHorisontalPos", config.onScreenDisplay.horisontalPos).toInt();
+	config.onScreenDisplay.verticalPos = settings.value("osdVerticalPos", config.onScreenDisplay.verticalPos).toInt();
+	settings.endGroup();
 }
 
 void loadSettings(const QString & _strIniFolder)
@@ -215,6 +223,14 @@ void writeSettings(const QString & _strIniFolder)
 	settings.beginGroup("gammaCorrection");
 	settings.setValue("force", config.gammaCorrection.force);
 	settings.setValue("level", config.gammaCorrection.level);
+	settings.endGroup();
+
+	settings.beginGroup("onScreenDispaly");
+	settings.setValue("showFPS", config.onScreenDisplay.fps);
+	settings.setValue("showVIS", config.onScreenDisplay.vis);
+	settings.setValue("showPercent", config.onScreenDisplay.percent);
+	settings.setValue("osdHorisontalPos", config.onScreenDisplay.horisontalPos);
+	settings.setValue("osdVerticalPos", config.onScreenDisplay.verticalPos);
 	settings.endGroup();
 }
 
