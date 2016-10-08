@@ -300,10 +300,10 @@ static void gSPBillboardVertex4_default(u32 v)
 	SPVertex & vtx0 = render.getVertex(i);
 	for (int j = 0; j < 4; ++j) {
 		SPVertex & vtx = render.getVertex(v+j);
-		vtx.x = vtx0.x;
-		vtx.y = vtx0.y;
-		vtx.z = vtx0.z;
-		vtx.w = vtx0.w;
+		vtx.x += vtx0.x;
+		vtx.y += vtx0.y;
+		vtx.z += vtx0.z;
+		vtx.w += vtx0.w;
 	}
 }
 
