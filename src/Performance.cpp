@@ -1,5 +1,6 @@
 #include "VI.h"
 #include "Performance.h"
+#include "Config.h"
 
 Performance perf;
 
@@ -13,6 +14,8 @@ Performance::Performance()
 
 void Performance::reset()
 {
+	if ((config.onScreenDisplay.fps | config.onScreenDisplay.vis | config.onScreenDisplay.percent) == 0)
+		return;
 	m_startTime = std::clock();
 }
 
@@ -34,6 +37,8 @@ f32 Performance::getPercent() const
 
 void Performance::increaseVICount()
 {
+	if ((config.onScreenDisplay.fps | config.onScreenDisplay.vis | config.onScreenDisplay.percent) == 0)
+		return;
 	m_vi++;
 	const clock_t curTime = std::clock();
 	const float elapsed = float( curTime - m_startTime ) /  CLOCKS_PER_SEC;
@@ -48,5 +53,7 @@ void Performance::increaseVICount()
 
 void Performance::increaseFramesCount()
 {
+	if ((config.onScreenDisplay.fps | config.onScreenDisplay.vis | config.onScreenDisplay.percent) == 0)
+		return;
 	m_frames++;
 }
