@@ -20,6 +20,7 @@ private:
 	f32 m_fps;
 	f32 m_vis;
 	clock_t m_startTime;
+	bool m_enabled;
 };
 
 extern Performance perf;
