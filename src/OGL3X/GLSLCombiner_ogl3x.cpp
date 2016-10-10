@@ -28,7 +28,6 @@ static GLuint  g_calc_noise_shader_object;
 static GLuint  g_write_depth_shader_object;
 static GLuint  g_calc_depth_shader_object;
 static GLuint  g_render_depth_shader_object;
-static GLuint  g_readtex_shader_object;
 static GLuint  g_readtex_ms_shader_object;
 static GLuint  g_dither_shader_object;
 static GLuint  g_monochrome_image_program = 0;
@@ -219,7 +218,6 @@ void InitShaderCombiner()
 	g_calc_mipmap_shader_object = _createShader(GL_FRAGMENT_SHADER, fragment_shader_mipmap);
 	g_calc_noise_shader_object = _createShader(GL_FRAGMENT_SHADER, fragment_shader_noise);
 	g_write_depth_shader_object = _createShader(GL_FRAGMENT_SHADER, fragment_shader_depth);
-	g_readtex_shader_object = _createShader(GL_FRAGMENT_SHADER, config.texture.bilinearMode == BILINEAR_3POINT ? fragment_shader_readtex_3point : fragment_shader_readtex);
 	g_readtex_ms_shader_object = _createShader(GL_FRAGMENT_SHADER, fragment_shader_readtex_ms);
 	g_dither_shader_object = _createShader(GL_FRAGMENT_SHADER, fragment_shader_dither);
 #endif // GLESX
@@ -256,8 +254,6 @@ void DestroyShaderCombiner() {
 	g_calc_light_shader_object = 0;
 	glDeleteShader(g_calc_mipmap_shader_object);
 	g_calc_mipmap_shader_object = 0;
-	glDeleteShader(g_readtex_shader_object);
-	g_readtex_shader_object = 0;
 	glDeleteShader(g_readtex_ms_shader_object);
 	g_readtex_ms_shader_object = 0;
 	glDeleteShader(g_calc_noise_shader_object);
@@ -320,7 +316,8 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 		if (bUseLod)
 			strFragmentShader.append(fragment_shader_header_mipmap);
 		else {
-			strFragmentShader.append(fragment_shader_header_readTex);
+			strFragmentShader.append(config.texture.bilinearMode == BILINEAR_3POINT ? fragment_shader_readtex_3point : fragment_shader_readtex);
+
 #ifdef GL_MULTISAMPLING_SUPPORT
 			if (config.video.multisampling > 0)
 				strFragmentShader.append(fragment_shader_header_readTexMS);
@@ -361,24 +358,32 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 		if (usesTile(0)) {
 			if (config.video.multisampling > 0) {
 				strFragmentShader.append("  lowp vec4 readtex0; \n");
-				strFragmentShader.append("  if (uMSTexEnabled[0] == 0) readtex0 = readTex(uTex0, vTexCoord0, uFbMonochrome[0], uFbFixedAlpha[0]); \n");
+				strFragmentShader.append("  if (uMSTexEnabled[0] == 0) READ_TEX(readtex0, uTex0, vTexCoord0, uFbMonochrome[0], uFbFixedAlpha[0]) \n");
 				strFragmentShader.append("  else readtex0 = readTexMS(uMSTex0, vTexCoord0, uFbMonochrome[0], uFbFixedAlpha[0]); \n");
-			} else
-				strFragmentShader.append("  lowp vec4 readtex0 = readTex(uTex0, vTexCoord0, uFbMonochrome[0], uFbFixedAlpha[0]); \n");
+			} else {
+				strFragmentShader.append("  lowp vec4 readtex0; \n");
+				strFragmentShader.append("  READ_TEX(readtex0, uTex0, vTexCoord0, uFbMonochrome[0], uFbFixedAlpha[0]); \n");
+			}
 		}
 		if (usesTile(1)) {
 			if (config.video.multisampling > 0) {
 				strFragmentShader.append("  lowp vec4 readtex1; \n");
-				strFragmentShader.append("  if (uMSTexEnabled[1] == 0) readtex1 = readTex(uTex1, vTexCoord1, uFbMonochrome[1], uFbFixedAlpha[1]); \n");
+				strFragmentShader.append("  if (uMSTexEnabled[1] == 0)  READ_TEX(readtex1, uTex1, vTexCoord1, uFbMonochrome[1], uFbFixedAlpha[1]) \n");
 				strFragmentShader.append("  else readtex1 = readTexMS(uMSTex1, vTexCoord1, uFbMonochrome[1], uFbFixedAlpha[1]); \n");
-			} else
-				strFragmentShader.append("  lowp vec4 readtex1 = readTex(uTex1, vTexCoord1, uFbMonochrome[1], uFbFixedAlpha[1]); \n");
+			} else {
+				strFragmentShader.append("  lowp vec4 readtex1; \n");
+				strFragmentShader.append("  READ_TEX(readtex1, uTex1, vTexCoord1, uFbMonochrome[1], uFbFixedAlpha[1]); \n");
+			}
 		}
 #else
-		if (usesTile(0))
-			strFragmentShader.append("  lowp vec4 readtex0 = readTex(uTex0, vTexCoord0, uFbMonochrome[0], uFbFixedAlpha[0]); \n");
-		if (usesTile(1))
-			strFragmentShader.append("  lowp vec4 readtex1 = readTex(uTex1, vTexCoord1, uFbMonochrome[1], uFbFixedAlpha[1]); \n");
+		if (usesTile(0)) {
+			strFragmentShader.append("  lowp vec4 readtex0; \n");
+			strFragmentShader.append("  READ_TEX(readtex0, uTex0, vTexCoord0, uFbMonochrome[0], uFbFixedAlpha[0]); \n");
+		}
+		if (usesTile(1)) {
+			strFragmentShader.append("  lowp vec4 readtex1; \n");
+			strFragmentShader.append("  READ_TEX(readtex1, uTex1, vTexCoord1, uFbMonochrome[1], uFbFixedAlpha[1]); \n");
+		}
 #endif // GL_MULTISAMPLING_SUPPORT
 	}
 
@@ -425,7 +430,6 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 		if (config.generalEmulation.enableLOD != 0)
 			strFragmentShader.append(fragment_shader_mipmap);
 	} else if (usesTexture()) {
-		strFragmentShader.append(config.texture.bilinearMode == BILINEAR_3POINT ? fragment_shader_readtex_3point : fragment_shader_readtex);
 #ifdef GL_MULTISAMPLING_SUPPORT
 		if (config.video.multisampling > 0)
 			strFragmentShader.append(fragment_shader_readtex_ms);
@@ -467,7 +471,6 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 		if (config.generalEmulation.enableLOD != 0)
 			glAttachShader(m_program, g_calc_mipmap_shader_object);
 	} else if (usesTexture()) {
-		glAttachShader(m_program, g_readtex_shader_object);
 		if (config.video.multisampling > 0)
 			glAttachShader(m_program, g_readtex_ms_shader_object);
 	}

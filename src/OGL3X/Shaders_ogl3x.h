@@ -270,8 +270,6 @@ static const char* fragment_shader_header_calc_light =
 	"void calc_light(in lowp float fLights, in lowp vec3 input_color, out lowp vec3 output_color);\n";
 static const char* fragment_shader_header_mipmap =
 	"mediump float mipmap(out lowp vec4 readtex0, out lowp vec4 readtex1);\n";
-static const char* fragment_shader_header_readTex =
-	"lowp vec4 readTex(in sampler2D tex, in mediump vec2 texCoord, in lowp int fbMonochrome, in lowp int fbFixedAlpha);\n";
 #ifdef GL_MULTISAMPLING_SUPPORT
 static const char* fragment_shader_header_readTexMS =
 	"lowp vec4 readTexMS(in lowp sampler2DMS mstex, in mediump vec2 texCoord, in lowp int fbMonochrome, in lowp int fbFixedAlpha);\n";
@@ -461,46 +459,40 @@ static const char* fragment_shader_fake_mipmap =
 ;
 
 static const char* fragment_shader_readtex =
-AUXILIARY_SHADER_VERSION
-"lowp vec4 readTex(in sampler2D tex, in mediump vec2 texCoord, in lowp int fbMonochrome, in lowp int fbFixedAlpha)	\n"
-"{												\n"
-"  lowp vec4 texColor = texture(tex, texCoord);	\n"
-"  if (fbMonochrome == 1) texColor = vec4(texColor.r);	\n"
-"  else if (fbMonochrome == 2) 						\n"
-"    texColor.rgb = vec3(dot(vec3(0.2126, 0.7152, 0.0722), texColor.rgb));	\n"
-"  if (fbFixedAlpha == 1) texColor.a = 0.825;		\n"
-"  return texColor;								\n"
-"}												\n"
+"#define READ_TEX(name, tex, texCoord, fbMonochrome, fbFixedAlpha)	\\\n"
+"  {		\\\n"
+"  name = texture(tex, texCoord);	\\\n"
+"  if (fbMonochrome == 1) name = vec4(name.r);	\\\n"
+"  else if (fbMonochrome == 2) 						\\\n"
+"    name.rgb = vec3(dot(vec3(0.2126, 0.7152, 0.0722), name.rgb));	\\\n"
+"  if (fbFixedAlpha == 1) name.a = 0.825;		\\\n"
+"  }		\n"
 ;
 
 static const char* fragment_shader_readtex_3point =
-AUXILIARY_SHADER_VERSION
 "uniform lowp int uTextureFilterMode;								\n"
 // 3 point texture filtering.
 // Original author: ArthurCarvalho
 // GLSL implementation: twinaphex, mupen64plus-libretro project.
-"#define TEX_OFFSET(off) texture(tex, texCoord - (off)/texSize)	\n"
-"lowp vec4 filter3point(in sampler2D tex, in mediump vec2 texCoord)			\n"
-"{																			\n"
-"  mediump vec2 texSize = vec2(textureSize(tex,0));							\n"
-"  mediump vec2 offset = fract(texCoord*texSize - vec2(0.5));	\n"
-"  offset -= step(1.0, offset.x + offset.y);								\n"
-"  lowp vec4 c0 = TEX_OFFSET(offset);										\n"
-"  lowp vec4 c1 = TEX_OFFSET(vec2(offset.x - sign(offset.x), offset.y));	\n"
-"  lowp vec4 c2 = TEX_OFFSET(vec2(offset.x, offset.y - sign(offset.y)));	\n"
-"  return c0 + abs(offset.x)*(c1-c0) + abs(offset.y)*(c2-c0);				\n"
-"}																			\n"
-"lowp vec4 readTex(in sampler2D tex, in mediump vec2 texCoord, in lowp int fbMonochrome, in lowp int fbFixedAlpha)	\n"
-"{																			\n"
-"  lowp vec4 texStandard = texture(tex, texCoord); 							\n"
-"  lowp vec4 tex3Point = filter3point(tex, texCoord); 						\n"
-"  lowp vec4 texColor = uTextureFilterMode == 0 ? texStandard : tex3Point;	\n"
-"  if (fbMonochrome == 1) texColor = vec4(texColor.r);						\n"
-"  else if (fbMonochrome == 2) 												\n"
-"    texColor.rgb = vec3(dot(vec3(0.2126, 0.7152, 0.0722), texColor.rgb));	\n"
-"  if (fbFixedAlpha == 1) texColor.a = 0.825;									\n"
-"  return texColor;															\n"
-"}																			\n"
+"#define TEX_OFFSET(tex, texCoord, off) texture(tex, texCoord - (off)/texSize)	\n"
+"#define FILTER_3POINT(tex, texCoord)			\\\n"
+"  mediump vec2 texSize = vec2(textureSize(tex,0));							\\\n"
+"  mediump vec2 offset = fract(texCoord*texSize - vec2(0.5));	\\\n"
+"  offset -= step(1.0, offset.x + offset.y);								\\\n"
+"  lowp vec4 c0 = TEX_OFFSET(tex, texCoord, offset);										\\\n"
+"  lowp vec4 c1 = TEX_OFFSET(tex, texCoord, vec2(offset.x - sign(offset.x), offset.y));	\\\n"
+"  lowp vec4 c2 = TEX_OFFSET(tex, texCoord, vec2(offset.x, offset.y - sign(offset.y)));	\\\n"
+"  lowp vec4 tex3Point = c0 + abs(offset.x)*(c1-c0) + abs(offset.y)*(c2-c0); 						\n"
+"#define READ_TEX(name, tex, texCoord, fbMonochrome, fbFixedAlpha)	\\\n"
+"  {		\\\n"
+"  lowp vec4 texStandard = texture(tex, texCoord); 							\\\n"
+"  FILTER_3POINT(tex, texCoord);  \\\n"
+"  name = uTextureFilterMode == 0 ? texStandard : tex3Point;	\\\n"
+"  if (fbMonochrome == 1) name = vec4(name.r);						\\\n"
+"  else if (fbMonochrome == 2) 												\\\n"
+"    name.rgb = vec3(dot(vec3(0.2126, 0.7152, 0.0722), name.rgb));	\\\n"
+"  if (fbFixedAlpha == 1) name.a = 0.825;									\\\n"
+"  }		\n"
 ;
 
 #ifdef GL_MULTISAMPLING_SUPPORT
