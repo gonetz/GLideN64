@@ -330,7 +330,9 @@ void TextDrawer::renderText(const char *_pText, float _x, float _y) const
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+#ifndef GLES2
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
+#endif
 
 	/* Set up the VBO for our vertex data */
 	glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
