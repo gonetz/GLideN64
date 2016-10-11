@@ -251,6 +251,9 @@
     <ClCompile Include="..\..\src\Performance.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\CRC32.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\3DMath.h">
@@ -443,6 +446,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Performance.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\CRC32.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

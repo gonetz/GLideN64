@@ -68,7 +68,7 @@ private:
 	{
 		current[0] = nullptr;
 		current[1] = nullptr;
-		CRC_BuildTable();
+		CRC_Init();
 	}
 	TextureCache(const TextureCache &);
 
