@@ -28,7 +28,7 @@ MY_LOCAL_SRC_FILES :=                               \
     $(SRCDIR)/CommonPluginAPI.cpp                   \
     $(SRCDIR)/Config.cpp                            \
     $(SRCDIR)/convert.cpp                           \
-    $(SRCDIR)/CRC.cpp                               \
+    $(SRCDIR)/CRC_OPT.cpp                           \
     $(SRCDIR)/DepthBuffer.cpp                       \
     $(SRCDIR)/F3D.cpp                               \
     $(SRCDIR)/F3DDKR.cpp                            \
