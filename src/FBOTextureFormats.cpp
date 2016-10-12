@@ -43,9 +43,9 @@ void FBOTextureFormats::init()
 	monochromeType = GL_UNSIGNED_BYTE;
 	monochromeFormatBytes = 1;
 
-	depthInternalFormat = GL_DEPTH_COMPONENT32F;
+	depthInternalFormat = GL_DEPTH_COMPONENT24;
 	depthFormat = GL_DEPTH_COMPONENT;
-	depthType = GL_FLOAT;
+	depthType = GL_UNSIGNED_INT;
 	depthFormatBytes = 4;
 
 	depthImageInternalFormat = GL_RGBA32F;
