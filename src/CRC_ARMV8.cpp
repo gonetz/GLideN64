@@ -1,7 +1,7 @@
 #include "CRC.h"
 #include <arm_acle.h>
 
-void CRC_BuildTable()
+void CRC_Init()
 {
 }
 
@@ -33,6 +33,11 @@ u32 CRC_Calculate( u32 crc, const void * buffer, u32 count )
 		crc = __crc32b(crc, *p);
 
 	return crc ^ orig;
+}
+
+u32 CRC_Calculate_Strict( u32 crc, const void * buffer, u32 count )
+{
+	return CRC_Calculate(crc, buffer, count);
 }
 
 u32 CRC_CalculatePalette(u32 crc, const void * buffer, u32 count )
