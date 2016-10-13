@@ -33,7 +33,7 @@ void FBOTextureFormats::init()
 		colorFormatBytes = 2;
 	}
 #elif defined(GLES3) || defined (GLES3_1)
-	colorInternalFormat = GL_RGBA;
+	colorInternalFormat = GL_RGBA8;
 	colorFormat = GL_RGBA;
 	colorType = GL_UNSIGNED_BYTE;
 	colorFormatBytes = 4;
