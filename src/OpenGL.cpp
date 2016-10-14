@@ -1515,7 +1515,7 @@ void OGLRender::drawRect(int _ulx, int _uly, int _lrx, int _lry, float *_pColor)
 
 	const float scaleX = pCurrentBuffer != nullptr ? 1.0f / pCurrentBuffer->m_width : VI.rwidth;
 	const float scaleY = pCurrentBuffer != nullptr ? 1.0f / pCurrentBuffer->m_height : VI.rheight;
-	const float Z = (gDP.otherMode.depthSource == G_ZS_PRIM) ? gDP.primDepth.z : gSP.viewport.nearz;
+	const float Z = (gDP.otherMode.depthSource == G_ZS_PRIM) ? gDP.primDepth.z : 0.0f;
 	const float W = 1.0f;
 	m_rect[0].x = (float)_ulx * (2.0f * scaleX) - 1.0;
 	m_rect[0].y = (float)_uly * (-2.0f * scaleY) + 1.0;
@@ -1775,7 +1775,7 @@ void OGLRender::drawTexturedRect(const TexturedRectParams & _params)
 
 	const float scaleX = pCurrentBuffer != nullptr ? 1.0f / pCurrentBuffer->m_width : VI.rwidth;
 	const float scaleY = pCurrentBuffer != nullptr ? 1.0f / pCurrentBuffer->m_height : VI.rheight;
-	const float Z = (gDP.otherMode.depthSource == G_ZS_PRIM) ? gDP.primDepth.z : gSP.viewport.nearz;
+	const float Z = (gDP.otherMode.depthSource == G_ZS_PRIM) ? gDP.primDepth.z : 0.0f;
 	const float W = 1.0f;
 	f32 uly, lry;
 	if (bUseTexrectDrawer) {
