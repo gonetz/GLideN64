@@ -982,6 +982,15 @@ float _adjustViewportX(f32 _X0)
 		return (_X0 + halfVP - halfX) * video().getAdjustScale() + halfX - halfVP;
 }
 
+inline
+bool _needAdjustCoordinate(OGLVideo & _ogl)
+{
+	return _ogl.isAdjustScreen() &&
+		gSP.viewport.width < gDP.colorImage.width &&
+		gSP.viewport.width + gSP.viewport.x * 2.0f != (float)gDP.colorImage.width &&
+		gDP.colorImage.width > VI.width * 98 / 100;
+}
+
 void OGLRender::_updateViewport() const
 {
 	OGLVideo & ogl = video();
@@ -990,7 +999,7 @@ void OGLRender::_updateViewport() const
 		const f32 scaleX = ogl.getScaleX();
 		const f32 scaleY = ogl.getScaleY();
 		float Xf = gSP.viewport.vscale[0] < 0 ? (gSP.viewport.x + gSP.viewport.vscale[0] * 2.0f) : gSP.viewport.x;
-		if (ogl.isAdjustScreen() && gSP.viewport.width < gDP.colorImage.width && gDP.colorImage.width > VI.width * 98 / 100)
+		if (_needAdjustCoordinate(ogl))
 			Xf = _adjustViewportX(Xf);
 		const GLint X = (GLint)(Xf * scaleX);
 		const GLint Y = gSP.viewport.vscale[1] < 0 ? (GLint)((gSP.viewport.y + gSP.viewport.vscale[1] * 2.0f) * scaleY) : (GLint)((VI.height - (gSP.viewport.y + gSP.viewport.height)) * scaleY);
@@ -1000,7 +1009,7 @@ void OGLRender::_updateViewport() const
 		const f32 scaleX = pCurrentBuffer->m_scaleX;
 		const f32 scaleY = pCurrentBuffer->m_scaleY;
 		float Xf = gSP.viewport.vscale[0] < 0 ? (gSP.viewport.x + gSP.viewport.vscale[0] * 2.0f) : gSP.viewport.x;
-		if (ogl.isAdjustScreen() && gSP.viewport.width < gDP.colorImage.width && gDP.colorImage.width > VI.width * 98 / 100)
+		if (_needAdjustCoordinate(ogl))
 			Xf = _adjustViewportX(Xf);
 		const GLint X = (GLint)(Xf * scaleX);
 		const GLint Y = gSP.viewport.vscale[1] < 0 ? (GLint)((gSP.viewport.y + gSP.viewport.vscale[1] * 2.0f) * scaleY) : (GLint)((pCurrentBuffer->m_height - (gSP.viewport.y + gSP.viewport.height)) * scaleY);
@@ -1049,7 +1058,7 @@ void OGLRender::updateScissor(FrameBuffer * _pBuffer) const
 
 	float SX0 = gDP.scissor.ulx;
 	float SX1 = gDP.scissor.lrx;
-	if (ogl.isAdjustScreen() && gSP.viewport.width < gDP.colorImage.width && gDP.colorImage.width > VI.width * 98 / 100)
+	if (_needAdjustCoordinate(ogl))
 		_adjustScissorX(SX0, SX1, ogl.getAdjustScale());
 
 	glScissor((GLint)(SX0 * scaleX), (GLint)((screenHeight - gDP.scissor.lry) * scaleY + heightOffset),
