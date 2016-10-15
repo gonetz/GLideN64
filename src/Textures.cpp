@@ -615,7 +615,8 @@ void _calcTileSizes(u32 _t, TileSizes & _sizes, gDPTile * _pLoadTile)
 	u32 maskHeight = 1 << pTile->maskt;
 	u32 width, height;
 
-	gDPLoadTileInfo &info = gDP.loadInfo[pTile->tmem];
+	const u32 tMemMask = gDP.otherMode.textureLUT == G_TT_NONE ? 0x1FF : 0xFF;
+	gDPLoadTileInfo &info = gDP.loadInfo[pTile->tmem & tMemMask];
 	_sizes.bytes = info.bytes;
 	if (info.loadType == LOADTYPE_TILE) {
 		if (pTile->masks && ((maskWidth * maskHeight) <= maxTexels))
@@ -1176,7 +1177,8 @@ u32 _calculateCRC(u32 _t, const TextureParams & _params, u32 _bytes)
 		const u32 lineBytes = gSP.textureTile[_t]->line << 3;
 		_bytes = _params.height*lineBytes;
 	}
-	const u64 *src = (u64*)&TMEM[gSP.textureTile[_t]->tmem];
+	const u32 tMemMask = gDP.otherMode.textureLUT == G_TT_NONE ? 0x1FF : 0xFF;
+	const u64 *src = (u64*)&TMEM[gSP.textureTile[_t]->tmem & tMemMask];
 	u32 crc = 0xFFFFFFFF;
 	crc = CRC_Calculate(crc, src, _bytes);
 
