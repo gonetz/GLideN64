@@ -10,7 +10,7 @@ void FBOTextureFormats::init()
 	monochromeType = GL_UNSIGNED_SHORT_5_6_5;
 	monochromeFormatBytes = 2;
 
-#ifndef VC
+#ifndef USE_DEPTH_RENDERBUFFER
 	depthInternalFormat = GL_DEPTH_COMPONENT;
 	depthFormatBytes = 4;
 #else
