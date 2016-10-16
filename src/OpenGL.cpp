@@ -987,7 +987,7 @@ bool _needAdjustCoordinate(OGLVideo & _ogl)
 {
 	return _ogl.isAdjustScreen() &&
 		gSP.viewport.width < gDP.colorImage.width &&
-		gSP.viewport.width + gSP.viewport.x * 2.0f != (float)gDP.colorImage.width &&
+		u32(gSP.viewport.width + gSP.viewport.x * 2.0f) != gDP.colorImage.width &&
 		gDP.colorImage.width > VI.width * 98 / 100;
 }
 
