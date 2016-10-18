@@ -63,7 +63,7 @@ bool ColorBufferToRDRAM_GL::_readPixels(GLint _x0, GLint _y0, GLsizei _width, GL
 {
 	GLenum colorFormat, colorType, colorFormatBytes;
 	if (_size > G_IM_SIZ_8b) {
-		colorFormat = fboFormats.colorInternalFormat;
+		colorFormat = fboFormats.colorFormat;
 		colorType = fboFormats.colorType;
 		colorFormatBytes = fboFormats.colorFormatBytes;
 	} else {
