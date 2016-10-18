@@ -1,4 +1,4 @@
-#include "CRC32.h"
+#include "CRC.h"
 
 #define CRC32_POLYNOMIAL     0x04C11DB7
 
@@ -19,7 +19,7 @@ u32 Reflect( u32 ref, char ch )
 	 return value;
 }
 
-void CRC32_BuildTable()
+void CRC_Init()
 {
 	u32 crc;
 
@@ -32,7 +32,7 @@ void CRC32_BuildTable()
 	}
 }
 
-u32 CRC32_Calculate( u32 crc, const void * buffer, u32 count )
+u32 CRC_Calculate( u32 crc, const void * buffer, u32 count )
 {
 	u8 *p;
 	u32 orig = crc;
@@ -44,7 +44,7 @@ u32 CRC32_Calculate( u32 crc, const void * buffer, u32 count )
 	return crc ^ orig;
 }
 
-u32 CRC32_CalculatePalette(u32 crc, const void * buffer, u32 count )
+u32 CRC_CalculatePalette(u32 crc, const void * buffer, u32 count )
 {
 	u8 *p;
 	u32 orig = crc;

@@ -59,9 +59,6 @@
     <ClCompile Include="..\..\src\Combiner.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\CRC.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\DepthBuffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

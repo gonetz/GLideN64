@@ -12,7 +12,6 @@ set(GLideN64_SOURCES
   CommonPluginAPI.cpp
   Config.cpp
   convert.cpp
-  CRC.cpp
   CRC32.cpp
   DepthBuffer.cpp
   F3D.cpp
@@ -186,20 +185,14 @@ if(VEC4_OPT)
   )
 endif(VEC4_OPT)
 
-if(CRC_OPT OR CRC_ARMV8)
+if(CRC_ARMV8)
   list(REMOVE_ITEM GLideN64_SOURCES
-    CRC.cpp
+	CRC32.cpp
   )
-  if(CRC_OPT)
-    list(APPEND GLideN64_SOURCES
-      CRC_OPT.cpp
-    )
-  elseif(CRC_ARMV8)
-    list(APPEND GLideN64_SOURCES
-      CRC_ARMV8.cpp
-    )
-  endif(CRC_OPT)
-endif(CRC_OPT OR CRC_ARMV8)
+  list(APPEND GLideN64_SOURCES
+	CRC32_ARMV8.cpp
+  )
+endif(CRC_ARMV8)
 
 if(NEON_OPT)
   add_definitions(

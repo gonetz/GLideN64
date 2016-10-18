@@ -241,7 +241,7 @@ void GBIInfo::loadMicrocode(u32 uc_start, u32 uc_dstart, u16 uc_dsize)
 	current.type = NONE;
 
 	// See if we can identify it by CRC
-	const u32 uc_crc = CRC_Calculate_Strict( 0xFFFFFFFF, &RDRAM[uc_start & 0x1FFFFFFF], 4096 );
+	const u32 uc_crc = CRC_Calculate( 0xFFFFFFFF, &RDRAM[uc_start & 0x1FFFFFFF], 4096 );
 	const u32 numSpecialMicrocodes = sizeof(specialMicrocodes) / sizeof(SpecialMicrocodeInfo);
 	for (u32 i = 0; i < numSpecialMicrocodes; ++i) {
 		if (uc_crc == specialMicrocodes[i].crc) {
