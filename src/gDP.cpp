@@ -899,7 +899,7 @@ void gDPFullSync()
 	video().getRender().flush();
 
 	const bool sync = config.frameBufferEmulation.copyToRDRAM == Config::ctSync;
-	if (config.frameBufferEmulation.copyToRDRAM != Config::ctDisable &&
+	if ((config.frameBufferEmulation.copyToRDRAM != Config::ctDisable || (config.generalEmulation.hacks & hack_subscreen) != 0) &&
 		!FBInfo::fbInfo.isSupported() &&
 		frameBufferList().getCurrent() != nullptr &&
 		!frameBufferList().getCurrent()->isAuxiliary()
