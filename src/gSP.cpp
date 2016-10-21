@@ -376,8 +376,8 @@ void gSPProcessVertex4(u32 v)
 					y = fLightDir[1];
 				}
 				if (gSP.geometryMode & G_TEXTURE_GEN_LINEAR) {
-					vtx.s = acosf(x) * 325.94931f;
-					vtx.t = acosf(y) * 325.94931f;
+					vtx.s = acosf(-x) * 325.94931f;
+					vtx.t = acosf(-y) * 325.94931f;
 				} else { // G_TEXTURE_GEN
 					vtx.s = (x + 1.0f) * 512.0f;
 					vtx.t = (y + 1.0f) * 512.0f;
@@ -607,8 +607,8 @@ void gSPProcessVertex(u32 v)
 				y = fLightDir[1];
 			}
 			if (gSP.geometryMode & G_TEXTURE_GEN_LINEAR) {
-				vtx.s = acosf(x) * 325.94931f;
-				vtx.t = acosf(y) * 325.94931f;
+				vtx.s = acosf(-x) * 325.94931f;
+				vtx.t = acosf(-y) * 325.94931f;
 			} else { // G_TEXTURE_GEN
 				vtx.s = (x + 1.0f) * 512.0f;
 				vtx.t = (y + 1.0f) * 512.0f;
