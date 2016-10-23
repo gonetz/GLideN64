@@ -3,6 +3,7 @@
 #include "DepthBufferRender/DepthBufferRender.h"
 #include "gSP.h"
 #include "SoftwareRender.h"
+#include "DepthBuffer.h"
 
 inline
 void clipTest(vertexclip & _vtx)
@@ -163,6 +164,10 @@ int clipW(const SPVertex ** _vsrc, SPVertex * _vdst)
 
 void renderTriangles(const SPVertex * _pVertices, const GLubyte * _pElements, u32 _numElements)
 {
+	//Current depth buffer can be null if we are loading from a save state
+	if(depthBufferList().getCurrent() == nullptr)
+		return;
+
 	vertexclip vclip[16];
 	vertexi vdraw[12];
 	const SPVertex * vsrc[4];
@@ -182,7 +187,7 @@ void renderTriangles(const SPVertex * _pVertices, const GLubyte * _pElements, u3
 		}
 		vsrc[3] = vsrc[0];
 
-        int numVertex = clipW(vsrc, vdata);
+		int numVertex = clipW(vsrc, vdata);
 
 		if (!calcScreenCoordinates(vdata, vclip, numVertex))
 			continue;
