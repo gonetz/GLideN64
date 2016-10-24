@@ -119,7 +119,7 @@ void VI_UpdateScreen()
 			gDP.changed |= CHANGED_CPU_FB_WRITE;
 		else if (!FBInfo::fbInfo.isSupported() && !pBuffer->isValid(true)) {
 			gDP.changed |= CHANGED_CPU_FB_WRITE;
-			if (config.frameBufferEmulation.copyToRDRAM == 0)
+			if (config.frameBufferEmulation.copyToRDRAM == 0 && (config.generalEmulation.hacks & hack_subscreen) == 0)
 				pBuffer->copyRdram();
 		}
 
