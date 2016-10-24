@@ -85,24 +85,23 @@ GLuint createShaderProgram(const char * _strVertex, const char * _strFragment)
 static
 const char* fragment_shader_blender1 =
 "  if (uForceBlendCycle1 != 0) {						\n"
-"    muxPM[0] = clamp(vec4(color2, alpha2), 0.0, 1.0);	\n"
-"    muxA[0] = muxPM[0].a;								\n"
+"    muxPM[0] = clampedColor;							\n"
+"    muxA[0] = clampedColor.a;							\n"
 "    muxB[0] = 1.0 - muxA[uBlendMux1[1]];				\n"
 "    lowp vec4 blend1 = (muxPM[uBlendMux1[0]] * muxA[uBlendMux1[1]]) + (muxPM[uBlendMux1[2]] * muxB[uBlendMux1[3]]);	\n"
-"    color2 = clamp(blend1.rgb, 0.0, 1.0);				\n"
-"    alpha2 = muxA[0];									\n"
+"    clampedColor.rgb = clamp(blend1.rgb, 0.0, 1.0);	\n"
 "  }													\n"
 ;
 
 static
 const char* fragment_shader_blender2 =
-"  if (uForceBlendCycle2 != 0) {				\n"
-"    muxPM[0] = vec4(color2, alpha2);			\n"
-"    muxA[0] = alpha2;							\n"
-"    muxB[0] = 1.0 - muxA[uBlendMux2[1]];		\n"
+"  if (uForceBlendCycle2 != 0) {						\n"
+"    muxPM[0] = clampedColor;							\n"
+"    muxA[0] = clampedColor.a;							\n"
+"    muxB[0] = 1.0 - muxA[uBlendMux2[1]];				\n"
 "    lowp vec4 blend2 = muxPM[uBlendMux2[0]] * muxA[uBlendMux2[1]] + muxPM[uBlendMux2[2]] * muxB[uBlendMux2[3]];	\n"
-"    color2 = clamp(blend2.rgb, 0.0, 1.0);		\n"
-"  }											\n"
+"    clampedColor.rgb = clamp(blend2.rgb, 0.0, 1.0);	\n"
+"  }													\n"
 ;
 #endif
 
@@ -306,12 +305,15 @@ int compileCombiner(Combiner & _color, Combiner & _alpha, std::string & _strShad
 	else
 		_strShader.append("  color2 = color1; \n");
 
+	// Simulate N64 color clamp.
+	_strShader.append("  lowp vec4 cmbRes = vec4(color2, alpha2);\n");
+	_strShader.append("  lowp vec4 clampedColor = cmbRes + (-cmbRes)*step(cmbRes, vec4(0.0)) + step(cmbRes, vec4(-0.51)); \n");
 
 #ifndef GLES2
 	if (config.generalEmulation.enableNoise != 0) {
 		_strShader.append(
-			"  if (uColorDitherMode == 2) colorNoiseDither(snoise(), color2);	\n"
-			"  if (uAlphaDitherMode == 2) alphaNoiseDither(snoise(), alpha2);	\n"
+			"  if (uColorDitherMode == 2) colorNoiseDither(snoise(), clampedColor.rgb);	\n"
+			"  if (uAlphaDitherMode == 2) alphaNoiseDither(snoise(), clampedColor.a);	\n"
 			);
 	}
 #endif
@@ -323,11 +325,11 @@ int compileCombiner(Combiner & _color, Combiner & _alpha, std::string & _strShad
 			_strShader.append(fragment_shader_blender2);
 
 		_strShader.append(
-			"  fragColor = vec4(color2, alpha2);	\n"
+			"  fragColor = clampedColor;	\n"
 			);
 	} else {
 		_strShader.append(
-			"  fragColor = vec4(color2, alpha2);	\n"
+			"  fragColor = clampedColor;	\n"
 			"  if (uFogUsage == 1) \n"
 			"    fragColor.rgb = mix(fragColor.rgb, uFogColor.rgb, vShadeColor.a); \n"
 			);
