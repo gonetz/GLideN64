@@ -381,29 +381,24 @@ CachedTexture * FrameBuffer::_getSubTexture(u32 _t)
 
 CachedTexture * FrameBuffer::getTexture(u32 _t)
 {
-	CachedTexture *pTexture = m_pTexture;
-
 	const bool getDepthTexture = m_isDepthBuffer &&
 								 gDP.colorImage.address == gDP.depthImageAddress &&
 								 m_pDepthBuffer != nullptr &&
 								 (config.generalEmulation.hacks & hack_ZeldaMM) == 0;
+	CachedTexture *pTexture = getDepthTexture ? m_pDepthBuffer->m_pDepthBufferTexture : m_pTexture;
 
-	if (getDepthTexture)
-		pTexture = m_pDepthBuffer->m_pDepthBufferTexture;
-	else if (gSP.textureTile[_t]->clamps == 0 || gSP.textureTile[_t]->clampt == 0)
-		pTexture = _getSubTexture(_t);
-
-	if (pTexture != m_pSubTexture) {
-		const u32 shift = (gSP.textureTile[_t]->imageAddress - m_startAddress) >> (m_size - 1);
-		const u32 factor = m_width;
-		if (m_loadType == LOADTYPE_TILE) {
-			pTexture->offsetS = (float)(m_loadTileOrigin.uls + (shift % factor));
-			pTexture->offsetT = (float)(m_height - (m_loadTileOrigin.ult + shift / factor));
-		} else {
-			pTexture->offsetS = (float)(shift % factor);
-			pTexture->offsetT = (float)(m_height - shift / factor);
-		}
+	const u32 shift = (gSP.textureTile[_t]->imageAddress - m_startAddress) >> (m_size - 1);
+	const u32 factor = m_width;
+	if (m_loadType == LOADTYPE_TILE) {
+		pTexture->offsetS = (float)(m_loadTileOrigin.uls + (shift % factor));
+		pTexture->offsetT = (float)(m_height - (m_loadTileOrigin.ult + shift / factor));
+	} else {
+		pTexture->offsetS = (float)(shift % factor);
+		pTexture->offsetT = (float)(m_height - shift / factor);
 	}
+
+	if (!getDepthTexture && (gSP.textureTile[_t]->clamps == 0 || gSP.textureTile[_t]->clampt == 0))
+		pTexture = _getSubTexture(_t);
 
 	pTexture->scaleS = m_scaleX / (float)pTexture->realWidth;
 	pTexture->scaleT = m_scaleY / (float)pTexture->realHeight;
