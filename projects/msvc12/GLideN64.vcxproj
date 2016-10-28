@@ -383,6 +383,7 @@
     <ClInclude Include="..\..\src\BufferCopy\RDRAMtoColorBuffer.h" />
     <ClInclude Include="..\..\src\BufferCopy\WriteToRDRAM.h" />
     <ClInclude Include="..\..\src\Combiner.h" />
+    <ClInclude Include="..\..\src\common\GLFunctions.h" />
     <ClInclude Include="..\..\src\Config.h" />
     <ClInclude Include="..\..\src\convert.h" />
     <ClInclude Include="..\..\src\CRC.h" />
@@ -448,7 +449,6 @@
     <ClInclude Include="..\..\src\L3DEX2.h" />
     <ClInclude Include="..\..\src\S2DEX.h" />
     <ClInclude Include="..\..\src\S2DEX2.h" />
-    <ClInclude Include="..\..\src\windows\GLFunctions.h" />
     <ClInclude Include="..\..\src\windows\GLideN64_windows.h" />
     <ClInclude Include="..\..\src\wst.h" />
     <ClInclude Include="..\..\src\ZilmarGFX_1_3.h">
