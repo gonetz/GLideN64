@@ -142,10 +142,10 @@ void InitZlutTexture()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	glTexImage2D(GL_TEXTURE_2D, 0, fboFormats.lutInternalFormat,
-		512, 512, 0, fboFormats.lutFormat, fboFormats.lutType,
-		zLUT);
-	glBindImageTexture(ZlutImageUnit, g_zlut_tex, 0, GL_FALSE, 0, GL_READ_ONLY, fboFormats.lutInternalFormat);
+	//glBindImageTexture requires an immutable texture object, glTexStorage2D does this
+	glTexStorage2D(GL_TEXTURE_2D, 1, fboFormats.lutInternalFormat, 512, 512);
+	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 512, 512, fboFormats.lutFormat, fboFormats.lutType, zLUT);
+	glBindImageTexture(ZlutImageUnit, g_zlut_tex, 0, GL_FALSE, GL_FALSE, GL_READ_ONLY, fboFormats.lutInternalFormat);
 }
 
 static
@@ -153,7 +153,8 @@ void DestroyZlutTexture()
 {
 	if (!video().getRender().isImageTexturesSupported())
 		return;
-	glBindImageTexture(ZlutImageUnit, 0, 0, GL_FALSE, 0, GL_READ_ONLY, fboFormats.lutInternalFormat);
+
+	glBindImageTexture(ZlutImageUnit, 0, 0, GL_FALSE, GL_FALSE, GL_READ_ONLY, fboFormats.lutInternalFormat);
 	if (g_zlut_tex > 0) {
 		glBindTexture(GL_TEXTURE_2D, 0);
 		glDeleteTextures(1, &g_zlut_tex);
