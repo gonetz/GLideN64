@@ -114,6 +114,8 @@ PFNGLGETPROGRAMBINARYPROC glGetProgramBinary;
 PFNGLPROGRAMBINARYPROC glProgramBinary;
 PFNGLPROGRAMPARAMETERIPROC glProgramParameteri;
 
+PFNGLTEXSTORAGE2DPROC glTexStorage2D;
+
 void initGLFunctions()
 {
 #ifdef EGL
@@ -217,4 +219,6 @@ void initGLFunctions()
 	glGetProgramBinary = (PFNGLGETPROGRAMBINARYPROC)glGetProcAddress("glGetProgramBinary");
 	glProgramBinary = (PFNGLPROGRAMBINARYPROC)glGetProcAddress("glProgramBinary");
 	glProgramParameteri = (PFNGLPROGRAMPARAMETERIPROC)glGetProcAddress("glProgramParameteri");
+
+	glTexStorage2D = (PFNGLTEXSTORAGE2DPROC)glGetProcAddress("glTexStorage2D");
 }
