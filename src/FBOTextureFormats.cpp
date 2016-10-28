@@ -54,7 +54,7 @@ void FBOTextureFormats::init()
 	depthImageFormatBytes = 16;
 
 	lutInternalFormat = GL_R32UI;
-	lutFormat = GL_RED;
+	lutFormat = GL_RED_INTEGER;
 	lutType = GL_UNSIGNED_INT;
 	lutFormatBytes = 4;
 #else

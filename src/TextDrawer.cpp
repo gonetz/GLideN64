@@ -20,6 +20,8 @@
 #include "Config.h"
 #include "GLSLCombiner.h"
 #include "ShaderUtils.h"
+#include <FBOTextureFormats.h>
+#include "Log.h"
 
 struct point {
 	GLfloat x;
@@ -45,8 +47,10 @@ struct point {
 
 #ifdef GLES2
 const GLenum monohromeformat = GL_LUMINANCE;
+const GLenum monohromeInternalformat = GL_LUMINANCE;
 #else
 const GLenum monohromeformat = GL_RED;
+const GLenum monohromeInternalformat = GL_R8;
 #endif // GLES2
 
 static
@@ -153,7 +157,7 @@ struct Atlas {
 		glGenTextures(1, &tex);
 		glBindTexture(GL_TEXTURE_2D, tex);
 
-		glTexImage2D(GL_TEXTURE_2D, 0, monohromeformat, w, h, 0, monohromeformat, GL_UNSIGNED_BYTE, 0);
+		glTexImage2D(GL_TEXTURE_2D, 0, monohromeInternalformat, w, h, 0, monohromeformat, GL_UNSIGNED_BYTE, 0);
 
 		/* We require 1 byte alignment when uploading texture data */
 		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
