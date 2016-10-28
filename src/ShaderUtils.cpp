@@ -63,10 +63,16 @@ GLuint createShaderProgram(const char * _strVertex, const char * _strFragment)
 	glCompileShader(vertex_shader_object);
 	assert(checkShaderCompileStatus(vertex_shader_object));
 
+	if (!checkShaderCompileStatus(vertex_shader_object))
+		logErrorShader(GL_VERTEX_SHADER, _strVertex);
+
 	GLuint fragment_shader_object = glCreateShader(GL_FRAGMENT_SHADER);
 	glShaderSource(fragment_shader_object, 1, &_strFragment, nullptr);
 	glCompileShader(fragment_shader_object);
 	assert(checkShaderCompileStatus(fragment_shader_object));
+
+	if (!checkShaderCompileStatus(fragment_shader_object))
+		logErrorShader(GL_VERTEX_SHADER, _strFragment);
 
 	GLuint program = glCreateProgram();
 	glBindAttribLocation(program, SC_POSITION, "aPosition");

@@ -736,7 +736,7 @@ void FrameBufferList::attachDepthBuffer()
 		pDepthBuffer->initDepthImageTexture(m_pCurrent);
 		pDepthBuffer->initDepthBufferTexture(m_pCurrent);
 #ifndef USE_DEPTH_RENDERBUFFER
-#ifdef GLES2
+#ifdef GLESX
 		if (pDepthBuffer->m_pDepthBufferTexture->realWidth == m_pCurrent->m_pTexture->realWidth) {
 #else
 		if (pDepthBuffer->m_pDepthBufferTexture->realWidth >= m_pCurrent->m_pTexture->realWidth) {
