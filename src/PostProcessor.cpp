@@ -242,6 +242,27 @@ FRAGMENT_SHADER_END
 "}																			\n"
 ;
 
+static const char* orientationCorrectionShader =
+SHADER_VERSION
+"#if (__VERSION__ > 120)													\n"
+"# define IN in																\n"
+"# define OUT out															\n"
+"# define texture2D texture													\n"
+"#else																		\n"
+"# define IN varying														\n"
+"# define OUT																\n"
+"#endif // __VERSION __														\n"
+"IN mediump vec2 vTexCoord;													\n"
+"uniform sampler2D Sample0;													\n"
+"OUT lowp vec4 fragColor;													\n"
+"																			\n"
+"void main()																\n"
+"{																			\n"
+"    fragColor = texture2D( Sample0, vec2(1.0 - vTexCoord.x, 1.0 - vTexCoord.y));       \n"
+FRAGMENT_SHADER_END
+"}																			\n"
+;
+
 static
 GLuint _createShaderProgram(const char * _strVertex, const char * _strFragment)
 {
@@ -321,6 +342,7 @@ PostProcessor::PostProcessor()
 	, m_glowProgram(0)
 	, m_bloomProgram(0)
 	, m_gammaCorrectionProgram(0)
+	, m_orientationCorrectionProgram(0)
 	, m_pResultBuffer(nullptr)
 	, m_FBO_glowMap(0)
 	, m_FBO_blur(0)
@@ -405,10 +427,22 @@ void PostProcessor::_initBlur()
 	glUseProgram(0);
 }
 
+void PostProcessor::_initOrientationCorrection()
+{
+	m_orientationCorrectionProgram = _createShaderProgram(vertexShader, orientationCorrectionShader);
+	glUseProgram(m_orientationCorrectionProgram);
+	int loc = glGetUniformLocation(m_orientationCorrectionProgram, "Sample0");
+	assert(loc >= 0);
+	glUniform1i(loc, 0);
+	glUseProgram(0);
+}
+
 void PostProcessor::init()
 {
 	_initCommon();
 	_initGammaCorrection();
+	if (config.generalEmulation.enableBlitScreenWorkaround != 0)
+		_initOrientationCorrection();
 	if (config.bloomFilter.enable != 0)
 		_initBlur();
 }
@@ -426,6 +460,13 @@ void PostProcessor::_destroyGammaCorrection()
 	if (m_gammaCorrectionProgram != 0)
 		glDeleteProgram(m_gammaCorrectionProgram);
 	m_gammaCorrectionProgram = 0;
+}
+
+void PostProcessor::_destroyOrientationCorrection()
+{
+	if (m_orientationCorrectionProgram != 0)
+		glDeleteProgram(m_orientationCorrectionProgram);
+	m_orientationCorrectionProgram = 0;
 }
 
 void PostProcessor::_destroyBlur()
@@ -468,6 +509,7 @@ void PostProcessor::destroy()
 {
 	_destroyBlur();
 	_destroyGammaCorrection();
+	_destroyOrientationCorrection();
 	_destroyCommon();
 }
 
@@ -591,3 +633,23 @@ FrameBuffer * PostProcessor::doGammaCorrection(FrameBuffer * _pBuffer)
 	_postDraw();
 	return m_pResultBuffer;
 }
+
+FrameBuffer * PostProcessor::doOrientationCorrection(FrameBuffer * _pBuffer)
+{
+	if (_pBuffer == nullptr)
+		return nullptr;
+
+	if (config.generalEmulation.enableBlitScreenWorkaround == 0)
+		return _pBuffer;
+
+	_preDraw(_pBuffer);
+
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_pResultBuffer->m_FBO);
+	textureCache().activateTexture(0, m_pTextureOriginal);
+	glUseProgram(m_orientationCorrectionProgram);
+	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+	_postDraw();
+	return m_pResultBuffer;
+}
+
