@@ -12,6 +12,7 @@ public:
 
 	FrameBuffer * doBlur(FrameBuffer * _pBuffer);
 	FrameBuffer * doGammaCorrection(FrameBuffer * _pBuffer);
+	FrameBuffer * doOrientationCorrection(FrameBuffer * _pBuffer);
 
 	static PostProcessor & get();
 
@@ -23,6 +24,8 @@ private:
 	void _destroyCommon();
 	void _initGammaCorrection();
 	void _destroyGammaCorrection();
+	void _initOrientationCorrection();
+	void _destroyOrientationCorrection();
 	void _initBlur();
 	void _destroyBlur();
 	void _setGLState();
@@ -35,6 +38,8 @@ private:
 	GLuint m_bloomProgram;
 
 	GLuint m_gammaCorrectionProgram;
+
+	GLuint m_orientationCorrectionProgram;
 
 	FrameBuffer * m_pResultBuffer;
 

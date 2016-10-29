@@ -866,8 +866,9 @@ void FrameBufferList::renderBuffer(u32 _address)
 		srcY0 = (GLint)(srcY0*yScale);
 		srcY1 = srcY0 + VI.real_height;
 	}
-
-	FrameBuffer * pFilteredBuffer = PostProcessor::get().doBlur(PostProcessor::get().doGammaCorrection(pBuffer));
+	PostProcessor & postProcessor = PostProcessor::get();
+	FrameBuffer * pFilteredBuffer = postProcessor.doBlur(postProcessor.doGammaCorrection(
+		postProcessor.doOrientationCorrection(pBuffer)));
 
 	const bool vi_fsaa = (*REG.VI_STATUS & 512) == 0;
 	const bool vi_divot = (*REG.VI_STATUS & 16) != 0;
@@ -938,7 +939,8 @@ void FrameBufferList::renderBuffer(u32 _address)
 		const u32 size = *REG.VI_STATUS & 3;
 		pBuffer = findBuffer(_address + (((*REG.VI_WIDTH)*VI.height)<<size>>1));
 		if (pBuffer != nullptr) {
-			pFilteredBuffer = PostProcessor::get().doBlur(PostProcessor::get().doGammaCorrection(pBuffer));
+			pFilteredBuffer = postProcessor.doBlur(postProcessor.doGammaCorrection(
+				postProcessor.doOrientationCorrection(pBuffer)));
 			srcY0 = 0;
 			srcY1 = srcPartHeight;
 			dstY0 = dstY1;
