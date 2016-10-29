@@ -38,6 +38,7 @@ struct FrameBuffer
 	bool m_isPauseScreen;
 	bool m_isOBScreen;
 	bool m_needHeightCorrection;
+	bool m_readable;
 
 	struct {
 		u32 uls, ult;

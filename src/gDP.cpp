@@ -380,7 +380,7 @@ bool CheckForFrameBufferTexture(u32 _address, u32 _bytes)
 
 	FrameBufferList & fbList = frameBufferList();
 	FrameBuffer *pBuffer = fbList.findBuffer(_address);
-	bool bRes = pBuffer != nullptr;
+	bool bRes = pBuffer != nullptr && pBuffer->m_readable;
 	if (bRes) {
 		if ((config.generalEmulation.hacks & hack_blurPauseScreen) != 0) {
 			if (gDP.colorImage.address == gDP.depthImageAddress && pBuffer->m_copiedToRdram) {

@@ -31,7 +31,8 @@ FrameBuffer::FrameBuffer() :
 	m_startAddress(0), m_endAddress(0), m_size(0), m_width(0), m_height(0), m_validityChecked(0),
 	m_scaleX(0), m_scaleY(0),
 	m_copiedToRdram(false), m_fingerprint(false), m_cleared(false), m_changed(false), m_cfb(false),
-	m_isDepthBuffer(false), m_isPauseScreen(false), m_isOBScreen(false), m_needHeightCorrection(false),
+	m_isDepthBuffer(false), m_isPauseScreen(false), m_isOBScreen(false),
+	m_needHeightCorrection(false), m_readable(false),
 	m_loadType(LOADTYPE_BLOCK), m_pDepthBuffer(nullptr),
 	m_resolveFBO(0), m_pResolveTexture(nullptr), m_resolved(false),
 	m_SubFBO(0), m_pSubTexture(nullptr)
@@ -556,6 +557,7 @@ void FrameBufferList::saveBuffer(u32 _address, u16 _format, u16 _size, u16 _widt
 
 	if (m_pCurrent != nullptr) {
 		bPrevIsDepth = m_pCurrent->m_isDepthBuffer;
+		m_pCurrent->m_readable = true;
 
 		// Correct buffer's end address
 		if (!m_pCurrent->isAuxiliary()) {
