@@ -358,6 +358,8 @@ void RSP_Init()
 	else if (strstr(RSP.romname, (const char *)"WIN BACK") != nullptr ||
 		strstr(RSP.romname, (const char *)"OPERATION WINBACK") != nullptr)
 		config.generalEmulation.hacks |= hack_WinBack;
+	else if (strstr(RSP.romname, (const char *)"GAUNTLET LEGENDS") != nullptr)
+		config.generalEmulation.hacks |= hack_SkipRepeatRSPInstr;
 
 	api().FindPluginPath(RSP.pluginpath);
 
