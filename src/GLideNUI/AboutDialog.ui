@@ -5,6 +5,14 @@
   <property name="windowModality">
    <enum>Qt::WindowModal</enum>
   </property>
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>535</width>
+    <height>424</height>
+   </rect>
+  </property>
   <property name="windowTitle">
    <string>About GLideN64</string>
   </property>
@@ -109,7 +117,7 @@
           <item>
            <widget class="QLabel" name="label_15">
             <property name="text">
-             <string>Author of original glN64 graphics plugin</string>
+             <string>Author of the original glN64 graphics plugin</string>
             </property>
             <property name="alignment">
              <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
@@ -139,7 +147,7 @@
           <item>
            <widget class="QLabel" name="label_17">
             <property name="text">
-             <string>Author of gles2n64, port of N64 to GL ES 2.0</string>
+             <string>Author of gles2n64, a port of glN64 to GL ES 2.0</string>
             </property>
             <property name="alignment">
              <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
@@ -169,7 +177,7 @@
           <item>
            <widget class="QLabel" name="label_19">
             <property name="text">
-             <string>Author of GlideHQ texture library</string>
+             <string>Author of the GlideHQ texture library</string>
             </property>
             <property name="alignment">
              <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
@@ -199,7 +207,7 @@
           <item>
            <widget class="QLabel" name="label_21">
             <property name="text">
-             <string>Author of z64 OpenGL LLE plugin</string>
+             <string>Author of z64, an OpenGL LLE plugin</string>
             </property>
             <property name="alignment">
              <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
