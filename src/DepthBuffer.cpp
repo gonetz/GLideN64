@@ -387,7 +387,7 @@ void DepthBufferList::saveBuffer(u32 _address)
 		pDepthBuffer = nullptr;
 	}
 
-	if (pDepthBuffer == nullptr) {
+	if (pDepthBuffer == nullptr && VI.height != 0) {
 		m_list.emplace_front();
 		DepthBuffer & buffer = m_list.front();
 
@@ -399,18 +399,20 @@ void DepthBufferList::saveBuffer(u32 _address)
 		pDepthBuffer = &buffer;
 	}
 
-	DepthBuffer * pCurrent = m_pCurrent;
-	m_pCurrent = pDepthBuffer;
-	frameBufferList().attachDepthBuffer();
-	if (pDepthBuffer->m_address != gDP.depthImageAddress)
-		m_pCurrent = pCurrent;
+	//Check for null since the depth buffer will not be initialized if VI.height == 0
+	if(pDepthBuffer != nullptr) {
+		DepthBuffer * pCurrent = m_pCurrent;
+		m_pCurrent = pDepthBuffer;
+		frameBufferList().attachDepthBuffer();
+		if (pDepthBuffer->m_address != gDP.depthImageAddress)
+			m_pCurrent = pCurrent;
+	}
 
 #ifdef DEBUG
-		DebugMsg( DEBUG_HIGH | DEBUG_HANDLED, "DepthBuffer_SetBuffer( 0x%08X ); color buffer is 0x%08X\n",
-			address, ( pFrameBuffer != nullptr &&  pFrameBuffer->m_FBO > 0) ?  pFrameBuffer->m_startAddress : 0
-		);
+	DebugMsg( DEBUG_HIGH | DEBUG_HANDLED, "DepthBuffer_SetBuffer( 0x%08X ); color buffer is 0x%08X\n",
+		address, ( pFrameBuffer != nullptr &&  pFrameBuffer->m_FBO > 0) ?  pFrameBuffer->m_startAddress : 0
+	);
 #endif
-
 }
 
 void DepthBufferList::clearBuffer(u32 _ulx, u32 _uly, u32 _lrx, u32 _lry)
