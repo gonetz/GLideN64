@@ -364,7 +364,14 @@ CachedTexture * FrameBuffer::_getSubTexture(u32 _t)
 	if (y0 + copyHeight > m_pTexture->realHeight)
 		copyHeight = m_pTexture->realHeight - y0;
 
+#ifdef GLESX
+	if (m_pTexture->frameBufferTexture == CachedTexture::fbMultiSample){
+		resolveMultisampledTexture(true);
+		glBindFramebuffer(GL_READ_FRAMEBUFFER, m_resolveFBO);
+	}else
+#endif
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, m_FBO);
+
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_SubFBO);
 	glDisable(GL_SCISSOR_TEST);
 	glBlitFramebuffer(
