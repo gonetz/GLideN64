@@ -34,7 +34,7 @@ DepthBuffer::DepthBuffer(DepthBuffer && _other) :
 	m_depthImageFBO(_other.m_depthImageFBO), m_pDepthImageTexture(_other.m_pDepthImageTexture), m_pDepthBufferTexture(_other.m_pDepthBufferTexture),
 	m_depthRenderbuffer(_other.m_depthRenderbuffer), m_depthRenderbufferWidth(_other.m_depthRenderbufferWidth),
 	m_cleared(_other.m_cleared), m_pResolveDepthBufferTexture(_other.m_pResolveDepthBufferTexture), m_resolved(_other.m_resolved),
-	m_pDepthBufferCopyTexture(_other.m_pDepthBufferCopyTexture), m_copied(m_copied)
+	m_pDepthBufferCopyTexture(_other.m_pDepthBufferCopyTexture), m_copied(_other.m_copied)
 {
 	_other.m_depthImageFBO = 0;
 	_other.m_pDepthImageTexture = nullptr;
@@ -267,18 +267,11 @@ CachedTexture * DepthBuffer::copyDepthBufferTexture(FrameBuffer * _pBuffer)
 	glReadBuffer(GL_COLOR_ATTACHMENT0);
 	assert(checkFBO());
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_copyFBO);
-#ifdef GL_MULTISAMPLING_SUPPORT
-	GLenum textarget = config.video.multisampling != 0 ? GL_TEXTURE_2D_MULTISAMPLE : GL_TEXTURE_2D;
-#else
-	GLenum textarget = GL_TEXTURE_2D;
-#endif
-	glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER,
-						   GL_COLOR_ATTACHMENT0,
-						   textarget,
-						   _pBuffer->m_pTexture->frameBufferTexture == CachedTexture::fbMultiSample ?
-						   _pBuffer->m_pResolveTexture->glName :
-						   _pBuffer->m_pTexture->glName,
-						   0);
+
+	glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
+		_pBuffer->m_pTexture->frameBufferTexture == CachedTexture::fbMultiSample ? _pBuffer->m_pResolveTexture->glName : _pBuffer->m_pTexture->glName,
+		0);
+
 	glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, m_pDepthBufferCopyTexture->glName, 0);
 	assert(checkFBO());
 	glDisable(GL_SCISSOR_TEST);
