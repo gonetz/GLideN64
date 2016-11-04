@@ -293,10 +293,10 @@ int compileCombiner(Combiner & _color, Combiner & _alpha, std::string & _strShad
 
 	_strShader.append("  color1 = ");
 	nInputs |= _compileCombiner(_color.stage[0], ColorInput, _strShader);
+	// Simulate N64 color sign-extend.
+	_strShader.append("  color1 += vec3(-2.0) * (vec3(1.0) - step(color1, vec3(1.0))); \n");
 
 	_strShader.append("  combined_color = vec4(color1, alpha1); \n");
-	// Simulate N64 color sign-extend.
-	_strShader.append("  combined_color += vec4(-2.0) * (vec4(1.0) - step(combined_color, vec4(1.0))); \n");
 	if (_alpha.numStages == 2) {
 		_strShader.append("  alpha2 = ");
 		_correctSecondStageParams(_alpha.stage[1]);
