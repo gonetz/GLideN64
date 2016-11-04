@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>ConfigDialog</class>
- <widget class="QDialog" name="ConfigDialog">
+ <class>textureCacheSizeLabel</class>
+ <widget class="QDialog" name="textureCacheSizeLabel">
   <property name="windowModality">
    <enum>Qt::ApplicationModal</enum>
   </property>
@@ -21,14 +21,8 @@
    </property>
    <item>
     <widget class="QTabWidget" name="tabWidget">
-     <property name="minimumSize">
-      <size>
-       <width>0</width>
-       <height>580</height>
-      </size>
-     </property>
      <property name="currentIndex">
-      <number>1</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="videoTab">
       <attribute name="title">
@@ -93,7 +87,7 @@
              <item>
               <widget class="QLabel" name="windowedResolutionLabel">
                <property name="toolTip">
-                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This option selects the resolution for windowed mode. You also may select &lt;span style=&quot; font-weight:600;&quot;&gt;Custom&lt;/span&gt; and enter your own window size.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;640x480, 800x600, 1024x768, 1280x960&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This option selects the resolution for windowed mode. You also may select &lt;span style=&quot; font-weight:600;&quot;&gt;Custom&lt;/span&gt; and enter your own window size.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;640 x 480, 800 x 600, 1024 x 768, 1280 x 960&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                </property>
                <property name="text">
                 <string>Windowed resolution:</string>
@@ -104,69 +98,11 @@
               </widget>
              </item>
              <item>
-              <widget class="QComboBox" name="windowedResolutionComboBox"/>
-             </item>
-             <item>
-              <layout class="QHBoxLayout" name="horizontalLayout_21">
-               <item>
-                <widget class="QLabel" name="windowCustomWidthLabel">
-                 <property name="toolTip">
-                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Custom windowed resolution width&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                 </property>
-                 <property name="text">
-                  <string>W:</string>
-                 </property>
-                 <property name="alignment">
-                  <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                 </property>
-                 <property name="buddy">
-                  <cstring>windowWidthSpinBox</cstring>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QSpinBox" name="windowWidthSpinBox">
-                 <property name="minimum">
-                  <number>320</number>
-                 </property>
-                 <property name="maximum">
-                  <number>7680</number>
-                 </property>
-                 <property name="singleStep">
-                  <number>16</number>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QLabel" name="windowCustomHeightLabel">
-                 <property name="toolTip">
-                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Custom windowed resolution height&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                 </property>
-                 <property name="text">
-                  <string>H:</string>
-                 </property>
-                 <property name="alignment">
-                  <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                 </property>
-                 <property name="buddy">
-                  <cstring>windowHeightSpinBox</cstring>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QSpinBox" name="windowHeightSpinBox">
-                 <property name="minimum">
-                  <number>240</number>
-                 </property>
-                 <property name="maximum">
-                  <number>4320</number>
-                 </property>
-                 <property name="singleStep">
-                  <number>16</number>
-                 </property>
-                </widget>
-               </item>
-              </layout>
+              <widget class="QComboBox" name="windowedResolutionComboBox">
+               <property name="editable">
+                <bool>true</bool>
+               </property>
+              </widget>
              </item>
             </layout>
            </item>
@@ -215,7 +151,7 @@
              </item>
              <item>
               <layout class="QHBoxLayout" name="horizontalLayout_23">
-               <item>
+               <item alignment="Qt::AlignHCenter">
                 <widget class="QLabel" name="cropImageWidthLabel">
                  <property name="toolTip">
                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Custom cropped image width&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -225,9 +161,6 @@
                  </property>
                  <property name="text">
                   <string>W:</string>
-                 </property>
-                 <property name="alignment">
-                  <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
                  </property>
                  <property name="buddy">
                   <cstring>cropImageWidthSpinBox</cstring>
@@ -244,7 +177,7 @@
                  </property>
                 </widget>
                </item>
-               <item>
+               <item alignment="Qt::AlignHCenter">
                 <widget class="QLabel" name="cropImageHeightLabel">
                  <property name="toolTip">
                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Custom cropped image height&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -254,9 +187,6 @@
                  </property>
                  <property name="text">
                   <string>H:</string>
-                 </property>
-                 <property name="alignment">
-                  <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
                  </property>
                  <property name="buddy">
                   <cstring>cropImageHeightSpinBox</cstring>
@@ -355,32 +285,72 @@
             <number>18</number>
            </property>
            <item>
-            <layout class="QHBoxLayout" name="horizontalLayout_22">
+            <layout class="QVBoxLayout" name="verticalLayout_21">
              <item>
-              <layout class="QVBoxLayout" name="verticalLayout_54">
+              <layout class="QVBoxLayout" name="verticalLayout_56">
                <property name="spacing">
-                <number>6</number>
+                <number>4</number>
                </property>
                <item>
-                <widget class="QLabel" name="labelAliasing">
-                 <property name="text">
-                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Anti-aliasing:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                <widget class="QLabel" name="factorLabel">
+                 <property name="toolTip">
+                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This option limits the rendered size of the output to a factor of the original N64 resolution. 1x is the original N64 resolution. Rendered images will be scaled to fit the screen.&lt;/p&gt;&lt;p&gt;0x renders the game at the size of the selected resolution, like traditional N64 emulators.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                  </property>
-                 <property name="alignment">
-                  <set>Qt::AlignCenter</set>
+                 <property name="text">
+                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Render at factor of N64 resolution:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                  </property>
                  <property name="buddy">
-                  <cstring>aliasingSlider</cstring>
+                  <cstring>resolutionFactorSlider</cstring>
                  </property>
                 </widget>
                </item>
                <item>
                 <layout class="QHBoxLayout" name="horizontalLayout_2">
                  <property name="spacing">
+                  <number>10</number>
+                 </property>
+                 <item>
+                  <widget class="QLabel" name="factorOffLabel">
+                   <property name="text">
+                    <string>Off</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QSlider" name="resolutionFactorSlider">
+                   <property name="maximum">
+                    <number>16</number>
+                   </property>
+                   <property name="pageStep">
+                    <number>2</number>
+                   </property>
+                   <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
+                   </property>
+                   <property name="tickPosition">
+                    <enum>QSlider::TicksAbove</enum>
+                   </property>
+                   <property name="tickInterval">
+                    <number>1</number>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLabel" name="factorHighLabel">
+                   <property name="text">
+                    <string>High</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item>
+                <layout class="QHBoxLayout" name="horizontalLayout_20">
+                 <property name="spacing">
                   <number>0</number>
                  </property>
                  <item>
-                  <spacer name="horizontalSpacer_12">
+                  <spacer name="horizontalSpacer_7">
                    <property name="orientation">
                     <enum>Qt::Horizontal</enum>
                    </property>
@@ -396,113 +366,164 @@
                   </spacer>
                  </item>
                  <item>
-                  <layout class="QVBoxLayout" name="verticalLayout_27">
-                   <property name="spacing">
-                    <number>6</number>
+                  <widget class="QLabel" name="factorLabelVal">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
                    </property>
-                   <item>
-                    <widget class="QSlider" name="aliasingSlider">
-                     <property name="sizePolicy">
-                      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                       <horstretch>0</horstretch>
-                       <verstretch>0</verstretch>
-                      </sizepolicy>
-                     </property>
-                     <property name="minimumSize">
-                      <size>
-                       <width>0</width>
-                       <height>160</height>
-                      </size>
-                     </property>
-                     <property name="maximum">
-                      <number>8</number>
-                     </property>
-                     <property name="singleStep">
-                      <number>2</number>
-                     </property>
-                     <property name="pageStep">
-                      <number>2</number>
-                     </property>
-                     <property name="orientation">
-                      <enum>Qt::Vertical</enum>
-                     </property>
-                     <property name="tickPosition">
-                      <enum>QSlider::TicksBothSides</enum>
-                     </property>
-                     <property name="tickInterval">
-                      <number>2</number>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <layout class="QHBoxLayout" name="horizontalLayout_3">
-                     <property name="spacing">
-                      <number>0</number>
-                     </property>
-                     <item>
-                      <spacer name="horizontalSpacer">
-                       <property name="orientation">
-                        <enum>Qt::Horizontal</enum>
-                       </property>
-                       <property name="sizeType">
-                        <enum>QSizePolicy::MinimumExpanding</enum>
-                       </property>
-                       <property name="sizeHint" stdset="0">
-                        <size>
-                         <width>0</width>
-                         <height>0</height>
-                        </size>
-                       </property>
-                      </spacer>
-                     </item>
-                     <item>
-                      <widget class="QLabel" name="aliasingLabelVal">
-                       <property name="sizePolicy">
-                        <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-                         <horstretch>0</horstretch>
-                         <verstretch>0</verstretch>
-                        </sizepolicy>
-                       </property>
-                       <property name="text">
-                        <string notr="true">0</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item>
-                      <widget class="QLabel" name="aliasingXLabel">
-                       <property name="sizePolicy">
-                        <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-                         <horstretch>0</horstretch>
-                         <verstretch>0</verstretch>
-                        </sizepolicy>
-                       </property>
-                       <property name="text">
-                        <string notr="true">x</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item>
-                      <spacer name="horizontalSpacer_2">
-                       <property name="orientation">
-                        <enum>Qt::Horizontal</enum>
-                       </property>
-                       <property name="sizeType">
-                        <enum>QSizePolicy::MinimumExpanding</enum>
-                       </property>
-                       <property name="sizeHint" stdset="0">
-                        <size>
-                         <width>0</width>
-                         <height>0</height>
-                        </size>
-                       </property>
-                      </spacer>
-                     </item>
-                    </layout>
-                   </item>
-                  </layout>
+                   <property name="toolTip">
+                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Render at constant factor of native resolution.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;If frame buffer emulation enabled and factor is not zero, internal frame buffer size will be that factor of native N64 resolution. The buffer will be scaled to screen resolution when rendered to screen. If factor is zero (default), internal buffer size is equal to screen size. If factor is 1, the game will be rendered in native resolution and then up-scaled to screen resolution.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                   </property>
+                   <property name="text">
+                    <string notr="true">0</string>
+                   </property>
+                  </widget>
                  </item>
                  <item>
-                  <spacer name="horizontalSpacer_10">
+                  <widget class="QLabel" name="factorXLabel">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="toolTip">
+                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Render at constant factor of native resolution.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;If frame buffer emulation enabled and factor is not zero, internal frame buffer size will be that factor of native N64 resolution. The buffer will be scaled to screen resolution when rendered to screen. If factor is zero (default), internal buffer size is equal to screen size. If factor is 1, the game will be rendered in native resolution and then up-scaled to screen resolution.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                   </property>
+                   <property name="text">
+                    <string notr="true">x</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <spacer name="horizontalSpacer_8">
+                   <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
+                   </property>
+                   <property name="sizeType">
+                    <enum>QSizePolicy::MinimumExpanding</enum>
+                   </property>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>0</width>
+                     <height>0</height>
+                    </size>
+                   </property>
+                  </spacer>
+                 </item>
+                </layout>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <layout class="QVBoxLayout" name="verticalLayout_54">
+               <property name="spacing">
+                <number>4</number>
+               </property>
+               <item>
+                <widget class="QLabel" name="aliasingLabel">
+                 <property name="text">
+                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Anti-aliasing:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                 </property>
+                 <property name="buddy">
+                  <cstring>aliasingSlider</cstring>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <layout class="QHBoxLayout" name="horizontalLayout_5">
+                 <property name="spacing">
+                  <number>10</number>
+                 </property>
+                 <item>
+                  <widget class="QLabel" name="aliasingOffLabel">
+                   <property name="text">
+                    <string>Off</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QSlider" name="aliasingSlider">
+                   <property name="maximum">
+                    <number>8</number>
+                   </property>
+                   <property name="singleStep">
+                    <number>2</number>
+                   </property>
+                   <property name="pageStep">
+                    <number>2</number>
+                   </property>
+                   <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
+                   </property>
+                   <property name="tickPosition">
+                    <enum>QSlider::TicksAbove</enum>
+                   </property>
+                   <property name="tickInterval">
+                    <number>2</number>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLabel" name="aliasingHighLabel">
+                   <property name="text">
+                    <string>High</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item>
+                <layout class="QHBoxLayout" name="horizontalLayout_3">
+                 <property name="spacing">
+                  <number>0</number>
+                 </property>
+                 <item>
+                  <spacer name="horizontalSpacer">
+                   <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
+                   </property>
+                   <property name="sizeType">
+                    <enum>QSizePolicy::MinimumExpanding</enum>
+                   </property>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>0</width>
+                     <height>0</height>
+                    </size>
+                   </property>
+                  </spacer>
+                 </item>
+                 <item>
+                  <widget class="QLabel" name="aliasingLabelVal">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="text">
+                    <string notr="true">0</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLabel" name="aliasingXLabel">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="text">
+                    <string notr="true">x</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <spacer name="horizontalSpacer_2">
                    <property name="orientation">
                     <enum>Qt::Horizontal</enum>
                    </property>
@@ -524,15 +545,12 @@
              <item>
               <layout class="QVBoxLayout" name="verticalLayout_55">
                <property name="spacing">
-                <number>6</number>
+                <number>4</number>
                </property>
                <item>
                 <widget class="QLabel" name="anisotropicLabel">
                  <property name="text">
                   <string>Anisotropic filtering:</string>
-                 </property>
-                 <property name="alignment">
-                  <set>Qt::AlignCenter</set>
                  </property>
                  <property name="buddy">
                   <cstring>anisotropicSlider</cstring>
@@ -540,12 +558,61 @@
                 </widget>
                </item>
                <item>
-                <layout class="QHBoxLayout" name="horizontalLayout_5">
+                <layout class="QHBoxLayout" name="horizontalLayout_10">
+                 <property name="spacing">
+                  <number>10</number>
+                 </property>
+                 <item>
+                  <widget class="QLabel" name="anisotropicOffLabel">
+                   <property name="text">
+                    <string>Off</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QSlider" name="anisotropicSlider">
+                   <property name="maximum">
+                    <number>16</number>
+                   </property>
+                   <property name="singleStep">
+                    <number>2</number>
+                   </property>
+                   <property name="pageStep">
+                    <number>2</number>
+                   </property>
+                   <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
+                   </property>
+                   <property name="invertedAppearance">
+                    <bool>false</bool>
+                   </property>
+                   <property name="invertedControls">
+                    <bool>false</bool>
+                   </property>
+                   <property name="tickPosition">
+                    <enum>QSlider::TicksAbove</enum>
+                   </property>
+                   <property name="tickInterval">
+                    <number>2</number>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLabel" name="anisotropicHighLabel">
+                   <property name="text">
+                    <string>High</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item>
+                <layout class="QHBoxLayout" name="horizontalLayout_4">
                  <property name="spacing">
                   <number>0</number>
                  </property>
                  <item>
-                  <spacer name="horizontalSpacer_13">
+                  <spacer name="horizontalSpacer_3">
                    <property name="orientation">
                     <enum>Qt::Horizontal</enum>
                    </property>
@@ -561,119 +628,33 @@
                   </spacer>
                  </item>
                  <item>
-                  <layout class="QVBoxLayout" name="verticalLayout_58">
-                   <property name="spacing">
-                    <number>6</number>
+                  <widget class="QLabel" name="anisotropicLabelVal">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
                    </property>
-                   <item>
-                    <widget class="QSlider" name="anisotropicSlider">
-                     <property name="sizePolicy">
-                      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                       <horstretch>0</horstretch>
-                       <verstretch>0</verstretch>
-                      </sizepolicy>
-                     </property>
-                     <property name="minimumSize">
-                      <size>
-                       <width>0</width>
-                       <height>160</height>
-                      </size>
-                     </property>
-                     <property name="maximum">
-                      <number>16</number>
-                     </property>
-                     <property name="singleStep">
-                      <number>2</number>
-                     </property>
-                     <property name="pageStep">
-                      <number>2</number>
-                     </property>
-                     <property name="orientation">
-                      <enum>Qt::Vertical</enum>
-                     </property>
-                     <property name="invertedAppearance">
-                      <bool>false</bool>
-                     </property>
-                     <property name="invertedControls">
-                      <bool>false</bool>
-                     </property>
-                     <property name="tickPosition">
-                      <enum>QSlider::TicksBothSides</enum>
-                     </property>
-                     <property name="tickInterval">
-                      <number>2</number>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <layout class="QHBoxLayout" name="horizontalLayout_4">
-                     <property name="spacing">
-                      <number>0</number>
-                     </property>
-                     <item>
-                      <spacer name="horizontalSpacer_3">
-                       <property name="orientation">
-                        <enum>Qt::Horizontal</enum>
-                       </property>
-                       <property name="sizeType">
-                        <enum>QSizePolicy::MinimumExpanding</enum>
-                       </property>
-                       <property name="sizeHint" stdset="0">
-                        <size>
-                         <width>0</width>
-                         <height>0</height>
-                        </size>
-                       </property>
-                      </spacer>
-                     </item>
-                     <item>
-                      <widget class="QLabel" name="anisotropicLabelVal">
-                       <property name="sizePolicy">
-                        <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-                         <horstretch>0</horstretch>
-                         <verstretch>0</verstretch>
-                        </sizepolicy>
-                       </property>
-                       <property name="text">
-                        <string notr="true">0</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item>
-                      <widget class="QLabel" name="anisotropicXLabel">
-                       <property name="sizePolicy">
-                        <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-                         <horstretch>0</horstretch>
-                         <verstretch>0</verstretch>
-                        </sizepolicy>
-                       </property>
-                       <property name="text">
-                        <string notr="true">x</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item>
-                      <spacer name="horizontalSpacer_6">
-                       <property name="orientation">
-                        <enum>Qt::Horizontal</enum>
-                       </property>
-                       <property name="sizeType">
-                        <enum>QSizePolicy::MinimumExpanding</enum>
-                       </property>
-                       <property name="sizeHint" stdset="0">
-                        <size>
-                         <width>0</width>
-                         <height>0</height>
-                        </size>
-                       </property>
-                      </spacer>
-                     </item>
-                    </layout>
-                   </item>
-                  </layout>
+                   <property name="text">
+                    <string notr="true">0</string>
+                   </property>
+                  </widget>
                  </item>
                  <item>
-                  <spacer name="horizontalSpacer_9">
+                  <widget class="QLabel" name="anisotropicXLabel">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="text">
+                    <string notr="true">x</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <spacer name="horizontalSpacer_6">
                    <property name="orientation">
                     <enum>Qt::Horizontal</enum>
                    </property>
@@ -692,264 +673,214 @@
                </item>
               </layout>
              </item>
+            </layout>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_19">
+             <property name="spacing">
+              <number>18</number>
+             </property>
              <item>
-              <layout class="QVBoxLayout" name="verticalLayout_56">
+              <layout class="QVBoxLayout" name="verticalLayout_65">
                <property name="spacing">
-                <number>6</number>
+                <number>18</number>
                </property>
                <item>
-                <widget class="QLabel" name="factorLabel">
-                 <property name="toolTip">
-                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This option limits the rendered size of the output to a factor of the original N64 resolution. 1x is the original N64 resolution. Rendered images will be scaled to fit the screen.&lt;/p&gt;&lt;p&gt;0x renders the game at the size of the selected resolution, like traditional N64 emulators.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                 </property>
-                 <property name="text">
-                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;N64 resolution factor:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                 </property>
-                 <property name="alignment">
-                  <set>Qt::AlignCenter</set>
-                 </property>
-                 <property name="buddy">
-                  <cstring>resolutionFactorSlider</cstring>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <layout class="QHBoxLayout" name="horizontalLayout_17">
+                <layout class="QVBoxLayout" name="verticalLayout_66">
                  <property name="spacing">
-                  <number>0</number>
+                  <number>4</number>
                  </property>
                  <item>
-                  <spacer name="horizontalSpacer_14">
-                   <property name="orientation">
-                    <enum>Qt::Horizontal</enum>
+                  <widget class="QLabel" name="textureBlnr3PointLabel">
+                   <property name="toolTip">
+                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Bilinear filtering&lt;/span&gt;: Textures will use standard PC-style bilinear filtering.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;N64-style 3 point&lt;/span&gt;: Textures will be filtered more like the N64. The result is less smooth but more accurate.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                    </property>
-                   <property name="sizeType">
-                    <enum>QSizePolicy::MinimumExpanding</enum>
+                   <property name="text">
+                    <string>Bilinear filtering:</string>
                    </property>
-                   <property name="sizeHint" stdset="0">
-                    <size>
-                     <width>0</width>
-                     <height>0</height>
-                    </size>
-                   </property>
-                  </spacer>
+                  </widget>
                  </item>
                  <item>
-                  <layout class="QVBoxLayout" name="verticalLayout_60">
-                   <property name="spacing">
-                    <number>6</number>
+                  <widget class="QRadioButton" name="blnrStandardRadioButton">
+                   <property name="text">
+                    <string>Standard</string>
                    </property>
-                   <item>
-                    <widget class="QSlider" name="resolutionFactorSlider">
-                     <property name="sizePolicy">
-                      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                       <horstretch>0</horstretch>
-                       <verstretch>0</verstretch>
-                      </sizepolicy>
-                     </property>
-                     <property name="minimumSize">
-                      <size>
-                       <width>0</width>
-                       <height>160</height>
-                      </size>
-                     </property>
-                     <property name="maximum">
-                      <number>16</number>
-                     </property>
-                     <property name="pageStep">
-                      <number>2</number>
-                     </property>
-                     <property name="orientation">
-                      <enum>Qt::Vertical</enum>
-                     </property>
-                     <property name="tickPosition">
-                      <enum>QSlider::TicksBothSides</enum>
-                     </property>
-                     <property name="tickInterval">
-                      <number>1</number>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <layout class="QHBoxLayout" name="horizontalLayout_20">
-                     <property name="spacing">
-                      <number>0</number>
-                     </property>
-                     <item>
-                      <spacer name="horizontalSpacer_7">
-                       <property name="orientation">
-                        <enum>Qt::Horizontal</enum>
-                       </property>
-                       <property name="sizeType">
-                        <enum>QSizePolicy::MinimumExpanding</enum>
-                       </property>
-                       <property name="sizeHint" stdset="0">
-                        <size>
-                         <width>0</width>
-                         <height>0</height>
-                        </size>
-                       </property>
-                      </spacer>
-                     </item>
-                     <item>
-                      <widget class="QLabel" name="factorLabelVal">
-                       <property name="sizePolicy">
-                        <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-                         <horstretch>0</horstretch>
-                         <verstretch>0</verstretch>
-                        </sizepolicy>
-                       </property>
-                       <property name="toolTip">
-                        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Render at constant factor of native resolution.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;If frame buffer emulation enabled and factor is not zero, internal frame buffer size will be that factor of native N64 resolution. The buffer will be scaled to screen resolution when rendered to screen. If factor is zero (default), internal buffer size is equal to screen size. If factor is 1, the game will be rendered in native resolution and then up-scaled to screen resolution.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                       </property>
-                       <property name="text">
-                        <string notr="true">0</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item>
-                      <widget class="QLabel" name="factorXLabel">
-                       <property name="sizePolicy">
-                        <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-                         <horstretch>0</horstretch>
-                         <verstretch>0</verstretch>
-                        </sizepolicy>
-                       </property>
-                       <property name="toolTip">
-                        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Render at constant factor of native resolution.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;If frame buffer emulation enabled and factor is not zero, internal frame buffer size will be that factor of native N64 resolution. The buffer will be scaled to screen resolution when rendered to screen. If factor is zero (default), internal buffer size is equal to screen size. If factor is 1, the game will be rendered in native resolution and then up-scaled to screen resolution.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                       </property>
-                       <property name="text">
-                        <string notr="true">x</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item>
-                      <spacer name="horizontalSpacer_8">
-                       <property name="orientation">
-                        <enum>Qt::Horizontal</enum>
-                       </property>
-                       <property name="sizeType">
-                        <enum>QSizePolicy::MinimumExpanding</enum>
-                       </property>
-                       <property name="sizeHint" stdset="0">
-                        <size>
-                         <width>0</width>
-                         <height>0</height>
-                        </size>
-                       </property>
-                      </spacer>
-                     </item>
-                    </layout>
-                   </item>
-                  </layout>
+                  </widget>
                  </item>
                  <item>
-                  <spacer name="horizontalSpacer_11">
-                   <property name="orientation">
-                    <enum>Qt::Horizontal</enum>
+                  <widget class="QRadioButton" name="blnr3PointRadioButton">
+                   <property name="text">
+                    <string>N64-style 3 point</string>
                    </property>
-                   <property name="sizeType">
-                    <enum>QSizePolicy::MinimumExpanding</enum>
-                   </property>
-                   <property name="sizeHint" stdset="0">
-                    <size>
-                     <width>0</width>
-                     <height>0</height>
-                    </size>
-                   </property>
-                  </spacer>
+                  </widget>
                  </item>
                 </layout>
+               </item>
+               <item>
+                <layout class="QVBoxLayout" name="verticalLayout_67">
+                 <property name="spacing">
+                  <number>4</number>
+                 </property>
+                 <item>
+                  <widget class="QLabel" name="label">
+                   <property name="text">
+                    <string>Texture cache size (MB):</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QSpinBox" name="cacheSizeSpinBox">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="maximum">
+                    <number>999</number>
+                   </property>
+                   <property name="singleStep">
+                    <number>50</number>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item>
+                <spacer name="horizontalSpacer_22">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>0</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+               <item>
+                <spacer name="verticalSpacer_8">
+                 <property name="orientation">
+                  <enum>Qt::Vertical</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>0</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <layout class="QVBoxLayout" name="verticalLayout_64">
+               <property name="spacing">
+                <number>18</number>
+               </property>
+               <item>
+                <layout class="QVBoxLayout" name="verticalLayout_6">
+                 <property name="spacing">
+                  <number>4</number>
+                 </property>
+                 <item>
+                  <widget class="QLabel" name="screenshotLabel">
+                   <property name="text">
+                    <string>Screenshot format:</string>
+                   </property>
+                   <property name="alignment">
+                    <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+                   </property>
+                   <property name="openExternalLinks">
+                    <bool>true</bool>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QRadioButton" name="jpegRadioButton">
+                   <property name="text">
+                    <string>JPEG</string>
+                   </property>
+                   <attribute name="buttonGroup">
+                    <string notr="true">screenshotButtonGroup</string>
+                   </attribute>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QRadioButton" name="bmpRadioButton">
+                   <property name="text">
+                    <string>BMP</string>
+                   </property>
+                   <attribute name="buttonGroup">
+                    <string notr="true">screenshotButtonGroup</string>
+                   </attribute>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item>
+                <layout class="QVBoxLayout" name="verticalLayout_26">
+                 <property name="spacing">
+                  <number>4</number>
+                 </property>
+                 <item>
+                  <widget class="QLabel" name="translationsLabel">
+                   <property name="enabled">
+                    <bool>true</bool>
+                   </property>
+                   <property name="toolTip">
+                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The selected language will display after this window is closed and reopened.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                   </property>
+                   <property name="text">
+                    <string>Language:</string>
+                   </property>
+                   <property name="buddy">
+                    <cstring>translationsComboBox</cstring>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QComboBox" name="translationsComboBox">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item>
+                <spacer name="horizontalSpacer_23">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>0</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+               <item>
+                <spacer name="verticalSpacer_12">
+                 <property name="orientation">
+                  <enum>Qt::Vertical</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>0</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                </spacer>
                </item>
               </layout>
              </item>
             </layout>
-           </item>
-           <item>
-            <layout class="QVBoxLayout" name="verticalLayout_6">
-             <property name="spacing">
-              <number>4</number>
-             </property>
-             <item>
-              <widget class="QLabel" name="screenshotLabel">
-               <property name="text">
-                <string>Screenshot format:</string>
-               </property>
-               <property name="alignment">
-                <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
-               </property>
-               <property name="openExternalLinks">
-                <bool>true</bool>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QRadioButton" name="jpegRadioButton">
-               <property name="text">
-                <string>JPEG</string>
-               </property>
-               <attribute name="buttonGroup">
-                <string notr="true">screenshotButtonGroup</string>
-               </attribute>
-              </widget>
-             </item>
-             <item>
-              <widget class="QRadioButton" name="bmpRadioButton">
-               <property name="text">
-                <string>BMP</string>
-               </property>
-               <attribute name="buttonGroup">
-                <string notr="true">screenshotButtonGroup</string>
-               </attribute>
-              </widget>
-             </item>
-            </layout>
-           </item>
-           <item>
-            <layout class="QVBoxLayout" name="verticalLayout_26">
-             <property name="spacing">
-              <number>4</number>
-             </property>
-             <item>
-              <widget class="QLabel" name="translationsLabel">
-               <property name="enabled">
-                <bool>true</bool>
-               </property>
-               <property name="toolTip">
-                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The selected language will display after this window is closed and reopened.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-               </property>
-               <property name="text">
-                <string>Language:</string>
-               </property>
-               <property name="buddy">
-                <cstring>translationsComboBox</cstring>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QComboBox" name="translationsComboBox">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </item>
-           <item>
-            <spacer name="verticalSpacer_12">
-             <property name="orientation">
-              <enum>Qt::Vertical</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>0</width>
-               <height>0</height>
-              </size>
-             </property>
-            </spacer>
            </item>
           </layout>
          </item>
@@ -972,526 +903,174 @@
         <number>10</number>
        </property>
        <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_11">
+        <layout class="QVBoxLayout" name="verticalLayout_30">
          <property name="spacing">
-          <number>16</number>
+          <number>18</number>
          </property>
          <item>
-          <widget class="QGroupBox" name="emulationGeneralGroupBox">
-           <property name="title">
-            <string>General settings</string>
+          <layout class="QVBoxLayout" name="verticalLayout_47">
+           <property name="spacing">
+            <number>6</number>
            </property>
-           <layout class="QVBoxLayout" name="verticalLayout_7">
-            <property name="spacing">
-             <number>6</number>
-            </property>
-            <property name="leftMargin">
-             <number>9</number>
-            </property>
-            <property name="topMargin">
-             <number>9</number>
-            </property>
-            <property name="rightMargin">
-             <number>9</number>
-            </property>
-            <property name="bottomMargin">
-             <number>9</number>
-            </property>
-            <item>
-             <widget class="QCheckBox" name="customSettingsCheckBox">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="toolTip">
-               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;GLideN64 contains settings for some games' optimal performance. When this option is selected some options on this tab may be overridden.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;Enabled&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-              </property>
-              <property name="text">
-               <string>Use GlideN64 per-game settings</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QCheckBox" name="emulateLodCheckBox">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="toolTip">
-               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The N64 uses a unique method of mip-mapping that's difficult to reproduce correctly on PCs. When selected, this option emulates N64-accurate mip-mapping. When cleared, some games have sharper distant textures.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;Enabled&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-              </property>
-              <property name="text">
-               <string>Emulate mip-mapping</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QCheckBox" name="emulateNoiseCheckBox">
-              <property name="toolTip">
-               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This option emulates effects that use random color input. Selecting this option may cause rare performance problems.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;Enabled&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-              </property>
-              <property name="text">
-               <string>Emulate noise</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QCheckBox" name="enableHWLightingCheckBox">
-              <property name="toolTip">
-               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;In traditional PC games lighting is calculated differently than the N64. When selected, lighting is smoother and more accurate to the N64.&lt;br/&gt;&lt;br/&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;Your preference&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-              </property>
-              <property name="text">
-               <string>Enable hardware lighting (HLE only)</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QCheckBox" name="n64DepthCompareCheckBox">
-              <property name="toolTip">
-               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The N64 uses a unique method of calculating the distance of objects to the camera. When this option is selected GlideN64 tries to emulate these calculations correctly. &lt;span style=&quot; font-weight:600;&quot;&gt;Experimental!&lt;/span&gt;&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;Sometimes selected, for a few games&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-              </property>
-              <property name="text">
-               <string>Emulate depth compare (experimental)</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QCheckBox" name="enableShadersStorageCheckBox">
-              <property name="toolTip">
-               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The N64 can use complex calculations to generate colors. When this option is selected, GLideN64 remembers previous color calculations, improving game performance.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;Selected&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-              </property>
-              <property name="text">
-               <string>Rememeber color calculations (recommended)</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <spacer name="verticalSpacer_17">
-              <property name="orientation">
-               <enum>Qt::Vertical</enum>
-              </property>
-              <property name="sizeType">
-               <enum>QSizePolicy::MinimumExpanding</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>0</width>
-                <height>0</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-           </layout>
+           <item>
+            <widget class="QCheckBox" name="customSettingsCheckBox">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;GLideN64 contains settings for some games' optimal performance. When this option is selected some options on this tab may be overridden.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;Checked&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
+             <property name="text">
+              <string>Use GlideN64 per-game settings</string>
+             </property>
+             <property name="checked">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="emulateLodCheckBox">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The N64 uses a unique method of mip-mapping that's difficult to reproduce correctly on PCs. When checked, this option emulates N64-accurate mip-mapping. When unchecked, some games have sharper distant textures.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;Checked&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
+             <property name="text">
+              <string>Enable N64-style mip-mapping</string>
+             </property>
+             <property name="checked">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="emulateNoiseCheckBox">
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This option emulates effects that use random color input. Checking this option may cause rare performance problems.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;Checked&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
+             <property name="text">
+              <string>Enable noise</string>
+             </property>
+             <property name="checked">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="enableHWLightingCheckBox">
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;In traditional PC games lighting is calculated differently than the N64. When checked, lighting is smoother and more accurate to the N64.&lt;br/&gt;&lt;br/&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;Your preference&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
+             <property name="text">
+              <string>Enable hardware lighting (HLE only)</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="n64DepthCompareCheckBox">
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The N64 uses a unique method of calculating the distance of objects to the camera. When checked, GlideN64 tries to emulate these calculations correctly. &lt;span style=&quot; font-weight:600;&quot;&gt;Experimental!&lt;/span&gt;&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;Sometimes checked, for a few games&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
+             <property name="text">
+              <string>Enable N64-style depth compare (experimental)</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="enableShadersStorageCheckBox">
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The N64 can use complex calculations to generate colors. When this option is selected, GLideN64 remembers previous color calculations, improving game performance.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;Checked&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
+             <property name="text">
+              <string>Store complex N64 color calculations as shaders for performance (recommended)</string>
+             </property>
+             <property name="checked">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="nativeRes2D_checkBox">
+           <property name="toolTip">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;When checked, 2D elements are rendered at the N64s resolution before copying them to output. This usually eliminates display issues with 2D elements, but it can be slow. This option uses heuristics to detect adjacent 2D elements that doesn't work for every game.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;Checked, unless you have performance problems&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+           <property name="text">
+            <string>Render 2D elements in N64 resolution (can be slow)</string>
+           </property>
           </widget>
          </item>
          <item>
-          <widget class="QGroupBox" name="emulation2DGroupBox">
-           <property name="title">
-            <string>2D elements</string>
+          <layout class="QVBoxLayout" name="verticalLayout_5">
+           <property name="spacing">
+            <number>4</number>
            </property>
-           <layout class="QVBoxLayout" name="verticalLayout_9">
-            <property name="spacing">
-             <number>18</number>
-            </property>
-            <property name="leftMargin">
-             <number>9</number>
-            </property>
-            <property name="topMargin">
-             <number>9</number>
-            </property>
-            <property name="rightMargin">
-             <number>9</number>
-            </property>
-            <property name="bottomMargin">
-             <number>9</number>
-            </property>
-            <item>
-             <widget class="QCheckBox" name="nativeRes2D_checkBox">
-              <property name="toolTip">
-               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;When selected, 2D elements are rendered at the N64s resolution before copying them to output. This usually eliminates display issues with 2D elements, but it can be slow. This option uses heuristics to detect adjacent 2D elements that doesn't work for every game.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;Selected, unless you have performance problems&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-              </property>
-              <property name="text">
-               <string>Render 2D elements in N64 resolution (can be slow)</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <layout class="QVBoxLayout" name="verticalLayout_5">
-              <property name="spacing">
-               <number>4</number>
-              </property>
-              <item>
-               <widget class="QLabel" name="texrectsBlackLinesLabel">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="toolTip">
-                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;In some games the coordinates for parts of 2D elements are not aligned: there is a half-pixel split between adjacent elements. When rendering in the N64's original resolution it isn't visible, but when the image is scaled up it results in black lines. This option attempts to connect these 2D elements.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;For adjacent 2D elements&lt;/span&gt;: Apply the correction only for polygons that need it. Select this option for games that have issues with black lines.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Always&lt;/span&gt;: Apply the correction for every 2D element. Select this option when &lt;span style=&quot; font-weight:600;&quot;&gt;For adjacent 2D elements&lt;/span&gt; doesn't help.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Never&lt;/span&gt;: Don't attempt to correct black lines between 2D elements.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;Game dependent, mostly Never&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                </property>
-                <property name="text">
-                 <string>Fix black lines between 2D elements:</string>
-                </property>
-                <property name="wordWrap">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QRadioButton" name="fixTexrectSmartRadioButton">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="text">
-                 <string>For adjacent 2D elements</string>
-                </property>
-                <attribute name="buttonGroup">
-                 <string notr="true">fixTexrectCoordsButtonGroup</string>
-                </attribute>
-               </widget>
-              </item>
-              <item>
-               <widget class="QRadioButton" name="fixTexrectForceRadioButton">
-                <property name="text">
-                 <string>Always</string>
-                </property>
-                <attribute name="buttonGroup">
-                 <string notr="true">fixTexrectCoordsButtonGroup</string>
-                </attribute>
-               </widget>
-              </item>
-              <item>
-               <widget class="QRadioButton" name="fixTexrectDisableRadioButton">
-                <property name="text">
-                 <string>Never</string>
-                </property>
-                <attribute name="buttonGroup">
-                 <string notr="true">fixTexrectCoordsButtonGroup</string>
-                </attribute>
-               </widget>
-              </item>
-             </layout>
-            </item>
-            <item>
-             <spacer name="verticalSpacer_9">
-              <property name="orientation">
-               <enum>Qt::Vertical</enum>
-              </property>
-              <property name="sizeType">
-               <enum>QSizePolicy::MinimumExpanding</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>0</width>
-                <height>0</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-           </layout>
-          </widget>
+           <item>
+            <widget class="QLabel" name="texrectsBlackLinesLabel">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;In some games the coordinates for parts of 2D elements are not aligned: there is a half-pixel split between adjacent elements. When rendering in the N64's original resolution it isn't visible, but when the image is scaled up it results in black lines. This option attempts to connect these 2D elements.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;For adjacent 2D elements&lt;/span&gt;: Apply the correction only for polygons that need it. Select this option for games that have issues with black lines.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Always&lt;/span&gt;: Apply the correction for every 2D element. Select this option when &lt;span style=&quot; font-weight:600;&quot;&gt;For adjacent 2D elements&lt;/span&gt; doesn't help.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Never&lt;/span&gt;: Don't attempt to correct black lines between 2D elements.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;Game dependent, mostly Never&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
+             <property name="text">
+              <string>Fix black lines between 2D elements:</string>
+             </property>
+             <property name="wordWrap">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QRadioButton" name="fixTexrectSmartRadioButton">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="text">
+              <string>For adjacent 2D elements</string>
+             </property>
+             <attribute name="buttonGroup">
+              <string notr="true">fixTexrectCoordsButtonGroup</string>
+             </attribute>
+            </widget>
+           </item>
+           <item>
+            <widget class="QRadioButton" name="fixTexrectForceRadioButton">
+             <property name="text">
+              <string>Always</string>
+             </property>
+             <attribute name="buttonGroup">
+              <string notr="true">fixTexrectCoordsButtonGroup</string>
+             </attribute>
+            </widget>
+           </item>
+           <item>
+            <widget class="QRadioButton" name="fixTexrectDisableRadioButton">
+             <property name="text">
+              <string>Never</string>
+             </property>
+             <attribute name="buttonGroup">
+              <string notr="true">fixTexrectCoordsButtonGroup</string>
+             </attribute>
+            </widget>
+           </item>
+          </layout>
          </item>
         </layout>
-       </item>
-       <item>
-        <widget class="QGroupBox" name="frameBufferGroupBox">
-         <property name="title">
-          <string>Frame buffer</string>
-         </property>
-         <layout class="QVBoxLayout" name="verticalLayout_44">
-          <property name="spacing">
-           <number>18</number>
-          </property>
-          <property name="leftMargin">
-           <number>9</number>
-          </property>
-          <property name="topMargin">
-           <number>9</number>
-          </property>
-          <property name="rightMargin">
-           <number>9</number>
-          </property>
-          <property name="bottomMargin">
-           <number>9</number>
-          </property>
-          <item>
-           <layout class="QVBoxLayout" name="verticalLayout_41">
-            <property name="spacing">
-             <number>6</number>
-            </property>
-            <item>
-             <widget class="QCheckBox" name="frameBufferCheckBox">
-              <property name="text">
-               <string>Emulate frame buffer (recommended)</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <layout class="QHBoxLayout" name="horizontalLayout_9">
-              <property name="spacing">
-               <number>10</number>
-              </property>
-              <item>
-               <widget class="QLabel" name="frameBufferIcon">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="text">
-                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;img src=&quot;:/Warning.png&quot;/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QLabel" name="frameBufferWarningLabel">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="text">
-                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Clearing this option disables many effects including anti-aliasing, cropping, aspect ratio, N64 resolution factor, depth compare, mip-mapping and more. Don't clear this option unless you have performance issues.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                </property>
-                <property name="textFormat">
-                 <enum>Qt::RichText</enum>
-                </property>
-                <property name="scaledContents">
-                 <bool>false</bool>
-                </property>
-                <property name="wordWrap">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </item>
-           </layout>
-          </item>
-          <item>
-           <layout class="QVBoxLayout" name="verticalLayout_42">
-            <property name="spacing">
-             <number>6</number>
-            </property>
-            <item>
-             <widget class="QCheckBox" name="copyAuxBuffersCheckBox">
-              <property name="toolTip">
-               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;When selected, the auxiliary color buffer is copied to N64 memory right after rendering to it is finished. This option helps to correctly emulate frame buffer effects in some games. This option may noticeably reduce performance.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;Usually cleared&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-              </property>
-              <property name="text">
-               <string>Copy auxiliary color buffers to N64 memory (sometimes slow, fewer game issues)</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QCheckBox" name="RenderFBCheckBox">
-              <property name="toolTip">
-               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;When this option is enabled, the frame buffer is rendered directly to the screen. This prevents some graphic problems but may cause slowdowns or visual quality problems.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;Usually cleared&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-              </property>
-              <property name="text">
-               <string>Render entire frame buffer to output</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <layout class="QVBoxLayout" name="verticalLayout_32">
-              <property name="spacing">
-               <number>4</number>
-              </property>
-              <item>
-               <widget class="QLabel" name="frameBufferSwapLabel">
-                <property name="toolTip">
-                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This option controls how often GlideN64 updates the main frame buffer. There are three modes:&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Vertical interrupt&lt;/span&gt;: Update the buffer as quickly as possible, every vertical interrupt per second (50 for PAL and 60 for NTSC games). This option is the most compatible. Use this mode unless you have performance problems.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;VI origin change&lt;/span&gt;: The VI origin changes corresponding to the game's actual FPS. N64 games typically run between 20 to 30 FPS so the buffers swap less often than the first mode. This mode does not work for games that use single buffering, which is rare.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Color buffer change&lt;/span&gt;: This option checks to see if the frame buffer has been changed. There are some games where this doesn't work.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                </property>
-                <property name="text">
-                 <string>Frame buffer swap on:</string>
-                </property>
-                <property name="buddy">
-                 <cstring>bufferSwapComboBox</cstring>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QComboBox" name="bufferSwapComboBox">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <item>
-                 <property name="text">
-                  <string comment="vi">Vertical interrupt (recommended, fewest game issues)</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string comment="origin">VI origin change (faster, few game issues)</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string comment="colorBuffer">Color buffer change (fastest, some game issues)</string>
-                 </property>
-                </item>
-               </widget>
-              </item>
-             </layout>
-            </item>
-           </layout>
-          </item>
-          <item>
-           <layout class="QVBoxLayout" name="verticalLayout_43">
-            <property name="spacing">
-             <number>6</number>
-            </property>
-            <item>
-             <widget class="QCheckBox" name="fbInfoEnableCheckBox">
-              <property name="toolTip">
-               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Some emulators do a poor job of detecting when to read/write frame buffers. You can disable emulator help to let GLideN64 read/write frame buffers.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;Selected&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-              </property>
-              <property name="text">
-               <string>Use emulator help to read/write frame buffers</string>
-              </property>
-              <property name="checked">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QCheckBox" name="readDepthChunkCheckBox">
-              <property name="toolTip">
-               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;When selected, the depth buffer will be read in chunks. Otherwise the buffer will be read in its entirety. If a game needs to read the entire buffer, selecting this option may be slow.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;Selected, because the depth buffer is not often read entirely&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-              </property>
-              <property name="text">
-               <string>Read depth buffer in 4 KB chunks</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QCheckBox" name="readColorChunkCheckBox">
-              <property name="toolTip">
-               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;When selected, the color buffer will be read in chunks. Otherwise, the buffer will be read in its entirety. If a game needs to read the entire buffer, selecting this option may be slow.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;Usually cleared, because the color buffer is usually read entirely&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-              </property>
-              <property name="text">
-               <string>Read color buffer in 4 KB chunks</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <layout class="QHBoxLayout" name="horizontalLayout_10">
-              <item>
-               <layout class="QVBoxLayout" name="verticalLayout_29">
-                <item>
-                 <layout class="QVBoxLayout" name="verticalLayout_10">
-                  <property name="spacing">
-                   <number>4</number>
-                  </property>
-                  <item>
-                   <widget class="QLabel" name="copyBufferLabel">
-                    <property name="toolTip">
-                     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;In some games GLideN64 can't detect frame buffer effects. This option can be used to force detection.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Asynchronous&lt;/span&gt;: Effects are detected for most games.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Synchronous&lt;/span&gt;: Effects are detected for all games, but it can be slow. Use for games where &lt;span style=&quot; font-weight:600;&quot;&gt;Asynchronous&lt;/span&gt; doesn't work.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Never&lt;/span&gt;: Frame buffer effects are disabled.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;Usually asynchronous&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                    </property>
-                    <property name="text">
-                     <string>Copy frame buffer to N64 memory:</string>
-                    </property>
-                    <property name="buddy">
-                     <cstring>copyBufferComboBox</cstring>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QComboBox" name="copyBufferComboBox">
-                    <item>
-                     <property name="text">
-                      <string comment="async">Asynchronous (fast, few game issues)</string>
-                     </property>
-                    </item>
-                    <item>
-                     <property name="text">
-                      <string comment="sync">Synchronous (slowest, fewest game issues)</string>
-                     </property>
-                    </item>
-                    <item>
-                     <property name="text">
-                      <string comment="disable">Off (fastest, many game issues)</string>
-                     </property>
-                    </item>
-                   </widget>
-                  </item>
-                 </layout>
-                </item>
-                <item>
-                 <layout class="QVBoxLayout" name="verticalLayout_2">
-                  <property name="spacing">
-                   <number>4</number>
-                  </property>
-                  <item>
-                   <widget class="QLabel" name="copyDepthLabel">
-                    <property name="toolTip">
-                     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The depth buffer is used to emulate some effects (e.g. coronas):&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;From VRAM&lt;/span&gt;: Your video card's depth buffer is copied to N64 memory each frame, which can be slow on some games.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Software&lt;/span&gt;: Generally faster than copying from VRAM, but the result can be imperfect.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Never&lt;/span&gt;: Depth buffer is disabled.&lt;/p&gt;&lt;p&gt;[Recommended:&lt;span style=&quot; font-style:italic;&quot;&gt; Software&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                    </property>
-                    <property name="text">
-                     <string>Copy depth buffer to N64 memory:</string>
-                    </property>
-                    <property name="buddy">
-                     <cstring>copyDepthComboBox</cstring>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QComboBox" name="copyDepthComboBox">
-                    <item>
-                     <property name="text">
-                      <string comment="vram">From VRAM (sometimes slow, fewest game issues)</string>
-                     </property>
-                    </item>
-                    <item>
-                     <property name="text">
-                      <string comment="software">In software (fast, some game issues)</string>
-                     </property>
-                    </item>
-                    <item>
-                     <property name="text">
-                      <string comment="disable">Never (fastest, most game issues)</string>
-                     </property>
-                    </item>
-                   </widget>
-                  </item>
-                 </layout>
-                </item>
-               </layout>
-              </item>
-              <item>
-               <spacer name="horizontalSpacer_4">
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
-                </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>0</width>
-                  <height>0</height>
-                 </size>
-                </property>
-               </spacer>
-              </item>
-             </layout>
-            </item>
-           </layout>
-          </item>
-         </layout>
-        </widget>
        </item>
        <item>
         <spacer name="verticalSpacer_2">
@@ -1508,9 +1087,309 @@
        </item>
       </layout>
      </widget>
+     <widget class="QWidget" name="frameBufferTab">
+      <attribute name="title">
+       <string>Frame buffer</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_34">
+       <item>
+        <layout class="QVBoxLayout" name="verticalLayout_7">
+         <property name="spacing">
+          <number>18</number>
+         </property>
+         <item>
+          <layout class="QVBoxLayout" name="verticalLayout_41">
+           <property name="spacing">
+            <number>6</number>
+           </property>
+           <item>
+            <widget class="QCheckBox" name="frameBufferCheckBox">
+             <property name="text">
+              <string>Emulate frame buffer (recommended)</string>
+             </property>
+             <property name="checked">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_9">
+             <property name="spacing">
+              <number>10</number>
+             </property>
+             <item>
+              <widget class="QLabel" name="frameBufferIcon">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="text">
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;img src=&quot;:/Warning.png&quot;/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="frameBufferWarningLabel">
+               <property name="text">
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Clearing this option disables many effects including anti-aliasing, cropping, aspect ratio, N64 resolution factor, N64-style depth compare and more. Don't clear this option unless you have performance issues.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+               </property>
+               <property name="textFormat">
+                <enum>Qt::RichText</enum>
+               </property>
+               <property name="scaledContents">
+                <bool>false</bool>
+               </property>
+               <property name="wordWrap">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QVBoxLayout" name="verticalLayout_42">
+           <property name="spacing">
+            <number>6</number>
+           </property>
+           <item>
+            <widget class="QCheckBox" name="copyAuxBuffersCheckBox">
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;When selected, the auxiliary color buffer is copied to N64 memory right after rendering to it is finished. This option helps to correctly emulate frame buffer effects in some games. This option may noticeably reduce performance.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;Usually unchecked&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
+             <property name="text">
+              <string>Copy auxiliary color buffers to N64 memory (sometimes slow, fewer game issues)</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="RenderFBCheckBox">
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;When this option is checked, the frame buffer is rendered directly to the screen. This prevents some graphic problems but may cause slowdowns or visual quality problems.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;Usually unchecked&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
+             <property name="text">
+              <string>Render entire frame buffer to output</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QVBoxLayout" name="verticalLayout_32">
+           <property name="spacing">
+            <number>4</number>
+           </property>
+           <item>
+            <widget class="QLabel" name="frameBufferSwapLabel">
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This option controls how often GLideN64 updates the main frame buffer. There are three modes:&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Vertical interrupt&lt;/span&gt;: Update the buffer as quickly as possible, every vertical interrupt per second (50 for PAL and 60 for NTSC games). This option is the most compatible. Use this mode unless you have performance problems.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;VI origin change&lt;/span&gt;: The VI origin changes corresponding to the game's actual FPS. N64 games typically run between 20 to 30 FPS so the buffers swap less often than the first mode. This mode does not work for games that use single buffering, which is rare.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Color buffer change&lt;/span&gt;: This option checks to see if the frame buffer has been changed. There are some games where this doesn't work.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
+             <property name="text">
+              <string>Frame buffer swap on:</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QRadioButton" name="bufferSwapVIRadioButton">
+             <property name="text">
+              <string>Vertical interrupt (recommended, fewest game issues)</string>
+             </property>
+             <property name="checked">
+              <bool>true</bool>
+             </property>
+             <attribute name="buttonGroup">
+              <string notr="true">bufferSwapButtonGroup</string>
+             </attribute>
+            </widget>
+           </item>
+           <item>
+            <widget class="QRadioButton" name="bufferSwapOriginRadioButton">
+             <property name="text">
+              <string>VI origin change (faster, few game issues)</string>
+             </property>
+             <attribute name="buttonGroup">
+              <string notr="true">bufferSwapButtonGroup</string>
+             </attribute>
+            </widget>
+           </item>
+           <item>
+            <widget class="QRadioButton" name="bufferSwapColorRadioButton">
+             <property name="text">
+              <string>Color buffer change (fastest, some game issues)</string>
+             </property>
+             <attribute name="buttonGroup">
+              <string notr="true">bufferSwapButtonGroup</string>
+             </attribute>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QVBoxLayout" name="verticalLayout_43">
+           <property name="spacing">
+            <number>6</number>
+           </property>
+           <item>
+            <widget class="QCheckBox" name="fbInfoEnableCheckBox">
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Some emulators do a poor job of detecting when to read/write frame buffers. You can disable emulator help to let GLideN64 read/write frame buffers itself.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;Usually checked, but for some games/emulators it must be unchecked&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
+             <property name="text">
+              <string>Use emulator help to read/write frame buffers</string>
+             </property>
+             <property name="checked">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="readDepthChunkCheckBox">
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;When checked, the depth buffer will be read in chunks. Otherwise the buffer will be read in its entirety. If a game needs to read the entire buffer, selecting this option may be slow.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;Checked, because the depth buffer is not often read entirely&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
+             <property name="text">
+              <string>Read depth buffer in 4 KB chunks</string>
+             </property>
+             <property name="checked">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="readColorChunkCheckBox">
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;When checked, the color buffer will be read in chunks. Otherwise, the buffer will be read in its entirety. If a game needs to read the entire buffer, selecting this option may be slow.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;Usually unchecked, because the color buffer is usually read entirely&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
+             <property name="text">
+              <string>Read color buffer in 4 KB chunks</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QVBoxLayout" name="verticalLayout_10">
+           <property name="spacing">
+            <number>4</number>
+           </property>
+           <item>
+            <widget class="QLabel" name="copyBufferLabel">
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;In some games GLideN64 can't detect frame buffer effects. This option can be used to force detection.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Asynchronous&lt;/span&gt;: Effects are detected for most games.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Synchronous&lt;/span&gt;: Effects are detected for all games, but it can be slow. Use for games where &lt;span style=&quot; font-weight:600;&quot;&gt;Asynchronous&lt;/span&gt; doesn't work.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Never&lt;/span&gt;: Frame buffer is disabled.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;Usually Asynchronous&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
+             <property name="text">
+              <string>Copy frame buffer to N64 memory:</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QRadioButton" name="copyBufferAsyncRadioButton">
+             <property name="text">
+              <string>Asynchronous (fast, few game issues)</string>
+             </property>
+             <property name="checked">
+              <bool>true</bool>
+             </property>
+             <attribute name="buttonGroup">
+              <string notr="true">copyBufferButtonGroup</string>
+             </attribute>
+            </widget>
+           </item>
+           <item>
+            <widget class="QRadioButton" name="copyBufferSyncRadioButton">
+             <property name="text">
+              <string>Synchronous (slowest, fewest game issues)</string>
+             </property>
+             <attribute name="buttonGroup">
+              <string notr="true">copyBufferButtonGroup</string>
+             </attribute>
+            </widget>
+           </item>
+           <item>
+            <widget class="QRadioButton" name="copyBufferOffRadioButton">
+             <property name="text">
+              <string>Never (fastest, many game issues)</string>
+             </property>
+             <attribute name="buttonGroup">
+              <string notr="true">copyBufferButtonGroup</string>
+             </attribute>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QVBoxLayout" name="verticalLayout_2">
+           <property name="spacing">
+            <number>4</number>
+           </property>
+           <item>
+            <widget class="QLabel" name="copyDepthLabel">
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The depth buffer is used to emulate some effects (e.g. coronas):&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;From VRAM&lt;/span&gt;: Your video card's depth buffer is copied to N64 memory each frame, which can be slow on some games.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Software&lt;/span&gt;: Generally faster than copying from VRAM, but the result can be imperfect.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Never&lt;/span&gt;: Depth buffer is disabled.&lt;/p&gt;&lt;p&gt;[Recommended:&lt;span style=&quot; font-style:italic;&quot;&gt; Software&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
+             <property name="text">
+              <string>Copy depth buffer to N64 memory:</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QRadioButton" name="copyDepthVRAMRadioButton">
+             <property name="text">
+              <string>From VRAM (sometimes slow, fewest game issues)</string>
+             </property>
+             <attribute name="buttonGroup">
+              <string notr="true">depthBufferButtonGroup</string>
+             </attribute>
+            </widget>
+           </item>
+           <item>
+            <widget class="QRadioButton" name="copyDepthSoftwareRadioButton">
+             <property name="text">
+              <string>In software (fast, some game issues)</string>
+             </property>
+             <property name="checked">
+              <bool>true</bool>
+             </property>
+             <attribute name="buttonGroup">
+              <string notr="true">depthBufferButtonGroup</string>
+             </attribute>
+            </widget>
+           </item>
+           <item>
+            <widget class="QRadioButton" name="copyDepthOffRadioButton">
+             <property name="text">
+              <string>Never (fastest, most game issues)</string>
+             </property>
+             <attribute name="buttonGroup">
+              <string notr="true">depthBufferButtonGroup</string>
+             </attribute>
+            </widget>
+           </item>
+          </layout>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <spacer name="verticalSpacer_9">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>0</width>
+           <height>0</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
      <widget class="QWidget" name="texturesTab">
       <attribute name="title">
-       <string>Textures</string>
+       <string>Texture enhancement</string>
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_11">
        <item>
@@ -1519,307 +1398,188 @@
           <number>16</number>
          </property>
          <item>
-          <layout class="QVBoxLayout" name="verticalLayout_52">
-           <item>
-            <widget class="QGroupBox" name="texturesGeneralGroupBox">
-             <property name="title">
-              <string>General settings</string>
-             </property>
-             <layout class="QVBoxLayout" name="verticalLayout_31">
-              <property name="spacing">
-               <number>18</number>
-              </property>
-              <property name="leftMargin">
-               <number>9</number>
-              </property>
-              <property name="topMargin">
-               <number>9</number>
-              </property>
-              <property name="rightMargin">
-               <number>9</number>
-              </property>
-              <property name="bottomMargin">
-               <number>9</number>
-              </property>
-              <item>
-               <layout class="QVBoxLayout" name="verticalLayout_30">
-                <property name="spacing">
-                 <number>4</number>
-                </property>
-                <item>
-                 <widget class="QLabel" name="textureCacheSizeLabel">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="text">
-                   <string>Cache size (MB):</string>
-                  </property>
-                  <property name="buddy">
-                   <cstring>cacheSizeSpinBox</cstring>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QSpinBox" name="cacheSizeSpinBox">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="maximum">
-                   <number>999</number>
-                  </property>
-                  <property name="singleStep">
-                   <number>50</number>
-                  </property>
-                  <property name="value">
-                   <number>100</number>
-                  </property>
-                 </widget>
-                </item>
-               </layout>
-              </item>
-              <item>
-               <layout class="QVBoxLayout" name="verticalLayout_21">
-                <property name="spacing">
-                 <number>4</number>
-                </property>
-                <item>
-                 <widget class="QLabel" name="textureBlnr3PointLabel">
-                  <property name="toolTip">
-                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Bilinear filtering&lt;/span&gt;: Textures will use standard PC-style bilinear filtering.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;N64 3 point&lt;/span&gt;: Textures will be filtered more like the N64. The result is less smooth but more accurate.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                  </property>
-                  <property name="text">
-                   <string>Bilinear filtering:</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QRadioButton" name="blnrStandardRadioButton">
-                  <property name="text">
-                   <string>Standard</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QRadioButton" name="blnr3PointRadioButton">
-                  <property name="text">
-                   <string>N64 3 point</string>
-                  </property>
-                 </widget>
-                </item>
-               </layout>
-              </item>
-             </layout>
-            </widget>
-           </item>
-           <item>
-            <spacer name="verticalSpacer_3">
-             <property name="orientation">
-              <enum>Qt::Vertical</enum>
-             </property>
-             <property name="sizeType">
-              <enum>QSizePolicy::Expanding</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>0</width>
-               <height>0</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
-          </layout>
-         </item>
-         <item>
           <layout class="QVBoxLayout" name="verticalLayout_33">
            <property name="spacing">
-            <number>10</number>
+            <number>18</number>
            </property>
            <item>
-            <widget class="QGroupBox" name="textureEnhancementsGroupBox">
-             <property name="title">
-              <string>Texture enhancements</string>
+            <layout class="QHBoxLayout" name="horizontalLayout_7">
+             <item>
+              <layout class="QVBoxLayout" name="verticalLayout_13">
+               <property name="spacing">
+                <number>6</number>
+               </property>
+               <item>
+                <layout class="QVBoxLayout" name="verticalLayout_62">
+                 <property name="spacing">
+                  <number>4</number>
+                 </property>
+                 <item>
+                  <widget class="QLabel" name="filterLabel">
+                   <property name="toolTip">
+                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This filter smooths or sharpens textures. There are four smoothing filters and two sharpening filters. The higher the number, the stronger the effect. Performance may be affected depending on the game and/or your PC.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;Your preference&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                   </property>
+                   <property name="text">
+                    <string>Filter:</string>
+                   </property>
+                   <property name="buddy">
+                    <cstring>filterComboBox</cstring>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QComboBox" name="filterComboBox"/>
+                 </item>
+                </layout>
+               </item>
+               <item>
+                <layout class="QVBoxLayout" name="verticalLayout_63">
+                 <property name="spacing">
+                  <number>4</number>
+                 </property>
+                 <item>
+                  <widget class="QLabel" name="enhancementLabel">
+                   <property name="toolTip">
+                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;There are 12 distinct filters to select. Depending on which filter, they may cause performance problems.&lt;/p&gt;&lt;p&gt;When &lt;span style=&quot; font-weight:600;&quot;&gt;Store&lt;/span&gt; is selected, textures are saved to the cache as-is. This improves performance in games that load many textures. Uncheck &lt;span style=&quot; font-weight:600;&quot;&gt;Ignore backgrounds&lt;/span&gt; for the best performance.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;Your preference&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                   </property>
+                   <property name="text">
+                    <string>Enhancement:</string>
+                   </property>
+                   <property name="buddy">
+                    <cstring>enhancementComboBox</cstring>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QComboBox" name="enhancementComboBox"/>
+                 </item>
+                </layout>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <spacer name="horizontalSpacer_4">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>0</width>
+                 <height>0</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <layout class="QVBoxLayout" name="verticalLayout_12">
+             <property name="spacing">
+              <number>6</number>
              </property>
-             <layout class="QVBoxLayout" name="verticalLayout_13">
-              <property name="spacing">
-               <number>18</number>
-              </property>
-              <item>
-               <layout class="QHBoxLayout" name="horizontalLayout_7">
-                <item>
-                 <layout class="QVBoxLayout" name="verticalLayout_35">
-                  <property name="spacing">
-                   <number>6</number>
-                  </property>
-                  <item>
-                   <layout class="QVBoxLayout" name="verticalLayout_62">
-                    <property name="spacing">
-                     <number>4</number>
-                    </property>
-                    <item>
-                     <widget class="QLabel" name="filterLabel">
-                      <property name="toolTip">
-                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This filter smooths or sharpens textures. There are four smoothing filters and two sharpening filters. The higher the number, the stronger the effect. Performance may be affected depending on the game and/or your PC.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;Your preference&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                      </property>
-                      <property name="text">
-                       <string>Filter:</string>
-                      </property>
-                      <property name="buddy">
-                       <cstring>filterComboBox</cstring>
-                      </property>
-                     </widget>
-                    </item>
-                    <item>
-                     <widget class="QComboBox" name="filterComboBox"/>
-                    </item>
-                   </layout>
-                  </item>
-                  <item>
-                   <layout class="QVBoxLayout" name="verticalLayout_63">
-                    <property name="spacing">
-                     <number>4</number>
-                    </property>
-                    <item>
-                     <widget class="QLabel" name="enhancementLabel">
-                      <property name="toolTip">
-                       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;There are 12 distinct filters to select. They may cause performance problems.&lt;/p&gt;&lt;p&gt;When &lt;span style=&quot; font-weight:600;&quot;&gt;Store&lt;/span&gt; is selected, textures are saved to the cache as-is. This improves performance in games that load many textures. Clear &lt;span style=&quot; font-weight:600;&quot;&gt;Ignore backgrounds&lt;/span&gt; for the best performance.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;Your preference&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                      </property>
-                      <property name="text">
-                       <string>Enhancement:</string>
-                      </property>
-                      <property name="buddy">
-                       <cstring>enhancementComboBox</cstring>
-                      </property>
-                     </widget>
-                    </item>
-                    <item>
-                     <widget class="QComboBox" name="enhancementComboBox"/>
-                    </item>
-                   </layout>
-                  </item>
-                 </layout>
-                </item>
-                <item>
-                 <spacer name="horizontalSpacer_5">
-                  <property name="orientation">
-                   <enum>Qt::Horizontal</enum>
-                  </property>
-                  <property name="sizeHint" stdset="0">
-                   <size>
-                    <width>0</width>
-                    <height>0</height>
-                   </size>
-                  </property>
-                 </spacer>
-                </item>
-               </layout>
-              </item>
-              <item>
-               <layout class="QVBoxLayout" name="verticalLayout_36">
-                <property name="spacing">
-                 <number>4</number>
-                </property>
-                <item>
-                 <widget class="QLabel" name="enhancedCacheSizeLabel">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="toolTip">
-                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enhanced and filtered textures can be cached to improve performance. This option adjusts how much memory is dedicated to the texture cache. This can improve performance if there are many requests for the same texture, which is usually the case. Normally 128 MB should be more than enough, but the best option is different for each game. Super Mario 64 may not need more than 32 MB, but Conker's Bad Fur Day can take advantage of 256 MB+. Adjust accordingly if you are having performance problems. Setting this option to 0 disables the cache.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;PC and game dependent&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                  </property>
-                  <property name="text">
-                   <string>Enhanced cache size (MB):</string>
-                  </property>
-                  <property name="buddy">
-                   <cstring>textureFilterCacheSpinBox</cstring>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QSpinBox" name="textureFilterCacheSpinBox">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="Fixed" vsizetype="Minimum">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="maximum">
-                   <number>999</number>
-                  </property>
-                  <property name="singleStep">
-                   <number>50</number>
-                  </property>
-                 </widget>
-                </item>
-               </layout>
-              </item>
-              <item>
-               <layout class="QVBoxLayout" name="verticalLayout_12">
-                <property name="spacing">
-                 <number>6</number>
-                </property>
-                <item>
-                 <widget class="QCheckBox" name="deposterizeCheckBox">
-                  <property name="toolTip">
-                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This option enables a pre-processing step that reduces posterization issues on enhanced textures.&lt;/p&gt;&lt;p&gt;[Recommended:&lt;span style=&quot; font-style:italic;&quot;&gt; Selected for xBRZ&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                  </property>
-                  <property name="text">
-                   <string>Decrease color banding</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QCheckBox" name="ignoreBackgroundsCheckBox">
-                  <property name="toolTip">
-                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This option skips texture enhancements for long, narrow textures that are usually used for backgrounds. This may save texture memory and improve performance.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;Selected (Cleared when &lt;/span&gt;&lt;span style=&quot; font-weight:600; font-style:italic;&quot;&gt;Enhancement&lt;/span&gt;&lt;span style=&quot; font-style:italic;&quot;&gt; is set to &lt;/span&gt;&lt;span style=&quot; font-weight:600; font-style:italic;&quot;&gt;Store&lt;/span&gt;&lt;span style=&quot; font-style:italic;&quot;&gt;)&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                  </property>
-                  <property name="text">
-                   <string>Ignore backgrounds</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QCheckBox" name="compressCacheCheckBox">
-                  <property name="toolTip">
-                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Textures will be compressed so more textures can be held in the cache. The compression ratio varies per texture, but the compression is typically 1/5 of the original size.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;Selected&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                  </property>
-                  <property name="text">
-                   <string>Compress texture cache</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QCheckBox" name="force16bppCheckBox">
-                  <property name="toolTip">
-                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This option halves the space used by textures and enhances performance. When reducing the color, GLideN64 tries to perserve the original quality as much as possible. On most textures it's hardly noticeable, but some textures, like skies, can look noticeably worse.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;Cleared&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                  </property>
-                  <property name="text">
-                   <string>Convert textures to 16 bpp</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QCheckBox" name="saveTextureCacheCheckBox">
-                  <property name="toolTip">
-                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This option saves all previously loaded and enhanced textures to your PC. When the game is next launched, textures don't have to be regenerated, causing smoother performance.&lt;/p&gt;&lt;p&gt;When using texture packs, loading packs will take only a few seconds when the game is launched as opposed to the 5–60 seconds that loading usually takes. However, if the texture pack changes you'll have to manually delete the texture cache. Saved cache files are saved to a folder called &lt;span style=&quot; font-weight:600;&quot;&gt;Cache&lt;/span&gt; within the plugins folder.&lt;/p&gt;&lt;p&gt;[ Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;Selected&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                  </property>
-                  <property name="text">
-                   <string>Remember enhanced textures (recommended)</string>
-                  </property>
-                 </widget>
-                </item>
-               </layout>
-              </item>
-             </layout>
-            </widget>
+             <item>
+              <widget class="QCheckBox" name="deposterizeCheckBox">
+               <property name="toolTip">
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This option enables a pre-processing step that reduces posterization issues on enhanced textures.&lt;/p&gt;&lt;p&gt;[Recommended:&lt;span style=&quot; font-style:italic;&quot;&gt; Selected for xBRZ&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+               </property>
+               <property name="text">
+                <string>Decrease color banding (recommended for xBRZ enhancement)</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QCheckBox" name="ignoreBackgroundsCheckBox">
+               <property name="toolTip">
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This option skips texture enhancements for long, narrow textures that are usually used for backgrounds. This may save texture memory and improve performance.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;Checked, unless Enhancement is set to Store&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+               </property>
+               <property name="text">
+                <string>Disable for backgrounds</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QCheckBox" name="saveTextureCacheCheckBox">
+               <property name="toolTip">
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This option saves all previously loaded and enhanced textures to your PC. When the game is next launched, textures don't have to be regenerated, causing smoother performance.&lt;/p&gt;&lt;p&gt;When using texture packs, loading packs will take only a few seconds when the game is launched as opposed to the 5–60 seconds that loading usually takes. However, if you change the texture pack you'll have to manually delete the texture cache. Saved cache files are saved to a folder called Cache within the plugins folder.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;Checked&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+               </property>
+               <property name="text">
+                <string>Store enhanced textures (recommended)</string>
+               </property>
+               <property name="checked">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <layout class="QVBoxLayout" name="verticalLayout_36">
+             <property name="spacing">
+              <number>4</number>
+             </property>
+             <item>
+              <widget class="QLabel" name="enhancedCacheSizeLabel">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="toolTip">
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enhanced and filtered textures can be cached to improve performance. This option adjusts how much memory is dedicated to the texture cache. This can improve performance if there are many requests for the same texture, which is usually the case. Normally 128 MB should be more than enough, but the best option is different for each game. Super Mario 64 may not need more than 32 MB, but Conker's Bad Fur Day can take advantage of 256 MB+. Adjust accordingly if you are having performance problems. Setting this option to 0 disables the cache.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;PC and game dependent&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+               </property>
+               <property name="text">
+                <string>Enhanced texture cache size (MB):</string>
+               </property>
+               <property name="buddy">
+                <cstring>textureFilterCacheSpinBox</cstring>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QSpinBox" name="textureFilterCacheSpinBox">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Fixed" vsizetype="Minimum">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="maximum">
+                <number>999</number>
+               </property>
+               <property name="singleStep">
+                <number>50</number>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <layout class="QVBoxLayout" name="verticalLayout_9">
+             <property name="spacing">
+              <number>6</number>
+             </property>
+             <item>
+              <widget class="QCheckBox" name="compressCacheCheckBox">
+               <property name="toolTip">
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Textures will be compressed so more textures can be held in the cache. The compression ratio varies per texture, but the compression is typically 1/5 of the original size.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;Checked&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+               </property>
+               <property name="text">
+                <string>Compress texture cache (recommended)</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QCheckBox" name="force16bppCheckBox">
+               <property name="toolTip">
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This option halves the space used by textures and enhances performance. When reducing the color, GLideN64 tries to perserve the original quality as much as possible. On most textures it's hardly noticeable, but some textures, like skies, can look noticeably worse.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;Unchecked&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+               </property>
+               <property name="text">
+                <string>Convert textures to 16 bpp</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
            </item>
            <item>
             <widget class="QGroupBox" name="texturePackGroupBox">
@@ -1844,17 +1604,17 @@
                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;When this option is cleared, textures will be loaded as they are when using Rice Video: transparencies either on or off. When this option is selected, GlideN64 will check how the texture's alpha channel was designed and will select the most appropriate format. This gives texture pack designers freedom to use semi-transparent textures.&lt;/p&gt;&lt;p&gt;Clear this option for older or poorly designed texture packs.&lt;/p&gt;&lt;p&gt;[Recommended:&lt;span style=&quot; font-style:italic;&quot;&gt; Texture pack dependent&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                   </property>
                   <property name="text">
-                   <string>Use full alpha channel</string>
+                   <string>Use full transparencies (recommended for newer texture packs)</string>
                   </property>
                  </widget>
                 </item>
                 <item>
                  <widget class="QCheckBox" name="alternativeCRCCheckBox">
                   <property name="toolTip">
-                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This option emulates a palette CRC calculation bug in Rice Video. If you have problems loading textures, try selecting or clearing this option.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;Mostly cleared, selected for old texture packs&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This option emulates a palette CRC calculation bug in Rice Video. If you have problems loading textures, try checking or unchecking this option.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;Mostly unchecked, checked for old texture packs&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                   </property>
                   <property name="text">
-                   <string>Alternative CRC calculation</string>
+                   <string>Alternative CRC calculation (for old Rice Video packs)</string>
                   </property>
                  </widget>
                 </item>
@@ -2319,7 +2079,7 @@
            <item>
             <widget class="QGroupBox" name="gammaCorrectionGroupBox">
              <property name="toolTip">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Some N64 games use gamma correction to brighten the image. When the frame buffer is enabled, gamma correction is applied automatically for all games that use it on the N64. You can use your own gamma correction with this option. The default level, used on the N64, is 2.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;Disabled&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Some N64 games use gamma correction to brighten the image. When the frame buffer is enabled, gamma correction is applied automatically for all games that use it on the N64. You can use your own gamma correction with this option. The default level, used on the N64, is 2.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;Unchecked; 2.00&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
              </property>
              <property name="title">
               <string>Custom gamma correction</string>
@@ -2429,25 +2189,455 @@
      </widget>
      <widget class="QWidget" name="osdTab">
       <attribute name="title">
-       <string>On screen display</string>
+       <string>OSD</string>
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_17">
        <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_15">
+        <layout class="QVBoxLayout" name="verticalLayout_18">
          <property name="spacing">
-          <number>16</number>
+          <number>10</number>
          </property>
          <item>
-          <layout class="QVBoxLayout" name="verticalLayout_47">
+          <layout class="QHBoxLayout" name="horizontalLayout_11">
            <property name="spacing">
-            <number>10</number>
+            <number>16</number>
            </property>
+           <item>
+            <widget class="QGroupBox" name="horizontalGroupBox_9">
+             <property name="title">
+              <string>Position</string>
+             </property>
+             <layout class="QVBoxLayout" name="verticalLayout_31">
+              <property name="spacing">
+               <number>6</number>
+              </property>
+              <property name="leftMargin">
+               <number>9</number>
+              </property>
+              <property name="topMargin">
+               <number>9</number>
+              </property>
+              <property name="rightMargin">
+               <number>9</number>
+              </property>
+              <property name="bottomMargin">
+               <number>9</number>
+              </property>
+              <item>
+               <layout class="QHBoxLayout" name="horizontalLayout_15">
+                <property name="spacing">
+                 <number>6</number>
+                </property>
+                <item>
+                 <widget class="QPushButton" name="topLeftPushButton">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="minimumSize">
+                   <size>
+                    <width>38</width>
+                    <height>38</height>
+                   </size>
+                  </property>
+                  <property name="maximumSize">
+                   <size>
+                    <width>38</width>
+                    <height>38</height>
+                   </size>
+                  </property>
+                  <property name="font">
+                   <font>
+                    <pointsize>17</pointsize>
+                   </font>
+                  </property>
+                  <property name="accessibleName">
+                   <string>Top left</string>
+                  </property>
+                  <property name="text">
+                   <string>⭦</string>
+                  </property>
+                  <property name="checkable">
+                   <bool>true</bool>
+                  </property>
+                  <property name="autoExclusive">
+                   <bool>true</bool>
+                  </property>
+                  <attribute name="buttonGroup">
+                   <string notr="true">osdButtonGroup</string>
+                  </attribute>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="topPushButton">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="minimumSize">
+                   <size>
+                    <width>38</width>
+                    <height>38</height>
+                   </size>
+                  </property>
+                  <property name="maximumSize">
+                   <size>
+                    <width>38</width>
+                    <height>38</height>
+                   </size>
+                  </property>
+                  <property name="font">
+                   <font>
+                    <pointsize>17</pointsize>
+                   </font>
+                  </property>
+                  <property name="accessibleName">
+                   <string>Top</string>
+                  </property>
+                  <property name="text">
+                   <string>⭡</string>
+                  </property>
+                  <property name="checkable">
+                   <bool>true</bool>
+                  </property>
+                  <property name="autoExclusive">
+                   <bool>true</bool>
+                  </property>
+                  <attribute name="buttonGroup">
+                   <string notr="true">osdButtonGroup</string>
+                  </attribute>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="topRightPushButton">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="minimumSize">
+                   <size>
+                    <width>38</width>
+                    <height>38</height>
+                   </size>
+                  </property>
+                  <property name="maximumSize">
+                   <size>
+                    <width>38</width>
+                    <height>38</height>
+                   </size>
+                  </property>
+                  <property name="font">
+                   <font>
+                    <pointsize>17</pointsize>
+                   </font>
+                  </property>
+                  <property name="accessibleName">
+                   <string>Top right</string>
+                  </property>
+                  <property name="text">
+                   <string>⭧</string>
+                  </property>
+                  <property name="checkable">
+                   <bool>true</bool>
+                  </property>
+                  <property name="autoExclusive">
+                   <bool>true</bool>
+                  </property>
+                  <attribute name="buttonGroup">
+                   <string notr="true">osdButtonGroup</string>
+                  </attribute>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item>
+               <layout class="QHBoxLayout" name="horizontalLayout_16">
+                <property name="spacing">
+                 <number>6</number>
+                </property>
+                <item>
+                 <widget class="QPushButton" name="leftPushButton">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="minimumSize">
+                   <size>
+                    <width>38</width>
+                    <height>38</height>
+                   </size>
+                  </property>
+                  <property name="maximumSize">
+                   <size>
+                    <width>38</width>
+                    <height>38</height>
+                   </size>
+                  </property>
+                  <property name="font">
+                   <font>
+                    <pointsize>17</pointsize>
+                   </font>
+                  </property>
+                  <property name="accessibleName">
+                   <string>Left</string>
+                  </property>
+                  <property name="text">
+                   <string>⭠</string>
+                  </property>
+                  <property name="checkable">
+                   <bool>true</bool>
+                  </property>
+                  <property name="autoExclusive">
+                   <bool>true</bool>
+                  </property>
+                  <attribute name="buttonGroup">
+                   <string notr="true">osdButtonGroup</string>
+                  </attribute>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="centerPushButton">
+                  <property name="enabled">
+                   <bool>false</bool>
+                  </property>
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="minimumSize">
+                   <size>
+                    <width>38</width>
+                    <height>38</height>
+                   </size>
+                  </property>
+                  <property name="maximumSize">
+                   <size>
+                    <width>38</width>
+                    <height>38</height>
+                   </size>
+                  </property>
+                  <property name="font">
+                   <font>
+                    <pointsize>17</pointsize>
+                   </font>
+                  </property>
+                  <property name="text">
+                   <string/>
+                  </property>
+                  <attribute name="buttonGroup">
+                   <string notr="true">osdButtonGroup</string>
+                  </attribute>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="rightPushButton">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="minimumSize">
+                   <size>
+                    <width>38</width>
+                    <height>38</height>
+                   </size>
+                  </property>
+                  <property name="maximumSize">
+                   <size>
+                    <width>38</width>
+                    <height>38</height>
+                   </size>
+                  </property>
+                  <property name="font">
+                   <font>
+                    <pointsize>17</pointsize>
+                   </font>
+                  </property>
+                  <property name="accessibleName">
+                   <string>Right</string>
+                  </property>
+                  <property name="text">
+                   <string>⭢</string>
+                  </property>
+                  <property name="checkable">
+                   <bool>true</bool>
+                  </property>
+                  <property name="autoExclusive">
+                   <bool>true</bool>
+                  </property>
+                  <attribute name="buttonGroup">
+                   <string notr="true">osdButtonGroup</string>
+                  </attribute>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item>
+               <layout class="QHBoxLayout" name="horizontalLayout_24">
+                <item>
+                 <widget class="QPushButton" name="bottomLeftPushButton">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="minimumSize">
+                   <size>
+                    <width>38</width>
+                    <height>38</height>
+                   </size>
+                  </property>
+                  <property name="maximumSize">
+                   <size>
+                    <width>38</width>
+                    <height>38</height>
+                   </size>
+                  </property>
+                  <property name="font">
+                   <font>
+                    <pointsize>17</pointsize>
+                   </font>
+                  </property>
+                  <property name="accessibleName">
+                   <string>Bottom left</string>
+                  </property>
+                  <property name="text">
+                   <string>⭩</string>
+                  </property>
+                  <property name="checkable">
+                   <bool>true</bool>
+                  </property>
+                  <property name="autoExclusive">
+                   <bool>true</bool>
+                  </property>
+                  <attribute name="buttonGroup">
+                   <string notr="true">osdButtonGroup</string>
+                  </attribute>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="bottomPushButton">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="minimumSize">
+                   <size>
+                    <width>38</width>
+                    <height>38</height>
+                   </size>
+                  </property>
+                  <property name="maximumSize">
+                   <size>
+                    <width>38</width>
+                    <height>38</height>
+                   </size>
+                  </property>
+                  <property name="font">
+                   <font>
+                    <pointsize>17</pointsize>
+                   </font>
+                  </property>
+                  <property name="accessibleName">
+                   <string>Bottom</string>
+                  </property>
+                  <property name="text">
+                   <string>⭣</string>
+                  </property>
+                  <property name="checkable">
+                   <bool>true</bool>
+                  </property>
+                  <property name="autoExclusive">
+                   <bool>true</bool>
+                  </property>
+                  <attribute name="buttonGroup">
+                   <string notr="true">osdButtonGroup</string>
+                  </attribute>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="bottomRightPushButton">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="minimumSize">
+                   <size>
+                    <width>38</width>
+                    <height>38</height>
+                   </size>
+                  </property>
+                  <property name="maximumSize">
+                   <size>
+                    <width>38</width>
+                    <height>38</height>
+                   </size>
+                  </property>
+                  <property name="font">
+                   <font>
+                    <pointsize>17</pointsize>
+                   </font>
+                  </property>
+                  <property name="accessibleName">
+                   <string>Bottom right</string>
+                  </property>
+                  <property name="text">
+                   <string>⭨</string>
+                  </property>
+                  <property name="checkable">
+                   <bool>true</bool>
+                  </property>
+                  <property name="autoExclusive">
+                   <bool>true</bool>
+                  </property>
+                  <attribute name="buttonGroup">
+                   <string notr="true">osdButtonGroup</string>
+                  </attribute>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item>
+               <spacer name="verticalSpacer_7">
+                <property name="orientation">
+                 <enum>Qt::Vertical</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>0</width>
+                  <height>0</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+             </layout>
+            </widget>
+           </item>
            <item>
             <widget class="QGroupBox" name="verticalGroupBox_12">
              <property name="title">
               <string>Text</string>
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_49">
+              <property name="spacing">
+               <number>0</number>
+              </property>
               <property name="leftMargin">
                <number>9</number>
               </property>
@@ -2465,29 +2655,6 @@
                 <property name="spacing">
                  <number>6</number>
                 </property>
-                <item row="1" column="1">
-                 <widget class="QLabel" name="fontColorLabel">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="text">
-                   <string>Green</string>
-                  </property>
-                  <property name="alignment">
-                   <set>Qt::AlignCenter</set>
-                  </property>
-                 </widget>
-                </item>
-                <item row="1" column="2">
-                 <widget class="QPushButton" name="PickFontColorButton">
-                  <property name="text">
-                   <string>Pick...</string>
-                  </property>
-                 </widget>
-                </item>
                 <item row="0" column="2">
                  <widget class="QPushButton" name="selectFontButton">
                   <property name="sizePolicy">
@@ -2498,6 +2665,25 @@
                   </property>
                   <property name="text">
                    <string>Select...</string>
+                  </property>
+                  <property name="autoDefault">
+                   <bool>false</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item row="1" column="0">
+                 <widget class="QLabel" name="fontColorDescLabel">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="text">
+                   <string>Color:</string>
+                  </property>
+                  <property name="buddy">
+                   <cstring>PickFontColorButton</cstring>
                   </property>
                  </widget>
                 </item>
@@ -2510,7 +2696,7 @@
                    </sizepolicy>
                   </property>
                   <property name="toolTip">
-                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This font is used for all on screen messages. Not all fonts can be used. If messages aren't displayed, try a different font.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This font is used for all on-screen messages. Not all fonts can be used. If messages aren't displayed, try a different font.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                   </property>
                   <property name="text">
                    <string>Font:</string>
@@ -2536,168 +2722,109 @@
                   </property>
                  </widget>
                 </item>
-                <item row="1" column="0">
-                 <widget class="QLabel" name="fontColorDescLabel">
+                <item row="1" column="1">
+                 <widget class="QLabel" name="fontColorLabel">
                   <property name="sizePolicy">
-                   <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+                   <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                     <horstretch>0</horstretch>
                     <verstretch>0</verstretch>
                    </sizepolicy>
                   </property>
                   <property name="text">
-                   <string>Color:</string>
+                   <string>Green</string>
                   </property>
-                  <property name="buddy">
-                   <cstring>PickFontColorButton</cstring>
+                  <property name="alignment">
+                   <set>Qt::AlignCenter</set>
                   </property>
                  </widget>
                 </item>
-               </layout>
-              </item>
-             </layout>
-            </widget>
-           </item>
-           <item>
-            <widget class="QGroupBox" name="horizontalGroupBox_9">
-             <property name="title">
-              <string>Position</string>
-             </property>
-             <layout class="QHBoxLayout" name="horizontalLayout_16">
-              <property name="spacing">
-               <number>0</number>
-              </property>
-              <property name="leftMargin">
-               <number>9</number>
-              </property>
-              <property name="topMargin">
-               <number>9</number>
-              </property>
-              <property name="rightMargin">
-               <number>9</number>
-              </property>
-              <property name="bottomMargin">
-               <number>9</number>
-              </property>
-              <item>
-               <layout class="QVBoxLayout" name="verticalLayout_46">
-                <property name="spacing">
-                 <number>4</number>
-                </property>
-                <item>
-                 <widget class="QRadioButton" name="topRadioButton">
+                <item row="1" column="2">
+                 <widget class="QPushButton" name="PickFontColorButton">
                   <property name="text">
-                   <string>Top</string>
+                   <string>Pick...</string>
                   </property>
-                  <attribute name="buttonGroup">
-                   <string notr="true">verticalPositionButtonGroup</string>
-                  </attribute>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QRadioButton" name="bottoRadioButton">
-                  <property name="text">
-                   <string>Bottom</string>
+                  <property name="autoDefault">
+                   <bool>false</bool>
                   </property>
-                  <attribute name="buttonGroup">
-                   <string notr="true">verticalPositionButtonGroup</string>
-                  </attribute>
                  </widget>
                 </item>
                </layout>
               </item>
               <item>
-               <layout class="QVBoxLayout" name="verticalLayout_18">
-                <property name="spacing">
-                 <number>4</number>
+               <spacer name="horizontalSpacer_24">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
                 </property>
-                <item>
-                 <widget class="QRadioButton" name="leftRadioButton">
-                  <property name="text">
-                   <string>Left</string>
-                  </property>
-                  <attribute name="buttonGroup">
-                   <string notr="true">horisontalPositionButtonGroup</string>
-                  </attribute>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QRadioButton" name="rightRadioButton">
-                  <property name="text">
-                   <string>Right</string>
-                  </property>
-                  <attribute name="buttonGroup">
-                   <string notr="true">horisontalPositionButtonGroup</string>
-                  </attribute>
-                 </widget>
-                </item>
-               </layout>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>0</width>
+                  <height>0</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item>
+               <spacer name="verticalSpacer_3">
+                <property name="orientation">
+                 <enum>Qt::Vertical</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>0</width>
+                  <height>0</height>
+                 </size>
+                </property>
+               </spacer>
               </item>
              </layout>
             </widget>
-           </item>
-           <item>
-            <spacer name="verticalSpacer_7">
-             <property name="orientation">
-              <enum>Qt::Vertical</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>0</width>
-               <height>0</height>
-              </size>
-             </property>
-            </spacer>
            </item>
           </layout>
          </item>
          <item>
-          <layout class="QVBoxLayout" name="verticalLayout_48">
-           <item>
-            <widget class="QGroupBox" name="performanceGroupBox">
-             <property name="title">
-              <string>Performance counters</string>
-             </property>
-             <layout class="QVBoxLayout" name="verticalLayout_19">
-              <item>
-               <widget class="QCheckBox" name="fpsCheckBox">
-                <property name="text">
-                 <string>Display frames per second</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QCheckBox" name="visCheckBox">
-                <property name="text">
-                 <string>Display vertical interrupts per second</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QCheckBox" name="percentCheckBox">
-                <property name="text">
-                 <string>Display percentage</string>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </widget>
-           </item>
-           <item>
-            <spacer name="verticalSpacer_6">
-             <property name="orientation">
-              <enum>Qt::Vertical</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>0</width>
-               <height>0</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
-          </layout>
+          <widget class="QGroupBox" name="performanceGroupBox">
+           <property name="title">
+            <string>Performance counters</string>
+           </property>
+           <layout class="QVBoxLayout" name="verticalLayout_19">
+            <item>
+             <widget class="QCheckBox" name="fpsCheckBox">
+              <property name="text">
+               <string>Display frames per second</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QCheckBox" name="visCheckBox">
+              <property name="text">
+               <string>Display vertical interrupts per second</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QCheckBox" name="percentCheckBox">
+              <property name="text">
+               <string>Display percentage</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
          </item>
         </layout>
+       </item>
+       <item>
+        <spacer name="verticalSpacer_6">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>0</width>
+           <height>0</height>
+          </size>
+         </property>
+        </spacer>
        </item>
       </layout>
      </widget>
@@ -2725,7 +2852,7 @@
   <connection>
    <sender>buttonBox</sender>
    <signal>rejected()</signal>
-   <receiver>ConfigDialog</receiver>
+   <receiver>textureCacheSizeLabel</receiver>
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -2741,7 +2868,7 @@
   <connection>
    <sender>buttonBox</sender>
    <signal>accepted()</signal>
-   <receiver>ConfigDialog</receiver>
+   <receiver>textureCacheSizeLabel</receiver>
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -2765,8 +2892,8 @@
      <y>287</y>
     </hint>
     <hint type="destinationlabel">
-     <x>230</x>
-     <y>306</y>
+     <x>260</x>
+     <y>358</y>
     </hint>
    </hints>
   </connection>
@@ -2781,8 +2908,8 @@
      <y>287</y>
     </hint>
     <hint type="destinationlabel">
-     <x>154</x>
-     <y>306</y>
+     <x>174</x>
+     <y>358</y>
     </hint>
    </hints>
   </connection>
@@ -2797,104 +2924,8 @@
      <y>287</y>
     </hint>
     <hint type="destinationlabel">
-     <x>82</x>
-     <y>306</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>fbInfoEnableCheckBox</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>readDepthChunkCheckBox</receiver>
-   <slot>setVisible(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>38</x>
-     <y>444</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>39</x>
-     <y>464</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>fbInfoEnableCheckBox</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>readColorChunkCheckBox</receiver>
-   <slot>setVisible(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>62</x>
-     <y>445</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>67</x>
-     <y>490</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>fbInfoEnableCheckBox</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>copyBufferLabel</receiver>
-   <slot>setHidden(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>96</x>
-     <y>442</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>96</x>
-     <y>514</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>fbInfoEnableCheckBox</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>copyBufferComboBox</receiver>
-   <slot>setHidden(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>123</x>
-     <y>441</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>124</x>
-     <y>539</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>fbInfoEnableCheckBox</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>copyDepthLabel</receiver>
-   <slot>setHidden(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>151</x>
-     <y>445</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>157</x>
-     <y>560</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>fbInfoEnableCheckBox</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>copyDepthComboBox</receiver>
-   <slot>setHidden(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>182</x>
-     <y>446</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>186</x>
-     <y>585</y>
+     <x>88</x>
+     <y>358</y>
     </hint>
    </hints>
   </connection>
@@ -2905,11 +2936,11 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>482</x>
-     <y>208</y>
+     <x>541</x>
+     <y>224</y>
     </hint>
     <hint type="destinationlabel">
-     <x>466</x>
+     <x>521</x>
      <y>244</y>
     </hint>
    </hints>
@@ -2925,7 +2956,7 @@
      <y>193</y>
     </hint>
     <hint type="destinationlabel">
-     <x>352</x>
+     <x>386</x>
      <y>244</y>
     </hint>
    </hints>
@@ -2941,7 +2972,7 @@
      <y>143</y>
     </hint>
     <hint type="destinationlabel">
-     <x>239</x>
+     <x>250</x>
      <y>244</y>
     </hint>
    </hints>
@@ -2953,12 +2984,12 @@
    <slot>setDisabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>328</x>
-     <y>72</y>
+     <x>340</x>
+     <y>209</y>
     </hint>
     <hint type="destinationlabel">
-     <x>328</x>
-     <y>109</y>
+     <x>341</x>
+     <y>241</y>
     </hint>
    </hints>
   </connection>
@@ -2969,12 +3000,12 @@
    <slot>setDisabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>349</x>
-     <y>72</y>
+     <x>361</x>
+     <y>209</y>
     </hint>
     <hint type="destinationlabel">
-     <x>349</x>
-     <y>124</y>
+     <x>362</x>
+     <y>262</y>
     </hint>
    </hints>
   </connection>
@@ -2985,12 +3016,12 @@
    <slot>setDisabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>375</x>
-     <y>71</y>
+     <x>387</x>
+     <y>209</y>
     </hint>
     <hint type="destinationlabel">
-     <x>375</x>
-     <y>150</y>
+     <x>388</x>
+     <y>283</y>
     </hint>
    </hints>
   </connection>
@@ -3001,22 +3032,184 @@
    <slot>setDisabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>399</x>
-     <y>73</y>
+     <x>411</x>
+     <y>209</y>
     </hint>
     <hint type="destinationlabel">
-     <x>397</x>
-     <y>162</y>
+     <x>410</x>
+     <y>304</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>fbInfoEnableCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>readDepthChunkCheckBox</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>31</x>
+     <y>284</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>31</x>
+     <y>308</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>fbInfoEnableCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>readColorChunkCheckBox</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>51</x>
+     <y>285</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>53</x>
+     <y>333</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>fbInfoEnableCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>copyBufferLabel</receiver>
+   <slot>setHidden(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>73</x>
+     <y>286</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>70</x>
+     <y>367</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>fbInfoEnableCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>copyBufferAsyncRadioButton</receiver>
+   <slot>setHidden(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>92</x>
+     <y>285</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>93</x>
+     <y>384</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>fbInfoEnableCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>copyBufferSyncRadioButton</receiver>
+   <slot>setHidden(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>113</x>
+     <y>284</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>113</x>
+     <y>405</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>fbInfoEnableCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>copyBufferOffRadioButton</receiver>
+   <slot>setHidden(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>136</x>
+     <y>286</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>133</x>
+     <y>427</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>fbInfoEnableCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>copyDepthLabel</receiver>
+   <slot>setHidden(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>151</x>
+     <y>285</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>154</x>
+     <y>466</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>fbInfoEnableCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>copyDepthVRAMRadioButton</receiver>
+   <slot>setHidden(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>178</x>
+     <y>290</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>174</x>
+     <y>479</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>fbInfoEnableCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>copyDepthSoftwareRadioButton</receiver>
+   <slot>setHidden(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>193</x>
+     <y>280</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>194</x>
+     <y>503</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>fbInfoEnableCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>copyDepthOffRadioButton</receiver>
+   <slot>setHidden(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>214</x>
+     <y>289</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>213</x>
+     <y>525</y>
     </hint>
    </hints>
   </connection>
  </connections>
  <buttongroups>
-  <buttongroup name="horisontalPositionButtonGroup"/>
-  <buttongroup name="screenshotButtonGroup"/>
-  <buttongroup name="verticalPositionButtonGroup"/>
-  <buttongroup name="aspectButtonGroup"/>
+  <buttongroup name="copyBufferButtonGroup"/>
   <buttongroup name="fixTexrectCoordsButtonGroup"/>
+  <buttongroup name="aspectButtonGroup"/>
   <buttongroup name="bloomBlendModeButtonGroup"/>
+  <buttongroup name="screenshotButtonGroup"/>
+  <buttongroup name="bufferSwapButtonGroup"/>
+  <buttongroup name="depthBufferButtonGroup"/>
+  <buttongroup name="osdButtonGroup"/>
  </buttongroups>
 </ui>
