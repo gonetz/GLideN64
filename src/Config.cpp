@@ -52,7 +52,7 @@ void Config::resetToDefaults()
 #endif
 
 	frameBufferEmulation.enable = 1;
-	frameBufferEmulation.copyDepthToRDRAM = cdDisable;
+	frameBufferEmulation.copyDepthToRDRAM = cdSoftwareRender;
 	frameBufferEmulation.copyFromRDRAM = 0;
 	frameBufferEmulation.copyAuxToRDRAM = 0;
 	frameBufferEmulation.copyToRDRAM = ctAsync;
