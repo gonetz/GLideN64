@@ -35,15 +35,6 @@
    </property>
    <item>
     <widget class="QTabWidget" name="tabWidget">
-     <property name="minimumSize">
-      <size>
-       <width>0</width>
-       <height>510</height>
-      </size>
-     </property>
-     <property name="currentIndex">
-      <number>0</number>
-     </property>
      <property name="usesScrollButtons">
       <bool>false</bool>
      </property>
@@ -121,11 +112,79 @@
               </widget>
              </item>
              <item>
-              <widget class="QComboBox" name="windowedResolutionComboBox">
-               <property name="editable">
-                <bool>true</bool>
-               </property>
-              </widget>
+              <widget class="QComboBox" name="windowedResolutionComboBox"/>
+             </item>
+             <item>
+              <layout class="QHBoxLayout" name="horizontalLayout_12">
+               <item>
+                <widget class="QLabel" name="windowWidthLabel">
+                 <property name="text">
+                  <string>W:</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QSpinBox" name="windowWidthSpinBox">
+                 <property name="minimumSize">
+                  <size>
+                   <width>52</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                 <property name="minimum">
+                  <number>320</number>
+                 </property>
+                 <property name="maximum">
+                  <number>7680</number>
+                 </property>
+                 <property name="singleStep">
+                  <number>16</number>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <spacer name="horizontalSpacer_5">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                 <property name="sizeType">
+                  <enum>QSizePolicy::Fixed</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>4</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+               <item>
+                <widget class="QLabel" name="windowHeightLabel">
+                 <property name="text">
+                  <string>H:</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QSpinBox" name="windowHeightSpinBox">
+                 <property name="minimumSize">
+                  <size>
+                   <width>52</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                 <property name="minimum">
+                  <number>240</number>
+                 </property>
+                 <property name="maximum">
+                  <number>4320</number>
+                 </property>
+                 <property name="singleStep">
+                  <number>16</number>
+                 </property>
+                </widget>
+               </item>
+              </layout>
              </item>
             </layout>
            </item>
@@ -174,7 +233,7 @@
              </item>
              <item>
               <layout class="QHBoxLayout" name="horizontalLayout_23">
-               <item alignment="Qt::AlignHCenter">
+               <item>
                 <widget class="QLabel" name="cropImageWidthLabel">
                  <property name="toolTip">
                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Custom cropped image width&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -192,6 +251,12 @@
                </item>
                <item>
                 <widget class="QSpinBox" name="cropImageWidthSpinBox">
+                 <property name="minimumSize">
+                  <size>
+                   <width>52</width>
+                   <height>0</height>
+                  </size>
+                 </property>
                  <property name="locale">
                   <locale language="English" country="UnitedStates"/>
                  </property>
@@ -200,7 +265,23 @@
                  </property>
                 </widget>
                </item>
-               <item alignment="Qt::AlignHCenter">
+               <item>
+                <spacer name="horizontalSpacer_9">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                 <property name="sizeType">
+                  <enum>QSizePolicy::Fixed</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>4</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                </spacer>
+               </item>
+               <item>
                 <widget class="QLabel" name="cropImageHeightLabel">
                  <property name="toolTip">
                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Custom cropped image height&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -218,6 +299,12 @@
                </item>
                <item>
                 <widget class="QSpinBox" name="cropImageHeightSpinBox">
+                 <property name="minimumSize">
+                  <size>
+                   <width>52</width>
+                   <height>0</height>
+                  </size>
+                 </property>
                  <property name="locale">
                   <locale language="English" country="UnitedStates"/>
                  </property>
@@ -750,7 +837,7 @@
                  <item>
                   <widget class="QLabel" name="label">
                    <property name="text">
-                    <string>Texture cache size (MB):</string>
+                    <string>Texture cache size:</string>
                    </property>
                   </widget>
                  </item>
@@ -761,6 +848,9 @@
                      <horstretch>0</horstretch>
                      <verstretch>0</verstretch>
                     </sizepolicy>
+                   </property>
+                   <property name="suffix">
+                    <string> MB</string>
                    </property>
                    <property name="maximum">
                     <number>999</number>
@@ -1422,313 +1512,350 @@
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_11">
        <item>
-        <layout class="QVBoxLayout" name="verticalLayout_33">
-         <property name="spacing">
-          <number>18</number>
+        <widget class="QTabWidget" name="tabWidget_2">
+         <property name="currentIndex">
+          <number>1</number>
          </property>
-         <item>
-          <layout class="QVBoxLayout" name="verticalLayout_27">
-           <property name="spacing">
-            <number>4</number>
-           </property>
+         <widget class="QWidget" name="textureEnhancementTab">
+          <attribute name="title">
+           <string>N64 texture enhancement</string>
+          </attribute>
+          <layout class="QVBoxLayout" name="verticalLayout_35">
            <item>
-            <widget class="QRadioButton" name="texturePackOffRadioButton">
-             <property name="text">
-              <string>Enhance N64 textures</string>
-             </property>
-             <attribute name="buttonGroup">
-              <string notr="true">texturePackButtonGroup</string>
-             </attribute>
-            </widget>
-           </item>
-           <item>
-            <widget class="QRadioButton" name="texturePackOnRadioButton">
-             <property name="text">
-              <string>Use texture pack</string>
-             </property>
-             <attribute name="buttonGroup">
-              <string notr="true">texturePackButtonGroup</string>
-             </attribute>
-            </widget>
-           </item>
-          </layout>
-         </item>
-         <item>
-          <layout class="QHBoxLayout" name="horizontalLayout_7">
-           <item>
-            <layout class="QVBoxLayout" name="verticalLayout_13">
+            <layout class="QVBoxLayout" name="verticalLayout_29">
              <property name="spacing">
-              <number>6</number>
+              <number>18</number>
              </property>
              <item>
-              <layout class="QVBoxLayout" name="verticalLayout_62">
-               <property name="spacing">
-                <number>4</number>
-               </property>
+              <layout class="QHBoxLayout" name="horizontalLayout_7">
                <item>
-                <widget class="QLabel" name="filterLabel">
-                 <property name="toolTip">
-                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This filter smooths or sharpens textures. There are four smoothing filters and two sharpening filters. The higher the number, the stronger the effect. Performance may be affected depending on the game and/or your PC.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;Your preference&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                <layout class="QVBoxLayout" name="verticalLayout_13">
+                 <property name="spacing">
+                  <number>6</number>
                  </property>
-                 <property name="text">
-                  <string>Filter:</string>
-                 </property>
-                 <property name="buddy">
-                  <cstring>filterComboBox</cstring>
-                 </property>
-                </widget>
+                 <item>
+                  <layout class="QVBoxLayout" name="verticalLayout_62">
+                   <property name="spacing">
+                    <number>4</number>
+                   </property>
+                   <item>
+                    <widget class="QLabel" name="filterLabel">
+                     <property name="toolTip">
+                      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This filter smooths or sharpens textures. There are four smoothing filters and two sharpening filters. The higher the number, the stronger the effect. Performance may be affected depending on the game and/or your PC.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;Your preference&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                     </property>
+                     <property name="text">
+                      <string>Filter:</string>
+                     </property>
+                     <property name="buddy">
+                      <cstring>filterComboBox</cstring>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QComboBox" name="filterComboBox"/>
+                   </item>
+                  </layout>
+                 </item>
+                 <item>
+                  <layout class="QVBoxLayout" name="verticalLayout_63">
+                   <property name="spacing">
+                    <number>4</number>
+                   </property>
+                   <item>
+                    <widget class="QLabel" name="enhancementLabel">
+                     <property name="toolTip">
+                      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;There are 12 distinct filters to select. Depending on which filter, they may cause performance problems.&lt;/p&gt;&lt;p&gt;When &lt;span style=&quot; font-weight:600;&quot;&gt;Store&lt;/span&gt; is selected, textures are saved to the cache as-is. This improves performance in games that load many textures. Uncheck &lt;span style=&quot; font-weight:600;&quot;&gt;Ignore backgrounds&lt;/span&gt; for the best performance.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;Your preference&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                     </property>
+                     <property name="text">
+                      <string>Enhancement:</string>
+                     </property>
+                     <property name="buddy">
+                      <cstring>enhancementComboBox</cstring>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QComboBox" name="enhancementComboBox"/>
+                   </item>
+                  </layout>
+                 </item>
+                </layout>
                </item>
                <item>
-                <widget class="QComboBox" name="filterComboBox"/>
+                <spacer name="horizontalSpacer_4">
+                 <property name="orientation">
+                  <enum>Qt::Horizontal</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>0</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                </spacer>
                </item>
               </layout>
              </item>
              <item>
-              <layout class="QVBoxLayout" name="verticalLayout_63">
+              <layout class="QVBoxLayout" name="verticalLayout_12">
                <property name="spacing">
-                <number>4</number>
+                <number>6</number>
                </property>
                <item>
-                <widget class="QLabel" name="enhancementLabel">
+                <widget class="QCheckBox" name="deposterizeCheckBox">
                  <property name="toolTip">
-                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;There are 12 distinct filters to select. Depending on which filter, they may cause performance problems.&lt;/p&gt;&lt;p&gt;When &lt;span style=&quot; font-weight:600;&quot;&gt;Store&lt;/span&gt; is selected, textures are saved to the cache as-is. This improves performance in games that load many textures. Uncheck &lt;span style=&quot; font-weight:600;&quot;&gt;Ignore backgrounds&lt;/span&gt; for the best performance.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;Your preference&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This option enables a pre-processing step that reduces posterization issues on enhanced textures.&lt;/p&gt;&lt;p&gt;[Recommended:&lt;span style=&quot; font-style:italic;&quot;&gt; Checked for xBRZ&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                  </property>
                  <property name="text">
-                  <string>Enhancement:</string>
-                 </property>
-                 <property name="buddy">
-                  <cstring>enhancementComboBox</cstring>
+                  <string>Decrease color banding (recommended for xBRZ enhancement)</string>
                  </property>
                 </widget>
                </item>
                <item>
-                <widget class="QComboBox" name="enhancementComboBox"/>
+                <widget class="QCheckBox" name="ignoreBackgroundsCheckBox">
+                 <property name="toolTip">
+                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This option skips texture enhancements for long, narrow textures that are usually used for backgrounds. This may save texture memory and improve performance.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;Checked, unless Enhancement is set to Store&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                 </property>
+                 <property name="text">
+                  <string>Disable for backgrounds</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <layout class="QVBoxLayout" name="verticalLayout_36">
+               <property name="spacing">
+                <number>4</number>
+               </property>
+               <item>
+                <widget class="QLabel" name="enhancedCacheSizeLabel">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="toolTip">
+                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enhanced and filtered textures can be cached to improve performance. This option adjusts how much memory is dedicated to the texture cache. This can improve performance if there are many requests for the same texture, which is usually the case. Normally 128 MB should be more than enough, but the best option is different for each game. Super Mario 64 may not need more than 32 MB, but Conker's Bad Fur Day can take advantage of 256 MB+. Adjust accordingly if you are having performance problems. Setting this option to 0 disables the cache.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;PC and game dependent&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                 </property>
+                 <property name="text">
+                  <string>Enhanced texture cache size:</string>
+                 </property>
+                 <property name="buddy">
+                  <cstring>textureFilterCacheSpinBox</cstring>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QSpinBox" name="textureFilterCacheSpinBox">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Fixed" vsizetype="Minimum">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="suffix">
+                  <string> MB</string>
+                 </property>
+                 <property name="maximum">
+                  <number>999</number>
+                 </property>
+                 <property name="singleStep">
+                  <number>50</number>
+                 </property>
+                </widget>
                </item>
               </layout>
              </item>
             </layout>
            </item>
            <item>
-            <spacer name="horizontalSpacer_4">
+            <spacer name="verticalSpacer_13">
              <property name="orientation">
-              <enum>Qt::Horizontal</enum>
+              <enum>Qt::Vertical</enum>
              </property>
              <property name="sizeHint" stdset="0">
               <size>
-               <width>0</width>
-               <height>0</height>
+               <width>20</width>
+               <height>40</height>
               </size>
              </property>
             </spacer>
            </item>
           </layout>
-         </item>
-         <item>
-          <layout class="QVBoxLayout" name="verticalLayout_12">
-           <property name="spacing">
-            <number>6</number>
-           </property>
+         </widget>
+         <widget class="QWidget" name="texturePackTab">
+          <attribute name="title">
+           <string>Texture pack</string>
+          </attribute>
+          <layout class="QVBoxLayout" name="verticalLayout_14">
            <item>
-            <widget class="QCheckBox" name="deposterizeCheckBox">
-             <property name="toolTip">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This option enables a pre-processing step that reduces posterization issues on enhanced textures.&lt;/p&gt;&lt;p&gt;[Recommended:&lt;span style=&quot; font-style:italic;&quot;&gt; Checked for xBRZ&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            <layout class="QVBoxLayout" name="verticalLayout_33">
+             <property name="spacing">
+              <number>18</number>
              </property>
-             <property name="text">
-              <string>Decrease color banding (recommended for xBRZ enhancement)</string>
-             </property>
-            </widget>
+             <item>
+              <widget class="QCheckBox" name="texturePackOnCheckBox">
+               <property name="text">
+                <string>Use texture pack</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <layout class="QVBoxLayout" name="verticalLayout_37">
+               <property name="spacing">
+                <number>4</number>
+               </property>
+               <item>
+                <widget class="QLabel" name="texturePackPathLabel">
+                 <property name="toolTip">
+                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select path to the folder with texture packs.&lt;br/&gt;Default: Plugin/hires_texture&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                 </property>
+                 <property name="text">
+                  <string>Texture pack path:</string>
+                 </property>
+                 <property name="buddy">
+                  <cstring>texPackPathButton</cstring>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="txPathLabel">
+                 <property name="text">
+                  <string/>
+                 </property>
+                 <property name="wordWrap">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QPushButton" name="texPackPathButton">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="text">
+                  <string>Browse...</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <layout class="QVBoxLayout" name="verticalLayout_38">
+               <property name="spacing">
+                <number>6</number>
+               </property>
+               <item>
+                <widget class="QCheckBox" name="alphaChannelCheckBox">
+                 <property name="toolTip">
+                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;When this option is cleared, textures will be loaded as they are when using Rice Video: transparencies either on or off. When this option is selected, GlideN64 will check how the texture's alpha channel was designed and will select the most appropriate format. This gives texture pack designers freedom to use semi-transparent textures.&lt;/p&gt;&lt;p&gt;Clear this option for older or poorly designed texture packs.&lt;/p&gt;&lt;p&gt;[Recommended:&lt;span style=&quot; font-style:italic;&quot;&gt; Texture pack dependent&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                 </property>
+                 <property name="text">
+                  <string>Use full transparencies (recommended for newer texture packs)</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QCheckBox" name="alternativeCRCCheckBox">
+                 <property name="toolTip">
+                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This option emulates a palette CRC calculation bug in Rice Video. If you have problems loading textures, try checking or unchecking this option.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;Mostly unchecked, checked for old texture packs&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                 </property>
+                 <property name="text">
+                  <string>Alternative CRC calculation (for old Rice Video packs)</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QCheckBox" name="textureDumpCheckBox">
+                 <property name="enabled">
+                  <bool>true</bool>
+                 </property>
+                 <property name="toolTip">
+                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This option dumps textures on screen to a texture pack folder. You can also reload textures while the game is running to see how they look instantly—big time saver!&lt;/p&gt;&lt;p&gt;Hotkeys:&lt;br/&gt;Use &lt;span style=&quot; font-weight:600;&quot;&gt;R&lt;/span&gt; to reload textures from the texture pack&lt;br/&gt;Use &lt;span style=&quot; font-weight:600;&quot;&gt;D&lt;/span&gt; to toggle texture dumping on or off&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                 </property>
+                 <property name="text">
+                  <string>Dump/edit textures</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+            </layout>
            </item>
            <item>
-            <widget class="QCheckBox" name="ignoreBackgroundsCheckBox">
-             <property name="toolTip">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This option skips texture enhancements for long, narrow textures that are usually used for backgrounds. This may save texture memory and improve performance.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;Checked, unless Enhancement is set to Store&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            <spacer name="verticalSpacer_10">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
              </property>
-             <property name="text">
-              <string>Disable for backgrounds</string>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>20</width>
+               <height>40</height>
+              </size>
              </property>
-            </widget>
-           </item>
-          </layout>
-         </item>
-         <item>
-          <layout class="QVBoxLayout" name="verticalLayout_36">
-           <property name="spacing">
-            <number>4</number>
-           </property>
-           <item>
-            <widget class="QLabel" name="enhancedCacheSizeLabel">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="toolTip">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enhanced and filtered textures can be cached to improve performance. This option adjusts how much memory is dedicated to the texture cache. This can improve performance if there are many requests for the same texture, which is usually the case. Normally 128 MB should be more than enough, but the best option is different for each game. Super Mario 64 may not need more than 32 MB, but Conker's Bad Fur Day can take advantage of 256 MB+. Adjust accordingly if you are having performance problems. Setting this option to 0 disables the cache.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;PC and game dependent&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-             </property>
-             <property name="text">
-              <string>Enhanced texture cache size (MB):</string>
-             </property>
-             <property name="buddy">
-              <cstring>textureFilterCacheSpinBox</cstring>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QSpinBox" name="textureFilterCacheSpinBox">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Fixed" vsizetype="Minimum">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="maximum">
-              <number>999</number>
-             </property>
-             <property name="singleStep">
-              <number>50</number>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </item>
-         <item>
-          <layout class="QVBoxLayout" name="verticalLayout_37">
-           <property name="spacing">
-            <number>4</number>
-           </property>
-           <item>
-            <widget class="QLabel" name="texturePackPathLabel">
-             <property name="toolTip">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select path to the folder with texture packs.&lt;br/&gt;Default: Plugin/hires_texture&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-             </property>
-             <property name="text">
-              <string>Texture pack path:</string>
-             </property>
-             <property name="buddy">
-              <cstring>texPackPathButton</cstring>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLabel" name="txPathLabel">
-             <property name="text">
-              <string/>
-             </property>
-             <property name="wordWrap">
-              <bool>true</bool>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QPushButton" name="texPackPathButton">
-             <property name="sizePolicy">
-              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="text">
-              <string>Browse...</string>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </item>
-         <item>
-          <layout class="QVBoxLayout" name="verticalLayout_38">
-           <property name="spacing">
-            <number>6</number>
-           </property>
-           <item>
-            <widget class="QCheckBox" name="alphaChannelCheckBox">
-             <property name="toolTip">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;When this option is cleared, textures will be loaded as they are when using Rice Video: transparencies either on or off. When this option is selected, GlideN64 will check how the texture's alpha channel was designed and will select the most appropriate format. This gives texture pack designers freedom to use semi-transparent textures.&lt;/p&gt;&lt;p&gt;Clear this option for older or poorly designed texture packs.&lt;/p&gt;&lt;p&gt;[Recommended:&lt;span style=&quot; font-style:italic;&quot;&gt; Texture pack dependent&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-             </property>
-             <property name="text">
-              <string>Use full transparencies (recommended for newer texture packs)</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QCheckBox" name="alternativeCRCCheckBox">
-             <property name="toolTip">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This option emulates a palette CRC calculation bug in Rice Video. If you have problems loading textures, try checking or unchecking this option.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;Mostly unchecked, checked for old texture packs&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-             </property>
-             <property name="text">
-              <string>Alternative CRC calculation (for old Rice Video packs)</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QCheckBox" name="textureDumpCheckBox">
-             <property name="enabled">
-              <bool>true</bool>
-             </property>
-             <property name="toolTip">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This option dumps textures on screen to a texture pack folder. You can also reload textures while the game is running to see how they look instantly—big time saver!&lt;/p&gt;&lt;p&gt;Hotkeys:&lt;br/&gt;Use &lt;span style=&quot; font-weight:600;&quot;&gt;R&lt;/span&gt; to reload textures from the texture pack&lt;br/&gt;Use &lt;span style=&quot; font-weight:600;&quot;&gt;D&lt;/span&gt; to toggle texture dumping on or off&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-             </property>
-             <property name="text">
-              <string>Dump/edit textures</string>
-             </property>
-            </widget>
+            </spacer>
            </item>
           </layout>
+         </widget>
+        </widget>
+       </item>
+       <item>
+        <layout class="QVBoxLayout" name="verticalLayout_9">
+         <property name="spacing">
+          <number>6</number>
+         </property>
+         <item>
+          <widget class="QCheckBox" name="saveTextureCacheCheckBox">
+           <property name="toolTip">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This option saves all previously loaded and enhanced textures to your PC. When the game is next launched, textures don't have to be recreated, causing smoother performance.&lt;/p&gt;&lt;p&gt;When using texture packs, loading packs will take only a few seconds when the game is launched as opposed to the 5–60 seconds that loading usually takes. However, if you change the texture pack you'll have to manually delete the texture cache. Saved cache files are saved to a folder called Cache within the plugins folder.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;Checked&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+           <property name="text">
+            <string>Save texture cache to hard disk</string>
+           </property>
+           <property name="checked">
+            <bool>true</bool>
+           </property>
+          </widget>
          </item>
          <item>
-          <layout class="QVBoxLayout" name="verticalLayout_9">
-           <property name="spacing">
-            <number>6</number>
+          <widget class="QCheckBox" name="compressCacheCheckBox">
+           <property name="toolTip">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Textures will be compressed so more textures can be held in the cache. The compression ratio varies per texture, but the compression is typically 1/5 of the original size.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;Checked&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
-           <item>
-            <widget class="QCheckBox" name="saveTextureCacheCheckBox">
-             <property name="toolTip">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This option saves all previously loaded and enhanced textures to your PC. When the game is next launched, textures don't have to be recreated, causing smoother performance.&lt;/p&gt;&lt;p&gt;When using texture packs, loading packs will take only a few seconds when the game is launched as opposed to the 5–60 seconds that loading usually takes. However, if you change the texture pack you'll have to manually delete the texture cache. Saved cache files are saved to a folder called Cache within the plugins folder.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;Checked&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-             </property>
-             <property name="text">
-              <string>Save texture cache to hard disk</string>
-             </property>
-             <property name="checked">
-              <bool>true</bool>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QCheckBox" name="compressCacheCheckBox">
-             <property name="toolTip">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Textures will be compressed so more textures can be held in the cache. The compression ratio varies per texture, but the compression is typically 1/5 of the original size.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;Checked&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-             </property>
-             <property name="text">
-              <string>Compress texture cache</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QCheckBox" name="force16bppCheckBox">
-             <property name="toolTip">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This option halves the space used by textures in the texture cache and video card memory to improve performance. When reducing the color, GLideN64 tries to perserve the original quality as much as possible. On most textures it's hardly noticeable, but some textures, like skies, can look noticeably worse.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;Unchecked&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-             </property>
-             <property name="text">
-              <string>Convert textures to 16 bpp</string>
-             </property>
-            </widget>
-           </item>
-          </layout>
+           <property name="text">
+            <string>Compress texture cache</string>
+           </property>
+          </widget>
          </item>
          <item>
-          <spacer name="verticalSpacer">
-           <property name="orientation">
-            <enum>Qt::Vertical</enum>
+          <widget class="QCheckBox" name="force16bppCheckBox">
+           <property name="toolTip">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This option halves the space used by textures in the texture cache and video card memory to improve performance. When reducing the color, GLideN64 tries to perserve the original quality as much as possible. On most textures it's hardly noticeable, but some textures, like skies, can look noticeably worse.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;Unchecked&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>0</width>
-             <height>0</height>
-            </size>
+           <property name="text">
+            <string>Convert textures to 16 bpp</string>
            </property>
-          </spacer>
+          </widget>
          </item>
         </layout>
+       </item>
+       <item>
+        <spacer name="verticalSpacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
        </item>
       </layout>
      </widget>
@@ -2893,12 +3020,12 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>119</x>
-     <y>189</y>
+     <x>199</x>
+     <y>339</y>
     </hint>
     <hint type="destinationlabel">
-     <x>119</x>
-     <y>69</y>
+     <x>199</x>
+     <y>346</y>
     </hint>
    </hints>
   </connection>
@@ -2909,12 +3036,12 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>119</x>
-     <y>189</y>
+     <x>123</x>
+     <y>339</y>
     </hint>
     <hint type="destinationlabel">
-     <x>119</x>
-     <y>69</y>
+     <x>123</x>
+     <y>346</y>
     </hint>
    </hints>
   </connection>
@@ -2925,12 +3052,12 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>93</x>
-     <y>189</y>
+     <x>51</x>
+     <y>339</y>
     </hint>
     <hint type="destinationlabel">
-     <x>93</x>
-     <y>69</y>
+     <x>51</x>
+     <y>346</y>
     </hint>
    </hints>
   </connection>
@@ -2989,12 +3116,12 @@
    <slot>setDisabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>119</x>
-     <y>69</y>
+     <x>131</x>
+     <y>221</y>
     </hint>
     <hint type="destinationlabel">
-     <x>119</x>
-     <y>69</y>
+     <x>132</x>
+     <y>253</y>
     </hint>
    </hints>
   </connection>
@@ -3005,12 +3132,12 @@
    <slot>setDisabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>119</x>
-     <y>69</y>
+     <x>131</x>
+     <y>221</y>
     </hint>
     <hint type="destinationlabel">
-     <x>119</x>
-     <y>69</y>
+     <x>132</x>
+     <y>274</y>
     </hint>
    </hints>
   </connection>
@@ -3021,12 +3148,12 @@
    <slot>setDisabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>119</x>
-     <y>69</y>
+     <x>131</x>
+     <y>221</y>
     </hint>
     <hint type="destinationlabel">
-     <x>119</x>
-     <y>69</y>
+     <x>132</x>
+     <y>295</y>
     </hint>
    </hints>
   </connection>
@@ -3037,12 +3164,12 @@
    <slot>setDisabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>119</x>
-     <y>69</y>
+     <x>131</x>
+     <y>221</y>
     </hint>
     <hint type="destinationlabel">
-     <x>119</x>
-     <y>69</y>
+     <x>132</x>
+     <y>316</y>
     </hint>
    </hints>
   </connection>
@@ -3050,15 +3177,15 @@
    <sender>fbInfoEnableCheckBox</sender>
    <signal>toggled(bool)</signal>
    <receiver>readDepthChunkCheckBox</receiver>
-   <slot>setVisible(bool)</slot>
+   <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>42</x>
-     <y>69</y>
+     <x>55</x>
+     <y>275</y>
     </hint>
     <hint type="destinationlabel">
-     <x>42</x>
-     <y>69</y>
+     <x>55</x>
+     <y>321</y>
     </hint>
    </hints>
   </connection>
@@ -3066,383 +3193,15 @@
    <sender>fbInfoEnableCheckBox</sender>
    <signal>toggled(bool)</signal>
    <receiver>readColorChunkCheckBox</receiver>
-   <slot>setVisible(bool)</slot>
+   <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>62</x>
-     <y>69</y>
+     <x>75</x>
+     <y>275</y>
     </hint>
     <hint type="destinationlabel">
-     <x>64</x>
-     <y>69</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>fbInfoEnableCheckBox</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>copyBufferLabel</receiver>
-   <slot>setHidden(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>84</x>
-     <y>69</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>81</x>
-     <y>69</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>fbInfoEnableCheckBox</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>copyBufferAsyncRadioButton</receiver>
-   <slot>setHidden(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>103</x>
-     <y>69</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>104</x>
-     <y>69</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>fbInfoEnableCheckBox</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>copyBufferSyncRadioButton</receiver>
-   <slot>setHidden(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>119</x>
-     <y>69</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>119</x>
-     <y>69</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>fbInfoEnableCheckBox</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>copyBufferDisableRadioButton</receiver>
-   <slot>setHidden(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>119</x>
-     <y>69</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>119</x>
-     <y>69</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>fbInfoEnableCheckBox</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>copyDepthLabel</receiver>
-   <slot>setHidden(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>119</x>
-     <y>69</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>119</x>
-     <y>69</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>fbInfoEnableCheckBox</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>copyDepthVRamRadioButton</receiver>
-   <slot>setHidden(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>119</x>
-     <y>69</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>119</x>
-     <y>69</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>fbInfoEnableCheckBox</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>copyDepthSoftwareRadioButton</receiver>
-   <slot>setHidden(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>119</x>
-     <y>69</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>119</x>
-     <y>69</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>fbInfoEnableCheckBox</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>copyDepthDisableRadioButton</receiver>
-   <slot>setHidden(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>119</x>
-     <y>69</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>119</x>
-     <y>69</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>texturePackOffRadioButton</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>filterLabel</receiver>
-   <slot>setVisible(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>26</x>
-     <y>52</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>39</x>
-     <y>69</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>texturePackOffRadioButton</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>filterComboBox</receiver>
-   <slot>setVisible(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>42</x>
-     <y>53</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>53</x>
-     <y>69</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>texturePackOffRadioButton</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>enhancementLabel</receiver>
-   <slot>setVisible(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>56</x>
-     <y>54</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>67</x>
-     <y>69</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>texturePackOffRadioButton</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>enhancementComboBox</receiver>
-   <slot>setVisible(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>72</x>
-     <y>54</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>81</x>
-     <y>69</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>texturePackOffRadioButton</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>deposterizeCheckBox</receiver>
-   <slot>setVisible(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>90</x>
-     <y>51</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>95</x>
-     <y>69</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>texturePackOffRadioButton</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>ignoreBackgroundsCheckBox</receiver>
-   <slot>setVisible(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>102</x>
-     <y>54</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>109</x>
-     <y>69</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>texturePackOffRadioButton</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>enhancedCacheSizeLabel</receiver>
-   <slot>setVisible(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>119</x>
-     <y>69</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>119</x>
-     <y>69</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>texturePackOffRadioButton</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>textureFilterCacheSpinBox</receiver>
-   <slot>setVisible(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>119</x>
-     <y>69</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>59</x>
-     <y>69</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>texturePackOffRadioButton</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>alphaChannelCheckBox</receiver>
-   <slot>setHidden(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>119</x>
-     <y>69</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>119</x>
-     <y>69</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>texturePackOffRadioButton</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>alternativeCRCCheckBox</receiver>
-   <slot>setHidden(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>119</x>
-     <y>69</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>119</x>
-     <y>69</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>texturePackOffRadioButton</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>textureDumpCheckBox</receiver>
-   <slot>setHidden(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>119</x>
-     <y>69</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>119</x>
-     <y>69</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>texturePackOffRadioButton</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>texturePackPathLabel</receiver>
-   <slot>setHidden(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>119</x>
-     <y>69</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>119</x>
-     <y>69</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>texturePackOffRadioButton</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>txPathLabel</receiver>
-   <slot>setHidden(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>119</x>
-     <y>69</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>119</x>
-     <y>69</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>texturePackOffRadioButton</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>texPackPathButton</receiver>
-   <slot>setHidden(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>119</x>
-     <y>69</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>86</x>
-     <y>69</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>fbInfoEnableCheckBox</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>RenderFBCheckBox</receiver>
-   <slot>setHidden(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>119</x>
-     <y>69</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>119</x>
-     <y>69</y>
+     <x>77</x>
+     <y>298</y>
     </hint>
    </hints>
   </connection>
@@ -3480,14 +3239,14 @@
   </connection>
  </connections>
  <buttongroups>
-  <buttongroup name="copyBufferButtonGroup"/>
-  <buttongroup name="bufferSwapButtonGroup"/>
-  <buttongroup name="aspectButtonGroup"/>
   <buttongroup name="texturePackButtonGroup"/>
+  <buttongroup name="copyBufferButtonGroup"/>
   <buttongroup name="fixTexrectCoordsButtonGroup"/>
-  <buttongroup name="osdButtonGroup"/>
+  <buttongroup name="aspectButtonGroup"/>
   <buttongroup name="depthBufferButtonGroup"/>
+  <buttongroup name="osdButtonGroup"/>
   <buttongroup name="screenshotButtonGroup"/>
   <buttongroup name="bloomBlendModeButtonGroup"/>
+  <buttongroup name="bufferSwapButtonGroup"/>
  </buttongroups>
 </ui>
