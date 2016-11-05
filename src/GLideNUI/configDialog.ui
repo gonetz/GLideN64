@@ -1,9 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>textureCacheSizeLabel</class>
- <widget class="QDialog" name="textureCacheSizeLabel">
+ <class>ConfigDialog</class>
+ <widget class="QDialog" name="ConfigDialog">
   <property name="windowModality">
-   <enum>Qt::ApplicationModal</enum>
+   <enum>Qt::WindowModal</enum>
+  </property>
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>469</width>
+    <height>618</height>
+   </rect>
+  </property>
+  <property name="sizePolicy">
+   <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
   </property>
   <property name="windowTitle">
    <string>GLideN64 settings</string>
@@ -26,6 +40,9 @@
        <width>0</width>
        <height>510</height>
       </size>
+     </property>
+     <property name="currentIndex">
+      <number>0</number>
      </property>
      <property name="usesScrollButtons">
       <bool>false</bool>
@@ -1311,7 +1328,7 @@
             </widget>
            </item>
            <item>
-            <widget class="QRadioButton" name="copyBufferOffRadioButton">
+            <widget class="QRadioButton" name="copyBufferDisableRadioButton">
              <property name="text">
               <string>Never (fastest, many game issues)</string>
              </property>
@@ -1351,7 +1368,7 @@
             </widget>
            </item>
            <item>
-            <widget class="QRadioButton" name="copyDepthVRAMRadioButton">
+            <widget class="QRadioButton" name="copyDepthVRamRadioButton">
              <property name="text">
               <string>From VRAM (slow, some game issues)</string>
              </property>
@@ -1361,7 +1378,7 @@
             </widget>
            </item>
            <item>
-            <widget class="QRadioButton" name="copyDepthOffRadioButton">
+            <widget class="QRadioButton" name="copyDepthDisableRadioButton">
              <property name="text">
               <string>Never (fastest, most game issues)</string>
              </property>
@@ -2870,50 +2887,18 @@
  </resources>
  <connections>
   <connection>
-   <sender>buttonBox</sender>
-   <signal>rejected()</signal>
-   <receiver>textureCacheSizeLabel</receiver>
-   <slot>reject()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>396</x>
-     <y>643</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>316</x>
-     <y>453</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>buttonBox</sender>
-   <signal>accepted()</signal>
-   <receiver>textureCacheSizeLabel</receiver>
-   <slot>accept()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>376</x>
-     <y>643</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>276</x>
-     <y>460</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>bloomThresholdSlider</sender>
    <signal>valueChanged(int)</signal>
    <receiver>bloomThresholdLabel_2</receiver>
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>230</x>
-     <y>287</y>
+     <x>119</x>
+     <y>189</y>
     </hint>
     <hint type="destinationlabel">
-     <x>230</x>
-     <y>358</y>
+     <x>119</x>
+     <y>69</y>
     </hint>
    </hints>
   </connection>
@@ -2924,12 +2909,12 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>154</x>
-     <y>287</y>
+     <x>119</x>
+     <y>189</y>
     </hint>
     <hint type="destinationlabel">
-     <x>154</x>
-     <y>358</y>
+     <x>119</x>
+     <y>69</y>
     </hint>
    </hints>
   </connection>
@@ -2940,12 +2925,12 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>82</x>
-     <y>287</y>
+     <x>93</x>
+     <y>189</y>
     </hint>
     <hint type="destinationlabel">
-     <x>82</x>
-     <y>358</y>
+     <x>93</x>
+     <y>69</y>
     </hint>
    </hints>
   </connection>
@@ -3004,12 +2989,12 @@
    <slot>setDisabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>340</x>
-     <y>209</y>
+     <x>119</x>
+     <y>69</y>
     </hint>
     <hint type="destinationlabel">
-     <x>341</x>
-     <y>241</y>
+     <x>119</x>
+     <y>69</y>
     </hint>
    </hints>
   </connection>
@@ -3020,12 +3005,12 @@
    <slot>setDisabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>361</x>
-     <y>209</y>
+     <x>119</x>
+     <y>69</y>
     </hint>
     <hint type="destinationlabel">
-     <x>362</x>
-     <y>262</y>
+     <x>119</x>
+     <y>69</y>
     </hint>
    </hints>
   </connection>
@@ -3036,12 +3021,12 @@
    <slot>setDisabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>387</x>
-     <y>209</y>
+     <x>119</x>
+     <y>69</y>
     </hint>
     <hint type="destinationlabel">
-     <x>388</x>
-     <y>283</y>
+     <x>119</x>
+     <y>69</y>
     </hint>
    </hints>
   </connection>
@@ -3052,12 +3037,12 @@
    <slot>setDisabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>411</x>
-     <y>209</y>
+     <x>119</x>
+     <y>69</y>
     </hint>
     <hint type="destinationlabel">
-     <x>410</x>
-     <y>304</y>
+     <x>119</x>
+     <y>69</y>
     </hint>
    </hints>
   </connection>
@@ -3068,12 +3053,12 @@
    <slot>setVisible(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>31</x>
-     <y>261</y>
+     <x>42</x>
+     <y>69</y>
     </hint>
     <hint type="destinationlabel">
-     <x>31</x>
-     <y>285</y>
+     <x>42</x>
+     <y>69</y>
     </hint>
    </hints>
   </connection>
@@ -3084,12 +3069,12 @@
    <slot>setVisible(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>51</x>
-     <y>262</y>
+     <x>62</x>
+     <y>69</y>
     </hint>
     <hint type="destinationlabel">
-     <x>53</x>
-     <y>310</y>
+     <x>64</x>
+     <y>69</y>
     </hint>
    </hints>
   </connection>
@@ -3100,12 +3085,12 @@
    <slot>setHidden(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>73</x>
-     <y>263</y>
+     <x>84</x>
+     <y>69</y>
     </hint>
     <hint type="destinationlabel">
-     <x>70</x>
-     <y>344</y>
+     <x>81</x>
+     <y>69</y>
     </hint>
    </hints>
   </connection>
@@ -3116,12 +3101,12 @@
    <slot>setHidden(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>92</x>
-     <y>262</y>
+     <x>103</x>
+     <y>69</y>
     </hint>
     <hint type="destinationlabel">
-     <x>93</x>
-     <y>361</y>
+     <x>104</x>
+     <y>69</y>
     </hint>
    </hints>
   </connection>
@@ -3132,28 +3117,28 @@
    <slot>setHidden(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>113</x>
-     <y>261</y>
+     <x>119</x>
+     <y>69</y>
     </hint>
     <hint type="destinationlabel">
-     <x>113</x>
-     <y>382</y>
+     <x>119</x>
+     <y>69</y>
     </hint>
    </hints>
   </connection>
   <connection>
    <sender>fbInfoEnableCheckBox</sender>
    <signal>toggled(bool)</signal>
-   <receiver>copyBufferOffRadioButton</receiver>
+   <receiver>copyBufferDisableRadioButton</receiver>
    <slot>setHidden(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>136</x>
-     <y>263</y>
+     <x>119</x>
+     <y>69</y>
     </hint>
     <hint type="destinationlabel">
-     <x>133</x>
-     <y>404</y>
+     <x>119</x>
+     <y>69</y>
     </hint>
    </hints>
   </connection>
@@ -3164,28 +3149,28 @@
    <slot>setHidden(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>151</x>
-     <y>262</y>
+     <x>119</x>
+     <y>69</y>
     </hint>
     <hint type="destinationlabel">
-     <x>154</x>
-     <y>443</y>
+     <x>119</x>
+     <y>69</y>
     </hint>
    </hints>
   </connection>
   <connection>
    <sender>fbInfoEnableCheckBox</sender>
    <signal>toggled(bool)</signal>
-   <receiver>copyDepthVRAMRadioButton</receiver>
+   <receiver>copyDepthVRamRadioButton</receiver>
    <slot>setHidden(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>178</x>
-     <y>267</y>
+     <x>119</x>
+     <y>69</y>
     </hint>
     <hint type="destinationlabel">
-     <x>174</x>
-     <y>477</y>
+     <x>119</x>
+     <y>69</y>
     </hint>
    </hints>
   </connection>
@@ -3196,28 +3181,28 @@
    <slot>setHidden(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>206</x>
-     <y>275</y>
+     <x>119</x>
+     <y>69</y>
     </hint>
     <hint type="destinationlabel">
-     <x>194</x>
-     <y>459</y>
+     <x>119</x>
+     <y>69</y>
     </hint>
    </hints>
   </connection>
   <connection>
    <sender>fbInfoEnableCheckBox</sender>
    <signal>toggled(bool)</signal>
-   <receiver>copyDepthOffRadioButton</receiver>
+   <receiver>copyDepthDisableRadioButton</receiver>
    <slot>setHidden(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>214</x>
-     <y>266</y>
+     <x>119</x>
+     <y>69</y>
     </hint>
     <hint type="destinationlabel">
-     <x>213</x>
-     <y>502</y>
+     <x>119</x>
+     <y>69</y>
     </hint>
    </hints>
   </connection>
@@ -3232,8 +3217,8 @@
      <y>52</y>
     </hint>
     <hint type="destinationlabel">
-     <x>28</x>
-     <y>109</y>
+     <x>39</x>
+     <y>69</y>
     </hint>
    </hints>
   </connection>
@@ -3248,8 +3233,8 @@
      <y>53</y>
     </hint>
     <hint type="destinationlabel">
-     <x>42</x>
-     <y>127</y>
+     <x>53</x>
+     <y>69</y>
     </hint>
    </hints>
   </connection>
@@ -3264,8 +3249,8 @@
      <y>54</y>
     </hint>
     <hint type="destinationlabel">
-     <x>56</x>
-     <y>155</y>
+     <x>67</x>
+     <y>69</y>
     </hint>
    </hints>
   </connection>
@@ -3280,8 +3265,8 @@
      <y>54</y>
     </hint>
     <hint type="destinationlabel">
-     <x>70</x>
-     <y>175</y>
+     <x>81</x>
+     <y>69</y>
     </hint>
    </hints>
   </connection>
@@ -3296,8 +3281,8 @@
      <y>51</y>
     </hint>
     <hint type="destinationlabel">
-     <x>84</x>
-     <y>218</y>
+     <x>95</x>
+     <y>69</y>
     </hint>
    </hints>
   </connection>
@@ -3312,8 +3297,8 @@
      <y>54</y>
     </hint>
     <hint type="destinationlabel">
-     <x>98</x>
-     <y>241</y>
+     <x>109</x>
+     <y>69</y>
     </hint>
    </hints>
   </connection>
@@ -3324,12 +3309,12 @@
    <slot>setVisible(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>130</x>
-     <y>53</y>
+     <x>119</x>
+     <y>69</y>
     </hint>
     <hint type="destinationlabel">
-     <x>126</x>
-     <y>277</y>
+     <x>119</x>
+     <y>69</y>
     </hint>
    </hints>
   </connection>
@@ -3340,12 +3325,12 @@
    <slot>setVisible(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>140</x>
-     <y>55</y>
+     <x>119</x>
+     <y>69</y>
     </hint>
     <hint type="destinationlabel">
-     <x>48</x>
-     <y>300</y>
+     <x>59</x>
+     <y>69</y>
     </hint>
    </hints>
   </connection>
@@ -3356,12 +3341,12 @@
    <slot>setHidden(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>174</x>
-     <y>52</y>
+     <x>119</x>
+     <y>69</y>
     </hint>
     <hint type="destinationlabel">
-     <x>171</x>
-     <y>409</y>
+     <x>119</x>
+     <y>69</y>
     </hint>
    </hints>
   </connection>
@@ -3372,12 +3357,12 @@
    <slot>setHidden(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>190</x>
-     <y>52</y>
+     <x>119</x>
+     <y>69</y>
     </hint>
     <hint type="destinationlabel">
-     <x>186</x>
-     <y>430</y>
+     <x>119</x>
+     <y>69</y>
     </hint>
    </hints>
   </connection>
@@ -3388,12 +3373,12 @@
    <slot>setHidden(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>213</x>
-     <y>51</y>
+     <x>119</x>
+     <y>69</y>
     </hint>
     <hint type="destinationlabel">
-     <x>202</x>
-     <y>458</y>
+     <x>119</x>
+     <y>69</y>
     </hint>
    </hints>
   </connection>
@@ -3404,12 +3389,12 @@
    <slot>setHidden(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>220</x>
-     <y>49</y>
+     <x>119</x>
+     <y>69</y>
     </hint>
     <hint type="destinationlabel">
-     <x>217</x>
-     <y>329</y>
+     <x>119</x>
+     <y>69</y>
     </hint>
    </hints>
   </connection>
@@ -3420,12 +3405,12 @@
    <slot>setHidden(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>233</x>
-     <y>53</y>
+     <x>119</x>
+     <y>69</y>
     </hint>
     <hint type="destinationlabel">
-     <x>232</x>
-     <y>346</y>
+     <x>119</x>
+     <y>69</y>
     </hint>
    </hints>
   </connection>
@@ -3436,12 +3421,12 @@
    <slot>setHidden(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>248</x>
-     <y>51</y>
+     <x>119</x>
+     <y>69</y>
     </hint>
     <hint type="destinationlabel">
-     <x>75</x>
-     <y>368</y>
+     <x>86</x>
+     <y>69</y>
     </hint>
    </hints>
   </connection>
@@ -3452,25 +3437,57 @@
    <slot>setHidden(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>227</x>
-     <y>267</y>
+     <x>119</x>
+     <y>69</y>
     </hint>
     <hint type="destinationlabel">
-     <x>231</x>
-     <y>543</y>
+     <x>119</x>
+     <y>69</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>accepted()</signal>
+   <receiver>ConfigDialog</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>342</x>
+     <y>596</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>343</x>
+     <y>619</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>rejected()</signal>
+   <receiver>ConfigDialog</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>423</x>
+     <y>599</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>426</x>
+     <y>629</y>
     </hint>
    </hints>
   </connection>
  </connections>
  <buttongroups>
-  <buttongroup name="fixTexrectCoordsButtonGroup"/>
+  <buttongroup name="copyBufferButtonGroup"/>
   <buttongroup name="bufferSwapButtonGroup"/>
+  <buttongroup name="aspectButtonGroup"/>
+  <buttongroup name="texturePackButtonGroup"/>
+  <buttongroup name="fixTexrectCoordsButtonGroup"/>
   <buttongroup name="osdButtonGroup"/>
   <buttongroup name="depthBufferButtonGroup"/>
-  <buttongroup name="copyBufferButtonGroup"/>
   <buttongroup name="screenshotButtonGroup"/>
-  <buttongroup name="aspectButtonGroup"/>
   <buttongroup name="bloomBlendModeButtonGroup"/>
-  <buttongroup name="texturePackButtonGroup"/>
  </buttongroups>
 </ui>
