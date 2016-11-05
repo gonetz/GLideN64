@@ -5,6 +5,14 @@
   <property name="windowModality">
    <enum>Qt::ApplicationModal</enum>
   </property>
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>469</width>
+    <height>618</height>
+   </rect>
+  </property>
   <property name="windowTitle">
    <string>GLideN64 settings</string>
   </property>
@@ -21,12 +29,6 @@
    </property>
    <item>
     <widget class="QTabWidget" name="tabWidget">
-     <property name="minimumSize">
-      <size>
-       <width>0</width>
-       <height>510</height>
-      </size>
-     </property>
      <property name="usesScrollButtons">
       <bool>false</bool>
      </property>
@@ -2105,7 +2107,7 @@
               <item>
                <widget class="QLabel" name="gammaLevelDescLabel">
                 <property name="text">
-                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Selecting this option overrides gamma correction specified by the game.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Checking this option overrides gamma correction specified by the game.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                 </property>
                 <property name="wordWrap">
                  <bool>true</bool>
@@ -3065,7 +3067,7 @@
    <sender>fbInfoEnableCheckBox</sender>
    <signal>toggled(bool)</signal>
    <receiver>readDepthChunkCheckBox</receiver>
-   <slot>setVisible(bool)</slot>
+   <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
      <x>31</x>
@@ -3081,7 +3083,7 @@
    <sender>fbInfoEnableCheckBox</sender>
    <signal>toggled(bool)</signal>
    <receiver>readColorChunkCheckBox</receiver>
-   <slot>setVisible(bool)</slot>
+   <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
      <x>51</x>
@@ -3090,134 +3092,6 @@
     <hint type="destinationlabel">
      <x>53</x>
      <y>310</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>fbInfoEnableCheckBox</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>copyBufferLabel</receiver>
-   <slot>setHidden(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>73</x>
-     <y>263</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>70</x>
-     <y>344</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>fbInfoEnableCheckBox</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>copyBufferAsyncRadioButton</receiver>
-   <slot>setHidden(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>92</x>
-     <y>262</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>93</x>
-     <y>361</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>fbInfoEnableCheckBox</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>copyBufferSyncRadioButton</receiver>
-   <slot>setHidden(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>113</x>
-     <y>261</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>113</x>
-     <y>382</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>fbInfoEnableCheckBox</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>copyBufferOffRadioButton</receiver>
-   <slot>setHidden(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>136</x>
-     <y>263</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>133</x>
-     <y>404</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>fbInfoEnableCheckBox</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>copyDepthLabel</receiver>
-   <slot>setHidden(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>151</x>
-     <y>262</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>154</x>
-     <y>443</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>fbInfoEnableCheckBox</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>copyDepthVRAMRadioButton</receiver>
-   <slot>setHidden(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>178</x>
-     <y>267</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>174</x>
-     <y>477</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>fbInfoEnableCheckBox</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>copyDepthSoftwareRadioButton</receiver>
-   <slot>setHidden(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>206</x>
-     <y>275</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>194</x>
-     <y>459</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>fbInfoEnableCheckBox</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>copyDepthOffRadioButton</receiver>
-   <slot>setHidden(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>214</x>
-     <y>266</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>213</x>
-     <y>502</y>
     </hint>
    </hints>
   </connection>
@@ -3445,32 +3319,16 @@
     </hint>
    </hints>
   </connection>
-  <connection>
-   <sender>fbInfoEnableCheckBox</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>RenderFBCheckBox</receiver>
-   <slot>setHidden(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>227</x>
-     <y>267</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>231</x>
-     <y>543</y>
-    </hint>
-   </hints>
-  </connection>
  </connections>
  <buttongroups>
-  <buttongroup name="fixTexrectCoordsButtonGroup"/>
   <buttongroup name="bufferSwapButtonGroup"/>
-  <buttongroup name="osdButtonGroup"/>
-  <buttongroup name="depthBufferButtonGroup"/>
-  <buttongroup name="copyBufferButtonGroup"/>
-  <buttongroup name="screenshotButtonGroup"/>
+  <buttongroup name="fixTexrectCoordsButtonGroup"/>
   <buttongroup name="aspectButtonGroup"/>
-  <buttongroup name="bloomBlendModeButtonGroup"/>
+  <buttongroup name="osdButtonGroup"/>
   <buttongroup name="texturePackButtonGroup"/>
+  <buttongroup name="depthBufferButtonGroup"/>
+  <buttongroup name="screenshotButtonGroup"/>
+  <buttongroup name="copyBufferButtonGroup"/>
+  <buttongroup name="bloomBlendModeButtonGroup"/>
  </buttongroups>
 </ui>
