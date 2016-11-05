@@ -139,9 +139,19 @@ void ConfigDialog::_init()
 		ui->fixTexrectSmartRadioButton->setEnabled(false);
 		ui->fixTexrectForceRadioButton->setEnabled(false);
 	}
+	switch (config.frameBufferEmulation.bufferSwapMode) {
+	case Config::bsOnVerticalInterrupt:
+		ui->bufferSwapVIRadioButton->setChecked(true);
+		break;
+	case Config::bsOnVIOriginChange:
+		ui->bufferSwapOriginRadioButton->setChecked(true);
+		break;
+	case Config::bsOnColorImageChange:
+		ui->bufferSwapColorRadioButton->setChecked(true);
+		break;
+	}
 
-	ui->bufferSwapComboBox->setCurrentIndex(config.frameBufferEmulation.bufferSwapMode);
-	ui->frameBufferGroupBox->setChecked(config.frameBufferEmulation.enable != 0);
+	ui->frameBufferCheckBox->setChecked(config.frameBufferEmulation.enable != 0);
 	switch (config.frameBufferEmulation.copyToRDRAM) {
 	case Config::ctDisable:
 		ui->copyBufferDisableRadioButton->setChecked(true);
@@ -182,7 +192,7 @@ void ConfigDialog::_init()
 	}
 	ui->resolutionFactorSlider->setValue(config.frameBufferEmulation.nativeResFactor);
 	ui->copyAuxBuffersCheckBox->setChecked(config.frameBufferEmulation.copyAuxToRDRAM != 0);
-	ui->fbInfoDisableCheckBox->setChecked(config.frameBufferEmulation.fbInfoDisabled != 0);
+	ui->fbInfoEnableCheckBox->setChecked(config.frameBufferEmulation.fbInfoDisabled == 0);
 	ui->readColorChunkCheckBox->setChecked(config.frameBufferEmulation.fbInfoReadColorChunk != 0);
 	ui->readColorChunkCheckBox->setEnabled(config.frameBufferEmulation.fbInfoDisabled == 0);
 	ui->readDepthChunkCheckBox->setChecked(config.frameBufferEmulation.fbInfoReadDepthChunk != 0);
@@ -205,7 +215,10 @@ void ConfigDialog::_init()
 	ui->deposterizeCheckBox->setChecked(config.textureFilter.txDeposterize != 0);
 	ui->ignoreBackgroundsCheckBox->setChecked(config.textureFilter.txFilterIgnoreBG != 0);
 
-	ui->texturePackGroupBox->setChecked(config.textureFilter.txHiresEnable != 0);
+	if (config.textureFilter.txHiresEnable == 0)
+		ui->texturePackOffRadioButton->setChecked(true);
+	else
+		ui->texturePackOnRadioButton->setChecked(true);
 	ui->alphaChannelCheckBox->setChecked(config.textureFilter.txHiresFullAlphaChannel != 0);
 	ui->alternativeCRCCheckBox->setChecked(config.textureFilter.txHresAltCRC != 0);
 	ui->textureDumpCheckBox->setChecked(config.textureFilter.txDump != 0);
@@ -232,9 +245,9 @@ void ConfigDialog::_init()
 	ui->blurAmountSlider->setValue(config.bloomFilter.blurAmount);
 	ui->blurStrengthSlider->setValue(config.bloomFilter.blurStrength);
 
-	ui->forceGammaCorrectionCheckBox->setChecked(config.gammaCorrection.force != 0);
+	ui->gammaCorrectionGroupBox->setChecked(config.gammaCorrection.force != 0);
 	ui->gammaLevelSpinBox->setValue(config.gammaCorrection.level);
-	ui->gammaLevelSpinBox->setEnabled(ui->forceGammaCorrectionCheckBox->isChecked());
+	ui->gammaLevelSpinBox->setEnabled(ui->gammaCorrectionGroupBox->isChecked());
 
 	// OSD settings
 	QString fontName(config.font.name.c_str());
@@ -255,6 +268,8 @@ void ConfigDialog::_init()
 	ui->fpsCheckBox->setChecked(config.onScreenDisplay.fps != 0);
 	ui->visCheckBox->setChecked(config.onScreenDisplay.vis != 0);
 	ui->percentCheckBox->setChecked(config.onScreenDisplay.percent != 0);
+	// TODO
+	/*
 	if (config.onScreenDisplay.horisontalPos == Config::posLeft)
 		ui->leftRadioButton->setChecked(true);
 	else
@@ -263,6 +278,7 @@ void ConfigDialog::_init()
 		ui->topRadioButton->setChecked(true);
 	else
 		ui->bottoRadioButton->setChecked(true);
+		*/
 }
 
 void ConfigDialog::_getTranslations(QStringList & _translationFiles) const
@@ -318,8 +334,9 @@ void ConfigDialog::accept()
 {
 	m_accepted = true;
 
-	config.video.windowedWidth = ui->windowWidthSpinBox->value();
-	config.video.windowedHeight = ui->windowHeightSpinBox->value();
+// TODO
+//	config.video.windowedWidth = ui->windowWidthSpinBox->value();
+//	config.video.windowedHeight = ui->windowHeightSpinBox->value();
 
 	getFullscreenResolutions(ui->fullScreenResolutionComboBox->currentIndex(), config.video.fullscreenWidth, config.video.fullscreenHeight);
 	getFullscreenRefreshRate(ui->fullScreenRefreshRateComboBox->currentIndex(), config.video.fullscreenRefresh);
@@ -357,30 +374,43 @@ void ConfigDialog::accept()
 	config.generalEmulation.enableHWLighting = ui->enableHWLightingCheckBox->isChecked() ? 1 : 0;
 	config.generalEmulation.enableShadersStorage = ui->enableShadersStorageCheckBox->isChecked() ? 1 : 0;
 	config.generalEmulation.enableCustomSettings = ui->customSettingsCheckBox->isChecked() ? 1 : 0;
+
 	if (ui->fixTexrectDisableRadioButton->isChecked())
 		config.generalEmulation.correctTexrectCoords = Config::tcDisable;
 	else if (ui->fixTexrectSmartRadioButton->isChecked())
 		config.generalEmulation.correctTexrectCoords = Config::tcSmart;
 	else if (ui->fixTexrectForceRadioButton->isChecked())
 		config.generalEmulation.correctTexrectCoords = Config::tcForce;
+
 	config.generalEmulation.enableNativeResTexrects = ui->nativeRes2D_checkBox->isChecked() ? 1 : 0;
 
-	config.frameBufferEmulation.bufferSwapMode = ui->bufferSwapComboBox->currentIndex();
-	config.frameBufferEmulation.enable = ui->frameBufferGroupBox->isChecked() ? 1 : 0;
+	config.frameBufferEmulation.enable = ui->frameBufferCheckBox->isChecked() ? 1 : 0;
+
+	if (ui->bufferSwapVIRadioButton->isChecked())
+		config.frameBufferEmulation.bufferSwapMode = Config::bsOnVerticalInterrupt;
+	else if (ui->bufferSwapOriginRadioButton->isChecked())
+		config.frameBufferEmulation.bufferSwapMode = Config::bsOnVIOriginChange;
+	else if (ui->bufferSwapColorRadioButton->isChecked())
+		config.frameBufferEmulation.bufferSwapMode = Config::bsOnColorImageChange;
+
 	if (ui->copyBufferDisableRadioButton->isChecked())
 		config.frameBufferEmulation.copyToRDRAM = Config::ctDisable;
 	else if (ui->copyBufferSyncRadioButton->isChecked())
 		config.frameBufferEmulation.copyToRDRAM = Config::ctSync;
 	else if (ui->copyBufferAsyncRadioButton->isChecked())
 		config.frameBufferEmulation.copyToRDRAM = Config::ctAsync;
+
 	config.frameBufferEmulation.copyFromRDRAM = ui->RenderFBCheckBox->isChecked() ? 1 : 0;
+
 	if (ui->copyDepthDisableRadioButton->isChecked())
 		config.frameBufferEmulation.copyDepthToRDRAM = Config::cdDisable;
 	else if (ui->copyDepthVRamRadioButton->isChecked())
 		config.frameBufferEmulation.copyDepthToRDRAM = Config::cdCopyFromVRam;
 	else if (ui->copyDepthSoftwareRadioButton->isChecked())
 		config.frameBufferEmulation.copyDepthToRDRAM = Config::cdSoftwareRender;
+
 	config.frameBufferEmulation.N64DepthCompare = ui->n64DepthCompareCheckBox->isChecked() ? 1 : 0;
+
 	if (ui->aspectStretchRadioButton->isChecked())
 		config.frameBufferEmulation.aspect = Config::aStretch;
 	else if (ui->aspect43RadioButton->isChecked())
@@ -389,9 +419,10 @@ void ConfigDialog::accept()
 		config.frameBufferEmulation.aspect = Config::a169;
 	else if (ui->aspectAdjustRadioButton->isChecked())
 		config.frameBufferEmulation.aspect = Config::aAdjust;
+
 	config.frameBufferEmulation.nativeResFactor = ui->resolutionFactorSlider->value();
 	config.frameBufferEmulation.copyAuxToRDRAM = ui->copyAuxBuffersCheckBox->isChecked() ? 1 : 0;
-	config.frameBufferEmulation.fbInfoDisabled = ui->fbInfoDisableCheckBox->isChecked() ? 1: 0;
+	config.frameBufferEmulation.fbInfoDisabled = ui->fbInfoEnableCheckBox->isChecked() ? 0 : 1;
 	config.frameBufferEmulation.fbInfoReadColorChunk = ui->readColorChunkCheckBox->isChecked() ? 1 : 0;
 	config.frameBufferEmulation.fbInfoReadDepthChunk = ui->readDepthChunkCheckBox->isChecked() ? 1 : 0;
 
@@ -403,7 +434,7 @@ void ConfigDialog::accept()
 	config.textureFilter.txDeposterize = ui->deposterizeCheckBox->isChecked() ? 1 : 0;
 	config.textureFilter.txFilterIgnoreBG = ui->ignoreBackgroundsCheckBox->isChecked() ? 1 : 0;
 
-	config.textureFilter.txHiresEnable = ui->texturePackGroupBox->isChecked() ? 1 : 0;
+	config.textureFilter.txHiresEnable = ui->texturePackOnRadioButton->isChecked() ? 1 : 0;
 	config.textureFilter.txHiresFullAlphaChannel = ui->alphaChannelCheckBox->isChecked() ? 1 : 0;
 	config.textureFilter.txHresAltCRC = ui->alternativeCRCCheckBox->isChecked() ? 1 : 0;
 	config.textureFilter.txDump = ui->textureDumpCheckBox->isChecked() ? 1 : 0;
@@ -428,7 +459,7 @@ void ConfigDialog::accept()
 	config.bloomFilter.blurAmount = ui->blurAmountSlider->value();
 	config.bloomFilter.blurStrength = ui->blurStrengthSlider->value();
 
-	config.gammaCorrection.force = ui->forceGammaCorrectionCheckBox->isChecked() ? 1 : 0;
+	config.gammaCorrection.force = ui->gammaCorrectionGroupBox->isChecked() ? 1 : 0;
 	config.gammaCorrection.level = ui->gammaLevelSpinBox->value();
 
 	// OSD settings
@@ -451,8 +482,9 @@ void ConfigDialog::accept()
 	config.onScreenDisplay.fps = ui->fpsCheckBox->isChecked() ? 1 : 0;
 	config.onScreenDisplay.vis = ui->visCheckBox->isChecked() ? 1 : 0;
 	config.onScreenDisplay.percent = ui->percentCheckBox->isChecked() ? 1 : 0;
-	config.onScreenDisplay.horisontalPos = ui->leftRadioButton->isChecked() ? Config::posLeft : Config::posRight;
-	config.onScreenDisplay.verticalPos = ui->topRadioButton->isChecked() ? Config::posTop : Config::posBottom;
+	// TODO
+//	config.onScreenDisplay.horisontalPos = ui->leftRadioButton->isChecked() ? Config::posLeft : Config::posRight;
+//	config.onScreenDisplay.verticalPos = ui->topRadioButton->isChecked() ? Config::posTop : Config::posBottom;
 
 	writeSettings(m_strIniPath);
 
@@ -533,11 +565,14 @@ void ConfigDialog::on_fbInfoDisableCheckBox_toggled(bool checked)
 
 void ConfigDialog::on_windowedResolutionComboBox_currentIndexChanged(int index)
 {
+	// TODO
+	/*
 	const bool bCustom = index == numWindowedModes - 1;
 	ui->windowWidthSpinBox->setValue(bCustom ? config.video.windowedWidth : WindowedModes[index].width);
 	ui->windowWidthSpinBox->setEnabled(bCustom);
 	ui->windowHeightSpinBox->setValue(bCustom ? config.video.windowedHeight : WindowedModes[index].height);
 	ui->windowHeightSpinBox->setEnabled(bCustom);
+	*/
 }
 
 void ConfigDialog::on_nativeRes2D_checkBox_toggled(bool checked)
