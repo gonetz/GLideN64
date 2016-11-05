@@ -45,6 +45,7 @@ void Config::resetToDefaults()
 #else
 	generalEmulation.enableFragmentDepthWrite = 1;
 #endif
+	generalEmulation.enableBlitScreenWorkaround = 0;
 #ifdef ANDROID
 	generalEmulation.forcePolygonOffset = 0;
 	generalEmulation.polygonOffsetFactor = 0.0f;
@@ -52,7 +53,7 @@ void Config::resetToDefaults()
 #endif
 
 	frameBufferEmulation.enable = 1;
-	frameBufferEmulation.copyDepthToRDRAM = cdDisable;
+	frameBufferEmulation.copyDepthToRDRAM = cdSoftwareRender;
 	frameBufferEmulation.copyFromRDRAM = 0;
 	frameBufferEmulation.copyAuxToRDRAM = 0;
 	frameBufferEmulation.copyToRDRAM = ctAsync;

@@ -31,7 +31,8 @@ FrameBuffer::FrameBuffer() :
 	m_startAddress(0), m_endAddress(0), m_size(0), m_width(0), m_height(0), m_validityChecked(0),
 	m_scaleX(0), m_scaleY(0),
 	m_copiedToRdram(false), m_fingerprint(false), m_cleared(false), m_changed(false), m_cfb(false),
-	m_isDepthBuffer(false), m_isPauseScreen(false), m_isOBScreen(false), m_needHeightCorrection(false),
+	m_isDepthBuffer(false), m_isPauseScreen(false), m_isOBScreen(false),
+	m_needHeightCorrection(false), m_readable(false),
 	m_loadType(LOADTYPE_BLOCK), m_pDepthBuffer(nullptr),
 	m_resolveFBO(0), m_pResolveTexture(nullptr), m_resolved(false),
 	m_SubFBO(0), m_pSubTexture(nullptr)
@@ -363,7 +364,14 @@ CachedTexture * FrameBuffer::_getSubTexture(u32 _t)
 	if (y0 + copyHeight > m_pTexture->realHeight)
 		copyHeight = m_pTexture->realHeight - y0;
 
+#ifdef GLESX
+	if (m_pTexture->frameBufferTexture == CachedTexture::fbMultiSample){
+		resolveMultisampledTexture(true);
+		glBindFramebuffer(GL_READ_FRAMEBUFFER, m_resolveFBO);
+	}else
+#endif
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, m_FBO);
+
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_SubFBO);
 	glDisable(GL_SCISSOR_TEST);
 	glBlitFramebuffer(
@@ -381,29 +389,24 @@ CachedTexture * FrameBuffer::_getSubTexture(u32 _t)
 
 CachedTexture * FrameBuffer::getTexture(u32 _t)
 {
-	CachedTexture *pTexture = m_pTexture;
-
 	const bool getDepthTexture = m_isDepthBuffer &&
 								 gDP.colorImage.address == gDP.depthImageAddress &&
 								 m_pDepthBuffer != nullptr &&
 								 (config.generalEmulation.hacks & hack_ZeldaMM) == 0;
+	CachedTexture *pTexture = getDepthTexture ? m_pDepthBuffer->m_pDepthBufferTexture : m_pTexture;
 
-	if (getDepthTexture)
-		pTexture = m_pDepthBuffer->m_pDepthBufferTexture;
-	else if (gSP.textureTile[_t]->clamps == 0 || gSP.textureTile[_t]->clampt == 0)
-		pTexture = _getSubTexture(_t);
-
-	if (pTexture != m_pSubTexture) {
-		const u32 shift = (gSP.textureTile[_t]->imageAddress - m_startAddress) >> (m_size - 1);
-		const u32 factor = m_width;
-		if (m_loadType == LOADTYPE_TILE) {
-			pTexture->offsetS = (float)(m_loadTileOrigin.uls + (shift % factor));
-			pTexture->offsetT = (float)(m_height - (m_loadTileOrigin.ult + shift / factor));
-		} else {
-			pTexture->offsetS = (float)(shift % factor);
-			pTexture->offsetT = (float)(m_height - shift / factor);
-		}
+	const u32 shift = (gSP.textureTile[_t]->imageAddress - m_startAddress) >> (m_size - 1);
+	const u32 factor = m_width;
+	if (m_loadType == LOADTYPE_TILE) {
+		pTexture->offsetS = (float)(m_loadTileOrigin.uls + (shift % factor));
+		pTexture->offsetT = (float)(m_height - (m_loadTileOrigin.ult + shift / factor));
+	} else {
+		pTexture->offsetS = (float)(shift % factor);
+		pTexture->offsetT = (float)(m_height - shift / factor);
 	}
+
+	if (!getDepthTexture && (gSP.textureTile[_t]->clamps == 0 || gSP.textureTile[_t]->clampt == 0))
+		pTexture = _getSubTexture(_t);
 
 	pTexture->scaleS = m_scaleX / (float)pTexture->realWidth;
 	pTexture->scaleT = m_scaleY / (float)pTexture->realHeight;
@@ -561,6 +564,7 @@ void FrameBufferList::saveBuffer(u32 _address, u16 _format, u16 _size, u16 _widt
 
 	if (m_pCurrent != nullptr) {
 		bPrevIsDepth = m_pCurrent->m_isDepthBuffer;
+		m_pCurrent->m_readable = true;
 
 		// Correct buffer's end address
 		if (!m_pCurrent->isAuxiliary()) {
@@ -741,7 +745,7 @@ void FrameBufferList::attachDepthBuffer()
 		pDepthBuffer->initDepthImageTexture(m_pCurrent);
 		pDepthBuffer->initDepthBufferTexture(m_pCurrent);
 #ifndef USE_DEPTH_RENDERBUFFER
-#ifdef GLES2
+#ifdef GLESX
 		if (pDepthBuffer->m_pDepthBufferTexture->realWidth == m_pCurrent->m_pTexture->realWidth) {
 #else
 		if (pDepthBuffer->m_pDepthBufferTexture->realWidth >= m_pCurrent->m_pTexture->realWidth) {
@@ -862,8 +866,9 @@ void FrameBufferList::renderBuffer(u32 _address)
 		srcY0 = (GLint)(srcY0*yScale);
 		srcY1 = srcY0 + VI.real_height;
 	}
-
-	FrameBuffer * pFilteredBuffer = PostProcessor::get().doBlur(PostProcessor::get().doGammaCorrection(pBuffer));
+	PostProcessor & postProcessor = PostProcessor::get();
+	FrameBuffer * pFilteredBuffer = postProcessor.doBlur(postProcessor.doGammaCorrection(
+		postProcessor.doOrientationCorrection(pBuffer)));
 
 	const bool vi_fsaa = (*REG.VI_STATUS & 512) == 0;
 	const bool vi_divot = (*REG.VI_STATUS & 16) != 0;
@@ -934,7 +939,8 @@ void FrameBufferList::renderBuffer(u32 _address)
 		const u32 size = *REG.VI_STATUS & 3;
 		pBuffer = findBuffer(_address + (((*REG.VI_WIDTH)*VI.height)<<size>>1));
 		if (pBuffer != nullptr) {
-			pFilteredBuffer = PostProcessor::get().doBlur(PostProcessor::get().doGammaCorrection(pBuffer));
+			pFilteredBuffer = postProcessor.doBlur(postProcessor.doGammaCorrection(
+				postProcessor.doOrientationCorrection(pBuffer)));
 			srcY0 = 0;
 			srcY1 = srcPartHeight;
 			dstY0 = dstY1;

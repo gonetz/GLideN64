@@ -104,4 +104,6 @@ extern PFNGLGETPROGRAMBINARYPROC glGetProgramBinary;
 extern PFNGLPROGRAMBINARYPROC glProgramBinary;
 extern PFNGLPROGRAMPARAMETERIPROC glProgramParameteri;
 
+extern PFNGLTEXSTORAGE2DPROC glTexStorage2D;
+
 #endif // GLFUNCTIONS_H

@@ -60,6 +60,7 @@ struct Config
 		u32 enableNativeResTexrects;
 		u32 enableLegacyBlending;
 		u32 enableFragmentDepthWrite;
+		u32 enableBlitScreenWorkaround;
 		u32 hacks;
 #ifdef ANDROID
 		u32 forcePolygonOffset;

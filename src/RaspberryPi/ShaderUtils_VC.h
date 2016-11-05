@@ -4,8 +4,8 @@
 static
 const char* fragment_shader_blender1 =
 "  if (uForceBlendCycle1 != 0) {						\n"
-"    muxPM[0] = clamp(vec4(color2, alpha2), 0.0, 1.0);	\n"
-"    muxA[0] = muxPM[0].a;								\n"
+"    muxPM[0] = clampedColor;	\n"
+"    muxA[0] = clampedColor.a;								\n"
 "    lowp float muxa;		\n"
 "    if (uBlendMux1[1] == 0)		\n"
 "      muxa = muxA[0];		\n"
@@ -44,16 +44,15 @@ const char* fragment_shader_blender1 =
 "    else if (uBlendMux1[3] == 3)		      \n"
 "      muxb = muxB[3];		 \n"
 "    lowp vec4 blend1 = (muxpm0 * muxa) + (muxpm2 * muxb);	\n"
-"    color2 = clamp(blend1.rgb, 0.0, 1.0);				\n"
-"    alpha2 = muxA[0];									\n"
+"    clampedColor.rgb = clamp(blend1.rgb, 0.0, 1.0);				\n"
 "  }													\n"
 ;
 
 static
 const char* fragment_shader_blender2 =
 "  if (uForceBlendCycle2 != 0) {				\n"
-"    muxPM[0] = vec4(color2, alpha2);			\n"
-"    muxA[0] = alpha2;							\n"
+"    muxPM[0] = clampedColor;			\n"
+"    muxA[0] = clampedColor.a;							\n"
 "    lowp float muxa;           \n"
 "    if (uBlendMux2[1] == 0)            \n"
 "      muxa = muxA[0];          \n"
@@ -92,7 +91,7 @@ const char* fragment_shader_blender2 =
 "    else if (uBlendMux2[3] == 3)		      \n"
 "      muxb = muxB[3];		 \n"
 "    lowp vec4 blend2 = muxpm0 * muxa + muxpm2 * muxb;	\n"
-"    color2 = clamp(blend2.rgb, 0.0, 1.0);		\n"
+"    clampedColor.rgb = clamp(blend2.rgb, 0.0, 1.0);		\n"
 "  }											\n"
 ;
 
