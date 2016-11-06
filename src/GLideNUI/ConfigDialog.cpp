@@ -215,10 +215,7 @@ void ConfigDialog::_init()
 	ui->deposterizeCheckBox->setChecked(config.textureFilter.txDeposterize != 0);
 	ui->ignoreBackgroundsCheckBox->setChecked(config.textureFilter.txFilterIgnoreBG != 0);
 
-	if (config.textureFilter.txHiresEnable == 0)
-		ui->texturePackOffRadioButton->setChecked(true);
-	else
-		ui->texturePackOnRadioButton->setChecked(true);
+	ui->texturePackOnCheckBox->setChecked(config.textureFilter.txHiresEnable != 0);
 	ui->alphaChannelCheckBox->setChecked(config.textureFilter.txHiresFullAlphaChannel != 0);
 	ui->alternativeCRCCheckBox->setChecked(config.textureFilter.txHresAltCRC != 0);
 	ui->textureDumpCheckBox->setChecked(config.textureFilter.txDump != 0);
@@ -334,9 +331,8 @@ void ConfigDialog::accept()
 {
 	m_accepted = true;
 
-// TODO
-//	config.video.windowedWidth = ui->windowWidthSpinBox->value();
-//	config.video.windowedHeight = ui->windowHeightSpinBox->value();
+	config.video.windowedWidth = ui->windowWidthSpinBox->value();
+	config.video.windowedHeight = ui->windowHeightSpinBox->value();
 
 	getFullscreenResolutions(ui->fullScreenResolutionComboBox->currentIndex(), config.video.fullscreenWidth, config.video.fullscreenHeight);
 	getFullscreenRefreshRate(ui->fullScreenRefreshRateComboBox->currentIndex(), config.video.fullscreenRefresh);
@@ -434,7 +430,7 @@ void ConfigDialog::accept()
 	config.textureFilter.txDeposterize = ui->deposterizeCheckBox->isChecked() ? 1 : 0;
 	config.textureFilter.txFilterIgnoreBG = ui->ignoreBackgroundsCheckBox->isChecked() ? 1 : 0;
 
-	config.textureFilter.txHiresEnable = ui->texturePackOnRadioButton->isChecked() ? 1 : 0;
+	config.textureFilter.txHiresEnable = ui->texturePackOnCheckBox->isChecked() ? 1 : 0;
 	config.textureFilter.txHiresFullAlphaChannel = ui->alphaChannelCheckBox->isChecked() ? 1 : 0;
 	config.textureFilter.txHresAltCRC = ui->alternativeCRCCheckBox->isChecked() ? 1 : 0;
 	config.textureFilter.txDump = ui->textureDumpCheckBox->isChecked() ? 1 : 0;
@@ -565,14 +561,11 @@ void ConfigDialog::on_fbInfoDisableCheckBox_toggled(bool checked)
 
 void ConfigDialog::on_windowedResolutionComboBox_currentIndexChanged(int index)
 {
-	// TODO
-	/*
 	const bool bCustom = index == numWindowedModes - 1;
 	ui->windowWidthSpinBox->setValue(bCustom ? config.video.windowedWidth : WindowedModes[index].width);
 	ui->windowWidthSpinBox->setEnabled(bCustom);
 	ui->windowHeightSpinBox->setValue(bCustom ? config.video.windowedHeight : WindowedModes[index].height);
 	ui->windowHeightSpinBox->setEnabled(bCustom);
-	*/
 }
 
 void ConfigDialog::on_nativeRes2D_checkBox_toggled(bool checked)
