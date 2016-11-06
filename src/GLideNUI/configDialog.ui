@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>469</width>
-    <height>618</height>
+    <height>644</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -35,6 +35,9 @@
    </property>
    <item>
     <widget class="QTabWidget" name="tabWidget">
+     <property name="currentIndex">
+      <number>5</number>
+     </property>
      <property name="usesScrollButtons">
       <bool>false</bool>
      </property>
@@ -1005,6 +1008,36 @@
          </item>
         </layout>
        </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_17">
+         <property name="spacing">
+          <number>9</number>
+         </property>
+         <item>
+          <widget class="QLabel" name="frameBufferInfoIcon">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;img src=&quot;:/Info.png&quot;/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="frameBufferInfoLabel">
+           <property name="text">
+            <string>Some of the options on this tab have been disabled because frame buffer emulation has been turned off.</string>
+           </property>
+           <property name="wordWrap">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
       </layout>
      </widget>
      <widget class="QWidget" name="emulationTab">
@@ -1089,16 +1122,6 @@
              </property>
              <property name="text">
               <string>Enable hardware lighting (HLE only)</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QCheckBox" name="n64DepthCompareCheckBox">
-             <property name="toolTip">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The N64 uses a unique method of calculating depth to the camera. When checked, GlideN64 uses shaders to try to emulate these calculations correctly. &lt;span style=&quot; font-weight:600;&quot;&gt;Experimental!&lt;/span&gt;&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;Sometimes checked, for a few games&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-             </property>
-             <property name="text">
-              <string>Enable N64-style depth compare (experimental)</string>
              </property>
             </widget>
            </item>
@@ -1480,14 +1503,31 @@
           </layout>
          </item>
          <item>
-          <widget class="QCheckBox" name="RenderFBCheckBox">
-           <property name="toolTip">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;When this option is checked, the frame buffer is rendered directly to the screen. This prevents some graphic problems but may cause slowdowns or visual quality problems.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;Usually unchecked&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+          <layout class="QVBoxLayout" name="verticalLayout_27">
+           <property name="spacing">
+            <number>6</number>
            </property>
-           <property name="text">
-            <string>Render N64 frame buffer to output</string>
-           </property>
-          </widget>
+           <item>
+            <widget class="QCheckBox" name="n64DepthCompareCheckBox">
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The N64 uses a unique method of calculating depth to the camera. When checked, GlideN64 uses shaders to try to emulate these calculations correctly. &lt;span style=&quot; font-weight:600;&quot;&gt;Experimental!&lt;/span&gt;&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;Sometimes checked, for a few games&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
+             <property name="text">
+              <string>Enable N64-style depth compare (experimental)</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="RenderFBCheckBox">
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;When this option is checked, the frame buffer is rendered directly to the screen. This prevents some graphic problems but may cause slowdowns or visual quality problems.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;Usually unchecked&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
+             <property name="text">
+              <string>Render N64 frame buffer to output</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
          </item>
         </layout>
        </item>
@@ -1514,11 +1554,11 @@
        <item>
         <widget class="QTabWidget" name="tabWidget_2">
          <property name="currentIndex">
-          <number>1</number>
+          <number>0</number>
          </property>
          <widget class="QWidget" name="textureEnhancementTab">
           <attribute name="title">
-           <string>N64 texture enhancement</string>
+           <string>N64 textures</string>
           </attribute>
           <layout class="QVBoxLayout" name="verticalLayout_35">
            <item>
@@ -1805,44 +1845,53 @@
         </widget>
        </item>
        <item>
-        <layout class="QVBoxLayout" name="verticalLayout_9">
-         <property name="spacing">
-          <number>6</number>
+        <spacer name="verticalSpacer_15">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
          </property>
-         <item>
-          <widget class="QCheckBox" name="saveTextureCacheCheckBox">
-           <property name="toolTip">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This option saves all previously loaded and enhanced textures to your PC. When the game is next launched, textures don't have to be recreated, causing smoother performance.&lt;/p&gt;&lt;p&gt;When using texture packs, loading packs will take only a few seconds when the game is launched as opposed to the 5–60 seconds that loading usually takes. However, if you change the texture pack you'll have to manually delete the texture cache. Saved cache files are saved to a folder called Cache within the plugins folder.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;Checked&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-           </property>
-           <property name="text">
-            <string>Save texture cache to hard disk</string>
-           </property>
-           <property name="checked">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QCheckBox" name="compressCacheCheckBox">
-           <property name="toolTip">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Textures will be compressed so more textures can be held in the cache. The compression ratio varies per texture, but the compression is typically 1/5 of the original size.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;Checked&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-           </property>
-           <property name="text">
-            <string>Compress texture cache</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QCheckBox" name="force16bppCheckBox">
-           <property name="toolTip">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This option halves the space used by textures in the texture cache and video card memory to improve performance. When reducing the color, GLideN64 tries to perserve the original quality as much as possible. On most textures it's hardly noticeable, but some textures, like skies, can look noticeably worse.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;Unchecked&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-           </property>
-           <property name="text">
-            <string>Convert textures to 16 bpp</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
+         <property name="sizeType">
+          <enum>QSizePolicy::Fixed</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>4</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="saveTextureCacheCheckBox">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This option saves all previously loaded and enhanced textures to your PC. When the game is next launched, textures don't have to be recreated, causing smoother performance.&lt;/p&gt;&lt;p&gt;When using texture packs, loading packs will take only a few seconds when the game is launched as opposed to the 5–60 seconds that loading usually takes. However, if you change the texture pack you'll have to manually delete the texture cache. Saved cache files are saved to a folder called Cache within the plugins folder.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;Checked&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="text">
+          <string>Save texture cache to hard disk</string>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="compressCacheCheckBox">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Textures will be compressed so more textures can be held in the cache. The compression ratio varies per texture, but the compression is typically 1/5 of the original size.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;Checked&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="text">
+          <string>Compress texture cache</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="force16bppCheckBox">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This option halves the space used by textures in the texture cache and video card memory to improve performance. When reducing the color, GLideN64 tries to perserve the original quality as much as possible. On most textures it's hardly noticeable, but some textures, like skies, can look noticeably worse.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;Unchecked&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="text">
+          <string>Convert textures to 16 bpp</string>
+         </property>
+        </widget>
        </item>
        <item>
         <spacer name="verticalSpacer">
@@ -2340,6 +2389,36 @@
          </item>
         </layout>
        </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_21">
+         <property name="spacing">
+          <number>9</number>
+         </property>
+         <item>
+          <widget class="QLabel" name="frameBufferInfoIcon2">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;img src=&quot;:/Info.png&quot;/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="frameBufferInfoLabel2">
+           <property name="text">
+            <string>All of the options on this tab have been disabled because frame buffer emulation has been turned off.</string>
+           </property>
+           <property name="wordWrap">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
       </layout>
      </widget>
      <widget class="QWidget" name="osdTab">
@@ -2353,7 +2432,7 @@
        <item>
         <layout class="QVBoxLayout" name="verticalLayout_18">
          <property name="spacing">
-          <number>10</number>
+          <number>16</number>
          </property>
          <item>
           <layout class="QHBoxLayout" name="horizontalLayout_11">
@@ -2396,8 +2475,8 @@
                   </property>
                   <property name="minimumSize">
                    <size>
-                    <width>38</width>
-                    <height>38</height>
+                    <width>42</width>
+                    <height>42</height>
                    </size>
                   </property>
                   <property name="maximumSize">
@@ -2414,8 +2493,15 @@
                   <property name="accessibleName">
                    <string>Top left</string>
                   </property>
-                  <property name="text">
-                   <string>⭦</string>
+                  <property name="icon">
+                   <iconset resource="icon.qrc">
+                    <normaloff>:/TopLeft.png</normaloff>:/TopLeft.png</iconset>
+                  </property>
+                  <property name="iconSize">
+                   <size>
+                    <width>17</width>
+                    <height>17</height>
+                   </size>
                   </property>
                   <property name="checkable">
                    <bool>true</bool>
@@ -2438,8 +2524,8 @@
                   </property>
                   <property name="minimumSize">
                    <size>
-                    <width>38</width>
-                    <height>38</height>
+                    <width>42</width>
+                    <height>42</height>
                    </size>
                   </property>
                   <property name="maximumSize">
@@ -2456,8 +2542,15 @@
                   <property name="accessibleName">
                    <string>Top</string>
                   </property>
-                  <property name="text">
-                   <string>⭡</string>
+                  <property name="icon">
+                   <iconset resource="icon.qrc">
+                    <normaloff>:/Up.png</normaloff>:/Up.png</iconset>
+                  </property>
+                  <property name="iconSize">
+                   <size>
+                    <width>16</width>
+                    <height>22</height>
+                   </size>
                   </property>
                   <property name="checkable">
                    <bool>true</bool>
@@ -2480,8 +2573,8 @@
                   </property>
                   <property name="minimumSize">
                    <size>
-                    <width>38</width>
-                    <height>38</height>
+                    <width>42</width>
+                    <height>42</height>
                    </size>
                   </property>
                   <property name="maximumSize">
@@ -2498,8 +2591,15 @@
                   <property name="accessibleName">
                    <string>Top right</string>
                   </property>
-                  <property name="text">
-                   <string>⭧</string>
+                  <property name="icon">
+                   <iconset resource="icon.qrc">
+                    <normaloff>:/TopRight.png</normaloff>:/TopRight.png</iconset>
+                  </property>
+                  <property name="iconSize">
+                   <size>
+                    <width>17</width>
+                    <height>17</height>
+                   </size>
                   </property>
                   <property name="checkable">
                    <bool>true</bool>
@@ -2532,8 +2632,8 @@
                   </property>
                   <property name="minimumSize">
                    <size>
-                    <width>38</width>
-                    <height>38</height>
+                    <width>42</width>
+                    <height>42</height>
                    </size>
                   </property>
                   <property name="maximumSize">
@@ -2550,8 +2650,15 @@
                   <property name="accessibleName">
                    <string>Left</string>
                   </property>
-                  <property name="text">
-                   <string>⭠</string>
+                  <property name="icon">
+                   <iconset resource="icon.qrc">
+                    <normaloff>:/Left.png</normaloff>:/Left.png</iconset>
+                  </property>
+                  <property name="iconSize">
+                   <size>
+                    <width>22</width>
+                    <height>16</height>
+                   </size>
                   </property>
                   <property name="checkable">
                    <bool>true</bool>
@@ -2577,8 +2684,8 @@
                   </property>
                   <property name="minimumSize">
                    <size>
-                    <width>38</width>
-                    <height>38</height>
+                    <width>42</width>
+                    <height>42</height>
                    </size>
                   </property>
                   <property name="maximumSize">
@@ -2613,8 +2720,8 @@
                   </property>
                   <property name="minimumSize">
                    <size>
-                    <width>38</width>
-                    <height>38</height>
+                    <width>42</width>
+                    <height>42</height>
                    </size>
                   </property>
                   <property name="maximumSize">
@@ -2631,8 +2738,15 @@
                   <property name="accessibleName">
                    <string>Right</string>
                   </property>
-                  <property name="text">
-                   <string>⭢</string>
+                  <property name="icon">
+                   <iconset resource="icon.qrc">
+                    <normaloff>:/Right.png</normaloff>:/Right.png</iconset>
+                  </property>
+                  <property name="iconSize">
+                   <size>
+                    <width>22</width>
+                    <height>16</height>
+                   </size>
                   </property>
                   <property name="checkable">
                    <bool>true</bool>
@@ -2659,8 +2773,8 @@
                   </property>
                   <property name="minimumSize">
                    <size>
-                    <width>38</width>
-                    <height>38</height>
+                    <width>42</width>
+                    <height>42</height>
                    </size>
                   </property>
                   <property name="maximumSize">
@@ -2677,8 +2791,15 @@
                   <property name="accessibleName">
                    <string>Bottom left</string>
                   </property>
-                  <property name="text">
-                   <string>⭩</string>
+                  <property name="icon">
+                   <iconset resource="icon.qrc">
+                    <normaloff>:/BottomLeft.png</normaloff>:/BottomLeft.png</iconset>
+                  </property>
+                  <property name="iconSize">
+                   <size>
+                    <width>17</width>
+                    <height>17</height>
+                   </size>
                   </property>
                   <property name="checkable">
                    <bool>true</bool>
@@ -2701,8 +2822,8 @@
                   </property>
                   <property name="minimumSize">
                    <size>
-                    <width>38</width>
-                    <height>38</height>
+                    <width>42</width>
+                    <height>42</height>
                    </size>
                   </property>
                   <property name="maximumSize">
@@ -2719,8 +2840,15 @@
                   <property name="accessibleName">
                    <string>Bottom</string>
                   </property>
-                  <property name="text">
-                   <string>⭣</string>
+                  <property name="icon">
+                   <iconset resource="icon.qrc">
+                    <normaloff>:/Down.png</normaloff>:/Down.png</iconset>
+                  </property>
+                  <property name="iconSize">
+                   <size>
+                    <width>16</width>
+                    <height>22</height>
+                   </size>
                   </property>
                   <property name="checkable">
                    <bool>true</bool>
@@ -2743,8 +2871,8 @@
                   </property>
                   <property name="minimumSize">
                    <size>
-                    <width>38</width>
-                    <height>38</height>
+                    <width>42</width>
+                    <height>42</height>
                    </size>
                   </property>
                   <property name="maximumSize">
@@ -2761,8 +2889,15 @@
                   <property name="accessibleName">
                    <string>Bottom right</string>
                   </property>
-                  <property name="text">
-                   <string>⭨</string>
+                  <property name="icon">
+                   <iconset resource="icon.qrc">
+                    <normaloff>:/BottomRight.png</normaloff>:/BottomRight.png</iconset>
+                  </property>
+                  <property name="iconSize">
+                   <size>
+                    <width>17</width>
+                    <height>17</height>
+                   </size>
                   </property>
                   <property name="checkable">
                    <bool>true</bool>
@@ -2946,36 +3081,47 @@
           </layout>
          </item>
          <item>
-          <widget class="QGroupBox" name="performanceGroupBox">
-           <property name="title">
-            <string>Performance counters</string>
+          <layout class="QVBoxLayout" name="verticalLayout_19">
+           <property name="spacing">
+            <number>6</number>
            </property>
-           <layout class="QVBoxLayout" name="verticalLayout_19">
-            <item>
-             <widget class="QCheckBox" name="fpsCheckBox">
-              <property name="text">
-               <string>Display frames per second</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QCheckBox" name="visCheckBox">
-              <property name="text">
-               <string>Display vertical interrupts per second</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QCheckBox" name="percentCheckBox">
-              <property name="text">
-               <string>Display percentage</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </widget>
+           <item>
+            <widget class="QCheckBox" name="fpsCheckBox">
+             <property name="text">
+              <string>Display frames per second</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="visCheckBox">
+             <property name="text">
+              <string>Display vertical interrupts per second</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="percentCheckBox">
+             <property name="text">
+              <string>Display percentage</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
          </item>
         </layout>
+       </item>
+       <item>
+        <spacer name="verticalSpacer_14">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>0</width>
+           <height>0</height>
+          </size>
+         </property>
+        </spacer>
        </item>
        <item>
         <spacer name="verticalSpacer_6">
@@ -3072,7 +3218,7 @@
      <y>88</y>
     </hint>
     <hint type="destinationlabel">
-     <x>314</x>
+     <x>322</x>
      <y>107</y>
     </hint>
    </hints>
@@ -3088,7 +3234,7 @@
      <y>234</y>
     </hint>
     <hint type="destinationlabel">
-     <x>314</x>
+     <x>322</x>
      <y>253</y>
     </hint>
    </hints>
@@ -3104,7 +3250,7 @@
      <y>143</y>
     </hint>
     <hint type="destinationlabel">
-     <x>314</x>
+     <x>322</x>
      <y>180</y>
     </hint>
    </hints>
@@ -3116,12 +3262,12 @@
    <slot>setDisabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>131</x>
-     <y>221</y>
+     <x>143</x>
+     <y>198</y>
     </hint>
     <hint type="destinationlabel">
-     <x>132</x>
-     <y>253</y>
+     <x>145</x>
+     <y>230</y>
     </hint>
    </hints>
   </connection>
@@ -3132,12 +3278,12 @@
    <slot>setDisabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>131</x>
-     <y>221</y>
+     <x>143</x>
+     <y>198</y>
     </hint>
     <hint type="destinationlabel">
-     <x>132</x>
-     <y>274</y>
+     <x>145</x>
+     <y>251</y>
     </hint>
    </hints>
   </connection>
@@ -3148,12 +3294,12 @@
    <slot>setDisabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>131</x>
-     <y>221</y>
+     <x>143</x>
+     <y>198</y>
     </hint>
     <hint type="destinationlabel">
-     <x>132</x>
-     <y>295</y>
+     <x>145</x>
+     <y>272</y>
     </hint>
    </hints>
   </connection>
@@ -3164,12 +3310,12 @@
    <slot>setDisabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>131</x>
-     <y>221</y>
+     <x>143</x>
+     <y>198</y>
     </hint>
     <hint type="destinationlabel">
-     <x>132</x>
-     <y>316</y>
+     <x>145</x>
+     <y>293</y>
     </hint>
    </hints>
   </connection>
@@ -3212,8 +3358,8 @@
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>342</x>
-     <y>596</y>
+     <x>351</x>
+     <y>634</y>
     </hint>
     <hint type="destinationlabel">
      <x>343</x>
@@ -3228,8 +3374,8 @@
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>423</x>
-     <y>599</y>
+     <x>432</x>
+     <y>634</y>
     </hint>
     <hint type="destinationlabel">
      <x>426</x>
@@ -3237,16 +3383,879 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>frameBufferCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>frameBufferIcon</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>27</x>
+     <y>52</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>28</x>
+     <y>76</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>frameBufferCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>frameBufferWarningLabel</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>43</x>
+     <y>49</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>71</x>
+     <y>72</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>frameBufferCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>copyAuxBuffersCheckBox</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>57</x>
+     <y>53</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>56</x>
+     <y>135</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>frameBufferCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>frameBufferSwapLabel</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>75</x>
+     <y>51</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>72</x>
+     <y>169</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>frameBufferCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>bufferSwapVIRadioButton</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>89</x>
+     <y>50</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>88</x>
+     <y>190</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>frameBufferCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>bufferSwapOriginRadioButton</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>105</x>
+     <y>49</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>103</x>
+     <y>215</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>frameBufferCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>bufferSwapColorRadioButton</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>121</x>
+     <y>49</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>119</x>
+     <y>233</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>frameBufferCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>fbInfoEnableCheckBox</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>133</x>
+     <y>50</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>134</x>
+     <y>271</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>frameBufferCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>readColorChunkCheckBox</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>153</x>
+     <y>47</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>150</x>
+     <y>291</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>frameBufferCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>readDepthChunkCheckBox</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>169</x>
+     <y>52</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>165</x>
+     <y>317</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>frameBufferCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>copyBufferLabel</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>184</x>
+     <y>48</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>180</x>
+     <y>352</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>frameBufferCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>copyBufferAsyncRadioButton</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>198</x>
+     <y>49</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>196</x>
+     <y>371</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>frameBufferCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>copyBufferSyncRadioButton</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>215</x>
+     <y>51</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>212</x>
+     <y>393</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>frameBufferCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>copyBufferDisableRadioButton</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>234</x>
+     <y>56</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>228</x>
+     <y>414</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>frameBufferCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>copyDepthLabel</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>247</x>
+     <y>52</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>244</x>
+     <y>450</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>frameBufferCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>copyDepthSoftwareRadioButton</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>261</x>
+     <y>56</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>260</x>
+     <y>469</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>frameBufferCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>copyDepthVRamRadioButton</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>276</x>
+     <y>57</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>275</x>
+     <y>489</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>frameBufferCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>copyDepthDisableRadioButton</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>290</x>
+     <y>56</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>291</x>
+     <y>513</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>frameBufferCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>RenderFBCheckBox</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>307</x>
+     <y>49</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>320</x>
+     <y>573</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>frameBufferCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>postFilterTab</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>33</x>
+     <y>53</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>31</x>
+     <y>51</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>texturePackOnCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>texturePackPathLabel</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>38</x>
+     <y>82</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>39</x>
+     <y>113</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>texturePackOnCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>txPathLabel</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>54</x>
+     <y>80</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>53</x>
+     <y>134</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>texturePackOnCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>texPackPathButton</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>74</x>
+     <y>84</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>68</x>
+     <y>160</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>texturePackOnCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>alphaChannelCheckBox</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>92</x>
+     <y>83</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>84</x>
+     <y>198</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>texturePackOnCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>alternativeCRCCheckBox</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>103</x>
+     <y>81</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>100</x>
+     <y>221</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>texturePackOnCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>textureDumpCheckBox</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>113</x>
+     <y>79</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>116</x>
+     <y>244</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>frameBufferCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>aliasingLabel</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>233</x>
+     <y>50</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>322</x>
+     <y>123</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>frameBufferCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>aliasingOffLabel</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>233</x>
+     <y>50</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>211</x>
+     <y>148</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>frameBufferCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>aliasingSlider</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>233</x>
+     <y>50</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>320</x>
+     <y>148</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>frameBufferCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>aliasingHighLabel</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>233</x>
+     <y>50</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>431</x>
+     <y>148</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>frameBufferCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>aliasingLabelVal</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>233</x>
+     <y>50</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>319</x>
+     <y>174</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>frameBufferCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>aliasingXLabel</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>233</x>
+     <y>50</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>325</x>
+     <y>174</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>frameBufferCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>factorHighLabel</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>233</x>
+     <y>50</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>431</x>
+     <y>75</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>frameBufferCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>factorLabel</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>233</x>
+     <y>50</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>322</x>
+     <y>50</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>frameBufferCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>factorLabelVal</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>233</x>
+     <y>50</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>319</x>
+     <y>101</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>frameBufferCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>resolutionFactorSlider</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>233</x>
+     <y>50</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>320</x>
+     <y>75</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>frameBufferCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>factorOffLabel</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>233</x>
+     <y>50</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>211</x>
+     <y>75</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>frameBufferCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>factorXLabel</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>233</x>
+     <y>50</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>325</x>
+     <y>101</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>frameBufferCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>frameBufferInfoIcon</receiver>
+   <slot>setHidden(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>233</x>
+     <y>50</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>36</x>
+     <y>591</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>frameBufferCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>frameBufferInfoLabel</receiver>
+   <slot>setHidden(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>233</x>
+     <y>50</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>282</x>
+     <y>591</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>frameBufferCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>cropImageLabel</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>233</x>
+     <y>50</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>102</x>
+     <y>215</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>frameBufferCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>cropImageComboBox</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>233</x>
+     <y>50</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>102</x>
+     <y>235</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>frameBufferCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>cropImageWidthLabel</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>233</x>
+     <y>50</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>30</x>
+     <y>260</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>frameBufferCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>cropImageWidthSpinBox</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>233</x>
+     <y>50</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>69</x>
+     <y>260</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>frameBufferCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>cropImageHeightLabel</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>233</x>
+     <y>50</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>117</x>
+     <y>260</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>frameBufferCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>cropImageHeightSpinBox</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>233</x>
+     <y>50</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>154</x>
+     <y>260</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>frameBufferCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>aspectLabel</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>233</x>
+     <y>50</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>102</x>
+     <y>298</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>frameBufferCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>aspect169RadioButton</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>233</x>
+     <y>50</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>102</x>
+     <y>338</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>frameBufferCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>aspect43RadioButton</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>233</x>
+     <y>50</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>102</x>
+     <y>317</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>frameBufferCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>aspectAdjustRadioButton</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>233</x>
+     <y>50</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>102</x>
+     <y>380</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>frameBufferCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>aspectStretchRadioButton</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>233</x>
+     <y>50</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>102</x>
+     <y>359</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>frameBufferCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>frameBufferInfoIcon2</receiver>
+   <slot>setHidden(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>233</x>
+     <y>50</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>28</x>
+     <y>578</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>frameBufferCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>frameBufferInfoLabel2</receiver>
+   <slot>setHidden(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>233</x>
+     <y>50</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>245</x>
+     <y>578</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>frameBufferCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>n64DepthCompareCheckBox</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>302</x>
+     <y>53</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>306</x>
+     <y>548</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <buttongroups>
-  <buttongroup name="texturePackButtonGroup"/>
-  <buttongroup name="copyBufferButtonGroup"/>
-  <buttongroup name="fixTexrectCoordsButtonGroup"/>
-  <buttongroup name="aspectButtonGroup"/>
-  <buttongroup name="depthBufferButtonGroup"/>
   <buttongroup name="osdButtonGroup"/>
-  <buttongroup name="screenshotButtonGroup"/>
+  <buttongroup name="depthBufferButtonGroup"/>
+  <buttongroup name="aspectButtonGroup"/>
   <buttongroup name="bloomBlendModeButtonGroup"/>
+  <buttongroup name="copyBufferButtonGroup"/>
+  <buttongroup name="screenshotButtonGroup"/>
   <buttongroup name="bufferSwapButtonGroup"/>
+  <buttongroup name="fixTexrectCoordsButtonGroup"/>
  </buttongroups>
 </ui>
