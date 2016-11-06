@@ -4,7 +4,7 @@
 #include <string>
 #include "Types.h"
 
-#define CONFIG_VERSION_CURRENT 15U
+#define CONFIG_VERSION_CURRENT 16U
 
 #define BILINEAR_3POINT   0
 #define BILINEAR_STANDARD 1
@@ -155,22 +155,22 @@ struct Config
 		f32 level;
 	} gammaCorrection;
 
-	enum HorisontalPosition {
-		posLeft,
-		posRight
-	};
-
-	enum VerticalPosition {
-		posBottom,
-		posTop
+	enum CountersPosition {
+		posTopLeft = 1,
+		posTopCenter = 2,
+		posTopRight = 4,
+		posTop = posTopLeft | posTopCenter | posTopRight,
+		posBottomLeft = 8,
+		posBottomCenter = 16,
+		posBottomRight = 32,
+		posBottom = posBottomLeft | posBottomCenter | posBottomRight
 	};
 
 	struct {
 		u32 vis;
 		u32 fps;
 		u32 percent;
-		u32 verticalPos;
-		u32 horisontalPos;
+		u32 pos;
 	} onScreenDisplay;
 
 	void resetToDefaults();

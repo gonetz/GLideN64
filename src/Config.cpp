@@ -116,6 +116,5 @@ void Config::resetToDefaults()
 	onScreenDisplay.vis = 0;
 	onScreenDisplay.fps = 0;
 	onScreenDisplay.percent = 0;
-	onScreenDisplay.verticalPos = posBottom;
-	onScreenDisplay.horisontalPos = posLeft;
+	onScreenDisplay.pos = posBottomLeft;
 }
