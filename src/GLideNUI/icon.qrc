@@ -2,5 +2,14 @@
     <qresource prefix="/">
         <file>Icon.png</file>
         <file>Warning.png</file>
+        <file>Info.png</file>
+        <file>Up.png</file>
+        <file>Right.png</file>
+        <file>Down.png</file>
+        <file>Left.png</file>
+        <file>TopLeft.png</file>
+        <file>TopRight.png</file>
+        <file>BottomRight.png</file>
+        <file>BottomLeft.png</file>
     </qresource>
 </RCC>
