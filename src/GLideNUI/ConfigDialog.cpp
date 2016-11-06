@@ -262,20 +262,30 @@ void ConfigDialog::_init()
 	ui->fontColorLabel->setAutoFillBackground(true);
 	ui->fontColorLabel->setPalette(palette);
 
+	switch (config.onScreenDisplay.pos) {
+	case Config::posTopLeft:
+		ui->topLeftPushButton->setChecked(true);
+		break;
+	case Config::posTopCenter:
+		ui->topPushButton->setChecked(true);
+		break;
+	case Config::posTopRight:
+		ui->topRightPushButton->setChecked(true);
+		break;
+	case Config::posBottomLeft:
+		ui->bottomLeftPushButton->setChecked(true);
+		break;
+	case Config::posBottomCenter:
+		ui->bottomPushButton->setChecked(true);
+		break;
+	case Config::posBottomRight:
+		ui->bottomRightPushButton->setChecked(true);
+		break;
+	}
+
 	ui->fpsCheckBox->setChecked(config.onScreenDisplay.fps != 0);
 	ui->visCheckBox->setChecked(config.onScreenDisplay.vis != 0);
 	ui->percentCheckBox->setChecked(config.onScreenDisplay.percent != 0);
-	// TODO
-	/*
-	if (config.onScreenDisplay.horisontalPos == Config::posLeft)
-		ui->leftRadioButton->setChecked(true);
-	else
-		ui->rightRadioButton->setChecked(true);
-	if (config.onScreenDisplay.verticalPos == Config::posTop)
-		ui->topRadioButton->setChecked(true);
-	else
-		ui->bottoRadioButton->setChecked(true);
-		*/
 }
 
 void ConfigDialog::_getTranslations(QStringList & _translationFiles) const
@@ -475,12 +485,23 @@ void ConfigDialog::accept()
 	config.font.colorf[2] = m_color.blueF();
 	config.font.colorf[3] = m_color.alphaF();
 
+
+	if (ui->topLeftPushButton->isChecked())
+		config.onScreenDisplay.pos = Config::posTopLeft;
+	else if (ui->topPushButton->isChecked())
+		config.onScreenDisplay.pos = Config::posTopCenter;
+	else if (ui->topRightPushButton->isChecked())
+		config.onScreenDisplay.pos = Config::posTopRight;
+	else if (ui->bottomLeftPushButton->isChecked())
+		config.onScreenDisplay.pos = Config::posBottomLeft;
+	else if (ui->bottomPushButton->isChecked())
+		config.onScreenDisplay.pos = Config::posBottomCenter;
+	else if (ui->bottomRightPushButton->isChecked())
+		config.onScreenDisplay.pos = Config::posBottomRight;
+
 	config.onScreenDisplay.fps = ui->fpsCheckBox->isChecked() ? 1 : 0;
 	config.onScreenDisplay.vis = ui->visCheckBox->isChecked() ? 1 : 0;
 	config.onScreenDisplay.percent = ui->percentCheckBox->isChecked() ? 1 : 0;
-	// TODO
-//	config.onScreenDisplay.horisontalPos = ui->leftRadioButton->isChecked() ? Config::posLeft : Config::posRight;
-//	config.onScreenDisplay.verticalPos = ui->topRadioButton->isChecked() ? Config::posTop : Config::posBottom;
 
 	writeSettings(m_strIniPath);
 

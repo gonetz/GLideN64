@@ -181,9 +181,8 @@ bool Config_SetDefault()
 	assert(res == M64ERR_SUCCESS);
 	res = ConfigSetDefaultBool(g_configVideoGliden64, "ShowPercent", config.onScreenDisplay.percent, "Show percent counter.");
 	assert(res == M64ERR_SUCCESS);
-	res = ConfigSetDefaultInt(g_configVideoGliden64, "CountersHPos", config.onScreenDisplay.horisontalPos, "Counters horisontal position (0=left, 1=right)");
-	assert(res == M64ERR_SUCCESS);
-	res = ConfigSetDefaultInt(g_configVideoGliden64, "CountersVPos", config.onScreenDisplay.verticalPos, "Counters vertical position (0=bottom, 1=top)");
+	res = ConfigSetDefaultInt(g_configVideoGliden64, "CountersPos", config.onScreenDisplay.pos,
+		"Counters position (1=top left, 2=top center, 4=top right, 8=bottom left, 16=bottom center, 32=bottom right)");
 	assert(res == M64ERR_SUCCESS);
 
 	return ConfigSaveSection("Video-GLideN64") == M64ERR_SUCCESS;
@@ -310,8 +309,7 @@ void Config_LoadConfig()
 	config.onScreenDisplay.fps = ConfigGetParamBool(g_configVideoGliden64, "ShowFPS");
 	config.onScreenDisplay.vis = ConfigGetParamBool(g_configVideoGliden64, "ShowVIS");
 	config.onScreenDisplay.percent = ConfigGetParamBool(g_configVideoGliden64, "ShowPercent");
-	config.onScreenDisplay.horisontalPos = ConfigGetParamInt(g_configVideoGliden64, "CountersHPos");
-	config.onScreenDisplay.verticalPos = ConfigGetParamInt(g_configVideoGliden64, "CountersVPos");
+	config.onScreenDisplay.pos = ConfigGetParamInt(g_configVideoGliden64, "CountersPos");
 
 	config.generalEmulation.hacks = hacks;
 }

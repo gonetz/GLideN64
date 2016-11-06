@@ -1973,12 +1973,22 @@ void OGLRender::_drawOSD(const char *_pText, float _x, float & _y)
 {
 	float tW, tH;
 	_getTextSize(_pText, tW, tH);
-	if (config.onScreenDisplay.horisontalPos == config.posRight)
+
+	const bool top = (config.posTop & config.onScreenDisplay.pos) != 0;
+	const bool right = (config.onScreenDisplay.pos == Config::posTopRight) || (config.onScreenDisplay.pos == Config::posBottomRight);
+	const bool center = (config.onScreenDisplay.pos == Config::posTopCenter) || (config.onScreenDisplay.pos == Config::posBottomCenter);
+
+	if (center)
+		_x = -tW * 0.5f;
+	else if (right)
 		_x -= tW;
-	if (config.onScreenDisplay.verticalPos == config.posTop)
+
+	if (top)
 		_y -= tH;
+
 	drawText(_pText, _x, _y);
-	if (config.onScreenDisplay.verticalPos == config.posTop)
+
+	if (top)
 		_y -= tH * 0.5f;
 	else
 		_y += tH * 1.5f;
@@ -2001,8 +2011,12 @@ void OGLRender::drawOSD()
 	gSP.changed |= CHANGED_VIEWPORT;
 	gDP.changed |= CHANGED_SCISSOR;
 
-	const float hp = config.onScreenDisplay.horisontalPos == config.posLeft ? -1 : 1;
-	const float vp = config.onScreenDisplay.verticalPos == config.posBottom ? -1 : 1;
+
+	const bool bottom = (config.posBottom & config.onScreenDisplay.pos) != 0;
+	const bool left = (config.onScreenDisplay.pos == Config::posTopLeft) || (config.onScreenDisplay.pos == Config::posBottomLeft);
+
+	const float hp = left ? -1 : 1;
+	const float vp = bottom ? -1 : 1;
 
 	float hShift, vShift;
 	_getTextSize("0", hShift, vShift);
