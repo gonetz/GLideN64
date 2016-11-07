@@ -36,7 +36,9 @@ extern "C" {
 #if defined(OS_WINDOWS)
 #define EXPORT	__declspec(dllexport)
 #define CALL		__cdecl
+#ifndef PATH_MAX
 #define PATH_MAX _MAX_PATH
+#endif
 #define strdup _strdup
 #else  /* Not WIN32 */
 #define EXPORT 	__attribute__((visibility("default")))
