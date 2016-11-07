@@ -1,4 +1,6 @@
-#define SHADER_VERSION "#version 100 \n"
+#define SHADER_VERSION "#version 100 \n" \
+"#extension GL_EXT_shader_texture_lod : enable \n" \
+"#extension GL_OES_standard_derivatives : enable \n"
 
 static const char* vertex_shader =
 SHADER_VERSION
@@ -279,6 +281,75 @@ static const char* fragment_shader_toonify =
 
 static const char* fragment_shader_end =
 "}                               \n"
+;
+
+static const char* fragment_shader_mipmap =
+"uniform lowp int uEnableLod;		\n"
+"uniform mediump float uMinLod;		\n"
+"uniform lowp int uMaxTile;			\n"
+"uniform lowp int uTextureDetail;	\n"
+"														\n"
+"mediump float mipmap(out lowp vec4 readtex0, out lowp vec4 readtex1) {	\n"
+"  readtex0 = texture2D(uTex0, vTexCoord0);				\n"
+"  readtex1 = texture2DLodEXT(uTex1, vTexCoord1, 0.0);		\n"
+"														\n"
+"  mediump float fMaxTile = float(uMaxTile);			\n"
+#if 1
+"  mediump vec2 dx = abs(dFdx(vLodTexCoord));			\n"
+"  dx *= uScreenScale;									\n"
+"  mediump float lod = max(dx.x, dx.y);					\n"
+#else
+"  mediump vec2 dx = dFdx(vLodTexCoord);				\n"
+"  dx *= uScreenScale;									\n"
+"  mediump vec2 dy = dFdy(vLodTexCoord);				\n"
+"  dy *= uScreenScale;									\n"
+"  mediump float lod = max(length(dx), length(dy));		\n"
+#endif
+"  bool magnify = lod < 1.0;							\n"
+"  mediump float lod_tile = magnify ? 0.0 : floor(log2(floor(lod))); \n"
+"  bool distant = lod > 128.0 || lod_tile >= fMaxTile;	\n"
+"  mediump float lod_frac = fract(lod/pow(2.0, lod_tile));	\n"
+"  if (magnify) lod_frac = max(lod_frac, uMinLod);		\n"
+"  if (uTextureDetail == 0)	{							\n"
+"    if (distant) lod_frac = 1.0;						\n"
+"    else if (magnify) lod_frac = 0.0;					\n"
+"  }													\n"
+"  if (magnify && (uTextureDetail == 1 || uTextureDetail == 3))			\n"
+"      lod_frac = 1.0 - lod_frac;						\n"
+"  if (uMaxTile == 0) {									\n"
+"    if (uEnableLod != 0 && (uTextureDetail == 2 || uTextureDetail == 3))	\n"
+"      readtex1 = readtex0;								\n"
+"    return lod_frac;									\n"
+"  }													\n"
+"  if (uEnableLod == 0) return lod_frac;				\n"
+"														\n"
+"  lod_tile = min(lod_tile, fMaxTile);					\n"
+"  lowp float lod_tile_m1 = max(0.0, lod_tile - 1.0);	\n"
+"  lowp vec4 lodT = texture2DLodEXT(uTex1, vTexCoord1, lod_tile);	\n"
+"  lowp vec4 lodT_m1 = texture2DLodEXT(uTex1, vTexCoord1, lod_tile_m1);	\n"
+"  lowp vec4 lodT_p1 = texture2DLodEXT(uTex1, vTexCoord1, lod_tile + 1.0);	\n"
+"  if (lod_tile < 1.0) {								\n"
+"    if (magnify) {									\n"
+//     !sharpen && !detail
+"      if (uTextureDetail == 0) readtex1 = readtex0;	\n"
+"    } else {											\n"
+//     detail
+"      if (uTextureDetail == 2 || uTextureDetail == 3) {				\n"
+"        readtex0 = lodT;								\n"
+"        readtex1 = lodT_p1;							\n"
+"      }												\n"
+"    }													\n"
+"  } else {												\n"
+"    if (uTextureDetail == 2 || uTextureDetail == 3) {							\n"
+"      readtex0 = lodT;									\n"
+"      readtex1 = lodT_p1;								\n"
+"    } else {											\n"
+"      readtex0 = lodT_m1;								\n"
+"      readtex1 = lodT;									\n"
+"    }													\n"
+"  }													\n"
+"  return lod_frac;										\n"
+"}														\n"
 ;
 
 static const char* fragment_shader_fake_mipmap =
