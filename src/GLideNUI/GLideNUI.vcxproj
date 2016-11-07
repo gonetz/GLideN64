@@ -63,7 +63,7 @@
       <ExceptionHandling>Sync</ExceptionHandling>
       <ObjectFileName>$(IntDir)</ObjectFileName>
       <Optimization>MaxSpeed</Optimization>
-      <PreprocessorDefinitions>OS_WINDOWS;_WINDOWS;UNICODE;WIN32;QT_NO_DEBUG;QT_WIDGETS_LIB;QT_GUI_LIB;QT_CORE_LIB;NDEBUG;QT_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>OS_WINDOWS;_WINDOWS;UNICODE;WIN32;QT_STATICPLUGIN;QT_NO_DEBUG;QT_WIDGETS_LIB;QT_GUI_LIB;QT_CORE_LIB;NDEBUG;QT_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessToFile>false</PreprocessToFile>
       <ProgramDataBaseFileName>$(IntDir)vc$(PlatformToolsetVersion).pdb</ProgramDataBaseFileName>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
@@ -75,8 +75,8 @@
     <Lib>
       <OutputFile>$(OutDir)\GLideNUI.lib</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <AdditionalDependencies>imm32.lib;Ws2_32.lib;qtmain.lib;qwindows.lib;qtharfbuzzng.lib;Qt5Core.lib;Qt5Gui.lib;Qt5Widgets.lib;Qt5PlatformSupport.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>"$(QTDIR)\lib";"$(QTDIR)\plugins\platforms"</AdditionalLibraryDirectories>
+      <AdditionalDependencies>imm32.lib;Ws2_32.lib;qtmain.lib;qwindows.lib;qico.lib;qtharfbuzzng.lib;Qt5Core.lib;Qt5Gui.lib;Qt5Widgets.lib;Qt5PlatformSupport.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(QTDIR)\lib;$(QTDIR)\plugins\platforms;$(QTDIR)\plugins\imageformats</AdditionalLibraryDirectories>
     </Lib>
     <Midl>
       <DefaultCharType>Unsigned</DefaultCharType>
@@ -112,7 +112,7 @@
       <OutputFile>$(OutDir)\GLideNUI.lib</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <AdditionalDependencies>Qt5Core.lib;Qt5Widgets.lib;Qt5Gui.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>"$(QTDIR)\lib";"$(QTDIR)\plugins\platforms"</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(QTDIR)\lib;$(QTDIR)\plugins\platforms;$(QTDIR)\plugins\imageformats</AdditionalLibraryDirectories>
     </Lib>
     <Midl>
       <DefaultCharType>Unsigned</DefaultCharType>
@@ -222,17 +222,17 @@ endlocal
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Icon.png">
+    <None Include="Icon.ico">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </None>
     <CustomBuild Include="icon.qrc">
       <FileType>Document</FileType>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(FullPath);.\Icon.png;%(AdditionalInputs)</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(FullPath);.\Icon.ico;%(AdditionalInputs)</AdditionalInputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)\bin\rcc.exe" -name "%(Filename)" -no-compress "%(FullPath)" -o .\GeneratedFiles\qrc_%(Filename).cpp</Command>
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Rcc%27ing %(Identity)...</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\GeneratedFiles\qrc_%(Filename).cpp;%(Outputs)</Outputs>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(FullPath);.\Icon.png;%(AdditionalInputs)</AdditionalInputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(FullPath);.\Icon.ico;%(AdditionalInputs)</AdditionalInputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">"$(QTDIR)\bin\rcc.exe" -name "%(Filename)" -no-compress "%(FullPath)" -o .\GeneratedFiles\qrc_%(Filename).cpp</Command>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Rcc%27ing %(Identity)...</Message>
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\GeneratedFiles\qrc_%(Filename).cpp;%(Outputs)</Outputs>

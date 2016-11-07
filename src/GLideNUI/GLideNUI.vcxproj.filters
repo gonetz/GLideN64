@@ -117,7 +117,7 @@
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Icon.png">
+    <None Include="Icon.ico">
       <Filter>Resource Files</Filter>
     </None>
     <CustomBuild Include="icon.qrc">
