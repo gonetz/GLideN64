@@ -1,15 +1,15 @@
 <RCC>
     <qresource prefix="/">
-        <file>Icon.png</file>
-        <file>Warning.png</file>
-        <file>Info.png</file>
-        <file>Up.png</file>
-        <file>Right.png</file>
-        <file>Down.png</file>
-        <file>Left.png</file>
-        <file>TopLeft.png</file>
-        <file>TopRight.png</file>
-        <file>BottomRight.png</file>
-        <file>BottomLeft.png</file>
+        <file>Icon.ico</file>
+        <file>Warning.ico</file>
+        <file>Info.ico</file>
+        <file>Up.ico</file>
+        <file>Right.ico</file>
+        <file>Down.ico</file>
+        <file>Left.ico</file>
+        <file>TopLeft.ico</file>
+        <file>TopRight.ico</file>
+        <file>BottomRight.ico</file>
+        <file>BottomLeft.ico</file>
     </qresource>
 </RCC>

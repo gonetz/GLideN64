@@ -1019,7 +1019,7 @@
             </sizepolicy>
            </property>
            <property name="text">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;img src=&quot;:/Info.png&quot;/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;img src=&quot;:/Info.ico&quot;/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
           </widget>
          </item>
@@ -1265,7 +1265,7 @@
                 </sizepolicy>
                </property>
                <property name="text">
-                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;img src=&quot;:/Warning.png&quot;/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;img src=&quot;:/Warning.ico&quot;/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                </property>
               </widget>
              </item>
@@ -2397,7 +2397,7 @@
             </sizepolicy>
            </property>
            <property name="text">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;img src=&quot;:/Info.png&quot;/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;img src=&quot;:/Info.ico&quot;/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
           </widget>
          </item>
@@ -2489,7 +2489,7 @@
                   </property>
                   <property name="icon">
                    <iconset resource="icon.qrc">
-                    <normaloff>:/TopLeft.png</normaloff>:/TopLeft.png</iconset>
+                    <normaloff>:/TopLeft.ico</normaloff>:/TopLeft.ico</iconset>
                   </property>
                   <property name="iconSize">
                    <size>
@@ -2538,7 +2538,7 @@
                   </property>
                   <property name="icon">
                    <iconset resource="icon.qrc">
-                    <normaloff>:/Up.png</normaloff>:/Up.png</iconset>
+                    <normaloff>:/Up.ico</normaloff>:/Up.ico</iconset>
                   </property>
                   <property name="iconSize">
                    <size>
@@ -2587,7 +2587,7 @@
                   </property>
                   <property name="icon">
                    <iconset resource="icon.qrc">
-                    <normaloff>:/TopRight.png</normaloff>:/TopRight.png</iconset>
+                    <normaloff>:/TopRight.ico</normaloff>:/TopRight.ico</iconset>
                   </property>
                   <property name="iconSize">
                    <size>
@@ -2646,7 +2646,7 @@
                   </property>
                   <property name="icon">
                    <iconset resource="icon.qrc">
-                    <normaloff>:/Left.png</normaloff>:/Left.png</iconset>
+                    <normaloff>:/Left.ico</normaloff>:/Left.ico</iconset>
                   </property>
                   <property name="iconSize">
                    <size>
@@ -2734,7 +2734,7 @@
                   </property>
                   <property name="icon">
                    <iconset resource="icon.qrc">
-                    <normaloff>:/Right.png</normaloff>:/Right.png</iconset>
+                    <normaloff>:/Right.ico</normaloff>:/Right.ico</iconset>
                   </property>
                   <property name="iconSize">
                    <size>
@@ -2787,7 +2787,7 @@
                   </property>
                   <property name="icon">
                    <iconset resource="icon.qrc">
-                    <normaloff>:/BottomLeft.png</normaloff>:/BottomLeft.png</iconset>
+                    <normaloff>:/BottomLeft.ico</normaloff>:/BottomLeft.ico</iconset>
                   </property>
                   <property name="iconSize">
                    <size>
@@ -2836,7 +2836,7 @@
                   </property>
                   <property name="icon">
                    <iconset resource="icon.qrc">
-                    <normaloff>:/Down.png</normaloff>:/Down.png</iconset>
+                    <normaloff>:/Down.ico</normaloff>:/Down.ico</iconset>
                   </property>
                   <property name="iconSize">
                    <size>
@@ -2885,7 +2885,7 @@
                   </property>
                   <property name="icon">
                    <iconset resource="icon.qrc">
-                    <normaloff>:/BottomRight.png</normaloff>:/BottomRight.png</iconset>
+                    <normaloff>:/BottomRight.ico</normaloff>:/BottomRight.ico</iconset>
                   </property>
                   <property name="iconSize">
                    <size>
