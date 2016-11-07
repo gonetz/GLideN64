@@ -590,7 +590,7 @@ p, li { white-space: pre-wrap; }
   </layout>
  </widget>
  <resources>
-  <include location="icon.qrc"/>
+  <include location="icon.ico"/>
  </resources>
  <connections>
   <connection>
