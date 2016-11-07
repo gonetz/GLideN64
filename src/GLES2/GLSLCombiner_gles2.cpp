@@ -191,23 +191,29 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 
 	if (bUseHWLight)
 		strFragmentShader.append(fragment_shader_calc_light);
-	if (bUseLod)
-		strFragmentShader.append(fragment_shader_fake_mipmap);
-	else if (usesTexture()) {
+
+	if (bUseLod) {
+		if (config.generalEmulation.enableLOD != 0)
+			strFragmentShader.append(fragment_shader_mipmap);
+		else
+			strFragmentShader.append(fragment_shader_fake_mipmap);
+	} else if (usesTexture()) {
 		if (config.texture.bilinearMode == BILINEAR_3POINT)
 			strFragmentShader.append(fragment_shader_readtex_3point);
 		else
 			strFragmentShader.append(fragment_shader_readtex);
 	}
-	if (config.generalEmulation.enableNoise != 0)
+
+	if (config.generalEmulation.enableNoise != 0) {
 		strFragmentShader.append(fragment_shader_noise);
+	}
 
 	GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
 	const GLchar * strShaderData = strFragmentShader.data();
 	glShaderSource(fragmentShader, 1, &strShaderData, NULL);
 	glCompileShader(fragmentShader);
 	if (!checkShaderCompileStatus(fragmentShader))
-		LOG(LOG_ERROR, "Error in fragment shader:\n%s\n", strFragmentShader.data());
+		logErrorShader(GL_FRAGMENT_SHADER, strFragmentShader);
 
 	m_program = glCreateProgram();
 	_locate_attributes();
@@ -251,6 +257,7 @@ void ShaderCombiner::_locateUniforms() {
 	LocateUniform(uFbMonochrome);
 	LocateUniform(uFbFixedAlpha);
 	LocateUniform(uMaxTile)
+	LocateUniform(uTextureDetail);
 	LocateUniform(uTexturePersp);
 	LocateUniform(uTextureFilterMode);
 	LocateUniform(uForceBlendCycle1);
@@ -388,9 +395,20 @@ void ShaderCombiner::updateDitherMode(bool _bForce)
 
 void ShaderCombiner::updateLOD(bool _bForce)
 {
-	if (usesLOD()) {
-		m_uniforms.uMinLod.set(gDP.primColor.m, _bForce);
-		m_uniforms.uMaxTile.set(gSP.texture.level, _bForce);
+	if (!usesLOD())
+		return;
+
+	m_uniforms.uMinLod.set(gDP.primColor.m, _bForce);
+	m_uniforms.uMaxTile.set(gSP.texture.level, _bForce);
+
+	if (config.generalEmulation.enableLOD != 0) {
+		const int uCalcLOD = (gDP.otherMode.textureLOD == G_TL_LOD) ? 1 : 0;
+		m_uniforms.uEnableLod.set(uCalcLOD, _bForce);
+		if (config.frameBufferEmulation.nativeResFactor == 0)
+			m_uniforms.uScreenScale.set(video().getScaleX(), video().getScaleY(), _bForce);
+		else
+			m_uniforms.uScreenScale.set(float(config.frameBufferEmulation.nativeResFactor), float(config.frameBufferEmulation.nativeResFactor), _bForce);
+		m_uniforms.uTextureDetail.set(gDP.otherMode.textureDetail, _bForce);
 	}
 }
 
