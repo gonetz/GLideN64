@@ -2102,6 +2102,14 @@ void OGLRender::_initExtensions()
 	} else
 		config.texture.maxAnisotropyF = 0.0f;
 	LOG(LOG_VERBOSE, "Max Anisotropy: %f\n", config.texture.maxAnisotropyF);
+
+#ifdef GLES2
+	if(!OGLVideo::isExtensionSupported("GL_EXT_shader_texture_lod") ||
+	!OGLVideo::isExtensionSupported("GL_OES_standard_derivatives")){
+		config.generalEmulation.enableLOD = 0;
+	}
+
+#endif
 }
 
 void OGLRender::_initStates()
