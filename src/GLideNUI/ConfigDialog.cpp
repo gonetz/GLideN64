@@ -154,6 +154,8 @@ void ConfigDialog::_init()
 	ui->frameBufferCheckBox->setChecked(config.frameBufferEmulation.enable != 0);
 	ui->frameBufferInfoLabel->setVisible(config.frameBufferEmulation.enable == 0);
 	ui->frameBufferInfoIcon->setVisible(config.frameBufferEmulation.enable == 0);
+	ui->frameBufferInfoLabel2->setVisible(config.frameBufferEmulation.enable == 0);
+	ui->frameBufferInfoIcon2->setVisible(config.frameBufferEmulation.enable == 0);
 
 	switch (config.frameBufferEmulation.copyToRDRAM) {
 	case Config::ctDisable:
