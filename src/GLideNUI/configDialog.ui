@@ -35,9 +35,6 @@
    </property>
    <item>
     <widget class="QTabWidget" name="tabWidget">
-     <property name="currentIndex">
-      <number>5</number>
-     </property>
      <property name="usesScrollButtons">
       <bool>false</bool>
      </property>
@@ -1553,9 +1550,6 @@
       <layout class="QVBoxLayout" name="verticalLayout_11">
        <item>
         <widget class="QTabWidget" name="tabWidget_2">
-         <property name="currentIndex">
-          <number>0</number>
-         </property>
          <widget class="QWidget" name="textureEnhancementTab">
           <attribute name="title">
            <string>N64 textures</string>
@@ -4252,10 +4246,10 @@
   <buttongroup name="osdButtonGroup"/>
   <buttongroup name="depthBufferButtonGroup"/>
   <buttongroup name="aspectButtonGroup"/>
-  <buttongroup name="bloomBlendModeButtonGroup"/>
-  <buttongroup name="copyBufferButtonGroup"/>
-  <buttongroup name="screenshotButtonGroup"/>
-  <buttongroup name="bufferSwapButtonGroup"/>
   <buttongroup name="fixTexrectCoordsButtonGroup"/>
+  <buttongroup name="screenshotButtonGroup"/>
+  <buttongroup name="copyBufferButtonGroup"/>
+  <buttongroup name="bloomBlendModeButtonGroup"/>
+  <buttongroup name="bufferSwapButtonGroup"/>
  </buttongroups>
 </ui>
