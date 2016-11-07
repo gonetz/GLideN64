@@ -7,9 +7,10 @@
 #include "ConfigDialog.h"
 #include "Settings.h"
 
-#ifndef _DEBUG
+#ifdef QT_STATICPLUGIN
 #include <QtPlugin>
 Q_IMPORT_PLUGIN(QWindowsIntegrationPlugin)
+Q_IMPORT_PLUGIN(QICOPlugin)
 #endif
 
 inline void initMyResource() { Q_INIT_RESOURCE(icon); }

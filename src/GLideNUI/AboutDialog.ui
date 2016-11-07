@@ -36,7 +36,7 @@
   </property>
   <property name="windowIcon">
    <iconset resource="icon.qrc">
-    <normaloff>:/Icon.png</normaloff>:/Icon.png</iconset>
+    <normaloff>:/Icon.ico</normaloff>:/Icon.ico</iconset>
   </property>
   <property name="modal">
    <bool>true</bool>
