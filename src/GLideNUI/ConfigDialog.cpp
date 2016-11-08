@@ -139,52 +139,25 @@ void ConfigDialog::_init()
 		ui->fixTexrectSmartRadioButton->setEnabled(false);
 		ui->fixTexrectForceRadioButton->setEnabled(false);
 	}
-	switch (config.frameBufferEmulation.bufferSwapMode) {
-	case Config::bsOnVerticalInterrupt:
-		ui->bufferSwapVIRadioButton->setChecked(true);
-		break;
-	case Config::bsOnVIOriginChange:
-		ui->bufferSwapOriginRadioButton->setChecked(true);
-		break;
-	case Config::bsOnColorImageChange:
-		ui->bufferSwapColorRadioButton->setChecked(true);
-		break;
-	}
+
+	ui->frameBufferSwapComboBox->setCurrentIndex(config.frameBufferEmulation.bufferSwapMode);
 
 	ui->fbInfoEnableCheckBox->toggle();
 	ui->fbInfoEnableCheckBox->setChecked(config.frameBufferEmulation.fbInfoDisabled == 0);
 
 	ui->frameBufferCheckBox->toggle();
-	ui->frameBufferCheckBox->setChecked(config.frameBufferEmulation.enable != 0);
-	ui->frameBufferInfoLabel->setVisible(config.frameBufferEmulation.enable == 0);
-	ui->frameBufferInfoIcon->setVisible(config.frameBufferEmulation.enable == 0);
-	ui->frameBufferInfoLabel2->setVisible(config.frameBufferEmulation.enable == 0);
-	ui->frameBufferInfoIcon2->setVisible(config.frameBufferEmulation.enable == 0);
+	const bool fbEmulationEnabled = config.frameBufferEmulation.enable != 0;
+	ui->frameBufferCheckBox->setChecked(fbEmulationEnabled);
+	ui->frameBufferInfoLabel->setVisible(!fbEmulationEnabled);
+	ui->frameBufferInfoIcon->setVisible(!fbEmulationEnabled);
+	ui->frameBufferInfoLabel2->setVisible(!fbEmulationEnabled);
+	ui->frameBufferInfoIcon2->setVisible(!fbEmulationEnabled);
 
-	switch (config.frameBufferEmulation.copyToRDRAM) {
-	case Config::ctDisable:
-		ui->copyBufferDisableRadioButton->setChecked(true);
-		break;
-	case Config::ctSync:
-		ui->copyBufferSyncRadioButton->setChecked(true);
-		break;
-	case Config::ctAsync:
-		ui->copyBufferAsyncRadioButton->setChecked(true);
-		break;
-	}
+	ui->copyColorBufferComboBox->setCurrentIndex(config.frameBufferEmulation.copyToRDRAM);
+	ui->copyDepthBufferComboBox->setCurrentIndex(config.frameBufferEmulation.copyDepthToRDRAM);
 	ui->RenderFBCheckBox->setChecked(config.frameBufferEmulation.copyFromRDRAM != 0);
-	switch (config.frameBufferEmulation.copyDepthToRDRAM) {
-	case Config::cdDisable:
-		ui->copyDepthDisableRadioButton->setChecked(true);
-		break;
-	case Config::cdCopyFromVRam:
-		ui->copyDepthVRamRadioButton->setChecked(true);
-		break;
-	case Config::cdSoftwareRender:
-		ui->copyDepthSoftwareRadioButton->setChecked(true);
-		break;
-	}
 	ui->n64DepthCompareCheckBox->setChecked(config.frameBufferEmulation.N64DepthCompare != 0);
+
 	switch (config.frameBufferEmulation.aspect) {
 	case Config::aStretch:
 		ui->aspectStretchRadioButton->setChecked(true);
@@ -199,6 +172,7 @@ void ConfigDialog::_init()
 		ui->aspectAdjustRadioButton->setChecked(true);
 		break;
 	}
+
 	ui->resolutionFactorSlider->setValue(config.frameBufferEmulation.nativeResFactor);
 	ui->copyAuxBuffersCheckBox->setChecked(config.frameBufferEmulation.copyAuxToRDRAM != 0);
 	ui->readColorChunkCheckBox->setChecked(config.frameBufferEmulation.fbInfoReadColorChunk != 0);
@@ -401,28 +375,10 @@ void ConfigDialog::accept()
 
 	config.frameBufferEmulation.enable = ui->frameBufferCheckBox->isChecked() ? 1 : 0;
 
-	if (ui->bufferSwapVIRadioButton->isChecked())
-		config.frameBufferEmulation.bufferSwapMode = Config::bsOnVerticalInterrupt;
-	else if (ui->bufferSwapOriginRadioButton->isChecked())
-		config.frameBufferEmulation.bufferSwapMode = Config::bsOnVIOriginChange;
-	else if (ui->bufferSwapColorRadioButton->isChecked())
-		config.frameBufferEmulation.bufferSwapMode = Config::bsOnColorImageChange;
-
-	if (ui->copyBufferDisableRadioButton->isChecked())
-		config.frameBufferEmulation.copyToRDRAM = Config::ctDisable;
-	else if (ui->copyBufferSyncRadioButton->isChecked())
-		config.frameBufferEmulation.copyToRDRAM = Config::ctSync;
-	else if (ui->copyBufferAsyncRadioButton->isChecked())
-		config.frameBufferEmulation.copyToRDRAM = Config::ctAsync;
-
+	config.frameBufferEmulation.bufferSwapMode = ui->frameBufferSwapComboBox->currentIndex();
+	config.frameBufferEmulation.copyToRDRAM = ui->copyColorBufferComboBox->currentIndex();
+	config.frameBufferEmulation.copyDepthToRDRAM = ui->copyDepthBufferComboBox->currentIndex();
 	config.frameBufferEmulation.copyFromRDRAM = ui->RenderFBCheckBox->isChecked() ? 1 : 0;
-
-	if (ui->copyDepthDisableRadioButton->isChecked())
-		config.frameBufferEmulation.copyDepthToRDRAM = Config::cdDisable;
-	else if (ui->copyDepthVRamRadioButton->isChecked())
-		config.frameBufferEmulation.copyDepthToRDRAM = Config::cdCopyFromVRam;
-	else if (ui->copyDepthSoftwareRadioButton->isChecked())
-		config.frameBufferEmulation.copyDepthToRDRAM = Config::cdSoftwareRender;
 
 	config.frameBufferEmulation.N64DepthCompare = ui->n64DepthCompareCheckBox->isChecked() ? 1 : 0;
 
