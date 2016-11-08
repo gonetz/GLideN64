@@ -151,6 +151,9 @@ void ConfigDialog::_init()
 		break;
 	}
 
+	ui->fbInfoEnableCheckBox->setChecked(config.frameBufferEmulation.fbInfoDisabled != 0);
+	ui->fbInfoEnableCheckBox->setChecked(config.frameBufferEmulation.fbInfoDisabled == 0);
+
 	ui->frameBufferCheckBox->setChecked(config.frameBufferEmulation.enable == 0);
 	ui->frameBufferCheckBox->setChecked(config.frameBufferEmulation.enable != 0);
 	ui->frameBufferInfoLabel->setVisible(config.frameBufferEmulation.enable == 0);
@@ -198,8 +201,6 @@ void ConfigDialog::_init()
 	}
 	ui->resolutionFactorSlider->setValue(config.frameBufferEmulation.nativeResFactor);
 	ui->copyAuxBuffersCheckBox->setChecked(config.frameBufferEmulation.copyAuxToRDRAM != 0);
-	ui->fbInfoEnableCheckBox->setChecked(config.frameBufferEmulation.fbInfoDisabled != 0);
-	ui->fbInfoEnableCheckBox->setChecked(config.frameBufferEmulation.fbInfoDisabled == 0);
 	ui->readColorChunkCheckBox->setChecked(config.frameBufferEmulation.fbInfoReadColorChunk != 0);
 	ui->readColorChunkCheckBox->setEnabled(config.frameBufferEmulation.fbInfoDisabled == 0);
 	ui->readDepthChunkCheckBox->setChecked(config.frameBufferEmulation.fbInfoReadDepthChunk != 0);
