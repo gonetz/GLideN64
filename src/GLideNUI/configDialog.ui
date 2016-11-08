@@ -13,12 +13,6 @@
     <height>644</height>
    </rect>
   </property>
-  <property name="sizePolicy">
-   <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
-    <horstretch>0</horstretch>
-    <verstretch>0</verstretch>
-   </sizepolicy>
-  </property>
   <property name="windowTitle">
    <string>GLideN64 settings</string>
   </property>
@@ -837,7 +831,7 @@
                  <item>
                   <widget class="QLabel" name="label">
                    <property name="text">
-                    <string>Texture cache size:</string>
+                    <string>VRAM texture cache size:</string>
                    </property>
                   </widget>
                  </item>
@@ -1860,7 +1854,7 @@
           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This option saves all previously loaded and enhanced textures to your PC. When the game is next launched, textures don't have to be recreated, causing smoother performance.&lt;/p&gt;&lt;p&gt;When using texture packs, loading packs will take only a few seconds when the game is launched as opposed to the 5–60 seconds that loading usually takes. However, if you change the texture pack you'll have to manually delete the texture cache. Saved cache files are saved to a folder called Cache within the plugins folder.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;Checked&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <property name="text">
-          <string>Save texture cache to hard disk</string>
+          <string>Save enhanced texture cache to hard disk</string>
          </property>
          <property name="checked">
           <bool>true</bool>
@@ -4243,13 +4237,13 @@
   </connection>
  </connections>
  <buttongroups>
-  <buttongroup name="osdButtonGroup"/>
-  <buttongroup name="depthBufferButtonGroup"/>
-  <buttongroup name="aspectButtonGroup"/>
   <buttongroup name="fixTexrectCoordsButtonGroup"/>
-  <buttongroup name="screenshotButtonGroup"/>
   <buttongroup name="copyBufferButtonGroup"/>
-  <buttongroup name="bloomBlendModeButtonGroup"/>
+  <buttongroup name="aspectButtonGroup"/>
   <buttongroup name="bufferSwapButtonGroup"/>
+  <buttongroup name="screenshotButtonGroup"/>
+  <buttongroup name="depthBufferButtonGroup"/>
+  <buttongroup name="bloomBlendModeButtonGroup"/>
+  <buttongroup name="osdButtonGroup"/>
  </buttongroups>
 </ui>
