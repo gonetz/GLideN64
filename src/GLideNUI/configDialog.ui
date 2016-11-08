@@ -9,7 +9,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>469</width>
+    <width>627</width>
     <height>644</height>
    </rect>
   </property>
@@ -34,6 +34,9 @@
        <width>0</width>
        <height>450</height>
       </size>
+     </property>
+     <property name="currentIndex">
+      <number>0</number>
      </property>
      <property name="usesScrollButtons">
       <bool>false</bool>
@@ -1408,10 +1411,10 @@
                 </widget>
                </item>
                <item>
-                <widget class="QComboBox" name="copyBufferComboBox">
+                <widget class="QComboBox" name="copyColorBufferComboBox">
                  <item>
                   <property name="text">
-                   <string comment="async">Asynchronous (fast, few game issues)</string>
+                   <string comment="off">Never (fastest, many game issues)</string>
                   </property>
                  </item>
                  <item>
@@ -1421,7 +1424,7 @@
                  </item>
                  <item>
                   <property name="text">
-                   <string comment="off">Never (fastest, many game issues)</string>
+                   <string comment="async">Asynchronous (fast, few game issues)</string>
                   </property>
                  </item>
                 </widget>
@@ -1437,10 +1440,10 @@
                 </widget>
                </item>
                <item>
-                <widget class="QComboBox" name="copyDepthComboBox">
+                <widget class="QComboBox" name="copyDepthBufferComboBox">
                  <item>
                   <property name="text">
-                   <string comment="software">In software (fast, fewest game issues)</string>
+                   <string comment="off">Never (fastest, most game issues)</string>
                   </property>
                  </item>
                  <item>
@@ -1450,7 +1453,7 @@
                  </item>
                  <item>
                   <property name="text">
-                   <string comment="off">Never (fastest, most game issues)</string>
+                   <string comment="software">In software (fast, fewest game issues)</string>
                   </property>
                  </item>
                 </widget>
@@ -4094,7 +4097,7 @@
   <connection>
    <sender>frameBufferCheckBox</sender>
    <signal>toggled(bool)</signal>
-   <receiver>copyDepthComboBox</receiver>
+   <receiver>copyDepthBufferComboBox</receiver>
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
@@ -4110,7 +4113,7 @@
   <connection>
    <sender>frameBufferCheckBox</sender>
    <signal>toggled(bool)</signal>
-   <receiver>copyBufferComboBox</receiver>
+   <receiver>copyColorBufferComboBox</receiver>
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
@@ -4125,10 +4128,10 @@
   </connection>
  </connections>
  <buttongroups>
-  <buttongroup name="screenshotButtonGroup"/>
-  <buttongroup name="osdButtonGroup"/>
-  <buttongroup name="bloomBlendModeButtonGroup"/>
   <buttongroup name="aspectButtonGroup"/>
   <buttongroup name="fixTexrectCoordsButtonGroup"/>
+  <buttongroup name="bloomBlendModeButtonGroup"/>
+  <buttongroup name="osdButtonGroup"/>
+  <buttongroup name="screenshotButtonGroup"/>
  </buttongroups>
 </ui>
