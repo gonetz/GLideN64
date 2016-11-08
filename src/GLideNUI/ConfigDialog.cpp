@@ -151,6 +151,7 @@ void ConfigDialog::_init()
 		break;
 	}
 
+	ui->frameBufferCheckBox->setChecked(config.frameBufferEmulation.enable == 0);
 	ui->frameBufferCheckBox->setChecked(config.frameBufferEmulation.enable != 0);
 	ui->frameBufferInfoLabel->setVisible(config.frameBufferEmulation.enable == 0);
 	ui->frameBufferInfoIcon->setVisible(config.frameBufferEmulation.enable == 0);
@@ -197,6 +198,7 @@ void ConfigDialog::_init()
 	}
 	ui->resolutionFactorSlider->setValue(config.frameBufferEmulation.nativeResFactor);
 	ui->copyAuxBuffersCheckBox->setChecked(config.frameBufferEmulation.copyAuxToRDRAM != 0);
+	ui->fbInfoEnableCheckBox->setChecked(config.frameBufferEmulation.fbInfoDisabled != 0);
 	ui->fbInfoEnableCheckBox->setChecked(config.frameBufferEmulation.fbInfoDisabled == 0);
 	ui->readColorChunkCheckBox->setChecked(config.frameBufferEmulation.fbInfoReadColorChunk != 0);
 	ui->readColorChunkCheckBox->setEnabled(config.frameBufferEmulation.fbInfoDisabled == 0);
@@ -220,6 +222,7 @@ void ConfigDialog::_init()
 	ui->deposterizeCheckBox->setChecked(config.textureFilter.txDeposterize != 0);
 	ui->ignoreBackgroundsCheckBox->setChecked(config.textureFilter.txFilterIgnoreBG != 0);
 
+	ui->texturePackOnCheckBox->setChecked(config.textureFilter.txHiresEnable == 0);
 	ui->texturePackOnCheckBox->setChecked(config.textureFilter.txHiresEnable != 0);
 	ui->alphaChannelCheckBox->setChecked(config.textureFilter.txHiresFullAlphaChannel != 0);
 	ui->alternativeCRCCheckBox->setChecked(config.textureFilter.txHresAltCRC != 0);
