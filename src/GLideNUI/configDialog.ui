@@ -831,7 +831,7 @@
                  <item>
                   <widget class="QLabel" name="label">
                    <property name="text">
-                    <string>VRAM texture cache size:</string>
+                    <string>VRAM usage limit:</string>
                    </property>
                   </widget>
                  </item>
