@@ -310,7 +310,7 @@ AUXILIARY_SHADER_VERSION
 "    intensity = max(dot(n, uLightDirection[i]), 0.0);			\n"
 "    output_color += intensity*uLightColor[i];					\n"
 "  };															\n"
-"  clamp(output_color, 0.0, 1.0);								\n"
+"  output_color = clamp(output_color, 0.0, 1.0);				\n"
 "}																\n"
 ;
 
