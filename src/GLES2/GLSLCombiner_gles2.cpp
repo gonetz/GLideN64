@@ -248,6 +248,7 @@ void ShaderCombiner::_locateUniforms() {
 	LocateUniform(uAlphaCompareMode);
 	LocateUniform(uCvgXAlpha);
 	LocateUniform(uAlphaCvgSel);
+	LocateUniform(uEnableLod);
 	LocateUniform(uEnableAlphaTest);
 	LocateUniform(uEnableDepth);
 	LocateUniform(uEnableDepthCompare)
