@@ -173,6 +173,8 @@ void ConfigDialog::_init()
 		break;
 	}
 
+	ui->resolutionFactorSlider->valueChanged(2);
+	ui->factorXxRadioButton->toggled(false);
 	switch (config.frameBufferEmulation.nativeResFactor) {
 	case 0:
 		ui->factor0xRadioButton->setChecked(true);
