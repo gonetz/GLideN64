@@ -1052,7 +1052,7 @@
              <item alignment="Qt::AlignTop">
               <widget class="QRadioButton" name="factorXxRadioButton">
                <property name="text">
-                <string>Factor of N64 resolution:</string>
+                <string>Multiple of N64 resolution:</string>
                </property>
                <attribute name="buttonGroup">
                 <string notr="true">factorButtonGroup</string>
@@ -3796,7 +3796,7 @@
    <sender>frameBufferCheckBox</sender>
    <signal>toggled(bool)</signal>
    <receiver>factorHighLabel</receiver>
-   <slot>setEnabled(bool)</slot>
+   <slot>setVisible(bool)</slot>
    <hints>
     <hint type="sourcelabel">
      <x>233</x>
@@ -3828,7 +3828,7 @@
    <sender>frameBufferCheckBox</sender>
    <signal>toggled(bool)</signal>
    <receiver>factorLabelVal</receiver>
-   <slot>setEnabled(bool)</slot>
+   <slot>setVisible(bool)</slot>
    <hints>
     <hint type="sourcelabel">
      <x>233</x>
@@ -3844,7 +3844,7 @@
    <sender>frameBufferCheckBox</sender>
    <signal>toggled(bool)</signal>
    <receiver>resolutionFactorSlider</receiver>
-   <slot>setEnabled(bool)</slot>
+   <slot>setVisible(bool)</slot>
    <hints>
     <hint type="sourcelabel">
      <x>233</x>
@@ -3860,7 +3860,7 @@
    <sender>frameBufferCheckBox</sender>
    <signal>toggled(bool)</signal>
    <receiver>factorOffLabel</receiver>
-   <slot>setEnabled(bool)</slot>
+   <slot>setVisible(bool)</slot>
    <hints>
     <hint type="sourcelabel">
      <x>233</x>
@@ -3876,7 +3876,7 @@
    <sender>frameBufferCheckBox</sender>
    <signal>toggled(bool)</signal>
    <receiver>factorXLabel</receiver>
-   <slot>setEnabled(bool)</slot>
+   <slot>setVisible(bool)</slot>
    <hints>
     <hint type="sourcelabel">
      <x>233</x>
@@ -4244,7 +4244,7 @@
    <sender>factorXxRadioButton</sender>
    <signal>toggled(bool)</signal>
    <receiver>resolutionFactorSlider</receiver>
-   <slot>setEnabled(bool)</slot>
+   <slot>setVisible(bool)</slot>
    <hints>
     <hint type="sourcelabel">
      <x>60</x>
@@ -4416,13 +4416,93 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>factorXxRadioButton</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>factorOffLabel</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>94</x>
+     <y>251</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>195</x>
+     <y>252</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>factorXxRadioButton</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>resolutionFactorSlider</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>94</x>
+     <y>251</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>391</x>
+     <y>258</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>factorXxRadioButton</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>factorHighLabel</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>94</x>
+     <y>251</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>589</x>
+     <y>252</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>factorXxRadioButton</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>factorLabelVal</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>94</x>
+     <y>251</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>388</x>
+     <y>283</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>factorXxRadioButton</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>factorXLabel</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>94</x>
+     <y>251</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>394</x>
+     <y>283</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <buttongroups>
-  <buttongroup name="screenshotButtonGroup"/>
   <buttongroup name="osdButtonGroup"/>
-  <buttongroup name="aspectButtonGroup"/>
-  <buttongroup name="bloomBlendModeButtonGroup"/>
   <buttongroup name="fixTexrectCoordsButtonGroup"/>
   <buttongroup name="factorButtonGroup"/>
+  <buttongroup name="bloomBlendModeButtonGroup"/>
+  <buttongroup name="aspectButtonGroup"/>
+  <buttongroup name="screenshotButtonGroup"/>
  </buttongroups>
 </ui>
