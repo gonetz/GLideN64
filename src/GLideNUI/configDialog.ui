@@ -1085,6 +1085,9 @@
                  </property>
                  <item>
                   <widget class="QSlider" name="resolutionFactorSlider">
+                   <property name="minimum">
+                    <number>2</number>
+                   </property>
                    <property name="maximum">
                     <number>16</number>
                    </property>
@@ -4415,11 +4418,11 @@
   </connection>
  </connections>
  <buttongroups>
-  <buttongroup name="fixTexrectCoordsButtonGroup"/>
-  <buttongroup name="bloomBlendModeButtonGroup"/>
-  <buttongroup name="aspectButtonGroup"/>
-  <buttongroup name="osdButtonGroup"/>
   <buttongroup name="screenshotButtonGroup"/>
+  <buttongroup name="osdButtonGroup"/>
+  <buttongroup name="aspectButtonGroup"/>
+  <buttongroup name="bloomBlendModeButtonGroup"/>
+  <buttongroup name="fixTexrectCoordsButtonGroup"/>
   <buttongroup name="factorButtonGroup"/>
  </buttongroups>
 </ui>
