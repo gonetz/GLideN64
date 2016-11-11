@@ -4523,13 +4523,173 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>factor0xRadioButton</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>factorOffLabel</receiver>
+   <slot>setHidden(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>94</x>
+     <y>251</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>195</x>
+     <y>252</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>factor0xRadioButton</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>resolutionFactorSlider</receiver>
+   <slot>setHidden(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>94</x>
+     <y>251</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>391</x>
+     <y>258</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>factor0xRadioButton</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>factorHighLabel</receiver>
+   <slot>setHidden(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>94</x>
+     <y>251</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>589</x>
+     <y>252</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>factor0xRadioButton</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>factorLabelVal</receiver>
+   <slot>setHidden(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>94</x>
+     <y>251</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>388</x>
+     <y>283</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>factor0xRadioButton</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>factorXLabel</receiver>
+   <slot>setHidden(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>94</x>
+     <y>251</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>394</x>
+     <y>283</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>factor1xRadioButton</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>factorOffLabel</receiver>
+   <slot>setHidden(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>94</x>
+     <y>251</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>195</x>
+     <y>252</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>factor1xRadioButton</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>resolutionFactorSlider</receiver>
+   <slot>setHidden(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>94</x>
+     <y>251</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>391</x>
+     <y>258</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>factor1xRadioButton</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>factorHighLabel</receiver>
+   <slot>setHidden(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>94</x>
+     <y>251</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>589</x>
+     <y>252</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>factor1xRadioButton</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>factorLabelVal</receiver>
+   <slot>setHidden(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>94</x>
+     <y>251</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>388</x>
+     <y>283</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>factor1xRadioButton</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>factorXLabel</receiver>
+   <slot>setHidden(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>94</x>
+     <y>251</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>394</x>
+     <y>283</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <buttongroups>
-  <buttongroup name="factorButtonGroup"/>
   <buttongroup name="fixTexrectCoordsButtonGroup"/>
   <buttongroup name="screenshotButtonGroup"/>
-  <buttongroup name="osdButtonGroup"/>
   <buttongroup name="bloomBlendModeButtonGroup"/>
+  <buttongroup name="factorButtonGroup"/>
   <buttongroup name="aspectButtonGroup"/>
+  <buttongroup name="osdButtonGroup"/>
  </buttongroups>
 </ui>
