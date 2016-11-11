@@ -173,8 +173,21 @@ void ConfigDialog::_init()
 		break;
 	}
 
-	ui->resolutionFactorSlider->setValue(config.frameBufferEmulation.nativeResFactor);
+	switch (config.frameBufferEmulation.nativeResFactor) {
+	case 0:
+		ui->factor0xRadioButton->setChecked(true);
+		break;
+	case 1:
+		ui->factor1xRadioButton->setChecked(true);
+		break;
+	default:
+		ui->factorXxRadioButton->setChecked(true);
+		ui->resolutionFactorSlider->setValue(config.frameBufferEmulation.nativeResFactor);
+		break;
+	}
+
 	ui->copyAuxBuffersCheckBox->setChecked(config.frameBufferEmulation.copyAuxToRDRAM != 0);
+
 	ui->readColorChunkCheckBox->setChecked(config.frameBufferEmulation.fbInfoReadColorChunk != 0);
 	ui->readColorChunkCheckBox->setEnabled(config.frameBufferEmulation.fbInfoDisabled == 0);
 	ui->readDepthChunkCheckBox->setChecked(config.frameBufferEmulation.fbInfoReadDepthChunk != 0);
@@ -391,7 +404,13 @@ void ConfigDialog::accept()
 	else if (ui->aspectAdjustRadioButton->isChecked())
 		config.frameBufferEmulation.aspect = Config::aAdjust;
 
-	config.frameBufferEmulation.nativeResFactor = ui->resolutionFactorSlider->value();
+	if (ui->factor0xRadioButton->isChecked())
+		config.frameBufferEmulation.nativeResFactor = 0;
+	else if (ui->factor1xRadioButton->isChecked())
+		config.frameBufferEmulation.nativeResFactor = 1;
+	else if (ui->factorXxRadioButton->isChecked())
+		config.frameBufferEmulation.nativeResFactor = ui->resolutionFactorSlider->value();
+
 	config.frameBufferEmulation.copyAuxToRDRAM = ui->copyAuxBuffersCheckBox->isChecked() ? 1 : 0;
 	config.frameBufferEmulation.fbInfoDisabled = ui->fbInfoEnableCheckBox->isChecked() ? 0 : 1;
 	config.frameBufferEmulation.fbInfoReadColorChunk = ui->readColorChunkCheckBox->isChecked() ? 1 : 0;
