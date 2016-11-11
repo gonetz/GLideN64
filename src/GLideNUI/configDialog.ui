@@ -35,9 +35,6 @@
        <height>450</height>
       </size>
      </property>
-     <property name="currentIndex">
-      <number>0</number>
-     </property>
      <property name="usesScrollButtons">
       <bool>false</bool>
      </property>
@@ -402,137 +399,6 @@
            </property>
            <item>
             <layout class="QVBoxLayout" name="verticalLayout_21">
-             <item>
-              <layout class="QVBoxLayout" name="verticalLayout_56">
-               <property name="spacing">
-                <number>4</number>
-               </property>
-               <item>
-                <widget class="QLabel" name="factorLabel">
-                 <property name="toolTip">
-                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This option limits the rendered size of the output to a factor of the original N64 resolution. 1x is the original N64 resolution. Rendered images will be scaled to fit the screen.&lt;/p&gt;&lt;p&gt;0x renders the game at the size of the selected resolution, like traditional N64 emulators.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                 </property>
-                 <property name="text">
-                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Render at factor of N64 resolution:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                 </property>
-                 <property name="buddy">
-                  <cstring>resolutionFactorSlider</cstring>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <layout class="QHBoxLayout" name="horizontalLayout_2">
-                 <property name="spacing">
-                  <number>10</number>
-                 </property>
-                 <item>
-                  <widget class="QLabel" name="factorOffLabel">
-                   <property name="text">
-                    <string>Off</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QSlider" name="resolutionFactorSlider">
-                   <property name="maximum">
-                    <number>16</number>
-                   </property>
-                   <property name="pageStep">
-                    <number>2</number>
-                   </property>
-                   <property name="orientation">
-                    <enum>Qt::Horizontal</enum>
-                   </property>
-                   <property name="tickPosition">
-                    <enum>QSlider::TicksAbove</enum>
-                   </property>
-                   <property name="tickInterval">
-                    <number>1</number>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QLabel" name="factorHighLabel">
-                   <property name="text">
-                    <string>High</string>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </item>
-               <item>
-                <layout class="QHBoxLayout" name="horizontalLayout_20">
-                 <property name="spacing">
-                  <number>0</number>
-                 </property>
-                 <item>
-                  <spacer name="horizontalSpacer_7">
-                   <property name="orientation">
-                    <enum>Qt::Horizontal</enum>
-                   </property>
-                   <property name="sizeType">
-                    <enum>QSizePolicy::MinimumExpanding</enum>
-                   </property>
-                   <property name="sizeHint" stdset="0">
-                    <size>
-                     <width>0</width>
-                     <height>0</height>
-                    </size>
-                   </property>
-                  </spacer>
-                 </item>
-                 <item>
-                  <widget class="QLabel" name="factorLabelVal">
-                   <property name="sizePolicy">
-                    <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-                     <horstretch>0</horstretch>
-                     <verstretch>0</verstretch>
-                    </sizepolicy>
-                   </property>
-                   <property name="toolTip">
-                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Render at constant factor of native resolution.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;If frame buffer emulation enabled and factor is not zero, internal frame buffer size will be that factor of native N64 resolution. The buffer will be scaled to screen resolution when rendered to screen. If factor is zero (default), internal buffer size is equal to screen size. If factor is 1, the game will be rendered in native resolution and then up-scaled to screen resolution.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                   </property>
-                   <property name="text">
-                    <string notr="true">0</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QLabel" name="factorXLabel">
-                   <property name="sizePolicy">
-                    <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-                     <horstretch>0</horstretch>
-                     <verstretch>0</verstretch>
-                    </sizepolicy>
-                   </property>
-                   <property name="toolTip">
-                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Render at constant factor of native resolution.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;If frame buffer emulation enabled and factor is not zero, internal frame buffer size will be that factor of native N64 resolution. The buffer will be scaled to screen resolution when rendered to screen. If factor is zero (default), internal buffer size is equal to screen size. If factor is 1, the game will be rendered in native resolution and then up-scaled to screen resolution.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                   </property>
-                   <property name="text">
-                    <string notr="true">x</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <spacer name="horizontalSpacer_8">
-                   <property name="orientation">
-                    <enum>Qt::Horizontal</enum>
-                   </property>
-                   <property name="sizeType">
-                    <enum>QSizePolicy::MinimumExpanding</enum>
-                   </property>
-                   <property name="sizeHint" stdset="0">
-                    <size>
-                     <width>0</width>
-                     <height>0</height>
-                    </size>
-                   </property>
-                  </spacer>
-                 </item>
-                </layout>
-               </item>
-              </layout>
-             </item>
              <item>
               <layout class="QVBoxLayout" name="verticalLayout_54">
                <property name="spacing">
@@ -1141,12 +1007,195 @@
           </layout>
          </item>
          <item>
+          <layout class="QVBoxLayout" name="verticalLayout_56">
+           <property name="spacing">
+            <number>4</number>
+           </property>
+           <item>
+            <widget class="QLabel" name="factorLabel">
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This option limits the rendered size of the output to a factor of the original N64 resolution. 1x is the original N64 resolution. Rendered images will be scaled to fit the screen.&lt;/p&gt;&lt;p&gt;0x renders the game at the size of the selected resolution, like traditional N64 emulators.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
+             <property name="text">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Render output at:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
+             <property name="buddy">
+              <cstring>resolutionFactorSlider</cstring>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QRadioButton" name="factor0xRadioButton">
+             <property name="text">
+              <string>Video resolution (like traditional N64 plugins)</string>
+             </property>
+             <attribute name="buttonGroup">
+              <string notr="true">factorButtonGroup</string>
+             </attribute>
+            </widget>
+           </item>
+           <item>
+            <widget class="QRadioButton" name="factor1xRadioButton">
+             <property name="text">
+              <string>Original N64 resolution (most accurate)</string>
+             </property>
+             <attribute name="buttonGroup">
+              <string notr="true">factorButtonGroup</string>
+             </attribute>
+            </widget>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_27">
+             <property name="spacing">
+              <number>18</number>
+             </property>
+             <item alignment="Qt::AlignTop">
+              <widget class="QRadioButton" name="factorXxRadioButton">
+               <property name="text">
+                <string>Factor of N64 resolution:</string>
+               </property>
+               <attribute name="buttonGroup">
+                <string notr="true">factorButtonGroup</string>
+               </attribute>
+              </widget>
+             </item>
+             <item>
+              <layout class="QHBoxLayout" name="horizontalLayout_2">
+               <property name="spacing">
+                <number>10</number>
+               </property>
+               <item>
+                <layout class="QHBoxLayout" name="horizontalLayout_28">
+                 <property name="topMargin">
+                  <number>2</number>
+                 </property>
+                 <item alignment="Qt::AlignTop">
+                  <widget class="QLabel" name="factorOffLabel">
+                   <property name="text">
+                    <string>Low</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+               <item>
+                <layout class="QVBoxLayout" name="verticalLayout_9">
+                 <property name="spacing">
+                  <number>4</number>
+                 </property>
+                 <item>
+                  <widget class="QSlider" name="resolutionFactorSlider">
+                   <property name="maximum">
+                    <number>16</number>
+                   </property>
+                   <property name="pageStep">
+                    <number>2</number>
+                   </property>
+                   <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
+                   </property>
+                   <property name="tickPosition">
+                    <enum>QSlider::TicksBelow</enum>
+                   </property>
+                   <property name="tickInterval">
+                    <number>1</number>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <layout class="QHBoxLayout" name="horizontalLayout_20">
+                   <property name="spacing">
+                    <number>0</number>
+                   </property>
+                   <item>
+                    <spacer name="horizontalSpacer_7">
+                     <property name="orientation">
+                      <enum>Qt::Horizontal</enum>
+                     </property>
+                     <property name="sizeType">
+                      <enum>QSizePolicy::MinimumExpanding</enum>
+                     </property>
+                     <property name="sizeHint" stdset="0">
+                      <size>
+                       <width>0</width>
+                       <height>0</height>
+                      </size>
+                     </property>
+                    </spacer>
+                   </item>
+                   <item>
+                    <widget class="QLabel" name="factorLabelVal">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
+                     <property name="text">
+                      <string notr="true">0</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QLabel" name="factorXLabel">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
+                     <property name="text">
+                      <string notr="true">x</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <spacer name="horizontalSpacer_8">
+                     <property name="orientation">
+                      <enum>Qt::Horizontal</enum>
+                     </property>
+                     <property name="sizeType">
+                      <enum>QSizePolicy::MinimumExpanding</enum>
+                     </property>
+                     <property name="sizeHint" stdset="0">
+                      <size>
+                       <width>0</width>
+                       <height>0</height>
+                      </size>
+                     </property>
+                    </spacer>
+                   </item>
+                  </layout>
+                 </item>
+                </layout>
+               </item>
+               <item>
+                <layout class="QHBoxLayout" name="horizontalLayout_29">
+                 <property name="topMargin">
+                  <number>2</number>
+                 </property>
+                 <item alignment="Qt::AlignTop">
+                  <widget class="QLabel" name="factorHighLabel">
+                   <property name="text">
+                    <string>High</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+              </layout>
+             </item>
+            </layout>
+           </item>
+          </layout>
+         </item>
+         <item>
           <widget class="QCheckBox" name="nativeRes2D_checkBox">
            <property name="toolTip">
             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;When checked, 2D elements are rendered at the N64s resolution before copying them to output. This usually eliminates display issues with 2D elements, but it can be slow. This option uses heuristics to detect adjacent 2D elements that doesn't work for every game.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;Checked, unless you have performance problems&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
            <property name="text">
-            <string>Render 2D elements in N64 resolution (can be slow)</string>
+            <string>Render 2D elements in N64 resolution (best quality, can be slow)</string>
            </property>
            <property name="checked">
             <bool>true</bool>
@@ -1226,6 +1275,36 @@
           </size>
          </property>
         </spacer>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_30">
+         <property name="spacing">
+          <number>9</number>
+         </property>
+         <item>
+          <widget class="QLabel" name="frameBufferInfoIcon3">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;img src=&quot;:/Info.ico&quot;/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="frameBufferInfoLabel3">
+           <property name="text">
+            <string>Some of the options on this tab have been disabled because frame buffer emulation has been turned off.</string>
+           </property>
+           <property name="wordWrap">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </item>
       </layout>
      </widget>
@@ -3125,12 +3204,12 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>199</x>
+     <x>267</x>
      <y>339</y>
     </hint>
     <hint type="destinationlabel">
-     <x>199</x>
-     <y>346</y>
+     <x>267</x>
+     <y>358</y>
     </hint>
    </hints>
   </connection>
@@ -3141,12 +3220,12 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>123</x>
+     <x>178</x>
      <y>339</y>
     </hint>
     <hint type="destinationlabel">
-     <x>123</x>
-     <y>346</y>
+     <x>178</x>
+     <y>358</y>
     </hint>
    </hints>
   </connection>
@@ -3157,12 +3236,12 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>51</x>
+     <x>90</x>
      <y>339</y>
     </hint>
     <hint type="destinationlabel">
-     <x>51</x>
-     <y>346</y>
+     <x>90</x>
+     <y>358</y>
     </hint>
    </hints>
   </connection>
@@ -3173,12 +3252,12 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>410</x>
-     <y>88</y>
+     <x>566</x>
+     <y>271</y>
     </hint>
     <hint type="destinationlabel">
-     <x>322</x>
-     <y>107</y>
+     <x>391</x>
+     <y>289</y>
     </hint>
    </hints>
   </connection>
@@ -3189,12 +3268,12 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>410</x>
-     <y>234</y>
+     <x>568</x>
+     <y>161</y>
     </hint>
     <hint type="destinationlabel">
-     <x>322</x>
-     <y>253</y>
+     <x>401</x>
+     <y>180</y>
     </hint>
    </hints>
   </connection>
@@ -3205,12 +3284,12 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>255</x>
-     <y>143</y>
+     <x>476</x>
+     <y>88</y>
     </hint>
     <hint type="destinationlabel">
-     <x>322</x>
-     <y>180</y>
+     <x>401</x>
+     <y>107</y>
     </hint>
    </hints>
   </connection>
@@ -3221,12 +3300,12 @@
    <slot>setDisabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>143</x>
-     <y>198</y>
+     <x>155</x>
+     <y>329</y>
     </hint>
     <hint type="destinationlabel">
-     <x>145</x>
-     <y>230</y>
+     <x>158</x>
+     <y>361</y>
     </hint>
    </hints>
   </connection>
@@ -3237,12 +3316,12 @@
    <slot>setDisabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>143</x>
-     <y>198</y>
+     <x>155</x>
+     <y>329</y>
     </hint>
     <hint type="destinationlabel">
-     <x>145</x>
-     <y>251</y>
+     <x>158</x>
+     <y>382</y>
     </hint>
    </hints>
   </connection>
@@ -3253,12 +3332,12 @@
    <slot>setDisabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>143</x>
-     <y>198</y>
+     <x>155</x>
+     <y>329</y>
     </hint>
     <hint type="destinationlabel">
-     <x>145</x>
-     <y>272</y>
+     <x>158</x>
+     <y>403</y>
     </hint>
    </hints>
   </connection>
@@ -3269,12 +3348,12 @@
    <slot>setDisabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>143</x>
-     <y>198</y>
+     <x>155</x>
+     <y>329</y>
     </hint>
     <hint type="destinationlabel">
-     <x>145</x>
-     <y>293</y>
+     <x>158</x>
+     <y>424</y>
     </hint>
    </hints>
   </connection>
@@ -3285,12 +3364,12 @@
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>70</x>
-     <y>236</y>
+     <x>85</x>
+     <y>229</y>
     </hint>
     <hint type="destinationlabel">
-     <x>70</x>
-     <y>282</y>
+     <x>85</x>
+     <y>275</y>
     </hint>
    </hints>
   </connection>
@@ -3301,12 +3380,12 @@
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>90</x>
-     <y>236</y>
+     <x>105</x>
+     <y>229</y>
     </hint>
     <hint type="destinationlabel">
-     <x>92</x>
-     <y>259</y>
+     <x>107</x>
+     <y>252</y>
     </hint>
    </hints>
   </connection>
@@ -3417,8 +3496,8 @@
      <y>50</y>
     </hint>
     <hint type="destinationlabel">
-     <x>149</x>
-     <y>236</y>
+     <x>164</x>
+     <y>229</y>
     </hint>
    </hints>
   </connection>
@@ -3433,8 +3512,8 @@
      <y>47</y>
     </hint>
     <hint type="destinationlabel">
-     <x>165</x>
-     <y>259</y>
+     <x>180</x>
+     <y>252</y>
     </hint>
    </hints>
   </connection>
@@ -3449,8 +3528,8 @@
      <y>52</y>
     </hint>
     <hint type="destinationlabel">
-     <x>180</x>
-     <y>282</y>
+     <x>195</x>
+     <y>275</y>
     </hint>
    </hints>
   </connection>
@@ -3465,8 +3544,8 @@
      <y>48</y>
     </hint>
     <hint type="destinationlabel">
-     <x>195</x>
-     <y>313</y>
+     <x>210</x>
+     <y>306</y>
     </hint>
    </hints>
   </connection>
@@ -3481,8 +3560,8 @@
      <y>52</y>
     </hint>
     <hint type="destinationlabel">
-     <x>259</x>
-     <y>354</y>
+     <x>274</x>
+     <y>347</y>
     </hint>
    </hints>
   </connection>
@@ -3498,7 +3577,7 @@
     </hint>
     <hint type="destinationlabel">
      <x>308</x>
-     <y>436</y>
+     <y>429</y>
     </hint>
    </hints>
   </connection>
@@ -3525,11 +3604,11 @@
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>52</x>
+     <x>80</x>
      <y>71</y>
     </hint>
     <hint type="destinationlabel">
-     <x>54</x>
+     <x>84</x>
      <y>82</y>
     </hint>
    </hints>
@@ -3541,11 +3620,11 @@
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>68</x>
+     <x>96</x>
      <y>71</y>
     </hint>
     <hint type="destinationlabel">
-     <x>68</x>
+     <x>98</x>
      <y>84</y>
     </hint>
    </hints>
@@ -3557,11 +3636,11 @@
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>88</x>
+     <x>111</x>
      <y>71</y>
     </hint>
     <hint type="destinationlabel">
-     <x>83</x>
+     <x>107</x>
      <y>85</y>
     </hint>
    </hints>
@@ -3573,11 +3652,11 @@
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>106</x>
+     <x>111</x>
      <y>71</y>
     </hint>
     <hint type="destinationlabel">
-     <x>99</x>
+     <x>110</x>
      <y>92</y>
     </hint>
    </hints>
@@ -3625,8 +3704,8 @@
      <y>50</y>
     </hint>
     <hint type="destinationlabel">
-     <x>322</x>
-     <y>123</y>
+     <x>516</x>
+     <y>56</y>
     </hint>
    </hints>
   </connection>
@@ -3641,8 +3720,8 @@
      <y>50</y>
     </hint>
     <hint type="destinationlabel">
-     <x>211</x>
-     <y>148</y>
+     <x>219</x>
+     <y>88</y>
     </hint>
    </hints>
   </connection>
@@ -3657,8 +3736,8 @@
      <y>50</y>
     </hint>
     <hint type="destinationlabel">
-     <x>320</x>
-     <y>148</y>
+     <x>541</x>
+     <y>88</y>
     </hint>
    </hints>
   </connection>
@@ -3673,8 +3752,8 @@
      <y>50</y>
     </hint>
     <hint type="destinationlabel">
-     <x>431</x>
-     <y>148</y>
+     <x>599</x>
+     <y>88</y>
     </hint>
    </hints>
   </connection>
@@ -3689,8 +3768,8 @@
      <y>50</y>
     </hint>
     <hint type="destinationlabel">
-     <x>319</x>
-     <y>174</y>
+     <x>401</x>
+     <y>107</y>
     </hint>
    </hints>
   </connection>
@@ -3705,8 +3784,8 @@
      <y>50</y>
     </hint>
     <hint type="destinationlabel">
-     <x>325</x>
-     <y>174</y>
+     <x>407</x>
+     <y>107</y>
     </hint>
    </hints>
   </connection>
@@ -3721,8 +3800,8 @@
      <y>50</y>
     </hint>
     <hint type="destinationlabel">
-     <x>431</x>
-     <y>75</y>
+     <x>599</x>
+     <y>258</y>
     </hint>
    </hints>
   </connection>
@@ -3737,8 +3816,8 @@
      <y>50</y>
     </hint>
     <hint type="destinationlabel">
-     <x>322</x>
-     <y>50</y>
+     <x>335</x>
+     <y>195</y>
     </hint>
    </hints>
   </connection>
@@ -3753,8 +3832,8 @@
      <y>50</y>
     </hint>
     <hint type="destinationlabel">
-     <x>319</x>
-     <y>101</y>
+     <x>391</x>
+     <y>289</y>
     </hint>
    </hints>
   </connection>
@@ -3769,8 +3848,8 @@
      <y>50</y>
     </hint>
     <hint type="destinationlabel">
-     <x>320</x>
-     <y>75</y>
+     <x>528</x>
+     <y>271</y>
     </hint>
    </hints>
   </connection>
@@ -3785,8 +3864,8 @@
      <y>50</y>
     </hint>
     <hint type="destinationlabel">
-     <x>211</x>
-     <y>75</y>
+     <x>204</x>
+     <y>258</y>
     </hint>
    </hints>
   </connection>
@@ -3801,8 +3880,8 @@
      <y>50</y>
     </hint>
     <hint type="destinationlabel">
-     <x>325</x>
-     <y>101</y>
+     <x>397</x>
+     <y>289</y>
     </hint>
    </hints>
   </connection>
@@ -4058,7 +4137,7 @@
     </hint>
     <hint type="destinationlabel">
      <x>308</x>
-     <y>413</y>
+     <y>406</y>
     </hint>
    </hints>
   </connection>
@@ -4073,8 +4152,8 @@
      <y>55</y>
     </hint>
     <hint type="destinationlabel">
-     <x>112</x>
-     <y>198</y>
+     <x>127</x>
+     <y>194</y>
     </hint>
    </hints>
   </connection>
@@ -4089,8 +4168,8 @@
      <y>55</y>
     </hint>
     <hint type="destinationlabel">
-     <x>225</x>
-     <y>353</y>
+     <x>240</x>
+     <y>347</y>
     </hint>
    </hints>
   </connection>
@@ -4126,12 +4205,221 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>factor0xRadioButton</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>resolutionFactorSlider</receiver>
+   <slot>setDisabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>29</x>
+     <y>211</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>226</x>
+     <y>271</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>factor1xRadioButton</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>resolutionFactorSlider</receiver>
+   <slot>setDisabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>44</x>
+     <y>233</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>285</x>
+     <y>260</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>factorXxRadioButton</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>resolutionFactorSlider</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>60</x>
+     <y>255</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>236</x>
+     <y>250</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>frameBufferCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>factor0xRadioButton</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>312</x>
+     <y>50</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>312</x>
+     <y>208</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>frameBufferCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>factor1xRadioButton</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>312</x>
+     <y>50</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>312</x>
+     <y>229</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>frameBufferCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>factorXxRadioButton</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>312</x>
+     <y>50</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>94</x>
+     <y>251</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>frameBufferCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>frameBufferInfoIcon3</receiver>
+   <slot>setHidden(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>312</x>
+     <y>50</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>28</x>
+     <y>583</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>frameBufferCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>frameBufferInfoLabel3</receiver>
+   <slot>setHidden(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>312</x>
+     <y>50</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>324</x>
+     <y>583</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>factor1xRadioButton</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>nativeRes2D_checkBox</receiver>
+   <slot>setDisabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>316</x>
+     <y>233</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>315</x>
+     <y>322</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>factor1xRadioButton</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>texrectsBlackLinesLabel</receiver>
+   <slot>setDisabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>333</x>
+     <y>231</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>333</x>
+     <y>361</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>factor1xRadioButton</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>fixTexrectSmartRadioButton</receiver>
+   <slot>setDisabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>350</x>
+     <y>233</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>351</x>
+     <y>375</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>factor1xRadioButton</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>fixTexrectForceRadioButton</receiver>
+   <slot>setDisabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>369</x>
+     <y>231</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>370</x>
+     <y>398</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>factor1xRadioButton</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>fixTexrectDisableRadioButton</receiver>
+   <slot>setDisabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>385</x>
+     <y>231</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>388</x>
+     <y>415</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <buttongroups>
-  <buttongroup name="aspectButtonGroup"/>
   <buttongroup name="fixTexrectCoordsButtonGroup"/>
   <buttongroup name="bloomBlendModeButtonGroup"/>
+  <buttongroup name="aspectButtonGroup"/>
   <buttongroup name="osdButtonGroup"/>
   <buttongroup name="screenshotButtonGroup"/>
+  <buttongroup name="factorButtonGroup"/>
  </buttongroups>
 </ui>
