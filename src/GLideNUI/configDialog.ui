@@ -1017,7 +1017,7 @@
               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This option limits the rendered size of the output to a factor of the original N64 resolution. 1x is the original N64 resolution. Rendered images will be scaled to fit the screen.&lt;/p&gt;&lt;p&gt;0x renders the game at the size of the selected resolution, like traditional N64 emulators.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
              </property>
              <property name="text">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Render output at:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Internal resolution:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
              </property>
              <property name="buddy">
               <cstring>resolutionFactorSlider</cstring>
@@ -1027,7 +1027,7 @@
            <item>
             <widget class="QRadioButton" name="factor0xRadioButton">
              <property name="text">
-              <string>Video resolution (like traditional N64 plugins)</string>
+              <string>Same as output resolution</string>
              </property>
              <attribute name="buttonGroup">
               <string notr="true">factorButtonGroup</string>
