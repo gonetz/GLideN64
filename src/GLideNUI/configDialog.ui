@@ -368,7 +368,7 @@
              <item>
               <widget class="QRadioButton" name="aspectAdjustRadioButton">
                <property name="text">
-                <string>Adjust game to fit</string>
+                <string>Try to adjust game to fit</string>
                </property>
                <attribute name="buttonGroup">
                 <string notr="true">aspectButtonGroup</string>
@@ -984,10 +984,10 @@
            <item>
             <widget class="QCheckBox" name="enableHWLightingCheckBox">
              <property name="toolTip">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;In traditional PC games lighting is calculated per vertex. This option enables per-pixel shader-based lighting. When checked, lighting is smoother and more accurate to the N64.&lt;br/&gt;&lt;br/&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;Your preference&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;In traditional PC games lighting is calculated per vertex. This option enables Phong shading. When checked, lighting is smoother and more accurate to the N64.&lt;br/&gt;&lt;br/&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;Your preference&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
              </property>
              <property name="text">
-              <string>Enable hardware lighting (HLE only)</string>
+              <string>Enable per-pixel lighting (better quality, slower, HLE only)</string>
              </property>
             </widget>
            </item>
@@ -2563,6 +2563,9 @@
                   <property name="autoExclusive">
                    <bool>true</bool>
                   </property>
+                  <property name="autoDefault">
+                   <bool>false</bool>
+                  </property>
                   <attribute name="buttonGroup">
                    <string notr="true">osdButtonGroup</string>
                   </attribute>
@@ -2612,6 +2615,9 @@
                   <property name="autoExclusive">
                    <bool>true</bool>
                   </property>
+                  <property name="autoDefault">
+                   <bool>false</bool>
+                  </property>
                   <attribute name="buttonGroup">
                    <string notr="true">osdButtonGroup</string>
                   </attribute>
@@ -2660,6 +2666,9 @@
                   </property>
                   <property name="autoExclusive">
                    <bool>true</bool>
+                  </property>
+                  <property name="autoDefault">
+                   <bool>false</bool>
                   </property>
                   <attribute name="buttonGroup">
                    <string notr="true">osdButtonGroup</string>
@@ -2720,6 +2729,9 @@
                   <property name="autoExclusive">
                    <bool>true</bool>
                   </property>
+                  <property name="autoDefault">
+                   <bool>false</bool>
+                  </property>
                   <attribute name="buttonGroup">
                    <string notr="true">osdButtonGroup</string>
                   </attribute>
@@ -2755,6 +2767,9 @@
                   </property>
                   <property name="text">
                    <string/>
+                  </property>
+                  <property name="autoDefault">
+                   <bool>false</bool>
                   </property>
                   <attribute name="buttonGroup">
                    <string notr="true">osdButtonGroup</string>
@@ -2807,6 +2822,9 @@
                   </property>
                   <property name="autoExclusive">
                    <bool>true</bool>
+                  </property>
+                  <property name="autoDefault">
+                   <bool>false</bool>
                   </property>
                   <attribute name="buttonGroup">
                    <string notr="true">osdButtonGroup</string>
@@ -2861,6 +2879,9 @@
                   <property name="autoExclusive">
                    <bool>true</bool>
                   </property>
+                  <property name="autoDefault">
+                   <bool>false</bool>
+                  </property>
                   <attribute name="buttonGroup">
                    <string notr="true">osdButtonGroup</string>
                   </attribute>
@@ -2910,6 +2931,9 @@
                   <property name="autoExclusive">
                    <bool>true</bool>
                   </property>
+                  <property name="autoDefault">
+                   <bool>false</bool>
+                  </property>
                   <attribute name="buttonGroup">
                    <string notr="true">osdButtonGroup</string>
                   </attribute>
@@ -2958,6 +2982,9 @@
                   </property>
                   <property name="autoExclusive">
                    <bool>true</bool>
+                  </property>
+                  <property name="autoDefault">
+                   <bool>false</bool>
                   </property>
                   <attribute name="buttonGroup">
                    <string notr="true">osdButtonGroup</string>
@@ -4498,11 +4525,11 @@
   </connection>
  </connections>
  <buttongroups>
-  <buttongroup name="osdButtonGroup"/>
-  <buttongroup name="fixTexrectCoordsButtonGroup"/>
   <buttongroup name="factorButtonGroup"/>
+  <buttongroup name="fixTexrectCoordsButtonGroup"/>
+  <buttongroup name="screenshotButtonGroup"/>
+  <buttongroup name="osdButtonGroup"/>
   <buttongroup name="bloomBlendModeButtonGroup"/>
   <buttongroup name="aspectButtonGroup"/>
-  <buttongroup name="screenshotButtonGroup"/>
  </buttongroups>
 </ui>
