@@ -1029,7 +1029,7 @@
               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;In traditional PC games lighting is calculated per vertex. This option enables Phong shading. When checked, lighting is smoother and more accurate to the N64.&lt;br/&gt;&lt;br/&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;Your preference&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
              </property>
              <property name="text">
-              <string>Enable per-pixel lighting (better quality, slower, HLE only)</string>
+              <string>Enable per-pixel lighting (better quality, HLE only)</string>
              </property>
             </widget>
            </item>
