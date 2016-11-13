@@ -2078,6 +2078,12 @@ void OGLRender::_initExtensions()
 	assert(majorVersion >= 3 && "Plugin requires GL version 3 or higher.");
 #endif
 
+#ifdef GL_MULTISAMPLING_SUPPORT
+	GLint max_samples = 0;
+	glGetIntegerv(GL_MAX_SAMPLES, &max_samples);
+	config.video.multisampling = min(config.video.multisampling, (u32)max_samples);
+#endif
+
 #ifdef GL_IMAGE_TEXTURES_SUPPORT
 	GLint minorVersion = 0;
 	glGetIntegerv(GL_MINOR_VERSION, &minorVersion);
