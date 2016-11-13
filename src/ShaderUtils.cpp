@@ -118,7 +118,7 @@ const char* fragment_shader_header_sign_extend_color_abd = "lowp vec3 SignExtend
 const char* fragment_shader_header_sign_extend_alpha_abd = "lowp float SignExtendAlphaABD(in lowp float a);\n";
 
 /*
-// N64 color clamp on floats
+// N64 color wrap and clamp on floats
 // See https://github.com/gonetz/GLideN64/issues/661 for reference
 if (c < -1.0) return c + 2.0;
 
@@ -135,28 +135,11 @@ if (c > 1.0) return 1;
 return c;
 */
 const char* fragment_shader_clamp =
-"lowp vec4 Clamp(in lowp vec4 col)										\n"
-"{																		\n"
-"  lowp vec4 zero = vec4(0.0);											\n"
-"  lowp vec4 one = vec4(1.0);											\n"
-"  lowp vec4 two = vec4(2.0);											\n"
-// col < -1.0
-"  lowp vec4 stepM1 = one - step(vec4(-1.0), col);						\n"
-// -1.0 <= col <= -0.504
-"  lowp vec4 stepMDot5 = step(col, vec4(-0.504)) * (one - stepM1);		\n"
-// -0.504 < col < 0.0
-"  lowp vec4 stepZero = (one - step(zero, col)) * (one - stepMDot5);	\n"
-// col > 2.0
-"  lowp vec4 step2 = one - step(col, two);								\n"
-// 2.0 >= col >= 1.496
-"  lowp vec4 step1dot5 = step(vec4(1.496), col) * (one - step2);		\n"
-// 1.496 > col > 1.0
-"  lowp vec4 step1 = (one - step(col, one)) * (one - step1dot5);		\n"
-// 0.0 <= col <= 1.0
-"  lowp vec4 inrange = step(zero, col) * step(col, one);				\n"
-"  lowp vec4 res = col*inrange + (col + two)*stepM1 + stepMDot5 + step1 + (col - two)*step2;	\n"
-"  return res * (one - stepZero) * (one - step1dot5);					\n"
-"}																		\n"
+"lowp vec4 Clamp(in lowp vec4 col)	\n"
+"{									\n"
+"  lowp vec4 wrap = col + 2.0 * step(col, vec4(-0.504)) - 2.0*step(vec4(1.496), col); \n"
+"  return clamp(wrap, 0.0, 1.0);	\n"
+"}									\n"
 ;
 
 /*
@@ -167,16 +150,16 @@ return c - 2.0;
 return c;
 */
 const char* fragment_shader_sign_extend_color_c =
-"lowp vec3 SignExtendColorC(in lowp vec3 col)						\n"
-"{																	\n"
-"  return col - 2.0 * (vec3(1.0) - step(col, vec3(1.0)));			\n"
-"}																	\n"
+"lowp vec3 SignExtendColorC(in lowp vec3 col)			\n"
+"{														\n"
+"  return col - 2.0*(vec3(1.0) - step(col, vec3(1.0)));	\n"
+"}														\n"
 ;
 const char* fragment_shader_sign_extend_alpha_c =
-"lowp float SignExtendAlphaC(in lowp float a)						\n"
-"{																	\n"
-"  return a - 2.0 * (1.0 - step(a, 1.0));							\n"
-"}																	\n"
+"lowp float SignExtendAlphaC(in lowp float a)			\n"
+"{														\n"
+"  return a - 2.0*(1.0 - step(a, 1.0));					\n"
+"}														\n"
 ;
 
 /*
@@ -190,30 +173,16 @@ return c + 2.0;
 return c;
 */
 const char* fragment_shader_sign_extend_color_abd =
-"lowp vec3 SignExtendColorABD(in lowp vec3 col)						\n"
-"{																	\n"
-"  lowp vec3 one = vec3(1.0);										\n"
-"  lowp vec3 two = vec3(2.0);										\n"
-// col >= 1.496
-"  lowp vec3 step1dot5 = step(vec3(1.496), col);					\n"
-// col <= -0.504
-"  lowp vec3 stepMDot5 = step(col, vec3(-0.504));					\n"
-// -0.504 < col < 1.496
-"  lowp vec3 inrange = (one - step1dot5) * (one - stepMDot5);		\n"
-"  return col*inrange + (col + two)*stepMDot5 + (col - two)*step1dot5;	\n"
-"}																	\n"
+"lowp vec3 SignExtendColorABD(in lowp vec3 col)	\n"
+"{												\n"
+"  return col + 2.0*step(col, vec3(-0.504)) - 2.0*step(vec3(1.496), col); \n"
+"}												\n"
 ;
 const char* fragment_shader_sign_extend_alpha_abd =
-"lowp float SignExtendAlphaABD(in lowp float a)						\n"
-"{																	\n"
-// a >= 1.496
-"  lowp float step1dot5 = step(1.496, a);							\n"
-// col <= -0.504
-"  lowp float stepMDot5 = step(a, -0.504);							\n"
-// -0.504 < col < 1.496
-"  lowp float inrange = (1.0 - step1dot5) * (1.0 - stepMDot5);		\n"
-"  return a*inrange + (a + 2.0)*stepMDot5 + (a - 2.0)*step1dot5;	\n"
-"}																	\n"
+"lowp float SignExtendAlphaABD(in lowp float a)	\n"
+"{												\n"
+"  return a + 2.0*step(a, -0.504) - 2.0*step(1.496, a); \n"
+"}												\n"
 ;
 
 static
@@ -305,30 +274,22 @@ int correctSecondStageParam(int _param)
 }
 
 bool needClampColor() {
-	if (config.generalEmulation.enableLegacyBlending != 0)
-		return false;
 	return gDP.otherMode.cycleType <= G_CYC_2CYCLE;
 }
 
 bool combinedColorC(const gDPCombine & _combine) {
-	if (config.generalEmulation.enableLegacyBlending != 0)
-		return false;
 	if (gDP.otherMode.cycleType != G_CYC_2CYCLE)
 		return false;
 	return _combine.mRGB1 == G_CCMUX_COMBINED;
 }
 
 bool combinedAlphaC(const gDPCombine & _combine) {
-	if (config.generalEmulation.enableLegacyBlending != 0)
-		return false;
 	if (gDP.otherMode.cycleType != G_CYC_2CYCLE)
 		return false;
 	return _combine.mA1 == G_ACMUX_COMBINED;
 }
 
 bool combinedColorABD(const gDPCombine & _combine) {
-	if (config.generalEmulation.enableLegacyBlending != 0)
-		return false;
 	if (gDP.otherMode.cycleType != G_CYC_2CYCLE)
 		return false;
 	if (_combine.aRGB1 == G_CCMUX_COMBINED)
@@ -338,8 +299,6 @@ bool combinedColorABD(const gDPCombine & _combine) {
 }
 
 bool combinedAlphaABD(const gDPCombine & _combine) {
-	if (config.generalEmulation.enableLegacyBlending != 0)
-		return false;
 	if (gDP.otherMode.cycleType != G_CYC_2CYCLE)
 		return false;
 	if (_combine.aA1 == G_ACMUX_COMBINED)
