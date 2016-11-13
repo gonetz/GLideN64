@@ -174,7 +174,6 @@ void ConfigDialog::_init()
 	}
 
 	ui->resolutionFactorSlider->valueChanged(2);
-	ui->factorXxRadioButton->toggled(false);
 	switch (config.frameBufferEmulation.nativeResFactor) {
 	case 0:
 		ui->factor0xRadioButton->setChecked(true);
@@ -187,6 +186,7 @@ void ConfigDialog::_init()
 		ui->resolutionFactorSlider->setValue(config.frameBufferEmulation.nativeResFactor);
 		break;
 	}
+	ui->factorXxRadioButton->toggled(fbEmulationEnabled && ui->factorXxRadioButton->isChecked());
 
 	ui->copyAuxBuffersCheckBox->setChecked(config.frameBufferEmulation.copyAuxToRDRAM != 0);
 
@@ -588,4 +588,12 @@ void ConfigDialog::on_cropImageComboBox_currentIndexChanged(int index)
 	const bool bCustom = index == Config::cmCustom;
 	ui->cropImageWidthSpinBox->setEnabled(bCustom);
 	ui->cropImageHeightSpinBox->setEnabled(bCustom);
+}
+
+void ConfigDialog::on_frameBufferCheckBox_toggled(bool checked)
+{
+	ui->readColorChunkCheckBox->setEnabled(checked && ui->fbInfoEnableCheckBox->isChecked());
+	ui->readDepthChunkCheckBox->setEnabled(checked && ui->fbInfoEnableCheckBox->isChecked());
+
+	ui->factorXxRadioButton->toggled(checked && ui->factorXxRadioButton->isChecked());
 }
