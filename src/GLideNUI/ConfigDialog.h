@@ -41,6 +41,8 @@ private slots:
 
 	void on_cropImageComboBox_currentIndexChanged(int index);
 
+	void on_frameBufferCheckBox_toggled(bool checked);
+
 private:
 	void _init();
 	void _getTranslations(QStringList & _translationFiles) const;
