@@ -111,6 +111,111 @@ const char* fragment_shader_blender2 =
 ;
 #endif
 
+const char* fragment_shader_header_clamp = "lowp vec4 Clamp(in lowp vec4 col);\n";
+const char* fragment_shader_header_sign_extend_color_c = "lowp vec3 SignExtendColorC(in lowp vec3 col);\n";
+const char* fragment_shader_header_sign_extend_alpha_c = "lowp float SignExtendAlphaC(in lowp float a);\n";
+const char* fragment_shader_header_sign_extend_color_abd = "lowp vec3 SignExtendColorABD(in lowp vec3 col);\n";
+const char* fragment_shader_header_sign_extend_alpha_abd = "lowp float SignExtendAlphaABD(in lowp float a);\n";
+
+/*
+// N64 color clamp on floats
+// See https://github.com/gonetz/GLideN64/issues/661 for reference
+if (c < -1.0) return c + 2.0;
+
+if (c < -0.5) return 1;
+
+if (c < 0.0) return 0;
+
+if (c > 2.0) return c - 2.0;
+
+if (c > 1.5) return 0;
+
+if (c > 1.0) return 1;
+
+return c;
+*/
+const char* fragment_shader_clamp =
+"lowp vec4 Clamp(in lowp vec4 col)										\n"
+"{																		\n"
+"  lowp vec4 zero = vec4(0.0);											\n"
+"  lowp vec4 one = vec4(1.0);											\n"
+"  lowp vec4 two = vec4(2.0);											\n"
+// col < -1.0
+"  lowp vec4 stepM1 = one - step(vec4(-1.0), col);						\n"
+// -1.0 <= col <= -0.504
+"  lowp vec4 stepMDot5 = step(col, vec4(-0.504)) * (one - stepM1);		\n"
+// -0.504 < col < 0.0
+"  lowp vec4 stepZero = (one - step(zero, col)) * (one - stepMDot5);	\n"
+// col > 2.0
+"  lowp vec4 step2 = one - step(col, two);								\n"
+// 2.0 >= col >= 1.496
+"  lowp vec4 step1dot5 = step(vec4(1.496), col) * (one - step2);		\n"
+// 1.496 > col > 1.0
+"  lowp vec4 step1 = (one - step(col, one)) * (one - step1dot5);		\n"
+// 0.0 <= col <= 1.0
+"  lowp vec4 inrange = step(zero, col) * step(col, one);				\n"
+"  lowp vec4 res = col*inrange + (col + two)*stepM1 + stepMDot5 + step1 + (col - two)*step2;	\n"
+"  return res * (one - stepZero) * (one - step1dot5);					\n"
+"}																		\n"
+;
+
+/*
+N64 sign-extension for C component of combiner
+if (c > 1.0)
+return c - 2.0;
+
+return c;
+*/
+const char* fragment_shader_sign_extend_color_c =
+"lowp vec3 SignExtendColorC(in lowp vec3 col)						\n"
+"{																	\n"
+"  return col - 2.0 * (vec3(1.0) - step(col, vec3(1.0)));			\n"
+"}																	\n"
+;
+const char* fragment_shader_sign_extend_alpha_c =
+"lowp float SignExtendAlphaC(in lowp float a)						\n"
+"{																	\n"
+"  return a - 2.0 * (1.0 - step(a, 1.0));							\n"
+"}																	\n"
+;
+
+/*
+N64 sign-extension for ABD components of combiner
+if (c > 1.5)
+return c - 2.0;
+
+if (c < -0.5)
+return c + 2.0;
+
+return c;
+*/
+const char* fragment_shader_sign_extend_color_abd =
+"lowp vec3 SignExtendColorABD(in lowp vec3 col)						\n"
+"{																	\n"
+"  lowp vec3 one = vec3(1.0);										\n"
+"  lowp vec3 two = vec3(2.0);										\n"
+// col >= 1.496
+"  lowp vec3 step1dot5 = step(vec3(1.496), col);					\n"
+// col <= -0.504
+"  lowp vec3 stepMDot5 = step(col, vec3(-0.504));					\n"
+// -0.504 < col < 1.496
+"  lowp vec3 inrange = (one - step1dot5) * (one - stepMDot5);		\n"
+"  return col*inrange + (col + two)*stepMDot5 + (col - two)*step1dot5;	\n"
+"}																	\n"
+;
+const char* fragment_shader_sign_extend_alpha_abd =
+"lowp float SignExtendAlphaABD(in lowp float a)						\n"
+"{																	\n"
+// a >= 1.496
+"  lowp float step1dot5 = step(1.496, a);							\n"
+// col <= -0.504
+"  lowp float stepMDot5 = step(a, -0.504);							\n"
+// -0.504 < col < 1.496
+"  lowp float inrange = (1.0 - step1dot5) * (1.0 - stepMDot5);		\n"
+"  return a*inrange + (a + 2.0)*stepMDot5 + (a - 2.0)*step1dot5;	\n"
+"}																	\n"
+;
+
 static
 const char *ColorInput[] = {
 	"combined_color.rgb",
@@ -199,6 +304,50 @@ int correctSecondStageParam(int _param)
 	return _param;
 }
 
+bool needClampColor() {
+	if (config.generalEmulation.enableLegacyBlending != 0)
+		return false;
+	return gDP.otherMode.cycleType <= G_CYC_2CYCLE;
+}
+
+bool combinedColorC(const gDPCombine & _combine) {
+	if (config.generalEmulation.enableLegacyBlending != 0)
+		return false;
+	if (gDP.otherMode.cycleType != G_CYC_2CYCLE)
+		return false;
+	return _combine.mRGB1 == G_CCMUX_COMBINED;
+}
+
+bool combinedAlphaC(const gDPCombine & _combine) {
+	if (config.generalEmulation.enableLegacyBlending != 0)
+		return false;
+	if (gDP.otherMode.cycleType != G_CYC_2CYCLE)
+		return false;
+	return _combine.mA1 == G_ACMUX_COMBINED;
+}
+
+bool combinedColorABD(const gDPCombine & _combine) {
+	if (config.generalEmulation.enableLegacyBlending != 0)
+		return false;
+	if (gDP.otherMode.cycleType != G_CYC_2CYCLE)
+		return false;
+	if (_combine.aRGB1 == G_CCMUX_COMBINED)
+		return true;
+	if (_combine.saRGB1 == G_CCMUX_COMBINED || _combine.sbRGB1 == G_CCMUX_COMBINED)
+		return _combine.mRGB1 != G_CCMUX_0;
+}
+
+bool combinedAlphaABD(const gDPCombine & _combine) {
+	if (config.generalEmulation.enableLegacyBlending != 0)
+		return false;
+	if (gDP.otherMode.cycleType != G_CYC_2CYCLE)
+		return false;
+	if (_combine.aA1 == G_ACMUX_COMBINED)
+		return true;
+	if (_combine.saA1 == G_ACMUX_COMBINED || _combine.sbA1 == G_ACMUX_COMBINED)
+		return _combine.mA1 != G_ACMUX_0;
+}
+
 static
 void _correctSecondStageParams(CombinerStage & _stage) {
 	for (int i = 0; i < _stage.numOps; ++i) {
@@ -269,7 +418,7 @@ int _compileCombiner(const CombinerStage & _stage, const char** _Input, std::str
 	return nRes;
 }
 
-int compileCombiner(Combiner & _color, Combiner & _alpha, std::string & _strShader)
+int compileCombiner(const gDPCombine & _combine, Combiner & _color, Combiner & _alpha, std::string & _strShader)
 {
 	if (gDP.otherMode.cycleType != G_CYC_2CYCLE) {
 		_correctFirstStageParams(_alpha.stage[0]);
@@ -277,6 +426,11 @@ int compileCombiner(Combiner & _color, Combiner & _alpha, std::string & _strShad
 	}
 	_strShader.append("  alpha1 = ");
 	int nInputs = _compileCombiner(_alpha.stage[0], AlphaInput, _strShader);
+	// Simulate N64 color sign-extend.
+	if (combinedAlphaC(_combine))
+		_strShader.append("	alpha1 = SignExtendAlphaC(alpha1);\n");
+	else if (combinedAlphaABD(_combine))
+		_strShader.append("	alpha1 = SignExtendAlphaABD(alpha1);\n");
 
 	_strShader.append(
 		"  if (uEnableAlphaTest != 0) {							\n"
@@ -294,7 +448,10 @@ int compileCombiner(Combiner & _color, Combiner & _alpha, std::string & _strShad
 	_strShader.append("  color1 = ");
 	nInputs |= _compileCombiner(_color.stage[0], ColorInput, _strShader);
 	// Simulate N64 color sign-extend.
-	_strShader.append("  color1 += vec3(-2.0) * (vec3(1.0) - step(color1, vec3(1.0))); \n");
+	if (combinedColorC(_combine))
+		_strShader.append("	color1 = SignExtendColorC(color1);\n");
+	else if (combinedColorABD(_combine))
+		_strShader.append("	color1 = SignExtendColorABD(color1);\n");
 
 	_strShader.append("  combined_color = vec4(color1, alpha1); \n");
 	if (_alpha.numStages == 2) {
@@ -315,9 +472,12 @@ int compileCombiner(Combiner & _color, Combiner & _alpha, std::string & _strShad
 	else
 		_strShader.append("  color2 = color1; \n");
 
-	// Simulate N64 color clamp.
 	_strShader.append("  lowp vec4 cmbRes = vec4(color2, alpha2);\n");
-	_strShader.append("  lowp vec4 clampedColor = cmbRes + (-cmbRes)*step(cmbRes, vec4(0.0)) + step(cmbRes, vec4(-0.51)); \n");
+	// Simulate N64 color clamp.
+	if (needClampColor())
+		_strShader.append("  lowp vec4 clampedColor = Clamp(cmbRes);\n");
+	else
+		_strShader.append("  lowp vec4 clampedColor = clamp(cmbRes, 0.0, 1.0);\n");
 
 #ifndef GLES2
 	if (config.generalEmulation.enableNoise != 0) {

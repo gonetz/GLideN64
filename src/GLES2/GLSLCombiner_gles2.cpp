@@ -142,7 +142,7 @@ void DestroyShaderCombiner() {
 ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCombine & _combine) : m_key(getCombinerKey(_combine.mux))
 {
 	std::string strCombiner;
-	m_nInputs = compileCombiner(_color, _alpha, strCombiner);
+	m_nInputs = compileCombiner(_combine, _color, _alpha, strCombiner);
 
 	if (usesTexture()) {
 		strFragmentShader.assign(fragment_shader_header_common_variables);
@@ -155,6 +155,17 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 			strFragmentShader.append(fragment_shader_header_common_variables_blend_mux_2cycle);
 		strFragmentShader.append(fragment_shader_header_common_functions_notex);
 	}
+
+	if (needClampColor())
+		strFragmentShader.append(fragment_shader_header_clamp);
+	if (combinedAlphaC(_combine))
+		strFragmentShader.append(fragment_shader_header_sign_extend_alpha_c);
+	else if (combinedAlphaABD(_combine))
+		strFragmentShader.append(fragment_shader_header_sign_extend_alpha_abd);
+	if (combinedColorC(_combine))
+		strFragmentShader.append(fragment_shader_header_sign_extend_color_c);
+	else if (combinedColorABD(_combine))
+		strFragmentShader.append(fragment_shader_header_sign_extend_color_abd);
 
 	strFragmentShader.append(fragment_shader_header_main);
 	if (config.generalEmulation.enableLegacyBlending == 0)
@@ -185,6 +196,17 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 	strFragmentShader.append(strCombiner);
 	strFragmentShader.append("  gl_FragColor = fragColor; \n");
 	strFragmentShader.append(fragment_shader_end);
+
+	if (needClampColor())
+		strFragmentShader.append(fragment_shader_clamp);
+	if (combinedAlphaC(_combine))
+		strFragmentShader.append(fragment_shader_sign_extend_alpha_c);
+	else if (combinedAlphaABD(_combine))
+		strFragmentShader.append(fragment_shader_sign_extend_alpha_abd);
+	if (combinedColorC(_combine))
+		strFragmentShader.append(fragment_shader_sign_extend_color_c);
+	else if (combinedColorABD(_combine))
+		strFragmentShader.append(fragment_shader_sign_extend_color_abd);
 
 	if (config.generalEmulation.enableNoise == 0)
 		strFragmentShader.append(fragment_shader_dummy_noise);
