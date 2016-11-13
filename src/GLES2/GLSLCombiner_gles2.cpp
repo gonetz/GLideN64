@@ -187,10 +187,12 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 	}
 
 	const bool bUseHWLight = config.generalEmulation.enableHWLighting != 0 && GBI.isHWLSupported() && usesShadeColor();
-	if (bUseHWLight)
+	if (bUseHWLight) {
 		strFragmentShader.append("  calc_light(vNumLights, vShadeColor.rgb, input_color); \n");
-	else
+		m_nInputs |= 1 << HW_LIGHT;
+	} else {
 		strFragmentShader.append("  input_color = vShadeColor.rgb;\n");
+	}
 
 	strFragmentShader.append("  vec_color = vec4(input_color, vShadeColor.a); \n");
 	strFragmentShader.append(strCombiner);
