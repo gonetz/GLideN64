@@ -192,9 +192,6 @@ void initGLFunctions()
 	glFramebufferTexture2D = (PFNGLFRAMEBUFFERTEXTURE2DPROC)glGetProcAddress( "glFramebufferTexture2D" );
 	glTexImage2DMultisample = (PFNGLTEXIMAGE2DMULTISAMPLEPROC)glGetProcAddress("glTexImage2DMultisample");
 	glTexStorage2DMultisample = (PFNGLTEXSTORAGE2DMULTISAMPLEPROC)glGetProcAddress("glTexStorage2DMultisample");
-	if (glTexStorage2DMultisample == nullptr)
-		// Dirty hack to enable MSAA for GL below 4.3
-		glTexStorage2DMultisample = (PFNGLTEXSTORAGE2DMULTISAMPLEPROC)glTexImage2DMultisample;
 	glGenRenderbuffers = (PFNGLGENRENDERBUFFERSPROC)glGetProcAddress( "glGenRenderbuffers" );
 	glBindRenderbuffer = (PFNGLBINDRENDERBUFFERPROC)glGetProcAddress( "glBindRenderbuffer" );
 	glRenderbufferStorage = (PFNGLRENDERBUFFERSTORAGEPROC)glGetProcAddress( "glRenderbufferStorage" );
@@ -226,4 +223,15 @@ void initGLFunctions()
 	glProgramParameteri = (PFNGLPROGRAMPARAMETERIPROC)glGetProcAddress("glProgramParameteri");
 
 	glTexStorage2D = (PFNGLTEXSTORAGE2DPROC)glGetProcAddress("glTexStorage2D");
+
+#ifndef GLESX
+	GLint majorVersion = 0;
+	glGetIntegerv(GL_MAJOR_VERSION, &majorVersion);
+	GLint minorVersion = 0;
+	glGetIntegerv(GL_MINOR_VERSION, &minorVersion);
+
+	if (majorVersion < 4 || (majorVersion == 4 && minorVersion < 3))
+		// Dirty hack to enable MSAA for GL below 4.3
+		glTexStorage2DMultisample = (PFNGLTEXSTORAGE2DMULTISAMPLEPROC)glTexImage2DMultisample;
+#endif
 }
