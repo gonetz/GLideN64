@@ -344,17 +344,6 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 
 	}
 
-	if (needClampColor())
-		strFragmentShader.append(fragment_shader_header_clamp);
-	if (combinedAlphaC(_combine))
-		strFragmentShader.append(fragment_shader_header_sign_extend_alpha_c);
-	else if (combinedAlphaABD(_combine))
-		strFragmentShader.append(fragment_shader_header_sign_extend_alpha_abd);
-	if (combinedColorC(_combine))
-		strFragmentShader.append(fragment_shader_header_sign_extend_color_c);
-	else if (combinedColorABD(_combine))
-		strFragmentShader.append(fragment_shader_header_sign_extend_color_abd);
-
 	if (bUseHWLight)
 		strFragmentShader.append(fragment_shader_header_calc_light);
 
@@ -425,17 +414,6 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 	}
 
 	strFragmentShader.append(fragment_shader_end);
-
-	if (needClampColor())
-		strFragmentShader.append(fragment_shader_clamp);
-	if (combinedAlphaC(_combine))
-		strFragmentShader.append(fragment_shader_sign_extend_alpha_c);
-	else if (combinedAlphaABD(_combine))
-		strFragmentShader.append(fragment_shader_sign_extend_alpha_abd);
-	if (combinedColorC(_combine))
-		strFragmentShader.append(fragment_shader_sign_extend_color_c);
-	else if (combinedColorABD(_combine))
-		strFragmentShader.append(fragment_shader_sign_extend_color_abd);
 
 	if (config.generalEmulation.enableNoise == 0)
 		strFragmentShader.append(fragment_shader_dummy_noise);
