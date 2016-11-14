@@ -569,8 +569,10 @@ void ConfigDialog::on_fbInfoDisableCheckBox_toggled(bool checked)
 void ConfigDialog::on_windowedResolutionComboBox_currentIndexChanged(int index)
 {
 	const bool bCustom = index == numWindowedModes - 1;
+    ui->windowWidthLabel->setEnabled(bCustom);
 	ui->windowWidthSpinBox->setValue(bCustom ? config.video.windowedWidth : WindowedModes[index].width);
 	ui->windowWidthSpinBox->setEnabled(bCustom);
+    ui->windowHeightLabel->setEnabled(bCustom);
 	ui->windowHeightSpinBox->setValue(bCustom ? config.video.windowedHeight : WindowedModes[index].height);
 	ui->windowHeightSpinBox->setEnabled(bCustom);
 }
@@ -586,7 +588,9 @@ void ConfigDialog::on_nativeRes2D_checkBox_toggled(bool checked)
 void ConfigDialog::on_cropImageComboBox_currentIndexChanged(int index)
 {
 	const bool bCustom = index == Config::cmCustom;
+    ui->cropImageHeightLabel->setEnabled(bCustom);
 	ui->cropImageWidthSpinBox->setEnabled(bCustom);
+    ui->cropImageHeightLabel->setEnabled(bCustom);
 	ui->cropImageHeightSpinBox->setEnabled(bCustom);
 }
 
