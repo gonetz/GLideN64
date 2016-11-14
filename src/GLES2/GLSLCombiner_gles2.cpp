@@ -62,7 +62,7 @@ void NoiseTexture::init()
 	m_pTexture->textureBytes = m_pTexture->realWidth * m_pTexture->realHeight;
 	textureCache().addFrameBufferTextureSize(m_pTexture->textureBytes);
 	glBindTexture(GL_TEXTURE_2D, m_pTexture->glName);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE, m_pTexture->realWidth, m_pTexture->realHeight, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE, m_pTexture->realWidth, m_pTexture->realHeight, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, nullptr);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glBindTexture(GL_TEXTURE_2D, 0);
@@ -100,7 +100,7 @@ static
 GLuint _createShader(GLenum _type, const char * _strShader)
 {
 	GLuint shader_object = glCreateShader(_type);
-	glShaderSource(shader_object, 1, &_strShader, NULL);
+	glShaderSource(shader_object, 1, &_strShader, nullptr);
 	glCompileShader(shader_object);
 	assert(checkShaderCompileStatus(shader_object));
 	return shader_object;
@@ -108,9 +108,9 @@ GLuint _createShader(GLenum _type, const char * _strShader)
 
 void InitShaderCombiner()
 {
-	if (strstr((const char*)glGetString(GL_VERSION), "OpenGL ES 2") != NULL) {
+	if (strstr((const char*)glGetString(GL_VERSION), "OpenGL ES 2") != nullptr) {
 		const char * strRenderer = reinterpret_cast<const char*>(glGetString(GL_RENDERER));
-		if (strstr(strRenderer, "PowerVR") != NULL || strstr(strRenderer, "Adreno") != NULL) {
+		if (strstr(strRenderer, "PowerVR") != nullptr || strstr(strRenderer, "Adreno") != nullptr) {
 			g_weakGLSL = true;
 			LOG(LOG_MINIMAL, "GPU with week GLSL detected: %s\n", strRenderer);
 		}
@@ -234,7 +234,7 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 
 	GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
 	const GLchar * strShaderData = strFragmentShader.data();
-	glShaderSource(fragmentShader, 1, &strShaderData, NULL);
+	glShaderSource(fragmentShader, 1, &strShaderData, nullptr);
 	glCompileShader(fragmentShader);
 	if (!checkShaderCompileStatus(fragmentShader))
 		logErrorShader(GL_FRAGMENT_SHADER, strFragmentShader);
@@ -311,6 +311,8 @@ void ShaderCombiner::_locate_attributes() const {
 }
 
 void ShaderCombiner::update(bool _bForce) {
+	_bForce |= m_bNeedUpdate;
+	m_bNeedUpdate = false;
 	glUseProgram(m_program);
 
 	if (_bForce) {
@@ -341,8 +343,8 @@ void ShaderCombiner::updateRenderState(bool _bForce)
 void ShaderCombiner::updateScreenCoordsScale(bool _bForce)
 {
 	FrameBuffer * pCurrentBuffer = frameBufferList().getCurrent();
-	const float scaleX = pCurrentBuffer != NULL ? 1.0f / pCurrentBuffer->m_width : VI.rwidth;
-	const float scaleY = pCurrentBuffer != NULL ? 1.0f / pCurrentBuffer->m_height : VI.rheight;
+	const float scaleX = pCurrentBuffer != nullptr ? 1.0f / pCurrentBuffer->m_width : VI.rwidth;
+	const float scaleY = pCurrentBuffer != nullptr ? 1.0f / pCurrentBuffer->m_height : VI.rheight;
 	m_uniforms.uScreenCoordsScale.set(2.0f*scaleX, -2.0f*scaleY, _bForce);
 }
 
@@ -438,7 +440,8 @@ void ShaderCombiner::updateLOD(bool _bForce)
 }
 
 void ShaderCombiner::updateTextureInfo(bool _bForce) {
-	m_uniforms.uTexturePersp.set(gDP.otherMode.texturePersp, _bForce);
+	const u32 texturePersp = (RSP.bLLE || GBI.isTexturePersp()) ? gDP.otherMode.texturePersp : 1U;
+	m_uniforms.uTexturePersp.set(texturePersp, _bForce);
 	if (config.texture.bilinearMode == BILINEAR_3POINT)
 		m_uniforms.uTextureFilterMode.set(gDP.otherMode.textureFilter | (gSP.objRendermode&G_OBJRM_BILERP), _bForce);
 }
@@ -451,7 +454,7 @@ void ShaderCombiner::updateFrameBufferInfo(bool _bForce) {
 	int nFbFixedAlpha0 = 0, nFbFixedAlpha1 = 0;
 	int nMSTex0Enabled = 0, nMSTex1Enabled = 0;
 	TextureCache & cache = textureCache();
-	if (cache.current[0] != NULL && cache.current[0]->frameBufferTexture != CachedTexture::fbNone) {
+	if (cache.current[0] != nullptr && cache.current[0]->frameBufferTexture != CachedTexture::fbNone) {
 		if (cache.current[0]->size == G_IM_SIZ_8b) {
 			nFbMonochromeMode0 = 1;
 			if (gDP.otherMode.imageRead == 0)
@@ -459,7 +462,7 @@ void ShaderCombiner::updateFrameBufferInfo(bool _bForce) {
 		} else if (gSP.textureTile[0]->size == G_IM_SIZ_16b && gSP.textureTile[0]->format == G_IM_FMT_IA)
 			nFbMonochromeMode0 = 2;
 	}
-	if (cache.current[1] != NULL && cache.current[1]->frameBufferTexture != CachedTexture::fbNone) {
+	if (cache.current[1] != nullptr && cache.current[1]->frameBufferTexture != CachedTexture::fbNone) {
 		if (cache.current[1]->size == G_IM_SIZ_8b) {
 			nFbMonochromeMode1 = 1;
 			if (gDP.otherMode.imageRead == 0)
@@ -478,7 +481,7 @@ void ShaderCombiner::updateDepthInfo(bool _bForce) {
 		return;
 
 	FrameBuffer * pBuffer = frameBufferList().getCurrent();
-	if (pBuffer == NULL || pBuffer->m_pDepthBuffer == NULL)
+	if (pBuffer == nullptr || pBuffer->m_pDepthBuffer == nullptr)
 		return;
 
 	const int nDepthEnabled = (gSP.geometryMode & G_ZBUFFER) > 0 ? 1 : 0;

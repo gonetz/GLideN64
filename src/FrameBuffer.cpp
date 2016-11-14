@@ -788,8 +788,8 @@ void FrameBuffer_Destroy()
 	RDRAMtoColorBuffer::get().destroy();
 #ifndef GLES2
 	DepthBufferToRDRAM::get().destroy();
-	ColorBufferToRDRAM::get().destroy();
 #endif
+	ColorBufferToRDRAM::get().destroy();
 	frameBufferList().destroy();
 }
 
