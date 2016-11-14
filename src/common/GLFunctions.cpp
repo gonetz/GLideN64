@@ -223,15 +223,4 @@ void initGLFunctions()
 	glProgramParameteri = (PFNGLPROGRAMPARAMETERIPROC)glGetProcAddress("glProgramParameteri");
 
 	glTexStorage2D = (PFNGLTEXSTORAGE2DPROC)glGetProcAddress("glTexStorage2D");
-
-#ifndef GLESX
-	GLint majorVersion = 0;
-	glGetIntegerv(GL_MAJOR_VERSION, &majorVersion);
-	GLint minorVersion = 0;
-	glGetIntegerv(GL_MINOR_VERSION, &minorVersion);
-
-	if (majorVersion < 4 || (majorVersion == 4 && minorVersion < 3))
-		// Dirty hack to enable MSAA for GL below 4.3
-		glTexStorage2DMultisample = (PFNGLTEXSTORAGE2DMULTISAMPLEPROC)glTexImage2DMultisample;
-#endif
 }
