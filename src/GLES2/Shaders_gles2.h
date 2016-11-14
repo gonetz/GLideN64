@@ -56,7 +56,7 @@ SHADER_VERSION
 "    if (uTexturePersp == 0 && aModify[2] == 0.0) texCoord *= 0.5;\n"
 "    vTexCoord0 = calcTexCoord(texCoord, 0);					\n"
 "    vTexCoord1 = calcTexCoord(texCoord, 1);					\n"
-"    vLodTexCoord = texCoord * uCacheShiftScale[0];				\n"
+"    vLodTexCoord = texCoord;									\n"
 "    vNumLights = aNumLights;									\n"
 "    if (aModify != vec4(0.0)) {								\n"
 "      if (aModify[0] != 0.0) {									\n"
