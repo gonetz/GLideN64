@@ -129,7 +129,7 @@ if (c > 1.0) return 1;
 return c;
 */
 const char* fragment_shader_clamp =
-"  lowp vec4 wrappedColor = cmbRes + 2.0 * step(cmbRes, vec4(-0.51)) - 2.0*step(vec4(1.49), cmbRes); \n"
+"  lowp vec4 wrappedColor = cmbRes + 2.0 * step(cmbRes, vec4(-0.51)) - 2.0*step(vec4(1.51), cmbRes); \n"
 "  lowp vec4 clampedColor = clamp(wrappedColor, 0.0, 1.0); \n"
 ;
 
@@ -158,10 +158,10 @@ return c + 2.0;
 return c;
 */
 const char* fragment_shader_sign_extend_color_abd =
-"  color1 = color1 + 2.0*step(color1, vec3(-0.51)) - 2.0*step(vec3(1.49), color1); \n"
+"  color1 = color1 + 2.0*step(color1, vec3(-0.51)) - 2.0*step(vec3(1.51), color1); \n"
 ;
 const char* fragment_shader_sign_extend_alpha_abd =
-"  alpha1 = alpha1 + 2.0*step(alpha1, -0.51) - 2.0*step(1.49, alpha1); \n"
+"  alpha1 = alpha1 + 2.0*step(alpha1, -0.51) - 2.0*step(1.51, alpha1); \n"
 ;
 
 static
