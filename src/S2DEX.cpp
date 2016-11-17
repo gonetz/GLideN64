@@ -44,6 +44,19 @@ void S2DEX_Obj_MoveMem( u32 w0, u32 w1 )
 	}
 }
 
+void S2DEX_MoveWord( u32 w0, u32 w1 )
+{
+	switch (_SHIFTR( w0, 16, 8 ))
+	{
+	case G_MW_GENSTAT:
+		gSPSetStatus(_SHIFTR(w0, 0, 16), w1);
+		break;
+	default:
+		F3D_MoveWord(w0, w1);
+		break;
+	}
+}
+
 void S2DEX_Select_DL( u32 w0, u32 w1 )
 {
 	LOG(LOG_WARNING, "S2DEX_Select_DL unimplemented\n");
@@ -102,7 +115,7 @@ void S2DEX_Init()
 	GBI_SetGBI( G_OBJ_LDTX_SPRITE,		S2DEX_OBJ_LDTX_SPRITE,	S2DEX_Obj_LdTx_Sprite );
 	GBI_SetGBI( G_OBJ_LDTX_RECT,		S2DEX_OBJ_LDTX_RECT,	S2DEX_Obj_LdTx_Rect );
 	GBI_SetGBI( G_OBJ_LDTX_RECT_R,		S2DEX_OBJ_LDTX_RECT_R,	S2DEX_Obj_LdTx_Rect_R );
-	GBI_SetGBI( G_MOVEWORD,				F3D_MOVEWORD,			F3D_MoveWord );
+	GBI_SetGBI( G_MOVEWORD,				F3D_MOVEWORD,			S2DEX_MoveWord );
 	GBI_SetGBI( G_SETOTHERMODE_H,		F3D_SETOTHERMODE_H,		F3D_SetOtherMode_H );
 	GBI_SetGBI( G_SETOTHERMODE_L,		F3D_SETOTHERMODE_L,		F3D_SetOtherMode_L );
 	GBI_SetGBI( G_ENDDL,				F3D_ENDDL,				F3D_EndDL );

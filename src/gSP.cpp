@@ -1789,6 +1789,11 @@ void gSPLineW3D( s32 v0, s32 v1, s32 wd, s32 flag )
 #endif
 }
 
+void gSPSetStatus(u32 sid, u32 val)
+{
+	gSP.status[sid>>2] = val;
+}
+
 void gSPObjLoadTxtr( u32 tx )
 {
 	const u32 address = RSP_SegmentToPhysical( tx );

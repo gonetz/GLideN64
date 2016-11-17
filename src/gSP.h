@@ -173,6 +173,7 @@ void gSPSetOtherMode_H(u32 _length, u32 _shift, u32 _data);
 void gSPSetOtherMode_L(u32 _length, u32 _shift, u32 _data);
 void gSPLine3D(s32 v0, s32 v1, s32 flag);
 void gSPLineW3D( s32 v0, s32 v1, s32 wd, s32 flag );
+void gSPSetStatus(u32 sid, u32 val);
 void gSPObjRectangle(u32 _sp );
 void gSPObjRectangleR(u32 _sp);
 void gSPObjSprite(u32 _sp);

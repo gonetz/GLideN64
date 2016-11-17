@@ -122,6 +122,7 @@
 #define G_MW_CLIP			0x04
 #define G_MW_SEGMENT		0x06
 #define G_MW_FOG			0x08
+#define	G_MW_GENSTAT		0x08
 #define G_MW_LIGHTCOL		0x0A
 #define G_MW_FORCEMTX		0x0C
 #define G_MW_POINTS			0x0C

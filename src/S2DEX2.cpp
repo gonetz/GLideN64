@@ -10,6 +10,19 @@
 #include "RSP.h"
 #include "Types.h"
 
+void S2DEX2_MoveWord( u32 w0, u32 w1 )
+{
+	switch (_SHIFTR( w0, 16, 8 ))
+	{
+	case G_MW_GENSTAT:
+		gSPSetStatus(_SHIFTR(w0, 0, 16), w1);
+		break;
+	default:
+		F3DEX2_MoveWord(w0, w1);
+		break;
+	}
+}
+
 void S2DEX2_Init()
 {
 	gSPSetupFunctions();
@@ -33,7 +46,7 @@ void S2DEX2_Init()
 	GBI_SetGBI( G_OBJ_LDTX_SPRITE,		S2DEX2_OBJ_LDTX_SPRITE,	S2DEX_Obj_LdTx_Sprite );
 	GBI_SetGBI( G_OBJ_LDTX_RECT,		S2DEX2_OBJ_LDTX_RECT,	S2DEX_Obj_LdTx_Rect );
 	GBI_SetGBI( G_OBJ_LDTX_RECT_R,		S2DEX2_OBJ_LDTX_RECT_R,	S2DEX_Obj_LdTx_Rect_R );
-	GBI_SetGBI( G_MOVEWORD,				F3DEX2_MOVEWORD,		F3DEX2_MoveWord );
+	GBI_SetGBI( G_MOVEWORD,				F3DEX2_MOVEWORD,		S2DEX2_MoveWord );
 	GBI_SetGBI( G_SETOTHERMODE_H,		F3DEX2_SETOTHERMODE_H,	F3DEX2_SetOtherMode_H );
 	GBI_SetGBI( G_SETOTHERMODE_L,		F3DEX2_SETOTHERMODE_L,	F3DEX2_SetOtherMode_L );
 	GBI_SetGBI( G_ENDDL,				F3DEX2_ENDDL,			F3D_EndDL );
