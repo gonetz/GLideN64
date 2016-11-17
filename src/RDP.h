@@ -16,6 +16,7 @@ extern RDPInfo RDP;
 
 void RDP_Init();
 void RDP_Half_1(u32 _c);
+void RDP_TexRect(u32 w0, u32 w1);
 void RDP_ProcessRDPList();
 void RDP_RepeatLastLoadBlock();
 void RDP_SetScissor(u32 w0, u32 w1);

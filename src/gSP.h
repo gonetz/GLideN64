@@ -119,6 +119,11 @@ struct gSPInfo
 
 	u32 changed;
 
+	struct {
+		u8 sid;
+		u32 flag;
+		u32 addr;
+	} selectDL;
 	u32 status[4];
 
 	struct

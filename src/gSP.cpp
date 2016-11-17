@@ -1791,6 +1791,7 @@ void gSPLineW3D( s32 v0, s32 v1, s32 wd, s32 flag )
 
 void gSPSetStatus(u32 sid, u32 val)
 {
+	assert(sid <= 12);
 	gSP.status[sid>>2] = val;
 }
 
