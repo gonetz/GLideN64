@@ -506,7 +506,7 @@ void ConfigDialog::on_selectFontButton_clicked()
 	QString strSize;
 	strSize.setNum(m_font.pointSize());
 	ui->fontNameLabel->setText(m_font.family() + " - " + strSize);
-	ui->fontColorLabel->setFont(m_font);
+    ui->fontPreviewLabel->setFont(m_font);
 }
 
 void ConfigDialog::on_PickFontColorButton_clicked()
@@ -521,7 +521,7 @@ void ConfigDialog::on_PickFontColorButton_clicked()
 	palette.setColor(QPalette::Window, Qt::black);
 	palette.setColor(QPalette::WindowText, m_color);
 	ui->fontColorLabel->setText(m_color.name());
-	ui->fontColorLabel->setPalette(palette);
+    ui->fontPreviewLabel->setPalette(palette);
 }
 
 void ConfigDialog::on_buttonBox_clicked(QAbstractButton *button)
