@@ -14,7 +14,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>GLideN64 settings</string>
+   <string>GLideN64 Settings</string>
   </property>
   <property name="windowIcon">
    <iconset resource="icon.qrc">
@@ -4727,11 +4727,11 @@
   </connection>
  </connections>
  <buttongroups>
-  <buttongroup name="osdButtonGroup"/>
   <buttongroup name="aspectButtonGroup"/>
-  <buttongroup name="factorButtonGroup"/>
-  <buttongroup name="screenshotButtonGroup"/>
   <buttongroup name="bloomBlendModeButtonGroup"/>
   <buttongroup name="fixTexrectCoordsButtonGroup"/>
+  <buttongroup name="screenshotButtonGroup"/>
+  <buttongroup name="factorButtonGroup"/>
+  <buttongroup name="osdButtonGroup"/>
  </buttongroups>
 </ui>
