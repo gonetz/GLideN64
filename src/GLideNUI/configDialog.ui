@@ -35,6 +35,9 @@
        <height>450</height>
       </size>
      </property>
+     <property name="currentIndex">
+      <number>1</number>
+     </property>
      <property name="usesScrollButtons">
       <bool>false</bool>
      </property>
@@ -1056,7 +1059,7 @@
            <item>
             <widget class="QLabel" name="factorLabel">
              <property name="toolTip">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This option can output the rendered buffer to a multiple of the orignal N64 resolution. The default is the &lt;span style=&quot; font-weight:600;&quot;&gt;Same as output resolution&lt;/span&gt;, but you can output to the &lt;span style=&quot; font-weight:600;&quot;&gt;Original N64 resolution&lt;/span&gt; or a &lt;span style=&quot; font-weight:600;&quot;&gt;Multiple of N64 resolution&lt;/span&gt;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This option sets the output render buffer size. By default, the render buffer is set to the &lt;span style=&quot; font-weight:600;&quot;&gt;Same as output resolution&lt;/span&gt;, but you can set it to the &lt;span style=&quot; font-weight:600;&quot;&gt;Original N64 resolution&lt;/span&gt; or a &lt;span style=&quot; font-weight:600;&quot;&gt;Multiple of N64 resolution&lt;/span&gt;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
              </property>
              <property name="text">
               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Internal resolution:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -4740,11 +4743,11 @@
   </connection>
  </connections>
  <buttongroups>
+  <buttongroup name="fixTexrectCoordsButtonGroup"/>
   <buttongroup name="osdButtonGroup"/>
   <buttongroup name="factorButtonGroup"/>
-  <buttongroup name="fixTexrectCoordsButtonGroup"/>
+  <buttongroup name="bloomBlendModeButtonGroup"/>
   <buttongroup name="aspectButtonGroup"/>
   <buttongroup name="screenshotButtonGroup"/>
-  <buttongroup name="bloomBlendModeButtonGroup"/>
  </buttongroups>
 </ui>
