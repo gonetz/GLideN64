@@ -3058,7 +3058,7 @@
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_49">
               <property name="spacing">
-               <number>0</number>
+               <number>9</number>
               </property>
               <property name="leftMargin">
                <number>9</number>
@@ -3184,6 +3184,19 @@
                  </size>
                 </property>
                </spacer>
+              </item>
+              <item>
+               <widget class="QLabel" name="fontPreviewLabel">
+                <property name="text">
+                 <string>Preview</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignCenter</set>
+                </property>
+                <property name="margin">
+                 <number>2</number>
+                </property>
+               </widget>
               </item>
               <item>
                <spacer name="verticalSpacer_3">
@@ -4727,11 +4740,11 @@
   </connection>
  </connections>
  <buttongroups>
+  <buttongroup name="screenshotButtonGroup"/>
   <buttongroup name="aspectButtonGroup"/>
   <buttongroup name="bloomBlendModeButtonGroup"/>
-  <buttongroup name="fixTexrectCoordsButtonGroup"/>
-  <buttongroup name="screenshotButtonGroup"/>
-  <buttongroup name="factorButtonGroup"/>
   <buttongroup name="osdButtonGroup"/>
+  <buttongroup name="factorButtonGroup"/>
+  <buttongroup name="fixTexrectCoordsButtonGroup"/>
  </buttongroups>
 </ui>
