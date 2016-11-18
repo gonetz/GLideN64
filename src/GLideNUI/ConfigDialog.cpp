@@ -252,13 +252,13 @@ void ConfigDialog::_init()
 	ui->fontNameLabel->setText(m_font.family() + " - " + strSize);
 
 	m_color = QColor(config.font.color[0], config.font.color[1], config.font.color[2]);
-	ui->fontColorLabel->setFont(m_font);
-	ui->fontColorLabel->setText(m_color.name());
+    ui->fontPreviewLabel->setFont(m_font);
+    ui->fontColorLabel->setText(m_color.name());
 	QPalette palette;
 	palette.setColor(QPalette::Window, Qt::black);
 	palette.setColor(QPalette::WindowText, m_color);
-	ui->fontColorLabel->setAutoFillBackground(true);
-	ui->fontColorLabel->setPalette(palette);
+    ui->fontPreviewLabel->setAutoFillBackground(true);
+    ui->fontPreviewLabel->setPalette(palette);
 
 	switch (config.onScreenDisplay.pos) {
 	case Config::posTopLeft:
@@ -506,7 +506,7 @@ void ConfigDialog::on_selectFontButton_clicked()
 	QString strSize;
 	strSize.setNum(m_font.pointSize());
 	ui->fontNameLabel->setText(m_font.family() + " - " + strSize);
-	ui->fontColorLabel->setFont(m_font);
+    ui->fontPreviewLabel->setFont(m_font);
 }
 
 void ConfigDialog::on_PickFontColorButton_clicked()
@@ -521,7 +521,7 @@ void ConfigDialog::on_PickFontColorButton_clicked()
 	palette.setColor(QPalette::Window, Qt::black);
 	palette.setColor(QPalette::WindowText, m_color);
 	ui->fontColorLabel->setText(m_color.name());
-	ui->fontColorLabel->setPalette(palette);
+    ui->fontPreviewLabel->setPalette(palette);
 }
 
 void ConfigDialog::on_buttonBox_clicked(QAbstractButton *button)
@@ -588,7 +588,7 @@ void ConfigDialog::on_nativeRes2D_checkBox_toggled(bool checked)
 void ConfigDialog::on_cropImageComboBox_currentIndexChanged(int index)
 {
 	const bool bCustom = index == Config::cmCustom;
-	ui->cropImageHeightLabel->setEnabled(bCustom);
+    ui->cropImageWidthLabel->setEnabled(bCustom);
 	ui->cropImageWidthSpinBox->setEnabled(bCustom);
 	ui->cropImageHeightLabel->setEnabled(bCustom);
 	ui->cropImageHeightSpinBox->setEnabled(bCustom);
