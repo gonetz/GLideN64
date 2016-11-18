@@ -1026,7 +1026,7 @@
            <item>
             <widget class="QCheckBox" name="enableHWLightingCheckBox">
              <property name="toolTip">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;In traditional PC games lighting is calculated per vertex. This option enables Phong shading. When checked, lighting is smoother and realistic than the N64.&lt;br/&gt;&lt;br/&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;Your preference&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;In traditional PC games lighting is calculated per vertex. This option enables Phong shading. When checked, lighting is smoother and more realistic than the N64.&lt;br/&gt;&lt;br/&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;Your preference&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
              </property>
              <property name="text">
               <string>Enable per-pixel lighting (better quality, HLE only)</string>
@@ -4740,11 +4740,11 @@
   </connection>
  </connections>
  <buttongroups>
-  <buttongroup name="aspectButtonGroup"/>
   <buttongroup name="fixTexrectCoordsButtonGroup"/>
-  <buttongroup name="osdButtonGroup"/>
-  <buttongroup name="screenshotButtonGroup"/>
   <buttongroup name="factorButtonGroup"/>
+  <buttongroup name="aspectButtonGroup"/>
+  <buttongroup name="osdButtonGroup"/>
   <buttongroup name="bloomBlendModeButtonGroup"/>
+  <buttongroup name="screenshotButtonGroup"/>
  </buttongroups>
 </ui>
