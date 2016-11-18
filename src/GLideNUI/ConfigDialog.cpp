@@ -588,7 +588,7 @@ void ConfigDialog::on_nativeRes2D_checkBox_toggled(bool checked)
 void ConfigDialog::on_cropImageComboBox_currentIndexChanged(int index)
 {
 	const bool bCustom = index == Config::cmCustom;
-	ui->cropImageHeightLabel->setEnabled(bCustom);
+    ui->cropImageWidthLabel->setEnabled(bCustom);
 	ui->cropImageWidthSpinBox->setEnabled(bCustom);
 	ui->cropImageHeightLabel->setEnabled(bCustom);
 	ui->cropImageHeightSpinBox->setEnabled(bCustom);
