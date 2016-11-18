@@ -1026,7 +1026,7 @@
            <item>
             <widget class="QCheckBox" name="enableHWLightingCheckBox">
              <property name="toolTip">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;In traditional PC games lighting is calculated per vertex. This option enables Phong shading. When checked, lighting is smoother and more accurate to the N64.&lt;br/&gt;&lt;br/&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;Your preference&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;In traditional PC games lighting is calculated per vertex. This option enables Phong shading. When checked, lighting is smoother and realistic than the N64.&lt;br/&gt;&lt;br/&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;Your preference&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
              </property>
              <property name="text">
               <string>Enable per-pixel lighting (better quality, HLE only)</string>
@@ -1056,7 +1056,7 @@
            <item>
             <widget class="QLabel" name="factorLabel">
              <property name="toolTip">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This option limits the rendered size of the output to a factor of the original N64 resolution. 1x is the original N64 resolution. Rendered images will be scaled to fit the screen.&lt;/p&gt;&lt;p&gt;0x renders the game at the size of the selected resolution, like traditional N64 emulators.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This option limits the rendered size of the output to a factor of the original N64 resolution. The default option is to output as the &lt;span style=&quot; font-weight:600;&quot;&gt;Same as output resolution&lt;/span&gt;, but you can output to the &lt;span style=&quot; font-weight:600;&quot;&gt;Original N64 resolution&lt;/span&gt; or a &lt;span style=&quot; font-weight:600;&quot;&gt;Multiple of N64 resolution&lt;/span&gt;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
              </property>
              <property name="text">
               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Internal resolution:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -4740,11 +4740,11 @@
   </connection>
  </connections>
  <buttongroups>
-  <buttongroup name="screenshotButtonGroup"/>
   <buttongroup name="aspectButtonGroup"/>
-  <buttongroup name="bloomBlendModeButtonGroup"/>
-  <buttongroup name="osdButtonGroup"/>
-  <buttongroup name="factorButtonGroup"/>
   <buttongroup name="fixTexrectCoordsButtonGroup"/>
+  <buttongroup name="osdButtonGroup"/>
+  <buttongroup name="screenshotButtonGroup"/>
+  <buttongroup name="factorButtonGroup"/>
+  <buttongroup name="bloomBlendModeButtonGroup"/>
  </buttongroups>
 </ui>
