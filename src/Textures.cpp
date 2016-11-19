@@ -1459,8 +1459,8 @@ void TextureCache::update(u32 _t)
 		CachedTexture & current = *iter;
 		m_textures.splice(m_textures.begin(), m_textures, iter);
 
-		assert(current.realWidth == sizes.realWidth);
-		assert(current.realHeight == sizes.realHeight);
+		assert(current.width == sizes.width);
+		assert(current.height == sizes.height);
 		assert(current.format == pTile->format);
 		assert(current.size == pTile->size);
 
