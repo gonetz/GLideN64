@@ -32,8 +32,3 @@ void PluginAPI::GetDllInfo(PLUGIN_INFO * PluginInfo)
 	PluginInfo->NormalMemory = FALSE;
 	PluginInfo->MemoryBswaped = TRUE;
 }
-
-void PluginAPI::ReadScreen(void **_dest, long *_width, long *_height)
-{
-	video().readScreen(_dest, _width, _height);
-}

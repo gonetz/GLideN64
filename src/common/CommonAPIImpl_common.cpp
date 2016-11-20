@@ -100,6 +100,25 @@ private:
 	u32 m_addr;
 };
 
+class ReadScreenCommand : public APICommand {
+public:
+	ReadScreenCommand(void **_dest, long *_width, long *_height)
+		: m_dest(_dest)
+		, m_width(_width)
+		, m_height(_height) {
+	}
+
+	bool run() {
+		video().readScreen(m_dest, m_width, m_height);
+		return true;
+	}
+
+private:
+	void ** m_dest;
+	long * m_width;
+	long * m_height;
+};
+
 class RomClosedCommand : public APICommand {
 public:
 	RomClosedCommand(std::mutex * _pRspThreadMtx,
@@ -272,5 +291,14 @@ void PluginAPI::FBGetFrameBufferInfo(void * _pinfo)
 void PluginAPI::FBWList(FrameBufferModifyEntry * _plist, unsigned int _size)
 {
 	FBInfo::fbInfo.WriteList(reinterpret_cast<FBInfo::FrameBufferModifyEntry*>(_plist), _size);
+}
+
+void PluginAPI::ReadScreen(void **_dest, long *_width, long *_height)
+{
+#ifdef RSPTHREAD
+	_callAPICommand(ReadScreenCommand(_dest, _width, _height));
+#else
+	video().readScreen(_dest, _width, _height);
+#endif
 }
 #endif
