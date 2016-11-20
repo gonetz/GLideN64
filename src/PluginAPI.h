@@ -7,6 +7,7 @@
 #ifdef MUPENPLUSAPI
 #include "m64p_plugin.h"
 #else
+#include "windows/GLideN64_windows.h"
 #include "ZilmarGFX_1_3.h"
 #include "FrameBufferInfoAPI.h"
 #define RSPTHREAD

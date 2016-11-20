@@ -299,6 +299,7 @@
     </ClCompile>
     <ClCompile Include="..\..\src\gSP.cpp" />
     <ClCompile Include="..\..\src\Keys.cpp" />
+    <ClCompile Include="..\..\src\Log.cpp" />
     <ClCompile Include="..\..\src\MupenPlusPluginAPI.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
