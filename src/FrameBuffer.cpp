@@ -851,8 +851,8 @@ void FrameBufferList::renderBuffer(u32 _address)
 		Xoffset = 0;
 
 	if (isLowerField) {
-		if (srcY0 > 0)
-			--srcY0;
+//		if (srcY0 > 0)
+//			--srcY0;
 		if (dstY0 > 0)
 			--dstY0;
 	}
