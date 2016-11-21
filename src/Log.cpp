@@ -5,6 +5,7 @@
 #include "Log.h"
 #include "PluginAPI.h"
 #include "wst.h"
+#include "Ext_TxFilter.h"
 
 void LOG(u16 type, const char * format, ...) {
 	if (type > LOG_LEVEL)
