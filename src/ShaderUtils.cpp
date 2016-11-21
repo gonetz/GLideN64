@@ -279,6 +279,7 @@ bool combinedColorABD(const gDPCombine & _combine) {
 		return true;
 	if (_combine.saRGB1 == G_CCMUX_COMBINED || _combine.sbRGB1 == G_CCMUX_COMBINED)
 		return _combine.mRGB1 != G_CCMUX_0;
+	return false;
 }
 
 static
@@ -289,6 +290,7 @@ bool combinedAlphaABD(const gDPCombine & _combine) {
 		return true;
 	if (_combine.saA1 == G_ACMUX_COMBINED || _combine.sbA1 == G_ACMUX_COMBINED)
 		return _combine.mA1 != G_ACMUX_0;
+	return false;
 }
 
 static
