@@ -13,7 +13,7 @@
 #endif
 
 #ifndef EGL
-#if !defined(OS_WINDOWS) || defined(GLES2) || defined(GLES3) || defined(GLES3_1)
+#if !defined(OS_WINDOWS) || defined(GLESX)
 
 void initGLFunctions()
 {
