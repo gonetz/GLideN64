@@ -11,7 +11,7 @@ struct VIInfo
 	bool PAL;
 
 	VIInfo() :
-		width(0), widthPrev(0), height(0), real_height(0),
+		width(0), widthPrev(0), height(0), real_height(0), rwidth(0), rheight(0),
 		lastOrigin(-1), interlaced(false), PAL(false)
 	{}
 };
