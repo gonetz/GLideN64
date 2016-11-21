@@ -258,7 +258,7 @@ void GBIInfo::loadMicrocode(u32 uc_start, u32 uc_dstart, u16 uc_dsize)
 	char uc_str[256];
 	strcpy(uc_str, "Not Found");
 
-	for (u32 i = 0; i < 2048; ++i) {
+	for (u32 i = 0; i < 2046; ++i) {
 		if ((uc_data[i] == 'R') && (uc_data[i+1] == 'S') && (uc_data[i+2] == 'P')) {
 			u32 j = 0;
 			while (uc_data[i+j] > 0x0A) {
