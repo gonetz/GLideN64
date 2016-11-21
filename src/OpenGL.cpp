@@ -2095,10 +2095,8 @@ void OGLRender::_initExtensions()
 #ifdef GL_IMAGE_TEXTURES_SUPPORT
 #ifndef GLESX
 	m_bImageTexture = (((majorVersion >= 4) && (minorVersion >= 3)) || OGLVideo::isExtensionSupported("GL_ARB_shader_image_load_store")) && (glBindImageTexture != nullptr);
-#elif defined(GLES3_1)
-	m_bImageTexture = (majorVersion >= 3) && (minorVersion >= 1) && (glBindImageTexture != nullptr);
 #else
-	m_bImageTexture = false;
+	m_bImageTexture = (majorVersion >= 3) && (minorVersion >= 1) && (glBindImageTexture != nullptr);
 #endif
 #else
 	m_bImageTexture = false;
