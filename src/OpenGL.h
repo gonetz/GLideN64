@@ -300,7 +300,7 @@ public:
 protected:
 	OGLVideo() :
 		m_bCaptureScreen(false), m_bToggleFullscreen(false), m_bResizeWindow(false), m_bFullscreen(false), m_bAdjustScreen(false),
-		m_width(0), m_height(0), m_heightOffset(0),
+		m_buffersSwapCount(0), m_width(0), m_height(0), m_heightOffset(0),
 		m_screenWidth(0), m_screenHeight(0), m_resizeWidth(0), m_resizeHeight(0),
 		m_scaleX(0), m_scaleY(0), m_adjustScale(0)
 	{}
