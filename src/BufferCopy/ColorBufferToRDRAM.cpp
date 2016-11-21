@@ -110,8 +110,8 @@ bool ColorBufferToRDRAM::_prepareCopy(u32 _startAddress)
 		return false;
 
 	const u32 stride = pBuffer->m_width << pBuffer->m_size >> 1;
-	const u32 height = cutHeight(_startAddress, pBuffer->m_height, stride);
-	if (height == 0)
+	const u32 bufferHeight = cutHeight(_startAddress, pBuffer->m_height, stride);
+	if (bufferHeight == 0)
 		return false;
 
 	if(m_pTexture == nullptr ||
