@@ -1138,9 +1138,9 @@ void OGLRender::_updateTextures(RENDER_STATE _renderState) const
 				textureCache().activateDummy(t);
 		}
 		pCurrentCombiner->updateFrameBufferInfo();
+		if (pCurrentCombiner->usesTexture() && (_renderState == rsTriangle || _renderState == rsLine))
+			cmbInfo.updateTextureParameters();
 	}
-	if (pCurrentCombiner->usesTexture() && (_renderState == rsTriangle || _renderState == rsLine))
-		cmbInfo.updateTextureParameters();
 	gDP.changed &= ~(CHANGED_TILE | CHANGED_TMEM);
 	gSP.changed &= ~(CHANGED_TEXTURE);
 }
