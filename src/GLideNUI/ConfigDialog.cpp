@@ -134,7 +134,7 @@ void ConfigDialog::_init()
 	}
 	ui->nativeRes2D_checkBox->setChecked(config.generalEmulation.enableNativeResTexrects != 0);
 	if (ui->nativeRes2D_checkBox->isChecked()) {
-		ui->texrectsBlackLinesLabel->setEnabled(false);
+		ui->fixBlackLinesLabel->setEnabled(false);
 		ui->fixTexrectDisableRadioButton->setEnabled(false);
 		ui->fixTexrectSmartRadioButton->setEnabled(false);
 		ui->fixTexrectForceRadioButton->setEnabled(false);
@@ -579,7 +579,7 @@ void ConfigDialog::on_windowedResolutionComboBox_currentIndexChanged(int index)
 
 void ConfigDialog::on_nativeRes2D_checkBox_toggled(bool checked)
 {
-	ui->texrectsBlackLinesLabel->setEnabled(!checked);
+	ui->fixBlackLinesLabel->setEnabled(!checked);
 	ui->fixTexrectDisableRadioButton->setEnabled(!checked);
 	ui->fixTexrectSmartRadioButton->setEnabled(!checked);
 	ui->fixTexrectForceRadioButton->setEnabled(!checked);
