@@ -2080,12 +2080,12 @@ void OGLRender::_initExtensions()
 	glGetFloatv(GL_ALIASED_LINE_WIDTH_RANGE, lineWidthRange);
 	m_maxLineWidth = lineWidthRange[1];
 
+	majorVersion = 0;
+	minorVersion = 0;
 #ifndef GLES2
-	GLint majorVersion = 0;
 	glGetIntegerv(GL_MAJOR_VERSION, &majorVersion);
 	LOG(LOG_VERBOSE, "OpenGL major version: %d\n", majorVersion);
 	assert(majorVersion >= 3 && "Plugin requires GL version 3 or higher.");
-	GLint minorVersion = 0;
 	glGetIntegerv(GL_MINOR_VERSION, &minorVersion);
 	LOG(LOG_VERBOSE, "OpenGL minor version: %d\n", minorVersion);
 #endif
@@ -2098,7 +2098,8 @@ void OGLRender::_initExtensions()
 
 #ifdef GL_IMAGE_TEXTURES_SUPPORT
 #ifndef GLESX
-	m_bImageTexture = (((majorVersion >= 4) && (minorVersion >= 3)) || OGLVideo::isExtensionSupported("GL_ARB_shader_image_load_store")) && (glBindImageTexture != nullptr);
+	int imageTextureExtension = OGLVideo::isExtensionSupported("GL_ARB_shader_image_load_store") && OGLVideo::isExtensionSupported("GL_ARB_compute_shader") && OGLVideo::isExtensionSupported("GL_ARB_shading_language_420pack");
+	m_bImageTexture = (((majorVersion >= 4) && (minorVersion >= 3)) || imageTextureExtension) && (glBindImageTexture != nullptr);
 #else
 	m_bImageTexture = (majorVersion >= 3) && (minorVersion >= 1) && (glBindImageTexture != nullptr);
 #endif

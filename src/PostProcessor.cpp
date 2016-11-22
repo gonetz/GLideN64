@@ -8,16 +8,6 @@
 #include "ShaderUtils.h"
 #include "Config.h"
 
-#if defined(GLES3_1)
-#define SHADER_VERSION "#version 310 es \n"
-#elif defined(GLES3)
-#define SHADER_VERSION "#version 300 es \n"
-#elif defined(GLES2)
-#define SHADER_VERSION "#version 100 \n"
-#else
-#define SHADER_VERSION "#version 330 core \n"
-#endif
-
 #ifdef GLES2
 #define FRAGMENT_SHADER_END "  gl_FragColor = fragColor; \n"
 #else
@@ -29,7 +19,6 @@ PostProcessor PostProcessor::processor;
 #endif
 
 static const char * vertexShader =
-SHADER_VERSION
 "#if (__VERSION__ > 120)						\n"
 "# define IN in									\n"
 "# define OUT out								\n"
@@ -47,7 +36,6 @@ SHADER_VERSION
 ;
 
 static const char* extractBloomShader =
-SHADER_VERSION
 "#if (__VERSION__ > 120)		\n"
 "# define IN in					\n"
 "# define OUT out				\n"
@@ -84,7 +72,6 @@ static const char* seperableBlurShader =
 ///				http://www.nutty.ca
 ///
 /// Fragment shader for performing a seperable blur on the specified texture.
-SHADER_VERSION
 "#if (__VERSION__ > 120)		\n"
 "# define IN in					\n"
 "# define OUT out				\n"
@@ -159,7 +146,6 @@ static const char* glowShader =
 ///				http://www.nutty.ca
 ///
 /// Fragment shader for blending two textures using an algorithm that overlays the glowmap.
-SHADER_VERSION
 "#if (__VERSION__ > 120)		\n"
 "# define IN in					\n"
 "# define OUT out				\n"
@@ -220,7 +206,6 @@ FRAGMENT_SHADER_END
 ;
 
 static const char* gammaCorrectionShader =
-SHADER_VERSION
 "#if (__VERSION__ > 120)													\n"
 "# define IN in																\n"
 "# define OUT out															\n"
@@ -243,7 +228,6 @@ FRAGMENT_SHADER_END
 ;
 
 static const char* orientationCorrectionShader =
-SHADER_VERSION
 "#if (__VERSION__ > 120)													\n"
 "# define IN in																\n"
 "# define OUT out															\n"
@@ -267,12 +251,14 @@ static
 GLuint _createShaderProgram(const char * _strVertex, const char * _strFragment)
 {
 	GLuint vertex_shader_object = glCreateShader(GL_VERTEX_SHADER);
-	glShaderSource(vertex_shader_object, 1, &_strVertex, nullptr);
+	const char* vertex_shader_string = addGLSLVersion(_strVertex);
+	glShaderSource(vertex_shader_object, 1, &vertex_shader_string, nullptr);
 	glCompileShader(vertex_shader_object);
 	assert(checkShaderCompileStatus(vertex_shader_object));
 
 	GLuint fragment_shader_object = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(fragment_shader_object, 1, &_strFragment, nullptr);
+	const char* fragment_shader_string = addGLSLVersion(_strFragment);
+	glShaderSource(fragment_shader_object, 1, &fragment_shader_string, nullptr);
 	glCompileShader(fragment_shader_object);
 	assert(checkShaderCompileStatus(fragment_shader_object));
 

@@ -201,7 +201,8 @@ static
 GLuint _createShader(GLenum _type, const char * _strShader)
 {
 	GLuint shader_object = glCreateShader(_type);
-	glShaderSource(shader_object, 1, &_strShader, nullptr);
+	const char* shader_string = addGLSLVersion(_strShader);
+	glShaderSource(shader_object, 1, &shader_string, nullptr);
 	glCompileShader(shader_object);
 	assert(checkShaderCompileStatus(shader_object));
 	return shader_object;
@@ -453,7 +454,8 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 
 	GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
 	const GLchar * strShaderData = strFragmentShader.data();
-	glShaderSource(fragmentShader, 1, &strShaderData, nullptr);
+	const char* shader_string = addGLSLVersion(strShaderData);
+	glShaderSource(fragmentShader, 1, &shader_string, nullptr);
 	glCompileShader(fragmentShader);
 	if (!checkShaderCompileStatus(fragmentShader))
 		logErrorShader(GL_FRAGMENT_SHADER, strFragmentShader);

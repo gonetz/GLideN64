@@ -35,16 +35,6 @@ struct point {
 // Maximum texture width
 #define MAXWIDTH 1024
 
-#if defined(GLES3_1)
-#define SHADER_VERSION "#version 310 es \n"
-#elif defined(GLES3)
-#define SHADER_VERSION "#version 300 es \n"
-#elif defined(GLES2)
-#define SHADER_VERSION "#version 100 \n"
-#else
-#define SHADER_VERSION "#version 330 core \n"
-#endif
-
 #ifdef GLES2
 const GLenum monohromeformat = GL_LUMINANCE;
 const GLenum monohromeInternalformat = GL_LUMINANCE;
@@ -55,7 +45,6 @@ const GLenum monohromeInternalformat = GL_R8;
 
 static
 const char * strDrawTextVertexShader =
-SHADER_VERSION
 "#if (__VERSION__ > 120)						\n"
 "# define IN in									\n"
 "# define OUT out								\n"
@@ -73,7 +62,6 @@ SHADER_VERSION
 
 static
 const char * strDrawTextFragmentShader =
-SHADER_VERSION
 "#if (__VERSION__ > 120)		\n"
 "# define IN in					\n"
 "# define OUT out				\n"

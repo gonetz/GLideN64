@@ -1,16 +1,4 @@
-#if defined(GLES3_1)
-#define MAIN_SHADER_VERSION "#version 310 es \n"
-#define AUXILIARY_SHADER_VERSION "\n"
-#elif defined(GLES3)
-#define MAIN_SHADER_VERSION "#version 300 es \n"
-#define AUXILIARY_SHADER_VERSION "\n"
-#else
-#define MAIN_SHADER_VERSION "#version 330 core \n"
-#define AUXILIARY_SHADER_VERSION "#version 330 core \n"
-#endif
-
 static const char* vertex_shader =
-MAIN_SHADER_VERSION
 "in highp vec4 aPosition;							\n"
 "in lowp vec4 aColor;								\n"
 "in highp vec2 aTexCoord0;							\n"
@@ -99,7 +87,6 @@ MAIN_SHADER_VERSION
 ;
 
 static const char* vertex_shader_notex =
-MAIN_SHADER_VERSION
 "in highp vec4 aPosition;			\n"
 "in lowp vec4 aColor;				\n"
 "in lowp float aNumLights;			\n"
@@ -148,7 +135,6 @@ MAIN_SHADER_VERSION
 ;
 
 static const char* fragment_shader_header_common_variables =
-MAIN_SHADER_VERSION
 "uniform sampler2D uTex0;		\n"
 "uniform sampler2D uTex1;		\n"
 "uniform sampler2D uDepthTex;	\n"
@@ -212,7 +198,6 @@ static const char* fragment_shader_header_common_variables_ms_tex1 =
 #endif
 
 static const char* fragment_shader_header_common_variables_notex =
-MAIN_SHADER_VERSION
 "uniform sampler2D uDepthTex;	\n"
 #ifdef GL_USE_UNIFORMBLOCK
 "layout (std140) uniform ColorsBlock {\n"
@@ -288,7 +273,6 @@ static const char* fragment_shader_header_alpha_noise_toonify =
 #endif
 
 static const char* fragment_shader_calc_light =
-AUXILIARY_SHADER_VERSION
 #ifdef GL_USE_UNIFORMBLOCK
 "layout (std140) uniform LightBlock {		\n"
 "  mediump vec3 uLightDirection[8];			\n"
@@ -330,7 +314,6 @@ static const char* fragment_shader_blend_mux =
 ;
 
 static const char* fragment_shader_dither =
-AUXILIARY_SHADER_VERSION
 "void colorNoiseDither(in lowp float _noise, inout lowp vec3 _color)	\n"
 "{															\n"
 "    mediump vec3 tmpColor = _color*255.0;					\n"
@@ -369,7 +352,6 @@ static const char* fragment_shader_end =
 
 static const char* fragment_shader_mipmap =
 #ifndef GLESX
-AUXILIARY_SHADER_VERSION
 "in mediump vec2 vTexCoord0;	\n"
 "in mediump vec2 vTexCoord1;	\n"
 "in mediump vec2 vLodTexCoord;	\n"
@@ -496,7 +478,6 @@ static const char* fragment_shader_readtex_3point =
 
 #ifdef GL_MULTISAMPLING_SUPPORT
 static const char* fragment_shader_readtex_ms =
-AUXILIARY_SHADER_VERSION
 "uniform lowp int uMSAASamples;	\n"
 "uniform lowp float uMSAAScale;	\n"
 "lowp vec4 sampleMS(in lowp sampler2DMS mstex, in mediump ivec2 ipos)			\n"
@@ -522,7 +503,6 @@ AUXILIARY_SHADER_VERSION
 #endif // GL_MULTISAMPLING_SUPPORT
 
 static const char* fragment_shader_noise =
-AUXILIARY_SHADER_VERSION
 #ifndef GLESX
 "uniform mediump vec2 uScreenScale;	\n"
 #endif
@@ -543,7 +523,6 @@ static const char* fragment_shader_dummy_noise =
 ;
 
 static const char* fragment_shader_depth =
-AUXILIARY_SHADER_VERSION
 #ifndef GLESX
 "uniform mediump vec2 uDepthScale;																	\n"
 #endif
@@ -562,7 +541,6 @@ static const char* fragment_shader_dummy_depth =
 #ifdef GL_IMAGE_TEXTURES_SUPPORT
 static const char* depth_compare_shader_float =
 #ifndef GLESX
-"#version 430								\n"
 "layout(binding = 2, rg32f) uniform coherent image2D uDepthImage;\n"
 #else
 "layout(binding = 2, rgba32f) highp uniform coherent image2D uDepthImage;\n"
@@ -620,7 +598,6 @@ static const char* depth_compare_shader_float =
 
 static const char* depth_render_shader =
 #ifndef GLESX
-"#version 430								\n"
 "layout(binding = 2, rg32f) uniform coherent image2D uDepthImage;\n"
 #else
 "layout(binding = 2, rgba32f) highp uniform coherent image2D uDepthImage;\n"
@@ -644,11 +621,9 @@ static const char* depth_render_shader =
 
 static const char* shadow_map_fragment_shader_float =
 #ifndef GLESX
-"#version 420 core											\n"
 "layout(binding = 0, r16ui) uniform readonly uimage2D uZlutImage;\n"
 "layout(binding = 1, r16ui) uniform readonly uimage2D uTlutImage;\n"
 #else
-MAIN_SHADER_VERSION
 "layout(binding = 0, r32ui) highp uniform readonly uimage2D uZlutImage;\n"
 "layout(binding = 1, r32ui) highp uniform readonly uimage2D uTlutImage;\n"
 #endif
@@ -676,7 +651,6 @@ MAIN_SHADER_VERSION
 #endif // GL_IMAGE_TEXTURES_SUPPORT
 
 static const char* default_vertex_shader =
-MAIN_SHADER_VERSION
 "in highp vec4 	aPosition;								\n"
 "void main()                                                    \n"
 "{                                                              \n"
@@ -686,7 +660,6 @@ MAIN_SHADER_VERSION
 
 #if 0 // Do palette based monochrome image. Exactly as N64 does
 static const char* zelda_monochrome_fragment_shader =
-"#version 420 core											\n"
 "layout(binding = 0) uniform sampler2D uColorImage;			\n"
 "layout(binding = 1, r16ui) uniform readonly uimage2D uTlutImage;\n"
 "out lowp vec4 fragColor;									\n"
@@ -710,7 +683,6 @@ static const char* zelda_monochrome_fragment_shader =
 ;
 #else // Cheat it
 static const char* zelda_monochrome_fragment_shader =
-MAIN_SHADER_VERSION
 "uniform sampler2D uColorImage;							\n"
 "out lowp vec4 fragColor;								\n"
 "void main()											\n"
@@ -725,7 +697,6 @@ MAIN_SHADER_VERSION
 #endif
 
 const char * strTexrectDrawerVertexShader =
-MAIN_SHADER_VERSION
 "in highp vec4 aPosition;		\n"
 "in highp vec2 aTexCoord0;		\n"
 "out mediump vec2 vTexCoord0;	\n"
@@ -737,7 +708,6 @@ MAIN_SHADER_VERSION
 ;
 
 const char * strTexrectDrawerTex3PointFilter =
-MAIN_SHADER_VERSION
 "uniform mediump vec4 uTextureBounds;																			\n"
 // 3 point texture filtering.
 // Original author: ArthurCarvalho
@@ -766,7 +736,6 @@ MAIN_SHADER_VERSION
 ;
 
 const char * strTexrectDrawerTexBilinearFilter =
-MAIN_SHADER_VERSION
 "uniform mediump vec4 uTextureBounds;																			\n"
 "#define TEX_OFFSET(off, tex, texCoord, texSize) texture(tex, texCoord - (off)/texSize)							\n"
 "#define TEX_FILTER(name, tex, texCoord)																		\\\n"
@@ -813,7 +782,6 @@ const char * strTexrectDrawerFragmentShaderTex =
 ;
 
 const char * strTexrectDrawerFragmentShaderClean =
-MAIN_SHADER_VERSION
 "lowp vec4 uTestColor = vec4(4.0/255.0, 2.0/255.0, 1.0/255.0, 0.0);	\n"
 "out lowp vec4 fragColor;													\n"
 "void main()																\n"
@@ -823,7 +791,6 @@ MAIN_SHADER_VERSION
 ;
 
 const char* strTextureCopyShader =
-MAIN_SHADER_VERSION
 "in mediump vec2 vTexCoord0;                            \n"
 "uniform sampler2D uTex0;				                \n"
 "out lowp vec4 fragColor;								\n"
