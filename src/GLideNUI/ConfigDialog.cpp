@@ -132,13 +132,8 @@ void ConfigDialog::_init()
 		ui->fixTexrectForceRadioButton->setChecked(true);
 		break;
 	}
+    ui->nativeRes2D_checkBox->toggle();
 	ui->nativeRes2D_checkBox->setChecked(config.generalEmulation.enableNativeResTexrects != 0);
-	if (ui->nativeRes2D_checkBox->isChecked()) {
-		ui->fixBlackLinesLabel->setEnabled(false);
-		ui->fixTexrectDisableRadioButton->setEnabled(false);
-		ui->fixTexrectSmartRadioButton->setEnabled(false);
-		ui->fixTexrectForceRadioButton->setEnabled(false);
-	}
 
 	ui->frameBufferSwapComboBox->setCurrentIndex(config.frameBufferEmulation.bufferSwapMode);
 
@@ -174,6 +169,9 @@ void ConfigDialog::_init()
 	}
 
 	ui->resolutionFactorSlider->valueChanged(2);
+    ui->factor0xRadioButton->toggle();
+    ui->factor1xRadioButton->toggle();
+    ui->factorXxRadioButton->toggle();
 	switch (config.frameBufferEmulation.nativeResFactor) {
 	case 0:
 		ui->factor0xRadioButton->setChecked(true);

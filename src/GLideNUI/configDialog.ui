@@ -4232,11 +4232,11 @@
   </connection>
  </connections>
  <buttongroups>
-  <buttongroup name="bloomBlendModeButtonGroup"/>
-  <buttongroup name="fixTexrectCoordsButtonGroup"/>
-  <buttongroup name="factorButtonGroup"/>
+  <buttongroup name="screenshotButtonGroup"/>
   <buttongroup name="aspectButtonGroup"/>
   <buttongroup name="osdButtonGroup"/>
-  <buttongroup name="screenshotButtonGroup"/>
+  <buttongroup name="bloomBlendModeButtonGroup"/>
+  <buttongroup name="factorButtonGroup"/>
+  <buttongroup name="fixTexrectCoordsButtonGroup"/>
  </buttongroups>
 </ui>
