@@ -17,8 +17,9 @@ void LOG(u16 type, const char * format, ...) {
 #ifdef OS_WINDOWS
 	FILE *dumpFile = _wfopen(logPath, wst("a+"));
 #else
-	char cbuf[MAX_PATH];
-	wcstombs(cbuf, logPath, MAX_PATH);
+	constexpr size_t bufSize = PLUGIN_PATH_SIZE * 6;
+	char cbuf[bufSize];
+	wcstombs(cbuf, logPath, bufSize);
 	FILE *dumpFile = fopen(cbuf, "a+");
 #endif
 
