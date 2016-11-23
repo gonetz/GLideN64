@@ -38,6 +38,7 @@ PFNGLGETFLOATVPROC glGetFloatv;
 PFNGLDELETETEXTURESPROC glDeleteTextures;
 PFNGLGENTEXTURESPROC glGenTextures;
 PFNGLTEXPARAMETERFPROC glTexParameterf;
+
 #endif // EGL
 
 // GLSL functions
@@ -102,6 +103,11 @@ PFNGLDELETEBUFFERSPROC glDeleteBuffers;
 PFNGLBINDIMAGETEXTUREPROC glBindImageTexture;
 PFNGLMEMORYBARRIERPROC glMemoryBarrier;
 PFNGLGETSTRINGIPROC glGetStringi;
+PFNGLINVALIDATEFRAMEBUFFERPROC glInvalidateFramebuffer;
+PFNGLBUFFERSTORAGEPROC glBufferStorage;
+PFNGLFENCESYNCPROC glFenceSync;
+PFNGLCLIENTWAITSYNCPROC glClientWaitSync;
+PFNGLDELETESYNCPROC glDeleteSync;
 
 PFNGLGETUNIFORMBLOCKINDEXPROC glGetUniformBlockIndex;
 PFNGLUNIFORMBLOCKBINDINGPROC glUniformBlockBinding;
@@ -209,6 +215,11 @@ void initGLFunctions()
 	glBindImageTexture = (PFNGLBINDIMAGETEXTUREPROC)glGetProcAddress( "glBindImageTexture" );
 	glMemoryBarrier = (PFNGLMEMORYBARRIERPROC)glGetProcAddress( "glMemoryBarrier" );
 	glGetStringi = (PFNGLGETSTRINGIPROC)glGetProcAddress("glGetStringi");
+	glInvalidateFramebuffer = (PFNGLINVALIDATEFRAMEBUFFERPROC)glGetProcAddress("glInvalidateFramebuffer");
+	glBufferStorage = (PFNGLBUFFERSTORAGEPROC)glGetProcAddress("glBufferStorage"); //For GLES 3.0 and 3.1 this is glBufferStorageEXT
+	glFenceSync = (PFNGLFENCESYNCPROC)glGetProcAddress("glFenceSync");
+	glClientWaitSync = (PFNGLCLIENTWAITSYNCPROC)glGetProcAddress("glClientWaitSync");
+	glDeleteSync = (PFNGLDELETESYNCPROC)glGetProcAddress("glDeleteSync");
 
 	glGetUniformBlockIndex = (PFNGLGETUNIFORMBLOCKINDEXPROC)glGetProcAddress("glGetUniformBlockIndex");
 	glUniformBlockBinding = (PFNGLUNIFORMBLOCKBINDINGPROC)glGetProcAddress("glUniformBlockBinding");

@@ -1,30 +1,6 @@
 #include "ColorBufferToRDRAM.h"
-
-#include <Textures.h>
 #include <FBOTextureFormats.h>
-
-class ColorBufferToRDRAM_GL : public ColorBufferToRDRAM
-{
-public:
-	ColorBufferToRDRAM_GL();
-	~ColorBufferToRDRAM_GL() {};
-
-private:
-	void _init() override;
-	void _destroy() override;
-	bool _readPixels(GLint _x0, GLint _y0, GLsizei _width, GLsizei _height, u32 _size, bool _sync)  override;
-	void _cleanUp()  override;
-	void _initBuffers(void) override;
-	static const int _numPBO = 3;
-	GLuint m_PBO[_numPBO];
-	u32 m_curIndex;
-};
-
-ColorBufferToRDRAM & ColorBufferToRDRAM::get()
-{
-	static ColorBufferToRDRAM_GL cbCopy;
-	return cbCopy;
-}
+#include "ColorBufferToRDRAM_GL.h"
 
 ColorBufferToRDRAM_GL::ColorBufferToRDRAM_GL()
 	: ColorBufferToRDRAM()
@@ -81,7 +57,7 @@ bool ColorBufferToRDRAM_GL::_readPixels(GLint _x0, GLint _y0, GLsizei _width, GL
 		glReadPixels(_x0, _y0, m_pTexture->realWidth, _height, colorFormat, colorType, 0);
 		glBindBuffer(GL_PIXEL_PACK_BUFFER, m_PBO[nextIndex]);
 	} else {
-		glBindBuffer(GL_PIXEL_PACK_BUFFER, m_PBO[2]);
+		glBindBuffer(GL_PIXEL_PACK_BUFFER, m_PBO[_numPBO - 1]);
 		glReadPixels(_x0, _y0, m_pTexture->realWidth, _height, colorFormat, colorType, 0);
 	}
 

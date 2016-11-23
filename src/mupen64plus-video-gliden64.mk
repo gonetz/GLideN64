@@ -135,7 +135,7 @@ LOCAL_STATIC_LIBRARIES  := $(MY_LOCAL_STATIC_LIBRARIES)
 LOCAL_ARM_MODE          := $(MY_LOCAL_ARM_MODE)
 LOCAL_C_INCLUDES        := $(MY_LOCAL_C_INCLUDES) $(LOCAL_PATH)/GLES3/include/
 LOCAL_SRC_FILES         := $(MY_LOCAL_SRC_FILES) $(SRCDIR)/GLUniforms/UniformSet.cpp $(SRCDIR)/OGL3X/GLSLCombiner_ogl3x.cpp \
-                           $(SRCDIR)/BufferCopy/ColorBufferToRDRAM_GL.cpp
+                           $(SRCDIR)/BufferCopy/ColorBufferToRDRAM_GL.cpp $(SRCDIR)/BufferCopy/ColorBufferToRDRAM_BufferStorageExt.cpp
 LOCAL_CFLAGS            := $(MY_LOCAL_CFLAGS) -DGLES3
 LOCAL_CPPFLAGS          := $(MY_LOCAL_CPPFLAGS)
 LOCAL_LDFLAGS           := $(MY_LOCAL_LDFLAGS)
@@ -152,7 +152,7 @@ LOCAL_STATIC_LIBRARIES  := $(MY_LOCAL_STATIC_LIBRARIES)
 LOCAL_ARM_MODE          := $(MY_LOCAL_ARM_MODE)
 LOCAL_C_INCLUDES        := $(MY_LOCAL_C_INCLUDES) $(LOCAL_PATH)/GLES3/include/
 LOCAL_SRC_FILES         := $(MY_LOCAL_SRC_FILES) $(SRCDIR)/GLUniforms/UniformSet.cpp $(SRCDIR)/OGL3X/GLSLCombiner_ogl3x.cpp \
-                           $(SRCDIR)/BufferCopy/ColorBufferToRDRAM_GL.cpp
+                           $(SRCDIR)/BufferCopy/ColorBufferToRDRAM_GL.cpp $(SRCDIR)/BufferCopy/ColorBufferToRDRAM_BufferStorageExt.cpp
 LOCAL_CFLAGS            := $(MY_LOCAL_CFLAGS) -DGLES3_1
 LOCAL_CPPFLAGS          := $(MY_LOCAL_CPPFLAGS)
 LOCAL_LDFLAGS           := $(MY_LOCAL_LDFLAGS)
@@ -169,7 +169,7 @@ LOCAL_STATIC_LIBRARIES  := $(MY_LOCAL_STATIC_LIBRARIES)
 LOCAL_ARM_MODE          := $(MY_LOCAL_ARM_MODE)
 LOCAL_C_INCLUDES        := $(MY_LOCAL_C_INCLUDES) $(LOCAL_PATH)/GL/
 LOCAL_SRC_FILES         := $(MY_LOCAL_SRC_FILES) $(SRCDIR)/GLUniforms/UniformSet.cpp $(SRCDIR)/OGL3X/GLSLCombiner_ogl3x.cpp \
-                           $(SRCDIR)/common/GLFunctions.cpp $(SRCDIR)/BufferCopy/ColorBufferToRDRAM_GL.cpp
+                           $(SRCDIR)/common/GLFunctions.cpp $(SRCDIR)/BufferCopy/ColorBufferToRDRAM_GL.cpp  $(SRCDIR)/BufferCopy/ColorBufferToRDRAM_BufferStorageExt.cpp
 LOCAL_CFLAGS            := $(MY_LOCAL_CFLAGS) -DEGL
 LOCAL_CPPFLAGS          := $(MY_LOCAL_CPPFLAGS)
 LOCAL_LDFLAGS           := $(MY_LOCAL_LDFLAGS)
