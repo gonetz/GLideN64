@@ -143,10 +143,9 @@ void ConfigDialog::_init()
 	ui->frameBufferCheckBox->toggle();
 	const bool fbEmulationEnabled = config.frameBufferEmulation.enable != 0;
 	ui->frameBufferCheckBox->setChecked(fbEmulationEnabled);
-	ui->frameBufferInfoLabel->setVisible(!fbEmulationEnabled);
-	ui->frameBufferInfoIcon->setVisible(!fbEmulationEnabled);
-	ui->frameBufferInfoLabel2->setVisible(!fbEmulationEnabled);
-	ui->frameBufferInfoIcon2->setVisible(!fbEmulationEnabled);
+    ui->frameBufferInfoFrame->setVisible(!fbEmulationEnabled);
+    ui->frameBufferInfoFrame2->setVisible(!fbEmulationEnabled);
+    ui->frameBufferInfoFrame3->setVisible(!fbEmulationEnabled);
 
 	ui->copyColorBufferComboBox->setCurrentIndex(config.frameBufferEmulation.copyToRDRAM);
 	ui->copyDepthBufferComboBox->setCurrentIndex(config.frameBufferEmulation.copyDepthToRDRAM);
@@ -184,7 +183,7 @@ void ConfigDialog::_init()
 		ui->resolutionFactorSlider->setValue(config.frameBufferEmulation.nativeResFactor);
 		break;
 	}
-	ui->factorXxRadioButton->toggled(fbEmulationEnabled && ui->factorXxRadioButton->isChecked());
+    //ui->factorXxRadioButton->toggled(fbEmulationEnabled && ui->factorXxRadioButton->isChecked());
 
 	ui->copyAuxBuffersCheckBox->setChecked(config.frameBufferEmulation.copyAuxToRDRAM != 0);
 
