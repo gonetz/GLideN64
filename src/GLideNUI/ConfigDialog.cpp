@@ -169,19 +169,22 @@ void ConfigDialog::_init()
 	}
 
 	ui->resolutionFactorSlider->valueChanged(2);
+    ui->factor0xRadioButton->toggle();
+    ui->factor1xRadioButton->toggle();
+    ui->factorXxRadioButton->toggle();
 	switch (config.frameBufferEmulation.nativeResFactor) {
 	case 0:
-        ui->factor0xRadioButton->toggled(true);
+		ui->factor0xRadioButton->setChecked(true);
 		break;
 	case 1:
-        ui->factor1xRadioButton->toggled(true);
+		ui->factor1xRadioButton->setChecked(true);
 		break;
 	default:
-        ui->factorXxRadioButton->toggled(true);
+		ui->factorXxRadioButton->setChecked(true);
 		ui->resolutionFactorSlider->setValue(config.frameBufferEmulation.nativeResFactor);
 		break;
 	}
-    //ui->factorXxRadioButton->toggled(fbEmulationEnabled && ui->factorXxRadioButton->isChecked());
+	ui->factorXxRadioButton->toggled(fbEmulationEnabled && ui->factorXxRadioButton->isChecked());
 
 	ui->copyAuxBuffersCheckBox->setChecked(config.frameBufferEmulation.copyAuxToRDRAM != 0);
 
