@@ -596,7 +596,7 @@ void ConfigDialog::on_frameBufferCheckBox_toggled(bool checked)
 	ui->readColorChunkCheckBox->setEnabled(checked && ui->fbInfoEnableCheckBox->isChecked());
 	ui->readDepthChunkCheckBox->setEnabled(checked && ui->fbInfoEnableCheckBox->isChecked());
 
-	ui->factorXxRadioButton->toggled(checked && ui->factorXxRadioButton->isChecked());
+    //ui->factorXxRadioButton->toggled(checked && ui->factorXxRadioButton->isChecked());
 
 	const bool bCustomCropEnabled = checked && ui->cropImageComboBox->currentIndex() == Config::cmCustom;
 	ui->cropImageWidthLabel->setEnabled(bCustomCropEnabled);
