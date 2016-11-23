@@ -36,7 +36,7 @@
 
 #ifdef OS_WINDOWS
 #include <GL/gl.h>
-#include "glext.h"
+#include <GL/glext.h>
 #elif defined(GLES2)
 #include <GLES2/gl2.h>
 #include <GLES2/gl2ext.h>

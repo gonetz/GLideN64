@@ -265,6 +265,7 @@
   <ItemGroup>
     <ClCompile Include="..\..\src\3DMath.cpp" />
     <ClCompile Include="..\..\src\BufferCopy\ColorBufferToRDRAM.cpp" />
+    <ClCompile Include="..\..\src\BufferCopy\ColorBufferToRDRAM_BufferStorageExt.cpp" />
     <ClCompile Include="..\..\src\BufferCopy\ColorBufferToRDRAM_GL.cpp" />
     <ClCompile Include="..\..\src\BufferCopy\DepthBufferToRDRAM.cpp" />
     <ClCompile Include="..\..\src\BufferCopy\RDRAMtoColorBuffer.cpp" />
@@ -380,6 +381,8 @@
   <ItemGroup>
     <ClInclude Include="..\..\src\3DMath.h" />
     <ClInclude Include="..\..\src\BufferCopy\ColorBufferToRDRAM.h" />
+    <ClInclude Include="..\..\src\BufferCopy\ColorBufferToRDRAM_BufferStorageExt.h" />
+    <ClInclude Include="..\..\src\BufferCopy\ColorBufferToRDRAM_GL.h" />
     <ClInclude Include="..\..\src\BufferCopy\DepthBufferToRDRAM.h" />
     <ClInclude Include="..\..\src\BufferCopy\RDRAMtoColorBuffer.h" />
     <ClInclude Include="..\..\src\BufferCopy\WriteToRDRAM.h" />

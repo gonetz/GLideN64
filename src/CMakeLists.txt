@@ -241,7 +241,6 @@ if(GLES2)
    )
    list(APPEND GLideN64_SOURCES 
     GLES2/GLSLCombiner_gles2.cpp
-    BufferCopy/ColorBufferToRDRAMStub.cpp
    )
    SET(OPENGL_LIBRARIES -lGLESv2 -lEGL)
 else(GLES2)
@@ -255,6 +254,7 @@ else(GLES2)
   list(APPEND GLideN64_SOURCES 
     OGL3X/GLSLCombiner_ogl3x.cpp
     BufferCopy/ColorBufferToRDRAM_GL.cpp
+    BufferCopy/ColorBufferToRDRAM_BufferStorageExt.cpp
   )
 endif(GLES2)
 

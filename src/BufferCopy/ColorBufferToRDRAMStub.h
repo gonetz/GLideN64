@@ -13,9 +13,3 @@ private:
 	bool _readPixels(GLint _x0, GLint _y0, GLsizei _width, GLsizei _height, u32 _size, bool _sync)  override {}
 	void _cleanUp()  override {}
 };
-
-ColorBufferToRDRAM & ColorBufferToRDRAM::get()
-{
-	static ColorBufferToRDRAMStub cbCopy;
-	return cbCopy;
-}

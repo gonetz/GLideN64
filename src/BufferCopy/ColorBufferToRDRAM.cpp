@@ -6,11 +6,18 @@
 
 #include <FBOTextureFormats.h>
 #include <FrameBuffer.h>
-#include <Textures.h>
 #include <Config.h>
 #include <N64.h>
 #include <VI.h>
-#include <Log.h>
+#include "Log.h"
+#ifndef GLES2
+#include "ColorBufferToRDRAM_GL.h"
+#include "ColorBufferToRDRAM_BufferStorageExt.h"
+#elif defined(ANDROID) && defined (GLES2)
+#include "ColorBufferToRDRAM_GLES.h"
+#else
+#include "ColorBufferToRDRAMStub.h"
+#endif
 
 ColorBufferToRDRAM::ColorBufferToRDRAM()
 	: m_FBO(0)
@@ -262,6 +269,31 @@ void ColorBufferToRDRAM::copyChunkToRDRAM(u32 _address)
 	if (!_prepareCopy(_address))
 		return;
 	_copy(_address, _address + 0x1000, true);
+}
+
+
+ColorBufferToRDRAM & ColorBufferToRDRAM::get()
+{
+#ifndef GLES2
+
+	static bool supportsBufferStorage = OGLVideo::isExtensionSupported("GL_EXT_buffer_storage") ||
+		OGLVideo::isExtensionSupported("GL_ARB_buffer_storage");
+
+	if (supportsBufferStorage) {
+		static ColorBufferToRDRAM_BufferStorageExt cbCopy;
+		return cbCopy;
+	} else {
+		static ColorBufferToRDRAM_GL cbCopy;
+		return cbCopy;
+	}
+
+#elif defined(ANDROID) && defined (GLES2)
+	static ColorBufferToRDRAM_GLES cbCopy;
+	return cbCopy;
+#else
+	static ColorBufferToRDRAMStub cbCopy;
+	return cbCopy;
+#endif
 }
 
 void copyWhiteToRDRAM(FrameBuffer * _pBuffer)
