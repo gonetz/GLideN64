@@ -592,6 +592,12 @@ void ConfigDialog::on_cropImageComboBox_currentIndexChanged(int index)
 
 void ConfigDialog::on_frameBufferCheckBox_toggled(bool checked)
 {
+
+    if (!checked)
+    {
+        ui->nativeRes2DFrame->setEnabled(true);
+    }
+
 	ui->readColorChunkCheckBox->setEnabled(checked && ui->fbInfoEnableCheckBox->isChecked());
 	ui->readDepthChunkCheckBox->setEnabled(checked && ui->fbInfoEnableCheckBox->isChecked());
 
