@@ -104,8 +104,12 @@ bool isGLError()
 
 	if ((errCode = glGetError()) != GL_NO_ERROR) {
 		errString = GLErrorString(errCode);
-		if (errString != nullptr)
-			fprintf (stderr, "OpenGL Error: %s\n", errString);
+		if (errString != nullptr) {
+			LOG(LOG_ERROR, "OpenGL Error: %s (%x)", errString, errCode);
+		} else {
+			LOG(LOG_ERROR, "OpenGL Error: %x", errCode);
+		}
+
 		return true;
 	}
 	return false;

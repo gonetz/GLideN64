@@ -87,10 +87,23 @@ void FrameBuffer::_initTexture(u16 _width, u16 _height, u16 _format, u16 _size, 
 void FrameBuffer::_setAndAttachTexture(u16 _size, CachedTexture *_pTexture)
 {
 	glBindTexture(GL_TEXTURE_2D, _pTexture->glName);
-	if (_size > G_IM_SIZ_8b)
-		glTexImage2D(GL_TEXTURE_2D, 0, fboFormats.colorInternalFormat, _pTexture->realWidth, _pTexture->realHeight, 0, fboFormats.colorFormat, fboFormats.colorType, nullptr);
-	else
-		glTexImage2D(GL_TEXTURE_2D, 0, fboFormats.monochromeInternalFormat, _pTexture->realWidth, _pTexture->realHeight, 0, fboFormats.monochromeFormat, fboFormats.monochromeType, nullptr);
+	if (_size > G_IM_SIZ_8b) {
+
+#if defined(GLES3) || defined (GLES3_1)
+		glTexStorage2D(GL_TEXTURE_2D, 1, fboFormats.colorInternalFormat, _pTexture->realWidth, _pTexture->realHeight);
+#else
+		glTexImage2D(GL_TEXTURE_2D, 0, fboFormats.colorInternalFormat, _pTexture->realWidth, _pTexture->realHeight, 0,
+					 fboFormats.colorFormat, fboFormats.colorType, nullptr);
+#endif
+
+	} else {
+#if defined(GLES3) || defined (GLES3_1)
+		glTexStorage2D(GL_TEXTURE_2D, 1, fboFormats.monochromeInternalFormat, _pTexture->realWidth, _pTexture->realHeight);
+#else
+		glTexImage2D(GL_TEXTURE_2D, 0, fboFormats.monochromeInternalFormat, _pTexture->realWidth, _pTexture->realHeight,
+					 0, fboFormats.monochromeFormat, fboFormats.monochromeType, nullptr);
+#endif
+	}
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
@@ -143,12 +156,12 @@ void FrameBuffer::init(u32 _address, u32 _endAddress, u16 _format, u16 _size, u1
 		glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, m_pTexture->glName);
 #if defined(GLESX)
 		if (_size > G_IM_SIZ_8b)
-			glTexStorage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, config.video.multisampling, GL_RGBA8, m_pTexture->realWidth, m_pTexture->realHeight, false);
+			glTexStorage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, config.video.multisampling, fboFormats.colorInternalFormat, m_pTexture->realWidth, m_pTexture->realHeight, false);
 		else
 			glTexStorage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, config.video.multisampling, fboFormats.monochromeInternalFormat, m_pTexture->realWidth, m_pTexture->realHeight, false);
 #else
 		if (_size > G_IM_SIZ_8b)
-			glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, config.video.multisampling, GL_RGBA8, m_pTexture->realWidth, m_pTexture->realHeight, false);
+			glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, config.video.multisampling, fboFormats.colorInternalFormat, m_pTexture->realWidth, m_pTexture->realHeight, false);
 		else
 			glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, config.video.multisampling, fboFormats.monochromeInternalFormat, m_pTexture->realWidth, m_pTexture->realHeight, false);
 #endif
@@ -336,10 +349,22 @@ bool FrameBuffer::_initSubTexture(u32 _t)
 
 	glActiveTexture(GL_TEXTURE0 + _t);
 	glBindTexture(GL_TEXTURE_2D, m_pSubTexture->glName);
-	if (m_pSubTexture->size > G_IM_SIZ_8b)
-		glTexImage2D(GL_TEXTURE_2D, 0, fboFormats.colorInternalFormat, m_pSubTexture->realWidth, m_pSubTexture->realHeight, 0, fboFormats.colorFormat, fboFormats.colorType, nullptr);
-	else
-		glTexImage2D(GL_TEXTURE_2D, 0, fboFormats.monochromeInternalFormat, m_pSubTexture->realWidth, m_pSubTexture->realHeight, 0, fboFormats.monochromeFormat, fboFormats.monochromeType, nullptr);
+	if (m_pSubTexture->size > G_IM_SIZ_8b) {
+#if defined(GLES3) || defined (GLES3_1)
+		glTexStorage2D(GL_TEXTURE_2D, 1, fboFormats.colorInternalFormat, m_pSubTexture->realWidth, m_pSubTexture->realHeight);
+#else
+		glTexImage2D(GL_TEXTURE_2D, 0, fboFormats.colorInternalFormat, m_pSubTexture->realWidth,
+					 m_pSubTexture->realHeight, 0, fboFormats.colorFormat, fboFormats.colorType, nullptr);
+#endif
+	} else {
+#if defined(GLES3) || defined (GLES3_1)
+		glTexStorage2D(GL_TEXTURE_2D, 1, fboFormats.monochromeInternalFormat, m_pSubTexture->realWidth, m_pSubTexture->realHeight);
+#else
+		glTexImage2D(GL_TEXTURE_2D, 0, fboFormats.monochromeInternalFormat, m_pSubTexture->realWidth,
+					 m_pSubTexture->realHeight, 0, fboFormats.monochromeFormat, fboFormats.monochromeType, nullptr);
+#endif
+	}
+	
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
