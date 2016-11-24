@@ -911,7 +911,7 @@ void FrameBufferList::renderBuffer(u32 _address)
 	const s32 hx1 = max(0, h0 + 640 - hEnd);
 	X0 = (GLint)((hx0 * viScaleX + Xoffset) * dstScaleX);
 	Xwidth = (GLint)((min((f32)VI.width, (hEnd - hStart)*viScaleX - Xoffset - Xdivot)) * srcScaleX);
-	X1 = ogl.getWidth() - (GLint)(hx1 *viScaleX * dstScaleX);
+	X1 = ogl.getWidth() - (GLint)((hx1*viScaleX + Xdivot) * dstScaleX);
 
 	const f32 srcScaleY = pFilteredBuffer->m_scaleY;
 	CachedTexture * pBufferTexture = pFilteredBuffer->m_pTexture;
