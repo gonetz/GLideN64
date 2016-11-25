@@ -33,11 +33,7 @@ private slots:
 
 	void on_texPackPathButton_clicked();
 
-	void on_fbInfoDisableCheckBox_toggled(bool checked);
-
 	void on_windowedResolutionComboBox_currentIndexChanged(int index);
-
-	void on_nativeRes2D_checkBox_toggled(bool checked);
 
 	void on_cropImageComboBox_currentIndexChanged(int index);
 
