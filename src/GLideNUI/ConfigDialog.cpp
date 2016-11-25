@@ -556,12 +556,6 @@ void ConfigDialog::on_texPackPathButton_clicked()
 		ui->txPathLabel->setText(directory);
 }
 
-void ConfigDialog::on_fbInfoDisableCheckBox_toggled(bool checked)
-{
-	ui->readColorChunkCheckBox->setEnabled(!checked);
-	ui->readDepthChunkCheckBox->setEnabled(!checked);
-}
-
 void ConfigDialog::on_windowedResolutionComboBox_currentIndexChanged(int index)
 {
 	const bool bCustom = index == numWindowedModes - 1;
@@ -571,14 +565,6 @@ void ConfigDialog::on_windowedResolutionComboBox_currentIndexChanged(int index)
 	ui->windowHeightLabel->setEnabled(bCustom);
 	ui->windowHeightSpinBox->setValue(bCustom ? config.video.windowedHeight : WindowedModes[index].height);
 	ui->windowHeightSpinBox->setEnabled(bCustom);
-}
-
-void ConfigDialog::on_nativeRes2D_checkBox_toggled(bool checked)
-{
-	ui->fixBlackLinesLabel->setEnabled(!checked);
-	ui->fixTexrectDisableRadioButton->setEnabled(!checked);
-	ui->fixTexrectSmartRadioButton->setEnabled(!checked);
-	ui->fixTexrectForceRadioButton->setEnabled(!checked);
 }
 
 void ConfigDialog::on_cropImageComboBox_currentIndexChanged(int index)
@@ -601,10 +587,4 @@ void ConfigDialog::on_frameBufferCheckBox_toggled(bool checked)
 
 	ui->readColorChunkCheckBox->setEnabled(checked && ui->fbInfoEnableCheckBox->isChecked());
 	ui->readDepthChunkCheckBox->setEnabled(checked && ui->fbInfoEnableCheckBox->isChecked());
-
-	const bool bCustomCropEnabled = checked && ui->cropImageComboBox->currentIndex() == Config::cmCustom;
-	ui->cropImageWidthLabel->setEnabled(bCustomCropEnabled);
-	ui->cropImageWidthSpinBox->setEnabled(bCustomCropEnabled);
-	ui->cropImageHeightLabel->setEnabled(bCustomCropEnabled);
-	ui->cropImageHeightSpinBox->setEnabled(bCustomCropEnabled);
 }
