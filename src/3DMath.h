@@ -63,43 +63,4 @@ inline void CopyMatrix( float m0[4][4], float m1[4][4] )
 #endif // WIN32_ASM
 }
 
-inline void Transpose3x3Matrix( float mtx[4][4] )
-{
-#ifdef WIN32_ASM
-	__asm
-	{
-		mov		esi, [mtx]
-
-		mov		eax, dword ptr [esi+04h]
-		mov		ebx, dword ptr [esi+10h]
-		mov		dword ptr [esi+04h], ebx
-		mov		dword ptr [esi+10h], eax
-
-		mov		eax, dword ptr [esi+08h]
-		mov		ebx, dword ptr [esi+20h]
-		mov		dword ptr [esi+08h], ebx
-		mov		dword ptr [esi+20h], eax
-
-		mov		eax, dword ptr [esi+18h]
-		mov		ebx, dword ptr [esi+24h]
-		mov		dword ptr [esi+18h], ebx
-		mov		dword ptr [esi+24h], eax
-	}
-#else // WIN32_ASM
-	float tmp;
-
-	tmp = mtx[0][1];
-	mtx[0][1] = mtx[1][0];
-	mtx[1][0] = tmp;
-
-	tmp = mtx[0][2];
-	mtx[0][2] = mtx[2][0];
-	mtx[2][0] = tmp;
-
-	tmp = mtx[1][2];
-	mtx[1][2] = mtx[2][1];
-	mtx[2][1] = tmp;
-#endif // WIN32_ASM
-}
-
 #endif
