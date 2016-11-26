@@ -11,7 +11,7 @@
 #include "ColorBufferToRDRAM_BufferStorageExt.h"
 
 ColorBufferToRDRAM_BufferStorageExt::ColorBufferToRDRAM_BufferStorageExt()
-	: ColorBufferToRDRAM(), m_curIndex(0)
+	: ColorBufferToRDRAM(), m_curIndex(0), m_buffersBound(false)
 {
 #ifdef GLESX
 	glBufferStorage = (PFNGLBUFFERSTORAGEPROC)eglGetProcAddress("glBufferStorageEXT");
@@ -22,6 +22,7 @@ void ColorBufferToRDRAM_BufferStorageExt::_init()
 {
 	// Generate Pixel Buffer Objects
 	glGenBuffers(_numPBO, m_PBO);
+	m_buffersBound = false;
 }
 
 void ColorBufferToRDRAM_BufferStorageExt::_destroy()
@@ -34,6 +35,7 @@ void ColorBufferToRDRAM_BufferStorageExt::_destroy()
 	}
 
 	glDeleteBuffers(_numPBO, m_PBO);
+	m_buffersBound = false;
 
 	for (int index = 0; index < _numPBO; ++index) {
 		m_PBO[index] = 0;
@@ -42,6 +44,10 @@ void ColorBufferToRDRAM_BufferStorageExt::_destroy()
 
 void ColorBufferToRDRAM_BufferStorageExt::_initBuffers(void)
 {
+	if (m_buffersBound) {
+		_destroy();
+		_init();
+	}
 	// Initialize Pixel Buffer Objects
 	for (int index = 0; index < _numPBO; ++index) {
 		glBindBuffer(GL_PIXEL_PACK_BUFFER, m_PBO[index]);
@@ -49,6 +55,7 @@ void ColorBufferToRDRAM_BufferStorageExt::_initBuffers(void)
 		glBufferStorage(GL_PIXEL_PACK_BUFFER, m_pTexture->textureBytes, nullptr, GL_MAP_READ_BIT | GL_MAP_PERSISTENT_BIT);
 		m_PBOData[index] = glMapBufferRange(GL_PIXEL_PACK_BUFFER, 0, m_pTexture->textureBytes, GL_MAP_READ_BIT | GL_MAP_PERSISTENT_BIT );
 	}
+	m_buffersBound = true;;
 
 	glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
 }
