@@ -79,11 +79,45 @@ void TransformVectorNormalize(float vec[3], float mtx[4][4])
 
 void InverseTransformVectorNormalize(float src[3], float dst[3], float mtx[4][4])
 {
-	dst[0] = mtx[0][0] * src[0] + mtx[0][1] * src[1] + mtx[0][2] * src[2];
-	dst[1] = mtx[1][0] * src[0] + mtx[1][1] * src[1] + mtx[1][2] * src[2];
-	dst[2] = mtx[2][0] * src[0] + mtx[2][1] * src[1] + mtx[2][2] * src[2];
+	asm volatile (
+	"vld1.32 		{d0}, [%1]  			\n\t"	//Q0 = v
+	"flds    		s2, [%1, #8]  			\n\t"	//Q0 = v
+	"vld1.32 		{d18, d19}, [%0]!		\n\t"	//D18 = m
+	"vld1.32 		{d20, d21}, [%0]!	    \n\t"	//D20 = m+4
+	"vld1.32 		{d22, d23}, [%0]	    \n\t"	//D22 = m+8
 
-	Normalize(dst);
+	"vmul.f32 		q2, q0, q9				\n\t"
+	"vmul.f32 		q3, q0, q10				\n\t"
+	"vmul.f32 		q4, q0, q11				\n\t"
+	"vpadd.f32 		d4, d4, d5				\n\t"
+	"vpadd.f32 		d4, d4, d4				\n\t"  //d4[0] = sum of q2
+	"vpadd.f32 		d8, d8, d9				\n\t"
+	"vpadd.f32 		d5, d8, d8				\n\t"  //d5[0] = sum of q4
+	"vpadd.f32 		d6, d6, d7				\n\t"
+	"vpadd.f32 		d10, d6, d6				\n\t"
+	"vmov.f32 		s9, s20					\n\t"  //d4[1] = sum of q3
+
+	"vmul.f32 		d0, d4, d4				\n\t"	//d0 = d0*d0
+	"vpadd.f32 		d0, d0, d0				\n\t"	//d0 = d[0] + d[1]
+	"vmla.f32 		d0, d5, d5				\n\t"	//d0 = d0 + d1*d1
+
+	"vmov.f32 		d1, d0					\n\t"	//d1 = d0
+	"vrsqrte.f32 	d0, d0					\n\t"	//d0 = ~ 1.0 / sqrt(d0)
+	"vmul.f32 		d2, d0, d1				\n\t"	//d2 = d0 * d1
+	"vrsqrts.f32 	d3, d2, d0				\n\t"	//d3 = (3 - d0 * d2) / 2
+	"vmul.f32 		d0, d0, d3				\n\t"	//d0 = d0 * d3
+	"vmul.f32 		d2, d0, d1				\n\t"	//d2 = d0 * d1
+	"vrsqrts.f32 	d3, d2, d0				\n\t"	//d3 = (3 - d0 * d3) / 2
+	"vmul.f32 		d0, d0, d3				\n\t"	//d0 = d0 * d4
+
+	"vmul.f32 		q2, q2, d0[0]			\n\t"	//d0= d2*d4
+
+	"vst1.32 		{d4}, [%2] 	    	    \n\t"	//Q4 = m+12
+	"fsts   		s10, [%2, #8] 	    	\n\t"	//Q4 = m+12
+	: "+r"(mtx): "r"(src), "r"(dst)
+	: "d0","d1","d2","d3","d4","d5","d6","d7","d8","d9","d18","d19",
+	"d20","d21","d22", "d23", "memory"
+	);
 }
 
 void Normalize(float v[3])
