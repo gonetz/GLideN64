@@ -15,27 +15,24 @@ void MultMatrix(float m0[4][4], float m1[4][4], float dest[4][4])
 
 void TransformVectorNormalize(float vec[3], float mtx[4][4])
 {
-	float len;
-
 	float vres[3];
-	vres[0] = mtx[0][0] * vec[0]
-		   + mtx[1][0] * vec[1]
-		   + mtx[2][0] * vec[2];
-	vres[1] = mtx[0][1] * vec[0]
-		   + mtx[1][1] * vec[1]
-		   + mtx[2][1] * vec[2];
-	vres[2] = mtx[0][2] * vec[0]
-		   + mtx[1][2] * vec[1]
-		   + mtx[2][2] * vec[2];
-	memcpy(vec, vres, sizeof(float)*3);
-	len = vec[0]*vec[0] + vec[1]*vec[1] + vec[2]*vec[2];
-	if (len != 0.0)
-	{
-		len = sqrtf(len);
-		vec[0] /= len;
-		vec[1] /= len;
-		vec[2] /= len;
-	}
+	vres[0] = mtx[0][0] * vec[0] + mtx[1][0] * vec[1] + mtx[2][0] * vec[2];
+	vres[1] = mtx[0][1] * vec[0] + mtx[1][1] * vec[1] + mtx[2][1] * vec[2];
+	vres[2] = mtx[0][2] * vec[0] + mtx[1][2] * vec[1] + mtx[2][2] * vec[2];
+	vec[0] = vres[0];
+	vec[1] = vres[1];
+	vec[2] = vres[2];
+
+	Normalize(vec);
+}
+
+void InverseTransformVectorNormalize(float src[3], float dst[3], float mtx[4][4])
+{
+	dst[0] = mtx[0][0] * src[0] + mtx[0][1] * src[1] + mtx[0][2] * src[2];
+	dst[1] = mtx[1][0] * src[0] + mtx[1][1] * src[1] + mtx[1][2] * src[2];
+	dst[2] = mtx[2][0] * src[0] + mtx[2][1] * src[1] + mtx[2][2] * src[2];
+
+	Normalize(dst);
 }
 
 void Normalize(float v[3])

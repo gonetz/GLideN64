@@ -326,9 +326,11 @@ void CombinerInfo::updateTextureParameters()
 
 void CombinerInfo::updateLightParameters()
 {
-	if (m_pUniformCollection != nullptr)
-		m_pUniformCollection->updateLightParameters();
-	gSP.changed &= ~CHANGED_LIGHT;
+	if (config.generalEmulation.enableHWLighting != 0) {
+		if (m_pUniformCollection != nullptr)
+			m_pUniformCollection->updateLightParameters();
+	}
+	gSP.changed ^= CHANGED_HW_LIGHT;
 }
 
 void CombinerInfo::updateParameters(OGLRender::RENDER_STATE _renderState)
@@ -384,7 +386,7 @@ Storage format:
   uint32 - number of shaders
   shaders in binary form
 */
-static const u32 ShaderStorageFormatVersion = 0x0CU;
+static const u32 ShaderStorageFormatVersion = 0x0DU;
 void CombinerInfo::_saveShadersStorage() const
 {
 	if (m_shadersLoaded >= m_combiners.size())

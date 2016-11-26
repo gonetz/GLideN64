@@ -77,6 +77,15 @@ void TransformVectorNormalize(float vec[3], float mtx[4][4])
 	);
 }
 
+void InverseTransformVectorNormalize(float src[3], float dst[3], float mtx[4][4])
+{
+	dst[0] = mtx[0][0] * src[0] + mtx[0][1] * src[1] + mtx[0][2] * src[2];
+	dst[1] = mtx[1][0] * src[0] + mtx[1][1] * src[1] + mtx[1][2] * src[2];
+	dst[2] = mtx[2][0] * src[0] + mtx[2][1] * src[1] + mtx[2][2] * src[2];
+
+	Normalize(dst);
+}
+
 void Normalize(float v[3])
 {
 	asm volatile (

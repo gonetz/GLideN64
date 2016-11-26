@@ -7,11 +7,13 @@
 
 #define CHANGED_VIEWPORT		0x01
 #define CHANGED_MATRIX			0x02
+#define CHANGED_TEXTURE			0x04
 #define CHANGED_GEOMETRYMODE	0x08
-#define CHANGED_TEXTURE			0x10
-#define CHANGED_FOGPOSITION		0x20
-#define CHANGED_LIGHT			0x40
+#define CHANGED_FOGPOSITION		0x10
+#define CHANGED_LIGHT			0x20
+#define CHANGED_LOOKAT			0x40
 #define CHANGED_TEXTURESCALE	0x80
+#define CHANGED_HW_LIGHT		0x100
 
 #define CLIP_X      0x03
 #define CLIP_NEGX   0x01
@@ -55,6 +57,7 @@ struct SPLight
 {
 	f32 r, g, b;
 	f32 x, y, z;
+	f32 ix, iy, iz;
 	f32 posx, posy, posz, posw;
 	f32 ca, la, qa;
 };
@@ -85,6 +88,7 @@ struct gSPInfo
 
 	SPLight lights[12];
 	SPLight lookat[2];
+	s32 numLights;
 	bool lookatEnable;
 
 	struct
@@ -115,8 +119,6 @@ struct gSPInfo
 	} bgImage;
 
 	u32 geometryMode;
-	s32 numLights;
-
 	u32 changed;
 
 	struct {

@@ -243,7 +243,7 @@ void UniformBlock::updateLightParameters()
 	GLbyte * pData = m_lightBlockData.data();
 	const u32 arraySize = m_lightBlock.m_offsets[luLightColor] / 8;
 	for (s32 i = 0; i <= gSP.numLights; ++i) {
-		memcpy(pData + m_lightBlock.m_offsets[luLightDirection] + arraySize*i, &gSP.lights[i].x, arraySize);
+		memcpy(pData + m_lightBlock.m_offsets[luLightDirection] + arraySize*i, &gSP.lights[i].ix, arraySize);
 		memcpy(pData + m_lightBlock.m_offsets[luLightColor] + arraySize*i, &gSP.lights[i].r, arraySize);
 	}
 	if (m_currentBuffer != m_lightBlock.m_buffer) {

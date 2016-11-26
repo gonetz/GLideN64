@@ -122,7 +122,7 @@ void UniformSet::_updateTextureSize(UniformSetLocation & _location, bool _bUsesT
 void UniformSet::_updateLightUniforms(UniformSetLocation & _location, bool _bForce)
 {
 	for (s32 i = 0; i <= gSP.numLights; ++i) {
-		_location.uLightDirection[i].set(&gSP.lights[i].x, _bForce);
+		_location.uLightDirection[i].set(&gSP.lights[i].ix, _bForce);
 		_location.uLightColor[i].set(&gSP.lights[i].r, _bForce);
 	}
 }
