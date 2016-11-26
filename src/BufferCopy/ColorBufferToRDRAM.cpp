@@ -98,6 +98,8 @@ void ColorBufferToRDRAM::_destroyFBTexure(void)
 	if (m_pTexture != nullptr) {
 		textureCache().removeFrameBufferTexture(m_pTexture);
 		m_pTexture = nullptr;
+
+		_destroyBuffers();
 	}
 }
 
