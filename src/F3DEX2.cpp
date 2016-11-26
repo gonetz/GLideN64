@@ -95,10 +95,6 @@ void F3DEX2_MoveWord( u32 w0, u32 w1 )
 			break;
 		case G_MW_FOG:
 			gSPFogFactor( (s16)_SHIFTR( w1, 16, 16 ), (s16)_SHIFTR( w1, 0, 16 ) );
-			//offset must be 0 for move_fog, but it can be non zero in Nushi Zuri 64 - Shiokaze ni Notte
-			//low-level display list has setothermode commands in this place, so this is obviously not move_fog.
-			if (_SHIFTR(w0, 0, 16) == 0x04)
-				gDPSetTextureLUT((w1 == 0xffffffff) ? G_TT_NONE : G_TT_RGBA16);
 			break;
 		case G_MW_LIGHTCOL:
 			gSPLightColor((_SHIFTR( w0, 0, 16 ) / 24) + 1, w1 );
