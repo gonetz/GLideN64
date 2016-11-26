@@ -323,6 +323,8 @@ void RSP_Init()
 		config.generalEmulation.hacks |= hack_Ogre64;
 	else if (strstr(RSP.romname, (const char *)"F1 POLE POSITION 64") != nullptr)
 		config.generalEmulation.hacks |= hack_noDepthFrameBuffers;
+	else if (strstr(RSP.romname, (const char *)"ROADSTERS TROPHY") != nullptr)
+		config.generalEmulation.hacks |= hack_noDepthFrameBuffers;
 	else if (strstr(RSP.romname, (const char *)"CONKER BFD") != nullptr)
 		config.generalEmulation.hacks |= hack_blurPauseScreen | hack_rectDepthBufferCopyCBFD;
 	else if (strstr(RSP.romname, (const char *)"MICKEY USA") != nullptr)
