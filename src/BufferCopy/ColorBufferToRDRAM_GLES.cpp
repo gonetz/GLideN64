@@ -24,7 +24,7 @@ void ColorBufferToRDRAM_GLES::_init()
 	m_window = new GraphicBuffer();
 }
 
-void ColorBufferToRDRAM_GLES::_destroy()
+void ColorBufferToRDRAM_GLES::_destroyBuffers()
 {
 }
 

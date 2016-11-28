@@ -11,43 +11,28 @@
 #include "ColorBufferToRDRAM_BufferStorageExt.h"
 
 ColorBufferToRDRAM_BufferStorageExt::ColorBufferToRDRAM_BufferStorageExt()
-	: ColorBufferToRDRAM(), m_curIndex(0), m_buffersBound(false)
+	: ColorBufferToRDRAM(), m_curIndex(0)
 {
 #ifdef GLESX
 	glBufferStorage = (PFNGLBUFFERSTORAGEPROC)eglGetProcAddress("glBufferStorageEXT");
 #endif
-}
-
-void ColorBufferToRDRAM_BufferStorageExt::_init()
-{
-	// Generate Pixel Buffer Objects
-	glGenBuffers(_numPBO, m_PBO);
-	m_buffersBound = false;
-}
-
-void ColorBufferToRDRAM_BufferStorageExt::_destroy()
-{
-	for (int index = 0; index < _numPBO; ++index) {
-		if (m_PBOData[index] != nullptr) {
-			glBindBuffer(GL_PIXEL_PACK_BUFFER, m_PBO[index]);
-			glUnmapBuffer(GL_PIXEL_PACK_BUFFER);
-		}
-	}
-
-	glDeleteBuffers(_numPBO, m_PBO);
-	m_buffersBound = false;
 
 	for (int index = 0; index < _numPBO; ++index) {
+		m_PBOData[index] = nullptr;
 		m_PBO[index] = 0;
 	}
 }
 
+void ColorBufferToRDRAM_BufferStorageExt::_init()
+{
+}
+
 void ColorBufferToRDRAM_BufferStorageExt::_initBuffers(void)
 {
-	if (m_buffersBound) {
-		_destroy();
-		_init();
-	}
+	// Generate Pixel Buffer Objects
+	glGenBuffers(_numPBO, m_PBO);
+	m_curIndex = 0;
+
 	// Initialize Pixel Buffer Objects
 	for (int index = 0; index < _numPBO; ++index) {
 		glBindBuffer(GL_PIXEL_PACK_BUFFER, m_PBO[index]);
@@ -55,9 +40,16 @@ void ColorBufferToRDRAM_BufferStorageExt::_initBuffers(void)
 		glBufferStorage(GL_PIXEL_PACK_BUFFER, m_pTexture->textureBytes, nullptr, GL_MAP_READ_BIT | GL_MAP_PERSISTENT_BIT);
 		m_PBOData[index] = glMapBufferRange(GL_PIXEL_PACK_BUFFER, 0, m_pTexture->textureBytes, GL_MAP_READ_BIT | GL_MAP_PERSISTENT_BIT );
 	}
-	m_buffersBound = true;;
 
 	glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
+}
+
+void ColorBufferToRDRAM_BufferStorageExt::_destroyBuffers(void)
+{
+	glDeleteBuffers(_numPBO, m_PBO);
+
+	for (int index = 0; index < _numPBO; ++index)
+		m_PBO[index] = 0;
 }
 
 bool ColorBufferToRDRAM_BufferStorageExt::_readPixels(GLint _x0, GLint _y0, GLsizei _width, GLsizei _height, u32 _size, bool _sync)

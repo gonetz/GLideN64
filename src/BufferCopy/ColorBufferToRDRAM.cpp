@@ -48,7 +48,6 @@ void ColorBufferToRDRAM::init()
 
 void ColorBufferToRDRAM::destroy() {
 	_destroyFBTexure();
-	_destroy();
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 	if (m_FBO != 0) {
 		glDeleteFramebuffers(1, &m_FBO);
@@ -95,6 +94,8 @@ void ColorBufferToRDRAM::_initFBTexture(void)
 
 void ColorBufferToRDRAM::_destroyFBTexure(void)
 {
+	_destroyBuffers();
+
 	if (m_pTexture != nullptr) {
 		textureCache().removeFrameBufferTexture(m_pTexture);
 		m_pTexture = nullptr;

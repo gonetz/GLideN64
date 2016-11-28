@@ -12,12 +12,9 @@ ColorBufferToRDRAM_GL::ColorBufferToRDRAM_GL()
 
 void ColorBufferToRDRAM_GL::_init()
 {
-	// Generate Pixel Buffer Objects
-	glGenBuffers(_numPBO, m_PBO);
-	m_curIndex = 0;
 }
 
-void ColorBufferToRDRAM_GL::_destroy()
+void ColorBufferToRDRAM_GL::_destroyBuffers()
 {
 	glDeleteBuffers(_numPBO, m_PBO);
 
@@ -27,6 +24,10 @@ void ColorBufferToRDRAM_GL::_destroy()
 
 void ColorBufferToRDRAM_GL::_initBuffers(void)
 {
+	// Generate Pixel Buffer Objects
+	glGenBuffers(_numPBO, m_PBO);
+	m_curIndex = 0;
+
 	// Initialize Pixel Buffer Objects
 	for (u32 i = 0; i < _numPBO; ++i) {
 		glBindBuffer(GL_PIXEL_PACK_BUFFER, m_PBO[i]);
