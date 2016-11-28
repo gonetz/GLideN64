@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1" language="es_ES">
+<TS version="2.0" language="es_ES">
 <context>
     <name>AboutDialog</name>
     <message>
@@ -15,7 +15,7 @@
     </message>
     <message>
         <source>Sergey Lipskiy</source>
-        <translation type="vanished">Sergey Lipskiy</translation>
+        <translation>Sergey Lipskiy</translation>
     </message>
     <message>
         <location filename="AboutDialog.ui" line="94"/>
@@ -24,7 +24,7 @@
     </message>
     <message>
         <source>Olivieryuyu</source>
-        <translation type="vanished">Olivieryuyu</translation>
+        <translation>Olivieryuyu</translation>
     </message>
     <message>
         <location filename="AboutDialog.ui" line="120"/>
@@ -38,31 +38,31 @@
     </message>
     <message>
         <source>Anthony Heathcoat</source>
-        <translation type="vanished">Anthony Heathcoat</translation>
+        <translation>Anthony Heathcoat</translation>
     </message>
     <message>
         <source>Paul Lamb</source>
-        <translation type="vanished">Paul Lamb</translation>
+        <translation>Paul Lamb</translation>
     </message>
     <message>
         <source>daman6009</source>
-        <translation type="vanished">daman6009</translation>
+        <translation>daman6009</translation>
     </message>
     <message>
         <source>Mush Man</source>
-        <translation type="vanished">Mush Man</translation>
+        <translation>Mush Man</translation>
     </message>
     <message>
         <source>zolcos</source>
-        <translation type="vanished">zolcos</translation>
+        <translation>zolcos</translation>
     </message>
     <message>
         <source>zilmar</source>
-        <translation type="vanished">zilmar</translation>
+        <translation>zilmar</translation>
     </message>
     <message>
         <source>neko9876</source>
-        <translation type="vanished">neko9876</translation>
+        <translation>neko9876</translation>
     </message>
     <message>
         <location filename="AboutDialog.ui" line="294"/>
@@ -484,7 +484,7 @@ p, li { white-space: pre-wrap; }
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;sweatypickle&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;jeremydmiller&lt;/span&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;... and others&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="vanished">&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+        <translation>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;MS Shell Dlg 2&apos;; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
@@ -653,7 +653,7 @@ p, li { white-space: pre-wrap; }
         <location filename="configDialog.ui" line="119"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Resolution:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;This option selects resolution for windowed mode. You also may select &lt;span style=&quot; font-style:italic;&quot;&gt;custom&lt;/span&gt; and enter necessary window sizes.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;640x480, 800x600, 1024x768&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <oldsource>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Resolution:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;This option selects resolution for windowed mode.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;640x480, 800x600, 1024x768&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</oldsource>
-        <translation type="unfinished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Resolución:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Selecciona la resolución para el modo de ventana.&lt;/p&gt;&lt;p&gt;[Recomendado: &lt;span style=&quot; font-style:italic;&quot;&gt;640x480, 800x600, 1024x768&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Resolución:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Selecciona la resolución para el modo de ventana. También puedes seleccionar la opción &lt;span style=&quot; font-style:italic;&quot;&gt;personalizar&lt;/span&gt; e introducir el tamaño que quieras.&lt;/p&gt;&lt;p&gt;[Recomendado: &lt;span style=&quot; font-style:italic;&quot;&gt;640x480, 800x600, 1024x768&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="80"/>
@@ -662,27 +662,27 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Refresh rate:</source>
-        <translation type="vanished">Frecuencia de actualización:</translation>
+        <translation>Frecuencia de actualización:</translation>
     </message>
     <message>
         <source>Resolution:</source>
-        <translation type="vanished">Resolución:</translation>
+        <translation>Resolución:</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="92"/>
         <location filename="configDialog.ui" line="180"/>
         <source>W:</source>
-        <translation type="unfinished"></translation>
+        <translation>Ancho:</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="112"/>
         <location filename="configDialog.ui" line="206"/>
         <source>H:</source>
-        <translation type="unfinished"></translation>
+        <translation>Alto:</translation>
     </message>
     <message>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Aspect ratio of the output.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Most N64 games use 4:3 aspect ratio, but some support widescreen too.You may select appropriate aspect here and set widescreen mode in game settings.In &lt;span style=&quot; font-weight:600;&quot;&gt;Stretch&lt;/span&gt; mode the output will be stretched to the entire screen, other modes may add black borders if necessary.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="vanished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Proporción de aspecto de salida:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;La mayoría de juegos de N64 utilizan la proporción 4:3, pero algunos también son compatibles con el formato panorámico. Puedes seleccionar aquí la proporción correcta y seleccionar el modo panorámico dentro de los ajustes del juego. En el modo &lt;span style=&quot; font-weight:600;&quot;&gt;&quot;Estirar&quot;&lt;/span&gt; la imagen se estirará por toda la pantalla, el resto de modos podrían añadir bordes negros si es necesario.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Proporción de aspecto de salida:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;La mayoría de juegos de N64 utilizan la proporción 4:3, pero algunos también son compatibles con el formato panorámico. Puedes seleccionar aquí la proporción correcta y seleccionar el modo panorámico dentro de los ajustes del juego. En el modo &lt;span style=&quot; font-weight:600;&quot;&gt;&quot;Estirar&quot;&lt;/span&gt; la imagen se estirará por toda la pantalla, el resto de modos podrían añadir bordes negros si es necesario.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="235"/>
@@ -715,12 +715,12 @@ p, li { white-space: pre-wrap; }
         <location filename="configDialog.ui" line="339"/>
         <location filename="configDialog.ui" line="349"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Render at constant factor of native resolution.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;If frame buffer emulation enabled and factor is not zero, internal frame buffer size will be that factor of native N64 resolution. The buffer will be scaled to screen resolution when rendered to screen. If factor is zero (default), internal buffer size is equal to screen size. If factor is 1, the game will be rendered in native resolution and then up-scaled to screen resolution.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Renderizar a un múltiplo constante de la resolución nativa.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Si está activada la emulación del frame buffer y el múltiplo no es igual a cero, el tamaño del frame buffer interno será un múltiplo de la resolución nativa de N64. El búfer será escalado a la resolución de pantalla cuando se renderice en la misma. Si el múltiplo es igual a cero (valor predeterminado), el tamaño del búfer interno será igual al tamaño de la pantalla. Si el múltiplo es 1, el juego se renderizará en su resolución nativa y luego se escalará a la resolución de la pantalla.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="303"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Render at constant factor of native resolution&lt;span style=&quot; vertical-align:super;&quot;&gt;*&lt;/span&gt;:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Renderizar a un múltiplo constante de la resolución nativa&lt;span style=&quot; vertical-align:super;&quot;&gt;*&lt;/span&gt;:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="367"/>
@@ -729,11 +729,11 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>0</source>
-        <translation type="vanished">0</translation>
+        <translation>0</translation>
     </message>
     <message>
         <source>X</source>
-        <translation type="vanished">X</translation>
+        <translation>X</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="423"/>
@@ -831,7 +831,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="configDialog.ui" line="778"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Emulate noise&lt;/span&gt;:&lt;/p&gt;&lt;p&gt;Enable emulation of various effects, which use random color input.&lt;/p&gt;&lt;p&gt;May cause slowdown in rare cases.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;on&lt;/span&gt;]&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Emular ruido&lt;/span&gt;:&lt;/p&gt;&lt;p&gt;Permite la emulación de varios efectos que utilizan una generación de colores aleatorios.&lt;/p&gt;&lt;p&gt;Puede provocar ralentizaciones en casos muy puntuales.&lt;/p&gt;&lt;p&gt;[Recomendado: &lt;span style=&quot; font-style:italic;&quot;&gt;Activado&lt;/span&gt;]&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="781"/>
@@ -840,15 +840,15 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Fog emulation:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Sets fog emulation on//off.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;on&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="vanished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Emulación de niebla:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Activa o desactiva la emulación de la niebla.&lt;/p&gt;&lt;p&gt;[Recomendado: &lt;span style=&quot; font-style:italic;&quot;&gt;Activado&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Emulación de niebla:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Activa o desactiva la emulación de la niebla.&lt;/p&gt;&lt;p&gt;[Recomendado: &lt;span style=&quot; font-style:italic;&quot;&gt;Activado&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <source>Emulate fog</source>
-        <translation type="vanished">Emular niebla</translation>
+        <translation>Emular niebla</translation>
     </message>
     <message>
         <source>Enable hardware lighting</source>
-        <translation type="vanished">Activar iluminación por hardware</translation>
+        <translation>Activar iluminación por hardware</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="798"/>
@@ -873,39 +873,39 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="configDialog.ui" line="833"/>
         <source>2D Fixes</source>
-        <translation type="unfinished"></translation>
+        <translation>Arreglos para 2D</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="854"/>
         <location filename="configDialog.ui" line="874"/>
         <location filename="configDialog.ui" line="887"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Fix black lines between texrect:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Most games draw 2D backgrounds using texrect command. Texrect stands for textured rectangle. In some games, texrects coordinates not aligned: there is half-pixel split between adjacent texrects. It is not visible in native resolution, but resulted as black lines when image upscaled. This option enables texrect coordinates correction to avoid black lines issue.&lt;/p&gt;&lt;p&gt;* disable - do not correct texrect coordinates&lt;/p&gt;&lt;p&gt;* smart - apply correction only for polygons, which need it. Use it for games, which have black lines issue.&lt;/p&gt;&lt;p&gt;* force - apply correction for all texrects. Use it when &lt;span style=&quot; font-style:italic;&quot;&gt;smart&lt;/span&gt; does not help.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;game dependant, mostly off&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Corregir líneas negras entre texrects:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;La mayoría de los juegos muestran sus fondos y gráficos en 2D mediante el comando texrect. Texrect significa rectángulo texturizado en inglés. En algunos juegos no se alinean las coordenadas de los texrects: Hay una separación de medio píxel entre cada texrect adyacente. No es algo visible en la resolución nativa, pero provoca líneas negras cuando se escala la imagen. Esta opción permite corregir las coordenadas de texrects para evitar el problema de las líneas negras.&lt;/p&gt;&lt;p&gt;* Desactivar: No corrige las coordenadas de texturas.&lt;/p&gt;&lt;p&gt;* Inteligente: Aplica la corrección únicamente a los polígonos cuando sea necesario. Utilizar en los juegos que tengan el problema de las líneas negras.&lt;/p&gt;&lt;p&gt;* Forzar: Aplicar la corrección a todos los texrects. Utilizar en caso de que el modo &lt;span style=&quot; font-style:italic;&quot;&gt;inteligente&lt;/span&gt; no funcione.&lt;/p&gt;&lt;p&gt;[Recomendado: &lt;span style=&quot; font-style:italic;&quot;&gt;En función del juego, por norma general desactivado&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="857"/>
         <source>Fix black lines between texrects</source>
-        <translation type="unfinished"></translation>
+        <translation>Corregir líneas negras entre texrects</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="877"/>
         <source>smart</source>
-        <translation type="unfinished"></translation>
+        <translation>Inteligente</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="890"/>
         <source>force</source>
-        <translation type="unfinished"></translation>
+        <translation>Forzar</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="902"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Render texrects in native resolution:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Most games draw 2D backgrounds and other 2D graphics using texrect command. Texrect stands for textured rectangle. 2D images represented by texrects often look distorted and unaligned in high resolution because of texture filtering. When this option is on, plugin renders texrects in native resolution and then copies the result to main buffer. Rendering in native resolution eliminates issues with 2D, but hardware load increases noticably.&lt;/p&gt;&lt;p&gt;Note: this option uses heuristics to detect adjucent texrects. The heuristics do not work for some games.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;mostly on, if your hardware can handle it&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Renderizar los texrects en su resolución nativa:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;La mayoría de los juegos muestran sus fondos y gráficos en 2D mediante el comando texrect. Texrect significa rectángulo texturizado en inglés. Las imágenes en 2D que se representan mediante texrects suelen aparecer distorsionadas y desalineadas en resoluciones altas debido al filtrado de texturas. Si se activa esta opción, el plugin renderizará los texrects en su resolución nativa y después copiará el resultado al búfer principal. Este renderizado eliminará los problemas en 2D, pero aumenta la carga de trabajo en el hardware.&lt;/p&gt;&lt;p&gt;Nota: Esta opción utiliza heurística para detectar los texrects adyacentes. La heurística no funciona en algunos juegos.&lt;/p&gt;&lt;p&gt;[Recomendado: &lt;span style=&quot; font-style:italic;&quot;&gt;Activado por lo general, si tu hardware es lo bastante potente&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="905"/>
         <source>Render texrects in native resolution</source>
-        <translation type="unfinished"></translation>
+        <translation>Renderizar los texrects en su resolución nativa</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="915"/>
@@ -915,7 +915,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="configDialog.ui" line="948"/>
         <source>General options</source>
-        <translation type="unfinished"></translation>
+        <translation>Opciones generales</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="975"/>
@@ -946,57 +946,57 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="configDialog.ui" line="1022"/>
         <source>Copy auxiliary color buffers to RDRAM</source>
-        <translation type="unfinished"></translation>
+        <translation>Copiar búfers auxiliares de color a la RDRAM</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="1044"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If emulator supports &lt;span style=&quot; font-style:italic;&quot;&gt;FBInfo&lt;/span&gt; API extension, plugin will rely on its help to read/write buffers only when game needs them.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Si el emulador es compatible con la extensión del API &lt;span style=&quot; font-style:italic;&quot;&gt;FBInfo&lt;/span&gt;, el plugin la utilizará para leer o escribir los búfers cuando lo necesite el juego.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="1047"/>
         <source>Buffers read/write with emulator help</source>
-        <translation type="unfinished"></translation>
+        <translation>Leer/Escribir búfers con la ayuda del emulador</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="1066"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Do not use emulator help:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Depending on emulator, frame buffer usage notification may work imperfect and some frame buffer effects will not work. You may disable emulator help and force buffers copy.&lt;/p&gt;&lt;p&gt;[Recommended: off]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;No utilizar la ayuda del emulador:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Según el emulador, las notificaciones del uso del frame buffere podrían no ser del todo perfectas, haciendo que algunos efectos del frame buffer no funcionen. Puedes desactivar la ayuda del emulador para obligar a que se copien los frame buffers.&lt;/p&gt;&lt;p&gt;[Recomendado: &lt;span style=&quot; font-style:italic;&quot;&gt;Desactivado&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="1069"/>
         <source>Do not use emulator help</source>
-        <translation type="unfinished"></translation>
+        <translation>No utilizar la ayuda del emulador</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="1078"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Read color buffer by chunks:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;When enabled, color bufer will be read by 4kb chunks. Otherwise the buffer will be read as whole. Read of one chunk is much faster than read of the whole buffer, but if game needs to read the whole buffer, read it by chunks will be slow.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;mostly off, because color buffer usually read as whole&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Leer el búfer de color por fragmentos:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Al activar esta opción, el búfer de color se leerá por fragmentos de 4 kb. En caso contrario, el búfer se leerá de golpe. Leer un fragmento es más rápido que leer todo el búfer, pero si el juego necesita leer todo el búfer, la lectura por fragmentos será lenta.&lt;/p&gt;&lt;p&gt;[Recomendado: &lt;span style=&quot; font-style:italic;&quot;&gt;Por norma general desactivado, ya que suele leerse el búfer de color de un golpe&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="1081"/>
         <source>Read color buffer by chunks</source>
-        <translation type="unfinished"></translation>
+        <translation>Leer el búfer de color por fragmentos</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="1088"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Read depth buffer by chunks:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;When enabled, depth bufer will be read by 4kb chunks. Otherwise the buffer will be read as whole. Read of one chunk is much faster than read of the whole buffer, but if game needs to read the whole buffer, read it by chunks will be slow.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;on, because depth buffer seldom read as whole&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Leer el búfer de profundidad por fragmentos:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Al activar esta opción, el búfer de profundidad se leerá por fragmentos de 4 kb. En caso contrario, el búfer se leerá de golpe. Leer un fragmento es más rápido que leer todo el búfer, pero si el juego necesita leer todo el búfer, la lectura por fragmentos será lenta.&lt;/p&gt;&lt;p&gt;[Recomendado: &lt;span style=&quot; font-style:italic;&quot;&gt;Activado, porque el búfer de profundidad no suele leerse de un golpe&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="1091"/>
         <source>Read depth buffer by chunks</source>
-        <translation type="unfinished"></translation>
+        <translation>Leer el búfer de profundidad por fragmentos</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="1109"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If emulator does not support &lt;span style=&quot; font-style:italic;&quot;&gt;FBInfo&lt;/span&gt; API extension, plugin  have to read/write buffers each frame to emulate &lt;span style=&quot; font-style:italic;&quot;&gt;some&lt;/span&gt; frame buffer based effects. It can be slow and also can cause glitches or even crashes. Enable these options only for games, which really need them.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Si el emulador no es compatible con la extensión del API &lt;span style=&quot; font-style:italic;&quot;&gt;FBInfo&lt;/span&gt;, el plugin tendra que leer y escribir los búfers en cada fotograma para emular &lt;span style=&quot; font-style:italic;&quot;&gt;algunos&lt;/span&gt; efectos basados en el frame buffer. Puede provocar ralentizaciones, defectos visuales o cierres inesperados. Activa estas opciones sólo para los juegos que las necesiten.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="1112"/>
         <source>Buffers read/write without emulator help</source>
-        <translation type="unfinished"></translation>
+        <translation>Leer/Escribir búfers sin la ayuda del emulador</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="1130"/>
@@ -1012,22 +1012,22 @@ p, li { white-space: pre-wrap; }
         <location filename="configDialog.ui" line="1206"/>
         <location filename="configDialog.ui" line="1219"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Copy depth buffer to RDRAM:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;This option is required for correct emulation of depth buffer based effects, e.g. coronas.&lt;/p&gt;&lt;p&gt;* disable - do not copy buffer&lt;/p&gt;&lt;p&gt;* from VRAM - Content of video card&apos;s depth buffer is copied into RDRAM area each frame. Can be slow on some games.&lt;/p&gt;&lt;p&gt;* software render - use software rendering. Generally faster than copy from video memory, but the result can be imperfect.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;software render&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Copiar búfer de profundidad a la RDRAM:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Esta opción es necesaria para emular correctamente los efectos basados en el búfer de profundidad; por ejemplo, los reflejos del sol.&lt;/p&gt;&lt;p&gt;* Desactivar: No se copiara el búfer&lt;/p&gt;&lt;p&gt;* De la VRAM: Se copiarán los contenidos del búfer de profundidad de la tarjeta grafica a la RDRAM en cada fotograma. Podria ralentizar algunos juegos.&lt;/p&gt;&lt;p&gt;* Software: Utilizar el renderizado por software. Generalmente es más rápido que copiar los datos de la memoria de video, pero puede tener imperfecciones.&lt;/p&gt;&lt;p&gt;[Recomendado: &lt;span style=&quot; font-style:italic;&quot;&gt;Renderizado por software&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="1209"/>
         <source>from VRAM</source>
-        <translation type="unfinished"></translation>
+        <translation>De la VRAM</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="1222"/>
         <source>software</source>
-        <translation type="unfinished"></translation>
+        <translation>Por software</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="1355"/>
         <source>Decrease color banding</source>
-        <translation type="unfinished"></translation>
+        <translation>Reducir las bandas de color</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="1689"/>
@@ -1058,85 +1058,85 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="configDialog.ui" line="1904"/>
         <source>Performance counters</source>
-        <translation type="unfinished"></translation>
+        <translation>Contadores de rendimiento</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="1910"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Show &lt;span style=&quot; font-weight:600;&quot;&gt;Frames Per Second&lt;/span&gt; counter&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Mostrar el contador de &lt;span style=&quot; font-weight:600;&quot;&gt;fotogramas por segundo&lt;/span&gt;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="1913"/>
         <source>FPS</source>
-        <translation type="unfinished"></translation>
+        <translation>FPS</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="1920"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Show &lt;span style=&quot; font-weight:600;&quot;&gt;Video Interrupts per second&lt;/span&gt; counter&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Mostrar el contador de &lt;span style=&quot; font-weight:600;&quot;&gt;Interrupciones de vídeo por segundo&lt;/span&gt;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="1923"/>
         <source>VI/S</source>
-        <translation type="unfinished"></translation>
+        <translation>VI/S</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="1930"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Show &lt;span style=&quot; font-weight:600;&quot;&gt;Performance in percents&lt;/span&gt; counter&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Mostrar el contador de &lt;span style=&quot; font-weight:600;&quot;&gt;rendimiento segun porcentajes&lt;/span&gt;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="1933"/>
         <source>%</source>
-        <translation type="unfinished"></translation>
+        <translation>%</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="1942"/>
         <location filename="configDialog.ui" line="1962"/>
         <location filename="configDialog.ui" line="1988"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Counters displayed in a corner of the screen. Select left or right corner.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Los contadores se muestran en una esquina de la pantalla. Selecciona el lateral izquierdo o derecho.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="1945"/>
         <source>Horisontal position:</source>
-        <translation type="unfinished"></translation>
+        <translation>Posición horizontal:</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="1952"/>
         <location filename="configDialog.ui" line="1975"/>
         <location filename="configDialog.ui" line="2001"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Counters displayed in a corner of the screen. Select top or bottom corner.&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Los contadores se muestran en una esquina de la pantalla. Selecciona la parte superior o inferior.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="1955"/>
         <source>Vertical position:</source>
-        <translation type="unfinished"></translation>
+        <translation>Posición vertical:</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="1965"/>
         <source>left</source>
-        <translation type="unfinished"></translation>
+        <translation>Izquierda</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="1978"/>
         <source>top</source>
-        <translation type="unfinished"></translation>
+        <translation>Superior</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="1991"/>
         <source>right</source>
-        <translation type="unfinished"></translation>
+        <translation>Derecha</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="2004"/>
         <source>bottom</source>
-        <translation type="unfinished"></translation>
+        <translation>Inferior</translation>
     </message>
     <message>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Copy frame buffer to RDRAM:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;In some games plugin can&apos;t detect frame buffer usage. In such cases you need to enable this option to see frame buffer effects. Every drawn frame will be read from video card and copied into RDRAM area.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;mostly off (needed only for a few games)&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="vanished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Copiar frame buffer a RDRAM:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;El plugin no podrá detectar el uso del frame buffer en algunos juegos. En tal caso, tendrás que activar esta opción para ver los efectos del frame buffer. Se leerán todos los fotogramas representados en la tarjeta gráfica y se copiarán a la zona de la RDRAM.&lt;/p&gt;&lt;p&gt;[Recomendado: &lt;span style=&quot; font-style:italic;&quot;&gt;Generalmente desactivado (solo lo necesitan algunos juegos)&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Copiar frame buffer a RDRAM:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;El plugin no podrá detectar el uso del frame buffer en algunos juegos. En tal caso, tendrás que activar esta opción para ver los efectos del frame buffer. Se leerán todos los fotogramas representados en la tarjeta gráfica y se copiarán a la zona de la RDRAM.&lt;/p&gt;&lt;p&gt;[Recomendado: &lt;span style=&quot; font-style:italic;&quot;&gt;Por norma general desactivado (solo lo necesitan algunos juegos)&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="1133"/>
@@ -1157,22 +1157,22 @@ p, li { white-space: pre-wrap; }
         <location filename="configDialog.ui" line="268"/>
         <location filename="configDialog.ui" line="281"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Aspect ratio of the output.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Most N64 games use 4:3 aspect ratio, but some support widescreen too.You may select appropriate aspect here and set widescreen mode in game settings. In &lt;span style=&quot; font-weight:600;&quot;&gt;Stretch&lt;/span&gt; mode the output will be stretched to the entire screen, other modes may add black borders if necessary.&lt;br/&gt;&lt;br/&gt;Special note: &lt;span style=&quot; font-weight:600;&quot;&gt;Adjust&lt;/span&gt; mode is so called &amp;quot;widescreen hack&amp;quot;. In that mode plugin tries to adjust viewport to fully use screen space, but without stretch of geometry. It may run games with native 4:3 aspect in widescreen. Some games look cool in that mode, some does not.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Proporción de aspecto de salida:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;La mayoría de juegos de N64 utilizan la proporción 4:3, pero algunos también son compatibles con el formato panorámico. Puedes seleccionar aquí la proporción correcta y seleccionar el modo panorámico dentro de los ajustes del juego. En el modo &lt;span style=&quot; font-weight:600;&quot;&gt;Estirar&lt;/span&gt; la imagen se estirará por toda la pantalla, el resto de modos podrían añadir bordes negros si es necesario.&lt;br/&gt;&lt;br/&gt;Nota adicional: El modo &lt;span style=&quot; font-weight:600;&quot;&gt;Ajustar&lt;/span&gt; es el conocido como &amp;quot;hack para pantallas panorámicas&amp;quot;. En este modo, el plugin intentará ajustar la cámara para que utilice todo el ancho de la pantalla sin estirar la geometria. Podría ser capaz de ejecutar juegos que utilizan la proporción 4:3 de forma nativa en formato panorámico. Algunos juegos quedan bien en ese modo y otros no.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="788"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enable hardware lighting:&lt;/p&gt;&lt;p&gt;Normally lighting calculated per vertex. This option enables per-pixel shader based lighting. It results in more smooth and correct shading of 3D objects.&lt;/p&gt;&lt;p&gt;Note: since in LLE mode vertex color calculated outside of graphics plugin, this option is only for HLE.&lt;br/&gt;&lt;br/&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;your preference&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Permitir iluminación por hardware:&lt;/p&gt;&lt;p&gt;Normalmente, la iluminación se calcula según los vértices. Esta opción activa la iluminación por píxel basada en shaders. Permite sombrear los objetos 3D de una forma más suave y correcta.&lt;/p&gt;&lt;p&gt;Nota: Como en el modo LLE se calcula el color de los vértices fuera del plugin grafico, esta opción solo funciona en el modo HLE.&lt;br/&gt;&lt;br/&gt;[Recomendado: &lt;span style=&quot; font-style:italic;&quot;&gt;Lo que prefieras&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="791"/>
         <source>Enable hardware lighting (HLE only!)</source>
-        <translation type="unfinished"></translation>
+        <translation>Permitir iluminación por hardware (¡Sólo en HLE!)</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="1019"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Copy auxiliary color buffers to RDRAM:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;When enabled, auxiliary color buffer copied to RDRAM right after rendering into it is finished. It helps to correctly emulate frame buffer effects in some games.&lt;br/&gt;&lt;/p&gt;&lt;p&gt;Note: this option may noticeably reduce performance.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;mostly off&lt;/span&gt;]&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Copiar búfers auxiliares de color a la RDRAM:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Al activar esta opción,se copiará el búfer auxiliar de color a la RDRAM nada más sea renderizado. Permite emular correctamente los efectos basados en frame buffer de algunos juegos.&lt;br/&gt;&lt;/p&gt;&lt;p&gt;Aviso: Esta opción podría reducir el rendimiento.&lt;/p&gt;&lt;p&gt;[Recomendado: &lt;span style=&quot; font-style:italic;&quot;&gt;Por norma general desactivado&lt;/span&gt;]&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="1156"/>
@@ -1187,7 +1187,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="configDialog.ui" line="1234"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Render N64 frame buffer as texture:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;When this option is enabled, content of each N64 frame buffer is rendered as texture over the frame, rendered by the plugin. This prevents graphics lost, but may cause slowdowns and various glitches in some games.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;mostly off&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Renderizar frame buffer como textura:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Al activar esta opción el plugin renderizará el contenido de cada frame buffer de N64 como una textura por encima del fotograma. Esto evita una pérdida de gráficos, pero puede provocar ralentizaciones y defectos visuales en algunos juegos.&lt;/p&gt;&lt;p&gt;[Recomendado: &lt;span style=&quot; font-style:italic;&quot;&gt;Generalmente desactivado&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Renderizar frame buffer como textura:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Al activar esta opción el plugin renderizará el contenido de cada frame buffer de N64 como una textura por encima del fotograma. Esto evita una pérdida de gráficos, pero puede provocar ralentizaciones y defectos visuales en algunos juegos.&lt;/p&gt;&lt;p&gt;[Recomendado: &lt;span style=&quot; font-style:italic;&quot;&gt;Por norma general desactivado&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="1237"/>
@@ -1196,15 +1196,15 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Detect CPU write to the N64 frame buffer:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;This option works as the previous options, but the plugin is trying to detect, when game uses CPU writes to N64 frame buffer. The N64 frame buffer is rendered only when CPU writes is detected. Use this option for those games, in which you see still image or no image at all for some time with no reason.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;mostly off&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="vanished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Detectar escrituras de CPU al frame buffer:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Esta opción funciona igual que las anteriores, pero el plugin intentará detectar cuándo escribe la CPU al frame buffer de N64. El frame buffer de N64 se renderizará únicamente cuando se detecten las escrituras de CPU. Utiliza esta opción para aquellos juegos en los que veas imágenes fijas o no veas imágenes sin motivo aparente.&lt;/p&gt;&lt;p&gt;[Recomendado: &lt;span style=&quot; font-style:italic;&quot;&gt;Casi siempre desactivado&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Detectar escrituras de CPU al frame buffer:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Esta opción funciona igual que las anteriores, pero el plugin intentará detectar el momento en el que la CPU modifica el frame buffer de N64. El frame buffer de N64 se renderizará únicamente cuando se detecten las escrituras de CPU. Utiliza esta opción para aquellos juegos en los que veas imágenes fijas o no veas imágenes sin motivo aparente.&lt;/p&gt;&lt;p&gt;[Recomendado: &lt;span style=&quot; font-style:italic;&quot;&gt;Por norma general desactivado&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <source>Detect CPU writes to the frame buffer</source>
-        <translation type="vanished">Detectar escrituras de CPU al frame buffer</translation>
+        <translation>Detectar escrituras de CPU al frame buffer</translation>
     </message>
     <message>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Copy depth buffer to RDRAM:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;This option is required for correct emulation of depth buffer based effects, e.g. coronas. Content of video card&apos;s depth buffer is copied into RDRAM area each frame.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;on&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="vanished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Copiar depth buffer a RDRAM:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Esta opción es necesaria para emular correctamente los efectos basados en el depth buffer, por ejemplo, los halos de luz. Los contenidos del depth buffer de la tarjeta gráfica se copiarán en la zona de la RDRAM cada fotograma.&lt;/p&gt;&lt;p&gt;[Recomendado: &lt;span style=&quot; font-style:italic;&quot;&gt;Activado&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Copiar depth buffer a RDRAM:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Esta opción es necesaria para emular correctamente los efectos basados en el depth buffer, por ejemplo, los halos de luz. Los contenidos del depth buffer de la tarjeta gráfica se copiarán en la zona de la RDRAM cada fotograma.&lt;/p&gt;&lt;p&gt;[Recomendado: &lt;span style=&quot; font-style:italic;&quot;&gt;Activado&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="1186"/>
@@ -1223,19 +1223,19 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Frame buffer validity check:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;For hardware, frame buffer emulation it is essential to know that hardware frame buffer is still valid and can be used as texture. Frame buffer validity means that corresponded area in RDRAM is still used for that buffer. Plugin checks RDRAM context for changes before use of hardware buffer. There are two methods to check RDRAM context:&lt;/p&gt;&lt;p&gt;1. Write fingerprint to RDRAM. The plugin writes smal portion of data (fingerprint) to buffer area in RDRAM. It helps plugin to detect changes in RDRAM context. Small portion of modifications makes possibility of game crash very low.&lt;/p&gt;&lt;p&gt;2. Fill RDRAM. Plugin fills RDRAM area for allocated frame buffer with some test value. Frame buffer is valid until all pixels inside the area match that value. it is recommended method for Legend of Zelda.&lt;br/&gt;Warning: This method may cause emulator&apos;s crash if actual frame buffer bounds are less than the ones detected by the plugin.&lt;/p&gt;&lt;p&gt;[Recommended: Write fingerprint to RDRAM]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="vanished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Método de validación del frame buffer:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Es esencial en la emulación del frame buffer saber que el frame buffer de hardware sigue siendo válido y puede utilizarse como textura. La validez del frame buffer significa que la zona correspondiente dentro de la RDRAM puede seguir utilizándose para ese búfer. El plugin comprueba que el contexto de la RDRAM tenga cambios antes de utilizar el búfer de hardware. Hay dos formas de comprobar el contexto de la RDRAM:&lt;/p&gt;&lt;p&gt;1. Escribir huella en la RDRAM. El plugin escribe una pequeña cantidad de datos (una huella) en la zona del búfer de la RDRAM, ayudando al plugin a detectar los cambios en el contexto de la RDRAM. Estas ligeras modificaciones tienen una probabilidad muy baja de interrumpir el juego.&lt;/p&gt;&lt;p&gt;2. Rellenar la RDRAM. El plugin rellena la zona de la RDRAM dedicada al frame buffer con un valor de pruebas. El frame buffer es válido hasta que todos los píxeles dentro de la zona tengan el mismo valor. Es el método recomendado para Legend of Zelda.&lt;br/&gt;Advertencia: Este método podría provocar un cuelgue del emulador si los límites del frame buffer son inferiores a los que detecta el plugin.&lt;/p&gt;&lt;p&gt;[Recomendado: Escribir huella en la RDRAM]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Método de validación del frame buffer:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Es esencial en la emulación del frame buffer saber que el frame buffer de hardware sigue siendo válido y puede utilizarse como textura. La validez del frame buffer significa que la zona correspondiente dentro de la RDRAM puede seguir utilizándose para ese búfer. El plugin comprueba que el contexto de la RDRAM tenga cambios antes de utilizar el búfer de hardware. Hay dos formas de comprobar el contexto de la RDRAM:&lt;/p&gt;&lt;p&gt;1. Escribir huella en la RDRAM. El plugin escribe una pequeña cantidad de datos (una huella) en la zona del búfer de la RDRAM, ayudando al plugin a detectar los cambios en el contexto de la RDRAM. Estas ligeras modificaciones tienen una probabilidad muy baja de interrumpir el juego.&lt;/p&gt;&lt;p&gt;2. Rellenar la RDRAM. El plugin rellena la zona de la RDRAM dedicada al frame buffer con un valor de pruebas. El frame buffer es válido hasta que todos los píxeles dentro de la zona tengan el mismo valor. Es el método recomendado para Legend of Zelda.&lt;br/&gt;Advertencia: Este método podría provocar un cuelgue del emulador si los límites del frame buffer son inferiores a los que detecta el plugin.&lt;/p&gt;&lt;p&gt;[Recomendado: Escribir huella en la RDRAM]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <source>Frame buffer validity check method:</source>
-        <translation type="vanished">Método de validación del frame buffer:</translation>
+        <translation>Método de validación del frame buffer:</translation>
     </message>
     <message>
         <source>fill buffer in RDRAM  with test value</source>
-        <translation type="vanished">Rellenar búfer de RDRAM con valor de pruebas</translation>
+        <translation>Rellenar búfer de RDRAM con valor de pruebas</translation>
     </message>
     <message>
         <source>write fingerprint to RDRAM</source>
-        <translation type="vanished">Escribir huella en la RDRAM</translation>
+        <translation>Escribir huella en la RDRAM</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="1251"/>
@@ -1284,7 +1284,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="configDialog.ui" line="1352"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Decrease color banding&lt;/span&gt;:&lt;/p&gt;&lt;p&gt;This option enables pre-processing step, which reduces posterization issues on enhanced textures.&lt;/p&gt;&lt;p&gt;[Recommended:&lt;span style=&quot; font-style:italic;&quot;&gt; on for xBRZ&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Reducir las bandas de color&lt;/span&gt;:&lt;/p&gt;&lt;p&gt;Esta opción activa un paso de preprocesado que reduce los efectos de posterización en las texturas modificadas.&lt;/p&gt;&lt;p&gt;[Recomendado:&lt;span style=&quot; font-style:italic;&quot;&gt; Activar para el efecto xBRZ&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="1362"/>
@@ -1314,7 +1314,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="configDialog.ui" line="1396"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Alternative CRC calculation:&lt;/p&gt;&lt;p&gt;This option enables emulation of a palette CRC calculation bug in RiceVideo.If some textures are not loaded, try to set this option on/off.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;mostly off, on for really old packs&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Cálculo alternativo de CRC:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Esta opción permite emular un fallo en el cálculo del CRC de las paletas de RiceVideo. Si no se cargan algunas texturas, prueba a activar o desactivar esta opción.&lt;/p&gt;&lt;p&gt;[Recomendado: &lt;span style=&quot; font-style:italic;&quot;&gt;Generalmente desactivado, activar para paquetes muy antiguos&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Cálculo alternativo de CRC:&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Esta opción permite emular un fallo en el cálculo del CRC de las paletas de RiceVideo. Si no se cargan algunas texturas, prueba a activar o desactivar esta opción.&lt;/p&gt;&lt;p&gt;[Recomendado: &lt;span style=&quot; font-style:italic;&quot;&gt;Por norma general desactivado, activar para paquetes muy antiguos&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="1399"/>
@@ -1334,12 +1334,12 @@ p, li { white-space: pre-wrap; }
     <message>
         <location filename="configDialog.ui" line="1783"/>
         <source>On screen display</source>
-        <translation type="unfinished"></translation>
+        <translation>Ventana en pantalla</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="1795"/>
         <source>Font parameters</source>
-        <translation type="unfinished"></translation>
+        <translation>Parámetros de la fuente</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="1809"/>
@@ -1353,7 +1353,7 @@ p, li { white-space: pre-wrap; }
         <location filename="configDialog.ui" line="1854"/>
         <location filename="configDialog.ui" line="1870"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select font and font size for on screen text messages.&lt;br/&gt;Warning: not all fonts installed in your system can be used. If you do not see OSD messages, switch back to default font.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Selecciona la fuente y su tamaño para los mensajes de texto en pantalla.&lt;br/&gt;Advertencia: No se pueden utilizar todas las fuentes que tengas instaladas en tu sistema. Si no ves los mensajes en pantalla, utiliza la fuente predeterminada.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="1892"/>
@@ -1362,7 +1362,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select font and font size for text messages, displayed during texture cache or texture pack save/load.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="vanished">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Selecciona el tipo y tamaño de la fuente de mensajes de texto que se mostrarán durante la carga o guardado de cachés o paquetes de texturas.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Selecciona el tipo y tamaño de la fuente de mensajes de texto que se mostrarán durante la carga o guardado de cachés o paquetes de texturas.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="1857"/>
@@ -1403,27 +1403,27 @@ p, li { white-space: pre-wrap; }
         <location filename="configDialog.ui" line="200"/>
         <location filename="configDialog.ui" line="213"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Crop image:&lt;/span&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;This option allows user to crop black boarders from resulted image. It has two modes:&lt;br/&gt;&lt;br/&gt;* Auto - plugin sets crop automatically using game&apos;s frame scissor.&lt;/p&gt;&lt;p&gt;* Custom - crop using user defined vaules. User should set number of pixels to crop from original native-res image.&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Recortar imagen:&lt;/span&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;Esta opción permite que el usuaro elimine las franjas negras de la imagen deseada. Tiene dos modos:&lt;br/&gt;&lt;br/&gt;* Automático: El plugin ajusta el corte de forma automática utilizando un fotograma como ejemplo.&lt;/p&gt;&lt;p&gt;* Personalizado: Recorta la imagen utilizando valores predefinidos. Utiliza el número de píxeles en función de la imagen en su resolución nativa.&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="140"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Crop image&lt;span style=&quot; vertical-align:super;&quot;&gt;*:&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Recortar imagen&lt;span style=&quot; vertical-align:super;&quot;&gt;*:&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="154"/>
         <source>Disable</source>
-        <translation type="unfinished"></translation>
+        <translation>Desactivado</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="159"/>
         <source>Auto</source>
-        <translation type="unfinished"></translation>
+        <translation>Automático</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="164"/>
         <source>Custom</source>
-        <translation type="unfinished"></translation>
+        <translation>Personalizado</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="1430"/>
