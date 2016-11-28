@@ -137,7 +137,7 @@
                 <item>
                  <widget class="QLabel" name="windowWidthLabel">
                   <property name="text">
-                   <string>W:</string>
+                   <string extracomment="Abbreviation for &quot;width&quot;.">W:</string>
                   </property>
                  </widget>
                 </item>
@@ -179,7 +179,7 @@
                 <item>
                  <widget class="QLabel" name="windowHeightLabel">
                   <property name="text">
-                   <string>H:</string>
+                   <string extracomment="Abbreviation for &quot;height&quot;.">H:</string>
                   </property>
                  </widget>
                 </item>
@@ -245,17 +245,17 @@
                 </property>
                 <item>
                  <property name="text">
-                  <string comment="disable">Disable</string>
+                  <string>Disable</string>
                  </property>
                 </item>
                 <item>
                  <property name="text">
-                  <string comment="auto">Auto per game</string>
+                  <string>Auto per game</string>
                  </property>
                 </item>
                 <item>
                  <property name="text">
-                  <string comment="custom">Custom</string>
+                  <string>Custom</string>
                  </property>
                 </item>
                </widget>
@@ -268,7 +268,7 @@
                    <locale language="English" country="UnitedStates"/>
                   </property>
                   <property name="text">
-                   <string>W:</string>
+                   <string extracomment="Abbreviation for &quot;width&quot;.">W:</string>
                   </property>
                  </widget>
                 </item>
@@ -310,7 +310,7 @@
                    <locale language="English" country="UnitedStates"/>
                   </property>
                   <property name="text">
-                   <string>H:</string>
+                   <string extracomment="Abbreviation for &quot;height&quot;.">H:</string>
                   </property>
                  </widget>
                 </item>
@@ -366,7 +366,7 @@
               <item>
                <widget class="QRadioButton" name="aspect43RadioButton">
                 <property name="text">
-                 <string>4:3 (recommended)</string>
+                 <string extracomment="Aspect ratio">4:3 (recommended)</string>
                 </property>
                 <property name="checked">
                  <bool>true</bool>
@@ -379,7 +379,7 @@
               <item>
                <widget class="QRadioButton" name="aspect169RadioButton">
                 <property name="text">
-                 <string>16:9</string>
+                 <string extracomment="Aspect ratio">16:9</string>
                 </property>
                 <attribute name="buttonGroup">
                  <string notr="true">aspectButtonGroup</string>
@@ -399,7 +399,7 @@
               <item>
                <widget class="QRadioButton" name="aspectAdjustRadioButton">
                 <property name="text">
-                 <string>Try to adjust game to fit</string>
+                 <string extracomment="This option activates a widescreen hack. The language &quot;Try to&quot; implies it may it may not work and the language &quot;adjust game&quot; implies the emulation will be inaccurate.">Try to adjust game to fit</string>
                 </property>
                 <attribute name="buttonGroup">
                  <string notr="true">aspectButtonGroup</string>
@@ -452,7 +452,7 @@
                 <item>
                  <widget class="QLabel" name="aliasingLabel">
                   <property name="text">
-                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Anti-aliasing:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                   <string>Anti-aliasing:</string>
                   </property>
                  </widget>
                 </item>
@@ -577,7 +577,7 @@
                     <item alignment="Qt::AlignTop">
                      <widget class="QLabel" name="aliasingHighLabel">
                       <property name="text">
-                       <string>High</string>
+                       <string extracomment="The highest of a set of numbers">High</string>
                       </property>
                      </widget>
                     </item>
@@ -740,7 +740,7 @@
                     <item alignment="Qt::AlignTop">
                      <widget class="QLabel" name="anisotropicHighLabel">
                       <property name="text">
-                       <string>High</string>
+                       <string extracomment="The highest of a set of numbers">High</string>
                       </property>
                      </widget>
                     </item>
@@ -801,7 +801,7 @@
                   <item>
                    <widget class="QRadioButton" name="blnr3PointRadioButton">
                     <property name="text">
-                     <string>N64-style 3 point</string>
+                     <string extracomment="3 point bilinear filtering as used by the Nintendo 64.">N64-style 3 point</string>
                     </property>
                    </widget>
                   </item>
@@ -829,7 +829,7 @@
                   <item>
                    <widget class="QLabel" name="cacheSizeLabel">
                     <property name="text">
-                     <string>VRAM usage limit:</string>
+                     <string comment="video/cacheSizeLabel" extracomment="&quot;Video RAM usage limit&quot; in MB. &quot;MB&quot; is referenced in the control.">VRAM usage limit:</string>
                     </property>
                    </widget>
                   </item>
@@ -842,7 +842,7 @@
                      </sizepolicy>
                     </property>
                     <property name="suffix">
-                     <string> MB</string>
+                     <string extracomment="Megabytes"> MB</string>
                     </property>
                     <property name="maximum">
                      <number>999</number>
@@ -1050,7 +1050,7 @@
              </sizepolicy>
             </property>
             <property name="text">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;img src=&quot;:/Info.ico&quot;/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             <string notr="true">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;img src=&quot;:/Info.ico&quot;/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
            </widget>
           </item>
@@ -1272,7 +1272,7 @@
                    <item alignment="Qt::AlignTop">
                     <widget class="QLabel" name="factorOffLabel">
                      <property name="text">
-                      <string>Low</string>
+                      <string extracomment="The fewest of a sequence of numbers. In this case, 2.">Low</string>
                      </property>
                     </widget>
                    </item>
@@ -1380,7 +1380,7 @@
                    <item alignment="Qt::AlignTop">
                     <widget class="QLabel" name="factorHighLabel">
                      <property name="text">
-                      <string>High</string>
+                      <string extracomment="The highest in a sequence of numbers. In this case, 16.">High</string>
                      </property>
                     </widget>
                    </item>
@@ -1418,7 +1418,7 @@
                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;When checked, 2D elements are rendered at the N64s resolution before copying them to output. This usually eliminates display issues with 2D elements, but it can be slow. This option uses heuristics to detect adjacent 2D elements that doesn't work for every game.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;Checked, unless you have performance problems&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
               </property>
               <property name="text">
-               <string>Render 2D elements in N64 resolution (best quality, can be slow)</string>
+               <string extracomment="2D elements, formerly labelled texrects, are usually used for title screens or HUDs">Render 2D elements in N64 resolution (best quality, can be slow)</string>
               </property>
               <property name="checked">
                <bool>true</bool>
@@ -1449,7 +1449,7 @@
                <item>
                 <widget class="QLabel" name="fixBlackLinesLabel">
                  <property name="text">
-                  <string>Fix black lines between 2D elements:</string>
+                  <string extracomment="2D elements, formerly labelled texrects, are usually used for title screens or HUDs">Fix black lines between 2D elements:</string>
                  </property>
                  <property name="wordWrap">
                   <bool>true</bool>
@@ -1465,7 +1465,7 @@
                   </sizepolicy>
                  </property>
                  <property name="text">
-                  <string>For adjacent 2D elements</string>
+                  <string extracomment="The label for this control is &quot;Fix black lines between 2D elements&quot;">For adjacent 2D elements</string>
                  </property>
                  <attribute name="buttonGroup">
                   <string notr="true">fixTexrectCoordsButtonGroup</string>
@@ -1475,7 +1475,7 @@
                <item>
                 <widget class="QRadioButton" name="fixTexrectForceRadioButton">
                  <property name="text">
-                  <string>Always</string>
+                  <string extracomment="The label for this control is &quot;Fix black lines between 2D elements&quot;">Always</string>
                  </property>
                  <attribute name="buttonGroup">
                   <string notr="true">fixTexrectCoordsButtonGroup</string>
@@ -1485,7 +1485,7 @@
                <item>
                 <widget class="QRadioButton" name="fixTexrectDisableRadioButton">
                  <property name="text">
-                  <string>Never</string>
+                  <string extracomment="The label for this control is &quot;Fix black lines between 2D elements&quot;">Never</string>
                  </property>
                  <property name="checked">
                   <bool>true</bool>
@@ -1543,7 +1543,7 @@
              </sizepolicy>
             </property>
             <property name="text">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;img src=&quot;:/Info.ico&quot;/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             <string notr="true">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;img src=&quot;:/Info.ico&quot;/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
            </widget>
           </item>
@@ -1627,7 +1627,7 @@
                   </sizepolicy>
                  </property>
                  <property name="text">
-                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;img src=&quot;:/Warning.ico&quot;/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                  <string notr="true">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;img src=&quot;:/Warning.ico&quot;/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                  </property>
                 </widget>
                </item>
@@ -1739,17 +1739,17 @@
                        <widget class="QComboBox" name="frameBufferSwapComboBox">
                         <item>
                          <property name="text">
-                          <string comment="vi">Vertical interrupt (recommended, fewest game issues)</string>
+                          <string extracomment="&quot;Vertical interrupt&quot; is frequently abbreviated as &quot;VI&quot;. This control is a combobox labelled &quot;Frame buffer swap on:&quot;">Vertical interrupt (recommended, fewest game issues)</string>
                          </property>
                         </item>
                         <item>
                          <property name="text">
-                          <string comment="origin">VI origin change (faster, few game issues)</string>
+                          <string extracomment="&quot;VI&quot; stands for &quot;vertical interrupt&quot;. This control is a combobox labelled &quot;Frame buffer swap on:&quot;">VI origin change (faster, few game issues)</string>
                          </property>
                         </item>
                         <item>
                          <property name="text">
-                          <string comment="color">Color buffer change (fastest, some game issues)</string>
+                          <string extracomment="This control is a combobox labelled &quot;Frame buffer swap on:&quot;">Color buffer change (fastest, some game issues)</string>
                          </property>
                         </item>
                        </widget>
@@ -1794,7 +1794,7 @@
                          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;When checked, the color buffer will be read in chunks. Otherwise, the buffer will be read in its entirety. If a game needs to read the entire buffer, selecting this option may be slow.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;Usually unchecked, because the color buffer is usually read entirely&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                         </property>
                         <property name="text">
-                         <string>Read color buffer in 4 KB chunks</string>
+                         <string extracomment="&quot;Read&quot; refers to &quot;Use emulator help to read/write frame buffers&quot;">Read color buffer in 4 KB chunks</string>
                         </property>
                        </widget>
                       </item>
@@ -1804,7 +1804,7 @@
                          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;When checked, the depth buffer will be read in chunks. Otherwise the buffer will be read in its entirety. If a game needs to read the entire buffer, selecting this option may be slow.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;Checked, because the depth buffer is not often read entirely&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                         </property>
                         <property name="text">
-                         <string>Read depth buffer in 4 KB chunks</string>
+                         <string extracomment="&quot;Read&quot; refers to &quot;Use emulator help to read/write frame buffers&quot;">Read depth buffer in 4 KB chunks</string>
                         </property>
                         <property name="checked">
                          <bool>true</bool>
@@ -1851,17 +1851,17 @@
                          <widget class="QComboBox" name="copyColorBufferComboBox">
                           <item>
                            <property name="text">
-                            <string comment="off">Never (fastest, many game issues)</string>
+                            <string extracomment="This is a combobox option with the label &quot;Copy video card frame buffer to N64 memory&quot;.">Never (fastest, many game issues)</string>
                            </property>
                           </item>
                           <item>
                            <property name="text">
-                            <string comment="sync">Synchronous (slowest, fewest game issues)</string>
+                            <string extracomment="This is a combobox option with the label &quot;Copy video card frame buffer to N64 memory&quot;.">Synchronous (slowest, fewest game issues)</string>
                            </property>
                           </item>
                           <item>
                            <property name="text">
-                            <string comment="async">Asynchronous (fast, few game issues)</string>
+                            <string extracomment="This is a combobox option with the label &quot;Copy video card frame buffer to N64 memory&quot;.">Asynchronous (fast, few game issues)</string>
                            </property>
                           </item>
                          </widget>
@@ -1907,17 +1907,17 @@
                          <widget class="QComboBox" name="copyDepthBufferComboBox">
                           <item>
                            <property name="text">
-                            <string comment="off">Never (fastest, most game issues)</string>
+                            <string extracomment="This is a combobox option with the label &quot;Copy video card frame buffer to N64 memory&quot;.">Never (fastest, most game issues)</string>
                            </property>
                           </item>
                           <item>
                            <property name="text">
-                            <string comment="vram">From VRAM (slow, some game issues)</string>
+                            <string extracomment="This is a combobox option with the label &quot;Copy video card frame buffer to N64 memory&quot;.">From VRAM (slow, some game issues)</string>
                            </property>
                           </item>
                           <item>
                            <property name="text">
-                            <string comment="software">In software (fast, fewest game issues)</string>
+                            <string extracomment="This is a combobox option with the label &quot;Copy video card frame buffer to N64 memory&quot;.">In software (fast, fewest game issues)</string>
                            </property>
                           </item>
                          </widget>
@@ -2182,7 +2182,7 @@
                    </sizepolicy>
                   </property>
                   <property name="suffix">
-                   <string> MB</string>
+                   <string extracomment="Megabytes"> MB</string>
                   </property>
                   <property name="maximum">
                    <number>999</number>
@@ -2268,7 +2268,7 @@
                    <item>
                     <widget class="QLabel" name="txPathLabel">
                      <property name="text">
-                      <string/>
+                      <string notr="true"/>
                      </property>
                      <property name="wordWrap">
                       <bool>true</bool>
@@ -2591,7 +2591,7 @@
                        <item>
                         <widget class="QLabel" name="blurStrengthLabel">
                          <property name="text">
-                          <string> 0</string>
+                          <string notr="true"> 0</string>
                          </property>
                          <property name="alignment">
                           <set>Qt::AlignCenter</set>
@@ -2691,7 +2691,7 @@
                        <item>
                         <widget class="QLabel" name="blurAmountLabel">
                          <property name="text">
-                          <string> 0</string>
+                          <string notr="true"> 0</string>
                          </property>
                          <property name="alignment">
                           <set>Qt::AlignCenter</set>
@@ -2791,7 +2791,7 @@
                        <item>
                         <widget class="QLabel" name="bloomThresholdLabel_2">
                          <property name="text">
-                          <string> 0</string>
+                          <string notr="true"> 0</string>
                          </property>
                          <property name="alignment">
                           <set>Qt::AlignCenter</set>
@@ -2976,7 +2976,7 @@
              </sizepolicy>
             </property>
             <property name="text">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;img src=&quot;:/Info.ico&quot;/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             <string notr="true">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;img src=&quot;:/Info.ico&quot;/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
            </widget>
           </item>
@@ -3621,7 +3621,7 @@
                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This font is used for all on-screen messages. Not all fonts can be used. If messages aren't displayed, try a different font.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                   </property>
                   <property name="text">
-                   <string>Arial</string>
+                   <string notr="true">Arial</string>
                   </property>
                   <property name="alignment">
                    <set>Qt::AlignCenter</set>
@@ -3637,7 +3637,7 @@
                    </sizepolicy>
                   </property>
                   <property name="text">
-                   <string>Green</string>
+                   <string notr="true">Green</string>
                   </property>
                   <property name="alignment">
                    <set>Qt::AlignCenter</set>
@@ -4216,11 +4216,11 @@
   </connection>
  </connections>
  <buttongroups>
-  <buttongroup name="factorButtonGroup"/>
   <buttongroup name="screenshotButtonGroup"/>
-  <buttongroup name="fixTexrectCoordsButtonGroup"/>
-  <buttongroup name="aspectButtonGroup"/>
   <buttongroup name="bloomBlendModeButtonGroup"/>
+  <buttongroup name="aspectButtonGroup"/>
+  <buttongroup name="factorButtonGroup"/>
   <buttongroup name="osdButtonGroup"/>
+  <buttongroup name="fixTexrectCoordsButtonGroup"/>
  </buttongroups>
 </ui>
