@@ -571,7 +571,7 @@ FrameBuffer * FrameBufferList::findTmpBuffer(u32 _address)
 
 void FrameBufferList::saveBuffer(u32 _address, u16 _format, u16 _size, u16 _width, u16 _height, bool _cfb)
 {
-	if (m_pCurrent != nullptr && config.frameBufferEmulation.copyAuxToRDRAM != 0) {
+	if (m_pCurrent != nullptr && config.frameBufferEmulation.copyAuxToRDRAM != 0 && (config.generalEmulation.hacks & hack_Snap) == 0) {
 		if (m_pCurrent->isAuxiliary()) {
 			FrameBuffer_CopyToRDRAM(m_pCurrent->m_startAddress, true);
 			removeBuffer(m_pCurrent->m_startAddress);

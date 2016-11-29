@@ -360,6 +360,8 @@ void RSP_Init()
 	else if (strstr(RSP.romname, (const char *)"WIN BACK") != nullptr ||
 		strstr(RSP.romname, (const char *)"OPERATION WINBACK") != nullptr)
 		config.generalEmulation.hacks |= hack_WinBack;
+	else if (strstr(RSP.romname, (const char *)"POKEMON SNAP") != nullptr)
+		config.generalEmulation.hacks |= hack_Snap;
 
 	api().FindPluginPath(RSP.pluginpath);
 
