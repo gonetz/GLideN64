@@ -30,7 +30,7 @@
 #include <functional>
 #include <thread>
 
-#include "../convert.h"
+#include <convert.h>
 #include "TxQuantize.h"
 
 TxQuantize::TxQuantize()
