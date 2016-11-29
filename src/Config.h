@@ -193,6 +193,7 @@ struct Config
 #define hack_legoRacers				(1<<14) //LEGO racers course map
 #define hack_doNotResetTLUTmode		(1<<15) //Don't set TLUT mode to none after dlist end. Quake 64
 #define hack_LoadDepthTextures		(1<<16) //Load textures for depth buffer
+#define hack_Snap					(1<<17) //Frame buffer settings for camera detection in Pokemon Snap. Copy aux buffers at fullsync
 
 extern Config config;
 
