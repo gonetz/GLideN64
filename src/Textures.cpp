@@ -1405,7 +1405,7 @@ void TextureCache::update(u32 _t)
 		}
 	}
 
-	const gDPTile * const pTile = gSP.textureTile[_t];
+	const gDPTile * pTile = gSP.textureTile[_t];
 	switch (pTile->textureMode) {
 	case TEXTUREMODE_BGIMAGE:
 		_updateBackground();
@@ -1425,11 +1425,13 @@ void TextureCache::update(u32 _t)
 	}
 
 	if (gSP.texture.tile == 7 &&
-			_t == 0 &&
-			gSP.textureTile[0] == gDP.loadTile &&
-			gDP.loadTile->loadType == LOADTYPE_BLOCK &&
-			gSP.textureTile[0]->tmem == gSP.textureTile[1]->tmem)
+		_t == 0 &&
+		gSP.textureTile[0] == gDP.loadTile &&
+		gDP.loadTile->loadType == LOADTYPE_BLOCK &&
+		gSP.textureTile[0]->tmem == gSP.textureTile[1]->tmem) {
 		gSP.textureTile[0] = gSP.textureTile[1];
+		pTile = gSP.textureTile[_t];
+	}
 
 	TextureParams params;
 	params.flags = pTile->masks	|
