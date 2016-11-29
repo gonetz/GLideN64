@@ -11,21 +11,11 @@
 #define LOG_LEVEL LOG_WARNING
 
 #if LOG_LEVEL > 0
-#ifdef ANDROID
-#include <android/log.h>
 
-#define LOG(A, ...) \
-    if (A <= LOG_LEVEL) \
-    { \
-		__android_log_print(ANDROID_LOG_DEBUG, "GLideN64", __VA_ARGS__); \
-    }
-
-#else // ANDROID
 #include "Types.h"
 
 void LOG(u16 type, const char * format, ...);
 
-#endif // ANDROID
 #else
 
 #define LOG(A, ...)

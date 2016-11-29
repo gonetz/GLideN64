@@ -50,6 +50,7 @@ MY_LOCAL_SRC_FILES :=                               \
     $(SRCDIR)/L3D.cpp                               \
     $(SRCDIR)/L3DEX2.cpp                            \
     $(SRCDIR)/L3DEX.cpp                             \
+    $(SRCDIR)/Log_android.cpp                       \
     $(SRCDIR)/MupenPlusPluginAPI.cpp                \
     $(SRCDIR)/N64.cpp                               \
     $(SRCDIR)/OpenGL.cpp                            \
