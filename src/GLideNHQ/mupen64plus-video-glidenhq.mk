@@ -11,6 +11,7 @@ LOCAL_ARM_MODE := arm
 
 LOCAL_C_INCLUDES :=                     \
     $(LOCAL_PATH)/$(SRCDIR)             \
+    $(LOCAL_PATH)/$(SRCDIR)/..          \
     $(LOCAL_PATH)/$(SRCDIR)/../osal     \
     $(PNG_INCLUDES)                     \
     $(LOCAL_PATH)/GLES3/include/        \
