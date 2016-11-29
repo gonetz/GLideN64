@@ -1,5 +1,3 @@
-#ifndef ANDROID
-
 #include <stdarg.h>
 #include <stdio.h>
 #include "Log.h"
@@ -21,7 +19,7 @@ void LOG(u16 type, const char * format, ...) {
 	char cbuf[bufSize];
 	wcstombs(cbuf, logPath, bufSize);
 	FILE *dumpFile = fopen(cbuf, "a+");
-#endif
+#endif //OS_WINDOWS
 
 	if (dumpFile == nullptr)
 		return;
@@ -45,5 +43,3 @@ void debugPrint(const char * format, ...) {
 	va_end(va);
 }
 #endif
-
-#endif // ANDROID
