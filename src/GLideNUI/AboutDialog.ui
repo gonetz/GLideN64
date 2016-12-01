@@ -27,15 +27,45 @@
    <property name="sizeConstraint">
     <enum>QLayout::SetFixedSize</enum>
    </property>
+   <property name="leftMargin">
+    <number>18</number>
+   </property>
+   <property name="topMargin">
+    <number>12</number>
+   </property>
+   <property name="rightMargin">
+    <number>18</number>
+   </property>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout">
+    <layout class="QVBoxLayout" name="verticalLayout">
      <property name="spacing">
-      <number>16</number>
+      <number>12</number>
      </property>
      <item>
-      <layout class="QVBoxLayout" name="verticalLayout_5">
+      <layout class="QHBoxLayout" name="horizontalLayout">
+       <property name="spacing">
+        <number>18</number>
+       </property>
        <item>
         <widget class="QGroupBox" name="aboutAuthors">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>200</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>200</width>
+           <height>16777215</height>
+          </size>
+         </property>
          <property name="title">
           <string>Authors</string>
          </property>
@@ -86,7 +116,201 @@
         </widget>
        </item>
        <item>
+        <widget class="QGroupBox" name="aboutMainFunders">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>300</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>300</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="title">
+          <string>Main funders</string>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_2">
+          <property name="horizontalSpacing">
+           <number>20</number>
+          </property>
+          <item row="1" column="1">
+           <widget class="QLabel" name="label_8">
+            <property name="font">
+             <font>
+              <pointsize>10</pointsize>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string notr="true">daman6009</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="label_9">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="font">
+             <font>
+              <pointsize>10</pointsize>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string notr="true">zolcos</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QLabel" name="label_6">
+            <property name="font">
+             <font>
+              <pointsize>10</pointsize>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string notr="true">Mush Man</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="QLabel" name="label_10">
+            <property name="font">
+             <font>
+              <pointsize>10</pointsize>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string notr="true">neko9876</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="0">
+           <widget class="QLabel" name="label_5">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="font">
+             <font>
+              <pointsize>10</pointsize>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string notr="true">Anthony Heathcoat</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="label_7">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="font">
+             <font>
+              <pointsize>10</pointsize>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string notr="true">Paul Lamb</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="0">
+           <widget class="QLabel" name="label_11">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="font">
+             <font>
+              <pointsize>10</pointsize>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string notr="true">zilmar</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="1">
+           <widget class="QLabel" name="label_12">
+            <property name="font">
+             <font>
+              <pointsize>10</pointsize>
+              <weight>75</weight>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string notr="true">nesplayer4life</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout_2">
+       <property name="spacing">
+        <number>18</number>
+       </property>
+       <property name="bottomMargin">
+        <number>8</number>
+       </property>
+       <item>
         <widget class="QGroupBox" name="aboutCredits">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>200</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>200</width>
+           <height>16777215</height>
+          </size>
+         </property>
          <property name="title">
           <string>Credits</string>
          </property>
@@ -241,176 +465,42 @@
             </property>
            </widget>
           </item>
-         </layout>
-        </widget>
-       </item>
-       <item>
-        <spacer name="verticalSpacer">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>0</width>
-           <height>0</height>
-          </size>
-         </property>
-        </spacer>
-       </item>
-      </layout>
-     </item>
-     <item>
-      <layout class="QVBoxLayout" name="verticalLayout_4">
-       <item>
-        <widget class="QGroupBox" name="aboutMainFunders">
-         <property name="title">
-          <string>Main funders</string>
-         </property>
-         <layout class="QGridLayout" name="gridLayout_2">
-          <property name="horizontalSpacing">
-           <number>20</number>
-          </property>
-          <item row="1" column="1">
-           <widget class="QLabel" name="label_8">
-            <property name="font">
-             <font>
-              <pointsize>10</pointsize>
-              <weight>75</weight>
-              <bold>true</bold>
-             </font>
+          <item>
+           <spacer name="verticalSpacer">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
             </property>
-            <property name="text">
-             <string notr="true">daman6009</string>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>40</height>
+             </size>
             </property>
-           </widget>
-          </item>
-          <item row="2" column="0">
-           <widget class="QLabel" name="label_9">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="font">
-             <font>
-              <pointsize>10</pointsize>
-              <weight>75</weight>
-              <bold>true</bold>
-             </font>
-            </property>
-            <property name="text">
-             <string notr="true">zolcos</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="1">
-           <widget class="QLabel" name="label_6">
-            <property name="font">
-             <font>
-              <pointsize>10</pointsize>
-              <weight>75</weight>
-              <bold>true</bold>
-             </font>
-            </property>
-            <property name="text">
-             <string notr="true">Mush Man</string>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="1">
-           <widget class="QLabel" name="label_10">
-            <property name="font">
-             <font>
-              <pointsize>10</pointsize>
-              <weight>75</weight>
-              <bold>true</bold>
-             </font>
-            </property>
-            <property name="text">
-             <string notr="true">neko9876</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="0">
-           <widget class="QLabel" name="label_5">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="font">
-             <font>
-              <pointsize>10</pointsize>
-              <weight>75</weight>
-              <bold>true</bold>
-             </font>
-            </property>
-            <property name="text">
-             <string notr="true">Anthony Heathcoat</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="0">
-           <widget class="QLabel" name="label_7">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="font">
-             <font>
-              <pointsize>10</pointsize>
-              <weight>75</weight>
-              <bold>true</bold>
-             </font>
-            </property>
-            <property name="text">
-             <string notr="true">Paul Lamb</string>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="0">
-           <widget class="QLabel" name="label_11">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="font">
-             <font>
-              <pointsize>10</pointsize>
-              <weight>75</weight>
-              <bold>true</bold>
-             </font>
-            </property>
-            <property name="text">
-             <string notr="true">zilmar</string>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="1">
-           <widget class="QLabel" name="label_12">
-            <property name="font">
-             <font>
-              <pointsize>10</pointsize>
-              <weight>75</weight>
-              <bold>true</bold>
-             </font>
-            </property>
-            <property name="text">
-             <string notr="true">nesplayer4life</string>
-            </property>
-           </widget>
+           </spacer>
           </item>
          </layout>
         </widget>
        </item>
        <item>
         <widget class="QGroupBox" name="aboutFunders">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>300</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>300</width>
+           <height>16777215</height>
+          </size>
+         </property>
          <property name="title">
           <string>Funders</string>
          </property>
@@ -430,18 +520,7 @@
              <bool>false</bool>
             </property>
             <widget class="QWidget" name="scrollAreaWidgetContents">
-             <property name="geometry">
-              <rect>
-               <x>0</x>
-               <y>-1697</y>
-               <width>166</width>
-               <height>2009</height>
-              </rect>
-             </property>
              <layout class="QVBoxLayout" name="verticalLayout_8">
-              <property name="spacing">
-               <number>9</number>
-              </property>
               <property name="leftMargin">
                <number>0</number>
               </property>
@@ -459,8 +538,13 @@
                   <verstretch>0</verstretch>
                  </sizepolicy>
                 </property>
+                <property name="font">
+                 <font>
+                  <pointsize>10</pointsize>
+                 </font>
+                </property>
                 <property name="text">
-                 <string notr="true">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;Ryan Rosser&lt;br/&gt;Amadeus Sterl&lt;br/&gt;Narann&lt;br/&gt;camara_luiz&lt;br/&gt;weinerschnitzel&lt;br/&gt;microdev&lt;br/&gt;Thomas Ginelli&lt;br/&gt;ace977&lt;br/&gt;patryk.szalanski&lt;br/&gt;Detomine&lt;br/&gt;itasovski&lt;br/&gt;keithclark1985&lt;br/&gt;josephrmoore&lt;br/&gt;fckyourlies&lt;br/&gt;dougforr&lt;br/&gt;camdenfurse&lt;br/&gt;grandslam810&lt;br/&gt;rictic&lt;br/&gt;Fred Lambes&lt;br/&gt;David Vercruyssen&lt;br/&gt;danielgormly&lt;br/&gt;lukecool&lt;br/&gt;rhilsky&lt;br/&gt;phillipstuerzl&lt;br/&gt;killjoy1337&lt;br/&gt;ratop46 &lt;br/&gt;william.a.moore&lt;br/&gt;RSP16&lt;br/&gt;kzidek127&lt;br/&gt;Dan Holberg&lt;br/&gt;178amm&lt;br/&gt;peterchrjoergensen&lt;br/&gt;hill_jm&lt;br/&gt;petercullenbryan&lt;br/&gt;Christopher M Rock&lt;br/&gt;Kenny.R.Mitchell&lt;br/&gt;Kevin Grasso&lt;br/&gt;mtgyure&lt;br/&gt;Anthony Heathcoat&lt;br/&gt;Liam Burns&lt;br/&gt;Steven Impson&lt;br/&gt;Gwyn.Whieldon&lt;br/&gt;hipnotoad&lt;br/&gt;shmuklidooha&lt;br/&gt;bcanard123&lt;br/&gt;Ben Slater&lt;br/&gt;Mike Nagy&lt;br/&gt;littlegreendude55&lt;br/&gt;Jay Loring&lt;br/&gt;Damion D&lt;br/&gt;heranbago&lt;br/&gt;baptiste.guilbert&lt;br/&gt;shadowpower69&lt;br/&gt;j.mcguirk72&lt;br/&gt;Peter Greenwood&lt;br/&gt;fla56&lt;br/&gt;Sergio &lt;br/&gt;theboy_181&lt;br/&gt;Jindo Fox&lt;br/&gt;s1n.pcc&lt;br/&gt;rafaelvasco &lt;br/&gt;copileo&lt;br/&gt;hugues.fabien&lt;br/&gt;seanmcm157&lt;br/&gt;David Morris&lt;br/&gt;Jason Lightner&lt;br/&gt;olivier_crepin77&lt;br/&gt;Paul Lamb&lt;br/&gt;thegump2.0&lt;br/&gt;Bates&lt;br/&gt;cdoublejj&lt;br/&gt;buddybenj&lt;br/&gt;don.carmical&lt;br/&gt;kyussgreen&lt;br/&gt;info1092&lt;br/&gt;YQ &lt;br/&gt;Allan Nordhøy&lt;br/&gt;christian010&lt;br/&gt;creuseur2patateradio&lt;br/&gt;chrisbevanlee&lt;br/&gt;theschklingen&lt;br/&gt;Thomas Lindstrøm&lt;br/&gt;Djipi &lt;br/&gt;Dartus &lt;br/&gt;Oscar Abraham &lt;br/&gt;nwstrathdee&lt;br/&gt;will7046 &lt;br/&gt;Richard42 &lt;br/&gt;V1del &lt;br/&gt;AnthonyBentley&lt;br/&gt;buddybenj&lt;br/&gt;nickshooter251&lt;br/&gt;sicurella12&lt;br/&gt;jcspringer&lt;br/&gt;Gru So&lt;br/&gt;Vinícius dos Santos Oliveira&lt;br/&gt;Jimmy Haugh&lt;br/&gt;Malcolm &lt;br/&gt;Alex Strange&lt;br/&gt;Espen Jensen&lt;br/&gt;m.johnsondelta&lt;br/&gt;alexzandar.toxic2&lt;br/&gt;Ben Slater&lt;br/&gt;WC-Predator &lt;br/&gt;Mush Man&lt;br/&gt;Ben Slater&lt;br/&gt;aznlucidx&lt;br/&gt;Nathan Dick&lt;br/&gt;paulanocom&lt;br/&gt;Ryan Rosser&lt;br/&gt;nekow42&lt;br/&gt;mgos1&lt;br/&gt;ian.macdonald996&lt;br/&gt;itasovski&lt;br/&gt;vikingpower1&lt;br/&gt;DukeX007X&lt;br/&gt;palaciosgabriel&lt;br/&gt;Franz-Josef Haider&lt;br/&gt;e-male&lt;br/&gt;aweath&lt;br/&gt;famicom4&lt;br/&gt;Keith_at_UMR&lt;br/&gt;sweatypickle&lt;br/&gt;jeremydmiller&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                 <string notr="true">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Ryan Rosser&lt;br/&gt;Amadeus Sterl&lt;br/&gt;Narann&lt;br/&gt;camara_luiz&lt;br/&gt;weinerschnitzel&lt;br/&gt;microdev&lt;br/&gt;Thomas Ginelli&lt;br/&gt;ace977&lt;br/&gt;patryk.szalanski&lt;br/&gt;Detomine&lt;br/&gt;itasovski&lt;br/&gt;keithclark1985&lt;br/&gt;josephrmoore&lt;br/&gt;fckyourlies&lt;br/&gt;dougforr&lt;br/&gt;camdenfurse&lt;br/&gt;grandslam810&lt;br/&gt;rictic&lt;br/&gt;Fred Lambes&lt;br/&gt;David Vercruyssen&lt;br/&gt;danielgormly&lt;br/&gt;lukecool&lt;br/&gt;rhilsky&lt;br/&gt;phillipstuerzl&lt;br/&gt;killjoy1337&lt;br/&gt;ratop46 &lt;br/&gt;william.a.moore&lt;br/&gt;RSP16&lt;br/&gt;kzidek127&lt;br/&gt;Dan Holberg&lt;br/&gt;178amm&lt;br/&gt;peterchrjoergensen&lt;br/&gt;hill_jm&lt;br/&gt;petercullenbryan&lt;br/&gt;Christopher M Rock&lt;br/&gt;Kenny.R.Mitchell&lt;br/&gt;Kevin Grasso&lt;br/&gt;mtgyure&lt;br/&gt;Anthony Heathcoat&lt;br/&gt;Liam Burns&lt;br/&gt;Steven Impson&lt;br/&gt;Gwyn.Whieldon&lt;br/&gt;hipnotoad&lt;br/&gt;shmuklidooha&lt;br/&gt;bcanard123&lt;br/&gt;Ben Slater&lt;br/&gt;Mike Nagy&lt;br/&gt;littlegreendude55&lt;br/&gt;Jay Loring&lt;br/&gt;Damion D&lt;br/&gt;heranbago&lt;br/&gt;baptiste.guilbert&lt;br/&gt;shadowpower69&lt;br/&gt;j.mcguirk72&lt;br/&gt;Peter Greenwood&lt;br/&gt;fla56&lt;br/&gt;Sergio &lt;br/&gt;theboy_181&lt;br/&gt;Jindo Fox&lt;br/&gt;s1n.pcc&lt;br/&gt;rafaelvasco &lt;br/&gt;copileo&lt;br/&gt;hugues.fabien&lt;br/&gt;seanmcm157&lt;br/&gt;David Morris&lt;br/&gt;Jason Lightner&lt;br/&gt;olivier_crepin77&lt;br/&gt;Paul Lamb&lt;br/&gt;thegump2.0&lt;br/&gt;Bates&lt;br/&gt;cdoublejj&lt;br/&gt;buddybenj&lt;br/&gt;don.carmical&lt;br/&gt;kyussgreen&lt;br/&gt;info1092&lt;br/&gt;YQ &lt;br/&gt;Allan Nordhøy&lt;br/&gt;christian010&lt;br/&gt;creuseur2patateradio&lt;br/&gt;chrisbevanlee&lt;br/&gt;theschklingen&lt;br/&gt;Thomas Lindstrøm&lt;br/&gt;Djipi &lt;br/&gt;Dartus &lt;br/&gt;Oscar Abraham &lt;br/&gt;nwstrathdee&lt;br/&gt;will7046 &lt;br/&gt;Richard42 &lt;br/&gt;V1del &lt;br/&gt;AnthonyBentley&lt;br/&gt;buddybenj&lt;br/&gt;nickshooter251&lt;br/&gt;sicurella12&lt;br/&gt;jcspringer&lt;br/&gt;Gru So&lt;br/&gt;Vinícius dos Santos Oliveira&lt;br/&gt;Jimmy Haugh&lt;br/&gt;Malcolm &lt;br/&gt;Alex Strange&lt;br/&gt;Espen Jensen&lt;br/&gt;m.johnsondelta&lt;br/&gt;alexzandar.toxic2&lt;br/&gt;Ben Slater&lt;br/&gt;WC-Predator &lt;br/&gt;Mush Man&lt;br/&gt;Ben Slater&lt;br/&gt;aznlucidx&lt;br/&gt;Nathan Dick&lt;br/&gt;paulanocom&lt;br/&gt;Ryan Rosser&lt;br/&gt;nekow42&lt;br/&gt;mgos1&lt;br/&gt;ian.macdonald996&lt;br/&gt;itasovski&lt;br/&gt;vikingpower1&lt;br/&gt;DukeX007X&lt;br/&gt;palaciosgabriel&lt;br/&gt;Franz-Josef Haider&lt;br/&gt;e-male&lt;br/&gt;aweath&lt;br/&gt;famicom4&lt;br/&gt;Keith_at_UMR&lt;br/&gt;sweatypickle&lt;br/&gt;jeremydmiller&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                 </property>
                </widget>
               </item>
@@ -488,19 +572,6 @@
           </item>
          </layout>
         </widget>
-       </item>
-       <item>
-        <spacer name="verticalSpacer_2">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>0</width>
-           <height>0</height>
-          </size>
-         </property>
-        </spacer>
        </item>
       </layout>
      </item>
