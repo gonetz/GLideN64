@@ -29,6 +29,9 @@
    </property>
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_3">
+     <property name="spacing">
+      <number>10</number>
+     </property>
      <item>
       <widget class="QLabel" name="label_2">
        <property name="sizePolicy">
@@ -38,7 +41,7 @@
         </sizepolicy>
        </property>
        <property name="text">
-        <string notr="true">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;img src=&quot;:/Icon.ico&quot; width=&quot;36&quot;/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        <string notr="true">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;img src=&quot;:/Icon-48.ico&quot;/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
        </property>
       </widget>
      </item>
@@ -46,7 +49,7 @@
       <widget class="QLabel" name="label_4">
        <property name="font">
         <font>
-         <pointsize>16</pointsize>
+         <pointsize>20</pointsize>
          <weight>75</weight>
          <bold>true</bold>
         </font>
@@ -72,6 +75,9 @@
        <height>275</height>
       </size>
      </property>
+     <property name="currentIndex">
+      <number>0</number>
+     </property>
      <widget class="QWidget" name="tab">
       <attribute name="title">
        <string>About</string>
@@ -84,6 +90,12 @@
         <spacer name="verticalSpacer_4">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>0</width>
+           <height>0</height>
+          </size>
          </property>
         </spacer>
        </item>
