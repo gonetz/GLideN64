@@ -11,12 +11,12 @@
     <message>
         <location filename="AboutDialog.ui" line="80"/>
         <source>About</source>
-        <translation type="unfinished"></translation>
+        <translation>Acerca de</translation>
     </message>
     <message>
         <location filename="AboutDialog.ui" line="102"/>
         <source>The next generation open source graphics plugin for N64 emulators.</source>
-        <translation type="unfinished"></translation>
+        <translation>La nueva generación de los plugins gráficos de código abierto para emuladores de N64.</translation>
     </message>
     <message>
         <location filename="AboutDialog.ui" line="125"/>
@@ -36,24 +36,25 @@
     <message>
         <location filename="AboutDialog.ui" line="193"/>
         <source>GUI designer</source>
-        <translation type="unfinished"></translation>
+        <translation>Diseñador de la interfaz</translation>
     </message>
     <message>
         <location filename="AboutDialog.ui" line="207"/>
         <source>Contributors</source>
-        <translation type="unfinished"></translation>
+        <translation>Contribuyentes</translation>
     </message>
     <message>
         <location filename="AboutDialog.ui" line="463"/>
         <source>... and more</source>
         <extracomment>Refers to more funders</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>y más...</translation>
     </message>
     <message>
         <location filename="AboutDialog.ui" line="591"/>
         <source>Author of the blur shader
 © Nutty Software</source>
-        <translation type="unfinished"></translation>
+        <translation>Autor del shader de desenfoque
+© Nutty Software</translation>
     </message>
     <message>
         <location filename="AboutDialog.ui" line="495"/>
@@ -96,12 +97,12 @@
     <message>
         <location filename="configDialog.ui" line="80"/>
         <source>Full screen resolution:</source>
-        <translation>Resolución en pantalla completa:</translation>
+        <translation>Resolución de pantalla completa:</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="128"/>
         <source>Windowed resolution:</source>
-        <translation>Resolución en ventana:</translation>
+        <translation>Resolución de ventana:</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="92"/>
@@ -182,88 +183,88 @@
         <location filename="configDialog.ui" line="213"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;You can use this option to crop black borders. Use &lt;span style=&quot; font-weight:600;&quot;&gt;Auto per game&lt;/span&gt; to crop automatically based on the game or &lt;span style=&quot; font-weight:600;&quot;&gt;Custom&lt;/span&gt; to set the number of pixels yourself. The number of pixels is based on the original N64 resolution.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <oldsource>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Crop image:&lt;/span&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;This option allows user to crop black boarders from resulted image. It has two modes:&lt;br/&gt;&lt;br/&gt;* Auto - plugin sets crop automatically using game&apos;s frame scissor.&lt;/p&gt;&lt;p&gt;* Custom - crop using user defined vaules. User should set number of pixels to crop from original native-res image.&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</oldsource>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Puedes utilizar esta opción para recortar los bordes negros. Utiliza la opción &lt;span style=&quot; font-weight:600;&quot;&gt;«Automático según juego»&lt;/span&gt; para cortar automáticamente la imagen en función de cada juego o &lt;span style=&quot; font-weight:600;&quot;&gt;«Personalizado»&lt;/span&gt; para asignar manualmente el número de píxeles. El número de píxeles se basa en la resolución original en N64.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Puedes utilizar esta opción para recortar los bordes negros. Utiliza la opción &lt;span style=&quot; font-weight:600;&quot;&gt;«Automático según juego»&lt;/span&gt; para cortar automáticamente la imagen en función de cada juego o &lt;span style=&quot; font-weight:600;&quot;&gt;«Personalizado»&lt;/span&gt; para asignar manualmente el número de píxeles. El número de píxeles se basa en la resolución original de N64.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="248"/>
         <source>Disable</source>
-        <translation type="unfinished">Desactivado</translation>
+        <translation>Desactivado</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="253"/>
         <source>Auto per game</source>
-        <translation type="unfinished">Automático según juego</translation>
+        <translation>Automático según juego</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="258"/>
         <source>Custom</source>
-        <translation type="unfinished">Personalizado</translation>
+        <translation>Personalizado</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="455"/>
         <source>Anti-aliasing:</source>
-        <translation type="unfinished"></translation>
+        <translation>Suavizado de bordes:</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="832"/>
         <source>VRAM usage limit:</source>
         <comment>video/cacheSizeLabel</comment>
         <extracomment>&quot;Video RAM usage limit&quot; in MB. &quot;MB&quot; is referenced in the control.</extracomment>
-        <translation type="unfinished">Límite de uso de VRAM:</translation>
+        <translation>Límite de uso de VRAM:</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="1742"/>
         <source>Vertical interrupt (recommended, fewest game issues)</source>
         <extracomment>&quot;Vertical interrupt&quot; is frequently abbreviated as &quot;VI&quot;. This control is a combobox labelled &quot;Frame buffer swap on:&quot;</extracomment>
-        <translation type="unfinished">Interrupción vertical (Recomendado, lo menos problemático)</translation>
+        <translation>Interrupción vertical (Recomendado, lo menos problemático)</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="1747"/>
         <source>VI origin change (faster, few game issues)</source>
         <extracomment>&quot;VI&quot; stands for &quot;vertical interrupt&quot;. This control is a combobox labelled &quot;Frame buffer swap on:&quot;</extracomment>
-        <translation type="unfinished">Cambio en el origen de la VI (Más rápido, da pocos problemas)</translation>
+        <translation>Cambio en el origen de la VI (Más rápido, da pocos problemas)</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="1752"/>
         <source>Color buffer change (fastest, some game issues)</source>
         <extracomment>This control is a combobox labelled &quot;Frame buffer swap on:&quot;</extracomment>
-        <translation type="unfinished">Cambio en el búfer de color (Más rápido, da algunos problemas)</translation>
+        <translation>Cambio en el búfer de color (Más rápido, da algunos problemas)</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="1854"/>
         <source>Never (fastest, many game issues)</source>
         <extracomment>This is a combobox option with the label &quot;Copy video card frame buffer to N64 memory&quot;.</extracomment>
-        <translation type="unfinished">Nunca (Lo más rápido, da más problemas)</translation>
+        <translation>Nunca (Lo más rápido, da más problemas)</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="1859"/>
         <source>Synchronous (slowest, fewest game issues)</source>
         <extracomment>This is a combobox option with the label &quot;Copy video card frame buffer to N64 memory&quot;.</extracomment>
-        <translation type="unfinished">Síncrono (Lo más lento, el menos problemático)</translation>
+        <translation>Síncrono (Lo más lento, el menos problemático)</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="1864"/>
         <source>Asynchronous (fast, few game issues)</source>
         <extracomment>This is a combobox option with the label &quot;Copy video card frame buffer to N64 memory&quot;.</extracomment>
-        <translation type="unfinished">Asíncrono (Rápido, da pocos problemas)</translation>
+        <translation>Asíncrono (Rápido, da pocos problemas)</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="1910"/>
         <source>Never (fastest, most game issues)</source>
         <extracomment>This is a combobox option with the label &quot;Copy video card frame buffer to N64 memory&quot;.</extracomment>
-        <translation type="unfinished">Nunca (Lo más rápido, lo más problemático)</translation>
+        <translation>Nunca (Lo más rápido, lo más problemático)</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="1915"/>
         <source>From VRAM (slow, some game issues)</source>
         <extracomment>This is a combobox option with the label &quot;Copy video card frame buffer to N64 memory&quot;.</extracomment>
-        <translation type="unfinished">Copiar de la VRAM (Lento, da algunos problemas)</translation>
+        <translation>Copiar de la VRAM (Lento, da algunos problemas)</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="1920"/>
         <source>In software (fast, fewest game issues)</source>
         <extracomment>This is a combobox option with the label &quot;Copy video card frame buffer to N64 memory&quot;.</extracomment>
-        <translation type="unfinished">Por software (Rápido, lo menos problemático)</translation>
+        <translation>Por software (Rápido, lo menos problemático)</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="2261"/>
