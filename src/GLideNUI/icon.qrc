@@ -1,7 +1,6 @@
 <RCC>
     <qresource prefix="/">
         <file>Icon.ico</file>
-        <file>Icon-48.ico</file>
         <file>Warning.ico</file>
         <file>Info.ico</file>
         <file>Up.ico</file>
