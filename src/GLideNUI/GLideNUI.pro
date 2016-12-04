@@ -43,3 +43,5 @@ TRANSLATIONS = gliden64_fr.ts \
                gliden64_pl.ts \
                gliden64_pt_BR.ts \
                gliden64_ja.ts
+
+DISTFILES +=

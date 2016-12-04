@@ -113,8 +113,7 @@ void _loadSettings(QSettings & settings)
 	config.onScreenDisplay.fps = settings.value("showFPS", config.onScreenDisplay.fps).toInt();
 	config.onScreenDisplay.vis = settings.value("showVIS", config.onScreenDisplay.vis).toInt();
 	config.onScreenDisplay.percent = settings.value("showPercent", config.onScreenDisplay.percent).toInt();
-	config.onScreenDisplay.horisontalPos = settings.value("osdHorisontalPos", config.onScreenDisplay.horisontalPos).toInt();
-	config.onScreenDisplay.verticalPos = settings.value("osdVerticalPos", config.onScreenDisplay.verticalPos).toInt();
+	config.onScreenDisplay.pos = settings.value("osdPos", config.onScreenDisplay.pos).toInt();
 	settings.endGroup();
 }
 
@@ -229,8 +228,7 @@ void writeSettings(const QString & _strIniFolder)
 	settings.setValue("showFPS", config.onScreenDisplay.fps);
 	settings.setValue("showVIS", config.onScreenDisplay.vis);
 	settings.setValue("showPercent", config.onScreenDisplay.percent);
-	settings.setValue("osdHorisontalPos", config.onScreenDisplay.horisontalPos);
-	settings.setValue("osdVerticalPos", config.onScreenDisplay.verticalPos);
+	settings.setValue("osdPos", config.onScreenDisplay.pos);
 	settings.endGroup();
 }
 
