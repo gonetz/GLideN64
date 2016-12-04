@@ -101,7 +101,7 @@ ifeq ($(TARGET_ARCH_ABI), armeabi-v7a)
     MY_LOCAL_SRC_FILES += $(SRCDIR)/3DMathNeon.cpp.neon
     MY_LOCAL_SRC_FILES += $(SRCDIR)/gSPNeon.cpp.neon
     MY_LOCAL_CFLAGS += -D__NEON_OPT
-    MY_LOCAL_CFLAGS += -D__VEC4_OPT -mfpu=neon -mfloat-abi=softfp -ftree-vectorize -mvectorize-with-neon-quad -ftree-vectorizer-verbose=2 -funsafe-math-optimizations
+    MY_LOCAL_CFLAGS += -D__VEC4_OPT -mfpu=neon -mfloat-abi=softfp -ftree-vectorize -mvectorize-with-neon-quad -ftree-vectorizer-verbose=2 -funsafe-math-optimizations -fno-finite-math-only
 
 else ifeq ($(TARGET_ARCH_ABI), x86)
 #    MY_LOCAL_CFLAGS += -DX86_ASM
