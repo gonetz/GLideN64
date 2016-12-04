@@ -346,6 +346,10 @@ void gSPProcessVertex4(u32 v)
 					x = DotProduct(&gSP.lookat[0].ix, fLightDir);
 					y = DotProduct(&gSP.lookat[1].ix, fLightDir);
 				} else {
+					fLightDir[0] *= 128.0f;
+					fLightDir[1] *= 128.0f;
+					fLightDir[2] *= 128.0f;
+					TransformVectorNormalize(fLightDir, gSP.matrix.modelView[gSP.matrix.modelViewi]);
 					x = fLightDir[0];
 					y = fLightDir[1];
 				}
