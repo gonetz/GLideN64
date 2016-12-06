@@ -13,7 +13,7 @@ class ConfigDialog : public QDialog
 	Q_OBJECT
 
 public:
-	explicit ConfigDialog(QWidget *parent = 0);
+	explicit ConfigDialog(QWidget *parent = Q_NULLPTR, Qt::WindowFlags f = Qt::WindowFlags());
 	~ConfigDialog();
 
 	void setIniPath(const QString & _strIniPath);

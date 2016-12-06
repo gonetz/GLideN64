@@ -317,8 +317,8 @@ void ConfigDialog::setIniPath(const QString & _strIniPath)
 	ui->translationsComboBox->setCurrentIndex(listIndex);
 }
 
-ConfigDialog::ConfigDialog(QWidget *parent) :
-QDialog(parent),
+ConfigDialog::ConfigDialog(QWidget *parent, Qt::WindowFlags f) :
+QDialog(parent, f),
 ui(new Ui::ConfigDialog),
 m_accepted(false)
 {

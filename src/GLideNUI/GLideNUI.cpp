@@ -32,7 +32,7 @@ int openConfigDialog(const wchar_t * _strFileName, bool & _accepted)
 	if (translator.load(getTranslationFile(), strIniFileName))
 		a.installTranslator(&translator);
 
-	ConfigDialog w;
+	ConfigDialog w(Q_NULLPTR, Qt::WindowTitleHint | Qt::WindowSystemMenuHint);
 
 	w.setIniPath(strIniFileName);
 	w.show();
@@ -55,7 +55,7 @@ int openAboutDialog(const wchar_t * _strFileName)
 	if (translator.load(getTranslationFile(), QString::fromWCharArray(_strFileName)))
 		a.installTranslator(&translator);
 
-	AboutDialog w;
+	AboutDialog w(Q_NULLPTR, Qt::WindowTitleHint | Qt::WindowSystemMenuHint);
 	w.show();
 	return a.exec();
 }
