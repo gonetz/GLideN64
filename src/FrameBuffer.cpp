@@ -676,7 +676,10 @@ void FrameBufferList::saveBuffer(u32 _address, u16 _format, u16 _size, u16 _widt
 	);
 #endif
 
-	if (m_pCurrent->isAuxiliary() && m_pCurrent->m_pDepthBuffer != nullptr && bPrevIsDepth) {
+	if (m_pCurrent->isAuxiliary() &&
+		m_pCurrent->m_pDepthBuffer != nullptr &&
+		bPrevIsDepth &&
+		(config.generalEmulation.hacks&hack_LoadDepthTextures) == 0) {
 		// N64 games may use partial depth buffer clear for aux buffers
 		// It will not work for GL, so we have to force clear depth buffer for aux buffer
 		const DepthBuffer * pDepth = m_pCurrent->m_pDepthBuffer;
