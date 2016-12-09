@@ -22,7 +22,8 @@
 #define F3DEX2CBFD	13
 #define Turbo3D		14
 #define ZSortp		15
-#define NONE		16
+#define F3DSETA		16
+#define NONE		17
 
 // Fixed point conversion factors
 #define FIXED2FLOATRECIP1	0.5f
@@ -595,6 +596,7 @@ extern u32 G_OBJ_RECTANGLE, G_OBJ_SPRITE, G_OBJ_MOVEMEM;
 extern u32 G_SELECT_DL, G_OBJ_RENDERMODE, G_OBJ_RECTANGLE_R;
 extern u32 G_OBJ_LOADTXTR, G_OBJ_LDTX_SPRITE, G_OBJ_LDTX_RECT, G_OBJ_LDTX_RECT_R;
 extern u32 G_RDPHALF_0;
+extern u32 G_PERSPNORM;
 
 #define LIGHT_1	1
 #define LIGHT_2	2

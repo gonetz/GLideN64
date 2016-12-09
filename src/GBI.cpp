@@ -22,6 +22,7 @@
 #include "F3DSWSE.h"
 #include "F3DWRUS.h"
 #include "F3DPD.h"
+#include "F3DSETA.h"
 #include "F3DEX2CBFD.h"
 #include "ZSort.h"
 #include "CRC.h"
@@ -35,10 +36,10 @@ SpecialMicrocodeInfo specialMicrocodes[] =
 {
 	{ F3D,		false,	0xe62a706d, "Fast3D" },
 	{ F3D,		false,	0x7d372819, "Fast3D" },
-	{ F3D,		false,	0x2edee7be, "Fast3D" },
 	{ F3D,		false,	0xe01e14be, "Fast3D" },
 	{ F3D,		false,	0x4AED6B3B, "Fast3D" }, //Vivid Dolls [ALECK64]
 
+	{ F3DSETA,	false,	0x2edee7be, "RSP SW Version: 2.0D, 04-01-96" },
 	{ F3DWRUS,	false,	0xd17906e2, "RSP SW Version: 2.0D, 04-01-96" },
 	{ F3DSWSE,	false,	0x94c4c833, "RSP SW Version: 2.0D, 04-01-96" },
 	{ F3DEX,	true,	0x637b4b58, "RSP SW Version: 2.0D, 04-01-96" },
@@ -76,6 +77,8 @@ u32 G_OBJ_RECTANGLE, G_OBJ_SPRITE, G_OBJ_MOVEMEM;
 u32 G_SELECT_DL, G_OBJ_RENDERMODE, G_OBJ_RECTANGLE_R;
 u32 G_OBJ_LOADTXTR, G_OBJ_LDTX_SPRITE, G_OBJ_LDTX_RECT, G_OBJ_LDTX_RECT_R;
 u32 G_RDPHALF_0;
+u32 G_PERSPNORM;
+
 
 u32 G_MTX_STACKSIZE;
 u32 G_MTX_MODELVIEW;
@@ -181,6 +184,7 @@ void GBIInfo::_makeCurrent(MicrocodeInfo * _pCurrent)
 			case Turbo3D:	F3D_Init();		break;
 			case ZSortp:	ZSort_Init();	break;
 			case F3DEX2CBFD:F3DEX2CBFD_Init(); break;
+			case F3DSETA:	F3DSETA_Init();	break;
 		}
 
 #ifndef GLESX

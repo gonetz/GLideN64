@@ -260,6 +260,9 @@
     <ClCompile Include="..\..\src\BufferCopy\ColorBufferToRDRAM_BufferStorageExt.cpp">
       <Filter>Source Files\BufferCopy</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\F3DSETA.cpp">
+      <Filter>Source Files\uCodes</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\3DMath.h">
@@ -462,6 +465,9 @@
     </ClInclude>
     <ClInclude Include="..\..\src\BufferCopy\ColorBufferToRDRAM_GL.h">
       <Filter>Header Files\BufferCopy</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\F3DSETA.h">
+      <Filter>Header Files\uCodes</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

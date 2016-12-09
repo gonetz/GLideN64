@@ -20,6 +20,7 @@ set(GLideN64_SOURCES
   F3DPD.cpp
   F3DWRUS.cpp
   F3DSWSE.cpp
+  F3DSETA.cpp
   F3DEX2.cpp
   F3DEX2CBFD.cpp
   FBOTextureFormats.cpp

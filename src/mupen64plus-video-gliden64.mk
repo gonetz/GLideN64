@@ -37,6 +37,7 @@ MY_LOCAL_SRC_FILES :=                               \
     $(SRCDIR)/F3DEX.cpp                             \
     $(SRCDIR)/F3DPD.cpp                             \
     $(SRCDIR)/F3DSWSE.cpp                           \
+    $(SRCDIR)/F3DSETA.cpp                           \
     $(SRCDIR)/F3DWRUS.cpp                           \
     $(SRCDIR)/FBOTextureFormats.cpp                 \
     $(SRCDIR)/FrameBuffer.cpp                       \
