@@ -524,6 +524,7 @@ PostProcessor & PostProcessor::get()
 void PostProcessor::_setGLState() {
 	glDisable(GL_DEPTH_TEST);
 	glDisable(GL_BLEND);
+	glDisable(GL_CULL_FACE);
 
 	static const float vert[] =
 	{
