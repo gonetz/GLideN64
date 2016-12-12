@@ -238,7 +238,6 @@ void ConfigDialog::_init()
 
 	ui->gammaCorrectionGroupBox->setChecked(config.gammaCorrection.force != 0);
 	ui->gammaLevelSpinBox->setValue(config.gammaCorrection.level);
-	ui->gammaLevelSpinBox->setEnabled(ui->gammaCorrectionGroupBox->isChecked());
 
 	// OSD settings
 	QString fontName(config.font.name.c_str());
