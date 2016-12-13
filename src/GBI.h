@@ -23,7 +23,8 @@
 #define Turbo3D		14
 #define ZSortp		15
 #define F3DSETA		16
-#define NONE		17
+#define F3DGOLDEN	17
+#define NONE		18
 
 // Fixed point conversion factors
 #define FIXED2FLOATRECIP1	0.5f

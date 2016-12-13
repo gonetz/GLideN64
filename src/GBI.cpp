@@ -23,6 +23,7 @@
 #include "F3DWRUS.h"
 #include "F3DPD.h"
 #include "F3DSETA.h"
+#include "F3DGOLDEN.h"
 #include "F3DEX2CBFD.h"
 #include "ZSort.h"
 #include "CRC.h"
@@ -34,26 +35,26 @@ u32 last_good_ucode = (u32) -1;
 
 SpecialMicrocodeInfo specialMicrocodes[] =
 {
-	{ F3D,		false,	0xe62a706d, "Fast3D" },
-	{ F3D,		false,	0x7d372819, "Fast3D" },
-	{ F3D,		false,	0xe01e14be, "Fast3D" },
-	{ F3D,		false,	0x4AED6B3B, "Fast3D" }, //Vivid Dolls [ALECK64]
+	{ F3D,			false,	0xe62a706d, "Fast3D" },
+	{ F3D,			false,	0x7d372819, "Fast3D" },
+	{ F3D,			false,	0xe01e14be, "Fast3D" },
+	{ F3D,			false,	0x4AED6B3B, "Fast3D" }, //Vivid Dolls [ALECK64]
 
-	{ F3DSETA,	false,	0x2edee7be, "RSP SW Version: 2.0D, 04-01-96" },
-	{ F3DWRUS,	false,	0xd17906e2, "RSP SW Version: 2.0D, 04-01-96" },
-	{ F3DSWSE,	false,	0x94c4c833, "RSP SW Version: 2.0D, 04-01-96" },
-	{ F3DEX,	true,	0x637b4b58, "RSP SW Version: 2.0D, 04-01-96" },
-	{ F3D,		true,	0x54c558ba, "RSP SW Version: 2.0D, 04-01-96" }, // Pilot Wings
-	{ F3D,		true,	0x302bca09, "RSP SW Version: 2.0G, 09-30-96" }, // GoldenEye
+	{ F3DSETA,		false,	0x2edee7be, "RSP SW Version: 2.0D, 04-01-96" },
+	{ F3DWRUS,		false,	0xd17906e2, "RSP SW Version: 2.0D, 04-01-96" },
+	{ F3DSWSE,		false,	0x94c4c833, "RSP SW Version: 2.0D, 04-01-96" },
+	{ F3DEX,		true,	0x637b4b58, "RSP SW Version: 2.0D, 04-01-96" },
+	{ F3D,			true,	0x54c558ba, "RSP SW Version: 2.0D, 04-01-96" }, // Pilot Wings
+	{ F3DGOLDEN,	true,	0x302bca09, "RSP SW Version: 2.0G, 09-30-96" }, // GoldenEye
 
-	{ S2DEX,	false,	0x9df31081, "RSP Gfx ucode S2DEX  1.06 Yoshitaka Yasumoto Nintendo." },
+	{ S2DEX,		false,	0x9df31081, "RSP Gfx ucode S2DEX  1.06 Yoshitaka Yasumoto Nintendo." },
 
-	{ F3DDKR,	false,	0x8d91244f, "Diddy Kong Racing" },
-	{ F3DDKR,	false,	0x6e6fc893, "Diddy Kong Racing" },
-	{ F3DJFG,	false,	0xbde9d1fb, "Jet Force Gemini" },
-	{ F3DPD,	true,	0x1c4f7869, "Perfect Dark" },
-	{ Turbo3D,	false,	0x2bdcfc8a, "Turbo3D" },
-	{ F3DEX2CBFD, true, 0x1b4ace88, "Conker's Bad Fur Day" }
+	{ F3DDKR,		false,	0x8d91244f, "Diddy Kong Racing" },
+	{ F3DDKR,		false,	0x6e6fc893, "Diddy Kong Racing" },
+	{ F3DJFG,		false,	0xbde9d1fb, "Jet Force Gemini" },
+	{ F3DPD,		true,	0x1c4f7869, "Perfect Dark" },
+	{ Turbo3D,		false,	0x2bdcfc8a, "Turbo3D" },
+	{ F3DEX2CBFD,	true,	0x1b4ace88, "Conker's Bad Fur Day" }
 };
 
 u32 G_RDPHALF_1, G_RDPHALF_2, G_RDPHALF_CONT;
@@ -168,23 +169,24 @@ void GBIInfo::_makeCurrent(MicrocodeInfo * _pCurrent)
 		G_TRI1 = G_TRI2 = G_TRI4 = G_QUAD = -1; // For correct work of gSPFlushTriangles()
 
 		switch (m_pCurrent->type) {
-			case F3D:		F3D_Init();		break;
-			case F3DEX:		F3DEX_Init();	break;
-			case F3DEX2:	F3DEX2_Init();	break;
-			case L3D:		L3D_Init();		break;
-			case L3DEX:		L3DEX_Init();	break;
-			case L3DEX2:	L3DEX2_Init();	break;
-			case S2DEX:		S2DEX_Init();	break;
-			case S2DEX2:	S2DEX2_Init();	break;
-			case F3DDKR:	F3DDKR_Init();	break;
-			case F3DJFG:	F3DJFG_Init();	break;
-			case F3DSWSE:	F3DSWSE_Init();	break;
-			case F3DWRUS:	F3DWRUS_Init();	break;
-			case F3DPD:		F3DPD_Init();	break;
-			case Turbo3D:	F3D_Init();		break;
-			case ZSortp:	ZSort_Init();	break;
-			case F3DEX2CBFD:F3DEX2CBFD_Init(); break;
-			case F3DSETA:	F3DSETA_Init();	break;
+			case F3D:		F3D_Init();			break;
+			case F3DEX:		F3DEX_Init();		break;
+			case F3DEX2:	F3DEX2_Init();		break;
+			case L3D:		L3D_Init();			break;
+			case L3DEX:		L3DEX_Init();		break;
+			case L3DEX2:	L3DEX2_Init();		break;
+			case S2DEX:		S2DEX_Init();		break;
+			case S2DEX2:	S2DEX2_Init();		break;
+			case F3DDKR:	F3DDKR_Init();		break;
+			case F3DJFG:	F3DJFG_Init();		break;
+			case F3DSWSE:	F3DSWSE_Init();		break;
+			case F3DWRUS:	F3DWRUS_Init();		break;
+			case F3DPD:		F3DPD_Init();		break;
+			case Turbo3D:	F3D_Init();			break;
+			case ZSortp:	ZSort_Init();		break;
+			case F3DEX2CBFD:F3DEX2CBFD_Init();	break;
+			case F3DSETA:	F3DSETA_Init();		break;
+			case F3DGOLDEN:	F3DGOLDEN_Init();	break;
 		}
 
 #ifndef GLESX

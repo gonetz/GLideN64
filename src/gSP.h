@@ -223,4 +223,5 @@ extern void (*gSPLightVertex)(SPVertex & _vtx);
 extern void (*gSPPointLightVertex)(SPVertex & _vtx, float * _vPos);
 extern void (*gSPBillboardVertex)(u32 v, u32 i);
 void gSPSetupFunctions();
+inline void gSPFlushTriangles();
 #endif
