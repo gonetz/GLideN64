@@ -602,19 +602,19 @@ TxMemBuf::size_of(uint32 num)
 uint32*
 TxMemBuf::getThreadBuf(uint32 threadIdx, uint32 num, uint32 size)
 {
-	const auto idx = threadIdx*2 + num;
+	assert(num < 2);
+	const auto idx = threadIdx * 2 + num;
 	auto& buf = _bufs[idx];
 
-	const auto bufSize = size * sizeof(uint32);
-	if (buf.size() < bufSize) {
+	if (buf.size() < size) {
 		try {
-			buf.resize(bufSize, 0);
+			buf.resize(size, 0);
 		} catch(std::bad_alloc) {
 			return nullptr;
 		}
 	}
 
-	return reinterpret_cast<uint32*>(buf.data());
+	return buf.data();
 }
 
 void setTextureFormat(uint16 internalFormat, GHQTexInfo * info)

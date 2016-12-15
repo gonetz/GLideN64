@@ -58,7 +58,7 @@ class TxMemBuf
 private:
 	uint8 *_tex[2];
 	uint32 _size[2];
-	std::vector< std::vector<uint8> > _bufs;
+	std::vector< std::vector<uint32> > _bufs;
 	TxMemBuf();
 public:
 	static TxMemBuf* getInstance() {
