@@ -280,6 +280,7 @@
     <ClCompile Include="..\..\src\DepthBufferRender\ClipPolygon.cpp" />
     <ClCompile Include="..\..\src\DepthBufferRender\DepthBufferRender.cpp" />
     <ClCompile Include="..\..\src\F3DEX2CBFD.cpp" />
+    <ClCompile Include="..\..\src\F3DGOLDEN.cpp" />
     <ClCompile Include="..\..\src\F3DSETA.cpp" />
     <ClCompile Include="..\..\src\F3DSWSE.cpp" />
     <ClCompile Include="..\..\src\FBOTextureFormats.cpp" />
@@ -398,6 +399,7 @@
     <ClInclude Include="..\..\src\DepthBufferRender\ClipPolygon.h" />
     <ClInclude Include="..\..\src\DepthBufferRender\DepthBufferRender.h" />
     <ClInclude Include="..\..\src\F3DEX2CBFD.h" />
+    <ClInclude Include="..\..\src\F3DGOLDEN.h" />
     <ClInclude Include="..\..\src\F3DSETA.h" />
     <ClInclude Include="..\..\src\F3DSWSE.h" />
     <ClInclude Include="..\..\src\FBOTextureFormats.h" />

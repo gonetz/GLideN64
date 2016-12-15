@@ -36,6 +36,7 @@ MY_LOCAL_SRC_FILES :=                               \
     $(SRCDIR)/F3DEX2.cpp                            \
     $(SRCDIR)/F3DEX.cpp                             \
     $(SRCDIR)/F3DPD.cpp                             \
+    $(SRCDIR)/F3DGOLDEN.cpp                         \
     $(SRCDIR)/F3DSWSE.cpp                           \
     $(SRCDIR)/F3DSETA.cpp                           \
     $(SRCDIR)/F3DWRUS.cpp                           \

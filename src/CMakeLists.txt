@@ -18,6 +18,7 @@ set(GLideN64_SOURCES
   F3DDKR.cpp
   F3DEX.cpp
   F3DPD.cpp
+  F3DGOLDEN.cpp
   F3DWRUS.cpp
   F3DSWSE.cpp
   F3DSETA.cpp
