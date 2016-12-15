@@ -757,8 +757,10 @@ void filter_8888(uint32 *src, uint32 srcwidth, uint32 srcheight, uint32 *dest, u
 		const auto bufSize = srcwidth * srcheight;
 		uint32 * tex = TxMemBuf::getInstance()->getThreadBuf(threadId, 0, bufSize);
 		uint32 * buf = TxMemBuf::getInstance()->getThreadBuf(threadId, 1, bufSize);
-		DePosterize(src, tex, buf, srcwidth, srcheight);
-		src = tex;
+		if (tex != nullptr && buf != nullptr) {
+			DePosterize(src, tex, buf, srcwidth, srcheight);
+			src = tex;
+		}
 	}
 	switch (filter & ENHANCEMENT_MASK) {
 	case BRZ2X_ENHANCEMENT:
