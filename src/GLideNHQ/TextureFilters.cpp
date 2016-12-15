@@ -23,6 +23,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include <stdlib.h>
 #include <string.h>
+#include <vector>
 #include "TextureFilters.h"
 #include "TxUtil.h"
 
@@ -745,7 +746,8 @@ void deposterizeV(uint32* data, uint32* out, int w, int h, int l, int u) {
 
 static
 void DePosterize(uint32* source, uint32* dest, int width, int height) {
-	uint32 * buf = (uint32*)TxMemBuf::getInstance()->get(3);
+	std::vector<uint32> tmpvec(width*height);
+	uint32 * buf = tmpvec.data();
 	deposterizeH(source, buf, width, 0, height);
 	deposterizeV(buf, dest, width, height, 0, height);
 	deposterizeH(dest, buf, width, 0, height);
@@ -753,8 +755,10 @@ void DePosterize(uint32* source, uint32* dest, int width, int height) {
 }
 
 void filter_8888(uint32 *src, uint32 srcwidth, uint32 srcheight, uint32 *dest, uint32 filter) {
+	std::vector<uint32> tmpvec;
 	if (filter & DEPOSTERIZE) {
-		uint32 * tex = (uint32*)TxMemBuf::getInstance()->get(2);
+		tmpvec.resize(srcwidth * srcheight);
+		uint32 * tex = tmpvec.data();
 		DePosterize(src, tex, srcwidth, srcheight);
 		src = tex;
 	}

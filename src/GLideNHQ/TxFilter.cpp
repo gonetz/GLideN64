@@ -116,7 +116,7 @@ TxFilter::TxFilter(int maxwidth, int maxheight, int maxbpp, int options,
 	if (ident && wcscmp(ident, wst("DEFAULT")) != 0)
 		_ident.assign(ident);
 
-	if (TxMemBuf::getInstance()->init(_maxwidth, _maxheight, (_options & DEPOSTERIZE) ? 1 : 0)) {
+	if (TxMemBuf::getInstance()->init(_maxwidth, _maxheight)) {
 		if (!_tex1)
 			_tex1 = TxMemBuf::getInstance()->get(0);
 

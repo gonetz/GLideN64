@@ -25,6 +25,7 @@
 #include "TxDbg.h"
 #include <zlib.h>
 #include <malloc.h>
+#include <assert.h>
 
 #if defined (OS_MAC_OS_X)
 #include <sys/param.h>
@@ -530,7 +531,7 @@ TxUtil::getNumberofProcessors()
 TxMemBuf::TxMemBuf()
 {
 	int i;
-	for (i = 0; i < 4; i++) {
+	for (i = 0; i < 2; i++) {
 		_tex[i] = nullptr;
 		_size[i] = 0;
 	}
@@ -542,10 +543,9 @@ TxMemBuf::~TxMemBuf()
 }
 
 boolean
-TxMemBuf::init(int maxwidth, int maxheight, boolean deposterize)
+TxMemBuf::init(int maxwidth, int maxheight)
 {
-	_numBufs = deposterize ? 4 : 2;
-	for (uint32 i = 0; i < _numBufs; i++) {
+	for (uint32 i = 0; i < 2; i++) {
 		if (!_tex[i]) {
 			_tex[i] = (uint8 *)malloc(maxwidth * maxheight * 4);
 			_size[i] = maxwidth * maxheight * 4;
@@ -563,7 +563,7 @@ void
 TxMemBuf::shutdown()
 {
 	int i;
-	for (i = 0; i < _numBufs; i++) {
+	for (i = 0; i < 2; i++) {
 		if (_tex[i]) free(_tex[i]);
 		_tex[i] = nullptr;
 		_size[i] = 0;
@@ -573,13 +573,15 @@ TxMemBuf::shutdown()
 uint8*
 TxMemBuf::get(unsigned int num)
 {
-	return ((num < _numBufs) ? _tex[num] : nullptr);
+	assert(num < 2);
+	return _tex[num];
 }
 
 uint32
 TxMemBuf::size_of(unsigned int num)
 {
-	return ((num < _numBufs) ? _size[num] : 0);
+	assert(num < 2);
+	return _size[num];
 }
 
 void setTextureFormat(uint16 internalFormat, GHQTexInfo * info)
