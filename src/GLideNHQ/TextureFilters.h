@@ -53,7 +53,7 @@ void SharpFilter_8888(uint32 *src, uint32 srcwidth, uint32 srcheight, uint32 *de
 void SmoothFilter_8888(uint32 *src, uint32 srcwidth, uint32 srcheight, uint32 *dest, uint32 filter);
 
 /* helper */
-void filter_8888(uint32 *src, uint32 srcwidth, uint32 srcheight, uint32 *dest, uint32 filter);
+void filter_8888(uint32 *src, uint32 srcwidth, uint32 srcheight, uint32 *dest, uint32 filter, uint32 threadId);
 
 #if !_16BPP_HACK
 void hq4x_init(void);

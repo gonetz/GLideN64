@@ -310,7 +310,8 @@ TxFilter::filter(uint8 *src, int srcwidth, int srcheight, uint16 srcformat, uint
 																srcwidth,
 																blkheight,
 																(uint32*)_tmptex,
-																filter));
+																filter,
+																i));
 						_texture += srcStride;
 						_tmptex  += destStride;
 					}
@@ -319,13 +320,14 @@ TxFilter::filter(uint8 *src, int srcwidth, int srcheight, uint16 srcformat, uint
 															srcwidth,
 															srcheight - blkheight * i,
 															(uint32*)_tmptex,
-															filter));
+															filter,
+															i));
 					for (i = 0; i < numcore; i++) {
 						thrd[i]->join();
 						delete thrd[i];
 					}
 				} else {
-					filter_8888((uint32*)_texture, srcwidth, srcheight, (uint32*)_tmptex, filter);
+					filter_8888((uint32*)_texture, srcwidth, srcheight, (uint32*)_tmptex, filter, 0);
 				}
 
 				if (filter & ENHANCEMENT_MASK) {

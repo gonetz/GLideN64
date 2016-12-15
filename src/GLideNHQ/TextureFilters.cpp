@@ -745,21 +745,19 @@ void deposterizeV(uint32* data, uint32* out, int w, int h, int l, int u) {
 }
 
 static
-void DePosterize(uint32* source, uint32* dest, int width, int height) {
-	std::vector<uint32> tmpvec(width*height);
-	uint32 * buf = tmpvec.data();
+void DePosterize(uint32* source, uint32* dest, uint32* buf, int width, int height) {
 	deposterizeH(source, buf, width, 0, height);
 	deposterizeV(buf, dest, width, height, 0, height);
 	deposterizeH(dest, buf, width, 0, height);
 	deposterizeV(buf, dest, width, height, 0, height);
 }
 
-void filter_8888(uint32 *src, uint32 srcwidth, uint32 srcheight, uint32 *dest, uint32 filter) {
-	std::vector<uint32> tmpvec;
+void filter_8888(uint32 *src, uint32 srcwidth, uint32 srcheight, uint32 *dest, uint32 filter, uint32 threadId) {
 	if (filter & DEPOSTERIZE) {
-		tmpvec.resize(srcwidth * srcheight);
-		uint32 * tex = tmpvec.data();
-		DePosterize(src, tex, srcwidth, srcheight);
+		const auto bufSize = srcwidth * srcheight;
+		uint32 * tex = TxMemBuf::getInstance()->getThreadBuf(threadId, 0, bufSize);
+		uint32 * buf = TxMemBuf::getInstance()->getThreadBuf(threadId, 1, bufSize);
+		DePosterize(src, tex, buf, srcwidth, srcheight);
 		src = tex;
 	}
 	switch (filter & ENHANCEMENT_MASK) {
