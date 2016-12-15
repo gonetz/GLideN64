@@ -41,7 +41,6 @@ protected:
   tx_wstring _ident;
   tx_wstring _path;
   dispInfoFuncExt _callback;
-  TxUtil *_txUtil;
   struct TXCACHE {
     int size;
     GHQTexInfo info;

@@ -35,16 +35,13 @@
 
 TxQuantize::TxQuantize()
 {
-	_txUtil = new TxUtil();
-
 	/* get number of CPU cores. */
-	_numcore = _txUtil->getNumberofProcessors();
+	_numcore = TxUtil::getNumberofProcessors();
 }
 
 
 TxQuantize::~TxQuantize()
 {
-	delete _txUtil;
 }
 
 void

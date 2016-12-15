@@ -30,7 +30,6 @@
 class TxQuantize
 {
 private:
-  TxUtil *_txUtil;
   int _numcore;
 
   /* fast optimized... well, sort of. */

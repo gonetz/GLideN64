@@ -672,7 +672,7 @@ TxHiResCache::loadHiResTextures(const wchar_t * dir_path, boolean replace)
 
 	  /* quantize */
 	  {
-		tmptex = (uint8 *)malloc(_txUtil->sizeofTx(width, height, destformat));
+		tmptex = (uint8 *)malloc(TxUtil::sizeofTx(width, height, destformat));
 		if (tmptex) {
 		  switch (destformat) {
 		  case GL_RGBA8:

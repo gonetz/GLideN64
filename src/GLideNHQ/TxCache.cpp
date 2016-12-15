@@ -36,15 +36,11 @@ TxCache::~TxCache()
 {
 	/* free memory, clean up, etc */
 	clear();
-
-	delete _txUtil;
 }
 
 TxCache::TxCache(int options, int cachesize, const wchar_t *path, const wchar_t *ident,
 				 dispInfoFuncExt callback)
 {
-	_txUtil = new TxUtil();
-
 	_options = options;
 	_cacheSize = cachesize;
 	_callback = callback;
@@ -85,7 +81,7 @@ TxCache::add(uint64 checksum, GHQTexInfo *info, int dataSize)
 	uint32 format = info->format;
 
 	if (!dataSize) {
-		dataSize = _txUtil->sizeofTx(info->width, info->height, info->format);
+		dataSize = TxUtil::sizeofTx(info->width, info->height, info->format);
 
 		if (!dataSize) return 0;
 

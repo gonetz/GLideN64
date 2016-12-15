@@ -48,7 +48,6 @@ private:
   TxQuantize *_txQuantize;
   TxTexCache *_txTexCache;
   TxHiResCache *_txHiResCache;
-  TxUtil *_txUtil;
   TxImage *_txImage;
   boolean _initialized;
   void clear();

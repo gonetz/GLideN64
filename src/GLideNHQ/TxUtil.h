@@ -35,22 +35,20 @@
 class TxUtil
 {
 private:
-	uint32 RiceCRC32(const uint8* src, int width, int height, int size, int rowStride);
-	boolean RiceCRC32_CI4(const uint8* src, int width, int height, int rowStride,
+	static uint32 RiceCRC32(const uint8* src, int width, int height, int size, int rowStride);
+	static boolean RiceCRC32_CI4(const uint8* src, int width, int height, int rowStride,
 						  uint32* crc32, uint32* cimax);
-	boolean RiceCRC32_CI8(const uint8* src, int width, int height, int rowStride,
+	static boolean RiceCRC32_CI8(const uint8* src, int width, int height, int rowStride,
 						  uint32* crc32, uint32* cimax);
 public:
-	TxUtil() { }
-	~TxUtil() { }
-	int sizeofTx(int width, int height, uint16 format);
-	uint32 checksumTx(uint8 *data, int width, int height, uint16 format);
+	static int sizeofTx(int width, int height, uint16 format);
+	static uint32 checksumTx(uint8 *data, int width, int height, uint16 format);
 #if 0 /* unused */
-	uint32 chkAlpha(uint32* src, int width, int height);
+	static uint32 chkAlpha(uint32* src, int width, int height);
 #endif
-	uint32 checksum(uint8 *src, int width, int height, int size, int rowStride);
-	uint64 checksum64(uint8 *src, int width, int height, int size, int rowStride, uint8 *palette);
-	int getNumberofProcessors();
+	static uint32 checksum(uint8 *src, int width, int height, int size, int rowStride);
+	static uint64 checksum64(uint8 *src, int width, int height, int size, int rowStride, uint8 *palette);
+	static int getNumberofProcessors();
 };
 
 class TxMemBuf
