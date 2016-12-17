@@ -148,8 +148,8 @@ public:
 	}
 	bool isImageTexturesSupported() const {return m_bImageTexture;}
 	SPVertex & getVertex(u32 _v) {return triangles.vertices[_v];}
-	void setDMAVerticesSize(u32 _size) { if (triangles.dmaVertices.size() < _size) triangles.dmaVertices.resize(_size); }
-	SPVertex * getDMAVerticesData() { return triangles.dmaVertices.data(); }
+	void setDMAVerticesSize(u32 _size) { if (m_dmaVertices.size() < _size) m_dmaVertices.resize(_size); }
+	SPVertex * getDMAVerticesData() { return m_dmaVertices.data(); }
 	void updateScissor(FrameBuffer * _pBuffer) const;
 	void flush() { m_texrectDrawer.draw(); }
 
@@ -205,19 +205,6 @@ private:
 	void _getTextSize(const char *_pText, float & _w, float & _h) const;
 	void _drawOSD(const char *_pText, float _x, float & _y);
 
-	struct {
-		SPVertex vertices[VERTBUFF_SIZE];
-		std::vector<SPVertex> dmaVertices;
-		GLubyte elements[ELEMBUFF_SIZE];
-		int num;
-	} triangles;
-
-	struct GLVertex
-	{
-		float x, y, z, w;
-		float s0, t0, s1, t1;
-	};
-
 	class TexrectDrawer
 	{
 	public:
@@ -248,10 +235,24 @@ private:
 		std::vector<RectCoords> m_vecRectCoords;
 	};
 
+	struct GLVertex
+	{
+		float x, y, z, w;
+		float s0, t0, s1, t1;
+	};
+
 	RENDER_STATE m_renderState;
 	OGL_RENDERER m_oglRenderer;
 	TexturedRectParams m_texrectParams;
+
+	struct {
+		SPVertex vertices[VERTBUFF_SIZE];
+		GLubyte elements[ELEMBUFF_SIZE];
+		int num;
+	} triangles;
+	std::vector<SPVertex> m_dmaVertices;
 	GLVertex m_rect[4];
+
 	u32 m_modifyVertices;
 	GLfloat m_maxLineWidth;
 	bool m_bImageTexture;

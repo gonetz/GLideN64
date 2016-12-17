@@ -1290,7 +1290,7 @@ void OGLRender::_prepareDrawTriangle(bool _dma)
 	m_bFlatColors = bFlatColors;
 
 	if (updateArrays) {
-		SPVertex * pVtx = _dma ? triangles.dmaVertices.data() : &triangles.vertices[0];
+		SPVertex * pVtx = _dma ? m_dmaVertices.data() : &triangles.vertices[0];
 		glVertexAttribPointer(SC_POSITION, 4, GL_FLOAT, GL_FALSE, sizeof(SPVertex), &pVtx->x);
 		if (m_bFlatColors)
 			glVertexAttribPointer(SC_COLOR, 4, GL_FLOAT, GL_FALSE, sizeof(SPVertex), &pVtx->flat_r);
@@ -1304,7 +1304,7 @@ void OGLRender::_prepareDrawTriangle(bool _dma)
 		glEnableVertexAttribArray(SC_MODIFY);
 		glVertexAttribPointer(SC_MODIFY, 4, GL_BYTE, GL_FALSE, sizeof(SPVertex), &pVtx->modify);
 	} else if (updateColorArrays) {
-		SPVertex * pVtx = _dma ? triangles.dmaVertices.data() : &triangles.vertices[0];
+		SPVertex * pVtx = _dma ? m_dmaVertices.data() : &triangles.vertices[0];
 		if (m_bFlatColors)
 			glVertexAttribPointer(SC_COLOR, 4, GL_FLOAT, GL_FALSE, sizeof(SPVertex), &pVtx->flat_r);
 		else
@@ -1327,7 +1327,7 @@ void OGLRender::drawScreenSpaceTriangle(u32 _numVtx)
 		return;
 
 	for (u32 i = 0; i < _numVtx; ++i) {
-		SPVertex & vtx = triangles.dmaVertices[i];
+		SPVertex & vtx = m_dmaVertices[i];
 		vtx.modify = MODIFY_ALL;
 	}
 	m_modifyVertices = MODIFY_ALL;
@@ -1351,7 +1351,7 @@ void OGLRender::drawDMATriangles(u32 _numVtx)
 	if (config.frameBufferEmulation.enable != 0 &&
 		config.frameBufferEmulation.copyDepthToRDRAM == Config::cdSoftwareRender &&
 		gDP.otherMode.depthUpdate != 0) {
-		renderTriangles(triangles.dmaVertices.data(), nullptr, _numVtx);
+		renderTriangles(m_dmaVertices.data(), nullptr, _numVtx);
 		FrameBuffer * pCurrentDepthBuffer = frameBufferList().findBuffer(gDP.depthImageAddress);
 		if (pCurrentDepthBuffer != nullptr)
 			pCurrentDepthBuffer->m_cleared = false;
