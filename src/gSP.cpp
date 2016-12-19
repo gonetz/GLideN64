@@ -1293,6 +1293,29 @@ void gSPBranchLessZ( u32 branchdl, u32 vtx, u32 zval )
 #endif
 }
 
+void gSPBranchLessW( u32 branchdl, u32 vtx, u32 zval )
+{
+	const u32 address = RSP_SegmentToPhysical( branchdl );
+
+	if ((address + 8) > RDRAMSize) {
+#ifdef DEBUG
+		DebugMsg( DEBUG_HIGH | DEBUG_ERROR, "// Specified display list at invalid address\n" );
+		DebugMsg( DEBUG_HIGH | DEBUG_HANDLED, "gSPBranchLessZ( 0x%08X, %i, %i );\n",
+			branchdl, vtx, zval );
+#endif
+		return;
+	}
+
+	SPVertex & v = video().getRender().getVertex((vtx & 0x1f));
+	if (v.w < (float)zval)
+		RSP.PC[RSP.PCi] = address;
+
+#ifdef DEBUG
+		DebugMsg( DEBUG_HIGH | DEBUG_HANDLED, "gSPBranchLessZ( 0x%08X, %i, %i );\n",
+			branchdl, vtx, zval );
+#endif
+}
+
 void gSPDlistCount(u32 count, u32 v)
 {
 	u32 address = RSP_SegmentToPhysical( v );

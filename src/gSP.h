@@ -156,6 +156,7 @@ void gSPCBFDVertex( u32 v, u32 n, u32 v0 );
 void gSPDisplayList( u32 dl );
 void gSPBranchList( u32 dl );
 void gSPBranchLessZ( u32 branchdl, u32 vtx, u32 zval );
+void gSPBranchLessW( u32 branchdl, u32 vtx, u32 zval );
 void gSPDlistCount(u32 count, u32 v);
 void gSPSprite2DBase(u32 _base );
 void gSPDMATriangles( u32 tris, u32 n );

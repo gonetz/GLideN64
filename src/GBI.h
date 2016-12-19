@@ -24,7 +24,8 @@
 #define ZSortp		15
 #define F3DSETA		16
 #define F3DGOLDEN	17
-#define NONE		18
+#define F3DEX2MM	18
+#define NONE		19
 
 // Fixed point conversion factors
 #define FIXED2FLOATRECIP1	0.5f

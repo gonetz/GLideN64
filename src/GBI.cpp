@@ -25,6 +25,7 @@
 #include "F3DSETA.h"
 #include "F3DGOLDEN.h"
 #include "F3DEX2CBFD.h"
+#include "F3DEX2MM.h"
 #include "ZSort.h"
 #include "CRC.h"
 #include "Log.h"
@@ -54,7 +55,8 @@ SpecialMicrocodeInfo specialMicrocodes[] =
 	{ F3DJFG,		false,	0xbde9d1fb, "Jet Force Gemini" },
 	{ F3DPD,		true,	0x1c4f7869, "Perfect Dark" },
 	{ Turbo3D,		false,	0x2bdcfc8a, "Turbo3D" },
-	{ F3DEX2CBFD,	true,	0x1b4ace88, "Conker's Bad Fur Day" }
+	{ F3DEX2CBFD,	true,	0x1b4ace88, "Conker's Bad Fur Day" },
+	{ F3DEX2MM,		true,	0xdf528a85, "Majora's Mask" }
 };
 
 u32 G_RDPHALF_1, G_RDPHALF_2, G_RDPHALF_CONT;
@@ -187,6 +189,7 @@ void GBIInfo::_makeCurrent(MicrocodeInfo * _pCurrent)
 			case F3DEX2CBFD:F3DEX2CBFD_Init();	break;
 			case F3DSETA:	F3DSETA_Init();		break;
 			case F3DGOLDEN:	F3DGOLDEN_Init();	break;
+			case F3DEX2MM:	F3DEX2MM_Init();	break;
 		}
 
 #ifndef GLESX
