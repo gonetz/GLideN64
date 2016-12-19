@@ -123,6 +123,11 @@ PFNGLPROGRAMPARAMETERIPROC glProgramParameteri;
 
 PFNGLTEXSTORAGE2DPROC glTexStorage2D;
 
+PFNGLGENVERTEXARRAYSPROC glGenVertexArrays;
+PFNGLBINDVERTEXARRAYPROC glBindVertexArray;
+PFNGLDELETEVERTEXARRAYSPROC glDeleteVertexArrays;
+PFNGLDRAWELEMENTSBASEVERTEXPROC glDrawElementsBaseVertex;
+
 void initGLFunctions()
 {
 #ifdef EGL
@@ -234,4 +239,9 @@ void initGLFunctions()
 	glProgramParameteri = (PFNGLPROGRAMPARAMETERIPROC)glGetProcAddress("glProgramParameteri");
 
 	glTexStorage2D = (PFNGLTEXSTORAGE2DPROC)glGetProcAddress("glTexStorage2D");
+
+	glGenVertexArrays = (PFNGLGENVERTEXARRAYSPROC)glGetProcAddress("glGenVertexArrays");
+	glBindVertexArray = (PFNGLBINDVERTEXARRAYPROC)glGetProcAddress("glBindVertexArray");
+	glDeleteVertexArrays = (PFNGLDELETEVERTEXARRAYSPROC)glGetProcAddress("glDeleteVertexArrays");
+	glDrawElementsBaseVertex = (PFNGLDRAWELEMENTSBASEVERTEXPROC)glGetProcAddress("glDrawElementsBaseVertex");
 }
