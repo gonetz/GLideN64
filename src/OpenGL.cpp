@@ -1749,7 +1749,7 @@ void OGLRender::drawTexturedRect(const TexturedRectParams & _params)
 			GLfloat alpha = 0.0f;
 			if (currentCombiner()->usesShade()) {
 				gDPCombine combine;
-				combine.mux = currentCombiner()->getKey();
+				combine.mux = currentCombiner()->getKey().getMux();
 				if (combine.mA0 == G_ACMUX_0 && combine.aA0 == G_ACMUX_SHADE)
 					alpha = 1.0f;
 			}

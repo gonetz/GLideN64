@@ -89,6 +89,60 @@ void Combiner_Destroy() {
 	CombinerInfo::get().destroy();
 }
 
+/*---------------CombinerKey-------------*/
+
+CombinerKey::CombinerKey(u64 _mux)
+{
+	m_key.mux = _mux;
+
+	// High byte of muxs0 is zero. We can use it for addtional combiner flags:
+	// [0 - 0] polygon type: 0 - triangle, 1 - rect
+	// [1 - 2] cycle type
+	u32 flags;
+	if (gDP.otherMode.cycleType >= G_CYC_COPY) {
+		flags = 1U;
+	}
+	else {
+		const OGLRender::RENDER_STATE rs = video().getRender().getRenderState();
+		flags = (rs == OGLRender::rsRect || rs == OGLRender::rsTexRect) ? 1U : 0U;
+	}
+	flags |= (gDP.otherMode.cycleType << 1);
+
+	m_key.muxs0 |= (flags << 24);
+}
+
+CombinerKey::CombinerKey(const CombinerKey & _other)
+{
+	m_key.mux = _other.m_key.mux;
+}
+
+void CombinerKey::operator=(u64 _mux)
+{
+	m_key.mux = _mux;
+}
+
+void CombinerKey::operator=(const CombinerKey & _other)
+{
+	m_key.mux = _other.m_key.mux;
+}
+
+bool CombinerKey::operator==(const CombinerKey & _other) const
+{
+	return m_key.mux == _other.m_key.mux;
+}
+
+bool CombinerKey::operator<(const CombinerKey & _other) const
+{
+	return m_key.mux < _other.m_key.mux;
+}
+
+bool CombinerKey::isRectKey() const
+{
+	return ((m_key.muxs0 >> 24) & 1) != 0;
+}
+
+/*---------------CombinerInfo-------------*/
+
 CombinerInfo & CombinerInfo::get()
 {
 	static CombinerInfo info;
@@ -261,7 +315,7 @@ void CombinerInfo::update()
 
 void CombinerInfo::setCombine(u64 _mux )
 {
-	const u64 key = getCombinerKey(_mux);
+	const CombinerKey key(_mux);
 	if (m_pCurrent != nullptr && m_pCurrent->getKey() == key) {
 		m_bChanged = false;
 		m_pCurrent->update(false);

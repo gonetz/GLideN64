@@ -114,6 +114,25 @@ struct CombineCycle
 	int sa, sb, m, a;
 };
 
+class CombinerKey {
+public:
+	CombinerKey() = default;
+	explicit CombinerKey(u64 _mux);
+	CombinerKey(const CombinerKey & _other);
+
+	void operator=(u64 _mux);
+	void operator=(const CombinerKey & _other);
+
+	bool operator==(const CombinerKey & _other) const;
+	bool operator<(const CombinerKey & _other) const;
+
+	bool isRectKey() const;
+	u64 getMux() const { return m_key.mux; }
+
+private:
+	gDPCombine m_key;
+};
+
 class ShaderCombiner;
 class UniformCollection;
 class CombinerInfo
@@ -163,7 +182,7 @@ private:
 	u32 m_configOptionsBitSet;
 
 	ShaderCombiner * m_pCurrent;
-	typedef std::map<u64, ShaderCombiner *> Combiners;
+	typedef std::map<CombinerKey, ShaderCombiner *> Combiners;
 	Combiners m_combiners;
 	UniformCollection * m_pUniformCollection;
 };
@@ -175,15 +194,6 @@ ShaderCombiner * currentCombiner() {
 
 void Combiner_Init();
 void Combiner_Destroy();
-
-inline
-u64 getCombinerKey(u64 _mux)
-{
-	gDPCombine cmb;
-	cmb.mux = _mux;
-	cmb.muxs0 |= (gDP.otherMode.cycleType<<24);
-	return cmb.mux;
-}
 
 #endif
 

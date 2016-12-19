@@ -26,7 +26,7 @@ public:
 	void updateBlendMode(bool _bForce = false);
 	void disableBlending();
 
-	u64 getKey() const {return m_key;}
+	const CombinerKey & getKey() const { return m_key; }
 
 	bool usesTile(u32 _t) const {
 		if (_t == 0)
@@ -143,7 +143,7 @@ private:
 	void _locate_attributes() const;
 	void _locateUniforms();
 
-	u64 m_key;
+	CombinerKey m_key;
 	UniformLocation m_uniforms;
 	GLuint m_program;
 	int m_nInputs;

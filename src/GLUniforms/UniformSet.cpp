@@ -7,10 +7,10 @@
 
 void UniformSet::bindWithShaderCombiner(ShaderCombiner * _pCombiner)
 {
-	const u64 mux = _pCombiner->getKey();
+	const CombinerKey key = _pCombiner->getKey();
 	const GLuint program = _pCombiner->m_program;
-	m_uniforms.emplace(mux, program);
-	UniformSetLocation & location = m_uniforms.at(mux);
+	m_uniforms.emplace(key, program);
+	UniformSetLocation & location = m_uniforms.at(key);
 
 	// Texture parameters
 	if (_pCombiner->usesTexture()) {

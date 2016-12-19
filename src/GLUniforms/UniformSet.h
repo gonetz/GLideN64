@@ -64,7 +64,7 @@ private:
 	void _updateTextureSize(UniformSetLocation & _location, bool _bUsesT0, bool _bUsesT1, bool _bForce);
 	void _updateLightUniforms(UniformSetLocation & _location, bool _bForce);
 
-	typedef std::map<u64, UniformSetLocation> Uniforms;
+	typedef std::map<CombinerKey, UniformSetLocation> Uniforms;
 	Uniforms m_uniforms;
 };
 
