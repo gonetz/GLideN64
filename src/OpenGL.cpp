@@ -1483,7 +1483,7 @@ void OGLRender::drawLine(int _v0, int _v1, float _width)
 		glVertexAttribPointer(SC_POSITION, 4, GL_FLOAT, GL_FALSE, sizeof(SPVertex), &triangles.vertices[0].x);
 		glVertexAttribPointer(SC_COLOR, 4, GL_FLOAT, GL_FALSE, sizeof(SPVertex), &triangles.vertices[0].r);
 		glEnableVertexAttribArray(SC_MODIFY);
-		glVertexAttribPointer(SC_MODIFY, 1, GL_BYTE, GL_FALSE, sizeof(SPVertex), &triangles.vertices[0].modify);
+		glVertexAttribPointer(SC_MODIFY, 4, GL_BYTE, GL_FALSE, sizeof(SPVertex), &triangles.vertices[0].modify);
 
 		m_renderState = rsLine;
 		currentCombiner()->updateRenderState();
