@@ -55,8 +55,7 @@ SpecialMicrocodeInfo specialMicrocodes[] =
 	{ F3DJFG,		false,	0xbde9d1fb, "Jet Force Gemini" },
 	{ F3DPD,		true,	0x1c4f7869, "Perfect Dark" },
 	{ Turbo3D,		false,	0x2bdcfc8a, "Turbo3D" },
-	{ F3DEX2CBFD,	true,	0x1b4ace88, "Conker's Bad Fur Day" },
-	{ F3DEX2MM,		true,	0xdf528a85, "Majora's Mask" }
+	{ F3DEX2CBFD,	true,	0x1b4ace88, "Conker's Bad Fur Day" }
 };
 
 u32 G_RDPHALF_1, G_RDPHALF_2, G_RDPHALF_CONT;
@@ -246,7 +245,6 @@ void GBIInfo::loadMicrocode(u32 uc_start, u32 uc_dstart, u16 uc_dsize)
 	current.NoN = false;
 	current.textureGen = true;
 	current.texturePersp = true;
-	current.branchLessZ = true;
 	current.type = NONE;
 
 	// See if we can identify it by CRC
@@ -292,7 +290,7 @@ void GBIInfo::loadMicrocode(u32 uc_start, u32 uc_dstart, u16 uc_dsize)
 					if (strncmp(&uc_str[14], "F3DF", 4) == 0)
 						current.textureGen = false;
 					else if (strncmp(&uc_str[14], "F3DZ", 4) == 0)
-						current.branchLessZ = false;
+						type = F3DEX2MM;
 					else if (strncmp(&uc_str[14], "F3DLX.Rej", 9) == 0)
 						current.NoN = true;
 					else if (strncmp(&uc_str[14], "F3DLP.Rej", 9) == 0) {

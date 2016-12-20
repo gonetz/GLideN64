@@ -685,7 +685,6 @@ struct MicrocodeInfo
 	bool NoN;
 	bool textureGen;
 	bool texturePersp;
-	bool branchLessZ;
 };
 
 struct GBIInfo
@@ -702,7 +701,6 @@ struct GBIInfo
 	bool isNoN() const { return m_pCurrent != nullptr ? m_pCurrent->NoN : false; }
 	bool isTextureGen() const { return m_pCurrent != nullptr ? m_pCurrent->textureGen: true; }
 	bool isTexturePersp() const { return m_pCurrent != nullptr ? m_pCurrent->texturePersp: true; }
-	bool isBranchLessZ() const { return m_pCurrent != nullptr ? m_pCurrent->branchLessZ : true; }
 
 private:
 	void _flushCommands();
