@@ -19,8 +19,7 @@
 #include "S2DEX.h"
 #include "S2DEX2.h"
 #include "F3DDKR.h"
-#include "F3DSWSE.h"
-#include "F3DWRUS.h"
+#include "F3DBETA.h"
 #include "F3DPD.h"
 #include "F3DSETA.h"
 #include "F3DGOLDEN.h"
@@ -42,8 +41,8 @@ SpecialMicrocodeInfo specialMicrocodes[] =
 	{ F3D,			false,	0x4AED6B3B, "Fast3D" }, //Vivid Dolls [ALECK64]
 
 	{ F3DSETA,		false,	0x2edee7be, "RSP SW Version: 2.0D, 04-01-96" },
-	{ F3DWRUS,		false,	0xd17906e2, "RSP SW Version: 2.0D, 04-01-96" },
-	{ F3DSWSE,		false,	0x94c4c833, "RSP SW Version: 2.0D, 04-01-96" },
+	{ F3DBETA,		false,	0xd17906e2, "RSP SW Version: 2.0D, 04-01-96" }, // Wave Race (U)
+	{ F3DBETA,		false,	0x94c4c833, "RSP SW Version: 2.0D, 04-01-96" }, // Star Wars Shadows of Empire
 	{ F3DEX,		true,	0x637b4b58, "RSP SW Version: 2.0D, 04-01-96" },
 	{ F3D,			true,	0x54c558ba, "RSP SW Version: 2.0D, 04-01-96" }, // Pilot Wings
 	{ F3DGOLDEN,	true,	0x302bca09, "RSP SW Version: 2.0G, 09-30-96" }, // GoldenEye
@@ -180,8 +179,7 @@ void GBIInfo::_makeCurrent(MicrocodeInfo * _pCurrent)
 			case S2DEX2:	S2DEX2_Init();		break;
 			case F3DDKR:	F3DDKR_Init();		break;
 			case F3DJFG:	F3DJFG_Init();		break;
-			case F3DSWSE:	F3DSWSE_Init();		break;
-			case F3DWRUS:	F3DWRUS_Init();		break;
+			case F3DBETA:	F3DBETA_Init();		break;
 			case F3DPD:		F3DPD_Init();		break;
 			case Turbo3D:	F3D_Init();			break;
 			case ZSortp:	ZSort_Init();		break;

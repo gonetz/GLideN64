@@ -283,7 +283,7 @@
     <ClCompile Include="..\..\src\F3DEX2MM.cpp" />
     <ClCompile Include="..\..\src\F3DGOLDEN.cpp" />
     <ClCompile Include="..\..\src\F3DSETA.cpp" />
-    <ClCompile Include="..\..\src\F3DSWSE.cpp" />
+    <ClCompile Include="..\..\src\F3DBETA.cpp" />
     <ClCompile Include="..\..\src\FBOTextureFormats.cpp" />
     <ClCompile Include="..\..\src\FrameBuffer.cpp" />
     <ClCompile Include="..\..\src\FrameBufferInfo.cpp" />
@@ -343,7 +343,6 @@
     <ClCompile Include="..\..\src\F3DEX.cpp" />
     <ClCompile Include="..\..\src\F3DEX2.cpp" />
     <ClCompile Include="..\..\src\F3DPD.cpp" />
-    <ClCompile Include="..\..\src\F3DWRUS.cpp" />
     <ClCompile Include="..\..\src\L3D.cpp" />
     <ClCompile Include="..\..\src\L3DEX.cpp" />
     <ClCompile Include="..\..\src\L3DEX2.cpp" />
@@ -403,7 +402,6 @@
     <ClInclude Include="..\..\src\F3DEX2MM.h" />
     <ClInclude Include="..\..\src\F3DGOLDEN.h" />
     <ClInclude Include="..\..\src\F3DSETA.h" />
-    <ClInclude Include="..\..\src\F3DSWSE.h" />
     <ClInclude Include="..\..\src\FBOTextureFormats.h" />
     <ClInclude Include="..\..\src\FrameBuffer.h" />
     <ClInclude Include="..\..\src\FrameBufferInfo.h" />
@@ -453,7 +451,7 @@
     <ClInclude Include="..\..\src\F3DEX.h" />
     <ClInclude Include="..\..\src\F3DEX2.h" />
     <ClInclude Include="..\..\src\F3DPD.h" />
-    <ClInclude Include="..\..\src\F3DWRUS.h" />
+    <ClInclude Include="..\..\src\F3DBETA.h" />
     <ClInclude Include="..\..\src\L3D.h" />
     <ClInclude Include="..\..\src\L3DEX.h" />
     <ClInclude Include="..\..\src\L3DEX2.h" />

@@ -113,9 +113,6 @@
     <ClCompile Include="..\..\src\F3DPD.cpp">
       <Filter>Source Files\uCodes</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\F3DWRUS.cpp">
-      <Filter>Source Files\uCodes</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\L3D.cpp">
       <Filter>Source Files\uCodes</Filter>
     </ClCompile>
@@ -180,9 +177,6 @@
       <Filter>Source Files\uCodes</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\ZSort.cpp">
-      <Filter>Source Files\uCodes</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\F3DSWSE.cpp">
       <Filter>Source Files\uCodes</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\TextDrawer.cpp">
@@ -269,6 +263,9 @@
     <ClCompile Include="..\..\src\F3DEX2MM.cpp">
       <Filter>Source Files\uCodes</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\F3DBETA.cpp">
+      <Filter>Source Files\uCodes</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\3DMath.h">
@@ -343,9 +340,6 @@
     <ClInclude Include="..\..\src\F3DPD.h">
       <Filter>Header Files\uCodes</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\F3DWRUS.h">
-      <Filter>Header Files\uCodes</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\L3D.h">
       <Filter>Header Files\uCodes</Filter>
     </ClInclude>
@@ -383,9 +377,6 @@
       <Filter>Header Files\uCodes</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\ZSort.h">
-      <Filter>Header Files\uCodes</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\F3DSWSE.h">
       <Filter>Header Files\uCodes</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\GLideNHQ\Ext_TxFilter.h">
@@ -479,6 +470,9 @@
       <Filter>Header Files\uCodes</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\F3DEX2MM.h">
+      <Filter>Header Files\uCodes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\F3DBETA.h">
       <Filter>Header Files\uCodes</Filter>
     </ClInclude>
   </ItemGroup>

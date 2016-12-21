@@ -17,15 +17,14 @@
 #define F3DPD		8
 #define F3DDKR		9
 #define F3DJFG		10
-#define F3DSWSE		11
-#define F3DWRUS		12
+#define F3DGOLDEN	11
+#define F3DBETA		12
 #define F3DEX2CBFD	13
 #define Turbo3D		14
 #define ZSortp		15
 #define F3DSETA		16
-#define F3DGOLDEN	17
-#define F3DEX2MM	18
-#define NONE		19
+#define F3DEX2MM	17
+#define NONE		18
 
 // Fixed point conversion factors
 #define FIXED2FLOATRECIP1	0.5f
