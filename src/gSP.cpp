@@ -1306,7 +1306,7 @@ void gSPBranchLessW( u32 branchdl, u32 vtx, u32 wval )
 		return;
 	}
 
-	SPVertex & v = video().getRender().getVertex((vtx & 0x1f));
+	SPVertex & v = video().getRender().getVertex(vtx);
 	if (v.w < (float)wval)
 		RSP.PC[RSP.PCi] = address;
 

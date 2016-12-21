@@ -7,7 +7,7 @@
 
 void F3DEX2MM_Branch_W( u32 w0, u32 w1 )
 {
-	gSPBranchLessW(gDP.half_1, w0, w1);
+	gSPBranchLessW(gDP.half_1, _SHIFTR( w0, 1, 7 ), w1);
 }
 
 void F3DEX2MM_Init()
