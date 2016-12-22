@@ -69,7 +69,7 @@ u32 G_TEXTURE;
 u32 G_DMA_IO, G_DMA_DL, G_DMA_TRI, G_DMA_MTX, G_DMA_VTX, G_DMA_TEX_OFFSET, G_DMA_OFFSETS;
 u32 G_SPECIAL_1, G_SPECIAL_2, G_SPECIAL_3;
 u32 G_VTX, G_MODIFYVTX, G_VTXCOLORBASE;
-u32 G_TRI1, G_TRI2, G_TRI4;
+u32 G_TRI1, G_TRI2, G_TRIX;
 u32 G_QUAD, G_LINE3D;
 u32 G_RESERVED0, G_RESERVED1, G_RESERVED2, G_RESERVED3;
 u32 G_SPRITE2D_BASE;
@@ -166,7 +166,7 @@ void GBIInfo::_makeCurrent(MicrocodeInfo * _pCurrent)
 
 		RDP_Init();
 
-		G_TRI1 = G_TRI2 = G_TRI4 = G_QUAD = -1; // For correct work of gSPFlushTriangles()
+		G_TRI1 = G_TRI2 = G_TRIX = G_QUAD = -1; // For correct work of gSPFlushTriangles()
 
 		switch (m_pCurrent->type) {
 			case F3D:		F3D_Init();			break;

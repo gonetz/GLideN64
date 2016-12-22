@@ -1,13 +1,12 @@
 #include "GLideN64.h"
 #include "Debug.h"
 #include "F3D.h"
+#include "F3DGOLDEN.h"
 #include "F3DPD.h"
 #include "N64.h"
-#include "RSP.h"
-#include "RDP.h"
 #include "gSP.h"
-#include "gDP.h"
-#include "GBI.h"
+
+#define F3DPD_VTXCOLORBASE	0x07
 
 void F3DPD_Vtx( u32 w0, u32 w1 )
 {
@@ -53,7 +52,7 @@ void F3DPD_Init()
 	GBI_SetGBI( G_RDPHALF_1,			F3D_RDPHALF_1,			F3D_RDPHalf_1 );
 	GBI_SetGBI( G_RDPHALF_2,			F3D_RDPHALF_2,			F3D_RDPHalf_2 );
 	GBI_SetGBI( G_RDPHALF_CONT,			F3D_RDPHALF_CONT,		F3D_RDPHalf_Cont );
-	GBI_SetGBI( G_TRI4,					F3D_TRI4,				F3D_Tri4 );
+	GBI_SetGBI( G_TRIX,					F3D_TRIX,				F3D_TriX );
 
 	gSPSetDMAOffsets( 0, 0 );
 }

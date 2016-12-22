@@ -34,7 +34,7 @@ void gSPFlushTriangles()
 	if (
 		(RSP.nextCmd != G_TRI1) &&
 		(RSP.nextCmd != G_TRI2) &&
-		(RSP.nextCmd != G_TRI4) &&
+		(RSP.nextCmd != G_TRIX) &&
 		(RSP.nextCmd != G_QUAD)
 	)
 		video().getRender().drawTriangles();

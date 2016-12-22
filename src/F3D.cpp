@@ -254,14 +254,6 @@ void F3D_RDPHalf_Cont( u32 w0, u32 w1 )
 {
 }
 
-void F3D_Tri4( u32 w0, u32 w1 )
-{
-	gSP4Triangles( _SHIFTR( w1, 28, 4 ), _SHIFTR( w0, 12, 4 ), _SHIFTR( w1, 24, 4 ),
-				   _SHIFTR( w1, 20, 4 ), _SHIFTR( w0,  8, 4 ), _SHIFTR( w1, 16, 4 ),
-				   _SHIFTR( w1, 12, 4 ), _SHIFTR( w0,  4, 4 ), _SHIFTR( w1,  8, 4 ),
-				   _SHIFTR( w1,  4, 4 ), _SHIFTR( w0,  0, 4 ), _SHIFTR( w1,  0, 4 ) );
-}
-
 void F3D_Init()
 {
 	gSPSetupFunctions();
@@ -296,5 +288,4 @@ void F3D_Init()
 	GBI_SetGBI( G_RDPHALF_1,			F3D_RDPHALF_1,			F3D_RDPHalf_1 );
 	GBI_SetGBI( G_RDPHALF_2,			F3D_RDPHALF_2,			F3D_RDPHalf_2 );
 	GBI_SetGBI( G_RDPHALF_CONT,			F3D_RDPHALF_CONT,		F3D_RDPHalf_Cont );
-	GBI_SetGBI( G_TRI4,					F3D_TRI4,				F3D_Tri4 );
 }

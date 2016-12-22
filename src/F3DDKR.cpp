@@ -130,7 +130,6 @@ void F3DDKR_Init()
 	GBI_SetGBI( G_RDPHALF_1,			F3D_RDPHALF_1,			F3D_RDPHalf_1 );
 	GBI_SetGBI( G_RDPHALF_2,			F3D_RDPHALF_2,			F3D_RDPHalf_2 );
 	GBI_SetGBI( G_RDPHALF_CONT,			F3D_RDPHALF_CONT,		F3D_RDPHalf_Cont );
-	GBI_SetGBI( G_TRI4,					F3D_TRI4,				F3D_Tri4 );
 
 	gSPSetDMAOffsets( 0, 0 );
 }

@@ -10,13 +10,11 @@
 #include "gDP.h"
 #include "GBI.h"
 
-#define F3DGOLDEN_TRIX		0xB1
 #define F3DGOLDEN_MOVEWORD	0xBD
 
-u32 G_GOLDEN_TRIX;
 u32 G_GOLDEN_MOVEWORD;
 
-void F3DGOLDEN_TriX(u32 w0, u32 w1)
+void F3D_TriX(u32 w0, u32 w1)
 {
 	while(w1 != 0) {
 		s32 v0 = w1 & 0xf;
@@ -67,5 +65,5 @@ void F3DGOLDEN_Init()
 	GBI_SetGBI( G_RDPHALF_1,			F3D_RDPHALF_1,			F3D_RDPHalf_1 );
 	GBI_SetGBI( G_RDPHALF_2,			F3D_RDPHALF_2,			F3D_RDPHalf_2 );
 	GBI_SetGBI( G_RDPHALF_CONT,			F3D_RDPHALF_CONT,		F3D_RDPHalf_Cont );
-	GBI_SetGBI( G_GOLDEN_TRIX,			F3DGOLDEN_TRIX,			F3DGOLDEN_TriX );
+	GBI_SetGBI( G_TRIX,					F3D_TRIX,				F3D_TriX );
 }
