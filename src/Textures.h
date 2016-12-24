@@ -15,9 +15,9 @@ typedef u32 (*GetTexelFunc)( u64 *src, u16 x, u16 i, u8 palette );
 
 struct CachedTexture
 {
-	CachedTexture(GLuint _glName) : glName(_glName), max_level(0), frameBufferTexture(fbNone), bHDTexture(false) {}
+	CachedTexture(u32 _glName) : glName(_glName), max_level(0), frameBufferTexture(fbNone), bHDTexture(false) {}
 
-	GLuint	glName;
+	u32		glName;
 	u32		crc;
 //	float	fulS, fulT;
 //	WORD	ulS, ulT, lrS, lrT;

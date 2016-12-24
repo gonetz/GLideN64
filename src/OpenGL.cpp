@@ -27,6 +27,7 @@
 #include "SoftwareRender.h"
 #include "FBOTextureFormats.h"
 #include "TextureFilterHandler.h"
+#include "Graphics/Context.h"
 
 using namespace std;
 
@@ -157,6 +158,7 @@ void OGLVideo::start()
 {
 	_start(); // TODO: process initialization error
 	initGLFunctions();
+	gfxContext.init();
 	m_render._initData();
 	m_buffersSwapCount = 0;
 }
@@ -164,6 +166,7 @@ void OGLVideo::start()
 void OGLVideo::stop()
 {
 	m_render._destroyData();
+	gfxContext.destroy();
 	_stop();
 }
 

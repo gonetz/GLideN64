@@ -17,6 +17,7 @@
 #include "Keys.h"
 #include "GLideNHQ/Ext_TxFilter.h"
 #include "TextureFilterHandler.h"
+#include "Graphics/Context.h"
 
 using namespace std;
 
@@ -555,9 +556,7 @@ CachedTexture * TextureCache::_addTexture(u32 _crc32)
 	if (m_curUnpackAlignment == 0)
 		glGetIntegerv(GL_UNPACK_ALIGNMENT, &m_curUnpackAlignment);
 	_checkCacheSize();
-	GLuint glName;
-	glGenTextures(1, &glName);
-	m_textures.emplace_front(glName);
+	m_textures.emplace_front(gfxContext.createTexture());
 	Textures::iterator new_iter = m_textures.begin();
 	new_iter->crc = _crc32;
 	m_lruTextureLocations.insert(std::pair<u32, Textures::iterator>(_crc32, new_iter));
@@ -569,17 +568,16 @@ void TextureCache::removeFrameBufferTexture(CachedTexture * _pTexture)
 	FBTextures::const_iterator iter = m_fbTextures.find(_pTexture->glName);
 	assert(iter != m_fbTextures.cend());
 	m_cachedBytes -= iter->second.textureBytes;
-	glDeleteTextures( 1, &iter->second.glName );
+	gfxContext.deleteTexture(graphics::ObjectName(iter->second.glName));
 	m_fbTextures.erase(iter);
 }
 
 CachedTexture * TextureCache::addFrameBufferTexture()
 {
 	_checkCacheSize();
-	GLuint glName;
-	glGenTextures(1, &glName);
-	m_fbTextures.emplace(glName, glName);
-	return &m_fbTextures.at(glName);
+	u32 texName(gfxContext.createTexture());
+	m_fbTextures.emplace(texName, texName);
+	return &m_fbTextures.at(texName);
 }
 
 struct TileSizes
