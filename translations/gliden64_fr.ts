@@ -47,7 +47,7 @@
         <location filename="AboutDialog.ui" line="591"/>
         <source>Author of the blur shader
 © Nutty Software</source>
-        <translation>Auteur du nuanceur de fondu
+        <translation>Auteur du Shader de flou
 © Nutty Software</translation>
     </message>
     <message>
@@ -347,7 +347,7 @@
         <location filename="configDialog.ui" line="472"/>
         <location filename="configDialog.ui" line="629"/>
         <source>Off</source>
-        <translation>Sans</translation>
+        <translation>Off</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="580"/>
@@ -446,7 +446,7 @@ The highest in a sequence of numbers. In this case, 16.</extracomment>
     <message>
         <location filename="configDialog.ui" line="1163"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;In N64 games lighting is calculated per vertex. This option enables Phong shading, which provides smoother and more realistic lighting.&lt;br/&gt;&lt;br/&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;Your preference&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Dans les jeux N64, l&apos;éclairage est calculé par vertex. Cette option active un nuanceur Phong, qui apporte un éclairage plus doux et plus réaliste.&lt;br/&gt;&lt;br/&gt;[Recommandé : &lt;span style=&quot; font-style:italic;&quot;&gt;Selon votre préférence&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Dans les jeux N64, l&apos;éclairage est calculé par vertex. Cette option active un Shader Phong, qui apporte un éclairage plus doux et plus réaliste.&lt;br/&gt;&lt;br/&gt;[Recommandé : &lt;span style=&quot; font-style:italic;&quot;&gt;Selon votre préférence&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="1166"/>
@@ -456,12 +456,12 @@ The highest in a sequence of numbers. In this case, 16.</extracomment>
     <message>
         <location filename="configDialog.ui" line="1173"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Use persistent storage for compiled shader programs.&lt;br/&gt;Each game uses a set of combiners. A combiner is an equation that defines how to build output color from various color inputs. GLideN64 translates shaders, and compiles shader programs on the fly. Shaders are large and complex. If the game uses several new combiners, compiling new shaders will take time and result in stuttering. When this option is checked, these shaders are saved so they&apos;re not recompiled the next time you run the game.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;Checked&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Utiliser un stockage persistent pour compiler les nuanceurs.&lt;br/&gt;Chaque jeu utilise un ensemble de combinateurs. Un combinateur est une équation qui définie couleur depuis des entrées de couleurs diverses. GLideN64 traduit les nuanceurs, et les compile à la volée. Les nuanceurs sont larges et complexes. Si le jeu utilise de nombreux mélangeurs, la compilation des nuanceurs prendra du temps et engendrera des saccades. Quand cette option est cochée, ces nuanceurs sont sauvegardées et ne seront donc pas recompilés la prochaine fois que vous lancerez le jeu.&lt;/p&gt;&lt;p&gt;[Recommandé : &lt;span style=&quot; font-style:italic;&quot;&gt;Activé&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Utiliser un stockage persistent pour compiler les Shaders.&lt;br/&gt;Chaque jeu utilise un ensemble de combinateurs. Un combinateur est une équation qui définie couleur depuis des entrées de couleurs diverses. GLideN64 traduit les Shaders, et les compile à la volée. Les Shaders sont larges et complexes. Si le jeu utilise de nombreux mélangeurs, la compilation des Shaders prendra du temps et engendrera des saccades. Quand cette option est cochée, ces Shaders sont sauvegardées et ne seront donc pas recompilés la prochaine fois que vous lancerez le jeu.&lt;/p&gt;&lt;p&gt;[Recommandé : &lt;span style=&quot; font-style:italic;&quot;&gt;Activé&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="1176"/>
         <source>Store compiled shaders for performance (recommended)</source>
-        <translation>Stocker les nuanceurs compilés pour plus de performance (recommandé)</translation>
+        <translation>Stocker les Shaders compilés pour plus de performance (recommandé)</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="1189"/>
@@ -619,7 +619,7 @@ The highest in a sequence of numbers. In this case, 16.</extracomment>
     <message>
         <location filename="configDialog.ui" line="1938"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The N64 uses a unique method of calculating depth to the camera. When checked, GlideN64 uses shaders to try to emulate these calculations correctly. &lt;span style=&quot; font-weight:600;&quot;&gt;Experimental!&lt;/span&gt;&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;Sometimes checked, for a few games&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;La N64 utilise une méthode unique de calcul de la profondeur vers la caméra. Quand l&apos;option est activée, GlideN64 utilise les nuanceurs pour essayer d&apos;émuler ces calculs correctement. &lt;span style=&quot; font-weight:600;&quot;&gt;Expérimental !&lt;/span&gt;&lt;/p&gt;&lt;p&gt;[Recommandé: &lt;span style=&quot; font-style:italic;&quot;&gt;Parfois activé, pour peu de jeux&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;La N64 utilise une méthode unique de calcul de la profondeur vers la caméra. Quand l&apos;option est activée, GlideN64 utilise les Shaders pour essayer d&apos;émuler ces calculs correctement. &lt;span style=&quot; font-weight:600;&quot;&gt;Expérimental !&lt;/span&gt;&lt;/p&gt;&lt;p&gt;[Recommandé: &lt;span style=&quot; font-style:italic;&quot;&gt;Parfois activé, pour peu de jeux&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="1941"/>
