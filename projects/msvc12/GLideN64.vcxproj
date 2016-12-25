@@ -303,8 +303,10 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Graphics\Context.cpp" />
     <ClCompile Include="..\..\src\Graphics\OpenGLContext\GLFunctions.cpp" />
-    <ClCompile Include="..\..\src\Graphics\OpenGLContext\OpenGLContextImpl.cpp" />
-    <ClCompile Include="..\..\src\Graphics\OpenGLContext\Parameters.cpp" />
+    <ClCompile Include="..\..\src\Graphics\OpenGLContext\opengl_ContextImpl.cpp" />
+    <ClCompile Include="..\..\src\Graphics\OpenGLContext\opengl_Parameters.cpp" />
+    <ClCompile Include="..\..\src\Graphics\OpenGLContext\opengl_TextureManipulationObjectFactory.cpp" />
+    <ClCompile Include="..\..\src\Graphics\OpenGLContext\opengl_Utilis.cpp" />
     <ClCompile Include="..\..\src\gSP.cpp" />
     <ClCompile Include="..\..\src\Keys.cpp" />
     <ClCompile Include="..\..\src\Log.cpp" />
@@ -429,7 +431,10 @@
     <ClInclude Include="..\..\src\Graphics\ContextImpl.h" />
     <ClInclude Include="..\..\src\Graphics\ObjectName.h" />
     <ClInclude Include="..\..\src\Graphics\OpenGLContext\GLFunctions.h" />
-    <ClInclude Include="..\..\src\Graphics\OpenGLContext\OpenGLContextImpl.h" />
+    <ClInclude Include="..\..\src\Graphics\OpenGLContext\opengl_ContextImpl.h" />
+    <ClInclude Include="..\..\src\Graphics\OpenGLContext\opengl_GLVersion.h" />
+    <ClInclude Include="..\..\src\Graphics\OpenGLContext\opengl_TextureManipulationObjectFactory.h" />
+    <ClInclude Include="..\..\src\Graphics\OpenGLContext\opengl_Utilis.h" />
     <ClInclude Include="..\..\src\Graphics\Parameter.h" />
     <ClInclude Include="..\..\src\Graphics\Parameters.h" />
     <ClInclude Include="..\..\src\gSP.h" />

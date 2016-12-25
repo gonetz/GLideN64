@@ -281,13 +281,19 @@
     <ClCompile Include="..\..\src\Graphics\Context.cpp">
       <Filter>Source Files\Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\Graphics\OpenGLContext\OpenGLContextImpl.cpp">
-      <Filter>Source Files\Graphics\OpenGL</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Graphics\OpenGLContext\Parameters.cpp">
-      <Filter>Source Files\Graphics\OpenGL</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\Graphics\OpenGLContext\GLFunctions.cpp">
+      <Filter>Source Files\Graphics\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Graphics\OpenGLContext\opengl_ContextImpl.cpp">
+      <Filter>Source Files\Graphics\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Graphics\OpenGLContext\opengl_Parameters.cpp">
+      <Filter>Source Files\Graphics\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Graphics\OpenGLContext\opengl_Utilis.cpp">
+      <Filter>Source Files\Graphics\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Graphics\OpenGLContext\opengl_TextureManipulationObjectFactory.cpp">
       <Filter>Source Files\Graphics\OpenGL</Filter>
     </ClCompile>
   </ItemGroup>
@@ -505,9 +511,6 @@
     <ClInclude Include="..\..\src\Graphics\Context.h">
       <Filter>Header Files\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Graphics\OpenGLContext\OpenGLContextImpl.h">
-      <Filter>Header Files\Graphics\OpenGL</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\Graphics\ObjectName.h">
       <Filter>Header Files\Graphics</Filter>
     </ClInclude>
@@ -518,6 +521,18 @@
       <Filter>Header Files\Graphics</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Graphics\OpenGLContext\GLFunctions.h">
+      <Filter>Header Files\Graphics\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Graphics\OpenGLContext\opengl_ContextImpl.h">
+      <Filter>Header Files\Graphics\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Graphics\OpenGLContext\opengl_Utilis.h">
+      <Filter>Header Files\Graphics\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Graphics\OpenGLContext\opengl_TextureManipulationObjectFactory.h">
+      <Filter>Header Files\Graphics\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Graphics\OpenGLContext\opengl_GLVersion.h">
       <Filter>Header Files\Graphics\OpenGL</Filter>
     </ClInclude>
   </ItemGroup>
