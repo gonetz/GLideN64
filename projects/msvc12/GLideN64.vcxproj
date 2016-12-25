@@ -304,6 +304,7 @@
     <ClCompile Include="..\..\src\Graphics\Context.cpp" />
     <ClCompile Include="..\..\src\Graphics\OpenGLContext\GLFunctions.cpp" />
     <ClCompile Include="..\..\src\Graphics\OpenGLContext\OpenGLContextImpl.cpp" />
+    <ClCompile Include="..\..\src\Graphics\OpenGLContext\Parameters.cpp" />
     <ClCompile Include="..\..\src\gSP.cpp" />
     <ClCompile Include="..\..\src\Keys.cpp" />
     <ClCompile Include="..\..\src\Log.cpp" />
@@ -429,6 +430,8 @@
     <ClInclude Include="..\..\src\Graphics\ObjectName.h" />
     <ClInclude Include="..\..\src\Graphics\OpenGLContext\GLFunctions.h" />
     <ClInclude Include="..\..\src\Graphics\OpenGLContext\OpenGLContextImpl.h" />
+    <ClInclude Include="..\..\src\Graphics\Parameter.h" />
+    <ClInclude Include="..\..\src\Graphics\Parameters.h" />
     <ClInclude Include="..\..\src\gSP.h" />
     <ClInclude Include="..\..\src\inc\glext.h" />
     <ClInclude Include="..\..\src\Keys.h" />

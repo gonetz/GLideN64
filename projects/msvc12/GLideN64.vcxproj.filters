@@ -284,6 +284,9 @@
     <ClCompile Include="..\..\src\Graphics\OpenGLContext\OpenGLContextImpl.cpp">
       <Filter>Source Files\Graphics\OpenGL</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\Graphics\OpenGLContext\Parameters.cpp">
+      <Filter>Source Files\Graphics\OpenGL</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\src\Graphics\OpenGLContext\GLFunctions.cpp">
       <Filter>Source Files\Graphics\OpenGL</Filter>
     </ClCompile>
@@ -505,11 +508,17 @@
     <ClInclude Include="..\..\src\Graphics\OpenGLContext\OpenGLContextImpl.h">
       <Filter>Header Files\Graphics\OpenGL</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Graphics\OpenGLContext\GLFunctions.h">
-      <Filter>Header Files\Graphics\OpenGL</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\Graphics\ObjectName.h">
       <Filter>Header Files\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Graphics\Parameter.h">
+      <Filter>Header Files\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Graphics\Parameters.h">
+      <Filter>Header Files\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Graphics\OpenGLContext\GLFunctions.h">
+      <Filter>Header Files\Graphics\OpenGL</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
