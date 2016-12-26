@@ -190,10 +190,12 @@ void OGLVideo::setCaptureScreen(const char * const _strDirectory)
 
 void OGLVideo::saveScreenshot()
 {
+#ifndef NO_UI
 	if (!m_bCaptureScreen)
 		return;
 	_saveScreenshot();
 	m_bCaptureScreen = false;
+#endif
 }
 
 bool OGLVideo::changeWindow()

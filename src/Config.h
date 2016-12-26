@@ -197,9 +197,11 @@ struct Config
 
 extern Config config;
 
+#ifndef NO_UI
 void Config_LoadConfig();
 #ifndef MUPENPLUSAPI
 void Config_DoConfig(/*HWND hParent*/);
 #endif
+#endif //NO_UI
 
 #endif // CONFIG_H

@@ -8,6 +8,7 @@
 
 Config config;
 
+#ifndef NO_UI
 void Config_DoConfig(/*HWND hParent*/)
 {
 	wchar_t strIniFolderPath[PLUGIN_PATH_SIZE];
@@ -30,3 +31,4 @@ void Config_LoadConfig()
 	if (config.generalEmulation.enableCustomSettings != 0)
 		LoadCustomRomSettings(strIniFolderPath, RSP.romname);
 }
+#endif

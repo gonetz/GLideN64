@@ -328,7 +328,9 @@ private:
 	virtual bool _start() = 0;
 	virtual void _stop() = 0;
 	virtual void _swapBuffers() = 0;
+#ifndef NO_UI
 	virtual void _saveScreenshot() = 0;
+#endif
 	virtual void _changeWindow() = 0;
 	virtual bool _resizeWindow() = 0;
 };
