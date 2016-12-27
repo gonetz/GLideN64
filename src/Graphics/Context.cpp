@@ -39,3 +39,9 @@ void Context::init2DTexture(ObjectName _name, u32 _msaaLevel, u32 _width, u32 _h
 	return m_impl->init2DTexture(_name, _msaaLevel, _width, _height,
 		_mipMapLevel, _format, _internalFormat, _dataType, _data);
 }
+
+bool Context::isMultisamplingSupported() const
+{
+	// TODO
+	return true;
+}

@@ -18,6 +18,7 @@
 #include "GLideNHQ/Ext_TxFilter.h"
 #include "TextureFilterHandler.h"
 #include "Graphics/Context.h"
+#include "Graphics/Parameters.h"
 
 using namespace std;
 
@@ -475,13 +476,21 @@ void TextureCache::init()
 	m_pDummy = addFrameBufferTexture(); // we don't want to remove dummy texture
 	_initDummyTexture(m_pDummy);
 
+#ifndef GRAPHICS_CONTEXT
 	glBindTexture(GL_TEXTURE_2D, m_pDummy->glName);
 	glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, 2, 2, 0, GL_RGBA, GL_UNSIGNED_BYTE, dummyTexture );
+#else
+	gfxContext.init2DTexture(graphics::ObjectName(m_pDummy->glName), 0, m_pDummy->realWidth, m_pDummy->realHeight, 0,
+		graphics::color::RGBA, graphics::internalcolor::RGBA, graphics::type::UNSIGNED_BYTE, dummyTexture);
+#endif
 
 	m_cachedBytes = m_pDummy->textureBytes;
 	activateDummy( 0 );
-	activateDummy( 1 );
+	activateDummy(1);
 	current[0] = current[1] = nullptr;
+
+
+#ifndef GRAPHICS_CONTEXT
 
 #ifdef GL_MULTISAMPLING_SUPPORT
 	if (config.video.multisampling != 0) {
@@ -497,12 +506,28 @@ void TextureCache::init()
 		glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, config.video.multisampling,
 					GL_RGBA8, m_pMSDummy->realWidth, m_pMSDummy->realHeight, false);
 #endif
+		activateMSDummy(0);
+		activateMSDummy(1);
+	}
+	else
+#endif
+	m_pMSDummy = nullptr;
+
+#else
+	m_pMSDummy = nullptr;
+	if (config.video.multisampling != 0 && gfxContext.isMultisamplingSupported()) {
+		m_pMSDummy = addFrameBufferTexture(); // we don't want to remove dummy texture
+		_initDummyTexture(m_pMSDummy);
+
+		gfxContext.init2DTexture(graphics::ObjectName(m_pMSDummy->glName), config.video.multisampling,
+			m_pMSDummy->realWidth, m_pMSDummy->realHeight, 0,
+			graphics::color::RGBA, graphics::internalcolor::RGBA, graphics::type::UNSIGNED_BYTE, nullptr);
 
 		activateMSDummy(0);
 		activateMSDummy(1);
-	} else
+	}
 #endif
-	m_pMSDummy = nullptr;
+
 	assert(!isGLError());
 }
 
@@ -556,7 +581,7 @@ CachedTexture * TextureCache::_addTexture(u32 _crc32)
 	if (m_curUnpackAlignment == 0)
 		glGetIntegerv(GL_UNPACK_ALIGNMENT, &m_curUnpackAlignment);
 	_checkCacheSize();
-	m_textures.emplace_front(gfxContext.createTexture());
+	m_textures.emplace_front(u32(gfxContext.createTexture()));
 	Textures::iterator new_iter = m_textures.begin();
 	new_iter->crc = _crc32;
 	m_lruTextureLocations.insert(std::pair<u32, Textures::iterator>(_crc32, new_iter));
