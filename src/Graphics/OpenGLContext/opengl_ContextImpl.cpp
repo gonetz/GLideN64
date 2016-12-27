@@ -2,6 +2,7 @@
 #include <Log.h>
 #include "opengl_ContextImpl.h"
 #include "opengl_GLVersion.h"
+#include "opengl_CachedFunctions.h"
 
 using namespace opengl;
 
@@ -28,7 +29,9 @@ void ContextImpl::init()
 	glGetIntegerv(GL_MINOR_VERSION, &version.minorVersion);
 	LOG(LOG_VERBOSE, "OpenGL minor version: %d\n", version.minorVersion);
 
-	TextureManipulationObjectFactory textureObjectsFactory(version);
+	CachedFunctions cachedFunctions;
+
+	TextureManipulationObjectFactory textureObjectsFactory(version, cachedFunctions);
 	m_init2DTexture.reset(textureObjectsFactory.getInit2DTexture());
 
 }

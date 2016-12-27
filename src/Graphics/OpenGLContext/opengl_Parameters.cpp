@@ -24,4 +24,20 @@ namespace graphics {
 		Parameter FLOAT(GL_FLOAT);
 	}
 
+	namespace target {
+		Parameter TEXTURE_2D(GL_TEXTURE_2D);
+		Parameter TEXTURE_2D_MULTISAMPLE(GL_TEXTURE_2D_MULTISAMPLE);
+	}
+
+	namespace enable {
+		Parameter BLEND(GL_BLEND);
+		Parameter CULL_FACE(GL_CULL_FACE);
+		Parameter DEPTH_TEST(GL_DEPTH_TEST);
+		Parameter DEPTH_CLAMP(GL_DEPTH_CLAMP);
+		Parameter CLIP_DISTANCE0(GL_CLIP_DISTANCE0);
+		Parameter DITHER(GL_DITHER);
+		Parameter POLYGON_OFFSET_FILL(GL_POLYGON_OFFSET_FILL);
+		Parameter SCISSOR_TEST(GL_SCISSOR_TEST);
+	}
+
 }

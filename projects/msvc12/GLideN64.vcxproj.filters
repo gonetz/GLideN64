@@ -296,6 +296,9 @@
     <ClCompile Include="..\..\src\Graphics\OpenGLContext\opengl_TextureManipulationObjectFactory.cpp">
       <Filter>Source Files\Graphics\OpenGL</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\Graphics\OpenGLContext\opengl_CachedFunctions.cpp">
+      <Filter>Source Files\Graphics\OpenGL</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\3DMath.h">
@@ -533,6 +536,9 @@
       <Filter>Header Files\Graphics\OpenGL</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Graphics\OpenGLContext\opengl_GLVersion.h">
+      <Filter>Header Files\Graphics\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Graphics\OpenGLContext\opengl_CachedFunctions.h">
       <Filter>Header Files\Graphics\OpenGL</Filter>
     </ClInclude>
   </ItemGroup>
