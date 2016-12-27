@@ -59,6 +59,12 @@ set(GLideN64_SOURCES
   DepthBufferRender/ClipPolygon.cpp
   DepthBufferRender/DepthBufferRender.cpp
   common/CommonAPIImpl_common.cpp
+  Graphics/Context.cpp
+  Graphics/OpenGLContext/GLFunctions.cpp
+  Graphics/OpenGLContext/opengl_ContextImpl.cpp
+  Graphics/OpenGLContext/opengl_Parameters.cpp
+  Graphics/OpenGLContext/opengl_TextureManipulationObjectFactory.cpp
+  Graphics/OpenGLContext/opengl_Utilis.cpp
 )
 
 #check if we're running on Raspberry Pi

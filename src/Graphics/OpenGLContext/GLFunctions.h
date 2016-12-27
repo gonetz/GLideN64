@@ -3,13 +3,20 @@
 
 #ifdef OS_WINDOWS
 #include <windows.h>
-#else
-#include >winlnxdefs.h>
+#elif defined(OS_LINUX)
+//#define GL_GLEXT_PROTOTYPES
+#include <winlnxdefs.h>
+#include <GL/glx.h>
+#include <GL/glxext.h>
 #endif
 
 #include <GL/gl.h>
 #include <GL/glext.h>
 
+#ifdef OS_WINDOWS
+extern PFNGLACTIVETEXTUREPROC glActiveTexture;
+extern PFNGLBLENDCOLORPROC glBlendColor;
+#endif
 extern PFNGLCREATESHADERPROC glCreateShader;
 extern PFNGLCOMPILESHADERPROC glCompileShader;
 extern PFNGLSHADERSOURCEPROC glShaderSource;
@@ -42,10 +49,8 @@ extern PFNGLBINDATTRIBLOCATIONPROC glBindAttribLocation;
 extern PFNGLVERTEXATTRIB4FPROC glVertexAttrib4f;
 extern PFNGLVERTEXATTRIB4FVPROC glVertexAttrib4fv;
 
-extern PFNGLACTIVETEXTUREPROC glActiveTexture;
 extern PFNGLDEPTHRANGEFPROC glDepthRangef;
 extern PFNGLCLEARDEPTHFPROC glClearDepthf;
-extern PFNGLBLENDCOLORPROC glBlendColor;
 
 extern PFNGLDRAWBUFFERSPROC glDrawBuffers;
 extern PFNGLGENFRAMEBUFFERSPROC glGenFramebuffers;

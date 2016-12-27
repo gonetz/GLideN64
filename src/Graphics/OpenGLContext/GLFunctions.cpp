@@ -2,10 +2,16 @@
 
 #ifdef OS_WINDOWS
 #define glGetProcAddress wglGetProcAddress
-#else
+#define GL_GET_PROC_ADR(proc_type, proc_name) proc_name = (proc_type) glGetProcAddress(#proc_name)
+#elif defined(OS_LINUX)
 #define glGetProcAddress glXGetProcAddress
+#define GL_GET_PROC_ADR(proc_type, proc_name) proc_name = (proc_type) glGetProcAddress((const GLubyte*)#proc_name)
 #endif
 
+#ifdef OS_WINDOWS
+PFNGLACTIVETEXTUREPROC glActiveTexture;
+PFNGLBLENDCOLORPROC glBlendColor;
+#endif
 // GLSL functions
 PFNGLCREATESHADERPROC glCreateShader;
 PFNGLCOMPILESHADERPROC glCompileShader;
@@ -39,10 +45,8 @@ PFNGLVERTEXATTRIB4FPROC glVertexAttrib4f;
 PFNGLVERTEXATTRIB4FVPROC glVertexAttrib4fv;
 
 // multitexture functions
-PFNGLACTIVETEXTUREPROC glActiveTexture;
 PFNGLDEPTHRANGEFPROC glDepthRangef;
 PFNGLCLEARDEPTHFPROC glClearDepthf;
-PFNGLBLENDCOLORPROC glBlendColor;
 
 PFNGLDRAWBUFFERSPROC glDrawBuffers;
 PFNGLBINDFRAMEBUFFERPROC glBindFramebuffer;
@@ -91,10 +95,12 @@ PFNGLTEXTURESTORAGE2DPROC glTextureStorage2D;
 PFNGLTEXTURESUBIMAGE2DPROC glTextureSubImage2D;
 PFNGLTEXTURESTORAGE2DMULTISAMPLEEXTPROC glTextureStorage2DMultisample;
 
-#define GL_GET_PROC_ADR(proc_type, proc_name) proc_name = (proc_type) glGetProcAddress(#proc_name)
-
 void initGLFunctions()
 {
+#ifdef OS_WINDOWS
+	GL_GET_PROC_ADR(PFNGLACTIVETEXTUREPROC, glActiveTexture);
+	GL_GET_PROC_ADR(PFNGLBLENDCOLORPROC, glBlendColor);
+#endif
 	GL_GET_PROC_ADR(PFNGLCREATESHADERPROC, glCreateShader);
 	GL_GET_PROC_ADR(PFNGLCOMPILESHADERPROC, glCompileShader);
 	GL_GET_PROC_ADR(PFNGLSHADERSOURCEPROC, glShaderSource);
@@ -126,10 +132,8 @@ void initGLFunctions()
 	GL_GET_PROC_ADR(PFNGLVERTEXATTRIB4FPROC, glVertexAttrib4f);
 	GL_GET_PROC_ADR(PFNGLVERTEXATTRIB4FVPROC, glVertexAttrib4fv);
 
-	GL_GET_PROC_ADR(PFNGLACTIVETEXTUREPROC, glActiveTexture);
 	GL_GET_PROC_ADR(PFNGLDEPTHRANGEFPROC, glDepthRangef);
 	GL_GET_PROC_ADR(PFNGLCLEARDEPTHFPROC, glClearDepthf);
-	GL_GET_PROC_ADR(PFNGLBLENDCOLORPROC, glBlendColor);
 
 	GL_GET_PROC_ADR(PFNGLDRAWBUFFERSPROC, glDrawBuffers);
 	GL_GET_PROC_ADR(PFNGLBINDFRAMEBUFFERPROC, glBindFramebuffer);
