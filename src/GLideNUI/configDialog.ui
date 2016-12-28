@@ -2868,10 +2868,7 @@
              <property name="title">
               <string>Position</string>
              </property>
-             <layout class="QVBoxLayout" name="verticalLayout_31">
-              <property name="spacing">
-               <number>6</number>
-              </property>
+             <layout class="QGridLayout" name="gridLayout_3">
               <property name="leftMargin">
                <number>9</number>
               </property>
@@ -2884,486 +2881,257 @@
               <property name="bottomMargin">
                <number>9</number>
               </property>
-              <item>
-               <layout class="QHBoxLayout" name="horizontalLayout_15">
-                <property name="spacing">
-                 <number>6</number>
+              <item row="1" column="2">
+               <widget class="QPushButton" name="rightPushButton">
+                <property name="enabled">
+                 <bool>false</bool>
                 </property>
-                <item>
-                 <widget class="QPushButton" name="topLeftPushButton">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="minimumSize">
-                   <size>
-                    <width>42</width>
-                    <height>42</height>
-                   </size>
-                  </property>
-                  <property name="maximumSize">
-                   <size>
-                    <width>38</width>
-                    <height>38</height>
-                   </size>
-                  </property>
-                  <property name="font">
-                   <font>
-                    <pointsize>17</pointsize>
-                   </font>
-                  </property>
-                  <property name="accessibleName">
-                   <string>Top left</string>
-                  </property>
-                  <property name="icon">
-                   <iconset resource="icon.qrc">
-                    <normaloff>:/TopLeft.ico</normaloff>:/TopLeft.ico</iconset>
-                  </property>
-                  <property name="iconSize">
-                   <size>
-                    <width>17</width>
-                    <height>17</height>
-                   </size>
-                  </property>
-                  <property name="checkable">
-                   <bool>true</bool>
-                  </property>
-                  <property name="autoExclusive">
-                   <bool>true</bool>
-                  </property>
-                  <property name="autoDefault">
-                   <bool>false</bool>
-                  </property>
-                  <attribute name="buttonGroup">
-                   <string notr="true">osdButtonGroup</string>
-                  </attribute>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QPushButton" name="topPushButton">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="minimumSize">
-                   <size>
-                    <width>42</width>
-                    <height>42</height>
-                   </size>
-                  </property>
-                  <property name="maximumSize">
-                   <size>
-                    <width>38</width>
-                    <height>38</height>
-                   </size>
-                  </property>
-                  <property name="font">
-                   <font>
-                    <pointsize>17</pointsize>
-                   </font>
-                  </property>
-                  <property name="accessibleName">
-                   <string>Top</string>
-                  </property>
-                  <property name="icon">
-                   <iconset resource="icon.qrc">
-                    <normaloff>:/Up.ico</normaloff>:/Up.ico</iconset>
-                  </property>
-                  <property name="iconSize">
-                   <size>
-                    <width>16</width>
-                    <height>22</height>
-                   </size>
-                  </property>
-                  <property name="checkable">
-                   <bool>true</bool>
-                  </property>
-                  <property name="autoExclusive">
-                   <bool>true</bool>
-                  </property>
-                  <property name="autoDefault">
-                   <bool>false</bool>
-                  </property>
-                  <attribute name="buttonGroup">
-                   <string notr="true">osdButtonGroup</string>
-                  </attribute>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QPushButton" name="topRightPushButton">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="minimumSize">
-                   <size>
-                    <width>42</width>
-                    <height>42</height>
-                   </size>
-                  </property>
-                  <property name="maximumSize">
-                   <size>
-                    <width>38</width>
-                    <height>38</height>
-                   </size>
-                  </property>
-                  <property name="font">
-                   <font>
-                    <pointsize>17</pointsize>
-                   </font>
-                  </property>
-                  <property name="accessibleName">
-                   <string>Top right</string>
-                  </property>
-                  <property name="icon">
-                   <iconset resource="icon.qrc">
-                    <normaloff>:/TopRight.ico</normaloff>:/TopRight.ico</iconset>
-                  </property>
-                  <property name="iconSize">
-                   <size>
-                    <width>17</width>
-                    <height>17</height>
-                   </size>
-                  </property>
-                  <property name="checkable">
-                   <bool>true</bool>
-                  </property>
-                  <property name="autoExclusive">
-                   <bool>true</bool>
-                  </property>
-                  <property name="autoDefault">
-                   <bool>false</bool>
-                  </property>
-                  <attribute name="buttonGroup">
-                   <string notr="true">osdButtonGroup</string>
-                  </attribute>
-                 </widget>
-                </item>
-               </layout>
-              </item>
-              <item>
-               <layout class="QHBoxLayout" name="horizontalLayout_16">
-                <property name="spacing">
-                 <number>6</number>
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
                 </property>
-                <item>
-                 <widget class="QPushButton" name="leftPushButton">
-                  <property name="enabled">
-                   <bool>false</bool>
-                  </property>
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="minimumSize">
-                   <size>
-                    <width>42</width>
-                    <height>42</height>
-                   </size>
-                  </property>
-                  <property name="maximumSize">
-                   <size>
-                    <width>38</width>
-                    <height>38</height>
-                   </size>
-                  </property>
-                  <property name="font">
-                   <font>
-                    <pointsize>17</pointsize>
-                   </font>
-                  </property>
-                  <property name="accessibleName">
-                   <string>Left</string>
-                  </property>
-                  <property name="icon">
-                   <iconset resource="icon.qrc">
-                    <normaloff>:/Left.ico</normaloff>:/Left.ico</iconset>
-                  </property>
-                  <property name="iconSize">
-                   <size>
-                    <width>22</width>
-                    <height>16</height>
-                   </size>
-                  </property>
-                  <property name="checkable">
-                   <bool>true</bool>
-                  </property>
-                  <property name="autoExclusive">
-                   <bool>true</bool>
-                  </property>
-                  <property name="autoDefault">
-                   <bool>false</bool>
-                  </property>
-                  <attribute name="buttonGroup">
-                   <string notr="true">osdButtonGroup</string>
-                  </attribute>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QPushButton" name="centerPushButton">
-                  <property name="enabled">
-                   <bool>false</bool>
-                  </property>
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="minimumSize">
-                   <size>
-                    <width>42</width>
-                    <height>42</height>
-                   </size>
-                  </property>
-                  <property name="maximumSize">
-                   <size>
-                    <width>38</width>
-                    <height>38</height>
-                   </size>
-                  </property>
-                  <property name="font">
-                   <font>
-                    <pointsize>17</pointsize>
-                   </font>
-                  </property>
-                  <property name="text">
-                   <string/>
-                  </property>
-                  <property name="autoDefault">
-                   <bool>false</bool>
-                  </property>
-                  <attribute name="buttonGroup">
-                   <string notr="true">osdButtonGroup</string>
-                  </attribute>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QPushButton" name="rightPushButton">
-                  <property name="enabled">
-                   <bool>false</bool>
-                  </property>
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="minimumSize">
-                   <size>
-                    <width>42</width>
-                    <height>42</height>
-                   </size>
-                  </property>
-                  <property name="maximumSize">
-                   <size>
-                    <width>38</width>
-                    <height>38</height>
-                   </size>
-                  </property>
-                  <property name="font">
-                   <font>
-                    <pointsize>17</pointsize>
-                   </font>
-                  </property>
-                  <property name="accessibleName">
-                   <string>Right</string>
-                  </property>
-                  <property name="icon">
-                   <iconset resource="icon.qrc">
-                    <normaloff>:/Right.ico</normaloff>:/Right.ico</iconset>
-                  </property>
-                  <property name="iconSize">
-                   <size>
-                    <width>22</width>
-                    <height>16</height>
-                   </size>
-                  </property>
-                  <property name="checkable">
-                   <bool>true</bool>
-                  </property>
-                  <property name="autoExclusive">
-                   <bool>true</bool>
-                  </property>
-                  <property name="autoDefault">
-                   <bool>false</bool>
-                  </property>
-                  <attribute name="buttonGroup">
-                   <string notr="true">osdButtonGroup</string>
-                  </attribute>
-                 </widget>
-                </item>
-               </layout>
+                <property name="minimumSize">
+                 <size>
+                  <width>42</width>
+                  <height>42</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>38</width>
+                  <height>38</height>
+                 </size>
+                </property>
+                <property name="font">
+                 <font>
+                  <pointsize>17</pointsize>
+                 </font>
+                </property>
+                <property name="accessibleName">
+                 <string>Right</string>
+                </property>
+                <property name="icon">
+                 <iconset resource="icon.qrc">
+                  <normaloff>:/Right.ico</normaloff>:/Right.ico</iconset>
+                </property>
+                <property name="iconSize">
+                 <size>
+                  <width>22</width>
+                  <height>16</height>
+                 </size>
+                </property>
+                <property name="checkable">
+                 <bool>true</bool>
+                </property>
+                <property name="autoExclusive">
+                 <bool>true</bool>
+                </property>
+                <property name="autoDefault">
+                 <bool>false</bool>
+                </property>
+                <attribute name="buttonGroup">
+                 <string notr="true">osdButtonGroup</string>
+                </attribute>
+               </widget>
               </item>
-              <item>
-               <layout class="QHBoxLayout" name="horizontalLayout_24">
-                <item>
-                 <widget class="QPushButton" name="bottomLeftPushButton">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="minimumSize">
-                   <size>
-                    <width>42</width>
-                    <height>42</height>
-                   </size>
-                  </property>
-                  <property name="maximumSize">
-                   <size>
-                    <width>38</width>
-                    <height>38</height>
-                   </size>
-                  </property>
-                  <property name="font">
-                   <font>
-                    <pointsize>17</pointsize>
-                   </font>
-                  </property>
-                  <property name="accessibleName">
-                   <string>Bottom left</string>
-                  </property>
-                  <property name="icon">
-                   <iconset resource="icon.qrc">
-                    <normaloff>:/BottomLeft.ico</normaloff>:/BottomLeft.ico</iconset>
-                  </property>
-                  <property name="iconSize">
-                   <size>
-                    <width>17</width>
-                    <height>17</height>
-                   </size>
-                  </property>
-                  <property name="checkable">
-                   <bool>true</bool>
-                  </property>
-                  <property name="autoExclusive">
-                   <bool>true</bool>
-                  </property>
-                  <property name="autoDefault">
-                   <bool>false</bool>
-                  </property>
-                  <attribute name="buttonGroup">
-                   <string notr="true">osdButtonGroup</string>
-                  </attribute>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QPushButton" name="bottomPushButton">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="minimumSize">
-                   <size>
-                    <width>42</width>
-                    <height>42</height>
-                   </size>
-                  </property>
-                  <property name="maximumSize">
-                   <size>
-                    <width>38</width>
-                    <height>38</height>
-                   </size>
-                  </property>
-                  <property name="font">
-                   <font>
-                    <pointsize>17</pointsize>
-                   </font>
-                  </property>
-                  <property name="accessibleName">
-                   <string>Bottom</string>
-                  </property>
-                  <property name="icon">
-                   <iconset resource="icon.qrc">
-                    <normaloff>:/Down.ico</normaloff>:/Down.ico</iconset>
-                  </property>
-                  <property name="iconSize">
-                   <size>
-                    <width>16</width>
-                    <height>22</height>
-                   </size>
-                  </property>
-                  <property name="checkable">
-                   <bool>true</bool>
-                  </property>
-                  <property name="autoExclusive">
-                   <bool>true</bool>
-                  </property>
-                  <property name="autoDefault">
-                   <bool>false</bool>
-                  </property>
-                  <attribute name="buttonGroup">
-                   <string notr="true">osdButtonGroup</string>
-                  </attribute>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QPushButton" name="bottomRightPushButton">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="minimumSize">
-                   <size>
-                    <width>42</width>
-                    <height>42</height>
-                   </size>
-                  </property>
-                  <property name="maximumSize">
-                   <size>
-                    <width>38</width>
-                    <height>38</height>
-                   </size>
-                  </property>
-                  <property name="font">
-                   <font>
-                    <pointsize>17</pointsize>
-                   </font>
-                  </property>
-                  <property name="accessibleName">
-                   <string>Bottom right</string>
-                  </property>
-                  <property name="icon">
-                   <iconset resource="icon.qrc">
-                    <normaloff>:/BottomRight.ico</normaloff>:/BottomRight.ico</iconset>
-                  </property>
-                  <property name="iconSize">
-                   <size>
-                    <width>17</width>
-                    <height>17</height>
-                   </size>
-                  </property>
-                  <property name="checkable">
-                   <bool>true</bool>
-                  </property>
-                  <property name="autoExclusive">
-                   <bool>true</bool>
-                  </property>
-                  <property name="autoDefault">
-                   <bool>false</bool>
-                  </property>
-                  <attribute name="buttonGroup">
-                   <string notr="true">osdButtonGroup</string>
-                  </attribute>
-                 </widget>
-                </item>
-               </layout>
+              <item row="2" column="0">
+               <widget class="QPushButton" name="bottomLeftPushButton">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>42</width>
+                  <height>42</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>38</width>
+                  <height>38</height>
+                 </size>
+                </property>
+                <property name="font">
+                 <font>
+                  <pointsize>17</pointsize>
+                 </font>
+                </property>
+                <property name="accessibleName">
+                 <string>Bottom left</string>
+                </property>
+                <property name="icon">
+                 <iconset resource="icon.qrc">
+                  <normaloff>:/BottomLeft.ico</normaloff>:/BottomLeft.ico</iconset>
+                </property>
+                <property name="iconSize">
+                 <size>
+                  <width>17</width>
+                  <height>17</height>
+                 </size>
+                </property>
+                <property name="checkable">
+                 <bool>true</bool>
+                </property>
+                <property name="autoExclusive">
+                 <bool>true</bool>
+                </property>
+                <property name="autoDefault">
+                 <bool>false</bool>
+                </property>
+                <attribute name="buttonGroup">
+                 <string notr="true">osdButtonGroup</string>
+                </attribute>
+               </widget>
               </item>
-              <item>
+              <item row="1" column="1">
+               <widget class="QPushButton" name="centerPushButton">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>42</width>
+                  <height>42</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>38</width>
+                  <height>38</height>
+                 </size>
+                </property>
+                <property name="font">
+                 <font>
+                  <pointsize>17</pointsize>
+                 </font>
+                </property>
+                <property name="text">
+                 <string/>
+                </property>
+                <property name="autoDefault">
+                 <bool>false</bool>
+                </property>
+                <attribute name="buttonGroup">
+                 <string notr="true">osdButtonGroup</string>
+                </attribute>
+               </widget>
+              </item>
+              <item row="2" column="2">
+               <widget class="QPushButton" name="bottomRightPushButton">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>42</width>
+                  <height>42</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>38</width>
+                  <height>38</height>
+                 </size>
+                </property>
+                <property name="font">
+                 <font>
+                  <pointsize>17</pointsize>
+                 </font>
+                </property>
+                <property name="accessibleName">
+                 <string>Bottom right</string>
+                </property>
+                <property name="icon">
+                 <iconset resource="icon.qrc">
+                  <normaloff>:/BottomRight.ico</normaloff>:/BottomRight.ico</iconset>
+                </property>
+                <property name="iconSize">
+                 <size>
+                  <width>17</width>
+                  <height>17</height>
+                 </size>
+                </property>
+                <property name="checkable">
+                 <bool>true</bool>
+                </property>
+                <property name="autoExclusive">
+                 <bool>true</bool>
+                </property>
+                <property name="autoDefault">
+                 <bool>false</bool>
+                </property>
+                <attribute name="buttonGroup">
+                 <string notr="true">osdButtonGroup</string>
+                </attribute>
+               </widget>
+              </item>
+              <item row="0" column="1">
+               <widget class="QPushButton" name="topPushButton">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>42</width>
+                  <height>42</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>38</width>
+                  <height>38</height>
+                 </size>
+                </property>
+                <property name="font">
+                 <font>
+                  <pointsize>17</pointsize>
+                 </font>
+                </property>
+                <property name="accessibleName">
+                 <string>Top</string>
+                </property>
+                <property name="icon">
+                 <iconset resource="icon.qrc">
+                  <normaloff>:/Up.ico</normaloff>:/Up.ico</iconset>
+                </property>
+                <property name="iconSize">
+                 <size>
+                  <width>16</width>
+                  <height>22</height>
+                 </size>
+                </property>
+                <property name="checkable">
+                 <bool>true</bool>
+                </property>
+                <property name="autoExclusive">
+                 <bool>true</bool>
+                </property>
+                <property name="autoDefault">
+                 <bool>false</bool>
+                </property>
+                <attribute name="buttonGroup">
+                 <string notr="true">osdButtonGroup</string>
+                </attribute>
+               </widget>
+              </item>
+              <item row="3" column="0">
                <spacer name="verticalSpacer_7">
                 <property name="orientation">
                  <enum>Qt::Vertical</enum>
@@ -3375,6 +3143,217 @@
                  </size>
                 </property>
                </spacer>
+              </item>
+              <item row="1" column="0">
+               <widget class="QPushButton" name="leftPushButton">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>42</width>
+                  <height>42</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>38</width>
+                  <height>38</height>
+                 </size>
+                </property>
+                <property name="font">
+                 <font>
+                  <pointsize>17</pointsize>
+                 </font>
+                </property>
+                <property name="accessibleName">
+                 <string>Left</string>
+                </property>
+                <property name="icon">
+                 <iconset resource="icon.qrc">
+                  <normaloff>:/Left.ico</normaloff>:/Left.ico</iconset>
+                </property>
+                <property name="iconSize">
+                 <size>
+                  <width>22</width>
+                  <height>16</height>
+                 </size>
+                </property>
+                <property name="checkable">
+                 <bool>true</bool>
+                </property>
+                <property name="autoExclusive">
+                 <bool>true</bool>
+                </property>
+                <property name="autoDefault">
+                 <bool>false</bool>
+                </property>
+                <attribute name="buttonGroup">
+                 <string notr="true">osdButtonGroup</string>
+                </attribute>
+               </widget>
+              </item>
+              <item row="0" column="2">
+               <widget class="QPushButton" name="topRightPushButton">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>42</width>
+                  <height>42</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>38</width>
+                  <height>38</height>
+                 </size>
+                </property>
+                <property name="font">
+                 <font>
+                  <pointsize>17</pointsize>
+                 </font>
+                </property>
+                <property name="accessibleName">
+                 <string>Top right</string>
+                </property>
+                <property name="icon">
+                 <iconset resource="icon.qrc">
+                  <normaloff>:/TopRight.ico</normaloff>:/TopRight.ico</iconset>
+                </property>
+                <property name="iconSize">
+                 <size>
+                  <width>17</width>
+                  <height>17</height>
+                 </size>
+                </property>
+                <property name="checkable">
+                 <bool>true</bool>
+                </property>
+                <property name="autoExclusive">
+                 <bool>true</bool>
+                </property>
+                <property name="autoDefault">
+                 <bool>false</bool>
+                </property>
+                <attribute name="buttonGroup">
+                 <string notr="true">osdButtonGroup</string>
+                </attribute>
+               </widget>
+              </item>
+              <item row="2" column="1">
+               <widget class="QPushButton" name="bottomPushButton">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>42</width>
+                  <height>42</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>38</width>
+                  <height>38</height>
+                 </size>
+                </property>
+                <property name="font">
+                 <font>
+                  <pointsize>17</pointsize>
+                 </font>
+                </property>
+                <property name="accessibleName">
+                 <string>Bottom</string>
+                </property>
+                <property name="icon">
+                 <iconset resource="icon.qrc">
+                  <normaloff>:/Down.ico</normaloff>:/Down.ico</iconset>
+                </property>
+                <property name="iconSize">
+                 <size>
+                  <width>16</width>
+                  <height>22</height>
+                 </size>
+                </property>
+                <property name="checkable">
+                 <bool>true</bool>
+                </property>
+                <property name="autoExclusive">
+                 <bool>true</bool>
+                </property>
+                <property name="autoDefault">
+                 <bool>false</bool>
+                </property>
+                <attribute name="buttonGroup">
+                 <string notr="true">osdButtonGroup</string>
+                </attribute>
+               </widget>
+              </item>
+              <item row="0" column="0">
+               <widget class="QPushButton" name="topLeftPushButton">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>42</width>
+                  <height>42</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>38</width>
+                  <height>38</height>
+                 </size>
+                </property>
+                <property name="font">
+                 <font>
+                  <pointsize>17</pointsize>
+                 </font>
+                </property>
+                <property name="accessibleName">
+                 <string>Top left</string>
+                </property>
+                <property name="icon">
+                 <iconset resource="icon.qrc">
+                  <normaloff>:/TopLeft.ico</normaloff>:/TopLeft.ico</iconset>
+                </property>
+                <property name="iconSize">
+                 <size>
+                  <width>17</width>
+                  <height>17</height>
+                 </size>
+                </property>
+                <property name="checkable">
+                 <bool>true</bool>
+                </property>
+                <property name="autoExclusive">
+                 <bool>true</bool>
+                </property>
+                <property name="autoDefault">
+                 <bool>false</bool>
+                </property>
+                <attribute name="buttonGroup">
+                 <string notr="true">osdButtonGroup</string>
+                </attribute>
+               </widget>
               </item>
              </layout>
             </widget>
@@ -4069,8 +4048,8 @@
   <buttongroup name="aspectButtonGroup"/>
   <buttongroup name="bloomBlendModeButtonGroup"/>
   <buttongroup name="fixTexrectCoordsButtonGroup"/>
-  <buttongroup name="factorButtonGroup"/>
   <buttongroup name="screenshotButtonGroup"/>
+  <buttongroup name="factorButtonGroup"/>
   <buttongroup name="osdButtonGroup"/>
  </buttongroups>
 </ui>
