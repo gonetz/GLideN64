@@ -91,6 +91,9 @@
                   <property name="text">
                    <string>Refresh rate:</string>
                   </property>
+                  <property name="wordWrap">
+                   <bool>true</bool>
+                  </property>
                  </widget>
                 </item>
                 <item>
