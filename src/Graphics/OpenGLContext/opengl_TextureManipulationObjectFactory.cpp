@@ -11,19 +11,30 @@ namespace opengl {
 	public:
 		Init2DTexImage(CachedBindTexture* _bind) : m_bind(_bind) {}
 
-		void init2DTexture(graphics::ObjectName _name, u32 _msaaLevel,
-			u32 _width, u32 _height, u32 _mipMapLevel,
-			graphics::Parameter _format, graphics::Parameter _internalFormat,
-			graphics::Parameter _dataType, const void * _data) override {
+		void init2DTexture(const graphics::Context::InitTextureParams & _params) override
+		{
 
-			if (_msaaLevel == 0) {
+			if (_params.msaaLevel == 0) {
 				//glBindTexture(GL_TEXTURE_2D, GLuint(_name));
-				m_bind->bind(graphics::target::TEXTURE_2D, _name);
-				glTexImage2D(GL_TEXTURE_2D, _mipMapLevel, GLuint(_internalFormat), _width, _height, 0, GLenum(_format), GLenum(_dataType), _data);
+				m_bind->bind(graphics::target::TEXTURE_2D, _params.name);
+				glTexImage2D(GL_TEXTURE_2D,
+							 _params.mipMapLevel,
+							 GLuint(_params.internalFormat),
+							 _params.width,
+							 _params.height,
+							 0,
+							 GLenum(_params.format),
+							 GLenum(_params.dataType),
+							 _params.data);
 			} else {
 				//glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, GLuint(_name));
-				m_bind->bind(graphics::target::TEXTURE_2D_MULTISAMPLE, _name);
-				glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, _msaaLevel, GLenum(_internalFormat), _width, _height, false);
+				m_bind->bind(graphics::target::TEXTURE_2D_MULTISAMPLE, _params.name);
+				glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE,
+										_params.msaaLevel,
+										GLenum(_params.internalFormat),
+										_params.width,
+										_params.height,
+										false);
 			}
 		}
 
@@ -40,19 +51,33 @@ namespace opengl {
 
 		Init2DTexStorage(CachedBindTexture* _bind) : m_bind(_bind) {}
 
-		void init2DTexture(graphics::ObjectName _name, u32 _msaaLevel,
-			u32 _width, u32 _height, u32 _mipMapLevel,
-			graphics::Parameter _format, graphics::Parameter _internalFormat,
-			graphics::Parameter _dataType, const void * _data) override {
-
-			if (_msaaLevel == 0) {
-				m_bind->bind(graphics::target::TEXTURE_2D, _name);
-				glTexStorage2D(GL_TEXTURE_2D, _mipMapLevel, GLenum(_internalFormat), _width, _height);
-				if (_data != nullptr)
-					glTexSubImage2D(GL_TEXTURE_2D, _mipMapLevel, 0, 0, _width, _height, GLuint(_format), GLenum(_dataType), _data);
+		void init2DTexture(const graphics::Context::InitTextureParams & _params) override
+		{
+			if (_params.msaaLevel == 0) {
+				m_bind->bind(graphics::target::TEXTURE_2D, _params.name);
+				glTexStorage2D(GL_TEXTURE_2D,
+							   _params.mipMapLevel,
+							   GLenum(_params.internalFormat),
+							   _params.width,
+							   _params.height);
+				if (_params.data != nullptr)
+					glTexSubImage2D(GL_TEXTURE_2D,
+									_params.mipMapLevel,
+									0, 0,
+									_params.width,
+									_params.height,
+									GLuint(_params.format),
+									GLenum(_params.dataType),
+									_params.data);
 			} else {
-				m_bind->bind(graphics::target::TEXTURE_2D_MULTISAMPLE, _name);
-				glTexStorage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, _msaaLevel, GLenum(_internalFormat), _width, _height, false);
+				m_bind->bind(graphics::target::TEXTURE_2D_MULTISAMPLE, _params.name);
+				glTexStorage2DMultisample(
+							GL_TEXTURE_2D_MULTISAMPLE,
+							_params.msaaLevel,
+							GLenum(_params.internalFormat),
+							_params.width,
+							_params.height,
+							false);
 			}
 
 		}
@@ -67,17 +92,31 @@ namespace opengl {
 //			return (_version.majorVersion > 4) || (_version.majorVersion == 4 && _version.minorVersion >= 5);
 			return false;
 		}
-		void init2DTexture(graphics::ObjectName _name, u32 _msaaLevel,
-			u32 _width, u32 _height, u32 _mipMapLevel,
-			graphics::Parameter _format, graphics::Parameter _internalFormat,
-			graphics::Parameter _dataType, const void * _data) override {
+		void init2DTexture(const graphics::Context::InitTextureParams & _params) override
+		{
 
-			if (_msaaLevel == 0) {
-				glTextureStorage2D(GLuint(_name), _mipMapLevel, GLenum(_internalFormat), _width, _height);
-				if (_data != nullptr)
-					glTextureSubImage2D(GLuint(_name), _mipMapLevel, 0, 0, _width, _height, GLuint(_format), GLenum(_dataType), _data);
+			if (_params.msaaLevel == 0) {
+				glTextureStorage2D(GLuint(_params.name),
+								   _params.mipMapLevel,
+								   GLenum(_params.internalFormat),
+								   _params.width,
+								   _params.height);
+				if (_params.data != nullptr)
+					glTextureSubImage2D(GLuint(_params.name),
+										_params.mipMapLevel,
+										0, 0,
+										_params.width,
+										_params.height,
+										GLuint(_params.format),
+										GLenum(_params.dataType),
+										_params.data);
 			} else {
-				glTexStorage2DMultisample(GLuint(_name), _msaaLevel, GLenum(_internalFormat), _width, _height, false);
+				glTexStorage2DMultisample(GLuint(_params.name),
+										  _params.msaaLevel,
+										  GLenum(_params.internalFormat),
+										  _params.width,
+										  _params.height,
+										  false);
 			}
 		}
 	};

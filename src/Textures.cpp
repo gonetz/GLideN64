@@ -480,8 +480,17 @@ void TextureCache::init()
 	glBindTexture(GL_TEXTURE_2D, m_pDummy->glName);
 	glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, 2, 2, 0, GL_RGBA, GL_UNSIGNED_BYTE, dummyTexture );
 #else
-	gfxContext.init2DTexture(graphics::ObjectName(m_pDummy->glName), 0, m_pDummy->realWidth, m_pDummy->realHeight, 0,
-		graphics::color::RGBA, graphics::internalcolor::RGBA, graphics::type::UNSIGNED_BYTE, dummyTexture);
+	graphics::Context::InitTextureParams params;
+	params.name = graphics::ObjectName(m_pDummy->glName);
+	params.mipMapLevel = 0;
+	params.msaaLevel = 0;
+	params.width = m_pDummy->realWidth;
+	params.height = m_pDummy->realHeight;
+	params.format = graphics::color::RGBA;
+	params.internalFormat = graphics::internalcolor::RGBA;
+	params.dataType = graphics::type::UNSIGNED_BYTE;
+	params.data = dummyTexture;
+	gfxContext.init2DTexture(params);
 #endif
 
 	m_cachedBytes = m_pDummy->textureBytes;
@@ -519,9 +528,16 @@ void TextureCache::init()
 		m_pMSDummy = addFrameBufferTexture(); // we don't want to remove dummy texture
 		_initDummyTexture(m_pMSDummy);
 
-		gfxContext.init2DTexture(graphics::ObjectName(m_pMSDummy->glName), config.video.multisampling,
-			m_pMSDummy->realWidth, m_pMSDummy->realHeight, 0,
-			graphics::color::RGBA, graphics::internalcolor::RGBA, graphics::type::UNSIGNED_BYTE, nullptr);
+		graphics::Context::InitTextureParams params;
+		params.name = graphics::ObjectName(m_pMSDummy->glName);
+		params.mipMapLevel = 0;
+		params.msaaLevel = config.video.multisampling;
+		params.width = m_pMSDummy->realWidth;
+		params.height = m_pMSDummy->realHeight;
+		params.format = graphics::color::RGBA;
+		params.internalFormat = graphics::internalcolor::RGBA;
+		params.dataType = graphics::type::UNSIGNED_BYTE;
+		gfxContext.init2DTexture(params);
 
 		activateMSDummy(0);
 		activateMSDummy(1);

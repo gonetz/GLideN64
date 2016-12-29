@@ -33,11 +33,9 @@ void Context::deleteTexture(ObjectName _name)
 	return m_impl->deleteTexture(_name);
 }
 
-void Context::init2DTexture(ObjectName _name, u32 _msaaLevel, u32 _width, u32 _height, u32 _mipMapLevel,
-	Parameter _format, Parameter _internalFormat, Parameter _dataType, const void * _data)
+void Context::init2DTexture(const InitTextureParams & _params)
 {
-	return m_impl->init2DTexture(_name, _msaaLevel, _width, _height,
-		_mipMapLevel, _format, _internalFormat, _dataType, _data);
+	return m_impl->init2DTexture(_params);
 }
 
 bool Context::isMultisamplingSupported() const

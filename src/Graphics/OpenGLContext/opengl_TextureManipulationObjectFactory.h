@@ -1,6 +1,7 @@
 #pragma once
 #include <Graphics/ObjectName.h>
 #include <Graphics/Parameter.h>
+#include <Graphics/Context.h>
 
 namespace opengl {
 
@@ -10,10 +11,7 @@ namespace opengl {
 	class Init2DTexture {
 	public:
 		virtual ~Init2DTexture() {};
-		virtual void init2DTexture(graphics::ObjectName _name, u32 _msaaLevel,
-									u32 _width, u32 _height, u32 _mipMapLevel,
-									graphics::Parameter _format, graphics::Parameter _internalFormat,
-									graphics::Parameter _dataType, const void * _data) = 0;
+		virtual void init2DTexture(const graphics::Context::InitTextureParams & _params) = 0;
 	};
 
 	class TextureManipulationObjectFactory

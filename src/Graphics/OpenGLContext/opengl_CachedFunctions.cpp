@@ -17,6 +17,11 @@ CachedEnable::CachedEnable()
 {
 }
 
+void CachedEnable::reset()
+{
+	m_enabled = false;
+}
+
 void CachedEnable::enable(bool _enable)
 {
 	// TODO make cacheable
@@ -31,6 +36,11 @@ void CachedEnable::enable(bool _enable)
 
 CachedBindTexture::CachedBindTexture()
 : m_name(0U) {
+}
+
+void CachedBindTexture::reset()
+{
+	m_name = graphics::ObjectName(0U);
 }
 
 void CachedBindTexture::bind(graphics::Parameter _target, graphics::ObjectName _name)
@@ -51,6 +61,14 @@ CachedFunctions::CachedFunctions()
 CachedFunctions::~CachedFunctions()
 {
 }
+
+void CachedFunctions::reset() {
+	for (auto it : m_enables)
+		it.second.reset();
+
+	m_bindTexture.reset();
+}
+
 
 CachedEnable * CachedFunctions::getCachedEnable(graphics::Parameter _parameter)
 {

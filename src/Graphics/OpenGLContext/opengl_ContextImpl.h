@@ -2,6 +2,8 @@
 #include <memory>
 #include <Graphics/ContextImpl.h>
 #include "opengl_TextureManipulationObjectFactory.h"
+#include "opengl_GLVersion.h"
+#include "opengl_CachedFunctions.h"
 
 namespace opengl {
 
@@ -19,12 +21,12 @@ namespace opengl {
 
 		void deleteTexture(graphics::ObjectName _name) override;
 
-		void init2DTexture(graphics::ObjectName _name, u32 _msaaLevel, u32 _width, u32 _height, u32 _mipMapLevel,
-			graphics::Parameter _format, graphics::Parameter _internalFormat, graphics::Parameter _dataType,
-			const void * _data) override;
+		void init2DTexture(const graphics::Context::InitTextureParams & _params) override;
 
 	private:
 		std::unique_ptr<Init2DTexture> m_init2DTexture;
+		GLVersion m_version;
+		CachedFunctions m_cachedFunctions;
 	};
 
 }

@@ -9,6 +9,9 @@ namespace opengl {
 	public:
 		CachedEnable();
 		CachedEnable(graphics::Parameter _parameter);
+
+		void reset();
+
 		void enable(bool _enable);
 
 	private:
@@ -35,6 +38,9 @@ namespace opengl {
 	class CachedBindTexture {
 	public:
 		CachedBindTexture();
+
+		void reset();
+
 		void bind(graphics::Parameter _target, graphics::ObjectName _name);
 
 	private:
@@ -47,8 +53,13 @@ namespace opengl {
 	public:
 		CachedFunctions();
 		~CachedFunctions();
+
+		void reset();
+
 		CachedEnable * getCachedEnable(graphics::Parameter _parameter);
+
 		CachedBindTexture * getCachedBindTexture();
+
 
 	private:
 		typedef std::unordered_map<u32, CachedEnable> EnableParameters;
