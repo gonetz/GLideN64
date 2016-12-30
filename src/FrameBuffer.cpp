@@ -149,6 +149,10 @@ void FrameBuffer::init(u32 _address, u32 _endAddress, u16 _format, u16 _size, u1
 	m_fingerprint = false;
 
 	_initTexture(_width, _height, _format, _size, m_pTexture);
+#ifdef VC
+	const GLenum discards[]  = {GL_DEPTH_ATTACHMENT};
+	glDiscardFramebufferEXT(GL_FRAMEBUFFER, 1, discards);
+#endif
 	glBindFramebuffer(GL_FRAMEBUFFER, m_FBO);
 
 #ifdef GL_MULTISAMPLING_SUPPORT
