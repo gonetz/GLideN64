@@ -253,6 +253,7 @@ void RDRAMtoColorBuffer::copyFromRDRAM(u32 _address, bool _bCFB)
 
 	const u32 cycleType = gDP.otherMode.cycleType;
 	gDP.otherMode.cycleType = G_CYC_1CYCLE;
+	CombinerInfo::get().setPolygonMode(OGLRender::rsTexRect);
 	CombinerInfo::get().setCombine(EncodeCombineMode(0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0));
 	currentCombiner()->disableBlending();
 	gDP.otherMode.cycleType = cycleType;

@@ -76,6 +76,7 @@ void Combiner_Init() {
 	cmbInfo.init();
 	InitShaderCombiner();
 	if (cmbInfo.getCombinersNumber() == 0) {
+		cmbInfo.setPolygonMode(OGLRender::rsTexRect);
 		gDP.otherMode.cycleType = G_CYC_COPY;
 		cmbInfo.setCombine(EncodeCombineMode(0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0));
 		gDP.otherMode.cycleType = G_CYC_FILL;
@@ -98,14 +99,7 @@ CombinerKey::CombinerKey(u64 _mux)
 	// High byte of muxs0 is zero. We can use it for addtional combiner flags:
 	// [0 - 0] polygon type: 0 - triangle, 1 - rect
 	// [1 - 2] cycle type
-	u32 flags;
-	if (gDP.otherMode.cycleType >= G_CYC_COPY) {
-		flags = 1U;
-	}
-	else {
-		const OGLRender::RENDER_STATE rs = video().getRender().getRenderState();
-		flags = (rs == OGLRender::rsRect || rs == OGLRender::rsTexRect) ? 1U : 0U;
-	}
+	u32 flags = CombinerInfo::get().isRectMode() ? 1U : 0U;
 	flags |= (gDP.otherMode.cycleType << 1);
 
 	m_key.muxs0 |= (flags << 24);
@@ -138,7 +132,9 @@ bool CombinerKey::operator<(const CombinerKey & _other) const
 
 bool CombinerKey::isRectKey() const
 {
-	return ((m_key.muxs0 >> 24) & 1) != 0;
+//	return ((m_key.muxs0 >> 24) & 1) != 0;
+	bool res = ((m_key.muxs0 >> 24) & 1) != 0;
+	return res;
 }
 
 /*---------------CombinerInfo-------------*/
@@ -391,6 +387,19 @@ void CombinerInfo::updateParameters(OGLRender::RENDER_STATE _renderState)
 {
 	if (m_pUniformCollection != nullptr)
 		m_pUniformCollection->updateUniforms(m_pCurrent, _renderState);
+}
+
+void CombinerInfo::setPolygonMode(OGLRender::RENDER_STATE _renderState)
+{
+	switch (_renderState) {
+	case OGLRender::rsRect:
+	case OGLRender::rsTexRect:
+		m_rectMode = true;
+		break;
+	default:
+		m_rectMode = false;
+		break;
+	}
 }
 
 #ifndef GLES2

@@ -63,12 +63,12 @@ SHADER_VERSION
 "# define IN attribute							\n"
 "# define OUT varying							\n"
 "#endif // __VERSION							\n"
-"IN highp vec4 aPosition;					\n"
-"OUT mediump vec2 texpos;					\n"
-"void main(void) {							\n"
-"  gl_Position = vec4(aPosition.xy, 0, 1);	\n"
-"  texpos = aPosition.zw;					\n"
-"}											\n"
+"IN highp vec4 aRectPosition;					\n"
+"OUT mediump vec2 texpos;						\n"
+"void main(void) {								\n"
+"  gl_Position = vec4(aRectPosition.xy, 0, 1);	\n"
+"  texpos = aRectPosition.zw;					\n"
+"}												\n"
 ;
 
 static
@@ -267,7 +267,7 @@ void TextDrawer::init()
 		return;
 	}
 
-	m_program = createShaderProgram(strDrawTextVertexShader, strDrawTextFragmentShader);
+	m_program = createRectShaderProgram(strDrawTextVertexShader, strDrawTextFragmentShader);
 	if(m_program == 0)
 		return;
 
@@ -340,7 +340,7 @@ void TextDrawer::renderText(const char *_pText, float _x, float _y) const
 
 	/* Set up the VBO for our vertex data */
 	glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
-	glVertexAttribPointer(SC_POSITION, 4, GL_FLOAT, GL_FALSE, 0, 0);
+	glVertexAttribPointer(SC_RECT_POSITION, 4, GL_FLOAT, GL_FALSE, 0, 0);
 
 	std::vector<point> coords(6 * strlen(_pText));
 	int c = 0;

@@ -412,8 +412,8 @@ void OGLRender::TexrectDrawer::init()
 
 	std::string fragmentShader(config.texture.bilinearMode == BILINEAR_STANDARD ? strTexrectDrawerTexBilinearFilter : strTexrectDrawerTex3PointFilter);
 	fragmentShader += strTexrectDrawerFragmentShaderTex;
-	m_programTex = createShaderProgram(strTexrectDrawerVertexShader, fragmentShader.c_str());
-	m_programClean = createShaderProgram(strTexrectDrawerVertexShader, strTexrectDrawerFragmentShaderClean);
+	m_programTex = createRectShaderProgram(strTexrectDrawerVertexShader, fragmentShader.c_str());
+	m_programClean = createRectShaderProgram(strTexrectDrawerVertexShader, strTexrectDrawerFragmentShaderClean);
 
 	glUseProgram(m_programTex);
 	GLint loc = glGetUniformLocation(m_programTex, "uTex0");
@@ -1160,6 +1160,7 @@ void OGLRender::_updateStates(RENDER_STATE _renderState) const
 	OGLVideo & ogl = video();
 
 	CombinerInfo & cmbInfo = CombinerInfo::get();
+	cmbInfo.setPolygonMode(_renderState);
 	cmbInfo.update();
 
 	if (gSP.changed & CHANGED_GEOMETRYMODE) {
@@ -1238,11 +1239,10 @@ void OGLRender::_setColorArray() const
 void OGLRender::_setTexCoordArrays() const
 {
 	if (m_renderState == rsTriangle) {
-		glDisableVertexAttribArray(SC_TEXCOORD1);
 		if (currentCombiner()->usesTexture())
-			glEnableVertexAttribArray(SC_TEXCOORD0);
+			glEnableVertexAttribArray(SC_TEXCOORD);
 		else
-			glDisableVertexAttribArray(SC_TEXCOORD0);
+			glDisableVertexAttribArray(SC_TEXCOORD);
 	} else {
 		if (currentCombiner()->usesTile(0))
 			glEnableVertexAttribArray(SC_TEXCOORD0);
@@ -1296,7 +1296,7 @@ void OGLRender::_prepareDrawTriangle(bool _dma)
 			glVertexAttribPointer(SC_COLOR, 4, GL_FLOAT, GL_FALSE, sizeof(SPVertex), &pVtx->flat_r);
 		else
 			glVertexAttribPointer(SC_COLOR, 4, GL_FLOAT, GL_FALSE, sizeof(SPVertex), &pVtx->r);
-		glVertexAttribPointer(SC_TEXCOORD0, 2, GL_FLOAT, GL_FALSE, sizeof(SPVertex), &pVtx->s);
+		glVertexAttribPointer(SC_TEXCOORD, 2, GL_FLOAT, GL_FALSE, sizeof(SPVertex), &pVtx->s);
 		if (config.generalEmulation.enableHWLighting) {
 			glEnableVertexAttribArray(SC_NUMLIGHTS);
 			glVertexAttribPointer(SC_NUMLIGHTS, 1, GL_BYTE, GL_FALSE, sizeof(SPVertex), &pVtx->HWLight);
@@ -1478,8 +1478,6 @@ void OGLRender::drawLine(int _v0, int _v1, float _width)
 
 	if (m_renderState != rsLine || CombinerInfo::get().isChanged()) {
 		_setColorArray();
-		glDisableVertexAttribArray(SC_TEXCOORD0);
-		glDisableVertexAttribArray(SC_TEXCOORD1);
 		glVertexAttribPointer(SC_POSITION, 4, GL_FLOAT, GL_FALSE, sizeof(SPVertex), &triangles.vertices[0].x);
 		glVertexAttribPointer(SC_COLOR, 4, GL_FLOAT, GL_FALSE, sizeof(SPVertex), &triangles.vertices[0].r);
 		glEnableVertexAttribArray(SC_MODIFY);
@@ -1511,15 +1509,12 @@ void OGLRender::drawRect(int _ulx, int _uly, int _lrx, int _lry, float *_pColor)
 	const bool updateArrays = m_renderState != rsRect;
 	if (updateArrays || CombinerInfo::get().isChanged()) {
 		m_renderState = rsRect;
-		glDisableVertexAttribArray(SC_COLOR);
 		glDisableVertexAttribArray(SC_TEXCOORD0);
 		glDisableVertexAttribArray(SC_TEXCOORD1);
-		glDisableVertexAttribArray(SC_NUMLIGHTS);
-		glDisableVertexAttribArray(SC_MODIFY);
 	}
 
 	if (updateArrays)
-		glVertexAttribPointer(SC_POSITION, 4, GL_FLOAT, GL_FALSE, sizeof(GLVertex), &m_rect[0].x);
+		glVertexAttribPointer(SC_RECT_POSITION, 4, GL_FLOAT, GL_FALSE, sizeof(GLVertex), &m_rect[0].x);
 	currentCombiner()->updateRenderState();
 
 	FrameBuffer * pCurrentBuffer = frameBufferList().getCurrent();
@@ -1559,9 +1554,9 @@ void OGLRender::drawRect(int _ulx, int _uly, int _lrx, int _lry, float *_pColor)
 	}
 
 	if (gDP.otherMode.cycleType == G_CYC_FILL)
-		glVertexAttrib4fv(SC_COLOR, _pColor);
+		glVertexAttrib4fv(SC_RECT_COLOR, _pColor);
 	else
-		glVertexAttrib4f(SC_COLOR, 0.0f, 0.0f, 0.0f, 0.0f);
+		glVertexAttrib4f(SC_RECT_COLOR, 0.0f, 0.0f, 0.0f, 0.0f);
 
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 	gSP.changed |= CHANGED_GEOMETRYMODE | CHANGED_VIEWPORT;
@@ -1729,6 +1724,7 @@ void OGLRender::drawTexturedRect(const TexturedRectParams & _params)
 	gSP.changed &= ~CHANGED_GEOMETRYMODE; // Don't update cull mode
 	if (!m_texrectDrawer.isEmpty()) {
 		CombinerInfo & cmbInfo = CombinerInfo::get();
+		cmbInfo.setPolygonMode(rsTexRect);
 		cmbInfo.update();
 		currentCombiner()->updateRenderState();
 		_updateTextures(rsTexRect);
@@ -1743,7 +1739,6 @@ void OGLRender::drawTexturedRect(const TexturedRectParams & _params)
 		const bool updateArrays = m_renderState != rsTexRect;
 		if (updateArrays || CombinerInfo::get().isChanged()) {
 			m_renderState = rsTexRect;
-			glDisableVertexAttribArray(SC_COLOR);
 			_setTexCoordArrays();
 
 			GLfloat alpha = 0.0f;
@@ -1753,18 +1748,16 @@ void OGLRender::drawTexturedRect(const TexturedRectParams & _params)
 				if (combine.mA0 == G_ACMUX_0 && combine.aA0 == G_ACMUX_SHADE)
 					alpha = 1.0f;
 			}
-			glVertexAttrib4f(SC_COLOR, 0, 0, 0, alpha);
+			glVertexAttrib4f(SC_RECT_COLOR, 0, 0, 0, alpha);
 		}
 
 		if (updateArrays) {
 #ifdef RENDERSTATE_TEST
 			StateChanges++;
 #endif
-			glVertexAttribPointer(SC_POSITION, 4, GL_FLOAT, GL_FALSE, sizeof(GLVertex), &m_rect[0].x);
+			glVertexAttribPointer(SC_RECT_POSITION, 4, GL_FLOAT, GL_FALSE, sizeof(GLVertex), &m_rect[0].x);
 			glVertexAttribPointer(SC_TEXCOORD0, 2, GL_FLOAT, GL_FALSE, sizeof(GLVertex), &m_rect[0].s0);
 			glVertexAttribPointer(SC_TEXCOORD1, 2, GL_FLOAT, GL_FALSE, sizeof(GLVertex), &m_rect[0].s1);
-			glDisableVertexAttribArray(SC_NUMLIGHTS);
-			glDisableVertexAttribArray(SC_MODIFY);
 		}
 		currentCombiner()->updateRenderState();
 
@@ -2143,7 +2136,8 @@ void OGLRender::_initStates()
 {
 	glDisable(GL_CULL_FACE);
 	glEnableVertexAttribArray(SC_POSITION);
-	glEnable( GL_DEPTH_TEST );
+	glEnableVertexAttribArray(SC_RECT_POSITION);
+	glEnable(GL_DEPTH_TEST);
 	glDepthFunc( GL_ALWAYS );
 	glDepthMask( GL_FALSE );
 	glEnable( GL_SCISSOR_TEST );
@@ -2202,7 +2196,7 @@ void OGLRender::_initData()
 	triangles.num = 0;
 
 #ifdef NO_BLIT_BUFFER_COPY
-	m_programCopyTex = createShaderProgram(strTexrectDrawerVertexShader, strTextureCopyShader);
+	m_programCopyTex = createRectShaderProgram(strTexrectDrawerVertexShader, strTextureCopyShader);
 	glUseProgram(m_programCopyTex);
 	GLint loc = glGetUniformLocation(m_programCopyTex, "uTex0");
 	assert(loc >= 0);
@@ -2256,12 +2250,9 @@ void OGLRender::copyTexturedRect(GLint _srcX0, GLint _srcY0, GLint _srcX1, GLint
 								 GLint _dstX0, GLint _dstY0, GLint _dstX1, GLint _dstY1,
 								 GLuint _dstWidth, GLuint _dstHeight, GLenum _filter)
 {
-	glDisableVertexAttribArray(SC_COLOR);
 	glDisableVertexAttribArray(SC_TEXCOORD1);
-	glDisableVertexAttribArray(SC_NUMLIGHTS);
-	glDisableVertexAttribArray(SC_MODIFY);
 	glEnableVertexAttribArray(SC_TEXCOORD0);
-	glVertexAttribPointer(SC_POSITION, 4, GL_FLOAT, GL_FALSE, sizeof(GLVertex), &m_rect[0].x);
+	glVertexAttribPointer(SC_RECT_POSITION, 4, GL_FLOAT, GL_FALSE, sizeof(GLVertex), &m_rect[0].x);
 	glVertexAttribPointer(SC_TEXCOORD0, 2, GL_FLOAT, GL_FALSE, sizeof(GLVertex), &m_rect[0].s0);
 	glUseProgram(m_programCopyTex);
 

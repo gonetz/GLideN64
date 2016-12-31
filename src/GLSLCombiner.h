@@ -26,7 +26,7 @@ public:
 	void updateBlendMode(bool _bForce = false);
 	void disableBlending();
 
-	const CombinerKey & getKey() const { return m_key; }
+	CombinerKey getKey() const { return m_key; }
 
 	bool usesTile(u32 _t) const {
 		if (_t == 0)

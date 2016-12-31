@@ -22,6 +22,8 @@ using namespace std;
 
 static GLuint  g_vertex_shader_object;
 static GLuint  g_vertex_shader_object_notex;
+static GLuint  g_vertex_shader_object_rect;
+static GLuint  g_vertex_shader_object_texrect;
 static GLuint  g_calc_light_shader_object;
 static GLuint  g_calc_mipmap_shader_object;
 static GLuint  g_calc_noise_shader_object;
@@ -176,7 +178,7 @@ void InitShadowMapShader()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexImage2D(GL_TEXTURE_2D, 0, fboFormats.lutInternalFormat, 256, 1, 0, fboFormats.lutFormat, fboFormats.lutType, nullptr);
 
-	g_draw_shadow_map_program = createShaderProgram(default_vertex_shader, shadow_map_fragment_shader_float);
+	g_draw_shadow_map_program = createRectShaderProgram(vertex_shader_rect_nocolor, shadow_map_fragment_shader_float);
 }
 
 static
@@ -211,6 +213,8 @@ void InitShaderCombiner()
 {
 	g_vertex_shader_object = _createShader(GL_VERTEX_SHADER, vertex_shader);
 	g_vertex_shader_object_notex = _createShader(GL_VERTEX_SHADER, vertex_shader_notex);
+	g_vertex_shader_object_texrect = _createShader(GL_VERTEX_SHADER, vertex_shader_texrect);
+	g_vertex_shader_object_rect = _createShader(GL_VERTEX_SHADER, vertex_shader_rect);
 
 	strFragmentShader.reserve(1024*5);
 
@@ -224,7 +228,7 @@ void InitShaderCombiner()
 #endif // GLESX
 
 	noiseTex.init();
-	g_monochrome_image_program = createShaderProgram(default_vertex_shader, zelda_monochrome_fragment_shader);
+	g_monochrome_image_program = createRectShaderProgram(vertex_shader_rect_nocolor, zelda_monochrome_fragment_shader);
 	glUseProgram(g_monochrome_image_program);
 	const int texLoc = glGetUniformLocation(g_monochrome_image_program, "uColorImage");
 	glUniform1i(texLoc, 0);
@@ -250,6 +254,10 @@ void DestroyShaderCombiner() {
 	g_vertex_shader_object = 0;
 	glDeleteShader(g_vertex_shader_object_notex);
 	g_vertex_shader_object_notex = 0;
+	glDeleteShader(g_vertex_shader_object_texrect);
+	g_vertex_shader_object_texrect = 0;
+	glDeleteShader(g_vertex_shader_object_rect);
+	g_vertex_shader_object_rect = 0;
 #ifndef GLESX
 	glDeleteShader(g_calc_light_shader_object);
 	g_calc_light_shader_object = 0;
@@ -451,6 +459,8 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 	}
 #endif // GLESX
 
+	// Shader program generation
+
 	GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
 	const GLchar * strShaderData = strFragmentShader.data();
 	glShaderSource(fragmentShader, 1, &strShaderData, nullptr);
@@ -461,9 +471,9 @@ ShaderCombiner::ShaderCombiner(Combiner & _color, Combiner & _alpha, const gDPCo
 	m_program = glCreateProgram();
 	_locate_attributes();
 	if (usesTexture())
-		glAttachShader(m_program, g_vertex_shader_object);
+		glAttachShader(m_program, m_key.isRectKey() ? g_vertex_shader_object_texrect : g_vertex_shader_object);
 	else
-		glAttachShader(m_program, g_vertex_shader_object_notex);
+		glAttachShader(m_program, m_key.isRectKey() ? g_vertex_shader_object_rect : g_vertex_shader_object_notex);
 	glAttachShader(m_program, fragmentShader);
 #ifndef GLESX
 	if (bUseHWLight)
@@ -561,10 +571,13 @@ void ShaderCombiner::_locateUniforms() {
 void ShaderCombiner::_locate_attributes() const {
 	glBindAttribLocation(m_program, SC_POSITION, "aPosition");
 	glBindAttribLocation(m_program, SC_COLOR, "aColor");
-	glBindAttribLocation(m_program, SC_TEXCOORD0, "aTexCoord0");
-	glBindAttribLocation(m_program, SC_TEXCOORD1, "aTexCoord1");
+	glBindAttribLocation(m_program, SC_TEXCOORD, "aTexCoord");
 	glBindAttribLocation(m_program, SC_NUMLIGHTS, "aNumLights");
 	glBindAttribLocation(m_program, SC_MODIFY, "aModify");
+	glBindAttribLocation(m_program, SC_RECT_POSITION, "aRectPosition");
+	glBindAttribLocation(m_program, SC_RECT_COLOR, "aRectColor");
+	glBindAttribLocation(m_program, SC_TEXCOORD0, "aTexCoord0");
+	glBindAttribLocation(m_program, SC_TEXCOORD1, "aTexCoord1");
 }
 
 void ShaderCombiner::update(bool _bForce) {

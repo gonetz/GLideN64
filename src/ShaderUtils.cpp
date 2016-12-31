@@ -56,7 +56,7 @@ void logErrorShader(GLenum _shaderType, const std::string & _strShader)
 	}
 }
 
-GLuint createShaderProgram(const char * _strVertex, const char * _strFragment)
+GLuint createRectShaderProgram(const char * _strVertex, const char * _strFragment)
 {
 	GLuint vertex_shader_object = glCreateShader(GL_VERTEX_SHADER);
 	glShaderSource(vertex_shader_object, 1, &_strVertex, nullptr);
@@ -75,7 +75,7 @@ GLuint createShaderProgram(const char * _strVertex, const char * _strFragment)
 		logErrorShader(GL_VERTEX_SHADER, _strFragment);
 
 	GLuint program = glCreateProgram();
-	glBindAttribLocation(program, SC_POSITION, "aPosition");
+	glBindAttribLocation(program, SC_RECT_POSITION, "aRectPosition");
 	glBindAttribLocation(program, SC_TEXCOORD0, "aTexCoord0");
 	glBindAttribLocation(program, SC_TEXCOORD1, "aTexCoord1");
 	glAttachShader(program, vertex_shader_object);

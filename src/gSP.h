@@ -35,10 +35,13 @@
 
 #define SC_POSITION             1
 #define SC_COLOR                2
-#define SC_TEXCOORD0            3
-#define SC_TEXCOORD1            4
-#define SC_NUMLIGHTS            5
-#define SC_MODIFY               6
+#define SC_TEXCOORD             3
+#define SC_NUMLIGHTS            4
+#define SC_MODIFY               5
+#define SC_RECT_POSITION        6
+#define SC_RECT_COLOR           7
+#define SC_TEXCOORD0            8
+#define SC_TEXCOORD1            9
 
 struct SPVertex
 {

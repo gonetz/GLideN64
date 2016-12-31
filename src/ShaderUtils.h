@@ -4,7 +4,7 @@
 #include "OpenGL.h"
 #include "Combiner.h"
 
-GLuint createShaderProgram(const char * _strVertex, const char * _strFragment);
+GLuint createRectShaderProgram(const char * _strVertex, const char * _strFragment);
 bool checkShaderCompileStatus(GLuint obj);
 bool checkProgramLinkStatus(GLuint obj);
 void logErrorShader(GLenum _shaderType, const std::string & _strShader);

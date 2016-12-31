@@ -30,20 +30,20 @@ PostProcessor PostProcessor::processor;
 
 static const char * vertexShader =
 SHADER_VERSION
-"#if (__VERSION__ > 120)						\n"
-"# define IN in									\n"
-"# define OUT out								\n"
-"#else											\n"
-"# define IN attribute							\n"
-"# define OUT varying							\n"
-"#endif // __VERSION							\n"
-"IN highp vec2 aPosition;								\n"
-"IN highp vec2 aTexCoord;								\n"
-"OUT mediump vec2 vTexCoord;							\n"
-"void main(){                                           \n"
-"gl_Position = vec4(aPosition.x, aPosition.y, 0.0, 1.0);\n"
-"vTexCoord = aTexCoord;                                 \n"
-"}                                                      \n"
+"#if (__VERSION__ > 120)		\n"
+"# define IN in					\n"
+"# define OUT out				\n"
+"#else							\n"
+"# define IN attribute			\n"
+"# define OUT varying			\n"
+"#endif // __VERSION			\n"
+"IN highp vec2 aRectPosition;	\n"
+"IN highp vec2 aTexCoord0;		\n"
+"OUT mediump vec2 vTexCoord;	\n"
+"void main() {					\n"
+"gl_Position = vec4(aRectPosition.x, aRectPosition.y, 0.0, 1.0);\n"
+"vTexCoord = aTexCoord0;		\n"
+"}								\n"
 ;
 
 static const char* extractBloomShader =
@@ -264,31 +264,6 @@ FRAGMENT_SHADER_END
 ;
 
 static
-GLuint _createShaderProgram(const char * _strVertex, const char * _strFragment)
-{
-	GLuint vertex_shader_object = glCreateShader(GL_VERTEX_SHADER);
-	glShaderSource(vertex_shader_object, 1, &_strVertex, nullptr);
-	glCompileShader(vertex_shader_object);
-	assert(checkShaderCompileStatus(vertex_shader_object));
-
-	GLuint fragment_shader_object = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(fragment_shader_object, 1, &_strFragment, nullptr);
-	glCompileShader(fragment_shader_object);
-	assert(checkShaderCompileStatus(fragment_shader_object));
-
-	GLuint program = glCreateProgram();
-	glBindAttribLocation(program, SC_POSITION, "aPosition");
-	glBindAttribLocation(program, SC_TEXCOORD0, "aTexCoord");
-	glAttachShader(program, vertex_shader_object);
-	glAttachShader(program, fragment_shader_object);
-	glLinkProgram(program);
-	glDeleteShader(vertex_shader_object);
-	glDeleteShader(fragment_shader_object);
-	assert(checkProgramLinkStatus(program));
-	return program;
-}
-
-static
 void _initTexture(CachedTexture * pTexture)
 {
 	pTexture->format = G_IM_FMT_RGBA;
@@ -362,7 +337,7 @@ void PostProcessor::_initCommon()
 
 void PostProcessor::_initGammaCorrection()
 {
-	m_gammaCorrectionProgram = _createShaderProgram(vertexShader, gammaCorrectionShader);
+	m_gammaCorrectionProgram = createRectShaderProgram(vertexShader, gammaCorrectionShader);
 	glUseProgram(m_gammaCorrectionProgram);
 	int loc = glGetUniformLocation(m_gammaCorrectionProgram, "Sample0");
 	assert(loc >= 0);
@@ -376,7 +351,7 @@ void PostProcessor::_initGammaCorrection()
 
 void PostProcessor::_initBlur()
 {
-	m_extractBloomProgram = _createShaderProgram(vertexShader, extractBloomShader);
+	m_extractBloomProgram = createRectShaderProgram(vertexShader, extractBloomShader);
 	glUseProgram(m_extractBloomProgram);
 	int loc = glGetUniformLocation(m_extractBloomProgram, "Sample0");
 	assert(loc >= 0);
@@ -385,7 +360,7 @@ void PostProcessor::_initBlur()
 	assert(loc >= 0);
 	glUniform1i(loc, config.bloomFilter.thresholdLevel);
 
-	m_seperableBlurProgram = _createShaderProgram(vertexShader, seperableBlurShader);
+	m_seperableBlurProgram = createRectShaderProgram(vertexShader, seperableBlurShader);
 	glUseProgram(m_seperableBlurProgram);
 	loc = glGetUniformLocation(m_seperableBlurProgram, "Sample0");
 	assert(loc >= 0);
@@ -406,7 +381,7 @@ void PostProcessor::_initBlur()
 	assert(loc >= 0);
 	glUniform1f(loc, config.bloomFilter.blurStrength/100.0f);
 
-	m_glowProgram = _createShaderProgram(vertexShader, glowShader);
+	m_glowProgram = createRectShaderProgram(vertexShader, glowShader);
 	glUseProgram(m_glowProgram);
 	loc = glGetUniformLocation(m_glowProgram, "Sample0");
 	assert(loc >= 0);
@@ -429,7 +404,7 @@ void PostProcessor::_initBlur()
 
 void PostProcessor::_initOrientationCorrection()
 {
-	m_orientationCorrectionProgram = _createShaderProgram(vertexShader, orientationCorrectionShader);
+	m_orientationCorrectionProgram = createRectShaderProgram(vertexShader, orientationCorrectionShader);
 	glUseProgram(m_orientationCorrectionProgram);
 	int loc = glGetUniformLocation(m_orientationCorrectionProgram, "Sample0");
 	assert(loc >= 0);
@@ -534,14 +509,9 @@ void PostProcessor::_setGLState() {
 		+1.0, +1.0, +1.0, +1.0
 	};
 
-	glEnableVertexAttribArray(SC_POSITION);
-	glVertexAttribPointer(SC_POSITION, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (float*)vert);
+	glVertexAttribPointer(SC_RECT_POSITION, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (float*)vert);
 	glEnableVertexAttribArray(SC_TEXCOORD0);
 	glVertexAttribPointer(SC_TEXCOORD0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (float*)vert + 2);
-	glDisableVertexAttribArray(SC_COLOR);
-	glDisableVertexAttribArray(SC_TEXCOORD1);
-	glDisableVertexAttribArray(SC_NUMLIGHTS);
-	glDisableVertexAttribArray(SC_MODIFY);
 	glViewport(0, 0, video().getWidth(), video().getHeight());
 	glScissor(0, 0, m_pResultBuffer->m_pTexture->realWidth, m_pResultBuffer->m_pTexture->realHeight);
 	gSP.changed |= CHANGED_VIEWPORT;

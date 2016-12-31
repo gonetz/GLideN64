@@ -162,10 +162,14 @@ public:
 	// Update uniforms for GL without UniformBlock support
 	void updateParameters(OGLRender::RENDER_STATE _renderState);
 
+	void setPolygonMode(OGLRender::RENDER_STATE _renderState);
+	bool isRectMode() const { return m_rectMode; }
+
 private:
 	CombinerInfo()
 		: m_bChanged(false)
 		, m_bShaderCacheSupported(false)
+		, m_rectMode(true)
 		, m_shadersLoaded(0)
 		, m_configOptionsBitSet(0)
 		, m_pCurrent(nullptr) {}
@@ -178,6 +182,7 @@ private:
 
 	bool m_bChanged;
 	bool m_bShaderCacheSupported;
+	bool m_rectMode;
 	u32 m_shadersLoaded;
 	u32 m_configOptionsBitSet;
 
