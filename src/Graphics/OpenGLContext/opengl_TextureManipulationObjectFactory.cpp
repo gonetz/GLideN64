@@ -75,6 +75,8 @@ namespace opengl {
 			}
 		}
 
+		void reset(graphics::ObjectHandle _deleted) override {}
+
 	private:
 		CachedBindTexture* m_bind;
 	};
@@ -126,6 +128,12 @@ namespace opengl {
 
 		}
 
+		void reset(graphics::ObjectHandle _deleted) override
+		{
+			if (m_handle == _deleted)
+				m_handle = graphics::ObjectHandle(0);
+		}
+
 	private:
 		CachedBindTexture* m_bind;
 		graphics::ObjectHandle m_handle;
@@ -170,6 +178,12 @@ namespace opengl {
 										  _params.height,
 										  GL_FALSE);
 			}
+		}
+
+		void reset(graphics::ObjectHandle _deleted) override
+		{
+			if (m_handle == _deleted)
+				m_handle = graphics::ObjectHandle(0);
 		}
 
 	private:

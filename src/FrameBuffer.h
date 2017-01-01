@@ -67,7 +67,7 @@ private:
 	} m_clearParams;
 
 	void _initTexture(u16 _width, u16 _height, u16 _format, u16 _size, CachedTexture *_pTexture);
-	void _setAndAttachTexture(u16 _size, CachedTexture *_pTexture);
+	void _setAndAttachTexture(u16 _size, CachedTexture *_pTexture, u32 _t, bool _multisampling);
 	bool _initSubTexture(u32 _t);
 	CachedTexture * _getSubTexture(u32 _t);
 	mutable u32 m_validityChecked;

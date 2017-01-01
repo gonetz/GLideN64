@@ -20,6 +20,7 @@ namespace opengl {
 	public:
 		virtual ~Init2DTexture() {};
 		virtual void init2DTexture(const graphics::Context::InitTextureParams & _params) = 0;
+		virtual void reset(graphics::ObjectHandle _deleted) = 0;
 	};
 
 	class Set2DTextureParameters

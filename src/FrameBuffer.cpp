@@ -25,6 +25,9 @@
 #include "BufferCopy/DepthBufferToRDRAM.h"
 #include "BufferCopy/RDRAMtoColorBuffer.h"
 
+#include <Graphics/Context.h>
+#include <Graphics/Parameters.h>
+
 using namespace std;
 
 FrameBuffer::FrameBuffer() :
@@ -84,8 +87,9 @@ void FrameBuffer::_initTexture(u16 _width, u16 _height, u16 _format, u16 _size, 
 	textureCache().addFrameBufferTextureSize(_pTexture->textureBytes);
 }
 
-void FrameBuffer::_setAndAttachTexture(u16 _size, CachedTexture *_pTexture)
+void FrameBuffer::_setAndAttachTexture(u16 _size, CachedTexture *_pTexture, u32 _t, bool _multisampling)
 {
+#ifndef GRAPHICS_CONTEXT
 	glBindTexture(GL_TEXTURE_2D, _pTexture->glName);
 	if (_size > G_IM_SIZ_8b) {
 
@@ -106,6 +110,36 @@ void FrameBuffer::_setAndAttachTexture(u16 _size, CachedTexture *_pTexture)
 	}
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+#else // GRAPHICS_CONTEXT
+	{
+		graphics::Context::InitTextureParams params;
+		params.handle = graphics::ObjectHandle(_pTexture->glName);
+		if (_multisampling)
+			params.msaaLevel = config.video.multisampling;
+		params.width = _pTexture->realWidth;
+		params.height = _pTexture->realHeight;
+		if (_size > G_IM_SIZ_8b) {
+			params.internalFormat = fboFormats.colorInternalFormat;
+			params.format = fboFormats.colorFormat;
+			params.dataType = fboFormats.colorType;
+		}
+		else {
+			params.internalFormat = fboFormats.monochromeInternalFormat;
+			params.format = fboFormats.monochromeFormat;
+			params.dataType = fboFormats.monochromeType;
+		}
+		gfxContext.init2DTexture(params);
+	}
+	{
+		graphics::Context::TexParameters params;
+		params.handle = graphics::ObjectHandle(_pTexture->glName);
+		params.target = _multisampling ? graphics::target::TEXTURE_2D_MULTISAMPLE : graphics::target::TEXTURE_2D;
+		params.textureUnitIndex = _t;
+		params.minFilter = graphics::textureParameters::FILTER_NEAREST;
+		params.magFilter = graphics::textureParameters::FILTER_NEAREST;
+		gfxContext.setTextureParameters(params);
+	}
+#endif // GRAPHICS_CONTEXT
 
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _pTexture->glName, 0);
 }
@@ -151,6 +185,8 @@ void FrameBuffer::init(u32 _address, u32 _endAddress, u16 _format, u16 _size, u1
 	_initTexture(_width, _height, _format, _size, m_pTexture);
 	glBindFramebuffer(GL_FRAMEBUFFER, m_FBO);
 
+#ifndef GRAPHICS_CONTEXT
+
 #ifdef GL_MULTISAMPLING_SUPPORT
 	if (config.video.multisampling != 0) {
 		glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, m_pTexture->glName);
@@ -172,13 +208,33 @@ void FrameBuffer::init(u32 _address, u32 _endAddress, u16 _format, u16 _size, u1
 		_initTexture(_width, _height, _format, _size, m_pResolveTexture);
 		glGenFramebuffers(1, &m_resolveFBO);
 		glBindFramebuffer(GL_FRAMEBUFFER, m_resolveFBO);
-		_setAndAttachTexture(_size, m_pResolveTexture);
+		_setAndAttachTexture(_size, m_pResolveTexture, 0, false);
 		assert(checkFBO());
 
 		glBindFramebuffer(GL_FRAMEBUFFER, m_FBO);
 	} else
 #endif // GL_MULTISAMPLING_SUPPORT
-		_setAndAttachTexture(_size, m_pTexture);
+		_setAndAttachTexture(_size, m_pTexture, 0, false);
+
+#else // GRAPHICS_CONTEXT
+
+	if (config.video.multisampling != 0) {
+		_setAndAttachTexture(_size, m_pTexture, 0, true);
+		m_pTexture->frameBufferTexture = CachedTexture::fbMultiSample;
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D_MULTISAMPLE, m_pTexture->glName, 0);
+
+		m_pResolveTexture = textureCache().addFrameBufferTexture(false);
+		_initTexture(_width, _height, _format, _size, m_pResolveTexture);
+		glGenFramebuffers(1, &m_resolveFBO);
+		glBindFramebuffer(GL_FRAMEBUFFER, m_resolveFBO);
+		_setAndAttachTexture(_size, m_pResolveTexture, 0, false);
+		assert(checkFBO());
+
+		glBindFramebuffer(GL_FRAMEBUFFER, m_FBO);
+	} else
+		_setAndAttachTexture(_size, m_pTexture, 0, false);
+
+#endif // GRAPHICS_CONTEXT
 
 	ogl.getRender().clearColorBuffer(nullptr);
 }
@@ -347,6 +403,8 @@ bool FrameBuffer::_initSubTexture(u32 _t)
 	m_pSubTexture->offsetS = 0.0f;
 	m_pSubTexture->offsetT = m_pSubTexture->clampHeight;
 
+#ifndef GRAPHICS_CONTEXT
+
 	glActiveTexture(GL_TEXTURE0 + _t);
 	glBindTexture(GL_TEXTURE_2D, m_pSubTexture->glName);
 	if (m_pSubTexture->size > G_IM_SIZ_8b) {
@@ -370,6 +428,13 @@ bool FrameBuffer::_initSubTexture(u32 _t)
 
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_SubFBO);
 	glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_pSubTexture->glName, 0);
+#else // GRAPHICS_CONTEXT
+
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_SubFBO);
+	_setAndAttachTexture(m_pSubTexture->size, m_pSubTexture, _t, false);
+
+#endif // GRAPHICS_CONTEXT
+
 	return true;
 }
 
