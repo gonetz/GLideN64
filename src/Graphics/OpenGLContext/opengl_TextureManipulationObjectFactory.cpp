@@ -121,7 +121,7 @@ namespace opengl {
 							GLenum(_params.internalFormat),
 							_params.width,
 							_params.height,
-							false);
+							GL_FALSE);
 			}
 
 		}
@@ -168,7 +168,7 @@ namespace opengl {
 										  GLenum(_params.internalFormat),
 										  _params.width,
 										  _params.height,
-										  false);
+										  GL_FALSE);
 			}
 		}
 

@@ -12,6 +12,8 @@
 #include "Config.h"
 #include "Debug.h"
 #include "FBOTextureFormats.h"
+#include <Graphics/Context.h>
+#include <Graphics/Parameters.h>
 
 const GLuint ZlutImageUnit = 0;
 const GLuint TlutImageUnit = 1;
@@ -91,11 +93,33 @@ void DepthBuffer::initDepthImageTexture(FrameBuffer * _pBuffer)
 	m_pDepthImageTexture->textureBytes = m_pDepthImageTexture->realWidth * m_pDepthImageTexture->realHeight * fboFormats.depthImageFormatBytes;
 	textureCache().addFrameBufferTextureSize(m_pDepthImageTexture->textureBytes);
 
+#ifndef GRAPHICS_CONTEXT
 	glBindTexture(GL_TEXTURE_2D, m_pDepthImageTexture->glName);
 	glTexImage2D(GL_TEXTURE_2D, 0, fboFormats.depthImageInternalFormat, m_pDepthImageTexture->realWidth, m_pDepthImageTexture->realHeight, 0, fboFormats.depthImageFormat, fboFormats.depthImageType, nullptr);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glBindTexture(GL_TEXTURE_2D, 0);
+#else // GRAPHICS_CONTEXT
+	{
+		graphics::Context::InitTextureParams params;
+		params.handle = graphics::ObjectHandle(m_pDepthImageTexture->glName);
+		params.width = m_pDepthImageTexture->realWidth;
+		params.height = m_pDepthImageTexture->realHeight;
+		params.internalFormat = fboFormats.depthImageInternalFormat;
+		params.format = fboFormats.depthImageFormat;
+		params.dataType = fboFormats.depthImageType;
+		gfxContext.init2DTexture(params);
+	}
+	{
+		graphics::Context::TexParameters params;
+		params.handle = graphics::ObjectHandle(m_pDepthImageTexture->glName);
+		params.target = graphics::target::TEXTURE_2D;
+		params.textureUnitIndex = 0;
+		params.minFilter = graphics::textureParameters::FILTER_NEAREST;
+		params.magFilter = graphics::textureParameters::FILTER_NEAREST;
+		gfxContext.setTextureParameters(params);
+	}
+#endif // GRAPHICS_CONTEXT
 
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_depthImageFBO);
@@ -142,6 +166,7 @@ void DepthBuffer::_initDepthBufferTexture(FrameBuffer * _pBuffer, CachedTexture 
 	_pTexture->textureBytes = _pTexture->realWidth * _pTexture->realHeight * fboFormats.depthFormatBytes;
 	textureCache().addFrameBufferTextureSize(_pTexture->textureBytes);
 
+#ifndef GRAPHICS_CONTEXT
 #ifdef GL_MULTISAMPLING_SUPPORT
 	if (_multisample) {
 		glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, _pTexture->glName);
@@ -161,6 +186,29 @@ void DepthBuffer::_initDepthBufferTexture(FrameBuffer * _pBuffer, CachedTexture 
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	}
 	glBindTexture(GL_TEXTURE_2D, 0);
+#else // GRAPHICS_CONTEXT
+	{
+		graphics::Context::InitTextureParams params;
+		params.handle = graphics::ObjectHandle(_pTexture->glName);
+		params.msaaLevel = _multisample ? config.video.multisampling : 0U;
+		params.width = _pTexture->realWidth;
+		params.height = _pTexture->realHeight;
+		params.internalFormat = fboFormats.depthInternalFormat;
+		params.format = fboFormats.depthFormat;
+		params.dataType = fboFormats.depthType;
+		gfxContext.init2DTexture(params);
+	}
+	{
+		graphics::Context::TexParameters params;
+		params.handle = graphics::ObjectHandle(_pTexture->glName);
+		params.target = _multisample ? graphics::target::TEXTURE_2D_MULTISAMPLE : graphics::target::TEXTURE_2D;
+		params.textureUnitIndex = 0;
+		params.minFilter = graphics::textureParameters::FILTER_NEAREST;
+		params.magFilter = graphics::textureParameters::FILTER_NEAREST;
+		gfxContext.setTextureParameters(params);
+	}
+#endif // GRAPHICS_CONTEXT
+
 }
 
 void DepthBuffer::_initDepthBufferRenderbuffer(FrameBuffer * _pBuffer)
