@@ -15,6 +15,7 @@ namespace graphics {
 		extern Parameter RG;
 		extern Parameter RED;
 		extern Parameter DEPTH;
+		extern Parameter RG32F;
 	}
 
 	namespace datatype {

@@ -12,9 +12,10 @@ namespace graphics {
 
 	namespace internalcolor {
 		Parameter RGBA(GL_RGBA8);
-		Parameter RG(GL_RG8UI);
-		Parameter RED(GL_R8UI);
+		Parameter RG(GL_RG8);
+		Parameter RED(GL_R8);
 		Parameter DEPTH(GL_DEPTH_COMPONENT);
+		Parameter RG32F(GL_RG32F);
 	}
 
 	namespace datatype {
