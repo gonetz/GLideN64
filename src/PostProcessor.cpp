@@ -289,7 +289,7 @@ void _initTexture(CachedTexture * pTexture)
 static
 CachedTexture * _createTexture()
 {
-	CachedTexture * pTexture = textureCache().addFrameBufferTexture();
+	CachedTexture * pTexture = textureCache().addFrameBufferTexture(false);
 	_initTexture(pTexture);
 	return pTexture;
 }

@@ -389,7 +389,7 @@ void OGLRender::TexrectDrawer::init()
 	glGenFramebuffers(1, &m_FBO);
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_FBO);
 
-	m_pTexture = textureCache().addFrameBufferTexture();
+	m_pTexture = textureCache().addFrameBufferTexture(false);
 	m_pTexture->format = G_IM_FMT_RGBA;
 	m_pTexture->clampS = 1;
 	m_pTexture->clampT = 1;
@@ -2172,7 +2172,6 @@ void OGLRender::_initStates()
 
 void OGLRender::_initData()
 {
-	glState.reset();
 	_initExtensions();
 	_initStates();
 	_setSpecialTexrect();

@@ -61,7 +61,7 @@ void NoiseTexture::init()
 {
 	if (config.generalEmulation.enableNoise == 0)
 		return;
-	m_pTexture = textureCache().addFrameBufferTexture();
+	m_pTexture = textureCache().addFrameBufferTexture(false);
 	m_pTexture->format = G_IM_FMT_RGBA;
 	m_pTexture->clampS = 1;
 	m_pTexture->clampT = 1;

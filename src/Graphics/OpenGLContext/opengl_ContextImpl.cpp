@@ -26,8 +26,10 @@ void ContextImpl::init()
 	LOG(LOG_VERBOSE, "OpenGL minor version: %d\n", m_version.minorVersion);
 
 	TextureManipulationObjectFactory textureObjectsFactory(m_version, m_cachedFunctions);
-	m_init2DTexture.reset(textureObjectsFactory.getInit2DTexture());
 
+	m_createTexture.reset(textureObjectsFactory.getCreate2DTexture());
+	m_init2DTexture.reset(textureObjectsFactory.getInit2DTexture());
+	m_set2DTextureParameters.reset(textureObjectsFactory.getSet2DTextureParameters());
 }
 
 void ContextImpl::destroy()
@@ -35,14 +37,12 @@ void ContextImpl::destroy()
 
 }
 
-graphics::ObjectName ContextImpl::createTexture()
+graphics::ObjectHandle ContextImpl::createTexture(graphics::Parameter _target)
 {
-	GLuint glName;
-	glGenTextures(1, &glName);
-	return graphics::ObjectName(static_cast<u32>(glName));
+	return m_createTexture->createTexture(_target);
 }
 
-void ContextImpl::deleteTexture(graphics::ObjectName _name)
+void ContextImpl::deleteTexture(graphics::ObjectHandle _name)
 {
 	u32 glName(_name);
 	glDeleteTextures(1, &glName);
@@ -52,4 +52,10 @@ void ContextImpl::init2DTexture(const graphics::Context::InitTextureParams & _pa
 {
 	assert(m_init2DTexture);
 	m_init2DTexture->init2DTexture(_params);
+}
+
+void ContextImpl::setTextureParameters(const graphics::Context::TexParameters & _parameters)
+{
+	assert(m_set2DTextureParameters);
+	m_set2DTextureParameters->setTextureParameters(_parameters);
 }

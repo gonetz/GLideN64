@@ -197,9 +197,6 @@
     <ClCompile Include="..\..\src\PostProcessor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\glState.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\Config.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -514,9 +511,6 @@
     <ClInclude Include="..\..\src\Graphics\Context.h">
       <Filter>Header Files\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Graphics\ObjectName.h">
-      <Filter>Header Files\Graphics</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\Graphics\Parameter.h">
       <Filter>Header Files\Graphics</Filter>
     </ClInclude>
@@ -540,6 +534,9 @@
     </ClInclude>
     <ClInclude Include="..\..\src\Graphics\OpenGLContext\opengl_CachedFunctions.h">
       <Filter>Header Files\Graphics\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Graphics\ObjectHandle.h">
+      <Filter>Header Files\Graphics</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

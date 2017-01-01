@@ -42,7 +42,7 @@ void DepthBufferToRDRAM::init()
 	glGenFramebuffers(1, &m_FBO);
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_FBO);
 
-	m_pColorTexture = textureCache().addFrameBufferTexture();
+	m_pColorTexture = textureCache().addFrameBufferTexture(false);
 	m_pColorTexture->format = G_IM_FMT_I;
 	m_pColorTexture->clampS = 1;
 	m_pColorTexture->clampT = 1;
@@ -56,7 +56,7 @@ void DepthBufferToRDRAM::init()
 	m_pColorTexture->textureBytes = m_pColorTexture->realWidth * m_pColorTexture->realHeight;
 	textureCache().addFrameBufferTextureSize(m_pColorTexture->textureBytes);
 
-	m_pDepthTexture = textureCache().addFrameBufferTexture();
+	m_pDepthTexture = textureCache().addFrameBufferTexture(false);
 	m_pDepthTexture->format = G_IM_FMT_I;
 	m_pDepthTexture->clampS = 1;
 	m_pDepthTexture->clampT = 1;

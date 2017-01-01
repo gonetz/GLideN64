@@ -54,7 +54,7 @@ struct TextureCache
 
 	void init();
 	void destroy();
-	CachedTexture * addFrameBufferTexture();
+	CachedTexture * addFrameBufferTexture(bool _multisample);
 	void addFrameBufferTextureSize(u32 _size) {m_cachedBytes += _size;}
 	void removeFrameBufferTexture(CachedTexture * _pTexture);
 	void activateTexture(u32 _t, CachedTexture *_pTexture);

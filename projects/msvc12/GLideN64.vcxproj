@@ -290,7 +290,6 @@
     <ClCompile Include="..\..\src\GBI.cpp" />
     <ClCompile Include="..\..\src\gDP.cpp" />
     <ClCompile Include="..\..\src\GLideN64.cpp" />
-    <ClCompile Include="..\..\src\glState.cpp" />
     <ClCompile Include="..\..\src\GLUniforms\UniformBlock.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_mupenplus_uniformset|Win32'">true</ExcludedFromBuild>
     </ClCompile>
@@ -430,7 +429,7 @@
     </ClInclude>
     <ClInclude Include="..\..\src\Graphics\Context.h" />
     <ClInclude Include="..\..\src\Graphics\ContextImpl.h" />
-    <ClInclude Include="..\..\src\Graphics\ObjectName.h" />
+    <ClInclude Include="..\..\src\Graphics\ObjectHandle.h" />
     <ClInclude Include="..\..\src\Graphics\OpenGLContext\GLFunctions.h" />
     <ClInclude Include="..\..\src\Graphics\OpenGLContext\opengl_CachedFunctions.h" />
     <ClInclude Include="..\..\src\Graphics\OpenGLContext\opengl_ContextImpl.h" />

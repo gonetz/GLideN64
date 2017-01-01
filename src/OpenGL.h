@@ -75,9 +75,6 @@ typedef char GLchar;
 #define GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT 0x84FF
 #endif
 
-#ifndef __LIBRETRO__
-#include "glState.h"
-#endif
 #include "gSP.h"
 
 #define INDEXMAP_SIZE 80U

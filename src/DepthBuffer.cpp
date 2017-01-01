@@ -70,7 +70,7 @@ void DepthBuffer::initDepthImageTexture(FrameBuffer * _pBuffer)
 	if (!video().getRender().isImageTexturesSupported() || config.frameBufferEmulation.N64DepthCompare == 0 || m_pDepthImageTexture != nullptr)
 		return;
 
-	m_pDepthImageTexture = textureCache().addFrameBufferTexture();
+	m_pDepthImageTexture = textureCache().addFrameBufferTexture(false);
 
 	m_pDepthImageTexture->width = (u32)(_pBuffer->m_pTexture->width);
 	m_pDepthImageTexture->height = (u32)(_pBuffer->m_pTexture->height);
@@ -206,7 +206,7 @@ void DepthBuffer::initDepthBufferTexture(FrameBuffer * _pBuffer)
 {
 #ifndef USE_DEPTH_RENDERBUFFER
 	if (m_pDepthBufferTexture == nullptr) {
-		m_pDepthBufferTexture = textureCache().addFrameBufferTexture();
+		m_pDepthBufferTexture = textureCache().addFrameBufferTexture(config.video.multisampling != 0);
 		_initDepthBufferTexture(_pBuffer, m_pDepthBufferTexture, config.video.multisampling != 0);
 	}
 #else
@@ -215,7 +215,7 @@ void DepthBuffer::initDepthBufferTexture(FrameBuffer * _pBuffer)
 
 #ifdef GL_MULTISAMPLING_SUPPORT
 	if (config.video.multisampling != 0 && m_pResolveDepthBufferTexture == nullptr) {
-		m_pResolveDepthBufferTexture = textureCache().addFrameBufferTexture();
+		m_pResolveDepthBufferTexture = textureCache().addFrameBufferTexture(false);
 		_initDepthBufferTexture(_pBuffer, m_pResolveDepthBufferTexture, false);
 	}
 #endif
@@ -259,7 +259,7 @@ CachedTexture * DepthBuffer::copyDepthBufferTexture(FrameBuffer * _pBuffer)
 		return m_pDepthBufferCopyTexture;
 
 	if (m_pDepthBufferCopyTexture == nullptr) {
-		m_pDepthBufferCopyTexture = textureCache().addFrameBufferTexture();
+		m_pDepthBufferCopyTexture = textureCache().addFrameBufferTexture(false);
 		_initDepthBufferTexture(_pBuffer, m_pDepthBufferCopyTexture, false);
 	}
 

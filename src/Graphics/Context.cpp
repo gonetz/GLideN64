@@ -23,19 +23,24 @@ void Context::destroy()
 	m_impl.reset(nullptr);
 }
 
-ObjectName Context::createTexture()
+ObjectHandle Context::createTexture(Parameter _target)
 {
-	return m_impl->createTexture();
+	return m_impl->createTexture(_target);
 }
 
-void Context::deleteTexture(ObjectName _name)
+void Context::deleteTexture(ObjectHandle _name)
 {
-	return m_impl->deleteTexture(_name);
+	m_impl->deleteTexture(_name);
 }
 
 void Context::init2DTexture(const InitTextureParams & _params)
 {
-	return m_impl->init2DTexture(_params);
+	m_impl->init2DTexture(_params);
+}
+
+void Context::setTextureParameters(const TexParameters & _parameters)
+{
+	m_impl->setTextureParameters(_parameters);
 }
 
 bool Context::isMultisamplingSupported() const

@@ -17,7 +17,7 @@ namespace graphics {
 		extern Parameter DEPTH;
 	}
 
-	namespace type {
+	namespace datatype {
 		extern Parameter UNSIGNED_BYTE;
 		extern Parameter UNSIGNED_SHORT;
 		extern Parameter UNSIGNED_INT;
@@ -38,5 +38,15 @@ namespace graphics {
 		extern Parameter DITHER;
 		extern Parameter POLYGON_OFFSET_FILL;
 		extern Parameter SCISSOR_TEST;
+	}
+
+	namespace textureParameters {
+		extern Parameter FILTER_NEAREST;
+		extern Parameter FILTER_LINEAR;
+		extern Parameter FILTER_NEAREST_MIPMAP_NEAREST;
+		extern Parameter FILTER_LINEAR_MIPMAP_NEAREST;
+		extern Parameter WRAP_CLAMP_TO_EDGE;
+		extern Parameter WRAP_REPEAT;
+		extern Parameter WRAP_MIRRORED_REPEAT;
 	}
 }

@@ -38,7 +38,7 @@ FrameBuffer::FrameBuffer() :
 	m_SubFBO(0), m_pSubTexture(nullptr)
 {
 	m_loadTileOrigin.uls = m_loadTileOrigin.ult = 0;
-	m_pTexture = textureCache().addFrameBufferTexture();
+	m_pTexture = textureCache().addFrameBufferTexture(config.video.multisampling != 0);
 	glGenFramebuffers(1, &m_FBO);
 }
 
@@ -168,7 +168,7 @@ void FrameBuffer::init(u32 _address, u32 _endAddress, u16 _format, u16 _size, u1
 		m_pTexture->frameBufferTexture = CachedTexture::fbMultiSample;
 		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D_MULTISAMPLE, m_pTexture->glName, 0);
 
-		m_pResolveTexture = textureCache().addFrameBufferTexture();
+		m_pResolveTexture = textureCache().addFrameBufferTexture(false);
 		_initTexture(_width, _height, _format, _size, m_pResolveTexture);
 		glGenFramebuffers(1, &m_resolveFBO);
 		glBindFramebuffer(GL_FRAMEBUFFER, m_resolveFBO);
@@ -193,7 +193,7 @@ void FrameBuffer::reinit(u16 _height)
 		glDeleteFramebuffers(1, &m_resolveFBO);
 	if (m_pResolveTexture != nullptr)
 		textureCache().removeFrameBufferTexture(m_pResolveTexture);
-	m_pTexture = textureCache().addFrameBufferTexture();
+	m_pTexture = textureCache().addFrameBufferTexture(config.video.multisampling != 0);
 	init(m_startAddress, endAddress, format, m_size, m_width, _height, m_cfb);
 }
 
@@ -339,7 +339,7 @@ bool FrameBuffer::_initSubTexture(u32 _t)
 		textureCache().removeFrameBufferTexture(m_pSubTexture);
 	}
 
-	m_pSubTexture = textureCache().addFrameBufferTexture();
+	m_pSubTexture = textureCache().addFrameBufferTexture(false);
 	_initTexture(width, height, m_pTexture->format, m_pTexture->size, m_pSubTexture);
 
 	m_pSubTexture->clampS = pTile->clamps;

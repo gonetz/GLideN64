@@ -17,14 +17,18 @@ namespace opengl {
 
 		void destroy() override;
 
-		graphics::ObjectName createTexture() override;
+		graphics::ObjectHandle createTexture(graphics::Parameter _target) override;
 
-		void deleteTexture(graphics::ObjectName _name) override;
+		void deleteTexture(graphics::ObjectHandle _name) override;
 
 		void init2DTexture(const graphics::Context::InitTextureParams & _params) override;
 
+		void setTextureParameters(const graphics::Context::TexParameters & _parameters) override;
+
 	private:
+		std::unique_ptr<Create2DTexture> m_createTexture;
 		std::unique_ptr<Init2DTexture> m_init2DTexture;
+		std::unique_ptr<Set2DTextureParameters> m_set2DTextureParameters;
 		GLVersion m_version;
 		CachedFunctions m_cachedFunctions;
 	};

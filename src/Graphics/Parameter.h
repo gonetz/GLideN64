@@ -3,16 +3,26 @@
 
 namespace graphics {
 
+#define INVALID_PARAMETER 0xFFFFFFFF
+
 	class Parameter
 	{
 	public:
-		Parameter() : m_parameter(0U) {}
-		Parameter(u32 _parameter) : m_parameter(_parameter) {}
-		explicit operator u32() const { return m_parameter; }
-		explicit operator s32() const { return static_cast<s32>(m_parameter); }
+		Parameter() : m_iparameter(INVALID_PARAMETER) {}
+		Parameter(u32 _parameter) : m_iparameter(_parameter) {}
+		Parameter(s32 _parameter) : m_iparameter(static_cast<u32>(_parameter)) {}
+		Parameter(f32 _parameter) : m_fparameter(_parameter) {}
 
+		explicit operator u32() const { return m_iparameter; }
+		explicit operator s32() const { return static_cast<s32>(m_iparameter); }
+		explicit operator f32() const { return m_fparameter; }
+
+		bool isValid() const { return m_iparameter != INVALID_PARAMETER; };
 	private:
-		u32 m_parameter;
+		union {
+			u32 m_iparameter;
+			f32 m_fparameter;
+		};
 	};
 
 }

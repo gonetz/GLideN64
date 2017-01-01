@@ -17,7 +17,7 @@ namespace graphics {
 		Parameter DEPTH(GL_DEPTH_COMPONENT);
 	}
 
-	namespace type {
+	namespace datatype {
 		Parameter UNSIGNED_BYTE(GL_UNSIGNED_BYTE);
 		Parameter UNSIGNED_SHORT(GL_UNSIGNED_SHORT);
 		Parameter UNSIGNED_INT(GL_UNSIGNED_INT);
@@ -40,4 +40,13 @@ namespace graphics {
 		Parameter SCISSOR_TEST(GL_SCISSOR_TEST);
 	}
 
+	namespace textureParameters {
+		Parameter FILTER_NEAREST(GL_NEAREST);
+		Parameter FILTER_LINEAR(GL_LINEAR);
+		Parameter FILTER_NEAREST_MIPMAP_NEAREST(GL_NEAREST_MIPMAP_NEAREST);
+		Parameter FILTER_LINEAR_MIPMAP_NEAREST(GL_LINEAR_MIPMAP_NEAREST);
+		Parameter WRAP_CLAMP_TO_EDGE(GL_CLAMP_TO_EDGE);
+		Parameter WRAP_REPEAT(GL_REPEAT);
+		Parameter WRAP_MIRRORED_REPEAT(GL_MIRRORED_REPEAT);
+	}
 }

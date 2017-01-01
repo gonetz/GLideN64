@@ -98,6 +98,9 @@ extern PFNGLTEXSTORAGE2DPROC glTexStorage2D;
 extern PFNGLTEXTURESTORAGE2DPROC glTextureStorage2D;
 extern PFNGLTEXTURESUBIMAGE2DPROC glTextureSubImage2D;
 extern PFNGLTEXTURESTORAGE2DMULTISAMPLEEXTPROC glTextureStorage2DMultisample;
+extern PFNGLTEXTUREPARAMETERIPROC glTextureParameteri;
+extern PFNGLTEXTUREPARAMETERFPROC glTextureParameterf;
+extern PFNGLCREATETEXTURESPROC glCreateTextures;
 
 void initGLFunctions();
 
