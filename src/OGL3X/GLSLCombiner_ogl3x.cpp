@@ -15,6 +15,8 @@
 #include <VI.h>
 #include <Log.h>
 #include <FBOTextureFormats.h>
+#include <Graphics/Context.h>
+#include <Graphics/Parameters.h>
 
 #include "Shaders_ogl3x.h"
 
@@ -74,11 +76,33 @@ void NoiseTexture::init()
 	m_pTexture->realHeight = 580;
 	m_pTexture->textureBytes = m_pTexture->realWidth * m_pTexture->realHeight;
 	textureCache().addFrameBufferTextureSize(m_pTexture->textureBytes);
+#ifndef GRAPHICS_CONTEXT
 	glBindTexture(GL_TEXTURE_2D, m_pTexture->glName);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_R8, m_pTexture->realWidth, m_pTexture->realHeight, 0, GL_RED, GL_UNSIGNED_BYTE, nullptr);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glBindTexture(GL_TEXTURE_2D, 0);
+#else // GRAPHICS_CONTEXT
+	{
+		graphics::Context::InitTextureParams params;
+		params.handle = graphics::ObjectHandle(m_pTexture->glName);
+		params.width = m_pTexture->realWidth;
+		params.height = m_pTexture->realHeight;
+		params.internalFormat = graphics::internalcolor::RED;
+		params.format = graphics::color::RED;
+		params.dataType = graphics::datatype::UNSIGNED_BYTE;
+		gfxContext.init2DTexture(params);
+	}
+	{
+		graphics::Context::TexParameters params;
+		params.handle = graphics::ObjectHandle(m_pTexture->glName);
+		params.target = graphics::target::TEXTURE_2D;
+		params.textureUnitIndex = 0;
+		params.minFilter = graphics::textureParameters::FILTER_NEAREST;
+		params.magFilter = graphics::textureParameters::FILTER_NEAREST;
+		gfxContext.setTextureParameters(params);
+	}
+#endif // GRAPHICS_CONTEXT
 
 	// Generate Pixel Buffer Object. Initialize it with max buffer size.
 	glGenBuffers(1, &m_PBO);
@@ -171,12 +195,38 @@ void InitShadowMapShader()
 		return;
 
 	g_paletteCRC256 = 0;
+
+#ifndef GRAPHICS_CONTEXT
 	glGenTextures(1, &g_tlut_tex);
 	glBindTexture(GL_TEXTURE_2D, g_tlut_tex);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexImage2D(GL_TEXTURE_2D, 0, fboFormats.lutInternalFormat, 256, 1, 0, fboFormats.lutFormat, fboFormats.lutType, nullptr);
+#else // GRAPHICS_CONTEXT
+	graphics::ObjectHandle tlut_handle = gfxContext.createTexture(graphics::target::TEXTURE_2D);
+	g_tlut_tex = GLuint(tlut_handle);
+	{
+		graphics::Context::InitTextureParams params;
+		params.handle = tlut_handle;
+		params.width = 256U;
+		params.height = 1U;
+		params.internalFormat = graphics::Parameter(fboFormats.lutInternalFormat);
+		params.format = graphics::Parameter(fboFormats.lutFormat);
+		params.dataType = graphics::Parameter(fboFormats.lutType);
+		gfxContext.init2DTexture(params);
+	}
+	{
+		graphics::Context::TexParameters params;
+		params.handle = tlut_handle;
+		params.target = graphics::target::TEXTURE_2D;
+		params.textureUnitIndex = 0U;
+		params.minFilter = graphics::textureParameters::FILTER_LINEAR;
+		params.magFilter = graphics::textureParameters::FILTER_LINEAR;
+		params.wrapS = graphics::textureParameters::WRAP_CLAMP_TO_EDGE;
+		gfxContext.setTextureParameters(params);
+	}
+#endif // GRAPHICS_CONTEXT
 
 	g_draw_shadow_map_program = createRectShaderProgram(vertex_shader_rect_nocolor, shadow_map_fragment_shader_float);
 }
