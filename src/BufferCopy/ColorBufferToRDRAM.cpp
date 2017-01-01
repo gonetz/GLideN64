@@ -18,6 +18,8 @@
 #else
 #include "ColorBufferToRDRAMStub.h"
 #endif
+#include <Graphics/Context.h>
+#include <Graphics/Parameters.h>
 
 ColorBufferToRDRAM::ColorBufferToRDRAM()
 	: m_FBO(0)
@@ -74,6 +76,9 @@ void ColorBufferToRDRAM::_initFBTexture(void)
 	m_pTexture->realHeight = m_lastBufferHeight;
 	m_pTexture->textureBytes = m_pTexture->realWidth * m_pTexture->realHeight * 4;
 	textureCache().addFrameBufferTextureSize(m_pTexture->textureBytes);
+
+#ifndef GRAPHICS_CONTEXT
+
 	glBindTexture(GL_TEXTURE_2D, m_pTexture->glName);
 #if defined(GLES3) || defined (GLES3_1)
 	glTexStorage2D(GL_TEXTURE_2D, 1, fboFormats.colorInternalFormat, m_pTexture->realWidth, m_pTexture->realHeight);
@@ -83,6 +88,28 @@ void ColorBufferToRDRAM::_initFBTexture(void)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glBindTexture(GL_TEXTURE_2D, 0);
+
+#else // GRAPHICS_CONTEXT
+	{
+		graphics::Context::InitTextureParams params;
+		params.handle = graphics::ObjectHandle(m_pTexture->glName);
+		params.width = m_pTexture->realWidth;
+		params.height = m_pTexture->realHeight;
+		params.internalFormat = fboFormats.colorInternalFormat;
+		params.format = fboFormats.colorFormat;
+		params.dataType = fboFormats.colorType;
+		gfxContext.init2DTexture(params);
+	}
+	{
+		graphics::Context::TexParameters params;
+		params.handle = graphics::ObjectHandle(m_pTexture->glName);
+		params.target = graphics::target::TEXTURE_2D;
+		params.textureUnitIndex = 0;
+		params.minFilter = graphics::textureParameters::FILTER_LINEAR;
+		params.magFilter = graphics::textureParameters::FILTER_LINEAR;
+		gfxContext.setTextureParameters(params);
+	}
+#endif // GRAPHICS_CONTEXT
 
 	glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_pTexture->glName, 0);
 	// check if everything is OK

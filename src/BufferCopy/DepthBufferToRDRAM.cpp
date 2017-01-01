@@ -13,6 +13,9 @@
 #include <N64.h>
 #include <VI.h>
 
+#include <Graphics/Context.h>
+#include <Graphics/Parameters.h>
+
 #ifndef GLES2
 
 DepthBufferToRDRAM::DepthBufferToRDRAM()
@@ -70,6 +73,8 @@ void DepthBufferToRDRAM::init()
 	m_pDepthTexture->textureBytes = m_pDepthTexture->realWidth * m_pDepthTexture->realHeight * sizeof(float);
 	textureCache().addFrameBufferTextureSize(m_pDepthTexture->textureBytes);
 
+#ifndef GRAPHICS_CONTEXT
+
 	glBindTexture(GL_TEXTURE_2D, m_pColorTexture->glName);
 	glTexImage2D(GL_TEXTURE_2D, 0, fboFormats.monochromeInternalFormat, m_pColorTexture->realWidth, m_pColorTexture->realHeight, 0, fboFormats.monochromeFormat, fboFormats.monochromeType, nullptr);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -81,6 +86,37 @@ void DepthBufferToRDRAM::init()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 
 	glBindTexture(GL_TEXTURE_2D, 0);
+
+#else // GRAPHICS_CONTEXT
+	graphics::Context::InitTextureParams initParams;
+	initParams.handle = graphics::ObjectHandle(m_pColorTexture->glName);
+	initParams.width = m_pColorTexture->realWidth;
+	initParams.height = m_pColorTexture->realHeight;
+	initParams.internalFormat = fboFormats.monochromeInternalFormat;
+	initParams.format = fboFormats.monochromeFormat;
+	initParams.dataType = fboFormats.monochromeType;
+	gfxContext.init2DTexture(initParams);
+
+	graphics::Context::TexParameters setParams;
+	setParams.handle = graphics::ObjectHandle(m_pColorTexture->glName);
+	setParams.target = graphics::target::TEXTURE_2D;
+	setParams.textureUnitIndex = 0;
+	setParams.minFilter = graphics::textureParameters::FILTER_NEAREST;
+	setParams.magFilter = graphics::textureParameters::FILTER_NEAREST;
+	gfxContext.setTextureParameters(setParams);
+
+	initParams.handle = graphics::ObjectHandle(m_pDepthTexture->glName);
+	initParams.width = m_pDepthTexture->realWidth;
+	initParams.height = m_pDepthTexture->realHeight;
+	initParams.internalFormat = fboFormats.depthInternalFormat;
+	initParams.format = fboFormats.depthFormat;
+	initParams.dataType = fboFormats.depthType;
+	gfxContext.init2DTexture(initParams);
+
+	setParams.handle = graphics::ObjectHandle(m_pDepthTexture->glName);
+	gfxContext.setTextureParameters(setParams);
+
+#endif // GRAPHICS_CONTEXT
 
 	glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_pColorTexture->glName, 0);
 	glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, m_pDepthTexture->glName, 0);
