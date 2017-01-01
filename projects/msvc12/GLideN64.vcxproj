@@ -272,7 +272,6 @@
     <ClCompile Include="..\..\src\Combiner.cpp" />
     <ClCompile Include="..\..\src\CommonPluginAPI.cpp" />
     <ClCompile Include="..\..\src\common\CommonAPIImpl_common.cpp" />
-    <ClCompile Include="..\..\src\common\GLFunctions.cpp" />
     <ClCompile Include="..\..\src\Config.cpp" />
     <ClCompile Include="..\..\src\convert.cpp" />
     <ClCompile Include="..\..\src\CRC32.cpp" />

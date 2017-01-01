@@ -157,7 +157,7 @@ bool OGLVideo::isExtensionSupported(const char *extension)
 void OGLVideo::start()
 {
 	_start(); // TODO: process initialization error
-	initGLFunctions();
+//	initGLFunctions();
 	gfxContext.init();
 	m_render._initData();
 	m_buffersSwapCount = 0;
