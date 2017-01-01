@@ -8,6 +8,9 @@
 #include "ShaderUtils.h"
 #include "Config.h"
 
+#include <Graphics/Context.h>
+#include <Graphics/Parameters.h>
+
 #if defined(GLES3_1)
 #define SHADER_VERSION "#version 310 es \n"
 #elif defined(GLES3)
@@ -278,12 +281,32 @@ void _initTexture(CachedTexture * pTexture)
 	pTexture->realHeight = video().getHeight();
 	pTexture->textureBytes = pTexture->realWidth * pTexture->realHeight * 4;
 	textureCache().addFrameBufferTextureSize(pTexture->textureBytes);
-	glBindTexture(GL_TEXTURE_2D, pTexture->glName);
 
+#ifndef GRAPHICS_CONTEXT
+
+	glBindTexture(GL_TEXTURE_2D, pTexture->glName);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, pTexture->realWidth, pTexture->realHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glBindTexture(GL_TEXTURE_2D, 0);
+
+#else // GRAPHICS_CONTEXT
+	graphics::Context::InitTextureParams initParams;
+	initParams.handle = graphics::ObjectHandle(pTexture->glName);
+	initParams.width = pTexture->realWidth;
+	initParams.height = pTexture->realHeight;
+	initParams.internalFormat = graphics::internalcolor::RGBA;
+	initParams.format = graphics::color::RGBA;
+	initParams.dataType = graphics::datatype::UNSIGNED_BYTE;
+	gfxContext.init2DTexture(initParams);
+
+	graphics::Context::TexParameters setParams;
+	setParams.handle = graphics::ObjectHandle(pTexture->glName);
+	setParams.target = graphics::target::TEXTURE_2D;
+	setParams.minFilter = graphics::textureParameters::FILTER_NEAREST;
+	setParams.magFilter = graphics::textureParameters::FILTER_NEAREST;
+	gfxContext.setTextureParameters(setParams);
+#endif // GRAPHICS_CONTEXT
 }
 
 static
