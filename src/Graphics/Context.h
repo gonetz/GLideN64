@@ -34,7 +34,7 @@ namespace graphics {
 			Parameter format;
 			Parameter internalFormat;
 			Parameter dataType;
-			const void * data;
+			const void * data = nullptr;
 		};
 
 		void init2DTexture(const InitTextureParams & _params);
