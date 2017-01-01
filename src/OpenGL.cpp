@@ -27,7 +27,9 @@
 #include "SoftwareRender.h"
 #include "FBOTextureFormats.h"
 #include "TextureFilterHandler.h"
+
 #include "Graphics/Context.h"
+#include <Graphics/Parameters.h>
 
 using namespace std;
 
@@ -402,11 +404,34 @@ void OGLRender::TexrectDrawer::init()
 	m_pTexture->realHeight = 580;
 	m_pTexture->textureBytes = m_pTexture->realWidth * m_pTexture->realHeight * 4;
 	textureCache().addFrameBufferTextureSize(m_pTexture->textureBytes);
+
+#ifndef GRAPHICS_CONTEXT
+
 	glBindTexture(GL_TEXTURE_2D, m_pTexture->glName);
 	glTexImage2D(GL_TEXTURE_2D, 0, fboFormats.colorInternalFormat, m_pTexture->realWidth, m_pTexture->realHeight, 0, fboFormats.colorFormat, fboFormats.colorType, nullptr);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glBindTexture(GL_TEXTURE_2D, 0);
+
+#else // GRAPHICS_CONTEXT
+
+	graphics::Context::InitTextureParams initParams;
+	initParams.handle = graphics::ObjectHandle(m_pTexture->glName);
+	initParams.width = m_pTexture->realWidth;
+	initParams.height = m_pTexture->realHeight;
+	initParams.internalFormat = fboFormats.colorInternalFormat;
+	initParams.format = fboFormats.colorFormat;
+	initParams.dataType = fboFormats.colorType;
+	gfxContext.init2DTexture(initParams);
+
+	graphics::Context::TexParameters setParams;
+	setParams.handle = graphics::ObjectHandle(m_pTexture->glName);
+	setParams.target = graphics::target::TEXTURE_2D;
+	setParams.minFilter = graphics::textureParameters::FILTER_LINEAR;
+	setParams.magFilter = graphics::textureParameters::FILTER_LINEAR;
+	gfxContext.setTextureParameters(setParams);
+
+#endif // GRAPHICS_CONTEXT
 
 	glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_pTexture->glName, 0);
 	// check if everything is OK
