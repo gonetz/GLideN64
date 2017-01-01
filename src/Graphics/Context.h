@@ -41,7 +41,7 @@ namespace graphics {
 
 		struct TexParameters {
 			ObjectHandle handle;
-			u32 textureUnitIndex;
+			u32 textureUnitIndex = 0;
 			Parameter target;
 			Parameter magFilter;
 			Parameter minFilter;

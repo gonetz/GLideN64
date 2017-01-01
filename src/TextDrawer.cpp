@@ -23,6 +23,9 @@
 #include <FBOTextureFormats.h>
 #include "Log.h"
 
+#include <Graphics/Context.h>
+#include <Graphics/Parameters.h>
+
 struct point {
 	GLfloat x;
 	GLfloat y;
@@ -153,6 +156,9 @@ struct Atlas {
 		h += rowh;
 
 		/* Create a texture that will be used to hold all ASCII glyphs */
+
+#ifndef GRAPHICS_CONTEXT
+
 		glActiveTexture(GL_TEXTURE0);
 		glGenTextures(1, &tex);
 		glBindTexture(GL_TEXTURE_2D, tex);
@@ -169,6 +175,32 @@ struct Atlas {
 		/* Linear filtering usually looks best for text */
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+#else // GRAPHICS_CONTEXT
+		graphics::ObjectHandle texHandle = gfxContext.createTexture(graphics::target::TEXTURE_2D);
+		tex = GLuint(texHandle);
+
+		graphics::Context::InitTextureParams initParams;
+		initParams.handle = texHandle;
+		initParams.width = w;
+		initParams.height = h;
+		initParams.internalFormat = monohromeInternalformat;
+		initParams.format = monohromeformat;
+		initParams.dataType = graphics::datatype::UNSIGNED_BYTE;
+		gfxContext.init2DTexture(initParams);
+
+		/* We require 1 byte alignment when uploading texture data */
+		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
+		graphics::Context::TexParameters setParams;
+		setParams.handle = texHandle;
+		setParams.target = graphics::target::TEXTURE_2D;
+		setParams.minFilter = graphics::textureParameters::FILTER_LINEAR;
+		setParams.magFilter = graphics::textureParameters::FILTER_LINEAR;
+		setParams.wrapS = graphics::textureParameters::WRAP_CLAMP_TO_EDGE;
+		setParams.wrapT = graphics::textureParameters::WRAP_CLAMP_TO_EDGE;
+		gfxContext.setTextureParameters(setParams);
+#endif // GRAPHICS_CONTEXT
 
 		/* Paste all glyph bitmaps into the texture, remembering the offset */
 		int ox = 0;
@@ -209,7 +241,11 @@ struct Atlas {
 	}
 
 	~Atlas() {
+#ifndef GRAPHICS_CONTEXT
 		glDeleteTextures(1, &tex);
+#else
+		gfxContext.deleteTexture(graphics::ObjectHandle(tex));
+#endif
 	}
 };
 
