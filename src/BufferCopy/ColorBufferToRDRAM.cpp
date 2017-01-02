@@ -59,8 +59,6 @@ void ColorBufferToRDRAM::destroy() {
 
 void ColorBufferToRDRAM::_initFBTexture(void)
 {
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_FBO);
-
 	m_pTexture = textureCache().addFrameBufferTexture(false);
 	m_pTexture->format = G_IM_FMT_RGBA;
 	m_pTexture->clampS = 1;
@@ -89,6 +87,9 @@ void ColorBufferToRDRAM::_initFBTexture(void)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glBindTexture(GL_TEXTURE_2D, 0);
 
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_FBO);
+	glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_pTexture->glName, 0);
+
 #else // GRAPHICS_CONTEXT
 	{
 		graphics::Context::InitTextureParams params;
@@ -109,9 +110,17 @@ void ColorBufferToRDRAM::_initFBTexture(void)
 		params.magFilter = graphics::textureParameters::FILTER_LINEAR;
 		gfxContext.setTextureParameters(params);
 	}
+	{
+		graphics::Context::FrameBufferRenderTarget bufTarget;
+		bufTarget.bufferHandle = graphics::ObjectHandle(m_FBO);
+		bufTarget.bufferTarget = graphics::bufferTarget::DRAW_FRAMEBUFFER;
+		bufTarget.attachment = graphics::bufferAttachment::COLOR_ATTACHMENT0;
+		bufTarget.textureTarget = graphics::target::TEXTURE_2D;
+		bufTarget.textureHandle = graphics::ObjectHandle(m_pTexture->glName);
+		gfxContext.addFrameBufferRenderTarget(bufTarget);
+	}
 #endif // GRAPHICS_CONTEXT
 
-	glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_pTexture->glName, 0);
 	// check if everything is OK
 	assert(checkFBO());
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
