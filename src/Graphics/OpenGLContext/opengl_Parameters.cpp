@@ -28,6 +28,7 @@ namespace graphics {
 	namespace target {
 		Parameter TEXTURE_2D(GL_TEXTURE_2D);
 		Parameter TEXTURE_2D_MULTISAMPLE(GL_TEXTURE_2D_MULTISAMPLE);
+		Parameter RENDERBUFFER(GL_RENDERBUFFER);
 	}
 
 	namespace bufferTarget {
@@ -38,6 +39,7 @@ namespace graphics {
 
 	namespace bufferAttachment {
 		Parameter COLOR_ATTACHMENT0(GL_COLOR_ATTACHMENT0);
+		Parameter DEPTH_ATTACHMENT(GL_DEPTH_ATTACHMENT);
 	}
 
 	namespace enable {

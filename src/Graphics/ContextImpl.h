@@ -19,6 +19,8 @@ namespace graphics {
 		virtual ObjectHandle createFramebuffer() = 0;
 		virtual void deleteFramebuffer(ObjectHandle _name) = 0;
 		virtual void addFrameBufferRenderTarget(const Context::FrameBufferRenderTarget & _params) = 0;
+		virtual ObjectHandle createRenderbuffer() = 0;
+		virtual void initRenderbuffer(const Context::InitRenderbufferParams & _params) = 0;
 	};
 
 }

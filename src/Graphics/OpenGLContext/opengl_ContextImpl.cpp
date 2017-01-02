@@ -35,6 +35,8 @@ void ContextImpl::init()
 	{
 		BufferManipulationObjectFactory bufferObjectFactory(m_version, *m_cachedFunctions.get());
 		m_createFramebuffer.reset(bufferObjectFactory.getCreateFramebufferObject());
+		m_createRenderbuffer.reset(bufferObjectFactory.getCreateRenderbuffer());
+		m_initRenderbuffer.reset(bufferObjectFactory.getInitRenderbuffer());
 		m_addFramebufferRenderTarget.reset(bufferObjectFactory.getAddFramebufferRenderTarget());
 	}
 }
@@ -47,6 +49,8 @@ void ContextImpl::destroy()
 	m_set2DTextureParameters.reset(nullptr);
 
 	m_createFramebuffer.reset(nullptr);
+	m_createRenderbuffer.reset(nullptr);
+	m_initRenderbuffer.reset(nullptr);
 	m_addFramebufferRenderTarget.reset(nullptr);
 }
 
@@ -84,6 +88,16 @@ void ContextImpl::deleteFramebuffer(graphics::ObjectHandle _name)
 	u32 fbo(_name);
 	if (fbo != 0)
 		glDeleteFramebuffers(1, &fbo);
+}
+
+graphics::ObjectHandle ContextImpl::createRenderbuffer()
+{
+	return m_createRenderbuffer->createRenderbuffer();
+}
+
+void ContextImpl::initRenderbuffer(const graphics::Context::InitRenderbufferParams & _params)
+{
+	m_initRenderbuffer->initRenderbuffer(_params);
 }
 
 void ContextImpl::addFrameBufferRenderTarget(const graphics::Context::FrameBufferRenderTarget & _params)

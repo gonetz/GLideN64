@@ -53,6 +53,16 @@ void Context::deleteFramebuffer(ObjectHandle _name)
 	m_impl->deleteFramebuffer(_name);
 }
 
+ObjectHandle Context::createRenderbuffer()
+{
+	return m_impl->createRenderbuffer();
+}
+
+void Context::initRenderbuffer(const InitRenderbufferParams & _params)
+{
+	m_impl->initRenderbuffer(_params);
+}
+
 void Context::addFrameBufferRenderTarget(const FrameBufferRenderTarget & _params)
 {
 	m_impl->addFrameBufferRenderTarget(_params);

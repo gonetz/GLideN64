@@ -15,7 +15,7 @@ struct DepthBuffer
 	CachedTexture * resolveDepthBufferTexture(FrameBuffer * _pBuffer);
 	CachedTexture * copyDepthBufferTexture(FrameBuffer * _pBuffer);
 
-	void setDepthAttachment(GLenum _target);
+	void setDepthAttachment(GLuint _fbo, GLenum _target);
 	void activateDepthBufferTexture(FrameBuffer * _pBuffer);
 
 	void bindDepthImageTexture();

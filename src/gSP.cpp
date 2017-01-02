@@ -2147,7 +2147,7 @@ void _copyDepthBuffer()
 	if (pCopyBufferDepth == nullptr)
 		return;
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, pTmpBuffer->m_FBO);
-	pCopyBufferDepth->setDepthAttachment(GL_READ_FRAMEBUFFER);
+	pCopyBufferDepth->setDepthAttachment(pTmpBuffer->m_FBO, GL_READ_FRAMEBUFFER);
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, fbList.getCurrent()->m_FBO);
 	OGLVideo & ogl = video();
 	glBlitFramebuffer(
@@ -2157,7 +2157,7 @@ void _copyDepthBuffer()
 	);
 	// Restore objects
 	if (pTmpBuffer->m_pDepthBuffer != nullptr)
-		pTmpBuffer->m_pDepthBuffer->setDepthAttachment(GL_READ_FRAMEBUFFER);
+		pTmpBuffer->m_pDepthBuffer->setDepthAttachment(fbList.getCurrent()->m_FBO, GL_READ_FRAMEBUFFER);
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
 	// Set back current depth buffer
 	dbList.saveBuffer(gDP.depthImageAddress);

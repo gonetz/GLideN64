@@ -71,7 +71,8 @@ void CachedActiveTexture::setActiveTexture(u32 _index) {
 /*---------------CachedFunctions-------------*/
 
 CachedFunctions::CachedFunctions()
-: m_bindFramebuffer(glBindFramebuffer) {
+: m_bindFramebuffer(glBindFramebuffer)
+, m_bindRenderbuffer(glBindRenderbuffer) {
 }
 
 
@@ -113,4 +114,9 @@ CachedActiveTexture * CachedFunctions::geCachedActiveTexture()
 CachedBindFramebuffer * CachedFunctions::geCachedBindFramebuffer()
 {
 	return &m_bindFramebuffer;
+}
+
+CachedBindRenderbuffer * CachedFunctions::geCachedBindRenderbuffer()
+{
+	return &m_bindRenderbuffer;
 }

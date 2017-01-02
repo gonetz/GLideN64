@@ -44,6 +44,8 @@ namespace opengl {
 
 	typedef CachedBind<decltype(glBindFramebuffer)> CachedBindFramebuffer;
 
+	typedef CachedBind<decltype(glBindRenderbuffer)> CachedBindRenderbuffer;
+
 	class CachedBindTexture
 	{
 	public:
@@ -87,6 +89,8 @@ namespace opengl {
 
 		CachedBindFramebuffer * geCachedBindFramebuffer();
 
+		CachedBindRenderbuffer * geCachedBindRenderbuffer();
+
 	private:
 		typedef std::unordered_map<u32, CachedEnable> EnableParameters;
 
@@ -94,6 +98,7 @@ namespace opengl {
 		CachedBindTexture m_bindTexture;
 		CachedActiveTexture m_activeTexture;
 		CachedBindFramebuffer m_bindFramebuffer;
+		CachedBindRenderbuffer m_bindRenderbuffer;
 	};
 
 }

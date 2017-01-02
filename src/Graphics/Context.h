@@ -57,6 +57,18 @@ namespace graphics {
 
 		void deleteFramebuffer(ObjectHandle _name);
 
+		ObjectHandle createRenderbuffer();
+
+		struct InitRenderbufferParams {
+			ObjectHandle handle;
+			Parameter target;
+			Parameter format;
+			u32 width = 0;
+			u32 height = 0;
+		};
+
+		void initRenderbuffer(const InitRenderbufferParams & _params);
+
 		struct FrameBufferRenderTarget {
 			ObjectHandle bufferHandle;
 			Parameter bufferTarget;

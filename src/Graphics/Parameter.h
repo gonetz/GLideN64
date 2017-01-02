@@ -17,7 +17,10 @@ namespace graphics {
 		explicit operator s32() const { return static_cast<s32>(m_iparameter); }
 		explicit operator f32() const { return m_fparameter; }
 
-		bool isValid() const { return m_iparameter != INVALID_PARAMETER; };
+		bool isValid() const { return m_iparameter != INVALID_PARAMETER; }
+
+		bool operator==(const Parameter & _other) const { return m_iparameter == _other.m_iparameter; }
+
 	private:
 		union {
 			u32 m_iparameter;

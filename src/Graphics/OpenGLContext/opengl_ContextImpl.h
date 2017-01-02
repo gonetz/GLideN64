@@ -30,6 +30,10 @@ namespace opengl {
 
 		void deleteFramebuffer(graphics::ObjectHandle _name) override;
 
+		graphics::ObjectHandle createRenderbuffer() override;
+
+		void initRenderbuffer(const graphics::Context::InitRenderbufferParams & _params) override;
+
 		void addFrameBufferRenderTarget(const graphics::Context::FrameBufferRenderTarget & _params) override;
 
 	private:
@@ -39,6 +43,8 @@ namespace opengl {
 		std::unique_ptr<Set2DTextureParameters> m_set2DTextureParameters;
 
 		std::unique_ptr<CreateFramebufferObject> m_createFramebuffer;
+		std::unique_ptr<CreateRenderbuffer> m_createRenderbuffer;
+		std::unique_ptr<InitRenderbuffer> m_initRenderbuffer;
 		std::unique_ptr<AddFramebufferRenderTarget> m_addFramebufferRenderTarget;
 
 		GLVersion m_version;

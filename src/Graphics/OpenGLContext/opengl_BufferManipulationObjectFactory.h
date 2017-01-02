@@ -15,6 +15,19 @@ namespace opengl {
 		virtual graphics::ObjectHandle createFramebuffer() = 0;
 	};
 
+	class CreateRenderbuffer
+	{
+	public:
+		virtual ~CreateRenderbuffer() {};
+		virtual graphics::ObjectHandle createRenderbuffer() = 0;
+	};
+
+	class InitRenderbuffer
+	{
+	public:
+		virtual ~InitRenderbuffer() {};
+		virtual void initRenderbuffer(const graphics::Context::InitRenderbufferParams & _params) = 0;
+	};
 
 	class AddFramebufferRenderTarget
 	{
@@ -31,6 +44,10 @@ namespace opengl {
 		~BufferManipulationObjectFactory();
 
 		CreateFramebufferObject * getCreateFramebufferObject() const;
+
+		CreateRenderbuffer * getCreateRenderbuffer() const;
+
+		InitRenderbuffer * getInitRenderbuffer() const;
 
 		AddFramebufferRenderTarget * getAddFramebufferRenderTarget() const;
 

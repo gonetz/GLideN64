@@ -39,6 +39,37 @@ public:
 	}
 };
 
+/*---------------CreateRenderbuffer-------------*/
+
+class GenRenderbuffer : public CreateRenderbuffer
+{
+public:
+	graphics::ObjectHandle createRenderbuffer() override
+	{
+		GLuint renderbuffer;
+		glGenRenderbuffers(1, &renderbuffer);
+		return graphics::ObjectHandle(renderbuffer);
+	}
+};
+
+
+/*---------------InitRenderbuffer-------------*/
+
+class RenderbufferStorage : public InitRenderbuffer
+{
+public:
+	RenderbufferStorage(CachedBindRenderbuffer * _bind) : m_bind(_bind) {}
+	void initRenderbuffer(const graphics::Context::InitRenderbufferParams & _params) override
+	{
+		m_bind->bind(_params.target, _params.handle);
+		glRenderbufferStorage(GLenum(_params.target), GLenum(_params.format), _params.width, _params.height);
+	}
+
+private:
+	CachedBindRenderbuffer * m_bind;
+};
+
+
 /*---------------AddFramebufferTarget-------------*/
 
 class AddFramebufferTexture2D : public AddFramebufferRenderTarget
@@ -49,11 +80,18 @@ public:
 	void addFrameBufferRenderTarget(const graphics::Context::FrameBufferRenderTarget & _params) override
 	{
 		m_bind->bind(_params.bufferTarget, _params.bufferHandle);
-		glFramebufferTexture2D(GLenum(_params.bufferTarget),
-			GLenum(_params.attachment),
-			GLenum(_params.textureTarget),
-			GLuint(_params.textureHandle),
-			0);
+		if (_params.textureTarget == graphics::target::RENDERBUFFER) {
+			glFramebufferRenderbuffer(GLenum(_params.bufferTarget),
+				GLenum(_params.attachment),
+				GLenum(_params.textureTarget),
+				GLuint(_params.textureHandle));
+		} else {
+			glFramebufferTexture2D(GLenum(_params.bufferTarget),
+				GLenum(_params.attachment),
+				GLenum(_params.textureTarget),
+				GLuint(_params.textureHandle),
+				0);
+		}
 	}
 
 private:
@@ -100,6 +138,16 @@ CreateFramebufferObject * BufferManipulationObjectFactory::getCreateFramebufferO
 		return new CreateFramebuffer;
 
 	return new GenFramebuffer;
+}
+
+CreateRenderbuffer * BufferManipulationObjectFactory::getCreateRenderbuffer() const
+{
+	return new GenRenderbuffer;
+}
+
+InitRenderbuffer * BufferManipulationObjectFactory::getInitRenderbuffer() const
+{
+	return new RenderbufferStorage(m_cachedFunctions.geCachedBindRenderbuffer());
 }
 
 AddFramebufferRenderTarget * BufferManipulationObjectFactory::getAddFramebufferRenderTarget() const

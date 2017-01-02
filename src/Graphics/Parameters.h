@@ -28,6 +28,7 @@ namespace graphics {
 	namespace target {
 		extern Parameter TEXTURE_2D;
 		extern Parameter TEXTURE_2D_MULTISAMPLE;
+		extern Parameter RENDERBUFFER;
 	}
 
 	namespace bufferTarget {
@@ -38,6 +39,7 @@ namespace graphics {
 
 	namespace bufferAttachment {
 		extern Parameter COLOR_ATTACHMENT0;
+		extern Parameter DEPTH_ATTACHMENT;
 	}
 
 	namespace enable {
