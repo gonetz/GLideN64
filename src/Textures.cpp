@@ -606,6 +606,8 @@ CachedTexture * TextureCache::_addTexture(u32 _crc32)
 
 void TextureCache::removeFrameBufferTexture(CachedTexture * _pTexture)
 {
+	if (_pTexture == nullptr)
+		return;
 	FBTextures::const_iterator iter = m_fbTextures.find(_pTexture->glName);
 	assert(iter != m_fbTextures.cend());
 	m_cachedBytes -= iter->second.textureBytes;

@@ -43,6 +43,21 @@ void Context::setTextureParameters(const TexParameters & _parameters)
 	m_impl->setTextureParameters(_parameters);
 }
 
+ObjectHandle Context::createFramebuffer()
+{
+	return m_impl->createFramebuffer();
+}
+
+void Context::deleteFramebuffer(ObjectHandle _name)
+{
+	m_impl->deleteFramebuffer(_name);
+}
+
+void Context::addFrameBufferRenderTarget(const FrameBufferRenderTarget & _params)
+{
+	m_impl->addFrameBufferRenderTarget(_params);
+}
+
 bool Context::isMultisamplingSupported() const
 {
 	// TODO

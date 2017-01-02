@@ -2,6 +2,7 @@
 #include <memory>
 #include <Graphics/ContextImpl.h>
 #include "opengl_TextureManipulationObjectFactory.h"
+#include "opengl_BufferManipulationObjectFactory.h"
 #include "opengl_GLVersion.h"
 #include "opengl_CachedFunctions.h"
 
@@ -25,12 +26,22 @@ namespace opengl {
 
 		void setTextureParameters(const graphics::Context::TexParameters & _parameters) override;
 
+		graphics::ObjectHandle createFramebuffer() override;
+
+		void deleteFramebuffer(graphics::ObjectHandle _name) override;
+
+		void addFrameBufferRenderTarget(const graphics::Context::FrameBufferRenderTarget & _params) override;
+
 	private:
+		std::unique_ptr<CachedFunctions> m_cachedFunctions;
 		std::unique_ptr<Create2DTexture> m_createTexture;
 		std::unique_ptr<Init2DTexture> m_init2DTexture;
 		std::unique_ptr<Set2DTextureParameters> m_set2DTextureParameters;
+
+		std::unique_ptr<CreateFramebufferObject> m_createFramebuffer;
+		std::unique_ptr<AddFramebufferRenderTarget> m_addFramebufferRenderTarget;
+
 		GLVersion m_version;
-		CachedFunctions m_cachedFunctions;
 	};
 
 }

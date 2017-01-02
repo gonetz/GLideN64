@@ -25,9 +25,15 @@ DepthBuffer::DepthBuffer() : m_address(0), m_width(0), m_ulx(0), m_uly(0), m_lrx
 	m_cleared(false), m_pResolveDepthBufferTexture(nullptr), m_resolved(false),
 	m_pDepthBufferCopyTexture(nullptr), m_copied(false)
 {
+#ifndef GRAPHICS_CONTEXT
 	glGenFramebuffers(1, &m_copyFBO);
 	if (video().getRender().isImageTexturesSupported() && config.frameBufferEmulation.N64DepthCompare != 0)
 		glGenFramebuffers(1, &m_depthImageFBO);
+#else // GRAPHICS_CONTEXT
+	m_copyFBO = GLuint(gfxContext.createFramebuffer());
+	if (video().getRender().isImageTexturesSupported() && config.frameBufferEmulation.N64DepthCompare != 0)
+		m_depthImageFBO = GLuint(gfxContext.createFramebuffer());
+#endif
 }
 
 DepthBuffer::DepthBuffer(DepthBuffer && _other) :
@@ -50,20 +56,23 @@ DepthBuffer::DepthBuffer(DepthBuffer && _other) :
 
 DepthBuffer::~DepthBuffer()
 {
+#ifndef GRAPHICS_CONTEXT
 	if (m_depthImageFBO != 0)
 		glDeleteFramebuffers(1, &m_depthImageFBO);
-	if (m_pDepthImageTexture != nullptr)
-		textureCache().removeFrameBufferTexture(m_pDepthImageTexture);
-	if (m_pDepthBufferTexture != nullptr)
-		textureCache().removeFrameBufferTexture(m_pDepthBufferTexture);
 	if (m_depthRenderbuffer != 0)
 		glDeleteRenderbuffers(1, &m_depthRenderbuffer);
-	if (m_pResolveDepthBufferTexture != nullptr)
-		textureCache().removeFrameBufferTexture(m_pResolveDepthBufferTexture);
 	if (m_copyFBO != 0)
 		glDeleteFramebuffers(1, &m_copyFBO);
-	if (m_pDepthBufferCopyTexture != nullptr)
-		textureCache().removeFrameBufferTexture(m_pDepthBufferCopyTexture);
+#else
+	gfxContext.deleteFramebuffer(graphics::ObjectHandle(m_depthImageFBO));
+	gfxContext.deleteFramebuffer(graphics::ObjectHandle(m_depthRenderbuffer));
+	gfxContext.deleteFramebuffer(graphics::ObjectHandle(m_copyFBO));
+#endif
+
+	textureCache().removeFrameBufferTexture(m_pDepthImageTexture);
+	textureCache().removeFrameBufferTexture(m_pDepthBufferTexture);
+	textureCache().removeFrameBufferTexture(m_pResolveDepthBufferTexture);
+	textureCache().removeFrameBufferTexture(m_pDepthBufferCopyTexture);
 }
 
 void DepthBuffer::initDepthImageTexture(FrameBuffer * _pBuffer)
@@ -198,6 +207,7 @@ void DepthBuffer::_initDepthBufferTexture(FrameBuffer * _pBuffer, CachedTexture 
 		params.dataType = fboFormats.depthType;
 		gfxContext.init2DTexture(params);
 	}
+	_pTexture->frameBufferTexture = _multisample ? CachedTexture::fbMultiSample : CachedTexture::fbOneSample;
 	{
 		graphics::Context::TexParameters params;
 		params.handle = graphics::ObjectHandle(_pTexture->glName);

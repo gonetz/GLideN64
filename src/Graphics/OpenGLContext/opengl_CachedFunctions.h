@@ -25,17 +25,24 @@ namespace opengl {
 	class CachedBind
 	{
 	public:
-		CachedBind(Bind * _bind) : m_bind(_bind), m_name(0U) {}
+		CachedBind(Bind _bind) : m_bind(_bind), m_name(0U) {}
 
 		void bind(graphics::Parameter _target, graphics::ObjectHandle _name) {
 			// TODO make cacheble
 			m_bind(GLenum(_target), GLuint(_name));
 		}
 
+		void reset()
+		{
+			m_name = graphics::ObjectHandle(0U);
+		}
+
 	private:
 		graphics::ObjectHandle m_name;
-		Bind * m_bind;
+		Bind m_bind;
 	};
+
+	typedef CachedBind<decltype(glBindFramebuffer)> CachedBindFramebuffer;
 
 	class CachedBindTexture
 	{
@@ -78,12 +85,15 @@ namespace opengl {
 
 		CachedActiveTexture * geCachedActiveTexture();
 
+		CachedBindFramebuffer * geCachedBindFramebuffer();
+
 	private:
 		typedef std::unordered_map<u32, CachedEnable> EnableParameters;
 
 		EnableParameters m_enables;
 		CachedBindTexture m_bindTexture;
 		CachedActiveTexture m_activeTexture;
+		CachedBindFramebuffer m_bindFramebuffer;
 	};
 
 }

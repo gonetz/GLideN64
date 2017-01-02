@@ -16,6 +16,9 @@ namespace graphics {
 		virtual void deleteTexture(ObjectHandle _name) = 0;
 		virtual void init2DTexture(const Context::InitTextureParams & _params) = 0;
 		virtual void setTextureParameters(const Context::TexParameters & _parameters) = 0;
+		virtual ObjectHandle createFramebuffer() = 0;
+		virtual void deleteFramebuffer(ObjectHandle _name) = 0;
+		virtual void addFrameBufferRenderTarget(const Context::FrameBufferRenderTarget & _params) = 0;
 	};
 
 }

@@ -30,6 +30,16 @@ namespace graphics {
 		Parameter TEXTURE_2D_MULTISAMPLE(GL_TEXTURE_2D_MULTISAMPLE);
 	}
 
+	namespace bufferTarget {
+		Parameter FRAMEBUFFER(GL_FRAMEBUFFER);
+		Parameter DRAW_FRAMEBUFFER(GL_DRAW_FRAMEBUFFER);
+		Parameter READ_FRAMEBUFFER(GL_READ_FRAMEBUFFER);
+	}
+
+	namespace bufferAttachment {
+		Parameter COLOR_ATTACHMENT0(GL_COLOR_ATTACHMENT0);
+	}
+
 	namespace enable {
 		Parameter BLEND(GL_BLEND);
 		Parameter CULL_FACE(GL_CULL_FACE);

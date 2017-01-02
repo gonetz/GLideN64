@@ -101,6 +101,9 @@ extern PFNGLTEXTURESTORAGE2DMULTISAMPLEEXTPROC glTextureStorage2DMultisample;
 extern PFNGLTEXTUREPARAMETERIPROC glTextureParameteri;
 extern PFNGLTEXTUREPARAMETERFPROC glTextureParameterf;
 extern PFNGLCREATETEXTURESPROC glCreateTextures;
+extern PFNGLCREATEBUFFERSPROC glCreateBuffers;
+extern PFNGLCREATEFRAMEBUFFERSPROC glCreateFramebuffers;
+extern PFNGLNAMEDFRAMEBUFFERTEXTUREPROC glNamedFramebufferTexture;
 
 void initGLFunctions();
 

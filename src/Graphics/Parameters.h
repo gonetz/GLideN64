@@ -30,6 +30,16 @@ namespace graphics {
 		extern Parameter TEXTURE_2D_MULTISAMPLE;
 	}
 
+	namespace bufferTarget {
+		extern Parameter FRAMEBUFFER;
+		extern Parameter DRAW_FRAMEBUFFER;
+		extern Parameter READ_FRAMEBUFFER;
+	}
+
+	namespace bufferAttachment {
+		extern Parameter COLOR_ATTACHMENT0;
+	}
+
 	namespace enable {
 		extern Parameter BLEND;
 		extern Parameter CULL_FACE;

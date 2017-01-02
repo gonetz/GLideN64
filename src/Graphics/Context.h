@@ -53,6 +53,20 @@ namespace graphics {
 
 		void setTextureParameters(const TexParameters & _parameters);
 
+		ObjectHandle createFramebuffer();
+
+		void deleteFramebuffer(ObjectHandle _name);
+
+		struct FrameBufferRenderTarget {
+			ObjectHandle bufferHandle;
+			Parameter bufferTarget;
+			Parameter attachment;
+			Parameter textureTarget;
+			ObjectHandle textureHandle;
+		};
+
+		void addFrameBufferRenderTarget(const FrameBufferRenderTarget & _params);
+
 		bool isMultisamplingSupported() const;
 
 	private:

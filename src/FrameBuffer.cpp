@@ -42,23 +42,30 @@ FrameBuffer::FrameBuffer() :
 {
 	m_loadTileOrigin.uls = m_loadTileOrigin.ult = 0;
 	m_pTexture = textureCache().addFrameBufferTexture(config.video.multisampling != 0);
+#ifndef GRAPHICS_CONTEXT
 	glGenFramebuffers(1, &m_FBO);
+#else
+	m_FBO = GLuint(gfxContext.createFramebuffer());
+#endif
 }
 
 FrameBuffer::~FrameBuffer()
 {
+#ifndef GRAPHICS_CONTEXT
 	if (m_FBO != 0)
 		glDeleteFramebuffers(1, &m_FBO);
-	if (m_pTexture != nullptr)
-		textureCache().removeFrameBufferTexture(m_pTexture);
 	if (m_resolveFBO != 0)
 		glDeleteFramebuffers(1, &m_resolveFBO);
-	if (m_pResolveTexture != nullptr)
-		textureCache().removeFrameBufferTexture(m_pResolveTexture);
 	if (m_SubFBO != 0)
 		glDeleteFramebuffers(1, &m_SubFBO);
-	if (m_pSubTexture != nullptr)
-		textureCache().removeFrameBufferTexture(m_pSubTexture);
+#else
+	gfxContext.deleteFramebuffer(graphics::ObjectHandle(m_FBO));
+	gfxContext.deleteFramebuffer(graphics::ObjectHandle(m_resolveFBO));
+	gfxContext.deleteFramebuffer(graphics::ObjectHandle(m_SubFBO));
+#endif
+	textureCache().removeFrameBufferTexture(m_pTexture);
+	textureCache().removeFrameBufferTexture(m_pResolveTexture);
+	textureCache().removeFrameBufferTexture(m_pSubTexture);
 }
 
 void FrameBuffer::_initTexture(u16 _width, u16 _height, u16 _format, u16 _size, CachedTexture *_pTexture)
@@ -87,11 +94,11 @@ void FrameBuffer::_initTexture(u16 _width, u16 _height, u16 _format, u16 _size, 
 	textureCache().addFrameBufferTextureSize(_pTexture->textureBytes);
 }
 
-void FrameBuffer::_setAndAttachTexture(u16 _size, CachedTexture *_pTexture, u32 _t, bool _multisampling)
+void FrameBuffer::_setAndAttachTexture(u32 _fbo, CachedTexture *_pTexture, u32 _t, bool _multisampling)
 {
 #ifndef GRAPHICS_CONTEXT
 	glBindTexture(GL_TEXTURE_2D, _pTexture->glName);
-	if (_size > G_IM_SIZ_8b) {
+	if (_pTexture->size > G_IM_SIZ_8b) {
 
 #if defined(GLES3) || defined (GLES3_1)
 		glTexStorage2D(GL_TEXTURE_2D, 1, fboFormats.colorInternalFormat, _pTexture->realWidth, _pTexture->realHeight);
@@ -110,6 +117,9 @@ void FrameBuffer::_setAndAttachTexture(u16 _size, CachedTexture *_pTexture, u32 
 	}
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+	glBindFramebuffer(GL_FRAMEBUFFER, _fbo);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _pTexture->glName, 0);
 #else // GRAPHICS_CONTEXT
 	{
 		graphics::Context::InitTextureParams params;
@@ -118,7 +128,7 @@ void FrameBuffer::_setAndAttachTexture(u16 _size, CachedTexture *_pTexture, u32 
 			params.msaaLevel = config.video.multisampling;
 		params.width = _pTexture->realWidth;
 		params.height = _pTexture->realHeight;
-		if (_size > G_IM_SIZ_8b) {
+		if (_pTexture->size > G_IM_SIZ_8b) {
 			params.internalFormat = fboFormats.colorInternalFormat;
 			params.format = fboFormats.colorFormat;
 			params.dataType = fboFormats.colorType;
@@ -139,9 +149,17 @@ void FrameBuffer::_setAndAttachTexture(u16 _size, CachedTexture *_pTexture, u32 
 		params.magFilter = graphics::textureParameters::FILTER_NEAREST;
 		gfxContext.setTextureParameters(params);
 	}
+	{
+		graphics::Context::FrameBufferRenderTarget bufTarget;
+		bufTarget.bufferHandle = graphics::ObjectHandle(_fbo);
+		bufTarget.bufferTarget = graphics::bufferTarget::FRAMEBUFFER;
+		bufTarget.attachment = graphics::bufferAttachment::COLOR_ATTACHMENT0;
+		bufTarget.textureTarget = _multisampling ? graphics::target::TEXTURE_2D_MULTISAMPLE : graphics::target::TEXTURE_2D;
+		bufTarget.textureHandle = graphics::ObjectHandle(_pTexture->glName);
+		gfxContext.addFrameBufferRenderTarget(bufTarget);
+	}
+	assert(checkFBO());
 #endif // GRAPHICS_CONTEXT
-
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _pTexture->glName, 0);
 }
 
 bool FrameBuffer::_isMarioTennisScoreboard() const
@@ -183,11 +201,11 @@ void FrameBuffer::init(u32 _address, u32 _endAddress, u16 _format, u16 _size, u1
 	m_fingerprint = false;
 
 	_initTexture(_width, _height, _format, _size, m_pTexture);
-	glBindFramebuffer(GL_FRAMEBUFFER, m_FBO);
-
 #ifndef GRAPHICS_CONTEXT
 
 #ifdef GL_MULTISAMPLING_SUPPORT
+	glBindFramebuffer(GL_FRAMEBUFFER, m_FBO);
+
 	if (config.video.multisampling != 0) {
 		glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, m_pTexture->glName);
 #if defined(GLESX)
@@ -208,31 +226,29 @@ void FrameBuffer::init(u32 _address, u32 _endAddress, u16 _format, u16 _size, u1
 		_initTexture(_width, _height, _format, _size, m_pResolveTexture);
 		glGenFramebuffers(1, &m_resolveFBO);
 		glBindFramebuffer(GL_FRAMEBUFFER, m_resolveFBO);
-		_setAndAttachTexture(_size, m_pResolveTexture, 0, false);
+		_setAndAttachTexture(m_resolveFBO, m_pResolveTexture, 0, false);
 		assert(checkFBO());
 
 		glBindFramebuffer(GL_FRAMEBUFFER, m_FBO);
 	} else
 #endif // GL_MULTISAMPLING_SUPPORT
-		_setAndAttachTexture(_size, m_pTexture, 0, false);
+		_setAndAttachTexture(m_FBO, m_pTexture, 0, false);
 
 #else // GRAPHICS_CONTEXT
 
 	if (config.video.multisampling != 0) {
-		_setAndAttachTexture(_size, m_pTexture, 0, true);
+		_setAndAttachTexture(m_FBO, m_pTexture, 0, true);
 		m_pTexture->frameBufferTexture = CachedTexture::fbMultiSample;
-		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D_MULTISAMPLE, m_pTexture->glName, 0);
 
 		m_pResolveTexture = textureCache().addFrameBufferTexture(false);
 		_initTexture(_width, _height, _format, _size, m_pResolveTexture);
-		glGenFramebuffers(1, &m_resolveFBO);
-		glBindFramebuffer(GL_FRAMEBUFFER, m_resolveFBO);
-		_setAndAttachTexture(_size, m_pResolveTexture, 0, false);
+		m_resolveFBO = GLuint(gfxContext.createFramebuffer());
+		_setAndAttachTexture(m_resolveFBO, m_pResolveTexture, 0, false);
 		assert(checkFBO());
 
 		glBindFramebuffer(GL_FRAMEBUFFER, m_FBO);
 	} else
-		_setAndAttachTexture(_size, m_pTexture, 0, false);
+		_setAndAttachTexture(m_FBO, m_pTexture, 0, false);
 
 #endif // GRAPHICS_CONTEXT
 
@@ -243,12 +259,16 @@ void FrameBuffer::reinit(u16 _height)
 {
 	const u16 format = m_pTexture->format;
 	const u32 endAddress = m_startAddress + ((m_width * _height) << m_size >> 1) - 1;
-	if (m_pTexture != nullptr)
-		textureCache().removeFrameBufferTexture(m_pTexture);
+	textureCache().removeFrameBufferTexture(m_pTexture);
+
+#ifndef GRAPHICS_CONTEXT
 	if (m_resolveFBO != 0)
 		glDeleteFramebuffers(1, &m_resolveFBO);
-	if (m_pResolveTexture != nullptr)
-		textureCache().removeFrameBufferTexture(m_pResolveTexture);
+#else
+	gfxContext.deleteFramebuffer(graphics::ObjectHandle(m_resolveFBO));
+#endif
+
+	textureCache().removeFrameBufferTexture(m_pResolveTexture);
 	m_pTexture = textureCache().addFrameBufferTexture(config.video.multisampling != 0);
 	init(m_startAddress, endAddress, format, m_size, m_width, _height, m_cfb);
 }
@@ -378,8 +398,13 @@ void FrameBuffer::resolveMultisampledTexture(bool _bForce)
 
 bool FrameBuffer::_initSubTexture(u32 _t)
 {
+#ifndef GRAPHICS_CONTEXT
 	if (m_SubFBO == 0)
 		glGenFramebuffers(1, &m_SubFBO);
+#else
+	if (m_SubFBO == 0)
+		m_SubFBO = GLuint(gfxContext.createFramebuffer());
+#endif
 
 	gDPTile * pTile = gSP.textureTile[_t];
 	if (pTile->lrs < pTile->uls || pTile->lrt < pTile->ult)
@@ -430,8 +455,7 @@ bool FrameBuffer::_initSubTexture(u32 _t)
 	glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_pSubTexture->glName, 0);
 #else // GRAPHICS_CONTEXT
 
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_SubFBO);
-	_setAndAttachTexture(m_pSubTexture->size, m_pSubTexture, _t, false);
+	_setAndAttachTexture(m_SubFBO, m_pSubTexture, _t, false);
 
 #endif // GRAPHICS_CONTEXT
 
