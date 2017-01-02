@@ -40,11 +40,6 @@ DepthBufferToRDRAM & DepthBufferToRDRAM::get()
 
 void DepthBufferToRDRAM::init()
 {
-	// generate a framebuffer
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-	glGenFramebuffers(1, &m_FBO);
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_FBO);
-
 	m_pColorTexture = textureCache().addFrameBufferTexture(false);
 	m_pColorTexture->format = G_IM_FMT_I;
 	m_pColorTexture->clampS = 1;
@@ -87,6 +82,13 @@ void DepthBufferToRDRAM::init()
 
 	glBindTexture(GL_TEXTURE_2D, 0);
 
+	// generate a framebuffer
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+	glGenFramebuffers(1, &m_FBO);
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_FBO);
+	glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_pColorTexture->glName, 0);
+	glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, m_pDepthTexture->glName, 0);
+
 #else // GRAPHICS_CONTEXT
 	graphics::Context::InitTextureParams initParams;
 	initParams.handle = graphics::ObjectHandle(m_pColorTexture->glName);
@@ -116,10 +118,22 @@ void DepthBufferToRDRAM::init()
 	setParams.handle = graphics::ObjectHandle(m_pDepthTexture->glName);
 	gfxContext.setTextureParameters(setParams);
 
+	graphics::ObjectHandle fboHandle = gfxContext.createFramebuffer();
+	m_FBO = GLuint(fboHandle);
+	graphics::Context::FrameBufferRenderTarget bufTarget;
+	bufTarget.bufferHandle = fboHandle;
+	bufTarget.bufferTarget = graphics::bufferTarget::DRAW_FRAMEBUFFER;
+	bufTarget.attachment = graphics::bufferAttachment::COLOR_ATTACHMENT0;
+	bufTarget.textureTarget = graphics::target::TEXTURE_2D;
+	bufTarget.textureHandle = graphics::ObjectHandle(m_pColorTexture->glName);
+	gfxContext.addFrameBufferRenderTarget(bufTarget);
+
+	bufTarget.attachment = graphics::bufferAttachment::DEPTH_ATTACHMENT;
+	bufTarget.textureHandle = graphics::ObjectHandle(m_pDepthTexture->glName);
+	gfxContext.addFrameBufferRenderTarget(bufTarget);
+
 #endif // GRAPHICS_CONTEXT
 
-	glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_pColorTexture->glName, 0);
-	glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, m_pDepthTexture->glName, 0);
 	// check if everything is OK
 	assert(checkFBO());
 	assert(!isGLError());
