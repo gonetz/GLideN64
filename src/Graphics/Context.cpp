@@ -68,6 +68,12 @@ void Context::addFrameBufferRenderTarget(const FrameBufferRenderTarget & _params
 	m_impl->addFrameBufferRenderTarget(_params);
 }
 
+CombinerProgram * Context::createCombinerProgram(Combiner & _color, Combiner & _alpha, const CombinerKey & _key)
+{
+	return 	m_impl->createCombinerProgram(_color, _alpha, _key);
+
+}
+
 bool Context::isMultisamplingSupported() const
 {
 	// TODO

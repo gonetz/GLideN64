@@ -21,6 +21,7 @@ namespace graphics {
 		virtual void addFrameBufferRenderTarget(const Context::FrameBufferRenderTarget & _params) = 0;
 		virtual ObjectHandle createRenderbuffer() = 0;
 		virtual void initRenderbuffer(const Context::InitRenderbufferParams & _params) = 0;
+		virtual CombinerProgram * createCombinerProgram(Combiner & _color, Combiner & _alpha, const CombinerKey & _key) = 0;
 	};
 
 }

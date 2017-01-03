@@ -69,6 +69,12 @@
     <Filter Include="Source Files\Graphics\OpenGL">
       <UniqueIdentifier>{207de069-1088-4913-84f5-3cf0804928dc}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Graphics\OpenGL\GLSL">
+      <UniqueIdentifier>{f6f08b9a-17ba-4e14-a73b-bb0c3878811f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Graphics\OpenGL\GLSL">
+      <UniqueIdentifier>{e67eafa1-5cea-4267-bc12-715e06c744db}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Combiner.cpp">
@@ -298,6 +304,12 @@
     </ClCompile>
     <ClCompile Include="..\..\src\CombinerKey.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Graphics\OpenGLContext\GLSL\glsl_CombinerProgramBuilder.cpp">
+      <Filter>Source Files\Graphics\OpenGL\GLSL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Graphics\OpenGLContext\GLSL\glsl_CombinerProgramImpl.cpp">
+      <Filter>Source Files\Graphics\OpenGL\GLSL</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -544,8 +556,17 @@
     <ClInclude Include="..\..\src\Graphics\OpenGLContext\opengl_BufferManipulationObjectFactory.h">
       <Filter>Header Files\Graphics\OpenGL</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Graphics\CombinerProgram.h">
+      <Filter>Header Files\Graphics</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\src\CombinerKey.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Graphics\OpenGLContext\GLSL\glsl_CombinerProgramBuilder.h">
+      <Filter>Header Files\Graphics\OpenGL\GLSL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Graphics\OpenGLContext\GLSL\glsl_CombinerProgramImpl.h">
+      <Filter>Header Files\Graphics\OpenGL\GLSL</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

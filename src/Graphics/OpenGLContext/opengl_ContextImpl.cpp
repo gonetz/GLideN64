@@ -104,3 +104,8 @@ void ContextImpl::addFrameBufferRenderTarget(const graphics::Context::FrameBuffe
 {
 	m_addFramebufferRenderTarget->addFrameBufferRenderTarget(_params);
 }
+
+graphics::CombinerProgram * ContextImpl::createCombinerProgram(Combiner & _color, Combiner & _alpha, const CombinerKey & _key)
+{
+	return nullptr;
+}

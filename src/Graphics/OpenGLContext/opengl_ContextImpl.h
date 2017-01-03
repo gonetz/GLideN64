@@ -36,6 +36,8 @@ namespace opengl {
 
 		void addFrameBufferRenderTarget(const graphics::Context::FrameBufferRenderTarget & _params) override;
 
+		graphics::CombinerProgram * createCombinerProgram(Combiner & _color, Combiner & _alpha, const CombinerKey & _key) override;
+
 	private:
 		std::unique_ptr<CachedFunctions> m_cachedFunctions;
 		std::unique_ptr<Create2DTexture> m_createTexture;

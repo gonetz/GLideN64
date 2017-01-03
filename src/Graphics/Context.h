@@ -1,8 +1,10 @@
 #pragma once
 
 #include <memory>
+#include <Combiner.h>
 #include "ObjectHandle.h"
 #include "Parameter.h"
+#include "CombinerProgram.h"
 
 #define GRAPHICS_CONTEXT
 
@@ -78,6 +80,8 @@ namespace graphics {
 		};
 
 		void addFrameBufferRenderTarget(const FrameBufferRenderTarget & _params);
+
+		CombinerProgram * createCombinerProgram(Combiner & _color, Combiner & _alpha, const CombinerKey & _key);
 
 		bool isMultisamplingSupported() const;
 
