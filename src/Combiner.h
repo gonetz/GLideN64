@@ -6,7 +6,7 @@
 #include "GLideN64.h"
 #include "OpenGL.h"
 #include "gDP.h"
-#include "Types.h"
+#include "CombinerKey.h"
 
 /*
 * G_SETCOMBINE: color combine modes
@@ -112,25 +112,6 @@ struct Combiner
 struct CombineCycle
 {
 	int sa, sb, m, a;
-};
-
-class CombinerKey {
-public:
-	CombinerKey() = default;
-	explicit CombinerKey(u64 _mux);
-	CombinerKey(const CombinerKey & _other);
-
-	void operator=(u64 _mux);
-	void operator=(const CombinerKey & _other);
-
-	bool operator==(const CombinerKey & _other) const;
-	bool operator<(const CombinerKey & _other) const;
-
-	bool isRectKey() const;
-	u64 getMux() const { return m_key.mux; }
-
-private:
-	gDPCombine m_key;
 };
 
 class ShaderCombiner;

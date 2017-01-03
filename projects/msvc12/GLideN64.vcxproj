@@ -270,6 +270,7 @@
     <ClCompile Include="..\..\src\BufferCopy\DepthBufferToRDRAM.cpp" />
     <ClCompile Include="..\..\src\BufferCopy\RDRAMtoColorBuffer.cpp" />
     <ClCompile Include="..\..\src\Combiner.cpp" />
+    <ClCompile Include="..\..\src\CombinerKey.cpp" />
     <ClCompile Include="..\..\src\CommonPluginAPI.cpp" />
     <ClCompile Include="..\..\src\common\CommonAPIImpl_common.cpp" />
     <ClCompile Include="..\..\src\Config.cpp" />
@@ -395,6 +396,7 @@
     <ClInclude Include="..\..\src\BufferCopy\RDRAMtoColorBuffer.h" />
     <ClInclude Include="..\..\src\BufferCopy\WriteToRDRAM.h" />
     <ClInclude Include="..\..\src\Combiner.h" />
+    <ClInclude Include="..\..\src\CombinerKey.h" />
     <ClInclude Include="..\..\src\common\GLFunctions.h" />
     <ClInclude Include="..\..\src\Config.h" />
     <ClInclude Include="..\..\src\convert.h" />
