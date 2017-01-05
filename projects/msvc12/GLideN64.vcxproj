@@ -302,8 +302,11 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Graphics\Context.cpp" />
     <ClCompile Include="..\..\src\Graphics\OpenGLContext\GLFunctions.cpp" />
+    <ClCompile Include="..\..\src\Graphics\OpenGLContext\GLSL\glsl_CombinerInputs.cpp" />
     <ClCompile Include="..\..\src\Graphics\OpenGLContext\GLSL\glsl_CombinerProgramBuilder.cpp" />
     <ClCompile Include="..\..\src\Graphics\OpenGLContext\GLSL\glsl_CombinerProgramImpl.cpp" />
+    <ClCompile Include="..\..\src\Graphics\OpenGLContext\GLSL\glsl_CombinerProgramUniformFactory.cpp" />
+    <ClCompile Include="..\..\src\Graphics\OpenGLContext\GLSL\glsl_NoiseTexture.cpp" />
     <ClCompile Include="..\..\src\Graphics\OpenGLContext\GLSL\glsl_Utils.cpp" />
     <ClCompile Include="..\..\src\Graphics\OpenGLContext\opengl_Attributes.cpp" />
     <ClCompile Include="..\..\src\Graphics\OpenGLContext\opengl_BufferManipulationObjectFactory.cpp" />
@@ -439,8 +442,11 @@
     <ClInclude Include="..\..\src\Graphics\ContextImpl.h" />
     <ClInclude Include="..\..\src\Graphics\ObjectHandle.h" />
     <ClInclude Include="..\..\src\Graphics\OpenGLContext\GLFunctions.h" />
+    <ClInclude Include="..\..\src\Graphics\OpenGLContext\GLSL\glsl_CombinerInputs.h" />
     <ClInclude Include="..\..\src\Graphics\OpenGLContext\GLSL\glsl_CombinerProgramBuilder.h" />
     <ClInclude Include="..\..\src\Graphics\OpenGLContext\GLSL\glsl_CombinerProgramImpl.h" />
+    <ClInclude Include="..\..\src\Graphics\OpenGLContext\GLSL\glsl_CombinerProgramUniformFactory.h" />
+    <ClInclude Include="..\..\src\Graphics\OpenGLContext\GLSL\glsl_NoiseTexture.h" />
     <ClInclude Include="..\..\src\Graphics\OpenGLContext\GLSL\glsl_Utils.h" />
     <ClInclude Include="..\..\src\Graphics\OpenGLContext\opengl_Attributes.h" />
     <ClInclude Include="..\..\src\Graphics\OpenGLContext\opengl_BufferManipulationObjectFactory.h" />

@@ -3,50 +3,11 @@
 
 using namespace glsl;
 
-/*---------------CombinerInputs-------------*/
-
-bool CombinerInputs::usesTile(u32 _t) const
-{
-	if (_t == 0)
-		return (m_inputs & ((1 << TEXEL0) | (1 << TEXEL0_ALPHA))) != 0;
-	return (m_inputs & ((1 << TEXEL1) | (1 << TEXEL1_ALPHA))) != 0;
-}
-
-bool CombinerInputs::usesTexture() const
-{
-	return (m_inputs & ((1 << TEXEL1) | (1 << TEXEL1_ALPHA) | (1 << TEXEL0) | (1 << TEXEL0_ALPHA))) != 0;
-}
-
-bool CombinerInputs::usesLOD() const
-{
-	return (m_inputs & (1 << LOD_FRACTION)) != 0;
-}
-
-bool CombinerInputs::usesShade() const
-{
-	return (m_inputs & ((1 << SHADE) | (1 << SHADE_ALPHA))) != 0;
-}
-
-bool CombinerInputs::usesShadeColor() const
-{
-	return (m_inputs & (1 << SHADE)) != 0;
-}
-
-bool CombinerInputs::usesHwLighting() const
-{
-	return (m_inputs & (1 << HW_LIGHT)) != 0;
-}
-
-void CombinerInputs::addInput(int _input)
-{
-	m_inputs |= 1 << _input;
-}
-
-
-/*---------------CombinerProgramImpl-------------*/
-
-
-CombinerProgramImpl::CombinerProgramImpl()
+CombinerProgramImpl::CombinerProgramImpl(GLuint _program, const CombinerInputs & _inputs, UniformGroups && _uniforms)
+: m_bNeedUpdate(true)
+, m_program(_program)
+, m_inputs(_inputs)
+, m_uniforms(std::move(_uniforms))
 {
 }
 
@@ -57,14 +18,51 @@ CombinerProgramImpl::~CombinerProgramImpl()
 
 void CombinerProgramImpl::activate()
 {
+	glUseProgram(m_program);
 }
 
 void CombinerProgramImpl::update(bool _force)
 {
-
+	_force |= m_bNeedUpdate;
+	m_bNeedUpdate = false;
+	glUseProgram(m_program);
+	for (auto it = m_uniforms.begin(); it != m_uniforms.end(); ++it)
+		(*it)->update(_force);
 }
 
 CombinerKey CombinerProgramImpl::getKey() const
 {
 	return CombinerKey();
+}
+
+bool CombinerProgramImpl::usesTexture() const
+{
+	return m_inputs.usesTexture();
+}
+
+bool CombinerProgramImpl::usesTile(u32 _t) const {
+	return m_inputs.usesTile(_t);
+}
+
+bool CombinerProgramImpl::usesShade() const {
+	return m_inputs.usesShade();
+}
+
+bool CombinerProgramImpl::usesLOD() const {
+	return m_inputs.usesLOD();
+}
+
+namespace graphics {
+
+	// TODO implement
+	std::ostream & operator<< (std::ostream & _os, const CombinerProgram & _combiner)
+	{
+		return _os;
+	}
+
+	std::istream & operator>> (std::istream & _is, CombinerProgram & _combiner)
+	{
+		return _is;
+	}
+
 }

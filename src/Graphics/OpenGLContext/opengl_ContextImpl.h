@@ -6,6 +6,10 @@
 #include "opengl_GLInfo.h"
 #include "opengl_CachedFunctions.h"
 
+namespace glsl {
+	class CombinerProgramBuilder;
+}
+
 namespace opengl {
 
 	class ContextImpl : public graphics::ContextImpl
@@ -49,6 +53,7 @@ namespace opengl {
 		std::unique_ptr<InitRenderbuffer> m_initRenderbuffer;
 		std::unique_ptr<AddFramebufferRenderTarget> m_addFramebufferRenderTarget;
 
+		std::unique_ptr<glsl::CombinerProgramBuilder> m_combinerProgramBuilder;
 		GLInfo m_glInfo;
 	};
 

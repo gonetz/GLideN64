@@ -1,6 +1,7 @@
 #include <assert.h>
 #include <Log.h>
 #include "opengl_ContextImpl.h"
+#include "GLSL/glsl_CombinerProgramBuilder.h"
 
 using namespace opengl;
 
@@ -35,6 +36,8 @@ void ContextImpl::init()
 		m_initRenderbuffer.reset(bufferObjectFactory.getInitRenderbuffer());
 		m_addFramebufferRenderTarget.reset(bufferObjectFactory.getAddFramebufferRenderTarget());
 	}
+
+	m_combinerProgramBuilder.reset(new glsl::CombinerProgramBuilder(m_glInfo));
 }
 
 void ContextImpl::destroy()
@@ -48,6 +51,9 @@ void ContextImpl::destroy()
 	m_createRenderbuffer.reset(nullptr);
 	m_initRenderbuffer.reset(nullptr);
 	m_addFramebufferRenderTarget.reset(nullptr);
+
+
+	m_combinerProgramBuilder.reset(nullptr);
 }
 
 graphics::ObjectHandle ContextImpl::createTexture(graphics::Parameter _target)
@@ -103,5 +109,5 @@ void ContextImpl::addFrameBufferRenderTarget(const graphics::Context::FrameBuffe
 
 graphics::CombinerProgram * ContextImpl::createCombinerProgram(Combiner & _color, Combiner & _alpha, const CombinerKey & _key)
 {
-	return nullptr;
+	return m_combinerProgramBuilder->buildCombinerProgram(_color, _alpha, _key);
 }

@@ -4,9 +4,15 @@
 #include <sstream>
 #include <Combiner.h>
 #include <Graphics/OpenGLContext/opengl_GLInfo.h>
-#include <Graphics/CombinerProgram.h>
+
+namespace graphics {
+	class CombinerProgram;
+}
 
 namespace glsl {
+
+	class NoiseTexture;
+	class CombinerProgramUniformFactory;
 
 	class ShaderPart
 	{
@@ -23,7 +29,7 @@ namespace glsl {
 	class CombinerProgramBuilder
 	{
 	public:
-		CombinerProgramBuilder(const opengl::GLInfo & _version);
+		CombinerProgramBuilder(const opengl::GLInfo & _glinfo);
 		~CombinerProgramBuilder();
 		graphics::CombinerProgram * buildCombinerProgram(Combiner & _color, Combiner & _alpha, const CombinerKey & _key);
 
@@ -76,6 +82,9 @@ namespace glsl {
 		ShaderPartPtr m_shaderReadtex;
 		ShaderPartPtr m_shaderN64DepthCompare;
 		ShaderPartPtr m_shaderN64DepthRender;
+
+		std::unique_ptr<NoiseTexture> m_noiseTexture;
+		std::unique_ptr<CombinerProgramUniformFactory> m_uniformFactory;
 
 		GLuint  m_vertexShaderRect;
 		GLuint  m_vertexShaderTriangle;
