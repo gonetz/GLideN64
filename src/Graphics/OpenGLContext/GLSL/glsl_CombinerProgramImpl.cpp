@@ -3,8 +3,12 @@
 
 using namespace glsl;
 
-CombinerProgramImpl::CombinerProgramImpl(GLuint _program, const CombinerInputs & _inputs, UniformGroups && _uniforms)
+CombinerProgramImpl::CombinerProgramImpl(const CombinerKey & _key,
+	GLuint _program,
+	const CombinerInputs & _inputs,
+	UniformGroups && _uniforms)
 : m_bNeedUpdate(true)
+, m_key(_key)
 , m_program(_program)
 , m_inputs(_inputs)
 , m_uniforms(std::move(_uniforms))
@@ -32,7 +36,7 @@ void CombinerProgramImpl::update(bool _force)
 
 CombinerKey CombinerProgramImpl::getKey() const
 {
-	return CombinerKey();
+	return m_key;
 }
 
 bool CombinerProgramImpl::usesTexture() const

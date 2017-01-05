@@ -1176,7 +1176,8 @@ void OGLRender::_updateTextures(RENDER_STATE _renderState) const
 {
 	//For some reason updating the texture cache on the first frame of LOZ:OOT causes a nullptr Pointer exception...
 	CombinerInfo & cmbInfo = CombinerInfo::get();
-	ShaderCombiner * pCurrentCombiner = cmbInfo.getCurrent();
+	//ShaderCombiner * pCurrentCombiner = cmbInfo.getCurrent();
+	graphics::CombinerProgram * pCurrentCombiner = cmbInfo.getCurrent();
 	if (pCurrentCombiner != nullptr) {
 		for (u32 t = 0; t < 2; ++t) {
 			if (pCurrentCombiner->usesTile(t))
@@ -1316,7 +1317,7 @@ void OGLRender::_prepareDrawTriangle(bool _dma)
 		_setColorArray();
 		_setTexCoordArrays();
 	}
-	currentCombiner()->updateRenderState();
+//	currentCombiner()->updateRenderState();
 
 	bool bFlatColors = false;
 	if (!RSP.bLLE && (gSP.geometryMode & G_LIGHTING) == 0) {
@@ -1522,7 +1523,7 @@ void OGLRender::drawLine(int _v0, int _v1, float _width)
 		glVertexAttribPointer(SC_MODIFY, 4, GL_BYTE, GL_FALSE, sizeof(SPVertex), &triangles.vertices[0].modify);
 
 		m_renderState = rsLine;
-		currentCombiner()->updateRenderState();
+//		currentCombiner()->updateRenderState();
 	}
 
 	if ((triangles.vertices[_v0].modify & MODIFY_XY) != 0)
@@ -1553,7 +1554,7 @@ void OGLRender::drawRect(int _ulx, int _uly, int _lrx, int _lry, float *_pColor)
 
 	if (updateArrays)
 		glVertexAttribPointer(SC_RECT_POSITION, 4, GL_FLOAT, GL_FALSE, sizeof(GLVertex), &m_rect[0].x);
-	currentCombiner()->updateRenderState();
+//	currentCombiner()->updateRenderState();
 
 	FrameBuffer * pCurrentBuffer = frameBufferList().getCurrent();
 	OGLVideo & ogl = video();
@@ -1764,7 +1765,7 @@ void OGLRender::drawTexturedRect(const TexturedRectParams & _params)
 		CombinerInfo & cmbInfo = CombinerInfo::get();
 		cmbInfo.setPolygonMode(rsTexRect);
 		cmbInfo.update();
-		currentCombiner()->updateRenderState();
+//		currentCombiner()->updateRenderState();
 		_updateTextures(rsTexRect);
 		cmbInfo.updateParameters(rsTexRect);
 		if (CombinerInfo::get().isChanged())
@@ -1797,7 +1798,7 @@ void OGLRender::drawTexturedRect(const TexturedRectParams & _params)
 			glVertexAttribPointer(SC_TEXCOORD0, 2, GL_FLOAT, GL_FALSE, sizeof(GLVertex), &m_rect[0].s0);
 			glVertexAttribPointer(SC_TEXCOORD1, 2, GL_FLOAT, GL_FALSE, sizeof(GLVertex), &m_rect[0].s1);
 		}
-		currentCombiner()->updateRenderState();
+//		currentCombiner()->updateRenderState();
 
 		if (_params.texrectCmd && texturedRectSpecial != nullptr && texturedRectSpecial(_params)) {
 			gSP.changed |= CHANGED_GEOMETRYMODE;
@@ -1808,7 +1809,8 @@ void OGLRender::drawTexturedRect(const TexturedRectParams & _params)
 			return;
 	}
 
-	ShaderCombiner * pCurrentCombiner = currentCombiner();
+//	ShaderCombiner * pCurrentCombiner = currentCombiner();
+	graphics::CombinerProgram * pCurrentCombiner = currentCombiner();
 	const FrameBuffer * pCurrentBuffer = _params.pBuffer;
 	OGLVideo & ogl = video();
 	TextureCache & cache = textureCache();

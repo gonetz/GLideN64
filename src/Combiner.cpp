@@ -12,6 +12,8 @@
 #include "Config.h"
 #include "PluginAPI.h"
 #include "RSP.h"
+#include "Graphics/Context.h"
+#include "Graphics/CombinerProgram.h"
 
 static int saRGBExpanded[] =
 {
@@ -191,7 +193,8 @@ void SimplifyCycle( CombineCycle *cc, CombinerStage *stage )
 	}
 }
 
-ShaderCombiner * CombinerInfo::_compile(u64 mux) const
+//ShaderCombiner * CombinerInfo::_compile(u64 mux) const
+graphics::CombinerProgram * CombinerInfo::_compile(u64 mux) const
 {
 	gDPCombine combine;
 
@@ -245,7 +248,8 @@ ShaderCombiner * CombinerInfo::_compile(u64 mux) const
 		}
 	}
 
-	return new ShaderCombiner( color, alpha, combine );
+//	return new ShaderCombiner( color, alpha, combine );
+	return gfxContext.createCombinerProgram(color, alpha, CombinerKey(combine.mux));
 }
 
 void CombinerInfo::update()
@@ -267,17 +271,17 @@ void CombinerInfo::setCombine(u64 _mux )
 	const CombinerKey key(_mux);
 	if (m_pCurrent != nullptr && m_pCurrent->getKey() == key) {
 		m_bChanged = false;
-		m_pCurrent->update(false);
+//		m_pCurrent->update(false);
 		return;
 	}
 	Combiners::const_iterator iter = m_combiners.find(key);
 	if (iter != m_combiners.end()) {
 		m_pCurrent = iter->second;
-		m_pCurrent->update(false);
+//		m_pCurrent->update(false);
 	} else {
 		m_pCurrent = _compile(_mux);
 		m_pCurrent->update(true);
-		m_pUniformCollection->bindWithShaderCombiner(m_pCurrent);
+//		m_pUniformCollection->bindWithShaderCombiner(m_pCurrent);
 		m_combiners[m_pCurrent->getKey()] = m_pCurrent;
 	}
 	m_bChanged = true;
@@ -285,36 +289,42 @@ void CombinerInfo::setCombine(u64 _mux )
 
 void CombinerInfo::updatePrimColor()
 {
+	return;
 	if (m_pUniformCollection != nullptr)
 		m_pUniformCollection->setColorData(UniformCollection::cuPrimColor, sizeof(f32)* 5, &gDP.primColor.r);
 }
 
 void CombinerInfo::updateEnvColor()
 {
+	return;
 	if (m_pUniformCollection != nullptr)
 		m_pUniformCollection->setColorData(UniformCollection::cuEnvColor, sizeof(f32)* 4, &gDP.envColor.r);
 }
 
 void CombinerInfo::updateFogColor()
 {
+	return;
 	if (m_pUniformCollection != nullptr)
 		m_pUniformCollection->setColorData(UniformCollection::cuFogColor, sizeof(f32)* 4, &gDP.fogColor.r);
 }
 
 void CombinerInfo::updateBlendColor()
 {
+	return;
 	if (m_pUniformCollection != nullptr)
 		m_pUniformCollection->setColorData(UniformCollection::cuBlendColor, sizeof(f32)* 4, &gDP.blendColor.r);
 }
 
 void CombinerInfo::updateKeyColor()
 {
+	return;
 	if (m_pUniformCollection != nullptr)
 		m_pUniformCollection->setColorData(UniformCollection::cuCenterColor, sizeof(f32)* 8, &gDP.key.center.r);
 }
 
 void CombinerInfo::updateConvertColor()
 {
+	return;
 	if (m_pUniformCollection == nullptr)
 		return;
 	f32 convert[2] = { gDP.convert.k4*0.0039215689f, gDP.convert.k5*0.0039215689f };
@@ -323,12 +333,14 @@ void CombinerInfo::updateConvertColor()
 
 void CombinerInfo::updateTextureParameters()
 {
+	return;
 	if (m_pUniformCollection != nullptr)
 		m_pUniformCollection->updateTextureParameters();
 }
 
 void CombinerInfo::updateLightParameters()
 {
+	return;
 	if (config.generalEmulation.enableHWLighting != 0) {
 		if (m_pUniformCollection != nullptr)
 			m_pUniformCollection->updateLightParameters();
@@ -338,8 +350,9 @@ void CombinerInfo::updateLightParameters()
 
 void CombinerInfo::updateParameters(OGLRender::RENDER_STATE _renderState)
 {
-	if (m_pUniformCollection != nullptr)
-		m_pUniformCollection->updateUniforms(m_pCurrent, _renderState);
+//	if (m_pUniformCollection != nullptr)
+//		m_pUniformCollection->updateUniforms(m_pCurrent, _renderState);
+	m_pCurrent->update(false);
 }
 
 void CombinerInfo::setPolygonMode(OGLRender::RENDER_STATE _renderState)
@@ -487,10 +500,11 @@ bool CombinerInfo::_loadShadersStorage()
 
 		fin.read((char*)&len, sizeof(len));
 		for (u32 i = 0; i < len; ++i) {
-			m_pCurrent = new ShaderCombiner();
+			// TODO implement
+//			m_pCurrent = new ShaderCombiner();
 			fin >> *m_pCurrent;
 			m_pCurrent->update(true);
-			m_pUniformCollection->bindWithShaderCombiner(m_pCurrent);
+//			m_pUniformCollection->bindWithShaderCombiner(m_pCurrent);
 			m_combiners[m_pCurrent->getKey()] = m_pCurrent;
 		}
 	}

@@ -114,6 +114,10 @@ struct CombineCycle
 	int sa, sb, m, a;
 };
 
+namespace graphics {
+	class CombinerProgram;
+}
+
 class ShaderCombiner;
 class UniformCollection;
 class CombinerInfo
@@ -124,7 +128,8 @@ public:
 	void update();
 	void setCombine(u64 _mux);
 
-	ShaderCombiner * getCurrent() const {return m_pCurrent;}
+//	ShaderCombiner * getCurrent() const {return m_pCurrent;}
+	graphics::CombinerProgram * getCurrent() const { return m_pCurrent; }
 	bool isChanged() const {return m_bChanged;}
 	bool isShaderCacheSupported() const { return m_bShaderCacheSupported; }
 	size_t getCombinersNumber() const { return m_combiners.size();  }
@@ -159,7 +164,8 @@ private:
 	void _saveShadersStorage() const;
 	bool _loadShadersStorage();
 	u32 _getConfigOptionsBitSet() const;
-	ShaderCombiner * _compile(u64 mux) const;
+	//ShaderCombiner * _compile(u64 mux) const;
+	graphics::CombinerProgram * _compile(u64 mux) const;
 
 	bool m_bChanged;
 	bool m_bShaderCacheSupported;
@@ -167,14 +173,17 @@ private:
 	u32 m_shadersLoaded;
 	u32 m_configOptionsBitSet;
 
-	ShaderCombiner * m_pCurrent;
-	typedef std::map<CombinerKey, ShaderCombiner *> Combiners;
+//	ShaderCombiner * m_pCurrent;
+//	typedef std::map<CombinerKey, ShaderCombiner *> Combiners;
+	graphics::CombinerProgram * m_pCurrent;
+	typedef std::map<CombinerKey, graphics::CombinerProgram *> Combiners;
 	Combiners m_combiners;
 	UniformCollection * m_pUniformCollection;
 };
 
 inline
-ShaderCombiner * currentCombiner() {
+//ShaderCombiner * currentCombiner() {
+graphics::CombinerProgram * currentCombiner() {
 	return CombinerInfo::get().getCurrent();
 }
 

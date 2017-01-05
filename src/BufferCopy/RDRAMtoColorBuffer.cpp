@@ -285,7 +285,7 @@ void RDRAMtoColorBuffer::copyFromRDRAM(u32 _address, bool _bCFB)
 	gDP.otherMode.cycleType = cycleType;
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	currentCombiner()->updateFrameBufferInfo();
+//	currentCombiner()->updateFrameBufferInfo();
 
 	glDisable(GL_DEPTH_TEST);
 	glDisable(GL_SCISSOR_TEST);

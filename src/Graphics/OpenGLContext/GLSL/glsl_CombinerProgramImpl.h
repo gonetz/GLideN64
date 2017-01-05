@@ -17,7 +17,10 @@ namespace glsl {
 	class CombinerProgramImpl : public graphics::CombinerProgram
 	{
 	public:
-		CombinerProgramImpl(GLuint _program, const CombinerInputs & _inputs, UniformGroups && _uniforms);
+		CombinerProgramImpl(const CombinerKey & _key,
+			GLuint _program,
+			const CombinerInputs & _inputs,
+			UniformGroups && _uniforms);
 		~CombinerProgramImpl();
 
 		void activate() override;
@@ -31,6 +34,7 @@ namespace glsl {
 
 	private:
 		bool m_bNeedUpdate;
+		CombinerKey m_key;
 		GLuint m_program;
 		CombinerInputs m_inputs;
 		UniformGroups m_uniforms;

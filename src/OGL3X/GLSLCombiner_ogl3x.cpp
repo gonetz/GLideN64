@@ -277,7 +277,7 @@ void InitShaderCombiner()
 	g_dither_shader_object = _createShader(GL_FRAGMENT_SHADER, fragment_shader_dither);
 #endif // GLESX
 
-	noiseTex.init();
+//	noiseTex.init();
 	g_monochrome_image_program = createRectShaderProgram(vertex_shader_rect_nocolor, zelda_monochrome_fragment_shader);
 	glUseProgram(g_monochrome_image_program);
 	const int texLoc = glGetUniformLocation(g_monochrome_image_program, "uColorImage");

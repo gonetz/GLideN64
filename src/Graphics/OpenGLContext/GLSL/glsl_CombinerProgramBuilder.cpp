@@ -1847,7 +1847,7 @@ graphics::CombinerProgram * CombinerProgramBuilder::buildCombinerProgram(Combine
 	UniformGroups uniforms;
 	m_uniformFactory->buildUniforms(program, combinerInputs, bIsRect, uniforms);
 
-	return new CombinerProgramImpl(program, combinerInputs, std::move(uniforms));
+	return new CombinerProgramImpl(_key, program, combinerInputs, std::move(uniforms));
 }
 
 static
