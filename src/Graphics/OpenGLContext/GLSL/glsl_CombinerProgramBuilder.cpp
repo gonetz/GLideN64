@@ -2,7 +2,6 @@
 #include <Log.h>
 #include <Config.h>
 #include "glsl_Utils.h"
-#include "glsl_NoiseTexture.h"
 #include "glsl_CombinerInputs.h"
 #include "glsl_CombinerProgramImpl.h"
 #include "glsl_CombinerProgramBuilder.h"
@@ -1914,9 +1913,7 @@ CombinerProgramBuilder::CombinerProgramBuilder(const opengl::GLInfo & _glinfo)
 	m_vertexShaderTriangle = _createVertexShader(m_vertexHeader.get(), m_vertexTriangle.get());
 	m_vertexShaderTexturedRect = _createVertexShader(m_vertexHeader.get(), m_vertexTexturedRect.get());
 	m_vertexShaderTexturedTriangle = _createVertexShader(m_vertexHeader.get(), m_vertexTexturedTriangle.get());
-	if (config.generalEmulation.enableNoise != 0)
-		m_noiseTexture.reset(new NoiseTexture);
-	m_uniformFactory.reset(new CombinerProgramUniformFactory(_glinfo, m_noiseTexture.get()));
+	m_uniformFactory.reset(new CombinerProgramUniformFactory(_glinfo));
 }
 
 CombinerProgramBuilder::~CombinerProgramBuilder()

@@ -212,7 +212,6 @@ void gDPSetEnvColor( u32 r, u32 g, u32 b, u32 a )
 	gDP.envColor.g = g * 0.0039215689f;
 	gDP.envColor.b = b * 0.0039215689f;
 	gDP.envColor.a = a * 0.0039215689f;
-	CombinerInfo::get().updateEnvColor();
 
 #ifdef DEBUG
 	DebugMsg( DEBUG_HIGH | DEBUG_HANDLED | DEBUG_COMBINE, "gDPSetEnvColor( %i, %i, %i, %i );\n",
@@ -226,7 +225,6 @@ void gDPSetBlendColor( u32 r, u32 g, u32 b, u32 a )
 	gDP.blendColor.g = g * 0.0039215689f;
 	gDP.blendColor.b = b * 0.0039215689f;
 	gDP.blendColor.a = a * 0.0039215689f;
-	CombinerInfo::get().updateBlendColor();
 
 	gDP.changed |= CHANGED_BLENDCOLOR;
 #ifdef DEBUG
@@ -241,7 +239,6 @@ void gDPSetFogColor( u32 r, u32 g, u32 b, u32 a )
 	gDP.fogColor.g = g * 0.0039215689f;
 	gDP.fogColor.b = b * 0.0039215689f;
 	gDP.fogColor.a = a * 0.0039215689f;
-	CombinerInfo::get().updateFogColor();
 
 	gDP.changed |= CHANGED_FOGCOLOR;
 
@@ -286,7 +283,6 @@ void gDPSetPrimColor( u32 m, u32 l, u32 r, u32 g, u32 b, u32 a )
 	gDP.primColor.g = g * 0.0039215689f;
 	gDP.primColor.b = b * 0.0039215689f;
 	gDP.primColor.a = a * 0.0039215689f;
-	CombinerInfo::get().updatePrimColor();
 
 #ifdef DEBUG
 	DebugMsg( DEBUG_HIGH | DEBUG_HANDLED | DEBUG_COMBINE, "gDPSetPrimColor( %i, %i, %i, %i, %i, %i );\n",
@@ -814,7 +810,6 @@ void gDPSetConvert( s32 k0, s32 k1, s32 k2, s32 k3, s32 k4, s32 k5 )
 	gDP.convert.k3 = SIGN(k3, 9);
 	gDP.convert.k4 = SIGN(k4, 9);
 	gDP.convert.k5 = SIGN(k5, 9);
-	CombinerInfo::get().updateConvertColor();
 }
 
 void gDPSetKeyR( u32 cR, u32 sR, u32 wR )
@@ -832,7 +827,6 @@ void gDPSetKeyGB(u32 cG, u32 sG, u32 wG, u32 cB, u32 sB, u32 wB )
 	gDP.key.center.b = cB * 0.0039215689f;
 	gDP.key.scale.b = sB * 0.0039215689f;
 	gDP.key.width.b = wB * 0.0039215689f;
-	CombinerInfo::get().updateKeyColor();
 }
 
 void gDPTextureRectangle(f32 ulx, f32 uly, f32 lrx, f32 lry, s32 tile, f32 s, f32 t, f32 dsdx, f32 dtdy , bool flip)

@@ -27,6 +27,7 @@
 #include "SoftwareRender.h"
 #include "FBOTextureFormats.h"
 #include "TextureFilterHandler.h"
+#include "NoiseTexture.h"
 
 #include "Graphics/Context.h"
 #include <Graphics/Parameters.h>
@@ -521,7 +522,7 @@ void OGLRender::TexrectDrawer::add()
 			draw();
 			memcpy(pRect, rect, sizeof(rect));
 			render._updateTextures(rsTexRect);
-			CombinerInfo::get().updateParameters(rsTexRect);
+			CombinerInfo::get().updateParameters();
 		}
 	}
 
@@ -1186,8 +1187,6 @@ void OGLRender::_updateTextures(RENDER_STATE _renderState) const
 				textureCache().activateDummy(t);
 		}
 		pCurrentCombiner->updateFrameBufferInfo();
-		if (pCurrentCombiner->usesTexture() && (_renderState == rsTriangle || _renderState == rsLine))
-			cmbInfo.updateTextureParameters();
 	}
 	gDP.changed &= ~(CHANGED_TILE | CHANGED_TMEM);
 	gSP.changed &= ~(CHANGED_TEXTURE);
@@ -1215,9 +1214,6 @@ void OGLRender::_updateStates(RENDER_STATE _renderState) const
 	if (gSP.changed & CHANGED_VIEWPORT)
 		_updateViewport();
 
-	if (gSP.changed & CHANGED_HW_LIGHT)
-		cmbInfo.updateLightParameters();
-
 	if ((gSP.changed & CHANGED_TEXTURE) ||
 		(gDP.changed & (CHANGED_TILE|CHANGED_TMEM)) ||
 		cmbInfo.isChanged() ||
@@ -1230,7 +1226,7 @@ void OGLRender::_updateStates(RENDER_STATE _renderState) const
 		gDP.changed &= ~(CHANGED_RENDERMODE | CHANGED_CYCLETYPE);
 	}
 
-	cmbInfo.updateParameters(_renderState);
+	cmbInfo.updateParameters();
 
 #ifndef GLES2
 	if (gDP.colorImage.address == gDP.depthImageAddress &&
@@ -1767,7 +1763,7 @@ void OGLRender::drawTexturedRect(const TexturedRectParams & _params)
 		cmbInfo.update();
 //		currentCombiner()->updateRenderState();
 		_updateTextures(rsTexRect);
-		cmbInfo.updateParameters(rsTexRect);
+		cmbInfo.updateParameters();
 		if (CombinerInfo::get().isChanged())
 			_setTexCoordArrays();
 	} else {
@@ -2220,6 +2216,7 @@ void OGLRender::_initData()
 	TextDrawer::get().init();
 	TFH.init();
 	PostProcessor::get().init();
+	g_noiseTexture.init();
 	perf.reset();
 	FBInfo::fbInfo.reset();
 	m_texrectDrawer.init();
@@ -2253,6 +2250,7 @@ void OGLRender::_destroyData()
 
 	m_renderState = rsNone;
 	m_texrectDrawer.destroy();
+	g_noiseTexture.destroy();
 	PostProcessor::get().destroy();
 	if (TFH.optionsChanged())
 		TFH.shutdown();

@@ -118,8 +118,6 @@ namespace graphics {
 	class CombinerProgram;
 }
 
-class ShaderCombiner;
-class UniformCollection;
 class CombinerInfo
 {
 public:
@@ -127,26 +125,14 @@ public:
 	void destroy();
 	void update();
 	void setCombine(u64 _mux);
+	void updateParameters();
 
-//	ShaderCombiner * getCurrent() const {return m_pCurrent;}
 	graphics::CombinerProgram * getCurrent() const { return m_pCurrent; }
 	bool isChanged() const {return m_bChanged;}
 	bool isShaderCacheSupported() const { return m_bShaderCacheSupported; }
 	size_t getCombinersNumber() const { return m_combiners.size();  }
 
 	static CombinerInfo & get();
-
-	void updatePrimColor();
-	void updateEnvColor();
-	void updateFogColor();
-	void updateBlendColor();
-	void updateKeyColor();
-	void updateConvertColor();
-
-	void updateTextureParameters();
-	void updateLightParameters();
-	// Update uniforms for GL without UniformBlock support
-	void updateParameters(OGLRender::RENDER_STATE _renderState);
 
 	void setPolygonMode(OGLRender::RENDER_STATE _renderState);
 	bool isRectMode() const { return m_rectMode; }
@@ -164,7 +150,6 @@ private:
 	void _saveShadersStorage() const;
 	bool _loadShadersStorage();
 	u32 _getConfigOptionsBitSet() const;
-	//ShaderCombiner * _compile(u64 mux) const;
 	graphics::CombinerProgram * _compile(u64 mux) const;
 
 	bool m_bChanged;
@@ -173,16 +158,12 @@ private:
 	u32 m_shadersLoaded;
 	u32 m_configOptionsBitSet;
 
-//	ShaderCombiner * m_pCurrent;
-//	typedef std::map<CombinerKey, ShaderCombiner *> Combiners;
 	graphics::CombinerProgram * m_pCurrent;
 	typedef std::map<CombinerKey, graphics::CombinerProgram *> Combiners;
 	Combiners m_combiners;
-	UniformCollection * m_pUniformCollection;
 };
 
 inline
-//ShaderCombiner * currentCombiner() {
 graphics::CombinerProgram * currentCombiner() {
 	return CombinerInfo::get().getCurrent();
 }

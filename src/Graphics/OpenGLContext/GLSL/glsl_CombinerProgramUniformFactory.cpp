@@ -1,8 +1,8 @@
 #include <Config.h>
 #include "glsl_CombinerProgramUniformFactory.h"
-#include "glsl_NoiseTexture.h"
 
 #include <Textures.h>
+#include <NoiseTexture.h>
 #include <FrameBuffer.h>
 #include <GBI.h>
 #include <RSP.h>
@@ -327,17 +327,12 @@ private:
 class UDitherMode : public UniformGroup
 {
 public:
-	UDitherMode(GLuint _program, bool _usesNoise, NoiseTexture * _noiseTexture)
+	UDitherMode(GLuint _program, bool _usesNoise)
 	: m_usesNoise(m_usesNoise)
-	, m_noiseTexture(_noiseTexture)
 	{
 		LocateUniform(uAlphaCompareMode);
 		LocateUniform(uAlphaDitherMode);
 		LocateUniform(uColorDitherMode);
-	}
-	~UDitherMode()
-	{
-		m_noiseTexture = nullptr;
 	}
 
 	void update(bool _force) override
@@ -355,8 +350,8 @@ public:
 
 		bool updateNoiseTex = m_usesNoise;
 		updateNoiseTex |= (gDP.otherMode.cycleType < G_CYC_COPY) && (gDP.otherMode.colorDither == G_CD_NOISE || gDP.otherMode.alphaDither == G_AD_NOISE || gDP.otherMode.alphaCompare == G_AC_DITHER);
-		if (updateNoiseTex && m_noiseTexture != nullptr)
-			m_noiseTexture->update();
+		if (updateNoiseTex)
+			g_noiseTexture.update();
 	}
 
 private:
@@ -364,7 +359,6 @@ private:
 	iUniform uAlphaDitherMode;
 	iUniform uColorDitherMode;
 	bool m_usesNoise;
-	NoiseTexture * m_noiseTexture;
 };
 
 class UScreenScale : public UniformGroup
@@ -806,7 +800,7 @@ void CombinerProgramUniformFactory::buildUniforms(GLuint _program,
 		}
 	}
 
-	_uniforms.emplace_back(new UDitherMode(_program, _inputs.usesNoise(), m_noiseTexture));
+	_uniforms.emplace_back(new UDitherMode(_program, _inputs.usesNoise()));
 
 	_uniforms.emplace_back(new UScreenScale(_program));
 
@@ -846,16 +840,13 @@ void CombinerProgramUniformFactory::buildUniforms(GLuint _program,
 		_uniforms.emplace_back(new ULights(_program));
 }
 
-CombinerProgramUniformFactory::CombinerProgramUniformFactory(const opengl::GLInfo & _glInfo,
-															 NoiseTexture * _noiseTexture)
+CombinerProgramUniformFactory::CombinerProgramUniformFactory(const opengl::GLInfo & _glInfo)
 : m_glInfo(_glInfo)
-, m_noiseTexture(_noiseTexture)
 {
 }
 
 CombinerProgramUniformFactory::~CombinerProgramUniformFactory()
 {
-	m_noiseTexture = nullptr;
 }
 
 }

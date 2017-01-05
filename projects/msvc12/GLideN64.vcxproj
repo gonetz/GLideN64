@@ -306,7 +306,6 @@
     <ClCompile Include="..\..\src\Graphics\OpenGLContext\GLSL\glsl_CombinerProgramBuilder.cpp" />
     <ClCompile Include="..\..\src\Graphics\OpenGLContext\GLSL\glsl_CombinerProgramImpl.cpp" />
     <ClCompile Include="..\..\src\Graphics\OpenGLContext\GLSL\glsl_CombinerProgramUniformFactory.cpp" />
-    <ClCompile Include="..\..\src\Graphics\OpenGLContext\GLSL\glsl_NoiseTexture.cpp" />
     <ClCompile Include="..\..\src\Graphics\OpenGLContext\GLSL\glsl_Utils.cpp" />
     <ClCompile Include="..\..\src\Graphics\OpenGLContext\opengl_Attributes.cpp" />
     <ClCompile Include="..\..\src\Graphics\OpenGLContext\opengl_BufferManipulationObjectFactory.cpp" />
@@ -340,6 +339,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\src\N64.cpp" />
+    <ClCompile Include="..\..\src\NoiseTexture.cpp" />
     <ClCompile Include="..\..\src\OGL3X\GLSLCombiner_ogl3x.cpp" />
     <ClCompile Include="..\..\src\OpenGL.cpp" />
     <ClCompile Include="..\..\src\Performance.cpp" />
@@ -446,7 +446,6 @@
     <ClInclude Include="..\..\src\Graphics\OpenGLContext\GLSL\glsl_CombinerProgramBuilder.h" />
     <ClInclude Include="..\..\src\Graphics\OpenGLContext\GLSL\glsl_CombinerProgramImpl.h" />
     <ClInclude Include="..\..\src\Graphics\OpenGLContext\GLSL\glsl_CombinerProgramUniformFactory.h" />
-    <ClInclude Include="..\..\src\Graphics\OpenGLContext\GLSL\glsl_NoiseTexture.h" />
     <ClInclude Include="..\..\src\Graphics\OpenGLContext\GLSL\glsl_Utils.h" />
     <ClInclude Include="..\..\src\Graphics\OpenGLContext\opengl_Attributes.h" />
     <ClInclude Include="..\..\src\Graphics\OpenGLContext\opengl_BufferManipulationObjectFactory.h" />
@@ -466,6 +465,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="..\..\src\N64.h" />
+    <ClInclude Include="..\..\src\NoiseTexture.h" />
     <ClInclude Include="..\..\src\OGL3X\Shaders_ogl3x.h" />
     <ClInclude Include="..\..\src\OpenGL.h" />
     <ClInclude Include="..\..\src\Performance.h" />

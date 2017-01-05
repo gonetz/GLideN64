@@ -326,8 +326,8 @@
     <ClCompile Include="..\..\src\Graphics\OpenGLContext\GLSL\glsl_CombinerInputs.cpp">
       <Filter>Source Files\Graphics\OpenGL\GLSL</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\Graphics\OpenGLContext\GLSL\glsl_NoiseTexture.cpp">
-      <Filter>Source Files\Graphics\OpenGL\GLSL</Filter>
+    <ClCompile Include="..\..\src\NoiseTexture.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -595,11 +595,11 @@
     <ClInclude Include="..\..\src\Graphics\OpenGLContext\GLSL\glsl_CombinerProgramUniformFactory.h">
       <Filter>Header Files\Graphics\OpenGL\GLSL</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Graphics\OpenGLContext\GLSL\glsl_NoiseTexture.h">
-      <Filter>Header Files\Graphics\OpenGL\GLSL</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\Graphics\OpenGLContext\GLSL\glsl_CombinerInputs.h">
       <Filter>Header Files\Graphics\OpenGL\GLSL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\NoiseTexture.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

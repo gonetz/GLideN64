@@ -45,6 +45,7 @@ static u32 g_paletteCRC256 = 0;
 
 static std::string strFragmentShader;
 
+#if 0
 class NoiseTexture
 {
 public:
@@ -144,7 +145,7 @@ void NoiseTexture::update()
 	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, VI.width, VI.height, GL_RED, GL_UNSIGNED_BYTE, 0);
 	m_DList = video().getBuffersSwapCount();
 }
-
+#endif
 
 #ifdef GL_IMAGE_TEXTURES_SUPPORT
 static
@@ -329,7 +330,7 @@ void DestroyShaderCombiner() {
 
 	glDeleteProgram(g_monochrome_image_program);
 	g_monochrome_image_program = 0;
-	noiseTex.destroy();
+//	noiseTex.destroy();
 
 #ifdef GL_IMAGE_TEXTURES_SUPPORT
 	DestroyZlutTexture();
@@ -765,7 +766,7 @@ void ShaderCombiner::updateDitherMode(bool _bForce)
 			m_uniforms.uScreenScale.set(video().getScaleX(), video().getScaleY(), _bForce);
 		else
 			m_uniforms.uScreenScale.set(float(config.frameBufferEmulation.nativeResFactor), float(config.frameBufferEmulation.nativeResFactor), _bForce);
-		noiseTex.update();
+//		noiseTex.update();
 	}
 }
 

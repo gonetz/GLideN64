@@ -11,7 +11,6 @@ namespace graphics {
 
 namespace glsl {
 
-	class NoiseTexture;
 	class CombinerProgramUniformFactory;
 
 	class ShaderPart
@@ -83,7 +82,6 @@ namespace glsl {
 		ShaderPartPtr m_shaderN64DepthCompare;
 		ShaderPartPtr m_shaderN64DepthRender;
 
-		std::unique_ptr<NoiseTexture> m_noiseTexture;
 		std::unique_ptr<CombinerProgramUniformFactory> m_uniformFactory;
 
 		GLuint  m_vertexShaderRect;
