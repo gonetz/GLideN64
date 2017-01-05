@@ -138,7 +138,7 @@ LOCAL_STATIC_LIBRARIES  := $(MY_LOCAL_STATIC_LIBRARIES)
 LOCAL_ARM_MODE          := $(MY_LOCAL_ARM_MODE)
 LOCAL_C_INCLUDES        := $(MY_LOCAL_C_INCLUDES) $(LOCAL_PATH)/GLES3/include/
 LOCAL_SRC_FILES         := $(MY_LOCAL_SRC_FILES) $(SRCDIR)/GLUniforms/UniformSet.cpp $(SRCDIR)/OGL3X/GLSLCombiner_ogl3x.cpp \
-                           $(SRCDIR)/BufferCopy/ColorBufferToRDRAM_GL.cpp $(SRCDIR)/BufferCopy/ColorBufferToRDRAM_BufferStorageExt.cpp
+                           $(SRCDIR)/BufferCopy/ColorBufferToRDRAM_GL.cpp
 LOCAL_CFLAGS            := $(MY_LOCAL_CFLAGS) -DGLES3
 LOCAL_CPPFLAGS          := $(MY_LOCAL_CPPFLAGS)
 LOCAL_LDFLAGS           := $(MY_LOCAL_LDFLAGS)

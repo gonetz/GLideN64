@@ -10,9 +10,11 @@
 #include <N64.h>
 #include <VI.h>
 #include "Log.h"
-#ifndef GLES2
+#if !defined(GLES2) && !defined(GLES3)
 #include "ColorBufferToRDRAM_GL.h"
 #include "ColorBufferToRDRAM_BufferStorageExt.h"
+#elif defined (GLES3)
+#include "ColorBufferToRDRAM_GL.h"
 #elif defined(ANDROID) && defined (GLES2)
 #include "ColorBufferToRDRAM_GLES.h"
 #else
@@ -275,8 +277,7 @@ void ColorBufferToRDRAM::copyChunkToRDRAM(u32 _address)
 
 ColorBufferToRDRAM & ColorBufferToRDRAM::get()
 {
-#ifndef GLES2
-
+#if !defined(GLES2) && !defined(GLES3)
 	static bool supportsBufferStorage = OGLVideo::isExtensionSupported("GL_EXT_buffer_storage") ||
 		OGLVideo::isExtensionSupported("GL_ARB_buffer_storage");
 
@@ -287,7 +288,9 @@ ColorBufferToRDRAM & ColorBufferToRDRAM::get()
 		static ColorBufferToRDRAM_GL cbCopy;
 		return cbCopy;
 	}
-
+#elif defined (GLES3)
+	static ColorBufferToRDRAM_GL cbCopy;
+	return cbCopy;
 #elif defined(ANDROID) && defined (GLES2)
 	static ColorBufferToRDRAM_GLES cbCopy;
 	return cbCopy;
