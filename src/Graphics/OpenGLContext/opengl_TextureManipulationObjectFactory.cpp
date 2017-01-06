@@ -316,7 +316,7 @@ namespace opengl {
 			if (_parameters.maxMipmapLevel.isValid())
 				glTextureParameteri(handle, GL_TEXTURE_MAX_LEVEL, GLint(_parameters.maxMipmapLevel));
 			if (_parameters.maxAnisotropy.isValid())
-				glTextureParameteri(handle, GL_TEXTURE_MAX_ANISOTROPY_EXT, GLfloat(_parameters.maxMipmapLevel));
+				glTextureParameterf(handle, GL_TEXTURE_MAX_ANISOTROPY_EXT, GLfloat(_parameters.maxAnisotropy));
 		}
 
 	private:
