@@ -2,6 +2,7 @@
 #include <Graphics/ObjectHandle.h>
 #include <Graphics/Parameter.h>
 #include <Graphics/Context.h>
+#include <Graphics/PixelBuffer.h>
 #include "opengl_GLInfo.h"
 
 namespace opengl {
@@ -37,6 +38,12 @@ namespace opengl {
 		virtual void addFrameBufferRenderTarget(const graphics::Context::FrameBufferRenderTarget & _params) = 0;
 	};
 
+	class CreatePixelWriteBuffer
+	{
+	public:
+		virtual ~CreatePixelWriteBuffer() {};
+		virtual graphics::PixelWriteBuffer * createPixelWriteBuffer(size_t _sizeInBytes) = 0;
+	};
 
 	class BufferManipulationObjectFactory
 	{
@@ -51,6 +58,8 @@ namespace opengl {
 		InitRenderbuffer * getInitRenderbuffer() const;
 
 		AddFramebufferRenderTarget * getAddFramebufferRenderTarget() const;
+
+		CreatePixelWriteBuffer * createPixelWriteBuffer() const;
 
 	private:
 		const GLInfo & m_glInfo;

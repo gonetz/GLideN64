@@ -38,6 +38,11 @@ void Context::init2DTexture(const InitTextureParams & _params)
 	m_impl->init2DTexture(_params);
 }
 
+void Context::update2DTexture(const UpdateTextureDataParams & _params)
+{
+	m_impl->update2DTexture(_params);
+}
+
 void Context::setTextureParameters(const TexParameters & _parameters)
 {
 	m_impl->setTextureParameters(_parameters);
@@ -68,10 +73,14 @@ void Context::addFrameBufferRenderTarget(const FrameBufferRenderTarget & _params
 	m_impl->addFrameBufferRenderTarget(_params);
 }
 
+PixelWriteBuffer * Context::createPixelWriteBuffer(size_t _sizeInBytes)
+{
+	return 	m_impl->createPixelWriteBuffer(_sizeInBytes);
+}
+
 CombinerProgram * Context::createCombinerProgram(Combiner & _color, Combiner & _alpha, const CombinerKey & _key)
 {
 	return 	m_impl->createCombinerProgram(_color, _alpha, _key);
-
 }
 
 bool Context::isMultisamplingSupported() const

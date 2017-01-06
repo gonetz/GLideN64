@@ -15,13 +15,17 @@ namespace graphics {
 		virtual ObjectHandle createTexture(Parameter _target) = 0;
 		virtual void deleteTexture(ObjectHandle _name) = 0;
 		virtual void init2DTexture(const Context::InitTextureParams & _params) = 0;
+		virtual void update2DTexture(const Context::UpdateTextureDataParams & _params) = 0;
 		virtual void setTextureParameters(const Context::TexParameters & _parameters) = 0;
 		virtual ObjectHandle createFramebuffer() = 0;
 		virtual void deleteFramebuffer(ObjectHandle _name) = 0;
 		virtual void addFrameBufferRenderTarget(const Context::FrameBufferRenderTarget & _params) = 0;
 		virtual ObjectHandle createRenderbuffer() = 0;
 		virtual void initRenderbuffer(const Context::InitRenderbufferParams & _params) = 0;
+		virtual PixelWriteBuffer * createPixelWriteBuffer(size_t _sizeInBytes) = 0;
 		virtual CombinerProgram * createCombinerProgram(Combiner & _color, Combiner & _alpha, const CombinerKey & _key) = 0;
+		virtual ShaderProgram * createDepthFogShader() = 0;
+		virtual ShaderProgram * createMonochromeShader() = 0;
 	};
 
 }

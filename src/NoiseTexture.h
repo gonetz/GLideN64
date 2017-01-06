@@ -1,5 +1,10 @@
 #pragma once
+#include <memory>
 #include "Types.h"
+
+namespace graphics {
+	class PixelWriteBuffer;
+}
 
 struct CachedTexture;
 
@@ -14,7 +19,7 @@ public:
 
 private:
 	CachedTexture * m_pTexture;
-	GLuint m_PBO;
+	std::unique_ptr<graphics::PixelWriteBuffer> m_pbuf;
 	u32 m_DList;
 };
 

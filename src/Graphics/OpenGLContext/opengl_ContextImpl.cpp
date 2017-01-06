@@ -26,6 +26,7 @@ void ContextImpl::init()
 		TextureManipulationObjectFactory textureObjectsFactory(m_glInfo, *m_cachedFunctions.get());
 		m_createTexture.reset(textureObjectsFactory.getCreate2DTexture());
 		m_init2DTexture.reset(textureObjectsFactory.getInit2DTexture());
+		m_update2DTexture.reset(textureObjectsFactory.getUpdate2DTexture());
 		m_set2DTextureParameters.reset(textureObjectsFactory.getSet2DTextureParameters());
 	}
 
@@ -35,6 +36,7 @@ void ContextImpl::init()
 		m_createRenderbuffer.reset(bufferObjectFactory.getCreateRenderbuffer());
 		m_initRenderbuffer.reset(bufferObjectFactory.getInitRenderbuffer());
 		m_addFramebufferRenderTarget.reset(bufferObjectFactory.getAddFramebufferRenderTarget());
+		m_createPixelWriteBuffer.reset(bufferObjectFactory.createPixelWriteBuffer());
 	}
 
 	m_combinerProgramBuilder.reset(new glsl::CombinerProgramBuilder(m_glInfo));
@@ -70,13 +72,16 @@ void ContextImpl::deleteTexture(graphics::ObjectHandle _name)
 
 void ContextImpl::init2DTexture(const graphics::Context::InitTextureParams & _params)
 {
-	assert(m_init2DTexture);
 	m_init2DTexture->init2DTexture(_params);
+}
+
+void ContextImpl::update2DTexture(const graphics::Context::UpdateTextureDataParams & _params)
+{
+	m_update2DTexture->update2DTexture(_params);
 }
 
 void ContextImpl::setTextureParameters(const graphics::Context::TexParameters & _parameters)
 {
-	assert(m_set2DTextureParameters);
 	m_set2DTextureParameters->setTextureParameters(_parameters);
 }
 
@@ -107,7 +112,22 @@ void ContextImpl::addFrameBufferRenderTarget(const graphics::Context::FrameBuffe
 	m_addFramebufferRenderTarget->addFrameBufferRenderTarget(_params);
 }
 
+graphics::PixelWriteBuffer * ContextImpl::createPixelWriteBuffer(size_t _sizeInBytes)
+{
+	return m_createPixelWriteBuffer->createPixelWriteBuffer(_sizeInBytes);
+}
+
 graphics::CombinerProgram * ContextImpl::createCombinerProgram(Combiner & _color, Combiner & _alpha, const CombinerKey & _key)
 {
 	return m_combinerProgramBuilder->buildCombinerProgram(_color, _alpha, _key);
+}
+
+graphics::ShaderProgram * ContextImpl::createDepthFogShader()
+{
+	return nullptr;
+}
+
+graphics::ShaderProgram * ContextImpl::createMonochromeShader()
+{
+	return nullptr;
 }

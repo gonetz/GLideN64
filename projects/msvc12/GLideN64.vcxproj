@@ -456,6 +456,8 @@
     <ClInclude Include="..\..\src\Graphics\OpenGLContext\opengl_Utilis.h" />
     <ClInclude Include="..\..\src\Graphics\Parameter.h" />
     <ClInclude Include="..\..\src\Graphics\Parameters.h" />
+    <ClInclude Include="..\..\src\Graphics\PixelBuffer.h" />
+    <ClInclude Include="..\..\src\Graphics\ShaderProgram.h" />
     <ClInclude Include="..\..\src\gSP.h" />
     <ClInclude Include="..\..\src\inc\glext.h" />
     <ClInclude Include="..\..\src\Keys.h" />

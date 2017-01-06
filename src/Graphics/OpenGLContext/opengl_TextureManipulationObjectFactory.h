@@ -23,6 +23,13 @@ namespace opengl {
 		virtual void reset(graphics::ObjectHandle _deleted) = 0;
 	};
 
+	class Update2DTexture
+	{
+	public:
+		virtual ~Update2DTexture() {};
+		virtual void update2DTexture(const graphics::Context::UpdateTextureDataParams & _params) = 0;
+	};
+
 	class Set2DTextureParameters
 	{
 	public:
@@ -39,6 +46,8 @@ namespace opengl {
 		Create2DTexture * getCreate2DTexture() const;
 
 		Init2DTexture * getInit2DTexture() const;
+
+		Update2DTexture * getUpdate2DTexture() const;
 
 		Set2DTextureParameters * getSet2DTextureParameters() const;
 

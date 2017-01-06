@@ -11,7 +11,6 @@ NoiseTexture g_noiseTexture;
 
 NoiseTexture::NoiseTexture()
 	: m_pTexture(nullptr)
-	, m_PBO(0)
 	, m_DList(0)
 {
 }
@@ -54,44 +53,47 @@ void NoiseTexture::init()
 		gfxContext.setTextureParameters(params);
 	}
 
-	// TODO rewrite in GL independent way
 	// Generate Pixel Buffer Object. Initialize it with max buffer size.
-	glGenBuffers(1, &m_PBO);
-	PBOBinder binder(GL_PIXEL_UNPACK_BUFFER, m_PBO);
-	glBufferData(GL_PIXEL_UNPACK_BUFFER, 640 * 580, nullptr, GL_DYNAMIC_DRAW);
+	m_pbuf.reset(gfxContext.createPixelWriteBuffer(640 * 580));
 }
 
 void NoiseTexture::destroy()
 {
-	if (m_pTexture != nullptr) {
-		textureCache().removeFrameBufferTexture(m_pTexture);
-		m_pTexture = nullptr;
-	}
-	glDeleteBuffers(1, &m_PBO);
-	m_PBO = 0;
+	textureCache().removeFrameBufferTexture(m_pTexture);
+	m_pTexture = nullptr;
+	m_pbuf.reset();
 }
 
 void NoiseTexture::update()
 {
-	if (m_PBO == 0 || m_pTexture == nullptr)
+	if (!m_pbuf || m_pTexture == nullptr)
 		return;
 	if (m_DList == video().getBuffersSwapCount() || config.generalEmulation.enableNoise == 0)
 		return;
 	const u32 dataSize = VI.width*VI.height;
 	if (dataSize == 0)
 		return;
-	PBOBinder binder(GL_PIXEL_UNPACK_BUFFER, m_PBO);
-	GLubyte* ptr = (GLubyte*)glMapBufferRange(GL_PIXEL_UNPACK_BUFFER, 0, dataSize, GL_MAP_WRITE_BIT);
-	if (ptr == nullptr)
+
+	graphics::PixelBufferBinder<graphics::PixelWriteBuffer> binder(m_pbuf.get());
+	GLubyte* ptr = (GLubyte*)m_pbuf->getWriteBuffer(dataSize);
+	if (ptr == nullptr) {
 		return;
+	}
 	for (u32 y = 0; y < VI.height; ++y)	{
 		for (u32 x = 0; x < VI.width; ++x)
 			ptr[x + y*VI.width] = rand() & 0xFF;
 	}
-	glUnmapBuffer(GL_PIXEL_UNPACK_BUFFER); // release the mapped buffer
+	m_pbuf->closeWriteBuffer();
 
-	glActiveTexture(GL_TEXTURE0 + g_noiseTexIndex);
-	glBindTexture(GL_TEXTURE_2D, m_pTexture->glName);
-	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, VI.width, VI.height, GL_RED, GL_UNSIGNED_BYTE, 0);
+	graphics::Context::UpdateTextureDataParams params;
+	params.handle = graphics::ObjectHandle(m_pTexture->glName);
+	params.textureUnitIndex = g_noiseTexIndex;
+	params.width = VI.width;
+	params.height = VI.height;
+	params.format = graphics::color::RED;
+	params.dataType = graphics::datatype::UNSIGNED_BYTE;
+	params.data = m_pbuf->getData();
+	gfxContext.update2DTexture(params);
+
 	m_DList = video().getBuffersSwapCount();
 }
