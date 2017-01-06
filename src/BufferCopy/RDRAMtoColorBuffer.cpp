@@ -62,7 +62,7 @@ void RDRAMtoColorBuffer::init()
 	graphics::Context::TexParameters setParams;
 	setParams.handle = graphics::ObjectHandle(m_pTexture->glName);
 	setParams.target = graphics::target::TEXTURE_2D;
-	setParams.textureUnitIndex = 0;
+	setParams.textureUnitIndex = graphics::textureIndices::Tex[0];
 	setParams.minFilter = graphics::textureParameters::FILTER_LINEAR;
 	setParams.magFilter = graphics::textureParameters::FILTER_LINEAR;
 	gfxContext.setTextureParameters(setParams);

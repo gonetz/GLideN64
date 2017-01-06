@@ -52,7 +52,7 @@ void CachedBindTexture::bind(graphics::Parameter _target, graphics::ObjectHandle
 
 /*---------------CachedActiveTexture-------------*/
 
-const u32 CachedActiveTexture::m_invalidIndex = 0xFFFFFFFF;
+const graphics::Parameter CachedActiveTexture::m_invalidIndex(0xFFFFFFFF);
 
 CachedActiveTexture::CachedActiveTexture()
 : m_index(m_invalidIndex) {
@@ -62,10 +62,10 @@ void CachedActiveTexture::reset() {
 	m_index = m_invalidIndex;
 }
 
-void CachedActiveTexture::setActiveTexture(u32 _index) {
+void CachedActiveTexture::setActiveTexture(graphics::Parameter _index) {
 	// TODO make cacheable
 	m_index = _index;
-	glActiveTexture(GL_TEXTURE0 + _index);
+	glActiveTexture(GL_TEXTURE0 + GLuint(_index));
 }
 
 /*---------------CachedFunctions-------------*/

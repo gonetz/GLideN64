@@ -53,6 +53,15 @@ namespace graphics {
 		extern Parameter SCISSOR_TEST;
 	}
 
+	namespace textureIndices {
+		extern Parameter Tex[2];
+		extern Parameter NoiseTex;
+		extern Parameter DepthTex;
+		extern Parameter ZLUTTex;
+		extern Parameter PaletteTex;
+		extern Parameter MSTex[2];
+	}
+
 	namespace textureParameters {
 		extern Parameter FILTER_NEAREST;
 		extern Parameter FILTER_LINEAR;

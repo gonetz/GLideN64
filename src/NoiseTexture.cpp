@@ -47,7 +47,7 @@ void NoiseTexture::init()
 		graphics::Context::TexParameters params;
 		params.handle = graphics::ObjectHandle(m_pTexture->glName);
 		params.target = graphics::target::TEXTURE_2D;
-		params.textureUnitIndex = 0;
+		params.textureUnitIndex = graphics::textureIndices::NoiseTex;
 		params.minFilter = graphics::textureParameters::FILTER_NEAREST;
 		params.magFilter = graphics::textureParameters::FILTER_NEAREST;
 		gfxContext.setTextureParameters(params);
@@ -87,7 +87,7 @@ void NoiseTexture::update()
 
 	graphics::Context::UpdateTextureDataParams params;
 	params.handle = graphics::ObjectHandle(m_pTexture->glName);
-	params.textureUnitIndex = g_noiseTexIndex;
+	params.textureUnitIndex = graphics::textureIndices::NoiseTex;
 	params.width = VI.width;
 	params.height = VI.height;
 	params.format = graphics::color::RED;

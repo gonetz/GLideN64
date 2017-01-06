@@ -68,11 +68,11 @@ namespace opengl {
 
 		void reset();
 
-		void setActiveTexture(u32 _index);
+		void setActiveTexture(graphics::Parameter _index);
 
 	private:
-		static const u32 m_invalidIndex;
-		u32 m_index;
+		static const graphics::Parameter m_invalidIndex;
+		graphics::Parameter m_index;
 	};
 
 	class CachedFunctions

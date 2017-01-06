@@ -24,7 +24,9 @@ using namespace std;
 
 const GLuint g_noiseTexIndex = 2;
 const GLuint g_depthTexIndex = g_noiseTexIndex + 1;
-const GLuint g_MSTex0Index = g_depthTexIndex + 1;
+const GLuint g_depthLUTIndex = g_depthTexIndex + 1;
+const GLuint g_paletteIndex = g_depthLUTIndex + 1;
+const GLuint g_MSTex0Index = g_paletteIndex + 1;
 
 inline u32 GetNone( u64 *src, u16 x, u16 i, u8 palette )
 {
@@ -1411,10 +1413,10 @@ void TextureCache::activateTexture(u32 _t, CachedTexture *_pTexture)
 	params.handle = graphics::ObjectHandle(_pTexture->glName);
 	if (config.video.multisampling > 0 && _pTexture->frameBufferTexture == CachedTexture::fbMultiSample) {
 		params.target = graphics::target::TEXTURE_2D_MULTISAMPLE;
-		params.textureUnitIndex = g_MSTex0Index + _t;
+		params.textureUnitIndex = graphics::textureIndices::MSTex[_t];
 	} else {
 		params.target = graphics::target::TEXTURE_2D;
-		params.textureUnitIndex = _t;
+		params.textureUnitIndex = graphics::textureIndices::Tex[_t];
 	}
 
 	const bool bUseBilinear = (gDP.otherMode.textureFilter | (gSP.objRendermode&G_OBJRM_BILERP)) != 0;
@@ -1490,7 +1492,7 @@ void TextureCache::activateDummy(u32 _t)
 	graphics::Context::TexParameters params;
 	params.handle = graphics::ObjectHandle(m_pDummy->glName);
 	params.target = graphics::target::TEXTURE_2D;
-	params.textureUnitIndex = _t;
+	params.textureUnitIndex = graphics::textureIndices::Tex[_t];
 	params.minFilter = graphics::textureParameters::FILTER_NEAREST;
 	params.magFilter = graphics::textureParameters::FILTER_NEAREST;
 	gfxContext.setTextureParameters(params);
@@ -1514,7 +1516,7 @@ void TextureCache::activateMSDummy(u32 _t)
 	graphics::Context::TexParameters params;
 	params.handle = graphics::ObjectHandle(m_pMSDummy->glName);
 	params.target = graphics::target::TEXTURE_2D_MULTISAMPLE;
-	params.textureUnitIndex = g_MSTex0Index + _t;
+	params.textureUnitIndex = graphics::textureIndices::MSTex[_t];
 	params.minFilter = graphics::textureParameters::FILTER_NEAREST;
 	params.magFilter = graphics::textureParameters::FILTER_NEAREST;
 	gfxContext.setTextureParameters(params);

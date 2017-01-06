@@ -102,7 +102,7 @@ void DepthBufferToRDRAM::init()
 	graphics::Context::TexParameters setParams;
 	setParams.handle = graphics::ObjectHandle(m_pColorTexture->glName);
 	setParams.target = graphics::target::TEXTURE_2D;
-	setParams.textureUnitIndex = 0;
+	setParams.textureUnitIndex = graphics::textureIndices::Tex[0];
 	setParams.minFilter = graphics::textureParameters::FILTER_NEAREST;
 	setParams.magFilter = graphics::textureParameters::FILTER_NEAREST;
 	gfxContext.setTextureParameters(setParams);

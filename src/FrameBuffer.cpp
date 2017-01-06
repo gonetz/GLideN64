@@ -144,7 +144,7 @@ void FrameBuffer::_setAndAttachTexture(u32 _fbo, CachedTexture *_pTexture, u32 _
 		graphics::Context::TexParameters params;
 		params.handle = graphics::ObjectHandle(_pTexture->glName);
 		params.target = _multisampling ? graphics::target::TEXTURE_2D_MULTISAMPLE : graphics::target::TEXTURE_2D;
-		params.textureUnitIndex = _t;
+		params.textureUnitIndex = graphics::textureIndices::Tex[_t];
 		params.minFilter = graphics::textureParameters::FILTER_NEAREST;
 		params.magFilter = graphics::textureParameters::FILTER_NEAREST;
 		gfxContext.setTextureParameters(params);

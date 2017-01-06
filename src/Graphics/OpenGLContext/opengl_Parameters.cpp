@@ -53,6 +53,15 @@ namespace graphics {
 		Parameter SCISSOR_TEST(GL_SCISSOR_TEST);
 	}
 
+	namespace textureIndices {
+		Parameter Tex[2] = {0U, 1U};
+		Parameter NoiseTex(2U);
+		Parameter DepthTex(3U);
+		Parameter ZLUTTex(4U);
+		Parameter PaletteTex(5U);
+		Parameter MSTex[2] = { 6U, 7U };
+	}
+
 	namespace textureParameters {
 		Parameter FILTER_NEAREST(GL_NEAREST);
 		Parameter FILTER_LINEAR(GL_LINEAR);

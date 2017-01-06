@@ -45,7 +45,7 @@ namespace graphics {
 
 		struct UpdateTextureDataParams {
 			ObjectHandle handle;
-			u32 textureUnitIndex = 0;
+			Parameter textureUnitIndex = Parameter(0U);
 			u32 x = 0;
 			u32 y = 0;
 			u32 width = 0;
@@ -60,7 +60,7 @@ namespace graphics {
 
 		struct TexParameters {
 			ObjectHandle handle;
-			u32 textureUnitIndex = 0;
+			Parameter textureUnitIndex = Parameter(0U);
 			Parameter target;
 			Parameter magFilter;
 			Parameter minFilter;

@@ -9,6 +9,8 @@
 
 extern const GLuint g_noiseTexIndex;
 extern const GLuint g_depthTexIndex;
+extern const GLuint g_depthLUTIndex;
+extern const GLuint g_paletteIndex;
 extern const GLuint g_MSTex0Index;
 
 typedef u32 (*GetTexelFunc)( u64 *src, u16 x, u16 i, u8 palette );

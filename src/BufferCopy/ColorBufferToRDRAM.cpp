@@ -105,7 +105,7 @@ void ColorBufferToRDRAM::_initFBTexture(void)
 		graphics::Context::TexParameters params;
 		params.handle = graphics::ObjectHandle(m_pTexture->glName);
 		params.target = graphics::target::TEXTURE_2D;
-		params.textureUnitIndex = 0;
+		params.textureUnitIndex = graphics::textureIndices::Tex[0];
 		params.minFilter = graphics::textureParameters::FILTER_LINEAR;
 		params.magFilter = graphics::textureParameters::FILTER_LINEAR;
 		gfxContext.setTextureParameters(params);

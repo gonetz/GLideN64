@@ -129,7 +129,7 @@ void DepthBuffer::initDepthImageTexture(FrameBuffer * _pBuffer)
 		graphics::Context::TexParameters params;
 		params.handle = graphics::ObjectHandle(m_pDepthImageTexture->glName);
 		params.target = graphics::target::TEXTURE_2D;
-		params.textureUnitIndex = 0;
+		params.textureUnitIndex = graphics::textureIndices::Tex[0];
 		params.minFilter = graphics::textureParameters::FILTER_NEAREST;
 		params.magFilter = graphics::textureParameters::FILTER_NEAREST;
 		gfxContext.setTextureParameters(params);
@@ -224,7 +224,7 @@ void DepthBuffer::_initDepthBufferTexture(FrameBuffer * _pBuffer, CachedTexture 
 		graphics::Context::TexParameters params;
 		params.handle = graphics::ObjectHandle(_pTexture->glName);
 		params.target = _multisample ? graphics::target::TEXTURE_2D_MULTISAMPLE : graphics::target::TEXTURE_2D;
-		params.textureUnitIndex = 0;
+		params.textureUnitIndex = graphics::textureIndices::Tex[0];
 		params.minFilter = graphics::textureParameters::FILTER_NEAREST;
 		params.magFilter = graphics::textureParameters::FILTER_NEAREST;
 		gfxContext.setTextureParameters(params);
