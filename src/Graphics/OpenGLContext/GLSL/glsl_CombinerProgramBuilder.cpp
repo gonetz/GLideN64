@@ -2,6 +2,7 @@
 #include <Log.h>
 #include <Config.h>
 #include "glsl_Utils.h"
+#include "glsl_ShaderPart.h"
 #include "glsl_CombinerInputs.h"
 #include "glsl_CombinerProgramImpl.h"
 #include "glsl_CombinerProgramBuilder.h"
@@ -1134,6 +1135,24 @@ public:
 	}
 };
 
+class ShaderFragmentMainEnd : public ShaderPart
+{
+public:
+	ShaderFragmentMainEnd(const opengl::GLInfo & _glinfo)
+	{
+		if (_glinfo.isGLES2) {
+			m_part =
+				"  gl_FragColor = fragColor; \n"
+				"} \n\n"
+				;
+		} else {
+			m_part =
+				"} \n\n"
+				;
+		}
+	}
+};
+
 class ShaderNoise : public ShaderPart
 {
 public:
@@ -1797,7 +1816,7 @@ graphics::CombinerProgram * CombinerProgramBuilder::buildCombinerProgram(Combine
 		m_fragmentRenderTarget->write(ssShader);
 
 	// End of Main() function
-	ssShader << "}" << std::endl << std::endl;
+	m_shaderFragmentMainEnd->write(ssShader);
 
 	/* Write other functions */
 	if (bUseHWLight)
@@ -1847,6 +1866,21 @@ graphics::CombinerProgram * CombinerProgramBuilder::buildCombinerProgram(Combine
 	m_uniformFactory->buildUniforms(program, combinerInputs, bIsRect, uniforms);
 
 	return new CombinerProgramImpl(_key, program, combinerInputs, std::move(uniforms));
+}
+
+const ShaderPart * CombinerProgramBuilder::getVertexShaderHeader() const
+{
+	return m_vertexHeader.get();
+}
+
+const ShaderPart * CombinerProgramBuilder::getFragmentShaderHeader() const
+{
+	return m_fragmentHeader.get();
+}
+
+const ShaderPart * CombinerProgramBuilder::getFragmentShaderEnd() const
+{
+	return m_shaderFragmentMainEnd.get();
 }
 
 static
@@ -1900,6 +1934,7 @@ CombinerProgramBuilder::CombinerProgramBuilder(const opengl::GLInfo & _glinfo)
 , m_fragmentReadTexMipmap(new ShaderFragmentReadTexMipmap(_glinfo))
 , m_fragmentCallN64Depth(new ShaderFragmentCallN64Depth(_glinfo))
 , m_fragmentRenderTarget(new ShaderFragmentRenderTarget(_glinfo))
+, m_shaderFragmentMainEnd(new ShaderFragmentMainEnd(_glinfo))
 , m_shaderNoise(new ShaderNoise(_glinfo))
 , m_shaderDither(new ShaderDither(_glinfo))
 , m_shaderWriteDepth(new ShaderWriteDepth(_glinfo))

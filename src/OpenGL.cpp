@@ -28,6 +28,8 @@
 #include "FBOTextureFormats.h"
 #include "TextureFilterHandler.h"
 #include "NoiseTexture.h"
+#include "ZlutTexture.h"
+#include "PaletteTexture.h"
 
 #include "Graphics/Context.h"
 #include <Graphics/Parameters.h>
@@ -1606,7 +1608,7 @@ bool texturedRectShadowMap(const OGLRender::TexturedRectParams &)
 #ifdef GL_IMAGE_TEXTURES_SUPPORT
 			if (video().getRender().isImageTexturesSupported()) {
 				pCurrentBuffer->m_pDepthBuffer->activateDepthBufferTexture(pCurrentBuffer);
-				SetDepthFogCombiner();
+				CombinerInfo::get().setDepthFogCombiner();
 			}
 			else
 				return true;
@@ -1741,7 +1743,7 @@ bool texturedRectMonochromeBackground(const OGLRender::TexturedRectParams & _par
 		FrameBuffer * pCurrentBuffer = frameBufferList().getCurrent();
 		if (pCurrentBuffer != nullptr) {
 			FrameBuffer_ActivateBufferTexture(0, pCurrentBuffer);
-			SetMonochromeCombiner();
+			CombinerInfo::get().setMonochromeCombiner();
 			return false;
 		} else
 #endif
@@ -2216,7 +2218,9 @@ void OGLRender::_initData()
 	TextDrawer::get().init();
 	TFH.init();
 	PostProcessor::get().init();
+	g_zlutTexture.init();
 	g_noiseTexture.init();
+	g_paletteTexture.init();
 	perf.reset();
 	FBInfo::fbInfo.reset();
 	m_texrectDrawer.init();
@@ -2250,6 +2254,8 @@ void OGLRender::_destroyData()
 
 	m_renderState = rsNone;
 	m_texrectDrawer.destroy();
+	g_paletteTexture.destroy();
+	g_zlutTexture.destroy();
 	g_noiseTexture.destroy();
 	PostProcessor::get().destroy();
 	if (TFH.optionsChanged())

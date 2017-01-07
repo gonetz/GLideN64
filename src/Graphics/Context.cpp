@@ -75,12 +75,22 @@ void Context::addFrameBufferRenderTarget(const FrameBufferRenderTarget & _params
 
 PixelWriteBuffer * Context::createPixelWriteBuffer(size_t _sizeInBytes)
 {
-	return 	m_impl->createPixelWriteBuffer(_sizeInBytes);
+	return m_impl->createPixelWriteBuffer(_sizeInBytes);
 }
 
 CombinerProgram * Context::createCombinerProgram(Combiner & _color, Combiner & _alpha, const CombinerKey & _key)
 {
-	return 	m_impl->createCombinerProgram(_color, _alpha, _key);
+	return m_impl->createCombinerProgram(_color, _alpha, _key);
+}
+
+ShaderProgram * Context::createDepthFogShader()
+{
+	return m_impl->createDepthFogShader();
+}
+
+ShaderProgram * Context::createMonochromeShader()
+{
+	return m_impl->createMonochromeShader();
 }
 
 bool Context::isMultisamplingSupported() const

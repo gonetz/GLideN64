@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <memory>
 #include <assert.h>
 #include <stdio.h>
 #include <string>
@@ -17,6 +18,9 @@
 #include <FBOTextureFormats.h>
 #include <Graphics/Context.h>
 #include <Graphics/Parameters.h>
+#include <Graphics/ShaderProgram.h>
+#include "ZlutTexture.h"
+#include "PaletteTexture.h"
 
 #include "Shaders_ogl3x.h"
 
@@ -35,6 +39,9 @@ static GLuint  g_render_depth_shader_object;
 static GLuint  g_readtex_ms_shader_object;
 static GLuint  g_dither_shader_object;
 static GLuint  g_monochrome_image_program = 0;
+
+static unique_ptr<graphics::ShaderProgram> g_shadowmapProgram;
+static unique_ptr<graphics::ShaderProgram> g_monochromeProgram;
 
 #ifdef GL_IMAGE_TEXTURES_SUPPORT
 GLuint g_draw_shadow_map_program = 0;
@@ -151,6 +158,7 @@ void NoiseTexture::update()
 static
 void InitZlutTexture()
 {
+#if 0
 	if (!video().getRender().isImageTexturesSupported())
 		return;
 
@@ -173,11 +181,15 @@ void InitZlutTexture()
 	glTexStorage2D(GL_TEXTURE_2D, 1, fboFormats.lutInternalFormat, 512, 512);
 	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, 512, 512, fboFormats.lutFormat, fboFormats.lutType, zLUT);
 	glBindImageTexture(ZlutImageUnit, g_zlut_tex, 0, GL_FALSE, GL_FALSE, GL_READ_ONLY, fboFormats.lutInternalFormat);
+#else
+	//g_zlutTexture.init();
+#endif
 }
 
 static
 void DestroyZlutTexture()
 {
+#if 0
 	if (!video().getRender().isImageTexturesSupported())
 		return;
 
@@ -187,11 +199,20 @@ void DestroyZlutTexture()
 		glDeleteTextures(1, &g_zlut_tex);
 		g_zlut_tex = 0;
 	}
+#else
+	//g_zlutTexture.destroy();
+#endif
 }
+
+#define USE_PALETTE_TEX
+
+#define USE_NEW_SHADOWMAP
+#define USE_NEW_MONOCHROME
 
 static
 void InitShadowMapShader()
 {
+#ifndef USE_PALETTE_TEX
 	if (!video().getRender().isImageTexturesSupported())
 		return;
 
@@ -228,13 +249,23 @@ void InitShadowMapShader()
 		gfxContext.setTextureParameters(params);
 	}
 #endif // GRAPHICS_CONTEXT
+#else
+	//g_paletteTexture.init();
+#endif
 
+#ifndef USE_NEW_SHADOWMAP
 	g_draw_shadow_map_program = createRectShaderProgram(vertex_shader_rect_nocolor, shadow_map_fragment_shader_float);
+
+	isGLError();
+#else
+	g_shadowmapProgram.reset(gfxContext.createDepthFogShader());
+#endif
 }
 
 static
 void DestroyShadowMapShader()
 {
+#ifndef USE_PALETTE_TEX
 	if (!video().getRender().isImageTexturesSupported())
 		return;
 
@@ -245,9 +276,18 @@ void DestroyShadowMapShader()
 		glDeleteTextures(1, &g_tlut_tex);
 		g_tlut_tex = 0;
 	}
+#else
+	//g_paletteTexture.destroy();
+#endif
+
+#ifndef USE_NEW_SHADOWMAP
 	glDeleteProgram(g_draw_shadow_map_program);
 	g_draw_shadow_map_program = 0;
+#else
+	g_shadowmapProgram.reset();
+#endif
 }
+
 #endif // GL_IMAGE_TEXTURES_SUPPORT
 
 static
@@ -262,6 +302,7 @@ GLuint _createShader(GLenum _type, const char * _strShader)
 
 void InitShaderCombiner()
 {
+#if 1
 	g_vertex_shader_object = _createShader(GL_VERTEX_SHADER, vertex_shader);
 	g_vertex_shader_object_notex = _createShader(GL_VERTEX_SHADER, vertex_shader_notex);
 	g_vertex_shader_object_texrect = _createShader(GL_VERTEX_SHADER, vertex_shader_texrect);
@@ -279,12 +320,16 @@ void InitShaderCombiner()
 #endif // GLESX
 
 //	noiseTex.init();
+#ifndef USE_NEW_MONOCHROME
 	g_monochrome_image_program = createRectShaderProgram(vertex_shader_rect_nocolor, zelda_monochrome_fragment_shader);
 	glUseProgram(g_monochrome_image_program);
 	const int texLoc = glGetUniformLocation(g_monochrome_image_program, "uColorImage");
 	glUniform1i(texLoc, 0);
 
 	glUseProgram(0);
+#else
+	g_monochromeProgram.reset(gfxContext.createMonochromeShader());
+#endif
 
 #ifdef GL_IMAGE_TEXTURES_SUPPORT
 	if (video().getRender().isImageTexturesSupported() && config.frameBufferEmulation.N64DepthCompare != 0) {
@@ -295,9 +340,13 @@ void InitShaderCombiner()
 	InitZlutTexture();
 	InitShadowMapShader();
 #endif // GL_IMAGE_TEXTURES_SUPPORT
+
+#endif
+
 }
 
 void DestroyShaderCombiner() {
+#if 1
 	strFragmentShader.clear();
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -328,14 +377,20 @@ void DestroyShaderCombiner() {
 	g_calc_depth_shader_object = 0;
 #endif // GLESX
 
+#ifndef USE_NEW_MONOCHROME
 	glDeleteProgram(g_monochrome_image_program);
 	g_monochrome_image_program = 0;
 //	noiseTex.destroy();
+#else
+	g_monochromeProgram.reset();
+#endif
 
 #ifdef GL_IMAGE_TEXTURES_SUPPORT
 	DestroyZlutTexture();
 	DestroyShadowMapShader();
 #endif // GL_IMAGE_TEXTURES_SUPPORT
+
+#endif
 }
 
 ShaderCombiner::ShaderCombiner() : m_bNeedUpdate(true)
@@ -940,8 +995,12 @@ void ShaderCombiner::getShaderCombinerOptionsSet(std::vector<u32> & _vecOptions)
 }
 
 #ifdef GL_IMAGE_TEXTURES_SUPPORT
+
+#ifndef USE_NEW_SHADOWMAP
 void SetDepthFogCombiner()
 {
+
+#ifndef USE_PALETTE_TEX
 	if (!video().getRender().isImageTexturesSupported())
 		return;
 
@@ -962,6 +1021,9 @@ void SetDepthFogCombiner()
 		glBindTexture(GL_TEXTURE_2D, 0);
 		glBindImageTexture(TlutImageUnit, g_tlut_tex, 0, GL_FALSE, 0, GL_READ_ONLY, fboFormats.lutInternalFormat);
 	}
+#else
+	//g_paletteTexture.update();
+#endif
 
 	glUseProgram(g_draw_shadow_map_program);
 	int loc = glGetUniformLocation(g_draw_shadow_map_program, "uFogColor");
@@ -971,10 +1033,24 @@ void SetDepthFogCombiner()
 
 	gDP.changed |= CHANGED_COMBINE;
 }
+#else
+void SetDepthFogCombiner()
+{
+	g_shadowmapProgram->activate();
+}
+#endif
+
 #endif // GL_IMAGE_TEXTURES_SUPPORT
 
+#ifndef USE_NEW_MONOCHROME
 void SetMonochromeCombiner()
 {
 	glUseProgram(g_monochrome_image_program);
 	gDP.changed |= CHANGED_COMBINE;
 }
+#else
+void SetMonochromeCombiner()
+{
+	g_monochromeProgram->activate();
+}
+#endif

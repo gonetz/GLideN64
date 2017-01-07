@@ -2,6 +2,7 @@
 #include <Log.h>
 #include "opengl_ContextImpl.h"
 #include "GLSL/glsl_CombinerProgramBuilder.h"
+#include "GLSL/glsl_SpecialShadersFactory.h"
 
 using namespace opengl;
 
@@ -124,10 +125,18 @@ graphics::CombinerProgram * ContextImpl::createCombinerProgram(Combiner & _color
 
 graphics::ShaderProgram * ContextImpl::createDepthFogShader()
 {
-	return nullptr;
+	glsl::SpecialShadersFactory shadersFactory(m_glInfo,
+		m_combinerProgramBuilder->getVertexShaderHeader(),
+		m_combinerProgramBuilder->getFragmentShaderHeader());
+
+	return shadersFactory.createShadowMapShader();
 }
 
 graphics::ShaderProgram * ContextImpl::createMonochromeShader()
 {
-	return nullptr;
+	glsl::SpecialShadersFactory shadersFactory(m_glInfo,
+		m_combinerProgramBuilder->getVertexShaderHeader(),
+		m_combinerProgramBuilder->getFragmentShaderHeader());
+
+	return shadersFactory.createMonochromeShader();
 }

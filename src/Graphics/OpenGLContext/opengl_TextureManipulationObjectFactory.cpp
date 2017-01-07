@@ -2,6 +2,7 @@
 #include <Graphics/Parameters.h>
 #include "opengl_GLInfo.h"
 #include "opengl_CachedFunctions.h"
+#include "opengl_Utils.h"
 #include "opengl_TextureManipulationObjectFactory.h"
 
 namespace opengl {
@@ -50,9 +51,11 @@ namespace opengl {
 
 		void init2DTexture(const graphics::Context::InitTextureParams & _params) override
 		{
-
 			if (_params.msaaLevel == 0) {
-				//glBindTexture(GL_TEXTURE_2D, GLuint(_name));
+				if (_params.ImageUnit.isValid())
+					glBindImageTexture(GLuint(_params.ImageUnit), 0,
+					0, GL_FALSE, GL_FALSE, GL_READ_ONLY, GLuint(_params.internalFormat));
+
 				m_bind->bind(graphics::target::TEXTURE_2D, _params.handle);
 				glTexImage2D(GL_TEXTURE_2D,
 							 _params.mipMapLevel,
@@ -63,6 +66,10 @@ namespace opengl {
 							 GLenum(_params.format),
 							 GLenum(_params.dataType),
 							 _params.data);
+
+				if (_params.ImageUnit.isValid() && glBindImageTexture != nullptr)
+					glBindImageTexture(GLuint(_params.ImageUnit), GLuint(_params.handle),
+					0, GL_FALSE, GL_FALSE, GL_READ_ONLY, GLuint(_params.internalFormat));
 			} else {
 				//glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, GLuint(_name));
 				m_bind->bind(graphics::target::TEXTURE_2D_MULTISAMPLE, _params.handle);
@@ -106,16 +113,23 @@ namespace opengl {
 								   _params.width,
 								   _params.height);
 				}
-				if (_params.data != nullptr)
+
+				if (_params.data != nullptr) {
 					glTexSubImage2D(GL_TEXTURE_2D,
-									_params.mipMapLevel,
-									0, 0,
-									_params.width,
-									_params.height,
-									GLuint(_params.format),
-									GLenum(_params.dataType),
-									_params.data);
-			} else {
+						_params.mipMapLevel,
+						0, 0,
+						_params.width,
+						_params.height,
+						GLuint(_params.format),
+						GLenum(_params.dataType),
+						_params.data);
+				}
+
+				if (_params.ImageUnit.isValid() && glBindImageTexture != nullptr)
+					glBindImageTexture(GLuint(_params.ImageUnit), GLuint(_params.handle),
+					0, GL_FALSE, GL_FALSE, GL_READ_ONLY, GLuint(_params.internalFormat));
+			}
+			else {
 				m_bind->bind(graphics::target::TEXTURE_2D_MULTISAMPLE, _params.handle);
 				glTexStorage2DMultisample(
 							GL_TEXTURE_2D_MULTISAMPLE,
@@ -161,16 +175,23 @@ namespace opengl {
 								   _params.width,
 								   _params.height);
 				}
-				if (_params.data != nullptr)
+
+				if (_params.data != nullptr) {
 					glTextureSubImage2D(GLuint(_params.handle),
-										_params.mipMapLevel,
-										0, 0,
-										_params.width,
-										_params.height,
-										GLuint(_params.format),
-										GLenum(_params.dataType),
-										_params.data);
-			} else {
+						_params.mipMapLevel,
+						0, 0,
+						_params.width,
+						_params.height,
+						GLuint(_params.format),
+						GLenum(_params.dataType),
+						_params.data);
+				}
+
+				if (_params.ImageUnit.isValid() && glBindImageTexture != nullptr)
+					glBindImageTexture(GLuint(_params.ImageUnit), GLuint(_params.handle),
+					0, GL_FALSE, GL_FALSE, GL_READ_ONLY, GLuint(_params.internalFormat));
+			}
+			else {
 				glTexStorage2DMultisample(GLuint(_params.handle),
 										  _params.msaaLevel,
 										  GLenum(_params.internalFormat),
@@ -204,6 +225,7 @@ namespace opengl {
 		{
 			m_activeTexture->setActiveTexture(_params.textureUnitIndex);
 			m_bind->bind(GL_TEXTURE_2D, _params.handle);
+
 			glTexSubImage2D(GL_TEXTURE_2D,
 				_params.mipMapLevel,
 				_params.x,
@@ -213,6 +235,10 @@ namespace opengl {
 				GLuint(_params.format),
 				GLenum(_params.dataType),
 				_params.data);
+
+			if (_params.ImageUnit.isValid() && _params.internalFormat.isValid() && glBindImageTexture != nullptr)
+				glBindImageTexture(GLuint(_params.ImageUnit), GLuint(_params.handle),
+				0, GL_FALSE, GL_FALSE, GL_READ_ONLY, GLuint(_params.internalFormat));
 		}
 
 	private:
@@ -242,6 +268,10 @@ namespace opengl {
 				GLuint(_params.format),
 				GLenum(_params.dataType),
 				_params.data);
+
+			if (_params.ImageUnit.isValid() && _params.internalFormat.isValid() && glBindImageTexture != nullptr)
+				glBindImageTexture(GLuint(_params.ImageUnit), GLuint(_params.handle),
+				0, GL_FALSE, GL_FALSE, GL_READ_ONLY, GLuint(_params.internalFormat));
 		}
 	};
 

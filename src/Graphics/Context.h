@@ -30,6 +30,7 @@ namespace graphics {
 
 		struct InitTextureParams {
 			ObjectHandle handle;
+			Parameter ImageUnit;
 			u32 msaaLevel = 0;
 			u32 width = 0;
 			u32 height = 0;
@@ -45,6 +46,7 @@ namespace graphics {
 
 		struct UpdateTextureDataParams {
 			ObjectHandle handle;
+			Parameter ImageUnit;
 			Parameter textureUnitIndex = Parameter(0U);
 			u32 x = 0;
 			u32 y = 0;
@@ -52,6 +54,7 @@ namespace graphics {
 			u32 height = 0;
 			u32 mipMapLevel = 0;
 			Parameter format;
+			Parameter internalFormat;
 			Parameter dataType;
 			const void * data = nullptr;
 		};

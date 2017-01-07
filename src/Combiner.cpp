@@ -13,7 +13,6 @@
 #include "PluginAPI.h"
 #include "RSP.h"
 #include "Graphics/Context.h"
-#include "Graphics/CombinerProgram.h"
 
 static int saRGBExpanded[] =
 {
@@ -76,7 +75,7 @@ static int aAExpanded[] =
 void Combiner_Init() {
 	CombinerInfo & cmbInfo = CombinerInfo::get();
 	cmbInfo.init();
-	InitShaderCombiner();
+//	InitShaderCombiner();
 	if (cmbInfo.getCombinersNumber() == 0) {
 		cmbInfo.setPolygonMode(OGLRender::rsTexRect);
 		gDP.otherMode.cycleType = G_CYC_COPY;
@@ -88,7 +87,7 @@ void Combiner_Init() {
 }
 
 void Combiner_Destroy() {
-	DestroyShaderCombiner();
+//	DestroyShaderCombiner();
 	CombinerInfo::get().destroy();
 }
 
@@ -117,10 +116,16 @@ void CombinerInfo::init()
 			delete cur->second;
 		m_combiners.clear();
 	}
+
+	m_shadowmapProgram.reset(gfxContext.createDepthFogShader());
+	m_monochromeProgram.reset(gfxContext.createMonochromeShader());
 }
 
 void CombinerInfo::destroy()
 {
+	m_shadowmapProgram.reset();
+	m_monochromeProgram.reset();
+
 	m_pCurrent = nullptr;
 	if (m_bShaderCacheSupported)
 		_saveShadersStorage();
@@ -283,6 +288,18 @@ void CombinerInfo::setCombine(u64 _mux )
 void CombinerInfo::updateParameters()
 {
 	m_pCurrent->update(false);
+}
+
+void CombinerInfo::setDepthFogCombiner()
+{
+	if (m_shadowmapProgram)
+		m_shadowmapProgram->activate();
+}
+
+void CombinerInfo::setMonochromeCombiner()
+{
+	if (m_monochromeProgram)
+		m_monochromeProgram->activate();
 }
 
 void CombinerInfo::setPolygonMode(OGLRender::RENDER_STATE _renderState)

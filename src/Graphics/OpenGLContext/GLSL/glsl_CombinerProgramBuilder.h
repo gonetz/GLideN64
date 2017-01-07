@@ -1,7 +1,5 @@
 #pragma once
 #include <memory>
-#include <string>
-#include <sstream>
 #include <Combiner.h>
 #include <Graphics/OpenGLContext/opengl_GLInfo.h>
 
@@ -11,26 +9,22 @@ namespace graphics {
 
 namespace glsl {
 
+	class ShaderPart;
 	class CombinerProgramUniformFactory;
-
-	class ShaderPart
-	{
-	public:
-		void write(std::stringstream & shader)
-		{
-			shader << m_part;
-		}
-
-	protected:
-		std::string m_part;
-	};
 
 	class CombinerProgramBuilder
 	{
 	public:
 		CombinerProgramBuilder(const opengl::GLInfo & _glinfo);
 		~CombinerProgramBuilder();
+
 		graphics::CombinerProgram * buildCombinerProgram(Combiner & _color, Combiner & _alpha, const CombinerKey & _key);
+
+		const ShaderPart * getVertexShaderHeader() const;
+
+		const ShaderPart * getFragmentShaderHeader() const;
+
+		const ShaderPart * getFragmentShaderEnd() const;
 
 	private:
 		int compileCombiner(const CombinerKey & _key, Combiner & _color, Combiner & _alpha, std::string & _strShader);
@@ -72,6 +66,7 @@ namespace glsl {
 		ShaderPartPtr m_fragmentReadTexMipmap;
 		ShaderPartPtr m_fragmentCallN64Depth;
 		ShaderPartPtr m_fragmentRenderTarget;
+		ShaderPartPtr m_shaderFragmentMainEnd;
 
 		ShaderPartPtr m_shaderNoise;
 		ShaderPartPtr m_shaderDither;

@@ -54,7 +54,7 @@ void NoiseTexture::init()
 	}
 
 	// Generate Pixel Buffer Object. Initialize it with max buffer size.
-	m_pbuf.reset(gfxContext.createPixelWriteBuffer(640 * 580));
+	m_pbuf.reset(gfxContext.createPixelWriteBuffer(m_pTexture->textureBytes));
 }
 
 void NoiseTexture::destroy()

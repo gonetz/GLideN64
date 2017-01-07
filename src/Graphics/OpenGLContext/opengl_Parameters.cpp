@@ -62,6 +62,12 @@ namespace graphics {
 		Parameter MSTex[2] = { 6U, 7U };
 	}
 
+	namespace textureImageUnits {
+		Parameter Zlut(0U);
+		Parameter Tlut(1U);
+		Parameter Depth(2U);
+	}
+
 	namespace textureParameters {
 		Parameter FILTER_NEAREST(GL_NEAREST);
 		Parameter FILTER_LINEAR(GL_LINEAR);

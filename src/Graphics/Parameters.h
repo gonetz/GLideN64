@@ -62,6 +62,12 @@ namespace graphics {
 		extern Parameter MSTex[2];
 	}
 
+	namespace textureImageUnits {
+		extern Parameter Zlut;
+		extern Parameter Tlut;
+		extern Parameter Depth;
+	}
+
 	namespace textureParameters {
 		extern Parameter FILTER_NEAREST;
 		extern Parameter FILTER_LINEAR;

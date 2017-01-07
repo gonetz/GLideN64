@@ -2,11 +2,14 @@
 #define COMBINER_H
 
 #include <map>
+#include <memory>
 
 #include "GLideN64.h"
 #include "OpenGL.h"
 #include "gDP.h"
 #include "CombinerKey.h"
+#include "Graphics/CombinerProgram.h"
+#include "Graphics/ShaderProgram.h"
 
 /*
 * G_SETCOMBINE: color combine modes
@@ -114,10 +117,6 @@ struct CombineCycle
 	int sa, sb, m, a;
 };
 
-namespace graphics {
-	class CombinerProgram;
-}
-
 class CombinerInfo
 {
 public:
@@ -126,6 +125,9 @@ public:
 	void update();
 	void setCombine(u64 _mux);
 	void updateParameters();
+
+	void setDepthFogCombiner();
+	void setMonochromeCombiner();
 
 	graphics::CombinerProgram * getCurrent() const { return m_pCurrent; }
 	bool isChanged() const {return m_bChanged;}
@@ -161,6 +163,9 @@ private:
 	graphics::CombinerProgram * m_pCurrent;
 	typedef std::map<CombinerKey, graphics::CombinerProgram *> Combiners;
 	Combiners m_combiners;
+
+	std::unique_ptr<graphics::ShaderProgram> m_shadowmapProgram;
+	std::unique_ptr<graphics::ShaderProgram> m_monochromeProgram;
 };
 
 inline

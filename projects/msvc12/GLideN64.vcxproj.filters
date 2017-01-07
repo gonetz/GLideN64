@@ -290,9 +290,6 @@
     <ClCompile Include="..\..\src\Graphics\OpenGLContext\opengl_Parameters.cpp">
       <Filter>Source Files\Graphics\OpenGL</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\Graphics\OpenGLContext\opengl_Utilis.cpp">
-      <Filter>Source Files\Graphics\OpenGL</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\Graphics\OpenGLContext\opengl_TextureManipulationObjectFactory.cpp">
       <Filter>Source Files\Graphics\OpenGL</Filter>
     </ClCompile>
@@ -328,6 +325,21 @@
     </ClCompile>
     <ClCompile Include="..\..\src\NoiseTexture.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\ZlutTexture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Graphics\OpenGLContext\GLSL\glsl_SpecialShadersFactory.cpp">
+      <Filter>Source Files\Graphics\OpenGL\GLSL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\PaletteTexture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Graphics\OpenGLContext\opengl_Utils.cpp">
+      <Filter>Source Files\Graphics\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Graphics\CombinerProgram.cpp">
+      <Filter>Source Files\Graphics</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -556,9 +568,6 @@
     <ClInclude Include="..\..\src\Graphics\OpenGLContext\opengl_ContextImpl.h">
       <Filter>Header Files\Graphics\OpenGL</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Graphics\OpenGLContext\opengl_Utilis.h">
-      <Filter>Header Files\Graphics\OpenGL</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\Graphics\OpenGLContext\opengl_TextureManipulationObjectFactory.h">
       <Filter>Header Files\Graphics\OpenGL</Filter>
     </ClInclude>
@@ -606,6 +615,21 @@
     </ClInclude>
     <ClInclude Include="..\..\src\Graphics\PixelBuffer.h">
       <Filter>Header Files\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\ZlutTexture.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Graphics\OpenGLContext\GLSL\glsl_SpecialShadersFactory.h">
+      <Filter>Header Files\Graphics\OpenGL\GLSL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\PaletteTexture.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Graphics\OpenGLContext\GLSL\glsl_ShaderPart.h">
+      <Filter>Header Files\Graphics\OpenGL\GLSL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Graphics\OpenGLContext\opengl_Utils.h">
+      <Filter>Header Files\Graphics\OpenGL</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

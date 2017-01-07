@@ -1,7 +1,7 @@
 #pragma once
 #include <Log.h>
 #include <Config.h>
-#include "opengl_Utilis.h"
+#include "opengl_Utils.h"
 #include "opengl_GLInfo.h"
 
 using namespace opengl;
@@ -20,6 +20,9 @@ void GLInfo::init() {
 	}
 	LOG(LOG_VERBOSE, "%s major version: %d\n", isGLESX ? "OpenGL ES" : "OpenGL", majorVersion);
 	LOG(LOG_VERBOSE, "%s minor version: %d\n", isGLESX ? "OpenGL ES" : "OpenGL", minorVersion);
+
+	//TODO implement
+	imageTextures = true;
 
 #ifdef GL_NUM_PROGRAM_BINARY_FORMATS
 	GLint numBinaryFormats = 0;

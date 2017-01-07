@@ -154,8 +154,8 @@ void InitShaderCombiner();
 void DestroyShaderCombiner();
 
 #ifdef GL_IMAGE_TEXTURES_SUPPORT
-void SetDepthFogCombiner();
-void SetMonochromeCombiner();
+//void SetDepthFogCombiner();
+//void SetMonochromeCombiner();
 #endif // GL_IMAGE_TEXTURES_SUPPORT
 
 //#define USE_TOONIFY

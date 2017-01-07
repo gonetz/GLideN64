@@ -5,7 +5,7 @@ namespace graphics {
 	class ShaderProgram
 	{
 	public:
-		virtual ~ShaderProgram() {};
+		virtual ~ShaderProgram() {}
 		virtual void activate() = 0;
 	};
 

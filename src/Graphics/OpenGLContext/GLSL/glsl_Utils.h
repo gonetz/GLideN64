@@ -9,5 +9,6 @@ namespace glsl {
 		static bool checkShaderCompileStatus(GLuint obj);
 		static bool checkProgramLinkStatus(GLuint obj);
 		static void logErrorShader(GLenum _shaderType, const std::string & _strShader);
+		static GLuint createRectShaderProgram(const char * _strVertex, const char * _strFragment);
 	};
 }

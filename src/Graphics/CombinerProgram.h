@@ -1,4 +1,5 @@
 #pragma once
+#include <vector>
 #include "CombinerKey.h"
 
 namespace graphics {
@@ -6,7 +7,7 @@ namespace graphics {
 	class CombinerProgram
 	{
 	public:
-		virtual ~CombinerProgram() {};
+		virtual ~CombinerProgram() {}
 		virtual void activate() = 0;
 		virtual void update(bool _force) = 0;
 		virtual CombinerKey getKey() const = 0;
@@ -21,6 +22,8 @@ namespace graphics {
 
 		friend std::ostream & operator<< (std::ostream & _os, const CombinerProgram & _combiner);
 		friend std::istream & operator>> (std::istream & _os, CombinerProgram & _combiner);
+
+		static void getShaderCombinerOptionsSet(std::vector<u32> & _vecOptions);
 	};
 
 }

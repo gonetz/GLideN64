@@ -1,3 +1,4 @@
+#include <assert.h>
 #include <Log.h>
 #include <Graphics/OpenGLContext/opengl_Attributes.h>
 #include "glsl_Utils.h"
@@ -73,4 +74,33 @@ void Utils::logErrorShader(GLenum _shaderType, const std::string & _strShader)
 		}
 		pos += max;
 	}
+}
+
+GLuint Utils::createRectShaderProgram(const char * _strVertex, const char * _strFragment)
+{
+	GLuint vertex_shader_object = glCreateShader(GL_VERTEX_SHADER);
+	glShaderSource(vertex_shader_object, 1, &_strVertex, nullptr);
+	glCompileShader(vertex_shader_object);
+	assert(checkShaderCompileStatus(vertex_shader_object));
+
+	if (!checkShaderCompileStatus(vertex_shader_object))
+		logErrorShader(GL_VERTEX_SHADER, _strVertex);
+
+	GLuint fragment_shader_object = glCreateShader(GL_FRAGMENT_SHADER);
+	glShaderSource(fragment_shader_object, 1, &_strFragment, nullptr);
+	glCompileShader(fragment_shader_object);
+	assert(checkShaderCompileStatus(fragment_shader_object));
+
+	if (!checkShaderCompileStatus(fragment_shader_object))
+		logErrorShader(GL_VERTEX_SHADER, _strFragment);
+
+	GLuint program = glCreateProgram();
+	locateAttributes(program, true, true);
+	glAttachShader(program, vertex_shader_object);
+	glAttachShader(program, fragment_shader_object);
+	glLinkProgram(program);
+	glDeleteShader(vertex_shader_object);
+	glDeleteShader(fragment_shader_object);
+	assert(checkProgramLinkStatus(program));
+	return program;
 }
