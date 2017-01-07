@@ -161,8 +161,7 @@ private:
 	u32 m_configOptionsBitSet;
 
 	graphics::CombinerProgram * m_pCurrent;
-	typedef std::map<CombinerKey, graphics::CombinerProgram *> Combiners;
-	Combiners m_combiners;
+	graphics::Combiners m_combiners;
 
 	std::unique_ptr<graphics::ShaderProgram> m_shadowmapProgram;
 	std::unique_ptr<graphics::ShaderProgram> m_monochromeProgram;

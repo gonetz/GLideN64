@@ -1,4 +1,5 @@
 #pragma once
+#include <map>
 #include <vector>
 #include "CombinerKey.h"
 
@@ -20,10 +21,11 @@ namespace graphics {
 		void disableBlending() {}
 		void updateFrameBufferInfo(bool _bForce = false) {}
 
-		friend std::ostream & operator<< (std::ostream & _os, const CombinerProgram & _combiner);
-		friend std::istream & operator>> (std::istream & _os, CombinerProgram & _combiner);
+		virtual bool getBinaryForm(std::vector<char> & _buffer) = 0;
 
 		static void getShaderCombinerOptionsSet(std::vector<u32> & _vecOptions);
 	};
+
+	typedef std::map<CombinerKey, graphics::CombinerProgram *> Combiners;
 
 }

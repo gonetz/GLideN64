@@ -8,6 +8,8 @@ namespace glsl {
 	public:
 		explicit CombinerInputs(int _inputs) : m_inputs(_inputs) {}
 
+		explicit operator int() { return m_inputs; }
+
 		bool usesTile(u32 _t) const;
 
 		bool usesTexture() const;

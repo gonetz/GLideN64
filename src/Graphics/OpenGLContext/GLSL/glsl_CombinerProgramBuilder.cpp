@@ -1863,7 +1863,7 @@ graphics::CombinerProgram * CombinerProgramBuilder::buildCombinerProgram(Combine
 	glDeleteShader(fragmentShader);
 
 	UniformGroups uniforms;
-	m_uniformFactory->buildUniforms(program, combinerInputs, bIsRect, uniforms);
+	m_uniformFactory->buildUniforms(program, combinerInputs, _key, uniforms);
 
 	return new CombinerProgramImpl(_key, program, combinerInputs, std::move(uniforms));
 }

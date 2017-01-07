@@ -1,4 +1,7 @@
+#include <fstream>
+#include <assert.h>
 #include <Combiner.h>
+#include "glsl_Utils.h"
 #include "glsl_CombinerProgramImpl.h"
 
 using namespace glsl;
@@ -56,17 +59,48 @@ bool CombinerProgramImpl::usesLOD() const {
 	return m_inputs.usesLOD();
 }
 
-namespace graphics {
+bool CombinerProgramImpl::getBinaryForm(std::vector<char> & _buffer)
+{
+	GLint  binaryLength;
+	glGetProgramiv(m_program, GL_PROGRAM_BINARY_LENGTH, &binaryLength);
 
-	// TODO implement
-	std::ostream & operator<< (std::ostream & _os, const CombinerProgram & _combiner)
-	{
-		return _os;
-	}
+	if (binaryLength < 1)
+		return false;
 
-	std::istream & operator>> (std::istream & _is, CombinerProgram & _combiner)
-	{
-		return _is;
-	}
+	std::vector<char> binary(binaryLength);
 
+	if (binary.size() == 0)
+		return false;
+
+	GLenum binaryFormat;
+	glGetProgramBinary(m_program, binaryLength, &binaryLength, &binaryFormat, binary.data());
+	if (isGLError())
+		return false;
+
+	u64 key = m_key.getMux();
+	int inputs(m_inputs);
+
+	int totalSize = sizeof(key)+sizeof(inputs)+sizeof(binaryFormat)+
+		sizeof(binaryLength)+binaryLength;
+	_buffer.resize(totalSize);
+
+	char* keyData = reinterpret_cast<char*>(&key);
+	std::copy_n(keyData, sizeof(key), _buffer.data());
+	int offset = sizeof(key);
+
+	char* inputData = reinterpret_cast<char*>(&inputs);
+	std::copy_n(inputData, sizeof(inputs), _buffer.data() + offset);
+	offset += sizeof(inputs);
+
+	char* binaryFormatData = reinterpret_cast<char*>(&binaryFormat);
+	std::copy_n(binaryFormatData, sizeof(binaryFormat), _buffer.data() + offset);
+	offset += sizeof(binaryFormat);
+
+	char* binaryLengthData = reinterpret_cast<char*>(&binaryLength);
+	std::copy_n(binaryLengthData, sizeof(binaryLength), _buffer.data() + offset);
+	offset += sizeof(binaryLength);
+
+	std::copy_n(binary.data(), binaryLength, _buffer.data() + offset);
+
+	return true;
 }

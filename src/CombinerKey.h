@@ -1,4 +1,5 @@
 #pragma once
+#include <istream>
 #include "gDP.h"
 
 class CombinerKey {
@@ -14,7 +15,12 @@ public:
 	bool operator<(const CombinerKey & _other) const;
 
 	bool isRectKey() const;
+
+	u32 getCycleType() const;
+
 	u64 getMux() const { return m_key.mux; }
+
+	void read(std::istream & _is);
 
 private:
 	gDPCombine m_key;

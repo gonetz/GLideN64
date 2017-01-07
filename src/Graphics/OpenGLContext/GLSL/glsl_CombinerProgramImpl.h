@@ -32,6 +32,8 @@ namespace glsl {
 		bool usesShade() const override;
 		bool usesLOD() const override;
 
+		bool getBinaryForm(std::vector<char> & _buffer) override;
+
 	private:
 		bool m_bNeedUpdate;
 		CombinerKey m_key;

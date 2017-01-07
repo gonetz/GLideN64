@@ -769,7 +769,7 @@ private:
 
 void CombinerProgramUniformFactory::buildUniforms(GLuint _program,
 												  const CombinerInputs & _inputs,
-												  bool _rect,
+												  const CombinerKey & _key,
 												  UniformGroups & _uniforms)
 {
 	if (config.generalEmulation.enableNoise != 0)
@@ -790,7 +790,7 @@ void CombinerProgramUniformFactory::buildUniforms(GLuint _program,
 	_uniforms.emplace_back(new UFog(_program));
 
 	if (config.generalEmulation.enableLegacyBlending == 0) {
-		switch (gDP.otherMode.cycleType) {
+		switch (_key.getCycleType()) {
 		case G_CYC_1CYCLE:
 			_uniforms.emplace_back(new UBlendMode1Cycle(_program));
 			break;
@@ -831,8 +831,9 @@ void CombinerProgramUniformFactory::buildUniforms(GLuint _program,
 	_uniforms.emplace_back(new UColors(_program));
 
 	if (_inputs.usesTexture()) {
-		_uniforms.emplace_back(new UTextureSize(_program, _inputs.usesTile(0), _inputs.usesTile(1)));
-		if (!_rect)
+		if (m_glInfo.isGLES2)
+			_uniforms.emplace_back(new UTextureSize(_program, _inputs.usesTile(0), _inputs.usesTile(1)));
+		if (!_key.isRectKey())
 			_uniforms.emplace_back(new UTextureParams(_program, _inputs.usesTile(0), _inputs.usesTile(1)));
 	}
 
@@ -842,10 +843,6 @@ void CombinerProgramUniformFactory::buildUniforms(GLuint _program,
 
 CombinerProgramUniformFactory::CombinerProgramUniformFactory(const opengl::GLInfo & _glInfo)
 : m_glInfo(_glInfo)
-{
-}
-
-CombinerProgramUniformFactory::~CombinerProgramUniformFactory()
 {
 }
 

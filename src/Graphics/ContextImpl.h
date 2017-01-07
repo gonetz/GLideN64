@@ -24,6 +24,8 @@ namespace graphics {
 		virtual void initRenderbuffer(const Context::InitRenderbufferParams & _params) = 0;
 		virtual PixelWriteBuffer * createPixelWriteBuffer(size_t _sizeInBytes) = 0;
 		virtual CombinerProgram * createCombinerProgram(Combiner & _color, Combiner & _alpha, const CombinerKey & _key) = 0;
+		virtual bool saveShadersStorage(const Combiners & _combiners) = 0;
+		virtual bool loadShadersStorage(Combiners & _combiners) = 0;
 		virtual ShaderProgram * createDepthFogShader() = 0;
 		virtual ShaderProgram * createMonochromeShader() = 0;
 	};

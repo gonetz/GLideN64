@@ -105,6 +105,10 @@ namespace graphics {
 
 		CombinerProgram * createCombinerProgram(Combiner & _color, Combiner & _alpha, const CombinerKey & _key);
 
+		bool saveShadersStorage(const Combiners & _combiners);
+
+		bool loadShadersStorage(Combiners & _combiners);
+
 		ShaderProgram * createDepthFogShader();
 
 		ShaderProgram * createMonochromeShader();

@@ -257,6 +257,14 @@ void RDRAMtoColorBuffer::copyFromRDRAM(u32 _address, bool _bCFB)
 	if (!bCopy)
 		return;
 
+	const u32 cycleType = gDP.otherMode.cycleType;
+	gDP.otherMode.cycleType = G_CYC_COPY;
+	CombinerInfo::get().setPolygonMode(OGLRender::rsTexRect);
+	CombinerInfo::get().update();
+	gDP.otherMode.cycleType = cycleType;
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
 	glBindTexture(GL_TEXTURE_2D, m_pTexture->glName);
 #ifndef GLES2
 	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, fboFormats.colorFormat, fboFormats.colorType, 0);
@@ -277,18 +285,10 @@ void RDRAMtoColorBuffer::copyFromRDRAM(u32 _address, bool _bCFB)
 	gDPTile * pTile0 = gSP.textureTile[0];
 	gSP.textureTile[0] = &tile0;
 
-	const u32 cycleType = gDP.otherMode.cycleType;
-	gDP.otherMode.cycleType = G_CYC_1CYCLE;
-	CombinerInfo::get().setPolygonMode(OGLRender::rsTexRect);
-	CombinerInfo::get().setCombine(EncodeCombineMode(0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0));
-	currentCombiner()->disableBlending();
-	gDP.otherMode.cycleType = cycleType;
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-//	currentCombiner()->updateFrameBufferInfo();
-
 	glDisable(GL_DEPTH_TEST);
 	glDisable(GL_SCISSOR_TEST);
+
+	CombinerInfo::get().updateParameters();
 
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_pCurBuffer->m_FBO);
 	OGLRender::TexturedRectParams params((float)x0, (float)y0, (float)width, (float)height,

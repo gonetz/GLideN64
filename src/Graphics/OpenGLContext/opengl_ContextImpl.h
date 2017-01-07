@@ -46,6 +46,10 @@ namespace opengl {
 
 		graphics::CombinerProgram * createCombinerProgram(Combiner & _color, Combiner & _alpha, const CombinerKey & _key) override;
 
+		bool saveShadersStorage(const graphics::Combiners & _combiners) override;
+
+		bool loadShadersStorage(graphics::Combiners & _combiners) override;
+
 		graphics::ShaderProgram * createDepthFogShader() override;
 
 		graphics::ShaderProgram * createMonochromeShader() override;

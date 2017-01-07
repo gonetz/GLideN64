@@ -42,9 +42,16 @@ bool CombinerKey::operator<(const CombinerKey & _other) const
 	return m_key.mux < _other.m_key.mux;
 }
 
+u32 CombinerKey::getCycleType() const
+{
+	return (m_key.muxs0 >> 25) & 3;
+}
+
 bool CombinerKey::isRectKey() const
 {
-	//	return ((m_key.muxs0 >> 24) & 1) != 0;
-	bool res = ((m_key.muxs0 >> 24) & 1) != 0;
-	return res;
+	return ((m_key.muxs0 >> 24) & 1) != 0;
+}
+
+void CombinerKey::read(std::istream & _is) {
+	_is.read((char*)&m_key.mux, sizeof(m_key.mux));
 }

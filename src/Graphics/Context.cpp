@@ -83,6 +83,16 @@ CombinerProgram * Context::createCombinerProgram(Combiner & _color, Combiner & _
 	return m_impl->createCombinerProgram(_color, _alpha, _key);
 }
 
+bool Context::saveShadersStorage(const Combiners & _combiners)
+{
+	return m_impl->saveShadersStorage(_combiners);
+}
+
+bool Context::loadShadersStorage(Combiners & _combiners)
+{
+	return m_impl->loadShadersStorage(_combiners);
+}
+
 ShaderProgram * Context::createDepthFogShader()
 {
 	return m_impl->createDepthFogShader();

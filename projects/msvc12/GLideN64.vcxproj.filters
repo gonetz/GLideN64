@@ -341,6 +341,9 @@
     <ClCompile Include="..\..\src\Graphics\CombinerProgram.cpp">
       <Filter>Source Files\Graphics</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\Graphics\OpenGLContext\GLSL\glsl_ShaderStorage.cpp">
+      <Filter>Source Files\Graphics\OpenGL\GLSL</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\3DMath.h">
@@ -630,6 +633,9 @@
     </ClInclude>
     <ClInclude Include="..\..\src\Graphics\OpenGLContext\opengl_Utils.h">
       <Filter>Header Files\Graphics\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Graphics\OpenGLContext\GLSL\glsl_ShaderStorage.h">
+      <Filter>Header Files\Graphics\OpenGL\GLSL</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

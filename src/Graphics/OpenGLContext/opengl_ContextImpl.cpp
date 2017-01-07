@@ -3,6 +3,7 @@
 #include "opengl_ContextImpl.h"
 #include "GLSL/glsl_CombinerProgramBuilder.h"
 #include "GLSL/glsl_SpecialShadersFactory.h"
+#include "GLSL/glsl_ShaderStorage.h"
 
 using namespace opengl;
 
@@ -121,6 +122,18 @@ graphics::PixelWriteBuffer * ContextImpl::createPixelWriteBuffer(size_t _sizeInB
 graphics::CombinerProgram * ContextImpl::createCombinerProgram(Combiner & _color, Combiner & _alpha, const CombinerKey & _key)
 {
 	return m_combinerProgramBuilder->buildCombinerProgram(_color, _alpha, _key);
+}
+
+bool ContextImpl::saveShadersStorage(const graphics::Combiners & _combiners)
+{
+	glsl::ShaderStorage storage(m_glInfo);
+	return storage.saveShadersStorage(_combiners);
+}
+
+bool ContextImpl::loadShadersStorage(graphics::Combiners & _combiners)
+{
+	glsl::ShaderStorage storage(m_glInfo);
+	return storage.loadShadersStorage(_combiners);
 }
 
 graphics::ShaderProgram * ContextImpl::createDepthFogShader()
