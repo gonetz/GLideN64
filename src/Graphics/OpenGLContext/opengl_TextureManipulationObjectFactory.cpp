@@ -1,6 +1,6 @@
 #include <unordered_map>
 #include <Graphics/Parameters.h>
-#include "opengl_GLVersion.h"
+#include "opengl_GLInfo.h"
 #include "opengl_CachedFunctions.h"
 #include "opengl_TextureManipulationObjectFactory.h"
 
@@ -25,9 +25,9 @@ namespace opengl {
 	class CreateTexture : public Create2DTexture
 	{
 	public:
-		static bool Check(const GLVersion & _version) {
+		static bool Check(const GLInfo & _glinfo) {
 #ifdef ENABLE_GL_4_5
-			return (_version.majorVersion > 4) || (_version.majorVersion == 4 && _version.minorVersion >= 5);
+			return (_glinfo.majorVersion > 4) || (_glinfo.majorVersion == 4 && _glinfo.minorVersion >= 5);
 #else
 			return false;
 #endif
@@ -84,9 +84,9 @@ namespace opengl {
 	class Init2DTexStorage : public Init2DTexture
 	{
 	public:
-		static bool Check(const GLVersion & _version) {
+		static bool Check(const GLInfo & _glinfo) {
 #ifdef ENABLE_GL_4_2
-			return (_version.majorVersion > 4) || (_version.majorVersion == 4 && _version.minorVersion >= 2);
+			return (_glinfo.majorVersion > 4) || (_glinfo.majorVersion == 4 && _glinfo.minorVersion >= 2);
 #else
 			return false;
 #endif
@@ -142,9 +142,9 @@ namespace opengl {
 	class Init2DTextureStorage : public Init2DTexture
 	{
 	public:
-		static bool Check(const GLVersion & _version) {
+		static bool Check(const GLInfo & _glinfo) {
 #ifdef ENABLE_GL_4_5
-			return (_version.majorVersion > 4) || (_version.majorVersion == 4 && _version.minorVersion >= 5);
+			return (_glinfo.majorVersion > 4) || (_glinfo.majorVersion == 4 && _glinfo.minorVersion >= 5);
 #else
 			return false;
 #endif
@@ -230,9 +230,9 @@ namespace opengl {
 	class SetTextureParameters : public Set2DTextureParameters
 	{
 	public:
-		static bool Check(const GLVersion & _version) {
+		static bool Check(const GLInfo & _glinfo) {
 #ifdef ENABLE_GL_4_5
-			return (_version.majorVersion > 4) || (_version.majorVersion == 4 && _version.minorVersion >= 5);
+			return (_glinfo.majorVersion > 4) || (_glinfo.majorVersion == 4 && _glinfo.minorVersion >= 5);
 #else
 			return false;
 #endif
@@ -272,9 +272,9 @@ namespace opengl {
 
 	/*---------------TextureManipulationObjectFactory-------------*/
 
-	TextureManipulationObjectFactory::TextureManipulationObjectFactory(const GLVersion & _version,
+	TextureManipulationObjectFactory::TextureManipulationObjectFactory(const GLInfo & _glinfo,
 		CachedFunctions & _cachedFunctions)
-		: m_version(_version)
+		: m_glInfo(_glinfo)
 		, m_cachedFunctions(_cachedFunctions)
 	{
 	}
@@ -285,7 +285,7 @@ namespace opengl {
 
 	Create2DTexture * TextureManipulationObjectFactory::getCreate2DTexture() const
 	{
-		if (CreateTexture::Check(m_version))
+		if (CreateTexture::Check(m_glInfo))
 			return new CreateTexture;
 
 		return new GenTexture;
@@ -293,10 +293,10 @@ namespace opengl {
 
 	Init2DTexture * TextureManipulationObjectFactory::getInit2DTexture() const
 	{
-		if (Init2DTextureStorage::Check(m_version))
+		if (Init2DTextureStorage::Check(m_glInfo))
 			return new Init2DTextureStorage;
 
-		if (Init2DTexStorage::Check(m_version))
+		if (Init2DTexStorage::Check(m_glInfo))
 			return new Init2DTexStorage(m_cachedFunctions.getCachedBindTexture());
 
 		return new Init2DTexImage(m_cachedFunctions.getCachedBindTexture());
@@ -304,7 +304,7 @@ namespace opengl {
 
 	Set2DTextureParameters * TextureManipulationObjectFactory::getSet2DTextureParameters() const
 	{
-		if (SetTextureParameters::Check(m_version))
+		if (SetTextureParameters::Check(m_glInfo))
 			return new SetTextureParameters;
 
 		return new SetTexParameters(m_cachedFunctions.geCachedActiveTexture(),

@@ -2,7 +2,9 @@
 #include "opengl_Utilis.h"
 #include "GLFunctions.h"
 
-bool opengl::isExtensionSupported(const char *extension)
+using namespace opengl;
+
+bool Utils::isExtensionSupported(const char *extension)
 {
 #ifdef GL_NUM_EXTENSIONS
 	GLint count = 0;

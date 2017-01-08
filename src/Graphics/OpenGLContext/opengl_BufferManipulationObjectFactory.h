@@ -2,10 +2,11 @@
 #include <Graphics/ObjectHandle.h>
 #include <Graphics/Parameter.h>
 #include <Graphics/Context.h>
+#include "opengl_GLInfo.h"
 
 namespace opengl {
 
-	struct GLVersion;
+	struct GLInfo;
 	class CachedFunctions;
 
 	class CreateFramebufferObject
@@ -40,7 +41,7 @@ namespace opengl {
 	class BufferManipulationObjectFactory
 	{
 	public:
-		BufferManipulationObjectFactory(const GLVersion & _version, CachedFunctions & _cachedFunctions);
+		BufferManipulationObjectFactory(const GLInfo & _info, CachedFunctions & _cachedFunctions);
 		~BufferManipulationObjectFactory();
 
 		CreateFramebufferObject * getCreateFramebufferObject() const;
@@ -52,7 +53,7 @@ namespace opengl {
 		AddFramebufferRenderTarget * getAddFramebufferRenderTarget() const;
 
 	private:
-		const GLVersion & m_version;
+		const GLInfo & m_glInfo;
 		CachedFunctions & m_cachedFunctions;
 	};
 

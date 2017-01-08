@@ -304,9 +304,12 @@
     <ClCompile Include="..\..\src\Graphics\OpenGLContext\GLFunctions.cpp" />
     <ClCompile Include="..\..\src\Graphics\OpenGLContext\GLSL\glsl_CombinerProgramBuilder.cpp" />
     <ClCompile Include="..\..\src\Graphics\OpenGLContext\GLSL\glsl_CombinerProgramImpl.cpp" />
+    <ClCompile Include="..\..\src\Graphics\OpenGLContext\GLSL\glsl_Utils.cpp" />
+    <ClCompile Include="..\..\src\Graphics\OpenGLContext\opengl_Attributes.cpp" />
     <ClCompile Include="..\..\src\Graphics\OpenGLContext\opengl_BufferManipulationObjectFactory.cpp" />
     <ClCompile Include="..\..\src\Graphics\OpenGLContext\opengl_CachedFunctions.cpp" />
     <ClCompile Include="..\..\src\Graphics\OpenGLContext\opengl_ContextImpl.cpp" />
+    <ClCompile Include="..\..\src\Graphics\OpenGLContext\opengl_GLInfo.cpp" />
     <ClCompile Include="..\..\src\Graphics\OpenGLContext\opengl_Parameters.cpp" />
     <ClCompile Include="..\..\src\Graphics\OpenGLContext\opengl_TextureManipulationObjectFactory.cpp" />
     <ClCompile Include="..\..\src\Graphics\OpenGLContext\opengl_Utilis.cpp" />
@@ -438,10 +441,12 @@
     <ClInclude Include="..\..\src\Graphics\OpenGLContext\GLFunctions.h" />
     <ClInclude Include="..\..\src\Graphics\OpenGLContext\GLSL\glsl_CombinerProgramBuilder.h" />
     <ClInclude Include="..\..\src\Graphics\OpenGLContext\GLSL\glsl_CombinerProgramImpl.h" />
+    <ClInclude Include="..\..\src\Graphics\OpenGLContext\GLSL\glsl_Utils.h" />
+    <ClInclude Include="..\..\src\Graphics\OpenGLContext\opengl_Attributes.h" />
     <ClInclude Include="..\..\src\Graphics\OpenGLContext\opengl_BufferManipulationObjectFactory.h" />
     <ClInclude Include="..\..\src\Graphics\OpenGLContext\opengl_CachedFunctions.h" />
     <ClInclude Include="..\..\src\Graphics\OpenGLContext\opengl_ContextImpl.h" />
-    <ClInclude Include="..\..\src\Graphics\OpenGLContext\opengl_GLVersion.h" />
+    <ClInclude Include="..\..\src\Graphics\OpenGLContext\opengl_GLInfo.h" />
     <ClInclude Include="..\..\src\Graphics\OpenGLContext\opengl_TextureManipulationObjectFactory.h" />
     <ClInclude Include="..\..\src\Graphics\OpenGLContext\opengl_Utilis.h" />
     <ClInclude Include="..\..\src\Graphics\Parameter.h" />

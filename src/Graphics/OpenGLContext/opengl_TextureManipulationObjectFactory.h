@@ -5,7 +5,7 @@
 
 namespace opengl {
 
-	struct GLVersion;
+	struct GLInfo;
 	class CachedFunctions;
 
 	class Create2DTexture
@@ -33,7 +33,7 @@ namespace opengl {
 	class TextureManipulationObjectFactory
 	{
 	public:
-		TextureManipulationObjectFactory(const GLVersion & _version, CachedFunctions & _cachedFunctions);
+		TextureManipulationObjectFactory(const GLInfo & _glinfo, CachedFunctions & _cachedFunctions);
 		~TextureManipulationObjectFactory();
 
 		Create2DTexture * getCreate2DTexture() const;
@@ -43,7 +43,7 @@ namespace opengl {
 		Set2DTextureParameters * getSet2DTextureParameters() const;
 
 	private:
-		const GLVersion & m_version;
+		const GLInfo & m_glInfo;
 		CachedFunctions & m_cachedFunctions;
 	};
 

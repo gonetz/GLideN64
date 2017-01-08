@@ -1,11 +1,1918 @@
+#include <assert.h>
+#include <Log.h>
+#include <Config.h>
+#include "glsl_Utils.h"
+#include "glsl_CombinerProgramImpl.h"
 #include "glsl_CombinerProgramBuilder.h"
 
-using namespace opengl::glsl;
+using namespace glsl;
 
-CombinerProgramBuilder::CombinerProgramBuilder()
+/*---------------_compileCombiner-------------*/
+
+static
+const char *ColorInput[] = {
+	"combined_color.rgb",
+	"readtex0.rgb",
+	"readtex1.rgb",
+	"uPrimColor.rgb",
+	"vec_color.rgb",
+	"uEnvColor.rgb",
+	"uCenterColor.rgb",
+	"uScaleColor.rgb",
+	"combined_color.a",
+	"vec3(readtex0.a)",
+	"vec3(readtex1.a)",
+	"vec3(uPrimColor.a)",
+	"vec3(vec_color.a)",
+	"vec3(uEnvColor.a)",
+	"vec3(lod_frac)",
+	"vec3(uPrimLod)",
+	"vec3(0.5 + 0.5*snoise())",
+	"vec3(uK4)",
+	"vec3(uK5)",
+	"vec3(1.0)",
+	"vec3(0.0)"
+};
+
+static
+const char *AlphaInput[] = {
+	"combined_color.a",
+	"readtex0.a",
+	"readtex1.a",
+	"uPrimColor.a",
+	"vec_color.a",
+	"uEnvColor.a",
+	"uCenterColor.a",
+	"uScaleColor.a",
+	"combined_color.a",
+	"readtex0.a",
+	"readtex1.a",
+	"uPrimColor.a",
+	"vec_color.a",
+	"uEnvColor.a",
+	"lod_frac",
+	"uPrimLod",
+	"0.5 + 0.5*snoise()",
+	"uK4",
+	"uK5",
+	"1.0",
+	"0.0"
+};
+
+inline
+int correctFirstStageParam(int _param)
 {
+	switch (_param) {
+	case TEXEL1:
+		return TEXEL0;
+	case TEXEL1_ALPHA:
+		return TEXEL0_ALPHA;
+	}
+	return _param;
 }
 
+static
+void _correctFirstStageParams(CombinerStage & _stage)
+{
+	for (int i = 0; i < _stage.numOps; ++i) {
+		_stage.op[i].param1 = correctFirstStageParam(_stage.op[i].param1);
+		_stage.op[i].param2 = correctFirstStageParam(_stage.op[i].param2);
+		_stage.op[i].param3 = correctFirstStageParam(_stage.op[i].param3);
+	}
+}
+
+inline
+int correctSecondStageParam(int _param)
+{
+	switch (_param) {
+	case TEXEL0:
+		return TEXEL1;
+	case TEXEL1:
+		return TEXEL0;
+	case TEXEL0_ALPHA:
+		return TEXEL1_ALPHA;
+	case TEXEL1_ALPHA:
+		return TEXEL0_ALPHA;
+	}
+	return _param;
+}
+
+static
+void _correctSecondStageParams(CombinerStage & _stage) {
+	for (int i = 0; i < _stage.numOps; ++i) {
+		_stage.op[i].param1 = correctSecondStageParam(_stage.op[i].param1);
+		_stage.op[i].param2 = correctSecondStageParam(_stage.op[i].param2);
+		_stage.op[i].param3 = correctSecondStageParam(_stage.op[i].param3);
+	}
+}
+
+static
+int _compileCombiner(const CombinerStage & _stage, const char** _Input, std::stringstream & _strShader) {
+	bool bBracketOpen = false;
+	int nRes = 0;
+	for (int i = 0; i < _stage.numOps; ++i) {
+		switch (_stage.op[i].op) {
+		case LOAD:
+			//			sprintf(buf, "(%s ", _Input[_stage.op[i].param1]);
+			_strShader << "(" << _Input[_stage.op[i].param1] << " ";
+			bBracketOpen = true;
+			nRes |= 1 << _stage.op[i].param1;
+			break;
+		case SUB:
+			if (bBracketOpen) {
+				//				sprintf(buf, "- %s)", _Input[_stage.op[i].param1]);
+				_strShader << "- " << _Input[_stage.op[i].param1] << ")";
+				bBracketOpen = false;
+			}
+			else
+				//				sprintf(buf, "- %s", _Input[_stage.op[i].param1]);
+				_strShader << "- " << _Input[_stage.op[i].param1];
+			//			_strShader += buf;
+			nRes |= 1 << _stage.op[i].param1;
+			break;
+		case ADD:
+			if (bBracketOpen) {
+				//				sprintf(buf, "+ %s)", _Input[_stage.op[i].param1]);
+				_strShader << "+ " << _Input[_stage.op[i].param1] << ")";
+				bBracketOpen = false;
+			}
+			else
+				//				sprintf(buf, "+ %s", _Input[_stage.op[i].param1]);
+				_strShader << "+ " << _Input[_stage.op[i].param1];
+			nRes |= 1 << _stage.op[i].param1;
+			break;
+		case MUL:
+			if (bBracketOpen) {
+				//				sprintf(buf, ")*%s", _Input[_stage.op[i].param1]);
+				_strShader << ")*" << _Input[_stage.op[i].param1];
+				bBracketOpen = false;
+			}
+			else
+				//				sprintf(buf, "*%s", _Input[_stage.op[i].param1]);
+				_strShader << "*" << _Input[_stage.op[i].param1];
+			nRes |= 1 << _stage.op[i].param1;
+			break;
+		case INTER:
+			//			sprintf(buf, "mix(%s, %s, %s)", _Input[_stage.op[0].param2], _Input[_stage.op[0].param1], _Input[_stage.op[0].param3]);
+			_strShader << "mix(" <<
+				_Input[_stage.op[0].param2] << "," <<
+				_Input[_stage.op[0].param1] << "," <<
+				_Input[_stage.op[0].param3] << ")";
+			nRes |= 1 << _stage.op[i].param1;
+			nRes |= 1 << _stage.op[i].param2;
+			nRes |= 1 << _stage.op[i].param3;
+			break;
+
+			//			default:
+			//				assert(false);
+		}
+	}
+	if (bBracketOpen)
+		_strShader << ")";
+	_strShader << ";" << std::endl;
+	return nRes;
+}
+
+/*---------------ShaderParts-------------*/
+
+class VertexShaderHeader : public ShaderPart
+{
+public:
+	VertexShaderHeader(const opengl::GLInfo & _version)
+	{
+		if (_version.isGLES2) {
+			m_part = "#version 100			\n";
+			m_part +=
+				"#if (__VERSION__ > 120)	\n"
+				"# define IN in				\n"
+				"# define OUT out			\n"
+				"#else						\n"
+				"# define IN attribute		\n"
+				"# define OUT varying		\n"
+				"#endif // __VERSION		\n"
+				;
+		}
+		else if (_version.isGLESX) {
+			std::stringstream ss;
+			ss << "#version " << _version.majorVersion << _version.minorVersion << "0 es " << std::endl;
+			ss << "# define IN in" << std::endl << "# define OUT out" << std::endl;
+			m_part = ss.str();
+		}
+		else {
+			std::stringstream ss;
+			ss << "#version " << _version.majorVersion << _version.minorVersion << "0 core " << std::endl;
+			ss << "# define IN in" << std::endl << "# define OUT out" << std::endl;
+			m_part = ss.str();
+		}
+	}
+};
+
+class VertexShaderTexturedTriangle : public ShaderPart
+{
+public:
+	VertexShaderTexturedTriangle(const opengl::GLInfo & _version)
+	{
+		m_part =
+			"IN highp vec4 aPosition;							\n"
+			"IN lowp vec4 aColor;								\n"
+			"IN highp vec2 aTexCoord;							\n"
+			"IN lowp float aNumLights;							\n"
+			"IN highp vec4 aModify;								\n"
+			"													\n"
+			"uniform int uTexturePersp;							\n"
+			"													\n"
+			"uniform lowp int uFogUsage;						\n"
+			"uniform mediump vec2 uFogScale;					\n"
+			"uniform mediump vec2 uScreenCoordsScale;			\n"
+			"													\n"
+			"uniform mediump vec2 uTexScale;					\n"
+			"uniform mediump vec2 uTexOffset[2];				\n"
+			"uniform mediump vec2 uCacheScale[2];				\n"
+			"uniform mediump vec2 uCacheOffset[2];				\n"
+			"uniform mediump vec2 uCacheShiftScale[2];			\n"
+			"uniform lowp ivec2 uCacheFrameBuffer;				\n"
+			"OUT lowp vec4 vShadeColor;							\n"
+			"OUT mediump vec2 vTexCoord0;						\n"
+			"OUT mediump vec2 vTexCoord1;						\n"
+			"OUT mediump vec2 vLodTexCoord;						\n"
+			"OUT lowp float vNumLights;							\n"
+
+			"mediump vec2 calcTexCoord(in vec2 texCoord, in int idx)		\n"
+			"{																\n"
+			"    vec2 texCoordOut = texCoord*uCacheShiftScale[idx];			\n"
+			"    texCoordOut -= uTexOffset[idx];							\n"
+			"    if (uCacheFrameBuffer[idx] != 0)							\n"
+			"      texCoordOut.t = -texCoordOut.t;							\n"
+			"    return (uCacheOffset[idx] + texCoordOut)* uCacheScale[idx];\n"
+			"}																\n"
+			"																\n"
+			"void main()													\n"
+			"{																\n"
+			"  gl_Position = aPosition;										\n"
+			"  vShadeColor = aColor;										\n"
+			"  vec2 texCoord = aTexCoord;									\n"
+			"  texCoord *= uTexScale;										\n"
+			"  if (uTexturePersp == 0 && aModify[2] == 0.0) texCoord *= 0.5;\n"
+			"  vTexCoord0 = calcTexCoord(texCoord, 0);						\n"
+			"  vTexCoord1 = calcTexCoord(texCoord, 1);						\n"
+			"  vLodTexCoord = texCoord;										\n"
+			"  vNumLights = aNumLights;										\n"
+			"  if (aModify != vec4(0.0)) {									\n"
+			"    if ((aModify[0]) != 0.0) {									\n"
+			"      gl_Position.xy = gl_Position.xy * uScreenCoordsScale + vec2(-1.0, 1.0);	\n"
+			"      gl_Position.xy *= gl_Position.w;							\n"
+			"    }															\n"
+			"    if ((aModify[1]) != 0.0)									\n"
+			"      gl_Position.z *= gl_Position.w;							\n"
+			"    if ((aModify[3]) != 0.0)									\n"
+			"      vNumLights = 0.0;										\n"
+			"  }															\n"
+			"  if (uFogUsage == 1) {										\n"
+			"    lowp float fp;												\n"
+			"    if (aPosition.z < -aPosition.w && aModify[1] == 0.0)		\n"
+			"      fp = -uFogScale.s + uFogScale.t;							\n"
+			"    else														\n"
+			"      fp = aPosition.z/aPosition.w*uFogScale.s + uFogScale.t;	\n"
+			"    vShadeColor.a = clamp(fp, 0.0, 1.0);						\n"
+			"  }															\n"
+			;
+		if (!_version.isGLESX) {
+			m_part +=
+				"  gl_ClipDistance[0] = gl_Position.w - gl_Position.z;			\n"
+				;
+		}
+		m_part +=
+			"} \n"
+		;
+	}
+};
+
+class VertexShaderTriangle : public ShaderPart
+{
+public:
+	VertexShaderTriangle(const opengl::GLInfo & _version)
+	{
+		m_part =
+			"IN highp vec4 aPosition;			\n"
+			"IN lowp vec4 aColor;				\n"
+			"IN lowp float aNumLights;			\n"
+			"IN highp vec4 aModify;				\n"
+			"									\n"
+			"uniform lowp int uFogUsage;		\n"
+			"uniform mediump vec2 uFogScale;	\n"
+			"uniform mediump vec2 uScreenCoordsScale;\n"
+			"									\n"
+			"OUT lowp vec4 vShadeColor;			\n"
+			"OUT lowp float vNumLights;			\n"
+			"																\n"
+			"void main()													\n"
+			"{																\n"
+			"  gl_Position = aPosition;										\n"
+			"  vShadeColor = aColor;										\n"
+			"  vNumLights = aNumLights;										\n"
+			"  if (aModify != vec4(0.0)) {									\n"
+			"    if ((aModify[0]) != 0.0) {									\n"
+			"      gl_Position.xy = gl_Position.xy * uScreenCoordsScale + vec2(-1.0, 1.0);	\n"
+			"      gl_Position.xy *= gl_Position.w;							\n"
+			"    }															\n"
+			"    if ((aModify[1]) != 0.0) 									\n"
+			"      gl_Position.z *= gl_Position.w;							\n"
+			"    if ((aModify[3]) != 0.0)									\n"
+			"      vNumLights = 0.0;										\n"
+			"  }															\n"
+			"  if (uFogUsage == 1) {										\n"
+			"    lowp float fp;												\n"
+			"    if (aPosition.z < -aPosition.w && aModify[1] == 0.0)		\n"
+			"      fp = -uFogScale.s + uFogScale.t;							\n"
+			"    else														\n"
+			"      fp = aPosition.z/aPosition.w*uFogScale.s + uFogScale.t;	\n"
+			"    vShadeColor.a = clamp(fp, 0.0, 1.0);						\n"
+			"  }															\n"
+		;
+		if (!_version.isGLESX) {
+			m_part +=
+				"  gl_ClipDistance[0] = gl_Position.w - gl_Position.z;			\n"
+				;
+		}
+		m_part +=
+			"} \n"
+			;
+	}
+};
+
+class VertexShaderTexturedRect : public ShaderPart
+{
+public:
+	VertexShaderTexturedRect(const opengl::GLInfo & _version)
+	{
+		m_part =
+			"IN highp vec4 aRectPosition;						\n"
+			"IN lowp vec4 aRectColor;							\n"
+			"IN highp vec2 aTexCoord0;							\n"
+			"IN highp vec2 aTexCoord1;							\n"
+			"													\n"
+			"OUT lowp vec4 vShadeColor;							\n"
+			"OUT mediump vec2 vTexCoord0;						\n"
+			"OUT mediump vec2 vTexCoord1;						\n"
+			"void main()										\n"
+			"{													\n"
+			"  gl_Position = aRectPosition;						\n"
+			"  vShadeColor = aRectColor;						\n"
+			"  vTexCoord0 = aTexCoord0;							\n"
+			"  vTexCoord1 = aTexCoord1;							\n"
+		;
+		if (!_version.isGLESX) {
+			m_part +=
+				"  gl_ClipDistance[0] = gl_Position.w - gl_Position.z;			\n"
+				;
+		}
+		m_part +=
+			"} \n"
+			;
+	}
+};
+
+class VertexShaderRect : public ShaderPart
+{
+public:
+	VertexShaderRect(const opengl::GLInfo & _version)
+	{
+		m_part =
+			"IN highp vec4 aRectPosition;						\n"
+			"IN lowp vec4 aRectColor;							\n"
+			"													\n"
+			"OUT lowp vec4 vShadeColor;							\n"
+			"void main()										\n"
+			"{													\n"
+			"  gl_Position = aRectPosition;						\n"
+			"  vShadeColor = aRectColor;						\n"
+			;
+		if (!_version.isGLESX) {
+			m_part +=
+				"  gl_ClipDistance[0] = gl_Position.w - gl_Position.z;			\n"
+				;
+		}
+		m_part +=
+			"} \n"
+			;
+	}
+};
+
+class FragmentShaderHeader : public ShaderPart
+{
+public:
+	FragmentShaderHeader(const opengl::GLInfo & _version)
+	{
+		if (_version.isGLES2) {
+			m_part = "#version 100 \n";
+			m_part += "#extension GL_EXT_shader_texture_lod : enable \n";
+			m_part += "#extension GL_OES_standard_derivatives : enable \n";
+			m_part +=
+				"#if (__VERSION__ > 120)		\n"
+				"# define IN in					\n"
+				"# define OUT out				\n"
+				"#else							\n"
+				"# define IN varying			\n"
+				"# define OUT					\n"
+				"#endif // __VERSION __			\n"
+			;
+		}
+		else if (_version.isGLESX) {
+			std::stringstream ss;
+			ss << "#version " << _version.majorVersion << _version.minorVersion << "0 es " << std::endl;
+			ss << "# define IN in" << std::endl << "# define OUT out" << std::endl;
+			m_part = ss.str();
+		} else {
+			std::stringstream ss;
+			ss << "#version " << _version.majorVersion << _version.minorVersion << "0 core " << std::endl;
+			ss << "# define IN in" << std::endl << "# define OUT out" << std::endl;
+			m_part = ss.str();
+		}
+	}
+};
+
+class ShaderBlender1 : public ShaderPart
+{
+public:
+	ShaderBlender1(const opengl::GLInfo & _version)
+	{
+		if (_version.isGLES2) {
+			m_part =
+				"  if (uForceBlendCycle1 != 0) {	\n"
+				"    muxPM[0] = clampedColor;		\n"
+				"    muxA[0] = clampedColor.a;		\n"
+				"    lowp float muxa;				\n"
+				"    if (uBlendMux1[1] == 0)		\n"
+				"      muxa = muxA[0];				\n"
+				"    else if (uBlendMux1[1] == 1)	\n"
+				"      muxa = muxA[1];				\n"
+				"    else if (uBlendMux1[1] == 2)	\n"
+				"      muxa = muxA[2];				\n"
+				"    else if (uBlendMux1[1] == 3)	\n"
+				"      muxa = muxA[3];				\n"
+				"    muxB[0] = 1.0 - muxa;			\n"
+				"    lowp vec4 muxpm0;				\n"
+				"    if (uBlendMux1[0] == 0)		\n"
+				"      muxpm0 = muxPM[0];			\n"
+				"    else if (uBlendMux1[0] == 1)	\n"
+				"      muxpm0 = muxPM[1];			\n"
+				"    else if (uBlendMux1[0] == 2)	\n"
+				"      muxpm0 = muxPM[2];			\n"
+				"    else if (uBlendMux1[0] == 3)	\n"
+				"      muxpm0 = muxPM[3];			\n"
+				"    lowp vec4 muxpm2;				\n"
+				"    if (uBlendMux1[2] == 0)		\n"
+				"      muxpm2 = muxPM[0];			\n"
+				"    else if (uBlendMux1[2] == 1)	\n"
+				"      muxpm2 = muxPM[1];			\n"
+				"    else if (uBlendMux1[2] == 2)	\n"
+				"      muxpm2 = muxPM[2];			\n"
+				"    else if (uBlendMux1[2] == 3)	\n"
+				"      muxpm2 = muxPM[3];			\n"
+				"    lowp float muxb;				\n"
+				"    if (uBlendMux1[3] == 0)		\n"
+				"      muxb = muxB[0];				\n"
+				"    else if (uBlendMux1[3] == 1)	\n"
+				"      muxb = muxB[1];				\n"
+				"    else if (uBlendMux1[3] == 2)	\n"
+				"      muxb = muxB[2];				\n"
+				"    else if (uBlendMux1[3] == 3)	\n"
+				"      muxb = muxB[3];				\n"
+				"    lowp vec4 blend1 = (muxpm0 * muxa) + (muxpm2 * muxb);	\n"
+				"    clampedColor.rgb = clamp(blend1.rgb, 0.0, 1.0);		\n"
+				"  }								\n"
+				;
+		} else {
+			m_part =
+				"  if (uForceBlendCycle1 != 0) {						\n"
+				"    muxPM[0] = clampedColor;							\n"
+				"    muxA[0] = clampedColor.a;							\n"
+				"    muxB[0] = 1.0 - muxA[uBlendMux1[1]];				\n"
+				"    lowp vec4 blend1 = (muxPM[uBlendMux1[0]] * muxA[uBlendMux1[1]]) + (muxPM[uBlendMux1[2]] * muxB[uBlendMux1[3]]);	\n"
+				"    clampedColor.rgb = clamp(blend1.rgb, 0.0, 1.0);	\n"
+				"  }													\n"
+			;
+
+		}
+	}
+};
+
+class ShaderBlender2 : public ShaderPart
+{
+public:
+	ShaderBlender2(const opengl::GLInfo & _version)
+	{
+		if (_version.isGLES2) {
+			m_part =
+				"  if (uForceBlendCycle2 != 0) {	\n"
+				"    muxPM[0] = clampedColor;		\n"
+				"    muxA[0] = clampedColor.a;		\n"
+				"    lowp float muxa;				\n"
+				"    if (uBlendMux2[1] == 0)		\n"
+				"      muxa = muxA[0];				\n"
+				"    else if (uBlendMux2[1] == 1)	\n"
+				"      muxa = muxA[1];				\n"
+				"    else if (uBlendMux2[1] == 2)	\n"
+				"      muxa = muxA[2];				\n"
+				"    else if (uBlendMux2[1] == 3)	\n"
+				"      muxa = muxA[3];				\n"
+				"    muxB[0] = 1.0 - muxa;			\n"
+				"    lowp vec4 muxpm0;				\n"
+				"    if (uBlendMux2[0] == 0)		\n"
+				"      muxpm0 = muxPM[0];			\n"
+				"    else if (uBlendMux2[0] == 1)	\n"
+				"      muxpm0 = muxPM[1];			\n"
+				"    else if (uBlendMux2[0] == 2)	\n"
+				"      muxpm0 = muxPM[2];			\n"
+				"    else if (uBlendMux2[0] == 3)	\n"
+				"      muxpm0 = muxPM[3];			\n"
+				"    lowp vec4 muxpm2;				\n"
+				"    if (uBlendMux2[2] == 0)		\n"
+				"      muxpm2 = muxPM[0];			\n"
+				"    else if (uBlendMux2[2] == 1)	\n"
+				"      muxpm2 = muxPM[1];			\n"
+				"    else if (uBlendMux2[2] == 2)	\n"
+				"      muxpm2 = muxPM[2];			\n"
+				"    else if (uBlendMux2[2] == 3)	\n"
+				"      muxpm2 = muxPM[3];			\n"
+				"    lowp float muxb;				\n"
+				"    if (uBlendMux2[3] == 0)		\n"
+				"      muxb = muxB[0];				\n"
+				"    else if (uBlendMux2[3] == 1)	\n"
+				"      muxb = muxB[1];				\n"
+				"    else if (uBlendMux2[3] == 2)	\n"
+				"      muxb = muxB[2];				\n"
+				"    else if (uBlendMux2[3] == 3)	\n"
+				"      muxb = muxB[3];				\n"
+				"    lowp vec4 blend2 = muxpm0 * muxa + muxpm2 * muxb;	\n"
+				"    clampedColor.rgb = clamp(blend2.rgb, 0.0, 1.0);	\n"
+				"  }								\n"
+				;
+		}
+		else {
+			m_part =
+				"  if (uForceBlendCycle2 != 0) {						\n"
+				"    muxPM[0] = clampedColor;							\n"
+				"    muxA[0] = clampedColor.a;							\n"
+				"    muxB[0] = 1.0 - muxA[uBlendMux2[1]];				\n"
+				"    lowp vec4 blend2 = muxPM[uBlendMux2[0]] * muxA[uBlendMux2[1]] + muxPM[uBlendMux2[2]] * muxB[uBlendMux2[3]];	\n"
+				"    clampedColor.rgb = clamp(blend2.rgb, 0.0, 1.0);	\n"
+				"  }													\n"
+				;
+		}
+	}
+};
+
+class ShaderLegacyBlender : public ShaderPart
+{
+public:
+	ShaderLegacyBlender()
+	{
+		m_part =
+			"  if (uFogUsage == 1) \n"
+			"    fragColor.rgb = mix(fragColor.rgb, uFogColor.rgb, vShadeColor.a); \n"
+			;
+	}
+};
+
+
+/*
+// N64 color wrap and clamp on floats
+// See https://github.com/gonetz/GLideN64/issues/661 for reference
+if (c < -1.0) return c + 2.0;
+
+if (c < -0.5) return 1;
+
+if (c < 0.0) return 0;
+
+if (c > 2.0) return c - 2.0;
+
+if (c > 1.5) return 0;
+
+if (c > 1.0) return 1;
+
+return c;
+*/
+class ShaderClamp : public ShaderPart
+{
+public:
+	ShaderClamp()
+	{
+		m_part =
+			"  lowp vec4 wrappedColor = cmbRes + 2.0 * step(cmbRes, vec4(-0.51)) - 2.0*step(vec4(1.51), cmbRes); \n"
+			"  lowp vec4 clampedColor = clamp(wrappedColor, 0.0, 1.0); \n"
+			;
+	}
+};
+
+/*
+N64 sign-extension for C component of combiner
+if (c > 1.0)
+return c - 2.0;
+
+return c;
+*/
+class ShaderSignExtendColorC : public ShaderPart
+{
+public:
+	ShaderSignExtendColorC()
+	{
+		m_part =
+			"  color1 = color1 - 2.0*(vec3(1.0) - step(color1, vec3(1.0)));	\n"
+			;
+	}
+};
+
+class ShaderSignExtendAlphaC : public ShaderPart
+{
+public:
+	ShaderSignExtendAlphaC()
+	{
+		m_part =
+			"  alpha1 = alpha1 - 2.0*(1.0 - step(alpha1, 1.0));					\n"
+			;
+	}
+};
+
+/*
+N64 sign-extension for ABD components of combiner
+if (c > 1.5)
+return c - 2.0;
+
+if (c < -0.5)
+return c + 2.0;
+
+return c;
+*/
+class ShaderSignExtendColorABD : public ShaderPart
+{
+public:
+	ShaderSignExtendColorABD()
+	{
+		m_part =
+			"  color1 = color1 + 2.0*step(color1, vec3(-0.51)) - 2.0*step(vec3(1.51), color1); \n"
+			;
+	}
+};
+
+class ShaderSignExtendAlphaABD : public ShaderPart
+{
+public:
+	ShaderSignExtendAlphaABD()
+	{
+		m_part =
+			"  alpha1 = alpha1 + 2.0*step(alpha1, -0.51) - 2.0*step(1.51, alpha1); \n"
+			;
+	}
+};
+
+class ShaderAlphaTest : public ShaderPart
+{
+public:
+	ShaderAlphaTest()
+	{
+		m_part =
+			"  if (uEnableAlphaTest != 0) {							\n"
+			"    lowp float alphaTestValue = (uAlphaCompareMode == 3) ? snoise() : uAlphaTestValue;	\n"
+			"    lowp float alphaValue;								\n"
+			"    if ((uAlphaCvgSel != 0) && (uCvgXAlpha == 0)) {	\n"
+			"      alphaValue = 0.125;								\n"
+			"    } else {											\n"
+			"      alphaValue = clamp(alpha1, 0.0, 1.0);			\n"
+			"    }													\n"
+			"    if (alphaValue < alphaTestValue) discard;			\n"
+			"  }													\n"
+			;
+	}
+};
+
+class ShaderCallDither : public ShaderPart
+{
+public:
+	ShaderCallDither(const opengl::GLInfo & _version)
+	{
+		if (!_version.isGLES2 && config.generalEmulation.enableNoise != 0) {
+			m_part =
+				"  if (uColorDitherMode == 2) colorNoiseDither(snoise(), clampedColor.rgb);	\n"
+				"  if (uAlphaDitherMode == 2) alphaNoiseDither(snoise(), clampedColor.a);	\n"
+				;
+		}
+	}
+};
+
+class ShaderFragmentGlobalVariablesTex : public ShaderPart
+{
+public:
+	ShaderFragmentGlobalVariablesTex(const opengl::GLInfo & _version)
+	{
+		m_part =
+			"uniform sampler2D uTex0;		\n"
+			"uniform sampler2D uTex1;		\n"
+			"uniform lowp vec4 uFogColor;	\n"
+			"uniform lowp vec4 uCenterColor;\n"
+			"uniform lowp vec4 uScaleColor;	\n"
+			"uniform lowp vec4 uBlendColor;	\n"
+			"uniform lowp vec4 uEnvColor;	\n"
+			"uniform lowp vec4 uPrimColor;	\n"
+			"uniform lowp float uPrimLod;	\n"
+			"uniform lowp float uK4;		\n"
+			"uniform lowp float uK5;		\n"
+			"uniform lowp int uAlphaCompareMode;	\n"
+			"uniform lowp ivec2 uFbMonochrome;		\n"
+			"uniform lowp ivec2 uFbFixedAlpha;		\n"
+			"uniform lowp int uEnableAlphaTest;		\n"
+			"uniform lowp int uCvgXAlpha;			\n"
+			"uniform lowp int uAlphaCvgSel;			\n"
+			"uniform lowp float uAlphaTestValue;	\n"
+			"uniform mediump vec2 uScreenScale;		\n"
+			;
+
+		if (config.generalEmulation.enableLegacyBlending != 0) {
+			m_part +=
+				"uniform lowp int uFogUsage;		\n"
+			;
+		} else {
+			m_part +=
+				"uniform lowp ivec4 uBlendMux1;		\n"
+				"uniform lowp int uForceBlendCycle1;\n"
+			;
+		}
+
+		if (!_version.isGLES2) {
+			m_part +=
+				"uniform sampler2D uDepthTex;		\n"
+				"uniform lowp int uAlphaDitherMode;	\n"
+				"uniform lowp int uColorDitherMode;	\n"
+				"uniform lowp int uRenderTarget;	\n"
+				"uniform mediump vec2 uDepthScale;	\n"
+				;
+			if (_version.imageTextures && config.frameBufferEmulation.N64DepthCompare != 0) {
+				m_part +=
+					"uniform lowp int uEnableDepthCompare;	\n"
+					;
+			}
+		} else {
+			m_part +=
+				"lowp int nCurrentTile;			\n"
+			;
+		}
+
+		if (config.video.multisampling > 0) {
+			m_part +=
+				"uniform lowp ivec2 uMSTexEnabled;	\n";
+				"uniform lowp sampler2DMS uMSTex0;	\n";
+				"uniform lowp sampler2DMS uMSTex1;	\n";
+			;
+		}
+
+		m_part +=
+			"IN lowp vec4 vShadeColor;	\n"
+			"IN mediump vec2 vTexCoord0;\n"
+			"IN mediump vec2 vTexCoord1;\n"
+			"IN mediump vec2 vLodTexCoord;\n"
+			"IN lowp float vNumLights;	\n"
+			"OUT lowp vec4 fragColor;	\n"
+		;
+	}
+};
+
+class ShaderFragmentGlobalVariablesNotex : public ShaderPart
+{
+public:
+	ShaderFragmentGlobalVariablesNotex(const opengl::GLInfo & _version)
+	{
+		m_part =
+			"uniform lowp vec4 uFogColor;	\n"
+			"uniform lowp vec4 uCenterColor;\n"
+			"uniform lowp vec4 uScaleColor;	\n"
+			"uniform lowp vec4 uBlendColor;	\n"
+			"uniform lowp vec4 uEnvColor;	\n"
+			"uniform lowp vec4 uPrimColor;	\n"
+			"uniform lowp float uPrimLod;	\n"
+			"uniform lowp float uK4;		\n"
+			"uniform lowp float uK5;		\n"
+			"uniform lowp int uAlphaCompareMode;	\n"
+			"uniform lowp ivec2 uFbMonochrome;		\n"
+			"uniform lowp ivec2 uFbFixedAlpha;		\n"
+			"uniform lowp int uEnableAlphaTest;		\n"
+			"uniform lowp int uCvgXAlpha;			\n"
+			"uniform lowp int uAlphaCvgSel;			\n"
+			"uniform lowp float uAlphaTestValue;	\n"
+			"uniform mediump vec2 uScreenScale;		\n"
+			;
+
+		if (config.generalEmulation.enableLegacyBlending != 0) {
+			m_part +=
+				"uniform lowp int uFogUsage;		\n"
+				;
+		} else {
+			m_part +=
+				"uniform lowp ivec4 uBlendMux1;		\n"
+				"uniform lowp int uForceBlendCycle1;\n"
+				;
+		}
+
+		if (!_version.isGLES2) {
+			m_part +=
+				"uniform sampler2D uDepthTex;		\n"
+				"uniform lowp int uAlphaDitherMode;	\n"
+				"uniform lowp int uColorDitherMode;	\n"
+				"uniform lowp int uRenderTarget;	\n"
+				"uniform mediump vec2 uDepthScale;	\n"
+				;
+			if (_version.imageTextures && config.frameBufferEmulation.N64DepthCompare != 0) {
+				m_part +=
+					"uniform lowp int uEnableDepthCompare;	\n"
+					;
+			}
+		} else {
+			m_part +=
+				"lowp int nCurrentTile;			\n"
+				;
+		}
+
+		m_part +=
+			"IN lowp vec4 vShadeColor;	\n"
+			"IN lowp float vNumLights;	\n"
+			"OUT lowp vec4 fragColor;	\n";
+	}
+};
+
+class ShaderFragmentHeaderNoise : public ShaderPart
+{
+public:
+	ShaderFragmentHeaderNoise(const opengl::GLInfo & _version)
+	{
+		m_part =
+			"lowp float snoise();\n";
+		;
+	}
+};
+
+class ShaderFragmentHeaderWriteDepth : public ShaderPart
+{
+public:
+	ShaderFragmentHeaderWriteDepth(const opengl::GLInfo & _version)
+	{
+		if (!_version.isGLES2) {
+			m_part =
+				"void writeDepth();\n";
+			;
+		}
+	}
+};
+
+class ShaderFragmentHeaderCalcLight : public ShaderPart
+{
+public:
+	ShaderFragmentHeaderCalcLight(const opengl::GLInfo & _version)
+	{
+		m_part =
+			"void calc_light(in lowp float fLights, in lowp vec3 input_color, out lowp vec3 output_color);\n";
+			;
+	}
+};
+
+class ShaderFragmentHeaderMipMap : public ShaderPart
+{
+public:
+	ShaderFragmentHeaderMipMap(const opengl::GLInfo & _version)
+	{
+		m_part =
+			"mediump float mipmap(out lowp vec4 readtex0, out lowp vec4 readtex1);\n";
+		;
+	}
+};
+
+class ShaderFragmentHeaderReadMSTex : public ShaderPart
+{
+public:
+	ShaderFragmentHeaderReadMSTex(const opengl::GLInfo & _version)
+	{
+		if (!_version.isGLES2 && config.video.multisampling > 0) {
+			m_part =
+				"lowp vec4 readTexMS(in lowp sampler2DMS mstex, in mediump vec2 texCoord, in lowp int fbMonochrome, in lowp int fbFixedAlpha);\n";
+			;
+		}
+	}
+};
+
+class ShaderFragmentHeaderDither : public ShaderPart
+{
+public:
+	ShaderFragmentHeaderDither(const opengl::GLInfo & _version)
+	{
+		if (!_version.isGLES2 && config.generalEmulation.enableNoise != 0) {
+			m_part =
+				"void colorNoiseDither(in lowp float _noise, inout lowp vec3 _color);\n"
+				"void alphaNoiseDither(in lowp float _noise, inout lowp float _alpha);\n";
+			;
+		}
+	}
+};
+
+class ShaderFragmentHeaderDepthCompare : public ShaderPart
+{
+public:
+	ShaderFragmentHeaderDepthCompare(const opengl::GLInfo & _version)
+	{
+		if (_version.imageTextures && config.frameBufferEmulation.N64DepthCompare != 0) {
+			m_part =
+				"bool depth_compare();\n"
+				"bool depth_render(highp float Z);\n";
+			;
+		}
+	}
+};
+
+class ShaderFragmentHeaderReadTex : public ShaderPart
+{
+public:
+	ShaderFragmentHeaderReadTex (const opengl::GLInfo & _version)
+	{
+		if (!_version.isGLES2) {
+			if (config.texture.bilinearMode == BILINEAR_3POINT) {
+				m_part =
+					"uniform lowp int uTextureFilterMode;								\n"
+					// 3 point texture filtering.
+					// Original author: ArthurCarvalho
+					// GLSL implementation: twinaphex, mupen64plus-libretro project.
+					"#define TEX_OFFSET(tex, texCoord, off) texture(tex, texCoord - (off)/texSize)	\n"
+					"#define FILTER_3POINT(tex, texCoord)			\\\n"
+					"  mediump vec2 texSize = vec2(textureSize(tex,0));							\\\n"
+					"  mediump vec2 offset = fract(texCoord*texSize - vec2(0.5));	\\\n"
+					"  offset -= step(1.0, offset.x + offset.y);								\\\n"
+					"  lowp vec4 c0 = TEX_OFFSET(tex, texCoord, offset);										\\\n"
+					"  lowp vec4 c1 = TEX_OFFSET(tex, texCoord, vec2(offset.x - sign(offset.x), offset.y));	\\\n"
+					"  lowp vec4 c2 = TEX_OFFSET(tex, texCoord, vec2(offset.x, offset.y - sign(offset.y)));	\\\n"
+					"  lowp vec4 tex3Point = c0 + abs(offset.x)*(c1-c0) + abs(offset.y)*(c2-c0); 						\n"
+					"#define READ_TEX(name, tex, texCoord, fbMonochrome, fbFixedAlpha)	\\\n"
+					"  {		\\\n"
+					"  lowp vec4 texStandard = texture(tex, texCoord); 							\\\n"
+					"  FILTER_3POINT(tex, texCoord);  \\\n"
+					"  name = uTextureFilterMode == 0 ? texStandard : tex3Point;	\\\n"
+					"  if (fbMonochrome == 1) name = vec4(name.r);						\\\n"
+					"  else if (fbMonochrome == 2) 												\\\n"
+					"    name.rgb = vec3(dot(vec3(0.2126, 0.7152, 0.0722), name.rgb));	\\\n"
+					"  if (fbFixedAlpha == 1) name.a = 0.825;									\\\n"
+					"  }		\n"
+					;
+			} else {
+				m_part =
+					"#define READ_TEX(name, tex, texCoord, fbMonochrome, fbFixedAlpha)	\\\n"
+					"  {		\\\n"
+					"  name = texture(tex, texCoord);	\\\n"
+					"  if (fbMonochrome == 1) name = vec4(name.r);	\\\n"
+					"  else if (fbMonochrome == 2) 						\\\n"
+					"    name.rgb = vec3(dot(vec3(0.2126, 0.7152, 0.0722), name.rgb));	\\\n"
+					"  if (fbFixedAlpha == 1) name.a = 0.825;		\\\n"
+					"  }		\n"
+				;
+			}
+		}
+	}
+};
+
+
+class ShaderFragmentMain : public ShaderPart
+{
+public:
+	ShaderFragmentMain(const opengl::GLInfo & _version)
+	{
+		m_part =
+			"void main() \n"
+			"{			 \n"
+		;
+		if (!_version.isGLES2) {
+			m_part +=
+				"  writeDepth(); \n"
+			;
+		}
+		m_part +=
+			"  lowp vec4 vec_color;				\n"
+			"  lowp float alpha1;				\n"
+			"  lowp vec3 color1, input_color;	\n"
+		;
+	}
+};
+
+class ShaderFragmentMain2Cycle : public ShaderPart
+{
+public:
+	ShaderFragmentMain2Cycle(const opengl::GLInfo & _version)
+	{
+		m_part =
+			"void main() \n"
+			"{			 \n"
+		;
+		if (!_version.isGLES2) {
+			m_part +=
+				"  writeDepth(); \n"
+			;
+		}
+		m_part +=
+			"  lowp vec4 vec_color, combined_color;		\n"
+			"  lowp float alpha1, alpha2;				\n"
+			"  lowp vec3 color1, color2, input_color;	\n"
+		;
+	}
+};
+
+class ShaderFragmentBlendMux : public ShaderPart
+{
+public:
+	ShaderFragmentBlendMux(const opengl::GLInfo & _version)
+	{
+		if (config.generalEmulation.enableLegacyBlending == 0) {
+			m_part =
+				"  lowp mat4 muxPM = mat4(vec4(0.0), vec4(0.0), uBlendColor, uFogColor);	\n"
+				"  lowp vec4 muxA = vec4(0.0, uFogColor.a, vShadeColor.a, 0.0);				\n"
+				"  lowp vec4 muxB = vec4(0.0, 1.0, 1.0, 0.0);								\n"
+			;
+		}
+	}
+};
+
+class ShaderFragmentReadTexMipmap : public ShaderPart
+{
+public:
+	ShaderFragmentReadTexMipmap(const opengl::GLInfo & _version)
+	{
+		m_part =
+			"  lowp vec4 readtex0, readtex1;						\n"
+			"  lowp float lod_frac = mipmap(readtex0, readtex1);	\n"
+		;
+	}
+};
+
+class ShaderFragmentReadTex0 : public ShaderPart
+{
+public:
+	ShaderFragmentReadTex0(const opengl::GLInfo & _version)
+	{
+		if (_version.isGLES2) {
+			if (config.video.multisampling > 0) {
+				m_part =
+					"  lowp vec4 readtex0; \n"
+					"  if (uMSTexEnabled[0] == 0) READ_TEX(readtex0, uTex0, vTexCoord0, uFbMonochrome[0], uFbFixedAlpha[0]) \n"
+					"  else readtex0 = readTexMS(uMSTex0, vTexCoord0, uFbMonochrome[0], uFbFixedAlpha[0]); \n"
+				;
+			} else {
+				m_part =
+					"  lowp vec4 readtex0; \n"
+					"  READ_TEX(readtex0, uTex0, vTexCoord0, uFbMonochrome[0], uFbFixedAlpha[0]); \n"
+				;
+			}
+		} else {
+			m_part =
+				"  nCurrentTile = 0; \n"
+				"  lowp vec4 readtex0 = readTex(uTex0, vTexCoord0, uFbMonochrome[0], uFbFixedAlpha[0]); \n"
+			;
+		}
+	}
+};
+
+class ShaderFragmentReadTex1 : public ShaderPart
+{
+public:
+	ShaderFragmentReadTex1(const opengl::GLInfo & _version)
+	{
+		if (_version.isGLES2) {
+			if (config.video.multisampling > 0) {
+				m_part =
+					"  lowp vec4 readtex1; \n"
+					"  if (uMSTexEnabled[1] == 0)  READ_TEX(readtex1, uTex1, vTexCoord1, uFbMonochrome[1], uFbFixedAlpha[1]) \n"
+					"  else readtex1 = readTexMS(uMSTex1, vTexCoord1, uFbMonochrome[1], uFbFixedAlpha[1]); \n"
+				;
+			}
+			else {
+				m_part =
+					"  lowp vec4 readtex1; \n"
+					"  READ_TEX(readtex1, uTex1, vTexCoord1, uFbMonochrome[1], uFbFixedAlpha[1]); \n"
+				;
+			}
+		}
+		else {
+			m_part =
+				"  nCurrentTile = 1; \n"
+				"  lowp vec4 readtex1 = readTex(uTex1, vTexCoord1, uFbMonochrome[1], uFbFixedAlpha[1]); \n"
+			;
+		}
+	}
+};
+
+class ShaderFragmentCallN64Depth : public ShaderPart
+{
+public:
+	ShaderFragmentCallN64Depth(const opengl::GLInfo & _version)
+	{
+		if (!_version.isGLES2 && _version.imageTextures && config.frameBufferEmulation.N64DepthCompare != 0) {
+			m_part =
+				"  if (uRenderTarget != 0) { if (!depth_render(fragColor.r)) discard; } \n"
+				"  else if (!depth_compare()) discard; \n"
+			;
+		}
+	}
+};
+
+class ShaderFragmentRenderTarget : public ShaderPart
+{
+public:
+	ShaderFragmentRenderTarget(const opengl::GLInfo & _version)
+	{
+		if (!_version.isGLES2 && config.generalEmulation.enableFragmentDepthWrite != 0) {
+			m_part =
+				"  if (uRenderTarget != 0) {					\n"
+				"    if (uRenderTarget > 1) {					\n"
+				"      ivec2 coord = ivec2(gl_FragCoord.xy);	\n"
+				"      if (gl_FragDepth >= texelFetch(uDepthTex, coord, 0).r) discard;	\n"
+				"    }											\n"
+				"    gl_FragDepth = fragColor.r;				\n"
+				"  }											\n"
+			;
+		}
+	}
+};
+
+class ShaderNoise : public ShaderPart
+{
+public:
+	ShaderNoise(const opengl::GLInfo & _version)
+	{
+		if (config.generalEmulation.enableNoise == 0) {
+			// Dummy noise
+			m_part =
+				"lowp float snoise()	\n"
+				"{						\n"
+				"  return 1.0;			\n"
+				"}						\n"
+				;
+		} else {
+			if (_version.isGLES2) {
+				m_part =
+					"uniform sampler2D uTexNoise;							\n"
+					"lowp float snoise()									\n"
+					"{														\n"
+					"  mediump vec2 texSize = vec2(640.0, 580.0);			\n"
+					"  mediump vec2 coord = gl_FragCoord.xy/uScreenScale/texSize;	\n"
+					"  return texture2D(uTexNoise, coord).r;				\n"
+					"}														\n"
+				;
+			} else {
+				m_part =
+					"uniform sampler2D uTexNoise;		\n"
+					"lowp float snoise()									\n"
+					"{														\n"
+					"  ivec2 coord = ivec2(gl_FragCoord.xy/uScreenScale);	\n"
+					"  return texelFetch(uTexNoise, coord, 0).r;			\n"
+					"}														\n"
+					;
+			}
+		}
+	}
+};
+
+class ShaderDither : public ShaderPart
+{
+public:
+	ShaderDither(const opengl::GLInfo & _version)
+	{
+		if (!_version.isGLES2 && config.generalEmulation.enableNoise != 0) {
+			m_part =
+				"void colorNoiseDither(in lowp float _noise, inout lowp vec3 _color)	\n"
+				"{															\n"
+				"    mediump vec3 tmpColor = _color*255.0;					\n"
+				"    mediump ivec3 iColor = ivec3(tmpColor);				\n"
+				//"    iColor &= 248;										\n" // does not work with HW lighting enabled (why?!)
+				"    iColor |= ivec3(tmpColor*_noise)&7;					\n"
+				"    _color = vec3(iColor)/255.0;							\n"
+				"}															\n"
+				"void alphaNoiseDither(in lowp float _noise, inout lowp float _alpha)	\n"
+				"{															\n"
+				"    mediump float tmpAlpha = _alpha*255.0;					\n"
+				"    mediump int iAlpha = int(tmpAlpha);					\n"
+				//"    iAlpha &= 248;											\n" // causes issue #518. need further investigation
+				"    iAlpha |= int(tmpAlpha*_noise)&7;						\n"
+				"    _alpha = float(iAlpha)/255.0;							\n"
+				"}															\n"
+			;
+		}
+	}
+};
+
+class ShaderWriteDepth : public ShaderPart
+{
+public:
+	ShaderWriteDepth(const opengl::GLInfo & _version)
+	{
+		if (!_version.isGLES2) {
+			if (config.generalEmulation.enableFragmentDepthWrite == 0) {
+				// Dummy write depth
+				m_part =
+					"void writeDepth()	    \n"
+					"{						\n"
+					"}						\n"
+				;
+			} else {
+				m_part =
+					"void writeDepth()						        		\n"
+					"{														\n"
+					"  gl_FragDepth = clamp((gl_FragCoord.z * 2.0 - 1.0) * uDepthScale.s + uDepthScale.t, 0.0, 1.0);	\n"
+					"}														\n"
+				;
+			}
+		}
+	}
+};
+
+class ShaderMipmap : public ShaderPart
+{
+public:
+	ShaderMipmap(const opengl::GLInfo & _version)
+	{
+		if (_version.isGLES2) {
+			if (config.generalEmulation.enableLOD == 0) {
+				// Fake mipmap
+				m_part =
+					"uniform lowp int uMaxTile;			\n"
+					"uniform mediump float uMinLod;		\n"
+					"														\n"
+					"mediump float mipmap(out lowp vec4 readtex0, out lowp vec4 readtex1) {	\n"
+					"  readtex0 = texture2D(uTex0, vTexCoord0);				\n"
+					"  readtex1 = texture2D(uTex1, vTexCoord1);				\n"
+					"  if (uMaxTile == 0) return 1.0;						\n"
+					"  return uMinLod;										\n"
+					"}														\n"
+				;
+			} else {
+				m_part =
+					"uniform lowp int uEnableLod;		\n"
+					"uniform mediump float uMinLod;		\n"
+					"uniform lowp int uMaxTile;			\n"
+					"uniform lowp int uTextureDetail;	\n"
+					"														\n"
+					"mediump float mipmap(out lowp vec4 readtex0, out lowp vec4 readtex1) {	\n"
+					"  readtex0 = texture2D(uTex0, vTexCoord0);				\n"
+					"  readtex1 = texture2DLodEXT(uTex1, vTexCoord1, 0.0);		\n"
+					"														\n"
+					"  mediump float fMaxTile = float(uMaxTile);			\n"
+					"  mediump vec2 dx = abs(dFdx(vLodTexCoord));			\n"
+					"  dx *= uScreenScale;									\n"
+					"  mediump float lod = max(dx.x, dx.y);					\n"
+					"  bool magnify = lod < 1.0;							\n"
+					"  mediump float lod_tile = magnify ? 0.0 : floor(log2(floor(lod))); \n"
+					"  bool distant = lod > 128.0 || lod_tile >= fMaxTile;	\n"
+					"  mediump float lod_frac = fract(lod/pow(2.0, lod_tile));	\n"
+					"  if (magnify) lod_frac = max(lod_frac, uMinLod);		\n"
+					"  if (uTextureDetail == 0)	{							\n"
+					"    if (distant) lod_frac = 1.0;						\n"
+					"    else if (magnify) lod_frac = 0.0;					\n"
+					"  }													\n"
+					"  if (magnify && (uTextureDetail == 1 || uTextureDetail == 3))			\n"
+					"      lod_frac = 1.0 - lod_frac;						\n"
+					"  if (uMaxTile == 0) {									\n"
+					"    if (uEnableLod != 0 && uTextureDetail < 2)	\n"
+					"      readtex1 = readtex0;								\n"
+					"    return lod_frac;									\n"
+					"  }													\n"
+					"  if (uEnableLod == 0) return lod_frac;				\n"
+					"														\n"
+					"  lod_tile = min(lod_tile, fMaxTile);					\n"
+					"  lowp float lod_tile_m1 = max(0.0, lod_tile - 1.0);	\n"
+					"  lowp vec4 lodT = texture2DLodEXT(uTex1, vTexCoord1, lod_tile);	\n"
+					"  lowp vec4 lodT_m1 = texture2DLodEXT(uTex1, vTexCoord1, lod_tile_m1);	\n"
+					"  lowp vec4 lodT_p1 = texture2DLodEXT(uTex1, vTexCoord1, lod_tile + 1.0);	\n"
+					"  if (lod_tile < 1.0) {								\n"
+					"    if (magnify) {									\n"
+					//     !sharpen && !detail
+					"      if (uTextureDetail == 0) readtex1 = readtex0;	\n"
+					"    } else {											\n"
+					//     detail
+					"      if (uTextureDetail > 1) {				\n"
+					"        readtex0 = lodT;								\n"
+					"        readtex1 = lodT_p1;							\n"
+					"      }												\n"
+					"    }													\n"
+					"  } else {												\n"
+					"    if (uTextureDetail > 1) {							\n"
+					"      readtex0 = lodT;									\n"
+					"      readtex1 = lodT_p1;								\n"
+					"    } else {											\n"
+					"      readtex0 = lodT_m1;								\n"
+					"      readtex1 = lodT;									\n"
+					"    }													\n"
+					"  }													\n"
+					"  return lod_frac;										\n"
+					"}														\n"
+				;
+			}
+		}
+		else {
+			if (config.generalEmulation.enableLOD == 0) {
+				// Fake mipmap
+				m_part =
+					"uniform lowp int uMaxTile;			\n"
+					"uniform mediump float uMinLod;		\n"
+					"														\n"
+					"mediump float mipmap(out lowp vec4 readtex0, out lowp vec4 readtex1) {	\n"
+					"  readtex0 = texture(uTex0, vTexCoord0);				\n"
+					"  readtex1 = texture(uTex1, vTexCoord1);				\n"
+					"  if (uMaxTile == 0) return 1.0;						\n"
+					"  return uMinLod;										\n"
+					"}														\n"
+				;
+			} else {
+				m_part =
+					"uniform lowp int uEnableLod;		\n"
+					"uniform mediump float uMinLod;		\n"
+					"uniform lowp int uMaxTile;			\n"
+					"uniform lowp int uTextureDetail;	\n"
+					"														\n"
+					"mediump float mipmap(out lowp vec4 readtex0, out lowp vec4 readtex1) {	\n"
+					"  readtex0 = texture(uTex0, vTexCoord0);				\n"
+					"  readtex1 = textureLod(uTex1, vTexCoord1, 0.0);		\n"
+					"														\n"
+					"  mediump float fMaxTile = float(uMaxTile);			\n"
+					"  mediump vec2 dx = abs(dFdx(vLodTexCoord));			\n"
+					"  dx *= uScreenScale;									\n"
+					"  mediump float lod = max(dx.x, dx.y);					\n"
+					"  bool magnify = lod < 1.0;							\n"
+					"  mediump float lod_tile = magnify ? 0.0 : floor(log2(floor(lod))); \n"
+					"  bool distant = lod > 128.0 || lod_tile >= fMaxTile;	\n"
+					"  mediump float lod_frac = fract(lod/pow(2.0, lod_tile));	\n"
+					"  if (magnify) lod_frac = max(lod_frac, uMinLod);		\n"
+					"  if (uTextureDetail == 0)	{							\n"
+					"    if (distant) lod_frac = 1.0;						\n"
+					"    else if (magnify) lod_frac = 0.0;					\n"
+					"  }													\n"
+					"  if (magnify && ((uTextureDetail & 1) != 0))			\n"
+					"      lod_frac = 1.0 - lod_frac;						\n"
+					"  if (uMaxTile == 0) {									\n"
+					"    if (uEnableLod != 0 && (uTextureDetail & 2) == 0)	\n"
+					"      readtex1 = readtex0;								\n"
+					"    return lod_frac;									\n"
+					"  }													\n"
+					"  if (uEnableLod == 0) return lod_frac;				\n"
+					"														\n"
+					"  lod_tile = min(lod_tile, fMaxTile);					\n"
+					"  lowp float lod_tile_m1 = max(0.0, lod_tile - 1.0);	\n"
+					"  lowp vec4 lodT = textureLod(uTex1, vTexCoord1, lod_tile);	\n"
+					"  lowp vec4 lodT_m1 = textureLod(uTex1, vTexCoord1, lod_tile_m1);	\n"
+					"  lowp vec4 lodT_p1 = textureLod(uTex1, vTexCoord1, lod_tile + 1.0);	\n"
+					"  if (lod_tile < 1.0) {								\n"
+					"    if (magnify) {									\n"
+					//     !sharpen && !detail
+					"      if (uTextureDetail == 0) readtex1 = readtex0;	\n"
+					"    } else {											\n"
+					//     detail
+					"      if ((uTextureDetail & 2) != 0 ) {				\n"
+					"        readtex0 = lodT;								\n"
+					"        readtex1 = lodT_p1;							\n"
+					"      }												\n"
+					"    }													\n"
+					"  } else {												\n"
+					"    if ((uTextureDetail & 2) != 0 ) {							\n"
+					"      readtex0 = lodT;									\n"
+					"      readtex1 = lodT_p1;								\n"
+					"    } else {											\n"
+					"      readtex0 = lodT_m1;								\n"
+					"      readtex1 = lodT;									\n"
+					"    }													\n"
+					"  }													\n"
+					"  return lod_frac;										\n"
+					"}														\n"
+				;
+			}
+		}
+	}
+};
+
+class ShaderCalcLight : public ShaderPart
+{
+public:
+	ShaderCalcLight(const opengl::GLInfo & _version)
+	{
+		m_part =
+			"uniform mediump vec3 uLightDirection[8];	\n"
+			"uniform lowp vec3 uLightColor[8];			\n"
+			"void calc_light(in lowp float fLights, in lowp vec3 input_color, out lowp vec3 output_color) {\n"
+			"  output_color = input_color;									\n"
+			"  lowp int nLights = int(floor(fLights + 0.5));				\n"
+			"  if (nLights == 0)											\n"
+			"     return;													\n"
+			"  output_color = uLightColor[nLights];							\n"
+			"  mediump float intensity;										\n"
+			"  for (int i = 0; i < nLights; i++)	{						\n"
+			"    intensity = max(dot(input_color, uLightDirection[i]), 0.0);\n"
+			"    output_color += intensity*uLightColor[i];					\n"
+			"  };															\n"
+			"  output_color = clamp(output_color, 0.0, 1.0);				\n"
+			"}																\n"
+		;
+	}
+};
+
+class ShaderReadtex : public ShaderPart
+{
+public:
+	ShaderReadtex(const opengl::GLInfo & _version)
+	{
+		if (_version.isGLES2) {
+			if (config.texture.bilinearMode == BILINEAR_3POINT) {
+				m_part =
+					"uniform mediump vec2 uTextureSize[2];										\n"
+					"uniform lowp int uTextureFilterMode;										\n"
+					// 3 point texture filtering.
+					// Original author: ArthurCarvalho
+					// GLSL implementation: twinaphex, mupen64plus-libretro project.
+					"#define TEX_OFFSET(off) texture2D(tex, texCoord - (off)/texSize)			\n"
+					"lowp vec4 filter3point(in sampler2D tex, in mediump vec2 texCoord)			\n"
+					"{																			\n"
+#ifndef VC
+					"  mediump vec2 texSize = uTextureSize[nCurrentTile];						\n"
+#else
+					"  mediump vec2 texSize;													\n"
+					"  if (nCurrentTile == 0)													\n"
+					"    texSize = uTextureSize[0];												\n"
+					"  else																		\n"
+					"    texSize = uTextureSize[1];												\n"
+#endif
+					"  mediump vec2 offset = fract(texCoord*texSize - vec2(0.5));	\n"
+					"  offset -= step(1.0, offset.x + offset.y);								\n"
+					"  lowp vec4 c0 = TEX_OFFSET(offset);										\n"
+					"  lowp vec4 c1 = TEX_OFFSET(vec2(offset.x - sign(offset.x), offset.y));	\n"
+					"  lowp vec4 c2 = TEX_OFFSET(vec2(offset.x, offset.y - sign(offset.y)));	\n"
+					"  return c0 + abs(offset.x)*(c1-c0) + abs(offset.y)*(c2-c0);				\n"
+					"}																			\n"
+					"lowp vec4 readTex(in sampler2D tex, in mediump vec2 texCoord, in lowp int fbMonochrome, in lowp int fbFixedAlpha)	\n"
+					"{																			\n"
+					"  lowp vec4 texStandard = texture2D(tex, texCoord); 						\n"
+					"  lowp vec4 tex3Point = filter3point(tex, texCoord); 						\n"
+					"  lowp vec4 texColor = uTextureFilterMode == 0 ? texStandard : tex3Point;	\n"
+					"  if (fbMonochrome == 1) texColor = vec4(texColor.r);						\n"
+					"  else if (fbMonochrome == 2) 												\n"
+					"    texColor.rgb = vec3(dot(vec3(0.2126, 0.7152, 0.0722), texColor.rgb));	\n"
+					"  if (fbFixedAlpha == 1) texColor.a = 0.825;								\n"
+					"  return texColor;															\n"
+					"}																			\n"
+				;
+			} else {
+				m_part =
+					"lowp vec4 readTex(in sampler2D tex, in mediump vec2 texCoord, in lowp int fbMonochrome, in lowp int fbFixedAlpha)	\n"
+					"{																			\n"
+					"  lowp vec4 texColor = texture2D(tex, texCoord); 							\n"
+					"  if (fbMonochrome == 1) texColor = vec4(texColor.r);						\n"
+					"  else if (fbMonochrome == 2) 												\n"
+					"    texColor.rgb = vec3(dot(vec3(0.2126, 0.7152, 0.0722), texColor.rgb));	\n"
+					"  if (fbFixedAlpha == 1) texColor.a = 0.825;								\n"
+					"  return texColor;															\n"
+					"}																			\n"
+				;
+			}
+		} else {
+			if (config.video.multisampling > 0) {
+				m_part =
+					"uniform lowp int uMSAASamples;												\n"
+					"uniform lowp float uMSAAScale;												\n"
+					"lowp vec4 sampleMS(in lowp sampler2DMS mstex, in mediump ivec2 ipos)		\n"
+					"{																			\n"
+					"  lowp vec4 texel = vec4(0.0);												\n"
+					"  for (int i = 0; i < uMSAASamples; ++i)									\n"
+					"    texel += texelFetch(mstex, ipos, i);									\n"
+					"  return texel * uMSAAScale;												\n"
+					"}																			\n"
+					"																			\n"
+					"lowp vec4 readTexMS(in lowp sampler2DMS mstex, in mediump vec2 texCoord, in lowp int fbMonochrome, in lowp int fbFixedAlpha)	\n"
+					"{																			\n"
+					"  mediump vec2 msTexSize = vec2(textureSize(mstex));						\n"
+					"  mediump ivec2 itexCoord = ivec2(msTexSize * texCoord);					\n"
+					"  lowp vec4 texColor = sampleMS(mstex, itexCoord);							\n"
+					"  if (fbMonochrome == 1) texColor = vec4(texColor.r);						\n"
+					"  else if (fbMonochrome == 2) 												\n"
+					"    texColor.rgb = vec3(dot(vec3(0.2126, 0.7152, 0.0722), texColor.rgb));	\n"
+					"  if (fbFixedAlpha == 1) texColor.a = 0.825;								\n"
+					"  return texColor;															\n"
+					"}																			\n"
+				;
+			}
+		}
+	}
+};
+
+class ShaderN64DepthCompare : public ShaderPart
+{
+public:
+	ShaderN64DepthCompare(const opengl::GLInfo & _version)
+	{
+		if (_version.imageTextures && config.frameBufferEmulation.N64DepthCompare != 0) {
+			m_part = _version.isGLESX
+				? "layout(binding = 2, rgba32f) highp uniform coherent image2D uDepthImage;\n"
+				: "layout(binding = 2, rg32f) highp uniform coherent image2D uDepthImage;\n"
+			;
+			m_part +=
+				"uniform lowp int uDepthMode;							\n"
+				"uniform lowp int uDepthSource;							\n"
+				"uniform lowp int uEnableDepthUpdate;					\n"
+				"uniform mediump float uDeltaZ;							\n"
+				"bool depth_compare()									\n"
+				"{														\n"
+				"  ivec2 coord = ivec2(gl_FragCoord.xy);				\n"
+				"  highp vec4 depth = imageLoad(uDepthImage,coord);		\n"
+				"  highp float bufZ = depth.r;							\n"
+				"  highp float curZ = gl_FragDepth;						\n"
+				"  highp float dz, dzMin;								\n"
+				"  if (uDepthSource == 1) {								\n"
+				"     dzMin = dz = uDeltaZ;								\n"
+				"  } else {												\n"
+				"    dz = 4.0*fwidth(gl_FragDepth);						\n"
+				"    dzMin = min(dz, depth.g);							\n"
+				"  }													\n"
+				"  bool bInfront = curZ < bufZ;							\n"
+				"  bool bFarther = (curZ + dzMin) >= bufZ;				\n"
+				"  bool bNearer = (curZ - dzMin) <= bufZ;				\n"
+				"  bool bMax = bufZ == 1.0;								\n"
+				"  bool bRes;											\n"
+				"  switch (uDepthMode) {								\n"
+				"     case 1:											\n"
+				"       bRes = bMax || bNearer;							\n"
+				"       break;											\n"
+				"     case 0:											\n"
+				"     case 2:											\n"
+				"       bRes = bMax || bInfront;						\n"
+				"       break;											\n"
+				"     case 3:											\n"
+				"       bRes = bFarther && bNearer && !bMax;			\n"
+				"       break;											\n"
+				"     default:											\n"
+				"       bRes = bInfront;								\n"
+				"       break;											\n"
+				"  }													\n"
+				"  if (uEnableDepthUpdate != 0  && bRes) {				\n"
+				"    highp vec4 depth_out = vec4(gl_FragDepth, dz, 1.0, 1.0); \n"
+				"    imageStore(uDepthImage,coord, depth_out);			\n"
+				"  }													\n"
+				"  memoryBarrierImage();								\n"
+				"  if (uEnableDepthCompare != 0)						\n"
+				"    return bRes;										\n"
+				"  return true;											\n"
+				"}														\n"
+			;
+		}
+	}
+};
+
+class ShaderN64DepthRender : public ShaderPart
+{
+public:
+	ShaderN64DepthRender(const opengl::GLInfo & _version)
+	{
+		if (_version.imageTextures && config.frameBufferEmulation.N64DepthCompare != 0) {
+			m_part = _version.isGLESX
+				? "layout(binding = 2, rgba32f) highp uniform coherent image2D uDepthImage;\n"
+				: "layout(binding = 2, rg32f) highp uniform coherent image2D uDepthImage;\n"
+				;
+			m_part +=
+				"bool depth_render(highp float Z)						\n"
+				"{														\n"
+				"  ivec2 coord = ivec2(gl_FragCoord.xy);				\n"
+				"  if (uEnableDepthCompare != 0) {						\n"
+				"    highp vec4 depth = imageLoad(uDepthImage,coord);	\n"
+				"    highp float bufZ = depth.r;						\n"
+				"    highp float curZ = gl_FragDepth;					\n"
+				"    if (curZ >= bufZ) return false;					\n"
+				"  }													\n"
+				"  highp vec4 depth_out = vec4(Z, 0.0, 1.0, 1.0);		\n"
+				"  imageStore(uDepthImage,coord, depth_out);			\n"
+				"  memoryBarrierImage();								\n"
+				"  return true;											\n"
+				"}														\n"
+			;
+		}
+	}
+};
+
+/*---------------ShaderPartsEnd-------------*/
+
+static
+bool needClampColor() {
+	return gDP.otherMode.cycleType <= G_CYC_2CYCLE;
+}
+
+static
+bool combinedColorC(const gDPCombine & _combine) {
+	if (gDP.otherMode.cycleType != G_CYC_2CYCLE)
+		return false;
+	return _combine.mRGB1 == G_CCMUX_COMBINED;
+}
+
+static
+bool combinedAlphaC(const gDPCombine & _combine) {
+	if (gDP.otherMode.cycleType != G_CYC_2CYCLE)
+		return false;
+	return _combine.mA1 == G_ACMUX_COMBINED;
+}
+
+static
+bool combinedColorABD(const gDPCombine & _combine) {
+	if (gDP.otherMode.cycleType != G_CYC_2CYCLE)
+		return false;
+	if (_combine.aRGB1 == G_CCMUX_COMBINED)
+		return true;
+	if (_combine.saRGB1 == G_CCMUX_COMBINED || _combine.sbRGB1 == G_CCMUX_COMBINED)
+		return _combine.mRGB1 != G_CCMUX_0;
+	return false;
+}
+
+static
+bool combinedAlphaABD(const gDPCombine & _combine) {
+	if (gDP.otherMode.cycleType != G_CYC_2CYCLE)
+		return false;
+	if (_combine.aA1 == G_ACMUX_COMBINED)
+		return true;
+	if (_combine.saA1 == G_ACMUX_COMBINED || _combine.sbA1 == G_ACMUX_COMBINED)
+		return _combine.mA1 != G_ACMUX_0;
+	return false;
+}
+
+int CombinerProgramBuilder::compileCombiner(const CombinerKey & _key, Combiner & _color, Combiner & _alpha, std::string & _strShader)
+{
+	gDPCombine combine;
+	combine.mux = _key.getMux();
+
+	std::stringstream ssShader;
+
+	if (gDP.otherMode.cycleType != G_CYC_2CYCLE) {
+		_correctFirstStageParams(_alpha.stage[0]);
+		_correctFirstStageParams(_color.stage[0]);
+	}
+	_strShader.append("  alpha1 = ");
+	int nInputs = _compileCombiner(_alpha.stage[0], AlphaInput, ssShader);
+	// Simulate N64 color sign-extend.
+	if (combinedAlphaC(combine))
+		m_signExtendAlphaC->write(ssShader);
+	else if (combinedAlphaABD(combine))
+		m_signExtendAlphaABD->write(ssShader);
+
+	m_alphaTest->write(ssShader);
+
+	_strShader.append("  color1 = ");
+	nInputs |= _compileCombiner(_color.stage[0], ColorInput, ssShader);
+	// Simulate N64 color sign-extend.
+	if (combinedColorC(combine))
+		m_signExtendColorC->write(ssShader);
+	else if (combinedColorABD(combine))
+		m_signExtendColorABD->write(ssShader);
+
+	if (gDP.otherMode.cycleType == G_CYC_2CYCLE) {
+
+		ssShader << "  combined_color = vec4(color1, alpha1);" << std::endl;
+		if (_alpha.numStages == 2) {
+			ssShader << "  alpha2 = ";
+			_correctSecondStageParams(_alpha.stage[1]);
+			nInputs |= _compileCombiner(_alpha.stage[1], AlphaInput, ssShader);
+		}
+		else
+			ssShader << "  alpha2 = alpha1;" << std::endl;
+
+		ssShader << "  if (uCvgXAlpha != 0 && alpha2 < 0.125) discard;" << std::endl;
+
+		if (_color.numStages == 2) {
+			ssShader << "  color2 = ";
+			_correctSecondStageParams(_color.stage[1]);
+			nInputs |= _compileCombiner(_color.stage[1], ColorInput, ssShader);
+		}
+		else
+			ssShader << "  color2 = color1;" << std::endl;
+
+		ssShader << "  lowp vec4 cmbRes = vec4(color2, alpha2);" << std::endl;
+	}
+	else {
+		ssShader << "  if (uCvgXAlpha != 0 && alpha1 < 0.125) discard;" << std::endl;
+		ssShader << "  lowp vec4 cmbRes = vec4(color1, alpha1);" << std::endl;
+	}
+
+	// Simulate N64 color clamp.
+	if (needClampColor())
+		m_clamp->write(ssShader);
+	else
+		ssShader << "  lowp vec4 clampedColor = clamp(cmbRes, 0.0, 1.0);" << std::endl;
+
+	m_callDither->write(ssShader);
+
+	if (config.generalEmulation.enableLegacyBlending == 0) {
+		if (gDP.otherMode.cycleType <= G_CYC_2CYCLE)
+			m_blender1->write(ssShader);
+		if (gDP.otherMode.cycleType == G_CYC_2CYCLE)
+			m_blender2->write(ssShader);
+
+		ssShader << "  fragColor = clampedColor;" << std::endl;
+	}
+	else {
+		ssShader << "  fragColor = clampedColor;" << std::endl;
+		m_legacyBlender->write(ssShader);
+	}
+
+	_strShader = ssShader.str();
+	return nInputs;
+}
+
+graphics::CombinerProgram * CombinerProgramBuilder::buildCombinerProgram(Combiner & _color,
+																		Combiner & _alpha,
+																		const CombinerKey & _key)
+{
+	std::string strCombiner;
+	CombinerInputs combinerInputs(compileCombiner(_key, _color, _alpha, strCombiner));
+
+	const bool bUseLod = combinerInputs.usesLOD();
+	const bool bUseTextures = combinerInputs.usesTexture();
+	const bool bUseHWLight = 
+		config.generalEmulation.enableHWLighting != 0 && GBI.isHWLSupported() && combinerInputs.usesShadeColor();
+
+	if (bUseHWLight)
+		combinerInputs.addInput(HW_LIGHT);
+
+	std::stringstream ssShader;
+
+	/* Write headers */
+	m_fragmentHeader->write(ssShader);
+
+	if (bUseTextures) {
+		m_fragmentGlobalVariablesTex->write(ssShader);
+
+		if (gDP.otherMode.cycleType == G_CYC_2CYCLE && config.generalEmulation.enableLegacyBlending == 0)
+			ssShader << "uniform lowp ivec4 uBlendMux2;" << std::endl << "uniform lowp int uForceBlendCycle2;" << std::endl;
+
+		m_fragmentHeaderNoise->write(ssShader);
+		m_fragmentHeaderDither->write(ssShader);
+		m_fragmentHeaderWriteDepth->write(ssShader);
+		m_fragmentHeaderDepthCompare->write(ssShader);
+		m_fragmentHeaderReadMSTex->write(ssShader);
+		if (bUseLod)
+			m_fragmentHeaderMipMap->write(ssShader);
+		else
+			m_fragmentHeaderReadTex->write(ssShader);
+	} else {
+		m_fragmentGlobalVariablesNotex->write(ssShader);
+
+		if (gDP.otherMode.cycleType == G_CYC_2CYCLE && config.generalEmulation.enableLegacyBlending == 0)
+			ssShader << "uniform lowp ivec4 uBlendMux2;" << std::endl << "uniform lowp int uForceBlendCycle2;" << std::endl;
+
+		m_fragmentHeaderNoise->write(ssShader);
+		m_fragmentHeaderDither->write(ssShader);
+		m_fragmentHeaderWriteDepth->write(ssShader);
+		m_fragmentHeaderDepthCompare->write(ssShader);
+	}
+
+	m_fragmentHeaderCalcLight->write(ssShader);
+
+	/* Write body */
+	if (gDP.otherMode.cycleType == G_CYC_2CYCLE)
+		m_fragmentMain2Cycle->write(ssShader);
+	else
+		m_fragmentMain->write(ssShader);
+
+	m_fragmentBlendMux->write(ssShader);
+
+	if (bUseLod) {
+		m_fragmentReadTexMipmap->write(ssShader);
+	} else {
+		if (combinerInputs.usesTile(0))
+			m_fragmentReadTex0->write(ssShader);
+
+		if (combinerInputs.usesTile(1))
+			m_fragmentReadTex1->write(ssShader);
+	}
+
+	if (bUseHWLight)
+		ssShader << "  calc_light(vNumLights, vShadeColor.rgb, input_color);" << std::endl;
+	else
+		ssShader << "  input_color = vShadeColor.rgb;" << std::endl;
+
+	ssShader << "  vec_color = vec4(input_color, vShadeColor.a);" << std::endl;
+	ssShader << strCombiner << std::endl;
+
+	if (config.frameBufferEmulation.N64DepthCompare != 0)
+		m_fragmentCallN64Depth->write(ssShader);
+	else
+		m_fragmentRenderTarget->write(ssShader);
+
+	// End of Main() function
+	ssShader << "}" << std::endl << std::endl;
+
+	/* Write other functions */
+	if (bUseHWLight)
+		m_shaderCalcLight->write(ssShader);
+
+	if (bUseLod)
+		m_shaderMipmap->write(ssShader);
+	else if (bUseTextures)
+		m_shaderReadtex->write(ssShader);
+
+	m_shaderNoise->write(ssShader);
+
+	m_shaderDither->write(ssShader);
+
+	m_shaderWriteDepth->write(ssShader);
+
+	m_shaderN64DepthCompare->write(ssShader);
+
+	m_shaderN64DepthRender->write(ssShader);
+
+	const std::string strFragmentShader(std::move(ssShader.str()));
+
+	/* Create shader program */
+
+	GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+	const GLchar * strShaderData = strFragmentShader.data();
+	glShaderSource(fragmentShader, 1, &strShaderData, nullptr);
+	glCompileShader(fragmentShader);
+	if (!Utils::checkShaderCompileStatus(fragmentShader))
+	Utils::logErrorShader(GL_FRAGMENT_SHADER, strFragmentShader);
+
+	GLuint program = glCreateProgram();
+	const bool bIsRect = _key.isRectKey();
+	Utils::locateAttributes(program, bIsRect, bUseTextures);
+	if (bIsRect)
+		glAttachShader(program, bUseTextures ? m_vertexShaderTexturedRect : m_vertexShaderRect);
+	else
+		glAttachShader(program, bUseTextures ? m_vertexShaderTexturedTriangle : m_vertexShaderTriangle);
+	glAttachShader(program, fragmentShader);
+	if (CombinerInfo::get().isShaderCacheSupported())
+		glProgramParameteri(program, GL_PROGRAM_BINARY_RETRIEVABLE_HINT, GL_TRUE);
+	glLinkProgram(program);
+	assert(Utils::checkProgramLinkStatus(program));
+	glDeleteShader(fragmentShader);
+//	_locateUniforms();
+
+
+	return nullptr;
+}
+
+static
+GLuint _createVertexShader(ShaderPart * _header, ShaderPart * _body)
+{
+	std::stringstream ssShader;
+	_header->write(ssShader);
+	_body->write(ssShader);
+	const std::string strShader(std::move(ssShader.str()));
+	const GLchar * strShaderData = strShader.data();
+
+	GLuint shader_object = glCreateShader(GL_VERTEX_SHADER);
+	glShaderSource(shader_object, 1, &strShaderData, nullptr);
+	glCompileShader(shader_object);
+	assert(Utils::checkShaderCompileStatus(shader_object));
+	return shader_object;
+}
+
+CombinerProgramBuilder::CombinerProgramBuilder(const opengl::GLInfo & _version)
+: m_blender1(new ShaderBlender1(_version))
+, m_blender2(new ShaderBlender2(_version))
+, m_legacyBlender(new ShaderLegacyBlender)
+, m_clamp(new ShaderClamp)
+, m_signExtendColorC(new ShaderSignExtendColorC)
+, m_signExtendAlphaC(new ShaderSignExtendAlphaC)
+, m_signExtendColorABD(new ShaderSignExtendColorABD)
+, m_signExtendAlphaABD(new ShaderSignExtendAlphaABD)
+, m_alphaTest(new ShaderAlphaTest)
+, m_callDither(new ShaderCallDither(_version))
+, m_vertexHeader(new VertexShaderHeader(_version))
+, m_vertexRect(new VertexShaderRect(_version))
+, m_vertexTexturedRect(new VertexShaderTexturedRect(_version))
+, m_vertexTriangle(new VertexShaderTriangle(_version))
+, m_vertexTexturedTriangle(new VertexShaderTexturedTriangle(_version))
+, m_fragmentHeader(new FragmentShaderHeader(_version))
+, m_fragmentGlobalVariablesTex(new ShaderFragmentGlobalVariablesTex(_version))
+, m_fragmentGlobalVariablesNotex(new ShaderFragmentGlobalVariablesNotex(_version))
+, m_fragmentHeaderNoise(new ShaderFragmentHeaderNoise(_version))
+, m_fragmentHeaderWriteDepth(new ShaderFragmentHeaderWriteDepth(_version))
+, m_fragmentHeaderCalcLight(new ShaderFragmentHeaderCalcLight(_version))
+, m_fragmentHeaderMipMap(new ShaderFragmentHeaderMipMap(_version))
+, m_fragmentHeaderReadMSTex(new ShaderFragmentHeaderReadMSTex(_version))
+, m_fragmentHeaderDither(new ShaderFragmentHeaderDither(_version))
+, m_fragmentHeaderDepthCompare(new ShaderFragmentHeaderDepthCompare(_version))
+, m_fragmentHeaderReadTex(new ShaderFragmentHeaderReadTex(_version))
+, m_fragmentMain(new ShaderFragmentMain(_version))
+, m_fragmentMain2Cycle(new ShaderFragmentMain2Cycle(_version))
+, m_fragmentBlendMux(new ShaderFragmentBlendMux(_version))
+, m_fragmentReadTex0(new ShaderFragmentReadTex0(_version))
+, m_fragmentReadTex1(new ShaderFragmentReadTex1(_version))
+, m_fragmentReadTexMipmap(new ShaderFragmentReadTexMipmap(_version))
+, m_fragmentCallN64Depth(new ShaderFragmentCallN64Depth(_version))
+, m_fragmentRenderTarget(new ShaderFragmentRenderTarget(_version))
+, m_shaderNoise(new ShaderNoise(_version))
+, m_shaderDither(new ShaderDither(_version))
+, m_shaderWriteDepth(new ShaderWriteDepth(_version))
+, m_shaderMipmap(new ShaderMipmap(_version))
+, m_shaderCalcLight(new ShaderCalcLight(_version))
+, m_shaderReadtex(new ShaderReadtex(_version))
+, m_shaderN64DepthCompare(new ShaderN64DepthCompare(_version))
+, m_shaderN64DepthRender(new ShaderN64DepthRender(_version))
+{
+	m_vertexShaderRect = _createVertexShader(m_vertexHeader.get(), m_vertexRect.get());
+	m_vertexShaderTriangle = _createVertexShader(m_vertexHeader.get(), m_vertexTriangle.get());
+	m_vertexShaderTexturedRect = _createVertexShader(m_vertexHeader.get(), m_vertexTexturedRect.get());
+	m_vertexShaderTexturedTriangle = _createVertexShader(m_vertexHeader.get(), m_vertexTexturedTriangle.get());
+}
 
 CombinerProgramBuilder::~CombinerProgramBuilder()
 {

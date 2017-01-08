@@ -3,7 +3,7 @@
 #include <Graphics/ContextImpl.h>
 #include "opengl_TextureManipulationObjectFactory.h"
 #include "opengl_BufferManipulationObjectFactory.h"
-#include "opengl_GLVersion.h"
+#include "opengl_GLInfo.h"
 #include "opengl_CachedFunctions.h"
 
 namespace opengl {
@@ -49,7 +49,7 @@ namespace opengl {
 		std::unique_ptr<InitRenderbuffer> m_initRenderbuffer;
 		std::unique_ptr<AddFramebufferRenderTarget> m_addFramebufferRenderTarget;
 
-		GLVersion m_version;
+		GLInfo m_glInfo;
 	};
 
 }

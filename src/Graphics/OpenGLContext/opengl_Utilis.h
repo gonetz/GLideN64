@@ -2,6 +2,9 @@
 
 namespace opengl {
 
-	bool isExtensionSupported(const char * extension);
+	struct Utils
+	{
+		static bool isExtensionSupported(const char * extension);
+	};
 
 }

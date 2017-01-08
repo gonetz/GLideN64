@@ -16,24 +16,20 @@ ContextImpl::~ContextImpl()
 
 void ContextImpl::init()
 {
-	glGetIntegerv(GL_MAJOR_VERSION, &m_version.majorVersion);
-	LOG(LOG_VERBOSE, "OpenGL major version: %d\n", m_version.majorVersion);
-	assert(m_version.majorVersion >= 3 && "Plugin requires GL version 3 or higher.");
-	glGetIntegerv(GL_MINOR_VERSION, &m_version.minorVersion);
-	LOG(LOG_VERBOSE, "OpenGL minor version: %d\n", m_version.minorVersion);
+	m_glInfo.init();
 
 	if (!m_cachedFunctions)
 		m_cachedFunctions.reset(new CachedFunctions);
 
 	{
-		TextureManipulationObjectFactory textureObjectsFactory(m_version, *m_cachedFunctions.get());
+		TextureManipulationObjectFactory textureObjectsFactory(m_glInfo, *m_cachedFunctions.get());
 		m_createTexture.reset(textureObjectsFactory.getCreate2DTexture());
 		m_init2DTexture.reset(textureObjectsFactory.getInit2DTexture());
 		m_set2DTextureParameters.reset(textureObjectsFactory.getSet2DTextureParameters());
 	}
 
 	{
-		BufferManipulationObjectFactory bufferObjectFactory(m_version, *m_cachedFunctions.get());
+		BufferManipulationObjectFactory bufferObjectFactory(m_glInfo, *m_cachedFunctions.get());
 		m_createFramebuffer.reset(bufferObjectFactory.getCreateFramebufferObject());
 		m_createRenderbuffer.reset(bufferObjectFactory.getCreateRenderbuffer());
 		m_initRenderbuffer.reset(bufferObjectFactory.getInitRenderbuffer());

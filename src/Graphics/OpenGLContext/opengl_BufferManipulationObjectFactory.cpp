@@ -1,5 +1,5 @@
 #include <Graphics/Parameters.h>
-#include "opengl_GLVersion.h"
+#include "opengl_GLInfo.h"
 #include "opengl_CachedFunctions.h"
 #include "opengl_BufferManipulationObjectFactory.h"
 
@@ -23,9 +23,9 @@ public:
 class CreateFramebuffer : public CreateFramebufferObject
 {
 public:
-	static bool Check(const GLVersion & _version) {
+	static bool Check(const GLInfo & _glinfo) {
 #ifdef ENABLE_GL_4_5
-		return (_version.majorVersion > 4) || (_version.majorVersion == 4 && _version.minorVersion >= 5);
+		return (_glinfo.majorVersion > 4) || (_glinfo.majorVersion == 4 && _glinfo.minorVersion >= 5);
 #else
 		return false;
 #endif
@@ -101,9 +101,9 @@ private:
 class AddNamedFramebufferTexture : public AddFramebufferRenderTarget
 {
 public:
-	static bool Check(const GLVersion & _version) {
+	static bool Check(const GLInfo & _glinfo) {
 #ifdef ENABLE_GL_4_5
-		return (_version.majorVersion > 4) || (_version.majorVersion == 4 && _version.minorVersion >= 5);
+		return (_glinfo.majorVersion > 4) || (_glinfo.majorVersion == 4 && _glinfo.minorVersion >= 5);
 #else
 		return false;
 #endif
@@ -120,9 +120,9 @@ public:
 
 /*---------------BufferManipulationObjectFactory-------------*/
 
-BufferManipulationObjectFactory::BufferManipulationObjectFactory(const GLVersion & _version,
+BufferManipulationObjectFactory::BufferManipulationObjectFactory(const GLInfo & _info,
 	CachedFunctions & _cachedFunctions)
-	: m_version(_version)
+	: m_glInfo(_info)
 	, m_cachedFunctions(_cachedFunctions)
 {
 }
@@ -134,7 +134,7 @@ BufferManipulationObjectFactory::~BufferManipulationObjectFactory()
 
 CreateFramebufferObject * BufferManipulationObjectFactory::getCreateFramebufferObject() const
 {
-	if (CreateFramebuffer::Check(m_version))
+	if (CreateFramebuffer::Check(m_glInfo))
 		return new CreateFramebuffer;
 
 	return new GenFramebuffer;
@@ -152,7 +152,7 @@ InitRenderbuffer * BufferManipulationObjectFactory::getInitRenderbuffer() const
 
 AddFramebufferRenderTarget * BufferManipulationObjectFactory::getAddFramebufferRenderTarget() const
 {
-	if (AddNamedFramebufferTexture::Check(m_version))
+	if (AddNamedFramebufferTexture::Check(m_glInfo))
 		return new AddNamedFramebufferTexture;
 
 	return new AddFramebufferTexture2D(m_cachedFunctions.geCachedBindFramebuffer());
