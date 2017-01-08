@@ -113,6 +113,12 @@ namespace graphics {
 
 		ShaderProgram * createMonochromeShader();
 
+		TexDrawerShaderProgram * createTexDrawerDrawShader();
+
+		ShaderProgram * createTexDrawerClearShader();
+
+		ShaderProgram * createTexrectCopyShader();
+
 		bool isMultisamplingSupported() const;
 
 	private:

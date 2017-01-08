@@ -54,6 +54,12 @@ namespace opengl {
 
 		graphics::ShaderProgram * createMonochromeShader() override;
 
+		graphics::TexDrawerShaderProgram * createTexDrawerDrawShader() override;
+
+		graphics::ShaderProgram * createTexDrawerClearShader() override;
+
+		graphics::ShaderProgram * createTexrectCopyShader() override;
+
 	private:
 		std::unique_ptr<CachedFunctions> m_cachedFunctions;
 		std::unique_ptr<Create2DTexture> m_createTexture;

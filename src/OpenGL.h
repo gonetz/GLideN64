@@ -1,6 +1,7 @@
 #ifndef OPENGL_H
 #define OPENGL_H
 
+#include <memory>
 #include <vector>
 
 #ifdef OS_WINDOWS
@@ -76,6 +77,7 @@ typedef char GLchar;
 #endif
 
 #include "gSP.h"
+#include <Graphics/ShaderProgram.h>
 
 #define INDEXMAP_SIZE 80U
 #define VERTBUFF_SIZE 256U
@@ -218,13 +220,11 @@ private:
 		f32 m_ulx, m_lrx, m_uly, m_lry, m_Z;
 		f32 m_max_lrx, m_max_lry;
 		GLuint m_FBO;
-		GLuint m_programTex;
-		GLuint m_programClean;
-		GLint m_enableAlphaTestLoc;
-		GLint m_textureBoundsLoc;
 		gDPScissor m_scissor;
 		CachedTexture * m_pTexture;
 		FrameBuffer * m_pBuffer;
+		std::unique_ptr<graphics::TexDrawerShaderProgram> m_programDraw;
+		std::unique_ptr<graphics::ShaderProgram> m_programClear;
 
 		struct RectCoords {
 			f32 x, y;

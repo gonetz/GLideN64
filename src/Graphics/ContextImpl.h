@@ -28,6 +28,9 @@ namespace graphics {
 		virtual bool loadShadersStorage(Combiners & _combiners) = 0;
 		virtual ShaderProgram * createDepthFogShader() = 0;
 		virtual ShaderProgram * createMonochromeShader() = 0;
+		virtual TexDrawerShaderProgram * createTexDrawerDrawShader() = 0;
+		virtual ShaderProgram * createTexDrawerClearShader() = 0;
+		virtual ShaderProgram * createTexrectCopyShader() = 0;
 	};
 
 }

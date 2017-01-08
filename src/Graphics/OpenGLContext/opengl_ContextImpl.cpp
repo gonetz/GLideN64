@@ -153,3 +153,30 @@ graphics::ShaderProgram * ContextImpl::createMonochromeShader()
 
 	return shadersFactory.createMonochromeShader();
 }
+
+graphics::TexDrawerShaderProgram * ContextImpl::createTexDrawerDrawShader()
+{
+	glsl::SpecialShadersFactory shadersFactory(m_glInfo,
+		m_combinerProgramBuilder->getVertexShaderHeader(),
+		m_combinerProgramBuilder->getFragmentShaderHeader());
+
+	return shadersFactory.createTexDrawerDrawShader();
+}
+
+graphics::ShaderProgram * ContextImpl::createTexDrawerClearShader()
+{
+	glsl::SpecialShadersFactory shadersFactory(m_glInfo,
+		m_combinerProgramBuilder->getVertexShaderHeader(),
+		m_combinerProgramBuilder->getFragmentShaderHeader());
+
+	return shadersFactory.createTexDrawerClearShader();
+}
+
+graphics::ShaderProgram * ContextImpl::createTexrectCopyShader()
+{
+	glsl::SpecialShadersFactory shadersFactory(m_glInfo,
+		m_combinerProgramBuilder->getVertexShaderHeader(),
+		m_combinerProgramBuilder->getFragmentShaderHeader());
+
+	return shadersFactory.createTexrectCopyShader();
+}

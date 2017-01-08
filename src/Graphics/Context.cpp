@@ -103,6 +103,21 @@ ShaderProgram * Context::createMonochromeShader()
 	return m_impl->createMonochromeShader();
 }
 
+TexDrawerShaderProgram * Context::createTexDrawerDrawShader()
+{
+	return m_impl->createTexDrawerDrawShader();
+}
+
+ShaderProgram * Context::createTexDrawerClearShader()
+{
+	return m_impl->createTexDrawerClearShader();
+}
+
+ShaderProgram * Context::createTexrectCopyShader()
+{
+	return m_impl->createTexrectCopyShader();
+}
+
 bool Context::isMultisamplingSupported() const
 {
 	// TODO

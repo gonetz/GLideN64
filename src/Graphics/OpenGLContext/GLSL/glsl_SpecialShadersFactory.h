@@ -20,6 +20,12 @@ namespace glsl {
 
 		graphics::ShaderProgram * createMonochromeShader() const;
 
+		graphics::TexDrawerShaderProgram * createTexDrawerDrawShader() const;
+
+		graphics::ShaderProgram * createTexDrawerClearShader() const;
+
+		graphics::ShaderProgram * createTexrectCopyShader() const;
+
 	private:
 		const opengl::GLInfo & m_glinfo;
 		const ShaderPart * m_vertexHeader;

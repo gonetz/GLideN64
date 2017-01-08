@@ -378,10 +378,6 @@ OGLRender::TexrectDrawer::TexrectDrawer()
 	, m_max_lrx(0)
 	, m_max_lry(0)
 	, m_FBO(0)
-	, m_programTex(0)
-	, m_programClean(0)
-	, m_enableAlphaTestLoc(-1)
-	, m_textureBoundsLoc(-1)
 	, m_scissor(gDPScissor())
 	, m_pTexture(nullptr)
 	, m_pBuffer(nullptr)
@@ -451,25 +447,9 @@ void OGLRender::TexrectDrawer::init()
 	assert(checkFBO());
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 
-	std::string fragmentShader(config.texture.bilinearMode == BILINEAR_STANDARD ? strTexrectDrawerTexBilinearFilter : strTexrectDrawerTex3PointFilter);
-	fragmentShader += strTexrectDrawerFragmentShaderTex;
-	m_programTex = createRectShaderProgram(strTexrectDrawerVertexShader, fragmentShader.c_str());
-	m_programClean = createRectShaderProgram(strTexrectDrawerVertexShader, strTexrectDrawerFragmentShaderClean);
-
-	glUseProgram(m_programTex);
-	GLint loc = glGetUniformLocation(m_programTex, "uTex0");
-	assert(loc >= 0);
-	glUniform1i(loc, 0);
-	loc = glGetUniformLocation(m_programTex, "uTextureSize");
-	if (loc >= 0)
-		glUniform2f(loc, m_pTexture->realWidth, m_pTexture->realHeight);
-
-	m_textureBoundsLoc = glGetUniformLocation(m_programTex, "uTextureBounds");
-	assert(m_textureBoundsLoc >= 0);
-	m_enableAlphaTestLoc = glGetUniformLocation(m_programTex, "uEnableAlphaTest");
-	assert(m_enableAlphaTestLoc >= 0);
-
-	glUseProgram(0);
+	m_programDraw.reset(gfxContext.createTexDrawerDrawShader());
+	m_programDraw->setTextureSize(m_pTexture->realWidth, m_pTexture->realHeight);
+	m_programClear.reset(gfxContext.createTexDrawerClearShader());
 
 	m_vecRectCoords.reserve(256);
 }
@@ -485,12 +465,9 @@ void OGLRender::TexrectDrawer::destroy()
 		textureCache().removeFrameBufferTexture(m_pTexture);
 		m_pTexture = nullptr;
 	}
-	if (m_programTex != 0)
-		glDeleteProgram(m_programTex);
-	m_programTex = 0;
-	if (m_programClean != 0)
-		glDeleteProgram(m_programClean);
-	m_programClean = 0;
+
+	m_programDraw.reset();
+	m_programClear.reset();
 }
 
 void OGLRender::TexrectDrawer::add()
@@ -634,10 +611,10 @@ bool OGLRender::TexrectDrawer::draw()
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-	glUseProgram(m_programTex);
-	glUniform1i(m_enableAlphaTestLoc, enableAlphaTest);
+	m_programDraw->setEnableAlphaTest(enableAlphaTest);
 	float texBounds[4] = { s0, t0, s1, t1 };
-	glUniform4fv(m_textureBoundsLoc, 1, texBounds);
+	m_programDraw->setTextureBounds(texBounds);
+	m_programDraw->activate();
 	
 	glEnableVertexAttribArray(SC_TEXCOORD0);
 
@@ -671,7 +648,7 @@ bool OGLRender::TexrectDrawer::draw()
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_FBO);
-	glUseProgram(m_programClean);
+	m_programClear->activate();
 	rect[0].y = m_uly;
 	rect[1].y = m_uly;
 	rect[2].y = m_lry;

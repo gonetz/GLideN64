@@ -1,22 +1,22 @@
-#include <Types.h>
+#include <assert.h>
 #include <Graphics/ShaderProgram.h>
 #include <Graphics/Parameters.h>
 #include <PaletteTexture.h>
 #include <ZlutTexture.h>
 #include <gDP.h>
+#include <Config.h>
 #include "glsl_SpecialShadersFactory.h"
 #include "glsl_ShaderPart.h"
 #include "glsl_Utils.h"
-#include "Textures.h"
 
 namespace glsl {
 
-	/*---------------ShadowMapShader-------------*/
+	/*---------------VertexShaderPart-------------*/
 
 	class VertexShaderRectNocolor : public ShaderPart
 	{
 	public:
-		VertexShaderRectNocolor()
+		VertexShaderRectNocolor(const opengl::GLInfo & _glinfo)
 		{
 			m_part =
 				"IN highp vec4 aRectPosition;									\n"
@@ -24,14 +24,34 @@ namespace glsl {
 				"{                                                              \n"
 				"  gl_Position = aRectPosition;									\n"
 				"}                                                              \n"
+				;
+		}
+	};
+
+	class VertexShaderTexturedRect : public ShaderPart
+	{
+	public:
+		VertexShaderTexturedRect(const opengl::GLInfo & _glinfo)
+		{
+			m_part =
+				"IN highp vec4 aRectPosition;	\n"
+				"IN highp vec2 aTexCoord0;		\n"
+				"OUT mediump vec2 vTexCoord0;	\n"
+				"void main()					\n"
+				"{								\n"
+				"  gl_Position = aRectPosition;	\n"
+				"  vTexCoord0 = aTexCoord0;		\n"
+				"}								\n"
 			;
 		}
 	};
 
+	/*---------------ShadowMapShaderPart-------------*/
+
 	class ShadowMapFragmentShader : public ShaderPart
 	{
 	public:
-		ShadowMapFragmentShader()
+		ShadowMapFragmentShader(const opengl::GLInfo & _glinfo)
 		{
 			m_part =
 #ifndef GLESX
@@ -65,10 +85,12 @@ namespace glsl {
 		}
 	};
 
+	/*---------------MonochromeShaderPart-------------*/
+
 	class MonochromeFragmentShader : public ShaderPart
 	{
 	public:
-		MonochromeFragmentShader()
+		MonochromeFragmentShader(const opengl::GLInfo & _glinfo)
 		{
 			m_part =
 				"uniform sampler2D uColorImage;							\n"
@@ -85,19 +107,270 @@ namespace glsl {
 		}
 	};
 
+	/*---------------TexrectDrawerShaderPart-------------*/
+
+	class TexrectDrawerTex3PointFilter : public ShaderPart
+	{
+	public:
+		TexrectDrawerTex3PointFilter(const opengl::GLInfo & _glinfo)
+		{
+			if (_glinfo.isGLES2) {
+				m_part =
+					"#if (__VERSION__ > 120)																						\n"
+					"# define IN in																									\n"
+					"# define OUT out																								\n"
+					"#else																											\n"
+					"# define IN varying																							\n"
+					"# define OUT																									\n"
+					"#endif // __VERSION __																							\n"
+					"uniform mediump vec4 uTextureBounds;																			\n"
+					"uniform mediump vec2 uTextureSize;																				\n"
+					// 3 point texture filtering.
+					// Original author: ArthurCarvalho
+					// GLSL implementation: twinaphex, mupen64plus-libretro project.
+					"#define TEX_OFFSET(off) texture2D(tex, texCoord - (off)/texSize)												\n"
+					"lowp vec4 texFilter(in sampler2D tex, in mediump vec2 texCoord)												\n"
+					"{																												\n"
+					"  mediump vec2 texSize = uTextureSize;																			\n"
+					"  mediump vec2 texelSize = vec2(1.0) / texSize;																\n"
+					"  lowp vec4 c = texture2D(tex, texCoord);		 																\n"
+					"  if (abs(texCoord.s - uTextureBounds[0]) < texelSize.x || abs(texCoord.s - uTextureBounds[2]) < texelSize.x) return c;	\n"
+					"  if (abs(texCoord.t - uTextureBounds[1]) < texelSize.y || abs(texCoord.t - uTextureBounds[3]) < texelSize.y) return c;	\n"
+					"																												\n"
+					"  mediump vec2 offset = fract(texCoord*texSize - vec2(0.5));													\n"
+					"  offset -= step(1.0, offset.x + offset.y);																	\n"
+					"  lowp vec4 zero = vec4(0.0);					 																\n"
+					"  lowp vec4 c0 = TEX_OFFSET(offset);																			\n"
+					"  lowp vec4 c1 = TEX_OFFSET(vec2(offset.x - sign(offset.x), offset.y));										\n"
+					"  lowp vec4 c2 = TEX_OFFSET(vec2(offset.x, offset.y - sign(offset.y)));										\n"
+					"  return c0 + abs(offset.x)*(c1-c0) + abs(offset.y)*(c2-c0);													\n"
+					"}																												\n"
+					"																												\n"
+				;
+			} else {
+				m_part =
+					"uniform mediump vec4 uTextureBounds;																			\n"
+					// 3 point texture filtering.
+					// Original author: ArthurCarvalho
+					// GLSL implementation: twinaphex, mupen64plus-libretro project.
+					"#define TEX_OFFSET(off, tex, texCoord, texSize) texture(tex, texCoord - (off)/texSize)							\n"
+					"#define TEX_FILTER(name, tex, texCoord)																		\\\n"
+					"{																												\\\n"
+					"  mediump vec2 texSize = vec2(textureSize(tex,0));																\\\n"
+					"  mediump vec2 texelSize = vec2(1.0) / texSize;																\\\n"
+					"  lowp vec4 c = texture(tex, texCoord);		 																\\\n"
+					"  if (abs(texCoord.s - uTextureBounds[0]) < texelSize.x || abs(texCoord.s - uTextureBounds[2]) < texelSize.x){	\\\n"
+					"    name = c;												 													\\\n"
+					"  } else if (abs(texCoord.t - uTextureBounds[1]) < texelSize.y || abs(texCoord.t - uTextureBounds[3]) < texelSize.y){	\\\n"
+					"    name = c;												 													\\\n"
+					"  } else {											 															\\\n"
+					"    mediump vec2 offset = fract(texCoord*texSize - vec2(0.5));													\\\n"
+					"    offset -= step(1.0, offset.x + offset.y);																	\\\n"
+					"    lowp vec4 zero = vec4(0.0);					 															\\\n"
+					"    lowp vec4 c0 = TEX_OFFSET(offset, tex, texCoord, texSize);													\\\n"
+					"    lowp vec4 c1 = TEX_OFFSET(vec2(offset.x - sign(offset.x), offset.y), tex, texCoord, texSize);				\\\n"
+					"    lowp vec4 c2 = TEX_OFFSET(vec2(offset.x, offset.y - sign(offset.y)), tex, texCoord, texSize);				\\\n"
+					"    name = c0 + abs(offset.x)*(c1-c0) + abs(offset.y)*(c2-c0);													\\\n"
+					"  }																											\\\n"
+					"}																												\\\n"
+					"																											    \n"
+					;
+			}
+		}
+	};
+
+	class TexrectDrawerTexBilinearFilter : public ShaderPart
+	{
+	public:
+		TexrectDrawerTexBilinearFilter(const opengl::GLInfo & _glinfo)
+		{
+			if (_glinfo.isGLES2) {
+				m_part =
+					"#if (__VERSION__ > 120)																						\n"
+					"# define IN in																									\n"
+					"# define OUT out																								\n"
+					"#else																											\n"
+					"# define IN varying																							\n"
+					"# define OUT																									\n"
+					"#endif // __VERSION __																							\n"
+					"uniform mediump vec4 uTextureBounds;																			\n"
+					"uniform mediump vec2 uTextureSize;																				\n"
+					"#define TEX_OFFSET(off) texture2D(tex, texCoord - (off)/texSize)												\n"
+					"lowp vec4 texFilter(in sampler2D tex, in mediump vec2 texCoord)												\n"
+					"{																												\n"
+					"  mediump vec2 texSize = uTextureSize;																			\n"
+					"  mediump vec2 texelSize = vec2(1.0) / texSize;																\n"
+					"  lowp vec4 c = texture2D(tex, texCoord);																		\n"
+					"  if (abs(texCoord.s - uTextureBounds[0]) < texelSize.x || abs(texCoord.s - uTextureBounds[2]) < texelSize.x) return c;	\n"
+					"  if (abs(texCoord.t - uTextureBounds[1]) < texelSize.y || abs(texCoord.t - uTextureBounds[3]) < texelSize.y) return c;	\n"
+					"																												\n"
+					"  mediump vec2 offset = fract(texCoord*texSize - vec2(0.5));													\n"
+					"  offset -= step(1.0, offset.x + offset.y);																	\n"
+					"  lowp vec4 zero = vec4(0.0);																					\n"
+					"																												\n"
+					"  lowp vec4 p0q0 = TEX_OFFSET(offset);																			\n"
+					"  lowp vec4 p1q0 = TEX_OFFSET(vec2(offset.x - sign(offset.x), offset.y));										\n"
+					"																												\n"
+					"  lowp vec4 p0q1 = TEX_OFFSET(vec2(offset.x, offset.y - sign(offset.y)));				                        \n"
+					"  lowp vec4 p1q1 = TEX_OFFSET(vec2(offset.x - sign(offset.x), offset.y - sign(offset.y)));						\n"
+					"																												\n"
+					"  mediump vec2 interpolationFactor = abs(offset);																\n"
+					"  lowp vec4 pInterp_q0 = mix( p0q0, p1q0, interpolationFactor.x ); // Interpolates top row in X direction.		\n"
+					"  lowp vec4 pInterp_q1 = mix( p0q1, p1q1, interpolationFactor.x ); // Interpolates bottom row in X direction.	\n"
+					"  return mix( pInterp_q0, pInterp_q1, interpolationFactor.y ); // Interpolate in Y direction.					\n"
+					"}																												\n"
+					;
+			}
+			else {
+				m_part =
+					"uniform mediump vec4 uTextureBounds;																			\n"
+					"#define TEX_OFFSET(off, tex, texCoord, texSize) texture(tex, texCoord - (off)/texSize)							\n"
+					"#define TEX_FILTER(name, tex, texCoord)																		\\\n"
+					"{																												\\\n"
+					"  mediump vec2 texSize = vec2(textureSize(tex,0));																\\\n"
+					"  mediump vec2 texelSize = vec2(1.0) / texSize;																\\\n"
+					"  lowp vec4 c = texture(tex, texCoord);																		\\\n"
+					"  if (abs(texCoord.s - uTextureBounds[0]) < texelSize.x || abs(texCoord.s - uTextureBounds[2]) < texelSize.x){	\\\n"
+					"    name = c;												 													\\\n"
+					"  } else if (abs(texCoord.t - uTextureBounds[1]) < texelSize.y || abs(texCoord.t - uTextureBounds[3]) < texelSize.y){	\\\n"
+					"    name = c;												 													\\\n"
+					"  } else {													 													\\\n"
+					"    mediump vec2 offset = fract(texCoord*texSize - vec2(0.5));													\\\n"
+					"    offset -= step(1.0, offset.x + offset.y);																	\\\n"
+					"    lowp vec4 zero = vec4(0.0);																				\\\n"
+					"																												\\\n"
+					"    lowp vec4 p0q0 = TEX_OFFSET(offset, tex, texCoord, texSize);												\\\n"
+					"    lowp vec4 p1q0 = TEX_OFFSET(vec2(offset.x - sign(offset.x), offset.y), tex, texCoord, texSize);			\\\n"
+					"																												\\\n"
+					"    lowp vec4 p0q1 = TEX_OFFSET(vec2(offset.x, offset.y - sign(offset.y)), tex, texCoord, texSize);			 \\\n"
+					"    lowp vec4 p1q1 = TEX_OFFSET(vec2(offset.x - sign(offset.x), offset.y - sign(offset.y)), tex, texCoord, texSize);	\\\n"
+					"																												\\\n"
+					"    mediump vec2 interpolationFactor = abs(offset);															\\\n"
+					"    lowp vec4 pInterp_q0 = mix( p0q0, p1q0, interpolationFactor.x ); 											\\\n" // Interpolates top row in X direction.
+					"    lowp vec4 pInterp_q1 = mix( p0q1, p1q1, interpolationFactor.x ); 											\\\n" // Interpolates bottom row in X direction.
+					"    name = mix( pInterp_q0, pInterp_q1, interpolationFactor.y ); 												\\\n" // Interpolate in Y direction.
+					"  }																											\\\n"
+					"}																												\\\n"
+					"																												\n"
+				;
+			}
+		}
+	};
+
+	class TexrectDrawerFragmentDraw : public ShaderPart
+	{
+	public:
+		TexrectDrawerFragmentDraw(const opengl::GLInfo & _glinfo)
+		{
+			if (_glinfo.isGLES2) {
+				m_part =
+					"uniform sampler2D uTex0;													\n"
+					"uniform lowp int uEnableAlphaTest;											\n"
+					"lowp vec4 uTestColor = vec4(4.0/255.0, 2.0/255.0, 1.0/255.0, 0.0);			\n"
+					"IN mediump vec2 vTexCoord0;												\n"
+					"OUT lowp vec4 fragColor;													\n"
+					"void main()																\n"
+					"{																			\n"
+					"  fragColor = texFilter(uTex0, vTexCoord0);								\n"
+					"  if (fragColor == uTestColor) discard;									\n"
+					"  if (uEnableAlphaTest != 0 && !(fragColor.a > 0.0)) discard;				\n"
+					"  gl_FragColor = fragColor;												\n"
+					"}																			\n"
+				;
+			} else {
+				m_part =
+					"uniform sampler2D uTex0;																						\n"
+					"uniform lowp int uEnableAlphaTest;																				\n"
+					"lowp vec4 uTestColor = vec4(4.0/255.0, 2.0/255.0, 1.0/255.0, 0.0);												\n"
+					"in mediump vec2 vTexCoord0;																					\n"
+					"out lowp vec4 fragColor;																						\n"
+					"void main()																									\n"
+					"{																												\n"
+					"  TEX_FILTER(fragColor, uTex0, vTexCoord0);																	\n"
+					"  if (fragColor == uTestColor) discard;																		\n"
+					"  if (uEnableAlphaTest == 1 && !(fragColor.a > 0.0)) discard;													\n"
+					"}																												\n"
+				;
+			}
+		}
+	};
+
+	class TexrectDrawerFragmentClear : public ShaderPart
+	{
+	public:
+		TexrectDrawerFragmentClear(const opengl::GLInfo & _glinfo)
+		{
+			if (_glinfo.isGLES2) {
+				m_part =
+					"lowp vec4 uTestColor = vec4(4.0/255.0, 2.0/255.0, 1.0/255.0, 0.0);	\n"
+					"void main()														\n"
+					"{																	\n"
+					"  gl_FragColor = uTestColor;										\n"
+					"}																	\n"
+				;
+			} else {
+				m_part =
+					"lowp vec4 uTestColor = vec4(4.0/255.0, 2.0/255.0, 1.0/255.0, 0.0);	\n"
+					"out lowp vec4 fragColor;													\n"
+					"void main()																\n"
+					"{																			\n"
+					"  fragColor = uTestColor;													\n"
+					"}																			\n"
+				;
+			}
+		}
+	};
+
+	/*---------------TexrectCopyShaderPart-------------*/
+
+	class TexrectCopy : public ShaderPart
+	{
+	public:
+		TexrectCopy(const opengl::GLInfo & _glinfo)
+		{
+			if (_glinfo.isGLES2) {
+				m_part =
+					"#if (__VERSION__ > 120)								\n"
+					"# define IN in											\n"
+					"#else													\n"
+					"# define IN varying									\n"
+					"#endif // __VERSION __									\n"
+					"IN mediump vec2 vTexCoord0;                            \n"
+					"uniform sampler2D uTex0;				                \n"
+					"                                                       \n"
+					"void main()                                            \n"
+					"{                                                      \n"
+					"    gl_FragColor = texture2D(uTex0, vTexCoord0);       \n"
+					"}							                            \n"
+				;
+			} else {
+				m_part =
+					"in mediump vec2 vTexCoord0;                            \n"
+					"uniform sampler2D uTex0;				                \n"
+					"out lowp vec4 fragColor;								\n"
+					"                                                       \n"
+					"void main()                                            \n"
+					"{                                                      \n"
+					"    fragColor = texture(uTex0, vTexCoord0);	        \n"
+					"}							                            \n"
+				;
+			}
+		}
+	};
 
 	/*---------------SpecialShader-------------*/
 
-	template<class FragmentBody>
+	template<class VertexBody, class FragmentBody>
 	class SpecialShader : public graphics::ShaderProgram
 	{
 	public:
-		SpecialShader(const ShaderPart * _vertexHeader,
+		SpecialShader(const opengl::GLInfo & _glinfo,
+			const ShaderPart * _vertexHeader,
 			const ShaderPart * _fragmentHeader)
 			: m_program(0)
 		{
-			VertexShaderRectNocolor vertexBody;
-			FragmentBody fragmentBody;
+			VertexBody vertexBody(_glinfo);
+			FragmentBody fragmentBody(_glinfo);
 
 			std::stringstream ssVertexShader;
 			_vertexHeader->write(ssVertexShader);
@@ -128,14 +401,15 @@ namespace glsl {
 
 	/*---------------ShadowMapShader-------------*/
 
-	typedef SpecialShader<ShadowMapFragmentShader> ShadowMapShaderBase;
+	typedef SpecialShader<VertexShaderRectNocolor, ShadowMapFragmentShader> ShadowMapShaderBase;
 
 	class ShadowMapShader : public ShadowMapShaderBase
 	{
 	public:
-		ShadowMapShader(const ShaderPart * _vertexHeader,
+		ShadowMapShader(const opengl::GLInfo & _glinfo,
+			const ShaderPart * _vertexHeader,
 			const ShaderPart * _fragmentHeader)
-			: ShadowMapShaderBase(_vertexHeader, _fragmentHeader)
+			: ShadowMapShaderBase(_glinfo, _vertexHeader, _fragmentHeader)
 			, m_loc(-1)
 		{
 			glUseProgram(m_program);
@@ -156,14 +430,15 @@ namespace glsl {
 
 	/*---------------MonochromeShader-------------*/
 
-	typedef SpecialShader<MonochromeFragmentShader> MonochromeShaderBase;
+	typedef SpecialShader<VertexShaderRectNocolor, MonochromeFragmentShader> MonochromeShaderBase;
 
 	class MonochromeShader : public MonochromeShaderBase
 	{
 	public:
-		MonochromeShader(const ShaderPart * _vertexHeader,
+		MonochromeShader(const opengl::GLInfo & _glinfo,
+			const ShaderPart * _vertexHeader,
 			const ShaderPart * _fragmentHeader)
-			: MonochromeShaderBase(_vertexHeader, _fragmentHeader)
+			: MonochromeShaderBase(_glinfo, _vertexHeader, _fragmentHeader)
 		{
 			glUseProgram(m_program);
 			const int texLoc = glGetUniformLocation(m_program, "uColorImage");
@@ -171,6 +446,111 @@ namespace glsl {
 			glUseProgram(0);
 		}
 	};
+
+	/*---------------TexrectDrawerShader-------------*/
+
+	class TexrectDrawerShaderDraw : public graphics::TexDrawerShaderProgram
+	{
+	public:
+		TexrectDrawerShaderDraw(const opengl::GLInfo & _glinfo,
+			const ShaderPart * _vertexHeader,
+			const ShaderPart * _fragmentHeader)
+			: m_program(0)
+		{
+			VertexShaderTexturedRect vertexBody(_glinfo);
+			std::stringstream ssVertexShader;
+			_vertexHeader->write(ssVertexShader);
+			vertexBody.write(ssVertexShader);
+
+			std::stringstream ssFragmentShader;
+			_fragmentHeader->write(ssFragmentShader);
+
+			if (config.texture.bilinearMode == BILINEAR_STANDARD) {
+				TexrectDrawerTexBilinearFilter filter(_glinfo);
+				filter.write(ssFragmentShader);
+			} else {
+				TexrectDrawerTex3PointFilter filter(_glinfo);
+				filter.write(ssFragmentShader);
+			}
+
+			TexrectDrawerFragmentDraw fragmentMain(_glinfo);
+			fragmentMain.write(ssFragmentShader);
+
+			m_program = Utils::createRectShaderProgram(ssVertexShader.str().data(), ssFragmentShader.str().data());
+
+			glUseProgram(m_program);
+			GLint loc = glGetUniformLocation(m_program, "uTex0");
+			assert(loc >= 0);
+			glUniform1i(loc, 0);
+			m_textureSizeLoc = glGetUniformLocation(m_program, "uTextureSize");
+			m_textureBoundsLoc = glGetUniformLocation(m_program, "uTextureBounds");
+			assert(m_textureBoundsLoc >= 0);
+			m_enableAlphaTestLoc = glGetUniformLocation(m_program, "uEnableAlphaTest");
+			glUseProgram(0);
+		}
+
+		~TexrectDrawerShaderDraw()
+		{
+			glUseProgram(0);
+			glDeleteProgram(m_program);
+			m_program = 0;
+		}
+
+		void TexrectDrawerShaderDraw::activate() override
+		{
+			glUseProgram(m_program);
+			gDP.changed |= CHANGED_COMBINE;
+		}
+
+		void setTextureSize(u32 _width, u32 _height) override
+		{
+			glUseProgram(m_program);
+			glUniform2f(m_textureSizeLoc, (GLfloat)_width, (GLfloat)_height);
+			gDP.changed |= CHANGED_COMBINE;
+		}
+
+		void setTextureBounds(float _texBounds[4])  override
+		{
+			glUseProgram(m_program);
+			glUniform4fv(m_textureBoundsLoc, 1, _texBounds);
+			gDP.changed |= CHANGED_COMBINE;
+		}
+
+		void setEnableAlphaTest(int _enable) override
+		{
+			glUseProgram(m_program);
+			glUniform1i(m_enableAlphaTestLoc, _enable);
+			gDP.changed |= CHANGED_COMBINE;
+		}
+
+	protected:
+		GLuint m_program;
+		GLint m_enableAlphaTestLoc;
+		GLint m_textureSizeLoc;
+		GLint m_textureBoundsLoc;
+	};
+
+	typedef SpecialShader<VertexShaderTexturedRect, TexrectDrawerFragmentClear> TexrectDrawerShaderClear;
+
+	/*---------------TexrectCopyShader-------------*/
+
+	typedef SpecialShader<VertexShaderTexturedRect, TexrectCopy> TexrectCopyShaderBase;
+
+	class TexrectCopyShader : public TexrectCopyShaderBase
+	{
+	public:
+		TexrectCopyShader(const opengl::GLInfo & _glinfo,
+			const ShaderPart * _vertexHeader,
+			const ShaderPart * _fragmentHeader)
+			: TexrectCopyShaderBase(_glinfo, _vertexHeader, _fragmentHeader)
+		{
+			glUseProgram(m_program);
+			const int texLoc = glGetUniformLocation(m_program, "uTex0");
+			glUniform1i(texLoc, 0);
+			glUseProgram(0);
+		}
+	};
+
 
 	/*---------------SpecialShadersFactory-------------*/
 
@@ -188,11 +568,27 @@ namespace glsl {
 		if (!m_glinfo.imageTextures)
 			return nullptr;
 
-		return new ShadowMapShader(m_vertexHeader, m_fragmentHeader);
+		return new ShadowMapShader(m_glinfo, m_vertexHeader, m_fragmentHeader);
 	}
 
 	graphics::ShaderProgram * SpecialShadersFactory::createMonochromeShader() const
 	{
-		return new MonochromeShader(m_vertexHeader, m_fragmentHeader);
+		return new MonochromeShader(m_glinfo, m_vertexHeader, m_fragmentHeader);
 	}
+
+	graphics::TexDrawerShaderProgram * SpecialShadersFactory::createTexDrawerDrawShader() const
+	{
+		return new TexrectDrawerShaderDraw(m_glinfo, m_vertexHeader, m_fragmentHeader);
+	}
+
+	graphics::ShaderProgram * SpecialShadersFactory::createTexDrawerClearShader() const
+	{
+		return new TexrectDrawerShaderClear(m_glinfo, m_vertexHeader, m_fragmentHeader);
+	}
+
+	graphics::ShaderProgram * SpecialShadersFactory::createTexrectCopyShader() const
+	{
+		return new TexrectCopyShader(m_glinfo, m_vertexHeader, m_fragmentHeader);
+	}
+
 }
