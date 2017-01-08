@@ -1782,7 +1782,8 @@ graphics::CombinerProgram * CombinerProgramBuilder::buildCombinerProgram(Combine
 		m_fragmentHeaderDepthCompare->write(ssShader);
 	}
 
-	m_fragmentHeaderCalcLight->write(ssShader);
+	if (bUseHWLight)
+		m_fragmentHeaderCalcLight->write(ssShader);
 
 	/* Write body */
 	if (gDP.otherMode.cycleType == G_CYC_2CYCLE)
