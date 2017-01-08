@@ -5,8 +5,6 @@
 
 #include "OpenGL.h"
 #include "Combiner.h"
-#include "GLSLCombiner.h"
-#include "UniformCollection.h"
 #include "Debug.h"
 #include "gDP.h"
 #include "Config.h"

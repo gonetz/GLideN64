@@ -5,7 +5,6 @@
 #include <chrono>         // std::chrono::seconds
 #include "OpenGL.h"
 #include "Textures.h"
-#include "GLSLCombiner.h"
 #include "GBI.h"
 #include "RSP.h"
 #include "gDP.h"

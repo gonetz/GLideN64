@@ -8,6 +8,5 @@ GLuint createRectShaderProgram(const char * _strVertex, const char * _strFragmen
 bool checkShaderCompileStatus(GLuint obj);
 bool checkProgramLinkStatus(GLuint obj);
 void logErrorShader(GLenum _shaderType, const std::string & _strShader);
-int compileCombiner(const gDPCombine & _combine, Combiner & _color, Combiner & _alpha, std::string & _strShader);
 
 #endif // SHADER_UTILS_H

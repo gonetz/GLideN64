@@ -30,12 +30,6 @@
     <Filter Include="Source Files\mupenplus">
       <UniqueIdentifier>{b10a85f0-0fbb-4f8e-b6d8-78ee2a6394bf}</UniqueIdentifier>
     </Filter>
-    <Filter Include="OGL3X">
-      <UniqueIdentifier>{b3016e90-1a88-4a28-9ca4-fbebf41e10ee}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\OGL3X">
-      <UniqueIdentifier>{32bbb389-ea50-4ac9-bb55-84e4f066fe94}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\BufferCopy">
       <UniqueIdentifier>{e9bcfc4d-06e5-496a-a069-3d28e2fcd559}</UniqueIdentifier>
     </Filter>
@@ -47,12 +41,6 @@
     </Filter>
     <Filter Include="Source Files\DepthBufferRender">
       <UniqueIdentifier>{ac6b6e3c-c470-4a66-ad6c-d4ad388ec793}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\GLUniforms">
-      <UniqueIdentifier>{b4b4d718-d4cf-4851-bd8f-fe0646df3d76}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\GLUniforms">
-      <UniqueIdentifier>{6207c101-59f4-44f2-9022-0b5d14645d92}</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files\common">
       <UniqueIdentifier>{699714e2-bd52-4b7d-a5d5-4e514651293f}</UniqueIdentifier>
@@ -212,9 +200,6 @@
     <ClCompile Include="..\..\src\ShaderUtils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\OGL3X\GLSLCombiner_ogl3x.cpp">
-      <Filter>Source Files\OGL3X</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\FrameBufferInfo.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -244,12 +229,6 @@
     </ClCompile>
     <ClCompile Include="..\..\src\FBOTextureFormats.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\GLUniforms\UniformSet.cpp">
-      <Filter>Source Files\GLUniforms</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\GLUniforms\UniformBlock.cpp">
-      <Filter>Source Files\GLUniforms</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\convert.cpp">
       <Filter>Source Files</Filter>
@@ -469,16 +448,7 @@
     <ClInclude Include="..\..\src\Keys.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\UniformCollection.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\ShaderUtils.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\OGL3X\Shaders_ogl3x.h">
-      <Filter>OGL3X</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\GLSLCombiner.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\wst.h">
@@ -516,12 +486,6 @@
     </ClInclude>
     <ClInclude Include="..\..\src\FBOTextureFormats.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\GLUniforms\UniformSet.h">
-      <Filter>Header Files\GLUniforms</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\GLUniforms\UniformBlock.h">
-      <Filter>Header Files\GLUniforms</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\inc\glext.h">
       <Filter>Header Files</Filter>

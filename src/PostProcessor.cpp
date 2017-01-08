@@ -4,7 +4,6 @@
 #include "gSP.h"
 #include "PostProcessor.h"
 #include "FrameBuffer.h"
-#include "GLSLCombiner.h"
 #include "ShaderUtils.h"
 #include "Config.h"
 

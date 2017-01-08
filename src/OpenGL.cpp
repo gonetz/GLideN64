@@ -13,7 +13,6 @@
 #include "gDP.h"
 #include "Textures.h"
 #include "Combiner.h"
-#include "GLSLCombiner.h"
 #include "FrameBuffer.h"
 #include "DepthBuffer.h"
 #include "FrameBufferInfo.h"

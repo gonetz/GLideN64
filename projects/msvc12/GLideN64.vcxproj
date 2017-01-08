@@ -290,16 +290,6 @@
     <ClCompile Include="..\..\src\GBI.cpp" />
     <ClCompile Include="..\..\src\gDP.cpp" />
     <ClCompile Include="..\..\src\GLideN64.cpp" />
-    <ClCompile Include="..\..\src\GLUniforms\UniformBlock.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_mupenplus_uniformset|Win32'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="..\..\src\GLUniforms\UniformSet.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_mupenplus_uniformset|Win32'">false</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_mupenplus|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_mupenplus|Win32'">true</ExcludedFromBuild>
-    </ClCompile>
     <ClCompile Include="..\..\src\Graphics\CombinerProgram.cpp" />
     <ClCompile Include="..\..\src\Graphics\Context.cpp" />
     <ClCompile Include="..\..\src\Graphics\OpenGLContext\GLFunctions.cpp" />
@@ -343,7 +333,6 @@
     </ClCompile>
     <ClCompile Include="..\..\src\N64.cpp" />
     <ClCompile Include="..\..\src\NoiseTexture.cpp" />
-    <ClCompile Include="..\..\src\OGL3X\GLSLCombiner_ogl3x.cpp" />
     <ClCompile Include="..\..\src\OpenGL.cpp" />
     <ClCompile Include="..\..\src\PaletteTexture.cpp" />
     <ClCompile Include="..\..\src\Performance.cpp" />
@@ -431,17 +420,6 @@
     <ClInclude Include="..\..\src\gDP.h" />
     <ClInclude Include="..\..\src\GLideN64.h" />
     <ClInclude Include="..\..\src\GLideNHQ\Ext_TxFilter.h" />
-    <ClInclude Include="..\..\src\GLSLCombiner.h" />
-    <ClInclude Include="..\..\src\GLUniforms\UniformBlock.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_mupenplus_uniformset|Win32'">true</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="..\..\src\GLUniforms\UniformSet.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_mupenplus|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_mupenplus_uniformset|Win32'">false</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_mupenplus|Win32'">true</ExcludedFromBuild>
-    </ClInclude>
     <ClInclude Include="..\..\src\Graphics\CombinerProgram.h" />
     <ClInclude Include="..\..\src\Graphics\Context.h" />
     <ClInclude Include="..\..\src\Graphics\ContextImpl.h" />
@@ -476,7 +454,6 @@
     </ClInclude>
     <ClInclude Include="..\..\src\N64.h" />
     <ClInclude Include="..\..\src\NoiseTexture.h" />
-    <ClInclude Include="..\..\src\OGL3X\Shaders_ogl3x.h" />
     <ClInclude Include="..\..\src\OpenGL.h" />
     <ClInclude Include="..\..\src\PaletteTexture.h" />
     <ClInclude Include="..\..\src\Performance.h" />
@@ -491,7 +468,6 @@
     <ClInclude Include="..\..\src\Textures.h" />
     <ClInclude Include="..\..\src\Turbo3D.h" />
     <ClInclude Include="..\..\src\Types.h" />
-    <ClInclude Include="..\..\src\UniformCollection.h" />
     <ClInclude Include="..\..\src\VI.h" />
     <ClInclude Include="..\..\src\F3D.h" />
     <ClInclude Include="..\..\src\F3DDKR.h" />

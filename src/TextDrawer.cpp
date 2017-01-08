@@ -18,7 +18,6 @@
 #include "TextDrawer.h"
 #include "RSP.h"
 #include "Config.h"
-#include "GLSLCombiner.h"
 #include "ShaderUtils.h"
 #include <FBOTextureFormats.h>
 #include "Log.h"

@@ -12,7 +12,6 @@
 #include "VI.h"
 #include "Textures.h"
 #include "Combiner.h"
-#include "GLSLCombiner.h"
 #include "Types.h"
 #include "Config.h"
 #include "Debug.h"
