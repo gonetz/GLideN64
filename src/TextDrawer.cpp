@@ -156,26 +156,6 @@ struct Atlas {
 
 		/* Create a texture that will be used to hold all ASCII glyphs */
 
-#ifndef GRAPHICS_CONTEXT
-
-		glActiveTexture(GL_TEXTURE0);
-		glGenTextures(1, &tex);
-		glBindTexture(GL_TEXTURE_2D, tex);
-
-		glTexImage2D(GL_TEXTURE_2D, 0, monohromeInternalformat, w, h, 0, monohromeformat, GL_UNSIGNED_BYTE, 0);
-
-		/* We require 1 byte alignment when uploading texture data */
-		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-
-		/* Clamping to edges is important to prevent artifacts when scaling */
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
-		/* Linear filtering usually looks best for text */
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-#else // GRAPHICS_CONTEXT
 		graphics::ObjectHandle texHandle = gfxContext.createTexture(graphics::target::TEXTURE_2D);
 		tex = GLuint(texHandle);
 
@@ -199,7 +179,6 @@ struct Atlas {
 		setParams.wrapS = graphics::textureParameters::WRAP_CLAMP_TO_EDGE;
 		setParams.wrapT = graphics::textureParameters::WRAP_CLAMP_TO_EDGE;
 		gfxContext.setTextureParameters(setParams);
-#endif // GRAPHICS_CONTEXT
 
 		/* Paste all glyph bitmaps into the texture, remembering the offset */
 		int ox = 0;
@@ -240,11 +219,7 @@ struct Atlas {
 	}
 
 	~Atlas() {
-#ifndef GRAPHICS_CONTEXT
-		glDeleteTextures(1, &tex);
-#else
-		gfxContext.deleteTexture(graphics::ObjectHandle(tex));
-#endif
+	gfxContext.deleteTexture(graphics::ObjectHandle(tex));
 	}
 };
 

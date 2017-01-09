@@ -281,15 +281,6 @@ void _initTexture(CachedTexture * pTexture)
 	pTexture->textureBytes = pTexture->realWidth * pTexture->realHeight * 4;
 	textureCache().addFrameBufferTextureSize(pTexture->textureBytes);
 
-#ifndef GRAPHICS_CONTEXT
-
-	glBindTexture(GL_TEXTURE_2D, pTexture->glName);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, pTexture->realWidth, pTexture->realHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glBindTexture(GL_TEXTURE_2D, 0);
-
-#else // GRAPHICS_CONTEXT
 	graphics::Context::InitTextureParams initParams;
 	initParams.handle = graphics::ObjectHandle(pTexture->glName);
 	initParams.width = pTexture->realWidth;
@@ -305,7 +296,6 @@ void _initTexture(CachedTexture * pTexture)
 	setParams.minFilter = graphics::textureParameters::FILTER_NEAREST;
 	setParams.magFilter = graphics::textureParameters::FILTER_NEAREST;
 	gfxContext.setTextureParameters(setParams);
-#endif // GRAPHICS_CONTEXT
 }
 
 static
@@ -319,10 +309,6 @@ CachedTexture * _createTexture()
 static
 void _initFBO(GLuint _FBO, CachedTexture * _pTexture)
 {
-#ifndef GRAPHICS_CONTEXT
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, _FBO);
-	glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _pTexture->glName, 0);
-#else // GRAPHICS_CONTEXT
 	graphics::Context::FrameBufferRenderTarget bufTarget;
 	bufTarget.bufferHandle = graphics::ObjectHandle(_FBO);
 	bufTarget.bufferTarget = graphics::bufferTarget::DRAW_FRAMEBUFFER;
@@ -330,19 +316,13 @@ void _initFBO(GLuint _FBO, CachedTexture * _pTexture)
 	bufTarget.textureTarget = graphics::target::TEXTURE_2D;
 	bufTarget.textureHandle = graphics::ObjectHandle(_pTexture->glName);
 	gfxContext.addFrameBufferRenderTarget(bufTarget);
-#endif // GRAPHICS_CONTEXT
 	assert(checkFBO());
 }
 
 static
 GLuint _createFBO(CachedTexture * _pTexture)
 {
-#ifndef GRAPHICS_CONTEXT
-	GLuint FBO;
-	glGenFramebuffers(1, &FBO);
-#else // GRAPHICS_CONTEXT
 	GLuint FBO = GLuint(gfxContext.createFramebuffer());
-#endif // GRAPHICS_CONTEXT
 	_initFBO(FBO, _pTexture);
 	return FBO;
 }

@@ -75,22 +75,6 @@ void ColorBufferToRDRAM::_initFBTexture(void)
 	m_pTexture->textureBytes = m_pTexture->realWidth * m_pTexture->realHeight * 4;
 	textureCache().addFrameBufferTextureSize(m_pTexture->textureBytes);
 
-#ifndef GRAPHICS_CONTEXT
-
-	glBindTexture(GL_TEXTURE_2D, m_pTexture->glName);
-#if defined(GLES3) || defined (GLES3_1)
-	glTexStorage2D(GL_TEXTURE_2D, 1, fboFormats.colorInternalFormat, m_pTexture->realWidth, m_pTexture->realHeight);
-#else
-	glTexImage2D(GL_TEXTURE_2D, 0, fboFormats.colorInternalFormat, m_pTexture->realWidth, m_pTexture->realHeight, 0, fboFormats.colorFormat, fboFormats.colorType, nullptr);
-#endif
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glBindTexture(GL_TEXTURE_2D, 0);
-
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_FBO);
-	glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_pTexture->glName, 0);
-
-#else // GRAPHICS_CONTEXT
 	{
 		graphics::Context::InitTextureParams params;
 		params.handle = graphics::ObjectHandle(m_pTexture->glName);
@@ -119,7 +103,6 @@ void ColorBufferToRDRAM::_initFBTexture(void)
 		bufTarget.textureHandle = graphics::ObjectHandle(m_pTexture->glName);
 		gfxContext.addFrameBufferRenderTarget(bufTarget);
 	}
-#endif // GRAPHICS_CONTEXT
 
 	// check if everything is OK
 	assert(checkFBO());

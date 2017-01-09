@@ -83,13 +83,6 @@ typedef char GLchar;
 #define VERTBUFF_SIZE 256U
 #define ELEMBUFF_SIZE 1024U
 
-extern const char * strTexrectDrawerVertexShader;
-extern const char * strTexrectDrawerTex3PointFilter;
-extern const char * strTexrectDrawerTexBilinearFilter;
-extern const char * strTexrectDrawerFragmentShaderTex;
-extern const char * strTexrectDrawerFragmentShaderClean;
-extern const char * strTextureCopyShader;
-
 struct CachedTexture;
 class OGLRender
 {

@@ -398,23 +398,6 @@ void OGLRender::TexrectDrawer::init()
 	m_pTexture->textureBytes = m_pTexture->realWidth * m_pTexture->realHeight * 4;
 	textureCache().addFrameBufferTextureSize(m_pTexture->textureBytes);
 
-#ifndef GRAPHICS_CONTEXT
-
-	glBindTexture(GL_TEXTURE_2D, m_pTexture->glName);
-	glTexImage2D(GL_TEXTURE_2D, 0, fboFormats.colorInternalFormat, m_pTexture->realWidth, m_pTexture->realHeight, 0, fboFormats.colorFormat, fboFormats.colorType, nullptr);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glBindTexture(GL_TEXTURE_2D, 0);
-
-	// generate a framebuffer
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-	glGenFramebuffers(1, &m_FBO);
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_FBO);
-
-	glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_pTexture->glName, 0);
-
-#else // GRAPHICS_CONTEXT
-
 	graphics::Context::InitTextureParams initParams;
 	initParams.handle = graphics::ObjectHandle(m_pTexture->glName);
 	initParams.width = m_pTexture->realWidth;
@@ -440,7 +423,6 @@ void OGLRender::TexrectDrawer::init()
 	bufTarget.textureTarget = graphics::target::TEXTURE_2D;
 	bufTarget.textureHandle = graphics::ObjectHandle(m_pTexture->glName);
 	gfxContext.addFrameBufferRenderTarget(bufTarget);
-#endif // GRAPHICS_CONTEXT
 
 	// check if everything is OK
 	assert(checkFBO());

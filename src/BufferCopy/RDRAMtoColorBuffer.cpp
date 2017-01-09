@@ -40,15 +40,6 @@ void RDRAMtoColorBuffer::init()
 	m_pTexture->textureBytes = m_pTexture->realWidth * m_pTexture->realHeight * 4;
 	textureCache().addFrameBufferTextureSize(m_pTexture->textureBytes);
 
-#ifndef GRAPHICS_CONTEXT
-
-	glBindTexture(GL_TEXTURE_2D, m_pTexture->glName);
-	glTexImage2D(GL_TEXTURE_2D, 0, fboFormats.colorInternalFormat, m_pTexture->realWidth, m_pTexture->realHeight, 0, fboFormats.colorFormat, fboFormats.colorType, nullptr);
-	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
-	glBindTexture(GL_TEXTURE_2D, 0);
-
-#else // GRAPHICS_CONTEXT
 	graphics::Context::InitTextureParams initParams;
 	initParams.handle = graphics::ObjectHandle(m_pTexture->glName);
 	initParams.width = m_pTexture->realWidth;
@@ -65,8 +56,6 @@ void RDRAMtoColorBuffer::init()
 	setParams.minFilter = graphics::textureParameters::FILTER_LINEAR;
 	setParams.magFilter = graphics::textureParameters::FILTER_LINEAR;
 	gfxContext.setTextureParameters(setParams);
-
-#endif // GRAPHICS_CONTEXT
 
 	// Generate Pixel Buffer Object. Initialize it later
 #ifndef GLES2
