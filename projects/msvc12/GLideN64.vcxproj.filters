@@ -63,6 +63,15 @@
     <Filter Include="Source Files\Graphics\OpenGL\GLSL">
       <UniqueIdentifier>{e67eafa1-5cea-4267-bc12-715e06c744db}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Graphics\OpenGL\windows">
+      <UniqueIdentifier>{dfff6885-c7e7-4b77-863e-7eeea6753d5a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Graphics\OpenGL\windows">
+      <UniqueIdentifier>{e8b5c80f-51ec-45c2-bcdb-5e18868073df}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Graphics\OpenGL\mupen64plus">
+      <UniqueIdentifier>{77259791-9942-4601-a63f-5a0468e69e49}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Combiner.cpp">
@@ -322,6 +331,15 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Graphics\OpenGLContext\GLSL\glsl_ShaderStorage.cpp">
       <Filter>Source Files\Graphics\OpenGL\GLSL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\DisplayWindow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Graphics\OpenGLContext\windows\windows_DisplayWindow.cpp">
+      <Filter>Source Files\Graphics\OpenGL\windows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Graphics\OpenGLContext\mupen64plus\mupen64plus_DisplayWindow.cpp">
+      <Filter>Source Files\Graphics\OpenGL\mupen64plus</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -600,6 +618,9 @@
     </ClInclude>
     <ClInclude Include="..\..\src\Graphics\OpenGLContext\GLSL\glsl_ShaderStorage.h">
       <Filter>Header Files\Graphics\OpenGL\GLSL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\DisplayWindow.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
