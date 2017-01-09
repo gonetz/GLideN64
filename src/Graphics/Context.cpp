@@ -5,10 +5,10 @@ using namespace graphics;
 
 Context gfxContext;
 
-Context::Context() : m_impl(nullptr) {}
+Context::Context() {}
 
 Context::~Context() {
-	m_impl.reset(nullptr);
+	m_impl.reset();
 }
 
 void Context::init()
@@ -20,7 +20,7 @@ void Context::init()
 void Context::destroy()
 {
 	m_impl->destroy();
-	m_impl.reset(nullptr);
+	m_impl.reset();
 }
 
 ObjectHandle Context::createTexture(Parameter _target)

@@ -6,8 +6,6 @@
 #elif defined(OS_LINUX)
 //#define GL_GLEXT_PROTOTYPES
 #include <winlnxdefs.h>
-#include <GL/glx.h>
-#include <GL/glxext.h>
 #endif
 
 #include <GL/gl.h>

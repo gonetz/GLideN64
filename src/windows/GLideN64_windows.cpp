@@ -1,5 +1,4 @@
 #include "GLideN64_Windows.h"
-#include "../OpenGL.h"
 
 HWND		hWnd;
 HWND		hStatusBar;
