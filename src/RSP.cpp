@@ -337,7 +337,8 @@ void RSP_Init()
 		config.generalEmulation.hacks |= hack_pilotWings;
 	else if (strstr(RSP.romname, (const char *)"THE LEGEND OF ZELDA") != nullptr ||
 			 strstr(RSP.romname, (const char *)"ZELDA MASTER QUEST") != nullptr ||
-			 strstr(RSP.romname, (const char *)"DOUBUTSUNOMORI") != nullptr)
+			 strstr(RSP.romname, (const char *)"DOUBUTSUNOMORI") != nullptr ||
+			 strstr(RSP.romname, (const char *)"ANIMAL FOREST") != nullptr)
 		config.generalEmulation.hacks |= hack_subscreen;
 	else if (strstr(RSP.romname, (const char *)"LEGORacers") != nullptr)
 		config.generalEmulation.hacks |= hack_legoRacers;
