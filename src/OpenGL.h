@@ -79,7 +79,6 @@ typedef char GLchar;
 #include "gSP.h"
 #include <Graphics/ShaderProgram.h>
 
-#define INDEXMAP_SIZE 80U
 #define VERTBUFF_SIZE 256U
 #define ELEMBUFF_SIZE 1024U
 

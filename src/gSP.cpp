@@ -24,6 +24,8 @@
 
 using namespace std;
 
+#define INDEXMAP_SIZE 80U
+
 void gSPFlushTriangles()
 {
 	if ((gSP.geometryMode & G_SHADING_SMOOTH) == 0) {
