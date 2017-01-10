@@ -1146,7 +1146,6 @@ void OGLRender::_updateTextures(RENDER_STATE _renderState) const
 			else
 				textureCache().activateDummy(t);
 		}
-		pCurrentCombiner->updateFrameBufferInfo();
 	}
 	gDP.changed &= ~(CHANGED_TILE | CHANGED_TMEM);
 	gSP.changed &= ~(CHANGED_TEXTURE);
@@ -1670,7 +1669,7 @@ bool texturedRectPaletteMod(const OGLRender::TexturedRectParams & _params)
 			curTile.frameBuffer = nullptr;
 			curTile.textureMode = TEXTUREMODE_NORMAL;
 			textureCache().update(0);
-			currentCombiner()->updateFrameBufferInfo();
+			currentCombiner()->update(false);
 		}
 		return false;
 	}

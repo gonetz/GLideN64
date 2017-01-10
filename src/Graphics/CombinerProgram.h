@@ -11,15 +11,13 @@ namespace graphics {
 		virtual ~CombinerProgram() {}
 		virtual void activate() = 0;
 		virtual void update(bool _force) = 0;
+
 		virtual CombinerKey getKey() const = 0;
+
 		virtual bool usesTexture() const = 0;
 		virtual bool usesTile(u32 _t) const = 0;
 		virtual bool usesShade() const = 0;
 		virtual bool usesLOD() const = 0;
-
-		// TODO implement
-		void disableBlending() {}
-		void updateFrameBufferInfo(bool _bForce = false) {}
 
 		virtual bool getBinaryForm(std::vector<char> & _buffer) = 0;
 
@@ -27,5 +25,4 @@ namespace graphics {
 	};
 
 	typedef std::map<CombinerKey, graphics::CombinerProgram *> Combiners;
-
 }
