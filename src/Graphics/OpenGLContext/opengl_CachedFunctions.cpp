@@ -98,6 +98,25 @@ void CachedBlendColor::setBlendColor(f32 _red, f32 _green, f32 _blue, f32 _alpha
 		glBlendColor(_red, _green, _blue, _alpha);
 }
 
+/*---------------CachedVertexAttribArray-------------*/
+
+void CachedVertexAttribArray::enableVertexAttribArray(u32 _index, bool _enable)
+{
+	if (m_attribs[_index] == Parameter(u32(_enable)))
+		return;
+	m_attribs[_index] = Parameter(u32(_enable));
+
+	if (_enable)
+		glEnableVertexAttribArray(_index);
+	else
+		glDisableVertexAttribArray(_index);
+}
+
+void CachedVertexAttribArray::reset()
+{
+	m_attribs.fill(Parameter());
+}
+
 /*---------------CachedFunctions-------------*/
 
 CachedFunctions::CachedFunctions(const GLInfo & _glinfo)
@@ -131,6 +150,7 @@ void CachedFunctions::reset()
 	m_scissor.reset();
 	m_blending.reset();
 	m_blendColor.reset();
+	m_attribArray.reset();
 }
 
 CachedEnable * CachedFunctions::getCachedEnable(Parameter _parameter)
@@ -204,4 +224,9 @@ CachedBlending * CachedFunctions::getCachedBlending()
 CachedBlendColor * CachedFunctions::getCachedBlendColor()
 {
 	return &m_blendColor;
+}
+
+CachedVertexAttribArray * CachedFunctions::getCachedVertexAttribArray()
+{
+	return &m_attribArray;
 }

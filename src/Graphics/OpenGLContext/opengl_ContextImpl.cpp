@@ -1,6 +1,7 @@
 #include <assert.h>
 #include <Log.h>
 #include "opengl_ContextImpl.h"
+#include "opengl_UnbufferedDrawer.h"
 #include "GLSL/glsl_CombinerProgramBuilder.h"
 #include "GLSL/glsl_SpecialShadersFactory.h"
 #include "GLSL/glsl_ShaderStorage.h"
@@ -219,4 +220,9 @@ graphics::ShaderProgram * ContextImpl::createTexrectCopyShader()
 		m_combinerProgramBuilder->getFragmentShaderHeader());
 
 	return shadersFactory.createTexrectCopyShader();
+}
+
+graphics::DrawerImpl * ContextImpl::createDrawerImpl()
+{
+	return new UnbufferedDrawer(m_cachedFunctions->getCachedVertexAttribArray());
 }

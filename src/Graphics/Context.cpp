@@ -158,6 +158,11 @@ ShaderProgram * Context::createTexrectCopyShader()
 	return m_impl->createTexrectCopyShader();
 }
 
+DrawerImpl * Context::createDrawerImpl()
+{
+	return m_impl->createDrawerImpl();
+}
+
 bool Context::isSupported(SpecialFeatures _feature) const
 {
 	// TODO

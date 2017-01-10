@@ -1,7 +1,10 @@
 #pragma once
+#include <array>
 #include <unordered_map>
 #include <Graphics/ObjectHandle.h>
 #include <Graphics/Parameter.h>
+#include "opengl_GLInfo.h"
+#include "opengl_Attributes.h"
 
 namespace opengl {
 
@@ -177,6 +180,15 @@ namespace opengl {
 		void setBlendColor(f32 _red, f32 _green, f32 _blue, f32 _alpha);
 	};
 
+	class CachedVertexAttribArray {
+	public:
+		void enableVertexAttribArray(u32 _index, bool _enable);
+		void reset();
+
+	private:
+		std::array<graphics::Parameter, MaxAttribIndex> m_attribs;
+	};
+
 	/*---------------CachedFunctions-------------*/
 
 	class CachedFunctions
@@ -213,6 +225,8 @@ namespace opengl {
 
 		CachedBlendColor * getCachedBlendColor();
 
+		CachedVertexAttribArray * getCachedVertexAttribArray();
+
 	private:
 		typedef std::unordered_map<u32, CachedEnable> EnableParameters;
 
@@ -229,6 +243,7 @@ namespace opengl {
 		CachedScissor m_scissor;
 		CachedBlending m_blending;
 		CachedBlendColor m_blendColor;
+		CachedVertexAttribArray m_attribArray;
 	};
 
 }

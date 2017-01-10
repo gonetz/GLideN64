@@ -39,6 +39,7 @@ namespace graphics {
 		virtual TexDrawerShaderProgram * createTexDrawerDrawShader() = 0;
 		virtual ShaderProgram * createTexDrawerClearShader() = 0;
 		virtual ShaderProgram * createTexrectCopyShader() = 0;
+		virtual DrawerImpl * createDrawerImpl() = 0;
 	};
 
 }

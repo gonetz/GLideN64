@@ -7,6 +7,7 @@
 #include "CombinerProgram.h"
 #include "ShaderProgram.h"
 #include "PixelBuffer.h"
+#include "DrawerImpl.h"
 
 #define GRAPHICS_CONTEXT
 
@@ -140,6 +141,8 @@ namespace graphics {
 		ShaderProgram * createTexDrawerClearShader();
 
 		ShaderProgram * createTexrectCopyShader();
+
+		DrawerImpl * createDrawerImpl();
 
 		bool isSupported(SpecialFeatures _feature) const;
 

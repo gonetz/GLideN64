@@ -47,16 +47,24 @@ bool CombinerProgramImpl::usesTexture() const
 	return m_inputs.usesTexture();
 }
 
-bool CombinerProgramImpl::usesTile(u32 _t) const {
+bool CombinerProgramImpl::usesTile(u32 _t) const
+{
 	return m_inputs.usesTile(_t);
 }
 
-bool CombinerProgramImpl::usesShade() const {
+bool CombinerProgramImpl::usesShade() const
+{
 	return m_inputs.usesShade();
 }
 
-bool CombinerProgramImpl::usesLOD() const {
+bool CombinerProgramImpl::usesLOD() const
+{
 	return m_inputs.usesLOD();
+}
+
+bool CombinerProgramImpl::usesHwLighting() const
+{
+	return m_inputs.usesHwLighting();
 }
 
 bool CombinerProgramImpl::getBinaryForm(std::vector<char> & _buffer)

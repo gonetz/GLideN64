@@ -1,8 +1,13 @@
 #pragma once
+#include <memory>
 #include <array>
 #include <vector>
 #include "gSP.h"
 #include "Graphics/Parameter.h"
+
+namespace graphics {
+	class DrawerImpl;
+}
 
 struct CachedTexture;
 struct FrameBuffer;
@@ -19,9 +24,17 @@ enum class DrawingState
 	TexRect = 4,
 };
 
+struct RectVertex
+{
+	float x, y, z, w;
+	float s0, t0, s1, t1;
+};
+
 class Drawer
 {
 public:
+	Drawer();
+
 	void addTriangle(int _v0, int _v1, int _v2);
 
 	void drawTriangles();
@@ -103,11 +116,6 @@ public:
 	void dropRenderState() { m_drawingState = DrawingState::None; }
 
 private:
-	Drawer()
-		: m_modifyVertices(0)
-		, m_bImageTexture(false)
-		, m_bFlatColors(false) {
-	}
 	Drawer(const Drawer &);
 
 	void _initExtensions();
@@ -133,12 +141,6 @@ private:
 	void _getTextSize(const char *_pText, float & _w, float & _h) const;
 	void _drawOSD(const char *_pText, float _x, float & _y);
 
-	struct RectVertex
-	{
-		float x, y, z, w;
-		float s0, t0, s1, t1;
-	};
-
 	DrawingState m_drawingState;
 	TexturedRectParams m_texrectParams;
 
@@ -158,6 +160,8 @@ private:
 	bool m_bImageTexture;
 	bool m_bFlatColors;
 	bool m_bDmaVertices;
+
+	std::unique_ptr<graphics::DrawerImpl> m_drawerImpl;
 
 	//GLuint m_programCopyTex;
 };

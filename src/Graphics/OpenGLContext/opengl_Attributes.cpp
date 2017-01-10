@@ -17,5 +17,4 @@ namespace opengl {
 		const GLuint texcoord0 = 8U;
 		const GLuint texcoord1 = 9U;
 	}
-
 }

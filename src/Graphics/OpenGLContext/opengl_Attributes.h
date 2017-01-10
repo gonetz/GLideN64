@@ -20,4 +20,5 @@ namespace opengl {
 		extern const GLuint texcoord1;
 	}
 
+#define MaxAttribIndex 10
 }

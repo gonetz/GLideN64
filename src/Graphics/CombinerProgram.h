@@ -18,6 +18,7 @@ namespace graphics {
 		virtual bool usesTile(u32 _t) const = 0;
 		virtual bool usesShade() const = 0;
 		virtual bool usesLOD() const = 0;
+		virtual bool usesHwLighting() const = 0;
 
 		virtual bool getBinaryForm(std::vector<char> & _buffer) = 0;
 

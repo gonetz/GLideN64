@@ -9,9 +9,18 @@
 #include "DepthBuffer.h"
 #include "DisplayWindow.h"
 #include "SoftwareRender.h"
+#include "Graphics/DrawerImpl.h"
 #include "Drawer.h"
 
 using namespace graphics;
+
+Drawer::Drawer()
+: m_modifyVertices(0)
+, m_bImageTexture(false)
+, m_bFlatColors(false)
+, m_drawerImpl(gfxContext.createDrawerImpl())
+{
+}
 
 void Drawer::addTriangle(int _v0, int _v1, int _v2)
 {
@@ -634,12 +643,15 @@ void Drawer::drawTriangles()
 
 	_prepareDrawTriangle(false);
 
-	/*
-	const u32 count = static_cast<u32>(triangles.maxElement) + 1;
-	m_vbo.setTrianglesBuffers(m_bFlatColors, count, triangles.vertices);
-	const VerticesBuffers::BufferType bufferType = VerticesBuffers::BufferType::triangles;
-	glDrawElementsBaseVertex(GL_TRIANGLES, triangles.num, GL_UNSIGNED_BYTE, triangles.elements, m_vbo.getPos(bufferType) - count);
-	*/
+	DrawerImpl::DrawTriangleParameters triPapams;
+	triPapams.mode = drawmode::TRIANGLES;
+	triPapams.elementsType = datatype::UNSIGNED_BYTE;
+	triPapams.verticesCount = static_cast<u32>(triangles.maxElement) + 1;
+	triPapams.elementsCount = triangles.num;
+	triPapams.vertices = triangles.vertices.data();
+	triPapams.elements = triangles.elements.data();
+	triPapams.combiner = currentCombiner();
+	m_drawerImpl->drawTriangles(triPapams);
 
 	if (config.frameBufferEmulation.enable != 0 &&
 		config.frameBufferEmulation.copyDepthToRDRAM == Config::cdSoftwareRender &&
@@ -649,8 +661,7 @@ void Drawer::drawTriangles()
 		if (pCurrentDepthBuffer != nullptr)
 			pCurrentDepthBuffer->m_cleared = false;
 	}
+
 	triangles.num = 0;
 	triangles.maxElement = 0;
 }
-
-

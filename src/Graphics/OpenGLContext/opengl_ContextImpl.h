@@ -76,6 +76,8 @@ namespace opengl {
 
 		graphics::ShaderProgram * createTexrectCopyShader() override;
 
+		graphics::DrawerImpl * createDrawerImpl() override;
+
 	private:
 		std::unique_ptr<CachedFunctions> m_cachedFunctions;
 		std::unique_ptr<Create2DTexture> m_createTexture;

@@ -312,6 +312,7 @@
     <ClCompile Include="..\..\src\Graphics\OpenGLContext\opengl_GLInfo.cpp" />
     <ClCompile Include="..\..\src\Graphics\OpenGLContext\opengl_Parameters.cpp" />
     <ClCompile Include="..\..\src\Graphics\OpenGLContext\opengl_TextureManipulationObjectFactory.cpp" />
+    <ClCompile Include="..\..\src\Graphics\OpenGLContext\opengl_UnbufferedDrawer.cpp" />
     <ClCompile Include="..\..\src\Graphics\OpenGLContext\opengl_Utils.cpp" />
     <ClCompile Include="..\..\src\Graphics\OpenGLContext\windows\windows_DisplayWindow.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_mupenplus|Win32'">true</ExcludedFromBuild>
@@ -437,6 +438,7 @@
     <ClInclude Include="..\..\src\Graphics\CombinerProgram.h" />
     <ClInclude Include="..\..\src\Graphics\Context.h" />
     <ClInclude Include="..\..\src\Graphics\ContextImpl.h" />
+    <ClInclude Include="..\..\src\Graphics\DrawerImpl.h" />
     <ClInclude Include="..\..\src\Graphics\ObjectHandle.h" />
     <ClInclude Include="..\..\src\Graphics\OpenGLContext\GLFunctions.h" />
     <ClInclude Include="..\..\src\Graphics\OpenGLContext\GLSL\glsl_CombinerInputs.h" />
@@ -453,6 +455,7 @@
     <ClInclude Include="..\..\src\Graphics\OpenGLContext\opengl_ContextImpl.h" />
     <ClInclude Include="..\..\src\Graphics\OpenGLContext\opengl_GLInfo.h" />
     <ClInclude Include="..\..\src\Graphics\OpenGLContext\opengl_TextureManipulationObjectFactory.h" />
+    <ClInclude Include="..\..\src\Graphics\OpenGLContext\opengl_UnbufferedDrawer.h" />
     <ClInclude Include="..\..\src\Graphics\OpenGLContext\opengl_Utils.h" />
     <ClInclude Include="..\..\src\Graphics\Parameter.h" />
     <ClInclude Include="..\..\src\Graphics\Parameters.h" />

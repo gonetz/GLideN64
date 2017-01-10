@@ -31,6 +31,7 @@ namespace glsl {
 		bool usesTile(u32 _t) const override;
 		bool usesShade() const override;
 		bool usesLOD() const override;
+		bool usesHwLighting() const override;
 
 		bool getBinaryForm(std::vector<char> & _buffer) override;
 

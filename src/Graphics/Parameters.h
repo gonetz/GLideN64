@@ -98,4 +98,10 @@ namespace graphics {
 		extern Parameter CONSTANT_ALPHA;
 		extern Parameter ONE_MINUS_CONSTANT_ALPHA;
 	}
+
+	namespace drawmode {
+		extern Parameter TRIANGLES;
+		extern Parameter TRIANGLE_STRIP;
+		extern Parameter LINES;
+	}
 }

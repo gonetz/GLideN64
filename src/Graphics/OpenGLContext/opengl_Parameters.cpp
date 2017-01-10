@@ -98,4 +98,10 @@ namespace graphics {
 		Parameter CONSTANT_ALPHA(GL_CONSTANT_ALPHA);
 		Parameter ONE_MINUS_CONSTANT_ALPHA(GL_ONE_MINUS_CONSTANT_ALPHA);
 	}
+
+	namespace drawmode {
+		Parameter TRIANGLES(GL_TRIANGLES);
+		Parameter TRIANGLE_STRIP(GL_TRIANGLE_STRIP);
+		Parameter LINES(GL_LINES);
+	}
 }
