@@ -5,40 +5,55 @@
 
 namespace opengl {
 
-	class CachedEnable
+//#define CACHED_USE_CACHE
+
+	template<class T>
+	class Cached1
 	{
 	public:
-		CachedEnable();
-		CachedEnable(graphics::Parameter _parameter);
+		bool update(T _param)
+		{
+#ifdef CACHED_USE_CACHE
+			if (_param == m_cached)
+				return false;
+#endif
+			m_cached = _param;
+			return true;
+		}
 
-		void reset();
+		void reset()
+		{
+			m_cached.reset();
+		}
+
+	protected:
+		T m_cached;
+	};
+
+	class CachedEnable : public Cached1<graphics::Parameter>
+	{
+	public:
+		CachedEnable(graphics::Parameter _parameter);
 
 		void enable(bool _enable);
 
 	private:
 		const graphics::Parameter m_parameter;
-		bool m_enabled;
 	};
 
 
 	template<typename Bind>
-	class CachedBind
+	class CachedBind : public Cached1<graphics::ObjectHandle>
 	{
 	public:
-		CachedBind(Bind _bind) : m_bind(_bind), m_name(0U) {}
+		CachedBind(Bind _bind) : m_bind(_bind) {}
 
 		void bind(graphics::Parameter _target, graphics::ObjectHandle _name) {
-			// TODO make cacheble
-			m_bind(GLenum(_target), GLuint(_name));
-		}
-
-		void reset()
-		{
-			m_name = graphics::ObjectHandle(0U);
+			if (update(_name))
+				m_bind(GLenum(_target), GLuint(_name));
 		}
 
 	private:
-		graphics::ObjectHandle m_name;
 		Bind m_bind;
 	};
 
@@ -48,37 +63,126 @@ namespace opengl {
 
 	typedef CachedBind<decltype(glBindBuffer)> CachedBindBuffer;
 
-	class CachedBindTexture
+	class CachedBindTexture : public Cached1<graphics::ObjectHandle>
 	{
 	public:
-		CachedBindTexture();
-
-		void reset();
-
 		void bind(graphics::Parameter _target, graphics::ObjectHandle _name);
-
-	private:
-		graphics::ObjectHandle m_name;
 	};
 
-	class CachedActiveTexture
+	class CachedActiveTexture : public Cached1<graphics::Parameter>
 	{
 	public:
-		CachedActiveTexture();
-
-		void reset();
-
 		void setActiveTexture(graphics::Parameter _index);
-
-	private:
-		static const graphics::Parameter m_invalidIndex;
-		graphics::Parameter m_index;
 	};
+
+	class CachedCullFace : public Cached1<graphics::Parameter>
+	{
+	public:
+		void setCullFace(graphics::Parameter _mode);
+	};
+
+	class CachedDepthMask : public Cached1<graphics::Parameter>
+	{
+	public:
+		void setDepthMask(bool _enable);
+	};
+
+	class CachedDepthCompare : public Cached1<graphics::Parameter>
+	{
+	public:
+		void setDepthCompare(graphics::Parameter m_mode);
+	};
+
+	class Cached2
+	{
+	public:
+		bool update(graphics::Parameter _p1,
+			graphics::Parameter _p2)
+		{
+#ifdef CACHED_USE_CACHE
+			if (_p1 == m_p1 &&
+				_p2 == m_p2)
+				return false;
+#endif
+			m_p1 = _p1;
+			m_p2 = _p2;
+			return true;
+		}
+
+		void reset()
+		{
+			m_p1.reset();
+			m_p2.reset();
+		}
+
+	protected:
+		graphics::Parameter m_p1, m_p2;
+	};
+
+	class Cached4
+	{
+	public:
+		bool update(graphics::Parameter _p1,
+			graphics::Parameter _p2,
+			graphics::Parameter _p3,
+			graphics::Parameter _p4)
+		{
+#ifdef CACHED_USE_CACHE
+			if (_p1 == m_p1 &&
+				_p2 == m_p2 &&
+				_p3 == m_p3 &&
+				_p4 == m_p4)
+			return false;
+#endif
+			m_p1 = _p1;
+			m_p2 = _p2;
+			m_p3 = _p3;
+			m_p4 = _p4;
+			return true;
+		}
+
+		void reset()
+		{
+			m_p1.reset();
+			m_p2.reset();
+			m_p3.reset();
+			m_p4.reset();
+		}
+
+	protected:
+		graphics::Parameter m_p1, m_p2, m_p3, m_p4;
+	};
+
+	class CachedViewport : public Cached4
+	{
+	public:
+		void setViewport(s32 _x, s32 _y, s32 _width, s32 _height);
+	};
+
+	class CachedScissor : public Cached4
+	{
+	public:
+		void setScissor(s32 _x, s32 _y, s32 _width, s32 _height);
+	};
+
+	class CachedBlending : public Cached2
+	{
+	public:
+		void setBlending(graphics::Parameter _sfactor, graphics::Parameter _dfactor);
+	};
+
+	class CachedBlendColor : public Cached4
+	{
+	public:
+		void setBlendColor(f32 _red, f32 _green, f32 _blue, f32 _alpha);
+	};
+
+	/*---------------CachedFunctions-------------*/
 
 	class CachedFunctions
 	{
 	public:
-		CachedFunctions();
+		CachedFunctions(const GLInfo & _glinfo);
 		~CachedFunctions();
 
 		void reset();
@@ -95,6 +199,20 @@ namespace opengl {
 
 		CachedBindBuffer * geCachedBindBuffer();
 
+		CachedCullFace * getCachedCullFace();
+
+		CachedDepthMask * getCachedDepthMask();
+
+		CachedDepthCompare * getCachedDepthCompare();
+
+		CachedViewport * getCachedViewport();
+
+		CachedScissor * getCachedScissor();
+
+		CachedBlending * getCachedBlending();
+
+		CachedBlendColor * getCachedBlendColor();
+
 	private:
 		typedef std::unordered_map<u32, CachedEnable> EnableParameters;
 
@@ -104,6 +222,13 @@ namespace opengl {
 		CachedBindFramebuffer m_bindFramebuffer;
 		CachedBindRenderbuffer m_bindRenderbuffer;
 		CachedBindBuffer m_bindBuffer;
+		CachedCullFace m_cullFace;
+		CachedDepthMask m_depthMask;
+		CachedDepthCompare m_depthCompare;
+		CachedViewport m_viewport;
+		CachedScissor m_scissor;
+		CachedBlending m_blending;
+		CachedBlendColor m_blendColor;
 	};
 
 }

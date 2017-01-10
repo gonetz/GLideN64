@@ -12,6 +12,12 @@
 
 namespace graphics {
 
+	enum class SpecialFeatures {
+		Multisampling,
+		NearPlaneClipping,
+		FragmentDepthWrite
+	};
+
 	class ContextImpl;
 
 	class Context
@@ -23,6 +29,22 @@ namespace graphics {
 		void init();
 
 		void destroy();
+
+		void enable(Parameter _parameter, bool _enable);
+
+		void cullFace(Parameter _mode);
+
+		void enableDepthWrite(bool _enable);
+
+		void setDepthCompare(Parameter _mode);
+
+		void setViewport(s32 _x, s32 _y, s32 _width, s32 _height);
+
+		void setScissor(s32 _x, s32 _y, s32 _width, s32 _height);
+
+		void setBlending(Parameter _sfactor, Parameter _dfactor);
+
+		void setBlendColor(f32 _red, f32 _green, f32 _blue, f32 _alpha);
 
 		ObjectHandle createTexture(Parameter _target);
 
@@ -119,7 +141,7 @@ namespace graphics {
 
 		ShaderProgram * createTexrectCopyShader();
 
-		bool isMultisamplingSupported() const;
+		bool isSupported(SpecialFeatures _feature) const;
 
 	private:
 		std::unique_ptr<ContextImpl> m_impl;

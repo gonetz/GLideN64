@@ -22,7 +22,7 @@ void ContextImpl::init()
 	m_glInfo.init();
 
 	if (!m_cachedFunctions)
-		m_cachedFunctions.reset(new CachedFunctions);
+		m_cachedFunctions.reset(new CachedFunctions(m_glInfo));
 
 	{
 		TextureManipulationObjectFactory textureObjectsFactory(m_glInfo, *m_cachedFunctions.get());
@@ -58,6 +58,46 @@ void ContextImpl::destroy()
 
 
 	m_combinerProgramBuilder.reset(nullptr);
+}
+
+void ContextImpl::enable(graphics::Parameter _parameter, bool _enable)
+{
+	m_cachedFunctions->getCachedEnable(_parameter)->enable(_enable);
+}
+
+void ContextImpl::cullFace(graphics::Parameter _mode)
+{
+	m_cachedFunctions->getCachedCullFace()->setCullFace(_mode);
+}
+
+void ContextImpl::enableDepthWrite(bool _enable)
+{
+	m_cachedFunctions->getCachedDepthMask()->setDepthMask(_enable);
+}
+
+void ContextImpl::setDepthCompare(graphics::Parameter _mode)
+{
+	m_cachedFunctions->getCachedDepthCompare()->setDepthCompare(_mode);
+}
+
+void ContextImpl::setViewport(s32 _x, s32 _y, s32 _width, s32 _height)
+{
+	m_cachedFunctions->getCachedViewport()->setViewport(_x, _y, _width, _height);
+}
+
+void ContextImpl::setScissor(s32 _x, s32 _y, s32 _width, s32 _height)
+{
+	m_cachedFunctions->getCachedScissor()->setScissor(_x, _y, _width, _height);
+}
+
+void ContextImpl::setBlending(graphics::Parameter _sfactor, graphics::Parameter _dfactor)
+{
+	m_cachedFunctions->getCachedBlending()->setBlending(_sfactor, _dfactor);
+}
+
+void ContextImpl::setBlendColor(f32 _red, f32 _green, f32 _blue, f32 _alpha)
+{
+
 }
 
 graphics::ObjectHandle ContextImpl::createTexture(graphics::Parameter _target)

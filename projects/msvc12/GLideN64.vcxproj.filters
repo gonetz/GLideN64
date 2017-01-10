@@ -341,6 +341,9 @@
     <ClCompile Include="..\..\src\Graphics\OpenGLContext\mupen64plus\mupen64plus_DisplayWindow.cpp">
       <Filter>Source Files\Graphics\OpenGL\mupen64plus</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\Drawer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\3DMath.h">
@@ -620,6 +623,9 @@
       <Filter>Header Files\Graphics\OpenGL\GLSL</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\DisplayWindow.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Drawer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -19,6 +19,8 @@ namespace graphics {
 
 		bool isValid() const { return m_iparameter != INVALID_PARAMETER; }
 
+		void reset() { m_iparameter = INVALID_PARAMETER; }
+
 		bool operator==(const Parameter & _other) const { return m_iparameter == _other.m_iparameter; }
 
 	private:

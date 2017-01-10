@@ -2,7 +2,7 @@
 #include "Graphics/Parameters.h"
 #include "FBOTextureFormats.h"
 #include "DepthBuffer.h"
-#include "Config.h""
+#include "Config.h"
 #include "Textures.h"
 #include "ZlutTexture.h"
 

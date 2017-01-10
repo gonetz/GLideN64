@@ -496,7 +496,7 @@ void TextureCache::init()
 
 
 	m_pMSDummy = nullptr;
-	if (config.video.multisampling != 0 && gfxContext.isMultisamplingSupported()) {
+	if (config.video.multisampling != 0 && gfxContext.isSupported(graphics::SpecialFeatures::Multisampling)) {
 		m_pMSDummy = addFrameBufferTexture(true); // we don't want to remove dummy texture
 		_initDummyTexture(m_pMSDummy);
 

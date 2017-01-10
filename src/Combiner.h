@@ -6,6 +6,7 @@
 
 #include "GLideN64.h"
 #include "OpenGL.h"
+#include "Drawer.h"
 #include "gDP.h"
 #include "CombinerKey.h"
 #include "Graphics/CombinerProgram.h"
@@ -68,29 +69,28 @@
 #define INTER		4
 
 // Internal generalized combiner inputs
-#define COMBINED		0
-#define TEXEL0			1
-#define TEXEL1			2
-#define PRIMITIVE		3
-#define SHADE			4
-#define ENVIRONMENT		5
-#define CENTER			6
-#define SCALE			7
-#define COMBINED_ALPHA	8
-#define TEXEL0_ALPHA	9
-#define TEXEL1_ALPHA	10
-#define PRIMITIVE_ALPHA	11
-#define SHADE_ALPHA		12
-#define ENV_ALPHA		13
-#define LOD_FRACTION	14
-#define PRIM_LOD_FRAC	15
-#define NOISE			16
-#define K4				17
-#define K5				18
-#define ONE				19
-#define ZERO			20
-#define LIGHT			21
-#define HW_LIGHT		22
+#define G_GCI_COMBINED			0
+#define G_GCI_TEXEL0			1
+#define G_GCI_TEXEL1			2
+#define G_GCI_PRIMITIVE			3
+#define G_GCI_SHADE				4
+#define G_GCI_ENVIRONMENT		5
+#define G_GCI_CENTER			6
+#define G_GCI_SCALE				7
+#define G_GCI_COMBINED_ALPHA	8
+#define G_GCI_TEXEL0_ALPHA		9
+#define G_GCI_TEXEL1_ALPHA		10
+#define G_GCI_PRIMITIVE_ALPHA	11
+#define G_GCI_SHADE_ALPHA		12
+#define G_GCI_ENV_ALPHA			13
+#define G_GCI_LOD_FRACTION		14
+#define G_GCI_PRIM_LOD_FRAC		15
+#define G_GCI_NOISE				16
+#define G_GCI_K4				17
+#define G_GCI_K5				18
+#define G_GCI_ONE				19
+#define G_GCI_ZERO				20
+#define G_GCI_HW_LIGHT			22
 
 struct CombinerOp
 {
@@ -137,6 +137,7 @@ public:
 	static CombinerInfo & get();
 
 	void setPolygonMode(OGLRender::RENDER_STATE _renderState);
+	void setPolygonMode(DrawingState _drawingState);
 	bool isRectMode() const { return m_rectMode; }
 
 private:

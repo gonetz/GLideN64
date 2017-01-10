@@ -12,6 +12,14 @@ namespace graphics {
 		virtual ~ContextImpl() {}
 		virtual void init() = 0;
 		virtual void destroy() = 0;
+		virtual void enable(Parameter _parameter, bool _enable) = 0;
+		virtual void cullFace(Parameter _mode) = 0;
+		virtual void enableDepthWrite(bool _enable) = 0;
+		virtual void setDepthCompare(Parameter _mode) = 0;
+		virtual void setViewport(s32 _x, s32 _y, s32 _width, s32 _height) = 0;
+		virtual void setScissor(s32 _x, s32 _y, s32 _width, s32 _height) = 0;
+		virtual void setBlending(Parameter _sfactor, Parameter _dfactor) = 0;
+		virtual void setBlendColor(f32 _red, f32 _green, f32 _blue, f32 _alpha) = 0;
 		virtual ObjectHandle createTexture(Parameter _target) = 0;
 		virtual void deleteTexture(ObjectHandle _name) = 0;
 		virtual void init2DTexture(const Context::InitTextureParams & _params) = 0;

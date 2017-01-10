@@ -23,6 +23,46 @@ void Context::destroy()
 	m_impl.reset();
 }
 
+void Context::enable(Parameter _parameter, bool _enable)
+{
+	m_impl->enable(_parameter, _enable);
+}
+
+void Context::cullFace(Parameter _parameter)
+{
+	m_impl->cullFace(_parameter);
+}
+
+void Context::enableDepthWrite(bool _enable)
+{
+	m_impl->enableDepthWrite(_enable);
+}
+
+void Context::setDepthCompare(Parameter _mode)
+{
+	m_impl->setDepthCompare(_mode);
+}
+
+void Context::setViewport(s32 _x, s32 _y, s32 _width, s32 _height)
+{
+	m_impl->setViewport(_x, _y, _width, _height);
+}
+
+void Context::setScissor(s32 _x, s32 _y, s32 _width, s32 _height)
+{
+	m_impl->setScissor(_x, _y, _width, _height);
+}
+
+void Context::setBlending(Parameter _sfactor, Parameter _dfactor)
+{
+	m_impl->setBlending(_sfactor, _dfactor);
+}
+
+void Context::setBlendColor(f32 _red, f32 _green, f32 _blue, f32 _alpha)
+{
+	m_impl->setBlendColor(_red, _green, _blue, _alpha);
+}
+
 ObjectHandle Context::createTexture(Parameter _target)
 {
 	return m_impl->createTexture(_target);
@@ -118,7 +158,7 @@ ShaderProgram * Context::createTexrectCopyShader()
 	return m_impl->createTexrectCopyShader();
 }
 
-bool Context::isMultisamplingSupported() const
+bool Context::isSupported(SpecialFeatures _feature) const
 {
 	// TODO
 	return true;

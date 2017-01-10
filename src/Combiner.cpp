@@ -14,60 +14,60 @@
 
 static int saRGBExpanded[] =
 {
-	COMBINED,			TEXEL0,				TEXEL1,				PRIMITIVE,
-	SHADE,				ENVIRONMENT,		ONE,				NOISE,
-	ZERO,				ZERO,				ZERO,				ZERO,
-	ZERO,				ZERO,				ZERO,				ZERO
+	G_GCI_COMBINED,			G_GCI_TEXEL0,			G_GCI_TEXEL1,			G_GCI_PRIMITIVE,
+	G_GCI_SHADE,			G_GCI_ENVIRONMENT,		G_GCI_ONE,				G_GCI_NOISE,
+	G_GCI_ZERO,				G_GCI_ZERO,				G_GCI_ZERO,				G_GCI_ZERO,
+	G_GCI_ZERO,				G_GCI_ZERO,				G_GCI_ZERO,				G_GCI_ZERO
 };
 
 static int sbRGBExpanded[] =
 {
-	COMBINED,			TEXEL0,				TEXEL1,				PRIMITIVE,
-	SHADE,				ENVIRONMENT,		CENTER,				K4,
-	ZERO,				ZERO,				ZERO,				ZERO,
-	ZERO,				ZERO,				ZERO,				ZERO
+	G_GCI_COMBINED,			G_GCI_TEXEL0,			G_GCI_TEXEL1,			G_GCI_PRIMITIVE,
+	G_GCI_SHADE,			G_GCI_ENVIRONMENT,		G_GCI_CENTER,			G_GCI_K4,
+	G_GCI_ZERO,				G_GCI_ZERO,				G_GCI_ZERO,				G_GCI_ZERO,
+	G_GCI_ZERO,				G_GCI_ZERO,				G_GCI_ZERO,				G_GCI_ZERO
 };
 
 static int mRGBExpanded[] =
 {
-	COMBINED,			TEXEL0,				TEXEL1,				PRIMITIVE,
-	SHADE,				ENVIRONMENT,		SCALE,				COMBINED_ALPHA,
-	TEXEL0_ALPHA,		TEXEL1_ALPHA,		PRIMITIVE_ALPHA,	SHADE_ALPHA,
-	ENV_ALPHA,			LOD_FRACTION,		PRIM_LOD_FRAC,		K5,
-	ZERO,				ZERO,				ZERO,				ZERO,
-	ZERO,				ZERO,				ZERO,				ZERO,
-	ZERO,				ZERO,				ZERO,				ZERO,
-	ZERO,				ZERO,				ZERO,				ZERO
+	G_GCI_COMBINED,			G_GCI_TEXEL0,			G_GCI_TEXEL1,			G_GCI_PRIMITIVE,
+	G_GCI_SHADE,			G_GCI_ENVIRONMENT,		G_GCI_SCALE,			G_GCI_COMBINED_ALPHA,
+	G_GCI_TEXEL0_ALPHA,		G_GCI_TEXEL1_ALPHA,		G_GCI_PRIMITIVE_ALPHA,	G_GCI_SHADE_ALPHA,
+	G_GCI_ENV_ALPHA,		G_GCI_LOD_FRACTION,		G_GCI_PRIM_LOD_FRAC,	G_GCI_K5,
+	G_GCI_ZERO,				G_GCI_ZERO,				G_GCI_ZERO,				G_GCI_ZERO,
+	G_GCI_ZERO,				G_GCI_ZERO,				G_GCI_ZERO,				G_GCI_ZERO,
+	G_GCI_ZERO,				G_GCI_ZERO,				G_GCI_ZERO,				G_GCI_ZERO,
+	G_GCI_ZERO,				G_GCI_ZERO,				G_GCI_ZERO,				G_GCI_ZERO
 };
 
 static int aRGBExpanded[] =
 {
-	COMBINED,			TEXEL0,				TEXEL1,				PRIMITIVE,
-	SHADE,				ENVIRONMENT,		ONE,				ZERO
+	G_GCI_COMBINED,			G_GCI_TEXEL0,			G_GCI_TEXEL1,			G_GCI_PRIMITIVE,
+	G_GCI_SHADE,			G_GCI_ENVIRONMENT,		G_GCI_ONE,				G_GCI_ZERO
 };
 
 static int saAExpanded[] =
 {
-	COMBINED,			TEXEL0_ALPHA,		TEXEL1_ALPHA,		PRIMITIVE_ALPHA,
-	SHADE_ALPHA,		ENV_ALPHA,			ONE,				ZERO
+	G_GCI_COMBINED,			G_GCI_TEXEL0_ALPHA,		G_GCI_TEXEL1_ALPHA,		G_GCI_PRIMITIVE_ALPHA,
+	G_GCI_SHADE_ALPHA,		G_GCI_ENV_ALPHA,		G_GCI_ONE,				G_GCI_ZERO
 };
 
 static int sbAExpanded[] =
 {
-	COMBINED,			TEXEL0_ALPHA,		TEXEL1_ALPHA,		PRIMITIVE_ALPHA,
-	SHADE_ALPHA,		ENV_ALPHA,			ONE,				ZERO
+	G_GCI_COMBINED,			G_GCI_TEXEL0_ALPHA,		G_GCI_TEXEL1_ALPHA,		G_GCI_PRIMITIVE_ALPHA,
+	G_GCI_SHADE_ALPHA,		G_GCI_ENV_ALPHA,		G_GCI_ONE,				G_GCI_ZERO
 };
 
 static int mAExpanded[] =
 {
-	LOD_FRACTION,		TEXEL0_ALPHA,		TEXEL1_ALPHA,		PRIMITIVE_ALPHA,
-	SHADE_ALPHA,		ENV_ALPHA,			PRIM_LOD_FRAC,		ZERO,
+	G_GCI_LOD_FRACTION,		G_GCI_TEXEL0_ALPHA,		G_GCI_TEXEL1_ALPHA,		G_GCI_PRIMITIVE_ALPHA,
+	G_GCI_SHADE_ALPHA,		G_GCI_ENV_ALPHA,		G_GCI_PRIM_LOD_FRAC,	G_GCI_ZERO,
 };
 
 static int aAExpanded[] =
 {
-	COMBINED,			TEXEL0_ALPHA,		TEXEL1_ALPHA,		PRIMITIVE_ALPHA,
-	SHADE_ALPHA,		ENV_ALPHA,			ONE,				ZERO
+	G_GCI_COMBINED,			G_GCI_TEXEL0_ALPHA,		G_GCI_TEXEL1_ALPHA,		G_GCI_PRIMITIVE_ALPHA,
+	G_GCI_SHADE_ALPHA,		G_GCI_ENV_ALPHA,		G_GCI_ONE,				G_GCI_ZERO
 };
 
 void Combiner_Init() {
@@ -142,10 +142,10 @@ void SimplifyCycle( CombineCycle *cc, CombinerStage *stage )
 	stage->numOps = 1;
 
 	// If we're just subtracting zero, skip it
-	if (cc->sb != ZERO) {
+	if (cc->sb != G_GCI_ZERO) {
 		// Subtracting a number from itself is zero
 		if (cc->sb == stage->op[0].param1)
-			stage->op[0].param1 = ZERO;
+			stage->op[0].param1 = G_GCI_ZERO;
 		else {
 			stage->op[1].op = SUB;
 			stage->op[1].param1 = cc->sb;
@@ -154,15 +154,15 @@ void SimplifyCycle( CombineCycle *cc, CombinerStage *stage )
 	}
 
 	// If we either subtracted, or didn't load a zero
-	if ((stage->numOps > 1) || (stage->op[0].param1 != ZERO)) {
+	if ((stage->numOps > 1) || (stage->op[0].param1 != G_GCI_ZERO)) {
 		// Multiplying by zero is zero
-		if (cc->m == ZERO) {
+		if (cc->m == G_GCI_ZERO) {
 			stage->numOps = 1;
 			stage->op[0].op = LOAD;
-			stage->op[0].param1 = ZERO;
+			stage->op[0].param1 = G_GCI_ZERO;
 		} else {
 			// Multiplying by one, so just do a load
-			if ((stage->numOps == 1) && (stage->op[0].param1 == ONE))
+			if ((stage->numOps == 1) && (stage->op[0].param1 == G_GCI_ONE))
 				stage->op[0].param1 = cc->m;
 			else {
 				stage->op[stage->numOps].op = MUL;
@@ -173,9 +173,9 @@ void SimplifyCycle( CombineCycle *cc, CombinerStage *stage )
 	}
 
 	// Don't bother adding zero
-	if (cc->a != ZERO) {
+	if (cc->a != G_GCI_ZERO) {
 		// If all we have so far is zero, then load this instead
-		if ((stage->numOps == 1) && (stage->op[0].param1 == ZERO))
+		if ((stage->numOps == 1) && (stage->op[0].param1 == G_GCI_ZERO))
 			stage->op[0].param1 = cc->a;
 		else {
 			stage->op[stage->numOps].op = ADD;
@@ -305,6 +305,19 @@ void CombinerInfo::setPolygonMode(OGLRender::RENDER_STATE _renderState)
 	switch (_renderState) {
 	case OGLRender::rsRect:
 	case OGLRender::rsTexRect:
+		m_rectMode = true;
+		break;
+	default:
+		m_rectMode = false;
+		break;
+	}
+}
+
+void CombinerInfo::setPolygonMode(DrawingState _drawingState)
+{
+	switch (_drawingState) {
+	case DrawingState::Rect:
+	case DrawingState::TexRect:
 		m_rectMode = true;
 		break;
 	default:

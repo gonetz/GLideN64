@@ -77,4 +77,25 @@ namespace graphics {
 		Parameter WRAP_REPEAT(GL_REPEAT);
 		Parameter WRAP_MIRRORED_REPEAT(GL_MIRRORED_REPEAT);
 	}
+
+	namespace cullMode {
+		Parameter FRONT(GL_FRONT);
+		Parameter BACK(GL_BACK);
+	}
+
+	namespace compare {
+		Parameter LEQUAL(GL_LEQUAL);
+		Parameter LESS(GL_LESS);
+		Parameter ALWAYS(GL_ALWAYS);
+	}
+
+	namespace blend {
+		Parameter ZERO(GL_ZERO);
+		Parameter ONE(GL_ONE);
+		Parameter SRC_ALPHA(GL_SRC_ALPHA);
+		Parameter DST_ALPHA(GL_DST_ALPHA);
+		Parameter ONE_MINUS_SRC_ALPHA(GL_ONE_MINUS_SRC_ALPHA);
+		Parameter CONSTANT_ALPHA(GL_CONSTANT_ALPHA);
+		Parameter ONE_MINUS_CONSTANT_ALPHA(GL_ONE_MINUS_CONSTANT_ALPHA);
+	}
 }

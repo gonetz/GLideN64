@@ -77,4 +77,25 @@ namespace graphics {
 		extern Parameter WRAP_REPEAT;
 		extern Parameter WRAP_MIRRORED_REPEAT;
 	}
+
+	namespace cullMode {
+		extern Parameter FRONT;
+		extern Parameter BACK;
+	}
+
+	namespace compare {
+		extern Parameter LEQUAL;
+		extern Parameter LESS;
+		extern Parameter ALWAYS;
+	}
+
+	namespace blend {
+		extern Parameter ZERO;
+		extern Parameter ONE;
+		extern Parameter SRC_ALPHA;
+		extern Parameter DST_ALPHA;
+		extern Parameter ONE_MINUS_SRC_ALPHA;
+		extern Parameter CONSTANT_ALPHA;
+		extern Parameter ONE_MINUS_CONSTANT_ALPHA;
+	}
 }

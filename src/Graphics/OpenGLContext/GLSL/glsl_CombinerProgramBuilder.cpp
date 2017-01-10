@@ -66,10 +66,10 @@ inline
 int correctFirstStageParam(int _param)
 {
 	switch (_param) {
-	case TEXEL1:
-		return TEXEL0;
-	case TEXEL1_ALPHA:
-		return TEXEL0_ALPHA;
+	case G_GCI_TEXEL1:
+		return G_GCI_TEXEL0;
+	case G_GCI_TEXEL1_ALPHA:
+		return G_GCI_TEXEL0_ALPHA;
 	}
 	return _param;
 }
@@ -88,14 +88,14 @@ inline
 int correctSecondStageParam(int _param)
 {
 	switch (_param) {
-	case TEXEL0:
-		return TEXEL1;
-	case TEXEL1:
-		return TEXEL0;
-	case TEXEL0_ALPHA:
-		return TEXEL1_ALPHA;
-	case TEXEL1_ALPHA:
-		return TEXEL0_ALPHA;
+	case G_GCI_TEXEL0:
+		return G_GCI_TEXEL1;
+	case G_GCI_TEXEL1:
+		return G_GCI_TEXEL0;
+	case G_GCI_TEXEL0_ALPHA:
+		return G_GCI_TEXEL1_ALPHA;
+	case G_GCI_TEXEL1_ALPHA:
+		return G_GCI_TEXEL0_ALPHA;
 	}
 	return _param;
 }
@@ -1748,7 +1748,7 @@ graphics::CombinerProgram * CombinerProgramBuilder::buildCombinerProgram(Combine
 		config.generalEmulation.enableHWLighting != 0 && GBI.isHWLSupported() && combinerInputs.usesShadeColor();
 
 	if (bUseHWLight)
-		combinerInputs.addInput(HW_LIGHT);
+		combinerInputs.addInput(G_GCI_HW_LIGHT);
 
 	std::stringstream ssShader;
 

@@ -1,9 +1,9 @@
 #include <Graphics/Context.h>
 #include <Graphics/Parameters.h>
 #include "FrameBuffer.h"
-#include "Config.h""
+#include "Config.h"
 #include "GBI.h"
-#include "VI.h""
+#include "VI.h"
 #include "Textures.h"
 #include "NoiseTexture.h"
 
