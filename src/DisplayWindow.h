@@ -1,10 +1,6 @@
 #pragma once
 #include "Types.h"
 
-namespace graphics {
-	class VideoImpl;
-}
-
 class DisplayWindow
 {
 public:
