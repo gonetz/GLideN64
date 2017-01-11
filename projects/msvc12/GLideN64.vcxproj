@@ -349,7 +349,7 @@
     <ClCompile Include="..\..\src\Performance.cpp" />
     <ClCompile Include="..\..\src\PostProcessor.cpp" />
     <ClCompile Include="..\..\src\RDP.CPP" />
-    <ClCompile Include="..\..\src\Drawer.cpp">
+    <ClCompile Include="..\..\src\GraphicsDrawer.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_mupenplus|Win32'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\src\RSP.cpp" />
@@ -477,7 +477,7 @@
     <ClInclude Include="..\..\src\PluginAPI.h" />
     <ClInclude Include="..\..\src\PostProcessor.h" />
     <ClInclude Include="..\..\src\RDP.h" />
-    <ClInclude Include="..\..\src\Drawer.h" />
+    <ClInclude Include="..\..\src\GraphicsDrawer.h" />
     <ClInclude Include="..\..\src\RSP.h" />
     <ClInclude Include="..\..\src\ShaderUtils.h" />
     <ClInclude Include="..\..\src\SoftwareRender.h" />

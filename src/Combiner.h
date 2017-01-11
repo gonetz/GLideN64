@@ -6,7 +6,7 @@
 
 #include "GLideN64.h"
 #include "OpenGL.h"
-#include "Drawer.h"
+#include "GraphicsDrawer.h"
 #include "gDP.h"
 #include "CombinerKey.h"
 #include "Graphics/CombinerProgram.h"

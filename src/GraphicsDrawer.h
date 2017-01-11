@@ -30,10 +30,10 @@ struct RectVertex
 	float s0, t0, s1, t1;
 };
 
-class Drawer
+class GraphicsDrawer
 {
 public:
-	Drawer();
+	GraphicsDrawer();
 
 	void addTriangle(int _v0, int _v1, int _v2);
 
@@ -71,7 +71,7 @@ public:
 			pBuffer(_pBuffer), pInputTexture(_pInputTexture), pOutputTexture(_pOutputTexture)
 		{}
 	private:
-		friend class Drawer;
+		friend class GraphicsDrawer;
 		TexturedRectParams() :
 			ulx(0), uly(0), lrx(0), lry(0)
 		{};
@@ -116,7 +116,7 @@ public:
 	void dropRenderState() { m_drawingState = DrawingState::None; }
 
 private:
-	Drawer(const Drawer &);
+	GraphicsDrawer(const GraphicsDrawer &);
 
 	void _initExtensions();
 	void _initStates();

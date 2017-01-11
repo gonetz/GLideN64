@@ -10,11 +10,11 @@
 #include "DisplayWindow.h"
 #include "SoftwareRender.h"
 #include "Graphics/DrawerImpl.h"
-#include "Drawer.h"
+#include "GraphicsDrawer.h"
 
 using namespace graphics;
 
-Drawer::Drawer()
+GraphicsDrawer::GraphicsDrawer()
 : m_modifyVertices(0)
 , m_bImageTexture(false)
 , m_bFlatColors(false)
@@ -22,7 +22,7 @@ Drawer::Drawer()
 {
 }
 
-void Drawer::addTriangle(int _v0, int _v1, int _v2)
+void GraphicsDrawer::addTriangle(int _v0, int _v1, int _v2)
 {
 	const u32 firstIndex = triangles.num;
 	triangles.elements[triangles.num++] = _v0;
@@ -77,7 +77,7 @@ void Drawer::addTriangle(int _v0, int _v1, int _v2)
 	}
 }
 
-void Drawer::_updateCullFace() const
+void GraphicsDrawer::_updateCullFace() const
 {
 	if (gSP.geometryMode & G_CULL_BOTH) {
 		gfxContext.enable(enable::CULL_FACE, true);
@@ -90,12 +90,12 @@ void Drawer::_updateCullFace() const
 		gfxContext.enable(enable::CULL_FACE, false);
 }
 
-void Drawer::_updateDepthUpdate() const
+void GraphicsDrawer::_updateDepthUpdate() const
 {
 	gfxContext.enableDepthWrite(gDP.otherMode.depthUpdate != 0);
 }
 
-void Drawer::_updateDepthCompare() const
+void GraphicsDrawer::_updateDepthCompare() const
 {
 	if (config.frameBufferEmulation.N64DepthCompare != 0) {
 		gfxContext.enable(enable::DEPTH_TEST, false);
@@ -160,7 +160,7 @@ void _adjustScissorX(f32 & _X0, f32 & _X1, float _scale)
 	_X1 = (_X1 - halfX) * _scale + halfX;
 }
 
-void Drawer::updateScissor(FrameBuffer * _pBuffer) const
+void GraphicsDrawer::updateScissor(FrameBuffer * _pBuffer) const
 {
 	DisplayWindow & wnd = DisplayWindow::get();
 	f32 scaleX, scaleY;
@@ -195,7 +195,7 @@ float _adjustViewportX(f32 _X0)
 	return (_X0 + halfVP - halfX) * video().getAdjustScale() + halfX - halfVP;
 }
 
-void Drawer::_updateViewport() const
+void GraphicsDrawer::_updateViewport() const
 {
 	DisplayWindow & wnd = DisplayWindow::get();
 	FrameBuffer * pCurrentBuffer = frameBufferList().getCurrent();
@@ -223,7 +223,7 @@ void Drawer::_updateViewport() const
 	gSP.changed &= ~CHANGED_VIEWPORT;
 }
 
-void Drawer::_updateScreenCoordsViewport() const
+void GraphicsDrawer::_updateScreenCoordsViewport() const
 {
 	DisplayWindow & wnd = DisplayWindow::get();
 	FrameBuffer * pCurrentBuffer = frameBufferList().getCurrent();
@@ -234,7 +234,7 @@ void Drawer::_updateScreenCoordsViewport() const
 	gSP.changed |= CHANGED_VIEWPORT;
 }
 
-void Drawer::_legacySetBlendMode() const
+void GraphicsDrawer::_legacySetBlendMode() const
 {
 	const u32 blendmode = gDP.otherMode.l >> 16;
 	// 0x7000 = CVG_X_ALPHA|ALPHA_CVG_SEL|FORCE_BL
@@ -385,7 +385,7 @@ void Drawer::_legacySetBlendMode() const
 	}
 }
 
-void Drawer::_setBlendMode() const
+void GraphicsDrawer::_setBlendMode() const
 {
 	if (config.generalEmulation.enableLegacyBlending != 0) {
 		_legacySetBlendMode();
@@ -509,7 +509,7 @@ void Drawer::_setBlendMode() const
 	}
 }
 
-void Drawer::_updateTextures() const
+void GraphicsDrawer::_updateTextures() const
 {
 	//For some reason updating the texture cache on the first frame of LOZ:OOT causes a nullptr Pointer exception...
 	CombinerInfo & cmbInfo = CombinerInfo::get();
@@ -526,7 +526,7 @@ void Drawer::_updateTextures() const
 	gSP.changed &= ~(CHANGED_TEXTURE);
 }
 
-void Drawer::_updateStates(DrawingState _drawingState) const
+void GraphicsDrawer::_updateStates(DrawingState _drawingState) const
 {
 //	DisplayWindow & ogl = DisplayWindow::get();
 
@@ -600,7 +600,7 @@ void Drawer::_updateStates(DrawingState _drawingState) const
 	}
 }
 
-void Drawer::_prepareDrawTriangle(bool _dma)
+void GraphicsDrawer::_prepareDrawTriangle(bool _dma)
 {
 #ifdef GL_IMAGE_TEXTURES_SUPPORT
 	if (m_bImageTexture && config.frameBufferEmulation.N64DepthCompare != 0)
@@ -628,12 +628,12 @@ void Drawer::_prepareDrawTriangle(bool _dma)
 	m_modifyVertices = 0;
 }
 
-bool Drawer::_canDraw() const
+bool GraphicsDrawer::_canDraw() const
 {
 	return config.frameBufferEmulation.enable == 0 || frameBufferList().getCurrent() != nullptr;
 }
 
-void Drawer::drawTriangles()
+void GraphicsDrawer::drawTriangles()
 {
 	if (triangles.num == 0 || !_canDraw()) {
 		triangles.num = 0;

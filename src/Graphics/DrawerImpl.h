@@ -1,6 +1,6 @@
 #ifndef GRAPHICS_DRAWERIMPL_H
 #define GRAPHICS_DRAWERIMPL_H
-#include <Drawer.h>
+#include <GraphicsDrawer.h>
 #include "Parameter.h"
 #include "CombinerProgram.h"
 

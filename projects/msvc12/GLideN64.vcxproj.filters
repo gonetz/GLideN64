@@ -341,11 +341,11 @@
     <ClCompile Include="..\..\src\Graphics\OpenGLContext\mupen64plus\mupen64plus_DisplayWindow.cpp">
       <Filter>Source Files\Graphics\OpenGL\mupen64plus</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\Drawer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\Graphics\OpenGLContext\opengl_UnbufferedDrawer.cpp">
       <Filter>Source Files\Graphics\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\GraphicsDrawer.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -628,14 +628,14 @@
     <ClInclude Include="..\..\src\DisplayWindow.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Drawer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\Graphics\DrawerImpl.h">
       <Filter>Header Files\Graphics</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Graphics\OpenGLContext\opengl_UnbufferedDrawer.h">
       <Filter>Header Files\Graphics\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\GraphicsDrawer.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
