@@ -1612,28 +1612,30 @@ public:
 
 /*---------------ShaderPartsEnd-------------*/
 
+u32 g_cycleType = G_CYC_1CYCLE;
+
 static
 bool needClampColor() {
-	return gDP.otherMode.cycleType <= G_CYC_2CYCLE;
+	return g_cycleType <= G_CYC_2CYCLE;
 }
 
 static
 bool combinedColorC(const gDPCombine & _combine) {
-	if (gDP.otherMode.cycleType != G_CYC_2CYCLE)
+	if (g_cycleType != G_CYC_2CYCLE)
 		return false;
 	return _combine.mRGB1 == G_CCMUX_COMBINED;
 }
 
 static
 bool combinedAlphaC(const gDPCombine & _combine) {
-	if (gDP.otherMode.cycleType != G_CYC_2CYCLE)
+	if (g_cycleType != G_CYC_2CYCLE)
 		return false;
 	return _combine.mA1 == G_ACMUX_COMBINED;
 }
 
 static
 bool combinedColorABD(const gDPCombine & _combine) {
-	if (gDP.otherMode.cycleType != G_CYC_2CYCLE)
+	if (g_cycleType != G_CYC_2CYCLE)
 		return false;
 	if (_combine.aRGB1 == G_CCMUX_COMBINED)
 		return true;
@@ -1644,7 +1646,7 @@ bool combinedColorABD(const gDPCombine & _combine) {
 
 static
 bool combinedAlphaABD(const gDPCombine & _combine) {
-	if (gDP.otherMode.cycleType != G_CYC_2CYCLE)
+	if (g_cycleType != G_CYC_2CYCLE)
 		return false;
 	if (_combine.aA1 == G_ACMUX_COMBINED)
 		return true;
@@ -1660,7 +1662,7 @@ int CombinerProgramBuilder::compileCombiner(const CombinerKey & _key, Combiner &
 
 	std::stringstream ssShader;
 
-	if (gDP.otherMode.cycleType != G_CYC_2CYCLE) {
+	if (g_cycleType != G_CYC_2CYCLE) {
 		_correctFirstStageParams(_alpha.stage[0]);
 		_correctFirstStageParams(_color.stage[0]);
 	}
@@ -1682,7 +1684,7 @@ int CombinerProgramBuilder::compileCombiner(const CombinerKey & _key, Combiner &
 	else if (combinedColorABD(combine))
 		m_signExtendColorABD->write(ssShader);
 
-	if (gDP.otherMode.cycleType == G_CYC_2CYCLE) {
+	if (g_cycleType == G_CYC_2CYCLE) {
 
 		ssShader << "  combined_color = vec4(color1, alpha1);" << std::endl;
 		if (_alpha.numStages == 2) {
@@ -1716,12 +1718,13 @@ int CombinerProgramBuilder::compileCombiner(const CombinerKey & _key, Combiner &
 	else
 		ssShader << "  lowp vec4 clampedColor = clamp(cmbRes, 0.0, 1.0);" << std::endl;
 
-	m_callDither->write(ssShader);
+	if (g_cycleType <= G_CYC_2CYCLE)
+		m_callDither->write(ssShader);
 
 	if (config.generalEmulation.enableLegacyBlending == 0) {
-		if (gDP.otherMode.cycleType <= G_CYC_2CYCLE)
+		if (g_cycleType <= G_CYC_2CYCLE)
 			m_blender1->write(ssShader);
-		if (gDP.otherMode.cycleType == G_CYC_2CYCLE)
+		if (g_cycleType == G_CYC_2CYCLE)
 			m_blender2->write(ssShader);
 
 		ssShader << "  fragColor = clampedColor;" << std::endl;
@@ -1739,6 +1742,8 @@ graphics::CombinerProgram * CombinerProgramBuilder::buildCombinerProgram(Combine
 																		Combiner & _alpha,
 																		const CombinerKey & _key)
 {
+	g_cycleType = _key.getCycleType();
+
 	std::string strCombiner;
 	CombinerInputs combinerInputs(compileCombiner(_key, _color, _alpha, strCombiner));
 
@@ -1758,11 +1763,12 @@ graphics::CombinerProgram * CombinerProgramBuilder::buildCombinerProgram(Combine
 	if (bUseTextures) {
 		m_fragmentGlobalVariablesTex->write(ssShader);
 
-		if (gDP.otherMode.cycleType == G_CYC_2CYCLE && config.generalEmulation.enableLegacyBlending == 0)
+		if (g_cycleType == G_CYC_2CYCLE && config.generalEmulation.enableLegacyBlending == 0)
 			ssShader << "uniform lowp ivec4 uBlendMux2;" << std::endl << "uniform lowp int uForceBlendCycle2;" << std::endl;
 
+		if (g_cycleType <= G_CYC_2CYCLE)
+			m_fragmentHeaderDither->write(ssShader);
 		m_fragmentHeaderNoise->write(ssShader);
-		m_fragmentHeaderDither->write(ssShader);
 		m_fragmentHeaderWriteDepth->write(ssShader);
 		m_fragmentHeaderDepthCompare->write(ssShader);
 		m_fragmentHeaderReadMSTex->write(ssShader);
@@ -1773,11 +1779,12 @@ graphics::CombinerProgram * CombinerProgramBuilder::buildCombinerProgram(Combine
 	} else {
 		m_fragmentGlobalVariablesNotex->write(ssShader);
 
-		if (gDP.otherMode.cycleType == G_CYC_2CYCLE && config.generalEmulation.enableLegacyBlending == 0)
+		if (g_cycleType == G_CYC_2CYCLE && config.generalEmulation.enableLegacyBlending == 0)
 			ssShader << "uniform lowp ivec4 uBlendMux2;" << std::endl << "uniform lowp int uForceBlendCycle2;" << std::endl;
 
+		if (g_cycleType <= G_CYC_2CYCLE)
+			m_fragmentHeaderDither->write(ssShader);
 		m_fragmentHeaderNoise->write(ssShader);
-		m_fragmentHeaderDither->write(ssShader);
 		m_fragmentHeaderWriteDepth->write(ssShader);
 		m_fragmentHeaderDepthCompare->write(ssShader);
 	}
@@ -1786,12 +1793,13 @@ graphics::CombinerProgram * CombinerProgramBuilder::buildCombinerProgram(Combine
 		m_fragmentHeaderCalcLight->write(ssShader);
 
 	/* Write body */
-	if (gDP.otherMode.cycleType == G_CYC_2CYCLE)
+	if (g_cycleType == G_CYC_2CYCLE)
 		m_fragmentMain2Cycle->write(ssShader);
 	else
 		m_fragmentMain->write(ssShader);
 
-	m_fragmentBlendMux->write(ssShader);
+	if (g_cycleType <= G_CYC_2CYCLE)
+		m_fragmentBlendMux->write(ssShader);
 
 	if (bUseLod) {
 		m_fragmentReadTexMipmap->write(ssShader);
@@ -1830,7 +1838,8 @@ graphics::CombinerProgram * CombinerProgramBuilder::buildCombinerProgram(Combine
 
 	m_shaderNoise->write(ssShader);
 
-	m_shaderDither->write(ssShader);
+	if (g_cycleType <= G_CYC_2CYCLE)
+		m_shaderDither->write(ssShader);
 
 	m_shaderWriteDepth->write(ssShader);
 
