@@ -63,6 +63,16 @@ void Context::setBlendColor(f32 _red, f32 _green, f32 _blue, f32 _alpha)
 	m_impl->setBlendColor(_red, _green, _blue, _alpha);
 }
 
+void Context::clearColorBuffer(f32 _red, f32 _green, f32 _blue, f32 _alpha)
+{
+	m_impl->clearColorBuffer(_red, _green, _blue, _alpha);
+}
+
+void Context::clearDepthBuffer()
+{
+	m_impl->clearDepthBuffer();
+}
+
 ObjectHandle Context::createTexture(Parameter _target)
 {
 	return m_impl->createTexture(_target);
@@ -161,6 +171,16 @@ ShaderProgram * Context::createTexrectCopyShader()
 DrawerImpl * Context::createDrawerImpl()
 {
 	return m_impl->createDrawerImpl();
+}
+
+TextDrawer * Context::createTextDrawer()
+{
+	return m_impl->createTextDrawer();
+}
+
+f32 Context::getMaxLineWidth()
+{
+	return m_impl->getMaxLineWidth();
 }
 
 bool Context::isSupported(SpecialFeatures _feature) const

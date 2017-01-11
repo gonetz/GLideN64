@@ -1,3 +1,4 @@
+#include <Config.h>
 #include "GLFunctions.h"
 #include "opengl_Attributes.h"
 #include "opengl_CachedFunctions.h"
@@ -5,8 +6,9 @@
 
 using namespace opengl;
 
-UnbufferedDrawer::UnbufferedDrawer(CachedVertexAttribArray * _cachedAttribArray)
-: m_cachedAttribArray(_cachedAttribArray)
+UnbufferedDrawer::UnbufferedDrawer(const GLInfo & _glinfo, CachedVertexAttribArray * _cachedAttribArray)
+: m_glInfo(_glinfo)
+, m_cachedAttribArray(_cachedAttribArray)
 {
 	m_cachedAttribArray->enableVertexAttribArray(triangleAttrib::position, false);
 	m_cachedAttribArray->enableVertexAttribArray(triangleAttrib::color, false);
@@ -37,6 +39,9 @@ bool UnbufferedDrawer::_updateAttribPointer(u32 _index, const void * _ptr)
 
 void UnbufferedDrawer::drawTriangles(const DrawTriangleParameters & _params)
 {
+	if (m_glInfo.imageTextures && config.frameBufferEmulation.N64DepthCompare != 0)
+		glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+
 	{
 		m_cachedAttribArray->enableVertexAttribArray(triangleAttrib::position, true);
 		const void * ptr = &_params.vertices->x;
@@ -100,7 +105,7 @@ void UnbufferedDrawer::drawRects(const DrawRectParameters & _params)
 
 	{
 		m_cachedAttribArray->enableVertexAttribArray(rectAttrib::color, true);
-		glVertexAttrib4fv(rectAttrib::color, _params.rectColor);
+		glVertexAttrib4fv(rectAttrib::color, _params.rectColor.data());
 	}
 
 	if (_params.combiner->usesTile(0)) {
@@ -126,4 +131,33 @@ void UnbufferedDrawer::drawRects(const DrawRectParameters & _params)
 	m_cachedAttribArray->enableVertexAttribArray(triangleAttrib::modify, false);
 
 	glDrawArrays(GLenum(_params.mode), 0, _params.verticesCount);
+}
+
+void UnbufferedDrawer::drawLine(f32 _width, SPVertex * _vertices)
+{
+	{
+		m_cachedAttribArray->enableVertexAttribArray(triangleAttrib::position, true);
+		const void * ptr = &_vertices->x;
+		if (_updateAttribPointer(triangleAttrib::position, ptr))
+			glVertexAttribPointer(triangleAttrib::position, 4, GL_FLOAT, GL_FALSE, sizeof(SPVertex), ptr);
+	}
+
+	{
+		m_cachedAttribArray->enableVertexAttribArray(triangleAttrib::color, true);
+		const void * ptr = &_vertices->r;
+		if (_updateAttribPointer(triangleAttrib::color, ptr))
+			glVertexAttribPointer(triangleAttrib::color, 4, GL_FLOAT, GL_FALSE, sizeof(SPVertex), ptr);
+	}
+
+	m_cachedAttribArray->enableVertexAttribArray(triangleAttrib::texcoord, false);
+	m_cachedAttribArray->enableVertexAttribArray(triangleAttrib::numlights, false);
+	m_cachedAttribArray->enableVertexAttribArray(triangleAttrib::modify, false);
+
+	m_cachedAttribArray->enableVertexAttribArray(rectAttrib::position, false);
+	m_cachedAttribArray->enableVertexAttribArray(rectAttrib::color, false);
+	m_cachedAttribArray->enableVertexAttribArray(rectAttrib::texcoord0, false);
+	m_cachedAttribArray->enableVertexAttribArray(rectAttrib::texcoord1, false);
+
+	glLineWidth(_width);
+	glDrawArrays(GL_LINES, 0, 2);
 }

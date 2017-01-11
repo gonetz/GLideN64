@@ -1,5 +1,6 @@
 #ifndef GRAPHICS_DRAWERIMPL_H
 #define GRAPHICS_DRAWERIMPL_H
+#include <array>
 #include <GraphicsDrawer.h>
 #include "Parameter.h"
 #include "CombinerProgram.h"
@@ -27,12 +28,13 @@ namespace graphics {
 		{
 			Parameter mode;
 			u32 verticesCount = 0;
-			f32 rectColor[4];
+			std::array<f32, 4> rectColor;
 			RectVertex * vertices = nullptr;
 			const CombinerProgram * combiner = nullptr;
 		};
 		virtual void drawRects(const DrawRectParameters & _params) = 0;
 
+		virtual void drawLine(f32 _width, SPVertex * vertices) = 0;
 	};
 }
 

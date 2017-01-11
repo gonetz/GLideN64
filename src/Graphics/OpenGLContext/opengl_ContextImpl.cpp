@@ -1,7 +1,9 @@
 #include <assert.h>
 #include <Log.h>
+#include <Graphics/Parameters.h>
 #include "opengl_ContextImpl.h"
 #include "opengl_UnbufferedDrawer.h"
+#include "opengl_DummyTextDrawer.h"
 #include "GLSL/glsl_CombinerProgramBuilder.h"
 #include "GLSL/glsl_SpecialShadersFactory.h"
 #include "GLSL/glsl_ShaderStorage.h"
@@ -98,7 +100,35 @@ void ContextImpl::setBlending(graphics::Parameter _sfactor, graphics::Parameter 
 
 void ContextImpl::setBlendColor(f32 _red, f32 _green, f32 _blue, f32 _alpha)
 {
+	m_cachedFunctions->getCachedBlendColor()->setBlendColor(_red, _green, _blue, _alpha);
+}
 
+void ContextImpl::clearColorBuffer(f32 _red, f32 _green, f32 _blue, f32 _alpha)
+{
+	CachedEnable * enableScissor = m_cachedFunctions->getCachedEnable(graphics::enable::SCISSOR_TEST);
+	enableScissor->enable(false);
+
+	m_cachedFunctions->getCachedClearColor()->setClearColor(_red, _green, _blue, _alpha);
+	glClear(GL_COLOR_BUFFER_BIT);
+
+	enableScissor->enable(true);
+}
+
+void ContextImpl::clearDepthBuffer()
+{
+	CachedEnable * enableScissor = m_cachedFunctions->getCachedEnable(graphics::enable::SCISSOR_TEST);
+	CachedDepthMask * depthMask = m_cachedFunctions->getCachedDepthMask();
+	enableScissor->enable(false);
+
+#ifdef ANDROID
+	depthMask->setDepthMask(false);
+	glClear(GL_DEPTH_BUFFER_BIT);
+#endif
+
+	depthMask->setDepthMask(true);
+	glClear(GL_DEPTH_BUFFER_BIT);
+
+	enableScissor->enable(true);
 }
 
 graphics::ObjectHandle ContextImpl::createTexture(graphics::Parameter _target)
@@ -224,5 +254,17 @@ graphics::ShaderProgram * ContextImpl::createTexrectCopyShader()
 
 graphics::DrawerImpl * ContextImpl::createDrawerImpl()
 {
-	return new UnbufferedDrawer(m_cachedFunctions->getCachedVertexAttribArray());
+	return new UnbufferedDrawer(m_glInfo, m_cachedFunctions->getCachedVertexAttribArray());
+}
+
+graphics::TextDrawer * ContextImpl::createTextDrawer()
+{
+	return new DummyTextDrawer;
+}
+
+f32 ContextImpl::getMaxLineWidth()
+{
+	GLfloat lineWidthRange[2] = { 0.0f, 0.0f };
+	glGetFloatv(GL_ALIASED_LINE_WIDTH_RANGE, lineWidthRange);
+	return lineWidthRange[1];
 }

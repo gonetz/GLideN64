@@ -180,6 +180,12 @@ namespace opengl {
 		void setBlendColor(f32 _red, f32 _green, f32 _blue, f32 _alpha);
 	};
 
+	class CachedClearColor : public Cached4
+	{
+	public:
+		void setClearColor(f32 _red, f32 _green, f32 _blue, f32 _alpha);
+	};
+
 	class CachedVertexAttribArray {
 	public:
 		void enableVertexAttribArray(u32 _index, bool _enable);
@@ -225,6 +231,8 @@ namespace opengl {
 
 		CachedBlendColor * getCachedBlendColor();
 
+		CachedClearColor * getCachedClearColor();
+
 		CachedVertexAttribArray * getCachedVertexAttribArray();
 
 	private:
@@ -243,6 +251,7 @@ namespace opengl {
 		CachedScissor m_scissor;
 		CachedBlending m_blending;
 		CachedBlendColor m_blendColor;
+		CachedClearColor m_clearColor;
 		CachedVertexAttribArray m_attribArray;
 	};
 

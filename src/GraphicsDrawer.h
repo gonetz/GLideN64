@@ -7,6 +7,7 @@
 
 namespace graphics {
 	class DrawerImpl;
+	class TextDrawer;
 }
 
 struct CachedTexture;
@@ -134,7 +135,7 @@ private:
 	void _updateDepthCompare() const;
 	void _updateTextures() const;
 	void _updateStates(DrawingState _drawingState) const;
-	void _prepareDrawTriangle(bool _dma);
+	void _prepareDrawTriangle();
 	bool _canDraw() const;
 	void _drawThickLine(int _v0, int _v1, float _width);
 
@@ -143,6 +144,18 @@ private:
 
 	DrawingState m_drawingState;
 	TexturedRectParams m_texrectParams;
+
+	// Dummy TexrectDrawer
+	class TexrectDrawer
+	{
+	public:
+		TexrectDrawer() {}
+		void init() {}
+		void destroy() {}
+		void add() {}
+		bool draw() { return false; }
+		bool isEmpty() { return true; }
+	};
 
 	struct {
 		std::array<SPVertex, VERTBUFF_SIZE> vertices;
@@ -159,9 +172,10 @@ private:
 	f32 m_maxLineWidth;
 	bool m_bImageTexture;
 	bool m_bFlatColors;
-	bool m_bDmaVertices;
+	TexrectDrawer m_texrectDrawer;
 
 	std::unique_ptr<graphics::DrawerImpl> m_drawerImpl;
+	std::unique_ptr<graphics::TextDrawer> m_textDrawer;
 
 	//GLuint m_programCopyTex;
 };

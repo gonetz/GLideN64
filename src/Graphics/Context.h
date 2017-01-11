@@ -7,7 +7,8 @@
 #include "CombinerProgram.h"
 #include "ShaderProgram.h"
 #include "PixelBuffer.h"
-#include "DrawerImpl.h"
+#include "GraphicsDrawerImpl.h"
+#include "TextDrawerImpl.h"
 
 #define GRAPHICS_CONTEXT
 
@@ -46,6 +47,10 @@ namespace graphics {
 		void setBlending(Parameter _sfactor, Parameter _dfactor);
 
 		void setBlendColor(f32 _red, f32 _green, f32 _blue, f32 _alpha);
+
+		void clearColorBuffer(f32 _red, f32 _green, f32 _blue, f32 _alpha);
+
+		void clearDepthBuffer();
 
 		ObjectHandle createTexture(Parameter _target);
 
@@ -143,6 +148,10 @@ namespace graphics {
 		ShaderProgram * createTexrectCopyShader();
 
 		DrawerImpl * createDrawerImpl();
+
+		TextDrawer * createTextDrawer();
+
+		f32 getMaxLineWidth();
 
 		bool isSupported(SpecialFeatures _feature) const;
 

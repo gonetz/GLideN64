@@ -38,6 +38,10 @@ namespace opengl {
 
 		void setBlendColor(f32 _red, f32 _green, f32 _blue, f32 _alpha) override;
 
+		void clearColorBuffer(f32 _red, f32 _green, f32 _blue, f32 _alpha) override;
+
+		void clearDepthBuffer() override;
+
 		graphics::ObjectHandle createTexture(graphics::Parameter _target) override;
 
 		void deleteTexture(graphics::ObjectHandle _name) override;
@@ -77,6 +81,10 @@ namespace opengl {
 		graphics::ShaderProgram * createTexrectCopyShader() override;
 
 		graphics::DrawerImpl * createDrawerImpl() override;
+
+		graphics::TextDrawer * createTextDrawer() override;
+
+		f32 getMaxLineWidth() override;
 
 	private:
 		std::unique_ptr<CachedFunctions> m_cachedFunctions;
