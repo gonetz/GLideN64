@@ -174,8 +174,5 @@ private:
 	bool m_bFlatColors;
 	TexrectDrawer m_texrectDrawer;
 
-	std::unique_ptr<graphics::DrawerImpl> m_drawerImpl;
-	std::unique_ptr<graphics::TextDrawer> m_textDrawer;
-
 	//GLuint m_programCopyTex;
 };

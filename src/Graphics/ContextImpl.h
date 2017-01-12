@@ -41,9 +41,12 @@ namespace graphics {
 		virtual TexDrawerShaderProgram * createTexDrawerDrawShader() = 0;
 		virtual ShaderProgram * createTexDrawerClearShader() = 0;
 		virtual ShaderProgram * createTexrectCopyShader() = 0;
-		virtual DrawerImpl * createDrawerImpl() = 0;
-		virtual TextDrawer * createTextDrawer() = 0;
+		virtual void drawTriangles(const Context::DrawTriangleParameters & _params) = 0;
+		virtual void drawRects(const Context::DrawRectParameters & _params) = 0;
+		virtual void drawLine(f32 _width, SPVertex * _vertices) = 0;
 		virtual f32 getMaxLineWidth() = 0;
+		virtual void drawText(const char *_pText, float _x, float _y) = 0;
+		virtual void getTextSize(const char *_pText, float & _w, float & _h) = 0;
 	};
 
 }

@@ -44,6 +44,11 @@ void ContextImpl::init()
 		m_createPixelWriteBuffer.reset(bufferObjectFactory.createPixelWriteBuffer());
 	}
 
+	{
+		m_graphicsDrawer.reset(new UnbufferedDrawer(m_glInfo, m_cachedFunctions->getCachedVertexAttribArray()));
+		m_textDrawer.reset(new DummyTextDrawer);
+	}
+
 	m_combinerProgramBuilder.reset(new glsl::CombinerProgramBuilder(m_glInfo));
 }
 
@@ -252,19 +257,35 @@ graphics::ShaderProgram * ContextImpl::createTexrectCopyShader()
 	return shadersFactory.createTexrectCopyShader();
 }
 
-graphics::DrawerImpl * ContextImpl::createDrawerImpl()
+void ContextImpl::drawTriangles(const graphics::Context::DrawTriangleParameters & _params)
 {
-	return new UnbufferedDrawer(m_glInfo, m_cachedFunctions->getCachedVertexAttribArray());
+	m_graphicsDrawer->drawTriangles(_params);
 }
 
-graphics::TextDrawer * ContextImpl::createTextDrawer()
+void ContextImpl::drawRects(const graphics::Context::DrawRectParameters & _params)
 {
-	return new DummyTextDrawer;
+	m_graphicsDrawer->drawRects(_params);
 }
+
+void ContextImpl::drawLine(f32 _width, SPVertex * _vertices)
+{
+	m_graphicsDrawer->drawLine(_width, _vertices);
+}
+
 
 f32 ContextImpl::getMaxLineWidth()
 {
 	GLfloat lineWidthRange[2] = { 0.0f, 0.0f };
 	glGetFloatv(GL_ALIASED_LINE_WIDTH_RANGE, lineWidthRange);
 	return lineWidthRange[1];
+}
+
+void ContextImpl::drawText(const char *_pText, float _x, float _y)
+{
+	m_textDrawer->drawText(_pText, _x, _y);
+}
+
+void ContextImpl::getTextSize(const char *_pText, float & _w, float & _h)
+{
+	m_textDrawer->getTextSize(_pText, _w, _h);
 }

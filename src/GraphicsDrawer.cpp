@@ -10,7 +10,6 @@
 #include "DepthBuffer.h"
 #include "DisplayWindow.h"
 #include "SoftwareRender.h"
-#include "Graphics/GraphicsDrawerImpl.h"
 #include "GraphicsDrawer.h"
 #include "Performance.h"
 
@@ -20,8 +19,6 @@ GraphicsDrawer::GraphicsDrawer()
 : m_modifyVertices(0)
 , m_bImageTexture(false)
 , m_bFlatColors(false)
-, m_drawerImpl(gfxContext.createDrawerImpl())
-, m_textDrawer(gfxContext.createTextDrawer())
 {
 }
 
@@ -642,7 +639,7 @@ void GraphicsDrawer::drawTriangles()
 
 	_prepareDrawTriangle();
 
-	DrawerImpl::DrawTriangleParameters triParams;
+	Context::DrawTriangleParameters triParams;
 	triParams.mode = drawmode::TRIANGLES;
 	triParams.flatColors = m_bFlatColors;
 	triParams.elementsType = datatype::UNSIGNED_BYTE;
@@ -651,7 +648,7 @@ void GraphicsDrawer::drawTriangles()
 	triParams.vertices = triangles.vertices.data();
 	triParams.elements = triangles.elements.data();
 	triParams.combiner = currentCombiner();
-	m_drawerImpl->drawTriangles(triParams);
+	gfxContext.drawTriangles(triParams);
 
 	if (config.frameBufferEmulation.enable != 0 &&
 		config.frameBufferEmulation.copyDepthToRDRAM == Config::cdSoftwareRender &&
@@ -681,13 +678,13 @@ void GraphicsDrawer::drawScreenSpaceTriangle(u32 _numVtx)
 	_prepareDrawTriangle();
 	gfxContext.enable(enable::CULL_FACE, false);
 
-	DrawerImpl::DrawTriangleParameters triParams;
+	Context::DrawTriangleParameters triParams;
 	triParams.mode = drawmode::TRIANGLE_STRIP;
 	triParams.flatColors = m_bFlatColors;
 	triParams.verticesCount = _numVtx;
 	triParams.vertices = m_dmaVertices.data();
 	triParams.combiner = currentCombiner();
-	m_drawerImpl->drawTriangles(triParams);
+	gfxContext.drawTriangles(triParams);
 
 	frameBufferList().setBufferChanged();
 	gSP.changed |= CHANGED_GEOMETRYMODE;
@@ -700,13 +697,13 @@ void GraphicsDrawer::drawDMATriangles(u32 _numVtx)
 	_prepareDrawTriangle();
 
 
-	DrawerImpl::DrawTriangleParameters triParams;
+	Context::DrawTriangleParameters triParams;
 	triParams.mode = drawmode::TRIANGLES;
 	triParams.flatColors = m_bFlatColors;
 	triParams.verticesCount = _numVtx;
 	triParams.vertices = m_dmaVertices.data();
 	triParams.combiner = currentCombiner();
-	m_drawerImpl->drawTriangles(triParams);
+	gfxContext.drawTriangles(triParams);
 
 	if (config.frameBufferEmulation.enable != 0 &&
 		config.frameBufferEmulation.copyDepthToRDRAM == Config::cdSoftwareRender &&
@@ -823,7 +820,7 @@ void GraphicsDrawer::drawLine(int _v0, int _v1, float _width)
 		_updateScreenCoordsViewport();
 
 	SPVertex vertexBuf[2] = { triangles.vertices[triangles.elements[_v0]], triangles.vertices[triangles.elements[_v1]] };
-	m_drawerImpl->drawLine(lineWidth, vertexBuf);
+	gfxContext.drawLine(lineWidth, vertexBuf);
 }
 
 void GraphicsDrawer::drawRect(int _ulx, int _uly, int _lrx, int _lry, float *_pColor)
@@ -875,7 +872,7 @@ void GraphicsDrawer::drawRect(int _ulx, int _uly, int _lrx, int _lry, float *_pC
 			m_rect[i].x *= scale;
 	}
 
-	graphics::DrawerImpl::DrawRectParameters rectParams;
+	Context::DrawRectParameters rectParams;
 	rectParams.mode = drawmode::TRIANGLE_STRIP;
 	if (gDP.otherMode.cycleType == G_CYC_FILL)
 		std::copy_n(_pColor, sizeof(_pColor[0]) * 4, rectParams.rectColor.data());
@@ -884,7 +881,7 @@ void GraphicsDrawer::drawRect(int _ulx, int _uly, int _lrx, int _lry, float *_pC
 	rectParams.verticesCount = 4;
 	rectParams.vertices = m_rect;
 	rectParams.combiner = currentCombiner();
-	m_drawerImpl->drawRects(rectParams);
+	gfxContext.drawRects(rectParams);
 	gSP.changed |= CHANGED_GEOMETRYMODE | CHANGED_VIEWPORT;
 }
 
@@ -1250,14 +1247,14 @@ void GraphicsDrawer::drawTexturedRect(const TexturedRectParams & _params)
 		else
 			gfxContext.setViewport(0, 0, pCurrentBuffer->m_width*pCurrentBuffer->m_scaleX, pCurrentBuffer->m_height*pCurrentBuffer->m_scaleY);
 
-		graphics::DrawerImpl::DrawRectParameters rectParams;
+		Context::DrawRectParameters rectParams;
 		rectParams.mode = drawmode::TRIANGLE_STRIP;
 		rectParams.rectColor.fill(0.0f);
 		rectParams.rectColor[3] = alpha;
 		rectParams.verticesCount = 4;
 		rectParams.vertices = m_rect;
 		rectParams.combiner = currentCombiner();
-		m_drawerImpl->drawRects(rectParams);
+		gfxContext.drawRects(rectParams);
 
 		gSP.changed |= CHANGED_GEOMETRYMODE | CHANGED_VIEWPORT;
 	}
@@ -1290,12 +1287,12 @@ void GraphicsDrawer::correctTexturedRectParams(TexturedRectParams & _params)
 void GraphicsDrawer::drawText(const char *_pText, float x, float y)
 {
 	m_drawingState = DrawingState::None;
-	m_textDrawer->renderText(_pText, x, y);
+	gfxContext.drawText(_pText, x, y);
 }
 
 void GraphicsDrawer::_getTextSize(const char *_pText, float & _w, float & _h) const
 {
-	m_textDrawer->getTextSize(_pText, _w, _h);
+	gfxContext.getTextSize(_pText, _w, _h);
 }
 
 void GraphicsDrawer::_drawOSD(const char *_pText, float _x, float & _y)

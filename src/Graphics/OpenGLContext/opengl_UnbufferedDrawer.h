@@ -1,20 +1,20 @@
 #pragma once
 #include <array>
-#include <Graphics/GraphicsDrawerImpl.h>
+#include "opengl_GraphicsDrawer.h"
 #include "opengl_GLInfo.h"
 
 namespace opengl {
 	class CachedVertexAttribArray;
 
-	class UnbufferedDrawer : public graphics::DrawerImpl
+	class UnbufferedDrawer : public GraphicsDrawer
 	{
 	public:
 		UnbufferedDrawer(const GLInfo & _glinfo, CachedVertexAttribArray * _cachedAttribArray);
 		~UnbufferedDrawer();
 
-		void drawTriangles(const DrawTriangleParameters & _params) override;
+		void drawTriangles(const graphics::Context::DrawTriangleParameters & _params) override;
 
-		void drawRects(const DrawRectParameters & _params) override;
+		void drawRects(const graphics::Context::DrawRectParameters & _params) override;
 
 		void drawLine(f32 _width, SPVertex * _vertices) override;
 

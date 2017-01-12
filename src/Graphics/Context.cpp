@@ -168,14 +168,29 @@ ShaderProgram * Context::createTexrectCopyShader()
 	return m_impl->createTexrectCopyShader();
 }
 
-DrawerImpl * Context::createDrawerImpl()
+void Context::drawTriangles(const DrawTriangleParameters & _params)
 {
-	return m_impl->createDrawerImpl();
+	m_impl->drawTriangles(_params);
 }
 
-TextDrawer * Context::createTextDrawer()
+void Context::drawRects(const DrawRectParameters & _params)
 {
-	return m_impl->createTextDrawer();
+	m_impl->drawRects(_params);
+}
+
+void Context::drawLine(f32 _width, SPVertex * _vertices)
+{
+	m_impl->drawLine(_width, _vertices);
+}
+
+void Context::drawText(const char *_pText, float _x, float _y)
+{
+	m_impl->drawText(_pText, _x, _y);
+}
+
+void Context::getTextSize(const char *_pText, float & _w, float & _h)
+{
+	m_impl->getTextSize(_pText, _w, _h);
 }
 
 f32 Context::getMaxLineWidth()

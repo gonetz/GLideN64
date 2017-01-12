@@ -5,6 +5,8 @@
 #include "opengl_BufferManipulationObjectFactory.h"
 #include "opengl_GLInfo.h"
 #include "opengl_CachedFunctions.h"
+#include "opengl_GraphicsDrawer.h"
+#include "opengl_TextDrawer.h"
 
 namespace glsl {
 	class CombinerProgramBuilder;
@@ -80,11 +82,17 @@ namespace opengl {
 
 		graphics::ShaderProgram * createTexrectCopyShader() override;
 
-		graphics::DrawerImpl * createDrawerImpl() override;
+		void drawTriangles(const graphics::Context::DrawTriangleParameters & _params) override;
 
-		graphics::TextDrawer * createTextDrawer() override;
+		void drawRects(const graphics::Context::DrawRectParameters & _params) override;
+
+		void drawLine(f32 _width, SPVertex * _vertices) override;
 
 		f32 getMaxLineWidth() override;
+
+		void drawText(const char *_pText, float _x, float _y) override;
+
+		void getTextSize(const char *_pText, float & _w, float & _h) override;
 
 	private:
 		std::unique_ptr<CachedFunctions> m_cachedFunctions;
@@ -98,6 +106,9 @@ namespace opengl {
 		std::unique_ptr<InitRenderbuffer> m_initRenderbuffer;
 		std::unique_ptr<AddFramebufferRenderTarget> m_addFramebufferRenderTarget;
 		std::unique_ptr<CreatePixelWriteBuffer> m_createPixelWriteBuffer;
+
+		std::unique_ptr<GraphicsDrawer> m_graphicsDrawer;
+		std::unique_ptr<TextDrawer> m_textDrawer;
 
 		std::unique_ptr<glsl::CombinerProgramBuilder> m_combinerProgramBuilder;
 		GLInfo m_glInfo;

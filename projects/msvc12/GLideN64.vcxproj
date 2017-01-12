@@ -438,7 +438,6 @@
     <ClInclude Include="..\..\src\Graphics\CombinerProgram.h" />
     <ClInclude Include="..\..\src\Graphics\Context.h" />
     <ClInclude Include="..\..\src\Graphics\ContextImpl.h" />
-    <ClInclude Include="..\..\src\Graphics\GraphicsDrawerImpl.h" />
     <ClInclude Include="..\..\src\Graphics\ObjectHandle.h" />
     <ClInclude Include="..\..\src\Graphics\OpenGLContext\GLFunctions.h" />
     <ClInclude Include="..\..\src\Graphics\OpenGLContext\GLSL\glsl_CombinerInputs.h" />
@@ -455,6 +454,8 @@
     <ClInclude Include="..\..\src\Graphics\OpenGLContext\opengl_ContextImpl.h" />
     <ClInclude Include="..\..\src\Graphics\OpenGLContext\opengl_GLInfo.h" />
     <ClInclude Include="..\..\src\Graphics\OpenGLContext\opengl_DummyTextDrawer.h" />
+    <ClInclude Include="..\..\src\Graphics\OpenGLContext\opengl_GraphicsDrawer.h" />
+    <ClInclude Include="..\..\src\Graphics\OpenGLContext\opengl_TextDrawer.h" />
     <ClInclude Include="..\..\src\Graphics\OpenGLContext\opengl_TextureManipulationObjectFactory.h" />
     <ClInclude Include="..\..\src\Graphics\OpenGLContext\opengl_UnbufferedDrawer.h" />
     <ClInclude Include="..\..\src\Graphics\OpenGLContext\opengl_Utils.h" />
@@ -462,7 +463,6 @@
     <ClInclude Include="..\..\src\Graphics\Parameters.h" />
     <ClInclude Include="..\..\src\Graphics\PixelBuffer.h" />
     <ClInclude Include="..\..\src\Graphics\ShaderProgram.h" />
-    <ClInclude Include="..\..\src\Graphics\TextDrawerImpl.h" />
     <ClInclude Include="..\..\src\gSP.h" />
     <ClInclude Include="..\..\src\inc\glext.h" />
     <ClInclude Include="..\..\src\Keys.h" />

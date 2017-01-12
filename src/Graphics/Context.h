@@ -7,8 +7,6 @@
 #include "CombinerProgram.h"
 #include "ShaderProgram.h"
 #include "PixelBuffer.h"
-#include "GraphicsDrawerImpl.h"
-#include "TextDrawerImpl.h"
 
 #define GRAPHICS_CONTEXT
 
@@ -51,6 +49,8 @@ namespace graphics {
 		void clearColorBuffer(f32 _red, f32 _green, f32 _blue, f32 _alpha);
 
 		void clearDepthBuffer();
+
+		/*---------------Texture-------------*/
 
 		ObjectHandle createTexture(Parameter _target);
 
@@ -103,6 +103,8 @@ namespace graphics {
 
 		void setTextureParameters(const TexParameters & _parameters);
 
+		/*---------------Framebuffer-------------*/
+
 		ObjectHandle createFramebuffer();
 
 		void deleteFramebuffer(ObjectHandle _name);
@@ -131,6 +133,8 @@ namespace graphics {
 
 		PixelWriteBuffer * createPixelWriteBuffer(size_t _sizeInBytes);
 
+		/*---------------Shaders-------------*/
+
 		CombinerProgram * createCombinerProgram(Combiner & _color, Combiner & _alpha, const CombinerKey & _key);
 
 		bool saveShadersStorage(const Combiners & _combiners);
@@ -147,11 +151,42 @@ namespace graphics {
 
 		ShaderProgram * createTexrectCopyShader();
 
-		DrawerImpl * createDrawerImpl();
+		/*---------------Draw-------------*/
 
-		TextDrawer * createTextDrawer();
+		struct DrawTriangleParameters
+		{
+			Parameter mode;
+			Parameter elementsType;
+			u32 verticesCount = 0;
+			u32 elementsCount = 0;
+			bool flatColors = false;
+			SPVertex * vertices = nullptr;
+			void * elements = nullptr;
+			const CombinerProgram * combiner = nullptr;
+		};
+
+		void drawTriangles(const DrawTriangleParameters & _params);
+
+		struct DrawRectParameters
+		{
+			Parameter mode;
+			u32 verticesCount = 0;
+			std::array<f32, 4> rectColor;
+			RectVertex * vertices = nullptr;
+			const CombinerProgram * combiner = nullptr;
+		};
+
+		void drawRects(const DrawRectParameters & _params);
+
+		void drawLine(f32 _width, SPVertex * _vertices);
 
 		f32 getMaxLineWidth();
+
+		void drawText(const char *_pText, float _x, float _y);
+
+		void getTextSize(const char *_pText, float & _w, float & _h);
+
+		/*---------------Misc-------------*/
 
 		bool isSupported(SpecialFeatures _feature) const;
 

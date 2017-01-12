@@ -37,7 +37,7 @@ bool UnbufferedDrawer::_updateAttribPointer(u32 _index, const void * _ptr)
 	return true;
 }
 
-void UnbufferedDrawer::drawTriangles(const DrawTriangleParameters & _params)
+void UnbufferedDrawer::drawTriangles(const graphics::Context::DrawTriangleParameters & _params)
 {
 	if (m_glInfo.imageTextures && config.frameBufferEmulation.N64DepthCompare != 0)
 		glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
@@ -94,7 +94,7 @@ void UnbufferedDrawer::drawTriangles(const DrawTriangleParameters & _params)
 	glDrawElements(GLenum(_params.mode), _params.elementsCount, GL_UNSIGNED_BYTE, _params.elements);
 }
 
-void UnbufferedDrawer::drawRects(const DrawRectParameters & _params)
+void UnbufferedDrawer::drawRects(const graphics::Context::DrawRectParameters & _params)
 {
 	{
 		m_cachedAttribArray->enableVertexAttribArray(rectAttrib::position, true);
