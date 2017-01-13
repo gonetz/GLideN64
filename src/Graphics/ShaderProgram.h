@@ -1,13 +1,22 @@
 #pragma once
 #include <Types.h>
+#include "CombinerProgram.h"
 
 namespace graphics {
 
-	class ShaderProgram
+	class ShaderProgram : public CombinerProgram
 	{
 	public:
 		virtual ~ShaderProgram() {}
-		virtual void activate() = 0;
+
+		void update(bool _force) override {}
+		CombinerKey getKey() const override {return CombinerKey();}
+		bool usesTexture() const override {return true;}
+		virtual bool usesTile(u32 _t) const override {return _t == 0 ? true : false;}
+		virtual bool usesShade() const override {return false;}
+		virtual bool usesLOD() const override {return false;}
+		virtual bool usesHwLighting() const override {return false;}
+		virtual bool getBinaryForm(std::vector<char> & _buffer) override {return false;}
 	};
 
 	class TexDrawerShaderProgram : public ShaderProgram

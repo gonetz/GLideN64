@@ -290,14 +290,18 @@ void CombinerInfo::updateParameters()
 
 void CombinerInfo::setDepthFogCombiner()
 {
-	if (m_shadowmapProgram)
+	if (m_shadowmapProgram) {
 		m_shadowmapProgram->activate();
+		m_pCurrent = m_shadowmapProgram.get();
+	}
 }
 
 void CombinerInfo::setMonochromeCombiner()
 {
-	if (m_monochromeProgram)
+	if (m_monochromeProgram) {
 		m_monochromeProgram->activate();
+		m_pCurrent = m_monochromeProgram.get();
+	}
 }
 
 void CombinerInfo::setPolygonMode(OGLRender::RENDER_STATE _renderState)
