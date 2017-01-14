@@ -10,8 +10,7 @@
 #include <Graphics/Context.h>
 #include <Graphics/Parameters.h>
 
-#define NEW_POST_PROCESSOR
-
+//#define NEW_POST_PROCESSOR
 
 #if defined(GLES3_1)
 #define SHADER_VERSION "#version 310 es \n"

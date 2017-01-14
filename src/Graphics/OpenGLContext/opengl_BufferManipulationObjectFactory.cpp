@@ -1,6 +1,7 @@
 #include <Graphics/Parameters.h>
 #include "opengl_GLInfo.h"
 #include "opengl_CachedFunctions.h"
+#include "opengl_Utils.h"
 #include "opengl_BufferManipulationObjectFactory.h"
 
 //#define ENABLE_GL_4_5
@@ -221,6 +222,43 @@ private:
 	CachedBindBuffer * m_bind;
 };
 
+/*---------------BlitFramebuffers-------------*/
+
+class BlitFramebuffersImpl : public BlitFramebuffers
+{
+public:
+	static bool Check(const GLInfo & _glinfo) {
+		return !_glinfo.isGLES2;
+	}
+
+	BlitFramebuffersImpl(CachedBindFramebuffer * _bind)
+		: m_bind(_bind) {}
+
+	bool blitFramebuffers(const graphics::Context::BlitFramebuffersParams & _params) override
+	{
+		m_bind->bind(graphics::bufferTarget::READ_FRAMEBUFFER, _params.readBuffer);
+		m_bind->bind(graphics::bufferTarget::DRAW_FRAMEBUFFER, _params.drawBuffer);
+		glBlitFramebuffer(
+			_params.srcX0, _params.srcY0, _params.srcX1, _params.srcY1,
+			_params.dstX0, _params.dstY0, _params.dstX1, _params.dstY1,
+			GLbitfield(_params.mask), GLenum(_params.filter)
+			);
+		return !Utils::isGLError();
+	}
+
+private:
+	CachedBindFramebuffer * m_bind;
+};
+
+class DummyBlitFramebuffers: public BlitFramebuffers
+{
+public:
+	bool blitFramebuffers(const graphics::Context::BlitFramebuffersParams & _params) override
+	{
+		return false;
+	}
+};
+
 /*---------------BufferManipulationObjectFactory-------------*/
 
 BufferManipulationObjectFactory::BufferManipulationObjectFactory(const GLInfo & _info,
@@ -259,6 +297,14 @@ AddFramebufferRenderTarget * BufferManipulationObjectFactory::getAddFramebufferR
 		return new AddNamedFramebufferTexture;
 
 	return new AddFramebufferTexture2D(m_cachedFunctions.geCachedBindFramebuffer());
+}
+
+BlitFramebuffers * BufferManipulationObjectFactory::getBlitFramebuffers() const
+{
+	if (BlitFramebuffersImpl::Check(m_glInfo))
+		return new BlitFramebuffersImpl(m_cachedFunctions.geCachedBindFramebuffer());
+
+	return new DummyBlitFramebuffers;
 }
 
 CreatePixelWriteBuffer * BufferManipulationObjectFactory::createPixelWriteBuffer() const

@@ -42,6 +42,7 @@ void ContextImpl::init()
 		m_initRenderbuffer.reset(bufferObjectFactory.getInitRenderbuffer());
 		m_addFramebufferRenderTarget.reset(bufferObjectFactory.getAddFramebufferRenderTarget());
 		m_createPixelWriteBuffer.reset(bufferObjectFactory.createPixelWriteBuffer());
+		m_blitFramebuffers.reset(bufferObjectFactory.getBlitFramebuffers());
 	}
 
 	{
@@ -136,6 +137,8 @@ void ContextImpl::clearDepthBuffer()
 	enableScissor->enable(true);
 }
 
+/*---------------Texture-------------*/
+
 graphics::ObjectHandle ContextImpl::createTexture(graphics::Parameter _target)
 {
 	return m_createTexture->createTexture(_target);
@@ -162,6 +165,8 @@ void ContextImpl::setTextureParameters(const graphics::Context::TexParameters & 
 {
 	m_set2DTextureParameters->setTextureParameters(_parameters);
 }
+
+/*---------------Framebuffer-------------*/
 
 graphics::ObjectHandle ContextImpl::createFramebuffer()
 {
@@ -190,10 +195,17 @@ void ContextImpl::addFrameBufferRenderTarget(const graphics::Context::FrameBuffe
 	m_addFramebufferRenderTarget->addFrameBufferRenderTarget(_params);
 }
 
+bool ContextImpl::blitFramebuffers(const graphics::Context::BlitFramebuffersParams & _params)
+{
+	return m_blitFramebuffers->blitFramebuffers(_params);
+}
+
 graphics::PixelWriteBuffer * ContextImpl::createPixelWriteBuffer(size_t _sizeInBytes)
 {
 	return m_createPixelWriteBuffer->createPixelWriteBuffer(_sizeInBytes);
 }
+
+/*---------------Shaders-------------*/
 
 graphics::CombinerProgram * ContextImpl::createCombinerProgram(Combiner & _color, Combiner & _alpha, const CombinerKey & _key)
 {

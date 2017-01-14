@@ -32,6 +32,7 @@ namespace graphics {
 		virtual void addFrameBufferRenderTarget(const Context::FrameBufferRenderTarget & _params) = 0;
 		virtual ObjectHandle createRenderbuffer() = 0;
 		virtual void initRenderbuffer(const Context::InitRenderbufferParams & _params) = 0;
+		virtual bool blitFramebuffers(const Context::BlitFramebuffersParams & _params) = 0;
 		virtual PixelWriteBuffer * createPixelWriteBuffer(size_t _sizeInBytes) = 0;
 		virtual CombinerProgram * createCombinerProgram(Combiner & _color, Combiner & _alpha, const CombinerKey & _key) = 0;
 		virtual bool saveShadersStorage(const Combiners & _combiners) = 0;

@@ -13,36 +13,43 @@ namespace opengl {
 	class CreateFramebufferObject
 	{
 	public:
-		virtual ~CreateFramebufferObject() {};
+		virtual ~CreateFramebufferObject() {}
 		virtual graphics::ObjectHandle createFramebuffer() = 0;
 	};
 
 	class CreateRenderbuffer
 	{
 	public:
-		virtual ~CreateRenderbuffer() {};
+		virtual ~CreateRenderbuffer() {}
 		virtual graphics::ObjectHandle createRenderbuffer() = 0;
 	};
 
 	class InitRenderbuffer
 	{
 	public:
-		virtual ~InitRenderbuffer() {};
+		virtual ~InitRenderbuffer() {}
 		virtual void initRenderbuffer(const graphics::Context::InitRenderbufferParams & _params) = 0;
 	};
 
 	class AddFramebufferRenderTarget
 	{
 	public:
-		virtual ~AddFramebufferRenderTarget() {};
+		virtual ~AddFramebufferRenderTarget() {}
 		virtual void addFrameBufferRenderTarget(const graphics::Context::FrameBufferRenderTarget & _params) = 0;
 	};
 
 	class CreatePixelWriteBuffer
 	{
 	public:
-		virtual ~CreatePixelWriteBuffer() {};
+		virtual ~CreatePixelWriteBuffer() {}
 		virtual graphics::PixelWriteBuffer * createPixelWriteBuffer(size_t _sizeInBytes) = 0;
+	};
+
+	class BlitFramebuffers
+	{
+	public:
+		virtual ~BlitFramebuffers() {}
+		virtual bool blitFramebuffers(const graphics::Context::BlitFramebuffersParams & _params) = 0;
 	};
 
 	class BufferManipulationObjectFactory
@@ -60,6 +67,8 @@ namespace opengl {
 		AddFramebufferRenderTarget * getAddFramebufferRenderTarget() const;
 
 		CreatePixelWriteBuffer * createPixelWriteBuffer() const;
+
+		BlitFramebuffers * getBlitFramebuffers() const;
 
 	private:
 		const GLInfo & m_glInfo;

@@ -1472,3 +1472,25 @@ void GraphicsDrawer::copyTexturedRect(const CopyRectParams & _params)
 	gSP.changed |= CHANGED_GEOMETRYMODE | CHANGED_VIEWPORT;
 	gDP.changed |= CHANGED_RENDERMODE | CHANGED_TILE | CHANGED_COMBINE | CHANGED_SCISSOR;
 }
+
+void GraphicsDrawer::blitOrCopyTexturedRect(const BlitOrCopyRectParams & _params)
+{
+	Context::BlitFramebuffersParams blitParams;
+	blitParams.readBuffer = _params.readBuffer;
+	blitParams.drawBuffer = _params.drawBuffer;
+	blitParams.srcX0 = _params.srcX0;
+	blitParams.srcX1 = _params.srcX1;
+	blitParams.dstX0 = _params.dstX0;
+	blitParams.dstX1 = _params.dstX1;
+	blitParams.srcY0 = _params.srcY0;
+	blitParams.srcY1 = _params.srcY1;
+	blitParams.dstY0 = _params.dstY0;
+	blitParams.dstY1 = _params.dstY1;
+	blitParams.mask = _params.mask;
+	blitParams.filter = _params.filter;
+
+	if (gfxContext.blitFramebuffers(blitParams))
+		return;
+
+	copyTexturedRect(_params);
+}

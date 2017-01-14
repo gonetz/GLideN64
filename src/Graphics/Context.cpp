@@ -98,6 +98,8 @@ void Context::setTextureParameters(const TexParameters & _parameters)
 	m_impl->setTextureParameters(_parameters);
 }
 
+/*---------------Framebuffer-------------*/
+
 ObjectHandle Context::createFramebuffer()
 {
 	return m_impl->createFramebuffer();
@@ -123,10 +125,17 @@ void Context::addFrameBufferRenderTarget(const FrameBufferRenderTarget & _params
 	m_impl->addFrameBufferRenderTarget(_params);
 }
 
+bool Context::blitFramebuffers(const BlitFramebuffersParams & _params)
+{
+	return m_impl->blitFramebuffers(_params);
+}
+
 PixelWriteBuffer * Context::createPixelWriteBuffer(size_t _sizeInBytes)
 {
 	return m_impl->createPixelWriteBuffer(_sizeInBytes);
 }
+
+/*---------------Shaders-------------*/
 
 CombinerProgram * Context::createCombinerProgram(Combiner & _color, Combiner & _alpha, const CombinerKey & _key)
 {

@@ -131,6 +131,24 @@ namespace graphics {
 
 		void addFrameBufferRenderTarget(const FrameBufferRenderTarget & _params);
 
+		struct BlitFramebuffersParams
+		{
+			ObjectHandle readBuffer;
+			ObjectHandle drawBuffer;
+			s32 srcX0;
+			s32 srcY0;
+			s32 srcX1;
+			s32 srcY1;
+			s32 dstX0;
+			s32 dstY0;
+			s32 dstX1;
+			s32 dstY1;
+			Parameter mask;
+			Parameter filter;
+		};
+
+		bool blitFramebuffers(const BlitFramebuffersParams & _params);
+
 		PixelWriteBuffer * createPixelWriteBuffer(size_t _sizeInBytes);
 
 		/*---------------Shaders-------------*/

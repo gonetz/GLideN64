@@ -58,7 +58,7 @@ typedef char GLchar;
 #include "common/GLFunctions.h"
 #define GL_IMAGE_TEXTURES_SUPPORT
 #define GL_MULTISAMPLING_SUPPORT
-#define NO_BLIT_BUFFER_COPY
+//#define NO_BLIT_BUFFER_COPY
 #endif // OS_MAC_OS_X
 #endif // GLES2
 

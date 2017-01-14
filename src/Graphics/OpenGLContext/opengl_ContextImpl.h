@@ -44,6 +44,8 @@ namespace opengl {
 
 		void clearDepthBuffer() override;
 
+		/*---------------Texture-------------*/
+
 		graphics::ObjectHandle createTexture(graphics::Parameter _target) override;
 
 		void deleteTexture(graphics::ObjectHandle _name) override;
@@ -53,6 +55,8 @@ namespace opengl {
 		void update2DTexture(const graphics::Context::UpdateTextureDataParams & _params) override;
 
 		void setTextureParameters(const graphics::Context::TexParameters & _parameters) override;
+
+		/*---------------Framebuffer-------------*/
 
 		graphics::ObjectHandle createFramebuffer() override;
 
@@ -64,7 +68,11 @@ namespace opengl {
 
 		void addFrameBufferRenderTarget(const graphics::Context::FrameBufferRenderTarget & _params) override;
 
+		bool blitFramebuffers(const graphics::Context::BlitFramebuffersParams & _params) override;
+
 		graphics::PixelWriteBuffer * createPixelWriteBuffer(size_t _sizeInBytes) override;
+
+		/*---------------Shaders-------------*/
 
 		graphics::CombinerProgram * createCombinerProgram(Combiner & _color, Combiner & _alpha, const CombinerKey & _key) override;
 
@@ -106,6 +114,7 @@ namespace opengl {
 		std::unique_ptr<InitRenderbuffer> m_initRenderbuffer;
 		std::unique_ptr<AddFramebufferRenderTarget> m_addFramebufferRenderTarget;
 		std::unique_ptr<CreatePixelWriteBuffer> m_createPixelWriteBuffer;
+		std::unique_ptr<BlitFramebuffers> m_blitFramebuffers;
 
 		std::unique_ptr<GraphicsDrawer> m_graphicsDrawer;
 		std::unique_ptr<TextDrawer> m_textDrawer;

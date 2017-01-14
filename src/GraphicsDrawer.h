@@ -3,6 +3,7 @@
 #include <array>
 #include <vector>
 #include "gSP.h"
+#include "Graphics/ObjectHandle.h"
 #include "Graphics/Parameter.h"
 
 namespace graphics {
@@ -98,6 +99,15 @@ public:
 	};
 
 	void copyTexturedRect(const CopyRectParams & _params);
+
+	struct BlitOrCopyRectParams : public CopyRectParams
+	{
+		graphics::ObjectHandle readBuffer;
+		graphics::ObjectHandle drawBuffer;
+		graphics::Parameter mask;
+	};
+
+	void blitOrCopyTexturedRect(const BlitOrCopyRectParams & _params);
 
 	void drawText(const char *_pText, float x, float y);
 
