@@ -51,6 +51,8 @@ namespace graphics {
 
 		void clearDepthBuffer();
 
+		void setPolygonOffset(f32 _factor, f32 _units);
+
 		/*---------------Texture-------------*/
 
 		ObjectHandle createTexture(Parameter _target);

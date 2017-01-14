@@ -22,6 +22,7 @@ namespace graphics {
 		virtual void setBlendColor(f32 _red, f32 _green, f32 _blue, f32 _alpha) = 0;
 		virtual void clearColorBuffer(f32 _red, f32 _green, f32 _blue, f32 _alpha) = 0;
 		virtual void clearDepthBuffer() = 0;
+		virtual void setPolygonOffset(f32 _factor, f32 _units) = 0;
 		virtual ObjectHandle createTexture(Parameter _target) = 0;
 		virtual void deleteTexture(ObjectHandle _name) = 0;
 		virtual void init2DTexture(const Context::InitTextureParams & _params) = 0;

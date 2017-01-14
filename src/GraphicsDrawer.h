@@ -141,7 +141,6 @@ public:
 private:
 	GraphicsDrawer(const GraphicsDrawer &);
 
-	void _initExtensions();
 	void _initStates();
 	void _initData();
 	void _destroyData();

@@ -138,6 +138,11 @@ void ContextImpl::clearDepthBuffer()
 	enableScissor->enable(true);
 }
 
+void ContextImpl::setPolygonOffset(f32 _factor, f32 _units)
+{
+	glPolygonOffset(_factor, _units);
+}
+
 /*---------------Texture-------------*/
 
 graphics::ObjectHandle ContextImpl::createTexture(graphics::Parameter _target)

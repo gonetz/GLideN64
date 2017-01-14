@@ -1494,3 +1494,34 @@ void GraphicsDrawer::blitOrCopyTexturedRect(const BlitOrCopyRectParams & _params
 
 	copyTexturedRect(_params);
 }
+
+void GraphicsDrawer::_initStates()
+{
+	gfxContext.enable(enable::CULL_FACE, false);
+	gfxContext.enable(enable::SCISSOR_TEST, true);
+	gfxContext.enableDepthWrite(false);
+	gfxContext.setDepthCompare(compare::ALWAYS);
+
+	if (config.frameBufferEmulation.N64DepthCompare != 0) {
+		gfxContext.enable(enable::DEPTH_TEST, false);
+		gfxContext.enable(enable::POLYGON_OFFSET_FILL, false);
+	}
+	else {
+		gfxContext.enable(enable::DEPTH_TEST, true);
+#ifdef ANDROID
+		if (config.generalEmulation.forcePolygonOffset != 0)
+			gfxContext.setPolygonOffset(config.generalEmulation.polygonOffsetFactor, config.generalEmulation.polygonOffsetUnits);
+		else
+#endif
+			gfxContext.setPolygonOffset(-3.0f, -3.0f);
+	}
+
+	DisplayWindow & wnd = DisplayWindow::get();
+	glViewport(0, wnd.getHeightOffset(), wnd.getScreenWidth(), wnd.getScreenHeight());
+
+	gfxContext.clearColorBuffer(0.0f, 0.0f, 0.0f, 0.0f);
+
+	srand(time(nullptr));
+
+	wnd.swapBuffers();
+}

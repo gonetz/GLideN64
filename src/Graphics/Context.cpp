@@ -74,6 +74,11 @@ void Context::clearDepthBuffer()
 	m_impl->clearDepthBuffer();
 }
 
+void Context::setPolygonOffset(f32 _factor, f32 _units)
+{
+	m_impl->setPolygonOffset(_factor, _units);
+}
+
 ObjectHandle Context::createTexture(Parameter _target)
 {
 	return m_impl->createTexture(_target);
