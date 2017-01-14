@@ -58,6 +58,7 @@ typedef char GLchar;
 #include "common/GLFunctions.h"
 #define GL_IMAGE_TEXTURES_SUPPORT
 #define GL_MULTISAMPLING_SUPPORT
+#define NO_BLIT_BUFFER_COPY
 #endif // OS_MAC_OS_X
 #endif // GLES2
 
@@ -126,7 +127,7 @@ public:
 	void copyTexturedRect(GLint _srcX0, GLint _srcY0, GLint _srcX1, GLint _srcY1,
 						  GLuint _srcWidth, GLuint _srcHeight, GLuint _srcTex,
 						  GLint _dstX0, GLint _dstY0, GLint _dstX1, GLint _dstY1,
-						  GLuint _dstWidth, GLuint _dstHeight, GLenum _filter);
+						  GLuint _dstWidth, GLuint _dstHeight, GLenum _filter, GLuint _program = 0);
 	void drawText(const char *_pText, float x, float y);
 	void drawOSD();
 	void clearDepthBuffer(u32 _ulx, u32 _uly, u32 _lrx, u32 _lry);

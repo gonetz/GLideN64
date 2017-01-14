@@ -10,6 +10,9 @@
 #include <Graphics/Context.h>
 #include <Graphics/Parameters.h>
 
+#define NEW_POST_PROCESSOR
+
+
 #if defined(GLES3_1)
 #define SHADER_VERSION "#version 310 es \n"
 #elif defined(GLES3)
@@ -39,11 +42,19 @@ SHADER_VERSION
 "# define IN attribute			\n"
 "# define OUT varying			\n"
 "#endif // __VERSION			\n"
+#ifndef NEW_POST_PROCESSOR
 "IN highp vec2 aRectPosition;	\n"
+#else
+"IN highp vec4 aRectPosition;						\n"
+#endif
 "IN highp vec2 aTexCoord0;		\n"
 "OUT mediump vec2 vTexCoord;	\n"
 "void main() {					\n"
+#ifndef NEW_POST_PROCESSOR
 "gl_Position = vec4(aRectPosition.x, aRectPosition.y, 0.0, 1.0);\n"
+#else
+"  gl_Position = aRectPosition;						\n"
+#endif
 "vTexCoord = aTexCoord0;		\n"
 "}								\n"
 ;
@@ -536,7 +547,9 @@ void PostProcessor::_setGLState() {
 
 void PostProcessor::_preDraw(FrameBuffer * _pBuffer)
 {
+#ifndef NEW_POST_PROCESSOR
 	_setGLState();
+#endif
 	OGLVideo & ogl = video();
 
 	m_pResultBuffer->m_width = _pBuffer->m_width;
@@ -559,7 +572,9 @@ void PostProcessor::_preDraw(FrameBuffer * _pBuffer)
 void PostProcessor::_postDraw()
 {
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+#ifndef NEW_POST_PROCESSOR
 	video().getRender().dropRenderState();
+#endif
 	glUseProgram(0);
 }
 
@@ -573,6 +588,7 @@ FrameBuffer * PostProcessor::doBlur(FrameBuffer * _pBuffer)
 
 	_preDraw(_pBuffer);
 
+#ifndef NEW_POST_PROCESSOR
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_FBO_glowMap);
 	textureCache().activateTexture(0, m_pTextureOriginal);
 	glUseProgram(m_extractBloomProgram);
@@ -596,6 +612,42 @@ FrameBuffer * PostProcessor::doBlur(FrameBuffer * _pBuffer)
 	textureCache().activateTexture(1, m_pTextureGlowMap);
 	glUseProgram(m_glowProgram);
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+#else
+	CachedTexture * pDstTex = m_pResultBuffer->m_pTexture;
+
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_FBO_glowMap);
+	video().getRender().copyTexturedRect(0, 0, m_pTextureOriginal->realWidth, m_pTextureOriginal->realHeight,
+		m_pTextureOriginal->realWidth, m_pTextureOriginal->realHeight, m_pTextureOriginal->glName,
+		0, 0, m_pTextureGlowMap->realWidth, m_pTextureGlowMap->realHeight,
+		m_pTextureGlowMap->realWidth, m_pTextureGlowMap->realHeight, GL_NEAREST, m_extractBloomProgram);
+
+	glUseProgram(m_seperableBlurProgram);
+	int loc = glGetUniformLocation(m_seperableBlurProgram, "Orientation");
+	assert(loc >= 0);
+	glUniform1i(loc, 0);
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_FBO_blur);
+	video().getRender().copyTexturedRect(0, 0, m_pTextureGlowMap->realWidth, m_pTextureGlowMap->realHeight,
+		m_pTextureGlowMap->realWidth, m_pTextureGlowMap->realHeight, m_pTextureGlowMap->glName,
+		0, 0, m_pTextureBlur->realWidth, m_pTextureBlur->realHeight,
+		m_pTextureBlur->realWidth, m_pTextureBlur->realHeight, GL_NEAREST, m_seperableBlurProgram);
+
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_FBO_glowMap);
+	glUniform1i(loc, 1);
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_FBO_blur);
+	video().getRender().copyTexturedRect(0, 0, m_pTextureBlur->realWidth, m_pTextureBlur->realHeight,
+		m_pTextureBlur->realWidth, m_pTextureBlur->realHeight, m_pTextureBlur->glName,
+		0, 0, m_pTextureGlowMap->realWidth, m_pTextureGlowMap->realHeight,
+		m_pTextureGlowMap->realWidth, m_pTextureGlowMap->realHeight, GL_NEAREST, m_seperableBlurProgram);
+
+
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_pResultBuffer->m_FBO);
+	textureCache().activateTexture(1, m_pTextureGlowMap);
+	video().getRender().copyTexturedRect(0, 0, m_pTextureGlowMap->realWidth, m_pTextureGlowMap->realHeight,
+		m_pTextureGlowMap->realWidth, m_pTextureGlowMap->realHeight, m_pTextureOriginal->glName,
+		0, 0, m_pTextureOriginal->realWidth, m_pTextureOriginal->realHeight,
+		m_pTextureOriginal->realWidth, m_pTextureOriginal->realHeight, GL_NEAREST, m_glowProgram);
+
+#endif
 
 	_postDraw();
 	return m_pResultBuffer;
@@ -612,10 +664,20 @@ FrameBuffer * PostProcessor::doGammaCorrection(FrameBuffer * _pBuffer)
 
 	_preDraw(_pBuffer);
 
+
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_pResultBuffer->m_FBO);
+
+#ifndef NEW_POST_PROCESSOR
 	textureCache().activateTexture(0, m_pTextureOriginal);
 	glUseProgram(m_gammaCorrectionProgram);
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+#else
+	CachedTexture * pDstTex = m_pResultBuffer->m_pTexture;
+	video().getRender().copyTexturedRect(0, 0, m_pTextureOriginal->realWidth, m_pTextureOriginal->realHeight,
+		m_pTextureOriginal->realWidth, m_pTextureOriginal->realHeight, m_pTextureOriginal->glName,
+		0, 0, pDstTex->realWidth, pDstTex->realHeight,
+		pDstTex->realWidth, pDstTex->realHeight, GL_NEAREST, m_gammaCorrectionProgram);
+#endif
 
 	_postDraw();
 	return m_pResultBuffer;
@@ -632,9 +694,18 @@ FrameBuffer * PostProcessor::doOrientationCorrection(FrameBuffer * _pBuffer)
 	_preDraw(_pBuffer);
 
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_pResultBuffer->m_FBO);
+
+#ifndef NEW_POST_PROCESSOR
 	textureCache().activateTexture(0, m_pTextureOriginal);
 	glUseProgram(m_orientationCorrectionProgram);
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+#else
+	CachedTexture * pDstTex = m_pResultBuffer->m_pTexture;
+	video().getRender().copyTexturedRect(0, 0, m_pTextureOriginal->realWidth, m_pTextureOriginal->realHeight,
+		m_pTextureOriginal->realWidth, m_pTextureOriginal->realHeight, m_pTextureOriginal->glName,
+		0, 0, pDstTex->realWidth, pDstTex->realHeight,
+		pDstTex->realWidth, pDstTex->realHeight, GL_NEAREST, m_orientationCorrectionProgram);
+#endif
 
 	_postDraw();
 	return m_pResultBuffer;

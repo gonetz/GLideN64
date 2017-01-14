@@ -2162,6 +2162,33 @@ void OGLRender::_initStates()
 	ogl.swapBuffers();
 }
 
+#define MAIN_SHADER_VERSION "#version 330 core \n"
+
+const char * strTexrectDrawerVertexShader =
+MAIN_SHADER_VERSION
+"in highp vec4 aRectPosition;	\n"
+"in highp vec2 aTexCoord0;		\n"
+"out mediump vec2 vTexCoord0;	\n"
+"void main()					\n"
+"{								\n"
+"  gl_Position = aRectPosition;	\n"
+"  vTexCoord0 = aTexCoord0;		\n"
+"}								\n"
+;
+
+const char* strTextureCopyShader =
+MAIN_SHADER_VERSION
+"in mediump vec2 vTexCoord0;                            \n"
+"uniform sampler2D uTex0;				                \n"
+"out lowp vec4 fragColor;								\n"
+"                                                       \n"
+"void main()                                            \n"
+"{                                                      \n"
+"    fragColor = texture(uTex0, vTexCoord0);	        \n"
+"}							                            \n"
+;
+
+
 void OGLRender::_initData()
 {
 	_initExtensions();
@@ -2248,13 +2275,16 @@ void OGLRender::_setSpecialTexrect() const
 void OGLRender::copyTexturedRect(GLint _srcX0, GLint _srcY0, GLint _srcX1, GLint _srcY1,
 								 GLuint _srcWidth, GLuint _srcHeight, GLuint _srcTex,
 								 GLint _dstX0, GLint _dstY0, GLint _dstX1, GLint _dstY1,
-								 GLuint _dstWidth, GLuint _dstHeight, GLenum _filter)
+								 GLuint _dstWidth, GLuint _dstHeight, GLenum _filter, GLuint _program)
 {
+	if (_program == 0)
+		glUseProgram(m_programCopyTex);
+	else
+		glUseProgram(_program);
 	glDisableVertexAttribArray(SC_TEXCOORD1);
 	glEnableVertexAttribArray(SC_TEXCOORD0);
 	glVertexAttribPointer(SC_RECT_POSITION, 4, GL_FLOAT, GL_FALSE, sizeof(GLVertex), &m_rect[0].x);
 	glVertexAttribPointer(SC_TEXCOORD0, 2, GL_FLOAT, GL_FALSE, sizeof(GLVertex), &m_rect[0].s0);
-	glUseProgram(m_programCopyTex);
 
 	const float scaleX = 1.0f / _dstWidth;
 	const float scaleY = 1.0f / _dstHeight;
@@ -2323,7 +2353,7 @@ void OGLRender::copyTexturedRect(GLint _srcX0, GLint _srcY0, GLint _srcX1, GLint
 void OGLRender::copyTexturedRect(GLint _srcX0, GLint _srcY0, GLint _srcX1, GLint _srcY1,
 								 GLuint _srcWidth, GLuint _srcHeight, GLuint _srcTex,
 								 GLint _dstX0, GLint _dstY0, GLint _dstX1, GLint _dstY1,
-								 GLuint _dstWidth, GLuint _dstHeight, GLenum _filter)
+								 GLuint _dstWidth, GLuint _dstHeight, GLenum _filter, GLuint _program)
 {
 	glDisable(GL_SCISSOR_TEST);
 	glBlitFramebuffer(
