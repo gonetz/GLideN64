@@ -1389,3 +1389,86 @@ void GraphicsDrawer::clearColorBuffer(float *_pColor)
 	else
 		gfxContext.clearColorBuffer(0.0f, 0.0f, 0.0f, 0.0f);
 }
+
+void GraphicsDrawer::copyTexturedRect(const CopyRectParams & _params)
+{
+	m_drawingState = DrawingState::TexRect;
+
+	const float scaleX = 1.0f / _params.dstWidth;
+	const float scaleY = 1.0f / _params.dstHeight;
+	const float X0 = _params.dstX0 * (2.0f * scaleX) - 1.0f;
+	const float Y0 = _params.dstY0 * (2.0f * scaleY) - 1.0f;
+	const float X1 = _params.dstX1 * (2.0f * scaleX) - 1.0f;
+	const float Y1 = _params.dstY1 * (2.0f * scaleY) - 1.0f;
+	const float Z = 1.0f;
+	const float W = 1.0f;
+
+	m_rect[0].x = X0;
+	m_rect[0].y = Y0;
+	m_rect[0].z = Z;
+	m_rect[0].w = W;
+	m_rect[1].x = X1;
+	m_rect[1].y = Y0;
+	m_rect[1].z = Z;
+	m_rect[1].w = W;
+	m_rect[2].x = X0;
+	m_rect[2].y = Y1;
+	m_rect[2].z = Z;
+	m_rect[2].w = W;
+	m_rect[3].x = X1;
+	m_rect[3].y = Y1;
+	m_rect[3].z = Z;
+	m_rect[3].w = W;
+
+	const float scaleS = 1.0f / _params.srcWidth;
+	const float scaleT = 1.0f / _params.srcHeight;
+
+	const float S0 = _params.srcX0 * scaleS;
+	const float S1 = _params.srcX1 * scaleS;
+	const float T0 = _params.srcY0 * scaleT;
+	const float T1 = _params.srcY1 * scaleT;
+
+	m_rect[0].s0 = S0;
+	m_rect[0].t0 = T0;
+	m_rect[1].s0 = S1;
+	m_rect[1].t0 = T0;
+	m_rect[2].s0 = S0;
+	m_rect[2].t0 = T1;
+	m_rect[3].s0 = S1;
+	m_rect[3].t0 = T1;
+
+	for (u32 i = 0; i < 2; ++i) {
+		CachedTexture * tex = _params.tex[i];
+		if (tex == nullptr)
+			continue;
+
+		Context::TexParameters texParams;
+		texParams.handle = graphics::ObjectHandle(tex->glName);
+		texParams.textureUnitIndex = graphics::textureIndices::Tex[i];
+		texParams.target = tex->frameBufferTexture == CachedTexture::fbMultiSample ?
+			graphics::target::TEXTURE_2D_MULTISAMPLE : graphics::target::TEXTURE_2D;
+		texParams.minFilter = _params.filter;
+		texParams.magFilter = _params.filter;
+		texParams.wrapS = graphics::textureParameters::WRAP_CLAMP_TO_EDGE;
+		texParams.wrapT = graphics::textureParameters::WRAP_CLAMP_TO_EDGE;
+		gfxContext.setTextureParameters(texParams);
+	}
+
+	gfxContext.setViewport(0, 0, _params.dstWidth, _params.dstHeight);
+	gfxContext.enable(graphics::enable::CULL_FACE, false);
+	gfxContext.enable(graphics::enable::BLEND, false);
+	gfxContext.enable(graphics::enable::DEPTH_TEST, false);
+	gfxContext.enable(graphics::enable::SCISSOR_TEST, false);
+	gfxContext.enableDepthWrite(false);
+
+	Context::DrawRectParameters rectParams;
+	rectParams.mode = drawmode::TRIANGLE_STRIP;
+	rectParams.rectColor.fill(0.0f);
+	rectParams.verticesCount = 4;
+	rectParams.vertices = m_rect;
+	rectParams.combiner = _params.combiner;
+	gfxContext.drawRects(rectParams);
+
+	gSP.changed |= CHANGED_GEOMETRYMODE | CHANGED_VIEWPORT;
+	gDP.changed |= CHANGED_RENDERMODE | CHANGED_TILE | CHANGED_COMBINE | CHANGED_SCISSOR;
+}

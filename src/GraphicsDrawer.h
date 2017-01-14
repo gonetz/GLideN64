@@ -78,10 +78,26 @@ public:
 
 	void drawTexturedRect(const TexturedRectParams & _params);
 
-	void copyTexturedRect(u32 _srcX0, u32 _srcY0, u32 _srcX1, u32 _srcY1,
-		u32 _srcWidth, u32 _srcHeight, u32 _srcTex,
-		s32 _dstX0, s32 _dstY0, s32 _dstX1, s32 _dstY1,
-		u32 _dstWidth, u32 _dstHeight, graphics::Parameter _filter);
+	struct CopyRectParams
+	{
+		s32 srcX0 = 0;
+		s32 srcY0 = 0;
+		s32 srcX1;
+		s32 srcY1;
+		u32 srcWidth;
+		u32 srcHeight;
+		s32 dstX0 = 0;
+		s32 dstY0 = 0;
+		s32 dstX1;
+		s32 dstY1;
+		u32 dstWidth;
+		u32 dstHeight;
+		std::array<CachedTexture *, 2> tex{ { nullptr, nullptr } };
+		graphics::CombinerProgram * combiner = nullptr;
+		graphics::Parameter filter;
+	};
+
+	void copyTexturedRect(const CopyRectParams & _params);
 
 	void drawText(const char *_pText, float x, float y);
 
