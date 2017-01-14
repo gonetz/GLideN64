@@ -194,6 +194,4 @@ private:
 	bool m_bImageTexture;
 	bool m_bFlatColors;
 	TexrectDrawer m_texrectDrawer;
-
-	//GLuint m_programCopyTex;
 };

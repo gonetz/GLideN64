@@ -2,16 +2,22 @@
 #include <assert.h>
 #include "Graphics/Context.h"
 #include "Graphics/Parameters.h"
-#include "Config.h"
-#include "RSP.h"
-#include "RDP.h"
-#include "VI.h"
-#include "FrameBuffer.h"
-#include "DepthBuffer.h"
 #include "DisplayWindow.h"
 #include "SoftwareRender.h"
 #include "GraphicsDrawer.h"
 #include "Performance.h"
+#include "TextureFilterHandler.h"
+#include "PostProcessor.h"
+#include "NoiseTexture.h"
+#include "ZlutTexture.h"
+#include "PaletteTexture.h"
+#include "FrameBuffer.h"
+#include "DepthBuffer.h"
+#include "FrameBufferInfo.h"
+#include "Config.h"
+#include "RSP.h"
+#include "RDP.h"
+#include "VI.h"
 
 using namespace graphics;
 
@@ -1524,4 +1530,67 @@ void GraphicsDrawer::_initStates()
 	srand(time(nullptr));
 
 	wnd.swapBuffers();
+}
+
+void GraphicsDrawer::_setSpecialTexrect() const
+{
+	const char * name = RSP.romname;
+	if (strstr(name, (const char *)"Beetle") || strstr(name, (const char *)"BEETLE") || strstr(name, (const char *)"HSV")
+		|| strstr(name, (const char *)"DUCK DODGERS") || strstr(name, (const char *)"DAFFY DUCK"))
+		texturedRectSpecial = texturedRectShadowMap;
+	else if (strstr(name, (const char *)"Perfect Dark") || strstr(name, (const char *)"PERFECT DARK"))
+		texturedRectSpecial = texturedRectDepthBufferCopy; // See comments to that function!
+	else if (strstr(name, (const char *)"CONKER BFD"))
+		texturedRectSpecial = texturedRectCopyToItself;
+	else if (strstr(name, (const char *)"YOSHI STORY"))
+		texturedRectSpecial = texturedRectBGCopy;
+	else if (strstr(name, (const char *)"PAPER MARIO") || strstr(name, (const char *)"MARIO STORY"))
+		texturedRectSpecial = texturedRectPaletteMod;
+	else if (strstr(name, (const char *)"ZELDA"))
+		texturedRectSpecial = texturedRectMonochromeBackground;
+	else
+		texturedRectSpecial = nullptr;
+}
+
+void GraphicsDrawer::_initData()
+{
+	_setSpecialTexrect();
+
+	textureCache().init();
+	DepthBuffer_Init();
+	FrameBuffer_Init();
+	Combiner_Init();
+	TFH.init();
+	PostProcessor::get().init();
+	g_zlutTexture.init();
+	g_noiseTexture.init();
+	g_paletteTexture.init();
+	perf.reset();
+	FBInfo::fbInfo.reset();
+	m_texrectDrawer.init();
+	m_drawingState = DrawingState::None;
+
+	gSP.changed = gDP.changed = 0xFFFFFFFF;
+
+	memset(triangles.vertices.data(), 0, triangles.vertices.size() * sizeof(SPVertex));
+	triangles.elements.fill(0);
+	for (auto vtx : triangles.vertices)
+		vtx.w = 1.0f;
+	triangles.num = 0;
+}
+
+void GraphicsDrawer::_destroyData()
+{
+	m_drawingState = DrawingState::None;
+	m_texrectDrawer.destroy();
+	g_paletteTexture.destroy();
+	g_zlutTexture.destroy();
+	g_noiseTexture.destroy();
+	PostProcessor::get().destroy();
+	if (TFH.optionsChanged())
+		TFH.shutdown();
+	Combiner_Destroy();
+	FrameBuffer_Destroy();
+	DepthBuffer_Destroy();
+	textureCache().destroy();
 }
