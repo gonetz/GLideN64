@@ -160,7 +160,6 @@ private:
 	bool _canDraw() const;
 	void _drawThickLine(int _v0, int _v1, float _width);
 
-	void _getTextSize(const char *_pText, float & _w, float & _h) const;
 	void _drawOSD(const char *_pText, float _x, float & _y);
 
 	DrawingState m_drawingState;

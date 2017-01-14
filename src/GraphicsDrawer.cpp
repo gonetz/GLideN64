@@ -1296,15 +1296,10 @@ void GraphicsDrawer::drawText(const char *_pText, float x, float y)
 	gfxContext.drawText(_pText, x, y);
 }
 
-void GraphicsDrawer::_getTextSize(const char *_pText, float & _w, float & _h) const
-{
-	gfxContext.getTextSize(_pText, _w, _h);
-}
-
 void GraphicsDrawer::_drawOSD(const char *_pText, float _x, float & _y)
 {
 	float tW, tH;
-	_getTextSize(_pText, tW, tH);
+	gfxContext.getTextSize(_pText, tW, tH);
 
 	const bool top = (config.posTop & config.onScreenDisplay.pos) != 0;
 	const bool right = (config.onScreenDisplay.pos == Config::posTopRight) || (config.onScreenDisplay.pos == Config::posBottomRight);
@@ -1351,7 +1346,7 @@ void GraphicsDrawer::drawOSD()
 	const float vp = bottom ? -1 : 1;
 
 	float hShift, vShift;
-	_getTextSize("0", hShift, vShift);
+	gfxContext.getTextSize("0", hShift, vShift);
 	hShift *= 0.5f;
 	vShift *= 0.5f;
 	const float x = hp - hShift * hp;
