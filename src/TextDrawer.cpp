@@ -19,7 +19,6 @@
 #include "RSP.h"
 #include "Config.h"
 #include "ShaderUtils.h"
-#include <FBOTextureFormats.h>
 #include "Log.h"
 
 #include <Graphics/Context.h>

@@ -17,7 +17,6 @@
 #include "Debug.h"
 #include "PostProcessor.h"
 #include "FrameBufferInfo.h"
-#include "FBOTextureFormats.h"
 #include "Log.h"
 
 #include "BufferCopy/ColorBufferToRDRAM.h"
@@ -57,6 +56,8 @@ FrameBuffer::~FrameBuffer()
 
 void FrameBuffer::_initTexture(u16 _width, u16 _height, u16 _format, u16 _size, CachedTexture *_pTexture)
 {
+	const graphics::FramebufferTextureFormats & fbTexFormats = gfxContext.getFramebufferTextureFormats();
+
 	_pTexture->width = (u32)(_width * m_scaleX);
 	_pTexture->height = (u32)(_height * m_scaleY);
 	_pTexture->format = _format;
@@ -75,15 +76,16 @@ void FrameBuffer::_initTexture(u16 _width, u16 _height, u16 _format, u16 _size, 
 	_pTexture->realHeight = _pTexture->height;
 	_pTexture->textureBytes = _pTexture->realWidth * _pTexture->realHeight;
 	if (_size > G_IM_SIZ_8b)
-		_pTexture->textureBytes *= fboFormats.colorFormatBytes;
+		_pTexture->textureBytes *= fbTexFormats.colorFormatBytes;
 	else
-		_pTexture->textureBytes *= fboFormats.monochromeFormatBytes;
+		_pTexture->textureBytes *= fbTexFormats.monochromeFormatBytes;
 	textureCache().addFrameBufferTextureSize(_pTexture->textureBytes);
 }
 
 void FrameBuffer::_setAndAttachTexture(u32 _fbo, CachedTexture *_pTexture, u32 _t, bool _multisampling)
 {
 	{
+		const graphics::FramebufferTextureFormats & fbTexFormat = gfxContext.getFramebufferTextureFormats();
 		graphics::Context::InitTextureParams params;
 		params.handle = graphics::ObjectHandle(_pTexture->glName);
 		if (_multisampling)
@@ -91,14 +93,14 @@ void FrameBuffer::_setAndAttachTexture(u32 _fbo, CachedTexture *_pTexture, u32 _
 		params.width = _pTexture->realWidth;
 		params.height = _pTexture->realHeight;
 		if (_pTexture->size > G_IM_SIZ_8b) {
-			params.internalFormat = fboFormats.colorInternalFormat;
-			params.format = fboFormats.colorFormat;
-			params.dataType = fboFormats.colorType;
+			params.internalFormat = fbTexFormat.colorInternalFormat;
+			params.format = fbTexFormat.colorFormat;
+			params.dataType = fbTexFormat.colorType;
 		}
 		else {
-			params.internalFormat = fboFormats.monochromeInternalFormat;
-			params.format = fboFormats.monochromeFormat;
-			params.dataType = fboFormats.monochromeType;
+			params.internalFormat = fbTexFormat.monochromeInternalFormat;
+			params.format = fbTexFormat.monochromeFormat;
+			params.dataType = fbTexFormat.monochromeType;
 		}
 		gfxContext.init2DTexture(params);
 	}

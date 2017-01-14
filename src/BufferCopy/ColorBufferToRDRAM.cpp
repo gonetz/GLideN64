@@ -4,7 +4,6 @@
 #include "ColorBufferToRDRAM.h"
 #include "WriteToRDRAM.h"
 
-#include <FBOTextureFormats.h>
 #include <FrameBuffer.h>
 #include <Config.h>
 #include <N64.h>
@@ -76,13 +75,14 @@ void ColorBufferToRDRAM::_initFBTexture(void)
 	textureCache().addFrameBufferTextureSize(m_pTexture->textureBytes);
 
 	{
+		const graphics::FramebufferTextureFormats & fbTexFormat = gfxContext.getFramebufferTextureFormats();
 		graphics::Context::InitTextureParams params;
 		params.handle = graphics::ObjectHandle(m_pTexture->glName);
 		params.width = m_pTexture->realWidth;
 		params.height = m_pTexture->realHeight;
-		params.internalFormat = fboFormats.colorInternalFormat;
-		params.format = fboFormats.colorFormat;
-		params.dataType = fboFormats.colorType;
+		params.internalFormat = fbTexFormat.colorInternalFormat;
+		params.format = fbTexFormat.colorFormat;
+		params.dataType = fbTexFormat.colorType;
 		gfxContext.init2DTexture(params);
 	}
 	{
@@ -153,7 +153,7 @@ bool ColorBufferToRDRAM::_prepareCopy(u32 _startAddress)
 		m_lastBufferWidth = pBuffer->m_width;
 		m_lastBufferHeight = pBuffer->m_height;
 		_initFBTexture();
-		m_pixelData.resize(m_pTexture->realWidth * m_pTexture->realHeight * fboFormats.colorFormatBytes);
+		m_pixelData.resize(m_pTexture->realWidth * m_pTexture->realHeight * gfxContext.getFramebufferTextureFormats().colorFormatBytes);
 	}
 
 	m_pCurFrameBuffer = pBuffer;

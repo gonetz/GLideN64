@@ -24,7 +24,6 @@
 #include "PostProcessor.h"
 #include "ShaderUtils.h"
 #include "SoftwareRender.h"
-#include "FBOTextureFormats.h"
 #include "TextureFilterHandler.h"
 #include "NoiseTexture.h"
 #include "ZlutTexture.h"
@@ -398,13 +397,14 @@ void OGLRender::TexrectDrawer::init()
 	m_pTexture->textureBytes = m_pTexture->realWidth * m_pTexture->realHeight * 4;
 	textureCache().addFrameBufferTextureSize(m_pTexture->textureBytes);
 
+	const graphics::FramebufferTextureFormats & fbTexFormats = gfxContext.getFramebufferTextureFormats();
 	graphics::Context::InitTextureParams initParams;
 	initParams.handle = graphics::ObjectHandle(m_pTexture->glName);
 	initParams.width = m_pTexture->realWidth;
 	initParams.height = m_pTexture->realHeight;
-	initParams.internalFormat = fboFormats.colorInternalFormat;
-	initParams.format = fboFormats.colorFormat;
-	initParams.dataType = fboFormats.colorType;
+	initParams.internalFormat = fbTexFormats.colorInternalFormat;
+	initParams.format = fbTexFormats.colorFormat;
+	initParams.dataType = fbTexFormats.colorType;
 	gfxContext.init2DTexture(initParams);
 
 	graphics::Context::TexParameters setParams;
@@ -2075,8 +2075,6 @@ void OGLRender::_initExtensions()
 	if (strstr((const char*)strRenderer, "Adreno") != nullptr)
 		m_oglRenderer = glrAdreno;
 	LOG(LOG_VERBOSE, "OpenGL renderer: %s\n", strRenderer);
-
-	fboFormats.init();
 
 	GLfloat lineWidthRange[2] = {0.0f, 0.0f};
 	glGetFloatv(GL_ALIASED_LINE_WIDTH_RANGE, lineWidthRange);

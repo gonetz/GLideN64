@@ -236,9 +236,6 @@
     <ClCompile Include="..\..\src\DepthBufferRender\DepthBufferRender.cpp">
       <Filter>Source Files\DepthBufferRender</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\FBOTextureFormats.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\convert.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -507,9 +504,6 @@
     </ClInclude>
     <ClInclude Include="..\..\src\DepthBufferRender\DepthBufferRender.h">
       <Filter>Header Files\DepthBufferRender</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\FBOTextureFormats.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\inc\glext.h">
       <Filter>Header Files</Filter>

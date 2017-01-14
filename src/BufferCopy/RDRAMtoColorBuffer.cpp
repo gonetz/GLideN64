@@ -1,6 +1,5 @@
 #include "RDRAMtoColorBuffer.h"
 
-#include <FBOTextureFormats.h>
 #include <FrameBufferInfo.h>
 #include <FrameBuffer.h>
 #include <Combiner.h>
@@ -40,13 +39,14 @@ void RDRAMtoColorBuffer::init()
 	m_pTexture->textureBytes = m_pTexture->realWidth * m_pTexture->realHeight * 4;
 	textureCache().addFrameBufferTextureSize(m_pTexture->textureBytes);
 
+	const graphics::FramebufferTextureFormats & fbTexFormats = gfxContext.getFramebufferTextureFormats();
 	graphics::Context::InitTextureParams initParams;
 	initParams.handle = graphics::ObjectHandle(m_pTexture->glName);
 	initParams.width = m_pTexture->realWidth;
 	initParams.height = m_pTexture->realHeight;
-	initParams.internalFormat = fboFormats.colorInternalFormat;
-	initParams.format = fboFormats.colorFormat;
-	initParams.dataType = fboFormats.colorType;
+	initParams.internalFormat = fbTexFormats.colorInternalFormat;
+	initParams.format = fbTexFormats.colorFormat;
+	initParams.dataType = fbTexFormats.colorType;
 	gfxContext.init2DTexture(initParams);
 
 	graphics::Context::TexParameters setParams;
@@ -254,10 +254,11 @@ void RDRAMtoColorBuffer::copyFromRDRAM(u32 _address, bool _bCFB)
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	glBindTexture(GL_TEXTURE_2D, m_pTexture->glName);
+	const graphics::FramebufferTextureFormats & fbTexFormats = gfxContext.getFramebufferTextureFormats();
 #ifndef GLES2
-	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, fboFormats.colorFormat, fboFormats.colorType, 0);
+	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, GLenum(fbTexFormats.colorFormat), GLenum(fbTexFormats.colorType), 0);
 #else
-	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, fboFormats.colorFormat, fboFormats.colorType, ptr);
+	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, GLenum(fbTexFormats.colorFormat), GLenum(fbTexFormats.colorType), ptr);
 #endif
 
 	m_pTexture->scaleS = 1.0f / (float)m_pTexture->realWidth;

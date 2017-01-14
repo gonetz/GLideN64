@@ -4,7 +4,6 @@
 #include "gDP.h"
 #include "VI.h"
 #include "Textures.h"
-#include "FBOTextureFormats.h"
 #include "PaletteTexture.h"
 #include "DepthBuffer.h"
 
@@ -39,14 +38,15 @@ void PaletteTexture::init()
 #endif
 	textureCache().addFrameBufferTextureSize(m_pTexture->textureBytes);
 
+	const graphics::FramebufferTextureFormats & fbTexFormats = gfxContext.getFramebufferTextureFormats();
 	graphics::Context::InitTextureParams initParams;
 	initParams.handle = graphics::ObjectHandle(m_pTexture->glName);
 	initParams.ImageUnit = graphics::textureImageUnits::Tlut;
 	initParams.width = m_pTexture->realWidth;
 	initParams.height = m_pTexture->realHeight;
-	initParams.internalFormat = fboFormats.lutInternalFormat;
-	initParams.format = fboFormats.lutFormat;
-	initParams.dataType = fboFormats.lutType;
+	initParams.internalFormat = fbTexFormats.lutInternalFormat;
+	initParams.format = fbTexFormats.lutFormat;
+	initParams.dataType = fbTexFormats.lutType;
 	gfxContext.init2DTexture(initParams);
 
 	graphics::Context::TexParameters setParams;
@@ -66,7 +66,8 @@ void PaletteTexture::init()
 
 void PaletteTexture::destroy()
 {
-	glBindImageTexture(TlutImageUnit, 0, 0, GL_FALSE, 0, GL_READ_ONLY, fboFormats.lutInternalFormat);
+	const graphics::FramebufferTextureFormats & fbTexFormats = gfxContext.getFramebufferTextureFormats();
+	glBindImageTexture(TlutImageUnit, 0, 0, GL_FALSE, 0, GL_READ_ONLY, GLenum(fbTexFormats.lutInternalFormat));
 	textureCache().removeFrameBufferTexture(m_pTexture);
 	m_pTexture = nullptr;
 	m_pbuf.reset();
@@ -91,16 +92,17 @@ void PaletteTexture::update()
 		palette[i] = swapword(src[i * 4]);
 	m_pbuf->closeWriteBuffer();
 
+	const graphics::FramebufferTextureFormats & fbTexFormats = gfxContext.getFramebufferTextureFormats();
 	graphics::Context::UpdateTextureDataParams params;
 	params.handle = graphics::ObjectHandle(m_pTexture->glName);
 	params.ImageUnit = graphics::textureImageUnits::Tlut;
 	params.textureUnitIndex = graphics::textureIndices::PaletteTex;
 	params.width = m_pTexture->realWidth;
 	params.height = m_pTexture->realHeight;
-	params.format = fboFormats.lutFormat;
-	params.internalFormat = fboFormats.lutInternalFormat;
-	params.dataType = fboFormats.lutType;
+	params.format = fbTexFormats.lutFormat;
+	params.internalFormat = fbTexFormats.lutInternalFormat;
+	params.dataType = fbTexFormats.lutType;
 	params.data = m_pbuf->getData();
-	glBindImageTexture(TlutImageUnit, 0, 0, GL_FALSE, 0, GL_READ_ONLY, fboFormats.lutInternalFormat);
+	glBindImageTexture(TlutImageUnit, 0, 0, GL_FALSE, 0, GL_READ_ONLY, GLenum(fbTexFormats.lutInternalFormat));
 	gfxContext.update2DTexture(params);
 }

@@ -1,6 +1,5 @@
 #include "Graphics/Context.h"
 #include "Graphics/Parameters.h"
-#include "FBOTextureFormats.h"
 #include "DepthBuffer.h"
 #include "Config.h"
 #include "Textures.h"
@@ -41,14 +40,15 @@ void ZlutTexture::init()
 	m_pTexture->textureBytes = m_pTexture->realWidth * m_pTexture->realHeight * sizeof(zLUT[0]);
 	textureCache().addFrameBufferTextureSize(m_pTexture->textureBytes);
 
+	const graphics::FramebufferTextureFormats & fbTexFormats = gfxContext.getFramebufferTextureFormats();
 	graphics::Context::InitTextureParams initParams;
 	initParams.handle = graphics::ObjectHandle(m_pTexture->glName);
 	initParams.ImageUnit = graphics::textureImageUnits::Zlut;
 	initParams.width = m_pTexture->realWidth;
 	initParams.height = m_pTexture->realHeight;
-	initParams.internalFormat = fboFormats.lutInternalFormat;
-	initParams.format = fboFormats.lutFormat;
-	initParams.dataType = fboFormats.lutType;
+	initParams.internalFormat = fbTexFormats.lutInternalFormat;
+	initParams.format = fbTexFormats.lutFormat;
+	initParams.dataType = fbTexFormats.lutType;
 	initParams.data = zLUT;
 	gfxContext.init2DTexture(initParams);
 
@@ -64,7 +64,8 @@ void ZlutTexture::init()
 }
 
 void ZlutTexture::destroy() {
-	glBindImageTexture(ZlutImageUnit, 0, 0, GL_FALSE, GL_FALSE, GL_READ_ONLY, fboFormats.lutInternalFormat);
+	const graphics::FramebufferTextureFormats & fbTexFormats = gfxContext.getFramebufferTextureFormats();
+	glBindImageTexture(ZlutImageUnit, 0, 0, GL_FALSE, GL_FALSE, GL_READ_ONLY, GLenum(fbTexFormats.lutInternalFormat));
 	textureCache().removeFrameBufferTexture(m_pTexture);
 	m_pTexture = nullptr;
 }

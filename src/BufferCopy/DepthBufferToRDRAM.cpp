@@ -5,7 +5,6 @@
 #include "DepthBufferToRDRAM.h"
 #include "WriteToRDRAM.h"
 
-#include <FBOTextureFormats.h>
 #include <FrameBuffer.h>
 #include <DepthBuffer.h>
 #include <Textures.h>
@@ -68,13 +67,14 @@ void DepthBufferToRDRAM::init()
 	m_pDepthTexture->textureBytes = m_pDepthTexture->realWidth * m_pDepthTexture->realHeight * sizeof(float);
 	textureCache().addFrameBufferTextureSize(m_pDepthTexture->textureBytes);
 
+	const graphics::FramebufferTextureFormats & fbTexFormats = gfxContext.getFramebufferTextureFormats();
 	graphics::Context::InitTextureParams initParams;
 	initParams.handle = graphics::ObjectHandle(m_pColorTexture->glName);
 	initParams.width = m_pColorTexture->realWidth;
 	initParams.height = m_pColorTexture->realHeight;
-	initParams.internalFormat = fboFormats.monochromeInternalFormat;
-	initParams.format = fboFormats.monochromeFormat;
-	initParams.dataType = fboFormats.monochromeType;
+	initParams.internalFormat = fbTexFormats.monochromeInternalFormat;
+	initParams.format = fbTexFormats.monochromeFormat;
+	initParams.dataType = fbTexFormats.monochromeType;
 	gfxContext.init2DTexture(initParams);
 
 	graphics::Context::TexParameters setParams;
@@ -88,9 +88,9 @@ void DepthBufferToRDRAM::init()
 	initParams.handle = graphics::ObjectHandle(m_pDepthTexture->glName);
 	initParams.width = m_pDepthTexture->realWidth;
 	initParams.height = m_pDepthTexture->realHeight;
-	initParams.internalFormat = fboFormats.depthInternalFormat;
-	initParams.format = fboFormats.depthFormat;
-	initParams.dataType = fboFormats.depthType;
+	initParams.internalFormat = fbTexFormats.depthInternalFormat;
+	initParams.format = fbTexFormats.depthFormat;
+	initParams.dataType = fbTexFormats.depthType;
 	gfxContext.init2DTexture(initParams);
 
 	setParams.handle = graphics::ObjectHandle(m_pDepthTexture->glName);
@@ -211,9 +211,10 @@ bool DepthBufferToRDRAM::_copy(u32 _startAddress, u32 _endAddress)
 
 	PBOBinder binder(GL_PIXEL_PACK_BUFFER, m_PBO);
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, m_FBO);
-	glReadPixels(x0, y0, width, height, fboFormats.depthFormat, fboFormats.depthType, 0);
+	const graphics::FramebufferTextureFormats & fbTexFormats = gfxContext.getFramebufferTextureFormats();
+	glReadPixels(x0, y0, width, height, GLenum(fbTexFormats.depthFormat), GLenum(fbTexFormats.depthType), 0);
 
-	GLubyte* pixelData = (GLubyte*)glMapBufferRange(GL_PIXEL_PACK_BUFFER, 0, width * height * fboFormats.depthFormatBytes, GL_MAP_READ_BIT);
+	GLubyte* pixelData = (GLubyte*)glMapBufferRange(GL_PIXEL_PACK_BUFFER, 0, width * height * fbTexFormats.depthFormatBytes, GL_MAP_READ_BIT);
 	if (pixelData == nullptr)
 		return false;
 

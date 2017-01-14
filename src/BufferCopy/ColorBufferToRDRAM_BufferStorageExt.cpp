@@ -1,6 +1,6 @@
 #include <OpenGL.h>
 #include <Textures.h>
-#include <FBOTextureFormats.h>
+#include <Graphics/Context.h>
 
 #if defined(EGL) || defined(GLESX)
 #include <inc/ARB_buffer_storage.h>
@@ -54,15 +54,16 @@ void ColorBufferToRDRAM_BufferStorageExt::_destroyBuffers(void)
 
 bool ColorBufferToRDRAM_BufferStorageExt::_readPixels(GLint _x0, GLint _y0, GLsizei _width, GLsizei _height, u32 _size, bool _sync)
 {
+	const graphics::FramebufferTextureFormats & fbTexFormat = gfxContext.getFramebufferTextureFormats();
 	GLenum colorFormat, colorType, colorFormatBytes;
 	if (_size > G_IM_SIZ_8b) {
-		colorFormat = fboFormats.colorFormat;
-		colorType = fboFormats.colorType;
-		colorFormatBytes = fboFormats.colorFormatBytes;
+		colorFormat = GLenum(fbTexFormat.colorFormat);
+		colorType = GLenum(fbTexFormat.colorType);
+		colorFormatBytes = GLenum(fbTexFormat.colorFormatBytes);
 	} else {
-		colorFormat = fboFormats.monochromeFormat;
-		colorType = fboFormats.monochromeType;
-		colorFormatBytes = fboFormats.monochromeFormatBytes;
+		colorFormat = GLenum(fbTexFormat.monochromeFormat);
+		colorType = GLenum(fbTexFormat.monochromeType);
+		colorFormatBytes = GLenum(fbTexFormat.monochromeFormatBytes);
 	}
 
 	glBindBuffer(GL_PIXEL_PACK_BUFFER, m_PBO[m_curIndex]);

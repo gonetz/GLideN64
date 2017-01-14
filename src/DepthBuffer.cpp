@@ -11,7 +11,6 @@
 #include "VI.h"
 #include "Config.h"
 #include "Debug.h"
-#include "FBOTextureFormats.h"
 #include <Graphics/Context.h>
 #include <Graphics/Parameters.h>
 
@@ -66,6 +65,7 @@ void DepthBuffer::initDepthImageTexture(FrameBuffer * _pBuffer)
 	if (!video().getRender().isImageTexturesSupported() || config.frameBufferEmulation.N64DepthCompare == 0 || m_pDepthImageTexture != nullptr)
 		return;
 
+	const graphics::FramebufferTextureFormats & fbTexFormat = gfxContext.getFramebufferTextureFormats();
 	m_pDepthImageTexture = textureCache().addFrameBufferTexture(false);
 
 	m_pDepthImageTexture->width = (u32)(_pBuffer->m_pTexture->width);
@@ -84,7 +84,7 @@ void DepthBuffer::initDepthImageTexture(FrameBuffer * _pBuffer)
 	m_pDepthImageTexture->mirrorT = 0;
 	m_pDepthImageTexture->realWidth = m_pDepthImageTexture->width;
 	m_pDepthImageTexture->realHeight = m_pDepthImageTexture->height;
-	m_pDepthImageTexture->textureBytes = m_pDepthImageTexture->realWidth * m_pDepthImageTexture->realHeight * fboFormats.depthImageFormatBytes;
+	m_pDepthImageTexture->textureBytes = m_pDepthImageTexture->realWidth * m_pDepthImageTexture->realHeight * fbTexFormat.depthImageFormatBytes;
 	textureCache().addFrameBufferTextureSize(m_pDepthImageTexture->textureBytes);
 
 	{
@@ -92,9 +92,9 @@ void DepthBuffer::initDepthImageTexture(FrameBuffer * _pBuffer)
 		params.handle = graphics::ObjectHandle(m_pDepthImageTexture->glName);
 		params.width = m_pDepthImageTexture->realWidth;
 		params.height = m_pDepthImageTexture->realHeight;
-		params.internalFormat = fboFormats.depthImageInternalFormat;
-		params.format = fboFormats.depthImageFormat;
-		params.dataType = fboFormats.depthImageType;
+		params.internalFormat = fbTexFormat.depthImageInternalFormat;
+		params.format = fbTexFormat.depthImageFormat;
+		params.dataType = fbTexFormat.depthImageType;
 		gfxContext.init2DTexture(params);
 	}
 	{
@@ -125,14 +125,15 @@ void DepthBuffer::initDepthImageTexture(FrameBuffer * _pBuffer)
 
 void DepthBuffer::_initDepthBufferTexture(FrameBuffer * _pBuffer, CachedTexture * _pTexture, bool _multisample)
 {
+	const graphics::FramebufferTextureFormats & fbTexFormat = gfxContext.getFramebufferTextureFormats();
+
 	if (_pBuffer != nullptr) {
 		_pTexture->width = (u32)(_pBuffer->m_pTexture->width);
 		_pTexture->height = (u32)(_pBuffer->m_pTexture->height);
 		_pTexture->address = _pBuffer->m_startAddress;
 		_pTexture->clampWidth = _pBuffer->m_width;
 		_pTexture->clampHeight = _pBuffer->m_height;
-	}
-	else {
+	} else {
 		if (config.frameBufferEmulation.nativeResFactor == 0) {
 			_pTexture->width = video().getWidth();
 			_pTexture->height = video().getHeight();
@@ -155,7 +156,7 @@ void DepthBuffer::_initDepthBufferTexture(FrameBuffer * _pBuffer, CachedTexture 
 	_pTexture->mirrorT = 0;
 	_pTexture->realWidth = _pTexture->width;
 	_pTexture->realHeight = _pTexture->height;
-	_pTexture->textureBytes = _pTexture->realWidth * _pTexture->realHeight * fboFormats.depthFormatBytes;
+	_pTexture->textureBytes = _pTexture->realWidth * _pTexture->realHeight * fbTexFormat.depthFormatBytes;
 	textureCache().addFrameBufferTextureSize(_pTexture->textureBytes);
 
 	{
@@ -164,9 +165,9 @@ void DepthBuffer::_initDepthBufferTexture(FrameBuffer * _pBuffer, CachedTexture 
 		params.msaaLevel = _multisample ? config.video.multisampling : 0U;
 		params.width = _pTexture->realWidth;
 		params.height = _pTexture->realHeight;
-		params.internalFormat = fboFormats.depthInternalFormat;
-		params.format = fboFormats.depthFormat;
-		params.dataType = fboFormats.depthType;
+		params.internalFormat = fbTexFormat.depthInternalFormat;
+		params.format = fbTexFormat.depthFormat;
+		params.dataType = fbTexFormat.depthType;
 		gfxContext.init2DTexture(params);
 	}
 	_pTexture->frameBufferTexture = _multisample ? CachedTexture::fbMultiSample : CachedTexture::fbOneSample;
@@ -205,7 +206,7 @@ void DepthBuffer::_initDepthBufferRenderbuffer(FrameBuffer * _pBuffer)
 	graphics::Context::InitRenderbufferParams params;
 	params.handle = renderbufHandle;
 	params.target = graphics::target::RENDERBUFFER;
-	params.format = fboFormats.depthInternalFormat;
+	params.format = gfxContext.getFramebufferTextureFormats().depthInternalFormat;
 	params.width = m_depthRenderbufferWidth;
 	params.height = height;
 	gfxContext.initRenderbuffer(params);
@@ -324,7 +325,8 @@ void DepthBuffer::activateDepthBufferTexture(FrameBuffer * _pBuffer)
 void DepthBuffer::bindDepthImageTexture()
 {
 #ifdef GL_IMAGE_TEXTURES_SUPPORT
-	glBindImageTexture(depthImageUnit, m_pDepthImageTexture->glName, 0, GL_FALSE, 0, GL_READ_WRITE, fboFormats.depthImageInternalFormat);
+	glBindImageTexture(depthImageUnit, m_pDepthImageTexture->glName, 0, GL_FALSE, 0, GL_READ_WRITE,
+		GLenum(gfxContext.getFramebufferTextureFormats().depthImageInternalFormat));
 #endif
 }
 
@@ -440,6 +442,9 @@ void DepthBufferList::clearBuffer(u32 _ulx, u32 _uly, u32 _lrx, u32 _lry)
 {
 	if (m_pCurrent == nullptr)
 		return;
+
+	const graphics::FramebufferTextureFormats & fbTexFormats = gfxContext.getFramebufferTextureFormats();
+
 	m_pCurrent->m_cleared = true;
 	m_pCurrent->m_ulx = _ulx;
 	m_pCurrent->m_uly = _uly;
@@ -449,13 +454,13 @@ void DepthBufferList::clearBuffer(u32 _ulx, u32 _uly, u32 _lrx, u32 _lry)
 	if (m_pCurrent->m_depthImageFBO == 0 || !video().getRender().isImageTexturesSupported() || config.frameBufferEmulation.N64DepthCompare == 0)
 		return;
 	float color[4] = {1.0f, 1.0f, 0.0f, 1.0f};
-	glBindImageTexture(depthImageUnit, 0, 0, GL_FALSE, 0, GL_READ_WRITE, fboFormats.depthImageInternalFormat);
+	glBindImageTexture(depthImageUnit, 0, 0, GL_FALSE, 0, GL_READ_WRITE, GLenum(fbTexFormats.depthImageInternalFormat));
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_pCurrent->m_depthImageFBO);
 	const u32 cycleType = gDP.otherMode.cycleType;
 	gDP.otherMode.cycleType = G_CYC_FILL;
 	video().getRender().drawRect(_ulx, _uly, _lrx, _lry, color);
 	gDP.otherMode.cycleType = cycleType;
-	glBindImageTexture(depthImageUnit, m_pCurrent->m_pDepthImageTexture->glName, 0, GL_FALSE, 0, GL_READ_WRITE, fboFormats.depthImageInternalFormat);
+	glBindImageTexture(depthImageUnit, m_pCurrent->m_pDepthImageTexture->glName, 0, GL_FALSE, 0, GL_READ_WRITE, GLenum(fbTexFormats.depthImageInternalFormat));
 	frameBufferList().setCurrentDrawBuffer();
 #endif // GL_IMAGE_TEXTURES_SUPPORT
 }

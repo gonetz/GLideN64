@@ -1,5 +1,5 @@
 #include "ColorBufferToRDRAM.h"
-#include <FBOTextureFormats.h>
+#include <Graphics/Context.h>
 #include "ColorBufferToRDRAM_GL.h"
 
 ColorBufferToRDRAM_GL::ColorBufferToRDRAM_GL()
@@ -38,15 +38,16 @@ void ColorBufferToRDRAM_GL::_initBuffers(void)
 
 bool ColorBufferToRDRAM_GL::_readPixels(GLint _x0, GLint _y0, GLsizei _width, GLsizei _height, u32 _size, bool _sync)
 {
+	const graphics::FramebufferTextureFormats & fbTexFormat = gfxContext.getFramebufferTextureFormats();
 	GLenum colorFormat, colorType, colorFormatBytes;
 	if (_size > G_IM_SIZ_8b) {
-		colorFormat = fboFormats.colorFormat;
-		colorType = fboFormats.colorType;
-		colorFormatBytes = fboFormats.colorFormatBytes;
+		colorFormat = GLenum(fbTexFormat.colorFormat);
+		colorType = GLenum(fbTexFormat.colorType);
+		colorFormatBytes = GLenum(fbTexFormat.colorFormatBytes);
 	} else {
-		colorFormat = fboFormats.monochromeFormat;
-		colorType = fboFormats.monochromeType;
-		colorFormatBytes = fboFormats.monochromeFormatBytes;
+		colorFormat = GLenum(fbTexFormat.monochromeFormat);
+		colorType = GLenum(fbTexFormat.monochromeType);
+		colorFormatBytes = GLenum(fbTexFormat.monochromeFormatBytes);
 	}
 
 	// If Sync, read pixels from the buffer, copy them to RDRAM.
