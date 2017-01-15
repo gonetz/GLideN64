@@ -1877,7 +1877,7 @@ graphics::CombinerProgram * CombinerProgramBuilder::buildCombinerProgram(Combine
 	UniformGroups uniforms;
 	m_uniformFactory->buildUniforms(program, combinerInputs, _key, uniforms);
 
-	return new CombinerProgramImpl(_key, program, combinerInputs, std::move(uniforms));
+	return new CombinerProgramImpl(_key, program, m_useProgram, combinerInputs, std::move(uniforms));
 }
 
 const ShaderPart * CombinerProgramBuilder::getVertexShaderHeader() const
@@ -1911,7 +1911,7 @@ GLuint _createVertexShader(ShaderPart * _header, ShaderPart * _body)
 	return shader_object;
 }
 
-CombinerProgramBuilder::CombinerProgramBuilder(const opengl::GLInfo & _glinfo)
+CombinerProgramBuilder::CombinerProgramBuilder(const opengl::GLInfo & _glinfo, opengl::CachedUseProgram * _useProgram)
 : m_blender1(new ShaderBlender1(_glinfo))
 , m_blender2(new ShaderBlender2(_glinfo))
 , m_legacyBlender(new ShaderLegacyBlender)
@@ -1955,6 +1955,7 @@ CombinerProgramBuilder::CombinerProgramBuilder(const opengl::GLInfo & _glinfo)
 , m_shaderReadtex(new ShaderReadtex(_glinfo))
 , m_shaderN64DepthCompare(new ShaderN64DepthCompare(_glinfo))
 , m_shaderN64DepthRender(new ShaderN64DepthRender(_glinfo))
+, m_useProgram(_useProgram)
 {
 	m_vertexShaderRect = _createVertexShader(m_vertexHeader.get(), m_vertexRect.get());
 	m_vertexShaderTriangle = _createVertexShader(m_vertexHeader.get(), m_vertexTriangle.get());

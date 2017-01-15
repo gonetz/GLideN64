@@ -129,7 +129,9 @@ bool ShaderStorage::saveShadersStorage(const graphics::Combiners & _combiners) c
 }
 
 static
-CombinerProgramImpl * _readCominerProgramFromStream(std::istream & _is, CombinerProgramUniformFactory & _uniformFactory)
+CombinerProgramImpl * _readCominerProgramFromStream(std::istream & _is,
+	CombinerProgramUniformFactory & _uniformFactory,
+	opengl::CachedUseProgram * _useProgram)
 {
 	CombinerKey cmbKey;
 	cmbKey.read(_is);
@@ -154,7 +156,7 @@ CombinerProgramImpl * _readCominerProgramFromStream(std::istream & _is, Combiner
 	UniformGroups uniforms;
 	_uniformFactory.buildUniforms(program, cmbInputs, cmbKey, uniforms);
 
-	return new CombinerProgramImpl(cmbKey, program, cmbInputs, std::move(uniforms));
+	return new CombinerProgramImpl(cmbKey, program, _useProgram, cmbInputs, std::move(uniforms));
 }
 
 bool ShaderStorage::loadShadersStorage(graphics::Combiners & _combiners)
@@ -203,7 +205,7 @@ bool ShaderStorage::loadShadersStorage(graphics::Combiners & _combiners)
 
 		fin.read((char*)&len, sizeof(len));
 		for (u32 i = 0; i < len; ++i) {
-			CombinerProgramImpl * pCombiner = _readCominerProgramFromStream(fin, uniformFactory);
+			CombinerProgramImpl * pCombiner = _readCominerProgramFromStream(fin, uniformFactory, m_useProgram);
 			pCombiner->update(true);
 			_combiners[pCombiner->getKey()] = pCombiner;
 		}
@@ -218,7 +220,8 @@ bool ShaderStorage::loadShadersStorage(graphics::Combiners & _combiners)
 }
 
 
-ShaderStorage::ShaderStorage(const opengl::GLInfo & _glinfo)
+ShaderStorage::ShaderStorage(const opengl::GLInfo & _glinfo, opengl::CachedUseProgram * _useProgram)
 : m_glinfo(_glinfo)
+, m_useProgram(_useProgram)
 {
 }

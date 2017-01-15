@@ -195,6 +195,12 @@ namespace opengl {
 		std::array<graphics::Parameter, MaxAttribIndex> m_attribs;
 	};
 
+	class CachedUseProgram : public Cached1<graphics::ObjectHandle>
+	{
+	public:
+		void useProgram(graphics::ObjectHandle _program);
+	};
+
 	/*---------------CachedFunctions-------------*/
 
 	class CachedFunctions
@@ -235,6 +241,8 @@ namespace opengl {
 
 		CachedVertexAttribArray * getCachedVertexAttribArray();
 
+		CachedUseProgram * getCachedUseProgram();
+
 	private:
 		typedef std::unordered_map<u32, CachedEnable> EnableParameters;
 
@@ -253,6 +261,7 @@ namespace opengl {
 		CachedBlendColor m_blendColor;
 		CachedClearColor m_clearColor;
 		CachedVertexAttribArray m_attribArray;
+		CachedUseProgram m_useProgram;
 	};
 
 }

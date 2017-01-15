@@ -1,6 +1,7 @@
 #include <fstream>
 #include <assert.h>
 #include <Combiner.h>
+#include <Graphics/OpenGLContext/opengl_CachedFunctions.h>
 #include "glsl_Utils.h"
 #include "glsl_CombinerProgramImpl.h"
 
@@ -8,11 +9,13 @@ using namespace glsl;
 
 CombinerProgramImpl::CombinerProgramImpl(const CombinerKey & _key,
 	GLuint _program,
+	opengl::CachedUseProgram * _useProgram,
 	const CombinerInputs & _inputs,
 	UniformGroups && _uniforms)
 : m_bNeedUpdate(true)
 , m_key(_key)
 , m_program(_program)
+, m_useProgram(_useProgram)
 , m_inputs(_inputs)
 , m_uniforms(std::move(_uniforms))
 {
@@ -21,18 +24,20 @@ CombinerProgramImpl::CombinerProgramImpl(const CombinerKey & _key,
 
 CombinerProgramImpl::~CombinerProgramImpl()
 {
+	m_useProgram->useProgram(graphics::ObjectHandle());
+	glDeleteProgram(GLuint(m_program));
 }
 
 void CombinerProgramImpl::activate()
 {
-	glUseProgram(m_program);
+	m_useProgram->useProgram(m_program);
 }
 
 void CombinerProgramImpl::update(bool _force)
 {
 	_force |= m_bNeedUpdate;
 	m_bNeedUpdate = false;
-	glUseProgram(m_program);
+	m_useProgram->useProgram(m_program);
 	for (auto it = m_uniforms.begin(); it != m_uniforms.end(); ++it)
 		(*it)->update(_force);
 }
@@ -70,7 +75,7 @@ bool CombinerProgramImpl::usesHwLighting() const
 bool CombinerProgramImpl::getBinaryForm(std::vector<char> & _buffer)
 {
 	GLint  binaryLength;
-	glGetProgramiv(m_program, GL_PROGRAM_BINARY_LENGTH, &binaryLength);
+	glGetProgramiv(GLuint(m_program), GL_PROGRAM_BINARY_LENGTH, &binaryLength);
 
 	if (binaryLength < 1)
 		return false;
@@ -81,7 +86,7 @@ bool CombinerProgramImpl::getBinaryForm(std::vector<char> & _buffer)
 		return false;
 
 	GLenum binaryFormat;
-	glGetProgramBinary(m_program, binaryLength, &binaryLength, &binaryFormat, binary.data());
+	glGetProgramBinary(GLuint(m_program), binaryLength, &binaryLength, &binaryFormat, binary.data());
 	if (isGLError())
 		return false;
 

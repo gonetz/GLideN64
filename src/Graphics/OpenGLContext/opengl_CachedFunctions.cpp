@@ -125,6 +125,14 @@ void CachedVertexAttribArray::reset()
 	m_attribs.fill(Parameter());
 }
 
+/*---------------CachedUseProgram-------------*/
+
+void CachedUseProgram::useProgram(graphics::ObjectHandle _program)
+{
+	if (update(_program))
+		glUseProgram(GLuint(_program));
+}
+
 /*---------------CachedFunctions-------------*/
 
 CachedFunctions::CachedFunctions(const GLInfo & _glinfo)
@@ -160,6 +168,7 @@ void CachedFunctions::reset()
 	m_blendColor.reset();
 	m_clearColor.reset();
 	m_attribArray.reset();
+	m_useProgram.reset();
 }
 
 CachedEnable * CachedFunctions::getCachedEnable(Parameter _parameter)
@@ -240,8 +249,12 @@ CachedClearColor * CachedFunctions::getCachedClearColor()
 	return &m_clearColor;
 }
 
-
 CachedVertexAttribArray * CachedFunctions::getCachedVertexAttribArray()
 {
 	return &m_attribArray;
+}
+
+CachedUseProgram * CachedFunctions::getCachedUseProgram()
+{
+	return &m_useProgram;
 }

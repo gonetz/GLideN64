@@ -5,6 +5,8 @@
 #include <ZlutTexture.h>
 #include <gDP.h>
 #include <Config.h>
+#include <Graphics/ObjectHandle.h>
+#include <Graphics/OpenGLContext/opengl_CachedFunctions.h>
 #include "glsl_SpecialShadersFactory.h"
 #include "glsl_ShaderPart.h"
 #include "glsl_Utils.h"
@@ -365,9 +367,11 @@ namespace glsl {
 	{
 	public:
 		SpecialShader(const opengl::GLInfo & _glinfo,
+			opengl::CachedUseProgram * _useProgram,
 			const ShaderPart * _vertexHeader,
 			const ShaderPart * _fragmentHeader)
 			: m_program(0)
+			, m_useProgram(_useProgram)
 		{
 			VertexBody vertexBody(_glinfo);
 			FragmentBody fragmentBody(_glinfo);
@@ -380,23 +384,24 @@ namespace glsl {
 			_fragmentHeader->write(ssFragmentShader);
 			fragmentBody.write(ssFragmentShader);
 
-			m_program = Utils::createRectShaderProgram(ssVertexShader.str().data(), ssFragmentShader.str().data());
+			m_program =
+				graphics::ObjectHandle(Utils::createRectShaderProgram(ssVertexShader.str().data(), ssFragmentShader.str().data()));
 		}
 
 		~SpecialShader()
 		{
-			glUseProgram(0);
-			glDeleteProgram(m_program);
-			m_program = 0;
+			m_useProgram->useProgram(graphics::ObjectHandle());
+			glDeleteProgram(GLuint(m_program));
 		}
 
 		void SpecialShader::activate() override {
-			glUseProgram(m_program);
+			m_useProgram->useProgram(m_program);
 			gDP.changed |= CHANGED_COMBINE;
 		}
 
 	protected:
-		GLuint m_program;
+		graphics::ObjectHandle m_program;
+		opengl::CachedUseProgram * m_useProgram;
 	};
 
 	/*---------------ShadowMapShader-------------*/
@@ -407,14 +412,15 @@ namespace glsl {
 	{
 	public:
 		ShadowMapShader(const opengl::GLInfo & _glinfo,
+			opengl::CachedUseProgram * _useProgram,
 			const ShaderPart * _vertexHeader,
 			const ShaderPart * _fragmentHeader)
-			: ShadowMapShaderBase(_glinfo, _vertexHeader, _fragmentHeader)
+			: ShadowMapShaderBase(_glinfo, _useProgram, _vertexHeader, _fragmentHeader)
 			, m_loc(-1)
 		{
-			glUseProgram(m_program);
-			m_loc = glGetUniformLocation(m_program, "uFogColor");
-			glUseProgram(0);
+			m_useProgram->useProgram(m_program);
+			m_loc = glGetUniformLocation(GLuint(m_program), "uFogColor");
+			m_useProgram->useProgram(graphics::ObjectHandle());
 		}
 
 		void activate() override {
@@ -436,14 +442,15 @@ namespace glsl {
 	{
 	public:
 		MonochromeShader(const opengl::GLInfo & _glinfo,
+			opengl::CachedUseProgram * _useProgram,
 			const ShaderPart * _vertexHeader,
 			const ShaderPart * _fragmentHeader)
-			: MonochromeShaderBase(_glinfo, _vertexHeader, _fragmentHeader)
+			: MonochromeShaderBase(_glinfo, _useProgram, _vertexHeader, _fragmentHeader)
 		{
-			glUseProgram(m_program);
-			const int texLoc = glGetUniformLocation(m_program, "uColorImage");
+			m_useProgram->useProgram(m_program);
+			const int texLoc = glGetUniformLocation(GLuint(m_program), "uColorImage");
 			glUniform1i(texLoc, 0);
-			glUseProgram(0);
+			m_useProgram->useProgram(graphics::ObjectHandle());
 		}
 	};
 
@@ -453,9 +460,11 @@ namespace glsl {
 	{
 	public:
 		TexrectDrawerShaderDraw(const opengl::GLInfo & _glinfo,
+			opengl::CachedUseProgram * _useProgram,
 			const ShaderPart * _vertexHeader,
 			const ShaderPart * _fragmentHeader)
 			: m_program(0)
+			, m_useProgram(_useProgram)
 		{
 			VertexShaderTexturedRect vertexBody(_glinfo);
 			std::stringstream ssVertexShader;
@@ -476,55 +485,56 @@ namespace glsl {
 			TexrectDrawerFragmentDraw fragmentMain(_glinfo);
 			fragmentMain.write(ssFragmentShader);
 
-			m_program = Utils::createRectShaderProgram(ssVertexShader.str().data(), ssFragmentShader.str().data());
+			m_program =
+				graphics::ObjectHandle(Utils::createRectShaderProgram(ssVertexShader.str().data(), ssFragmentShader.str().data()));
 
-			glUseProgram(m_program);
-			GLint loc = glGetUniformLocation(m_program, "uTex0");
+			m_useProgram->useProgram(m_program);
+			GLint loc = glGetUniformLocation(GLuint(m_program), "uTex0");
 			assert(loc >= 0);
 			glUniform1i(loc, 0);
-			m_textureSizeLoc = glGetUniformLocation(m_program, "uTextureSize");
-			m_textureBoundsLoc = glGetUniformLocation(m_program, "uTextureBounds");
+			m_textureSizeLoc = glGetUniformLocation(GLuint(m_program), "uTextureSize");
+			m_textureBoundsLoc = glGetUniformLocation(GLuint(m_program), "uTextureBounds");
 			assert(m_textureBoundsLoc >= 0);
-			m_enableAlphaTestLoc = glGetUniformLocation(m_program, "uEnableAlphaTest");
-			glUseProgram(0);
+			m_enableAlphaTestLoc = glGetUniformLocation(GLuint(m_program), "uEnableAlphaTest");
+			m_useProgram->useProgram(graphics::ObjectHandle());
 		}
 
 		~TexrectDrawerShaderDraw()
 		{
-			glUseProgram(0);
-			glDeleteProgram(m_program);
-			m_program = 0;
+			m_useProgram->useProgram(graphics::ObjectHandle());
+			glDeleteProgram(GLuint(m_program));
 		}
 
 		void TexrectDrawerShaderDraw::activate() override
 		{
-			glUseProgram(m_program);
+			m_useProgram->useProgram(m_program);
 			gDP.changed |= CHANGED_COMBINE;
 		}
 
 		void setTextureSize(u32 _width, u32 _height) override
 		{
-			glUseProgram(m_program);
+			m_useProgram->useProgram(m_program);
 			glUniform2f(m_textureSizeLoc, (GLfloat)_width, (GLfloat)_height);
 			gDP.changed |= CHANGED_COMBINE;
 		}
 
 		void setTextureBounds(float _texBounds[4])  override
 		{
-			glUseProgram(m_program);
+			m_useProgram->useProgram(m_program);
 			glUniform4fv(m_textureBoundsLoc, 1, _texBounds);
 			gDP.changed |= CHANGED_COMBINE;
 		}
 
 		void setEnableAlphaTest(int _enable) override
 		{
-			glUseProgram(m_program);
+			m_useProgram->useProgram(m_program);
 			glUniform1i(m_enableAlphaTestLoc, _enable);
 			gDP.changed |= CHANGED_COMBINE;
 		}
 
 	protected:
-		GLuint m_program;
+		graphics::ObjectHandle m_program;
+		opengl::CachedUseProgram * m_useProgram;
 		GLint m_enableAlphaTestLoc;
 		GLint m_textureSizeLoc;
 		GLint m_textureBoundsLoc;
@@ -540,14 +550,15 @@ namespace glsl {
 	{
 	public:
 		TexrectCopyShader(const opengl::GLInfo & _glinfo,
+			opengl::CachedUseProgram * _useProgram,
 			const ShaderPart * _vertexHeader,
 			const ShaderPart * _fragmentHeader)
-			: TexrectCopyShaderBase(_glinfo, _vertexHeader, _fragmentHeader)
+			: TexrectCopyShaderBase(_glinfo, _useProgram, _vertexHeader, _fragmentHeader)
 		{
-			glUseProgram(m_program);
-			const int texLoc = glGetUniformLocation(m_program, "uTex0");
+			m_useProgram->useProgram(m_program);
+			const int texLoc = glGetUniformLocation(GLuint(m_program), "uTex0");
 			glUniform1i(texLoc, 0);
-			glUseProgram(0);
+			m_useProgram->useProgram(graphics::ObjectHandle());
 		}
 	};
 
@@ -555,11 +566,13 @@ namespace glsl {
 	/*---------------SpecialShadersFactory-------------*/
 
 	SpecialShadersFactory::SpecialShadersFactory(const opengl::GLInfo & _glinfo,
+												opengl::CachedUseProgram * _useProgram,
 												const ShaderPart * _vertexHeader,
 												const ShaderPart * _fragmentHeader)
 		: m_glinfo(_glinfo)
 		, m_vertexHeader(_vertexHeader)
 		, m_fragmentHeader(_fragmentHeader)
+		, m_useProgram(_useProgram)
 	{
 	}
 
@@ -568,27 +581,27 @@ namespace glsl {
 		if (!m_glinfo.imageTextures)
 			return nullptr;
 
-		return new ShadowMapShader(m_glinfo, m_vertexHeader, m_fragmentHeader);
+		return new ShadowMapShader(m_glinfo, m_useProgram, m_vertexHeader, m_fragmentHeader);
 	}
 
 	graphics::ShaderProgram * SpecialShadersFactory::createMonochromeShader() const
 	{
-		return new MonochromeShader(m_glinfo, m_vertexHeader, m_fragmentHeader);
+		return new MonochromeShader(m_glinfo, m_useProgram, m_vertexHeader, m_fragmentHeader);
 	}
 
 	graphics::TexDrawerShaderProgram * SpecialShadersFactory::createTexDrawerDrawShader() const
 	{
-		return new TexrectDrawerShaderDraw(m_glinfo, m_vertexHeader, m_fragmentHeader);
+		return new TexrectDrawerShaderDraw(m_glinfo, m_useProgram, m_vertexHeader, m_fragmentHeader);
 	}
 
 	graphics::ShaderProgram * SpecialShadersFactory::createTexDrawerClearShader() const
 	{
-		return new TexrectDrawerShaderClear(m_glinfo, m_vertexHeader, m_fragmentHeader);
+		return new TexrectDrawerShaderClear(m_glinfo, m_useProgram, m_vertexHeader, m_fragmentHeader);
 	}
 
 	graphics::ShaderProgram * SpecialShadersFactory::createTexrectCopyShader() const
 	{
-		return new TexrectCopyShader(m_glinfo, m_vertexHeader, m_fragmentHeader);
+		return new TexrectCopyShader(m_glinfo, m_useProgram, m_vertexHeader, m_fragmentHeader);
 	}
 
 }

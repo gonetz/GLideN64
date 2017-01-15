@@ -2,7 +2,12 @@
 #include <memory>
 #include <vector>
 #include <Graphics/CombinerProgram.h>
+#include <Graphics/ObjectHandle.h>
 #include "glsl_CombinerInputs.h"
+
+namespace opengl {
+	class CachedUseProgram;
+}
 
 namespace glsl {
 
@@ -19,6 +24,7 @@ namespace glsl {
 	public:
 		CombinerProgramImpl(const CombinerKey & _key,
 			GLuint _program,
+			opengl::CachedUseProgram * _useProgram,
 			const CombinerInputs & _inputs,
 			UniformGroups && _uniforms);
 		~CombinerProgramImpl();
@@ -38,7 +44,8 @@ namespace glsl {
 	private:
 		bool m_bNeedUpdate;
 		CombinerKey m_key;
-		GLuint m_program;
+		graphics::ObjectHandle m_program;
+		opengl::CachedUseProgram * m_useProgram;
 		CombinerInputs m_inputs;
 		UniformGroups m_uniforms;
 	};

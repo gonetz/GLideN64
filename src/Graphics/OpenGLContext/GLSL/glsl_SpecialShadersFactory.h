@@ -5,6 +5,10 @@ namespace graphics {
 	class ShaderProgram;
 }
 
+namespace opengl {
+	class CachedUseProgram;
+}
+
 namespace glsl {
 
 	class ShaderPart;
@@ -13,6 +17,7 @@ namespace glsl {
 	{
 	public:
 		SpecialShadersFactory(const opengl::GLInfo & _glinfo,
+			opengl::CachedUseProgram * _useProgram,
 			const ShaderPart * _vertexHeader,
 			const ShaderPart * _fragmentHeader);
 
@@ -30,6 +35,7 @@ namespace glsl {
 		const opengl::GLInfo & m_glinfo;
 		const ShaderPart * m_vertexHeader;
 		const ShaderPart * m_fragmentHeader;
+		opengl::CachedUseProgram * m_useProgram;
 	};
 
 }

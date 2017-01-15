@@ -52,7 +52,7 @@ void ContextImpl::init()
 		m_textDrawer.reset(new DummyTextDrawer);
 	}
 
-	m_combinerProgramBuilder.reset(new glsl::CombinerProgramBuilder(m_glInfo));
+	m_combinerProgramBuilder.reset(new glsl::CombinerProgramBuilder(m_glInfo, m_cachedFunctions->getCachedUseProgram()));
 }
 
 void ContextImpl::destroy()
@@ -231,19 +231,20 @@ graphics::CombinerProgram * ContextImpl::createCombinerProgram(Combiner & _color
 
 bool ContextImpl::saveShadersStorage(const graphics::Combiners & _combiners)
 {
-	glsl::ShaderStorage storage(m_glInfo);
+	glsl::ShaderStorage storage(m_glInfo, m_cachedFunctions->getCachedUseProgram());
 	return storage.saveShadersStorage(_combiners);
 }
 
 bool ContextImpl::loadShadersStorage(graphics::Combiners & _combiners)
 {
-	glsl::ShaderStorage storage(m_glInfo);
+	glsl::ShaderStorage storage(m_glInfo, m_cachedFunctions->getCachedUseProgram());
 	return storage.loadShadersStorage(_combiners);
 }
 
 graphics::ShaderProgram * ContextImpl::createDepthFogShader()
 {
 	glsl::SpecialShadersFactory shadersFactory(m_glInfo,
+		m_cachedFunctions->getCachedUseProgram(),
 		m_combinerProgramBuilder->getVertexShaderHeader(),
 		m_combinerProgramBuilder->getFragmentShaderHeader());
 
@@ -253,6 +254,7 @@ graphics::ShaderProgram * ContextImpl::createDepthFogShader()
 graphics::ShaderProgram * ContextImpl::createMonochromeShader()
 {
 	glsl::SpecialShadersFactory shadersFactory(m_glInfo,
+		m_cachedFunctions->getCachedUseProgram(),
 		m_combinerProgramBuilder->getVertexShaderHeader(),
 		m_combinerProgramBuilder->getFragmentShaderHeader());
 
@@ -262,6 +264,7 @@ graphics::ShaderProgram * ContextImpl::createMonochromeShader()
 graphics::TexDrawerShaderProgram * ContextImpl::createTexDrawerDrawShader()
 {
 	glsl::SpecialShadersFactory shadersFactory(m_glInfo,
+		m_cachedFunctions->getCachedUseProgram(),
 		m_combinerProgramBuilder->getVertexShaderHeader(),
 		m_combinerProgramBuilder->getFragmentShaderHeader());
 
@@ -271,6 +274,7 @@ graphics::TexDrawerShaderProgram * ContextImpl::createTexDrawerDrawShader()
 graphics::ShaderProgram * ContextImpl::createTexDrawerClearShader()
 {
 	glsl::SpecialShadersFactory shadersFactory(m_glInfo,
+		m_cachedFunctions->getCachedUseProgram(),
 		m_combinerProgramBuilder->getVertexShaderHeader(),
 		m_combinerProgramBuilder->getFragmentShaderHeader());
 
@@ -280,6 +284,7 @@ graphics::ShaderProgram * ContextImpl::createTexDrawerClearShader()
 graphics::ShaderProgram * ContextImpl::createTexrectCopyShader()
 {
 	glsl::SpecialShadersFactory shadersFactory(m_glInfo,
+		m_cachedFunctions->getCachedUseProgram(),
 		m_combinerProgramBuilder->getVertexShaderHeader(),
 		m_combinerProgramBuilder->getFragmentShaderHeader());
 

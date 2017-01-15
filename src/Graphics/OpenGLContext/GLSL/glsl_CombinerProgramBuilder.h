@@ -7,6 +7,10 @@ namespace graphics {
 	class CombinerProgram;
 }
 
+namespace opengl {
+	class CachedUseProgram;
+}
+
 namespace glsl {
 
 	class ShaderPart;
@@ -15,7 +19,7 @@ namespace glsl {
 	class CombinerProgramBuilder
 	{
 	public:
-		CombinerProgramBuilder(const opengl::GLInfo & _glinfo);
+		CombinerProgramBuilder(const opengl::GLInfo & _glinfo, opengl::CachedUseProgram * _useProgram);
 		~CombinerProgramBuilder();
 
 		graphics::CombinerProgram * buildCombinerProgram(Combiner & _color, Combiner & _alpha, const CombinerKey & _key);
@@ -83,6 +87,7 @@ namespace glsl {
 		GLuint  m_vertexShaderTriangle;
 		GLuint  m_vertexShaderTexturedRect;
 		GLuint  m_vertexShaderTexturedTriangle;
+		opengl::CachedUseProgram * m_useProgram;
 	};
 
 }
