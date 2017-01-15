@@ -1674,7 +1674,8 @@ int CombinerProgramBuilder::compileCombiner(const CombinerKey & _key, Combiner &
 	else if (combinedAlphaABD(combine))
 		m_signExtendAlphaABD->write(ssShader);
 
-	m_alphaTest->write(ssShader);
+	if (g_cycleType < G_CYC_FILL)
+		m_alphaTest->write(ssShader);
 
 	ssShader << "  color1 = ";
 	nInputs |= _compileCombiner(_color.stage[0], ColorInput, ssShader);
@@ -1708,7 +1709,8 @@ int CombinerProgramBuilder::compileCombiner(const CombinerKey & _key, Combiner &
 		ssShader << "  lowp vec4 cmbRes = vec4(color2, alpha2);" << std::endl;
 	}
 	else {
-		ssShader << "  if (uCvgXAlpha != 0 && alpha1 < 0.125) discard;" << std::endl;
+		if (g_cycleType < G_CYC_FILL)
+			ssShader << "  if (uCvgXAlpha != 0 && alpha1 < 0.125) discard;" << std::endl;
 		ssShader << "  lowp vec4 cmbRes = vec4(color1, alpha1);" << std::endl;
 	}
 

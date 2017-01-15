@@ -534,8 +534,6 @@ void GraphicsDrawer::_updateTextures() const
 
 void GraphicsDrawer::_updateStates(DrawingState _drawingState) const
 {
-//	DisplayWindow & ogl = DisplayWindow::get();
-
 	CombinerInfo & cmbInfo = CombinerInfo::get();
 	cmbInfo.setPolygonMode(_drawingState);
 	cmbInfo.update();
@@ -881,7 +879,7 @@ void GraphicsDrawer::drawRect(int _ulx, int _uly, int _lrx, int _lry, float *_pC
 	Context::DrawRectParameters rectParams;
 	rectParams.mode = drawmode::TRIANGLE_STRIP;
 	if (gDP.otherMode.cycleType == G_CYC_FILL)
-		std::copy_n(_pColor, sizeof(_pColor[0]) * 4, rectParams.rectColor.data());
+		std::copy_n(_pColor, 4, rectParams.rectColor.begin());
 	else
 		rectParams.rectColor.fill(0.0f);
 	rectParams.verticesCount = 4;
@@ -1179,6 +1177,8 @@ void GraphicsDrawer::drawTexturedRect(const TexturedRectParams & _params)
 
 			if (texParams.wrapS.isValid() || texParams.wrapT.isValid()) {
 				texParams.handle = ObjectHandle(cache.current[t]->glName);
+				texParams.target = cache.current[t]->frameBufferTexture == CachedTexture::fbMultiSample ?
+					target::TEXTURE_2D_MULTISAMPLE : target::TEXTURE_2D;
 				texParams.textureUnitIndex = textureIndices::Tex[t];
 				gfxContext.setTextureParameters(texParams);
 			}
@@ -1193,6 +1193,8 @@ void GraphicsDrawer::drawTexturedRect(const TexturedRectParams & _params)
 	if (gDP.otherMode.cycleType == G_CYC_COPY) {
 		Context::TexParameters texParams;
 		texParams.handle = ObjectHandle(cache.current[0]->glName);
+		texParams.target = cache.current[0]->frameBufferTexture == CachedTexture::fbMultiSample ?
+			target::TEXTURE_2D_MULTISAMPLE : target::TEXTURE_2D;
 		texParams.textureUnitIndex = textureIndices::Tex[0];
 		texParams.minFilter = textureParameters::FILTER_NEAREST;
 		texParams.magFilter = textureParameters::FILTER_NEAREST;

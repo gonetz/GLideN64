@@ -966,6 +966,7 @@ void FrameBufferList::renderBuffer(u32 _address)
 	blitParams.dstWidth = wnd.getScreenWidth();
 	blitParams.dstHeight = wnd.getScreenHeight() + wnd.getHeightOffset();
 	blitParams.filter = filter;
+	blitParams.mask = graphics::blitMask::COLOR_BUFFER;
 	blitParams.tex[0] = pBufferTexture;
 	blitParams.combiner = CombinerInfo::get().getTexrectCopyProgram();
 	blitParams.readBuffer = readBuffer;
@@ -1120,6 +1121,8 @@ bool FrameBuffer_CopyDepthBufferChunk(u32 address)
 
 void FrameBuffer_CopyFromRDRAM(u32 _address, bool _bCFB)
 {
+	// TODO fix me
+	return;
 	RDRAMtoColorBuffer::get().copyFromRDRAM(_address, _bCFB);
 }
 

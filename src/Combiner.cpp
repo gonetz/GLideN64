@@ -73,19 +73,10 @@ static int aAExpanded[] =
 void Combiner_Init() {
 	CombinerInfo & cmbInfo = CombinerInfo::get();
 	cmbInfo.init();
-//	InitShaderCombiner();
-	if (cmbInfo.getCombinersNumber() == 0) {
-		cmbInfo.setPolygonMode(OGLRender::rsTexRect);
-		gDP.otherMode.cycleType = G_CYC_COPY;
-		cmbInfo.setCombine(EncodeCombineMode(0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0));
-		gDP.otherMode.cycleType = G_CYC_FILL;
-		cmbInfo.setCombine(EncodeCombineMode(0, 0, 0, SHADE, 0, 0, 0, SHADE, 0, 0, 0, SHADE, 0, 0, 0, SHADE));
-	}
 	gDP.otherMode.cycleType = G_CYC_1CYCLE;
 }
 
 void Combiner_Destroy() {
-//	DestroyShaderCombiner();
 	CombinerInfo::get().destroy();
 }
 
@@ -113,6 +104,14 @@ void CombinerInfo::init()
 		for (auto cur = m_combiners.begin(); cur != m_combiners.end(); ++cur)
 			delete cur->second;
 		m_combiners.clear();
+	}
+
+	if (m_combiners.empty()) {
+		setPolygonMode(OGLRender::rsTexRect);
+		gDP.otherMode.cycleType = G_CYC_COPY;
+		setCombine(EncodeCombineMode(0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0));
+		gDP.otherMode.cycleType = G_CYC_FILL;
+		setCombine(EncodeCombineMode(0, 0, 0, SHADE, 0, 0, 0, SHADE, 0, 0, 0, SHADE, 0, 0, 0, SHADE));
 	}
 
 	m_shadowmapProgram.reset(gfxContext.createDepthFogShader());
