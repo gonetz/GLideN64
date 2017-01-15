@@ -3,8 +3,9 @@
 #include "../Config.h"
 #include "../RSP.h"
 #include "../PluginAPI.h"
-#include "../OpenGL.h"
 #include "../GLideNUI/GLideNUI.h"
+#include <DisplayWindow.h>
+
 
 Config config;
 
@@ -18,7 +19,7 @@ void Config_DoConfig(/*HWND hParent*/)
 	if (config.generalEmulation.enableCustomSettings != 0)
 		LoadCustomRomSettings(strIniFolderPath, RSP.romname);
 	if (bRestart)
-		video().restart();
+		dwnd().restart();
 	ConfigOpen = false;
 }
 

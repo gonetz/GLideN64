@@ -31,6 +31,7 @@ namespace graphics {
 		virtual FramebufferTextureFormats * getFramebufferTextureFormats() = 0;
 		virtual ObjectHandle createFramebuffer() = 0;
 		virtual void deleteFramebuffer(ObjectHandle _name) = 0;
+		virtual void bindFramebuffer(Parameter _target, ObjectHandle _name) = 0;
 		virtual void addFrameBufferRenderTarget(const Context::FrameBufferRenderTarget & _params) = 0;
 		virtual ObjectHandle createRenderbuffer() = 0;
 		virtual void initRenderbuffer(const Context::InitRenderbufferParams & _params) = 0;
@@ -50,6 +51,7 @@ namespace graphics {
 		virtual f32 getMaxLineWidth() = 0;
 		virtual void drawText(const char *_pText, float _x, float _y) = 0;
 		virtual void getTextSize(const char *_pText, float & _w, float & _h) = 0;
+		virtual bool isError() const = 0;
 	};
 
 }

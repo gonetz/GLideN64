@@ -23,6 +23,7 @@
 
 #include <Graphics/Context.h>
 #include <Graphics/Parameters.h>
+#include "DisplayWindow.h"
 
 struct point {
 	GLfloat x;
@@ -316,9 +317,9 @@ void TextDrawer::renderText(const char *_pText, float _x, float _y) const
 {
 	if (m_pAtlas == nullptr)
 		return;
-	OGLVideo & ogl = video();
-	const float sx = 2.0f / ogl.getWidth();
-	const float sy = 2.0f / ogl.getHeight();
+	DisplayWindow & wnd = dwnd();
+	const float sx = 2.0f / wnd.getWidth();
+	const float sy = 2.0f / wnd.getHeight();
 
 	const u8 *p;
 
@@ -389,9 +390,9 @@ void TextDrawer::getTextSize(const char *_pText, float & _w, float & _h) const
 	_w = _h = 0;
 	if (m_pAtlas == nullptr)
 		return;
-	OGLVideo & ogl = video();
-	const float sx = 2.0f / ogl.getWidth();
-	const float sy = 2.0f / ogl.getHeight();
+	DisplayWindow & wnd = dwnd();
+	const float sx = 2.0f / wnd.getWidth();
+	const float sy = 2.0f / wnd.getHeight();
 	float bw, bh;
 
 	for (const u8 *p = (const u8 *)_pText; *p; ++p) {

@@ -13,10 +13,13 @@
 #include "Debug.h"
 #include <Graphics/Context.h>
 #include <Graphics/Parameters.h>
+#include "DisplayWindow.h"
 
 const GLuint ZlutImageUnit = 0;
 const GLuint TlutImageUnit = 1;
 const GLuint depthImageUnit = 2;
+
+using namespace graphics;
 
 DepthBuffer::DepthBuffer() : m_address(0), m_width(0), m_ulx(0), m_uly(0), m_lrx(0), m_lry(0),
 	m_depthImageFBO(0), m_pDepthImageTexture(nullptr), m_pDepthBufferTexture(nullptr),
@@ -25,7 +28,7 @@ DepthBuffer::DepthBuffer() : m_address(0), m_width(0), m_ulx(0), m_uly(0), m_lrx
 	m_pDepthBufferCopyTexture(nullptr), m_copied(false)
 {
 	m_copyFBO = GLuint(gfxContext.createFramebuffer());
-	if (video().getRender().isImageTexturesSupported() && config.frameBufferEmulation.N64DepthCompare != 0)
+	if (Context::imageTextures && config.frameBufferEmulation.N64DepthCompare != 0)
 		m_depthImageFBO = GLuint(gfxContext.createFramebuffer());
 }
 
@@ -61,8 +64,7 @@ DepthBuffer::~DepthBuffer()
 
 void DepthBuffer::initDepthImageTexture(FrameBuffer * _pBuffer)
 {
-#ifdef GL_IMAGE_TEXTURES_SUPPORT
-	if (!video().getRender().isImageTexturesSupported() || config.frameBufferEmulation.N64DepthCompare == 0 || m_pDepthImageTexture != nullptr)
+	if (!Context::imageTextures || config.frameBufferEmulation.N64DepthCompare == 0 || m_pDepthImageTexture != nullptr)
 		return;
 
 	const graphics::FramebufferTextureFormats & fbTexFormat = gfxContext.getFramebufferTextureFormats();
@@ -118,9 +120,7 @@ void DepthBuffer::initDepthImageTexture(FrameBuffer * _pBuffer)
 
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, _pBuffer->m_FBO);
 
-
 	depthBufferList().clearBuffer(0, 0, VI.width, VI.height);
-#endif // GL_IMAGE_TEXTURES_SUPPORT
 }
 
 void DepthBuffer::_initDepthBufferTexture(FrameBuffer * _pBuffer, CachedTexture * _pTexture, bool _multisample)
@@ -135,8 +135,8 @@ void DepthBuffer::_initDepthBufferTexture(FrameBuffer * _pBuffer, CachedTexture 
 		_pTexture->clampHeight = _pBuffer->m_height;
 	} else {
 		if (config.frameBufferEmulation.nativeResFactor == 0) {
-			_pTexture->width = video().getWidth();
-			_pTexture->height = video().getHeight();
+			_pTexture->width = dwnd().getWidth();
+			_pTexture->height = dwnd().getHeight();
 		} else {
 			_pTexture->width = VI.width * config.frameBufferEmulation.nativeResFactor;
 			_pTexture->height = VI.height * config.frameBufferEmulation.nativeResFactor;
@@ -193,8 +193,8 @@ void DepthBuffer::_initDepthBufferRenderbuffer(FrameBuffer * _pBuffer)
 		height = (u32)(_pBuffer->m_pTexture->height);
 	} else {
 		if (config.frameBufferEmulation.nativeResFactor == 0) {
-			m_depthRenderbufferWidth = video().getWidth();
-			height = video().getHeight();
+			m_depthRenderbufferWidth = dwnd().getWidth();
+			height = dwnd().getHeight();
 		} else {
 			m_depthRenderbufferWidth = VI.width * config.frameBufferEmulation.nativeResFactor;
 			height = VI.height * config.frameBufferEmulation.nativeResFactor;
@@ -450,19 +450,19 @@ void DepthBufferList::clearBuffer(u32 _ulx, u32 _uly, u32 _lrx, u32 _lry)
 	m_pCurrent->m_uly = _uly;
 	m_pCurrent->m_lrx = _lrx;
 	m_pCurrent->m_lry = _lry;
-#ifdef GL_IMAGE_TEXTURES_SUPPORT
-	if (m_pCurrent->m_depthImageFBO == 0 || !video().getRender().isImageTexturesSupported() || config.frameBufferEmulation.N64DepthCompare == 0)
+
+	if (m_pCurrent->m_depthImageFBO == 0 || !Context::imageTextures || config.frameBufferEmulation.N64DepthCompare == 0)
 		return;
+
 	float color[4] = {1.0f, 1.0f, 0.0f, 1.0f};
 	glBindImageTexture(depthImageUnit, 0, 0, GL_FALSE, 0, GL_READ_WRITE, GLenum(fbTexFormats.depthImageInternalFormat));
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_pCurrent->m_depthImageFBO);
 	const u32 cycleType = gDP.otherMode.cycleType;
 	gDP.otherMode.cycleType = G_CYC_FILL;
-	video().getRender().drawRect(_ulx, _uly, _lrx, _lry, color);
+	dwnd().getDrawer().drawRect(_ulx, _uly, _lrx, _lry, color);
 	gDP.otherMode.cycleType = cycleType;
 	glBindImageTexture(depthImageUnit, m_pCurrent->m_pDepthImageTexture->glName, 0, GL_FALSE, 0, GL_READ_WRITE, GLenum(fbTexFormats.depthImageInternalFormat));
 	frameBufferList().setCurrentDrawBuffer();
-#endif // GL_IMAGE_TEXTURES_SUPPORT
 }
 
 void DepthBuffer_Init()

@@ -4,7 +4,7 @@
 #include "RDP.h"
 #include "gSP.h"
 #include "gDP.h"
-#include "OpenGL.h"
+#include "DisplayWindow.h"
 
 /******************Turbo3D microcode*************************/
 
@@ -126,7 +126,7 @@ void Turbo3D_LoadObject(u32 pstate, u32 pvtx, u32 ptri)
 			addr += 4;
 			gSPTriangle(tri->v0, tri->v1, tri->v2);
 		}
-		video().getRender().drawTriangles();
+		dwnd().getDrawer().drawTriangles();
 	}
 }
 

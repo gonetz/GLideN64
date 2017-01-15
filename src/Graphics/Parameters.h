@@ -104,4 +104,10 @@ namespace graphics {
 		extern Parameter TRIANGLE_STRIP;
 		extern Parameter LINES;
 	}
+
+	namespace blitMask {
+		extern Parameter COLOR_BUFFER;
+		extern Parameter DEPTH_BUFFER;
+		extern Parameter STENCIL_BUFFER;
+	}
 }

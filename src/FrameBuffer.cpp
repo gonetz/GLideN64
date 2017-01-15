@@ -25,6 +25,7 @@
 
 #include <Graphics/Context.h>
 #include <Graphics/Parameters.h>
+#include "DisplayWindow.h"
 
 using namespace std;
 
@@ -143,7 +144,7 @@ bool FrameBuffer::isAuxiliary() const
 
 void FrameBuffer::init(u32 _address, u32 _endAddress, u16 _format, u16 _size, u16 _width, u16 _height, bool _cfb)
 {
-	OGLVideo & ogl = video();
+	DisplayWindow & wnd = dwnd();
 	m_startAddress = _address;
 	m_endAddress = _endAddress;
 	m_width = _width;
@@ -155,8 +156,8 @@ void FrameBuffer::init(u32 _address, u32 _endAddress, u16 _format, u16 _size, u1
 	} else if (config.frameBufferEmulation.nativeResFactor != 0) {
 		m_scaleX = m_scaleY = static_cast<float>(config.frameBufferEmulation.nativeResFactor);
 	} else {
-		m_scaleX = ogl.getScaleX();
-		m_scaleY = ogl.getScaleY();
+		m_scaleX = wnd.getScaleX();
+		m_scaleY = wnd.getScaleY();
 	}
 	m_cfb = _cfb;
 	m_needHeightCorrection = _width != VI.width && _width != *REG.VI_WIDTH;
@@ -179,7 +180,7 @@ void FrameBuffer::init(u32 _address, u32 _endAddress, u16 _format, u16 _size, u1
 	} else
 		_setAndAttachTexture(m_FBO, m_pTexture, 0, false);
 
-	ogl.getRender().clearColorBuffer(nullptr);
+	wnd.getDrawer().clearColorBuffer(nullptr);
 }
 
 void FrameBuffer::reinit(u16 _height)
@@ -254,9 +255,9 @@ void FrameBuffer::copyRdram()
 bool FrameBuffer::isValid(bool _forceCheck) const
 {
 	if (!_forceCheck) {
-		if (m_validityChecked == video().getBuffersSwapCount())
+		if (m_validityChecked == dwnd().getBuffersSwapCount())
 			return true; // Already checked
-		m_validityChecked = video().getBuffersSwapCount();
+		m_validityChecked = dwnd().getBuffersSwapCount();
 	}
 
 	const u32 * const pData = (const u32*)RDRAM;
@@ -562,7 +563,7 @@ void FrameBufferList::saveBuffer(u32 _address, u16 _format, u16 _size, u16 _widt
 		return;
 	}
 
-	OGLVideo & ogl = video();
+	DisplayWindow & wnd = dwnd();
 	bool bPrevIsDepth = false;
 
 	if (m_pCurrent != nullptr) {
@@ -596,8 +597,8 @@ void FrameBufferList::saveBuffer(u32 _address, u16 _format, u16 _size, u16 _widt
 	const u32 endAddress = _address + ((_width * _height) << _size >> 1) - 1;
 	if (m_pCurrent == nullptr || m_pCurrent->m_startAddress != _address || m_pCurrent->m_width != _width)
 		m_pCurrent = findBuffer(_address);
-	const float scaleX = config.frameBufferEmulation.nativeResFactor == 0 ? ogl.getScaleX() : static_cast<float>(config.frameBufferEmulation.nativeResFactor);
-	const float scaleY = config.frameBufferEmulation.nativeResFactor == 0 ? ogl.getScaleY() : scaleX;
+	const float scaleX = config.frameBufferEmulation.nativeResFactor == 0 ? wnd.getScaleX() : static_cast<float>(config.frameBufferEmulation.nativeResFactor);
+	const float scaleY = config.frameBufferEmulation.nativeResFactor == 0 ? wnd.getScaleY() : scaleX;
 	if (m_pCurrent != nullptr) {
 		if ((m_pCurrent->m_startAddress != _address) ||
 			(m_pCurrent->m_width != _width) ||
@@ -618,7 +619,7 @@ void FrameBufferList::saveBuffer(u32 _address, u16 _format, u16 _size, u16 _widt
 			if (m_pCurrent->m_size != _size) {
 				f32 fillColor[4];
 				gDPGetFillColor(fillColor);
-				ogl.getRender().clearColorBuffer(fillColor);
+				wnd.getDrawer().clearColorBuffer(fillColor);
 				m_pCurrent->m_size = _size;
 				m_pCurrent->m_pTexture->format = _format;
 				m_pCurrent->m_pTexture->size = _size;
@@ -661,7 +662,7 @@ void FrameBufferList::saveBuffer(u32 _address, u16 _format, u16 _size, u16 _widt
 		// N64 games may use partial depth buffer clear for aux buffers
 		// It will not work for GL, so we have to force clear depth buffer for aux buffer
 		const DepthBuffer * pDepth = m_pCurrent->m_pDepthBuffer;
-		ogl.getRender().clearDepthBuffer(pDepth->m_ulx, pDepth->m_uly, pDepth->m_lrx, pDepth->m_lry);
+		wnd.getDrawer().clearDepthBuffer(pDepth->m_ulx, pDepth->m_uly, pDepth->m_lrx, pDepth->m_lry);
 	}
 
 	m_pCurrent->m_isDepthBuffer = _address == gDP.depthImageAddress;
@@ -761,7 +762,7 @@ void FrameBufferList::attachDepthBuffer()
 #endif // USE_DEPTH_RENDERBUFFER
 			m_pCurrent->m_pDepthBuffer = pDepthBuffer;
 			pDepthBuffer->setDepthAttachment(m_pCurrent->m_FBO, GL_DRAW_FRAMEBUFFER);
-			if (video().getRender().isImageTexturesSupported() && config.frameBufferEmulation.N64DepthCompare != 0)
+			if (graphics::Context::imageTextures && config.frameBufferEmulation.N64DepthCompare != 0)
 				pDepthBuffer->bindDepthImageTexture();
 		} else
 			m_pCurrent->m_pDepthBuffer = nullptr;
@@ -817,8 +818,8 @@ void FrameBufferList::renderBuffer(u32 _address)
 	if (pBuffer == nullptr)
 		return;
 
-	OGLVideo & ogl = video();
-	OGLRender & render = ogl.getRender();
+	DisplayWindow & wnd = dwnd();
+	GraphicsDrawer & drawer = wnd.getDrawer();
 	GLint srcY0, srcY1, dstY0, dstY1;
 	GLint X0, X1, Xwidth;
 	GLint Xoffset = 0;
@@ -842,7 +843,7 @@ void FrameBufferList::renderBuffer(u32 _address)
 	vEnd >>= 1;
 	const u32 vFullHeight = isPAL ? 288 : 240;
 	const u32 vCurrentHeight = vEnd - vStart;
-	const float dstScaleY = (float)ogl.getHeight() / float(vFullHeight);
+	const float dstScaleY = (float)wnd.getHeight() / float(vFullHeight);
 
 	bool isLowerField = false;
 	if (interlaced)
@@ -888,13 +889,13 @@ void FrameBufferList::renderBuffer(u32 _address)
 
 	const f32 viScaleX = _FIXED2FLOAT(_SHIFTR(*REG.VI_X_SCALE, 0, 12), 10);
 	const f32 srcScaleX = pFilteredBuffer->m_scaleX;
-	const f32 dstScaleX = ogl.getScaleX();
+	const f32 dstScaleX = wnd.getScaleX();
 	const s32 h0 = (isPAL ? 128 : 108);
 	const s32 hx0 = max(0, hStart - h0);
 	const s32 hx1 = max(0, h0 + 640 - hEnd);
 	X0 = (GLint)((hx0 * viScaleX + Xoffset) * dstScaleX);
 	Xwidth = (GLint)((min((f32)VI.width, (hEnd - hStart)*viScaleX - Xoffset - Xdivot)) * srcScaleX);
-	X1 = ogl.getWidth() - (GLint)((hx1*viScaleX + Xdivot) * dstScaleX);
+	X1 = wnd.getWidth() - (GLint)((hx1*viScaleX + Xdivot) * dstScaleX);
 
 	const f32 srcScaleY = pFilteredBuffer->m_scaleY;
 	CachedTexture * pBufferTexture = pFilteredBuffer->m_pTexture;
@@ -909,42 +910,67 @@ void FrameBufferList::renderBuffer(u32 _address)
 		return;
 	}
 
-	const GLint hOffset = (ogl.getScreenWidth() - ogl.getWidth()) / 2;
-	const GLint vOffset = (ogl.getScreenHeight() - ogl.getHeight()) / 2 + ogl.getHeightOffset();
+	const GLint hOffset = (wnd.getScreenWidth() - wnd.getWidth()) / 2;
+	const GLint vOffset = (wnd.getScreenHeight() - wnd.getHeight()) / 2 + wnd.getHeightOffset();
 	GLint dstCoord[4] = { X0 + hOffset,
 						  vOffset + (GLint)(dstY0*dstScaleY),
 						  hOffset + X1,
 						  vOffset + (GLint)(dstY1*dstScaleY) };
-#ifdef GLESX
+#if 0 //def GLESX
+	// TODO fix me
 	if (render.getRenderer() == OGLRender::glrAdreno)
 		dstCoord[0] += 1; // workaround for Adreno's issue with glBindFramebuffer;
 #endif // GLESX
 
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+//	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+	gfxContext.bindFramebuffer(graphics::bufferTarget::DRAW_FRAMEBUFFER, graphics::ObjectHandle());
+
 	//glDrawBuffer( GL_BACK );
 	float clearColor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
-	render.clearColorBuffer(clearColor);
+	drawer.clearColorBuffer(clearColor);
+
 
 	GLenum filter = GL_LINEAR;
+	graphics::ObjectHandle readBuffer;
+
 	if (pFilteredBuffer->m_pTexture->frameBufferTexture == CachedTexture::fbMultiSample) {
 		if (X0 > 0 || dstPartHeight > 0 ||
 			(srcCoord[2] - srcCoord[0]) != (dstCoord[2] - dstCoord[0]) ||
 			(srcCoord[3] - srcCoord[1]) != (dstCoord[3] - dstCoord[1])) {
 			pFilteredBuffer->resolveMultisampledTexture(true);
-			glBindFramebuffer(GL_READ_FRAMEBUFFER, pFilteredBuffer->m_resolveFBO);
+			//glBindFramebuffer(GL_READ_FRAMEBUFFER, pFilteredBuffer->m_resolveFBO);
+			readBuffer = graphics::ObjectHandle(pFilteredBuffer->m_resolveFBO);
 		} else {
-			glBindFramebuffer(GL_READ_FRAMEBUFFER, pFilteredBuffer->m_FBO);
+//			glBindFramebuffer(GL_READ_FRAMEBUFFER, pFilteredBuffer->m_FBO);
+			readBuffer = graphics::ObjectHandle(pFilteredBuffer->m_FBO);
 			filter = GL_NEAREST;
 		}
-	} else
-		glBindFramebuffer(GL_READ_FRAMEBUFFER, pFilteredBuffer->m_FBO);
+	} else {
+		readBuffer = graphics::ObjectHandle(pFilteredBuffer->m_FBO);
+//		glBindFramebuffer(GL_READ_FRAMEBUFFER, pFilteredBuffer->m_FBO);
+	}
 
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+//	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 
-	ogl.getRender().copyTexturedRect(srcCoord[0], srcCoord[1], srcCoord[2], srcCoord[3],
-									 pBufferTexture->realWidth, pBufferTexture->realHeight, pBufferTexture->glName,
-									 dstCoord[0], dstCoord[1], dstCoord[2], dstCoord[3],
-									 ogl.getScreenWidth(), ogl.getScreenHeight() + ogl.getHeightOffset(), filter);
+	GraphicsDrawer::BlitOrCopyRectParams blitParams;
+	blitParams.srcX0 = srcCoord[0];
+	blitParams.srcY0 = srcCoord[1];
+	blitParams.srcX1 = srcCoord[2];
+	blitParams.srcY1 = srcCoord[3];
+	blitParams.srcWidth = pBufferTexture->realWidth;
+	blitParams.srcHeight = pBufferTexture->realHeight;
+	blitParams.dstX0 = dstCoord[0];
+	blitParams.dstY0 = dstCoord[1];
+	blitParams.dstX1 = dstCoord[2];
+	blitParams.dstY1 = dstCoord[3];
+	blitParams.dstWidth = wnd.getScreenWidth();
+	blitParams.dstHeight = wnd.getScreenHeight() + wnd.getHeightOffset();
+	blitParams.filter = filter;
+	blitParams.tex[0] = pBufferTexture;
+	blitParams.combiner = CombinerInfo::get().getTexrectCopyProgram();
+	blitParams.readBuffer = readBuffer;
+
+	drawer.blitOrCopyTexturedRect(blitParams);
 
 	if (dstPartHeight > 0) {
 		const u32 size = *REG.VI_STATUS & 3;
@@ -958,22 +984,37 @@ void FrameBufferList::renderBuffer(u32 _address)
 			dstY1 = dstY0 + dstPartHeight;
 			if (pFilteredBuffer->m_pTexture->frameBufferTexture == CachedTexture::fbMultiSample) {
 				pFilteredBuffer->resolveMultisampledTexture();
-				glBindFramebuffer(GL_READ_FRAMEBUFFER, pFilteredBuffer->m_resolveFBO);
-			} else
-				glBindFramebuffer(GL_READ_FRAMEBUFFER, pFilteredBuffer->m_FBO);
+				readBuffer = graphics::ObjectHandle(pFilteredBuffer->m_resolveFBO);
+//				glBindFramebuffer(GL_READ_FRAMEBUFFER, pFilteredBuffer->m_resolveFBO);
+			} else {
+//				glBindFramebuffer(GL_READ_FRAMEBUFFER, pFilteredBuffer->m_FBO);
+				readBuffer = graphics::ObjectHandle(pFilteredBuffer->m_FBO);
+			}
 
-			glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+//			glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 
 			pBufferTexture = pFilteredBuffer->m_pTexture;
-			ogl.getRender().copyTexturedRect(0, (GLint)(srcY0*srcScaleY), Xwidth, min((GLint)(srcY1*srcScaleY), (GLint)pFilteredBuffer->m_pTexture->realHeight),
-											 pBufferTexture->realWidth, pBufferTexture->realHeight, pBufferTexture->glName,
-											 hOffset, vOffset + (GLint)(dstY0*dstScaleY), hOffset + X1, vOffset + (GLint)(dstY1*dstScaleY),
-											 ogl.getScreenWidth(), ogl.getScreenHeight() + ogl.getHeightOffset(), filter);
+
+			blitParams.srcX0 = 0;
+			blitParams.srcY0 = (s32)(srcY0*srcScaleY);
+			blitParams.srcX1 = Xwidth;
+			blitParams.srcY1 = min((s32)(srcY1*srcScaleY), (s32)pFilteredBuffer->m_pTexture->realHeight);
+			blitParams.srcWidth = pBufferTexture->realWidth;
+			blitParams.srcHeight = pBufferTexture->realHeight;
+			blitParams.dstX0 = hOffset;
+			blitParams.dstY0 = vOffset + (s32)(dstY0*dstScaleY);
+			blitParams.dstX1 = hOffset + X1;
+			blitParams.dstY1 = vOffset + (s32)(dstY1*dstScaleY);
+			blitParams.dstWidth = wnd.getScreenWidth();
+			blitParams.dstHeight = wnd.getScreenHeight() + wnd.getHeightOffset();
+			blitParams.tex[0] = pBufferTexture;
+
+			drawer.blitOrCopyTexturedRect(blitParams);
 		}
 	}
 
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
-	ogl.swapBuffers();
+	wnd.swapBuffers();
 	if (m_pCurrent != nullptr) {
 		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_pCurrent->m_FBO);
 #ifdef VC

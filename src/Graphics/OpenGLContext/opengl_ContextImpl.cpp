@@ -4,6 +4,7 @@
 #include "opengl_ContextImpl.h"
 #include "opengl_UnbufferedDrawer.h"
 #include "opengl_DummyTextDrawer.h"
+#include "opengl_Utils.h"
 #include "GLSL/glsl_CombinerProgramBuilder.h"
 #include "GLSL/glsl_SpecialShadersFactory.h"
 #include "GLSL/glsl_ShaderStorage.h"
@@ -191,6 +192,11 @@ void ContextImpl::deleteFramebuffer(graphics::ObjectHandle _name)
 		glDeleteFramebuffers(1, &fbo);
 }
 
+void ContextImpl::bindFramebuffer(graphics::Parameter _target, graphics::ObjectHandle _name)
+{
+	m_cachedFunctions->geCachedBindFramebuffer()->bind(_target, _name);
+}
+
 graphics::ObjectHandle ContextImpl::createRenderbuffer()
 {
 	return m_createRenderbuffer->createRenderbuffer();
@@ -311,4 +317,9 @@ void ContextImpl::drawText(const char *_pText, float _x, float _y)
 void ContextImpl::getTextSize(const char *_pText, float & _w, float & _h)
 {
 	m_textDrawer->getTextSize(_pText, _w, _h);
+}
+
+bool ContextImpl::isError() const
+{
+	return Utils::isGLError();
 }

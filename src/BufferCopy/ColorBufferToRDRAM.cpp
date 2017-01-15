@@ -19,6 +19,7 @@
 #endif
 #include <Graphics/Context.h>
 #include <Graphics/Parameters.h>
+#include <DisplayWindow.h>
 
 ColorBufferToRDRAM::ColorBufferToRDRAM()
 	: m_FBO(0)
@@ -126,8 +127,8 @@ bool ColorBufferToRDRAM::_prepareCopy(u32 _startAddress)
 	if (VI.width == 0 || frameBufferList().getCurrent() == nullptr)
 		return false;
 
-	OGLVideo & ogl = video();
-	const u32 curFrame = ogl.getBuffersSwapCount();
+	DisplayWindow & wnd = dwnd();
+	const u32 curFrame = wnd.getBuffersSwapCount();
 	FrameBuffer * pBuffer = frameBufferList().findBuffer(_startAddress);
 
 	if (pBuffer == nullptr || pBuffer->m_isOBScreen)
@@ -163,23 +164,30 @@ bool ColorBufferToRDRAM::_prepareCopy(u32 _startAddress)
 		return false;
 	}
 
+	graphics::ObjectHandle readBuffer;
+
 	if (config.video.multisampling != 0) {
 		m_pCurFrameBuffer->resolveMultisampledTexture();
-		glBindFramebuffer(GL_READ_FRAMEBUFFER, m_pCurFrameBuffer->m_resolveFBO);
+		//glBindFramebuffer(GL_READ_FRAMEBUFFER, m_pCurFrameBuffer->m_resolveFBO);
+		readBuffer = graphics::ObjectHandle(m_pCurFrameBuffer->m_resolveFBO);
+	} else {
+		//		glBindFramebuffer(GL_READ_FRAMEBUFFER, m_pCurFrameBuffer->m_FBO);
+		readBuffer = graphics::ObjectHandle(m_pCurFrameBuffer->m_FBO);
 	}
-	else
-		glBindFramebuffer(GL_READ_FRAMEBUFFER, m_pCurFrameBuffer->m_FBO);
+
 
 	if (m_pCurFrameBuffer->m_scaleX != 1.0f || m_pCurFrameBuffer->m_scaleY != 1.0f) {
-		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_FBO);
+//		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_FBO);
+		graphics::ObjectHandle drawBuffer(m_FBO);
+
 		u32 x0 = 0;
 		u32 width, height;
 		if (config.frameBufferEmulation.nativeResFactor == 0) {
-			height = ogl.getHeight();
-			const u32 screenWidth = ogl.getWidth();
+			height = wnd.getHeight();
+			const u32 screenWidth = wnd.getWidth();
 			width = screenWidth;
-			if (ogl.isAdjustScreen()) {
-				width = static_cast<u32>(screenWidth*ogl.getAdjustScale());
+			if (wnd.isAdjustScreen()) {
+				width = static_cast<u32>(screenWidth*wnd.getAdjustScale());
 				x0 = (screenWidth - width) / 2;
 			}
 		}
@@ -189,12 +197,29 @@ bool ColorBufferToRDRAM::_prepareCopy(u32 _startAddress)
 		}
 
 		CachedTexture * pInputTexture = frameBufferList().getCurrent()->m_pTexture;
-		ogl.getRender().copyTexturedRect(x0, 0, x0 + width, height,
-										 pInputTexture->realWidth, pInputTexture->realHeight, pInputTexture->glName,
-										 0, 0, VI.width, VI.height,
-										 m_pTexture->realWidth, m_pTexture->realHeight, GL_NEAREST);
+		GraphicsDrawer::BlitOrCopyRectParams blitParams;
+		blitParams.srcX0 = x0;
+		blitParams.srcY0 = 0;
+		blitParams.srcX1 = x0 + width;
+		blitParams.srcY1 = height;
+		blitParams.srcWidth = pInputTexture->realWidth;
+		blitParams.srcHeight = pInputTexture->realHeight;
+		blitParams.dstX0 = 0;
+		blitParams.dstY0 = 0;
+		blitParams.dstX1 = VI.width;
+		blitParams.dstY1 = VI.height;
+		blitParams.dstWidth = m_pTexture->realWidth;
+		blitParams.dstHeight = m_pTexture->realHeight;
+		blitParams.filter = graphics::textureParameters::FILTER_NEAREST;
+		blitParams.tex[0] = pInputTexture;
+		blitParams.combiner = CombinerInfo::get().getTexrectCopyProgram();
+		blitParams.readBuffer = readBuffer;
+		blitParams.drawBuffer = drawBuffer;
+		blitParams.mask = graphics::blitMask::COLOR_BUFFER;
+		wnd.getDrawer().blitOrCopyTexturedRect(blitParams);
 
-		glBindFramebuffer(GL_READ_FRAMEBUFFER, m_FBO);
+		gfxContext.bindFramebuffer(graphics::bufferTarget::READ_FRAMEBUFFER, graphics::ObjectHandle(m_FBO));
+//		glBindFramebuffer(GL_READ_FRAMEBUFFER, m_FBO);
 	}
 
 	m_frameCount = curFrame;

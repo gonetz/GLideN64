@@ -6,6 +6,7 @@
 #include "VI.h"
 #include "Textures.h"
 #include "NoiseTexture.h"
+#include "DisplayWindow.h"
 
 NoiseTexture g_noiseTexture;
 
@@ -68,7 +69,7 @@ void NoiseTexture::update()
 {
 	if (!m_pbuf || m_pTexture == nullptr)
 		return;
-	if (m_DList == video().getBuffersSwapCount() || config.generalEmulation.enableNoise == 0)
+	if (m_DList == dwnd().getBuffersSwapCount() || config.generalEmulation.enableNoise == 0)
 		return;
 	const u32 dataSize = VI.width*VI.height;
 	if (dataSize == 0)
@@ -95,5 +96,5 @@ void NoiseTexture::update()
 	params.data = m_pbuf->getData();
 	gfxContext.update2DTexture(params);
 
-	m_DList = video().getBuffersSwapCount();
+	m_DList = dwnd().getBuffersSwapCount();
 }

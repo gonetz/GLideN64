@@ -1,7 +1,7 @@
 #include "GLideN64_mupenplus.h"
 #include "../PluginAPI.h"
 #include "../GLideN64.h"
-#include "../OpenGL.h"
+#include <DisplayWindow.h>
 
 #ifdef OS_WINDOWS
 #define DLSYM(a, b) GetProcAddress(a, b)
@@ -123,10 +123,10 @@ void PluginAPI::SetRenderingCallback(void (*callback)(int))
 
 void PluginAPI::ResizeVideoOutput(int _Width, int _Height)
 {
-	video().setWindowSize(_Width, _Height);
+	dwnd().setWindowSize(_Width, _Height);
 }
 
 void PluginAPI::ReadScreen2(void * _dest, int * _width, int * _height, int _front)
 {
-	video().readScreen2(_dest, _width, _height, _front);
+	dwnd().readScreen2(_dest, _width, _height, _front);
 }

@@ -9,6 +9,7 @@
 namespace graphics {
 	class DrawerImpl;
 	class TextDrawer;
+	class CombinerProgram;
 }
 
 struct CachedTexture;
@@ -35,8 +36,6 @@ struct RectVertex
 class GraphicsDrawer
 {
 public:
-	GraphicsDrawer();
-
 	void addTriangle(int _v0, int _v1, int _v2);
 
 	void drawTriangles();
@@ -138,8 +137,14 @@ public:
 
 	void dropRenderState() { m_drawingState = DrawingState::None; }
 
+	void flush() { m_texrectDrawer.draw(); }
+
 private:
-	GraphicsDrawer(const GraphicsDrawer &);
+	friend class DisplayWindow;
+
+	GraphicsDrawer();
+
+	GraphicsDrawer(const GraphicsDrawer &) = delete;
 
 	void _initStates();
 	void _initData();

@@ -14,6 +14,7 @@
 #include "PluginAPI.h"
 #include "Config.h"
 #include "TextureFilterHandler.h"
+#include "DisplayWindow.h"
 
 using namespace std;
 
@@ -139,14 +140,14 @@ void RSP_CheckDLCounter()
 
 void RSP_ProcessDList()
 {
-	if (ConfigOpen || video().isResizeWindow()) {
+	if (ConfigOpen || dwnd().isResizeWindow()) {
 		*REG.MI_INTR |= MI_INTR_DP;
 		CheckInterrupts();
 		return;
 	}
 	if (*REG.VI_ORIGIN != VI.lastOrigin) {
 		VI_UpdateSize();
-		video().updateScale();
+		dwnd().updateScale();
 	}
 
 	RSP.PC[0] = *(u32*)&DMEM[0x0FF0];
@@ -220,7 +221,7 @@ void RSP_ProcessDList()
 		if ((config.generalEmulation.hacks & hack_rectDepthBufferCopyCBFD) != 0) {
 			; // do nothing
 		} else if ((config.generalEmulation.hacks & hack_rectDepthBufferCopyPD) != 0) {
-			if (rectDepthBufferCopyFrame == video().getBuffersSwapCount())
+			if (rectDepthBufferCopyFrame == dwnd().getBuffersSwapCount())
 				FrameBuffer_CopyDepthBuffer(gDP.colorImage.address);
 		} else if (!FBInfo::fbInfo.isSupported())
 			FrameBuffer_CopyDepthBuffer(gDP.colorImage.address);

@@ -2,9 +2,9 @@
 #include "../PluginAPI.h"
 #include "../GLideN64.h"
 #include "../GLideNUI/GLideNUI.h"
-#include "../OpenGL.h"
 #include "../Config.h"
 #include "../Revision.h"
+#include <DisplayWindow.h>
 
 void PluginAPI::DllAbout(/*HWND _hParent*/)
 {
@@ -16,7 +16,7 @@ void PluginAPI::DllAbout(/*HWND _hParent*/)
 
 void PluginAPI::CaptureScreen(char * _Directory)
 {
-	video().setCaptureScreen(_Directory);
+	dwnd().setCaptureScreen(_Directory);
 }
 
 void PluginAPI::DllConfig(HWND _hParent)

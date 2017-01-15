@@ -10,6 +10,7 @@
 
 #include <Graphics/Context.h>
 #include <Graphics/Parameters.h>
+#include <DisplayWindow.h>
 
 RDRAMtoColorBuffer::RDRAMtoColorBuffer()
 	: m_pCurBuffer(nullptr)
@@ -280,10 +281,12 @@ void RDRAMtoColorBuffer::copyFromRDRAM(u32 _address, bool _bCFB)
 	CombinerInfo::get().updateParameters();
 
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_pCurBuffer->m_FBO);
-	OGLRender::TexturedRectParams params((float)x0, (float)y0, (float)width, (float)height,
+
+	GraphicsDrawer::TexturedRectParams params((float)x0, (float)y0, (float)width, (float)height,
 										 0.0f, 0.0f, width - 1.0f, height - 1.0f, 1.0f, 1.0f,
 										 false, true, false, m_pCurBuffer);
-	video().getRender().drawTexturedRect(params);
+	dwnd().getDrawer().drawTexturedRect(params);
+
 	frameBufferList().setCurrentDrawBuffer();
 
 	gSP.textureTile[0] = pTile0;

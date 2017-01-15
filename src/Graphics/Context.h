@@ -16,7 +16,8 @@ namespace graphics {
 	enum class SpecialFeatures {
 		Multisampling,
 		NearPlaneClipping,
-		FragmentDepthWrite
+		FragmentDepthWrite,
+		ImageTextures
 	};
 
 	class ContextImpl;
@@ -113,6 +114,8 @@ namespace graphics {
 		ObjectHandle createFramebuffer();
 
 		void deleteFramebuffer(ObjectHandle _name);
+
+		void bindFramebuffer(Parameter _target, ObjectHandle _name);
 
 		ObjectHandle createRenderbuffer();
 
@@ -212,6 +215,10 @@ namespace graphics {
 		/*---------------Misc-------------*/
 
 		bool isSupported(SpecialFeatures _feature) const;
+
+		bool isError() const;
+
+		static bool imageTextures;
 
 	private:
 		std::unique_ptr<ContextImpl> m_impl;

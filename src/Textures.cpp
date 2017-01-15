@@ -18,6 +18,7 @@
 #include "TextureFilterHandler.h"
 #include "Graphics/Context.h"
 #include "Graphics/Parameters.h"
+#include "DisplayWindow.h"
 
 using namespace std;
 
@@ -1315,7 +1316,7 @@ void TextureCache::activateTexture(u32 _t, CachedTexture *_pTexture)
 		_pTexture->mirrorT ? graphics::textureParameters::WRAP_MIRRORED_REPEAT
 		: graphics::textureParameters::WRAP_REPEAT;
 
-	if (video().getRender().getRenderState() == OGLRender::rsTriangle && config.texture.maxAnisotropyF > 0.0f)
+	if (dwnd().getDrawer().getDrawingState() == DrawingState::Triangle && config.texture.maxAnisotropyF > 0.0f)
 		params.maxAnisotropy = graphics::Parameter(config.texture.maxAnisotropyF);
 
 	gfxContext.setTextureParameters(params);

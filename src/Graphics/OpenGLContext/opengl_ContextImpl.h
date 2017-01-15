@@ -66,6 +66,8 @@ namespace opengl {
 
 		void deleteFramebuffer(graphics::ObjectHandle _name) override;
 
+		void bindFramebuffer(graphics::Parameter _target, graphics::ObjectHandle _name) override;
+
 		graphics::ObjectHandle createRenderbuffer() override;
 
 		void initRenderbuffer(const graphics::Context::InitRenderbufferParams & _params) override;
@@ -105,6 +107,8 @@ namespace opengl {
 		void drawText(const char *_pText, float _x, float _y) override;
 
 		void getTextSize(const char *_pText, float & _w, float & _h) override;
+
+		bool isError() const override;
 
 	private:
 		std::unique_ptr<CachedFunctions> m_cachedFunctions;

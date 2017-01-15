@@ -9,7 +9,6 @@
 
 #include <N64.h>
 #include <GLideN64.h>
-#include <OpenGL.h>
 #include <RSP.h>
 #include <RDP.h>
 #include <VI.h>
@@ -18,6 +17,8 @@
 #include <FrameBufferInfo.h>
 #include <TextureFilterHandler.h>
 #include <Log.h>
+#include "Graphics/Context.h"
+#include <DisplayWindow.h>
 
 PluginAPI & PluginAPI::get()
 {
@@ -37,8 +38,8 @@ void RSP_ThreadProc(std::mutex * _pRspThreadMtx, std::mutex * _pPluginThreadMtx,
 	RSP_Init();
 	GBI.init();
 	Config_LoadConfig();
-	video().start();
-	assert(!isGLError());
+	dwnd().start();
+	assert(!gfxContext.isError());
 
 	while (true) {
 		_pPluginThreadMtx->lock();
@@ -47,7 +48,7 @@ void RSP_ThreadProc(std::mutex * _pRspThreadMtx, std::mutex * _pPluginThreadMtx,
 		_pRspThreadCv->wait(*_pRspThreadMtx);
 		if (*_pCommand != nullptr && !(*_pCommand)->run())
 			return;
-		assert(!isGLError());
+		assert(!gfxContext.isError());
 	}
 }
 
@@ -109,7 +110,7 @@ public:
 	}
 
 	bool run() {
-		video().readScreen(m_dest, m_width, m_height);
+		dwnd().readScreen(m_dest, m_width, m_height);
 		return true;
 	}
 
@@ -133,7 +134,7 @@ public:
 
 	bool run() {
 		TFH.shutdown();
-		video().stop();
+		dwnd().stop();
 		GBI.destroy();
 		m_pRspThreadMtx->unlock();
 		m_pPluginThreadMtx->lock();
@@ -184,7 +185,7 @@ void PluginAPI::RomClosed()
 	m_pRspThread = nullptr;
 #else
 	TFH.shutdown();
-	video().stop();
+	dwnd().stop();
 	GBI.destroy();
 #endif
 
@@ -206,7 +207,7 @@ void PluginAPI::RomOpen()
 	RSP_Init();
 	GBI.init();
 	Config_LoadConfig();
-	video().start();
+	dwnd().start();
 #endif
 
 #ifdef DEBUG
@@ -265,7 +266,7 @@ void PluginAPI::_initiateGFX(const GFX_INFO & _gfxInfo) const {
 
 void PluginAPI::ChangeWindow()
 {
-	video().setToggleFullscreen();
+	dwnd().setToggleFullscreen();
 }
 
 void PluginAPI::FBWrite(unsigned int _addr, unsigned int _size)
@@ -298,7 +299,7 @@ void PluginAPI::ReadScreen(void **_dest, long *_width, long *_height)
 #ifdef RSPTHREAD
 	_callAPICommand(ReadScreenCommand(_dest, _width, _height));
 #else
-	video().readScreen(_dest, _width, _height);
+	dwnd().readScreen(_dest, _width, _height);
 #endif
 }
 #endif

@@ -104,4 +104,10 @@ namespace graphics {
 		Parameter TRIANGLE_STRIP(GL_TRIANGLE_STRIP);
 		Parameter LINES(GL_LINES);
 	}
+
+	namespace blitMask {
+		Parameter COLOR_BUFFER(GL_COLOR_BUFFER_BIT);
+		Parameter DEPTH_BUFFER(GL_DEPTH_BUFFER_BIT);
+		Parameter STENCIL_BUFFER(GL_STENCIL_BUFFER_BIT);
+	}
 }

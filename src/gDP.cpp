@@ -21,6 +21,7 @@
 #include "Config.h"
 #include "Combiner.h"
 #include "Performance.h"
+#include "DisplayWindow.h"
 
 using namespace std;
 
@@ -735,7 +736,7 @@ void gDPSetScissor( u32 mode, f32 ulx, f32 uly, f32 lrx, f32 lry )
 
 void gDPFillRectangle( s32 ulx, s32 uly, s32 lrx, s32 lry )
 {
-	OGLRender & render = video().getRender();
+	GraphicsDrawer & drawer = dwnd().getDrawer();
 	if (gDP.otherMode.cycleType == G_CYC_FILL) {
 		++lrx;
 		++lry;
@@ -750,7 +751,7 @@ void gDPFillRectangle( s32 ulx, s32 uly, s32 lrx, s32 lry )
 			frameBufferList().fillRDRAM(ulx, uly, lrx, lry);
 			if (config.generalEmulation.enableFragmentDepthWrite == 0 ||
 				(ulx == 0 && uly == 0 && lrx == gDP.scissor.lrx && lry == gDP.scissor.lry)) {
-				render.clearDepthBuffer(ulx, uly, lrx, lry);
+				drawer.clearDepthBuffer(ulx, uly, lrx, lry);
 				bBufferCleared = true;
 			} else
 				depthBufferList().clearBuffer(ulx, uly, lrx, lry);
@@ -760,7 +761,7 @@ void gDPFillRectangle( s32 ulx, s32 uly, s32 lrx, s32 lry )
 		frameBufferList().fillRDRAM(ulx, uly, lrx, lry);
 		if (config.generalEmulation.enableFragmentDepthWrite == 0 ||
 			(ulx == 0 && uly == 0 && lrx == gDP.scissor.lrx && lry == gDP.scissor.lry)) {
-			render.clearDepthBuffer(ulx, uly, lrx, lry);
+			drawer.clearDepthBuffer(ulx, uly, lrx, lry);
 			bBufferCleared = true;
 		} else
 			depthBufferList().clearBuffer(ulx, uly, lrx, lry);
@@ -774,11 +775,11 @@ void gDPFillRectangle( s32 ulx, s32 uly, s32 lrx, s32 lry )
 		if (gDP.otherMode.cycleType == G_CYC_FILL) {
 			if ((ulx == 0) && (uly == 0) && (lrx == gDP.scissor.lrx) && (lry == gDP.scissor.lry)) {
 				frameBufferList().fillRDRAM(ulx, uly, lrx, lry);
-				render.clearColorBuffer(fillColor);
+				drawer.clearColorBuffer(fillColor);
 			} else
-				render.drawRect(ulx, uly, lrx, lry, fillColor);
+				drawer.drawRect(ulx, uly, lrx, lry, fillColor);
 		} else
-			render.drawRect(ulx, uly, lrx, lry, fillColor);
+			drawer.drawRect(ulx, uly, lrx, lry, fillColor);
 	}
 
 	if (lrx == gDP.colorImage.width) {
@@ -857,12 +858,12 @@ void gDPTextureRectangle(f32 ulx, f32 uly, f32 lrx, f32 lry, s32 tile, f32 s, f3
 		lrt = t + (lry - uly - 1) * dtdy;
 	}
 
-	OGLRender::TexturedRectParams params(ulx, uly, lrx, lry, s, t, lrs, lrt, fabsf(dsdx), fabsf(dtdy),
-										 flip, false, true, frameBufferList().getCurrent());
-	OGLRender & render = video().getRender();
+	GraphicsDrawer & drawer = dwnd().getDrawer();
+	GraphicsDrawer::TexturedRectParams params(ulx, uly, lrx, lry, s, t, lrs, lrt, fabsf(dsdx), fabsf(dtdy),
+		flip, false, true, frameBufferList().getCurrent());
 	if (config.generalEmulation.enableNativeResTexrects == 0 && config.generalEmulation.correctTexrectCoords != Config::tcDisable)
-		render.correctTexturedRectParams(params);
-	render.drawTexturedRect(params);
+		drawer.correctTexturedRectParams(params);
+	drawer.drawTexturedRect(params);
 
 	gSP.textureTile[0] = textureTileOrg[0];
 	gSP.textureTile[1] = textureTileOrg[1];
@@ -890,7 +891,7 @@ void gDPFullSync()
 		frameBufferList().removeAux();
 	}
 
-	video().getRender().flush();
+	dwnd().getDrawer().flush();
 
 	const bool sync = config.frameBufferEmulation.copyToRDRAM == Config::ctSync;
 	if ((config.frameBufferEmulation.copyToRDRAM != Config::ctDisable || (config.generalEmulation.hacks & hack_subscreen) != 0) &&
@@ -1058,9 +1059,9 @@ void gDPLLETriangle(u32 _w1, u32 _w2, int _shade, int _texture, int _zbuffer, u3
 #define SSCALE(s, _w) (PERSP_EN? float(PERSP(s, _w))/(1 << 10) : float(s)/(1<<21))
 #define TSCALE(s, w) (PERSP_EN? float(PERSP(s, w))/(1 << 10) : float(s)/(1<<21))
 
-	OGLRender & render = video().getRender();
-	render.setDMAVerticesSize(16);
-	SPVertex * vtx0 = render.getDMAVerticesData();
+	GraphicsDrawer & drawer = dwnd().getDrawer();
+	drawer.setDMAVerticesSize(16);
+	SPVertex * vtx0 = drawer.getDMAVerticesData();
 	SPVertex * vtx = vtx0;
 
 	xleft = xm;
@@ -1243,7 +1244,7 @@ void gDPLLETriangle(u32 _w1, u32 _w2, int _shade, int _texture, int _zbuffer, u3
 	if (_zbuffer != 0)
 		gSP.geometryMode |= G_ZBUFFER;
 
-	render.drawScreenSpaceTriangle(vtx - vtx0);
+	drawer.drawScreenSpaceTriangle(vtx - vtx0);
 	gSP.textureTile[0] = textureTileOrg[0];
 	gSP.textureTile[1] = textureTileOrg[1];
 }

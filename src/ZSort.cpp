@@ -7,8 +7,8 @@
 #include "gDP.h"
 #include "Log.h"
 #include "F3D.h"
-#include "OpenGL.h"
 #include "3DMath.h"
+#include "DisplayWindow.h"
 
 #define	GZM_USER0		0
 #define	GZM_USER1		2
@@ -132,9 +132,9 @@ void ZSort_DrawObject (u8 * _addr, u32 _type)
 	break;
 	}
 
-	OGLRender & render = video().getRender();
-	render.setDMAVerticesSize(vnum);
-	SPVertex * pVtx = render.getDMAVerticesData();
+	GraphicsDrawer & drawer = dwnd().getDrawer();
+	drawer.setDMAVerticesSize(vnum);
+	SPVertex * pVtx = drawer.getDMAVerticesData();
 	for (u32 i = 0; i < vnum; ++i) {
 		SPVertex & vtx = pVtx[i];
 		vtx.x = _FIXED2FLOAT(((s16*)_addr)[0 ^ 1], 2);
@@ -156,7 +156,7 @@ void ZSort_DrawObject (u8 * _addr, u32 _type)
 
 		_addr += vsize;
 	}
-	render.drawScreenSpaceTriangle(vnum);
+	drawer.drawScreenSpaceTriangle(vnum);
 }
 
 static
@@ -285,9 +285,9 @@ void ZSort_Lighting( u32 _w0, u32 _w1 )
 	u32 tdest = -1024 + _SHIFTR(_w1, 0, 12);
 	int use_material = (csrs != 0x0ff0);
 	tdest >>= 1;
-	OGLRender & render = video().getRender();
-	render.setDMAVerticesSize(num);
-	SPVertex * pVtx = render.getDMAVerticesData();
+	GraphicsDrawer & drawer = dwnd().getDrawer();
+	drawer.setDMAVerticesSize(num);
+	SPVertex * pVtx = drawer.getDMAVerticesData();
 	for (u32 i = 0; i < num; i++) {
 		SPVertex & vtx = pVtx[i];
 

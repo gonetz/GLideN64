@@ -4,6 +4,7 @@
 #include <Textures.h>
 #include <NoiseTexture.h>
 #include <FrameBuffer.h>
+#include <DisplayWindow.h>
 #include <GBI.h>
 #include <RSP.h>
 #include <gSP.h>
@@ -372,8 +373,8 @@ public:
 	{
 		if (config.frameBufferEmulation.nativeResFactor == 0)
 			// TODO fix me
-			//uScreenScale.set(video().getScaleX(), video().getScaleY(), _force);
-			uScreenScale.set(2.0f, 2.0f, _force);
+			uScreenScale.set(dwnd().getScaleX(), dwnd().getScaleY(), _force);
+//			uScreenScale.set(2.0f, 2.0f, _force);
 		else
 			uScreenScale.set(float(config.frameBufferEmulation.nativeResFactor), float(config.frameBufferEmulation.nativeResFactor), _force);
 	}

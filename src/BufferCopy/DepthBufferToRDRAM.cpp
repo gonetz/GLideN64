@@ -14,6 +14,7 @@
 
 #include <Graphics/Context.h>
 #include <Graphics/Parameters.h>
+#include <DisplayWindow.h>
 
 #ifndef GLES2
 
@@ -142,7 +143,7 @@ void DepthBufferToRDRAM::destroy() {
 
 bool DepthBufferToRDRAM::_prepareCopy(u32 _address, bool _copyChunk)
 {
-	const u32 curFrame = video().getBuffersSwapCount();
+	const u32 curFrame = dwnd().getBuffersSwapCount();
 	if (_copyChunk && m_frameCount == curFrame)
 		return true;
 

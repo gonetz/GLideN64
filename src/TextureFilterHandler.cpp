@@ -7,6 +7,7 @@
 #include "PluginAPI.h"
 #include "FrameBuffer.h"
 #include "TextureFilterHandler.h"
+#include "DisplayWindow.h"
 #include "wst.h"
 
 static
@@ -67,10 +68,10 @@ void displayLoadProgress(const wchar_t *format, ...)
 	if (pBuffer != nullptr)
 		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 
-	OGLRender & render = video().getRender();
-	render.clearColorBuffer(nullptr);
-	render.drawText(buf, -0.9f, 0);
-	video().swapBuffers();
+	GraphicsDrawer & drawer = dwnd().getDrawer();
+	drawer.clearColorBuffer(nullptr);
+	drawer.drawText(buf, -0.9f, 0);
+	dwnd().swapBuffers();
 
 	if (pBuffer != nullptr)
 		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, pBuffer->m_FBO);

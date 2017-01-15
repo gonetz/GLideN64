@@ -13,6 +13,7 @@
 #include "Config.h"
 #include "Performance.h"
 #include "Debug.h"
+#include "DisplayWindow.h"
 
 using namespace std;
 
@@ -98,18 +99,18 @@ void VI_UpdateScreen()
 		return;
 
 	perf.increaseVICount();
-	OGLVideo & ogl = video();
-	if (ogl.changeWindow())
+	DisplayWindow & wnd = dwnd();
+	if (wnd.changeWindow())
 		return;
-	if (ogl.resizeWindow())
+	if (wnd.resizeWindow())
 		return;
-	ogl.saveScreenshot();
+	wnd.saveScreenshot();
 
 	bool bVIUpdated = false;
 	if (*REG.VI_ORIGIN != VI.lastOrigin) {
 		VI_UpdateSize();
 		bVIUpdated = true;
-		ogl.updateScale();
+		wnd.updateScale();
 	}
 
 	if (config.frameBufferEmulation.enable) {
@@ -142,7 +143,7 @@ void VI_UpdateScreen()
 				if (pBuffer == nullptr || pBuffer->m_width != VI.width) {
 					if (!bVIUpdated) {
 						VI_UpdateSize();
-						ogl.updateScale();
+						wnd.updateScale();
 						bVIUpdated = true;
 					}
 					const u32 size = *REG.VI_STATUS & 3;
@@ -165,7 +166,7 @@ void VI_UpdateScreen()
 	}
 	else {
 		if (gDP.changed & CHANGED_COLORBUFFER) {
-			ogl.swapBuffers();
+			wnd.swapBuffers();
 			gDP.changed &= ~CHANGED_COLORBUFFER;
 			VI.lastOrigin = *REG.VI_ORIGIN;
 		}

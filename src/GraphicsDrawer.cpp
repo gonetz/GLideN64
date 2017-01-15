@@ -198,7 +198,7 @@ float _adjustViewportX(f32 _X0)
 {
 	const f32 halfX = gDP.colorImage.width / 2.0f;
 	const f32 halfVP = gSP.viewport.width / 2.0f;
-	return (_X0 + halfVP - halfX) * video().getAdjustScale() + halfX - halfVP;
+	return (_X0 + halfVP - halfX) * dwnd().getAdjustScale() + halfX - halfVP;
 }
 
 void GraphicsDrawer::_updateViewport() const
@@ -807,7 +807,7 @@ void GraphicsDrawer::drawLine(int _v0, int _v1, float _width)
 
 	GLfloat lineWidth = _width;
 	if (config.frameBufferEmulation.nativeResFactor == 0)
-		lineWidth *= video().getScaleX();
+		lineWidth *= dwnd().getScaleX();
 	else
 		lineWidth *= config.frameBufferEmulation.nativeResFactor;
 	if (lineWidth > m_maxLineWidth) {
@@ -843,9 +843,9 @@ void GraphicsDrawer::drawRect(int _ulx, int _uly, int _lrx, int _lry, float *_pC
 	m_drawingState = DrawingState::Rect;
 
 	FrameBuffer * pCurrentBuffer = frameBufferList().getCurrent();
-	OGLVideo & ogl = video();
+	DisplayWindow & wnd = dwnd();
 	if (pCurrentBuffer == nullptr)
-		gfxContext.setViewport(0, ogl.getHeightOffset(), ogl.getScreenWidth(), ogl.getScreenHeight());
+		gfxContext.setViewport(0, wnd.getHeightOffset(), wnd.getScreenWidth(), wnd.getScreenHeight());
 	else
 		gfxContext.setViewport(0, 0, pCurrentBuffer->m_width*pCurrentBuffer->m_scaleX, pCurrentBuffer->m_height*pCurrentBuffer->m_scaleY);
 
@@ -872,8 +872,8 @@ void GraphicsDrawer::drawRect(int _ulx, int _uly, int _lrx, int _lry, float *_pC
 	m_rect[3].z = Z;
 	m_rect[3].w = W;
 
-	if (ogl.isAdjustScreen() && (gDP.colorImage.width > VI.width * 98 / 100) && (_lrx - _ulx < VI.width * 9 / 10)) {
-		const float scale = ogl.getAdjustScale();
+	if (wnd.isAdjustScreen() && (gDP.colorImage.width > VI.width * 98 / 100) && (_lrx - _ulx < VI.width * 9 / 10)) {
+		const float scale = wnd.getAdjustScale();
 		for (u32 i = 0; i < 4; ++i)
 			m_rect[i].x *= scale;
 	}
@@ -897,16 +897,12 @@ bool texturedRectShadowMap(const GraphicsDrawer::TexturedRectParams &)
 	FrameBuffer * pCurrentBuffer = frameBufferList().getCurrent();
 	if (pCurrentBuffer != nullptr) {
 		if (gDP.textureImage.size == 2 && gDP.textureImage.address >= gDP.depthImageAddress &&  gDP.textureImage.address < (gDP.depthImageAddress + gDP.colorImage.width*gDP.colorImage.width * 6 / 4)) {
-#ifdef GL_IMAGE_TEXTURES_SUPPORT
-			if (video().getRender().isImageTexturesSupported()) {
+			if (Context::imageTextures) {
 				pCurrentBuffer->m_pDepthBuffer->activateDepthBufferTexture(pCurrentBuffer);
 				CombinerInfo::get().setDepthFogCombiner();
 			}
 			else
 				return true;
-#else
-			return true;
-#endif
 		}
 	}
 	return false;
@@ -929,8 +925,8 @@ bool texturedRectDepthBufferCopy(const GraphicsDrawer::TexturedRectParams & _par
 			return true;
 		pBuffer->m_cleared = true;
 		if (config.frameBufferEmulation.copyDepthToRDRAM == Config::cdCopyFromVRam) {
-			if (rectDepthBufferCopyFrame != video().getBuffersSwapCount()) {
-				rectDepthBufferCopyFrame = video().getBuffersSwapCount();
+			if (rectDepthBufferCopyFrame != dwnd().getBuffersSwapCount()) {
+				rectDepthBufferCopyFrame = dwnd().getBuffersSwapCount();
 				if (!FrameBuffer_CopyDepthBuffer(gDP.colorImage.address))
 					return true;
 			}
@@ -1087,7 +1083,7 @@ void GraphicsDrawer::drawTexturedRect(const TexturedRectParams & _params)
 
 	CombinerProgram * pCurrentCombiner = currentCombiner();
 	const FrameBuffer * pCurrentBuffer = _params.pBuffer;
-	OGLVideo & ogl = video();
+	DisplayWindow & wnd = dwnd();
 	TextureCache & cache = textureCache();
 	const bool bUseBilinear = (gDP.otherMode.textureFilter | (gSP.objRendermode&G_OBJRM_BILERP)) != 0;
 	const bool bUseTexrectDrawer = config.generalEmulation.enableNativeResTexrects != 0
@@ -1236,11 +1232,11 @@ void GraphicsDrawer::drawTexturedRect(const TexturedRectParams & _params)
 		m_rect[2].t1 = texST[1].t1;
 	}
 
-	if (ogl.isAdjustScreen() &&
+	if (wnd.isAdjustScreen() &&
 		(_params.forceAjustScale ||
 		((gDP.colorImage.width > VI.width * 98 / 100) && (_params.lrx - _params.ulx < VI.width * 9 / 10))))
 	{
-		const float scale = ogl.getAdjustScale();
+		const float scale = wnd.getAdjustScale();
 		for (u32 i = 0; i < 4; ++i)
 			m_rect[i].x *= scale;
 	}
@@ -1249,7 +1245,7 @@ void GraphicsDrawer::drawTexturedRect(const TexturedRectParams & _params)
 		m_texrectDrawer.add();
 	else {
 		if (pCurrentBuffer == nullptr)
-			gfxContext.setViewport(0, ogl.getHeightOffset(), ogl.getScreenWidth(), ogl.getScreenHeight());
+			gfxContext.setViewport(0, wnd.getHeightOffset(), wnd.getScreenWidth(), wnd.getScreenHeight());
 		else
 			gfxContext.setViewport(0, 0, pCurrentBuffer->m_width*pCurrentBuffer->m_scaleX, pCurrentBuffer->m_height*pCurrentBuffer->m_scaleY);
 
@@ -1493,6 +1489,8 @@ void GraphicsDrawer::blitOrCopyTexturedRect(const BlitOrCopyRectParams & _params
 	if (gfxContext.blitFramebuffers(blitParams))
 		return;
 
+	gfxContext.bindFramebuffer(bufferTarget::READ_FRAMEBUFFER, _params.readBuffer);
+	gfxContext.bindFramebuffer(bufferTarget::DRAW_FRAMEBUFFER, _params.drawBuffer);
 	copyTexturedRect(_params);
 }
 
@@ -1564,6 +1562,7 @@ void GraphicsDrawer::_initData()
 	FBInfo::fbInfo.reset();
 	m_texrectDrawer.init();
 	m_drawingState = DrawingState::None;
+	m_bImageTexture = gfxContext.isSupported(SpecialFeatures::ImageTextures);
 
 	gSP.changed = gDP.changed = 0xFFFFFFFF;
 

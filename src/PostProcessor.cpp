@@ -9,6 +9,7 @@
 
 #include <Graphics/Context.h>
 #include <Graphics/Parameters.h>
+#include "DisplayWindow.h"
 
 //#define NEW_POST_PROCESSOR
 
@@ -286,8 +287,8 @@ void _initTexture(CachedTexture * pTexture)
 	pTexture->maskT = 0;
 	pTexture->mirrorS = 0;
 	pTexture->mirrorT = 0;
-	pTexture->realWidth = video().getWidth();
-	pTexture->realHeight = video().getHeight();
+	pTexture->realWidth = dwnd().getWidth();
+	pTexture->realHeight = dwnd().getHeight();
 	pTexture->textureBytes = pTexture->realWidth * pTexture->realHeight * 4;
 	textureCache().addFrameBufferTextureSize(pTexture->textureBytes);
 
@@ -393,7 +394,7 @@ void PostProcessor::_initBlur()
 	glUniform1i(loc, 0);
 	loc = glGetUniformLocation(m_seperableBlurProgram, "TexelSize");
 	assert(loc >= 0);
-	glUniform2f(loc, 1.0f / video().getWidth(), 1.0f / video().getHeight());
+	glUniform2f(loc, 1.0f / dwnd().getWidth(), 1.0f / dwnd().getHeight());
 	loc = glGetUniformLocation(m_seperableBlurProgram, "Orientation");
 	assert(loc >= 0);
 	glUniform1i(loc, 0);
@@ -538,7 +539,7 @@ void PostProcessor::_setGLState() {
 	glVertexAttribPointer(SC_RECT_POSITION, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (float*)vert);
 	glEnableVertexAttribArray(SC_TEXCOORD0);
 	glVertexAttribPointer(SC_TEXCOORD0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (float*)vert + 2);
-	glViewport(0, 0, video().getWidth(), video().getHeight());
+	glViewport(0, 0, dwnd().getWidth(), dwnd().getHeight());
 	glScissor(0, 0, m_pResultBuffer->m_pTexture->realWidth, m_pResultBuffer->m_pTexture->realHeight);
 	gSP.changed |= CHANGED_VIEWPORT;
 	gDP.changed |= CHANGED_RENDERMODE | CHANGED_SCISSOR;
@@ -549,12 +550,11 @@ void PostProcessor::_preDraw(FrameBuffer * _pBuffer)
 #ifndef NEW_POST_PROCESSOR
 	_setGLState();
 #endif
-	OGLVideo & ogl = video();
 
 	m_pResultBuffer->m_width = _pBuffer->m_width;
 	m_pResultBuffer->m_height = _pBuffer->m_height;
-	m_pResultBuffer->m_scaleX = ogl.getScaleX();
-	m_pResultBuffer->m_scaleY = ogl.getScaleY();
+	m_pResultBuffer->m_scaleX = dwnd().getScaleX();
+	m_pResultBuffer->m_scaleY = dwnd().getScaleY();
 #ifdef GLES2
 	m_pTextureOriginal = _pBuffer->m_pTexture;
 #else
@@ -572,7 +572,7 @@ void PostProcessor::_postDraw()
 {
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 #ifndef NEW_POST_PROCESSOR
-	video().getRender().dropRenderState();
+	dwnd().getDrawer().dropRenderState();
 #endif
 	glUseProgram(0);
 }

@@ -5,17 +5,21 @@ using namespace graphics;
 
 Context gfxContext;
 
+bool Context::imageTextures = false;
+
 Context::Context() {}
 
 Context::~Context() {
 	m_impl.reset();
 }
 
+
 void Context::init()
 {
 	m_impl.reset(new opengl::ContextImpl);
 	m_impl->init();
 	m_fbTexFormats.reset(m_impl->getFramebufferTextureFormats());
+	imageTextures = isSupported(SpecialFeatures::ImageTextures);
 }
 
 void Context::destroy()
@@ -121,6 +125,11 @@ void Context::deleteFramebuffer(ObjectHandle _name)
 	m_impl->deleteFramebuffer(_name);
 }
 
+void Context::bindFramebuffer(Parameter _target, ObjectHandle _name)
+{
+	m_impl->bindFramebuffer(_target, _name);
+}
+
 ObjectHandle Context::createRenderbuffer()
 {
 	return m_impl->createRenderbuffer();
@@ -216,6 +225,11 @@ void Context::getTextSize(const char *_pText, float & _w, float & _h)
 f32 Context::getMaxLineWidth()
 {
 	return m_impl->getMaxLineWidth();
+}
+
+bool Context::isError() const
+{
+	return m_impl->isError();
 }
 
 bool Context::isSupported(SpecialFeatures _feature) const

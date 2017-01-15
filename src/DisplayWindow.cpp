@@ -1,20 +1,20 @@
 #include <assert.h>
 #include "Config.h"
 #include "VI.h"
-#include "DisplayWindow.h"
 #include "Graphics/Context.h"
+#include "DisplayWindow.h"
 
 void DisplayWindow::start()
 {
 	_start(); // TODO: process initialization error
 	gfxContext.init();
-//	m_render._initData();
+	m_drawer._initData();
 	m_buffersSwapCount = 0;
 }
 
 void DisplayWindow::stop()
 {
-//	m_render._destroyData();
+	m_drawer._destroyData();
 	gfxContext.destroy();
 	_stop();
 }
@@ -26,7 +26,7 @@ void DisplayWindow::restart()
 
 void DisplayWindow::swapBuffers()
 {
-//	m_render.drawOSD();
+	m_drawer.drawOSD();
 	_swapBuffers();
 	gDP.otherMode.l = 0;
 	if ((config.generalEmulation.hacks & hack_doNotResetTLUTmode) == 0)
@@ -52,10 +52,10 @@ bool DisplayWindow::changeWindow()
 {
 	if (!m_bToggleFullscreen)
 		return false;
-//	m_render._destroyData();
+	m_drawer._destroyData();
 	_changeWindow();
 	updateScale();
-//	m_render._initData();
+	m_drawer._initData();
 	m_bToggleFullscreen = false;
 	return true;
 }
@@ -73,11 +73,11 @@ bool DisplayWindow::resizeWindow()
 {
 	if (!m_bResizeWindow)
 		return false;
-//	m_render._destroyData();
+	m_drawer._destroyData();
 	if (!_resizeWindow())
 		_start();
 	updateScale();
-//	m_render._initData();
+	m_drawer._initData();
 	m_bResizeWindow = false;
 	return true;
 }

@@ -117,12 +117,14 @@ void CombinerInfo::init()
 
 	m_shadowmapProgram.reset(gfxContext.createDepthFogShader());
 	m_monochromeProgram.reset(gfxContext.createMonochromeShader());
+	m_texrectCopyProgram.reset(gfxContext.createTexrectCopyShader());
 }
 
 void CombinerInfo::destroy()
 {
 	m_shadowmapProgram.reset();
 	m_monochromeProgram.reset();
+	m_texrectCopyProgram.reset();
 
 	m_pCurrent = nullptr;
 	if (m_bShaderCacheSupported)
@@ -302,6 +304,11 @@ void CombinerInfo::setMonochromeCombiner()
 		m_monochromeProgram->activate();
 		m_pCurrent = m_monochromeProgram.get();
 	}
+}
+
+graphics::ShaderProgram * CombinerInfo::getTexrectCopyProgram()
+{
+	return m_texrectCopyProgram.get();
 }
 
 void CombinerInfo::setPolygonMode(OGLRender::RENDER_STATE _renderState)

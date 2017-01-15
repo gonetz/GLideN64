@@ -1,5 +1,6 @@
 #pragma once
 #include "Types.h"
+#include "GraphicsDrawer.h"
 
 class DisplayWindow
 {
@@ -33,6 +34,8 @@ public:
 	bool isAdjustScreen() const { return m_bAdjustScreen; }
 	bool isResizeWindow() const { return m_bResizeWindow; }
 
+	GraphicsDrawer & getDrawer() { return m_drawer; }
+
 	static DisplayWindow & get();
 
 protected:
@@ -61,7 +64,7 @@ protected:
 	wchar_t m_strScreenDirectory[PLUGIN_PATH_SIZE];
 
 private:
-//	OGLRender m_render;
+	GraphicsDrawer m_drawer;
 
 	virtual bool _start() = 0;
 	virtual void _stop() = 0;
@@ -72,3 +75,9 @@ private:
 	virtual void _readScreen(void **_pDest, long *_pWidth, long *_pHeight) = 0;
 	virtual void _readScreen2(void * _dest, int * _width, int * _height, int _front) = 0;
 };
+
+inline
+DisplayWindow & dwnd()
+{
+	return DisplayWindow::get();
+}
