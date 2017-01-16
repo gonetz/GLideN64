@@ -438,6 +438,7 @@
     <ClInclude Include="..\..\src\Graphics\CombinerProgram.h" />
     <ClInclude Include="..\..\src\Graphics\Context.h" />
     <ClInclude Include="..\..\src\Graphics\ContextImpl.h" />
+    <ClInclude Include="..\..\src\Graphics\FramebufferTextureFormats.h" />
     <ClInclude Include="..\..\src\Graphics\ObjectHandle.h" />
     <ClInclude Include="..\..\src\Graphics\OpenGLContext\GLFunctions.h" />
     <ClInclude Include="..\..\src\Graphics\OpenGLContext\GLSL\glsl_CombinerInputs.h" />

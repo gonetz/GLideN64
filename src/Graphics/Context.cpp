@@ -15,6 +15,7 @@ void Context::init()
 {
 	m_impl.reset(new opengl::ContextImpl);
 	m_impl->init();
+	m_fbTexFormats.reset(m_impl->getFramebufferTextureFormats());
 }
 
 void Context::destroy()
@@ -99,6 +100,11 @@ void Context::setTextureParameters(const TexParameters & _parameters)
 }
 
 /*---------------Framebuffer-------------*/
+
+const FramebufferTextureFormats & Context::getFramebufferTextureFormats()
+{
+	return *m_fbTexFormats.get();
+}
 
 ObjectHandle Context::createFramebuffer()
 {

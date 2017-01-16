@@ -7,6 +7,7 @@
 #include "CombinerProgram.h"
 #include "ShaderProgram.h"
 #include "PixelBuffer.h"
+#include "FramebufferTextureFormats.h"
 
 #define GRAPHICS_CONTEXT
 
@@ -104,6 +105,8 @@ namespace graphics {
 		void setTextureParameters(const TexParameters & _parameters);
 
 		/*---------------Framebuffer-------------*/
+
+		const FramebufferTextureFormats & getFramebufferTextureFormats();
 
 		ObjectHandle createFramebuffer();
 
@@ -210,6 +213,7 @@ namespace graphics {
 
 	private:
 		std::unique_ptr<ContextImpl> m_impl;
+		std::unique_ptr<FramebufferTextureFormats> m_fbTexFormats;
 	};
 
 }

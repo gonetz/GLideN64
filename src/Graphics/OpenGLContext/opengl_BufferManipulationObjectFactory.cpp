@@ -1,3 +1,4 @@
+#include <assert.h>
 #include <Graphics/Parameters.h>
 #include "opengl_GLInfo.h"
 #include "opengl_CachedFunctions.h"
@@ -259,6 +260,135 @@ public:
 	}
 };
 
+/*---------------FramebufferTextureFormats-------------*/
+
+struct FramebufferTextureFormatsGLES2 : public graphics::FramebufferTextureFormats
+{
+	static bool Check(const GLInfo & _glinfo) {
+		return _glinfo.isGLES2;
+	}
+
+	FramebufferTextureFormatsGLES2()
+	{
+		init();
+	}
+
+protected:
+	void init() override
+	{
+		monochromeInternalFormat = GL_RGB;
+		monochromeFormat = GL_RGB;
+		monochromeType = GL_UNSIGNED_SHORT_5_6_5;
+		monochromeFormatBytes = 2;
+
+#ifndef USE_DEPTH_RENDERBUFFER
+		depthInternalFormat = GL_DEPTH_COMPONENT;
+		depthFormatBytes = 4;
+#else
+		depthInternalFormat = GL_DEPTH_COMPONENT16;
+		depthFormatBytes = 2;
+#endif
+
+		depthFormat = GL_DEPTH_COMPONENT;
+		depthType = GL_UNSIGNED_INT;
+
+		if (Utils::isExtensionSupported("GL_OES_rgb8_rgba8")) {
+			colorInternalFormat = GL_RGBA;
+			colorFormat = GL_RGBA;
+			colorType = GL_UNSIGNED_BYTE;
+			colorFormatBytes = 4;
+		}
+		else {
+			colorInternalFormat = GL_RGB;
+			colorFormat = GL_RGB;
+			colorType = GL_UNSIGNED_SHORT_5_6_5;
+			colorFormatBytes = 2;
+		}
+	}
+};
+
+struct FramebufferTextureFormatsGLES3 : public graphics::FramebufferTextureFormats
+{
+	static bool Check(const GLInfo & _glinfo) {
+		return _glinfo.isGLESX && !_glinfo.isGLES2;
+	}
+
+	FramebufferTextureFormatsGLES3()
+	{
+		init();
+	}
+
+protected:
+	void init() override
+	{
+		colorInternalFormat = GL_RGBA8;
+		colorFormat = GL_RGBA;
+		colorType = GL_UNSIGNED_BYTE;
+		colorFormatBytes = 4;
+
+		monochromeInternalFormat = GL_R8;
+		monochromeFormat = GL_RED;
+		monochromeType = GL_UNSIGNED_BYTE;
+		monochromeFormatBytes = 1;
+
+		depthInternalFormat = GL_DEPTH_COMPONENT24;
+		depthFormat = GL_DEPTH_COMPONENT;
+		depthType = GL_UNSIGNED_INT;
+		depthFormatBytes = 4;
+
+		depthImageInternalFormat = GL_RGBA32F;
+		depthImageFormat = GL_RGBA;
+		depthImageType = GL_FLOAT;
+		depthImageFormatBytes = 16;
+
+		lutInternalFormat = GL_R32UI;
+		lutFormat = GL_RED_INTEGER;
+		lutType = GL_UNSIGNED_INT;
+		lutFormatBytes = 4;
+	}
+};
+
+struct FramebufferTextureFormatsOpenGL : public graphics::FramebufferTextureFormats
+{
+	static bool Check(const GLInfo & _glinfo) {
+		return !_glinfo.isGLESX;
+	}
+
+	FramebufferTextureFormatsOpenGL()
+	{
+		init();
+	}
+
+protected:
+	void init() override
+	{
+		colorInternalFormat = GL_RGBA;
+		colorFormat = GL_RGBA;
+		colorType = GL_UNSIGNED_BYTE;
+		colorFormatBytes = 4;
+
+		monochromeInternalFormat = GL_RED;
+		monochromeFormat = GL_RED;
+		monochromeType = GL_UNSIGNED_BYTE;
+		monochromeFormatBytes = 1;
+
+		depthInternalFormat = GL_DEPTH_COMPONENT;
+		depthFormat = GL_DEPTH_COMPONENT;
+		depthType = GL_FLOAT;
+		depthFormatBytes = 4;
+
+		depthImageInternalFormat = GL_RG32F;
+		depthImageFormat = GL_RG;
+		depthImageType = GL_FLOAT;
+		depthImageFormatBytes = 8;
+
+		lutInternalFormat = GL_R16;
+		lutFormat = GL_RED;
+		lutType = GL_UNSIGNED_SHORT;
+		lutFormatBytes = 2;
+	}
+};
+
 /*---------------BufferManipulationObjectFactory-------------*/
 
 BufferManipulationObjectFactory::BufferManipulationObjectFactory(const GLInfo & _info,
@@ -313,4 +443,19 @@ CreatePixelWriteBuffer * BufferManipulationObjectFactory::createPixelWriteBuffer
 		return new CreatePixelWriteBufferT<MemoryWriteBuffer>(nullptr);
 
 	return new CreatePixelWriteBufferT<PBOWriteBuffer>(m_cachedFunctions.geCachedBindBuffer());
+}
+
+graphics::FramebufferTextureFormats * BufferManipulationObjectFactory::getFramebufferTextureFormats() const
+{
+	if (FramebufferTextureFormatsOpenGL::Check(m_glInfo))
+		return new FramebufferTextureFormatsOpenGL;
+
+	if (FramebufferTextureFormatsGLES3::Check(m_glInfo))
+		return new FramebufferTextureFormatsGLES3;
+
+	if (FramebufferTextureFormatsGLES2::Check(m_glInfo))
+		return new FramebufferTextureFormatsGLES2;
+
+	assert(false);
+	return nullptr;
 }

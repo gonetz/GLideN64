@@ -643,5 +643,8 @@
     <ClInclude Include="..\..\src\Graphics\OpenGLContext\opengl_GraphicsDrawer.h">
       <Filter>Header Files\Graphics\OpenGL</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Graphics\FramebufferTextureFormats.h">
+      <Filter>Header Files\Graphics</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

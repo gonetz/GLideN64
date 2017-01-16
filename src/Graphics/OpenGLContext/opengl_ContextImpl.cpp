@@ -37,6 +37,7 @@ void ContextImpl::init()
 
 	{
 		BufferManipulationObjectFactory bufferObjectFactory(m_glInfo, *m_cachedFunctions.get());
+		m_fbTexFormats.reset(bufferObjectFactory.getFramebufferTextureFormats());
 		m_createFramebuffer.reset(bufferObjectFactory.getCreateFramebufferObject());
 		m_createRenderbuffer.reset(bufferObjectFactory.getCreateRenderbuffer());
 		m_initRenderbuffer.reset(bufferObjectFactory.getInitRenderbuffer());
@@ -55,18 +56,18 @@ void ContextImpl::init()
 
 void ContextImpl::destroy()
 {
-	m_cachedFunctions.reset(nullptr);
-	m_createTexture.reset(nullptr);
-	m_init2DTexture.reset(nullptr);
-	m_set2DTextureParameters.reset(nullptr);
+	m_cachedFunctions.reset();
+	m_createTexture.reset();
+	m_init2DTexture.reset();
+	m_set2DTextureParameters.reset();
 
-	m_createFramebuffer.reset(nullptr);
-	m_createRenderbuffer.reset(nullptr);
-	m_initRenderbuffer.reset(nullptr);
-	m_addFramebufferRenderTarget.reset(nullptr);
+	m_createFramebuffer.reset();
+	m_createRenderbuffer.reset();
+	m_initRenderbuffer.reset();
+	m_addFramebufferRenderTarget.reset();
 
 
-	m_combinerProgramBuilder.reset(nullptr);
+	m_combinerProgramBuilder.reset();
 }
 
 void ContextImpl::enable(graphics::Parameter _parameter, bool _enable)
@@ -167,6 +168,11 @@ void ContextImpl::setTextureParameters(const graphics::Context::TexParameters & 
 }
 
 /*---------------Framebuffer-------------*/
+
+graphics::FramebufferTextureFormats * ContextImpl::getFramebufferTextureFormats()
+{
+	return m_fbTexFormats.release();
+}
 
 graphics::ObjectHandle ContextImpl::createFramebuffer()
 {
