@@ -10,6 +10,7 @@ namespace opengl {
 		bool isGLESX = false;
 		bool imageTextures = false;
 		bool shaderStorage = false;
+		bool msaa = false;
 
 		void init();
 	};
