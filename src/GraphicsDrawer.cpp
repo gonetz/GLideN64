@@ -894,13 +894,16 @@ bool texturedRectShadowMap(const GraphicsDrawer::TexturedRectParams &)
 {
 	FrameBuffer * pCurrentBuffer = frameBufferList().getCurrent();
 	if (pCurrentBuffer != nullptr) {
-		if (gDP.textureImage.size == 2 && gDP.textureImage.address >= gDP.depthImageAddress &&  gDP.textureImage.address < (gDP.depthImageAddress + gDP.colorImage.width*gDP.colorImage.width * 6 / 4)) {
-			if (Context::imageTextures) {
-				pCurrentBuffer->m_pDepthBuffer->activateDepthBufferTexture(pCurrentBuffer);
-				CombinerInfo::get().setDepthFogCombiner();
-			}
-			else
+		if (gDP.textureImage.size == 2 && gDP.textureImage.address >= gDP.depthImageAddress &&
+			gDP.textureImage.address < (gDP.depthImageAddress + gDP.colorImage.width*gDP.colorImage.width * 6 / 4)) {
+
+			if (!Context::imageTextures)
 				return true;
+
+			pCurrentBuffer->m_pDepthBuffer->activateDepthBufferTexture(pCurrentBuffer);
+			CombinerInfo::get().setDepthFogCombiner();
+			return false;
+
 		}
 	}
 	return false;
@@ -1024,18 +1027,19 @@ bool texturedRectPaletteMod(const GraphicsDrawer::TexturedRectParams & _params)
 static
 bool texturedRectMonochromeBackground(const GraphicsDrawer::TexturedRectParams & _params)
 {
-	if (gDP.textureImage.address >= gDP.colorImage.address && gDP.textureImage.address <= (gDP.colorImage.address + gDP.colorImage.width*gDP.colorImage.height * 2)) {
-#ifdef GL_IMAGE_TEXTURES_SUPPORT
+	if (gDP.textureImage.address >= gDP.colorImage.address &&
+		gDP.textureImage.address <= (gDP.colorImage.address + gDP.colorImage.width*gDP.colorImage.height * 2)) {
+
 		FrameBuffer * pCurrentBuffer = frameBufferList().getCurrent();
 		if (pCurrentBuffer != nullptr) {
 			FrameBuffer_ActivateBufferTexture(0, pCurrentBuffer);
 			CombinerInfo::get().setMonochromeCombiner();
 			return false;
-		}
-		else
-#endif
+		} else
 			return true;
+
 	}
+
 	return false;
 }
 
