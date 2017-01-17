@@ -110,6 +110,8 @@ namespace opengl {
 
 		bool isError() const override;
 
+		bool isSupported(graphics::SpecialFeatures _feature) const override;
+
 	private:
 		std::unique_ptr<CachedFunctions> m_cachedFunctions;
 		std::unique_ptr<Create2DTexture> m_createTexture;

@@ -234,6 +234,5 @@ bool Context::isError() const
 
 bool Context::isSupported(SpecialFeatures _feature) const
 {
-	// TODO
-	return true;
+	return m_impl->isSupported(_feature);
 }

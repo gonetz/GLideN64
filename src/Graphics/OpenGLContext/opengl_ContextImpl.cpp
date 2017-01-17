@@ -328,3 +328,17 @@ bool ContextImpl::isError() const
 {
 	return Utils::isGLError();
 }
+
+bool ContextImpl::isSupported(graphics::SpecialFeatures _feature) const
+{
+	switch (_feature) {
+	case graphics::SpecialFeatures::FragmentDepthWrite:
+	case graphics::SpecialFeatures::NearPlaneClipping:
+		return !m_glInfo.isGLESX;
+	case graphics::SpecialFeatures::Multisampling:
+		return m_glInfo.msaa;
+	case graphics::SpecialFeatures::ImageTextures:
+		return m_glInfo.imageTextures;
+	}
+	return false;
+}

@@ -52,6 +52,7 @@ namespace graphics {
 		virtual void drawText(const char *_pText, float _x, float _y) = 0;
 		virtual void getTextSize(const char *_pText, float & _w, float & _h) = 0;
 		virtual bool isError() const = 0;
+		virtual bool isSupported(SpecialFeatures _feature) const = 0;
 	};
 
 }
