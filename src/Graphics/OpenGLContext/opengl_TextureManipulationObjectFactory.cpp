@@ -57,7 +57,7 @@ namespace opengl {
 		void init2DTexture(const graphics::Context::InitTextureParams & _params) override
 		{
 			if (_params.msaaLevel == 0) {
-				if (_params.ImageUnit.isValid())
+				if (_params.ImageUnit.isValid() && glBindImageTexture != nullptr)
 					glBindImageTexture(GLuint(_params.ImageUnit), 0,
 					0, GL_FALSE, GL_FALSE, GL_READ_ONLY, GLuint(_params.internalFormat));
 
