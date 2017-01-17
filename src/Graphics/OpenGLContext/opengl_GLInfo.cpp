@@ -21,8 +21,12 @@ void GLInfo::init() {
 	LOG(LOG_VERBOSE, "%s major version: %d\n", isGLESX ? "OpenGL ES" : "OpenGL", majorVersion);
 	LOG(LOG_VERBOSE, "%s minor version: %d\n", isGLESX ? "OpenGL ES" : "OpenGL", minorVersion);
 
-	//TODO implement
-	imageTextures = true;
+	if (isGLES2)
+        imageTextures = false;
+	else if (isGLESX)
+        imageTextures = (majorVersion >= 3) && (minorVersion >= 1) && (glBindImageTexture != nullptr);
+	else
+		imageTextures = (((majorVersion >= 4) && (minorVersion >= 3)) || Utils::isExtensionSupported("GL_ARB_shader_image_load_store")) && (glBindImageTexture != nullptr);
 
 #ifdef GL_NUM_PROGRAM_BINARY_FORMATS
 	GLint numBinaryFormats = 0;
