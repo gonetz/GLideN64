@@ -197,6 +197,21 @@ ShaderProgram * Context::createTexrectCopyShader()
 	return m_impl->createTexrectCopyShader();
 }
 
+ShaderProgram * Context::createGammaCorrectionShader()
+{
+	return m_impl->createGammaCorrectionShader();
+}
+
+ShaderProgram * Context::createOrientationCorrectionShader()
+{
+	return m_impl->createOrientationCorrectionShader();
+}
+
+void Context::resetShaderProgram()
+{
+	m_impl->resetShaderProgram();
+}
+
 void Context::drawTriangles(const DrawTriangleParameters & _params)
 {
 	m_impl->drawTriangles(_params);

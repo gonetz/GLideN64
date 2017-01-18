@@ -10,6 +10,7 @@
 
 namespace glsl {
 	class CombinerProgramBuilder;
+	class SpecialShadersFactory;
 }
 
 namespace opengl {
@@ -96,6 +97,12 @@ namespace opengl {
 
 		graphics::ShaderProgram * createTexrectCopyShader() override;
 
+		graphics::ShaderProgram * createGammaCorrectionShader() override;
+
+		graphics::ShaderProgram * createOrientationCorrectionShader() override;
+
+		void resetShaderProgram() override;
+
 		void drawTriangles(const graphics::Context::DrawTriangleParameters & _params) override;
 
 		void drawRects(const graphics::Context::DrawRectParameters & _params) override;
@@ -131,6 +138,7 @@ namespace opengl {
 		std::unique_ptr<TextDrawer> m_textDrawer;
 
 		std::unique_ptr<glsl::CombinerProgramBuilder> m_combinerProgramBuilder;
+		std::unique_ptr<glsl::SpecialShadersFactory> m_specialShadersFactory;
 		GLInfo m_glInfo;
 	};
 

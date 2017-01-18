@@ -1403,7 +1403,7 @@ void GraphicsDrawer::copyTexturedRect(const CopyRectParams & _params)
 	const float Y0 = _params.dstY0 * (2.0f * scaleY) - 1.0f;
 	const float X1 = _params.dstX1 * (2.0f * scaleX) - 1.0f;
 	const float Y1 = _params.dstY1 * (2.0f * scaleY) - 1.0f;
-	const float Z = 1.0f;
+	const float Z = 0.0f;
 	const float W = 1.0f;
 
 	m_rect[0].x = X0;
@@ -1470,6 +1470,7 @@ void GraphicsDrawer::copyTexturedRect(const CopyRectParams & _params)
 	rectParams.verticesCount = 4;
 	rectParams.vertices = m_rect;
 	rectParams.combiner = _params.combiner;
+	_params.combiner->activate();
 	gfxContext.drawRects(rectParams);
 
 	gSP.changed |= CHANGED_GEOMETRYMODE | CHANGED_VIEWPORT;

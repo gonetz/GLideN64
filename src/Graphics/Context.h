@@ -177,6 +177,12 @@ namespace graphics {
 
 		ShaderProgram * createTexrectCopyShader();
 
+		ShaderProgram * createGammaCorrectionShader();
+
+		ShaderProgram * createOrientationCorrectionShader();
+
+		void resetShaderProgram();
+
 		/*---------------Draw-------------*/
 
 		struct DrawTriangleParameters

@@ -53,6 +53,11 @@ void ContextImpl::init()
 	}
 
 	m_combinerProgramBuilder.reset(new glsl::CombinerProgramBuilder(m_glInfo, m_cachedFunctions->getCachedUseProgram()));
+	m_specialShadersFactory.reset(new glsl::SpecialShadersFactory(m_glInfo,
+		m_cachedFunctions->getCachedUseProgram(),
+		m_combinerProgramBuilder->getVertexShaderHeader(),
+		m_combinerProgramBuilder->getFragmentShaderHeader(),
+		m_combinerProgramBuilder->getFragmentShaderEnd()));
 }
 
 void ContextImpl::destroy()
@@ -243,57 +248,42 @@ bool ContextImpl::loadShadersStorage(graphics::Combiners & _combiners)
 
 graphics::ShaderProgram * ContextImpl::createDepthFogShader()
 {
-	glsl::SpecialShadersFactory shadersFactory(m_glInfo,
-		m_cachedFunctions->getCachedUseProgram(),
-		m_combinerProgramBuilder->getVertexShaderHeader(),
-		m_combinerProgramBuilder->getFragmentShaderHeader(),
-		m_combinerProgramBuilder->getFragmentShaderEnd());
-
-	return shadersFactory.createShadowMapShader();
+	return m_specialShadersFactory->createShadowMapShader();
 }
 
 graphics::ShaderProgram * ContextImpl::createMonochromeShader()
 {
-	glsl::SpecialShadersFactory shadersFactory(m_glInfo,
-		m_cachedFunctions->getCachedUseProgram(),
-		m_combinerProgramBuilder->getVertexShaderHeader(),
-		m_combinerProgramBuilder->getFragmentShaderHeader(),
-		m_combinerProgramBuilder->getFragmentShaderEnd());
-
-	return shadersFactory.createMonochromeShader();
+	return m_specialShadersFactory->createMonochromeShader();
 }
 
 graphics::TexDrawerShaderProgram * ContextImpl::createTexDrawerDrawShader()
 {
-	glsl::SpecialShadersFactory shadersFactory(m_glInfo,
-		m_cachedFunctions->getCachedUseProgram(),
-		m_combinerProgramBuilder->getVertexShaderHeader(),
-		m_combinerProgramBuilder->getFragmentShaderHeader(),
-		m_combinerProgramBuilder->getFragmentShaderEnd());
-
-	return shadersFactory.createTexDrawerDrawShader();
+	return m_specialShadersFactory->createTexDrawerDrawShader();
 }
 
 graphics::ShaderProgram * ContextImpl::createTexDrawerClearShader()
 {
-	glsl::SpecialShadersFactory shadersFactory(m_glInfo,
-		m_cachedFunctions->getCachedUseProgram(),
-		m_combinerProgramBuilder->getVertexShaderHeader(),
-		m_combinerProgramBuilder->getFragmentShaderHeader(),
-		m_combinerProgramBuilder->getFragmentShaderEnd());
-
-	return shadersFactory.createTexDrawerClearShader();
+	return m_specialShadersFactory->createTexDrawerClearShader();
 }
 
 graphics::ShaderProgram * ContextImpl::createTexrectCopyShader()
 {
-	glsl::SpecialShadersFactory shadersFactory(m_glInfo,
-		m_cachedFunctions->getCachedUseProgram(),
-		m_combinerProgramBuilder->getVertexShaderHeader(),
-		m_combinerProgramBuilder->getFragmentShaderHeader(),
-		m_combinerProgramBuilder->getFragmentShaderEnd());
+	return m_specialShadersFactory->createTexrectCopyShader();
+}
 
-	return shadersFactory.createTexrectCopyShader();
+graphics::ShaderProgram * ContextImpl::createGammaCorrectionShader()
+{
+	return m_specialShadersFactory->createGammaCorrectionShader();
+}
+
+graphics::ShaderProgram * ContextImpl::createOrientationCorrectionShader()
+{
+	return m_specialShadersFactory->createOrientationCorrectionShader();
+}
+
+void ContextImpl::resetShaderProgram()
+{
+	m_cachedFunctions->getCachedUseProgram()->useProgram(graphics::ObjectHandle());
 }
 
 void ContextImpl::drawTriangles(const graphics::Context::DrawTriangleParameters & _params)

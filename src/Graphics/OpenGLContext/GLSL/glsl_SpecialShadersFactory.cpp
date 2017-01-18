@@ -330,33 +330,15 @@ namespace glsl {
 	public:
 		TexrectCopy(const opengl::GLInfo & _glinfo)
 		{
-			if (_glinfo.isGLES2) {
-				m_part =
-					"#if (__VERSION__ > 120)								\n"
-					"# define IN in											\n"
-					"#else													\n"
-					"# define IN varying									\n"
-					"#endif // __VERSION __									\n"
-					"IN mediump vec2 vTexCoord0;                            \n"
-					"uniform sampler2D uTex0;				                \n"
-					"                                                       \n"
-					"void main()                                            \n"
-					"{                                                      \n"
-					"    gl_FragColor = texture2D(uTex0, vTexCoord0);       \n"
-					"}							                            \n"
-				;
-			} else {
-				m_part =
-					"in mediump vec2 vTexCoord0;                            \n"
-					"uniform sampler2D uTex0;				                \n"
-					"out lowp vec4 fragColor;								\n"
-					"                                                       \n"
-					"void main()                                            \n"
-					"{                                                      \n"
-					"    fragColor = texture(uTex0, vTexCoord0);	        \n"
-					"}							                            \n"
-				;
-			}
+			m_part =
+				"IN mediump vec2 vTexCoord0;                            \n"
+				"uniform sampler2D uTex0;				                \n"
+				"                                                       \n"
+				"void main()                                            \n"
+				"{                                                      \n"
+				"    gl_FragColor = texture2D(uTex0, vTexCoord0);       \n"
+				"}							                            \n"
+			;
 		}
 	};
 
@@ -368,14 +350,13 @@ namespace glsl {
 		GammaCorrection(const opengl::GLInfo & _glinfo)
 		{
 			m_part =
-				"IN mediump vec2 vTexCoord;													\n"
+				"IN mediump vec2 vTexCoord0;													\n"
 				"uniform sampler2D uTex0;													\n"
 				"uniform lowp float uGammaCorrectionLevel;									\n"
 				"OUT lowp vec4 fragColor;													\n"
-				"																			\n"
 				"void main()																\n"
 				"{																			\n"
-				"    fragColor = texture2D(uTex0, vTexCoord);								\n"
+				"    fragColor = texture2D(uTex0, vTexCoord0);								\n"
 				"    fragColor.rgb = pow(fragColor.rgb, vec3(1.0 / uGammaCorrectionLevel));	\n"
 				;
 		}
@@ -387,13 +368,12 @@ namespace glsl {
 		OrientationCorrection(const opengl::GLInfo & _glinfo)
 		{
 			m_part =
-				"IN mediump vec2 vTexCoord;													\n"
+				"IN mediump vec2 vTexCoord0;													\n"
 				"uniform sampler2D uTex0;													\n"
 				"OUT lowp vec4 fragColor;													\n"
-				"																			\n"
 				"void main()																\n"
 				"{																			\n"
-				"    fragColor = texture2D(uTex0, vec2(1.0 - vTexCoord.x, 1.0 - vTexCoord.y));       \n"
+				"    fragColor = texture2D(uTex0, vec2(1.0 - vTexCoord0.x, 1.0 - vTexCoord0.y));       \n"
 			;
 		}
 	};
