@@ -22,12 +22,6 @@
 
 using namespace std;
 
-const GLuint g_noiseTexIndex = 2;
-const GLuint g_depthTexIndex = g_noiseTexIndex + 1;
-const GLuint g_depthLUTIndex = g_depthTexIndex + 1;
-const GLuint g_paletteIndex = g_depthLUTIndex + 1;
-const GLuint g_MSTex0Index = g_paletteIndex + 1;
-
 inline u32 GetNone( u64 *src, u16 x, u16 i, u8 palette )
 {
 	return 0x00000000;

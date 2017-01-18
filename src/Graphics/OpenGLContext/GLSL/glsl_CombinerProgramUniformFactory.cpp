@@ -1,5 +1,6 @@
 #include <Config.h>
 #include "glsl_CombinerProgramUniformFactory.h"
+#include <Graphics/Parameters.h>
 
 #include <Textures.h>
 #include <NoiseTexture.h>
@@ -116,7 +117,7 @@ public:
 
 	void update(bool _force) override
 	{
-		uTexNoise.set(g_noiseTexIndex, _force);
+		uTexNoise.set(int(graphics::textureIndices::NoiseTex), _force);
 	}
 
 private:
@@ -132,7 +133,7 @@ public:
 
 	void update(bool _force) override
 	{
-		uDepthTex.set(g_depthTexIndex, _force);
+		uDepthTex.set(int(graphics::textureIndices::DepthTex), _force);
 	}
 
 private:
@@ -170,8 +171,8 @@ public:
 
 	void update(bool _force) override
 	{
-		uMSTex0.set(g_MSTex0Index + 0, _force);
-		uMSTex1.set(g_MSTex0Index + 1, _force);
+		uMSTex0.set(int(graphics::textureIndices::MSTex[0]), _force);
+		uMSTex1.set(int(graphics::textureIndices::MSTex[1]), _force);
 		uMSAASamples.set(config.video.multisampling, _force);
 		uMSAAScale.set(1.0f / (float)config.video.multisampling, _force);
 	}
