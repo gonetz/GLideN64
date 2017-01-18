@@ -19,7 +19,8 @@ namespace glsl {
 		SpecialShadersFactory(const opengl::GLInfo & _glinfo,
 			opengl::CachedUseProgram * _useProgram,
 			const ShaderPart * _vertexHeader,
-			const ShaderPart * _fragmentHeader);
+			const ShaderPart * _fragmentHeader,
+			const ShaderPart * _fragmentEnd);
 
 		graphics::ShaderProgram * createShadowMapShader() const;
 
@@ -31,10 +32,15 @@ namespace glsl {
 
 		graphics::ShaderProgram * createTexrectCopyShader() const;
 
+		graphics::ShaderProgram * createGammaCorrectionShader() const;
+
+		graphics::ShaderProgram * createOrientationCorrectionShader() const;
+
 	private:
 		const opengl::GLInfo & m_glinfo;
 		const ShaderPart * m_vertexHeader;
 		const ShaderPart * m_fragmentHeader;
+		const ShaderPart * m_fragmentEnd;
 		opengl::CachedUseProgram * m_useProgram;
 	};
 

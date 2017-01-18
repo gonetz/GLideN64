@@ -246,7 +246,8 @@ graphics::ShaderProgram * ContextImpl::createDepthFogShader()
 	glsl::SpecialShadersFactory shadersFactory(m_glInfo,
 		m_cachedFunctions->getCachedUseProgram(),
 		m_combinerProgramBuilder->getVertexShaderHeader(),
-		m_combinerProgramBuilder->getFragmentShaderHeader());
+		m_combinerProgramBuilder->getFragmentShaderHeader(),
+		m_combinerProgramBuilder->getFragmentShaderEnd());
 
 	return shadersFactory.createShadowMapShader();
 }
@@ -256,7 +257,8 @@ graphics::ShaderProgram * ContextImpl::createMonochromeShader()
 	glsl::SpecialShadersFactory shadersFactory(m_glInfo,
 		m_cachedFunctions->getCachedUseProgram(),
 		m_combinerProgramBuilder->getVertexShaderHeader(),
-		m_combinerProgramBuilder->getFragmentShaderHeader());
+		m_combinerProgramBuilder->getFragmentShaderHeader(),
+		m_combinerProgramBuilder->getFragmentShaderEnd());
 
 	return shadersFactory.createMonochromeShader();
 }
@@ -266,7 +268,8 @@ graphics::TexDrawerShaderProgram * ContextImpl::createTexDrawerDrawShader()
 	glsl::SpecialShadersFactory shadersFactory(m_glInfo,
 		m_cachedFunctions->getCachedUseProgram(),
 		m_combinerProgramBuilder->getVertexShaderHeader(),
-		m_combinerProgramBuilder->getFragmentShaderHeader());
+		m_combinerProgramBuilder->getFragmentShaderHeader(),
+		m_combinerProgramBuilder->getFragmentShaderEnd());
 
 	return shadersFactory.createTexDrawerDrawShader();
 }
@@ -276,7 +279,8 @@ graphics::ShaderProgram * ContextImpl::createTexDrawerClearShader()
 	glsl::SpecialShadersFactory shadersFactory(m_glInfo,
 		m_cachedFunctions->getCachedUseProgram(),
 		m_combinerProgramBuilder->getVertexShaderHeader(),
-		m_combinerProgramBuilder->getFragmentShaderHeader());
+		m_combinerProgramBuilder->getFragmentShaderHeader(),
+		m_combinerProgramBuilder->getFragmentShaderEnd());
 
 	return shadersFactory.createTexDrawerClearShader();
 }
@@ -286,7 +290,8 @@ graphics::ShaderProgram * ContextImpl::createTexrectCopyShader()
 	glsl::SpecialShadersFactory shadersFactory(m_glInfo,
 		m_cachedFunctions->getCachedUseProgram(),
 		m_combinerProgramBuilder->getVertexShaderHeader(),
-		m_combinerProgramBuilder->getFragmentShaderHeader());
+		m_combinerProgramBuilder->getFragmentShaderHeader(),
+		m_combinerProgramBuilder->getFragmentShaderEnd());
 
 	return shadersFactory.createTexrectCopyShader();
 }

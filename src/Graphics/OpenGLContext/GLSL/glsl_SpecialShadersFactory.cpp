@@ -360,6 +360,45 @@ namespace glsl {
 		}
 	};
 
+	/*---------------PostProcessorShaderPart-------------*/
+
+	class GammaCorrection : public ShaderPart
+	{
+	public:
+		GammaCorrection(const opengl::GLInfo & _glinfo)
+		{
+			m_part =
+				"IN mediump vec2 vTexCoord;													\n"
+				"uniform sampler2D uTex0;													\n"
+				"uniform lowp float uGammaCorrectionLevel;									\n"
+				"OUT lowp vec4 fragColor;													\n"
+				"																			\n"
+				"void main()																\n"
+				"{																			\n"
+				"    fragColor = texture2D(uTex0, vTexCoord);								\n"
+				"    fragColor.rgb = pow(fragColor.rgb, vec3(1.0 / uGammaCorrectionLevel));	\n"
+				;
+		}
+	};
+
+	class OrientationCorrection : public ShaderPart
+	{
+	public:
+		OrientationCorrection(const opengl::GLInfo & _glinfo)
+		{
+			m_part =
+				"IN mediump vec2 vTexCoord;													\n"
+				"uniform sampler2D uTex0;													\n"
+				"OUT lowp vec4 fragColor;													\n"
+				"																			\n"
+				"void main()																\n"
+				"{																			\n"
+				"    fragColor = texture2D(uTex0, vec2(1.0 - vTexCoord.x, 1.0 - vTexCoord.y));       \n"
+			;
+		}
+	};
+
+
 	/*---------------SpecialShader-------------*/
 
 	template<class VertexBody, class FragmentBody>
@@ -369,7 +408,8 @@ namespace glsl {
 		SpecialShader(const opengl::GLInfo & _glinfo,
 			opengl::CachedUseProgram * _useProgram,
 			const ShaderPart * _vertexHeader,
-			const ShaderPart * _fragmentHeader)
+			const ShaderPart * _fragmentHeader,
+			const ShaderPart * _fragmentEnd = nullptr)
 			: m_program(0)
 			, m_useProgram(_useProgram)
 		{
@@ -383,6 +423,8 @@ namespace glsl {
 			std::stringstream ssFragmentShader;
 			_fragmentHeader->write(ssFragmentShader);
 			fragmentBody.write(ssFragmentShader);
+			if (_fragmentEnd != nullptr)
+				_fragmentEnd->write(ssFragmentShader);
 
 			m_program =
 				graphics::ObjectHandle(Utils::createRectShaderProgram(ssVertexShader.str().data(), ssFragmentShader.str().data()));
@@ -562,16 +604,61 @@ namespace glsl {
 		}
 	};
 
+	/*---------------PostProcessorShaderPart-------------*/
+
+	typedef SpecialShader<VertexShaderTexturedRect, GammaCorrection> GammaCorrectionShaderBase;
+
+	class GammaCorrectionShader : public GammaCorrectionShaderBase
+	{
+	public:
+		GammaCorrectionShader(const opengl::GLInfo & _glinfo,
+			opengl::CachedUseProgram * _useProgram,
+			const ShaderPart * _vertexHeader,
+			const ShaderPart * _fragmentHeader,
+			const ShaderPart * _fragmentEnd)
+			: GammaCorrectionShaderBase(_glinfo, _useProgram, _vertexHeader, _fragmentHeader, _fragmentEnd)
+		{
+			m_useProgram->useProgram(m_program);
+			const int texLoc = glGetUniformLocation(GLuint(m_program), "uTex0");
+			glUniform1i(texLoc, 0);
+			const int levelLoc = glGetUniformLocation(GLuint(m_program), "uGammaCorrectionLevel");
+			assert(levelLoc >= 0);
+			const f32 gammaLevel = (config.gammaCorrection.force != 0) ? config.gammaCorrection.level : 2.0f;
+			glUniform1f(levelLoc, gammaLevel);
+			m_useProgram->useProgram(graphics::ObjectHandle());
+		}
+	};
+
+	typedef SpecialShader<VertexShaderTexturedRect, OrientationCorrection> OrientationCorrectionShaderBase;
+
+	class OrientationCorrectionShader : public OrientationCorrectionShaderBase
+	{
+	public:
+		OrientationCorrectionShader(const opengl::GLInfo & _glinfo,
+			opengl::CachedUseProgram * _useProgram,
+			const ShaderPart * _vertexHeader,
+			const ShaderPart * _fragmentHeader,
+			const ShaderPart * _fragmentEnd)
+			: OrientationCorrectionShaderBase(_glinfo, _useProgram, _vertexHeader, _fragmentHeader, _fragmentEnd)
+		{
+			m_useProgram->useProgram(m_program);
+			const int texLoc = glGetUniformLocation(GLuint(m_program), "uTex0");
+			glUniform1i(texLoc, 0);
+			m_useProgram->useProgram(graphics::ObjectHandle());
+		}
+	};
 
 	/*---------------SpecialShadersFactory-------------*/
 
 	SpecialShadersFactory::SpecialShadersFactory(const opengl::GLInfo & _glinfo,
 												opengl::CachedUseProgram * _useProgram,
 												const ShaderPart * _vertexHeader,
-												const ShaderPart * _fragmentHeader)
+												const ShaderPart * _fragmentHeader,
+												const ShaderPart * _fragmentEnd)
 		: m_glinfo(_glinfo)
 		, m_vertexHeader(_vertexHeader)
 		, m_fragmentHeader(_fragmentHeader)
+		, m_fragmentEnd(_fragmentEnd)
 		, m_useProgram(_useProgram)
 	{
 	}
@@ -602,6 +689,16 @@ namespace glsl {
 	graphics::ShaderProgram * SpecialShadersFactory::createTexrectCopyShader() const
 	{
 		return new TexrectCopyShader(m_glinfo, m_useProgram, m_vertexHeader, m_fragmentHeader);
+	}
+
+	graphics::ShaderProgram * SpecialShadersFactory::createGammaCorrectionShader() const
+	{
+		return new GammaCorrectionShader(m_glinfo, m_useProgram, m_vertexHeader, m_fragmentHeader, m_fragmentEnd);
+	}
+
+	graphics::ShaderProgram * SpecialShadersFactory::createOrientationCorrectionShader() const
+	{
+		return new OrientationCorrectionShader(m_glinfo, m_useProgram, m_vertexHeader, m_fragmentHeader, m_fragmentEnd);
 	}
 
 }

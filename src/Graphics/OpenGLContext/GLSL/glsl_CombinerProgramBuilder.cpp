@@ -414,6 +414,7 @@ public:
 				"#if (__VERSION__ > 120)		\n"
 				"# define IN in					\n"
 				"# define OUT out				\n"
+				"# define texture2D texture		\n"
 				"#else							\n"
 				"# define IN varying			\n"
 				"# define OUT					\n"
