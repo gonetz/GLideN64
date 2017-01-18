@@ -1017,7 +1017,7 @@ void FrameBufferList::renderBuffer(u32 _address)
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
 	wnd.swapBuffers();
 	if (m_pCurrent != nullptr) {
-		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_pCurrent->m_FBO);
+		gfxContext.bindFramebuffer(graphics::bufferTarget::DRAW_FRAMEBUFFER, graphics::ObjectHandle(m_pCurrent->m_FBO));
 #ifdef VC
 		const GLenum discards[]  = {GL_DEPTH_ATTACHMENT};
 		glDiscardFramebufferEXT(GL_FRAMEBUFFER, 1, discards);
