@@ -12,6 +12,9 @@ namespace graphics {
 		bool operator==(const ObjectHandle & _other) const { return m_name == _other.m_name; }
 		bool operator!=(const ObjectHandle & _other) const { return m_name != _other.m_name; }
 
+
+		bool isNotNull() const { return m_name != 0; }
+
 		void reset() { m_name = 0; }
 
 	private:
