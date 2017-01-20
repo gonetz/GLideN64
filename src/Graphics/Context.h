@@ -17,6 +17,8 @@ namespace graphics {
 		Multisampling,
 		NearPlaneClipping,
 		FragmentDepthWrite,
+		BlitFramebuffer,
+		WeakBlitFramebuffer,
 		ImageTextures
 	};
 
@@ -225,6 +227,7 @@ namespace graphics {
 		bool isError() const;
 
 		static bool imageTextures;
+		static bool multisampling;
 
 	private:
 		std::unique_ptr<ContextImpl> m_impl;

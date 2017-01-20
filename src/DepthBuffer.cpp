@@ -118,7 +118,7 @@ void DepthBuffer::initDepthImageTexture(FrameBuffer * _pBuffer)
 		gfxContext.addFrameBufferRenderTarget(bufTarget);
 	}
 
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, _pBuffer->m_FBO);
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, GLuint(_pBuffer->m_FBO));
 
 	depthBufferList().clearBuffer(0, 0, VI.width, VI.height);
 }
@@ -257,12 +257,12 @@ CachedTexture * DepthBuffer::resolveDepthBufferTexture(FrameBuffer * _pBuffer)
 		return m_pDepthBufferTexture;
 	if (m_resolved)
 		return m_pResolveDepthBufferTexture;
-	glBindFramebuffer(GL_READ_FRAMEBUFFER, _pBuffer->m_FBO);
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, GLuint(_pBuffer->m_FBO));
 	glReadBuffer(GL_COLOR_ATTACHMENT0);
 	GLuint attachment = GL_COLOR_ATTACHMENT0;
 	glDrawBuffers(1, &attachment);
 	assert(checkFBO());
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, _pBuffer->m_resolveFBO);
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, GLuint(_pBuffer->m_resolveFBO));
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, m_pResolveDepthBufferTexture->glName, 0);
 	assert(checkFBO());
 	glDisable(GL_SCISSOR_TEST);
@@ -273,7 +273,7 @@ CachedTexture * DepthBuffer::resolveDepthBufferTexture(FrameBuffer * _pBuffer)
 		);
 	glEnable(GL_SCISSOR_TEST);
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, _pBuffer->m_FBO);
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, GLuint(_pBuffer->m_FBO));
 	m_resolved = true;
 	return m_pResolveDepthBufferTexture;
 #else
@@ -292,7 +292,7 @@ CachedTexture * DepthBuffer::copyDepthBufferTexture(FrameBuffer * _pBuffer)
 		_initDepthBufferTexture(_pBuffer, m_pDepthBufferCopyTexture, false);
 	}
 
-	glBindFramebuffer(GL_READ_FRAMEBUFFER, _pBuffer->m_FBO);
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, GLuint(_pBuffer->m_FBO));
 	glReadBuffer(GL_COLOR_ATTACHMENT0);
 	assert(checkFBO());
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_copyFBO);
@@ -311,7 +311,7 @@ CachedTexture * DepthBuffer::copyDepthBufferTexture(FrameBuffer * _pBuffer)
 		);
 	glEnable(GL_SCISSOR_TEST);
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, _pBuffer->m_FBO);
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, GLuint(_pBuffer->m_FBO));
 	m_copied = true;
 	return m_pDepthBufferCopyTexture;
 }

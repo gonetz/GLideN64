@@ -631,7 +631,7 @@ bool OGLRender::TexrectDrawer::draw()
 	rect[3].t0 = t1;
 
 	render.updateScissor(m_pBuffer);
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_pBuffer != nullptr ? m_pBuffer->m_FBO : 0);
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_pBuffer != nullptr ? GLuint(m_pBuffer->m_FBO) : 0);
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_FBO);
@@ -652,7 +652,7 @@ bool OGLRender::TexrectDrawer::draw()
 	glEnable(GL_SCISSOR_TEST);
 
 	m_pBuffer = frameBufferList().getCurrent();
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_pBuffer != nullptr ? m_pBuffer->m_FBO : 0);
+	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_pBuffer != nullptr ? GLuint(m_pBuffer->m_FBO) : 0);
 
 	m_numRects = 0;
 	m_vecRectCoords.clear();

@@ -1,5 +1,7 @@
 #include <stdarg.h>
 #include "GLideNHQ/Ext_TxFilter.h"
+#include <Graphics/Context.h>
+#include <Graphics/Parameters.h>
 
 #include "RSP.h"
 #include "OpenGL.h"
@@ -66,7 +68,7 @@ void displayLoadProgress(const wchar_t *format, ...)
 
 	FrameBuffer* pBuffer = frameBufferList().getCurrent();
 	if (pBuffer != nullptr)
-		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+		gfxContext.bindFramebuffer(graphics::bufferTarget::DRAW_FRAMEBUFFER, graphics::ObjectHandle());
 
 	GraphicsDrawer & drawer = dwnd().getDrawer();
 	drawer.clearColorBuffer(nullptr);
@@ -74,7 +76,7 @@ void displayLoadProgress(const wchar_t *format, ...)
 	dwnd().swapBuffers();
 
 	if (pBuffer != nullptr)
-		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, pBuffer->m_FBO);
+		gfxContext.bindFramebuffer(graphics::bufferTarget::DRAW_FRAMEBUFFER, pBuffer->m_FBO);
 }
 
 u32 TextureFilterHandler::_getConfigOptions() const

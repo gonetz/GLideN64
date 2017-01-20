@@ -164,10 +164,10 @@ bool DepthBufferToRDRAM::_prepareCopy(u32 _address, bool _copyChunk)
 		return false;
 
 	if (config.video.multisampling == 0)
-		glBindFramebuffer(GL_READ_FRAMEBUFFER, pBuffer->m_FBO);
+		glBindFramebuffer(GL_READ_FRAMEBUFFER, GLuint(pBuffer->m_FBO));
 	else {
 		m_pCurDepthBuffer->resolveDepthBufferTexture(pBuffer);
-		glBindFramebuffer(GL_READ_FRAMEBUFFER, pBuffer->m_resolveFBO);
+		glBindFramebuffer(GL_READ_FRAMEBUFFER, GLuint(pBuffer->m_resolveFBO));
 	}
 	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_FBO);
 	glDisable(GL_SCISSOR_TEST);

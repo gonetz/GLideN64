@@ -28,6 +28,7 @@
 #include "DisplayWindow.h"
 
 using namespace std;
+using namespace graphics;
 
 FrameBuffer::FrameBuffer() :
 	m_startAddress(0), m_endAddress(0), m_size(0), m_width(0), m_height(0), m_validityChecked(0),
@@ -36,19 +37,19 @@ FrameBuffer::FrameBuffer() :
 	m_isDepthBuffer(false), m_isPauseScreen(false), m_isOBScreen(false),
 	m_needHeightCorrection(false), m_readable(false),
 	m_loadType(LOADTYPE_BLOCK), m_pDepthBuffer(nullptr),
-	m_resolveFBO(0), m_pResolveTexture(nullptr), m_resolved(false),
-	m_SubFBO(0), m_pSubTexture(nullptr)
+	m_pResolveTexture(nullptr), m_resolved(false),
+	m_pSubTexture(nullptr)
 {
 	m_loadTileOrigin.uls = m_loadTileOrigin.ult = 0;
 	m_pTexture = textureCache().addFrameBufferTexture(config.video.multisampling != 0);
-	m_FBO = GLuint(gfxContext.createFramebuffer());
+	m_FBO = gfxContext.createFramebuffer();
 }
 
 FrameBuffer::~FrameBuffer()
 {
-	gfxContext.deleteFramebuffer(graphics::ObjectHandle(m_FBO));
-	gfxContext.deleteFramebuffer(graphics::ObjectHandle(m_resolveFBO));
-	gfxContext.deleteFramebuffer(graphics::ObjectHandle(m_SubFBO));
+	gfxContext.deleteFramebuffer(m_FBO);
+	gfxContext.deleteFramebuffer(m_resolveFBO);
+	gfxContext.deleteFramebuffer(m_SubFBO);
 
 	textureCache().removeFrameBufferTexture(m_pTexture);
 	textureCache().removeFrameBufferTexture(m_pResolveTexture);
@@ -57,7 +58,7 @@ FrameBuffer::~FrameBuffer()
 
 void FrameBuffer::_initTexture(u16 _width, u16 _height, u16 _format, u16 _size, CachedTexture *_pTexture)
 {
-	const graphics::FramebufferTextureFormats & fbTexFormats = gfxContext.getFramebufferTextureFormats();
+	const FramebufferTextureFormats & fbTexFormats = gfxContext.getFramebufferTextureFormats();
 
 	_pTexture->width = (u32)(_width * m_scaleX);
 	_pTexture->height = (u32)(_height * m_scaleY);
@@ -83,12 +84,12 @@ void FrameBuffer::_initTexture(u16 _width, u16 _height, u16 _format, u16 _size, 
 	textureCache().addFrameBufferTextureSize(_pTexture->textureBytes);
 }
 
-void FrameBuffer::_setAndAttachTexture(u32 _fbo, CachedTexture *_pTexture, u32 _t, bool _multisampling)
+void FrameBuffer::_setAndAttachTexture(ObjectHandle _fbo, CachedTexture *_pTexture, u32 _t, bool _multisampling)
 {
 	{
-		const graphics::FramebufferTextureFormats & fbTexFormat = gfxContext.getFramebufferTextureFormats();
-		graphics::Context::InitTextureParams params;
-		params.handle = graphics::ObjectHandle(_pTexture->glName);
+		const FramebufferTextureFormats & fbTexFormat = gfxContext.getFramebufferTextureFormats();
+		Context::InitTextureParams params;
+		params.handle = ObjectHandle(_pTexture->glName);
 		if (_multisampling)
 			params.msaaLevel = config.video.multisampling;
 		params.width = _pTexture->realWidth;
@@ -106,21 +107,21 @@ void FrameBuffer::_setAndAttachTexture(u32 _fbo, CachedTexture *_pTexture, u32 _
 		gfxContext.init2DTexture(params);
 	}
 	{
-		graphics::Context::TexParameters params;
-		params.handle = graphics::ObjectHandle(_pTexture->glName);
-		params.target = _multisampling ? graphics::target::TEXTURE_2D_MULTISAMPLE : graphics::target::TEXTURE_2D;
-		params.textureUnitIndex = graphics::textureIndices::Tex[_t];
-		params.minFilter = graphics::textureParameters::FILTER_NEAREST;
-		params.magFilter = graphics::textureParameters::FILTER_NEAREST;
+		Context::TexParameters params;
+		params.handle = ObjectHandle(_pTexture->glName);
+		params.target = _multisampling ? target::TEXTURE_2D_MULTISAMPLE : target::TEXTURE_2D;
+		params.textureUnitIndex = textureIndices::Tex[_t];
+		params.minFilter = textureParameters::FILTER_NEAREST;
+		params.magFilter = textureParameters::FILTER_NEAREST;
 		gfxContext.setTextureParameters(params);
 	}
 	{
-		graphics::Context::FrameBufferRenderTarget bufTarget;
-		bufTarget.bufferHandle = graphics::ObjectHandle(_fbo);
-		bufTarget.bufferTarget = graphics::bufferTarget::FRAMEBUFFER;
-		bufTarget.attachment = graphics::bufferAttachment::COLOR_ATTACHMENT0;
-		bufTarget.textureTarget = _multisampling ? graphics::target::TEXTURE_2D_MULTISAMPLE : graphics::target::TEXTURE_2D;
-		bufTarget.textureHandle = graphics::ObjectHandle(_pTexture->glName);
+		Context::FrameBufferRenderTarget bufTarget;
+		bufTarget.bufferHandle = _fbo;
+		bufTarget.bufferTarget = bufferTarget::FRAMEBUFFER;
+		bufTarget.attachment = bufferAttachment::COLOR_ATTACHMENT0;
+		bufTarget.textureTarget = _multisampling ? target::TEXTURE_2D_MULTISAMPLE : target::TEXTURE_2D;
+		bufTarget.textureHandle = ObjectHandle(_pTexture->glName);
 		gfxContext.addFrameBufferRenderTarget(bufTarget);
 	}
 	assert(checkFBO());
@@ -172,11 +173,11 @@ void FrameBuffer::init(u32 _address, u32 _endAddress, u16 _format, u16 _size, u1
 
 		m_pResolveTexture = textureCache().addFrameBufferTexture(false);
 		_initTexture(_width, _height, _format, _size, m_pResolveTexture);
-		m_resolveFBO = GLuint(gfxContext.createFramebuffer());
+		m_resolveFBO = gfxContext.createFramebuffer();
 		_setAndAttachTexture(m_resolveFBO, m_pResolveTexture, 0, false);
 		assert(checkFBO());
 
-		glBindFramebuffer(GL_FRAMEBUFFER, m_FBO);
+		gfxContext.bindFramebuffer(bufferTarget::FRAMEBUFFER, m_FBO);
 	} else
 		_setAndAttachTexture(m_FBO, m_pTexture, 0, false);
 
@@ -189,7 +190,7 @@ void FrameBuffer::reinit(u16 _height)
 	const u32 endAddress = m_startAddress + ((m_width * _height) << m_size >> 1) - 1;
 	textureCache().removeFrameBufferTexture(m_pTexture);
 
-	gfxContext.deleteFramebuffer(graphics::ObjectHandle(m_resolveFBO));
+	gfxContext.deleteFramebuffer(ObjectHandle(m_resolveFBO));
 
 	textureCache().removeFrameBufferTexture(m_pResolveTexture);
 	m_pTexture = textureCache().addFrameBufferTexture(config.video.multisampling != 0);
@@ -300,29 +301,38 @@ bool FrameBuffer::isValid(bool _forceCheck) const
 
 void FrameBuffer::resolveMultisampledTexture(bool _bForce)
 {
-#ifdef GL_MULTISAMPLING_SUPPORT
+	if (!Context::multisampling)
+		return;
+
 	if (m_resolved && !_bForce)
 		return;
-	glBindFramebuffer(GL_READ_FRAMEBUFFER, m_FBO);
-	glReadBuffer(GL_COLOR_ATTACHMENT0);
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_resolveFBO);
-	glDisable(GL_SCISSOR_TEST);
-	glBlitFramebuffer(
-		0, 0, m_pTexture->realWidth, m_pTexture->realHeight,
-		0, 0, m_pResolveTexture->realWidth, m_pResolveTexture->realHeight,
-		GL_COLOR_BUFFER_BIT, GL_NEAREST
-		);
-	glEnable(GL_SCISSOR_TEST);
-	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
+
+	Context::BlitFramebuffersParams blitParams;
+	blitParams.readBuffer = m_FBO;
+	blitParams.drawBuffer = m_resolveFBO;
+	blitParams.srcX0 = 0;
+	blitParams.srcY0 = 0;
+	blitParams.srcX1 = m_pTexture->realWidth;
+	blitParams.srcY1 = m_pTexture->realHeight;
+	blitParams.dstX0 = 0;
+	blitParams.dstY0 = 0;
+	blitParams.dstX1 = m_pResolveTexture->realWidth;
+	blitParams.dstY1 = m_pResolveTexture->realHeight;
+	blitParams.mask = blitMask::COLOR_BUFFER;
+	blitParams.filter = textureParameters::FILTER_NEAREST;
+
+	gfxContext.blitFramebuffers(blitParams);
+
+	gfxContext.bindFramebuffer(bufferTarget::READ_FRAMEBUFFER, ObjectHandle());
+
 	frameBufferList().setCurrentDrawBuffer();
 	m_resolved = true;
-#endif
 }
 
 bool FrameBuffer::_initSubTexture(u32 _t)
 {
-	if (m_SubFBO == 0)
-		m_SubFBO = GLuint(gfxContext.createFramebuffer());
+	if (!m_SubFBO.isNotNull())
+		m_SubFBO = gfxContext.createFramebuffer();
 
 	gDPTile * pTile = gSP.textureTile[_t];
 	if (pTile->lrs < pTile->uls || pTile->lrt < pTile->ult)
@@ -354,11 +364,12 @@ bool FrameBuffer::_initSubTexture(u32 _t)
 
 CachedTexture * FrameBuffer::_getSubTexture(u32 _t)
 {
-#ifdef GLES2
-	return m_pTexture;
-#else
+	if (!gfxContext.isSupported(SpecialFeatures::BlitFramebuffer))
+		return m_pTexture;
+
 	if (!_initSubTexture(_t))
 		return m_pTexture;
+
 	GLint x0 = (GLint)(m_pTexture->offsetS * m_scaleX);
 	GLint y0 = (GLint)(m_pTexture->offsetT * m_scaleY) - m_pSubTexture->realHeight;
 	GLint copyWidth = m_pSubTexture->realWidth;
@@ -368,27 +379,34 @@ CachedTexture * FrameBuffer::_getSubTexture(u32 _t)
 	if (y0 + copyHeight > m_pTexture->realHeight)
 		copyHeight = m_pTexture->realHeight - y0;
 
-#ifdef GLESX
-	if (m_pTexture->frameBufferTexture == CachedTexture::fbMultiSample){
+	ObjectHandle readFBO = m_FBO;
+	if (gfxContext.isSupported(SpecialFeatures::WeakBlitFramebuffer) &&
+			m_pTexture->frameBufferTexture == CachedTexture::fbMultiSample) {
 		resolveMultisampledTexture(true);
-		glBindFramebuffer(GL_READ_FRAMEBUFFER, m_resolveFBO);
-	}else
-#endif
-	glBindFramebuffer(GL_READ_FRAMEBUFFER, m_FBO);
+		readFBO = m_resolveFBO;
+	}
 
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_SubFBO);
-	glDisable(GL_SCISSOR_TEST);
-	glBlitFramebuffer(
-		x0, y0, x0 + copyWidth, y0 + copyHeight,
-		0, 0, copyWidth, copyHeight,
-		GL_COLOR_BUFFER_BIT, GL_NEAREST
-		);
-	glEnable(GL_SCISSOR_TEST);
-	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
+	Context::BlitFramebuffersParams blitParams;
+	blitParams.readBuffer = readFBO;
+	blitParams.drawBuffer = m_SubFBO;
+	blitParams.srcX0 = x0;
+	blitParams.srcY0 = y0;
+	blitParams.srcX1 = x0 + copyWidth;
+	blitParams.srcY1 = y0 + copyHeight;
+	blitParams.dstX0 = 0;
+	blitParams.dstY0 = 0;
+	blitParams.dstX1 = copyWidth;
+	blitParams.dstY1 = copyHeight;
+	blitParams.mask = blitMask::COLOR_BUFFER;
+	blitParams.filter = textureParameters::FILTER_NEAREST;
+
+	gfxContext.blitFramebuffers(blitParams);
+
+	gfxContext.bindFramebuffer(bufferTarget::READ_FRAMEBUFFER, ObjectHandle());
+
 	frameBufferList().setCurrentDrawBuffer();
 
 	return m_pSubTexture;
-#endif
 }
 
 CachedTexture * FrameBuffer::getTexture(u32 _t)
@@ -455,7 +473,7 @@ void FrameBufferList::init()
 {
 	 m_pCurrent = nullptr;
 	 m_pCopy = nullptr;
-	 glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+	 gfxContext.bindFramebuffer(bufferTarget::DRAW_FRAMEBUFFER, ObjectHandle());
 	 m_prevColorImageHeight = 0;
 }
 
@@ -463,7 +481,7 @@ void FrameBufferList::destroy() {
 	m_list.clear();
 	m_pCurrent = nullptr;
 	m_pCopy = nullptr;
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+	gfxContext.bindFramebuffer(bufferTarget::DRAW_FRAMEBUFFER, ObjectHandle());
 }
 
 void FrameBufferList::setBufferChanged()
@@ -507,14 +525,15 @@ void FrameBufferList::clearBuffersChanged()
 void FrameBufferList::setCurrentDrawBuffer() const
 {
 	if (m_pCurrent != nullptr)
-		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_pCurrent->m_FBO);
+		gfxContext.bindFramebuffer(bufferTarget::DRAW_FRAMEBUFFER, m_pCurrent->m_FBO);
 }
 
 FrameBuffer * FrameBufferList::findBuffer(u32 _startAddress)
 {
-	for (FrameBuffers::iterator iter = m_list.begin(); iter != m_list.end(); ++iter)
-	if (iter->m_startAddress <= _startAddress && iter->m_endAddress >= _startAddress) // [  {  ]
-		return &(*iter);
+	for (auto iter = m_list.begin(); iter != m_list.end(); ++iter) {
+		if (iter->m_startAddress <= _startAddress && iter->m_endAddress >= _startAddress) // [  {  ]
+			return &(*iter);
+	}
 	return nullptr;
 }
 
@@ -542,7 +561,7 @@ FrameBuffer * FrameBufferList::_findBuffer(u32 _startAddress, u32 _endAddress, u
 
 FrameBuffer * FrameBufferList::findTmpBuffer(u32 _address)
 {
-	for (FrameBuffers::iterator iter = m_list.begin(); iter != m_list.end(); ++iter)
+	for (auto iter = m_list.begin(); iter != m_list.end(); ++iter)
 		if (iter->m_startAddress > _address || iter->m_endAddress < _address)
 				return &(*iter);
 	return nullptr;
@@ -550,7 +569,9 @@ FrameBuffer * FrameBufferList::findTmpBuffer(u32 _address)
 
 void FrameBufferList::saveBuffer(u32 _address, u16 _format, u16 _size, u16 _width, u16 _height, bool _cfb)
 {
-	if (m_pCurrent != nullptr && config.frameBufferEmulation.copyAuxToRDRAM != 0 && (config.generalEmulation.hacks & hack_Snap) == 0) {
+	if (m_pCurrent != nullptr &&
+		config.frameBufferEmulation.copyAuxToRDRAM != 0 &&
+		(config.generalEmulation.hacks & hack_Snap) == 0) {
 		if (m_pCurrent->isAuxiliary()) {
 			FrameBuffer_CopyToRDRAM(m_pCurrent->m_startAddress, true);
 			removeBuffer(m_pCurrent->m_startAddress);
@@ -559,7 +580,7 @@ void FrameBufferList::saveBuffer(u32 _address, u16 _format, u16 _size, u16 _widt
 
 	if (VI.width == 0 || _height == 0) {
 		m_pCurrent = nullptr;
-		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+		gfxContext.bindFramebuffer(bufferTarget::DRAW_FRAMEBUFFER, ObjectHandle());
 		return;
 	}
 
@@ -612,10 +633,11 @@ void FrameBufferList::saveBuffer(u32 _address, u16 _format, u16 _size, u16 _widt
 		} else {
 			m_pCurrent->m_resolved = false;
 #ifdef VC
+			// TODO
 			const GLenum discards[]  = {GL_DEPTH_ATTACHMENT};
 			glDiscardFramebufferEXT(GL_FRAMEBUFFER, 1, discards);
 #endif
-			glBindFramebuffer(GL_FRAMEBUFFER, m_pCurrent->m_FBO);
+			gfxContext.bindFramebuffer(bufferTarget::FRAMEBUFFER, m_pCurrent->m_FBO);
 			if (m_pCurrent->m_size != _size) {
 				f32 fillColor[4];
 				gDPGetFillColor(fillColor);
@@ -671,7 +693,7 @@ void FrameBufferList::saveBuffer(u32 _address, u16 _format, u16 _size, u16 _widt
 
 void FrameBufferList::copyAux()
 {
-	for (FrameBuffers::iterator iter = m_list.begin(); iter != m_list.end(); ++iter) {
+	for (auto iter = m_list.begin(); iter != m_list.end(); ++iter) {
 		if (iter->m_width != VI.width && iter->m_height != VI.height)
 			FrameBuffer_CopyToRDRAM(iter->m_startAddress, true);
 	}
@@ -679,11 +701,11 @@ void FrameBufferList::copyAux()
 
 void FrameBufferList::removeAux()
 {
-	for (FrameBuffers::iterator iter = m_list.begin(); iter != m_list.end(); ++iter) {
+	for (auto iter = m_list.begin(); iter != m_list.end(); ++iter) {
 		while (iter->m_width != VI.width && iter->m_height != VI.height) {
 			if (&(*iter) == m_pCurrent) {
 				m_pCurrent = nullptr;
-				glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+				gfxContext.bindFramebuffer(bufferTarget::DRAW_FRAMEBUFFER, ObjectHandle());
 			}
 			iter = m_list.erase(iter);
 			if (iter == m_list.end())
@@ -694,11 +716,11 @@ void FrameBufferList::removeAux()
 
 void FrameBufferList::removeBuffer(u32 _address )
 {
-	for (FrameBuffers::iterator iter = m_list.begin(); iter != m_list.end(); ++iter)
+	for (auto iter = m_list.begin(); iter != m_list.end(); ++iter)
 		if (iter->m_startAddress == _address) {
 			if (&(*iter) == m_pCurrent) {
 				m_pCurrent = nullptr;
-				glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+				gfxContext.bindFramebuffer(bufferTarget::DRAW_FRAMEBUFFER, ObjectHandle());
 			}
 			m_list.erase(iter);
 			return;
@@ -708,11 +730,11 @@ void FrameBufferList::removeBuffer(u32 _address )
 void FrameBufferList::removeBuffers(u32 _width)
 {
 	m_pCurrent = nullptr;
-	for (FrameBuffers::iterator iter = m_list.begin(); iter != m_list.end(); ++iter) {
+	for (auto iter = m_list.begin(); iter != m_list.end(); ++iter) {
 		while (iter->m_width == _width) {
 			if (&(*iter) == m_pCurrent) {
 				m_pCurrent = nullptr;
-				glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+				gfxContext.bindFramebuffer(bufferTarget::DRAW_FRAMEBUFFER, ObjectHandle());
 			}
 			iter = m_list.erase(iter);
 			if (iter == m_list.end())
@@ -726,7 +748,7 @@ void FrameBufferList::fillBufferInfo(void * _pinfo, u32 _size)
 	FBInfo::FrameBufferInfo* pInfo = reinterpret_cast<FBInfo::FrameBufferInfo*>(_pinfo);
 
 	u32 idx = 0;
-	for (FrameBuffers::iterator iter = m_list.begin(); iter != m_list.end(); ++iter) {
+	for (auto iter = m_list.begin(); iter != m_list.end(); ++iter) {
 		if (iter->m_width == VI.width && !iter->m_cfb && !iter->m_isDepthBuffer) {
 			pInfo[idx].addr = iter->m_startAddress;
 			pInfo[idx].width = iter->m_width;
@@ -744,41 +766,38 @@ void FrameBufferList::attachDepthBuffer()
 		return;
 
 #ifdef VC
+	// TODO
 	const GLenum discards[]  = {GL_DEPTH_ATTACHMENT};
 	glDiscardFramebufferEXT(GL_FRAMEBUFFER, 1, discards);
 #endif
 	DepthBuffer * pDepthBuffer = depthBufferList().getCurrent();
-	if (m_pCurrent->m_FBO > 0 && pDepthBuffer != nullptr) {
+	if (m_pCurrent->m_FBO.isNotNull() && pDepthBuffer != nullptr) {
 		pDepthBuffer->initDepthImageTexture(m_pCurrent);
 		pDepthBuffer->initDepthBufferTexture(m_pCurrent);
-#ifndef USE_DEPTH_RENDERBUFFER
-#ifdef GLESX
-		if (pDepthBuffer->m_pDepthBufferTexture->realWidth == m_pCurrent->m_pTexture->realWidth) {
-#else
-		if (pDepthBuffer->m_pDepthBufferTexture->realWidth >= m_pCurrent->m_pTexture->realWidth) {
-#endif // GLES2
-#else
+#ifdef USE_DEPTH_RENDERBUFFER
+		// TODO
 		if (pDepthBuffer->m_depthRenderbufferWidth == m_pCurrent->m_pTexture->realWidth) {
+#else
+		const bool goodDepthBufferTexture = gfxContext.isSupported(SpecialFeatures::WeakBlitFramebuffer) ?
+					pDepthBuffer->m_pDepthBufferTexture->realWidth == m_pCurrent->m_pTexture->realWidth :
+					pDepthBuffer->m_pDepthBufferTexture->realWidth >= m_pCurrent->m_pTexture->realWidth;
+		if (goodDepthBufferTexture) {
 #endif // USE_DEPTH_RENDERBUFFER
 			m_pCurrent->m_pDepthBuffer = pDepthBuffer;
-			pDepthBuffer->setDepthAttachment(m_pCurrent->m_FBO, GL_DRAW_FRAMEBUFFER);
-			if (graphics::Context::imageTextures && config.frameBufferEmulation.N64DepthCompare != 0)
+			pDepthBuffer->setDepthAttachment(GLuint(m_pCurrent->m_FBO), GL_DRAW_FRAMEBUFFER);
+			if (Context::imageTextures && config.frameBufferEmulation.N64DepthCompare != 0)
 				pDepthBuffer->bindDepthImageTexture();
 		} else
 			m_pCurrent->m_pDepthBuffer = nullptr;
 	} else
 		m_pCurrent->m_pDepthBuffer = nullptr;
 
-#ifndef GLES2
-	GLuint attachments[1] = { GL_COLOR_ATTACHMENT0 };
-	glDrawBuffers(1, attachments);
-#endif
 	assert(checkFBO());
 }
 
 void FrameBufferList::clearDepthBuffer(DepthBuffer * _pDepthBuffer)
 {
-	for (FrameBuffers::iterator iter = m_list.begin(); iter != m_list.end(); ++iter) {
+	for (auto iter = m_list.begin(); iter != m_list.end(); ++iter) {
 		if (iter->m_pDepthBuffer == _pDepthBuffer) {
 			iter->m_pDepthBuffer = nullptr;
 		}
@@ -790,9 +809,7 @@ void FrameBuffer_Init()
 	frameBufferList().init();
 	if (config.frameBufferEmulation.enable != 0) {
 	ColorBufferToRDRAM::get().init();
-#ifndef GLES2
 	DepthBufferToRDRAM::get().init();
-#endif
 	RDRAMtoColorBuffer::get().init();
 	}
 }
@@ -800,9 +817,7 @@ void FrameBuffer_Init()
 void FrameBuffer_Destroy()
 {
 	RDRAMtoColorBuffer::get().destroy();
-#ifndef GLES2
 	DepthBufferToRDRAM::get().destroy();
-#endif
 	ColorBufferToRDRAM::get().destroy();
 	frameBufferList().destroy();
 }
@@ -923,7 +938,7 @@ void FrameBufferList::renderBuffer(u32 _address)
 #endif // GLESX
 
 //	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-	gfxContext.bindFramebuffer(graphics::bufferTarget::DRAW_FRAMEBUFFER, graphics::ObjectHandle());
+	gfxContext.bindFramebuffer(bufferTarget::DRAW_FRAMEBUFFER, ObjectHandle());
 
 	//glDrawBuffer( GL_BACK );
 	float clearColor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
@@ -931,7 +946,7 @@ void FrameBufferList::renderBuffer(u32 _address)
 
 
 	GLenum filter = GL_LINEAR;
-	graphics::ObjectHandle readBuffer;
+	ObjectHandle readBuffer;
 
 	if (pFilteredBuffer->m_pTexture->frameBufferTexture == CachedTexture::fbMultiSample) {
 		if (X0 > 0 || dstPartHeight > 0 ||
@@ -939,14 +954,14 @@ void FrameBufferList::renderBuffer(u32 _address)
 			(srcCoord[3] - srcCoord[1]) != (dstCoord[3] - dstCoord[1])) {
 			pFilteredBuffer->resolveMultisampledTexture(true);
 			//glBindFramebuffer(GL_READ_FRAMEBUFFER, pFilteredBuffer->m_resolveFBO);
-			readBuffer = graphics::ObjectHandle(pFilteredBuffer->m_resolveFBO);
+			readBuffer = ObjectHandle(pFilteredBuffer->m_resolveFBO);
 		} else {
 //			glBindFramebuffer(GL_READ_FRAMEBUFFER, pFilteredBuffer->m_FBO);
-			readBuffer = graphics::ObjectHandle(pFilteredBuffer->m_FBO);
+			readBuffer = ObjectHandle(pFilteredBuffer->m_FBO);
 			filter = GL_NEAREST;
 		}
 	} else {
-		readBuffer = graphics::ObjectHandle(pFilteredBuffer->m_FBO);
+		readBuffer = ObjectHandle(pFilteredBuffer->m_FBO);
 //		glBindFramebuffer(GL_READ_FRAMEBUFFER, pFilteredBuffer->m_FBO);
 	}
 
@@ -966,7 +981,7 @@ void FrameBufferList::renderBuffer(u32 _address)
 	blitParams.dstWidth = wnd.getScreenWidth();
 	blitParams.dstHeight = wnd.getScreenHeight() + wnd.getHeightOffset();
 	blitParams.filter = filter;
-	blitParams.mask = graphics::blitMask::COLOR_BUFFER;
+	blitParams.mask = blitMask::COLOR_BUFFER;
 	blitParams.tex[0] = pBufferTexture;
 	blitParams.combiner = CombinerInfo::get().getTexrectCopyProgram();
 	blitParams.readBuffer = readBuffer;
@@ -985,11 +1000,11 @@ void FrameBufferList::renderBuffer(u32 _address)
 			dstY1 = dstY0 + dstPartHeight;
 			if (pFilteredBuffer->m_pTexture->frameBufferTexture == CachedTexture::fbMultiSample) {
 				pFilteredBuffer->resolveMultisampledTexture();
-				readBuffer = graphics::ObjectHandle(pFilteredBuffer->m_resolveFBO);
+				readBuffer = ObjectHandle(pFilteredBuffer->m_resolveFBO);
 //				glBindFramebuffer(GL_READ_FRAMEBUFFER, pFilteredBuffer->m_resolveFBO);
 			} else {
 //				glBindFramebuffer(GL_READ_FRAMEBUFFER, pFilteredBuffer->m_FBO);
-				readBuffer = graphics::ObjectHandle(pFilteredBuffer->m_FBO);
+				readBuffer = ObjectHandle(pFilteredBuffer->m_FBO);
 			}
 
 //			glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
@@ -1014,11 +1029,13 @@ void FrameBufferList::renderBuffer(u32 _address)
 		}
 	}
 
-	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
+	gfxContext.bindFramebuffer(bufferTarget::READ_FRAMEBUFFER, ObjectHandle());
+
 	wnd.swapBuffers();
 	if (m_pCurrent != nullptr) {
-		gfxContext.bindFramebuffer(graphics::bufferTarget::DRAW_FRAMEBUFFER, graphics::ObjectHandle(m_pCurrent->m_FBO));
+		gfxContext.bindFramebuffer(bufferTarget::DRAW_FRAMEBUFFER, ObjectHandle(m_pCurrent->m_FBO));
 #ifdef VC
+		// TODO
 		const GLenum discards[]  = {GL_DEPTH_ATTACHMENT};
 		glDiscardFramebufferEXT(GL_FRAMEBUFFER, 1, discards);
 #endif
@@ -1095,7 +1112,6 @@ void FrameBuffer_CopyChunkToRDRAM(u32 _address)
 
 bool FrameBuffer_CopyDepthBuffer( u32 address )
 {
-#ifndef GLES2
 	FrameBuffer * pCopyBuffer = frameBufferList().getCopyBuffer();
 	if (pCopyBuffer != nullptr) {
 		// This code is mainly to emulate Zelda MM camera.
@@ -1105,18 +1121,11 @@ bool FrameBuffer_CopyDepthBuffer( u32 address )
 		return true;
 	} else
 		return DepthBufferToRDRAM::get().copyToRDRAM(address);
-#else
-	return false;
-#endif
 }
 
 bool FrameBuffer_CopyDepthBufferChunk(u32 address)
 {
-#ifndef GLES2
 	return DepthBufferToRDRAM::get().copyChunkToRDRAM(address);
-#else
-	return false;
-#endif
 }
 
 void FrameBuffer_CopyFromRDRAM(u32 _address, bool _bCFB)

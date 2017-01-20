@@ -6,6 +6,8 @@
 
 #include "Types.h"
 #include "Textures.h"
+#include "Graphics/ObjectHandle.h"
+
 struct gDPTile;
 struct DepthBuffer;
 
@@ -45,17 +47,17 @@ struct FrameBuffer
 	} m_loadTileOrigin;
 	u32 m_loadType;
 
-	GLuint m_FBO;
+	graphics::ObjectHandle m_FBO;
 	CachedTexture *m_pTexture;
 	DepthBuffer *m_pDepthBuffer;
 
 	// multisampling
-	GLuint m_resolveFBO;
+	graphics::ObjectHandle m_resolveFBO;
 	CachedTexture *m_pResolveTexture;
 	bool m_resolved;
 
 	// subtexture
-	GLuint m_SubFBO;
+	graphics::ObjectHandle m_SubFBO;
 	CachedTexture *m_pSubTexture;
 
 	std::vector<u8> m_RdramCopy;
@@ -67,7 +69,7 @@ private:
 	} m_clearParams;
 
 	void _initTexture(u16 _width, u16 _height, u16 _format, u16 _size, CachedTexture *_pTexture);
-	void _setAndAttachTexture(u32 _fbo, CachedTexture *_pTexture, u32 _t, bool _multisampling);
+	void _setAndAttachTexture(graphics::ObjectHandle _fbo, CachedTexture *_pTexture, u32 _t, bool _multisampling);
 	bool _initSubTexture(u32 _t);
 	CachedTexture * _getSubTexture(u32 _t);
 	mutable u32 m_validityChecked;
