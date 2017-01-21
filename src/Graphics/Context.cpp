@@ -110,6 +110,11 @@ void Context::setTextureParameters(const TexParameters & _parameters)
 	m_impl->setTextureParameters(_parameters);
 }
 
+void Context::bindImageTexture(const BindImageTextureParameters & _params)
+{
+	m_impl->bindImageTexture(_params);
+}
+
 /*---------------Framebuffer-------------*/
 
 const FramebufferTextureFormats & Context::getFramebufferTextureFormats()

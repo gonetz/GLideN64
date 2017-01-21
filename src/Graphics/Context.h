@@ -109,6 +109,15 @@ namespace graphics {
 
 		void setTextureParameters(const TexParameters & _parameters);
 
+		struct BindImageTextureParameters {
+			Parameter imageUnit;
+			ObjectHandle texture;
+			Parameter accessMode;
+			Parameter textureFormat;
+		};
+
+		void bindImageTexture(const BindImageTextureParameters & _params);
+
 		/*---------------Framebuffer-------------*/
 
 		const FramebufferTextureFormats & getFramebufferTextureFormats();

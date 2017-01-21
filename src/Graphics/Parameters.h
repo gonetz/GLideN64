@@ -68,6 +68,12 @@ namespace graphics {
 		extern Parameter Depth;
 	}
 
+	namespace textureImageAccessMode {
+		extern Parameter READ_ONLY;
+		extern Parameter WRITE_ONLY;
+		extern Parameter READ_WRITE;
+	}
+
 	namespace textureParameters {
 		extern Parameter FILTER_NEAREST;
 		extern Parameter FILTER_LINEAR;

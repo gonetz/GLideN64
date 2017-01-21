@@ -28,6 +28,7 @@ namespace graphics {
 		virtual void init2DTexture(const Context::InitTextureParams & _params) = 0;
 		virtual void update2DTexture(const Context::UpdateTextureDataParams & _params) = 0;
 		virtual void setTextureParameters(const Context::TexParameters & _parameters) = 0;
+		virtual void bindImageTexture(const Context::BindImageTextureParameters & _params) = 0;
 		virtual FramebufferTextureFormats * getFramebufferTextureFormats() = 0;
 		virtual ObjectHandle createFramebuffer() = 0;
 		virtual void deleteFramebuffer(ObjectHandle _name) = 0;

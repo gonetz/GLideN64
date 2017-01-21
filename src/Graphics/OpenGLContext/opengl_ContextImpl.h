@@ -59,6 +59,8 @@ namespace opengl {
 
 		void setTextureParameters(const graphics::Context::TexParameters & _parameters) override;
 
+		void bindImageTexture(const graphics::Context::BindImageTextureParameters & _params) override;
+
 		/*---------------Framebuffer-------------*/
 
 		graphics::FramebufferTextureFormats * getFramebufferTextureFormats() override;

@@ -68,6 +68,12 @@ namespace graphics {
 		Parameter Depth(2U);
 	}
 
+	namespace textureImageAccessMode {
+		Parameter READ_ONLY(GL_READ_ONLY);
+		Parameter WRITE_ONLY(GL_WRITE_ONLY);
+		Parameter READ_WRITE(GL_READ_WRITE);
+	}
+
 	namespace textureParameters {
 		Parameter FILTER_NEAREST(GL_NEAREST);
 		Parameter FILTER_LINEAR(GL_LINEAR);

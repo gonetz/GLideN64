@@ -9,6 +9,7 @@
 
 
 PaletteTexture g_paletteTexture;
+using namespace graphics;
 
 PaletteTexture::PaletteTexture()
 : m_pTexture(nullptr)
@@ -38,10 +39,10 @@ void PaletteTexture::init()
 #endif
 	textureCache().addFrameBufferTextureSize(m_pTexture->textureBytes);
 
-	const graphics::FramebufferTextureFormats & fbTexFormats = gfxContext.getFramebufferTextureFormats();
-	graphics::Context::InitTextureParams initParams;
-	initParams.handle = graphics::ObjectHandle(m_pTexture->glName);
-	initParams.ImageUnit = graphics::textureImageUnits::Tlut;
+	const FramebufferTextureFormats & fbTexFormats = gfxContext.getFramebufferTextureFormats();
+	Context::InitTextureParams initParams;
+	initParams.handle = ObjectHandle(m_pTexture->glName);
+	initParams.ImageUnit = textureImageUnits::Tlut;
 	initParams.width = m_pTexture->realWidth;
 	initParams.height = m_pTexture->realHeight;
 	initParams.internalFormat = fbTexFormats.lutInternalFormat;
@@ -49,14 +50,14 @@ void PaletteTexture::init()
 	initParams.dataType = fbTexFormats.lutType;
 	gfxContext.init2DTexture(initParams);
 
-	graphics::Context::TexParameters setParams;
-	setParams.handle = graphics::ObjectHandle(m_pTexture->glName);
-	setParams.target = graphics::target::TEXTURE_2D;
-	setParams.textureUnitIndex = graphics::textureIndices::PaletteTex;
-	setParams.minFilter = graphics::textureParameters::FILTER_NEAREST;
-	setParams.magFilter = graphics::textureParameters::FILTER_NEAREST;
-	setParams.wrapS = graphics::textureParameters::WRAP_CLAMP_TO_EDGE;
-	setParams.wrapT = graphics::textureParameters::WRAP_CLAMP_TO_EDGE;
+	Context::TexParameters setParams;
+	setParams.handle = ObjectHandle(m_pTexture->glName);
+	setParams.target = target::TEXTURE_2D;
+	setParams.textureUnitIndex = textureIndices::PaletteTex;
+	setParams.minFilter = textureParameters::FILTER_NEAREST;
+	setParams.magFilter = textureParameters::FILTER_NEAREST;
+	setParams.wrapS = textureParameters::WRAP_CLAMP_TO_EDGE;
+	setParams.wrapT = textureParameters::WRAP_CLAMP_TO_EDGE;
 	gfxContext.setTextureParameters(setParams);
 
 	// Generate Pixel Buffer Object. Initialize it with max buffer size.
@@ -66,8 +67,16 @@ void PaletteTexture::init()
 
 void PaletteTexture::destroy()
 {
-	const graphics::FramebufferTextureFormats & fbTexFormats = gfxContext.getFramebufferTextureFormats();
-	glBindImageTexture(TlutImageUnit, 0, 0, GL_FALSE, 0, GL_READ_ONLY, GLenum(fbTexFormats.lutInternalFormat));
+	const FramebufferTextureFormats & fbTexFormats = gfxContext.getFramebufferTextureFormats();
+
+	Context::BindImageTextureParameters bindParams;
+	bindParams.imageUnit = textureImageUnits::Tlut;
+	bindParams.texture = ObjectHandle();
+	bindParams.accessMode = textureImageAccessMode::READ_ONLY;
+	bindParams.textureFormat = fbTexFormats.lutInternalFormat;
+
+	gfxContext.bindImageTexture(bindParams);
+
 	textureCache().removeFrameBufferTexture(m_pTexture);
 	m_pTexture = nullptr;
 	m_pbuf.reset();
@@ -80,7 +89,7 @@ void PaletteTexture::update()
 	
 	m_paletteCRC256 = gDP.paletteCRC256;
 
-	graphics::PixelBufferBinder<graphics::PixelWriteBuffer> binder(m_pbuf.get());
+	PixelBufferBinder<PixelWriteBuffer> binder(m_pbuf.get());
 	GLubyte* ptr = (GLubyte*)m_pbuf->getWriteBuffer(m_pTexture->textureBytes);
 #ifdef GLESX
 	u32 * palette = (u32*)ptr;
@@ -92,17 +101,16 @@ void PaletteTexture::update()
 		palette[i] = swapword(src[i * 4]);
 	m_pbuf->closeWriteBuffer();
 
-	const graphics::FramebufferTextureFormats & fbTexFormats = gfxContext.getFramebufferTextureFormats();
-	graphics::Context::UpdateTextureDataParams params;
-	params.handle = graphics::ObjectHandle(m_pTexture->glName);
-	params.ImageUnit = graphics::textureImageUnits::Tlut;
-	params.textureUnitIndex = graphics::textureIndices::PaletteTex;
+	const FramebufferTextureFormats & fbTexFormats = gfxContext.getFramebufferTextureFormats();
+	Context::UpdateTextureDataParams params;
+	params.handle = ObjectHandle(m_pTexture->glName);
+	params.ImageUnit = textureImageUnits::Tlut;
+	params.textureUnitIndex = textureIndices::PaletteTex;
 	params.width = m_pTexture->realWidth;
 	params.height = m_pTexture->realHeight;
 	params.format = fbTexFormats.lutFormat;
 	params.internalFormat = fbTexFormats.lutInternalFormat;
 	params.dataType = fbTexFormats.lutType;
 	params.data = m_pbuf->getData();
-	glBindImageTexture(TlutImageUnit, 0, 0, GL_FALSE, 0, GL_READ_ONLY, GLenum(fbTexFormats.lutInternalFormat));
 	gfxContext.update2DTexture(params);
 }

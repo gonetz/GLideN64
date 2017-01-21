@@ -178,6 +178,12 @@ void ContextImpl::setTextureParameters(const graphics::Context::TexParameters & 
 	m_set2DTextureParameters->setTextureParameters(_parameters);
 }
 
+void ContextImpl::bindImageTexture(const graphics::Context::BindImageTextureParameters & _params)
+{
+	if (glBindImageTexture != nullptr)
+		glBindImageTexture(GLuint(_params.imageUnit), GLuint(_params.texture), 0, GL_FALSE, 0, GLenum(_params.accessMode), GLenum(_params.textureFormat));
+}
+
 /*---------------Framebuffer-------------*/
 
 graphics::FramebufferTextureFormats * ContextImpl::getFramebufferTextureFormats()

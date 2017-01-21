@@ -5,6 +5,7 @@
 #include "Textures.h"
 #include "ZlutTexture.h"
 
+using namespace graphics;
 
 ZlutTexture g_zlutTexture;
 
@@ -40,10 +41,10 @@ void ZlutTexture::init()
 	m_pTexture->textureBytes = m_pTexture->realWidth * m_pTexture->realHeight * sizeof(zLUT[0]);
 	textureCache().addFrameBufferTextureSize(m_pTexture->textureBytes);
 
-	const graphics::FramebufferTextureFormats & fbTexFormats = gfxContext.getFramebufferTextureFormats();
-	graphics::Context::InitTextureParams initParams;
-	initParams.handle = graphics::ObjectHandle(m_pTexture->glName);
-	initParams.ImageUnit = graphics::textureImageUnits::Zlut;
+	const FramebufferTextureFormats & fbTexFormats = gfxContext.getFramebufferTextureFormats();
+	Context::InitTextureParams initParams;
+	initParams.handle = ObjectHandle(m_pTexture->glName);
+	initParams.ImageUnit = textureImageUnits::Zlut;
 	initParams.width = m_pTexture->realWidth;
 	initParams.height = m_pTexture->realHeight;
 	initParams.internalFormat = fbTexFormats.lutInternalFormat;
@@ -52,20 +53,28 @@ void ZlutTexture::init()
 	initParams.data = zLUT;
 	gfxContext.init2DTexture(initParams);
 
-	graphics::Context::TexParameters setParams;
-	setParams.handle = graphics::ObjectHandle(m_pTexture->glName);
-	setParams.target = graphics::target::TEXTURE_2D;
-	setParams.textureUnitIndex = graphics::textureIndices::ZLUTTex;
-	setParams.minFilter = graphics::textureParameters::FILTER_NEAREST;
-	setParams.magFilter = graphics::textureParameters::FILTER_NEAREST;
-	setParams.wrapS = graphics::textureParameters::WRAP_CLAMP_TO_EDGE;
-	setParams.wrapT = graphics::textureParameters::WRAP_CLAMP_TO_EDGE;
+	Context::TexParameters setParams;
+	setParams.handle = ObjectHandle(m_pTexture->glName);
+	setParams.target = target::TEXTURE_2D;
+	setParams.textureUnitIndex = textureIndices::ZLUTTex;
+	setParams.minFilter = textureParameters::FILTER_NEAREST;
+	setParams.magFilter = textureParameters::FILTER_NEAREST;
+	setParams.wrapS = textureParameters::WRAP_CLAMP_TO_EDGE;
+	setParams.wrapT = textureParameters::WRAP_CLAMP_TO_EDGE;
 	gfxContext.setTextureParameters(setParams);
 }
 
 void ZlutTexture::destroy() {
-	const graphics::FramebufferTextureFormats & fbTexFormats = gfxContext.getFramebufferTextureFormats();
-	glBindImageTexture(ZlutImageUnit, 0, 0, GL_FALSE, GL_FALSE, GL_READ_ONLY, GLenum(fbTexFormats.lutInternalFormat));
+	const FramebufferTextureFormats & fbTexFormats = gfxContext.getFramebufferTextureFormats();
+
+	Context::BindImageTextureParameters bindParams;
+	bindParams.imageUnit = textureImageUnits::Zlut;
+	bindParams.texture = ObjectHandle();
+	bindParams.accessMode = textureImageAccessMode::READ_ONLY;
+	bindParams.textureFormat = fbTexFormats.lutInternalFormat;
+
+	gfxContext.bindImageTexture(bindParams);
+
 	textureCache().removeFrameBufferTexture(m_pTexture);
 	m_pTexture = nullptr;
 }
