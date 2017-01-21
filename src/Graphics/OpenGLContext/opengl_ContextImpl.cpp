@@ -344,6 +344,12 @@ bool ContextImpl::isSupported(graphics::SpecialFeatures _feature) const
 		return m_glInfo.msaa;
 	case graphics::SpecialFeatures::ImageTextures:
 		return m_glInfo.imageTextures;
+	case graphics::SpecialFeatures::DepthFramebufferTextures:
+#ifndef USE_DEPTH_RENDERBUFFER
+		return true;
+#else
+		return false;
+#endif
 	}
 	return false;
 }

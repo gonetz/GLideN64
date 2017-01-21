@@ -22,14 +22,13 @@ const GLuint depthImageUnit = 2;
 using namespace graphics;
 
 DepthBuffer::DepthBuffer() : m_address(0), m_width(0), m_ulx(0), m_uly(0), m_lrx(0), m_lry(0),
-	m_depthImageFBO(0), m_pDepthImageTexture(nullptr), m_pDepthBufferTexture(nullptr),
-	m_depthRenderbuffer(0), m_depthRenderbufferWidth(0),
+	m_pDepthImageTexture(nullptr), m_pDepthBufferTexture(nullptr), m_depthRenderbufferWidth(0),
 	m_cleared(false), m_pResolveDepthBufferTexture(nullptr), m_resolved(false),
 	m_pDepthBufferCopyTexture(nullptr), m_copied(false)
 {
-	m_copyFBO = GLuint(gfxContext.createFramebuffer());
+	m_copyFBO = gfxContext.createFramebuffer();
 	if (Context::imageTextures && config.frameBufferEmulation.N64DepthCompare != 0)
-		m_depthImageFBO = GLuint(gfxContext.createFramebuffer());
+		m_depthImageFBO = gfxContext.createFramebuffer();
 }
 
 DepthBuffer::DepthBuffer(DepthBuffer && _other) :
@@ -40,10 +39,10 @@ DepthBuffer::DepthBuffer(DepthBuffer && _other) :
 	m_cleared(_other.m_cleared), m_pResolveDepthBufferTexture(_other.m_pResolveDepthBufferTexture), m_resolved(_other.m_resolved),
 	m_pDepthBufferCopyTexture(_other.m_pDepthBufferCopyTexture), m_copied(_other.m_copied)
 {
-	_other.m_depthImageFBO = 0;
+	_other.m_depthImageFBO = ObjectHandle();
 	_other.m_pDepthImageTexture = nullptr;
 	_other.m_pDepthBufferTexture = nullptr;
-	_other.m_depthRenderbuffer = 0;
+	_other.m_depthRenderbuffer = ObjectHandle();
 	_other.m_pResolveDepthBufferTexture = nullptr;
 	_other.m_resolved = false;
 	_other.m_pDepthBufferCopyTexture = nullptr;
@@ -52,9 +51,9 @@ DepthBuffer::DepthBuffer(DepthBuffer && _other) :
 
 DepthBuffer::~DepthBuffer()
 {
-	gfxContext.deleteFramebuffer(graphics::ObjectHandle(m_depthImageFBO));
-	gfxContext.deleteFramebuffer(graphics::ObjectHandle(m_depthRenderbuffer));
-	gfxContext.deleteFramebuffer(graphics::ObjectHandle(m_copyFBO));
+	gfxContext.deleteFramebuffer(m_depthImageFBO);
+	gfxContext.deleteFramebuffer(m_depthRenderbuffer);
+	gfxContext.deleteFramebuffer(m_copyFBO);
 
 	textureCache().removeFrameBufferTexture(m_pDepthImageTexture);
 	textureCache().removeFrameBufferTexture(m_pDepthBufferTexture);
@@ -67,7 +66,7 @@ void DepthBuffer::initDepthImageTexture(FrameBuffer * _pBuffer)
 	if (!Context::imageTextures || config.frameBufferEmulation.N64DepthCompare == 0 || m_pDepthImageTexture != nullptr)
 		return;
 
-	const graphics::FramebufferTextureFormats & fbTexFormat = gfxContext.getFramebufferTextureFormats();
+	const FramebufferTextureFormats & fbTexFormat = gfxContext.getFramebufferTextureFormats();
 	m_pDepthImageTexture = textureCache().addFrameBufferTexture(false);
 
 	m_pDepthImageTexture->width = (u32)(_pBuffer->m_pTexture->width);
@@ -90,8 +89,8 @@ void DepthBuffer::initDepthImageTexture(FrameBuffer * _pBuffer)
 	textureCache().addFrameBufferTextureSize(m_pDepthImageTexture->textureBytes);
 
 	{
-		graphics::Context::InitTextureParams params;
-		params.handle = graphics::ObjectHandle(m_pDepthImageTexture->glName);
+		Context::InitTextureParams params;
+		params.handle = ObjectHandle(m_pDepthImageTexture->glName);
 		params.width = m_pDepthImageTexture->realWidth;
 		params.height = m_pDepthImageTexture->realHeight;
 		params.internalFormat = fbTexFormat.depthImageInternalFormat;
@@ -100,32 +99,32 @@ void DepthBuffer::initDepthImageTexture(FrameBuffer * _pBuffer)
 		gfxContext.init2DTexture(params);
 	}
 	{
-		graphics::Context::TexParameters params;
-		params.handle = graphics::ObjectHandle(m_pDepthImageTexture->glName);
-		params.target = graphics::target::TEXTURE_2D;
-		params.textureUnitIndex = graphics::textureIndices::Tex[0];
-		params.minFilter = graphics::textureParameters::FILTER_NEAREST;
-		params.magFilter = graphics::textureParameters::FILTER_NEAREST;
+		Context::TexParameters params;
+		params.handle = ObjectHandle(m_pDepthImageTexture->glName);
+		params.target = target::TEXTURE_2D;
+		params.textureUnitIndex = textureIndices::Tex[0];
+		params.minFilter = textureParameters::FILTER_NEAREST;
+		params.magFilter = textureParameters::FILTER_NEAREST;
 		gfxContext.setTextureParameters(params);
 	}
 	{
-		graphics::Context::FrameBufferRenderTarget bufTarget;
-		bufTarget.bufferHandle = graphics::ObjectHandle(m_depthImageFBO);
-		bufTarget.bufferTarget = graphics::bufferTarget::DRAW_FRAMEBUFFER;
-		bufTarget.attachment = graphics::bufferAttachment::COLOR_ATTACHMENT0;
-		bufTarget.textureTarget = graphics::target::TEXTURE_2D;
-		bufTarget.textureHandle = graphics::ObjectHandle(m_pDepthImageTexture->glName);
+		Context::FrameBufferRenderTarget bufTarget;
+		bufTarget.bufferHandle = m_depthImageFBO;
+		bufTarget.bufferTarget = bufferTarget::DRAW_FRAMEBUFFER;
+		bufTarget.attachment = bufferAttachment::COLOR_ATTACHMENT0;
+		bufTarget.textureTarget = target::TEXTURE_2D;
+		bufTarget.textureHandle = ObjectHandle(m_pDepthImageTexture->glName);
 		gfxContext.addFrameBufferRenderTarget(bufTarget);
 	}
 
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, GLuint(_pBuffer->m_FBO));
+	gfxContext.bindFramebuffer(bufferTarget::DRAW_FRAMEBUFFER, _pBuffer->m_FBO);
 
 	depthBufferList().clearBuffer(0, 0, VI.width, VI.height);
 }
 
 void DepthBuffer::_initDepthBufferTexture(FrameBuffer * _pBuffer, CachedTexture * _pTexture, bool _multisample)
 {
-	const graphics::FramebufferTextureFormats & fbTexFormat = gfxContext.getFramebufferTextureFormats();
+	const FramebufferTextureFormats & fbTexFormat = gfxContext.getFramebufferTextureFormats();
 
 	if (_pBuffer != nullptr) {
 		_pTexture->width = (u32)(_pBuffer->m_pTexture->width);
@@ -160,8 +159,8 @@ void DepthBuffer::_initDepthBufferTexture(FrameBuffer * _pBuffer, CachedTexture 
 	textureCache().addFrameBufferTextureSize(_pTexture->textureBytes);
 
 	{
-		graphics::Context::InitTextureParams params;
-		params.handle = graphics::ObjectHandle(_pTexture->glName);
+		Context::InitTextureParams params;
+		params.handle = ObjectHandle(_pTexture->glName);
 		params.msaaLevel = _multisample ? config.video.multisampling : 0U;
 		params.width = _pTexture->realWidth;
 		params.height = _pTexture->realHeight;
@@ -172,12 +171,12 @@ void DepthBuffer::_initDepthBufferTexture(FrameBuffer * _pBuffer, CachedTexture 
 	}
 	_pTexture->frameBufferTexture = _multisample ? CachedTexture::fbMultiSample : CachedTexture::fbOneSample;
 	{
-		graphics::Context::TexParameters params;
-		params.handle = graphics::ObjectHandle(_pTexture->glName);
-		params.target = _multisample ? graphics::target::TEXTURE_2D_MULTISAMPLE : graphics::target::TEXTURE_2D;
-		params.textureUnitIndex = graphics::textureIndices::Tex[0];
-		params.minFilter = graphics::textureParameters::FILTER_NEAREST;
-		params.magFilter = graphics::textureParameters::FILTER_NEAREST;
+		Context::TexParameters params;
+		params.handle = ObjectHandle(_pTexture->glName);
+		params.target = _multisample ? target::TEXTURE_2D_MULTISAMPLE : target::TEXTURE_2D;
+		params.textureUnitIndex = textureIndices::Tex[0];
+		params.minFilter = textureParameters::FILTER_NEAREST;
+		params.magFilter = textureParameters::FILTER_NEAREST;
 		gfxContext.setTextureParameters(params);
 	}
 
@@ -185,7 +184,7 @@ void DepthBuffer::_initDepthBufferTexture(FrameBuffer * _pBuffer, CachedTexture 
 
 void DepthBuffer::_initDepthBufferRenderbuffer(FrameBuffer * _pBuffer)
 {
-	if (m_depthRenderbuffer != 0)
+	if (m_depthRenderbuffer.isNotNull())
 		return;
 	u32 height;
 	if (_pBuffer != NULL) {
@@ -201,30 +200,29 @@ void DepthBuffer::_initDepthBufferRenderbuffer(FrameBuffer * _pBuffer)
 		}
 	}
 
-	graphics::ObjectHandle renderbufHandle = gfxContext.createRenderbuffer();
-	m_depthRenderbuffer = GLuint(renderbufHandle);
-	graphics::Context::InitRenderbufferParams params;
-	params.handle = renderbufHandle;
-	params.target = graphics::target::RENDERBUFFER;
+	m_depthRenderbuffer = gfxContext.createRenderbuffer();
+	Context::InitRenderbufferParams params;
+	params.handle = m_depthRenderbuffer;
+	params.target = target::RENDERBUFFER;
 	params.format = gfxContext.getFramebufferTextureFormats().depthInternalFormat;
 	params.width = m_depthRenderbufferWidth;
 	params.height = height;
 	gfxContext.initRenderbuffer(params);
 }
 
-void DepthBuffer::setDepthAttachment(GLuint _fbo, GLenum _target)
+void DepthBuffer::setDepthAttachment(ObjectHandle _fbo, Parameter _target)
 {
-	graphics::Context::FrameBufferRenderTarget params;
-	params.attachment = graphics::bufferAttachment::DEPTH_ATTACHMENT;
-	params.bufferHandle = graphics::ObjectHandle(_fbo);
+	Context::FrameBufferRenderTarget params;
+	params.attachment = bufferAttachment::DEPTH_ATTACHMENT;
+	params.bufferHandle = _fbo;
 	params.bufferTarget = _target;
-#ifndef USE_DEPTH_RENDERBUFFER
-	params.textureHandle = graphics::ObjectHandle(m_pDepthBufferTexture->glName);
-	params.textureTarget = config.video.multisampling != 0 ? graphics::target::TEXTURE_2D_MULTISAMPLE : graphics::target::TEXTURE_2D;
-#else
-	params.textureHandle = graphics::ObjectHandle(m_depthRenderbuffer);
-	params.textureTarget = graphics::target::RENDERBUFFER;
-#endif // USE_DEPTH_RENDERBUFFER
+	if (gfxContext.isSupported(SpecialFeatures::DepthFramebufferTextures)) {
+		params.textureHandle = ObjectHandle(m_pDepthBufferTexture->glName);
+		params.textureTarget = config.video.multisampling != 0 ? target::TEXTURE_2D_MULTISAMPLE : target::TEXTURE_2D;
+	} else {
+		params.textureHandle = m_depthRenderbuffer;
+		params.textureTarget = target::RENDERBUFFER;
+	}
 	gfxContext.addFrameBufferRenderTarget(params);
 
 	m_copied = false;
@@ -233,55 +231,60 @@ void DepthBuffer::setDepthAttachment(GLuint _fbo, GLenum _target)
 
 void DepthBuffer::initDepthBufferTexture(FrameBuffer * _pBuffer)
 {
-#ifndef USE_DEPTH_RENDERBUFFER
-	if (m_pDepthBufferTexture == nullptr) {
-		m_pDepthBufferTexture = textureCache().addFrameBufferTexture(config.video.multisampling != 0);
-		_initDepthBufferTexture(_pBuffer, m_pDepthBufferTexture, config.video.multisampling != 0);
+	if (gfxContext.isSupported(SpecialFeatures::DepthFramebufferTextures)) {
+		if (m_pDepthBufferTexture == nullptr) {
+			m_pDepthBufferTexture = textureCache().addFrameBufferTexture(config.video.multisampling != 0);
+			_initDepthBufferTexture(_pBuffer, m_pDepthBufferTexture, config.video.multisampling != 0);
+		}
+	} else {
+		_initDepthBufferRenderbuffer(_pBuffer);
 	}
-#else
-	_initDepthBufferRenderbuffer(_pBuffer);
-#endif
 
-#ifdef GL_MULTISAMPLING_SUPPORT
 	if (config.video.multisampling != 0 && m_pResolveDepthBufferTexture == nullptr) {
 		m_pResolveDepthBufferTexture = textureCache().addFrameBufferTexture(false);
 		_initDepthBufferTexture(_pBuffer, m_pResolveDepthBufferTexture, false);
 	}
-#endif
 }
 
 CachedTexture * DepthBuffer::resolveDepthBufferTexture(FrameBuffer * _pBuffer)
 {
-#ifdef GL_MULTISAMPLING_SUPPORT
 	if (config.video.multisampling == 0)
 		return m_pDepthBufferTexture;
+
 	if (m_resolved)
 		return m_pResolveDepthBufferTexture;
-	glBindFramebuffer(GL_READ_FRAMEBUFFER, GLuint(_pBuffer->m_FBO));
-	glReadBuffer(GL_COLOR_ATTACHMENT0);
-	GLuint attachment = GL_COLOR_ATTACHMENT0;
-	glDrawBuffers(1, &attachment);
-	assert(checkFBO());
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, GLuint(_pBuffer->m_resolveFBO));
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, m_pResolveDepthBufferTexture->glName, 0);
-	assert(checkFBO());
-	glDisable(GL_SCISSOR_TEST);
-	glBlitFramebuffer(
-		0, 0, m_pDepthBufferTexture->realWidth, m_pDepthBufferTexture->realHeight,
-		0, 0, m_pResolveDepthBufferTexture->realWidth, m_pResolveDepthBufferTexture->realHeight,
-		GL_DEPTH_BUFFER_BIT, GL_NEAREST
-		);
-	glEnable(GL_SCISSOR_TEST);
-	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, GLuint(_pBuffer->m_FBO));
+
+	Context::FrameBufferRenderTarget targetParams;
+	targetParams.attachment = bufferAttachment::DEPTH_ATTACHMENT;
+	targetParams.bufferHandle = _pBuffer->m_resolveFBO;
+	targetParams.bufferTarget = bufferTarget::DRAW_FRAMEBUFFER;
+	targetParams.textureHandle = ObjectHandle(m_pResolveDepthBufferTexture->glName);
+	targetParams.textureTarget = target::TEXTURE_2D;
+	gfxContext.addFrameBufferRenderTarget(targetParams);
+
+	Context::BlitFramebuffersParams blitParams;
+	blitParams.readBuffer = _pBuffer->m_FBO;
+	blitParams.drawBuffer = _pBuffer->m_resolveFBO;
+	blitParams.srcX0 = 0;
+	blitParams.srcY0 = 0;
+	blitParams.srcX1 = m_pDepthBufferTexture->realWidth;
+	blitParams.srcY1 = m_pDepthBufferTexture->realHeight;
+	blitParams.dstX0 = 0;
+	blitParams.dstY0 = 0;
+	blitParams.dstX1 = m_pResolveDepthBufferTexture->realWidth;
+	blitParams.dstY1 = m_pResolveDepthBufferTexture->realHeight;
+	blitParams.mask = blitMask::DEPTH_BUFFER;
+	blitParams.filter = textureParameters::FILTER_NEAREST;
+
+	gfxContext.blitFramebuffers(blitParams);
+
+	gfxContext.bindFramebuffer(bufferTarget::READ_FRAMEBUFFER, ObjectHandle());
+	gfxContext.bindFramebuffer(bufferTarget::DRAW_FRAMEBUFFER, _pBuffer->m_FBO);
+
 	m_resolved = true;
 	return m_pResolveDepthBufferTexture;
-#else
-	return m_pDepthBufferTexture;
-#endif
 }
 
-#ifndef GLES2
 CachedTexture * DepthBuffer::copyDepthBufferTexture(FrameBuffer * _pBuffer)
 {
 	if (m_copied)
@@ -292,30 +295,46 @@ CachedTexture * DepthBuffer::copyDepthBufferTexture(FrameBuffer * _pBuffer)
 		_initDepthBufferTexture(_pBuffer, m_pDepthBufferCopyTexture, false);
 	}
 
-	glBindFramebuffer(GL_READ_FRAMEBUFFER, GLuint(_pBuffer->m_FBO));
-	glReadBuffer(GL_COLOR_ATTACHMENT0);
-	assert(checkFBO());
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_copyFBO);
 
-	glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
-		_pBuffer->m_pTexture->frameBufferTexture == CachedTexture::fbMultiSample ? _pBuffer->m_pResolveTexture->glName : _pBuffer->m_pTexture->glName,
-		0);
+	Context::FrameBufferRenderTarget targetParams;
+	targetParams.bufferHandle = m_copyFBO;
+	targetParams.bufferTarget = bufferTarget::DRAW_FRAMEBUFFER;
+	targetParams.attachment = bufferAttachment::COLOR_ATTACHMENT0;
+	targetParams.textureHandle = _pBuffer->m_pTexture->frameBufferTexture == CachedTexture::fbMultiSample ?
+		ObjectHandle(_pBuffer->m_pResolveTexture->glName) :
+		ObjectHandle(_pBuffer->m_pTexture->glName);
+	targetParams.textureTarget = target::TEXTURE_2D;
 
-	glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, m_pDepthBufferCopyTexture->glName, 0);
-	assert(checkFBO());
-	glDisable(GL_SCISSOR_TEST);
-	glBlitFramebuffer(
-		0, 0, m_pDepthBufferTexture->realWidth, m_pDepthBufferTexture->realHeight,
-		0, 0, m_pDepthBufferTexture->realWidth, m_pDepthBufferTexture->realHeight,
-		GL_DEPTH_BUFFER_BIT, GL_NEAREST
-		);
-	glEnable(GL_SCISSOR_TEST);
-	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, GLuint(_pBuffer->m_FBO));
+	gfxContext.addFrameBufferRenderTarget(targetParams);
+
+	targetParams.attachment = bufferAttachment::DEPTH_ATTACHMENT;
+	targetParams.textureHandle = ObjectHandle(m_pDepthBufferCopyTexture->glName);
+
+	gfxContext.addFrameBufferRenderTarget(targetParams);
+
+
+	Context::BlitFramebuffersParams blitParams;
+	blitParams.readBuffer = _pBuffer->m_FBO;
+	blitParams.drawBuffer = m_copyFBO;
+	blitParams.srcX0 = 0;
+	blitParams.srcY0 = 0;
+	blitParams.srcX1 = m_pDepthBufferTexture->realWidth;
+	blitParams.srcY1 = m_pDepthBufferTexture->realHeight;
+	blitParams.dstX0 = 0;
+	blitParams.dstY0 = 0;
+	blitParams.dstX1 = m_pDepthBufferTexture->realWidth;
+	blitParams.dstY1 = m_pDepthBufferTexture->realHeight;
+	blitParams.mask = blitMask::DEPTH_BUFFER;
+	blitParams.filter = textureParameters::FILTER_NEAREST;
+
+	gfxContext.blitFramebuffers(blitParams);
+
+	gfxContext.bindFramebuffer(bufferTarget::READ_FRAMEBUFFER, ObjectHandle());
+	gfxContext.bindFramebuffer(bufferTarget::DRAW_FRAMEBUFFER, _pBuffer->m_FBO);
+
 	m_copied = true;
 	return m_pDepthBufferCopyTexture;
 }
-#endif
 
 void DepthBuffer::activateDepthBufferTexture(FrameBuffer * _pBuffer)
 {
@@ -324,10 +343,16 @@ void DepthBuffer::activateDepthBufferTexture(FrameBuffer * _pBuffer)
 
 void DepthBuffer::bindDepthImageTexture()
 {
-#ifdef GL_IMAGE_TEXTURES_SUPPORT
-	glBindImageTexture(depthImageUnit, m_pDepthImageTexture->glName, 0, GL_FALSE, 0, GL_READ_WRITE,
-		GLenum(gfxContext.getFramebufferTextureFormats().depthImageInternalFormat));
-#endif
+	if (!Context::imageTextures)
+		return;
+
+	Context::BindImageTextureParameters bindParams;
+	bindParams.imageUnit = textureImageUnits::Depth;
+	bindParams.texture = ObjectHandle(m_pDepthImageTexture->glName);
+	bindParams.accessMode = textureImageAccessMode::READ_WRITE;
+	bindParams.textureFormat = gfxContext.getFramebufferTextureFormats().depthImageInternalFormat;
+
+	gfxContext.bindImageTexture(bindParams);
 }
 
 DepthBufferList::DepthBufferList() : m_pCurrent(nullptr), m_pzLUT(nullptr)
@@ -443,7 +468,7 @@ void DepthBufferList::clearBuffer(u32 _ulx, u32 _uly, u32 _lrx, u32 _lry)
 	if (m_pCurrent == nullptr)
 		return;
 
-	const graphics::FramebufferTextureFormats & fbTexFormats = gfxContext.getFramebufferTextureFormats();
+	const FramebufferTextureFormats & fbTexFormats = gfxContext.getFramebufferTextureFormats();
 
 	m_pCurrent->m_cleared = true;
 	m_pCurrent->m_ulx = _ulx;
@@ -451,17 +476,28 @@ void DepthBufferList::clearBuffer(u32 _ulx, u32 _uly, u32 _lrx, u32 _lry)
 	m_pCurrent->m_lrx = _lrx;
 	m_pCurrent->m_lry = _lry;
 
-	if (m_pCurrent->m_depthImageFBO == 0 || !Context::imageTextures || config.frameBufferEmulation.N64DepthCompare == 0)
+	if (!m_pCurrent->m_depthImageFBO.isNotNull() || !Context::imageTextures || config.frameBufferEmulation.N64DepthCompare == 0)
 		return;
 
-	float color[4] = {1.0f, 1.0f, 0.0f, 1.0f};
-	glBindImageTexture(depthImageUnit, 0, 0, GL_FALSE, 0, GL_READ_WRITE, GLenum(fbTexFormats.depthImageInternalFormat));
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_pCurrent->m_depthImageFBO);
+
+	Context::BindImageTextureParameters bindParams;
+	bindParams.imageUnit = textureImageUnits::Depth;
+	bindParams.texture = ObjectHandle();
+	bindParams.accessMode = textureImageAccessMode::READ_WRITE;
+	bindParams.textureFormat = gfxContext.getFramebufferTextureFormats().depthImageInternalFormat;
+	gfxContext.bindImageTexture(bindParams);
+
+	gfxContext.bindFramebuffer(bufferTarget::DRAW_FRAMEBUFFER, m_pCurrent->m_depthImageFBO);
+
 	const u32 cycleType = gDP.otherMode.cycleType;
 	gDP.otherMode.cycleType = G_CYC_FILL;
+	float color[4] = { 1.0f, 1.0f, 0.0f, 1.0f };
 	dwnd().getDrawer().drawRect(_ulx, _uly, _lrx, _lry, color);
 	gDP.otherMode.cycleType = cycleType;
-	glBindImageTexture(depthImageUnit, m_pCurrent->m_pDepthImageTexture->glName, 0, GL_FALSE, 0, GL_READ_WRITE, GLenum(fbTexFormats.depthImageInternalFormat));
+
+	bindParams.texture = ObjectHandle(m_pCurrent->m_pDepthImageTexture->glName);
+	gfxContext.bindImageTexture(bindParams);
+
 	frameBufferList().setCurrentDrawBuffer();
 }
 

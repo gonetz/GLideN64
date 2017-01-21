@@ -784,7 +784,7 @@ void FrameBufferList::attachDepthBuffer()
 		if (goodDepthBufferTexture) {
 #endif // USE_DEPTH_RENDERBUFFER
 			m_pCurrent->m_pDepthBuffer = pDepthBuffer;
-			pDepthBuffer->setDepthAttachment(GLuint(m_pCurrent->m_FBO), GL_DRAW_FRAMEBUFFER);
+			pDepthBuffer->setDepthAttachment(m_pCurrent->m_FBO, GL_DRAW_FRAMEBUFFER);
 			if (Context::imageTextures && config.frameBufferEmulation.N64DepthCompare != 0)
 				pDepthBuffer->bindDepthImageTexture();
 		} else

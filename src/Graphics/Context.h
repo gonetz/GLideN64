@@ -19,6 +19,7 @@ namespace graphics {
 		FragmentDepthWrite,
 		BlitFramebuffer,
 		WeakBlitFramebuffer,
+		DepthFramebufferTextures,
 		ImageTextures
 	};
 
