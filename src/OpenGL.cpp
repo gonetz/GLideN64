@@ -405,7 +405,7 @@ void OGLRender::TexrectDrawer::init()
 
 	const graphics::FramebufferTextureFormats & fbTexFormats = gfxContext.getFramebufferTextureFormats();
 	graphics::Context::InitTextureParams initParams;
-	initParams.handle = graphics::ObjectHandle(m_pTexture->glName);
+	initParams.handle = m_pTexture->name;
 	initParams.width = m_pTexture->realWidth;
 	initParams.height = m_pTexture->realHeight;
 	initParams.internalFormat = fbTexFormats.colorInternalFormat;
@@ -414,7 +414,7 @@ void OGLRender::TexrectDrawer::init()
 	gfxContext.init2DTexture(initParams);
 
 	graphics::Context::TexParameters setParams;
-	setParams.handle = graphics::ObjectHandle(m_pTexture->glName);
+	setParams.handle = m_pTexture->name;
 	setParams.target = graphics::target::TEXTURE_2D;
 	setParams.minFilter = graphics::textureParameters::FILTER_LINEAR;
 	setParams.magFilter = graphics::textureParameters::FILTER_LINEAR;
@@ -427,7 +427,7 @@ void OGLRender::TexrectDrawer::init()
 	bufTarget.bufferTarget = graphics::bufferTarget::DRAW_FRAMEBUFFER;
 	bufTarget.attachment = graphics::bufferAttachment::COLOR_ATTACHMENT0;
 	bufTarget.textureTarget = graphics::target::TEXTURE_2D;
-	bufTarget.textureHandle = graphics::ObjectHandle(m_pTexture->glName);
+	bufTarget.textureHandle = m_pTexture->name;
 	gfxContext.addFrameBufferRenderTarget(bufTarget);
 
 	// check if everything is OK
@@ -1210,7 +1210,7 @@ void OGLRender::_updateStates(RENDER_STATE _renderState) const
 				if (pDepthTexture == nullptr)
 					return;
 				glActiveTexture(GL_TEXTURE0 + g_depthTexIndex);
-				glBindTexture(GL_TEXTURE_2D, pDepthTexture->glName);
+				glBindTexture(GL_TEXTURE_2D, GLuint(pDepthTexture->name));
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);

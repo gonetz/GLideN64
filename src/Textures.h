@@ -6,14 +6,15 @@
 
 #include "CRC.h"
 #include "convert.h"
+#include "Graphics/ObjectHandle.h"
 
 typedef u32 (*GetTexelFunc)( u64 *src, u16 x, u16 i, u8 palette );
 
 struct CachedTexture
 {
-	CachedTexture(u32 _glName) : glName(_glName), max_level(0), frameBufferTexture(fbNone), bHDTexture(false) {}
+	CachedTexture(graphics::ObjectHandle _name) : name(_name), max_level(0), frameBufferTexture(fbNone), bHDTexture(false) {}
 
-	u32		glName;
+	graphics::ObjectHandle name;
 	u32		crc;
 //	float	fulS, fulT;
 //	WORD	ulS, ulT, lrS, lrT;
@@ -83,7 +84,7 @@ private:
 
 	typedef std::list<CachedTexture> Textures;
 	typedef std::map<u32, Textures::iterator> Texture_Locations;
-	typedef std::map<u32, CachedTexture> FBTextures;
+	typedef std::map<graphics::ObjectHandle, CachedTexture> FBTextures;
 	Textures m_textures;
 	Texture_Locations m_lruTextureLocations;
 	FBTextures m_fbTextures;

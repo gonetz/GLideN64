@@ -21,6 +21,7 @@
 #include "DisplayWindow.h"
 
 using namespace std;
+using namespace graphics;
 
 inline u32 GetNone( u64 *src, u16 x, u16 i, u8 palette )
 {
@@ -472,15 +473,15 @@ void TextureCache::init()
 	m_pDummy = addFrameBufferTexture(false); // we don't want to remove dummy texture
 	_initDummyTexture(m_pDummy);
 
-	graphics::Context::InitTextureParams params;
-	params.handle = graphics::ObjectHandle(m_pDummy->glName);
+	Context::InitTextureParams params;
+	params.handle = m_pDummy->name;
 	params.mipMapLevel = 0;
 	params.msaaLevel = 0;
 	params.width = m_pDummy->realWidth;
 	params.height = m_pDummy->realHeight;
-	params.format = graphics::color::RGBA;
-	params.internalFormat = graphics::internalcolor::RGBA;
-	params.dataType = graphics::datatype::UNSIGNED_BYTE;
+	params.format = color::RGBA;
+	params.internalFormat = internalcolor::RGBA;
+	params.dataType = datatype::UNSIGNED_BYTE;
 	params.data = dummyTexture;
 	gfxContext.init2DTexture(params);
 
@@ -491,19 +492,19 @@ void TextureCache::init()
 
 
 	m_pMSDummy = nullptr;
-	if (config.video.multisampling != 0 && gfxContext.isSupported(graphics::SpecialFeatures::Multisampling)) {
+	if (config.video.multisampling != 0 && gfxContext.isSupported(SpecialFeatures::Multisampling)) {
 		m_pMSDummy = addFrameBufferTexture(true); // we don't want to remove dummy texture
 		_initDummyTexture(m_pMSDummy);
 
-		graphics::Context::InitTextureParams params;
-		params.handle = graphics::ObjectHandle(m_pMSDummy->glName);
+		Context::InitTextureParams params;
+		params.handle = m_pMSDummy->name;
 		params.mipMapLevel = 0;
 		params.msaaLevel = config.video.multisampling;
 		params.width = m_pMSDummy->realWidth;
 		params.height = m_pMSDummy->realHeight;
-		params.format = graphics::color::RGBA;
-		params.internalFormat = graphics::internalcolor::RGBA;
-		params.dataType = graphics::datatype::UNSIGNED_BYTE;
+		params.format = color::RGBA;
+		params.internalFormat = internalcolor::RGBA;
+		params.dataType = datatype::UNSIGNED_BYTE;
 		gfxContext.init2DTexture(params);
 
 		activateMSDummy(0);
@@ -518,12 +519,12 @@ void TextureCache::destroy()
 	current[0] = current[1] = nullptr;
 
 	for (Textures::const_iterator cur = m_textures.cbegin(); cur != m_textures.cend(); ++cur)
-		glDeleteTextures( 1, &cur->glName );
+		gfxContext.deleteTexture(cur->name);
 	m_textures.clear();
 	m_lruTextureLocations.clear();
 
 	for (FBTextures::const_iterator cur = m_fbTextures.cbegin(); cur != m_fbTextures.cend(); ++cur)
-		glDeleteTextures( 1, &cur->second.glName );
+		gfxContext.deleteTexture(cur->second.name);
 	m_fbTextures.clear();
 
 	m_cachedBytes = 0;
@@ -539,7 +540,7 @@ void TextureCache::_checkCacheSize()
 	if (m_textures.size() >= maxCacheSize) {
 		CachedTexture& clsTex = m_textures.back();
 		m_cachedBytes -= clsTex.textureBytes;
-		glDeleteTextures(1, &clsTex.glName);
+		gfxContext.deleteTexture(clsTex.name);
 		m_lruTextureLocations.erase(clsTex.crc);
 		m_textures.pop_back();
 	}
@@ -552,7 +553,7 @@ void TextureCache::_checkCacheSize()
 		--iter;
 		CachedTexture& tex = *iter;
 		m_cachedBytes -= tex.textureBytes;
-		glDeleteTextures(1, &tex.glName);
+		gfxContext.deleteTexture(tex.name);
 		m_lruTextureLocations.erase(tex.crc);
 	} while (m_cachedBytes > m_maxBytes && iter != m_textures.cbegin());
 	m_textures.erase(iter, m_textures.end());
@@ -563,7 +564,7 @@ CachedTexture * TextureCache::_addTexture(u32 _crc32)
 	if (m_curUnpackAlignment == 0)
 		glGetIntegerv(GL_UNPACK_ALIGNMENT, &m_curUnpackAlignment);
 	_checkCacheSize();
-	m_textures.emplace_front(u32(gfxContext.createTexture(graphics::target::TEXTURE_2D)));
+	m_textures.emplace_front(gfxContext.createTexture(target::TEXTURE_2D));
 	Textures::iterator new_iter = m_textures.begin();
 	new_iter->crc = _crc32;
 	m_lruTextureLocations.insert(std::pair<u32, Textures::iterator>(_crc32, new_iter));
@@ -574,18 +575,18 @@ void TextureCache::removeFrameBufferTexture(CachedTexture * _pTexture)
 {
 	if (_pTexture == nullptr)
 		return;
-	FBTextures::const_iterator iter = m_fbTextures.find(_pTexture->glName);
+	FBTextures::const_iterator iter = m_fbTextures.find(_pTexture->name);
 	assert(iter != m_fbTextures.cend());
 	m_cachedBytes -= iter->second.textureBytes;
-	gfxContext.deleteTexture(graphics::ObjectHandle(iter->second.glName));
+	gfxContext.deleteTexture(ObjectHandle(iter->second.name));
 	m_fbTextures.erase(iter);
 }
 
 CachedTexture * TextureCache::addFrameBufferTexture(bool _multisample)
 {
 	_checkCacheSize();
-	u32 texName(gfxContext.createTexture(_multisample ?
-		graphics::target::TEXTURE_2D_MULTISAMPLE : graphics::target::TEXTURE_2D));
+	ObjectHandle texName(gfxContext.createTexture(_multisample ?
+		target::TEXTURE_2D_MULTISAMPLE : target::TEXTURE_2D));
 	m_fbTextures.emplace(texName, texName);
 	return &m_fbTextures.at(texName);
 }
@@ -748,15 +749,15 @@ bool TextureCache::_loadHiresBackground(CachedTexture *_pTexture)
 						bpl, paladdr);
 	GHQTexInfo ghqTexInfo;
 	if (txfilter_hirestex(_pTexture->crc, ricecrc, palette, &ghqTexInfo)) {
-		graphics::Context::InitTextureParams params;
-		params.handle = graphics::ObjectHandle(_pTexture->glName);
+		Context::InitTextureParams params;
+		params.handle = _pTexture->name;
 		params.mipMapLevel = 0;
 		params.msaaLevel = 0;
 		params.width = ghqTexInfo.width;
 		params.height = ghqTexInfo.height;
-		params.format = graphics::Parameter(ghqTexInfo.texture_format);
-		params.internalFormat = graphics::Parameter(ghqTexInfo.format);
-		params.dataType = graphics::Parameter(ghqTexInfo.pixel_type);
+		params.format = Parameter(ghqTexInfo.texture_format);
+		params.internalFormat = Parameter(ghqTexInfo.format);
+		params.dataType = Parameter(ghqTexInfo.pixel_type);
 		params.data = ghqTexInfo.data;
 		gfxContext.init2DTexture(params);
 
@@ -835,15 +836,15 @@ void TextureCache::_loadBackground(CachedTexture *pTexture)
 					ghqTexInfo.format != GL_RGBA &&
 					m_curUnpackAlignment > 1)
 				glPixelStorei(GL_UNPACK_ALIGNMENT, 2);
-			graphics::Context::InitTextureParams params;
-			params.handle = graphics::ObjectHandle(pTexture->glName);
+			Context::InitTextureParams params;
+			params.handle = pTexture->name;
 			params.mipMapLevel = 0;
 			params.msaaLevel = 0;
 			params.width = ghqTexInfo.width;
 			params.height = ghqTexInfo.height;
-			params.format = graphics::Parameter(ghqTexInfo.texture_format);
-			params.internalFormat = graphics::Parameter(ghqTexInfo.format);
-			params.dataType = graphics::Parameter(ghqTexInfo.pixel_type);
+			params.format = Parameter(ghqTexInfo.texture_format);
+			params.internalFormat = Parameter(ghqTexInfo.format);
+			params.dataType = Parameter(ghqTexInfo.pixel_type);
 			params.data = ghqTexInfo.data;
 			gfxContext.init2DTexture(params);
 			_updateCachedTexture(ghqTexInfo, pTexture);
@@ -853,15 +854,15 @@ void TextureCache::_loadBackground(CachedTexture *pTexture)
 	if (!bLoaded) {
 		if (pTexture->realWidth % 2 != 0 && glInternalFormat != GL_RGBA)
 			glPixelStorei(GL_UNPACK_ALIGNMENT, 2);
-		graphics::Context::InitTextureParams params;
-		params.handle = graphics::ObjectHandle(pTexture->glName);
+		Context::InitTextureParams params;
+		params.handle = pTexture->name;
 		params.mipMapLevel = 0;
 		params.msaaLevel = 0;
 		params.width = pTexture->realWidth;
 		params.height = pTexture->realHeight;
-		params.format = graphics::color::RGBA;
-		params.internalFormat = graphics::Parameter(glInternalFormat);
-		params.dataType = graphics::Parameter(glType);
+		params.format = color::RGBA;
+		params.internalFormat = Parameter(glInternalFormat);
+		params.dataType = Parameter(glType);
 		params.data = pDest;
 		gfxContext.init2DTexture(params);
 	}
@@ -915,15 +916,15 @@ bool TextureCache::_loadHiresTexture(u32 _tile, CachedTexture *_pTexture, u64 & 
 	_ricecrc = txfilter_checksum(addr, tile_width, tile_height, (unsigned short)(_pTexture->format << 8 | _pTexture->size), bpl, paladdr);
 	GHQTexInfo ghqTexInfo;
 	if (txfilter_hirestex(_pTexture->crc, _ricecrc, palette, &ghqTexInfo)) {
-		graphics::Context::InitTextureParams params;
-		params.handle = graphics::ObjectHandle(_pTexture->glName);
+		Context::InitTextureParams params;
+		params.handle = _pTexture->name;
 		params.mipMapLevel = 0;
 		params.msaaLevel = 0;
 		params.width = ghqTexInfo.width;
 		params.height = ghqTexInfo.height;
-		params.internalFormat = graphics::Parameter(ghqTexInfo.format);
-		params.format = graphics::Parameter(ghqTexInfo.texture_format);
-		params.dataType = graphics::Parameter(ghqTexInfo.pixel_type);
+		params.internalFormat = Parameter(ghqTexInfo.format);
+		params.format = Parameter(ghqTexInfo.texture_format);
+		params.dataType = Parameter(ghqTexInfo.pixel_type);
 		params.data = ghqTexInfo.data;
 		gfxContext.init2DTexture(params);
 		assert(!isGLError());
@@ -945,15 +946,15 @@ void TextureCache::_loadDepthTexture(CachedTexture * _pTexture, u16* _pDest)
 	for (u32 t = 0; t < numTexels; ++t)
 		pDestF[t] = _pDest[t] / 65535.0f;
 
-	graphics::Context::InitTextureParams params;
-	params.handle = graphics::ObjectHandle(_pTexture->glName);
+	Context::InitTextureParams params;
+	params.handle = _pTexture->name;
 	params.mipMapLevel = 0;
 	params.msaaLevel = 0;
 	params.width = _pTexture->realWidth;
 	params.height = _pTexture->realHeight;
-	params.internalFormat = graphics::internalcolor::RED;
-	params.format = graphics::color::RED;
-	params.dataType = graphics::datatype::FLOAT;
+	params.internalFormat = internalcolor::RED;
+	params.format = color::RED;
+	params.dataType = datatype::FLOAT;
 	params.data = pDestF;
 	gfxContext.init2DTexture(params);
 	free(pDestF);
@@ -1116,7 +1117,8 @@ void TextureCache::_load(u32 _tile, CachedTexture *_pTexture)
 	if (config.generalEmulation.enableLOD != 0 && gSP.texture.level > 1)
 		_pTexture->max_level = static_cast<u8>(_tile == 0 ? 0 : gSP.texture.level - 1);
 
-	CachedTexture tmptex(0);
+	ObjectHandle name;
+	CachedTexture tmptex(name);
 	memcpy(&tmptex, _pTexture, sizeof(CachedTexture));
 
 	line = tmptex.line;
@@ -1149,15 +1151,15 @@ void TextureCache::_load(u32 _tile, CachedTexture *_pTexture)
 			if (txfilter_filter((u8*)pDest, tmptex.realWidth, tmptex.realHeight,
 							glInternalFormat, (uint64)_pTexture->crc,
 							&ghqTexInfo) != 0 && ghqTexInfo.data != nullptr) {
-				graphics::Context::InitTextureParams params;
-				params.handle = graphics::ObjectHandle(_pTexture->glName);
+				Context::InitTextureParams params;
+				params.handle = _pTexture->name;
 				params.mipMapLevel = 0;
 				params.msaaLevel = 0;
 				params.width = ghqTexInfo.width;
 				params.height = ghqTexInfo.height;
-				params.internalFormat = graphics::Parameter(ghqTexInfo.format);
-				params.format = graphics::Parameter(ghqTexInfo.texture_format);
-				params.dataType = graphics::Parameter(ghqTexInfo.pixel_type);
+				params.internalFormat = Parameter(ghqTexInfo.format);
+				params.format = Parameter(ghqTexInfo.texture_format);
+				params.dataType = Parameter(ghqTexInfo.pixel_type);
 				params.data = ghqTexInfo.data;
 				gfxContext.init2DTexture(params);
 				_updateCachedTexture(ghqTexInfo, _pTexture);
@@ -1169,16 +1171,16 @@ void TextureCache::_load(u32 _tile, CachedTexture *_pTexture)
 					glInternalFormat != GL_RGBA &&
 					m_curUnpackAlignment > 1)
 				glPixelStorei(GL_UNPACK_ALIGNMENT, 2);
-			graphics::Context::InitTextureParams params;
-			params.handle = graphics::ObjectHandle(_pTexture->glName);
+			Context::InitTextureParams params;
+			params.handle = _pTexture->name;
 			params.mipMapLevel = mipLevel;
 			params.mipMapLevels = _pTexture->max_level + 1;
 			params.msaaLevel = 0;
 			params.width = tmptex.realWidth;
 			params.height = tmptex.realHeight;
-			params.internalFormat = graphics::Parameter(glInternalFormat);
-			params.format = graphics::color::RGBA;
-			params.dataType = graphics::Parameter(glType);
+			params.internalFormat = Parameter(glInternalFormat);
+			params.format = color::RGBA;
+			params.dataType = Parameter(glType);
 			params.data = pDest;
 			gfxContext.init2DTexture(params);
 		}
@@ -1249,69 +1251,69 @@ u32 _calculateCRC(u32 _t, const TextureParams & _params, u32 _bytes)
 void TextureCache::activateTexture(u32 _t, CachedTexture *_pTexture)
 {
 
-	graphics::Context::TexParameters params;
-	params.handle = graphics::ObjectHandle(_pTexture->glName);
+	Context::TexParameters params;
+	params.handle = _pTexture->name;
 	if (config.video.multisampling > 0 && _pTexture->frameBufferTexture == CachedTexture::fbMultiSample) {
-		params.target = graphics::target::TEXTURE_2D_MULTISAMPLE;
-		params.textureUnitIndex = graphics::textureIndices::MSTex[_t];
+		params.target = target::TEXTURE_2D_MULTISAMPLE;
+		params.textureUnitIndex = textureIndices::MSTex[_t];
 	} else {
-		params.target = graphics::target::TEXTURE_2D;
-		params.textureUnitIndex = graphics::textureIndices::Tex[_t];
+		params.target = target::TEXTURE_2D;
+		params.textureUnitIndex = textureIndices::Tex[_t];
 	}
 
 	const bool bUseBilinear = (gDP.otherMode.textureFilter | (gSP.objRendermode&G_OBJRM_BILERP)) != 0;
 	const bool bUseLOD = currentCombiner()->usesLOD();
 	const GLint texLevel = bUseLOD ? _pTexture->max_level : 0;
-	params.maxMipmapLevel = graphics::Parameter(texLevel);
+	params.maxMipmapLevel = Parameter(texLevel);
 
 	if (config.texture.bilinearMode == BILINEAR_STANDARD) {
 		if (bUseBilinear) {
 			if (texLevel > 0)
-				params.minFilter = graphics::textureParameters::FILTER_LINEAR_MIPMAP_NEAREST;
+				params.minFilter = textureParameters::FILTER_LINEAR_MIPMAP_NEAREST;
 			else
-				params.minFilter = graphics::textureParameters::FILTER_LINEAR;
-			params.magFilter = graphics::textureParameters::FILTER_LINEAR;
+				params.minFilter = textureParameters::FILTER_LINEAR;
+			params.magFilter = textureParameters::FILTER_LINEAR;
 		}
 		else {
 			if (texLevel > 0)
-				params.minFilter = graphics::textureParameters::FILTER_NEAREST_MIPMAP_NEAREST;
+				params.minFilter = textureParameters::FILTER_NEAREST_MIPMAP_NEAREST;
 			else
-				params.minFilter = graphics::textureParameters::FILTER_NEAREST;
-			params.magFilter = graphics::textureParameters::FILTER_NEAREST;
+				params.minFilter = textureParameters::FILTER_NEAREST;
+			params.magFilter = textureParameters::FILTER_NEAREST;
 		}
 	}
 	else { // 3 point filter
 		if (texLevel > 0) { // Apply standard bilinear to mipmap textures
 			if (bUseBilinear) {
-				params.minFilter = graphics::textureParameters::FILTER_LINEAR_MIPMAP_NEAREST;
-				params.magFilter = graphics::textureParameters::FILTER_LINEAR;
+				params.minFilter = textureParameters::FILTER_LINEAR_MIPMAP_NEAREST;
+				params.magFilter = textureParameters::FILTER_LINEAR;
 			}
 			else {
-				params.minFilter = graphics::textureParameters::FILTER_NEAREST_MIPMAP_NEAREST;
-				params.magFilter = graphics::textureParameters::FILTER_NEAREST;
+				params.minFilter = textureParameters::FILTER_NEAREST_MIPMAP_NEAREST;
+				params.magFilter = textureParameters::FILTER_NEAREST;
 			}
 		}
 		else if (bUseBilinear && config.generalEmulation.enableLOD != 0 && bUseLOD) { // Apply standard bilinear to first tile of mipmap texture
-			params.minFilter = graphics::textureParameters::FILTER_LINEAR;
-			params.magFilter = graphics::textureParameters::FILTER_LINEAR;
+			params.minFilter = textureParameters::FILTER_LINEAR;
+			params.magFilter = textureParameters::FILTER_LINEAR;
 		}
 		else { // Don't use texture filter. Texture will be filtered by 3 point filter shader
-			params.minFilter = graphics::textureParameters::FILTER_NEAREST;
-			params.magFilter = graphics::textureParameters::FILTER_NEAREST;
+			params.minFilter = textureParameters::FILTER_NEAREST;
+			params.magFilter = textureParameters::FILTER_NEAREST;
 		}
 	}
 
 
 	// Set clamping modes
-	params.wrapS = _pTexture->clampS ? graphics::textureParameters::WRAP_CLAMP_TO_EDGE :
-		_pTexture->mirrorS ? graphics::textureParameters::WRAP_MIRRORED_REPEAT
-		: graphics::textureParameters::WRAP_REPEAT;
-	params.wrapT = _pTexture->clampT ? graphics::textureParameters::WRAP_CLAMP_TO_EDGE :
-		_pTexture->mirrorT ? graphics::textureParameters::WRAP_MIRRORED_REPEAT
-		: graphics::textureParameters::WRAP_REPEAT;
+	params.wrapS = _pTexture->clampS ? textureParameters::WRAP_CLAMP_TO_EDGE :
+		_pTexture->mirrorS ? textureParameters::WRAP_MIRRORED_REPEAT
+		: textureParameters::WRAP_REPEAT;
+	params.wrapT = _pTexture->clampT ? textureParameters::WRAP_CLAMP_TO_EDGE :
+		_pTexture->mirrorT ? textureParameters::WRAP_MIRRORED_REPEAT
+		: textureParameters::WRAP_REPEAT;
 
 	if (dwnd().getDrawer().getDrawingState() == DrawingState::Triangle && config.texture.maxAnisotropyF > 0.0f)
-		params.maxAnisotropy = graphics::Parameter(config.texture.maxAnisotropyF);
+		params.maxAnisotropy = Parameter(config.texture.maxAnisotropyF);
 
 	gfxContext.setTextureParameters(params);
 
@@ -1320,23 +1322,23 @@ void TextureCache::activateTexture(u32 _t, CachedTexture *_pTexture)
 
 void TextureCache::activateDummy(u32 _t)
 {
-	graphics::Context::TexParameters params;
-	params.handle = graphics::ObjectHandle(m_pDummy->glName);
-	params.target = graphics::target::TEXTURE_2D;
-	params.textureUnitIndex = graphics::textureIndices::Tex[_t];
-	params.minFilter = graphics::textureParameters::FILTER_NEAREST;
-	params.magFilter = graphics::textureParameters::FILTER_NEAREST;
+	Context::TexParameters params;
+	params.handle = m_pDummy->name;
+	params.target = target::TEXTURE_2D;
+	params.textureUnitIndex = textureIndices::Tex[_t];
+	params.minFilter = textureParameters::FILTER_NEAREST;
+	params.magFilter = textureParameters::FILTER_NEAREST;
 	gfxContext.setTextureParameters(params);
 }
 
 void TextureCache::activateMSDummy(u32 _t)
 {
-	graphics::Context::TexParameters params;
-	params.handle = graphics::ObjectHandle(m_pMSDummy->glName);
-	params.target = graphics::target::TEXTURE_2D_MULTISAMPLE;
-	params.textureUnitIndex = graphics::textureIndices::MSTex[_t];
-	params.minFilter = graphics::textureParameters::FILTER_NEAREST;
-	params.magFilter = graphics::textureParameters::FILTER_NEAREST;
+	Context::TexParameters params;
+	params.handle = m_pMSDummy->name;
+	params.target = target::TEXTURE_2D_MULTISAMPLE;
+	params.textureUnitIndex = textureIndices::MSTex[_t];
+	params.minFilter = textureParameters::FILTER_NEAREST;
+	params.magFilter = textureParameters::FILTER_NEAREST;
 	gfxContext.setTextureParameters(params);
 }
 
@@ -1378,7 +1380,7 @@ void TextureCache::_updateBackground()
 	glActiveTexture( GL_TEXTURE0 );
 	CachedTexture * pCurrent = _addTexture(crc);
 
-	glBindTexture( GL_TEXTURE_2D, pCurrent->glName );
+	glBindTexture( GL_TEXTURE_2D, GLuint(pCurrent->name) );
 
 	pCurrent->address = gSP.bgImage.address;
 
@@ -1424,13 +1426,10 @@ void TextureCache::_clear()
 {
 	current[0] = current[1] = nullptr;
 
-	std::vector<GLuint> textureNames;
-	textureNames.reserve(m_textures.size());
-	for (Textures::const_iterator cur = m_textures.cbegin(); cur != m_textures.cend(); ++cur) {
+	for (auto cur = m_textures.cbegin(); cur != m_textures.cend(); ++cur) {
 		m_cachedBytes -= cur->textureBytes;
-		textureNames.push_back(cur->glName);
+		gfxContext.deleteTexture(cur->name);
 	}
-	glDeleteTextures(textureNames.size(), textureNames.data());
 	m_textures.clear();
 	m_lruTextureLocations.clear();
 }
@@ -1531,7 +1530,7 @@ void TextureCache::update(u32 _t)
 
 	CachedTexture * pCurrent = _addTexture(crc);
 
-	glBindTexture( GL_TEXTURE_2D, pCurrent->glName );
+	glBindTexture( GL_TEXTURE_2D, GLuint(pCurrent->name) );
 
 	pCurrent->address = gDP.loadInfo[pTile->tmem].texAddress;
 

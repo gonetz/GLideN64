@@ -12,6 +12,8 @@
 #include <Graphics/Parameters.h>
 #include <DisplayWindow.h>
 
+using namespace graphics;
+
 RDRAMtoColorBuffer::RDRAMtoColorBuffer()
 	: m_pCurBuffer(nullptr)
 	, m_pTexture(nullptr)
@@ -40,9 +42,9 @@ void RDRAMtoColorBuffer::init()
 	m_pTexture->textureBytes = m_pTexture->realWidth * m_pTexture->realHeight * 4;
 	textureCache().addFrameBufferTextureSize(m_pTexture->textureBytes);
 
-	const graphics::FramebufferTextureFormats & fbTexFormats = gfxContext.getFramebufferTextureFormats();
-	graphics::Context::InitTextureParams initParams;
-	initParams.handle = graphics::ObjectHandle(m_pTexture->glName);
+	const FramebufferTextureFormats & fbTexFormats = gfxContext.getFramebufferTextureFormats();
+	Context::InitTextureParams initParams;
+	initParams.handle = m_pTexture->name;
 	initParams.width = m_pTexture->realWidth;
 	initParams.height = m_pTexture->realHeight;
 	initParams.internalFormat = fbTexFormats.colorInternalFormat;
@@ -50,12 +52,12 @@ void RDRAMtoColorBuffer::init()
 	initParams.dataType = fbTexFormats.colorType;
 	gfxContext.init2DTexture(initParams);
 
-	graphics::Context::TexParameters setParams;
-	setParams.handle = graphics::ObjectHandle(m_pTexture->glName);
-	setParams.target = graphics::target::TEXTURE_2D;
-	setParams.textureUnitIndex = graphics::textureIndices::Tex[0];
-	setParams.minFilter = graphics::textureParameters::FILTER_LINEAR;
-	setParams.magFilter = graphics::textureParameters::FILTER_LINEAR;
+	Context::TexParameters setParams;
+	setParams.handle = m_pTexture->name;
+	setParams.target = target::TEXTURE_2D;
+	setParams.textureUnitIndex = textureIndices::Tex[0];
+	setParams.minFilter = textureParameters::FILTER_LINEAR;
+	setParams.magFilter = textureParameters::FILTER_LINEAR;
 	gfxContext.setTextureParameters(setParams);
 
 	// Generate Pixel Buffer Object. Initialize it later
@@ -254,8 +256,8 @@ void RDRAMtoColorBuffer::copyFromRDRAM(u32 _address, bool _bCFB)
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	glBindTexture(GL_TEXTURE_2D, m_pTexture->glName);
-	const graphics::FramebufferTextureFormats & fbTexFormats = gfxContext.getFramebufferTextureFormats();
+	glBindTexture(GL_TEXTURE_2D, GLuint(m_pTexture->name));
+	const FramebufferTextureFormats & fbTexFormats = gfxContext.getFramebufferTextureFormats();
 #ifndef GLES2
 	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, GLenum(fbTexFormats.colorFormat), GLenum(fbTexFormats.colorType), 0);
 #else

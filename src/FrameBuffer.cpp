@@ -89,7 +89,7 @@ void FrameBuffer::_setAndAttachTexture(ObjectHandle _fbo, CachedTexture *_pTextu
 	{
 		const FramebufferTextureFormats & fbTexFormat = gfxContext.getFramebufferTextureFormats();
 		Context::InitTextureParams params;
-		params.handle = ObjectHandle(_pTexture->glName);
+		params.handle = _pTexture->name;
 		if (_multisampling)
 			params.msaaLevel = config.video.multisampling;
 		params.width = _pTexture->realWidth;
@@ -108,7 +108,7 @@ void FrameBuffer::_setAndAttachTexture(ObjectHandle _fbo, CachedTexture *_pTextu
 	}
 	{
 		Context::TexParameters params;
-		params.handle = ObjectHandle(_pTexture->glName);
+		params.handle = _pTexture->name;
 		params.target = _multisampling ? target::TEXTURE_2D_MULTISAMPLE : target::TEXTURE_2D;
 		params.textureUnitIndex = textureIndices::Tex[_t];
 		params.minFilter = textureParameters::FILTER_NEAREST;
@@ -121,7 +121,7 @@ void FrameBuffer::_setAndAttachTexture(ObjectHandle _fbo, CachedTexture *_pTextu
 		bufTarget.bufferTarget = bufferTarget::FRAMEBUFFER;
 		bufTarget.attachment = bufferAttachment::COLOR_ATTACHMENT0;
 		bufTarget.textureTarget = _multisampling ? target::TEXTURE_2D_MULTISAMPLE : target::TEXTURE_2D;
-		bufTarget.textureHandle = ObjectHandle(_pTexture->glName);
+		bufTarget.textureHandle = _pTexture->name;
 		gfxContext.addFrameBufferRenderTarget(bufTarget);
 	}
 	assert(checkFBO());

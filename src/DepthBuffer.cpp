@@ -90,7 +90,7 @@ void DepthBuffer::initDepthImageTexture(FrameBuffer * _pBuffer)
 
 	{
 		Context::InitTextureParams params;
-		params.handle = ObjectHandle(m_pDepthImageTexture->glName);
+		params.handle = m_pDepthImageTexture->name;
 		params.width = m_pDepthImageTexture->realWidth;
 		params.height = m_pDepthImageTexture->realHeight;
 		params.internalFormat = fbTexFormat.depthImageInternalFormat;
@@ -100,7 +100,7 @@ void DepthBuffer::initDepthImageTexture(FrameBuffer * _pBuffer)
 	}
 	{
 		Context::TexParameters params;
-		params.handle = ObjectHandle(m_pDepthImageTexture->glName);
+		params.handle =m_pDepthImageTexture->name;
 		params.target = target::TEXTURE_2D;
 		params.textureUnitIndex = textureIndices::Tex[0];
 		params.minFilter = textureParameters::FILTER_NEAREST;
@@ -113,7 +113,7 @@ void DepthBuffer::initDepthImageTexture(FrameBuffer * _pBuffer)
 		bufTarget.bufferTarget = bufferTarget::DRAW_FRAMEBUFFER;
 		bufTarget.attachment = bufferAttachment::COLOR_ATTACHMENT0;
 		bufTarget.textureTarget = target::TEXTURE_2D;
-		bufTarget.textureHandle = ObjectHandle(m_pDepthImageTexture->glName);
+		bufTarget.textureHandle = m_pDepthImageTexture->name;
 		gfxContext.addFrameBufferRenderTarget(bufTarget);
 	}
 
@@ -160,7 +160,7 @@ void DepthBuffer::_initDepthBufferTexture(FrameBuffer * _pBuffer, CachedTexture 
 
 	{
 		Context::InitTextureParams params;
-		params.handle = ObjectHandle(_pTexture->glName);
+		params.handle = _pTexture->name;
 		params.msaaLevel = _multisample ? config.video.multisampling : 0U;
 		params.width = _pTexture->realWidth;
 		params.height = _pTexture->realHeight;
@@ -172,7 +172,7 @@ void DepthBuffer::_initDepthBufferTexture(FrameBuffer * _pBuffer, CachedTexture 
 	_pTexture->frameBufferTexture = _multisample ? CachedTexture::fbMultiSample : CachedTexture::fbOneSample;
 	{
 		Context::TexParameters params;
-		params.handle = ObjectHandle(_pTexture->glName);
+		params.handle = _pTexture->name;
 		params.target = _multisample ? target::TEXTURE_2D_MULTISAMPLE : target::TEXTURE_2D;
 		params.textureUnitIndex = textureIndices::Tex[0];
 		params.minFilter = textureParameters::FILTER_NEAREST;
@@ -217,7 +217,7 @@ void DepthBuffer::setDepthAttachment(ObjectHandle _fbo, Parameter _target)
 	params.bufferHandle = _fbo;
 	params.bufferTarget = _target;
 	if (gfxContext.isSupported(SpecialFeatures::DepthFramebufferTextures)) {
-		params.textureHandle = ObjectHandle(m_pDepthBufferTexture->glName);
+		params.textureHandle = m_pDepthBufferTexture->name;
 		params.textureTarget = config.video.multisampling != 0 ? target::TEXTURE_2D_MULTISAMPLE : target::TEXTURE_2D;
 	} else {
 		params.textureHandle = m_depthRenderbuffer;
@@ -258,7 +258,7 @@ CachedTexture * DepthBuffer::resolveDepthBufferTexture(FrameBuffer * _pBuffer)
 	targetParams.attachment = bufferAttachment::DEPTH_ATTACHMENT;
 	targetParams.bufferHandle = _pBuffer->m_resolveFBO;
 	targetParams.bufferTarget = bufferTarget::DRAW_FRAMEBUFFER;
-	targetParams.textureHandle = ObjectHandle(m_pResolveDepthBufferTexture->glName);
+	targetParams.textureHandle = m_pResolveDepthBufferTexture->name;
 	targetParams.textureTarget = target::TEXTURE_2D;
 	gfxContext.addFrameBufferRenderTarget(targetParams);
 
@@ -301,14 +301,14 @@ CachedTexture * DepthBuffer::copyDepthBufferTexture(FrameBuffer * _pBuffer)
 	targetParams.bufferTarget = bufferTarget::DRAW_FRAMEBUFFER;
 	targetParams.attachment = bufferAttachment::COLOR_ATTACHMENT0;
 	targetParams.textureHandle = _pBuffer->m_pTexture->frameBufferTexture == CachedTexture::fbMultiSample ?
-		ObjectHandle(_pBuffer->m_pResolveTexture->glName) :
-		ObjectHandle(_pBuffer->m_pTexture->glName);
+		_pBuffer->m_pResolveTexture->name :
+		_pBuffer->m_pTexture->name;
 	targetParams.textureTarget = target::TEXTURE_2D;
 
 	gfxContext.addFrameBufferRenderTarget(targetParams);
 
 	targetParams.attachment = bufferAttachment::DEPTH_ATTACHMENT;
-	targetParams.textureHandle = ObjectHandle(m_pDepthBufferCopyTexture->glName);
+	targetParams.textureHandle = m_pDepthBufferCopyTexture->name;
 
 	gfxContext.addFrameBufferRenderTarget(targetParams);
 
@@ -348,7 +348,7 @@ void DepthBuffer::bindDepthImageTexture()
 
 	Context::BindImageTextureParameters bindParams;
 	bindParams.imageUnit = textureImageUnits::Depth;
-	bindParams.texture = ObjectHandle(m_pDepthImageTexture->glName);
+	bindParams.texture = m_pDepthImageTexture->name;
 	bindParams.accessMode = textureImageAccessMode::READ_WRITE;
 	bindParams.textureFormat = gfxContext.getFramebufferTextureFormats().depthImageInternalFormat;
 
@@ -495,7 +495,7 @@ void DepthBufferList::clearBuffer(u32 _ulx, u32 _uly, u32 _lrx, u32 _lry)
 	dwnd().getDrawer().drawRect(_ulx, _uly, _lrx, _lry, color);
 	gDP.otherMode.cycleType = cycleType;
 
-	bindParams.texture = ObjectHandle(m_pCurrent->m_pDepthImageTexture->glName);
+	bindParams.texture = m_pCurrent->m_pDepthImageTexture->name;
 	gfxContext.bindImageTexture(bindParams);
 
 	frameBufferList().setCurrentDrawBuffer();

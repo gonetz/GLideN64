@@ -584,12 +584,12 @@ void GraphicsDrawer::_updateStates(DrawingState _drawingState) const
 				if (pDepthTexture == nullptr)
 					return;
 				Context::TexParameters params;
-				params.handle = graphics::ObjectHandle(pDepthTexture->glName);
-				params.target = graphics::target::TEXTURE_2D;
-				params.textureUnitIndex = graphics::textureIndices::DepthTex;
+				params.handle = pDepthTexture->name;
+				params.target = target::TEXTURE_2D;
+				params.textureUnitIndex = textureIndices::DepthTex;
 				params.maxMipmapLevel = 0;
-				params.minFilter = graphics::textureParameters::FILTER_NEAREST;
-				params.magFilter = graphics::textureParameters::FILTER_NEAREST;
+				params.minFilter = textureParameters::FILTER_NEAREST;
+				params.magFilter = textureParameters::FILTER_NEAREST;
 				gfxContext.setTextureParameters(params);
 			}
 		}
@@ -1180,7 +1180,7 @@ void GraphicsDrawer::drawTexturedRect(const TexturedRectParams & _params)
 				texParams.wrapT = textureParameters::WRAP_CLAMP_TO_EDGE;
 
 			if (texParams.wrapS.isValid() || texParams.wrapT.isValid()) {
-				texParams.handle = ObjectHandle(cache.current[t]->glName);
+				texParams.handle = cache.current[t]->name;
 				texParams.target = cache.current[t]->frameBufferTexture == CachedTexture::fbMultiSample ?
 					target::TEXTURE_2D_MULTISAMPLE : target::TEXTURE_2D;
 				texParams.textureUnitIndex = textureIndices::Tex[t];
@@ -1196,7 +1196,7 @@ void GraphicsDrawer::drawTexturedRect(const TexturedRectParams & _params)
 
 	if (gDP.otherMode.cycleType == G_CYC_COPY) {
 		Context::TexParameters texParams;
-		texParams.handle = ObjectHandle(cache.current[0]->glName);
+		texParams.handle = cache.current[0]->name;
 		texParams.target = cache.current[0]->frameBufferTexture == CachedTexture::fbMultiSample ?
 			target::TEXTURE_2D_MULTISAMPLE : target::TEXTURE_2D;
 		texParams.textureUnitIndex = textureIndices::Tex[0];
@@ -1446,22 +1446,22 @@ void GraphicsDrawer::copyTexturedRect(const CopyRectParams & _params)
 			continue;
 
 		Context::TexParameters texParams;
-		texParams.handle = graphics::ObjectHandle(tex->glName);
-		texParams.textureUnitIndex = graphics::textureIndices::Tex[i];
+		texParams.handle = tex->name;
+		texParams.textureUnitIndex = textureIndices::Tex[i];
 		texParams.target = tex->frameBufferTexture == CachedTexture::fbMultiSample ?
-			graphics::target::TEXTURE_2D_MULTISAMPLE : graphics::target::TEXTURE_2D;
+			target::TEXTURE_2D_MULTISAMPLE : target::TEXTURE_2D;
 		texParams.minFilter = _params.filter;
 		texParams.magFilter = _params.filter;
-		texParams.wrapS = graphics::textureParameters::WRAP_CLAMP_TO_EDGE;
-		texParams.wrapT = graphics::textureParameters::WRAP_CLAMP_TO_EDGE;
+		texParams.wrapS = textureParameters::WRAP_CLAMP_TO_EDGE;
+		texParams.wrapT = textureParameters::WRAP_CLAMP_TO_EDGE;
 		gfxContext.setTextureParameters(texParams);
 	}
 
 	gfxContext.setViewport(0, 0, _params.dstWidth, _params.dstHeight);
-	gfxContext.enable(graphics::enable::CULL_FACE, false);
-	gfxContext.enable(graphics::enable::BLEND, false);
-	gfxContext.enable(graphics::enable::DEPTH_TEST, false);
-	gfxContext.enable(graphics::enable::SCISSOR_TEST, false);
+	gfxContext.enable(enable::CULL_FACE, false);
+	gfxContext.enable(enable::BLEND, false);
+	gfxContext.enable(enable::DEPTH_TEST, false);
+	gfxContext.enable(enable::SCISSOR_TEST, false);
 	gfxContext.enableDepthWrite(false);
 
 	Context::DrawRectParameters rectParams;

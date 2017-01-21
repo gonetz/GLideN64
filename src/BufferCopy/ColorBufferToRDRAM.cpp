@@ -21,6 +21,8 @@
 #include <Graphics/Parameters.h>
 #include <DisplayWindow.h>
 
+using namespace graphics;
+
 ColorBufferToRDRAM::ColorBufferToRDRAM()
 	: m_FBO(0)
 	, m_pTexture(nullptr)
@@ -76,9 +78,9 @@ void ColorBufferToRDRAM::_initFBTexture(void)
 	textureCache().addFrameBufferTextureSize(m_pTexture->textureBytes);
 
 	{
-		const graphics::FramebufferTextureFormats & fbTexFormat = gfxContext.getFramebufferTextureFormats();
-		graphics::Context::InitTextureParams params;
-		params.handle = graphics::ObjectHandle(m_pTexture->glName);
+		const FramebufferTextureFormats & fbTexFormat = gfxContext.getFramebufferTextureFormats();
+		Context::InitTextureParams params;
+		params.handle = m_pTexture->name;
 		params.width = m_pTexture->realWidth;
 		params.height = m_pTexture->realHeight;
 		params.internalFormat = fbTexFormat.colorInternalFormat;
@@ -87,21 +89,21 @@ void ColorBufferToRDRAM::_initFBTexture(void)
 		gfxContext.init2DTexture(params);
 	}
 	{
-		graphics::Context::TexParameters params;
-		params.handle = graphics::ObjectHandle(m_pTexture->glName);
-		params.target = graphics::target::TEXTURE_2D;
-		params.textureUnitIndex = graphics::textureIndices::Tex[0];
-		params.minFilter = graphics::textureParameters::FILTER_LINEAR;
-		params.magFilter = graphics::textureParameters::FILTER_LINEAR;
+		Context::TexParameters params;
+		params.handle = m_pTexture->name;
+		params.target = target::TEXTURE_2D;
+		params.textureUnitIndex = textureIndices::Tex[0];
+		params.minFilter = textureParameters::FILTER_LINEAR;
+		params.magFilter = textureParameters::FILTER_LINEAR;
 		gfxContext.setTextureParameters(params);
 	}
 	{
-		graphics::Context::FrameBufferRenderTarget bufTarget;
-		bufTarget.bufferHandle = graphics::ObjectHandle(m_FBO);
-		bufTarget.bufferTarget = graphics::bufferTarget::DRAW_FRAMEBUFFER;
-		bufTarget.attachment = graphics::bufferAttachment::COLOR_ATTACHMENT0;
-		bufTarget.textureTarget = graphics::target::TEXTURE_2D;
-		bufTarget.textureHandle = graphics::ObjectHandle(m_pTexture->glName);
+		Context::FrameBufferRenderTarget bufTarget;
+		bufTarget.bufferHandle = ObjectHandle(m_FBO);
+		bufTarget.bufferTarget = bufferTarget::DRAW_FRAMEBUFFER;
+		bufTarget.attachment = bufferAttachment::COLOR_ATTACHMENT0;
+		bufTarget.textureTarget = target::TEXTURE_2D;
+		bufTarget.textureHandle = m_pTexture->name;
 		gfxContext.addFrameBufferRenderTarget(bufTarget);
 	}
 
@@ -164,21 +166,21 @@ bool ColorBufferToRDRAM::_prepareCopy(u32 _startAddress)
 		return false;
 	}
 
-	graphics::ObjectHandle readBuffer;
+	ObjectHandle readBuffer;
 
 	if (config.video.multisampling != 0) {
 		m_pCurFrameBuffer->resolveMultisampledTexture();
 		//glBindFramebuffer(GL_READ_FRAMEBUFFER, m_pCurFrameBuffer->m_resolveFBO);
-		readBuffer = graphics::ObjectHandle(m_pCurFrameBuffer->m_resolveFBO);
+		readBuffer = ObjectHandle(m_pCurFrameBuffer->m_resolveFBO);
 	} else {
 		//		glBindFramebuffer(GL_READ_FRAMEBUFFER, m_pCurFrameBuffer->m_FBO);
-		readBuffer = graphics::ObjectHandle(m_pCurFrameBuffer->m_FBO);
+		readBuffer = ObjectHandle(m_pCurFrameBuffer->m_FBO);
 	}
 
 
 	if (m_pCurFrameBuffer->m_scaleX != 1.0f || m_pCurFrameBuffer->m_scaleY != 1.0f) {
 //		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_FBO);
-		graphics::ObjectHandle drawBuffer(m_FBO);
+		ObjectHandle drawBuffer(m_FBO);
 
 		u32 x0 = 0;
 		u32 width, height;
@@ -210,15 +212,15 @@ bool ColorBufferToRDRAM::_prepareCopy(u32 _startAddress)
 		blitParams.dstY1 = VI.height;
 		blitParams.dstWidth = m_pTexture->realWidth;
 		blitParams.dstHeight = m_pTexture->realHeight;
-		blitParams.filter = graphics::textureParameters::FILTER_NEAREST;
+		blitParams.filter = textureParameters::FILTER_NEAREST;
 		blitParams.tex[0] = pInputTexture;
 		blitParams.combiner = CombinerInfo::get().getTexrectCopyProgram();
 		blitParams.readBuffer = readBuffer;
 		blitParams.drawBuffer = drawBuffer;
-		blitParams.mask = graphics::blitMask::COLOR_BUFFER;
+		blitParams.mask = blitMask::COLOR_BUFFER;
 		wnd.getDrawer().blitOrCopyTexturedRect(blitParams);
 
-		gfxContext.bindFramebuffer(graphics::bufferTarget::READ_FRAMEBUFFER, graphics::ObjectHandle(m_FBO));
+		gfxContext.bindFramebuffer(bufferTarget::READ_FRAMEBUFFER, ObjectHandle(m_FBO));
 //		glBindFramebuffer(GL_READ_FRAMEBUFFER, m_FBO);
 	}
 

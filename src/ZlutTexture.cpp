@@ -43,7 +43,7 @@ void ZlutTexture::init()
 
 	const FramebufferTextureFormats & fbTexFormats = gfxContext.getFramebufferTextureFormats();
 	Context::InitTextureParams initParams;
-	initParams.handle = ObjectHandle(m_pTexture->glName);
+	initParams.handle = m_pTexture->name;
 	initParams.ImageUnit = textureImageUnits::Zlut;
 	initParams.width = m_pTexture->realWidth;
 	initParams.height = m_pTexture->realHeight;
@@ -54,7 +54,7 @@ void ZlutTexture::init()
 	gfxContext.init2DTexture(initParams);
 
 	Context::TexParameters setParams;
-	setParams.handle = ObjectHandle(m_pTexture->glName);
+	setParams.handle = m_pTexture->name;
 	setParams.target = target::TEXTURE_2D;
 	setParams.textureUnitIndex = textureIndices::ZLUTTex;
 	setParams.minFilter = textureParameters::FILTER_NEAREST;

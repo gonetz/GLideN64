@@ -8,6 +8,8 @@
 #include "NoiseTexture.h"
 #include "DisplayWindow.h"
 
+using namespace graphics;
+
 NoiseTexture g_noiseTexture;
 
 NoiseTexture::NoiseTexture()
@@ -35,22 +37,22 @@ void NoiseTexture::init()
 	textureCache().addFrameBufferTextureSize(m_pTexture->textureBytes);
 
 	{
-		graphics::Context::InitTextureParams params;
-		params.handle = graphics::ObjectHandle(m_pTexture->glName);
+		Context::InitTextureParams params;
+		params.handle = m_pTexture->name;
 		params.width = m_pTexture->realWidth;
 		params.height = m_pTexture->realHeight;
-		params.internalFormat = graphics::internalcolor::RED;
-		params.format = graphics::color::RED;
-		params.dataType = graphics::datatype::UNSIGNED_BYTE;
+		params.internalFormat = internalcolor::RED;
+		params.format = color::RED;
+		params.dataType = datatype::UNSIGNED_BYTE;
 		gfxContext.init2DTexture(params);
 	}
 	{
-		graphics::Context::TexParameters params;
-		params.handle = graphics::ObjectHandle(m_pTexture->glName);
-		params.target = graphics::target::TEXTURE_2D;
-		params.textureUnitIndex = graphics::textureIndices::NoiseTex;
-		params.minFilter = graphics::textureParameters::FILTER_NEAREST;
-		params.magFilter = graphics::textureParameters::FILTER_NEAREST;
+		Context::TexParameters params;
+		params.handle = m_pTexture->name;
+		params.target = target::TEXTURE_2D;
+		params.textureUnitIndex = textureIndices::NoiseTex;
+		params.minFilter = textureParameters::FILTER_NEAREST;
+		params.magFilter = textureParameters::FILTER_NEAREST;
 		gfxContext.setTextureParameters(params);
 	}
 
@@ -75,7 +77,7 @@ void NoiseTexture::update()
 	if (dataSize == 0)
 		return;
 
-	graphics::PixelBufferBinder<graphics::PixelWriteBuffer> binder(m_pbuf.get());
+	PixelBufferBinder<PixelWriteBuffer> binder(m_pbuf.get());
 	GLubyte* ptr = (GLubyte*)m_pbuf->getWriteBuffer(dataSize);
 	if (ptr == nullptr) {
 		return;
@@ -86,13 +88,13 @@ void NoiseTexture::update()
 	}
 	m_pbuf->closeWriteBuffer();
 
-	graphics::Context::UpdateTextureDataParams params;
-	params.handle = graphics::ObjectHandle(m_pTexture->glName);
-	params.textureUnitIndex = graphics::textureIndices::NoiseTex;
+	Context::UpdateTextureDataParams params;
+	params.handle = m_pTexture->name;
+	params.textureUnitIndex = textureIndices::NoiseTex;
 	params.width = VI.width;
 	params.height = VI.height;
-	params.format = graphics::color::RED;
-	params.dataType = graphics::datatype::UNSIGNED_BYTE;
+	params.format = color::RED;
+	params.dataType = datatype::UNSIGNED_BYTE;
 	params.data = m_pbuf->getData();
 	gfxContext.update2DTexture(params);
 

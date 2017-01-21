@@ -11,7 +11,7 @@ namespace graphics {
 		explicit operator u32() const { return m_name; }
 		bool operator==(const ObjectHandle & _other) const { return m_name == _other.m_name; }
 		bool operator!=(const ObjectHandle & _other) const { return m_name != _other.m_name; }
-
+		bool operator<(const ObjectHandle & _other) const { return m_name < _other.m_name; }
 
 		bool isNotNull() const { return m_name != 0; }
 

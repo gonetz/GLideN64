@@ -11,6 +11,8 @@
 #include <Graphics/Parameters.h>
 #include "DisplayWindow.h"
 
+using namespace graphics;
+
 #define NEW_POST_PROCESSOR
 
 #ifdef ANDROID
@@ -252,20 +254,20 @@ void _initTexture(CachedTexture * pTexture)
 	pTexture->textureBytes = pTexture->realWidth * pTexture->realHeight * 4;
 	textureCache().addFrameBufferTextureSize(pTexture->textureBytes);
 
-	graphics::Context::InitTextureParams initParams;
-	initParams.handle = graphics::ObjectHandle(pTexture->glName);
+	Context::InitTextureParams initParams;
+	initParams.handle = pTexture->name;
 	initParams.width = pTexture->realWidth;
 	initParams.height = pTexture->realHeight;
-	initParams.internalFormat = graphics::internalcolor::RGBA;
-	initParams.format = graphics::color::RGBA;
-	initParams.dataType = graphics::datatype::UNSIGNED_BYTE;
+	initParams.internalFormat = internalcolor::RGBA;
+	initParams.format = color::RGBA;
+	initParams.dataType = datatype::UNSIGNED_BYTE;
 	gfxContext.init2DTexture(initParams);
 
-	graphics::Context::TexParameters setParams;
-	setParams.handle = graphics::ObjectHandle(pTexture->glName);
-	setParams.target = graphics::target::TEXTURE_2D;
-	setParams.minFilter = graphics::textureParameters::FILTER_NEAREST;
-	setParams.magFilter = graphics::textureParameters::FILTER_NEAREST;
+	Context::TexParameters setParams;
+	setParams.handle = pTexture->name;
+	setParams.target = target::TEXTURE_2D;
+	setParams.minFilter = textureParameters::FILTER_NEAREST;
+	setParams.magFilter = textureParameters::FILTER_NEAREST;
 	gfxContext.setTextureParameters(setParams);
 }
 
@@ -278,22 +280,22 @@ CachedTexture * _createTexture()
 }
 
 static
-void _initFBO(graphics::ObjectHandle _FBO, CachedTexture * _pTexture)
+void _initFBO(ObjectHandle _FBO, CachedTexture * _pTexture)
 {
-	graphics::Context::FrameBufferRenderTarget bufTarget;
+	Context::FrameBufferRenderTarget bufTarget;
 	bufTarget.bufferHandle = _FBO;
-	bufTarget.bufferTarget = graphics::bufferTarget::DRAW_FRAMEBUFFER;
-	bufTarget.attachment = graphics::bufferAttachment::COLOR_ATTACHMENT0;
-	bufTarget.textureTarget = graphics::target::TEXTURE_2D;
-	bufTarget.textureHandle = graphics::ObjectHandle(_pTexture->glName);
+	bufTarget.bufferTarget = bufferTarget::DRAW_FRAMEBUFFER;
+	bufTarget.attachment = bufferAttachment::COLOR_ATTACHMENT0;
+	bufTarget.textureTarget = target::TEXTURE_2D;
+	bufTarget.textureHandle = _pTexture->name;
 	gfxContext.addFrameBufferRenderTarget(bufTarget);
 	assert(checkFBO());
 }
 
 static
-graphics::ObjectHandle _createFBO(CachedTexture * _pTexture)
+ObjectHandle _createFBO(CachedTexture * _pTexture)
 {
-	graphics::ObjectHandle FBO = gfxContext.createFramebuffer();
+	ObjectHandle FBO = gfxContext.createFramebuffer();
 	_initFBO(FBO, _pTexture);
 	return FBO;
 }
@@ -311,10 +313,10 @@ void PostProcessor::_initCommon()
 {
 	m_pResultBuffer = new FrameBuffer();
 	_initTexture(m_pResultBuffer->m_pTexture);
-	_initFBO(graphics::ObjectHandle(m_pResultBuffer->m_FBO), m_pResultBuffer->m_pTexture);
+	_initFBO(ObjectHandle(m_pResultBuffer->m_FBO), m_pResultBuffer->m_pTexture);
 
-	gfxContext.bindFramebuffer(graphics::bufferTarget::DRAW_FRAMEBUFFER,
-		graphics::ObjectHandle());
+	gfxContext.bindFramebuffer(bufferTarget::DRAW_FRAMEBUFFER,
+		ObjectHandle());
 }
 
 void PostProcessor::_initGammaCorrection()
@@ -478,14 +480,14 @@ void PostProcessor::_preDraw(FrameBuffer * _pBuffer)
 	} else
 		m_pTextureOriginal = _pBuffer->m_pTexture;
 
-	gfxContext.bindFramebuffer(graphics::bufferTarget::READ_FRAMEBUFFER,
-		graphics::ObjectHandle());
+	gfxContext.bindFramebuffer(bufferTarget::READ_FRAMEBUFFER,
+		ObjectHandle());
 }
 
 void PostProcessor::_postDraw()
 {
-	gfxContext.bindFramebuffer(graphics::bufferTarget::DRAW_FRAMEBUFFER,
-		graphics::ObjectHandle());
+	gfxContext.bindFramebuffer(bufferTarget::DRAW_FRAMEBUFFER,
+		ObjectHandle());
 
 	gfxContext.resetShaderProgram();
 }
@@ -578,8 +580,8 @@ FrameBuffer * PostProcessor::doGammaCorrection(FrameBuffer * _pBuffer)
 
 	_preDraw(_pBuffer);
 
-	gfxContext.bindFramebuffer(graphics::bufferTarget::DRAW_FRAMEBUFFER,
-		graphics::ObjectHandle(m_pResultBuffer->m_FBO));
+	gfxContext.bindFramebuffer(bufferTarget::DRAW_FRAMEBUFFER,
+		ObjectHandle(m_pResultBuffer->m_FBO));
 
 	CachedTexture * pDstTex = m_pResultBuffer->m_pTexture;
 	GraphicsDrawer::CopyRectParams copyParams;
@@ -597,7 +599,7 @@ FrameBuffer * PostProcessor::doGammaCorrection(FrameBuffer * _pBuffer)
 	copyParams.dstWidth = pDstTex->realWidth;
 	copyParams.dstHeight = pDstTex->realHeight;
 	copyParams.tex[0] = m_pTextureOriginal;
-	copyParams.filter = graphics::textureParameters::FILTER_NEAREST;
+	copyParams.filter = textureParameters::FILTER_NEAREST;
 	copyParams.combiner = m_gammaCorrectionProgram.get();
 
 	dwnd().getDrawer().copyTexturedRect(copyParams);
@@ -617,8 +619,8 @@ FrameBuffer * PostProcessor::doOrientationCorrection(FrameBuffer * _pBuffer)
 	_preDraw(_pBuffer);
 
 
-	gfxContext.bindFramebuffer(graphics::bufferTarget::DRAW_FRAMEBUFFER,
-		graphics::ObjectHandle(m_pResultBuffer->m_FBO));
+	gfxContext.bindFramebuffer(bufferTarget::DRAW_FRAMEBUFFER,
+		ObjectHandle(m_pResultBuffer->m_FBO));
 
 	CachedTexture * pDstTex = m_pResultBuffer->m_pTexture;
 	GraphicsDrawer::CopyRectParams copyParams;
@@ -636,7 +638,7 @@ FrameBuffer * PostProcessor::doOrientationCorrection(FrameBuffer * _pBuffer)
 	copyParams.dstWidth = pDstTex->realWidth;
 	copyParams.dstHeight = pDstTex->realHeight;
 	copyParams.tex[0] = m_pTextureOriginal;
-	copyParams.filter = graphics::textureParameters::FILTER_NEAREST;
+	copyParams.filter = textureParameters::FILTER_NEAREST;
 	copyParams.combiner = m_orientationCorrectionProgram.get();
 
 	dwnd().getDrawer().copyTexturedRect(copyParams);

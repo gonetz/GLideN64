@@ -16,6 +16,8 @@
 #include <Graphics/Parameters.h>
 #include <DisplayWindow.h>
 
+using namespace graphics;
+
 #ifndef GLES2
 
 DepthBufferToRDRAM::DepthBufferToRDRAM()
@@ -68,9 +70,9 @@ void DepthBufferToRDRAM::init()
 	m_pDepthTexture->textureBytes = m_pDepthTexture->realWidth * m_pDepthTexture->realHeight * sizeof(float);
 	textureCache().addFrameBufferTextureSize(m_pDepthTexture->textureBytes);
 
-	const graphics::FramebufferTextureFormats & fbTexFormats = gfxContext.getFramebufferTextureFormats();
-	graphics::Context::InitTextureParams initParams;
-	initParams.handle = graphics::ObjectHandle(m_pColorTexture->glName);
+	const FramebufferTextureFormats & fbTexFormats = gfxContext.getFramebufferTextureFormats();
+	Context::InitTextureParams initParams;
+	initParams.handle = m_pColorTexture->name;
 	initParams.width = m_pColorTexture->realWidth;
 	initParams.height = m_pColorTexture->realHeight;
 	initParams.internalFormat = fbTexFormats.monochromeInternalFormat;
@@ -78,15 +80,15 @@ void DepthBufferToRDRAM::init()
 	initParams.dataType = fbTexFormats.monochromeType;
 	gfxContext.init2DTexture(initParams);
 
-	graphics::Context::TexParameters setParams;
-	setParams.handle = graphics::ObjectHandle(m_pColorTexture->glName);
-	setParams.target = graphics::target::TEXTURE_2D;
-	setParams.textureUnitIndex = graphics::textureIndices::Tex[0];
-	setParams.minFilter = graphics::textureParameters::FILTER_NEAREST;
-	setParams.magFilter = graphics::textureParameters::FILTER_NEAREST;
+	Context::TexParameters setParams;
+	setParams.handle = m_pColorTexture->name;
+	setParams.target = target::TEXTURE_2D;
+	setParams.textureUnitIndex = textureIndices::Tex[0];
+	setParams.minFilter = textureParameters::FILTER_NEAREST;
+	setParams.magFilter = textureParameters::FILTER_NEAREST;
 	gfxContext.setTextureParameters(setParams);
 
-	initParams.handle = graphics::ObjectHandle(m_pDepthTexture->glName);
+	initParams.handle = m_pDepthTexture->name;
 	initParams.width = m_pDepthTexture->realWidth;
 	initParams.height = m_pDepthTexture->realHeight;
 	initParams.internalFormat = fbTexFormats.depthInternalFormat;
@@ -94,21 +96,21 @@ void DepthBufferToRDRAM::init()
 	initParams.dataType = fbTexFormats.depthType;
 	gfxContext.init2DTexture(initParams);
 
-	setParams.handle = graphics::ObjectHandle(m_pDepthTexture->glName);
+	setParams.handle = m_pDepthTexture->name;
 	gfxContext.setTextureParameters(setParams);
 
-	graphics::ObjectHandle fboHandle = gfxContext.createFramebuffer();
+	ObjectHandle fboHandle = gfxContext.createFramebuffer();
 	m_FBO = GLuint(fboHandle);
-	graphics::Context::FrameBufferRenderTarget bufTarget;
+	Context::FrameBufferRenderTarget bufTarget;
 	bufTarget.bufferHandle = fboHandle;
-	bufTarget.bufferTarget = graphics::bufferTarget::DRAW_FRAMEBUFFER;
-	bufTarget.attachment = graphics::bufferAttachment::COLOR_ATTACHMENT0;
-	bufTarget.textureTarget = graphics::target::TEXTURE_2D;
-	bufTarget.textureHandle = graphics::ObjectHandle(m_pColorTexture->glName);
+	bufTarget.bufferTarget = bufferTarget::DRAW_FRAMEBUFFER;
+	bufTarget.attachment = bufferAttachment::COLOR_ATTACHMENT0;
+	bufTarget.textureTarget = target::TEXTURE_2D;
+	bufTarget.textureHandle = m_pColorTexture->name;
 	gfxContext.addFrameBufferRenderTarget(bufTarget);
 
-	bufTarget.attachment = graphics::bufferAttachment::DEPTH_ATTACHMENT;
-	bufTarget.textureHandle = graphics::ObjectHandle(m_pDepthTexture->glName);
+	bufTarget.attachment = bufferAttachment::DEPTH_ATTACHMENT;
+	bufTarget.textureHandle = m_pDepthTexture->name;
 	gfxContext.addFrameBufferRenderTarget(bufTarget);
 
 	// check if everything is OK
@@ -212,7 +214,7 @@ bool DepthBufferToRDRAM::_copy(u32 _startAddress, u32 _endAddress)
 
 	PBOBinder binder(GL_PIXEL_PACK_BUFFER, m_PBO);
 	glBindFramebuffer(GL_READ_FRAMEBUFFER, m_FBO);
-	const graphics::FramebufferTextureFormats & fbTexFormats = gfxContext.getFramebufferTextureFormats();
+	const FramebufferTextureFormats & fbTexFormats = gfxContext.getFramebufferTextureFormats();
 	glReadPixels(x0, y0, width, height, GLenum(fbTexFormats.depthFormat), GLenum(fbTexFormats.depthType), 0);
 
 	GLubyte* pixelData = (GLubyte*)glMapBufferRange(GL_PIXEL_PACK_BUFFER, 0, width * height * fbTexFormats.depthFormatBytes, GL_MAP_READ_BIT);
