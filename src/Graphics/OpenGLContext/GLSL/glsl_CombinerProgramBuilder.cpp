@@ -925,7 +925,11 @@ public:
 	ShaderFragmentHeaderDepthCompare(const opengl::GLInfo & _glinfo)
 	{
 		if (_glinfo.imageTextures && config.frameBufferEmulation.N64DepthCompare != 0) {
-			m_part =
+			m_part = _glinfo.isGLESX
+				? "layout(binding = 2, rgba32f) highp uniform coherent image2D uDepthImage;\n"
+				: "layout(binding = 2, rg32f) highp uniform coherent image2D uDepthImage;\n"
+				;
+			m_part +=
 				"bool depth_compare();\n"
 				"bool depth_render(highp float Z);\n";
 			;
@@ -1529,11 +1533,7 @@ public:
 	ShaderN64DepthCompare(const opengl::GLInfo & _glinfo)
 	{
 		if (_glinfo.imageTextures && config.frameBufferEmulation.N64DepthCompare != 0) {
-			m_part = _glinfo.isGLESX
-				? "layout(binding = 2, rgba32f) highp uniform coherent image2D uDepthImage;\n"
-				: "layout(binding = 2, rg32f) highp uniform coherent image2D uDepthImage;\n"
-			;
-			m_part +=
+			m_part =
 				"uniform lowp int uDepthMode;							\n"
 				"uniform lowp int uDepthSource;							\n"
 				"uniform lowp int uEnableDepthUpdate;					\n"
@@ -1591,11 +1591,7 @@ public:
 	ShaderN64DepthRender(const opengl::GLInfo & _glinfo)
 	{
 		if (_glinfo.imageTextures && config.frameBufferEmulation.N64DepthCompare != 0) {
-			m_part = _glinfo.isGLESX
-				? "layout(binding = 2, rgba32f) highp uniform coherent image2D uDepthImage;\n"
-				: "layout(binding = 2, rg32f) highp uniform coherent image2D uDepthImage;\n"
-				;
-			m_part +=
+			m_part =
 				"bool depth_render(highp float Z)						\n"
 				"{														\n"
 				"  ivec2 coord = ivec2(gl_FragCoord.xy);				\n"
