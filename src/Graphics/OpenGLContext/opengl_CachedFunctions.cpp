@@ -189,22 +189,22 @@ CachedBindTexture * CachedFunctions::getCachedBindTexture()
 	return &m_bindTexture;
 }
 
-CachedActiveTexture * CachedFunctions::geCachedActiveTexture()
+CachedActiveTexture * CachedFunctions::getCachedActiveTexture()
 {
 	return &m_activeTexture;
 }
 
-CachedBindFramebuffer * CachedFunctions::geCachedBindFramebuffer()
+CachedBindFramebuffer * CachedFunctions::getCachedBindFramebuffer()
 {
 	return &m_bindFramebuffer;
 }
 
-CachedBindRenderbuffer * CachedFunctions::geCachedBindRenderbuffer()
+CachedBindRenderbuffer * CachedFunctions::getCachedBindRenderbuffer()
 {
 	return &m_bindRenderbuffer;
 }
 
-CachedBindBuffer * CachedFunctions::geCachedBindBuffer()
+CachedBindBuffer * CachedFunctions::getCachedBindBuffer()
 {
 	return &m_bindBuffer;
 }

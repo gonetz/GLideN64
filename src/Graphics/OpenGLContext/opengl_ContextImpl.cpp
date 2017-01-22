@@ -205,7 +205,7 @@ void ContextImpl::deleteFramebuffer(graphics::ObjectHandle _name)
 
 void ContextImpl::bindFramebuffer(graphics::Parameter _target, graphics::ObjectHandle _name)
 {
-	m_cachedFunctions->geCachedBindFramebuffer()->bind(_target, _name);
+	m_cachedFunctions->getCachedBindFramebuffer()->bind(_target, _name);
 }
 
 graphics::ObjectHandle ContextImpl::createRenderbuffer()

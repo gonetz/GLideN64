@@ -396,7 +396,7 @@ namespace opengl {
 		if (Update2DTextureSubImage::Check(m_glInfo))
 			return new Update2DTextureSubImage;
 
-		return new Update2DTexSubImage(m_cachedFunctions.geCachedActiveTexture(),
+		return new Update2DTexSubImage(m_cachedFunctions.getCachedActiveTexture(),
 			m_cachedFunctions.getCachedBindTexture());
 	}
 
@@ -405,7 +405,7 @@ namespace opengl {
 		if (SetTextureParameters::Check(m_glInfo))
 			return new SetTextureParameters;
 
-		return new SetTexParameters(m_cachedFunctions.geCachedActiveTexture(),
+		return new SetTexParameters(m_cachedFunctions.getCachedActiveTexture(),
 			m_cachedFunctions.getCachedBindTexture());
 	}
 

@@ -418,7 +418,7 @@ CreateRenderbuffer * BufferManipulationObjectFactory::getCreateRenderbuffer() co
 
 InitRenderbuffer * BufferManipulationObjectFactory::getInitRenderbuffer() const
 {
-	return new RenderbufferStorage(m_cachedFunctions.geCachedBindRenderbuffer());
+	return new RenderbufferStorage(m_cachedFunctions.getCachedBindRenderbuffer());
 }
 
 AddFramebufferRenderTarget * BufferManipulationObjectFactory::getAddFramebufferRenderTarget() const
@@ -426,13 +426,13 @@ AddFramebufferRenderTarget * BufferManipulationObjectFactory::getAddFramebufferR
 	if (AddNamedFramebufferTexture::Check(m_glInfo))
 		return new AddNamedFramebufferTexture;
 
-	return new AddFramebufferTexture2D(m_cachedFunctions.geCachedBindFramebuffer());
+	return new AddFramebufferTexture2D(m_cachedFunctions.getCachedBindFramebuffer());
 }
 
 BlitFramebuffers * BufferManipulationObjectFactory::getBlitFramebuffers() const
 {
 	if (BlitFramebuffersImpl::Check(m_glInfo))
-		return new BlitFramebuffersImpl(m_cachedFunctions.geCachedBindFramebuffer());
+		return new BlitFramebuffersImpl(m_cachedFunctions.getCachedBindFramebuffer());
 
 	return new DummyBlitFramebuffers;
 }
@@ -442,7 +442,7 @@ CreatePixelWriteBuffer * BufferManipulationObjectFactory::createPixelWriteBuffer
 	if (m_glInfo.isGLES2)
 		return new CreatePixelWriteBufferT<MemoryWriteBuffer>(nullptr);
 
-	return new CreatePixelWriteBufferT<PBOWriteBuffer>(m_cachedFunctions.geCachedBindBuffer());
+	return new CreatePixelWriteBufferT<PBOWriteBuffer>(m_cachedFunctions.getCachedBindBuffer());
 }
 
 graphics::FramebufferTextureFormats * BufferManipulationObjectFactory::getFramebufferTextureFormats() const

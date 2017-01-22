@@ -215,13 +215,13 @@ namespace opengl {
 
 		CachedBindTexture * getCachedBindTexture();
 
-		CachedActiveTexture * geCachedActiveTexture();
+		CachedActiveTexture * getCachedActiveTexture();
 
-		CachedBindFramebuffer * geCachedBindFramebuffer();
+		CachedBindFramebuffer * getCachedBindFramebuffer();
 
-		CachedBindRenderbuffer * geCachedBindRenderbuffer();
+		CachedBindRenderbuffer * getCachedBindRenderbuffer();
 
-		CachedBindBuffer * geCachedBindBuffer();
+		CachedBindBuffer * getCachedBindBuffer();
 
 		CachedCullFace * getCachedCullFace();
 
