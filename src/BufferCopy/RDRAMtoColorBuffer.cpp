@@ -1,4 +1,5 @@
 #include "RDRAMtoColorBuffer.h"
+#include "PBOBinder.h"
 
 #include <FrameBufferInfo.h>
 #include <FrameBuffer.h>

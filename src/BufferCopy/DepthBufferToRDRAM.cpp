@@ -4,6 +4,7 @@
 
 #include "DepthBufferToRDRAM.h"
 #include "WriteToRDRAM.h"
+#include "PBOBinder.h"
 
 #include <FrameBuffer.h>
 #include <DepthBuffer.h>

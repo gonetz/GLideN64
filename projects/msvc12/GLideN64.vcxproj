@@ -408,6 +408,7 @@
     <ClInclude Include="..\..\src\BufferCopy\ColorBufferToRDRAM_BufferStorageExt.h" />
     <ClInclude Include="..\..\src\BufferCopy\ColorBufferToRDRAM_GL.h" />
     <ClInclude Include="..\..\src\BufferCopy\DepthBufferToRDRAM.h" />
+    <ClInclude Include="..\..\src\BufferCopy\PBOBinder.h" />
     <ClInclude Include="..\..\src\BufferCopy\RDRAMtoColorBuffer.h" />
     <ClInclude Include="..\..\src\BufferCopy\WriteToRDRAM.h" />
     <ClInclude Include="..\..\src\Combiner.h" />
