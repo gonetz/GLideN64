@@ -31,6 +31,7 @@ namespace graphics {
 		virtual void bindTexture(const Context::BindTextureParameters & _params) = 0;
 		virtual void setTextureUnpackAlignment(s32 _param) = 0;
 		virtual s32 getTextureUnpackAlignment() const = 0;
+		virtual s32 getMaxTextureSize() const = 0;
 		virtual void bindImageTexture(const Context::BindImageTextureParameters & _params) = 0;
 		virtual FramebufferTextureFormats * getFramebufferTextureFormats() = 0;
 		virtual ObjectHandle createFramebuffer() = 0;
@@ -58,8 +59,9 @@ namespace graphics {
 		virtual f32 getMaxLineWidth() = 0;
 		virtual void drawText(const char *_pText, float _x, float _y) = 0;
 		virtual void getTextSize(const char *_pText, float & _w, float & _h) = 0;
-		virtual bool isError() const = 0;
 		virtual bool isSupported(SpecialFeatures _feature) const = 0;
+		virtual bool isError() const = 0;
+		virtual bool isFramebufferError() const = 0;
 	};
 
 }

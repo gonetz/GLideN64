@@ -2,7 +2,6 @@
 #include <math.h>
 #include <algorithm>
 #include <vector>
-#include "OpenGL.h"
 #include "FrameBuffer.h"
 #include "DepthBuffer.h"
 #include "N64.h"
@@ -124,7 +123,7 @@ void FrameBuffer::_setAndAttachTexture(ObjectHandle _fbo, CachedTexture *_pTextu
 		bufTarget.textureHandle = _pTexture->name;
 		gfxContext.addFrameBufferRenderTarget(bufTarget);
 	}
-	assert(checkFBO());
+	assert(!gfxContext.isFramebufferError());
 }
 
 bool FrameBuffer::_isMarioTennisScoreboard() const
@@ -175,7 +174,7 @@ void FrameBuffer::init(u32 _address, u32 _endAddress, u16 _format, u16 _size, u1
 		_initTexture(_width, _height, _format, _size, m_pResolveTexture);
 		m_resolveFBO = gfxContext.createFramebuffer();
 		_setAndAttachTexture(m_resolveFBO, m_pResolveTexture, 0, false);
-		assert(checkFBO());
+		assert(!gfxContext.isFramebufferError());
 
 		gfxContext.bindFramebuffer(bufferTarget::FRAMEBUFFER, m_FBO);
 	} else
@@ -792,7 +791,7 @@ void FrameBufferList::attachDepthBuffer()
 	} else
 		m_pCurrent->m_pDepthBuffer = nullptr;
 
-	assert(checkFBO());
+	assert(!gfxContext.isFramebufferError());
 }
 
 void FrameBufferList::clearDepthBuffer(DepthBuffer * _pDepthBuffer)

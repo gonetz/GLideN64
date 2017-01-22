@@ -3,7 +3,6 @@
 #include <stdio.h>
 #include <osal_files.h>
 
-#include "OpenGL.h"
 #include "Combiner.h"
 #include "Debug.h"
 #include "gDP.h"
@@ -11,6 +10,8 @@
 #include "PluginAPI.h"
 #include "RSP.h"
 #include "Graphics/Context.h"
+
+using namespace graphics;
 
 static int saRGBExpanded[] =
 {
@@ -91,13 +92,7 @@ CombinerInfo & CombinerInfo::get()
 void CombinerInfo::init()
 {
 	m_pCurrent = nullptr;
-	GLint numBinaryFormats = 0;
-#ifdef GL_NUM_PROGRAM_BINARY_FORMATS
-	glGetIntegerv(GL_NUM_PROGRAM_BINARY_FORMATS, &numBinaryFormats);
-#endif
-	m_bShaderCacheSupported = config.generalEmulation.enableShadersStorage != 0 &&
-								OGLVideo::isExtensionSupported(GET_PROGRAM_BINARY_EXTENSION) &&
-								numBinaryFormats > 0;
+	m_bShaderCacheSupported = config.generalEmulation.enableShadersStorage != 0 && gfxContext.isSupported(SpecialFeatures::ShaderProgramBinary);
 
 	m_shadersLoaded = 0;
 	if (m_bShaderCacheSupported && !_loadShadersStorage()) {
@@ -107,7 +102,7 @@ void CombinerInfo::init()
 	}
 
 	if (m_combiners.empty()) {
-		setPolygonMode(OGLRender::rsTexRect);
+		setPolygonMode(DrawingState::TexRect);
 		gDP.otherMode.cycleType = G_CYC_COPY;
 		setCombine(EncodeCombineMode(0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0));
 		gDP.otherMode.cycleType = G_CYC_FILL;
@@ -195,7 +190,7 @@ void SimplifyCycle( CombineCycle *cc, CombinerStage *stage )
 }
 
 //ShaderCombiner * CombinerInfo::_compile(u64 mux) const
-graphics::CombinerProgram * CombinerInfo::_compile(u64 mux) const
+CombinerProgram * CombinerInfo::_compile(u64 mux) const
 {
 	gDPCombine combine;
 
@@ -305,22 +300,9 @@ void CombinerInfo::setMonochromeCombiner()
 	}
 }
 
-graphics::ShaderProgram * CombinerInfo::getTexrectCopyProgram()
+ShaderProgram * CombinerInfo::getTexrectCopyProgram()
 {
 	return m_texrectCopyProgram.get();
-}
-
-void CombinerInfo::setPolygonMode(OGLRender::RENDER_STATE _renderState)
-{
-	switch (_renderState) {
-	case OGLRender::rsRect:
-	case OGLRender::rsTexRect:
-		m_rectMode = true;
-		break;
-	default:
-		m_rectMode = false;
-		break;
-	}
 }
 
 void CombinerInfo::setPolygonMode(DrawingState _drawingState)

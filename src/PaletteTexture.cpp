@@ -62,7 +62,6 @@ void PaletteTexture::init()
 
 	// Generate Pixel Buffer Object. Initialize it with max buffer size.
 	m_pbuf.reset(gfxContext.createPixelWriteBuffer(m_pTexture->textureBytes));
-	isGLError();
 }
 
 void PaletteTexture::destroy()
@@ -90,7 +89,7 @@ void PaletteTexture::update()
 	m_paletteCRC256 = gDP.paletteCRC256;
 
 	PixelBufferBinder<PixelWriteBuffer> binder(m_pbuf.get());
-	GLubyte* ptr = (GLubyte*)m_pbuf->getWriteBuffer(m_pTexture->textureBytes);
+	u8* ptr = (u8*)m_pbuf->getWriteBuffer(m_pTexture->textureBytes);
 #ifdef GLESX
 	u32 * palette = (u32*)ptr;
 #else

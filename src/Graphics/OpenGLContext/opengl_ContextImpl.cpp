@@ -195,6 +195,13 @@ s32 ContextImpl::getTextureUnpackAlignment() const
 	return unpackAlignment;
 }
 
+s32 ContextImpl::getMaxTextureSize() const
+{
+	GLint maxTextureSize;
+	glGetIntegerv(GL_MAX_TEXTURE_SIZE, &maxTextureSize);
+	return maxTextureSize;
+}
+
 void ContextImpl::bindImageTexture(const graphics::Context::BindImageTextureParameters & _params)
 {
 	if (glBindImageTexture != nullptr)
@@ -341,12 +348,6 @@ void ContextImpl::getTextSize(const char *_pText, float & _w, float & _h)
 {
 	m_textDrawer->getTextSize(_pText, _w, _h);
 }
-
-bool ContextImpl::isError() const
-{
-	return Utils::isGLError();
-}
-
 bool ContextImpl::isSupported(graphics::SpecialFeatures _feature) const
 {
 	switch (_feature) {
@@ -361,6 +362,18 @@ bool ContextImpl::isSupported(graphics::SpecialFeatures _feature) const
 		return m_glInfo.msaa;
 	case graphics::SpecialFeatures::ImageTextures:
 		return m_glInfo.imageTextures;
+	case graphics::SpecialFeatures::ShaderProgramBinary:
+	{
+	   GLint numBinaryFormats = 0;
+#ifdef GL_NUM_PROGRAM_BINARY_FORMATS
+		glGetIntegerv(GL_NUM_PROGRAM_BINARY_FORMATS, &numBinaryFormats);
+#endif
+
+		if (m_glInfo.isGLESX)
+		   return numBinaryFormats != 0 && Utils::isExtensionSupported("GL_OES_get_program_binary");
+
+	   return numBinaryFormats != 0 && Utils::isExtensionSupported("GL_ARB_get_program_binary");
+	}
 	case graphics::SpecialFeatures::DepthFramebufferTextures:
 #ifndef USE_DEPTH_RENDERBUFFER
 		return true;
@@ -369,4 +382,14 @@ bool ContextImpl::isSupported(graphics::SpecialFeatures _feature) const
 #endif
 	}
 	return false;
+}
+
+bool ContextImpl::isError() const
+{
+	return Utils::isGLError();
+}
+
+bool ContextImpl::isFramebufferError() const
+{
+	return Utils::isFramebufferError();
 }

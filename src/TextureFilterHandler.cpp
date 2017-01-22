@@ -4,7 +4,6 @@
 #include <Graphics/Parameters.h>
 
 #include "RSP.h"
-#include "OpenGL.h"
 #include "Config.h"
 #include "PluginAPI.h"
 #include "FrameBuffer.h"
@@ -110,8 +109,7 @@ void TextureFilterHandler::init()
 
 	m_options = _getConfigOptions();
 
-	GLint maxTextureSize;
-	glGetIntegerv(GL_MAX_TEXTURE_SIZE, &maxTextureSize);
+	s32 maxTextureSize = gfxContext.getMaxTextureSize();
 	wchar_t wRomName[32];
 	::mbstowcs(wRomName, RSP.romname, 32);
 	wchar_t txPath[PLUGIN_PATH_SIZE + 16];

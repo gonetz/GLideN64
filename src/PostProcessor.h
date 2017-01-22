@@ -3,7 +3,6 @@
 
 #include <memory>
 #include "Types.h"
-#include "OpenGL.h"
 #include "Textures.h"
 #include "Graphics/ObjectHandle.h"
 

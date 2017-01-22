@@ -7,7 +7,6 @@
 #include "GBI.h"
 #include "gDP.h"
 #include "gSP.h"
-#include "OpenGL.h"
 #include "Config.h"
 #include "Debug.h"
 #include "DisplayWindow.h"

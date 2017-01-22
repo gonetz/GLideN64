@@ -2,6 +2,7 @@
 #include <assert.h>
 #include <Combiner.h>
 #include <Graphics/OpenGLContext/opengl_CachedFunctions.h>
+#include <Graphics/OpenGLContext/opengl_Utils.h>
 #include "glsl_Utils.h"
 #include "glsl_CombinerProgramImpl.h"
 
@@ -87,7 +88,7 @@ bool CombinerProgramImpl::getBinaryForm(std::vector<char> & _buffer)
 
 	GLenum binaryFormat;
 	glGetProgramBinary(GLuint(m_program), binaryLength, &binaryLength, &binaryFormat, binary.data());
-	if (isGLError())
+	if (opengl::Utils::isGLError())
 		return false;
 
 	u64 key = m_key.getMux();

@@ -65,6 +65,8 @@ namespace opengl {
 
 		s32 getTextureUnpackAlignment() const override;
 
+		s32 getMaxTextureSize() const override;
+
 		void bindImageTexture(const graphics::Context::BindImageTextureParameters & _params) override;
 
 		/*---------------Framebuffer-------------*/
@@ -123,9 +125,11 @@ namespace opengl {
 
 		void getTextSize(const char *_pText, float & _w, float & _h) override;
 
+		bool isSupported(graphics::SpecialFeatures _feature) const override;
+
 		bool isError() const override;
 
-		bool isSupported(graphics::SpecialFeatures _feature) const override;
+		bool isFramebufferError() const override;
 
 	private:
 		std::unique_ptr<CachedFunctions> m_cachedFunctions;

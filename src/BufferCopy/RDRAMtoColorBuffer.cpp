@@ -251,7 +251,7 @@ void RDRAMtoColorBuffer::copyFromRDRAM(u32 _address, bool _bCFB)
 
 	const u32 cycleType = gDP.otherMode.cycleType;
 	gDP.otherMode.cycleType = G_CYC_COPY;
-	CombinerInfo::get().setPolygonMode(OGLRender::rsTexRect);
+	CombinerInfo::get().setPolygonMode(DrawingState::TexRect);
 	CombinerInfo::get().update();
 	gDP.otherMode.cycleType = cycleType;
 	glEnable(GL_BLEND);

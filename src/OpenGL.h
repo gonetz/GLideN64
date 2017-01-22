@@ -330,6 +330,4 @@ void initGLFunctions();
 bool checkFBO();
 bool isGLError();
 
-void displayLoadProgress(const wchar_t *format, ...);
-
 #endif

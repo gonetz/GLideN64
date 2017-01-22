@@ -125,6 +125,11 @@ s32 Context::getTextureUnpackAlignment() const
 	return m_impl->getTextureUnpackAlignment();
 }
 
+s32 Context::getMaxTextureSize() const
+{
+	return m_impl->getMaxTextureSize();
+}
+
 void Context::bindImageTexture(const BindImageTextureParameters & _params)
 {
 	m_impl->bindImageTexture(_params);
@@ -264,12 +269,17 @@ f32 Context::getMaxLineWidth()
 	return m_impl->getMaxLineWidth();
 }
 
+bool Context::isSupported(SpecialFeatures _feature) const
+{
+	return m_impl->isSupported(_feature);
+}
+
 bool Context::isError() const
 {
 	return m_impl->isError();
 }
 
-bool Context::isSupported(SpecialFeatures _feature) const
+bool Context::isFramebufferError() const
 {
-	return m_impl->isSupported(_feature);
+	return m_impl->isFramebufferError();
 }

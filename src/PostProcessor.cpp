@@ -4,7 +4,6 @@
 #include "gSP.h"
 #include "PostProcessor.h"
 #include "FrameBuffer.h"
-#include "ShaderUtils.h"
 #include "Config.h"
 
 #include <Graphics/Context.h>
@@ -289,7 +288,7 @@ void _initFBO(ObjectHandle _FBO, CachedTexture * _pTexture)
 	bufTarget.textureTarget = target::TEXTURE_2D;
 	bufTarget.textureHandle = _pTexture->name;
 	gfxContext.addFrameBufferRenderTarget(bufTarget);
-	assert(checkFBO());
+	assert(!gfxContext.isFramebufferError());
 }
 
 static

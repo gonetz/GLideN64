@@ -1163,7 +1163,7 @@ void OGLRender::_updateStates(RENDER_STATE _renderState) const
 	OGLVideo & ogl = video();
 
 	CombinerInfo & cmbInfo = CombinerInfo::get();
-	cmbInfo.setPolygonMode(_renderState);
+//	cmbInfo.setPolygonMode(_renderState);
 	cmbInfo.update();
 
 	if (gSP.changed & CHANGED_GEOMETRYMODE) {
@@ -1724,7 +1724,7 @@ void OGLRender::drawTexturedRect(const TexturedRectParams & _params)
 	gSP.changed &= ~CHANGED_GEOMETRYMODE; // Don't update cull mode
 	if (!m_texrectDrawer.isEmpty()) {
 		CombinerInfo & cmbInfo = CombinerInfo::get();
-		cmbInfo.setPolygonMode(rsTexRect);
+//		cmbInfo.setPolygonMode(rsTexRect);
 		cmbInfo.update();
 //		currentCombiner()->updateRenderState();
 		_updateTextures(rsTexRect);

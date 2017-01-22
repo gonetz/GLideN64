@@ -2,7 +2,6 @@
 #include <math.h>
 #include "Types.h"
 #include "VI.h"
-#include "OpenGL.h"
 #include "N64.h"
 #include "gSP.h"
 #include "gDP.h"
@@ -14,6 +13,7 @@
 #include "Performance.h"
 #include "Debug.h"
 #include "DisplayWindow.h"
+#include <Graphics/Context.h>
 
 using namespace std;
 
@@ -93,7 +93,7 @@ void VI_UpdateSize()
 void VI_UpdateScreen()
 {
 	if (VI.lastOrigin == -1) // Workaround for Mupen64Plus issue with initialization
-		isGLError();
+		gfxContext.isError();
 
 	if (ConfigOpen)
 		return;
@@ -173,7 +173,6 @@ void VI_UpdateScreen()
 	}
 
 	if (VI.lastOrigin == -1) { // Workaround for Mupen64Plus issue with initialization
-		glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-		glClear(GL_COLOR_BUFFER_BIT);
+		gfxContext.clearColorBuffer(0.0f, 0.0f, 0.0f, 0.0f);
 	}
 }

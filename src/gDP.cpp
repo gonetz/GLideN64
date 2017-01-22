@@ -11,7 +11,6 @@
 #include "Types.h"
 #include "Debug.h"
 #include "convert.h"
-#include "OpenGL.h"
 #include "CRC.h"
 #include "FrameBuffer.h"
 #include "DepthBuffer.h"

@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <assert.h>
+#include "Platform.h"
 #include "Graphics/Context.h"
 #include "Graphics/Parameters.h"
 #include "DisplayWindow.h"
@@ -803,7 +804,7 @@ void GraphicsDrawer::drawLine(int _v0, int _v1, float _width)
 	if (!_canDraw())
 		return;
 
-	GLfloat lineWidth = _width;
+	f32 lineWidth = _width;
 	if (config.frameBufferEmulation.nativeResFactor == 0)
 		lineWidth *= dwnd().getScaleX();
 	else
@@ -1063,7 +1064,7 @@ void GraphicsDrawer::drawTexturedRect(const TexturedRectParams & _params)
 	else {
 		if (_params.texrectCmd && (gSP.changed | gDP.changed) != 0)
 			_updateStates(DrawingState::TexRect);
-		glDisable(GL_CULL_FACE);
+		gfxContext.enable(enable::CULL_FACE, false);
 
 		if (CombinerInfo::get().isChanged()) {
 			if (currentCombiner()->usesShade()) {
@@ -1328,15 +1329,17 @@ void GraphicsDrawer::drawOSD()
 	if ((config.onScreenDisplay.fps | config.onScreenDisplay.vis | config.onScreenDisplay.percent) == 0)
 		return;
 
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+	gfxContext.bindFramebuffer(bufferTarget::DRAW_FRAMEBUFFER, ObjectHandle());
 
 	DisplayWindow & wnd = DisplayWindow::get();
-	const GLint X = (wnd.getScreenWidth() - wnd.getWidth()) / 2;
-	const GLint Y = wnd.getHeightOffset();
-	const GLint W = wnd.getWidth();
-	const GLint H = wnd.getHeight();
-	glViewport(X, Y, W, H);
-	glScissor(X, Y, W, H);
+	const s32 X = (wnd.getScreenWidth() - wnd.getWidth()) / 2;
+	const s32 Y = wnd.getHeightOffset();
+	const s32 W = wnd.getWidth();
+	const s32 H = wnd.getHeight();
+
+	gfxContext.setViewport(X, Y, W, H);
+	gfxContext.setScissor(X, Y, W, H);
+
 	gSP.changed |= CHANGED_VIEWPORT;
 	gDP.changed |= CHANGED_SCISSOR;
 
@@ -1523,7 +1526,7 @@ void GraphicsDrawer::_initStates()
 	}
 
 	DisplayWindow & wnd = DisplayWindow::get();
-	glViewport(0, wnd.getHeightOffset(), wnd.getScreenWidth(), wnd.getScreenHeight());
+	gfxContext.setViewport(0, wnd.getHeightOffset(), wnd.getScreenWidth(), wnd.getScreenHeight());
 
 	gfxContext.clearColorBuffer(0.0f, 0.0f, 0.0f, 0.0f);
 

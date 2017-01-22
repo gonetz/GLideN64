@@ -3,7 +3,6 @@
 #include <algorithm>
 #include <thread>         // std::this_thread::sleep_for
 #include <chrono>         // std::chrono::seconds
-#include "OpenGL.h"
 #include "Textures.h"
 #include "GBI.h"
 #include "RSP.h"
@@ -513,7 +512,7 @@ void TextureCache::init()
 		activateMSDummy(1);
 	}
 
-	assert(!isGLError());
+	assert(!gfxContext.isError());
 }
 
 void TextureCache::destroy()
@@ -765,7 +764,7 @@ bool TextureCache::_loadHiresBackground(CachedTexture *_pTexture)
 		params.data = ghqTexInfo.data;
 		gfxContext.init2DTexture(params);
 
-		assert(!isGLError());
+		assert(!gfxContext.isError());
 		_updateCachedTexture(ghqTexInfo, _pTexture);
 		return true;
 	}
@@ -857,7 +856,7 @@ void TextureCache::_loadBackground(CachedTexture *pTexture)
 	}
 	if (!bLoaded) {
 		if (pTexture->realWidth % 2 != 0 && glInternalFormat != internalcolor::RGBA)
-			glPixelStorei(GL_UNPACK_ALIGNMENT, 2);
+			gfxContext.setTextureUnpackAlignment(2);
 		Context::InitTextureParams params;
 		params.handle = pTexture->name;
 		params.mipMapLevel = 0;
@@ -931,7 +930,7 @@ bool TextureCache::_loadHiresTexture(u32 _tile, CachedTexture *_pTexture, u64 & 
 		params.dataType = Parameter(ghqTexInfo.pixel_type);
 		params.data = ghqTexInfo.data;
 		gfxContext.init2DTexture(params);
-		assert(!isGLError());
+		assert(!gfxContext.isError());
 		_updateCachedTexture(ghqTexInfo, _pTexture);
 		return true;
 	}
@@ -941,10 +940,12 @@ bool TextureCache::_loadHiresTexture(u32 _tile, CachedTexture *_pTexture, u64 & 
 
 void TextureCache::_loadDepthTexture(CachedTexture * _pTexture, u16* _pDest)
 {
-#ifndef GLES2
+	if (!gfxContext.isSupported(SpecialFeatures::FragmentDepthWrite))
+		return;
+
 	const u32 numTexels = _pTexture->realWidth * _pTexture->realHeight;
-	_pTexture->textureBytes = numTexels * sizeof(GLfloat);
-	GLfloat * pDestF = (GLfloat*)malloc(_pTexture->textureBytes);
+	_pTexture->textureBytes = numTexels * sizeof(f32);
+	f32 * pDestF = (f32*)malloc(_pTexture->textureBytes);
 	assert(pDestF != nullptr);
 
 	for (u32 t = 0; t < numTexels; ++t)
@@ -962,7 +963,6 @@ void TextureCache::_loadDepthTexture(CachedTexture * _pTexture, u16* _pDest)
 	params.data = pDestF;
 	gfxContext.init2DTexture(params);
 	free(pDestF);
-#endif
 }
 
 /*
@@ -1533,11 +1533,13 @@ void TextureCache::update(u32 _t)
 
 	m_misses++;
 
-	glActiveTexture( GL_TEXTURE0 + _t );
-
 	CachedTexture * pCurrent = _addTexture(crc);
 
-	glBindTexture( GL_TEXTURE_2D, GLuint(pCurrent->name) );
+	Context::BindTextureParameters bindParams;
+	bindParams.target = target::TEXTURE_2D;
+	bindParams.texture = pCurrent->name;
+	bindParams.textureUnitIndex = textureIndices::Tex[_t];
+	gfxContext.bindTexture(bindParams);
 
 	pCurrent->address = gDP.loadInfo[pTile->tmem].texAddress;
 

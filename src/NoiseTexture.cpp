@@ -78,7 +78,7 @@ void NoiseTexture::update()
 		return;
 
 	PixelBufferBinder<PixelWriteBuffer> binder(m_pbuf.get());
-	GLubyte* ptr = (GLubyte*)m_pbuf->getWriteBuffer(dataSize);
+	u8* ptr = (u8*)m_pbuf->getWriteBuffer(dataSize);
 	if (ptr == nullptr) {
 		return;
 	}

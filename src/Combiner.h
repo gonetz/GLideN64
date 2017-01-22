@@ -5,7 +5,6 @@
 #include <memory>
 
 #include "GLideN64.h"
-#include "OpenGL.h"
 #include "GraphicsDrawer.h"
 #include "gDP.h"
 #include "CombinerKey.h"
@@ -137,7 +136,6 @@ public:
 
 	static CombinerInfo & get();
 
-	void setPolygonMode(OGLRender::RENDER_STATE _renderState);
 	void setPolygonMode(DrawingState _drawingState);
 	bool isRectMode() const { return m_rectMode; }
 

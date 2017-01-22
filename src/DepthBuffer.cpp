@@ -4,7 +4,6 @@
 #include <malloc.h>
 #endif
 #include <assert.h>
-#include "OpenGL.h"
 #include "Combiner.h"
 #include "FrameBuffer.h"
 #include "DepthBuffer.h"
@@ -14,10 +13,6 @@
 #include <Graphics/Context.h>
 #include <Graphics/Parameters.h>
 #include "DisplayWindow.h"
-
-const GLuint ZlutImageUnit = 0;
-const GLuint TlutImageUnit = 1;
-const GLuint depthImageUnit = 2;
 
 using namespace graphics;
 

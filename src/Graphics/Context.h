@@ -20,6 +20,7 @@ namespace graphics {
 		BlitFramebuffer,
 		WeakBlitFramebuffer,
 		DepthFramebufferTextures,
+		ShaderProgramBinary,
 		ImageTextures
 	};
 
@@ -121,6 +122,8 @@ namespace graphics {
 		void setTextureUnpackAlignment(s32 _param);
 
 		s32 getTextureUnpackAlignment() const;
+
+		s32 getMaxTextureSize() const;
 
 		struct BindImageTextureParameters {
 			Parameter imageUnit;
@@ -247,6 +250,8 @@ namespace graphics {
 		bool isSupported(SpecialFeatures _feature) const;
 
 		bool isError() const;
+
+		bool isFramebufferError() const;
 
 		static bool imageTextures;
 		static bool multisampling;

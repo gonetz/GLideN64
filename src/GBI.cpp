@@ -28,8 +28,9 @@
 #include "ZSort.h"
 #include "CRC.h"
 #include "Log.h"
-#include "OpenGL.h"
 #include "Debug.h"
+#include "Graphics/Context.h"
+#include "Graphics/Parameters.h"
 
 u32 last_good_ucode = (u32) -1;
 
@@ -192,25 +193,25 @@ void GBIInfo::_makeCurrent(MicrocodeInfo * _pCurrent)
 #ifndef GLESX
 		if (m_pCurrent->NoN) {
 			// Disable near and far plane clipping
-			glEnable(GL_DEPTH_CLAMP);
+			gfxContext.enable(graphics::enable::DEPTH_CLAMP, true);
 			// Enable Far clipping plane in vertex shader
-			glEnable(GL_CLIP_DISTANCE0);
+			gfxContext.enable(graphics::enable::CLIP_DISTANCE0, true);
 		} else {
-			glDisable(GL_DEPTH_CLAMP);
-			glDisable(GL_CLIP_DISTANCE0);
+			gfxContext.enable(graphics::enable::DEPTH_CLAMP, false);
+			gfxContext.enable(graphics::enable::CLIP_DISTANCE0, false);
 		}
 #endif
 	} else if (m_pCurrent->NoN != _pCurrent->NoN) {
 #ifndef GLESX
 		if (_pCurrent->NoN) {
 			// Disable near and far plane clipping
-			glEnable(GL_DEPTH_CLAMP);
+			gfxContext.enable(graphics::enable::DEPTH_CLAMP, true);
 			// Enable Far clipping plane in vertex shader
-			glEnable(GL_CLIP_DISTANCE0);
+			gfxContext.enable(graphics::enable::CLIP_DISTANCE0, true);
 		}
 		else {
-			glDisable(GL_DEPTH_CLAMP);
-			glDisable(GL_CLIP_DISTANCE0);
+			gfxContext.enable(graphics::enable::DEPTH_CLAMP, false);
+			gfxContext.enable(graphics::enable::CLIP_DISTANCE0, false);
 		}
 #endif
 	}

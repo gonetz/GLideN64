@@ -643,5 +643,8 @@
     <ClInclude Include="..\..\src\BufferCopy\PBOBinder.h">
       <Filter>Header Files\BufferCopy</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Platform.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

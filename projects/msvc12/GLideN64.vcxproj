@@ -476,6 +476,7 @@
     <ClInclude Include="..\..\src\OpenGL.h" />
     <ClInclude Include="..\..\src\PaletteTexture.h" />
     <ClInclude Include="..\..\src\Performance.h" />
+    <ClInclude Include="..\..\src\Platform.h" />
     <ClInclude Include="..\..\src\PluginAPI.h" />
     <ClInclude Include="..\..\src\PostProcessor.h" />
     <ClInclude Include="..\..\src\RDP.h" />
