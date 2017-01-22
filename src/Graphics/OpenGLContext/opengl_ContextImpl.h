@@ -59,6 +59,12 @@ namespace opengl {
 
 		void setTextureParameters(const graphics::Context::TexParameters & _parameters) override;
 
+		void bindTexture(const graphics::Context::BindTextureParameters & _params) override;
+
+		void setTextureUnpackAlignment(s32 _param) override;
+
+		s32 getTextureUnpackAlignment() const override;
+
 		void bindImageTexture(const graphics::Context::BindImageTextureParameters & _params) override;
 
 		/*---------------Framebuffer-------------*/

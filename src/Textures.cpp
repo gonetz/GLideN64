@@ -562,7 +562,7 @@ void TextureCache::_checkCacheSize()
 CachedTexture * TextureCache::_addTexture(u32 _crc32)
 {
 	if (m_curUnpackAlignment == 0)
-		glGetIntegerv(GL_UNPACK_ALIGNMENT, &m_curUnpackAlignment);
+		m_curUnpackAlignment = gfxContext.getTextureUnpackAlignment();
 	_checkCacheSize();
 	m_textures.emplace_front(gfxContext.createTexture(target::TEXTURE_2D));
 	Textures::iterator new_iter = m_textures.begin();
@@ -833,9 +833,9 @@ void TextureCache::_loadBackground(CachedTexture *pTexture)
 				glInternalFormat, (uint64)pTexture->crc, &ghqTexInfo) != 0 &&
 				ghqTexInfo.data != nullptr) {
 			if (ghqTexInfo.width % 2 != 0 &&
-					ghqTexInfo.format != GL_RGBA &&
-					m_curUnpackAlignment > 1)
-				glPixelStorei(GL_UNPACK_ALIGNMENT, 2);
+				ghqTexInfo.format != GL_RGBA &&
+				m_curUnpackAlignment > 1)
+				gfxContext.setTextureUnpackAlignment(2);
 			Context::InitTextureParams params;
 			params.handle = pTexture->name;
 			params.mipMapLevel = 0;
@@ -867,7 +867,7 @@ void TextureCache::_loadBackground(CachedTexture *pTexture)
 		gfxContext.init2DTexture(params);
 	}
 	if (m_curUnpackAlignment > 1)
-		glPixelStorei(GL_UNPACK_ALIGNMENT, m_curUnpackAlignment);
+		gfxContext.setTextureUnpackAlignment(m_curUnpackAlignment);
 	free(pSwapped);
 	free(pDest);
 }
@@ -1111,7 +1111,7 @@ void TextureCache::_load(u32 _tile, CachedTexture *_pTexture)
 	pDest = (u32*)malloc(_pTexture->textureBytes);
 	assert(pDest != nullptr);
 
-	GLint mipLevel = 0;
+	s32 mipLevel = 0;
 	_pTexture->max_level = 0;
 
 	if (config.generalEmulation.enableLOD != 0 && gSP.texture.level > 1)
@@ -1168,9 +1168,9 @@ void TextureCache::_load(u32 _tile, CachedTexture *_pTexture)
 		}
 		if (!bLoaded) {
 			if (tmptex.realWidth % 2 != 0 &&
-					glInternalFormat != GL_RGBA &&
-					m_curUnpackAlignment > 1)
-				glPixelStorei(GL_UNPACK_ALIGNMENT, 2);
+				glInternalFormat != GL_RGBA &&
+				m_curUnpackAlignment > 1)
+				gfxContext.setTextureUnpackAlignment(2);
 			Context::InitTextureParams params;
 			params.handle = _pTexture->name;
 			params.mipMapLevel = mipLevel;
@@ -1208,7 +1208,7 @@ void TextureCache::_load(u32 _tile, CachedTexture *_pTexture)
 		_pTexture->textureBytes += (tmptex.realWidth * tmptex.realHeight) << sizeShift;
 	}
 	if (m_curUnpackAlignment > 1)
-		glPixelStorei(GL_UNPACK_ALIGNMENT, m_curUnpackAlignment);
+		gfxContext.setTextureUnpackAlignment(m_curUnpackAlignment);
 	free(pDest);
 }
 
@@ -1263,7 +1263,7 @@ void TextureCache::activateTexture(u32 _t, CachedTexture *_pTexture)
 
 	const bool bUseBilinear = (gDP.otherMode.textureFilter | (gSP.objRendermode&G_OBJRM_BILERP)) != 0;
 	const bool bUseLOD = currentCombiner()->usesLOD();
-	const GLint texLevel = bUseLOD ? _pTexture->max_level : 0;
+	const s32 texLevel = bUseLOD ? _pTexture->max_level : 0;
 	params.maxMipmapLevel = Parameter(texLevel);
 
 	if (config.texture.bilinearMode == BILINEAR_STANDARD) {
@@ -1377,10 +1377,13 @@ void TextureCache::_updateBackground()
 
 	m_misses++;
 
-	glActiveTexture( GL_TEXTURE0 );
 	CachedTexture * pCurrent = _addTexture(crc);
 
-	glBindTexture( GL_TEXTURE_2D, GLuint(pCurrent->name) );
+	Context::BindTextureParameters bindParams;
+	bindParams.target = target::TEXTURE_2D;
+	bindParams.texture = pCurrent->name;
+	bindParams.textureUnitIndex = textureIndices::Tex[0];
+	gfxContext.bindTexture(bindParams);
 
 	pCurrent->address = gSP.bgImage.address;
 

@@ -178,6 +178,23 @@ void ContextImpl::setTextureParameters(const graphics::Context::TexParameters & 
 	m_set2DTextureParameters->setTextureParameters(_parameters);
 }
 
+void ContextImpl::bindTexture(const graphics::Context::BindTextureParameters & _params) {
+	m_cachedFunctions->getCachedActiveTexture()->setActiveTexture(_params.textureUnitIndex);
+	m_cachedFunctions->getCachedBindTexture()->bind(_params.target, _params.texture);
+}
+
+void ContextImpl::setTextureUnpackAlignment(s32 _param)
+{
+	m_cachedFunctions->getCachedTextureUnpackAlignment()->setTextureUnpackAlignment(_param);
+}
+
+s32 ContextImpl::getTextureUnpackAlignment() const
+{
+	GLint unpackAlignment;
+	glGetIntegerv(GL_UNPACK_ALIGNMENT, &unpackAlignment);
+	return unpackAlignment;
+}
+
 void ContextImpl::bindImageTexture(const graphics::Context::BindImageTextureParameters & _params)
 {
 	if (glBindImageTexture != nullptr)

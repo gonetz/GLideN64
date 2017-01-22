@@ -110,6 +110,21 @@ void Context::setTextureParameters(const TexParameters & _parameters)
 	m_impl->setTextureParameters(_parameters);
 }
 
+void Context::bindTexture(const BindTextureParameters & _params)
+{
+	m_impl->bindTexture(_params);
+}
+
+void Context::setTextureUnpackAlignment(s32 _param)
+{
+	m_impl->setTextureUnpackAlignment(_param);
+}
+
+s32 Context::getTextureUnpackAlignment() const
+{
+	return m_impl->getTextureUnpackAlignment();
+}
+
 void Context::bindImageTexture(const BindImageTextureParameters & _params)
 {
 	m_impl->bindImageTexture(_params);

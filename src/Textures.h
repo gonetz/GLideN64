@@ -93,7 +93,7 @@ private:
 	u32 m_hits, m_misses;
 	u32 m_maxBytes;
 	u32 m_cachedBytes;
-	GLint m_curUnpackAlignment;
+	s32 m_curUnpackAlignment;
 	bool m_toggleDumpTex;
 };
 

@@ -110,6 +110,18 @@ namespace graphics {
 
 		void setTextureParameters(const TexParameters & _parameters);
 
+		struct BindTextureParameters {
+			ObjectHandle texture;
+			Parameter textureUnitIndex;
+			Parameter target;
+		};
+
+		void bindTexture(const BindTextureParameters & _params);
+
+		void setTextureUnpackAlignment(s32 _param);
+
+		s32 getTextureUnpackAlignment() const;
+
 		struct BindImageTextureParameters {
 			Parameter imageUnit;
 			ObjectHandle texture;

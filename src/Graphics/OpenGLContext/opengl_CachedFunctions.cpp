@@ -133,6 +133,14 @@ void CachedUseProgram::useProgram(graphics::ObjectHandle _program)
 		glUseProgram(GLuint(_program));
 }
 
+/*---------------CachedTextureUnpackAlignment-------------*/
+
+void CachedTextureUnpackAlignment::setTextureUnpackAlignment(s32 _param)
+{
+	if (update(_param))
+		glPixelStorei(GL_UNPACK_ALIGNMENT, _param);
+}
+
 /*---------------CachedFunctions-------------*/
 
 CachedFunctions::CachedFunctions(const GLInfo & _glinfo)
@@ -257,4 +265,9 @@ CachedVertexAttribArray * CachedFunctions::getCachedVertexAttribArray()
 CachedUseProgram * CachedFunctions::getCachedUseProgram()
 {
 	return &m_useProgram;
+}
+
+CachedTextureUnpackAlignment * CachedFunctions::getCachedTextureUnpackAlignment()
+{
+	return &m_unpackAlignment;
 }

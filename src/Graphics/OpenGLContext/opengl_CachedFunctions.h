@@ -201,6 +201,12 @@ namespace opengl {
 		void useProgram(graphics::ObjectHandle _program);
 	};
 
+	class CachedTextureUnpackAlignment : public Cached1<s32>
+	{
+	public:
+		void setTextureUnpackAlignment(s32 _param);
+	};
+
 	/*---------------CachedFunctions-------------*/
 
 	class CachedFunctions
@@ -243,6 +249,8 @@ namespace opengl {
 
 		CachedUseProgram * getCachedUseProgram();
 
+		CachedTextureUnpackAlignment * getCachedTextureUnpackAlignment();
+
 	private:
 		typedef std::unordered_map<u32, CachedEnable> EnableParameters;
 
@@ -262,6 +270,7 @@ namespace opengl {
 		CachedClearColor m_clearColor;
 		CachedVertexAttribArray m_attribArray;
 		CachedUseProgram m_useProgram;
+		CachedTextureUnpackAlignment m_unpackAlignment;
 	};
 
 }
