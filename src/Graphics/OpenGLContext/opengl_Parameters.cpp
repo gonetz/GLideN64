@@ -11,7 +11,10 @@ namespace graphics {
 	}
 
 	namespace internalcolor {
+		Parameter RGB8(GL_RGB);
 		Parameter RGBA(GL_RGBA8);
+		Parameter RGBA4(GL_RGBA4);
+		Parameter RGB5_A1(GL_RGB5_A1);
 		Parameter RG(GL_RG8);
 		Parameter RED(GL_R8);
 		Parameter DEPTH(GL_DEPTH_COMPONENT);
@@ -23,6 +26,8 @@ namespace graphics {
 		Parameter UNSIGNED_SHORT(GL_UNSIGNED_SHORT);
 		Parameter UNSIGNED_INT(GL_UNSIGNED_INT);
 		Parameter FLOAT(GL_FLOAT);
+		Parameter UNSIGNED_SHORT_5_5_5_1(GL_UNSIGNED_SHORT_5_5_5_1);
+		Parameter UNSIGNED_SHORT_4_4_4_4(GL_UNSIGNED_SHORT_4_4_4_4);
 	}
 
 	namespace target {

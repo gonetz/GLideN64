@@ -7,6 +7,7 @@
 #include "CRC.h"
 #include "convert.h"
 #include "Graphics/ObjectHandle.h"
+#include "Graphics/Parameter.h"
 
 typedef u32 (*GetTexelFunc)( u64 *src, u16 x, u16 i, u8 palette );
 
@@ -80,7 +81,7 @@ private:
 	void _updateBackground();
 	void _clear();
 	void _initDummyTexture(CachedTexture * _pDummy);
-	void _getTextureDestData(CachedTexture& tmptex, u32* pDest, GLuint glInternalFormat, GetTexelFunc GetTexel, u16* pLine);
+	void _getTextureDestData(CachedTexture& tmptex, u32* pDest, graphics::Parameter glInternalFormat, GetTexelFunc GetTexel, u16* pLine);
 
 	typedef std::list<CachedTexture> Textures;
 	typedef std::map<u32, Textures::iterator> Texture_Locations;

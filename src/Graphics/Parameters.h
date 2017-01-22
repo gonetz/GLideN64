@@ -11,7 +11,10 @@ namespace graphics {
 	}
 
 	namespace internalcolor {
+		extern Parameter RGB8;
 		extern Parameter RGBA;
+		extern Parameter RGBA4;
+		extern Parameter RGB5_A1;
 		extern Parameter RG;
 		extern Parameter RED;
 		extern Parameter DEPTH;
@@ -23,6 +26,8 @@ namespace graphics {
 		extern Parameter UNSIGNED_SHORT;
 		extern Parameter UNSIGNED_INT;
 		extern Parameter FLOAT;
+		extern Parameter UNSIGNED_SHORT_5_5_5_1;
+		extern Parameter UNSIGNED_SHORT_4_4_4_4;
 	}
 
 	namespace target {
