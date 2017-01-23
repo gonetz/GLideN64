@@ -307,6 +307,7 @@
     <ClCompile Include="..\..\src\Graphics\OpenGLContext\opengl_Attributes.cpp" />
     <ClCompile Include="..\..\src\Graphics\OpenGLContext\opengl_BufferManipulationObjectFactory.cpp" />
     <ClCompile Include="..\..\src\Graphics\OpenGLContext\opengl_CachedFunctions.cpp" />
+    <ClCompile Include="..\..\src\Graphics\OpenGLContext\opengl_ColorBufferReaderWithPixelBuffer.cpp" />
     <ClCompile Include="..\..\src\Graphics\OpenGLContext\opengl_ContextImpl.cpp" />
     <ClCompile Include="..\..\src\Graphics\OpenGLContext\opengl_GLInfo.cpp" />
     <ClCompile Include="..\..\src\Graphics\OpenGLContext\opengl_Parameters.cpp" />
@@ -434,6 +435,7 @@
     <ClInclude Include="..\..\src\gDP.h" />
     <ClInclude Include="..\..\src\GLideN64.h" />
     <ClInclude Include="..\..\src\GLideNHQ\Ext_TxFilter.h" />
+    <ClInclude Include="..\..\src\Graphics\ColorBufferReader.h" />
     <ClInclude Include="..\..\src\Graphics\CombinerProgram.h" />
     <ClInclude Include="..\..\src\Graphics\Context.h" />
     <ClInclude Include="..\..\src\Graphics\ContextImpl.h" />
@@ -451,6 +453,7 @@
     <ClInclude Include="..\..\src\Graphics\OpenGLContext\opengl_Attributes.h" />
     <ClInclude Include="..\..\src\Graphics\OpenGLContext\opengl_BufferManipulationObjectFactory.h" />
     <ClInclude Include="..\..\src\Graphics\OpenGLContext\opengl_CachedFunctions.h" />
+    <ClInclude Include="..\..\src\Graphics\OpenGLContext\opengl_ColorBufferReaderWithPixelBuffer.h" />
     <ClInclude Include="..\..\src\Graphics\OpenGLContext\opengl_ContextImpl.h" />
     <ClInclude Include="..\..\src\Graphics\OpenGLContext\opengl_GLInfo.h" />
     <ClInclude Include="..\..\src\Graphics\OpenGLContext\opengl_DummyTextDrawer.h" />

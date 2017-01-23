@@ -344,6 +344,9 @@
     <ClCompile Include="..\..\src\GraphicsDrawer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\Graphics\OpenGLContext\opengl_ColorBufferReaderWithPixelBuffer.cpp">
+      <Filter>Source Files\Graphics\OpenGL</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\3DMath.h">
@@ -645,6 +648,12 @@
     </ClInclude>
     <ClInclude Include="..\..\src\Platform.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Graphics\ColorBufferReader.h">
+      <Filter>Header Files\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Graphics\OpenGLContext\opengl_ColorBufferReaderWithPixelBuffer.h">
+      <Filter>Header Files\Graphics\OpenGL</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
