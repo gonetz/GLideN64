@@ -369,12 +369,12 @@ CachedTexture * FrameBuffer::_getSubTexture(u32 _t)
 	if (!_initSubTexture(_t))
 		return m_pTexture;
 
-	GLint x0 = (GLint)(m_pTexture->offsetS * m_scaleX);
-	GLint y0 = (GLint)(m_pTexture->offsetT * m_scaleY) - m_pSubTexture->realHeight;
-	GLint copyWidth = m_pSubTexture->realWidth;
+	s32 x0 = (s32)(m_pTexture->offsetS * m_scaleX);
+	s32 y0 = (s32)(m_pTexture->offsetT * m_scaleY) - m_pSubTexture->realHeight;
+	s32 copyWidth = m_pSubTexture->realWidth;
 	if (x0 + copyWidth > m_pTexture->realWidth)
 		copyWidth = m_pTexture->realWidth - x0;
-	GLint copyHeight = m_pSubTexture->realHeight;
+	s32 copyHeight = m_pSubTexture->realHeight;
 	if (y0 + copyHeight > m_pTexture->realHeight)
 		copyHeight = m_pTexture->realHeight - y0;
 
@@ -783,7 +783,7 @@ void FrameBufferList::attachDepthBuffer()
 		if (goodDepthBufferTexture) {
 #endif // USE_DEPTH_RENDERBUFFER
 			m_pCurrent->m_pDepthBuffer = pDepthBuffer;
-			pDepthBuffer->setDepthAttachment(m_pCurrent->m_FBO, GL_DRAW_FRAMEBUFFER);
+			pDepthBuffer->setDepthAttachment(m_pCurrent->m_FBO, bufferTarget::DRAW_FRAMEBUFFER);
 			if (Context::imageTextures && config.frameBufferEmulation.N64DepthCompare != 0)
 				pDepthBuffer->bindDepthImageTexture();
 		} else
@@ -834,12 +834,12 @@ void FrameBufferList::renderBuffer(u32 _address)
 
 	DisplayWindow & wnd = dwnd();
 	GraphicsDrawer & drawer = wnd.getDrawer();
-	GLint srcY0, srcY1, dstY0, dstY1;
-	GLint X0, X1, Xwidth;
-	GLint Xoffset = 0;
-	GLint Xdivot = 0;
-	GLint srcPartHeight = 0;
-	GLint dstPartHeight = 0;
+	s32 srcY0, srcY1, dstY0, dstY1;
+	s32 X0, X1, Xwidth;
+	s32 Xoffset = 0;
+	s32 Xdivot = 0;
+	s32 srcPartHeight = 0;
+	s32 dstPartHeight = 0;
 
 	const f32 yScale = _FIXED2FLOAT(_SHIFTR(*REG.VI_Y_SCALE, 0, 12), 10);
 	s32 vEnd = _SHIFTR(*REG.VI_V_START, 0, 10);
@@ -882,14 +882,14 @@ void FrameBufferList::renderBuffer(u32 _address)
 
 	if (srcY0 + vCurrentHeight > vFullHeight) {
 		dstPartHeight = srcY0;
-		srcY0 = (GLint)(srcY0*yScale);
+		srcY0 = (s32)(srcY0*yScale);
 		srcPartHeight = srcY0;
 		srcY1 = VI.real_height;
 		dstY1 = dstY0 + vCurrentHeight - dstPartHeight;
 	} else {
 		dstY0 += srcY0;
 		dstY1 = dstY0 + vCurrentHeight;
-		srcY0 = (GLint)(srcY0*yScale);
+		srcY0 = (s32)(srcY0*yScale);
 		srcY1 = srcY0 + VI.real_height;
 	}
 	PostProcessor & postProcessor = PostProcessor::get();
@@ -907,29 +907,29 @@ void FrameBufferList::renderBuffer(u32 _address)
 	const s32 h0 = (isPAL ? 128 : 108);
 	const s32 hx0 = max(0, hStart - h0);
 	const s32 hx1 = max(0, h0 + 640 - hEnd);
-	X0 = (GLint)((hx0 * viScaleX + Xoffset) * dstScaleX);
-	Xwidth = (GLint)((min((f32)VI.width, (hEnd - hStart)*viScaleX - Xoffset - Xdivot)) * srcScaleX);
-	X1 = wnd.getWidth() - (GLint)((hx1*viScaleX + Xdivot) * dstScaleX);
+	X0 = (s32)((hx0 * viScaleX + Xoffset) * dstScaleX);
+	Xwidth = (s32)((min((f32)VI.width, (hEnd - hStart)*viScaleX - Xoffset - Xdivot)) * srcScaleX);
+	X1 = wnd.getWidth() - (s32)((hx1*viScaleX + Xdivot) * dstScaleX);
 
 	const f32 srcScaleY = pFilteredBuffer->m_scaleY;
 	CachedTexture * pBufferTexture = pFilteredBuffer->m_pTexture;
-	const GLint hCrop = config.video.cropMode == Config::cmDisable ? 0 : GLint(config.video.cropWidth * srcScaleX);
-	const GLint vCrop = config.video.cropMode == Config::cmDisable ? 0 : GLint(config.video.cropHeight * srcScaleY);
-	GLint srcCoord[4] = { hCrop,
-						  vCrop + (GLint)(srcY0*srcScaleY),
+	const s32 hCrop = config.video.cropMode == Config::cmDisable ? 0 : s32(config.video.cropWidth * srcScaleX);
+	const s32 vCrop = config.video.cropMode == Config::cmDisable ? 0 : s32(config.video.cropHeight * srcScaleY);
+	s32 srcCoord[4] = { hCrop,
+						  vCrop + (s32)(srcY0*srcScaleY),
 						  Xwidth - hCrop,
-						  min((GLint)(srcY1*srcScaleY), (GLint)pBufferTexture->realHeight) - vCrop };
+						  min((s32)(srcY1*srcScaleY), (s32)pBufferTexture->realHeight) - vCrop };
 	if (srcCoord[2] > pBufferTexture->realWidth || srcCoord[3] > pBufferTexture->realHeight) {
 		removeBuffer(pBuffer->m_startAddress);
 		return;
 	}
 
-	const GLint hOffset = (wnd.getScreenWidth() - wnd.getWidth()) / 2;
-	const GLint vOffset = (wnd.getScreenHeight() - wnd.getHeight()) / 2 + wnd.getHeightOffset();
-	GLint dstCoord[4] = { X0 + hOffset,
-						  vOffset + (GLint)(dstY0*dstScaleY),
+	const s32 hOffset = (wnd.getScreenWidth() - wnd.getWidth()) / 2;
+	const s32 vOffset = (wnd.getScreenHeight() - wnd.getHeight()) / 2 + wnd.getHeightOffset();
+	s32 dstCoord[4] = { X0 + hOffset,
+						  vOffset + (s32)(dstY0*dstScaleY),
 						  hOffset + X1,
-						  vOffset + (GLint)(dstY1*dstScaleY) };
+						  vOffset + (s32)(dstY1*dstScaleY) };
 #if 0 //def GLESX
 	// TODO fix me
 	if (render.getRenderer() == OGLRender::glrAdreno)
@@ -944,7 +944,7 @@ void FrameBufferList::renderBuffer(u32 _address)
 	drawer.clearColorBuffer(clearColor);
 
 
-	GLenum filter = GL_LINEAR;
+	Parameter filter = textureParameters::FILTER_LINEAR;
 	ObjectHandle readBuffer;
 
 	if (pFilteredBuffer->m_pTexture->frameBufferTexture == CachedTexture::fbMultiSample) {
@@ -957,7 +957,7 @@ void FrameBufferList::renderBuffer(u32 _address)
 		} else {
 //			glBindFramebuffer(GL_READ_FRAMEBUFFER, pFilteredBuffer->m_FBO);
 			readBuffer = ObjectHandle(pFilteredBuffer->m_FBO);
-			filter = GL_NEAREST;
+			filter = textureParameters::FILTER_NEAREST;
 		}
 	} else {
 		readBuffer = ObjectHandle(pFilteredBuffer->m_FBO);

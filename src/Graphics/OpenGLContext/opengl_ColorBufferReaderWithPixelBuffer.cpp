@@ -19,9 +19,6 @@ ColorBufferReaderWithPixelBuffer::~ColorBufferReaderWithPixelBuffer()
 }
 
 
-void ColorBufferReaderWithPixelBuffer::init() {
-}
-
 void ColorBufferReaderWithPixelBuffer::destroyBuffers()
 {
 	glDeleteBuffers(_numPBO, m_PBO);

@@ -9,6 +9,8 @@
 #include <N64.h>
 #include <VI.h>
 #include "Log.h"
+
+/*
 #ifndef GLES2
 #include "ColorBufferToRDRAM_GL.h"
 #include "ColorBufferToRDRAM_BufferStorageExt.h"
@@ -17,8 +19,11 @@
 #else
 #include "ColorBufferToRDRAMStub.h"
 #endif
+*/
+
 #include <Graphics/Context.h>
 #include <Graphics/Parameters.h>
+#include <Graphics/ColorBufferReader.h>
 #include <DisplayWindow.h>
 
 using namespace graphics;
@@ -43,27 +48,22 @@ ColorBufferToRDRAM::~ColorBufferToRDRAM()
 
 void ColorBufferToRDRAM::init()
 {
-	// generate a framebuffer
-//	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-//	glGenFramebuffers(1, &m_FBO);
-
 	m_FBO = gfxContext.createFramebuffer();
-	_init();
 }
 
 void ColorBufferToRDRAM::destroy() {
 	_destroyFBTexure();
 
-//	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 	if (m_FBO.isNotNull()) {
 		gfxContext.deleteFramebuffer(m_FBO);
-//		glDeleteFramebuffers(1, &m_FBO);
 		m_FBO.reset();
 	}
 }
 
 void ColorBufferToRDRAM::_initFBTexture(void)
 {
+	const FramebufferTextureFormats & fbTexFormat = gfxContext.getFramebufferTextureFormats();
+
 	m_pTexture = textureCache().addFrameBufferTexture(false);
 	m_pTexture->format = G_IM_FMT_RGBA;
 	m_pTexture->clampS = 1;
@@ -77,11 +77,10 @@ void ColorBufferToRDRAM::_initFBTexture(void)
 	//cause slowdowns in the glReadPixels call, at least on Android
 	m_pTexture->realWidth = _getRealWidth(m_lastBufferWidth);
 	m_pTexture->realHeight = m_lastBufferHeight;
-	m_pTexture->textureBytes = m_pTexture->realWidth * m_pTexture->realHeight * 4;
+	m_pTexture->textureBytes = m_pTexture->realWidth * m_pTexture->realHeight * fbTexFormat.colorFormatBytes;
 	textureCache().addFrameBufferTextureSize(m_pTexture->textureBytes);
 
 	{
-		const FramebufferTextureFormats & fbTexFormat = gfxContext.getFramebufferTextureFormats();
 		Context::InitTextureParams params;
 		params.handle = m_pTexture->name;
 		params.width = m_pTexture->realWidth;
@@ -111,17 +110,17 @@ void ColorBufferToRDRAM::_initFBTexture(void)
 	}
 
 	// check if everything is OK
-	assert(checkFBO());
+	assert(!gfxContext.isFramebufferError());
 
 	gfxContext.bindFramebuffer(graphics::bufferTarget::DRAW_FRAMEBUFFER, graphics::ObjectHandle());
 	//	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 
-	_initBuffers();
+	m_bufferReader.reset(gfxContext.createColorBufferReader(m_pTexture));
 }
 
 void ColorBufferToRDRAM::_destroyFBTexure(void)
 {
-	_destroyBuffers();
+	m_bufferReader.reset();
 
 	if (m_pTexture != nullptr) {
 		textureCache().removeFrameBufferTexture(m_pTexture);
@@ -161,7 +160,6 @@ bool ColorBufferToRDRAM::_prepareCopy(u32 _startAddress)
 		m_lastBufferWidth = pBuffer->m_width;
 		m_lastBufferHeight = pBuffer->m_height;
 		_initFBTexture();
-		m_pixelData.resize(m_pTexture->realWidth * m_pTexture->realHeight * gfxContext.getFramebufferTextureFormats().colorFormatBytes);
 	}
 
 	m_pCurFrameBuffer = pBuffer;
@@ -261,29 +259,29 @@ void ColorBufferToRDRAM::_copy(u32 _startAddress, u32 _endAddress, bool _sync)
 		numPixels = (_endAddress - _startAddress) >> (m_pCurFrameBuffer->m_size - 1);
 	}
 
-	const GLsizei width = m_pCurFrameBuffer->m_width;
-	const GLint x0 = 0;
-	const GLint y0 = max_height - (_endAddress - m_pCurFrameBuffer->m_startAddress) / stride;
-	const GLint y1 = max_height - (_startAddress - m_pCurFrameBuffer->m_startAddress) / stride;
-	const GLsizei height = std::min(max_height, 1u + y1 - y0);
+	const u32 width = m_pCurFrameBuffer->m_width;
+	const s32 x0 = 0;
+	const s32 y0 = max_height - (_endAddress - m_pCurFrameBuffer->m_startAddress) / stride;
+	const u32 y1 = max_height - (_startAddress - m_pCurFrameBuffer->m_startAddress) / stride;
+	const u32 height = std::min(max_height, 1u + y1 - y0);
 
-	const bool pixelsRead = _readPixels(x0, y0, width, height, m_pCurFrameBuffer->m_size, _sync);
+	const u8* pPixels = m_bufferReader->readPixels(x0, y0, width, height, m_pCurFrameBuffer->m_size, _sync);
 	frameBufferList().setCurrentDrawBuffer();
-	if (!pixelsRead)
+	if (pPixels == nullptr)
 		return;
 
 	if (m_pCurFrameBuffer->m_size == G_IM_SIZ_32b) {
-		u32 *ptr_src = (u32*)m_pixelData.data();
+		u32 *ptr_src = (u32*)pPixels;
 		u32 *ptr_dst = (u32*)(RDRAM + _startAddress);
 		writeToRdram<u32, u32>(ptr_src, ptr_dst, &ColorBufferToRDRAM::_RGBAtoRGBA32, 0, 0, width, height, numPixels, _startAddress, m_pCurFrameBuffer->m_startAddress, m_pCurFrameBuffer->m_size);
 	}
 	else if (m_pCurFrameBuffer->m_size == G_IM_SIZ_16b) {
-		u32 *ptr_src = (u32*)m_pixelData.data();
+		u32 *ptr_src = (u32*)pPixels;
 		u16 *ptr_dst = (u16*)(RDRAM + _startAddress);
 		writeToRdram<u32, u16>(ptr_src, ptr_dst, &ColorBufferToRDRAM::_RGBAtoRGBA16, 0, 1, width, height, numPixels, _startAddress, m_pCurFrameBuffer->m_startAddress, m_pCurFrameBuffer->m_size);
 	}
 	else if (m_pCurFrameBuffer->m_size == G_IM_SIZ_8b) {
-		u8 *ptr_src = (u8*)m_pixelData.data();
+		u8 *ptr_src = (u8*)pPixels;
 		u8 *ptr_dst = RDRAM + _startAddress;
 		writeToRdram<u8, u8>(ptr_src, ptr_dst, &ColorBufferToRDRAM::_RGBAtoR8, 0, 3, width, height, numPixels, _startAddress, m_pCurFrameBuffer->m_startAddress, m_pCurFrameBuffer->m_size);
 	}
@@ -292,7 +290,7 @@ void ColorBufferToRDRAM::_copy(u32 _startAddress, u32 _endAddress, bool _sync)
 	m_pCurFrameBuffer->copyRdram();
 	m_pCurFrameBuffer->m_cleared = false;
 
-	_cleanUp();
+	m_bufferReader->cleanUp();
 
 	gDP.changed |= CHANGED_SCISSOR;
 }
@@ -326,6 +324,10 @@ void ColorBufferToRDRAM::copyChunkToRDRAM(u32 _address)
 
 ColorBufferToRDRAM & ColorBufferToRDRAM::get()
 {
+	static ColorBufferToRDRAM cbCopy;
+	return cbCopy;
+
+	/*
 #ifndef GLES2
 
 	static bool supportsBufferStorage = OGLVideo::isExtensionSupported("GL_EXT_buffer_storage") ||
@@ -346,6 +348,7 @@ ColorBufferToRDRAM & ColorBufferToRDRAM::get()
 	static ColorBufferToRDRAMStub cbCopy;
 	return cbCopy;
 #endif
+	*/
 }
 
 void copyWhiteToRDRAM(FrameBuffer * _pBuffer)

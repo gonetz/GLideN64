@@ -11,6 +11,8 @@
 
 #define GRAPHICS_CONTEXT
 
+struct CachedTexture;
+
 namespace graphics {
 
 	enum class SpecialFeatures {
@@ -25,6 +27,7 @@ namespace graphics {
 	};
 
 	class ContextImpl;
+	class ColorBufferReader;
 
 	class Context
 	{
@@ -189,6 +192,8 @@ namespace graphics {
 		PixelWriteBuffer * createPixelWriteBuffer(size_t _sizeInBytes);
 
 		PixelReadBuffer * createPixelReadBuffer(size_t _sizeInBytes);
+
+		ColorBufferReader * createColorBufferReader(CachedTexture * _pTexture);
 
 		/*---------------Shaders-------------*/
 

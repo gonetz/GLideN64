@@ -187,6 +187,11 @@ PixelReadBuffer * Context::createPixelReadBuffer(size_t _sizeInBytes)
 	return m_impl->createPixelReadBuffer(_sizeInBytes);
 }
 
+ColorBufferReader * Context::createColorBufferReader(CachedTexture * _pTexture)
+{
+	return m_impl->createColorBufferReader(_pTexture);
+}
+
 /*---------------Shaders-------------*/
 
 CombinerProgram * Context::createCombinerProgram(Combiner & _color, Combiner & _alpha, const CombinerKey & _key)

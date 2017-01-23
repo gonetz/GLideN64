@@ -14,7 +14,7 @@ public:
 
 	virtual ~ColorBufferReader() {}
 
-	virtual void init() = 0;
+//	virtual void init() = 0;
 //	virtual void initBuffers() = 0;
 //	virtual void destroyBuffers() = 0;
 	virtual u8 * readPixels(s32 _x0, s32 _y0, u32 _width, u32 _height, u32 _size, bool _sync) = 0;

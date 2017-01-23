@@ -1,10 +1,14 @@
 #ifndef ColorBufferToRDRAM_H
 #define ColorBufferToRDRAM_H
 
-#include <OpenGL.h>
+#include <memory>
 #include <array>
 #include <vector>
 #include <Graphics/ObjectHandle.h>
+
+namespace graphics {
+	class ColorBufferReader;
+}
 
 struct CachedTexture;
 struct FrameBuffer;
@@ -20,20 +24,12 @@ public:
 
 	static ColorBufferToRDRAM & get();
 
-protected:
+private:
 	ColorBufferToRDRAM();
 	ColorBufferToRDRAM(const ColorBufferToRDRAM &);
 	virtual ~ColorBufferToRDRAM();
 
 	CachedTexture * m_pTexture;
-	std::vector<u8> m_pixelData;
-
-private:
-	virtual void _init() = 0;
-	virtual void _initBuffers(void) = 0;
-	virtual void _destroyBuffers(void) = 0;
-	virtual bool _readPixels(s32 _x0, s32 _y0, u32 _width, u32 _height, u32 _size, bool _sync) = 0;
-	virtual void _cleanUp() = 0;
 
 	union RGBA {
 		struct {
@@ -66,6 +62,7 @@ private:
 	u32 m_lastBufferHeight;
 
 	std::array<u32, 3> m_allowedRealWidths;
+	std::unique_ptr<graphics::ColorBufferReader> m_bufferReader;
 };
 
 void copyWhiteToRDRAM(FrameBuffer * _pBuffer);

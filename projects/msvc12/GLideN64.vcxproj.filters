@@ -221,9 +221,6 @@
     <ClCompile Include="..\..\src\BufferCopy\RDRAMtoColorBuffer.cpp">
       <Filter>Source Files\BufferCopy</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\BufferCopy\ColorBufferToRDRAM_GL.cpp">
-      <Filter>Source Files\BufferCopy</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\TextureFilterHandler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -247,9 +244,6 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Log.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\BufferCopy\ColorBufferToRDRAM_BufferStorageExt.cpp">
-      <Filter>Source Files\BufferCopy</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\F3DSETA.cpp">
       <Filter>Source Files\uCodes</Filter>
@@ -519,12 +513,6 @@
     </ClInclude>
     <ClInclude Include="..\..\src\common\GLFunctions.h">
       <Filter>Header Files\common</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\BufferCopy\ColorBufferToRDRAM_BufferStorageExt.h">
-      <Filter>Header Files\BufferCopy</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\BufferCopy\ColorBufferToRDRAM_GL.h">
-      <Filter>Header Files\BufferCopy</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\F3DSETA.h">
       <Filter>Header Files\uCodes</Filter>

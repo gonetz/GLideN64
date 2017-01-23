@@ -87,9 +87,13 @@ namespace opengl {
 
 		bool blitFramebuffers(const graphics::Context::BlitFramebuffersParams & _params) override;
 
+		/*---------------Pixelbuffer-------------*/
+
 		graphics::PixelWriteBuffer * createPixelWriteBuffer(size_t _sizeInBytes) override;
 
 		graphics::PixelReadBuffer * createPixelReadBuffer(size_t _sizeInBytes) override;
+
+		graphics::ColorBufferReader * createColorBufferReader(CachedTexture * _pTexture) override;
 
 		/*---------------Shaders-------------*/
 

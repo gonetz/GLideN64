@@ -12,7 +12,6 @@ public:
 			CachedBindBuffer * _bindBuffer);
 	~ColorBufferReaderWithPixelBuffer();
 
-	void init() override;
 	u8 * readPixels(s32 _x0, s32 _y0, u32 _width, u32 _height, u32 _size, bool _sync) override;
 	void cleanUp() override;
 
