@@ -4,6 +4,7 @@
 #include <OpenGL.h>
 #include <array>
 #include <vector>
+#include <Graphics/ObjectHandle.h>
 
 struct CachedTexture;
 struct FrameBuffer;
@@ -25,13 +26,13 @@ protected:
 	virtual ~ColorBufferToRDRAM();
 
 	CachedTexture * m_pTexture;
-	std::vector<GLubyte> m_pixelData;
+	std::vector<u8> m_pixelData;
 
 private:
 	virtual void _init() = 0;
 	virtual void _initBuffers(void) = 0;
 	virtual void _destroyBuffers(void) = 0;
-	virtual bool _readPixels(GLint _x0, GLint _y0, GLsizei _width, GLsizei _height, u32 _size, bool _sync) = 0;
+	virtual bool _readPixels(s32 _x0, s32 _y0, u32 _width, u32 _height, u32 _size, bool _sync) = 0;
 	virtual void _cleanUp() = 0;
 
 	union RGBA {
@@ -56,7 +57,7 @@ private:
 	static u16 _RGBAtoRGBA16(u32 _c);
 	static u32 _RGBAtoRGBA32(u32 _c);
 
-	GLuint m_FBO;
+	graphics::ObjectHandle m_FBO;
 	FrameBuffer * m_pCurFrameBuffer;
 	u32 m_frameCount;
 	u32 m_startAddress;

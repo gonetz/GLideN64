@@ -44,18 +44,21 @@ ColorBufferToRDRAM::~ColorBufferToRDRAM()
 void ColorBufferToRDRAM::init()
 {
 	// generate a framebuffer
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-	glGenFramebuffers(1, &m_FBO);
+//	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+//	glGenFramebuffers(1, &m_FBO);
 
+	m_FBO = gfxContext.createFramebuffer();
 	_init();
 }
 
 void ColorBufferToRDRAM::destroy() {
 	_destroyFBTexure();
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-	if (m_FBO != 0) {
-		glDeleteFramebuffers(1, &m_FBO);
-		m_FBO = 0;
+
+//	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+	if (m_FBO.isNotNull()) {
+		gfxContext.deleteFramebuffer(m_FBO);
+//		glDeleteFramebuffers(1, &m_FBO);
+		m_FBO.reset();
 	}
 }
 
@@ -109,7 +112,9 @@ void ColorBufferToRDRAM::_initFBTexture(void)
 
 	// check if everything is OK
 	assert(checkFBO());
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+
+	gfxContext.bindFramebuffer(graphics::bufferTarget::DRAW_FRAMEBUFFER, graphics::ObjectHandle());
+	//	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 
 	_initBuffers();
 }

@@ -36,7 +36,7 @@ void ColorBufferToRDRAM_GL::_initBuffers(void)
 	glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
 }
 
-bool ColorBufferToRDRAM_GL::_readPixels(GLint _x0, GLint _y0, GLsizei _width, GLsizei _height, u32 _size, bool _sync)
+bool ColorBufferToRDRAM_GL::_readPixels(s32 _x0, s32 _y0, u32 _width, u32 _height, u32 _size, bool _sync)
 {
 	const graphics::FramebufferTextureFormats & fbTexFormat = gfxContext.getFramebufferTextureFormats();
 	GLenum colorFormat, colorType, colorFormatBytes;

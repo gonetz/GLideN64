@@ -11,7 +11,7 @@ public:
 private:
 	void _init() override;
 	void _destroyBuffers() override;
-	bool _readPixels(GLint _x0, GLint _y0, GLsizei _width, GLsizei _height, u32 _size, bool _sync)  override;
+	bool _readPixels(s32 _x0, s32 _y0, u32 _width, u32 _height, u32 _size, bool _sync)  override;
 	void _cleanUp()  override;
 	void _initBuffers(void) override;
 	static const int _numPBO = 3;
