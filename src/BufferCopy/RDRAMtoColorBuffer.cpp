@@ -17,8 +17,7 @@ using namespace graphics;
 
 RDRAMtoColorBuffer::RDRAMtoColorBuffer()
 	: m_pCurBuffer(nullptr)
-	, m_pTexture(nullptr)
-	, m_PBO(0) {
+	, m_pTexture(nullptr) {
 }
 
 RDRAMtoColorBuffer & RDRAMtoColorBuffer::get()
@@ -61,10 +60,7 @@ void RDRAMtoColorBuffer::init()
 	setParams.magFilter = textureParameters::FILTER_LINEAR;
 	gfxContext.setTextureParameters(setParams);
 
-	// Generate Pixel Buffer Object. Initialize it later
-#ifndef GLES2
-	glGenBuffers(1, &m_PBO);
-#endif
+	m_pbuf.reset(gfxContext.createPixelWriteBuffer(m_pTexture->textureBytes));
 }
 
 void RDRAMtoColorBuffer::destroy()
@@ -73,12 +69,7 @@ void RDRAMtoColorBuffer::destroy()
 		textureCache().removeFrameBufferTexture(m_pTexture);
 		m_pTexture = nullptr;
 	}
-#ifndef GLES2
-	if (m_PBO != 0) {
-		glDeleteBuffers(1, &m_PBO);
-		m_PBO = 0;
-	}
-#endif
+	m_pbuf.reset();
 }
 
 void RDRAMtoColorBuffer::addAddress(u32 _address, u32 _size)
@@ -210,14 +201,9 @@ void RDRAMtoColorBuffer::copyFromRDRAM(u32 _address, bool _bCFB)
 	m_pTexture->width = width;
 	m_pTexture->height = height;
 	const u32 dataSize = width*height * 4;
-#ifndef GLES2
-	PBOBinder binder(GL_PIXEL_UNPACK_BUFFER, m_PBO);
-	glBufferData(GL_PIXEL_UNPACK_BUFFER, dataSize, nullptr, GL_DYNAMIC_DRAW);
-	GLubyte* ptr = (GLubyte*)glMapBufferRange(GL_PIXEL_UNPACK_BUFFER, 0, dataSize, GL_MAP_WRITE_BIT);
-#else
-	GLubyte* ptr = (GLubyte*)malloc(dataSize);
-	PBOBinder binder(ptr);
-#endif // GLES2
+
+	PixelBufferBinder<PixelWriteBuffer> binder(m_pbuf.get());
+	u8* ptr = (u8*)m_pbuf->getWriteBuffer(dataSize);
 	if (ptr == nullptr)
 		return;
 
@@ -243,9 +229,8 @@ void RDRAMtoColorBuffer::copyFromRDRAM(u32 _address, bool _bCFB)
 		memset(RDRAM + address, 0, totalBytes);
 	}
 
-#ifndef GLES2
-	glUnmapBuffer(GL_PIXEL_UNPACK_BUFFER); // release the mapped buffer
-#endif
+	m_pbuf->closeWriteBuffer();
+
 	if (!bCopy)
 		return;
 
@@ -254,16 +239,18 @@ void RDRAMtoColorBuffer::copyFromRDRAM(u32 _address, bool _bCFB)
 	CombinerInfo::get().setPolygonMode(DrawingState::TexRect);
 	CombinerInfo::get().update();
 	gDP.otherMode.cycleType = cycleType;
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	glBindTexture(GL_TEXTURE_2D, GLuint(m_pTexture->name));
 	const FramebufferTextureFormats & fbTexFormats = gfxContext.getFramebufferTextureFormats();
-#ifndef GLES2
-	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, GLenum(fbTexFormats.colorFormat), GLenum(fbTexFormats.colorType), 0);
-#else
-	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, GLenum(fbTexFormats.colorFormat), GLenum(fbTexFormats.colorType), ptr);
-#endif
+
+	Context::UpdateTextureDataParams updateParams;
+	updateParams.handle = m_pTexture->name;
+	updateParams.textureUnitIndex = textureIndices::Tex[0];
+	updateParams.width = width;
+	updateParams.height = height;
+	updateParams.format = fbTexFormats.colorFormat;
+	updateParams.dataType = fbTexFormats.colorType;
+	updateParams.data = m_pbuf->getData();
+	gfxContext.update2DTexture(updateParams);
 
 	m_pTexture->scaleS = 1.0f / (float)m_pTexture->realWidth;
 	m_pTexture->scaleT = 1.0f / (float)m_pTexture->realHeight;
@@ -278,17 +265,19 @@ void RDRAMtoColorBuffer::copyFromRDRAM(u32 _address, bool _bCFB)
 	gDPTile * pTile0 = gSP.textureTile[0];
 	gSP.textureTile[0] = &tile0;
 
-	glDisable(GL_DEPTH_TEST);
-	glDisable(GL_SCISSOR_TEST);
+	gfxContext.enable(enable::BLEND, true);
+	gfxContext.setBlending(blend::SRC_ALPHA, blend::ONE_MINUS_SRC_ALPHA);
+	gfxContext.enable(enable::DEPTH_TEST, false);
+	gfxContext.enable(enable::SCISSOR_TEST, false);
 
 	CombinerInfo::get().updateParameters();
 
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, GLuint(m_pCurBuffer->m_FBO));
+	gfxContext.bindFramebuffer(bufferTarget::DRAW_FRAMEBUFFER, m_pCurBuffer->m_FBO);
 
-	GraphicsDrawer::TexturedRectParams params((float)x0, (float)y0, (float)width, (float)height,
+	GraphicsDrawer::TexturedRectParams texRectParams((float)x0, (float)y0, (float)width, (float)height,
 										 0.0f, 0.0f, width - 1.0f, height - 1.0f, 1.0f, 1.0f,
 										 false, true, false, m_pCurBuffer);
-	dwnd().getDrawer().drawTexturedRect(params);
+	dwnd().getDrawer().drawTexturedRect(texRectParams);
 
 	frameBufferList().setCurrentDrawBuffer();
 

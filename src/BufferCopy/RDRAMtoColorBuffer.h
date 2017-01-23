@@ -2,7 +2,12 @@
 #define RDRAMtoColorBuffer_H
 
 #include <vector>
-#include <OpenGL.h>
+#include <memory>
+#include <Graphics/ObjectHandle.h>
+
+namespace graphics {
+	class PixelWriteBuffer;
+}
 
 struct CachedTexture;
 struct FrameBuffer;
@@ -38,8 +43,8 @@ private:
 
 	FrameBuffer * m_pCurBuffer;
 	CachedTexture * m_pTexture;
-	GLuint m_PBO;
 	std::vector<u32> m_vecAddress;
+	std::unique_ptr<graphics::PixelWriteBuffer> m_pbuf;
 };
 
 #endif // RDRAMtoColorBuffer_H
