@@ -4,7 +4,6 @@
 
 #include "DepthBufferToRDRAM.h"
 #include "WriteToRDRAM.h"
-#include "PBOBinder.h"
 
 #include <FrameBuffer.h>
 #include <DepthBuffer.h>
@@ -15,6 +14,7 @@
 
 #include <Graphics/Context.h>
 #include <Graphics/Parameters.h>
+#include <Graphics/PixelBuffer.h>
 #include <DisplayWindow.h>
 
 using namespace graphics;
@@ -22,11 +22,9 @@ using namespace graphics;
 #ifndef GLES2
 
 DepthBufferToRDRAM::DepthBufferToRDRAM()
-	: m_FBO(0)
-	, m_PBO(0)
-	, m_frameCount(-1)
+	: m_frameCount(-1)
 	, m_pColorTexture(nullptr)
-	,	m_pDepthTexture(nullptr)
+	, m_pDepthTexture(nullptr)
 	, m_pCurDepthBuffer(nullptr)
 {
 }
@@ -100,10 +98,9 @@ void DepthBufferToRDRAM::init()
 	setParams.handle = m_pDepthTexture->name;
 	gfxContext.setTextureParameters(setParams);
 
-	ObjectHandle fboHandle = gfxContext.createFramebuffer();
-	m_FBO = GLuint(fboHandle);
+	m_FBO = gfxContext.createFramebuffer();
 	Context::FrameBufferRenderTarget bufTarget;
-	bufTarget.bufferHandle = fboHandle;
+	bufTarget.bufferHandle = m_FBO;
 	bufTarget.bufferTarget = bufferTarget::DRAW_FRAMEBUFFER;
 	bufTarget.attachment = bufferAttachment::COLOR_ATTACHMENT0;
 	bufTarget.textureTarget = target::TEXTURE_2D;
@@ -115,21 +112,18 @@ void DepthBufferToRDRAM::init()
 	gfxContext.addFrameBufferRenderTarget(bufTarget);
 
 	// check if everything is OK
-	assert(checkFBO());
-	assert(!isGLError());
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+	assert(!gfxContext.isFramebufferError());
+	assert(!gfxContext.isError());
+	gfxContext.bindFramebuffer(bufferTarget::DRAW_FRAMEBUFFER, ObjectHandle());
 
 	// Generate and initialize Pixel Buffer Objects
-	glGenBuffers(1, &m_PBO);
-	glBindBuffer(GL_PIXEL_PACK_BUFFER, m_PBO);
-	glBufferData(GL_PIXEL_PACK_BUFFER, m_pDepthTexture->realWidth * m_pDepthTexture->realHeight * sizeof(float), nullptr, GL_DYNAMIC_READ);
-	glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
+	m_pbuf.reset(gfxContext.createPixelReadBuffer(m_pDepthTexture->textureBytes));
 }
 
 void DepthBufferToRDRAM::destroy() {
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-	glDeleteFramebuffers(1, &m_FBO);
-	m_FBO = 0;
+
+	gfxContext.deleteFramebuffer(m_FBO);
+	m_FBO.reset();
 	if (m_pColorTexture != nullptr) {
 		textureCache().removeFrameBufferTexture(m_pColorTexture);
 		m_pColorTexture = nullptr;
@@ -138,10 +132,7 @@ void DepthBufferToRDRAM::destroy() {
 		textureCache().removeFrameBufferTexture(m_pDepthTexture);
 		m_pDepthTexture = nullptr;
 	}
-	if (m_PBO != 0) {
-		glDeleteBuffers(1, &m_PBO);
-		m_PBO = 0;
-	}
+	m_pbuf.reset();
 }
 
 bool DepthBufferToRDRAM::_prepareCopy(u32 _address, bool _copyChunk)
@@ -166,20 +157,28 @@ bool DepthBufferToRDRAM::_prepareCopy(u32 _address, bool _copyChunk)
 	if (height == 0)
 		return false;
 
-	if (config.video.multisampling == 0)
-		glBindFramebuffer(GL_READ_FRAMEBUFFER, GLuint(pBuffer->m_FBO));
-	else {
+	ObjectHandle readBuffer = pBuffer->m_FBO;
+	if (config.video.multisampling != 0) {
 		m_pCurDepthBuffer->resolveDepthBufferTexture(pBuffer);
-		glBindFramebuffer(GL_READ_FRAMEBUFFER, GLuint(pBuffer->m_resolveFBO));
+		readBuffer = pBuffer->m_resolveFBO;
 	}
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_FBO);
-	glDisable(GL_SCISSOR_TEST);
-	glBlitFramebuffer(
-		0, 0, pBuffer->m_pTexture->realWidth, pBuffer->m_pTexture->realHeight,
-		0, 0, pBuffer->m_width, pBuffer->m_height,
-		GL_DEPTH_BUFFER_BIT, GL_NEAREST
-		);
-	glEnable(GL_SCISSOR_TEST);
+
+	Context::BlitFramebuffersParams blitParams;
+	blitParams.readBuffer = readBuffer;
+	blitParams.drawBuffer = m_FBO;
+	blitParams.srcX0 = 0;
+	blitParams.srcY0 = 0;
+	blitParams.srcX1 = pBuffer->m_pTexture->realWidth;
+	blitParams.srcY1 = pBuffer->m_pTexture->realHeight;
+	blitParams.dstX0 = 0;
+	blitParams.dstY0 = 0;
+	blitParams.dstX1 = pBuffer->m_width;
+	blitParams.dstY1 = pBuffer->m_height;
+	blitParams.mask = blitMask::DEPTH_BUFFER;
+	blitParams.filter = textureParameters::FILTER_NEAREST;
+
+	gfxContext.blitFramebuffers(blitParams);
+
 	frameBufferList().setCurrentDrawBuffer();
 	m_frameCount = curFrame;
 	return true;
@@ -207,18 +206,18 @@ bool DepthBufferToRDRAM::_copy(u32 _startAddress, u32 _endAddress)
 		numPixels = (_endAddress - _startAddress) >> 1;
 	}
 
-	const GLsizei width = m_pCurDepthBuffer->m_width;
-	const GLint x0 = 0;
-	const GLint y0 = max_height - (_endAddress - m_pCurDepthBuffer->m_address) / stride;
-	const GLint y1 = max_height - (_startAddress - m_pCurDepthBuffer->m_address) / stride;
-	const GLsizei height = std::min(max_height, 1u + y1 - y0);
+	const u32 width = m_pCurDepthBuffer->m_width;
+	const s32 x0 = 0;
+	const s32 y0 = max_height - (_endAddress - m_pCurDepthBuffer->m_address) / stride;
+	const u32 y1 = max_height - (_startAddress - m_pCurDepthBuffer->m_address) / stride;
+	const u32 height = std::min(max_height, 1u + y1 - y0);
 
-	PBOBinder binder(GL_PIXEL_PACK_BUFFER, m_PBO);
-	glBindFramebuffer(GL_READ_FRAMEBUFFER, m_FBO);
+	gfxContext.bindFramebuffer(bufferTarget::READ_FRAMEBUFFER, m_FBO);
+
+	PixelBufferBinder<PixelReadBuffer> binder(m_pbuf.get());
 	const FramebufferTextureFormats & fbTexFormats = gfxContext.getFramebufferTextureFormats();
-	glReadPixels(x0, y0, width, height, GLenum(fbTexFormats.depthFormat), GLenum(fbTexFormats.depthType), 0);
-
-	GLubyte* pixelData = (GLubyte*)glMapBufferRange(GL_PIXEL_PACK_BUFFER, 0, width * height * fbTexFormats.depthFormatBytes, GL_MAP_READ_BIT);
+	m_pbuf->readPixels(x0, y0, width, height, fbTexFormats.depthFormat, fbTexFormats.depthType);
+	u8 * pixelData = (u8*)m_pbuf->getDataRange(0, width * height * fbTexFormats.depthFormatBytes);
 	if (pixelData == nullptr)
 		return false;
 
@@ -234,7 +233,8 @@ bool DepthBufferToRDRAM::_copy(u32 _startAddress, u32 _endAddress)
 	if (pBuffer != nullptr)
 		pBuffer->m_cleared = false;
 
-	glUnmapBuffer(GL_PIXEL_PACK_BUFFER);
+	m_pbuf->closeReadBuffer();
+
 	gDP.changed |= CHANGED_SCISSOR;
 	return true;
 }

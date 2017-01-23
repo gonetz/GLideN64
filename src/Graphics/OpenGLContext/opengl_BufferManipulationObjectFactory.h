@@ -45,6 +45,13 @@ namespace opengl {
 		virtual graphics::PixelWriteBuffer * createPixelWriteBuffer(size_t _sizeInBytes) = 0;
 	};
 
+	class CreatePixelReadBuffer
+	{
+	public:
+		virtual ~CreatePixelReadBuffer() {}
+		virtual graphics::PixelReadBuffer * createPixelReadBuffer(size_t _sizeInBytes) = 0;
+	};
+
 	class BlitFramebuffers
 	{
 	public:
@@ -67,6 +74,8 @@ namespace opengl {
 		AddFramebufferRenderTarget * getAddFramebufferRenderTarget() const;
 
 		CreatePixelWriteBuffer * createPixelWriteBuffer() const;
+
+		CreatePixelReadBuffer * createPixelReadBuffer() const;
 
 		BlitFramebuffers * getBlitFramebuffers() const;
 

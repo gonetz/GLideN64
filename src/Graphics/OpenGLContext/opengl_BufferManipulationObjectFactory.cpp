@@ -223,6 +223,75 @@ private:
 	CachedBindBuffer * m_bind;
 };
 
+/*---------------CreatePixelReadBuffer-------------*/
+
+class PBOReadBuffer : public graphics::PixelReadBuffer
+{
+public:
+	PBOReadBuffer(CachedBindBuffer * _bind, size_t _size)
+		: m_bind(_bind)
+		, m_size(_size)
+	{
+		glGenBuffers(1, &m_PBO);
+		m_bind->bind(graphics::Parameter(GL_PIXEL_PACK_BUFFER), graphics::ObjectHandle(m_PBO));
+		glBufferData(GL_PIXEL_PACK_BUFFER, m_size, nullptr, GL_DYNAMIC_READ);
+		m_bind->bind(graphics::Parameter(GL_PIXEL_PACK_BUFFER), graphics::ObjectHandle());
+	}
+
+	~PBOReadBuffer() {
+		glDeleteBuffers(1, &m_PBO);
+		m_PBO = 0;
+	}
+
+	void readPixels(s32 _x,s32 _y, u32 _width, u32 _height, graphics::Parameter _format, graphics::Parameter _type) override
+	{
+		glReadPixels(_x, _y, _width, _height, GLenum(_format), GLenum(_type), 0);
+	}
+
+	void * getDataRange(u32 _offset, u32 _range) override
+	{
+		if (_range > m_size)
+			_range = m_size;
+		return glMapBufferRange(GL_PIXEL_PACK_BUFFER, _offset, _range, GL_MAP_READ_BIT);
+	}
+
+	void closeReadBuffer() override
+	{
+		glUnmapBuffer(GL_PIXEL_PACK_BUFFER);
+	}
+
+
+	void bind() override {
+		m_bind->bind(graphics::Parameter(GL_PIXEL_PACK_BUFFER), graphics::ObjectHandle(m_PBO));
+	}
+
+	void unbind() override {
+		m_bind->bind(graphics::Parameter(GL_PIXEL_PACK_BUFFER), graphics::ObjectHandle());
+	}
+
+private:
+	CachedBindBuffer * m_bind;
+	size_t m_size;
+	GLuint m_PBO;
+};
+
+template<typename T>
+class CreatePixelReadBufferT : public CreatePixelReadBuffer
+{
+public:
+	CreatePixelReadBufferT(CachedBindBuffer * _bind)
+		: m_bind(_bind) {
+	}
+
+	graphics::PixelReadBuffer * createPixelReadBuffer(size_t _sizeInBytes) override
+	{
+		return new T(m_bind, _sizeInBytes);
+	}
+
+private:
+	CachedBindBuffer * m_bind;
+};
+
 /*---------------BlitFramebuffers-------------*/
 
 class BlitFramebuffersImpl : public BlitFramebuffers
@@ -243,7 +312,7 @@ public:
 			_params.srcX0, _params.srcY0, _params.srcX1, _params.srcY1,
 			_params.dstX0, _params.dstY0, _params.dstX1, _params.dstY1,
 			GLbitfield(_params.mask), GLenum(_params.filter)
-			);
+		);
 		return !Utils::isGLError();
 	}
 
@@ -443,6 +512,14 @@ CreatePixelWriteBuffer * BufferManipulationObjectFactory::createPixelWriteBuffer
 		return new CreatePixelWriteBufferT<MemoryWriteBuffer>(nullptr);
 
 	return new CreatePixelWriteBufferT<PBOWriteBuffer>(m_cachedFunctions.getCachedBindBuffer());
+}
+
+CreatePixelReadBuffer * BufferManipulationObjectFactory::createPixelReadBuffer() const
+{
+	if (m_glInfo.isGLES2)
+		return nullptr;
+
+	return new CreatePixelReadBufferT<PBOReadBuffer>(m_cachedFunctions.getCachedBindBuffer());
 }
 
 graphics::FramebufferTextureFormats * BufferManipulationObjectFactory::getFramebufferTextureFormats() const

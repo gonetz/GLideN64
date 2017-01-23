@@ -184,7 +184,11 @@ namespace graphics {
 
 		bool blitFramebuffers(const BlitFramebuffersParams & _params);
 
+		/*---------------Pixelbuffer-------------*/
+
 		PixelWriteBuffer * createPixelWriteBuffer(size_t _sizeInBytes);
+
+		PixelReadBuffer * createPixelReadBuffer(size_t _sizeInBytes);
 
 		/*---------------Shaders-------------*/
 
