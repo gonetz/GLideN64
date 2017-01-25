@@ -301,8 +301,11 @@ public:
 		return !_glinfo.isGLES2;
 	}
 
-	BlitFramebuffersImpl(CachedBindFramebuffer * _bind, Renderer _renderer)
+	BlitFramebuffersImpl(CachedBindFramebuffer * _bind,
+		CachedEnable * _enableScissor,
+		Renderer _renderer)
 		: m_bind(_bind)
+		, m_enableScissor(_enableScissor)
 		, m_renderer(_renderer) {
 	}
 
@@ -313,16 +316,20 @@ public:
 
 		const s32 adrenoCoordFix = (m_renderer == Renderer::Adreno) ? 1 : 0;
 
+		m_enableScissor->enable(false);
 		glBlitFramebuffer(
 			_params.srcX0, _params.srcY0, _params.srcX1, _params.srcY1,
 			adrenoCoordFix +_params.dstX0, _params.dstY0, _params.dstX1, _params.dstY1,
 			GLbitfield(_params.mask), GLenum(_params.filter)
 		);
+		m_enableScissor->enable(true);
+
 		return !Utils::isGLError();
 	}
 
 private:
 	CachedBindFramebuffer * m_bind;
+	CachedEnable * m_enableScissor;
 	Renderer m_renderer;
 };
 
@@ -507,7 +514,9 @@ AddFramebufferRenderTarget * BufferManipulationObjectFactory::getAddFramebufferR
 BlitFramebuffers * BufferManipulationObjectFactory::getBlitFramebuffers() const
 {
 	if (BlitFramebuffersImpl::Check(m_glInfo))
-		return new BlitFramebuffersImpl(m_cachedFunctions.getCachedBindFramebuffer(), m_glInfo.renderer);
+		return new BlitFramebuffersImpl(m_cachedFunctions.getCachedBindFramebuffer(),
+										m_cachedFunctions.getCachedEnable(graphics::enable::SCISSOR_TEST),
+										m_glInfo.renderer);
 
 	return new DummyBlitFramebuffers;
 }
