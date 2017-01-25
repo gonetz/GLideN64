@@ -1464,7 +1464,6 @@ void GraphicsDrawer::copyTexturedRect(const CopyRectParams & _params)
 	gfxContext.enable(enable::CULL_FACE, false);
 	gfxContext.enable(enable::BLEND, false);
 	gfxContext.enable(enable::DEPTH_TEST, false);
-	gfxContext.enable(enable::SCISSOR_TEST, false);
 	gfxContext.enableDepthWrite(false);
 
 	Context::DrawRectParameters rectParams;
@@ -1474,10 +1473,12 @@ void GraphicsDrawer::copyTexturedRect(const CopyRectParams & _params)
 	rectParams.vertices = m_rect;
 	rectParams.combiner = _params.combiner;
 	_params.combiner->activate();
+	gfxContext.enable(enable::SCISSOR_TEST, false);
 	gfxContext.drawRects(rectParams);
+	gfxContext.enable(enable::SCISSOR_TEST, true);
 
 	gSP.changed |= CHANGED_GEOMETRYMODE | CHANGED_VIEWPORT;
-	gDP.changed |= CHANGED_RENDERMODE | CHANGED_TILE | CHANGED_COMBINE | CHANGED_SCISSOR;
+	gDP.changed |= CHANGED_RENDERMODE | CHANGED_TILE | CHANGED_COMBINE;
 }
 
 void GraphicsDrawer::blitOrCopyTexturedRect(const BlitOrCopyRectParams & _params)
