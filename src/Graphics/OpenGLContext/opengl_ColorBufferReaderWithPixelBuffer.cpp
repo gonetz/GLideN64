@@ -9,17 +9,16 @@ ColorBufferReaderWithPixelBuffer::ColorBufferReaderWithPixelBuffer(CachedTexture
 																   CachedBindBuffer *_bindBuffer)
 	: ColorBufferReader(_pTexture), m_bindBuffer(_bindBuffer)
 {
-	initBuffers();
+	_initBuffers();
 }
 
 
 ColorBufferReaderWithPixelBuffer::~ColorBufferReaderWithPixelBuffer()
 {
-	destroyBuffers();
+	_destroyBuffers();
 }
 
-
-void ColorBufferReaderWithPixelBuffer::destroyBuffers()
+void ColorBufferReaderWithPixelBuffer::_destroyBuffers()
 {
 	glDeleteBuffers(_numPBO, m_PBO);
 
@@ -27,7 +26,7 @@ void ColorBufferReaderWithPixelBuffer::destroyBuffers()
 		m_PBO[index] = 0;
 }
 
-void ColorBufferReaderWithPixelBuffer::initBuffers()
+void ColorBufferReaderWithPixelBuffer::_initBuffers()
 {
 	// Generate Pixel Buffer Objects
 	glGenBuffers(_numPBO, m_PBO);
@@ -87,5 +86,5 @@ u8 * ColorBufferReaderWithPixelBuffer::readPixels(s32 _x0, s32 _y0, u32 _width, 
 void ColorBufferReaderWithPixelBuffer::cleanUp()
 {
 	glUnmapBuffer(GL_PIXEL_PACK_BUFFER);
-	glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
+	m_bindBuffer->bind(Parameter(GL_PIXEL_PACK_BUFFER), ObjectHandle());
 }

@@ -5,6 +5,7 @@
 #include "opengl_UnbufferedDrawer.h"
 #include "opengl_DummyTextDrawer.h"
 #include "opengl_ColorBufferReaderWithPixelBuffer.h"
+#include "opengl_ColorBufferReaderWithBufferStorage.h"
 #include "opengl_Utils.h"
 #include "GLSL/glsl_CombinerProgramBuilder.h"
 #include "GLSL/glsl_SpecialShadersFactory.h"
@@ -266,6 +267,9 @@ graphics::PixelReadBuffer * ContextImpl::createPixelReadBuffer(size_t _sizeInByt
 
 graphics::ColorBufferReader * ContextImpl::createColorBufferReader(CachedTexture * _pTexture)
 {
+	if (glBufferStorage != nullptr && glMemoryBarrier != nullptr)
+		return new ColorBufferReaderWithBufferStorage(_pTexture, m_cachedFunctions->getCachedBindBuffer());
+
 	return new ColorBufferReaderWithPixelBuffer(_pTexture, m_cachedFunctions->getCachedBindBuffer());
 }
 

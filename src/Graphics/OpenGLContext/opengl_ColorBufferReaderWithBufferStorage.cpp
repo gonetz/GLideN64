@@ -1,33 +1,23 @@
-#include <OpenGL.h>
 #include <Textures.h>
 #include <Graphics/Context.h>
+#include "opengl_ColorBufferReaderWithBufferStorage.h"
 
-#if defined(EGL) || defined(GLESX)
-#include <inc/ARB_buffer_storage.h>
-#include <EGL/egl.h>
-#include <EGL/eglext.h>
-#endif
+using namespace graphics;
+using namespace opengl;
 
-#include "ColorBufferToRDRAM_BufferStorageExt.h"
-
-ColorBufferToRDRAM_BufferStorageExt::ColorBufferToRDRAM_BufferStorageExt()
-	: ColorBufferToRDRAM(), m_curIndex(0)
+ColorBufferReaderWithBufferStorage::ColorBufferReaderWithBufferStorage(CachedTexture * _pTexture,
+	CachedBindBuffer * _bindBuffer)
+	: ColorBufferReader(_pTexture), m_bindBuffer(_bindBuffer)
 {
-#ifdef GLESX
-	glBufferStorage = (PFNGLBUFFERSTORAGEPROC)eglGetProcAddress("glBufferStorageEXT");
-#endif
-
-	for (int index = 0; index < _numPBO; ++index) {
-		m_PBOData[index] = nullptr;
-		m_PBO[index] = 0;
-	}
+	_initBuffers();
 }
 
-void ColorBufferToRDRAM_BufferStorageExt::_init()
+ColorBufferReaderWithBufferStorage::~ColorBufferReaderWithBufferStorage()
 {
+	_destroyBuffers();
 }
 
-void ColorBufferToRDRAM_BufferStorageExt::_initBuffers(void)
+void ColorBufferReaderWithBufferStorage::_initBuffers()
 {
 	// Generate Pixel Buffer Objects
 	glGenBuffers(_numPBO, m_PBO);
@@ -35,16 +25,18 @@ void ColorBufferToRDRAM_BufferStorageExt::_initBuffers(void)
 
 	// Initialize Pixel Buffer Objects
 	for (int index = 0; index < _numPBO; ++index) {
-		glBindBuffer(GL_PIXEL_PACK_BUFFER, m_PBO[index]);
+		m_bindBuffer->bind(Parameter(GL_PIXEL_PACK_BUFFER), ObjectHandle(m_PBO[index]));
 		m_fence[index] = 0;
 		glBufferStorage(GL_PIXEL_PACK_BUFFER, m_pTexture->textureBytes, nullptr, GL_MAP_READ_BIT | GL_MAP_PERSISTENT_BIT);
-		m_PBOData[index] = glMapBufferRange(GL_PIXEL_PACK_BUFFER, 0, m_pTexture->textureBytes, GL_MAP_READ_BIT | GL_MAP_PERSISTENT_BIT );
+		m_PBOData[index] = glMapBufferRange(GL_PIXEL_PACK_BUFFER, 0, m_pTexture->textureBytes, GL_MAP_READ_BIT | GL_MAP_PERSISTENT_BIT);
 	}
 
-	glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
+	m_bindBuffer->bind(Parameter(GL_PIXEL_PACK_BUFFER), ObjectHandle());
+
+	m_pixelData.resize(m_pTexture->textureBytes);
 }
 
-void ColorBufferToRDRAM_BufferStorageExt::_destroyBuffers(void)
+void ColorBufferReaderWithBufferStorage::_destroyBuffers()
 {
 	glDeleteBuffers(_numPBO, m_PBO);
 
@@ -52,15 +44,16 @@ void ColorBufferToRDRAM_BufferStorageExt::_destroyBuffers(void)
 		m_PBO[index] = 0;
 }
 
-bool ColorBufferToRDRAM_BufferStorageExt::_readPixels(s32 _x0, s32 _y0, u32 _width, u32 _height, u32 _size, bool _sync)
+u8 * ColorBufferReaderWithBufferStorage::readPixels(s32 _x0, s32 _y0, u32 _width, u32 _height, u32 _size, bool _sync)
 {
-	const graphics::FramebufferTextureFormats & fbTexFormat = gfxContext.getFramebufferTextureFormats();
+	const FramebufferTextureFormats & fbTexFormat = gfxContext.getFramebufferTextureFormats();
 	GLenum colorFormat, colorType, colorFormatBytes;
 	if (_size > G_IM_SIZ_8b) {
 		colorFormat = GLenum(fbTexFormat.colorFormat);
 		colorType = GLenum(fbTexFormat.colorType);
 		colorFormatBytes = GLenum(fbTexFormat.colorFormatBytes);
-	} else {
+	}
+	else {
 		colorFormat = GLenum(fbTexFormat.monochromeFormat);
 		colorType = GLenum(fbTexFormat.monochromeType);
 		colorFormatBytes = GLenum(fbTexFormat.monochromeFormatBytes);
@@ -74,7 +67,7 @@ bool ColorBufferToRDRAM_BufferStorageExt::_readPixels(s32 _x0, s32 _y0, u32 _wid
 	m_fence[m_curIndex] = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
 
 	if (!_sync) {
-		m_curIndex = (m_curIndex+1)%_numPBO;
+		m_curIndex = (m_curIndex + 1) % _numPBO;
 	}
 
 	//Wait for glReadPixels to complete for the currently selected PBO
@@ -95,10 +88,10 @@ bool ColorBufferToRDRAM_BufferStorageExt::_readPixels(s32 _x0, s32 _y0, u32 _wid
 		memcpy(pixelDataAlloc + lnIndex*widthBytes, pixelData + (lnIndex*strideBytes), widthBytes);
 	}
 
-	return true;
+	return pixelDataAlloc;
 }
 
-void ColorBufferToRDRAM_BufferStorageExt::_cleanUp()
+void ColorBufferReaderWithBufferStorage::cleanUp()
 {
-	glBindBuffer(GL_PIXEL_PACK_BUFFER, 0);
+	m_bindBuffer->bind(Parameter(GL_PIXEL_PACK_BUFFER), ObjectHandle());
 }

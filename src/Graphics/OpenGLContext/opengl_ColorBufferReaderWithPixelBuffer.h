@@ -16,8 +16,8 @@ public:
 	void cleanUp() override;
 
 private:
-	void initBuffers();
-	void destroyBuffers();
+	void _initBuffers();
+	void _destroyBuffers();
 
 	CachedBindBuffer * m_bindBuffer;
 
