@@ -373,9 +373,7 @@ public:
 	void update(bool _force) override
 	{
 		if (config.frameBufferEmulation.nativeResFactor == 0)
-			// TODO fix me
 			uScreenScale.set(dwnd().getScaleX(), dwnd().getScaleY(), _force);
-//			uScreenScale.set(2.0f, 2.0f, _force);
 		else
 			uScreenScale.set(float(config.frameBufferEmulation.nativeResFactor), float(config.frameBufferEmulation.nativeResFactor), _force);
 	}
