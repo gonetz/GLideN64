@@ -20,9 +20,13 @@
 #include "DepthBuffer.h"
 #include "Config.h"
 #include "Log.h"
+
+#include <Graphics/Context.h>
+#include <Graphics/Parameters.h>
 #include "DisplayWindow.h"
 
 using namespace std;
+using namespace graphics;
 
 #define INDEXMAP_SIZE 80U
 
@@ -2129,13 +2133,15 @@ void gSPObjRectangleR(u32 _sp)
 	gSPDrawObjRect(objCoords);
 }
 
-//TODO
-#ifdef REWRITE_COPY_DEPTH
 static
 void _copyDepthBuffer()
 {
 	if (!config.frameBufferEmulation.enable)
 		return;
+
+	if (!gfxContext.isSupported(SpecialFeatures::BlitFramebuffer))
+		return;
+
 	// The game copies content of depth buffer into current color buffer
 	// OpenGL has different format for color and depth buffers, so this trick can't be performed directly
 	// To do that, depth buffer with address of current color buffer created and attached to the current FBO
@@ -2150,23 +2156,33 @@ void _copyDepthBuffer()
 	DepthBuffer * pCopyBufferDepth = dbList.findBuffer(gSP.bgImage.address);
 	if (pCopyBufferDepth == nullptr)
 		return;
-	glBindFramebuffer(GL_READ_FRAMEBUFFER, pTmpBuffer->m_FBO);
-	pCopyBufferDepth->setDepthAttachment(pTmpBuffer->m_FBO, GL_READ_FRAMEBUFFER);
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, fbList.getCurrent()->m_FBO);
+	pCopyBufferDepth->setDepthAttachment(pTmpBuffer->m_FBO, bufferTarget::READ_FRAMEBUFFER);
+
 	DisplayWindow & wnd = dwnd();
-	glBlitFramebuffer(
-		0, 0, wnd.getWidth(), wnd.getHeight(),
-		0, 0, wnd.getWidth(), wnd.getHeight(),
-		GL_DEPTH_BUFFER_BIT, GL_NEAREST
-	);
+	Context::BlitFramebuffersParams blitParams;
+	blitParams.readBuffer = pTmpBuffer->m_FBO;
+	blitParams.drawBuffer = fbList.getCurrent()->m_FBO;
+	blitParams.srcX0 = 0;
+	blitParams.srcY0 = 0;
+	blitParams.srcX1 = wnd.getWidth();
+	blitParams.srcY1 = wnd.getHeight();
+	blitParams.dstX0 = 0;
+	blitParams.dstY0 = 0;
+	blitParams.dstX1 = wnd.getWidth();
+	blitParams.dstY1 = wnd.getHeight();
+	blitParams.mask = blitMask::DEPTH_BUFFER;
+	blitParams.filter = textureParameters::FILTER_NEAREST;
+
+	gfxContext.blitFramebuffers(blitParams);
+
 	// Restore objects
 	if (pTmpBuffer->m_pDepthBuffer != nullptr)
-		pTmpBuffer->m_pDepthBuffer->setDepthAttachment(fbList.getCurrent()->m_FBO, GL_READ_FRAMEBUFFER);
-	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
+		pTmpBuffer->m_pDepthBuffer->setDepthAttachment(fbList.getCurrent()->m_FBO, bufferTarget::READ_FRAMEBUFFER);
+	gfxContext.bindFramebuffer(bufferTarget::READ_FRAMEBUFFER, ObjectHandle());
+
 	// Set back current depth buffer
 	dbList.saveBuffer(gDP.depthImageAddress);
 }
-#endif // REWRITE_COPY_DEPTH
 
 static
 void _loadBGImage(const uObjScaleBg * _bgInfo, bool _loadScale)
@@ -2221,7 +2237,6 @@ void gSPBgRect1Cyc( u32 _bg )
 	uObjScaleBg *objScaleBg = (uObjScaleBg*)&RDRAM[address];
 	_loadBGImage(objScaleBg, true);
 
-#ifdef REWRITE_COPY_DEPTH
 	// Zelda MM uses depth buffer copy in LoT and in pause screen.
 	// In later case depth buffer is used as temporal color buffer, and usual rendering must be used.
 	// Since both situations are hard to distinguish, do the both depth buffer copy and bg rendering.
@@ -2229,7 +2244,6 @@ void gSPBgRect1Cyc( u32 _bg )
 		(gSP.bgImage.address == gDP.depthImageAddress || depthBufferList().findBuffer(gSP.bgImage.address) != nullptr)
 	)
 		_copyDepthBuffer();
-#endif // REWRITE_COPY_DEPTH
 
 	gDP.otherMode.cycleType = G_CYC_1CYCLE;
 	gDP.changed |= CHANGED_CYCLETYPE;
@@ -2245,13 +2259,11 @@ void gSPBgRectCopy( u32 _bg )
 	uObjScaleBg *objBg = (uObjScaleBg*)&RDRAM[address];
 	_loadBGImage(objBg, false);
 
-#ifdef REWRITE_COPY_DEPTH
 	// See comment to gSPBgRect1Cyc
 	if ((config.generalEmulation.hacks & hack_ZeldaMM) != 0 &&
 		(gSP.bgImage.address == gDP.depthImageAddress || depthBufferList().findBuffer(gSP.bgImage.address) != nullptr)
 	)
 		_copyDepthBuffer();
-#endif // GL_IMAGE_TEXTURES_SUPPORT
 
 	gSPTexture( 1.0f, 1.0f, 0, 0, TRUE );
 
