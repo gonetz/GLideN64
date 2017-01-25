@@ -20,6 +20,13 @@ void GLInfo::init() {
 	LOG(LOG_VERBOSE, "%s major version: %d\n", isGLESX ? "OpenGL ES" : "OpenGL", majorVersion);
 	LOG(LOG_VERBOSE, "%s minor version: %d\n", isGLESX ? "OpenGL ES" : "OpenGL", minorVersion);
 
+
+	LOG(LOG_VERBOSE, "OpenGL vendor: %s\n", glGetString(GL_VENDOR));
+	const GLubyte * strRenderer = glGetString(GL_RENDERER);
+	if (strstr((const char*)strRenderer, "Adreno") != nullptr)
+		renderer = Renderer::Adreno;
+	LOG(LOG_VERBOSE, "OpenGL renderer: %s\n", strRenderer);
+
 	if (isGLES2) {
 		imageTextures = false;
 		msaa = false;

@@ -773,15 +773,17 @@ void FrameBufferList::attachDepthBuffer()
 	if (m_pCurrent->m_FBO.isNotNull() && pDepthBuffer != nullptr) {
 		pDepthBuffer->initDepthImageTexture(m_pCurrent);
 		pDepthBuffer->initDepthBufferTexture(m_pCurrent);
-#ifdef USE_DEPTH_RENDERBUFFER
-		// TODO
-		if (pDepthBuffer->m_depthRenderbufferWidth == m_pCurrent->m_pTexture->realWidth) {
-#else
-		const bool goodDepthBufferTexture = gfxContext.isSupported(SpecialFeatures::WeakBlitFramebuffer) ?
-					pDepthBuffer->m_pDepthBufferTexture->realWidth == m_pCurrent->m_pTexture->realWidth :
-					pDepthBuffer->m_pDepthBufferTexture->realWidth >= m_pCurrent->m_pTexture->realWidth;
+
+		bool goodDepthBufferTexture = false;
+		if (gfxContext.isSupported(SpecialFeatures::DepthFramebufferTextures)) {
+			goodDepthBufferTexture = gfxContext.isSupported(SpecialFeatures::WeakBlitFramebuffer) ?
+				pDepthBuffer->m_pDepthBufferTexture->realWidth == m_pCurrent->m_pTexture->realWidth :
+				pDepthBuffer->m_pDepthBufferTexture->realWidth >= m_pCurrent->m_pTexture->realWidth;
+		} else {
+			goodDepthBufferTexture = pDepthBuffer->m_depthRenderbufferWidth == m_pCurrent->m_pTexture->realWidth;
+		}
+
 		if (goodDepthBufferTexture) {
-#endif // USE_DEPTH_RENDERBUFFER
 			m_pCurrent->m_pDepthBuffer = pDepthBuffer;
 			pDepthBuffer->setDepthAttachment(m_pCurrent->m_FBO, bufferTarget::DRAW_FRAMEBUFFER);
 			if (Context::imageTextures && config.frameBufferEmulation.N64DepthCompare != 0)
@@ -930,16 +932,9 @@ void FrameBufferList::renderBuffer(u32 _address)
 						  vOffset + (s32)(dstY0*dstScaleY),
 						  hOffset + X1,
 						  vOffset + (s32)(dstY1*dstScaleY) };
-#if 0 //def GLESX
-	// TODO fix me
-	if (render.getRenderer() == OGLRender::glrAdreno)
-		dstCoord[0] += 1; // workaround for Adreno's issue with glBindFramebuffer;
-#endif // GLESX
 
-//	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 	gfxContext.bindFramebuffer(bufferTarget::DRAW_FRAMEBUFFER, ObjectHandle());
 
-	//glDrawBuffer( GL_BACK );
 	float clearColor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
 	drawer.clearColorBuffer(clearColor);
 
@@ -952,19 +947,14 @@ void FrameBufferList::renderBuffer(u32 _address)
 			(srcCoord[2] - srcCoord[0]) != (dstCoord[2] - dstCoord[0]) ||
 			(srcCoord[3] - srcCoord[1]) != (dstCoord[3] - dstCoord[1])) {
 			pFilteredBuffer->resolveMultisampledTexture(true);
-			//glBindFramebuffer(GL_READ_FRAMEBUFFER, pFilteredBuffer->m_resolveFBO);
 			readBuffer = ObjectHandle(pFilteredBuffer->m_resolveFBO);
 		} else {
-//			glBindFramebuffer(GL_READ_FRAMEBUFFER, pFilteredBuffer->m_FBO);
 			readBuffer = ObjectHandle(pFilteredBuffer->m_FBO);
 			filter = textureParameters::FILTER_NEAREST;
 		}
 	} else {
 		readBuffer = ObjectHandle(pFilteredBuffer->m_FBO);
-//		glBindFramebuffer(GL_READ_FRAMEBUFFER, pFilteredBuffer->m_FBO);
 	}
-
-//	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 
 	GraphicsDrawer::BlitOrCopyRectParams blitParams;
 	blitParams.srcX0 = srcCoord[0];
@@ -1000,13 +990,9 @@ void FrameBufferList::renderBuffer(u32 _address)
 			if (pFilteredBuffer->m_pTexture->frameBufferTexture == CachedTexture::fbMultiSample) {
 				pFilteredBuffer->resolveMultisampledTexture();
 				readBuffer = ObjectHandle(pFilteredBuffer->m_resolveFBO);
-//				glBindFramebuffer(GL_READ_FRAMEBUFFER, pFilteredBuffer->m_resolveFBO);
 			} else {
-//				glBindFramebuffer(GL_READ_FRAMEBUFFER, pFilteredBuffer->m_FBO);
 				readBuffer = ObjectHandle(pFilteredBuffer->m_FBO);
 			}
-
-//			glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 
 			pBufferTexture = pFilteredBuffer->m_pTexture;
 
@@ -1129,8 +1115,6 @@ bool FrameBuffer_CopyDepthBufferChunk(u32 address)
 
 void FrameBuffer_CopyFromRDRAM(u32 _address, bool _bCFB)
 {
-	// TODO fix me
-	return;
 	RDRAMtoColorBuffer::get().copyFromRDRAM(_address, _bCFB);
 }
 

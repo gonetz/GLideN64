@@ -301,16 +301,21 @@ public:
 		return !_glinfo.isGLES2;
 	}
 
-	BlitFramebuffersImpl(CachedBindFramebuffer * _bind)
-		: m_bind(_bind) {}
+	BlitFramebuffersImpl(CachedBindFramebuffer * _bind, Renderer _renderer)
+		: m_bind(_bind)
+		, m_renderer(_renderer) {
+	}
 
 	bool blitFramebuffers(const graphics::Context::BlitFramebuffersParams & _params) override
 	{
 		m_bind->bind(graphics::bufferTarget::READ_FRAMEBUFFER, _params.readBuffer);
 		m_bind->bind(graphics::bufferTarget::DRAW_FRAMEBUFFER, _params.drawBuffer);
+
+		const s32 adrenoCoordFix = (m_renderer == Renderer::Adreno) ? 1 : 0;
+
 		glBlitFramebuffer(
 			_params.srcX0, _params.srcY0, _params.srcX1, _params.srcY1,
-			_params.dstX0, _params.dstY0, _params.dstX1, _params.dstY1,
+			adrenoCoordFix +_params.dstX0, _params.dstY0, _params.dstX1, _params.dstY1,
 			GLbitfield(_params.mask), GLenum(_params.filter)
 		);
 		return !Utils::isGLError();
@@ -318,6 +323,7 @@ public:
 
 private:
 	CachedBindFramebuffer * m_bind;
+	Renderer m_renderer;
 };
 
 class DummyBlitFramebuffers: public BlitFramebuffers
@@ -501,7 +507,7 @@ AddFramebufferRenderTarget * BufferManipulationObjectFactory::getAddFramebufferR
 BlitFramebuffers * BufferManipulationObjectFactory::getBlitFramebuffers() const
 {
 	if (BlitFramebuffersImpl::Check(m_glInfo))
-		return new BlitFramebuffersImpl(m_cachedFunctions.getCachedBindFramebuffer());
+		return new BlitFramebuffersImpl(m_cachedFunctions.getCachedBindFramebuffer(), m_glInfo.renderer);
 
 	return new DummyBlitFramebuffers;
 }
