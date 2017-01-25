@@ -285,9 +285,10 @@ namespace opengl {
 	class SetTexParameters : public Set2DTextureParameters
 	{
 	public:
-		SetTexParameters(CachedActiveTexture * _activeTexture, CachedBindTexture* _bind)
+		SetTexParameters(CachedActiveTexture * _activeTexture, CachedBindTexture* _bind, bool _supportMipmapLevel)
 			: m_activeTexture(_activeTexture)
-			, m_bind(_bind)	{
+			, m_bind(_bind)
+			, m_supportMipmapLevel(_supportMipmapLevel) {
 		}
 
 		void setTextureParameters(const graphics::Context::TexParameters & _parameters) override
@@ -303,8 +304,7 @@ namespace opengl {
 				glTexParameteri(target, GL_TEXTURE_WRAP_S, GLint(_parameters.wrapS));
 			if (_parameters.wrapT.isValid())
 				glTexParameteri(target, GL_TEXTURE_WRAP_T, GLint(_parameters.wrapT));
-			if (_parameters.maxMipmapLevel.isValid())
-				// TODO: disable for GLES2
+			if (m_supportMipmapLevel && _parameters.maxMipmapLevel.isValid())
 				glTexParameteri(target, GL_TEXTURE_MAX_LEVEL, GLint(_parameters.maxMipmapLevel));
 			if (_parameters.maxAnisotropy.isValid())
 				glTexParameterf(target, GL_TEXTURE_MAX_ANISOTROPY_EXT, GLfloat(_parameters.maxMipmapLevel));
@@ -313,6 +313,7 @@ namespace opengl {
 	private:
 		CachedActiveTexture * m_activeTexture;
 		CachedBindTexture* m_bind;
+		bool m_supportMipmapLevel;
 	};
 
 
@@ -336,8 +337,8 @@ namespace opengl {
 			// TODO make cacheable
 			if (it == m_parameters.end()) {
 				auto res = m_parameters.emplace(handle, _parameters);
-//				if (res.second)
-//					return &(res.first->second);
+				if (res.second)
+					it = res.first;
 			}
 
 			if (_parameters.magFilter.isValid())
@@ -406,7 +407,7 @@ namespace opengl {
 			return new SetTextureParameters;
 
 		return new SetTexParameters(m_cachedFunctions.getCachedActiveTexture(),
-			m_cachedFunctions.getCachedBindTexture());
+			m_cachedFunctions.getCachedBindTexture(), !m_glInfo.isGLES2);
 	}
 
 }
