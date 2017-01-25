@@ -1558,6 +1558,7 @@ void GraphicsDrawer::_setSpecialTexrect() const
 
 void GraphicsDrawer::_initData()
 {
+	_initStates();
 	_setSpecialTexrect();
 
 	textureCache().init();
