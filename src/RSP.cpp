@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <cstring>
 #include "Debug.h"
 #include "RSP.h"
 #include "RDP.h"
@@ -121,7 +122,7 @@ LoadLoop:
 
 	for (i = 0; i < 4; i++)
 		for (j = 0; j < 4; j++)
-			mtx[i][j] = (GLfloat)(n64Mat->integer[i][j^1]) + (GLfloat)(n64Mat->fraction[i][j^1]) * recip;
+			mtx[i][j] = (f32)(n64Mat->integer[i][j^1]) + (f32)(n64Mat->fraction[i][j^1]) * recip;
 # endif // !X86_ASM
 #endif // WIN32_ASM
 }

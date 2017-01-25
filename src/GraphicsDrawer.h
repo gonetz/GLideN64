@@ -20,7 +20,7 @@ struct FrameBuffer;
 
 enum class DrawingState
 {
-	None = 0,
+	Non = 0,
 	Line = 1,
 	Triangle = 2,
 	Rect = 3,
@@ -135,7 +135,7 @@ public:
 
 	DrawingState getDrawingState() const { return m_drawingState; }
 
-	void dropRenderState() { m_drawingState = DrawingState::None; }
+	void dropRenderState() { m_drawingState = DrawingState::Non; }
 
 	void flush() { m_texrectDrawer.draw(); }
 

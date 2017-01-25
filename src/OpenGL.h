@@ -326,7 +326,7 @@ OGLVideo & video()
 	return OGLVideo::get();
 }
 
-void initGLFunctions();
+//void initGLFunctions();
 bool checkFBO();
 bool isGLError();
 

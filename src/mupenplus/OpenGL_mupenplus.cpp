@@ -15,6 +15,7 @@
 #ifndef EGL
 #if !defined(OS_WINDOWS) || defined(GLESX)
 
+static
 void initGLFunctions()
 {
 }

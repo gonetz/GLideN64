@@ -6,6 +6,7 @@
 #ifdef OS_WINDOWS
 #define DLSYM(a, b) GetProcAddress(a, b)
 #else
+#include <dlfcn.h>
 #define DLSYM(a, b) dlsym(a, b)
 #endif // OS_WINDOWS
 

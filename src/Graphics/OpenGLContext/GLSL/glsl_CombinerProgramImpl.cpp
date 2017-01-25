@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <fstream>
 #include <assert.h>
 #include <Combiner.h>

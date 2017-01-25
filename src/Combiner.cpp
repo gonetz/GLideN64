@@ -1,5 +1,6 @@
 #include <fstream>
 #include <functional>
+#include <cstring>
 #include <stdio.h>
 #include <osal_files.h>
 

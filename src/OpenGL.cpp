@@ -1717,6 +1717,7 @@ bool texturedRectMonochromeBackground(const OGLRender::TexturedRectParams & _par
 
 // Special processing of textured rect.
 // Return true if actuial rendering is not necessary
+static
 bool(*texturedRectSpecial)(const OGLRender::TexturedRectParams & _params) = nullptr;
 
 void OGLRender::drawTexturedRect(const TexturedRectParams & _params)

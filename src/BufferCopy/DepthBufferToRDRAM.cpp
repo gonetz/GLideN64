@@ -1,6 +1,7 @@
 #include <assert.h>
 #include <math.h>
 #include <algorithm>
+#include <cstring>
 
 #include "DepthBufferToRDRAM.h"
 #include "WriteToRDRAM.h"

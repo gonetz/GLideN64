@@ -1,4 +1,3 @@
-#pragma once
 #include <Log.h>
 #include <Config.h>
 #include "opengl_Utils.h"

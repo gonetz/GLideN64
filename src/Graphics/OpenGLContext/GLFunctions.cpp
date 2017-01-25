@@ -4,6 +4,17 @@
 #define glGetProcAddress wglGetProcAddress
 #define GL_GET_PROC_ADR(proc_type, proc_name) proc_name = (proc_type) glGetProcAddress(#proc_name)
 #elif defined(OS_LINUX)
+#include <X11/Xutil.h>
+typedef XID GLXContextID;
+typedef XID GLXPixmap;
+typedef XID GLXDrawable;
+typedef XID GLXPbuffer;
+typedef XID GLXWindow;
+typedef XID GLXFBConfigID;
+typedef struct __GLXcontextRec *GLXContext;
+typedef struct __GLXFBConfigRec *GLXFBConfig;
+#define GLX_GLXEXT_PROTOTYPES
+#include <GL/glxext.h>
 #define glGetProcAddress glXGetProcAddress
 #define GL_GET_PROC_ADR(proc_type, proc_name) proc_name = (proc_type) glGetProcAddress((const GLubyte*)#proc_name)
 #endif

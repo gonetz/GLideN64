@@ -1295,7 +1295,7 @@ void GraphicsDrawer::correctTexturedRectParams(TexturedRectParams & _params)
 
 void GraphicsDrawer::drawText(const char *_pText, float x, float y)
 {
-	m_drawingState = DrawingState::None;
+	m_drawingState = DrawingState::Non;
 	gfxContext.drawText(_pText, x, y);
 }
 
@@ -1571,7 +1571,7 @@ void GraphicsDrawer::_initData()
 	perf.reset();
 	FBInfo::fbInfo.reset();
 	m_texrectDrawer.init();
-	m_drawingState = DrawingState::None;
+	m_drawingState = DrawingState::Non;
 	m_bImageTexture = gfxContext.isSupported(SpecialFeatures::ImageTextures);
 
 	gSP.changed = gDP.changed = 0xFFFFFFFF;
@@ -1585,7 +1585,7 @@ void GraphicsDrawer::_initData()
 
 void GraphicsDrawer::_destroyData()
 {
-	m_drawingState = DrawingState::None;
+	m_drawingState = DrawingState::Non;
 	m_texrectDrawer.destroy();
 	g_paletteTexture.destroy();
 	g_zlutTexture.destroy();

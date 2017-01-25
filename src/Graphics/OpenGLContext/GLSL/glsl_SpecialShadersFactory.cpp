@@ -416,7 +416,7 @@ namespace glsl {
 			glDeleteProgram(GLuint(m_program));
 		}
 
-		void SpecialShader::activate() override {
+		void activate() override {
 			m_useProgram->useProgram(m_program);
 			gDP.changed |= CHANGED_COMBINE;
 		}
@@ -527,7 +527,7 @@ namespace glsl {
 			glDeleteProgram(GLuint(m_program));
 		}
 
-		void TexrectDrawerShaderDraw::activate() override
+		void activate() override
 		{
 			m_useProgram->useProgram(m_program);
 			gDP.changed |= CHANGED_COMBINE;

@@ -9,28 +9,27 @@ project( GLideN64 )
 set(GLideN64_SOURCES
   3DMath.cpp
   Combiner.cpp
+  CombinerKey.cpp
   CommonPluginAPI.cpp
   Config.cpp
   convert.cpp
   CRC32.cpp
   DepthBuffer.cpp
-  F3D.cpp
+  F3DBETA.cpp
   F3DDKR.cpp
   F3DEX.cpp
-  F3DPD.cpp
-  F3DGOLDEN.cpp
-  F3DBETA.cpp
-  F3DSETA.cpp
   F3DEX2.cpp
   F3DEX2CBFD.cpp
   F3DEX2MM.cpp
-  FBOTextureFormats.cpp
+  F3DGOLDEN.cpp
+  F3DPD.cpp
+  F3DSETA.cpp
   FrameBuffer.cpp
   FrameBufferInfo.cpp
   GBI.cpp
   gDP.cpp
   GLideN64.cpp
-  glState.cpp
+  GraphicsDrawer.cpp
   gSP.cpp
   Keys.cpp
   L3D.cpp
@@ -38,21 +37,24 @@ set(GLideN64_SOURCES
   L3DEX.cpp
   Log.cpp
   N64.cpp
+  NoiseTexture.cpp
   OpenGL.cpp
+  PaletteTexture.cpp
   Performance.cpp
+  PostProcessor.cpp
   RDP.cpp
   RSP.cpp
   S2DEX2.cpp
   S2DEX.cpp
-  Turbo3D.cpp
-  ZSort.cpp
   ShaderUtils.cpp
   SoftwareRender.cpp
-  Textures.cpp
-  TextDrawer.cpp
+  TextDrawerStub.cpp
   TextureFilterHandler.cpp
-  PostProcessor.cpp
+  Textures.cpp
+  Turbo3D.cpp
   VI.cpp
+  ZlutTexture.cpp
+  ZSort.cpp
   BufferCopy/ColorBufferToRDRAM.cpp
   BufferCopy/DepthBufferToRDRAM.cpp
   BufferCopy/RDRAMtoColorBuffer.cpp
@@ -60,11 +62,26 @@ set(GLideN64_SOURCES
   DepthBufferRender/DepthBufferRender.cpp
   common/CommonAPIImpl_common.cpp
   Graphics/Context.cpp
+  Graphics/CombinerProgram.cpp
   Graphics/OpenGLContext/GLFunctions.cpp
+  Graphics/OpenGLContext/opengl_Attributes.cpp
+  Graphics/OpenGLContext/opengl_BufferManipulationObjectFactory.cpp
+  Graphics/OpenGLContext/opengl_CachedFunctions.cpp
+  Graphics/OpenGLContext/opengl_ColorBufferReaderWithBufferStorage.cpp
+  Graphics/OpenGLContext/opengl_ColorBufferReaderWithPixelBuffer.cpp
   Graphics/OpenGLContext/opengl_ContextImpl.cpp
+  Graphics/OpenGLContext/opengl_GLInfo.cpp
   Graphics/OpenGLContext/opengl_Parameters.cpp
   Graphics/OpenGLContext/opengl_TextureManipulationObjectFactory.cpp
-  Graphics/OpenGLContext/opengl_Utilis.cpp
+  Graphics/OpenGLContext/opengl_UnbufferedDrawer.cpp
+  Graphics/OpenGLContext/opengl_Utils.cpp
+  Graphics/OpenGLContext/GLSL/glsl_CombinerInputs.cpp
+  Graphics/OpenGLContext/GLSL/glsl_CombinerProgramBuilder.cpp
+  Graphics/OpenGLContext/GLSL/glsl_CombinerProgramImpl.cpp
+  Graphics/OpenGLContext/GLSL/glsl_CombinerProgramUniformFactory.cpp
+  Graphics/OpenGLContext/GLSL/glsl_ShaderStorage.cpp
+  Graphics/OpenGLContext/GLSL/glsl_SpecialShadersFactory.cpp
+  Graphics/OpenGLContext/GLSL/glsl_Utils.cpp
 )
 
 #check if we're running on Raspberry Pi
@@ -230,25 +247,9 @@ if( CMAKE_BUILD_TYPE STREQUAL "Debug")
 #	)
 endif( CMAKE_BUILD_TYPE STREQUAL "Debug")
 
-if (USE_UNIFORMBLOCK)
-  add_definitions(
-	-DGL_USE_UNIFORMBLOCK
-   )
-  list(APPEND GLideN64_SOURCES
-	GLUniforms/UniformBlock.cpp
-  )
-else (USE_UNIFORMBLOCK)
-  list(APPEND GLideN64_SOURCES
-	GLUniforms/UniformSet.cpp
-  )
-endif (USE_UNIFORMBLOCK)
-
 if(GLES2)
   add_definitions(
     -DGLES2
-   )
-   list(APPEND GLideN64_SOURCES 
-    GLES2/GLSLCombiner_gles2.cpp
    )
    SET(OPENGL_LIBRARIES -lGLESv2 -lEGL)
 else(GLES2)
@@ -259,11 +260,6 @@ else(GLES2)
   if(NOT OPENGL_FOUND)
   	message(ERROR " OPENGL not found!")
   endif(NOT OPENGL_FOUND)
-  list(APPEND GLideN64_SOURCES 
-    OGL3X/GLSLCombiner_ogl3x.cpp
-    BufferCopy/ColorBufferToRDRAM_GL.cpp
-    BufferCopy/ColorBufferToRDRAM_BufferStorageExt.cpp
-  )
 endif(GLES2)
 
 if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
