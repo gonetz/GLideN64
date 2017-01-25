@@ -16,16 +16,18 @@ ZlutTexture::ZlutTexture()
 
 void ZlutTexture::init()
 {
-// TODO make GL independent
-#ifdef GLESX
-	std::vector<u32> vecZLUT(0x40000);
-	const u16 * const zLUT16 = depthBufferList().getZLUT();
-	for (u32 i = 0; i < 0x40000; ++i)
-		vecZLUT[i] = zLUT16[i];
-	const u32 * zLUT = vecZLUT.data();
-#else
-	const u16 * const zLUT = depthBufferList().getZLUT();
-#endif
+	const FramebufferTextureFormats & fbTexFormats = gfxContext.getFramebufferTextureFormats();
+
+	const void * zLUT;
+	if (fbTexFormats.lutFormatBytes == 4) {
+		std::vector<u32> vecZLUT(0x40000);
+		const u16 * const zLUT16 = depthBufferList().getZLUT();
+		for (u32 i = 0; i < 0x40000; ++i)
+			vecZLUT[i] = zLUT16[i];
+		zLUT = vecZLUT.data();
+	} else {
+		zLUT = depthBufferList().getZLUT();
+	}
 
 	m_pTexture = textureCache().addFrameBufferTexture(false);
 	m_pTexture->format = G_IM_FMT_IA;
@@ -38,10 +40,9 @@ void ZlutTexture::init()
 	m_pTexture->mirrorT = 0;
 	m_pTexture->realWidth = 512;
 	m_pTexture->realHeight = 512;
-	m_pTexture->textureBytes = m_pTexture->realWidth * m_pTexture->realHeight * sizeof(zLUT[0]);
+	m_pTexture->textureBytes = m_pTexture->realWidth * m_pTexture->realHeight * fbTexFormats.lutFormatBytes;
 	textureCache().addFrameBufferTextureSize(m_pTexture->textureBytes);
 
-	const FramebufferTextureFormats & fbTexFormats = gfxContext.getFramebufferTextureFormats();
 	Context::InitTextureParams initParams;
 	initParams.handle = m_pTexture->name;
 	initParams.ImageUnit = textureImageUnits::Zlut;
