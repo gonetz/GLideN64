@@ -337,13 +337,8 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\..\src\mupenplus\OpenGL_mupenplus.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-    </ClCompile>
     <ClCompile Include="..\..\src\N64.cpp" />
     <ClCompile Include="..\..\src\NoiseTexture.cpp" />
-    <ClCompile Include="..\..\src\OpenGL.cpp" />
     <ClCompile Include="..\..\src\PaletteTexture.cpp" />
     <ClCompile Include="..\..\src\Performance.cpp" />
     <ClCompile Include="..\..\src\PostProcessor.cpp" />
@@ -352,9 +347,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_mupenplus|Win32'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\src\RSP.cpp" />
-    <ClCompile Include="..\..\src\ShaderUtils.cpp" />
     <ClCompile Include="..\..\src\SoftwareRender.cpp" />
-    <ClCompile Include="..\..\src\TextDrawer.cpp" />
     <ClCompile Include="..\..\src\TextureFilterHandler.cpp" />
     <ClCompile Include="..\..\src\Textures.cpp" />
     <ClCompile Include="..\..\src\Turbo3D.cpp" />
@@ -380,11 +373,6 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_mupenplus|Win32'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\src\windows\GLideN64_windows.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_mupenplus|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_mupenplus_uniformset|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_mupenplus|Win32'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="..\..\src\windows\OpenGL_windows.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_mupenplus|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_mupenplus_uniformset|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_mupenplus|Win32'">true</ExcludedFromBuild>
@@ -473,7 +461,6 @@
     </ClInclude>
     <ClInclude Include="..\..\src\N64.h" />
     <ClInclude Include="..\..\src\NoiseTexture.h" />
-    <ClInclude Include="..\..\src\OpenGL.h" />
     <ClInclude Include="..\..\src\PaletteTexture.h" />
     <ClInclude Include="..\..\src\Performance.h" />
     <ClInclude Include="..\..\src\Platform.h" />
@@ -482,9 +469,7 @@
     <ClInclude Include="..\..\src\RDP.h" />
     <ClInclude Include="..\..\src\GraphicsDrawer.h" />
     <ClInclude Include="..\..\src\RSP.h" />
-    <ClInclude Include="..\..\src\ShaderUtils.h" />
     <ClInclude Include="..\..\src\SoftwareRender.h" />
-    <ClInclude Include="..\..\src\TextDrawer.h" />
     <ClInclude Include="..\..\src\TextureFilterHandler.h" />
     <ClInclude Include="..\..\src\Textures.h" />
     <ClInclude Include="..\..\src\Turbo3D.h" />

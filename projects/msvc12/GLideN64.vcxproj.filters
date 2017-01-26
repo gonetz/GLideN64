@@ -98,9 +98,6 @@
     <ClCompile Include="..\..\src\N64.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\OpenGL.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\RDP.CPP">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -164,16 +161,10 @@
     <ClCompile Include="..\..\src\mupenplus\MupenPlusAPIImpl.cpp">
       <Filter>Source Files\mupenplus</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\mupenplus\OpenGL_mupenplus.cpp">
-      <Filter>Source Files\mupenplus</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\windows\CommonAPIImpl_windows.cpp">
       <Filter>Source Files\windows</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\windows\GLideN64_windows.cpp">
-      <Filter>Source Files\windows</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\windows\OpenGL_windows.cpp">
       <Filter>Source Files\windows</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\windows\ZilmarAPIImpl_windows.cpp">
@@ -194,9 +185,6 @@
     <ClCompile Include="..\..\src\ZSort.cpp">
       <Filter>Source Files\uCodes</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\TextDrawer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\PostProcessor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -204,9 +192,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Keys.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\ShaderUtils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\FrameBufferInfo.cpp">
@@ -385,9 +370,6 @@
     <ClInclude Include="..\..\src\N64.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\OpenGL.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\RDP.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -460,16 +442,10 @@
     <ClInclude Include="..\..\src\GLideNHQ\Ext_TxFilter.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\TextDrawer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\PostProcessor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Keys.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\ShaderUtils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\wst.h">

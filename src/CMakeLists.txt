@@ -38,7 +38,6 @@ set(GLideN64_SOURCES
   Log.cpp
   N64.cpp
   NoiseTexture.cpp
-  OpenGL.cpp
   PaletteTexture.cpp
   Performance.cpp
   PostProcessor.cpp
@@ -46,9 +45,7 @@ set(GLideN64_SOURCES
   RSP.cpp
   S2DEX2.cpp
   S2DEX.cpp
-  ShaderUtils.cpp
   SoftwareRender.cpp
-  TextDrawerStub.cpp
   TextureFilterHandler.cpp
   Textures.cpp
   Turbo3D.cpp
@@ -69,6 +66,7 @@ set(GLideN64_SOURCES
   Graphics/OpenGLContext/opengl_CachedFunctions.cpp
   Graphics/OpenGLContext/opengl_ColorBufferReaderWithBufferStorage.cpp
   Graphics/OpenGLContext/opengl_ColorBufferReaderWithPixelBuffer.cpp
+  Graphics/OpenGLContext/opengl_ColorBufferReaderWithEGLImage.cpp
   Graphics/OpenGLContext/opengl_ContextImpl.cpp
   Graphics/OpenGLContext/opengl_GLInfo.cpp
   Graphics/OpenGLContext/opengl_Parameters.cpp
@@ -119,11 +117,10 @@ if(MUPENPLUSAPI)
 	mupenplus/Config_mupenplus.cpp
 	mupenplus/CommonAPIImpl_mupenplus.cpp
 	mupenplus/MupenPlusAPIImpl.cpp
-	mupenplus/OpenGL_mupenplus.cpp
+	Graphics/OpenGLContext/mupen64plus/mupen64plus_DisplayWindow.cpp
   )
 
   set(GLideN64_SOURCES_WIN ${GLideN64_SOURCES_UNIX}
-	common/GLFunctions.cpp
   )
   set(GLideN64_DLL_NAME mupen64plus-video-GLideN64)
 else(MUPENPLUSAPI)
@@ -136,8 +133,8 @@ else(MUPENPLUSAPI)
 	windows/CommonAPIImpl_windows.cpp
 	windows/GLideN64_windows.cpp
 	common/GLFunctions.cpp
-	windows/OpenGL_windows.cpp
 	windows/ZilmarAPIImpl_windows.cpp
+	Graphics/OpenGLContext/windows/windows_DisplayWindow.cpp
   )
   set(GLideN64_DLL_NAME GLideN64)
 endif(MUPENPLUSAPI)

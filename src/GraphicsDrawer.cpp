@@ -910,7 +910,7 @@ bool texturedRectShadowMap(const GraphicsDrawer::TexturedRectParams &)
 	return false;
 }
 
-//u32 rectDepthBufferCopyFrame = 0xFFFFFFFF;
+u32 rectDepthBufferCopyFrame = 0xFFFFFFFF;
 static
 bool texturedRectDepthBufferCopy(const GraphicsDrawer::TexturedRectParams & _params)
 {

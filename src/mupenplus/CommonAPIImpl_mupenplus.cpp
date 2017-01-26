@@ -1,7 +1,7 @@
 #include "GLideN64_mupenplus.h"
 #include <algorithm>
+#include <Platform.h>
 #include "../PluginAPI.h"
-#include "../OpenGL.h"
 #include "../RSP.h"
 
 int PluginAPI::InitiateGFX(const GFX_INFO & _gfxInfo)

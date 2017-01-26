@@ -6,7 +6,6 @@
 
 #include "../Config.h"
 #include "../GLideN64.h"
-#include "../OpenGL.h"
 #include "../GBI.h"
 #include "../RSP.h"
 #include "../Log.h"
