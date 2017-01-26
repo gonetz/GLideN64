@@ -1967,4 +1967,8 @@ CombinerProgramBuilder::CombinerProgramBuilder(const opengl::GLInfo & _glinfo, o
 
 CombinerProgramBuilder::~CombinerProgramBuilder()
 {
+	glDeleteShader(m_vertexShaderRect);
+	glDeleteShader(m_vertexShaderTriangle);
+	glDeleteShader(m_vertexShaderTexturedRect);
+	glDeleteShader(m_vertexShaderTexturedTriangle);
 }
