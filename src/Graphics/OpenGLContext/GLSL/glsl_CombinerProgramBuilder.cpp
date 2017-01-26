@@ -110,16 +110,16 @@ void _correctSecondStageParams(CombinerStage & _stage) {
 }
 
 static
-int _compileCombiner(const CombinerStage & _stage, const char** _Input, std::stringstream & _strShader) {
+CombinerInputs _compileCombiner(const CombinerStage & _stage, const char** _Input, std::stringstream & _strShader) {
 	bool bBracketOpen = false;
-	int nRes = 0;
+	CombinerInputs inputs;
 	for (int i = 0; i < _stage.numOps; ++i) {
 		switch (_stage.op[i].op) {
 		case LOAD:
 			//			sprintf(buf, "(%s ", _Input[_stage.op[i].param1]);
 			_strShader << "(" << _Input[_stage.op[i].param1] << " ";
 			bBracketOpen = true;
-			nRes |= 1 << _stage.op[i].param1;
+			inputs.addInput(_stage.op[i].param1);
 			break;
 		case SUB:
 			if (bBracketOpen) {
@@ -131,7 +131,7 @@ int _compileCombiner(const CombinerStage & _stage, const char** _Input, std::str
 				//				sprintf(buf, "- %s", _Input[_stage.op[i].param1]);
 				_strShader << "- " << _Input[_stage.op[i].param1];
 			//			_strShader += buf;
-			nRes |= 1 << _stage.op[i].param1;
+			inputs.addInput(_stage.op[i].param1);
 			break;
 		case ADD:
 			if (bBracketOpen) {
@@ -142,7 +142,7 @@ int _compileCombiner(const CombinerStage & _stage, const char** _Input, std::str
 			else
 				//				sprintf(buf, "+ %s", _Input[_stage.op[i].param1]);
 				_strShader << "+ " << _Input[_stage.op[i].param1];
-			nRes |= 1 << _stage.op[i].param1;
+			inputs.addInput(_stage.op[i].param1);
 			break;
 		case MUL:
 			if (bBracketOpen) {
@@ -153,7 +153,7 @@ int _compileCombiner(const CombinerStage & _stage, const char** _Input, std::str
 			else
 				//				sprintf(buf, "*%s", _Input[_stage.op[i].param1]);
 				_strShader << "*" << _Input[_stage.op[i].param1];
-			nRes |= 1 << _stage.op[i].param1;
+			inputs.addInput(_stage.op[i].param1);
 			break;
 		case INTER:
 			//			sprintf(buf, "mix(%s, %s, %s)", _Input[_stage.op[0].param2], _Input[_stage.op[0].param1], _Input[_stage.op[0].param3]);
@@ -161,9 +161,9 @@ int _compileCombiner(const CombinerStage & _stage, const char** _Input, std::str
 				_Input[_stage.op[0].param2] << "," <<
 				_Input[_stage.op[0].param1] << "," <<
 				_Input[_stage.op[0].param3] << ")";
-			nRes |= 1 << _stage.op[i].param1;
-			nRes |= 1 << _stage.op[i].param2;
-			nRes |= 1 << _stage.op[i].param3;
+			inputs.addInput(_stage.op[i].param1);
+			inputs.addInput(_stage.op[i].param2);
+			inputs.addInput(_stage.op[i].param3);
 			break;
 
 			//			default:
@@ -173,7 +173,7 @@ int _compileCombiner(const CombinerStage & _stage, const char** _Input, std::str
 	if (bBracketOpen)
 		_strShader << ")";
 	_strShader << ";" << std::endl;
-	return nRes;
+	return inputs;
 }
 
 /*---------------ShaderParts-------------*/
@@ -1656,7 +1656,7 @@ bool combinedAlphaABD(const gDPCombine & _combine) {
 	return false;
 }
 
-int CombinerProgramBuilder::compileCombiner(const CombinerKey & _key, Combiner & _color, Combiner & _alpha, std::string & _strShader)
+CombinerInputs CombinerProgramBuilder::compileCombiner(const CombinerKey & _key, Combiner & _color, Combiner & _alpha, std::string & _strShader)
 {
 	gDPCombine combine;
 	combine.mux = _key.getMux();
@@ -1668,7 +1668,7 @@ int CombinerProgramBuilder::compileCombiner(const CombinerKey & _key, Combiner &
 		_correctFirstStageParams(_color.stage[0]);
 	}
 	ssShader << "  alpha1 = ";
-	int nInputs = _compileCombiner(_alpha.stage[0], AlphaInput, ssShader);
+	CombinerInputs inputs = _compileCombiner(_alpha.stage[0], AlphaInput, ssShader);
 	// Simulate N64 color sign-extend.
 	if (combinedAlphaC(combine))
 		m_signExtendAlphaC->write(ssShader);
@@ -1679,7 +1679,7 @@ int CombinerProgramBuilder::compileCombiner(const CombinerKey & _key, Combiner &
 		m_alphaTest->write(ssShader);
 
 	ssShader << "  color1 = ";
-	nInputs |= _compileCombiner(_color.stage[0], ColorInput, ssShader);
+	inputs += _compileCombiner(_color.stage[0], ColorInput, ssShader);
 	// Simulate N64 color sign-extend.
 	if (combinedColorC(combine))
 		m_signExtendColorC->write(ssShader);
@@ -1692,7 +1692,7 @@ int CombinerProgramBuilder::compileCombiner(const CombinerKey & _key, Combiner &
 		if (_alpha.numStages == 2) {
 			ssShader << "  alpha2 = ";
 			_correctSecondStageParams(_alpha.stage[1]);
-			nInputs |= _compileCombiner(_alpha.stage[1], AlphaInput, ssShader);
+			inputs += _compileCombiner(_alpha.stage[1], AlphaInput, ssShader);
 		}
 		else
 			ssShader << "  alpha2 = alpha1;" << std::endl;
@@ -1702,7 +1702,7 @@ int CombinerProgramBuilder::compileCombiner(const CombinerKey & _key, Combiner &
 		if (_color.numStages == 2) {
 			ssShader << "  color2 = ";
 			_correctSecondStageParams(_color.stage[1]);
-			nInputs |= _compileCombiner(_color.stage[1], ColorInput, ssShader);
+			inputs += _compileCombiner(_color.stage[1], ColorInput, ssShader);
 		}
 		else
 			ssShader << "  color2 = color1;" << std::endl;
@@ -1738,7 +1738,7 @@ int CombinerProgramBuilder::compileCombiner(const CombinerKey & _key, Combiner &
 	}
 
 	_strShader = std::move(ssShader.str());
-	return nInputs;
+	return inputs;
 }
 
 graphics::CombinerProgram * CombinerProgramBuilder::buildCombinerProgram(Combiner & _color,

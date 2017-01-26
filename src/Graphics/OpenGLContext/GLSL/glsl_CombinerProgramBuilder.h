@@ -14,6 +14,7 @@ namespace opengl {
 namespace glsl {
 
 	class ShaderPart;
+	class CombinerInputs;
 	class CombinerProgramUniformFactory;
 
 	class CombinerProgramBuilder
@@ -31,7 +32,7 @@ namespace glsl {
 		const ShaderPart * getFragmentShaderEnd() const;
 
 	private:
-		int compileCombiner(const CombinerKey & _key, Combiner & _color, Combiner & _alpha, std::string & _strShader);
+		CombinerInputs compileCombiner(const CombinerKey & _key, Combiner & _color, Combiner & _alpha, std::string & _strShader);
 
 		typedef std::unique_ptr<ShaderPart> ShaderPartPtr;
 		ShaderPartPtr m_blender1;

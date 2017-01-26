@@ -44,3 +44,8 @@ void CombinerInputs::addInput(int _input)
 {
 	m_inputs |= 1 << _input;
 }
+
+void CombinerInputs::operator+=(const CombinerInputs & _other)
+{
+	m_inputs |= _other.m_inputs;
+}
