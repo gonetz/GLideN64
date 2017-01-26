@@ -24,7 +24,6 @@ private:
 	static const int _numPBO = 3;
 	GLuint m_PBO[_numPBO];
 	u32 m_curIndex;
-	std::vector<u8> m_pixelData;
 };
 
 }

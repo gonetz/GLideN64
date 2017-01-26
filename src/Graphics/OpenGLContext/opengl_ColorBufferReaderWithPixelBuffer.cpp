@@ -1,4 +1,3 @@
-#include <Textures.h>
 #include <Graphics/Context.h>
 #include "opengl_ColorBufferReaderWithPixelBuffer.h"
 
@@ -38,8 +37,6 @@ void ColorBufferReaderWithPixelBuffer::_initBuffers()
 		glBufferData(GL_PIXEL_PACK_BUFFER, m_pTexture->textureBytes, nullptr, GL_DYNAMIC_READ);
 	}
 	m_bindBuffer->bind(Parameter(GL_PIXEL_PACK_BUFFER), ObjectHandle());
-
-	m_pixelData.resize(m_pTexture->textureBytes);
 }
 
 u8 * ColorBufferReaderWithPixelBuffer::readPixels(s32 _x0, s32 _y0, u32 _width, u32 _height, u32 _size, bool _sync)

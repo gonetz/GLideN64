@@ -27,7 +27,6 @@ namespace opengl {
 		void* m_PBOData[_numPBO];
 		u32 m_curIndex;
 		GLsync m_fence[_numPBO];
-		std::vector<u8> m_pixelData;
 	};
 
 }
