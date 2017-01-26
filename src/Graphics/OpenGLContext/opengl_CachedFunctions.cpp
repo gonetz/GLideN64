@@ -16,7 +16,7 @@ void CachedEnable::enable(bool _enable)
 {
 	if (!m_parameter.isValid())
 		return;
-	// TODO make cacheable
+
 	if (!update(u32(_enable)))
 		return;
 

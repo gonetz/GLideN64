@@ -8,7 +8,9 @@
 
 namespace opengl {
 
-//#define CACHED_USE_CACHE
+#define CACHED_USE_CACHE1
+#define CACHED_USE_CACHE2
+#define CACHED_USE_CACHE4
 
 	template<class T>
 	class Cached1
@@ -16,7 +18,7 @@ namespace opengl {
 	public:
 		bool update(T _param)
 		{
-#ifdef CACHED_USE_CACHE
+#ifdef CACHED_USE_CACHE1
 			if (_param == m_cached)
 				return false;
 #endif
@@ -102,7 +104,7 @@ namespace opengl {
 		bool update(graphics::Parameter _p1,
 			graphics::Parameter _p2)
 		{
-#ifdef CACHED_USE_CACHE
+#ifdef CACHED_USE_CACHE2
 			if (_p1 == m_p1 &&
 				_p2 == m_p2)
 				return false;
@@ -130,7 +132,7 @@ namespace opengl {
 			graphics::Parameter _p3,
 			graphics::Parameter _p4)
 		{
-#ifdef CACHED_USE_CACHE
+#ifdef CACHED_USE_CACHE4
 			if (_p1 == m_p1 &&
 				_p2 == m_p2 &&
 				_p3 == m_p3 &&
