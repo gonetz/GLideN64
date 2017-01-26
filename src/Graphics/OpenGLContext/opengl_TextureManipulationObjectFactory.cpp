@@ -76,7 +76,6 @@ namespace opengl {
 					glBindImageTexture(GLuint(_params.ImageUnit), GLuint(_params.handle),
 					0, GL_FALSE, GL_FALSE, GL_READ_ONLY, GLuint(_params.internalFormat));
 			} else {
-				//glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, GLuint(_name));
 				m_bind->bind(_params.textureUnitIndex, graphics::target::TEXTURE_2D_MULTISAMPLE, _params.handle);
 				glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE,
 										_params.msaaLevel,
@@ -87,7 +86,9 @@ namespace opengl {
 			}
 		}
 
-		void reset(graphics::ObjectHandle _deleted) override {}
+		void reset(graphics::ObjectHandle _deleted) override {
+			m_bind->reset();
+		}
 
 	private:
 		CachedBindTexture* m_bind;
@@ -149,6 +150,7 @@ namespace opengl {
 
 		void reset(graphics::ObjectHandle _deleted) override
 		{
+			m_bind->reset();
 			if (m_handle == _deleted)
 				m_handle = graphics::ObjectHandle(0);
 		}
