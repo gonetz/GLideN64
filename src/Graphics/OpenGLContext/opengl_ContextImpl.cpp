@@ -183,8 +183,7 @@ void ContextImpl::setTextureParameters(const graphics::Context::TexParameters & 
 }
 
 void ContextImpl::bindTexture(const graphics::Context::BindTextureParameters & _params) {
-	m_cachedFunctions->getCachedActiveTexture()->setActiveTexture(_params.textureUnitIndex);
-	m_cachedFunctions->getCachedBindTexture()->bind(_params.target, _params.texture);
+	m_cachedFunctions->getCachedBindTexture()->bind(_params.textureUnitIndex, _params.target, _params.texture);
 }
 
 void ContextImpl::setTextureUnpackAlignment(s32 _param)

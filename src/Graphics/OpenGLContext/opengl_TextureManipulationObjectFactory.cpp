@@ -61,7 +61,7 @@ namespace opengl {
 					glBindImageTexture(GLuint(_params.ImageUnit), 0,
 					0, GL_FALSE, GL_FALSE, GL_READ_ONLY, GLuint(_params.internalFormat));
 
-				m_bind->bind(graphics::target::TEXTURE_2D, _params.handle);
+				m_bind->bind(_params.textureUnitIndex, graphics::target::TEXTURE_2D, _params.handle);
 				glTexImage2D(GL_TEXTURE_2D,
 							 _params.mipMapLevel,
 							 GLuint(_params.internalFormat),
@@ -77,7 +77,7 @@ namespace opengl {
 					0, GL_FALSE, GL_FALSE, GL_READ_ONLY, GLuint(_params.internalFormat));
 			} else {
 				//glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, GLuint(_name));
-				m_bind->bind(graphics::target::TEXTURE_2D_MULTISAMPLE, _params.handle);
+				m_bind->bind(_params.textureUnitIndex, graphics::target::TEXTURE_2D_MULTISAMPLE, _params.handle);
 				glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE,
 										_params.msaaLevel,
 										GLenum(_params.internalFormat),
@@ -109,7 +109,7 @@ namespace opengl {
 		void init2DTexture(const graphics::Context::InitTextureParams & _params) override
 		{
 			if (_params.msaaLevel == 0) {
-				m_bind->bind(graphics::target::TEXTURE_2D, _params.handle);
+				m_bind->bind(_params.textureUnitIndex, graphics::target::TEXTURE_2D, _params.handle);
 				if (m_handle != _params.handle) {
 					m_handle = _params.handle;
 					glTexStorage2D(GL_TEXTURE_2D,
@@ -135,7 +135,7 @@ namespace opengl {
 					0, GL_FALSE, GL_FALSE, GL_READ_ONLY, GLuint(_params.internalFormat));
 			}
 			else {
-				m_bind->bind(graphics::target::TEXTURE_2D_MULTISAMPLE, _params.handle);
+				m_bind->bind(_params.textureUnitIndex, graphics::target::TEXTURE_2D_MULTISAMPLE, _params.handle);
 				glTexStorage2DMultisample(
 							GL_TEXTURE_2D_MULTISAMPLE,
 							_params.msaaLevel,
@@ -221,15 +221,13 @@ namespace opengl {
 	class Update2DTexSubImage : public Update2DTexture
 	{
 	public:
-		Update2DTexSubImage(CachedActiveTexture * _activeTexture, CachedBindTexture* _bind)
-			: m_activeTexture(_activeTexture)
-			, m_bind(_bind)	{
+		Update2DTexSubImage(CachedBindTexture* _bind)
+			: m_bind(_bind)	{
 		}
 
 		void update2DTexture(const graphics::Context::UpdateTextureDataParams & _params) override
 		{
-			m_activeTexture->setActiveTexture(_params.textureUnitIndex);
-			m_bind->bind(GL_TEXTURE_2D, _params.handle);
+			m_bind->bind(_params.textureUnitIndex, GL_TEXTURE_2D, _params.handle);
 
 			glTexSubImage2D(GL_TEXTURE_2D,
 				_params.mipMapLevel,
@@ -247,7 +245,6 @@ namespace opengl {
 		}
 
 	private:
-		CachedActiveTexture * m_activeTexture;
 		CachedBindTexture* m_bind;
 	};
 
@@ -285,16 +282,14 @@ namespace opengl {
 	class SetTexParameters : public Set2DTextureParameters
 	{
 	public:
-		SetTexParameters(CachedActiveTexture * _activeTexture, CachedBindTexture* _bind, bool _supportMipmapLevel)
-			: m_activeTexture(_activeTexture)
-			, m_bind(_bind)
+		SetTexParameters(CachedBindTexture* _bind, bool _supportMipmapLevel)
+			: m_bind(_bind)
 			, m_supportMipmapLevel(_supportMipmapLevel) {
 		}
 
 		void setTextureParameters(const graphics::Context::TexParameters & _parameters) override
 		{
-			m_activeTexture->setActiveTexture(_parameters.textureUnitIndex);
-			m_bind->bind(_parameters.target, _parameters.handle);
+			m_bind->bind(_parameters.textureUnitIndex, _parameters.target, _parameters.handle);
 			const GLenum target(_parameters.target);
 			if (_parameters.magFilter.isValid())
 				glTexParameteri(target, GL_TEXTURE_MAG_FILTER, GLint(_parameters.magFilter));
@@ -311,7 +306,6 @@ namespace opengl {
 		}
 
 	private:
-		CachedActiveTexture * m_activeTexture;
 		CachedBindTexture* m_bind;
 		bool m_supportMipmapLevel;
 	};
@@ -397,8 +391,7 @@ namespace opengl {
 		if (Update2DTextureSubImage::Check(m_glInfo))
 			return new Update2DTextureSubImage;
 
-		return new Update2DTexSubImage(m_cachedFunctions.getCachedActiveTexture(),
-			m_cachedFunctions.getCachedBindTexture());
+		return new Update2DTexSubImage(m_cachedFunctions.getCachedBindTexture());
 	}
 
 	Set2DTextureParameters * TextureManipulationObjectFactory::getSet2DTextureParameters() const
@@ -406,8 +399,7 @@ namespace opengl {
 		if (SetTextureParameters::Check(m_glInfo))
 			return new SetTextureParameters;
 
-		return new SetTexParameters(m_cachedFunctions.getCachedActiveTexture(),
-			m_cachedFunctions.getCachedBindTexture(), !m_glInfo.isGLES2);
+		return new SetTexParameters(m_cachedFunctions.getCachedBindTexture(), !m_glInfo.isGLES2);
 	}
 
 }

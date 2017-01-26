@@ -70,6 +70,7 @@ namespace graphics {
 		struct InitTextureParams {
 			ObjectHandle handle;
 			Parameter ImageUnit;
+			Parameter textureUnitIndex = Parameter(0U);
 			u32 msaaLevel = 0;
 			u32 width = 0;
 			u32 height = 0;

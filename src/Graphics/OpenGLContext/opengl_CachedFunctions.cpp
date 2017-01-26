@@ -29,17 +29,12 @@ void CachedEnable::enable(bool _enable)
 
 /*---------------CachedBindTexture-------------*/
 
-void CachedBindTexture::bind(Parameter _target, ObjectHandle _name)
+void CachedBindTexture::bind(Parameter _tmuIndex, Parameter _target, ObjectHandle _name)
 {
-	if (update(_name))
+	if (update(_tmuIndex, _name)) {
+		glActiveTexture(GL_TEXTURE0 + GLuint(_tmuIndex));
 		glBindTexture(GLenum(_target), GLuint(_name));
-}
-
-/*---------------CachedActiveTexture-------------*/
-
-void CachedActiveTexture::setActiveTexture(Parameter _index) {
-	if (update(_index))
-		glActiveTexture(GL_TEXTURE0 + GLuint(_index));
+	}
 }
 
 /*---------------CachedCullFace-------------*/
@@ -162,7 +157,6 @@ void CachedFunctions::reset()
 	for (auto it : m_enables)
 		it.second.reset();
 
-	m_activeTexture.reset();
 	m_bindTexture.reset();
 	m_bindFramebuffer.reset();
 	m_bindRenderbuffer.reset();
@@ -195,11 +189,6 @@ CachedEnable * CachedFunctions::getCachedEnable(Parameter _parameter)
 CachedBindTexture * CachedFunctions::getCachedBindTexture()
 {
 	return &m_bindTexture;
-}
-
-CachedActiveTexture * CachedFunctions::getCachedActiveTexture()
-{
-	return &m_activeTexture;
 }
 
 CachedBindFramebuffer * CachedFunctions::getCachedBindFramebuffer()
