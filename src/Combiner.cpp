@@ -209,31 +209,28 @@ CombinerProgram * CombinerInfo::_compile(u64 mux) const
 	CombineCycle ac[2];
 
 	// Decode and expand the combine mode into a more general form
-	cc[1].sa = saRGBExpanded[combine.saRGB1];
-	cc[1].sb = sbRGBExpanded[combine.sbRGB1];
-	cc[1].m  = mRGBExpanded[combine.mRGB1];
-	cc[1].a  = aRGBExpanded[combine.aRGB1];
-	ac[1].sa = saAExpanded[combine.saA1];
-	ac[1].sb = sbAExpanded[combine.sbA1];
-	ac[1].m  = mAExpanded[combine.mA1];
-	ac[1].a  = aAExpanded[combine.aA1];
+	cc[0].sa = saRGBExpanded[combine.saRGB0];
+	cc[0].sb = sbRGBExpanded[combine.sbRGB0];
+	cc[0].m = mRGBExpanded[combine.mRGB0];
+	cc[0].a = aRGBExpanded[combine.aRGB0];
+	ac[0].sa = saAExpanded[combine.saA0];
+	ac[0].sb = sbAExpanded[combine.sbA0];
+	ac[0].m = mAExpanded[combine.mA0];
+	ac[0].a = aAExpanded[combine.aA0];
+
+	SimplifyCycle(&cc[0], &color.stage[0]);
+	SimplifyCycle(&ac[0], &alpha.stage[0]);
 
 	// Simplify each RDP combiner cycle into a combiner stage
-	if (gDP.otherMode.cycleType != G_CYC_2CYCLE) {
-		SimplifyCycle(&cc[1], &color.stage[0]);
-		SimplifyCycle(&ac[1], &alpha.stage[0]);
-	} else {
-		cc[0].sa = saRGBExpanded[combine.saRGB0];
-		cc[0].sb = sbRGBExpanded[combine.sbRGB0];
-		cc[0].m = mRGBExpanded[combine.mRGB0];
-		cc[0].a = aRGBExpanded[combine.aRGB0];
-		ac[0].sa = saAExpanded[combine.saA0];
-		ac[0].sb = sbAExpanded[combine.sbA0];
-		ac[0].m = mAExpanded[combine.mA0];
-		ac[0].a = aAExpanded[combine.aA0];
-
-		SimplifyCycle(&cc[0], &color.stage[0]);
-		SimplifyCycle(&ac[0], &alpha.stage[0]);
+	if (gDP.otherMode.cycleType == G_CYC_2CYCLE) {
+		cc[1].sa = saRGBExpanded[combine.saRGB1];
+		cc[1].sb = sbRGBExpanded[combine.sbRGB1];
+		cc[1].m  = mRGBExpanded[combine.mRGB1];
+		cc[1].a  = aRGBExpanded[combine.aRGB1];
+		ac[1].sa = saAExpanded[combine.saA1];
+		ac[1].sb = sbAExpanded[combine.sbA1];
+		ac[1].m  = mAExpanded[combine.mA1];
+		ac[1].a  = aAExpanded[combine.aA1];
 
 		const bool equalStages = (memcmp(cc, cc + 1, sizeof(CombineCycle)) | memcmp(ac, ac + 1, sizeof(CombineCycle))) == 0;
 		if (!equalStages) {
