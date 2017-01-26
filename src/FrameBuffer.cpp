@@ -89,6 +89,7 @@ void FrameBuffer::_setAndAttachTexture(ObjectHandle _fbo, CachedTexture *_pTextu
 		const FramebufferTextureFormats & fbTexFormat = gfxContext.getFramebufferTextureFormats();
 		Context::InitTextureParams params;
 		params.handle = _pTexture->name;
+		params.textureUnitIndex = textureIndices::Tex[_t];
 		if (_multisampling)
 			params.msaaLevel = config.video.multisampling;
 		params.width = _pTexture->realWidth;

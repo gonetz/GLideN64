@@ -1157,6 +1157,7 @@ void TextureCache::_load(u32 _tile, CachedTexture *_pTexture)
 							&ghqTexInfo) != 0 && ghqTexInfo.data != nullptr) {
 				Context::InitTextureParams params;
 				params.handle = _pTexture->name;
+				params.textureUnitIndex = textureIndices::Tex[_tile];
 				params.mipMapLevel = 0;
 				params.msaaLevel = 0;
 				params.width = ghqTexInfo.width;
@@ -1177,6 +1178,7 @@ void TextureCache::_load(u32 _tile, CachedTexture *_pTexture)
 				gfxContext.setTextureUnpackAlignment(2);
 			Context::InitTextureParams params;
 			params.handle = _pTexture->name;
+			params.textureUnitIndex = textureIndices::Tex[_tile];
 			params.mipMapLevel = mipLevel;
 			params.mipMapLevels = _pTexture->max_level + 1;
 			params.msaaLevel = 0;
@@ -1383,12 +1385,6 @@ void TextureCache::_updateBackground()
 
 	CachedTexture * pCurrent = _addTexture(crc);
 
-	Context::BindTextureParameters bindParams;
-	bindParams.target = target::TEXTURE_2D;
-	bindParams.texture = pCurrent->name;
-	bindParams.textureUnitIndex = textureIndices::Tex[0];
-	gfxContext.bindTexture(bindParams);
-
 	pCurrent->address = gSP.bgImage.address;
 
 	pCurrent->format = gSP.bgImage.format;
@@ -1534,12 +1530,6 @@ void TextureCache::update(u32 _t)
 	m_misses++;
 
 	CachedTexture * pCurrent = _addTexture(crc);
-
-	Context::BindTextureParameters bindParams;
-	bindParams.target = target::TEXTURE_2D;
-	bindParams.texture = pCurrent->name;
-	bindParams.textureUnitIndex = textureIndices::Tex[_t];
-	gfxContext.bindTexture(bindParams);
 
 	pCurrent->address = gDP.loadInfo[pTile->tmem].texAddress;
 
