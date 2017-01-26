@@ -1,3 +1,4 @@
+#include <assert.h>
 #include <Types.h>
 #include <Log.h>
 #include "opengl_Utils.h"
@@ -10,7 +11,8 @@ bool Utils::isExtensionSupported(const char *extension)
 #ifdef GL_NUM_EXTENSIONS
 	GLint count = 0;
 	glGetIntegerv(GL_NUM_EXTENSIONS, &count);
-	for (u32 i = 0; i < count; ++i) {
+	assert(count >= 0);
+	for (GLuint i = 0; i < (GLuint)count; ++i) {
 		const char* name = (const char*)glGetStringi(GL_EXTENSIONS, i);
 		if (name == nullptr)
 			continue;
