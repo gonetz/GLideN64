@@ -17,7 +17,7 @@ namespace graphics {
 		Parameter RGB5_A1(GL_RGB5_A1);
 		Parameter RG(GL_RG8);
 		Parameter RED(GL_R8);
-		Parameter DEPTH(GL_DEPTH_COMPONENT);
+		Parameter DEPTH(GL_DEPTH_COMPONENT24);
 		Parameter RG32F(GL_RG32F);
 	}
 

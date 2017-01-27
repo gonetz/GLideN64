@@ -444,17 +444,17 @@ struct FramebufferTextureFormatsOpenGL : public graphics::FramebufferTextureForm
 protected:
 	void init() override
 	{
-		colorInternalFormat = GL_RGBA;
+		colorInternalFormat = GL_RGBA8;
 		colorFormat = GL_RGBA;
 		colorType = GL_UNSIGNED_BYTE;
 		colorFormatBytes = 4;
 
-		monochromeInternalFormat = GL_RED;
+		monochromeInternalFormat = GL_R8;
 		monochromeFormat = GL_RED;
 		monochromeType = GL_UNSIGNED_BYTE;
 		monochromeFormatBytes = 1;
 
-		depthInternalFormat = GL_DEPTH_COMPONENT;
+		depthInternalFormat = GL_DEPTH_COMPONENT24;
 		depthFormat = GL_DEPTH_COMPONENT;
 		depthType = GL_FLOAT;
 		depthFormatBytes = 4;
