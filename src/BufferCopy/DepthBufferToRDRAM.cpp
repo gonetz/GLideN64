@@ -73,6 +73,7 @@ void DepthBufferToRDRAM::init()
 	const FramebufferTextureFormats & fbTexFormats = gfxContext.getFramebufferTextureFormats();
 	Context::InitTextureParams initParams;
 	initParams.handle = m_pColorTexture->name;
+	initParams.textureUnitIndex = textureIndices::Tex[0];
 	initParams.width = m_pColorTexture->realWidth;
 	initParams.height = m_pColorTexture->realHeight;
 	initParams.internalFormat = fbTexFormats.monochromeInternalFormat;
