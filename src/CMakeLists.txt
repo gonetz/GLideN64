@@ -15,6 +15,8 @@ set(GLideN64_SOURCES
   convert.cpp
   CRC32.cpp
   DepthBuffer.cpp
+  DisplayWindow.cpp
+  F3D.cpp
   F3DBETA.cpp
   F3DDKR.cpp
   F3DEX.cpp
