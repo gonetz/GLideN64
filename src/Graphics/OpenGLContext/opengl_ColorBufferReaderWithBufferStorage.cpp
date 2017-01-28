@@ -56,7 +56,7 @@ u8 * ColorBufferReaderWithBufferStorage::readPixels(s32 _x0, s32 _y0, u32 _width
 		colorFormatBytes = GLenum(fbTexFormat.monochromeFormatBytes);
 	}
 
-	glBindBuffer(GL_PIXEL_PACK_BUFFER, m_PBO[m_curIndex]);
+	m_bindBuffer->bind(Parameter(GL_PIXEL_PACK_BUFFER), ObjectHandle(m_PBO[m_curIndex]));
 	glReadPixels(_x0, _y0, m_pTexture->realWidth, _height, colorFormat, colorType, 0);
 
 	//Setup a fence sync object so that we know when glReadPixels completes

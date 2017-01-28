@@ -113,7 +113,6 @@ void ColorBufferToRDRAM::_initFBTexture(void)
 	assert(!gfxContext.isFramebufferError());
 
 	gfxContext.bindFramebuffer(graphics::bufferTarget::DRAW_FRAMEBUFFER, graphics::ObjectHandle());
-	//	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 
 	m_bufferReader.reset(gfxContext.createColorBufferReader(m_pTexture));
 }
@@ -173,18 +172,12 @@ bool ColorBufferToRDRAM::_prepareCopy(u32 _startAddress)
 
 	if (config.video.multisampling != 0) {
 		m_pCurFrameBuffer->resolveMultisampledTexture();
-		//glBindFramebuffer(GL_READ_FRAMEBUFFER, m_pCurFrameBuffer->m_resolveFBO);
-		readBuffer = ObjectHandle(m_pCurFrameBuffer->m_resolveFBO);
+		readBuffer = m_pCurFrameBuffer->m_resolveFBO;
 	} else {
-		//		glBindFramebuffer(GL_READ_FRAMEBUFFER, m_pCurFrameBuffer->m_FBO);
-		readBuffer = ObjectHandle(m_pCurFrameBuffer->m_FBO);
+		readBuffer = m_pCurFrameBuffer->m_FBO;
 	}
 
-
 	if (m_pCurFrameBuffer->m_scaleX != 1.0f || m_pCurFrameBuffer->m_scaleY != 1.0f) {
-//		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_FBO);
-		ObjectHandle drawBuffer(m_FBO);
-
 		u32 x0 = 0;
 		u32 width, height;
 		if (config.frameBufferEmulation.nativeResFactor == 0) {
@@ -195,13 +188,12 @@ bool ColorBufferToRDRAM::_prepareCopy(u32 _startAddress)
 				width = static_cast<u32>(screenWidth*wnd.getAdjustScale());
 				x0 = (screenWidth - width) / 2;
 			}
-		}
-		else {
+		} else {
 			width = m_pCurFrameBuffer->m_pTexture->realWidth;
 			height = m_pCurFrameBuffer->m_pTexture->realHeight;
 		}
 
-		CachedTexture * pInputTexture = frameBufferList().getCurrent()->m_pTexture;
+		CachedTexture * pInputTexture = m_pCurFrameBuffer->m_pTexture;
 		GraphicsDrawer::BlitOrCopyRectParams blitParams;
 		blitParams.srcX0 = x0;
 		blitParams.srcY0 = 0;
@@ -219,12 +211,11 @@ bool ColorBufferToRDRAM::_prepareCopy(u32 _startAddress)
 		blitParams.tex[0] = pInputTexture;
 		blitParams.combiner = CombinerInfo::get().getTexrectCopyProgram();
 		blitParams.readBuffer = readBuffer;
-		blitParams.drawBuffer = drawBuffer;
+		blitParams.drawBuffer = m_FBO;
 		blitParams.mask = blitMask::COLOR_BUFFER;
 		wnd.getDrawer().blitOrCopyTexturedRect(blitParams);
 
-		gfxContext.bindFramebuffer(bufferTarget::READ_FRAMEBUFFER, ObjectHandle(m_FBO));
-//		glBindFramebuffer(GL_READ_FRAMEBUFFER, m_FBO);
+		gfxContext.bindFramebuffer(bufferTarget::READ_FRAMEBUFFER, m_FBO);
 	}
 
 	m_frameCount = curFrame;
@@ -326,29 +317,6 @@ ColorBufferToRDRAM & ColorBufferToRDRAM::get()
 {
 	static ColorBufferToRDRAM cbCopy;
 	return cbCopy;
-
-	/*
-#ifndef GLES2
-
-	static bool supportsBufferStorage = OGLVideo::isExtensionSupported("GL_EXT_buffer_storage") ||
-		OGLVideo::isExtensionSupported("GL_ARB_buffer_storage");
-
-	if (supportsBufferStorage) {
-		static ColorBufferToRDRAM_BufferStorageExt cbCopy;
-		return cbCopy;
-	} else {
-		static ColorBufferToRDRAM_GL cbCopy;
-		return cbCopy;
-	}
-
-#elif defined(ANDROID) && defined (GLES2)
-	static ColorBufferToRDRAM_GLES cbCopy;
-	return cbCopy;
-#else
-	static ColorBufferToRDRAMStub cbCopy;
-	return cbCopy;
-#endif
-	*/
 }
 
 void copyWhiteToRDRAM(FrameBuffer * _pBuffer)
