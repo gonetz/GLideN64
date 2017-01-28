@@ -42,9 +42,6 @@
     <Filter Include="Source Files\DepthBufferRender">
       <UniqueIdentifier>{ac6b6e3c-c470-4a66-ad6c-d4ad388ec793}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\common">
-      <UniqueIdentifier>{699714e2-bd52-4b7d-a5d5-4e514651293f}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\Graphics">
       <UniqueIdentifier>{ed46d297-e09c-4187-870c-1f03bc54905f}</UniqueIdentifier>
     </Filter>
@@ -489,9 +486,6 @@
     </ClInclude>
     <ClInclude Include="..\..\src\CRC32.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\common\GLFunctions.h">
-      <Filter>Header Files\common</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\F3DSETA.h">
       <Filter>Header Files\uCodes</Filter>

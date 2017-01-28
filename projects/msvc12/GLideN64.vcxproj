@@ -399,7 +399,6 @@
     <ClInclude Include="..\..\src\BufferCopy\WriteToRDRAM.h" />
     <ClInclude Include="..\..\src\Combiner.h" />
     <ClInclude Include="..\..\src\CombinerKey.h" />
-    <ClInclude Include="..\..\src\common\GLFunctions.h" />
     <ClInclude Include="..\..\src\Config.h" />
     <ClInclude Include="..\..\src\convert.h" />
     <ClInclude Include="..\..\src\CRC.h" />
