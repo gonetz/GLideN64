@@ -109,13 +109,13 @@ namespace opengl {
 
 
 	template<typename Bind>
-	class CachedBind : public Cached1<graphics::ObjectHandle>
+	class CachedBind : public Cached2<graphics::Parameter, graphics::ObjectHandle>
 	{
 	public:
 		CachedBind(Bind _bind) : m_bind(_bind) {}
 
 		void bind(graphics::Parameter _target, graphics::ObjectHandle _name) {
-			if (update(_name))
+			if (update(_target, _name))
 				m_bind(GLenum(_target), GLuint(_name));
 		}
 
