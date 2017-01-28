@@ -226,8 +226,10 @@ graphics::ObjectHandle ContextImpl::createFramebuffer()
 void ContextImpl::deleteFramebuffer(graphics::ObjectHandle _name)
 {
 	u32 fbo(_name);
-	if (fbo != 0)
+	if (fbo != 0) {
 		glDeleteFramebuffers(1, &fbo);
+		m_cachedFunctions->getCachedBindFramebuffer()->reset();
+	}
 }
 
 void ContextImpl::bindFramebuffer(graphics::Parameter _target, graphics::ObjectHandle _name)
