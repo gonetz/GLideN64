@@ -18,7 +18,7 @@ struct DepthBuffer
 	CachedTexture * resolveDepthBufferTexture(FrameBuffer * _pBuffer);
 	CachedTexture * copyDepthBufferTexture(FrameBuffer * _pBuffer);
 
-	void setDepthAttachment(graphics::ObjectHandle _fbo, graphics::Parameter _target);
+	void setDepthAttachment(graphics::ObjectHandle _fbo, graphics::BufferTargetParam _target);
 	void activateDepthBufferTexture(FrameBuffer * _pBuffer);
 
 	void bindDepthImageTexture();

@@ -31,4 +31,28 @@ namespace graphics {
 		};
 	};
 
+#define SpecialParameterClass(A)						\
+	class A : public Parameter							\
+	{													\
+	public:												\
+		A() : Parameter() {}							\
+		A(u32 _parameter) : Parameter(_parameter) {}	\
+	}
+
+	SpecialParameterClass(ImageUnitParam);
+	SpecialParameterClass(TextureUnitParam);
+	SpecialParameterClass(ColorFormatParam);
+	SpecialParameterClass(InternalColorFormatParam);
+	SpecialParameterClass(DatatypeParam);
+	SpecialParameterClass(TextureTargetParam);
+	SpecialParameterClass(BufferTargetParam);
+	SpecialParameterClass(TextureParam);
+	SpecialParameterClass(BufferAttachmentParam);
+	SpecialParameterClass(EnableParam);
+	SpecialParameterClass(ImageAccessModeParam);
+	SpecialParameterClass(CullModeParam);
+	SpecialParameterClass(CompareParam);
+	SpecialParameterClass(BlendParam);
+	SpecialParameterClass(DrawModeParam);
+	SpecialParameterClass(BlitMaskParam);
 }

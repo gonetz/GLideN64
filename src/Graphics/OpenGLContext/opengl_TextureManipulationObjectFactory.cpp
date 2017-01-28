@@ -61,7 +61,7 @@ namespace opengl {
 					glBindImageTexture(GLuint(_params.ImageUnit), 0,
 					0, GL_FALSE, GL_FALSE, GL_READ_ONLY, GLuint(_params.internalFormat));
 
-				m_bind->bind(_params.textureUnitIndex, graphics::target::TEXTURE_2D, _params.handle);
+				m_bind->bind(_params.textureUnitIndex, graphics::textureTarget::TEXTURE_2D, _params.handle);
 				glTexImage2D(GL_TEXTURE_2D,
 							 _params.mipMapLevel,
 							 GLuint(_params.internalFormat),
@@ -76,7 +76,7 @@ namespace opengl {
 					glBindImageTexture(GLuint(_params.ImageUnit), GLuint(_params.handle),
 					0, GL_FALSE, GL_FALSE, GL_READ_ONLY, GLuint(_params.internalFormat));
 			} else {
-				m_bind->bind(_params.textureUnitIndex, graphics::target::TEXTURE_2D_MULTISAMPLE, _params.handle);
+				m_bind->bind(_params.textureUnitIndex, graphics::textureTarget::TEXTURE_2D_MULTISAMPLE, _params.handle);
 				glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE,
 										_params.msaaLevel,
 										GLenum(_params.internalFormat),
@@ -110,7 +110,7 @@ namespace opengl {
 		void init2DTexture(const graphics::Context::InitTextureParams & _params) override
 		{
 			if (_params.msaaLevel == 0) {
-				m_bind->bind(_params.textureUnitIndex, graphics::target::TEXTURE_2D, _params.handle);
+				m_bind->bind(_params.textureUnitIndex, graphics::textureTarget::TEXTURE_2D, _params.handle);
 				if (m_handle != _params.handle) {
 					m_handle = _params.handle;
 					glTexStorage2D(GL_TEXTURE_2D,
@@ -136,7 +136,7 @@ namespace opengl {
 					0, GL_FALSE, GL_FALSE, GL_READ_ONLY, GLuint(_params.internalFormat));
 			}
 			else {
-				m_bind->bind(_params.textureUnitIndex, graphics::target::TEXTURE_2D_MULTISAMPLE, _params.handle);
+				m_bind->bind(_params.textureUnitIndex, graphics::textureTarget::TEXTURE_2D_MULTISAMPLE, _params.handle);
 				glTexStorage2DMultisample(
 							GL_TEXTURE_2D_MULTISAMPLE,
 							_params.msaaLevel,

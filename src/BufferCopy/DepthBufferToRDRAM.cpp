@@ -83,7 +83,7 @@ void DepthBufferToRDRAM::init()
 
 	Context::TexParameters setParams;
 	setParams.handle = m_pColorTexture->name;
-	setParams.target = target::TEXTURE_2D;
+	setParams.target = textureTarget::TEXTURE_2D;
 	setParams.textureUnitIndex = textureIndices::Tex[0];
 	setParams.minFilter = textureParameters::FILTER_NEAREST;
 	setParams.magFilter = textureParameters::FILTER_NEAREST;
@@ -105,7 +105,7 @@ void DepthBufferToRDRAM::init()
 	bufTarget.bufferHandle = m_FBO;
 	bufTarget.bufferTarget = bufferTarget::DRAW_FRAMEBUFFER;
 	bufTarget.attachment = bufferAttachment::COLOR_ATTACHMENT0;
-	bufTarget.textureTarget = target::TEXTURE_2D;
+	bufTarget.textureTarget = textureTarget::TEXTURE_2D;
 	bufTarget.textureHandle = m_pColorTexture->name;
 	gfxContext.addFrameBufferRenderTarget(bufTarget);
 

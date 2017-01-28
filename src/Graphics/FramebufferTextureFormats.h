@@ -6,29 +6,29 @@ namespace graphics {
 
 	struct FramebufferTextureFormats
 	{
-		Parameter colorInternalFormat;
-		Parameter colorFormat;
-		Parameter colorType;
+		InternalColorFormatParam colorInternalFormat;
+		ColorFormatParam colorFormat;
+		DatatypeParam colorType;
 		u32 colorFormatBytes;
 
-		Parameter monochromeInternalFormat;
-		Parameter monochromeFormat;
-		Parameter monochromeType;
+		InternalColorFormatParam monochromeInternalFormat;
+		ColorFormatParam monochromeFormat;
+		DatatypeParam monochromeType;
 		u32 monochromeFormatBytes;
 
-		Parameter depthInternalFormat;
-		Parameter depthFormat;
-		Parameter depthType;
+		InternalColorFormatParam depthInternalFormat;
+		ColorFormatParam depthFormat;
+		DatatypeParam depthType;
 		u32 depthFormatBytes;
 
-		Parameter depthImageInternalFormat;
-		Parameter depthImageFormat;
-		Parameter depthImageType;
+		InternalColorFormatParam depthImageInternalFormat;
+		ColorFormatParam depthImageFormat;
+		DatatypeParam depthImageType;
 		u32 depthImageFormatBytes;
 
-		Parameter lutInternalFormat;
-		Parameter lutFormat;
-		Parameter lutType;
+		InternalColorFormatParam lutInternalFormat;
+		ColorFormatParam lutFormat;
+		DatatypeParam lutType;
 		u32 lutFormatBytes;
 
 		virtual ~FramebufferTextureFormats() {}

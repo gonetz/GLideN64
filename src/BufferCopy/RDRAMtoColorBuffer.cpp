@@ -53,7 +53,7 @@ void RDRAMtoColorBuffer::init()
 
 	Context::TexParameters setParams;
 	setParams.handle = m_pTexture->name;
-	setParams.target = target::TEXTURE_2D;
+	setParams.target = textureTarget::TEXTURE_2D;
 	setParams.textureUnitIndex = textureIndices::Tex[0];
 	setParams.minFilter = textureParameters::FILTER_LINEAR;
 	setParams.magFilter = textureParameters::FILTER_LINEAR;

@@ -39,19 +39,19 @@ namespace graphics {
 
 		void destroy();
 
-		void enable(Parameter _parameter, bool _enable);
+		void enable(EnableParam _parameter, bool _enable);
 
-		void cullFace(Parameter _mode);
+		void cullFace(CullModeParam _mode);
 
 		void enableDepthWrite(bool _enable);
 
-		void setDepthCompare(Parameter _mode);
+		void setDepthCompare(CompareParam _mode);
 
 		void setViewport(s32 _x, s32 _y, s32 _width, s32 _height);
 
 		void setScissor(s32 _x, s32 _y, s32 _width, s32 _height);
 
-		void setBlending(Parameter _sfactor, Parameter _dfactor);
+		void setBlending(BlendParam _sfactor, BlendParam _dfactor);
 
 		void setBlendColor(f32 _red, f32 _green, f32 _blue, f32 _alpha);
 
@@ -69,16 +69,16 @@ namespace graphics {
 
 		struct InitTextureParams {
 			ObjectHandle handle;
-			Parameter ImageUnit;
-			Parameter textureUnitIndex = Parameter(0U);
+			ImageUnitParam ImageUnit;
+			TextureUnitParam textureUnitIndex{0};
 			u32 msaaLevel = 0;
 			u32 width = 0;
 			u32 height = 0;
 			u32 mipMapLevel = 0;
 			u32 mipMapLevels = 1;
-			Parameter format;
-			Parameter internalFormat;
-			Parameter dataType;
+			ColorFormatParam format;
+			InternalColorFormatParam internalFormat;
+			DatatypeParam dataType;
 			const void * data = nullptr;
 		};
 
@@ -86,16 +86,16 @@ namespace graphics {
 
 		struct UpdateTextureDataParams {
 			ObjectHandle handle;
-			Parameter ImageUnit;
-			Parameter textureUnitIndex = Parameter(0U);
+			ImageUnitParam ImageUnit;
+			TextureUnitParam textureUnitIndex{0};
 			u32 x = 0;
 			u32 y = 0;
 			u32 width = 0;
 			u32 height = 0;
 			u32 mipMapLevel = 0;
-			Parameter format;
-			Parameter internalFormat;
-			Parameter dataType;
+			ColorFormatParam format;
+			InternalColorFormatParam internalFormat;
+			DatatypeParam dataType;
 			const void * data = nullptr;
 		};
 
@@ -103,12 +103,12 @@ namespace graphics {
 
 		struct TexParameters {
 			ObjectHandle handle;
-			Parameter textureUnitIndex = Parameter(0U);
-			Parameter target;
-			Parameter magFilter;
-			Parameter minFilter;
-			Parameter wrapS;
-			Parameter wrapT;
+			TextureUnitParam textureUnitIndex{0};
+			TextureTargetParam target;
+			TextureParam magFilter;
+			TextureParam minFilter;
+			TextureParam wrapS;
+			TextureParam wrapT;
 			Parameter maxMipmapLevel;
 			Parameter maxAnisotropy;
 		};
@@ -117,8 +117,8 @@ namespace graphics {
 
 		struct BindTextureParameters {
 			ObjectHandle texture;
-			Parameter textureUnitIndex;
-			Parameter target;
+			TextureUnitParam textureUnitIndex;
+			TextureTargetParam target;
 		};
 
 		void bindTexture(const BindTextureParameters & _params);
@@ -130,10 +130,10 @@ namespace graphics {
 		s32 getMaxTextureSize() const;
 
 		struct BindImageTextureParameters {
-			Parameter imageUnit;
+			ImageUnitParam imageUnit;
 			ObjectHandle texture;
-			Parameter accessMode;
-			Parameter textureFormat;
+			ImageAccessModeParam accessMode;
+			InternalColorFormatParam textureFormat;
 		};
 
 		void bindImageTexture(const BindImageTextureParameters & _params);
@@ -146,14 +146,14 @@ namespace graphics {
 
 		void deleteFramebuffer(ObjectHandle _name);
 
-		void bindFramebuffer(Parameter _target, ObjectHandle _name);
+		void bindFramebuffer(BufferTargetParam _target, ObjectHandle _name);
 
 		ObjectHandle createRenderbuffer();
 
 		struct InitRenderbufferParams {
 			ObjectHandle handle;
-			Parameter target;
-			Parameter format;
+			TextureTargetParam target;
+			InternalColorFormatParam format;
 			u32 width = 0;
 			u32 height = 0;
 		};
@@ -162,8 +162,8 @@ namespace graphics {
 
 		struct FrameBufferRenderTarget {
 			ObjectHandle bufferHandle;
-			Parameter bufferTarget;
-			Parameter attachment;
+			BufferTargetParam bufferTarget;
+			BufferAttachmentParam attachment;
 			Parameter textureTarget;
 			ObjectHandle textureHandle;
 		};
@@ -224,7 +224,7 @@ namespace graphics {
 
 		struct DrawTriangleParameters
 		{
-			Parameter mode;
+			DrawModeParam mode;
 			Parameter elementsType;
 			u32 verticesCount = 0;
 			u32 elementsCount = 0;
@@ -238,7 +238,7 @@ namespace graphics {
 
 		struct DrawRectParameters
 		{
-			Parameter mode;
+			DrawModeParam mode;
 			u32 verticesCount = 0;
 			std::array<f32, 4> rectColor;
 			RectVertex * vertices = nullptr;

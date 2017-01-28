@@ -41,15 +41,15 @@ void NoiseTexture::init()
 		params.handle = m_pTexture->name;
 		params.width = m_pTexture->realWidth;
 		params.height = m_pTexture->realHeight;
-		params.internalFormat = internalcolor::RED;
-		params.format = color::RED;
+		params.internalFormat = internalcolorFormat::RED;
+		params.format = colorFormat::RED;
 		params.dataType = datatype::UNSIGNED_BYTE;
 		gfxContext.init2DTexture(params);
 	}
 	{
 		Context::TexParameters params;
 		params.handle = m_pTexture->name;
-		params.target = target::TEXTURE_2D;
+		params.target = textureTarget::TEXTURE_2D;
 		params.textureUnitIndex = textureIndices::NoiseTex;
 		params.minFilter = textureParameters::FILTER_NEAREST;
 		params.magFilter = textureParameters::FILTER_NEAREST;
@@ -93,7 +93,7 @@ void NoiseTexture::update()
 	params.textureUnitIndex = textureIndices::NoiseTex;
 	params.width = VI.width;
 	params.height = VI.height;
-	params.format = color::RED;
+	params.format = colorFormat::RED;
 	params.dataType = datatype::UNSIGNED_BYTE;
 	params.data = m_pbuf->getData();
 	gfxContext.update2DTexture(params);

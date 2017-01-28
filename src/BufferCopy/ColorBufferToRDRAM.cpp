@@ -93,7 +93,7 @@ void ColorBufferToRDRAM::_initFBTexture(void)
 	{
 		Context::TexParameters params;
 		params.handle = m_pTexture->name;
-		params.target = target::TEXTURE_2D;
+		params.target = textureTarget::TEXTURE_2D;
 		params.textureUnitIndex = textureIndices::Tex[0];
 		params.minFilter = textureParameters::FILTER_LINEAR;
 		params.magFilter = textureParameters::FILTER_LINEAR;
@@ -104,7 +104,7 @@ void ColorBufferToRDRAM::_initFBTexture(void)
 		bufTarget.bufferHandle = ObjectHandle(m_FBO);
 		bufTarget.bufferTarget = bufferTarget::DRAW_FRAMEBUFFER;
 		bufTarget.attachment = bufferAttachment::COLOR_ATTACHMENT0;
-		bufTarget.textureTarget = target::TEXTURE_2D;
+		bufTarget.textureTarget = textureTarget::TEXTURE_2D;
 		bufTarget.textureHandle = m_pTexture->name;
 		gfxContext.addFrameBufferRenderTarget(bufTarget);
 	}

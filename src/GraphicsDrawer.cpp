@@ -259,7 +259,7 @@ void GraphicsDrawer::_legacySetBlendMode() const
 	}
 
 	if (gDP.otherMode.forceBlender != 0 && gDP.otherMode.cycleType < G_CYC_COPY) {
-		Parameter sfactor, dfactor;
+		BlendParam sfactor, dfactor;
 
 		switch (blendmode)
 		{
@@ -400,8 +400,8 @@ void GraphicsDrawer::_setBlendMode() const
 	}
 
 	if (gDP.otherMode.forceBlender != 0 && gDP.otherMode.cycleType < G_CYC_COPY) {
-		Parameter srcFactor = blend::ONE;
-		Parameter dstFactor = blend::ZERO;
+		BlendParam srcFactor = blend::ONE;
+		BlendParam dstFactor = blend::ZERO;
 		u32 memFactorSource = 2, muxA, muxB;
 		if (gDP.otherMode.cycleType == G_CYC_2CYCLE) {
 			muxA = gDP.otherMode.c2_m1b;
@@ -586,7 +586,7 @@ void GraphicsDrawer::_updateStates(DrawingState _drawingState) const
 					return;
 				Context::TexParameters params;
 				params.handle = pDepthTexture->name;
-				params.target = target::TEXTURE_2D;
+				params.target = textureTarget::TEXTURE_2D;
 				params.textureUnitIndex = textureIndices::DepthTex;
 				params.maxMipmapLevel = 0;
 				params.minFilter = textureParameters::FILTER_NEAREST;
@@ -1183,7 +1183,7 @@ void GraphicsDrawer::drawTexturedRect(const TexturedRectParams & _params)
 			if (texParams.wrapS.isValid() || texParams.wrapT.isValid()) {
 				texParams.handle = cache.current[t]->name;
 				texParams.target = cache.current[t]->frameBufferTexture == CachedTexture::fbMultiSample ?
-					target::TEXTURE_2D_MULTISAMPLE : target::TEXTURE_2D;
+					textureTarget::TEXTURE_2D_MULTISAMPLE : textureTarget::TEXTURE_2D;
 				texParams.textureUnitIndex = textureIndices::Tex[t];
 				gfxContext.setTextureParameters(texParams);
 			}
@@ -1199,7 +1199,7 @@ void GraphicsDrawer::drawTexturedRect(const TexturedRectParams & _params)
 		Context::TexParameters texParams;
 		texParams.handle = cache.current[0]->name;
 		texParams.target = cache.current[0]->frameBufferTexture == CachedTexture::fbMultiSample ?
-			target::TEXTURE_2D_MULTISAMPLE : target::TEXTURE_2D;
+			textureTarget::TEXTURE_2D_MULTISAMPLE : textureTarget::TEXTURE_2D;
 		texParams.textureUnitIndex = textureIndices::Tex[0];
 		texParams.minFilter = textureParameters::FILTER_NEAREST;
 		texParams.magFilter = textureParameters::FILTER_NEAREST;
@@ -1452,7 +1452,7 @@ void GraphicsDrawer::copyTexturedRect(const CopyRectParams & _params)
 		texParams.handle = tex->name;
 		texParams.textureUnitIndex = textureIndices::Tex[i];
 		texParams.target = tex->frameBufferTexture == CachedTexture::fbMultiSample ?
-			target::TEXTURE_2D_MULTISAMPLE : target::TEXTURE_2D;
+			textureTarget::TEXTURE_2D_MULTISAMPLE : textureTarget::TEXTURE_2D;
 		texParams.minFilter = _params.filter;
 		texParams.magFilter = _params.filter;
 		texParams.wrapS = textureParameters::WRAP_CLAMP_TO_EDGE;

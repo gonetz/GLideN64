@@ -80,12 +80,12 @@ void ContextImpl::destroy()
 	m_combinerProgramBuilder.reset();
 }
 
-void ContextImpl::enable(graphics::Parameter _parameter, bool _enable)
+void ContextImpl::enable(graphics::EnableParam _parameter, bool _enable)
 {
 	m_cachedFunctions->getCachedEnable(_parameter)->enable(_enable);
 }
 
-void ContextImpl::cullFace(graphics::Parameter _mode)
+void ContextImpl::cullFace(graphics::CullModeParam _mode)
 {
 	m_cachedFunctions->getCachedCullFace()->setCullFace(_mode);
 }
@@ -95,7 +95,7 @@ void ContextImpl::enableDepthWrite(bool _enable)
 	m_cachedFunctions->getCachedDepthMask()->setDepthMask(_enable);
 }
 
-void ContextImpl::setDepthCompare(graphics::Parameter _mode)
+void ContextImpl::setDepthCompare(graphics::CompareParam _mode)
 {
 	m_cachedFunctions->getCachedDepthCompare()->setDepthCompare(_mode);
 }
@@ -110,7 +110,7 @@ void ContextImpl::setScissor(s32 _x, s32 _y, s32 _width, s32 _height)
 	m_cachedFunctions->getCachedScissor()->setScissor(_x, _y, _width, _height);
 }
 
-void ContextImpl::setBlending(graphics::Parameter _sfactor, graphics::Parameter _dfactor)
+void ContextImpl::setBlending(graphics::BlendParam _sfactor, graphics::BlendParam _dfactor)
 {
 	m_cachedFunctions->getCachedBlending()->setBlending(_sfactor, _dfactor);
 }
@@ -232,7 +232,7 @@ void ContextImpl::deleteFramebuffer(graphics::ObjectHandle _name)
 	}
 }
 
-void ContextImpl::bindFramebuffer(graphics::Parameter _target, graphics::ObjectHandle _name)
+void ContextImpl::bindFramebuffer(graphics::BufferTargetParam _target, graphics::ObjectHandle _name)
 {
 	m_cachedFunctions->getCachedBindFramebuffer()->bind(_target, _name);
 }

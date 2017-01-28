@@ -94,7 +94,7 @@ public:
 		u32 dstHeight;
 		std::array<CachedTexture *, 2> tex{ { nullptr, nullptr } };
 		graphics::CombinerProgram * combiner = nullptr;
-		graphics::Parameter filter;
+		graphics::TextureParam filter;
 	};
 
 	void copyTexturedRect(const CopyRectParams & _params);
@@ -103,7 +103,7 @@ public:
 	{
 		graphics::ObjectHandle readBuffer;
 		graphics::ObjectHandle drawBuffer;
-		graphics::Parameter mask;
+		graphics::BlitMaskParam mask;
 	};
 
 	void blitOrCopyTexturedRect(const BlitOrCopyRectParams & _params);

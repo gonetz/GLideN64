@@ -52,7 +52,7 @@ void PaletteTexture::init()
 
 	Context::TexParameters setParams;
 	setParams.handle = m_pTexture->name;
-	setParams.target = target::TEXTURE_2D;
+	setParams.target = textureTarget::TEXTURE_2D;
 	setParams.textureUnitIndex = textureIndices::PaletteTex;
 	setParams.minFilter = textureParameters::FILTER_NEAREST;
 	setParams.magFilter = textureParameters::FILTER_NEAREST;

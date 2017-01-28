@@ -25,19 +25,19 @@ namespace opengl {
 
 		void destroy() override;
 
-		void enable(graphics::Parameter _parameter, bool _enable) override;
+		void enable(graphics::EnableParam _parameter, bool _enable) override;
 
-		void cullFace(graphics::Parameter _mode) override;
+		void cullFace(graphics::CullModeParam _mode) override;
 
 		void enableDepthWrite(bool _enable) override;
 
-		void setDepthCompare(graphics::Parameter _mode) override;
+		void setDepthCompare(graphics::CompareParam _mode) override;
 
 		void setViewport(s32 _x, s32 _y, s32 _width, s32 _height) override;
 
 		void setScissor(s32 _x, s32 _y, s32 _width, s32 _height) override;
 
-		void setBlending(graphics::Parameter _sfactor, graphics::Parameter _dfactor) override;
+		void setBlending(graphics::BlendParam _sfactor, graphics::BlendParam _dfactor) override;
 
 		void setBlendColor(f32 _red, f32 _green, f32 _blue, f32 _alpha) override;
 
@@ -77,7 +77,7 @@ namespace opengl {
 
 		void deleteFramebuffer(graphics::ObjectHandle _name) override;
 
-		void bindFramebuffer(graphics::Parameter _target, graphics::ObjectHandle _name) override;
+		void bindFramebuffer(graphics::BufferTargetParam _target, graphics::ObjectHandle _name) override;
 
 		graphics::ObjectHandle createRenderbuffer() override;
 

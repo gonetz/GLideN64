@@ -30,12 +30,12 @@ void Context::destroy()
 	m_impl.reset();
 }
 
-void Context::enable(Parameter _parameter, bool _enable)
+void Context::enable(EnableParam _parameter, bool _enable)
 {
 	m_impl->enable(_parameter, _enable);
 }
 
-void Context::cullFace(Parameter _parameter)
+void Context::cullFace(CullModeParam _parameter)
 {
 	m_impl->cullFace(_parameter);
 }
@@ -45,7 +45,7 @@ void Context::enableDepthWrite(bool _enable)
 	m_impl->enableDepthWrite(_enable);
 }
 
-void Context::setDepthCompare(Parameter _mode)
+void Context::setDepthCompare(CompareParam _mode)
 {
 	m_impl->setDepthCompare(_mode);
 }
@@ -60,7 +60,7 @@ void Context::setScissor(s32 _x, s32 _y, s32 _width, s32 _height)
 	m_impl->setScissor(_x, _y, _width, _height);
 }
 
-void Context::setBlending(Parameter _sfactor, Parameter _dfactor)
+void Context::setBlending(BlendParam _sfactor, BlendParam _dfactor)
 {
 	m_impl->setBlending(_sfactor, _dfactor);
 }
@@ -152,7 +152,7 @@ void Context::deleteFramebuffer(ObjectHandle _name)
 	m_impl->deleteFramebuffer(_name);
 }
 
-void Context::bindFramebuffer(Parameter _target, ObjectHandle _name)
+void Context::bindFramebuffer(BufferTargetParam _target, ObjectHandle _name)
 {
 	m_impl->bindFramebuffer(_target, _name);
 }

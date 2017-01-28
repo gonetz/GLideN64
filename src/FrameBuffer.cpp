@@ -109,7 +109,7 @@ void FrameBuffer::_setAndAttachTexture(ObjectHandle _fbo, CachedTexture *_pTextu
 	{
 		Context::TexParameters params;
 		params.handle = _pTexture->name;
-		params.target = _multisampling ? target::TEXTURE_2D_MULTISAMPLE : target::TEXTURE_2D;
+		params.target = _multisampling ? textureTarget::TEXTURE_2D_MULTISAMPLE : textureTarget::TEXTURE_2D;
 		params.textureUnitIndex = textureIndices::Tex[_t];
 		params.minFilter = textureParameters::FILTER_NEAREST;
 		params.magFilter = textureParameters::FILTER_NEAREST;
@@ -120,7 +120,7 @@ void FrameBuffer::_setAndAttachTexture(ObjectHandle _fbo, CachedTexture *_pTextu
 		bufTarget.bufferHandle = _fbo;
 		bufTarget.bufferTarget = bufferTarget::FRAMEBUFFER;
 		bufTarget.attachment = bufferAttachment::COLOR_ATTACHMENT0;
-		bufTarget.textureTarget = _multisampling ? target::TEXTURE_2D_MULTISAMPLE : target::TEXTURE_2D;
+		bufTarget.textureTarget = _multisampling ? textureTarget::TEXTURE_2D_MULTISAMPLE : textureTarget::TEXTURE_2D;
 		bufTarget.textureHandle = _pTexture->name;
 		gfxContext.addFrameBufferRenderTarget(bufTarget);
 	}
@@ -940,7 +940,7 @@ void FrameBufferList::renderBuffer(u32 _address)
 	drawer.clearColorBuffer(clearColor);
 
 
-	Parameter filter = textureParameters::FILTER_LINEAR;
+	TextureParam filter = textureParameters::FILTER_LINEAR;
 	ObjectHandle readBuffer;
 
 	if (pFilteredBuffer->m_pTexture->frameBufferTexture == CachedTexture::fbMultiSample) {

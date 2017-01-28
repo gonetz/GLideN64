@@ -82,7 +82,7 @@ public:
 	void addFrameBufferRenderTarget(const graphics::Context::FrameBufferRenderTarget & _params) override
 	{
 		m_bind->bind(_params.bufferTarget, _params.bufferHandle);
-		if (_params.textureTarget == graphics::target::RENDERBUFFER) {
+		if (_params.textureTarget == graphics::textureTarget::RENDERBUFFER) {
 			glFramebufferRenderbuffer(GLenum(_params.bufferTarget),
 				GLenum(_params.attachment),
 				GLenum(_params.textureTarget),

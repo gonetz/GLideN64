@@ -257,14 +257,14 @@ void _initTexture(CachedTexture * pTexture)
 	initParams.handle = pTexture->name;
 	initParams.width = pTexture->realWidth;
 	initParams.height = pTexture->realHeight;
-	initParams.internalFormat = internalcolor::RGBA;
-	initParams.format = color::RGBA;
+	initParams.internalFormat = internalcolorFormat::RGBA;
+	initParams.format = colorFormat::RGBA;
 	initParams.dataType = datatype::UNSIGNED_BYTE;
 	gfxContext.init2DTexture(initParams);
 
 	Context::TexParameters setParams;
 	setParams.handle = pTexture->name;
-	setParams.target = target::TEXTURE_2D;
+	setParams.target = textureTarget::TEXTURE_2D;
 	setParams.minFilter = textureParameters::FILTER_NEAREST;
 	setParams.magFilter = textureParameters::FILTER_NEAREST;
 	gfxContext.setTextureParameters(setParams);
@@ -285,7 +285,7 @@ void _initFBO(ObjectHandle _FBO, CachedTexture * _pTexture)
 	bufTarget.bufferHandle = _FBO;
 	bufTarget.bufferTarget = bufferTarget::DRAW_FRAMEBUFFER;
 	bufTarget.attachment = bufferAttachment::COLOR_ATTACHMENT0;
-	bufTarget.textureTarget = target::TEXTURE_2D;
+	bufTarget.textureTarget = textureTarget::TEXTURE_2D;
 	bufTarget.textureHandle = _pTexture->name;
 	gfxContext.addFrameBufferRenderTarget(bufTarget);
 	assert(!gfxContext.isFramebufferError());
