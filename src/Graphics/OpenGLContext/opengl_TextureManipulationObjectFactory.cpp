@@ -57,9 +57,6 @@ namespace opengl {
 		void init2DTexture(const graphics::Context::InitTextureParams & _params) override
 		{
 			if (_params.msaaLevel == 0) {
-				if (_params.ImageUnit.isValid() && glBindImageTexture != nullptr)
-					glBindImageTexture(GLuint(_params.ImageUnit), 0,
-					0, GL_FALSE, GL_FALSE, GL_READ_ONLY, GLuint(_params.internalFormat));
 
 				m_bind->bind(_params.textureUnitIndex, graphics::textureTarget::TEXTURE_2D, _params.handle);
 				glTexImage2D(GL_TEXTURE_2D,
@@ -71,10 +68,6 @@ namespace opengl {
 							 GLenum(_params.format),
 							 GLenum(_params.dataType),
 							 _params.data);
-
-				if (_params.ImageUnit.isValid() && glBindImageTexture != nullptr)
-					glBindImageTexture(GLuint(_params.ImageUnit), GLuint(_params.handle),
-					0, GL_FALSE, GL_FALSE, GL_READ_ONLY, GLuint(_params.internalFormat));
 			} else {
 				m_bind->bind(_params.textureUnitIndex, graphics::textureTarget::TEXTURE_2D_MULTISAMPLE, _params.handle);
 				glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE,
