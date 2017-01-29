@@ -5,10 +5,10 @@ include $(CLEAR_VARS)
 LOCAL_PATH := $(JNI_LOCAL_PATH)
 SRCDIR := ./mupen64plus-video-gliden64/src
 
-include $(CLEAR_VARS)
-LOCAL_MODULE := android-framework-ui
-LOCAL_SRC_FILES := ./android_framework/lib/$(TARGET_ARCH_ABI)/libui.so
-include $(PREBUILT_SHARED_LIBRARY)
+#include $(CLEAR_VARS)
+#LOCAL_MODULE := android-framework-ui
+#LOCAL_SRC_FILES := ./android_framework/lib/$(TARGET_ARCH_ABI)/libui.so
+#include $(PREBUILT_SHARED_LIBRARY)
 
 MY_LOCAL_MODULE := mupen64plus-video-gliden64
 MY_LOCAL_SHARED_LIBRARIES := freetype
@@ -71,7 +71,6 @@ MY_LOCAL_SRC_FILES :=                               \
     $(SRCDIR)/VI.cpp                                \
     $(SRCDIR)/ZlutTexture.cpp                       \
     $(SRCDIR)/ZSort.cpp                             \
-    $(SRCDIR)/ShaderUtils.cpp                       \
     $(SRCDIR)/common/CommonAPIImpl_common.cpp       \
     $(SRCDIR)/mupenplus/CommonAPIImpl_mupenplus.cpp \
     $(SRCDIR)/mupenplus/Config_mupenplus.cpp        \
@@ -89,7 +88,6 @@ MY_LOCAL_SRC_FILES :=                               \
     $(SRCDIR)/Graphics/OpenGLContext/opengl_CachedFunctions.cpp                    \
     $(SRCDIR)/Graphics/OpenGLContext/opengl_ColorBufferReaderWithBufferStorage.cpp \
     $(SRCDIR)/Graphics/OpenGLContext/opengl_ColorBufferReaderWithPixelBuffer.cpp   \
-    $(SRCDIR)/Graphics/OpenGLContext/opengl_ColorBufferReaderWithEGLImage.cpp      \
     $(SRCDIR)/Graphics/OpenGLContext/opengl_ContextImpl.cpp                        \
     $(SRCDIR)/Graphics/OpenGLContext/opengl_GLInfo.cpp                             \
     $(SRCDIR)/Graphics/OpenGLContext/opengl_Parameters.cpp                         \
@@ -102,7 +100,8 @@ MY_LOCAL_SRC_FILES :=                               \
     $(SRCDIR)/Graphics/OpenGLContext/GLSL/glsl_CombinerProgramUniformFactory.cpp   \
     $(SRCDIR)/Graphics/OpenGLContext/GLSL/glsl_ShaderStorage.cpp                   \
     $(SRCDIR)/Graphics/OpenGLContext/GLSL/glsl_SpecialShadersFactory.cpp           \
-    $(SRCDIR)/Graphics/OpenGLContext/GLSL/glsl_Utils.cpp                           
+    $(SRCDIR)/Graphics/OpenGLContext/GLSL/glsl_Utils.cpp                           \
+    $(SRCDIR)/Graphics/OpenGLContext/mupen64plus/mupen64plus_DisplayWindow.cpp
 
 MY_LOCAL_CFLAGS :=      \
     $(COMMON_CFLAGS)    \
@@ -133,54 +132,6 @@ else ifeq ($(TARGET_ARCH_ABI), x86)
     MY_LOCAL_CFLAGS += -D__VEC4_OPT
     MY_LOCAL_SRC_FILES += $(SRCDIR)/3DMath.cpp
 endif
-
-###########
-# gles 2.0
-###########
-include $(CLEAR_VARS)
-LOCAL_MODULE            := $(MY_LOCAL_MODULE)-gles20
-LOCAL_SHARED_LIBRARIES  := $(MY_LOCAL_SHARED_LIBRARIES) android-framework-ui
-LOCAL_STATIC_LIBRARIES  := $(MY_LOCAL_STATIC_LIBRARIES)
-LOCAL_ARM_MODE          := $(MY_LOCAL_ARM_MODE)
-LOCAL_C_INCLUDES        := $(MY_LOCAL_C_INCLUDES)
-LOCAL_SRC_FILES         := $(MY_LOCAL_SRC_FILES)
-LOCAL_CFLAGS            := $(MY_LOCAL_CFLAGS) -DGLES2
-LOCAL_CPPFLAGS          := $(MY_LOCAL_CPPFLAGS)
-LOCAL_LDFLAGS           := $(MY_LOCAL_LDFLAGS)
-LOCAL_LDLIBS            := $(MY_LOCAL_LDLIBS) -lGLESv2
-include $(BUILD_SHARED_LIBRARY)
-
-###########
-# gles 3.0
-###########
-include $(CLEAR_VARS)
-LOCAL_MODULE            := $(MY_LOCAL_MODULE)-gles30
-LOCAL_SHARED_LIBRARIES  := $(MY_LOCAL_SHARED_LIBRARIES)
-LOCAL_STATIC_LIBRARIES  := $(MY_LOCAL_STATIC_LIBRARIES)
-LOCAL_ARM_MODE          := $(MY_LOCAL_ARM_MODE)
-LOCAL_C_INCLUDES        := $(MY_LOCAL_C_INCLUDES) $(LOCAL_PATH)/GLES3/include/
-LOCAL_SRC_FILES         := $(MY_LOCAL_SRC_FILES)
-LOCAL_CFLAGS            := $(MY_LOCAL_CFLAGS) -DGLES3
-LOCAL_CPPFLAGS          := $(MY_LOCAL_CPPFLAGS)
-LOCAL_LDFLAGS           := $(MY_LOCAL_LDFLAGS)
-LOCAL_LDLIBS            := $(MY_LOCAL_LDLIBS) -L$(LOCAL_PATH)/GLES3/lib/$(TARGET_ARCH_ABI)/ -lGLESv3
-include $(BUILD_SHARED_LIBRARY)
-
-###########
-# gles 3.1
-###########
-include $(CLEAR_VARS)
-LOCAL_MODULE            := $(MY_LOCAL_MODULE)-gles31
-LOCAL_SHARED_LIBRARIES  := $(MY_LOCAL_SHARED_LIBRARIES)
-LOCAL_STATIC_LIBRARIES  := $(MY_LOCAL_STATIC_LIBRARIES)
-LOCAL_ARM_MODE          := $(MY_LOCAL_ARM_MODE)
-LOCAL_C_INCLUDES        := $(MY_LOCAL_C_INCLUDES) $(LOCAL_PATH)/GLES3/include/
-LOCAL_SRC_FILES         := $(MY_LOCAL_SRC_FILES)
-LOCAL_CFLAGS            := $(MY_LOCAL_CFLAGS) -DGLES3_1
-LOCAL_CPPFLAGS          := $(MY_LOCAL_CPPFLAGS)
-LOCAL_LDFLAGS           := $(MY_LOCAL_LDFLAGS)
-LOCAL_LDLIBS            := $(MY_LOCAL_LDLIBS) -L$(LOCAL_PATH)/GLES3/lib/$(TARGET_ARCH_ABI)/ -lGLESv3
-include $(BUILD_SHARED_LIBRARY)
 
 ###########
 # EGL
