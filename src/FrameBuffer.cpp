@@ -1010,6 +1010,7 @@ void FrameBufferList::renderBuffer(u32 _address)
 			blitParams.dstWidth = wnd.getScreenWidth();
 			blitParams.dstHeight = wnd.getScreenHeight() + wnd.getHeightOffset();
 			blitParams.tex[0] = pBufferTexture;
+			blitParams.readBuffer = readBuffer;
 
 			drawer.blitOrCopyTexturedRect(blitParams);
 		}
