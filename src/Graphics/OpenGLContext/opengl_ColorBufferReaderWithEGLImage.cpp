@@ -55,9 +55,9 @@ u8 * ColorBufferReaderWithEGLImage::readPixels(s32 _x0, s32 _y0, u32 _width, u32
 	if (!_sync) {
 		void* ptr;
 
-		m_bindTexture->bind(Parameter(GL_TEXTURE_2D), m_pTexture->name);
+		m_bindTexture->bind(graphics::Parameter(0), graphics::Parameter(GL_TEXTURE_2D), m_pTexture->name);
 		m_glEGLImageTargetTexture2DOES(GL_TEXTURE_2D, m_image);
-		m_bindTexture->bind(Parameter(GL_TEXTURE_2D), ObjectHandle());
+		m_bindTexture->bind(graphics::Parameter(0), graphics::Parameter(GL_TEXTURE_2D), ObjectHandle());
 		int widthBytes = _width*colorFormatBytes;
 		int strideBytes = m_pTexture->realWidth * colorFormatBytes;
 
