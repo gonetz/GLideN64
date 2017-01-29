@@ -8,10 +8,16 @@
 #include <winlnxdefs.h>
 #endif
 
+#ifdef EGL
+#include <GL/glcorearb.h>
+#else
 #include <GL/gl.h>
+#endif
+
 #include <GL/glext.h>
 
 #ifdef EGL
+
 extern PFNGLBLENDFUNCPROC glBlendFunc;
 extern PFNGLPIXELSTOREIPROC glPixelStorei;
 extern PFNGLCLEARCOLORPROC glClearColor;
@@ -39,12 +45,16 @@ extern PFNGLGETFLOATVPROC glGetFloatv;
 extern PFNGLDELETETEXTURESPROC glDeleteTextures;
 extern PFNGLGENTEXTURESPROC glGenTextures;
 extern PFNGLTEXPARAMETERFPROC glTexParameterf;
+extern PFNGLACTIVETEXTUREPROC glActiveTexture;
+extern PFNGLBLENDCOLORPROC glBlendColor;
+extern PFNGLREADBUFFERPROC glReadBuffer;
 #endif
 
 #ifdef OS_WINDOWS
 extern PFNGLACTIVETEXTUREPROC glActiveTexture;
 extern PFNGLBLENDCOLORPROC glBlendColor;
 #endif
+
 extern PFNGLCREATESHADERPROC glCreateShader;
 extern PFNGLCOMPILESHADERPROC glCompileShader;
 extern PFNGLSHADERSOURCEPROC glShaderSource;
