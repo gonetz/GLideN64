@@ -75,7 +75,7 @@ u8 * ColorBufferReaderWithBufferStorage::readPixels(s32 _x0, s32 _y0, u32 _width
 
 	GLubyte* pixelData = reinterpret_cast<GLubyte*>(m_PBOData[m_curIndex]);
 	if (pixelData == nullptr)
-		return false;
+		return nullptr;
 
 	int widthBytes = _width * colorFormatBytes;
 	int strideBytes = m_pTexture->realWidth * colorFormatBytes;

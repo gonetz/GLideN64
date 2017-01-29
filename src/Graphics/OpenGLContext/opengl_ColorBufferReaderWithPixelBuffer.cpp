@@ -68,7 +68,7 @@ u8 * ColorBufferReaderWithPixelBuffer::readPixels(s32 _x0, s32 _y0, u32 _width, 
 
 	GLubyte* pixelData = (GLubyte*)glMapBufferRange(GL_PIXEL_PACK_BUFFER, 0, m_pTexture->realWidth * _height * colorFormatBytes, GL_MAP_READ_BIT);
 	if (pixelData == nullptr)
-		return false;
+		return nullptr;
 
 	int widthBytes = _width*colorFormatBytes;
 	int strideBytes = m_pTexture->realWidth * colorFormatBytes;
