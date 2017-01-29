@@ -7,6 +7,7 @@
 #include "Textures.h"
 #include "NoiseTexture.h"
 #include "DisplayWindow.h"
+#include <cstdlib>
 
 using namespace graphics;
 

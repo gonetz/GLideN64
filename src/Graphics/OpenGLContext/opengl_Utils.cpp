@@ -3,6 +3,7 @@
 #include <Log.h>
 #include "opengl_Utils.h"
 #include "GLFunctions.h"
+#include <cstring>
 
 using namespace opengl;
 
