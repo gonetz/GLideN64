@@ -197,13 +197,13 @@ public:
 		}
 		else if (_glinfo.isGLESX) {
 			std::stringstream ss;
-			ss << "#version " << std::to_string(_glinfo.majorVersion) << std::to_string(_glinfo.minorVersion) << "0 es " << std::endl;
+			ss << "#version " << Utils::to_string(_glinfo.majorVersion) << Utils::to_string(_glinfo.minorVersion) << "0 es " << std::endl;
 			ss << "# define IN in" << std::endl << "# define OUT out" << std::endl;
 			m_part = ss.str();
 		}
 		else {
 			std::stringstream ss;
-			ss << "#version " << std::to_string(_glinfo.majorVersion) << std::to_string(_glinfo.minorVersion) << "0 core " << std::endl;
+			ss << "#version " << Utils::to_string(_glinfo.majorVersion) << Utils::to_string(_glinfo.minorVersion) << "0 core " << std::endl;
 			ss << "# define IN in" << std::endl << "# define OUT out" << std::endl;
 			m_part = ss.str();
 		}
@@ -423,14 +423,14 @@ public:
 		}
 		else if (_glinfo.isGLESX) {
 			std::stringstream ss;
-			ss << "#version " << std::to_string(_glinfo.majorVersion) << std::to_string(_glinfo.minorVersion) << "0 es " << std::endl;
+			ss << "#version " << Utils::to_string(_glinfo.majorVersion) << Utils::to_string(_glinfo.minorVersion) << "0 es " << std::endl;
 			ss << "# define IN in" << std::endl
 				<< "# define OUT out" << std::endl
 				<< "# define texture2D texture" << std::endl;
 			m_part = ss.str();
 		} else {
 			std::stringstream ss;
-			ss << "#version " << std::to_string(_glinfo.majorVersion) << std::to_string(_glinfo.minorVersion) << "0 core " << std::endl;
+			ss << "#version " << Utils::to_string(_glinfo.majorVersion) << Utils::to_string(_glinfo.minorVersion) << "0 core " << std::endl;
 			ss << "# define IN in" << std::endl
 				<< "# define OUT out" << std::endl
 				<< "# define texture2D texture" << std::endl;
