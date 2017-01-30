@@ -331,13 +331,13 @@ namespace glsl {
 		TexrectCopy(const opengl::GLInfo & _glinfo)
 		{
 			m_part =
-				"IN mediump vec2 vTexCoord0;                            \n"
-				"uniform sampler2D uTex0;				                \n"
-				"                                                       \n"
-				"void main()                                            \n"
-				"{                                                      \n"
-				"    gl_FragColor = texture2D(uTex0, vTexCoord0);       \n"
-				"}							                            \n"
+				"IN mediump vec2 vTexCoord0;							\n"
+				"uniform sampler2D uTex0;								\n"
+				"OUT lowp vec4 fragColor;								\n"
+				"														\n"
+				"void main()											\n"
+				"{														\n"
+				"	fragColor = texture2D(uTex0, vTexCoord0);			\n"
 			;
 		}
 	};
@@ -574,8 +574,9 @@ namespace glsl {
 		TexrectCopyShader(const opengl::GLInfo & _glinfo,
 			opengl::CachedUseProgram * _useProgram,
 			const ShaderPart * _vertexHeader,
-			const ShaderPart * _fragmentHeader)
-			: TexrectCopyShaderBase(_glinfo, _useProgram, _vertexHeader, _fragmentHeader)
+			const ShaderPart * _fragmentHeader,
+			const ShaderPart * _fragmentEnd)
+			: TexrectCopyShaderBase(_glinfo, _useProgram, _vertexHeader, _fragmentHeader, _fragmentEnd)
 		{
 			m_useProgram->useProgram(m_program);
 			const int texLoc = glGetUniformLocation(GLuint(m_program), "uTex0");
@@ -668,7 +669,7 @@ namespace glsl {
 
 	graphics::ShaderProgram * SpecialShadersFactory::createTexrectCopyShader() const
 	{
-		return new TexrectCopyShader(m_glinfo, m_useProgram, m_vertexHeader, m_fragmentHeader);
+		return new TexrectCopyShader(m_glinfo, m_useProgram, m_vertexHeader, m_fragmentHeader, m_fragmentEnd);
 	}
 
 	graphics::ShaderProgram * SpecialShadersFactory::createGammaCorrectionShader() const
