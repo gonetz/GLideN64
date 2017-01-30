@@ -6,7 +6,7 @@
 #include "opengl_DummyTextDrawer.h"
 #include "opengl_ColorBufferReaderWithPixelBuffer.h"
 #include "opengl_ColorBufferReaderWithBufferStorage.h"
-#include "opengl_ColorBufferReaderWithEGLImage.h"
+//#include "opengl_ColorBufferReaderWithEGLImage.h"
 #include "opengl_Utils.h"
 #include "GLSL/glsl_CombinerProgramBuilder.h"
 #include "GLSL/glsl_SpecialShadersFactory.h"
