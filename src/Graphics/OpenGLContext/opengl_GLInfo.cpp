@@ -34,7 +34,7 @@ void GLInfo::init() {
 		imageTextures = (majorVersion * 10 + minorVersion >= 31) && (glBindImageTexture != nullptr);
 		msaa = majorVersion * 10 + minorVersion >= 31;
 	} else {
-		imageTextures = ((majorVersion * 10  + minorVersion >= 43) || Utils::isExtensionSupported("GL_ARB_shader_image_load_store")) && (glBindImageTexture != nullptr);
+		imageTextures = ((majorVersion * 10  + minorVersion >= 43) || (Utils::isExtensionSupported("GL_ARB_shader_image_load_store") && Utils::isExtensionSupported("GL_ARB_compute_shader"))) && (glBindImageTexture != nullptr);
 		msaa = true;
 	}
 
