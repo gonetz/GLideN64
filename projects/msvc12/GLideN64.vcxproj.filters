@@ -266,6 +266,9 @@
     <ClCompile Include="..\..\src\F3DBETA.cpp">
       <Filter>Source Files\uCodes</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\F3DTEXA.cpp">
+      <Filter>Source Files\uCodes</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\3DMath.h">
@@ -473,6 +476,9 @@
       <Filter>Header Files\uCodes</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\F3DBETA.h">
+      <Filter>Header Files\uCodes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\F3DTEXA.h">
       <Filter>Header Files\uCodes</Filter>
     </ClInclude>
   </ItemGroup>
