@@ -204,6 +204,10 @@ public:
 		else {
 			std::stringstream ss;
 			ss << "#version " << Utils::to_string(_glinfo.majorVersion) << Utils::to_string(_glinfo.minorVersion) << "0 core " << std::endl;
+			if (_glinfo.imageTextures && _glinfo.majorVersion * 10 + _glinfo.minorVersion < 42) {
+				ss << "#extension GL_ARB_shader_image_load_store : enable" << std::endl
+					<< "#extension GL_ARB_shading_language_420pack : enable" << std::endl;
+			}
 			ss << "# define IN in" << std::endl << "# define OUT out" << std::endl;
 			m_part = ss.str();
 		}
@@ -431,6 +435,10 @@ public:
 		} else {
 			std::stringstream ss;
 			ss << "#version " << Utils::to_string(_glinfo.majorVersion) << Utils::to_string(_glinfo.minorVersion) << "0 core " << std::endl;
+			if (_glinfo.imageTextures && _glinfo.majorVersion * 10 + _glinfo.minorVersion < 42) {
+				ss << "#extension GL_ARB_shader_image_load_store : enable" << std::endl
+					<< "#extension GL_ARB_shading_language_420pack : enable" << std::endl;
+			}
 			ss << "# define IN in" << std::endl
 				<< "# define OUT out" << std::endl
 				<< "# define texture2D texture" << std::endl;
