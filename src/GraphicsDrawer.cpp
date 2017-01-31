@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <assert.h>
+#include <cmath>
 #include "Platform.h"
 #include "Graphics/Context.h"
 #include "Graphics/Parameters.h"
