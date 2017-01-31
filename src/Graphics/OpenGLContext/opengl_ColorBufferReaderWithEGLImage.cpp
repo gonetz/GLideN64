@@ -1,4 +1,4 @@
-#ifdef EGL
+#if defined(EGL) && defined(ANDROID)
 
 #include <GBI.h>
 #include <Graphics/Context.h>

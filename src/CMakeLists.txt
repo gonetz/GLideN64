@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.6)
 
-option(GLES2 "Set to ON if targeting a GLES2 device" ${GLES2})
+option(EGL "Set to ON if targeting an EGL device" ${EGL})
 option(PANDORA "Set to ON if targeting an OpenPandora" ${PANDORA})
 option(MUPENPLUSAPI "Set to ON for Mupen64Plus plugin" ${MUPENPLUSAPI})
 
@@ -89,7 +89,7 @@ MESSAGE("Looking for bcm_host.h")
 if(EXISTS "/opt/vc/include/bcm_host.h")
   MESSAGE("bcm_host.h found")
   set(BCMHOST ON)
-  set(GLES2 ON)
+  set(EGL ON)
   add_definitions(
     -DVC
     -DUSE_DEPTH_RENDERBUFFER
@@ -192,7 +192,7 @@ if(PANDORA)
   add_definitions(
   -DPANDORA
   -DPowerVR_SGX_540
-  -DGLES2
+  -DEGL
    )
 endif(PANDORA)
 
@@ -246,12 +246,12 @@ if( CMAKE_BUILD_TYPE STREQUAL "Debug")
 #	)
 endif( CMAKE_BUILD_TYPE STREQUAL "Debug")
 
-if(GLES2)
+if(EGL)
   add_definitions(
-    -DGLES2
+    -DEGL
    )
-   SET(OPENGL_LIBRARIES -lGLESv2 -lEGL)
-else(GLES2)
+   SET(OPENGL_LIBRARIES -lEGL)
+else(EGL)
   find_package(OpenGL REQUIRED)
   include_directories(${OpenGL_INCLUDE_DIRS})
   link_directories(${OpenGL_LIBRARY_DIRS})
@@ -259,7 +259,7 @@ else(GLES2)
   if(NOT OPENGL_FOUND)
   	message(ERROR " OPENGL not found!")
   endif(NOT OPENGL_FOUND)
-endif(GLES2)
+endif(EGL)
 
 if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
   #check for G++ 4.8+

@@ -5,6 +5,13 @@
 #define glGetProcAddress wglGetProcAddress
 #define GL_GET_PROC_ADR(proc_type, proc_name) g_##proc_name = (proc_type) glGetProcAddress(#proc_name)
 
+#elif defined(EGL)
+
+#include <EGL/egl.h>
+#include <EGL/eglext.h>
+#define glGetProcAddress eglGetProcAddress
+#define GL_GET_PROC_ADR(proc_type, proc_name) g_##proc_name = (proc_type) glGetProcAddress(#proc_name)
+
 #elif defined(OS_LINUX)
 
 #include <X11/Xutil.h>
@@ -20,13 +27,6 @@ typedef struct __GLXFBConfigRec *GLXFBConfig;
 #include <GL/glxext.h>
 #define glGetProcAddress glXGetProcAddress
 #define GL_GET_PROC_ADR(proc_type, proc_name) g_##proc_name = (proc_type) glGetProcAddress((const GLubyte*)#proc_name)
-
-#elif defined(EGL)
-
-#include <EGL/egl.h>
-#include <EGL/eglext.h>
-#define glGetProcAddress eglGetProcAddress
-#define GL_GET_PROC_ADR(proc_type, proc_name) g_##proc_name = (proc_type) glGetProcAddress(#proc_name)
 
 #endif
 
