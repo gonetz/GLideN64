@@ -2,6 +2,7 @@
 #include <Log.h>
 #include <Graphics/Parameters.h>
 #include "opengl_ContextImpl.h"
+#include "opengl_BufferedDrawer.h"
 #include "opengl_UnbufferedDrawer.h"
 #include "opengl_DummyTextDrawer.h"
 #include "opengl_ColorBufferReaderWithPixelBuffer.h"
@@ -58,7 +59,10 @@ void ContextImpl::init()
 	}
 
 	{
-		m_graphicsDrawer.reset(new UnbufferedDrawer(m_glInfo, m_cachedFunctions->getCachedVertexAttribArray()));
+		if ((m_glInfo.isGLESX && (m_glInfo.bufferStorage && m_glInfo.majorVersion * 10 + m_glInfo.minorVersion > 32)) || !m_glInfo.isGLESX)
+			m_graphicsDrawer.reset(new BufferedDrawer(m_glInfo, m_cachedFunctions->getCachedVertexAttribArray(), m_cachedFunctions->getCachedBindBuffer()));
+		else
+			m_graphicsDrawer.reset(new UnbufferedDrawer(m_glInfo, m_cachedFunctions->getCachedVertexAttribArray()));
 		m_textDrawer.reset(new DummyTextDrawer);
 	}
 

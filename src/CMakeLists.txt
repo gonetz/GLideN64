@@ -64,6 +64,7 @@ set(GLideN64_SOURCES
   Graphics/CombinerProgram.cpp
   Graphics/OpenGLContext/GLFunctions.cpp
   Graphics/OpenGLContext/opengl_Attributes.cpp
+  Graphics/OpenGLContext/opengl_BufferedDrawer.cpp
   Graphics/OpenGLContext/opengl_BufferManipulationObjectFactory.cpp
   Graphics/OpenGLContext/opengl_CachedFunctions.cpp
   Graphics/OpenGLContext/opengl_ColorBufferReaderWithBufferStorage.cpp
