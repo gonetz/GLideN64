@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <Graphics/Context.h>
 #include <Graphics/OpenGLContext/GLFunctions.h>
 #include <Graphics/OpenGLContext/opengl_Utils.h>
 #include <mupenplus/GLideN64_mupenplus.h>
@@ -126,7 +127,7 @@ void DisplayWindowMupen64plus::_swapBuffers()
 {
 	// if emulator defined a render callback function, call it before buffer swap
 	if (renderCallback != nullptr) {
-		glUseProgram(0);
+		gfxContext.resetShaderProgram();
 		if (config.frameBufferEmulation.N64DepthCompare == 0) {
 			glViewport(0, getHeightOffset(), getScreenWidth(), getScreenHeight());
 			gSP.changed |= CHANGED_VIEWPORT;
