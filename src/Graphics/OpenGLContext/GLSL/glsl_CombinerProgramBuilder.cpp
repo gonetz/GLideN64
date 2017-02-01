@@ -1760,8 +1760,10 @@ graphics::CombinerProgram * CombinerProgramBuilder::buildCombinerProgram(Combine
 
 	const bool bUseLod = combinerInputs.usesLOD();
 	const bool bUseTextures = combinerInputs.usesTexture();
-	const bool bUseHWLight = 
-		config.generalEmulation.enableHWLighting != 0 && GBI.isHWLSupported() && combinerInputs.usesShadeColor();
+	const bool bUseHWLight = g_cycleType <= G_CYC_2CYCLE && // Rects not use lighting
+							 config.generalEmulation.enableHWLighting != 0 &&
+							 GBI.isHWLSupported() &&
+							 combinerInputs.usesShadeColor();
 
 	if (bUseHWLight)
 		combinerInputs.addInput(G_GCI_HW_LIGHT);
