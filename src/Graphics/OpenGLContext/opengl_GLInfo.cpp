@@ -27,18 +27,19 @@ void GLInfo::init() {
 		renderer = Renderer::Adreno;
 	LOG(LOG_VERBOSE, "OpenGL renderer: %s\n", strRenderer);
 
+	int numericVersion = majorVersion * 10 + minorVersion;
 	if (isGLES2) {
 		imageTextures = false;
 		msaa = false;
 	} else if (isGLESX) {
-		imageTextures = (majorVersion * 10 + minorVersion >= 31) && (glBindImageTexture != nullptr);
-		msaa = majorVersion * 10 + minorVersion >= 31;
+		imageTextures = (numericVersion >= 31) && (glBindImageTexture != nullptr);
+		msaa = numericVersion >= 31;
 	} else {
-		imageTextures = ((majorVersion * 10  + minorVersion >= 43) || (Utils::isExtensionSupported("GL_ARB_shader_image_load_store") && Utils::isExtensionSupported("GL_ARB_compute_shader"))) && (glBindImageTexture != nullptr);
+		imageTextures = ((numericVersion >= 43) || (Utils::isExtensionSupported("GL_ARB_shader_image_load_store") && Utils::isExtensionSupported("GL_ARB_compute_shader"))) && (glBindImageTexture != nullptr);
 		msaa = true;
 	}
-	bufferStorage = Utils::isExtensionSupported("GL_ARB_buffer_storage") || Utils::isExtensionSupported("GL_EXT_buffer_storage");
-	texStorage = Utils::isExtensionSupported("GL_ARB_texture_storage") || Utils::isExtensionSupported("GL_EXT_texture_storage");
+	bufferStorage = (!isGLESX && (numericVersion >= 44)) || Utils::isExtensionSupported("GL_ARB_buffer_storage") || Utils::isExtensionSupported("GL_EXT_buffer_storage");
+	texStorage = (isGLESX && (numericVersion >= 30)) || (!isGLESX && numericVersion >= 42) || Utils::isExtensionSupported("GL_ARB_texture_storage") || Utils::isExtensionSupported("GL_EXT_texture_storage");
 
 	shaderStorage = false;
 	if (config.generalEmulation.enableShadersStorage != 0) {
