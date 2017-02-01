@@ -14,8 +14,7 @@ using namespace graphics;
 NoiseTexture g_noiseTexture;
 
 NoiseTexture::NoiseTexture()
-	: m_pTexture(nullptr)
-	, m_DList(0)
+	: m_DList(0)
 {
 }
 
@@ -23,81 +22,83 @@ void NoiseTexture::init()
 {
 	if (config.generalEmulation.enableNoise == 0)
 		return;
-	m_pTexture = textureCache().addFrameBufferTexture(false);
-	m_pTexture->format = G_IM_FMT_RGBA;
-	m_pTexture->clampS = 1;
-	m_pTexture->clampT = 1;
-	m_pTexture->frameBufferTexture = CachedTexture::fbOneSample;
-	m_pTexture->maskS = 0;
-	m_pTexture->maskT = 0;
-	m_pTexture->mirrorS = 0;
-	m_pTexture->mirrorT = 0;
-	m_pTexture->realWidth = 640;
-	m_pTexture->realHeight = 580;
-	m_pTexture->textureBytes = m_pTexture->realWidth * m_pTexture->realHeight;
-	textureCache().addFrameBufferTextureSize(m_pTexture->textureBytes);
+	for (u32 i = 0; i < NOISE_TEX_NUM; ++i) {
+		m_pTexture[i] = textureCache().addFrameBufferTexture(false);
+		m_pTexture[i]->format = G_IM_FMT_RGBA;
+		m_pTexture[i]->clampS = 1;
+		m_pTexture[i]->clampT = 1;
+		m_pTexture[i]->frameBufferTexture = CachedTexture::fbOneSample;
+		m_pTexture[i]->maskS = 0;
+		m_pTexture[i]->maskT = 0;
+		m_pTexture[i]->mirrorS = 0;
+		m_pTexture[i]->mirrorT = 0;
+		m_pTexture[i]->realWidth = 640;
+		m_pTexture[i]->realHeight = 580;
+		m_pTexture[i]->textureBytes = m_pTexture[i]->realWidth * m_pTexture[i]->realHeight;
+		textureCache().addFrameBufferTextureSize(m_pTexture[i]->textureBytes);
 
-	{
-		Context::InitTextureParams params;
-		params.handle = m_pTexture->name;
-		params.width = m_pTexture->realWidth;
-		params.height = m_pTexture->realHeight;
-		params.internalFormat = internalcolorFormat::RED;
-		params.format = colorFormat::RED;
-		params.dataType = datatype::UNSIGNED_BYTE;
-		gfxContext.init2DTexture(params);
+		{
+			Context::InitTextureParams params;
+			params.handle = m_pTexture[i]->name;
+			params.width = m_pTexture[i]->realWidth;
+			params.height = m_pTexture[i]->realHeight;
+			params.internalFormat = internalcolorFormat::RED;
+			params.format = colorFormat::RED;
+			params.dataType = datatype::UNSIGNED_BYTE;
+			gfxContext.init2DTexture(params);
+		}
+		{
+			Context::TexParameters params;
+			params.handle = m_pTexture[i]->name;
+			params.target = textureTarget::TEXTURE_2D;
+			params.textureUnitIndex = textureIndices::NoiseTex;
+			params.minFilter = textureParameters::FILTER_NEAREST;
+			params.magFilter = textureParameters::FILTER_NEAREST;
+			gfxContext.setTextureParameters(params);
+		}
+		unsigned char ptr[m_pTexture[i]->textureBytes];
+		for (u32 y = 0; y < m_pTexture[i]->realHeight; ++y)     {
+			for (u32 x = 0; x < m_pTexture[i]->realWidth; ++x)
+				ptr[x + y*m_pTexture[i]->realWidth] = rand() & 0xFF;
+		}
+		{
+			Context::UpdateTextureDataParams params;
+			params.handle = m_pTexture[i]->name;
+			params.textureUnitIndex = textureIndices::NoiseTex;
+			params.width = 640;
+			params.height = 580;
+			params.format = colorFormat::RED;
+			params.dataType = datatype::UNSIGNED_BYTE;
+			params.data = ptr;
+			gfxContext.update2DTexture(params);
+		}
 	}
-	{
-		Context::TexParameters params;
-		params.handle = m_pTexture->name;
-		params.target = textureTarget::TEXTURE_2D;
-		params.textureUnitIndex = textureIndices::NoiseTex;
-		params.minFilter = textureParameters::FILTER_NEAREST;
-		params.magFilter = textureParameters::FILTER_NEAREST;
-		gfxContext.setTextureParameters(params);
-	}
-
-	// Generate Pixel Buffer Object. Initialize it with max buffer size.
-	m_pbuf.reset(gfxContext.createPixelWriteBuffer(m_pTexture->textureBytes));
 }
 
 void NoiseTexture::destroy()
 {
-	textureCache().removeFrameBufferTexture(m_pTexture);
-	m_pTexture = nullptr;
-	m_pbuf.reset();
+	for (u32 i = 0; i < NOISE_TEX_NUM; ++i) {
+		textureCache().removeFrameBufferTexture(m_pTexture[i]);
+		m_pTexture[i] = nullptr;
+	}
 }
 
 void NoiseTexture::update()
 {
-	if (!m_pbuf || m_pTexture == nullptr)
-		return;
 	if (m_DList == dwnd().getBuffersSwapCount() || config.generalEmulation.enableNoise == 0)
 		return;
-	const u32 dataSize = VI.width*VI.height;
-	if (dataSize == 0)
+
+	while (m_currTex == m_prevTex)
+		m_currTex = rand() % NOISE_TEX_NUM;
+	m_prevTex = m_currTex;
+	if (m_pTexture[m_currTex] == nullptr)
 		return;
-
-	PixelBufferBinder<PixelWriteBuffer> binder(m_pbuf.get());
-	u8* ptr = (u8*)m_pbuf->getWriteBuffer(dataSize);
-	if (ptr == nullptr) {
-		return;
+	{
+		Context::BindTextureParameters params;
+		params.texture = m_pTexture[m_currTex]->name;
+		params.textureUnitIndex = textureIndices::NoiseTex;
+		params.target = textureTarget::TEXTURE_2D;
+		gfxContext.bindTexture(params);
 	}
-	for (u32 y = 0; y < VI.height; ++y)	{
-		for (u32 x = 0; x < VI.width; ++x)
-			ptr[x + y*VI.width] = rand() & 0xFF;
-	}
-	m_pbuf->closeWriteBuffer();
-
-	Context::UpdateTextureDataParams params;
-	params.handle = m_pTexture->name;
-	params.textureUnitIndex = textureIndices::NoiseTex;
-	params.width = VI.width;
-	params.height = VI.height;
-	params.format = colorFormat::RED;
-	params.dataType = datatype::UNSIGNED_BYTE;
-	params.data = m_pbuf->getData();
-	gfxContext.update2DTexture(params);
-
 	m_DList = dwnd().getBuffersSwapCount();
 }

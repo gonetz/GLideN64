@@ -2,9 +2,7 @@
 #include <memory>
 #include "Types.h"
 
-namespace graphics {
-	class PixelWriteBuffer;
-}
+#define NOISE_TEX_NUM 30
 
 struct CachedTexture;
 
@@ -18,9 +16,9 @@ public:
 	void update();
 
 private:
-	CachedTexture * m_pTexture;
-	std::unique_ptr<graphics::PixelWriteBuffer> m_pbuf;
+	CachedTexture * m_pTexture[NOISE_TEX_NUM];
 	u32 m_DList;
+	u32 m_currTex, m_prevTex;
 };
 
 extern NoiseTexture g_noiseTexture;
