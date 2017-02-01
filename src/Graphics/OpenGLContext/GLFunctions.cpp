@@ -253,6 +253,10 @@ void initGLFunctions()
 	GL_GET_PROC_ADR(PFNGLGETSTRINGIPROC, glGetStringi);
 	GL_GET_PROC_ADR(PFNGLINVALIDATEFRAMEBUFFERPROC, glInvalidateFramebuffer);
 	GL_GET_PROC_ADR(PFNGLBUFFERSTORAGEPROC, glBufferStorage);
+#ifdef EGL
+	if (g_glBufferStorage == nullptr)
+		g_glBufferStorage = (PFNGLBUFFERSTORAGEPROC) eglGetProcAddress("glBufferStorageEXT");
+#endif
 	GL_GET_PROC_ADR(PFNGLFENCESYNCPROC, glFenceSync);
 	GL_GET_PROC_ADR(PFNGLCLIENTWAITSYNCPROC, glClientWaitSync);
 	GL_GET_PROC_ADR(PFNGLDELETESYNCPROC, glDeleteSync);
