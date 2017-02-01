@@ -14,6 +14,8 @@ struct GLInfo {
 	bool isGLES2 = false;
 	bool isGLESX = false;
 	bool imageTextures = false;
+	bool bufferStorage = false;
+	bool texStorage    = false;
 	bool shaderStorage = false;
 	bool msaa = false;
 	Renderer renderer = Renderer::Other;

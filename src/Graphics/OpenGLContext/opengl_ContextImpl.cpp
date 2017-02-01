@@ -274,7 +274,7 @@ graphics::ColorBufferReader * ContextImpl::createColorBufferReader(CachedTexture
 	return new ColorBufferReaderWithEGLImage(_pTexture, m_cachedFunctions->getCachedBindTexture());
 #endif*/
 
-	if (Utils::isExtensionSupported("GL_ARB_buffer_storage") || Utils::isExtensionSupported("GL_EXT_buffer_storage"))
+	if (m_glInfo.bufferStorage)
 		return new ColorBufferReaderWithBufferStorage(_pTexture, m_cachedFunctions->getCachedBindBuffer());
 
 	return new ColorBufferReaderWithPixelBuffer(_pTexture, m_cachedFunctions->getCachedBindBuffer());

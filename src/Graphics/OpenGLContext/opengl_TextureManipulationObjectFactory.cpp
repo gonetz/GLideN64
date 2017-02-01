@@ -92,7 +92,7 @@ namespace opengl {
 	public:
 		static bool Check(const GLInfo & _glinfo) {
 #ifdef ENABLE_GL_4_2
-			return (_glinfo.majorVersion > 4) || (_glinfo.majorVersion == 4 && _glinfo.minorVersion >= 2);
+			return (_glinfo.texStorage);
 #else
 			return false;
 #endif

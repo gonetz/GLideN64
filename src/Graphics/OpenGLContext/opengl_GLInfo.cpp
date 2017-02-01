@@ -37,6 +37,8 @@ void GLInfo::init() {
 		imageTextures = ((majorVersion * 10  + minorVersion >= 43) || (Utils::isExtensionSupported("GL_ARB_shader_image_load_store") && Utils::isExtensionSupported("GL_ARB_compute_shader"))) && (glBindImageTexture != nullptr);
 		msaa = true;
 	}
+	bufferStorage = Utils::isExtensionSupported("GL_ARB_buffer_storage") || Utils::isExtensionSupported("GL_EXT_buffer_storage");
+	texStorage = Utils::isExtensionSupported("GL_ARB_texture_storage") || Utils::isExtensionSupported("GL_EXT_texture_storage");
 
 	shaderStorage = false;
 	if (config.generalEmulation.enableShadersStorage != 0) {
