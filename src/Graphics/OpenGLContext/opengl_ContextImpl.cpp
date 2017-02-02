@@ -399,11 +399,10 @@ bool ContextImpl::isSupported(graphics::SpecialFeatures _feature) const
 	   return numBinaryFormats != 0 && Utils::isExtensionSupported("GL_ARB_get_program_binary");
 	}
 	case graphics::SpecialFeatures::DepthFramebufferTextures:
-#ifndef USE_DEPTH_RENDERBUFFER
-		return true;
-#else
-		return false;
-#endif
+		if (!m_glInfo.isGLES2 || Utils::isExtensionSupported("GL_OES_depth_texture"))
+			return true;
+		else
+			return false;
 	}
 	return false;
 }
