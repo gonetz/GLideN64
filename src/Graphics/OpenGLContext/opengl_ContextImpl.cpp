@@ -379,6 +379,7 @@ bool ContextImpl::isSupported(graphics::SpecialFeatures _feature) const
 	case graphics::SpecialFeatures::WeakBlitFramebuffer:
 		return m_glInfo.isGLESX;
 	case graphics::SpecialFeatures::FragmentDepthWrite:
+		return !m_glInfo.isGLES2;
 	case graphics::SpecialFeatures::NearPlaneClipping:
 		return !m_glInfo.isGLESX;
 	case graphics::SpecialFeatures::Multisampling:
