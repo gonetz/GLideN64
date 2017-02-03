@@ -28,6 +28,12 @@ void ContextImpl::init()
 {
 	m_glInfo.init();
 
+	if (m_glInfo.isGLES2) {
+		// Correct buffer target parameters, since GLES2 knows only GL_FRAMEBUFFER
+		graphics::bufferTarget::DRAW_FRAMEBUFFER = graphics::bufferTarget::FRAMEBUFFER;
+		graphics::bufferTarget::READ_FRAMEBUFFER = graphics::bufferTarget::FRAMEBUFFER;
+	}
+
 	if (!m_cachedFunctions)
 		m_cachedFunctions.reset(new CachedFunctions(m_glInfo));
 
