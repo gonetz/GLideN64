@@ -1,3 +1,4 @@
+#include <assert.h>
 #include <unordered_map>
 #include <Graphics/Parameters.h>
 #include "opengl_GLInfo.h"
@@ -98,7 +99,10 @@ namespace opengl {
 #endif
 		}
 
-		Init2DTexStorage(CachedBindTexture* _bind) : m_bind(_bind) {}
+		Init2DTexStorage(CachedBindTexture* _bind, bool _imageTextures)
+			: m_bind(_bind)
+			, m_imageTextures(_imageTextures) {
+		}
 
 		void init2DTexture(const graphics::Context::InitTextureParams & _params) override
 		{
@@ -124,7 +128,7 @@ namespace opengl {
 						_params.data);
 				}
 
-				if (_params.ImageUnit.isValid() && glBindImageTexture != nullptr)
+				if (_params.ImageUnit.isValid() && m_imageTextures)
 					glBindImageTexture(GLuint(_params.ImageUnit), GLuint(_params.handle),
 					0, GL_FALSE, GL_FALSE, GL_READ_ONLY, GLuint(_params.internalFormat));
 			}
@@ -150,6 +154,7 @@ namespace opengl {
 
 	private:
 		CachedBindTexture* m_bind;
+		bool m_imageTextures;
 		graphics::ObjectHandle m_handle;
 	};
 
@@ -187,9 +192,11 @@ namespace opengl {
 						_params.data);
 				}
 
-				if (_params.ImageUnit.isValid() && glBindImageTexture != nullptr)
+				if (_params.ImageUnit.isValid()) {
+					assert(glBindImageTexture != nullptr);
 					glBindImageTexture(GLuint(_params.ImageUnit), GLuint(_params.handle),
 					0, GL_FALSE, GL_FALSE, GL_READ_ONLY, GLuint(_params.internalFormat));
+				}
 			}
 			else {
 				glTexStorage2DMultisample(GLuint(_params.handle),
@@ -216,8 +223,9 @@ namespace opengl {
 	class Update2DTexSubImage : public Update2DTexture
 	{
 	public:
-		Update2DTexSubImage(CachedBindTexture* _bind)
-			: m_bind(_bind)	{
+		Update2DTexSubImage(CachedBindTexture* _bind, bool _imageTextures)
+			: m_bind(_bind)
+			, m_imageTextures(_imageTextures) {
 		}
 
 		void update2DTexture(const graphics::Context::UpdateTextureDataParams & _params) override
@@ -234,13 +242,14 @@ namespace opengl {
 				GLenum(_params.dataType),
 				_params.data);
 
-			if (_params.ImageUnit.isValid() && _params.internalFormat.isValid() && glBindImageTexture != nullptr)
+			if (_params.ImageUnit.isValid() && _params.internalFormat.isValid() && m_imageTextures)
 				glBindImageTexture(GLuint(_params.ImageUnit), GLuint(_params.handle),
 				0, GL_FALSE, GL_FALSE, GL_READ_ONLY, GLuint(_params.internalFormat));
 		}
 
 	private:
 		CachedBindTexture* m_bind;
+		bool m_imageTextures;
 	};
 
 	class Update2DTextureSubImage : public Update2DTexture
@@ -266,9 +275,11 @@ namespace opengl {
 				GLenum(_params.dataType),
 				_params.data);
 
-			if (_params.ImageUnit.isValid() && _params.internalFormat.isValid() && glBindImageTexture != nullptr)
+			if (_params.ImageUnit.isValid() && _params.internalFormat.isValid()) {
+				assert(glBindImageTexture != nullptr);
 				glBindImageTexture(GLuint(_params.ImageUnit), GLuint(_params.handle),
 				0, GL_FALSE, GL_FALSE, GL_READ_ONLY, GLuint(_params.internalFormat));
+			}
 		}
 	};
 
@@ -376,7 +387,7 @@ namespace opengl {
 			return new Init2DTextureStorage;
 
 		if (Init2DTexStorage::Check(m_glInfo))
-			return new Init2DTexStorage(m_cachedFunctions.getCachedBindTexture());
+			return new Init2DTexStorage(m_cachedFunctions.getCachedBindTexture(), m_glInfo.imageTextures);
 
 		return new Init2DTexImage(m_cachedFunctions.getCachedBindTexture());
 	}
@@ -386,7 +397,7 @@ namespace opengl {
 		if (Update2DTextureSubImage::Check(m_glInfo))
 			return new Update2DTextureSubImage;
 
-		return new Update2DTexSubImage(m_cachedFunctions.getCachedBindTexture());
+		return new Update2DTexSubImage(m_cachedFunctions.getCachedBindTexture(), m_glInfo.imageTextures);
 	}
 
 	Set2DTextureParameters * TextureManipulationObjectFactory::getSet2DTextureParameters() const
