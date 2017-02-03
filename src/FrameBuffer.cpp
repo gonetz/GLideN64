@@ -771,6 +771,9 @@ void FrameBufferList::attachDepthBuffer()
 	glDiscardFramebufferEXT(GL_FRAMEBUFFER, 1, discards);
 #endif
 	DepthBuffer * pDepthBuffer = depthBufferList().getCurrent();
+	if (m_pCurrent->m_pDepthBuffer == pDepthBuffer)
+		return;
+
 	if (m_pCurrent->m_FBO.isNotNull() && pDepthBuffer != nullptr) {
 		pDepthBuffer->initDepthImageTexture(m_pCurrent);
 		pDepthBuffer->initDepthBufferTexture(m_pCurrent);
