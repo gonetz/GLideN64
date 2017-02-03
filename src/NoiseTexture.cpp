@@ -56,7 +56,7 @@ void NoiseTexture::init()
 			params.magFilter = textureParameters::FILTER_NEAREST;
 			gfxContext.setTextureParameters(params);
 		}
-		unsigned char ptr[m_pTexture[i]->textureBytes];
+		std::vector<u8> ptr(m_pTexture[i]->textureBytes);
 		for (u32 y = 0; y < m_pTexture[i]->realHeight; ++y)     {
 			for (u32 x = 0; x < m_pTexture[i]->realWidth; ++x)
 				ptr[x + y*m_pTexture[i]->realWidth] = rand() & 0xFF;
@@ -69,7 +69,7 @@ void NoiseTexture::init()
 			params.height = 580;
 			params.format = colorFormat::RED;
 			params.dataType = datatype::UNSIGNED_BYTE;
-			params.data = ptr;
+			params.data = ptr.data();
 			gfxContext.update2DTexture(params);
 		}
 	}
