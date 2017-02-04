@@ -56,13 +56,8 @@ namespace glsl {
 		ShadowMapFragmentShader(const opengl::GLInfo & _glinfo)
 		{
 			m_part =
-#ifndef GLESX
-				"layout(binding = 0, r16ui) uniform readonly uimage2D uZlutImage;\n"
-				"layout(binding = 1, r16ui) uniform readonly uimage2D uTlutImage;\n"
-#else
 				"layout(binding = 0, r32ui) highp uniform readonly uimage2D uZlutImage;\n"
 				"layout(binding = 1, r32ui) highp uniform readonly uimage2D uTlutImage;\n"
-#endif
 				"layout(binding = 0) uniform sampler2D uDepthImage;		\n"
 				"uniform lowp vec4 uFogColor;								\n"
 				"OUT lowp vec4 fragColor;									\n"

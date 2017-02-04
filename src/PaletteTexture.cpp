@@ -22,6 +22,8 @@ void PaletteTexture::init()
 	if (!Context::imageTextures)
 		return;
 
+	const FramebufferTextureFormats & fbTexFormats = gfxContext.getFramebufferTextureFormats();
+
 	m_paletteCRC256 = 0;
 	m_pTexture = textureCache().addFrameBufferTexture(false);
 	m_pTexture->format = G_IM_FMT_IA;
@@ -34,15 +36,9 @@ void PaletteTexture::init()
 	m_pTexture->mirrorT = 0;
 	m_pTexture->realWidth = 256;
 	m_pTexture->realHeight = 1;
-	m_pTexture->textureBytes = m_pTexture->realWidth * m_pTexture->realHeight;
-#ifdef GLESX
-	m_pTexture->textureBytes *= sizeof(u32);
-#else
-	m_pTexture->textureBytes *= sizeof(u16);
-#endif
+	m_pTexture->textureBytes = m_pTexture->realWidth * m_pTexture->realHeight * fbTexFormats.lutFormatBytes;
 	textureCache().addFrameBufferTextureSize(m_pTexture->textureBytes);
 
-	const FramebufferTextureFormats & fbTexFormats = gfxContext.getFramebufferTextureFormats();
 	Context::InitTextureParams initParams;
 	initParams.handle = m_pTexture->name;
 	initParams.ImageUnit = textureImageUnits::Tlut;
@@ -99,11 +95,7 @@ void PaletteTexture::update()
 
 	PixelBufferBinder<PixelWriteBuffer> binder(m_pbuf.get());
 	u8* ptr = (u8*)m_pbuf->getWriteBuffer(m_pTexture->textureBytes);
-#ifdef GLESX
 	u32 * palette = (u32*)ptr;
-#else
-	u16 * palette = (u16*)ptr;
-#endif
 	u16 *src = (u16*)&TMEM[256];
 	for (int i = 0; i < 256; ++i)
 		palette[i] = swapword(src[i * 4]);

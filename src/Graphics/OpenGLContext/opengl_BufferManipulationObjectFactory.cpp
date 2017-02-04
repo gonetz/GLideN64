@@ -464,10 +464,10 @@ protected:
 		depthImageType = GL_FLOAT;
 		depthImageFormatBytes = 8;
 
-		lutInternalFormat = GL_R16;
-		lutFormat = GL_RED;
-		lutType = GL_UNSIGNED_SHORT;
-		lutFormatBytes = 2;
+		lutInternalFormat = GL_R32UI;
+		lutFormat = GL_RED_INTEGER;
+		lutType = GL_UNSIGNED_INT;
+		lutFormatBytes = 4;
 	}
 };
 

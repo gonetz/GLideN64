@@ -21,16 +21,10 @@ void ZlutTexture::init()
 
 	const FramebufferTextureFormats & fbTexFormats = gfxContext.getFramebufferTextureFormats();
 
-	const void * zLUT;
-	if (fbTexFormats.lutFormatBytes == 4) {
-		std::vector<u32> vecZLUT(0x40000);
-		const u16 * const zLUT16 = depthBufferList().getZLUT();
-		for (u32 i = 0; i < 0x40000; ++i)
-			vecZLUT[i] = zLUT16[i];
-		zLUT = vecZLUT.data();
-	} else {
-		zLUT = depthBufferList().getZLUT();
-	}
+	std::vector<u32> vecZLUT(0x40000);
+	const u16 * const zLUT16 = depthBufferList().getZLUT();
+	for (u32 i = 0; i < 0x40000; ++i)
+		vecZLUT[i] = zLUT16[i];
 
 	m_pTexture = textureCache().addFrameBufferTexture(false);
 	m_pTexture->format = G_IM_FMT_IA;
@@ -54,7 +48,7 @@ void ZlutTexture::init()
 	initParams.internalFormat = fbTexFormats.lutInternalFormat;
 	initParams.format = fbTexFormats.lutFormat;
 	initParams.dataType = fbTexFormats.lutType;
-	initParams.data = zLUT;
+	initParams.data = vecZLUT.data();
 	gfxContext.init2DTexture(initParams);
 
 	Context::TexParameters setParams;
