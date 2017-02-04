@@ -12,6 +12,7 @@
 #include "Config.h"
 #include "PluginAPI.h"
 #include "RSP.h"
+#include "Log.h"
 
 static int saRGBExpanded[] =
 {
@@ -420,9 +421,28 @@ void CombinerInfo::_saveShadersStorage() const
 	fout.write(strGLVersion, len);
 
 	len = m_combiners.size();
-	fout.write((char*)&len, sizeof(len));
+
+	u32 totalWritten = 0;
+	std::vector<char> allShaderData;
+
 	for (Combiners::const_iterator cur = m_combiners.begin(); cur != m_combiners.end(); ++cur)
-		fout << *(cur->second);
+	{
+		std::vector<char> data;
+		if(cur->second->convertShaderCacheToBinary(data))
+		{
+			allShaderData.insert(allShaderData.end(), data.begin(), data.end());
+			++totalWritten;
+		}
+		else
+		{
+			LOG(LOG_ERROR, "Error while writing shader with key key=0x%016lX",
+				static_cast<long unsigned int>(cur->second->getKey()));
+		}
+	}
+
+	fout.write((char*)&totalWritten, sizeof(totalWritten));
+	fout.write(allShaderData.data(), allShaderData.size());
+
 	fout.flush();
 	fout.close();
 }
@@ -472,20 +492,19 @@ bool CombinerInfo::_loadShadersStorage()
 		fin.read((char*)&len, sizeof(len));
 		for (u32 i = 0; i < len; ++i) {
 			m_pCurrent = new ShaderCombiner();
-			fin >> *m_pCurrent;
+			m_pCurrent->readShaderCacheFromFile(fin);
 			m_pCurrent->update(true);
 			m_pUniformCollection->bindWithShaderCombiner(m_pCurrent);
 			m_combiners[m_pCurrent->getKey()] = m_pCurrent;
 		}
 	}
 	catch (...) {
-		m_shadersLoaded = 0;
-		return false;
+		LOG(LOG_ERROR, "Stream error while loading shader cache! Buffer is probably not big enough");
 	}
 
 	m_shadersLoaded = m_combiners.size();
 	fin.close();
-	return !isGLError();
+	return true;
 }
 #else // GLES2
 void CombinerInfo::_saveShadersStorage() const
