@@ -19,6 +19,9 @@ PaletteTexture::PaletteTexture()
 
 void PaletteTexture::init()
 {
+	if (!Context::imageTextures)
+		return;
+
 	m_paletteCRC256 = 0;
 	m_pTexture = textureCache().addFrameBufferTexture(false);
 	m_pTexture->format = G_IM_FMT_IA;
@@ -66,6 +69,9 @@ void PaletteTexture::init()
 
 void PaletteTexture::destroy()
 {
+	if (!Context::imageTextures)
+		return;
+
 	const FramebufferTextureFormats & fbTexFormats = gfxContext.getFramebufferTextureFormats();
 
 	Context::BindImageTextureParameters bindParams;
@@ -83,6 +89,9 @@ void PaletteTexture::destroy()
 
 void PaletteTexture::update()
 {
+	if (!Context::imageTextures)
+		return;
+
 	if (m_paletteCRC256 == gDP.paletteCRC256)
 		return;
 	
