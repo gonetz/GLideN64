@@ -144,7 +144,7 @@ public:
 	{
 		if (_size > m_size)
 			_size = m_size;
-		return glMapBufferRange(GL_PIXEL_UNPACK_BUFFER, 0, _size, GL_MAP_WRITE_BIT);
+		return glMapBufferRange(GL_PIXEL_UNPACK_BUFFER, 0, _size, GL_MAP_WRITE_BIT | GL_MAP_UNSYNCHRONIZED_BIT | GL_MAP_INVALIDATE_BUFFER_BIT);
 	}
 
 	void closeWriteBuffer() override
@@ -167,6 +167,60 @@ public:
 private:
 	CachedBindBuffer * m_bind;
 	size_t m_size;
+	GLuint m_PBO;
+};
+
+class PersistentWriteBuffer : public graphics::PixelWriteBuffer
+{
+public:
+	PersistentWriteBuffer(CachedBindBuffer * _bind, size_t _size)
+		: m_bind(_bind)
+		, m_size(_size)
+	{
+		glGenBuffers(1, &m_PBO);
+		m_bind->bind(graphics::Parameter(GL_PIXEL_UNPACK_BUFFER), graphics::ObjectHandle(m_PBO));
+		glBufferStorage(GL_PIXEL_UNPACK_BUFFER, m_size * 6, nullptr, GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT);
+		m_bufferData = glMapBufferRange(GL_PIXEL_UNPACK_BUFFER, 0, m_size * 6, GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT);
+		m_bufferOffset = 0;
+		m_bind->bind(graphics::Parameter(GL_PIXEL_UNPACK_BUFFER), graphics::ObjectHandle());
+	}
+
+	~PersistentWriteBuffer() {
+		glDeleteBuffers(1, &m_PBO);
+		m_PBO = 0;
+	}
+
+	void * getWriteBuffer(size_t _size) override
+	{
+		if (_size > m_size)
+			_size = m_size;
+		if (m_bufferOffset + _size > m_size * 6)
+			m_bufferOffset = 0;
+		return (char*)m_bufferData + m_bufferOffset;
+	}
+
+	void closeWriteBuffer() override
+	{
+		m_bufferOffset += m_size;
+	}
+
+	void * getData() override {
+		return nullptr;
+	}
+
+	void bind() override {
+		m_bind->bind(graphics::Parameter(GL_PIXEL_UNPACK_BUFFER), graphics::ObjectHandle(m_PBO));
+	}
+
+	void unbind() override {
+		m_bind->bind(graphics::Parameter(GL_PIXEL_UNPACK_BUFFER), graphics::ObjectHandle());
+	}
+
+private:
+	CachedBindBuffer * m_bind;
+	size_t m_size;
+	void* m_bufferData;
+	u32 m_bufferOffset;
 	GLuint m_PBO;
 };
 
@@ -525,6 +579,8 @@ CreatePixelWriteBuffer * BufferManipulationObjectFactory::createPixelWriteBuffer
 {
 	if (m_glInfo.isGLES2)
 		return new CreatePixelWriteBufferT<MemoryWriteBuffer>(nullptr);
+	if (m_glInfo.bufferStorage)
+		return new CreatePixelWriteBufferT<PersistentWriteBuffer>(m_cachedFunctions.getCachedBindBuffer());
 
 	return new CreatePixelWriteBufferT<PBOWriteBuffer>(m_cachedFunctions.getCachedBindBuffer());
 }
