@@ -144,7 +144,7 @@ public:
 	{
 		if (_size > m_size)
 			_size = m_size;
-		return glMapBufferRange(GL_PIXEL_UNPACK_BUFFER, 0, _size, GL_MAP_WRITE_BIT);
+		return glMapBufferRange(GL_PIXEL_UNPACK_BUFFER, 0, _size, GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT | GL_MAP_UNSYNCHRONIZED_BIT);
 	}
 
 	void closeWriteBuffer() override
