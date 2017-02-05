@@ -989,6 +989,10 @@ public:
 					"  }		\n"
 				;
 			}
+		} else {
+			m_part =
+				"lowp vec4 readTex(in sampler2D tex, in mediump vec2 texCoord, in lowp int fbMonochrome, in lowp int fbFixedAlpha);	\n"
+			;
 		}
 	}
 };
