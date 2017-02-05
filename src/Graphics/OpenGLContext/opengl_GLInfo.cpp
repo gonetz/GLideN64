@@ -2,6 +2,9 @@
 #include <Config.h>
 #include "opengl_Utils.h"
 #include "opengl_GLInfo.h"
+#ifdef EGL
+#include <EGL/egl.h>
+#endif
 
 using namespace opengl;
 
@@ -40,9 +43,12 @@ void GLInfo::init() {
 	}
 	bufferStorage = (!isGLESX && (numericVersion >= 44)) || Utils::isExtensionSupported(*this, "GL_ARB_buffer_storage") ||
 			Utils::isExtensionSupported(*this, "GL_EXT_buffer_storage");
+#ifdef EGL
+	if (isGLESX && bufferStorage)
+		g_glBufferStorage = (PFNGLBUFFERSTORAGEPROC) eglGetProcAddress("glBufferStorageEXT");
+#endif
 	texStorage = (isGLESX && (numericVersion >= 30)) || (!isGLESX && numericVersion >= 42) ||
-			Utils::isExtensionSupported(*this, "GL_ARB_texture_storage") ||
-			Utils::isExtensionSupported(*this, "GL_EXT_texture_storage");
+			Utils::isExtensionSupported(*this, "GL_ARB_texture_storage");
 
 	shaderStorage = false;
 	if (config.generalEmulation.enableShadersStorage != 0) {
