@@ -138,6 +138,8 @@ namespace graphics {
 
 		void bindImageTexture(const BindImageTextureParameters & _params);
 
+		u32 convertGHQTextureFormat(u32 _format) const;
+
 		/*---------------Framebuffer-------------*/
 
 		const FramebufferTextureFormats & getFramebufferTextureFormats();

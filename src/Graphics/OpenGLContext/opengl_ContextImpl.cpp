@@ -222,6 +222,14 @@ void ContextImpl::bindImageTexture(const graphics::Context::BindImageTexturePara
 		glBindImageTexture(GLuint(_params.imageUnit), GLuint(_params.texture), 0, GL_FALSE, 0, GLenum(_params.accessMode), GLenum(_params.textureFormat));
 }
 
+u32 ContextImpl::convertGHQTextureFormat(u32 _format) const
+{
+	if (!m_glInfo.isGLES2)
+		return _format;
+
+	return GL_RGBA;
+}
+
 /*---------------Framebuffer-------------*/
 
 graphics::FramebufferTextureFormats * ContextImpl::getFramebufferTextureFormats()

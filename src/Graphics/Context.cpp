@@ -135,6 +135,11 @@ void Context::bindImageTexture(const BindImageTextureParameters & _params)
 	m_impl->bindImageTexture(_params);
 }
 
+u32 Context::convertGHQTextureFormat(u32 _format) const
+{
+	return m_impl->convertGHQTextureFormat(_format);
+}
+
 /*---------------Framebuffer-------------*/
 
 const FramebufferTextureFormats & Context::getFramebufferTextureFormats()
