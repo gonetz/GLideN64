@@ -179,8 +179,8 @@ public:
 	{
 		glGenBuffers(1, &m_PBO);
 		m_bind->bind(graphics::Parameter(GL_PIXEL_UNPACK_BUFFER), graphics::ObjectHandle(m_PBO));
-		glBufferStorage(GL_PIXEL_UNPACK_BUFFER, m_size * 6, nullptr, GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT);
-		m_bufferData = glMapBufferRange(GL_PIXEL_UNPACK_BUFFER, 0, m_size * 6, GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT);
+		glBufferStorage(GL_PIXEL_UNPACK_BUFFER, m_size * 32, nullptr, GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT);
+		m_bufferData = glMapBufferRange(GL_PIXEL_UNPACK_BUFFER, 0, m_size * 32, GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT);
 		m_bufferOffset = 0;
 		m_bind->bind(graphics::Parameter(GL_PIXEL_UNPACK_BUFFER), graphics::ObjectHandle());
 	}
@@ -194,7 +194,7 @@ public:
 	{
 		if (_size > m_size)
 			_size = m_size;
-		if (m_bufferOffset + _size > m_size * 6)
+		if (m_bufferOffset + _size > m_size * 32)
 			m_bufferOffset = 0;
 		return (char*)m_bufferData + m_bufferOffset;
 	}
@@ -205,7 +205,7 @@ public:
 	}
 
 	void * getData() override {
-		return nullptr;
+		return (char*)nullptr + m_bufferOffset - m_size;
 	}
 
 	void bind() override {
