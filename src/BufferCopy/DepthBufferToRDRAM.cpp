@@ -20,8 +20,6 @@
 
 using namespace graphics;
 
-#ifndef GLES2
-
 DepthBufferToRDRAM::DepthBufferToRDRAM()
 	: m_frameCount(-1)
 	, m_pColorTexture(nullptr)
@@ -262,4 +260,3 @@ bool DepthBufferToRDRAM::copyChunkToRDRAM(u32 _address)
 	const u32 endAddress = _address + 0x1000;
 	return _copy(_address, endAddress);
 }
-#endif // GLES2
