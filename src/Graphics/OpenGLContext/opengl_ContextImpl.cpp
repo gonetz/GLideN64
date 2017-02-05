@@ -274,7 +274,9 @@ graphics::PixelWriteBuffer * ContextImpl::createPixelWriteBuffer(size_t _sizeInB
 
 graphics::PixelReadBuffer * ContextImpl::createPixelReadBuffer(size_t _sizeInBytes)
 {
-	return m_createPixelReadBuffer->createPixelReadBuffer(_sizeInBytes);
+	if (m_createPixelReadBuffer)
+		return m_createPixelReadBuffer->createPixelReadBuffer(_sizeInBytes);
+	return nullptr;
 }
 
 graphics::ColorBufferReader * ContextImpl::createColorBufferReader(CachedTexture * _pTexture)
