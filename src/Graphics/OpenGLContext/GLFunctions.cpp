@@ -290,10 +290,4 @@ void initGLFunctions()
 	GL_GET_PROC_ADR(PFNGLCREATEFRAMEBUFFERSPROC, glCreateFramebuffers);
 	GL_GET_PROC_ADR(PFNGLNAMEDFRAMEBUFFERTEXTUREPROC, glNamedFramebufferTexture);
 	GL_GET_PROC_ADR(PFNGLDRAWELEMENTSBASEVERTEXPROC, glDrawElementsBaseVertex);
-#ifdef EGL
-	if (g_glBufferStorage == nullptr)
-		g_glBufferStorage = (PFNGLBUFFERSTORAGEPROC) eglGetProcAddress("glBufferStorageEXT");
-	if (g_glTexStorage2D == nullptr)
-		g_glTexStorage2D = (PFNGLTEXSTORAGE2DPROC) eglGetProcAddress("glTexStorage2DEXT");
-#endif
 }

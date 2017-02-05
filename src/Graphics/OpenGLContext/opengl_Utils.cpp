@@ -8,7 +8,7 @@
 using namespace opengl;
 
 bool Utils::isExtensionSupported(const opengl::GLInfo & _glinfo, const char *extension) {
-	if (!_glinfo.isGLES2 && !_glinfo.majorVersion >= 3) {
+	if (_glinfo.majorVersion >= 3) {
 		GLint count = 0;
 		glGetIntegerv(GL_NUM_EXTENSIONS, &count);
 		assert(count >= 0);
