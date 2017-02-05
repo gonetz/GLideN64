@@ -89,18 +89,32 @@ namespace glsl {
 	public:
 		MonochromeFragmentShader(const opengl::GLInfo & _glinfo)
 		{
-			m_part =
-				"uniform sampler2D uColorImage;							\n"
-				"OUT lowp vec4 fragColor;								\n"
-				"void main()											\n"
-				"{														\n"
-				"  mediump ivec2 coord = ivec2(gl_FragCoord.xy);				\n"
-				"  lowp vec4 tex = texelFetch(uColorImage, coord, 0);		\n"
-				//"  lowp float c = (tex.r + tex.g + tex.b) / 3.0f;		\n"
-				"  lowp float c = dot(vec4(0.2126, 0.7152, 0.0722, 0.0), tex);\n"
-				"  fragColor = vec4(c, c, c, 1.0);						\n"
-				"}														\n"
-				;
+			if (_glinfo.isGLES2) {
+				m_part =
+					"uniform sampler2D uColorImage;									\n"
+					"uniform mediump vec2 uScreenSize;								\n"
+					"void main()													\n"
+					"{																\n"
+					"  mediump vec2 coord = gl_FragCoord.xy/uScreenSize;			\n"
+					"  lowp vec4 tex = texture2D(uColorImage, coord);				\n"
+					"  lowp float c = dot(vec4(0.2126, 0.7152, 0.0722, 0.0), tex);	\n"
+					"  gl_FragColor = vec4(c, c, c, 1.0);							\n"
+					"}																\n"
+					;
+			} else {
+				m_part =
+					"uniform sampler2D uColorImage;							\n"
+					"OUT lowp vec4 fragColor;								\n"
+					"void main()											\n"
+					"{														\n"
+					"  mediump ivec2 coord = ivec2(gl_FragCoord.xy);				\n"
+					"  lowp vec4 tex = texelFetch(uColorImage, coord, 0);		\n"
+					//"  lowp float c = (tex.r + tex.g + tex.b) / 3.0f;		\n"
+					"  lowp float c = dot(vec4(0.2126, 0.7152, 0.0722, 0.0), tex);\n"
+					"  fragColor = vec4(c, c, c, 1.0);						\n"
+					"}														\n"
+					;
+			}
 		}
 	};
 
