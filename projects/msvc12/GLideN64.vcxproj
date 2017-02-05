@@ -314,6 +314,7 @@
     <ClCompile Include="..\..\src\Graphics\OpenGLContext\opengl_TextureManipulationObjectFactory.cpp" />
     <ClCompile Include="..\..\src\Graphics\OpenGLContext\opengl_UnbufferedDrawer.cpp" />
     <ClCompile Include="..\..\src\Graphics\OpenGLContext\opengl_Utils.cpp" />
+    <ClCompile Include="..\..\src\Graphics\OpenGLContext\opengl_BufferedDrawer.cpp" />
     <ClCompile Include="..\..\src\Graphics\OpenGLContext\windows\windows_DisplayWindow.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_mupenplus|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_mupenplus|Win32'">true</ExcludedFromBuild>
@@ -447,6 +448,7 @@
     <ClInclude Include="..\..\src\Graphics\OpenGLContext\opengl_TextureManipulationObjectFactory.h" />
     <ClInclude Include="..\..\src\Graphics\OpenGLContext\opengl_UnbufferedDrawer.h" />
     <ClInclude Include="..\..\src\Graphics\OpenGLContext\opengl_Utils.h" />
+    <ClInclude Include="..\..\src\Graphics\OpenGLContext\opengl_BufferedDrawer.h" />
     <ClInclude Include="..\..\src\Graphics\Parameter.h" />
     <ClInclude Include="..\..\src\Graphics\Parameters.h" />
     <ClInclude Include="..\..\src\Graphics\PixelBuffer.h" />

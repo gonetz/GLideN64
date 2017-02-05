@@ -117,6 +117,7 @@ extern PFNGLBLENDCOLORPROC g_glBlendColor;
 #define glDisableVertexAttribArray g_glDisableVertexAttribArray
 #define glVertexAttribPointer g_glVertexAttribPointer
 #define glBindAttribLocation g_glBindAttribLocation
+#define glVertexAttrib1f g_glVertexAttrib1f
 #define glVertexAttrib4f g_glVertexAttrib4f
 #define glVertexAttrib4fv g_glVertexAttrib4fv
 
@@ -137,6 +138,9 @@ extern PFNGLBLENDCOLORPROC g_glBlendColor;
 #define glFramebufferRenderbuffer g_glFramebufferRenderbuffer
 #define glCheckFramebufferStatus g_glCheckFramebufferStatus
 #define glBlitFramebuffer g_glBlitFramebuffer
+#define glGenVertexArrays g_glGenVertexArrays
+#define glBindVertexArray g_glBindVertexArray
+#define glDeleteVertexArrays g_glDeleteVertexArrays;
 #define glGenBuffers g_glGenBuffers
 #define glBindBuffer g_glBindBuffer
 #define glBufferData g_glBufferData
@@ -175,6 +179,7 @@ extern PFNGLBLENDCOLORPROC g_glBlendColor;
 #define glCreateBuffers g_glCreateBuffers
 #define glCreateFramebuffers g_glCreateFramebuffers
 #define glNamedFramebufferTexture g_glNamedFramebufferTexture
+#define glDrawElementsBaseVertex g_glDrawElementsBaseVertex
 
 extern PFNGLCREATESHADERPROC g_glCreateShader;
 extern PFNGLCOMPILESHADERPROC g_glCompileShader;
@@ -205,6 +210,7 @@ extern PFNGLENABLEVERTEXATTRIBARRAYPROC g_glEnableVertexAttribArray;
 extern PFNGLDISABLEVERTEXATTRIBARRAYPROC g_glDisableVertexAttribArray;
 extern PFNGLVERTEXATTRIBPOINTERPROC g_glVertexAttribPointer;
 extern PFNGLBINDATTRIBLOCATIONPROC g_glBindAttribLocation;
+extern PFNGLVERTEXATTRIB1FPROC g_glVertexAttrib1f;
 extern PFNGLVERTEXATTRIB4FPROC g_glVertexAttrib4f;
 extern PFNGLVERTEXATTRIB4FVPROC g_glVertexAttrib4fv;
 
@@ -225,6 +231,9 @@ extern PFNGLDELETERENDERBUFFERSPROC g_glDeleteRenderbuffers;
 extern PFNGLFRAMEBUFFERRENDERBUFFERPROC g_glFramebufferRenderbuffer;
 extern PFNGLCHECKFRAMEBUFFERSTATUSPROC g_glCheckFramebufferStatus;
 extern PFNGLBLITFRAMEBUFFERPROC g_glBlitFramebuffer;
+extern PFNGLGENVERTEXARRAYSPROC g_glGenVertexArrays;
+extern PFNGLBINDVERTEXARRAYPROC g_glBindVertexArray;
+extern PFNGLDELETEVERTEXARRAYSPROC g_glDeleteVertexArrays;
 extern PFNGLGENBUFFERSPROC g_glGenBuffers;
 extern PFNGLBINDBUFFERPROC g_glBindBuffer;
 extern PFNGLBUFFERDATAPROC g_glBufferData;
@@ -263,6 +272,7 @@ extern PFNGLCREATETEXTURESPROC g_glCreateTextures;
 extern PFNGLCREATEBUFFERSPROC g_glCreateBuffers;
 extern PFNGLCREATEFRAMEBUFFERSPROC g_glCreateFramebuffers;
 extern PFNGLNAMEDFRAMEBUFFERTEXTUREPROC g_glNamedFramebufferTexture;
+extern PFNGLDRAWELEMENTSBASEVERTEXPROC g_glDrawElementsBaseVertex;
 
 void initGLFunctions();
 
