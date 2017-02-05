@@ -90,7 +90,7 @@ void PaletteTexture::update()
 
 	if (m_paletteCRC256 == gDP.paletteCRC256)
 		return;
-	
+
 	m_paletteCRC256 = gDP.paletteCRC256;
 
 	PixelBufferBinder<PixelWriteBuffer> binder(m_pbuf.get());
