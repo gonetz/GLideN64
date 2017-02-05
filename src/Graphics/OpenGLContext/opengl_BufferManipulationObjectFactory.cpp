@@ -404,7 +404,8 @@ struct FramebufferTextureFormatsGLES2 : public graphics::FramebufferTextureForma
 		return _glinfo.isGLES2;
 	}
 
-	FramebufferTextureFormatsGLES2()
+	FramebufferTextureFormatsGLES2(const GLInfo & _glinfo):
+		m_glinfo(_glinfo)
 	{
 		init();
 	}
@@ -417,7 +418,7 @@ protected:
 		monochromeType = GL_UNSIGNED_SHORT_5_6_5;
 		monochromeFormatBytes = 2;
 
-		if (Utils::isExtensionSupported("GL_OES_depth_texture")) {
+		if (Utils::isExtensionSupported(m_glinfo, "GL_OES_depth_texture")) {
 			depthInternalFormat = GL_DEPTH_COMPONENT;
 			depthFormatBytes = 4;
 		} else {
@@ -428,7 +429,7 @@ protected:
 		depthFormat = GL_DEPTH_COMPONENT;
 		depthType = GL_UNSIGNED_INT;
 
-		if (Utils::isExtensionSupported("GL_OES_rgb8_rgba8")) {
+		if (Utils::isExtensionSupported(m_glinfo, "GL_OES_rgb8_rgba8")) {
 			colorInternalFormat = GL_RGBA;
 			colorFormat = GL_RGBA;
 			colorType = GL_UNSIGNED_BYTE;
@@ -441,6 +442,9 @@ protected:
 			colorFormatBytes = 2;
 		}
 	}
+
+private:
+	const GLInfo & m_glinfo;
 };
 
 struct FramebufferTextureFormatsGLES3 : public graphics::FramebufferTextureFormats
@@ -602,7 +606,7 @@ graphics::FramebufferTextureFormats * BufferManipulationObjectFactory::getFrameb
 		return new FramebufferTextureFormatsGLES3;
 
 	if (FramebufferTextureFormatsGLES2::Check(m_glInfo))
-		return new FramebufferTextureFormatsGLES2;
+		return new FramebufferTextureFormatsGLES2(m_glInfo);
 
 	assert(false);
 	return nullptr;

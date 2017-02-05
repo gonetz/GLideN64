@@ -12,8 +12,7 @@ void GLInfo::init() {
 	if (isGLES2) {
 		majorVersion = 2;
 		minorVersion = 0;
-	}
-	else {
+	} else {
 		glGetIntegerv(GL_MAJOR_VERSION, &majorVersion);
 		glGetIntegerv(GL_MINOR_VERSION, &minorVersion);
 	}
@@ -35,18 +34,22 @@ void GLInfo::init() {
 		imageTextures = (numericVersion >= 31) && (glBindImageTexture != nullptr);
 		msaa = numericVersion >= 31;
 	} else {
-		imageTextures = ((numericVersion >= 43) || (Utils::isExtensionSupported("GL_ARB_shader_image_load_store") && Utils::isExtensionSupported("GL_ARB_compute_shader"))) && (glBindImageTexture != nullptr);
+		imageTextures = ((numericVersion >= 43) || (Utils::isExtensionSupported(*this, "GL_ARB_shader_image_load_store") &&
+				Utils::isExtensionSupported(*this, "GL_ARB_compute_shader"))) && (glBindImageTexture != nullptr);
 		msaa = true;
 	}
-	bufferStorage = (!isGLESX && (numericVersion >= 44)) || Utils::isExtensionSupported("GL_ARB_buffer_storage") || Utils::isExtensionSupported("GL_EXT_buffer_storage");
-	texStorage = (isGLESX && (numericVersion >= 30)) || (!isGLESX && numericVersion >= 42) || Utils::isExtensionSupported("GL_ARB_texture_storage") || Utils::isExtensionSupported("GL_EXT_texture_storage");
+	bufferStorage = (!isGLESX && (numericVersion >= 44)) || Utils::isExtensionSupported(*this, "GL_ARB_buffer_storage") ||
+			Utils::isExtensionSupported(*this, "GL_EXT_buffer_storage");
+	texStorage = (isGLESX && (numericVersion >= 30)) || (!isGLESX && numericVersion >= 42) ||
+			Utils::isExtensionSupported(*this, "GL_ARB_texture_storage") ||
+			Utils::isExtensionSupported(*this, "GL_EXT_texture_storage");
 
 	shaderStorage = false;
 	if (config.generalEmulation.enableShadersStorage != 0) {
 		const char * strGetProgramBinary = isGLESX
 			? "GL_OES_get_program_binary"
 			: "GL_ARB_get_program_binary";
-		if (Utils::isExtensionSupported(strGetProgramBinary)) {
+		if (Utils::isExtensionSupported(*this, strGetProgramBinary)) {
 			GLint numBinaryFormats = 0;
 			glGetIntegerv(GL_NUM_PROGRAM_BINARY_FORMATS, &numBinaryFormats);
 			shaderStorage = numBinaryFormats > 0;

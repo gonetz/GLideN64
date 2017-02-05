@@ -406,12 +406,12 @@ bool ContextImpl::isSupported(graphics::SpecialFeatures _feature) const
 #endif
 
 		if (m_glInfo.isGLESX)
-		   return numBinaryFormats != 0 && Utils::isExtensionSupported("GL_OES_get_program_binary");
+		   return numBinaryFormats != 0 && Utils::isExtensionSupported(m_glInfo, "GL_OES_get_program_binary");
 
-	   return numBinaryFormats != 0 && Utils::isExtensionSupported("GL_ARB_get_program_binary");
+	   return numBinaryFormats != 0 && Utils::isExtensionSupported(m_glInfo, "GL_ARB_get_program_binary");
 	}
 	case graphics::SpecialFeatures::DepthFramebufferTextures:
-		if (!m_glInfo.isGLES2 || Utils::isExtensionSupported("GL_OES_depth_texture"))
+		if (!m_glInfo.isGLES2 || Utils::isExtensionSupported(m_glInfo, "GL_OES_depth_texture"))
 			return true;
 		else
 			return false;
