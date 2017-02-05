@@ -8,6 +8,7 @@ namespace graphics {
 		extern ColorFormatParam RG;
 		extern ColorFormatParam RED;
 		extern ColorFormatParam DEPTH;
+		extern ColorFormatParam LUMINANCE;
 	}
 
 	namespace internalcolorFormat {
@@ -19,6 +20,7 @@ namespace graphics {
 		extern InternalColorFormatParam RED;
 		extern InternalColorFormatParam DEPTH;
 		extern InternalColorFormatParam RG32F;
+		extern InternalColorFormatParam LUMINANCE;
 	}
 
 	namespace datatype {

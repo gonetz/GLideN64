@@ -31,6 +31,11 @@ namespace graphics {
 		DatatypeParam lutType;
 		u32 lutFormatBytes;
 
+		InternalColorFormatParam noiseInternalFormat;
+		ColorFormatParam noiseFormat;
+		DatatypeParam noiseType;
+		u32 noiseFormatBytes;
+
 		virtual ~FramebufferTextureFormats() {}
 
 	protected:

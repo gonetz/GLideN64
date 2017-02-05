@@ -441,6 +441,11 @@ protected:
 			colorType = GL_UNSIGNED_SHORT_5_6_5;
 			colorFormatBytes = 2;
 		}
+
+		noiseInternalFormat = graphics::internalcolorFormat::LUMINANCE;
+		noiseFormat = graphics::colorFormat::LUMINANCE;
+		noiseType = GL_UNSIGNED_BYTE;
+		noiseFormatBytes = 1;
 	}
 
 private:
@@ -485,6 +490,11 @@ protected:
 		lutFormat = GL_RED_INTEGER;
 		lutType = GL_UNSIGNED_INT;
 		lutFormatBytes = 4;
+
+		noiseInternalFormat = GL_R8;
+		noiseFormat = GL_RED;
+		noiseType = GL_UNSIGNED_BYTE;
+		noiseFormatBytes = 1;
 	}
 };
 
@@ -526,6 +536,11 @@ protected:
 		lutFormat = GL_RED_INTEGER;
 		lutType = GL_UNSIGNED_INT;
 		lutFormatBytes = 4;
+
+		noiseInternalFormat = GL_R8;
+		noiseFormat = GL_RED;
+		noiseType = GL_UNSIGNED_BYTE;
+		noiseFormatBytes = 1;
 	}
 };
 

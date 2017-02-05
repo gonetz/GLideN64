@@ -8,6 +8,7 @@ namespace graphics {
 		ColorFormatParam RG(GL_RG);
 		ColorFormatParam RED(GL_RED);
 		ColorFormatParam DEPTH(GL_DEPTH_COMPONENT);
+		ColorFormatParam LUMINANCE(0x1909);
 	}
 
 	namespace internalcolorFormat {
@@ -19,6 +20,7 @@ namespace graphics {
 		InternalColorFormatParam RED(GL_R8);
 		InternalColorFormatParam DEPTH(GL_DEPTH_COMPONENT24);
 		InternalColorFormatParam RG32F(GL_RG32F);
+		InternalColorFormatParam LUMINANCE(0x1909);
 	}
 
 	namespace datatype {

@@ -37,14 +37,15 @@ void NoiseTexture::init()
 		m_pTexture[i]->textureBytes = m_pTexture[i]->realWidth * m_pTexture[i]->realHeight;
 		textureCache().addFrameBufferTextureSize(m_pTexture[i]->textureBytes);
 
+		const FramebufferTextureFormats & fbTexFormats = gfxContext.getFramebufferTextureFormats();
 		{
 			Context::InitTextureParams params;
 			params.handle = m_pTexture[i]->name;
 			params.width = m_pTexture[i]->realWidth;
 			params.height = m_pTexture[i]->realHeight;
-			params.internalFormat = internalcolorFormat::RED;
-			params.format = colorFormat::RED;
-			params.dataType = datatype::UNSIGNED_BYTE;
+			params.internalFormat = fbTexFormats.noiseInternalFormat;
+			params.format = fbTexFormats.noiseFormat;
+			params.dataType = fbTexFormats.noiseType;
 			gfxContext.init2DTexture(params);
 		}
 		{
@@ -67,8 +68,8 @@ void NoiseTexture::init()
 			params.textureUnitIndex = textureIndices::NoiseTex;
 			params.width = 640;
 			params.height = 580;
-			params.format = colorFormat::RED;
-			params.dataType = datatype::UNSIGNED_BYTE;
+			params.format = fbTexFormats.noiseFormat;
+			params.dataType = fbTexFormats.noiseType;
 			params.data = ptr.data();
 			gfxContext.update2DTexture(params);
 		}
