@@ -72,21 +72,24 @@ void BufferedDrawer::_updateBuffer(Buffer & _buffer, u32 _dataSize, const void *
 	if (_buffer.offset + _dataSize > _buffer.size) {
 		_buffer.offset = 0;
 		_buffer.pos = 0;
+		if (!m_glInfo.bufferStorage)
+			m_rectBufferOffsets.clear();
 	}
 
 	if (m_glInfo.bufferStorage) {
 		memcpy(&_buffer.data[_buffer.offset], _data, _dataSize);
 	}
 	else {
-		m_bindBuffer->bind(Parameter(GL_ARRAY_BUFFER), ObjectHandle(_buffer.handle));
-		void* buffer_pointer = glMapBufferRange(GL_ARRAY_BUFFER, _buffer.offset, _dataSize, GL_MAP_WRITE_BIT | GL_MAP_UNSYNCHRONIZED_BIT);
+		m_bindBuffer->bind(Parameter(_buffer.type), ObjectHandle(_buffer.handle));
+		void* buffer_pointer = glMapBufferRange(_buffer.type, _buffer.offset, _dataSize, GL_MAP_WRITE_BIT | GL_MAP_UNSYNCHRONIZED_BIT);
 		memcpy(buffer_pointer, _data, _dataSize);
-		glUnmapBuffer(GL_ARRAY_BUFFER);
+		glUnmapBuffer(_buffer.type);
 	}
 }
 
 void BufferedDrawer::_updateRectBuffer(const graphics::Context::DrawRectParameters & _params)
 {
+	u32 crc;
 	const BuffersType type = BuffersType::rects;
 	if (m_type != type) {
 		glBindVertexArray(m_rectsBuffers.vao);
@@ -95,21 +98,22 @@ void BufferedDrawer::_updateRectBuffer(const graphics::Context::DrawRectParamete
 
 	Buffer & buffer = m_rectsBuffers.vbo;
 	const size_t dataSize = _params.verticesCount * sizeof(RectVertex);
-	const u32 crc = CRC_Calculate(0xFFFFFFFF, _params.vertices, dataSize);
+	if (!m_glInfo.bufferStorage) {
+		crc = CRC_Calculate(0xFFFFFFFF, _params.vertices, dataSize);
 
-	auto iter = m_rectBufferOffsets.find(crc);
-	if (iter != m_rectBufferOffsets.end()) {
-		buffer.pos = iter->second;
-		return;
+		auto iter = m_rectBufferOffsets.find(crc);
+		if (iter != m_rectBufferOffsets.end()) {
+			buffer.pos = iter->second;
+			return;
+		}
 	}
 
 	_updateBuffer(buffer, dataSize, _params.vertices);
-	if (buffer.pos == 0)
-		m_rectBufferOffsets.clear();
 
 	buffer.offset += dataSize;
 	buffer.pos = buffer.offset / sizeof(RectVertex);
-	m_rectBufferOffsets[crc] = buffer.pos;
+	if (!m_glInfo.bufferStorage)
+		m_rectBufferOffsets[crc] = buffer.pos;
 }
 
 
