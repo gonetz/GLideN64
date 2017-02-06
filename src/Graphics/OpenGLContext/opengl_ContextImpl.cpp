@@ -408,17 +408,7 @@ bool ContextImpl::isSupported(graphics::SpecialFeatures _feature) const
 	case graphics::SpecialFeatures::ImageTextures:
 		return m_glInfo.imageTextures;
 	case graphics::SpecialFeatures::ShaderProgramBinary:
-	{
-	   GLint numBinaryFormats = 0;
-#ifdef GL_NUM_PROGRAM_BINARY_FORMATS
-		glGetIntegerv(GL_NUM_PROGRAM_BINARY_FORMATS, &numBinaryFormats);
-#endif
-
-		if (m_glInfo.isGLESX)
-		   return numBinaryFormats != 0 && Utils::isExtensionSupported(m_glInfo, "GL_OES_get_program_binary");
-
-	   return numBinaryFormats != 0 && Utils::isExtensionSupported(m_glInfo, "GL_ARB_get_program_binary");
-	}
+		return m_glInfo.shaderStorage;
 	case graphics::SpecialFeatures::DepthFramebufferTextures:
 		if (!m_glInfo.isGLES2 || Utils::isExtensionSupported(m_glInfo, "GL_OES_depth_texture"))
 			return true;
