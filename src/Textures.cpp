@@ -1015,7 +1015,7 @@ void TextureCache::_loadBackground(CachedTexture *pTexture)
 		params.width = pTexture->realWidth;
 		params.height = pTexture->realHeight;
 		params.format = colorFormat::RGBA;
-		params.internalFormat = glInternalFormat;
+		params.internalFormat = gfxContext.convertGHQTextureFormat(u32(glInternalFormat));
 		params.dataType = glType;
 		params.data = pDest;
 		gfxContext.init2DTexture(params);
@@ -1338,7 +1338,7 @@ void TextureCache::_load(u32 _tile, CachedTexture *_pTexture)
 			params.msaaLevel = 0;
 			params.width = tmptex.realWidth;
 			params.height = tmptex.realHeight;
-			params.internalFormat = glInternalFormat;
+			params.internalFormat = gfxContext.convertGHQTextureFormat(u32(glInternalFormat));
 			params.format = colorFormat::RGBA;
 			params.dataType = glType;
 			params.data = pDest;
