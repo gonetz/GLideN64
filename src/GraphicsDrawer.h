@@ -102,7 +102,9 @@ public:
 	struct BlitOrCopyRectParams : public CopyRectParams
 	{
 		graphics::ObjectHandle readBuffer;
+		graphics::ObjectHandle readBufferAttachment;
 		graphics::ObjectHandle drawBuffer;
+		graphics::ObjectHandle drawBufferAttachment;
 		graphics::BlitMaskParam mask;
 	};
 

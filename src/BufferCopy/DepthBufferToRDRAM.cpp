@@ -165,7 +165,11 @@ bool DepthBufferToRDRAM::_prepareCopy(u32 _address, bool _copyChunk)
 
 	Context::BlitFramebuffersParams blitParams;
 	blitParams.readBuffer = readBuffer;
+	blitParams.readBufferAttachment = config.video.multisampling ?
+		graphics::ObjectHandle() :
+		pBuffer->m_pDepthBuffer->m_pDepthBufferTexture->name;
 	blitParams.drawBuffer = m_FBO;
+	blitParams.drawBufferAttachment = m_pDepthTexture->name;
 	blitParams.srcX0 = 0;
 	blitParams.srcY0 = 0;
 	blitParams.srcX1 = pBuffer->m_pTexture->realWidth;
