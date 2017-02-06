@@ -417,12 +417,6 @@
              <property name="orientation">
               <enum>Qt::Vertical</enum>
              </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>0</width>
-               <height>0</height>
-              </size>
-             </property>
             </spacer>
            </item>
           </layout>
@@ -518,12 +512,6 @@
                         <property name="sizeType">
                          <enum>QSizePolicy::MinimumExpanding</enum>
                         </property>
-                        <property name="sizeHint" stdset="0">
-                         <size>
-                          <width>0</width>
-                          <height>0</height>
-                         </size>
-                        </property>
                        </spacer>
                       </item>
                       <item>
@@ -559,12 +547,6 @@
                         </property>
                         <property name="sizeType">
                          <enum>QSizePolicy::MinimumExpanding</enum>
-                        </property>
-                        <property name="sizeHint" stdset="0">
-                         <size>
-                          <width>0</width>
-                          <height>0</height>
-                         </size>
                         </property>
                        </spacer>
                       </item>
@@ -681,12 +663,6 @@
                         <property name="sizeType">
                          <enum>QSizePolicy::MinimumExpanding</enum>
                         </property>
-                        <property name="sizeHint" stdset="0">
-                         <size>
-                          <width>0</width>
-                          <height>0</height>
-                         </size>
-                        </property>
                        </spacer>
                       </item>
                       <item>
@@ -722,12 +698,6 @@
                         </property>
                         <property name="sizeType">
                          <enum>QSizePolicy::MinimumExpanding</enum>
-                        </property>
-                        <property name="sizeHint" stdset="0">
-                         <size>
-                          <width>0</width>
-                          <height>0</height>
-                         </size>
                         </property>
                        </spacer>
                       </item>
@@ -876,12 +846,6 @@
                  <property name="orientation">
                   <enum>Qt::Vertical</enum>
                  </property>
-                 <property name="sizeHint" stdset="0">
-                  <size>
-                   <width>0</width>
-                   <height>0</height>
-                  </size>
-                 </property>
                 </spacer>
                </item>
               </layout>
@@ -1009,12 +973,6 @@
                 <spacer name="verticalSpacer_12">
                  <property name="orientation">
                   <enum>Qt::Vertical</enum>
-                 </property>
-                 <property name="sizeHint" stdset="0">
-                  <size>
-                   <width>0</width>
-                   <height>0</height>
-                  </size>
                  </property>
                 </spacer>
                </item>
@@ -1321,12 +1279,6 @@
                        <property name="sizeType">
                         <enum>QSizePolicy::MinimumExpanding</enum>
                        </property>
-                       <property name="sizeHint" stdset="0">
-                        <size>
-                         <width>0</width>
-                         <height>0</height>
-                        </size>
-                       </property>
                       </spacer>
                      </item>
                      <item>
@@ -1362,12 +1314,6 @@
                        </property>
                        <property name="sizeType">
                         <enum>QSizePolicy::MinimumExpanding</enum>
-                       </property>
-                       <property name="sizeHint" stdset="0">
-                        <size>
-                         <width>0</width>
-                         <height>0</height>
-                        </size>
                        </property>
                       </spacer>
                      </item>
@@ -1510,12 +1456,6 @@
         <spacer name="verticalSpacer_2">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>0</width>
-           <height>0</height>
-          </size>
          </property>
         </spacer>
        </item>
@@ -1964,12 +1904,6 @@
                    <property name="orientation">
                     <enum>Qt::Horizontal</enum>
                    </property>
-                   <property name="sizeHint" stdset="0">
-                    <size>
-                     <width>0</width>
-                     <height>0</height>
-                    </size>
-                   </property>
                   </spacer>
                  </item>
                 </layout>
@@ -1986,12 +1920,6 @@
         <spacer name="verticalSpacer_9">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>0</width>
-           <height>0</height>
-          </size>
          </property>
         </spacer>
        </item>
@@ -2018,18 +1946,12 @@
               <layout class="QHBoxLayout" name="horizontalLayout_7">
                <item>
                 <layout class="QVBoxLayout" name="verticalLayout_13">
-                 <property name="spacing">
-                  <number>5</number>
-                 </property>
                  <item>
                   <widget class="QFrame" name="filterFrame">
                    <property name="toolTip">
                     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This filter smooths or sharpens textures. There are four smoothing filters and two sharpening filters. The higher the number, the stronger the effect. Performance may be affected depending on the game and/or your PC.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;Your preference&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                    </property>
-                   <layout class="QVBoxLayout" name="verticalLayout_62">
-                    <property name="spacing">
-                     <number>5</number>
-                    </property>
+                   <layout class="QHBoxLayout" name="horizontalLayout">
                     <property name="leftMargin">
                      <number>0</number>
                     </property>
@@ -2063,7 +1985,7 @@
                    <property name="toolTip">
                     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;There are 12 distinct filters to select. Depending on which filter, they may cause performance problems.&lt;/p&gt;&lt;p&gt;When &lt;span style=&quot; font-weight:600;&quot;&gt;Store&lt;/span&gt; is selected, textures are saved to the cache as-is. This improves performance in games that load many textures. Uncheck &lt;span style=&quot; font-weight:600;&quot;&gt;Disable for backgrounds&lt;/span&gt; for the best performance.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;Your preference&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                    </property>
-                   <layout class="QVBoxLayout" name="verticalLayout_63">
+                   <layout class="QHBoxLayout" name="horizontalLayout_6">
                     <property name="spacing">
                      <number>5</number>
                     </property>
@@ -2102,12 +2024,6 @@
                  <property name="orientation">
                   <enum>Qt::Horizontal</enum>
                  </property>
-                 <property name="sizeHint" stdset="0">
-                  <size>
-                   <width>0</width>
-                   <height>0</height>
-                  </size>
-                 </property>
                 </spacer>
                </item>
               </layout>
@@ -2144,7 +2060,7 @@
                <property name="toolTip">
                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enhanced and filtered textures can be cached to improve performance. This option adjusts how much memory is dedicated to the texture cache. This can improve performance if there are many requests for the same texture, which is usually the case. Normally 128 MB should be more than enough, but the best option is different for each game. Super Mario 64 may not need more than 32 MB, but Conker's Bad Fur Day can take advantage of 256 MB+. Adjust accordingly if you are having performance problems. Setting this option to 0 disables the cache.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;PC and game dependent&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                </property>
-               <layout class="QVBoxLayout" name="verticalLayout_36">
+               <layout class="QHBoxLayout" name="horizontalLayout_8">
                 <property name="spacing">
                  <number>5</number>
                 </property>
@@ -2179,7 +2095,7 @@
                 <item>
                  <widget class="QSpinBox" name="textureFilterCacheSpinBox">
                   <property name="sizePolicy">
-                   <sizepolicy hsizetype="Fixed" vsizetype="Minimum">
+                   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                     <horstretch>0</horstretch>
                     <verstretch>0</verstretch>
                    </sizepolicy>
@@ -2194,6 +2110,13 @@
                    <number>50</number>
                   </property>
                  </widget>
+                </item>
+                <item>
+                 <spacer name="horizontalSpacer_11">
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+                  </property>
+                 </spacer>
                 </item>
                </layout>
               </widget>
@@ -2417,12 +2340,6 @@
         <spacer name="verticalSpacer">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>20</width>
-           <height>40</height>
-          </size>
          </property>
         </spacer>
        </item>
@@ -2681,12 +2598,6 @@
              <property name="orientation">
               <enum>Qt::Vertical</enum>
              </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>0</width>
-               <height>0</height>
-              </size>
-             </property>
             </spacer>
            </item>
           </layout>
@@ -2769,12 +2680,6 @@
                   <property name="orientation">
                    <enum>Qt::Horizontal</enum>
                   </property>
-                  <property name="sizeHint" stdset="0">
-                   <size>
-                    <width>0</width>
-                    <height>0</height>
-                   </size>
-                  </property>
                  </spacer>
                 </item>
                </layout>
@@ -2789,12 +2694,6 @@
              </property>
              <property name="sizeType">
               <enum>QSizePolicy::Expanding</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>0</width>
-               <height>0</height>
-              </size>
              </property>
             </spacer>
            </item>
@@ -3138,12 +3037,6 @@
                <spacer name="verticalSpacer_7">
                 <property name="orientation">
                  <enum>Qt::Vertical</enum>
-                </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>0</width>
-                  <height>0</height>
-                 </size>
                 </property>
                </spacer>
               </item>
@@ -3519,12 +3412,6 @@
                 <property name="orientation">
                  <enum>Qt::Vertical</enum>
                 </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>0</width>
-                  <height>0</height>
-                 </size>
-                </property>
                </spacer>
               </item>
              </layout>
@@ -3566,12 +3453,6 @@
         <spacer name="verticalSpacer_14">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>0</width>
-           <height>0</height>
-          </size>
          </property>
         </spacer>
        </item>
@@ -4048,11 +3929,11 @@
   </connection>
  </connections>
  <buttongroups>
-  <buttongroup name="aspectButtonGroup"/>
-  <buttongroup name="bloomBlendModeButtonGroup"/>
-  <buttongroup name="fixTexrectCoordsButtonGroup"/>
-  <buttongroup name="screenshotButtonGroup"/>
   <buttongroup name="factorButtonGroup"/>
   <buttongroup name="osdButtonGroup"/>
+  <buttongroup name="screenshotButtonGroup"/>
+  <buttongroup name="fixTexrectCoordsButtonGroup"/>
+  <buttongroup name="aspectButtonGroup"/>
+  <buttongroup name="bloomBlendModeButtonGroup"/>
  </buttongroups>
 </ui>
