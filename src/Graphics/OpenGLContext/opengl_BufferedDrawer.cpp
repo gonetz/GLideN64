@@ -78,10 +78,10 @@ void BufferedDrawer::_updateBuffer(Buffer & _buffer, u32 _dataSize, const void *
 		memcpy(&_buffer.data[_buffer.offset], _data, _dataSize);
 	}
 	else {
-		m_bindBuffer->bind(Parameter(GL_ARRAY_BUFFER), ObjectHandle(_buffer.handle));
-		void* buffer_pointer = glMapBufferRange(GL_ARRAY_BUFFER, _buffer.offset, _dataSize, GL_MAP_WRITE_BIT | GL_MAP_UNSYNCHRONIZED_BIT);
+		m_bindBuffer->bind(Parameter(_buffer.type), ObjectHandle(_buffer.handle));
+		void* buffer_pointer = glMapBufferRange(_buffer.type, _buffer.offset, _dataSize, GL_MAP_WRITE_BIT | GL_MAP_UNSYNCHRONIZED_BIT);
 		memcpy(buffer_pointer, _data, _dataSize);
-		glUnmapBuffer(GL_ARRAY_BUFFER);
+		glUnmapBuffer(_buffer.type);
 	}
 }
 
