@@ -241,9 +241,9 @@ endif( NOT CMAKE_BUILD_TYPE)
 if( CMAKE_BUILD_TYPE STREQUAL "Debug")
 	set( CMAKE_BUILD_TYPE Debug)
 	set( DEBUG_BUILD TRUE)
-#	add_definitions(
-#	-DDEBUG
-#	)
+	add_definitions(
+	-DGL_DEBUG
+	)
 endif( CMAKE_BUILD_TYPE STREQUAL "Debug")
 
 if(EGL)

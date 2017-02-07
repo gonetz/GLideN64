@@ -180,6 +180,7 @@ extern PFNGLBLENDCOLORPROC g_glBlendColor;
 #define glCreateFramebuffers g_glCreateFramebuffers
 #define glNamedFramebufferTexture g_glNamedFramebufferTexture
 #define glDrawElementsBaseVertex g_glDrawElementsBaseVertex
+#define glFlushMappedBufferRange g_glFlushMappedBufferRange
 
 extern PFNGLCREATESHADERPROC g_glCreateShader;
 extern PFNGLCOMPILESHADERPROC g_glCompileShader;
@@ -273,6 +274,7 @@ extern PFNGLCREATEBUFFERSPROC g_glCreateBuffers;
 extern PFNGLCREATEFRAMEBUFFERSPROC g_glCreateFramebuffers;
 extern PFNGLNAMEDFRAMEBUFFERTEXTUREPROC g_glNamedFramebufferTexture;
 extern PFNGLDRAWELEMENTSBASEVERTEXPROC g_glDrawElementsBaseVertex;
+extern PFNGLFLUSHMAPPEDBUFFERRANGEPROC g_glFlushMappedBufferRange;
 
 void initGLFunctions();
 
