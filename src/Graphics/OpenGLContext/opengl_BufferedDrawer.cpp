@@ -109,11 +109,12 @@ void BufferedDrawer::_updateRectBuffer(const graphics::Context::DrawRectParamete
 		return;
 	}
 
-	const GLint prevPos = buffer.pos;
+	const GLintptr prevOffset = buffer.offset;
 	_updateBuffer(buffer, _params.verticesCount, dataSize, _params.vertices);
-	if (buffer.pos < prevPos)
+	if (buffer.offset < prevOffset)
 		m_rectBufferOffsets.clear();
 
+	buffer.pos = buffer.offset / sizeof(RectVertex);
 	m_rectBufferOffsets[crc] = buffer.pos;
 }
 
