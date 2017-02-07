@@ -1764,7 +1764,8 @@ graphics::CombinerProgram * CombinerProgramBuilder::buildCombinerProgram(Combine
 
 	const bool bUseLod = combinerInputs.usesLOD();
 	const bool bUseTextures = combinerInputs.usesTexture();
-	const bool bUseHWLight = g_cycleType <= G_CYC_2CYCLE && // Rects not use lighting
+	const bool bIsRect = _key.isRectKey();
+	const bool bUseHWLight = !bIsRect && // Rects not use lighting
 							 config.generalEmulation.enableHWLighting != 0 &&
 							 GBI.isHWLSupported() &&
 							 combinerInputs.usesShadeColor();
@@ -1876,7 +1877,6 @@ graphics::CombinerProgram * CombinerProgramBuilder::buildCombinerProgram(Combine
 	Utils::logErrorShader(GL_FRAGMENT_SHADER, strFragmentShader);
 
 	GLuint program = glCreateProgram();
-	const bool bIsRect = _key.isRectKey();
 	Utils::locateAttributes(program, bIsRect, bUseTextures);
 	if (bIsRect)
 		glAttachShader(program, bUseTextures ? m_vertexShaderTexturedRect : m_vertexShaderRect);
