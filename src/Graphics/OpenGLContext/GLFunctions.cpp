@@ -5,6 +5,10 @@
 #define glGetProcAddress wglGetProcAddress
 #define GL_GET_PROC_ADR(proc_type, proc_name) g_##proc_name = (proc_type) glGetProcAddress(#proc_name)
 
+#elif defined(VC)
+
+#define GL_GET_PROC_ADR(proc_type, proc_name) g_##proc_name = (proc_type) dlsym(gles2so, #proc_name);
+
 #elif defined(EGL)
 
 #include <EGL/egl.h>
@@ -162,6 +166,9 @@ PFNGLDRAWELEMENTSBASEVERTEXPROC g_glDrawElementsBaseVertex;
 
 void initGLFunctions()
 {
+#ifdef VC
+	void *gles2so = dlopen("/opt/vc/lib/libGLESv2.so", RTLD_NOW);
+#endif
 #ifdef OS_WINDOWS
 	GL_GET_PROC_ADR(PFNGLACTIVETEXTUREPROC, glActiveTexture);
 	GL_GET_PROC_ADR(PFNGLBLENDCOLORPROC, glBlendColor);
