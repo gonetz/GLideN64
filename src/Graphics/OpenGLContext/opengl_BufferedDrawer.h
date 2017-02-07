@@ -76,26 +76,6 @@ namespace opengl {
 		typedef std::unordered_map<u32, u32> BufferOffsets;
 		BufferOffsets m_rectBufferOffsets;
 
-		/*
-		GLuint m_vao;
-
-
-		enum {
-			TRI_VBO = 0,
-			RECT_VBO,
-			IBO,
-			BO_COUNT
-		};
-		GLuint m_bufObj[BO_COUNT];
-		GLenum m_bufType[BO_COUNT];
-		char* m_bufData[BO_COUNT];
-		u32 m_bufOffset[BO_COUNT];
-		u32 m_bufFormatSize[BO_COUNT];
-		u32 m_bufMaxSize;
-		GLbitfield m_bufAccess;
-		GLbitfield m_bufMapAccess;
-		*/
-
 		static const u32 m_bufMaxSize;
 	};
 
