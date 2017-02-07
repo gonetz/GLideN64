@@ -66,20 +66,15 @@ void UnbufferedDrawer::drawTriangles(const graphics::Context::DrawTriangleParame
 	} else
 		m_cachedAttribArray->enableVertexAttribArray(triangleAttrib::texcoord, false);
 
-	if (_params.combiner->usesHwLighting()) {
-		m_cachedAttribArray->enableVertexAttribArray(triangleAttrib::numlights, true);
-		const void * ptr = &_params.vertices->HWLight;
-		if (_updateAttribPointer(triangleAttrib::numlights, ptr))
-			glVertexAttribPointer(triangleAttrib::numlights, 1, GL_BYTE, GL_FALSE, sizeof(SPVertex), ptr);
-	} else
-		m_cachedAttribArray->enableVertexAttribArray(triangleAttrib::numlights, false);
-
 	{
 		m_cachedAttribArray->enableVertexAttribArray(triangleAttrib::modify, true);
 		const void * ptr = &_params.vertices->modify;
 		if (_updateAttribPointer(triangleAttrib::modify, ptr))
 			glVertexAttribPointer(triangleAttrib::modify, 4, GL_BYTE, GL_FALSE, sizeof(SPVertex), ptr);
 	}
+
+	if (config.generalEmulation.enableHWLighting != 0)
+		glVertexAttrib1f(triangleAttrib::numlights, GLfloat(_params.vertices[0].HWLight));
 
 	m_cachedAttribArray->enableVertexAttribArray(rectAttrib::position, false);
 	m_cachedAttribArray->enableVertexAttribArray(rectAttrib::texcoord0, false);
@@ -123,7 +118,6 @@ void UnbufferedDrawer::drawRects(const graphics::Context::DrawRectParameters & _
 	m_cachedAttribArray->enableVertexAttribArray(triangleAttrib::position, false);
 	m_cachedAttribArray->enableVertexAttribArray(triangleAttrib::color, false);
 	m_cachedAttribArray->enableVertexAttribArray(triangleAttrib::texcoord, false);
-	m_cachedAttribArray->enableVertexAttribArray(triangleAttrib::numlights, false);
 	m_cachedAttribArray->enableVertexAttribArray(triangleAttrib::modify, false);
 
 	glDrawArrays(GLenum(_params.mode), 0, _params.verticesCount);
@@ -146,7 +140,6 @@ void UnbufferedDrawer::drawLine(f32 _width, SPVertex * _vertices)
 	}
 
 	m_cachedAttribArray->enableVertexAttribArray(triangleAttrib::texcoord, false);
-	m_cachedAttribArray->enableVertexAttribArray(triangleAttrib::numlights, false);
 	m_cachedAttribArray->enableVertexAttribArray(triangleAttrib::modify, false);
 
 	m_cachedAttribArray->enableVertexAttribArray(rectAttrib::position, false);
