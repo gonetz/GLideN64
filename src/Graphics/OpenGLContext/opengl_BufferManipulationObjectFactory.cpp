@@ -179,8 +179,8 @@ public:
 	{
 		glGenBuffers(1, &m_PBO);
 		m_bind->bind(graphics::Parameter(GL_PIXEL_UNPACK_BUFFER), graphics::ObjectHandle(m_PBO));
-		glBufferStorage(GL_PIXEL_UNPACK_BUFFER, m_size * 32, nullptr, GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT);
-		m_bufferData = glMapBufferRange(GL_PIXEL_UNPACK_BUFFER, 0, m_size * 32, GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT);
+		glBufferStorage(GL_PIXEL_UNPACK_BUFFER, m_size * 32, nullptr, m_bufAccessBits);
+		m_bufferData = glMapBufferRange(GL_PIXEL_UNPACK_BUFFER, 0, m_size * 32, m_bufMapBits);
 		m_bufferOffset = 0;
 		m_bind->bind(graphics::Parameter(GL_PIXEL_UNPACK_BUFFER), graphics::ObjectHandle());
 	}
@@ -201,6 +201,9 @@ public:
 
 	void closeWriteBuffer() override
 	{
+#ifdef GL_DEBUG
+		glFlushMappedBufferRange(GL_PIXEL_UNPACK_BUFFER, m_bufferOffset, m_size);
+#endif
 		m_bufferOffset += m_size;
 	}
 
@@ -222,6 +225,13 @@ private:
 	void* m_bufferData;
 	u32 m_bufferOffset;
 	GLuint m_PBO;
+#ifndef GL_DEBUG
+	GLbitfield m_bufAccessBits = GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT;
+	GLbitfield m_bufMapBits = GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT;
+#else
+	GLbitfield m_bufAccessBits = GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT;
+	GLbitfield m_bufMapBits = GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_FLUSH_EXPLICIT_BIT;
+#endif
 };
 
 class MemoryWriteBuffer : public graphics::PixelWriteBuffer

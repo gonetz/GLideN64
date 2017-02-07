@@ -8,6 +8,13 @@ using namespace graphics;
 using namespace opengl;
 
 const u32 BufferedDrawer::m_bufMaxSize = 4194304;
+#ifndef GL_DEBUG
+const GLbitfield BufferedDrawer::m_bufAccessBits = GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT;
+const GLbitfield BufferedDrawer::m_bufMapBits = GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT;
+#else
+const GLbitfield BufferedDrawer::m_bufAccessBits = GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT;
+const GLbitfield BufferedDrawer::m_bufMapBits = GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_FLUSH_EXPLICIT_BIT;
+#endif
 
 BufferedDrawer::BufferedDrawer(const GLInfo & _glinfo, CachedVertexAttribArray * _cachedAttribArray, CachedBindBuffer * _bindBuffer)
 : m_glInfo(_glinfo)
@@ -48,8 +55,8 @@ void BufferedDrawer::_initBuffer(Buffer & _buffer, GLuint _bufSize)
 	glGenBuffers(1, &_buffer.handle);
 	m_bindBuffer->bind(Parameter(_buffer.type), ObjectHandle(_buffer.handle));
 	if (m_glInfo.bufferStorage) {
-		glBufferStorage(_buffer.type, _bufSize, nullptr, GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT);
-		_buffer.data = (GLubyte*)glMapBufferRange(_buffer.type, 0, _bufSize, GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT);
+		glBufferStorage(_buffer.type, _bufSize, nullptr, m_bufAccessBits);
+		_buffer.data = (GLubyte*)glMapBufferRange(_buffer.type, 0, _bufSize, m_bufMapBits);
 	} else {
 		glBufferData(_buffer.type, _bufSize, nullptr, GL_DYNAMIC_DRAW);
 	}
@@ -75,6 +82,10 @@ void BufferedDrawer::_updateBuffer(Buffer & _buffer, u32 _count, u32 _dataSize, 
 
 	if (m_glInfo.bufferStorage) {
 		memcpy(&_buffer.data[_buffer.offset], _data, _dataSize);
+#ifdef GL_DEBUG
+		m_bindBuffer->bind(Parameter(_buffer.type), ObjectHandle(_buffer.handle));
+		glFlushMappedBufferRange(_buffer.type, _buffer.offset, _dataSize);
+#endif
 	} else {
 		m_bindBuffer->bind(Parameter(_buffer.type), ObjectHandle(_buffer.handle));
 		void* buffer_pointer = glMapBufferRange(_buffer.type, _buffer.offset, _dataSize, GL_MAP_WRITE_BIT | GL_MAP_UNSYNCHRONIZED_BIT);

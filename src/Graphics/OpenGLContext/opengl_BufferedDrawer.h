@@ -77,6 +77,8 @@ namespace opengl {
 		BufferOffsets m_rectBufferOffsets;
 
 		static const u32 m_bufMaxSize;
+		static const GLbitfield m_bufAccessBits;
+		static const GLbitfield m_bufMapBits;
 	};
 
 }
