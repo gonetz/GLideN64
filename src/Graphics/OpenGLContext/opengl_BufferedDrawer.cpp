@@ -67,7 +67,7 @@ BufferedDrawer::~BufferedDrawer()
 	glDeleteVertexArrays(2, arrays);
 }
 
-void BufferedDrawer::_updateBuffer(Buffer & _buffer, u32 _dataSize, const void * _data)
+void BufferedDrawer::_updateBuffer(Buffer & _buffer, u32 _count, u32 _dataSize, const void * _data)
 {
 	if (_buffer.offset + _dataSize > _buffer.size) {
 		_buffer.offset = 0;
@@ -76,13 +76,15 @@ void BufferedDrawer::_updateBuffer(Buffer & _buffer, u32 _dataSize, const void *
 
 	if (m_glInfo.bufferStorage) {
 		memcpy(&_buffer.data[_buffer.offset], _data, _dataSize);
-	}
-	else {
+	} else {
 		m_bindBuffer->bind(Parameter(_buffer.type), ObjectHandle(_buffer.handle));
 		void* buffer_pointer = glMapBufferRange(_buffer.type, _buffer.offset, _dataSize, GL_MAP_WRITE_BIT | GL_MAP_UNSYNCHRONIZED_BIT);
 		memcpy(buffer_pointer, _data, _dataSize);
 		glUnmapBuffer(_buffer.type);
 	}
+
+	_buffer.offset += _dataSize;
+	_buffer.pos += _count;
 }
 
 void BufferedDrawer::_updateRectBuffer(const graphics::Context::DrawRectParameters & _params)
@@ -95,20 +97,24 @@ void BufferedDrawer::_updateRectBuffer(const graphics::Context::DrawRectParamete
 
 	Buffer & buffer = m_rectsBuffers.vbo;
 	const size_t dataSize = _params.verticesCount * sizeof(RectVertex);
-	const u32 crc = CRC_Calculate(0xFFFFFFFF, _params.vertices, dataSize);
 
+	if (m_glInfo.bufferStorage) {
+		_updateBuffer(buffer, _params.verticesCount, dataSize, _params.vertices);
+		return;
+	}
+
+	const u32 crc = CRC_Calculate(0xFFFFFFFF, _params.vertices, dataSize);
 	auto iter = m_rectBufferOffsets.find(crc);
 	if (iter != m_rectBufferOffsets.end()) {
 		buffer.pos = iter->second;
 		return;
 	}
 
-	_updateBuffer(buffer, dataSize, _params.vertices);
-	if (buffer.pos == 0)
+	const GLint prevPos = buffer.pos;
+	_updateBuffer(buffer, _params.verticesCount, dataSize, _params.vertices);
+	if (buffer.pos < prevPos)
 		m_rectBufferOffsets.clear();
 
-	buffer.offset += dataSize;
-	buffer.pos = buffer.offset / sizeof(RectVertex);
 	m_rectBufferOffsets[crc] = buffer.pos;
 }
 
@@ -160,18 +166,14 @@ void BufferedDrawer::_updateTrianglesBuffers(const graphics::Context::DrawTriang
 	_convertFromSPVertex(_params.flatColors, _params.verticesCount, _params.vertices);
 	const GLsizeiptr vboDataSize = _params.verticesCount * sizeof(Vertex);
 	Buffer & vboBuffer = m_trisBuffers.vbo;
-	_updateBuffer(vboBuffer, vboDataSize, m_vertices);
-	vboBuffer.offset += vboDataSize;
-	vboBuffer.pos += _params.verticesCount;
+	_updateBuffer(vboBuffer, _params.verticesCount, vboDataSize, m_vertices);
 
 	if (_params.elements == nullptr)
 		return;
 
 	const GLsizeiptr eboDataSize = sizeof(GLubyte) * _params.elementsCount;
 	Buffer & eboBuffer = m_trisBuffers.ebo;
-	_updateBuffer(eboBuffer, eboDataSize, _params.elements);
-	eboBuffer.offset += eboDataSize;
-	eboBuffer.pos += _params.elementsCount;
+	_updateBuffer(eboBuffer, _params.elementsCount, eboDataSize, _params.elements);
 }
 
 void BufferedDrawer::drawTriangles(const graphics::Context::DrawTriangleParameters & _params)
@@ -202,9 +204,7 @@ void BufferedDrawer::drawLine(f32 _width, SPVertex * _vertices)
 	_convertFromSPVertex(false, 2, _vertices);
 	const GLsizeiptr vboDataSize = 2 * sizeof(Vertex);
 	Buffer & vboBuffer = m_trisBuffers.vbo;
-	_updateBuffer(vboBuffer, vboDataSize, m_vertices);
-	vboBuffer.offset += vboDataSize;
-	vboBuffer.pos += 2;
+	_updateBuffer(vboBuffer, 2, vboDataSize, m_vertices);
 
 	glDrawArrays(GL_LINES, m_trisBuffers.vbo.pos - 2, 2);
 }

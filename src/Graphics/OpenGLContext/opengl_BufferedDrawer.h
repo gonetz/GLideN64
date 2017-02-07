@@ -60,7 +60,7 @@ namespace opengl {
 		};
 
 		void _initBuffer(Buffer & _buffer, GLuint _bufSize);
-		void _updateBuffer(Buffer & _buffer, u32 _dataSize, const void * _data);
+		void _updateBuffer(Buffer & _buffer, u32 _count, u32 _dataSize, const void * _data);
 		void _convertFromSPVertex(bool _flatColors, u32 _count, const SPVertex * _data);
 
 		const GLInfo & m_glInfo;
