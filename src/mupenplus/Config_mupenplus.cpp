@@ -3,6 +3,8 @@
 #include <errno.h>
 #include <stdlib.h>
 #include <string.h>
+#include <osal_files.h>
+#include <algorithm>
 
 #include "../Textures.h"
 #include "../Config.h"
@@ -184,6 +186,119 @@ bool Config_SetDefault()
 	return ConfigSaveSection("Video-GLideN64") == M64ERR_SUCCESS;
 }
 
+void Config_LoadCustomConfig()
+{
+	if (ConfigExternalGetParameter == nullptr || ConfigExternalOpen == nullptr || ConfigExternalClose == nullptr)
+		return;
+	char value[PATH_MAX];
+	m64p_error result;
+	std::string ROMname = RSP.romname;
+	const char* pathName = ConfigGetSharedDataFilepath("GLideN64.custom.ini");
+	if (pathName == nullptr)
+		return;
+	for (size_t pos = ROMname.find(' '); pos != std::string::npos; pos = ROMname.find(' ', pos))
+		ROMname.replace(pos, 1, "%20");
+	for (size_t pos = ROMname.find('\''); pos != std::string::npos; pos = ROMname.find('\'', pos))
+		ROMname.replace(pos, 1, "%27");
+	std::transform(ROMname.begin(), ROMname.end(), ROMname.begin(), ::toupper);
+	const char* sectionName = ROMname.c_str();
+	m64p_handle fileHandle;
+	result = ConfigExternalOpen(pathName, &fileHandle);
+	if (result != M64ERR_SUCCESS)
+		return;
+	result = ConfigExternalGetParameter(fileHandle, sectionName, "video\\fullscreenWidth", value, sizeof(value));
+	if (result == M64ERR_SUCCESS) config.video.fullscreenWidth = atoi(value);
+	result = ConfigExternalGetParameter(fileHandle, sectionName, "video\\fullscreenHeight", value, sizeof(value));
+	if (result == M64ERR_SUCCESS) config.video.fullscreenHeight = atoi(value);
+	result = ConfigExternalGetParameter(fileHandle, sectionName, "video\\windowedWidth", value, sizeof(value));
+	if (result == M64ERR_SUCCESS) config.video.windowedWidth = atoi(value);
+	result = ConfigExternalGetParameter(fileHandle, sectionName, "video\\windowedHeight", value, sizeof(value));
+	if (result == M64ERR_SUCCESS) config.video.windowedHeight = atoi(value);
+	result = ConfigExternalGetParameter(fileHandle, sectionName, "video\\fullscreenRefresh", value, sizeof(value));
+	if (result == M64ERR_SUCCESS) config.video.fullscreenRefresh = atoi(value);
+	result = ConfigExternalGetParameter(fileHandle, sectionName, "video\\multisampling", value, sizeof(value));
+	if (result == M64ERR_SUCCESS) config.video.multisampling = atoi(value);
+	result = ConfigExternalGetParameter(fileHandle, sectionName, "video\\cropMode", value, sizeof(value));
+	if (result == M64ERR_SUCCESS) config.video.cropMode = atoi(value);
+	result = ConfigExternalGetParameter(fileHandle, sectionName, "video\\cropWidth", value, sizeof(value));
+	if (result == M64ERR_SUCCESS) config.video.cropWidth = atoi(value);
+	result = ConfigExternalGetParameter(fileHandle, sectionName, "video\\cropHeight", value, sizeof(value));
+	if (result == M64ERR_SUCCESS) config.video.cropHeight = atoi(value);
+
+	result = ConfigExternalGetParameter(fileHandle, sectionName, "texture\\maxAnisotropy", value, sizeof(value));
+	if (result == M64ERR_SUCCESS) config.texture.maxAnisotropy = atoi(value);
+	result = ConfigExternalGetParameter(fileHandle, sectionName, "texture\\bilinearMode", value, sizeof(value));
+	if (result == M64ERR_SUCCESS) config.texture.bilinearMode = atoi(value);
+	result = ConfigExternalGetParameter(fileHandle, sectionName, "texture\\maxBytes", value, sizeof(value));
+	if (result == M64ERR_SUCCESS) config.texture.maxBytes = atoi(value);
+	result = ConfigExternalGetParameter(fileHandle, sectionName, "texture\\screenShotFormat", value, sizeof(value));
+	if (result == M64ERR_SUCCESS) config.texture.screenShotFormat = atoi(value);
+
+	result = ConfigExternalGetParameter(fileHandle, sectionName, "generalEmulation\\enableNoise", value, sizeof(value));
+	if (result == M64ERR_SUCCESS) config.generalEmulation.enableNoise = atoi(value);
+	result = ConfigExternalGetParameter(fileHandle, sectionName, "generalEmulation\\enableLOD", value, sizeof(value));
+	if (result == M64ERR_SUCCESS) config.generalEmulation.enableLOD = atoi(value);
+	result = ConfigExternalGetParameter(fileHandle, sectionName, "generalEmulation\\enableHWLighting", value, sizeof(value));
+	if (result == M64ERR_SUCCESS) config.generalEmulation.enableHWLighting = atoi(value);
+	result = ConfigExternalGetParameter(fileHandle, sectionName, "generalEmulation\\enableShadersStorage", value, sizeof(value));
+	if (result == M64ERR_SUCCESS) config.generalEmulation.enableShadersStorage = atoi(value);
+	result = ConfigExternalGetParameter(fileHandle, sectionName, "generalEmulation\\correctTexrectCoords", value, sizeof(value));
+	if (result == M64ERR_SUCCESS) config.generalEmulation.correctTexrectCoords = atoi(value);
+	result = ConfigExternalGetParameter(fileHandle, sectionName, "generalEmulation\\enableNativeResTexrects", value, sizeof(value));
+	if (result == M64ERR_SUCCESS) config.generalEmulation.enableNativeResTexrects = atoi(value);
+
+	result = ConfigExternalGetParameter(fileHandle, sectionName, "frameBufferEmulation\\enable", value, sizeof(value));
+	if (result == M64ERR_SUCCESS) config.frameBufferEmulation.enable = atoi(value);
+	result = ConfigExternalGetParameter(fileHandle, sectionName, "frameBufferEmulation\\aspect", value, sizeof(value));
+	if (result == M64ERR_SUCCESS) config.frameBufferEmulation.aspect = atoi(value);
+	result = ConfigExternalGetParameter(fileHandle, sectionName, "frameBufferEmulation\\nativeResFactor", value, sizeof(value));
+	if (result == M64ERR_SUCCESS) config.frameBufferEmulation.nativeResFactor = atoi(value);
+	result = ConfigExternalGetParameter(fileHandle, sectionName, "frameBufferEmulation\\bufferSwapMode", value, sizeof(value));
+	if (result == M64ERR_SUCCESS) config.frameBufferEmulation.bufferSwapMode = atoi(value);
+	result = ConfigExternalGetParameter(fileHandle, sectionName, "frameBufferEmulation\\N64DepthCompare", value, sizeof(value));
+	if (result == M64ERR_SUCCESS) config.frameBufferEmulation.N64DepthCompare = atoi(value);
+	result = ConfigExternalGetParameter(fileHandle, sectionName, "frameBufferEmulation\\copyAuxToRDRAM", value, sizeof(value));
+	if (result == M64ERR_SUCCESS) config.frameBufferEmulation.copyAuxToRDRAM = atoi(value);
+	result = ConfigExternalGetParameter(fileHandle, sectionName, "frameBufferEmulation\\copyToRDRAM", value, sizeof(value));
+	if (result == M64ERR_SUCCESS) config.frameBufferEmulation.copyToRDRAM = atoi(value);
+	result = ConfigExternalGetParameter(fileHandle, sectionName, "frameBufferEmulation\\copyDepthToRDRAM", value, sizeof(value));
+	if (result == M64ERR_SUCCESS) config.frameBufferEmulation.copyDepthToRDRAM = atoi(value);
+	result = ConfigExternalGetParameter(fileHandle, sectionName, "frameBufferEmulation\\copyFromRDRAM", value, sizeof(value));
+	if (result == M64ERR_SUCCESS) config.frameBufferEmulation.copyFromRDRAM = atoi(value);
+	result = ConfigExternalGetParameter(fileHandle, sectionName, "frameBufferEmulation\\fbInfoDisabled", value, sizeof(value));
+	if (result == M64ERR_SUCCESS) config.frameBufferEmulation.fbInfoDisabled = atoi(value);
+	result = ConfigExternalGetParameter(fileHandle, sectionName, "frameBufferEmulation\\fbInfoReadColorChunk", value, sizeof(value));
+	if (result == M64ERR_SUCCESS) config.frameBufferEmulation.fbInfoReadColorChunk = atoi(value);
+	result = ConfigExternalGetParameter(fileHandle, sectionName, "frameBufferEmulation\\fbInfoReadDepthChunk", value, sizeof(value));
+	if (result == M64ERR_SUCCESS) config.frameBufferEmulation.fbInfoReadDepthChunk = atoi(value);
+
+	result = ConfigExternalGetParameter(fileHandle, sectionName, "textureFilter\\txFilterMode", value, sizeof(value));
+	if (result == M64ERR_SUCCESS) config.textureFilter.txFilterMode = atoi(value);
+	result = ConfigExternalGetParameter(fileHandle, sectionName, "textureFilter\\txEnhancementMode", value, sizeof(value));
+	if (result == M64ERR_SUCCESS) config.textureFilter.txEnhancementMode = atoi(value);
+	result = ConfigExternalGetParameter(fileHandle, sectionName, "textureFilter\\txDeposterize", value, sizeof(value));
+	if (result == M64ERR_SUCCESS) config.textureFilter.txDeposterize = atoi(value);
+	result = ConfigExternalGetParameter(fileHandle, sectionName, "textureFilter\\txFilterIgnoreBG", value, sizeof(value));
+	if (result == M64ERR_SUCCESS) config.textureFilter.txFilterIgnoreBG = atoi(value);
+	result = ConfigExternalGetParameter(fileHandle, sectionName, "textureFilter\\txCacheSize", value, sizeof(value));
+	if (result == M64ERR_SUCCESS) config.textureFilter.txCacheSize = atoi(value);
+	result = ConfigExternalGetParameter(fileHandle, sectionName, "textureFilter\\txHiresEnable", value, sizeof(value));
+	if (result == M64ERR_SUCCESS) config.textureFilter.txHiresEnable = atoi(value);
+	result = ConfigExternalGetParameter(fileHandle, sectionName, "textureFilter\\txHiresFullAlphaChannel", value, sizeof(value));
+	if (result == M64ERR_SUCCESS) config.textureFilter.txHiresFullAlphaChannel = atoi(value);
+	result = ConfigExternalGetParameter(fileHandle, sectionName, "textureFilter\\txHresAltCRC", value, sizeof(value));
+	if (result == M64ERR_SUCCESS) config.textureFilter.txHresAltCRC = atoi(value);
+	result = ConfigExternalGetParameter(fileHandle, sectionName, "textureFilter\\txDump", value, sizeof(value));
+	if (result == M64ERR_SUCCESS) config.textureFilter.txDump = atoi(value);
+	result = ConfigExternalGetParameter(fileHandle, sectionName, "textureFilter\\txForce16bpp", value, sizeof(value));
+	if (result == M64ERR_SUCCESS) config.textureFilter.txForce16bpp = atoi(value);
+	result = ConfigExternalGetParameter(fileHandle, sectionName, "textureFilter\\txCacheCompression", value, sizeof(value));
+	if (result == M64ERR_SUCCESS) config.textureFilter.txCacheCompression = atoi(value);
+	result = ConfigExternalGetParameter(fileHandle, sectionName, "textureFilter\\txSaveCache", value, sizeof(value));
+	if (result == M64ERR_SUCCESS) config.textureFilter.txSaveCache = atoi(value);
+	ConfigExternalClose(fileHandle);
+}
+
 void Config_LoadConfig()
 {
 	const u32 hacks = config.generalEmulation.hacks;
@@ -299,5 +414,7 @@ void Config_LoadConfig()
 	config.onScreenDisplay.percent = ConfigGetParamBool(g_configVideoGliden64, "ShowPercent");
 	config.onScreenDisplay.pos = ConfigGetParamInt(g_configVideoGliden64, "CountersPos");
 
+	if (config.generalEmulation.enableCustomSettings)
+		Config_LoadCustomConfig();
 	config.generalEmulation.hacks = hacks;
 }
