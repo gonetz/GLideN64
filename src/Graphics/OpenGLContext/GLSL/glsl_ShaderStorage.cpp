@@ -18,7 +18,7 @@ using namespace glsl;
 #define SHADER_STORAGE_FOLDER_NAME L"shaders"
 
 static
-void getStorageFileName(wchar_t * _fileName)
+void getStorageFileName(const opengl::GLInfo & _glinfo, wchar_t * _fileName)
 {
 	wchar_t strCacheFolderPath[PLUGIN_PATH_SIZE];
 	api().GetUserCachePath(strCacheFolderPath);
@@ -30,15 +30,15 @@ void getStorageFileName(wchar_t * _fileName)
 			pPath = strCacheFolderPath;
 	}
 
-#ifdef GLES3
-	const wchar_t* strOpenGLType = L"GLES3";
-#elif GLES3_1
-	const wchar_t* strOpenGLType = L"GLES3_1";
-#else
-	const wchar_t* strOpenGLType = L"OpenGL";
-#endif
+	std::wstring strOpenGLType;
 
-	swprintf(_fileName, PLUGIN_PATH_SIZE, L"%ls/GLideN64.%08lx.%ls.shaders", pPath, std::hash<std::string>()(RSP.romname), strOpenGLType);
+	if(_glinfo.isGLESX) {
+		strOpenGLType = L"GLES";
+	} else {
+		strOpenGLType = L"OpenGL";
+	}
+
+	swprintf(_fileName, PLUGIN_PATH_SIZE, L"%ls/GLideN64.%08lx.%ls.shaders", pPath, std::hash<std::string>()(RSP.romname), strOpenGLType.c_str());
 }
 
 static
@@ -67,7 +67,7 @@ static const u32 ShaderStorageFormatVersion = 0x0DU;
 bool ShaderStorage::saveShadersStorage(const graphics::Combiners & _combiners) const
 {
 	wchar_t fileName[PLUGIN_PATH_SIZE];
-	getStorageFileName(fileName);
+	getStorageFileName(m_glinfo, fileName);
 
 #if defined(OS_WINDOWS) && !defined(MINGW)
 	std::ofstream fout(fileName, std::ofstream::binary | std::ofstream::trunc);
@@ -162,7 +162,7 @@ CombinerProgramImpl * _readCominerProgramFromStream(std::istream & _is,
 bool ShaderStorage::loadShadersStorage(graphics::Combiners & _combiners)
 {
 	wchar_t fileName[PLUGIN_PATH_SIZE];
-	getStorageFileName(fileName);
+	getStorageFileName(m_glinfo, fileName);
 	const u32 configOptionsBitSet = _getConfigOptionsBitSet();
 
 #if defined(OS_WINDOWS) && !defined(MINGW)

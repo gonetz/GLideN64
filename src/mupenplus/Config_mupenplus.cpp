@@ -82,15 +82,11 @@ bool Config_SetDefault()
 	assert(res == M64ERR_SUCCESS);
 	res = ConfigSetDefaultBool(g_configVideoGliden64, "EnableLegacyBlending", config.generalEmulation.enableLegacyBlending, "Do not use shaders to emulate N64 blending modes. Works faster on slow GPU. Can cause glitches.");
 	assert(res == M64ERR_SUCCESS);
-#ifndef GLES2
 	res = ConfigSetDefaultBool(g_configVideoGliden64, "EnableFragmentDepthWrite", config.generalEmulation.enableFragmentDepthWrite, "Enable writing of fragment depth. Some mobile GPUs do not support it, thus it made optional. Leave enabled.");
 	assert(res == M64ERR_SUCCESS);
-#ifdef GLESX
+#ifdef ANDROID
 	res = ConfigSetDefaultBool(g_configVideoGliden64, "EnableBlitScreenWorkaround", config.generalEmulation.enableBlitScreenWorkaround, "Enable to render everything upside down");
 	assert(res == M64ERR_SUCCESS);
-#endif //GLESX
-#endif //GLES2
-#ifdef ANDROID
 	res = ConfigSetDefaultBool(g_configVideoGliden64, "ForcePolygonOffset", config.generalEmulation.forcePolygonOffset, "If true, use polygon offset values specified below");
 	assert(res == M64ERR_SUCCESS);
 	res = ConfigSetDefaultFloat(g_configVideoGliden64, "PolygonOffsetFactor", config.generalEmulation.polygonOffsetFactor, "Specifies a scale factor that is used to create a variable depth offset for each polygon");
@@ -237,13 +233,9 @@ void Config_LoadConfig()
 	config.generalEmulation.correctTexrectCoords = ConfigGetParamInt(g_configVideoGliden64, "CorrectTexrectCoords");
 	config.generalEmulation.enableNativeResTexrects = ConfigGetParamBool(g_configVideoGliden64, "EnableNativeResTexrects");
 	config.generalEmulation.enableLegacyBlending = ConfigGetParamBool(g_configVideoGliden64, "EnableLegacyBlending");
-#ifndef GLES2
 	config.generalEmulation.enableFragmentDepthWrite = ConfigGetParamBool(g_configVideoGliden64, "EnableFragmentDepthWrite");
-#ifdef GLESX
-	config.generalEmulation.enableBlitScreenWorkaround = ConfigGetParamBool(g_configVideoGliden64, "EnableBlitScreenWorkaround");
-#endif //GLESX
-#endif //GLES2
 #ifdef ANDROID
+	config.generalEmulation.enableBlitScreenWorkaround = ConfigGetParamBool(g_configVideoGliden64, "EnableBlitScreenWorkaround");
 	config.generalEmulation.forcePolygonOffset = ConfigGetParamBool(g_configVideoGliden64, "ForcePolygonOffset");
 	config.generalEmulation.polygonOffsetFactor = ConfigGetParamFloat(g_configVideoGliden64, "PolygonOffsetFactor");
 	config.generalEmulation.polygonOffsetUnits = ConfigGetParamFloat(g_configVideoGliden64, "PolygonOffsetUnits");
