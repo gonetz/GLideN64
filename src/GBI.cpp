@@ -190,30 +190,30 @@ void GBIInfo::_makeCurrent(MicrocodeInfo * _pCurrent)
 			case F3DEX2MM:	F3DEX2MM_Init();	break;
 		}
 
-#ifndef GLESX
-		if (m_pCurrent->NoN) {
-			// Disable near and far plane clipping
-			gfxContext.enable(graphics::enable::DEPTH_CLAMP, true);
-			// Enable Far clipping plane in vertex shader
-			gfxContext.enable(graphics::enable::CLIP_DISTANCE0, true);
-		} else {
-			gfxContext.enable(graphics::enable::DEPTH_CLAMP, false);
-			gfxContext.enable(graphics::enable::CLIP_DISTANCE0, false);
+		if (gfxContext.isSupported(graphics::SpecialFeatures::NearPlaneClipping)) {
+			if (m_pCurrent->NoN) {
+				// Disable near and far plane clipping
+				gfxContext.enable(graphics::enable::DEPTH_CLAMP, true);
+				// Enable Far clipping plane in vertex shader
+				gfxContext.enable(graphics::enable::CLIP_DISTANCE0, true);
+			} else {
+				gfxContext.enable(graphics::enable::DEPTH_CLAMP, false);
+				gfxContext.enable(graphics::enable::CLIP_DISTANCE0, false);
+			}
 		}
-#endif
 	} else if (m_pCurrent->NoN != _pCurrent->NoN) {
-#ifndef GLESX
-		if (_pCurrent->NoN) {
-			// Disable near and far plane clipping
-			gfxContext.enable(graphics::enable::DEPTH_CLAMP, true);
-			// Enable Far clipping plane in vertex shader
-			gfxContext.enable(graphics::enable::CLIP_DISTANCE0, true);
+		if (gfxContext.isSupported(graphics::SpecialFeatures::NearPlaneClipping)) {
+			if (_pCurrent->NoN) {
+				// Disable near and far plane clipping
+				gfxContext.enable(graphics::enable::DEPTH_CLAMP, true);
+				// Enable Far clipping plane in vertex shader
+				gfxContext.enable(graphics::enable::CLIP_DISTANCE0, true);
+			}
+			else {
+				gfxContext.enable(graphics::enable::DEPTH_CLAMP, false);
+				gfxContext.enable(graphics::enable::CLIP_DISTANCE0, false);
+			}
 		}
-		else {
-			gfxContext.enable(graphics::enable::DEPTH_CLAMP, false);
-			gfxContext.enable(graphics::enable::CLIP_DISTANCE0, false);
-		}
-#endif
 	}
 	m_pCurrent = _pCurrent;
 }

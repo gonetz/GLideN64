@@ -44,29 +44,11 @@ DisplayWindow & DisplayWindow::get()
 
 void DisplayWindowMupen64plus::_setAttributes()
 {
-
-#ifdef GLES2
-	CoreVideo_GL_SetAttribute(M64P_GL_CONTEXT_MAJOR_VERSION, 2);
-	CoreVideo_GL_SetAttribute(M64P_GL_CONTEXT_MINOR_VERSION, 0);
 	LOG(LOG_VERBOSE, "[gles2GlideN64]: _setAttributes\n");
-#elif defined(GLES3)
-	CoreVideo_GL_SetAttribute(M64P_GL_CONTEXT_MAJOR_VERSION, 3);
-	CoreVideo_GL_SetAttribute(M64P_GL_CONTEXT_MINOR_VERSION, 0);
-#elif defined(GLES3_1)
-	CoreVideo_GL_SetAttribute(M64P_GL_CONTEXT_MAJOR_VERSION, 3);
-	CoreVideo_GL_SetAttribute(M64P_GL_CONTEXT_MINOR_VERSION, 1);
-#else
+
 	CoreVideo_GL_SetAttribute(M64P_GL_CONTEXT_PROFILE_MASK, M64P_GL_CONTEXT_PROFILE_CORE);
 	CoreVideo_GL_SetAttribute(M64P_GL_CONTEXT_MAJOR_VERSION, 3);
 	CoreVideo_GL_SetAttribute(M64P_GL_CONTEXT_MINOR_VERSION, 3);
-#endif
-
-#ifndef GLES2
-	CoreVideo_GL_SetAttribute(M64P_GL_RED_SIZE, 8);
-	CoreVideo_GL_SetAttribute(M64P_GL_GREEN_SIZE, 8);
-	CoreVideo_GL_SetAttribute(M64P_GL_BLUE_SIZE, 8);
-	CoreVideo_GL_SetAttribute(M64P_GL_ALPHA_SIZE, 8);
-#endif
 
 	CoreVideo_GL_SetAttribute(M64P_GL_DOUBLEBUFFER, 1);
 	CoreVideo_GL_SetAttribute(M64P_GL_SWAP_CONTROL, config.video.verticalSync);
@@ -196,7 +178,7 @@ void DisplayWindowMupen64plus::_readScreen2(void * _dest, int * _width, int * _h
 	u8 *pBufferData = (u8*)malloc((*_width)*(*_height) * 4);
 	u8 *pDest = (u8*)_dest;
 
-#ifndef GLES2
+#ifndef ANDROID
 	GLint oldMode;
 	glGetIntegerv(GL_READ_BUFFER, &oldMode);
 	if (_front != 0)
