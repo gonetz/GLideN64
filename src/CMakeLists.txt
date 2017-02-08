@@ -166,6 +166,12 @@ if(UNIX)
   endif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 endif(UNIX)
 
+if(MINGW)
+  add_definitions(
+    -DMINGW
+  )
+endif(MINGW)
+
 if(WIN32)
   list(APPEND GLideN64_SOURCES ${GLideN64_SOURCES_WIN})
   add_definitions(
