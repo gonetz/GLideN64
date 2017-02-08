@@ -39,7 +39,7 @@ bool UnbufferedDrawer::_updateAttribPointer(u32 _index, const void * _ptr)
 
 void UnbufferedDrawer::drawTriangles(const graphics::Context::DrawTriangleParameters & _params)
 {
-	if (m_glInfo.imageTextures && config.frameBufferEmulation.N64DepthCompare != 0)
+	if (config.frameBufferEmulation.N64DepthCompare != 0)
 		glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 
 	{

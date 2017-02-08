@@ -762,7 +762,7 @@ public:
 				"uniform lowp int uRenderTarget;	\n"
 				"uniform mediump vec2 uDepthScale;	\n"
 				;
-			if (_glinfo.imageTextures && config.frameBufferEmulation.N64DepthCompare != 0) {
+			if (config.frameBufferEmulation.N64DepthCompare != 0) {
 				m_part +=
 					"uniform lowp int uEnableDepthCompare;	\n"
 					;
@@ -836,7 +836,7 @@ public:
 				"uniform lowp int uRenderTarget;	\n"
 				"uniform mediump vec2 uDepthScale;	\n"
 				;
-			if (_glinfo.imageTextures && config.frameBufferEmulation.N64DepthCompare != 0) {
+			if (config.frameBufferEmulation.N64DepthCompare != 0) {
 				m_part +=
 					"uniform lowp int uEnableDepthCompare;	\n"
 					;
@@ -932,7 +932,7 @@ class ShaderFragmentHeaderDepthCompare : public ShaderPart
 public:
 	ShaderFragmentHeaderDepthCompare(const opengl::GLInfo & _glinfo)
 	{
-		if (_glinfo.imageTextures && config.frameBufferEmulation.N64DepthCompare != 0) {
+		if (config.frameBufferEmulation.N64DepthCompare != 0) {
 			m_part = _glinfo.isGLESX
 				? "layout(binding = 2, rgba32f) highp uniform coherent image2D uDepthImage;\n"
 				: "layout(binding = 2, rg32f) highp uniform coherent image2D uDepthImage;\n"
@@ -1128,7 +1128,7 @@ class ShaderFragmentCallN64Depth : public ShaderPart
 public:
 	ShaderFragmentCallN64Depth(const opengl::GLInfo & _glinfo)
 	{
-		if (!_glinfo.isGLES2 && _glinfo.imageTextures && config.frameBufferEmulation.N64DepthCompare != 0) {
+		if (config.frameBufferEmulation.N64DepthCompare != 0) {
 			m_part =
 				"  if (uRenderTarget != 0) { if (!depth_render(fragColor.r)) discard; } \n"
 				"  else if (!depth_compare()) discard; \n"
@@ -1142,7 +1142,7 @@ class ShaderFragmentRenderTarget : public ShaderPart
 public:
 	ShaderFragmentRenderTarget(const opengl::GLInfo & _glinfo)
 	{
-		if (!_glinfo.isGLES2 && config.generalEmulation.enableFragmentDepthWrite != 0) {
+		if (config.generalEmulation.enableFragmentDepthWrite != 0) {
 			m_part =
 				"  if (uRenderTarget != 0) {					\n"
 				"    if (uRenderTarget > 1) {					\n"
@@ -1544,7 +1544,7 @@ class ShaderN64DepthCompare : public ShaderPart
 public:
 	ShaderN64DepthCompare(const opengl::GLInfo & _glinfo)
 	{
-		if (_glinfo.imageTextures && config.frameBufferEmulation.N64DepthCompare != 0) {
+		if (config.frameBufferEmulation.N64DepthCompare != 0) {
 			m_part =
 				"uniform lowp int uDepthMode;							\n"
 				"uniform lowp int uDepthSource;							\n"
@@ -1602,7 +1602,7 @@ class ShaderN64DepthRender : public ShaderPart
 public:
 	ShaderN64DepthRender(const opengl::GLInfo & _glinfo)
 	{
-		if (_glinfo.imageTextures && config.frameBufferEmulation.N64DepthCompare != 0) {
+		if (config.frameBufferEmulation.N64DepthCompare != 0) {
 			m_part =
 				"bool depth_render(highp float Z)						\n"
 				"{														\n"

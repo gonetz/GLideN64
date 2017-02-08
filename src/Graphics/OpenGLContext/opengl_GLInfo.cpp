@@ -41,6 +41,12 @@ void GLInfo::init() {
 				Utils::isExtensionSupported(*this, "GL_ARB_compute_shader"))) && (glBindImageTexture != nullptr);
 		msaa = true;
 	}
+	if (!imageTextures && config.frameBufferEmulation.N64DepthCompare != 0) {
+		config.frameBufferEmulation.N64DepthCompare = 0;
+		LOG(LOG_WARNING, "N64 depth compare and depth based fog will not work without Image Textures support provided in OpenGL >= 4.3 or GLES >= 3.1\n");
+	}
+	if (isGLES2)
+		config.generalEmulation.enableFragmentDepthWrite = 0;
 	bufferStorage = (!isGLESX && (numericVersion >= 44)) || Utils::isExtensionSupported(*this, "GL_ARB_buffer_storage") ||
 			Utils::isExtensionSupported(*this, "GL_EXT_buffer_storage");
 #ifdef EGL
