@@ -22,7 +22,7 @@ DepthBuffer::DepthBuffer() : m_address(0), m_width(0), m_ulx(0), m_uly(0), m_lrx
 	m_pDepthBufferCopyTexture(nullptr), m_copied(false)
 {
 	m_copyFBO = gfxContext.createFramebuffer();
-	if (Context::imageTextures && config.frameBufferEmulation.N64DepthCompare != 0)
+	if (config.frameBufferEmulation.N64DepthCompare != 0)
 		m_depthImageFBO = gfxContext.createFramebuffer();
 }
 
@@ -58,7 +58,7 @@ DepthBuffer::~DepthBuffer()
 
 void DepthBuffer::initDepthImageTexture(FrameBuffer * _pBuffer)
 {
-	if (!Context::imageTextures || config.frameBufferEmulation.N64DepthCompare == 0 || m_pDepthImageTexture != nullptr)
+	if (config.frameBufferEmulation.N64DepthCompare == 0 || m_pDepthImageTexture != nullptr)
 		return;
 
 	const FramebufferTextureFormats & fbTexFormat = gfxContext.getFramebufferTextureFormats();
@@ -471,7 +471,7 @@ void DepthBufferList::clearBuffer(u32 _ulx, u32 _uly, u32 _lrx, u32 _lry)
 	m_pCurrent->m_lrx = _lrx;
 	m_pCurrent->m_lry = _lry;
 
-	if (!m_pCurrent->m_depthImageFBO.isNotNull() || !Context::imageTextures || config.frameBufferEmulation.N64DepthCompare == 0)
+	if (!m_pCurrent->m_depthImageFBO.isNotNull() || config.frameBufferEmulation.N64DepthCompare == 0)
 		return;
 
 
