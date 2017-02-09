@@ -3,7 +3,7 @@
 
 #include <string>
 
-#ifdef ANDROID
+#ifdef OS_ANDROID
 
 int tx_swprintf(wchar_t* ws, size_t len, const wchar_t* format, ...);
 bool wccmp(const wchar_t* w1, const wchar_t* w2);
@@ -56,6 +56,6 @@ private:
 #define wst(A) L##A
 #define wccmp(A, B) A[0] == B[0]
 
-#endif // ANDROID
+#endif // OS_ANDROID
 
 #endif // ___TXWIDESCREENWRAPPER_H__

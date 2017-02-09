@@ -47,7 +47,7 @@ void displayLoadProgress(const wchar_t *format, ...)
 	char buf[INFO_BUF];
 
 	// process input
-#ifdef ANDROID
+#ifdef OS_ANDROID
 	const u32 bufSize = 2048;
 	char cbuf[bufSize];
 	char fmt[bufSize];

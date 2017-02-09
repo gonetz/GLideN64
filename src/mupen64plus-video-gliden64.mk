@@ -108,7 +108,7 @@ MY_LOCAL_CFLAGS :=      \
     $(COMMON_CFLAGS)    \
     -g                  \
     -DTXFILTER_LIB      \
-    -DANDROID           \
+    -DOS_ANDROID        \
     -DUSE_SDL           \
     -DMUPENPLUSAPI      \
     -DEGL_EGLEXT_PROTOTYPES \

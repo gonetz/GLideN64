@@ -14,7 +14,7 @@ using namespace graphics;
 
 #define NEW_POST_PROCESSOR
 
-#ifdef ANDROID
+#ifdef OS_ANDROID
 PostProcessor PostProcessor::processor;
 #endif
 
@@ -459,7 +459,7 @@ void PostProcessor::destroy()
 
 PostProcessor & PostProcessor::get()
 {
-#ifndef ANDROID
+#ifndef OS_ANDROID
 	static PostProcessor processor;
 #endif
 	return processor;

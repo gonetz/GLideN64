@@ -1519,7 +1519,7 @@ void GraphicsDrawer::_initStates()
 	}
 	else {
 		gfxContext.enable(enable::DEPTH_TEST, true);
-#ifdef ANDROID
+#ifdef OS_ANDROID
 		if (config.generalEmulation.forcePolygonOffset != 0)
 			gfxContext.setPolygonOffset(config.generalEmulation.polygonOffsetFactor, config.generalEmulation.polygonOffsetUnits);
 		else

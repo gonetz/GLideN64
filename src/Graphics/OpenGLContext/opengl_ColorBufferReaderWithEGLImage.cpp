@@ -1,4 +1,4 @@
-#if defined(EGL) && defined(ANDROID)
+#if defined(EGL) && defined(OS_ANDROID)
 
 #include <GBI.h>
 #include <Graphics/Context.h>

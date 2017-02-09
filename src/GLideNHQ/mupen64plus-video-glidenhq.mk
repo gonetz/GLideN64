@@ -38,7 +38,7 @@ LOCAL_CFLAGS :=         \
     $(COMMON_CFLAGS)    \
     -g                  \
     -DGLES3             \
-    -DANDROID           \
+    -DOS_ANDROID        \
     -fsigned-char       \
     #-DDEBUG             \
     #-DSDL_NO_COMPAT     \

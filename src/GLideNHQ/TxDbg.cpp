@@ -27,7 +27,7 @@
 #include <stdarg.h>
 #include <stdio.h>
 
-#ifdef ANDROID
+#ifdef OS_ANDROID
 
 #include <stdlib.h>
 #include <android/log.h>
@@ -56,7 +56,7 @@ TxDbg::output(const int level, const wchar_t *format, ...)
 	va_end(ap);
 }
 
-#else // ANDROID
+#else // OS_ANDROID
 TxDbg::TxDbg()
 {
 	_level = DBG_LEVEL;
@@ -99,4 +99,4 @@ TxDbg::output(const int level, const wchar_t *format, ...)
 #endif
 	va_end(args);
 }
-#endif // ANDROID
+#endif // OS_ANDROID

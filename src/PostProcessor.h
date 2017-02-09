@@ -48,7 +48,7 @@ private:
 	CachedTexture * m_pTextureGlowMap;
 	CachedTexture * m_pTextureBlur;
 
-#ifdef ANDROID
+#ifdef OS_ANDROID
 	static PostProcessor processor;
 #endif
 };

@@ -62,7 +62,7 @@ struct Config
 		u32 enableFragmentDepthWrite;
 		u32 enableBlitScreenWorkaround;
 		u32 hacks;
-#ifdef ANDROID
+#ifdef OS_ANDROID
 		u32 forcePolygonOffset;
 		f32 polygonOffsetFactor;
 		f32 polygonOffsetUnits;
