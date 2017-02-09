@@ -40,7 +40,7 @@ void Config::resetToDefaults()
 	generalEmulation.enableNativeResTexrects = 0;
 	generalEmulation.enableLegacyBlending = 0;
 	generalEmulation.hacks = 0;
-#ifdef ANDROID
+#ifdef OS_ANDROID
 	generalEmulation.enableFragmentDepthWrite = 0;
 	generalEmulation.enableBlitScreenWorkaround = 0;
 	generalEmulation.forcePolygonOffset = 0;
@@ -87,7 +87,7 @@ void Config::resetToDefaults()
 
 #ifdef OS_WINDOWS
 	font.name.assign("arial.ttf");
-#elif defined (ANDROID)
+#elif defined (OS_ANDROID)
 	font.name.assign("DroidSans.ttf");
 #elif defined (PANDORA)
 	font.name.assign("LiberationMono-Regular.ttf");

@@ -15,7 +15,7 @@ namespace glsl {
 		template <typename T>
 		static std::string to_string(T value)
 		{
-#ifdef ANDROID
+#ifdef OS_ANDROID
 			std::ostringstream os ;
 			os << value ;
 			return os.str() ;

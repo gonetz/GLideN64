@@ -241,7 +241,7 @@ bool getFontFileName(char * _strName)
 	if (pSysPath == nullptr)
 		return false;
 	sprintf(_strName, "%s/Fonts/%s", pSysPath, config.font.name.c_str());
-#elif defined (ANDROID)
+#elif defined (OS_ANDROID)
 	sprintf(_strName, "/system/fonts/%s", config.font.name.c_str());
 #elif defined (PANDORA)
 	sprintf(_strName, "/usr/share/fonts/truetype/%s", config.font.name.c_str());

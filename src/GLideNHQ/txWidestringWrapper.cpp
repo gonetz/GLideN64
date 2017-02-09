@@ -1,4 +1,4 @@
-#ifdef ANDROID
+#ifdef OS_ANDROID
 
 #include <stdarg.h>
 #include <stdlib.h>
@@ -116,4 +116,4 @@ bool wccmp(const wchar_t* w1, const wchar_t* w2)
 	wcstombs(cbuf2, w2, 16);
 	return cbuf1[0] == cbuf2[0];
 }
-#endif // ANDROID
+#endif // OS_ANDROID
