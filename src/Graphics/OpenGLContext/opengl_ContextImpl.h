@@ -69,7 +69,7 @@ namespace opengl {
 
 		void bindImageTexture(const graphics::Context::BindImageTextureParameters & _params) override;
 
-		u32 convertGHQTextureFormat(u32 _format) const override;
+		u32 convertInternalTextureFormat(u32 _format) const override;
 
 		/*---------------Framebuffer-------------*/
 

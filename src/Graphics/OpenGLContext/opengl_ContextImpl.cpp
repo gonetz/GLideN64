@@ -33,12 +33,6 @@ void ContextImpl::init()
 		// Correct buffer target parameters, since GLES2 knows only GL_FRAMEBUFFER
 		graphics::bufferTarget::DRAW_FRAMEBUFFER = graphics::bufferTarget::FRAMEBUFFER;
 		graphics::bufferTarget::READ_FRAMEBUFFER = graphics::bufferTarget::FRAMEBUFFER;
-
-		// Replace internal color format parameters on formats supported by GLES2
-		graphics::internalcolorFormat::RGB8 = graphics::InternalColorFormatParam(GL_RGB);
-		graphics::internalcolorFormat::RGBA8 = graphics::InternalColorFormatParam(GL_RGBA);
-		graphics::internalcolorFormat::RGBA4 = graphics::InternalColorFormatParam(GL_RGBA);
-		graphics::internalcolorFormat::RGB5_A1 = graphics::InternalColorFormatParam(GL_RGBA);
 	}
 
 	if (!m_cachedFunctions)
@@ -227,12 +221,21 @@ void ContextImpl::bindImageTexture(const graphics::Context::BindImageTexturePara
 		glBindImageTexture(GLuint(_params.imageUnit), GLuint(_params.texture), 0, GL_FALSE, 0, GLenum(_params.accessMode), GLenum(_params.textureFormat));
 }
 
-u32 ContextImpl::convertGHQTextureFormat(u32 _format) const
+u32 ContextImpl::convertInternalTextureFormat(u32 _format) const
 {
 	if (!m_glInfo.isGLES2)
 		return _format;
 
-	return GL_RGBA;
+	switch (_format) {
+	case GL_RGB8:
+		return GL_RGB;
+	case GL_RGBA8:
+	case GL_RGBA4:
+	case GL_RGB5_A1:
+		return GL_RGBA;
+	}
+
+	return _format;
 }
 
 /*---------------Framebuffer-------------*/

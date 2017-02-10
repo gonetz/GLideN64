@@ -898,7 +898,7 @@ bool TextureCache::_loadHiresBackground(CachedTexture *_pTexture)
 						bpl, paladdr);
 	GHQTexInfo ghqTexInfo;
 	if (txfilter_hirestex(_pTexture->crc, ricecrc, palette, &ghqTexInfo)) {
-		ghqTexInfo.format = gfxContext.convertGHQTextureFormat(ghqTexInfo.format);
+		ghqTexInfo.format = gfxContext.convertInternalTextureFormat(ghqTexInfo.format);
 		Context::InitTextureParams params;
 		params.handle = _pTexture->name;
 		params.mipMapLevel = 0;
@@ -989,7 +989,7 @@ void TextureCache::_loadBackground(CachedTexture *pTexture)
 				m_curUnpackAlignment > 1)
 				gfxContext.setTextureUnpackAlignment(2);
 
-			ghqTexInfo.format = gfxContext.convertGHQTextureFormat(ghqTexInfo.format);
+			ghqTexInfo.format = gfxContext.convertInternalTextureFormat(ghqTexInfo.format);
 			Context::InitTextureParams params;
 			params.handle = pTexture->name;
 			params.mipMapLevel = 0;
@@ -1015,7 +1015,7 @@ void TextureCache::_loadBackground(CachedTexture *pTexture)
 		params.width = pTexture->realWidth;
 		params.height = pTexture->realHeight;
 		params.format = colorFormat::RGBA;
-		params.internalFormat = glInternalFormat;
+		params.internalFormat = gfxContext.convertInternalTextureFormat(u32(glInternalFormat));
 		params.dataType = glType;
 		params.data = pDest;
 		gfxContext.init2DTexture(params);
@@ -1070,7 +1070,7 @@ bool TextureCache::_loadHiresTexture(u32 _tile, CachedTexture *_pTexture, u64 & 
 	_ricecrc = txfilter_checksum(addr, tile_width, tile_height, (unsigned short)(_pTexture->format << 8 | _pTexture->size), bpl, paladdr);
 	GHQTexInfo ghqTexInfo;
 	if (txfilter_hirestex(_pTexture->crc, _ricecrc, palette, &ghqTexInfo)) {
-		ghqTexInfo.format = gfxContext.convertGHQTextureFormat(ghqTexInfo.format);
+		ghqTexInfo.format = gfxContext.convertInternalTextureFormat(ghqTexInfo.format);
 		Context::InitTextureParams params;
 		params.handle = _pTexture->name;
 		params.mipMapLevel = 0;
@@ -1308,7 +1308,7 @@ void TextureCache::_load(u32 _tile, CachedTexture *_pTexture)
 			if (txfilter_filter((u8*)pDest, tmptex.realWidth, tmptex.realHeight,
 							(u16)u32(glInternalFormat), (uint64)_pTexture->crc,
 							&ghqTexInfo) != 0 && ghqTexInfo.data != nullptr) {
-				ghqTexInfo.format = gfxContext.convertGHQTextureFormat(ghqTexInfo.format);
+				ghqTexInfo.format = gfxContext.convertInternalTextureFormat(ghqTexInfo.format);
 				Context::InitTextureParams params;
 				params.handle = _pTexture->name;
 				params.textureUnitIndex = textureIndices::Tex[_tile];
@@ -1338,7 +1338,7 @@ void TextureCache::_load(u32 _tile, CachedTexture *_pTexture)
 			params.msaaLevel = 0;
 			params.width = tmptex.realWidth;
 			params.height = tmptex.realHeight;
-			params.internalFormat = glInternalFormat;
+			params.internalFormat = gfxContext.convertInternalTextureFormat(u32(glInternalFormat));
 			params.format = colorFormat::RGBA;
 			params.dataType = glType;
 			params.data = pDest;

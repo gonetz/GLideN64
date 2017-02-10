@@ -33,7 +33,7 @@ namespace graphics {
 		virtual s32 getTextureUnpackAlignment() const = 0;
 		virtual s32 getMaxTextureSize() const = 0;
 		virtual void bindImageTexture(const Context::BindImageTextureParameters & _params) = 0;
-		virtual u32 convertGHQTextureFormat(u32 _format) const = 0;
+		virtual u32 convertInternalTextureFormat(u32 _format) const = 0;
 		virtual FramebufferTextureFormats * getFramebufferTextureFormats() = 0;
 		virtual ObjectHandle createFramebuffer() = 0;
 		virtual void deleteFramebuffer(ObjectHandle _name) = 0;
