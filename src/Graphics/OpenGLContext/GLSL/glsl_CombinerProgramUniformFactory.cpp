@@ -645,8 +645,8 @@ class UTextureSize : public UniformGroup
 {
 public:
 	UTextureSize(GLuint _program, bool _useT0, bool _useT1)
-	: m_useT0(m_useT0)
-	, m_useT1(m_useT1)
+	: m_useT0(_useT0)
+	, m_useT1(_useT1)
 	{
 		LocateUniform(uTextureSize[0]);
 		LocateUniform(uTextureSize[1]);
