@@ -131,6 +131,8 @@ void UniformSet::updateUniforms(ShaderCombiner * _pCombiner, OGLRender::RENDER_S
 {
 	UniformSetLocation & location = m_uniforms.at(_pCombiner->getKey());
 
+	glUseProgram(_pCombiner->m_program);
+
 	_updateColorUniforms(location, false);
 
 	if ((_renderState == OGLRender::rsTriangle || _renderState == OGLRender::rsLine) && _pCombiner->usesTexture())
