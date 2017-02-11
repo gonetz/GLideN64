@@ -7,6 +7,7 @@
 #include "opengl_ColorBufferReaderWithPixelBuffer.h"
 #include "opengl_ColorBufferReaderWithBufferStorage.h"
 //#include "opengl_ColorBufferReaderWithEGLImage.h"
+#include "opengl_ColorBufferReaderWithReadPixels.h"
 #include "opengl_Utils.h"
 #include "GLSL/glsl_CombinerProgramBuilder.h"
 #include "GLSL/glsl_SpecialShadersFactory.h"
@@ -297,14 +298,17 @@ graphics::PixelReadBuffer * ContextImpl::createPixelReadBuffer(size_t _sizeInByt
 graphics::ColorBufferReader * ContextImpl::createColorBufferReader(CachedTexture * _pTexture)
 {
 	/*
-#ifdef EGL
+#if defined(EGL) && defined(OS_ANDROID)
 	return new ColorBufferReaderWithEGLImage(_pTexture, m_cachedFunctions->getCachedBindTexture());
 #endif*/
 
 	if (m_glInfo.bufferStorage)
 		return new ColorBufferReaderWithBufferStorage(_pTexture, m_cachedFunctions->getCachedBindBuffer());
 
-	return new ColorBufferReaderWithPixelBuffer(_pTexture, m_cachedFunctions->getCachedBindBuffer());
+	if (!m_glInfo.isGLES2)
+		return new ColorBufferReaderWithPixelBuffer(_pTexture, m_cachedFunctions->getCachedBindBuffer());
+
+	return new ColorBufferReaderWithReadPixels(_pTexture);
 }
 
 /*---------------Shaders-------------*/

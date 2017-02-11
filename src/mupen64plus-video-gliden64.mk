@@ -90,6 +90,7 @@ MY_LOCAL_SRC_FILES :=                               \
     $(SRCDIR)/Graphics/OpenGLContext/opengl_CachedFunctions.cpp                    \
     $(SRCDIR)/Graphics/OpenGLContext/opengl_ColorBufferReaderWithBufferStorage.cpp \
     $(SRCDIR)/Graphics/OpenGLContext/opengl_ColorBufferReaderWithPixelBuffer.cpp   \
+    $(SRCDIR)/Graphics/OpenGLContext/opengl_ColorBufferReaderWithReadPixels.cpp    \
     $(SRCDIR)/Graphics/OpenGLContext/opengl_ContextImpl.cpp                        \
     $(SRCDIR)/Graphics/OpenGLContext/opengl_GLInfo.cpp                             \
     $(SRCDIR)/Graphics/OpenGLContext/opengl_Parameters.cpp                         \
