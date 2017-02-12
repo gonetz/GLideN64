@@ -123,11 +123,11 @@ namespace opengl {
 		Bind m_bind;
 	};
 
-	typedef CachedBind<decltype(glBindFramebuffer)> CachedBindFramebuffer;
+	typedef CachedBind<decltype(GET_GL_FUNCTION(glBindFramebuffer))> CachedBindFramebuffer;
 
-	typedef CachedBind<decltype(glBindRenderbuffer)> CachedBindRenderbuffer;
+	typedef CachedBind<decltype(GET_GL_FUNCTION(glBindRenderbuffer))> CachedBindRenderbuffer;
 
-	typedef CachedBind<decltype(glBindBuffer)> CachedBindBuffer;
+	typedef CachedBind<decltype(GET_GL_FUNCTION(glBindBuffer))> CachedBindBuffer;
 
 	class CachedBindTexture : public Cached2<graphics::Parameter, graphics::ObjectHandle>
 	{

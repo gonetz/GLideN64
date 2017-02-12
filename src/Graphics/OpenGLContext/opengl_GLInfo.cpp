@@ -34,11 +34,11 @@ void GLInfo::init() {
 		imageTextures = false;
 		msaa = false;
 	} else if (isGLESX) {
-		imageTextures = (numericVersion >= 31) && (glBindImageTexture != nullptr);
+		imageTextures = (numericVersion >= 31) && IS_GL_FUNCTION_VALID(glBindImageTexture);
 		msaa = numericVersion >= 31;
 	} else {
 		imageTextures = ((numericVersion >= 43) || (Utils::isExtensionSupported(*this, "GL_ARB_shader_image_load_store") &&
-				Utils::isExtensionSupported(*this, "GL_ARB_compute_shader"))) && (glBindImageTexture != nullptr);
+				Utils::isExtensionSupported(*this, "GL_ARB_compute_shader"))) && IS_GL_FUNCTION_VALID(glBindImageTexture);
 		msaa = true;
 	}
 	if (!imageTextures && config.frameBufferEmulation.N64DepthCompare != 0) {
