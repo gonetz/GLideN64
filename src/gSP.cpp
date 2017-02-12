@@ -2161,7 +2161,9 @@ void _copyDepthBuffer()
 	DisplayWindow & wnd = dwnd();
 	Context::BlitFramebuffersParams blitParams;
 	blitParams.readBuffer = pTmpBuffer->m_FBO;
+	blitParams.readBufferAttachment = pTmpBuffer->m_pDepthBuffer->m_pDepthBufferTexture->name;
 	blitParams.drawBuffer = fbList.getCurrent()->m_FBO;
+	blitParams.drawBufferAttachment = fbList.getCurrent()->m_pDepthBuffer->m_pDepthBufferTexture->name;
 	blitParams.srcX0 = 0;
 	blitParams.srcY0 = 0;
 	blitParams.srcX1 = wnd.getWidth();

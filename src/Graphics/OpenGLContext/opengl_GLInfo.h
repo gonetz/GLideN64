@@ -15,6 +15,7 @@ struct GLInfo {
 	bool isGLESX = false;
 	bool imageTextures = false;
 	bool bufferStorage = false;
+	bool copyImage     = false;
 	bool texStorage    = false;
 	bool shaderStorage = false;
 	bool msaa = false;

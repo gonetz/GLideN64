@@ -49,9 +49,13 @@ void GLInfo::init() {
 		config.generalEmulation.enableFragmentDepthWrite = 0;
 	bufferStorage = (!isGLESX && (numericVersion >= 44)) || Utils::isExtensionSupported(*this, "GL_ARB_buffer_storage") ||
 			Utils::isExtensionSupported(*this, "GL_EXT_buffer_storage");
+	copyImage = (isGLESX && (numericVersion >= 32)) || (!isGLESX && numericVersion >= 43) ||
+			Utils::isExtensionSupported(*this, "GL_ARB_copy_image") || Utils::isExtensionSupported(*this, "GL_EXT_copy_image");
 #ifdef EGL
 	if (isGLESX && bufferStorage)
 		g_glBufferStorage = (PFNGLBUFFERSTORAGEPROC) eglGetProcAddress("glBufferStorageEXT");
+	if (isGLEX && numericVersion < 32)
+		g_glCopyImageSubData = (PFNGLCOPYIMAGESUBDATAPROC) eglGetProcAddress("glCopyImageSubDataEXT");
 #endif
 	texStorage = (isGLESX && (numericVersion >= 30)) || (!isGLESX && numericVersion >= 42) ||
 			Utils::isExtensionSupported(*this, "GL_ARB_texture_storage");

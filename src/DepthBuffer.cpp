@@ -310,7 +310,9 @@ CachedTexture * DepthBuffer::copyDepthBufferTexture(FrameBuffer * _pBuffer)
 
 	Context::BlitFramebuffersParams blitParams;
 	blitParams.readBuffer = _pBuffer->m_FBO;
+	blitParams.readBufferAttachment = _pBuffer->m_pDepthBuffer->m_pDepthBufferTexture->name;
 	blitParams.drawBuffer = m_copyFBO;
+	blitParams.drawBufferAttachment = m_pDepthBufferCopyTexture->name;
 	blitParams.srcX0 = 0;
 	blitParams.srcY0 = 0;
 	blitParams.srcX1 = m_pDepthBufferTexture->realWidth;

@@ -175,7 +175,9 @@ namespace graphics {
 		struct BlitFramebuffersParams
 		{
 			ObjectHandle readBuffer;
+			ObjectHandle readBufferAttachment;
 			ObjectHandle drawBuffer;
+			ObjectHandle drawBufferAttachment;
 			s32 srcX0;
 			s32 srcY0;
 			s32 srcX1;

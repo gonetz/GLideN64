@@ -1487,7 +1487,9 @@ void GraphicsDrawer::blitOrCopyTexturedRect(const BlitOrCopyRectParams & _params
 {
 	Context::BlitFramebuffersParams blitParams;
 	blitParams.readBuffer = _params.readBuffer;
+	blitParams.readBufferAttachment = _params.readBufferAttachment;
 	blitParams.drawBuffer = _params.drawBuffer;
+	blitParams.drawBufferAttachment = _params.drawBufferAttachment;
 	blitParams.srcX0 = _params.srcX0;
 	blitParams.srcX1 = _params.srcX1;
 	blitParams.dstX0 = _params.dstX0;

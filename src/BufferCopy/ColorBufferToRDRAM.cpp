@@ -211,7 +211,9 @@ bool ColorBufferToRDRAM::_prepareCopy(u32 _startAddress)
 		blitParams.tex[0] = pInputTexture;
 		blitParams.combiner = CombinerInfo::get().getTexrectCopyProgram();
 		blitParams.readBuffer = readBuffer;
+		blitParams.readBufferAttachment = pInputTexture->name;
 		blitParams.drawBuffer = m_FBO;
+		blitParams.drawBufferAttachment = m_pTexture->name;
 		blitParams.mask = blitMask::COLOR_BUFFER;
 		wnd.getDrawer().blitOrCopyTexturedRect(blitParams);
 

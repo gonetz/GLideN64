@@ -377,15 +377,18 @@ CachedTexture * FrameBuffer::_getSubTexture(u32 _t)
 		copyHeight = m_pTexture->realHeight - y0;
 
 	ObjectHandle readFBO = m_FBO;
-	if (gfxContext.isSupported(SpecialFeatures::WeakBlitFramebuffer) &&
-			m_pTexture->frameBufferTexture == CachedTexture::fbMultiSample) {
+	bool multisample = gfxContext.isSupported(SpecialFeatures::WeakBlitFramebuffer) &&
+		m_pTexture->frameBufferTexture == CachedTexture::fbMultiSample;
+	if (multisample) {
 		resolveMultisampledTexture(true);
 		readFBO = m_resolveFBO;
 	}
 
 	Context::BlitFramebuffersParams blitParams;
 	blitParams.readBuffer = readFBO;
+	blitParams.readBufferAttachment = multisample ? graphics::ObjectHandle() : m_pTexture->name;
 	blitParams.drawBuffer = m_SubFBO;
+	blitParams.drawBufferAttachment = m_pSubTexture->name;
 	blitParams.srcX0 = x0;
 	blitParams.srcY0 = y0;
 	blitParams.srcX1 = x0 + copyWidth;

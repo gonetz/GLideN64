@@ -367,27 +367,34 @@ public:
 
 	BlitFramebuffersImpl(CachedBindFramebuffer * _bind,
 		CachedEnable * _enableScissor,
-		Renderer _renderer)
+		Renderer _renderer, bool _copyImage)
 		: m_bind(_bind)
 		, m_enableScissor(_enableScissor)
-		, m_renderer(_renderer) {
+		, m_renderer(_renderer)
+		, m_copyImage(_copyImage) {
 	}
 
 	bool blitFramebuffers(const graphics::Context::BlitFramebuffersParams & _params) override
 	{
-		m_bind->bind(graphics::bufferTarget::READ_FRAMEBUFFER, _params.readBuffer);
-		m_bind->bind(graphics::bufferTarget::DRAW_FRAMEBUFFER, _params.drawBuffer);
+		if (m_copyImage && _params.dstX1 - _params.dstX0 == _params.srcX1 - _params.srcX0 &&_params.dstY1 - _params.dstY0 == _params.srcY1 - _params.srcY0 &&
+		_params.readBufferAttachment.isNotNull() && _params.drawBufferAttachment.isNotNull()) {
+			glCopyImageSubData(GLuint(_params.readBufferAttachment), GLenum(graphics::textureTarget::TEXTURE_2D), 0, _params.srcX0, _params.srcY0,
+			0, GLuint(_params.drawBufferAttachment), GLenum(graphics::textureTarget::TEXTURE_2D), 0,
+			_params.dstX0, _params.dstY0, 0, _params.srcX1 - _params.srcX0, _params.srcY1 - _params.srcY0, 1);
+		} else {
+			m_bind->bind(graphics::bufferTarget::READ_FRAMEBUFFER, _params.readBuffer);
+			m_bind->bind(graphics::bufferTarget::DRAW_FRAMEBUFFER, _params.drawBuffer);
 
-		const s32 adrenoCoordFix = (m_renderer == Renderer::Adreno) ? 1 : 0;
+			const s32 adrenoCoordFix = (m_renderer == Renderer::Adreno) ? 1 : 0;
 
-		m_enableScissor->enable(false);
-		glBlitFramebuffer(
-			_params.srcX0, _params.srcY0, _params.srcX1, _params.srcY1,
-			adrenoCoordFix +_params.dstX0, _params.dstY0, _params.dstX1, _params.dstY1,
-			GLbitfield(_params.mask), GLenum(_params.filter)
-		);
-		m_enableScissor->enable(true);
-
+			m_enableScissor->enable(false);
+			glBlitFramebuffer(
+				_params.srcX0, _params.srcY0, _params.srcX1, _params.srcY1,
+				adrenoCoordFix +_params.dstX0, _params.dstY0, _params.dstX1, _params.dstY1,
+				GLbitfield(_params.mask), GLenum(_params.filter)
+			);
+			m_enableScissor->enable(true);
+		}
 		return !Utils::isGLError();
 	}
 
@@ -395,6 +402,7 @@ private:
 	CachedBindFramebuffer * m_bind;
 	CachedEnable * m_enableScissor;
 	Renderer m_renderer;
+	bool m_copyImage;
 };
 
 class DummyBlitFramebuffers: public BlitFramebuffers
@@ -599,7 +607,7 @@ BlitFramebuffers * BufferManipulationObjectFactory::getBlitFramebuffers() const
 	if (BlitFramebuffersImpl::Check(m_glInfo))
 		return new BlitFramebuffersImpl(m_cachedFunctions.getCachedBindFramebuffer(),
 										m_cachedFunctions.getCachedEnable(graphics::enable::SCISSOR_TEST),
-										m_glInfo.renderer);
+										m_glInfo.renderer, m_glInfo.copyImage);
 
 	return new DummyBlitFramebuffers;
 }
