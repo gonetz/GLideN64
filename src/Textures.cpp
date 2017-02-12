@@ -1497,8 +1497,6 @@ void TextureCache::activateMSDummy(u32 _t)
 	params.handle = m_pMSDummy->name;
 	params.target = textureTarget::TEXTURE_2D_MULTISAMPLE;
 	params.textureUnitIndex = textureIndices::MSTex[_t];
-	params.minFilter = textureParameters::FILTER_NEAREST;
-	params.magFilter = textureParameters::FILTER_NEAREST;
 	gfxContext.setTextureParameters(params);
 }
 

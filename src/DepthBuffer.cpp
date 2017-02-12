@@ -165,10 +165,10 @@ void DepthBuffer::_initDepthBufferTexture(FrameBuffer * _pBuffer, CachedTexture 
 		gfxContext.init2DTexture(params);
 	}
 	_pTexture->frameBufferTexture = _multisample ? CachedTexture::fbMultiSample : CachedTexture::fbOneSample;
-	{
+	if (!_multisample) {
 		Context::TexParameters params;
 		params.handle = _pTexture->name;
-		params.target = _multisample ? textureTarget::TEXTURE_2D_MULTISAMPLE : textureTarget::TEXTURE_2D;
+		params.target = textureTarget::TEXTURE_2D;
 		params.textureUnitIndex = textureIndices::Tex[0];
 		params.minFilter = textureParameters::FILTER_NEAREST;
 		params.magFilter = textureParameters::FILTER_NEAREST;

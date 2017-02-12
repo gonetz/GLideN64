@@ -106,10 +106,10 @@ void FrameBuffer::_setAndAttachTexture(ObjectHandle _fbo, CachedTexture *_pTextu
 		}
 		gfxContext.init2DTexture(params);
 	}
-	{
+	if (!_multisampling) {
 		Context::TexParameters params;
 		params.handle = _pTexture->name;
-		params.target = _multisampling ? textureTarget::TEXTURE_2D_MULTISAMPLE : textureTarget::TEXTURE_2D;
+		params.target = textureTarget::TEXTURE_2D;
 		params.textureUnitIndex = textureIndices::Tex[_t];
 		params.minFilter = textureParameters::FILTER_NEAREST;
 		params.magFilter = textureParameters::FILTER_NEAREST;
