@@ -350,6 +350,7 @@
     </ClCompile>
     <ClCompile Include="..\..\src\RSP.cpp" />
     <ClCompile Include="..\..\src\SoftwareRender.cpp" />
+    <ClCompile Include="..\..\src\TextDrawer.cpp" />
     <ClCompile Include="..\..\src\TextureFilterHandler.cpp" />
     <ClCompile Include="..\..\src\Textures.cpp" />
     <ClCompile Include="..\..\src\Turbo3D.cpp" />
@@ -442,9 +443,7 @@
     <ClInclude Include="..\..\src\Graphics\OpenGLContext\opengl_ColorBufferReaderWithPixelBuffer.h" />
     <ClInclude Include="..\..\src\Graphics\OpenGLContext\opengl_ContextImpl.h" />
     <ClInclude Include="..\..\src\Graphics\OpenGLContext\opengl_GLInfo.h" />
-    <ClInclude Include="..\..\src\Graphics\OpenGLContext\opengl_DummyTextDrawer.h" />
     <ClInclude Include="..\..\src\Graphics\OpenGLContext\opengl_GraphicsDrawer.h" />
-    <ClInclude Include="..\..\src\Graphics\OpenGLContext\opengl_TextDrawer.h" />
     <ClInclude Include="..\..\src\Graphics\OpenGLContext\opengl_TextureManipulationObjectFactory.h" />
     <ClInclude Include="..\..\src\Graphics\OpenGLContext\opengl_UnbufferedDrawer.h" />
     <ClInclude Include="..\..\src\Graphics\OpenGLContext\opengl_Utils.h" />
@@ -472,6 +471,7 @@
     <ClInclude Include="..\..\src\GraphicsDrawer.h" />
     <ClInclude Include="..\..\src\RSP.h" />
     <ClInclude Include="..\..\src\SoftwareRender.h" />
+    <ClInclude Include="..\..\src\TextDrawer.h" />
     <ClInclude Include="..\..\src\TextureFilterHandler.h" />
     <ClInclude Include="..\..\src\Textures.h" />
     <ClInclude Include="..\..\src\Turbo3D.h" />

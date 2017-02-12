@@ -7,8 +7,6 @@
 #include "Graphics/Parameter.h"
 
 namespace graphics {
-	class DrawerImpl;
-	class TextDrawer;
 	class CombinerProgram;
 }
 

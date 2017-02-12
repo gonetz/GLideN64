@@ -6,7 +6,6 @@
 #include "opengl_GLInfo.h"
 #include "opengl_CachedFunctions.h"
 #include "opengl_GraphicsDrawer.h"
-#include "opengl_TextDrawer.h"
 
 namespace glsl {
 	class CombinerProgramBuilder;
@@ -119,6 +118,8 @@ namespace opengl {
 
 		graphics::ShaderProgram * createOrientationCorrectionShader() override;
 
+		graphics::ShaderProgram * createTextDrawerShader() override;
+
 		void resetShaderProgram() override;
 
 		void drawTriangles(const graphics::Context::DrawTriangleParameters & _params) override;
@@ -128,10 +129,6 @@ namespace opengl {
 		void drawLine(f32 _width, SPVertex * _vertices) override;
 
 		f32 getMaxLineWidth() override;
-
-		void drawText(const char *_pText, float _x, float _y) override;
-
-		void getTextSize(const char *_pText, float & _w, float & _h) override;
 
 		bool isSupported(graphics::SpecialFeatures _feature) const override;
 
@@ -156,7 +153,6 @@ namespace opengl {
 		std::unique_ptr<graphics::FramebufferTextureFormats> m_fbTexFormats;
 
 		std::unique_ptr<GraphicsDrawer> m_graphicsDrawer;
-		std::unique_ptr<TextDrawer> m_textDrawer;
 
 		std::unique_ptr<glsl::CombinerProgramBuilder> m_combinerProgramBuilder;
 		std::unique_ptr<glsl::SpecialShadersFactory> m_specialShadersFactory;

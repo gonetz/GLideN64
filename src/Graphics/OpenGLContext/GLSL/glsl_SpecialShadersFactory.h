@@ -36,6 +36,8 @@ namespace glsl {
 
 		graphics::ShaderProgram * createOrientationCorrectionShader() const;
 
+		graphics::ShaderProgram * createTextDrawerShader() const;
+
 	private:
 		const opengl::GLInfo & m_glinfo;
 		const ShaderPart * m_vertexHeader;

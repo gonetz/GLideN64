@@ -4,7 +4,6 @@
 #include "opengl_ContextImpl.h"
 #include "opengl_BufferedDrawer.h"
 #include "opengl_UnbufferedDrawer.h"
-#include "opengl_DummyTextDrawer.h"
 #include "opengl_ColorBufferReaderWithPixelBuffer.h"
 #include "opengl_ColorBufferReaderWithBufferStorage.h"
 //#include "opengl_ColorBufferReaderWithEGLImage.h"
@@ -63,7 +62,6 @@ void ContextImpl::init()
 			m_graphicsDrawer.reset(new BufferedDrawer(m_glInfo, m_cachedFunctions->getCachedVertexAttribArray(), m_cachedFunctions->getCachedBindBuffer()));
 		else
 			m_graphicsDrawer.reset(new UnbufferedDrawer(m_glInfo, m_cachedFunctions->getCachedVertexAttribArray()));
-		m_textDrawer.reset(new DummyTextDrawer);
 	}
 
 	m_combinerProgramBuilder.reset(new glsl::CombinerProgramBuilder(m_glInfo, m_cachedFunctions->getCachedUseProgram()));
@@ -363,6 +361,11 @@ graphics::ShaderProgram * ContextImpl::createOrientationCorrectionShader()
 	return m_specialShadersFactory->createOrientationCorrectionShader();
 }
 
+graphics::ShaderProgram * ContextImpl::createTextDrawerShader()
+{
+	return m_specialShadersFactory->createTextDrawerShader();
+}
+
 void ContextImpl::resetShaderProgram()
 {
 	m_cachedFunctions->getCachedUseProgram()->useProgram(graphics::ObjectHandle());
@@ -391,15 +394,6 @@ f32 ContextImpl::getMaxLineWidth()
 	return lineWidthRange[1];
 }
 
-void ContextImpl::drawText(const char *_pText, float _x, float _y)
-{
-	m_textDrawer->drawText(_pText, _x, _y);
-}
-
-void ContextImpl::getTextSize(const char *_pText, float & _w, float & _h)
-{
-	m_textDrawer->getTextSize(_pText, _w, _h);
-}
 bool ContextImpl::isSupported(graphics::SpecialFeatures _feature) const
 {
 	switch (_feature) {

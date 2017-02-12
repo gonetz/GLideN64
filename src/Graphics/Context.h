@@ -220,6 +220,8 @@ namespace graphics {
 
 		ShaderProgram * createOrientationCorrectionShader();
 
+		ShaderProgram * createTextDrawerShader();
+
 		void resetShaderProgram();
 
 		/*---------------Draw-------------*/
@@ -252,10 +254,6 @@ namespace graphics {
 		void drawLine(f32 _width, SPVertex * _vertices);
 
 		f32 getMaxLineWidth();
-
-		void drawText(const char *_pText, float _x, float _y);
-
-		void getTextSize(const char *_pText, float & _w, float & _h);
 
 		/*---------------Misc-------------*/
 

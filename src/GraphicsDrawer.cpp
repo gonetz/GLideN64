@@ -13,6 +13,7 @@
 #include "NoiseTexture.h"
 #include "ZlutTexture.h"
 #include "PaletteTexture.h"
+#include "TextDrawer.h"
 #include "FrameBuffer.h"
 #include "DepthBuffer.h"
 #include "FrameBufferInfo.h"
@@ -1297,13 +1298,13 @@ void GraphicsDrawer::correctTexturedRectParams(TexturedRectParams & _params)
 void GraphicsDrawer::drawText(const char *_pText, float x, float y)
 {
 	m_drawingState = DrawingState::Non;
-	gfxContext.drawText(_pText, x, y);
+	g_textDrawer.drawText(_pText, x, y);
 }
 
 void GraphicsDrawer::_drawOSD(const char *_pText, float _x, float & _y)
 {
 	float tW, tH;
-	gfxContext.getTextSize(_pText, tW, tH);
+	g_textDrawer.getTextSize(_pText, tW, tH);
 
 	const bool top = (config.posTop & config.onScreenDisplay.pos) != 0;
 	const bool right = (config.onScreenDisplay.pos == Config::posTopRight) || (config.onScreenDisplay.pos == Config::posBottomRight);
@@ -1352,7 +1353,7 @@ void GraphicsDrawer::drawOSD()
 	const float vp = bottom ? -1 : 1;
 
 	float hShift, vShift;
-	gfxContext.getTextSize("0", hShift, vShift);
+	g_textDrawer.getTextSize("0", hShift, vShift);
 	hShift *= 0.5f;
 	vShift *= 0.5f;
 	const float x = hp - hShift * hp;
@@ -1571,6 +1572,7 @@ void GraphicsDrawer::_initData()
 	g_zlutTexture.init();
 	g_noiseTexture.init();
 	g_paletteTexture.init();
+	g_textDrawer.init();
 	perf.reset();
 	FBInfo::fbInfo.reset();
 	m_texrectDrawer.init();
@@ -1590,6 +1592,7 @@ void GraphicsDrawer::_destroyData()
 {
 	m_drawingState = DrawingState::Non;
 	m_texrectDrawer.destroy();
+	g_textDrawer.destroy();
 	g_paletteTexture.destroy();
 	g_zlutTexture.destroy();
 	g_noiseTexture.destroy();

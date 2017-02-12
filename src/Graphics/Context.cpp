@@ -249,6 +249,11 @@ ShaderProgram * Context::createOrientationCorrectionShader()
 	return m_impl->createOrientationCorrectionShader();
 }
 
+ShaderProgram * Context::createTextDrawerShader()
+{
+	return m_impl->createTextDrawerShader();
+}
+
 void Context::resetShaderProgram()
 {
 	m_impl->resetShaderProgram();
@@ -267,16 +272,6 @@ void Context::drawRects(const DrawRectParameters & _params)
 void Context::drawLine(f32 _width, SPVertex * _vertices)
 {
 	m_impl->drawLine(_width, _vertices);
-}
-
-void Context::drawText(const char *_pText, float _x, float _y)
-{
-	m_impl->drawText(_pText, _x, _y);
-}
-
-void Context::getTextSize(const char *_pText, float & _w, float & _h)
-{
-	m_impl->getTextSize(_pText, _w, _h);
 }
 
 f32 Context::getMaxLineWidth()
