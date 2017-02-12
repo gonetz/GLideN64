@@ -216,7 +216,7 @@ s32 ContextImpl::getMaxTextureSize() const
 
 void ContextImpl::bindImageTexture(const graphics::Context::BindImageTextureParameters & _params)
 {
-	if (glBindImageTexture != nullptr)
+	if (IS_GL_FUNCTION_VALID(glBindImageTexture))
 		glBindImageTexture(GLuint(_params.imageUnit), GLuint(_params.texture), 0, GL_FALSE, 0, GLenum(_params.accessMode), GLenum(_params.textureFormat));
 }
 

@@ -193,7 +193,7 @@ namespace opengl {
 				}
 
 				if (_params.ImageUnit.isValid()) {
-					assert(glBindImageTexture != nullptr);
+					assert(IS_GL_FUNCTION_VALID(glBindImageTexture));
 					glBindImageTexture(GLuint(_params.ImageUnit), GLuint(_params.handle),
 					0, GL_FALSE, GL_FALSE, GL_READ_ONLY, GLuint(_params.internalFormat));
 				}
@@ -276,7 +276,7 @@ namespace opengl {
 				_params.data);
 
 			if (_params.ImageUnit.isValid() && _params.internalFormat.isValid()) {
-				assert(glBindImageTexture != nullptr);
+				assert(IS_GL_FUNCTION_VALID(glBindImageTexture));
 				glBindImageTexture(GLuint(_params.ImageUnit), GLuint(_params.handle),
 				0, GL_FALSE, GL_FALSE, GL_READ_ONLY, GLuint(_params.internalFormat));
 			}
