@@ -330,6 +330,16 @@ ConfigDialog::~ConfigDialog()
 	delete ui;
 }
 
+static
+u32 pow2(u32 dim)
+{
+	u32 i = 1;
+
+	while (i < dim) i <<= 1;
+
+	return i;
+}
+
 void ConfigDialog::accept()
 {
 	m_accepted = true;
@@ -344,7 +354,8 @@ void ConfigDialog::accept()
 	config.video.cropWidth = ui->cropImageWidthSpinBox->value();
 	config.video.cropHeight = ui->cropImageHeightSpinBox->value();
 
-	config.video.multisampling = ui->aliasingSlider->value();
+	config.video.multisampling = pow2(ui->aliasingSlider->value());
+
 	config.texture.maxAnisotropy = ui->anisotropicSlider->value();
 	config.texture.maxBytes = ui->cacheSizeSpinBox->value() * gc_uMegabyte;
 
