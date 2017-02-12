@@ -26,9 +26,9 @@ namespace glsl {
 
 		graphics::ShaderProgram * createMonochromeShader() const;
 
-		graphics::TexDrawerShaderProgram * createTexDrawerDrawShader() const;
+		graphics::TexrectDrawerShaderProgram * createTexrectDrawerDrawShader() const;
 
-		graphics::ShaderProgram * createTexDrawerClearShader() const;
+		graphics::ShaderProgram * createTexrectDrawerClearShader() const;
 
 		graphics::ShaderProgram * createTexrectCopyShader() const;
 

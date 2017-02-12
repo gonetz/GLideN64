@@ -108,9 +108,9 @@ namespace opengl {
 
 		graphics::ShaderProgram * createMonochromeShader() override;
 
-		graphics::TexDrawerShaderProgram * createTexDrawerDrawShader() override;
+		graphics::TexrectDrawerShaderProgram * createTexrectDrawerDrawShader() override;
 
-		graphics::ShaderProgram * createTexDrawerClearShader() override;
+		graphics::ShaderProgram * createTexrectDrawerClearShader() override;
 
 		graphics::ShaderProgram * createTexrectCopyShader() override;
 

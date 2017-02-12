@@ -3,6 +3,7 @@
 #include <array>
 #include <vector>
 #include "gSP.h"
+#include "TexrectDrawer.h"
 #include "Graphics/ObjectHandle.h"
 #include "Graphics/Parameter.h"
 
@@ -139,6 +140,7 @@ public:
 
 private:
 	friend class DisplayWindow;
+	friend TexrectDrawer;
 
 	GraphicsDrawer();
 
@@ -167,18 +169,6 @@ private:
 
 	DrawingState m_drawingState;
 	TexturedRectParams m_texrectParams;
-
-	// Dummy TexrectDrawer
-	class TexrectDrawer
-	{
-	public:
-		TexrectDrawer() {}
-		void init() {}
-		void destroy() {}
-		void add() {}
-		bool draw() { return false; }
-		bool isEmpty() { return true; }
-	};
 
 	struct {
 		std::array<SPVertex, VERTBUFF_SIZE> vertices;

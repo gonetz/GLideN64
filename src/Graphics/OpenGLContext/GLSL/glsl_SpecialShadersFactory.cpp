@@ -506,7 +506,7 @@ namespace glsl {
 
 	/*---------------TexrectDrawerShader-------------*/
 
-	class TexrectDrawerShaderDraw : public graphics::TexDrawerShaderProgram
+	class TexrectDrawerShaderDraw : public graphics::TexrectDrawerShaderProgram
 	{
 	public:
 		TexrectDrawerShaderDraw(const opengl::GLInfo & _glinfo,
@@ -708,12 +708,12 @@ namespace glsl {
 		return new MonochromeShader(m_glinfo, m_useProgram, m_vertexHeader, m_fragmentHeader);
 	}
 
-	graphics::TexDrawerShaderProgram * SpecialShadersFactory::createTexDrawerDrawShader() const
+	graphics::TexrectDrawerShaderProgram * SpecialShadersFactory::createTexrectDrawerDrawShader() const
 	{
 		return new TexrectDrawerShaderDraw(m_glinfo, m_useProgram, m_vertexHeader, m_fragmentHeader);
 	}
 
-	graphics::ShaderProgram * SpecialShadersFactory::createTexDrawerClearShader() const
+	graphics::ShaderProgram * SpecialShadersFactory::createTexrectDrawerClearShader() const
 	{
 		return new TexrectDrawerShaderClear(m_glinfo, m_useProgram, m_vertexHeader, m_fragmentHeader);
 	}

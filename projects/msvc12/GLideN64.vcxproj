@@ -351,6 +351,7 @@
     </ClCompile>
     <ClCompile Include="..\..\src\RSP.cpp" />
     <ClCompile Include="..\..\src\SoftwareRender.cpp" />
+    <ClCompile Include="..\..\src\TexrectDrawer.cpp" />
     <ClCompile Include="..\..\src\TextDrawer.cpp" />
     <ClCompile Include="..\..\src\TextureFilterHandler.cpp" />
     <ClCompile Include="..\..\src\Textures.cpp" />
@@ -473,6 +474,7 @@
     <ClInclude Include="..\..\src\GraphicsDrawer.h" />
     <ClInclude Include="..\..\src\RSP.h" />
     <ClInclude Include="..\..\src\SoftwareRender.h" />
+    <ClInclude Include="..\..\src\TexrectDrawer.h" />
     <ClInclude Include="..\..\src\TextDrawer.h" />
     <ClInclude Include="..\..\src\TextureFilterHandler.h" />
     <ClInclude Include="..\..\src\Textures.h" />

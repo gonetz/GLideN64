@@ -340,14 +340,14 @@ graphics::ShaderProgram * ContextImpl::createMonochromeShader()
 	return m_specialShadersFactory->createMonochromeShader();
 }
 
-graphics::TexDrawerShaderProgram * ContextImpl::createTexDrawerDrawShader()
+graphics::TexrectDrawerShaderProgram * ContextImpl::createTexrectDrawerDrawShader()
 {
-	return m_specialShadersFactory->createTexDrawerDrawShader();
+	return m_specialShadersFactory->createTexrectDrawerDrawShader();
 }
 
-graphics::ShaderProgram * ContextImpl::createTexDrawerClearShader()
+graphics::ShaderProgram * ContextImpl::createTexrectDrawerClearShader()
 {
-	return m_specialShadersFactory->createTexDrawerClearShader();
+	return m_specialShadersFactory->createTexrectDrawerClearShader();
 }
 
 graphics::ShaderProgram * ContextImpl::createTexrectCopyShader()

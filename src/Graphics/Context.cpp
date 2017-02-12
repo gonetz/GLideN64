@@ -224,14 +224,14 @@ ShaderProgram * Context::createMonochromeShader()
 	return m_impl->createMonochromeShader();
 }
 
-TexDrawerShaderProgram * Context::createTexDrawerDrawShader()
+TexrectDrawerShaderProgram * Context::createTexrectDrawerDrawShader()
 {
-	return m_impl->createTexDrawerDrawShader();
+	return m_impl->createTexrectDrawerDrawShader();
 }
 
-ShaderProgram * Context::createTexDrawerClearShader()
+ShaderProgram * Context::createTexrectDrawerClearShader()
 {
-	return m_impl->createTexDrawerClearShader();
+	return m_impl->createTexrectDrawerClearShader();
 }
 
 ShaderProgram * Context::createTexrectCopyShader()

@@ -19,7 +19,7 @@ namespace graphics {
 		virtual bool getBinaryForm(std::vector<char> & _buffer) override {return false;}
 	};
 
-	class TexDrawerShaderProgram : public ShaderProgram
+	class TexrectDrawerShaderProgram : public ShaderProgram
 	{
 	public:
 		virtual void setTextureSize(u32 _width, u32 _height) = 0;

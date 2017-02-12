@@ -210,9 +210,9 @@ namespace graphics {
 
 		ShaderProgram * createMonochromeShader();
 
-		TexDrawerShaderProgram * createTexDrawerDrawShader();
+		TexrectDrawerShaderProgram * createTexrectDrawerDrawShader();
 
-		ShaderProgram * createTexDrawerClearShader();
+		ShaderProgram * createTexrectDrawerClearShader();
 
 		ShaderProgram * createTexrectCopyShader();
 
