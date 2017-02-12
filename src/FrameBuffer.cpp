@@ -85,45 +85,42 @@ void FrameBuffer::_initTexture(u16 _width, u16 _height, u16 _format, u16 _size, 
 
 void FrameBuffer::_setAndAttachTexture(ObjectHandle _fbo, CachedTexture *_pTexture, u32 _t, bool _multisampling)
 {
-	{
-		const FramebufferTextureFormats & fbTexFormat = gfxContext.getFramebufferTextureFormats();
-		Context::InitTextureParams params;
-		params.handle = _pTexture->name;
-		params.textureUnitIndex = textureIndices::Tex[_t];
-		if (_multisampling)
-			params.msaaLevel = config.video.multisampling;
-		params.width = _pTexture->realWidth;
-		params.height = _pTexture->realHeight;
-		if (_pTexture->size > G_IM_SIZ_8b) {
-			params.internalFormat = fbTexFormat.colorInternalFormat;
-			params.format = fbTexFormat.colorFormat;
-			params.dataType = fbTexFormat.colorType;
-		}
-		else {
-			params.internalFormat = fbTexFormat.monochromeInternalFormat;
-			params.format = fbTexFormat.monochromeFormat;
-			params.dataType = fbTexFormat.monochromeType;
-		}
-		gfxContext.init2DTexture(params);
+	const FramebufferTextureFormats & fbTexFormat = gfxContext.getFramebufferTextureFormats();
+	Context::InitTextureParams initParams;
+	initParams.handle = _pTexture->name;
+	initParams.textureUnitIndex = textureIndices::Tex[_t];
+	if (_multisampling)
+		initParams.msaaLevel = config.video.multisampling;
+	initParams.width = _pTexture->realWidth;
+	initParams.height = _pTexture->realHeight;
+	if (_pTexture->size > G_IM_SIZ_8b) {
+		initParams.internalFormat = fbTexFormat.colorInternalFormat;
+		initParams.format = fbTexFormat.colorFormat;
+		initParams.dataType = fbTexFormat.colorType;
+	} else {
+		initParams.internalFormat = fbTexFormat.monochromeInternalFormat;
+		initParams.format = fbTexFormat.monochromeFormat;
+		initParams.dataType = fbTexFormat.monochromeType;
 	}
+	gfxContext.init2DTexture(initParams);
+
 	if (!_multisampling) {
-		Context::TexParameters params;
-		params.handle = _pTexture->name;
-		params.target = textureTarget::TEXTURE_2D;
-		params.textureUnitIndex = textureIndices::Tex[_t];
-		params.minFilter = textureParameters::FILTER_NEAREST;
-		params.magFilter = textureParameters::FILTER_NEAREST;
-		gfxContext.setTextureParameters(params);
+		Context::TexParameters texParams;
+		texParams.handle = _pTexture->name;
+		texParams.target = textureTarget::TEXTURE_2D;
+		texParams.textureUnitIndex = textureIndices::Tex[_t];
+		texParams.minFilter = textureParameters::FILTER_NEAREST;
+		texParams.magFilter = textureParameters::FILTER_NEAREST;
+		gfxContext.setTextureParameters(texParams);
 	}
-	{
-		Context::FrameBufferRenderTarget bufTarget;
-		bufTarget.bufferHandle = _fbo;
-		bufTarget.bufferTarget = bufferTarget::FRAMEBUFFER;
-		bufTarget.attachment = bufferAttachment::COLOR_ATTACHMENT0;
-		bufTarget.textureTarget = _multisampling ? textureTarget::TEXTURE_2D_MULTISAMPLE : textureTarget::TEXTURE_2D;
-		bufTarget.textureHandle = _pTexture->name;
-		gfxContext.addFrameBufferRenderTarget(bufTarget);
-	}
+
+	Context::FrameBufferRenderTarget bufTarget;
+	bufTarget.bufferHandle = _fbo;
+	bufTarget.bufferTarget = bufferTarget::FRAMEBUFFER;
+	bufTarget.attachment = bufferAttachment::COLOR_ATTACHMENT0;
+	bufTarget.textureTarget = _multisampling ? textureTarget::TEXTURE_2D_MULTISAMPLE : textureTarget::TEXTURE_2D;
+	bufTarget.textureHandle = _pTexture->name;
+	gfxContext.addFrameBufferRenderTarget(bufTarget);
 	assert(!gfxContext.isFramebufferError());
 }
 

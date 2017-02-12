@@ -153,28 +153,28 @@ void DepthBuffer::_initDepthBufferTexture(FrameBuffer * _pBuffer, CachedTexture 
 	_pTexture->textureBytes = _pTexture->realWidth * _pTexture->realHeight * fbTexFormat.depthFormatBytes;
 	textureCache().addFrameBufferTextureSize(_pTexture->textureBytes);
 
-	{
-		Context::InitTextureParams params;
-		params.handle = _pTexture->name;
-		params.msaaLevel = _multisample ? config.video.multisampling : 0U;
-		params.width = _pTexture->realWidth;
-		params.height = _pTexture->realHeight;
-		params.internalFormat = fbTexFormat.depthInternalFormat;
-		params.format = fbTexFormat.depthFormat;
-		params.dataType = fbTexFormat.depthType;
-		gfxContext.init2DTexture(params);
-	}
-	_pTexture->frameBufferTexture = _multisample ? CachedTexture::fbMultiSample : CachedTexture::fbOneSample;
-	if (!_multisample) {
-		Context::TexParameters params;
-		params.handle = _pTexture->name;
-		params.target = textureTarget::TEXTURE_2D;
-		params.textureUnitIndex = textureIndices::Tex[0];
-		params.minFilter = textureParameters::FILTER_NEAREST;
-		params.magFilter = textureParameters::FILTER_NEAREST;
-		gfxContext.setTextureParameters(params);
-	}
+	Context::InitTextureParams initParams;
+	initParams.handle = _pTexture->name;
+	initParams.msaaLevel = _multisample ? config.video.multisampling : 0U;
+	initParams.width = _pTexture->realWidth;
+	initParams.height = _pTexture->realHeight;
+	initParams.internalFormat = fbTexFormat.depthInternalFormat;
+	initParams.format = fbTexFormat.depthFormat;
+	initParams.dataType = fbTexFormat.depthType;
+	gfxContext.init2DTexture(initParams);
 
+	if (!_multisample) {
+		_pTexture->frameBufferTexture = CachedTexture::fbOneSample;
+		Context::TexParameters texParams;
+		texParams.handle = _pTexture->name;
+		texParams.target = textureTarget::TEXTURE_2D;
+		texParams.textureUnitIndex = textureIndices::Tex[0];
+		texParams.minFilter = textureParameters::FILTER_NEAREST;
+		texParams.magFilter = textureParameters::FILTER_NEAREST;
+		gfxContext.setTextureParameters(texParams);
+	} else {
+		_pTexture->frameBufferTexture = CachedTexture::fbMultiSample;
+	}
 }
 
 void DepthBuffer::_initDepthBufferRenderbuffer(FrameBuffer * _pBuffer)
