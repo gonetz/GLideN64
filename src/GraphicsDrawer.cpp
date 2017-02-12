@@ -1567,12 +1567,12 @@ void GraphicsDrawer::_initData()
 	DepthBuffer_Init();
 	FrameBuffer_Init();
 	Combiner_Init();
+	g_textDrawer.init();
 	TFH.init();
 	PostProcessor::get().init();
 	g_zlutTexture.init();
 	g_noiseTexture.init();
 	g_paletteTexture.init();
-	g_textDrawer.init();
 	perf.reset();
 	FBInfo::fbInfo.reset();
 	m_texrectDrawer.init();
@@ -1592,13 +1592,13 @@ void GraphicsDrawer::_destroyData()
 {
 	m_drawingState = DrawingState::Non;
 	m_texrectDrawer.destroy();
-	g_textDrawer.destroy();
 	g_paletteTexture.destroy();
 	g_zlutTexture.destroy();
 	g_noiseTexture.destroy();
 	PostProcessor::get().destroy();
 	if (TFH.optionsChanged())
 		TFH.shutdown();
+	g_textDrawer.destroy();
 	Combiner_Destroy();
 	FrameBuffer_Destroy();
 	DepthBuffer_Destroy();
