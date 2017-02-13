@@ -381,9 +381,10 @@ public:
 		const s32 adrenoCoordFix = (m_renderer == Renderer::Adreno) ? 1 : 0;
 
 		m_enableScissor->enable(false);
+
 		glBlitFramebuffer(
-			_params.srcX0, _params.srcY0, _params.srcX1, _params.srcY1,
-			adrenoCoordFix +_params.dstX0, _params.dstY0, _params.dstX1, _params.dstY1,
+			adrenoCoordFix + _params.srcX0, _params.srcY0, _params.srcX1, _params.srcY1,
+			adrenoCoordFix + _params.dstX0, _params.dstY0, _params.dstX1, _params.dstY1,
 			GLbitfield(_params.mask), GLenum(_params.filter)
 		);
 		m_enableScissor->enable(true);
