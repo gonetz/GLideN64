@@ -354,7 +354,8 @@ void ConfigDialog::accept()
 	config.video.cropWidth = ui->cropImageWidthSpinBox->value();
 	config.video.cropHeight = ui->cropImageHeightSpinBox->value();
 
-	config.video.multisampling = pow2(ui->aliasingSlider->value());
+	const u32 multisampling = ui->aliasingSlider->value();
+	config.video.multisampling = multisampling == 0 ? 0 : pow2(multisampling);
 
 	config.texture.maxAnisotropy = ui->anisotropicSlider->value();
 	config.texture.maxBytes = ui->cacheSizeSpinBox->value() * gc_uMegabyte;

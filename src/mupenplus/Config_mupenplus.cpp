@@ -212,7 +212,8 @@ void Config_LoadConfig()
 	config.video.cropMode = ConfigGetParamInt(g_configVideoGliden64, "CropMode");
 	config.video.cropWidth = ConfigGetParamInt(g_configVideoGliden64, "CropWidth");
 	config.video.cropHeight = ConfigGetParamInt(g_configVideoGliden64, "CropHeight");
-	config.video.multisampling = pow2(ConfigGetParamInt(g_configVideoGliden64, "MultiSampling"));
+	const u32 multisampling = ConfigGetParamInt(g_configVideoGliden64, "MultiSampling");
+	config.video.multisampling = multisampling == 0 ? 0 : pow2(multisampling);
 	config.frameBufferEmulation.aspect = ConfigGetParamInt(g_configVideoGliden64, "AspectRatio");
 	config.frameBufferEmulation.bufferSwapMode = ConfigGetParamInt(g_configVideoGliden64, "BufferSwapMode");
 	config.frameBufferEmulation.nativeResFactor = ConfigGetParamInt(g_configVideoGliden64, "UseNativeResolutionFactor");
