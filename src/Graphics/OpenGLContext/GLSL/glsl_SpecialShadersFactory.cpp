@@ -563,6 +563,8 @@ namespace glsl {
 
 		void setTextureSize(u32 _width, u32 _height) override
 		{
+			if (m_textureSizeLoc < 0)
+				return;
 			m_useProgram->useProgram(m_program);
 			glUniform2f(m_textureSizeLoc, (GLfloat)_width, (GLfloat)_height);
 			gDP.changed |= CHANGED_COMBINE;

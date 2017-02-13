@@ -79,6 +79,7 @@ void TexrectDrawer::init()
 
 	m_programTex.reset(gfxContext.createTexrectDrawerDrawShader());
 	m_programClear.reset(gfxContext.createTexrectDrawerClearShader());
+	m_programTex->setTextureSize(m_pTexture->realWidth, m_pTexture->realHeight);
 
 	m_vecRectCoords.reserve(256);
 }
