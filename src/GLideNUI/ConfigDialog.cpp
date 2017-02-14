@@ -64,6 +64,16 @@ static const char * cmbTexEnhancement_choices[numEnhancements] = {
 	"6xBRZ"
 };
 
+static
+u32 pow2(u32 dim)
+{
+	u32 i = 1;
+
+	while (i < dim) i <<= 1;
+
+	return i;
+}
+
 void ConfigDialog::_init()
 {
 	// Video settings
@@ -94,6 +104,7 @@ void ConfigDialog::_init()
 	ui->fullScreenRefreshRateComboBox->setCurrentIndex(fullscreenRate);
 
 	ui->aliasingSlider->setValue(config.video.multisampling);
+	ui->aliasingLabelVal->setText(QString::number(pow2(config.video.multisampling)));
 	ui->anisotropicSlider->setValue(config.texture.maxAnisotropy);
 	ui->cacheSizeSpinBox->setValue(config.texture.maxBytes / gc_uMegabyte);
 
@@ -132,7 +143,7 @@ void ConfigDialog::_init()
 		ui->fixTexrectForceRadioButton->setChecked(true);
 		break;
 	}
-    ui->nativeRes2D_checkBox->toggle();
+	ui->nativeRes2D_checkBox->toggle();
 	ui->nativeRes2D_checkBox->setChecked(config.generalEmulation.enableNativeResTexrects != 0);
 
 	ui->frameBufferSwapComboBox->setCurrentIndex(config.frameBufferEmulation.bufferSwapMode);
@@ -143,9 +154,9 @@ void ConfigDialog::_init()
 	ui->frameBufferCheckBox->toggle();
 	const bool fbEmulationEnabled = config.frameBufferEmulation.enable != 0;
 	ui->frameBufferCheckBox->setChecked(fbEmulationEnabled);
-    ui->frameBufferInfoFrame->setVisible(!fbEmulationEnabled);
-    ui->frameBufferInfoFrame2->setVisible(!fbEmulationEnabled);
-    ui->frameBufferInfoFrame3->setVisible(!fbEmulationEnabled);
+	ui->frameBufferInfoFrame->setVisible(!fbEmulationEnabled);
+	ui->frameBufferInfoFrame2->setVisible(!fbEmulationEnabled);
+	ui->frameBufferInfoFrame3->setVisible(!fbEmulationEnabled);
 
 	ui->copyColorBufferComboBox->setCurrentIndex(config.frameBufferEmulation.copyToRDRAM);
 	ui->copyDepthBufferComboBox->setCurrentIndex(config.frameBufferEmulation.copyDepthToRDRAM);
@@ -168,9 +179,9 @@ void ConfigDialog::_init()
 	}
 
 	ui->resolutionFactorSlider->valueChanged(2);
-    ui->factor0xRadioButton->toggle();
-    ui->factor1xRadioButton->toggle();
-    ui->factorXxRadioButton->toggle();
+	ui->factor0xRadioButton->toggle();
+	ui->factor1xRadioButton->toggle();
+	ui->factorXxRadioButton->toggle();
 	switch (config.frameBufferEmulation.nativeResFactor) {
 	case 0:
 		ui->factor0xRadioButton->setChecked(true);
@@ -247,13 +258,13 @@ void ConfigDialog::_init()
 	ui->fontNameLabel->setText(m_font.family() + " - " + strSize);
 
 	m_color = QColor(config.font.color[0], config.font.color[1], config.font.color[2]);
-    ui->fontPreviewLabel->setFont(m_font);
-    ui->fontColorLabel->setText(m_color.name());
+	ui->fontPreviewLabel->setFont(m_font);
+	ui->fontColorLabel->setText(m_color.name());
 	QPalette palette;
 	palette.setColor(QPalette::Window, Qt::black);
 	palette.setColor(QPalette::WindowText, m_color);
-    ui->fontPreviewLabel->setAutoFillBackground(true);
-    ui->fontPreviewLabel->setPalette(palette);
+	ui->fontPreviewLabel->setAutoFillBackground(true);
+	ui->fontPreviewLabel->setPalette(palette);
 
 	switch (config.onScreenDisplay.pos) {
 	case Config::posTopLeft:
@@ -328,16 +339,6 @@ m_accepted(false)
 ConfigDialog::~ConfigDialog()
 {
 	delete ui;
-}
-
-static
-u32 pow2(u32 dim)
-{
-	u32 i = 1;
-
-	while (i < dim) i <<= 1;
-
-	return i;
 }
 
 void ConfigDialog::accept()
@@ -529,6 +530,11 @@ void ConfigDialog::on_PickFontColorButton_clicked()
 	palette.setColor(QPalette::WindowText, m_color);
 	ui->fontColorLabel->setText(m_color.name());
 	ui->fontPreviewLabel->setPalette(palette);
+}
+
+void ConfigDialog::on_aliasingSlider_valueChanged(int value)
+{
+	ui->aliasingLabelVal->setText(QString::number(pow2(value)));
 }
 
 void ConfigDialog::on_buttonBox_clicked(QAbstractButton *button)

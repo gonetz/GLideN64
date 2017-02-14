@@ -483,13 +483,13 @@
                     <item>
                      <widget class="QSlider" name="aliasingSlider">
                       <property name="maximum">
-                       <number>8</number>
+                       <number>3</number>
                       </property>
                       <property name="singleStep">
-                       <number>2</number>
+                       <number>1</number>
                       </property>
                       <property name="pageStep">
-                       <number>2</number>
+                       <number>1</number>
                       </property>
                       <property name="orientation">
                        <enum>Qt::Horizontal</enum>
@@ -498,7 +498,7 @@
                        <enum>QSlider::TicksBelow</enum>
                       </property>
                       <property name="tickInterval">
-                       <number>2</number>
+                       <number>1</number>
                       </property>
                      </widget>
                     </item>
@@ -3649,22 +3649,6 @@
    </hints>
   </connection>
   <connection>
-   <sender>aliasingSlider</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>aliasingLabelVal</receiver>
-   <slot>setNum(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>396</x>
-     <y>87</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>396</x>
-     <y>98</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>anisotropicSlider</sender>
    <signal>valueChanged(int)</signal>
    <receiver>anisotropicLabelVal</receiver>
@@ -3767,8 +3751,8 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>158</x>
-     <y>297</y>
+     <x>156</x>
+     <y>325</y>
     </hint>
     <hint type="destinationlabel">
      <x>163</x>
@@ -3783,8 +3767,8 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>250</x>
-     <y>291</y>
+     <x>237</x>
+     <y>325</y>
     </hint>
     <hint type="destinationlabel">
      <x>252</x>
@@ -3979,8 +3963,8 @@
      <y>82</y>
     </hint>
     <hint type="destinationlabel">
-     <x>40</x>
-     <y>190</y>
+     <x>53</x>
+     <y>100</y>
     </hint>
    </hints>
   </connection>
@@ -4066,11 +4050,11 @@
   </connection>
  </connections>
  <buttongroups>
-  <buttongroup name="aspectButtonGroup"/>
-  <buttongroup name="bloomBlendModeButtonGroup"/>
-  <buttongroup name="fixTexrectCoordsButtonGroup"/>
-  <buttongroup name="factorButtonGroup"/>
   <buttongroup name="screenshotButtonGroup"/>
+  <buttongroup name="factorButtonGroup"/>
+  <buttongroup name="bloomBlendModeButtonGroup"/>
   <buttongroup name="osdButtonGroup"/>
+  <buttongroup name="aspectButtonGroup"/>
+  <buttongroup name="fixTexrectCoordsButtonGroup"/>
  </buttongroups>
 </ui>
