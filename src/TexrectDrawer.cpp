@@ -1,6 +1,7 @@
 #include <assert.h>
 #include <algorithm>
 #include <cstring>
+#include <cmath>
 #include <Graphics/Context.h>
 #include <Graphics/Parameters.h>
 #include "DisplayWindow.h"
