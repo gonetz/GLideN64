@@ -92,6 +92,7 @@ MY_LOCAL_SRC_FILES :=                               \
     $(SRCDIR)/Graphics/OpenGLContext/opengl_ColorBufferReaderWithBufferStorage.cpp \
     $(SRCDIR)/Graphics/OpenGLContext/opengl_ColorBufferReaderWithPixelBuffer.cpp   \
     $(SRCDIR)/Graphics/OpenGLContext/opengl_ColorBufferReaderWithReadPixels.cpp    \
+    $(SRCDIR)/Graphics/OpenGLContext/opengl_ColorBufferReaderWithEGLImage.cpp      \
     $(SRCDIR)/Graphics/OpenGLContext/opengl_ContextImpl.cpp                        \
     $(SRCDIR)/Graphics/OpenGLContext/opengl_GLInfo.cpp                             \
     $(SRCDIR)/Graphics/OpenGLContext/opengl_Parameters.cpp                         \
@@ -105,7 +106,9 @@ MY_LOCAL_SRC_FILES :=                               \
     $(SRCDIR)/Graphics/OpenGLContext/GLSL/glsl_ShaderStorage.cpp                   \
     $(SRCDIR)/Graphics/OpenGLContext/GLSL/glsl_SpecialShadersFactory.cpp           \
     $(SRCDIR)/Graphics/OpenGLContext/GLSL/glsl_Utils.cpp                           \
-    $(SRCDIR)/Graphics/OpenGLContext/mupen64plus/mupen64plus_DisplayWindow.cpp
+    $(SRCDIR)/Graphics/OpenGLContext/mupen64plus/mupen64plus_DisplayWindow.cpp     \
+    $(SRCDIR)/Graphics/OpenGLContext/GraphicBufferPrivateApi/GraphicBuffer.cpp     \
+    $(SRCDIR)/Graphics/OpenGLContext/GraphicBufferPrivateApi/libhardware.cpp       \
 
 MY_LOCAL_CFLAGS :=      \
     $(COMMON_CFLAGS)    \

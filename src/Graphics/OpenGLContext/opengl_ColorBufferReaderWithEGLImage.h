@@ -3,14 +3,12 @@
 #include <Graphics/ColorBufferReader.h>
 #include "opengl_CachedFunctions.h"
 
-#include <ui/GraphicBuffer.h>
-#include <android/native_window.h>
+#include <Graphics/OpenGLContext/GraphicBUfferPrivateApi/GraphicBuffer.h>
 #include <EGL/egl.h>
 #include <EGL/eglext.h>
 
 typedef void (APIENTRYP PFNGLEGLIMAGETARGETTEXTURE2DOESPROC) (GLenum target, EGLImageKHR image);
 
-using namespace android;
 
 namespace opengl {
 
@@ -28,7 +26,7 @@ private:
 	void _initBuffers();
 
 	CachedBindTexture * m_bindTexture;
-	GraphicBuffer* m_window;
+	GraphicBuffer m_window{};
 	EGLImageKHR m_image;
 	PFNGLEGLIMAGETARGETTEXTURE2DOESPROC m_glEGLImageTargetTexture2DOES;
 };

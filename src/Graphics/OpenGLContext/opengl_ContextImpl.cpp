@@ -1,12 +1,13 @@
 #include <assert.h>
 #include <Log.h>
+#include <Config.h>
 #include <Graphics/Parameters.h>
 #include "opengl_ContextImpl.h"
 #include "opengl_BufferedDrawer.h"
 #include "opengl_UnbufferedDrawer.h"
 #include "opengl_ColorBufferReaderWithPixelBuffer.h"
 #include "opengl_ColorBufferReaderWithBufferStorage.h"
-//#include "opengl_ColorBufferReaderWithEGLImage.h"
+#include "opengl_ColorBufferReaderWithEGLImage.h"
 #include "opengl_ColorBufferReaderWithReadPixels.h"
 #include "opengl_Utils.h"
 #include "GLSL/glsl_CombinerProgramBuilder.h"
@@ -297,16 +298,16 @@ graphics::PixelReadBuffer * ContextImpl::createPixelReadBuffer(size_t _sizeInByt
 
 graphics::ColorBufferReader * ContextImpl::createColorBufferReader(CachedTexture * _pTexture)
 {
-	/*
-#if defined(EGL) && defined(OS_ANDROID)
-	return new ColorBufferReaderWithEGLImage(_pTexture, m_cachedFunctions->getCachedBindTexture());
-#endif*/
-
 	if (m_glInfo.bufferStorage)
 		return new ColorBufferReaderWithBufferStorage(_pTexture, m_cachedFunctions->getCachedBindBuffer());
 
 	if (!m_glInfo.isGLES2)
 		return new ColorBufferReaderWithPixelBuffer(_pTexture, m_cachedFunctions->getCachedBindBuffer());
+
+#if defined(EGL) && defined(OS_ANDROID)
+	if(config.frameBufferEmulation.copyToRDRAM == Config::ctAsync)
+		return new ColorBufferReaderWithEGLImage(_pTexture, m_cachedFunctions->getCachedBindTexture());
+#endif
 
 	return new ColorBufferReaderWithReadPixels(_pTexture);
 }
