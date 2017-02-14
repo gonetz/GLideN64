@@ -826,7 +826,7 @@ void GraphicsDrawer::drawLine(int _v0, int _v1, float _width)
 	if ((triangles.vertices[_v0].modify & MODIFY_XY) != 0)
 		_updateScreenCoordsViewport();
 
-	SPVertex vertexBuf[2] = { triangles.vertices[triangles.elements[_v0]], triangles.vertices[triangles.elements[_v1]] };
+	SPVertex vertexBuf[2] = { triangles.vertices[_v0], triangles.vertices[_v1] };
 	gfxContext.drawLine(lineWidth, vertexBuf);
 }
 
@@ -1578,6 +1578,7 @@ void GraphicsDrawer::_initData()
 	m_texrectDrawer.init();
 	m_drawingState = DrawingState::Non;
 	m_bImageTexture = gfxContext.isSupported(SpecialFeatures::ImageTextures);
+	m_maxLineWidth = gfxContext.getMaxLineWidth();
 
 	gSP.changed = gDP.changed = 0xFFFFFFFF;
 
