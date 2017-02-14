@@ -71,7 +71,7 @@ set(GLideN64_SOURCES
   Graphics/OpenGLContext/opengl_CachedFunctions.cpp
   Graphics/OpenGLContext/opengl_ColorBufferReaderWithBufferStorage.cpp
   Graphics/OpenGLContext/opengl_ColorBufferReaderWithPixelBuffer.cpp
-  Graphics/OpenGLContext/opengl_ColorBufferReaderWithEGLImage.cpp
+  Graphics/OpenGLContext/opengl_ColorBufferReaderWithReadPixels.cpp
   Graphics/OpenGLContext/opengl_ContextImpl.cpp
   Graphics/OpenGLContext/opengl_GLInfo.cpp
   Graphics/OpenGLContext/opengl_Parameters.cpp
