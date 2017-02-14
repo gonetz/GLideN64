@@ -67,12 +67,29 @@ static const char * cmbTexEnhancement_choices[numEnhancements] = {
 static
 u32 pow2(u32 dim)
 {
+	if (dim == 0)
+		return 0;
+
+	return (1<<dim);
+}
+
+static
+u32 powof(u32 dim)
+{
+	if (dim == 0)
+		return 0;
+
+	u32 num = 2;
 	u32 i = 1;
 
-	while (i < dim) i <<= 1;
+	while (num < dim) {
+		num <<= 1;
+		i++;
+	}
 
 	return i;
 }
+
 
 void ConfigDialog::_init()
 {
@@ -103,8 +120,8 @@ void ConfigDialog::_init()
 	ui->fullScreenRefreshRateComboBox->insertItems(0, fullscreenRatesList);
 	ui->fullScreenRefreshRateComboBox->setCurrentIndex(fullscreenRate);
 
-	ui->aliasingSlider->setValue(config.video.multisampling);
-	ui->aliasingLabelVal->setText(QString::number(pow2(config.video.multisampling)));
+	ui->aliasingSlider->setValue(powof(config.video.multisampling));
+	ui->aliasingLabelVal->setText(QString::number(config.video.multisampling));
 	ui->anisotropicSlider->setValue(config.texture.maxAnisotropy);
 	ui->cacheSizeSpinBox->setValue(config.texture.maxBytes / gc_uMegabyte);
 
@@ -355,8 +372,7 @@ void ConfigDialog::accept()
 	config.video.cropWidth = ui->cropImageWidthSpinBox->value();
 	config.video.cropHeight = ui->cropImageHeightSpinBox->value();
 
-	const u32 multisampling = ui->aliasingSlider->value();
-	config.video.multisampling = multisampling == 0 ? 0 : pow2(multisampling);
+	config.video.multisampling = pow2(ui->aliasingSlider->value());
 
 	config.texture.maxAnisotropy = ui->anisotropicSlider->value();
 	config.texture.maxBytes = ui->cacheSizeSpinBox->value() * gc_uMegabyte;
