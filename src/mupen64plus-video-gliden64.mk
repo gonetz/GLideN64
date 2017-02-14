@@ -5,11 +5,6 @@ include $(CLEAR_VARS)
 LOCAL_PATH := $(JNI_LOCAL_PATH)
 SRCDIR := ./mupen64plus-video-gliden64/src
 
-#include $(CLEAR_VARS)
-#LOCAL_MODULE := android-framework-ui
-#LOCAL_SRC_FILES := ./android_framework/lib/$(TARGET_ARCH_ABI)/libui.so
-#include $(PREBUILT_SHARED_LIBRARY)
-
 MY_LOCAL_MODULE := mupen64plus-video-gliden64
 MY_LOCAL_SHARED_LIBRARIES := freetype
 MY_LOCAL_STATIC_LIBRARIES := glidenhq osal
