@@ -257,7 +257,7 @@ void _initTexture(CachedTexture * pTexture)
 	initParams.handle = pTexture->name;
 	initParams.width = pTexture->realWidth;
 	initParams.height = pTexture->realHeight;
-	initParams.internalFormat = internalcolorFormat::RGBA8;
+	initParams.internalFormat = gfxContext.convertInternalTextureFormat(u32(internalcolorFormat::RGBA8));
 	initParams.format = colorFormat::RGBA;
 	initParams.dataType = datatype::UNSIGNED_BYTE;
 	gfxContext.init2DTexture(initParams);

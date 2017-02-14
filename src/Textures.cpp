@@ -626,7 +626,7 @@ void TextureCache::init()
 	params.width = m_pDummy->realWidth;
 	params.height = m_pDummy->realHeight;
 	params.format = colorFormat::RGBA;
-	params.internalFormat = internalcolorFormat::RGBA8;
+	params.internalFormat = gfxContext.convertInternalTextureFormat(u32(internalcolorFormat::RGBA8));
 	params.dataType = datatype::UNSIGNED_BYTE;
 	params.data = dummyTexture;
 	gfxContext.init2DTexture(params);
@@ -649,7 +649,7 @@ void TextureCache::init()
 		params.width = m_pMSDummy->realWidth;
 		params.height = m_pMSDummy->realHeight;
 		params.format = colorFormat::RGBA;
-		params.internalFormat = internalcolorFormat::RGBA8;
+		params.internalFormat = gfxContext.convertInternalTextureFormat(u32(internalcolorFormat::RGBA8));
 		params.dataType = datatype::UNSIGNED_BYTE;
 		gfxContext.init2DTexture(params);
 
