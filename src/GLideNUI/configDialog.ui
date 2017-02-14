@@ -574,6 +574,50 @@
               </widget>
              </item>
              <item>
+              <widget class="QFrame" name="aliasingWarningFrame">
+               <layout class="QHBoxLayout" name="horizontalLayout_15">
+                <property name="spacing">
+                 <number>9</number>
+                </property>
+                <property name="leftMargin">
+                 <number>0</number>
+                </property>
+                <property name="topMargin">
+                 <number>0</number>
+                </property>
+                <property name="rightMargin">
+                 <number>0</number>
+                </property>
+                <property name="bottomMargin">
+                 <number>0</number>
+                </property>
+                <item>
+                 <widget class="QLabel" name="aliasingWarningIcon">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="pixmap">
+                   <pixmap resource="icon.qrc">:/Info.ico</pixmap>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLabel" name="aliasingWarningLabel">
+                  <property name="text">
+                   <string>Anti-aliasing is not compatible with N64-style depth compare</string>
+                  </property>
+                  <property name="wordWrap">
+                   <bool>true</bool>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </widget>
+             </item>
+             <item>
               <widget class="QFrame" name="anisotropicFrame">
                <layout class="QVBoxLayout" name="verticalLayout_55">
                 <property name="spacing">
@@ -1878,7 +1922,7 @@
                      <item>
                       <widget class="QCheckBox" name="n64DepthCompareCheckBox">
                        <property name="toolTip">
-                        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The N64 uses a unique method of calculating depth to the camera. When checked, GlideN64 uses shaders to try to emulate these calculations correctly. &lt;span style=&quot; font-weight:600;&quot;&gt;Experimental!&lt;/span&gt;&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;Sometimes checked, for a few games&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The N64 uses a unique method of calculating depth to the camera. When checked, GlideN64 uses shaders to try to emulate these calculations correctly. Not compatible with anti-aliasing. &lt;span style=&quot; font-weight:600;&quot;&gt;Experimental!&lt;/span&gt;&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;Sometimes checked, for a few games&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                        </property>
                        <property name="text">
                         <string>Enable N64-style depth compare (experimental)</string>
@@ -3535,11 +3579,11 @@
    <hints>
     <hint type="sourcelabel">
      <x>396</x>
-     <y>150</y>
+     <y>172</y>
     </hint>
     <hint type="destinationlabel">
      <x>396</x>
-     <y>169</y>
+     <y>191</y>
     </hint>
    </hints>
   </connection>
@@ -3614,12 +3658,12 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>74</x>
-     <y>302</y>
+     <x>81</x>
+     <y>325</y>
     </hint>
     <hint type="destinationlabel">
-     <x>76</x>
-     <y>340</y>
+     <x>98</x>
+     <y>344</y>
     </hint>
    </hints>
   </connection>
@@ -3630,12 +3674,12 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>158</x>
-     <y>297</y>
+     <x>156</x>
+     <y>325</y>
     </hint>
     <hint type="destinationlabel">
-     <x>163</x>
-     <y>342</y>
+     <x>171</x>
+     <y>344</y>
     </hint>
    </hints>
   </connection>
@@ -3646,12 +3690,12 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>250</x>
-     <y>291</y>
+     <x>237</x>
+     <y>325</y>
     </hint>
     <hint type="destinationlabel">
-     <x>252</x>
-     <y>339</y>
+     <x>259</x>
+     <y>344</y>
     </hint>
    </hints>
   </connection>
@@ -3838,12 +3882,12 @@
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>60</x>
-     <y>82</y>
+     <x>71</x>
+     <y>78</y>
     </hint>
     <hint type="destinationlabel">
-     <x>40</x>
-     <y>190</y>
+     <x>51</x>
+     <y>78</y>
     </hint>
    </hints>
   </connection>
@@ -3858,8 +3902,8 @@
      <y>49</y>
     </hint>
     <hint type="destinationlabel">
-     <x>162</x>
-     <y>200</y>
+     <x>119</x>
+     <y>69</y>
     </hint>
    </hints>
   </connection>
@@ -3874,8 +3918,8 @@
      <y>49</y>
     </hint>
     <hint type="destinationlabel">
-     <x>462</x>
-     <y>85</y>
+     <x>388</x>
+     <y>71</y>
     </hint>
    </hints>
   </connection>
@@ -3906,8 +3950,8 @@
      <y>49</y>
     </hint>
     <hint type="destinationlabel">
-     <x>312</x>
-     <y>584</y>
+     <x>101</x>
+     <y>579</y>
     </hint>
    </hints>
   </connection>
@@ -3927,13 +3971,45 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>n64DepthCompareCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>aliasingFrame</receiver>
+   <slot>setDisabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>165</x>
+     <y>394</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>400</x>
+     <y>75</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>n64DepthCompareCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>aliasingWarningFrame</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>165</x>
+     <y>394</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>400</x>
+     <y>122</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <buttongroups>
-  <buttongroup name="factorButtonGroup"/>
-  <buttongroup name="osdButtonGroup"/>
-  <buttongroup name="screenshotButtonGroup"/>
-  <buttongroup name="fixTexrectCoordsButtonGroup"/>
   <buttongroup name="aspectButtonGroup"/>
   <buttongroup name="bloomBlendModeButtonGroup"/>
+  <buttongroup name="factorButtonGroup"/>
+  <buttongroup name="fixTexrectCoordsButtonGroup"/>
+  <buttongroup name="osdButtonGroup"/>
+  <buttongroup name="screenshotButtonGroup"/>
  </buttongroups>
 </ui>

@@ -38,6 +38,8 @@ private slots:
 	void on_cropImageComboBox_currentIndexChanged(int index);
 
 	void on_frameBufferCheckBox_toggled(bool checked);
+	
+	void on_n64DepthCompareCheckBox_toggled(bool checked);
 
 private:
 	void _init();
