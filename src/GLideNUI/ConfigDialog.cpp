@@ -150,6 +150,7 @@ void ConfigDialog::_init()
 	ui->copyColorBufferComboBox->setCurrentIndex(config.frameBufferEmulation.copyToRDRAM);
 	ui->copyDepthBufferComboBox->setCurrentIndex(config.frameBufferEmulation.copyDepthToRDRAM);
 	ui->RenderFBCheckBox->setChecked(config.frameBufferEmulation.copyFromRDRAM != 0);
+	ui->n64DepthCompareCheckBox->toggle();
 	ui->n64DepthCompareCheckBox->setChecked(config.frameBufferEmulation.N64DepthCompare != 0);
 
 	switch (config.frameBufferEmulation.aspect) {
@@ -542,6 +543,13 @@ void ConfigDialog::on_fullScreenResolutionComboBox_currentIndexChanged(int index
 	ui->fullScreenRefreshRateComboBox->clear();
 	ui->fullScreenRefreshRateComboBox->insertItems(0, fullscreenRatesList);
 	ui->fullScreenRefreshRateComboBox->setCurrentIndex(fullscreenRate);
+}
+
+void ConfigDialog::on_n64DepthCompareCheckBox_toggled(bool checked)
+{
+	if (checked) {
+		ui->aliasingSlider->setValue(0);
+	}
 }
 
 void ConfigDialog::on_texPackPathButton_clicked()
