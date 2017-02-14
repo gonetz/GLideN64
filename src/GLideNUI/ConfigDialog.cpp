@@ -94,6 +94,7 @@ void ConfigDialog::_init()
 	ui->fullScreenRefreshRateComboBox->setCurrentIndex(fullscreenRate);
 
 	ui->aliasingSlider->setValue(config.video.multisampling);
+	ui->aliasingLabelVal = pow2(config.video.multisampling);
 	ui->anisotropicSlider->setValue(config.texture.maxAnisotropy);
 	ui->cacheSizeSpinBox->setValue(config.texture.maxBytes / gc_uMegabyte);
 
