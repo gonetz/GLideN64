@@ -933,11 +933,10 @@ public:
 	ShaderFragmentHeaderDepthCompare(const opengl::GLInfo & _glinfo)
 	{
 		if (config.frameBufferEmulation.N64DepthCompare != 0) {
-			m_part = _glinfo.isGLESX
-				? "layout(binding = 2, rgba32f) highp uniform coherent image2D uDepthImage;\n"
-				: "layout(binding = 2, rg32f) highp uniform coherent image2D uDepthImage;\n"
-				;
+
 			m_part +=
+				"layout(binding = 2, r32f) highp uniform coherent image2D uDepthImageZ;		\n"
+				"layout(binding = 3, r32f) highp uniform coherent image2D uDepthImageDeltaZ;\n"
 				"bool depth_compare();\n"
 				"bool depth_render(highp float Z);\n";
 			;
@@ -1553,15 +1552,16 @@ public:
 				"bool depth_compare()									\n"
 				"{														\n"
 				"  ivec2 coord = ivec2(gl_FragCoord.xy);				\n"
-				"  highp vec4 depth = imageLoad(uDepthImage,coord);		\n"
-				"  highp float bufZ = depth.r;							\n"
+				"  highp vec4 depthZ = imageLoad(uDepthImageZ,coord);	\n"
+				"  highp vec4 depthDeltaZ = imageLoad(uDepthImageDeltaZ,coord);\n"
+				"  highp float bufZ = depthZ.r;							\n"
 				"  highp float curZ = gl_FragDepth;						\n"
 				"  highp float dz, dzMin;								\n"
 				"  if (uDepthSource == 1) {								\n"
 				"     dzMin = dz = uDeltaZ;								\n"
 				"  } else {												\n"
 				"    dz = 4.0*fwidth(gl_FragDepth);						\n"
-				"    dzMin = min(dz, depth.g);							\n"
+				"    dzMin = min(dz, depthDeltaZ.r);					\n"
 				"  }													\n"
 				"  bool bInfront = curZ < bufZ;							\n"
 				"  bool bFarther = (curZ + dzMin) >= bufZ;				\n"
@@ -1584,8 +1584,10 @@ public:
 				"       break;											\n"
 				"  }													\n"
 				"  if (uEnableDepthUpdate != 0  && bRes) {				\n"
-				"    highp vec4 depth_out = vec4(gl_FragDepth, dz, 1.0, 1.0); \n"
-				"    imageStore(uDepthImage,coord, depth_out);			\n"
+				"    highp vec4 depthOutZ = vec4(gl_FragDepth, 1.0, 1.0, 1.0); \n"
+				"    highp vec4 depthOutDeltaZ = vec4(dz, 1.0, 1.0, 1.0); \n"
+				"    imageStore(uDepthImageZ, coord, depthOutZ);		\n"
+				"    imageStore(uDepthImageDeltaZ, coord, depthOutDeltaZ);\n"
 				"  }													\n"
 				"  memoryBarrierImage();								\n"
 				"  if (uEnableDepthCompare != 0)						\n"
@@ -1608,13 +1610,15 @@ public:
 				"{														\n"
 				"  ivec2 coord = ivec2(gl_FragCoord.xy);				\n"
 				"  if (uEnableDepthCompare != 0) {						\n"
-				"    highp vec4 depth = imageLoad(uDepthImage,coord);	\n"
-				"    highp float bufZ = depth.r;						\n"
+				"    highp vec4 depthZ = imageLoad(uDepthImageZ,coord);	\n"
+				"    highp float bufZ = depthZ.r;						\n"
 				"    highp float curZ = gl_FragDepth;					\n"
 				"    if (curZ >= bufZ) return false;					\n"
 				"  }													\n"
-				"  highp vec4 depth_out = vec4(Z, 0.0, 1.0, 1.0);		\n"
-				"  imageStore(uDepthImage,coord, depth_out);			\n"
+				"  highp vec4 depthOutZ = vec4(Z, 1.0, 1.0, 1.0);		\n"
+				"  highp vec4 depthOutDeltaZ = vec4(0.0, 1.0, 1.0, 1.0);\n"
+				"  imageStore(uDepthImageZ,coord, depthOutZ);			\n"
+				"  imageStore(uDepthImageDeltaZ,coord, depthOutDeltaZ);	\n"
 				"  memoryBarrierImage();								\n"
 				"  return true;											\n"
 				"}														\n"
