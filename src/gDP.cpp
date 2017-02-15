@@ -749,7 +749,7 @@ void gDPFillRectangle( s32 ulx, s32 uly, s32 lrx, s32 lry )
 		// If color is not depth clear color, that is most likely the case
 		if (gDP.fillColor.color == DepthClearColor) {
 			frameBufferList().fillRDRAM(ulx, uly, lrx, lry);
-			if (config.generalEmulation.enableFragmentDepthWrite == 0 ||
+			if (config.generalEmulation.enableFragmentDepthWrite == 0 || !gfxContext.isSupported(graphics::SpecialFeatures::FragmentDepthWrite) ||
 				(ulx == 0 && uly == 0 && lrx == gDP.scissor.lrx && lry == gDP.scissor.lry)) {
 				drawer.clearDepthBuffer(ulx, uly, lrx, lry);
 				bBufferCleared = true;
@@ -759,7 +759,7 @@ void gDPFillRectangle( s32 ulx, s32 uly, s32 lrx, s32 lry )
 	} else if (gDP.fillColor.color == DepthClearColor && gDP.otherMode.cycleType == G_CYC_FILL) {
 		depthBufferList().saveBuffer(gDP.colorImage.address);
 		frameBufferList().fillRDRAM(ulx, uly, lrx, lry);
-		if (config.generalEmulation.enableFragmentDepthWrite == 0 ||
+		if (config.generalEmulation.enableFragmentDepthWrite == 0 || !gfxContext.isSupported(graphics::SpecialFeatures::FragmentDepthWrite) ||
 			(ulx == 0 && uly == 0 && lrx == gDP.scissor.lrx && lry == gDP.scissor.lry)) {
 			drawer.clearDepthBuffer(ulx, uly, lrx, lry);
 			bBufferCleared = true;
