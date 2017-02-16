@@ -150,6 +150,7 @@ void ConfigDialog::_init()
 	ui->copyColorBufferComboBox->setCurrentIndex(config.frameBufferEmulation.copyToRDRAM);
 	ui->copyDepthBufferComboBox->setCurrentIndex(config.frameBufferEmulation.copyDepthToRDRAM);
 	ui->RenderFBCheckBox->setChecked(config.frameBufferEmulation.copyFromRDRAM != 0);
+	ui->n64DepthCompareCheckBox->toggle(); 
 	ui->n64DepthCompareCheckBox->setChecked(config.frameBufferEmulation.N64DepthCompare != 0);
 
 	switch (config.frameBufferEmulation.aspect) {
@@ -344,7 +345,7 @@ void ConfigDialog::accept()
 	config.video.cropWidth = ui->cropImageWidthSpinBox->value();
 	config.video.cropHeight = ui->cropImageHeightSpinBox->value();
 
-	config.video.multisampling = ui->aliasingSlider->value();
+	config.video.multisampling = ui->n64DepthCompareCheckBox->isChecked() ? 0 : ui->aliasingSlider->value();
 	config.texture.maxAnisotropy = ui->anisotropicSlider->value();
 	config.texture.maxBytes = ui->cacheSizeSpinBox->value() * gc_uMegabyte;
 
