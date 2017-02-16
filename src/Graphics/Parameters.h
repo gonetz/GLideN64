@@ -72,7 +72,8 @@ namespace graphics {
 	namespace textureImageUnits {
 		extern ImageUnitParam Zlut;
 		extern ImageUnitParam Tlut;
-		extern ImageUnitParam Depth;
+		extern ImageUnitParam DepthZ;
+		extern ImageUnitParam DepthDeltaZ;
 	}
 
 	namespace textureImageAccessMode {
