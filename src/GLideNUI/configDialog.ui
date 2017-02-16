@@ -417,6 +417,12 @@
              <property name="orientation">
               <enum>Qt::Vertical</enum>
              </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>0</width>
+               <height>0</height>
+              </size>
+             </property>
             </spacer>
            </item>
           </layout>
@@ -512,6 +518,12 @@
                         <property name="sizeType">
                          <enum>QSizePolicy::MinimumExpanding</enum>
                         </property>
+                        <property name="sizeHint" stdset="0">
+                         <size>
+                          <width>0</width>
+                          <height>0</height>
+                         </size>
+                        </property>
                        </spacer>
                       </item>
                       <item>
@@ -547,6 +559,12 @@
                         </property>
                         <property name="sizeType">
                          <enum>QSizePolicy::MinimumExpanding</enum>
+                        </property>
+                        <property name="sizeHint" stdset="0">
+                         <size>
+                          <width>0</width>
+                          <height>0</height>
+                         </size>
                         </property>
                        </spacer>
                       </item>
@@ -707,6 +725,12 @@
                         <property name="sizeType">
                          <enum>QSizePolicy::MinimumExpanding</enum>
                         </property>
+                        <property name="sizeHint" stdset="0">
+                         <size>
+                          <width>0</width>
+                          <height>0</height>
+                         </size>
+                        </property>
                        </spacer>
                       </item>
                       <item>
@@ -742,6 +766,12 @@
                         </property>
                         <property name="sizeType">
                          <enum>QSizePolicy::MinimumExpanding</enum>
+                        </property>
+                        <property name="sizeHint" stdset="0">
+                         <size>
+                          <width>0</width>
+                          <height>0</height>
+                         </size>
                         </property>
                        </spacer>
                       </item>
@@ -890,6 +920,12 @@
                  <property name="orientation">
                   <enum>Qt::Vertical</enum>
                  </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>0</width>
+                   <height>0</height>
+                  </size>
+                 </property>
                 </spacer>
                </item>
               </layout>
@@ -1017,6 +1053,12 @@
                 <spacer name="verticalSpacer_12">
                  <property name="orientation">
                   <enum>Qt::Vertical</enum>
+                 </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>0</width>
+                   <height>0</height>
+                  </size>
                  </property>
                 </spacer>
                </item>
@@ -1323,6 +1365,12 @@
                        <property name="sizeType">
                         <enum>QSizePolicy::MinimumExpanding</enum>
                        </property>
+                       <property name="sizeHint" stdset="0">
+                        <size>
+                         <width>0</width>
+                         <height>0</height>
+                        </size>
+                       </property>
                       </spacer>
                      </item>
                      <item>
@@ -1358,6 +1406,12 @@
                        </property>
                        <property name="sizeType">
                         <enum>QSizePolicy::MinimumExpanding</enum>
+                       </property>
+                       <property name="sizeHint" stdset="0">
+                        <size>
+                         <width>0</width>
+                         <height>0</height>
+                        </size>
                        </property>
                       </spacer>
                      </item>
@@ -1500,6 +1554,12 @@
         <spacer name="verticalSpacer_2">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>0</width>
+           <height>0</height>
+          </size>
          </property>
         </spacer>
        </item>
@@ -1948,6 +2008,12 @@
                    <property name="orientation">
                     <enum>Qt::Horizontal</enum>
                    </property>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>0</width>
+                     <height>0</height>
+                    </size>
+                   </property>
                   </spacer>
                  </item>
                 </layout>
@@ -1964,6 +2030,12 @@
         <spacer name="verticalSpacer_9">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>0</width>
+           <height>0</height>
+          </size>
          </property>
         </spacer>
        </item>
@@ -2068,6 +2140,12 @@
                  <property name="orientation">
                   <enum>Qt::Horizontal</enum>
                  </property>
+                 <property name="sizeHint" stdset="0">
+                  <size>
+                   <width>0</width>
+                   <height>0</height>
+                  </size>
+                 </property>
                 </spacer>
                </item>
               </layout>
@@ -2159,6 +2237,12 @@
                  <spacer name="horizontalSpacer_11">
                   <property name="orientation">
                    <enum>Qt::Horizontal</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>0</width>
+                    <height>0</height>
+                   </size>
                   </property>
                  </spacer>
                 </item>
@@ -2384,6 +2468,12 @@
         <spacer name="verticalSpacer">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>0</width>
+           <height>0</height>
+          </size>
          </property>
         </spacer>
        </item>
@@ -2642,6 +2732,12 @@
              <property name="orientation">
               <enum>Qt::Vertical</enum>
              </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>0</width>
+               <height>0</height>
+              </size>
+             </property>
             </spacer>
            </item>
           </layout>
@@ -2724,6 +2820,12 @@
                   <property name="orientation">
                    <enum>Qt::Horizontal</enum>
                   </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>0</width>
+                    <height>0</height>
+                   </size>
+                  </property>
                  </spacer>
                 </item>
                </layout>
@@ -2738,6 +2840,12 @@
              </property>
              <property name="sizeType">
               <enum>QSizePolicy::Expanding</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>0</width>
+               <height>0</height>
+              </size>
              </property>
             </spacer>
            </item>
@@ -3081,6 +3189,12 @@
                <spacer name="verticalSpacer_7">
                 <property name="orientation">
                  <enum>Qt::Vertical</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>0</width>
+                  <height>0</height>
+                 </size>
                 </property>
                </spacer>
               </item>
@@ -3456,6 +3570,12 @@
                 <property name="orientation">
                  <enum>Qt::Vertical</enum>
                 </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>0</width>
+                  <height>0</height>
+                 </size>
+                </property>
                </spacer>
               </item>
              </layout>
@@ -3497,6 +3617,12 @@
         <spacer name="verticalSpacer_14">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>0</width>
+           <height>0</height>
+          </size>
          </property>
         </spacer>
        </item>
@@ -4006,10 +4132,10 @@
  </connections>
  <buttongroups>
   <buttongroup name="bloomBlendModeButtonGroup"/>
-  <buttongroup name="fixTexrectCoordsButtonGroup"/>
-  <buttongroup name="aspectButtonGroup"/>
-  <buttongroup name="osdButtonGroup"/>
-  <buttongroup name="factorButtonGroup"/>
   <buttongroup name="screenshotButtonGroup"/>
+  <buttongroup name="factorButtonGroup"/>
+  <buttongroup name="osdButtonGroup"/>
+  <buttongroup name="aspectButtonGroup"/>
+  <buttongroup name="fixTexrectCoordsButtonGroup"/>
  </buttongroups>
 </ui>
