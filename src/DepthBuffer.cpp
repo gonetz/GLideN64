@@ -23,23 +23,18 @@ DepthBuffer::DepthBuffer() : m_address(0), m_width(0), m_ulx(0), m_uly(0), m_lrx
 {
 	m_copyFBO = gfxContext.createFramebuffer();
 	if (config.frameBufferEmulation.N64DepthCompare != 0) {
-		m_depthImageZFBO = gfxContext.createFramebuffer();
-		m_depthImageDeltaZFBO = gfxContext.createFramebuffer();
 	}
 }
 
 DepthBuffer::DepthBuffer(DepthBuffer && _other) :
 	m_address(_other.m_address), m_width(_other.m_width),
 	m_ulx(_other.m_ulx), m_uly(_other.m_uly), m_lrx(_other.m_lrx), m_lry(_other.m_lry),
-	m_depthImageZFBO(_other.m_depthImageZFBO), m_depthImageDeltaZFBO(_other.m_depthImageDeltaZFBO),
 	m_pDepthImageZTexture(_other.m_pDepthImageZTexture),
 	m_pDepthImageDeltaZTexture(_other.m_pDepthImageDeltaZTexture), m_pDepthBufferTexture(_other.m_pDepthBufferTexture),
 	m_depthRenderbuffer(_other.m_depthRenderbuffer), m_depthRenderbufferWidth(_other.m_depthRenderbufferWidth),
 	m_cleared(_other.m_cleared), m_pResolveDepthBufferTexture(_other.m_pResolveDepthBufferTexture), m_resolved(_other.m_resolved),
 	m_pDepthBufferCopyTexture(_other.m_pDepthBufferCopyTexture), m_copied(_other.m_copied)
 {
-	_other.m_depthImageZFBO = ObjectHandle();
-	_other.m_depthImageDeltaZFBO = ObjectHandle();
 	_other.m_pDepthImageZTexture = nullptr;
 	_other.m_pDepthImageDeltaZTexture = nullptr;
 	_other.m_pDepthBufferTexture = nullptr;
@@ -52,8 +47,6 @@ DepthBuffer::DepthBuffer(DepthBuffer && _other) :
 
 DepthBuffer::~DepthBuffer()
 {
-	gfxContext.deleteFramebuffer(m_depthImageZFBO);
-	gfxContext.deleteFramebuffer(m_depthImageDeltaZFBO);
 	gfxContext.deleteFramebuffer(m_depthRenderbuffer);
 	gfxContext.deleteFramebuffer(m_copyFBO);
 
@@ -64,8 +57,7 @@ DepthBuffer::~DepthBuffer()
 	textureCache().removeFrameBufferTexture(m_pDepthBufferCopyTexture);
 }
 
-void DepthBuffer::_initDepthImageTexture(FrameBuffer * _pBuffer, CachedTexture& _cachedTexture,
-										 graphics::ObjectHandle& _depthImageFBO)
+void DepthBuffer::_initDepthImageTexture(FrameBuffer * _pBuffer, CachedTexture& _cachedTexture)
 {
 	const FramebufferTextureFormats & fbTexFormat = gfxContext.getFramebufferTextureFormats();
 
@@ -107,15 +99,6 @@ void DepthBuffer::_initDepthImageTexture(FrameBuffer * _pBuffer, CachedTexture& 
 		params.magFilter = textureParameters::FILTER_NEAREST;
 		gfxContext.setTextureParameters(params);
 	}
-	{
-		Context::FrameBufferRenderTarget bufTarget;
-		bufTarget.bufferHandle = _depthImageFBO;
-		bufTarget.bufferTarget = bufferTarget::DRAW_FRAMEBUFFER;
-		bufTarget.attachment = bufferAttachment::COLOR_ATTACHMENT0;
-		bufTarget.textureTarget = textureTarget::TEXTURE_2D;
-		bufTarget.textureHandle = _cachedTexture.name;
-		gfxContext.addFrameBufferRenderTarget(bufTarget);
-	}
 }
 
 void DepthBuffer::initDepthImageTexture(FrameBuffer * _pBuffer)
@@ -126,8 +109,8 @@ void DepthBuffer::initDepthImageTexture(FrameBuffer * _pBuffer)
 	m_pDepthImageZTexture = textureCache().addFrameBufferTexture(false);
 	m_pDepthImageDeltaZTexture = textureCache().addFrameBufferTexture(false);
 
-	_initDepthImageTexture(_pBuffer, *m_pDepthImageZTexture, m_depthImageZFBO);
-	_initDepthImageTexture(_pBuffer, *m_pDepthImageDeltaZTexture, m_depthImageDeltaZFBO);
+	_initDepthImageTexture(_pBuffer, *m_pDepthImageZTexture);
+	_initDepthImageTexture(_pBuffer, *m_pDepthImageDeltaZTexture);
 
 	gfxContext.bindFramebuffer(bufferTarget::DRAW_FRAMEBUFFER, _pBuffer->m_FBO);
 
@@ -490,36 +473,6 @@ void DepthBufferList::clearBuffer(u32 _ulx, u32 _uly, u32 _lrx, u32 _lry)
 	m_pCurrent->m_uly = _uly;
 	m_pCurrent->m_lrx = _lrx;
 	m_pCurrent->m_lry = _lry;
-
-	if (!m_pCurrent->m_depthImageZFBO.isNotNull() || config.frameBufferEmulation.N64DepthCompare == 0)
-		return;
-
-	Context::BindImageTextureParameters bindParams;
-	bindParams.imageUnit = textureImageUnits::DepthZ;
-	bindParams.texture = ObjectHandle();
-	bindParams.accessMode = textureImageAccessMode::READ_WRITE;
-	bindParams.textureFormat = gfxContext.getFramebufferTextureFormats().depthImageInternalFormat;
-	gfxContext.bindImageTexture(bindParams);
-	bindParams.imageUnit = textureImageUnits::DepthDeltaZ;
-	gfxContext.bindImageTexture(bindParams);
-
-	const u32 cycleType = gDP.otherMode.cycleType;
-	gDP.otherMode.cycleType = G_CYC_FILL;
-	float color[4] = { 1.0f, 1.0f, 0.0f, 1.0f };
-	gfxContext.bindFramebuffer(bufferTarget::DRAW_FRAMEBUFFER, m_pCurrent->m_depthImageZFBO);
-	dwnd().getDrawer().drawRect(_ulx, _uly, _lrx, _lry, color);
-	gfxContext.bindFramebuffer(bufferTarget::DRAW_FRAMEBUFFER, m_pCurrent->m_depthImageDeltaZFBO);
-	dwnd().getDrawer().drawRect(_ulx, _uly, _lrx, _lry, color);
-	gDP.otherMode.cycleType = cycleType;
-
-	bindParams.texture = m_pCurrent->m_pDepthImageZTexture->name;
-	bindParams.imageUnit = textureImageUnits::DepthZ;
-	gfxContext.bindImageTexture(bindParams);
-	bindParams.texture = m_pCurrent->m_pDepthImageDeltaZTexture->name;
-	bindParams.imageUnit = textureImageUnits::DepthDeltaZ;
-	gfxContext.bindImageTexture(bindParams);
-
-	frameBufferList().setCurrentDrawBuffer();
 }
 
 void DepthBuffer_Init()

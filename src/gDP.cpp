@@ -743,37 +743,49 @@ void gDPFillRectangle( s32 ulx, s32 uly, s32 lrx, s32 lry )
 	} else if (lry == uly)
 		++lry;
 
-	bool bBufferCleared = false;
+	enum {
+		dbNone,
+		dbFound,
+		dbCleared
+	} depthBuffer = dbNone;
 	if (gDP.depthImageAddress == gDP.colorImage.address) {
 		// Game may use depth texture as auxilary color texture. Example: Mario Tennis
 		// If color is not depth clear color, that is most likely the case
 		if (gDP.fillColor.color == DepthClearColor) {
 			frameBufferList().fillRDRAM(ulx, uly, lrx, lry);
-			if (config.generalEmulation.enableFragmentDepthWrite == 0 ||
-				(ulx == 0 && uly == 0 && lrx == gDP.scissor.lrx && lry == gDP.scissor.lry)) {
+			depthBuffer = dbFound;
+			if (config.frameBufferEmulation.N64DepthCompare == 0 &&
+				(config.generalEmulation.enableFragmentDepthWrite == 0 ||
+				(ulx == 0 && uly == 0 && lrx == gDP.scissor.lrx && lry == gDP.scissor.lry))) {
 				drawer.clearDepthBuffer(ulx, uly, lrx, lry);
-				bBufferCleared = true;
+				depthBuffer = dbCleared;
 			} else
 				depthBufferList().clearBuffer(ulx, uly, lrx, lry);
 		}
 	} else if (gDP.fillColor.color == DepthClearColor && gDP.otherMode.cycleType == G_CYC_FILL) {
+		depthBuffer = dbFound;
 		depthBufferList().saveBuffer(gDP.colorImage.address);
 		frameBufferList().fillRDRAM(ulx, uly, lrx, lry);
-		if (config.generalEmulation.enableFragmentDepthWrite == 0 ||
-			(ulx == 0 && uly == 0 && lrx == gDP.scissor.lrx && lry == gDP.scissor.lry)) {
+		if (config.frameBufferEmulation.N64DepthCompare == 0 &&
+			(config.generalEmulation.enableFragmentDepthWrite == 0 ||
+			(ulx == 0 && uly == 0 && lrx == gDP.scissor.lrx && lry == gDP.scissor.lry))) {
 			drawer.clearDepthBuffer(ulx, uly, lrx, lry);
-			bBufferCleared = true;
+			depthBuffer = dbCleared;
 		} else
 			depthBufferList().clearBuffer(ulx, uly, lrx, lry);
 	}
 
-	if (!bBufferCleared) {
+	if (depthBuffer != dbCleared) {
 		frameBufferList().setBufferChanged();
 		f32 fillColor[4];
 		gDPGetFillColor(fillColor);
 
 		if (gDP.otherMode.cycleType == G_CYC_FILL) {
-			if ((ulx == 0) && (uly == 0) && (lrx == gDP.scissor.lrx) && (lry == gDP.scissor.lry)) {
+			if ((depthBuffer == dbNone) &&
+				(ulx == 0) &&
+				(uly == 0) &&
+				(lrx == gDP.scissor.lrx) &&
+				(lry == gDP.scissor.lry)) {
 				frameBufferList().fillRDRAM(ulx, uly, lrx, lry);
 				drawer.clearColorBuffer(fillColor);
 			} else
