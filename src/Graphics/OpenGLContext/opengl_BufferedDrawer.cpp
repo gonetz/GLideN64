@@ -189,6 +189,9 @@ void BufferedDrawer::_updateTrianglesBuffers(const graphics::Context::DrawTriang
 
 void BufferedDrawer::drawTriangles(const graphics::Context::DrawTriangleParameters & _params)
 {
+	if (config.frameBufferEmulation.N64DepthCompare != 0)
+		glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+
 	_updateTrianglesBuffers(_params);
 
 	if (config.generalEmulation.enableHWLighting != 0)
