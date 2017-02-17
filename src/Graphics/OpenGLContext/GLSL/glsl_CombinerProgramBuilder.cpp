@@ -1245,7 +1245,8 @@ public:
 	ShaderWriteDepth(const opengl::GLInfo & _glinfo)
 	{
 		if (!_glinfo.isGLES2) {
-			if (config.generalEmulation.enableFragmentDepthWrite == 0) {
+			if (config.generalEmulation.enableFragmentDepthWrite == 0 &&
+				config.frameBufferEmulation.N64DepthCompare == 0) {
 				// Dummy write depth
 				m_part =
 					"void writeDepth()	    \n"
