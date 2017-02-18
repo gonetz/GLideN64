@@ -513,6 +513,7 @@ void TextureCache::destroy()
 		glDeleteTextures( 1, &cur->glName );
 	m_textures.clear();
 	m_lruTextureLocations.clear();
+	pDest_Locations.clear();
 
 	for (FBTextures::const_iterator cur = m_fbTextures.cbegin(); cur != m_fbTextures.cend(); ++cur)
 		glDeleteTextures( 1, &cur->second.glName );
@@ -830,8 +831,19 @@ void TextureCache::_loadBackground(CachedTexture *pTexture)
 		if (pTexture->realWidth % 2 != 0 && glInternalFormat != GL_RGBA)
 			glPixelStorei(GL_UNPACK_ALIGNMENT, 2);
 #ifdef GLES2
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, pTexture->realWidth,
-				pTexture->realHeight, 0, GL_RGBA, glType, pDest);
+		u32 pDestCRC = CRC_Calculate(0xFFFFFFFF, pDest, pTexture->textureBytes);
+		Texture_Locations::iterator locations_iter = pDest_Locations.find(pDestCRC);
+		if (locations_iter == pDest_Locations.end()) {
+			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, pTexture->realWidth,
+					pTexture->realHeight, 0, GL_RGBA, glType, pDest);
+			Textures::iterator new_iter = m_textures.begin();
+			pDest_Locations.insert(std::pair<u32, Textures::iterator>(pDestCRC, new_iter));
+		} else {
+			Textures::iterator iter = locations_iter->second;
+			glDeleteTextures(1, &pTexture->glName);
+			*pTexture = *iter;
+			m_cachedBytes -= pTexture->textureBytes;
+		}
 #else
 		glTexImage2D(GL_TEXTURE_2D, 0, glInternalFormat, pTexture->realWidth,
 				pTexture->realHeight, 0, GL_RGBA, glType, pDest);
@@ -1126,8 +1138,19 @@ void TextureCache::_load(u32 _tile, CachedTexture *_pTexture)
 					m_curUnpackAlignment > 1)
 				glPixelStorei(GL_UNPACK_ALIGNMENT, 2);
 #ifdef GLES2
-			glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, tmptex.realWidth,
-					tmptex.realHeight, 0, GL_RGBA, glType, pDest);
+			u32 pDestCRC = CRC_Calculate(0xFFFFFFFF, pDest, _pTexture->textureBytes);
+			Texture_Locations::iterator locations_iter = pDest_Locations.find(pDestCRC);
+			if (locations_iter == pDest_Locations.end()) {
+				glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, tmptex.realWidth,
+						tmptex.realHeight, 0, GL_RGBA, glType, pDest);
+				Textures::iterator new_iter = m_textures.begin();
+				pDest_Locations.insert(std::pair<u32, Textures::iterator>(pDestCRC, new_iter));
+			} else {
+				Textures::iterator iter = locations_iter->second;
+				glDeleteTextures(1, &_pTexture->glName);
+				*_pTexture = *iter;
+				m_cachedBytes -= _pTexture->textureBytes;
+			}
 #else
 			glTexImage2D(GL_TEXTURE_2D, mipLevel, glInternalFormat, tmptex.realWidth,
 					tmptex.realHeight, 0, GL_RGBA, glType, pDest);
@@ -1379,6 +1402,7 @@ void TextureCache::_clear()
 	glDeleteTextures(textureNames.size(), textureNames.data());
 	m_textures.clear();
 	m_lruTextureLocations.clear();
+	pDest_Locations.clear();
 }
 
 void TextureCache::update(u32 _t)
