@@ -1,5 +1,6 @@
 #include <assert.h>
 #include <stdio.h>
+#include <sstream>
 #include "ShaderUtils.h"
 #include "Config.h"
 #include "Log.h"
@@ -56,10 +57,46 @@ void logErrorShader(GLenum _shaderType, const std::string & _strShader)
 	}
 }
 
+const std::string &  getHeader()
+{
+	static std::string strHeader;
+	if (!strHeader.empty())
+		return strHeader;
+
+	OGLVideo & ogl = video();
+	OGLRender & render = ogl.getRender();
+	std::stringstream headerStream;
+#if defined(GLES2)
+	headerStream << "#version 100 " << std::endl;
+	if (config.generalEmulation.enableLOD > 0) {
+		headerStream << "#extension GL_EXT_shader_texture_lod : enable " << std::endl \
+			<< "#extension GL_OES_standard_derivatives : enable " << std::endl;
+	}
+#elif defined(GLESX)
+	headerStream << "#version " << render.majorVersion << render.minorVersion << "0 es " << std::endl;
+#else
+	headerStream << "#version " << render.majorVersion << render.minorVersion << "0 core " << std::endl;
+	if (video().getRender().isImageTexturesSupported() && ((render.majorVersion * 10) + render.minorVersion) < 42)
+		headerStream << "#extension GL_ARB_shader_image_load_store : enable " << std::endl \
+			<< "#extension GL_ARB_shading_language_420pack : enable " << std::endl;
+#endif
+	strHeader = headerStream.str();
+	return strHeader;
+}
+
+const char* addGLSLVersion(const char* shaderString)
+{
+	static std::string strResult;
+	strResult = getHeader();
+	strResult.append(shaderString);
+	return strResult.c_str();
+}
+
 GLuint createShaderProgram(const char * _strVertex, const char * _strFragment)
 {
 	GLuint vertex_shader_object = glCreateShader(GL_VERTEX_SHADER);
-	glShaderSource(vertex_shader_object, 1, &_strVertex, nullptr);
+	const char* vertex_shader_string = addGLSLVersion(_strVertex);
+	glShaderSource(vertex_shader_object, 1, &vertex_shader_string, nullptr);
 	glCompileShader(vertex_shader_object);
 	assert(checkShaderCompileStatus(vertex_shader_object));
 
@@ -67,7 +104,8 @@ GLuint createShaderProgram(const char * _strVertex, const char * _strFragment)
 		logErrorShader(GL_VERTEX_SHADER, _strVertex);
 
 	GLuint fragment_shader_object = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(fragment_shader_object, 1, &_strFragment, nullptr);
+	const char* fragment_shader_string = addGLSLVersion(_strFragment);
+	glShaderSource(fragment_shader_object, 1, &fragment_shader_string, nullptr);
 	glCompileShader(fragment_shader_object);
 	assert(checkShaderCompileStatus(fragment_shader_object));
 

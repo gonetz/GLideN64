@@ -1,9 +1,4 @@
-#define SHADER_VERSION "#version 100 \n" \
-"#extension GL_EXT_shader_texture_lod : enable \n" \
-"#extension GL_OES_standard_derivatives : enable \n"
-
 static const char* vertex_shader =
-SHADER_VERSION
 "#if (__VERSION__ > 120)						\n"
 "# define IN in									\n"
 "# define OUT out								\n"
@@ -85,7 +80,6 @@ SHADER_VERSION
 ;
 
 static const char* vertex_shader_notex =
-SHADER_VERSION
 "#if (__VERSION__ > 120)			\n"
 "# define IN in						\n"
 "# define OUT out					\n"
@@ -138,7 +132,6 @@ SHADER_VERSION
 ;
 
 static const char* fragment_shader_header_common_variables =
-SHADER_VERSION
 "#if (__VERSION__ > 120)		\n"
 "# define IN in					\n"
 "# define OUT out				\n"
@@ -178,7 +171,6 @@ SHADER_VERSION
 ;
 
 static const char* fragment_shader_header_common_variables_notex =
-SHADER_VERSION
 "#if (__VERSION__ > 120)		\n"
 "# define IN in					\n"
 "# define OUT out				\n"
@@ -432,7 +424,6 @@ static const char* fragment_shader_dummy_noise =
 ;
 
 static const char* default_vertex_shader =
-SHADER_VERSION
 "#if (__VERSION__ > 120)						\n"
 "# define IN in									\n"
 "#else											\n"
@@ -446,7 +437,6 @@ SHADER_VERSION
 ;
 
 static const char* zelda_monochrome_fragment_shader =
-SHADER_VERSION
 "uniform sampler2D uColorImage;									\n"
 "uniform mediump vec2 uScreenSize;								\n"
 "void main()													\n"
@@ -459,7 +449,6 @@ SHADER_VERSION
 ;
 
 const char * strTexrectDrawerVertexShader =
-SHADER_VERSION
 "#if (__VERSION__ > 120)		\n"
 "# define IN in					\n"
 "# define OUT out				\n"
@@ -478,7 +467,6 @@ SHADER_VERSION
 ;
 
 const char * strTexrectDrawerTex3PointFilter =
-SHADER_VERSION
 "#if (__VERSION__ > 120)																						\n"
 "# define IN in																									\n"
 "# define OUT out																								\n"
@@ -512,7 +500,6 @@ SHADER_VERSION
 ;
 
 const char * strTexrectDrawerTexBilinearFilter =
-SHADER_VERSION
 "#if (__VERSION__ > 120)																						\n"
 "# define IN in																									\n"
 "# define OUT out																								\n"
@@ -564,7 +551,6 @@ const char * strTexrectDrawerFragmentShaderTex =
 ;
 
 const char * strTexrectDrawerFragmentShaderClean =
-SHADER_VERSION
 "lowp vec4 uTestColor = vec4(4.0/255.0, 2.0/255.0, 1.0/255.0, 0.0);	\n"
 "void main()																\n"
 "{																			\n"
@@ -573,7 +559,6 @@ SHADER_VERSION
 ;
 
 const char* strTextureCopyShader =
-SHADER_VERSION
 "#if (__VERSION__ > 120)								\n"
 "# define IN in											\n"
 "#else													\n"

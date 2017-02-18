@@ -169,6 +169,8 @@ public:
 	OGL_RENDERER getRenderer() const { return m_oglRenderer; }
 
 	void dropRenderState() {m_renderState = rsNone;}
+	GLint majorVersion;
+	GLint minorVersion;
 
 private:
 	OGLRender()

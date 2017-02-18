@@ -4,6 +4,7 @@
 #include "OpenGL.h"
 #include "Combiner.h"
 
+const char* addGLSLVersion(const char* shaderString);
 GLuint createShaderProgram(const char * _strVertex, const char * _strFragment);
 bool checkShaderCompileStatus(GLuint obj);
 bool checkProgramLinkStatus(GLuint obj);
