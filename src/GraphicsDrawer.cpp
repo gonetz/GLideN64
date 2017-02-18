@@ -1062,8 +1062,7 @@ void GraphicsDrawer::drawTexturedRect(const TexturedRectParams & _params)
 		cmbInfo.update();
 		_updateTextures();
 		cmbInfo.updateParameters();
-	}
-	else {
+	} else {
 		if (_params.texrectCmd && (gSP.changed | gDP.changed) != 0)
 			_updateStates(DrawingState::TexRect);
 		gfxContext.enable(enable::CULL_FACE, false);
@@ -1108,8 +1107,7 @@ void GraphicsDrawer::drawTexturedRect(const TexturedRectParams & _params)
 	if (bUseTexrectDrawer) {
 		uly = (float)_params.uly * (2.0f * scaleY) - 1.0f;
 		lry = (float)_params.lry * (2.0f * scaleY) - 1.0f;
-	}
-	else {
+	} else {
 		uly = (float)_params.uly * (-2.0f * scaleY) + 1.0f;
 		lry = (float)(_params.lry) * (-2.0f * scaleY) + 1.0f;
 		// Flush text drawer
@@ -1146,16 +1144,14 @@ void GraphicsDrawer::drawTexturedRect(const TexturedRectParams & _params)
 			if (_params.uls > _params.lrs) {
 				texST[t].s0 = (_params.uls + _params.dsdx) * shiftScaleS - gSP.textureTile[t]->fuls;
 				texST[t].s1 = _params.lrs * shiftScaleS - gSP.textureTile[t]->fuls;
-			}
-			else {
+			} else {
 				texST[t].s0 = _params.uls * shiftScaleS - gSP.textureTile[t]->fuls;
 				texST[t].s1 = (_params.lrs + _params.dsdx) * shiftScaleS - gSP.textureTile[t]->fuls;
 			}
 			if (_params.ult > _params.lrt) {
 				texST[t].t0 = (_params.ult + _params.dtdy) * shiftScaleT - gSP.textureTile[t]->fult;
 				texST[t].t1 = _params.lrt * shiftScaleT - gSP.textureTile[t]->fult;
-			}
-			else {
+			} else {
 				texST[t].t0 = _params.ult * shiftScaleT - gSP.textureTile[t]->fult;
 				texST[t].t1 = (_params.lrt + _params.dtdy) * shiftScaleT - gSP.textureTile[t]->fult;
 			}
@@ -1167,27 +1163,28 @@ void GraphicsDrawer::drawTexturedRect(const TexturedRectParams & _params)
 				texST[t].t1 = cache.current[t]->offsetT - texST[t].t1;
 			}
 
-			Context::TexParameters texParams;
+			if (cache.current[t]->frameBufferTexture != CachedTexture::fbMultiSample) {
+				Context::TexParameters texParams;
 
-			if ((cache.current[t]->mirrorS == 0 && cache.current[t]->maskS == 0 &&
-				(texST[t].s0 < texST[t].s1 ?
-				texST[t].s0 >= 0.0 && texST[t].s1 <= (float)cache.current[t]->width :
-				texST[t].s1 >= 0.0 && texST[t].s0 <= (float)cache.current[t]->width))
-				|| (cache.current[t]->maskS == 0 && (texST[t].s0 < -1024.0f || texST[t].s1 > 1023.99f)))
-				texParams.wrapS = textureParameters::WRAP_CLAMP_TO_EDGE;
+				if ((cache.current[t]->mirrorS == 0 && cache.current[t]->maskS == 0 &&
+					(texST[t].s0 < texST[t].s1 ?
+					texST[t].s0 >= 0.0 && texST[t].s1 <= (float)cache.current[t]->width :
+					texST[t].s1 >= 0.0 && texST[t].s0 <= (float)cache.current[t]->width))
+					|| (cache.current[t]->maskS == 0 && (texST[t].s0 < -1024.0f || texST[t].s1 > 1023.99f)))
+					texParams.wrapS = textureParameters::WRAP_CLAMP_TO_EDGE;
 
-			if (cache.current[t]->mirrorT == 0 &&
-				(texST[t].t0 < texST[t].t1 ?
-				texST[t].t0 >= 0.0f && texST[t].t1 <= (float)cache.current[t]->height :
-				texST[t].t1 >= 0.0f && texST[t].t0 <= (float)cache.current[t]->height))
-				texParams.wrapT = textureParameters::WRAP_CLAMP_TO_EDGE;
+				if (cache.current[t]->mirrorT == 0 &&
+					(texST[t].t0 < texST[t].t1 ?
+					texST[t].t0 >= 0.0f && texST[t].t1 <= (float)cache.current[t]->height :
+					texST[t].t1 >= 0.0f && texST[t].t0 <= (float)cache.current[t]->height))
+					texParams.wrapT = textureParameters::WRAP_CLAMP_TO_EDGE;
 
-			if (texParams.wrapS.isValid() || texParams.wrapT.isValid()) {
-				texParams.handle = cache.current[t]->name;
-				texParams.target = cache.current[t]->frameBufferTexture == CachedTexture::fbMultiSample ?
-					textureTarget::TEXTURE_2D_MULTISAMPLE : textureTarget::TEXTURE_2D;
-				texParams.textureUnitIndex = textureIndices::Tex[t];
-				gfxContext.setTextureParameters(texParams);
+				if (texParams.wrapS.isValid() || texParams.wrapT.isValid()) {
+					texParams.handle = cache.current[t]->name;
+					texParams.target = textureTarget::TEXTURE_2D;
+					texParams.textureUnitIndex = textureIndices::Tex[t];
+					gfxContext.setTextureParameters(texParams);
+				}
 			}
 
 			texST[t].s0 *= cache.current[t]->scaleS;
@@ -1197,11 +1194,10 @@ void GraphicsDrawer::drawTexturedRect(const TexturedRectParams & _params)
 		}
 	}
 
-	if (gDP.otherMode.cycleType == G_CYC_COPY) {
+	if (gDP.otherMode.cycleType == G_CYC_COPY && cache.current[0]->frameBufferTexture != CachedTexture::fbMultiSample) {
 		Context::TexParameters texParams;
 		texParams.handle = cache.current[0]->name;
-		texParams.target = cache.current[0]->frameBufferTexture == CachedTexture::fbMultiSample ?
-			textureTarget::TEXTURE_2D_MULTISAMPLE : textureTarget::TEXTURE_2D;
+		texParams.target = textureTarget::TEXTURE_2D;
 		texParams.textureUnitIndex = textureIndices::Tex[0];
 		texParams.minFilter = textureParameters::FILTER_NEAREST;
 		texParams.magFilter = textureParameters::FILTER_NEAREST;
@@ -1228,8 +1224,7 @@ void GraphicsDrawer::drawTexturedRect(const TexturedRectParams & _params)
 		m_rect[2].t0 = texST[0].t0;
 		m_rect[2].s1 = texST[1].s1;
 		m_rect[2].t1 = texST[1].t0;
-	}
-	else {
+	} else {
 		m_rect[1].s0 = texST[0].s1;
 		m_rect[1].t0 = texST[0].t0;
 		m_rect[1].s1 = texST[1].s1;
@@ -1453,12 +1448,15 @@ void GraphicsDrawer::copyTexturedRect(const CopyRectParams & _params)
 		Context::TexParameters texParams;
 		texParams.handle = tex->name;
 		texParams.textureUnitIndex = textureIndices::Tex[i];
-		texParams.target = tex->frameBufferTexture == CachedTexture::fbMultiSample ?
-			textureTarget::TEXTURE_2D_MULTISAMPLE : textureTarget::TEXTURE_2D;
-		texParams.minFilter = _params.filter;
-		texParams.magFilter = _params.filter;
-		texParams.wrapS = textureParameters::WRAP_CLAMP_TO_EDGE;
-		texParams.wrapT = textureParameters::WRAP_CLAMP_TO_EDGE;
+		if (tex->frameBufferTexture == CachedTexture::fbMultiSample)
+			texParams.target = textureTarget::TEXTURE_2D_MULTISAMPLE;
+		else {
+			texParams.target = textureTarget::TEXTURE_2D;
+			texParams.minFilter = _params.filter;
+			texParams.magFilter = _params.filter;
+			texParams.wrapS = textureParameters::WRAP_CLAMP_TO_EDGE;
+			texParams.wrapT = textureParameters::WRAP_CLAMP_TO_EDGE;
+		}
 		gfxContext.setTextureParameters(texParams);
 	}
 
