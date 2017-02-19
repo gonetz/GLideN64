@@ -102,18 +102,42 @@ namespace glsl {
 					"}																\n"
 					;
 			} else {
-				m_part =
-					"uniform sampler2D uColorImage;							\n"
-					"OUT lowp vec4 fragColor;								\n"
-					"void main()											\n"
-					"{														\n"
-					"  mediump ivec2 coord = ivec2(gl_FragCoord.xy);				\n"
-					"  lowp vec4 tex = texelFetch(uColorImage, coord, 0);		\n"
-					//"  lowp float c = (tex.r + tex.g + tex.b) / 3.0f;		\n"
-					"  lowp float c = dot(vec4(0.2126, 0.7152, 0.0722, 0.0), tex);\n"
-					"  fragColor = vec4(c, c, c, 1.0);						\n"
-					"}														\n"
-					;
+				if (config.video.multisampling > 0) {
+					m_part =
+						"uniform lowp sampler2DMS uColorImage;					\n"
+						"uniform lowp int uMSAASamples;							\n"
+						"OUT lowp vec4 fragColor;								\n"
+						"lowp vec4 sampleMS()									\n"
+						"{														\n"
+						"  mediump ivec2 coord = ivec2(gl_FragCoord.xy);		\n"
+						"  lowp vec4 texel = vec4(0.0);							\n"
+						"  for (int i = 0; i < uMSAASamples; ++i)				\n"
+						"    texel += texelFetch(uColorImage, coord, i);		\n"
+						"  return texel / float(uMSAASamples);					\n"
+						"}														\n"
+						"														\n"
+						"void main()											\n"
+						"{														\n"
+						"  lowp vec4 tex = sampleMS();							\n"
+						//"  lowp float c = (tex.r + tex.g + tex.b) / 3.0f;		\n"
+						"  lowp float c = dot(vec4(0.2126, 0.7152, 0.0722, 0.0), tex);\n"
+						"  fragColor = vec4(c, c, c, 1.0);						\n"
+						"}														\n"
+						;
+				} else {
+					m_part =
+						"uniform sampler2D uColorImage;							\n"
+						"OUT lowp vec4 fragColor;								\n"
+						"void main()											\n"
+						"{														\n"
+						"  mediump ivec2 coord = ivec2(gl_FragCoord.xy);				\n"
+						"  lowp vec4 tex = texelFetch(uColorImage, coord, 0);		\n"
+						//"  lowp float c = (tex.r + tex.g + tex.b) / 3.0f;		\n"
+						"  lowp float c = dot(vec4(0.2126, 0.7152, 0.0722, 0.0), tex);\n"
+						"  fragColor = vec4(c, c, c, 1.0);						\n"
+						"}														\n"
+						;
+				}
 			}
 		}
 	};
@@ -499,7 +523,12 @@ namespace glsl {
 		{
 			m_useProgram->useProgram(m_program);
 			const int texLoc = glGetUniformLocation(GLuint(m_program), "uColorImage");
-			glUniform1i(texLoc, 0);
+			if (config.video.multisampling > 0) {
+				glUniform1i(texLoc, u32(graphics::textureIndices::MSTex[0]));
+				const int samplesLoc = glGetUniformLocation(GLuint(m_program), "uMSAASamples");
+				glUniform1i(samplesLoc, config.video.multisampling);
+			} else
+				glUniform1i(texLoc, u32(graphics::textureIndices::Tex[0]));
 			m_useProgram->useProgram(graphics::ObjectHandle());
 		}
 	};
