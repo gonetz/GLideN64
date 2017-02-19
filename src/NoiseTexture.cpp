@@ -22,6 +22,9 @@ void NoiseTexture::init()
 {
 	if (config.generalEmulation.enableNoise == 0)
 		return;
+
+	std::vector<u16> ptr(640 * 580 / 2);
+
 	for (u32 i = 0; i < NOISE_TEX_NUM; ++i) {
 		m_pTexture[i] = textureCache().addFrameBufferTexture(false);
 		m_pTexture[i]->format = G_IM_FMT_RGBA;
@@ -57,17 +60,17 @@ void NoiseTexture::init()
 			params.magFilter = textureParameters::FILTER_NEAREST;
 			gfxContext.setTextureParameters(params);
 		}
-		std::vector<u8> ptr(m_pTexture[i]->textureBytes);
+		const u32 widthWords = m_pTexture[i]->realWidth / 2;
 		for (u32 y = 0; y < m_pTexture[i]->realHeight; ++y)     {
-			for (u32 x = 0; x < m_pTexture[i]->realWidth; ++x)
-				ptr[x + y*m_pTexture[i]->realWidth] = rand() & 0xFF;
+			for (u32 x = 0; x < widthWords; ++x)
+				ptr[x + y*widthWords] = rand() & 0xFFFF;
 		}
 		{
 			Context::UpdateTextureDataParams params;
 			params.handle = m_pTexture[i]->name;
 			params.textureUnitIndex = textureIndices::NoiseTex;
-			params.width = 640;
-			params.height = 580;
+			params.width = m_pTexture[i]->realWidth;
+			params.height = m_pTexture[i]->realHeight;
 			params.format = fbTexFormats.noiseFormat;
 			params.dataType = fbTexFormats.noiseType;
 			params.data = ptr.data();
