@@ -1,3 +1,9 @@
+#include <thread>
+#include <array>
+#include <algorithm>
+#include <random>
+#include <functional>
+#include <cstdlib>
 #include <Graphics/Context.h>
 #include <Graphics/Parameters.h>
 #include "FrameBuffer.h"
@@ -7,9 +13,11 @@
 #include "Textures.h"
 #include "NoiseTexture.h"
 #include "DisplayWindow.h"
-#include <cstdlib>
 
 using namespace graphics;
+
+#define NOISE_TEX_WIDTH 640
+#define NOISE_TEX_HEIHT 580
 
 NoiseTexture g_noiseTexture;
 
@@ -18,12 +26,54 @@ NoiseTexture::NoiseTexture()
 {
 }
 
+typedef std::array<std::vector<u16>, NOISE_TEX_NUM> NoiseTexturesData;
+
+static
+void FillTextureData(u32 _seed, NoiseTexturesData * _pData, u32 _start, u32 _stop)
+{
+	srand(_seed);
+	for (u32 i = _start; i < _stop; ++i) {
+		auto & vec = _pData->at(i);
+		const size_t sz = vec.size();
+		for (size_t t = 0; t < sz; ++t)
+			vec[t] = rand() & 0xFFFF;
+	}
+}
+
 void NoiseTexture::init()
 {
 	if (config.generalEmulation.enableNoise == 0)
 		return;
 
-	std::vector<u16> ptr(640 * 580 / 2);
+	NoiseTexturesData texData;
+	for (auto& vec : texData)
+		vec.resize(NOISE_TEX_WIDTH * NOISE_TEX_HEIHT / 2);
+
+	const u32 concurentThreadsSupported = std::thread::hardware_concurrency();
+	if (concurentThreadsSupported > 2) {
+		const u32 numThreads = concurentThreadsSupported - 1;
+		u32 chunk = NOISE_TEX_NUM / numThreads;
+		if (NOISE_TEX_NUM % numThreads != 0)
+			chunk++;
+
+		std::uniform_int_distribution<u32> uint_dist;
+		std::mt19937 engine; // Mersenne twister MT19937
+		engine.seed(std::mt19937::default_seed);
+		auto generator = std::bind(uint_dist, engine);
+
+		std::vector<std::thread> threads;
+		u32 start = 0;
+		do {
+			threads.emplace_back(
+				FillTextureData, generator(), &texData, start, std::min(start + chunk, texData.size()));
+			start += chunk;
+		} while (start < NOISE_TEX_NUM);
+
+		for (auto& t : threads)
+			t.join();
+	} else {
+		FillTextureData(static_cast<u32>(time(nullptr)), &texData, 0, texData.size());
+	}
 
 	for (u32 i = 0; i < NOISE_TEX_NUM; ++i) {
 		m_pTexture[i] = textureCache().addFrameBufferTexture(false);
@@ -35,8 +85,8 @@ void NoiseTexture::init()
 		m_pTexture[i]->maskT = 0;
 		m_pTexture[i]->mirrorS = 0;
 		m_pTexture[i]->mirrorT = 0;
-		m_pTexture[i]->realWidth = 640;
-		m_pTexture[i]->realHeight = 580;
+		m_pTexture[i]->realWidth = NOISE_TEX_WIDTH;
+		m_pTexture[i]->realHeight = NOISE_TEX_HEIHT;
 		m_pTexture[i]->textureBytes = m_pTexture[i]->realWidth * m_pTexture[i]->realHeight;
 		textureCache().addFrameBufferTextureSize(m_pTexture[i]->textureBytes);
 
@@ -60,11 +110,6 @@ void NoiseTexture::init()
 			params.magFilter = textureParameters::FILTER_NEAREST;
 			gfxContext.setTextureParameters(params);
 		}
-		const u32 widthWords = m_pTexture[i]->realWidth / 2;
-		for (u32 y = 0; y < m_pTexture[i]->realHeight; ++y)     {
-			for (u32 x = 0; x < widthWords; ++x)
-				ptr[x + y*widthWords] = rand() & 0xFFFF;
-		}
 		{
 			Context::UpdateTextureDataParams params;
 			params.handle = m_pTexture[i]->name;
@@ -73,7 +118,7 @@ void NoiseTexture::init()
 			params.height = m_pTexture[i]->realHeight;
 			params.format = fbTexFormats.noiseFormat;
 			params.dataType = fbTexFormats.noiseType;
-			params.data = ptr.data();
+			params.data = texData[i].data();
 			gfxContext.update2DTexture(params);
 		}
 	}
