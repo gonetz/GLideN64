@@ -778,14 +778,28 @@ void CombinerProgramUniformFactory::buildUniforms(GLuint _program,
 	if (!m_glInfo.isGLES2)
 		_uniforms.emplace_back(new UDepthTex(_program));
 
-	if (_inputs.usesTexture())
+	if (_inputs.usesTexture()) {
 		_uniforms.emplace_back(new UTextures(_program));
 
-	if (config.video.multisampling != 0)
-		_uniforms.emplace_back(new UMSAATextures(_program));
+		if (config.video.multisampling != 0)
+			_uniforms.emplace_back(new UMSAATextures(_program));
 
-	if (_inputs.usesTexture())
 		_uniforms.emplace_back(new UFrameBufferInfo(_program));
+
+		if (_inputs.usesLOD()) {
+			_uniforms.emplace_back(new UMipmap1(_program));
+			if (config.generalEmulation.enableLOD != 0)
+				_uniforms.emplace_back(new UMipmap2(_program));
+		}
+
+		_uniforms.emplace_back(new UTexturePersp(_program));
+
+		if (m_glInfo.isGLES2)
+			_uniforms.emplace_back(new UTextureSize(_program, _inputs.usesTile(0), _inputs.usesTile(1)));
+
+		if (!_key.isRectKey())
+			_uniforms.emplace_back(new UTextureParams(_program, _inputs.usesTile(0), _inputs.usesTile(1)));
+	}
 
 	_uniforms.emplace_back(new UFog(_program));
 
@@ -803,14 +817,6 @@ void CombinerProgramUniformFactory::buildUniforms(GLuint _program,
 	_uniforms.emplace_back(new UDitherMode(_program, _inputs.usesNoise()));
 
 	_uniforms.emplace_back(new UScreenScale(_program));
-
-	if (_inputs.usesLOD()) {
-		_uniforms.emplace_back(new UMipmap1(_program));
-		if (config.generalEmulation.enableLOD != 0)
-			_uniforms.emplace_back(new UMipmap2(_program));
-	}
-
-	_uniforms.emplace_back(new UTexturePersp(_program));
 
 	if (config.texture.bilinearMode == BILINEAR_3POINT)
 		_uniforms.emplace_back(new UTextureFilterMode(_program));
@@ -830,13 +836,6 @@ void CombinerProgramUniformFactory::buildUniforms(GLuint _program,
 	_uniforms.emplace_back(new UScreenCoordsScale(_program));
 
 	_uniforms.emplace_back(new UColors(_program));
-
-	if (_inputs.usesTexture()) {
-		if (m_glInfo.isGLES2)
-			_uniforms.emplace_back(new UTextureSize(_program, _inputs.usesTile(0), _inputs.usesTile(1)));
-		if (!_key.isRectKey())
-			_uniforms.emplace_back(new UTextureParams(_program, _inputs.usesTile(0), _inputs.usesTile(1)));
-	}
 
 	if (_inputs.usesHwLighting())
 		_uniforms.emplace_back(new ULights(_program));
