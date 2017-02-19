@@ -166,7 +166,6 @@ public:
 		LocateUniform(uMSTex0);
 		LocateUniform(uMSTex1);
 		LocateUniform(uMSAASamples);
-		LocateUniform(uMSAAScale);
 	}
 
 	void update(bool _force) override
@@ -174,14 +173,12 @@ public:
 		uMSTex0.set(int(graphics::textureIndices::MSTex[0]), _force);
 		uMSTex1.set(int(graphics::textureIndices::MSTex[1]), _force);
 		uMSAASamples.set(config.video.multisampling, _force);
-		uMSAAScale.set(1.0f / (float)config.video.multisampling, _force);
 	}
 
 private:
 	iUniform uMSTex0;
 	iUniform uMSTex1;
 	iUniform uMSAASamples;
-	fUniform uMSAAScale;
 };
 
 class UFrameBufferInfo : public UniformGroup

@@ -1513,13 +1513,12 @@ public:
 			if (config.video.multisampling > 0) {
 				m_part =
 					"uniform lowp int uMSAASamples;												\n"
-					"uniform lowp float uMSAAScale;												\n"
 					"lowp vec4 sampleMS(in lowp sampler2DMS mstex, in mediump ivec2 ipos)		\n"
 					"{																			\n"
 					"  lowp vec4 texel = vec4(0.0);												\n"
 					"  for (int i = 0; i < uMSAASamples; ++i)									\n"
 					"    texel += texelFetch(mstex, ipos, i);									\n"
-					"  return texel * uMSAAScale;												\n"
+					"  return texel / float(uMSAASamples);										\n"
 					"}																			\n"
 					"																			\n"
 					"lowp vec4 readTexMS(in lowp sampler2DMS mstex, in mediump vec2 texCoord, in lowp int fbMonochrome, in lowp int fbFixedAlpha)	\n"
