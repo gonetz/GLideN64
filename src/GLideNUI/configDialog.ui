@@ -208,6 +208,16 @@
             </widget>
            </item>
            <item>
+            <widget class="QCheckBox" name="vSyncCheckBox">
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Vertical sync, or VSync, can improve the image by syncing the game's frame rate to your monitor's refresh rate. This prevents image tearing, but may cause performance problems.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;Usually off, on if you have image tearing problems&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
+             <property name="text">
+              <string>Enable VSync</string>
+             </property>
+            </widget>
+           </item>
+           <item>
             <widget class="QFrame" name="cropImageFrame">
              <property name="toolTip">
               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;You can use this option to crop black borders. Use &lt;span style=&quot; font-weight:600;&quot;&gt;Auto per game&lt;/span&gt; to crop automatically based on the game or &lt;span style=&quot; font-weight:600;&quot;&gt;Custom&lt;/span&gt; to set the number of pixels yourself. The number of pixels is based on the original N64 resolution.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -4050,11 +4060,11 @@
   </connection>
  </connections>
  <buttongroups>
+  <buttongroup name="fixTexrectCoordsButtonGroup"/>
+  <buttongroup name="aspectButtonGroup"/>
+  <buttongroup name="bloomBlendModeButtonGroup"/>
   <buttongroup name="screenshotButtonGroup"/>
   <buttongroup name="factorButtonGroup"/>
-  <buttongroup name="bloomBlendModeButtonGroup"/>
   <buttongroup name="osdButtonGroup"/>
-  <buttongroup name="aspectButtonGroup"/>
-  <buttongroup name="fixTexrectCoordsButtonGroup"/>
  </buttongroups>
 </ui>
