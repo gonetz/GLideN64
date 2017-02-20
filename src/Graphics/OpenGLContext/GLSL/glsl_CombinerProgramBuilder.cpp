@@ -275,12 +275,13 @@ public:
 			"      vNumLights = 0.0;										\n"
 			"  }															\n"
 			"  if (uFogUsage == 1) {										\n"
-			"    lowp float fp;												\n"
+			"    lowp vec4 shadeColor = aColor;								\n"
 			"    if (aPosition.z < -aPosition.w && aModify[1] == 0.0)		\n"
-			"      fp = -uFogScale.s + uFogScale.t;							\n"
+			"      shadeColor.a = -uFogScale.s + uFogScale.t;							\n"
 			"    else														\n"
-			"      fp = aPosition.z/aPosition.w*uFogScale.s + uFogScale.t;	\n"
-			"    vShadeColor.a = clamp(fp, 0.0, 1.0);						\n"
+			"      shadeColor.a = aPosition.z/aPosition.w*uFogScale.s + uFogScale.t;	\n"
+			"    shadeColor.a = clamp(shadeColor.a, 0.0, 1.0);				\n"
+			"    vShadeColor = shadeColor; 									\n"
 			"  }															\n"
 			;
 		if (!_glinfo.isGLESX) {
@@ -1926,7 +1927,8 @@ GLuint _createVertexShader(ShaderPart * _header, ShaderPart * _body)
 	GLuint shader_object = glCreateShader(GL_VERTEX_SHADER);
 	glShaderSource(shader_object, 1, &strShaderData, nullptr);
 	glCompileShader(shader_object);
-	assert(Utils::checkShaderCompileStatus(shader_object));
+	if (!Utils::checkShaderCompileStatus(shader_object))
+		Utils::logErrorShader(GL_VERTEX_SHADER, strShaderData);
 	return shader_object;
 }
 
