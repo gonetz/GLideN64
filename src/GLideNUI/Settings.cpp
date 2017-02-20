@@ -26,6 +26,7 @@ void _loadSettings(QSettings & settings)
 	config.video.windowedHeight = settings.value("windowedHeight", config.video.windowedHeight).toInt();
 	config.video.fullscreenRefresh = settings.value("fullscreenRefresh", config.video.fullscreenRefresh).toInt();
 	config.video.multisampling = settings.value("multisampling", config.video.multisampling).toInt();
+	config.video.verticalSync = settings.value("verticalSync", config.video.verticalSync).toInt();
 	config.video.cropMode = settings.value("cropMode", config.video.cropMode).toInt();
 	config.video.cropWidth = settings.value("cropWidth", config.video.cropWidth).toInt();
 	config.video.cropHeight = settings.value("cropHeight", config.video.cropHeight).toInt();
@@ -152,6 +153,7 @@ void writeSettings(const QString & _strIniFolder)
 	settings.setValue("windowedHeight", config.video.windowedHeight);
 	settings.setValue("fullscreenRefresh", config.video.fullscreenRefresh);
 	settings.setValue("multisampling", config.video.multisampling);
+	settings.setValue("verticalSync", config.video.verticalSync);
 	settings.setValue("cropMode", config.video.cropMode);
 	settings.setValue("cropWidth", config.video.cropWidth);
 	settings.setValue("cropHeight", config.video.cropHeight);

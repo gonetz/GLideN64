@@ -124,6 +124,7 @@ void ConfigDialog::_init()
 	ui->aliasingLabelVal->setText(QString::number(config.video.multisampling));
 	ui->anisotropicSlider->setValue(config.texture.maxAnisotropy);
 	ui->cacheSizeSpinBox->setValue(config.texture.maxBytes / gc_uMegabyte);
+	ui->vSyncCheckBox->setChecked(config.video.verticalSync != 0);
 
 	switch (config.texture.bilinearMode) {
 	case BILINEAR_3POINT:
@@ -395,6 +396,8 @@ void ConfigDialog::accept()
 		_getTranslations(translationFiles);
 		config.translationFile = translationFiles[lanuageIndex-1].toLocal8Bit().constData();
 	}
+
+	config.video.verticalSync = ui->vSyncCheckBox->isChecked() ? 1 : 0;
 
 	// Emulation settings
 	config.generalEmulation.enableLOD = ui->emulateLodCheckBox->isChecked() ? 1 : 0;
