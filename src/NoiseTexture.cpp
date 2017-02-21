@@ -17,7 +17,7 @@
 using namespace graphics;
 
 #define NOISE_TEX_WIDTH 640
-#define NOISE_TEX_HEIHT 580
+#define NOISE_TEX_HEIGHT 580
 
 NoiseTexture g_noiseTexture;
 
@@ -47,7 +47,7 @@ void NoiseTexture::init()
 
 	NoiseTexturesData texData;
 	for (auto& vec : texData)
-		vec.resize(NOISE_TEX_WIDTH * NOISE_TEX_HEIHT / 2);
+		vec.resize(NOISE_TEX_WIDTH * NOISE_TEX_HEIGHT / 2);
 
 	const u32 concurentThreadsSupported = std::thread::hardware_concurrency();
 	if (concurentThreadsSupported > 2) {
@@ -90,7 +90,7 @@ void NoiseTexture::init()
 		m_pTexture[i]->mirrorS = 0;
 		m_pTexture[i]->mirrorT = 0;
 		m_pTexture[i]->realWidth = NOISE_TEX_WIDTH;
-		m_pTexture[i]->realHeight = NOISE_TEX_HEIHT;
+		m_pTexture[i]->realHeight = NOISE_TEX_HEIGHT;
 		m_pTexture[i]->textureBytes = m_pTexture[i]->realWidth * m_pTexture[i]->realHeight;
 		textureCache().addFrameBufferTextureSize(m_pTexture[i]->textureBytes);
 
