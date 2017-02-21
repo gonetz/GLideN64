@@ -178,7 +178,7 @@
       <ProxyFileName>%(Filename)_p.c</ProxyFileName>
     </Midl>
     <Lib>
-      <AdditionalDependencies>libpngd.lib;zlibd.lib;legacy_stdio_definitions.lib</AdditionalDependencies>
+      <AdditionalDependencies>libpngd.lib;zlibd.lib</AdditionalDependencies>
     </Lib>
     <Lib>
       <AdditionalLibraryDirectories>../../src/GLideNHQ/lib</AdditionalLibraryDirectories>

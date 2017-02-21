@@ -1,7 +1,7 @@
 #include "FrameBufferInfoAPI.h"
 #include "FrameBufferInfo.h"
 #include "Config.h"
-#include "OpenGL.h"
+#include "gSP.h"
 #include "FrameBuffer.h"
 #include "DepthBuffer.h"
 #include "RSP.h"

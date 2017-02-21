@@ -11,7 +11,6 @@
 #include "gSP.h"
 #include "gDP.h"
 #include "GBI.h"
-#include "OpenGL.h"
 
 using namespace std;
 

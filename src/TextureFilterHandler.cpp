@@ -1,12 +1,14 @@
 #include <stdarg.h>
 #include "GLideNHQ/Ext_TxFilter.h"
+#include <Graphics/Context.h>
+#include <Graphics/Parameters.h>
 
 #include "RSP.h"
-#include "OpenGL.h"
 #include "Config.h"
 #include "PluginAPI.h"
 #include "FrameBuffer.h"
 #include "TextureFilterHandler.h"
+#include "DisplayWindow.h"
 #include "wst.h"
 
 static
@@ -45,7 +47,7 @@ void displayLoadProgress(const wchar_t *format, ...)
 	char buf[INFO_BUF];
 
 	// process input
-#ifdef ANDROID
+#ifdef OS_ANDROID
 	const u32 bufSize = 2048;
 	char cbuf[bufSize];
 	char fmt[bufSize];
@@ -65,15 +67,15 @@ void displayLoadProgress(const wchar_t *format, ...)
 
 	FrameBuffer* pBuffer = frameBufferList().getCurrent();
 	if (pBuffer != nullptr)
-		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+		gfxContext.bindFramebuffer(graphics::bufferTarget::DRAW_FRAMEBUFFER, graphics::ObjectHandle());
 
-	OGLRender & render = video().getRender();
-	render.clearColorBuffer(nullptr);
-	render.drawText(buf, -0.9f, 0);
-	video().swapBuffers();
+	GraphicsDrawer & drawer = dwnd().getDrawer();
+	drawer.clearColorBuffer(nullptr);
+	drawer.drawText(buf, -0.9f, 0);
+	dwnd().swapBuffers();
 
 	if (pBuffer != nullptr)
-		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, pBuffer->m_FBO);
+		gfxContext.bindFramebuffer(graphics::bufferTarget::DRAW_FRAMEBUFFER, pBuffer->m_FBO);
 }
 
 u32 TextureFilterHandler::_getConfigOptions() const
@@ -107,8 +109,7 @@ void TextureFilterHandler::init()
 
 	m_options = _getConfigOptions();
 
-	GLint maxTextureSize;
-	glGetIntegerv(GL_MAX_TEXTURE_SIZE, &maxTextureSize);
+	s32 maxTextureSize = gfxContext.getMaxTextureSize();
 	wchar_t wRomName[32];
 	::mbstowcs(wRomName, RSP.romname, 32);
 	wchar_t txPath[PLUGIN_PATH_SIZE + 16];

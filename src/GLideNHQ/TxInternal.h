@@ -58,6 +58,9 @@
 #elif defined(OS_LINUX)
 #include <GL/gl.h>
 #include <GL/glext.h>
+#elif defined(OS_ANDROID)
+#include <GL/gl.h>
+#include <GL/glext.h>
 #endif // OS_WINDOWS
 
 /* in-memory zlib texture compression */

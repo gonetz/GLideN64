@@ -2,7 +2,6 @@
 #include <math.h>
 #include "Types.h"
 #include "VI.h"
-#include "OpenGL.h"
 #include "N64.h"
 #include "gSP.h"
 #include "gDP.h"
@@ -13,6 +12,8 @@
 #include "Config.h"
 #include "Performance.h"
 #include "Debug.h"
+#include "DisplayWindow.h"
+#include <Graphics/Context.h>
 
 using namespace std;
 
@@ -92,24 +93,24 @@ void VI_UpdateSize()
 void VI_UpdateScreen()
 {
 	if (VI.lastOrigin == -1) // Workaround for Mupen64Plus issue with initialization
-		isGLError();
+		gfxContext.isError();
 
 	if (ConfigOpen)
 		return;
 
 	perf.increaseVICount();
-	OGLVideo & ogl = video();
-	if (ogl.changeWindow())
+	DisplayWindow & wnd = dwnd();
+	if (wnd.changeWindow())
 		return;
-	if (ogl.resizeWindow())
+	if (wnd.resizeWindow())
 		return;
-	ogl.saveScreenshot();
+	wnd.saveScreenshot();
 
 	bool bVIUpdated = false;
 	if (*REG.VI_ORIGIN != VI.lastOrigin) {
 		VI_UpdateSize();
 		bVIUpdated = true;
-		ogl.updateScale();
+		wnd.updateScale();
 	}
 
 	if (config.frameBufferEmulation.enable) {
@@ -142,7 +143,7 @@ void VI_UpdateScreen()
 				if (pBuffer == nullptr || pBuffer->m_width != VI.width) {
 					if (!bVIUpdated) {
 						VI_UpdateSize();
-						ogl.updateScale();
+						wnd.updateScale();
 						bVIUpdated = true;
 					}
 					const u32 size = *REG.VI_STATUS & 3;
@@ -165,14 +166,13 @@ void VI_UpdateScreen()
 	}
 	else {
 		if (gDP.changed & CHANGED_COLORBUFFER) {
-			ogl.swapBuffers();
+			wnd.swapBuffers();
 			gDP.changed &= ~CHANGED_COLORBUFFER;
 			VI.lastOrigin = *REG.VI_ORIGIN;
 		}
 	}
 
 	if (VI.lastOrigin == -1) { // Workaround for Mupen64Plus issue with initialization
-		glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-		glClear(GL_COLOR_BUFFER_BIT);
+		gfxContext.clearColorBuffer(0.0f, 0.0f, 0.0f, 0.0f);
 	}
 }

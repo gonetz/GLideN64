@@ -18,13 +18,10 @@
 #define CLIP_X      0x03
 #define CLIP_NEGX   0x01
 #define CLIP_POSX   0x02
-
 #define CLIP_Y      0x0C
 #define CLIP_NEGY   0x04
 #define CLIP_POSY   0x08
-
 #define CLIP_W      0x10
-
 #define CLIP_ALL	0x1F // CLIP_NEGX|CLIP_POSX|CLIP_NEGY|CLIP_POSY|CLIP_W
 
 #define MODIFY_XY	0x000000FF
@@ -32,13 +29,6 @@
 #define MODIFY_ST	0x00FF0000
 #define MODIFY_RGBA	0xFF000000
 #define MODIFY_ALL	0xFFFFFFFF
-
-#define SC_POSITION             1
-#define SC_COLOR                2
-#define SC_TEXCOORD0            3
-#define SC_TEXCOORD1            4
-#define SC_NUMLIGHTS            5
-#define SC_MODIFY               6
 
 struct SPVertex
 {

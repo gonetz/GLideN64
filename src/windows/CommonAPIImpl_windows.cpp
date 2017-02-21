@@ -2,7 +2,6 @@
 #include "GLideN64_Windows.h"
 #include <commctrl.h>
 #include "../PluginAPI.h"
-#include "../OpenGL.h"
 #include "../RSP.h"
 
 #ifdef OS_WINDOWS

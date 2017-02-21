@@ -491,7 +491,7 @@ int
 TxUtil::getNumberofProcessors()
 {
 	int numcore = 1;
-#ifndef ANDROID
+#ifndef OS_ANDROID
 	try {
 #if defined (OS_WINDOWS)
 		SYSTEM_INFO sysinfo;
@@ -519,7 +519,7 @@ TxUtil::getNumberofProcessors()
 	}
 
 	if (numcore > MAX_NUMCORE) numcore = MAX_NUMCORE;
-#endif // ANDROID
+#endif // OS_ANDROID
 	DBG_INFO(80, wst("Number of processors : %d\n"), numcore);
 
 	return numcore;

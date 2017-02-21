@@ -4,7 +4,7 @@
 #include <string>
 #include "Types.h"
 
-#define CONFIG_VERSION_CURRENT 16U
+#define CONFIG_VERSION_CURRENT 17U
 
 #define BILINEAR_3POINT   0
 #define BILINEAR_STANDARD 1
@@ -62,7 +62,7 @@ struct Config
 		u32 enableFragmentDepthWrite;
 		u32 enableBlitScreenWorkaround;
 		u32 hacks;
-#ifdef ANDROID
+#ifdef OS_ANDROID
 		u32 forcePolygonOffset;
 		f32 polygonOffsetFactor;
 		f32 polygonOffsetUnits;

@@ -1,8 +1,6 @@
 #include "RDRAMtoColorBuffer.h"
 
-#include <FBOTextureFormats.h>
 #include <FrameBufferInfo.h>
-#include <GLSLCombiner.h>
 #include <FrameBuffer.h>
 #include <Combiner.h>
 #include <Textures.h>
@@ -10,10 +8,15 @@
 #include <N64.h>
 #include <VI.h>
 
+#include <Graphics/Context.h>
+#include <Graphics/Parameters.h>
+#include <DisplayWindow.h>
+
+using namespace graphics;
+
 RDRAMtoColorBuffer::RDRAMtoColorBuffer()
 	: m_pCurBuffer(nullptr)
-	, m_pTexture(nullptr)
-	, m_PBO(0) {
+	, m_pTexture(nullptr) {
 }
 
 RDRAMtoColorBuffer & RDRAMtoColorBuffer::get()
@@ -24,7 +27,7 @@ RDRAMtoColorBuffer & RDRAMtoColorBuffer::get()
 
 void RDRAMtoColorBuffer::init()
 {
-	m_pTexture = textureCache().addFrameBufferTexture();
+	m_pTexture = textureCache().addFrameBufferTexture(false);
 	m_pTexture->format = G_IM_FMT_RGBA;
 	m_pTexture->clampS = 1;
 	m_pTexture->clampT = 1;
@@ -37,16 +40,26 @@ void RDRAMtoColorBuffer::init()
 	m_pTexture->realHeight = 580;
 	m_pTexture->textureBytes = m_pTexture->realWidth * m_pTexture->realHeight * 4;
 	textureCache().addFrameBufferTextureSize(m_pTexture->textureBytes);
-	glBindTexture( GL_TEXTURE_2D, m_pTexture->glName );
-	glTexImage2D(GL_TEXTURE_2D, 0, fboFormats.colorInternalFormat, m_pTexture->realWidth, m_pTexture->realHeight, 0, fboFormats.colorFormat, fboFormats.colorType, nullptr);
-	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
-	glBindTexture(GL_TEXTURE_2D, 0);
 
-	// Generate Pixel Buffer Object. Initialize it later
-#ifndef GLES2
-	glGenBuffers(1, &m_PBO);
-#endif
+	const FramebufferTextureFormats & fbTexFormats = gfxContext.getFramebufferTextureFormats();
+	Context::InitTextureParams initParams;
+	initParams.handle = m_pTexture->name;
+	initParams.width = m_pTexture->realWidth;
+	initParams.height = m_pTexture->realHeight;
+	initParams.internalFormat = fbTexFormats.colorInternalFormat;
+	initParams.format = fbTexFormats.colorFormat;
+	initParams.dataType = fbTexFormats.colorType;
+	gfxContext.init2DTexture(initParams);
+
+	Context::TexParameters setParams;
+	setParams.handle = m_pTexture->name;
+	setParams.target = textureTarget::TEXTURE_2D;
+	setParams.textureUnitIndex = textureIndices::Tex[0];
+	setParams.minFilter = textureParameters::FILTER_LINEAR;
+	setParams.magFilter = textureParameters::FILTER_LINEAR;
+	gfxContext.setTextureParameters(setParams);
+
+	m_pbuf.reset(gfxContext.createPixelWriteBuffer(m_pTexture->textureBytes));
 }
 
 void RDRAMtoColorBuffer::destroy()
@@ -55,12 +68,7 @@ void RDRAMtoColorBuffer::destroy()
 		textureCache().removeFrameBufferTexture(m_pTexture);
 		m_pTexture = nullptr;
 	}
-#ifndef GLES2
-	if (m_PBO != 0) {
-		glDeleteBuffers(1, &m_PBO);
-		m_PBO = 0;
-	}
-#endif
+	m_pbuf.reset();
 }
 
 void RDRAMtoColorBuffer::addAddress(u32 _address, u32 _size)
@@ -192,14 +200,9 @@ void RDRAMtoColorBuffer::copyFromRDRAM(u32 _address, bool _bCFB)
 	m_pTexture->width = width;
 	m_pTexture->height = height;
 	const u32 dataSize = width*height * 4;
-#ifndef GLES2
-	PBOBinder binder(GL_PIXEL_UNPACK_BUFFER, m_PBO);
-	glBufferData(GL_PIXEL_UNPACK_BUFFER, dataSize, nullptr, GL_DYNAMIC_DRAW);
-	GLubyte* ptr = (GLubyte*)glMapBufferRange(GL_PIXEL_UNPACK_BUFFER, 0, dataSize, GL_MAP_WRITE_BIT);
-#else
-	GLubyte* ptr = (GLubyte*)malloc(dataSize);
-	PBOBinder binder(ptr);
-#endif // GLES2
+
+	PixelBufferBinder<PixelWriteBuffer> binder(m_pbuf.get());
+	u8* ptr = (u8*)m_pbuf->getWriteBuffer(dataSize);
 	if (ptr == nullptr)
 		return;
 
@@ -225,18 +228,28 @@ void RDRAMtoColorBuffer::copyFromRDRAM(u32 _address, bool _bCFB)
 		memset(RDRAM + address, 0, totalBytes);
 	}
 
-#ifndef GLES2
-	glUnmapBuffer(GL_PIXEL_UNPACK_BUFFER); // release the mapped buffer
-#endif
+	m_pbuf->closeWriteBuffer();
+
 	if (!bCopy)
 		return;
 
-	glBindTexture(GL_TEXTURE_2D, m_pTexture->glName);
-#ifndef GLES2
-	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, fboFormats.colorFormat, fboFormats.colorType, 0);
-#else
-	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, fboFormats.colorFormat, fboFormats.colorType, ptr);
-#endif
+	const u32 cycleType = gDP.otherMode.cycleType;
+	gDP.otherMode.cycleType = G_CYC_COPY;
+	CombinerInfo::get().setPolygonMode(DrawingState::TexRect);
+	CombinerInfo::get().update();
+	gDP.otherMode.cycleType = cycleType;
+
+	const FramebufferTextureFormats & fbTexFormats = gfxContext.getFramebufferTextureFormats();
+
+	Context::UpdateTextureDataParams updateParams;
+	updateParams.handle = m_pTexture->name;
+	updateParams.textureUnitIndex = textureIndices::Tex[0];
+	updateParams.width = width;
+	updateParams.height = height;
+	updateParams.format = fbTexFormats.colorFormat;
+	updateParams.dataType = fbTexFormats.colorType;
+	updateParams.data = m_pbuf->getData();
+	gfxContext.update2DTexture(updateParams);
 
 	m_pTexture->scaleS = 1.0f / (float)m_pTexture->realWidth;
 	m_pTexture->scaleT = 1.0f / (float)m_pTexture->realHeight;
@@ -251,23 +264,20 @@ void RDRAMtoColorBuffer::copyFromRDRAM(u32 _address, bool _bCFB)
 	gDPTile * pTile0 = gSP.textureTile[0];
 	gSP.textureTile[0] = &tile0;
 
-	const u32 cycleType = gDP.otherMode.cycleType;
-	gDP.otherMode.cycleType = G_CYC_1CYCLE;
-	CombinerInfo::get().setCombine(EncodeCombineMode(0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0));
-	currentCombiner()->disableBlending();
-	gDP.otherMode.cycleType = cycleType;
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	currentCombiner()->updateFrameBufferInfo();
+	gfxContext.enable(enable::BLEND, true);
+	gfxContext.setBlending(blend::SRC_ALPHA, blend::ONE_MINUS_SRC_ALPHA);
+	gfxContext.enable(enable::DEPTH_TEST, false);
+	gfxContext.enable(enable::SCISSOR_TEST, false);
 
-	glDisable(GL_DEPTH_TEST);
-	glDisable(GL_SCISSOR_TEST);
+	CombinerInfo::get().updateParameters();
 
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_pCurBuffer->m_FBO);
-	OGLRender::TexturedRectParams params((float)x0, (float)y0, (float)width, (float)height,
+	gfxContext.bindFramebuffer(bufferTarget::DRAW_FRAMEBUFFER, m_pCurBuffer->m_FBO);
+
+	GraphicsDrawer::TexturedRectParams texRectParams((float)x0, (float)y0, (float)width, (float)height,
 										 0.0f, 0.0f, width - 1.0f, height - 1.0f, 1.0f, 1.0f,
 										 false, true, false, m_pCurBuffer);
-	video().getRender().drawTexturedRect(params);
+	dwnd().getDrawer().drawTexturedRect(texRectParams);
+
 	frameBufferList().setCurrentDrawBuffer();
 
 	gSP.textureTile[0] = pTile0;

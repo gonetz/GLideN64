@@ -1,9 +1,14 @@
 #ifndef POST_PROCESSOR_H
 #define POST_PROCESSOR_H
 
+#include <memory>
 #include "Types.h"
-#include "OpenGL.h"
 #include "Textures.h"
+#include "Graphics/ObjectHandle.h"
+
+namespace graphics {
+	class ShaderProgram;
+}
 
 class PostProcessor {
 public:
@@ -28,29 +33,22 @@ private:
 	void _destroyOrientationCorrection();
 	void _initBlur();
 	void _destroyBlur();
-	void _setGLState();
 	void _preDraw(FrameBuffer * _pBuffer);
 	void _postDraw();
 
-	GLuint m_extractBloomProgram;
-	GLuint m_seperableBlurProgram;
-	GLuint m_glowProgram;
-	GLuint m_bloomProgram;
-
-	GLuint m_gammaCorrectionProgram;
-
-	GLuint m_orientationCorrectionProgram;
+	std::unique_ptr<graphics::ShaderProgram> m_gammaCorrectionProgram;
+	std::unique_ptr<graphics::ShaderProgram> m_orientationCorrectionProgram;
 
 	FrameBuffer * m_pResultBuffer;
 
-	GLuint m_FBO_glowMap;
-	GLuint m_FBO_blur;
+	graphics::ObjectHandle m_FBO_glowMap;
+	graphics::ObjectHandle m_FBO_blur;
 
 	CachedTexture * m_pTextureOriginal;
 	CachedTexture * m_pTextureGlowMap;
 	CachedTexture * m_pTextureBlur;
 
-#ifdef ANDROID
+#ifdef OS_ANDROID
 	static PostProcessor processor;
 #endif
 };

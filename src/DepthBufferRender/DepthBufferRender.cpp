@@ -15,7 +15,7 @@
 //****************************************************************
 
 #include "N64.h"
-#include "OpenGL.h"
+#include "gDP.h"
 #include "FrameBuffer.h"
 #include "DepthBuffer.h"
 #include "DepthBufferRender.h"

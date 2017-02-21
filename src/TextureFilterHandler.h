@@ -19,6 +19,8 @@ private:
 	u32 m_options;
 };
 
+void displayLoadProgress(const wchar_t *format, ...);
+
 extern TextureFilterHandler TFH;
 
 #endif // TEXTUREFILTERHANDLER_H

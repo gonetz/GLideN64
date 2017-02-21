@@ -3,8 +3,11 @@
 
 #include "Types.h"
 #include "Textures.h"
+#include "Graphics/ObjectHandle.h"
+#include "Graphics/Parameter.h"
 
 struct FrameBuffer;
+
 struct DepthBuffer
 {
 	DepthBuffer();
@@ -15,28 +18,29 @@ struct DepthBuffer
 	CachedTexture * resolveDepthBufferTexture(FrameBuffer * _pBuffer);
 	CachedTexture * copyDepthBufferTexture(FrameBuffer * _pBuffer);
 
-	void setDepthAttachment(GLenum _target);
+	void setDepthAttachment(graphics::ObjectHandle _fbo, graphics::BufferTargetParam _target);
 	void activateDepthBufferTexture(FrameBuffer * _pBuffer);
 
 	void bindDepthImageTexture();
 
 	u32 m_address, m_width;
 	u32 m_ulx, m_uly, m_lrx, m_lry; // Parameters of fillrect command.
-	GLuint m_depthImageFBO;
-	CachedTexture *m_pDepthImageTexture;
+	CachedTexture *m_pDepthImageZTexture;
+	CachedTexture *m_pDepthImageDeltaZTexture;
 	CachedTexture *m_pDepthBufferTexture;
-	GLuint m_depthRenderbuffer;
+	graphics::ObjectHandle m_depthRenderbuffer;
 	u32 m_depthRenderbufferWidth;
 	bool m_cleared;
 	// multisampling
 	CachedTexture *m_pResolveDepthBufferTexture;
 	bool m_resolved;
 	// render to depth buffer
-	GLuint m_copyFBO;
+	graphics::ObjectHandle m_copyFBO;
 	CachedTexture *m_pDepthBufferCopyTexture;
 	bool m_copied;
 
 private:
+	void _initDepthImageTexture(FrameBuffer * _pBuffer, CachedTexture& _cachedTexture);
 	void _initDepthBufferTexture(FrameBuffer * _pBuffer, CachedTexture *_pTexture, bool _multisample);
 	void _initDepthBufferRenderbuffer(FrameBuffer * _pBuffer);
 	void _DepthBufferTexture(FrameBuffer * _pBuffer);
@@ -74,10 +78,6 @@ DepthBufferList & depthBufferList()
 {
 	return DepthBufferList::get();
 }
-
-extern const GLuint ZlutImageUnit;
-extern const GLuint TlutImageUnit;
-extern const GLuint depthImageUnit;
 
 void DepthBuffer_Init();
 void DepthBuffer_Destroy();

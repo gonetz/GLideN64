@@ -6,18 +6,16 @@
 
 #include "CRC.h"
 #include "convert.h"
-
-extern const GLuint g_noiseTexIndex;
-extern const GLuint g_depthTexIndex;
-extern const GLuint g_MSTex0Index;
+#include "Graphics/ObjectHandle.h"
+#include "Graphics/Parameter.h"
 
 typedef u32 (*GetTexelFunc)( u64 *src, u16 x, u16 i, u8 palette );
 
 struct CachedTexture
 {
-	CachedTexture(GLuint _glName) : glName(_glName), max_level(0), frameBufferTexture(fbNone), bHDTexture(false) {}
+	CachedTexture(graphics::ObjectHandle _name) : name(_name), max_level(0), frameBufferTexture(fbNone), bHDTexture(false) {}
 
-	GLuint	glName;
+	graphics::ObjectHandle name;
 	u32		crc;
 //	float	fulS, fulT;
 //	WORD	ulS, ulT, lrS, lrT;
@@ -54,7 +52,7 @@ struct TextureCache
 
 	void init();
 	void destroy();
-	CachedTexture * addFrameBufferTexture();
+	CachedTexture * addFrameBufferTexture(bool _multisample);
 	void addFrameBufferTextureSize(u32 _size) {m_cachedBytes += _size;}
 	void removeFrameBufferTexture(CachedTexture * _pTexture);
 	void activateTexture(u32 _t, CachedTexture *_pTexture);
@@ -83,11 +81,11 @@ private:
 	void _updateBackground();
 	void _clear();
 	void _initDummyTexture(CachedTexture * _pDummy);
-	void _getTextureDestData(CachedTexture& tmptex, u32* pDest, GLuint glInternalFormat, GetTexelFunc GetTexel, u16* pLine);
+	void _getTextureDestData(CachedTexture& tmptex, u32* pDest, graphics::Parameter glInternalFormat, GetTexelFunc GetTexel, u16* pLine);
 
 	typedef std::list<CachedTexture> Textures;
 	typedef std::map<u32, Textures::iterator> Texture_Locations;
-	typedef std::map<u32, CachedTexture> FBTextures;
+	typedef std::map<graphics::ObjectHandle, CachedTexture> FBTextures;
 	Textures m_textures;
 	Texture_Locations m_lruTextureLocations;
 	FBTextures m_fbTextures;
@@ -96,7 +94,7 @@ private:
 	u32 m_hits, m_misses;
 	u32 m_maxBytes;
 	u32 m_cachedBytes;
-	GLint m_curUnpackAlignment;
+	s32 m_curUnpackAlignment;
 	bool m_toggleDumpTex;
 };
 
