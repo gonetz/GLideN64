@@ -67,4 +67,10 @@ void GLInfo::init() {
 			shaderStorage = numBinaryFormats > 0;
 		}
 	}
+#ifndef OS_ANDROID
+	if (isGLES2 && config.frameBufferEmulation.copyToRDRAM == ctAsync) {
+		config.frameBufferEmulation.copyToRDRAM = ctDisable;
+		LOG(LOG_WARNING, "Async color buffer copies are not supported on GLES2\n");
+	}
+#endif
 }
