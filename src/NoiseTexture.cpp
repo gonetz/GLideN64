@@ -65,7 +65,11 @@ void NoiseTexture::init()
 		u32 start = 0;
 		do {
 			threads.emplace_back(
-				FillTextureData, generator(), &texData, start, std::min(start + chunk, texData.size()));
+				FillTextureData,
+				generator(),
+				&texData,
+				start,
+				std::min(start + chunk, static_cast<u32>(texData.size())));
 			start += chunk;
 		} while (start < NOISE_TEX_NUM);
 
