@@ -20,6 +20,10 @@ void RDP_TexRect(u32 w0, u32 w1);
 void RDP_ProcessRDPList();
 void RDP_RepeatLastLoadBlock();
 void RDP_SetScissor(u32 w0, u32 w1);
+void RDP_SetTImg(u32 w0, u32 w1);
+void RDP_LoadBlock(u32 w0, u32 w1);
+void RDP_SetTile(u32 w0, u32 w1);
+void RDP_SetTileSize(u32 w0, u32 w1);
 
 #endif
 

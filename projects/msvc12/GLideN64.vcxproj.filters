@@ -338,6 +338,9 @@
     <ClCompile Include="..\..\src\TexrectDrawer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\F3DTEXA.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\3DMath.h">
@@ -632,6 +635,9 @@
       <Filter>Header Files\Graphics\OpenGL</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\TexrectDrawer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\F3DTEXA.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

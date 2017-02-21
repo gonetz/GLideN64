@@ -24,6 +24,7 @@ set(GLideN64_SOURCES
   F3DEX2CBFD.cpp
   F3DEX2MM.cpp
   F3DGOLDEN.cpp
+  F3DTEXA.cpp
   F3DPD.cpp
   F3DSETA.cpp
   FrameBuffer.cpp
@@ -275,9 +276,9 @@ if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
   if (G++_VERSION VERSION_LESS 4.8)
 	message(SEND_ERROR "You need at least G++ 4.8 to compile GLideN64!")
   endif()
-  SET(GCC_CPP11_COMPILE_FLAGS "-std=c++0x -static-libgcc -static-libstdc++")
+  SET(GCC_CPP11_COMPILE_FLAGS "-std=c++0x -static-libgcc")
   SET( CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} ${GCC_CPP11_COMPILE_FLAGS}" )
-  SET(GCC_STATIC_LINK_FLAGS "-static-libgcc -static-libstdc++")
+  SET(GCC_STATIC_LINK_FLAGS "-static-libgcc")
   SET( CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} ${GCC_STATIC_LINK_FLAGS}" )
 endif()
 

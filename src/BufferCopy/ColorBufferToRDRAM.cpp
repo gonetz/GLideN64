@@ -11,10 +11,10 @@
 #include "Log.h"
 
 /*
-#ifndef GLES2
 #include "ColorBufferToRDRAM_GL.h"
 #include "ColorBufferToRDRAM_BufferStorageExt.h"
 #elif defined(OS_ANDROID) && defined (GLES2)
+#include "ColorBufferToRDRAM_GL.h"
 #include "ColorBufferToRDRAM_GLES.h"
 #else
 #include "ColorBufferToRDRAMStub.h"

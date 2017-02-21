@@ -25,6 +25,7 @@
 #include "F3DGOLDEN.h"
 #include "F3DEX2CBFD.h"
 #include "F3DEX2MM.h"
+#include "F3DTEXA.h"
 #include "ZSort.h"
 #include "CRC.h"
 #include "Log.h"
@@ -55,7 +56,8 @@ SpecialMicrocodeInfo specialMicrocodes[] =
 	{ F3DJFG,		false,	0xbde9d1fb, "Jet Force Gemini" },
 	{ F3DPD,		true,	0x1c4f7869, "Perfect Dark" },
 	{ Turbo3D,		false,	0x2bdcfc8a, "Turbo3D" },
-	{ F3DEX2CBFD,	true,	0x1b4ace88, "Conker's Bad Fur Day" }
+	{ F3DEX2CBFD,	true,	0x1b4ace88, "Conker's Bad Fur Day" },
+	{ F3DEX2MM,	true,	0xd39a0d4f, "Animal Forest" }
 };
 
 u32 G_RDPHALF_1, G_RDPHALF_2, G_RDPHALF_CONT;
@@ -188,6 +190,7 @@ void GBIInfo::_makeCurrent(MicrocodeInfo * _pCurrent)
 			case F3DSETA:	F3DSETA_Init();		break;
 			case F3DGOLDEN:	F3DGOLDEN_Init();	break;
 			case F3DEX2MM:	F3DEX2MM_Init();	break;
+			case F3DTEXA:	F3DTEXA_Init();		break;
 		}
 
 		if (gfxContext.isSupported(graphics::SpecialFeatures::NearPlaneClipping)) {
@@ -290,6 +293,8 @@ void GBIInfo::loadMicrocode(u32 uc_start, u32 uc_dstart, u16 uc_dsize)
 						current.textureGen = false;
 					else if (strncmp(&uc_str[14], "F3DZ", 4) == 0)
 						type = F3DEX2MM;
+					else if (strncmp(&uc_str[14], "F3DTEX/A", 8) == 0)
+						type = F3DTEXA;
 					else if (strncmp(&uc_str[14], "F3DLX.Rej", 9) == 0)
 						current.NoN = true;
 					else if (strncmp(&uc_str[14], "F3DLP.Rej", 9) == 0) {
