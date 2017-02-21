@@ -183,7 +183,7 @@
         <location filename="configDialog.ui" line="213"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;You can use this option to crop black borders. Use &lt;span style=&quot; font-weight:600;&quot;&gt;Auto per game&lt;/span&gt; to crop automatically based on the game or &lt;span style=&quot; font-weight:600;&quot;&gt;Custom&lt;/span&gt; to set the number of pixels yourself. The number of pixels is based on the original N64 resolution.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <oldsource>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Crop image:&lt;/span&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;This option allows user to crop black boarders from resulted image. It has two modes:&lt;br/&gt;&lt;br/&gt;* Auto - plugin sets crop automatically using game&apos;s frame scissor.&lt;/p&gt;&lt;p&gt;* Custom - crop using user defined values. User should set number of pixels to crop from original native-res image.&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</oldsource>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Bild zuschneiden:&lt;/span&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;Diese Option erlaubt es dem Benutzer schwarze Fensterr&auml;nder zu beschneiden. Es gibt zwei Modi:&lt;br/&gt;&lt;br/&gt;* Auto - das Plugin beschneidet automatisch nach Spielvorgabe.&lt;/p&gt;&lt;p&gt;* Custom - der Rand wird nach Benutzervorgabe beschnitten. Der Benutzer muss die zu beschneidende Pixelanzahl angeben.&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Bild zuschneiden:&lt;/span&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;Diese Option erlaubt es dem Benutzer schwarze Fensterr&#228;nder zu beschneiden. Es gibt zwei Modi:&lt;br/&gt;&lt;br/&gt;* Auto - das Plugin beschneidet automatisch nach Spielvorgabe.&lt;/p&gt;&lt;p&gt;* Custom - der Rand wird nach Benutzervorgabe beschnitten. Der Benutzer muss die zu beschneidende Pixelanzahl angeben.&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="248"/>
@@ -314,7 +314,7 @@
     <message>
         <location filename="configDialog.ui" line="59"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;All the resolutions that your video card/monitor supports should be displayed.&lt;/p&gt;&lt;p&gt;[Recommended:&lt;span style=&quot; font-style:italic;&quot;&gt; Maximum resolution for your monitor unless performance becomes an issue&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Alle von der Grafikkarte/Monitor unterst&uuml;tzten Aufl&ouml;sungen sollten angezeigt werden.&lt;/p&gt;&lt;p&gt;[Empfohlen:&lt;span style=&quot; font-style:italic;&quot;&gt; Die maximale Aufl&ouml;sung des Monitors außer es gibt Geschwindigkeitprobleme&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Alle von der Grafikkarte/Monitor unterst&#252;tzten Aufl&#246;sungen sollten angezeigt werden.&lt;/p&gt;&lt;p&gt;[Empfohlen:&lt;span style=&quot; font-style:italic;&quot;&gt; Die maximale Aufl&#246;sung des Monitors außer es gibt Geschwindigkeitprobleme&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="107"/>
@@ -334,7 +334,7 @@
     <message>
         <location filename="configDialog.ui" line="362"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Aspect ratio:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Seitenverh&auml;ltnis:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Seitenverh&#228;ltnis:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="369"/>
@@ -476,7 +476,7 @@ The highest in a sequence of numbers. In this case, 16.</extracomment>
     <message>
         <location filename="configDialog.ui" line="1210"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Internal resolution:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Interne Aufl&ouml;sung:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Interne Aufl&#246;sung:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="1217"/>
@@ -508,7 +508,7 @@ The highest in a sequence of numbers. In this case, 16.</extracomment>
         <location filename="configDialog.ui" line="1421"/>
         <source>Render 2D elements in N64 resolution (best quality, can be slow)</source>
         <extracomment>2D elements, formerly labelled texrects, are usually used for title screens or HUDs</extracomment>
-        <translation>Gebe 2D Elemente in der originalen N64 Aufl&ouml;sung wieder (beste Qualit&auml;t, kann langsam sein)</translation>
+        <translation>Gebe 2D Elemente in der originalen N64 Aufl&#246;sung wieder (beste Qualit&#228;t, kann langsam sein)</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="1431"/>
@@ -724,7 +724,7 @@ The highest in a sequence of numbers. In this case, 16.</extracomment>
     <message>
         <location filename="configDialog.ui" line="2338"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This option dumps textures on screen to a texture pack folder. You can also reload textures while the game is running to see how they look instantly—big time saver!&lt;/p&gt;&lt;p&gt;Hotkeys:&lt;br/&gt;Use &lt;span style=&quot; font-weight:600;&quot;&gt;R&lt;/span&gt; to reload textures from the texture pack&lt;br/&gt;Use &lt;span style=&quot; font-weight:600;&quot;&gt;D&lt;/span&gt; to toggle texture dumping on or off&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Diese Einstellung speichert aktuell angezeigte Texturen in einem Texture-Pack Verzeichnis. Es k&ouml;nnen auch Texturen neu geladen werden während ein Spiel l&auml;uft um direkt zu sehen wie sie aussehen.&lt;/p&gt;&lt;p&gt;Hotkeys:&lt;br/&gt;Benutze &lt;span style=&quot; font-weight:600;&quot;&gt;R&lt;/span&gt; um Texturen aus Texture-Packs neu zu laden&lt;br/&gt;Benutze &lt;span style=&quot; font-weight:600;&quot;&gt;D&lt;/span&gt; um Texturen speichern an- und abzuschalten&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Diese Einstellung speichert aktuell angezeigte Texturen in einem Texture-Pack Verzeichnis. Es k&#246;nnen auch Texturen neu geladen werden während ein Spiel l&#228;uft um direkt zu sehen wie sie aussehen.&lt;/p&gt;&lt;p&gt;Hotkeys:&lt;br/&gt;Benutze &lt;span style=&quot; font-weight:600;&quot;&gt;R&lt;/span&gt; um Texturen aus Texture-Packs neu zu laden&lt;br/&gt;Benutze &lt;span style=&quot; font-weight:600;&quot;&gt;D&lt;/span&gt; um Texturen speichern an- und abzuschalten&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="2341"/>
@@ -734,7 +734,7 @@ The highest in a sequence of numbers. In this case, 16.</extracomment>
     <message>
         <location filename="configDialog.ui" line="2381"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This option saves all previously loaded and enhanced textures to your PC. When the game is next launched, textures don&apos;t have to be recreated, causing smoother performance.&lt;/p&gt;&lt;p&gt;When using texture packs, loading packs will take only a few seconds when the game is launched as opposed to the 5–60 seconds that loading usually takes. However, if you change the texture pack you&apos;ll have to manually delete the texture cache. Saved cache files are saved to a folder called Cache within the plugins folder.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;Checked&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Diese Einstellung speichert alle vorher geladenen oder verbesserten Texturen auf dem PC. Wenn das Spiel noch einmal gestartet wird müssen die Texturen nicht neu erstellt werden.&lt;/p&gt;&lt;p&gt;Wenn Texture-Packs verwendet werden dauert das Laden eines Packs nur wenige Sekunden gegen&uuml;ber dem normalen Ladevorgang von 5-60 Sekunden. Wird jedoch das Texture Pack ver&auml;ndert, muss der Texture Cache manuell gel&ouml;scht werden um die Änderung zu &uuml;bernehmen. Cache Dateien werden im Plugin Verzeichnis im Verzeichnis Cache gespeichert.&lt;/p&gt;&lt;p&gt;[Empfohlen: &lt;span style=&quot; font-style:italic;&quot;&gt;Ausgewählt&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Diese Einstellung speichert alle vorher geladenen oder verbesserten Texturen auf dem PC. Wenn das Spiel noch einmal gestartet wird müssen die Texturen nicht neu erstellt werden.&lt;/p&gt;&lt;p&gt;Wenn Texture-Packs verwendet werden dauert das Laden eines Packs nur wenige Sekunden gegen&#252;ber dem normalen Ladevorgang von 5-60 Sekunden. Wird jedoch das Texture Pack ver&#228;ndert, muss der Texture Cache manuell gel&#246;scht werden um die Änderung zu &#252;bernehmen. Cache Dateien werden im Plugin Verzeichnis im Verzeichnis Cache gespeichert.&lt;/p&gt;&lt;p&gt;[Empfohlen: &lt;span style=&quot; font-style:italic;&quot;&gt;Ausgewählt&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="2384"/>
@@ -744,12 +744,12 @@ The highest in a sequence of numbers. In this case, 16.</extracomment>
     <message>
         <location filename="configDialog.ui" line="2394"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Textures will be compressed so more textures can be held in the cache. The compression ratio varies per texture, but the compression is typically 1/5 of the original size.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;Checked&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Texturen werden komprimiert, damit mehr Texturen im Cache gehalten werden können. Die Kompressionsrate variiert je nach Textur, aber ist normalerweise 1/5 der Originalgr&ouml;ße.&lt;/p&gt;&lt;p&gt;[Empfehlung: &lt;span style=&quot; font-style:italic;&quot;&gt;Ausgew&auml;hlt&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Texturen werden komprimiert, damit mehr Texturen im Cache gehalten werden können. Die Kompressionsrate variiert je nach Textur, aber ist normalerweise 1/5 der Originalgr&#246;ße.&lt;/p&gt;&lt;p&gt;[Empfehlung: &lt;span style=&quot; font-style:italic;&quot;&gt;Ausgew&#228;hlt&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="2404"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This option halves the space used by textures in the texture cache and video card memory to improve performance. When reducing the color, GLideN64 tries to perserve the original quality as much as possible. On most textures it&apos;s hardly noticeable, but some textures, like skies, can look noticeably worse.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;Unchecked&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Diese Einstellung halbiert den Speicherbedarf von Texturen im Texture-Cache und VRAM um die Leistung zu steigern. Wenn die Farbtiefe reduziert wird versucht GLideN64 die originale Qualit&auml;t so gut wie m&ouml;glich zu erhalten. Bei den meisten Texturen ist es kaum wahrnehmbar, aber einige Texturen, wie z.B. f&uuml;r den Himmel, k&ouml;nnen schlechter aussehen.&lt;/p&gt;&lt;p&gt;[Empfohlen: &lt;span style=&quot; font-style:italic;&quot;&gt;Nicht ausgew&auml;hlt&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Diese Einstellung halbiert den Speicherbedarf von Texturen im Texture-Cache und VRAM um die Leistung zu steigern. Wenn die Farbtiefe reduziert wird versucht GLideN64 die originale Qualit&#228;t so gut wie m&#246;glich zu erhalten. Bei den meisten Texturen ist es kaum wahrnehmbar, aber einige Texturen, wie z.B. f&#252;r den Himmel, k&#246;nnen schlechter aussehen.&lt;/p&gt;&lt;p&gt;[Empfohlen: &lt;span style=&quot; font-style:italic;&quot;&gt;Nicht ausgew&#228;hlt&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="2407"/>
@@ -784,7 +784,7 @@ The highest in a sequence of numbers. In this case, 16.</extracomment>
     <message>
         <location filename="configDialog.ui" line="2861"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Selecting this option overrides gamma correction specified by the game.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Wird diese Einstellung ausgew&auml;hlt wird die durch das Spiel festgelegte Gammakorrektur &uuml;berschrieben.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Wird diese Einstellung ausgew&#228;hlt wird die durch das Spiel festgelegte Gammakorrektur &#252;berschrieben.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="2882"/>
@@ -861,7 +861,7 @@ The highest in a sequence of numbers. In this case, 16.</extracomment>
         <location filename="configDialog.ui" line="3602"/>
         <location filename="configDialog.ui" line="3621"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This font is used for all on-screen messages. Not all fonts can be used. If messages aren&apos;t displayed, try a different font.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Diese Schrift wird f&uuml;r alle Bildschirmmeldungen verwendet. Nicht alle Schriften k&ouml;nnen verwendet werden. Wenn Meldungen nicht dargestellt werden, probiere eine andere Schrift.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Diese Schrift wird f&#252;r alle Bildschirmmeldungen verwendet. Nicht alle Schriften k&#246;nnen verwendet werden. Wenn Meldungen nicht dargestellt werden, probiere eine andere Schrift.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="3570"/>
