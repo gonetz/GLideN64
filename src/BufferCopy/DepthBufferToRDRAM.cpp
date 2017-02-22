@@ -114,7 +114,7 @@ void DepthBufferToRDRAM::init()
 	// check if everything is OK
 	assert(!gfxContext.isFramebufferError());
 	assert(!gfxContext.isError());
-	gfxContext.bindFramebuffer(bufferTarget::DRAW_FRAMEBUFFER, ObjectHandle());
+	gfxContext.bindFramebuffer(bufferTarget::DRAW_FRAMEBUFFER, ObjectHandle::null);
 
 	// Generate and initialize Pixel Buffer Objects
 	m_pbuf.reset(gfxContext.createPixelReadBuffer(m_pDepthTexture->textureBytes));

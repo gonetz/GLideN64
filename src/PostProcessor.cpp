@@ -315,7 +315,7 @@ void PostProcessor::_initCommon()
 	_initFBO(ObjectHandle(m_pResultBuffer->m_FBO), m_pResultBuffer->m_pTexture);
 
 	gfxContext.bindFramebuffer(bufferTarget::DRAW_FRAMEBUFFER,
-		ObjectHandle());
+		ObjectHandle::null);
 }
 
 void PostProcessor::_initGammaCorrection()
@@ -480,13 +480,13 @@ void PostProcessor::_preDraw(FrameBuffer * _pBuffer)
 		m_pTextureOriginal = _pBuffer->m_pTexture;
 
 	gfxContext.bindFramebuffer(bufferTarget::READ_FRAMEBUFFER,
-		ObjectHandle());
+		ObjectHandle::null);
 }
 
 void PostProcessor::_postDraw()
 {
 	gfxContext.bindFramebuffer(bufferTarget::DRAW_FRAMEBUFFER,
-		ObjectHandle());
+		ObjectHandle::null);
 
 	gfxContext.resetShaderProgram();
 }

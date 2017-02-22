@@ -373,7 +373,7 @@ graphics::ShaderProgram * ContextImpl::createTextDrawerShader()
 
 void ContextImpl::resetShaderProgram()
 {
-	m_cachedFunctions->getCachedUseProgram()->useProgram(graphics::ObjectHandle());
+	m_cachedFunctions->getCachedUseProgram()->useProgram(graphics::ObjectHandle::null);
 }
 
 void ContextImpl::drawTriangles(const graphics::Context::DrawTriangleParameters & _params)

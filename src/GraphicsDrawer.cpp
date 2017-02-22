@@ -1326,7 +1326,7 @@ void GraphicsDrawer::drawOSD()
 	if ((config.onScreenDisplay.fps | config.onScreenDisplay.vis | config.onScreenDisplay.percent) == 0)
 		return;
 
-	gfxContext.bindFramebuffer(bufferTarget::DRAW_FRAMEBUFFER, ObjectHandle());
+	gfxContext.bindFramebuffer(bufferTarget::DRAW_FRAMEBUFFER, ObjectHandle::null);
 
 	DisplayWindow & wnd = DisplayWindow::get();
 	const s32 X = (wnd.getScreenWidth() - wnd.getWidth()) / 2;

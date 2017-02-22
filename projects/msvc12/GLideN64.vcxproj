@@ -292,6 +292,7 @@
     <ClCompile Include="..\..\src\GLideN64.cpp" />
     <ClCompile Include="..\..\src\Graphics\CombinerProgram.cpp" />
     <ClCompile Include="..\..\src\Graphics\Context.cpp" />
+    <ClCompile Include="..\..\src\Graphics\ObjectHandle.cpp" />
     <ClCompile Include="..\..\src\Graphics\OpenGLContext\GLFunctions.cpp" />
     <ClCompile Include="..\..\src\Graphics\OpenGLContext\GLSL\glsl_CombinerInputs.cpp" />
     <ClCompile Include="..\..\src\Graphics\OpenGLContext\GLSL\glsl_CombinerProgramBuilder.cpp" />

@@ -65,6 +65,7 @@ set(GLideN64_SOURCES
   common/CommonAPIImpl_common.cpp
   Graphics/Context.cpp
   Graphics/CombinerProgram.cpp
+  Graphics/ObjectHandle.cpp
   Graphics/OpenGLContext/GLFunctions.cpp
   Graphics/OpenGLContext/opengl_Attributes.cpp
   Graphics/OpenGLContext/opengl_BufferedDrawer.cpp

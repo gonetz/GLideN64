@@ -132,7 +132,7 @@ public:
 		glGenBuffers(1, &m_PBO);
 		m_bind->bind(graphics::Parameter(GL_PIXEL_UNPACK_BUFFER), graphics::ObjectHandle(m_PBO));
 		glBufferData(GL_PIXEL_UNPACK_BUFFER, m_size, nullptr, GL_DYNAMIC_DRAW);
-		m_bind->bind(graphics::Parameter(GL_PIXEL_UNPACK_BUFFER), graphics::ObjectHandle());
+		m_bind->bind(graphics::Parameter(GL_PIXEL_UNPACK_BUFFER), graphics::ObjectHandle::null);
 	}
 
 	~PBOWriteBuffer() {
@@ -161,7 +161,7 @@ public:
 	}
 
 	void unbind() override {
-		m_bind->bind(graphics::Parameter(GL_PIXEL_UNPACK_BUFFER), graphics::ObjectHandle());
+		m_bind->bind(graphics::Parameter(GL_PIXEL_UNPACK_BUFFER), graphics::ObjectHandle::null);
 	}
 
 private:
@@ -182,7 +182,7 @@ public:
 		glBufferStorage(GL_PIXEL_UNPACK_BUFFER, m_size * 32, nullptr, m_bufAccessBits);
 		m_bufferData = glMapBufferRange(GL_PIXEL_UNPACK_BUFFER, 0, m_size * 32, m_bufMapBits);
 		m_bufferOffset = 0;
-		m_bind->bind(graphics::Parameter(GL_PIXEL_UNPACK_BUFFER), graphics::ObjectHandle());
+		m_bind->bind(graphics::Parameter(GL_PIXEL_UNPACK_BUFFER), graphics::ObjectHandle::null);
 	}
 
 	~PersistentWriteBuffer() {
@@ -216,7 +216,7 @@ public:
 	}
 
 	void unbind() override {
-		m_bind->bind(graphics::Parameter(GL_PIXEL_UNPACK_BUFFER), graphics::ObjectHandle());
+		m_bind->bind(graphics::Parameter(GL_PIXEL_UNPACK_BUFFER), graphics::ObjectHandle::null);
 	}
 
 private:
@@ -299,7 +299,7 @@ public:
 		glGenBuffers(1, &m_PBO);
 		m_bind->bind(graphics::Parameter(GL_PIXEL_PACK_BUFFER), graphics::ObjectHandle(m_PBO));
 		glBufferData(GL_PIXEL_PACK_BUFFER, m_size, nullptr, GL_DYNAMIC_READ);
-		m_bind->bind(graphics::Parameter(GL_PIXEL_PACK_BUFFER), graphics::ObjectHandle());
+		m_bind->bind(graphics::Parameter(GL_PIXEL_PACK_BUFFER), graphics::ObjectHandle::null);
 	}
 
 	~PBOReadBuffer() {
@@ -330,7 +330,7 @@ public:
 	}
 
 	void unbind() override {
-		m_bind->bind(graphics::Parameter(GL_PIXEL_PACK_BUFFER), graphics::ObjectHandle());
+		m_bind->bind(graphics::Parameter(GL_PIXEL_PACK_BUFFER), graphics::ObjectHandle::null);
 	}
 
 private:

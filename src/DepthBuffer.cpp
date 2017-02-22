@@ -38,7 +38,7 @@ DepthBuffer::DepthBuffer(DepthBuffer && _other) :
 	_other.m_pDepthImageZTexture = nullptr;
 	_other.m_pDepthImageDeltaZTexture = nullptr;
 	_other.m_pDepthBufferTexture = nullptr;
-	_other.m_depthRenderbuffer = ObjectHandle();
+	_other.m_depthRenderbuffer = ObjectHandle::null;
 	_other.m_pResolveDepthBufferTexture = nullptr;
 	_other.m_resolved = false;
 	_other.m_pDepthBufferCopyTexture = nullptr;
@@ -273,7 +273,7 @@ CachedTexture * DepthBuffer::resolveDepthBufferTexture(FrameBuffer * _pBuffer)
 
 	gfxContext.blitFramebuffers(blitParams);
 
-	gfxContext.bindFramebuffer(bufferTarget::READ_FRAMEBUFFER, ObjectHandle());
+	gfxContext.bindFramebuffer(bufferTarget::READ_FRAMEBUFFER, ObjectHandle::null);
 	gfxContext.bindFramebuffer(bufferTarget::DRAW_FRAMEBUFFER, _pBuffer->m_FBO);
 
 	m_resolved = true;
@@ -324,7 +324,7 @@ CachedTexture * DepthBuffer::copyDepthBufferTexture(FrameBuffer * _pBuffer)
 
 	gfxContext.blitFramebuffers(blitParams);
 
-	gfxContext.bindFramebuffer(bufferTarget::READ_FRAMEBUFFER, ObjectHandle());
+	gfxContext.bindFramebuffer(bufferTarget::READ_FRAMEBUFFER, ObjectHandle::null);
 	gfxContext.bindFramebuffer(bufferTarget::DRAW_FRAMEBUFFER, _pBuffer->m_FBO);
 
 	m_copied = true;

@@ -26,7 +26,7 @@ CombinerProgramImpl::CombinerProgramImpl(const CombinerKey & _key,
 
 CombinerProgramImpl::~CombinerProgramImpl()
 {
-	m_useProgram->useProgram(graphics::ObjectHandle());
+	m_useProgram->useProgram(graphics::ObjectHandle::null);
 	glDeleteProgram(GLuint(m_program));
 }
 

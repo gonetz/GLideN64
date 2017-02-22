@@ -70,7 +70,7 @@ void ZlutTexture::destroy() {
 
 	Context::BindImageTextureParameters bindParams;
 	bindParams.imageUnit = textureImageUnits::Zlut;
-	bindParams.texture = ObjectHandle();
+	bindParams.texture = ObjectHandle::null;
 	bindParams.accessMode = textureImageAccessMode::READ_ONLY;
 	bindParams.textureFormat = fbTexFormats.lutInternalFormat;
 

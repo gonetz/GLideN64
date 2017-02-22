@@ -464,7 +464,7 @@ namespace glsl {
 
 		~SpecialShader()
 		{
-			m_useProgram->useProgram(graphics::ObjectHandle());
+			m_useProgram->useProgram(graphics::ObjectHandle::null);
 			glDeleteProgram(GLuint(m_program));
 		}
 
@@ -494,7 +494,7 @@ namespace glsl {
 		{
 			m_useProgram->useProgram(m_program);
 			m_loc = glGetUniformLocation(GLuint(m_program), "uFogColor");
-			m_useProgram->useProgram(graphics::ObjectHandle());
+			m_useProgram->useProgram(graphics::ObjectHandle::null);
 		}
 
 		void activate() override {
@@ -529,7 +529,7 @@ namespace glsl {
 				glUniform1i(samplesLoc, config.video.multisampling);
 			} else
 				glUniform1i(texLoc, u32(graphics::textureIndices::Tex[0]));
-			m_useProgram->useProgram(graphics::ObjectHandle());
+			m_useProgram->useProgram(graphics::ObjectHandle::null);
 		}
 	};
 
@@ -575,12 +575,12 @@ namespace glsl {
 			m_textureBoundsLoc = glGetUniformLocation(GLuint(m_program), "uTextureBounds");
 			assert(m_textureBoundsLoc >= 0);
 			m_enableAlphaTestLoc = glGetUniformLocation(GLuint(m_program), "uEnableAlphaTest");
-			m_useProgram->useProgram(graphics::ObjectHandle());
+			m_useProgram->useProgram(graphics::ObjectHandle::null);
 		}
 
 		~TexrectDrawerShaderDraw()
 		{
-			m_useProgram->useProgram(graphics::ObjectHandle());
+			m_useProgram->useProgram(graphics::ObjectHandle::null);
 			glDeleteProgram(GLuint(m_program));
 		}
 
@@ -640,7 +640,7 @@ namespace glsl {
 			m_useProgram->useProgram(m_program);
 			const int texLoc = glGetUniformLocation(GLuint(m_program), "uTex0");
 			glUniform1i(texLoc, 0);
-			m_useProgram->useProgram(graphics::ObjectHandle());
+			m_useProgram->useProgram(graphics::ObjectHandle::null);
 		}
 	};
 
@@ -665,7 +665,7 @@ namespace glsl {
 			assert(levelLoc >= 0);
 			const f32 gammaLevel = (config.gammaCorrection.force != 0) ? config.gammaCorrection.level : 2.0f;
 			glUniform1f(levelLoc, gammaLevel);
-			m_useProgram->useProgram(graphics::ObjectHandle());
+			m_useProgram->useProgram(graphics::ObjectHandle::null);
 		}
 	};
 
@@ -684,7 +684,7 @@ namespace glsl {
 			m_useProgram->useProgram(m_program);
 			const int texLoc = glGetUniformLocation(GLuint(m_program), "uTex0");
 			glUniform1i(texLoc, 0);
-			m_useProgram->useProgram(graphics::ObjectHandle());
+			m_useProgram->useProgram(graphics::ObjectHandle::null);
 		}
 	};
 
@@ -707,7 +707,7 @@ namespace glsl {
 			glUniform1i(texLoc, 0);
 			const int colorLoc = glGetUniformLocation(GLuint(m_program), "uColor");
 			glUniform4fv(colorLoc, 1, config.font.colorf);
-			m_useProgram->useProgram(graphics::ObjectHandle());
+			m_useProgram->useProgram(graphics::ObjectHandle::null);
 		}
 	};
 

@@ -320,7 +320,7 @@ void FrameBuffer::resolveMultisampledTexture(bool _bForce)
 
 	gfxContext.blitFramebuffers(blitParams);
 
-	gfxContext.bindFramebuffer(bufferTarget::READ_FRAMEBUFFER, ObjectHandle());
+	gfxContext.bindFramebuffer(bufferTarget::READ_FRAMEBUFFER, ObjectHandle::null);
 
 	frameBufferList().setCurrentDrawBuffer();
 	m_resolved = true;
@@ -399,7 +399,7 @@ CachedTexture * FrameBuffer::_getSubTexture(u32 _t)
 
 	gfxContext.blitFramebuffers(blitParams);
 
-	gfxContext.bindFramebuffer(bufferTarget::READ_FRAMEBUFFER, ObjectHandle());
+	gfxContext.bindFramebuffer(bufferTarget::READ_FRAMEBUFFER, ObjectHandle::null);
 
 	frameBufferList().setCurrentDrawBuffer();
 
@@ -470,7 +470,7 @@ void FrameBufferList::init()
 {
 	 m_pCurrent = nullptr;
 	 m_pCopy = nullptr;
-	 gfxContext.bindFramebuffer(bufferTarget::DRAW_FRAMEBUFFER, ObjectHandle());
+	 gfxContext.bindFramebuffer(bufferTarget::DRAW_FRAMEBUFFER, ObjectHandle::null);
 	 m_prevColorImageHeight = 0;
 }
 
@@ -478,7 +478,7 @@ void FrameBufferList::destroy() {
 	m_list.clear();
 	m_pCurrent = nullptr;
 	m_pCopy = nullptr;
-	gfxContext.bindFramebuffer(bufferTarget::DRAW_FRAMEBUFFER, ObjectHandle());
+	gfxContext.bindFramebuffer(bufferTarget::DRAW_FRAMEBUFFER, ObjectHandle::null);
 }
 
 void FrameBufferList::setBufferChanged()
@@ -577,7 +577,7 @@ void FrameBufferList::saveBuffer(u32 _address, u16 _format, u16 _size, u16 _widt
 
 	if (VI.width == 0 || _height == 0) {
 		m_pCurrent = nullptr;
-		gfxContext.bindFramebuffer(bufferTarget::DRAW_FRAMEBUFFER, ObjectHandle());
+		gfxContext.bindFramebuffer(bufferTarget::DRAW_FRAMEBUFFER, ObjectHandle::null);
 		return;
 	}
 
@@ -697,7 +697,7 @@ void FrameBufferList::removeAux()
 		while (iter->m_width != VI.width && iter->m_height != VI.height) {
 			if (&(*iter) == m_pCurrent) {
 				m_pCurrent = nullptr;
-				gfxContext.bindFramebuffer(bufferTarget::DRAW_FRAMEBUFFER, ObjectHandle());
+				gfxContext.bindFramebuffer(bufferTarget::DRAW_FRAMEBUFFER, ObjectHandle::null);
 			}
 			iter = m_list.erase(iter);
 			if (iter == m_list.end())
@@ -712,7 +712,7 @@ void FrameBufferList::removeBuffer(u32 _address )
 		if (iter->m_startAddress == _address) {
 			if (&(*iter) == m_pCurrent) {
 				m_pCurrent = nullptr;
-				gfxContext.bindFramebuffer(bufferTarget::DRAW_FRAMEBUFFER, ObjectHandle());
+				gfxContext.bindFramebuffer(bufferTarget::DRAW_FRAMEBUFFER, ObjectHandle::null);
 			}
 			m_list.erase(iter);
 			return;
@@ -726,7 +726,7 @@ void FrameBufferList::removeBuffers(u32 _width)
 		while (iter->m_width == _width) {
 			if (&(*iter) == m_pCurrent) {
 				m_pCurrent = nullptr;
-				gfxContext.bindFramebuffer(bufferTarget::DRAW_FRAMEBUFFER, ObjectHandle());
+				gfxContext.bindFramebuffer(bufferTarget::DRAW_FRAMEBUFFER, ObjectHandle::null);
 			}
 			iter = m_list.erase(iter);
 			if (iter == m_list.end())
@@ -924,7 +924,7 @@ void FrameBufferList::renderBuffer(u32 _address)
 						  hOffset + X1,
 						  vOffset + (s32)(dstY1*dstScaleY) };
 
-	gfxContext.bindFramebuffer(bufferTarget::DRAW_FRAMEBUFFER, ObjectHandle());
+	gfxContext.bindFramebuffer(bufferTarget::DRAW_FRAMEBUFFER, ObjectHandle::null);
 
 	float clearColor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
 	drawer.clearColorBuffer(clearColor);
@@ -1006,7 +1006,7 @@ void FrameBufferList::renderBuffer(u32 _address)
 		}
 	}
 
-	gfxContext.bindFramebuffer(bufferTarget::READ_FRAMEBUFFER, ObjectHandle());
+	gfxContext.bindFramebuffer(bufferTarget::READ_FRAMEBUFFER, ObjectHandle::null);
 
 	wnd.swapBuffers();
 	if (m_pCurrent != nullptr) {

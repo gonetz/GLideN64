@@ -30,7 +30,7 @@ void ColorBufferReaderWithBufferStorage::_initBuffers()
 		m_PBOData[index] = glMapBufferRange(GL_PIXEL_PACK_BUFFER, 0, m_pTexture->textureBytes, GL_MAP_READ_BIT | GL_MAP_PERSISTENT_BIT);
 	}
 
-	m_bindBuffer->bind(Parameter(GL_PIXEL_PACK_BUFFER), ObjectHandle());
+	m_bindBuffer->bind(Parameter(GL_PIXEL_PACK_BUFFER), ObjectHandle::null);
 }
 
 void ColorBufferReaderWithBufferStorage::_destroyBuffers()
@@ -90,5 +90,5 @@ u8 * ColorBufferReaderWithBufferStorage::readPixels(s32 _x0, s32 _y0, u32 _width
 
 void ColorBufferReaderWithBufferStorage::cleanUp()
 {
-	m_bindBuffer->bind(Parameter(GL_PIXEL_PACK_BUFFER), ObjectHandle());
+	m_bindBuffer->bind(Parameter(GL_PIXEL_PACK_BUFFER), ObjectHandle::null);
 }

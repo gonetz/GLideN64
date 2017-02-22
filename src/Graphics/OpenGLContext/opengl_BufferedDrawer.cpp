@@ -64,8 +64,8 @@ void BufferedDrawer::_initBuffer(Buffer & _buffer, GLuint _bufSize)
 
 BufferedDrawer::~BufferedDrawer()
 {
-	m_bindBuffer->bind(Parameter(GL_ARRAY_BUFFER), ObjectHandle());
-	m_bindBuffer->bind(Parameter(GL_ELEMENT_ARRAY_BUFFER), ObjectHandle());
+	m_bindBuffer->bind(Parameter(GL_ARRAY_BUFFER), ObjectHandle::null);
+	m_bindBuffer->bind(Parameter(GL_ELEMENT_ARRAY_BUFFER), ObjectHandle::null);
 	GLuint buffers[3] = { m_rectsBuffers.vbo.handle, m_trisBuffers.vbo.handle, m_trisBuffers.ebo.handle };
 	glDeleteBuffers(3, buffers);
 	glBindVertexArray(0);

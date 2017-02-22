@@ -77,7 +77,7 @@ void TexrectDrawer::init()
 
 	// check if everything is OK
 	assert(!gfxContext.isFramebufferError());
-	gfxContext.bindFramebuffer(bufferTarget::DRAW_FRAMEBUFFER, ObjectHandle());
+	gfxContext.bindFramebuffer(bufferTarget::DRAW_FRAMEBUFFER, ObjectHandle::null);
 
 	m_programTex.reset(gfxContext.createTexrectDrawerDrawShader());
 	m_programClear.reset(gfxContext.createTexrectDrawerClearShader());
@@ -282,7 +282,7 @@ bool TexrectDrawer::draw()
 	rect[3].t0 = t1;
 
 	drawer.updateScissor(m_pBuffer);
-	gfxContext.bindFramebuffer(bufferTarget::DRAW_FRAMEBUFFER, m_pBuffer != nullptr ? m_pBuffer->m_FBO : ObjectHandle());
+	gfxContext.bindFramebuffer(bufferTarget::DRAW_FRAMEBUFFER, m_pBuffer != nullptr ? m_pBuffer->m_FBO : ObjectHandle::null);
 
 	Context::DrawRectParameters rectParams;
 	rectParams.mode = drawmode::TRIANGLE_STRIP;
@@ -312,7 +312,7 @@ bool TexrectDrawer::draw()
 	gfxContext.enable(enable::SCISSOR_TEST, true);
 
 	m_pBuffer = frameBufferList().getCurrent();
-	gfxContext.bindFramebuffer(bufferTarget::DRAW_FRAMEBUFFER, m_pBuffer != nullptr ? m_pBuffer->m_FBO : ObjectHandle());
+	gfxContext.bindFramebuffer(bufferTarget::DRAW_FRAMEBUFFER, m_pBuffer != nullptr ? m_pBuffer->m_FBO : ObjectHandle::null);
 
 	m_numRects = 0;
 	m_vecRectCoords.clear();
