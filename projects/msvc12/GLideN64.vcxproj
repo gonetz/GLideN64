@@ -308,7 +308,7 @@
     <ClCompile Include="..\..\src\Graphics\OpenGLContext\opengl_Attributes.cpp" />
     <ClCompile Include="..\..\src\Graphics\OpenGLContext\opengl_BufferManipulationObjectFactory.cpp" />
     <ClCompile Include="..\..\src\Graphics\OpenGLContext\opengl_CachedFunctions.cpp" />
-    <ClCompile Include="..\..\src\Graphics\OpenGLContext\opengl_ColorBufferReaderWithBufferStorage.cpp" />
+    <ClCompile Include="..\..\src\Graphics\OpenGLContext\opengl_ColorBufferReaderWithBufferStore.cpp" />
     <ClCompile Include="..\..\src\Graphics\OpenGLContext\opengl_ColorBufferReaderWithPixelBuffer.cpp" />
     <ClCompile Include="..\..\src\Graphics\OpenGLContext\opengl_ColorBufferReaderWithReadPixels.cpp" />
     <ClCompile Include="..\..\src\Graphics\OpenGLContext\opengl_ContextImpl.cpp" />
@@ -444,7 +444,7 @@
     <ClInclude Include="..\..\src\Graphics\OpenGLContext\opengl_Attributes.h" />
     <ClInclude Include="..\..\src\Graphics\OpenGLContext\opengl_BufferManipulationObjectFactory.h" />
     <ClInclude Include="..\..\src\Graphics\OpenGLContext\opengl_CachedFunctions.h" />
-    <ClInclude Include="..\..\src\Graphics\OpenGLContext\opengl_ColorBufferReaderWithBufferStorage.h" />
+    <ClInclude Include="..\..\src\Graphics\OpenGLContext\opengl_ColorBufferReaderWithBufferStore.h" />
     <ClInclude Include="..\..\src\Graphics\OpenGLContext\opengl_ColorBufferReaderWithPixelBuffer.h" />
     <ClInclude Include="..\..\src\Graphics\OpenGLContext\opengl_ColorBufferReaderWithReadPixels.h" />
     <ClInclude Include="..\..\src\Graphics\OpenGLContext\opengl_ContextImpl.h" />

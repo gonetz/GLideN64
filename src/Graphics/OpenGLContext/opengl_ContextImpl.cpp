@@ -6,7 +6,7 @@
 #include "opengl_BufferedDrawer.h"
 #include "opengl_UnbufferedDrawer.h"
 #include "opengl_ColorBufferReaderWithPixelBuffer.h"
-#include "opengl_ColorBufferReaderWithBufferStorage.h"
+#include "opengl_ColorBufferReaderWithBufferStore.h"
 #include "opengl_ColorBufferReaderWithEGLImage.h"
 #include "opengl_ColorBufferReaderWithReadPixels.h"
 #include "opengl_Utils.h"
@@ -299,7 +299,7 @@ graphics::PixelReadBuffer * ContextImpl::createPixelReadBuffer(size_t _sizeInByt
 graphics::ColorBufferReader * ContextImpl::createColorBufferReader(CachedTexture * _pTexture)
 {
 	if (m_glInfo.bufferStorage)
-		return new ColorBufferReaderWithBufferStorage(_pTexture, m_cachedFunctions->getCachedBindBuffer());
+		return new ColorBufferReaderWithBufferStore(_pTexture, m_cachedFunctions->getCachedBindBuffer());
 
 	if (!m_glInfo.isGLES2)
 		return new ColorBufferReaderWithPixelBuffer(_pTexture, m_cachedFunctions->getCachedBindBuffer());

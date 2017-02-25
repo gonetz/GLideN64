@@ -5,13 +5,13 @@
 
 namespace opengl {
 
-	class ColorBufferReaderWithBufferStorage :
+	class ColorBufferReaderWithBufferStore :
 		public graphics::ColorBufferReader
 	{
 	public:
-		ColorBufferReaderWithBufferStorage(CachedTexture * _pTexture,
+		ColorBufferReaderWithBufferStore(CachedTexture * _pTexture,
 			CachedBindBuffer * _bindBuffer);
-		virtual ~ColorBufferReaderWithBufferStorage();
+		virtual ~ColorBufferReaderWithBufferStore();
 
 		u8 * readPixels(s32 _x0, s32 _y0, u32 _width, u32 _height, u32 _size, bool _sync) override;
 		void cleanUp() override;
