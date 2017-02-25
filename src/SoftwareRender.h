@@ -1,8 +1,8 @@
 #ifndef SOFTWARE_RENDER_H
 #define SOFTWARE_RENDER_H
 
-#include "OpenGL.h"
+#include "gSP.h"
 
-void renderTriangles(const SPVertex * _pVertices, const GLubyte * _pElements, u32 _numElements);
+void renderTriangles(const SPVertex * _pVertices, const u8 * _pElements, u32 _numElements);
 
 #endif // SOFTWARE_RENDER_H

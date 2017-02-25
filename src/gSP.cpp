@@ -11,7 +11,6 @@
 #include "gSP.h"
 #include "gDP.h"
 #include "3DMath.h"
-#include "OpenGL.h"
 #include "CRC.h"
 #include <string.h>
 #include "convert.h"
@@ -22,12 +21,19 @@
 #include "Config.h"
 #include "Log.h"
 
+#include <Graphics/Context.h>
+#include <Graphics/Parameters.h>
+#include "DisplayWindow.h"
+
 using namespace std;
+using namespace graphics;
+
+#define INDEXMAP_SIZE 80U
 
 void gSPFlushTriangles()
 {
 	if ((gSP.geometryMode & G_SHADING_SMOOTH) == 0) {
-		video().getRender().drawTriangles();
+		dwnd().getDrawer().drawTriangles();
 		return;
 	}
 
@@ -36,8 +42,9 @@ void gSPFlushTriangles()
 		(RSP.nextCmd != G_TRI2) &&
 		(RSP.nextCmd != G_TRIX) &&
 		(RSP.nextCmd != G_QUAD)
-	)
-		video().getRender().drawTriangles();
+		) {
+		dwnd().getDrawer().drawTriangles();
+	}
 }
 
 void gSPCombineMatrices()
@@ -48,13 +55,13 @@ void gSPCombineMatrices()
 
 void gSPTriangle(s32 v0, s32 v1, s32 v2)
 {
-	OGLRender & render = video().getRender();
+	GraphicsDrawer & drawer = dwnd().getDrawer();
 	if ((v0 < INDEXMAP_SIZE) && (v1 < INDEXMAP_SIZE) && (v2 < INDEXMAP_SIZE)) {
-		if (render.isClipped(v0, v1, v2))
+		if (drawer.isClipped(v0, v1, v2))
 			return;
-		render.addTriangle(v0, v1, v2);
+		drawer.addTriangle(v0, v1, v2);
 		if (config.frameBufferEmulation.N64DepthCompare != 0)
-			render.drawTriangles();
+			drawer.drawTriangles();
 	}
 
 	frameBufferList().setBufferChanged();
@@ -102,9 +109,9 @@ f32 identityMatrix[4][4] =
 static void gSPTransformVertex4_default(u32 v, float mtx[4][4])
 {
 	float x, y, z, w;
-	OGLRender & render = video().getRender();
+	GraphicsDrawer & drawer = dwnd().getDrawer();
 	for (int i = 0; i < 4; ++i) {
-		SPVertex & vtx = render.getVertex(v+i);
+		SPVertex & vtx = drawer.getVertex(v+i);
 		x = vtx.x;
 		y = vtx.y;
 		z = vtx.z;
@@ -118,10 +125,10 @@ static void gSPTransformVertex4_default(u32 v, float mtx[4][4])
 
 static void gSPLightVertex4_default(u32 v)
 {
-	OGLRender & render = video().getRender();
+	GraphicsDrawer & drawer = dwnd().getDrawer();
 	if (!config.generalEmulation.enableHWLighting) {
 		for(int j = 0; j < 4; ++j) {
-			SPVertex & vtx = render.getVertex(v+j);
+			SPVertex & vtx = drawer.getVertex(v+j);
 			vtx.r = gSP.lights[gSP.numLights].r;
 			vtx.g = gSP.lights[gSP.numLights].g;
 			vtx.b = gSP.lights[gSP.numLights].b;
@@ -141,7 +148,7 @@ static void gSPLightVertex4_default(u32 v)
 		}
 	} else {
 		for(int j = 0; j < 4; ++j) {
-			SPVertex & vtx = render.getVertex(v+j);
+			SPVertex & vtx = drawer.getVertex(v+j);
 			vtx.HWLight = gSP.numLights;
 			vtx.r = vtx.nx;
 			vtx.g = vtx.ny;
@@ -153,9 +160,9 @@ static void gSPLightVertex4_default(u32 v)
 static void gSPPointLightVertex4_default(u32 v, float _vPos[4][3])
 {
 	assert(_vPos != nullptr);
-	OGLRender & render = video().getRender();
+	GraphicsDrawer & drawer = dwnd().getDrawer();
 	for(int j = 0; j < 4; ++j) {
-		SPVertex & vtx = render.getVertex(v+j);
+		SPVertex & vtx = drawer.getVertex(v+j);
 		float light_intensity = 0.0f;
 		vtx.HWLight = 0;
 		vtx.r = gSP.lights[gSP.numLights].r;
@@ -187,9 +194,9 @@ static void gSPPointLightVertex4_default(u32 v, float _vPos[4][3])
 
 static void gSPLightVertex4_CBFD(u32 v)
 {
-	OGLRender & render = video().getRender();
+	GraphicsDrawer & drawer = dwnd().getDrawer();
 	for(int j = 0; j < 4; ++j) {
-		SPVertex & vtx = render.getVertex(v+j);
+		SPVertex & vtx = drawer.getVertex(v+j);
 		f32 r = gSP.lights[gSP.numLights].r;
 		f32 g = gSP.lights[gSP.numLights].g;
 		f32 b = gSP.lights[gSP.numLights].b;
@@ -221,9 +228,9 @@ static void gSPLightVertex4_CBFD(u32 v)
 
 static void gSPPointLightVertex4_CBFD(u32 v, float _vPos[4][3])
 {
-	OGLRender & render = video().getRender();
+	GraphicsDrawer & drawer = dwnd().getDrawer();
 	for(int j = 0; j < 4; ++j) {
-		SPVertex & vtx = render.getVertex(v+j);
+		SPVertex & vtx = drawer.getVertex(v+j);
 		f32 r = gSP.lights[gSP.numLights].r;
 		f32 g = gSP.lights[gSP.numLights].g;
 		f32 b = gSP.lights[gSP.numLights].b;
@@ -269,11 +276,11 @@ static void gSPPointLightVertex4_CBFD(u32 v, float _vPos[4][3])
 
 static void gSPBillboardVertex4_default(u32 v)
 {
-	OGLRender & render = video().getRender();
+	GraphicsDrawer & drawer = dwnd().getDrawer();
 	int i = 0;
-	SPVertex & vtx0 = render.getVertex(i);
+	SPVertex & vtx0 = drawer.getVertex(i);
 	for (int j = 0; j < 4; ++j) {
-		SPVertex & vtx = render.getVertex(v+j);
+		SPVertex & vtx = drawer.getVertex(v+j);
 		vtx.x += vtx0.x;
 		vtx.y += vtx0.y;
 		vtx.z += vtx0.z;
@@ -283,9 +290,9 @@ static void gSPBillboardVertex4_default(u32 v)
 
 void gSPClipVertex4(u32 v)
 {
-	OGLRender & render = video().getRender();
+	GraphicsDrawer & drawer = dwnd().getDrawer();
 	for(int i = 0; i < 4; ++i) {
-		SPVertex & vtx = render.getVertex(v+i);
+		SPVertex & vtx = drawer.getVertex(v+i);
 		vtx.clip = 0;
 		if (vtx.x > +vtx.w) vtx.clip |= CLIP_POSX;
 		if (vtx.x < -vtx.w) vtx.clip |= CLIP_NEGX;
@@ -300,11 +307,11 @@ void gSPProcessVertex4(u32 v)
 	if (gSP.changed & CHANGED_MATRIX)
 		gSPCombineMatrices();
 
-	OGLVideo & ogl = video();
-	OGLRender & render = ogl.getRender();
+	DisplayWindow & wnd = dwnd();
+	GraphicsDrawer & drawer = wnd.getDrawer();
 	float vPos[4][3];
 	for(int i = 0; i < 4; ++i) {
-		SPVertex & vtx = render.getVertex(v+i);
+		SPVertex & vtx = drawer.getVertex(v+i);
 		vPos[i][0] = vtx.x;
 		vPos[i][1] = vtx.y;
 		vPos[i][2] = vtx.z;
@@ -312,18 +319,18 @@ void gSPProcessVertex4(u32 v)
 	}
 	gSPTransformVertex4(v, gSP.matrix.combined );
 
-	if (ogl.isAdjustScreen() && (gDP.colorImage.width > VI.width * 98 / 100)) {
+	if (wnd.isAdjustScreen() && (gDP.colorImage.width > VI.width * 98 / 100)) {
 		for(int i = 0; i < 4; ++i) {
-			SPVertex & vtx = render.getVertex(v+i);
-			vtx.x *= ogl.getAdjustScale();
+			SPVertex & vtx = drawer.getVertex(v+i);
+			vtx.x *= wnd.getAdjustScale();
 			if (gSP.matrix.projection[3][2] == -1.f)
-				vtx.w *= ogl.getAdjustScale();
+				vtx.w *= wnd.getAdjustScale();
 		}
 	}
 
 	if (gSP.viewport.vscale[0] < 0) {
 		for(int i = 0; i < 4; ++i) {
-			SPVertex & vtx = render.getVertex(v+i);
+			SPVertex & vtx = drawer.getVertex(v+i);
 			vtx.x = -vtx.x;
 		}
 	}
@@ -339,7 +346,7 @@ void gSPProcessVertex4(u32 v)
 
 		if (GBI.isTextureGen() && (gSP.geometryMode & G_TEXTURE_GEN) != 0) {
 			for(int i = 0; i < 4; ++i) {
-				SPVertex & vtx = render.getVertex(v+i);
+				SPVertex & vtx = drawer.getVertex(v+i);
 				f32 fLightDir[3] = {vtx.nx, vtx.ny, vtx.nz};
 				f32 x, y;
 				if (gSP.lookatEnable) {
@@ -364,7 +371,7 @@ void gSPProcessVertex4(u32 v)
 		}
 	} else {
 		for(int i = 0; i < 4; ++i)
-			render.getVertex(v+i).HWLight = 0;
+			drawer.getVertex(v+i).HWLight = 0;
 	}
 
 	gSPClipVertex4(v);
@@ -519,9 +526,9 @@ static void gSPPointLightVertex_CBFD(SPVertex & _vtx, float * /*_vPos*/)
 
 static void gSPBillboardVertex_default(u32 v, u32 i)
 {
-	OGLRender & render = video().getRender();
-	SPVertex & vtx0 = render.getVertex(i);
-	SPVertex & vtx = render.getVertex(v);
+	GraphicsDrawer & drawer = dwnd().getDrawer();
+	SPVertex & vtx0 = drawer.getVertex(i);
+	SPVertex & vtx = drawer.getVertex(v);
 	vtx.x += vtx0.x;
 	vtx.y += vtx0.y;
 	vtx.z += vtx0.z;
@@ -530,7 +537,7 @@ static void gSPBillboardVertex_default(u32 v, u32 i)
 
 void gSPClipVertex(u32 v)
 {
-	SPVertex & vtx = video().getRender().getVertex(v);
+	SPVertex & vtx = dwnd().getDrawer().getVertex(v);
 	vtx.clip = 0;
 	if (vtx.x > +vtx.w) vtx.clip |= CLIP_POSX;
 	if (vtx.x < -vtx.w) vtx.clip |= CLIP_NEGX;
@@ -544,16 +551,16 @@ void gSPProcessVertex(u32 v)
 	if (gSP.changed & CHANGED_MATRIX)
 		gSPCombineMatrices();
 
-	OGLVideo & ogl = video();
-	OGLRender & render = ogl.getRender();
-	SPVertex & vtx = render.getVertex(v);
+	DisplayWindow & wnd = dwnd();
+	GraphicsDrawer & drawer = wnd.getDrawer();
+	SPVertex & vtx = drawer.getVertex(v);
 	float vPos[3] = {(float)vtx.x, (float)vtx.y, (float)vtx.z};
 	gSPTransformVertex( &vtx.x, gSP.matrix.combined );
 
-	if (ogl.isAdjustScreen() && (gDP.colorImage.width > VI.width * 98 / 100)) {
-		vtx.x *= ogl.getAdjustScale();
+	if (wnd.isAdjustScreen() && (gDP.colorImage.width > VI.width * 98 / 100)) {
+		vtx.x *= wnd.getAdjustScale();
 		if (gSP.matrix.projection[3][2] == -1.f)
-			vtx.w *= ogl.getAdjustScale();
+			vtx.w *= wnd.getAdjustScale();
 	}
 
 	if (gSP.viewport.vscale[0] < 0)
@@ -934,14 +941,14 @@ void gSPVertex(u32 a, u32 n, u32 v0)
 
 	Vertex *vertex = (Vertex*)&RDRAM[address];
 
-	OGLRender & render = video().getRender();
+	GraphicsDrawer & drawer = dwnd().getDrawer();
 	if ((n + v0) <= INDEXMAP_SIZE) {
 		unsigned int i = v0;
 #ifdef __VEC4_OPT
 		for (; i < n - (n%4) + v0; i += 4) {
 			u32 v = i;
 			for(int j = 0; j < 4; ++j) {
-				SPVertex & vtx = render.getVertex(v+j);
+				SPVertex & vtx = drawer.getVertex(v+j);
 				vtx.x = vertex->x;
 				vtx.y = vertex->y;
 				vtx.z = vertex->z;
@@ -966,7 +973,7 @@ void gSPVertex(u32 a, u32 n, u32 v0)
 #endif
 		for (; i < n + v0; ++i) {
 			u32 v = i;
-			SPVertex & vtx = render.getVertex(v);
+			SPVertex & vtx = drawer.getVertex(v);
 			vtx.x = vertex->x;
 			vtx.y = vertex->y;
 			vtx.z = vertex->z;
@@ -1010,14 +1017,14 @@ void gSPCIVertex( u32 a, u32 n, u32 v0 )
 
 	PDVertex *vertex = (PDVertex*)&RDRAM[address];
 
-	OGLRender & render = video().getRender();
+	GraphicsDrawer & drawer = dwnd().getDrawer();
 	if ((n + v0) <= INDEXMAP_SIZE) {
 		unsigned int i = v0;
 #ifdef __VEC4_OPT
 		for (; i < n - (n%4) + v0; i += 4) {
 			u32 v = i;
 			for(unsigned int j = 0; j < 4; ++j) {
-				SPVertex & vtx = render.getVertex(v + j);
+				SPVertex & vtx = drawer.getVertex(v + j);
 				vtx.x = vertex->x;
 				vtx.y = vertex->y;
 				vtx.z = vertex->z;
@@ -1043,7 +1050,7 @@ void gSPCIVertex( u32 a, u32 n, u32 v0 )
 #endif
 		for(; i < n + v0; ++i) {
 			u32 v = i;
-			SPVertex & vtx = render.getVertex(v);
+			SPVertex & vtx = drawer.getVertex(v);
 			vtx.x = vertex->x;
 			vtx.y = vertex->y;
 			vtx.z = vertex->z;
@@ -1088,14 +1095,14 @@ void gSPDMAVertex( u32 a, u32 n, u32 v0 )
 			gSPUpdateLookatVectors();
 	}
 
-	OGLRender & render = video().getRender();
+	GraphicsDrawer & drawer = dwnd().getDrawer();
 	if ((n + v0) <= INDEXMAP_SIZE) {
 		u32 i = v0;
 #ifdef __VEC4_OPT
 		for (; i < n - (n%4) + v0; i += 4) {
 			u32 v = i;
 			for(int j = 0; j < 4; ++j) {
-				SPVertex & vtx = render.getVertex(v + j);
+				SPVertex & vtx = drawer.getVertex(v + j);
 				vtx.x = *(s16*)&RDRAM[address ^ 2];
 				vtx.y = *(s16*)&RDRAM[(address + 2) ^ 2];
 				vtx.z = *(s16*)&RDRAM[(address + 4) ^ 2];
@@ -1118,7 +1125,7 @@ void gSPDMAVertex( u32 a, u32 n, u32 v0 )
 #endif
 		for (; i < n + v0; ++i) {
 			u32 v = i;
-			SPVertex & vtx = render.getVertex(v);
+			SPVertex & vtx = drawer.getVertex(v);
 			vtx.x = *(s16*)&RDRAM[address ^ 2];
 			vtx.y = *(s16*)&RDRAM[(address + 2) ^ 2];
 			vtx.z = *(s16*)&RDRAM[(address + 4) ^ 2];
@@ -1161,14 +1168,14 @@ void gSPCBFDVertex( u32 a, u32 n, u32 v0 )
 
 	Vertex *vertex = (Vertex*)&RDRAM[address];
 
-	OGLRender & render = video().getRender();
+	GraphicsDrawer & drawer = dwnd().getDrawer();
 	if ((n + v0) <= INDEXMAP_SIZE) {
 		unsigned int i = v0;
 #ifdef __VEC4_OPT
 		for (; i < n - (n%4) + v0; i += 4) {
 			u32 v = i;
 			for(int j = 0; j < 4; ++j) {
-				SPVertex & vtx = render.getVertex(v+j);
+				SPVertex & vtx = drawer.getVertex(v+j);
 				vtx.x = vertex->x;
 				vtx.y = vertex->y;
 				vtx.z = vertex->z;
@@ -1191,7 +1198,7 @@ void gSPCBFDVertex( u32 a, u32 n, u32 v0 )
 #endif
 		for (; i < n + v0; ++i) {
 			u32 v = i;
-			SPVertex & vtx = render.getVertex(v);
+			SPVertex & vtx = drawer.getVertex(v);
 			vtx.x = vertex->x;
 			vtx.y = vertex->y;
 			vtx.z = vertex->z;
@@ -1282,7 +1289,7 @@ void gSPBranchLessZ( u32 branchdl, u32 vtx, u32 zval )
 		return;
 	}
 
-	SPVertex & v = video().getRender().getVertex(vtx);
+	SPVertex & v = dwnd().getDrawer().getVertex(vtx);
 	const u32 zTest = u32((v.z / v.w) * 1023.0f);
 	if (zTest > 0x03FF || zTest <= zval)
 		RSP.PC[RSP.PCi] = address;
@@ -1306,7 +1313,7 @@ void gSPBranchLessW( u32 branchdl, u32 vtx, u32 wval )
 		return;
 	}
 
-	SPVertex & v = video().getRender().getVertex(vtx);
+	SPVertex & v = dwnd().getDrawer().getVertex(vtx);
 	if (v.w < (float)wval)
 		RSP.PC[RSP.PCi] = address;
 
@@ -1388,11 +1395,11 @@ void gSPDMATriangles( u32 tris, u32 n ){
 		return;
 	}
 
-	OGLRender & render = video().getRender();
-	render.setDMAVerticesSize(n * 3);
+	GraphicsDrawer & drawer = dwnd().getDrawer();
+	drawer.setDMAVerticesSize(n * 3);
 
 	DKRTriangle *triangles = (DKRTriangle*)&RDRAM[address];
-	SPVertex * pVtx = render.getDMAVerticesData();
+	SPVertex * pVtx = drawer.getDMAVerticesData();
 	for (u32 i = 0; i < n; ++i) {
 		int mode = 0;
 		if (!(triangles->flag & 0x40)) {
@@ -1402,8 +1409,8 @@ void gSPDMATriangles( u32 tris, u32 n ){
 				mode |= G_CULL_FRONT;
 		}
 		if ((gSP.geometryMode&G_CULL_BOTH) != mode) {
-			render.drawDMATriangles(pVtx - render.getDMAVerticesData());
-			pVtx = render.getDMAVerticesData();
+			drawer.drawDMATriangles(pVtx - drawer.getDMAVerticesData());
+			pVtx = drawer.getDMAVerticesData();
 			gSP.geometryMode &= ~G_CULL_BOTH;
 			gSP.geometryMode |= mode;
 			gSP.changed |= CHANGED_GEOMETRYMODE;
@@ -1412,25 +1419,25 @@ void gSPDMATriangles( u32 tris, u32 n ){
 		const s32 v0 = triangles->v0;
 		const s32 v1 = triangles->v1;
 		const s32 v2 = triangles->v2;
-		if (render.isClipped(v0, v1, v2)) {
+		if (drawer.isClipped(v0, v1, v2)) {
 			++triangles;
 			continue;
 		}
-		*pVtx = render.getVertex(v0);
+		*pVtx = drawer.getVertex(v0);
 		pVtx->s = _FIXED2FLOAT(triangles->s0, 5);
 		pVtx->t = _FIXED2FLOAT(triangles->t0, 5);
 		++pVtx;
-		*pVtx = render.getVertex(v1);
+		*pVtx = drawer.getVertex(v1);
 		pVtx->s = _FIXED2FLOAT(triangles->s1, 5);
 		pVtx->t = _FIXED2FLOAT(triangles->t1, 5);
 		++pVtx;
-		*pVtx = render.getVertex(v2);
+		*pVtx = drawer.getVertex(v2);
 		pVtx->s = _FIXED2FLOAT(triangles->s2, 5);
 		pVtx->t = _FIXED2FLOAT(triangles->t2, 5);
 		++pVtx;
 		++triangles;
 	}
-	render.drawDMATriangles(pVtx - render.getDMAVerticesData());
+	drawer.drawDMATriangles(pVtx - drawer.getDMAVerticesData());
 }
 
 void gSP1Quadrangle( s32 v0, s32 v1, s32 v2, s32 v3 )
@@ -1454,9 +1461,9 @@ bool gSPCullVertices( u32 v0, u32 vn )
 		vn = v;
 	}
 	u32 clip = 0;
-	OGLRender & render = video().getRender();
+	GraphicsDrawer & drawer = dwnd().getDrawer();
 	for (u32 i = v0; i <= vn; ++i) {
-		clip |= (~render.getVertex(i).clip) & CLIP_ALL;
+		clip |= (~drawer.getVertex(i).clip) & CLIP_ALL;
 		if (clip == CLIP_ALL)
 			return false;
 	}
@@ -1580,9 +1587,9 @@ void gSPInsertMatrix( u32 where, u32 num )
 
 void gSPModifyVertex( u32 _vtx, u32 _where, u32 _val )
 {
-	OGLRender & render = video().getRender();
+	GraphicsDrawer & drawer = dwnd().getDrawer();
 
-	SPVertex & vtx0 = render.getVertex(_vtx);
+	SPVertex & vtx0 = drawer.getVertex(_vtx);
 	switch (_where) {
 		case G_MWO_POINT_RGBA:
 			vtx0.r = _SHIFTR( _val, 24, 8 ) * 0.0039215689f;
@@ -1831,7 +1838,7 @@ void gSPSetOtherMode_L(u32 _length, u32 _shift, u32 _data)
 
 void gSPLine3D( s32 v0, s32 v1, s32 flag )
 {
-	video().getRender().drawLine(v0, v1, 1.5f);
+	dwnd().getDrawer().drawLine(v0, v1, 1.5f);
 
 #ifdef DEBUG
 	DebugMsg( DEBUG_HIGH | DEBUG_UNHANDLED, "gSPLine3D( %i, %i, %i );\n", v0, v1, flag );
@@ -1840,7 +1847,7 @@ void gSPLine3D( s32 v0, s32 v1, s32 flag )
 
 void gSPLineW3D( s32 v0, s32 v1, s32 wd, s32 flag )
 {
-	video().getRender().drawLine(v0, v1, 1.5f + wd * 0.5f);
+	dwnd().getDrawer().drawLine(v0, v1, 1.5f + wd * 0.5f);
 #ifdef DEBUG
 	DebugMsg( DEBUG_HIGH | DEBUG_UNHANDLED, "gSPLineW3D( %i, %i, %i, %i );\n", v0, v1, wd, flag );
 #endif
@@ -2004,9 +2011,9 @@ struct ObjCoordinates
 static
 void gSPDrawObjRect(const ObjCoordinates & _coords)
 {
-	OGLRender & render = video().getRender();
-	render.setDMAVerticesSize(4);
-	SPVertex * pVtx = render.getDMAVerticesData();
+	GraphicsDrawer & drawer = dwnd().getDrawer();
+	drawer.setDMAVerticesSize(4);
+	SPVertex * pVtx = drawer.getDMAVerticesData();
 	SPVertex & vtx0 = pVtx[0];
 	vtx0.x = _coords.ulx;
 	vtx0.y = _coords.uly;
@@ -2036,7 +2043,7 @@ void gSPDrawObjRect(const ObjCoordinates & _coords)
 	vtx3.s = _coords.lrs;
 	vtx3.t = _coords.lrt;
 
-	render.drawScreenSpaceTriangle(4);
+	drawer.drawScreenSpaceTriangle(4);
 	gDP.colorImage.height = (u32)(max(gDP.colorImage.height, (u32)gDP.scissor.lry));
 }
 
@@ -2126,12 +2133,15 @@ void gSPObjRectangleR(u32 _sp)
 	gSPDrawObjRect(objCoords);
 }
 
-#ifndef GLES2
 static
 void _copyDepthBuffer()
 {
 	if (!config.frameBufferEmulation.enable)
 		return;
+
+	if (!gfxContext.isSupported(SpecialFeatures::BlitFramebuffer))
+		return;
+
 	// The game copies content of depth buffer into current color buffer
 	// OpenGL has different format for color and depth buffers, so this trick can't be performed directly
 	// To do that, depth buffer with address of current color buffer created and attached to the current FBO
@@ -2146,23 +2156,33 @@ void _copyDepthBuffer()
 	DepthBuffer * pCopyBufferDepth = dbList.findBuffer(gSP.bgImage.address);
 	if (pCopyBufferDepth == nullptr)
 		return;
-	glBindFramebuffer(GL_READ_FRAMEBUFFER, pTmpBuffer->m_FBO);
-	pCopyBufferDepth->setDepthAttachment(GL_READ_FRAMEBUFFER);
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, fbList.getCurrent()->m_FBO);
-	OGLVideo & ogl = video();
-	glBlitFramebuffer(
-		0, 0, ogl.getWidth(), ogl.getHeight(),
-		0, 0, ogl.getWidth(), ogl.getHeight(),
-		GL_DEPTH_BUFFER_BIT, GL_NEAREST
-	);
+	pCopyBufferDepth->setDepthAttachment(pTmpBuffer->m_FBO, bufferTarget::READ_FRAMEBUFFER);
+
+	DisplayWindow & wnd = dwnd();
+	Context::BlitFramebuffersParams blitParams;
+	blitParams.readBuffer = pTmpBuffer->m_FBO;
+	blitParams.drawBuffer = fbList.getCurrent()->m_FBO;
+	blitParams.srcX0 = 0;
+	blitParams.srcY0 = 0;
+	blitParams.srcX1 = wnd.getWidth();
+	blitParams.srcY1 = wnd.getHeight();
+	blitParams.dstX0 = 0;
+	blitParams.dstY0 = 0;
+	blitParams.dstX1 = wnd.getWidth();
+	blitParams.dstY1 = wnd.getHeight();
+	blitParams.mask = blitMask::DEPTH_BUFFER;
+	blitParams.filter = textureParameters::FILTER_NEAREST;
+
+	gfxContext.blitFramebuffers(blitParams);
+
 	// Restore objects
 	if (pTmpBuffer->m_pDepthBuffer != nullptr)
-		pTmpBuffer->m_pDepthBuffer->setDepthAttachment(GL_READ_FRAMEBUFFER);
-	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
+		pTmpBuffer->m_pDepthBuffer->setDepthAttachment(fbList.getCurrent()->m_FBO, bufferTarget::READ_FRAMEBUFFER);
+	gfxContext.bindFramebuffer(bufferTarget::READ_FRAMEBUFFER, ObjectHandle::null);
+
 	// Set back current depth buffer
 	dbList.saveBuffer(gDP.depthImageAddress);
 }
-#endif // GLES2
 
 static
 void _loadBGImage(const uObjScaleBg * _bgInfo, bool _loadScale)
@@ -2217,7 +2237,6 @@ void gSPBgRect1Cyc( u32 _bg )
 	uObjScaleBg *objScaleBg = (uObjScaleBg*)&RDRAM[address];
 	_loadBGImage(objScaleBg, true);
 
-#ifndef GLES2
 	// Zelda MM uses depth buffer copy in LoT and in pause screen.
 	// In later case depth buffer is used as temporal color buffer, and usual rendering must be used.
 	// Since both situations are hard to distinguish, do the both depth buffer copy and bg rendering.
@@ -2225,7 +2244,6 @@ void gSPBgRect1Cyc( u32 _bg )
 		(gSP.bgImage.address == gDP.depthImageAddress || depthBufferList().findBuffer(gSP.bgImage.address) != nullptr)
 	)
 		_copyDepthBuffer();
-#endif // GLES2
 
 	gDP.otherMode.cycleType = G_CYC_1CYCLE;
 	gDP.changed |= CHANGED_CYCLETYPE;
@@ -2241,13 +2259,11 @@ void gSPBgRectCopy( u32 _bg )
 	uObjScaleBg *objBg = (uObjScaleBg*)&RDRAM[address];
 	_loadBGImage(objBg, false);
 
-#ifdef GL_IMAGE_TEXTURES_SUPPORT
 	// See comment to gSPBgRect1Cyc
 	if ((config.generalEmulation.hacks & hack_ZeldaMM) != 0 &&
 		(gSP.bgImage.address == gDP.depthImageAddress || depthBufferList().findBuffer(gSP.bgImage.address) != nullptr)
 	)
 		_copyDepthBuffer();
-#endif // GL_IMAGE_TEXTURES_SUPPORT
 
 	gSPTexture( 1.0f, 1.0f, 0, 0, TRUE );
 
@@ -2278,9 +2294,9 @@ void gSPObjSprite(u32 _sp)
 	}
 	const float z = (gDP.otherMode.depthSource == G_ZS_PRIM) ? gDP.primDepth.z : gSP.viewport.nearz;
 
-	OGLRender & render = video().getRender();
-	render.setDMAVerticesSize(4);
-	SPVertex * pVtx = render.getDMAVerticesData();
+	GraphicsDrawer & drawer = dwnd().getDrawer();
+	drawer.setDMAVerticesSize(4);
+	SPVertex * pVtx = drawer.getDMAVerticesData();
 
 	SPVertex & vtx0 = pVtx[0];
 	vtx0.x = gSP.objMatrix.A * ulx + gSP.objMatrix.B * uly + gSP.objMatrix.X;
@@ -2311,7 +2327,7 @@ void gSPObjSprite(u32 _sp)
 	vtx3.s = lrs;
 	vtx3.t = lrt;
 
-	render.drawScreenSpaceTriangle(4);
+	drawer.drawScreenSpaceTriangle(4);
 
 	frameBufferList().setBufferChanged();
 	gDP.colorImage.height = (u32)(max( gDP.colorImage.height, (u32)gDP.scissor.lry ));
@@ -2423,9 +2439,9 @@ void gSPSprite2DBase(u32 _base)
 		}
 		*/
 
-		OGLRender & render = video().getRender();
-		render.setDMAVerticesSize(4);
-		SPVertex * pVtx = render.getDMAVerticesData();
+		GraphicsDrawer & drawer = dwnd().getDrawer();
+		drawer.setDMAVerticesSize(4);
+		SPVertex * pVtx = drawer.getDMAVerticesData();
 
 		SPVertex & vtx0 = pVtx[0];
 		vtx0.x = ulx;
@@ -2457,7 +2473,7 @@ void gSPSprite2DBase(u32 _base)
 		vtx3.t = lrt;
 
 		if (pSprite->stride > 0)
-			render.drawScreenSpaceTriangle(4);
+			drawer.drawScreenSpaceTriangle(4);
 	} while (RSP.nextCmd == 0xBD || RSP.nextCmd == 0xBE);
 }
 

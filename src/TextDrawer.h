@@ -1,24 +1,28 @@
 #ifndef TEXTDRAWER_H
 #define TEXTDRAWER_H
-#include "OpenGL.h"
+
+#include <memory>
+#include "Graphics/ShaderProgram.h"
+#include "Graphics/FramebufferTextureFormats.h"
+
+struct Atlas;
 
 class TextDrawer
 {
+public:
 	void init();
+
 	void destroy();
-	void renderText(const char *_pText, float x, float y) const;
+
+	void drawText(const char *_pText, float x, float y) const;
+
 	void getTextSize(const char *_pText, float & _w, float & _h) const;
-	static TextDrawer & get();
 
 private:
-	TextDrawer();
-	TextDrawer(const TextDrawer &);
-	friend class OGLRender;
-	struct Atlas * m_pAtlas;
-	GLuint m_program;
-	GLint m_uTex;
-	GLint m_uColor;
-	GLuint m_vbo;
+	std::unique_ptr<Atlas> m_atlas;
+	std::unique_ptr<graphics::ShaderProgram> m_program;
 };
+
+extern TextDrawer g_textDrawer;
 
 #endif // TEXTDRAWER_H

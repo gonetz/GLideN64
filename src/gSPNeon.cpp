@@ -11,7 +11,6 @@
 #include "gSP.h"
 #include "gDP.h"
 #include "3DMath.h"
-#include "OpenGL.h"
 #include "CRC.h"
 #include <string.h>
 #include "convert.h"
@@ -21,11 +20,12 @@
 #include "DepthBuffer.h"
 #include "Config.h"
 #include "Log.h"
+#include "DisplayWindow.h"
 
 void gSPTransformVertex4NEON(u32 v, float mtx[4][4])
 {
-	OGLRender & render = video().getRender();
-	SPVertex & vtx = render.getVertex(v);
+	GraphicsDrawer & drawer = dwnd().getDrawer();
+	SPVertex & vtx = drawer.getVertex(v);
 	void *ptr = &vtx.x;
 
 	asm volatile (
@@ -79,10 +79,10 @@ void gSPTransformVertex4NEON(u32 v, float mtx[4][4])
 void gSPBillboardVertex4NEON(u32 v)
 {
 	int i = 0;
+	GraphicsDrawer & drawer = dwnd().getDrawer();
 
-	OGLRender & render = video().getRender();
-	SPVertex & vtx0 = render.getVertex(v);
-	SPVertex & vtx1 = render.getVertex(i);
+	SPVertex & vtx0 = drawer.getVertex(v);
+	SPVertex & vtx1 = drawer.getVertex(i);
 
 	void *ptr0 = (void*)&vtx0.x;
 	void *ptr1 = (void*)&vtx1.x;

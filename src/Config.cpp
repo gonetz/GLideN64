@@ -40,16 +40,14 @@ void Config::resetToDefaults()
 	generalEmulation.enableNativeResTexrects = 0;
 	generalEmulation.enableLegacyBlending = 0;
 	generalEmulation.hacks = 0;
-#ifdef GLES2
+#ifdef OS_ANDROID
 	generalEmulation.enableFragmentDepthWrite = 0;
-#else
-	generalEmulation.enableFragmentDepthWrite = 1;
-#endif
 	generalEmulation.enableBlitScreenWorkaround = 0;
-#ifdef ANDROID
 	generalEmulation.forcePolygonOffset = 0;
 	generalEmulation.polygonOffsetFactor = 0.0f;
 	generalEmulation.polygonOffsetUnits = 0.0f;
+#else
+	generalEmulation.enableFragmentDepthWrite = 1;
 #endif
 
 	frameBufferEmulation.enable = 1;
@@ -89,7 +87,7 @@ void Config::resetToDefaults()
 
 #ifdef OS_WINDOWS
 	font.name.assign("arial.ttf");
-#elif defined (ANDROID)
+#elif defined (OS_ANDROID)
 	font.name.assign("DroidSans.ttf");
 #elif defined (PANDORA)
 	font.name.assign("LiberationMono-Regular.ttf");

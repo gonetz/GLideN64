@@ -18,7 +18,7 @@ LOCAL_SRC_FILES :=                          \
 LOCAL_CFLAGS :=         \
     $(COMMON_CFLAGS)    \
     -g                  \
-    -DANDROID           \
+    -DOS_ANDROID           \
     -fsigned-char       \
     #-DDEBUG             \
     #-DSDL_NO_COMPAT     \

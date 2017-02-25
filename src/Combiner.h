@@ -2,11 +2,14 @@
 #define COMBINER_H
 
 #include <map>
+#include <memory>
 
 #include "GLideN64.h"
-#include "OpenGL.h"
+#include "GraphicsDrawer.h"
 #include "gDP.h"
-#include "Types.h"
+#include "CombinerKey.h"
+#include "Graphics/CombinerProgram.h"
+#include "Graphics/ShaderProgram.h"
 
 /*
 * G_SETCOMBINE: color combine modes
@@ -65,29 +68,28 @@
 #define INTER		4
 
 // Internal generalized combiner inputs
-#define COMBINED		0
-#define TEXEL0			1
-#define TEXEL1			2
-#define PRIMITIVE		3
-#define SHADE			4
-#define ENVIRONMENT		5
-#define CENTER			6
-#define SCALE			7
-#define COMBINED_ALPHA	8
-#define TEXEL0_ALPHA	9
-#define TEXEL1_ALPHA	10
-#define PRIMITIVE_ALPHA	11
-#define SHADE_ALPHA		12
-#define ENV_ALPHA		13
-#define LOD_FRACTION	14
-#define PRIM_LOD_FRAC	15
-#define NOISE			16
-#define K4				17
-#define K5				18
-#define ONE				19
-#define ZERO			20
-#define LIGHT			21
-#define HW_LIGHT		22
+#define G_GCI_COMBINED			0
+#define G_GCI_TEXEL0			1
+#define G_GCI_TEXEL1			2
+#define G_GCI_PRIMITIVE			3
+#define G_GCI_SHADE				4
+#define G_GCI_ENVIRONMENT		5
+#define G_GCI_CENTER			6
+#define G_GCI_SCALE				7
+#define G_GCI_COMBINED_ALPHA	8
+#define G_GCI_TEXEL0_ALPHA		9
+#define G_GCI_TEXEL1_ALPHA		10
+#define G_GCI_PRIMITIVE_ALPHA	11
+#define G_GCI_SHADE_ALPHA		12
+#define G_GCI_ENV_ALPHA			13
+#define G_GCI_LOD_FRACTION		14
+#define G_GCI_PRIM_LOD_FRAC		15
+#define G_GCI_NOISE				16
+#define G_GCI_K4				17
+#define G_GCI_K5				18
+#define G_GCI_ONE				19
+#define G_GCI_ZERO				20
+#define G_GCI_HW_LIGHT			22
 
 struct CombinerOp
 {
@@ -114,8 +116,6 @@ struct CombineCycle
 	int sa, sb, m, a;
 };
 
-class ShaderCombiner;
-class UniformCollection;
 class CombinerInfo
 {
 public:
@@ -123,30 +123,27 @@ public:
 	void destroy();
 	void update();
 	void setCombine(u64 _mux);
+	void updateParameters();
 
-	ShaderCombiner * getCurrent() const {return m_pCurrent;}
+	void setDepthFogCombiner();
+	void setMonochromeCombiner();
+	graphics::ShaderProgram * getTexrectCopyProgram();
+
+	graphics::CombinerProgram * getCurrent() const { return m_pCurrent; }
 	bool isChanged() const {return m_bChanged;}
 	bool isShaderCacheSupported() const { return m_bShaderCacheSupported; }
 	size_t getCombinersNumber() const { return m_combiners.size();  }
 
 	static CombinerInfo & get();
 
-	void updatePrimColor();
-	void updateEnvColor();
-	void updateFogColor();
-	void updateBlendColor();
-	void updateKeyColor();
-	void updateConvertColor();
-
-	void updateTextureParameters();
-	void updateLightParameters();
-	// Update uniforms for GL without UniformBlock support
-	void updateParameters(OGLRender::RENDER_STATE _renderState);
+	void setPolygonMode(DrawingState _drawingState);
+	bool isRectMode() const { return m_rectMode; }
 
 private:
 	CombinerInfo()
 		: m_bChanged(false)
 		, m_bShaderCacheSupported(false)
+		, m_rectMode(true)
 		, m_shadersLoaded(0)
 		, m_configOptionsBitSet(0)
 		, m_pCurrent(nullptr) {}
@@ -155,35 +152,29 @@ private:
 	void _saveShadersStorage() const;
 	bool _loadShadersStorage();
 	u32 _getConfigOptionsBitSet() const;
-	ShaderCombiner * _compile(u64 mux) const;
+	graphics::CombinerProgram * _compile(u64 mux) const;
 
 	bool m_bChanged;
 	bool m_bShaderCacheSupported;
+	bool m_rectMode;
 	u32 m_shadersLoaded;
 	u32 m_configOptionsBitSet;
 
-	ShaderCombiner * m_pCurrent;
-	typedef std::map<u64, ShaderCombiner *> Combiners;
-	Combiners m_combiners;
-	UniformCollection * m_pUniformCollection;
+	graphics::CombinerProgram * m_pCurrent;
+	graphics::Combiners m_combiners;
+
+	std::unique_ptr<graphics::ShaderProgram> m_shadowmapProgram;
+	std::unique_ptr<graphics::ShaderProgram> m_monochromeProgram;
+	std::unique_ptr<graphics::ShaderProgram> m_texrectCopyProgram;
 };
 
 inline
-ShaderCombiner * currentCombiner() {
+graphics::CombinerProgram * currentCombiner() {
 	return CombinerInfo::get().getCurrent();
 }
 
 void Combiner_Init();
 void Combiner_Destroy();
-
-inline
-u64 getCombinerKey(u64 _mux)
-{
-	gDPCombine cmb;
-	cmb.mux = _mux;
-	cmb.muxs0 |= (gDP.otherMode.cycleType<<24);
-	return cmb.mux;
-}
 
 #endif
 

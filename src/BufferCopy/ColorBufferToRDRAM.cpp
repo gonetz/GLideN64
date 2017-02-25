@@ -4,22 +4,29 @@
 #include "ColorBufferToRDRAM.h"
 #include "WriteToRDRAM.h"
 
-#include <FBOTextureFormats.h>
 #include <FrameBuffer.h>
 #include <Config.h>
 #include <N64.h>
 #include <VI.h>
 #include "Log.h"
-#if !defined(GLES2) && !defined(GLES3)
+
+/*
 #include "ColorBufferToRDRAM_GL.h"
 #include "ColorBufferToRDRAM_BufferStorageExt.h"
-#elif defined (GLES3)
+#elif defined(OS_ANDROID) && defined (GLES2)
 #include "ColorBufferToRDRAM_GL.h"
-#elif defined(ANDROID) && defined (GLES2)
 #include "ColorBufferToRDRAM_GLES.h"
 #else
 #include "ColorBufferToRDRAMStub.h"
 #endif
+*/
+
+#include <Graphics/Context.h>
+#include <Graphics/Parameters.h>
+#include <Graphics/ColorBufferReader.h>
+#include <DisplayWindow.h>
+
+using namespace graphics;
 
 ColorBufferToRDRAM::ColorBufferToRDRAM()
 	: m_FBO(0)
@@ -41,27 +48,23 @@ ColorBufferToRDRAM::~ColorBufferToRDRAM()
 
 void ColorBufferToRDRAM::init()
 {
-	// generate a framebuffer
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-	glGenFramebuffers(1, &m_FBO);
-
-	_init();
+	m_FBO = gfxContext.createFramebuffer();
 }
 
 void ColorBufferToRDRAM::destroy() {
 	_destroyFBTexure();
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-	if (m_FBO != 0) {
-		glDeleteFramebuffers(1, &m_FBO);
-		m_FBO = 0;
+
+	if (m_FBO.isNotNull()) {
+		gfxContext.deleteFramebuffer(m_FBO);
+		m_FBO.reset();
 	}
 }
 
 void ColorBufferToRDRAM::_initFBTexture(void)
 {
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_FBO);
+	const FramebufferTextureFormats & fbTexFormat = gfxContext.getFramebufferTextureFormats();
 
-	m_pTexture = textureCache().addFrameBufferTexture();
+	m_pTexture = textureCache().addFrameBufferTexture(false);
 	m_pTexture->format = G_IM_FMT_RGBA;
 	m_pTexture->clampS = 1;
 	m_pTexture->clampT = 1;
@@ -74,29 +77,49 @@ void ColorBufferToRDRAM::_initFBTexture(void)
 	//cause slowdowns in the glReadPixels call, at least on Android
 	m_pTexture->realWidth = _getRealWidth(m_lastBufferWidth);
 	m_pTexture->realHeight = m_lastBufferHeight;
-	m_pTexture->textureBytes = m_pTexture->realWidth * m_pTexture->realHeight * 4;
+	m_pTexture->textureBytes = m_pTexture->realWidth * m_pTexture->realHeight * fbTexFormat.colorFormatBytes;
 	textureCache().addFrameBufferTextureSize(m_pTexture->textureBytes);
-	glBindTexture(GL_TEXTURE_2D, m_pTexture->glName);
-#if defined(GLES3) || defined (GLES3_1)
-	glTexStorage2D(GL_TEXTURE_2D, 1, fboFormats.colorInternalFormat, m_pTexture->realWidth, m_pTexture->realHeight);
-#else
-	glTexImage2D(GL_TEXTURE_2D, 0, fboFormats.colorInternalFormat, m_pTexture->realWidth, m_pTexture->realHeight, 0, fboFormats.colorFormat, fboFormats.colorType, nullptr);
-#endif
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glBindTexture(GL_TEXTURE_2D, 0);
 
-	glFramebufferTexture2D(GL_DRAW_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_pTexture->glName, 0);
+	{
+		Context::InitTextureParams params;
+		params.handle = m_pTexture->name;
+		params.width = m_pTexture->realWidth;
+		params.height = m_pTexture->realHeight;
+		params.internalFormat = fbTexFormat.colorInternalFormat;
+		params.format = fbTexFormat.colorFormat;
+		params.dataType = fbTexFormat.colorType;
+		gfxContext.init2DTexture(params);
+	}
+	{
+		Context::TexParameters params;
+		params.handle = m_pTexture->name;
+		params.target = textureTarget::TEXTURE_2D;
+		params.textureUnitIndex = textureIndices::Tex[0];
+		params.minFilter = textureParameters::FILTER_LINEAR;
+		params.magFilter = textureParameters::FILTER_LINEAR;
+		gfxContext.setTextureParameters(params);
+	}
+	{
+		Context::FrameBufferRenderTarget bufTarget;
+		bufTarget.bufferHandle = ObjectHandle(m_FBO);
+		bufTarget.bufferTarget = bufferTarget::DRAW_FRAMEBUFFER;
+		bufTarget.attachment = bufferAttachment::COLOR_ATTACHMENT0;
+		bufTarget.textureTarget = textureTarget::TEXTURE_2D;
+		bufTarget.textureHandle = m_pTexture->name;
+		gfxContext.addFrameBufferRenderTarget(bufTarget);
+	}
+
 	// check if everything is OK
-	assert(checkFBO());
-	glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+	assert(!gfxContext.isFramebufferError());
 
-	_initBuffers();
+	gfxContext.bindFramebuffer(graphics::bufferTarget::DRAW_FRAMEBUFFER, graphics::ObjectHandle::null);
+
+	m_bufferReader.reset(gfxContext.createColorBufferReader(m_pTexture));
 }
 
 void ColorBufferToRDRAM::_destroyFBTexure(void)
 {
-	_destroyBuffers();
+	m_bufferReader.reset();
 
 	if (m_pTexture != nullptr) {
 		textureCache().removeFrameBufferTexture(m_pTexture);
@@ -109,8 +132,8 @@ bool ColorBufferToRDRAM::_prepareCopy(u32 _startAddress)
 	if (VI.width == 0 || frameBufferList().getCurrent() == nullptr)
 		return false;
 
-	OGLVideo & ogl = video();
-	const u32 curFrame = ogl.getBuffersSwapCount();
+	DisplayWindow & wnd = dwnd();
+	const u32 curFrame = wnd.getBuffersSwapCount();
 	FrameBuffer * pBuffer = frameBufferList().findBuffer(_startAddress);
 
 	if (pBuffer == nullptr || pBuffer->m_isOBScreen)
@@ -136,7 +159,6 @@ bool ColorBufferToRDRAM::_prepareCopy(u32 _startAddress)
 		m_lastBufferWidth = pBuffer->m_width;
 		m_lastBufferHeight = pBuffer->m_height;
 		_initFBTexture();
-		m_pixelData.resize(m_pTexture->realWidth * m_pTexture->realHeight * fboFormats.colorFormatBytes);
 	}
 
 	m_pCurFrameBuffer = pBuffer;
@@ -146,38 +168,54 @@ bool ColorBufferToRDRAM::_prepareCopy(u32 _startAddress)
 		return false;
 	}
 
+	ObjectHandle readBuffer;
+
 	if (config.video.multisampling != 0) {
 		m_pCurFrameBuffer->resolveMultisampledTexture();
-		glBindFramebuffer(GL_READ_FRAMEBUFFER, m_pCurFrameBuffer->m_resolveFBO);
+		readBuffer = m_pCurFrameBuffer->m_resolveFBO;
+	} else {
+		readBuffer = m_pCurFrameBuffer->m_FBO;
 	}
-	else
-		glBindFramebuffer(GL_READ_FRAMEBUFFER, m_pCurFrameBuffer->m_FBO);
 
 	if (m_pCurFrameBuffer->m_scaleX != 1.0f || m_pCurFrameBuffer->m_scaleY != 1.0f) {
-		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_FBO);
 		u32 x0 = 0;
 		u32 width, height;
 		if (config.frameBufferEmulation.nativeResFactor == 0) {
-			height = ogl.getHeight();
-			const u32 screenWidth = ogl.getWidth();
+			height = wnd.getHeight();
+			const u32 screenWidth = wnd.getWidth();
 			width = screenWidth;
-			if (ogl.isAdjustScreen()) {
-				width = static_cast<u32>(screenWidth*ogl.getAdjustScale());
+			if (wnd.isAdjustScreen()) {
+				width = static_cast<u32>(screenWidth*wnd.getAdjustScale());
 				x0 = (screenWidth - width) / 2;
 			}
-		}
-		else {
+		} else {
 			width = m_pCurFrameBuffer->m_pTexture->realWidth;
 			height = m_pCurFrameBuffer->m_pTexture->realHeight;
 		}
 
-		CachedTexture * pInputTexture = frameBufferList().getCurrent()->m_pTexture;
-		ogl.getRender().copyTexturedRect(x0, 0, x0 + width, height,
-										 pInputTexture->realWidth, pInputTexture->realHeight, pInputTexture->glName,
-										 0, 0, VI.width, VI.height,
-										 m_pTexture->realWidth, m_pTexture->realHeight, GL_NEAREST);
+		CachedTexture * pInputTexture = m_pCurFrameBuffer->m_pTexture;
+		GraphicsDrawer::BlitOrCopyRectParams blitParams;
+		blitParams.srcX0 = x0;
+		blitParams.srcY0 = 0;
+		blitParams.srcX1 = x0 + width;
+		blitParams.srcY1 = height;
+		blitParams.srcWidth = pInputTexture->realWidth;
+		blitParams.srcHeight = pInputTexture->realHeight;
+		blitParams.dstX0 = 0;
+		blitParams.dstY0 = 0;
+		blitParams.dstX1 = VI.width;
+		blitParams.dstY1 = VI.height;
+		blitParams.dstWidth = m_pTexture->realWidth;
+		blitParams.dstHeight = m_pTexture->realHeight;
+		blitParams.filter = textureParameters::FILTER_NEAREST;
+		blitParams.tex[0] = pInputTexture;
+		blitParams.combiner = CombinerInfo::get().getTexrectCopyProgram();
+		blitParams.readBuffer = readBuffer;
+		blitParams.drawBuffer = m_FBO;
+		blitParams.mask = blitMask::COLOR_BUFFER;
+		wnd.getDrawer().blitOrCopyTexturedRect(blitParams);
 
-		glBindFramebuffer(GL_READ_FRAMEBUFFER, m_FBO);
+		gfxContext.bindFramebuffer(bufferTarget::READ_FRAMEBUFFER, m_FBO);
 	}
 
 	m_frameCount = curFrame;
@@ -212,29 +250,29 @@ void ColorBufferToRDRAM::_copy(u32 _startAddress, u32 _endAddress, bool _sync)
 		numPixels = (_endAddress - _startAddress) >> (m_pCurFrameBuffer->m_size - 1);
 	}
 
-	const GLsizei width = m_pCurFrameBuffer->m_width;
-	const GLint x0 = 0;
-	const GLint y0 = max_height - (_endAddress - m_pCurFrameBuffer->m_startAddress) / stride;
-	const GLint y1 = max_height - (_startAddress - m_pCurFrameBuffer->m_startAddress) / stride;
-	const GLsizei height = std::min(max_height, 1u + y1 - y0);
+	const u32 width = m_pCurFrameBuffer->m_width;
+	const s32 x0 = 0;
+	const s32 y0 = max_height - (_endAddress - m_pCurFrameBuffer->m_startAddress) / stride;
+	const u32 y1 = max_height - (_startAddress - m_pCurFrameBuffer->m_startAddress) / stride;
+	const u32 height = std::min(max_height, 1u + y1 - y0);
 
-	const bool pixelsRead = _readPixels(x0, y0, width, height, m_pCurFrameBuffer->m_size, _sync);
+	const u8* pPixels = m_bufferReader->readPixels(x0, y0, width, height, m_pCurFrameBuffer->m_size, _sync);
 	frameBufferList().setCurrentDrawBuffer();
-	if (!pixelsRead)
+	if (pPixels == nullptr)
 		return;
 
 	if (m_pCurFrameBuffer->m_size == G_IM_SIZ_32b) {
-		u32 *ptr_src = (u32*)m_pixelData.data();
+		u32 *ptr_src = (u32*)pPixels;
 		u32 *ptr_dst = (u32*)(RDRAM + _startAddress);
 		writeToRdram<u32, u32>(ptr_src, ptr_dst, &ColorBufferToRDRAM::_RGBAtoRGBA32, 0, 0, width, height, numPixels, _startAddress, m_pCurFrameBuffer->m_startAddress, m_pCurFrameBuffer->m_size);
 	}
 	else if (m_pCurFrameBuffer->m_size == G_IM_SIZ_16b) {
-		u32 *ptr_src = (u32*)m_pixelData.data();
+		u32 *ptr_src = (u32*)pPixels;
 		u16 *ptr_dst = (u16*)(RDRAM + _startAddress);
 		writeToRdram<u32, u16>(ptr_src, ptr_dst, &ColorBufferToRDRAM::_RGBAtoRGBA16, 0, 1, width, height, numPixels, _startAddress, m_pCurFrameBuffer->m_startAddress, m_pCurFrameBuffer->m_size);
 	}
 	else if (m_pCurFrameBuffer->m_size == G_IM_SIZ_8b) {
-		u8 *ptr_src = (u8*)m_pixelData.data();
+		u8 *ptr_src = (u8*)pPixels;
 		u8 *ptr_dst = RDRAM + _startAddress;
 		writeToRdram<u8, u8>(ptr_src, ptr_dst, &ColorBufferToRDRAM::_RGBAtoR8, 0, 3, width, height, numPixels, _startAddress, m_pCurFrameBuffer->m_startAddress, m_pCurFrameBuffer->m_size);
 	}
@@ -243,7 +281,7 @@ void ColorBufferToRDRAM::_copy(u32 _startAddress, u32 _endAddress, bool _sync)
 	m_pCurFrameBuffer->copyRdram();
 	m_pCurFrameBuffer->m_cleared = false;
 
-	_cleanUp();
+	m_bufferReader->cleanUp();
 
 	gDP.changed |= CHANGED_SCISSOR;
 }
@@ -277,27 +315,8 @@ void ColorBufferToRDRAM::copyChunkToRDRAM(u32 _address)
 
 ColorBufferToRDRAM & ColorBufferToRDRAM::get()
 {
-#if !defined(GLES2) && !defined(GLES3)
-	static bool supportsBufferStorage = OGLVideo::isExtensionSupported("GL_EXT_buffer_storage") ||
-		OGLVideo::isExtensionSupported("GL_ARB_buffer_storage");
-
-	if (supportsBufferStorage) {
-		static ColorBufferToRDRAM_BufferStorageExt cbCopy;
-		return cbCopy;
-	} else {
-		static ColorBufferToRDRAM_GL cbCopy;
-		return cbCopy;
-	}
-#elif defined (GLES3)
-	static ColorBufferToRDRAM_GL cbCopy;
+	static ColorBufferToRDRAM cbCopy;
 	return cbCopy;
-#elif defined(ANDROID) && defined (GLES2)
-	static ColorBufferToRDRAM_GLES cbCopy;
-	return cbCopy;
-#else
-	static ColorBufferToRDRAMStub cbCopy;
-	return cbCopy;
-#endif
 }
 
 void copyWhiteToRDRAM(FrameBuffer * _pBuffer)

@@ -20,11 +20,11 @@ set(GLideNHQ_SOURCES
   TxUtil.cpp
 )
 
-if(PANDORA OR BCMHOST)
+if(MINGW OR PANDORA OR BCMHOST)
   include_directories( ${CMAKE_CURRENT_SOURCE_DIR}/../osal )
-else(PANDORA OR BCMHOST)
+else(MINGW OR PANDORA OR BCMHOST)
   include_directories( inc ${CMAKE_CURRENT_SOURCE_DIR}/../osal )
-endif(PANDORA OR BCMHOST)
+endif(MINGW OR PANDORA OR BCMHOST)
 LINK_DIRECTORIES( ${CMAKE_CURRENT_SOURCE_DIR}/lib )
 
 if(GLES2)
@@ -88,7 +88,7 @@ if( NOT GHQCHK )
       set_target_properties(GLideNHQd PROPERTIES LINK_SEARCH_START_STATIC 1)
       set_target_properties(GLideNHQd PROPERTIES LINK_SEARCH_END_STATIC 1)
 
-      if(BCMHOST)
+      if(MINGW OR BCMHOST)
         FIND_PACKAGE( ZLIB REQUIRED )
         FIND_PACKAGE( PNG REQUIRED )
         target_link_libraries(GLideNHQd
@@ -96,14 +96,14 @@ if( NOT GHQCHK )
           ${ZLIB_LIBRARIES}
           osald
         )
-      else(BCMHOST)
+      else(MINGW OR BCMHOST)
         target_link_libraries(GLideNHQd PRIVATE
           ${CMAKE_CURRENT_SOURCE_DIR}/lib/libpng.a
           ${CMAKE_CURRENT_SOURCE_DIR}/lib/libz.a
           dl
           osald
         )
-      endif(BCMHOST)
+      endif(MINGW OR BCMHOST)
     endif( CMAKE_BUILD_TYPE STREQUAL "Debug")
 
     if( CMAKE_BUILD_TYPE STREQUAL "Release")
@@ -120,7 +120,7 @@ if( NOT GHQCHK )
           /mnt/utmp/codeblocks/usr/lib/libz.a
           osal
         )
-      elseif(BCMHOST)
+      elseif(BCMHOST OR MINGW)
         FIND_PACKAGE( ZLIB REQUIRED )
         FIND_PACKAGE( PNG REQUIRED )
         target_link_libraries(GLideNHQ

@@ -38,6 +38,8 @@ private slots:
 	void on_cropImageComboBox_currentIndexChanged(int index);
 
 	void on_frameBufferCheckBox_toggled(bool checked);
+	
+	void on_aliasingSlider_valueChanged(int value);
 
 private:
 	void _init();

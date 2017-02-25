@@ -43,7 +43,7 @@
 //
 //****************************************************************
 
-#include "OpenGL.h"
+#include "Platform.h"
 #include "Keys.h"
 
 Glide64Keys::Glide64Keys()

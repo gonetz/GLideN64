@@ -4,8 +4,6 @@
  * http://en.wikibooks.org/wiki/OpenGL_Programming"
  */
 
-#define NOMINMAX
-
 #include <cstdio>
 #include <cstdlib>
 #include <cmath>
@@ -15,84 +13,24 @@
 #include <ft2build.h>
 #include FT_FREETYPE_H
 
-#include "TextDrawer.h"
-#include "RSP.h"
+#include "Platform.h"
+#include "DisplayWindow.h"
+#include "GraphicsDrawer.h"
+#include "Textures.h"
 #include "Config.h"
-#include "GLSLCombiner.h"
-#include "ShaderUtils.h"
-#include <FBOTextureFormats.h>
 #include "Log.h"
 
-struct point {
-	GLfloat x;
-	GLfloat y;
-	GLfloat s;
-	GLfloat t;
-	point() : x(0), y(0), s(0), t(0) {}
-	point(GLfloat _x, GLfloat _y, GLfloat _s, GLfloat _t) : x(_x), y(_y), s(_s), t(_t) {}
-};
+#include "Graphics/Context.h"
+#include "Graphics/Parameters.h"
+
+#include "TextDrawer.h"
+
+using namespace graphics;
 
 // Maximum texture width
 #define MAXWIDTH 1024
 
-#if defined(GLES3_1)
-#define SHADER_VERSION "#version 310 es \n"
-#elif defined(GLES3)
-#define SHADER_VERSION "#version 300 es \n"
-#elif defined(GLES2)
-#define SHADER_VERSION "#version 100 \n"
-#else
-#define SHADER_VERSION "#version 330 core \n"
-#endif
-
-#ifdef GLES2
-const GLenum monohromeformat = GL_LUMINANCE;
-const GLenum monohromeInternalformat = GL_LUMINANCE;
-#else
-const GLenum monohromeformat = GL_RED;
-const GLenum monohromeInternalformat = GL_R8;
-#endif // GLES2
-
-static
-const char * strDrawTextVertexShader =
-SHADER_VERSION
-"#if (__VERSION__ > 120)						\n"
-"# define IN in									\n"
-"# define OUT out								\n"
-"#else											\n"
-"# define IN attribute							\n"
-"# define OUT varying							\n"
-"#endif // __VERSION							\n"
-"IN highp vec4 aPosition;					\n"
-"OUT mediump vec2 texpos;					\n"
-"void main(void) {							\n"
-"  gl_Position = vec4(aPosition.xy, 0, 1);	\n"
-"  texpos = aPosition.zw;					\n"
-"}											\n"
-;
-
-static
-const char * strDrawTextFragmentShader =
-SHADER_VERSION
-"#if (__VERSION__ > 120)		\n"
-"# define IN in					\n"
-"# define OUT out				\n"
-"# define texture2D texture		\n"
-"#else							\n"
-"# define IN varying			\n"
-"# define OUT					\n"
-"#endif // __VERSION __			\n"
-"IN mediump vec2 texpos;							\n"
-"uniform sampler2D uTex;							\n"
-"uniform lowp vec4 uColor;							\n"
-"OUT lowp vec4 fragColor;							\n"
-"void main(void) {									\n"
-"  fragColor = texture2D(uTex, texpos).r * uColor;	\n"
-#ifdef GLES2
-"  gl_FragColor = fragColor;						\n"
-#endif
-"}													\n"
-;
+TextDrawer g_textDrawer;
 
 /**
  * The atlas struct holds a texture that contains the visible US-ASCII characters
@@ -103,7 +41,7 @@ SHADER_VERSION
  * After the constructor is run, you don't need to use any FreeType functions anymore.
  */
 struct Atlas {
-	GLuint tex;		// texture object
+	CachedTexture * m_pTexture;	// texture object
 
 	int w;			// width of texture in pixels
 	int h;			// height of texture in pixels
@@ -122,16 +60,17 @@ struct Atlas {
 		float ty;	// y offset of glyph in texture coordinates
 	} c[128];		// character information
 
-	 Atlas(FT_Face face, int height) {
+	Atlas(FT_Face face, int height)
+	{
 		FT_Set_Pixel_Sizes(face, 0, height);
 		FT_GlyphSlot g = face->glyph;
 
 		int roww = 0;
 		int rowh = 0;
-		 w = 0;
-		 h = 0;
+		w = 0;
+		h = 0;
 
-		 memset(c, 0, sizeof c);
+		memset(c, 0, sizeof c);
 
 		/* Find minimum size for a texture holding all visible ASCII characters */
 		for (int i = 32; i < 128; i++) {
@@ -153,27 +92,57 @@ struct Atlas {
 		h += rowh;
 
 		/* Create a texture that will be used to hold all ASCII glyphs */
-		glActiveTexture(GL_TEXTURE0);
-		glGenTextures(1, &tex);
-		glBindTexture(GL_TEXTURE_2D, tex);
+		const FramebufferTextureFormats & fbTexFormats = gfxContext.getFramebufferTextureFormats();
 
-		glTexImage2D(GL_TEXTURE_2D, 0, monohromeInternalformat, w, h, 0, monohromeformat, GL_UNSIGNED_BYTE, 0);
+		m_pTexture = textureCache().addFrameBufferTexture(false);
+		m_pTexture->format = G_IM_FMT_I;
+		m_pTexture->clampS = 1;
+		m_pTexture->clampT = 1;
+		m_pTexture->frameBufferTexture = CachedTexture::fbOneSample;
+		m_pTexture->maskS = 0;
+		m_pTexture->maskT = 0;
+		m_pTexture->mirrorS = 0;
+		m_pTexture->mirrorT = 0;
+		m_pTexture->realWidth = w;
+		m_pTexture->realHeight = h;
+		m_pTexture->textureBytes = m_pTexture->realWidth * m_pTexture->realHeight * fbTexFormats.noiseFormatBytes;
+		textureCache().addFrameBufferTextureSize(m_pTexture->textureBytes);
 
-		/* We require 1 byte alignment when uploading texture data */
-		glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+		Context::InitTextureParams initParams;
+		initParams.handle = m_pTexture->name;
+		initParams.textureUnitIndex = textureIndices::Tex[0];
+		initParams.width = w;
+		initParams.height = h;
+		initParams.internalFormat = fbTexFormats.noiseInternalFormat;
+		initParams.format = fbTexFormats.noiseFormat;
+		initParams.dataType = fbTexFormats.noiseType;
+		gfxContext.init2DTexture(initParams);
 
-		/* Clamping to edges is important to prevent artifacts when scaling */
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-
-		/* Linear filtering usually looks best for text */
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		Context::TexParameters setParams;
+		setParams.handle = m_pTexture->name;
+		setParams.textureUnitIndex = textureIndices::Tex[0];
+		setParams.target = textureTarget::TEXTURE_2D;
+		setParams.minFilter = textureParameters::FILTER_LINEAR;
+		setParams.magFilter = textureParameters::FILTER_LINEAR;
+		setParams.wrapS = textureParameters::WRAP_CLAMP_TO_EDGE;
+		setParams.wrapT = textureParameters::WRAP_CLAMP_TO_EDGE;
+		gfxContext.setTextureParameters(setParams);
 
 		/* Paste all glyph bitmaps into the texture, remembering the offset */
+
+		/* We require 1 byte alignment when uploading texture data */
+		const s32 curUnpackAlignment = gfxContext.getTextureUnpackAlignment();
+		gfxContext.setTextureUnpackAlignment(1);
+
+		Context::UpdateTextureDataParams updateParams;
+		updateParams.handle = m_pTexture->name;
+		updateParams.textureUnitIndex = textureIndices::Tex[0];
+		updateParams.format = initParams.format;
+		updateParams.internalFormat = initParams.internalFormat;
+		updateParams.dataType = initParams.dataType;
+
 		int ox = 0;
 		int oy = 0;
-
 		rowh = 0;
 
 		for (int i = 32; i < 128; i++) {
@@ -188,7 +157,13 @@ struct Atlas {
 				ox = 0;
 			}
 
-			glTexSubImage2D(GL_TEXTURE_2D, 0, ox, oy, g->bitmap.width, g->bitmap.rows, monohromeformat, GL_UNSIGNED_BYTE, g->bitmap.buffer);
+			updateParams.x = ox;
+			updateParams.y = oy;
+			updateParams.width = g->bitmap.width;
+			updateParams.height = g->bitmap.rows;
+			updateParams.data = g->bitmap.buffer;
+			gfxContext.update2DTexture(updateParams);
+
 			c[i].ax = _FIXED2FLOAT(g->advance.x, 6);
 			c[i].ay = _FIXED2FLOAT(g->advance.y, 6);
 
@@ -205,22 +180,16 @@ struct Atlas {
 			ox += g->bitmap.width + 1;
 		}
 
-		fprintf(stderr, "Generated a %d x %d (%d kb) texture atlas\n", w, h, w * h / 1024);
+		gfxContext.setTextureUnpackAlignment(curUnpackAlignment);
+
+		LOG(LOG_VERBOSE, "Generated a %d x %d (%d kb) texture atlas\n", w, h, w * h / 1024);
 	}
 
 	~Atlas() {
-		glDeleteTextures(1, &tex);
+		textureCache().removeFrameBufferTexture(m_pTexture);
+		m_pTexture = nullptr;
 	}
 };
-
-TextDrawer::TextDrawer() :
-	m_pAtlas(nullptr), m_program(0), m_uTex(0), m_uColor(0), m_vbo(0)
-{}
-
-TextDrawer & TextDrawer::get() {
-	static TextDrawer drawer;
-	return drawer;
-}
 
 static
 bool getFontFileName(char * _strName)
@@ -230,7 +199,7 @@ bool getFontFileName(char * _strName)
 	if (pSysPath == nullptr)
 		return false;
 	sprintf(_strName, "%s/Fonts/%s", pSysPath, config.font.name.c_str());
-#elif defined (ANDROID)
+#elif defined (OS_ANDROID)
 	sprintf(_strName, "/system/fonts/%s", config.font.name.c_str());
 #elif defined (PANDORA)
 	sprintf(_strName, "/usr/share/fonts/truetype/%s", config.font.name.c_str());
@@ -245,9 +214,6 @@ FT_Face face;
 
 void TextDrawer::init()
 {
-	if (m_pAtlas != nullptr)
-		return;
-
 	char strBuffer[PLUGIN_PATH_SIZE];
 	const char *fontfilename;
 	if (getFontFileName(strBuffer))
@@ -267,33 +233,16 @@ void TextDrawer::init()
 		return;
 	}
 
-	m_program = createShaderProgram(strDrawTextVertexShader, strDrawTextFragmentShader);
-	if(m_program == 0)
-		return;
-
-	m_uTex = glGetUniformLocation(m_program, "uTex");
-	m_uColor = glGetUniformLocation(m_program, "uColor");
-
-	if(m_uTex == -1 || m_uColor == -1)
-		return;
-
-	// Create the vertex buffer object
-	glGenBuffers(1, &m_vbo);
-
 	/* Create texture atlas for selected font size */
-	m_pAtlas = new Atlas(face, config.font.size);
+	m_atlas.reset(new Atlas(face, config.font.size));
+
+	m_program.reset(gfxContext.createTextDrawerShader());
 }
 
 void TextDrawer::destroy()
 {
-	if (m_pAtlas == nullptr)
-		return;
-	delete m_pAtlas;
-	m_pAtlas = nullptr;
-	glDeleteBuffers(1, &m_vbo);
-	m_vbo = 0;
-	glDeleteProgram(m_program);
-	m_program = 0;
+	m_atlas.reset();
+	m_program.reset();
 	FT_Done_Face(face);
 	FT_Done_FreeType(ft);
 }
@@ -303,94 +252,122 @@ void TextDrawer::destroy()
  * Rendering starts at coordinates (x, y), z is always 0.
  * The pixel coordinates that the FreeType2 library uses are scaled by (sx, sy).
  */
-void TextDrawer::renderText(const char *_pText, float _x, float _y) const
+void TextDrawer::drawText(const char *_pText, float _x, float _y) const
 {
-	if (m_pAtlas == nullptr)
+	if (!m_atlas)
 		return;
-	OGLVideo & ogl = video();
-	const float sx = 2.0f / ogl.getWidth();
-	const float sy = 2.0f / ogl.getHeight();
+
+	DisplayWindow & wnd = DisplayWindow::get();
+	const float sx = 2.0f / wnd.getWidth();
+	const float sy = 2.0f / wnd.getHeight();
 
 	const u8 *p;
 
-	glUseProgram(m_program);
 
-	/* Enable blending, necessary for our alpha texture */
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glDisable(GL_CULL_FACE);
-	glDisable(GL_DEPTH_TEST);
-	glDepthMask(GL_FALSE);
+	std::vector<RectVertex> coords;
+	coords.reserve(6 * strlen(_pText));
 
-	/* Set color */
-	glUniform4fv(m_uColor, 1, config.font.colorf);
-
-	/* Use the texture containing the atlas */
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, m_pAtlas->tex);
-	glUniform1i(m_uTex, 0);
-
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-#ifndef GLES2
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
-#endif
-
-	/* Set up the VBO for our vertex data */
-	glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
-	glVertexAttribPointer(SC_POSITION, 4, GL_FLOAT, GL_FALSE, 0, 0);
-
-	std::vector<point> coords(6 * strlen(_pText));
-	int c = 0;
+	RectVertex rect;
+	rect.z = 0.0f;
+	rect.w = 1.0f;
 
 	/* Loop through all characters */
 	for (p = (const u8 *)_pText; *p; ++p) {
 		/* Calculate the vertex and texture coordinates */
-		float x2 = _x + m_pAtlas->c[*p].bl * sx;
-		float y2 = -_y - m_pAtlas->c[*p].bt * sy;
-		float w = m_pAtlas->c[*p].bw * sx;
-		float h = m_pAtlas->c[*p].bh * sy;
+		float x2 = _x + m_atlas->c[*p].bl * sx;
+		float y2 = -_y - m_atlas->c[*p].bt * sy;
+		float w = m_atlas->c[*p].bw * sx;
+		float h = m_atlas->c[*p].bh * sy;
 
 		/* Advance the cursor to the start of the next character */
-		_x += m_pAtlas->c[*p].ax * sx;
-		_y += m_pAtlas->c[*p].ay * sy;
+		_x += m_atlas->c[*p].ax * sx;
+		_y += m_atlas->c[*p].ay * sy;
 
 		/* Skip glyphs that have no pixels */
 		if (!w || !h)
 			continue;
 
-		coords[c++] = point(x2, -y2, m_pAtlas->c[*p].tx, m_pAtlas->c[*p].ty);
-		coords[c++] = point(x2 + w, -y2, m_pAtlas->c[*p].tx + m_pAtlas->c[*p].bw / m_pAtlas->w, m_pAtlas->c[*p].ty);
-		coords[c++] = point(x2, -y2 - h, m_pAtlas->c[*p].tx, m_pAtlas->c[*p].ty + m_pAtlas->c[*p].bh / m_pAtlas->h);
-		coords[c++] = point(x2 + w, -y2, m_pAtlas->c[*p].tx + m_pAtlas->c[*p].bw / m_pAtlas->w, m_pAtlas->c[*p].ty);
-		coords[c++] = point(x2, -y2 - h, m_pAtlas->c[*p].tx, m_pAtlas->c[*p].ty + m_pAtlas->c[*p].bh / m_pAtlas->h);
-		coords[c++] = point(x2 + w, -y2 - h, m_pAtlas->c[*p].tx + m_pAtlas->c[*p].bw / m_pAtlas->w, m_pAtlas->c[*p].ty + m_pAtlas->c[*p].bh / m_pAtlas->h);
+		rect.x = x2;
+		rect.y = -y2;
+		rect.s0 = m_atlas->c[*p].tx;
+		rect.t0 = m_atlas->c[*p].ty;
+		coords.push_back(rect);
+
+		rect.x = x2 + w;
+		rect.y = -y2;
+		rect.s0 = m_atlas->c[*p].tx + m_atlas->c[*p].bw / m_atlas->w;
+		rect.t0 = m_atlas->c[*p].ty;
+		coords.push_back(rect);
+
+		rect.x = x2;
+		rect.y = -y2 - h;
+		rect.s0 = m_atlas->c[*p].tx;
+		rect.t0 = m_atlas->c[*p].ty + m_atlas->c[*p].bh / m_atlas->h;
+		coords.push_back(rect);
+
+		rect.x = x2 + w;
+		rect.y = -y2;
+		rect.s0 = m_atlas->c[*p].tx + m_atlas->c[*p].bw / m_atlas->w;
+		rect.t0 = m_atlas->c[*p].ty;
+		coords.push_back(rect);
+
+		rect.x = x2;
+		rect.y = -y2 - h;
+		rect.s0 = m_atlas->c[*p].tx;
+		rect.t0 = m_atlas->c[*p].ty + m_atlas->c[*p].bh / m_atlas->h;
+		coords.push_back(rect);
+
+		rect.x = x2 + w;
+		rect.y = -y2 - h;
+		rect.s0 = m_atlas->c[*p].tx + m_atlas->c[*p].bw / m_atlas->w;
+		rect.t0 = m_atlas->c[*p].ty + m_atlas->c[*p].bh / m_atlas->h;
+		coords.push_back(rect);
 	}
 
-	/* Draw all the character on the screen in one go */
-	glBufferData(GL_ARRAY_BUFFER, coords.size()*sizeof(point), coords.data(), GL_DYNAMIC_DRAW);
-	glDrawArrays(GL_TRIANGLES, 0, c);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	gfxContext.enable(enable::BLEND, true);
+	gfxContext.enable(enable::CULL_FACE, false);
+	gfxContext.enable(enable::DEPTH_TEST, false);
+	gfxContext.enableDepthWrite(false);
+	gfxContext.setBlending(blend::SRC_ALPHA, blend::ONE_MINUS_SRC_ALPHA);
+	m_program->activate();
+
+	Context::TexParameters setParams;
+	setParams.handle = m_atlas->m_pTexture->name;
+	setParams.textureUnitIndex = textureIndices::Tex[0];
+	setParams.target = textureTarget::TEXTURE_2D;
+	setParams.minFilter = textureParameters::FILTER_LINEAR;
+	setParams.magFilter = textureParameters::FILTER_LINEAR;
+	setParams.wrapS = textureParameters::WRAP_CLAMP_TO_EDGE;
+	setParams.wrapT = textureParameters::WRAP_CLAMP_TO_EDGE;
+	setParams.maxMipmapLevel = Parameter(0);
+	gfxContext.setTextureParameters(setParams);
+
+	Context::DrawRectParameters rectParams;
+	rectParams.mode = drawmode::TRIANGLES;
+	rectParams.rectColor.fill(0.0f);
+	rectParams.verticesCount = coords.size();
+	rectParams.vertices = coords.data();
+	rectParams.combiner = m_program.get();
+	gfxContext.drawRects(rectParams);
 }
 
 void TextDrawer::getTextSize(const char *_pText, float & _w, float & _h) const
 {
 	_w = _h = 0;
-	if (m_pAtlas == nullptr)
+	if (!m_atlas)
 		return;
-	OGLVideo & ogl = video();
-	const float sx = 2.0f / ogl.getWidth();
-	const float sy = 2.0f / ogl.getHeight();
+
+	DisplayWindow & wnd = DisplayWindow::get();
+	const float sx = 2.0f / wnd.getWidth();
+	const float sy = 2.0f / wnd.getHeight();
 	float bw, bh;
 
 	for (const u8 *p = (const u8 *)_pText; *p; ++p) {
-		bw = m_pAtlas->c[*p].bw * sx;
-		bh = m_pAtlas->c[*p].bh * sy;
+		bw = m_atlas->c[*p].bw * sx;
+		bh = m_atlas->c[*p].bh * sy;
 
-		_w += m_pAtlas->c[*p].ax * sx;
-		_h += m_pAtlas->c[*p].ay * sy;
+		_w += m_atlas->c[*p].ax * sx;
+		_h += m_atlas->c[*p].ay * sy;
 	}
 	_w += bw;
 	_h += bh;

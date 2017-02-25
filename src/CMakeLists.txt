@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.6)
 
-option(GLES2 "Set to ON if targeting a GLES2 device" ${GLES2})
+option(EGL "Set to ON if targeting an EGL device" ${EGL})
 option(PANDORA "Set to ON if targeting an OpenPandora" ${PANDORA})
 option(MUPENPLUSAPI "Set to ON for Mupen64Plus plugin" ${MUPENPLUSAPI})
 
@@ -9,29 +9,30 @@ project( GLideN64 )
 set(GLideN64_SOURCES
   3DMath.cpp
   Combiner.cpp
+  CombinerKey.cpp
   CommonPluginAPI.cpp
   Config.cpp
   convert.cpp
   CRC32.cpp
   DepthBuffer.cpp
+  DisplayWindow.cpp
   F3D.cpp
+  F3DBETA.cpp
   F3DDKR.cpp
   F3DEX.cpp
-  F3DPD.cpp
-  F3DGOLDEN.cpp
-  F3DBETA.cpp
-  F3DSETA.cpp
   F3DEX2.cpp
   F3DEX2CBFD.cpp
   F3DEX2MM.cpp
+  F3DGOLDEN.cpp
   F3DTEXA.cpp
-  FBOTextureFormats.cpp
+  F3DPD.cpp
+  F3DSETA.cpp
   FrameBuffer.cpp
   FrameBufferInfo.cpp
   GBI.cpp
   gDP.cpp
   GLideN64.cpp
-  glState.cpp
+  GraphicsDrawer.cpp
   gSP.cpp
   Keys.cpp
   L3D.cpp
@@ -39,27 +40,53 @@ set(GLideN64_SOURCES
   L3DEX.cpp
   Log.cpp
   N64.cpp
-  OpenGL.cpp
+  NoiseTexture.cpp
+  PaletteTexture.cpp
   Performance.cpp
+  PostProcessor.cpp
   RDP.cpp
   RSP.cpp
   S2DEX2.cpp
   S2DEX.cpp
-  Turbo3D.cpp
-  ZSort.cpp
-  ShaderUtils.cpp
   SoftwareRender.cpp
-  Textures.cpp
+  TexrectDrawer.cpp
   TextDrawer.cpp
   TextureFilterHandler.cpp
-  PostProcessor.cpp
+  Textures.cpp
+  Turbo3D.cpp
   VI.cpp
+  ZlutTexture.cpp
+  ZSort.cpp
   BufferCopy/ColorBufferToRDRAM.cpp
   BufferCopy/DepthBufferToRDRAM.cpp
   BufferCopy/RDRAMtoColorBuffer.cpp
   DepthBufferRender/ClipPolygon.cpp
   DepthBufferRender/DepthBufferRender.cpp
   common/CommonAPIImpl_common.cpp
+  Graphics/Context.cpp
+  Graphics/CombinerProgram.cpp
+  Graphics/ObjectHandle.cpp
+  Graphics/OpenGLContext/GLFunctions.cpp
+  Graphics/OpenGLContext/opengl_Attributes.cpp
+  Graphics/OpenGLContext/opengl_BufferedDrawer.cpp
+  Graphics/OpenGLContext/opengl_BufferManipulationObjectFactory.cpp
+  Graphics/OpenGLContext/opengl_CachedFunctions.cpp
+  Graphics/OpenGLContext/opengl_ColorBufferReaderWithBufferStore.cpp
+  Graphics/OpenGLContext/opengl_ColorBufferReaderWithPixelBuffer.cpp
+  Graphics/OpenGLContext/opengl_ColorBufferReaderWithReadPixels.cpp
+  Graphics/OpenGLContext/opengl_ContextImpl.cpp
+  Graphics/OpenGLContext/opengl_GLInfo.cpp
+  Graphics/OpenGLContext/opengl_Parameters.cpp
+  Graphics/OpenGLContext/opengl_TextureManipulationObjectFactory.cpp
+  Graphics/OpenGLContext/opengl_UnbufferedDrawer.cpp
+  Graphics/OpenGLContext/opengl_Utils.cpp
+  Graphics/OpenGLContext/GLSL/glsl_CombinerInputs.cpp
+  Graphics/OpenGLContext/GLSL/glsl_CombinerProgramBuilder.cpp
+  Graphics/OpenGLContext/GLSL/glsl_CombinerProgramImpl.cpp
+  Graphics/OpenGLContext/GLSL/glsl_CombinerProgramUniformFactory.cpp
+  Graphics/OpenGLContext/GLSL/glsl_ShaderStorage.cpp
+  Graphics/OpenGLContext/GLSL/glsl_SpecialShadersFactory.cpp
+  Graphics/OpenGLContext/GLSL/glsl_Utils.cpp
 )
 
 #check if we're running on Raspberry Pi
@@ -67,10 +94,9 @@ MESSAGE("Looking for bcm_host.h")
 if(EXISTS "/opt/vc/include/bcm_host.h")
   MESSAGE("bcm_host.h found")
   set(BCMHOST ON)
-  set(GLES2 ON)
+  set(EGL ON)
   add_definitions(
     -DVC
-    -DUSE_DEPTH_RENDERBUFFER
   )
   include_directories(
     "/opt/vc/include"
@@ -97,11 +123,10 @@ if(MUPENPLUSAPI)
 	mupenplus/Config_mupenplus.cpp
 	mupenplus/CommonAPIImpl_mupenplus.cpp
 	mupenplus/MupenPlusAPIImpl.cpp
-	mupenplus/OpenGL_mupenplus.cpp
+	Graphics/OpenGLContext/mupen64plus/mupen64plus_DisplayWindow.cpp
   )
 
   set(GLideN64_SOURCES_WIN ${GLideN64_SOURCES_UNIX}
-	common/GLFunctions.cpp
   )
   set(GLideN64_DLL_NAME mupen64plus-video-GLideN64)
 else(MUPENPLUSAPI)
@@ -114,8 +139,8 @@ else(MUPENPLUSAPI)
 	windows/CommonAPIImpl_windows.cpp
 	windows/GLideN64_windows.cpp
 	common/GLFunctions.cpp
-	windows/OpenGL_windows.cpp
 	windows/ZilmarAPIImpl_windows.cpp
+	Graphics/OpenGLContext/windows/windows_DisplayWindow.cpp
   )
   set(GLideN64_DLL_NAME GLideN64)
 endif(MUPENPLUSAPI)
@@ -145,6 +170,12 @@ if(UNIX)
   endif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 endif(UNIX)
 
+if(MINGW)
+  add_definitions(
+    -DMINGW
+  )
+endif(MINGW)
+
 if(WIN32)
   list(APPEND GLideN64_SOURCES ${GLideN64_SOURCES_WIN})
   add_definitions(
@@ -171,7 +202,7 @@ if(PANDORA)
   add_definitions(
   -DPANDORA
   -DPowerVR_SGX_540
-  -DGLES2
+  -DEGL
    )
 endif(PANDORA)
 
@@ -220,33 +251,17 @@ endif( NOT CMAKE_BUILD_TYPE)
 if( CMAKE_BUILD_TYPE STREQUAL "Debug")
 	set( CMAKE_BUILD_TYPE Debug)
 	set( DEBUG_BUILD TRUE)
-#	add_definitions(
-#	-DDEBUG
-#	)
+	add_definitions(
+	-DGL_DEBUG
+	)
 endif( CMAKE_BUILD_TYPE STREQUAL "Debug")
 
-if (USE_UNIFORMBLOCK)
+if(EGL)
   add_definitions(
-	-DGL_USE_UNIFORMBLOCK
+    -DEGL
    )
-  list(APPEND GLideN64_SOURCES
-	GLUniforms/UniformBlock.cpp
-  )
-else (USE_UNIFORMBLOCK)
-  list(APPEND GLideN64_SOURCES
-	GLUniforms/UniformSet.cpp
-  )
-endif (USE_UNIFORMBLOCK)
-
-if(GLES2)
-  add_definitions(
-    -DGLES2
-   )
-   list(APPEND GLideN64_SOURCES 
-    GLES2/GLSLCombiner_gles2.cpp
-   )
-   SET(OPENGL_LIBRARIES -lGLESv2 -lEGL)
-else(GLES2)
+   SET(OPENGL_LIBRARIES -lEGL)
+else(EGL)
   find_package(OpenGL REQUIRED)
   include_directories(${OpenGL_INCLUDE_DIRS})
   link_directories(${OpenGL_LIBRARY_DIRS})
@@ -254,12 +269,7 @@ else(GLES2)
   if(NOT OPENGL_FOUND)
   	message(ERROR " OPENGL not found!")
   endif(NOT OPENGL_FOUND)
-  list(APPEND GLideN64_SOURCES 
-    OGL3X/GLSLCombiner_ogl3x.cpp
-    BufferCopy/ColorBufferToRDRAM_GL.cpp
-    BufferCopy/ColorBufferToRDRAM_BufferStorageExt.cpp
-  )
-endif(GLES2)
+endif(EGL)
 
 if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
   #check for G++ 4.8+
