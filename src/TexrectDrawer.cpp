@@ -171,13 +171,6 @@ void TexrectDrawer::add()
 		m_max_lry = std::max(m_max_lry, m_lry);
 	}
 
-	Context::DrawRectParameters rectParams;
-	rectParams.mode = drawmode::TRIANGLE_STRIP;
-	rectParams.verticesCount = 4;
-	rectParams.vertices = pRect;
-	rectParams.combiner = currentCombiner();
-	gfxContext.drawRects(rectParams);
-
 	RectCoords coords;
 	coords.x = pRect[1].x;
 	coords.y = pRect[1].y;
@@ -185,8 +178,16 @@ void TexrectDrawer::add()
 	coords.x = pRect[3].x;
 	coords.y = pRect[3].y;
 	m_vecRectCoords.push_back(coords);
-
 	++m_numRects;
+
+	for (u32 i = 0; i < 4; ++i)
+		pRect[i].y = -pRect[i].y;
+	Context::DrawRectParameters rectParams;
+	rectParams.mode = drawmode::TRIANGLE_STRIP;
+	rectParams.verticesCount = 4;
+	rectParams.vertices = pRect;
+	rectParams.combiner = currentCombiner();
+	gfxContext.drawRects(rectParams);
 }
 
 bool TexrectDrawer::draw()
@@ -293,10 +294,10 @@ bool TexrectDrawer::draw()
 	gfxContext.bindFramebuffer(bufferTarget::DRAW_FRAMEBUFFER, m_FBO);
 	m_programClear->activate();
 
-	rect[0].y = m_uly;
-	rect[1].y = m_uly;
-	rect[2].y = m_lry;
-	rect[3].y = m_lry;
+	rect[0].y = -m_uly;
+	rect[1].y = -m_uly;
+	rect[2].y = -m_lry;
+	rect[3].y = -m_lry;
 
 	if (m_pBuffer == nullptr)
 		gfxContext.setViewport(0, 0, VI.width, VI.height);
