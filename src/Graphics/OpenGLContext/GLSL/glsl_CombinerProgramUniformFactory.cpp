@@ -327,7 +327,7 @@ class UDitherMode : public UniformGroup
 {
 public:
 	UDitherMode(GLuint _program, bool _usesNoise)
-	: m_usesNoise(m_usesNoise)
+	: m_usesNoise(_usesNoise)
 	{
 		LocateUniform(uAlphaCompareMode);
 		LocateUniform(uAlphaDitherMode);
