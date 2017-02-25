@@ -67,6 +67,8 @@ private:
 	DepthBufferList(const DepthBufferList &);
 	~DepthBufferList();
 
+	void _createScreenSizeBuffer(u32 _address);
+
 	typedef std::list<DepthBuffer> DepthBuffers;
 	DepthBuffers m_list;
 	DepthBuffer *m_pCurrent;

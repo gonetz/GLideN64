@@ -151,7 +151,7 @@ void FrameBuffer::init(u32 _address, u32 _endAddress, u16 _format, u16 _size, u1
 	if (isAuxiliary() && config.frameBufferEmulation.copyAuxToRDRAM != 0) {
 		m_scaleX = 1.0f;
 		m_scaleY = 1.0f;
-	} else if (config.frameBufferEmulation.nativeResFactor != 0) {
+	} else if (config.frameBufferEmulation.nativeResFactor != 0 && config.frameBufferEmulation.enable != 0) {
 		m_scaleX = m_scaleY = static_cast<float>(config.frameBufferEmulation.nativeResFactor);
 	} else {
 		m_scaleX = wnd.getScaleX();
@@ -564,8 +564,24 @@ FrameBuffer * FrameBufferList::findTmpBuffer(u32 _address)
 	return nullptr;
 }
 
+
+void FrameBufferList::_createScreenSizeBuffer()
+{
+	if (VI.height == 0)
+		return;
+	m_list.emplace_front();
+	FrameBuffer & buffer = m_list.front();
+	buffer.init(VI.width * 2, VI.width * VI.height * 2, G_IM_FMT_RGBA, G_IM_SIZ_16b, VI.width, VI.height, false);
+}
+
 void FrameBufferList::saveBuffer(u32 _address, u16 _format, u16 _size, u16 _width, u16 _height, bool _cfb)
 {
+	if (config.frameBufferEmulation.enable == 0) {
+		if (m_list.empty())
+			_createScreenSizeBuffer();
+		return;
+	}
+
 	if (m_pCurrent != nullptr &&
 		config.frameBufferEmulation.copyAuxToRDRAM != 0 &&
 		(config.generalEmulation.hacks & hack_Snap) == 0) {
@@ -754,35 +770,36 @@ void FrameBufferList::fillBufferInfo(void * _pinfo, u32 _size)
 
 void FrameBufferList::attachDepthBuffer()
 {
-	if (m_pCurrent == nullptr)
+	FrameBuffer * pCurrent = config.frameBufferEmulation.enable == 0 ? &m_list.back() : m_pCurrent;
+	if (pCurrent == nullptr)
 		return;
 
 	DepthBuffer * pDepthBuffer = depthBufferList().getCurrent();
-	if (m_pCurrent->m_pDepthBuffer == pDepthBuffer)
+	if (pCurrent->m_pDepthBuffer == pDepthBuffer)
 		return;
 
-	if (m_pCurrent->m_FBO.isNotNull() && pDepthBuffer != nullptr) {
-		pDepthBuffer->initDepthImageTexture(m_pCurrent);
-		pDepthBuffer->initDepthBufferTexture(m_pCurrent);
+	if (pCurrent->m_FBO.isNotNull() && pDepthBuffer != nullptr) {
+		pDepthBuffer->initDepthImageTexture(pCurrent);
+		pDepthBuffer->initDepthBufferTexture(pCurrent);
 
 		bool goodDepthBufferTexture = false;
 		if (gfxContext.isSupported(SpecialFeatures::DepthFramebufferTextures)) {
 			goodDepthBufferTexture = gfxContext.isSupported(SpecialFeatures::WeakBlitFramebuffer) ?
-				pDepthBuffer->m_pDepthBufferTexture->realWidth == m_pCurrent->m_pTexture->realWidth :
-				pDepthBuffer->m_pDepthBufferTexture->realWidth >= m_pCurrent->m_pTexture->realWidth;
+				pDepthBuffer->m_pDepthBufferTexture->realWidth == pCurrent->m_pTexture->realWidth :
+				pDepthBuffer->m_pDepthBufferTexture->realWidth >= pCurrent->m_pTexture->realWidth;
 		} else {
-			goodDepthBufferTexture = pDepthBuffer->m_depthRenderbufferWidth == m_pCurrent->m_pTexture->realWidth;
+			goodDepthBufferTexture = pDepthBuffer->m_depthRenderbufferWidth == pCurrent->m_pTexture->realWidth;
 		}
 
 		if (goodDepthBufferTexture) {
-			m_pCurrent->m_pDepthBuffer = pDepthBuffer;
-			pDepthBuffer->setDepthAttachment(m_pCurrent->m_FBO, bufferTarget::DRAW_FRAMEBUFFER);
+			pCurrent->m_pDepthBuffer = pDepthBuffer;
+			pDepthBuffer->setDepthAttachment(pCurrent->m_FBO, bufferTarget::DRAW_FRAMEBUFFER);
 			if (config.frameBufferEmulation.N64DepthCompare != 0)
 				pDepthBuffer->bindDepthImageTexture();
 		} else
-			m_pCurrent->m_pDepthBuffer = nullptr;
+			pCurrent->m_pDepthBuffer = nullptr;
 	} else
-		m_pCurrent->m_pDepthBuffer = nullptr;
+		pCurrent->m_pDepthBuffer = nullptr;
 
 	assert(!gfxContext.isFramebufferError());
 }
@@ -814,12 +831,71 @@ void FrameBuffer_Destroy()
 	frameBufferList().destroy();
 }
 
+void FrameBufferList::_renderScreenSizeBuffer()
+{
+	if (m_list.empty())
+		return;
+
+	DisplayWindow & wnd = dwnd();
+	GraphicsDrawer & drawer = wnd.getDrawer();
+	FrameBuffer *pBuffer = &m_list.back();
+	PostProcessor & postProcessor = PostProcessor::get();
+	FrameBuffer * pFilteredBuffer = postProcessor.doBlur(postProcessor.doGammaCorrection(
+		postProcessor.doOrientationCorrection(pBuffer)));
+	CachedTexture * pBufferTexture = pFilteredBuffer->m_pTexture;
+
+
+	s32 srcCoord[4] = { 0, 0, pBufferTexture->realWidth, pBufferTexture->realHeight };
+	const s32 hOffset = (wnd.getScreenWidth() - wnd.getWidth()) / 2;
+	const s32 vOffset = (wnd.getScreenHeight() - wnd.getHeight()) / 2 + wnd.getHeightOffset();
+	s32 dstCoord[4] = { hOffset, vOffset, hOffset + pBufferTexture->realWidth, vOffset + pBufferTexture->realHeight };
+
+	gfxContext.bindFramebuffer(bufferTarget::DRAW_FRAMEBUFFER, ObjectHandle::null);
+
+	float clearColor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+	drawer.clearColorBuffer(clearColor);
+
+	TextureParam filter = textureParameters::FILTER_LINEAR;
+
+	GraphicsDrawer::BlitOrCopyRectParams blitParams;
+	blitParams.srcX0 = srcCoord[0];
+	blitParams.srcY0 = srcCoord[1];
+	blitParams.srcX1 = srcCoord[2];
+	blitParams.srcY1 = srcCoord[3];
+	blitParams.srcWidth = pBufferTexture->realWidth;
+	blitParams.srcHeight = pBufferTexture->realHeight;
+	blitParams.dstX0 = dstCoord[0];
+	blitParams.dstY0 = dstCoord[1];
+	blitParams.dstX1 = dstCoord[2];
+	blitParams.dstY1 = dstCoord[3];
+	blitParams.dstWidth = wnd.getScreenWidth();
+	blitParams.dstHeight = wnd.getScreenHeight() + wnd.getHeightOffset();
+	blitParams.filter = filter;
+	blitParams.mask = blitMask::COLOR_BUFFER;
+	blitParams.tex[0] = pBufferTexture;
+	blitParams.combiner = CombinerInfo::get().getTexrectCopyProgram();
+	blitParams.readBuffer = pFilteredBuffer->m_FBO;
+
+	drawer.blitOrCopyTexturedRect(blitParams);
+
+	gfxContext.bindFramebuffer(bufferTarget::READ_FRAMEBUFFER, ObjectHandle::null);
+
+	wnd.swapBuffers();
+	gfxContext.bindFramebuffer(bufferTarget::DRAW_FRAMEBUFFER, pBuffer->m_FBO);
+	gDP.changed |= CHANGED_SCISSOR;
+}
+
 void FrameBufferList::renderBuffer(u32 _address)
 {
 	static s32 vStartPrev = 0;
 
 	if (VI.width == 0 || *REG.VI_WIDTH == 0 || *REG.VI_H_START == 0) // H width is zero. Don't draw
 		return;
+
+	if (config.frameBufferEmulation.enable == 0) {
+		_renderScreenSizeBuffer();
+		return;
+	}
 
 	FrameBuffer *pBuffer = findBuffer(_address);
 	if (pBuffer == nullptr)

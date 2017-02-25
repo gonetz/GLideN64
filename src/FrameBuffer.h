@@ -110,6 +110,9 @@ private:
 
 	FrameBuffer * _findBuffer(u32 _startAddress, u32 _endAddress, u32 _width);
 
+	void _createScreenSizeBuffer();
+	void _renderScreenSizeBuffer();
+
 	typedef std::list<FrameBuffer> FrameBuffers;
 	FrameBuffers m_list;
 	FrameBuffer * m_pCurrent;

@@ -173,16 +173,14 @@ void GraphicsDrawer::updateScissor(FrameBuffer * _pBuffer) const
 {
 	DisplayWindow & wnd = DisplayWindow::get();
 	f32 scaleX, scaleY;
-	u32 heightOffset, screenHeight;
+	u32 screenHeight;
 	if (_pBuffer == nullptr) {
 		scaleX = wnd.getScaleX();
 		scaleY = wnd.getScaleY();
-		heightOffset = wnd.getHeightOffset();
 		screenHeight = VI.height;
 	} else {
 		scaleX = _pBuffer->m_scaleX;
 		scaleY = _pBuffer->m_scaleY;
-		heightOffset = 0;
 		screenHeight = (_pBuffer->m_height == 0) ? VI.height : _pBuffer->m_height;
 	}
 
@@ -191,7 +189,7 @@ void GraphicsDrawer::updateScissor(FrameBuffer * _pBuffer) const
 	if (_needAdjustCoordinate(wnd))
 		_adjustScissorX(SX0, SX1, wnd.getAdjustScale());
 
-	gfxContext.setScissor((s32)(SX0 * scaleX), (s32)((screenHeight - gDP.scissor.lry) * scaleY + heightOffset),
+	gfxContext.setScissor((s32)(SX0 * scaleX), (s32)((screenHeight - gDP.scissor.lry) * scaleY),
 		std::max((s32)((SX1 - SX0) * scaleX), 0), std::max((s32)((gDP.scissor.lry - gDP.scissor.uly) * scaleY), 0));
 	gDP.changed &= ~CHANGED_SCISSOR;
 }
@@ -216,7 +214,7 @@ void GraphicsDrawer::_updateViewport() const
 			Xf = _adjustViewportX(Xf);
 		const s32 X = (s32)(Xf * scaleX);
 		const s32 Y = gSP.viewport.vscale[1] < 0 ? (s32)((gSP.viewport.y + gSP.viewport.vscale[1] * 2.0f) * scaleY) : (s32)((VI.height - (gSP.viewport.y + gSP.viewport.height)) * scaleY);
-		gfxContext.setViewport(X, Y + wnd.getHeightOffset(),
+		gfxContext.setViewport(X, Y,
 			std::max((s32)(gSP.viewport.width * scaleX), 0), std::max((s32)(gSP.viewport.height * scaleY), 0));
 	} else {
 		const f32 scaleX = pCurrentBuffer->m_scaleX;
@@ -237,7 +235,7 @@ void GraphicsDrawer::_updateScreenCoordsViewport() const
 	DisplayWindow & wnd = DisplayWindow::get();
 	FrameBuffer * pCurrentBuffer = frameBufferList().getCurrent();
 	if (pCurrentBuffer == nullptr)
-		gfxContext.setViewport(0, wnd.getHeightOffset(), wnd.getScreenWidth(), wnd.getScreenHeight());
+		gfxContext.setViewport(0, 0, wnd.getScreenWidth(), wnd.getScreenHeight());
 	else
 		gfxContext.setViewport(0, 0, s32(pCurrentBuffer->m_width*pCurrentBuffer->m_scaleX), s32(pCurrentBuffer->m_height*pCurrentBuffer->m_scaleY));
 	gSP.changed |= CHANGED_VIEWPORT;
@@ -846,7 +844,7 @@ void GraphicsDrawer::drawRect(int _ulx, int _uly, int _lrx, int _lry, float *_pC
 	FrameBuffer * pCurrentBuffer = frameBufferList().getCurrent();
 	DisplayWindow & wnd = dwnd();
 	if (pCurrentBuffer == nullptr)
-		gfxContext.setViewport(0, wnd.getHeightOffset(), wnd.getScreenWidth(), wnd.getScreenHeight());
+		gfxContext.setViewport(0, 0, wnd.getScreenWidth(), wnd.getScreenHeight());
 	else
 		gfxContext.setViewport(0, 0, pCurrentBuffer->m_width*pCurrentBuffer->m_scaleX, pCurrentBuffer->m_height*pCurrentBuffer->m_scaleY);
 
@@ -1249,7 +1247,7 @@ void GraphicsDrawer::drawTexturedRect(const TexturedRectParams & _params)
 		m_texrectDrawer.add();
 	else {
 		if (pCurrentBuffer == nullptr)
-			gfxContext.setViewport(0, wnd.getHeightOffset(), wnd.getScreenWidth(), wnd.getScreenHeight());
+			gfxContext.setViewport(0, 0, wnd.getScreenWidth(), wnd.getScreenHeight());
 		else
 			gfxContext.setViewport(0, 0, pCurrentBuffer->m_width*pCurrentBuffer->m_scaleX, pCurrentBuffer->m_height*pCurrentBuffer->m_scaleY);
 

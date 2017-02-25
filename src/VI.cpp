@@ -163,10 +163,9 @@ void VI_UpdateScreen()
 			frameBufferList().clearBuffersChanged();
 			VI.lastOrigin = *REG.VI_ORIGIN;
 		} 
-	}
-	else {
+	} else {
 		if (gDP.changed & CHANGED_COLORBUFFER) {
-			wnd.swapBuffers();
+			frameBufferList().renderBuffer(*REG.VI_ORIGIN);
 			gDP.changed &= ~CHANGED_COLORBUFFER;
 			VI.lastOrigin = *REG.VI_ORIGIN;
 		}

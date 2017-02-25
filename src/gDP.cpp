@@ -148,10 +148,10 @@ void gDPSetColorImage( u32 format, u32 size, u32 width, u32 address )
 		else
 			height = VI.height > 0 ? VI.height : gDP.scissor.lry;
 
-		if (config.frameBufferEmulation.enable) {
-				frameBufferList().saveBuffer(address, (u16)format, (u16)size, (u16)width, height, false);
-				gDP.colorImage.height = 0;
-		} else
+		frameBufferList().saveBuffer(address, (u16)format, (u16)size, (u16)width, height, false);
+		if (config.frameBufferEmulation.enable != 0)
+			gDP.colorImage.height = 0;
+		else
 			gDP.colorImage.height = height;
 	}
 

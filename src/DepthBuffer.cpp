@@ -417,10 +417,32 @@ void DepthBufferList::removeBuffer(u32 _address )
 		}
 }
 
+void DepthBufferList::_createScreenSizeBuffer(u32 _address)
+{
+	FrameBuffer * pFrameBuffer = frameBufferList().findBuffer(VI.width*2);
+	if (pFrameBuffer == nullptr)
+		return;
+
+	m_list.emplace_front();
+	DepthBuffer & buffer = m_list.front();
+
+	buffer.m_address = _address;
+	buffer.m_width = pFrameBuffer->m_width;
+
+	buffer.initDepthBufferTexture(pFrameBuffer);
+
+	m_pCurrent = &buffer;
+	frameBufferList().attachDepthBuffer();
+	m_pCurrent = nullptr;
+}
+
 void DepthBufferList::saveBuffer(u32 _address)
 {
-	if (!config.frameBufferEmulation.enable)
+	if (config.frameBufferEmulation.enable == 0) {
+		if (m_list.empty())
+			_createScreenSizeBuffer(_address);
 		return;
+	}
 
 	FrameBuffer * pFrameBuffer = frameBufferList().findBuffer(_address);
 	if (pFrameBuffer != nullptr)
