@@ -174,7 +174,6 @@ void ConfigDialog::_init()
 	ui->frameBufferCheckBox->setChecked(fbEmulationEnabled);
 	ui->frameBufferInfoFrame->setVisible(!fbEmulationEnabled);
 	ui->frameBufferInfoFrame2->setVisible(!fbEmulationEnabled);
-	ui->frameBufferInfoFrame3->setVisible(!fbEmulationEnabled);
 
 	ui->copyColorBufferComboBox->setCurrentIndex(config.frameBufferEmulation.copyToRDRAM);
 	ui->copyDepthBufferComboBox->setCurrentIndex(config.frameBufferEmulation.copyDepthToRDRAM);

@@ -1107,7 +1107,10 @@
              </sizepolicy>
             </property>
             <property name="text">
-             <string notr="true">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;img src=&quot;:/Info.ico&quot;/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             <string notr="true"/>
+            </property>
+            <property name="pixmap">
+             <pixmap resource="icon.qrc">:/Info.ico</pixmap>
             </property>
            </widget>
           </item>
@@ -1574,7 +1577,7 @@
         </spacer>
        </item>
        <item>
-        <widget class="QFrame" name="frameBufferInfoFrame3">
+        <widget class="QFrame" name="frameBufferInfoFrame2">
          <layout class="QHBoxLayout" name="horizontalLayout_30">
           <property name="spacing">
            <number>9</number>
@@ -1592,7 +1595,7 @@
            <number>0</number>
           </property>
           <item>
-           <widget class="QLabel" name="frameBufferInfoIcon3">
+           <widget class="QLabel" name="frameBufferInfoIcon2">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
               <horstretch>0</horstretch>
@@ -1600,12 +1603,15 @@
              </sizepolicy>
             </property>
             <property name="text">
-             <string notr="true">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;img src=&quot;:/Info.ico&quot;/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             <string notr="true"/>
+            </property>
+            <property name="pixmap">
+             <pixmap resource="icon.qrc">:/Info.ico</pixmap>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QLabel" name="frameBufferInfoLabel3">
+           <widget class="QLabel" name="frameBufferInfoLabel2">
             <property name="text">
              <string>Some of the options on this tab have been disabled because frame buffer emulation has been turned off.</string>
             </property>
@@ -1691,7 +1697,7 @@
                <item>
                 <widget class="QLabel" name="frameBufferWarningLabel">
                  <property name="text">
-                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Unchecking this option disables many effects including anti-aliasing, cropping, aspect ratio, N64 resolution factor, N64-style depth compare and more. Don't uncheck this option unless you have performance issues.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Unchecking this option disables many effects including cropping, aspect ratio, N64 resolution factor, N64-style depth compare and more. Don't uncheck this option unless you have performance issues.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                  </property>
                  <property name="textFormat">
                   <enum>Qt::RichText</enum>
@@ -2863,50 +2869,6 @@
          </item>
         </layout>
        </item>
-       <item>
-        <widget class="QFrame" name="frameBufferInfoFrame2">
-         <layout class="QHBoxLayout" name="horizontalLayout_21">
-          <property name="spacing">
-           <number>9</number>
-          </property>
-          <property name="leftMargin">
-           <number>0</number>
-          </property>
-          <property name="topMargin">
-           <number>0</number>
-          </property>
-          <property name="rightMargin">
-           <number>0</number>
-          </property>
-          <property name="bottomMargin">
-           <number>0</number>
-          </property>
-          <item>
-           <widget class="QLabel" name="frameBufferInfoIcon2">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="text">
-             <string notr="true">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;img src=&quot;:/Info.ico&quot;/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QLabel" name="frameBufferInfoLabel2">
-            <property name="text">
-             <string>All of the options on this tab have been disabled because frame buffer emulation has been turned off.</string>
-            </property>
-            <property name="wordWrap">
-             <bool>true</bool>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </widget>
-       </item>
       </layout>
      </widget>
      <widget class="QWidget" name="osdTab">
@@ -3698,12 +3660,12 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>396</x>
-     <y>150</y>
+     <x>566</x>
+     <y>183</y>
     </hint>
     <hint type="destinationlabel">
-     <x>396</x>
-     <y>169</y>
+     <x>398</x>
+     <y>199</y>
     </hint>
    </hints>
   </connection>
@@ -3714,12 +3676,12 @@
    <slot>setHidden(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>128</x>
-     <y>199</y>
+     <x>119</x>
+     <y>69</y>
     </hint>
     <hint type="destinationlabel">
-     <x>202</x>
-     <y>233</y>
+     <x>119</x>
+     <y>69</y>
     </hint>
    </hints>
   </connection>
@@ -3730,12 +3692,12 @@
    <slot>setHidden(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>102</x>
-     <y>220</y>
+     <x>113</x>
+     <y>69</y>
     </hint>
     <hint type="destinationlabel">
-     <x>192</x>
-     <y>255</y>
+     <x>119</x>
+     <y>69</y>
     </hint>
    </hints>
   </connection>
@@ -3746,12 +3708,12 @@
    <slot>setVisible(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>62</x>
-     <y>242</y>
+     <x>73</x>
+     <y>69</y>
     </hint>
     <hint type="destinationlabel">
-     <x>215</x>
-     <y>276</y>
+     <x>119</x>
+     <y>69</y>
     </hint>
    </hints>
   </connection>
@@ -3762,12 +3724,12 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>392</x>
-     <y>249</y>
+     <x>119</x>
+     <y>69</y>
     </hint>
     <hint type="destinationlabel">
-     <x>393</x>
-     <y>272</y>
+     <x>119</x>
+     <y>69</y>
     </hint>
    </hints>
   </connection>
@@ -3778,12 +3740,12 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>74</x>
-     <y>302</y>
+     <x>81</x>
+     <y>325</y>
     </hint>
     <hint type="destinationlabel">
-     <x>76</x>
-     <y>340</y>
+     <x>98</x>
+     <y>344</y>
     </hint>
    </hints>
   </connection>
@@ -3798,8 +3760,8 @@
      <y>325</y>
     </hint>
     <hint type="destinationlabel">
-     <x>163</x>
-     <y>342</y>
+     <x>171</x>
+     <y>344</y>
     </hint>
    </hints>
   </connection>
@@ -3814,8 +3776,8 @@
      <y>325</y>
     </hint>
     <hint type="destinationlabel">
-     <x>252</x>
-     <y>339</y>
+     <x>259</x>
+     <y>344</y>
     </hint>
    </hints>
   </connection>
@@ -3826,12 +3788,12 @@
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>29</x>
-     <y>221</y>
+     <x>40</x>
+     <y>69</y>
     </hint>
     <hint type="destinationlabel">
-     <x>29</x>
-     <y>243</y>
+     <x>40</x>
+     <y>69</y>
     </hint>
    </hints>
   </connection>
@@ -3842,12 +3804,12 @@
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>45</x>
-     <y>222</y>
+     <x>56</x>
+     <y>69</y>
     </hint>
     <hint type="destinationlabel">
-     <x>44</x>
-     <y>263</y>
+     <x>55</x>
+     <y>69</y>
     </hint>
    </hints>
   </connection>
@@ -3858,12 +3820,12 @@
    <slot>setDisabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>27</x>
-     <y>306</y>
+     <x>38</x>
+     <y>69</y>
     </hint>
     <hint type="destinationlabel">
-     <x>26</x>
-     <y>344</y>
+     <x>37</x>
+     <y>69</y>
     </hint>
    </hints>
   </connection>
@@ -3874,12 +3836,12 @@
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>160</x>
-     <y>44</y>
+     <x>119</x>
+     <y>69</y>
     </hint>
     <hint type="destinationlabel">
-     <x>71</x>
-     <y>216</y>
+     <x>82</x>
+     <y>69</y>
     </hint>
    </hints>
   </connection>
@@ -3890,12 +3852,12 @@
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>312</x>
-     <y>49</y>
+     <x>119</x>
+     <y>69</y>
     </hint>
     <hint type="destinationlabel">
-     <x>101</x>
-     <y>240</y>
+     <x>114</x>
+     <y>307</y>
     </hint>
    </hints>
   </connection>
@@ -3906,8 +3868,8 @@
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>312</x>
-     <y>49</y>
+     <x>119</x>
+     <y>69</y>
     </hint>
     <hint type="destinationlabel">
      <x>101</x>
@@ -3918,32 +3880,16 @@
   <connection>
    <sender>frameBufferCheckBox</sender>
    <signal>toggled(bool)</signal>
-   <receiver>aliasingFrame</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>312</x>
-     <y>49</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>400</x>
-     <y>75</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>frameBufferCheckBox</sender>
-   <signal>toggled(bool)</signal>
    <receiver>factorFrame</receiver>
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>312</x>
-     <y>49</y>
+     <x>119</x>
+     <y>69</y>
     </hint>
     <hint type="destinationlabel">
-     <x>312</x>
-     <y>225</y>
+     <x>119</x>
+     <y>69</y>
     </hint>
    </hints>
   </connection>
@@ -3954,12 +3900,12 @@
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>42</x>
-     <y>196</y>
+     <x>53</x>
+     <y>69</y>
     </hint>
     <hint type="destinationlabel">
-     <x>42</x>
-     <y>320</y>
+     <x>53</x>
+     <y>69</y>
     </hint>
    </hints>
   </connection>
@@ -3970,12 +3916,12 @@
    <slot>setDisabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>154</x>
-     <y>218</y>
+     <x>119</x>
+     <y>69</y>
     </hint>
     <hint type="destinationlabel">
-     <x>153</x>
-     <y>327</y>
+     <x>119</x>
+     <y>69</y>
     </hint>
    </hints>
   </connection>
@@ -3986,12 +3932,12 @@
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>83</x>
-     <y>242</y>
+     <x>94</x>
+     <y>69</y>
     </hint>
     <hint type="destinationlabel">
-     <x>84</x>
-     <y>316</y>
+     <x>95</x>
+     <y>69</y>
     </hint>
    </hints>
   </connection>
@@ -4002,44 +3948,12 @@
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>60</x>
-     <y>82</y>
+     <x>71</x>
+     <y>78</y>
     </hint>
     <hint type="destinationlabel">
-     <x>53</x>
-     <y>100</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>frameBufferCheckBox</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>bloomGroupBox</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>312</x>
-     <y>49</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>162</x>
-     <y>200</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>frameBufferCheckBox</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>gammaCorrectionGroupBox</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>312</x>
-     <y>49</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>462</x>
-     <y>85</y>
+     <x>64</x>
+     <y>78</y>
     </hint>
    </hints>
   </connection>
@@ -4050,8 +3964,8 @@
    <slot>setHidden(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>312</x>
-     <y>49</y>
+     <x>119</x>
+     <y>69</y>
     </hint>
     <hint type="destinationlabel">
      <x>312</x>
@@ -4066,28 +3980,12 @@
    <slot>setHidden(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>312</x>
-     <y>49</y>
+     <x>119</x>
+     <y>69</y>
     </hint>
     <hint type="destinationlabel">
-     <x>312</x>
-     <y>584</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>frameBufferCheckBox</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>frameBufferInfoFrame3</receiver>
-   <slot>setHidden(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>312</x>
-     <y>49</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>312</x>
-     <y>584</y>
+     <x>101</x>
+     <y>401</y>
     </hint>
    </hints>
   </connection>
@@ -4098,8 +3996,8 @@
    <slot>setDisabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>165</x>
-     <y>394</y>
+     <x>119</x>
+     <y>69</y>
     </hint>
     <hint type="destinationlabel">
      <x>400</x>
@@ -4114,23 +4012,22 @@
    <slot>setVisible(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>165</x>
-     <y>394</y>
+     <x>119</x>
+     <y>69</y>
     </hint>
     <hint type="destinationlabel">
-     <x>400</x>
-     <y>206</y>
+     <x>591</x>
+     <y>130</y>
     </hint>
    </hints>
   </connection>
  </connections>
  <buttongroups>
-  <buttongroup name="fixTexrectCoordsButtonGroup"/>
+  <buttongroup name="aspectButtonGroup"/>
   <buttongroup name="bloomBlendModeButtonGroup"/>
   <buttongroup name="screenshotButtonGroup"/>
+  <buttongroup name="fixTexrectCoordsButtonGroup"/>
   <buttongroup name="factorButtonGroup"/>
   <buttongroup name="osdButtonGroup"/>
-  <buttongroup name="aspectButtonGroup"/>
-  <buttongroup name="fixTexrectCoordsButtonGroup"/>
  </buttongroups>
 </ui>
