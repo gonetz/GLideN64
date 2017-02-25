@@ -938,13 +938,13 @@ void FrameBufferList::renderBuffer(u32 _address)
 			(srcCoord[2] - srcCoord[0]) != (dstCoord[2] - dstCoord[0]) ||
 			(srcCoord[3] - srcCoord[1]) != (dstCoord[3] - dstCoord[1])) {
 			pFilteredBuffer->resolveMultisampledTexture(true);
-			readBuffer = ObjectHandle(pFilteredBuffer->m_resolveFBO);
+			readBuffer = pFilteredBuffer->m_resolveFBO;
 		} else {
-			readBuffer = ObjectHandle(pFilteredBuffer->m_FBO);
+			readBuffer = pFilteredBuffer->m_FBO;
 			filter = textureParameters::FILTER_NEAREST;
 		}
 	} else {
-		readBuffer = ObjectHandle(pFilteredBuffer->m_FBO);
+		readBuffer = pFilteredBuffer->m_FBO;
 	}
 
 	GraphicsDrawer::BlitOrCopyRectParams blitParams;
@@ -980,9 +980,9 @@ void FrameBufferList::renderBuffer(u32 _address)
 			dstY1 = dstY0 + dstPartHeight;
 			if (pFilteredBuffer->m_pTexture->frameBufferTexture == CachedTexture::fbMultiSample) {
 				pFilteredBuffer->resolveMultisampledTexture();
-				readBuffer = ObjectHandle(pFilteredBuffer->m_resolveFBO);
+				readBuffer = pFilteredBuffer->m_resolveFBO;
 			} else {
-				readBuffer = ObjectHandle(pFilteredBuffer->m_FBO);
+				readBuffer = pFilteredBuffer->m_FBO;
 			}
 
 			pBufferTexture = pFilteredBuffer->m_pTexture;
@@ -1010,7 +1010,7 @@ void FrameBufferList::renderBuffer(u32 _address)
 
 	wnd.swapBuffers();
 	if (m_pCurrent != nullptr) {
-		gfxContext.bindFramebuffer(bufferTarget::DRAW_FRAMEBUFFER, ObjectHandle(m_pCurrent->m_FBO));
+		gfxContext.bindFramebuffer(bufferTarget::DRAW_FRAMEBUFFER, m_pCurrent->m_FBO);
 	}
 	gDP.changed |= CHANGED_SCISSOR;
 }
