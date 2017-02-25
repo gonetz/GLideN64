@@ -140,11 +140,11 @@ bool FrameBuffer::isAuxiliary() const
 	return m_width != VI.width;
 }
 
-void FrameBuffer::init(u32 _address, u32 _endAddress, u16 _format, u16 _size, u16 _width, u16 _height, bool _cfb)
+void FrameBuffer::init(u32 _address, u16 _format, u16 _size, u16 _width, u16 _height, bool _cfb)
 {
 	DisplayWindow & wnd = dwnd();
 	m_startAddress = _address;
-	m_endAddress = _endAddress;
+	m_endAddress = _address + ((_width * _height) << _size >> 1) - 1;
 	m_width = _width;
 	m_height = _height;
 	m_size = _size;
@@ -184,14 +184,13 @@ void FrameBuffer::init(u32 _address, u32 _endAddress, u16 _format, u16 _size, u1
 void FrameBuffer::reinit(u16 _height)
 {
 	const u16 format = m_pTexture->format;
-	const u32 endAddress = m_startAddress + ((m_width * _height) << m_size >> 1) - 1;
 	textureCache().removeFrameBufferTexture(m_pTexture);
 
 	gfxContext.deleteFramebuffer(ObjectHandle(m_resolveFBO));
 
 	textureCache().removeFrameBufferTexture(m_pResolveTexture);
 	m_pTexture = textureCache().addFrameBufferTexture(config.video.multisampling != 0);
-	init(m_startAddress, endAddress, format, m_size, m_width, _height, m_cfb);
+	init(m_startAddress, format, m_size, m_width, _height, m_cfb);
 }
 
 inline
@@ -571,7 +570,7 @@ void FrameBufferList::_createScreenSizeBuffer()
 		return;
 	m_list.emplace_front();
 	FrameBuffer & buffer = m_list.front();
-	buffer.init(VI.width * 2, VI.width * VI.height * 2, G_IM_FMT_RGBA, G_IM_SIZ_16b, VI.width, VI.height, false);
+	buffer.init(VI.width * 2, G_IM_FMT_RGBA, G_IM_SIZ_16b, VI.width, VI.height, false);
 }
 
 void FrameBufferList::saveBuffer(u32 _address, u16 _format, u16 _size, u16 _width, u16 _height, bool _cfb)
@@ -628,7 +627,6 @@ void FrameBufferList::saveBuffer(u32 _address, u16 _format, u16 _size, u16 _widt
 		m_pCurrent = _findBuffer(m_pCurrent->m_startAddress, m_pCurrent->m_endAddress, m_pCurrent->m_width);
 	}
 
-	const u32 endAddress = _address + ((_width * _height) << _size >> 1) - 1;
 	if (m_pCurrent == nullptr || m_pCurrent->m_startAddress != _address || m_pCurrent->m_width != _width)
 		m_pCurrent = findBuffer(_address);
 	const float scaleX = config.frameBufferEmulation.nativeResFactor == 0 ? wnd.getScaleX() : static_cast<float>(config.frameBufferEmulation.nativeResFactor);
@@ -667,7 +665,7 @@ void FrameBufferList::saveBuffer(u32 _address, u16 _format, u16 _size, u16 _widt
 		// Wasn't found or removed, create a new one
 		m_list.emplace_front();
 		FrameBuffer & buffer = m_list.front();
-		buffer.init(_address, endAddress, _format, _size, _width, _height, _cfb);
+		buffer.init(_address, _format, _size, _width, _height, _cfb);
 		m_pCurrent = &buffer;
 
 		if (m_pCurrent->_isMarioTennisScoreboard() || ((config.generalEmulation.hacks & hack_legoRacers) != 0 && _width == VI.width))
