@@ -220,7 +220,6 @@ struct gDPInfo
 	{
 		u32 format, size, width, height, bpl;
 		u32 address, changed;
-		u32 depthImage;
 	} colorImage;
 
 	u32	depthImageAddress;
