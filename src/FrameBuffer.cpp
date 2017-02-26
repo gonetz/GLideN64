@@ -485,10 +485,13 @@ void FrameBufferList::destroy() {
 	gfxContext.bindFramebuffer(bufferTarget::DRAW_FRAMEBUFFER, ObjectHandle::null);
 }
 
-void FrameBufferList::setBufferChanged()
+void FrameBufferList::setBufferChanged(f32 _maxY)
 {
 	gDP.colorImage.changed = TRUE;
+	gDP.colorImage.height = max(gDP.colorImage.height, (u32)_maxY);
+	gDP.colorImage.height = min(gDP.colorImage.height, (u32)gDP.scissor.lry);
 	if (m_pCurrent != nullptr) {
+		m_pCurrent->m_height = max(m_pCurrent->m_height, gDP.colorImage.height);
 		m_pCurrent->m_cfb = false;
 		m_pCurrent->m_changed = true;
 		m_pCurrent->m_copiedToRdram = false;

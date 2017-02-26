@@ -61,9 +61,6 @@ void gSPTriangle(s32 v0, s32 v1, s32 v2)
 			return;
 		drawer.addTriangle(v0, v1, v2);
 	}
-
-	frameBufferList().setBufferChanged();
-	gDP.colorImage.height = (u32)max( gDP.colorImage.height, (u32)gDP.scissor.lry );
 }
 
 void gSP1Triangle( const s32 v0, const s32 v1, const s32 v2)
@@ -2042,7 +2039,6 @@ void gSPDrawObjRect(const ObjCoordinates & _coords)
 	vtx3.t = _coords.lrt;
 
 	drawer.drawScreenSpaceTriangle(4);
-	gDP.colorImage.height = (u32)(max(gDP.colorImage.height, (u32)gDP.scissor.lry));
 }
 
 static
@@ -2326,9 +2322,6 @@ void gSPObjSprite(u32 _sp)
 	vtx3.t = lrt;
 
 	drawer.drawScreenSpaceTriangle(4);
-
-	frameBufferList().setBufferChanged();
-	gDP.colorImage.height = (u32)(max( gDP.colorImage.height, (u32)gDP.scissor.lry ));
 }
 
 static

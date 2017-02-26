@@ -662,7 +662,7 @@ void GraphicsDrawer::drawTriangles()
 
 	if (config.frameBufferEmulation.enable != 0) {
 		const f32 maxY = renderTriangles(triangles.vertices.data(), triangles.elements.data(), triangles.num);
-		gDP.colorImage.height = std::max(gDP.colorImage.height, (u32)maxY);
+		frameBufferList().setBufferChanged(maxY);
 		if (config.frameBufferEmulation.copyDepthToRDRAM == Config::cdSoftwareRender &&
 			gDP.otherMode.depthUpdate != 0) {
 			FrameBuffer * pCurrentDepthBuffer = frameBufferList().findBuffer(gDP.depthImageAddress);
@@ -680,10 +680,11 @@ void GraphicsDrawer::drawScreenSpaceTriangle(u32 _numVtx)
 	if (_numVtx == 0 || !_canDraw())
 		return;
 
+	f32 maxY = 0;
 	for (u32 i = 0; i < _numVtx; ++i) {
 		SPVertex & vtx = m_dmaVertices[i];
 		vtx.modify = MODIFY_ALL;
-		gDP.colorImage.height = std::max(gDP.colorImage.height, (u32)vtx.y);
+		maxY = std::max(maxY, vtx.y);
 	}
 	m_modifyVertices = MODIFY_ALL;
 
@@ -699,7 +700,7 @@ void GraphicsDrawer::drawScreenSpaceTriangle(u32 _numVtx)
 	triParams.combiner = currentCombiner();
 	gfxContext.drawTriangles(triParams);
 
-	frameBufferList().setBufferChanged();
+	frameBufferList().setBufferChanged(maxY);
 	gSP.changed |= CHANGED_GEOMETRYMODE;
 }
 
@@ -720,7 +721,7 @@ void GraphicsDrawer::drawDMATriangles(u32 _numVtx)
 
 	if (config.frameBufferEmulation.enable != 0) {
 		const f32 maxY = renderTriangles(m_dmaVertices.data(), nullptr, _numVtx);
-		gDP.colorImage.height = std::max(gDP.colorImage.height, (u32)maxY);
+		frameBufferList().setBufferChanged(maxY);
 		if (config.frameBufferEmulation.copyDepthToRDRAM == Config::cdSoftwareRender &&
 			gDP.otherMode.depthUpdate != 0) {
 			FrameBuffer * pCurrentDepthBuffer = frameBufferList().findBuffer(gDP.depthImageAddress);
