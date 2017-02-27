@@ -24,7 +24,7 @@
 //****************************************************************
 
 
-#include <VI.h>
+#include <gSP.h>
 #include "ClipPolygon.h"
 
 float LeftClip  =   0.0f;
@@ -64,8 +64,10 @@ inline int cliptesty(vertexclip * v)
 
 int ClipPolygon(vertexclip *** final, vertexclip * vbp, int numVertices)
 {
-	RightClip = VI.width;
-	TopClip = VI.height;
+	LeftClip = gSP.viewport.x;
+	RightClip = LeftClip + gSP.viewport.width;
+	BotClip = gSP.viewport.y;
+	TopClip = BotClip + gSP.viewport.height;
 	int max, n, dsti;
 	static vertexclip * vp1[12], * vp2[12];     // vertex ptr buffers
 	vertexclip ** src = vp1;
