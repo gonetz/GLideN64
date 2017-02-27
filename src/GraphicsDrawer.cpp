@@ -173,15 +173,12 @@ void GraphicsDrawer::updateScissor(FrameBuffer * _pBuffer) const
 {
 	DisplayWindow & wnd = DisplayWindow::get();
 	f32 scaleX, scaleY;
-	u32 screenHeight;
 	if (_pBuffer == nullptr) {
 		scaleX = wnd.getScaleX();
 		scaleY = wnd.getScaleY();
-		screenHeight = VI.height;
 	} else {
 		scaleX = _pBuffer->m_scaleX;
 		scaleY = _pBuffer->m_scaleY;
-		screenHeight = (_pBuffer->m_height == 0) ? VI.height : _pBuffer->m_height;
 	}
 
 	f32 SX0 = gDP.scissor.ulx;
