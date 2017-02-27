@@ -700,7 +700,7 @@ void FrameBufferList::saveBuffer(u32 _address, u16 _format, u16 _size, u16 _widt
 void FrameBufferList::copyAux()
 {
 	for (auto iter = m_list.begin(); iter != m_list.end(); ++iter) {
-		if (iter->m_width != VI.width && iter->m_height != VI.height)
+		if (iter->isAuxiliary())
 			FrameBuffer_CopyToRDRAM(iter->m_startAddress, true);
 	}
 }
@@ -708,7 +708,7 @@ void FrameBufferList::copyAux()
 void FrameBufferList::removeAux()
 {
 	for (auto iter = m_list.begin(); iter != m_list.end(); ++iter) {
-		while (iter->m_width != VI.width && iter->m_height != VI.height) {
+		while (iter->isAuxiliary()) {
 			if (&(*iter) == m_pCurrent) {
 				m_pCurrent = nullptr;
 				gfxContext.bindFramebuffer(bufferTarget::DRAW_FRAMEBUFFER, ObjectHandle::null);
