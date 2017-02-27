@@ -355,7 +355,7 @@ bool FrameBuffer::_initSubTexture(u32 _t)
 	m_pSubTexture->clampS = pTile->clamps;
 	m_pSubTexture->clampT = pTile->clampt;
 	m_pSubTexture->offsetS = 0.0f;
-	m_pSubTexture->offsetT = m_pSubTexture->clampHeight;
+	m_pSubTexture->offsetT = 0.0f;
 
 
 	_setAndAttachTexture(m_SubFBO, m_pSubTexture, _t, false);
@@ -372,7 +372,7 @@ CachedTexture * FrameBuffer::_getSubTexture(u32 _t)
 		return m_pTexture;
 
 	s32 x0 = (s32)(m_pTexture->offsetS * m_scaleX);
-	s32 y0 = (s32)(m_pTexture->offsetT * m_scaleY) - m_pSubTexture->realHeight;
+	s32 y0 = (s32)(m_pTexture->offsetT * m_scaleY);
 	s32 copyWidth = m_pSubTexture->realWidth;
 	if (x0 + copyWidth > m_pTexture->realWidth)
 		copyWidth = m_pTexture->realWidth - x0;
@@ -422,10 +422,10 @@ CachedTexture * FrameBuffer::getTexture(u32 _t)
 	const u32 factor = m_width;
 	if (m_loadType == LOADTYPE_TILE) {
 		pTexture->offsetS = (float)(m_loadTileOrigin.uls + (shift % factor));
-		pTexture->offsetT = (float)(m_height - (m_loadTileOrigin.ult + shift / factor));
+		pTexture->offsetT = (float)(m_loadTileOrigin.ult + shift / factor);
 	} else {
 		pTexture->offsetS = (float)(shift % factor);
-		pTexture->offsetT = (float)(m_height - shift / factor);
+		pTexture->offsetT = (float)(shift / factor);
 	}
 
 	if (!getDepthTexture && (gSP.textureTile[_t]->clamps == 0 || gSP.textureTile[_t]->clampt == 0))
@@ -460,7 +460,7 @@ CachedTexture * FrameBuffer::getTextureBG(u32 _t)
 	m_pTexture->shiftScaleT = 1.0f;
 
 	m_pTexture->offsetS = gSP.bgImage.imageX;
-	m_pTexture->offsetT = (float)m_height - gSP.bgImage.imageY;
+	m_pTexture->offsetT = gSP.bgImage.imageY;
 	return m_pTexture;
 }
 
@@ -862,9 +862,9 @@ void FrameBufferList::_renderScreenSizeBuffer()
 
 	GraphicsDrawer::BlitOrCopyRectParams blitParams;
 	blitParams.srcX0 = srcCoord[0];
-	blitParams.srcY0 = srcCoord[1];
+	blitParams.srcY0 = srcCoord[3];
 	blitParams.srcX1 = srcCoord[2];
-	blitParams.srcY1 = srcCoord[3];
+	blitParams.srcY1 = srcCoord[1];
 	blitParams.srcWidth = pBufferTexture->realWidth;
 	blitParams.srcHeight = pBufferTexture->realHeight;
 	blitParams.dstX0 = dstCoord[0];
@@ -1028,9 +1028,9 @@ void FrameBufferList::renderBuffer(u32 _address)
 
 	GraphicsDrawer::BlitOrCopyRectParams blitParams;
 	blitParams.srcX0 = srcCoord[0];
-	blitParams.srcY0 = srcCoord[1];
+	blitParams.srcY0 = srcCoord[3];
 	blitParams.srcX1 = srcCoord[2];
-	blitParams.srcY1 = srcCoord[3];
+	blitParams.srcY1 = srcCoord[1];
 	blitParams.srcWidth = pBufferTexture->realWidth;
 	blitParams.srcHeight = pBufferTexture->realHeight;
 	blitParams.dstX0 = dstCoord[0];

@@ -31,7 +31,7 @@ void writeToRdram(TSrc* _src, TDst* _dst, TDst(*converter)(TSrc _c), TSrc _testV
 	u32 dsty = 0;
 	for (; y < _height; ++y) {
 		for (u32 x = 0; x < _width && numStored < _numPixels; ++x) {
-			c = _src[x + (_height - y - 1)*_width];
+			c = _src[x + y *_width];
 			if (c != _testValue)
 				_dst[(x + dsty*_width) ^ _xor] = converter(c);
 			++numStored;

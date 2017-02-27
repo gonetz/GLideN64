@@ -99,7 +99,7 @@ bool _copyBufferFromRdram(u32 _address, u32* _dst, u32(*converter)(TSrc _c, bool
 	const u32 y1 = _y0 + _height;
 	for (u32 y = _y0; y < y1; ++y) {
 		for (u32 x = _x0; x < _width; ++x) {
-			idx = (x + (_height - y - 1)*_width) ^ _xor;
+			idx = (x + y *_width) ^ _xor;
 			if (idx >= bound)
 				break;
 			col = src[idx];
@@ -133,7 +133,7 @@ bool _copyPixelsFromRdram(u32 _address, const std::vector<u32> & _vecAddress, u3
 			return false;
 		col = src[idx];
 		summ += col;
-		_dst[(w + (_height - h)*_width) ^ _xor] = converter(col, _bCFB);
+		_dst[(w + h * _width) ^ _xor] = converter(col, _bCFB);
 	}
 
 	return summ != 0;
@@ -255,8 +255,8 @@ void RDRAMtoColorBuffer::copyFromRDRAM(u32 _address, bool _bCFB)
 	m_pTexture->scaleT = 1.0f / (float)m_pTexture->realHeight;
 	m_pTexture->shiftScaleS = 1.0f;
 	m_pTexture->shiftScaleT = 1.0f;
-	m_pTexture->offsetS = 0;
-	m_pTexture->offsetT = (float)m_pTexture->height;
+	m_pTexture->offsetS = 0.0f;
+	m_pTexture->offsetT = 0.0f;
 	textureCache().activateTexture(0, m_pTexture);
 
 	gDPTile tile0;

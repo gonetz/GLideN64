@@ -186,11 +186,14 @@ void GraphicsDrawer::updateScissor(FrameBuffer * _pBuffer) const
 
 	f32 SX0 = gDP.scissor.ulx;
 	f32 SX1 = gDP.scissor.lrx;
+	f32 SY0 = gDP.scissor.uly;
+	f32 SY1 = gDP.scissor.lry;
 	if (_needAdjustCoordinate(wnd))
 		_adjustScissorX(SX0, SX1, wnd.getAdjustScale());
 
-	gfxContext.setScissor((s32)(SX0 * scaleX), (s32)((screenHeight - gDP.scissor.lry) * scaleY),
-		std::max((s32)((SX1 - SX0) * scaleX), 0), std::max((s32)((gDP.scissor.lry - gDP.scissor.uly) * scaleY), 0));
+	gfxContext.setScissor((s32)(SX0 * scaleX), (s32)(SY0 * scaleY),
+		std::max((s32)((SX1 - SX0) * scaleX), 0), std::max((s32)((SY1 - SY0) * scaleY), 0));
+
 	gDP.changed &= ~CHANGED_SCISSOR;
 }
 
@@ -213,7 +216,8 @@ void GraphicsDrawer::_updateViewport() const
 		if (_needAdjustCoordinate(wnd))
 			Xf = _adjustViewportX(Xf);
 		const s32 X = (s32)(Xf * scaleX);
-		const s32 Y = gSP.viewport.vscale[1] < 0 ? (s32)((gSP.viewport.y + gSP.viewport.vscale[1] * 2.0f) * scaleY) : (s32)((VI.height - (gSP.viewport.y + gSP.viewport.height)) * scaleY);
+//		const s32 Y = gSP.viewport.vscale[1] < 0 ? (s32)((gSP.viewport.y + gSP.viewport.vscale[1] * 2.0f) * scaleY) : (s32)((VI.height - (gSP.viewport.y + gSP.viewport.height)) * scaleY);
+		const s32 Y = (s32)(gSP.viewport.y * scaleY);
 		gfxContext.setViewport(X, Y,
 			std::max((s32)(gSP.viewport.width * scaleX), 0), std::max((s32)(gSP.viewport.height * scaleY), 0));
 	} else {
@@ -223,7 +227,8 @@ void GraphicsDrawer::_updateViewport() const
 		if (_needAdjustCoordinate(wnd))
 			Xf = _adjustViewportX(Xf);
 		const s32 X = (s32)(Xf * scaleX);
-		const s32 Y = gSP.viewport.vscale[1] < 0 ? (s32)((gSP.viewport.y + gSP.viewport.vscale[1] * 2.0f) * scaleY) : (s32)((pCurrentBuffer->m_height - (gSP.viewport.y + gSP.viewport.height)) * scaleY);
+//		const s32 Y = gSP.viewport.vscale[1] < 0 ? (s32)((gSP.viewport.y + gSP.viewport.vscale[1] * 2.0f) * scaleY) : (s32)((pCurrentBuffer->m_height - (gSP.viewport.y + gSP.viewport.height)) * scaleY);
+		const s32 Y = (s32)(gSP.viewport.y * scaleY);
 		gfxContext.setViewport(X, Y,
 			std::max((s32)(gSP.viewport.width * scaleX), 0), std::max((s32)(gSP.viewport.height * scaleY), 0));
 	}
@@ -1094,7 +1099,7 @@ void GraphicsDrawer::drawTexturedRect(const TexturedRectParams & _params)
 		lry = (float)_params.lry * (2.0f * scaleY) - 1.0f;
 	} else {
 		uly = (float)_params.uly * (-2.0f * scaleY) + 1.0f;
-		lry = (float)(_params.lry) * (-2.0f * scaleY) + 1.0f;
+		lry = (float)_params.lry * (-2.0f * scaleY) + 1.0f;
 		// Flush text drawer
 		if (m_texrectDrawer.draw())
 			_updateStates(DrawingState::TexRect);
@@ -1143,9 +1148,9 @@ void GraphicsDrawer::drawTexturedRect(const TexturedRectParams & _params)
 
 			if (cache.current[t]->frameBufferTexture != CachedTexture::fbNone) {
 				texST[t].s0 = cache.current[t]->offsetS + texST[t].s0;
-				texST[t].t0 = cache.current[t]->offsetT - texST[t].t0;
+				texST[t].t0 = cache.current[t]->offsetT + texST[t].t0;
 				texST[t].s1 = cache.current[t]->offsetS + texST[t].s1;
-				texST[t].t1 = cache.current[t]->offsetT - texST[t].t1;
+				texST[t].t1 = cache.current[t]->offsetT + texST[t].t1;
 			}
 
 			if (cache.current[t]->frameBufferTexture != CachedTexture::fbMultiSample) {
@@ -1383,9 +1388,9 @@ void GraphicsDrawer::copyTexturedRect(const CopyRectParams & _params)
 	const float scaleX = 1.0f / _params.dstWidth;
 	const float scaleY = 1.0f / _params.dstHeight;
 	const float X0 = _params.dstX0 * (2.0f * scaleX) - 1.0f;
-	const float Y0 = _params.dstY0 * (2.0f * scaleY) - 1.0f;
+	const float Y0 = _params.dstY0 * (-2.0f * scaleY) + 1.0f;
 	const float X1 = _params.dstX1 * (2.0f * scaleX) - 1.0f;
-	const float Y1 = _params.dstY1 * (2.0f * scaleY) - 1.0f;
+	const float Y1 = _params.dstY1 * (-2.0f * scaleY) + 1.0f;
 	const float Z = 0.0f;
 	const float W = 1.0f;
 

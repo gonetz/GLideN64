@@ -93,8 +93,8 @@ namespace graphics {
 	}
 
 	namespace cullMode {
-		CullModeParam FRONT(GL_FRONT);
-		CullModeParam BACK(GL_BACK);
+		CullModeParam FRONT(GL_BACK);
+		CullModeParam BACK(GL_FRONT);
 	}
 
 	namespace compare {
