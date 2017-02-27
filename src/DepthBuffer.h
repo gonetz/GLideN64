@@ -11,7 +11,6 @@ struct FrameBuffer;
 struct DepthBuffer
 {
 	DepthBuffer();
-	DepthBuffer(DepthBuffer && _other);
 	~DepthBuffer();
 	void initDepthImageTexture(FrameBuffer * _pBuffer);
 	void initDepthBufferTexture(FrameBuffer * _pBuffer);
