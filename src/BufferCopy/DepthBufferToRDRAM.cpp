@@ -27,7 +27,7 @@ DepthBufferToRDRAM::DepthBufferToRDRAM()
 	: m_frameCount(-1)
 	, m_pColorTexture(nullptr)
 	, m_pDepthTexture(nullptr)
-	, m_pCurDepthBuffer(nullptr)
+	, m_pCurFrameBuffer(nullptr)
 {
 }
 
@@ -148,26 +148,35 @@ bool DepthBufferToRDRAM::_prepareCopy(u32 _address, bool _copyChunk)
 	if (_copyChunk && m_frameCount == curFrame)
 		return true;
 
-	const u32 numPixels = VI.width * VI.height;
-	if (numPixels == 0) // Incorrect buffer size. Don't copy
+	if ((VI.width | VI.height) == 0) // Incorrect buffer size. Don't copy
 		return false;
+
 	FrameBuffer *pBuffer = frameBufferList().findBuffer(_address);
 	if (pBuffer == nullptr || pBuffer->isAuxiliary() || pBuffer->m_pDepthBuffer == nullptr || !pBuffer->m_pDepthBuffer->m_cleared)
 		return false;
 
-	m_pCurDepthBuffer = pBuffer->m_pDepthBuffer;
-	const u32 address = m_pCurDepthBuffer->m_address;
+	FrameBuffer * pDepthFrameBuffer = frameBufferList().findBuffer(pBuffer->m_pDepthBuffer->m_address);
+	if (pDepthFrameBuffer != nullptr)
+		m_pCurFrameBuffer = pDepthFrameBuffer;
+	else
+		m_pCurFrameBuffer = pBuffer;
+
+	if (m_pCurFrameBuffer->m_width != pBuffer->m_pDepthBuffer->m_width)
+		return false;
+
+	const u32 numPixels = m_pCurFrameBuffer->m_width * m_pCurFrameBuffer->m_height;
+	const u32 address = m_pCurFrameBuffer->m_pDepthBuffer->m_address;
 	if (address + numPixels * 2 > RDRAMSize)
 		return false;
 
-	const u32 height = cutHeight(address, std::min(VI.height, m_pCurDepthBuffer->m_lry), pBuffer->m_width * 2);
+	const u32 height = cutHeight(address, m_pCurFrameBuffer->m_height, m_pCurFrameBuffer->m_width * 2);
 	if (height == 0)
 		return false;
 
 	ObjectHandle readBuffer = pBuffer->m_FBO;
 	if (config.video.multisampling != 0) {
-		m_pCurDepthBuffer->resolveDepthBufferTexture(pBuffer);
-		readBuffer = pBuffer->m_resolveFBO;
+		m_pCurFrameBuffer->m_pDepthBuffer->resolveDepthBufferTexture(m_pCurFrameBuffer);
+		readBuffer = m_pCurFrameBuffer->m_resolveFBO;
 	}
 
 	Context::BlitFramebuffersParams blitParams;
@@ -175,12 +184,12 @@ bool DepthBufferToRDRAM::_prepareCopy(u32 _address, bool _copyChunk)
 	blitParams.drawBuffer = m_FBO;
 	blitParams.srcX0 = 0;
 	blitParams.srcY0 = 0;
-	blitParams.srcX1 = pBuffer->m_pTexture->realWidth;
-	blitParams.srcY1 = pBuffer->m_pTexture->realHeight;
+	blitParams.srcX1 = m_pCurFrameBuffer->m_pTexture->realWidth;
+	blitParams.srcY1 = s32(m_pCurFrameBuffer->m_height * m_pCurFrameBuffer->m_scaleY);
 	blitParams.dstX0 = 0;
 	blitParams.dstY0 = 0;
-	blitParams.dstX1 = pBuffer->m_width;
-	blitParams.dstY1 = pBuffer->m_height;
+	blitParams.dstX1 = m_pCurFrameBuffer->m_width;
+	blitParams.dstY1 = m_pCurFrameBuffer->m_height;
 	blitParams.mask = blitMask::DEPTH_BUFFER;
 	blitParams.filter = textureParameters::FILTER_NEAREST;
 
@@ -204,19 +213,20 @@ u16 DepthBufferToRDRAM::_FloatToUInt16(f32 _z)
 
 bool DepthBufferToRDRAM::_copy(u32 _startAddress, u32 _endAddress)
 {
-	const u32 stride = m_pCurDepthBuffer->m_width << 1;
-	const u32 max_height = cutHeight(_startAddress, std::min(VI.height, m_pCurDepthBuffer->m_lry), stride);
+	DepthBuffer * pDepthBuffer = m_pCurFrameBuffer->m_pDepthBuffer;
+	const u32 stride = m_pCurFrameBuffer->m_width << 1;
+	const u32 max_height = cutHeight(_startAddress, m_pCurFrameBuffer->m_height, stride);
 
 	u32 numPixels = (_endAddress - _startAddress) >> 1;
-	if (numPixels / m_pCurDepthBuffer->m_width > max_height) {
+	if (numPixels / m_pCurFrameBuffer->m_width > max_height) {
 		_endAddress = _startAddress + (max_height * stride);
 		numPixels = (_endAddress - _startAddress) >> 1;
 	}
 
-	const u32 width = m_pCurDepthBuffer->m_width;
+	const u32 width = m_pCurFrameBuffer->m_width;
 	const s32 x0 = 0;
-	const s32 y0 = max_height - (_endAddress - m_pCurDepthBuffer->m_address) / stride;
-	const u32 y1 = max_height - (_startAddress - m_pCurDepthBuffer->m_address) / stride;
+	const s32 y0 = max_height - (_endAddress - pDepthBuffer->m_address) / stride;
+	const u32 y1 = max_height - (_startAddress - pDepthBuffer->m_address) / stride;
 	const u32 height = std::min(max_height, 1u + y1 - y0);
 
 	gfxContext.bindFramebuffer(bufferTarget::READ_FRAMEBUFFER, m_FBO);
@@ -233,10 +243,20 @@ bool DepthBufferToRDRAM::_copy(u32 _startAddress, u32 _endAddress)
 
 	std::vector<f32> srcBuf(width * height);
 	memcpy(srcBuf.data(), ptr_src, width * height * sizeof(f32));
-	writeToRdram<f32, u16>(srcBuf.data(), ptr_dst, &DepthBufferToRDRAM::_FloatToUInt16, 2.0f, 1, width, height, numPixels, _startAddress, m_pCurDepthBuffer->m_address, G_IM_SIZ_16b);
+	writeToRdram<f32, u16>(srcBuf.data(),
+						   ptr_dst,
+						   &DepthBufferToRDRAM::_FloatToUInt16,
+						   2.0f,
+						   1,
+						   width,
+						   height,
+						   numPixels,
+						   _startAddress,
+						   pDepthBuffer->m_address,
+						   G_IM_SIZ_16b);
 
-	m_pCurDepthBuffer->m_cleared = false;
-	FrameBuffer * pBuffer = frameBufferList().findBuffer(m_pCurDepthBuffer->m_address);
+	pDepthBuffer->m_cleared = false;
+	FrameBuffer * pBuffer = frameBufferList().findBuffer(pDepthBuffer->m_address);
 	if (pBuffer != nullptr)
 		pBuffer->m_cleared = false;
 
@@ -257,8 +277,9 @@ bool DepthBufferToRDRAM::copyToRDRAM(u32 _address)
 	if (!_prepareCopy(_address, false))
 		return false;
 
-	const u32 endAddress = m_pCurDepthBuffer->m_address + (std::min(VI.height, m_pCurDepthBuffer->m_lry) * m_pCurDepthBuffer->m_width * 2);
-	return _copy(m_pCurDepthBuffer->m_address, endAddress);
+	const u32 endAddress = m_pCurFrameBuffer->m_pDepthBuffer->m_address +
+			m_pCurFrameBuffer->m_width * m_pCurFrameBuffer->m_height * 2;
+	return _copy(m_pCurFrameBuffer->m_pDepthBuffer->m_address, endAddress);
 }
 
 bool DepthBufferToRDRAM::copyChunkToRDRAM(u32 _address)

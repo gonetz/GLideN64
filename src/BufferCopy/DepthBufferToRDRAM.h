@@ -9,7 +9,7 @@ namespace graphics {
 }
 
 struct CachedTexture;
-struct DepthBuffer;
+struct FrameBuffer;
 
 class DepthBufferToRDRAM
 {
@@ -37,7 +37,7 @@ private:
 	u32 m_frameCount;
 	CachedTexture * m_pColorTexture;
 	CachedTexture * m_pDepthTexture;
-	DepthBuffer * m_pCurDepthBuffer;
+	FrameBuffer * m_pCurFrameBuffer;
 };
 
 #endif // DepthBufferToRDRAM_H
