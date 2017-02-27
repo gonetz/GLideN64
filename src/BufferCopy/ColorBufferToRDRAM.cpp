@@ -163,7 +163,7 @@ bool ColorBufferToRDRAM::_prepareCopy(u32 _startAddress)
 
 	m_pCurFrameBuffer = pBuffer;
 
-	if ((config.generalEmulation.hacks & hack_subscreen) != 0 && m_pCurFrameBuffer->m_width == VI.width && m_pCurFrameBuffer->m_height == VI.height) {
+	if ((config.generalEmulation.hacks & hack_subscreen) != 0 && m_pCurFrameBuffer->m_width == VI.width && m_pCurFrameBuffer->m_height > 220) {
 		copyWhiteToRDRAM(m_pCurFrameBuffer);
 		return false;
 	}
@@ -179,9 +179,8 @@ bool ColorBufferToRDRAM::_prepareCopy(u32 _startAddress)
 
 	if (m_pCurFrameBuffer->m_scaleX != 1.0f || m_pCurFrameBuffer->m_scaleY != 1.0f) {
 		u32 x0 = 0;
-		u32 width, height;
+		u32 width;
 		if (config.frameBufferEmulation.nativeResFactor == 0) {
-			height = wnd.getHeight();
 			const u32 screenWidth = wnd.getWidth();
 			width = screenWidth;
 			if (wnd.isAdjustScreen()) {
@@ -190,8 +189,8 @@ bool ColorBufferToRDRAM::_prepareCopy(u32 _startAddress)
 			}
 		} else {
 			width = m_pCurFrameBuffer->m_pTexture->realWidth;
-			height = m_pCurFrameBuffer->m_pTexture->realHeight;
 		}
+		u32 height = (u32)(m_pCurFrameBuffer->m_height * m_pCurFrameBuffer->m_scaleY);
 
 		CachedTexture * pInputTexture = m_pCurFrameBuffer->m_pTexture;
 		GraphicsDrawer::BlitOrCopyRectParams blitParams;
@@ -203,8 +202,8 @@ bool ColorBufferToRDRAM::_prepareCopy(u32 _startAddress)
 		blitParams.srcHeight = pInputTexture->realHeight;
 		blitParams.dstX0 = 0;
 		blitParams.dstY0 = 0;
-		blitParams.dstX1 = VI.width;
-		blitParams.dstY1 = VI.height;
+		blitParams.dstX1 = m_pCurFrameBuffer->m_width;
+		blitParams.dstY1 = m_pCurFrameBuffer->m_height;
 		blitParams.dstWidth = m_pTexture->realWidth;
 		blitParams.dstHeight = m_pTexture->realHeight;
 		blitParams.filter = textureParameters::FILTER_NEAREST;
