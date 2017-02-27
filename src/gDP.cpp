@@ -755,8 +755,6 @@ void gDPFillRectangle( s32 ulx, s32 uly, s32 lrx, s32 lry )
 	}
 
 	if (depthBuffer != dbCleared) {
-		frameBufferList().setBufferChanged(lry);
-
 		if (gDP.otherMode.cycleType == G_CYC_FILL) {
 			f32 fillColor[4];
 			gDPGetFillColor(fillColor);
@@ -779,6 +777,8 @@ void gDPFillRectangle( s32 ulx, s32 uly, s32 lrx, s32 lry )
 			drawer.drawRect(ulx, uly, lrx, lry);
 		}
 	}
+
+	frameBufferList().setBufferChanged(lry);
 
 #ifdef DEBUG
 	DebugMsg( DEBUG_HIGH | DEBUG_HANDLED, "gDPFillRectangle( %i, %i, %i, %i );\n",
