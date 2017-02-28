@@ -20,6 +20,9 @@
 
 using namespace graphics;
 
+#define DEPTH_TEX_WIDTH 640
+#define DEPTH_TEX_HEIGHT 580
+
 DepthBufferToRDRAM::DepthBufferToRDRAM()
 	: m_frameCount(-1)
 	, m_pColorTexture(nullptr)
@@ -40,6 +43,11 @@ DepthBufferToRDRAM & DepthBufferToRDRAM::get()
 
 void DepthBufferToRDRAM::init()
 {
+	// Generate and initialize Pixel Buffer Objects
+	m_pbuf.reset(gfxContext.createPixelReadBuffer(DEPTH_TEX_WIDTH * DEPTH_TEX_HEIGHT * sizeof(float)));
+	if (!m_pbuf)
+		return;
+
 	m_pColorTexture = textureCache().addFrameBufferTexture(false);
 	m_pColorTexture->format = G_IM_FMT_I;
 	m_pColorTexture->clampS = 1;
@@ -49,8 +57,8 @@ void DepthBufferToRDRAM::init()
 	m_pColorTexture->maskT = 0;
 	m_pColorTexture->mirrorS = 0;
 	m_pColorTexture->mirrorT = 0;
-	m_pColorTexture->realWidth = 640;
-	m_pColorTexture->realHeight = 580;
+	m_pColorTexture->realWidth = DEPTH_TEX_WIDTH;
+	m_pColorTexture->realHeight = DEPTH_TEX_HEIGHT;
 	m_pColorTexture->textureBytes = m_pColorTexture->realWidth * m_pColorTexture->realHeight;
 	textureCache().addFrameBufferTextureSize(m_pColorTexture->textureBytes);
 
@@ -63,8 +71,8 @@ void DepthBufferToRDRAM::init()
 	m_pDepthTexture->maskT = 0;
 	m_pDepthTexture->mirrorS = 0;
 	m_pDepthTexture->mirrorT = 0;
-	m_pDepthTexture->realWidth = 640;
-	m_pDepthTexture->realHeight = 580;
+	m_pDepthTexture->realWidth = DEPTH_TEX_WIDTH;
+	m_pDepthTexture->realHeight = DEPTH_TEX_HEIGHT;
 	m_pDepthTexture->textureBytes = m_pDepthTexture->realWidth * m_pDepthTexture->realHeight * sizeof(float);
 	textureCache().addFrameBufferTextureSize(m_pDepthTexture->textureBytes);
 
@@ -115,12 +123,11 @@ void DepthBufferToRDRAM::init()
 	assert(!gfxContext.isFramebufferError());
 	assert(!gfxContext.isError());
 	gfxContext.bindFramebuffer(bufferTarget::DRAW_FRAMEBUFFER, ObjectHandle::null);
-
-	// Generate and initialize Pixel Buffer Objects
-	m_pbuf.reset(gfxContext.createPixelReadBuffer(m_pDepthTexture->textureBytes));
 }
 
 void DepthBufferToRDRAM::destroy() {
+	if (!m_pbuf)
+		return;
 
 	gfxContext.deleteFramebuffer(m_FBO);
 	m_FBO.reset();
@@ -243,6 +250,10 @@ bool DepthBufferToRDRAM::copyToRDRAM(u32 _address)
 {
 	if (config.frameBufferEmulation.copyDepthToRDRAM == Config::cdSoftwareRender)
 		return true;
+
+	if (!m_pbuf)
+		return false;
+
 	if (!_prepareCopy(_address, false))
 		return false;
 
@@ -254,6 +265,10 @@ bool DepthBufferToRDRAM::copyChunkToRDRAM(u32 _address)
 {
 	if (config.frameBufferEmulation.copyDepthToRDRAM == Config::cdSoftwareRender)
 		return true;
+
+	if (!m_pbuf)
+		return false;
+
 	if (!_prepareCopy(_address, true))
 		return false;
 
