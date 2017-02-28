@@ -173,7 +173,6 @@ void TexrectDrawer::add()
 
 	Context::DrawRectParameters rectParams;
 	rectParams.mode = drawmode::TRIANGLE_STRIP;
-	rectParams.rectColor.fill(0.0f);
 	rectParams.verticesCount = 4;
 	rectParams.vertices = pRect;
 	rectParams.combiner = currentCombiner();
@@ -286,7 +285,6 @@ bool TexrectDrawer::draw()
 
 	Context::DrawRectParameters rectParams;
 	rectParams.mode = drawmode::TRIANGLE_STRIP;
-	rectParams.rectColor.fill(0.0f);
 	rectParams.verticesCount = 4;
 	rectParams.vertices = rect;
 	rectParams.combiner = m_programTex.get();

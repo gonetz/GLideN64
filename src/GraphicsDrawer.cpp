@@ -835,6 +835,14 @@ void GraphicsDrawer::drawRect(int _ulx, int _uly, int _lrx, int _lry, float *_pC
 	if (!_canDraw())
 		return;
 
+	if (gDP.otherMode.cycleType == G_CYC_FILL) {
+		gDP.rectColor.r = _pColor[0];
+		gDP.rectColor.g = _pColor[1];
+		gDP.rectColor.b = _pColor[2];
+		gDP.rectColor.a = _pColor[3];
+	} else {
+		gDP.rectColor = gDPInfo::Color();
+	}
 	gSP.changed &= ~CHANGED_GEOMETRYMODE; // Don't update cull mode
 	if (gSP.changed || gDP.changed)
 		_updateStates(DrawingState::Rect);
@@ -879,10 +887,6 @@ void GraphicsDrawer::drawRect(int _ulx, int _uly, int _lrx, int _lry, float *_pC
 
 	Context::DrawRectParameters rectParams;
 	rectParams.mode = drawmode::TRIANGLE_STRIP;
-	if (gDP.otherMode.cycleType == G_CYC_FILL)
-		std::copy_n(_pColor, 4, rectParams.rectColor.begin());
-	else
-		rectParams.rectColor.fill(0.0f);
 	rectParams.verticesCount = 4;
 	rectParams.vertices = m_rect;
 	rectParams.combiner = currentCombiner();
@@ -1052,7 +1056,6 @@ void GraphicsDrawer::drawTexturedRect(const TexturedRectParams & _params)
 {
 	gSP.changed &= ~CHANGED_GEOMETRYMODE; // Don't update cull mode
 	m_drawingState = DrawingState::TexRect;
-	f32 alpha = 0.0f;
 
 	if (!m_texrectDrawer.isEmpty()) {
 		CombinerInfo & cmbInfo = CombinerInfo::get();
@@ -1061,18 +1064,15 @@ void GraphicsDrawer::drawTexturedRect(const TexturedRectParams & _params)
 		_updateTextures();
 		cmbInfo.updateParameters();
 	} else {
+		gDP.rectColor = gDPInfo::Color();
+		if (gDP.otherMode.cycleType < G_CYC_COPY) {
+			if (gDP.combine.mA0 == G_ACMUX_0 && gDP.combine.aA0 == G_ACMUX_SHADE)
+				gDP.rectColor.a = 1.0f;
+		}
+
 		if (_params.texrectCmd && (gSP.changed | gDP.changed) != 0)
 			_updateStates(DrawingState::TexRect);
 		gfxContext.enable(enable::CULL_FACE, false);
-
-		if (CombinerInfo::get().isChanged()) {
-			if (currentCombiner()->usesShade()) {
-				gDPCombine combine;
-				combine.mux = currentCombiner()->getKey().getMux();
-				if (combine.mA0 == G_ACMUX_0 && combine.aA0 == G_ACMUX_SHADE)
-					alpha = 1.0f;
-			}
-		}
 
 		if (_params.texrectCmd && texturedRectSpecial != nullptr && texturedRectSpecial(_params)) {
 			gSP.changed |= CHANGED_GEOMETRYMODE;
@@ -1253,8 +1253,6 @@ void GraphicsDrawer::drawTexturedRect(const TexturedRectParams & _params)
 
 		Context::DrawRectParameters rectParams;
 		rectParams.mode = drawmode::TRIANGLE_STRIP;
-		rectParams.rectColor.fill(0.0f);
-		rectParams.rectColor[3] = alpha;
 		rectParams.verticesCount = 4;
 		rectParams.vertices = m_rect;
 		rectParams.combiner = currentCombiner();
@@ -1466,7 +1464,6 @@ void GraphicsDrawer::copyTexturedRect(const CopyRectParams & _params)
 
 	Context::DrawRectParameters rectParams;
 	rectParams.mode = drawmode::TRIANGLE_STRIP;
-	rectParams.rectColor.fill(0.0f);
 	rectParams.verticesCount = 4;
 	rectParams.vertices = m_rect;
 	rectParams.combiner = _params.combiner;

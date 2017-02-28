@@ -355,17 +355,17 @@ public:
 	{
 		m_part =
 			"IN highp vec4 aRectPosition;						\n"
-			"IN lowp vec4 aRectColor;							\n"
 			"IN highp vec2 aTexCoord0;							\n"
 			"IN highp vec2 aTexCoord1;							\n"
 			"													\n"
 			"OUT lowp vec4 vShadeColor;							\n"
 			"OUT mediump vec2 vTexCoord0;						\n"
 			"OUT mediump vec2 vTexCoord1;						\n"
+			"uniform lowp vec4 uRectColor;						\n"
 			"void main()										\n"
 			"{													\n"
 			"  gl_Position = aRectPosition;						\n"
-			"  vShadeColor = aRectColor;						\n"
+			"  vShadeColor = uRectColor;						\n"
 			"  vTexCoord0 = aTexCoord0;							\n"
 			"  vTexCoord1 = aTexCoord1;							\n"
 		;
@@ -387,13 +387,13 @@ public:
 	{
 		m_part =
 			"IN highp vec4 aRectPosition;						\n"
-			"IN lowp vec4 aRectColor;							\n"
 			"													\n"
 			"OUT lowp vec4 vShadeColor;							\n"
+			"uniform lowp vec4 uRectColor;						\n"
 			"void main()										\n"
 			"{													\n"
 			"  gl_Position = aRectPosition;						\n"
-			"  vShadeColor = aRectColor;						\n"
+			"  vShadeColor = uRectColor;						\n"
 			;
 		if (!_glinfo.isGLESX) {
 			m_part +=

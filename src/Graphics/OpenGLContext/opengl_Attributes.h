@@ -15,7 +15,6 @@ namespace opengl {
 	// Rect attributes
 	namespace rectAttrib {
 		extern const GLuint position;
-		extern const GLuint color;
 		extern const GLuint texcoord0;
 		extern const GLuint texcoord1;
 	}

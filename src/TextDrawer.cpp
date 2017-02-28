@@ -344,7 +344,6 @@ void TextDrawer::drawText(const char *_pText, float _x, float _y) const
 
 	Context::DrawRectParameters rectParams;
 	rectParams.mode = drawmode::TRIANGLES;
-	rectParams.rectColor.fill(0.0f);
 	rectParams.verticesCount = coords.size();
 	rectParams.vertices = coords.data();
 	rectParams.combiner = m_program.get();

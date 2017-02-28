@@ -9,7 +9,6 @@ void Utils::locateAttributes(GLuint _program, bool _rect, bool _textures)
 {
 	if (_rect) {
 		glBindAttribLocation(_program, opengl::rectAttrib::position, "aRectPosition");
-		glBindAttribLocation(_program, opengl::rectAttrib::color, "aRectColor");
 		if (_textures) {
 			glBindAttribLocation(_program, opengl::rectAttrib::texcoord0, "aTexCoord0");
 			glBindAttribLocation(_program, opengl::rectAttrib::texcoord1, "aTexCoord1");

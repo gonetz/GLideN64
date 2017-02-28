@@ -191,8 +191,9 @@ struct gDPInfo
 
 	struct Color
 	{
+		Color() : r(0), g(0), b(0), a(0) {}
 		f32 r, g, b, a;
-	} fogColor,  blendColor, envColor;
+	} fogColor,  blendColor, envColor, rectColor;
 
 	struct
 	{

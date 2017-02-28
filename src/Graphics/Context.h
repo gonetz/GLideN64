@@ -244,7 +244,6 @@ namespace graphics {
 		{
 			DrawModeParam mode;
 			u32 verticesCount = 0;
-			std::array<f32, 4> rectColor;
 			RectVertex * vertices = nullptr;
 			const CombinerProgram * combiner = nullptr;
 		};

@@ -3,18 +3,17 @@
 namespace opengl {
 
 	namespace triangleAttrib {
-		const GLuint position = 1U;
-		const GLuint color = 2U;
-		const GLuint texcoord = 3U;
-		const GLuint numlights = 4U;
-		const GLuint modify = 5U;
+		const GLuint position = 0U;
+		const GLuint color = 1U;
+		const GLuint texcoord = 2U;
+		const GLuint numlights = 3U;
+		const GLuint modify = 4U;
 	}
 
 	// Rect attributes
 	namespace rectAttrib {
-		const GLuint position = 6U;
-		const GLuint color = 7U;
-		const GLuint texcoord0 = 8U;
-		const GLuint texcoord1 = 9U;
+		const GLuint position = 5U;
+		const GLuint texcoord0 = 6U;
+		const GLuint texcoord1 = 7U;
 	}
 }

@@ -28,7 +28,6 @@ BufferedDrawer::BufferedDrawer(const GLInfo & _glinfo, CachedVertexAttribArray *
 	m_cachedAttribArray->enableVertexAttribArray(rectAttrib::position, true);
 	m_cachedAttribArray->enableVertexAttribArray(rectAttrib::texcoord0, true);
 	m_cachedAttribArray->enableVertexAttribArray(rectAttrib::texcoord1, true);
-	m_cachedAttribArray->enableVertexAttribArray(rectAttrib::color, false);
 	glVertexAttribPointer(rectAttrib::position, 4, GL_FLOAT, GL_FALSE, sizeof(RectVertex), (const GLvoid *)(offsetof(RectVertex, x)));
 	glVertexAttribPointer(rectAttrib::texcoord0, 2, GL_FLOAT, GL_FALSE, sizeof(RectVertex), (const GLvoid *)(offsetof(RectVertex, s0)));
 	glVertexAttribPointer(rectAttrib::texcoord1, 2, GL_FLOAT, GL_FALSE, sizeof(RectVertex), (const GLvoid *)(offsetof(RectVertex, s1)));
@@ -133,8 +132,6 @@ void BufferedDrawer::_updateRectBuffer(const graphics::Context::DrawRectParamete
 void BufferedDrawer::drawRects(const graphics::Context::DrawRectParameters & _params)
 {
 	_updateRectBuffer(_params);
-
-	glVertexAttrib4fv(rectAttrib::color, _params.rectColor.data());
 
 	glDrawArrays(GLenum(_params.mode), m_rectsBuffers.vbo.pos - _params.verticesCount, _params.verticesCount);
 }

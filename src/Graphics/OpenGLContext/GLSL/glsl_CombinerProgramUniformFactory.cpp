@@ -638,6 +638,22 @@ private:
 	fUniform uK5;
 };
 
+class URectColor : public UniformGroup
+{
+public:
+	URectColor(GLuint _program) {
+		LocateUniform(uRectColor);
+	}
+
+	void update(bool _force) override
+	{
+		uRectColor.set(&gDP.rectColor.r, _force);
+	}
+
+private:
+	fv4Uniform uRectColor;
+};
+
 class UTextureSize : public UniformGroup
 {
 public:
@@ -772,8 +788,10 @@ void CombinerProgramUniformFactory::buildUniforms(GLuint _program,
 	if (config.generalEmulation.enableNoise != 0)
 		_uniforms.emplace_back(new UNoiseTex(_program));
 
-	if (!m_glInfo.isGLES2)
+	if (!m_glInfo.isGLES2) {
 		_uniforms.emplace_back(new UDepthTex(_program));
+		_uniforms.emplace_back(new UDepthScale(_program));
+	}
 
 	if (_inputs.usesTexture()) {
 		_uniforms.emplace_back(new UTextures(_program));
@@ -820,9 +838,6 @@ void CombinerProgramUniformFactory::buildUniforms(GLuint _program,
 
 	_uniforms.emplace_back(new UAlphaTestInfo(_program));
 
-	if (!m_glInfo.isGLES2)
-		_uniforms.emplace_back(new UDepthScale(_program));
-
 	if (config.frameBufferEmulation.N64DepthCompare != 0)
 		_uniforms.emplace_back(new UDepthInfo(_program));
 
@@ -833,6 +848,9 @@ void CombinerProgramUniformFactory::buildUniforms(GLuint _program,
 	_uniforms.emplace_back(new UScreenCoordsScale(_program));
 
 	_uniforms.emplace_back(new UColors(_program));
+
+	if (_key.isRectKey())
+		_uniforms.emplace_back(new URectColor(_program));
 
 	if (_inputs.usesHwLighting())
 		_uniforms.emplace_back(new ULights(_program));

@@ -17,7 +17,6 @@ UnbufferedDrawer::UnbufferedDrawer(const GLInfo & _glinfo, CachedVertexAttribArr
 	m_cachedAttribArray->enableVertexAttribArray(triangleAttrib::modify, false);
 
 	m_cachedAttribArray->enableVertexAttribArray(rectAttrib::position, false);
-	m_cachedAttribArray->enableVertexAttribArray(rectAttrib::color, false);
 	m_cachedAttribArray->enableVertexAttribArray(rectAttrib::texcoord0, false);
 	m_cachedAttribArray->enableVertexAttribArray(rectAttrib::texcoord1, false);
 
@@ -96,8 +95,6 @@ void UnbufferedDrawer::drawRects(const graphics::Context::DrawRectParameters & _
 		if (_updateAttribPointer(rectAttrib::position, ptr))
 			glVertexAttribPointer(rectAttrib::position, 4, GL_FLOAT, GL_FALSE, sizeof(RectVertex), ptr);
 	}
-
-	glVertexAttrib4fv(rectAttrib::color, _params.rectColor.data());
 
 	if (_params.combiner->usesTile(0)) {
 		m_cachedAttribArray->enableVertexAttribArray(rectAttrib::texcoord0, true);
