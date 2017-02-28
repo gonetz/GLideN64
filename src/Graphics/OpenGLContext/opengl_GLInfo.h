@@ -5,6 +5,7 @@ namespace opengl {
 
 enum class Renderer {
 	Adreno,
+	VideoCore,
 	Other
 };
 

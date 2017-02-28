@@ -261,6 +261,11 @@ void ContextImpl::deleteFramebuffer(graphics::ObjectHandle _name)
 
 void ContextImpl::bindFramebuffer(graphics::BufferTargetParam _target, graphics::ObjectHandle _name)
 {
+	if (m_glInfo.renderer == Renderer::VideoCore) {
+		CachedDepthMask * depthMask = m_cachedFunctions->getCachedDepthMask();
+		depthMask->setDepthMask(true);
+		glClear(GL_DEPTH_BUFFER_BIT);
+	}
 	m_cachedFunctions->getCachedBindFramebuffer()->bind(_target, _name);
 }
 
