@@ -45,7 +45,7 @@ public:
 
 	void drawLine(int _v0, int _v1, float _width);
 
-	void drawRect(int _ulx, int _uly, int _lrx, int _lry, float * _pColor);
+	void drawRect(int _ulx, int _uly, int _lrx, int _lry);
 
 	struct TexturedRectParams
 	{

@@ -828,21 +828,13 @@ void GraphicsDrawer::drawLine(int _v0, int _v1, float _width)
 	gfxContext.drawLine(lineWidth, vertexBuf);
 }
 
-void GraphicsDrawer::drawRect(int _ulx, int _uly, int _lrx, int _lry, float *_pColor)
+void GraphicsDrawer::drawRect(int _ulx, int _uly, int _lrx, int _lry)
 {
 	m_texrectDrawer.draw();
 
 	if (!_canDraw())
 		return;
 
-	if (gDP.otherMode.cycleType == G_CYC_FILL) {
-		gDP.rectColor.r = _pColor[0];
-		gDP.rectColor.g = _pColor[1];
-		gDP.rectColor.b = _pColor[2];
-		gDP.rectColor.a = _pColor[3];
-	} else {
-		gDP.rectColor = gDPInfo::Color();
-	}
 	gSP.changed &= ~CHANGED_GEOMETRYMODE; // Don't update cull mode
 	if (gSP.changed || gDP.changed)
 		_updateStates(DrawingState::Rect);
@@ -1064,12 +1056,6 @@ void GraphicsDrawer::drawTexturedRect(const TexturedRectParams & _params)
 		_updateTextures();
 		cmbInfo.updateParameters();
 	} else {
-		gDP.rectColor = gDPInfo::Color();
-		if (gDP.otherMode.cycleType < G_CYC_COPY) {
-			if (gDP.combine.mA0 == G_ACMUX_0 && gDP.combine.aA0 == G_ACMUX_SHADE)
-				gDP.rectColor.a = 1.0f;
-		}
-
 		if (_params.texrectCmd && (gSP.changed | gDP.changed) != 0)
 			_updateStates(DrawingState::TexRect);
 		gfxContext.enable(enable::CULL_FACE, false);
