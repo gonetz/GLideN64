@@ -89,7 +89,7 @@ public:
 	FrameBuffer * findBuffer(u32 _startAddress);
 	FrameBuffer * findTmpBuffer(u32 _address);
 	FrameBuffer * getCurrent() const {return m_pCurrent;}
-	void renderBuffer(u32 _address);
+	void renderBuffer();
 	void setBufferChanged(f32 _maxY);
 	void clearBuffersChanged();
 	void setCurrentDrawBuffer() const;

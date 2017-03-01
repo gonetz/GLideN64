@@ -169,13 +169,13 @@ void VI_UpdateScreen()
 				}
 				FrameBuffer_CopyFromRDRAM(*REG.VI_ORIGIN, bCFB);
 			}
-			frameBufferList().renderBuffer(*REG.VI_ORIGIN);
+			frameBufferList().renderBuffer();
 			frameBufferList().clearBuffersChanged();
 			VI.lastOrigin = *REG.VI_ORIGIN;
 		} 
 	} else {
 		if (gDP.changed & CHANGED_COLORBUFFER) {
-			frameBufferList().renderBuffer(*REG.VI_ORIGIN);
+			frameBufferList().renderBuffer();
 			gDP.changed &= ~CHANGED_COLORBUFFER;
 			VI.lastOrigin = *REG.VI_ORIGIN;
 		}

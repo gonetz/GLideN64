@@ -143,9 +143,10 @@ void FrameBuffer::init(u32 _address, u16 _format, u16 _size, u16 _width, bool _c
 {
 	DisplayWindow & wnd = dwnd();
 	m_startAddress = _address;
-	m_endAddress = _address + (_width << _size >> 1) - 1;
 	m_width = _width;
-	m_height = 1;
+	m_height = _cfb ? VI.height : 1;
+//	m_height = VI.height;
+	updateEndAddress();
 	m_size = _size;
 	if (isAuxiliary() && config.frameBufferEmulation.copyAuxToRDRAM != 0) {
 		m_scaleX = 1.0f;
@@ -846,10 +847,147 @@ void FrameBufferList::_renderScreenSizeBuffer()
 	gDP.changed |= CHANGED_SCISSOR;
 }
 
-void FrameBufferList::renderBuffer(u32 _address)
-{
-	static s32 vStartPrev = 0;
+struct RdpUpdateResult {
+	u32 vi_vres;
+	u32 vi_hres;
+	u32 vi_v_start;
+	u32 vi_h_start;
+	u32 vi_x_start;
+	u32 vi_y_start;
+	u32 vi_x_add;
+	u32 vi_y_add;
+	u32 vi_width;
+	u32 vi_origin;
+	bool vi_lowerfield;
+	bool vi_fsaa;
+	bool vi_divot;
+	bool vi_ispal;
+};
 
+/* This function taken from angrylion's code and adopted for my needs */
+static
+bool rdp_update(RdpUpdateResult & _result)
+{
+	static const u32 PRESCALE_WIDTH = 640;
+	static const u32 PRESCALE_HEIGHT = 625;
+	static u32 oldvstart = 0;
+	static bool prevwasblank = false;
+
+	const u32 x_add = _SHIFTR(*REG.VI_X_SCALE, 0, 12);
+	const u32 y_add = _SHIFTR(*REG.VI_Y_SCALE, 0, 12);
+	const u32 v_sync = _SHIFTR(*REG.VI_V_SYNC, 0, 10);
+	const bool ispal = (v_sync > 550);
+	const u32 x1 = _SHIFTR( *REG.VI_H_START, 16, 10 );
+	const u32 y1 = _SHIFTR( *REG.VI_V_START, 16, 10 );
+	const u32 x2 = _SHIFTR( *REG.VI_H_START, 0, 10 );
+	const u32 y2 = _SHIFTR( *REG.VI_V_START, 0, 10 );
+
+	const u32 delta_x = x2 - x1;
+	const u32 delta_y = y2 - y1;
+	const u32 vitype = _SHIFTR( *REG.VI_STATUS, 0, 2 );
+
+	const bool interlaced = (*REG.VI_STATUS & 0x40) != 0;
+	const bool lowerfield = interlaced ? y1 > oldvstart : false;
+	oldvstart = y1;
+
+	u32 hres = delta_x;
+	u32 vres = delta_y;
+	s32 h_start = x1 - (ispal ? 128 : 108);
+	s32 v_start = y1 - (ispal ? 47 : 37);
+	u32 x_start = _SHIFTR(*REG.VI_X_SCALE, 16, 12);
+	u32 y_start = _SHIFTR(*REG.VI_Y_SCALE, 16, 12);
+
+	if (h_start < 0) {
+		x_start -= x_add * h_start;
+		h_start = 0;
+	}
+	v_start >>= 1;
+	v_start &= -int(v_start >= 0);
+	vres >>= 1;
+
+	if (hres > PRESCALE_WIDTH - h_start)
+		hres = PRESCALE_WIDTH - h_start;
+	if (vres > PRESCALE_HEIGHT - v_start)
+		vres = PRESCALE_HEIGHT - v_start;
+
+	s32 vactivelines = v_sync - (ispal ? 47 : 37);
+	if (vactivelines > PRESCALE_HEIGHT) {
+		LOG(LOG_MINIMAL, "VI_V_SYNC_REG too big\n");
+		return false;
+	}
+
+	if (vactivelines < 0) {
+		LOG(LOG_MINIMAL, "vactivelines lesser than 0\n");
+		return false;
+	}
+
+	if (hres <= 0 || vres <= 0 || ((vitype & 2) == 0 && prevwasblank)) /* early return. */
+		return false;
+
+	if (vitype >> 1 == 0) {
+		prevwasblank = true;
+		return false;
+	}
+
+	prevwasblank = false;
+
+	_result.vi_hres = hres;
+	_result.vi_vres = vres;
+	_result.vi_ispal = ispal;
+	_result.vi_h_start = h_start;
+	_result.vi_v_start = v_start;
+	_result.vi_x_start = x_start;
+	_result.vi_y_start = y_start;
+	_result.vi_x_add = x_add;
+	_result.vi_y_add = y_add;
+	_result.vi_width = _SHIFTR(*REG.VI_WIDTH, 0, 12);
+	_result.vi_lowerfield = lowerfield;
+	_result.vi_origin = _SHIFTR(*REG.VI_ORIGIN, 0, 24);
+	_result.vi_fsaa = (*REG.VI_STATUS & 512) == 0;
+	_result.vi_divot = (*REG.VI_STATUS & 16) != 0;
+	return true;
+
+#if 0
+	{
+		int pixels;
+		int prevy, y_start;
+		int cur_x, line_x;
+		register int i;
+		const int VI_width = *GET_GFX_INFO(VI_WIDTH) & 0x00000FFF;
+		const int x_add = *GET_GFX_INFO(VI_X_SCALE) & 0x00000FFF;
+		const int y_add = *GET_GFX_INFO(VI_Y_SCALE) & 0x00000FFF;
+
+		y_start = *GET_GFX_INFO(VI_Y_SCALE) >> 16 & 0x0FFF;
+
+		//while (--vres >= 0)
+		{
+			x_start = *GET_GFX_INFO(VI_X_SCALE) >> 16 & 0x0FFF;
+			prescale_ptr += line_count;
+
+			prevy = y_start >> 10;
+			pixels = VI_width * prevy;
+
+			//for (i = 0; i < hres; i++)
+			{
+				unsigned long pix;
+				unsigned long addr;
+
+				line_x = x_start >> 10;
+				cur_x = pixels + line_x;
+
+				x_start += x_add;
+				addr = frame_buffer + 4 * cur_x;
+				pix = *(int32_t *)(RDRAM + addr);
+			}
+			y_start += y_add;
+		}
+	}
+#endif
+}
+
+
+void FrameBufferList::renderBuffer()
+{
 	if (VI.width == 0 || *REG.VI_WIDTH == 0 || *REG.VI_H_START == 0) // H width is zero. Don't draw
 		return;
 
@@ -858,88 +996,79 @@ void FrameBufferList::renderBuffer(u32 _address)
 		return;
 	}
 
-	FrameBuffer *pBuffer = findBuffer(_address);
+	RdpUpdateResult rdpRes;
+	if (!rdp_update(rdpRes))
+		return;
+
+	FrameBuffer *pBuffer = findBuffer(rdpRes.vi_origin);
 	if (pBuffer == nullptr)
 		return;
 
 	DisplayWindow & wnd = dwnd();
 	GraphicsDrawer & drawer = wnd.getDrawer();
-	s32 srcY0, srcY1, dstY0, dstY1;
-	s32 X0, X1, Xwidth;
+	s32 srcY0, srcY1;
+	s32 dstX0, dstX1, dstY0, dstY1;
+	s32 srcWidth, srcHeight;
 	s32 Xoffset = 0;
 	s32 Xdivot = 0;
 	s32 srcPartHeight = 0;
 	s32 dstPartHeight = 0;
 
-	const f32 yScale = _FIXED2FLOAT(_SHIFTR(*REG.VI_Y_SCALE, 0, 12), 10);
-	s32 vEnd = _SHIFTR(*REG.VI_V_START, 0, 10);
-	s32 vStart = _SHIFTR(*REG.VI_V_START, 16, 10);
-	const s32 hEnd = _SHIFTR(*REG.VI_H_START, 0, 10);
-	const s32 hStart = _SHIFTR(*REG.VI_H_START, 16, 10);
-	const s32 vSync = (*REG.VI_V_SYNC) & 0x03FF;
-	const bool interlaced = (*REG.VI_STATUS & 0x40) != 0;
-	const bool isPAL = vSync > 550;
-	const s32 vShift = (isPAL ? 47 : 37);
-	dstY0 = vStart - vShift;
-	dstY0 >>= 1;
-	dstY0 &= -(dstY0 >= 0);
-	vStart >>= 1;
-	vEnd >>= 1;
-	const u32 vFullHeight = isPAL ? 288 : 240;
-	const u32 vCurrentHeight = vEnd - vStart;
+	dstY0 = rdpRes.vi_v_start;
+
+	const f32 xScale = _FIXED2FLOAT(rdpRes.vi_x_add, 10);
+	const f32 yScale = _FIXED2FLOAT(rdpRes.vi_y_add, 10);
+	const u32 vFullHeight = rdpRes.vi_ispal ? 288 : 240;
 	const float dstScaleY = (float)wnd.getHeight() / float(vFullHeight);
 
-	bool isLowerField = false;
-	if (interlaced)
-		isLowerField = vStart > vStartPrev;
-	vStartPrev = vStart;
+	const u32 addrOffset = ((rdpRes.vi_origin - pBuffer->m_startAddress) << 1 >> pBuffer->m_size);
+	srcY0 = addrOffset / pBuffer->m_width;
 
-	const u32 addrOffset = ((_address - pBuffer->m_startAddress) << 1 >> pBuffer->m_size);
-	srcY0 = addrOffset / (*REG.VI_WIDTH);
-	if ((*REG.VI_WIDTH != addrOffset * 2) && (addrOffset % (*REG.VI_WIDTH) != 0))
-		Xoffset = (*REG.VI_WIDTH) - addrOffset % (*REG.VI_WIDTH);
-	if (Xoffset == VI.width)
+	if ((rdpRes.vi_width != addrOffset * 2) && (addrOffset % rdpRes.vi_width != 0))
+		Xoffset = rdpRes.vi_width - addrOffset % rdpRes.vi_width;
+	if (Xoffset == pBuffer->m_width)
 		Xoffset = 0;
 
-	if (isLowerField) {
-		if (*REG.VI_WIDTH < VI.width * 2) {
-			if (srcY0 > 0)
-				--srcY0;
-		}
+	if (rdpRes.vi_lowerfield) {
+		if (srcY0 > 0)
+			--srcY0;
 		if (dstY0 > 0)
 			--dstY0;
 	}
 
-	if (srcY0 + vCurrentHeight > vFullHeight) {
+	srcWidth = min(rdpRes.vi_width, (rdpRes.vi_hres * rdpRes.vi_x_add) >> 10);
+	srcHeight = rdpRes.vi_width * ((rdpRes.vi_vres*rdpRes.vi_y_add + rdpRes.vi_y_start) >> 10) / pBuffer->m_width;
+
+	if (srcY0 + rdpRes.vi_vres > vFullHeight) {
 		dstPartHeight = srcY0;
-		srcY0 = (s32)(srcY0*yScale);
+//		srcY0 = (s32)(srcY0*yScale);
 		srcPartHeight = srcY0;
-		srcY1 = VI.real_height;
-		dstY1 = dstY0 + vCurrentHeight - dstPartHeight;
+		srcY1 = srcHeight;
+		dstY1 = dstY0 + rdpRes.vi_vres - dstPartHeight;
 	} else {
 		dstY0 += srcY0;
-		dstY1 = dstY0 + vCurrentHeight;
-		srcY0 = (s32)(srcY0*yScale);
-		srcY1 = srcY0 + VI.real_height;
+		dstY1 = dstY0 + rdpRes.vi_vres;
+//		srcY0 = (s32)(srcY0*yScale);
+		srcY1 = srcY0 + srcHeight;
 	}
 	PostProcessor & postProcessor = PostProcessor::get();
 	FrameBuffer * pFilteredBuffer = postProcessor.doBlur(postProcessor.doGammaCorrection(
 		postProcessor.doOrientationCorrection(pBuffer)));
 
-	const bool vi_fsaa = (*REG.VI_STATUS & 512) == 0;
-	const bool vi_divot = (*REG.VI_STATUS & 16) != 0;
-	if (vi_fsaa && vi_divot)
+	if (rdpRes.vi_fsaa && rdpRes.vi_divot)
 		Xdivot = 1;
 
 	const f32 viScaleX = _FIXED2FLOAT(_SHIFTR(*REG.VI_X_SCALE, 0, 12), 10);
 	const f32 srcScaleX = pFilteredBuffer->m_scaleX;
 	const f32 dstScaleX = wnd.getScaleX();
-	const s32 h0 = (isPAL ? 128 : 108);
-	const s32 hx0 = max(0, hStart - h0);
+	const s32 hx0 = rdpRes.vi_h_start;
+	const s32 h0 = (rdpRes.vi_ispal ? 128 : 108);
+	const s32 hEnd = _SHIFTR(*REG.VI_H_START, 0, 10);
 	const s32 hx1 = max(0, h0 + 640 - hEnd);
-	X0 = (s32)((hx0 * viScaleX + Xoffset) * dstScaleX);
-	Xwidth = (s32)((min((f32)VI.width, (hEnd - hStart)*viScaleX - Xoffset - Xdivot)) * srcScaleX);
-	X1 = wnd.getWidth() - (s32)((hx1*viScaleX + Xdivot) * dstScaleX);
+	//const s32 hx1 = hx0 + rdpRes.vi_hres;
+	dstX0 = (s32)((hx0 * viScaleX + Xoffset) * dstScaleX);
+	dstX1 = wnd.getWidth() - (s32)((hx1*viScaleX + Xdivot) * dstScaleX);
+	srcWidth -= Xoffset + Xdivot;
 
 	const f32 srcScaleY = pFilteredBuffer->m_scaleY;
 	CachedTexture * pBufferTexture = pFilteredBuffer->m_pTexture;
@@ -947,7 +1076,7 @@ void FrameBufferList::renderBuffer(u32 _address)
 	const s32 vCrop = config.video.cropMode == Config::cmDisable ? 0 : s32(config.video.cropHeight * srcScaleY);
 	s32 srcCoord[4] = { hCrop,
 						  vCrop + (s32)(srcY0*srcScaleY),
-						  Xwidth - hCrop,
+						  (s32)(srcWidth * srcScaleX) - hCrop,
 						  min((s32)(srcY1*srcScaleY), (s32)pBufferTexture->realHeight) - vCrop };
 	if (srcCoord[2] > pBufferTexture->realWidth || srcCoord[3] > pBufferTexture->realHeight) {
 		removeBuffer(pBuffer->m_startAddress);
@@ -956,9 +1085,9 @@ void FrameBufferList::renderBuffer(u32 _address)
 
 	const s32 hOffset = (wnd.getScreenWidth() - wnd.getWidth()) / 2;
 	const s32 vOffset = (wnd.getScreenHeight() - wnd.getHeight()) / 2 + wnd.getHeightOffset();
-	s32 dstCoord[4] = { X0 + hOffset,
+	s32 dstCoord[4] = { dstX0 + hOffset,
 						  vOffset + (s32)(dstY0*dstScaleY),
-						  hOffset + X1,
+						  hOffset + dstX1,
 						  vOffset + (s32)(dstY1*dstScaleY) };
 
 	gfxContext.bindFramebuffer(bufferTarget::DRAW_FRAMEBUFFER, ObjectHandle::null);
@@ -971,7 +1100,7 @@ void FrameBufferList::renderBuffer(u32 _address)
 	ObjectHandle readBuffer;
 
 	if (pFilteredBuffer->m_pTexture->frameBufferTexture == CachedTexture::fbMultiSample) {
-		if (X0 > 0 || dstPartHeight > 0 ||
+		if (dstX0 > 0 || dstPartHeight > 0 ||
 			(srcCoord[2] - srcCoord[0]) != (dstCoord[2] - dstCoord[0]) ||
 			(srcCoord[3] - srcCoord[1]) != (dstCoord[3] - dstCoord[1])) {
 			pFilteredBuffer->resolveMultisampledTexture(true);
@@ -1007,7 +1136,7 @@ void FrameBufferList::renderBuffer(u32 _address)
 
 	if (dstPartHeight > 0) {
 		const u32 size = *REG.VI_STATUS & 3;
-		pBuffer = findBuffer(_address + (((*REG.VI_WIDTH)*VI.height)<<size>>1));
+		pBuffer = findBuffer(rdpRes.vi_origin + (((*REG.VI_WIDTH)*VI.height) << size >> 1));
 		if (pBuffer != nullptr) {
 			pFilteredBuffer = postProcessor.doBlur(postProcessor.doGammaCorrection(
 				postProcessor.doOrientationCorrection(pBuffer)));
@@ -1024,15 +1153,13 @@ void FrameBufferList::renderBuffer(u32 _address)
 
 			pBufferTexture = pFilteredBuffer->m_pTexture;
 
-			blitParams.srcX0 = 0;
-			blitParams.srcY0 = (s32)(srcY0*srcScaleY);
-			blitParams.srcX1 = Xwidth;
+			blitParams.srcY0 = 0;
 			blitParams.srcY1 = min((s32)(srcY1*srcScaleY), (s32)pFilteredBuffer->m_pTexture->realHeight);
 			blitParams.srcWidth = pBufferTexture->realWidth;
 			blitParams.srcHeight = pBufferTexture->realHeight;
 			blitParams.dstX0 = hOffset;
 			blitParams.dstY0 = vOffset + (s32)(dstY0*dstScaleY);
-			blitParams.dstX1 = hOffset + X1;
+			blitParams.dstX1 = hOffset + dstX1;
 			blitParams.dstY1 = vOffset + (s32)(dstY1*dstScaleY);
 			blitParams.dstWidth = wnd.getScreenWidth();
 			blitParams.dstHeight = wnd.getScreenHeight() + wnd.getHeightOffset();
