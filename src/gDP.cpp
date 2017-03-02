@@ -801,16 +801,10 @@ void gDPFillRectangle( s32 ulx, s32 uly, s32 lrx, s32 lry )
 		}
 	}
 
-	if (lrx == gDP.colorImage.width) {
-		if (gDP.otherMode.cycleType == G_CYC_FILL) {
-			if (lry > (u32)gDP.scissor.lry)
-				gDP.colorImage.height = (u32)max(gDP.colorImage.height, (u32)gDP.scissor.lry);
-			else
-				gDP.colorImage.height = (u32)max((s32)gDP.colorImage.height, lry);
-		}
-		else
-			gDP.colorImage.height = max(gDP.colorImage.height, (u32)gDP.scissor.lry);
-	}
+	if (lry > (u32)gDP.scissor.lry)
+		gDP.colorImage.height = max(gDP.colorImage.height, (u32)gDP.scissor.lry);
+	else
+		gDP.colorImage.height = max(gDP.colorImage.height, (u32)lry);
 
 #ifdef DEBUG
 	DebugMsg( DEBUG_HIGH | DEBUG_HANDLED, "gDPFillRectangle( %i, %i, %i, %i );\n",
@@ -894,10 +888,7 @@ void gDPTextureRectangle(f32 ulx, f32 uly, f32 lrx, f32 lry, s32 tile, f32 s, f3
 	gSP.textureTile[1] = textureTileOrg[1];
 
 	frameBufferList().setBufferChanged();
-	if (gDP.colorImage.width < 64)
-		gDP.colorImage.height = (u32)max( (f32)gDP.colorImage.height, lry );
-	else
-		gDP.colorImage.height = max( gDP.colorImage.height, (u32)gDP.scissor.lry );
+	gDP.colorImage.height = max(gDP.colorImage.height, (u32)lry);
 
 #ifdef DEBUG
 	if (flip)

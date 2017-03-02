@@ -1,9 +1,11 @@
 #include <assert.h>
+#include <algorithm>
 #include "DepthBufferRender/ClipPolygon.h"
 #include "DepthBufferRender/DepthBufferRender.h"
 #include "gSP.h"
 #include "SoftwareRender.h"
 #include "DepthBuffer.h"
+#include "Config.h"
 
 inline
 void clipTest(vertexclip & _vtx)
@@ -162,16 +164,13 @@ int clipW(const SPVertex ** _vsrc, SPVertex * _vdst)
 	return dsti;
 }
 
-void renderTriangles(const SPVertex * _pVertices, const u8 * _pElements, u32 _numElements)
+f32 renderTriangles(const SPVertex * _pVertices, const u8 * _pElements, u32 _numElements)
 {
-	//Current depth buffer can be null if we are loading from a save state
-	if(depthBufferList().getCurrent() == nullptr)
-		return;
-
 	vertexclip vclip[16];
 	vertexi vdraw[12];
 	const SPVertex * vsrc[4];
 	SPVertex vdata[6];
+	f32 maxY = 0.0f;
 	for (u32 i = 0; i < _numElements; i += 3) {
 		u32 orbits = 0;
 		if (_pElements != nullptr) {
@@ -198,6 +197,7 @@ void renderTriangles(const SPVertex * _pVertices, const u8 * _pElements, u32 _nu
 			assert(numVertex == 3);
 			if ((gSP.geometryMode & G_CULL_BACK) != 0) {
 				for (int k = 0; k < 3; ++k) {
+					maxY = std::max(maxY, vclip[k].y);
 					vdraw[k].x = floatToFixed16(vclip[k].x);
 					vdraw[k].y = floatToFixed16(vclip[k].y);
 					vdraw[k].z = floatToFixed16(vclip[k].z);
@@ -205,6 +205,7 @@ void renderTriangles(const SPVertex * _pVertices, const u8 * _pElements, u32 _nu
 			} else {
 				for (int k = 0; k < 3; ++k) {
 					const u32 idx = 3 - k - 1;
+					maxY = std::max(maxY, vclip[idx].y);
 					vdraw[k].x = floatToFixed16(vclip[idx].x);
 					vdraw[k].y = floatToFixed16(vclip[idx].y);
 					vdraw[k].z = floatToFixed16(vclip[idx].z);
@@ -218,6 +219,7 @@ void renderTriangles(const SPVertex * _pVertices, const u8 * _pElements, u32 _nu
 
 			if ((gSP.geometryMode & G_CULL_BACK) != 0) {
 				for (int k = 0; k < numVertex; ++k) {
+					maxY = std::max(maxY, vtx[k]->y);
 					vdraw[k].x = floatToFixed16(vtx[k]->x);
 					vdraw[k].y = floatToFixed16(vtx[k]->y);
 					vdraw[k].z = floatToFixed16(vtx[k]->z);
@@ -225,6 +227,7 @@ void renderTriangles(const SPVertex * _pVertices, const u8 * _pElements, u32 _nu
 			} else {
 				for (int k = 0; k < numVertex; ++k) {
 					const u32 idx = numVertex - k - 1;
+					maxY = std::max(maxY, vtx[idx]->y);
 					vdraw[k].x = floatToFixed16(vtx[idx]->x);
 					vdraw[k].y = floatToFixed16(vtx[idx]->y);
 					vdraw[k].z = floatToFixed16(vtx[idx]->z);
@@ -232,6 +235,11 @@ void renderTriangles(const SPVertex * _pVertices, const u8 * _pElements, u32 _nu
 			}
 		}
 
-		Rasterize(vdraw, numVertex, dzdx);
+		//Current depth buffer can be null if we are loading from a save state
+		if (depthBufferList().getCurrent() != nullptr &&
+			config.frameBufferEmulation.copyDepthToRDRAM == Config::cdSoftwareRender &&
+			gDP.otherMode.depthUpdate != 0)
+			Rasterize(vdraw, numVertex, dzdx);
 	}
+	return maxY;
 }

@@ -660,13 +660,15 @@ void GraphicsDrawer::drawTriangles()
 	triParams.combiner = currentCombiner();
 	gfxContext.drawTriangles(triParams);
 
-	if (config.frameBufferEmulation.enable != 0 &&
-		config.frameBufferEmulation.copyDepthToRDRAM == Config::cdSoftwareRender &&
-		gDP.otherMode.depthUpdate != 0) {
-		renderTriangles(triangles.vertices.data(), triangles.elements.data(), triangles.num);
-		FrameBuffer * pCurrentDepthBuffer = frameBufferList().findBuffer(gDP.depthImageAddress);
-		if (pCurrentDepthBuffer != nullptr)
-			pCurrentDepthBuffer->m_cleared = false;
+	if (config.frameBufferEmulation.enable != 0) {
+		const f32 maxY = renderTriangles(triangles.vertices.data(), triangles.elements.data(), triangles.num);
+		gDP.colorImage.height = std::max(gDP.colorImage.height, (u32)maxY);
+		if (config.frameBufferEmulation.copyDepthToRDRAM == Config::cdSoftwareRender &&
+			gDP.otherMode.depthUpdate != 0) {
+			FrameBuffer * pCurrentDepthBuffer = frameBufferList().findBuffer(gDP.depthImageAddress);
+			if (pCurrentDepthBuffer != nullptr)
+				pCurrentDepthBuffer->m_cleared = false;
+		}
 	}
 
 	triangles.num = 0;
@@ -681,6 +683,7 @@ void GraphicsDrawer::drawScreenSpaceTriangle(u32 _numVtx)
 	for (u32 i = 0; i < _numVtx; ++i) {
 		SPVertex & vtx = m_dmaVertices[i];
 		vtx.modify = MODIFY_ALL;
+		gDP.colorImage.height = std::max(gDP.colorImage.height, (u32)vtx.y);
 	}
 	m_modifyVertices = MODIFY_ALL;
 
@@ -715,13 +718,15 @@ void GraphicsDrawer::drawDMATriangles(u32 _numVtx)
 	triParams.combiner = currentCombiner();
 	gfxContext.drawTriangles(triParams);
 
-	if (config.frameBufferEmulation.enable != 0 &&
-		config.frameBufferEmulation.copyDepthToRDRAM == Config::cdSoftwareRender &&
-		gDP.otherMode.depthUpdate != 0) {
-		renderTriangles(m_dmaVertices.data(), nullptr, _numVtx);
-		FrameBuffer * pCurrentDepthBuffer = frameBufferList().findBuffer(gDP.depthImageAddress);
-		if (pCurrentDepthBuffer != nullptr)
-			pCurrentDepthBuffer->m_cleared = false;
+	if (config.frameBufferEmulation.enable != 0) {
+		const f32 maxY = renderTriangles(m_dmaVertices.data(), nullptr, _numVtx);
+		gDP.colorImage.height = std::max(gDP.colorImage.height, (u32)maxY);
+		if (config.frameBufferEmulation.copyDepthToRDRAM == Config::cdSoftwareRender &&
+			gDP.otherMode.depthUpdate != 0) {
+			FrameBuffer * pCurrentDepthBuffer = frameBufferList().findBuffer(gDP.depthImageAddress);
+			if (pCurrentDepthBuffer != nullptr)
+				pCurrentDepthBuffer->m_cleared = false;
+		}
 	}
 }
 
