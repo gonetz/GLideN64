@@ -20,6 +20,7 @@ extern VIInfo VI;
 
 void VI_UpdateSize();
 void VI_UpdateScreen();
+u16 VI_GetMaxBufferHeight(u16 _width);
 
 #endif
 

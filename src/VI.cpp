@@ -19,6 +19,14 @@ using namespace std;
 
 VIInfo VI;
 
+u16 VI_GetMaxBufferHeight(u16 _width)
+{
+	if (_width > 320 || VI.interlaced)
+		return VI.PAL ? 580 : 480;
+
+	return VI.PAL ? 290 : 240;
+}
+
 void VI_UpdateSize()
 {
 	const f32 xScale = _FIXED2FLOAT( _SHIFTR( *REG.VI_X_SCALE, 0, 12 ), 10 );
@@ -27,8 +35,8 @@ void VI_UpdateSize()
 	const u32 vScale = _SHIFTR(*REG.VI_Y_SCALE, 0, 12);
 //	f32 yOffset = _FIXED2FLOAT( _SHIFTR( *REG.VI_Y_SCALE, 16, 12 ), 10 );
 
-	const u32 hEnd = _SHIFTR( *REG.VI_H_START, 0, 10 );
-	const u32 hStart = _SHIFTR( *REG.VI_H_START, 16, 10 );
+//	const u32 hEnd = _SHIFTR( *REG.VI_H_START, 0, 10 );
+//	const u32 hStart = _SHIFTR( *REG.VI_H_START, 16, 10 );
 
 	// These are in half-lines, so shift an extra bit
 	const u32 vEnd = _SHIFTR( *REG.VI_V_START, 0, 10 );
@@ -77,8 +85,10 @@ void VI_UpdateSize()
 	if (config.frameBufferEmulation.enable && ((config.generalEmulation.hacks & hack_ZeldaMM) == 0) &&
 		((interlacedPrev != VI.interlaced) ||
 		(VI.width > 0 && VI.width != VI.widthPrev) ||
-		(!VI.interlaced && pDepthBuffer != nullptr && pDepthBuffer->m_width != VI.width) ||
-		((config.generalEmulation.hacks & hack_ignoreVIHeightChange) == 0 && pBuffer != nullptr && pBuffer->m_height != VI.height))
+		(!VI.interlaced && pDepthBuffer != nullptr && pDepthBuffer->m_width != VI.width)
+)//		||
+//		((config.generalEmulation.hacks & hack_ignoreVIHeightChange) == 0 && pBuffer != nullptr && pBuffer->m_height != VI.height))
+
 	) {
 		fbList.removeBuffers(VI.widthPrev);
 		fbList.removeBuffers(VI.width);
@@ -148,7 +158,7 @@ void VI_UpdateScreen()
 					}
 					const u32 size = *REG.VI_STATUS & 3;
 					if (VI.height > 0 && size > G_IM_SIZ_8b  && VI.width > 0)
-						frameBufferList().saveBuffer(*REG.VI_ORIGIN, G_IM_FMT_RGBA, size, VI.width, VI.height, true);
+						frameBufferList().saveBuffer(*REG.VI_ORIGIN, G_IM_FMT_RGBA, size, VI.width, true);
 				}
 			}
 //			if ((((*REG.VI_STATUS) & 3) > 0) && (gDP.colorImage.changed || bCFB)) { // Does not work in release build!!!

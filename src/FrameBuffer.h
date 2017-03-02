@@ -17,8 +17,8 @@ struct FrameBuffer
 {
 	FrameBuffer();
 	~FrameBuffer();
-	void init(u32 _address, u16 _format, u16 _size, u16 _width, u16 _height, bool _cfb);
-	void reinit(u16 _height);
+	void init(u32 _address, u16 _format, u16 _size, u16 _width, bool _cfb);
+	void updateEndAddress();
 	void resolveMultisampledTexture(bool _bForce = false);
 	CachedTexture * getTexture(u32 _t);
 	CachedTexture * getTextureBG(u32 _t);
@@ -39,7 +39,6 @@ struct FrameBuffer
 	bool m_isDepthBuffer;
 	bool m_isPauseScreen;
 	bool m_isOBScreen;
-	bool m_needHeightCorrection;
 	bool m_readable;
 
 	struct {
@@ -80,7 +79,7 @@ class FrameBufferList
 public:
 	void init();
 	void destroy();
-	void saveBuffer(u32 _address, u16 _format, u16 _size, u16 _width, u16 _height, bool _cfb);
+	void saveBuffer(u32 _address, u16 _format, u16 _size, u16 _width, bool _cfb);
 	void removeAux();
 	void copyAux();
 	void removeBuffer(u32 _address);
@@ -92,7 +91,6 @@ public:
 	FrameBuffer * getCurrent() const {return m_pCurrent;}
 	void renderBuffer(u32 _address);
 	void setBufferChanged(f32 _maxY);
-	void correctHeight();
 	void clearBuffersChanged();
 	void setCurrentDrawBuffer() const;
 	void fillRDRAM(s32 ulx, s32 uly, s32 lrx, s32 lry);

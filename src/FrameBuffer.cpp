@@ -33,8 +33,7 @@ FrameBuffer::FrameBuffer() :
 	m_startAddress(0), m_endAddress(0), m_size(0), m_width(0), m_height(0), m_validityChecked(0),
 	m_scaleX(0), m_scaleY(0),
 	m_copiedToRdram(false), m_fingerprint(false), m_cleared(false), m_changed(false), m_cfb(false),
-	m_isDepthBuffer(false), m_isPauseScreen(false), m_isOBScreen(false),
-	m_needHeightCorrection(false), m_readable(false),
+	m_isDepthBuffer(false), m_isPauseScreen(false), m_isOBScreen(false), m_readable(false),
 	m_loadType(LOADTYPE_BLOCK), m_pDepthBuffer(nullptr),
 	m_pResolveTexture(nullptr), m_resolved(false),
 	m_pSubTexture(nullptr)
@@ -59,8 +58,8 @@ void FrameBuffer::_initTexture(u16 _width, u16 _height, u16 _format, u16 _size, 
 {
 	const FramebufferTextureFormats & fbTexFormats = gfxContext.getFramebufferTextureFormats();
 
-	_pTexture->width = (u32)(_width * m_scaleX);
-	_pTexture->height = (u32)(_height * m_scaleY);
+	_pTexture->width = (u16)(u32)(_width * m_scaleX);
+	_pTexture->height = (u16)(u32)(_height * m_scaleY);
 	_pTexture->format = _format;
 	_pTexture->size = _size;
 	_pTexture->clampS = 1;
@@ -140,13 +139,13 @@ bool FrameBuffer::isAuxiliary() const
 	return m_width != VI.width;
 }
 
-void FrameBuffer::init(u32 _address, u16 _format, u16 _size, u16 _width, u16 _height, bool _cfb)
+void FrameBuffer::init(u32 _address, u16 _format, u16 _size, u16 _width, bool _cfb)
 {
 	DisplayWindow & wnd = dwnd();
 	m_startAddress = _address;
-	m_endAddress = _address + ((_width * _height) << _size >> 1) - 1;
+	m_endAddress = _address + (_width << _size >> 1) - 1;
 	m_width = _width;
-	m_height = _height;
+	m_height = 1;
 	m_size = _size;
 	if (isAuxiliary() && config.frameBufferEmulation.copyAuxToRDRAM != 0) {
 		m_scaleX = 1.0f;
@@ -154,22 +153,21 @@ void FrameBuffer::init(u32 _address, u16 _format, u16 _size, u16 _width, u16 _he
 	} else if (config.frameBufferEmulation.nativeResFactor != 0 && config.frameBufferEmulation.enable != 0) {
 		m_scaleX = m_scaleY = static_cast<float>(config.frameBufferEmulation.nativeResFactor);
 	} else {
-		m_scaleX = wnd.getScaleX();
-		m_scaleY = wnd.getScaleY();
+		m_scaleY = m_scaleX = wnd.getScaleX();
 	}
 	m_cfb = _cfb;
-	m_needHeightCorrection = _width != VI.width && _width != *REG.VI_WIDTH;
 	m_cleared = false;
 	m_fingerprint = false;
 
-	_initTexture(_width, _height, _format, _size, m_pTexture);
+	const u16 maxHeight = VI_GetMaxBufferHeight(_width);
+	_initTexture(_width, maxHeight, _format, _size, m_pTexture);
 
 	if (config.video.multisampling != 0) {
 		_setAndAttachTexture(m_FBO, m_pTexture, 0, true);
 		m_pTexture->frameBufferTexture = CachedTexture::fbMultiSample;
 
 		m_pResolveTexture = textureCache().addFrameBufferTexture(false);
-		_initTexture(_width, _height, _format, _size, m_pResolveTexture);
+		_initTexture(_width, maxHeight, _format, _size, m_pResolveTexture);
 		m_resolveFBO = gfxContext.createFramebuffer();
 		_setAndAttachTexture(m_resolveFBO, m_pResolveTexture, 0, false);
 		assert(!gfxContext.isFramebufferError());
@@ -181,16 +179,9 @@ void FrameBuffer::init(u32 _address, u16 _format, u16 _size, u16 _width, u16 _he
 	wnd.getDrawer().clearColorBuffer(nullptr);
 }
 
-void FrameBuffer::reinit(u16 _height)
+void FrameBuffer::updateEndAddress()
 {
-	const u16 format = m_pTexture->format;
-	textureCache().removeFrameBufferTexture(m_pTexture);
-
-	gfxContext.deleteFramebuffer(ObjectHandle(m_resolveFBO));
-
-	textureCache().removeFrameBufferTexture(m_pResolveTexture);
-	m_pTexture = textureCache().addFrameBufferTexture(config.video.multisampling != 0);
-	init(m_startAddress, format, m_size, m_width, _height, m_cfb);
+	m_endAddress = min(RDRAMSize, m_startAddress + (((m_width * m_height) << m_size >> 1) - 1));
 }
 
 inline
@@ -498,26 +489,6 @@ void FrameBufferList::setBufferChanged(f32 _maxY)
 	}
 }
 
-void FrameBufferList::correctHeight()
-{
-	if (m_pCurrent == nullptr)
-		return;
-	if (m_pCurrent->m_changed) {
-		m_pCurrent->m_needHeightCorrection = false;
-		return;
-	}
-	if (m_pCurrent->m_needHeightCorrection && m_pCurrent->m_width == gDP.scissor.lrx) {
-		if (m_pCurrent->m_height != gDP.scissor.lry) {
-			m_pCurrent->reinit((u32)gDP.scissor.lry);
-
-			if (m_pCurrent->_isMarioTennisScoreboard())
-				RDRAMtoColorBuffer::get().copyFromRDRAM(m_pCurrent->m_startAddress + 4, true);
-			gSP.changed |= CHANGED_VIEWPORT;
-		}
-		m_pCurrent->m_needHeightCorrection = false;
-	}
-}
-
 void FrameBufferList::clearBuffersChanged()
 {
 	gDP.colorImage.changed = FALSE;
@@ -578,10 +549,10 @@ void FrameBufferList::_createScreenSizeBuffer()
 		return;
 	m_list.emplace_front();
 	FrameBuffer & buffer = m_list.front();
-	buffer.init(VI.width * 2, G_IM_FMT_RGBA, G_IM_SIZ_16b, VI.width, VI.height, false);
+	buffer.init(VI.width * 2, G_IM_FMT_RGBA, G_IM_SIZ_16b, VI.width, false);
 }
 
-void FrameBufferList::saveBuffer(u32 _address, u16 _format, u16 _size, u16 _width, u16 _height, bool _cfb)
+void FrameBufferList::saveBuffer(u32 _address, u16 _format, u16 _size, u16 _width, bool _cfb)
 {
 	if (config.frameBufferEmulation.enable == 0) {
 		if (m_list.empty())
@@ -598,37 +569,21 @@ void FrameBufferList::saveBuffer(u32 _address, u16 _format, u16 _size, u16 _widt
 		}
 	}
 
-	if (VI.width == 0 || _height == 0) {
-		m_pCurrent = nullptr;
-		gfxContext.bindFramebuffer(bufferTarget::DRAW_FRAMEBUFFER, ObjectHandle::null);
-		return;
-	}
-
 	DisplayWindow & wnd = dwnd();
 	bool bPrevIsDepth = false;
 
 	if (m_pCurrent != nullptr) {
 		bPrevIsDepth = m_pCurrent->m_isDepthBuffer;
 		m_pCurrent->m_readable = true;
+		m_pCurrent->updateEndAddress();
 
-		// Correct buffer's end address
-		if (!m_pCurrent->isAuxiliary()) {
-			if (gDP.colorImage.height > 200)
-				m_prevColorImageHeight = gDP.colorImage.height;
-			else if (gDP.colorImage.height == 0)
-				gDP.colorImage.height = m_prevColorImageHeight;
-
-			gDP.colorImage.height = min(gDP.colorImage.height, VI.height);
-		}
-
-		//Non-auxiliary buffers are always corrected, auxiliary buffers are correct only if they need correction.
-		//Also, before making any adjustments, make sure gDP.colorImage.height has a valid value.
-		if((!m_pCurrent->isAuxiliary() || m_pCurrent->m_needHeightCorrection) && gDP.colorImage.height != 0)
-		{
-			m_pCurrent->m_endAddress = min(RDRAMSize, m_pCurrent->m_startAddress + (((m_pCurrent->m_width * gDP.colorImage.height) << m_pCurrent->m_size >> 1) - 1));
-		}
-
-		if (!m_pCurrent->_isMarioTennisScoreboard() && !m_pCurrent->m_isDepthBuffer && !m_pCurrent->m_copiedToRdram && !m_pCurrent->m_cfb && !m_pCurrent->m_cleared && m_pCurrent->m_RdramCopy.empty() && gDP.colorImage.height > 1) {
+		if (!m_pCurrent->_isMarioTennisScoreboard() &&
+			!m_pCurrent->m_isDepthBuffer &&
+			!m_pCurrent->m_copiedToRdram &&
+			!m_pCurrent->m_cfb &&
+			!m_pCurrent->m_cleared
+			&& m_pCurrent->m_RdramCopy.empty()
+			&& m_pCurrent->m_height > 1) {
 			m_pCurrent->copyRdram();
 		}
 
@@ -637,15 +592,14 @@ void FrameBufferList::saveBuffer(u32 _address, u16 _format, u16 _size, u16 _widt
 
 	if (m_pCurrent == nullptr || m_pCurrent->m_startAddress != _address || m_pCurrent->m_width != _width)
 		m_pCurrent = findBuffer(_address);
-	const float scaleX = config.frameBufferEmulation.nativeResFactor == 0 ? wnd.getScaleX() : static_cast<float>(config.frameBufferEmulation.nativeResFactor);
-	const float scaleY = config.frameBufferEmulation.nativeResFactor == 0 ? wnd.getScaleY() : scaleX;
+	const float scaleX = config.frameBufferEmulation.nativeResFactor == 0 ?
+				wnd.getScaleX() :
+				static_cast<float>(config.frameBufferEmulation.nativeResFactor);
 	if (m_pCurrent != nullptr) {
 		if ((m_pCurrent->m_startAddress != _address) ||
 			(m_pCurrent->m_width != _width) ||
-			//(current->height != height) ||
 			(m_pCurrent->m_size < _size) ||
-			(m_pCurrent->m_scaleX != scaleX) ||
-			(m_pCurrent->m_scaleY != scaleY))
+			(m_pCurrent->m_scaleX != scaleX))
 		{
 			removeBuffer(m_pCurrent->m_startAddress);
 			m_pCurrent = nullptr;
@@ -673,7 +627,7 @@ void FrameBufferList::saveBuffer(u32 _address, u16 _format, u16 _size, u16 _widt
 		// Wasn't found or removed, create a new one
 		m_list.emplace_front();
 		FrameBuffer & buffer = m_list.front();
-		buffer.init(_address, _format, _size, _width, _height, _cfb);
+		buffer.init(_address, _format, _size, _width, _cfb);
 		m_pCurrent = &buffer;
 
 		if (m_pCurrent->_isMarioTennisScoreboard() || ((config.generalEmulation.hacks & hack_legoRacers) != 0 && _width == VI.width))

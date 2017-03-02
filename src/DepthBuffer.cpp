@@ -109,16 +109,17 @@ void DepthBuffer::_initDepthBufferTexture(FrameBuffer * _pBuffer, CachedTexture 
 		_pTexture->clampWidth = _pBuffer->m_width;
 		_pTexture->clampHeight = _pBuffer->m_height;
 	} else {
+		const u16 maxHeight = VI_GetMaxBufferHeight(VI.width);
 		if (config.frameBufferEmulation.nativeResFactor == 0) {
 			_pTexture->width = dwnd().getWidth();
-			_pTexture->height = dwnd().getHeight();
+			_pTexture->height = (u16)(u32)(maxHeight * dwnd().getScaleX());
 		} else {
 			_pTexture->width = VI.width * config.frameBufferEmulation.nativeResFactor;
-			_pTexture->height = VI.height * config.frameBufferEmulation.nativeResFactor;
+			_pTexture->height = maxHeight * config.frameBufferEmulation.nativeResFactor;
 		}
 		_pTexture->address = gDP.depthImageAddress;
 		_pTexture->clampWidth = VI.width;
-		_pTexture->clampHeight = VI.height;
+		_pTexture->clampHeight = maxHeight;
 	}
 	_pTexture->format = 0;
 	_pTexture->size = 2;
@@ -169,10 +170,10 @@ void DepthBuffer::_initDepthBufferRenderbuffer(FrameBuffer * _pBuffer)
 	} else {
 		if (config.frameBufferEmulation.nativeResFactor == 0) {
 			m_depthRenderbufferWidth = dwnd().getWidth();
-			height = dwnd().getHeight();
+			height = (u32)(VI_GetMaxBufferHeight(VI.width) * dwnd().getScaleX());
 		} else {
 			m_depthRenderbufferWidth = VI.width * config.frameBufferEmulation.nativeResFactor;
-			height = VI.height * config.frameBufferEmulation.nativeResFactor;
+			height = VI_GetMaxBufferHeight(VI.width) * config.frameBufferEmulation.nativeResFactor;
 		}
 	}
 
