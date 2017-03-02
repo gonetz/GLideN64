@@ -181,7 +181,8 @@ void FrameBuffer::init(u32 _address, u16 _format, u16 _size, u16 _width, bool _c
 
 void FrameBuffer::updateEndAddress()
 {
-	m_endAddress = min(RDRAMSize, m_startAddress + (((m_width * m_height) << m_size >> 1) - 1));
+	const u32 height = max(1U, m_height - 1);
+	m_endAddress = min(RDRAMSize, m_startAddress + (((m_width * height) << m_size >> 1) - 1));
 }
 
 inline
