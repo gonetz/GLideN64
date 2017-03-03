@@ -90,9 +90,8 @@ set(GLideN64_SOURCES
 )
 
 #check if we're running on Raspberry Pi
-MESSAGE("Looking for bcm_host.h")
 if(EXISTS "/opt/vc/include/bcm_host.h")
-  MESSAGE("bcm_host.h found")
+  message("bcm_host.h found")
   set(BCMHOST ON)
   set(EGL ON)
   add_definitions(
@@ -108,8 +107,6 @@ if(EXISTS "/opt/vc/include/bcm_host.h")
     "/opt/vc/lib"
     "/opt/vc/lib/GL"
   )
-else(EXISTS "/opt/vc/include/bcm_host.h")
-  MESSAGE("bcm_host.h not found")
 endif(EXISTS "/opt/vc/include/bcm_host.h")
 
 if(MUPENPLUSAPI)
