@@ -34,10 +34,17 @@ if(GLES2)
 endif(GLES2)
 
 if(UNIX)
-  add_definitions(
-    -DNDEBUG
-    -DOS_LINUX
-  )
+  if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+    add_definitions(
+      -DOS_MAC_OS_X
+    )
+    set(APPLE ON)
+  elseif(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+    add_definitions(
+      -DNDEBUG
+      -DOS_LINUX
+    )
+  endif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 endif(UNIX)
 
 if(WIN32)
@@ -67,7 +74,7 @@ if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
 	add_definitions( -D__MSC__)
 endif()
 
-if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
     SET(GCC_CPP11_COMPILE_FLAGS "-std=c++0x")
     if( NOT GHQCHK )
       SET( CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} ${GCC_CPP11_COMPILE_FLAGS} -static -fPIC " )
@@ -88,7 +95,7 @@ if( NOT GHQCHK )
       set_target_properties(GLideNHQd PROPERTIES LINK_SEARCH_START_STATIC 1)
       set_target_properties(GLideNHQd PROPERTIES LINK_SEARCH_END_STATIC 1)
 
-      if(MINGW OR BCMHOST)
+      if(MINGW OR BCMHOST OR APPLE)
         FIND_PACKAGE( ZLIB REQUIRED )
         FIND_PACKAGE( PNG REQUIRED )
         target_link_libraries(GLideNHQd
@@ -96,14 +103,14 @@ if( NOT GHQCHK )
           ${ZLIB_LIBRARIES}
           osald
         )
-      else(MINGW OR BCMHOST)
+      else(MINGW OR BCMHOST OR APPLE)
         target_link_libraries(GLideNHQd PRIVATE
           ${CMAKE_CURRENT_SOURCE_DIR}/lib/libpng.a
           ${CMAKE_CURRENT_SOURCE_DIR}/lib/libz.a
           dl
           osald
         )
-      endif(MINGW OR BCMHOST)
+      endif(MINGW OR BCMHOST OR APPLE)
     endif( CMAKE_BUILD_TYPE STREQUAL "Debug")
 
     if( CMAKE_BUILD_TYPE STREQUAL "Release")
@@ -120,7 +127,7 @@ if( NOT GHQCHK )
           /mnt/utmp/codeblocks/usr/lib/libz.a
           osal
         )
-      elseif(BCMHOST OR MINGW)
+      elseif(BCMHOST OR MINGW OR APPLE)
         FIND_PACKAGE( ZLIB REQUIRED )
         FIND_PACKAGE( PNG REQUIRED )
         target_link_libraries(GLideNHQ
