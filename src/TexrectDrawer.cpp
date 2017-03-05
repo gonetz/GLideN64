@@ -97,6 +97,12 @@ void TexrectDrawer::destroy()
 	m_programClear.reset();
 }
 
+void TexrectDrawer::_setViewport() const
+{
+	const u32 bufferWidth = m_pBuffer == nullptr ? VI.width : m_pBuffer->m_width;
+	gfxContext.setViewport(0, 0, bufferWidth, VI_GetMaxBufferHeight(bufferWidth));
+}
+
 void TexrectDrawer::add()
 {
 	DisplayWindow & wnd = dwnd();
@@ -150,10 +156,7 @@ void TexrectDrawer::add()
 		gfxContext.enable(enable::DEPTH_TEST, false);
 		gfxContext.enable(enable::BLEND, false);
 
-		if (m_pBuffer == nullptr)
-			gfxContext.setViewport(0, 0, VI.width, VI.height);
-		else
-			gfxContext.setViewport(0, 0, m_pBuffer->m_width, m_pBuffer->m_height);
+		_setViewport();
 
 		gfxContext.setScissor((s32)gDP.scissor.ulx, (s32)gDP.scissor.uly, (s32)(gDP.scissor.lrx - gDP.scissor.ulx), (s32)(gDP.scissor.lry - gDP.scissor.uly));
 
@@ -227,8 +230,10 @@ bool TexrectDrawer::draw()
 
 	RectVertex * rect = drawer.m_rect;
 
-	const float scaleX = (m_pBuffer != nullptr ? 1.0f / m_pBuffer->m_width : VI.rwidth) * 2.0f;
-	const float scaleY = (m_pBuffer != nullptr ? 1.0f / m_pBuffer->m_height : VI.rheight) * 2.0f;
+	f32 scaleX, scaleY;
+	calcCoordsScales(m_pBuffer, scaleX, scaleY);
+	scaleX *= 2.0f;
+	scaleY *= 2.0f;
 
 	const float s0 = (m_ulx + 1.0f) / scaleX / (float)m_pTexture->realWidth;
 	const float t1 = (m_uly + 1.0f) / scaleY / (float)m_pTexture->realHeight;
@@ -236,10 +241,7 @@ bool TexrectDrawer::draw()
 	const float t0 = (m_lry + 1.0f) / scaleY / (float)m_pTexture->realHeight;
 	const float W = 1.0f;
 
-	if (m_pBuffer == nullptr)
-		gfxContext.setViewport(0, wnd.getHeightOffset(), wnd.getScreenWidth(), wnd.getScreenHeight());
-	else
-		gfxContext.setViewport(0, 0, m_pBuffer->m_width*m_pBuffer->m_scaleX, m_pBuffer->m_height*m_pBuffer->m_scaleY);
+	drawer._updateScreenCoordsViewport();
 
 	textureCache().activateTexture(0, m_pTexture);
 	// Disable filtering to avoid black outlines
@@ -299,10 +301,7 @@ bool TexrectDrawer::draw()
 	rect[2].y = -m_lry;
 	rect[3].y = -m_lry;
 
-	if (m_pBuffer == nullptr)
-		gfxContext.setViewport(0, 0, VI.width, VI.height);
-	else
-		gfxContext.setViewport(0, 0, m_pBuffer->m_width, m_pBuffer->m_height);
+	_setViewport();
 
 	gfxContext.enable(enable::BLEND, false);
 	gfxContext.enable(enable::SCISSOR_TEST, false);

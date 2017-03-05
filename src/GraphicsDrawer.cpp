@@ -213,7 +213,6 @@ void GraphicsDrawer::_updateViewport() const
 		if (_needAdjustCoordinate(wnd))
 			Xf = _adjustViewportX(Xf);
 		const s32 X = (s32)(Xf * scaleX);
-//		const s32 Y = gSP.viewport.vscale[1] < 0 ? (s32)((gSP.viewport.y + gSP.viewport.vscale[1] * 2.0f) * scaleY) : (s32)((VI.height - (gSP.viewport.y + gSP.viewport.height)) * scaleY);
 		const s32 Y = (s32)(gSP.viewport.y * scaleY);
 		gfxContext.setViewport(X, Y,
 			std::max((s32)(gSP.viewport.width * scaleX), 0), std::max((s32)(gSP.viewport.height * scaleY), 0));
@@ -224,7 +223,6 @@ void GraphicsDrawer::_updateViewport() const
 		if (_needAdjustCoordinate(wnd))
 			Xf = _adjustViewportX(Xf);
 		const s32 X = (s32)(Xf * scaleX);
-//		const s32 Y = gSP.viewport.vscale[1] < 0 ? (s32)((gSP.viewport.y + gSP.viewport.vscale[1] * 2.0f) * scaleY) : (s32)((pCurrentBuffer->m_height - (gSP.viewport.y + gSP.viewport.height)) * scaleY);
 		const s32 Y = (s32)(gSP.viewport.y * scaleY);
 		gfxContext.setViewport(X, Y,
 			std::max((s32)(gSP.viewport.width * scaleX), 0), std::max((s32)(gSP.viewport.height * scaleY), 0));
@@ -236,10 +234,18 @@ void GraphicsDrawer::_updateScreenCoordsViewport() const
 {
 	DisplayWindow & wnd = DisplayWindow::get();
 	FrameBuffer * pCurrentBuffer = frameBufferList().getCurrent();
-	if (pCurrentBuffer == nullptr)
-		gfxContext.setViewport(0, 0, wnd.getScreenWidth(), wnd.getScreenHeight());
-	else
-		gfxContext.setViewport(0, 0, s32(pCurrentBuffer->m_width*pCurrentBuffer->m_scaleX), s32(pCurrentBuffer->m_height*pCurrentBuffer->m_scaleY));
+
+	u32 bufferWidth;
+	f32 viewportScale;
+	if (pCurrentBuffer == nullptr) {
+		bufferWidth = VI.width;
+		viewportScale = wnd.getScaleX();
+	} else {
+		bufferWidth = pCurrentBuffer->m_width;
+		viewportScale = pCurrentBuffer->m_scaleX;
+	}
+	const u32 bufferHeight = VI_GetMaxBufferHeight(bufferWidth);
+	gfxContext.setViewport(0, 0, (s32)(bufferWidth * viewportScale), (s32)(bufferHeight * viewportScale));
 	gSP.changed |= CHANGED_VIEWPORT;
 }
 
@@ -849,17 +855,12 @@ void GraphicsDrawer::drawRect(int _ulx, int _uly, int _lrx, int _lry)
 
 	m_drawingState = DrawingState::Rect;
 
-	FrameBuffer * pCurrentBuffer = frameBufferList().getCurrent();
-	DisplayWindow & wnd = dwnd();
-	if (pCurrentBuffer == nullptr)
-		gfxContext.setViewport(0, 0, wnd.getScreenWidth(), wnd.getScreenHeight());
-	else
-		gfxContext.setViewport(0, 0, pCurrentBuffer->m_width*pCurrentBuffer->m_scaleX, pCurrentBuffer->m_height*pCurrentBuffer->m_scaleY);
+	_updateScreenCoordsViewport();
 
 	gfxContext.enable(enable::CULL_FACE, false);
 
-	const float scaleX = pCurrentBuffer != nullptr ? 1.0f / pCurrentBuffer->m_width : VI.rwidth;
-	const float scaleY = pCurrentBuffer != nullptr ? 1.0f / pCurrentBuffer->m_height : VI.rheight;
+	f32 scaleX, scaleY;
+	calcCoordsScales(frameBufferList().getCurrent(), scaleX, scaleY);
 	const float Z = (gDP.otherMode.depthSource == G_ZS_PRIM) ? gDP.primDepth.z : 0.0f;
 	const float W = 1.0f;
 	m_rect[0].x = (float)_ulx * (2.0f * scaleX) - 1.0;
@@ -879,6 +880,7 @@ void GraphicsDrawer::drawRect(int _ulx, int _uly, int _lrx, int _lry)
 	m_rect[3].z = Z;
 	m_rect[3].w = W;
 
+	DisplayWindow & wnd = dwnd();
 	if (wnd.isAdjustScreen() && (gDP.colorImage.width > VI.width * 98 / 100) && (_lrx - _ulx < VI.width * 9 / 10)) {
 		const float scale = wnd.getAdjustScale();
 		for (u32 i = 0; i < 4; ++i)
@@ -1092,8 +1094,8 @@ void GraphicsDrawer::drawTexturedRect(const TexturedRectParams & _params)
 		&& ((cache.current[0]->frameBufferTexture == CachedTexture::fbNone && !cache.current[0]->bHDTexture))
 		&& (cache.current[1] == nullptr || (cache.current[1]->frameBufferTexture == CachedTexture::fbNone && !cache.current[1]->bHDTexture));
 
-	const float scaleX = pCurrentBuffer != nullptr ? 1.0f / pCurrentBuffer->m_width : VI.rwidth;
-	const float scaleY = pCurrentBuffer != nullptr ? 1.0f / pCurrentBuffer->m_height : VI.rheight;
+	f32 scaleX, scaleY;
+	calcCoordsScales(pCurrentBuffer, scaleX, scaleY);
 	const float Z = (gDP.otherMode.depthSource == G_ZS_PRIM) ? gDP.primDepth.z : 0.0f;
 	const float W = 1.0f;
 	f32 uly, lry;
@@ -1241,10 +1243,7 @@ void GraphicsDrawer::drawTexturedRect(const TexturedRectParams & _params)
 	if (bUseTexrectDrawer)
 		m_texrectDrawer.add();
 	else {
-		if (pCurrentBuffer == nullptr)
-			gfxContext.setViewport(0, 0, wnd.getScreenWidth(), wnd.getScreenHeight());
-		else
-			gfxContext.setViewport(0, 0, pCurrentBuffer->m_width*pCurrentBuffer->m_scaleX, pCurrentBuffer->m_height*pCurrentBuffer->m_scaleY);
+		_updateScreenCoordsViewport();
 
 		Context::DrawRectParameters rectParams;
 		rectParams.mode = drawmode::TRIANGLE_STRIP;

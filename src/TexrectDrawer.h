@@ -21,6 +21,8 @@ public:
 	bool draw();
 	bool isEmpty();
 private:
+	void _setViewport() const;
+
 	u32 m_numRects;
 	u64 m_otherMode;
 	u64 m_mux;

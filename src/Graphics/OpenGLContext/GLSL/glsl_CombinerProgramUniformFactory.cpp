@@ -588,9 +588,8 @@ public:
 
 	void update(bool _force) override
 	{
-		FrameBuffer * pCurrentBuffer = frameBufferList().getCurrent();
-		const float scaleX = pCurrentBuffer != nullptr ? 1.0f / pCurrentBuffer->m_width : VI.rwidth;
-		const float scaleY = pCurrentBuffer != nullptr ? 1.0f / pCurrentBuffer->m_height : VI.rheight;
+		f32 scaleX, scaleY;
+		calcCoordsScales(frameBufferList().getCurrent(), scaleX, scaleY);
 		uScreenCoordsScale.set(2.0f*scaleX, -2.0f*scaleY, _force);
 	}
 

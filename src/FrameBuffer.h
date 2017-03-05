@@ -125,6 +125,7 @@ FrameBufferList & frameBufferList()
 }
 
 u32 cutHeight(u32 _address, u32 _height, u32 _stride);
+void calcCoordsScales(const FrameBuffer * _pBuffer, f32 & _scaleX, f32 & _scaleY);
 
 void FrameBuffer_Init();
 void FrameBuffer_Destroy();

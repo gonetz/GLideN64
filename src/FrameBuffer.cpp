@@ -196,11 +196,6 @@ u32 _cutHeight(u32 _address, u32 _height, u32 _stride)
 	return _height;
 }
 
-u32 cutHeight(u32 _address, u32 _height, u32 _stride)
-{
-	return _cutHeight(_address, _height, _stride);
-}
-
 void FrameBuffer::setBufferClearParams(u32 _fillcolor, s32 _ulx, s32 _uly, s32 _lrx, s32 _lry)
 {
 	m_cleared = true;
@@ -1272,4 +1267,17 @@ void FrameBuffer_CopyFromRDRAM(u32 _address, bool _bCFB)
 void FrameBuffer_AddAddress(u32 address, u32 _size)
 {
 	RDRAMtoColorBuffer::get().addAddress(address, _size);
+}
+
+u32 cutHeight(u32 _address, u32 _height, u32 _stride)
+{
+	return _cutHeight(_address, _height, _stride);
+}
+
+void calcCoordsScales(const FrameBuffer * _pBuffer, f32 & _scaleX, f32 & _scaleY)
+{
+	const u32 bufferWidth = _pBuffer != nullptr ? _pBuffer->m_width : VI.width;
+	const u32 bufferHeight = VI_GetMaxBufferHeight(bufferWidth);
+	_scaleX = 1.0f / f32(bufferWidth);
+	_scaleY = 1.0f / f32(bufferHeight);
 }
