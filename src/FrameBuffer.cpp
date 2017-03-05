@@ -509,26 +509,20 @@ FrameBuffer * FrameBufferList::findBuffer(u32 _startAddress)
 	return nullptr;
 }
 
-FrameBuffer * FrameBufferList::_findBuffer(u32 _startAddress, u32 _endAddress, u32 _width)
+void FrameBufferList::removeIntersections()
 {
-	if (m_list.empty())
-		return nullptr;
+	assert(!m_list.empty());
 
 	FrameBuffers::iterator iter = m_list.end();
 	do {
 		--iter;
-		if ((iter->m_startAddress <= _startAddress && iter->m_endAddress >= _startAddress) || // [  {  ]
-			(_startAddress <= iter->m_startAddress && _endAddress >= iter->m_startAddress)) { // {  [  }
-
-			if (_startAddress != iter->m_startAddress || _width != iter->m_width) {
-				m_list.erase(iter);
-				return _findBuffer(_startAddress, _endAddress, _width);
-			}
-
-			return &(*iter);
+		if (&(*iter) == m_pCurrent)
+			continue;
+		if ((iter->m_startAddress <= m_pCurrent->m_startAddress && iter->m_endAddress >= m_pCurrent->m_startAddress) || // [  {  ]
+			(m_pCurrent->m_startAddress <= iter->m_startAddress && m_pCurrent->m_endAddress >= iter->m_startAddress)) { // {  [  }
+			iter = m_list.erase(iter);
 		}
 	} while (iter != m_list.begin());
-	return nullptr;
 }
 
 FrameBuffer * FrameBufferList::findTmpBuffer(u32 _address)
@@ -584,7 +578,7 @@ void FrameBufferList::saveBuffer(u32 _address, u16 _format, u16 _size, u16 _widt
 			m_pCurrent->copyRdram();
 		}
 
-		m_pCurrent = _findBuffer(m_pCurrent->m_startAddress, m_pCurrent->m_endAddress, m_pCurrent->m_width);
+		removeIntersections();
 	}
 
 	if (m_pCurrent == nullptr || m_pCurrent->m_startAddress != _address || m_pCurrent->m_width != _width)
