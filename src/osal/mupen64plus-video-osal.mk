@@ -6,7 +6,6 @@ LOCAL_PATH := $(JNI_LOCAL_PATH)
 SRCDIR := ./mupen64plus-video-gliden64/src/osal
 
 LOCAL_MODULE := osal
-#LOCAL_STATIC_LIBRARIES := png
 LOCAL_ARM_MODE := arm
 
 LOCAL_C_INCLUDES :=                     \
@@ -25,4 +24,4 @@ LOCAL_CFLAGS :=         \
 
 LOCAL_CPPFLAGS := $(COMMON_CPPFLAGS) -std=c++11 -g -fexceptions
 
-include $(BUILD_STATIC_LIBRARY)
+include $(BUILD_SHARED_LIBRARY)

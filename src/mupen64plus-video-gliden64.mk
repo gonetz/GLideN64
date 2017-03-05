@@ -6,8 +6,7 @@ LOCAL_PATH := $(JNI_LOCAL_PATH)
 SRCDIR := ./mupen64plus-video-gliden64/src
 
 MY_LOCAL_MODULE := mupen64plus-video-gliden64
-MY_LOCAL_SHARED_LIBRARIES := freetype
-MY_LOCAL_STATIC_LIBRARIES := glidenhq osal
+MY_LOCAL_SHARED_LIBRARIES := freetype glidenhq osal
 MY_LOCAL_ARM_MODE := arm
 
 MY_LOCAL_C_INCLUDES :=                          \
@@ -114,6 +113,7 @@ MY_LOCAL_CFLAGS :=      \
     -DOS_ANDROID        \
     -DUSE_SDL           \
     -DMUPENPLUSAPI      \
+    -DEGL               \
     -DEGL_EGLEXT_PROTOTYPES \
     -fsigned-char       \
     #-DSDL_NO_COMPAT     \
@@ -143,13 +143,12 @@ endif
 include $(CLEAR_VARS)
 LOCAL_MODULE            := $(MY_LOCAL_MODULE)
 LOCAL_SHARED_LIBRARIES  := $(MY_LOCAL_SHARED_LIBRARIES)
-LOCAL_STATIC_LIBRARIES  := $(MY_LOCAL_STATIC_LIBRARIES)
 LOCAL_ARM_MODE          := $(MY_LOCAL_ARM_MODE)
 LOCAL_C_INCLUDES        := $(MY_LOCAL_C_INCLUDES) $(LOCAL_PATH)/GL/
 LOCAL_SRC_FILES         := $(MY_LOCAL_SRC_FILES)
-LOCAL_CFLAGS            := $(MY_LOCAL_CFLAGS) -DEGL
+LOCAL_CFLAGS            := $(MY_LOCAL_CFLAGS)
 LOCAL_CPPFLAGS          := $(MY_LOCAL_CPPFLAGS)
 LOCAL_LDFLAGS           := $(MY_LOCAL_LDFLAGS)
-LOCAL_LDLIBS            := $(MY_LOCAL_LDLIBS) -lEGL
+LOCAL_LDLIBS            := $(MY_LOCAL_LDLIBS)
 
 include $(BUILD_SHARED_LIBRARY)
