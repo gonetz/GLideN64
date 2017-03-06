@@ -188,7 +188,7 @@ bool ColorBufferToRDRAM::_prepareCopy(u32 _startAddress)
 		} else {
 			width = m_pCurFrameBuffer->m_pTexture->realWidth;
 		}
-		u32 height = (u32)(m_pCurFrameBuffer->m_height * m_pCurFrameBuffer->m_scaleY);
+		u32 height = (u32)(bufferHeight * m_pCurFrameBuffer->m_scaleY);
 
 		CachedTexture * pInputTexture = m_pCurFrameBuffer->m_pTexture;
 		GraphicsDrawer::BlitOrCopyRectParams blitParams;
@@ -201,7 +201,7 @@ bool ColorBufferToRDRAM::_prepareCopy(u32 _startAddress)
 		blitParams.dstX0 = 0;
 		blitParams.dstY0 = 0;
 		blitParams.dstX1 = m_pCurFrameBuffer->m_width;
-		blitParams.dstY1 = m_pCurFrameBuffer->m_height;
+		blitParams.dstY1 = bufferHeight;
 		blitParams.dstWidth = m_pTexture->realWidth;
 		blitParams.dstHeight = m_pTexture->realHeight;
 		blitParams.filter = textureParameters::FILTER_NEAREST;
