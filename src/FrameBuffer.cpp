@@ -33,7 +33,7 @@ FrameBuffer::FrameBuffer() :
 	m_startAddress(0), m_endAddress(0), m_size(0), m_width(0), m_height(0), m_validityChecked(0),
 	m_scaleX(0), m_scaleY(0),
 	m_copiedToRdram(false), m_fingerprint(false), m_cleared(false), m_changed(false), m_cfb(false),
-	m_isDepthBuffer(false), m_isPauseScreen(false), m_isOBScreen(false), m_readable(false),
+	m_isDepthBuffer(false), m_isPauseScreen(false), m_isOBScreen(false), m_isMainBuffer(false), m_readable(false),
 	m_loadType(LOADTYPE_BLOCK), m_pDepthBuffer(nullptr),
 	m_pResolveTexture(nullptr), m_resolved(false),
 	m_pSubTexture(nullptr)
@@ -992,6 +992,7 @@ void FrameBufferList::renderBuffer()
 	FrameBuffer *pBuffer = findBuffer(rdpRes.vi_origin);
 	if (pBuffer == nullptr)
 		return;
+	pBuffer->m_isMainBuffer = true;
 
 	DisplayWindow & wnd = dwnd();
 	GraphicsDrawer & drawer = wnd.getDrawer();

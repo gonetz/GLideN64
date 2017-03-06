@@ -39,6 +39,7 @@ struct FrameBuffer
 	bool m_isDepthBuffer;
 	bool m_isPauseScreen;
 	bool m_isOBScreen;
+	bool m_isMainBuffer;
 	bool m_readable;
 
 	struct {
