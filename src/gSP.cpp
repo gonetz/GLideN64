@@ -2072,7 +2072,7 @@ void _drawYUVImageToFrameBuffer(const ObjCoordinates & _objCoords)
 	const u32 lrx = (u32)_objCoords.lrx;
 	const u32 lry = (u32)_objCoords.lry;
 	const u32 ci_width = gDP.colorImage.width;
-	const u32 ci_height = gDP.colorImage.height;
+	const u32 ci_height = gDP.scissor.lry;
 	if (ulx >= ci_width)
 		return;
 	if (uly >= ci_height)
