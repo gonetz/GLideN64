@@ -106,11 +106,11 @@ void ConfigDialog::_init()
 	}
 	ui->windowedResolutionComboBox->insertItems(0, windowedModesList);
 	ui->windowedResolutionComboBox->setCurrentIndex(windowedModesCurrent);
+
 	ui->cropImageComboBox->setCurrentIndex(config.video.cropMode);
 	ui->cropImageWidthSpinBox->setValue(config.video.cropWidth);
-	ui->cropImageWidthSpinBox->setEnabled(config.video.cropMode == Config::cmCustom);
 	ui->cropImageHeightSpinBox->setValue(config.video.cropHeight);
-	ui->cropImageHeightSpinBox->setEnabled(config.video.cropMode == Config::cmCustom);
+	ui->cropImageCustomFrame->setVisible(config.video.cropMode == Config::cmCustom);
 
 	QStringList fullscreenModesList, fullscreenRatesList;
 	int fullscreenMode, fullscreenRate;
@@ -594,21 +594,15 @@ void ConfigDialog::on_texPackPathButton_clicked()
 void ConfigDialog::on_windowedResolutionComboBox_currentIndexChanged(int index)
 {
 	const bool bCustom = index == numWindowedModes - 1;
-	ui->windowWidthLabel->setEnabled(bCustom);
 	ui->windowWidthSpinBox->setValue(bCustom ? config.video.windowedWidth : WindowedModes[index].width);
-	ui->windowWidthSpinBox->setEnabled(bCustom);
-	ui->windowHeightLabel->setEnabled(bCustom);
 	ui->windowHeightSpinBox->setValue(bCustom ? config.video.windowedHeight : WindowedModes[index].height);
-	ui->windowHeightSpinBox->setEnabled(bCustom);
+	ui->windowedResolutionCustomFrame->setVisible(bCustom);
 }
 
 void ConfigDialog::on_cropImageComboBox_currentIndexChanged(int index)
 {
 	const bool bCustom = index == Config::cmCustom;
-	ui->cropImageWidthLabel->setEnabled(bCustom);
-	ui->cropImageWidthSpinBox->setEnabled(bCustom);
-	ui->cropImageHeightLabel->setEnabled(bCustom);
-	ui->cropImageHeightSpinBox->setEnabled(bCustom);
+	ui->cropImageCustomFrame->setVisible(bCustom);
 }
 
 void ConfigDialog::on_frameBufferCheckBox_toggled(bool checked)
