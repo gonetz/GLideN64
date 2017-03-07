@@ -136,76 +136,90 @@
                <widget class="QComboBox" name="windowedResolutionComboBox"/>
               </item>
               <item>
-               <layout class="QHBoxLayout" name="horizontalLayout_12">
-                <item>
-                 <widget class="QLabel" name="windowWidthLabel">
-                  <property name="text">
-                   <string extracomment="Abbreviation for &quot;width&quot;.">W:</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QSpinBox" name="windowWidthSpinBox">
-                  <property name="minimumSize">
-                   <size>
-                    <width>52</width>
-                    <height>0</height>
-                   </size>
-                  </property>
-                  <property name="minimum">
-                   <number>320</number>
-                  </property>
-                  <property name="maximum">
-                   <number>7680</number>
-                  </property>
-                  <property name="singleStep">
-                   <number>16</number>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <spacer name="horizontalSpacer_5">
-                  <property name="orientation">
-                   <enum>Qt::Horizontal</enum>
-                  </property>
-                  <property name="sizeType">
-                   <enum>QSizePolicy::Fixed</enum>
-                  </property>
-                  <property name="sizeHint" stdset="0">
-                   <size>
-                    <width>4</width>
-                    <height>0</height>
-                   </size>
-                  </property>
-                 </spacer>
-                </item>
-                <item>
-                 <widget class="QLabel" name="windowHeightLabel">
-                  <property name="text">
-                   <string extracomment="Abbreviation for &quot;height&quot;.">H:</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QSpinBox" name="windowHeightSpinBox">
-                  <property name="minimumSize">
-                   <size>
-                    <width>52</width>
-                    <height>0</height>
-                   </size>
-                  </property>
-                  <property name="minimum">
-                   <number>240</number>
-                  </property>
-                  <property name="maximum">
-                   <number>4320</number>
-                  </property>
-                  <property name="singleStep">
-                   <number>16</number>
-                  </property>
-                 </widget>
-                </item>
-               </layout>
+               <widget class="QFrame" name="windowedResolutionCustomFrame">
+                <layout class="QHBoxLayout" name="horizontalLayout_12">
+                 <property name="leftMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="topMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="rightMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="bottomMargin">
+                  <number>0</number>
+                 </property>
+                 <item>
+                  <widget class="QLabel" name="windowWidthLabel">
+                   <property name="text">
+                    <string extracomment="Abbreviation for &quot;width&quot;.">W:</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QSpinBox" name="windowWidthSpinBox">
+                   <property name="minimumSize">
+                    <size>
+                     <width>52</width>
+                     <height>0</height>
+                    </size>
+                   </property>
+                   <property name="minimum">
+                    <number>320</number>
+                   </property>
+                   <property name="maximum">
+                    <number>7680</number>
+                   </property>
+                   <property name="singleStep">
+                    <number>16</number>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <spacer name="horizontalSpacer_5">
+                   <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
+                   </property>
+                   <property name="sizeType">
+                    <enum>QSizePolicy::Fixed</enum>
+                   </property>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>4</width>
+                     <height>0</height>
+                    </size>
+                   </property>
+                  </spacer>
+                 </item>
+                 <item>
+                  <widget class="QLabel" name="windowHeightLabel">
+                   <property name="text">
+                    <string extracomment="Abbreviation for &quot;height&quot;.">H:</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QSpinBox" name="windowHeightSpinBox">
+                   <property name="minimumSize">
+                    <size>
+                     <width>52</width>
+                     <height>0</height>
+                    </size>
+                   </property>
+                   <property name="minimum">
+                    <number>240</number>
+                   </property>
+                   <property name="maximum">
+                    <number>4320</number>
+                   </property>
+                   <property name="singleStep">
+                    <number>16</number>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </widget>
               </item>
              </layout>
             </widget>
@@ -274,76 +288,90 @@
                </widget>
               </item>
               <item>
-               <layout class="QHBoxLayout" name="horizontalLayout_23">
-                <item>
-                 <widget class="QLabel" name="cropImageWidthLabel">
-                  <property name="locale">
-                   <locale language="English" country="UnitedStates"/>
-                  </property>
-                  <property name="text">
-                   <string extracomment="Abbreviation for &quot;width&quot;.">W:</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QSpinBox" name="cropImageWidthSpinBox">
-                  <property name="minimumSize">
-                   <size>
-                    <width>52</width>
-                    <height>0</height>
-                   </size>
-                  </property>
-                  <property name="locale">
-                   <locale language="English" country="UnitedStates"/>
-                  </property>
-                  <property name="maximum">
-                   <number>64</number>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <spacer name="horizontalSpacer_9">
-                  <property name="orientation">
-                   <enum>Qt::Horizontal</enum>
-                  </property>
-                  <property name="sizeType">
-                   <enum>QSizePolicy::Fixed</enum>
-                  </property>
-                  <property name="sizeHint" stdset="0">
-                   <size>
-                    <width>4</width>
-                    <height>0</height>
-                   </size>
-                  </property>
-                 </spacer>
-                </item>
-                <item>
-                 <widget class="QLabel" name="cropImageHeightLabel">
-                  <property name="locale">
-                   <locale language="English" country="UnitedStates"/>
-                  </property>
-                  <property name="text">
-                   <string extracomment="Abbreviation for &quot;height&quot;.">H:</string>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QSpinBox" name="cropImageHeightSpinBox">
-                  <property name="minimumSize">
-                   <size>
-                    <width>52</width>
-                    <height>0</height>
-                   </size>
-                  </property>
-                  <property name="locale">
-                   <locale language="English" country="UnitedStates"/>
-                  </property>
-                  <property name="maximum">
-                   <number>48</number>
-                  </property>
-                 </widget>
-                </item>
-               </layout>
+               <widget class="QFrame" name="cropImageCustomFrame">
+                <layout class="QHBoxLayout" name="horizontalLayout_23">
+                 <property name="leftMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="topMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="rightMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="bottomMargin">
+                  <number>0</number>
+                 </property>
+                 <item>
+                  <widget class="QLabel" name="cropImageWidthLabel">
+                   <property name="locale">
+                    <locale language="English" country="UnitedStates"/>
+                   </property>
+                   <property name="text">
+                    <string extracomment="Abbreviation for &quot;width&quot;.">W:</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QSpinBox" name="cropImageWidthSpinBox">
+                   <property name="minimumSize">
+                    <size>
+                     <width>52</width>
+                     <height>0</height>
+                    </size>
+                   </property>
+                   <property name="locale">
+                    <locale language="English" country="UnitedStates"/>
+                   </property>
+                   <property name="maximum">
+                    <number>64</number>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <spacer name="horizontalSpacer_9">
+                   <property name="orientation">
+                    <enum>Qt::Horizontal</enum>
+                   </property>
+                   <property name="sizeType">
+                    <enum>QSizePolicy::Fixed</enum>
+                   </property>
+                   <property name="sizeHint" stdset="0">
+                    <size>
+                     <width>4</width>
+                     <height>0</height>
+                    </size>
+                   </property>
+                  </spacer>
+                 </item>
+                 <item>
+                  <widget class="QLabel" name="cropImageHeightLabel">
+                   <property name="locale">
+                    <locale language="English" country="UnitedStates"/>
+                   </property>
+                   <property name="text">
+                    <string extracomment="Abbreviation for &quot;height&quot;.">H:</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QSpinBox" name="cropImageHeightSpinBox">
+                   <property name="minimumSize">
+                    <size>
+                     <width>52</width>
+                     <height>0</height>
+                    </size>
+                   </property>
+                   <property name="locale">
+                    <locale language="English" country="UnitedStates"/>
+                   </property>
+                   <property name="maximum">
+                    <number>48</number>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </widget>
               </item>
              </layout>
             </widget>
@@ -3664,7 +3692,7 @@
      <y>183</y>
     </hint>
     <hint type="destinationlabel">
-     <x>398</x>
+     <x>397</x>
      <y>199</y>
     </hint>
    </hints>
@@ -3676,12 +3704,12 @@
    <slot>setHidden(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>119</x>
-     <y>69</y>
+     <x>100</x>
+     <y>199</y>
     </hint>
     <hint type="destinationlabel">
-     <x>119</x>
-     <y>69</y>
+     <x>217</x>
+     <y>238</y>
     </hint>
    </hints>
   </connection>
@@ -3692,12 +3720,12 @@
    <slot>setHidden(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>113</x>
-     <y>69</y>
+     <x>100</x>
+     <y>219</y>
     </hint>
     <hint type="destinationlabel">
-     <x>119</x>
-     <y>69</y>
+     <x>217</x>
+     <y>238</y>
     </hint>
    </hints>
   </connection>
@@ -3708,12 +3736,12 @@
    <slot>setVisible(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>73</x>
-     <y>69</y>
+     <x>51</x>
+     <y>238</y>
     </hint>
     <hint type="destinationlabel">
-     <x>119</x>
-     <y>69</y>
+     <x>217</x>
+     <y>238</y>
     </hint>
    </hints>
   </connection>
@@ -3724,12 +3752,12 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>119</x>
-     <y>69</y>
+     <x>220</x>
+     <y>233</y>
     </hint>
     <hint type="destinationlabel">
-     <x>119</x>
-     <y>69</y>
+     <x>389</x>
+     <y>262</y>
     </hint>
    </hints>
   </connection>
@@ -3740,12 +3768,12 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>81</x>
+     <x>50</x>
      <y>325</y>
     </hint>
     <hint type="destinationlabel">
-     <x>98</x>
-     <y>344</y>
+     <x>33</x>
+     <y>332</y>
     </hint>
    </hints>
   </connection>
@@ -3756,12 +3784,12 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>156</x>
+     <x>125</x>
      <y>325</y>
     </hint>
     <hint type="destinationlabel">
-     <x>171</x>
-     <y>344</y>
+     <x>111</x>
+     <y>332</y>
     </hint>
    </hints>
   </connection>
@@ -3772,12 +3800,12 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>237</x>
+     <x>206</x>
      <y>325</y>
     </hint>
     <hint type="destinationlabel">
-     <x>259</x>
-     <y>344</y>
+     <x>184</x>
+     <y>332</y>
     </hint>
    </hints>
   </connection>
@@ -3788,12 +3816,12 @@
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>40</x>
-     <y>69</y>
+     <x>54</x>
+     <y>211</y>
     </hint>
     <hint type="destinationlabel">
-     <x>40</x>
-     <y>69</y>
+     <x>54</x>
+     <y>232</y>
     </hint>
    </hints>
   </connection>
@@ -3804,12 +3832,12 @@
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>56</x>
-     <y>69</y>
+     <x>70</x>
+     <y>211</y>
     </hint>
     <hint type="destinationlabel">
-     <x>55</x>
-     <y>69</y>
+     <x>69</x>
+     <y>253</y>
     </hint>
    </hints>
   </connection>
@@ -3820,12 +3848,12 @@
    <slot>setDisabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>38</x>
-     <y>69</y>
+     <x>50</x>
+     <y>312</y>
     </hint>
     <hint type="destinationlabel">
-     <x>37</x>
-     <y>69</y>
+     <x>49</x>
+     <y>346</y>
     </hint>
    </hints>
   </connection>
@@ -3836,12 +3864,12 @@
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>119</x>
-     <y>69</y>
+     <x>100</x>
+     <y>41</y>
     </hint>
     <hint type="destinationlabel">
-     <x>82</x>
-     <y>69</y>
+     <x>94</x>
+     <y>120</y>
     </hint>
    </hints>
   </connection>
@@ -3852,12 +3880,12 @@
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>119</x>
-     <y>69</y>
+     <x>100</x>
+     <y>41</y>
     </hint>
     <hint type="destinationlabel">
      <x>114</x>
-     <y>307</y>
+     <y>303</y>
     </hint>
    </hints>
   </connection>
@@ -3868,8 +3896,8 @@
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>119</x>
-     <y>69</y>
+     <x>100</x>
+     <y>41</y>
     </hint>
     <hint type="destinationlabel">
      <x>101</x>
@@ -3884,12 +3912,12 @@
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>119</x>
-     <y>69</y>
+     <x>100</x>
+     <y>41</y>
     </hint>
     <hint type="destinationlabel">
-     <x>119</x>
-     <y>69</y>
+     <x>100</x>
+     <y>194</y>
     </hint>
    </hints>
   </connection>
@@ -3900,12 +3928,12 @@
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>53</x>
-     <y>69</y>
+     <x>65</x>
+     <y>199</y>
     </hint>
     <hint type="destinationlabel">
-     <x>53</x>
-     <y>69</y>
+     <x>65</x>
+     <y>346</y>
     </hint>
    </hints>
   </connection>
@@ -3916,12 +3944,12 @@
    <slot>setDisabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>119</x>
-     <y>69</y>
+     <x>100</x>
+     <y>219</y>
     </hint>
     <hint type="destinationlabel">
-     <x>119</x>
-     <y>69</y>
+     <x>100</x>
+     <y>346</y>
     </hint>
    </hints>
   </connection>
@@ -3932,12 +3960,12 @@
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>94</x>
-     <y>69</y>
+     <x>51</x>
+     <y>238</y>
     </hint>
     <hint type="destinationlabel">
-     <x>95</x>
-     <y>69</y>
+     <x>100</x>
+     <y>346</y>
     </hint>
    </hints>
   </connection>
@@ -3948,12 +3976,12 @@
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>71</x>
-     <y>78</y>
+     <x>85</x>
+     <y>72</y>
     </hint>
     <hint type="destinationlabel">
-     <x>64</x>
-     <y>78</y>
+     <x>78</x>
+     <y>88</y>
     </hint>
    </hints>
   </connection>
@@ -3964,8 +3992,8 @@
    <slot>setHidden(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>119</x>
-     <y>69</y>
+     <x>100</x>
+     <y>41</y>
     </hint>
     <hint type="destinationlabel">
      <x>312</x>
@@ -3980,12 +4008,12 @@
    <slot>setHidden(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>119</x>
-     <y>69</y>
+     <x>100</x>
+     <y>41</y>
     </hint>
     <hint type="destinationlabel">
      <x>101</x>
-     <y>401</y>
+     <y>592</y>
     </hint>
    </hints>
   </connection>
@@ -3996,8 +4024,8 @@
    <slot>setDisabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>119</x>
-     <y>69</y>
+     <x>91</x>
+     <y>386</y>
     </hint>
     <hint type="destinationlabel">
      <x>400</x>
@@ -4012,8 +4040,8 @@
    <slot>setVisible(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>119</x>
-     <y>69</y>
+     <x>91</x>
+     <y>386</y>
     </hint>
     <hint type="destinationlabel">
      <x>591</x>
@@ -4023,11 +4051,11 @@
   </connection>
  </connections>
  <buttongroups>
-  <buttongroup name="aspectButtonGroup"/>
-  <buttongroup name="bloomBlendModeButtonGroup"/>
-  <buttongroup name="screenshotButtonGroup"/>
   <buttongroup name="fixTexrectCoordsButtonGroup"/>
-  <buttongroup name="factorButtonGroup"/>
+  <buttongroup name="screenshotButtonGroup"/>
   <buttongroup name="osdButtonGroup"/>
+  <buttongroup name="aspectButtonGroup"/>
+  <buttongroup name="factorButtonGroup"/>
+  <buttongroup name="bloomBlendModeButtonGroup"/>
  </buttongroups>
 </ui>
