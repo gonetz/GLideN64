@@ -1036,7 +1036,6 @@ void FrameBufferList::renderBuffer()
 		srcY1 = srcHeight;
 		dstY1 = dstY0 + rdpRes.vi_vres - dstPartHeight;
 	} else {
-		dstY0 += srcY0;
 		dstY1 = dstY0 + rdpRes.vi_vres;
 //		srcY0 = (s32)(srcY0*yScale);
 		srcY1 = srcY0 + srcHeight;
