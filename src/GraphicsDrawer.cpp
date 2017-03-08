@@ -850,6 +850,7 @@ void GraphicsDrawer::drawRect(int _ulx, int _uly, int _lrx, int _lry)
 		return;
 
 	gSP.changed &= ~CHANGED_GEOMETRYMODE; // Don't update cull mode
+	gSP.changed &= ~CHANGED_VIEWPORT; // Don't update viewport
 	if (gSP.changed || gDP.changed)
 		_updateStates(DrawingState::Rect);
 
@@ -1067,6 +1068,8 @@ void GraphicsDrawer::drawTexturedRect(const TexturedRectParams & _params)
 		_updateTextures();
 		cmbInfo.updateParameters();
 	} else {
+		gSP.changed &= ~CHANGED_GEOMETRYMODE; // Don't update cull mode
+		gSP.changed &= ~CHANGED_VIEWPORT; // Don't update viewport
 		if (_params.texrectCmd && (gSP.changed | gDP.changed) != 0)
 			_updateStates(DrawingState::TexRect);
 		gfxContext.enable(enable::CULL_FACE, false);
