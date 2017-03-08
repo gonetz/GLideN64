@@ -66,27 +66,27 @@ set(GLideN64_SOURCES
   Graphics/Context.cpp
   Graphics/CombinerProgram.cpp
   Graphics/ObjectHandle.cpp
-  Graphics/OpenGLContext/GLFunctions.cpp
-  Graphics/OpenGLContext/opengl_Attributes.cpp
-  Graphics/OpenGLContext/opengl_BufferedDrawer.cpp
-  Graphics/OpenGLContext/opengl_BufferManipulationObjectFactory.cpp
-  Graphics/OpenGLContext/opengl_CachedFunctions.cpp
-  Graphics/OpenGLContext/opengl_ColorBufferReaderWithBufferStore.cpp
-  Graphics/OpenGLContext/opengl_ColorBufferReaderWithPixelBuffer.cpp
-  Graphics/OpenGLContext/opengl_ColorBufferReaderWithReadPixels.cpp
-  Graphics/OpenGLContext/opengl_ContextImpl.cpp
-  Graphics/OpenGLContext/opengl_GLInfo.cpp
-  Graphics/OpenGLContext/opengl_Parameters.cpp
-  Graphics/OpenGLContext/opengl_TextureManipulationObjectFactory.cpp
-  Graphics/OpenGLContext/opengl_UnbufferedDrawer.cpp
-  Graphics/OpenGLContext/opengl_Utils.cpp
-  Graphics/OpenGLContext/GLSL/glsl_CombinerInputs.cpp
-  Graphics/OpenGLContext/GLSL/glsl_CombinerProgramBuilder.cpp
-  Graphics/OpenGLContext/GLSL/glsl_CombinerProgramImpl.cpp
-  Graphics/OpenGLContext/GLSL/glsl_CombinerProgramUniformFactory.cpp
-  Graphics/OpenGLContext/GLSL/glsl_ShaderStorage.cpp
-  Graphics/OpenGLContext/GLSL/glsl_SpecialShadersFactory.cpp
-  Graphics/OpenGLContext/GLSL/glsl_Utils.cpp
+  Graphics/OGLContext/GLFunctions.cpp
+  Graphics/OGLContext/opengl_Attributes.cpp
+  Graphics/OGLContext/opengl_BufferedDrawer.cpp
+  Graphics/OGLContext/opengl_BufferManipulationObjectFactory.cpp
+  Graphics/OGLContext/opengl_CachedFunctions.cpp
+  Graphics/OGLContext/opengl_ColorBufferReaderWithBufferStore.cpp
+  Graphics/OGLContext/opengl_ColorBufferReaderWithPixelBuffer.cpp
+  Graphics/OGLContext/opengl_ColorBufferReaderWithReadPixels.cpp
+  Graphics/OGLContext/opengl_ContextImpl.cpp
+  Graphics/OGLContext/opengl_GLInfo.cpp
+  Graphics/OGLContext/opengl_Parameters.cpp
+  Graphics/OGLContext/opengl_TextureManipulationObjectFactory.cpp
+  Graphics/OGLContext/opengl_UnbufferedDrawer.cpp
+  Graphics/OGLContext/opengl_Utils.cpp
+  Graphics/OGLContext/GLSL/glsl_CombinerInputs.cpp
+  Graphics/OGLContext/GLSL/glsl_CombinerProgramBuilder.cpp
+  Graphics/OGLContext/GLSL/glsl_CombinerProgramImpl.cpp
+  Graphics/OGLContext/GLSL/glsl_CombinerProgramUniformFactory.cpp
+  Graphics/OGLContext/GLSL/glsl_ShaderStorage.cpp
+  Graphics/OGLContext/GLSL/glsl_SpecialShadersFactory.cpp
+  Graphics/OGLContext/GLSL/glsl_Utils.cpp
 )
 
 #check if we're running on Raspberry Pi
@@ -120,7 +120,7 @@ if(MUPENPLUSAPI)
 	mupenplus/Config_mupenplus.cpp
 	mupenplus/CommonAPIImpl_mupenplus.cpp
 	mupenplus/MupenPlusAPIImpl.cpp
-	Graphics/OpenGLContext/mupen64plus/mupen64plus_DisplayWindow.cpp
+	Graphics/OGLContext/mupen64plus/mupen64plus_DisplayWindow.cpp
   )
 
   set(GLideN64_SOURCES_WIN ${GLideN64_SOURCES_UNIX}
@@ -137,7 +137,7 @@ else(MUPENPLUSAPI)
 	windows/GLideN64_windows.cpp
 	common/GLFunctions.cpp
 	windows/ZilmarAPIImpl_windows.cpp
-	Graphics/OpenGLContext/windows/windows_DisplayWindow.cpp
+	Graphics/OGLContext/windows/windows_DisplayWindow.cpp
   )
   set(GLideN64_DLL_NAME GLideN64)
 endif(MUPENPLUSAPI)

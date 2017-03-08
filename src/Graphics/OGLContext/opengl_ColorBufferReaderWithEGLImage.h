@@ -3,7 +3,7 @@
 #include <Graphics/ColorBufferReader.h>
 #include "opengl_CachedFunctions.h"
 
-#include <Graphics/OpenGLContext/GraphicBufferPrivateApi/GraphicBuffer.h>
+#include <Graphics/OGLContext/GraphicBufferPrivateApi/GraphicBuffer.h>
 #include <EGL/egl.h>
 #include <EGL/eglext.h>
 

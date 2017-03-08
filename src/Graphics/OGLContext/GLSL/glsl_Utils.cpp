@@ -1,6 +1,6 @@
 #include <assert.h>
 #include <Log.h>
-#include <Graphics/OpenGLContext/opengl_Attributes.h>
+#include <Graphics/OGLContext/opengl_Attributes.h>
 #include "glsl_Utils.h"
 
 using namespace glsl;

@@ -80,31 +80,31 @@ MY_LOCAL_SRC_FILES :=                               \
     $(SRCDIR)/Graphics/Context.cpp                  \
     $(SRCDIR)/Graphics/CombinerProgram.cpp          \
     $(SRCDIR)/Graphics/ObjectHandle.cpp             \
-    $(SRCDIR)/Graphics/OpenGLContext/GLFunctions.cpp                               \
-    $(SRCDIR)/Graphics/OpenGLContext/opengl_Attributes.cpp                         \
-    $(SRCDIR)/Graphics/OpenGLContext/opengl_BufferedDrawer.cpp                     \
-    $(SRCDIR)/Graphics/OpenGLContext/opengl_BufferManipulationObjectFactory.cpp    \
-    $(SRCDIR)/Graphics/OpenGLContext/opengl_CachedFunctions.cpp                    \
-    $(SRCDIR)/Graphics/OpenGLContext/opengl_ColorBufferReaderWithPixelBuffer.cpp   \
-    $(SRCDIR)/Graphics/OpenGLContext/opengl_ColorBufferReaderWithReadPixels.cpp    \
-    $(SRCDIR)/Graphics/OpenGLContext/opengl_ColorBufferReaderWithEGLImage.cpp      \
-    $(SRCDIR)/Graphics/OpenGLContext/opengl_ColorBufferReaderWithBufferStore.cpp   \
-    $(SRCDIR)/Graphics/OpenGLContext/opengl_ContextImpl.cpp                        \
-    $(SRCDIR)/Graphics/OpenGLContext/opengl_GLInfo.cpp                             \
-    $(SRCDIR)/Graphics/OpenGLContext/opengl_Parameters.cpp                         \
-    $(SRCDIR)/Graphics/OpenGLContext/opengl_TextureManipulationObjectFactory.cpp   \
-    $(SRCDIR)/Graphics/OpenGLContext/opengl_UnbufferedDrawer.cpp                   \
-    $(SRCDIR)/Graphics/OpenGLContext/opengl_Utils.cpp                              \
-    $(SRCDIR)/Graphics/OpenGLContext/GLSL/glsl_CombinerInputs.cpp                  \
-    $(SRCDIR)/Graphics/OpenGLContext/GLSL/glsl_CombinerProgramBuilder.cpp          \
-    $(SRCDIR)/Graphics/OpenGLContext/GLSL/glsl_CombinerProgramImpl.cpp             \
-    $(SRCDIR)/Graphics/OpenGLContext/GLSL/glsl_CombinerProgramUniformFactory.cpp   \
-    $(SRCDIR)/Graphics/OpenGLContext/GLSL/glsl_ShaderStorage.cpp                   \
-    $(SRCDIR)/Graphics/OpenGLContext/GLSL/glsl_SpecialShadersFactory.cpp           \
-    $(SRCDIR)/Graphics/OpenGLContext/GLSL/glsl_Utils.cpp                           \
-    $(SRCDIR)/Graphics/OpenGLContext/mupen64plus/mupen64plus_DisplayWindow.cpp     \
-    $(SRCDIR)/Graphics/OpenGLContext/GraphicBufferPrivateApi/GraphicBuffer.cpp     \
-    $(SRCDIR)/Graphics/OpenGLContext/GraphicBufferPrivateApi/libhardware.cpp       \
+    $(SRCDIR)/Graphics/OGLContext/GLFunctions.cpp                               \
+    $(SRCDIR)/Graphics/OGLContext/opengl_Attributes.cpp                         \
+    $(SRCDIR)/Graphics/OGLContext/opengl_BufferedDrawer.cpp                     \
+    $(SRCDIR)/Graphics/OGLContext/opengl_BufferManipulationObjectFactory.cpp    \
+    $(SRCDIR)/Graphics/OGLContext/opengl_CachedFunctions.cpp                    \
+    $(SRCDIR)/Graphics/OGLContext/opengl_ColorBufferReaderWithPixelBuffer.cpp   \
+    $(SRCDIR)/Graphics/OGLContext/opengl_ColorBufferReaderWithReadPixels.cpp    \
+    $(SRCDIR)/Graphics/OGLContext/opengl_ColorBufferReaderWithEGLImage.cpp      \
+    $(SRCDIR)/Graphics/OGLContext/opengl_ColorBufferReaderWithBufferStore.cpp   \
+    $(SRCDIR)/Graphics/OGLContext/opengl_ContextImpl.cpp                        \
+    $(SRCDIR)/Graphics/OGLContext/opengl_GLInfo.cpp                             \
+    $(SRCDIR)/Graphics/OGLContext/opengl_Parameters.cpp                         \
+    $(SRCDIR)/Graphics/OGLContext/opengl_TextureManipulationObjectFactory.cpp   \
+    $(SRCDIR)/Graphics/OGLContext/opengl_UnbufferedDrawer.cpp                   \
+    $(SRCDIR)/Graphics/OGLContext/opengl_Utils.cpp                              \
+    $(SRCDIR)/Graphics/OGLContext/GLSL/glsl_CombinerInputs.cpp                  \
+    $(SRCDIR)/Graphics/OGLContext/GLSL/glsl_CombinerProgramBuilder.cpp          \
+    $(SRCDIR)/Graphics/OGLContext/GLSL/glsl_CombinerProgramImpl.cpp             \
+    $(SRCDIR)/Graphics/OGLContext/GLSL/glsl_CombinerProgramUniformFactory.cpp   \
+    $(SRCDIR)/Graphics/OGLContext/GLSL/glsl_ShaderStorage.cpp                   \
+    $(SRCDIR)/Graphics/OGLContext/GLSL/glsl_SpecialShadersFactory.cpp           \
+    $(SRCDIR)/Graphics/OGLContext/GLSL/glsl_Utils.cpp                           \
+    $(SRCDIR)/Graphics/OGLContext/mupen64plus/mupen64plus_DisplayWindow.cpp     \
+    $(SRCDIR)/Graphics/OGLContext/GraphicBufferPrivateApi/GraphicBuffer.cpp     \
+    $(SRCDIR)/Graphics/OGLContext/GraphicBufferPrivateApi/libhardware.cpp       \
 
 MY_LOCAL_CFLAGS :=      \
     $(COMMON_CFLAGS)    \

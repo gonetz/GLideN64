@@ -6,7 +6,7 @@
 #include <gDP.h>
 #include <Config.h>
 #include <Graphics/ObjectHandle.h>
-#include <Graphics/OpenGLContext/opengl_CachedFunctions.h>
+#include <Graphics/OGLContext/opengl_CachedFunctions.h>
 #include "glsl_SpecialShadersFactory.h"
 #include "glsl_ShaderPart.h"
 #include "glsl_Utils.h"

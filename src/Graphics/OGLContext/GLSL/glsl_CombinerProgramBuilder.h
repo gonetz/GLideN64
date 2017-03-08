@@ -1,7 +1,7 @@
 #pragma once
 #include <memory>
 #include <Combiner.h>
-#include <Graphics/OpenGLContext/opengl_GLInfo.h>
+#include <Graphics/OGLContext/opengl_GLInfo.h>
 
 namespace graphics {
 	class CombinerProgram;
