@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
 #include <sstream>
-#include <Graphics/OpenGLContext/GLFunctions.h>
+#include <Graphics/OGLContext/GLFunctions.h>
 
 namespace glsl {
 

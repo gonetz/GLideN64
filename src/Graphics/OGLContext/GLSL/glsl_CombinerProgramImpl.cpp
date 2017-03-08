@@ -2,8 +2,8 @@
 #include <fstream>
 #include <assert.h>
 #include <Combiner.h>
-#include <Graphics/OpenGLContext/opengl_CachedFunctions.h>
-#include <Graphics/OpenGLContext/opengl_Utils.h>
+#include <Graphics/OGLContext/opengl_CachedFunctions.h>
+#include <Graphics/OGLContext/opengl_Utils.h>
 #include "glsl_Utils.h"
 #include "glsl_CombinerProgramImpl.h"
 

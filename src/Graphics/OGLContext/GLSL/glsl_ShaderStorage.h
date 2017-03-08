@@ -1,5 +1,5 @@
 #pragma once
-#include <Graphics/OpenGLContext/opengl_GLInfo.h>
+#include <Graphics/OGLContext/opengl_GLInfo.h>
 
 namespace opengl {
 	class CachedUseProgram;

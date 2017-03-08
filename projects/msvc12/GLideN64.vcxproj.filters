@@ -242,46 +242,46 @@
     <ClCompile Include="..\..\src\Graphics\Context.cpp">
       <Filter>Source Files\Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\Graphics\OpenGLContext\GLFunctions.cpp">
+    <ClCompile Include="..\..\src\Graphics\OGLContext\GLFunctions.cpp">
       <Filter>Source Files\Graphics\OpenGL</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\Graphics\OpenGLContext\opengl_ContextImpl.cpp">
+    <ClCompile Include="..\..\src\Graphics\OGLContext\opengl_ContextImpl.cpp">
       <Filter>Source Files\Graphics\OpenGL</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\Graphics\OpenGLContext\opengl_Parameters.cpp">
+    <ClCompile Include="..\..\src\Graphics\OGLContext\opengl_Parameters.cpp">
       <Filter>Source Files\Graphics\OpenGL</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\Graphics\OpenGLContext\opengl_TextureManipulationObjectFactory.cpp">
+    <ClCompile Include="..\..\src\Graphics\OGLContext\opengl_TextureManipulationObjectFactory.cpp">
       <Filter>Source Files\Graphics\OpenGL</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\Graphics\OpenGLContext\opengl_CachedFunctions.cpp">
+    <ClCompile Include="..\..\src\Graphics\OGLContext\opengl_CachedFunctions.cpp">
       <Filter>Source Files\Graphics\OpenGL</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\Graphics\OpenGLContext\opengl_BufferManipulationObjectFactory.cpp">
+    <ClCompile Include="..\..\src\Graphics\OGLContext\opengl_BufferManipulationObjectFactory.cpp">
       <Filter>Source Files\Graphics\OpenGL</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\CombinerKey.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\Graphics\OpenGLContext\GLSL\glsl_CombinerProgramBuilder.cpp">
+    <ClCompile Include="..\..\src\Graphics\OGLContext\GLSL\glsl_CombinerProgramBuilder.cpp">
       <Filter>Source Files\Graphics\OpenGL\GLSL</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\Graphics\OpenGLContext\GLSL\glsl_CombinerProgramImpl.cpp">
+    <ClCompile Include="..\..\src\Graphics\OGLContext\GLSL\glsl_CombinerProgramImpl.cpp">
       <Filter>Source Files\Graphics\OpenGL\GLSL</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\Graphics\OpenGLContext\GLSL\glsl_Utils.cpp">
+    <ClCompile Include="..\..\src\Graphics\OGLContext\GLSL\glsl_Utils.cpp">
       <Filter>Source Files\Graphics\OpenGL\GLSL</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\Graphics\OpenGLContext\opengl_Attributes.cpp">
+    <ClCompile Include="..\..\src\Graphics\OGLContext\opengl_Attributes.cpp">
       <Filter>Source Files\Graphics\OpenGL</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\Graphics\OpenGLContext\opengl_GLInfo.cpp">
+    <ClCompile Include="..\..\src\Graphics\OGLContext\opengl_GLInfo.cpp">
       <Filter>Source Files\Graphics\OpenGL</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\Graphics\OpenGLContext\GLSL\glsl_CombinerProgramUniformFactory.cpp">
+    <ClCompile Include="..\..\src\Graphics\OGLContext\GLSL\glsl_CombinerProgramUniformFactory.cpp">
       <Filter>Source Files\Graphics\OpenGL\GLSL</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\Graphics\OpenGLContext\GLSL\glsl_CombinerInputs.cpp">
+    <ClCompile Include="..\..\src\Graphics\OGLContext\GLSL\glsl_CombinerInputs.cpp">
       <Filter>Source Files\Graphics\OpenGL\GLSL</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\NoiseTexture.cpp">
@@ -290,49 +290,49 @@
     <ClCompile Include="..\..\src\ZlutTexture.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\Graphics\OpenGLContext\GLSL\glsl_SpecialShadersFactory.cpp">
+    <ClCompile Include="..\..\src\Graphics\OGLContext\GLSL\glsl_SpecialShadersFactory.cpp">
       <Filter>Source Files\Graphics\OpenGL\GLSL</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\PaletteTexture.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\Graphics\OpenGLContext\opengl_Utils.cpp">
+    <ClCompile Include="..\..\src\Graphics\OGLContext\opengl_Utils.cpp">
       <Filter>Source Files\Graphics\OpenGL</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Graphics\CombinerProgram.cpp">
       <Filter>Source Files\Graphics</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\Graphics\OpenGLContext\GLSL\glsl_ShaderStorage.cpp">
+    <ClCompile Include="..\..\src\Graphics\OGLContext\GLSL\glsl_ShaderStorage.cpp">
       <Filter>Source Files\Graphics\OpenGL\GLSL</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\DisplayWindow.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\Graphics\OpenGLContext\windows\windows_DisplayWindow.cpp">
+    <ClCompile Include="..\..\src\Graphics\OGLContext\windows\windows_DisplayWindow.cpp">
       <Filter>Source Files\Graphics\OpenGL\windows</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\Graphics\OpenGLContext\mupen64plus\mupen64plus_DisplayWindow.cpp">
+    <ClCompile Include="..\..\src\Graphics\OGLContext\mupen64plus\mupen64plus_DisplayWindow.cpp">
       <Filter>Source Files\Graphics\OpenGL\mupen64plus</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\Graphics\OpenGLContext\opengl_UnbufferedDrawer.cpp">
+    <ClCompile Include="..\..\src\Graphics\OGLContext\opengl_UnbufferedDrawer.cpp">
       <Filter>Source Files\Graphics\OpenGL</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\GraphicsDrawer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\Graphics\OpenGLContext\opengl_ColorBufferReaderWithPixelBuffer.cpp">
+    <ClCompile Include="..\..\src\Graphics\OGLContext\opengl_ColorBufferReaderWithPixelBuffer.cpp">
       <Filter>Source Files\Graphics\OpenGL</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\Graphics\OpenGLContext\opengl_ColorBufferReaderWithBufferStore.cpp">
+    <ClCompile Include="..\..\src\Graphics\OGLContext\opengl_ColorBufferReaderWithBufferStore.cpp">
       <Filter>Source Files\Graphics\OpenGL</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\Graphics\OpenGLContext\opengl_BufferedDrawer.cpp">
+    <ClCompile Include="..\..\src\Graphics\OGLContext\opengl_BufferedDrawer.cpp">
       <Filter>Source Files\Graphics\OpenGL</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\TextDrawer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\Graphics\OpenGLContext\opengl_ColorBufferReaderWithReadPixels.cpp">
+    <ClCompile Include="..\..\src\Graphics\OGLContext\opengl_ColorBufferReaderWithReadPixels.cpp">
       <Filter>Source Files\Graphics\OpenGL</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\TexrectDrawer.cpp">
@@ -529,22 +529,22 @@
     <ClInclude Include="..\..\src\Graphics\Parameters.h">
       <Filter>Header Files\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Graphics\OpenGLContext\GLFunctions.h">
+    <ClInclude Include="..\..\src\Graphics\OGLContext\GLFunctions.h">
       <Filter>Header Files\Graphics\OpenGL</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Graphics\OpenGLContext\opengl_ContextImpl.h">
+    <ClInclude Include="..\..\src\Graphics\OGLContext\opengl_ContextImpl.h">
       <Filter>Header Files\Graphics\OpenGL</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Graphics\OpenGLContext\opengl_TextureManipulationObjectFactory.h">
+    <ClInclude Include="..\..\src\Graphics\OGLContext\opengl_TextureManipulationObjectFactory.h">
       <Filter>Header Files\Graphics\OpenGL</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Graphics\OpenGLContext\opengl_CachedFunctions.h">
+    <ClInclude Include="..\..\src\Graphics\OGLContext\opengl_CachedFunctions.h">
       <Filter>Header Files\Graphics\OpenGL</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Graphics\ObjectHandle.h">
       <Filter>Header Files\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Graphics\OpenGLContext\opengl_BufferManipulationObjectFactory.h">
+    <ClInclude Include="..\..\src\Graphics\OGLContext\opengl_BufferManipulationObjectFactory.h">
       <Filter>Header Files\Graphics\OpenGL</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Graphics\CombinerProgram.h">
@@ -553,25 +553,25 @@
     <ClInclude Include="..\..\src\CombinerKey.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Graphics\OpenGLContext\GLSL\glsl_CombinerProgramBuilder.h">
+    <ClInclude Include="..\..\src\Graphics\OGLContext\GLSL\glsl_CombinerProgramBuilder.h">
       <Filter>Header Files\Graphics\OpenGL\GLSL</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Graphics\OpenGLContext\GLSL\glsl_CombinerProgramImpl.h">
+    <ClInclude Include="..\..\src\Graphics\OGLContext\GLSL\glsl_CombinerProgramImpl.h">
       <Filter>Header Files\Graphics\OpenGL\GLSL</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Graphics\OpenGLContext\GLSL\glsl_Utils.h">
+    <ClInclude Include="..\..\src\Graphics\OGLContext\GLSL\glsl_Utils.h">
       <Filter>Header Files\Graphics\OpenGL\GLSL</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Graphics\OpenGLContext\opengl_Attributes.h">
+    <ClInclude Include="..\..\src\Graphics\OGLContext\opengl_Attributes.h">
       <Filter>Header Files\Graphics\OpenGL</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Graphics\OpenGLContext\opengl_GLInfo.h">
+    <ClInclude Include="..\..\src\Graphics\OGLContext\opengl_GLInfo.h">
       <Filter>Header Files\Graphics\OpenGL</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Graphics\OpenGLContext\GLSL\glsl_CombinerProgramUniformFactory.h">
+    <ClInclude Include="..\..\src\Graphics\OGLContext\GLSL\glsl_CombinerProgramUniformFactory.h">
       <Filter>Header Files\Graphics\OpenGL\GLSL</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Graphics\OpenGLContext\GLSL\glsl_CombinerInputs.h">
+    <ClInclude Include="..\..\src\Graphics\OGLContext\GLSL\glsl_CombinerInputs.h">
       <Filter>Header Files\Graphics\OpenGL\GLSL</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\NoiseTexture.h">
@@ -586,31 +586,31 @@
     <ClInclude Include="..\..\src\ZlutTexture.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Graphics\OpenGLContext\GLSL\glsl_SpecialShadersFactory.h">
+    <ClInclude Include="..\..\src\Graphics\OGLContext\GLSL\glsl_SpecialShadersFactory.h">
       <Filter>Header Files\Graphics\OpenGL\GLSL</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\PaletteTexture.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Graphics\OpenGLContext\GLSL\glsl_ShaderPart.h">
+    <ClInclude Include="..\..\src\Graphics\OGLContext\GLSL\glsl_ShaderPart.h">
       <Filter>Header Files\Graphics\OpenGL\GLSL</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Graphics\OpenGLContext\opengl_Utils.h">
+    <ClInclude Include="..\..\src\Graphics\OGLContext\opengl_Utils.h">
       <Filter>Header Files\Graphics\OpenGL</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Graphics\OpenGLContext\GLSL\glsl_ShaderStorage.h">
+    <ClInclude Include="..\..\src\Graphics\OGLContext\GLSL\glsl_ShaderStorage.h">
       <Filter>Header Files\Graphics\OpenGL\GLSL</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\DisplayWindow.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Graphics\OpenGLContext\opengl_UnbufferedDrawer.h">
+    <ClInclude Include="..\..\src\Graphics\OGLContext\opengl_UnbufferedDrawer.h">
       <Filter>Header Files\Graphics\OpenGL</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\GraphicsDrawer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Graphics\OpenGLContext\opengl_GraphicsDrawer.h">
+    <ClInclude Include="..\..\src\Graphics\OGLContext\opengl_GraphicsDrawer.h">
       <Filter>Header Files\Graphics\OpenGL</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Graphics\FramebufferTextureFormats.h">
@@ -622,19 +622,19 @@
     <ClInclude Include="..\..\src\Graphics\ColorBufferReader.h">
       <Filter>Header Files\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Graphics\OpenGLContext\opengl_ColorBufferReaderWithPixelBuffer.h">
+    <ClInclude Include="..\..\src\Graphics\OGLContext\opengl_ColorBufferReaderWithPixelBuffer.h">
       <Filter>Header Files\Graphics\OpenGL</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Graphics\OpenGLContext\opengl_ColorBufferReaderWithBufferStore.h">
+    <ClInclude Include="..\..\src\Graphics\OGLContext\opengl_ColorBufferReaderWithBufferStore.h">
       <Filter>Header Files\Graphics\OpenGL</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Graphics\OpenGLContext\opengl_BufferedDrawer.h">
+    <ClInclude Include="..\..\src\Graphics\OGLContext\opengl_BufferedDrawer.h">
       <Filter>Header Files\Graphics\OpenGL</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\TextDrawer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Graphics\OpenGLContext\opengl_ColorBufferReaderWithReadPixels.h">
+    <ClInclude Include="..\..\src\Graphics\OGLContext\opengl_ColorBufferReaderWithReadPixels.h">
       <Filter>Header Files\Graphics\OpenGL</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\TexrectDrawer.h">

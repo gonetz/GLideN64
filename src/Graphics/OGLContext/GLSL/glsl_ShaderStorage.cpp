@@ -2,7 +2,7 @@
 #include <assert.h>
 
 #include <Graphics/CombinerProgram.h>
-#include <Graphics/OpenGLContext/opengl_Utils.h>
+#include <Graphics/OGLContext/opengl_Utils.h>
 #include <Types.h>
 #include <Log.h>
 #include <RSP.h>

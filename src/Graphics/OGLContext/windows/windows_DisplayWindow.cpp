@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include <Graphics/OpenGLContext/GLFunctions.h>
+#include <Graphics/OGLContext/GLFunctions.h>
 #include <GL/wglext.h>
 #include <windows/GLideN64_Windows.h>
 #include <GLideN64.h>
