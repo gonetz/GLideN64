@@ -1081,28 +1081,20 @@ void FrameBufferList::renderBuffer()
 						  hOffset + dstX1,
 						  vOffset + (s32)(dstY1*dstScaleY) };
 
-	gfxContext.bindFramebuffer(bufferTarget::DRAW_FRAMEBUFFER, ObjectHandle::null);
-
-	float clearColor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
-	drawer.clearColorBuffer(clearColor);
-
-
 	TextureParam filter = textureParameters::FILTER_LINEAR;
 	ObjectHandle readBuffer;
 
 	if (pFilteredBuffer->m_pTexture->frameBufferTexture == CachedTexture::fbMultiSample) {
-		if (dstX0 > 0 || dstPartHeight > 0 ||
-			(srcCoord[2] - srcCoord[0]) != (dstCoord[2] - dstCoord[0]) ||
-			(srcCoord[3] - srcCoord[1]) != (dstCoord[3] - dstCoord[1])) {
-			pFilteredBuffer->resolveMultisampledTexture(true);
-			readBuffer = pFilteredBuffer->m_resolveFBO;
-		} else {
-			readBuffer = pFilteredBuffer->m_FBO;
-			filter = textureParameters::FILTER_NEAREST;
-		}
+		pFilteredBuffer->resolveMultisampledTexture(true);
+		readBuffer = pFilteredBuffer->m_resolveFBO;
+		pBufferTexture = pFilteredBuffer->m_pResolveTexture;
 	} else {
 		readBuffer = pFilteredBuffer->m_FBO;
 	}
+
+	gfxContext.bindFramebuffer(bufferTarget::DRAW_FRAMEBUFFER, ObjectHandle::null);
+	float clearColor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+	drawer.clearColorBuffer(clearColor);
 
 	GraphicsDrawer::BlitOrCopyRectParams blitParams;
 	blitParams.srcX0 = srcCoord[0];
@@ -1138,11 +1130,11 @@ void FrameBufferList::renderBuffer()
 			if (pFilteredBuffer->m_pTexture->frameBufferTexture == CachedTexture::fbMultiSample) {
 				pFilteredBuffer->resolveMultisampledTexture();
 				readBuffer = pFilteredBuffer->m_resolveFBO;
+				pBufferTexture = pFilteredBuffer->m_pResolveTexture;
 			} else {
 				readBuffer = pFilteredBuffer->m_FBO;
+				pBufferTexture = pFilteredBuffer->m_pTexture;
 			}
-
-			pBufferTexture = pFilteredBuffer->m_pTexture;
 
 			blitParams.srcY0 = 0;
 			blitParams.srcY1 = min((s32)(srcY1*srcScaleY), (s32)pFilteredBuffer->m_pTexture->realHeight);
