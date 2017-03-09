@@ -1075,7 +1075,7 @@ void FrameBufferList::renderBuffer()
 	}
 
 	const s32 hOffset = (wnd.getScreenWidth() - wnd.getWidth()) / 2;
-	const s32 vOffset = (wnd.getScreenHeight() - wnd.getHeight()) / 2 + wnd.getHeightOffset();
+	const s32 vOffset = (wnd.getScreenHeight() - wnd.getHeight()) / 2;// +wnd.getHeightOffset();
 	s32 dstCoord[4] = { dstX0 + hOffset,
 						  vOffset + (s32)(dstY0*dstScaleY),
 						  hOffset + dstX1,
