@@ -90,9 +90,8 @@ set(GLideN64_SOURCES
 )
 
 #check if we're running on Raspberry Pi
-MESSAGE("Looking for bcm_host.h")
 if(EXISTS "/opt/vc/include/bcm_host.h")
-  MESSAGE("bcm_host.h found")
+  message("bcm_host.h found")
   set(BCMHOST ON)
   set(EGL ON)
   add_definitions(
@@ -108,8 +107,6 @@ if(EXISTS "/opt/vc/include/bcm_host.h")
     "/opt/vc/lib"
     "/opt/vc/lib/GL"
   )
-else(EXISTS "/opt/vc/include/bcm_host.h")
-  MESSAGE("bcm_host.h not found")
 endif(EXISTS "/opt/vc/include/bcm_host.h")
 
 if(MUPENPLUSAPI)
@@ -271,13 +268,18 @@ else(EGL)
   endif(NOT OPENGL_FOUND)
 endif(EGL)
 
-if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
-  #check for G++ 4.8+
+if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+  #check for compiler version
   execute_process(COMMAND ${CMAKE_CXX_COMPILER} -dumpversion OUTPUT_VARIABLE G++_VERSION)
-  if (G++_VERSION VERSION_LESS 4.8)
-	message(SEND_ERROR "You need at least G++ 4.8 to compile GLideN64!")
+  if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" AND G++_VERSION VERSION_LESS 4.8)
+    message("Found compiler version " ${G++_VERSION})
+    message(SEND_ERROR "You need at least G++ 4.8 to compile GLideN64!")
+  elseif(G++_VERSION VERSION_LESS 3.3)
+    message("Found compiler version " ${G++_VERSION})
+    message(SEND_ERROR "You need at least Clang 3.3 to compile GLideN64!")
   endif()
-  SET(GCC_CPP11_COMPILE_FLAGS "-std=c++0x -static-libgcc")
+#  SET(GCC_CPP11_COMPILE_FLAGS "-std=c++0x -static-libgcc")
+  SET(GCC_CPP11_COMPILE_FLAGS "-std=c++0x")
   SET( CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} ${GCC_CPP11_COMPILE_FLAGS}" )
   SET(GCC_STATIC_LINK_FLAGS "-static-libgcc")
   SET( CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} ${GCC_STATIC_LINK_FLAGS}" )

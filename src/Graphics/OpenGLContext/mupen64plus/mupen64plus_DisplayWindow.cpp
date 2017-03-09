@@ -110,7 +110,7 @@ void DisplayWindowMupen64plus::_swapBuffers()
 	if (renderCallback != nullptr) {
 		gfxContext.resetShaderProgram();
 		if (config.frameBufferEmulation.N64DepthCompare == 0) {
-			glViewport(0, getHeightOffset(), getScreenWidth(), getScreenHeight());
+			gfxContext.setViewport(0, getHeightOffset(), getScreenWidth(), getScreenHeight());
 			gSP.changed |= CHANGED_VIEWPORT;
 		}
 		gDP.changed |= CHANGED_COMBINE;

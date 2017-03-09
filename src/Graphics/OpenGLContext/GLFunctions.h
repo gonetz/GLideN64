@@ -10,6 +10,11 @@
 
 #ifdef EGL
 #include <GL/glcorearb.h>
+#elif defined(OS_MAC_OS_X)
+#include <OpenGL/OpenGL.h>
+#include <stddef.h>
+#include <OpenGL/gl3.h>
+//#include <OpenGL/gl3ext.h>
 #else
 #include <GL/gl.h>
 #endif

@@ -58,7 +58,7 @@ const char* GLErrorString(GLenum errorCode)
 		{ GL_INVALID_ENUM, "invalid enumerant" },
 		{ GL_INVALID_VALUE, "invalid value" },
 		{ GL_INVALID_OPERATION, "invalid operation" },
-#ifndef GLESX
+#if !defined(GLESX) && !defined(OS_MAC_OS_X)
 		{ GL_STACK_OVERFLOW, "stack overflow" },
 		{ GL_STACK_UNDERFLOW, "stack underflow" },
 #endif

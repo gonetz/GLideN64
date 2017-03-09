@@ -1,5 +1,6 @@
 #include <stdarg.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include "Log.h"
 #include "PluginAPI.h"
 #include "wst.h"

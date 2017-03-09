@@ -24,14 +24,17 @@
 #include "TxUtil.h"
 #include "TxDbg.h"
 #include <zlib.h>
-#include <malloc.h>
 #include <assert.h>
 
-#if defined (OS_MAC_OS_X)
+#if defined (OS_WINDOWS)
+#include <malloc.h>
+#elif defined (OS_MAC_OS_X)
 #include <sys/param.h>
 #include <sys/sysctl.h>
-#elif defined OS_LINUX
+#include <stdlib.h>
+#elif defined (OS_LINUX)
 #include <unistd.h>
+#include <malloc.h>
 #endif
 
 /*

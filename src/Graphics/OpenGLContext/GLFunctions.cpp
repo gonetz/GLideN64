@@ -32,6 +32,26 @@ typedef struct __GLXFBConfigRec *GLXFBConfig;
 #define glGetProcAddress glXGetProcAddress
 #define GL_GET_PROC_ADR(proc_type, proc_name) g_##proc_name = (proc_type) glGetProcAddress((const GLubyte*)#proc_name)
 
+#elif defined(OS_MAC_OS_X)
+#import <mach-o/dyld.h>
+#import <stdlib.h>
+#import <string.h>
+void * MyNSGLGetProcAddress (const char *name)
+{
+    NSSymbol symbol;
+    char *symbolName;
+    symbolName = (char*)malloc (strlen (name) + 2); // 1
+    strcpy(symbolName + 1, name); // 2
+    symbolName[0] = '_'; // 3
+    symbol = NULL;
+    if (NSIsSymbolNameDefined (symbolName)) // 4
+        symbol = NSLookupAndBindSymbol (symbolName);
+    free (symbolName); // 5
+    return symbol ? NSAddressOfSymbol (symbol) : NULL; // 6
+}
+#define glGetProcAddress MyNSGLGetProcAddress
+#define GL_GET_PROC_ADR(proc_type, proc_name) g_##proc_name = (proc_type) glGetProcAddress(#proc_name)
+
 #endif
 
 //GL Fucntions

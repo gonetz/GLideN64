@@ -1,8 +1,15 @@
 #include "GLideN64_mupenplus.h"
 #include <algorithm>
+#include <string>
+#include <sstream>
+#include <iostream>
 #include <Platform.h>
 #include "../PluginAPI.h"
 #include "../RSP.h"
+
+#if defined(OS_MAC_OS_X)
+#include <mach-o/dyld.h>
+#endif
 
 int PluginAPI::InitiateGFX(const GFX_INFO & _gfxInfo)
 {
@@ -61,9 +68,10 @@ void PluginAPI::FindPluginPath(wchar_t * _strPath)
 		_getWSPath(path, _strPath);
 	}
 #elif defined(OS_MAC_OS_X)
+#define MAXPATHLEN 256
 	char path[MAXPATHLEN];
 	uint32_t pathLen = MAXPATHLEN * 2;
-	if (_NSGetExecutablePath(path, pathLen) == 0) {
+	if (_NSGetExecutablePath(path, &pathLen) == 0) {
 		_getWSPath(path, _strPath);
 	}
 #elif defined(OS_ANDROID)
