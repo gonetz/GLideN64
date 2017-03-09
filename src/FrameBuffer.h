@@ -30,7 +30,7 @@ struct FrameBuffer
 
 	u32 m_startAddress, m_endAddress;
 	u32 m_size, m_width, m_height;
-	float m_scaleX, m_scaleY;
+	float m_scale;
 	bool m_copiedToRdram;
 	bool m_fingerprint;
 	bool m_cleared;

@@ -185,7 +185,7 @@ bool DepthBufferToRDRAM::_prepareCopy(u32 _address, bool _copyChunk)
 	blitParams.srcX0 = 0;
 	blitParams.srcY0 = 0;
 	blitParams.srcX1 = m_pCurFrameBuffer->m_pTexture->realWidth;
-	blitParams.srcY1 = s32(m_pCurFrameBuffer->m_height * m_pCurFrameBuffer->m_scaleY);
+	blitParams.srcY1 = s32(m_pCurFrameBuffer->m_height * m_pCurFrameBuffer->m_scale);
 	blitParams.dstX0 = 0;
 	blitParams.dstY0 = 0;
 	blitParams.dstX1 = m_pCurFrameBuffer->m_width;

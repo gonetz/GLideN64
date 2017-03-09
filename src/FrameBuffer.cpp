@@ -31,7 +31,7 @@ using namespace graphics;
 
 FrameBuffer::FrameBuffer() :
 	m_startAddress(0), m_endAddress(0), m_size(0), m_width(0), m_height(0), m_validityChecked(0),
-	m_scaleX(0), m_scaleY(0),
+	m_scale(0),
 	m_copiedToRdram(false), m_fingerprint(false), m_cleared(false), m_changed(false), m_cfb(false),
 	m_isDepthBuffer(false), m_isPauseScreen(false), m_isOBScreen(false), m_isMainBuffer(false), m_readable(false),
 	m_loadType(LOADTYPE_BLOCK), m_pDepthBuffer(nullptr),
@@ -58,8 +58,8 @@ void FrameBuffer::_initTexture(u16 _width, u16 _height, u16 _format, u16 _size, 
 {
 	const FramebufferTextureFormats & fbTexFormats = gfxContext.getFramebufferTextureFormats();
 
-	_pTexture->width = (u16)(u32)(_width * m_scaleX);
-	_pTexture->height = (u16)(u32)(_height * m_scaleY);
+	_pTexture->width = (u16)(u32)(_width * m_scale);
+	_pTexture->height = (u16)(u32)(_height * m_scale);
 	_pTexture->format = _format;
 	_pTexture->size = _size;
 	_pTexture->clampS = 1;
@@ -149,12 +149,11 @@ void FrameBuffer::init(u32 _address, u16 _format, u16 _size, u16 _width, bool _c
 	updateEndAddress();
 	m_size = _size;
 	if (isAuxiliary() && config.frameBufferEmulation.copyAuxToRDRAM != 0) {
-		m_scaleX = 1.0f;
-		m_scaleY = 1.0f;
+		m_scale = 1.0f;
 	} else if (config.frameBufferEmulation.nativeResFactor != 0 && config.frameBufferEmulation.enable != 0) {
-		m_scaleX = m_scaleY = static_cast<float>(config.frameBufferEmulation.nativeResFactor);
+		m_scale = static_cast<float>(config.frameBufferEmulation.nativeResFactor);
 	} else {
-		m_scaleY = m_scaleX = wnd.getScaleX();
+		m_scale = wnd.getScaleX();
 	}
 	m_cfb = _cfb;
 	m_cleared = false;
@@ -359,8 +358,8 @@ CachedTexture * FrameBuffer::_getSubTexture(u32 _t)
 	if (!_initSubTexture(_t))
 		return m_pTexture;
 
-	s32 x0 = (s32)(m_pTexture->offsetS * m_scaleX);
-	s32 y0 = (s32)(m_pTexture->offsetT * m_scaleY);
+	s32 x0 = (s32)(m_pTexture->offsetS * m_scale);
+	s32 y0 = (s32)(m_pTexture->offsetT * m_scale);
 	s32 copyWidth = m_pSubTexture->realWidth;
 	if (x0 + copyWidth > m_pTexture->realWidth)
 		copyWidth = m_pTexture->realWidth - x0;
@@ -419,8 +418,8 @@ CachedTexture * FrameBuffer::getTexture(u32 _t)
 	if (!getDepthTexture && (gSP.textureTile[_t]->clamps == 0 || gSP.textureTile[_t]->clampt == 0))
 		pTexture = _getSubTexture(_t);
 
-	pTexture->scaleS = m_scaleX / (float)pTexture->realWidth;
-	pTexture->scaleT = m_scaleY / (float)pTexture->realHeight;
+	pTexture->scaleS = m_scale / (float)pTexture->realWidth;
+	pTexture->scaleT = m_scale / (float)pTexture->realHeight;
 
 	if (gSP.textureTile[_t]->shifts > 10)
 		pTexture->shiftScaleS = (float)(1 << (16 - gSP.textureTile[_t]->shifts));
@@ -441,8 +440,8 @@ CachedTexture * FrameBuffer::getTexture(u32 _t)
 
 CachedTexture * FrameBuffer::getTextureBG(u32 _t)
 {
-	m_pTexture->scaleS = m_scaleX / (float)m_pTexture->realWidth;
-	m_pTexture->scaleT = m_scaleY / (float)m_pTexture->realHeight;
+	m_pTexture->scaleS = m_scale / (float)m_pTexture->realWidth;
+	m_pTexture->scaleT = m_scale / (float)m_pTexture->realHeight;
 
 	m_pTexture->shiftScaleS = 1.0f;
 	m_pTexture->shiftScaleT = 1.0f;
@@ -590,7 +589,7 @@ void FrameBufferList::saveBuffer(u32 _address, u16 _format, u16 _size, u16 _widt
 		if ((m_pCurrent->m_startAddress != _address) ||
 			(m_pCurrent->m_width != _width) ||
 			(m_pCurrent->m_size < _size) ||
-			(m_pCurrent->m_scaleX != scaleX))
+			(m_pCurrent->m_scale != scaleX))
 		{
 			removeBuffer(m_pCurrent->m_startAddress);
 			m_pCurrent = nullptr;
@@ -1051,7 +1050,7 @@ void FrameBufferList::renderBuffer()
 		Xdivot = 1;
 
 	const f32 viScaleX = _FIXED2FLOAT(_SHIFTR(*REG.VI_X_SCALE, 0, 12), 10);
-	const f32 srcScaleX = pFilteredBuffer->m_scaleX;
+	const f32 srcScaleX = pFilteredBuffer->m_scale;
 	const f32 dstScaleX = wnd.getScaleX();
 	const s32 hx0 = rdpRes.vi_h_start;
 	const s32 h0 = (rdpRes.vi_ispal ? 128 : 108);
@@ -1062,7 +1061,7 @@ void FrameBufferList::renderBuffer()
 	dstX1 = wnd.getWidth() - (s32)((hx1*viScaleX + Xdivot) * dstScaleX);
 	srcWidth -= Xoffset + Xdivot;
 
-	const f32 srcScaleY = pFilteredBuffer->m_scaleY;
+	const f32 srcScaleY = pFilteredBuffer->m_scale;
 	CachedTexture * pBufferTexture = pFilteredBuffer->m_pTexture;
 	const s32 hCrop = config.video.cropMode == Config::cmDisable ? 0 : s32(config.video.cropWidth * srcScaleX);
 	const s32 vCrop = config.video.cropMode == Config::cmDisable ? 0 : s32(config.video.cropHeight * srcScaleY);

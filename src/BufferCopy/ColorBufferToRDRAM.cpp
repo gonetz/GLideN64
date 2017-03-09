@@ -175,7 +175,7 @@ bool ColorBufferToRDRAM::_prepareCopy(u32 _startAddress)
 		readBuffer = m_pCurFrameBuffer->m_FBO;
 	}
 
-	if (m_pCurFrameBuffer->m_scaleX != 1.0f || m_pCurFrameBuffer->m_scaleY != 1.0f) {
+	if (m_pCurFrameBuffer->m_scale != 1.0f) {
 		u32 x0 = 0;
 		u32 width;
 		if (config.frameBufferEmulation.nativeResFactor == 0) {
@@ -188,7 +188,7 @@ bool ColorBufferToRDRAM::_prepareCopy(u32 _startAddress)
 		} else {
 			width = m_pCurFrameBuffer->m_pTexture->realWidth;
 		}
-		u32 height = (u32)(bufferHeight * m_pCurFrameBuffer->m_scaleY);
+		u32 height = (u32)(bufferHeight * m_pCurFrameBuffer->m_scale);
 
 		CachedTexture * pInputTexture = m_pCurFrameBuffer->m_pTexture;
 		GraphicsDrawer::BlitOrCopyRectParams blitParams;

@@ -470,8 +470,7 @@ void PostProcessor::_preDraw(FrameBuffer * _pBuffer)
 
 	m_pResultBuffer->m_width = _pBuffer->m_width;
 	m_pResultBuffer->m_height = _pBuffer->m_height;
-	m_pResultBuffer->m_scaleX = dwnd().getScaleX();
-	m_pResultBuffer->m_scaleY = dwnd().getScaleY();
+	m_pResultBuffer->m_scale = dwnd().getScaleX();
 
 	if (_pBuffer->m_pTexture->frameBufferTexture == CachedTexture::fbMultiSample) {
 		_pBuffer->resolveMultisampledTexture(true);
