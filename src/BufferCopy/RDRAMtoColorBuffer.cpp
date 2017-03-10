@@ -185,7 +185,7 @@ void RDRAMtoColorBuffer::copyFromRDRAM(u32 _address, bool _bCFB)
 
 	const u32 address = m_pCurBuffer->m_startAddress;
 
-	const u32 height = cutHeight(address, m_pCurBuffer->m_startAddress == _address ? VI.real_height : m_pCurBuffer->m_height, m_pCurBuffer->m_width << m_pCurBuffer->m_size >> 1);
+	const u32 height = cutHeight(address, m_pCurBuffer->m_startAddress == _address ? VI.real_height : VI_GetMaxBufferHeight(m_pCurBuffer->m_width), m_pCurBuffer->m_width << m_pCurBuffer->m_size >> 1);
 	if (height == 0)
 		return;
 
