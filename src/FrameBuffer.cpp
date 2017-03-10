@@ -1029,7 +1029,10 @@ void FrameBufferList::renderBuffer()
 	srcWidth = min(rdpRes.vi_width, (rdpRes.vi_hres * rdpRes.vi_x_add) >> 10);
 	srcHeight = rdpRes.vi_width * ((rdpRes.vi_vres*rdpRes.vi_y_add + rdpRes.vi_y_start) >> 10) / pBuffer->m_width;
 
-	if (srcY0 + rdpRes.vi_vres > vFullHeight) {
+	u32 maxY = gDP.scissor.uly + gDP.scissor.lry;
+	if (maxY == 0)
+		maxY = vFullHeight;
+	if (srcY0 + srcHeight > maxY) {
 		dstPartHeight = srcY0;
 //		srcY0 = (s32)(srcY0*yScale);
 		srcPartHeight = srcY0;
@@ -1104,9 +1107,9 @@ void FrameBufferList::renderBuffer()
 
 	GraphicsDrawer::BlitOrCopyRectParams blitParams;
 	blitParams.srcX0 = srcCoord[0];
-	blitParams.srcY0 = srcCoord[3];
+	blitParams.srcY0 = srcCoord[1];
 	blitParams.srcX1 = srcCoord[2];
-	blitParams.srcY1 = srcCoord[1];
+	blitParams.srcY1 = srcCoord[3];
 	blitParams.srcWidth = pBufferTexture->realWidth;
 	blitParams.srcHeight = pBufferTexture->realHeight;
 	blitParams.dstX0 = dstCoord[0];
@@ -1120,8 +1123,9 @@ void FrameBufferList::renderBuffer()
 	blitParams.tex[0] = pBufferTexture;
 	blitParams.combiner = CombinerInfo::get().getTexrectCopyProgram();
 	blitParams.readBuffer = readBuffer;
+	blitParams.invertY = true;
 
-	drawer.blitOrCopyTexturedRect(blitParams);
+	drawer.copyTexturedRect(blitParams);
 
 	if (dstPartHeight > 0) {
 		const u32 size = *REG.VI_STATUS & 3;
@@ -1129,7 +1133,6 @@ void FrameBufferList::renderBuffer()
 		if (pBuffer != nullptr) {
 			pFilteredBuffer = postProcessor.doBlur(postProcessor.doGammaCorrection(
 				postProcessor.doOrientationCorrection(pBuffer)));
-			srcY0 = 0;
 			srcY1 = srcPartHeight;
 			dstY0 = dstY1;
 			dstY1 = dstY0 + dstPartHeight;
@@ -1155,7 +1158,7 @@ void FrameBufferList::renderBuffer()
 			blitParams.tex[0] = pBufferTexture;
 			blitParams.readBuffer = readBuffer;
 
-			drawer.blitOrCopyTexturedRect(blitParams);
+			drawer.copyTexturedRect(blitParams);
 		}
 	}
 

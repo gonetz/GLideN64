@@ -1392,12 +1392,20 @@ void GraphicsDrawer::copyTexturedRect(const CopyRectParams & _params)
 
 	const float scaleX = 1.0f / _params.dstWidth;
 	const float scaleY = 1.0f / _params.dstHeight;
-	const float X0 = _params.dstX0 * (2.0f * scaleX) - 1.0f;
-	const float Y0 = _params.dstY0 * (-2.0f * scaleY) + 1.0f;
-	const float X1 = _params.dstX1 * (2.0f * scaleX) - 1.0f;
-	const float Y1 = _params.dstY1 * (-2.0f * scaleY) + 1.0f;
 	const float Z = 0.0f;
 	const float W = 1.0f;
+	float X0 = _params.dstX0 * (2.0f * scaleX) - 1.0f;
+	float Y0 = _params.dstY0 * (-2.0f * scaleY) + 1.0f;
+	float X1 = _params.dstX1 * (2.0f * scaleX) - 1.0f;
+	float Y1 = _params.dstY1 * (-2.0f * scaleY) + 1.0f;
+	if (_params.invertX) {
+		X0 = -X0;
+		X1 = -X1;
+	}
+	if (_params.invertY) {
+		Y0 = -Y0;
+		Y1 = -Y1;
+	}
 
 	m_rect[0].x = X0;
 	m_rect[0].y = Y0;

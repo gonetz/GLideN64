@@ -91,6 +91,8 @@ public:
 		s32 dstY1;
 		u32 dstWidth;
 		u32 dstHeight;
+		bool invertX = false;
+		bool invertY = false;
 		std::array<CachedTexture *, 2> tex{ { nullptr, nullptr } };
 		graphics::CombinerProgram * combiner = nullptr;
 		graphics::TextureParam filter;
