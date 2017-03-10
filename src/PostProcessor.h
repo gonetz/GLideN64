@@ -10,6 +10,8 @@ namespace graphics {
 	class ShaderProgram;
 }
 
+class FrameBuffer;
+
 class PostProcessor {
 public:
 	void init();
@@ -25,8 +27,7 @@ private:
 	PostProcessor();
 	PostProcessor(const PostProcessor & _other);
 
-	void _initCommon();
-	void _destroyCommon();
+	void _createResultBuffer(const FrameBuffer * _pMainBuffer);
 	void _initGammaCorrection();
 	void _destroyGammaCorrection();
 	void _initOrientationCorrection();
@@ -39,7 +40,7 @@ private:
 	std::unique_ptr<graphics::ShaderProgram> m_gammaCorrectionProgram;
 	std::unique_ptr<graphics::ShaderProgram> m_orientationCorrectionProgram;
 
-	FrameBuffer * m_pResultBuffer;
+	std::unique_ptr<FrameBuffer> m_pResultBuffer;
 
 	graphics::ObjectHandle m_FBO_glowMap;
 	graphics::ObjectHandle m_FBO_blur;

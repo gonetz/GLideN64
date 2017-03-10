@@ -237,9 +237,23 @@ FRAGMENT_SHADER_END
 
 #endif
 
-static
-void _initTexture(CachedTexture * pTexture)
+PostProcessor::PostProcessor()
+	: m_FBO_glowMap(0)
+	, m_FBO_blur(0)
+	, m_pTextureOriginal(nullptr)
+	, m_pTextureGlowMap(nullptr)
+	, m_pTextureBlur(nullptr)
+{}
+
+void PostProcessor::_createResultBuffer(const FrameBuffer * _pMainBuffer)
 {
+	m_pResultBuffer.reset(new FrameBuffer());
+	m_pResultBuffer->m_width = _pMainBuffer->m_width;
+	m_pResultBuffer->m_height = _pMainBuffer->m_height;
+	m_pResultBuffer->m_scale = _pMainBuffer->m_scale;
+
+	const CachedTexture * pMainTexture = _pMainBuffer->m_pTexture;
+	CachedTexture * pTexture = m_pResultBuffer->m_pTexture;
 	pTexture->format = G_IM_FMT_RGBA;
 	pTexture->clampS = 1;
 	pTexture->clampT = 1;
@@ -248,8 +262,8 @@ void _initTexture(CachedTexture * pTexture)
 	pTexture->maskT = 0;
 	pTexture->mirrorS = 0;
 	pTexture->mirrorT = 0;
-	pTexture->realWidth = dwnd().getWidth();
-	pTexture->realHeight = dwnd().getHeight();
+	pTexture->realWidth = pMainTexture->realWidth;
+	pTexture->realHeight = pMainTexture->realHeight;
 	pTexture->textureBytes = pTexture->realWidth * pTexture->realHeight * 4;
 	textureCache().addFrameBufferTextureSize(pTexture->textureBytes);
 
@@ -268,54 +282,15 @@ void _initTexture(CachedTexture * pTexture)
 	setParams.minFilter = textureParameters::FILTER_NEAREST;
 	setParams.magFilter = textureParameters::FILTER_NEAREST;
 	gfxContext.setTextureParameters(setParams);
-}
 
-static
-CachedTexture * _createTexture()
-{
-	CachedTexture * pTexture = textureCache().addFrameBufferTexture(false);
-	_initTexture(pTexture);
-	return pTexture;
-}
-
-static
-void _initFBO(ObjectHandle _FBO, CachedTexture * _pTexture)
-{
 	Context::FrameBufferRenderTarget bufTarget;
-	bufTarget.bufferHandle = _FBO;
+	bufTarget.bufferHandle = m_pResultBuffer->m_FBO;
 	bufTarget.bufferTarget = bufferTarget::DRAW_FRAMEBUFFER;
 	bufTarget.attachment = bufferAttachment::COLOR_ATTACHMENT0;
 	bufTarget.textureTarget = textureTarget::TEXTURE_2D;
-	bufTarget.textureHandle = _pTexture->name;
+	bufTarget.textureHandle = pTexture->name;
 	gfxContext.addFrameBufferRenderTarget(bufTarget);
 	assert(!gfxContext.isFramebufferError());
-}
-
-static
-ObjectHandle _createFBO(CachedTexture * _pTexture)
-{
-	ObjectHandle FBO = gfxContext.createFramebuffer();
-	_initFBO(FBO, _pTexture);
-	return FBO;
-}
-
-PostProcessor::PostProcessor()
-	: m_pResultBuffer(nullptr)
-	, m_FBO_glowMap(0)
-	, m_FBO_blur(0)
-	, m_pTextureOriginal(nullptr)
-	, m_pTextureGlowMap(nullptr)
-	, m_pTextureBlur(nullptr)
-{}
-
-void PostProcessor::_initCommon()
-{
-	m_pResultBuffer = new FrameBuffer();
-	_initTexture(m_pResultBuffer->m_pTexture);
-	_initFBO(ObjectHandle(m_pResultBuffer->m_FBO), m_pResultBuffer->m_pTexture);
-
-	gfxContext.bindFramebuffer(bufferTarget::DRAW_FRAMEBUFFER,
-		ObjectHandle::null);
 }
 
 void PostProcessor::_initGammaCorrection()
@@ -385,20 +360,11 @@ void PostProcessor::_initOrientationCorrection()
 
 void PostProcessor::init()
 {
-	_initCommon();
 	_initGammaCorrection();
 	if (config.generalEmulation.enableBlitScreenWorkaround != 0)
 		_initOrientationCorrection();
 	if (config.bloomFilter.enable != 0)
 		_initBlur();
-}
-
-void PostProcessor::_destroyCommon()
-{
-	delete m_pResultBuffer;
-	m_pResultBuffer = nullptr;
-
-	m_pTextureOriginal = nullptr;
 }
 
 void PostProcessor::_destroyGammaCorrection()
@@ -454,7 +420,7 @@ void PostProcessor::destroy()
 	_destroyBlur();
 	_destroyGammaCorrection();
 	_destroyOrientationCorrection();
-	_destroyCommon();
+	m_pResultBuffer.reset();
 }
 
 PostProcessor & PostProcessor::get()
@@ -467,10 +433,8 @@ PostProcessor & PostProcessor::get()
 
 void PostProcessor::_preDraw(FrameBuffer * _pBuffer)
 {
-
-	m_pResultBuffer->m_width = _pBuffer->m_width;
-	m_pResultBuffer->m_height = _pBuffer->m_height;
-	m_pResultBuffer->m_scale = dwnd().getScaleX();
+	if (!m_pResultBuffer || m_pResultBuffer->m_width != _pBuffer->m_width)
+		_createResultBuffer(_pBuffer);
 
 	if (_pBuffer->m_pTexture->frameBufferTexture == CachedTexture::fbMultiSample) {
 		_pBuffer->resolveMultisampledTexture(true);
@@ -603,7 +567,7 @@ FrameBuffer * PostProcessor::doGammaCorrection(FrameBuffer * _pBuffer)
 	dwnd().getDrawer().copyTexturedRect(copyParams);
 
 	_postDraw();
-	return m_pResultBuffer;
+	return m_pResultBuffer.get();
 }
 
 FrameBuffer * PostProcessor::doOrientationCorrection(FrameBuffer * _pBuffer)
@@ -642,5 +606,5 @@ FrameBuffer * PostProcessor::doOrientationCorrection(FrameBuffer * _pBuffer)
 	dwnd().getDrawer().copyTexturedRect(copyParams);
 
 	_postDraw();
-	return m_pResultBuffer;
+	return m_pResultBuffer.get();
 }
