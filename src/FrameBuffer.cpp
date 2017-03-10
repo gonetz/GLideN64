@@ -544,6 +544,9 @@ void FrameBufferList::_createScreenSizeBuffer()
 
 void FrameBufferList::saveBuffer(u32 _address, u16 _format, u16 _size, u16 _width, bool _cfb)
 {
+	if (_width > 640)
+		return;
+
 	if (config.frameBufferEmulation.enable == 0) {
 		if (m_list.empty())
 			_createScreenSizeBuffer();
