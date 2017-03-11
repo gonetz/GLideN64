@@ -2135,7 +2135,43 @@
                      </widget>
                     </item>
                     <item>
-                     <widget class="QComboBox" name="filterComboBox"/>
+                     <widget class="QComboBox" name="filterComboBox">
+                      <item>
+                       <property name="text">
+                        <string extracomment="No texture filtering">None</string>
+                       </property>
+                      </item>
+                      <item>
+                       <property name="text">
+                        <string>Smooth filtering 1</string>
+                       </property>
+                      </item>
+                      <item>
+                       <property name="text">
+                        <string>Smooth filtering 2</string>
+                       </property>
+                      </item>
+                      <item>
+                       <property name="text">
+                        <string>Smooth filtering 3</string>
+                       </property>
+                      </item>
+                      <item>
+                       <property name="text">
+                        <string>Smooth filtering 4</string>
+                       </property>
+                      </item>
+                      <item>
+                       <property name="text">
+                        <string>Sharp filtering 1</string>
+                       </property>
+                      </item>
+                      <item>
+                       <property name="text">
+                        <string>Sharp filtering 2</string>
+                       </property>
+                      </item>
+                     </widget>
                     </item>
                    </layout>
                   </widget>
@@ -2172,7 +2208,78 @@
                      </widget>
                     </item>
                     <item>
-                     <widget class="QComboBox" name="enhancementComboBox"/>
+                     <widget class="QComboBox" name="enhancementComboBox">
+                      <item>
+                       <property name="text">
+                        <string extracomment="No texture enhancement">None</string>
+                       </property>
+                      </item>
+                      <item>
+                       <property name="text">
+                        <string extracomment="Store texture enhancement">Store</string>
+                       </property>
+                      </item>
+                      <item>
+                       <property name="text">
+                        <string notr="true">X2</string>
+                       </property>
+                      </item>
+                      <item>
+                       <property name="text">
+                        <string notr="true">X2SAI</string>
+                       </property>
+                      </item>
+                      <item>
+                       <property name="text">
+                        <string notr="true">HQ2X</string>
+                       </property>
+                      </item>
+                      <item>
+                       <property name="text">
+                        <string notr="true">HQ2XS</string>
+                       </property>
+                      </item>
+                      <item>
+                       <property name="text">
+                        <string notr="true">LQ2X</string>
+                       </property>
+                      </item>
+                      <item>
+                       <property name="text">
+                        <string notr="true">LQ2XS</string>
+                       </property>
+                      </item>
+                      <item>
+                       <property name="text">
+                        <string notr="true">HQ4X</string>
+                       </property>
+                      </item>
+                      <item>
+                       <property name="text">
+                        <string notr="true">2xBRZ</string>
+                       </property>
+                      </item>
+                      <item>
+                       <property name="text">
+                        <string notr="true">3xBRZ</string>
+                       </property>
+                      </item>
+                      <item>
+                       <property name="text">
+                        <string notr="true">4xBRZ</string>
+                       </property>
+                      </item>
+                      <item>
+                       <property name="text">
+                        <string notr="true">5xBRZ</string>
+                       </property>
+                      </item>
+                      <item>
+                       <property name="text">
+                        <string notr="true">6xBRZ</string>
+                       </property>
+                      </item>
+                     </widget>
                     </item>
                    </layout>
                   </widget>
@@ -4051,11 +4158,11 @@
   </connection>
  </connections>
  <buttongroups>
+  <buttongroup name="bloomBlendModeButtonGroup"/>
+  <buttongroup name="aspectButtonGroup"/>
   <buttongroup name="fixTexrectCoordsButtonGroup"/>
   <buttongroup name="screenshotButtonGroup"/>
-  <buttongroup name="osdButtonGroup"/>
-  <buttongroup name="aspectButtonGroup"/>
   <buttongroup name="factorButtonGroup"/>
-  <buttongroup name="bloomBlendModeButtonGroup"/>
+  <buttongroup name="osdButtonGroup"/>
  </buttongroups>
 </ui>
