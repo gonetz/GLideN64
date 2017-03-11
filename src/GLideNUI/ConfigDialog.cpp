@@ -35,35 +35,6 @@ struct
 static
 const unsigned int numWindowedModes = sizeof(WindowedModes) / sizeof(WindowedModes[0]);
 
-static const unsigned int numFilters = 7U;
-static const char * cmbTexFilter_choices[numFilters] = {
-	"None",
-	"Smooth filtering 1",
-	"Smooth filtering 2",
-	"Smooth filtering 3",
-	"Smooth filtering 4",
-	"Sharp filtering 1",
-	"Sharp filtering 2"
-};
-
-static const unsigned int numEnhancements = 14U;
-static const char * cmbTexEnhancement_choices[numEnhancements] = {
-	"None",
-	"Store",
-	"X2",
-	"X2SAI",
-	"HQ2X",
-	"HQ2XS",
-	"LQ2X",
-	"LQ2XS",
-	"HQ4X",
-	"2xBRZ",
-	"3xBRZ",
-	"4xBRZ",
-	"5xBRZ",
-	"6xBRZ"
-};
-
 static
 u32 pow2(u32 dim)
 {
@@ -221,16 +192,7 @@ void ConfigDialog::_init()
 	ui->readDepthChunkCheckBox->setEnabled(fbEmulationEnabled && config.frameBufferEmulation.fbInfoDisabled == 0);
 
 	// Texture filter settings
-	QStringList textureFiltersList;
-	for (unsigned int i = 0; i < numFilters; ++i)
-		textureFiltersList.append(cmbTexFilter_choices[i]);
-	ui->filterComboBox->insertItems(0, textureFiltersList);
 	ui->filterComboBox->setCurrentIndex(config.textureFilter.txFilterMode);
-
-	QStringList textureEnhancementList;
-	for (unsigned int i = 0; i < numEnhancements; ++i)
-		textureEnhancementList.append(cmbTexEnhancement_choices[i]);
-	ui->enhancementComboBox->insertItems(0, textureEnhancementList);
 	ui->enhancementComboBox->setCurrentIndex(config.textureFilter.txEnhancementMode);
 
 	ui->textureFilterCacheSpinBox->setValue(config.textureFilter.txCacheSize / gc_uMegabyte);
