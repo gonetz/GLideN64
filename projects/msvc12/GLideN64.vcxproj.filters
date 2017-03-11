@@ -323,7 +323,7 @@
     <ClCompile Include="..\..\src\Graphics\OpenGLContext\opengl_ColorBufferReaderWithPixelBuffer.cpp">
       <Filter>Source Files\Graphics\OpenGL</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\Graphics\OpenGLContext\opengl_ColorBufferReaderWithBufferStore.cpp">
+    <ClCompile Include="..\..\src\Graphics\OpenGLContext\opengl_ColorBufferReaderWithBufferStorage.cpp">
       <Filter>Source Files\Graphics\OpenGL</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Graphics\OpenGLContext\opengl_BufferedDrawer.cpp">
@@ -625,7 +625,7 @@
     <ClInclude Include="..\..\src\Graphics\OpenGLContext\opengl_ColorBufferReaderWithPixelBuffer.h">
       <Filter>Header Files\Graphics\OpenGL</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\Graphics\OpenGLContext\opengl_ColorBufferReaderWithBufferStore.h">
+    <ClInclude Include="..\..\src\Graphics\OpenGLContext\opengl_ColorBufferReaderWithBufferStorage.h">
       <Filter>Header Files\Graphics\OpenGL</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Graphics\OpenGLContext\opengl_BufferedDrawer.h">
