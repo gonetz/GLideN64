@@ -133,7 +133,13 @@
                </widget>
               </item>
               <item>
-               <widget class="QComboBox" name="windowedResolutionComboBox"/>
+               <widget class="QComboBox" name="windowedResolutionComboBox">
+                <item>
+                 <property name="text">
+                  <string extracomment="In the dropdown for windowed resolutions">Custom</string>
+                 </property>
+                </item>
+               </widget>
               </item>
               <item>
                <widget class="QFrame" name="windowedResolutionCustomFrame">
@@ -4158,11 +4164,11 @@
   </connection>
  </connections>
  <buttongroups>
-  <buttongroup name="bloomBlendModeButtonGroup"/>
-  <buttongroup name="aspectButtonGroup"/>
-  <buttongroup name="fixTexrectCoordsButtonGroup"/>
-  <buttongroup name="screenshotButtonGroup"/>
   <buttongroup name="factorButtonGroup"/>
+  <buttongroup name="screenshotButtonGroup"/>
+  <buttongroup name="aspectButtonGroup"/>
+  <buttongroup name="bloomBlendModeButtonGroup"/>
   <buttongroup name="osdButtonGroup"/>
+  <buttongroup name="fixTexrectCoordsButtonGroup"/>
  </buttongroups>
 </ui>
