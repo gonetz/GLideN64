@@ -243,6 +243,7 @@ namespace graphics {
 		struct DrawRectParameters
 		{
 			DrawModeParam mode;
+			bool texrect = true;
 			u32 verticesCount = 0;
 			RectVertex * vertices = nullptr;
 			const CombinerProgram * combiner = nullptr;

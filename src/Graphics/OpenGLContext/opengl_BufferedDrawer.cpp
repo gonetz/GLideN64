@@ -133,6 +133,9 @@ void BufferedDrawer::drawRects(const graphics::Context::DrawRectParameters & _pa
 {
 	_updateRectBuffer(_params);
 
+	m_cachedAttribArray->enableVertexAttribArray(rectAttrib::texcoord0, _params.texrect);
+	m_cachedAttribArray->enableVertexAttribArray(rectAttrib::texcoord1, _params.texrect);
+
 	glDrawArrays(GLenum(_params.mode), m_rectsBuffers.vbo.pos - _params.verticesCount, _params.verticesCount);
 }
 
