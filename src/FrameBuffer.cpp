@@ -261,11 +261,16 @@ bool FrameBuffer::isValid(bool _forceCheck) const
 
 	if (m_cleared) {
 		const u32 testColor = m_clearParams.fillcolor & 0xFFFEFFFE;
+		const u32 stride = m_width << m_size >> 1;
+		const u32 lry = _cutHeight(m_startAddress, m_clearParams.lry, stride);
+		if (lry == 0)
+			return false;
+
 		const u32 ci_width_in_dwords = m_width >> (3 - m_size);
 		const u32 start = (m_startAddress >> 2) + m_clearParams.uly * ci_width_in_dwords;
 		const u32 * dst = pData + start;
 		u32 wrongPixels = 0;
-		for (u32 y = m_clearParams.uly; y < m_clearParams.lry; ++y) {
+		for (u32 y = m_clearParams.uly; y < lry; ++y) {
 			for (u32 x = m_clearParams.ulx; x < m_clearParams.lrx; ++x) {
 				if ((dst[x] & 0xFFFEFFFE) != testColor)
 					++wrongPixels;

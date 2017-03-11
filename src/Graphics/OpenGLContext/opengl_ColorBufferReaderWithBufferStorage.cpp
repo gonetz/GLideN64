@@ -1,22 +1,22 @@
 #include <Graphics/Context.h>
-#include "opengl_ColorBufferReaderWithBufferStore.h"
+#include "opengl_ColorBufferReaderWithBufferStorage.h"
 
 using namespace graphics;
 using namespace opengl;
 
-ColorBufferReaderWithBufferStore::ColorBufferReaderWithBufferStore(CachedTexture * _pTexture,
+ColorBufferReaderWithBufferStorage::ColorBufferReaderWithBufferStorage(CachedTexture * _pTexture,
 	CachedBindBuffer * _bindBuffer)
 	: ColorBufferReader(_pTexture), m_bindBuffer(_bindBuffer)
 {
 	_initBuffers();
 }
 
-ColorBufferReaderWithBufferStore::~ColorBufferReaderWithBufferStore()
+ColorBufferReaderWithBufferStorage::~ColorBufferReaderWithBufferStorage()
 {
 	_destroyBuffers();
 }
 
-void ColorBufferReaderWithBufferStore::_initBuffers()
+void ColorBufferReaderWithBufferStorage::_initBuffers()
 {
 	// Generate Pixel Buffer Objects
 	glGenBuffers(_numPBO, m_PBO);
@@ -33,7 +33,7 @@ void ColorBufferReaderWithBufferStore::_initBuffers()
 	m_bindBuffer->bind(Parameter(GL_PIXEL_PACK_BUFFER), ObjectHandle::null);
 }
 
-void ColorBufferReaderWithBufferStore::_destroyBuffers()
+void ColorBufferReaderWithBufferStorage::_destroyBuffers()
 {
 	glDeleteBuffers(_numPBO, m_PBO);
 
@@ -41,7 +41,7 @@ void ColorBufferReaderWithBufferStore::_destroyBuffers()
 		m_PBO[index] = 0;
 }
 
-u8 * ColorBufferReaderWithBufferStore::readPixels(s32 _x0, s32 _y0, u32 _width, u32 _height, u32 _size, bool _sync)
+u8 * ColorBufferReaderWithBufferStorage::readPixels(s32 _x0, s32 _y0, u32 _width, u32 _height, u32 _size, bool _sync)
 {
 	const FramebufferTextureFormats & fbTexFormat = gfxContext.getFramebufferTextureFormats();
 	GLenum colorFormat, colorType, colorFormatBytes;
@@ -88,7 +88,7 @@ u8 * ColorBufferReaderWithBufferStore::readPixels(s32 _x0, s32 _y0, u32 _width, 
 	return pixelDataAlloc;
 }
 
-void ColorBufferReaderWithBufferStore::cleanUp()
+void ColorBufferReaderWithBufferStorage::cleanUp()
 {
 	m_bindBuffer->bind(Parameter(GL_PIXEL_PACK_BUFFER), ObjectHandle::null);
 }
