@@ -208,21 +208,45 @@ CombinerProgram * CombinerInfo::_compile(u64 mux) const
 	CombineCycle cc[2];
 	CombineCycle ac[2];
 
-	// Decode and expand the combine mode into a more general form
-	cc[1].sa = saRGBExpanded[combine.saRGB1];
-	cc[1].sb = sbRGBExpanded[combine.sbRGB1];
-	cc[1].m  = mRGBExpanded[combine.mRGB1];
-	cc[1].a  = aRGBExpanded[combine.aRGB1];
-	ac[1].sa = saAExpanded[combine.saA1];
-	ac[1].sb = sbAExpanded[combine.sbA1];
-	ac[1].m  = mAExpanded[combine.mA1];
-	ac[1].a  = aAExpanded[combine.aA1];
-
 	// Simplify each RDP combiner cycle into a combiner stage
-	if (gDP.otherMode.cycleType != G_CYC_2CYCLE) {
+	if (gDP.otherMode.cycleType == G_CYC_1CYCLE) {
+		// 1 cycle mode uses combiner equations from 2nd cycle
+		u32 colorMux[4] = { saRGBExpanded[combine.saRGB1], sbRGBExpanded[combine.sbRGB1],
+							mRGBExpanded[combine.mRGB1], aRGBExpanded[combine.aRGB1] };
+		// Check for 'combined' mux
+		for (u32 i = 0; i < 4; ++i) {
+			if (colorMux[i] == G_GCI_COMBINED || colorMux[i] == G_GCI_COMBINED_ALPHA)
+				colorMux[i] = G_GCI_ZERO;
+		}
+		cc[1].sa = colorMux[0];
+		cc[1].sb = colorMux[1];
+		cc[1].m = colorMux[2];
+		cc[1].a = colorMux[3];
 		SimplifyCycle(&cc[1], &color.stage[0]);
+
+		u32 alphaMux[4] = { saAExpanded[combine.saA1], sbAExpanded[combine.sbA1],
+			mAExpanded[combine.mA1], aAExpanded[combine.aA1] };
+		// Check for 'combined' mux
+		for (u32 i = 0; i < 4; ++i) {
+			if (alphaMux[i] == G_GCI_COMBINED)
+				alphaMux[i] = G_GCI_ZERO;
+		}
+		ac[1].sa = alphaMux[0];
+		ac[1].sb = alphaMux[1];
+		ac[1].m = alphaMux[2];
+		ac[1].a = alphaMux[3];
 		SimplifyCycle(&ac[1], &alpha.stage[0]);
 	} else {
+		// Decode and expand the combine mode into a more general form
+		cc[1].sa = saRGBExpanded[combine.saRGB1];
+		cc[1].sb = sbRGBExpanded[combine.sbRGB1];
+		cc[1].m = mRGBExpanded[combine.mRGB1];
+		cc[1].a = aRGBExpanded[combine.aRGB1];
+		ac[1].sa = saAExpanded[combine.saA1];
+		ac[1].sb = sbAExpanded[combine.sbA1];
+		ac[1].m = mAExpanded[combine.mA1];
+		ac[1].a = aAExpanded[combine.aA1];
+
 		cc[0].sa = saRGBExpanded[combine.saRGB0];
 		cc[0].sb = sbRGBExpanded[combine.sbRGB0];
 		cc[0].m = mRGBExpanded[combine.mRGB0];
