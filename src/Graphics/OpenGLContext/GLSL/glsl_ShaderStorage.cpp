@@ -63,7 +63,7 @@ char * - GL version string
 uint32 - number of shaders
 shaders in binary form
 */
-static const u32 ShaderStorageFormatVersion = 0x0FU;
+static const u32 ShaderStorageFormatVersion = 0x10U;
 bool ShaderStorage::saveShadersStorage(const graphics::Combiners & _combiners) const
 {
 	wchar_t fileName[PLUGIN_PATH_SIZE];
