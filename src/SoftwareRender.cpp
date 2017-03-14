@@ -193,8 +193,6 @@ void renderTriangles(const SPVertex * _pVertices, const u8 * _pElements, u32 _nu
 			continue;
 
 		const int dzdx = ((orbits & CLIP_W) == 0) ? calcDzDx(vclip) : calcDzDx2(vsrc);
-		if (dzdx == 0)
-			continue;
 
 		if (orbits == 0) {
 			assert(numVertex == 3);
