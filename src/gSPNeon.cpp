@@ -38,10 +38,8 @@ void gSPTransformVertex4NEON(u32 v, float mtx[4][4])
     "vld1.32         {d6, d7}, [%1]          \n\t"    //q3 = {x,y,z,w}
     "sub             %1, %1, %3              \n\t"    //q0 = {x,y,z,w}
 
-    "vld1.32         {d18, d19}, [%0]!       \n\t"    //q9 = m
-    "vld1.32         {d20, d21}, [%0]!       \n\t"    //q10 = m
-    "vld1.32         {d22, d23}, [%0]!       \n\t"    //q11 = m
-    "vld1.32         {d24, d25}, [%0]        \n\t"    //q12 = m
+    "vld1.32         {d18-d21}, [%0]!        \n\t"    //q9 & q10 = m
+    "vld1.32         {d22-d25}, [%0]         \n\t"    //q11 & q12 = m+8
 
     "vmov.f32        q13, q12                \n\t"    //q13 = q12
     "vmov.f32        q14, q12                \n\t"    //q14 = q12
