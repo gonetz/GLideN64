@@ -208,6 +208,9 @@ public:
 				ss << "#extension GL_ARB_shader_image_load_store : enable" << std::endl
 					<< "#extension GL_ARB_shading_language_420pack : enable" << std::endl;
 			}
+			if (_glinfo.imageTextures && _glinfo.majorVersion * 10 + _glinfo.minorVersion < 43) {
+				ss << "#extension GL_ARB_compute_shader : enable" << std::endl;
+			}
 			ss << "# define IN in" << std::endl << "# define OUT out" << std::endl;
 			m_part = ss.str();
 		}
@@ -439,6 +442,9 @@ public:
 			if (_glinfo.imageTextures && _glinfo.majorVersion * 10 + _glinfo.minorVersion < 42) {
 				ss << "#extension GL_ARB_shader_image_load_store : enable" << std::endl
 					<< "#extension GL_ARB_shading_language_420pack : enable" << std::endl;
+			}
+			if (_glinfo.imageTextures && _glinfo.majorVersion * 10 + _glinfo.minorVersion < 43) {
+				ss << "#extension GL_ARB_compute_shader : enable" << std::endl;
 			}
 			ss << "# define IN in" << std::endl
 				<< "# define OUT out" << std::endl
