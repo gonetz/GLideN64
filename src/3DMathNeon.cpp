@@ -38,6 +38,11 @@ void MultMatrix( float m0[4][4], float m1[4][4], float dest[4][4])
     );
 }
 
+void MultMatrix2(float m0[4][4], float m1[4][4])
+{
+    MultMatrix(m0, m1, m0);
+}
+
 void TransformVectorNormalize(float vec[3], float mtx[4][4])
 {
     asm volatile (
