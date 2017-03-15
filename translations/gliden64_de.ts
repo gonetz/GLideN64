@@ -217,7 +217,7 @@
     <message>
         <location filename="configDialog.ui" line="1734"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Unchecking this option disables many effects including cropping, aspect ratio, N64 resolution factor, N64-style depth compare and more. Don&apos;t uncheck this option unless you have performance issues.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Wenn diese Einstellung nicht ausgewählt ist, sind viele Effekte deaktiviert wie z.B. Kantenglättung, Beschneiden, Seitenverhältnis, N64 Auflösungsfaktor, N64-Style Tiefenvergleich und mehr. Diese Einstellung sollte nur deaktiviert werden, falls es Geschwindigkeitsprobleme gibt.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="1839"/>
@@ -276,7 +276,7 @@
     <message>
         <location filename="configDialog.ui" line="2035"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The N64 uses a unique method of calculating depth to the camera. When checked, GlideN64 uses shaders to try to emulate these calculations correctly. Not compatible with anti-aliasing. &lt;span style=&quot; font-weight:600;&quot;&gt;Experimental!&lt;/span&gt;&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;Sometimes checked, for a few games&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Das N64 berechnet auf eine einzigartige Art die Tiefe der Kamera. Wenn ausgewählt versucht GlideN64 mit Shadern die Berechnung richtig zu emulieren. &lt;span style=&quot; font-weight:600;&quot;&gt;Experimentell!&lt;/span&gt;&lt;/p&gt;&lt;p&gt;[Empfehlung: &lt;span style=&quot; font-style:italic;&quot;&gt;Bei einigen Spielen ausgewählt&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="2472"/>
@@ -336,12 +336,12 @@
     <message>
         <location filename="configDialog.ui" line="236"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Vertical sync, or VSync, can improve the image by syncing the game&apos;s frame rate to your monitor&apos;s refresh rate. This prevents image tearing, but may cause performance problems.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;Usually off, on if you have image tearing problems&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Vertikale Synchronisation, oder VSync, kann die Bildqualität durch die Synchronisation der Aktualisierungsrate des Spiels mit der Bildwiederholrate des Monitors verbessern. Dies verhindert Bildversatz/Tearing, kann zu Leistungseinbrüchen führen.&lt;/p&gt;&lt;p&gt;[Empfehlung: &lt;span style=&quot; font-style:italic;&quot;&gt;Gewöhnlich aus, außer es gibt Tearing&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="239"/>
         <source>Enable VSync</source>
-        <translation type="unfinished"></translation>
+        <translation>Aktiviere VSync</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="270"/>
@@ -389,7 +389,7 @@ The highest in a sequence of numbers. In this case, 16.</extracomment>
     <message>
         <location filename="configDialog.ui" line="672"/>
         <source>Anti-aliasing is not compatible with N64-style depth compare</source>
-        <translation type="unfinished"></translation>
+        <translation>Kantenglättung kann mit dem N64-Style-Tiefenvergleich nicht verwendet werden</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="860"/>
@@ -675,37 +675,37 @@ The highest in a sequence of numbers. In this case, 16.</extracomment>
         <extracomment>No texture filtering
 ----------
 No texture enhancement</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Kein</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="2152"/>
         <source>Smooth filtering 1</source>
-        <translation type="unfinished"></translation>
+        <translation>Glatte Filterung 1</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="2157"/>
         <source>Smooth filtering 2</source>
-        <translation type="unfinished"></translation>
+        <translation>Glatte Filterung 2</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="2162"/>
         <source>Smooth filtering 3</source>
-        <translation type="unfinished"></translation>
+        <translation>Glatte Filterung 3</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="2167"/>
         <source>Smooth filtering 4</source>
-        <translation type="unfinished"></translation>
+        <translation>Glatte Filterung 4</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="2172"/>
         <source>Sharp filtering 1</source>
-        <translation type="unfinished"></translation>
+        <translation>Scharfe Filterung 1</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="2177"/>
         <source>Sharp filtering 2</source>
-        <translation type="unfinished"></translation>
+        <translation>Scharfe Filterung 2</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="2188"/>
@@ -716,7 +716,7 @@ No texture enhancement</extracomment>
         <location filename="configDialog.ui" line="2225"/>
         <source>Store</source>
         <extracomment>Store texture enhancement</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Abspeichern</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="2318"/>
