@@ -31,5 +31,5 @@ EXPORT void CALL SaveScreenshot(const wchar_t * _folder, const char * _name, int
 		return;
 	QImage image(_data, _width, _height, QImage::Format_RGB888);
 	QImageWriter writer(fileName, fileExt);
-	writer.write(image.mirrored());
+	writer.write(image);
 }
