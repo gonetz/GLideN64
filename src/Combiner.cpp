@@ -14,7 +14,7 @@
 
 using namespace graphics;
 
-static int saRGBExpanded[] =
+static u32 saRGBExpanded[] =
 {
 	G_GCI_COMBINED,			G_GCI_TEXEL0,			G_GCI_TEXEL1,			G_GCI_PRIMITIVE,
 	G_GCI_SHADE,			G_GCI_ENVIRONMENT,		G_GCI_ONE,				G_GCI_NOISE,
@@ -22,7 +22,7 @@ static int saRGBExpanded[] =
 	G_GCI_ZERO,				G_GCI_ZERO,				G_GCI_ZERO,				G_GCI_ZERO
 };
 
-static int sbRGBExpanded[] =
+static u32 sbRGBExpanded[] =
 {
 	G_GCI_COMBINED,			G_GCI_TEXEL0,			G_GCI_TEXEL1,			G_GCI_PRIMITIVE,
 	G_GCI_SHADE,			G_GCI_ENVIRONMENT,		G_GCI_CENTER,			G_GCI_K4,
@@ -30,7 +30,7 @@ static int sbRGBExpanded[] =
 	G_GCI_ZERO,				G_GCI_ZERO,				G_GCI_ZERO,				G_GCI_ZERO
 };
 
-static int mRGBExpanded[] =
+static u32 mRGBExpanded[] =
 {
 	G_GCI_COMBINED,			G_GCI_TEXEL0,			G_GCI_TEXEL1,			G_GCI_PRIMITIVE,
 	G_GCI_SHADE,			G_GCI_ENVIRONMENT,		G_GCI_SCALE,			G_GCI_COMBINED_ALPHA,
@@ -42,31 +42,31 @@ static int mRGBExpanded[] =
 	G_GCI_ZERO,				G_GCI_ZERO,				G_GCI_ZERO,				G_GCI_ZERO
 };
 
-static int aRGBExpanded[] =
+static u32 aRGBExpanded[] =
 {
 	G_GCI_COMBINED,			G_GCI_TEXEL0,			G_GCI_TEXEL1,			G_GCI_PRIMITIVE,
 	G_GCI_SHADE,			G_GCI_ENVIRONMENT,		G_GCI_ONE,				G_GCI_ZERO
 };
 
-static int saAExpanded[] =
+static u32 saAExpanded[] =
 {
 	G_GCI_COMBINED,			G_GCI_TEXEL0_ALPHA,		G_GCI_TEXEL1_ALPHA,		G_GCI_PRIMITIVE_ALPHA,
 	G_GCI_SHADE_ALPHA,		G_GCI_ENV_ALPHA,		G_GCI_ONE,				G_GCI_ZERO
 };
 
-static int sbAExpanded[] =
+static u32 sbAExpanded[] =
 {
 	G_GCI_COMBINED,			G_GCI_TEXEL0_ALPHA,		G_GCI_TEXEL1_ALPHA,		G_GCI_PRIMITIVE_ALPHA,
 	G_GCI_SHADE_ALPHA,		G_GCI_ENV_ALPHA,		G_GCI_ONE,				G_GCI_ZERO
 };
 
-static int mAExpanded[] =
+static u32 mAExpanded[] =
 {
 	G_GCI_LOD_FRACTION,		G_GCI_TEXEL0_ALPHA,		G_GCI_TEXEL1_ALPHA,		G_GCI_PRIMITIVE_ALPHA,
 	G_GCI_SHADE_ALPHA,		G_GCI_ENV_ALPHA,		G_GCI_PRIM_LOD_FRAC,	G_GCI_ZERO,
 };
 
-static int aAExpanded[] =
+static u32 aAExpanded[] =
 {
 	G_GCI_COMBINED,			G_GCI_TEXEL0_ALPHA,		G_GCI_TEXEL1_ALPHA,		G_GCI_PRIMITIVE_ALPHA,
 	G_GCI_SHADE_ALPHA,		G_GCI_ENV_ALPHA,		G_GCI_ONE,				G_GCI_ZERO
