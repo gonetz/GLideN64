@@ -189,9 +189,6 @@ void BufferedDrawer::_updateTrianglesBuffers(const graphics::Context::DrawTriang
 
 void BufferedDrawer::drawTriangles(const graphics::Context::DrawTriangleParameters & _params)
 {
-	if (config.frameBufferEmulation.N64DepthCompare != 0)
-		glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
-
 	_updateTrianglesBuffers(_params);
 
 	if (config.generalEmulation.enableHWLighting != 0)
@@ -202,8 +199,20 @@ void BufferedDrawer::drawTriangles(const graphics::Context::DrawTriangleParamete
 		return;
 	}
 
-	glDrawElementsBaseVertex(GLenum(_params.mode), _params.elementsCount, GL_UNSIGNED_BYTE,
-		(char*)nullptr + m_trisBuffers.ebo.pos - _params.elementsCount, m_trisBuffers.vbo.pos - _params.verticesCount);
+	if (config.frameBufferEmulation.N64DepthCompare == 0) {
+		glDrawElementsBaseVertex(GLenum(_params.mode), _params.elementsCount, GL_UNSIGNED_BYTE,
+			(char*)nullptr + m_trisBuffers.ebo.pos - _params.elementsCount, m_trisBuffers.vbo.pos - _params.verticesCount);
+		return;
+	}
+
+	// Draw polygons one by one
+	const GLint eboStartPos = m_trisBuffers.ebo.pos - _params.elementsCount;
+	const GLint vboStartPos = m_trisBuffers.vbo.pos - _params.verticesCount;
+	for (GLint i = 0; i < _params.elementsCount; i += 3) {
+		glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+		glDrawElementsBaseVertex(GLenum(_params.mode), 3, GL_UNSIGNED_BYTE,
+			(char*)nullptr + eboStartPos + i, vboStartPos);
+	}
 }
 
 void BufferedDrawer::drawLine(f32 _width, SPVertex * _vertices)

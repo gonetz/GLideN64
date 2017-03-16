@@ -60,8 +60,6 @@ void gSPTriangle(s32 v0, s32 v1, s32 v2)
 		if (drawer.isClipped(v0, v1, v2))
 			return;
 		drawer.addTriangle(v0, v1, v2);
-		if (config.frameBufferEmulation.N64DepthCompare != 0)
-			drawer.drawTriangles();
 	}
 
 	frameBufferList().setBufferChanged();
