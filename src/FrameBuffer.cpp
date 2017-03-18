@@ -146,8 +146,8 @@ void FrameBuffer::init(u32 _address, u16 _format, u16 _size, u16 _width, bool _c
 	m_width = _width;
 	m_height = _cfb ? VI.height : 1;
 //	m_height = VI.height;
-	updateEndAddress();
 	m_size = _size;
+	updateEndAddress();
 	if (isAuxiliary() && config.frameBufferEmulation.copyAuxToRDRAM != 0) {
 		m_scale = 1.0f;
 	} else if (config.frameBufferEmulation.nativeResFactor != 0 && config.frameBufferEmulation.enable != 0) {
