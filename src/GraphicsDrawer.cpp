@@ -223,7 +223,7 @@ void GraphicsDrawer::_updateViewport() const
 		if (_needAdjustCoordinate(wnd))
 			Xf = _adjustViewportX(Xf);
 		const s32 X = (s32)(Xf * scaleX);
-		const s32 Y = (s32)(gSP.viewport.y * scaleY);
+		const s32 Y = gSP.viewport.vscale[1] < 0 ? (s32)((gSP.viewport.y + gSP.viewport.vscale[1] * 2.0f) * scaleY) : (s32)(gSP.viewport.y * scaleY);
 		gfxContext.setViewport(X, Y,
 			std::max((s32)(gSP.viewport.width * scaleX), 0), std::max((s32)(gSP.viewport.height * scaleY), 0));
 	}
