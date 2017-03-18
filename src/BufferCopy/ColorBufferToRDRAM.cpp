@@ -162,7 +162,7 @@ bool ColorBufferToRDRAM::_prepareCopy(u32 _startAddress)
 
 	m_pCurFrameBuffer = pBuffer;
 
-	if ((config.generalEmulation.hacks & hack_subscreen) != 0 && m_pCurFrameBuffer->m_isMainBuffer) {
+	if ((config.generalEmulation.hacks & hack_subscreen) != 0 && m_pCurFrameBuffer->m_width == VI.width) {
 		copyWhiteToRDRAM(m_pCurFrameBuffer);
 		return false;
 	}
@@ -322,16 +322,16 @@ void copyWhiteToRDRAM(FrameBuffer * _pBuffer)
 	if (_pBuffer->m_size == G_IM_SIZ_32b) {
 		u32 *ptr_dst = (u32*)(RDRAM + _pBuffer->m_startAddress);
 
-		for (u32 y = 0; y < _pBuffer->m_height; ++y) {
-			for (u32 x = 0; x < _pBuffer->m_width; ++x)
-				ptr_dst[x + y*_pBuffer->m_width] = 0xFFFFFFFF;
+		for (u32 y = 0; y < VI.height; ++y) {
+			for (u32 x = 0; x < VI.width; ++x)
+				ptr_dst[x + y*VI.width] = 0xFFFFFFFF;
 		}
 	} else {
 		u16 *ptr_dst = (u16*)(RDRAM + _pBuffer->m_startAddress);
 
-		for (u32 y = 0; y < _pBuffer->m_height; ++y) {
-			for (u32 x = 0; x < _pBuffer->m_width; ++x) {
-				ptr_dst[(x + y*_pBuffer->m_width) ^ 1] = 0xFFFF;
+		for (u32 y = 0; y < VI.height; ++y) {
+			for (u32 x = 0; x < VI.width; ++x) {
+				ptr_dst[(x + y*VI.width) ^ 1] = 0xFFFF;
 			}
 		}
 	}
