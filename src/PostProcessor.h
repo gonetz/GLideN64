@@ -10,7 +10,7 @@ namespace graphics {
 	class ShaderProgram;
 }
 
-class FrameBuffer;
+struct FrameBuffer;
 
 class PostProcessor {
 public:
