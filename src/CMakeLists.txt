@@ -46,6 +46,7 @@ set(GLideN64_SOURCES
   PostProcessor.cpp
   RDP.cpp
   RSP.cpp
+  RSP_LoadMatrix.cpp
   S2DEX2.cpp
   S2DEX.cpp
   SoftwareRender.cpp
@@ -233,9 +234,11 @@ if(NEON_OPT)
   list(APPEND GLideN64_SOURCES
     3DMathNeon.cpp
     gSPNeon.cpp
+    RSP_LoadMatrixNeon.cpp
   )
   list(REMOVE_ITEM GLideN64_SOURCES
     3DMath.cpp
+    RSP_LoadMatrix.cpp
   )
 endif(NEON_OPT)
 
