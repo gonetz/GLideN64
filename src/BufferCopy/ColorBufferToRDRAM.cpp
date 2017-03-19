@@ -214,6 +214,8 @@ bool ColorBufferToRDRAM::_prepareCopy(u32 _startAddress)
 		wnd.getDrawer().blitOrCopyTexturedRect(blitParams);
 
 		gfxContext.bindFramebuffer(bufferTarget::READ_FRAMEBUFFER, m_FBO);
+	} else {
+		gfxContext.bindFramebuffer(bufferTarget::READ_FRAMEBUFFER, readBuffer);
 	}
 
 	m_frameCount = curFrame;
