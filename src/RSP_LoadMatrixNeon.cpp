@@ -45,41 +45,41 @@ void RSP_LoadMatrix( f32 mtx[4][4], u32 address )
     uint16x4_t _fraction2_u16 = vld1_u16(n64Mat->fraction[2]);
     uint16x4_t _fraction3_u16 = vld1_u16(n64Mat->fraction[3]);
 
-    // Reverse bytes --> n^1
-    _integer0_s16 = vrev32_s16 (_integer0_s16); 
-    _integer1_s16 = vrev32_s16 (_integer1_s16); 
-    _integer2_s16 = vrev32_s16 (_integer2_s16); 
-    _integer3_s16 = vrev32_s16 (_integer3_s16); 
-    _fraction0_u16 = vrev32_u16 (_fraction0_u16); 
-    _fraction1_u16 = vrev32_u16 (_fraction1_u16); 
-    _fraction2_u16 = vrev32_u16 (_fraction2_u16); 
-    _fraction3_u16 = vrev32_u16 (_fraction3_u16);
+    // Reverse bytes --> j^1
+    _integer0_s16 = vrev32_s16 (_integer0_s16);                 // 0 1 2 3 --> 1 0 3 2
+    _integer1_s16 = vrev32_s16 (_integer1_s16);                 // 0 1 2 3 --> 1 0 3 2 
+    _integer2_s16 = vrev32_s16 (_integer2_s16);                 // 0 1 2 3 --> 1 0 3 2
+    _integer3_s16 = vrev32_s16 (_integer3_s16);                 // 0 1 2 3 --> 1 0 3 2
+    _fraction0_u16 = vrev32_u16 (_fraction0_u16);               // 0 1 2 3 --> 1 0 3 2
+    _fraction1_u16 = vrev32_u16 (_fraction1_u16);               // 0 1 2 3 --> 1 0 3 2 
+    _fraction2_u16 = vrev32_u16 (_fraction2_u16);               // 0 1 2 3 --> 1 0 3 2 
+    _fraction3_u16 = vrev32_u16 (_fraction3_u16);               // 0 1 2 3 --> 1 0 3 2
     
     // Expand to 32Bit int/uint
-    int32x4_t _integer0_s32 = vmovl_s16(_integer0_s16);
-    int32x4_t _integer1_s32 = vmovl_s16(_integer1_s16);
-    int32x4_t _integer2_s32 = vmovl_s16(_integer2_s16);
-    int32x4_t _integer3_s32 = vmovl_s16(_integer3_s16);
-    uint32x4_t _fraction0_u32 = vmovl_u16(_fraction0_u16);
-    uint32x4_t _fraction1_u32 = vmovl_u16(_fraction1_u16);
-    uint32x4_t _fraction2_u32 = vmovl_u16(_fraction2_u16);
-    uint32x4_t _fraction3_u32 = vmovl_u16(_fraction3_u16);
+    int32x4_t _integer0_s32 = vmovl_s16(_integer0_s16);         // _integer0_s32 = (i32)_integer0_s16
+    int32x4_t _integer1_s32 = vmovl_s16(_integer1_s16);         // _integer1_s32 = (i32)_integer1_s16
+    int32x4_t _integer2_s32 = vmovl_s16(_integer2_s16);         // _integer2_s32 = (i32)_integer2_s16
+    int32x4_t _integer3_s32 = vmovl_s16(_integer3_s16);         // _integer3_s32 = (i32)_integer3_s16
+    uint32x4_t _fraction0_u32 = vmovl_u16(_fraction0_u16);      // _fraction0_u32 = (u32)_fraction0_u16
+    uint32x4_t _fraction1_u32 = vmovl_u16(_fraction1_u16);      // _fraction1_u32 = (u32)_fraction1_u16
+    uint32x4_t _fraction2_u32 = vmovl_u16(_fraction2_u16);      // _fraction2_u32 = (u32)_fraction2_u16
+    uint32x4_t _fraction3_u32 = vmovl_u16(_fraction3_u16);      // _fraction3_u32 = (u32)_fraction3_u16
     
     // Convert to Float
-    float32x4_t _integer0_f32 = vcvtq_f32_s32 (_integer0_s32); 
-    float32x4_t _integer1_f32 = vcvtq_f32_s32 (_integer1_s32); 
-    float32x4_t _integer2_f32 = vcvtq_f32_s32 (_integer2_s32); 
-    float32x4_t _integer3_f32 = vcvtq_f32_s32 (_integer3_s32); 
-    float32x4_t _fraction0_f32 = vcvtq_f32_u32 (_fraction0_u32); 
-    float32x4_t _fraction1_f32 = vcvtq_f32_u32 (_fraction1_u32); 
-    float32x4_t _fraction2_f32 = vcvtq_f32_u32 (_fraction2_u32); 
-    float32x4_t _fraction3_f32 = vcvtq_f32_u32 (_fraction3_u32); 
+    float32x4_t _integer0_f32 = vcvtq_f32_s32 (_integer0_s32);  // _integer0_f32 = (f32)_integer0_s32
+    float32x4_t _integer1_f32 = vcvtq_f32_s32 (_integer1_s32);  // _integer1_f32 = (f32)_integer1_s32 
+    float32x4_t _integer2_f32 = vcvtq_f32_s32 (_integer2_s32);  // _integer2_f32 = (f32)_integer2_s32 
+    float32x4_t _integer3_f32 = vcvtq_f32_s32 (_integer3_s32);  // _integer3_f32 = (f32)_integer3_s32 
+    float32x4_t _fraction0_f32 = vcvtq_f32_u32 (_fraction0_u32);// _fraction0_f32 = (f32)_fraction0_u32 
+    float32x4_t _fraction1_f32 = vcvtq_f32_u32 (_fraction1_u32);// _fraction1_f32 = (f32)_fraction1_u32 
+    float32x4_t _fraction2_f32 = vcvtq_f32_u32 (_fraction2_u32);// _fraction2_f32 = (f32)_fraction2_u32
+    float32x4_t _fraction3_f32 = vcvtq_f32_u32 (_fraction3_u32);// _fraction3_f32 = (f32)_fraction3_u32
 
     // Multiply and add
-    _integer0_f32 = vmlaq_n_f32(_integer0_f32,_fraction0_f32,_recip); 
-    _integer1_f32 = vmlaq_n_f32(_integer1_f32,_fraction1_f32,_recip);
-    _integer2_f32 = vmlaq_n_f32(_integer2_f32,_fraction2_f32,_recip);
-    _integer3_f32 = vmlaq_n_f32(_integer3_f32,_fraction3_f32,_recip);
+    _integer0_f32 = vmlaq_n_f32(_integer0_f32,_fraction0_f32,_recip);// _integer0_f32 = _integer0_f32 + _fraction0_f32* _recip
+    _integer1_f32 = vmlaq_n_f32(_integer1_f32,_fraction1_f32,_recip);// _integer1_f32 = _integer1_f32 + _fraction1_f32* _recip
+    _integer2_f32 = vmlaq_n_f32(_integer2_f32,_fraction2_f32,_recip);// _integer2_f32 = _integer2_f32 + _fraction2_f32* _recip
+    _integer3_f32 = vmlaq_n_f32(_integer3_f32,_fraction3_f32,_recip);// _integer3_f32 = _integer3_f32 + _fraction3_f32* _recip
 
     // Store in mtx
     vst1q_f32(mtx[0], _integer0_f32);
