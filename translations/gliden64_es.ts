@@ -157,7 +157,7 @@
     <message>
         <location filename="configDialog.ui" line="2959"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Gamma correction.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Some N64 games use gamma correction. Gamma correction makes image brighter. N64 applies gamma correction in its Video Interface. &lt;/p&gt;&lt;p&gt;GLideN64 emulates gamma correction as post-processing effect. That is, it works only when frame buffer emulation enabled. Gamma correction enabled automatically for games, which use it on real N64. You may force gamma correction for all games. Default level of gamma correction is 2, as on N64.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;use defaults&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Corrección gamma.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Algunos juegos de N64 utilizan la corrección gamma, que hace que la imagen sea más brillante. La N64 aplica la corrección gamma a su interfaz de video. &lt;/p&gt;&lt;p&gt;GLideN64 emula la corrección gamma como un efecto de posprocesado. Es decir, sólo funciona si se utiliza la emulación del frame buffer. La corrección gamma se activa automáticamente en los juegos que la utilizan en una N64 real. Puedes forzar la corrección gamma en todos los juegos. El nivel predeterminado de corrección es 2, como en una N64 real.&lt;/p&gt;&lt;p&gt;[Recomendación: &lt;span style=&quot; font-style:italic;&quot;&gt;Utilizar el valor predeterminado&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Corrección gamma.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Algunos juegos de N64 utilizan la corrección gamma, que hace que la imagen sea más brillante. La N64 aplica la corrección gamma a su interfaz de vídeo. &lt;/p&gt;&lt;p&gt;GLideN64 emula la corrección gamma como un efecto de posprocesado. Es decir, sólo funciona si se utiliza la emulación del frame buffer. La corrección gamma se activa automáticamente en los juegos que la utilizan en una N64 real. Puedes forzar la corrección gamma en todos los juegos. El nivel predeterminado de corrección es 2, como en una N64 real.&lt;/p&gt;&lt;p&gt;[Recomendación: &lt;span style=&quot; font-style:italic;&quot;&gt;Utilizar el valor predeterminado&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="2096"/>
@@ -217,13 +217,13 @@
     <message>
         <location filename="configDialog.ui" line="1734"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Unchecking this option disables many effects including cropping, aspect ratio, N64 resolution factor, N64-style depth compare and more. Don&apos;t uncheck this option unless you have performance issues.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Al desactivar esta opción desactivarás muchos efectos, como el recorte de imagen, la proporción de aspecto, el factor de resolución de N64 y la comparación de profundidad al estilo de N64, entre otros. No desactives esta opción salvo que tengas problemas de rendimiento.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="1839"/>
         <source>Vertical interrupt (recommended, fewest game issues)</source>
         <extracomment>&quot;Vertical interrupt&quot; is frequently abbreviated as &quot;VI&quot;. This control is a combobox labelled &quot;Frame buffer swap on:&quot;</extracomment>
-        <translation>Interrupción vertical (Recomendado, lo menos problemático)</translation>
+        <translation>Interrupción vertical (Recomendado, problemas mínimos)</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="1844"/>
@@ -247,7 +247,7 @@
         <location filename="configDialog.ui" line="1956"/>
         <source>Synchronous (slowest, fewest game issues)</source>
         <extracomment>This is a combobox option with the label &quot;Copy video card frame buffer to N64 memory&quot;.</extracomment>
-        <translation>Síncrono (Lo más lento, el menos problemático)</translation>
+        <translation>Síncrono (Lo más lento, problemas mínimos)</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="1961"/>
@@ -271,12 +271,12 @@
         <location filename="configDialog.ui" line="2017"/>
         <source>In software (fast, fewest game issues)</source>
         <extracomment>This is a combobox option with the label &quot;Copy video card frame buffer to N64 memory&quot;.</extracomment>
-        <translation>Por software (Rápido, lo menos problemático)</translation>
+        <translation>Por software (Rápido, problemas mínimos)</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="2035"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The N64 uses a unique method of calculating depth to the camera. When checked, GlideN64 uses shaders to try to emulate these calculations correctly. Not compatible with anti-aliasing. &lt;span style=&quot; font-weight:600;&quot;&gt;Experimental!&lt;/span&gt;&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;Sometimes checked, for a few games&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;La N64 utiliza un método único para calcular las distancias respecto a la cámara. Al activar esta opción, GlideN64 utilizará shaders para intentar emular estos cálculos de forma correcta. Esta opción no es compatible con el suavizado de bordes. &lt;span style=&quot; font-weight:600;&quot;&gt;¡Experimental!&lt;/span&gt;&lt;/p&gt;&lt;p&gt;[Recomendación: &lt;span style=&quot; font-style:italic;&quot;&gt;Activar en unos pocos juegos&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="2472"/>
@@ -326,7 +326,7 @@
     <message>
         <location filename="configDialog.ui" line="59"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;All the resolutions that your video card/monitor supports should be displayed.&lt;/p&gt;&lt;p&gt;[Recommended:&lt;span style=&quot; font-style:italic;&quot;&gt; Maximum resolution for your monitor unless performance becomes an issue&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Aquí deberían aparecer todas las resoluciones que admite tu tarjeta gráfica y/o monitor.&lt;/p&gt;&lt;p&gt;[Recomendación:&lt;span style=&quot; font-style:italic;&quot;&gt; La resolución máxima que permita tu monitor salvo que haya problemas de rendimiento&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Aquí deberían aparecer todas las resoluciones que admite tu tarjeta gráfica o monitor.&lt;/p&gt;&lt;p&gt;[Recomendación:&lt;span style=&quot; font-style:italic;&quot;&gt; La resolución máxima que permita tu monitor salvo que haya problemas de rendimiento&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="110"/>
@@ -336,12 +336,12 @@
     <message>
         <location filename="configDialog.ui" line="236"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Vertical sync, or VSync, can improve the image by syncing the game&apos;s frame rate to your monitor&apos;s refresh rate. This prevents image tearing, but may cause performance problems.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;Usually off, on if you have image tearing problems&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;La sincronía vertical (También llamada VSync) puede mejorar la calidad de imagen sincronizando la velocidad de fotogramas del juego con la frecuencia de actualización de tu monitor. Esto evita que la imagen aparezca cortada, pero podría provocar problemas de rendimiento.&lt;/p&gt;&lt;p&gt;[Recomendación: &lt;span style=&quot; font-style:italic;&quot;&gt;Por norma general desactivado, activar si las imágenes salen cortadas&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="239"/>
         <source>Enable VSync</source>
-        <translation type="unfinished"></translation>
+        <translation>Sincronía vertical</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="270"/>
@@ -389,7 +389,7 @@ The highest in a sequence of numbers. In this case, 16.</extracomment>
     <message>
         <location filename="configDialog.ui" line="672"/>
         <source>Anti-aliasing is not compatible with N64-style depth compare</source>
-        <translation type="unfinished"></translation>
+        <translation>El suavizado de bordes no es compatible con la comparación de profundidad estilo N64</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="860"/>
@@ -541,7 +541,6 @@ The highest in a sequence of numbers. In this case, 16.</extracomment>
     <message>
         <location filename="configDialog.ui" line="1525"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;In some games the coordinates for parts of 2D elements are not aligned: there is a half-pixel split between adjacent elements. When rendering at the N64&apos;s original resolution it isn&apos;t visible, but when the image is scaled up it results in black lines. This option attempts to connect these 2D elements.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;For adjacent 2D elements&lt;/span&gt;: Apply the correction only for polygons that need it. Select this option for games that have issues with black lines.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Always&lt;/span&gt;: Apply the correction for every 2D element. Select this option when &lt;span style=&quot; font-weight:600;&quot;&gt;For adjacent 2D elements&lt;/span&gt; doesn&apos;t help.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Never&lt;/span&gt;: Don&apos;t attempt to correct black lines between 2D elements.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;Game dependent, mostly Never&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translatorcomment>D</translatorcomment>
         <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;En algunos juegos no se alinean las coordenadas de los elementos en 2D: Hay una separación de medio píxel entre cada elemento adyacente. No es algo visible cuando se renderizan en la resolución nativa de N64, pero provoca líneas negras cuando se escala la imagen. Esta opción intenta unir estos elementos en 2D.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Para elementos en 2D adyacentes&lt;/span&gt;: Aplica la corrección sólo en los polígonos que la necesiten. Selecciona esta opción para los juegos que tengan problemas de líneas negras.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Siempre&lt;/span&gt;: Aplica la corrección en todos los elementos en 2D. Selecciona esta opción cuando &lt;span style=&quot; font-weight:600;&quot;&gt;«Para elementos adyacentes»&lt;/span&gt; no funcione.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Nunca&lt;/span&gt;: No corregir las líneas negras entre los elementos en 2D.&lt;/p&gt;&lt;p&gt;[Recomendación: &lt;span style=&quot; font-style:italic;&quot;&gt;En función de cada juego, por lo general «Nunca»&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
@@ -586,7 +585,7 @@ The highest in a sequence of numbers. In this case, 16.</extracomment>
     <message>
         <location filename="configDialog.ui" line="1810"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This option controls how often GLideN64 updates the main frame buffer.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Vertical interrupt&lt;/span&gt;: Update the buffer as quickly as possible, every vertical interrupt per second (50 for PAL and 60 for NTSC games). This option is the most compatible. Use this mode unless you have performance problems.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;VI origin change&lt;/span&gt;: The VI origin changes corresponding to the game&apos;s actual FPS. N64 games typically run between 20 to 30 FPS so the buffers swap less often than the first mode. This mode does not work for games that use single buffering, which is rare.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Color buffer change&lt;/span&gt;: This option checks to see if the frame buffer has been changed. There are some games where this doesn&apos;t work.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Esta opción controla la frecuencia con la que GlideN64 actualizará el frame buffer principal.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Interrupción vertical&lt;/span&gt;: Actualiza el búfer lo más rápido posible, en cada interrupción vertical por segundo (50 en juegos PAL y 60 en juegos NTSC). Es la opción más compatible. Utilízala salvo que tengas problemas de rendimiento.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Cambio en el origen de la VI&lt;/span&gt;: El origen del VI cambia en función de los FPS que tenga el juego. Los juegos de N64 suelen funcionar a entre 20 y 30 FPS, así que los búfers se actualizan menos que en el primer modo. Este modo no funciona en los juegos monobúfer, lo que es poco habitual.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Cambio en el búfer de color&lt;/span&gt;: Esta opción verifica que se haya cambiado el frame buffer. No funciona en algunos juegos.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Esta opción controla la frecuencia con la que GlideN64 actualizará el frame buffer principal.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Interrupción vertical&lt;/span&gt;: Actualiza el búfer lo más rápido posible, en cada interrupción vertical por segundo (50 en juegos PAL y 60 en juegos NTSC). Es la opción más compatible. Utilízala salvo que tengas problemas de rendimiento.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Cambio en el origen de la VI&lt;/span&gt;: El origen del VI cambia en función de los FPS que tenga el juego. Los juegos de N64 suelen funcionar a una velocidad de entre 20 y 30 FPS, así que los búfers se actualizan menos que en el primer modo. Este modo no funciona en los juegos monobúfer, lo que es poco habitual.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Cambio en el búfer de color&lt;/span&gt;: Esta opción verifica que se haya cambiado el frame buffer. No funciona en algunos juegos.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="1831"/>
@@ -668,7 +667,7 @@ The highest in a sequence of numbers. In this case, 16.</extracomment>
     <message>
         <location filename="configDialog.ui" line="2118"/>
         <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This filter smooths or sharpens textures. There are four smoothing filters and two sharpening filters. The higher the number, the stronger the effect. Performance may be affected depending on the game and/or your PC.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;Your preference&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Este filtro suaviza o perfila las texturas. Hay cuatro filtros de suavizado y dos de perfilado. Cuanto más alto sea el número, más fuerte será el efecto. Podría afectar al rendimiento según el juego y/o tu equipo.&lt;/p&gt;&lt;p&gt;[Recomendación: &lt;span style=&quot; font-style:italic;&quot;&gt;Lo que prefieras&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+        <translation>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Este filtro suaviza o perfila las texturas. Hay cuatro filtros de suavizado y dos de perfilado. Cuanto más alto sea el número, más fuerte será el efecto. Podría afectar al rendimiento según el juego o tu equipo.&lt;/p&gt;&lt;p&gt;[Recomendación: &lt;span style=&quot; font-style:italic;&quot;&gt;Lo que prefieras&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="2147"/>
@@ -677,37 +676,37 @@ The highest in a sequence of numbers. In this case, 16.</extracomment>
         <extracomment>No texture filtering
 ----------
 No texture enhancement</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Desactivar</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="2152"/>
         <source>Smooth filtering 1</source>
-        <translation type="unfinished"></translation>
+        <translation>Filtro suave 1</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="2157"/>
         <source>Smooth filtering 2</source>
-        <translation type="unfinished"></translation>
+        <translation>Filtro suave 2</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="2162"/>
         <source>Smooth filtering 3</source>
-        <translation type="unfinished"></translation>
+        <translation>Filtro suave 3</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="2167"/>
         <source>Smooth filtering 4</source>
-        <translation type="unfinished"></translation>
+        <translation>Filtro suave 4</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="2172"/>
         <source>Sharp filtering 1</source>
-        <translation type="unfinished"></translation>
+        <translation>Filtro nítido 1</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="2177"/>
         <source>Sharp filtering 2</source>
-        <translation type="unfinished"></translation>
+        <translation>Filtro nítido 2</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="2188"/>
@@ -718,7 +717,7 @@ No texture enhancement</extracomment>
         <location filename="configDialog.ui" line="2225"/>
         <source>Store</source>
         <extracomment>Store texture enhancement</extracomment>
-        <translation type="unfinished"></translation>
+        <translation>Almacenar</translation>
     </message>
     <message>
         <location filename="configDialog.ui" line="2318"/>
