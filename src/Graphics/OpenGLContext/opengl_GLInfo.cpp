@@ -75,4 +75,10 @@ void GLInfo::init() {
 		LOG(LOG_WARNING, "Async color buffer copies are not supported on GLES2\n");
 	}
 #endif
+	if (isGLES2 && config.generalEmulation.enableLOD) {
+		if (!Utils::isExtensionSupported(*this, "GL_EXT_shader_texture_lod") || !Utils::isExtensionSupported(*this, "GL_OES_standard_derivatives")) {
+			config.generalEmulation.enableLOD = 0;
+			LOG(LOG_WARNING, "LOD emulation not possible on this device\n");
+		}
+	}
 }

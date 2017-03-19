@@ -415,8 +415,10 @@ public:
 	{
 		if (_glinfo.isGLES2) {
 			m_part = "#version 100 \n";
-			m_part += "#extension GL_EXT_shader_texture_lod : enable \n";
-			m_part += "#extension GL_OES_standard_derivatives : enable \n";
+			if (config.generalEmulation.enableLOD) {
+				m_part += "#extension GL_EXT_shader_texture_lod : enable \n";
+				m_part += "#extension GL_OES_standard_derivatives : enable \n";
+			}
 			m_part +=
 				"#if (__VERSION__ > 120)		\n"
 				"# define IN in					\n"
