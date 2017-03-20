@@ -352,6 +352,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_mupenplus|Win32'">false</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\src\RSP.cpp" />
+    <ClCompile Include="..\..\src\RSP_LoadMatrixX86.cpp" />
     <ClCompile Include="..\..\src\SoftwareRender.cpp" />
     <ClCompile Include="..\..\src\TexrectDrawer.cpp" />
     <ClCompile Include="..\..\src\TextDrawer.cpp" />

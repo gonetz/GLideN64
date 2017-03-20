@@ -344,6 +344,9 @@
     <ClCompile Include="..\..\src\Graphics\ObjectHandle.cpp">
       <Filter>Source Files\Graphics</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\RSP_LoadMatrixX86.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\3DMath.h">
