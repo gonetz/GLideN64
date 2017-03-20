@@ -2516,10 +2516,10 @@ void gSPObjRendermode(u32 _mode)
 	gSP.objRendermode = _mode;
 }
 
-
 #ifdef __NEON_OPT
 void gSPTransformVertex4NEON(u32 v, float mtx[4][4]);
 void gSPBillboardVertex4NEON(u32 v);
+void gSPTransformVertex_NEON(float vtx[4], float mtx[4][4]);
 #endif //__NEON_OPT
 
 #ifdef __VEC4_OPT
@@ -2537,8 +2537,13 @@ void (*gSPPointLightVertex4)(u32 v, float _vPos[4][3]) = gSPPointLightVertex4_de
 #endif
 
 
+#ifndef __NEON_OPT
 void (*gSPTransformVertex)(float vtx[4], float mtx[4][4]) =
 		gSPTransformVertex_default;
+#else
+void (*gSPTransformVertex)(float vtx[4], float mtx[4][4]) =
+		gSPTransformVertex_NEON;
+#endif
 void (*gSPLightVertex)(SPVertex & _vtx) = gSPLightVertex_default;
 void (*gSPPointLightVertex)(SPVertex & _vtx, float * _vPos) = gSPPointLightVertex_default;
 void (*gSPBillboardVertex)(u32 v, u32 i) = gSPBillboardVertex_default;
