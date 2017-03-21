@@ -232,9 +232,9 @@ if(NEON_OPT)
     -D__NEON_OPT
   )
   list(APPEND GLideN64_SOURCES
-    3DMathNeon.cpp
-    gSPNeon.cpp
-    RSP_LoadMatrixNeon.cpp
+    Neon/3DMathNeon.cpp
+    Neon/gSPNeon.cpp
+    Neon/RSP_LoadMatrixNeon.cpp
   )
   list(REMOVE_ITEM GLideN64_SOURCES
     3DMath.cpp
