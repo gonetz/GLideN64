@@ -567,9 +567,7 @@ public:
 	void update(bool _force) override
 	{
 		int renderTarget = 0;
-		if (gDP.colorImage.address == gDP.depthImageAddress &&
-			(config.generalEmulation.hacks & hack_ZeldaMM) == 0
-			) {
+		if (gDP.colorImage.address == gDP.depthImageAddress ) {
 			renderTarget = gDP.otherMode.depthCompare + 1;
 		}
 		uRenderTarget.set(renderTarget, _force);
