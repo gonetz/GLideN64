@@ -21,6 +21,7 @@
 #include "Config.h"
 #include "Log.h"
 #include "DisplayWindow.h"
+#include <arm_neon.h>
 
 void gSPTransformVertex4NEON(u32 v, float mtx[4][4])
 {
@@ -112,4 +113,24 @@ void gSPBillboardVertex4NEON(u32 v)
     : "d0", "d1", "d2", "d3", "d4", "d5", "d6", "d7",
       "d16", "d17", "memory"
     );
+}
+
+void gSPTransformVertex_NEON(float vtx[4], float mtx[4][4])
+{
+    // Load vtx
+    float32x4_t _vtx = vld1q_f32(vtx);
+
+    // Load mtx
+    float32x4_t _mtx0 = vld1q_f32(mtx[0]);
+    float32x4_t _mtx1 = vld1q_f32(mtx[1]);
+    float32x4_t _mtx2 = vld1q_f32(mtx[2]);
+    float32x4_t _mtx3 = vld1q_f32(mtx[3]);
+
+    // Multiply and add
+    _mtx0 = vmlaq_n_f32(_mtx3, _mtx0, _vtx[0]);    // _mtx0 = _mtx3 + _mtx0 * _vtx[0]
+    _mtx0 = vmlaq_n_f32(_mtx0, _mtx1, _vtx[1]);    // _mtx0 = _mtx0 + _mtx1 * _vtx[1]
+    _mtx0 = vmlaq_n_f32(_mtx0, _mtx2, _vtx[2]);    // _mtx0 = _mtx0 + _mtx2 * _vtx[2]
+
+    // Store vtx
+    vst1q_f32(vtx, _mtx0);
 }

@@ -126,8 +126,9 @@ MY_LOCAL_LDLIBS := -llog -latomic -lEGL
 
 ifeq ($(TARGET_ARCH_ABI), armeabi-v7a)
     # Use for ARM7a:
-    MY_LOCAL_SRC_FILES += $(SRCDIR)/3DMathNeon.cpp.neon
-    MY_LOCAL_SRC_FILES += $(SRCDIR)/gSPNeon.cpp.neon
+    MY_LOCAL_SRC_FILES += $(SRCDIR)/Neon/3DMathNeon.cpp
+    MY_LOCAL_SRC_FILES += $(SRCDIR)/Neon/gSPNeon.cpp
+    MY_LOCAL_SRC_FILES += $(SRCDIR)/Neon/RSP_LoadMatrixNeon.cpp
     MY_LOCAL_CFLAGS += -D__NEON_OPT
     MY_LOCAL_CFLAGS += -D__VEC4_OPT -mfpu=neon -mfloat-abi=softfp -ftree-vectorize -funsafe-math-optimizations -fno-finite-math-only
 
@@ -135,6 +136,7 @@ else ifeq ($(TARGET_ARCH_ABI), x86)
 #    MY_LOCAL_CFLAGS += -DX86_ASM
     MY_LOCAL_CFLAGS += -D__VEC4_OPT
     MY_LOCAL_SRC_FILES += $(SRCDIR)/3DMath.cpp
+    MY_LOCAL_SRC_FILES += $(SRCDIR)/RSP_LoadMatrix.cpp
 endif
 
 ###########
