@@ -678,6 +678,11 @@ void _calcTileSizes(u32 _t, TileSizes & _sizes, gDPTile * _pLoadTile)
 	_sizes.clampWidth = (pTile->clamps && gDP.otherMode.cycleType != G_CYC_COPY) ? tileWidth : width;
 	_sizes.clampHeight = (pTile->clampt && gDP.otherMode.cycleType != G_CYC_COPY) ? tileHeight : height;
 
+	if (_sizes.clampWidth > 256)
+		pTile->clamps = 0;
+	if (_sizes.clampHeight > 256)
+		pTile->clampt = 0;
+
 	// Make sure masking is valid
 	if (maskWidth > width) {
 		pTile->masks = powof(width);
