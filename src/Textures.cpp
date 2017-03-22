@@ -1509,6 +1509,8 @@ void TextureCache::update(u32 _t)
 		pTile = gSP.textureTile[_t];
 	}
 
+	TileSizes sizes;
+	_calcTileSizes(_t, sizes, gDP.loadTile);
 	TextureParams params;
 	params.flags = pTile->masks	|
 		(pTile->maskt   << 4)	|
@@ -1519,8 +1521,6 @@ void TextureCache::update(u32 _t)
 		(pTile->size   << 12)	|
 		(pTile->format << 14)	|
 		(gDP.otherMode.textureLUT << 17);
-	TileSizes sizes;
-	_calcTileSizes(_t, sizes, gDP.loadTile);
 	params.width = sizes.realWidth;
 	params.height = sizes.realHeight;
 
