@@ -259,6 +259,8 @@ void RSP_Init()
 		config.generalEmulation.hacks |= hack_WinBack;
 	else if (strstr(RSP.romname, (const char *)"POKEMON SNAP") != nullptr)
 		config.generalEmulation.hacks |= hack_Snap;
+	else if (strstr(RSP.romname, (const char *)"MARIOKART64") != nullptr)
+		config.generalEmulation.hacks |= hack_MK64;
 
 	api().FindPluginPath(RSP.pluginpath);
 

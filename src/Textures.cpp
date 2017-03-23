@@ -720,7 +720,7 @@ void _calcTileSizes(u32 _t, TileSizes & _sizes, gDPTile * _pLoadTile)
 }
 
 inline
-void _updateCachedTexture(const GHQTexInfo & _info, CachedTexture *_pTexture)
+void _updateCachedTexture(const GHQTexInfo & _info, CachedTexture *_pTexture, int _scale)
 {
 	_pTexture->textureBytes = _info.width * _info.height;
 
@@ -736,11 +736,9 @@ void _updateCachedTexture(const GHQTexInfo & _info, CachedTexture *_pTexture)
 
 	_pTexture->realWidth = _info.width;
 	_pTexture->realHeight = _info.height;
+	_pTexture->scaleS = 1.0f / (f32)(_info.width / _scale);
+	_pTexture->scaleT = 1.0f / (f32)(_info.height / _scale);
 	_pTexture->bHDTexture = true;
-	/*
-	_pTexture->scaleS = 1.0f / (f32)(_pTexture->realWidth);
-	_pTexture->scaleT = 1.0f / (f32)(_pTexture->realHeight);
-	*/
 }
 
 bool TextureCache::_loadHiresBackground(CachedTexture *_pTexture)
@@ -785,7 +783,7 @@ bool TextureCache::_loadHiresBackground(CachedTexture *_pTexture)
 		gfxContext.init2DTexture(params);
 
 		assert(!gfxContext.isError());
-		_updateCachedTexture(ghqTexInfo, _pTexture);
+		_updateCachedTexture(ghqTexInfo, _pTexture, ghqTexInfo.width / tile_width);
 		return true;
 	}
 	return false;
@@ -874,7 +872,7 @@ void TextureCache::_loadBackground(CachedTexture *pTexture)
 			params.dataType = DatatypeParam(ghqTexInfo.pixel_type);
 			params.data = ghqTexInfo.data;
 			gfxContext.init2DTexture(params);
-			_updateCachedTexture(ghqTexInfo, pTexture);
+			_updateCachedTexture(ghqTexInfo, pTexture, ghqTexInfo.width / pTexture->realWidth);
 			bLoaded = true;
 		}
 	}
@@ -913,8 +911,15 @@ bool TextureCache::_loadHiresTexture(u32 _tile, CachedTexture *_pTexture, u64 & 
 	if (info.loadType == LOADTYPE_TILE) {
 		bpl = info.texWidth << info.size >> 1;
 		addr += (info.ult * bpl) + (((info.uls << info.size) + 1) >> 1);
-	}
-	else {
+
+		tile_width = min(info.width, info.texWidth);
+		if (info.size > _pTexture->size)
+			tile_width <<= info.size - _pTexture->size;
+
+		tile_height = info.height;
+		if ((config.generalEmulation.hacks & hack_MK64) != 0 && (tile_height % 2) != 0)
+			tile_height--;
+	} else {
 		if (gSP.textureTile[_tile]->size == G_IM_SIZ_32b)
 			bpl = gSP.textureTile[_tile]->line << 4;
 		else if (info.dxt == 0)
@@ -956,7 +961,7 @@ bool TextureCache::_loadHiresTexture(u32 _tile, CachedTexture *_pTexture, u64 & 
 		params.data = ghqTexInfo.data;
 		gfxContext.init2DTexture(params);
 		assert(!gfxContext.isError());
-		_updateCachedTexture(ghqTexInfo, _pTexture);
+		_updateCachedTexture(ghqTexInfo, _pTexture, ghqTexInfo.width / tile_width);
 		return true;
 	}
 
@@ -1194,7 +1199,7 @@ void TextureCache::_load(u32 _tile, CachedTexture *_pTexture)
 				params.dataType = DatatypeParam(ghqTexInfo.pixel_type);
 				params.data = ghqTexInfo.data;
 				gfxContext.init2DTexture(params);
-				_updateCachedTexture(ghqTexInfo, _pTexture);
+				_updateCachedTexture(ghqTexInfo, _pTexture, ghqTexInfo.width / tmptex.realWidth);
 				bLoaded = true;
 			}
 		}
