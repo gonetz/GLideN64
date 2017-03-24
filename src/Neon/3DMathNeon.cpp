@@ -139,23 +139,3 @@ void Normalize(float v[3])
     : "d0", "d1", "d2", "d3", "d4", "d5", "memory"
     );
 }
-
-float DotProduct(const float v0[3], const float v1[3])
-{
-    float dot;
-    asm volatile (
-    "vld1.32         {d8}, [%1]!            \n\t"    //d8={x0,y0}
-    "vld1.32         {d10}, [%2]!           \n\t"    //d10={x1,y1}
-    "flds            s18, [%1, #0]          \n\t"    //d9[0]={z0}
-    "flds            s22, [%2, #0]          \n\t"    //d11[0]={z1}
-    "vmul.f32        d12, d8, d10           \n\t"    //d12= d8*d10
-    "vpadd.f32       d12, d12, d12          \n\t"    //d12 = d12[0] + d12[1]
-    "vmla.f32        d12, d9, d11           \n\t"    //d12 += d9*d11
-    "fmrs            %0, s24                \n\t"    //r0 = s0
-    : "=r"(dot), "+r"(v0), "+r"(v1):
-    : "d8", "d9", "d10", "d11", "d12"
-
-    );
-    return dot;
-}
-
