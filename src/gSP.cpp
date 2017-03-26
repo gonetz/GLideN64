@@ -902,8 +902,21 @@ void gSPLookAt( u32 _l, u32 _n )
 static
 void gSPUpdateLightVectors()
 {
-	for (u32 l = 0; l < gSP.numLights; ++l)
-		InverseTransformVectorNormalize(&gSP.lights[l].x, &gSP.lights[l].ix, gSP.matrix.modelView[gSP.matrix.modelViewi]);
+	s32 count = gSP.numLights;
+	while (count >= 4) {
+		InverseTransformVectorNormalize4x(&gSP.lights[count-1].x, &gSP.lights[count-2].x,&gSP.lights[count-3].x, &gSP.lights[count-4].x,
+									&gSP.lights[count-1].ix, &gSP.lights[count-2].ix,&gSP.lights[count-3].ix, &gSP.lights[count-4].ix,
+									gSP.matrix.modelView[gSP.matrix.modelViewi]);
+		count -= 4;
+	}
+	if (count >= 2){
+		InverseTransformVectorNormalize2x(&gSP.lights[count - 1].x, &gSP.lights[count - 2].x,
+									&gSP.lights[count - 1].ix, &gSP.lights[count - 2].ix,
+									gSP.matrix.modelView[gSP.matrix.modelViewi]);
+		count -= 2;
+	}
+	if (count == 1)
+		InverseTransformVectorNormalize(&gSP.lights[0].x, &gSP.lights[0].ix, gSP.matrix.modelView[gSP.matrix.modelViewi]);
 	gSP.changed ^= CHANGED_LIGHT;
 	gSP.changed |= CHANGED_HW_LIGHT;
 }
@@ -912,8 +925,9 @@ static
 void gSPUpdateLookatVectors()
 {
 	if (gSP.lookatEnable) {
-		for (u32 l = 0; l < 2; ++l)
-			InverseTransformVectorNormalize(&gSP.lookat[l].x, &gSP.lookat[l].ix, gSP.matrix.modelView[gSP.matrix.modelViewi]);
+		InverseTransformVectorNormalize2x(&gSP.lookat[0].x, &gSP.lookat[1].x,
+									&gSP.lookat[0].ix, &gSP.lookat[1].ix,
+									gSP.matrix.modelView[gSP.matrix.modelViewi]);
 	}
 	gSP.changed ^= CHANGED_LOOKAT;
 }
