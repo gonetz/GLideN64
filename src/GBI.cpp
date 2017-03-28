@@ -57,7 +57,8 @@ SpecialMicrocodeInfo specialMicrocodes[] =
 	{ F3DPD,		true,	0x1c4f7869, "Perfect Dark" },
 	{ Turbo3D,		false,	0x2bdcfc8a, "Turbo3D" },
 	{ F3DEX2CBFD,	true,	0x1b4ace88, "Conker's Bad Fur Day" },
-	{ F3DEX2MM,	true,	0xd39a0d4f, "Animal Forest" }
+	{ F3DEX2MM,	true,	0xd39a0d4f, "Animal Forest" },
+	{ S2DEX2,	false,	0x2c399dd, "Animal Forest" }
 };
 
 u32 G_RDPHALF_1, G_RDPHALF_2, G_RDPHALF_CONT;
