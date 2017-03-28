@@ -728,8 +728,6 @@ void FrameBufferList::attachDepthBuffer()
 		return;
 
 	DepthBuffer * pDepthBuffer = depthBufferList().getCurrent();
-	if (pCurrent->m_pDepthBuffer == pDepthBuffer)
-		return;
 
 	if (pCurrent->m_FBO.isNotNull() && pDepthBuffer != nullptr) {
 		pDepthBuffer->initDepthImageTexture(pCurrent);
