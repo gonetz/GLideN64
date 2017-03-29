@@ -98,6 +98,7 @@ public:
 
 	FrameBuffer * getCopyBuffer() const { return m_pCopy; }
 	void setCopyBuffer(FrameBuffer * _pBuffer) { m_pCopy = _pBuffer; }
+	void depthBufferCopyRdram();
 
 	void fillBufferInfo(void * _pinfo, u32 _size);
 

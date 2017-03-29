@@ -704,6 +704,13 @@ void FrameBufferList::removeBuffers(u32 _width)
 	}
 }
 
+void FrameBufferList::depthBufferCopyRdram()
+{
+	FrameBuffer * pCurrentDepthBuffer = findBuffer(gDP.depthImageAddress);
+	if (pCurrentDepthBuffer != nullptr)
+		pCurrentDepthBuffer->copyRdram();
+}
+
 void FrameBufferList::fillBufferInfo(void * _pinfo, u32 _size)
 {
 	FBInfo::FrameBufferInfo* pInfo = reinterpret_cast<FBInfo::FrameBufferInfo*>(_pinfo);
@@ -1233,15 +1240,22 @@ void FrameBuffer_CopyChunkToRDRAM(u32 _address)
 
 bool FrameBuffer_CopyDepthBuffer( u32 address )
 {
-	FrameBuffer * pCopyBuffer = frameBufferList().getCopyBuffer();
+	FrameBufferList & fblist = frameBufferList();
+	FrameBuffer * pCopyBuffer = fblist.getCopyBuffer();
 	if (pCopyBuffer != nullptr) {
 		// This code is mainly to emulate Zelda MM camera.
 		ColorBufferToRDRAM::get().copyToRDRAM(pCopyBuffer->m_startAddress, true);
 		pCopyBuffer->m_RdramCopy.resize(0); // To disable validity check by RDRAM content. CPU may change content of the buffer for some unknown reason.
-		frameBufferList().setCopyBuffer(nullptr);
+		fblist.setCopyBuffer(nullptr);
 		return true;
-	} else
-		return DepthBufferToRDRAM::get().copyToRDRAM(address);
+	}
+
+	if (DepthBufferToRDRAM::get().copyToRDRAM(address)) {
+		fblist.depthBufferCopyRdram();
+		return true;
+	}
+
+	return false;
 }
 
 bool FrameBuffer_CopyDepthBufferChunk(u32 address)
