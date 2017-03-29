@@ -303,7 +303,7 @@ graphics::PixelReadBuffer * ContextImpl::createPixelReadBuffer(size_t _sizeInByt
 
 graphics::ColorBufferReader * ContextImpl::createColorBufferReader(CachedTexture * _pTexture)
 {
-	if (m_glInfo.bufferStorage)
+	if (m_glInfo.bufferStorage && m_glInfo.renderer != Renderer::Intel)
 		return new ColorBufferReaderWithBufferStorage(_pTexture, m_cachedFunctions->getCachedBindBuffer());
 
 	if (!m_glInfo.isGLES2)

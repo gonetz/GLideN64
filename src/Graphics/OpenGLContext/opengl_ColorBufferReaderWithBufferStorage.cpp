@@ -26,8 +26,8 @@ void ColorBufferReaderWithBufferStorage::_initBuffers()
 	for (int index = 0; index < _numPBO; ++index) {
 		m_bindBuffer->bind(Parameter(GL_PIXEL_PACK_BUFFER), ObjectHandle(m_PBO[index]));
 		m_fence[index] = 0;
-		glBufferStorage(GL_PIXEL_PACK_BUFFER, m_pTexture->textureBytes, nullptr, GL_MAP_READ_BIT | GL_MAP_PERSISTENT_BIT);
-		m_PBOData[index] = glMapBufferRange(GL_PIXEL_PACK_BUFFER, 0, m_pTexture->textureBytes, GL_MAP_READ_BIT | GL_MAP_PERSISTENT_BIT);
+		glBufferStorage(GL_PIXEL_PACK_BUFFER, m_pTexture->textureBytes, nullptr, GL_MAP_READ_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT);
+		m_PBOData[index] = glMapBufferRange(GL_PIXEL_PACK_BUFFER, 0, m_pTexture->textureBytes, GL_MAP_READ_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT);
 	}
 
 	m_bindBuffer->bind(Parameter(GL_PIXEL_PACK_BUFFER), ObjectHandle::null);
@@ -59,18 +59,17 @@ u8 * ColorBufferReaderWithBufferStorage::readPixels(s32 _x0, s32 _y0, u32 _width
 	m_bindBuffer->bind(Parameter(GL_PIXEL_PACK_BUFFER), ObjectHandle(m_PBO[m_curIndex]));
 	glReadPixels(_x0, _y0, m_pTexture->realWidth, _height, colorFormat, colorType, 0);
 
-	//Setup a fence sync object so that we know when glReadPixels completes
-	glMemoryBarrier(GL_CLIENT_MAPPED_BUFFER_BARRIER_BIT);
-	m_fence[m_curIndex] = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
-
 	if (!_sync) {
+		//Setup a fence sync object so that we know when glReadPixels completes
+		m_fence[m_curIndex] = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
 		m_curIndex = (m_curIndex + 1) % _numPBO;
-	}
-
-	//Wait for glReadPixels to complete for the currently selected PBO
-	if (m_fence[m_curIndex] != 0) {
-		glClientWaitSync(m_fence[m_curIndex], 0, 1e8);
-		glDeleteSync(m_fence[m_curIndex]);
+		//Wait for glReadPixels to complete for the currently selected PBO
+		if (m_fence[m_curIndex] != 0) {
+			glClientWaitSync(m_fence[m_curIndex], 0, 1e8);
+			glDeleteSync(m_fence[m_curIndex]);
+		}
+	} else {
+		glFinish();
 	}
 
 	GLubyte* pixelData = reinterpret_cast<GLubyte*>(m_PBOData[m_curIndex]);

@@ -29,6 +29,8 @@ void GLInfo::init() {
 		renderer = Renderer::Adreno;
 	else if (strstr((const char*)strRenderer, "VideoCore IV") != nullptr)
 		renderer = Renderer::VideoCore;
+	else if (strstr((const char*)strRenderer, "Intel") != nullptr)
+		renderer = Renderer::Intel;
 	LOG(LOG_VERBOSE, "OpenGL renderer: %s\n", strRenderer);
 
 	int numericVersion = majorVersion * 10 + minorVersion;

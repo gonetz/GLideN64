@@ -33,7 +33,7 @@ void ColorBufferReaderWithPixelBuffer::_initBuffers()
 
 	// Initialize Pixel Buffer Objects
 	for (u32 i = 0; i < _numPBO; ++i) {
-		glBindBuffer(GL_PIXEL_PACK_BUFFER, m_PBO[i]);
+		m_bindBuffer->bind(Parameter(GL_PIXEL_PACK_BUFFER), ObjectHandle(m_PBO[i]));
 		glBufferData(GL_PIXEL_PACK_BUFFER, m_pTexture->textureBytes, nullptr, GL_DYNAMIC_READ);
 	}
 	m_bindBuffer->bind(Parameter(GL_PIXEL_PACK_BUFFER), ObjectHandle::null);
@@ -58,11 +58,11 @@ u8 * ColorBufferReaderWithPixelBuffer::readPixels(s32 _x0, s32 _y0, u32 _width, 
 	if (!_sync) {
 		m_curIndex ^= 1;
 		const u32 nextIndex = m_curIndex ^ 1;
-		glBindBuffer(GL_PIXEL_PACK_BUFFER, m_PBO[m_curIndex]);
+		m_bindBuffer->bind(Parameter(GL_PIXEL_PACK_BUFFER), ObjectHandle(m_PBO[m_curIndex]));
 		glReadPixels(_x0, _y0, m_pTexture->realWidth, _height, colorFormat, colorType, 0);
-		glBindBuffer(GL_PIXEL_PACK_BUFFER, m_PBO[nextIndex]);
+		m_bindBuffer->bind(Parameter(GL_PIXEL_PACK_BUFFER), ObjectHandle(m_PBO[nextIndex]));
 	} else {
-		glBindBuffer(GL_PIXEL_PACK_BUFFER, m_PBO[_numPBO - 1]);
+		m_bindBuffer->bind(Parameter(GL_PIXEL_PACK_BUFFER), ObjectHandle(m_PBO[_numPBO -1]));
 		glReadPixels(_x0, _y0, m_pTexture->realWidth, _height, colorFormat, colorType, 0);
 	}
 
