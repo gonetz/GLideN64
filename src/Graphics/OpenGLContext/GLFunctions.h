@@ -67,6 +67,7 @@
 #define glActiveTexture(...) CHECKED_GL_FUNCTION(g_glActiveTexture, __VA_ARGS__)
 #define glBlendColor(...) CHECKED_GL_FUNCTION(g_glBlendColor, __VA_ARGS__)
 #define glReadBuffer(...) CHECKED_GL_FUNCTION(g_glReadBuffer, __VA_ARGS__)
+#define glFinish(...) CHECKED_GL_FUNCTION(g_glFinish, __VA_ARGS__)
 
 extern PFNGLBLENDFUNCPROC g_glBlendFunc;
 extern PFNGLPIXELSTOREIPROC g_glPixelStorei;
@@ -98,6 +99,7 @@ extern PFNGLTEXPARAMETERFPROC g_glTexParameterf;
 extern PFNGLACTIVETEXTUREPROC g_glActiveTexture;
 extern PFNGLBLENDCOLORPROC g_glBlendColor;
 extern PFNGLREADBUFFERPROC g_glReadBuffer;
+extern PFNGLFINISHPROC g_glFinish;
 #endif
 
 #ifdef OS_WINDOWS
