@@ -1622,6 +1622,10 @@ void gSPModifyVertex( u32 _vtx, u32 _where, u32 _val )
 				vtx0.y *= vtx0.w;
 			} else {
 				vtx0.modify |= MODIFY_XY;
+				if (vtx0.w == 0.0f) {
+					vtx0.w = 1.0f;
+					vtx0.clip &= ~(CLIP_W);
+				}
 			}
 			vtx0.clip &= ~(CLIP_POSX | CLIP_NEGX | CLIP_POSY | CLIP_NEGY);
 		break;
@@ -1973,16 +1977,26 @@ struct ObjCoordinates
 	{
 		const f32 frameX = _FIXED2FLOAT(_pObjScaleBg->frameX, 2);
 		const f32 frameY = _FIXED2FLOAT(_pObjScaleBg->frameY, 2);
-		const f32 frameW = _FIXED2FLOAT(_pObjScaleBg->frameW, 2);
-		const f32 frameH = _FIXED2FLOAT(_pObjScaleBg->frameH, 2);
 		const f32 imageX = gSP.bgImage.imageX;
 		const f32 imageY = gSP.bgImage.imageY;
-		const f32 imageW = (f32)(_pObjScaleBg->imageW>>2);
-		const f32 imageH = (f32)(_pObjScaleBg->imageH >> 2);
-//		const f32 imageW = (f32)gSP.bgImage.width;
-//		const f32 imageH = (f32)gSP.bgImage.height;
 		const f32 scaleW = gSP.bgImage.scaleW;
 		const f32 scaleH = gSP.bgImage.scaleH;
+
+		f32 frameW = _FIXED2FLOAT(_pObjScaleBg->frameW, 2);
+		f32 frameH = _FIXED2FLOAT(_pObjScaleBg->frameH, 2);
+		f32 imageW = (f32)(_pObjScaleBg->imageW>>2);
+		f32 imageH = (f32)(_pObjScaleBg->imageH >> 2);
+//		const f32 imageW = (f32)gSP.bgImage.width;
+//		const f32 imageH = (f32)gSP.bgImage.height;
+
+		if (u32(imageW) == 512 && (config.generalEmulation.hacks & hack_RE2) != 0) {
+			const f32 width = f32(*REG.VI_WIDTH);
+			const f32 scale = imageW / width;
+			imageW = width;
+			frameW = width;
+			imageH *= scale;
+			frameH *= scale;
+		}
 
 		ulx = frameX;
 		uly = frameY;
@@ -2198,9 +2212,14 @@ void _loadBGImage(const uObjScaleBg * _bgInfo, bool _loadScale)
 	gSP.bgImage.address = RSP_SegmentToPhysical( _bgInfo->imagePtr );
 
 	const u32 imageW = _bgInfo->imageW >> 2;
-	gSP.bgImage.width = imageW - imageW%2;
 	const u32 imageH = _bgInfo->imageH >> 2;
-	gSP.bgImage.height = imageH - imageH%2;
+	if (imageW == 512 && (config.generalEmulation.hacks & hack_RE2) != 0) {
+		gSP.bgImage.width = *REG.VI_WIDTH;
+		gSP.bgImage.height = (imageH * imageW) / gSP.bgImage.width;
+	} else {
+		gSP.bgImage.width = imageW - imageW%2;
+		gSP.bgImage.height = imageH - imageH%2;
+	}
 	gSP.bgImage.format = _bgInfo->imageFmt;
 	gSP.bgImage.size = _bgInfo->imageSiz;
 	gSP.bgImage.palette = _bgInfo->imagePal;
@@ -2221,7 +2240,7 @@ void _loadBGImage(const uObjScaleBg * _bgInfo, bool _loadScale)
 				return;
 			}
 
-			if (!pBuffer->isValid(false)) {
+			if (pBuffer->m_cfb || !pBuffer->isValid(false)) {
 				frameBufferList().removeBuffer(pBuffer->m_startAddress);
 				return;
 			}

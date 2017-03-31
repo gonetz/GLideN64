@@ -1259,12 +1259,27 @@ public:
 					"}						\n"
 				;
 			} else {
-				m_part =
-					"void writeDepth()						        		\n"
-					"{														\n"
-					"  gl_FragDepth = clamp((gl_FragCoord.z * 2.0 - 1.0) * uDepthScale.s + uDepthScale.t, 0.0, 1.0);	\n"
-					"}														\n"
-				;
+				if (_glinfo.imageTextures && (config.generalEmulation.hacks & hack_RE2) != 0) {
+					m_part =
+						"layout(binding = 0, r32ui) highp uniform readonly uimage2D uZlutImage;\n"
+						"void writeDepth()						        													\n"
+						"{																									\n"
+						"  gl_FragDepth = clamp((gl_FragCoord.z * 2.0 - 1.0) * uDepthScale.s + uDepthScale.t, 0.0, 1.0);	\n"
+						"  highp int iZ = gl_FragDepth > 0.999 ? 262143 : int(floor(gl_FragDepth * 262143.0));				\n"
+						"  mediump int y0 = clamp(iZ/512, 0, 511);															\n"
+						"  mediump int x0 = iZ - 512*y0;																	\n"
+						"  highp uint iN64z = imageLoad(uZlutImage,ivec2(x0,y0)).r;											\n"
+						"  gl_FragDepth = clamp(float(iN64z)/65532.0, 0.0, 1.0);											\n"
+						"}																									\n"
+						;
+				} else {
+					m_part =
+						"void writeDepth()						        		\n"
+						"{														\n"
+						"  gl_FragDepth = clamp((gl_FragCoord.z * 2.0 - 1.0) * uDepthScale.s + uDepthScale.t, 0.0, 1.0);	\n"
+						"}														\n"
+						;
+				}
 			}
 		}
 	}

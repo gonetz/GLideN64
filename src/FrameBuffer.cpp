@@ -547,6 +547,9 @@ void FrameBufferList::saveBuffer(u32 _address, u16 _format, u16 _size, u16 _widt
 	if (_width > 640)
 		return;
 
+	if (_width == 512 && (config.generalEmulation.hacks & hack_RE2) != 0)
+		_width = *REG.VI_WIDTH;
+
 	if (config.frameBufferEmulation.enable == 0) {
 		if (m_list.empty())
 			_createScreenSizeBuffer();

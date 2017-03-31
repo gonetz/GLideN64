@@ -261,6 +261,9 @@ void RSP_Init()
 		config.generalEmulation.hacks |= hack_Snap;
 	else if (strstr(RSP.romname, (const char *)"MARIOKART64") != nullptr)
 		config.generalEmulation.hacks |= hack_MK64;
+	else if (strstr(RSP.romname, (const char *)"Resident Evil II") ||
+			 strstr(RSP.romname, (const char *)"BioHazard II"))
+		config.generalEmulation.hacks |= hack_RE2 | hack_ModifyVertexXyInShader | hack_LoadDepthTextures;
 
 	api().FindPluginPath(RSP.pluginpath);
 

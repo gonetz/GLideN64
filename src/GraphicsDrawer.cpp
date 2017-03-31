@@ -185,6 +185,12 @@ void GraphicsDrawer::updateScissor(FrameBuffer * _pBuffer) const
 	f32 SX1 = gDP.scissor.lrx;
 	f32 SY0 = gDP.scissor.uly;
 	f32 SY1 = gDP.scissor.lry;
+
+	if (u32(SX1) == 512 && (config.generalEmulation.hacks & hack_RE2) != 0) {
+		SX1 = f32(*REG.VI_WIDTH);
+		SY1 *= 512.0f / SX1;
+	}
+
 	if (_needAdjustCoordinate(wnd))
 		_adjustScissorX(SX0, SX1, wnd.getAdjustScale());
 

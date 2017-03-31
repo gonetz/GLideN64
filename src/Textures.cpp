@@ -846,6 +846,13 @@ void TextureCache::_loadBackground(CachedTexture *pTexture)
 		}
 	}
 
+	if ((config.generalEmulation.hacks&hack_LoadDepthTextures) != 0 && gDP.colorImage.address == gDP.depthImageAddress) {
+		_loadDepthTexture(pTexture, (u16*)pDest);
+		free(pDest);
+		free(pSwapped);
+		return;
+	}
+
 	bool bLoaded = false;
 	if ((config.textureFilter.txEnhancementMode | config.textureFilter.txFilterMode) != 0 &&
 			config.textureFilter.txFilterIgnoreBG == 0 &&
