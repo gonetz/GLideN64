@@ -135,7 +135,7 @@ void RSP_SetDefaultState()
 	gDP.loadTile = &gDP.tiles[7];
 	gSP.textureTile[0] = &gDP.tiles[0];
 	gSP.textureTile[1] = &gDP.tiles[1];
-	gSP.lookat[0].y = gSP.lookat[1].x = 1.0f;
+	gSP.lookat.xyz[0][Y] = gSP.lookat.xyz[1][X] = 1.0f;
 	gSP.lookatEnable = true;
 
 	gSP.objMatrix.A = 1.0f;
