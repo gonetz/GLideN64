@@ -277,10 +277,13 @@ void DisplayWindowWindows::_readScreen(void **_pDest, long *_pWidth, long *_pHei
 		return;
 
 #ifndef GLESX
-	const GLenum format = GL_BGR_EXT;
+	GLint oldMode;
+	glGetIntegerv(GL_READ_BUFFER, &oldMode);
+	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
 	glReadBuffer(GL_FRONT);
+	glReadPixels(0, m_heightOffset, m_width, m_height, GL_BGR_EXT, GL_UNSIGNED_BYTE, *_pDest);
+	glReadBuffer(oldMode);
 #else
-	const GLenum format = GL_RGB;
+	glReadPixels(0, m_heightOffset, m_width, m_height, GL_RGB, GL_UNSIGNED_BYTE, *_pDest);
 #endif
-	glReadPixels(0, m_heightOffset, m_width, m_height, format, GL_UNSIGNED_BYTE, *_pDest);
 }
