@@ -30,6 +30,9 @@
 #define MODIFY_RGBA	0xFF000000
 #define MODIFY_ALL	0xFFFFFFFF
 
+enum Component { R, G, B };
+enum Axis { X ,Y, Z, W };
+
 struct SPVertex
 {
 	f32 x, y, z, w;
@@ -41,15 +44,6 @@ struct SPVertex
 	u8 HWLight;
 	u8 clip;
 	s16 flag;
-};
-
-struct SPLight
-{
-	f32 r, g, b;
-	f32 x, y, z;
-	f32 ix, iy, iz;
-	f32 posx, posy, posz, posw;
-	f32 ca, la, qa;
 };
 
 struct gSPInfo
@@ -76,8 +70,24 @@ struct gSPInfo
 	u32 vertexColorBase;
 	u32 vertexi;
 
-	SPLight lights[12];
-	SPLight lookat[2];
+	struct
+	{
+		f32 rgb[12][3];
+		f32 xyz[12][3];
+		f32 i_xyz[12][3];
+		f32 pos_xyzw[12][4];
+		f32 ca[12], la[12], qa[12];
+	} lights;
+
+	struct
+	{
+		f32 rgb[2][3];
+		f32 xyz[2][3];
+		f32 i_xyz[2][3];
+		f32 pos_xyzw[2][4];
+		f32 ca[2], la[2], qa[2];
+	} lookat;
+	
 	s32 numLights;
 	bool lookatEnable;
 

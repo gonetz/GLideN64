@@ -245,27 +245,27 @@ void ZSort_XFMLight( u32 _w0, u32 _w1 )
 */
 
 
-	gSP.lights[gSP.numLights].r = (f32)(((u8*)DMEM)[(addr+0)^3]) * 0.0039215689f;
-	gSP.lights[gSP.numLights].g = (f32)(((u8*)DMEM)[(addr+1)^3]) * 0.0039215689f;
-	gSP.lights[gSP.numLights].b = (f32)(((u8*)DMEM)[(addr+2)^3]) * 0.0039215689f;
+	gSP.lights.rgb[gSP.numLights][R] = (f32)(((u8*)DMEM)[(addr+0)^3]) * 0.0039215689f;
+	gSP.lights.rgb[gSP.numLights][G] = (f32)(((u8*)DMEM)[(addr+1)^3]) * 0.0039215689f;
+	gSP.lights.rgb[gSP.numLights][B] = (f32)(((u8*)DMEM)[(addr+2)^3]) * 0.0039215689f;
 	addr += 8;
 	u32 i;
 	for (i = 0; i < gSP.numLights; ++i)
 	{
-		gSP.lights[i].r = (f32)(((u8*)DMEM)[(addr+0)^3]) * 0.0039215689f;
-		gSP.lights[i].g = (f32)(((u8*)DMEM)[(addr+1)^3]) * 0.0039215689f;
-		gSP.lights[i].b = (f32)(((u8*)DMEM)[(addr+2)^3]) * 0.0039215689f;
-		gSP.lights[i].x = (f32)(((s8*)DMEM)[(addr+8)^3]);
-		gSP.lights[i].y = (f32)(((s8*)DMEM)[(addr+9)^3]);
-		gSP.lights[i].z = (f32)(((s8*)DMEM)[(addr+10)^3]);
+		gSP.lights.rgb[i][R] = (f32)(((u8*)DMEM)[(addr+0)^3]) * 0.0039215689f;
+		gSP.lights.rgb[i][G] = (f32)(((u8*)DMEM)[(addr+1)^3]) * 0.0039215689f;
+		gSP.lights.rgb[i][B] = (f32)(((u8*)DMEM)[(addr+2)^3]) * 0.0039215689f;
+		gSP.lights.xyz[i][X] = (f32)(((s8*)DMEM)[(addr+8)^3]);
+		gSP.lights.xyz[i][Y] = (f32)(((s8*)DMEM)[(addr+9)^3]);
+		gSP.lights.xyz[i][Z] = (f32)(((s8*)DMEM)[(addr+10)^3]);
 		addr += 24;
 	}
 	for (i = 0; i < 2; i++)
 	{
-		gSP.lookat[i].x = (f32)(((s8*)DMEM)[(addr+8)^3]);
-		gSP.lookat[i].y = (f32)(((s8*)DMEM)[(addr+9)^3]);
-		gSP.lookat[i].z = (f32)(((s8*)DMEM)[(addr+10)^3]);
-		gSP.lookatEnable = (i == 0) || (i == 1 && gSP.lookat[i].x != 0 && gSP.lookat[i].y != 0);
+		gSP.lookat.xyz[i][X] = (f32)(((s8*)DMEM)[(addr+8)^3]);
+		gSP.lookat.xyz[i][Y] = (f32)(((s8*)DMEM)[(addr+9)^3]);
+		gSP.lookat.xyz[i][Z] = (f32)(((s8*)DMEM)[(addr+10)^3]);
+		gSP.lookatEnable = (i == 0) || (i == 1 && gSP.lookat.xyz[i][X] != 0 && gSP.lookat.xyz[i][Y] != 0);
 		addr += 24;
 	}
 }
@@ -300,8 +300,8 @@ void ZSort_Lighting( u32 _w0, u32 _w1 )
 		TransformVectorNormalize(fLightDir, gSP.matrix.projection);
 		f32 x, y;
 		if (gSP.lookatEnable) {
-			x = DotProduct(&gSP.lookat[0].x, fLightDir);
-			y = DotProduct(&gSP.lookat[1].x, fLightDir);
+			x = DotProduct(gSP.lookat.xyz[0], fLightDir);
+			y = DotProduct(gSP.lookat.xyz[1], fLightDir);
 		} else {
 			x = fLightDir[0];
 			y = fLightDir[1];
