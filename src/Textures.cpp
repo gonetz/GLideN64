@@ -973,14 +973,6 @@ void TextureCache::_loadDepthTexture(CachedTexture * _pTexture, u16* _pDest)
 	if (!gfxContext.isSupported(SpecialFeatures::FragmentDepthWrite))
 		return;
 
-	const u32 numTexels = _pTexture->realWidth * _pTexture->realHeight;
-	_pTexture->textureBytes = numTexels * sizeof(f32);
-	f32 * pDestF = (f32*)malloc(_pTexture->textureBytes);
-	assert(pDestF != nullptr);
-
-	for (u32 t = 0; t < numTexels; ++t)
-		pDestF[t] = _pDest[t] / 65535.0f;
-
 	Context::InitTextureParams params;
 	params.handle = _pTexture->name;
 	params.mipMapLevel = 0;
@@ -989,10 +981,9 @@ void TextureCache::_loadDepthTexture(CachedTexture * _pTexture, u16* _pDest)
 	params.height = _pTexture->realHeight;
 	params.internalFormat = internalcolorFormat::RED;
 	params.format = colorFormat::RED;
-	params.dataType = datatype::FLOAT;
-	params.data = pDestF;
+	params.dataType = datatype::UNSIGNED_SHORT;
+	params.data = _pDest;
 	gfxContext.init2DTexture(params);
-	free(pDestF);
 }
 
 /*
