@@ -2,6 +2,7 @@
 #define TEXTURES_H
 
 #include <map>
+#include <unordered_map>
 #include <list>
 
 #include "CRC.h"
@@ -84,7 +85,7 @@ private:
 	void _getTextureDestData(CachedTexture& tmptex, u32* pDest, graphics::Parameter glInternalFormat, GetTexelFunc GetTexel, u16* pLine);
 
 	typedef std::list<CachedTexture> Textures;
-	typedef std::map<u32, Textures::iterator> Texture_Locations;
+	typedef std::unordered_map<u32, Textures::iterator> Texture_Locations;
 	typedef std::map<graphics::ObjectHandle, CachedTexture> FBTextures;
 	Textures m_textures;
 	Texture_Locations m_lruTextureLocations;
