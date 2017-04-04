@@ -23,7 +23,7 @@ MY_LOCAL_SRC_FILES :=                               \
     $(SRCDIR)/CommonPluginAPI.cpp                   \
     $(SRCDIR)/Config.cpp                            \
     $(SRCDIR)/convert.cpp                           \
-    $(SRCDIR)/CRC32.cpp                             \
+    $(SRCDIR)/CRC_OPT.cpp                           \
     $(SRCDIR)/DepthBuffer.cpp                       \
     $(SRCDIR)/DisplayWindow.cpp                     \
     $(SRCDIR)/F3D.cpp                               \
@@ -105,6 +105,7 @@ MY_LOCAL_SRC_FILES :=                               \
     $(SRCDIR)/Graphics/OpenGLContext/mupen64plus/mupen64plus_DisplayWindow.cpp     \
     $(SRCDIR)/Graphics/OpenGLContext/GraphicBufferPrivateApi/GraphicBuffer.cpp     \
     $(SRCDIR)/Graphics/OpenGLContext/GraphicBufferPrivateApi/libhardware.cpp       \
+    $(SRCDIR)/xxHash/xxhash.c                                                      \
 
 MY_LOCAL_CFLAGS :=      \
     $(COMMON_CFLAGS)    \

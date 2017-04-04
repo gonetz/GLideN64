@@ -225,6 +225,14 @@ if(CRC_ARMV8)
   list(APPEND GLideN64_SOURCES
 	CRC32_ARMV8.cpp
   )
+elseif(CRC_OPT)
+  list(REMOVE_ITEM GLideN64_SOURCES
+        CRC32.cpp
+  )
+  list(APPEND GLideN64_SOURCES
+        CRC_OPT.cpp
+        xxHash/xxhash.c
+  )
 endif(CRC_ARMV8)
 
 if(NEON_OPT)
