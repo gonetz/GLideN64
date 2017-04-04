@@ -88,16 +88,16 @@ End:
 #endif // WIN32_ASM
 }
 
-void InverseTransformVectorNormalize2x(float src0[3], float src1[3], float dst0[3], float dst1[3], float mtx[4][4] )
+void InverseTransformVectorNormalize2x(float src[2][3], float dst[2][3], float mtx[4][4] )
 {
-	InverseTransformVectorNormalize(src0, dst0, mtx);
-	InverseTransformVectorNormalize(src1, dst1, mtx);
+	InverseTransformVectorNormalize((float(*))src[0], (float(*))dst[0], mtx);
+	InverseTransformVectorNormalize((float(*))src[1], (float(*))dst[1], mtx);
 }
 
-void InverseTransformVectorNormalize4x(float src0[3], float src1[3],float src2[3], float src3[3], float dst0[3], float dst1[3], float dst2[3], float dst3[3], float mtx[4][4] )
+void InverseTransformVectorNormalize4x(float src[4][3], float dst[4][3], float mtx[4][4] )
 {
-	InverseTransformVectorNormalize(src0, dst0, mtx);
-	InverseTransformVectorNormalize(src1, dst1, mtx);
-	InverseTransformVectorNormalize(src2, dst2, mtx);
-	InverseTransformVectorNormalize(src3, dst3, mtx);
+	InverseTransformVectorNormalize((float(*))src[0], (float(*))dst[0], mtx);
+	InverseTransformVectorNormalize((float(*))src[1], (float(*))dst[1], mtx);
+	InverseTransformVectorNormalize((float(*))src[2], (float(*))dst[2], mtx);
+	InverseTransformVectorNormalize((float(*))src[3], (float(*))dst[3], mtx);
 }

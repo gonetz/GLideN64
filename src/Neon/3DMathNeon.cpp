@@ -140,142 +140,98 @@ void Normalize(float v[3])
     );
 }
 
-void InverseTransformVectorNormalize2x(float src0[3], float src1[3], float dst0[3], float dst1[3], float mtx[4][4] )
+void InverseTransformVectorNormalize2x(float src[2][3], float dst[2][3], float mtx[4][4] )
 {
     asm volatile (
-    // Load src0
-    "vld3.32        {d0[0],d1[0],d2[0]}, [%1]     \n\t"
-    // Load src1
-    "vld3.32        {d0[1],d1[1],d2[1]}, [%3]     \n\t"
+    // Load src
+    "vld3.32        {d0,d1,d2}, [%1]              \n\t"    // load vector 0-1
     
     // Load mtx
-    "vld4.32        {d16, d18, d20, d22}, [%0]!   \n\t"
-    "vld4.32        {d17, d19, d21, d23}, [%0]    \n\t"
+    "vld1.32        {d6-d9}, [%0]!                \n\t"    // load row 0-1
+    "vld1.32        {d10-d11}, [%0]               \n\t"    // load row 2
     
     // Multiply and add
-    "vmul.f32       q2, q8, d0[0]                 \n\t"    //q2 =  q8*d0[0]
-    "vmul.f32       q5, q8, d0[1]                 \n\t"    //q5 =  q8*d0[1]
-    "vmla.f32       q2, q9, d1[0]                 \n\t"    //q2 += q9*d1[0]
-    "vmla.f32       q5, q9, d1[1]                 \n\t"    //q5 += q9*d1[1]
-    "vmla.f32       q2, q10, d2[0]                \n\t"    //q2 += q10*d2[0]
-    "vmla.f32       q5, q10, d2[1]                \n\t"    //q5 += q10*d2[1]
+    "vmul.f32       d3, d0, d6[0]                 \n\t"    //dst[0] = v[0]*mtx[0][0]
+    "vmul.f32       d4, d0, d8[0]                 \n\t"    //dst[1] = v[0]*mtx[1][0]
+    "vmul.f32       d5, d0, d10[0]                \n\t"    //dst[2] = v[0]*mtx[2][0]
+    "vmla.f32       d3, d1, d6[1]                 \n\t"    //dst[0] = v[1]*mtx[0][1]
+    "vmla.f32       d4, d1, d8[1]                 \n\t"    //dst[1] += v[1]*mtx[1][1]
+    "vmla.f32       d5, d1, d10[1]                \n\t"    //dst[2] += v[1]*mtx[2][1]
+    "vmla.f32       d3, d2, d7[0]                 \n\t"    //dst[0] += v[2]*mtx[0][2]
+    "vmla.f32       d4, d2, d9[0]                 \n\t"    //dst[1] += v[2]*mtx[1][2]
+    "vmla.f32       d5, d2, d11[0]                \n\t"    //dst[2] += v[2]*mtx[2][2]
 
     // Normalize 2x
-    "vmul.f32       d0, d4, d4                    \n\t"    //d0 =  d4*d4
-    "vmul.f32       d1, d10, d10                  \n\t"    //d1 =  d10*d10
-    "vpadd.f32      d0, d0, d0                    \n\t"    //d0 =  d0[0] + d0[1]
-    "vpadd.f32      d1, d1, d1                    \n\t"    //d1 =  d1[0] + d1[1]
-    "vmla.f32       d0, d5, d5                    \n\t"    //d0 += d5*d5
-    "vmla.f32       d1, d11, d11                  \n\t"    //d1 += d11*d11
+    "vmul.f32       d0, d3, d3                    \n\t"    //len = dst[0]*dst[0]
+    "vmla.f32       d0, d4, d4                    \n\t"    //len += dst[1]*dst[1]
+    "vmla.f32       d0, d5, d5                    \n\t"    //len += dst[2]*dst[2]
 
-    "vzip.32        d0, d1                        \n\t"    //d0[1] = d7[1];d7[1] = d0[1]
     "vmov.f32       d1, d0                        \n\t"    //d1 = d0
     "vrsqrte.f32    d0, d0                        \n\t"    //d0 = ~ 1.0 / sqrt(d0)
     "vmul.f32       d2, d0, d1                    \n\t"    //d2 = d0 * d1
-    "vrsqrts.f32    d3, d2, d0                    \n\t"    //d3 = (3 - d0 * d2) / 2
-    "vmul.f32       d0, d0, d3                    \n\t"    //d0 = d0 * d3
+    "vrsqrts.f32    d6, d2, d0                    \n\t"    //d3 = (3 - d0 * d2) / 2
+    "vmul.f32       d0, d0, d6                    \n\t"    //d0 = d0 * d3
     "vmul.f32       d2, d0, d1                    \n\t"    //d2 = d0 * d1
-    "vrsqrts.f32    d3, d2, d0                    \n\t"    //d3 = (3 - d0 * d3) / 2
-    "vmul.f32       d0, d0, d3                    \n\t"    //d0 = d0 * d3
+    "vrsqrts.f32    d6, d2, d0                    \n\t"    //d3 = (3 - d0 * d3) / 2
+    "vmul.f32       d0, d0, d6                    \n\t"    //d0 = d0 * d3
 
-    "vmul.f32       q2, q2, d0[0]                 \n\t"    //q2 = q2*d0[0]
-    "vmul.f32       q5, q5, d0[1]                 \n\t"    //q5 = q5*d0[1]
+    "vmul.f32       d3, d3, d0                    \n\t"    //dst[0] = dst[0]*(1/len)
+    "vmul.f32       d4, d4, d0                    \n\t"    //dst[1] = dst[1]*(1/len)
+    "vmul.f32       d5, d5, d0                    \n\t"    //dst[2] = dst[2]*(1/len)
 
-    // Store dst0
-    "vst1.32        {d4}, [%2]!                   \n\t"    //dst = d4
-    "vst1.32        {d5[0]}, [%2]                 \n\t"    //dst += d5[0]
-    // Store dst1
-    "vst1.32        {d10}, [%4]!                  \n\t"    //dst = d10
-    "vst1.32        {d11[0]}, [%4]                \n\t"    //dst += d11[0]
-    : "+r"(mtx), "+r"(src0), "+r"(dst0), "+r"(src1), "+r"(dst1)  :
-    : "d0","d1","d2","d3","d4","d5","d6","d7","d8","d9","d10","d11","d16","d17","d18","d19",
-    "d20","d21","d22","d23", "memory"
+    // Store two dst vectors
+    "vst3.32        {d3, d4, d5}, [%2]            \n\t"    // store vector 0-1
+    : "+r"(mtx), "+r"(src), "+r"(dst)  :
+    : "d0","d1","d2","d3","d4","d5","d6","d7","d8","d9","d10","d11", "memory"
     );
 }
 
-void InverseTransformVectorNormalize4x(float src0[3], float src1[3],float src2[3], float src3[3], float dst0[3], float dst1[3], float dst2[3], float dst3[3], float mtx[4][4] )
+void InverseTransformVectorNormalize4x(float src[4][3], float dst[4][3], float mtx[4][4] )
 {
     asm volatile (
-    // Load src0
-    "vld3.32        {d0[0],d2[0],d4[0]}, [%1]     \n\t"
-    // Load src1
-    "vld3.32        {d0[1],d2[1],d4[1]}, [%3]     \n\t"
-    // Load src2
-    "vld3.32        {d1[0],d3[0],d5[0]}, [%5]     \n\t"
-    // Load src3
-    "vld3.32        {d1[1],d3[1],d5[1]}, [%7]     \n\t"
+    // Load four src vectors
+    "vld3.32        {d0,d2,d4}, [%1]!            \n\t"    // load vector 0-1
+    "vld3.32        {d1,d3,d5}, [%1]             \n\t"    // load vector 2-3
     
     // Load mtx
-    "vld4.32        {d16, d18, d20, d22}, [%0]!   \n\t"
-    "vld4.32        {d17, d19, d21, d23}, [%0]    \n\t"
+    "vld1.32        {d6-d9}, [%0]!               \n\t"    // load row 0-1
+    "vld1.32        {d10-d11}, [%0]              \n\t"    // load row 2
     
     // Multiply and add
-    "vmul.f32       q3, q8, d0[0]                 \n\t"    //q3 =  q8*d0[0]
-    "vmul.f32       q4, q8, d0[1]                 \n\t"    //q4 =  q8*d0[1]
-    "vmul.f32       q5, q8, d1[0]                 \n\t"    //q5 =  q8*d1[0]
-    "vmul.f32       q6, q8, d1[1]                 \n\t"    //q6 =  q8*d1[1]
-    "vmla.f32       q3, q9, d2[0]                 \n\t"    //q3 += q9*d2[0]
-    "vmla.f32       q4, q9, d2[1]                 \n\t"    //q4 += q9*d2[1]
-    "vmla.f32       q5, q9, d3[0]                 \n\t"    //q5 += q9*d3[0]
-    "vmla.f32       q6, q9, d3[1]                 \n\t"    //q6 += q9*d3[1]
-    "vmla.f32       q3, q10, d4[0]                \n\t"    //q3 += q10*d4[0]
-    "vmla.f32       q4, q10, d4[1]                \n\t"    //q4 += q10*d4[1]
-    "vmla.f32       q5, q10, d5[0]                \n\t"    //q5 += q10*d5[0]
-    "vmla.f32       q6, q10, d5[1]                \n\t"    //q6 += q10*d5[1]
+    "vmul.f32       q8, q0, d6[0]                \n\t"    //dst[0] = v[0]*mtx[0][0]
+    "vmul.f32       q9, q0, d8[0]                \n\t"    //dst[1] = v[0]*mtx[1][0]
+    "vmul.f32       q10, q0, d10[0]              \n\t"    //dst[2] = v[0]*mtx[2][0]
+    "vmla.f32       q8, q1, d6[1]                \n\t"    //dst[0] += v[1]*mtx[0][1]
+    "vmla.f32       q9, q1, d8[1]                \n\t"    //dst[1] += v[1]*mtx[1][1]
+    "vmla.f32       q10, q1, d10[1]              \n\t"    //dst[2] += v[1]*mtx[2][1]
+    "vmla.f32       q8, q2, d7[0]                \n\t"    //dst[0] += v[0]*mtx[2][1]
+    "vmla.f32       q9, q2, d9[0]                \n\t"    //dst[1] += v[2]*mtx[2][1]
+    "vmla.f32       q10, q2, d11[0]              \n\t"    //dst[2] += v[2]*mtx[2][2]
 
     // Normalize 4x
-    "vmul.f32       d0, d6, d6                    \n\t"    //d0 =  d6*d6
-    "vmul.f32       d1, d8, d8                    \n\t"    //d1 =  d8*d8
-    "vmul.f32       d2, d10, d10                  \n\t"    //d2 =  d10*d10
-    "vmul.f32       d3, d12, d12                  \n\t"    //d3 =  d12*d12
-    "vpadd.f32      d0, d0, d0                    \n\t"    //d0 =  d0[0] + d0[1]
-    "vpadd.f32      d1, d1, d1                    \n\t"    //d1 =  d1[0] + d1[1]
-    "vpadd.f32      d2, d2, d2                    \n\t"    //d2 =  d2[0] + d2[1]
-    "vpadd.f32      d3, d3, d3                    \n\t"    //d3 =  d3[0] + d3[1]
-    "vmla.f32       d0, d7, d7                    \n\t"    //d0 += d7*d7
-    "vmla.f32       d1, d9, d9                    \n\t"    //d1 += d9*d9
-    "vmla.f32       d2, d11, d11                  \n\t"    //d2 += d11*d11
-    "vmla.f32       d3, d13, d13                  \n\t"    //d3 += d13*d13
+    "vmul.f32       q0, q8, q8                   \n\t"    //len = dst[0]*dst[0]
+    "vmla.f32       q0, q9, q9                   \n\t"    //len += dst[1]*dst[1]
+    "vmla.f32       q0, q10, q10                 \n\t"    //len += dst[2]*dst[2]
 
-    "vzip.32        d0, d1                        \n\t"    //d0[1] = d7[1];d7[1] = d0[1]
-    "vzip.32        d2, d3                        \n\t"    //d2[1] = d3[1];d3[1] = d2[1]
-    "vmov.f32       d1, d0                        \n\t"    //d1 = d0
-    "vmov.f32       d3, d2                        \n\t"    //d3 = d2
-    "vrsqrte.f32    d0, d0                        \n\t"    //d0 = ~ 1.0 / sqrt(d0)
-    "vrsqrte.f32    d2, d2                        \n\t"    //d2 = ~ 1.0 / sqrt(d2)
-    "vmul.f32       d14, d0, d1                   \n\t"    //d2 = d0 * d1
-    "vmul.f32       d16, d2, d3                   \n\t"    //d2 = d2 * d3
-    "vrsqrts.f32    d15, d14, d0                  \n\t"    //d3 = (3 - d0 * d2) / 2
-    "vrsqrts.f32    d17, d16, d2                  \n\t"    //d17 = (3 - d2 * d16) / 2
-    "vmul.f32       d0, d0, d15                   \n\t"    //d0 = d0 * d15
-    "vmul.f32       d2, d2, d17                   \n\t"    //d2 = d2 * d17
-    "vmul.f32       d14, d0, d1                   \n\t"    //d14 = d0 * d1
-    "vmul.f32       d16, d2, d3                   \n\t"    //d16 = d2 * d3
-    "vrsqrts.f32    d15, d14, d0                  \n\t"    //d15 = (3 - d0 * d14) / 2
-    "vrsqrts.f32    d17, d16, d2                  \n\t"    //d17 = (3 - d2 * d16) / 2
-    "vmul.f32       d0, d0, d15                   \n\t"    //d0 = d0 * d15
-    "vmul.f32       d2, d2, d17                   \n\t"    //d2 = d2 * d17
+    "vmov.f32       q1, q0                       \n\t"    //d1 = len
+    "vrsqrte.f32    q0, q0                       \n\t"    //q0 = ~ 1.0 / sqrt(q0)
+    "vmul.f32       q7, q0, q1                   \n\t"    //q7 = q0 * q1
+    "vrsqrts.f32    q6, q7, q0                   \n\t"    //q6 = (3 - q0 * q7) / 2
+    "vmul.f32       q0, q0, q6                   \n\t"    //d0 = d0 * d15
+    "vmul.f32       q7, q0, q1                   \n\t"    //q7 = q0 * q1
+    "vrsqrts.f32    q6, q7, q0                   \n\t"    //q6 = (3 - q0 * q7) / 2
+    "vmul.f32       q0, q0, q6                   \n\t"    //q0 = q0 * q6
 
-    "vmul.f32       q3, q3, d0[0]                 \n\t"    //q2 = q2*d0[0]
-    "vmul.f32       q4, q4, d0[1]                 \n\t"    //q2 = q2*d0[0]
-    "vmul.f32       q5, q5, d2[0]                 \n\t"    //q2 = q2*d0[0]
-    "vmul.f32       q6, q6, d2[1]                 \n\t"    //q2 = q2*d0[0]
+    "vmul.f32       q8, q8, q0                   \n\t"    //dst[0] = dst[0]*(1/len)
+    "vmul.f32       q9, q9, q0                   \n\t"    //dst[1] = dst[1]*(1/len)
+    "vmul.f32       q10, q10, q0                 \n\t"    //dst[2] = dst[2]*(1/len)
 
-    // Store dst0
-    "vst1.32        {d6}, [%2]!                   \n\t"    //dst0 = d4
-    "vst1.32        {d7[0]}, [%2]                 \n\t"    //dst0 += d5[0]
-    // Store dst1
-    "vst1.32        {d8}, [%4]!                   \n\t"    //dst1 = d4
-    "vst1.32        {d9[0]}, [%4]                 \n\t"    //dst1 += d5[0]
-    // Store dst2
-    "vst1.32        {d10}, [%6]!                  \n\t"    //dst2 = d4
-    "vst1.32        {d11[0]}, [%6]                \n\t"    //dst2 += d5[0]
-    // Store dst3
-    "vst1.32        {d12}, [%8]!                  \n\t"    //dst3 = d4
-    "vst1.32        {d13[0]}, [%8]                \n\t"    //dst3 += d5[0]
+    // Store four dst vectors
+    "vst3.32        {d16, d18, d20}, [%2]!       \n\t"    // store vector 0-1
+    "vst3.32        {d17, d19, d21}, [%2]        \n\t"    // store vector 2-3
 
-    : "+r"(mtx), "+r"(src0), "+r"(dst0), "+r"(src1), "+r"(dst1), "+r"(src2), "+r"(dst2), "+r"(src3), "+r"(dst3)  :
+    : "+r"(mtx), "+r"(src), "+r"(dst) :
     : "d0","d1","d2","d3","d4","d5","d6","d7","d8","d9","d10","d11","d12","d13","d14","d15","d16","d17","d18","d19",
-    "d20","d21","d22","d23", "memory"
+    "d20","d21", "memory"
     );
 }
