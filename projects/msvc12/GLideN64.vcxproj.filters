@@ -221,9 +221,6 @@
     <ClCompile Include="..\..\src\Performance.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\CRC32.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\Log.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -345,6 +342,12 @@
       <Filter>Source Files\Graphics</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\RSP_LoadMatrixX86.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\CRC_OPT.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\xxHash\xxhash.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -644,6 +647,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\F3DTEXA.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\xxHash\xxhash.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

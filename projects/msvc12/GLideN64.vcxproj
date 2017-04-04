@@ -274,7 +274,7 @@
     <ClCompile Include="..\..\src\common\CommonAPIImpl_common.cpp" />
     <ClCompile Include="..\..\src\Config.cpp" />
     <ClCompile Include="..\..\src\convert.cpp" />
-    <ClCompile Include="..\..\src\CRC32.cpp" />
+    <ClCompile Include="..\..\src\CRC_OPT.cpp" />
     <ClCompile Include="..\..\src\DepthBuffer.cpp" />
     <ClCompile Include="..\..\src\DepthBufferRender\ClipPolygon.cpp" />
     <ClCompile Include="..\..\src\DepthBufferRender\DepthBufferRender.cpp" />
@@ -390,6 +390,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_mupenplus_uniformset|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_mupenplus|Win32'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="..\..\src\xxHash\xxhash.c" />
     <ClCompile Include="..\..\src\ZilmarPluginAPI.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_mupenplus|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_mupenplus_uniformset|Win32'">true</ExcludedFromBuild>
@@ -498,6 +499,7 @@
     <ClInclude Include="..\..\src\S2DEX2.h" />
     <ClInclude Include="..\..\src\windows\GLideN64_windows.h" />
     <ClInclude Include="..\..\src\wst.h" />
+    <ClInclude Include="..\..\src\xxHash\xxhash.h" />
     <ClInclude Include="..\..\src\ZilmarGFX_1_3.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_mupenplus|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_mupenplus_uniformset|Win32'">true</ExcludedFromBuild>
