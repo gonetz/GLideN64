@@ -897,20 +897,18 @@ void gSPLookAt( u32 _l, u32 _n )
 static
 void gSPUpdateLightVectors()
 {
-	s32 count = gSP.numLights;
-	while (count >= 4) {
-		InverseTransformVectorNormalize4x(gSP.lights.xyz[count-1], gSP.lights.xyz[count-2], gSP.lights.xyz[count-3], gSP.lights.xyz[count-4],
-									gSP.lights.i_xyz[count-1], gSP.lights.i_xyz[count-2], gSP.lights.i_xyz[count-3], gSP.lights.i_xyz[count-4],
-									gSP.matrix.modelView[gSP.matrix.modelViewi]);
+	s32 count = gSP.numLights-1;
+	while (count >= 3) {
+		InverseTransformVectorNormalize4x(&gSP.lights.xyz[count-3],&gSP.lights.i_xyz[count-3], 
+					gSP.matrix.modelView[gSP.matrix.modelViewi]);
 		count -= 4;
 	}
-	if (count >= 2){
-		InverseTransformVectorNormalize2x(gSP.lights.xyz[count - 1], gSP.lights.xyz[count - 2],
-									gSP.lights.i_xyz[count - 1], gSP.lights.i_xyz[count - 2],
-									gSP.matrix.modelView[gSP.matrix.modelViewi]);
+	if (count >= 1){
+		InverseTransformVectorNormalize2x(&gSP.lights.xyz[count-1], &gSP.lights.i_xyz[count-1],
+					gSP.matrix.modelView[gSP.matrix.modelViewi]);
 		count -= 2;
 	}
-	if (count == 1)
+	if (count == 0)
 		InverseTransformVectorNormalize(gSP.lights.xyz[0], gSP.lights.i_xyz[0], gSP.matrix.modelView[gSP.matrix.modelViewi]);
 	gSP.changed ^= CHANGED_LIGHT;
 	gSP.changed |= CHANGED_HW_LIGHT;
@@ -920,9 +918,8 @@ static
 void gSPUpdateLookatVectors()
 {
 	if (gSP.lookatEnable) {
-		InverseTransformVectorNormalize2x(gSP.lookat.xyz[0], gSP.lookat.xyz[1],
-									gSP.lookat.i_xyz[0], gSP.lookat.i_xyz[1],
-									gSP.matrix.modelView[gSP.matrix.modelViewi]);
+		InverseTransformVectorNormalize2x(&gSP.lookat.xyz[0], &gSP.lookat.i_xyz[0],
+					gSP.matrix.modelView[gSP.matrix.modelViewi]);
 	}
 	gSP.changed ^= CHANGED_LOOKAT;
 }
