@@ -737,6 +737,10 @@ void FrameBufferList::attachDepthBuffer()
 	if (pCurrent == nullptr)
 		return;
 
+#ifdef VC
+	const GLenum discards[]  = {GL_DEPTH_ATTACHMENT};
+	glDiscardFramebufferEXT(GL_FRAMEBUFFER, 1, discards);
+#endif
 	DepthBuffer * pDepthBuffer = depthBufferList().getCurrent();
 
 	if (pCurrent->m_FBO.isNotNull() && pDepthBuffer != nullptr) {
