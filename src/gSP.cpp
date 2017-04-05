@@ -327,6 +327,12 @@ void gSPProcessVertex4(u32 v)
 			vtx.x = -vtx.x;
 		}
 	}
+	if (gSP.viewport.vscale[1] < 0) {
+		for(int i = 0; i < 4; ++i) {
+			SPVertex & vtx = drawer.getVertex(v+i);
+			vtx.y = -vtx.y;
+		}
+	}
 
 	if (gSP.matrix.billboard)
 		gSPBillboardVertex4(v);
@@ -555,6 +561,8 @@ void gSPProcessVertex(u32 v)
 
 	if (gSP.viewport.vscale[0] < 0)
 		vtx.x = -vtx.x;
+	if (gSP.viewport.vscale[1] < 0)
+		vtx.y = -vtx.y;
 
 	if (gSP.matrix.billboard) {
 		int i = 0;
@@ -740,6 +748,9 @@ void gSPViewport( u32 v )
 	gSP.viewport.vtrans[1] = _FIXED2FLOAT( *(s16*)&RDRAM[address +  8], 2 );
 	gSP.viewport.vtrans[2] = _FIXED2FLOAT( *(s16*)&RDRAM[address + 14], 10 );// * 0.00097847357f;
 	gSP.viewport.vtrans[3] = *(s16*)&RDRAM[address + 12];
+
+	if ((config.generalEmulation.hacks & hack_NegativeViewport) != 0 && gSP.viewport.vscale[1] < 0.0f)
+		gSP.viewport.vscale[1] = -gSP.viewport.vscale[1];
 
 	gSP.viewport.x		= gSP.viewport.vtrans[0] - gSP.viewport.vscale[0];
 	gSP.viewport.y		= gSP.viewport.vtrans[1] - gSP.viewport.vscale[1];
@@ -1609,8 +1620,12 @@ void gSPModifyVertex( u32 _vtx, u32 _where, u32 _val )
 			vtx0.y = _FIXED2FLOAT((s16)_SHIFTR(_val, 0, 16), 2);
 			if ((config.generalEmulation.hacks & hack_ModifyVertexXyInShader) == 0) {
 				vtx0.x = (vtx0.x - gSP.viewport.vtrans[0]) / gSP.viewport.vscale[0];
+				if (gSP.viewport.vscale[0] < 0)
+					vtx0.x = -vtx0.x;
 				vtx0.x *= vtx0.w;
 				vtx0.y = -(vtx0.y - gSP.viewport.vtrans[1]) / gSP.viewport.vscale[1];
+				if (gSP.viewport.vscale[1] < 0)
+					vtx0.y = -vtx0.y;
 				vtx0.y *= vtx0.w;
 			} else {
 				vtx0.modify |= MODIFY_XY;

@@ -240,8 +240,10 @@ void RSP_Init()
 		config.generalEmulation.hacks |= hack_legoRacers;
 	else if (strstr(RSP.romname, (const char *)"Blast") != nullptr)
 		config.generalEmulation.hacks |= hack_blastCorps;
-	else if (strstr(RSP.romname, (const char *)"SPACE INVADERS") != nullptr)
-		config.generalEmulation.hacks |= hack_ignoreVIHeightChange;
+	else if (strstr(RSP.romname, (const char *)"PACHINKO365NICHI") != nullptr ||
+			 strstr(RSP.romname, // Eikou no Saint Andrews (J)
+				(const char *)"\xb4\xb2\xba\xb3\xc9\xbe\xdd\xc4\xb1\xdd\xc4\xde\xd8\xad\xb0\xbd\x00") != nullptr)
+		config.generalEmulation.hacks |= hack_NegativeViewport;
 	else if (strstr(RSP.romname, (const char *)"MASK") != nullptr) // Zelda MM
 		config.generalEmulation.hacks |= hack_ZeldaMM;
 	else if (strstr(RSP.romname, (const char *)"Perfect Dark") != nullptr ||
