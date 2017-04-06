@@ -14,6 +14,8 @@
 #include "ConfigDialog.h"
 #include "FullscreenResolutions.h"
 
+bool init = true;
+
 static
 struct
 {
@@ -589,7 +591,7 @@ void ConfigDialog::on_fontSizeSpinBox_valueChanged(int value)
 
 void ConfigDialog::on_tabWidget_currentChanged(int tab)
 {
-	if (tab == 5) {
+	if (tab == 5 && init) {
 		ui->tabWidget->setCursor(QCursor(Qt::WaitCursor));
 
 		QMap<QString, QStringList> internalFontList;
@@ -622,5 +624,6 @@ void ConfigDialog::on_tabWidget_currentChanged(int tab)
 		}
 
 		ui->tabWidget->setCursor(QCursor(Qt::ArrowCursor));
+		init = false;
 	}
 }
