@@ -2,6 +2,7 @@
 #define CONFIGDIALOG_H
 
 #include <QDialog>
+#include <QTreeWidgetItem>
 
 namespace Ui {
 class ConfigDialog;
@@ -23,8 +24,6 @@ public Q_SLOTS:
 	virtual void accept();
 
 private slots:
-	void on_selectFontButton_clicked();
-
 	void on_PickFontColorButton_clicked();
 
 	void on_buttonBox_clicked(QAbstractButton *button);
@@ -41,6 +40,12 @@ private slots:
 	
 	void on_aliasingSlider_valueChanged(int value);
 
+	void on_fontTreeWidget_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous);
+
+	void on_fontSizeSpinBox_valueChanged(int value);
+
+	void on_tabWidget_currentChanged(int tab);
+
 private:
 	void _init();
 	void _getTranslations(QStringList & _translationFiles) const;
@@ -49,6 +54,7 @@ private:
 	QFont m_font;
 	QColor m_color;
 	bool m_accepted;
+	bool m_fontsInited;
 	QString m_strIniPath;
 };
 

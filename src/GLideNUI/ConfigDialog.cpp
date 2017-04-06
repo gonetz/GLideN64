@@ -1,9 +1,12 @@
 #include <QDir>
+#include <QStandardPaths>
 #include <QFileDialog>
-#include <QFontDialog>
+#include <QFont>
+#include <QFontDatabase>
 #include <QColorDialog>
 #include <QAbstractButton>
 #include <QMessageBox>
+#include <QCursor>
 
 #include "../Config.h"
 #include "ui_configDialog.h"
@@ -231,19 +234,21 @@ void ConfigDialog::_init()
 
 	// OSD settings
 	QString fontName(config.font.name.c_str());
-	m_font = QFont(fontName.left(fontName.indexOf(".ttf")), config.font.size);
-	QString strSize;
-	strSize.setNum(m_font.pointSize());
-	ui->fontNameLabel->setText(m_font.family() + " - " + strSize);
+	ui->fontLineEdit->setText(fontName);
+	m_font = QFont(fontName.left(fontName.indexOf(".ttf")));
+	m_font.setPixelSize(config.font.size);
+
+	ui->fontLineEdit->setHidden(true);
+
+	ui->fontSizeSpinBox->setValue(config.font.size);
 
 	m_color = QColor(config.font.color[0], config.font.color[1], config.font.color[2]);
-	ui->fontPreviewLabel->setFont(m_font);
-	ui->fontColorLabel->setText(m_color.name());
 	QPalette palette;
-	palette.setColor(QPalette::Window, Qt::black);
 	palette.setColor(QPalette::WindowText, m_color);
+	palette.setColor(QPalette::Window, Qt::black);
 	ui->fontPreviewLabel->setAutoFillBackground(true);
 	ui->fontPreviewLabel->setPalette(palette);
+	ui->PickFontColorButton->setStyleSheet(QString("color:") + m_color.name());
 
 	switch (config.onScreenDisplay.pos) {
 	case Config::posTopLeft:
@@ -309,7 +314,8 @@ void ConfigDialog::setIniPath(const QString & _strIniPath)
 ConfigDialog::ConfigDialog(QWidget *parent, Qt::WindowFlags f) :
 QDialog(parent, f),
 ui(new Ui::ConfigDialog),
-m_accepted(false)
+m_accepted(false),
+m_fontsInited(false)
 {
 	ui->setupUi(this);
 	_init();
@@ -442,12 +448,11 @@ void ConfigDialog::accept()
 	config.gammaCorrection.level = ui->gammaLevelSpinBox->value();
 
 	// OSD settings
-	config.font.size = m_font.pointSize();
-	QString fontName = m_font.family() + ".ttf";
+	config.font.size = ui->fontSizeSpinBox->value();
 #ifdef OS_WINDOWS
-	config.font.name = fontName.toLocal8Bit().constData();
+	config.font.name = ui->fontLineEdit->text().toLocal8Bit().constData();
 #else
-	config.font.name = fontName.toStdString();
+	config.font.name = ui->fontLineEdit->text().toStdString();
 #endif
 	config.font.color[0] = m_color.red();
 	config.font.color[1] = m_color.green();
@@ -481,21 +486,6 @@ void ConfigDialog::accept()
 	QDialog::accept();
 }
 
-void ConfigDialog::on_selectFontButton_clicked()
-{
-	bool ok;
-	m_font = QFontDialog::getFont(
-		&ok, m_font, this);
-	if (!ok)
-		return;
-
-	// the user clicked OK and font is set to the font the user selected
-	QString strSize;
-	strSize.setNum(m_font.pointSize());
-	ui->fontNameLabel->setText(m_font.family() + " - " + strSize);
-	ui->fontPreviewLabel->setFont(m_font);
-}
-
 void ConfigDialog::on_PickFontColorButton_clicked()
 {
 	const QColor color = QColorDialog::getColor(m_color, this);
@@ -505,10 +495,11 @@ void ConfigDialog::on_PickFontColorButton_clicked()
 
 	m_color = color;
 	QPalette palette;
-	palette.setColor(QPalette::Window, Qt::black);
 	palette.setColor(QPalette::WindowText, m_color);
-	ui->fontColorLabel->setText(m_color.name());
+	palette.setColor(QPalette::Window, Qt::black);
+	ui->fontPreviewLabel->setAutoFillBackground(true);
 	ui->fontPreviewLabel->setPalette(palette);
+	ui->PickFontColorButton->setStyleSheet(QString("color:") + m_color.name());
 }
 
 void ConfigDialog::on_aliasingSlider_valueChanged(int value)
@@ -577,4 +568,61 @@ void ConfigDialog::on_frameBufferCheckBox_toggled(bool checked)
 
 	ui->readColorChunkCheckBox->setEnabled(checked && ui->fbInfoEnableCheckBox->isChecked());
 	ui->readDepthChunkCheckBox->setEnabled(checked && ui->fbInfoEnableCheckBox->isChecked());
+}
+
+void ConfigDialog::on_fontTreeWidget_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem * /*previous*/)
+{
+	if (current->childCount() > 0) {
+		ui->fontLineEdit->setText(current->child(0)->text(0));
+		m_font.setFamily(current->text(0));
+	} else {
+		ui->fontLineEdit->setText(current->text(0));
+		m_font.setFamily(current->parent()->text(0));
+	}
+	ui->fontPreviewLabel->setFont(m_font);
+}
+
+void ConfigDialog::on_fontSizeSpinBox_valueChanged(int value)
+{
+	m_font.setPixelSize(value);
+	ui->fontPreviewLabel->setFont(m_font);
+}
+
+void ConfigDialog::on_tabWidget_currentChanged(int tab)
+{
+	if (!m_fontsInited && ui->tabWidget->tabText(tab) == "OSD") {
+		ui->tabWidget->setCursor(QCursor(Qt::WaitCursor));
+
+		QMap<QString, QStringList> internalFontList;
+		QDir fontDir(QStandardPaths::locate(QStandardPaths::FontsLocation, QString(), QStandardPaths::LocateDirectory));
+		QStringList fontFilter;
+		fontFilter << "*.ttf";
+		fontDir.setNameFilters(fontFilter);
+		QFileInfoList fontList = fontDir.entryInfoList();
+		for (int i = 0; i < fontList.size(); ++i) {
+			int id = QFontDatabase::addApplicationFont(fontList.at(i).absoluteFilePath());
+			QString fontListFamily = QFontDatabase::applicationFontFamilies(id).at(0);
+			internalFontList[fontListFamily].append(fontList.at(i).fileName());
+		}
+
+		QMap<QString, QStringList>::const_iterator i;
+		for (i = internalFontList.constBegin(); i != internalFontList.constEnd(); ++i) {
+			QTreeWidgetItem *fontFamily = new QTreeWidgetItem(ui->fontTreeWidget);
+			fontFamily->setText(0, i.key());
+			for (int j = 0; j < i.value().size(); ++j) {
+				QTreeWidgetItem *fontFile = new QTreeWidgetItem(fontFamily);
+				fontFile->setText(0, i.value()[j]);
+				if (i.value()[j] == ui->fontLineEdit->text()) {
+					fontFamily->setExpanded(true);
+					fontFile->setSelected(true);
+					ui->fontTreeWidget->scrollToItem(fontFile);
+					m_font.setFamily(i.key());
+					ui->fontPreviewLabel->setFont(m_font);
+				}
+			}
+		}
+
+		ui->tabWidget->setCursor(QCursor(Qt::ArrowCursor));
+		m_fontsInited = true;
+	}
 }
