@@ -3687,7 +3687,7 @@
                  </font>
                 </property>
                 <property name="text">
-                 <string notr="true">████</string>
+                 <string>████</string>
                 </property>
                 <property name="autoDefault">
                  <bool>false</bool>
@@ -4235,11 +4235,11 @@
   </connection>
  </connections>
  <buttongroups>
-  <buttongroup name="fixTexrectCoordsButtonGroup"/>
-  <buttongroup name="factorButtonGroup"/>
-  <buttongroup name="screenshotButtonGroup"/>
   <buttongroup name="aspectButtonGroup"/>
-  <buttongroup name="bloomBlendModeButtonGroup"/>
+  <buttongroup name="screenshotButtonGroup"/>
   <buttongroup name="osdButtonGroup"/>
+  <buttongroup name="factorButtonGroup"/>
+  <buttongroup name="fixTexrectCoordsButtonGroup"/>
+  <buttongroup name="bloomBlendModeButtonGroup"/>
  </buttongroups>
 </ui>
