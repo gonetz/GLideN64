@@ -68,6 +68,8 @@ u32 powof(u32 dim)
 
 void ConfigDialog::_init()
 {
+	init = true;
+
 	// Video settings
 	QStringList windowedModesList;
 	const unsigned int windowedModesCustom = numWindowedModes;
