@@ -3037,13 +3037,13 @@
                <number>9</number>
               </property>
               <property name="topMargin">
-               <number>9</number>
+               <number>6</number>
               </property>
               <property name="rightMargin">
                <number>9</number>
               </property>
               <property name="bottomMargin">
-               <number>9</number>
+               <number>12</number>
               </property>
               <item row="1" column="2">
                <widget class="QPushButton" name="rightPushButton">
@@ -4235,11 +4235,11 @@
   </connection>
  </connections>
  <buttongroups>
-  <buttongroup name="aspectButtonGroup"/>
-  <buttongroup name="screenshotButtonGroup"/>
-  <buttongroup name="osdButtonGroup"/>
-  <buttongroup name="factorButtonGroup"/>
   <buttongroup name="fixTexrectCoordsButtonGroup"/>
+  <buttongroup name="factorButtonGroup"/>
   <buttongroup name="bloomBlendModeButtonGroup"/>
+  <buttongroup name="aspectButtonGroup"/>
+  <buttongroup name="osdButtonGroup"/>
+  <buttongroup name="screenshotButtonGroup"/>
  </buttongroups>
 </ui>
