@@ -90,7 +90,6 @@ void ConfigDialog::_init()
 	fillFullscreenResolutionsList(fullscreenModesList, fullscreenMode, fullscreenRatesList, fullscreenRate);
 	ui->fullScreenResolutionComboBox->insertItems(0, fullscreenModesList);
 	ui->fullScreenResolutionComboBox->setCurrentIndex(fullscreenMode);
-	ui->fullScreenRefreshRateComboBox->insertItems(0, fullscreenRatesList);
 	ui->fullScreenRefreshRateComboBox->setCurrentIndex(fullscreenRate);
 
 	ui->aliasingSlider->setValue(powof(config.video.multisampling));
