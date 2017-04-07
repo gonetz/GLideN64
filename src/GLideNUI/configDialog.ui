@@ -3021,15 +3021,12 @@
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_17">
        <item>
-        <layout class="QVBoxLayout" name="verticalLayout_18">
+        <layout class="QHBoxLayout" name="horizontalLayout_11">
          <property name="spacing">
           <number>16</number>
          </property>
          <item>
-          <layout class="QHBoxLayout" name="horizontalLayout_11">
-           <property name="spacing">
-            <number>16</number>
-           </property>
+          <layout class="QVBoxLayout" name="verticalLayout_28">
            <item>
             <widget class="QGroupBox" name="horizontalGroupBox_9">
              <property name="title">
@@ -3040,13 +3037,13 @@
                <number>9</number>
               </property>
               <property name="topMargin">
-               <number>9</number>
+               <number>6</number>
               </property>
               <property name="rightMargin">
                <number>9</number>
               </property>
               <property name="bottomMargin">
-               <number>9</number>
+               <number>12</number>
               </property>
               <item row="1" column="2">
                <widget class="QPushButton" name="rightPushButton">
@@ -3155,11 +3152,8 @@
                 </attribute>
                </widget>
               </item>
-              <item row="1" column="1">
-               <widget class="QPushButton" name="centerPushButton">
-                <property name="enabled">
-                 <bool>false</bool>
-                </property>
+              <item row="0" column="1">
+               <widget class="QPushButton" name="topPushButton">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -3183,8 +3177,24 @@
                   <pointsize>17</pointsize>
                  </font>
                 </property>
-                <property name="text">
-                 <string/>
+                <property name="accessibleName">
+                 <string>Top</string>
+                </property>
+                <property name="icon">
+                 <iconset resource="icon.qrc">
+                  <normaloff>:/Up.ico</normaloff>:/Up.ico</iconset>
+                </property>
+                <property name="iconSize">
+                 <size>
+                  <width>16</width>
+                  <height>22</height>
+                 </size>
+                </property>
+                <property name="checkable">
+                 <bool>true</bool>
+                </property>
+                <property name="autoExclusive">
+                 <bool>true</bool>
                 </property>
                 <property name="autoDefault">
                  <bool>false</bool>
@@ -3246,71 +3256,6 @@
                 </attribute>
                </widget>
               </item>
-              <item row="0" column="1">
-               <widget class="QPushButton" name="topPushButton">
-                <property name="sizePolicy">
-                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                  <horstretch>0</horstretch>
-                  <verstretch>0</verstretch>
-                 </sizepolicy>
-                </property>
-                <property name="minimumSize">
-                 <size>
-                  <width>42</width>
-                  <height>42</height>
-                 </size>
-                </property>
-                <property name="maximumSize">
-                 <size>
-                  <width>38</width>
-                  <height>38</height>
-                 </size>
-                </property>
-                <property name="font">
-                 <font>
-                  <pointsize>17</pointsize>
-                 </font>
-                </property>
-                <property name="accessibleName">
-                 <string>Top</string>
-                </property>
-                <property name="icon">
-                 <iconset resource="icon.qrc">
-                  <normaloff>:/Up.ico</normaloff>:/Up.ico</iconset>
-                </property>
-                <property name="iconSize">
-                 <size>
-                  <width>16</width>
-                  <height>22</height>
-                 </size>
-                </property>
-                <property name="checkable">
-                 <bool>true</bool>
-                </property>
-                <property name="autoExclusive">
-                 <bool>true</bool>
-                </property>
-                <property name="autoDefault">
-                 <bool>false</bool>
-                </property>
-                <attribute name="buttonGroup">
-                 <string notr="true">osdButtonGroup</string>
-                </attribute>
-               </widget>
-              </item>
-              <item row="3" column="0">
-               <spacer name="verticalSpacer_7">
-                <property name="orientation">
-                 <enum>Qt::Vertical</enum>
-                </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>0</width>
-                  <height>0</height>
-                 </size>
-                </property>
-               </spacer>
-              </item>
               <item row="1" column="0">
                <widget class="QPushButton" name="leftPushButton">
                 <property name="enabled">
@@ -3366,8 +3311,47 @@
                 </attribute>
                </widget>
               </item>
-              <item row="0" column="2">
-               <widget class="QPushButton" name="topRightPushButton">
+              <item row="1" column="1">
+               <widget class="QPushButton" name="centerPushButton">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>42</width>
+                  <height>42</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>38</width>
+                  <height>38</height>
+                 </size>
+                </property>
+                <property name="font">
+                 <font>
+                  <pointsize>17</pointsize>
+                 </font>
+                </property>
+                <property name="text">
+                 <string/>
+                </property>
+                <property name="autoDefault">
+                 <bool>false</bool>
+                </property>
+                <attribute name="buttonGroup">
+                 <string notr="true">osdButtonGroup</string>
+                </attribute>
+               </widget>
+              </item>
+              <item row="0" column="0">
+               <widget class="QPushButton" name="topLeftPushButton">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -3392,11 +3376,11 @@
                  </font>
                 </property>
                 <property name="accessibleName">
-                 <string>Top right</string>
+                 <string>Top left</string>
                 </property>
                 <property name="icon">
                  <iconset resource="icon.qrc">
-                  <normaloff>:/TopRight.ico</normaloff>:/TopRight.ico</iconset>
+                  <normaloff>:/TopLeft.ico</normaloff>:/TopLeft.ico</iconset>
                 </property>
                 <property name="iconSize">
                  <size>
@@ -3470,8 +3454,8 @@
                 </attribute>
                </widget>
               </item>
-              <item row="0" column="0">
-               <widget class="QPushButton" name="topLeftPushButton">
+              <item row="0" column="2">
+               <widget class="QPushButton" name="topRightPushButton">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                   <horstretch>0</horstretch>
@@ -3496,11 +3480,11 @@
                  </font>
                 </property>
                 <property name="accessibleName">
-                 <string>Top left</string>
+                 <string>Top right</string>
                 </property>
                 <property name="icon">
                  <iconset resource="icon.qrc">
-                  <normaloff>:/TopLeft.ico</normaloff>:/TopLeft.ico</iconset>
+                  <normaloff>:/TopRight.ico</normaloff>:/TopRight.ico</iconset>
                 </property>
                 <property name="iconSize">
                  <size>
@@ -3526,134 +3510,192 @@
             </widget>
            </item>
            <item>
-            <widget class="QGroupBox" name="verticalGroupBox_12">
-             <property name="title">
-              <string>Text</string>
+            <layout class="QVBoxLayout" name="verticalLayout_19">
+             <property name="spacing">
+              <number>4</number>
              </property>
-             <layout class="QVBoxLayout" name="verticalLayout_49">
-              <property name="spacing">
-               <number>9</number>
+             <item>
+              <widget class="QCheckBox" name="fpsCheckBox">
+               <property name="text">
+                <string>Display FPS</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QCheckBox" name="visCheckBox">
+               <property name="text">
+                <string>Display VI/s</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QCheckBox" name="percentCheckBox">
+               <property name="text">
+                <string>Display percentage</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <spacer name="verticalSpacer_7">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>0</width>
+               <height>0</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <widget class="QGroupBox" name="verticalGroupBox_12">
+           <property name="title">
+            <string>Font</string>
+           </property>
+           <layout class="QVBoxLayout" name="verticalLayout_49">
+            <property name="leftMargin">
+             <number>9</number>
+            </property>
+            <property name="topMargin">
+             <number>9</number>
+            </property>
+            <property name="rightMargin">
+             <number>9</number>
+            </property>
+            <property name="bottomMargin">
+             <number>9</number>
+            </property>
+            <item>
+             <widget class="QLineEdit" name="fontLineEdit"/>
+            </item>
+            <item>
+             <widget class="QTreeWidget" name="fontTreeWidget">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
               </property>
-              <property name="leftMargin">
-               <number>9</number>
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>160</height>
+               </size>
               </property>
-              <property name="topMargin">
-               <number>9</number>
+              <property name="maximumSize">
+               <size>
+                <width>16777215</width>
+                <height>160</height>
+               </size>
               </property>
-              <property name="rightMargin">
-               <number>9</number>
+              <property name="styleSheet">
+               <string notr="true">font: 8pt &quot;MS Shell Dlg 2&quot;;</string>
               </property>
-              <property name="bottomMargin">
-               <number>9</number>
-              </property>
+              <attribute name="headerVisible">
+               <bool>false</bool>
+              </attribute>
+              <column>
+               <property name="text">
+                <string notr="true">1</string>
+               </property>
+              </column>
+             </widget>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_16">
               <item>
-               <layout class="QGridLayout" name="gridLayout">
-                <property name="spacing">
-                 <number>6</number>
+               <widget class="QLabel" name="fontSizeLabel">
+                <property name="text">
+                 <string extracomment="Font size">Size:</string>
                 </property>
-                <item row="0" column="2">
-                 <widget class="QPushButton" name="selectFontButton">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="toolTip">
-                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This font is used for all on-screen messages. Not all fonts can be used. If messages aren't displayed, try a different font.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                  </property>
-                  <property name="text">
-                   <string>Select...</string>
-                  </property>
-                  <property name="autoDefault">
-                   <bool>false</bool>
-                  </property>
-                 </widget>
-                </item>
-                <item row="1" column="0">
-                 <widget class="QLabel" name="fontColorDescLabel">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="text">
-                   <string>Color:</string>
-                  </property>
-                  <property name="buddy">
-                   <cstring>PickFontColorButton</cstring>
-                  </property>
-                 </widget>
-                </item>
-                <item row="0" column="0">
-                 <widget class="QLabel" name="fontNameDescLabel">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="toolTip">
-                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This font is used for all on-screen messages. Not all fonts can be used. If messages aren't displayed, try a different font.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                  </property>
-                  <property name="text">
-                   <string>Font:</string>
-                  </property>
-                  <property name="buddy">
-                   <cstring>selectFontButton</cstring>
-                  </property>
-                 </widget>
-                </item>
-                <item row="0" column="1">
-                 <widget class="QLabel" name="fontNameLabel">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="toolTip">
-                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This font is used for all on-screen messages. Not all fonts can be used. If messages aren't displayed, try a different font.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                  </property>
-                  <property name="text">
-                   <string notr="true">Arial</string>
-                  </property>
-                  <property name="alignment">
-                   <set>Qt::AlignCenter</set>
-                  </property>
-                 </widget>
-                </item>
-                <item row="1" column="1">
-                 <widget class="QLabel" name="fontColorLabel">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="text">
-                   <string notr="true">Green</string>
-                  </property>
-                  <property name="alignment">
-                   <set>Qt::AlignCenter</set>
-                  </property>
-                 </widget>
-                </item>
-                <item row="1" column="2">
-                 <widget class="QPushButton" name="PickFontColorButton">
-                  <property name="text">
-                   <string>Pick...</string>
-                  </property>
-                  <property name="autoDefault">
-                   <bool>false</bool>
-                  </property>
-                 </widget>
-                </item>
-               </layout>
+               </widget>
               </item>
               <item>
-               <spacer name="horizontalSpacer_24">
+               <widget class="QSpinBox" name="fontSizeSpinBox">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="suffix">
+                 <string extracomment="Short for font size pixels; include a leading space if appropriate"> px</string>
+                </property>
+                <property name="minimum">
+                 <number>6</number>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <spacer name="horizontalSpacer_13">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeType">
+                 <enum>QSizePolicy::Fixed</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>9</width>
+                  <height>0</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+              <item>
+               <widget class="QLabel" name="fontColorDescLabel">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true">margin-top: 2px</string>
+                </property>
+                <property name="text">
+                 <string>Color:</string>
+                </property>
+                <property name="buddy">
+                 <cstring>PickFontColorButton</cstring>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="PickFontColorButton">
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>28</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>46</width>
+                  <height>16777215</height>
+                 </size>
+                </property>
+                <property name="font">
+                 <font>
+                  <family>Arial Unicode MS</family>
+                  <pointsize>10</pointsize>
+                 </font>
+                </property>
+                <property name="text">
+                 <string>████</string>
+                </property>
+                <property name="autoDefault">
+                 <bool>false</bool>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <spacer name="horizontalSpacer_12">
                 <property name="orientation">
                  <enum>Qt::Horizontal</enum>
                 </property>
@@ -3665,64 +3707,93 @@
                 </property>
                </spacer>
               </item>
-              <item>
-               <widget class="QLabel" name="fontPreviewLabel">
-                <property name="text">
-                 <string>Preview</string>
-                </property>
-                <property name="alignment">
-                 <set>Qt::AlignCenter</set>
-                </property>
-                <property name="margin">
-                 <number>2</number>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <spacer name="verticalSpacer_3">
-                <property name="orientation">
-                 <enum>Qt::Vertical</enum>
-                </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>0</width>
-                  <height>0</height>
-                 </size>
-                </property>
-               </spacer>
-              </item>
              </layout>
-            </widget>
-           </item>
-          </layout>
-         </item>
-         <item>
-          <layout class="QVBoxLayout" name="verticalLayout_19">
-           <property name="spacing">
-            <number>4</number>
-           </property>
-           <item>
-            <widget class="QCheckBox" name="fpsCheckBox">
-             <property name="text">
-              <string>Display frames per second</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QCheckBox" name="visCheckBox">
-             <property name="text">
-              <string>Display vertical interrupts per second</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QCheckBox" name="percentCheckBox">
-             <property name="text">
-              <string>Display percentage</string>
-             </property>
-            </widget>
-           </item>
-          </layout>
+            </item>
+            <item>
+             <spacer name="horizontalSpacer_24">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>0</width>
+                <height>0</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item>
+             <widget class="QLabel" name="fontPreviewLabel">
+              <property name="text">
+               <string>Preview</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+              <property name="margin">
+               <number>2</number>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QFrame" name="fontPreviewNoteFrame">
+              <layout class="QHBoxLayout" name="horizontalLayout_18">
+               <property name="spacing">
+                <number>9</number>
+               </property>
+               <property name="leftMargin">
+                <number>0</number>
+               </property>
+               <property name="topMargin">
+                <number>0</number>
+               </property>
+               <property name="rightMargin">
+                <number>0</number>
+               </property>
+               <property name="bottomMargin">
+                <number>0</number>
+               </property>
+               <item>
+                <widget class="QLabel" name="fontPreviewNoteIcon">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="pixmap">
+                  <pixmap resource="icon.qrc">:/Info.ico</pixmap>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="fontPreviewNoteLabel">
+                 <property name="text">
+                  <string>The font preview only shows the regular style for the font family. Some styles like bold and italic display only in game.</string>
+                 </property>
+                 <property name="wordWrap">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item>
+             <spacer name="verticalSpacer_3">
+              <property name="orientation">
+               <enum>Qt::Vertical</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>0</width>
+                <height>0</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
+          </widget>
          </item>
         </layout>
        </item>
@@ -4164,11 +4235,11 @@
   </connection>
  </connections>
  <buttongroups>
-  <buttongroup name="factorButtonGroup"/>
-  <buttongroup name="screenshotButtonGroup"/>
-  <buttongroup name="aspectButtonGroup"/>
-  <buttongroup name="bloomBlendModeButtonGroup"/>
-  <buttongroup name="osdButtonGroup"/>
   <buttongroup name="fixTexrectCoordsButtonGroup"/>
+  <buttongroup name="factorButtonGroup"/>
+  <buttongroup name="bloomBlendModeButtonGroup"/>
+  <buttongroup name="aspectButtonGroup"/>
+  <buttongroup name="osdButtonGroup"/>
+  <buttongroup name="screenshotButtonGroup"/>
  </buttongroups>
 </ui>
