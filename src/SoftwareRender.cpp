@@ -166,6 +166,10 @@ int clipW(const SPVertex ** _vsrc, SPVertex * _vdst)
 
 f32 renderTriangles(const SPVertex * _pVertices, const u8 * _pElements, u32 _numElements)
 {
+	//Current depth buffer can be null if we are loading from a save state
+	if(depthBufferList().getCurrent() == nullptr)
+		return;
+
 	vertexclip vclip[16];
 	vertexi vdraw[12];
 	const SPVertex * vsrc[4];
