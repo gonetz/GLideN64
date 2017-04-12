@@ -1021,6 +1021,8 @@ void FrameBufferList::renderBuffer()
 
 	const u32 addrOffset = ((rdpRes.vi_origin - pBuffer->m_startAddress) << 1 >> pBuffer->m_size);
 	srcY0 = addrOffset / pBuffer->m_width;
+	if ((addrOffset != 0) && (pBuffer->m_width == addrOffset * 2))
+		srcY0 = 1;
 
 	if ((rdpRes.vi_width != addrOffset * 2) && (addrOffset % rdpRes.vi_width != 0))
 		Xoffset = rdpRes.vi_width - addrOffset % rdpRes.vi_width;
