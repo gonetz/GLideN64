@@ -1016,13 +1016,13 @@ void FrameBufferList::renderBuffer()
 
 	dstY0 = rdpRes.vi_v_start;
 
-	const f32 xScale = _FIXED2FLOAT(rdpRes.vi_x_add, 10);
-	const f32 yScale = _FIXED2FLOAT(rdpRes.vi_y_add, 10);
 	const u32 vFullHeight = rdpRes.vi_ispal ? 288 : 240;
 	const float dstScaleY = (float)wnd.getHeight() / float(vFullHeight);
 
 	const u32 addrOffset = ((rdpRes.vi_origin - pBuffer->m_startAddress) << 1 >> pBuffer->m_size);
 	srcY0 = addrOffset / pBuffer->m_width;
+	if ((addrOffset != 0) && (pBuffer->m_width == addrOffset * 2))
+		srcY0 = 1;
 
 	if ((rdpRes.vi_width != addrOffset * 2) && (addrOffset % rdpRes.vi_width != 0))
 		Xoffset = rdpRes.vi_width - addrOffset % rdpRes.vi_width;
@@ -1047,13 +1047,11 @@ void FrameBufferList::renderBuffer()
 
 	if (pNextBuffer != nullptr) {
 		dstPartHeight = srcY0;
-//		srcY0 = (s32)(srcY0*yScale);
 		srcPartHeight = srcY0;
 		srcY1 = srcHeight;
 		dstY1 = dstY0 + rdpRes.vi_vres - dstPartHeight;
 	} else {
 		dstY1 = dstY0 + rdpRes.vi_vres;
-//		srcY0 = (s32)(srcY0*yScale);
 		srcY1 = srcY0 + srcHeight;
 	}
 	PostProcessor & postProcessor = PostProcessor::get();

@@ -45,6 +45,9 @@
 
 #include "Platform.h"
 #include "Keys.h"
+#ifndef MUPENPLUSAPI
+#include "windows/GLideN64_windows.h"
+#endif
 
 Glide64Keys::Glide64Keys()
 {
@@ -117,7 +120,11 @@ bool isKeyPressed(int _key, int _mask)
 {
 	static Glide64Keys g64Keys;
 #ifdef OS_WINDOWS
+#ifdef MUPENPLUSAPI
 	return (GetAsyncKeyState(g64Keys[_key]) & _mask) != 0;
+#else
+	return (GetAsyncKeyState(g64Keys[_key]) & _mask) != 0 && GetForegroundWindow() == hWnd;
+#endif
 #else
 	// TODO
 #endif
