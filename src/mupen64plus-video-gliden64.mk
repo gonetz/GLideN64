@@ -78,6 +78,7 @@ MY_LOCAL_SRC_FILES :=                               \
     $(SRCDIR)/BufferCopy/DepthBufferToRDRAM.cpp     \
     $(SRCDIR)/BufferCopy/RDRAMtoColorBuffer.cpp     \
     $(SRCDIR)/Graphics/Context.cpp                  \
+    $(SRCDIR)/Graphics/ColorBufferReader.cpp        \
     $(SRCDIR)/Graphics/CombinerProgram.cpp          \
     $(SRCDIR)/Graphics/ObjectHandle.cpp             \
     $(SRCDIR)/Graphics/OpenGLContext/GLFunctions.cpp                               \

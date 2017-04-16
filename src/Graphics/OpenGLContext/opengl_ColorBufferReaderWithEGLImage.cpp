@@ -11,6 +11,7 @@ ColorBufferReaderWithEGLImage::ColorBufferReaderWithEGLImage(CachedTexture *_pTe
 	: graphics::ColorBufferReader(_pTexture)
 	, m_bindTexture(_bindTexture)
 	, m_image(0)
+	, m_bufferLocked(false)
 {
 	m_glEGLImageTargetTexture2DOES = (PFNGLEGLIMAGETARGETTEXTURE2DOESPROC)eglGetProcAddress("glEGLImageTargetTexture2DOES");
 	_initBuffers();
@@ -35,48 +36,43 @@ void ColorBufferReaderWithEGLImage::_initBuffers()
 	}
 }
 
-u8 * ColorBufferReaderWithEGLImage::readPixels(s32 _x0, s32 _y0, u32 _width, u32 _height, u32 _size, bool _sync)
+
+const u8 * ColorBufferReaderWithEGLImage::_readPixels(const ReadColorBufferParams& _params, u32& _heightOffset,
+	u32& _stride)
 {
-	const graphics::FramebufferTextureFormats & fbTexFormat = gfxContext.getFramebufferTextureFormats();
-	GLenum colorFormat, colorType, colorFormatBytes;
-	if (_size > G_IM_SIZ_8b) {
-		colorFormat = GLenum(fbTexFormat.colorFormat);
-		colorType = GLenum(fbTexFormat.colorType);
-		colorFormatBytes = GLenum(fbTexFormat.colorFormatBytes);
-	}
-	else {
-		colorFormat = GLenum(fbTexFormat.monochromeFormat);
-		colorType = GLenum(fbTexFormat.monochromeType);
-		colorFormatBytes = GLenum(fbTexFormat.monochromeFormatBytes);
-	}
+	GLenum format = GLenum(_params.colorFormat);
+	GLenum type = GLenum(_params.colorType);
 
-	u8* pixelData = m_pixelData.data();
+	void* gpuData = nullptr;
+	const u8* returnData = nullptr;
 
-	if (!_sync) {
-		void* ptr;
+	if (!_params.sync) {
 
 		m_bindTexture->bind(graphics::Parameter(0), graphics::Parameter(GL_TEXTURE_2D), m_pTexture->name);
 		m_glEGLImageTargetTexture2DOES(GL_TEXTURE_2D, m_image);
 		m_bindTexture->bind(graphics::Parameter(0), graphics::Parameter(GL_TEXTURE_2D), ObjectHandle());
-		int widthBytes = _width*colorFormatBytes;
-		int strideBytes = m_pTexture->realWidth * colorFormatBytes;
 
-		m_window.lock(GRALLOC_USAGE_SW_READ_OFTEN, &ptr);
+		m_window.lock(GRALLOC_USAGE_SW_READ_OFTEN, &gpuData);
+		m_bufferLocked = true;
+		_heightOffset = static_cast<u32>(_params.y0);
+		_stride = m_pTexture->realWidth;
 
-		for (unsigned int lnIndex = 0; lnIndex < _height; ++lnIndex) {
-			memcpy(pixelData + lnIndex*widthBytes, reinterpret_cast<char*>(ptr) + ((lnIndex + _y0)*strideBytes), widthBytes);
-		}
-
-		m_window.unlock();
 	} else {
-		glReadPixels(_x0, _y0, _width, _height, colorFormat, colorType, pixelData);
+		gpuData = m_pixelData.data();
+		glReadPixels(_params.x0, _params.y0, _params.width, _params.height, format, type, gpuData);
+		_heightOffset = 0;
+		_stride = 0;
 	}
 
-	return pixelData;
+	return reinterpret_cast<u8*>(gpuData);
 }
 
 void ColorBufferReaderWithEGLImage::cleanUp()
 {
+	if (m_bufferLocked) {
+		m_window.unlock();
+		m_bufferLocked = false;
+	}
 }
 
 #endif // EGL

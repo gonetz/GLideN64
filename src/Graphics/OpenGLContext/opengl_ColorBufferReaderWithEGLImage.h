@@ -19,7 +19,8 @@ public:
 								  CachedBindTexture * _bindTexture);
 	~ColorBufferReaderWithEGLImage();
 
-	u8 * readPixels(s32 _x0, s32 _y0, u32 _width, u32 _height, u32 _size, bool _sync) override;
+	const u8 * _readPixels(const ReadColorBufferParams& _params, u32& _heightOffset, u32& _stride) override;
+
 	void cleanUp() override;
 
 private:
@@ -29,6 +30,7 @@ private:
 	GraphicBuffer m_window{};
 	EGLImageKHR m_image;
 	PFNGLEGLIMAGETARGETTEXTURE2DOESPROC m_glEGLImageTargetTexture2DOES;
+	bool m_bufferLocked;
 };
 
 }

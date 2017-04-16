@@ -290,6 +290,7 @@
     <ClCompile Include="..\..\src\GBI.cpp" />
     <ClCompile Include="..\..\src\gDP.cpp" />
     <ClCompile Include="..\..\src\GLideN64.cpp" />
+    <ClCompile Include="..\..\src\Graphics\ColorBufferReader.cpp" />
     <ClCompile Include="..\..\src\Graphics\CombinerProgram.cpp" />
     <ClCompile Include="..\..\src\Graphics\Context.cpp" />
     <ClCompile Include="..\..\src\Graphics\ObjectHandle.cpp" />

@@ -65,6 +65,7 @@ set(GLideN64_SOURCES
   DepthBufferRender/DepthBufferRender.cpp
   common/CommonAPIImpl_common.cpp
   Graphics/Context.cpp
+  Graphics/ColorBufferReader.cpp
   Graphics/CombinerProgram.cpp
   Graphics/ObjectHandle.cpp
   Graphics/OpenGLContext/GLFunctions.cpp
