@@ -469,7 +469,8 @@ struct FramebufferTextureFormatsGLES3 : public graphics::FramebufferTextureForma
 		return _glinfo.isGLESX && !_glinfo.isGLES2;
 	}
 
-	FramebufferTextureFormatsGLES3()
+	FramebufferTextureFormatsGLES3(const GLInfo & _glinfo):
+		m_glinfo(_glinfo)
 	{
 		init();
 	}
@@ -477,10 +478,17 @@ struct FramebufferTextureFormatsGLES3 : public graphics::FramebufferTextureForma
 protected:
 	void init() override
 	{
-		colorInternalFormat = GL_RGBA8;
-		colorFormat = GL_RGBA;
-		colorType = GL_UNSIGNED_BYTE;
-		colorFormatBytes = 4;
+		if (m_glinfo.renderer == Renderer::Adreno500) {
+			colorInternalFormat = GL_RGBA32F;
+			colorFormat = GL_RGBA;
+			colorType = GL_FLOAT;
+			colorFormatBytes = 16;
+		} else {
+			colorInternalFormat = GL_RGBA8;
+			colorFormat = GL_RGBA;
+			colorType = GL_UNSIGNED_BYTE;
+			colorFormatBytes = 4;
+		}
 
 		monochromeInternalFormat = GL_R8;
 		monochromeFormat = GL_RED;
@@ -507,6 +515,8 @@ protected:
 		noiseType = GL_UNSIGNED_BYTE;
 		noiseFormatBytes = 1;
 	}
+
+	const GLInfo & m_glinfo;
 };
 
 struct FramebufferTextureFormatsOpenGL : public graphics::FramebufferTextureFormats
@@ -629,7 +639,7 @@ graphics::FramebufferTextureFormats * BufferManipulationObjectFactory::getFrameb
 		return new FramebufferTextureFormatsOpenGL;
 
 	if (FramebufferTextureFormatsGLES3::Check(m_glInfo))
-		return new FramebufferTextureFormatsGLES3;
+		return new FramebufferTextureFormatsGLES3(m_glInfo);
 
 	if (FramebufferTextureFormatsGLES2::Check(m_glInfo))
 		return new FramebufferTextureFormatsGLES2(m_glInfo);
