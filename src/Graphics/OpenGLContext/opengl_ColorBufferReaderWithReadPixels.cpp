@@ -11,31 +11,20 @@ ColorBufferReaderWithReadPixels::ColorBufferReaderWithReadPixels(CachedTexture *
 
 }
 
-u8 * ColorBufferReaderWithReadPixels::readPixels(s32 _x0, s32 _y0, u32 _width, u32 _height, u32 _size, bool _sync)
+const u8 * ColorBufferReaderWithReadPixels::_readPixels(const ReadColorBufferParams& _params, u32& _heightOffset,
+	u32& _stride)
 {
-	const graphics::FramebufferTextureFormats & fbTexFormat = gfxContext.getFramebufferTextureFormats();
-	GLenum colorFormat, colorType, colorFormatBytes;
-	if (_size > G_IM_SIZ_8b) {
-		colorFormat = GLenum(fbTexFormat.colorFormat);
-		colorType = GLenum(fbTexFormat.colorType);
-		colorFormatBytes = GLenum(fbTexFormat.colorFormatBytes);
-	} else {
-		colorFormat = GLenum(fbTexFormat.monochromeFormat);
-		colorType = GLenum(fbTexFormat.monochromeType);
-		colorFormatBytes = GLenum(fbTexFormat.monochromeFormatBytes);
-	}
+	GLenum format = GLenum(_params.colorFormat);
+	GLenum type = GLenum(_params.colorType);
 
 	// No async pixel buffer copies are supported in this class, this is a last resort fallback
-	auto pixelData = std::unique_ptr<GLubyte[]>(new GLubyte[m_pTexture->realWidth * _height * colorFormatBytes]) ;
-	glReadPixels(_x0, _y0, m_pTexture->realWidth, _height, colorFormat, colorType, pixelData.get());
+	u8* gpuData = m_pixelData.data();
+	glReadPixels(_params.x0, _params.y0, m_pTexture->realWidth, _params.height, format, type, gpuData);
 
-	int widthBytes = _width*colorFormatBytes;
-	int strideBytes = m_pTexture->realWidth * colorFormatBytes;
+	_heightOffset = 0;
+	_stride = m_pTexture->realWidth;
 
-	for (unsigned int lnIndex = 0; lnIndex < _height; ++lnIndex) {
-		std::copy_n(pixelData.get() + (lnIndex*strideBytes), widthBytes, m_pixelData.data() + lnIndex*widthBytes);
-	}
-	return m_pixelData.data();
+	return gpuData;
 }
 
 void ColorBufferReaderWithReadPixels::cleanUp()

@@ -41,25 +41,16 @@ void ColorBufferReaderWithBufferStorage::_destroyBuffers()
 		m_PBO[index] = 0;
 }
 
-u8 * ColorBufferReaderWithBufferStorage::readPixels(s32 _x0, s32 _y0, u32 _width, u32 _height, u32 _size, bool _sync)
+const u8 * ColorBufferReaderWithBufferStorage::_readPixels(const ReadColorBufferParams& _params, u32& _heightOffset,
+	u32& _stride)
 {
-	const FramebufferTextureFormats & fbTexFormat = gfxContext.getFramebufferTextureFormats();
-	GLenum colorFormat, colorType, colorFormatBytes;
-	if (_size > G_IM_SIZ_8b) {
-		colorFormat = GLenum(fbTexFormat.colorFormat);
-		colorType = GLenum(fbTexFormat.colorType);
-		colorFormatBytes = GLenum(fbTexFormat.colorFormatBytes);
-	}
-	else {
-		colorFormat = GLenum(fbTexFormat.monochromeFormat);
-		colorType = GLenum(fbTexFormat.monochromeType);
-		colorFormatBytes = GLenum(fbTexFormat.monochromeFormatBytes);
-	}
+	GLenum format = GLenum(_params.colorFormat);
+	GLenum type = GLenum(_params.colorType);
 
 	m_bindBuffer->bind(Parameter(GL_PIXEL_PACK_BUFFER), ObjectHandle(m_PBO[m_curIndex]));
-	glReadPixels(_x0, _y0, m_pTexture->realWidth, _height, colorFormat, colorType, 0);
+	glReadPixels(_params.x0, _params.y0, m_pTexture->realWidth, _params.height, format, type, 0);
 
-	if (!_sync) {
+	if (!_params.sync) {
 		//Setup a fence sync object so that we know when glReadPixels completes
 		m_fence[m_curIndex] = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
 		m_curIndex = (m_curIndex + 1) % _numPBO;
@@ -72,19 +63,10 @@ u8 * ColorBufferReaderWithBufferStorage::readPixels(s32 _x0, s32 _y0, u32 _width
 		glFinish();
 	}
 
-	GLubyte* pixelData = reinterpret_cast<GLubyte*>(m_PBOData[m_curIndex]);
-	if (pixelData == nullptr)
-		return nullptr;
+	_heightOffset = 0;
+	_stride = m_pTexture->realWidth;
 
-	int widthBytes = _width * colorFormatBytes;
-	int strideBytes = m_pTexture->realWidth * colorFormatBytes;
-
-	GLubyte* pixelDataAlloc = m_pixelData.data();
-	for (unsigned int lnIndex = 0; lnIndex < _height; ++lnIndex) {
-		memcpy(pixelDataAlloc + lnIndex*widthBytes, pixelData + (lnIndex*strideBytes), widthBytes);
-	}
-
-	return pixelDataAlloc;
+	return reinterpret_cast<u8*>(m_PBOData[m_curIndex]);
 }
 
 void ColorBufferReaderWithBufferStorage::cleanUp()

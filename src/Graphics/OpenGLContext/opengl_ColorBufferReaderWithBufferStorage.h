@@ -2,6 +2,7 @@
 
 #include <Graphics/ColorBufferReader.h>
 #include "opengl_CachedFunctions.h"
+#include <Graphics/Parameter.h>
 
 namespace opengl {
 
@@ -13,7 +14,8 @@ namespace opengl {
 			CachedBindBuffer * _bindBuffer);
 		virtual ~ColorBufferReaderWithBufferStorage();
 
-		u8 * readPixels(s32 _x0, s32 _y0, u32 _width, u32 _height, u32 _size, bool _sync) override;
+		const u8 * _readPixels(const ReadColorBufferParams& _params, u32& _heightOffset, u32& _stride) override;
+
 		void cleanUp() override;
 
 	private:
