@@ -11,6 +11,7 @@
 #include <Graphics/Context.h>
 #include <Graphics/Parameters.h>
 #include <DisplayWindow.h>
+#include <algorithm>
 
 using namespace graphics;
 
@@ -27,6 +28,8 @@ RDRAMtoColorBuffer & RDRAMtoColorBuffer::get()
 
 void RDRAMtoColorBuffer::init()
 {
+	const FramebufferTextureFormats & fbTexFormats = gfxContext.getFramebufferTextureFormats();
+
 	m_pTexture = textureCache().addFrameBufferTexture(false);
 	m_pTexture->format = G_IM_FMT_RGBA;
 	m_pTexture->clampS = 1;
@@ -38,10 +41,9 @@ void RDRAMtoColorBuffer::init()
 	m_pTexture->mirrorT = 0;
 	m_pTexture->realWidth = 640;
 	m_pTexture->realHeight = 580;
-	m_pTexture->textureBytes = m_pTexture->realWidth * m_pTexture->realHeight * 4;
+	m_pTexture->textureBytes = m_pTexture->realWidth * m_pTexture->realHeight * fbTexFormats.colorFormatBytes;
 	textureCache().addFrameBufferTextureSize(m_pTexture->textureBytes);
 
-	const FramebufferTextureFormats & fbTexFormats = gfxContext.getFramebufferTextureFormats();
 	Context::InitTextureParams initParams;
 	initParams.handle = m_pTexture->name;
 	initParams.width = m_pTexture->realWidth;
@@ -197,16 +199,29 @@ void RDRAMtoColorBuffer::copyFromRDRAM(u32 _address, bool _bCFB)
 
 	const bool bUseAlpha = !_bCFB && m_pCurBuffer->m_changed;
 
+	const FramebufferTextureFormats & fbTexFormats = gfxContext.getFramebufferTextureFormats();
+
 	m_pTexture->width = width;
 	m_pTexture->height = height;
-	const u32 dataSize = width*height * 4;
+	const u32 gpuDataSize = width*height * fbTexFormats.colorFormatBytes;
 
 	PixelBufferBinder<PixelWriteBuffer> binder(m_pbuf.get());
-	u8* ptr = (u8*)m_pbuf->getWriteBuffer(dataSize);
+	u8* ptr = (u8*)m_pbuf->getWriteBuffer(gpuDataSize);
 	if (ptr == nullptr)
 		return;
 
-	u32 * dst = (u32*)ptr;
+	u32 * dst = nullptr;
+	std::unique_ptr<u8[]> dstData;
+
+	//If not using float, the initial coversion will already be correct
+	if (fbTexFormats.colorType == datatype::FLOAT) {
+		const u32 initialDataSize = width*height * 4;
+		dstData = std::unique_ptr<u8[]>(new u8[initialDataSize]);
+		dst = reinterpret_cast<u32*>(dstData.get());
+	} else {
+		dst = reinterpret_cast<u32*>(ptr);
+	}
+
 	bool bCopy;
 	if (m_vecAddress.empty()) {
 		if (m_pCurBuffer->m_size == G_IM_SIZ_16b)
@@ -219,6 +234,20 @@ void RDRAMtoColorBuffer::copyFromRDRAM(u32 _address, bool _bCFB)
 			bCopy = _copyPixelsFromRdram<u16>(address, m_vecAddress, dst, RGBA16ToABGR32, 1, width, height, _bCFB);
 		else
 			bCopy = _copyPixelsFromRdram<u32>(address, m_vecAddress, dst, RGBA32ToABGR32, 0, width, height, _bCFB);
+	}
+
+	//Convert integer format to float
+	if (fbTexFormats.colorType == datatype::FLOAT) {
+		f32* floatData = reinterpret_cast<f32*>(ptr);
+		u8* byteData = dstData.get();
+		const u32 widthPixels = width*4;
+		for (unsigned int heightIndex = 0; heightIndex < height; ++heightIndex) {
+			for (unsigned int widthIndex = 0; widthIndex < widthPixels; ++widthIndex) {
+				u8& src = *(byteData + heightIndex*widthPixels + widthIndex);
+				float& dst = *(floatData + heightIndex*widthPixels + widthIndex);
+				dst = src/255.0f;
+			}
+		}
 	}
 
 	if (bUseAlpha) {
@@ -238,8 +267,6 @@ void RDRAMtoColorBuffer::copyFromRDRAM(u32 _address, bool _bCFB)
 	CombinerInfo::get().setPolygonMode(DrawingState::TexRect);
 	CombinerInfo::get().update();
 	gDP.otherMode.cycleType = cycleType;
-
-	const FramebufferTextureFormats & fbTexFormats = gfxContext.getFramebufferTextureFormats();
 
 	Context::UpdateTextureDataParams updateParams;
 	updateParams.handle = m_pTexture->name;
