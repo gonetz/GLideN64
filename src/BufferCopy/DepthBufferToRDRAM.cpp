@@ -204,10 +204,14 @@ u16 DepthBufferToRDRAM::_FloatToUInt16(f32 _z)
 {
 	static const u16 * const zLUT = depthBufferList().getZLUT();
 	u32 idx = 0x3FFFF;
-	if (_z < 1.0f) {
+
+	if (_z < 0.0f) {
+		idx = 0;
+	} else if (_z < 1.0f) {
 		_z *= 262144.0f;
 		idx = std::min(0x3FFFFU, u32(floorf(_z + 0.5f)));
 	}
+
 	return zLUT[idx];
 }
 
