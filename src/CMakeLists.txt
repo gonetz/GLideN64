@@ -61,6 +61,8 @@ set(GLideN64_SOURCES
   Graphics/CombinerProgram.cpp
   Graphics/ObjectHandle.cpp
   Graphics/OpenGLContext/GLFunctions.cpp
+  Graphics/OpenGLContext/opengl_Wrapper.cpp
+  Graphics/OpenGLContext/opengl_WrappedFunctions.cpp
   Graphics/OpenGLContext/opengl_Attributes.cpp
   Graphics/OpenGLContext/opengl_BufferedDrawer.cpp
   Graphics/OpenGLContext/opengl_BufferManipulationObjectFactory.cpp
@@ -73,6 +75,7 @@ set(GLideN64_SOURCES
   Graphics/OpenGLContext/opengl_Parameters.cpp
   Graphics/OpenGLContext/opengl_TextureManipulationObjectFactory.cpp
   Graphics/OpenGLContext/opengl_UnbufferedDrawer.cpp
+  Graphics/OpenGLContext/opengl_UnbufferedDrawerThreadSafe.cpp
   Graphics/OpenGLContext/opengl_Utils.cpp
   Graphics/OpenGLContext/GLSL/glsl_CombinerInputs.cpp
   Graphics/OpenGLContext/GLSL/glsl_CombinerProgramBuilder.cpp

@@ -260,6 +260,12 @@
     <ClCompile Include="..\..\src\Graphics\OpenGLContext\windows\windows_DisplayWindow.cpp">
       <Filter>Source Files\Graphics\OpenGL\windows</Filter>
     </ClCompile>
+	<ClCompile Include="..\..\src\Graphics\OpenGLContext\windows\WindowsWGL.cpp">
+      <Filter>Source Files\Graphics\OpenGL\windows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Graphics\OpenGLContext\windows\WindowsWGL.cpp">
+      <Filter>Source Files\Graphics\OpenGL\windows</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\src\Graphics\OpenGLContext\mupen64plus\mupen64plus_DisplayWindow.cpp">
       <Filter>Source Files\Graphics\OpenGL\mupen64plus</Filter>
     </ClCompile>
@@ -298,6 +304,24 @@
     </ClCompile>
     <ClCompile Include="..\..\src\xxHash\xxhash.c">
       <Filter>Source Files</Filter>
+    </ClCompile>
+	<ClCompile Include="..\..\src\Graphics\OpenGLContext\opengl_Wrapper.cpp">
+      <Filter>Source Files\Graphics\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Graphics\OpenGLContext\opengl_WrappedFunctions.cpp">
+      <Filter>Source Files\Graphics\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Graphics\OpenGLContext\opengl_UnbufferedDrawerThreadSafe.cpp">
+      <Filter>Source Files\Graphics\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Graphics\OpenGLContext\opengl_Wrapper.cpp">
+      <Filter>Source Files\Graphics\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Graphics\OpenGLContext\opengl_WrappedFunctions.cpp">
+      <Filter>Source Files\Graphics\OpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Graphics\OpenGLContext\opengl_UnbufferedDrawerThreadSafe.cpp">
+      <Filter>Source Files\Graphics\OpenGL</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\DebugDump.cpp">
       <Filter>Source Files</Filter>
@@ -630,6 +654,30 @@
     </ClInclude>
     <ClInclude Include="..\..\src\Graphics\OpenGLContext\opengl_ColorBufferReaderWithReadPixels.h">
       <Filter>Header Files\Graphics\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Graphics\OpenGLContext\opengl_Wrapper.h">
+      <Filter>Header Files\Graphics\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Graphics\OpenGLContext\opengl_WrappedFunctions.h">
+      <Filter>Header Files\Graphics\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Graphics\OpenGLContext\opengl_UnbufferedDrawerThreadSafe.h">
+      <Filter>Header Files\Graphics\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Graphics\OpenGLContext\windows\WindowsWGL.h">
+      <Filter>Header Files\Graphics\OpenGL\windows</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Graphics\OpenGLContext\opengl_Wrapper.h">
+      <Filter>Header Files\Graphics\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Graphics\OpenGLContext\opengl_WrappedFunctions.h">
+      <Filter>Header Files\Graphics\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Graphics\OpenGLContext\opengl_UnbufferedDrawerThreadSafe.h">
+      <Filter>Header Files\Graphics\OpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Graphics\OpenGLContext\windows\WindowsWGL.h">
+      <Filter>Header Files\Graphics\OpenGL\windows</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\TexrectDrawer.h">
       <Filter>Header Files</Filter>

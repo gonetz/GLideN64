@@ -260,7 +260,13 @@ copy /Y "$(OutDir)$(TargetName).*" "$(Mupen64PluginsDir_x64)")</Command>
     <ClCompile Include="..\..\src\Graphics\OpenGLContext\opengl_UnbufferedDrawer.cpp" />
     <ClCompile Include="..\..\src\Graphics\OpenGLContext\opengl_Utils.cpp" />
     <ClCompile Include="..\..\src\Graphics\OpenGLContext\opengl_BufferedDrawer.cpp" />
+    <ClCompile Include="..\..\src\Graphics\OpenGLContext\opengl_Wrapper.cpp" />
+    <ClCompile Include="..\..\src\Graphics\OpenGLContext\opengl_WrappedFunctions.cpp" />
+    <ClCompile Include="..\..\src\Graphics\OpenGLContext\opengl_UnbufferedDrawerThreadSafe.cpp" />
     <ClCompile Include="..\..\src\Graphics\OpenGLContext\windows\windows_DisplayWindow.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)'=='Debug_mupenplus' Or '$(Configuration)'=='Release_mupenplus'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Graphics\OpenGLContext\windows\WindowsWGL.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)'=='Debug_mupenplus' Or '$(Configuration)'=='Release_mupenplus'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\src\gSP.cpp" />
@@ -399,6 +405,12 @@ copy /Y "$(OutDir)$(TargetName).*" "$(Mupen64PluginsDir_x64)")</Command>
     <ClInclude Include="..\..\src\Graphics\OpenGLContext\opengl_UnbufferedDrawer.h" />
     <ClInclude Include="..\..\src\Graphics\OpenGLContext\opengl_Utils.h" />
     <ClInclude Include="..\..\src\Graphics\OpenGLContext\opengl_BufferedDrawer.h" />
+    <ClInclude Include="..\..\src\Graphics\OpenGLContext\opengl_Wrapper.h" />
+    <ClInclude Include="..\..\src\Graphics\OpenGLContext\opengl_WrappedFunctions.h" />
+    <ClInclude Include="..\..\src\Graphics\OpenGLContext\opengl_UnbufferedDrawerThreadSafe.h" />
+    <ClInclude Include="..\..\src\Graphics\OpenGLContext\windows\WindowsWGL.h">
+      <ExcludedFromBuild Condition="'$(Configuration)'=='Debug_mupenplus' Or '$(Configuration)'=='Release_mupenplus'">true</ExcludedFromBuild>
+    </ClInclude>
     <ClInclude Include="..\..\src\Graphics\Parameter.h" />
     <ClInclude Include="..\..\src\Graphics\Parameters.h" />
     <ClInclude Include="..\..\src\Graphics\PixelBuffer.h" />
