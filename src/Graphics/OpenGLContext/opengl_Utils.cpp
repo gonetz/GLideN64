@@ -2,7 +2,7 @@
 #include <Types.h>
 #include <Log.h>
 #include "opengl_Utils.h"
-#include "GLFunctions.h"
+#include "opengl_Wrapper.h"
 #include <cstring>
 
 using namespace opengl;
@@ -10,10 +10,10 @@ using namespace opengl;
 bool Utils::isExtensionSupported(const opengl::GLInfo & _glinfo, const char *extension) {
 	if (_glinfo.majorVersion >= 3) {
 		GLint count = 0;
-		glGetIntegerv(GL_NUM_EXTENSIONS, &count);
+		FunctionWrapper::glGetIntegerv(GL_NUM_EXTENSIONS, &count);
 		assert(count >= 0);
 		for (GLuint i = 0; i < (GLuint)count; ++i) {
-			const char* name = (const char*)glGetStringi(GL_EXTENSIONS, i);
+			const char* name = (const char*)FunctionWrapper::glGetStringi(GL_EXTENSIONS, i);
 			if (name == nullptr)
 				continue;
 			if (strcmp(extension, name) == 0)
@@ -26,7 +26,7 @@ bool Utils::isExtensionSupported(const opengl::GLInfo & _glinfo, const char *ext
 	if (where || *extension == '\0')
 		return false;
 
-	const GLubyte *extensions = glGetString(GL_EXTENSIONS);
+	const GLubyte *extensions = FunctionWrapper::glGetString(GL_EXTENSIONS);
 
 	const GLubyte *start = extensions;
 	for (;;) {
@@ -86,7 +86,7 @@ bool Utils::isGLError()
 	GLenum errCode;
 	const char* errString;
 
-	if ((errCode = glGetError()) != GL_NO_ERROR) {
+	if ((errCode = FunctionWrapper::glGetError()) != GL_NO_ERROR) {
 		errString = GLErrorString(errCode);
 		if (errString != nullptr) {
 			LOG(LOG_ERROR, "OpenGL Error: %s (%x)", errString, errCode);
@@ -103,7 +103,8 @@ bool Utils::isGLError()
 bool Utils::isFramebufferError()
 {
 #ifdef GL_DEBUG
-	GLenum e = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+	GLenum e = FunctionWrapper::glCheckFramebufferStatus(GL_FRAMEBUFFER);
+
 	switch (e) {
 		//		case GL_FRAMEBUFFER_UNDEFINED:
 		//			printf("FBO Undefined\n");

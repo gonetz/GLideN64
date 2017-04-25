@@ -19,7 +19,7 @@ namespace graphics {
 		u32 _heightOffset, u32 _stride)
 	{
 		int bytesToCopy = m_pTexture->realWidth * _height * 16;
-		std::copy_n(_gpuData, bytesToCopy, m_tempPixelData.data());
+		std::copy_n(_gpuData, bytesToCopy, m_tempPixelData.begin());
 		u8* pixelDataAlloc = m_pixelData.data();
 		float* pixelData = reinterpret_cast<float*>(m_tempPixelData.data());
 		const u32 colorsPerPixel = 4;

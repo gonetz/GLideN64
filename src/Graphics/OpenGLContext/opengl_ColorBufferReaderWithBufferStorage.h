@@ -29,7 +29,6 @@ namespace opengl {
 		GLuint m_PBO[_maxPBO];
 		void* m_PBOData[_maxPBO];
 		u32 m_curIndex;
-		GLsync m_fence[_maxPBO];
 	};
 
 }

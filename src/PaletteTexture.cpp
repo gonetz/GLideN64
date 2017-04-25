@@ -99,5 +99,7 @@ void PaletteTexture::update()
 	params.internalFormat = fbTexFormats.lutInternalFormat;
 	params.dataType = fbTexFormats.lutType;
 	params.data = m_pbuf;
+	params.dataBytes = m_pTexture->textureBytes;
+	params.fromBuffer = true;
 	gfxContext.update2DTexture(params);
 }

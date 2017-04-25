@@ -14,12 +14,14 @@
 #include <Combiner.h>
 #include <DisplayLoadProgress.h>
 #include <osal_files.h>
+#include <Graphics/OpenGLContext/opengl_Wrapper.h>
 #include "glsl_Utils.h"
 #include "glsl_ShaderStorage.h"
 #include "glsl_CombinerProgramImpl.h"
 #include "glsl_CombinerProgramUniformFactory.h"
 
 using namespace glsl;
+using namespace opengl;
 
 #define SHADER_STORAGE_FOLDER_NAME L"shaders"
 
@@ -134,12 +136,12 @@ bool ShaderStorage::saveShadersStorage(const graphics::Combiners & _combiners) c
 	const u32 configOptionsBitSet = graphics::CombinerProgram::getShaderCombinerOptionsBits();
 	shadersOut.write((char*)&configOptionsBitSet, sizeof(configOptionsBitSet));
 
-	const char * strRenderer = reinterpret_cast<const char *>(glGetString(GL_RENDERER));
+	const char * strRenderer = reinterpret_cast<const char *>(FunctionWrapper::glGetString(GL_RENDERER));
 	u32 len = static_cast<u32>(strlen(strRenderer));
 	shadersOut.write((char*)&len, sizeof(len));
 	shadersOut.write(strRenderer, len);
 
-	const char * strGLVersion = reinterpret_cast<const char *>(glGetString(GL_VERSION));
+	const char * strGLVersion = reinterpret_cast<const char *>(FunctionWrapper::glGetString(GL_VERSION));
 	len = static_cast<u32>(strlen(strGLVersion));
 	shadersOut.write((char*)&len, sizeof(len));
 	shadersOut.write(strGLVersion, len);
@@ -200,13 +202,13 @@ CombinerProgramImpl * _readCominerProgramFromStream(std::istream & _is,
 	GLint  binaryLength;
 	_is.read((char*)&binaryFormat, sizeof(binaryFormat));
 	_is.read((char*)&binaryLength, sizeof(binaryLength));
-	std::vector<char> binary(binaryLength);
-	_is.read(binary.data(), binaryLength);
+	std::unique_ptr<char[]> binary(new char[binaryLength]);
+	_is.read(binary.get(), binaryLength);
 
-	GLuint program = glCreateProgram();
+	GLuint program = FunctionWrapper::glCreateProgram();
 	const bool isRect = cmbKey.isRectKey();
 	glsl::Utils::locateAttributes(program, isRect, cmbInputs.usesTexture());
-	glProgramBinary(program, binaryFormat, binary.data(), binaryLength);
+	FunctionWrapper::glProgramBinary(program, binaryFormat, std::move(binary), binaryLength);
 	assert(glsl::Utils::checkProgramLinkStatus(program));
 
 	UniformGroups uniforms;
@@ -303,7 +305,7 @@ bool ShaderStorage::loadShadersStorage(graphics::Combiners & _combiners)
 		if (optionsSet != configOptionsBitSet)
 			return _loadFromCombinerKeys(_combiners);
 
-		const char * strRenderer = reinterpret_cast<const char *>(glGetString(GL_RENDERER));
+		const char * strRenderer = reinterpret_cast<const char *>(FunctionWrapper::glGetString(GL_RENDERER));
 		u32 len;
 		fin.read((char*)&len, sizeof(len));
 		std::vector<char> strBuf(len);
@@ -311,7 +313,7 @@ bool ShaderStorage::loadShadersStorage(graphics::Combiners & _combiners)
 		if (strncmp(strRenderer, strBuf.data(), len) != 0)
 			return _loadFromCombinerKeys(_combiners);
 
-		const char * strGLVersion = reinterpret_cast<const char *>(glGetString(GL_VERSION));
+		const char * strGLVersion = reinterpret_cast<const char *>(FunctionWrapper::glGetString(GL_VERSION));
 		fin.read((char*)&len, sizeof(len));
 		strBuf.resize(len);
 		fin.read(strBuf.data(), len);

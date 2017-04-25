@@ -252,6 +252,8 @@ void RDRAMtoColorBuffer::_copyFromRDRAM(u32 _height, bool _fullAlpha)
 	updateParams.format = fbTexFormats.colorFormat;
 	updateParams.dataType = fbTexFormats.colorType;
 	updateParams.data = m_pbuf;
+	updateParams.dataBytes = m_pTexture->textureBytes;
+	updateParams.fromBuffer = true;
 	gfxContext.update2DTexture(updateParams);
 
 	m_pTexture->scaleS = 1.0f / (float)m_pTexture->realWidth;

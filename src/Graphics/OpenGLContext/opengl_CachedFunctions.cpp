@@ -3,6 +3,7 @@
 #include "GLFunctions.h"
 #include "opengl_GLInfo.h"
 #include "opengl_CachedFunctions.h"
+#include "opengl_Wrapper.h"
 
 using namespace graphics;
 using namespace opengl;
@@ -24,14 +25,14 @@ void CachedEnable::enable(bool _enable)
 
 	if (_enable) {
 		if (m_parameter == enable::BLEND && IS_GL_FUNCTION_VALID(glEnablei))
-			glEnablei(GLenum(m_parameter), 0);
+			FunctionWrapper::glEnablei(GLenum(m_parameter), 0);
 		else
-			glEnable(GLenum(m_parameter));
+			FunctionWrapper::glEnable(GLenum(m_parameter));
 	} else {
 		if (m_parameter == enable::BLEND && IS_GL_FUNCTION_VALID(glDisablei))
-			glDisablei(GLenum(m_parameter), 0);
+			FunctionWrapper::glDisablei(GLenum(m_parameter), 0);
 		else
-			glDisable(GLenum(m_parameter));
+			FunctionWrapper::glDisable(GLenum(m_parameter));
 	}
 }
 
@@ -40,13 +41,34 @@ u32 CachedEnable::get()
 	return u32(m_cached);
 }
 
+/*---------------CachedBindFramebuffer-------------*/
+
+void CachedBindFramebuffer::bind(graphics::Parameter _target, graphics::ObjectHandle _name) {
+	if (update(_target, _name))
+		FunctionWrapper::glBindFramebuffer(GLenum(_target), GLuint(_name));
+}
+
+/*---------------CachedBindRenderbuffer-------------*/
+
+void CachedBindRenderbuffer::bind(graphics::Parameter _target, graphics::ObjectHandle _name) {
+	if (update(_target, _name))
+		FunctionWrapper::glBindRenderbuffer(GLenum(_target), GLuint(_name));
+}
+
+/*---------------CachedBindBuffer-------------*/
+
+void CachedBindBuffer::bind(graphics::Parameter _target, graphics::ObjectHandle _name) {
+	if (update(_target, _name))
+		FunctionWrapper::glBindBuffer(GLenum(_target), GLuint(_name));
+}
+
 /*---------------CachedBindTexture-------------*/
 
 void CachedBindTexture::bind(Parameter _tmuIndex, Parameter _target, ObjectHandle _name)
 {
 	if (update(_tmuIndex, _name)) {
-		glActiveTexture(GL_TEXTURE0 + GLuint(_tmuIndex));
-		glBindTexture(GLenum(_target), GLuint(_name));
+		FunctionWrapper::glActiveTexture(GL_TEXTURE0 + GLuint(_tmuIndex));
+		FunctionWrapper::glBindTexture(GLenum(_target), GLuint(_name));
 	}
 }
 
@@ -55,7 +77,7 @@ void CachedBindTexture::bind(Parameter _tmuIndex, Parameter _target, ObjectHandl
 void CachedCullFace::setCullFace(Parameter _mode)
 {
 	if (update(_mode))
-		glCullFace(GLenum(_mode));
+		FunctionWrapper::glCullFace(GLenum(_mode));
 }
 
 /*---------------CachedDepthMask-------------*/
@@ -63,7 +85,7 @@ void CachedCullFace::setCullFace(Parameter _mode)
 void CachedDepthMask::setDepthMask(bool _enable)
 {
 	if (update(Parameter(u32(_enable))))
-		glDepthMask(GLboolean(_enable));
+		FunctionWrapper::glDepthMask(GLboolean(_enable));
 }
 
 /*---------------CachedDepthMask-------------*/
@@ -71,7 +93,7 @@ void CachedDepthMask::setDepthMask(bool _enable)
 void CachedDepthCompare::setDepthCompare(Parameter _mode)
 {
 	if (update(_mode))
-		glDepthFunc(GLenum(_mode));
+		FunctionWrapper::glDepthFunc(GLenum(_mode));
 }
 
 /*---------------CachedViewport-------------*/
@@ -79,7 +101,7 @@ void CachedDepthCompare::setDepthCompare(Parameter _mode)
 void CachedViewport::setViewport(s32 _x, s32 _y, s32 _width, s32 _height)
 {
 	if (update(Parameter(_x), Parameter(_y), Parameter(_width), Parameter(_height)))
-		glViewport(_x, _y, _width, _height);
+		FunctionWrapper::glViewport(_x, _y, _width, _height);
 }
 
 /*---------------CachedScissor-------------*/
@@ -87,7 +109,7 @@ void CachedViewport::setViewport(s32 _x, s32 _y, s32 _width, s32 _height)
 void CachedScissor::setScissor(s32 _x, s32 _y, s32 _width, s32 _height)
 {
 	if (update(Parameter(_x), Parameter(_y), Parameter(_width), Parameter(_height)))
-		glScissor(_x, _y, _width, _height);
+		FunctionWrapper::glScissor(_x, _y, _width, _height);
 }
 
 /*---------------CachedBlending-------------*/
@@ -95,7 +117,7 @@ void CachedScissor::setScissor(s32 _x, s32 _y, s32 _width, s32 _height)
 void CachedBlending::setBlending(Parameter _sfactor, Parameter _dfactor)
 {
 	if (update(_sfactor, _dfactor))
-		glBlendFunc(GLenum(_sfactor), GLenum(_dfactor));
+		FunctionWrapper::glBlendFunc(GLenum(_sfactor), GLenum(_dfactor));
 }
 
 /*---------------CachedBlendColor-------------*/
@@ -103,7 +125,7 @@ void CachedBlending::setBlending(Parameter _sfactor, Parameter _dfactor)
 void CachedBlendColor::setBlendColor(f32 _red, f32 _green, f32 _blue, f32 _alpha)
 {
 	if (update(Parameter(_red), Parameter(_green), Parameter(_blue), Parameter(_alpha)))
-		glBlendColor(_red, _green, _blue, _alpha);
+		FunctionWrapper::glBlendColor(_red, _green, _blue, _alpha);
 }
 
 /*---------------CachedClearColor-------------*/
@@ -111,7 +133,7 @@ void CachedBlendColor::setBlendColor(f32 _red, f32 _green, f32 _blue, f32 _alpha
 void CachedClearColor::setClearColor(f32 _red, f32 _green, f32 _blue, f32 _alpha)
 {
 	if (update(Parameter(_red), Parameter(_green), Parameter(_blue), Parameter(_alpha)))
-		glClearColor(_red, _green, _blue, _alpha);
+		FunctionWrapper::glClearColor(_red, _green, _blue, _alpha);
 }
 
 /*---------------CachedVertexAttribArray-------------*/
@@ -123,9 +145,9 @@ void CachedVertexAttribArray::enableVertexAttribArray(u32 _index, bool _enable)
 	m_attribs[_index] = Parameter(u32(_enable));
 
 	if (_enable)
-		glEnableVertexAttribArray(_index);
+		FunctionWrapper::glEnableVertexAttribArray(_index);
 	else
-		glDisableVertexAttribArray(_index);
+		FunctionWrapper::glDisableVertexAttribArray(_index);
 }
 
 void CachedVertexAttribArray::reset()
@@ -138,7 +160,7 @@ void CachedVertexAttribArray::reset()
 void CachedUseProgram::useProgram(graphics::ObjectHandle _program)
 {
 	if (update(_program))
-		glUseProgram(GLuint(_program));
+		FunctionWrapper::glUseProgram(GLuint(_program));
 }
 
 /*---------------CachedTextureUnpackAlignment-------------*/
@@ -146,15 +168,13 @@ void CachedUseProgram::useProgram(graphics::ObjectHandle _program)
 void CachedTextureUnpackAlignment::setTextureUnpackAlignment(s32 _param)
 {
 	if (update(_param))
-		glPixelStorei(GL_UNPACK_ALIGNMENT, _param);
+		FunctionWrapper::glPixelStorei(GL_UNPACK_ALIGNMENT, _param);
 }
 
 /*---------------CachedFunctions-------------*/
 
 CachedFunctions::CachedFunctions(const GLInfo & _glinfo)
-: m_bindFramebuffer(GET_GL_FUNCTION(glBindFramebuffer))
-, m_bindRenderbuffer(GET_GL_FUNCTION(glBindRenderbuffer))
-, m_bindBuffer(GET_GL_FUNCTION(glBindBuffer)) {
+{
 	if (_glinfo.isGLESX) {
 		// Disable parameters, not avalible for GLESX
 		m_enables.emplace(GL_DEPTH_CLAMP, Parameter());

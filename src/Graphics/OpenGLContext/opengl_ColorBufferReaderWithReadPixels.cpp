@@ -1,5 +1,6 @@
 #include <Graphics/Context.h>
 #include "opengl_ColorBufferReaderWithReadPixels.h"
+#include "opengl_Wrapper.h"
 #include <algorithm>
 
 using namespace graphics;
@@ -19,7 +20,7 @@ const u8 * ColorBufferReaderWithReadPixels::_readPixels(const ReadColorBufferPar
 
 	// No async pixel buffer copies are supported in this class, this is a last resort fallback
 	u8* gpuData = m_pixelData.data();
-	glReadPixels(_params.x0, _params.y0, m_pTexture->realWidth, _params.height, format, type, gpuData);
+	FunctionWrapper::glReadPixels(_params.x0, _params.y0, m_pTexture->realWidth, _params.height, format, type, gpuData);
 
 	_heightOffset = 0;
 	_stride = m_pTexture->realWidth;

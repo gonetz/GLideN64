@@ -3,6 +3,7 @@
 #include <GBI.h>
 #include <Graphics/Context.h>
 #include "opengl_ColorBufferReaderWithEGLImage.h"
+#include "opengl_Wrapper.h"
 
 using namespace opengl;
 using namespace graphics;
@@ -56,7 +57,7 @@ const u8 * ColorBufferReaderWithEGLImage::_readPixels(const ReadColorBufferParam
 		_stride = m_pTexture->realWidth;
 	} else {
 		gpuData = m_pixelData.data();
-		glReadPixels(_params.x0, _params.y0, _params.width, _params.height, format, type, gpuData);
+		FunctionWrapper::glReadPixels(_params.x0, _params.y0, _params.width, _params.height, format, type, gpuData);
 		_heightOffset = 0;
 		_stride = m_pTexture->realWidth;
 	}

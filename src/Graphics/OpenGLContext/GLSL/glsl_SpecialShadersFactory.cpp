@@ -10,10 +10,15 @@
 #include <Graphics/ObjectHandle.h>
 #include <Graphics/ShaderProgram.h>
 #include <Graphics/OpenGLContext/opengl_CachedFunctions.h>
+#include <Graphics/OpenGLContext/opengl_Wrapper.h>
 #include "glsl_SpecialShadersFactory.h"
 #include "glsl_ShaderPart.h"
 #include "glsl_FXAA.h"
 #include "glsl_Utils.h"
+
+#include <algorithm>
+
+using namespace opengl;
 
 namespace glsl {
 
@@ -455,13 +460,13 @@ namespace glsl {
 				_fragmentEnd->write(ssFragmentShader);
 
 			m_program =
-				graphics::ObjectHandle(Utils::createRectShaderProgram(ssVertexShader.str().data(), ssFragmentShader.str().data()));
+				graphics::ObjectHandle(Utils::createRectShaderProgram(ssVertexShader.str(), ssFragmentShader.str()));
 		}
 
 		~SpecialShader()
 		{
 			m_useProgram->useProgram(graphics::ObjectHandle::null);
-			glDeleteProgram(GLuint(m_program));
+			FunctionWrapper::glDeleteProgram(GLuint(m_program));
 		}
 
 		void activate() override {
@@ -492,20 +497,22 @@ namespace glsl {
 			, m_locDepthImage(-1)
 		{
 			m_useProgram->useProgram(m_program);
-			m_locFog = glGetUniformLocation(GLuint(m_program), "uFogColor");
-			m_locZlut = glGetUniformLocation(GLuint(m_program), "uZlutImage");
-			m_locTlut = glGetUniformLocation(GLuint(m_program), "uTlutImage");
-			m_locDepthImage = glGetUniformLocation(GLuint(m_program), "uDepthImage");
+			m_locFog = FunctionWrapper::glGetUniformLocation(GLuint(m_program), "uFogColor");
+			m_locZlut = FunctionWrapper::glGetUniformLocation(GLuint(m_program), "uZlutImage");
+			m_locTlut = FunctionWrapper::glGetUniformLocation(GLuint(m_program), "uTlutImage");
+			m_locDepthImage = FunctionWrapper::glGetUniformLocation(GLuint(m_program), "uDepthImage");
 			m_useProgram->useProgram(graphics::ObjectHandle::null);
 		}
 
 		void activate() override {
 			ShadowMapShaderBase::activate();
-			glUniform4fv(m_locFog, 1, &gDP.fogColor.r);
-			glUniform1i(m_locZlut, int(graphics::textureIndices::ZLUTTex));
-			glUniform1i(m_locTlut, int(graphics::textureIndices::PaletteTex));
-			glUniform1i(m_locDepthImage, 0);
-			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+			std::unique_ptr<GLfloat[]> values(new GLfloat[4]);
+			std::copy_n(&gDP.fogColor.r, 4, values.get());
+			FunctionWrapper::glUniform4fv(m_locFog, 1, std::move(values));
+			FunctionWrapper::glUniform1i(m_locZlut, int(graphics::textureIndices::ZLUTTex));
+			FunctionWrapper::glUniform1i(m_locTlut, int(graphics::textureIndices::PaletteTex));
+			FunctionWrapper::glUniform1i(m_locDepthImage, 0);
+			FunctionWrapper::glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 			g_paletteTexture.update();
 		}
 
@@ -531,7 +538,7 @@ namespace glsl {
 			: FXAAShaderBase(_glinfo, _useProgram, _vertexHeader, _fragmentHeader, _fragmentEnd)
 		{
 			m_useProgram->useProgram(m_program);
-			m_textureSizeLoc = glGetUniformLocation(GLuint(m_program), "uTextureSize");
+			m_textureSizeLoc = FunctionWrapper::glGetUniformLocation(GLuint(m_program), "uTextureSize");
 			m_useProgram->useProgram(graphics::ObjectHandle::null);
 		}
 
@@ -542,7 +549,7 @@ namespace glsl {
 				(m_width != pBuffer->m_pTexture->realWidth || m_height != pBuffer->m_pTexture->realHeight)) {
 				m_width = pBuffer->m_pTexture->realWidth;
 				m_height = pBuffer->m_pTexture->realHeight;
-				glUniform2f(m_textureSizeLoc, GLfloat(m_width), GLfloat(m_height));
+				FunctionWrapper::glUniform2f(m_textureSizeLoc, GLfloat(m_width), GLfloat(m_height));
 			}
 		}
 
@@ -585,22 +592,22 @@ namespace glsl {
 			fragmentMain.write(ssFragmentShader);
 
 			m_program =
-				graphics::ObjectHandle(Utils::createRectShaderProgram(ssVertexShader.str().data(), ssFragmentShader.str().data()));
+				graphics::ObjectHandle(Utils::createRectShaderProgram(ssVertexShader.str(), ssFragmentShader.str()));
 
 			m_useProgram->useProgram(m_program);
-			GLint loc = glGetUniformLocation(GLuint(m_program), "uTex0");
+			GLint loc = FunctionWrapper::glGetUniformLocation(GLuint(m_program), "uTex0");
 			assert(loc >= 0);
-			glUniform1i(loc, 0);
-			m_textureSizeLoc = glGetUniformLocation(GLuint(m_program), "uTextureSize");
-			m_enableAlphaTestLoc = glGetUniformLocation(GLuint(m_program), "uEnableAlphaTest");
-			m_primDepthLoc = glGetUniformLocation(GLuint(m_program), "uPrimDepth");
+			FunctionWrapper::glUniform1i(loc, 0);
+			m_textureSizeLoc = FunctionWrapper::glGetUniformLocation(GLuint(m_program), "uTextureSize");
+			m_enableAlphaTestLoc = FunctionWrapper::glGetUniformLocation(GLuint(m_program), "uEnableAlphaTest");
+			m_primDepthLoc = FunctionWrapper::glGetUniformLocation(GLuint(m_program), "uPrimDepth");
 			m_useProgram->useProgram(graphics::ObjectHandle::null);
 		}
 
 		~TexrectDrawerShaderDraw()
 		{
 			m_useProgram->useProgram(graphics::ObjectHandle::null);
-			glDeleteProgram(GLuint(m_program));
+			FunctionWrapper::glDeleteProgram(GLuint(m_program));
 		}
 
 		void activate() override
@@ -610,7 +617,7 @@ namespace glsl {
 				const GLfloat depth = gDP.otherMode.depthSource == G_ZS_PRIM ? gDP.primDepth.z : 0.0f;
 				if (depth != m_depth) {
 					m_depth = depth;
-					glUniform1f(m_primDepthLoc, m_depth);
+					FunctionWrapper::glUniform1f(m_primDepthLoc, m_depth);
 				}
 			}
 			gDP.changed |= CHANGED_COMBINE;
@@ -621,14 +628,14 @@ namespace glsl {
 			if (m_textureSizeLoc < 0)
 				return;
 			m_useProgram->useProgram(m_program);
-			glUniform2f(m_textureSizeLoc, (GLfloat)_width, (GLfloat)_height);
+			FunctionWrapper::glUniform2f(m_textureSizeLoc, (GLfloat)_width, (GLfloat)_height);
 			gDP.changed |= CHANGED_COMBINE;
 		}
 
 		void setEnableAlphaTest(int _enable) override
 		{
 			m_useProgram->useProgram(m_program);
-			glUniform1i(m_enableAlphaTestLoc, _enable);
+			FunctionWrapper::glUniform1i(m_enableAlphaTestLoc, _enable);
 			gDP.changed |= CHANGED_COMBINE;
 		}
 
@@ -658,8 +665,8 @@ namespace glsl {
 			: TexrectCopyShaderBase(_glinfo, _useProgram, _vertexHeader, _fragmentHeader, _fragmentEnd)
 		{
 			m_useProgram->useProgram(m_program);
-			const int texLoc = glGetUniformLocation(GLuint(m_program), "uTex0");
-			glUniform1i(texLoc, 0);
+			const int texLoc = FunctionWrapper::glGetUniformLocation(GLuint(m_program), "uTex0");
+			FunctionWrapper::glUniform1i(texLoc, 0);
 			m_useProgram->useProgram(graphics::ObjectHandle::null);
 		}
 	};
@@ -679,12 +686,12 @@ namespace glsl {
 			: GammaCorrectionShaderBase(_glinfo, _useProgram, _vertexHeader, _fragmentHeader, _fragmentEnd)
 		{
 			m_useProgram->useProgram(m_program);
-			const int texLoc = glGetUniformLocation(GLuint(m_program), "uTex0");
-			glUniform1i(texLoc, 0);
-			const int levelLoc = glGetUniformLocation(GLuint(m_program), "uGammaCorrectionLevel");
+			const int texLoc = FunctionWrapper::glGetUniformLocation(GLuint(m_program), "uTex0");
+			FunctionWrapper::glUniform1i(texLoc, 0);
+			const int levelLoc = FunctionWrapper::glGetUniformLocation(GLuint(m_program), "uGammaCorrectionLevel");
 			assert(levelLoc >= 0);
 			const f32 gammaLevel = (config.gammaCorrection.force != 0) ? config.gammaCorrection.level : 2.0f;
-			glUniform1f(levelLoc, gammaLevel);
+			FunctionWrapper::glUniform1f(levelLoc, gammaLevel);
 			m_useProgram->useProgram(graphics::ObjectHandle::null);
 		}
 	};
@@ -702,8 +709,8 @@ namespace glsl {
 			: OrientationCorrectionShaderBase(_glinfo, _useProgram, _vertexHeader, _fragmentHeader, _fragmentEnd)
 		{
 			m_useProgram->useProgram(m_program);
-			const int texLoc = glGetUniformLocation(GLuint(m_program), "uTex0");
-			glUniform1i(texLoc, 0);
+			const int texLoc = FunctionWrapper::glGetUniformLocation(GLuint(m_program), "uTex0");
+			FunctionWrapper::glUniform1i(texLoc, 0);
 			m_useProgram->useProgram(graphics::ObjectHandle::null);
 		}
 	};
@@ -723,16 +730,20 @@ namespace glsl {
 			: TextDrawerShaderBase(_glinfo, _useProgram, _vertexHeader, _fragmentHeader, _fragmentEnd)
 		{
 			m_useProgram->useProgram(m_program);
-			const int texLoc = glGetUniformLocation(GLuint(m_program), "uTex0");
-			glUniform1i(texLoc, 0);
-			m_colorLoc = glGetUniformLocation(GLuint(m_program), "uColor");
-			glUniform4fv(m_colorLoc, 1, config.font.colorf);
+			const int texLoc = FunctionWrapper::glGetUniformLocation(GLuint(m_program), "uTex0");
+			FunctionWrapper::glUniform1i(texLoc, 0);
+			m_colorLoc = FunctionWrapper::glGetUniformLocation(GLuint(m_program), "uColor");
+			std::unique_ptr<GLfloat[]> values(new GLfloat[4]);
+			std::copy_n(config.font.colorf, 4, values.get());
+			FunctionWrapper::glUniform4fv(m_colorLoc, 1, std::move(values));
 			m_useProgram->useProgram(graphics::ObjectHandle::null);
 		}
 
 		void setTextColor(float * _color) override {
 			m_useProgram->useProgram(m_program);
-			glUniform4fv(m_colorLoc, 1, _color);
+			std::unique_ptr<GLfloat[]> values(new GLfloat[4]);
+			std::copy_n(_color, 4, values.get());
+			FunctionWrapper::glUniform4fv(m_colorLoc, 1, std::move(values));
 			m_useProgram->useProgram(graphics::ObjectHandle::null);
 		}
 

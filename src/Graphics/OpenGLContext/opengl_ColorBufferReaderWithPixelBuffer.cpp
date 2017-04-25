@@ -1,6 +1,7 @@
 #include <Config.h>
 #include <Graphics/Context.h>
 #include "opengl_ColorBufferReaderWithPixelBuffer.h"
+#include "opengl_Wrapper.h"
 
 using namespace graphics;
 using namespace opengl;
@@ -20,7 +21,13 @@ ColorBufferReaderWithPixelBuffer::~ColorBufferReaderWithPixelBuffer()
 
 void ColorBufferReaderWithPixelBuffer::_destroyBuffers()
 {
-	glDeleteBuffers(m_numPBO, m_PBO);
+	auto buffers = std::unique_ptr<GLuint[]>(new GLuint[m_numPBO]);
+
+	for(unsigned int index = 0; index < m_numPBO; ++index) {
+		buffers[index] = m_PBO[index];
+	}
+
+	FunctionWrapper::glDeleteBuffers(m_numPBO, std::move(buffers));
 
 	for (u32 index = 0; index < m_numPBO; ++index)
 		m_PBO[index] = 0;
@@ -33,13 +40,13 @@ void ColorBufferReaderWithPixelBuffer::_initBuffers()
 		m_numPBO = _maxPBO;
 
 	// Generate Pixel Buffer Objects
-	glGenBuffers(m_numPBO, m_PBO);
+	FunctionWrapper::glGenBuffers(m_numPBO, m_PBO);
 	m_curIndex = 0;
 
 	// Initialize Pixel Buffer Objects
 	for (u32 i = 0; i < m_numPBO; ++i) {
 		m_bindBuffer->bind(Parameter(GL_PIXEL_PACK_BUFFER), ObjectHandle(m_PBO[i]));
-		glBufferData(GL_PIXEL_PACK_BUFFER, m_pTexture->textureBytes, nullptr, GL_DYNAMIC_READ);
+		FunctionWrapper::glBufferData(GL_PIXEL_PACK_BUFFER, m_pTexture->textureBytes, std::move(std::unique_ptr<u8[]>(nullptr)), GL_DYNAMIC_READ);
 	}
 	m_bindBuffer->bind(Parameter(GL_PIXEL_PACK_BUFFER), ObjectHandle::null);
 }
@@ -50,24 +57,31 @@ const u8 * ColorBufferReaderWithPixelBuffer::_readPixels(const ReadColorBufferPa
 	GLenum format = GLenum(_params.colorFormat);
 	GLenum type = GLenum(_params.colorType);
 
-	m_bindBuffer->bind(Parameter(GL_PIXEL_PACK_BUFFER), ObjectHandle(m_PBO[m_curIndex]));
-	glReadPixels(_params.x0, _params.y0, m_pTexture->realWidth, _params.height, format, type, 0);
+	GLubyte* pixelData = nullptr;
+
 	// If Sync, read pixels from the buffer, copy them to RDRAM.
 	// If not Sync, read pixels from the buffer, copy pixels from the previous buffer to RDRAM.
 	if (!_params.sync) {
 		m_curIndex = (m_curIndex + 1) % m_numPBO;
 		m_bindBuffer->bind(Parameter(GL_PIXEL_PACK_BUFFER), ObjectHandle(m_PBO[m_curIndex]));
+		FunctionWrapper::glReadPixelsAsync(_params.x0, _params.y0, m_pTexture->realWidth, _params.height, format, type);
+		pixelData = (GLubyte*)FunctionWrapper::glMapBufferRangeReadAsync(GL_PIXEL_PACK_BUFFER, m_PBO[m_curIndex], 0,
+			m_pTexture->realWidth * _params.height * _params.colorFormatBytes, GL_MAP_READ_BIT);
+	} else {
+		m_bindBuffer->bind(Parameter(GL_PIXEL_PACK_BUFFER), ObjectHandle(m_PBO[m_numPBO -1]));
+		FunctionWrapper::glReadPixels(_params.x0, _params.y0, m_pTexture->realWidth, _params.height, format, type, 0);
+		pixelData = (GLubyte*)FunctionWrapper::glMapBufferRange(GL_PIXEL_PACK_BUFFER, 0,
+			m_pTexture->realWidth * _params.height * _params.colorFormatBytes, GL_MAP_READ_BIT);
 	}
 
 	_heightOffset = 0;
 	_stride = m_pTexture->realWidth;
 
-	return reinterpret_cast<u8*>(glMapBufferRange(GL_PIXEL_PACK_BUFFER, 0,
-		m_pTexture->realWidth * _params.height * _params.colorFormatBytes, GL_MAP_READ_BIT));
+	return reinterpret_cast<u8*>(pixelData);
 }
 
 void ColorBufferReaderWithPixelBuffer::cleanUp()
 {
-	glUnmapBuffer(GL_PIXEL_PACK_BUFFER);
+	FunctionWrapper::glUnmapBufferAsync(GL_PIXEL_PACK_BUFFER);
 	m_bindBuffer->bind(Parameter(GL_PIXEL_PACK_BUFFER), ObjectHandle::null);
 }

@@ -5,6 +5,7 @@
 #include "opengl_ContextImpl.h"
 #include "opengl_BufferedDrawer.h"
 #include "opengl_UnbufferedDrawer.h"
+#include "opengl_UnbufferedDrawerThreadSafe.h"
 #include "opengl_ColorBufferReaderWithPixelBuffer.h"
 #include "opengl_ColorBufferReaderWithBufferStorage.h"
 #include "opengl_ColorBufferReaderWithEGLImage.h"
@@ -13,6 +14,7 @@
 #include "GLSL/glsl_CombinerProgramBuilder.h"
 #include "GLSL/glsl_SpecialShadersFactory.h"
 #include "GLSL/glsl_ShaderStorage.h"
+#include "opengl_Wrapper.h"
 
 using namespace opengl;
 
@@ -61,10 +63,13 @@ void ContextImpl::init()
 	}
 
 	{
-		if ((m_glInfo.isGLESX && (m_glInfo.bufferStorage && m_glInfo.majorVersion * 10 + m_glInfo.minorVersion >= 32)) || !m_glInfo.isGLESX)
+		if ((m_glInfo.isGLESX && (m_glInfo.bufferStorage && m_glInfo.majorVersion * 10 + m_glInfo.minorVersion >= 32)) || !m_glInfo.isGLESX) {
 			m_graphicsDrawer.reset(new BufferedDrawer(m_glInfo, m_cachedFunctions->getCachedVertexAttribArray(), m_cachedFunctions->getCachedBindBuffer()));
-		else
+		} else if (config.video.threadedVideo) {
+			m_graphicsDrawer.reset(new UnbufferedDrawerThreadSafe(m_glInfo, m_cachedFunctions->getCachedVertexAttribArray()));
+		} else {
 			m_graphicsDrawer.reset(new UnbufferedDrawer(m_glInfo, m_cachedFunctions->getCachedVertexAttribArray()));
+		}
 	}
 
 	resetCombinerProgramBuilder();
@@ -164,10 +169,14 @@ void ContextImpl::clearColorBuffer(f32 _red, f32 _green, f32 _blue, f32 _alpha)
 
 	if (m_glInfo.isGLES2) {
 		m_cachedFunctions->getCachedClearColor()->setClearColor(_red, _green, _blue, _alpha);
-		glClear(GL_COLOR_BUFFER_BIT);
+		FunctionWrapper::glClear(GL_COLOR_BUFFER_BIT);
 	} else {
-		GLfloat values[4] = {_red, _green, _blue, _alpha};
-		glClearBufferfv(GL_COLOR, 0, values);
+		std::unique_ptr<GLfloat[]> values(new GLfloat[4]);
+		values.get()[0] = _red;
+		values.get()[1] = _green;
+		values.get()[2] = _blue;
+		values.get()[3] = _alpha;
+		FunctionWrapper::glClearBufferfv(GL_COLOR, 0, std::move(values));
 	}
 
 	enableScissor->enable(true);
@@ -181,18 +190,18 @@ void ContextImpl::clearDepthBuffer()
 
 	if (m_glInfo.renderer == Renderer::PowerVR) {
 		depthMask->setDepthMask(false);
-		glClear(GL_DEPTH_BUFFER_BIT);
+		FunctionWrapper::glClear(GL_DEPTH_BUFFER_BIT);
 	}
 
 	depthMask->setDepthMask(true);
-	glClear(GL_DEPTH_BUFFER_BIT);
+	FunctionWrapper::glClear(GL_DEPTH_BUFFER_BIT);
 
 	enableScissor->enable(true);
 }
 
 void ContextImpl::setPolygonOffset(f32 _factor, f32 _units)
 {
-	glPolygonOffset(_factor, _units);
+	FunctionWrapper::glPolygonOffset(_factor, _units);
 }
 
 /*---------------Texture-------------*/
@@ -205,7 +214,9 @@ graphics::ObjectHandle ContextImpl::createTexture(graphics::Parameter _target)
 void ContextImpl::deleteTexture(graphics::ObjectHandle _name)
 {
 	u32 glName(_name);
-	glDeleteTextures(1, &glName);
+	std::unique_ptr<GLuint[]> texture(new GLuint[1]);
+	texture[0] = glName;
+	FunctionWrapper::glDeleteTextures(1, std::move(texture));
 	m_init2DTexture->reset(_name);
 
 	m_cachedFunctions->getTexParams()->erase(u32(_name));
@@ -238,20 +249,20 @@ void ContextImpl::setTextureUnpackAlignment(s32 _param)
 s32 ContextImpl::getTextureUnpackAlignment() const
 {
 	GLint unpackAlignment;
-	glGetIntegerv(GL_UNPACK_ALIGNMENT, &unpackAlignment);
+	FunctionWrapper::glGetIntegerv(GL_UNPACK_ALIGNMENT, &unpackAlignment);
 	return unpackAlignment;
 }
 
 s32 ContextImpl::getMaxTextureSize() const
 {
 	GLint maxTextureSize;
-	glGetIntegerv(GL_MAX_TEXTURE_SIZE, &maxTextureSize);
+	FunctionWrapper::glGetIntegerv(GL_MAX_TEXTURE_SIZE, &maxTextureSize);
 	return maxTextureSize;
 }
 
 void ContextImpl::bindImageTexture(const graphics::Context::BindImageTextureParameters & _params)
 {
-	glBindImageTexture(GLuint(_params.imageUnit), GLuint(_params.texture), 0, GL_FALSE, 0, GLenum(_params.accessMode), GLenum(_params.textureFormat));
+	FunctionWrapper::glBindImageTexture(GLuint(_params.imageUnit), GLuint(_params.texture), 0, GL_FALSE, 0, GLenum(_params.accessMode), GLenum(_params.textureFormat));
 }
 
 u32 ContextImpl::convertInternalTextureFormat(u32 _format) const
@@ -274,9 +285,9 @@ u32 ContextImpl::convertInternalTextureFormat(u32 _format) const
 void ContextImpl::textureBarrier()
 {
 	if (m_glInfo.texture_barrier)
-		glTextureBarrier();
+		FunctionWrapper::glTextureBarrier();
 	else if (m_glInfo.texture_barrierNV)
-		glTextureBarrierNV();
+		FunctionWrapper::glTextureBarrierNV();
 }
 
 /*---------------Framebuffer-------------*/
@@ -295,7 +306,8 @@ void ContextImpl::deleteFramebuffer(graphics::ObjectHandle _name)
 {
 	u32 fbo(_name);
 	if (fbo != 0) {
-		glDeleteFramebuffers(1, &fbo);
+		std::unique_ptr<GLuint[]> buffers(new GLuint[1]{fbo});
+		FunctionWrapper::glDeleteFramebuffers(1, std::move(buffers));
 		m_cachedFunctions->getCachedBindFramebuffer()->reset();
 	}
 }
@@ -305,7 +317,7 @@ void ContextImpl::bindFramebuffer(graphics::BufferTargetParam _target, graphics:
 	if (m_glInfo.renderer == Renderer::VideoCore) {
 		CachedDepthMask * depthMask = m_cachedFunctions->getCachedDepthMask();
 		depthMask->setDepthMask(true);
-		glClear(GL_DEPTH_BUFFER_BIT);
+		FunctionWrapper::glClear(GL_DEPTH_BUFFER_BIT);
 	}
 	m_cachedFunctions->getCachedBindFramebuffer()->bind(_target, _name);
 }
@@ -332,8 +344,13 @@ bool ContextImpl::blitFramebuffers(const graphics::Context::BlitFramebuffersPara
 
 void ContextImpl::setDrawBuffers(u32 _num)
 {
-	GLenum targets[4] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3};
-	glDrawBuffers(_num, targets);
+	std::unique_ptr<GLenum[]> targets(new GLenum[4]);
+	targets.get()[0] = GL_COLOR_ATTACHMENT0;
+	targets.get()[1] = GL_COLOR_ATTACHMENT1;
+	targets.get()[2] = GL_COLOR_ATTACHMENT2;
+	targets.get()[3] = GL_COLOR_ATTACHMENT3;
+
+	FunctionWrapper::glDrawBuffers(_num, std::move(targets));
 }
 
 graphics::PixelReadBuffer * ContextImpl::createPixelReadBuffer(size_t _sizeInBytes)
@@ -461,7 +478,7 @@ void ContextImpl::drawLine(f32 _width, SPVertex * _vertices)
 f32 ContextImpl::getMaxLineWidth()
 {
 	GLfloat lineWidthRange[2] = { 0.0f, 0.0f };
-	glGetFloatv(GL_ALIASED_LINE_WIDTH_RANGE, lineWidthRange);
+	FunctionWrapper::glGetFloatv(GL_ALIASED_LINE_WIDTH_RANGE, lineWidthRange);
 	return lineWidthRange[1];
 }
 
