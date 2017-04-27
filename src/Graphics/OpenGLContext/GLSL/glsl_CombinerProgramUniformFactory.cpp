@@ -261,7 +261,7 @@ public:
 				nFogUsage = 2;
 		}
 		uFogUsage.set(nFogUsage, _force);
-		uFogScale.set((float)gSP.fog.multiplier / 256.0f, (float)gSP.fog.offset / 256.0f, _force);
+		uFogScale.set(gSP.fog.multiplierf, gSP.fog.offsetf, _force);
 	}
 
 private:

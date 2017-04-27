@@ -511,11 +511,12 @@ void ZSort_MoveMem( u32 _w0, u32 _w1 )
 		const f32 scale_x = _FIXED2FLOAT( *(s16*)&RDRAM[(a+0)^1], 2 );
 		const f32 scale_y = _FIXED2FLOAT( *(s16*)&RDRAM[(a+1)^1], 2 );
 		const f32 scale_z = _FIXED2FLOAT( *(s16*)&RDRAM[(a+2)^1], 10 );
-		gSP.fog.multiplier = ((s16*)RDRAM)[(a+3)^1];
+		const s16 fm = ((s16*)RDRAM)[(a+3)^1];
 		const f32 trans_x = _FIXED2FLOAT( *(s16*)&RDRAM[(a+4)^1], 2 );
 		const f32 trans_y = _FIXED2FLOAT( *(s16*)&RDRAM[(a+5)^1], 2 );
 		const f32 trans_z = _FIXED2FLOAT( *(s16*)&RDRAM[(a+6)^1], 10 );
-		gSP.fog.offset = ((s16*)RDRAM)[(a+7)^1];
+		const s16 fo = ((s16*)RDRAM)[(a+7)^1];
+		gSPFogFactor(fm, fo);
 
 		gSP.viewport.vscale[0] = scale_x;
 		gSP.viewport.vscale[1] = scale_y;

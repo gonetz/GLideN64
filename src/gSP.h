@@ -110,6 +110,7 @@ struct gSPInfo
 	struct
 	{
 		s16 multiplier, offset;
+		f32 multiplierf, offsetf;
 	} fog;
 
 	struct

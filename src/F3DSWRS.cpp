@@ -30,6 +30,8 @@
 #define F3DSWRS_TRI1				0xBF
 
 #define F3DSWRS_MV_TEXSCALE			0x82
+#define F3DSWRS_MW_FOG_MULTIPLIER	0x08
+#define F3DSWRS_MW_FOG_OFFSET		0x0A
 
 void F3DSWRS_VertexColor(u32, u32 _w1)
 {
@@ -181,11 +183,13 @@ void F3DSWRS_MoveWord(u32 _w0, u32 _w1)
 	case G_MW_SEGMENT:
 		gSPSegment( _SHIFTR( _w0, 8, 16 ) >> 2, _w1 & 0x00FFFFFF );
 		break;
-	case G_MW_FOG:
-		gSPFogFactor( (s16)_SHIFTR( _w1, 16, 16 ), (s16)_SHIFTR( _w1, 0, 16 ) );
+	case F3DSWRS_MW_FOG_MULTIPLIER:
+		gSP.fog.multiplierf = _FIXED2FLOAT((s32)_w1, 16);
+		gSP.changed |= CHANGED_FOGPOSITION;
 		break;
-	case G_MW_LIGHTCOL:
-		gSPLightColor((_SHIFTR( _w0, 8, 8 ) / 32) + 1, _w1 );
+	case F3DSWRS_MW_FOG_OFFSET:
+		gSP.fog.offsetf = _FIXED2FLOAT((s32)_w1, 16);
+		gSP.changed |= CHANGED_FOGPOSITION;
 		break;
 	case G_MW_PERSPNORM:
 		gSPPerspNormalize( _w1 );

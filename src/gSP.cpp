@@ -1899,6 +1899,8 @@ void gSPFogFactor( s16 fm, s16 fo )
 {
 	gSP.fog.multiplier = fm;
 	gSP.fog.offset = fo;
+	gSP.fog.multiplierf = _FIXED2FLOAT(fm, 8);
+	gSP.fog.offsetf = _FIXED2FLOAT(fo, 8);
 
 	gSP.changed |= CHANGED_FOGPOSITION;
 	DebugMsg(DEBUG_NORMAL, "gSPFogFactor( %i, %i );\n", fm, fo);
