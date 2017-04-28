@@ -15,7 +15,7 @@ typedef struct
 	struct {
 		u32 SWStartDL;
 		u32 SWOtherDL;
-	} swDL[18];
+	} swDL[10];
 } RSPInfo;
 
 extern RSPInfo RSP;

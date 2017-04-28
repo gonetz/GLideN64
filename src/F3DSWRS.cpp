@@ -3,6 +3,7 @@
  * Incomplete!
  */
 
+#include <array>
 #include "GLideN64.h"
 #include "DebugDump.h"
 #include "F3D.h"
@@ -57,7 +58,14 @@ void F3DSWRS_MoveMem(u32 _w0, u32)
 
 void F3DSWRS_Vtx(u32 _w0, u32 _w1)
 {
-	gSPSWVertex( _w1, _SHIFTR( _w0, 10, 6 ), 0 );
+    const u32 address = RSP_SegmentToPhysical(_w1);
+    const u32 n = _SHIFTR(_w0, 10, 6);
+
+    if ((address + sizeof(SWVertex)* n) > RDRAMSize)
+        return;
+
+    const SWVertex * vertex = (const SWVertex*)&RDRAM[address];
+    gSPSWVertex(vertex, n, 0 );
 }
 
 void F3DSWRS_Jump2(u32, u32)
@@ -67,8 +75,57 @@ void F3DSWRS_Jump2(u32, u32)
 	RSP.swDL[RSP.PCi].SWOtherDL = _SHIFTR(*(u32*)&RDRAM[RSP.PC[RSP.PCi] + 4], 0, 24);
 }
 
+static
+void Jump3_2(u32 * _result) {
+    typedef std::array<s16, 4> Vector;
+    u32 params[10];
+    for (u32 i = 1; i < 10; ++i)
+        params[i] = *(u32*)&RDRAM[RSP.PC[RSP.PCi] + i * 4];
+    Vector v0{ 0, 0, 0, 0 };
+    Vector v1{ 0, 0, 0, 0 };
+    Vector v2{ 0, 0, 0, 0 };
+    Vector v3{ 0, 0, 0, 0 };
+    s16 V0 = _SHIFTR(params[9], 0, 16);
+    s16 V1 = _SHIFTR(params[8], 0, 16);
+    V1 <<= 4;
+    v0[0] = _SHIFTR(params[8], 16, 16);
+    v0[1] = V1;
+    v0[2] = _SHIFTR(params[9], 16, 16);
+    v2[0] = V0;
+    v3[2] = V0;
+    v1[1] = _SHIFTR(params[2], 16, 16);
+    _result[0] = ((v0[0] + v1[0]) << 16) | (v0[1] + v1[1]);
+    _result[1] = ((v0[2] + v1[2]) << 16) | (v0[3] + v1[3]);
+    v1 = v2;
+    v1[1] = _SHIFTR(params[2], 0, 16);
+    _result[2] = ((v0[0] + v1[0]) << 16) | (v0[1] + v1[1]);
+    _result[3] = ((v0[2] + v1[2]) << 16) | (v0[3] + v1[3]);
+    v1 = v3;
+    v1[1] = _SHIFTR(params[1], 16, 16);
+    _result[4] = ((v0[0] + v1[0]) << 16) | (v0[1] + v1[1]);
+    _result[5] = ((v0[2] + v1[2]) << 16) | (v0[3] + v1[3]);
+    for (u32 i = 0; i < 4; ++i)
+        v1[i] = v2[i] + v3[i];
+    v1[1] = _SHIFTR(params[1], 0, 16);
+    _result[6] = ((v0[0] + v1[0]) << 16) | (v0[1] + v1[1]);
+    _result[7] = ((v0[2] + v1[2]) << 16) | (v0[3] + v1[3]);
+}
+
+
 void F3DSWRS_Jump3(u32 _w0, u32 _w1)
 {
+    const u32 mode = _SHIFTR(_w0, 8, 8);
+    switch (mode) {
+    case 0x02: {
+        u32 vecdata[8];
+        Jump3_2(vecdata);
+        const SWVertex * vertex = (const SWVertex*)&vecdata[0];
+        gSPSWVertex(vertex, 4, 0);
+    }
+        break;
+    default:
+        break;
+    }
 	RSP.PC[RSP.PCi] = RSP.swDL[RSP.PCi].SWOtherDL;
 	RSP.swDL[RSP.PCi].SWStartDL = _SHIFTR(*(u32*)&RDRAM[RSP.PC[RSP.PCi]], 0, 24);
 	RSP.swDL[RSP.PCi].SWOtherDL = _SHIFTR(*(u32*)&RDRAM[RSP.PC[RSP.PCi] + 4], 0, 24);

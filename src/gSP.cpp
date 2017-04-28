@@ -1440,15 +1440,8 @@ void gSPF3DAMVertex(u32 a, u32 n, u32 v0)
 	}
 }
 
-void gSPSWVertex(u32 a, u32 n, u32 v0)
+void gSPSWVertex(const SWVertex * vertex, u32 n, u32 v0)
 {
-	u32 address = RSP_SegmentToPhysical(a);
-
-	if ((address + sizeof(SWVertex)* n) > RDRAMSize)
-		return;
-
-	SWVertex *vertex = (SWVertex*)&RDRAM[address];
-
 	GraphicsDrawer & drawer = dwnd().getDrawer();
 	if ((n + v0) <= INDEXMAP_SIZE) {
 		unsigned int i = v0;

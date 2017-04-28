@@ -160,7 +160,7 @@ void gSPDMAVertex( u32 v, u32 n, u32 v0 );
 void gSPCBFDVertex( u32 v, u32 n, u32 v0 );
 void gSPT3DUXVertex(u32 v, u32 n, u32 ci);
 void gSPF3DAMVertex( u32 v, u32 n, u32 v0 );
-void gSPSWVertex(u32 a, u32 n, u32 v0);
+void gSPSWVertex(const SWVertex * vertex, u32 n, u32 v0);
 void gSPDisplayList(u32 dl);
 void gSPSWDisplayList(u32 dl);
 void gSPBranchList( u32 dl );
