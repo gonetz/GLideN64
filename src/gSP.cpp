@@ -926,19 +926,8 @@ void gSPLookAt( u32 _l, u32 _n )
 static
 void gSPUpdateLightVectors()
 {
-	s32 count = gSP.numLights-1;
-	while (count >= 3) {
-		InverseTransformVectorNormalize4x(&gSP.lights.xyz[count-3],&gSP.lights.i_xyz[count-3], 
-					gSP.matrix.modelView[gSP.matrix.modelViewi]);
-		count -= 4;
-	}
-	if (count >= 1){
-		InverseTransformVectorNormalize2x(&gSP.lights.xyz[count-1], &gSP.lights.i_xyz[count-1],
-					gSP.matrix.modelView[gSP.matrix.modelViewi]);
-		count -= 2;
-	}
-	if (count == 0)
-		InverseTransformVectorNormalize(gSP.lights.xyz[0], gSP.lights.i_xyz[0], gSP.matrix.modelView[gSP.matrix.modelViewi]);
+	InverseTransformVectorNormalizeN(&gSP.lights.xyz[0], &gSP.lights.i_xyz[0], 
+			gSP.matrix.modelView[gSP.matrix.modelViewi], gSP.numLights);
 	gSP.changed ^= CHANGED_LIGHT;
 	gSP.changed |= CHANGED_HW_LIGHT;
 }
@@ -947,8 +936,8 @@ static
 void gSPUpdateLookatVectors()
 {
 	if (gSP.lookatEnable) {
-		InverseTransformVectorNormalize2x(&gSP.lookat.xyz[0], &gSP.lookat.i_xyz[0],
-					gSP.matrix.modelView[gSP.matrix.modelViewi]);
+		InverseTransformVectorNormalizeN(&gSP.lookat.xyz[0], &gSP.lookat.i_xyz[0],
+				gSP.matrix.modelView[gSP.matrix.modelViewi], 2);
 	}
 	gSP.changed ^= CHANGED_LOOKAT;
 }
