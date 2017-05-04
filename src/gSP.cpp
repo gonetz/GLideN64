@@ -164,21 +164,30 @@ static void gSPPointLightVertex4_default(u32 v, float _vPos[4][3])
 		vtx.g = gSP.lights.rgb[gSP.numLights][G];
 		vtx.b = gSP.lights.rgb[gSP.numLights][B];
 		for (u32 l=0; l < gSP.numLights; ++l) {
-			float lvec[3] = {gSP.lights.pos_xyzw[l][X], gSP.lights.pos_xyzw[l][Y], gSP.lights.pos_xyzw[l][Z]};
-			lvec[0] -= _vPos[j][0];
-			lvec[1] -= _vPos[j][1];
-			lvec[2] -= _vPos[j][2];
-			const float light_len2 = lvec[0]*lvec[0] + lvec[1]*lvec[1] + lvec[2]*lvec[2];
-			const float light_len = sqrtf(light_len2);
-			const float at = gSP.lights.ca[l] + light_len/65535.0f*gSP.lights.la[l] + light_len2/65535.0f*gSP.lights.qa[l];
-			if (at > 0.0f)
-				light_intensity = 1/at;
-			else
-				light_intensity = 0.0f;
-			if (light_intensity > 0.0f) {
-				vtx.r += gSP.lights.rgb[l][R] * light_intensity;
-				vtx.g += gSP.lights.rgb[l][G] * light_intensity;
-				vtx.b += gSP.lights.rgb[l][B] * light_intensity;
+			if (gSP.lights.ca[l] != 0.0f) {
+				float lvec[3] = {gSP.lights.pos_xyzw[l][X], gSP.lights.pos_xyzw[l][Y], gSP.lights.pos_xyzw[l][Z]};
+				lvec[0] -= _vPos[j][0];
+				lvec[1] -= _vPos[j][1];
+				lvec[2] -= _vPos[j][2];
+				const float light_len2 = lvec[0]*lvec[0] + lvec[1]*lvec[1] + lvec[2]*lvec[2];
+				const float light_len = sqrtf(light_len2);
+				const float at = gSP.lights.ca[l] + light_len/65535.0f*gSP.lights.la[l] + light_len2/65535.0f*gSP.lights.qa[l];
+				if (at > 0.0f)
+					light_intensity = 1/at;
+				else
+					light_intensity = 0.0f;
+				if (light_intensity > 0.0f) {
+					vtx.r += gSP.lights.rgb[l][R] * light_intensity;
+					vtx.g += gSP.lights.rgb[l][G] * light_intensity;
+					vtx.b += gSP.lights.rgb[l][B] * light_intensity;
+				}
+			} else {
+				f32 intensity = DotProduct(&vtx.nx, gSP.lights.i_xyz[l]);
+				if (intensity < 0.0f)
+					intensity = 0.0f;
+				vtx.r += gSP.lights.rgb[l][R] * intensity;
+				vtx.g += gSP.lights.rgb[l][G] * intensity;
+				vtx.b += gSP.lights.rgb[l][B] * intensity;
 			}
 		}
 		if (vtx.r > 1.0f) vtx.r = 1.0f;
@@ -427,21 +436,30 @@ static void gSPPointLightVertex_default(SPVertex & _vtx, float * _vPos)
 	_vtx.g = gSP.lights.rgb[gSP.numLights][G];
 	_vtx.b = gSP.lights.rgb[gSP.numLights][B];
 	for (u32 l=0; l < gSP.numLights; ++l) {
-		float lvec[3] = {gSP.lights.pos_xyzw[l][X], gSP.lights.pos_xyzw[l][Y], gSP.lights.pos_xyzw[l][Z]};
-		lvec[0] -= _vPos[0];
-		lvec[1] -= _vPos[1];
-		lvec[2] -= _vPos[2];
-		const float light_len2 = lvec[0]*lvec[0] + lvec[1]*lvec[1] + lvec[2]*lvec[2];
-		const float light_len = sqrtf(light_len2);
-		const float at = gSP.lights.ca[l] + light_len/65535.0f*gSP.lights.la[l] + light_len2/65535.0f*gSP.lights.qa[l];
-		if (at > 0.0f)
-			light_intensity = 1/at;//DotProduct (lvec, nvec) / (light_len * normal_len * at);
-		else
-			light_intensity = 0.0f;
-		if (light_intensity > 0.0f) {
-			_vtx.r += gSP.lights.rgb[l][R] * light_intensity;
-			_vtx.g += gSP.lights.rgb[l][G] * light_intensity;
-			_vtx.b += gSP.lights.rgb[l][B] * light_intensity;
+		if (gSP.lights.ca[l] != 0.0f) {
+			float lvec[3] = {gSP.lights.pos_xyzw[l][X], gSP.lights.pos_xyzw[l][Y], gSP.lights.pos_xyzw[l][Z]};
+			lvec[0] -= _vPos[0];
+			lvec[1] -= _vPos[1];
+			lvec[2] -= _vPos[2];
+			const float light_len2 = lvec[0]*lvec[0] + lvec[1]*lvec[1] + lvec[2]*lvec[2];
+			const float light_len = sqrtf(light_len2);
+			const float at = gSP.lights.ca[l] + light_len/65535.0f*gSP.lights.la[l] + light_len2/65535.0f*gSP.lights.qa[l];
+			if (at > 0.0f)
+				light_intensity = 1/at;//DotProduct (lvec, nvec) / (light_len * normal_len * at);
+			else
+				light_intensity = 0.0f;
+			if (light_intensity > 0.0f) {
+				_vtx.r += gSP.lights.rgb[l][R] * light_intensity;
+				_vtx.g += gSP.lights.rgb[l][G] * light_intensity;
+				_vtx.b += gSP.lights.rgb[l][B] * light_intensity;
+			}
+		} else {
+			f32 intensity = DotProduct(&_vtx.nx, gSP.lights.i_xyz[l]);
+			if (intensity < 0.0f)
+				intensity = 0.0f;
+			_vtx.r += gSP.lights.rgb[l][R] * intensity;
+			_vtx.g += gSP.lights.rgb[l][G] * intensity;
+			_vtx.b += gSP.lights.rgb[l][B] * intensity;
 		}
 	}
 	if (_vtx.r > 1.0f) _vtx.r = 1.0f;
