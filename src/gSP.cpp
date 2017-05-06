@@ -169,9 +169,9 @@ static void gSPPointLightVertex4_default(u32 v, float _vPos[4][3])
 				lvec[0] -= _vPos[j][0];
 				lvec[1] -= _vPos[j][1];
 				lvec[2] -= _vPos[j][2];
-				const float light_len2 = lvec[0]*lvec[0] + lvec[1]*lvec[1] + lvec[2]*lvec[2];
+				const float light_len2 = (lvec[0] * lvec[0] + lvec[1] * lvec[1] + lvec[2] * lvec[2]) / 65535.0f;
 				const float light_len = sqrtf(light_len2);
-				const float at = gSP.lights.ca[l] + light_len/65535.0f*gSP.lights.la[l] + light_len2/65535.0f*gSP.lights.qa[l];
+				const float at = gSP.lights.ca[l] + light_len*gSP.lights.la[l] + light_len2*gSP.lights.qa[l];
 				if (at > 0.0f)
 					light_intensity = 1/at;
 				else
@@ -441,9 +441,9 @@ static void gSPPointLightVertex_default(SPVertex & _vtx, float * _vPos)
 			lvec[0] -= _vPos[0];
 			lvec[1] -= _vPos[1];
 			lvec[2] -= _vPos[2];
-			const float light_len2 = lvec[0]*lvec[0] + lvec[1]*lvec[1] + lvec[2]*lvec[2];
+			const float light_len2 = (lvec[0] * lvec[0] + lvec[1] * lvec[1] + lvec[2] * lvec[2]) / 65535.0f;
 			const float light_len = sqrtf(light_len2);
-			const float at = gSP.lights.ca[l] + light_len/65535.0f*gSP.lights.la[l] + light_len2/65535.0f*gSP.lights.qa[l];
+			const float at = gSP.lights.ca[l] + light_len*gSP.lights.la[l] + light_len2*gSP.lights.qa[l];
 			if (at > 0.0f)
 				light_intensity = 1/at;//DotProduct (lvec, nvec) / (light_len * normal_len * at);
 			else
