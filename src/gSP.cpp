@@ -2567,18 +2567,21 @@ void gSPObjRendermode(u32 _mode)
 void gSPTransformVertex4NEON(u32 v, float mtx[4][4]);
 void gSPBillboardVertex4NEON(u32 v);
 void gSPTransformVertex_NEON(float vtx[4], float mtx[4][4]);
+void gSPLightVertex_NEON(SPVertex & _vtx);
+void gSPLightVertex4_NEON(u32 v);
 #endif //__NEON_OPT
 
 #ifdef __VEC4_OPT
 #ifndef __NEON_OPT
 void (*gSPTransformVertex4)(u32 v, float mtx[4][4]) = gSPTransformVertex4_default;
 void (*gSPBillboardVertex4)(u32 v) = gSPBillboardVertex4_default;
+void (*gSPLightVertex4)(u32 v) = gSPLightVertex4_default;
 #else
 void (*gSPTransformVertex4)(u32 v, float mtx[4][4]) = gSPTransformVertex4NEON;
 void (*gSPBillboardVertex4)(u32 v) = gSPBillboardVertex4NEON;
+void (*gSPLightVertex4)(u32 v) = gSPLightVertex4_NEON;
 #endif
 
-void (*gSPLightVertex4)(u32 v) = gSPLightVertex4_default;
 void (*gSPPointLightVertex4)(u32 v, float _vPos[4][3]) = gSPPointLightVertex4_default;
 
 #endif
@@ -2587,11 +2590,14 @@ void (*gSPPointLightVertex4)(u32 v, float _vPos[4][3]) = gSPPointLightVertex4_de
 #ifndef __NEON_OPT
 void (*gSPTransformVertex)(float vtx[4], float mtx[4][4]) =
 		gSPTransformVertex_default;
+void (*gSPLightVertex)(SPVertex & _vtx) = 
+		gSPLightVertex_default;
 #else
 void (*gSPTransformVertex)(float vtx[4], float mtx[4][4]) =
 		gSPTransformVertex_NEON;
+void (*gSPLightVertex)(SPVertex & _vtx) =
+		gSPLightVertex_NEON;
 #endif
-void (*gSPLightVertex)(SPVertex & _vtx) = gSPLightVertex_default;
 void (*gSPPointLightVertex)(SPVertex & _vtx, float * _vPos) = gSPPointLightVertex_default;
 void (*gSPBillboardVertex)(u32 v, u32 i) = gSPBillboardVertex_default;
 
@@ -2600,10 +2606,19 @@ void gSPSetupFunctions()
 	if (GBI.getMicrocodeType() != F3DEX2CBFD) {
 
 #ifdef __VEC4_OPT
+#ifndef __NEON_OPT
 		gSPLightVertex4 = gSPLightVertex4_default;
+#else
+		gSPLightVertex4 = gSPLightVertex4_NEON;
+#endif
 		gSPPointLightVertex4 = gSPPointLightVertex4_default;
 #endif
+
+#ifndef __NEON_OPT
 		gSPLightVertex = gSPLightVertex_default;
+#else
+		gSPLightVertex = gSPLightVertex_NEON;
+#endif
 		gSPPointLightVertex = gSPPointLightVertex_default;
 		return;
 	}
