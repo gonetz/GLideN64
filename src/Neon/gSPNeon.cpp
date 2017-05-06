@@ -23,6 +23,8 @@
 #include "DisplayWindow.h"
 #include <arm_neon.h>
 
+using namespace std;
+
 void gSPTransformVertex4NEON(u32 v, float mtx[4][4])
 {
     GraphicsDrawer & drawer = dwnd().getDrawer();
@@ -133,4 +135,194 @@ void gSPTransformVertex_NEON(float vtx[4], float mtx[4][4])
 
     // Store vtx
     vst1q_f32(vtx, _mtx0);
+}
+
+void DotProductMax7FullNeon( float v0[3], float v1[7][3], float lights[7][3], float _vtx[3])
+{
+    asm volatile (
+    "pld            [%0]                           \n\t"	//preload lights
+    "pld            [%0, #64]                      \n\t"	
+    "pld            [%3]                           \n\t"	//preload vtx
+    "vld3.32        {d2[0],d3[0],d4[0]}, [%1]      \n\t"	//load v0
+    "vld3.32        {d6,d8,d10}, [%2]!             \n\t"	//load v1
+    "vld3.32        {d7,d9,d11}, [%2]!             \n\t"	
+    "vld3.32        {d18,d20,d22}, [%2]!           \n\t"	
+    "vld3.32        {d19[0],d21[0],d23[0]}, [%2]   \n\t"	
+
+    "vmul.f32       q0, q3, d2[0]                  \n\t"	//q0=v0[0]*v1[i][0]
+    "vmul.f32       q6, q9, d2[0]                  \n\t"	//q6=v0[0]*v1[i+4][0]
+
+    "vmla.f32       q0, q4, d3[0]                  \n\t"	//q0+=v0[0]*v1[i][1]
+    "vmla.f32       q6, q10, d3[0]                 \n\t"	//q6+=v0[0]*v1[i+4][1]
+    "vmov.f32       q15, #0.0                      \n\t"	//q15={0.0f,0.0f,0.0f,0.0f}
+    "vmla.f32       q0, q5, d4[0]                  \n\t"	//q0+=v0[0]*v1[i][2]
+    "vmla.f32       q6, q11, d4[0]                 \n\t"	//q6+=v0[0]*v1[i+4][2]
+    "vld3.32        {d4,d6,d8}, [%0]!              \n\t"	//load lights
+    "vld3.32        {d5,d7,d9}, [%0]!              \n\t"	
+
+    "vmax.f32       q0, q0, q15                    \n\t"	//q0=max(q0,q15)
+    "vmov.f32       d11, #0.0                      \n\t"	//d11={0.0f,0.0f}
+    "vmov.f32       d15, #0.0                      \n\t"	//d15={0.0f,0.0f}
+    "vmax.f32       q1, q6, q15                    \n\t"	//q1=max(q6,q15)
+    "vmov.f32       d13, #0.0                      \n\t"	//d13={0.0f,0.0f}
+
+    "vld3.32        {d10,d12,d14}, [%0]!           \n\t"	//d10={x1,y1}
+    "vld3.32        {d11[0],d13[0],d15[0]}, [%0]   \n\t"	//d10={x1,y1}	
+
+    "vmul.f32       q2, q2, q0                     \n\t"	//q2=light.x*intensity
+    "vmul.f32       q3, q3, q0                     \n\t"	//q3=light.y*intensity
+    "vmul.f32       q4, q4, q0                     \n\t"	//q4=light.z*intensity
+    "vmul.f32       q5, q5, q1                     \n\t"	//q5=(light.x+4)*intensity
+    "vmul.f32       q6, q6, q1                     \n\t"	//q6=(light.y+4)*intensity
+    "vmul.f32       q7, q7, q1                     \n\t"	//q7=(light.z+4)*intensity
+    "vld3.32        {d22[0],d23[0],d24[0]}, [%3]   \n\t"	//load vtx
+
+    "vadd.f32       d4,d4,d5                       \n\t"	//add everything to vtx
+    "vadd.f32       d6,d6,d7                       \n\t"
+    "vadd.f32       d8,d8,d9                       \n\t"
+
+    "vadd.f32       d10,d10,d11                    \n\t"
+    "vadd.f32       d12,d12,d13                    \n\t"
+    "vadd.f32       d14,d14,d15                    \n\t"
+
+    "vpadd.f32      d4,d4,d4                       \n\t"
+    "vpadd.f32      d10,d10,d10                    \n\t"
+    "vpadd.f32      d5,d6,d6                       \n\t"
+    "vpadd.f32      d11,d12,d12                    \n\t"
+    "vpadd.f32      d6,d8,d8                       \n\t"
+    "vpadd.f32      d12,d14,d14                    \n\t"
+
+    "vadd.f32       d4,d4,d10                      \n\t"
+    "vadd.f32       d5,d5,d11                      \n\t"
+    "vadd.f32       d6,d6,d12                      \n\t"
+
+    "vadd.f32       d4,d4,d22                      \n\t"
+    "vadd.f32       d5,d5,d23                      \n\t"
+    "vadd.f32       d6,d6,d24                      \n\t"
+
+    "vst3.32        {d4[0],d5[0],d6[0]}, [%3]      \n\t"
+    : "+r"(lights), "+r"(v0), "+r"(v1), "+r"(_vtx):
+    : "d0", "d1", "d2", "d3", "d4", "d5", "d6", "d7", "d8", "d9", "d10", "d11", "d12", "d13", "d14", 
+    "d15", "d16", "d17", "d18", "d19", "d20", "d21", "d22", "d23", "d24", "memory"
+    );
+}
+
+void DotProductMax4FullNeon( float v0[3], float v1[4][3], float _lights[4][3], float _vtx[3])
+{
+    asm volatile (
+    "vld3.32        {d0[0],d2[0],d4[0]}, [%1]   \n\t"	//load v0
+    "vld3.32        {d6,d8,d10}, [%2]!          \n\t"	//load v1
+    "vld3.32        {d7,d9,d11}, [%2]           \n\t"	//
+
+    "vmul.f32       q0, q3, d0[0]               \n\t"	//product=v0[0]*v1[0]
+    "vld3.32        {d12,d14,d16}, [%0]!        \n\t"	//load lights
+    "vmla.f32       q0, q4, d2[0]               \n\t"	//product+=v0[1]*v1[1]
+    "vld3.32        {d13,d15,d17}, [%0]         \n\t"	//load lights +2
+    "vmov.f32       q11, #0.0                   \n\t"	
+    "vmla.f32       q0, q5, d4[0]               \n\t"	//product+=v0[2]*v1[2]
+
+    "vmax.f32       q0, q0, q11                 \n\t"	//product=max(product,0.0f)
+    "vld3.32        {d18[0],d19[0],d20[0]}, [%3]\n\t"	//load vtx
+    "vmul.f32       q6, q6, q0                  \n\t"	//lights.r = lights.r * intensity
+    "vmul.f32       q7, q7, q0                  \n\t"	//lights.g = lights.g * intensity
+    "vmul.f32       q8, q8, q0                  \n\t"	//lights.b = lights.b * intensity
+
+    "vadd.f32       d12,d12,d13                 \n\t"	//add all values
+    "vadd.f32       d14,d14,d15                 \n\t"
+    "vadd.f32       d16,d16,d17                 \n\t"
+
+    "vpadd.f32      d12,d12,d12                 \n\t"
+    "vpadd.f32      d13,d14,d14                 \n\t"
+    "vpadd.f32      d14,d16,d16                 \n\t"
+
+    "vadd.f32       d12,d12,d18                 \n\t"
+    "vadd.f32       d13,d13,d19                 \n\t"
+    "vadd.f32       d14,d14,d20                 \n\t"
+
+    "vst3.32        {d12[0],d13[0],d14[0]}, [%3]\n\t"	//store vtx
+    : "+r"(_lights), "+r"(v0), "+r"(v1), "+r"(_vtx):
+    : "d0", "d1", "d2", "d3", "d4", "d5", "d6", "d7", "d8", "d9", "d10", "d11", "d12", "d13", "memory"
+    );
+}
+
+void gSPLightVertex4_NEON(u32 v)
+{
+	GraphicsDrawer & drawer = dwnd().getDrawer();
+	if (!config.generalEmulation.enableHWLighting) {
+		for(int j = 0; j < 4; ++j) {
+			SPVertex & vtx = drawer.getVertex(v+j);
+			vtx.r = gSP.lights.rgb[gSP.numLights][R];
+			vtx.g = gSP.lights.rgb[gSP.numLights][G];
+			vtx.b = gSP.lights.rgb[gSP.numLights][B];
+			vtx.HWLight = 0;
+
+			s32 count = gSP.numLights-1;
+			while (count >= 6) {
+				DotProductMax7FullNeon(&vtx.nx,(float (*)[3])gSP.lights.i_xyz[gSP.numLights - count - 1],(float (*)[3])gSP.lights.rgb[gSP.numLights - count - 1],&vtx.r);
+				count -= 7;
+			}
+			while (count >= 3) {
+				DotProductMax4FullNeon(&vtx.nx,(float (*)[3])gSP.lights.i_xyz[gSP.numLights - count - 1],(float (*)[3])gSP.lights.rgb[gSP.numLights - count - 1],&vtx.r);
+				count -= 4;
+			}
+			while (count >= 0)
+			{
+				f32 intensity = DotProduct( &vtx.nx, gSP.lights.i_xyz[gSP.numLights - count - 1] );
+				if (intensity < 0.0f)
+					intensity = 0.0f;
+				vtx.r += gSP.lights.rgb[gSP.numLights - count - 1][R] * intensity;
+				vtx.g += gSP.lights.rgb[gSP.numLights - count - 1][G] * intensity;
+				vtx.b += gSP.lights.rgb[gSP.numLights - count - 1][B] * intensity;
+				count -= 1;
+			}
+			vtx.r = min(1.0f, vtx.r);
+			vtx.g = min(1.0f, vtx.g);
+			vtx.b = min(1.0f, vtx.b);
+		}
+	} else {
+		for(int j = 0; j < 4; ++j) {
+			SPVertex & vtx = drawer.getVertex(v+j);
+			vtx.HWLight = gSP.numLights;
+			vtx.r = vtx.nx;
+			vtx.g = vtx.ny;
+			vtx.b = vtx.nz;
+		}
+	}
+}
+
+void gSPLightVertex_NEON(SPVertex & _vtx)
+{
+	if (config.generalEmulation.enableHWLighting == 0) {
+		_vtx.HWLight = 0;
+		_vtx.r = gSP.lights.rgb[gSP.numLights][R];
+		_vtx.g = gSP.lights.rgb[gSP.numLights][G];
+		_vtx.b = gSP.lights.rgb[gSP.numLights][B];
+		s32 count = gSP.numLights-1;
+		while (count >= 6) {
+			DotProductMax7FullNeon(&_vtx.nx,(float (*)[3])gSP.lights.i_xyz[gSP.numLights - count - 1],(float (*)[3])gSP.lights.rgb[gSP.numLights - count - 1],&_vtx.r);
+			count -= 7;
+		}
+		while (count >= 3) {
+			DotProductMax4FullNeon(&_vtx.nx,(float (*)[3])gSP.lights.i_xyz[gSP.numLights - count - 1],(float (*)[3])gSP.lights.rgb[gSP.numLights - count - 1],&_vtx.r);
+			count -= 4;
+		}
+		while (count >= 0)
+		{
+			f32 intensity = DotProduct( &_vtx.nx, gSP.lights.i_xyz[gSP.numLights - count - 1] );
+			if (intensity < 0.0f)
+				intensity = 0.0f;
+			_vtx.r += gSP.lights.rgb[gSP.numLights - count - 1][R] * intensity;
+			_vtx.g += gSP.lights.rgb[gSP.numLights - count - 1][G] * intensity;
+			_vtx.b += gSP.lights.rgb[gSP.numLights - count - 1][B] * intensity;
+			count -= 1;
+		}
+		_vtx.r = min(1.0f, _vtx.r);
+		_vtx.g = min(1.0f, _vtx.g);
+		_vtx.b = min(1.0f, _vtx.b);
+	} else {
+		_vtx.HWLight = gSP.numLights;
+		_vtx.r = _vtx.nx;
+		_vtx.g = _vtx.ny;
+		_vtx.b = _vtx.nz;
+	}
 }
