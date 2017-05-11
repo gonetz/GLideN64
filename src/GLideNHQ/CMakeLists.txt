@@ -95,7 +95,7 @@ if( NOT GHQCHK )
       set_target_properties(GLideNHQd PROPERTIES LINK_SEARCH_START_STATIC 1)
       set_target_properties(GLideNHQd PROPERTIES LINK_SEARCH_END_STATIC 1)
 
-      if(MINGW OR BCMHOST OR APPLE)
+      if(MINGW OR BCMHOST OR APPLE OR USE_SYSTEM_LIBS)
         FIND_PACKAGE( ZLIB REQUIRED )
         FIND_PACKAGE( PNG REQUIRED )
         target_link_libraries(GLideNHQd
@@ -103,14 +103,14 @@ if( NOT GHQCHK )
           ${ZLIB_LIBRARIES}
           osald
         )
-      else(MINGW OR BCMHOST OR APPLE)
+      else(MINGW OR BCMHOST OR APPLE OR USE_SYSTEM_LIBS)
         target_link_libraries(GLideNHQd PRIVATE
           ${CMAKE_CURRENT_SOURCE_DIR}/lib/libpng.a
           ${CMAKE_CURRENT_SOURCE_DIR}/lib/libz.a
           dl
           osald
         )
-      endif(MINGW OR BCMHOST OR APPLE)
+      endif(MINGW OR BCMHOST OR APPLE OR USE_SYSTEM_LIBS)
     endif( CMAKE_BUILD_TYPE STREQUAL "Debug")
 
     if( CMAKE_BUILD_TYPE STREQUAL "Release")
@@ -127,7 +127,7 @@ if( NOT GHQCHK )
           /mnt/utmp/codeblocks/usr/lib/libz.a
           osal
         )
-      elseif(BCMHOST OR MINGW OR APPLE)
+      elseif(BCMHOST OR MINGW OR APPLE OR USE_SYSTEM_LIBS)
         FIND_PACKAGE( ZLIB REQUIRED )
         FIND_PACKAGE( PNG REQUIRED )
         target_link_libraries(GLideNHQ

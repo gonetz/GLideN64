@@ -10,3 +10,4 @@ cmake [-DCMAKE_BUILD_TYPE=Debug] [-DVEC4_OPT=On] [-DCRC_OPT=On] [-DNEON_OPT=On] 
 -DX86_OPT=On - optional parameter. set it if you want to enable additional X86 ASM optimization (can cause additional bugs).
 -DNOHQ=On - build without realtime texture enhancer library (GLideNHQ).
 -DMUPENPLUSAPI=On - currently cmake build works only for mupen64plus version of the plugin.
+-DUSE_SYSTEM_LIBS=On - set to use system provided libraries for libpng and zlib.
