@@ -59,6 +59,7 @@ TxHiResCache::~TxHiResCache()
   if ((_options & DUMP_HIRESTEXCACHE) && !_haveCache && !_abortLoad) {
 	/* dump cache to disk */
 	tx_wstring filename = _ident + wst("_HIRESTEXTURES.") + TEXCACHE_EXT;
+	removeColon(filename);
 	tx_wstring cachepath(_path);
 	cachepath += OSAL_DIR_SEPARATOR_STR;
 	cachepath += wst("cache");
@@ -101,6 +102,7 @@ TxHiResCache::TxHiResCache(int maxwidth, int maxheight, int maxbpp, int options,
   if (_options & DUMP_HIRESTEXCACHE) {
 	/* find it on disk */
 	tx_wstring filename = _ident + wst("_HIRESTEXTURES.") + TEXCACHE_EXT;
+	removeColon(filename);
 	tx_wstring cachepath(_path);
 	cachepath += OSAL_DIR_SEPARATOR_STR;
 	cachepath += wst("cache");

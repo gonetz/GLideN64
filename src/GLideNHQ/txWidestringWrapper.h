@@ -2,6 +2,7 @@
 #define ___TXWIDESCREENWRAPPER_H__
 
 #include <string>
+#include <algorithm>
 
 #ifdef OS_ANDROID
 
@@ -49,12 +50,18 @@ private:
 
 #define wst(A) dummyWString(A).c_str()
 
+#define removeColon(A)
 #else
 
 #define tx_wstring std::wstring
 #define tx_swprintf	swprintf
 #define wst(A) L##A
 #define wccmp(A, B) A[0] == B[0]
+inline
+void removeColon(tx_wstring& _s)
+{
+	std::replace(_s.begin(), _s.end(), L':', L'-');
+}
 
 #endif // OS_ANDROID
 
