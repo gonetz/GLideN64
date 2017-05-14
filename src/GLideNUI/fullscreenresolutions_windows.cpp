@@ -69,6 +69,21 @@ void fillFullscreenResolutionsList(QStringList & _listResolutions, int & _resolu
 	fullscreen.numRefreshRates = 0;
 	_resolutionIdx = 0;
 
+	static
+	struct
+	{
+		unsigned short x, y;
+		const char *description;
+	} ratios[] = {
+		{ 3,  2, "3:2" },
+		{ 4,  3, "4:3" },
+		{ 5,  4, "5:4" },
+		{ 16, 9, "16:9" },
+		{ 8,  5, "16:10" },
+		{ 21, 9, "21:9" }
+	};
+	const int numRatios = sizeof(ratios);
+
 	int i = 0;
 	char text[128];
 	DEVMODE deviceMode;
@@ -90,6 +105,14 @@ void fillFullscreenResolutionsList(QStringList & _listResolutions, int & _resolu
 			fullscreen.resolution[fullscreen.numResolutions].width = deviceMode.dmPelsWidth;
 			fullscreen.resolution[fullscreen.numResolutions].height = deviceMode.dmPelsHeight;
 			sprintf(text, "%i x %i", deviceMode.dmPelsWidth, deviceMode.dmPelsHeight);
+
+			for (int j = 0; j < numRatios; ++j)
+				if (fabs((float)deviceMode.dmPelsWidth / (float)deviceMode.dmPelsHeight
+					- (float)ratios[j].x / (float)ratios[j].y) < 0.005f) {
+					sprintf(text, "%s (%s)", text, ratios[j].description);
+					break;
+				}
+
 			_listResolutions.append(text);
 
 			if ((fullscreen.selected.width == deviceMode.dmPelsWidth) &&
