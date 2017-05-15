@@ -107,7 +107,7 @@
            <item>
             <widget class="QFrame" name="windowedResolutionFrame">
              <property name="toolTip">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This option selects the resolution for windowed mode. You also may select &lt;span style=&quot; font-weight:600;&quot;&gt;Custom&lt;/span&gt; and enter your own window size.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;640 x 480, 800 x 600, 1024 x 768, 1280 x 960&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This option selects the resolution for windowed mode. You can also type in a custom window size.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;640 x 480, 800 x 600, 1024 x 768, 1280 x 960&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
              </property>
              <layout class="QVBoxLayout" name="verticalLayout_24">
               <property name="spacing">
@@ -134,97 +134,14 @@
               </item>
               <item>
                <widget class="QComboBox" name="windowedResolutionComboBox">
+                <property name="editable">
+                 <bool>true</bool>
+                </property>
                 <item>
                  <property name="text">
                   <string extracomment="In the dropdown for windowed resolutions">Custom</string>
                  </property>
                 </item>
-               </widget>
-              </item>
-              <item>
-               <widget class="QFrame" name="windowedResolutionCustomFrame">
-                <layout class="QHBoxLayout" name="horizontalLayout_12">
-                 <property name="leftMargin">
-                  <number>0</number>
-                 </property>
-                 <property name="topMargin">
-                  <number>0</number>
-                 </property>
-                 <property name="rightMargin">
-                  <number>0</number>
-                 </property>
-                 <property name="bottomMargin">
-                  <number>0</number>
-                 </property>
-                 <item>
-                  <widget class="QLabel" name="windowWidthLabel">
-                   <property name="text">
-                    <string extracomment="Abbreviation for &quot;width&quot;.">W:</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QSpinBox" name="windowWidthSpinBox">
-                   <property name="minimumSize">
-                    <size>
-                     <width>52</width>
-                     <height>0</height>
-                    </size>
-                   </property>
-                   <property name="minimum">
-                    <number>320</number>
-                   </property>
-                   <property name="maximum">
-                    <number>7680</number>
-                   </property>
-                   <property name="singleStep">
-                    <number>16</number>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <spacer name="horizontalSpacer_5">
-                   <property name="orientation">
-                    <enum>Qt::Horizontal</enum>
-                   </property>
-                   <property name="sizeType">
-                    <enum>QSizePolicy::Fixed</enum>
-                   </property>
-                   <property name="sizeHint" stdset="0">
-                    <size>
-                     <width>4</width>
-                     <height>0</height>
-                    </size>
-                   </property>
-                  </spacer>
-                 </item>
-                 <item>
-                  <widget class="QLabel" name="windowHeightLabel">
-                   <property name="text">
-                    <string extracomment="Abbreviation for &quot;height&quot;.">H:</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QSpinBox" name="windowHeightSpinBox">
-                   <property name="minimumSize">
-                    <size>
-                     <width>52</width>
-                     <height>0</height>
-                    </size>
-                   </property>
-                   <property name="minimum">
-                    <number>240</number>
-                   </property>
-                   <property name="maximum">
-                    <number>4320</number>
-                   </property>
-                   <property name="singleStep">
-                    <number>16</number>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
                </widget>
               </item>
              </layout>
@@ -4235,11 +4152,11 @@
   </connection>
  </connections>
  <buttongroups>
-  <buttongroup name="fixTexrectCoordsButtonGroup"/>
-  <buttongroup name="factorButtonGroup"/>
-  <buttongroup name="bloomBlendModeButtonGroup"/>
   <buttongroup name="aspectButtonGroup"/>
   <buttongroup name="osdButtonGroup"/>
+  <buttongroup name="fixTexrectCoordsButtonGroup"/>
+  <buttongroup name="factorButtonGroup"/>
   <buttongroup name="screenshotButtonGroup"/>
+  <buttongroup name="bloomBlendModeButtonGroup"/>
  </buttongroups>
 </ui>
