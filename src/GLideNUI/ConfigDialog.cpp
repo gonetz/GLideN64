@@ -7,6 +7,7 @@
 #include <QAbstractButton>
 #include <QMessageBox>
 #include <QCursor>
+#include <QRegExpValidator>
 
 #include "../Config.h"
 #include "ui_configDialog.h"
@@ -68,17 +69,26 @@ void ConfigDialog::_init()
 {
 	// Video settings
 	QStringList windowedModesList;
-	const unsigned int windowedModesCustom = numWindowedModes;
-	unsigned int windowedModesCurrent = windowedModesCustom;
+	int windowedModesCurrent = -1;
 	for (unsigned int i = 0; i < numWindowedModes; ++i) {
 		windowedModesList.append(WindowedModes[i].description);
-		if (i != windowedModesCustom &&
-			WindowedModes[i].width == config.video.windowedWidth &&
+		if (WindowedModes[i].width == config.video.windowedWidth &&
 			WindowedModes[i].height == config.video.windowedHeight)
 			windowedModesCurrent = i;
 	}
 	ui->windowedResolutionComboBox->insertItems(0, windowedModesList);
-	ui->windowedResolutionComboBox->setCurrentIndex(windowedModesCurrent);
+	if (windowedModesCurrent > -1)
+		ui->windowedResolutionComboBox->setCurrentIndex(windowedModesCurrent);
+	else
+		ui->windowedResolutionComboBox->setCurrentText(
+			QString::number(config.video.windowedWidth) + " x " +
+			QString::number(config.video.windowedHeight)
+		);
+
+	// matches w x h where w is 300-7999 and h is 200-3999, spaces around x optional
+	QRegExp windowedRegExp("([3-9][0-9]{2}|[1-7][0-9]{3}) ?x ?([2-9][0-9]{2}|[1-3][0-9]{3})");
+	QValidator *windowedValidator = new QRegExpValidator(windowedRegExp, this);
+	ui->windowedResolutionComboBox->setValidator(windowedValidator);
 
 	ui->cropImageComboBox->setCurrentIndex(config.video.cropMode);
 	ui->cropImageWidthSpinBox->setValue(config.video.cropWidth);
@@ -329,8 +339,14 @@ void ConfigDialog::accept()
 {
 	m_accepted = true;
 
-	config.video.windowedWidth = ui->windowWidthSpinBox->value();
-	config.video.windowedHeight = ui->windowHeightSpinBox->value();
+	int windowedValidatorPos = 0;
+	if (ui->windowedResolutionComboBox->validator()->validate(
+		ui->windowedResolutionComboBox->currentText(), windowedValidatorPos
+	) == QValidator::Acceptable) {
+		QStringList windowedResolutionDimensions = ui->windowedResolutionComboBox->currentText().split("x");
+		config.video.windowedWidth = windowedResolutionDimensions[0].trimmed().toInt();
+		config.video.windowedHeight = windowedResolutionDimensions[1].trimmed().toInt();
+	}
 
 	getFullscreenResolutions(ui->fullScreenResolutionComboBox->currentIndex(), config.video.fullscreenWidth, config.video.fullscreenHeight);
 	getFullscreenRefreshRate(ui->fullScreenRefreshRateComboBox->currentIndex(), config.video.fullscreenRefresh);
@@ -544,10 +560,8 @@ void ConfigDialog::on_texPackPathButton_clicked()
 
 void ConfigDialog::on_windowedResolutionComboBox_currentIndexChanged(int index)
 {
-	const bool bCustom = index == numWindowedModes;
-	ui->windowWidthSpinBox->setValue(bCustom ? config.video.windowedWidth : WindowedModes[index].width);
-	ui->windowHeightSpinBox->setValue(bCustom ? config.video.windowedHeight : WindowedModes[index].height);
-	ui->windowedResolutionCustomFrame->setVisible(bCustom);
+	if (index == numWindowedModes)
+		ui->windowedResolutionComboBox->setCurrentText("");
 }
 
 void ConfigDialog::on_cropImageComboBox_currentIndexChanged(int index)
