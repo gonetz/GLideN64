@@ -562,6 +562,8 @@ void ConfigDialog::on_windowedResolutionComboBox_currentIndexChanged(int index)
 {
 	if (index == numWindowedModes)
 		ui->windowedResolutionComboBox->setCurrentText("");
+	else
+		ui->windowedResolutionComboBox->clearFocus();
 }
 
 void ConfigDialog::on_cropImageComboBox_currentIndexChanged(int index)
