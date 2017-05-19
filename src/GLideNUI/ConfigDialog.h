@@ -34,6 +34,8 @@ private slots:
 
 	void on_windowedResolutionComboBox_currentIndexChanged(int index);
 
+	void on_windowedResolutionComboBox_currentTextChanged(QString text);
+
 	void on_cropImageComboBox_currentIndexChanged(int index);
 
 	void on_frameBufferCheckBox_toggled(bool checked);

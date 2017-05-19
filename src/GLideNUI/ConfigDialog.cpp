@@ -560,10 +560,13 @@ void ConfigDialog::on_texPackPathButton_clicked()
 
 void ConfigDialog::on_windowedResolutionComboBox_currentIndexChanged(int index)
 {
-	if (index == numWindowedModes)
-		ui->windowedResolutionComboBox->setCurrentText("");
-	else
+	if (index < numWindowedModes)
 		ui->windowedResolutionComboBox->clearFocus();
+}
+
+void ConfigDialog::on_windowedResolutionComboBox_currentTextChanged(QString text) {
+	if (text == tr("Custom"))
+		ui->windowedResolutionComboBox->setCurrentText("");
 }
 
 void ConfigDialog::on_cropImageComboBox_currentIndexChanged(int index)
