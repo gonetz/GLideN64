@@ -117,7 +117,7 @@ void VI_UpdateScreen()
 	wnd.saveScreenshot();
 
 	if (isKeyPressed(G64_VK_G, 0x0001)) {
-		SwitchDump(DEBUG_NORMAL);
+		SwitchDump(DEBUG_LOW|DEBUG_NORMAL);
 	}
 
 	bool bVIUpdated = false;

@@ -67,6 +67,8 @@ void gSP1Triangle( const s32 v0, const s32 v1, const s32 v2)
 {
 	gSPTriangle( v0, v1, v2);
 	gSPFlushTriangles();
+
+	DebugMsg(DEBUG_NORMAL, "gSP1Triangle (%i, %i, %i)\n", v0, v1, v2);
 }
 
 void gSP2Triangles(const s32 v00, const s32 v01, const s32 v02, const s32 flag0,
@@ -75,6 +77,8 @@ void gSP2Triangles(const s32 v00, const s32 v01, const s32 v02, const s32 flag0,
 	gSPTriangle( v00, v01, v02);
 	gSPTriangle( v10, v11, v12);
 	gSPFlushTriangles();
+
+	DebugMsg(DEBUG_NORMAL, "gSP2Triangle (%i, %i, %i)-(%i, %i, %i)\n", v00, v01, v02, v10, v11, v12);
 }
 
 void gSP4Triangles(const s32 v00, const s32 v01, const s32 v02,
@@ -87,6 +91,9 @@ void gSP4Triangles(const s32 v00, const s32 v01, const s32 v02,
 	gSPTriangle(v20, v21, v22);
 	gSPTriangle(v30, v31, v32);
 	gSPFlushTriangles();
+
+	DebugMsg(DEBUG_NORMAL, "gSP4Triangle (%i, %i, %i)-(%i, %i, %i)-(%i, %i, %i)-(%i, %i, %i)\n",
+		v00, v01, v02, v10, v11, v12, v20, v21, v22, v30, v31, v32);
 }
 
 gSPInfo gSP;
@@ -628,12 +635,16 @@ void gSPLoadUcodeEx( u32 uc_start, u32 uc_dstart, u16 uc_dsize )
 	gSP.changed |= CHANGED_MATRIX;
 	gSP.status[0] = gSP.status[1] = gSP.status[2] = gSP.status[3] = 0;
 
-	if ((((uc_start & 0x1FFFFFFF) + 4096) > RDRAMSize) || (((uc_dstart & 0x1FFFFFFF) + uc_dsize) > RDRAMSize))
+	if ((((uc_start & 0x1FFFFFFF) + 4096) > RDRAMSize) || (((uc_dstart & 0x1FFFFFFF) + uc_dsize) > RDRAMSize)) {
+		DebugMsg(DEBUG_NORMAL|DEBUG_ERROR, "gSPLoadUcodeEx out of RDRAM\n");
 		return;
+	}
 
 	GBI.loadMicrocode(uc_start, uc_dstart, uc_dsize);
 	RSP.uc_start = uc_start;
 	RSP.uc_dstart = uc_dstart;
+
+	DebugMsg(DEBUG_NORMAL, "gSPLoadUcodeEx type: %d\n", GBI.getMicrocodeType());
 }
 
 void gSPNoOp()
@@ -681,7 +692,12 @@ void gSPMatrix( u32 matrix, u8 param )
 
 	gSP.changed |= CHANGED_MATRIX;
 
-	DebugMsg( DEBUG_DETAIL, "// %12.6f %12.6f %12.6f %12.6f\n",
+	DebugMsg(DEBUG_NORMAL, "gSPMatrix( 0x%08X, %s | %s | %s );\n",
+		matrix,
+		(param & G_MTX_PROJECTION) ? "G_MTX_PROJECTION" : "G_MTX_MODELVIEW",
+		(param & G_MTX_LOAD) ? "G_MTX_LOAD" : "G_MTX_MUL",
+		(param & G_MTX_PUSH) ? "G_MTX_PUSH" : "G_MTX_NOPUSH");
+	DebugMsg(DEBUG_DETAIL, "// %12.6f %12.6f %12.6f %12.6f\n",
 		mtx[0][0], mtx[0][1], mtx[0][2], mtx[0][3] );
 	DebugMsg( DEBUG_DETAIL, "// %12.6f %12.6f %12.6f %12.6f\n",
 		mtx[1][0], mtx[1][1], mtx[1][2], mtx[1][3] );
@@ -689,11 +705,6 @@ void gSPMatrix( u32 matrix, u8 param )
 		mtx[2][0], mtx[2][1], mtx[2][2], mtx[2][3] );
 	DebugMsg( DEBUG_DETAIL, "// %12.6f %12.6f %12.6f %12.6f\n",
 		mtx[3][0], mtx[3][1], mtx[3][2], mtx[3][3] );
-	DebugMsg( DEBUG_NORMAL, "gSPMatrix( 0x%08X, %s | %s | %s );\n",
-		matrix,
-		(param & G_MTX_PROJECTION) ? "G_MTX_PROJECTION" : "G_MTX_MODELVIEW",
-		(param & G_MTX_LOAD) ? "G_MTX_LOAD" : "G_MTX_MUL",
-		(param & G_MTX_PUSH) ? "G_MTX_PUSH" : "G_MTX_NOPUSH" );
 }
 
 void gSPDMAMatrix( u32 matrix, u8 index, u8 multiply )
@@ -721,7 +732,10 @@ void gSPDMAMatrix( u32 matrix, u8 index, u8 multiply )
 
 
 	gSP.changed |= CHANGED_MATRIX;
-	DebugMsg( DEBUG_DETAIL, "// %12.6f %12.6f %12.6f %12.6f\n",
+
+	DebugMsg(DEBUG_NORMAL, "gSPDMAMatrix( 0x%08X, %i, %s );\n",
+		matrix, index, multiply ? "TRUE" : "FALSE");
+	DebugMsg(DEBUG_DETAIL, "// %12.6f %12.6f %12.6f %12.6f\n",
 		mtx[0][0], mtx[0][1], mtx[0][2], mtx[0][3] );
 	DebugMsg( DEBUG_DETAIL, "// %12.6f %12.6f %12.6f %12.6f\n",
 		mtx[1][0], mtx[1][1], mtx[1][2], mtx[1][3] );
@@ -729,8 +743,6 @@ void gSPDMAMatrix( u32 matrix, u8 index, u8 multiply )
 		mtx[2][0], mtx[2][1], mtx[2][2], mtx[2][3] );
 	DebugMsg( DEBUG_DETAIL, "// %12.6f %12.6f %12.6f %12.6f\n",
 		mtx[3][0], mtx[3][1], mtx[3][2], mtx[3][3] );
-	DebugMsg(DEBUG_NORMAL, "gSPDMAMatrix( 0x%08X, %i, %s );\n",
-		matrix, index, multiply ? "TRUE" : "FALSE" );
 }
 
 void gSPViewport( u32 v )
@@ -764,7 +776,9 @@ void gSPViewport( u32 v )
 
 	gSP.changed |= CHANGED_VIEWPORT;
 
-	DebugMsg(DEBUG_NORMAL, "gSPViewport( 0x%08X );\n", v);
+	DebugMsg(DEBUG_NORMAL, "gSPViewport scale(%02f, %02f, %02f), trans(%02f, %02f, %02f)\n",
+		gSP.viewport.vscale[0], gSP.viewport.vscale[1], gSP.viewport.vscale[2],
+		gSP.viewport.vtrans[0], gSP.viewport.vtrans[1], gSP.viewport.vtrans[2]);
 }
 
 void gSPForceMatrix( u32 mptr )
@@ -858,12 +872,11 @@ void gSPLightCBFD( u32 l, s32 n )
 
 	gSP.changed |= CHANGED_LIGHT;
 
-	DebugMsg( DEBUG_DETAIL, "// x = %2.6f    y = %2.6f    z = %2.6f\n",
+	DebugMsg(DEBUG_NORMAL, "gSPLight( 0x%08X, LIGHT_%i );\n", l, n);
+	DebugMsg(DEBUG_DETAIL, "// x = %2.6f    y = %2.6f    z = %2.6f\n",
 		_FIXED2FLOAT( light->x, 7 ), _FIXED2FLOAT( light->y, 7 ), _FIXED2FLOAT( light->z, 7 ) );
 	DebugMsg( DEBUG_DETAIL, "// r = %3i    g = %3i   b = %3i\n",
 		light->r, light->g, light->b );
-	DebugMsg(DEBUG_NORMAL, "gSPLight( 0x%08X, LIGHT_%i );\n",
-		l, n );
 }
 
 void gSPLookAt( u32 _l, u32 _n )
@@ -887,6 +900,7 @@ void gSPLookAt( u32 _l, u32 _n )
 
 	Normalize(gSP.lookat.xyz[_n]);
 	gSP.changed |= CHANGED_LOOKAT;
+	DebugMsg(DEBUG_NORMAL, "gSPLookAt( 0x%08X, LOOKAT_%i );\n", _l, _n);
 }
 
 static
@@ -912,8 +926,12 @@ void gSPVertex(u32 a, u32 n, u32 v0)
 {
 	u32 address = RSP_SegmentToPhysical(a);
 
-	if ((address + sizeof( Vertex ) * n) > RDRAMSize)
+	if ((address + sizeof(Vertex)* n) > RDRAMSize) {
+		DebugMsg(DEBUG_NORMAL | DEBUG_ERROR, "gSPVertex Using Vertex outside RDRAM n = %i, v0 = %i, from %08x\n", n, v0, a);
 		return;
+	}
+
+	DebugMsg(DEBUG_NORMAL, "gSPVertex n = %i, v0 = %i, from %08x\n", n, v0, a);
 
 	if ((gSP.geometryMode & G_LIGHTING) != 0) {
 
@@ -976,6 +994,7 @@ void gSPVertex(u32 a, u32 n, u32 v0)
 				vtx.a = vertex->color.a * 0.0039215689f;
 			}
 			gSPProcessVertex(v);
+			DebugMsg(DEBUG_DETAIL, "v%d - x: %f, y: %f, z: %f, w: %f, s: %f, t: %f, r=%02f, g=%02f, b=%02f, a=%02f\n", i, vtx.x, vtx.y, vtx.z, vtx.w, vtx.s, vtx.t, vtx.r, vtx.g, vtx.b, vtx.a);
 			vertex++;
 		}
 	} else {
@@ -1284,7 +1303,7 @@ void gSPDisplayList( u32 dl )
 	}
 
 	if (RSP.PCi < (GBI.PCStackSize - 1)) {
-		DebugMsg(DEBUG_NORMAL, "gSPDisplayList( 0x%08X );\n", dl);
+		DebugMsg(DEBUG_NORMAL, "gSPDisplayList( 0x%08X ) push\n", dl);
 		RSP.PCi++;
 		RSP.PC[RSP.PCi] = address;
 		RSP.nextCmd = _SHIFTR( *(u32*)&RDRAM[address], 24, 8 );
@@ -1305,7 +1324,7 @@ void gSPBranchList( u32 dl )
 		return;
 	}
 
-	DebugMsg(DEBUG_NORMAL, "gSPBranchList( 0x%08X );\n", dl );
+	DebugMsg(DEBUG_NORMAL, "gSPBranchList( 0x%08X ) nopush\n", dl );
 
 	RSP.PC[RSP.PCi] = address;
 	RSP.nextCmd = _SHIFTR( *(u32*)&RDRAM[address], 24, 8 );
@@ -1702,8 +1721,10 @@ void gSPCoordMod(u32 _w0, u32 _w1)
 void gSPTexture( f32 sc, f32 tc, s32 level, s32 tile, s32 on )
 {
 	gSP.texture.on = on;
-	if (on == 0)
+	if (on == 0) {
+		DebugMsg(DEBUG_NORMAL, "gSPTexture skipped b/c of off\n");
 		return;
+	}
 
 	gSP.texture.scales = sc;
 	gSP.texture.scalet = tc;
@@ -1719,7 +1740,7 @@ void gSPTexture( f32 sc, f32 tc, s32 level, s32 tile, s32 on )
 
 	gSP.changed |= CHANGED_TEXTURE;
 
-	DebugMsg(DEBUG_NORMAL, "gSPTexture( %f, %f, %i, %i, %i );\n", sc, tc, level, tile, on );
+	DebugMsg(DEBUG_NORMAL, "gSPTexture:  tile: %d, mipmap_lvl: %d, on: %d, s_scale: %f, t_scale: %f\n", tile, level, on, sc, tc);
 }
 
 void gSPEndDisplayList()
@@ -1809,7 +1830,47 @@ void gSPSetOtherMode_H(u32 _length, u32 _shift, u32 _data)
 	if (mask & 0x00300000)  // cycle type
 		gDP.changed |= CHANGED_CYCLETYPE;
 
-	DebugMsg(DEBUG_NORMAL, "gSPSetOtherMode_H length=%u shift=%u data=%u result=0x%08x\n", _length, _shift, _data, gDP.otherMode.h);
+	DebugMsg(DEBUG_NORMAL, "gSPSetOtherMode_H");
+#ifdef DEBUG_DUMP
+	std::string strRes;
+	if (mask & 0x00000030) {
+		strRes.append(AlphaDitherText[(gDP.otherMode.h>>4) & 3]);
+		strRes.append(" | ");
+	}
+
+	if (mask & 0x000000C0) {
+		strRes.append(ColorDitherText[(gDP.otherMode.h >> 6) & 3]);
+		strRes.append(" | ");
+	}
+
+	if (mask & 0x00003000) {
+		strRes.append(TextureFilterText[(gDP.otherMode.h & 0x00003000) >> 12]);
+		strRes.append(" | ");
+	}
+
+	if (mask & 0x0000C000) {
+		strRes.append(TextureLUTText[(gDP.otherMode.h & 0x0000C000) >> 14]);
+		strRes.append(" | ");
+	}
+
+	if (mask & 0x00300000) {
+		strRes.append(CycleTypeText[(gDP.otherMode.h & 0x00300000) >> 20]);
+		strRes.append(" | ");
+	}
+
+	if (mask & 0x00010000) {
+		strRes.append("LOD_en : ");
+		strRes.append((gDP.otherMode.h & 0x00010000) ? "yes | " : "no | ");
+	}
+
+	if (mask & 0x00080000) {
+		strRes.append("Persp_en : ");
+		strRes.append((gDP.otherMode.h & 0x00080000) ? "yes" : "no");
+	}
+
+	DebugMsg(DEBUG_NORMAL, "( %s)", strRes.c_str());
+#endif
+	DebugMsg(DEBUG_NORMAL, " result: %08x\n", gDP.otherMode.h);
 }
 
 void gSPSetOtherMode_L(u32 _length, u32 _shift, u32 _data)
@@ -1823,7 +1884,27 @@ void gSPSetOtherMode_L(u32 _length, u32 _shift, u32 _data)
 	if (mask & 0xFFFFFFF8)  // rendermode / blender bits
 		gDP.changed |= CHANGED_RENDERMODE;
 
-	DebugMsg(DEBUG_NORMAL, "gSPSetOtherMode_L length=%u shift=%u data=%u result=0x%08x\n", _length, _shift, _data, gDP.otherMode.l);
+	DebugMsg(DEBUG_NORMAL, "gSPSetOtherMode_L");
+#ifdef DEBUG_DUMP
+	std::string strRes;
+
+	if (mask & 0x00000003) {
+		strRes.append(AlphaCompareText[gDP.otherMode.l & 0x00000003]);
+		strRes.append(" | ");
+	}
+
+	if (mask & 0x00000004) {
+		strRes.append(DepthSourceText[(gDP.otherMode.l & 0x00000004) >> 2]);
+		strRes.append(" | ");
+	}
+
+	if (mask & 0xFFFFFFF8)  { // rendermode / blender bits
+		strRes.append(" rendermode");
+	}
+
+	DebugMsg(DEBUG_NORMAL, "( %s)", strRes.c_str());
+#endif
+	DebugMsg(DEBUG_NORMAL, " result: %08x\n", gDP.otherMode.l);
 }
 
 void gSPLine3D( s32 v0, s32 v1, s32 flag )

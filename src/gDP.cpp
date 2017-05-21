@@ -97,8 +97,9 @@ void gDPSetCombine( s32 muxs0, s32 muxs1 )
 
 	gDP.changed |= CHANGED_COMBINE;
 
+	DebugMsg(DEBUG_NORMAL, "gDPSetCombine\n");
 #ifdef DEBUG_DUMP
-	DebugMsg( DEBUG_NORMAL, "gDPSetCombine( %s, %s, %s, %s, %s, %s, %s, %s,\n",
+	DebugMsg( DEBUG_NORMAL, "	%s, %s, %s, %s, %s, %s, %s, %s,\n",
 		saRGBText[gDP.combine.saRGB0],
 		sbRGBText[gDP.combine.sbRGB0],
 		mRGBText[gDP.combine.mRGB0],
@@ -108,7 +109,7 @@ void gDPSetCombine( s32 muxs0, s32 muxs1 )
 		mAText[gDP.combine.mA0],
 		aAText[gDP.combine.aA0] );
 
-	DebugMsg( DEBUG_NORMAL, "               %s, %s, %s, %s, %s, %s, %s, %s );\n",
+	DebugMsg( DEBUG_NORMAL, "	%s, %s, %s, %s, %s, %s, %s, %s );\n",
 		saRGBText[gDP.combine.saRGB1],
 		sbRGBText[gDP.combine.sbRGB1],
 		mRGBText[gDP.combine.mRGB1],
@@ -117,7 +118,6 @@ void gDPSetCombine( s32 muxs0, s32 muxs1 )
 		sbAText[gDP.combine.sbA1],
 		mAText[gDP.combine.mA1],
 		aAText[gDP.combine.aA1] );
-
 #endif
 }
 
@@ -618,8 +618,10 @@ void gDPLoadBlock(u32 tile, u32 uls, u32 ult, u32 lrs, u32 dxt)
 void gDPLoadTLUT( u32 tile, u32 uls, u32 ult, u32 lrs, u32 lrt )
 {
 	gDPSetTileSize( tile, uls, ult, lrs, lrt );
-	if (gDP.tiles[tile].tmem < 256)
+	if (gDP.tiles[tile].tmem < 256) {
+		DebugMsg(DEBUG_NORMAL | DEBUG_ERROR, "gDPLoadTLUT wrong tile tmem addr: tile[%d].tmem=%04x;\n", tile, gDP.tiles[tile].tmem);
 		return;
+	}
 	const u16 count = (u16)((gDP.tiles[tile].lrs - gDP.tiles[tile].uls + 1) * (gDP.tiles[tile].lrt - gDP.tiles[tile].ult + 1));
 	u32 address = gDP.textureImage.address + gDP.tiles[tile].ult * gDP.textureImage.bpl + (gDP.tiles[tile].uls << gDP.textureImage.size >> 1);
 	u16 pal = (u16)((gDP.tiles[tile].tmem - 256) >> 4);

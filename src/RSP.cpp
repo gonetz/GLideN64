@@ -62,6 +62,12 @@ void RSP_ProcessDList()
 	gDP.changed &= ~CHANGED_CPU_FB_WRITE;
 	gDPSetTexturePersp(G_TP_PERSP);
 
+	// Get the start of the display list and the length of it
+	const u32 dlist_start = *(u32*)(DMEM + 0xFF0);
+	const u32 dlist_length = *(u32*)(DMEM + 0xFF4);
+	DebugMsg(DEBUG_NORMAL, "--- NEW DLIST --- ucode: %d, fbuf: %08lx, fbuf_width: %d, dlist start: %08lx, dlist_length: %d, x_scale: %f, y_scale: %f\n",
+		GBI.getMicrocodeType(), *REG.VI_ORIGIN, *REG.VI_WIDTH, dlist_start, dlist_length, (*REG.VI_X_SCALE & 0xFFF) / 1024.0f, (*REG.VI_Y_SCALE & 0xFFF) / 1024.0f);
+
 	u32 uc_start = *(u32*)&DMEM[0x0FD0];
 	u32 uc_dstart = *(u32*)&DMEM[0x0FD8];
 	u32 uc_dsize = *(u32*)&DMEM[0x0FDC];
@@ -91,6 +97,7 @@ void RSP_ProcessDList()
 
 //			DebugRSPState( RSP.PCi, RSP.PC[RSP.PCi], _SHIFTR( RSP.w0, 24, 8 ), RSP.w0, RSP.w1 );
 //			DebugMsg( DEBUG_LOW | DEBUG_HANDLED, "0x%08lX: CMD=0x%02lX W0=0x%08lX W1=0x%08lX\n", RSP.PC[RSP.PCi], _SHIFTR( RSP.w0, 24, 8 ), RSP.w0, RSP.w1 );
+			DebugMsg(DEBUG_LOW, "%08x (w0:%08x, w1:%08x): ", RSP.PC[RSP.PCi], RSP.w0, RSP.w1);
 
 			RSP.PC[RSP.PCi] += 8;
 			u32 pci = RSP.PCi;

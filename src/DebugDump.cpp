@@ -70,14 +70,23 @@ void DebugMsg(u32 _mode, const char * _format, ...)
 	if (!g_log || !g_log->needPrint(_mode))
 		return;
 
-	char text[1024];
+	char buf[1024];
+	char* text = buf;
+	if ((_mode & DEBUG_IGNORED) != 0) {
+		sprintf(buf, "Ignored: ");
+		text += strlen(buf);
+	}
+	if ((_mode & DEBUG_ERROR) != 0) {
+		sprintf(buf, "Error: ");
+		text += strlen(buf);
+	}
 
 	va_list va;
 	va_start(va, _format);
 	vsprintf(text, _format, va);
 	va_end(va);
 
-	g_log->print(text);
+	g_log->print(buf);
 }
 
 void StartDump(u32 _mode)

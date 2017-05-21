@@ -1,11 +1,13 @@
 #ifndef DEBUG_H
 #define DEBUG_H
+
 #include "Types.h"
 
-#define DEBUG_NORMAL	0x01
-#define DEBUG_DETAIL	0x02
-#define DEBUG_IGNORED	0x04
-#define DEBUG_ERROR		0x08
+#define DEBUG_LOW		0x01
+#define DEBUG_NORMAL	0x02
+#define DEBUG_DETAIL	0x04
+#define DEBUG_IGNORED	0x08
+#define DEBUG_ERROR		0x10
 
 #ifdef DEBUG_DUMP
 
