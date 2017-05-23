@@ -16,6 +16,7 @@ public:
 	~AboutDialog();
 
 private:
+	void _init();
 	Ui::AboutDialog *ui;
 };
 

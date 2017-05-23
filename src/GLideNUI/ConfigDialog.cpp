@@ -283,6 +283,11 @@ void ConfigDialog::_init()
 	ui->fpsCheckBox->setChecked(config.onScreenDisplay.fps != 0);
 	ui->visCheckBox->setChecked(config.onScreenDisplay.vis != 0);
 	ui->percentCheckBox->setChecked(config.onScreenDisplay.percent != 0);
+
+	// Buttons
+	ui->buttonBox->button(QDialogButtonBox::Ok)->setText(tr("OK"));
+	ui->buttonBox->button(QDialogButtonBox::Cancel)->setText(tr("Cancel"));
+	ui->buttonBox->button(QDialogButtonBox::RestoreDefaults)->setText(tr("Restore Defaults"));
 }
 
 void ConfigDialog::_getTranslations(QStringList & _translationFiles) const
@@ -525,11 +530,13 @@ void ConfigDialog::on_aliasingSlider_valueChanged(int value)
 void ConfigDialog::on_buttonBox_clicked(QAbstractButton *button)
 {
 	if ((QPushButton *)button == ui->buttonBox->button(QDialogButtonBox::RestoreDefaults)) {
-		QMessageBox msgBox(QMessageBox::Question, "GLideN64",
-			"Do you really want to reset all settings to defaults?",
+		QMessageBox msgBox(QMessageBox::Warning, tr("Restore Defaults"),
+			tr("Are you sure you want to reset all settings to default?"),
 			QMessageBox::RestoreDefaults | QMessageBox::Cancel, this
 			);
 		msgBox.setDefaultButton(QMessageBox::Cancel);
+		msgBox.setButtonText(QMessageBox::RestoreDefaults, tr("Restore Defaults"));
+		msgBox.setButtonText(QMessageBox::Cancel, tr("Cancel"));
 		if (msgBox.exec() == QMessageBox::RestoreDefaults) {
 			config.resetToDefaults();
 			_init();
@@ -564,7 +571,8 @@ void ConfigDialog::on_windowedResolutionComboBox_currentIndexChanged(int index)
 		ui->windowedResolutionComboBox->clearFocus();
 }
 
-void ConfigDialog::on_windowedResolutionComboBox_currentTextChanged(QString text) {
+void ConfigDialog::on_windowedResolutionComboBox_currentTextChanged(QString text)
+{
 	if (text == tr("Custom"))
 		ui->windowedResolutionComboBox->setCurrentText("");
 }
@@ -608,7 +616,7 @@ void ConfigDialog::on_fontSizeSpinBox_valueChanged(int value)
 
 void ConfigDialog::on_tabWidget_currentChanged(int tab)
 {
-	if (!m_fontsInited && ui->tabWidget->tabText(tab) == "OSD") {
+	if (!m_fontsInited && ui->tabWidget->tabText(tab) == tr("OSD")) {
 		ui->tabWidget->setCursor(QCursor(Qt::WaitCursor));
 
 		QMap<QString, QStringList> internalFontList;

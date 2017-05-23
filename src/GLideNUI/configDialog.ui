@@ -3733,9 +3733,6 @@
    </item>
    <item>
     <widget class="QDialogButtonBox" name="buttonBox">
-     <property name="styleSheet">
-      <string notr="true"/>
-     </property>
      <property name="standardButtons">
       <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok|QDialogButtonBox::RestoreDefaults</set>
      </property>
@@ -4152,11 +4149,11 @@
   </connection>
  </connections>
  <buttongroups>
-  <buttongroup name="aspectButtonGroup"/>
-  <buttongroup name="osdButtonGroup"/>
-  <buttongroup name="fixTexrectCoordsButtonGroup"/>
-  <buttongroup name="factorButtonGroup"/>
-  <buttongroup name="screenshotButtonGroup"/>
   <buttongroup name="bloomBlendModeButtonGroup"/>
+  <buttongroup name="factorButtonGroup"/>
+  <buttongroup name="aspectButtonGroup"/>
+  <buttongroup name="fixTexrectCoordsButtonGroup"/>
+  <buttongroup name="screenshotButtonGroup"/>
+  <buttongroup name="osdButtonGroup"/>
  </buttongroups>
 </ui>
