@@ -46,6 +46,7 @@ void _fillFullscreenRefreshRateList(QStringList & _listRefreshRates, int & _rate
 			(deviceMode.dmPelsHeight == fullscreen.selected.height)) {
 
 			fullscreen.refreshRate[j] = deviceMode.dmDisplayFrequency;
+			//: Abbreviation for Hertz; include a leading space if appropriate
 			_listRefreshRates.append(QString::number(deviceMode.dmDisplayFrequency) + QObject::tr(" Hz"));
 
 			if (fullscreen.selected.refreshRate == deviceMode.dmDisplayFrequency)
