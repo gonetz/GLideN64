@@ -1,4 +1,5 @@
 #include <windows.h>
+#include <QObject>
 #include "FullscreenResolutions.h"
 #include "../Config.h"
 
@@ -29,7 +30,6 @@ void _fillFullscreenRefreshRateList(QStringList & _listRefreshRates, int & _rate
 	_rateIdx = 0;
 
 	int i = 0;
-	char text[128];
 	DEVMODE deviceMode;
 	while (EnumDisplaySettings(NULL, i++, &deviceMode) != 0)
 	{
@@ -46,8 +46,7 @@ void _fillFullscreenRefreshRateList(QStringList & _listRefreshRates, int & _rate
 			(deviceMode.dmPelsHeight == fullscreen.selected.height)) {
 
 			fullscreen.refreshRate[j] = deviceMode.dmDisplayFrequency;
-			sprintf(text, "%i Hz", deviceMode.dmDisplayFrequency);
-			_listRefreshRates.append(text);
+			_listRefreshRates.append(QString::number(deviceMode.dmDisplayFrequency) + QObject::tr(" Hz"));
 
 			if (fullscreen.selected.refreshRate == deviceMode.dmDisplayFrequency)
 				_rateIdx = fullscreen.numRefreshRates;
