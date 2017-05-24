@@ -9,6 +9,7 @@
 #include "Log.h"
 #include "wst.h"
 #include "DebugDump.h"
+#include "DisplayWindow.h"
 
 #ifdef DEBUG_DUMP
 
@@ -81,11 +82,13 @@ void DebugMsg(u32 _mode, const char * _format, ...)
 
 void StartDump(u32 _mode)
 {
+	dwnd().getDrawer().showMessage("Start commands logging\n", Milliseconds(750));
 	g_log.reset(new BufferedLog(_mode));
 }
 
 void EndDump()
 {
+	dwnd().getDrawer().showMessage("Stop commands logging\n", Milliseconds(750));
 	g_log.reset();
 }
 

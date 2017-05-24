@@ -2,6 +2,9 @@
 #include <memory>
 #include <array>
 #include <vector>
+#include <list>
+#include <chrono>
+#include <string>
 #include "gSP.h"
 #include "TexrectDrawer.h"
 #include "Graphics/ObjectHandle.h"
@@ -31,6 +34,8 @@ struct RectVertex
 	float x, y, z, w;
 	float s0, t0, s1, t1;
 };
+
+typedef std::chrono::milliseconds Milliseconds;
 
 class GraphicsDrawer
 {
@@ -113,6 +118,8 @@ public:
 
 	void drawOSD();
 
+	void showMessage(std::string _message, Milliseconds _interval);
+
 	void clearDepthBuffer(u32 _ulx, u32 _uly, u32 _lrx, u32 _lry);
 
 	void clearColorBuffer(float * _pColor);
@@ -145,6 +152,7 @@ private:
 	friend TexrectDrawer;
 
 	GraphicsDrawer();
+	~GraphicsDrawer();
 
 	GraphicsDrawer(const GraphicsDrawer &) = delete;
 
@@ -169,6 +177,9 @@ private:
 
 	void _drawOSD(const char *_pText, float _x, float & _y);
 
+	typedef std::list<std::string> OSDMessages;
+	void _removeOSDMessage(OSDMessages::iterator _iter, Milliseconds _interval);
+
 	DrawingState m_drawingState;
 	TexturedRectParams m_texrectParams;
 
@@ -188,4 +199,5 @@ private:
 	bool m_bImageTexture;
 	bool m_bFlatColors;
 	TexrectDrawer m_texrectDrawer;
+	OSDMessages m_osdMessages;
 };

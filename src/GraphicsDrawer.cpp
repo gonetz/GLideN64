@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <thread>
 #include <assert.h>
 #include <cmath>
 #include "Platform.h"
@@ -29,6 +30,12 @@ GraphicsDrawer::GraphicsDrawer()
 , m_bImageTexture(false)
 , m_bFlatColors(false)
 {
+}
+
+GraphicsDrawer::~GraphicsDrawer()
+{
+	while (!m_osdMessages.empty())
+		std::this_thread::sleep_for(Milliseconds(1));
 }
 
 void GraphicsDrawer::addTriangle(int _v0, int _v1, int _v2)
@@ -1303,7 +1310,8 @@ void GraphicsDrawer::_drawOSD(const char *_pText, float _x, float & _y)
 
 void GraphicsDrawer::drawOSD()
 {
-	if ((config.onScreenDisplay.fps | config.onScreenDisplay.vis | config.onScreenDisplay.percent) == 0)
+	if ((config.onScreenDisplay.fps | config.onScreenDisplay.vis | config.onScreenDisplay.percent) == 0 &&
+		m_osdMessages.empty())
 		return;
 
 	gfxContext.bindFramebuffer(bufferTarget::DRAW_FRAMEBUFFER, ObjectHandle::null);
@@ -1350,7 +1358,24 @@ void GraphicsDrawer::drawOSD()
 		_drawOSD(buf, x, y);
 	}
 
+	for (const std::string & m : m_osdMessages) {
+		_drawOSD(m.c_str(), x, y);
+	}
+
 	frameBufferList().setCurrentDrawBuffer();
+}
+
+void GraphicsDrawer::showMessage(std::string _message, Milliseconds _interval)
+{
+	m_osdMessages.emplace_back(_message);
+	std::thread t(&GraphicsDrawer::_removeOSDMessage, this, std::prev(m_osdMessages.end()), _interval);
+	t.detach();
+}
+
+void GraphicsDrawer::_removeOSDMessage(OSDMessages::iterator _iter, Milliseconds _interval)
+{
+	std::this_thread::sleep_for(_interval);
+	m_osdMessages.erase(_iter);
 }
 
 void GraphicsDrawer::clearDepthBuffer(u32 _ulx, u32 _uly, u32 _lrx, u32 _lry)
