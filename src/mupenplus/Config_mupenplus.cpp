@@ -87,6 +87,8 @@ bool Config_SetDefault()
 	assert(res == M64ERR_SUCCESS);
 	res = ConfigSetDefaultBool(g_configVideoGliden64, "EnableFragmentDepthWrite", config.generalEmulation.enableFragmentDepthWrite, "Enable writing of fragment depth. Some mobile GPUs do not support it, thus it made optional. Leave enabled.");
 	assert(res == M64ERR_SUCCESS);
+	res = ConfigSetDefaultBool(g_configVideoGliden64, "EnableCustomSettings", config.generalEmulation.enableCustomSettings, "Use GLideN64 per-game settings.");
+	assert(res == M64ERR_SUCCESS);
 #ifdef OS_ANDROID
 	res = ConfigSetDefaultBool(g_configVideoGliden64, "EnableBlitScreenWorkaround", config.generalEmulation.enableBlitScreenWorkaround, "Enable to render everything upside down");
 	assert(res == M64ERR_SUCCESS);
@@ -346,6 +348,7 @@ void Config_LoadConfig()
 	config.generalEmulation.enableNativeResTexrects = ConfigGetParamBool(g_configVideoGliden64, "EnableNativeResTexrects");
 	config.generalEmulation.enableLegacyBlending = ConfigGetParamBool(g_configVideoGliden64, "EnableLegacyBlending");
 	config.generalEmulation.enableFragmentDepthWrite = ConfigGetParamBool(g_configVideoGliden64, "EnableFragmentDepthWrite");
+	config.generalEmulation.enableCustomSettings = ConfigGetParamBool(g_configVideoGliden64, "EnableCustomSettings");
 #ifdef OS_ANDROID
 	config.generalEmulation.enableBlitScreenWorkaround = ConfigGetParamBool(g_configVideoGliden64, "EnableBlitScreenWorkaround");
 	config.generalEmulation.forcePolygonOffset = ConfigGetParamBool(g_configVideoGliden64, "ForcePolygonOffset");
