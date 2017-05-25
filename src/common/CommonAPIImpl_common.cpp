@@ -13,7 +13,6 @@
 #include <RDP.h>
 #include <VI.h>
 #include <Config.h>
-#include <Debug.h>
 #include <FrameBufferInfo.h>
 #include <TextureFilterHandler.h>
 #include <Log.h>
@@ -188,10 +187,6 @@ void PluginAPI::RomClosed()
 	dwnd().stop();
 	GBI.destroy();
 #endif
-
-#ifdef DEBUG
-	CloseDebugDlg();
-#endif
 }
 
 void PluginAPI::RomOpen()
@@ -208,10 +203,6 @@ void PluginAPI::RomOpen()
 	GBI.init();
 	Config_LoadConfig();
 	dwnd().start();
-#endif
-
-#ifdef DEBUG
-	OpenDebugDlg();
 #endif
 }
 

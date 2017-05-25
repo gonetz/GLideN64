@@ -9,7 +9,7 @@
 #include "DepthBuffer.h"
 #include "VI.h"
 #include "Config.h"
-#include "Debug.h"
+#include "DebugDump.h"
 #include <Graphics/Context.h>
 #include <Graphics/Parameters.h>
 #include "DisplayWindow.h"
@@ -454,12 +454,6 @@ void DepthBufferList::saveBuffer(u32 _address)
 	frameBufferList().attachDepthBuffer();
 	if (pDepthBuffer->m_address != gDP.depthImageAddress)
 		m_pCurrent = pCurrent;
-
-#ifdef DEBUG
-	DebugMsg( DEBUG_HIGH | DEBUG_HANDLED, "DepthBuffer_SetBuffer( 0x%08X ); color buffer is 0x%08X\n",
-		address, ( pFrameBuffer != nullptr &&  pFrameBuffer->m_FBO > 0) ?  pFrameBuffer->m_startAddress : 0
-	);
-#endif
 }
 
 void DepthBufferList::clearBuffer(u32 _ulx, u32 _uly, u32 _lrx, u32 _lry)

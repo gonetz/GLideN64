@@ -29,7 +29,7 @@
 #include "ZSort.h"
 #include "CRC.h"
 #include "Log.h"
-#include "Debug.h"
+#include "DebugDump.h"
 #include "Graphics/Context.h"
 #include "Graphics/Parameters.h"
 
@@ -114,14 +114,7 @@ GBIInfo GBI;
 
 void GBI_Unknown( u32 w0, u32 w1 )
 {
-#ifdef DEBUG
-	if (Debug.level == DEBUG_LOW)
-		DebugMsg( DEBUG_LOW | DEBUG_UNKNOWN, "UNKNOWN GBI COMMAND 0x%02X", _SHIFTR( w0, 24, 8 ) );
-	if (Debug.level == DEBUG_MEDIUM)
-		DebugMsg( DEBUG_MEDIUM | DEBUG_UNKNOWN, "Unknown GBI Command 0x%02X", _SHIFTR( w0, 24, 8 ) );
-	else if (Debug.level == DEBUG_HIGH)
-		DebugMsg( DEBUG_HIGH | DEBUG_UNKNOWN, "// Unknown GBI Command 0x%02X", _SHIFTR( w0, 24, 8 ) );
-#endif
+	DebugMsg(DEBUG_NORMAL, "UNKNOWN GBI COMMAND 0x%02X", _SHIFTR(w0, 24, 8));
 }
 
 void GBIInfo::init()

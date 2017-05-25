@@ -1,6 +1,6 @@
 #include <algorithm>
 #include <cstring>
-#include "Debug.h"
+#include "DebugDump.h"
 #include "RSP.h"
 #include "RDP.h"
 #include "N64.h"
@@ -29,7 +29,7 @@ void RSP_CheckDLCounter()
 		if (RSP.count == 0) {
 			RSP.count = -1;
 			--RSP.PCi;
-			DebugMsg( DEBUG_LOW | DEBUG_HANDLED, "End of DL\n" );
+			DebugMsg(DEBUG_NORMAL, "End of DL\n");
 		}
 	}
 }
@@ -81,20 +81,7 @@ void RSP_ProcessDList()
 	default:
 		while (!RSP.halt) {
 			if ((RSP.PC[RSP.PCi] + 8) > RDRAMSize) {
-#ifdef DEBUG
-				switch (Debug.level)
-				{
-					case DEBUG_LOW:
-					DebugMsg( DEBUG_LOW | DEBUG_ERROR, "ATTEMPTING TO EXECUTE RSP COMMAND AT INVALID RDRAM LOCATION\n" );
-					break;
-					case DEBUG_MEDIUM:
-					DebugMsg( DEBUG_MEDIUM | DEBUG_ERROR, "Attempting to execute RSP command at invalid RDRAM location\n" );
-					break;
-					case DEBUG_HIGH:
-					DebugMsg( DEBUG_HIGH | DEBUG_ERROR, "// Attempting to execute RSP command at invalid RDRAM location\n" );
-					break;
-				}
-#endif
+				DebugMsg(DEBUG_NORMAL | DEBUG_ERROR, "ATTEMPTING TO EXECUTE RSP COMMAND AT INVALID RDRAM LOCATION\n");
 				break;
 			}
 
@@ -102,10 +89,8 @@ void RSP_ProcessDList()
 			RSP.w1 = *(u32*)&RDRAM[RSP.PC[RSP.PCi] + 4];
 			RSP.cmd = _SHIFTR(RSP.w0, 24, 8);
 
-#ifdef DEBUG
-			DebugRSPState( RSP.PCi, RSP.PC[RSP.PCi], _SHIFTR( RSP.w0, 24, 8 ), RSP.w0, RSP.w1 );
-			DebugMsg( DEBUG_LOW | DEBUG_HANDLED, "0x%08lX: CMD=0x%02lX W0=0x%08lX W1=0x%08lX\n", RSP.PC[RSP.PCi], _SHIFTR( RSP.w0, 24, 8 ), RSP.w0, RSP.w1 );
-#endif
+//			DebugRSPState( RSP.PCi, RSP.PC[RSP.PCi], _SHIFTR( RSP.w0, 24, 8 ), RSP.w0, RSP.w1 );
+//			DebugMsg( DEBUG_LOW | DEBUG_HANDLED, "0x%08lX: CMD=0x%02lX W0=0x%08lX W1=0x%08lX\n", RSP.PC[RSP.PCi], _SHIFTR( RSP.w0, 24, 8 ), RSP.w0, RSP.w1 );
 
 			RSP.PC[RSP.PCi] += 8;
 			u32 pci = RSP.PCi;

@@ -1,5 +1,5 @@
 #include "GLideN64.h"
-#include "Debug.h"
+#include "DebugDump.h"
 #include "F3D.h"
 #include "F3DEX.h"
 #include "L3D.h"

@@ -11,7 +11,8 @@
 #include "FrameBufferInfo.h"
 #include "Config.h"
 #include "Performance.h"
-#include "Debug.h"
+#include "DebugDump.h"
+#include "Keys.h"
 #include "DisplayWindow.h"
 #include <Graphics/Context.h>
 
@@ -114,6 +115,10 @@ void VI_UpdateScreen()
 	if (wnd.resizeWindow())
 		return;
 	wnd.saveScreenshot();
+
+	if (isKeyPressed(G64_VK_G, 0x0001)) {
+		SwitchDump(DEBUG_NORMAL);
+	}
 
 	bool bVIUpdated = false;
 	if (*REG.VI_ORIGIN != VI.lastOrigin) {

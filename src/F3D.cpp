@@ -1,5 +1,5 @@
 #include "GLideN64.h"
-#include "Debug.h"
+#include "DebugDump.h"
 #include "F3D.h"
 #include "N64.h"
 #include "RSP.h"
@@ -16,9 +16,7 @@ void F3D_SPNoOp( u32 w0, u32 w1 )
 void F3D_Mtx( u32 w0, u32 w1 )
 {
 	if (_SHIFTR( w0, 0, 16 ) != 64) {
-#ifdef DEBUG
-	DebugMsg( DEBUG_MEDIUM | DEBUG_HIGH | DEBUG_ERROR, "G_MTX: address = 0x%08X    length = %i    params = 0x%02X\n", w1, _SHIFTR( w0, 0, 16 ), _SHIFTR( w0, 16, 8 ) );
-#endif
+		DebugMsg(DEBUG_NORMAL | DEBUG_ERROR, "G_MTX: address = 0x%08X    length = %i    params = 0x%02X\n", w1, _SHIFTR(w0, 0, 16), _SHIFTR(w0, 16, 8));
 		return;
 	}
 
@@ -27,9 +25,7 @@ void F3D_Mtx( u32 w0, u32 w1 )
 
 void F3D_Reserved0( u32 w0, u32 w1 )
 {
-#ifdef DEBUG
-	DebugMsg( DEBUG_MEDIUM | DEBUG_IGNORED | DEBUG_UNKNOWN, "G_RESERVED0: w0=0x%08lX w1=0x%08lX\n", w0, w1 );
-#endif
+	DebugMsg(DEBUG_NORMAL | DEBUG_IGNORED, "G_RESERVED0: w0=0x%08lX w1=0x%08lX\n", w0, w1);
 }
 
 void F3D_MoveMem( u32 w0, u32 w1 )
