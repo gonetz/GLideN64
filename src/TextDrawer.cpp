@@ -359,14 +359,14 @@ void TextDrawer::getTextSize(const char *_pText, float & _w, float & _h) const
 	DisplayWindow & wnd = DisplayWindow::get();
 	const float sx = 2.0f / wnd.getWidth();
 	const float sy = 2.0f / wnd.getHeight();
-	float bw, bh;
+	float bw, bh = 0;
 
 	for (const u8 *p = (const u8 *)_pText; *p; ++p) {
 		bw = m_atlas->c[*p].bw * sx;
-		bh = m_atlas->c[*p].bh * sy;
+		bh = std::max(bh, m_atlas->c[*p].bh * sy);
 
 		_w += m_atlas->c[*p].ax * sx;
-		_h += m_atlas->c[*p].ay * sy;
+//		_h += m_atlas->c[*p].ay * sy;
 	}
 	_w += bw;
 	_h += bh;
