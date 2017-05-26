@@ -371,3 +371,9 @@ void TextDrawer::getTextSize(const char *_pText, float & _w, float & _h) const
 	_w += bw;
 	_h += bh;
 }
+
+void TextDrawer::setTextColor(float * _color)
+{
+	if (m_program)
+		m_program->setTextColor(_color);
+}

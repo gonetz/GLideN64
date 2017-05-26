@@ -118,7 +118,7 @@ namespace opengl {
 
 		graphics::ShaderProgram * createOrientationCorrectionShader() override;
 
-		graphics::ShaderProgram * createTextDrawerShader() override;
+		graphics::TextDrawerShaderProgram * createTextDrawerShader() override;
 
 		void resetShaderProgram() override;
 

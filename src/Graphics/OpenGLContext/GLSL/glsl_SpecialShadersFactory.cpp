@@ -435,8 +435,8 @@ namespace glsl {
 
 	/*---------------SpecialShader-------------*/
 
-	template<class VertexBody, class FragmentBody>
-	class SpecialShader : public graphics::ShaderProgram
+	template<class VertexBody, class FragmentBody, class Base = graphics::ShaderProgram>
+	class SpecialShader : public Base
 	{
 	public:
 		SpecialShader(const opengl::GLInfo & _glinfo,
@@ -692,7 +692,7 @@ namespace glsl {
 
 	/*---------------TexrectDrawerShader-------------*/
 
-	typedef SpecialShader<VertexShaderTexturedRect, TextDraw> TextDrawerShaderBase;
+	typedef SpecialShader<VertexShaderTexturedRect, TextDraw, graphics::TextDrawerShaderProgram> TextDrawerShaderBase;
 
 	class TextDrawerShader : public TextDrawerShaderBase
 	{
@@ -707,10 +707,19 @@ namespace glsl {
 			m_useProgram->useProgram(m_program);
 			const int texLoc = glGetUniformLocation(GLuint(m_program), "uTex0");
 			glUniform1i(texLoc, 0);
-			const int colorLoc = glGetUniformLocation(GLuint(m_program), "uColor");
-			glUniform4fv(colorLoc, 1, config.font.colorf);
+			m_colorLoc = glGetUniformLocation(GLuint(m_program), "uColor");
+			glUniform4fv(m_colorLoc, 1, config.font.colorf);
 			m_useProgram->useProgram(graphics::ObjectHandle::null);
 		}
+
+		void setTextColor(float * _color) override {
+			m_useProgram->useProgram(m_program);
+			glUniform4fv(m_colorLoc, 1, _color);
+			m_useProgram->useProgram(graphics::ObjectHandle::null);
+		}
+
+	private:
+		int m_colorLoc;
 	};
 
 	/*---------------SpecialShadersFactory-------------*/
@@ -766,7 +775,7 @@ namespace glsl {
 		return new OrientationCorrectionShader(m_glinfo, m_useProgram, m_vertexHeader, m_fragmentHeader, m_fragmentEnd);
 	}
 
-	graphics::ShaderProgram * SpecialShadersFactory::createTextDrawerShader() const
+	graphics::TextDrawerShaderProgram * SpecialShadersFactory::createTextDrawerShader() const
 	{
 		return new TextDrawerShader(m_glinfo, m_useProgram, m_vertexHeader, m_fragmentHeader, m_fragmentEnd);
 	}

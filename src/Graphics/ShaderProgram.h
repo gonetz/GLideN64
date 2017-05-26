@@ -27,4 +27,9 @@ namespace graphics {
 		virtual void setEnableAlphaTest(int _enable) = 0;
 	};
 
+	class TextDrawerShaderProgram : public ShaderProgram
+	{
+	public:
+		virtual void setTextColor(float * _color) = 0;
+	};
 }

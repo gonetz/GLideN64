@@ -371,7 +371,7 @@ graphics::ShaderProgram * ContextImpl::createOrientationCorrectionShader()
 	return m_specialShadersFactory->createOrientationCorrectionShader();
 }
 
-graphics::ShaderProgram * ContextImpl::createTextDrawerShader()
+graphics::TextDrawerShaderProgram * ContextImpl::createTextDrawerShader()
 {
 	return m_specialShadersFactory->createTextDrawerShader();
 }

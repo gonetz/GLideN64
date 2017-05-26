@@ -220,7 +220,7 @@ namespace graphics {
 
 		ShaderProgram * createOrientationCorrectionShader();
 
-		ShaderProgram * createTextDrawerShader();
+		TextDrawerShaderProgram * createTextDrawerShader();
 
 		void resetShaderProgram();
 

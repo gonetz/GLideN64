@@ -249,7 +249,7 @@ ShaderProgram * Context::createOrientationCorrectionShader()
 	return m_impl->createOrientationCorrectionShader();
 }
 
-ShaderProgram * Context::createTextDrawerShader()
+TextDrawerShaderProgram * Context::createTextDrawerShader()
 {
 	return m_impl->createTextDrawerShader();
 }
