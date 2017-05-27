@@ -88,9 +88,9 @@ End:
 #endif // WIN32_ASM
 }
 
-void InverseTransformVectorNormalizeN(float src[][3], float dst[][3], float mtx[4][4], s32 count)
+void InverseTransformVectorNormalizeN(float src[][3], float dst[][3], float mtx[4][4], u32 count)
 {
-	for (s32 i = 0; i < count; i++)
+	for (u32 i = 0; i < count; i++)
 	{
 		InverseTransformVectorNormalize((float(*))src[i], (float(*))dst[i], mtx);
 	}
