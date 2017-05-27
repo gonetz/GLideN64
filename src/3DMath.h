@@ -8,7 +8,7 @@ void MultMatrix(float m0[4][4], float m1[4][4], float dest[4][4]);
 void MultMatrix2(float m0[4][4], float m1[4][4]);
 void TransformVectorNormalize(float vec[3], float mtx[4][4]);
 void InverseTransformVectorNormalize(float src[3], float dst[3], float mtx[4][4]);
-void InverseTransformVectorNormalizeN(float src[][3], float dst[][3], float mtx[4][4], s32 count);
+void InverseTransformVectorNormalizeN(float src[][3], float dst[][3], float mtx[4][4], u32 count);
 void Normalize(float v[3]);
 float DotProduct(const float v0[3], const float v1[3]);
 

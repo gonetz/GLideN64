@@ -1,6 +1,7 @@
 #include "3DMath.h"
 #include <cmath>
 #include "Log.h"
+#include "Types.h"
 
 void MultMatrix( float m0[4][4], float m1[4][4], float dest[4][4])
 {
@@ -140,14 +141,14 @@ void Normalize(float v[3])
     );
 }
 
-void InverseTransformVectorNormalizeN(float src[][3], float dst[][3], float mtx[4][4], int count)
+void InverseTransformVectorNormalizeN(float src[][3], float dst[][3], float mtx[4][4], u32 count)
 {
     void *ptr = (void*)&count;
     asm volatile (
     "ldr                r4, [%3]             \n\t"
     "b                  4f                           \n\t"
     "7:                                              \n\t"
-         // Load four src vectors
+         // Load seven src vectors
     "    vld3.32        {d0,d2,d4}, [%1]!            \n\t"    // load vector 0-1
     "    vld3.32        {d1,d3,d5}, [%1]!            \n\t"    // load vector 2-3
     "    vld3.32        {d24,d26,d28}, [%1]!         \n\t"    // load vector 4-5
@@ -178,7 +179,7 @@ void InverseTransformVectorNormalizeN(float src[][3], float dst[][3], float mtx[
     "    vmla.f32       q10, q14, d9[0]              \n\t"    //dst[1] += v[2]*mtx[2][1]
     "    vmla.f32       q11, q14, d11[0]             \n\t"    //dst[2] += v[2]*mtx[2][2]
 
-         // Normalize 4x
+         // Normalize 7x
     "    vmul.f32       q0, q6, q6                   \n\t"    //len = dst[0]*dst[0]
     "    vmul.f32       q4, q9, q9                   \n\t"    //len = dst[0]*dst[0]
     "    vmla.f32       q0, q7, q7                   \n\t"    //len += dst[1]*dst[1]
@@ -211,7 +212,7 @@ void InverseTransformVectorNormalizeN(float src[][3], float dst[][3], float mtx[
     "    vmul.f32       q10, q10, q4                 \n\t"    //dst[1] = dst[1]*(1/len)
     "    vmul.f32       q11, q11, q4                 \n\t"    //dst[2] = dst[2]*(1/len)
 
-         // Store four dst vectors
+         // Store seven dst vectors
     "    vst3.32        {d12, d14, d16}, [%2]!       \n\t"    // store vector 0-1
     "    vst3.32        {d13, d15, d17}, [%2]!       \n\t"    // store vector 2-3
     "    vst3.32        {d18, d20, d22}, [%2]!       \n\t"    // store vector 4-5
