@@ -229,5 +229,6 @@ void BufferedDrawer::drawLine(f32 _width, SPVertex * _vertices)
 	Buffer & vboBuffer = m_trisBuffers.vbo;
 	_updateBuffer(vboBuffer, 2, vboDataSize, m_vertices);
 
+	glLineWidth(_width);
 	glDrawArrays(GL_LINES, m_trisBuffers.vbo.pos - 2, 2);
 }
