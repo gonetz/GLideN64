@@ -9,7 +9,6 @@ Performance::Performance()
 	, m_frames(0)
 	, m_fps(0)
 	, m_vis(0)
-	, m_startTime(0)
 	, m_enabled(false) {
 }
 
@@ -19,10 +18,9 @@ void Performance::reset()
 	m_frames = 0;
 	m_fps = 0;
 	m_vis = 0;
-	m_startTime = 0;
 	m_enabled = (config.onScreenDisplay.fps | config.onScreenDisplay.vis | config.onScreenDisplay.percent) != 0;
 	if (m_enabled)
-		m_startTime = std::clock();
+		m_startTime = std::chrono::steady_clock::now();
 }
 
 f32 Performance::getFps() const
@@ -46,8 +44,9 @@ void Performance::increaseVICount()
 	if (!m_enabled)
 		return;
 	m_vi++;
-	const clock_t curTime = std::clock();
-	const float elapsed = float( curTime - m_startTime ) /  CLOCKS_PER_SEC;
+	const std::chrono::steady_clock::time_point curTime = std::chrono::steady_clock::now();
+	std::chrono::steady_clock::duration time_span = curTime - m_startTime;
+	const double elapsed = double(time_span.count()) * std::chrono::steady_clock::period::num / std::chrono::steady_clock::period::den;
 	if (elapsed < 0.5)
 		return;
 	m_vis = m_vi / elapsed;
