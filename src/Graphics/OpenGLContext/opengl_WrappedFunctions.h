@@ -2516,6 +2516,8 @@ namespace opengl {
 		void commandToExecute(void) override
 		{
 			m_returnValue = ::CoreVideo_SetVideoMode(m_screenWidth, m_screenHeight, m_bitsPerPixel, m_mode, m_flags);
+
+			initGLFunctions();
 		}
 
 		int m_screenWidth;

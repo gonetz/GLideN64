@@ -99,6 +99,8 @@ bool WindowsWGL::start()
 		}
 	}
 
+	initGLFunctions();
+
 	return true;
 }
 
