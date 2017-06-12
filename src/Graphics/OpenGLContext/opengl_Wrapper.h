@@ -28,6 +28,9 @@ namespace opengl {
 		static std::thread m_commandExecutionThread;
 		static std::mutex m_condvarMutex;
 		static std::condition_variable m_condition;
+
+		static const int MAX_SWAP = 2;
+
 	public:
 		static void setThreadedMode(void);
 

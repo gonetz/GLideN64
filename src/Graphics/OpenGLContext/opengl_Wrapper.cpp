@@ -1154,12 +1154,12 @@ namespace opengl {
 	}
 
 #endif
+
 	void FunctionWrapper::ReduceSwapBuffersQueued(void)
 	{
 		--m_swapBuffersQueued;
 
-		if(m_swapBuffersQueued == 0)
-		{
+		if (m_swapBuffersQueued <= MAX_SWAP) {
 			m_condition.notify_all();
 		}
 	}
@@ -1168,8 +1168,8 @@ namespace opengl {
 	{
 		std::unique_lock<std::mutex> lock(m_condvarMutex);
 
-		if (!m_shutdown && m_swapBuffersQueued != 0) {
-			m_condition.wait(lock, []{return FunctionWrapper::m_swapBuffersQueued == 0;});
+		if (!m_shutdown && m_swapBuffersQueued > MAX_SWAP) {
+			m_condition.wait(lock, []{return FunctionWrapper::m_swapBuffersQueued <= MAX_SWAP;});
 		}
 	}
 }
