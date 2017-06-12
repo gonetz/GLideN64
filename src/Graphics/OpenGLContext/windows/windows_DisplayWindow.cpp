@@ -55,6 +55,9 @@ void DisplayWindowWindows::_stop()
 
 void DisplayWindowWindows::_swapBuffers()
 {
+	//Don't let the command queue grow too big buy waiting on no more swap buffers being queued
+	FunctionWrapper::WaitForSwapBuffersQueued();
+
 	FunctionWrapper::windowsSwapBuffers();
 }
 
