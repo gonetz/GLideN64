@@ -37,6 +37,7 @@ namespace opengl {
 	void FunctionWrapper::setThreadedMode(void)
 	{
 		m_threaded_wrapper = true;
+		m_shutdown = false;
 
 		m_commandExecutionThread = std::thread(&FunctionWrapper::commandLoop);
 	}
