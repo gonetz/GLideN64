@@ -314,7 +314,8 @@ void ConfigDialog::setIniPath(const QString & _strIniPath)
 		const bool bCurrent = locale == currentTranslation;
 		locale.truncate(locale.lastIndexOf('.')); // "TranslationExample_de"
 		locale.remove(0, locale.indexOf('_') + 1); // "de"
-		QString language = QLocale::languageToString(QLocale(locale).language());
+		QString language = QLocale(locale).nativeLanguageName();
+		language = language.left(1).toUpper() + language.remove(0, 1);
 		if (bCurrent) {
 			listIndex = i + 1;
 		}
