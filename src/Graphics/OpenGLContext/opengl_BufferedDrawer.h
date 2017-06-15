@@ -1,4 +1,5 @@
 #pragma once
+#include <vector>
 #include <unordered_map>
 #include "opengl_GLInfo.h"
 #include "opengl_GraphicsDrawer.h"
@@ -71,7 +72,7 @@ namespace opengl {
 		TrisBuffers m_trisBuffers;
 		BuffersType m_type = BuffersType::none;
 
-		Vertex m_vertices[VERTBUFF_SIZE];
+		std::vector<Vertex> m_vertices;
 
 		typedef std::unordered_map<u32, u32> BufferOffsets;
 		BufferOffsets m_rectBufferOffsets;

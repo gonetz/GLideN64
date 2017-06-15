@@ -21,6 +21,7 @@ BufferedDrawer::BufferedDrawer(const GLInfo & _glinfo, CachedVertexAttribArray *
 , m_cachedAttribArray(_cachedAttribArray)
 , m_bindBuffer(_bindBuffer)
 {
+	m_vertices.resize(VERTBUFF_SIZE);
 	/* Init buffers for rects */
 	glGenVertexArrays(1, &m_rectsBuffers.vao);
 	glBindVertexArray(m_rectsBuffers.vao);
@@ -141,6 +142,9 @@ void BufferedDrawer::drawRects(const graphics::Context::DrawRectParameters & _pa
 
 void BufferedDrawer::_convertFromSPVertex(bool _flatColors, u32 _count, const SPVertex * _data)
 {
+	if (_count > m_vertices.size())
+		m_vertices.resize(_count);
+
 	for (u32 i = 0; i < _count; ++i) {
 		const SPVertex & src = _data[i];
 		Vertex & dst = m_vertices[i];
@@ -177,7 +181,7 @@ void BufferedDrawer::_updateTrianglesBuffers(const graphics::Context::DrawTriang
 	_convertFromSPVertex(_params.flatColors, _params.verticesCount, _params.vertices);
 	const GLsizeiptr vboDataSize = _params.verticesCount * sizeof(Vertex);
 	Buffer & vboBuffer = m_trisBuffers.vbo;
-	_updateBuffer(vboBuffer, _params.verticesCount, vboDataSize, m_vertices);
+	_updateBuffer(vboBuffer, _params.verticesCount, vboDataSize, m_vertices.data());
 
 	if (_params.elements == nullptr)
 		return;
@@ -227,7 +231,7 @@ void BufferedDrawer::drawLine(f32 _width, SPVertex * _vertices)
 	_convertFromSPVertex(false, 2, _vertices);
 	const GLsizeiptr vboDataSize = 2 * sizeof(Vertex);
 	Buffer & vboBuffer = m_trisBuffers.vbo;
-	_updateBuffer(vboBuffer, 2, vboDataSize, m_vertices);
+	_updateBuffer(vboBuffer, 2, vboDataSize, m_vertices.data());
 
 	glLineWidth(_width);
 	glDrawArrays(GL_LINES, m_trisBuffers.vbo.pos - 2, 2);
