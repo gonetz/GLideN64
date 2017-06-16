@@ -11,6 +11,7 @@
 #include "FrameBufferInfo.h"
 #include "Config.h"
 #include "Performance.h"
+#include "Debugger.h"
 #include "DebugDump.h"
 #include "Keys.h"
 #include "DisplayWindow.h"
@@ -115,6 +116,7 @@ void VI_UpdateScreen()
 	if (wnd.resizeWindow())
 		return;
 	wnd.saveScreenshot();
+	g_debugger.checkDebugState();
 
 	if (isKeyPressed(G64_VK_G, 0x0001)) {
 		SwitchDump(DEBUG_LOW|DEBUG_NORMAL);

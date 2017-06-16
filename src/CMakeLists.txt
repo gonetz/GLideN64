@@ -15,6 +15,7 @@ set(GLideN64_SOURCES
   convert.cpp
   CRC32.cpp
   DebugDump.cpp
+  Debugger.cpp
   DepthBuffer.cpp
   DisplayWindow.cpp
   F3D.cpp

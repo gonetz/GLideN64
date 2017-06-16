@@ -25,6 +25,7 @@ MY_LOCAL_SRC_FILES :=                               \
     $(SRCDIR)/convert.cpp                           \
     $(SRCDIR)/CRC_OPT.cpp                           \
     $(SRCDIR)/DebugDump.cpp                         \
+    $(SRCDIR)/Debugger.cpp                          \
     $(SRCDIR)/DepthBuffer.cpp                       \
     $(SRCDIR)/DisplayWindow.cpp                     \
     $(SRCDIR)/F3D.cpp                               \

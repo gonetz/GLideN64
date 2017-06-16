@@ -359,6 +359,9 @@
     <ClCompile Include="..\..\src\DebugDump.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\Debugger.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\3DMath.h">
@@ -662,6 +665,9 @@
       <Filter>Header Files\uCodes</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\DebugDump.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Debugger.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

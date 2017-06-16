@@ -101,6 +101,8 @@ struct gDPLoadTileInfo {
 	u8 loadType;
 	u16 uls;
 	u16 ult;
+	u16 lrs;
+	u16 lrt;
 	u16 width;
 	u16 height;
 	u16 texWidth;
@@ -117,7 +119,7 @@ struct gDPScissor
 
 struct gDPInfo
 {
-	struct
+	struct OtherMode
 	{
 		union
 		{
@@ -195,7 +197,7 @@ struct gDPInfo
 		f32 r, g, b, a;
 	} fogColor,  blendColor, envColor, rectColor;
 
-	struct
+	struct FillColor
 	{
 		f32 z, dz;
 		u32 color;

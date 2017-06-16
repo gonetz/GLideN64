@@ -276,6 +276,7 @@
     <ClCompile Include="..\..\src\convert.cpp" />
     <ClCompile Include="..\..\src\CRC_OPT.cpp" />
     <ClCompile Include="..\..\src\DebugDump.cpp" />
+    <ClCompile Include="..\..\src\Debugger.cpp" />
     <ClCompile Include="..\..\src\DepthBuffer.cpp" />
     <ClCompile Include="..\..\src\DepthBufferRender\ClipPolygon.cpp" />
     <ClCompile Include="..\..\src\DepthBufferRender\DepthBufferRender.cpp" />
@@ -415,6 +416,7 @@
     <ClInclude Include="..\..\src\CRC.h" />
     <ClInclude Include="..\..\src\CRC32.h" />
     <ClInclude Include="..\..\src\DebugDump.h" />
+    <ClInclude Include="..\..\src\Debugger.h" />
     <ClInclude Include="..\..\src\DepthBuffer.h" />
     <ClInclude Include="..\..\src\DepthBufferRender\ClipPolygon.h" />
     <ClInclude Include="..\..\src\DepthBufferRender\DepthBufferRender.h" />

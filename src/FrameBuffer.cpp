@@ -13,6 +13,7 @@
 #include "Combiner.h"
 #include "Types.h"
 #include "Config.h"
+#include "Debugger.h"
 #include "DebugDump.h"
 #include "PostProcessor.h"
 #include "FrameBufferInfo.h"
@@ -985,6 +986,11 @@ void FrameBufferList::renderBuffer()
 {
 	if (VI.width == 0 || *REG.VI_WIDTH == 0 || *REG.VI_H_START == 0) // H width is zero. Don't draw
 		return;
+
+	if (g_debugger.isDebugMode()) {
+		g_debugger.draw();
+		return;
+	}
 
 	if (config.frameBufferEmulation.enable == 0) {
 		_renderScreenSizeBuffer();

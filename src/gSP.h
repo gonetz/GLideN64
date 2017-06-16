@@ -99,7 +99,7 @@ struct gSPInfo
 
 	gDPTile *textureTile[2];
 
-	struct
+	struct Viewport
 	{
 		f32 vscale[4];
 		f32 vtrans[4];
