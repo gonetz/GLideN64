@@ -25,7 +25,8 @@
 #define F3DSETA		16
 #define F3DEX2MM	17
 #define F3DTEXA		18
-#define NONE		19
+#define T3DUX		19
+#define NONE		20
 
 // Fixed point conversion factors
 #define FIXED2FLOATRECIP1	0.5f

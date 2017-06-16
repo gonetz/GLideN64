@@ -57,8 +57,10 @@ SpecialMicrocodeInfo specialMicrocodes[] =
 	{ F3DPD,		true,	0x1c4f7869, "Perfect Dark" },
 	{ Turbo3D,		false,	0x2bdcfc8a, "Turbo3D" },
 	{ F3DEX2CBFD,	true,	0x1b4ace88, "Conker's Bad Fur Day" },
-	{ F3DEX2MM,	true,	0xd39a0d4f, "Animal Forest" },
-	{ S2DEX2,	false,	0x2c399dd, "Animal Forest" }
+	{ F3DEX2MM,		true,	0xd39a0d4f,	"Animal Forest" },
+	{ S2DEX2,		false,	0x2c399dd,	"Animal Forest" },
+	{ T3DUX,		false,	0xbad437f2, "T3DUX vers 0.83 for Toukon Road" },
+	{ T3DUX,		false,	0xd0a1aa3d, "T3DUX vers 0.85 for Toukon Road 2" }
 };
 
 u32 G_RDPHALF_1, G_RDPHALF_2, G_RDPHALF_CONT;
@@ -192,6 +194,7 @@ void GBIInfo::_makeCurrent(MicrocodeInfo * _pCurrent)
 			case F3DGOLDEN:	F3DGOLDEN_Init();	break;
 			case F3DEX2MM:	F3DEX2MM_Init();	break;
 			case F3DTEXA:	F3DTEXA_Init();		break;
+			case T3DUX:		F3D_Init();			break;
 		}
 
 		if (gfxContext.isSupported(graphics::SpecialFeatures::NearPlaneClipping)) {

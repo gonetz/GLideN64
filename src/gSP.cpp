@@ -1241,6 +1241,68 @@ void gSPCBFDVertex( u32 a, u32 n, u32 v0 )
 	}
 }
 
+void gSPT3DUXVertex(u32 a, u32 n, u32 ci)
+{
+	const u32 address = RSP_SegmentToPhysical(a);
+	const u32 colors = RSP_SegmentToPhysical(ci);
+
+	struct T3DUXVertex {
+		s16 y;
+		s16 x;
+		u16 flag;
+		s16 z;
+	} *vertex = (T3DUXVertex*)&RDRAM[address];
+
+	struct T3DUXColor
+	{
+		u8 a;
+		u8 b;
+		u8 g;
+		u8 r;
+	} *color = (T3DUXColor*)&RDRAM[colors];
+
+	if ((address + sizeof(T3DUXVertex)* n) > RDRAMSize)
+		return;
+
+	GraphicsDrawer & drawer = dwnd().getDrawer();
+	u32 i = 0;
+#ifdef __VEC4_OPT
+	for (; i < n - (n % 4); i += 4) {
+		u32 v = i;
+		for (int j = 0; j < 4; ++j) {
+			SPVertex & vtx = drawer.getVertex(v + j);
+			vtx.x = vertex->x;
+			vtx.y = vertex->y;
+			vtx.z = vertex->z;
+			vtx.s = 0;
+			vtx.t = 0;
+			vtx.r = _FIXED2FLOAT(color->r, 8);
+			vtx.g = _FIXED2FLOAT(color->g, 8);
+			vtx.b = _FIXED2FLOAT(color->b, 8);
+			vtx.a = _FIXED2FLOAT(color->a, 8);
+			vertex++;
+			color++;
+		}
+		gSPProcessVertex4(v);
+	}
+#endif
+	for (; i < n; ++i) {
+		SPVertex & vtx = drawer.getVertex(i);
+		vtx.x = vertex->x;
+		vtx.y = vertex->y;
+		vtx.z = vertex->z;
+		vtx.s = 0;
+		vtx.t = 0;
+		vtx.r = _FIXED2FLOAT(color->r, 8);
+		vtx.g = _FIXED2FLOAT(color->g, 8);
+		vtx.b = _FIXED2FLOAT(color->b, 8);
+		vtx.a = _FIXED2FLOAT(color->a, 8);
+		gSPProcessVertex(i);
+		vertex++;
+		color++;
+	}
+}
+
 void gSPDisplayList( u32 dl )
 {
 	u32 address = RSP_SegmentToPhysical( dl );

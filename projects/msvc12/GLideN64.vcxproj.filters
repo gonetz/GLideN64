@@ -338,9 +338,6 @@
     <ClCompile Include="..\..\src\TexrectDrawer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\F3DTEXA.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\Graphics\ObjectHandle.cpp">
       <Filter>Source Files\Graphics</Filter>
     </ClCompile>
@@ -352,6 +349,12 @@
     </ClCompile>
     <ClCompile Include="..\..\src\xxHash\xxhash.c">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\F3DTEXA.cpp">
+      <Filter>Source Files\uCodes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\T3DUX.cpp">
+      <Filter>Source Files\uCodes</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -649,11 +652,14 @@
     <ClInclude Include="..\..\src\TexrectDrawer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\F3DTEXA.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\xxHash\xxhash.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\T3DUX.h">
+      <Filter>Header Files\uCodes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\F3DTEXA.h">
+      <Filter>Header Files\uCodes</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

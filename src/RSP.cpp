@@ -6,6 +6,7 @@
 #include "N64.h"
 #include "F3D.h"
 #include "Turbo3D.h"
+#include "T3DUX.h"
 #include "VI.h"
 #include "Combiner.h"
 #include "FrameBuffer.h"
@@ -70,9 +71,14 @@ void RSP_ProcessDList()
 
 	depthBufferList().setNotCleared();
 
-	if (GBI.getMicrocodeType() == Turbo3D)
+	switch (GBI.getMicrocodeType()) {
+	case Turbo3D:
 		RunTurbo3D();
-	else {
+		break;
+	case T3DUX:
+		RunT3DUX();
+		break;
+	default:
 		while (!RSP.halt) {
 			if ((RSP.PC[RSP.PCi] + 8) > RDRAMSize) {
 #ifdef DEBUG

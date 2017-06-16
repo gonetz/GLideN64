@@ -355,6 +355,7 @@
     <ClCompile Include="..\..\src\RSP.cpp" />
     <ClCompile Include="..\..\src\RSP_LoadMatrixX86.cpp" />
     <ClCompile Include="..\..\src\SoftwareRender.cpp" />
+    <ClCompile Include="..\..\src\T3DUX.cpp" />
     <ClCompile Include="..\..\src\TexrectDrawer.cpp" />
     <ClCompile Include="..\..\src\TextDrawer.cpp" />
     <ClCompile Include="..\..\src\TextureFilterHandler.cpp" />
@@ -480,6 +481,7 @@
     <ClInclude Include="..\..\src\GraphicsDrawer.h" />
     <ClInclude Include="..\..\src\RSP.h" />
     <ClInclude Include="..\..\src\SoftwareRender.h" />
+    <ClInclude Include="..\..\src\T3DUX.h" />
     <ClInclude Include="..\..\src\TexrectDrawer.h" />
     <ClInclude Include="..\..\src\TextDrawer.h" />
     <ClInclude Include="..\..\src\TextureFilterHandler.h" />
