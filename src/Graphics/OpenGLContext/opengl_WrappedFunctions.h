@@ -1755,13 +1755,6 @@ namespace opengl {
 				OpenGlCommand(false, false, "GlMapBufferRangeReadAsyncCommand"), m_target(target), m_buffer(buffer),
 				m_offset(offset), m_length(length), m_access(access)
 		{
-			std::unique_lock<std::mutex> lock(m_mapMutex);
-
-			if(m_sizes[m_buffer] != m_length)
-			{
-				m_sizes[m_buffer] = m_length;
-				m_data[m_buffer] = std::unique_ptr<u8[]>(new u8[m_length]);
-			}
 		}
 
 		void commandToExecute(void) override
@@ -1771,24 +1764,35 @@ namespace opengl {
 
 			if (buffer_pointer != nullptr) {
 				std::unique_lock<std::mutex> lock(m_mapMutex);
-				std::unique_ptr<u8[]>& data = m_data[m_buffer];
-				memcpy(data.get(), buffer_pointer, m_length);
+				verifyBuffer(m_buffer, m_length);
+				auto data = m_data[m_buffer];
+				memcpy(data->data(), buffer_pointer, m_length);
 			}
 		}
 
-		static void* getData(const GLuint& buffer)
+		static std::shared_ptr<std::vector<u8>> getData(const GLuint& buffer, u32 length)
 		{
 			std::unique_lock<std::mutex> lock(m_mapMutex);
-			return m_data[buffer].get();
+			verifyBuffer(buffer, length);
+			return m_data[buffer];
 		}
+		
 	private:
+	
+		static void verifyBuffer(GLuint buffer, u32 length)
+		{
+			if (m_data[buffer] == nullptr || m_data[buffer]->size() < length) {
+				m_data[buffer] = std::make_shared<std::vector<u8>>(length);
+			}
+		}
+		
 		GLenum m_target;
 		GLuint m_buffer;
 		GLintptr m_offset;
 		u32 m_length;
 		GLbitfield m_access;
-		static std::unordered_map<int, std::unique_ptr<u8[]>> m_data;
-		static std::unordered_map<int, int> m_sizes;
+		static std::unordered_map<int, std::shared_ptr<std::vector<u8>>> m_data;
+		static std::unordered_map<int, u32> m_sizes;
 		static std::mutex m_mapMutex;
 	};
 

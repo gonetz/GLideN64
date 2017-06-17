@@ -136,7 +136,7 @@ namespace opengl {
 		static void glMapBuffer(const GLenum& target, const GLenum& access);
 		static void* glMapBufferRange(const GLenum& target, const GLintptr& offset, const GLsizeiptr& length, const GLbitfield& access);
 		static void glMapBufferRangeWriteAsync(const GLenum& target, const GLuint& buffer, const GLintptr& offset, u32 length, const GLbitfield& access, std::unique_ptr<u8[]> data);
-		static void* glMapBufferRangeReadAsync(const GLenum& target, const GLuint& buffer, const GLintptr& offset, u32 length, const GLbitfield& access);
+		static std::shared_ptr<std::vector<u8>> glMapBufferRangeReadAsync(const GLenum& target, const GLuint& buffer, const GLintptr& offset, u32 length, const GLbitfield& access);
 		static GLboolean glUnmapBuffer(const GLenum& target);
 		static void glUnmapBufferAsync(const GLenum& target);
 		static void glDeleteBuffers(GLsizei n, std::unique_ptr<GLuint[]> buffers);

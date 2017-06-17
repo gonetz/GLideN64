@@ -779,7 +779,7 @@ namespace opengl {
 		}
 	}
 
-	void* FunctionWrapper::glMapBufferRangeReadAsync(const GLenum& target, const GLuint& buffer, const GLintptr& offset, u32 length, const GLbitfield& access)
+	std::shared_ptr<std::vector<u8>> FunctionWrapper::glMapBufferRangeReadAsync(const GLenum& target, const GLuint& buffer, const GLintptr& offset, u32 length, const GLbitfield& access)
 	{
 		if(m_threaded_wrapper)
 			executeCommand(std::make_shared<GlMapBufferRangeReadAsyncCommand>(target, buffer, offset, length, access));
@@ -787,7 +787,7 @@ namespace opengl {
 			auto command = std::make_shared<GlMapBufferRangeReadAsyncCommand>(target, buffer, offset, length, access);
 			command->performCommandSingleThreaded();
 		}
-		return GlMapBufferRangeReadAsyncCommand::getData(buffer);
+		return GlMapBufferRangeReadAsyncCommand::getData(buffer, length);
 	}
 
 	GLboolean FunctionWrapper::glUnmapBuffer(const GLenum& target)

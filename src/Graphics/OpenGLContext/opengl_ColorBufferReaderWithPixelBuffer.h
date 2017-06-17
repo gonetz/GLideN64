@@ -24,6 +24,7 @@ private:
 	u32 m_numPBO;
 	static const int _maxPBO = 3;
 	GLuint m_PBO[_maxPBO];
+	std::shared_ptr<std::vector<u8>> m_localData;
 	u32 m_curIndex;
 };
 
