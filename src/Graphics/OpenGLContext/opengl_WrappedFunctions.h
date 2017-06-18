@@ -29,13 +29,12 @@ namespace opengl {
 		{
 			commandToExecute();
 #ifdef GL_DEBUG
-			if(m_isGlCommand)
-			{
+			if (m_isGlCommand) {
 				auto error = g_glGetError();
 				if (error != GL_NO_ERROR) {
 					std::stringstream errorString;
 					errorString << " OpenGL error: 0x" << std::hex << error << ", on function: " << m_functionName;
-					LOG(LOG_ERROR, errorString.str().c_str());
+					LOG(LOG_VERBOSE, errorString.str().c_str());
 					throw std::runtime_error(errorString.str().c_str());
 				}
 			}
@@ -45,13 +44,12 @@ namespace opengl {
 		void performCommand(void) {
 			std::unique_lock<std::mutex> lock(m_condvarMutex);
 			performCommandSingleThreaded();
-			if (m_synced)
-			{
+			if (m_synced) {
 #ifdef GL_DEBUG
 				if (m_logIfSynced) {
 					std::stringstream errorString;
 					errorString << " Executing synced: " << m_functionName;
-					LOG(LOG_ERROR, errorString.str().c_str());
+					LOG(LOG_VERBOSE, errorString.str().c_str());
 				}
 #endif
 				m_executed = true;
@@ -495,6 +493,7 @@ namespace opengl {
 		GLint m_first;
 		GLsizei m_count;
 	};
+
 	class GlVertexAttribPointerUnbufferedCommand : public OpenGlCommand
 	{
 	public:
