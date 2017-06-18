@@ -34,150 +34,150 @@ namespace opengl {
 	public:
 		static void setThreadedMode(void);
 
-		static void glBlendFunc(const GLenum& sfactor, const GLenum& dfactor);
-		static void glPixelStorei(const GLenum& pname, const GLint& param);
-		static void glClearColor(const GLfloat& red, const GLfloat& green, const GLfloat& blue, const GLfloat& alpha);
-		static void glCullFace(const GLenum& mode);
-		static void glDepthFunc(const GLenum& func);
-		static void glDepthMask(const GLboolean& flag);
-		static void glDisable(const GLenum& cap);
-		static void glEnable(const GLenum& cap);
-		static void glPolygonOffset(const GLfloat& factor, const GLfloat& units);
+		static void glBlendFunc(GLenum sfactor, GLenum dfactor);
+		static void glPixelStorei(GLenum pname, GLint param);
+		static void glClearColor(GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha);
+		static void glCullFace(GLenum mode);
+		static void glDepthFunc(GLenum func);
+		static void glDepthMask(GLboolean flag);
+		static void glDisable(GLenum cap);
+		static void glEnable(GLenum cap);
+		static void glPolygonOffset(GLfloat factor, GLfloat units);
 
-		static void glScissor(const GLint& x, const GLint& y, const GLsizei& width, const GLsizei& height);
-		static void glViewport(const GLint& x, const GLint& y, const GLsizei& width, const GLsizei& height);
-		static void glBindTexture(const GLenum& target, const GLuint& texture);
+		static void glScissor(GLint x, GLint y, GLsizei width, GLsizei height);
+		static void glViewport(GLint x, GLint y, GLsizei width, GLsizei height);
+		static void glBindTexture(GLenum target, GLuint texture);
 		template <class pixelType>
-		static void glTexImage2D(const GLenum& target, const GLint& level, const GLint& internalformat, const GLsizei& width, const GLsizei& height, const GLint& border, const GLenum& format, const GLenum& type, std::unique_ptr<pixelType[]> pixels);
-		static void glTexParameteri(const GLenum& target, const GLenum& pname, const GLint& param);
-		static void glGetIntegerv(const GLenum& pname, GLint* data);
-		static const GLubyte* glGetString(const GLenum& name);
+		static void glTexImage2D(GLenum target, GLint level, GLint internalformat, GLsizei width, GLsizei height, GLint border, GLenum format, GLenum type, std::unique_ptr<pixelType[]> pixels);
+		static void glTexParameteri(GLenum target, GLenum pname, GLint param);
+		static void glGetIntegerv(GLenum pname, GLint* data);
+		static const GLubyte* glGetString(GLenum name);
 
-		static void glReadPixels(const GLint& x, const GLint& y, const GLsizei& width, const GLsizei& height, const GLenum& format, const GLenum& type, void *pixels);
-		static void glReadPixelsAsync(const GLint& x, const GLint& y, const GLsizei& width, const GLsizei& height, const GLenum& format, const GLenum& type);
+		static void glReadPixels(GLint x, GLint y, GLsizei width, GLsizei height, GLenum format, GLenum type, void *pixels);
+		static void glReadPixelsAsync(GLint x, GLint y, GLsizei width, GLsizei height, GLenum format, GLenum type);
 		template <class pixelType>
-		static void glTexSubImage2DUnbuffered(const GLenum& target, const GLint& level, const GLint& xoffset, const GLint& yoffset, const GLsizei& width, const GLsizei& height, const GLenum& format, const GLenum& type, std::unique_ptr<pixelType[]> pixels);
-		static void glTexSubImage2DBuffered(const GLenum& target, const GLint& level, const GLint& xoffset, const GLint& yoffset, const GLsizei& width, const GLsizei& height, const GLenum& format, const GLenum& type, std::size_t offset);
-		static void glDrawArrays(const GLenum& mode, const GLint& first, const GLsizei& count);
-		static void glDrawArraysUnbuffered(const GLenum& mode, const GLint& first, const GLsizei& count, std::unique_ptr<std::vector<char>> data);
+		static void glTexSubImage2DUnbuffered(GLenum target, GLint level, GLint xoffset, GLint yoffset, GLsizei width, GLsizei height, GLenum format, GLenum type, std::unique_ptr<pixelType[]> pixels);
+		static void glTexSubImage2DBuffered(GLenum target, GLint level, GLint xoffset, GLint yoffset, GLsizei width, GLsizei height, GLenum format, GLenum type, std::size_t offset);
+		static void glDrawArrays(GLenum mode, GLint first, GLsizei count);
+		static void glDrawArraysUnbuffered(GLenum mode, GLint first, GLsizei count, std::unique_ptr<std::vector<char>> data);
 		static GLenum glGetError(void);
-		static void glDrawElementsNotThreadSafe(const GLenum& mode, const GLsizei& count, const GLenum& type, const void *indices);
+		static void glDrawElementsNotThreadSafe(GLenum mode, GLsizei count, GLenum type, const void *indices);
 		template <class indiceType>
-		static void glDrawElementsUnbuffered(const GLenum& mode, const GLsizei& count, const GLenum& type, std::unique_ptr<indiceType[]> indices, std::unique_ptr<std::vector<char>> data);
-		static void glLineWidth(const GLfloat& width);
-		static void glClear(const GLbitfield& mask);
-		static void glGetFloatv(const GLenum& pname, GLfloat* data);
-		static void glDeleteTextures(const GLsizei& n, std::unique_ptr<GLuint[]> textures);
-		static void glGenTextures(const GLsizei& n, GLuint* textures);
-		static void glTexParameterf(const GLenum& target, const GLenum& pname, const GLfloat& param);
-		static void glActiveTexture(const GLenum& texture);
-		static void glBlendColor(const GLfloat& red, const GLfloat& green, const GLfloat& blue, const GLfloat& alpha);
-		static void glReadBuffer(const GLenum& src);
+		static void glDrawElementsUnbuffered(GLenum mode, GLsizei count, GLenum type, std::unique_ptr<indiceType[]> indices, std::unique_ptr<std::vector<char>> data);
+		static void glLineWidth(GLfloat width);
+		static void glClear(GLbitfield mask);
+		static void glGetFloatv(GLenum pname, GLfloat* data);
+		static void glDeleteTextures(GLsizei n, std::unique_ptr<GLuint[]> textures);
+		static void glGenTextures(GLsizei n, GLuint* textures);
+		static void glTexParameterf(GLenum target, GLenum pname, GLfloat param);
+		static void glActiveTexture(GLenum texture);
+		static void glBlendColor(GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha);
+		static void glReadBuffer(GLenum src);
 
-		static GLuint glCreateShader(const GLenum& type);
-		static void glCompileShader(const GLuint& shader);
-		static void glShaderSource(const GLuint& shader, const std::string& string);
+		static GLuint glCreateShader(GLenum type);
+		static void glCompileShader(GLuint shader);
+		static void glShaderSource(GLuint shader, const std::string& string);
 		static GLuint glCreateProgram(void);
-		static void glAttachShader(const GLuint& program, const GLuint& shader);
-		static void glLinkProgram(const GLuint& program);
-		static void glUseProgram(const GLuint& program);
-		static GLint glGetUniformLocation(const GLuint& program, const GLchar *name);
-		static void glUniform1i(const GLint& location, const GLint& v0);
-		static void glUniform1f(const GLint& location, const GLfloat& v0);
-		static void glUniform2f(const GLint& location, const GLfloat& v0, const GLfloat& v1);
-		static void glUniform2i(const GLint& location, const GLint& v0, const GLint& v1);
-		static void glUniform4i(const GLint& location, const GLint& v0, const GLint& v1, const GLint& v2, const GLint& v3);
+		static void glAttachShader(GLuint program, GLuint shader);
+		static void glLinkProgram(GLuint program);
+		static void glUseProgram(GLuint program);
+		static GLint glGetUniformLocation(GLuint program, const GLchar *name);
+		static void glUniform1i(GLint location, GLint v0);
+		static void glUniform1f(GLint location, GLfloat v0);
+		static void glUniform2f(GLint location, GLfloat v0, GLfloat v1);
+		static void glUniform2i(GLint location, GLint v0, GLint v1);
+		static void glUniform4i(GLint location, GLint v0, GLint v1, GLint v2, GLint v3);
 
-		static void glUniform4f(const GLint& location, const GLfloat& v0, const GLfloat& v1, const GLfloat& v2, const GLfloat& v3);
-		static void glUniform3fv(const GLint& location, const GLsizei& count, std::unique_ptr<GLfloat[]> value);
-		static void glUniform4fv(const GLint& location, const GLsizei& count, std::unique_ptr<GLfloat[]> value);
-		static void glDetachShader(const GLuint& program, const GLuint& shader);
-		static void glDeleteShader(const GLuint& shader);
-		static void glDeleteProgram(const GLuint& program);
-		static void glGetProgramInfoLog(const GLuint& program, const GLsizei& bufSize, GLsizei* length, GLchar *infoLog);
-		static void glGetShaderInfoLog(const GLuint& shader, const GLsizei& bufSize, GLsizei* length, GLchar *infoLog);
-		static void glGetShaderiv(const GLuint& shader, const GLenum& pname, GLint* params);
-		static void glGetProgramiv(const GLuint& program, const GLenum& pname, GLint* params);
+		static void glUniform4f(GLint location, GLfloat v0, GLfloat v1, GLfloat v2, GLfloat v3);
+		static void glUniform3fv(GLint location, GLsizei count, std::unique_ptr<GLfloat[]> value);
+		static void glUniform4fv(GLint location, GLsizei count, std::unique_ptr<GLfloat[]> value);
+		static void glDetachShader(GLuint program, GLuint shader);
+		static void glDeleteShader(GLuint shader);
+		static void glDeleteProgram(GLuint program);
+		static void glGetProgramInfoLog(GLuint program, GLsizei bufSize, GLsizei* length, GLchar *infoLog);
+		static void glGetShaderInfoLog(GLuint shader, GLsizei bufSize, GLsizei* length, GLchar *infoLog);
+		static void glGetShaderiv(GLuint shader, GLenum pname, GLint* params);
+		static void glGetProgramiv(GLuint program, GLenum pname, GLint* params);
 
-		static void glEnableVertexAttribArray(const GLuint& index);
-		static void glDisableVertexAttribArray(const GLuint& index);
-		static void glVertexAttribPointerBuffered(const GLuint& index, const GLint& size, const GLenum& type, const GLboolean& normalized, const GLsizei& stride, std::size_t offset);
-		static void glVertexAttribPointerNotThreadSafe(const GLuint& index, const GLint& size, const GLenum& type, const GLboolean& normalized, const GLsizei& stride, const void *pointer);
-		static void glVertexAttribPointerUnbuffered(const GLuint& index, const GLint& size, const GLenum& type, const GLboolean& normalized, const GLsizei& stride, std::size_t offset);
-		static void glBindAttribLocation(const GLuint& program, const GLuint& index, const std::string& name);
-		static void glVertexAttrib1f(const GLuint& index, const GLfloat& x);
-		static void glVertexAttrib4f(const GLuint& index, const GLfloat& x, const GLfloat& y, const GLfloat& z, const GLfloat& w);
-		static void glVertexAttrib4fv(const GLuint& index, std::unique_ptr<GLfloat[]> v);
+		static void glEnableVertexAttribArray(GLuint index);
+		static void glDisableVertexAttribArray(GLuint index);
+		static void glVertexAttribPointerBuffered(GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, std::size_t offset);
+		static void glVertexAttribPointerNotThreadSafe(GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, const void *pointer);
+		static void glVertexAttribPointerUnbuffered(GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, std::size_t offset);
+		static void glBindAttribLocation(GLuint program, GLuint index, const std::string& name);
+		static void glVertexAttrib1f(GLuint index, GLfloat x);
+		static void glVertexAttrib4f(GLuint index, GLfloat x, GLfloat y, GLfloat z, GLfloat w);
+		static void glVertexAttrib4fv(GLuint index, std::unique_ptr<GLfloat[]> v);
 
-		static void glDepthRangef(const GLfloat& n, const GLfloat& f);
-		static void glClearDepthf(const GLfloat& d);
+		static void glDepthRangef(GLfloat n, GLfloat f);
+		static void glClearDepthf(GLfloat d);
 
-		static void glDrawBuffers(const GLsizei& n, std::unique_ptr<GLenum[]> bufs);
-		static void glGenFramebuffers(const GLsizei& n, GLuint* framebuffers);
-		static void glBindFramebuffer(const GLenum& target, const GLuint& framebuffer);
-		static void glDeleteFramebuffers(const GLsizei& n, std::unique_ptr<GLuint[]> framebuffers);
-		static void glFramebufferTexture2D(const GLenum& target, const GLenum& attachment, const GLenum& textarget, const GLuint& texture, const GLint& level);
-		static void glTexImage2DMultisample(const GLenum& target, const GLsizei& samples, const GLenum& internalformat, const GLsizei& width, const GLsizei& height, const GLboolean& fixedsamplelocations);
-		static void glTexStorage2DMultisample(const GLenum& target, const GLsizei& samples, const GLenum& internalformat, const GLsizei& width, const GLsizei& height, const GLboolean& fixedsamplelocations);
-		static void glGenRenderbuffers(const GLsizei& n, GLuint* renderbuffers);
-		static void glBindRenderbuffer(const GLenum& target, const GLuint& renderbuffer);
-		static void glRenderbufferStorage(const GLenum& target, const GLenum& internalformat, const GLsizei& width, const GLsizei& height);
-		static void glDeleteRenderbuffers(const GLsizei& n, std::unique_ptr<GLuint[]> renderbuffers);
-		static void glFramebufferRenderbuffer(const GLenum& target, const GLenum& attachment, const GLenum& renderbuffertarget, const GLuint& renderbuffer);
-		static GLenum glCheckFramebufferStatus(const GLenum& target);
-		static void glBlitFramebuffer(const GLint& srcX0, const GLint& srcY0, const GLint& srcX1, const GLint& srcY1, const GLint& dstX0, const GLint& dstY0, const GLint& dstX1, const GLint& dstY1, const GLbitfield& mask, const GLenum& filter);
-		static void glGenVertexArrays(const GLsizei& n, GLuint* arrays);
-		static void glBindVertexArray(const GLuint& array);
-		static void glDeleteVertexArrays(const GLsizei& n, std::unique_ptr<GLuint[]> arrays);
+		static void glDrawBuffers(GLsizei n, std::unique_ptr<GLenum[]> bufs);
+		static void glGenFramebuffers(GLsizei n, GLuint* framebuffers);
+		static void glBindFramebuffer(GLenum target, GLuint framebuffer);
+		static void glDeleteFramebuffers(GLsizei n, std::unique_ptr<GLuint[]> framebuffers);
+		static void glFramebufferTexture2D(GLenum target, GLenum attachment, GLenum textarget, GLuint texture, GLint level);
+		static void glTexImage2DMultisample(GLenum target, GLsizei samples, GLenum internalformat, GLsizei width, GLsizei height, GLboolean fixedsamplelocations);
+		static void glTexStorage2DMultisample(GLenum target, GLsizei samples, GLenum internalformat, GLsizei width, GLsizei height, GLboolean fixedsamplelocations);
+		static void glGenRenderbuffers(GLsizei n, GLuint* renderbuffers);
+		static void glBindRenderbuffer(GLenum target, GLuint renderbuffer);
+		static void glRenderbufferStorage(GLenum target, GLenum internalformat, GLsizei width, GLsizei height);
+		static void glDeleteRenderbuffers(GLsizei n, std::unique_ptr<GLuint[]> renderbuffers);
+		static void glFramebufferRenderbuffer(GLenum target, GLenum attachment, GLenum renderbuffertarget, GLuint renderbuffer);
+		static GLenum glCheckFramebufferStatus(GLenum target);
+		static void glBlitFramebuffer(GLint srcX0, GLint srcY0, GLint srcX1, GLint srcY1, GLint dstX0, GLint dstY0, GLint dstX1, GLint dstY1, GLbitfield mask, GLenum filter);
+		static void glGenVertexArrays(GLsizei n, GLuint* arrays);
+		static void glBindVertexArray(GLuint array);
+		static void glDeleteVertexArrays(GLsizei n, std::unique_ptr<GLuint[]> arrays);
 		static void glGenBuffers(GLsizei n, GLuint* buffers);
-		static void glBindBuffer(const GLenum& target, const GLuint& buffer);
+		static void glBindBuffer(GLenum target, GLuint buffer);
 		template <class dataType>
-		static void glBufferData(const GLenum& target, const GLsizeiptr& size, std::unique_ptr<dataType[]> data, const GLenum& usage);
-		static void glMapBuffer(const GLenum& target, const GLenum& access);
-		static void* glMapBufferRange(const GLenum& target, const GLintptr& offset, const GLsizeiptr& length, const GLbitfield& access);
-		static void glMapBufferRangeWriteAsync(const GLenum& target, const GLuint& buffer, const GLintptr& offset, u32 length, const GLbitfield& access, std::unique_ptr<u8[]> data);
-		static std::shared_ptr<std::vector<u8>> glMapBufferRangeReadAsync(const GLenum& target, const GLuint& buffer, const GLintptr& offset, u32 length, const GLbitfield& access);
-		static GLboolean glUnmapBuffer(const GLenum& target);
-		static void glUnmapBufferAsync(const GLenum& target);
+		static void glBufferData(GLenum target, GLsizeiptr size, std::unique_ptr<dataType[]> data, GLenum usage);
+		static void glMapBuffer(GLenum target, GLenum access);
+		static void* glMapBufferRange(GLenum target, GLintptr offset, GLsizeiptr length, GLbitfield access);
+		static void glMapBufferRangeWriteAsync(GLenum target, GLuint buffer, GLintptr offset, u32 length, GLbitfield access, std::unique_ptr<u8[]> data);
+		static std::shared_ptr<std::vector<u8>> glMapBufferRangeReadAsync(GLenum target, GLuint buffer, GLintptr offset, u32 length, GLbitfield access);
+		static GLboolean glUnmapBuffer(GLenum target);
+		static void glUnmapBufferAsync(GLenum target);
 		static void glDeleteBuffers(GLsizei n, std::unique_ptr<GLuint[]> buffers);
-		static void glBindImageTexture(const GLuint& unit, const GLuint& texture, const GLint& level, const GLboolean& layered, const GLint& layer, const GLenum& access, const GLenum& format);
-		static void glMemoryBarrier(const GLbitfield& barriers);
-		static const GLubyte* glGetStringi(const GLenum& name, const GLuint& index);
-		static void glInvalidateFramebuffer(const GLenum& target, const GLsizei& numAttachments, std::unique_ptr<GLenum[]> attachments);
+		static void glBindImageTexture(GLuint unit, GLuint texture, GLint level, GLboolean layered, GLint layer, GLenum access, GLenum format);
+		static void glMemoryBarrier(GLbitfield barriers);
+		static const GLubyte* glGetStringi(GLenum name, GLuint index);
+		static void glInvalidateFramebuffer(GLenum target, GLsizei numAttachments, std::unique_ptr<GLenum[]> attachments);
 		template <class dataType>
-		static void glBufferStorage(const GLenum& target, const GLsizeiptr& size, std::unique_ptr<dataType[]> data, const GLbitfield& flags);
-		static GLsync glFenceSync(const GLenum& condition, const GLbitfield& flags);
-		static void glClientWaitSync(const GLsync& sync, const GLbitfield& flags, const GLuint64& timeout);
-		static void glDeleteSync(const GLsync& sync);
+		static void glBufferStorage(GLenum target, GLsizeiptr size, std::unique_ptr<dataType[]> data, GLbitfield flags);
+		static GLsync glFenceSync(GLenum condition, GLbitfield flags);
+		static void glClientWaitSync(GLsync sync, GLbitfield flags, GLuint64 timeout);
+		static void glDeleteSync(GLsync sync);
 
-		static GLuint glGetUniformBlockIndex(const GLuint& program, GLchar *uniformBlockName);
-		static void glUniformBlockBinding(const GLuint& program, const GLuint& uniformBlockIndex, const GLuint& uniformBlockBinding);
-		static void glGetActiveUniformBlockiv(const GLuint& program, const GLuint& uniformBlockIndex, const GLenum& pname, GLint* params);
-		static void glGetUniformIndices(const GLuint& program, const GLsizei& uniformCount, const GLchar *const*uniformNames, GLuint* uniformIndices);
-		static void glGetActiveUniformsiv(const GLuint& program, const GLsizei& uniformCount, const GLuint *uniformIndices, const GLenum& pname, GLint* params);
-		static void glBindBufferBase(const GLenum& target, const GLuint& index, const GLuint& buffer);
+		static GLuint glGetUniformBlockIndex(GLuint program, GLchar *uniformBlockName);
+		static void glUniformBlockBinding(GLuint program, GLuint uniformBlockIndex, GLuint uniformBlockBinding);
+		static void glGetActiveUniformBlockiv(GLuint program, GLuint uniformBlockIndex, GLenum pname, GLint* params);
+		static void glGetUniformIndices(GLuint program, GLsizei uniformCount, const GLchar *const*uniformNames, GLuint* uniformIndices);
+		static void glGetActiveUniformsiv(GLuint program, GLsizei uniformCount, const GLuint *uniformIndices, GLenum pname, GLint* params);
+		static void glBindBufferBase(GLenum target, GLuint index, GLuint buffer);
 		template <class dataType>
-		static void glBufferSubData(const GLenum& target, const GLintptr& offset, const GLsizeiptr& size, std::unique_ptr<dataType[]> data);
+		static void glBufferSubData(GLenum target, GLintptr offset, GLsizeiptr size, std::unique_ptr<dataType[]> data);
 
-		static void glGetProgramBinary(const GLuint& program, const GLsizei& bufSize, GLsizei* length, GLenum* binaryFormat, void *binary);
+		static void glGetProgramBinary(GLuint program, GLsizei bufSize, GLsizei* length, GLenum* binaryFormat, void *binary);
 		template <class dataType>
-		static void glProgramBinary(const GLuint& program, const GLenum& binaryFormat, std::unique_ptr<dataType[]> binary, const GLsizei& length);
-		static void glProgramParameteri(const GLuint& program, const GLenum& pname, const GLint& value);
+		static void glProgramBinary(GLuint program, GLenum binaryFormat, std::unique_ptr<dataType[]> binary, GLsizei length);
+		static void glProgramParameteri(GLuint program, GLenum pname, GLint value);
 
-		static void glTexStorage2D(const GLenum& target, const GLsizei& levels, const GLenum& internalformat, const GLsizei& width, const GLsizei& height);
-		static void glTextureStorage2D(const GLuint& texture, const GLsizei& levels, const GLenum& internalformat, const GLsizei& width, const GLsizei& height);
+		static void glTexStorage2D(GLenum target, GLsizei levels, GLenum internalformat, GLsizei width, GLsizei height);
+		static void glTextureStorage2D(GLuint texture, GLsizei levels, GLenum internalformat, GLsizei width, GLsizei height);
 		template <class pixelType>
-		static void glTextureSubImage2DUnbuffered(const GLuint& texture, const GLint& level, const GLint& xoffset, const GLint& yoffset, const GLsizei& width, const GLsizei& height, const GLenum& format, const GLenum& type, std::unique_ptr<pixelType[]> pixels);
-		static void glTextureSubImage2DBuffered(const GLuint& texture, const GLint& level, const GLint& xoffset, const GLint& yoffset, const GLsizei& width, const GLsizei& height, const GLenum& format, const GLenum& type, std::size_t offset);
-		static void glTextureStorage2DMultisample(const GLuint& texture, const GLenum& target, const GLsizei& samples, const GLenum& internalformat, const GLsizei& width, const GLsizei& height, const GLboolean& fixedsamplelocations);
-		static void glTextureParameteri(const GLuint& texture, const GLenum& pname, const GLint& param);
-		static void glTextureParameterf(const GLuint& texture, const GLenum& pname, const GLfloat& param);
-		static void glCreateTextures(const GLenum& target, const GLsizei& n, GLuint* textures);
-		static void glCreateBuffers(const GLsizei& n, GLuint* buffers);
-		static void glCreateFramebuffers(const GLsizei& n, GLuint* framebuffers);
-		static void glNamedFramebufferTexture(const GLuint& framebuffer, const GLenum& attachment, const GLuint& texture, const GLint& level);
-		static void glDrawElementsBaseVertex(const GLenum& mode, const GLsizei& count, const GLenum& type, const char* indices, const GLint& basevertex);
-		static void glFlushMappedBufferRange(const GLenum& target, const GLintptr& offset, const GLsizeiptr& length);
+		static void glTextureSubImage2DUnbuffered(GLuint texture, GLint level, GLint xoffset, GLint yoffset, GLsizei width, GLsizei height, GLenum format, GLenum type, std::unique_ptr<pixelType[]> pixels);
+		static void glTextureSubImage2DBuffered(GLuint texture, GLint level, GLint xoffset, GLint yoffset, GLsizei width, GLsizei height, GLenum format, GLenum type, std::size_t offset);
+		static void glTextureStorage2DMultisample(GLuint texture, GLenum target, GLsizei samples, GLenum internalformat, GLsizei width, GLsizei height, GLboolean fixedsamplelocations);
+		static void glTextureParameteri(GLuint texture, GLenum pname, GLint param);
+		static void glTextureParameterf(GLuint texture, GLenum pname, GLfloat param);
+		static void glCreateTextures(GLenum target, GLsizei n, GLuint* textures);
+		static void glCreateBuffers(GLsizei n, GLuint* buffers);
+		static void glCreateFramebuffers(GLsizei n, GLuint* framebuffers);
+		static void glNamedFramebufferTexture(GLuint framebuffer, GLenum attachment, GLuint texture, GLint level);
+		static void glDrawElementsBaseVertex(GLenum mode, GLsizei count, GLenum type, const char* indices, GLint basevertex);
+		static void glFlushMappedBufferRange(GLenum target, GLintptr offset, GLsizeiptr length);
 		static void glFinish(void);
 
 #ifdef MUPENPLUSAPI
@@ -200,7 +200,7 @@ namespace opengl {
 	};
 
 	template <class pixelType>
-	void  FunctionWrapper::glTexImage2D(const GLenum& target, const GLint& level, const GLint& internalformat, const GLsizei& width, const GLsizei& height, const GLint& border, const GLenum& format, const GLenum& type, std::unique_ptr<pixelType[]> pixels)
+	void  FunctionWrapper::glTexImage2D(GLenum target, GLint level, GLint internalformat, GLsizei width, GLsizei height, GLint border, GLenum format, GLenum type, std::unique_ptr<pixelType[]> pixels)
 	{
 		if(m_threaded_wrapper)
 			executeCommand(std::make_shared<GlTexImage2DCommand<pixelType>>(target, level, internalformat, width, height, border, format, type, std::move(pixels)));
@@ -209,7 +209,7 @@ namespace opengl {
 	}
 
 	template <class pixelType>
-	void  FunctionWrapper::glTexSubImage2DUnbuffered(const GLenum& target, const GLint& level, const GLint& xoffset, const GLint& yoffset, const GLsizei& width, const GLsizei& height, const GLenum& format, const GLenum& type, std::unique_ptr<pixelType[]> pixels)
+	void  FunctionWrapper::glTexSubImage2DUnbuffered(GLenum target, GLint level, GLint xoffset, GLint yoffset, GLsizei width, GLsizei height, GLenum format, GLenum type, std::unique_ptr<pixelType[]> pixels)
 	{
 		if(m_threaded_wrapper)
 			executeCommand(std::make_shared<GlTexSubImage2DUnbufferedCommand<pixelType>>(target, level, xoffset, yoffset, width, height, format, type, std::move(pixels)));
@@ -218,7 +218,7 @@ namespace opengl {
 	}
 
 	template <class indiceType>
-	void  FunctionWrapper::glDrawElementsUnbuffered(const GLenum& mode, const GLsizei& count, const GLenum& type, std::unique_ptr<indiceType[]> indices, std::unique_ptr<std::vector<char>> data)
+	void  FunctionWrapper::glDrawElementsUnbuffered(GLenum mode, GLsizei count, GLenum type, std::unique_ptr<indiceType[]> indices, std::unique_ptr<std::vector<char>> data)
 	{
 		if(m_threaded_wrapper)
 			executeCommand(std::make_shared<GlDrawElementsUnbufferedCommand<indiceType>>(mode, count, type, std::move(indices), std::move(data)));
@@ -227,7 +227,7 @@ namespace opengl {
 	}
 
 	template <class dataType>
-	void  FunctionWrapper::glBufferData(const GLenum& target, const GLsizeiptr& size, std::unique_ptr<dataType[]> data, const GLenum& usage)
+	void  FunctionWrapper::glBufferData(GLenum target, GLsizeiptr size, std::unique_ptr<dataType[]> data, GLenum usage)
 	{
 		if(m_threaded_wrapper)
 			executeCommand(std::make_shared<GlBufferDataCommand<dataType>>(target, size, std::move(data), usage));
@@ -236,7 +236,7 @@ namespace opengl {
 	}
 
 	template <class dataType>
-	void  FunctionWrapper::glBufferStorage(const GLenum& target, const GLsizeiptr& size, std::unique_ptr<dataType[]> data, const GLbitfield& flags)
+	void  FunctionWrapper::glBufferStorage(GLenum target, GLsizeiptr size, std::unique_ptr<dataType[]> data, GLbitfield flags)
 	{
 		if(m_threaded_wrapper)
 			executeCommand(std::make_shared<GlBufferStorageCommand<dataType>>(target, size, std::move(data), flags));
@@ -245,7 +245,7 @@ namespace opengl {
 	}
 
 	template <class dataType>
-	void  FunctionWrapper::glBufferSubData(const GLenum& target, const GLintptr& offset, const GLsizeiptr& size, std::unique_ptr<dataType[]> data)
+	void  FunctionWrapper::glBufferSubData(GLenum target, GLintptr offset, GLsizeiptr size, std::unique_ptr<dataType[]> data)
 	{
 		if(m_threaded_wrapper)
 			executeCommand(std::make_shared<GlBufferSubDataCommand<dataType>>(target, offset, size, std::move(data)));
@@ -254,7 +254,7 @@ namespace opengl {
 	}
 
 	template <class dataType>
-	void  FunctionWrapper::glProgramBinary(const GLuint& program, const GLenum& binaryFormat, std::unique_ptr<dataType[]> binary, const GLsizei& length)
+	void  FunctionWrapper::glProgramBinary(GLuint program, GLenum binaryFormat, std::unique_ptr<dataType[]> binary, GLsizei length)
 	{
 		if(m_threaded_wrapper)
 			executeCommand(std::make_shared<GlProgramBinaryCommand<dataType>>(program, binaryFormat, std::move(binary), length));
@@ -263,7 +263,7 @@ namespace opengl {
 	}
 
 	template <class pixelType>
-	void  FunctionWrapper::glTextureSubImage2DUnbuffered(const GLuint& texture, const GLint& level, const GLint& xoffset, const GLint& yoffset, const GLsizei& width, const GLsizei& height, const GLenum& format, const GLenum& type, std::unique_ptr<pixelType[]> pixels)
+	void  FunctionWrapper::glTextureSubImage2DUnbuffered(GLuint texture, GLint level, GLint xoffset, GLint yoffset, GLsizei width, GLsizei height, GLenum format, GLenum type, std::unique_ptr<pixelType[]> pixels)
 	{
 		if(m_threaded_wrapper)
 			executeCommand(std::make_shared<GlTextureSubImage2DUnbufferedCommand<pixelType>>(texture, level, xoffset, yoffset, width, height, format, type, std::move(pixels)));
