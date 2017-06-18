@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <cstdlib>
 #include <Graphics/Context.h>
 #include <Graphics/OpenGLContext/GLFunctions.h>
 #include <Graphics/OpenGLContext/opengl_Utils.h>

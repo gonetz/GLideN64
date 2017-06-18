@@ -1,4 +1,5 @@
 #include <assert.h>
+#include <cstdlib>
 #include "Config.h"
 #include "VI.h"
 #include "Graphics/Context.h"

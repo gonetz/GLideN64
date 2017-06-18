@@ -1,5 +1,6 @@
 #include <fstream>
 #include <assert.h>
+#include <cstdlib>
 
 #include <Graphics/CombinerProgram.h>
 #include <Graphics/OpenGLContext/opengl_Utils.h>

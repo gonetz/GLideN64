@@ -1,6 +1,8 @@
 #ifndef WST_H
 #define WST_H
 
+#include <cstdlib>
+
 #ifdef OS_ANDROID
 static
 void gln_wcscat(wchar_t* destination, const wchar_t* source)
