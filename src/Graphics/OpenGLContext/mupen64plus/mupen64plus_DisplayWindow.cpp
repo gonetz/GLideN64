@@ -75,11 +75,7 @@ void DisplayWindowMupen64plus::_setAttributes()
 
 bool DisplayWindowMupen64plus::_start()
 {
-#ifndef GL_DEBUG
-	if (config.video.threadedVideo) {
-		FunctionWrapper::setThreadedMode();
-	}
-#endif
+	FunctionWrapper::setThreadedMode(config.video.threadedVideo);
 
 	FunctionWrapper::CoreVideo_Init();
 	_setAttributes();

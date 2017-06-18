@@ -33,12 +33,20 @@ namespace opengl {
 		}
 	}
 
-	void FunctionWrapper::setThreadedMode(void)
+	void FunctionWrapper::setThreadedMode(bool _threaded)
 	{
-		m_threaded_wrapper = true;
-		m_shutdown = false;
+#ifdef GL_DEBUG
+		_threaded = false;
+#endif
 
-		m_commandExecutionThread = std::thread(&FunctionWrapper::commandLoop);
+		if (_threaded) {
+			m_threaded_wrapper = true;
+			m_shutdown = false;
+			m_commandExecutionThread = std::thread(&FunctionWrapper::commandLoop);
+		} else {
+			m_threaded_wrapper = false;
+			m_shutdown = true;
+		}
 	}
 
 	void FunctionWrapper::glBlendFunc(GLenum sfactor, GLenum dfactor)
