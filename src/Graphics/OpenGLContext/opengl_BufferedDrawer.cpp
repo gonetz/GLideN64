@@ -10,7 +10,7 @@
 using namespace graphics;
 using namespace opengl;
 
-const u32 BufferedDrawer::m_bufMaxSize = 8*1024*1024;
+const u32 BufferedDrawer::m_bufMaxSize = 4*1024*1024;
 #ifndef GL_DEBUG
 const GLbitfield BufferedDrawer::m_bufAccessBits = GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT;
 const GLbitfield BufferedDrawer::m_bufMapBits = GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT;
