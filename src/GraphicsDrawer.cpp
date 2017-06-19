@@ -1039,25 +1039,6 @@ bool texturedRectPaletteMod(const GraphicsDrawer::TexturedRectParams & _params)
 	return true;
 }
 
-static
-bool texturedRectMonochromeBackground(const GraphicsDrawer::TexturedRectParams & _params)
-{
-	if (gDP.textureImage.address >= gDP.colorImage.address &&
-		gDP.textureImage.address <= (gDP.colorImage.address + gDP.colorImage.width*gDP.colorImage.height * 2)) {
-
-		FrameBuffer * pCurrentBuffer = frameBufferList().getCurrent();
-		if (pCurrentBuffer != nullptr) {
-			FrameBuffer_ActivateBufferTexture(0, pCurrentBuffer);
-			CombinerInfo::get().setMonochromeCombiner();
-			return false;
-		} else
-			return true;
-
-	}
-
-	return false;
-}
-
 // Special processing of textured rect.
 // Return true if actuial rendering is not necessary
 bool(*texturedRectSpecial)(const GraphicsDrawer::TexturedRectParams & _params) = nullptr;
@@ -1556,8 +1537,6 @@ void GraphicsDrawer::_setSpecialTexrect() const
 		texturedRectSpecial = texturedRectBGCopy;
 	else if (strstr(name, (const char *)"PAPER MARIO") || strstr(name, (const char *)"MARIO STORY"))
 		texturedRectSpecial = texturedRectPaletteMod;
-	else if (strstr(name, (const char *)"ZELDA"))
-		texturedRectSpecial = texturedRectMonochromeBackground;
 	else
 		texturedRectSpecial = nullptr;
 }
