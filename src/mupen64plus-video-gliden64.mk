@@ -123,7 +123,7 @@ MY_LOCAL_CFLAGS :=      \
 
 MY_LOCAL_CPPFLAGS := $(COMMON_CPPFLAGS) -std=c++11 -g
 
-MY_LOCAL_LDFLAGS := -Wl,-version-script,$(LOCAL_PATH)/$(SRCDIR)/mupenplus/video_api_export.ver
+MY_LOCAL_LDFLAGS := $(COMMON_LDFLAGS) -Wl,-version-script,$(LOCAL_PATH)/$(SRCDIR)/mupenplus/video_api_export.ver
 
 MY_LOCAL_LDLIBS := -llog -latomic -lEGL
 
