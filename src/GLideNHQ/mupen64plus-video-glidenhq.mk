@@ -43,6 +43,7 @@ LOCAL_CFLAGS :=         \
     #-DSDL_NO_COMPAT     \
 
 LOCAL_CPPFLAGS := $(COMMON_CPPFLAGS) -std=c++11 -fexceptions
+LOCAL_LDFLAGS := $(COMMON_LDFLAGS)
 LOCAL_LDLIBS := -llog
 
 include $(BUILD_SHARED_LIBRARY)
