@@ -37,30 +37,27 @@ u32 last_good_ucode = (u32) -1;
 
 SpecialMicrocodeInfo specialMicrocodes[] =
 {
-	{ F3D,			false,	0xe62a706d, "Fast3D" },
-	{ F3D,			false,	0x7d372819, "Fast3D" },
-	{ F3D,			false,	0xe01e14be, "Fast3D" },
-	{ F3D,			false,	0x4AED6B3B, "Fast3D" }, //Vivid Dolls [ALECK64]
-
-	{ F3DSETA,		false,	0x2edee7be, "RSP SW Version: 2.0D, 04-01-96" },
-	{ F3DBETA,		false,	0xd17906e2, "RSP SW Version: 2.0D, 04-01-96" }, // Wave Race (U)
-	{ F3DBETA,		false,	0x94c4c833, "RSP SW Version: 2.0D, 04-01-96" }, // Star Wars Shadows of Empire
-	{ F3DEX,		true,	0x637b4b58, "RSP SW Version: 2.0D, 04-01-96" },
-	{ F3D,			true,	0x54c558ba, "RSP SW Version: 2.0D, 04-01-96" }, // Pilot Wings
-	{ F3DGOLDEN,	true,	0x302bca09, "RSP SW Version: 2.0G, 09-30-96" }, // GoldenEye
-
-	{ S2DEX,		false,	0x9df31081, "RSP Gfx ucode S2DEX  1.06 Yoshitaka Yasumoto Nintendo." },
-
-	{ F3DDKR,		false,	0x8d91244f, "Diddy Kong Racing" },
-	{ F3DDKR,		false,	0x6e6fc893, "Diddy Kong Racing" },
-	{ F3DJFG,		false,	0xbde9d1fb, "Jet Force Gemini" },
-	{ F3DPD,		true,	0x1c4f7869, "Perfect Dark" },
-	{ Turbo3D,		false,	0x2bdcfc8a, "Turbo3D" },
-	{ F3DEX2CBFD,	true,	0x1b4ace88, "Conker's Bad Fur Day" },
-	{ F3DEX2MM,		true,	0xd39a0d4f,	"Animal Forest" },
-	{ S2DEX2,		false,	0x2c399dd,	"Animal Forest" },
-	{ T3DUX,		false,	0xbad437f2, "T3DUX vers 0.83 for Toukon Road" },
-	{ T3DUX,		false,	0xd0a1aa3d, "T3DUX vers 0.85 for Toukon Road 2" }
+	{ F3D,			false,	true,	0xe62a706d, "Fast3D" },
+	{ F3D,			false,	false,	0x7d372819, "Super3D" }, // Pachinko nichi 365
+	{ F3D,			false,	false,	0xe01e14be, "Super3D" }, // Eikou no Saint Andrews
+	{ F3D,			false,	true,	0x4AED6B3B, "Fast3D" }, //Vivid Dolls [ALECK64]
+	{ F3DSETA,		false,	true,	0x2edee7be, "RSP SW Version: 2.0D, 04-01-96" },
+	{ F3DBETA,		false,	true,	0xd17906e2, "RSP SW Version: 2.0D, 04-01-96" }, // Wave Race (U)
+	{ F3DBETA,		false,	true,	0x94c4c833, "RSP SW Version: 2.0D, 04-01-96" }, // Star Wars Shadows of Empire
+	{ F3DEX,		true,	true,	0x637b4b58, "RSP SW Version: 2.0D, 04-01-96" },
+	{ F3D,			true,	true,	0x54c558ba, "RSP SW Version: 2.0D, 04-01-96" }, // Pilot Wings
+	{ F3DGOLDEN,	true,	true,	0x302bca09, "RSP SW Version: 2.0G, 09-30-96" }, // GoldenEye
+	{ S2DEX,		false,	true,	0x9df31081, "RSP Gfx ucode S2DEX  1.06 Yoshitaka Yasumoto Nintendo." },
+	{ F3DDKR,		false,	true,	0x8d91244f, "Diddy Kong Racing" },
+	{ F3DDKR,		false,	true,	0x6e6fc893, "Diddy Kong Racing" },
+	{ F3DJFG,		false,	true,	0xbde9d1fb, "Jet Force Gemini" },
+	{ F3DPD,		true,	true,	0x1c4f7869, "Perfect Dark" },
+	{ Turbo3D,		false,	true,	0x2bdcfc8a, "Turbo3D" },
+	{ F3DEX2CBFD,	true,	true,	0x1b4ace88, "Conker's Bad Fur Day" },
+	{ F3DEX2MM,		true,	true,	0xd39a0d4f,	"Animal Forest" },
+	{ S2DEX2,		false,	true,	0x2c399dd,	"Animal Forest" },
+	{ T3DUX,		false,	true,	0xbad437f2, "T3DUX vers 0.83 for Toukon Road" },
+	{ T3DUX,		false,	true,	0xd0a1aa3d, "T3DUX vers 0.85 for Toukon Road 2" }
 };
 
 u32 G_RDPHALF_1, G_RDPHALF_2, G_RDPHALF_CONT;
@@ -249,6 +246,7 @@ void GBIInfo::loadMicrocode(u32 uc_start, u32 uc_dstart, u16 uc_dsize)
 	current.dataAddress = uc_dstart;
 	current.dataSize = uc_dsize;
 	current.NoN = false;
+	current.negativeY = true;
 	current.textureGen = true;
 	current.texturePersp = true;
 	current.type = NONE;
@@ -260,6 +258,7 @@ void GBIInfo::loadMicrocode(u32 uc_start, u32 uc_dstart, u16 uc_dsize)
 		if (uc_crc == specialMicrocodes[i].crc) {
 			current.type = specialMicrocodes[i].type;
 			current.NoN = specialMicrocodes[i].NoN;
+			current.negativeY = specialMicrocodes[i].negativeY;
 			_makeCurrent(&current);
 			return;
 		}

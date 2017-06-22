@@ -184,7 +184,6 @@ struct Config
 #define hack_pilotWings				(1<<5)  //Special blend mode for PilotWings.
 #define hack_subscreen				(1<<6)  //Fix subscreen delay in Zelda OOT and Doubutsu no Mori
 #define hack_blastCorps				(1<<7)  //Blast Corps black polygons
-#define hack_NegativeViewport		(1<<8)  //Reverse negative viewport when game set it. Eikou no Saint Andrews, pachinko nichi 365
 #define hack_rectDepthBufferCopyPD	(1<<9)  //Copy depth buffer only when game need it. Optimized for PD
 #define hack_rectDepthBufferCopyCBFD (1<<10) //Copy depth buffer only when game need it. Optimized for CBFD
 #define hack_WinBack				(1<<11) //Hack for WinBack to remove gray rectangle in HLE mode

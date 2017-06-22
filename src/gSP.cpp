@@ -767,7 +767,7 @@ void gSPViewport( u32 v )
 	gSP.viewport.vtrans[2] = _FIXED2FLOAT( *(s16*)&RDRAM[address + 14], 10 );// * 0.00097847357f;
 	gSP.viewport.vtrans[3] = *(s16*)&RDRAM[address + 12];
 
-	if ((config.generalEmulation.hacks & hack_NegativeViewport) != 0 && gSP.viewport.vscale[1] < 0.0f)
+	if (gSP.viewport.vscale[1] < 0.0f && !GBI.isNegativeY())
 		gSP.viewport.vscale[1] = -gSP.viewport.vscale[1];
 
 	gSP.viewport.x		= gSP.viewport.vtrans[0] - gSP.viewport.vscale[0];

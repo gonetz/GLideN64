@@ -673,6 +673,7 @@ struct SpecialMicrocodeInfo
 {
 	u32 type;
 	bool NoN;
+	bool negativeY;
 	u32 crc;
 	const char *text;
 };
@@ -684,6 +685,7 @@ struct MicrocodeInfo
 	u32 type;
 	u32 crc;
 	bool NoN;
+	bool negativeY;
 	bool textureGen;
 	bool texturePersp;
 };
@@ -700,6 +702,7 @@ struct GBIInfo
 	u32 getMicrocodeType() const {return m_pCurrent != nullptr ? m_pCurrent->type : NONE;}
 	bool isHWLSupported() const;
 	bool isNoN() const { return m_pCurrent != nullptr ? m_pCurrent->NoN : false; }
+	bool isNegativeY() const { return m_pCurrent != nullptr ? m_pCurrent->negativeY : true; }
 	bool isTextureGen() const { return m_pCurrent != nullptr ? m_pCurrent->textureGen: true; }
 	bool isTexturePersp() const { return m_pCurrent != nullptr ? m_pCurrent->texturePersp: true; }
 
