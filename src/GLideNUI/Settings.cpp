@@ -116,6 +116,10 @@ void _loadSettings(QSettings & settings)
 	config.onScreenDisplay.percent = settings.value("showPercent", config.onScreenDisplay.percent).toInt();
 	config.onScreenDisplay.pos = settings.value("osdPos", config.onScreenDisplay.pos).toInt();
 	settings.endGroup();
+
+	settings.beginGroup("debug");
+	config.debug.dumpMode = settings.value("dumpMode", config.debug.dumpMode).toInt();
+	settings.endGroup();
 }
 
 void loadSettings(const QString & _strIniFolder)
@@ -231,6 +235,10 @@ void writeSettings(const QString & _strIniFolder)
 	settings.setValue("showVIS", config.onScreenDisplay.vis);
 	settings.setValue("showPercent", config.onScreenDisplay.percent);
 	settings.setValue("osdPos", config.onScreenDisplay.pos);
+	settings.endGroup();
+
+	settings.beginGroup("debug");
+	settings.setValue("dumpMode", config.debug.dumpMode);
 	settings.endGroup();
 }
 

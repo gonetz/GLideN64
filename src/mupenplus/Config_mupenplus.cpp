@@ -185,6 +185,12 @@ bool Config_SetDefault()
 		"Counters position (1=top left, 2=top center, 4=top right, 8=bottom left, 16=bottom center, 32=bottom right)");
 	assert(res == M64ERR_SUCCESS);
 
+#ifdef DEBUG_DUMP
+	//#Debug settings
+	res = ConfigSetDefaultInt(g_configVideoGliden64, "DebugDumpMode", config.debug.dumpMode, "Enable debug dump. Set 3 to normal or 7 to detailed dump.");
+	assert(res == M64ERR_SUCCESS);
+#endif
+
 	return ConfigSaveSection("Video-GLideN64") == M64ERR_SUCCESS;
 }
 
@@ -416,6 +422,10 @@ void Config_LoadConfig()
 	config.onScreenDisplay.vis = ConfigGetParamBool(g_configVideoGliden64, "ShowVIS");
 	config.onScreenDisplay.percent = ConfigGetParamBool(g_configVideoGliden64, "ShowPercent");
 	config.onScreenDisplay.pos = ConfigGetParamInt(g_configVideoGliden64, "CountersPos");
+
+#ifdef DEBUG_DUMP
+	config.debug.dumpMode = ConfigGetParamInt(g_configVideoGliden64, "DebugDumpMode");
+#endif
 
 	if (config.generalEmulation.enableCustomSettings)
 		Config_LoadCustomConfig();

@@ -173,6 +173,10 @@ struct Config
 		u32 pos;
 	} onScreenDisplay;
 
+	struct {
+		u32 dumpMode;
+	} debug;
+
 	void resetToDefaults();
 };
 

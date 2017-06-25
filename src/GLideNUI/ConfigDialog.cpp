@@ -10,6 +10,7 @@
 #include <QRegExpValidator>
 
 #include "../Config.h"
+#include "../DebugDump.h"
 #include "ui_configDialog.h"
 #include "Settings.h"
 #include "ConfigDialog.h"
@@ -288,6 +289,19 @@ void ConfigDialog::_init()
 	ui->buttonBox->button(QDialogButtonBox::Ok)->setText(tr("OK"));
 	ui->buttonBox->button(QDialogButtonBox::Cancel)->setText(tr("Cancel"));
 	ui->buttonBox->button(QDialogButtonBox::RestoreDefaults)->setText(tr("Restore Defaults"));
+
+	ui->dumpLowCheckBox->setChecked((config.debug.dumpMode & DEBUG_LOW) != 0);
+	ui->dumpNormalCheckBox->setChecked((config.debug.dumpMode & DEBUG_NORMAL) != 0);
+	ui->dumpDetailCheckBox->setChecked((config.debug.dumpMode & DEBUG_DETAIL) != 0);
+
+#ifndef DEBUG_DUMP
+	for (int i = 0; i < ui->tabWidget->count(); ++i) {
+		if ("Debug" == ui->tabWidget->tabText(i)) {
+			ui->tabWidget->removeTab(i);
+			break;
+		}
+	}
+#endif
 }
 
 void ConfigDialog::_getTranslations(QStringList & _translationFiles) const
@@ -501,6 +515,14 @@ void ConfigDialog::accept()
 	config.onScreenDisplay.fps = ui->fpsCheckBox->isChecked() ? 1 : 0;
 	config.onScreenDisplay.vis = ui->visCheckBox->isChecked() ? 1 : 0;
 	config.onScreenDisplay.percent = ui->percentCheckBox->isChecked() ? 1 : 0;
+
+	config.debug.dumpMode = 0;
+	if (ui->dumpLowCheckBox->isChecked())
+		config.debug.dumpMode |= DEBUG_LOW;
+	if (ui->dumpNormalCheckBox->isChecked())
+		config.debug.dumpMode |= DEBUG_NORMAL;
+	if (ui->dumpDetailCheckBox->isChecked())
+		config.debug.dumpMode |= DEBUG_DETAIL;
 
 	writeSettings(m_strIniPath);
 

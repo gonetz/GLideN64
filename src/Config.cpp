@@ -115,4 +115,6 @@ void Config::resetToDefaults()
 	onScreenDisplay.fps = 0;
 	onScreenDisplay.percent = 0;
 	onScreenDisplay.pos = posBottomLeft;
+
+	debug.dumpMode = 0;
 }

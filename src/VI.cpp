@@ -119,7 +119,7 @@ void VI_UpdateScreen()
 	g_debugger.checkDebugState();
 
 	if (isKeyPressed(G64_VK_G, 0x0001)) {
-		SwitchDump(DEBUG_LOW|DEBUG_NORMAL);
+		SwitchDump(config.debug.dumpMode);
 	}
 
 	bool bVIUpdated = false;

@@ -103,6 +103,9 @@ void EndDump()
 
 void SwitchDump(u32 _mode)
 {
+	if (_mode == 0)
+		return;
+
 	if (!g_log)
 		StartDump(_mode);
 	else
