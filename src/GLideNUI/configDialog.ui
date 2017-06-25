@@ -3734,41 +3734,34 @@
        <string>Debug</string>
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_36">
+       <property name="spacing">
+        <number>4</number>
+       </property>
        <item>
-        <layout class="QVBoxLayout" name="verticalLayout_31">
-         <item>
-          <widget class="QCheckBox" name="dumpLowCheckBox">
-           <property name="text">
-            <string>dump low-level info</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QCheckBox" name="dumpNormalCheckBox">
-           <property name="text">
-            <string>dump display list commands</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QCheckBox" name="dumpDetailCheckBox">
-           <property name="text">
-            <string>dump detailed info (matrices, vertices and so on).</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
+        <widget class="QCheckBox" name="dumpLowCheckBox">
+         <property name="text">
+          <string>Dump low-level info</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="dumpNormalCheckBox">
+         <property name="text">
+          <string>Dump display list commands</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="dumpDetailCheckBox">
+         <property name="text">
+          <string>Dump detailed info (matrices, vertices, etc.)</string>
+         </property>
+        </widget>
        </item>
        <item>
         <spacer name="verticalSpacer_10">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>20</width>
-           <height>40</height>
-          </size>
          </property>
         </spacer>
        </item>
@@ -4194,11 +4187,11 @@
   </connection>
  </connections>
  <buttongroups>
+  <buttongroup name="screenshotButtonGroup"/>
+  <buttongroup name="aspectButtonGroup"/>
+  <buttongroup name="osdButtonGroup"/>
+  <buttongroup name="fixTexrectCoordsButtonGroup"/>
   <buttongroup name="bloomBlendModeButtonGroup"/>
   <buttongroup name="factorButtonGroup"/>
-  <buttongroup name="aspectButtonGroup"/>
-  <buttongroup name="fixTexrectCoordsButtonGroup"/>
-  <buttongroup name="screenshotButtonGroup"/>
-  <buttongroup name="osdButtonGroup"/>
  </buttongroups>
 </ui>

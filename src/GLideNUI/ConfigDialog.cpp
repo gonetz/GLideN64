@@ -296,7 +296,7 @@ void ConfigDialog::_init()
 
 #ifndef DEBUG_DUMP
 	for (int i = 0; i < ui->tabWidget->count(); ++i) {
-		if ("Debug" == ui->tabWidget->tabText(i)) {
+		if (tr("Debug") == ui->tabWidget->tabText(i)) {
 			ui->tabWidget->removeTab(i);
 			break;
 		}
