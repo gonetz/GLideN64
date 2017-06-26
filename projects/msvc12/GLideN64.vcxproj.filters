@@ -362,6 +362,9 @@
     <ClCompile Include="..\..\src\Debugger.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\F3DEX2ACCLAIM.cpp">
+      <Filter>Source Files\uCodes</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\3DMath.h">
@@ -669,6 +672,9 @@
     </ClInclude>
     <ClInclude Include="..\..\src\Debugger.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\F3DEX2ACCLAIM.h">
+      <Filter>Header Files\uCodes</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

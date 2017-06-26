@@ -545,6 +545,33 @@ static void gSPPointLightVertex_CBFD(SPVertex & _vtx, float * /*_vPos*/)
 	_vtx.HWLight = 0;
 }
 
+static
+void gSPPointLightVertex_Acclaim(SPVertex & _vtx)
+{
+	_vtx.HWLight = 0;
+
+	for (u32 l = 2; l < 10; ++l) {
+		if (gSP.lights.ca[l] < 0)
+			continue;
+
+		const f32 dX = fabsf(gSP.lights.pos_xyzw[l][X] - _vtx.x);
+		const f32 dY = fabsf(gSP.lights.pos_xyzw[l][Y] - _vtx.y);
+		const f32 dZ = fabsf(gSP.lights.pos_xyzw[l][Z] - _vtx.z);
+		const f32 distance = dX + dY + dZ - gSP.lights.ca[l];
+		if (distance >= 0.0f)
+			continue;
+
+		const f32 light_intensity = -distance * gSP.lights.la[l];
+		_vtx.r += gSP.lights.rgb[l][R] * light_intensity;
+		_vtx.g += gSP.lights.rgb[l][G] * light_intensity;
+		_vtx.b += gSP.lights.rgb[l][B] * light_intensity;
+	}
+
+	if (_vtx.r > 1.0f) _vtx.r = 1.0f;
+	if (_vtx.g > 1.0f) _vtx.g = 1.0f;
+	if (_vtx.b > 1.0f) _vtx.b = 1.0f;
+}
+
 static void gSPBillboardVertex_default(u32 v, u32 i)
 {
 	GraphicsDrawer & drawer = dwnd().getDrawer();
@@ -625,8 +652,12 @@ void gSPProcessVertex(u32 v)
 				vtx.t = (y + 1.0f) * 512.0f;
 			}
 		}
-	} else
+	} else if (gSP.geometryMode & G_ACCLAIM_LIGHTING) {
+		gSPPointLightVertex_Acclaim(vtx);
+	} else {
 		vtx.HWLight = 0;
+	}
+
 }
 
 void gSPLoadUcodeEx( u32 uc_start, u32 uc_dstart, u16 uc_dsize )
@@ -877,6 +908,28 @@ void gSPLightCBFD( u32 l, s32 n )
 		_FIXED2FLOAT( light->x, 7 ), _FIXED2FLOAT( light->y, 7 ), _FIXED2FLOAT( light->z, 7 ) );
 	DebugMsg( DEBUG_DETAIL, "// r = %3i    g = %3i   b = %3i\n",
 		light->r, light->g, light->b );
+}
+
+void gSPLightAcclaim(u32 l, s32 n)
+{
+	u32 addrByte = RSP_SegmentToPhysical(l);
+
+	if (n < 10) {
+		const u32 addrShort = addrByte >> 1;
+		gSP.lights.pos_xyzw[n][X] = (f32)(((s16*)RDRAM)[(addrShort + 0) ^ 1]);
+		gSP.lights.pos_xyzw[n][Y] = (f32)(((s16*)RDRAM)[(addrShort + 1) ^ 1]);
+		gSP.lights.pos_xyzw[n][Z] = (f32)(((s16*)RDRAM)[(addrShort + 2) ^ 1]);
+		gSP.lights.ca[n] = (f32)(((s16*)RDRAM)[(addrShort + 5) ^ 1]);
+		gSP.lights.la[n] = _FIXED2FLOAT((((u16*)RDRAM)[(addrShort + 6) ^ 1]), 16);
+		gSP.lights.qa[n] = (f32)(((u16*)RDRAM)[(addrShort + 7) ^ 1]);
+		gSP.lights.rgb[n][R] = _FIXED2FLOAT((RDRAM[(addrByte + 6) ^ 3]), 8);
+		gSP.lights.rgb[n][G] = _FIXED2FLOAT((RDRAM[(addrByte + 7) ^ 3]), 8);
+		gSP.lights.rgb[n][B] = _FIXED2FLOAT((RDRAM[(addrByte + 8) ^ 3]), 8);
+	}
+
+	gSP.changed |= CHANGED_LIGHT;
+
+	DebugMsg(DEBUG_NORMAL, "gSPLightAcclaim( 0x%08X, LIGHT_%i );\n", l, n);
 }
 
 void gSPLookAt( u32 _l, u32 _n )

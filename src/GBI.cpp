@@ -26,6 +26,7 @@
 #include "F3DEX2CBFD.h"
 #include "F3DEX2MM.h"
 #include "F3DTEXA.h"
+#include "F3DEX2ACCLAIM.h"
 #include "ZSort.h"
 #include "CRC.h"
 #include "Log.h"
@@ -57,7 +58,8 @@ SpecialMicrocodeInfo specialMicrocodes[] =
 	{ F3DEX2MM,		true,	true,	0xd39a0d4f,	"Animal Forest" },
 	{ S2DEX2,		false,	true,	0x2c399dd,	"Animal Forest" },
 	{ T3DUX,		false,	true,	0xbad437f2, "T3DUX vers 0.83 for Toukon Road" },
-	{ T3DUX,		false,	true,	0xd0a1aa3d, "T3DUX vers 0.85 for Toukon Road 2" }
+	{ T3DUX,		false,	true,	0xd0a1aa3d, "T3DUX vers 0.85 for Toukon Road 2" },
+	{ F3DEX2ACCLAIM,true,	true,	0xe44df568, "Acclaim games: Turok2 & 3, Armories and South park" }
 };
 
 u32 G_RDPHALF_1, G_RDPHALF_2, G_RDPHALF_CONT;
@@ -139,6 +141,7 @@ bool GBIInfo::isHWLSupported() const
 		case F3DDKR:
 		case F3DJFG:
 		case F3DEX2CBFD:
+		case F3DEX2ACCLAIM:
 		return false;
 	}
 	return true;
@@ -165,26 +168,27 @@ void GBIInfo::_makeCurrent(MicrocodeInfo * _pCurrent)
 		G_TRI1 = G_TRI2 = G_TRIX = G_QUAD = -1; // For correct work of gSPFlushTriangles()
 
 		switch (m_pCurrent->type) {
-			case F3D:		F3D_Init();			break;
-			case F3DEX:		F3DEX_Init();		break;
-			case F3DEX2:	F3DEX2_Init();		break;
-			case L3D:		L3D_Init();			break;
-			case L3DEX:		L3DEX_Init();		break;
-			case L3DEX2:	L3DEX2_Init();		break;
-			case S2DEX:		S2DEX_Init();		break;
-			case S2DEX2:	S2DEX2_Init();		break;
-			case F3DDKR:	F3DDKR_Init();		break;
-			case F3DJFG:	F3DJFG_Init();		break;
-			case F3DBETA:	F3DBETA_Init();		break;
-			case F3DPD:		F3DPD_Init();		break;
-			case Turbo3D:	F3D_Init();			break;
-			case ZSortp:	ZSort_Init();		break;
-			case F3DEX2CBFD:F3DEX2CBFD_Init();	break;
-			case F3DSETA:	F3DSETA_Init();		break;
-			case F3DGOLDEN:	F3DGOLDEN_Init();	break;
-			case F3DEX2MM:	F3DEX2MM_Init();	break;
-			case F3DTEXA:	F3DTEXA_Init();		break;
-			case T3DUX:		F3D_Init();			break;
+			case F3D:			F3D_Init();				break;
+			case F3DEX:			F3DEX_Init();			break;
+			case F3DEX2:		F3DEX2_Init();			break;
+			case L3D:			L3D_Init();				break;
+			case L3DEX:			L3DEX_Init();			break;
+			case L3DEX2:		L3DEX2_Init();			break;
+			case S2DEX:			S2DEX_Init();			break;
+			case S2DEX2:		S2DEX2_Init();			break;
+			case F3DDKR:		F3DDKR_Init();			break;
+			case F3DJFG:		F3DJFG_Init();			break;
+			case F3DBETA:		F3DBETA_Init();			break;
+			case F3DPD:			F3DPD_Init();			break;
+			case Turbo3D:		F3D_Init();				break;
+			case ZSortp:		ZSort_Init();			break;
+			case F3DEX2CBFD:	F3DEX2CBFD_Init();		break;
+			case F3DSETA:		F3DSETA_Init();			break;
+			case F3DGOLDEN:		F3DGOLDEN_Init();		break;
+			case F3DEX2MM:		F3DEX2MM_Init();		break;
+			case F3DTEXA:		F3DTEXA_Init();			break;
+			case T3DUX:			F3D_Init();				break;
+			case F3DEX2ACCLAIM:	F3DEX2ACCLAIM_Init();	break;
 		}
 
 		if (gfxContext.isSupported(graphics::SpecialFeatures::NearPlaneClipping)) {

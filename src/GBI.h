@@ -6,27 +6,28 @@
 #include "Types.h"
 
 // Microcode Types
-#define F3D			0
-#define F3DEX		1
-#define F3DEX2		2
-#define L3D			3
-#define L3DEX		4
-#define L3DEX2		5
-#define S2DEX		6
-#define S2DEX2		7
-#define F3DPD		8
-#define F3DDKR		9
-#define F3DJFG		10
-#define F3DGOLDEN	11
-#define F3DBETA		12
-#define F3DEX2CBFD	13
-#define Turbo3D		14
-#define ZSortp		15
-#define F3DSETA		16
-#define F3DEX2MM	17
-#define F3DTEXA		18
-#define T3DUX		19
-#define NONE		20
+#define F3D				0
+#define F3DEX			1
+#define F3DEX2			2
+#define L3D				3
+#define L3DEX			4
+#define L3DEX2			5
+#define S2DEX			6
+#define S2DEX2			7
+#define F3DPD			8
+#define F3DDKR			9
+#define F3DJFG			10
+#define F3DGOLDEN		11
+#define F3DBETA			12
+#define F3DEX2CBFD		13
+#define Turbo3D			14
+#define ZSortp			15
+#define F3DSETA			16
+#define F3DEX2MM		17
+#define F3DTEXA			18
+#define T3DUX			19
+#define F3DEX2ACCLAIM	21
+#define NONE			22
 
 // Fixed point conversion factors
 #define FIXED2FLOATRECIP1	0.5f
@@ -80,6 +81,7 @@
 // These are all the constant flags
 #define G_ZBUFFER				0x00000001
 #define G_SHADE					0x00000004
+#define G_ACCLAIM_LIGHTING		0x00000080
 #define G_FOG					0x00010000
 #define G_LIGHTING				0x00020000
 #define G_TEXTURE_GEN			0x00040000
