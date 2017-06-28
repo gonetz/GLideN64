@@ -4,7 +4,6 @@
 #include <assert.h>
 #include "N64.h"
 #include "GLideN64.h"
-#include "Debug.h"
 #include "Types.h"
 #include "RSP.h"
 #include "GBI.h"
