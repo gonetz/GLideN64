@@ -708,11 +708,13 @@ void gSPMatrix( u32 matrix, u8 param )
 		else
 			MultMatrix2( gSP.matrix.projection, mtx );
 	} else {
-		if ((param & G_MTX_PUSH) && (gSP.matrix.modelViewi < (gSP.matrix.stackSize))) {
-			CopyMatrix( gSP.matrix.modelView[gSP.matrix.modelViewi + 1], gSP.matrix.modelView[gSP.matrix.modelViewi] );
-			gSP.matrix.modelViewi++;
-		} else
-			DebugMsg(DEBUG_NORMAL | DEBUG_ERROR, "// Modelview stack overflow\n");
+		if ((param & G_MTX_PUSH)) {
+			if (gSP.matrix.modelViewi < (gSP.matrix.stackSize)) {
+				CopyMatrix(gSP.matrix.modelView[gSP.matrix.modelViewi + 1], gSP.matrix.modelView[gSP.matrix.modelViewi]);
+				gSP.matrix.modelViewi++;
+			} else
+				DebugMsg(DEBUG_NORMAL | DEBUG_ERROR, "// Modelview stack overflow\n");
+		}
 
 		if (param & G_MTX_LOAD)
 			CopyMatrix( gSP.matrix.modelView[gSP.matrix.modelViewi], mtx );
