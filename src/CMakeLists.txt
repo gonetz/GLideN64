@@ -22,6 +22,7 @@ set(GLideN64_SOURCES
   F3DBETA.cpp
   F3DDKR.cpp
   F3DEX.cpp
+  F3DAM.cpp
   F3DEX2.cpp
   F3DEX2ACCLAIM.cpp
   F3DEX2CBFD.cpp

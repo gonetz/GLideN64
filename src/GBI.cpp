@@ -18,6 +18,7 @@
 #include "L3DEX2.h"
 #include "S2DEX.h"
 #include "S2DEX2.h"
+#include "F3DAM.h"
 #include "F3DDKR.h"
 #include "F3DBETA.h"
 #include "F3DPD.h"
@@ -180,6 +181,7 @@ void GBIInfo::_makeCurrent(MicrocodeInfo * _pCurrent)
 			case F3DJFG:		F3DJFG_Init();			break;
 			case F3DBETA:		F3DBETA_Init();			break;
 			case F3DPD:			F3DPD_Init();			break;
+			case F3DAM:			F3DAM_Init();			break;
 			case Turbo3D:		F3D_Init();				break;
 			case ZSortp:		ZSort_Init();			break;
 			case F3DEX2CBFD:	F3DEX2CBFD_Init();		break;
@@ -295,6 +297,8 @@ void GBIInfo::loadMicrocode(u32 uc_start, u32 uc_dstart, u16 uc_dsize)
 						type = F3DEX2MM;
 					else if (strncmp(&uc_str[14], "F3DTEX/A", 8) == 0)
 						type = F3DTEXA;
+					else if (strncmp(&uc_str[14], "F3DAM", 5) == 0)
+						type = F3DAM;
 					else if (strncmp(&uc_str[14], "F3DLX.Rej", 9) == 0)
 						current.NoN = true;
 					else if (strncmp(&uc_str[14], "F3DLP.Rej", 9) == 0) {

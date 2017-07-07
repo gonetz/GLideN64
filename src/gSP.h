@@ -136,6 +136,9 @@ struct gSPInfo
 	// CBFD
 	u32 vertexNormalBase;
 	f32 vertexCoordMod[16];
+
+	u32 textureCoordScaleOrg;
+	u32 textureCoordScale[2];
 };
 
 extern gSPInfo gSP;
@@ -155,6 +158,7 @@ void gSPCIVertex( u32 v, u32 n, u32 v0 );
 void gSPDMAVertex( u32 v, u32 n, u32 v0 );
 void gSPCBFDVertex( u32 v, u32 n, u32 v0 );
 void gSPT3DUXVertex(u32 v, u32 n, u32 ci);
+void gSPF3DAMVertex( u32 v, u32 n, u32 v0 );
 void gSPDisplayList(u32 dl);
 void gSPBranchList( u32 dl );
 void gSPBranchLessZ( u32 branchdl, u32 vtx, u32 zval );

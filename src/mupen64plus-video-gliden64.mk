@@ -29,6 +29,7 @@ MY_LOCAL_SRC_FILES :=                               \
     $(SRCDIR)/DepthBuffer.cpp                       \
     $(SRCDIR)/DisplayWindow.cpp                     \
     $(SRCDIR)/F3D.cpp                               \
+    $(SRCDIR)/F3DAM.cpp                             \
     $(SRCDIR)/F3DBETA.cpp                           \
     $(SRCDIR)/F3DDKR.cpp                            \
     $(SRCDIR)/F3DEX.cpp                             \

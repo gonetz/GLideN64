@@ -1345,6 +1345,101 @@ void gSPT3DUXVertex(u32 a, u32 n, u32 ci)
 	}
 }
 
+static
+void calcF3DAMTexCoords(Vertex * _vertex, SPVertex & _vtx)
+{
+	const u32 s0 = (u32)_vertex->s;
+	const u32 t0 = (u32)_vertex->t;
+	const u32 acum_0 = ((_SHIFTR(gSP.textureCoordScaleOrg, 0, 16) * t0) << 1) + 0x8000;
+	const u32 acum_1 = ((_SHIFTR(gSP.textureCoordScale[1], 0, 16) * t0) << 1) + 0x8000;
+	const u32 sres = ((_SHIFTR(gSP.textureCoordScaleOrg, 16, 16) * s0) << 1) + acum_0;
+	const u32 tres = ((_SHIFTR(gSP.textureCoordScale[1], 16, 16) * s0) << 1) + acum_1;
+	const s16 s = _SHIFTR(sres, 16, 16) + _SHIFTR(gSP.textureCoordScale[0], 16, 16);
+	const s16 t = _SHIFTR(tres, 16, 16) + _SHIFTR(gSP.textureCoordScale[0], 0, 16);
+
+	_vtx.s = _FIXED2FLOAT( s, 5 );
+	_vtx.t = _FIXED2FLOAT( t, 5 );
+}
+
+void gSPF3DAMVertex(u32 a, u32 n, u32 v0)
+{
+	u32 address = RSP_SegmentToPhysical(a);
+
+	if ((address + sizeof(Vertex)* n) > RDRAMSize) {
+		DebugMsg(DEBUG_NORMAL | DEBUG_ERROR, "gSPF3DAMVertex Using Vertex outside RDRAM n = %i, v0 = %i, from %08x\n", n, v0, a);
+		return;
+	}
+
+	DebugMsg(DEBUG_NORMAL, "gSPF3DAMVertex n = %i, v0 = %i, from %08x\n", n, v0, a);
+
+	if ((gSP.geometryMode & G_LIGHTING) != 0) {
+
+		if ((gSP.changed & CHANGED_LIGHT) != 0)
+			gSPUpdateLightVectors();
+
+		if (((gSP.geometryMode & G_TEXTURE_GEN) != 0) && ((gSP.changed & CHANGED_LOOKAT) != 0))
+			gSPUpdateLookatVectors();
+	}
+
+	Vertex *vertex = (Vertex*)&RDRAM[address];
+
+	GraphicsDrawer & drawer = dwnd().getDrawer();
+	if ((n + v0) <= INDEXMAP_SIZE) {
+		unsigned int i = v0;
+#ifdef __VEC4_OPT
+		for (; i < n - (n%4) + v0; i += 4) {
+			u32 v = i;
+			for(int j = 0; j < 4; ++j) {
+				SPVertex & vtx = drawer.getVertex(v+j);
+				vtx.x = vertex->x;
+				vtx.y = vertex->y;
+				vtx.z = vertex->z;
+				//vtx.flag = vertex->flag;
+				calcF3DAMTexCoords(vertex, vtx);
+				if (gSP.geometryMode & G_LIGHTING) {
+					vtx.nx = _FIXED2FLOAT( vertex->normal.x, 7 );
+					vtx.ny = _FIXED2FLOAT( vertex->normal.y, 7 );
+					vtx.nz = _FIXED2FLOAT( vertex->normal.z, 7 );
+					vtx.a = vertex->color.a * 0.0039215689f;
+				} else {
+					vtx.r = vertex->color.r * 0.0039215689f;
+					vtx.g = vertex->color.g * 0.0039215689f;
+					vtx.b = vertex->color.b * 0.0039215689f;
+					vtx.a = vertex->color.a * 0.0039215689f;
+				}
+				vertex++;
+			}
+			gSPProcessVertex4(v);
+		}
+#endif
+		for (; i < n + v0; ++i) {
+			u32 v = i;
+			SPVertex & vtx = drawer.getVertex(v);
+			vtx.x = vertex->x;
+			vtx.y = vertex->y;
+			vtx.z = vertex->z;
+			calcF3DAMTexCoords(vertex, vtx);
+			if (gSP.geometryMode & G_LIGHTING) {
+				vtx.nx = _FIXED2FLOAT(vertex->normal.x, 7);
+				vtx.ny = _FIXED2FLOAT(vertex->normal.y, 7);
+				vtx.nz = _FIXED2FLOAT(vertex->normal.z, 7);
+				vtx.a = vertex->color.a * 0.0039215689f;
+			} else {
+				vtx.r = vertex->color.r * 0.0039215689f;
+				vtx.g = vertex->color.g * 0.0039215689f;
+				vtx.b = vertex->color.b * 0.0039215689f;
+				vtx.a = vertex->color.a * 0.0039215689f;
+			}
+			gSPProcessVertex(v);
+			DebugMsg(DEBUG_DETAIL, "v%d - x: %f, y: %f, z: %f, w: %f, s: %f, t: %f, r=%02f, g=%02f, b=%02f, a=%02f\n", i, vtx.x, vtx.y, vtx.z, vtx.w, vtx.s, vtx.t, vtx.r, vtx.g, vtx.b, vtx.a);
+			vertex++;
+		}
+	} else {
+		LOG(LOG_ERROR, "Using Vertex outside buffer v0=%i, n=%i\n", v0, n);
+		DebugMsg(DEBUG_NORMAL | DEBUG_ERROR, "//Using Vertex outside buffer v0 = %i, n = %i\n", v0, n);
+	}
+}
+
 void gSPDisplayList( u32 dl )
 {
 	u32 address = RSP_SegmentToPhysical( dl );
