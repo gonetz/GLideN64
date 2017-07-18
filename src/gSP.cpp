@@ -1442,6 +1442,8 @@ void gSPF3DAMVertex(u32 a, u32 n, u32 v0)
 
 void gSPSWVertex(const SWVertex * vertex, u32 n, u32 v0)
 {
+	DebugMsg(DEBUG_NORMAL, "gSPSWVertex n = %i, v0 = %i\n", n, v0);
+
 	GraphicsDrawer & drawer = dwnd().getDrawer();
 	if ((n + v0) <= INDEXMAP_SIZE) {
 		unsigned int i = v0;

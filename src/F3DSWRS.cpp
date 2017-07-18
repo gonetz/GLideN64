@@ -14,7 +14,6 @@
 #include "gSP.h"
 #include "gDP.h"
 #include "GBI.h"
-#include "Log.h"
 #include "DisplayWindow.h"
 
 #define F3DSWRS_VTXCOLOR			0x02
@@ -52,6 +51,8 @@ void F3DSWRS_MoveMem(u32 _w0, u32)
 	case F3DSWRS_MV_TEXSCALE:
 		gSP.textureCoordScale[0] = *(u32*)&RDRAM[RSP.PC[RSP.PCi] + 16];
 		gSP.textureCoordScale[1] = *(u32*)&RDRAM[RSP.PC[RSP.PCi] + 12];
+		DebugMsg(DEBUG_NORMAL, "F3DSWRS_MoveMem Texscale(0x%08x, 0x%08x)\n",
+				 gSP.textureCoordScale[0], gSP.textureCoordScale[1]);
 		break;
 	}
 	RSP.PC[RSP.PCi] += 16;
@@ -59,14 +60,16 @@ void F3DSWRS_MoveMem(u32 _w0, u32)
 
 void F3DSWRS_Vtx(u32 _w0, u32 _w1)
 {
-    const u32 address = RSP_SegmentToPhysical(_w1);
-    const u32 n = _SHIFTR(_w0, 10, 6);
+	DebugMsg(DEBUG_NORMAL, "F3DSWRS_Vtx (0x%08x, 0x%08x)\n", _w0, _w1);
 
-    if ((address + sizeof(SWVertex)* n) > RDRAMSize)
-        return;
+	const u32 address = RSP_SegmentToPhysical(_w1);
+	const u32 n = _SHIFTR(_w0, 10, 6);
 
-    const SWVertex * vertex = (const SWVertex*)&RDRAM[address];
-    gSPSWVertex(vertex, n, 0 );
+	if ((address + sizeof(SWVertex)* n) > RDRAMSize)
+		return;
+
+	const SWVertex * vertex = (const SWVertex*)&RDRAM[address];
+	gSPSWVertex(vertex, n, 0 );
 }
 
 void F3DSWRS_Jump2(u32, u32)
@@ -79,56 +82,56 @@ void F3DSWRS_Jump2(u32, u32)
 static
 void F3DSWRS_PrepareVertices(const u32* _vert, const u8* _colorbase, const u32* _color, const u8* _texbase, bool _useTex, u32 _num)
 {
-    const u32 sscale = _SHIFTR(gSP.textureCoordScale[0], 16, 16);
-    const u32 tscale = _SHIFTR(gSP.textureCoordScale[0], 0, 16);
-    const u32 sscale1 = _SHIFTR(gSP.textureCoordScale[1], 16, 16);
-    const u32 tscale1 = _SHIFTR(gSP.textureCoordScale[1], 0, 16);
+	const u32 sscale = _SHIFTR(gSP.textureCoordScale[0], 16, 16);
+	const u32 tscale = _SHIFTR(gSP.textureCoordScale[0], 0, 16);
+	const u32 sscale1 = _SHIFTR(gSP.textureCoordScale[1], 16, 16);
+	const u32 tscale1 = _SHIFTR(gSP.textureCoordScale[1], 0, 16);
 
-    GraphicsDrawer & drawer = dwnd().getDrawer();
+	GraphicsDrawer & drawer = dwnd().getDrawer();
 
-    for (u32 i = 0; i < _num; ++i) {
-        SPVertex & vtx = drawer.getVertex(_vert[i]);
-        const u8 *color = _colorbase + _color[i];
-        vtx.r = color[3] * 0.0039215689f;
-        vtx.g = color[2] * 0.0039215689f;
-        vtx.b = color[1] * 0.0039215689f;
-        vtx.a = color[0] * 0.0039215689f;
+	for (u32 i = 0; i < _num; ++i) {
+		SPVertex & vtx = drawer.getVertex(_vert[i]);
+		const u8 *color = _colorbase + _color[i];
+		vtx.r = color[3] * 0.0039215689f;
+		vtx.g = color[2] * 0.0039215689f;
+		vtx.b = color[1] * 0.0039215689f;
+		vtx.a = color[0] * 0.0039215689f;
 
-        if (_useTex) {
-            const u32 st = *(u32*)&_texbase[4 * i];
-            u32 s = (s16)_SHIFTR(st, 16, 16);
-            u32 t = (s16)_SHIFTR(st, 0, 16);
-            if ((s & 0x8000) != 0)
-                s |= ~0xffff;
-            if ((t & 0x8000) != 0)
-                t |= ~0xffff;
-            const u32 VMUDN_S = s * sscale;
-            const u32 VMUDN_T = t * tscale;
-            const s16 low_acum_S = _SHIFTR(VMUDN_S, 16, 16);
-            const s16 low_acum_T = _SHIFTR(VMUDN_T, 16, 16);
-            const u32 VMADH_S = s * sscale1;
-            const u32 VMADH_T = t * tscale1;
-            const s16 hi_acum_S = _SHIFTR(VMADH_S, 0, 16);
-            const s16 hi_acum_T = _SHIFTR(VMADH_T, 0, 16);
-            const s16 scaledS = low_acum_S + hi_acum_S;
-            const s16 scaledT = low_acum_T + hi_acum_T;
+		if (_useTex) {
+			const u32 st = *(u32*)&_texbase[4 * i];
+			u32 s = (s16)_SHIFTR(st, 16, 16);
+			u32 t = (s16)_SHIFTR(st, 0, 16);
+			if ((s & 0x8000) != 0)
+				s |= ~0xffff;
+			if ((t & 0x8000) != 0)
+				t |= ~0xffff;
+			const u32 VMUDN_S = s * sscale;
+			const u32 VMUDN_T = t * tscale;
+			const s16 low_acum_S = _SHIFTR(VMUDN_S, 16, 16);
+			const s16 low_acum_T = _SHIFTR(VMUDN_T, 16, 16);
+			const u32 VMADH_S = s * sscale1;
+			const u32 VMADH_T = t * tscale1;
+			const s16 hi_acum_S = _SHIFTR(VMADH_S, 0, 16);
+			const s16 hi_acum_T = _SHIFTR(VMADH_T, 0, 16);
+			const s16 scaledS = low_acum_S + hi_acum_S;
+			const s16 scaledT = low_acum_T + hi_acum_T;
 
-            if (gDP.otherMode.texturePersp == 0) {
-                vtx.s = _FIXED2FLOAT(scaledS, 4);
-                vtx.t = _FIXED2FLOAT(scaledT, 4);
-            }
-            else {
-                vtx.s = _FIXED2FLOAT(scaledS, 5);
-                vtx.t = _FIXED2FLOAT(scaledT, 5);
-            }
-        }
-    }
+			if (gDP.otherMode.texturePersp == 0) {
+				vtx.s = _FIXED2FLOAT(scaledS, 4);
+				vtx.t = _FIXED2FLOAT(scaledT, 4);
+			}
+			else {
+				vtx.s = _FIXED2FLOAT(scaledS, 5);
+				vtx.t = _FIXED2FLOAT(scaledT, 5);
+			}
+		}
+	}
 }
 
 static
 void Jump3_2(const u32 * _params, u32 * _result) {
-	    if (_params[1] == 0xFDA00050 && _params[9] == 0xE2000200 && _params[8] == 0xF0000000)
-	        int k = 0;
+//	if (_params[1] == 0xFDA00050 && _params[9] == 0xE2000200 && _params[8] == 0xF0000000)
+//		int k = 0;
 	typedef std::array<s16, 4> Vector;
 	Vector v0 = { 0, 0, 0, 0 };
 	Vector v1 = { 0, 0, 0, 0 };
@@ -143,45 +146,47 @@ void Jump3_2(const u32 * _params, u32 * _result) {
 	v2[0] = V0;
 	v3[2] = V0;
 	v1[1] = _SHIFTR(_params[1], 16, 16);
-    _result[0] = ((v0[0] + v1[0]) << 16) | ((v0[1] + v1[1]) & 0xFFFF);
-    _result[1] = ((v0[2] + v1[2]) << 16) | ((v0[3] + v1[3]) & 0xFFFF);
-    v1 = v2;
+	_result[0] = ((v0[0] + v1[0]) << 16) | ((v0[1] + v1[1]) & 0xFFFF);
+	_result[1] = ((v0[2] + v1[2]) << 16) | ((v0[3] + v1[3]) & 0xFFFF);
+	v1 = v2;
 	v1[1] = _SHIFTR(_params[1], 0, 16);
-    _result[2] = ((v0[0] + v1[0]) << 16) | ((v0[1] + v1[1]) & 0xFFFF);
-    _result[3] = ((v0[2] + v1[2]) << 16) | ((v0[3] + v1[3]) & 0xFFFF);
-    v1 = v3;
+	_result[2] = ((v0[0] + v1[0]) << 16) | ((v0[1] + v1[1]) & 0xFFFF);
+	_result[3] = ((v0[2] + v1[2]) << 16) | ((v0[3] + v1[3]) & 0xFFFF);
+	v1 = v3;
 	v1[1] = _SHIFTR(_params[2], 16, 16);
-    _result[4] = ((v0[0] + v1[0]) << 16) | ((v0[1] + v1[1]) & 0xFFFF);
-    _result[5] = ((v0[2] + v1[2]) << 16) | ((v0[3] + v1[3]) & 0xFFFF);
-    for (u32 i = 0; i < 4; ++i)
+	_result[4] = ((v0[0] + v1[0]) << 16) | ((v0[1] + v1[1]) & 0xFFFF);
+	_result[5] = ((v0[2] + v1[2]) << 16) | ((v0[3] + v1[3]) & 0xFFFF);
+	for (u32 i = 0; i < 4; ++i)
 		v1[i] = v2[i] + v3[i];
 	v1[1] = _SHIFTR(_params[2], 0, 16);
-    _result[6] = ((v0[0] + v1[0]) << 16) | ((v0[1] + v1[1]) & 0xFFFF);
-    _result[7] = ((v0[2] + v1[2]) << 16) | ((v0[3] + v1[3]) & 0xFFFF);
+	_result[6] = ((v0[0] + v1[0]) << 16) | ((v0[1] + v1[1]) & 0xFFFF);
+	_result[7] = ((v0[2] + v1[2]) << 16) | ((v0[3] + v1[3]) & 0xFFFF);
 }
 
 
 bool _print = false;
 void F3DSWRS_Jump3(u32 _w0, u32 _w1)
 {
+	DebugMsg(DEBUG_NORMAL, "F3DSWRS_Jump3 (0x%08x, 0x%08x)\n", _w0, _w1);
+
 	const u32 mode = _SHIFTR(_w0, 8, 8);
 	switch (mode) {
-	case 0x02: 
+	case 0x02:
 	{
-        /*
-		u32 params[10] = { 
-            0x05050200,
-            0xFDA00050,
-            0xFDD00190,
-            0xF4F4F401,
-            0xE4E4E4FF,
-            0xFFFFFFFF,
-            0xFFFFFFFF,
-            0x000007E0,
-            0xF0000000,
-            0xE2000200 };
-            */
-        u32 params[10];
+		/*
+		u32 params[10] = {
+			0x05050200,
+			0xFDA00050,
+			0xFDD00190,
+			0xF4F4F401,
+			0xE4E4E4FF,
+			0xFFFFFFFF,
+			0xFFFFFFFF,
+			0x000007E0,
+			0xF0000000,
+			0xE2000200 };
+			*/
+		u32 params[10];
 		for (u32 i = 1; i < 10; ++i)
 			params[i] = *(u32*)&RDRAM[RSP.PC[RSP.PCi] + i * 4];
 
@@ -196,7 +201,7 @@ void F3DSWRS_Jump3(u32 _w0, u32 _w1)
 				f32 sx = v.x / v.w * gSP.viewport.vscale[0] + gSP.viewport.vtrans[0];
 				f32 sy = v.y / v.w * gSP.viewport.vscale[1] + gSP.viewport.vtrans[1];
 				f32 sz = v.z / v.w * gSP.viewport.vscale[2] + gSP.viewport.vtrans[2];
-				debugPrint("v[%d] x=%02f y=%02f z=%02f\n", i, sx, gDP.scissor.lry - sy, sz);
+				DebugMsg(DEBUG_NORMAL, "v[%d] x=%02f y=%02f z=%02f\n", i, sx, gDP.scissor.lry - sy, sz);
 			}
 		}
 
@@ -214,7 +219,7 @@ void F3DSWRS_Jump3(u32 _w0, u32 _w1)
 
 
 		const bool useTex = true;// (_w0 & 2) != 0;
-		F3DSWRS_PrepareVertices(vert, (u8*)colorbase, color, (u8*)texbase, true, 4);
+		F3DSWRS_PrepareVertices(vert, (u8*)colorbase, color, (u8*)texbase, useTex, 4);
 
 		SPVertex & vtx2 = drawer.getVertex(v2);
 		SPVertex & vtx3 = drawer.getVertex(v3);
@@ -237,19 +242,22 @@ void F3DSWRS_Jump3(u32 _w0, u32 _w1)
 	RSP.swDL[RSP.PCi].SWOtherDL = _SHIFTR(*(u32*)&RDRAM[RSP.PC[RSP.PCi] + 4], 0, 24);
 }
 
-void F3DSWRS_DList(u32, u32 _w1)
+void F3DSWRS_DList(u32 _w0, u32 _w1)
 {
+	DebugMsg(DEBUG_NORMAL, "F3DSWRS_DList (0x%08x, 0x%08x)\n", _w0, _w1);
 	gSPSWDisplayList(_w1);
 }
 
-void F3DSWRS_BranchDList(u32, u32 _w1)
+void F3DSWRS_BranchDList(u32 _w0, u32 _w1)
 {
+	DebugMsg(DEBUG_NORMAL, "F3DSWRS_BranchDList (0x%08x, 0x%08x)\n", _w0, _w1);
 	gSPSWBranchList(_w1);
 }
 
 void F3DSWRS_Tri1(u32 _w0, u32 _w1)
 {
-	const u32 v1 = (_SHIFTR( _w1, 13, 11 ) & 0x7F8) / 40;
+	DebugMsg(DEBUG_NORMAL, "F3DSWRS_Tri1 (0x%08x, 0x%08x)\n", _w0, _w1);
+	const u32 v1 = (_SHIFTR(_w1, 13, 11) & 0x7F8) / 40;
 	const u32 v2 = (_SHIFTR( _w1,  5, 11 ) & 0x7F8) / 40;
 	const u32 v3 = ((_w1 <<  3) & 0x7F8) / 40;
 	const u32 vert[3] = { v1, v2, v3 };
@@ -270,7 +278,8 @@ void F3DSWRS_Tri1(u32 _w0, u32 _w1)
 
 void F3DSWRS_Tri2(u32 _w0, u32 _w1)
 {
-	const u32 v1 = (_SHIFTR( _w1, 13, 11 ) & 0x7F8) / 40;
+	DebugMsg(DEBUG_NORMAL, "F3DSWRS_Tri2 (0x%08x, 0x%08x)\n", _w0, _w1);
+	const u32 v1 = (_SHIFTR(_w1, 13, 11) & 0x7F8) / 40;
 	const u32 v2 = (_SHIFTR( _w1,  5, 11 ) & 0x7F8) / 40;
 	const u32 v3 = ((_w1 <<  3) & 0x7F8) / 40;
 	const u32 v4 = (_SHIFTR( _w1,  21, 11 ) & 0x7F8) / 40;
@@ -293,7 +302,8 @@ void F3DSWRS_Tri2(u32 _w0, u32 _w1)
 
 void F3DSWRS_MoveWord(u32 _w0, u32 _w1)
 {
-	switch (_SHIFTR( _w0, 0, 8 )){
+	DebugMsg(DEBUG_NORMAL, "F3DSWRS_MoveWord (0x%08x, 0x%08x)\n", _w0, _w1);
+	switch (_SHIFTR(_w0, 0, 8)){
 //	case 0x58C: // This PC is used after a texrect in naboo
 //		State.NabooPCAfterTexRect = Segment[Command.dl.segment] + Command.dl.addr;
 //		break;
@@ -317,23 +327,26 @@ void F3DSWRS_MoveWord(u32 _w0, u32 _w1)
 	}
 }
 
-void F3DSWRS_HeightField(u32, u32)
+void F3DSWRS_HeightField(u32 _w0, u32 _w1)
 {
+	DebugMsg(DEBUG_NORMAL, "F3DSWRS_HeightField (0x%08x, 0x%08x)\n", _w0, _w1);
 	// Lemmy's note:
 	// seems to be similar to JUMP3, but calls actual function with A1=0x2C
 	// it *might* need the same jump/branch code as JUMP3
 	RSP.PC[RSP.PCi] += 16;
 }
 
-void F3DSWRS_SetOtherMode_H_EX(u32, u32 _w1)
+void F3DSWRS_SetOtherMode_H_EX(u32 _w0, u32 _w1)
 {
+	DebugMsg(DEBUG_NORMAL, "F3DSWRS_SetOtherMode_H_EX (0x%08x, 0x%08x)\n", _w0, _w1);
 	RSP.PC[RSP.PCi] += 8;
 	gDP.otherMode.h &= *(u32*)&RDRAM[RSP.PC[RSP.PCi]];
 	gDP.otherMode.h |= _w1;
 }
 
-void F3DSWRS_SetOtherMode_L_EX(u32, u32 _w1)
+void F3DSWRS_SetOtherMode_L_EX(u32 _w0, u32 _w1)
 {
+	DebugMsg(DEBUG_NORMAL, "F3DSWRS_SetOtherMode_L_EX (0x%08x, 0x%08x)\n", _w0, _w1);
 	RSP.PC[RSP.PCi] += 8;
 	gDP.otherMode.l &= *(u32*)&RDRAM[RSP.PC[RSP.PCi]];
 	gDP.otherMode.l |= _w1;
