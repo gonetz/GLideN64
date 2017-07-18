@@ -29,47 +29,22 @@
 #define F3DSWRS_SETOTHERMODE_H_EX	0xBE
 #define F3DSWRS_TRI1				0xBF
 
+#define F3DSWRS_MV_TEXSCALE			0x82
+
 void F3DSWRS_VertexColor(u32, u32 _w1)
 {
-	gSPSetVertexColorBase( _w1 );
+	gSPSetVertexColorBase(_w1);
 }
 
 void F3DSWRS_MoveMem(u32 _w0, u32)
 {
-	u32 addr = RSP.PC[RSP.PCi] + 8;
-	switch (_SHIFTR( _w0, 16, 8 )) {
+	switch (_SHIFTR(_w0, 16, 8)) {
 	case F3D_MV_VIEWPORT://G_MV_VIEWPORT:
-		gSPViewport( addr );
+		gSPViewport(RSP.PC[RSP.PCi] + 8);
 		break;
-	case G_MV_L0:
-		gSPLight( addr, LIGHT_1 );
-		break;
-	case G_MV_L1:
-		gSPLight( addr, LIGHT_2 );
-		break;
-	case G_MV_L2:
-		gSPLight( addr, LIGHT_3 );
-		break;
-	case G_MV_L3:
-		gSPLight( addr, LIGHT_4 );
-		break;
-	case G_MV_L4:
-		gSPLight( addr, LIGHT_5 );
-		break;
-	case G_MV_L5:
-		gSPLight( addr, LIGHT_6 );
-		break;
-	case G_MV_L6:
-		gSPLight( addr, LIGHT_7 );
-		break;
-	case G_MV_L7:
-		gSPLight( addr, LIGHT_8 );
-		break;
-	case G_MV_LOOKATY:
-		gSPLookAt(addr, 1);
-		break;
-	case G_MV_LOOKATX:
-		gSPLookAt(addr, 0);
+	case F3DSWRS_MV_TEXSCALE:
+		gSP.textureCoordScale[0] = *(u32*)&RDRAM[RSP.PC[RSP.PCi] + 16];
+		gSP.textureCoordScale[1] = *(u32*)&RDRAM[RSP.PC[RSP.PCi] + 12];
 		break;
 	}
 	RSP.PC[RSP.PCi] += 16;
@@ -104,108 +79,92 @@ void F3DSWRS_BranchDList(u32, u32 _w1)
 	gSPSWBranchList(_w1);
 }
 
-void F3DSWRS_Tri1(u32 _w0, u32 _w1)
+static
+void F3DSWRS_PrepareVertices(const u32* _vert, const u32* _color, bool _useTex, u32 _num)
 {
-	u32 v1 = (_SHIFTR( _w1, 13, 11 ) & 0x7F8) / 40;
-	u32 v2 = (_SHIFTR( _w1,  5, 11 ) & 0x7F8) / 40;
-	u32 v3 = ((_w1 <<  3) & 0x7F8) / 40;
-
-	u32 nextCMD = *(u32*)&RDRAM[RSP.PC[RSP.PCi] + 8];
+	const u32 sscale0 = _SHIFTR(gSP.textureCoordScale[0], 16, 16);
+	const u32 tscale0 = _SHIFTR(gSP.textureCoordScale[0], 0, 16);
+	const u32 sscale1 = _SHIFTR(gSP.textureCoordScale[1], 16, 16);
+	const u32 tscale1 = _SHIFTR(gSP.textureCoordScale[1], 0, 16);
 
 	GraphicsDrawer & drawer = dwnd().getDrawer();
-	SPVertex & vtx1 = drawer.getVertex(v1);
-	u8 *color = &RDRAM[gSP.vertexColorBase + _SHIFTR(nextCMD, 16, 8)];
-	vtx1.r = color[3] * 0.0039215689f;
-	vtx1.g = color[2] * 0.0039215689f;
-	vtx1.b = color[1] * 0.0039215689f;
-	vtx1.a = color[0] * 0.0039215689f;
 
-	SPVertex & vtx2 = drawer.getVertex(v2);
-	color = &RDRAM[gSP.vertexColorBase + _SHIFTR(nextCMD, 8, 8)];
-	vtx2.r = color[3] * 0.0039215689f;
-	vtx2.g = color[2] * 0.0039215689f;
-	vtx2.b = color[1] * 0.0039215689f;
-	vtx2.a = color[0] * 0.0039215689f;
+	for (u32 i = 0; i < _num; ++i) {
+		SPVertex & vtx = drawer.getVertex(_vert[i]);
+		u8 *color = &RDRAM[gSP.vertexColorBase + _color[i]];
+		vtx.r = color[3] * 0.0039215689f;
+		vtx.g = color[2] * 0.0039215689f;
+		vtx.b = color[1] * 0.0039215689f;
+		vtx.a = color[0] * 0.0039215689f;
 
-	SPVertex & vtx3 = drawer.getVertex(v3);
-	color = &RDRAM[gSP.vertexColorBase + _SHIFTR(nextCMD, 0, 8)];
-	vtx3.r = color[3] * 0.0039215689f;
-	vtx3.g = color[2] * 0.0039215689f;
-	vtx3.b = color[1] * 0.0039215689f;
-	vtx3.a = color[0] * 0.0039215689f;
+		if (_useTex) {
+			const u32 st = *(u32*)&RDRAM[RSP.PC[RSP.PCi] + 16 + 4*i];
+			u32 s = (s16)_SHIFTR(st, 16, 16);
+			u32 t = (s16)_SHIFTR(st, 0, 16);
+			if ((s & 0x8000) != 0)
+				s |= ~0xffff;
+			if ((t & 0x8000) != 0)
+				t |= ~0xffff;
+			const u32 VMUDN_S = s * sscale0;
+			const u32 VMUDN_T = t * tscale0;
+			const s16 low_acum_S = _SHIFTR(VMUDN_S, 16, 16);
+			const s16 low_acum_T = _SHIFTR(VMUDN_T, 16, 16);
+			const u32 VMADH_S = s * sscale1;
+			const u32 VMADH_T = t * tscale1;
+			const s16 hi_acum_S = _SHIFTR(VMADH_S, 0, 16);
+			const s16 hi_acum_T = _SHIFTR(VMADH_T, 0, 16);
+			const s16 scaledS = low_acum_S + hi_acum_S;
+			const s16 scaledT = low_acum_T + hi_acum_T;
 
-	if (_w0 & 2) {
-		// Lemmy's note: does something more here....real rsp code loads some vectors
-		u32 t1 = *(u32*)&RDRAM[RSP.PC[RSP.PCi] + 16];
-		vtx1.s = _FIXED2FLOAT( (s16)_SHIFTR(t1, 16, 16), 5 );
-		vtx1.t = _FIXED2FLOAT((s16)_SHIFTR(t1, 0, 16), 5);
-		u32 t2 = *(u32*)&RDRAM[RSP.PC[RSP.PCi] + 20];
-		vtx2.s = _FIXED2FLOAT((s16)_SHIFTR(t2, 16, 16), 5);
-		vtx2.t = _FIXED2FLOAT((s16)_SHIFTR(t2, 0, 16), 5);
-		u32 t3 = *(u32*)&RDRAM[RSP.PC[RSP.PCi] + 24];
-		vtx3.s = _FIXED2FLOAT((s16)_SHIFTR(t3, 16, 16), 5);
-		vtx3.t = _FIXED2FLOAT((s16)_SHIFTR(t3, 0, 16), 5);
-		RSP.PC[RSP.PCi] += 16;
+			if (gDP.otherMode.texturePersp == 0) {
+				vtx.s = _FIXED2FLOAT(scaledS, 4);
+				vtx.t = _FIXED2FLOAT(scaledT, 4);
+			} else {
+				vtx.s = _FIXED2FLOAT(scaledS, 5);
+				vtx.t = _FIXED2FLOAT(scaledT, 5);
+			}
+		}
 	}
+}
+
+void F3DSWRS_Tri1(u32 _w0, u32 _w1)
+{
+	const u32 v1 = (_SHIFTR( _w1, 13, 11 ) & 0x7F8) / 40;
+	const u32 v2 = (_SHIFTR( _w1,  5, 11 ) & 0x7F8) / 40;
+	const u32 v3 = ((_w1 <<  3) & 0x7F8) / 40;
+	const u32 vert[3] = { v1, v2, v3 };
+
+	const u32 nextCMD = *(u32*)&RDRAM[RSP.PC[RSP.PCi] + 8];
+	const u32 color[3] = { _SHIFTR(nextCMD, 16, 8), _SHIFTR(nextCMD, 8, 8), _SHIFTR(nextCMD, 0, 8) };
+
+	const bool useTex = (_w0 & 2) != 0;
+	F3DSWRS_PrepareVertices(vert, color, useTex, 3);
+
+	if (useTex)
+		RSP.PC[RSP.PCi] += 16;
+
 	gSP1Triangle(v1, v2, v3);
 	RSP.PC[RSP.PCi] += 8;
 }
 
 void F3DSWRS_Tri2(u32 _w0, u32 _w1)
 {
-	u32 v1 = (_SHIFTR( _w1, 13, 11 ) & 0x7F8) / 40;
-	u32 v2 = (_SHIFTR( _w1,  5, 11 ) & 0x7F8) / 40;
-	u32 v3 = ((_w1 <<  3) & 0x7F8) / 40;
-	u32 v4 = (_SHIFTR( _w1,  21, 11 ) & 0x7F8) / 40;
+	const u32 v1 = (_SHIFTR( _w1, 13, 11 ) & 0x7F8) / 40;
+	const u32 v2 = (_SHIFTR( _w1,  5, 11 ) & 0x7F8) / 40;
+	const u32 v3 = ((_w1 <<  3) & 0x7F8) / 40;
+	const u32 v4 = (_SHIFTR( _w1,  21, 11 ) & 0x7F8) / 40;
+	const u32 vert[4] = { v1, v2, v3, v4 };
 
-	u32 nextCMD = *(u32*)&RDRAM[RSP.PC[RSP.PCi] + 8];
+	const u32 nextCMD = *(u32*)&RDRAM[RSP.PC[RSP.PCi] + 8];
+	const u32 color[4] = { _SHIFTR(nextCMD, 16, 8), _SHIFTR(nextCMD, 8, 8),
+							_SHIFTR(nextCMD, 0, 8), _SHIFTR(nextCMD, 24, 8) };
 
-	GraphicsDrawer & drawer = dwnd().getDrawer();
-	SPVertex & vtx1 = drawer.getVertex(v1);
-	u8 *color = &RDRAM[gSP.vertexColorBase + _SHIFTR(nextCMD, 16, 8)];
-	vtx1.r = color[3] * 0.0039215689f;
-	vtx1.g = color[2] * 0.0039215689f;
-	vtx1.b = color[1] * 0.0039215689f;
-	vtx1.a = color[0] * 0.0039215689f;
+	const bool useTex = (_w0 & 2) != 0;
+	F3DSWRS_PrepareVertices(vert, color, useTex, 4);
 
-	SPVertex & vtx2 = drawer.getVertex(v2);
-	color = &RDRAM[gSP.vertexColorBase + _SHIFTR(nextCMD, 8, 8)];
-	vtx2.r = color[3] * 0.0039215689f;
-	vtx2.g = color[2] * 0.0039215689f;
-	vtx2.b = color[1] * 0.0039215689f;
-	vtx2.a = color[0] * 0.0039215689f;
-
-	SPVertex & vtx3 = drawer.getVertex(v3);
-	color = &RDRAM[gSP.vertexColorBase + _SHIFTR(nextCMD, 0, 8)];
-	vtx3.r = color[3] * 0.0039215689f;
-	vtx3.g = color[2] * 0.0039215689f;
-	vtx3.b = color[1] * 0.0039215689f;
-	vtx3.a = color[0] * 0.0039215689f;
-
-	SPVertex & vtx4 = drawer.getVertex(v4);
-	color = &RDRAM[gSP.vertexColorBase + _SHIFTR(nextCMD, 24, 8)];
-	vtx4.r = color[3] * 0.0039215689f;
-	vtx4.g = color[2] * 0.0039215689f;
-	vtx4.b = color[1] * 0.0039215689f;
-	vtx4.a = color[0] * 0.0039215689f;
-
-
-	if (_w0 & 2) {
-		// Lemmy's note: does something more here....real rsp code loads some vectors
-		u32 t1 = *(u32*)&RDRAM[RSP.PC[RSP.PCi] + 16];
-		vtx1.s = _FIXED2FLOAT((s16)_SHIFTR(t1, 16, 16), 5);
-		vtx1.t = _FIXED2FLOAT((s16)_SHIFTR(t1, 0, 16), 5);
-		u32 t2 = *(u32*)&RDRAM[RSP.PC[RSP.PCi] + 20];
-		vtx2.s = _FIXED2FLOAT((s16)_SHIFTR(t2, 16, 16), 5);
-		vtx2.t = _FIXED2FLOAT((s16)_SHIFTR(t2, 0, 16), 5);
-		u32 t3 = *(u32*)&RDRAM[RSP.PC[RSP.PCi] + 24];
-		vtx3.s = _FIXED2FLOAT((s16)_SHIFTR(t3, 16, 16), 5);
-		vtx3.t = _FIXED2FLOAT((s16)_SHIFTR(t3, 0, 16), 5);
-		u32 t4 = *(u32*)&RDRAM[RSP.PC[RSP.PCi] + 28];
-		vtx4.s = _FIXED2FLOAT((s16)_SHIFTR(t4, 16, 16), 5);
-		vtx4.t = _FIXED2FLOAT((s16)_SHIFTR(t4, 0, 16), 5);
+	if (useTex)
 		RSP.PC[RSP.PCi] += 16;
-	}
+
 	gSP2Triangles(v1, v2, v3, 0, v1, v3, v4, 0);
 	RSP.PC[RSP.PCi] += 8;
 }
