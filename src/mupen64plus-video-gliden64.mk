@@ -40,6 +40,7 @@ MY_LOCAL_SRC_FILES :=                               \
     $(SRCDIR)/F3DGOLDEN.cpp                         \
     $(SRCDIR)/F3DPD.cpp                             \
     $(SRCDIR)/F3DSETA.cpp                           \
+    $(SRCDIR)/F3DSWRS.cpp                           \
     $(SRCDIR)/F3DTEXA.cpp                           \
     $(SRCDIR)/FrameBuffer.cpp                       \
     $(SRCDIR)/FrameBufferInfo.cpp                   \

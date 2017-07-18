@@ -22,6 +22,72 @@ using namespace std;
 
 RSPInfo		RSP;
 
+static
+void _ProcessDList()
+{
+	while (!RSP.halt) {
+		if ((RSP.PC[RSP.PCi] + 8) > RDRAMSize) {
+#ifdef DEBUG
+			switch (Debug.level)
+			{
+			case DEBUG_LOW:
+				DebugMsg(DEBUG_LOW | DEBUG_ERROR, "ATTEMPTING TO EXECUTE RSP COMMAND AT INVALID RDRAM LOCATION\n");
+				break;
+			case DEBUG_MEDIUM:
+				DebugMsg(DEBUG_MEDIUM | DEBUG_ERROR, "Attempting to execute RSP command at invalid RDRAM location\n");
+				break;
+			case DEBUG_HIGH:
+				DebugMsg(DEBUG_HIGH | DEBUG_ERROR, "// Attempting to execute RSP command at invalid RDRAM location\n");
+				break;
+			}
+#endif
+			break;
+		}
+
+		RSP.w0 = *(u32*)&RDRAM[RSP.PC[RSP.PCi]];
+		RSP.w1 = *(u32*)&RDRAM[RSP.PC[RSP.PCi] + 4];
+		RSP.cmd = _SHIFTR(RSP.w0, 24, 8);
+
+#ifdef DEBUG
+		DebugRSPState(RSP.PCi, RSP.PC[RSP.PCi], _SHIFTR(RSP.w0, 24, 8), RSP.w0, RSP.w1);
+		DebugMsg(DEBUG_LOW | DEBUG_HANDLED, "0x%08lX: CMD=0x%02lX W0=0x%08lX W1=0x%08lX\n", RSP.PC[RSP.PCi], _SHIFTR(RSP.w0, 24, 8), RSP.w0, RSP.w1);
+#endif
+
+		RSP.PC[RSP.PCi] += 8;
+		u32 pci = RSP.PCi;
+		if (RSP.count == 1)
+			--pci;
+		RSP.nextCmd = _SHIFTR(*(u32*)&RDRAM[RSP.PC[pci]], 24, 8);
+
+		GBI.cmd[RSP.cmd](RSP.w0, RSP.w1);
+		RSP_CheckDLCounter();
+	}
+}
+
+static
+void _ProcessDListSWRS()
+{
+	// Lemmy's note: read first 64 bits of this dlist
+	RSP.swDL[0].SWStartDL = _SHIFTR(*(u32*)&RDRAM[RSP.PC[0]], 0, 24);
+	RSP.swDL[0].SWOtherDL = _SHIFTR(*(u32*)&RDRAM[RSP.PC[0] + 4], 0, 24);
+	RSP.PC[0] += 8;
+	while (!RSP.halt) {
+		if ((RSP.PC[RSP.PCi] + 8) > RDRAMSize) {
+			break;
+		}
+
+		RSP.w0 = *(u32*)&RDRAM[RSP.PC[RSP.PCi]];
+		RSP.w1 = *(u32*)&RDRAM[RSP.PC[RSP.PCi] + 4];
+		RSP.cmd = _SHIFTR(RSP.w0, 24, 8);
+
+		RSP.nextCmd = _SHIFTR(*(u32*)&RDRAM[RSP.PC[RSP.PCi] + 8], 24, 8);
+
+		GBI.cmd[RSP.cmd](RSP.w0, RSP.w1);
+		RSP.PC[RSP.PCi] += 8;
+		RSP_CheckDLCounter();
+	}
+}
+
 void RSP_CheckDLCounter()
 {
 	if (RSP.count != -1) {
@@ -84,30 +150,12 @@ void RSP_ProcessDList()
 	case T3DUX:
 		RunT3DUX();
 		break;
+	case F3DSWRS:
+		_ProcessDListSWRS();
+		break;
 	default:
-		while (!RSP.halt) {
-			if ((RSP.PC[RSP.PCi] + 8) > RDRAMSize) {
-				DebugMsg(DEBUG_NORMAL | DEBUG_ERROR, "ATTEMPTING TO EXECUTE RSP COMMAND AT INVALID RDRAM LOCATION\n");
-				break;
-			}
-
-			RSP.w0 = *(u32*)&RDRAM[RSP.PC[RSP.PCi]];
-			RSP.w1 = *(u32*)&RDRAM[RSP.PC[RSP.PCi] + 4];
-			RSP.cmd = _SHIFTR(RSP.w0, 24, 8);
-
-//			DebugRSPState( RSP.PCi, RSP.PC[RSP.PCi], _SHIFTR( RSP.w0, 24, 8 ), RSP.w0, RSP.w1 );
-//			DebugMsg( DEBUG_LOW | DEBUG_HANDLED, "0x%08lX: CMD=0x%02lX W0=0x%08lX W1=0x%08lX\n", RSP.PC[RSP.PCi], _SHIFTR( RSP.w0, 24, 8 ), RSP.w0, RSP.w1 );
-			DebugMsg(DEBUG_LOW, "%08x (w0:%08x, w1:%08x): ", RSP.PC[RSP.PCi], RSP.w0, RSP.w1);
-
-			RSP.PC[RSP.PCi] += 8;
-			u32 pci = RSP.PCi;
-			if (RSP.count == 1)
-				--pci;
-			RSP.nextCmd = _SHIFTR(*(u32*)&RDRAM[RSP.PC[pci]], 24, 8);
-
-			GBI.cmd[RSP.cmd](RSP.w0, RSP.w1);
-			RSP_CheckDLCounter();
-		}
+		_ProcessDList();
+		break;
 	}
 
 	if (config.frameBufferEmulation.copyDepthToRDRAM != Config::cdDisable) {

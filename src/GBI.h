@@ -28,7 +28,8 @@
 #define T3DUX			19
 #define F3DEX2ACCLAIM	21
 #define F3DAM			22
-#define NONE			23
+#define F3DSWRS		23
+#define NONE			24
 
 // Fixed point conversion factors
 #define FIXED2FLOATRECIP1	0.5f
@@ -462,6 +463,13 @@ typedef struct
 	s16		t1, s1;
 	s16		t2, s2;
 } DKRTriangle;
+
+typedef struct
+{
+	s16 y, x;
+	u16	flag;
+	s16 z;
+} SWVertex;
 
 struct Light
 {

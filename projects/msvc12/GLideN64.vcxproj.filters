@@ -368,6 +368,9 @@
     <ClCompile Include="..\..\src\F3DAM.cpp">
       <Filter>Source Files\uCodes</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\F3DSWRS.cpp">
+      <Filter>Source Files\uCodes</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\3DMath.h">
@@ -680,6 +683,9 @@
       <Filter>Header Files\uCodes</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\F3DAM.h">
+      <Filter>Header Files\uCodes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\F3DSWRS.h">
       <Filter>Header Files\uCodes</Filter>
     </ClInclude>
   </ItemGroup>

@@ -12,6 +12,10 @@ typedef struct
 	bool bLLE;
 	char romname[21];
 	wchar_t pluginpath[PLUGIN_PATH_SIZE];
+	struct {
+		u32 SWStartDL;
+		u32 SWOtherDL;
+	} swDL[18];
 } RSPInfo;
 
 extern RSPInfo RSP;

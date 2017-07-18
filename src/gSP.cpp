@@ -1440,6 +1440,49 @@ void gSPF3DAMVertex(u32 a, u32 n, u32 v0)
 	}
 }
 
+void gSPSWVertex(u32 a, u32 n, u32 v0)
+{
+	u32 address = RSP_SegmentToPhysical(a);
+
+	if ((address + sizeof(SWVertex)* n) > RDRAMSize)
+		return;
+
+	SWVertex *vertex = (SWVertex*)&RDRAM[address];
+
+	GraphicsDrawer & drawer = dwnd().getDrawer();
+	if ((n + v0) <= INDEXMAP_SIZE) {
+		unsigned int i = v0;
+#ifdef __VEC4_OPT
+		for (; i < n - (n % 4) + v0; i += 4) {
+			u32 v = i;
+			for (unsigned int j = 0; j < 4; ++j) {
+				SPVertex & vtx = drawer.getVertex(v + j);
+				vtx.x = vertex->x;
+				vtx.y = vertex->y;
+				vtx.z = vertex->z;
+				vtx.st_scaled = 0;
+				vertex++;
+			}
+			gSPProcessVertex4(v);
+		}
+#endif
+		for (; i < n + v0; ++i) {
+			u32 v = i;
+			SPVertex & vtx = drawer.getVertex(v);
+			vtx.x = vertex->x;
+			vtx.y = vertex->y;
+			vtx.z = vertex->z;
+
+			gSPProcessVertex(v);
+			vtx.y = -vtx.y;
+			vertex++;
+		}
+	} else {
+		LOG(LOG_ERROR, "Using Vertex outside buffer v0=%i, n=%i\n", v0, n);
+	}
+}
+
+
 void gSPDisplayList( u32 dl )
 {
 	u32 address = RSP_SegmentToPhysical( dl );
@@ -1462,6 +1505,17 @@ void gSPDisplayList( u32 dl )
 	}
 }
 
+void gSPSWDisplayList(u32 dl)
+{
+	// Lemmy's note:
+	// differs from the other DL commands because it does skip the first command
+	// the first 32 bits are stored, because they are
+	// used as branch target address in the command in the QUAD "slot"
+	gSPDisplayList(dl);
+	RSP.swDL[RSP.PCi].SWStartDL = _SHIFTR(*(u32*)&RDRAM[RSP.PC[RSP.PCi]], 0, 24);
+	RSP.swDL[RSP.PCi].SWOtherDL = _SHIFTR(*(u32*)&RDRAM[RSP.PC[RSP.PCi] + 4], 0, 24);
+}
+
 void gSPBranchList( u32 dl )
 {
 	u32 address = RSP_SegmentToPhysical( dl );
@@ -1478,7 +1532,18 @@ void gSPBranchList( u32 dl )
 	RSP.nextCmd = _SHIFTR( *(u32*)&RDRAM[address], 24, 8 );
 }
 
-void gSPBranchLessZ( u32 branchdl, u32 vtx, u32 zval )
+void gSPSWBranchList(u32 dl)
+{
+	// Lemmy's note:
+	// differs from the other DL commands because it does skip the first command
+	// the first 32 bits are stored, because they are
+	// used as branch target address in the command in the QUAD "slot"
+	gSPBranchList(dl);
+	RSP.swDL[RSP.PCi].SWStartDL = _SHIFTR(*(u32*)&RDRAM[RSP.PC[RSP.PCi]], 0, 24);
+	RSP.swDL[RSP.PCi].SWOtherDL = _SHIFTR(*(u32*)&RDRAM[RSP.PC[RSP.PCi] + 4], 0, 24);
+}
+
+void gSPBranchLessZ(u32 branchdl, u32 vtx, u32 zval)
 {
 	const u32 address = RSP_SegmentToPhysical( branchdl );
 

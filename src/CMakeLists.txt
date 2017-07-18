@@ -28,6 +28,7 @@ set(GLideN64_SOURCES
   F3DEX2CBFD.cpp
   F3DEX2MM.cpp
   F3DGOLDEN.cpp
+  F3DSWRS.cpp
   F3DTEXA.cpp
   F3DPD.cpp
   F3DSETA.cpp
