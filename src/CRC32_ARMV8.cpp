@@ -1,3 +1,15 @@
+// Copyright (c) 2017-Present Stefan Eschenbacher. All rights reserved.
+//
+// This ARMv8 CRC32 code, is dual-licensed under GNU General Public License 
+// version 2 ("GPL") and the Apache License version 2 ("ASL"). For the GPL, 
+// please see LICENSE. For the ASL, you may obtain a copy of the License at
+//
+//    http://www.apache.org/licenses/LICENSE-2.0
+//
+// This software is distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY KIND,
+// either express or implied. See the LICENSE file for specific language governing
+// rights and limitations of this software.
+
 #include "CRC.h"
 #include <arm_acle.h>
 
