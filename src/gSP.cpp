@@ -1500,17 +1500,6 @@ void gSPDisplayList( u32 dl )
 	}
 }
 
-void gSPSWDisplayList(u32 dl)
-{
-	// Lemmy's note:
-	// differs from the other DL commands because it does skip the first command
-	// the first 32 bits are stored, because they are
-	// used as branch target address in the command in the QUAD "slot"
-	gSPDisplayList(dl);
-	RSP.swDL[RSP.PCi].SWStartDL = _SHIFTR(*(u32*)&RDRAM[RSP.PC[RSP.PCi]], 0, 24);
-	RSP.swDL[RSP.PCi].SWOtherDL = _SHIFTR(*(u32*)&RDRAM[RSP.PC[RSP.PCi] + 4], 0, 24);
-}
-
 void gSPBranchList( u32 dl )
 {
 	u32 address = RSP_SegmentToPhysical( dl );
@@ -1525,17 +1514,6 @@ void gSPBranchList( u32 dl )
 
 	RSP.PC[RSP.PCi] = address;
 	RSP.nextCmd = _SHIFTR( *(u32*)&RDRAM[address], 24, 8 );
-}
-
-void gSPSWBranchList(u32 dl)
-{
-	// Lemmy's note:
-	// differs from the other DL commands because it does skip the first command
-	// the first 32 bits are stored, because they are
-	// used as branch target address in the command in the QUAD "slot"
-	gSPBranchList(dl);
-	RSP.swDL[RSP.PCi].SWStartDL = _SHIFTR(*(u32*)&RDRAM[RSP.PC[RSP.PCi]], 0, 24);
-	RSP.swDL[RSP.PCi].SWOtherDL = _SHIFTR(*(u32*)&RDRAM[RSP.PC[RSP.PCi] + 4], 0, 24);
 }
 
 void gSPBranchLessZ(u32 branchdl, u32 vtx, u32 zval)

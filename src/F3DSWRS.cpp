@@ -25,7 +25,8 @@
 
 #define F3DSWRS_SETOTHERMODE_L_EX	0xB3
 #define F3DSWRS_TRI2				0xB4
-#define F3DSWRS_JUMP2				0xB5
+#define F3DSWRS_JUMPSWDL			0xB5
+#define F3DSWRS_ENDDL				0xB8
 #define F3DSWRS_MOVEWORD			0xBC
 #define F3DSWRS_HEIGHTFIELD			0xBD
 #define F3DSWRS_SETOTHERMODE_H_EX	0xBE
@@ -70,13 +71,6 @@ void F3DSWRS_Vtx(u32 _w0, u32 _w1)
 
 	const SWVertex * vertex = (const SWVertex*)&RDRAM[address];
 	gSPSWVertex(vertex, n, 0 );
-}
-
-void F3DSWRS_Jump2(u32, u32)
-{
-	RSP.PC[RSP.PCi] = RSP.swDL[RSP.PCi].SWStartDL;
-	RSP.swDL[RSP.PCi].SWStartDL = _SHIFTR(*(u32*)&RDRAM[RSP.PC[RSP.PCi]], 0, 24);
-	RSP.swDL[RSP.PCi].SWOtherDL = _SHIFTR(*(u32*)&RDRAM[RSP.PC[RSP.PCi] + 4], 0, 24);
 }
 
 static
@@ -242,16 +236,44 @@ void F3DSWRS_Jump3(u32 _w0, u32 _w1)
 	RSP.swDL[RSP.PCi].SWOtherDL = _SHIFTR(*(u32*)&RDRAM[RSP.PC[RSP.PCi] + 4], 0, 24);
 }
 
-void F3DSWRS_DList(u32 _w0, u32 _w1)
+inline
+void _updateSWDL()
 {
-	DebugMsg(DEBUG_NORMAL, "F3DSWRS_DList (0x%08x, 0x%08x)\n", _w0, _w1);
-	gSPSWDisplayList(_w1);
+	// Lemmy's note:
+	// differs from the other DL commands because it does skip the first command
+	// the first 32 bits are stored, because they are
+	// used as branch target address in the command in the QUAD "slot"
+	RSP.swDL[RSP.PCi].SWStartDL = _SHIFTR(*(u32*)&RDRAM[RSP.PC[RSP.PCi]], 0, 24);
+	RSP.swDL[RSP.PCi].SWOtherDL = _SHIFTR(*(u32*)&RDRAM[RSP.PC[RSP.PCi] + 4], 0, 24);
 }
 
-void F3DSWRS_BranchDList(u32 _w0, u32 _w1)
+
+void F3DSWRS_JumpSWDL(u32, u32)
 {
-	DebugMsg(DEBUG_NORMAL, "F3DSWRS_BranchDList (0x%08x, 0x%08x)\n", _w0, _w1);
-	gSPSWBranchList(_w1);
+	DebugMsg(DEBUG_NORMAL, "F3DSWRS_JumpSWDL\n");
+	RSP.PC[RSP.PCi] = RSP.swDL[RSP.PCi].SWStartDL;
+	_updateSWDL();
+}
+
+void F3DSWRS_DList(u32, u32 _w1)
+{
+	DebugMsg(DEBUG_NORMAL, "F3DSWRS_DList (0x%08x)\n", _w1);
+	gSPDisplayList(_w1);
+	_updateSWDL();
+}
+
+void F3DSWRS_BranchDList(u32, u32 _w1)
+{
+	DebugMsg(DEBUG_NORMAL, "F3DSWRS_BranchDList (0x%08x)\n", _w1);
+	gSPBranchList(_w1);
+	_updateSWDL();
+}
+
+void F3DSWRS_EndDisplayList(u32, u32)
+{
+	DebugMsg(DEBUG_NORMAL, "F3DSWRS_EndDisplayList\n");
+	gSPEndDisplayList();
+//	_updateSWDL();
 }
 
 void F3DSWRS_Tri1(u32 _w0, u32 _w1)
@@ -378,10 +400,10 @@ void F3DSWRS_Init()
 	GBI_SetGBI( G_TEXTURE,				F3D_TEXTURE,				F3D_Texture );
 	GBI_SetGBI( G_SETOTHERMODE_H,		F3D_SETOTHERMODE_H,			F3D_SetOtherMode_H );
 	GBI_SetGBI( G_SETOTHERMODE_L,		F3D_SETOTHERMODE_L,			F3D_SetOtherMode_L );
-	GBI_SetGBI( G_ENDDL,				F3D_ENDDL,					F3D_EndDL );
+	GBI_SetGBI( G_ENDDL,				F3DSWRS_ENDDL,				F3DSWRS_EndDisplayList );
 	GBI_SetGBI( G_SETGEOMETRYMODE,		F3D_SETGEOMETRYMODE,		F3D_SetGeometryMode );
 	GBI_SetGBI( G_CLEARGEOMETRYMODE,	F3D_CLEARGEOMETRYMODE,		F3D_ClearGeometryMode );
-	GBI_SetGBI( G_QUAD,					F3DSWRS_JUMP2,				F3DSWRS_Jump2 );
+	GBI_SetGBI( G_QUAD,					F3DSWRS_JUMPSWDL,			F3DSWRS_JumpSWDL );
 	GBI_SetGBI( G_RDPHALF_1,			F3DSWRS_TRI2,				F3DSWRS_Tri2 );
 	GBI_SetGBI( G_SETOTHERMODE_L_EX,	F3DSWRS_SETOTHERMODE_L_EX,	F3DSWRS_SetOtherMode_L_EX );
 }
