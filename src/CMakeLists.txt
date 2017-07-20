@@ -134,9 +134,9 @@ if(MUPENPLUSAPI)
   )
   set(GLideN64_DLL_NAME mupen64plus-video-GLideN64)
 else(MUPENPLUSAPI)
-  if(NOT UNIX)
-	message(ERROR "UNIX build requires MUPENPLUSAPI!")
-  endif(NOT UNIX)
+  if(UNIX)
+    message(FATAL_ERROR "UNIX build requires MUPENPLUSAPI!")
+  endif(UNIX)
   set(GLideN64_SOURCES_WIN
 	ZilmarPluginAPI.cpp
 	windows/Config_windows.cpp
