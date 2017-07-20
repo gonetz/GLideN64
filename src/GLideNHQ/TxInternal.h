@@ -54,7 +54,7 @@
 #define GL_COLOR_INDEX8_EXT  0x80E5
 #elif defined(OS_MAC_OS_X)
 #include <OpenGL/gl3.h>
-#include <GL/glext.h>
+#include <OpenGL/glext.h>
 #ifndef GL_COLOR_INDEX8_EXT
 #define GL_COLOR_INDEX8_EXT  0x80E5
 #endif
