@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.6)
 
 option(EGL "Set to ON if targeting an EGL device" ${EGL})
 option(PANDORA "Set to ON if targeting an OpenPandora" ${PANDORA})
-option(MUPENPLUSAPI "Set to ON for Mupen64Plus plugin" ${MUPENPLUSAPI})
+option(MUPENPLUSAPI "Set to ON for Mupen64Plus plugin" ${UNIX})
 
 project( GLideN64 )
 
