@@ -140,7 +140,6 @@ struct gSPInfo
 
 	u32 textureCoordScaleOrg;
 	u32 textureCoordScale[2];
-    bool swrs_special;
 };
 
 extern gSPInfo gSP;

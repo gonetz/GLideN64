@@ -666,11 +666,6 @@ void GraphicsDrawer::drawTriangles()
 
 	_prepareDrawTriangle();
 
-	if (gSP.swrs_special) {
-		CombinerInfo::get().setCombine(EncodeCombineMode(0, 0, 0, SHADE, 0, 0, 0, 1, 0, 0, 0, SHADE, 0, 0, 0, 1));
-		currentCombiner()->update(true);
-	}
-
 	Context::DrawTriangleParameters triParams;
 	triParams.mode = drawmode::TRIANGLES;
 	triParams.flatColors = m_bFlatColors;
