@@ -196,7 +196,6 @@ static const char *aAText[] =
 #else
 
 #define DebugMsg(type, A, ...)
-#define DebugRSPState(A, ...)
 #define SwitchDump(A)
 
 #endif // DEBUG_DUMP
