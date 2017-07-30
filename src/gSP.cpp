@@ -1455,10 +1455,13 @@ void gSPSWVertex(const SWVertex * vertex, u32 n, u32 v0)
 				vtx.x = vertex->x;
 				vtx.y = vertex->y;
 				vtx.z = vertex->z;
-				vtx.st_scaled = 0;
 				vertex++;
 			}
 			gSPProcessVertex4(v);
+			for (unsigned int j = 0; j < 4; ++j) {
+				SPVertex & vtx = drawer.getVertex(v + j);
+				vtx.y = -vtx.y;
+			}
 		}
 #endif
 		for (; i < n + v0; ++i) {
