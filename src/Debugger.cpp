@@ -231,6 +231,8 @@ void Debugger::_fillTriInfo(TriInfo & _info)
 	_info.env_color = gDP.envColor;
 	_info.fill_color = gDP.fillColor;
 	_info.prim_color = gDP.primColor;
+	_info.K4 = gDP.convert.k4;
+	_info.K5 = gDP.convert.k5;
 	_info.viewport = gSP.viewport;
 	_info.frameBufferAddress = gDP.colorImage.address;
 
@@ -755,6 +757,8 @@ void Debugger::_drawColors(f32 _ulx, f32 _uly, f32 _yShift)
 	OUTPUT_COLOR("fog:   r %.2f g %.2f b %.2f a %.2f", fog.r, fog.g, fog.b, fog.a);
 	const gDPInfo::Color & blend = m_triSel->blend_color;
 	OUTPUT_COLOR("blend: r %.2f g %.2f b %.2f a %.2f", blend.r, blend.g, blend.b, blend.a);
+	OUTPUT1("K4:  %02x", m_triSel->K4);
+	OUTPUT1("K5:  %02x", m_triSel->K5);
 	OUTPUT1("prim_lodmin:  %.2f", prim.m);
 	OUTPUT1("prim_lodfrac: %.2f", prim.l);
 	const gDPInfo::FillColor & fill = m_triSel->fill_color;

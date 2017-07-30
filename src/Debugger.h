@@ -98,6 +98,7 @@ private:
 		gDPInfo::Color env_color;
 		gDPInfo::FillColor fill_color;
 		gDPInfo::PrimColor prim_color;
+		s32 K4, K5;
 
 		f32 getScreenX(const Vertex & _v) const;
 		f32 getScreenY(const Vertex & _v) const;
