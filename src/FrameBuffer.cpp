@@ -1171,6 +1171,13 @@ void FrameBufferList::renderBuffer()
 	if (m_pCurrent != nullptr) {
 		gfxContext.bindFramebuffer(bufferTarget::DRAW_FRAMEBUFFER, m_pCurrent->m_FBO);
 	}
+
+	const s32 X = hOffset;
+	const s32 Y = wnd.getHeightOffset();
+	const s32 W = wnd.getWidth();
+	const s32 H = wnd.getHeight();
+
+	gfxContext.setScissor(X, Y, W, H);
 	gDP.changed |= CHANGED_SCISSOR;
 }
 
