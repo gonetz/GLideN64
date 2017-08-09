@@ -61,8 +61,7 @@ static
 void _ProcessDListSWRS()
 {
 	// Lemmy's note: read first 64 bits of this dlist
-	RSP.swDL[0].SWStartDL = _SHIFTR(*(u32*)&RDRAM[RSP.PC[0]], 0, 24);
-	RSP.swDL[0].SWOtherDL = _SHIFTR(*(u32*)&RDRAM[RSP.PC[0] + 4], 0, 24);
+	RSP.swDL[0] = _SHIFTR(*(u32*)&RDRAM[RSP.PC[0]], 0, 24);
 	RSP.PC[0] += 8;
 	while (!RSP.halt) {
 		if ((RSP.PC[RSP.PCi] + 8) > RDRAMSize) {

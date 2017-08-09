@@ -6,16 +6,14 @@
 
 typedef struct
 {
-	u32 PC[18], PCi, busy, halt, close, uc_start, uc_dstart, cmd, nextCmd;
+	u32 PC[18], PCi;
+	u32 swDL[10];
+	u32 busy, halt, close, uc_start, uc_dstart, cmd, nextCmd;
 	u32 w0, w1;
 	s32 count;
 	bool bLLE;
 	char romname[21];
 	wchar_t pluginpath[PLUGIN_PATH_SIZE];
-	struct {
-		u32 SWStartDL;
-		u32 SWOtherDL;
-	} swDL[10];
 } RSPInfo;
 
 extern RSPInfo RSP;

@@ -1,6 +1,6 @@
 /* Star Wars Rogue Squadron ucode
- * Initial code ported from Lemmy's LemNemu plugin
- * Incomplete!
+ * Initial implementation ported from Lemmy's LemNemu plugin
+ * Microcode decoding: olivieryuyu
  */
 
 #include <assert.h>
@@ -39,8 +39,6 @@
 #define F3DSWRS_MV_TEXSCALE			0x82
 #define F3DSWRS_MW_FOG_MULTIPLIER	0x08
 #define F3DSWRS_MW_FOG_OFFSET		0x0A
-
-//#define TRIGEN_DEBUG
 
 static u32 G_SETOTHERMODE_H_EX, G_SETOTHERMODE_L_EX, G_JUMPSWDL;
 static u32 F3DSWRS_ViewportAddress;
@@ -131,8 +129,7 @@ void _updateSWDL()
 	// differs from the other DL commands because it does skip the first command
 	// the first 32 bits are stored, because they are
 	// used as branch target address in the command in the QUAD "slot"
-	RSP.swDL[RSP.PCi].SWStartDL = _SHIFTR(*(u32*)&RDRAM[RSP.PC[RSP.PCi]], 0, 24);
-	RSP.swDL[RSP.PCi].SWOtherDL = _SHIFTR(*(u32*)&RDRAM[RSP.PC[RSP.PCi] + 4], 0, 24);
+	RSP.swDL[RSP.PCi] = _SHIFTR(*(u32*)&RDRAM[RSP.PC[RSP.PCi]], 0, 24);
 }
 
 void F3DSWRS_Mtx(u32 w0, u32 w1)
@@ -180,7 +177,13 @@ void F3DSWRS_Vtx(u32 _w0, u32 _w1)
 }
 
 static
-void F3DSWRS_PrepareVertices(const u32* _vert, const u8* _colorbase, const u32* _color, const u8* _texbase, bool _useTex, bool _persp, u32 _num)
+void F3DSWRS_PrepareVertices(const u32* _vert,
+							 const u8* _colorbase,
+							 const u32* _color,
+							 const u8* _texbase,
+							 bool _useTex,
+							 bool _persp,
+							 u32 _num)
 {
 	const u32 sscale = _SHIFTR(gSP.textureCoordScale[0], 16, 16);
 	const u32 tscale = _SHIFTR(gSP.textureCoordScale[0], 0, 16);
@@ -267,8 +270,6 @@ void TriGen0000_PrepareColorData(const u32 * _params, std::vector<u32> & _data)
 	assert((_params[3] & 0x07) % 4 == 0);
 	const u32* data32 = (const u32*)&RDRAM[_SHIFTR(_params[3], 0, 24)];
 	std::copy_n(data32, 25, _data.begin());
-	for (u32 i = 0; i < 25; ++i)
-		_data[i] |= 0xFF;
 }
 
 static
@@ -290,8 +291,6 @@ void TriGen0001_PrepareColorData(const u32 * _params, std::vector<u32> & _data)
 	} while(dataSize > idx32);
 
 	const size_t colorDataSize = _data.size();
-	for (u32 i = 0; i < colorDataSize; ++i)
-		_data[i] |= 0xFF;
 }
 
 static
@@ -553,7 +552,10 @@ void TriGen0000_ponderation5(const u32 * _params, std::vector<u16> & _vtxData, s
 }
 
 static
-void TriGen0001_option_01010201(const u32 * _params, std::vector<u16> & _vtxData, std::vector<u32> & _colorData, std::vector<SWRSTriangle> & _triangles)
+void TriGen0001_option_01010201(const u32 * _params,
+								std::vector<u16> & _vtxData,
+								std::vector<u32> & _colorData,
+								std::vector<SWRSTriangle> & _triangles)
 {
 	if ((_params[1] & 0xFF00) != 0x0200)
 		return;
@@ -584,7 +586,10 @@ void TriGen0001_ponderation1(const u32 * _params, std::vector<u16> & _vtxData, s
 }
 
 static
-void TriGen0001_option_01010102(const u32 * _params, std::vector<u16> & _vtxData, std::vector<u32> & _colorData, std::vector<SWRSTriangle> & _triangles)
+void TriGen0001_option_01010102(const u32 * _params,
+								std::vector<u16> & _vtxData,
+								std::vector<u32> & _colorData,
+								std::vector<SWRSTriangle> & _triangles)
 {
 	if ((_params[1] & 0xFF) != 0x02)
 		return;
@@ -615,7 +620,10 @@ void TriGen0001_ponderation2(const u32 * _params, std::vector<u16> & _vtxData, s
 }
 
 static
-void TriGen0001_option_02010101(const u32 * _params, std::vector<u16> & _vtxData, std::vector<u32> & _colorData, std::vector<SWRSTriangle> & _triangles)
+void TriGen0001_option_02010101(const u32 * _params,
+								std::vector<u16> & _vtxData,
+								std::vector<u32> & _colorData,
+								std::vector<SWRSTriangle> & _triangles)
 {
 	if ((_params[1] & 0xFF000000) != 0x02000000)
 		return;
@@ -646,7 +654,10 @@ void TriGen0001_ponderation3(const u32 * _params, std::vector<u16> & _vtxData, s
 }
 
 static
-void TriGen0001_option_01020101(const u32 * _params, std::vector<u16> & _vtxData, std::vector<u32> & _colorData, std::vector<SWRSTriangle> & _triangles)
+void TriGen0001_option_01020101(const u32 * _params,
+								std::vector<u16> & _vtxData,
+								std::vector<u32> & _colorData,
+								std::vector<SWRSTriangle> & _triangles)
 {
 	if ((_params[1] & 0x00FF0000) != 0x00020000)
 		return;
@@ -714,7 +725,8 @@ struct Vector2 {
 };
 
 static
-void TriGen00_BuildVtxData(const u32 * _params, u32 _step, const std::vector<u16> & _input, std::vector<u32> & _output) {
+void TriGen00_BuildVtxData(const u32 * _params, u32 _step, const std::vector<u16> & _input, std::vector<u32> & _output)
+{
 	u16 V0 = _SHIFTR(_params[9], 0, 16);
 	u16 V1 = _SHIFTR(_params[8], 0, 16);
 	V1 <<= 4;
@@ -745,45 +757,8 @@ void TriGen00_BuildVtxData(const u32 * _params, u32 _step, const std::vector<u16
 
 
 static
-void TriGen0000_BuildVtxData(const u32 * _params, const std::vector<u16> & _input, std::vector<u32> & _output) {
-#ifdef TRIGEN_DEBUG
-	u32 debug_params[10] = {
-		0x05050000,
-		0x00000000,
-		0x8027E226,
-		0x8020A8B4,
-		0x00190064,
-		0x5BA75BA7,
-		0x5BA769B8,
-		0x5BA701F8,
-		0xFA000000,
-		0x00000080
-	};
-	_params = debug_params;
-#endif
-
-
-#ifdef TRIGEN_DEBUG
-	const u32 RDRAM_data[] = {
-		0x07100729,
-		0x07600763,
-		0x077006E0,
-		0x07020725,
-		0x0757075A,
-		0x06B006D2,
-		0x0700071D,
-		0x0730066D,
-		0x069F06CD,
-		0x06EF070D,
-		0x0620065D,
-		0x069006BD,
-		0x06E00000
-	};
-	const u16* input =(u16*)RDRAM_data;
-#else
-#endif
-
-
+void TriGen0000_BuildVtxData(const u32 * _params, const std::vector<u16> & _input, std::vector<u32> & _output)
+{
 	u16 V0 = _SHIFTR(_params[9], 0, 16);
 	u16 V1 = _SHIFTR(_params[8], 0, 16);
 	V1 <<= 4;
@@ -811,7 +786,8 @@ void TriGen0000_BuildVtxData(const u32 * _params, const std::vector<u16> & _inpu
 }
 
 static
-void TriGen0001_BuildVtxData(const u32 * _params, const std::vector<u16> & _input, std::vector<u32> & _output) {
+void TriGen0001_BuildVtxData(const u32 * _params, const std::vector<u16> & _input, std::vector<u32> & _output)
+{
 	u16 V0 = _SHIFTR(_params[9], 0, 16);
 	u16 V1 = _SHIFTR(_params[8], 0, 16);
 	V1 <<= 4;
@@ -961,24 +937,7 @@ void TriGen0000()
 static
 void TriGen0001()
 {
-#ifdef TRIGEN_DEBUG
-	u32 debug_params[10] = {
-		0x05050001,
-		0x01010101,
-		0x8022C467,
-		0x802139E4,
-		0x00190064,
-		0x00000000,
-		0x00000000,
-		0x000003F0,
-		0xF0000000,
-		0xF4000100
-	};
-	const u32* params = debug_params;
-#else
-
 	const u32* params = (const u32*)&RDRAM[RSP.PC[RSP.PCi]];
-#endif
 
 	// Step 1. Load data from RDRAM
 
@@ -1065,7 +1024,7 @@ void TriGen02()
 	const u32 v4 = 3;
 	const u32 vert[4] = { v1, v2, v3, v4 };
 
-	const u32 colorbase[4] = { params[3] | 0xFF, params[4] | 0xFF, params[5] | 0xFF, params[6] | 0xFF };
+	const u32 colorbase[4] = { params[3], params[4], params[5], params[6] };
 	const u32 color[4] = { 0, 4, 8, 12 };
 
 	const u32 tex = _SHIFTR(params[7], 0, 16);
@@ -1116,15 +1075,12 @@ void F3DSWRS_TriGen(u32 _w0, u32 _w1)
 
 	RSP.nextCmd = nextCmd;
 	RSP.PC[RSP.PCi] += 32;
-//	RSP.PC[RSP.PCi] = RSP.swDL[RSP.PCi].SWOtherDL;
-//	RSP.swDL[RSP.PCi].SWStartDL = _SHIFTR(*(u32*)&RDRAM[RSP.PC[RSP.PCi]], 0, 24);
-//	RSP.swDL[RSP.PCi].SWOtherDL = _SHIFTR(*(u32*)&RDRAM[RSP.PC[RSP.PCi] + 4], 0, 24);
 }
 
 void F3DSWRS_JumpSWDL(u32, u32)
 {
 	DebugMsg(DEBUG_NORMAL, "F3DSWRS_JumpSWDL\n");
-	RSP.PC[RSP.PCi] = RSP.swDL[RSP.PCi].SWStartDL;
+	RSP.PC[RSP.PCi] = RSP.swDL[RSP.PCi];
 	_updateSWDL();
 }
 
@@ -1238,7 +1194,6 @@ void F3DSWRS_TexrectGen(u32 _w0, u32 _w1)
 
 	const bool flip = (_w0 & 1) != 0;
 
-#if 1
 	const u32 w_i = std::max(1U, u32(v.w));
 	const u32 viewport = *(u32*)&RDRAM[F3DSWRS_ViewportAddress];
 	const u32 viewportX = _SHIFTR(viewport, 17, 15);
@@ -1255,16 +1210,6 @@ void F3DSWRS_TexrectGen(u32 _w0, u32 _w1)
 	u32 offset_y_i = (u32)(((param3Y * viewportY * perspMatrixY) / w_i) >> 16);
 	const f32 offset_x_f = _FIXED2FLOAT(offset_x_i, 2);
 	const f32 offset_y_f = _FIXED2FLOAT(offset_y_i, 2);
-#else
-	u64 paramX = _SHIFTR(params[3], 16, 16);
-	u64 paramY = _SHIFTR(params[3], 0, 16);
-	if (flip)
-		std::swap(paramX, paramY);
-	f32 offset_x_f = (_FIXED2FLOAT((u32)paramX, 2) * gSP.viewport.vscale[0] * gSP.matrix.projection[0][0] * 2.0f) / v.w;
-	f32 offset_y_f = (_FIXED2FLOAT((u32)paramY, 2) * gSP.viewport.vscale[1] * gSP.matrix.projection[1][1] * 2.0f) / v.w;
-	u32 offset_x_i = u32(offset_x_f * 4.0f);
-	u32 offset_y_i = u32(offset_y_f * 4.0f);
-#endif
 
 	const f32 ulx = screenX - offset_x_f;
 	const f32 lrx = screenX + offset_x_f;
