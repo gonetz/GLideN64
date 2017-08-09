@@ -6,6 +6,7 @@
 #include <assert.h>
 #include <array>
 #include <algorithm>
+#include <cmath>
 #include "GLideN64.h"
 #include "DebugDump.h"
 #include "F3D.h"
@@ -16,6 +17,7 @@
 #include "gSP.h"
 #include "gDP.h"
 #include "GBI.h"
+#include "FrameBuffer.h"
 #include "DisplayWindow.h"
 
 #define F3DSWRS_VTXCOLOR			0x02
@@ -30,7 +32,7 @@
 #define F3DSWRS_JUMPSWDL			0xB5
 #define F3DSWRS_ENDDL				0xB8
 #define F3DSWRS_MOVEWORD			0xBC
-#define F3DSWRS_HEIGHTFIELD			0xBD
+#define F3DSWRS_TEXRECT_GEN			0xBD
 #define F3DSWRS_SETOTHERMODE_H_EX	0xBE
 #define F3DSWRS_TRI1				0xBF
 
@@ -41,6 +43,8 @@
 //#define TRIGEN_DEBUG
 
 static u32 G_SETOTHERMODE_H_EX, G_SETOTHERMODE_L_EX, G_JUMPSWDL;
+static u32 F3DSWRS_ViewportAddress;
+static u32 F3DSWRS_PerspMatrixAddress;
 
 struct SWRSTriangle
 {
@@ -131,6 +135,14 @@ void _updateSWDL()
 	RSP.swDL[RSP.PCi].SWOtherDL = _SHIFTR(*(u32*)&RDRAM[RSP.PC[RSP.PCi] + 4], 0, 24);
 }
 
+void F3DSWRS_Mtx(u32 w0, u32 w1)
+{
+	const u32 param = _SHIFTR(w0, 16, 8);
+	if ((param & G_MTX_PROJECTION) != 0)
+		F3DSWRS_PerspMatrixAddress = _SHIFTR(w1, 0, 24);
+	F3D_Mtx(w0, w1);
+}
+
 void F3DSWRS_VertexColor(u32, u32 _w1)
 {
 	gSPSetVertexColorBase(_w1);
@@ -140,7 +152,8 @@ void F3DSWRS_MoveMem(u32 _w0, u32)
 {
 	switch (_SHIFTR(_w0, 16, 8)) {
 	case F3D_MV_VIEWPORT://G_MV_VIEWPORT:
-		gSPViewport(RSP.PC[RSP.PCi] + 8);
+		F3DSWRS_ViewportAddress = _SHIFTR((RSP.PC[RSP.PCi] + 8), 0, 24);
+		gSPViewport(F3DSWRS_ViewportAddress);
 		break;
 	case F3DSWRS_MV_TEXSCALE:
 		gSP.textureCoordScale[0] = *(u32*)&RDRAM[RSP.PC[RSP.PCi] + 16];
@@ -1206,13 +1219,134 @@ void F3DSWRS_MoveWord(u32 _w0, u32 _w1)
 	}
 }
 
-void F3DSWRS_HeightField(u32 _w0, u32 _w1)
+void F3DSWRS_TexrectGen(u32 _w0, u32 _w1)
 {
-	DebugMsg(DEBUG_NORMAL, "F3DSWRS_HeightField (0x%08x, 0x%08x)\n", _w0, _w1);
-	// Lemmy's note:
-	// seems to be similar to JUMP3, but calls actual function with A1=0x2C
-	// it *might* need the same jump/branch code as JUMP3
+	DebugMsg(DEBUG_NORMAL, "F3DSWRS_TexrectGen (0x%08x, 0x%08x)\n", _w0, _w1);
+
+	const u32 vtxIdx = ((_w0 >> 5) & 0x07F8) / 40;
+
+	const u32* params = (const u32*)&RDRAM[RSP.PC[RSP.PCi]];
+
 	RSP.PC[RSP.PCi] += 16;
+
+	const SPVertex & v = dwnd().getDrawer().getVertex(vtxIdx);
+	if (v.clip != 0)
+		return;
+
+	const f32 screenX = v.x / v.w * gSP.viewport.vscale[0] + gSP.viewport.vtrans[0];
+	const f32 screenY = -v.y / v.w * gSP.viewport.vscale[1] + gSP.viewport.vtrans[1];
+
+	const bool flip = (_w0 & 1) != 0;
+
+#if 1
+	const u32 w_i = std::max(1U, u32(v.w));
+	const u32 viewport = *(u32*)&RDRAM[F3DSWRS_ViewportAddress];
+	const u32 viewportX = _SHIFTR(viewport, 17, 15);
+	const u32 viewportY = _SHIFTR(viewport, 1, 15);
+	const u32* const perspMatrix = (u32*)&RDRAM[F3DSWRS_PerspMatrixAddress];
+	const u32 perspMatrixX = (perspMatrix[0] & 0xFFFF0000) | _SHIFTR(perspMatrix[8], 16, 16);
+	const u32 perspMatrixY = _SHIFTL(perspMatrix[2], 16, 16) | _SHIFTR(perspMatrix[10], 0, 16);
+	u64 param3X = _SHIFTR(params[3], 16, 16);
+	u64 param3Y = _SHIFTR(params[3], 0, 16);
+	if (flip)
+		std::swap(param3X, param3Y);
+
+	u32 offset_x_i = (u32)(((param3X * viewportX * perspMatrixX) / w_i) >> 16);
+	u32 offset_y_i = (u32)(((param3Y * viewportY * perspMatrixY) / w_i) >> 16);
+	const f32 offset_x_f = _FIXED2FLOAT(offset_x_i, 2);
+	const f32 offset_y_f = _FIXED2FLOAT(offset_y_i, 2);
+#else
+	u64 paramX = _SHIFTR(params[3], 16, 16);
+	u64 paramY = _SHIFTR(params[3], 0, 16);
+	if (flip)
+		std::swap(paramX, paramY);
+	f32 offset_x_f = (_FIXED2FLOAT((u32)paramX, 2) * gSP.viewport.vscale[0] * gSP.matrix.projection[0][0] * 2.0f) / v.w;
+	f32 offset_y_f = (_FIXED2FLOAT((u32)paramY, 2) * gSP.viewport.vscale[1] * gSP.matrix.projection[1][1] * 2.0f) / v.w;
+	u32 offset_x_i = u32(offset_x_f * 4.0f);
+	u32 offset_y_i = u32(offset_y_f * 4.0f);
+#endif
+
+	const f32 ulx = screenX - offset_x_f;
+	const f32 lrx = screenX + offset_x_f;
+	if (lrx - ulx <= 0.0f)
+		return;
+	const f32 uly = screenY - offset_y_f;
+	const f32 lry = screenY + offset_y_f;
+	if (lry - uly <= 0.0f)
+		return;
+
+	u32 param4X = params[4] & 0xFFFF0000;
+	u32 param4Y = _SHIFTL(params[4], 16, 16);
+	float intpart;
+	const f32 frac_x_f = fabs(modff(gSP.matrix.combined[0][0], &intpart));
+	const u32 combMatrixFracX = u32(frac_x_f*65536.0f);
+	const f32 frac_y_f = fabs(modff(gSP.matrix.combined[0][1], &intpart));
+	const u32 combMatrixFracY = u32(frac_y_f*65536.0f);
+	param4X |= combMatrixFracX;
+	param4Y |= combMatrixFracY;
+
+	if (flip)
+		std::swap(offset_x_i, offset_y_i);
+
+	u16 dsdx_i = (u16)((param4X / offset_x_i) >> 10);
+	u16 dtdy_i = (u16)((param4Y / offset_y_i) >> 10);
+	u16 E = 0, F = 0;
+
+	if ((_w0 & 2) != 0) {
+		dsdx_i = -dsdx_i;
+		E = _SHIFTR(params[4], 16, 16);;
+	}
+
+	if ((_w0 & 4) != 0) {
+		dtdy_i = -dtdy_i;
+		F = _SHIFTR(params[4], 0, 16);;
+	}
+
+	const f32 dsdx = _FIXED2FLOAT((s16)dsdx_i, 10);
+	const f32 dtdy = _FIXED2FLOAT((s16)dtdy_i, 10);
+
+	if (flip)
+		std::swap(dsdx_i, dtdy_i);
+
+	u16 S, T;
+
+	if (ulx > 0)  {
+		S = E + 0xFFF0;
+	} else {
+		const int ulx_i = int(ulx * 4.0f);
+		S = ((0 - (dsdx_i << 6) * ulx_i) << 3) + E + 0xFFF0;
+	}
+
+	if (uly > 0)  {
+		T = F + 0xFFF0;
+	} else {
+		const int uly_i = int(uly * 4.0f);
+		T = ((0 - (dtdy_i << 6) * uly_i) << 3) + F + 0xFFF0;
+	}
+
+	const f32 s = _FIXED2FLOAT((s16)S, 5);
+	const f32 t = _FIXED2FLOAT((s16)T, 5);
+
+	gDP.primDepth.z = v.z/v.w;
+	gDP.primDepth.deltaZ = 0.0f;
+
+	const u32 primColor = params[1];
+	gDPSetPrimColor( u32(gDP.primColor.m*255.0f),	// m
+					 u32(gDP.primColor.l*255.0f),	// l
+					 _SHIFTR( primColor, 24, 8 ),	// r
+					 _SHIFTR( primColor, 16, 8 ),	// g
+					 _SHIFTR( primColor,  8, 8 ),	// b
+					 _SHIFTR( primColor,  0, 8 ) );	// a
+
+	if ((gSP.geometryMode & G_FOG) != 0) {
+		const u32 fogColor = (params[1] & 0xFFFFFF00) | u32(v.a*255.0f);
+		gDPSetFogColor( _SHIFTR( fogColor, 24, 8 ),		// r
+						_SHIFTR( fogColor, 16, 8 ),		// g
+						_SHIFTR( fogColor,  8, 8 ),		// b
+						_SHIFTR( fogColor,  0, 8 ) );	// a
+	}
+
+	gDPTextureRectangle(ulx, uly, lrx, lry, gSP.texture.tile, s, t, dsdx, dtdy , flip);
 }
 
 void F3DSWRS_SetOtherMode_H_EX(u32 _w0, u32 _w1)
@@ -1241,7 +1375,7 @@ void F3DSWRS_Init()
 
 	//          GBI Command             Command Value				Command Function
 	GBI_SetGBI( G_SPNOOP,				F3D_SPNOOP,					F3D_SPNoOp );
-	GBI_SetGBI( G_MTX,					F3D_MTX,					F3D_Mtx );
+	GBI_SetGBI( G_MTX,					F3D_MTX,					F3DSWRS_Mtx );
 	GBI_SetGBI( G_RESERVED0,			F3DSWRS_VTXCOLOR,			F3DSWRS_VertexColor );
 	GBI_SetGBI( G_MOVEMEM,				F3DSWRS_MOVEMEM,			F3DSWRS_MoveMem );
 	GBI_SetGBI( G_VTX,					F3DSWRS_VTX,				F3DSWRS_Vtx );
@@ -1252,7 +1386,7 @@ void F3DSWRS_Init()
 
 	GBI_SetGBI( G_TRI1,					F3DSWRS_TRI1,				F3DSWRS_Tri1 );
 	GBI_SetGBI( G_SETOTHERMODE_H_EX,	F3DSWRS_SETOTHERMODE_H_EX,	F3DSWRS_SetOtherMode_H_EX );
-	GBI_SetGBI( G_POPMTX,				F3DSWRS_HEIGHTFIELD,		F3DSWRS_HeightField );
+	GBI_SetGBI( G_POPMTX,				F3DSWRS_TEXRECT_GEN,		F3DSWRS_TexrectGen );
 	GBI_SetGBI( G_MOVEWORD,				F3DSWRS_MOVEWORD,			F3DSWRS_MoveWord );
 	GBI_SetGBI( G_TEXTURE,				F3D_TEXTURE,				F3D_Texture );
 	GBI_SetGBI( G_SETOTHERMODE_H,		F3D_SETOTHERMODE_H,			F3D_SetOtherMode_H );
