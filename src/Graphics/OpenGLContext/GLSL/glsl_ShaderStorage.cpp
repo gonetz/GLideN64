@@ -64,7 +64,6 @@ char * - GL version string
 uint32 - number of shaders
 shaders in binary form
 */
-static const u32 ShaderStorageFormatVersion = 0x11U;
 bool ShaderStorage::saveShadersStorage(const graphics::Combiners & _combiners) const
 {
 	wchar_t fileName[PLUGIN_PATH_SIZE];
@@ -80,7 +79,7 @@ bool ShaderStorage::saveShadersStorage(const graphics::Combiners & _combiners) c
 	if (!fout)
 		return false;
 
-	fout.write((char*)&ShaderStorageFormatVersion, sizeof(ShaderStorageFormatVersion));
+	fout.write((char*)&m_formatVersion, sizeof(m_formatVersion));
 
 	const u32 configOptionsBitSet = _getConfigOptionsBitSet();
 	fout.write((char*)&configOptionsBitSet, sizeof(configOptionsBitSet));
@@ -179,7 +178,7 @@ bool ShaderStorage::loadShadersStorage(graphics::Combiners & _combiners)
 	try {
 		u32 version;
 		fin.read((char*)&version, sizeof(version));
-		if (version != ShaderStorageFormatVersion)
+		if (version != m_formatVersion)
 			return false;
 
 		u32 optionsSet;
