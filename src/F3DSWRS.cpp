@@ -231,40 +231,6 @@ void F3DSWRS_PrepareVertices(const u32* _vert,
 }
 
 static
-void TriGen02_PrepareVtxData(const u32 * _params, u32 * _result)
-{
-	typedef std::array<s16, 4> Vector;
-	Vector v0 = { 0, 0, 0, 0 };
-	Vector v1 = { 0, 0, 0, 0 };
-	Vector v2 = { 0, 0, 0, 0 };
-	Vector v3 = { 0, 0, 0, 0 };
-	s16 V0 = _SHIFTR(_params[9], 0, 16);
-	s16 V1 = _SHIFTR(_params[8], 0, 16);
-	V1 <<= 4;
-	v0[0] = _SHIFTR(_params[8], 16, 16);
-	v0[1] = V1;
-	v0[2] = _SHIFTR(_params[9], 16, 16);
-	v2[0] = V0;
-	v3[2] = V0;
-	v1[1] = _SHIFTR(_params[1], 16, 16);
-	_result[0] = ((v0[0] + v1[0]) << 16) | ((v0[1] + v1[1]) & 0xFFFF);
-	_result[1] = ((v0[2] + v1[2]) << 16) | ((v0[3] + v1[3]) & 0xFFFF);
-	v1 = v2;
-	v1[1] = _SHIFTR(_params[1], 0, 16);
-	_result[2] = ((v0[0] + v1[0]) << 16) | ((v0[1] + v1[1]) & 0xFFFF);
-	_result[3] = ((v0[2] + v1[2]) << 16) | ((v0[3] + v1[3]) & 0xFFFF);
-	v1 = v3;
-	v1[1] = _SHIFTR(_params[2], 16, 16);
-	_result[4] = ((v0[0] + v1[0]) << 16) | ((v0[1] + v1[1]) & 0xFFFF);
-	_result[5] = ((v0[2] + v1[2]) << 16) | ((v0[3] + v1[3]) & 0xFFFF);
-	for (u32 i = 0; i < 4; ++i)
-		v1[i] = v2[i] + v3[i];
-	v1[1] = _SHIFTR(_params[2], 0, 16);
-	_result[6] = ((v0[0] + v1[0]) << 16) | ((v0[1] + v1[1]) & 0xFFFF);
-	_result[7] = ((v0[2] + v1[2]) << 16) | ((v0[3] + v1[3]) & 0xFFFF);
-}
-
-static
 void TriGen0000_PrepareColorData(const u32 * _params, std::vector<u32> & _data)
 {
 	assert((_params[3] & 0x07) % 4 == 0);
@@ -725,6 +691,39 @@ struct Vector2 {
 };
 
 static
+void TriGen02_BuildVtxData(const u32 * _params, u32 * _output)
+{
+	Vector2  v0, v1, v2, v3;
+	u16 V0 = _SHIFTR(_params[9], 0, 16);
+	u16 V1 = _SHIFTR(_params[8], 0, 16);
+	V1 <<= 4;
+	v0.VAL(1, _SHIFTR(_params[8], 16, 16));
+	v0.VAL(0, V1);
+	v0.VAL(3, _SHIFTR(_params[9], 16, 16));
+	v2.VAL(1, V0);
+	v3.VAL(3, V0);
+	v1.VAL(0, _SHIFTR(_params[1], 16, 16));
+	v1 = v1.ADD(v0);
+	_output[0] = v1.data.vec32[0];
+	_output[1] = v1.data.vec32[1];
+	v1 = v2;
+	v1.VAL(0, _SHIFTR(_params[1], 0, 16));
+	v1 = v1.ADD(v0);
+	_output[2] = v1.data.vec32[0];
+	_output[3] = v1.data.vec32[1];
+	v1 = v3;
+	v1.VAL(0, _SHIFTR(_params[2], 16, 16));
+	v1 = v1.ADD(v0);
+	_output[4] = v1.data.vec32[0];
+	_output[5] = v1.data.vec32[1];
+	v1 = v2.ADD(v3);
+	v1.VAL(0, _SHIFTR(_params[2], 0, 16));
+	v1 = v1.ADD(v0);
+	_output[6] = v1.data.vec32[0];
+	_output[7] = v1.data.vec32[1];
+}
+
+static
 void TriGen00_BuildVtxData(const u32 * _params, u32 _step, const std::vector<u16> & _input, std::vector<u32> & _output)
 {
 	u16 V0 = _SHIFTR(_params[9], 0, 16);
@@ -743,66 +742,6 @@ void TriGen00_BuildVtxData(const u32 * _params, u32 _step, const std::vector<u16
 	const u32 bound = _step * (_step - 1) + 1;
 	for (u32 startDataIdx = 0; startDataIdx < _step; ++startDataIdx) {
 		for (u32 idx = 0; idx < bound; idx += _step) {
-			v1.VAL(0, _input[(startDataIdx + idx) ^ 1]);
-			Vector2 v4 = v1.ADD(v0);
-			_output.push_back(v4.data.vec32[0]);
-			_output.push_back(v4.data.vec32[1]);
-			v1 = v1.ADD(v3);
-		}
-		v1 = v1.ADD(v2);
-		v1.VAL(3, 0);
-	}
-}
-
-
-
-static
-void TriGen0000_BuildVtxData(const u32 * _params, const std::vector<u16> & _input, std::vector<u32> & _output)
-{
-	u16 V0 = _SHIFTR(_params[9], 0, 16);
-	u16 V1 = _SHIFTR(_params[8], 0, 16);
-	V1 <<= 4;
-	Vector2 v0;
-	v0.VAL(1, _SHIFTR(_params[8], 16, 16));
-	v0.VAL(3, _SHIFTR(_params[9], 16, 16));
-	v0.VAL(0, V1);
-	Vector2 v2;
-	v2.VAL(1, V0);
-	Vector2 v3;
-	v3.VAL(3, V0);
-	Vector2 v1;
-
-	for (u32 startDataIdx = 0; startDataIdx < 5; ++startDataIdx) {
-		for (u32 idx = 0; idx < 21; idx += 5) {
-			v1.VAL(0, _input[(startDataIdx + idx) ^ 1]);
-			Vector2 v4 = v1.ADD(v0);
-			_output.push_back(v4.data.vec32[0]);
-			_output.push_back(v4.data.vec32[1]);
-			v1 = v1.ADD(v3);
-		}
-		v1 = v1.ADD(v2);
-		v1.VAL(3, 0);
-	}
-}
-
-static
-void TriGen0001_BuildVtxData(const u32 * _params, const std::vector<u16> & _input, std::vector<u32> & _output)
-{
-	u16 V0 = _SHIFTR(_params[9], 0, 16);
-	u16 V1 = _SHIFTR(_params[8], 0, 16);
-	V1 <<= 4;
-	Vector2 v0;
-	v0.VAL(1, _SHIFTR(_params[8], 16, 16));
-	v0.VAL(3, _SHIFTR(_params[9], 16, 16));
-	v0.VAL(0, V1);
-	Vector2 v2;
-	v2.VAL(1, V0);
-	Vector2 v3;
-	v3.VAL(3, V0);
-	Vector2 v1;
-
-	for (u32 startDataIdx = 0; startDataIdx < 3; ++startDataIdx) {
-		for (u32 idx = 0; idx < 7; idx += 3) {
 			v1.VAL(0, _input[(startDataIdx + idx) ^ 1]);
 			Vector2 v4 = v1.ADD(v0);
 			_output.push_back(v4.data.vec32[0]);
@@ -1013,7 +952,7 @@ void TriGen02()
 	const u32* params = (const u32*)&RDRAM[RSP.PC[RSP.PCi]];
 
 	u32 vecdata[8];
-	TriGen02_PrepareVtxData(params, vecdata);
+	TriGen02_BuildVtxData(params, vecdata);
 	const SWVertex * vertex = (const SWVertex*)&vecdata[0];
 	gSPSWVertex(vertex, 4, 0);
 	GraphicsDrawer & drawer = dwnd().getDrawer();
