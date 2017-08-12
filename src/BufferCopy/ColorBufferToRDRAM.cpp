@@ -152,7 +152,7 @@ bool ColorBufferToRDRAM::_prepareCopy(u32 _startAddress)
 
 	if(m_pTexture == nullptr ||
 		m_pTexture->realWidth != _getRealWidth(pBuffer->m_width) ||
-		m_pTexture->realHeight != VI_GetMaxBufferHeight(m_lastBufferWidth))
+		m_pTexture->realHeight != VI_GetMaxBufferHeight(_getRealWidth(pBuffer->m_width)))
 	{
 		_destroyFBTexure();
 
