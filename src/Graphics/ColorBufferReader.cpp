@@ -18,17 +18,21 @@ namespace graphics {
 	const u8* ColorBufferReader::_convertFloatTextureBuffer(const u8* _gpuData, u32 _width, u32 _height,
 		u32 _heightOffset, u32 _stride)
 	{
-		std::copy_n(_gpuData, m_tempPixelData.size(), m_tempPixelData.data());
+		int bytesToCopy = m_pTexture->realWidth * _height * 16;
+		std::copy_n(_gpuData, bytesToCopy, m_tempPixelData.data());
 		u8* pixelDataAlloc = m_pixelData.data();
 		float* pixelData = reinterpret_cast<float*>(m_tempPixelData.data());
 		const u32 colorsPerPixel = 4;
 		const u32 widthPixels = _width * colorsPerPixel;
 		const u32 stridePixels = _stride * colorsPerPixel;
+		
+		if (_height * widthPixels  > m_pixelData.size())
+			_height = m_pixelData.size() / widthPixels;
 
-		for (u32 index = 0; index < _height; ++index) {
+		for (u32 heightIndex = 0; heightIndex < _height; ++heightIndex) {
 			for (u32 widthIndex = 0; widthIndex < widthPixels; ++widthIndex) {
-				u8& dest = *(pixelDataAlloc + index*widthPixels + widthIndex);
-				float& src = *(pixelData + (index+_heightOffset)*stridePixels + widthIndex);
+				u8& dest = *(pixelDataAlloc + heightIndex*widthPixels + widthIndex);
+				float& src = *(pixelData + (heightIndex+_heightOffset)*stridePixels + widthIndex);
 				dest = static_cast<u8>(src*255.0);
 			}
 		}
@@ -37,15 +41,18 @@ namespace graphics {
 	}
 
 	const u8* ColorBufferReader::_convertIntegerTextureBuffer(const u8* _gpuData, u32 _width, u32 _height,
-		u32 _heightOffset, u32 _stride)
+		u32 _heightOffset, u32 _stride, u32 _colorsPerPixel)
 	{
-		const u32 colorsPerPixel = 4;
-		const u32 widthBytes = _width * colorsPerPixel;
-		const u32 strideBytes = _stride * colorsPerPixel;
+		const u32 widthBytes = _width * _colorsPerPixel;
+		const u32 strideBytes = _stride * _colorsPerPixel;
 
 		u8* pixelDataAlloc = m_pixelData.data();
-		for (u32 lnIndex = 0; lnIndex < _height; ++lnIndex) {
-			memcpy(pixelDataAlloc + lnIndex*widthBytes, _gpuData + ((lnIndex+_heightOffset)*strideBytes), widthBytes);
+		
+		if (_height * widthBytes  > m_pixelData.size())
+			_height = m_pixelData.size() / widthBytes;
+
+		for (u32 index = 0; index < _height; ++index) {
+			memcpy(pixelDataAlloc + index * widthBytes, _gpuData + ((index + _heightOffset) * strideBytes), widthBytes);
 		}
 
 		return pixelDataAlloc;
@@ -80,10 +87,11 @@ namespace graphics {
 		if (pixelData == nullptr)
 			return nullptr;
 
-		if(params.colorType == datatype::FLOAT) {
+		if(params.colorType == datatype::FLOAT && _size > G_IM_SIZ_8b) {
 			return _convertFloatTextureBuffer(pixelData, params.width, params.height, heightOffset, stride);
 		} else {
-			return _convertIntegerTextureBuffer(pixelData, params.width, params.height, heightOffset, stride);
+			return _convertIntegerTextureBuffer(pixelData, params.width, params.height, heightOffset, stride,
+												params.colorFormatBytes);
 		}
 	}
 }
