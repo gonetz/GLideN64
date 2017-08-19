@@ -1,10 +1,3 @@
-float ORIENTATION_MAT[4][4] = {{1,0,0,0}, {0,1,0,0}, {0,0,1,0}, {0,0,0,1}};
-float VR_TRANSFORM_MAT[4][4] = {{1,0,0,0}, {0,1,0,0}, {0,0,1,0}, {0,0,0,1}};
-bool VR_LEFT_EYE = true;
-bool VR_CURRENTLY_RENDERING = false;
-bool VR_HAS_CLEARED_SCREEN = false;
-
-#ifdef OS_ANDROID
 #define ASENSOR_TYPE_ROTATION_VECTOR 15
 #include <android/looper.h>
 #include <android/sensor.h>
@@ -13,6 +6,12 @@ bool VR_HAS_CLEARED_SCREEN = false;
 #include "3DMath.h"
 #include "gSP.h"
 #include "Config.h"
+
+float ORIENTATION_MAT[4][4] = {{1,0,0,0}, {0,1,0,0}, {0,0,1,0}, {0,0,0,1}};
+float VR_TRANSFORM_MAT[4][4] = {{1,0,0,0}, {0,1,0,0}, {0,0,1,0}, {0,0,0,1}};
+bool VR_LEFT_EYE = true;
+bool VR_CURRENTLY_RENDERING = false;
+bool VR_HAS_CLEARED_SCREEN = false;
 
 static ASensorEventQueue* VR_SENSOR_QUEUE = NULL;
 static ASensorRef VR_SENSOR = NULL;
@@ -236,4 +235,3 @@ int VRDestroySensor() {
 
     return 0;
 }
-#endif
