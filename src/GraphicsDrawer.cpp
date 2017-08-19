@@ -736,9 +736,17 @@ void GraphicsDrawer::drawTriangles()
 			vtx.w = vtx.orig_w;
 		}
 
-		for (unsigned int j=0; j<triangles.vertices.size(); j++) {
+#ifdef OS_ANDROID
+// ^ fixes a linker error, since gSPProcessVertex4 is
+//  not always included
+		unsigned int j=0;
+		for (;j<triangles.vertices.size(); j+=4) {
+			gSPProcessVertex4(j);
+		}
+		for (;j<triangles.vertices.size(); j++) {
 			gSPProcessVertex(j);
 		}
+#endif
 
 		_drawTrianglesUnmodified();
 
