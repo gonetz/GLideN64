@@ -24,6 +24,10 @@
 #include "RDP.h"
 #include "VI.h"
 
+#include "VR.h"
+#include "3DMath.h"
+#include "gSP.h"
+
 using namespace graphics;
 
 GraphicsDrawer::GraphicsDrawer()
@@ -31,10 +35,12 @@ GraphicsDrawer::GraphicsDrawer()
 , m_bImageTexture(false)
 , m_bFlatColors(false)
 {
+	VRSetupSensor();
 }
 
 GraphicsDrawer::~GraphicsDrawer()
 {
+	VRDestroySensor();
 	while (!m_osdMessages.empty())
 		std::this_thread::sleep_for(Milliseconds(1));
 }
@@ -656,14 +662,8 @@ bool GraphicsDrawer::_canDraw() const
 	return config.frameBufferEmulation.enable == 0 || frameBufferList().getCurrent() != nullptr;
 }
 
-void GraphicsDrawer::drawTriangles()
+void GraphicsDrawer::_drawTrianglesUnmodified()
 {
-	if (triangles.num == 0 || !_canDraw()) {
-		triangles.num = 0;
-		triangles.maxElement = 0;
-		return;
-	}
-
 	_prepareDrawTriangle();
 
 	Context::DrawTriangleParameters triParams;
@@ -688,6 +688,71 @@ void GraphicsDrawer::drawTriangles()
 				pCurrentDepthBuffer->m_cleared = false;
 		}
 	}
+}
+
+void GraphicsDrawer::drawTriangles()
+{
+	if (triangles.num == 0 || !_canDraw()) {
+		triangles.num = 0;
+		triangles.maxElement = 0;
+		return;
+	}
+
+	if (!config.vr.enable) {
+		_drawTrianglesUnmodified();
+
+		triangles.num = 0;
+		triangles.maxElement = 0;
+		return;
+	}
+
+	if (!VR_HAS_CLEARED_SCREEN) {
+		// Hack to work around lack of clearing in-game, exposed
+		//  by VR viewport
+		gfxContext.clearColorBuffer(0.0f, 0.0f, 0.0f, 0.0f);
+		VR_HAS_CLEARED_SCREEN = true;
+	}
+
+	std::array<SPVertex, 256U> old_verts = triangles.vertices;
+
+	for (int i=0; i<2; i++) {
+		const u32 bufferWidth = VI.width;
+		const u32 bufferHeight = VI_GetMaxBufferHeight(bufferWidth);
+		const f32 viewportScale = DisplayWindow::get().getScaleX();
+
+		const s32 size = bufferWidth / 2;
+		VR_LEFT_EYE = (i==0);
+		const s32 start = (VR_LEFT_EYE? 0 : size);
+		gfxContext.setViewport((s32) (start * viewportScale), 0, (s32) (size * viewportScale), (s32) (bufferHeight * viewportScale));
+
+		VR_CURRENTLY_RENDERING = true;
+		gSPCombineMatrices();
+
+		for (unsigned int j=0; j<triangles.vertices.size(); j++) {
+			SPVertex &vtx = triangles.vertices.at(j);
+			vtx.x = vtx.orig_x;
+			vtx.y = vtx.orig_y;
+			vtx.z = vtx.orig_z;
+			vtx.w = vtx.orig_w;
+		}
+
+		unsigned int j=0;
+		for (;j<triangles.vertices.size(); j+=4) {
+			gSPProcessVertex4(j);
+		}
+		for (;j<triangles.vertices.size(); j++) {
+			gSPProcessVertex(j);
+		}
+
+		_drawTrianglesUnmodified();
+
+		triangles.vertices = old_verts;
+	}
+
+	// Hack so that we can avoid clipping next frame
+	// See gSPCombineMatrices
+	VR_CURRENTLY_RENDERING = false;
+	gSPCombineMatrices();
 
 	triangles.num = 0;
 	triangles.maxElement = 0;

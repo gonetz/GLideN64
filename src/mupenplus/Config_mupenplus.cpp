@@ -98,6 +98,8 @@ bool Config_SetDefault()
 	assert(res == M64ERR_SUCCESS);
 	res = ConfigSetDefaultFloat(g_configVideoGliden64, "PolygonOffsetUnits", config.generalEmulation.polygonOffsetUnits, "Is multiplied by an implementation-specific value to create a constant depth offset");
 	assert(res == M64ERR_SUCCESS);
+	res = ConfigSetDefaultBool(g_configVideoGliden64, "EnableVR", config.vr.enable, "Enable to render for Cardboard");
+	assert(res == M64ERR_SUCCESS);
 #endif
 	//#Frame Buffer Settings:"
 	res = ConfigSetDefaultBool(g_configVideoGliden64, "EnableFBEmulation", config.frameBufferEmulation.enable, "Enable frame and|or depth buffer emulation.");
@@ -360,6 +362,7 @@ void Config_LoadConfig()
 	config.generalEmulation.forcePolygonOffset = ConfigGetParamBool(g_configVideoGliden64, "ForcePolygonOffset");
 	config.generalEmulation.polygonOffsetFactor = ConfigGetParamFloat(g_configVideoGliden64, "PolygonOffsetFactor");
 	config.generalEmulation.polygonOffsetUnits = ConfigGetParamFloat(g_configVideoGliden64, "PolygonOffsetUnits");
+	config.vr.enable = ConfigGetParamBool(g_configVideoGliden64, "EnableVR");
 #endif
 	//#Frame Buffer Settings:"
 	config.frameBufferEmulation.enable = ConfigGetParamBool(g_configVideoGliden64, "EnableFBEmulation");

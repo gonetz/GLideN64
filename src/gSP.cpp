@@ -24,6 +24,7 @@
 #include <Graphics/Context.h>
 #include <Graphics/Parameters.h>
 #include "DisplayWindow.h"
+#include "VR.h"
 
 using namespace std;
 using namespace graphics;
@@ -49,8 +50,24 @@ void gSPFlushTriangles()
 
 void gSPCombineMatrices()
 {
-	MultMatrix(gSP.matrix.projection, gSP.matrix.modelView[gSP.matrix.modelViewi], gSP.matrix.combined);
 	gSP.changed &= ~CHANGED_MATRIX;
+
+	if (!config.vr.enable) {
+		MultMatrix(gSP.matrix.projection, gSP.matrix.modelView[gSP.matrix.modelViewi], gSP.matrix.combined);
+		return;
+	}
+
+	VRUpdateTransform();
+
+	MultMatrix(VR_TRANSFORM_MAT, gSP.matrix.modelView[gSP.matrix.modelViewi], gSP.matrix.combined);
+
+	if (!VR_CURRENTLY_RENDERING) {
+		// Hack: scale so that neither the left/right eye are clipped
+		float scale[4][4] = {{0.2,0,0,0},{0,1,0,0},{0,0,1,0},{0,0,0,1}};
+		float result[4][4] = {{1,0,0,0},{0,1,0,0},{0,0,1,0},{0,0,0,1}};
+		MultMatrix(scale, gSP.matrix.combined, result);
+		CopyMatrix(gSP.matrix.combined, result);
+	}
 }
 
 void gSPTriangle(s32 v0, s32 v1, s32 v2)
@@ -325,6 +342,11 @@ void gSPProcessVertex4(u32 v)
 		vPos[i][1] = vtx.y;
 		vPos[i][2] = vtx.z;
 		vtx.modify = 0;
+
+		vtx.orig_x = vtx.x;
+		vtx.orig_y = vtx.y;
+		vtx.orig_z = vtx.z;
+		vtx.orig_w = vtx.w;
 	}
 	gSPTransformVertex4(v, gSP.matrix.combined );
 
@@ -603,6 +625,12 @@ void gSPProcessVertex(u32 v)
 	GraphicsDrawer & drawer = wnd.getDrawer();
 	SPVertex & vtx = drawer.getVertex(v);
 	float vPos[3] = {(float)vtx.x, (float)vtx.y, (float)vtx.z};
+
+	vtx.orig_x = vtx.x;
+	vtx.orig_y = vtx.y;
+	vtx.orig_z = vtx.z;
+	vtx.orig_w = vtx.w;
+
 	gSPTransformVertex( &vtx.x, gSP.matrix.combined );
 
 	if (wnd.isAdjustScreen() && (gDP.colorImage.width > VI.width * 98 / 100)) {

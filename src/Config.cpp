@@ -117,4 +117,5 @@ void Config::resetToDefaults()
 	onScreenDisplay.pos = posBottomLeft;
 
 	debug.dumpMode = 0;
+	vr.enable = 0;
 }

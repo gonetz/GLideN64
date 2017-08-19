@@ -172,6 +172,7 @@ private:
 	void _updateTextures() const;
 	void _updateStates(DrawingState _drawingState) const;
 	void _prepareDrawTriangle();
+	void _drawTrianglesUnmodified();
 	bool _canDraw() const;
 	void _drawThickLine(int _v0, int _v1, float _width);
 
