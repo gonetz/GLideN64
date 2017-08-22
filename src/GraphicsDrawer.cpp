@@ -662,8 +662,36 @@ bool GraphicsDrawer::_canDraw() const
 	return config.frameBufferEmulation.enable == 0 || frameBufferList().getCurrent() != nullptr;
 }
 
-void GraphicsDrawer::_drawTrianglesUnmodified()
+void GraphicsDrawer::_drawTrianglesOneEye(bool finish)
 {
+    if (triangles.num == 0 || !_canDraw()) {
+        triangles.num = 0;
+        triangles.maxElement = 0;
+        return;
+    }
+
+    std::array<SPVertex, 256U> old_verts = triangles.vertices;
+
+    for (unsigned int j=0; j<triangles.vertices.size(); j++) {
+        SPVertex &vtx = triangles.vertices.at(j);
+        vtx.x = vtx.orig_x;
+        vtx.y = vtx.orig_y;
+        vtx.z = vtx.orig_z;
+        vtx.w = vtx.orig_w;
+    }
+
+#ifdef OS_ANDROID
+// ^ fixes a linker error, since gSPProcessVertex4 is
+//  not always included
+    unsigned int j=0;
+    for (;j<triangles.vertices.size(); j+=4) {
+        gSPProcessVertex4(j);
+    }
+    for (;j<triangles.vertices.size(); j++) {
+        gSPProcessVertex(j);
+    }
+#endif
+
 	_prepareDrawTriangle();
 
 	Context::DrawTriangleParameters triParams;
@@ -688,78 +716,53 @@ void GraphicsDrawer::_drawTrianglesUnmodified()
 				pCurrentDepthBuffer->m_cleared = false;
 		}
 	}
+
+    triangles.vertices = old_verts;
+
+    if (finish) {
+        triangles.num = 0;
+        triangles.maxElement = 0;
+    }
+}
+
+void GraphicsDrawer::_drawStereo(void (GraphicsDrawer::*callback)(bool)) {
+    if (!config.vr.enable) {
+        (this->*callback)(true);
+        return;
+    }
+
+    if (!VR_HAS_CLEARED_SCREEN) {
+        // Hack to work around lack of clearing in-game, exposed
+        //  by VR viewport
+        gfxContext.clearColorBuffer(0.0f, 0.0f, 0.0f, 0.0f);
+        VR_HAS_CLEARED_SCREEN = true;
+    }
+
+    for (int i=0; i<2; i++) {
+        const u32 bufferWidth = VI.width;
+        const u32 bufferHeight = VI_GetMaxBufferHeight(bufferWidth);
+        const f32 viewportScale = DisplayWindow::get().getScaleX();
+
+        const s32 size = bufferWidth / 2;
+        VR_LEFT_EYE = (i==0);
+        const s32 start = (VR_LEFT_EYE? 0 : size);
+        gfxContext.setViewport((s32) (start * viewportScale), 0, (s32) (size * viewportScale), (s32) (bufferHeight * viewportScale));
+
+        VR_CURRENTLY_RENDERING = true;
+        gSPCombineMatrices();
+
+        (this->*callback)(i==1);
+    }
+
+    // Hack so that we can avoid clipping next frame
+    // See gSPCombineMatrices
+    VR_CURRENTLY_RENDERING = false;
+    gSPCombineMatrices();
 }
 
 void GraphicsDrawer::drawTriangles()
 {
-	if (triangles.num == 0 || !_canDraw()) {
-		triangles.num = 0;
-		triangles.maxElement = 0;
-		return;
-	}
-
-	if (!config.vr.enable) {
-		_drawTrianglesUnmodified();
-
-		triangles.num = 0;
-		triangles.maxElement = 0;
-		return;
-	}
-
-	if (!VR_HAS_CLEARED_SCREEN) {
-		// Hack to work around lack of clearing in-game, exposed
-		//  by VR viewport
-		gfxContext.clearColorBuffer(0.0f, 0.0f, 0.0f, 0.0f);
-		VR_HAS_CLEARED_SCREEN = true;
-	}
-
-	std::array<SPVertex, 256U> old_verts = triangles.vertices;
-
-	for (int i=0; i<2; i++) {
-		const u32 bufferWidth = VI.width;
-		const u32 bufferHeight = VI_GetMaxBufferHeight(bufferWidth);
-		const f32 viewportScale = DisplayWindow::get().getScaleX();
-
-		const s32 size = bufferWidth / 2;
-		VR_LEFT_EYE = (i==0);
-		const s32 start = (VR_LEFT_EYE? 0 : size);
-		gfxContext.setViewport((s32) (start * viewportScale), 0, (s32) (size * viewportScale), (s32) (bufferHeight * viewportScale));
-
-		VR_CURRENTLY_RENDERING = true;
-		gSPCombineMatrices();
-
-		for (unsigned int j=0; j<triangles.vertices.size(); j++) {
-			SPVertex &vtx = triangles.vertices.at(j);
-			vtx.x = vtx.orig_x;
-			vtx.y = vtx.orig_y;
-			vtx.z = vtx.orig_z;
-			vtx.w = vtx.orig_w;
-		}
-
-#ifdef OS_ANDROID
-// ^ fixes a linker error, since gSPProcessVertex4 is
-//  not always included
-		unsigned int j=0;
-		for (;j<triangles.vertices.size(); j+=4) {
-			gSPProcessVertex4(j);
-		}
-		for (;j<triangles.vertices.size(); j++) {
-			gSPProcessVertex(j);
-		}
-#endif
-
-		_drawTrianglesUnmodified();
-
-		triangles.vertices = old_verts;
-	}
-
-	// Hack so that we can avoid clipping next frame
-	// See gSPCombineMatrices
-	VR_CURRENTLY_RENDERING = false;
-	gSPCombineMatrices();
-
-	triangles.num = 0;
-	triangles.maxElement = 0;
+	_drawStereo(&GraphicsDrawer::_drawTrianglesOneEye);
 }
 
 void GraphicsDrawer::drawScreenSpaceTriangle(u32 _numVtx)
