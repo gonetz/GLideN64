@@ -662,7 +662,7 @@ bool GraphicsDrawer::_canDraw() const
 	return config.frameBufferEmulation.enable == 0 || frameBufferList().getCurrent() != nullptr;
 }
 
-void GraphicsDrawer::_drawTrianglesOneEye(bool finish)
+void GraphicsDrawer::_drawTrianglesOneEye(bool finish, void *data)
 {
     if (triangles.num == 0 || !_canDraw()) {
         triangles.num = 0;
@@ -725,9 +725,9 @@ void GraphicsDrawer::_drawTrianglesOneEye(bool finish)
     }
 }
 
-void GraphicsDrawer::_drawStereo(void (GraphicsDrawer::*callback)(bool)) {
+void GraphicsDrawer::_drawStereo(void (GraphicsDrawer::*callback)(bool, void*), void *data) {
     if (!config.vr.enable) {
-        (this->*callback)(true);
+        (this->*callback)(true, data);
         return;
     }
 
@@ -751,7 +751,7 @@ void GraphicsDrawer::_drawStereo(void (GraphicsDrawer::*callback)(bool)) {
         VR_CURRENTLY_RENDERING = true;
         gSPCombineMatrices();
 
-        (this->*callback)(i==1);
+        (this->*callback)(i==1, data);
     }
 
     // Hack so that we can avoid clipping next frame
@@ -762,7 +762,7 @@ void GraphicsDrawer::_drawStereo(void (GraphicsDrawer::*callback)(bool)) {
 
 void GraphicsDrawer::drawTriangles()
 {
-	_drawStereo(&GraphicsDrawer::_drawTrianglesOneEye);
+	_drawStereo(&GraphicsDrawer::_drawTrianglesOneEye, NULL);
 }
 
 void GraphicsDrawer::drawScreenSpaceTriangle(u32 _numVtx)
