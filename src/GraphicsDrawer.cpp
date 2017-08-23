@@ -1127,8 +1127,14 @@ bool texturedRectPaletteMod(const GraphicsDrawer::TexturedRectParams & _params)
 // Return true if actuial rendering is not necessary
 bool(*texturedRectSpecial)(const GraphicsDrawer::TexturedRectParams & _params) = nullptr;
 
-void GraphicsDrawer::drawTexturedRect(const TexturedRectParams & _params)
+void GraphicsDrawer::drawTexturedRect(const TexturedRectParams & _params) {
+    _drawStereo(&GraphicsDrawer::_drawTexturedRectOneEye, (TexturedRectParams*) (&_params));
+}
+
+void GraphicsDrawer::_drawTexturedRectOneEye(bool finish, void *data)
 {
+    const TexturedRectParams & _params = *((TexturedRectParams*) data);
+
 	gSP.changed &= ~CHANGED_GEOMETRYMODE; // Don't update cull mode
 	m_drawingState = DrawingState::TexRect;
 
@@ -1317,8 +1323,6 @@ void GraphicsDrawer::drawTexturedRect(const TexturedRectParams & _params)
 	if (bUseTexrectDrawer)
 		m_texrectDrawer.add();
 	else {
-		_updateScreenCoordsViewport();
-
 		Context::DrawRectParameters rectParams;
 		rectParams.mode = drawmode::TRIANGLE_STRIP;
 		rectParams.verticesCount = 4;
@@ -1327,7 +1331,7 @@ void GraphicsDrawer::drawTexturedRect(const TexturedRectParams & _params)
 		gfxContext.drawRects(rectParams);
 		g_debugger.addRects(rectParams);
 
-		gSP.changed |= CHANGED_GEOMETRYMODE | CHANGED_VIEWPORT;
+		gSP.changed |= CHANGED_GEOMETRYMODE;
 	}
 }
 

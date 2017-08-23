@@ -7,7 +7,7 @@
 #include "gSP.h"
 #include "Config.h"
 
-float ORIENTATION_MAT[4][4] = {{1,0,0,0}, {0,1,0,0}, {0,0,1,0}, {0,0,0,1}};
+float VR_ORIENTATION_MAT[4][4] = {{1,0,0,0}, {0,1,0,0}, {0,0,1,0}, {0,0,0,1}};
 float VR_TRANSFORM_MAT[4][4] = {{1,0,0,0}, {0,1,0,0}, {0,0,1,0}, {0,0,0,1}};
 bool VR_LEFT_EYE = true;
 bool VR_CURRENTLY_RENDERING = false;
@@ -183,12 +183,12 @@ int VRPollForSensorData() {
     R[2][1] = q2_q3 + q1_q0;
     R[2][2] = 1 - sq_q1 - sq_q2;
 
-    VRRemapCoordinateSystem(R, AXIS_Y, AXIS_MINUS_X, ORIENTATION_MAT);
+    VRRemapCoordinateSystem(R, AXIS_Y, AXIS_MINUS_X, VR_ORIENTATION_MAT);
 
     float rot_mat[4][4] = {{1,0,0,0}, {0,0,1,0}, {0,-1,0,0}, {0,0,0,1}};
     float res_mat[4][4] = {{1,0,0,0}, {0,1,0,0}, {0,0,1,0}, {0,0,0,1}};
-    MultMatrix(ORIENTATION_MAT, rot_mat, res_mat);
-    CopyMatrix(ORIENTATION_MAT, res_mat);
+    MultMatrix(VR_ORIENTATION_MAT, rot_mat, res_mat);
+    CopyMatrix(VR_ORIENTATION_MAT, res_mat);
 
     while (ASensorEventQueue_getEvents(VR_SENSOR_QUEUE, data, 1) > 0);
 
@@ -202,7 +202,7 @@ void VRUpdateTransform() {
     if (VR_LEFT_EYE) trans *= -1;
     float trans_mat[4][4] = {{1,0,0,0}, {0,1,0,0}, {0,0,1,0}, {trans,0,0,1}};
     float res_mat[4][4] = {{1,0,0,0}, {0,1,0,0}, {0,0,1,0}, {0,0,0,1}};
-    MultMatrix(trans_mat, ORIENTATION_MAT, res_mat);
+    MultMatrix(trans_mat, VR_ORIENTATION_MAT, res_mat);
 
     MultMatrix(gSP.matrix.projection, res_mat, VR_TRANSFORM_MAT);
 
