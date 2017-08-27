@@ -52,7 +52,9 @@ void gSPCombineMatrices()
 {
 	gSP.changed &= ~CHANGED_MATRIX;
 
-	if (!config.vr.enable) {
+    // Hack to check for projection matrix
+    // If this is supposed to draw to screenspace, like game text, don't rotate
+	if (!config.vr.enable || gSP.matrix.projection[3][3] != 0) {
 		MultMatrix(gSP.matrix.projection, gSP.matrix.modelView[gSP.matrix.modelViewi], gSP.matrix.combined);
 		return;
 	}
