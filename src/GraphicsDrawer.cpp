@@ -1320,6 +1320,10 @@ void GraphicsDrawer::_drawTexturedRectOneEye(bool finish, void *data)
 			m_rect[i].x *= scale;
 	}
 
+    for (int i=0; i<4; i++) {
+        m_rect[i].y *= 0.5;
+    }
+
 	if (bUseTexrectDrawer)
 		m_texrectDrawer.add();
 	else {

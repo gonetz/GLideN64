@@ -63,7 +63,7 @@ void gSPCombineMatrices()
 
 	if (!VR_CURRENTLY_RENDERING) {
 		// Hack: scale so that neither the left/right eye are clipped
-		float scale[4][4] = {{0.2,0,0,0},{0,1,0,0},{0,0,1,0},{0,0,0,1}};
+		float scale[4][4] = {{0,0,0,0},{0,1,0,0},{0,0,1,0},{0,0,0,1}};
 		float result[4][4] = {{1,0,0,0},{0,1,0,0},{0,0,1,0},{0,0,0,1}};
 		MultMatrix(scale, gSP.matrix.combined, result);
 		CopyMatrix(gSP.matrix.combined, result);

@@ -207,7 +207,7 @@ void VRUpdateTransform() {
     MultMatrix(gSP.matrix.projection, res_mat, VR_TRANSFORM_MAT);
 
     // Hack around swashed viewport
-    float change_aspect[4][4] = {{2,0,0,0}, {0,1,0,0}, {0,0,1,0}, {0,0,0,1}};
+    float change_aspect[4][4] = {{1,0,0,0}, {0,0.5,0,0}, {0,0,1,0}, {0,0,0,1}};
     MultMatrix(change_aspect, VR_TRANSFORM_MAT, res_mat);
     CopyMatrix(VR_TRANSFORM_MAT, res_mat);
 }
