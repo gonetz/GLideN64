@@ -692,6 +692,14 @@ void GraphicsDrawer::_drawTrianglesOneEye(bool finish, void *data)
     }
 #endif
 
+    // Hack to check for projection matrix
+    // If this is supposed to draw to screenspace, like game text, don't rotate
+    if (gSP.matrix.projection[3][3] != 0) {
+        for (j=0; j<triangles.vertices.size(); j++) {
+            triangles.vertices.at(j).y *= 0.5;
+        }
+    }
+
 	_prepareDrawTriangle();
 
 	Context::DrawTriangleParameters triParams;
