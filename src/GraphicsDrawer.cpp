@@ -756,6 +756,7 @@ void GraphicsDrawer::_drawStereo(void (GraphicsDrawer::*callback)(bool, void*), 
         VR_LEFT_EYE = (i==0);
         const s32 start = (VR_LEFT_EYE? 0 : size);
         gfxContext.setViewport((s32) (start * viewportScale), 0, (s32) (size * viewportScale), (s32) (bufferHeight * viewportScale));
+        gSP.changed &= ~CHANGED_VIEWPORT;
 
         VR_CURRENTLY_RENDERING = true;
         gSPCombineMatrices();
