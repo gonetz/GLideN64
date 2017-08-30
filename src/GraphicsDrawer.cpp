@@ -758,10 +758,17 @@ void GraphicsDrawer::_drawStereo(void (GraphicsDrawer::*callback)(bool, void*), 
         gfxContext.setViewport((s32) (start * viewportScale), 0, (s32) (size * viewportScale), (s32) (bufferHeight * viewportScale));
         gSP.changed &= ~CHANGED_VIEWPORT;
 
+        f32 orig_scissor = gDP.scissor.lrx;
+        gDP.scissor.lrx = 5000; // Hack to fix clipping on second screen
+        gSP.changed |= CHANGED_SCISSOR;
+
         VR_CURRENTLY_RENDERING = true;
         gSPCombineMatrices();
 
         (this->*callback)(i==1, data);
+
+        gDP.scissor.lrx = orig_scissor;
+        gSP.changed |= CHANGED_SCISSOR;
     }
 
     // Hack so that we can avoid clipping next frame
