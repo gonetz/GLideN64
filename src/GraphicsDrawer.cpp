@@ -742,7 +742,9 @@ void GraphicsDrawer::_drawStereo(void (GraphicsDrawer::*callback)(bool, void*), 
     if (!VR_HAS_CLEARED_SCREEN) {
         // Hack to work around lack of clearing in-game, exposed
         //  by VR viewport
-        gfxContext.clearColorBuffer(0.0f, 0.0f, 0.0f, 0.0f);
+        f32 fillColor[4];
+        gDPGetFillColor(fillColor);
+        clearColorBuffer(fillColor);
         gfxContext.clearDepthBuffer();
         VR_HAS_CLEARED_SCREEN = true;
     }
