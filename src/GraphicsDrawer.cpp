@@ -775,14 +775,15 @@ void GraphicsDrawer::_drawStereo(void (GraphicsDrawer::*callback)(bool, void*), 
         (this->*callback)(i==1, data);
 
         gDP.scissor = orig_scissor;
-        gSP.changed |= CHANGED_SCISSOR;
-		updateScissor(frameBufferList().getCurrent());
     }
 
     // Hack so that we can avoid clipping next frame
     // See gSPCombineMatrices
     VR_CURRENTLY_RENDERING = false;
     gSPCombineMatrices();
+
+    gSP.changed |= CHANGED_SCISSOR;
+    updateScissor(frameBufferList().getCurrent());
 }
 
 void GraphicsDrawer::drawTriangles()
@@ -1345,8 +1346,10 @@ void GraphicsDrawer::_drawTexturedRectOneEye(bool finish, void *data)
 			m_rect[i].x *= scale;
 	}
 
-    for (int i=0; i<4; i++) {
-        m_rect[i].y *= 0.5;
+    if (config.vr.enable) {
+        for (int i=0; i<4; i++) {
+            m_rect[i].y *= 0.5;
+        }
     }
 
 	if (bUseTexrectDrawer)

@@ -204,6 +204,15 @@ void VRUpdateTransform() {
     float res_mat[4][4] = {{1,0,0,0}, {0,1,0,0}, {0,0,1,0}, {0,0,0,1}};
     MultMatrix(trans_mat, VR_ORIENTATION_MAT, res_mat);
 
+    if (!VR_CURRENTLY_RENDERING) {
+        // Hack: scale so that polygons on the right edge of the right eye,
+        //  not in view of the left eye, aren't culled
+        float scale[4][4] = {{0.7,0,0,0},{0,1,0,0},{0,0,1,0},{0,0,0,1}};
+        float result[4][4] = {{1,0,0,0},{0,1,0,0},{0,0,1,0},{0,0,0,1}};
+        MultMatrix(scale, res_mat, result);
+        CopyMatrix(res_mat, result);
+    }
+
     MultMatrix(gSP.matrix.projection, res_mat, VR_TRANSFORM_MAT);
 
     // Hack around swashed viewport
