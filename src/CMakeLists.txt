@@ -1,5 +1,9 @@
 cmake_minimum_required(VERSION 2.6)
 
+if ((${CMAKE_VERSION} VERSION_EQUAL 3.9) OR (${CMAKE_VERSION} VERSION_GREATER 3.9))
+  cmake_policy(SET CMP0069 NEW)
+endif()
+
 option(EGL "Set to ON if targeting an EGL device" ${EGL})
 option(PANDORA "Set to ON if targeting an OpenPandora" ${PANDORA})
 option(MUPENPLUSAPI "Set to ON for Mupen64Plus plugin" ${MUPENPLUSAPI})
@@ -305,11 +309,10 @@ if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" OR "${CMAKE_CXX_COMPILER_ID}" STREQ
     message("Found compiler version " ${G++_VERSION})
     message(SEND_ERROR "You need at least Clang 3.3 to compile GLideN64!")
   endif()
-#  SET(GCC_CPP11_COMPILE_FLAGS "-std=c++0x -static-libgcc")
-  SET(GCC_CPP11_COMPILE_FLAGS "-std=c++0x")
+  SET(GCC_CPP11_COMPILE_FLAGS "-std=c++11")
   SET( CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} ${GCC_CPP11_COMPILE_FLAGS}" )
   SET(GCC_STATIC_LINK_FLAGS "-static-libgcc")
-  SET( CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} ${GCC_STATIC_LINK_FLAGS}" )
+  SET( CMAKE_SHARED_LINKER_FLAGS  "${CMAKE_SHARED_LINKER_FLAGS} ${GCC_STATIC_LINK_FLAGS}" )
 endif()
 
 add_library( ${GLideN64_DLL_NAME} SHARED ${GLideN64_SOURCES})
@@ -339,6 +342,15 @@ if( CMAKE_BUILD_TYPE STREQUAL "Debug")
 endif( CMAKE_BUILD_TYPE STREQUAL "Debug")
 
 if( CMAKE_BUILD_TYPE STREQUAL "Release")
+  if ((${CMAKE_VERSION} VERSION_EQUAL 3.9) OR (${CMAKE_VERSION} VERSION_GREATER 3.9))
+    include(CheckIPOSupported)
+    check_ipo_supported(RESULT result)
+    if(result)
+      message("Interprocedural optimizations enabled")
+      set_property(TARGET ${GLideN64_DLL_NAME} PROPERTY INTERPROCEDURAL_OPTIMIZATION TRUE)
+    endif()
+  endif()
+
   SET_TARGET_PROPERTIES(
 	${GLideN64_DLL_NAME}
 	PROPERTIES

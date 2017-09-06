@@ -8,7 +8,7 @@
 
 /******************T3DUX microcode*************************/
 
-struct T3DGlobState
+struct T3DUXGlobState
 {
 	u16 pad0;
 	u16 perspNorm;
@@ -28,7 +28,7 @@ struct T3DGlobState
 	u32 rdpCmds;
 };
 
-struct T3DState
+struct T3DUXState
 {
 	u32 renderState;	/* render state */
 
@@ -48,7 +48,7 @@ struct T3DState
 };
 
 
-struct T3DTriN
+struct T3DUXTriN
 {
 	u8	flag, v2, v1, v0; /* flag is which one for flat shade */
 	u8	pal, v2tex, v1tex, v0tex; /* indexes in texture coords list */
@@ -91,7 +91,7 @@ static
 void T3DUX_LoadGlobState(u32 pgstate)
 {
 	const u32 addr = RSP_SegmentToPhysical(pgstate);
-	T3DGlobState *gstate = (T3DGlobState*)&RDRAM[addr];
+	T3DUXGlobState *gstate = (T3DUXGlobState*)&RDRAM[addr];
 	const u32 w0 = gstate->othermode0;
 	const u32 w1 = gstate->othermode1;
 	gDPSetOtherMode( _SHIFTR( w0, 0, 24 ),	// mode0
@@ -108,7 +108,7 @@ void T3DUX_LoadGlobState(u32 pgstate)
 static
 void T3DUX_LoadObject(u32 pstate, u32 pvtx, u32 ptri, u32 pcol)
 {
-	T3DState *ostate = (T3DState*)&RDRAM[RSP_SegmentToPhysical(pstate)];
+	T3DUXState *ostate = (T3DUXState*)&RDRAM[RSP_SegmentToPhysical(pstate)];
 	// TODO: fix me
 	const u32 tile = 0;
 	gSP.texture.tile = tile;
@@ -123,7 +123,7 @@ void T3DUX_LoadObject(u32 pstate, u32 pvtx, u32 ptri, u32 pcol)
 					 w1 );					// mode1
 
 	if ((ostate->matrixFlag & 1) == 0) //load matrix
-		gSPForceMatrix(pstate + sizeof(T3DState));
+		gSPForceMatrix(pstate + sizeof(T3DUXState));
 
 	gSPClearGeometryMode(G_LIGHTING | G_FOG);
 	gSPSetGeometryMode(ostate->renderState | G_SHADING_SMOOTH | G_SHADE | G_ZBUFFER | G_CULL_BACK);
@@ -138,7 +138,7 @@ void T3DUX_LoadObject(u32 pstate, u32 pvtx, u32 ptri, u32 pcol)
 
 	GraphicsDrawer & drawer = dwnd().getDrawer();
 	const u32 coladdr = RSP_SegmentToPhysical(pcol);
-	const T3DTriN * tri = (const T3DTriN*)&RDRAM[RSP_SegmentToPhysical(ptri)];
+	const T3DUXTriN * tri = (const T3DUXTriN*)&RDRAM[RSP_SegmentToPhysical(ptri)];
 	u8 pal = _SHIFTR(t32uxSetTileW1, 20, 4);
 	t32uxSetTileW1 &= 0xFF0FFFFF;
 	const bool flatShading = (ostate->geommode & 0x0F) == 0;

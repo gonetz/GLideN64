@@ -1,9 +1,6 @@
 #ifndef COMMONPLUGINAPI_H
 #define COMMONPLUGINAPI_H
 
-#include <thread>
-#include <condition_variable>
-
 #ifdef MUPENPLUSAPI
 #include "m64p_plugin.h"
 #else
@@ -11,6 +8,11 @@
 #include "ZilmarGFX_1_3.h"
 #include "FrameBufferInfoAPI.h"
 #define RSPTHREAD
+#endif
+
+#ifdef RSPTHREAD
+#include <thread>
+#include <condition_variable>
 #endif
 
 class APICommand;

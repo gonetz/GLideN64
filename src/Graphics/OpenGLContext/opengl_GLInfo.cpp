@@ -27,7 +27,7 @@ void GLInfo::init() {
 	LOG(LOG_VERBOSE, "OpenGL vendor: %s\n", glGetString(GL_VENDOR));
 	const GLubyte * strRenderer = glGetString(GL_RENDERER);
 
-	if (std::regex_match((const char*)strRenderer, std::regex("Adreno.*5\\d\\d") ))
+	if (std::regex_match(std::string((const char*)strRenderer), std::regex("Adreno.*5\\d\\d") ))
 		renderer = Renderer::Adreno500;
 	else if (strstr((const char*)strRenderer, "Adreno") != nullptr)
 		renderer = Renderer::Adreno;
