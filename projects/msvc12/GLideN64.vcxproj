@@ -289,6 +289,7 @@
     <ClCompile Include="..\..\src\F3DEX2ACCLAIM.cpp" />
     <ClCompile Include="..\..\src\F3DEX2CBFD.cpp" />
     <ClCompile Include="..\..\src\F3DEX2MM.cpp" />
+    <ClCompile Include="..\..\src\F3DFLX2.cpp" />
     <ClCompile Include="..\..\src\F3DGOLDEN.cpp" />
     <ClCompile Include="..\..\src\F3DSETA.cpp" />
     <ClCompile Include="..\..\src\F3DBETA.cpp" />
@@ -432,6 +433,7 @@
     <ClInclude Include="..\..\src\F3DEX2ACCLAIM.h" />
     <ClInclude Include="..\..\src\F3DEX2CBFD.h" />
     <ClInclude Include="..\..\src\F3DEX2MM.h" />
+    <ClInclude Include="..\..\src\F3DFLX2.h" />
     <ClInclude Include="..\..\src\F3DGOLDEN.h" />
     <ClInclude Include="..\..\src\F3DSETA.h" />
     <ClInclude Include="..\..\src\F3DSWRS.h" />

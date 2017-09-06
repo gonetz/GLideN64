@@ -134,6 +134,8 @@ struct gSPInfo
 		u32 vtx, mtx, tex_offset, tex_shift, tex_count;
 	} DMAOffsets;
 
+	u32 DMAIO_address;
+
 	// CBFD
 	u32 vertexNormalBase;
 	f32 vertexCoordMod[16];

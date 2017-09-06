@@ -250,9 +250,6 @@ public:
 		}
 
 		int nFogUsage = ((gSP.geometryMode & G_FOG) != 0) ? 1 : 0;
-		if (!GBI.isTextureGen())
-			// F-Zero ucode seems to always use fog mode when fog is used in blender.
-			nFogUsage |= (gDP.otherMode.c1_m1a == 3 || gDP.otherMode.c1_m2a == 3) ? 1 : 0;
 		if (GBI.getMicrocodeType() == F3DAM) {
 			const s16 fogMode = ((gSP.geometryMode >> 13) & 9) + 0xFFF8;
 			if (fogMode == 0)

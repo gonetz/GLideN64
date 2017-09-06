@@ -28,8 +28,9 @@
 #define T3DUX			19
 #define F3DEX2ACCLAIM	21
 #define F3DAM			22
-#define F3DSWRS		23
-#define NONE			24
+#define F3DSWRS			23
+#define F3DFLX2			24
+#define NONE			25
 
 // Fixed point conversion factors
 #define FIXED2FLOATRECIP1	0.5f
@@ -499,7 +500,6 @@ struct MicrocodeInfo
 	u32 crc;
 	bool NoN;
 	bool negativeY;
-	bool textureGen;
 	bool texturePersp;
 	bool combineMatrices;
 };
@@ -517,7 +517,6 @@ struct GBIInfo
 	bool isHWLSupported() const;
 	bool isNoN() const { return m_pCurrent != nullptr ? m_pCurrent->NoN : false; }
 	bool isNegativeY() const { return m_pCurrent != nullptr ? m_pCurrent->negativeY : true; }
-	bool isTextureGen() const { return m_pCurrent != nullptr ? m_pCurrent->textureGen: true; }
 	bool isTexturePersp() const { return m_pCurrent != nullptr ? m_pCurrent->texturePersp: true; }
 	bool isCombineMatrices() const { return m_pCurrent != nullptr ? m_pCurrent->combineMatrices: false; }
 

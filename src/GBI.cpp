@@ -29,6 +29,7 @@
 #include "F3DTEXA.h"
 #include "F3DEX2ACCLAIM.h"
 #include "F3DSWRS.h"
+#include "F3DFLX2.h"
 #include "ZSort.h"
 #include "CRC.h"
 #include "Log.h"
@@ -193,7 +194,8 @@ void GBIInfo::_makeCurrent(MicrocodeInfo * _pCurrent)
 			case F3DTEXA:		F3DTEXA_Init();			break;
 			case T3DUX:			F3D_Init();				break;
 			case F3DEX2ACCLAIM:	F3DEX2ACCLAIM_Init();	break;
-			case F3DSWRS:	F3DSWRS_Init();		break;
+			case F3DSWRS:		F3DSWRS_Init();			break;
+			case F3DFLX2:		F3DFLX2_Init();			break;
 		}
 
 		if (gfxContext.isSupported(graphics::SpecialFeatures::NearPlaneClipping)) {
@@ -249,7 +251,6 @@ void GBIInfo::loadMicrocode(u32 uc_start, u32 uc_dstart, u16 uc_dsize)
 	current.dataSize = uc_dsize;
 	current.NoN = false;
 	current.negativeY = true;
-	current.textureGen = true;
 	current.texturePersp = true;
 	current.combineMatrices = false;
 	current.type = NONE;
@@ -298,8 +299,8 @@ void GBIInfo::loadMicrocode(u32 uc_start, u32 uc_dstart, u16 uc_dsize)
 						if (uc_str[35] == 'H')
 							current.combineMatrices = true;
 					}
-					if (strncmp(&uc_str[14], "F3DF", 4) == 0)
-						current.textureGen = false;
+					if (strncmp(&uc_str[14], "F3DFLX", 6) == 0)
+						type = F3DFLX2;
 					else if (strncmp(&uc_str[14], "F3DZEX", 6) == 0) {
 						// Zelda games
 						// Check ucode version

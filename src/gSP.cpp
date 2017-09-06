@@ -369,28 +369,37 @@ void gSPProcessVertex4(u32 v)
 		else
 			gSPLightVertex4(v);
 
-		if (GBI.isTextureGen() && (gSP.geometryMode & G_TEXTURE_GEN) != 0) {
-			for(int i = 0; i < 4; ++i) {
-				SPVertex & vtx = drawer.getVertex(v+i);
-				f32 fLightDir[3] = {vtx.nx, vtx.ny, vtx.nz};
-				f32 x, y;
-				if (gSP.lookatEnable) {
-					x = DotProduct(gSP.lookat.i_xyz[0], fLightDir);
-					y = DotProduct(gSP.lookat.i_xyz[1], fLightDir);
-				} else {
-					fLightDir[0] *= 128.0f;
-					fLightDir[1] *= 128.0f;
-					fLightDir[2] *= 128.0f;
-					TransformVectorNormalize(fLightDir, gSP.matrix.modelView[gSP.matrix.modelViewi]);
-					x = fLightDir[0];
-					y = fLightDir[1];
+		if ((gSP.geometryMode & G_TEXTURE_GEN) != 0) {
+			if (GBI.getMicrocodeType() != F3DFLX2) {
+				for(int i = 0; i < 4; ++i) {
+					SPVertex & vtx = drawer.getVertex(v+i);
+					f32 fLightDir[3] = {vtx.nx, vtx.ny, vtx.nz};
+					f32 x, y;
+					if (gSP.lookatEnable) {
+						x = DotProduct(gSP.lookat.i_xyz[0], fLightDir);
+						y = DotProduct(gSP.lookat.i_xyz[1], fLightDir);
+					} else {
+						fLightDir[0] *= 128.0f;
+						fLightDir[1] *= 128.0f;
+						fLightDir[2] *= 128.0f;
+						TransformVectorNormalize(fLightDir, gSP.matrix.modelView[gSP.matrix.modelViewi]);
+						x = fLightDir[0];
+						y = fLightDir[1];
+					}
+					if (gSP.geometryMode & G_TEXTURE_GEN_LINEAR) {
+						vtx.s = acosf(-x) * 325.94931f;
+						vtx.t = acosf(-y) * 325.94931f;
+					} else { // G_TEXTURE_GEN
+						vtx.s = (x + 1.0f) * 512.0f;
+						vtx.t = (y + 1.0f) * 512.0f;
+					}
 				}
-				if (gSP.geometryMode & G_TEXTURE_GEN_LINEAR) {
-					vtx.s = acosf(-x) * 325.94931f;
-					vtx.t = acosf(-y) * 325.94931f;
-				} else { // G_TEXTURE_GEN
-					vtx.s = (x + 1.0f) * 512.0f;
-					vtx.t = (y + 1.0f) * 512.0f;
+			} else {
+				for(int i = 0; i < 4; ++i) {
+					SPVertex & vtx = drawer.getVertex(v+i);
+					const f32 intensity = DotProduct(gSP.lookat.i_xyz[0], &vtx.nx) * 128.0f;
+					const s16 index = static_cast<s16>(intensity);
+					vtx.a = _FIXED2FLOAT(RDRAM[(gSP.DMAIO_address + 128 + index) ^ 3], 8);
 				}
 			}
 		}
@@ -612,8 +621,8 @@ void gSPProcessVertex(u32 v)
 	DisplayWindow & wnd = dwnd();
 	GraphicsDrawer & drawer = wnd.getDrawer();
 	SPVertex & vtx = drawer.getVertex(v);
-	float vPos[3] = {(float)vtx.x, (float)vtx.y, (float)vtx.z};
-	gSPTransformVertex( &vtx.x, gSP.matrix.combined );
+	f32 vPos[3] = {vtx.x, vtx.y, vtx.z};
+	gSPTransformVertex(&vtx.x, gSP.matrix.combined);
 
 	if (wnd.isAdjustScreen() && (gDP.colorImage.width > VI.width * 98 / 100)) {
 		vtx.x *= wnd.getAdjustScale();
@@ -640,26 +649,32 @@ void gSPProcessVertex(u32 v)
 		else
 			gSPLightVertex(vtx);
 
-		if (GBI.isTextureGen() && (gSP.geometryMode & G_TEXTURE_GEN) != 0) {
-			f32 fLightDir[3] = {vtx.nx, vtx.ny, vtx.nz};
-			f32 x, y;
-			if (gSP.lookatEnable) {
-				x = DotProduct(gSP.lookat.i_xyz[0], fLightDir);
-				y = DotProduct(gSP.lookat.i_xyz[1], fLightDir);
+		if ((gSP.geometryMode & G_TEXTURE_GEN) != 0) {
+			if (GBI.getMicrocodeType() != F3DFLX2) {
+				f32 fLightDir[3] = {vtx.nx, vtx.ny, vtx.nz};
+				f32 x, y;
+				if (gSP.lookatEnable) {
+					x = DotProduct(gSP.lookat.i_xyz[0], fLightDir);
+					y = DotProduct(gSP.lookat.i_xyz[1], fLightDir);
+				} else {
+					fLightDir[0] *= 128.0f;
+					fLightDir[1] *= 128.0f;
+					fLightDir[2] *= 128.0f;
+					TransformVectorNormalize(fLightDir, gSP.matrix.modelView[gSP.matrix.modelViewi]);
+					x = fLightDir[0];
+					y = fLightDir[1];
+				}
+				if (gSP.geometryMode & G_TEXTURE_GEN_LINEAR) {
+					vtx.s = acosf(-x) * 325.94931f;
+					vtx.t = acosf(-y) * 325.94931f;
+				} else { // G_TEXTURE_GEN
+					vtx.s = (x + 1.0f) * 512.0f;
+					vtx.t = (y + 1.0f) * 512.0f;
+				}
 			} else {
-				fLightDir[0] *= 128.0f;
-				fLightDir[1] *= 128.0f;
-				fLightDir[2] *= 128.0f;
-				TransformVectorNormalize(fLightDir, gSP.matrix.modelView[gSP.matrix.modelViewi]);
-				x = fLightDir[0];
-				y = fLightDir[1];
-			}
-			if (gSP.geometryMode & G_TEXTURE_GEN_LINEAR) {
-				vtx.s = acosf(-x) * 325.94931f;
-				vtx.t = acosf(-y) * 325.94931f;
-			} else { // G_TEXTURE_GEN
-				vtx.s = (x + 1.0f) * 512.0f;
-				vtx.t = (y + 1.0f) * 512.0f;
+				const f32 intensity = DotProduct(gSP.lookat.i_xyz[0], &vtx.nx) * 128.0f;
+				const s16 index = static_cast<s16>(intensity);
+				vtx.a = _FIXED2FLOAT(RDRAM[(gSP.DMAIO_address + 128 + index) ^ 3], 8);
 			}
 		}
 	} else if (gSP.geometryMode & G_ACCLAIM_LIGHTING) {
