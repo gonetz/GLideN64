@@ -14,7 +14,7 @@
 #include "CRC.h"
 #include <string.h>
 #include "convert.h"
-#include "S2DEX.h"
+#include "uCodes/S2DEX.h"
 #include "VI.h"
 #include "FrameBuffer.h"
 #include "DepthBuffer.h"

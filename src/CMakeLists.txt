@@ -22,21 +22,6 @@ set(GLideN64_SOURCES
   Debugger.cpp
   DepthBuffer.cpp
   DisplayWindow.cpp
-  F3D.cpp
-  F3DBETA.cpp
-  F3DDKR.cpp
-  F3DEX.cpp
-  F3DAM.cpp
-  F3DEX2.cpp
-  F3DEX2ACCLAIM.cpp
-  F3DEX2CBFD.cpp
-  F3DEX2MM.cpp
-  F3DFLX2.cpp
-  F3DGOLDEN.cpp
-  F3DSWRS.cpp
-  F3DTEXA.cpp
-  F3DPD.cpp
-  F3DSETA.cpp
   FrameBuffer.cpp
   FrameBufferInfo.cpp
   GBI.cpp
@@ -45,9 +30,6 @@ set(GLideN64_SOURCES
   GraphicsDrawer.cpp
   gSP.cpp
   Keys.cpp
-  L3D.cpp
-  L3DEX2.cpp
-  L3DEX.cpp
   Log.cpp
   N64.cpp
   NoiseTexture.cpp
@@ -57,18 +39,13 @@ set(GLideN64_SOURCES
   RDP.cpp
   RSP.cpp
   RSP_LoadMatrix.cpp
-  S2DEX2.cpp
-  S2DEX.cpp
   SoftwareRender.cpp
-  T3DUX.cpp
   TexrectDrawer.cpp
   TextDrawer.cpp
   TextureFilterHandler.cpp
   Textures.cpp
-  Turbo3D.cpp
   VI.cpp
   ZlutTexture.cpp
-  ZSort.cpp
   BufferCopy/ColorBufferToRDRAM.cpp
   BufferCopy/DepthBufferToRDRAM.cpp
   BufferCopy/RDRAMtoColorBuffer.cpp
@@ -100,6 +77,29 @@ set(GLideN64_SOURCES
   Graphics/OpenGLContext/GLSL/glsl_ShaderStorage.cpp
   Graphics/OpenGLContext/GLSL/glsl_SpecialShadersFactory.cpp
   Graphics/OpenGLContext/GLSL/glsl_Utils.cpp
+  uCodes/F3D.cpp
+  uCodes/F3DBETA.cpp
+  uCodes/F3DDKR.cpp
+  uCodes/F3DEX.cpp
+  uCodes/F3DAM.cpp
+  uCodes/F3DEX2.cpp
+  uCodes/F3DEX2ACCLAIM.cpp
+  uCodes/F3DEX2CBFD.cpp
+  uCodes/F3DEX2MM.cpp
+  uCodes/F3DFLX2.cpp
+  uCodes/F3DGOLDEN.cpp
+  uCodes/F3DSWRS.cpp
+  uCodes/F3DTEXA.cpp
+  uCodes/F3DPD.cpp
+  uCodes/F3DSETA.cpp
+  uCodes/L3D.cpp
+  uCodes/L3DEX2.cpp
+  uCodes/L3DEX.cpp
+  uCodes/S2DEX2.cpp
+  uCodes/S2DEX.cpp
+  uCodes/T3DUX.cpp
+  uCodes/Turbo3D.cpp
+  uCodes/ZSort.cpp
 )
 
 #check if we're running on Raspberry Pi

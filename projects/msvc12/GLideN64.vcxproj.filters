@@ -107,36 +107,6 @@
     <ClCompile Include="..\..\src\VI.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\F3D.cpp">
-      <Filter>Source Files\uCodes</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\F3DDKR.cpp">
-      <Filter>Source Files\uCodes</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\F3DEX.cpp">
-      <Filter>Source Files\uCodes</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\F3DEX2.cpp">
-      <Filter>Source Files\uCodes</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\F3DPD.cpp">
-      <Filter>Source Files\uCodes</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\L3D.cpp">
-      <Filter>Source Files\uCodes</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\L3DEX.cpp">
-      <Filter>Source Files\uCodes</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\L3DEX2.cpp">
-      <Filter>Source Files\uCodes</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\S2DEX.cpp">
-      <Filter>Source Files\uCodes</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\S2DEX2.cpp">
-      <Filter>Source Files\uCodes</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\3DMath.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -167,20 +137,11 @@
     <ClCompile Include="..\..\src\windows\ZilmarAPIImpl_windows.cpp">
       <Filter>Source Files\windows</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\F3DEX2CBFD.cpp">
-      <Filter>Source Files\uCodes</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\windows\Config_windows.cpp">
       <Filter>Source Files\windows</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\mupenplus\Config_mupenplus.cpp">
       <Filter>Source Files\mupenplus</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\Turbo3D.cpp">
-      <Filter>Source Files\uCodes</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\ZSort.cpp">
-      <Filter>Source Files\uCodes</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\PostProcessor.cpp">
       <Filter>Source Files</Filter>
@@ -223,18 +184,6 @@
     </ClCompile>
     <ClCompile Include="..\..\src\Log.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\F3DSETA.cpp">
-      <Filter>Source Files\uCodes</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\F3DGOLDEN.cpp">
-      <Filter>Source Files\uCodes</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\F3DEX2MM.cpp">
-      <Filter>Source Files\uCodes</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\F3DBETA.cpp">
-      <Filter>Source Files\uCodes</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Graphics\Context.cpp">
       <Filter>Source Files\Graphics</Filter>
@@ -350,28 +299,79 @@
     <ClCompile Include="..\..\src\xxHash\xxhash.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\F3DTEXA.cpp">
-      <Filter>Source Files\uCodes</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\T3DUX.cpp">
-      <Filter>Source Files\uCodes</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\DebugDump.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\Debugger.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\F3DEX2ACCLAIM.cpp">
+    <ClCompile Include="..\..\src\uCodes\F3D.cpp">
       <Filter>Source Files\uCodes</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\F3DAM.cpp">
+    <ClCompile Include="..\..\src\uCodes\F3DAM.cpp">
       <Filter>Source Files\uCodes</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\F3DSWRS.cpp">
+    <ClCompile Include="..\..\src\uCodes\F3DBETA.cpp">
       <Filter>Source Files\uCodes</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\F3DFLX2.cpp">
+    <ClCompile Include="..\..\src\uCodes\F3DDKR.cpp">
+      <Filter>Source Files\uCodes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\uCodes\F3DEX.cpp">
+      <Filter>Source Files\uCodes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\uCodes\F3DEX2.cpp">
+      <Filter>Source Files\uCodes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\uCodes\F3DEX2ACCLAIM.cpp">
+      <Filter>Source Files\uCodes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\uCodes\F3DEX2CBFD.cpp">
+      <Filter>Source Files\uCodes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\uCodes\F3DEX2MM.cpp">
+      <Filter>Source Files\uCodes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\uCodes\F3DFLX2.cpp">
+      <Filter>Source Files\uCodes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\uCodes\F3DGOLDEN.cpp">
+      <Filter>Source Files\uCodes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\uCodes\F3DPD.cpp">
+      <Filter>Source Files\uCodes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\uCodes\F3DSETA.cpp">
+      <Filter>Source Files\uCodes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\uCodes\F3DSWRS.cpp">
+      <Filter>Source Files\uCodes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\uCodes\F3DTEXA.cpp">
+      <Filter>Source Files\uCodes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\uCodes\L3D.cpp">
+      <Filter>Source Files\uCodes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\uCodes\L3DEX.cpp">
+      <Filter>Source Files\uCodes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\uCodes\L3DEX2.cpp">
+      <Filter>Source Files\uCodes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\uCodes\S2DEX.cpp">
+      <Filter>Source Files\uCodes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\uCodes\S2DEX2.cpp">
+      <Filter>Source Files\uCodes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\uCodes\T3DUX.cpp">
+      <Filter>Source Files\uCodes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\uCodes\Turbo3D.cpp">
+      <Filter>Source Files\uCodes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\uCodes\ZSort.cpp">
       <Filter>Source Files\uCodes</Filter>
     </ClCompile>
   </ItemGroup>
@@ -427,36 +427,6 @@
     <ClInclude Include="..\..\src\VI.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\F3D.h">
-      <Filter>Header Files\uCodes</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\F3DDKR.h">
-      <Filter>Header Files\uCodes</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\F3DEX.h">
-      <Filter>Header Files\uCodes</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\F3DEX2.h">
-      <Filter>Header Files\uCodes</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\F3DPD.h">
-      <Filter>Header Files\uCodes</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\L3D.h">
-      <Filter>Header Files\uCodes</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\L3DEX.h">
-      <Filter>Header Files\uCodes</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\L3DEX2.h">
-      <Filter>Header Files\uCodes</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\S2DEX.h">
-      <Filter>Header Files\uCodes</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\S2DEX2.h">
-      <Filter>Header Files\uCodes</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\ZilmarGFX_1_3.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -471,15 +441,6 @@
     </ClInclude>
     <ClInclude Include="..\..\src\Log.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\F3DEX2CBFD.h">
-      <Filter>Header Files\uCodes</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\Turbo3D.h">
-      <Filter>Header Files\uCodes</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\ZSort.h">
-      <Filter>Header Files\uCodes</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\GLideNHQ\Ext_TxFilter.h">
       <Filter>Header Files</Filter>
@@ -531,18 +492,6 @@
     </ClInclude>
     <ClInclude Include="..\..\src\CRC32.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\F3DSETA.h">
-      <Filter>Header Files\uCodes</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\F3DGOLDEN.h">
-      <Filter>Header Files\uCodes</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\F3DEX2MM.h">
-      <Filter>Header Files\uCodes</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\F3DBETA.h">
-      <Filter>Header Files\uCodes</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Graphics\ContextImpl.h">
       <Filter>Header Files\Graphics</Filter>
@@ -670,28 +619,79 @@
     <ClInclude Include="..\..\src\xxHash\xxhash.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\T3DUX.h">
-      <Filter>Header Files\uCodes</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\F3DTEXA.h">
-      <Filter>Header Files\uCodes</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\DebugDump.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\Debugger.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\F3DEX2ACCLAIM.h">
+    <ClInclude Include="..\..\src\uCodes\F3D.h">
       <Filter>Header Files\uCodes</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\F3DAM.h">
+    <ClInclude Include="..\..\src\uCodes\F3DAM.h">
       <Filter>Header Files\uCodes</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\F3DSWRS.h">
+    <ClInclude Include="..\..\src\uCodes\F3DBETA.h">
       <Filter>Header Files\uCodes</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\F3DFLX2.h">
+    <ClInclude Include="..\..\src\uCodes\F3DDKR.h">
+      <Filter>Header Files\uCodes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\uCodes\F3DEX.h">
+      <Filter>Header Files\uCodes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\uCodes\F3DEX2.h">
+      <Filter>Header Files\uCodes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\uCodes\F3DEX2ACCLAIM.h">
+      <Filter>Header Files\uCodes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\uCodes\F3DEX2CBFD.h">
+      <Filter>Header Files\uCodes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\uCodes\F3DEX2MM.h">
+      <Filter>Header Files\uCodes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\uCodes\F3DFLX2.h">
+      <Filter>Header Files\uCodes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\uCodes\F3DGOLDEN.h">
+      <Filter>Header Files\uCodes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\uCodes\F3DPD.h">
+      <Filter>Header Files\uCodes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\uCodes\F3DSETA.h">
+      <Filter>Header Files\uCodes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\uCodes\F3DSWRS.h">
+      <Filter>Header Files\uCodes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\uCodes\F3DTEXA.h">
+      <Filter>Header Files\uCodes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\uCodes\L3D.h">
+      <Filter>Header Files\uCodes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\uCodes\L3DEX.h">
+      <Filter>Header Files\uCodes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\uCodes\L3DEX2.h">
+      <Filter>Header Files\uCodes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\uCodes\S2DEX.h">
+      <Filter>Header Files\uCodes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\uCodes\S2DEX2.h">
+      <Filter>Header Files\uCodes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\uCodes\T3DUX.h">
+      <Filter>Header Files\uCodes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\uCodes\Turbo3D.h">
+      <Filter>Header Files\uCodes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\uCodes\ZSort.h">
       <Filter>Header Files\uCodes</Filter>
     </ClInclude>
   </ItemGroup>
