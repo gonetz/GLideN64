@@ -466,17 +466,17 @@ class ShaderBlender1 : public ShaderPart
 public:
 	ShaderBlender1(const opengl::GLInfo & _glinfo)
 	{
-		if (_glinfo.isGLES2) {
+		if (_glinfo.isGLESX) {
 			m_part =
-				"  if (uForceBlendCycle1 != 0) {	\n"
-				"    muxPM[0] = clampedColor;		\n"
-			;
+				"  muxPM[0] = clampedColor;			\n"
+				;
 			if (g_cycleType == G_CYC_2CYCLE) {
 				m_part +=
-					"    muxPM[1] = clampedColor;	\n"
+					"  muxPM[1] = clampedColor;		\n"
 					;
 			}
 			m_part +=
+				"  if (uForceBlendCycle1 != 0) {	\n"
 				"    muxA[0] = clampedColor.a;		\n"
 				"    lowp float muxa;				\n"
 				"    if (uBlendMux1[1] == 0)		\n"
@@ -517,25 +517,36 @@ public:
 				"      muxb = muxB[3];				\n"
 				"    lowp vec4 blend1 = (muxpm0 * muxa) + (muxpm2 * muxb);	\n"
 				"    clampedColor.rgb = clamp(blend1.rgb, 0.0, 1.0);		\n"
+				"  } else {							\n"
+				"    lowp vec4 muxpm0;				\n"
+				"    if (uBlendMux1[0] == 0)		\n"
+				"      muxpm0 = muxPM[0];			\n"
+				"    else if (uBlendMux1[0] == 1)	\n"
+				"      muxpm0 = muxPM[1];			\n"
+				"    else if (uBlendMux1[0] == 2)	\n"
+				"      muxpm0 = muxPM[2];			\n"
+				"    else if (uBlendMux1[0] == 3)	\n"
+				"      muxpm0 = muxPM[3];			\n"
+				"    clampedColor.rgb = muxpm0.rgb;	\n"
 				"  }								\n"
 				;
 		} else {
 			m_part =
-				"  if (uForceBlendCycle1 != 0) {						\n"
-				"    muxPM[0] = clampedColor;							\n"
+				"  muxPM[0] = clampedColor;								\n"
 			;
 			if (g_cycleType == G_CYC_2CYCLE) {
 				m_part +=
-					"    muxPM[1] = clampedColor;						\n"
-				;
+					"  muxPM[1] = clampedColor;							\n"
+					;
 			}
 			m_part +=
+				"  if (uForceBlendCycle1 != 0) {						\n"
 				"    muxA[0] = clampedColor.a;							\n"
 				"    muxB[0] = 1.0 - muxA[uBlendMux1[1]];				\n"
 				"    lowp vec4 blend1 = (muxPM[uBlendMux1[0]] * muxA[uBlendMux1[1]]) + (muxPM[uBlendMux1[2]] * muxB[uBlendMux1[3]]);	\n"
 				"    clampedColor.rgb = clamp(blend1.rgb, 0.0, 1.0);	\n"
-				"  }													\n"
-			;
+				"  } else clampedColor.rgb = muxPM[uBlendMux1[0]].rgb;	\n"
+				;
 
 		}
 	}
@@ -546,11 +557,11 @@ class ShaderBlender2 : public ShaderPart
 public:
 	ShaderBlender2(const opengl::GLInfo & _glinfo)
 	{
-		if (_glinfo.isGLES2) {
+		if (_glinfo.isGLESX) {
 			m_part =
-				"  if (uForceBlendCycle2 != 0) {	\n"
 				"    muxPM[0] = clampedColor;		\n"
 				"    muxPM[1] = vec4(0.0);			\n"
+				"  if (uForceBlendCycle2 != 0) {	\n"
 				"    muxA[0] = clampedColor.a;		\n"
 				"    lowp float muxa;				\n"
 				"    if (uBlendMux2[1] == 0)		\n"
@@ -591,19 +602,30 @@ public:
 				"      muxb = muxB[3];				\n"
 				"    lowp vec4 blend2 = muxpm0 * muxa + muxpm2 * muxb;	\n"
 				"    clampedColor.rgb = clamp(blend2.rgb, 0.0, 1.0);	\n"
+				"  } else {							\n"
+				"    lowp vec4 muxpm0;				\n"
+				"    if (uBlendMux2[0] == 0)		\n"
+				"      muxpm0 = muxPM[0];			\n"
+				"    else if (uBlendMux2[0] == 1)	\n"
+				"      muxpm0 = muxPM[1];			\n"
+				"    else if (uBlendMux2[0] == 2)	\n"
+				"      muxpm0 = muxPM[2];			\n"
+				"    else if (uBlendMux2[0] == 3)	\n"
+				"      muxpm0 = muxPM[3];			\n"
+				"    clampedColor.rgb = muxpm0.rgb;	\n"
 				"  }								\n"
 				;
 		}
 		else {
 			m_part =
+				"  muxPM[0] = clampedColor;								\n"
+				"  muxPM[1] = vec4(0.0);								\n"
 				"  if (uForceBlendCycle2 != 0) {						\n"
-				"    muxPM[0] = clampedColor;							\n"
-				"    muxPM[1] = vec4(0.0);								\n"
 				"    muxA[0] = clampedColor.a;							\n"
 				"    muxB[0] = 1.0 - muxA[uBlendMux2[1]];				\n"
 				"    lowp vec4 blend2 = muxPM[uBlendMux2[0]] * muxA[uBlendMux2[1]] + muxPM[uBlendMux2[2]] * muxB[uBlendMux2[3]];	\n"
 				"    clampedColor.rgb = clamp(blend2.rgb, 0.0, 1.0);	\n"
-				"  }													\n"
+				"  } else clampedColor.rgb = muxPM[uBlendMux2[0]].rgb;	\n"
 				;
 		}
 	}
