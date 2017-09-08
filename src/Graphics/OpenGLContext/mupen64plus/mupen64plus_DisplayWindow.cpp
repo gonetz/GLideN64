@@ -78,6 +78,8 @@ bool DisplayWindowMupen64plus::_start()
 	m_screenHeight = config.video.windowedHeight;
 	_getDisplaySize();
 	_setBufferSize();
+	config.video.windowedWidth = m_width;
+	config.video.windowedHeight = m_height;
 
 	printf("(II) Setting video mode %dx%d...\n", m_screenWidth, m_screenHeight);
 	const m64p_video_flags flags = M64VIDEOFLAG_SUPPORT_RESIZING;
@@ -128,7 +130,6 @@ bool DisplayWindowMupen64plus::_resizeWindow()
 {
 	_setAttributes();
 
-	m_bFullscreen = false;
 	m_width = m_screenWidth = m_resizeWidth;
 	m_height = m_screenHeight = m_resizeHeight;
 	if (CoreVideo_ResizeWindow(m_screenWidth, m_screenHeight) != M64ERR_SUCCESS) {
@@ -145,6 +146,7 @@ bool DisplayWindowMupen64plus::_resizeWindow()
 
 void DisplayWindowMupen64plus::_changeWindow()
 {
+	m_bFullscreen = !m_bFullscreen;
 	CoreVideo_ToggleFullScreen();
 }
 
