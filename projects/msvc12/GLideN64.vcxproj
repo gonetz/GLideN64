@@ -218,6 +218,7 @@
       <ExceptionHandling>Async</ExceptionHandling>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <AdditionalIncludeDirectories>../../src;../../src/inc;../../src/osal;../../../freetype/include</AdditionalIncludeDirectories>
+      <WholeProgramOptimization>true</WholeProgramOptimization>
     </ClCompile>
     <Link>
       <AdditionalDependencies>freetype253MT.lib;..\..\src\GLideNUI\release\GLideNUI.lib;osal\Release\osal.lib;GLideNHQ\Release\libGLideNHQ.lib;opengl32.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -230,6 +231,7 @@
       <TargetMachine>MachineX86</TargetMachine>
       <AdditionalLibraryDirectories>../../../freetype/lib</AdditionalLibraryDirectories>
       <AdditionalOptions>/LTCG %(AdditionalOptions)</AdditionalOptions>
+      <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_mupenplus|Win32'">
@@ -250,6 +252,7 @@
       <AdditionalIncludeDirectories>../../src;../../src/inc;../../src/osal;../../../freetype/include</AdditionalIncludeDirectories>
       <ExceptionHandling>Async</ExceptionHandling>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <WholeProgramOptimization>true</WholeProgramOptimization>
     </ClCompile>
     <Link>
       <AdditionalDependencies>freetype253MT.lib;osal\Release\osal.lib;GLideNHQ\Release\libGLideNHQ.lib;opengl32.lib;winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -261,6 +264,7 @@
       <ImportLibrary>$(OutDir)New glNintendo64().lib</ImportLibrary>
       <TargetMachine>MachineX86</TargetMachine>
       <AdditionalLibraryDirectories>../../../freetype/lib</AdditionalLibraryDirectories>
+      <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
