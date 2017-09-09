@@ -87,8 +87,21 @@ void DisplayWindow::updateScale()
 {
 	if (VI.width == 0 || VI.height == 0)
 		return;
-	m_scaleX = m_width / (float)VI.width;
-	m_scaleY = m_height / (float)VI.height;
+	u32 width, height;
+#ifdef MUPENPLUSAPI
+	if (m_bFullscreen)
+	{
+		width = config.video.windowedWidth;
+		height = config.video.windowedHeight;
+	}
+	else
+#endif
+	{
+		width = m_width;
+		height = m_height;
+	}
+	m_scaleX = width / (float)VI.width;
+	m_scaleY = height / (float)VI.height;
 }
 
 void DisplayWindow::_setBufferSize()

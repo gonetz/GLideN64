@@ -177,25 +177,14 @@ bool ColorBufferToRDRAM::_prepareCopy(u32 _startAddress)
 	}
 
 	if (m_pCurFrameBuffer->m_scale != 1.0f) {
-		u32 x0 = 0;
-		u32 width;
-		if (config.frameBufferEmulation.nativeResFactor == 0) {
-			const u32 screenWidth = wnd.getWidth();
-			width = screenWidth;
-			if (wnd.isAdjustScreen()) {
-				width = static_cast<u32>(screenWidth*wnd.getAdjustScale());
-				x0 = (screenWidth - width) / 2;
-			}
-		} else {
-			width = m_pCurFrameBuffer->m_pTexture->realWidth;
-		}
+		u32 width = m_pCurFrameBuffer->m_pTexture->realWidth;
 		u32 height = (u32)(bufferHeight * m_pCurFrameBuffer->m_scale);
 
 		CachedTexture * pInputTexture = m_pCurFrameBuffer->m_pTexture;
 		GraphicsDrawer::BlitOrCopyRectParams blitParams;
-		blitParams.srcX0 = x0;
+		blitParams.srcX0 = 0;
 		blitParams.srcY0 = 0;
-		blitParams.srcX1 = x0 + width;
+		blitParams.srcX1 = width;
 		blitParams.srcY1 = height;
 		blitParams.srcWidth = pInputTexture->realWidth;
 		blitParams.srcHeight = pInputTexture->realHeight;
