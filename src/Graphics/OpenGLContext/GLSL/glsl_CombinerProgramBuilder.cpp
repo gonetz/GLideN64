@@ -469,13 +469,6 @@ public:
 		if (_glinfo.isGLESX) {
 			m_part =
 				"  muxPM[0] = clampedColor;			\n"
-				;
-			if (g_cycleType == G_CYC_2CYCLE) {
-				m_part +=
-					"  muxPM[1] = clampedColor;		\n"
-					;
-			}
-			m_part +=
 				"  if (uForceBlendCycle1 != 0) {	\n"
 				"    muxA[0] = clampedColor.a;		\n"
 				"    lowp float muxa;				\n"
@@ -533,13 +526,6 @@ public:
 		} else {
 			m_part =
 				"  muxPM[0] = clampedColor;								\n"
-			;
-			if (g_cycleType == G_CYC_2CYCLE) {
-				m_part +=
-					"  muxPM[1] = clampedColor;							\n"
-					;
-			}
-			m_part +=
 				"  if (uForceBlendCycle1 != 0) {						\n"
 				"    muxA[0] = clampedColor.a;							\n"
 				"    muxB[0] = 1.0 - muxA[uBlendMux1[1]];				\n"
@@ -549,6 +535,14 @@ public:
 				;
 
 		}
+	}
+
+	void write(std::stringstream & shader) const override
+	{
+		if (g_cycleType == G_CYC_2CYCLE)
+			shader << "  muxPM[1] = clampedColor;	\n";
+
+		ShaderPart::write(shader);
 	}
 };
 
