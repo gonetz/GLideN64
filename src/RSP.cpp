@@ -126,6 +126,7 @@ void RSP_ProcessDList()
 		gSP.matrix.modelViewi = 0;
 		gSP.status[0] = gSP.status[1] = gSP.status[2] = gSP.status[3] = 0;
 		gSP.changed |= CHANGED_MATRIX | CHANGED_LIGHT | CHANGED_LOOKAT;
+		gSP.tri_num = 0;
 		gDP.changed &= ~CHANGED_CPU_FB_WRITE;
 		gDPSetTexturePersp(G_TP_PERSP);
 

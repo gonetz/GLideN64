@@ -56,6 +56,7 @@ void gSPFlushTriangles()
 		(RSP.nextCmd != G_QUAD)
 		) {
 		dwnd().getDrawer().drawTriangles();
+		DebugMsg(DEBUG_NORMAL, "Triangles flushed;\n");
 	}
 }
 
@@ -79,43 +80,46 @@ void gSPTriangle(s32 v0, s32 v1, s32 v2)
 {
 	GraphicsDrawer & drawer = dwnd().getDrawer();
 	if ((v0 < INDEXMAP_SIZE) && (v1 < INDEXMAP_SIZE) && (v2 < INDEXMAP_SIZE)) {
-		if (drawer.isClipped(v0, v1, v2))
+		if (drawer.isClipped(v0, v1, v2)) {
+			DebugMsg(DEBUG_NORMAL, "Triangle clipped (%i, %i, %i)\n", v0, v1, v2);
 			return;
+		}
 		drawer.addTriangle(v0, v1, v2);
+		DebugMsg(DEBUG_NORMAL, "Triangle #%i added (%i, %i, %i)\n", gSP.tri_num++, v0, v1, v2);
 	}
 }
 
 void gSP1Triangle( const s32 v0, const s32 v1, const s32 v2)
 {
+	DebugMsg(DEBUG_NORMAL, "gSP1Triangle (%i, %i, %i)\n", v0, v1, v2);
+
 	gSPTriangle( v0, v1, v2);
 	gSPFlushTriangles();
-
-	DebugMsg(DEBUG_NORMAL, "gSP1Triangle (%i, %i, %i)\n", v0, v1, v2);
 }
 
 void gSP2Triangles(const s32 v00, const s32 v01, const s32 v02, const s32 flag0,
-					const s32 v10, const s32 v11, const s32 v12, const s32 flag1 )
+				   const s32 v10, const s32 v11, const s32 v12, const s32 flag1 )
 {
+	DebugMsg(DEBUG_NORMAL, "gSP2Triangle (%i, %i, %i)-(%i, %i, %i)\n", v00, v01, v02, v10, v11, v12);
+
 	gSPTriangle( v00, v01, v02);
 	gSPTriangle( v10, v11, v12);
 	gSPFlushTriangles();
-
-	DebugMsg(DEBUG_NORMAL, "gSP2Triangle (%i, %i, %i)-(%i, %i, %i)\n", v00, v01, v02, v10, v11, v12);
 }
 
 void gSP4Triangles(const s32 v00, const s32 v01, const s32 v02,
-					const s32 v10, const s32 v11, const s32 v12,
-					const s32 v20, const s32 v21, const s32 v22,
-					const s32 v30, const s32 v31, const s32 v32 )
+				   const s32 v10, const s32 v11, const s32 v12,
+				   const s32 v20, const s32 v21, const s32 v22,
+				   const s32 v30, const s32 v31, const s32 v32 )
 {
+	DebugMsg(DEBUG_NORMAL, "gSP4Triangle (%i, %i, %i)-(%i, %i, %i)-(%i, %i, %i)-(%i, %i, %i)\n",
+			 v00, v01, v02, v10, v11, v12, v20, v21, v22, v30, v31, v32);
+
 	gSPTriangle(v00, v01, v02);
 	gSPTriangle(v10, v11, v12);
 	gSPTriangle(v20, v21, v22);
 	gSPTriangle(v30, v31, v32);
 	gSPFlushTriangles();
-
-	DebugMsg(DEBUG_NORMAL, "gSP4Triangle (%i, %i, %i)-(%i, %i, %i)-(%i, %i, %i)-(%i, %i, %i)\n",
-		v00, v01, v02, v10, v11, v12, v20, v21, v22, v30, v31, v32);
 }
 
 gSPInfo gSP;

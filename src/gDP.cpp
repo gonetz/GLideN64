@@ -760,7 +760,8 @@ void gDPFillRectangle( s32 ulx, s32 uly, s32 lrx, s32 lry )
 
 	frameBufferList().setBufferChanged(f32(lry));
 
-	DebugMsg( DEBUG_NORMAL, "gDPFillRectangle( %i, %i, %i, %i );\n", ulx, uly, lrx, lry );
+	DebugMsg( DEBUG_NORMAL, "gDPFillRectangle #%i- #%i ( %i, %i, %i, %i );\n", gSP.tri_num, gSP.tri_num +1, ulx, uly, lrx, lry );
+	gSP.tri_num += 2;
 }
 
 void gDPSetConvert( s32 k0, s32 k1, s32 k2, s32 k3, s32 k4, s32 k5 )
@@ -846,11 +847,12 @@ void gDPTextureRectangle(f32 ulx, f32 uly, f32 lrx, f32 lry, s32 tile, f32 s, f3
 	frameBufferList().setBufferChanged(lry);
 
 	if (flip)
-		DebugMsg( DEBUG_NORMAL, "gDPTextureRectangleFlip( %f, %f, %f, %f, %i, %f, %f, %f, %f);\n",
-				  ulx, uly, lrx, lry, tile, s, t, dsdx, dtdy );
+		DebugMsg( DEBUG_NORMAL, "gDPTextureRectangleFlip #%i- #%i ( %f, %f, %f, %f, %i, %f, %f, %f, %f);\n",
+				  gSP.tri_num, gSP.tri_num + 1, ulx, uly, lrx, lry, tile, s, t, dsdx, dtdy );
 	else
-		DebugMsg( DEBUG_NORMAL, "gDPTextureRectangle( %f, %f, %f, %f, %i, %i, %f, %f, %f, %f );\n",
-				  ulx, uly, lrx, lry, tile, s, t, dsdx, dtdy );
+		DebugMsg( DEBUG_NORMAL, "gDPTextureRectangle #%i- #%i ( %f, %f, %f, %f, %i, %i, %f, %f, %f, %f );\n",
+				  gSP.tri_num, gSP.tri_num+1, ulx, uly, lrx, lry, tile, s, t, dsdx, dtdy );
+	gSP.tri_num += 2;
 }
 
 void gDPFullSync()

@@ -136,6 +136,8 @@ struct gSPInfo
 
 	u32 DMAIO_address;
 
+	u32 tri_num;
+
 	// CBFD
 	u32 vertexNormalBase;
 	f32 vertexCoordMod[16];
