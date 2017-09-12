@@ -44,6 +44,9 @@ struct SPVertex
 	u8 HWLight;
 	u8 clip;
 	s16 flag;
+
+	// For VR
+	f32 orig_x, orig_y, orig_z, orig_w;
 };
 
 struct gSPInfo
@@ -208,6 +211,12 @@ void gSPSetVertexColorBase( u32 base );
 void gSPSetVertexNormaleBase( u32 base );
 void gSPProcessVertex(u32 v);
 void gSPCoordMod(u32 _w0, u32 _w1);
+void gSPCombineMatrices();
+#ifdef OS_ANDROID
+// ^ fixes a linker error, since gSPProcessVertex4 is
+//  not always included
+void gSPProcessVertex4(u32 v);
+#endif
 
 void gSPTriangleUnknown();
 

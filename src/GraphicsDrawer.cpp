@@ -24,6 +24,10 @@
 #include "RDP.h"
 #include "VI.h"
 
+#include "VR.h"
+#include "3DMath.h"
+#include "gSP.h"
+
 using namespace graphics;
 
 GraphicsDrawer::GraphicsDrawer()
@@ -31,10 +35,12 @@ GraphicsDrawer::GraphicsDrawer()
 , m_bImageTexture(false)
 , m_bFlatColors(false)
 {
+	VRSetupSensor();
 }
 
 GraphicsDrawer::~GraphicsDrawer()
 {
+	VRDestroySensor();
 	while (!m_osdMessages.empty())
 		std::this_thread::sleep_for(Milliseconds(1));
 }
@@ -656,13 +662,43 @@ bool GraphicsDrawer::_canDraw() const
 	return config.frameBufferEmulation.enable == 0 || frameBufferList().getCurrent() != nullptr;
 }
 
-void GraphicsDrawer::drawTriangles()
+void GraphicsDrawer::_drawTrianglesOneEye(bool finish, void *data)
 {
-	if (triangles.num == 0 || !_canDraw()) {
-		triangles.num = 0;
-		triangles.maxElement = 0;
-		return;
-	}
+    if (triangles.num == 0 || !_canDraw()) {
+        triangles.num = 0;
+        triangles.maxElement = 0;
+        return;
+    }
+
+    std::array<SPVertex, 256U> old_verts = triangles.vertices;
+
+    for (unsigned int j=0; j<triangles.vertices.size(); j++) {
+        SPVertex &vtx = triangles.vertices.at(j);
+        vtx.x = vtx.orig_x;
+        vtx.y = vtx.orig_y;
+        vtx.z = vtx.orig_z;
+        vtx.w = vtx.orig_w;
+    }
+
+#ifdef OS_ANDROID
+// ^ fixes a linker error, since gSPProcessVertex4 is
+//  not always included
+    unsigned int j=0;
+    for (;j<triangles.vertices.size(); j+=4) {
+        gSPProcessVertex4(j);
+    }
+    for (;j<triangles.vertices.size(); j++) {
+        gSPProcessVertex(j);
+    }
+#endif
+
+    // Hack to check for projection matrix
+    // If this is supposed to draw to screenspace, like game text, don't rotate
+    if (gSP.matrix.projection[3][3] != 0) {
+        for (j=0; j<triangles.vertices.size(); j++) {
+            triangles.vertices.at(j).y *= 0.5;
+        }
+    }
 
 	_prepareDrawTriangle();
 
@@ -689,8 +725,70 @@ void GraphicsDrawer::drawTriangles()
 		}
 	}
 
-	triangles.num = 0;
-	triangles.maxElement = 0;
+    triangles.vertices = old_verts;
+
+    if (finish) {
+        triangles.num = 0;
+        triangles.maxElement = 0;
+    }
+}
+
+void GraphicsDrawer::_drawStereo(void (GraphicsDrawer::*callback)(bool, void*), void *data) {
+    if (!config.vr.enable) {
+        (this->*callback)(true, data);
+        return;
+    }
+
+    if (!VR_HAS_CLEARED_SCREEN) {
+        // Hack to work around lack of clearing in-game, exposed
+        //  by VR viewport
+        f32 fillColor[4];
+        gDPGetFillColor(fillColor);
+        clearColorBuffer(fillColor);
+        gfxContext.clearDepthBuffer();
+        VR_HAS_CLEARED_SCREEN = true;
+    }
+
+    for (int i=0; i<2; i++) {
+        const u32 bufferWidth = VI.width;
+        const u32 bufferHeight = VI_GetMaxBufferHeight(bufferWidth);
+        const f32 viewportScale = DisplayWindow::get().getScaleX();
+
+        const s32 size = bufferWidth / 2;
+        VR_LEFT_EYE = (i==0);
+        const s32 start = (VR_LEFT_EYE? 0 : size);
+        gfxContext.setViewport((s32) (start * viewportScale), 0, (s32) (size * viewportScale), (s32) (bufferHeight * viewportScale));
+        gSP.changed &= ~CHANGED_VIEWPORT;
+
+        gDPScissor orig_scissor = gDP.scissor;
+
+        gDP.scissor.lrx/=2;
+        gDP.scissor.ulx/=2;
+        gDP.scissor.ulx+=start;
+        gDP.scissor.lrx+=start;
+        gSP.changed |= CHANGED_SCISSOR;
+		updateScissor(frameBufferList().getCurrent());
+
+        VR_CURRENTLY_RENDERING = true;
+        gSPCombineMatrices();
+
+        (this->*callback)(i==1, data);
+
+        gDP.scissor = orig_scissor;
+    }
+
+    // Hack so that we can avoid clipping next frame
+    // See gSPCombineMatrices
+    VR_CURRENTLY_RENDERING = false;
+    gSPCombineMatrices();
+
+    gSP.changed |= CHANGED_SCISSOR;
+    updateScissor(frameBufferList().getCurrent());
+}
+
+void GraphicsDrawer::drawTriangles()
+{
+	_drawStereo(&GraphicsDrawer::_drawTrianglesOneEye, NULL);
 }
 
 void GraphicsDrawer::drawScreenSpaceTriangle(u32 _numVtx)
@@ -1055,8 +1153,14 @@ bool texturedRectPaletteMod(const GraphicsDrawer::TexturedRectParams & _params)
 // Return true if actuial rendering is not necessary
 bool(*texturedRectSpecial)(const GraphicsDrawer::TexturedRectParams & _params) = nullptr;
 
-void GraphicsDrawer::drawTexturedRect(const TexturedRectParams & _params)
+void GraphicsDrawer::drawTexturedRect(const TexturedRectParams & _params) {
+    _drawStereo(&GraphicsDrawer::_drawTexturedRectOneEye, (TexturedRectParams*) (&_params));
+}
+
+void GraphicsDrawer::_drawTexturedRectOneEye(bool finish, void *data)
 {
+    const TexturedRectParams & _params = *((TexturedRectParams*) data);
+
 	gSP.changed &= ~CHANGED_GEOMETRYMODE; // Don't update cull mode
 	m_drawingState = DrawingState::TexRect;
 
@@ -1242,11 +1346,15 @@ void GraphicsDrawer::drawTexturedRect(const TexturedRectParams & _params)
 			m_rect[i].x *= scale;
 	}
 
+    if (config.vr.enable) {
+        for (int i=0; i<4; i++) {
+            m_rect[i].y *= 0.5;
+        }
+    }
+
 	if (bUseTexrectDrawer)
 		m_texrectDrawer.add();
 	else {
-		_updateScreenCoordsViewport();
-
 		Context::DrawRectParameters rectParams;
 		rectParams.mode = drawmode::TRIANGLE_STRIP;
 		rectParams.verticesCount = 4;
@@ -1255,7 +1363,7 @@ void GraphicsDrawer::drawTexturedRect(const TexturedRectParams & _params)
 		gfxContext.drawRects(rectParams);
 		g_debugger.addRects(rectParams);
 
-		gSP.changed |= CHANGED_GEOMETRYMODE | CHANGED_VIEWPORT;
+		gSP.changed |= CHANGED_GEOMETRYMODE;
 	}
 }
 

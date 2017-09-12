@@ -177,6 +177,10 @@ struct Config
 		u32 dumpMode;
 	} debug;
 
+	struct {
+		bool enable;
+	} vr;
+
 	void resetToDefaults();
 };
 

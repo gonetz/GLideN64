@@ -113,6 +113,8 @@ MY_LOCAL_SRC_FILES :=                               \
     $(SRCDIR)/Graphics/OpenGLContext/GraphicBufferPrivateApi/GraphicBuffer.cpp     \
     $(SRCDIR)/Graphics/OpenGLContext/GraphicBufferPrivateApi/libhardware.cpp       \
     $(SRCDIR)/xxHash/xxhash.c                                                      \
+    $(SRCDIR)/VR.h                                                                 \
+    $(SRCDIR)/VR.cpp                                                               \
 
 MY_LOCAL_CFLAGS :=      \
     $(COMMON_CFLAGS)    \
@@ -130,7 +132,7 @@ MY_LOCAL_CPPFLAGS := $(COMMON_CPPFLAGS) -std=c++11 -g
 
 MY_LOCAL_LDFLAGS := $(COMMON_LDFLAGS) -Wl,-version-script,$(LOCAL_PATH)/$(SRCDIR)/mupenplus/video_api_export.ver
 
-MY_LOCAL_LDLIBS := -llog -latomic -lEGL
+MY_LOCAL_LDLIBS := -llog -latomic -lEGL -landroid
 
 ifeq ($(TARGET_ARCH_ABI), armeabi-v7a)
     # Use for ARM7a:

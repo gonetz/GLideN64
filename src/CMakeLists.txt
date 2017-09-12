@@ -66,6 +66,7 @@ set(GLideN64_SOURCES
   Textures.cpp
   Turbo3D.cpp
   VI.cpp
+  VR_stub.cpp
   ZlutTexture.cpp
   ZSort.cpp
   BufferCopy/ColorBufferToRDRAM.cpp
