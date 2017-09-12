@@ -179,7 +179,7 @@ void F3DSWRS_Vtx(u32 _w0, u32 _w1)
 static
 void F3DSWRS_PrepareVertices(const u32* _vert,
 							 const u8* _colorbase,
-							 const u32* _color,
+							 const u32* _colorIdx,
 							 const u8* _texbase,
 							 bool _useTex,
 							 bool _persp,
@@ -194,7 +194,7 @@ void F3DSWRS_PrepareVertices(const u32* _vert,
 
 	for (u32 i = 0; i < _num; ++i) {
 		SPVertex & vtx = drawer.getVertex(_vert[i]);
-		const u8 *color = _colorbase + _color[i];
+		const u8 *color = _colorbase + _colorIdx[i];
 		vtx.r = color[3] * 0.0039215689f;
 		vtx.g = color[2] * 0.0039215689f;
 		vtx.b = color[1] * 0.0039215689f;
@@ -1052,12 +1052,12 @@ void F3DSWRS_Tri1(u32 _w0, u32 _w1)
 	const u32 v3 = ((_w1 <<  3) & 0x7F8) / 40;
 	const u32 vert[3] = { v1, v2, v3 };
 
-	const u32 nextCMD = *(u32*)&RDRAM[RSP.PC[RSP.PCi] + 8];
-	const u32 color[3] = { _SHIFTR(nextCMD, 16, 8), _SHIFTR(nextCMD, 8, 8), _SHIFTR(nextCMD, 0, 8) };
+	const u32 colorParam = *(u32*)&RDRAM[RSP.PC[RSP.PCi] + 8];
+	const u32 colorIdx[3] = { _SHIFTR(colorParam, 16, 8), _SHIFTR(colorParam, 8, 8), _SHIFTR(colorParam, 0, 8) };
 
 	const bool useTex = (_w0 & 2) != 0;
     const u8 * texbase = RDRAM + RSP.PC[RSP.PCi] + 16;
-	F3DSWRS_PrepareVertices(vert, RDRAM + gSP.vertexColorBase, color, texbase, useTex, gDP.otherMode.texturePersp != 0, 3);
+	F3DSWRS_PrepareVertices(vert, RDRAM + gSP.vertexColorBase, colorIdx, texbase, useTex, gDP.otherMode.texturePersp != 0, 3);
 
 	if (useTex)
 		RSP.PC[RSP.PCi] += 16;
@@ -1076,13 +1076,13 @@ void F3DSWRS_Tri2(u32 _w0, u32 _w1)
 	const u32 v4 = (_SHIFTR( _w1,  21, 11 ) & 0x7F8) / 40;
 	const u32 vert[4] = { v1, v2, v3, v4 };
 
-	const u32 nextCMD = *(u32*)&RDRAM[RSP.PC[RSP.PCi] + 8];
-	const u32 color[4] = { _SHIFTR(nextCMD, 16, 8), _SHIFTR(nextCMD, 8, 8),
-							_SHIFTR(nextCMD, 0, 8), _SHIFTR(nextCMD, 24, 8) };
+	const u32 colorParam = *(u32*)&RDRAM[RSP.PC[RSP.PCi] + 8];
+	const u32 colorIdx[4] = { _SHIFTR(colorParam, 16, 8), _SHIFTR(colorParam, 8, 8),
+							_SHIFTR(colorParam, 0, 8), _SHIFTR(colorParam, 24, 8) };
 
 	const bool useTex = (_w0 & 2) != 0;
     const u8 * texbase = RDRAM + RSP.PC[RSP.PCi] + 16;
-	F3DSWRS_PrepareVertices(vert, RDRAM + gSP.vertexColorBase, color, texbase, useTex, gDP.otherMode.texturePersp != 0, 4);
+	F3DSWRS_PrepareVertices(vert, RDRAM + gSP.vertexColorBase, colorIdx, texbase, useTex, gDP.otherMode.texturePersp != 0, 4);
 
 	if (useTex)
 		RSP.PC[RSP.PCi] += 16;
