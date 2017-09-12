@@ -47,22 +47,14 @@ u32 CRC_Calculate_Strict( u32 crc, const void * buffer, u32 count )
 
 u32 CRC_Calculate( u32 crc, const void * buffer, u32 count )
 {
-#if defined(__x86_64__) || defined(_M_X64)
-	return XXH64(buffer, count, crc);
-#else
 	return XXH32(buffer, count, crc);
-#endif
 }
 
 u32 CRC_CalculatePalette(u32 crc, const void * buffer, u32 count )
 {
 	u8 *p = (u8*) buffer;
 	while (count--) {
-#if defined(__x86_64__) || defined(_M_X64)
-		crc = XXH64(p, 2, crc);
-#else
 		crc = XXH32(p, 2, crc);
-#endif
 		p += 8;
 	}
 	return crc;
