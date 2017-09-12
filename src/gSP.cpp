@@ -47,10 +47,20 @@ void gSPFlushTriangles()
 	}
 }
 
-void gSPCombineMatrices()
+static
+void _gSPCombineMatrices()
 {
 	MultMatrix(gSP.matrix.projection, gSP.matrix.modelView[gSP.matrix.modelViewi], gSP.matrix.combined);
 	gSP.changed &= ~CHANGED_MATRIX;
+}
+
+void gSPCombineMatrices(u32 _mode)
+{
+	if (_mode == 1)
+		_gSPCombineMatrices();
+	else
+		DebugMsg(DEBUG_NORMAL | DEBUG_ERROR, "// Unknown gSPCombineMatrices mode: %u\n", _mode);
+	DebugMsg(DEBUG_NORMAL, "gSPCombineMatrices();\n");
 }
 
 void gSPTriangle(s32 v0, s32 v1, s32 v2)
@@ -314,7 +324,7 @@ void gSPClipVertex4(u32 v)
 void gSPProcessVertex4(u32 v)
 {
 	if (gSP.changed & CHANGED_MATRIX)
-		gSPCombineMatrices();
+		_gSPCombineMatrices();
 
 	DisplayWindow & wnd = dwnd();
 	GraphicsDrawer & drawer = wnd.getDrawer();
@@ -597,7 +607,7 @@ void gSPClipVertex(u32 v)
 void gSPProcessVertex(u32 v)
 {
 	if (gSP.changed & CHANGED_MATRIX)
-		gSPCombineMatrices();
+		_gSPCombineMatrices();
 
 	DisplayWindow & wnd = dwnd();
 	GraphicsDrawer & drawer = wnd.getDrawer();
@@ -1759,7 +1769,7 @@ void gSPInsertMatrix( u32 where, u32 num )
 	f32 fraction, integer;
 
 	if (gSP.changed & CHANGED_MATRIX)
-		gSPCombineMatrices();
+		_gSPCombineMatrices();
 
 	if ((where & 0x3) || (where > 0x3C))
 		return;
