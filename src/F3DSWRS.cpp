@@ -1062,6 +1062,7 @@ void F3DSWRS_Tri1(u32 _w0, u32 _w1)
 	if (useTex)
 		RSP.PC[RSP.PCi] += 16;
 
+	RSP.nextCmd = _SHIFTR(*(u32*)&RDRAM[RSP.PC[RSP.PCi] + 16], 24, 8);
 	gSP1Triangle(v1, v2, v3);
 	RSP.PC[RSP.PCi] += 8;
 }
@@ -1086,6 +1087,7 @@ void F3DSWRS_Tri2(u32 _w0, u32 _w1)
 	if (useTex)
 		RSP.PC[RSP.PCi] += 16;
 
+	RSP.nextCmd = _SHIFTR(*(u32*)&RDRAM[RSP.PC[RSP.PCi] + 16], 24, 8);
 	gSP2Triangles(v1, v2, v3, 0, v1, v3, v4, 0);
 	RSP.PC[RSP.PCi] += 8;
 }
