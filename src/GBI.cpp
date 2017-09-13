@@ -300,9 +300,14 @@ void GBIInfo::loadMicrocode(u32 uc_start, u32 uc_dstart, u16 uc_dsize)
 					}
 					if (strncmp(&uc_str[14], "F3DF", 4) == 0)
 						current.textureGen = false;
-					else if (strncmp(&uc_str[14], "F3DZ", 4) == 0)
-						type = F3DEX2MM;
-					else if (strncmp(&uc_str[14], "F3DTEX/A", 8) == 0)
+					else if (strncmp(&uc_str[14], "F3DZEX", 6) == 0) {
+						// Zelda games
+						// Check ucode version
+						if (strncmp(&uc_str[31], "2.08I", 5) == 0)
+							type = F3DEX2MM;
+						else
+							type = F3DEX2;
+					} else if (strncmp(&uc_str[14], "F3DTEX/A", 8) == 0)
 						type = F3DTEXA;
 					else if (strncmp(&uc_str[14], "F3DAM", 5) == 0)
 						type = F3DAM;
