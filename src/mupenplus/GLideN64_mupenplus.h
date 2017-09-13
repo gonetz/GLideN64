@@ -49,4 +49,8 @@ extern ptr_VidExt_GL_SwapBuffers        CoreVideo_GL_SwapBuffers;
 
 extern void(*renderCallback)(int);
 
+extern m64p_handle g_configVideoGeneral;
+extern m64p_handle g_configVideoGliden64;
+bool Config_SetDefault();
+
 #endif // GLIDEN64_MUPENPLUS_H
