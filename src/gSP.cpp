@@ -1768,9 +1768,6 @@ void gSPInsertMatrix( u32 where, u32 num )
 
 	f32 fraction, integer;
 
-	if (gSP.changed & CHANGED_MATRIX)
-		_gSPCombineMatrices();
-
 	if ((where & 0x3) || (where > 0x3C))
 		return;
 

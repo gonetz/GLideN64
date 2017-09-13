@@ -501,7 +501,6 @@ struct MicrocodeInfo
 	bool negativeY;
 	bool textureGen;
 	bool texturePersp;
-	bool combineMatrices;
 };
 
 struct GBIInfo
@@ -519,7 +518,6 @@ struct GBIInfo
 	bool isNegativeY() const { return m_pCurrent != nullptr ? m_pCurrent->negativeY : true; }
 	bool isTextureGen() const { return m_pCurrent != nullptr ? m_pCurrent->textureGen: true; }
 	bool isTexturePersp() const { return m_pCurrent != nullptr ? m_pCurrent->texturePersp: true; }
-	bool isCombineMatrices() const { return m_pCurrent != nullptr ? m_pCurrent->combineMatrices: false; }
 
 private:
 	void _flushCommands();
