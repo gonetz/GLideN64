@@ -1,6 +1,7 @@
 #include "GLideN64_mupenplus.h"
 #include "../PluginAPI.h"
 #include "../GLideN64.h"
+#include "../Config.h"
 #include <DisplayWindow.h>
 
 #ifdef OS_WINDOWS
@@ -81,6 +82,14 @@ m64p_error PluginAPI::PluginStartup(m64p_dynlib_handle _CoreLibHandle)
 	CoreVideo_GL_GetAttribute = (ptr_VidExt_GL_GetAttribute) DLSYM(_CoreLibHandle, "VidExt_GL_GetAttribute");
 	CoreVideo_GL_SwapBuffers = (ptr_VidExt_GL_SwapBuffers) DLSYM(_CoreLibHandle, "VidExt_GL_SwapBuffers");
 
+	if (Config_SetDefault()) {
+		config.version = ConfigGetParamInt(g_configVideoGliden64, "configVersion");
+		if (config.version != CONFIG_VERSION_CURRENT) {
+			ConfigDeleteSection("Video-GLideN64");
+			ConfigSaveFile();
+			Config_SetDefault();
+		}
+	}
 	return M64ERR_SUCCESS;
 }
 

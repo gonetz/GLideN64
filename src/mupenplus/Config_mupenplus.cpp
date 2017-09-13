@@ -18,18 +18,19 @@ Config config;
 static
 const u32 uMegabyte = 1024U*1024U;
 
-static m64p_handle g_configVideoGeneral = nullptr;
-static m64p_handle g_configVideoGliden64 = nullptr;
+m64p_handle g_configVideoGeneral = nullptr;
+m64p_handle g_configVideoGliden64 = nullptr;
 
-static
 bool Config_SetDefault()
 {
 	if (ConfigOpenSection("Video-General", &g_configVideoGeneral) != M64ERR_SUCCESS) {
 		LOG(LOG_ERROR, "Unable to open Video-General configuration section");
+		g_configVideoGeneral = nullptr;
 		return false;
 	}
 	if (ConfigOpenSection("Video-GLideN64", &g_configVideoGliden64) != M64ERR_SUCCESS) {
 		LOG(LOG_ERROR, "Unable to open GLideN64 configuration section");
+		g_configVideoGliden64 = nullptr;
 		return false;
 	}
 
@@ -309,23 +310,8 @@ void Config_LoadCustomConfig()
 
 void Config_LoadConfig()
 {
-	const u32 hacks = config.generalEmulation.hacks;
-
-	if (!Config_SetDefault()) {
-		config.generalEmulation.hacks = hacks;
+	if (g_configVideoGeneral == nullptr || g_configVideoGliden64 == nullptr)
 		return;
-	}
-
-	config.version = ConfigGetParamInt(g_configVideoGliden64, "configVersion");
-	if (config.version != CONFIG_VERSION_CURRENT) {
-		m64p_error res = ConfigDeleteSection("Video-GLideN64");
-		assert(res == M64ERR_SUCCESS);
-		ConfigSaveFile();
-		if (!Config_SetDefault()) {
-			config.generalEmulation.hacks = hacks;
-			return;
-		}
-	}
 
 	config.video.fullscreen = ConfigGetParamBool(g_configVideoGeneral, "Fullscreen");
 	config.video.windowedWidth = ConfigGetParamInt(g_configVideoGeneral, "ScreenWidth");
@@ -429,5 +415,4 @@ void Config_LoadConfig()
 
 	if (config.generalEmulation.enableCustomSettings)
 		Config_LoadCustomConfig();
-	config.generalEmulation.hacks = hacks;
 }
