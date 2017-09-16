@@ -138,8 +138,11 @@ void F3DEX2_DMAIO( u32 w0, u32 w1 )
 
 void F3DEX2_Special_1( u32 w0, u32 w1 )
 {
-	const u32 mode = _SHIFTR( w0, 0, 8 );
-	gSPCombineMatrices(mode);
+	const u32 param = _SHIFTR(w0, 0, 8);
+	if (GBI.isCombineMatrices())
+		gSPCombineMatrices(param);
+	else
+		gSPDlistCount(param, w1);
 }
 
 void F3DEX2_Special_2( u32 w0, u32 w1 )
