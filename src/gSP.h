@@ -229,6 +229,7 @@ extern void (*gSPPointLightVertex4)(u32 v, float _vPos[4][3]);
 extern void (*gSPBillboardVertex4)(u32 v);
 #endif
 extern void (*gSPTransformVertex)(float vtx[4], float mtx[4][4]);
+extern void (*gSPInverseTransformVector)(float vtx[4], float mtx[4][4]);
 extern void (*gSPLightVertex)(SPVertex & _vtx);
 extern void (*gSPPointLightVertex)(SPVertex & _vtx, float * _vPos);
 extern void (*gSPBillboardVertex)(u32 v, u32 i);
