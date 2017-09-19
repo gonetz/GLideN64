@@ -329,9 +329,6 @@
     <ClCompile Include="..\..\src\uCodes\F3DEX2CBFD.cpp">
       <Filter>Source Files\uCodes</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\uCodes\F3DEX2MM.cpp">
-      <Filter>Source Files\uCodes</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\uCodes\F3DFLX2.cpp">
       <Filter>Source Files\uCodes</Filter>
     </ClCompile>
@@ -372,6 +369,9 @@
       <Filter>Source Files\uCodes</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\uCodes\ZSort.cpp">
+      <Filter>Source Files\uCodes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\uCodes\F3DZEX2.cpp">
       <Filter>Source Files\uCodes</Filter>
     </ClCompile>
   </ItemGroup>
@@ -649,9 +649,6 @@
     <ClInclude Include="..\..\src\uCodes\F3DEX2CBFD.h">
       <Filter>Header Files\uCodes</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\uCodes\F3DEX2MM.h">
-      <Filter>Header Files\uCodes</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\uCodes\F3DFLX2.h">
       <Filter>Header Files\uCodes</Filter>
     </ClInclude>
@@ -692,6 +689,9 @@
       <Filter>Header Files\uCodes</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\uCodes\ZSort.h">
+      <Filter>Header Files\uCodes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\uCodes\F3DZEX2.h">
       <Filter>Header Files\uCodes</Filter>
     </ClInclude>
   </ItemGroup>

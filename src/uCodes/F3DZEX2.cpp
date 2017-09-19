@@ -2,15 +2,17 @@
 #include "F3D.h"
 #include "F3DEX.h"
 #include "F3DEX2.h"
-#include "F3DEX2MM.h"
+#include "F3DZEX2.h"
 #include "gSP.h"
 
-void F3DEX2MM_Branch_W( u32 w0, u32 w1 )
+#define	F3DZEX2_BRANCH_W	0x04
+
+void F3DZEX2_Branch_W( u32 w0, u32 w1 )
 {
 	gSPBranchLessW(gDP.half_1, _SHIFTR( w0, 1, 7 ), w1);
 }
 
-void F3DEX2MM_Init()
+void F3DZEX2_Init()
 {
 	gSPSetupFunctions();
 	// Set GeometryMode flags
@@ -41,7 +43,7 @@ void F3DEX2MM_Init()
 	GBI_SetGBI( G_VTX,					F3DEX2_VTX,					F3DEX2_Vtx );
 	GBI_SetGBI( G_MODIFYVTX,			F3DEX2_MODIFYVTX,			F3DEX_ModifyVtx );
 	GBI_SetGBI(	G_CULLDL,				F3DEX2_CULLDL,				F3DEX_CullDL );
-	GBI_SetGBI( G_BRANCH_Z,				F3DEX2_BRANCH_Z,			F3DEX2MM_Branch_W );
+	GBI_SetGBI( G_BRANCH_W,				F3DZEX2_BRANCH_W,			F3DZEX2_Branch_W );
 	GBI_SetGBI( G_TRI1,					F3DEX2_TRI1,				F3DEX2_Tri1 );
 	GBI_SetGBI( G_TRI2,					F3DEX2_TRI2,				F3DEX_Tri2 );
 	GBI_SetGBI( G_QUAD,					F3DEX2_QUAD,				F3DEX2_Quad );

@@ -85,7 +85,7 @@ set(GLideN64_SOURCES
   uCodes/F3DEX2.cpp
   uCodes/F3DEX2ACCLAIM.cpp
   uCodes/F3DEX2CBFD.cpp
-  uCodes/F3DEX2MM.cpp
+  uCodes/F3DZEX2.cpp
   uCodes/F3DFLX2.cpp
   uCodes/F3DGOLDEN.cpp
   uCodes/F3DSWRS.cpp

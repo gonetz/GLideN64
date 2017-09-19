@@ -25,7 +25,7 @@
 #include "uCodes/F3DSETA.h"
 #include "uCodes/F3DGOLDEN.h"
 #include "uCodes/F3DEX2CBFD.h"
-#include "uCodes/F3DEX2MM.h"
+#include "uCodes/F3DZEX2.h"
 #include "uCodes/F3DTEXA.h"
 #include "uCodes/F3DEX2ACCLAIM.h"
 #include "uCodes/F3DSWRS.h"
@@ -59,7 +59,7 @@ SpecialMicrocodeInfo specialMicrocodes[] =
 	{ Turbo3D,		false,	true,	0x2bdcfc8a, "Turbo3D" },
 	{ F3DEX2CBFD,	true,	true,	0x1b4ace88, "Conker's Bad Fur Day" },
 	{ F3DSWRS,		false,	false,	0xda51ccdb, "Star Wars RS" },
-	{ F3DEX2MM,		true,	true,	0xd39a0d4f,	"Animal Forest" },
+	{ F3DZEX2,		true,	true,	0xd39a0d4f,	"Animal Forest" },
 	{ S2DEX2,		false,	true,	0x2c399dd,	"Animal Forest" },
 	{ T3DUX,		false,	true,	0xbad437f2, "T3DUX vers 0.83 for Toukon Road" },
 	{ T3DUX,		false,	true,	0xd0a1aa3d, "T3DUX vers 0.85 for Toukon Road 2" },
@@ -69,7 +69,7 @@ SpecialMicrocodeInfo specialMicrocodes[] =
 u32 G_RDPHALF_1, G_RDPHALF_2, G_RDPHALF_CONT;
 u32 G_SPNOOP;
 u32 G_SETOTHERMODE_H, G_SETOTHERMODE_L;
-u32 G_DL, G_ENDDL, G_CULLDL, G_BRANCH_Z;
+u32 G_DL, G_ENDDL, G_CULLDL, G_BRANCH_Z, G_BRANCH_W;
 u32 G_LOAD_UCODE;
 u32 G_MOVEMEM, G_MOVEWORD;
 u32 G_MTX, G_POPMTX;
@@ -190,7 +190,7 @@ void GBIInfo::_makeCurrent(MicrocodeInfo * _pCurrent)
 			case F3DEX2CBFD:	F3DEX2CBFD_Init();		break;
 			case F3DSETA:		F3DSETA_Init();			break;
 			case F3DGOLDEN:		F3DGOLDEN_Init();		break;
-			case F3DEX2MM:		F3DEX2MM_Init();		break;
+			case F3DZEX2:		F3DZEX2_Init();			break;
 			case F3DTEXA:		F3DTEXA_Init();			break;
 			case T3DUX:			F3D_Init();				break;
 			case F3DEX2ACCLAIM:	F3DEX2ACCLAIM_Init();	break;
@@ -303,11 +303,8 @@ void GBIInfo::loadMicrocode(u32 uc_start, u32 uc_dstart, u16 uc_dsize)
 						type = F3DFLX2;
 					else if (strncmp(&uc_str[14], "F3DZEX", 6) == 0) {
 						// Zelda games
-						// Check ucode version
-						if (strncmp(&uc_str[31], "2.08I", 5) == 0)
-							type = F3DEX2MM;
-						else
-							type = F3DEX2;
+						type = F3DZEX2;
+						current.combineMatrices = false;
 					} else if (strncmp(&uc_str[14], "F3DTEX/A", 8) == 0)
 						type = F3DTEXA;
 					else if (strncmp(&uc_str[14], "F3DAM", 5) == 0)

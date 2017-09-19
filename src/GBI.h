@@ -23,7 +23,7 @@
 #define Turbo3D			14
 #define ZSortp			15
 #define F3DSETA			16
-#define F3DEX2MM		17
+#define F3DZEX2			17
 #define F3DTEXA			18
 #define T3DUX			19
 #define F3DEX2ACCLAIM	21
@@ -388,7 +388,7 @@ extern u32 G_MWO_aLIGHT_8, G_MWO_bLIGHT_8;
 extern u32 G_RDPHALF_1, G_RDPHALF_2, G_RDPHALF_CONT;
 extern u32 G_SPNOOP;
 extern u32 G_SETOTHERMODE_H, G_SETOTHERMODE_L;
-extern u32 G_DL, G_ENDDL, G_CULLDL, G_BRANCH_Z;
+extern u32 G_DL, G_ENDDL, G_CULLDL, G_BRANCH_Z, G_BRANCH_W;
 extern u32 G_LOAD_UCODE;
 extern u32 G_MOVEMEM, G_MOVEWORD;
 extern u32 G_MTX, G_POPMTX;
