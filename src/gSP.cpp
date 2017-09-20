@@ -688,7 +688,7 @@ void gSPProcessVertex(u32 v)
 void gSPLoadUcodeEx( u32 uc_start, u32 uc_dstart, u16 uc_dsize )
 {
 	gSP.matrix.modelViewi = 0;
-	gSP.changed |= CHANGED_MATRIX;
+	gSP.changed |= CHANGED_MATRIX | CHANGED_LIGHT | CHANGED_LOOKAT;
 	gSP.status[0] = gSP.status[1] = gSP.status[2] = gSP.status[3] = 0;
 
 	if ((((uc_start & 0x1FFFFFFF) + 4096) > RDRAMSize) || (((uc_dstart & 0x1FFFFFFF) + uc_dsize) > RDRAMSize)) {
@@ -789,7 +789,7 @@ void gSPDMAMatrix( u32 matrix, u8 index, u8 multiply )
 	CopyMatrix( gSP.matrix.projection, identityMatrix );
 
 
-	gSP.changed |= CHANGED_MATRIX;
+	gSP.changed |= CHANGED_MATRIX | CHANGED_LIGHT | CHANGED_LOOKAT;
 
 	DebugMsg(DEBUG_NORMAL, "gSPDMAMatrix( 0x%08X, %i, %s );\n",
 		matrix, index, multiply ? "TRUE" : "FALSE");
@@ -1736,7 +1736,7 @@ void gSPPopMatrixN(u32 param, u32 num)
 {
 	if (gSP.matrix.modelViewi > num - 1) {
 		gSP.matrix.modelViewi -= num;
-		gSP.changed |= CHANGED_MATRIX;
+		gSP.changed |= CHANGED_MATRIX | CHANGED_LIGHT | CHANGED_LOOKAT;
 	} else {
 		DebugMsg(DEBUG_NORMAL | DEBUG_ERROR, "// Attempting to pop matrix stack below 0\n");
 	}
@@ -1752,7 +1752,7 @@ void gSPPopMatrix( u32 param )
 		if (gSP.matrix.modelViewi > 0) {
 			gSP.matrix.modelViewi--;
 
-			gSP.changed |= CHANGED_MATRIX;
+			gSP.changed |= CHANGED_MATRIX | CHANGED_LIGHT | CHANGED_LOOKAT;
 		}
 	break;
 	case 1: // projection, can't
