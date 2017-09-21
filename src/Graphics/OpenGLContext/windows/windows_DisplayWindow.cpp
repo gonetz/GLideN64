@@ -8,6 +8,8 @@
 #include <RSP.h>
 #include <FrameBuffer.h>
 #include <GLideNUI/GLideNUI.h>
+#include <Graphics/Context.h>
+#include <Graphics/Parameters.h>
 #include <DisplayWindow.h>
 
 class DisplayWindowWindows : public DisplayWindow
@@ -161,10 +163,15 @@ void DisplayWindowWindows::_saveScreenshot()
 	unsigned char * pixelData = NULL;
 	GLint oldMode;
 	glGetIntegerv(GL_READ_BUFFER, &oldMode);
-	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
+	gfxContext.bindFramebuffer(graphics::bufferTarget::READ_FRAMEBUFFER, graphics::ObjectHandle::null);
 	glReadBuffer(GL_FRONT);
 	pixelData = (unsigned char*)malloc(m_screenWidth * m_screenHeight * 3);
 	glReadPixels(0, m_heightOffset, m_screenWidth, m_screenHeight, GL_RGB, GL_UNSIGNED_BYTE, pixelData);
+	if (graphics::BufferAttachmentParam(oldMode) == graphics::bufferAttachment::COLOR_ATTACHMENT0) {
+		FrameBuffer * pBuffer = frameBufferList().getCurrent();
+		if (pBuffer != nullptr)
+			gfxContext.bindFramebuffer(graphics::bufferTarget::READ_FRAMEBUFFER, pBuffer->m_FBO);
+	}
 	glReadBuffer(oldMode);
 	SaveScreenshot(m_strScreenDirectory, RSP.romname, m_screenWidth, m_screenHeight, pixelData);
 	free( pixelData );
@@ -279,9 +286,14 @@ void DisplayWindowWindows::_readScreen(void **_pDest, long *_pWidth, long *_pHei
 #ifndef GLESX
 	GLint oldMode;
 	glGetIntegerv(GL_READ_BUFFER, &oldMode);
-	glBindFramebuffer(GL_READ_FRAMEBUFFER, 0);
+	gfxContext.bindFramebuffer(graphics::bufferTarget::READ_FRAMEBUFFER, graphics::ObjectHandle::null);
 	glReadBuffer(GL_FRONT);
 	glReadPixels(0, m_heightOffset, m_width, m_height, GL_BGR_EXT, GL_UNSIGNED_BYTE, *_pDest);
+	if (graphics::BufferAttachmentParam(oldMode) == graphics::bufferAttachment::COLOR_ATTACHMENT0) {
+		FrameBuffer * pBuffer = frameBufferList().getCurrent();
+		if (pBuffer != nullptr)
+			gfxContext.bindFramebuffer(graphics::bufferTarget::READ_FRAMEBUFFER, pBuffer->m_FBO);
+	}
 	glReadBuffer(oldMode);
 #else
 	glReadPixels(0, m_heightOffset, m_width, m_height, GL_RGB, GL_UNSIGNED_BYTE, *_pDest);
