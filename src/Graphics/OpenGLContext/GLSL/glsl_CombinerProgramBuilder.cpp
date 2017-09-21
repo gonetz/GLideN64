@@ -464,148 +464,50 @@ public:
 class ShaderBlender1 : public ShaderPart
 {
 public:
-	ShaderBlender1(const opengl::GLInfo & _glinfo)
+	ShaderBlender1()
 	{
-		if (_glinfo.isGLES2) {
-			m_part =
-				"  if (uForceBlendCycle1 != 0) {	\n"
-				"    muxPM[0] = clampedColor;		\n"
-			;
-			if (g_cycleType == G_CYC_2CYCLE) {
-				m_part +=
-					"    muxPM[1] = clampedColor;	\n"
-					;
-			}
+		m_part =
+			"  if (uForceBlendCycle1 != 0) {	\n"
+			"    muxPM[0] = clampedColor;		\n"
+		;
+		if (g_cycleType == G_CYC_2CYCLE) {
 			m_part +=
-				"    muxA[0] = clampedColor.a;		\n"
-				"    lowp float muxa;				\n"
-				"    if (uBlendMux1[1] == 0)		\n"
-				"      muxa = muxA[0];				\n"
-				"    else if (uBlendMux1[1] == 1)	\n"
-				"      muxa = muxA[1];				\n"
-				"    else if (uBlendMux1[1] == 2)	\n"
-				"      muxa = muxA[2];				\n"
-				"    else if (uBlendMux1[1] == 3)	\n"
-				"      muxa = muxA[3];				\n"
-				"    muxB[0] = 1.0 - muxa;			\n"
-				"    lowp vec4 muxpm0;				\n"
-				"    if (uBlendMux1[0] == 0)		\n"
-				"      muxpm0 = muxPM[0];			\n"
-				"    else if (uBlendMux1[0] == 1)	\n"
-				"      muxpm0 = muxPM[1];			\n"
-				"    else if (uBlendMux1[0] == 2)	\n"
-				"      muxpm0 = muxPM[2];			\n"
-				"    else if (uBlendMux1[0] == 3)	\n"
-				"      muxpm0 = muxPM[3];			\n"
-				"    lowp vec4 muxpm2;				\n"
-				"    if (uBlendMux1[2] == 0)		\n"
-				"      muxpm2 = muxPM[0];			\n"
-				"    else if (uBlendMux1[2] == 1)	\n"
-				"      muxpm2 = muxPM[1];			\n"
-				"    else if (uBlendMux1[2] == 2)	\n"
-				"      muxpm2 = muxPM[2];			\n"
-				"    else if (uBlendMux1[2] == 3)	\n"
-				"      muxpm2 = muxPM[3];			\n"
-				"    lowp float muxb;				\n"
-				"    if (uBlendMux1[3] == 0)		\n"
-				"      muxb = muxB[0];				\n"
-				"    else if (uBlendMux1[3] == 1)	\n"
-				"      muxb = muxB[1];				\n"
-				"    else if (uBlendMux1[3] == 2)	\n"
-				"      muxb = muxB[2];				\n"
-				"    else if (uBlendMux1[3] == 3)	\n"
-				"      muxb = muxB[3];				\n"
-				"    lowp vec4 blend1 = (muxpm0 * muxa) + (muxpm2 * muxb);	\n"
-				"    clampedColor.rgb = clamp(blend1.rgb, 0.0, 1.0);		\n"
-				"  }								\n"
+				"    muxPM[1] = clampedColor;	\n"
 				;
-		} else {
-			m_part =
-				"  if (uForceBlendCycle1 != 0) {						\n"
-				"    muxPM[0] = clampedColor;							\n"
-			;
-			if (g_cycleType == G_CYC_2CYCLE) {
-				m_part +=
-					"    muxPM[1] = clampedColor;						\n"
-				;
-			}
-			m_part +=
-				"    muxA[0] = clampedColor.a;							\n"
-				"    muxB[0] = 1.0 - muxA[uBlendMux1[1]];				\n"
-				"    lowp vec4 blend1 = (muxPM[uBlendMux1[0]] * muxA[uBlendMux1[1]]) + (muxPM[uBlendMux1[2]] * muxB[uBlendMux1[3]]);	\n"
-				"    clampedColor.rgb = clamp(blend1.rgb, 0.0, 1.0);	\n"
-				"  }													\n"
-			;
-
 		}
+		m_part +=
+			"    muxA[0] = clampedColor.a;		\n"
+			"    lowp float muxa = dot(muxA,vec4(equal(vec4(uBlendMux1[1]),vec4(0,1,2,3))));	\n"
+			"    muxB[0] = 1.0 - muxa;			\n"
+			"    lowp vec4 muxpm0 = muxPM*vec4(equal(vec4(uBlendMux1[0]), vec4(0,1,2,3)));	\n"
+			"    lowp vec4 muxpm2 = muxPM*vec4(equal(vec4(uBlendMux1[2]), vec4(0,1,2,3)));	\n"
+			"    lowp float muxb = dot(muxB,vec4(equal(vec4(uBlendMux1[3]),vec4(0,1,2,3))));	\n"
+			"    lowp vec4 blend1 = (muxpm0 * muxa) + (muxpm2 * muxb);	\n"
+			"    clampedColor.rgb = clamp(blend1.rgb, 0.0, 1.0);		\n"
+			"  }								\n"
+			;
 	}
 };
 
 class ShaderBlender2 : public ShaderPart
 {
 public:
-	ShaderBlender2(const opengl::GLInfo & _glinfo)
+	ShaderBlender2()
 	{
-		if (_glinfo.isGLES2) {
-			m_part =
-				"  if (uForceBlendCycle2 != 0) {	\n"
-				"    muxPM[0] = clampedColor;		\n"
-				"    muxPM[1] = vec4(0.0);			\n"
-				"    muxA[0] = clampedColor.a;		\n"
-				"    lowp float muxa;				\n"
-				"    if (uBlendMux2[1] == 0)		\n"
-				"      muxa = muxA[0];				\n"
-				"    else if (uBlendMux2[1] == 1)	\n"
-				"      muxa = muxA[1];				\n"
-				"    else if (uBlendMux2[1] == 2)	\n"
-				"      muxa = muxA[2];				\n"
-				"    else if (uBlendMux2[1] == 3)	\n"
-				"      muxa = muxA[3];				\n"
-				"    muxB[0] = 1.0 - muxa;			\n"
-				"    lowp vec4 muxpm0;				\n"
-				"    if (uBlendMux2[0] == 0)		\n"
-				"      muxpm0 = muxPM[0];			\n"
-				"    else if (uBlendMux2[0] == 1)	\n"
-				"      muxpm0 = muxPM[1];			\n"
-				"    else if (uBlendMux2[0] == 2)	\n"
-				"      muxpm0 = muxPM[2];			\n"
-				"    else if (uBlendMux2[0] == 3)	\n"
-				"      muxpm0 = muxPM[3];			\n"
-				"    lowp vec4 muxpm2;				\n"
-				"    if (uBlendMux2[2] == 0)		\n"
-				"      muxpm2 = muxPM[0];			\n"
-				"    else if (uBlendMux2[2] == 1)	\n"
-				"      muxpm2 = muxPM[1];			\n"
-				"    else if (uBlendMux2[2] == 2)	\n"
-				"      muxpm2 = muxPM[2];			\n"
-				"    else if (uBlendMux2[2] == 3)	\n"
-				"      muxpm2 = muxPM[3];			\n"
-				"    lowp float muxb;				\n"
-				"    if (uBlendMux2[3] == 0)		\n"
-				"      muxb = muxB[0];				\n"
-				"    else if (uBlendMux2[3] == 1)	\n"
-				"      muxb = muxB[1];				\n"
-				"    else if (uBlendMux2[3] == 2)	\n"
-				"      muxb = muxB[2];				\n"
-				"    else if (uBlendMux2[3] == 3)	\n"
-				"      muxb = muxB[3];				\n"
-				"    lowp vec4 blend2 = muxpm0 * muxa + muxpm2 * muxb;	\n"
-				"    clampedColor.rgb = clamp(blend2.rgb, 0.0, 1.0);	\n"
-				"  }								\n"
-				;
-		}
-		else {
-			m_part =
-				"  if (uForceBlendCycle2 != 0) {						\n"
-				"    muxPM[0] = clampedColor;							\n"
-				"    muxPM[1] = vec4(0.0);								\n"
-				"    muxA[0] = clampedColor.a;							\n"
-				"    muxB[0] = 1.0 - muxA[uBlendMux2[1]];				\n"
-				"    lowp vec4 blend2 = muxPM[uBlendMux2[0]] * muxA[uBlendMux2[1]] + muxPM[uBlendMux2[2]] * muxB[uBlendMux2[3]];	\n"
-				"    clampedColor.rgb = clamp(blend2.rgb, 0.0, 1.0);	\n"
-				"  }													\n"
-				;
-		}
+		m_part =
+			"  if (uForceBlendCycle2 != 0) {	\n"
+			"    muxPM[0] = clampedColor;		\n"
+			"    muxPM[1] = vec4(0.0);			\n"
+			"    muxA[0] = clampedColor.a;		\n"
+			"    lowp float muxa = dot(muxA,vec4(equal(vec4(uBlendMux2[1]),vec4(0,1,2,3))));	\n"
+			"    muxB[0] = 1.0 - muxa;			\n"
+			"    lowp vec4 muxpm0 = muxPM*vec4(equal(vec4(uBlendMux2[0]), vec4(0,1,2,3)));	\n"
+			"    lowp vec4 muxpm2 = muxPM*vec4(equal(vec4(uBlendMux2[2]), vec4(0,1,2,3)));	\n"
+			"    lowp float muxb = dot(muxB,vec4(equal(vec4(uBlendMux2[3]),vec4(0,1,2,3))));	\n"
+			"    lowp vec4 blend2 = muxpm0 * muxa + muxpm2 * muxb;	\n"
+			"    clampedColor.rgb = clamp(blend2.rgb, 0.0, 1.0);	\n"
+			"  }								\n"
+			;
 	}
 };
 
@@ -2004,8 +1906,8 @@ GLuint _createVertexShader(ShaderPart * _header, ShaderPart * _body)
 }
 
 CombinerProgramBuilder::CombinerProgramBuilder(const opengl::GLInfo & _glinfo, opengl::CachedUseProgram * _useProgram)
-: m_blender1(new ShaderBlender1(_glinfo))
-, m_blender2(new ShaderBlender2(_glinfo))
+: m_blender1(new ShaderBlender1)
+, m_blender2(new ShaderBlender2)
 , m_legacyBlender(new ShaderLegacyBlender)
 , m_clamp(new ShaderClamp)
 , m_signExtendColorC(new ShaderSignExtendColorC)
