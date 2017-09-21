@@ -134,7 +134,7 @@ struct gDPInfo
 					unsigned int depthCompare : 1;
 					unsigned int depthUpdate : 1;
 					unsigned int imageRead : 1;
-					unsigned int clearOnCvg : 1;
+					unsigned int colorOnCvg : 1;
 
 					unsigned int cvgDest : 2;
 					unsigned int depthMode : 2;

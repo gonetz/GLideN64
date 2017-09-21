@@ -468,21 +468,26 @@ public:
 	{
 #if 1
 		m_part =
-			"  muxPM[0] = clampedColor;																	\n"
-			"  lowp vec4 vprobe = vec4(0.0, 1.0, 2.0, 3.0);												\n"
-			"  if (uForceBlendCycle1 != 0) {															\n"
-			"    muxA[0] = clampedColor.a;																\n"
-			"    lowp float muxa = dot(muxA, vec4(equal(vec4(uBlendMux1[1]), vprobe)));					\n"
-			"    muxB[0] = 1.0 - muxa;																	\n"
-			"    lowp vec4 muxpm0 = muxPM * vec4(equal(vec4(uBlendMux1[0]), vprobe));					\n"
-			"    lowp vec4 muxpm2 = muxPM * vec4(equal(vec4(uBlendMux1[2]), vprobe));					\n"
-			"    lowp float muxb = dot(muxB, vec4(equal(vec4(uBlendMux1[3]), vprobe)));					\n"
-			"    lowp vec4 blend1 = (muxpm0 * muxa) + (muxpm2 * muxb);									\n"
-			"    clampedColor.rgb = clamp(blend1.rgb, 0.0, 1.0);										\n"
-			"  } else {																					\n"
-			"    lowp vec4 muxpm0 = muxPM * vec4(equal(vec4(uBlendMux1[0]), vprobe));					\n"
-			"    clampedColor.rgb = muxpm0.rgb;															\n"
-			"  }																						\n"
+			"  muxPM[0] = clampedColor;													\n"
+			"  lowp vec4 vprobe = vec4(0.0, 1.0, 2.0, 3.0);								\n"
+			"  if (uForceBlendCycle1 != 0) {											\n"
+			"    muxA[0] = clampedColor.a;												\n"
+			"    lowp float muxa = dot(muxA, vec4(equal(vec4(uBlendMux1[1]), vprobe)));	\n"
+			"    muxB[0] = 1.0 - muxa;													\n"
+			"    lowp vec4 muxpm0 = muxPM * vec4(equal(vec4(uBlendMux1[0]), vprobe));	\n"
+			"    lowp vec4 muxpm2 = muxPM * vec4(equal(vec4(uBlendMux1[2]), vprobe));	\n"
+			"    lowp float muxb = dot(muxB, vec4(equal(vec4(uBlendMux1[3]), vprobe)));	\n"
+			"    lowp vec4 blend1 = (muxpm0 * muxa) + (muxpm2 * muxb);					\n"
+			"    clampedColor.rgb = clamp(blend1.rgb, 0.0, 1.0);						\n"
+			"  } else {																	\n"
+			"    if (uColorOnCvg == 0) {												\n"
+			"      lowp vec4 muxpm0 = muxPM * vec4(equal(vec4(uBlendMux1[0]), vprobe));	\n"
+			"      clampedColor.rgb = muxpm0.rgb;										\n"
+			"    } else {																\n"
+			"      lowp vec4 muxpm2 = muxPM * vec4(equal(vec4(uBlendMux1[2]), vprobe));	\n"
+			"      clampedColor.rgb = muxpm2.rgb;										\n"
+			"    }																		\n"
+			"  }																		\n"
 			;
 #else
 		// Keep old code for reference
@@ -526,8 +531,13 @@ public:
 			"    lowp vec4 blend2 = muxpm0 * muxa + muxpm2 * muxb;						\n"
 			"    clampedColor.rgb = clamp(blend2.rgb, 0.0, 1.0);						\n"
 			"  } else {																	\n"
-			"    lowp vec4 muxpm0 = muxPM * vec4(equal(vec4(uBlendMux2[0]), vprobe));	\n"
-			"    clampedColor.rgb = muxpm0.rgb;											\n"
+			"    if (uColorOnCvg == 0) {												\n"
+			"      lowp vec4 muxpm0 = muxPM * vec4(equal(vec4(uBlendMux2[0]), vprobe));	\n"
+			"      clampedColor.rgb = muxpm0.rgb;										\n"
+			"    } else {																\n"
+			"      lowp vec4 muxpm2 = muxPM * vec4(equal(vec4(uBlendMux2[2]), vprobe));	\n"
+			"      clampedColor.rgb = muxpm2.rgb;										\n"
+			"    }																		\n"
 			"  }																		\n"
 			;
 #else
@@ -706,6 +716,7 @@ public:
 			"uniform lowp int uEnableAlphaTest;		\n"
 			"uniform lowp int uCvgXAlpha;			\n"
 			"uniform lowp int uAlphaCvgSel;			\n"
+			"uniform lowp int uColorOnCvg;			\n"
 			"uniform lowp float uAlphaTestValue;	\n"
 			"uniform mediump vec2 uScreenScale;		\n"
 			;
@@ -780,6 +791,7 @@ public:
 			"uniform lowp int uEnableAlphaTest;		\n"
 			"uniform lowp int uCvgXAlpha;			\n"
 			"uniform lowp int uAlphaCvgSel;			\n"
+			"uniform lowp int uColorOnCvg;			\n"
 			"uniform lowp float uAlphaTestValue;	\n"
 			"uniform mediump vec2 uScreenScale;		\n"
 			;
