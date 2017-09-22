@@ -160,6 +160,13 @@ void GraphicsDrawer::_updateDepthCompare() const
 	}
 }
 
+SPVertex & GraphicsDrawer::getCurrentDMAVertex()
+{
+	if (m_dmaVerticesNum >= m_dmaVertices.size())
+		m_dmaVertices.resize(std::max(static_cast<std::vector<SPVertex>::size_type>(64), m_dmaVertices.size() * 2));
+	return m_dmaVertices[m_dmaVerticesNum++];
+}
+
 inline
 bool _needAdjustCoordinate(DisplayWindow & _wnd)
 {
@@ -770,6 +777,7 @@ void GraphicsDrawer::drawDMATriangles(u32 _numVtx)
 	triParams.combiner = currentCombiner();
 	gfxContext.drawTriangles(triParams);
 	g_debugger.addTriangles(triParams);
+	m_dmaVerticesNum = 0;
 
 	if (config.frameBufferEmulation.enable != 0) {
 		const f32 maxY = renderTriangles(m_dmaVertices.data(), nullptr, _numVtx);
@@ -1633,6 +1641,7 @@ void GraphicsDrawer::_initData()
 	for (auto vtx : triangles.vertices)
 		vtx.w = 1.0f;
 	triangles.num = 0;
+	m_dmaVerticesNum = 0;
 }
 
 void GraphicsDrawer::_destroyData()
