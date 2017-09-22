@@ -193,7 +193,7 @@ void F3DSWRS_PrepareVertices(const u32* _vert,
 	GraphicsDrawer & drawer = dwnd().getDrawer();
 
 	for (u32 i = 0; i < _num; ++i) {
-		SPVertex & vtx = drawer.getVertex(_vert[i]);
+		SPVertex & vtx = drawer.getVertex(_vert != nullptr ? _vert[i] : i);
 		const u8 *color = _colorbase + _colorIdx[i];
 		vtx.r = color[3] * 0.0039215689f;
 		vtx.g = color[2] * 0.0039215689f;
@@ -845,12 +845,7 @@ void TriGen0000()
 	std::vector<u32> texCoords(vtxSize);
 	TriGen00_BuildTextureCoords(5, params, texCoords);
 
-	std::vector<u32> vertices(vtxSize);
-	for (u32 i = 0; i < vtxSize; i++) {
-		vertices[i] = i;
-	}
-
-	F3DSWRS_PrepareVertices(vertices.data(), (u8*)colorData.data(),
+	F3DSWRS_PrepareVertices(nullptr, (u8*)colorData.data(),
 							colorIndices.data(), (u8*)texCoords.data(), true, false, vtxSize);
 
 	// Step 5. Prepare triangles, sort them by z and draw.
@@ -918,12 +913,7 @@ void TriGen0001()
 	std::vector<u32> texCoords(vtxSize);
 	TriGen00_BuildTextureCoords(3, params, texCoords);
 
-	std::vector<u32> vertices(vtxSize);
-	for (u32 i = 0; i < vtxSize; i++) {
-		vertices[i] = i;
-	}
-
-	F3DSWRS_PrepareVertices(vertices.data(), (u8*)colorData.data(),
+	F3DSWRS_PrepareVertices(nullptr, (u8*)colorData.data(),
 							colorIndices.data(), (u8*)texCoords.data(), true, false, vtxSize);
 
 	// Step 5. Prepare triangles, sort them by z and draw.
