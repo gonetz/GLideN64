@@ -59,6 +59,8 @@ SpecialMicrocodeInfo specialMicrocodes[] =
 	{ Turbo3D,		false,	true,	0x2bdcfc8a, "Turbo3D" },
 	{ F3DEX2CBFD,	true,	true,	0x1b4ace88, "Conker's Bad Fur Day" },
 	{ F3DSWRS,		false,	false,	0xda51ccdb, "Star Wars RS" },
+	{ F3DZEX2,		true,	true,	0xd39a0d4f,	"Animal Forest" },
+	{ S2DEX2,		false,	true,	0x2c399dd,	"Animal Forest" },
 	{ T3DUX,		false,	true,	0xbad437f2, "T3DUX vers 0.83 for Toukon Road" },
 	{ T3DUX,		false,	true,	0xd0a1aa3d, "T3DUX vers 0.85 for Toukon Road 2" },
 	{ F3DEX2ACCLAIM,true,	true,	0xe44df568, "Acclaim games: Turok2 & 3, Armories and South park" }
