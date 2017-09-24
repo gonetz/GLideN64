@@ -341,11 +341,6 @@ graphics::ShaderProgram * ContextImpl::createDepthFogShader()
 	return m_specialShadersFactory->createShadowMapShader();
 }
 
-graphics::ShaderProgram * ContextImpl::createMonochromeShader()
-{
-	return m_specialShadersFactory->createMonochromeShader();
-}
-
 graphics::TexrectDrawerShaderProgram * ContextImpl::createTexrectDrawerDrawShader()
 {
 	return m_specialShadersFactory->createTexrectDrawerDrawShader();

@@ -219,11 +219,6 @@ ShaderProgram * Context::createDepthFogShader()
 	return m_impl->createDepthFogShader();
 }
 
-ShaderProgram * Context::createMonochromeShader()
-{
-	return m_impl->createMonochromeShader();
-}
-
 TexrectDrawerShaderProgram * Context::createTexrectDrawerDrawShader()
 {
 	return m_impl->createTexrectDrawerDrawShader();

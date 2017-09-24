@@ -49,7 +49,6 @@ namespace graphics {
 		virtual bool saveShadersStorage(const Combiners & _combiners) = 0;
 		virtual bool loadShadersStorage(Combiners & _combiners) = 0;
 		virtual ShaderProgram * createDepthFogShader() = 0;
-		virtual ShaderProgram * createMonochromeShader() = 0;
 		virtual TexrectDrawerShaderProgram * createTexrectDrawerDrawShader() = 0;
 		virtual ShaderProgram * createTexrectDrawerClearShader() = 0;
 		virtual ShaderProgram * createTexrectCopyShader() = 0;

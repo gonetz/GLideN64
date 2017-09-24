@@ -208,8 +208,6 @@ namespace graphics {
 
 		ShaderProgram * createDepthFogShader();
 
-		ShaderProgram * createMonochromeShader();
-
 		TexrectDrawerShaderProgram * createTexrectDrawerDrawShader();
 
 		ShaderProgram * createTexrectDrawerClearShader();

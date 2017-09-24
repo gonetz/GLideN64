@@ -111,14 +111,12 @@ void CombinerInfo::init()
 	}
 
 	m_shadowmapProgram.reset(gfxContext.createDepthFogShader());
-	m_monochromeProgram.reset(gfxContext.createMonochromeShader());
 	m_texrectCopyProgram.reset(gfxContext.createTexrectCopyShader());
 }
 
 void CombinerInfo::destroy()
 {
 	m_shadowmapProgram.reset();
-	m_monochromeProgram.reset();
 	m_texrectCopyProgram.reset();
 
 	m_pCurrent = nullptr;
@@ -314,14 +312,6 @@ void CombinerInfo::setDepthFogCombiner()
 	if (m_shadowmapProgram) {
 		m_shadowmapProgram->activate();
 		m_pCurrent = m_shadowmapProgram.get();
-	}
-}
-
-void CombinerInfo::setMonochromeCombiner()
-{
-	if (m_monochromeProgram) {
-		m_monochromeProgram->activate();
-		m_pCurrent = m_monochromeProgram.get();
 	}
 }
 

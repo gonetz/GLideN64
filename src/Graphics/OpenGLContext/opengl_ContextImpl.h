@@ -106,8 +106,6 @@ namespace opengl {
 
 		graphics::ShaderProgram * createDepthFogShader() override;
 
-		graphics::ShaderProgram * createMonochromeShader() override;
-
 		graphics::TexrectDrawerShaderProgram * createTexrectDrawerDrawShader() override;
 
 		graphics::ShaderProgram * createTexrectDrawerClearShader() override;
