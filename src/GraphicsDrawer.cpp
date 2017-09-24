@@ -270,7 +270,8 @@ void GraphicsDrawer::_updateScreenCoordsViewport() const
 	gSP.changed |= CHANGED_VIEWPORT;
 }
 
-void GraphicsDrawer::_legacySetBlendMode() const
+static
+void _legacySetBlendMode()
 {
 	const u32 blendmode = gDP.otherMode.l >> 16;
 	// 0x7000 = CVG_X_ALPHA|ALPHA_CVG_SEL|FORCE_BL
@@ -333,8 +334,7 @@ void GraphicsDrawer::_legacySetBlendMode() const
 			if (gDP.otherMode.cycleType == G_CYC_1CYCLE) {
 				sfactor = blend::ONE;
 				dfactor = blend::ZERO;
-			}
-			else {
+			} else {
 				sfactor = blend::ZERO;
 				dfactor = blend::ONE;
 			}
@@ -969,8 +969,9 @@ bool texturedRectShadowMap(const GraphicsDrawer::TexturedRectParams &)
 
 			pCurrentBuffer->m_pDepthBuffer->activateDepthBufferTexture(pCurrentBuffer);
 			CombinerInfo::get().setDepthFogCombiner();
+			// DepthFogCombiner does not support shader blending.
+			_legacySetBlendMode();
 			return false;
-
 		}
 	}
 	return false;
