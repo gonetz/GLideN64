@@ -4,7 +4,9 @@
 
 class CombinerKey {
 public:
-	CombinerKey() = default;
+	CombinerKey() {
+		m_key.mux = 0;
+	}
 	explicit CombinerKey(u64 _mux);
 	CombinerKey(const CombinerKey & _other);
 
