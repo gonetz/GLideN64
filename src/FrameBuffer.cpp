@@ -182,7 +182,7 @@ void FrameBuffer::init(u32 _address, u16 _format, u16 _size, u16 _width, bool _c
 
 void FrameBuffer::updateEndAddress()
 {
-	const u32 height = max(1U, m_height - 1);
+	const u32 height = max(1U, m_height);
 	m_endAddress = min(RDRAMSize, m_startAddress + (((m_width * height) << m_size >> 1) - 1));
 }
 
@@ -515,6 +515,20 @@ FrameBuffer * FrameBufferList::findBuffer(u32 _startAddress)
 	return nullptr;
 }
 
+inline
+bool isOverlapping(const FrameBuffer * _buf1, const FrameBuffer * _buf2)
+{
+	if (_buf1->m_endAddress < _buf2->m_endAddress && _buf1->m_width == _buf2->m_width && _buf1->m_size == _buf2->m_size) {
+		const u32 diff = _buf1->m_endAddress - _buf2->m_startAddress + 1;
+		const u32 stride = _buf1->m_width << _buf1->m_size >> 1;
+		if ((diff % stride == 0) && (diff / stride < 5))
+			return true;
+		else
+			return false;
+	}
+	return false;
+}
+
 void FrameBufferList::removeIntersections()
 {
 	assert(!m_list.empty());
@@ -524,8 +538,17 @@ void FrameBufferList::removeIntersections()
 		--iter;
 		if (&(*iter) == m_pCurrent)
 			continue;
-		if ((iter->m_startAddress <= m_pCurrent->m_startAddress && iter->m_endAddress >= m_pCurrent->m_startAddress) || // [  {  ]
-			(m_pCurrent->m_startAddress <= iter->m_startAddress && m_pCurrent->m_endAddress >= iter->m_startAddress)) { // {  [  }
+		if (iter->m_startAddress <= m_pCurrent->m_startAddress && iter->m_endAddress >= m_pCurrent->m_startAddress) { // [  {  ]
+			if (isOverlapping(&(*iter), m_pCurrent)) {
+				iter->m_endAddress = m_pCurrent->m_startAddress - 1;
+				continue;
+			}
+			iter = m_list.erase(iter);
+		} else if (m_pCurrent->m_startAddress <= iter->m_startAddress && m_pCurrent->m_endAddress >= iter->m_startAddress) { // {  [  }
+			if (isOverlapping(m_pCurrent, &(*iter))) {
+				m_pCurrent->m_endAddress = iter->m_startAddress - 1;
+				continue;
+			}
 			iter = m_list.erase(iter);
 		}
 	} while (iter != m_list.begin());
