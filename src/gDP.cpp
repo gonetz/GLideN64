@@ -828,7 +828,8 @@ void gDPTextureRectangle(f32 ulx, f32 uly, f32 lrx, f32 lry, s32 tile, f32 s, f3
 
 	gDP.rectColor = gDPInfo::Color();
 	if (gDP.otherMode.cycleType < G_CYC_COPY) {
-		if (gDP.combine.mA0 == G_ACMUX_0 && gDP.combine.aA0 == G_ACMUX_SHADE)
+		if ((config.generalEmulation.hacks & hack_texrect_shade_alpha) != 0 &&
+			gDP.combine.mA0 == G_ACMUX_0 && gDP.combine.aA0 == G_ACMUX_SHADE)
 			gDP.rectColor.a = 1.0f;
 	}
 

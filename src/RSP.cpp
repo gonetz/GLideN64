@@ -271,6 +271,8 @@ void RSP_Init()
 		config.generalEmulation.hacks |= hack_scoreboardJ;
 	else if (strstr(RSP.romname, (const char *)"MarioTennis") != nullptr)
 		config.generalEmulation.hacks |= hack_scoreboard;
+	else if (strstr(RSP.romname, (const char *)"POKEMON STADIUM 2") != nullptr)
+		config.generalEmulation.hacks |= hack_texrect_shade_alpha;
 	else if (strstr(RSP.romname, (const char *)"THE LEGEND OF ZELDA") != nullptr ||
 			 strstr(RSP.romname, (const char *)"ZELDA MASTER QUEST") != nullptr ||
 			 strstr(RSP.romname, (const char *)"DOUBUTSUNOMORI") != nullptr ||
