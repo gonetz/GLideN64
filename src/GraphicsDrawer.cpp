@@ -724,7 +724,7 @@ void GraphicsDrawer::drawTriangles()
 			gDP.otherMode.depthUpdate != 0) {
 			FrameBuffer * pCurrentDepthBuffer = frameBufferList().findBuffer(gDP.depthImageAddress);
 			if (pCurrentDepthBuffer != nullptr)
-				pCurrentDepthBuffer->m_cleared = false;
+				pCurrentDepthBuffer->setDirty();
 		}
 	}
 
@@ -786,7 +786,7 @@ void GraphicsDrawer::drawDMATriangles(u32 _numVtx)
 			gDP.otherMode.depthUpdate != 0) {
 			FrameBuffer * pCurrentDepthBuffer = frameBufferList().findBuffer(gDP.depthImageAddress);
 			if (pCurrentDepthBuffer != nullptr)
-				pCurrentDepthBuffer->m_cleared = false;
+				pCurrentDepthBuffer->setDirty();
 		}
 	}
 }

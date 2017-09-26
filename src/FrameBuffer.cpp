@@ -237,6 +237,12 @@ void FrameBuffer::copyRdram()
 	memcpy(m_RdramCopy.data(), RDRAM + m_startAddress, dataSize);
 }
 
+void FrameBuffer::setDirty()
+{
+	m_cleared = false;
+	m_RdramCopy.clear();
+}
+
 bool FrameBuffer::isValid(bool _forceCheck) const
 {
 	if (!_forceCheck) {
