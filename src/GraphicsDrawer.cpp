@@ -540,22 +540,6 @@ void GraphicsDrawer::_setBlendMode() const
 	} else if ((config.generalEmulation.hacks & hack_blastCorps) != 0 && gDP.otherMode.cycleType < G_CYC_COPY && gSP.texture.on == 0 && currentCombiner()->usesTexture()) { // Blast Corps
 		gfxContext.enable(enable::BLEND, true);
 		gfxContext.setBlending(blend::ZERO, blend::ONE);
-	} else if (gDP.otherMode.colorOnCvg != 0) {
-		// CLR_ON_CVG - just use second mux of blender
-		bool useMemColor = false;
-		if (gDP.otherMode.cycleType == G_CYC_1CYCLE) {
-			if (gDP.otherMode.c1_m2a == 1)
-				useMemColor = true;
-		} else if (gDP.otherMode.cycleType == G_CYC_2CYCLE) {
-			if (gDP.otherMode.c2_m2a == 1)
-				useMemColor = true;
-		}
-		if (useMemColor) {
-			gfxContext.enable(enable::BLEND, true);
-			gfxContext.setBlending(blend::ZERO, blend::ONE);
-		} else {
-			gfxContext.enable(enable::BLEND, false);
-		}
 	} else if ((gDP.otherMode.forceBlender == 0 && gDP.otherMode.cycleType < G_CYC_COPY)) {
 		// Just use first mux of blender
 		bool useMemColor = false;
@@ -563,7 +547,7 @@ void GraphicsDrawer::_setBlendMode() const
 			if (gDP.otherMode.c1_m1a == 1)
 				useMemColor = true;
 		} else if (gDP.otherMode.cycleType == G_CYC_2CYCLE) {
-			if (gDP.otherMode.c1_m2a == 1)
+			if (gDP.otherMode.c2_m1a == 1)
 				useMemColor = true;
 		}
 		if (useMemColor) {

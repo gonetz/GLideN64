@@ -480,13 +480,8 @@ public:
 			"    lowp vec4 blend1 = (muxpm0 * muxa) + (muxpm2 * muxb);					\n"
 			"    clampedColor.rgb = clamp(blend1.rgb, 0.0, 1.0);						\n"
 			"  } else {																	\n"
-			"    if (uColorOnCvg == 0) {												\n"
 			"      lowp vec4 muxpm0 = muxPM * vec4(equal(vec4(uBlendMux1[0]), vprobe));	\n"
 			"      clampedColor.rgb = muxpm0.rgb;										\n"
-			"    } else {																\n"
-			"      lowp vec4 muxpm2 = muxPM * vec4(equal(vec4(uBlendMux1[2]), vprobe));	\n"
-			"      clampedColor.rgb = muxpm2.rgb;										\n"
-			"    }																		\n"
 			"  }																		\n"
 			;
 #else
@@ -531,13 +526,8 @@ public:
 			"    lowp vec4 blend2 = muxpm0 * muxa + muxpm2 * muxb;						\n"
 			"    clampedColor.rgb = clamp(blend2.rgb, 0.0, 1.0);						\n"
 			"  } else {																	\n"
-			"    if (uColorOnCvg == 0) {												\n"
 			"      lowp vec4 muxpm0 = muxPM * vec4(equal(vec4(uBlendMux2[0]), vprobe));	\n"
 			"      clampedColor.rgb = muxpm0.rgb;										\n"
-			"    } else {																\n"
-			"      lowp vec4 muxpm2 = muxPM * vec4(equal(vec4(uBlendMux2[2]), vprobe));	\n"
-			"      clampedColor.rgb = muxpm2.rgb;										\n"
-			"    }																		\n"
 			"  }																		\n"
 			;
 #else
@@ -716,7 +706,6 @@ public:
 			"uniform lowp int uEnableAlphaTest;		\n"
 			"uniform lowp int uCvgXAlpha;			\n"
 			"uniform lowp int uAlphaCvgSel;			\n"
-			"uniform lowp int uColorOnCvg;			\n"
 			"uniform lowp float uAlphaTestValue;	\n"
 			"uniform mediump vec2 uScreenScale;		\n"
 			;
@@ -791,7 +780,6 @@ public:
 			"uniform lowp int uEnableAlphaTest;		\n"
 			"uniform lowp int uCvgXAlpha;			\n"
 			"uniform lowp int uAlphaCvgSel;			\n"
-			"uniform lowp int uColorOnCvg;			\n"
 			"uniform lowp float uAlphaTestValue;	\n"
 			"uniform mediump vec2 uScreenScale;		\n"
 			;

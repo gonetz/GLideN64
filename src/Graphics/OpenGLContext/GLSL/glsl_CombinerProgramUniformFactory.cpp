@@ -272,7 +272,6 @@ public:
 	UBlendMode1Cycle(GLuint _program) {
 		LocateUniform(uBlendMux1);
 		LocateUniform(uForceBlendCycle1);
-		LocateUniform(uColorOnCvg);
 	}
 
 	void update(bool _force) override
@@ -285,15 +284,11 @@ public:
 
 		const int forceBlend1 = (int)gDP.otherMode.forceBlender;
 		uForceBlendCycle1.set(forceBlend1, _force);
-
-		const int colorOnCvg = (int)gDP.otherMode.colorOnCvg;
-		uColorOnCvg.set(colorOnCvg, _force);
 	}
 
 private:
 	i4Uniform uBlendMux1;
 	iUniform uForceBlendCycle1;
-	iUniform uColorOnCvg;
 };
 
 class UBlendMode2Cycle : public UniformGroup
