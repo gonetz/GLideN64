@@ -50,6 +50,7 @@ SpecialMicrocodeInfo specialMicrocodes[] =
 	{ F3DBETA,		false,	true,	0x94c4c833, "RSP SW Version: 2.0D, 04-01-96" }, // Star Wars Shadows of Empire
 	{ F3DEX,		true,	true,	0x637b4b58, "RSP SW Version: 2.0D, 04-01-96" },
 	{ F3D,			true,	true,	0x54c558ba, "RSP SW Version: 2.0D, 04-01-96" }, // Pilot Wings
+	{ L3D,			true,	true,	0x771ce0c4, "RSP SW Version: 2.0D, 04-01-96" }, // Blast Corps
 	{ F3DGOLDEN,	true,	true,	0x302bca09, "RSP SW Version: 2.0G, 09-30-96" }, // GoldenEye
 	{ S2DEX,		false,	true,	0x9df31081, "RSP Gfx ucode S2DEX  1.06 Yoshitaka Yasumoto Nintendo." },
 	{ F3DDKR,		false,	true,	0x8d91244f, "Diddy Kong Racing" },
