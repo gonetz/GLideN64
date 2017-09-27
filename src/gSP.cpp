@@ -2275,12 +2275,8 @@ struct ObjCoordinates
 
 		ulx = frameX;
 		uly = frameY;
-		lrx = frameX + min(imageW/scaleW, frameW) - 1.0f;
-		lry = frameY + min(imageH/scaleH, frameH) - 1.0f;
-		if (gDP.otherMode.cycleType == G_CYC_COPY) {
-			lrx += 1.0f;
-			lry += 1.0f;;
-		}
+		lrx = frameX + min(imageW/scaleW, frameW);
+		lry = frameY + min(imageH/scaleH, frameH);
 
 		uls = imageX;
 		ult = imageY;
