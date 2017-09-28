@@ -360,10 +360,11 @@ void ConfigDialog::accept()
 	m_accepted = true;
 
 	int windowedValidatorPos = 0;
+	QString currentText = ui->windowedResolutionComboBox->currentText();
 	if (ui->windowedResolutionComboBox->validator()->validate(
-		ui->windowedResolutionComboBox->currentText(), windowedValidatorPos
+		currentText, windowedValidatorPos
 	) == QValidator::Acceptable) {
-		QStringList windowedResolutionDimensions = ui->windowedResolutionComboBox->currentText().split("x");
+		QStringList windowedResolutionDimensions = currentText.split("x");
 		config.video.windowedWidth = windowedResolutionDimensions[0].trimmed().toInt();
 		config.video.windowedHeight = windowedResolutionDimensions[1].trimmed().toInt();
 	}
