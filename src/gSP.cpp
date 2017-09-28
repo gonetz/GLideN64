@@ -2280,8 +2280,8 @@ struct ObjCoordinates
 
 		uls = imageX;
 		ult = imageY;
-		lrs = uls + (lrx - ulx) * scaleW;
-		lrt = ult + (lry - uly) * scaleH;
+		lrs = uls + (lrx - ulx - 1.0f) * scaleW;
+		lrt = ult + (lry - uly - 1.0f) * scaleH;
 		if (gDP.otherMode.cycleType != G_CYC_COPY) {
 			if ((gSP.objRendermode&G_OBJRM_SHRINKSIZE_1) != 0) {
 				lrs -= 1.0f / scaleW;
