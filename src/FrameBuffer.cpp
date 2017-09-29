@@ -46,6 +46,10 @@ FrameBuffer::FrameBuffer() :
 
 FrameBuffer::~FrameBuffer()
 {
+	for (u32 i = 0; i < 8; ++i) {
+		if (gDP.tiles[i].frameBuffer == this)
+			gDP.tiles[i].frameBuffer = nullptr;
+	}
 	gfxContext.deleteFramebuffer(m_FBO);
 	gfxContext.deleteFramebuffer(m_resolveFBO);
 	gfxContext.deleteFramebuffer(m_SubFBO);
