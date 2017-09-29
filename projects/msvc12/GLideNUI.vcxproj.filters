@@ -57,22 +57,22 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="AboutDialog.cpp">
+    <ClCompile Include="..\..\src\GLideNUI\AboutDialog.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ConfigDialog.cpp">
+    <ClCompile Include="..\..\src\GLideNUI\ConfigDialog.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="FullscreenResolutions_windows.cpp">
+    <ClCompile Include="..\..\src\GLideNUI\FullscreenResolutions_windows.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GLideNUI.cpp">
+    <ClCompile Include="..\..\src\GLideNUI\GLideNUI.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ScreenShot.cpp">
+    <ClCompile Include="..\..\src\GLideNUI\ScreenShot.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Settings.cpp">
+    <ClCompile Include="..\..\src\GLideNUI\Settings.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Debug\moc_AboutDialog.cpp">
@@ -92,35 +92,35 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="AboutDialog.h">
+    <CustomBuild Include="..\..\src\GLideNUI\AboutDialog.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
-    <CustomBuild Include="ConfigDialog.h">
+    <CustomBuild Include="..\..\src\GLideNUI\ConfigDialog.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
-    <ClInclude Include="FullscreenResolutions.h">
+    <ClInclude Include="..\..\src\GLideNUI\FullscreenResolutions.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="GLideNUI.h">
+    <ClInclude Include="..\..\src\GLideNUI\GLideNUI.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Settings.h">
+    <ClInclude Include="..\..\src\GLideNUI\Settings.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="AboutDialog.ui">
+    <CustomBuild Include="..\..\src\GLideNUI\AboutDialog.ui">
       <Filter>Form Files</Filter>
     </CustomBuild>
-    <CustomBuild Include="configDialog.ui">
+    <CustomBuild Include="..\..\src\GLideNUI\configDialog.ui">
       <Filter>Form Files</Filter>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Icon.ico">
+    <None Include="..\..\src\GLideNUI\Icon.ico">
       <Filter>Resource Files</Filter>
     </None>
-    <CustomBuild Include="icon.qrc">
+    <CustomBuild Include="..\..\src\GLideNUI\icon.qrc">
       <Filter>Resource Files</Filter>
     </CustomBuild>
   </ItemGroup>
