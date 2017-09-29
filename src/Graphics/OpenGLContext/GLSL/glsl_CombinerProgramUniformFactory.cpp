@@ -710,24 +710,28 @@ public:
 			if (!m_useTile[t])
 				continue;
 
-			if (gSP.textureTile[t] != NULL) {
+			if (gSP.textureTile[t] != nullptr) {
 				if (gSP.textureTile[t]->textureMode == TEXTUREMODE_BGIMAGE || gSP.textureTile[t]->textureMode == TEXTUREMODE_FRAMEBUFFER_BG)
 					uTexOffset[t].set(0.0f, 0.0f, _force);
 				else {
 					float fuls = gSP.textureTile[t]->fuls;
 					float fult = gSP.textureTile[t]->fult;
-					FrameBuffer * pBuffer = gSP.textureTile[t]->frameBuffer;
-					if (pBuffer != NULL) {
-						if (gSP.textureTile[t]->masks > 0 && gSP.textureTile[t]->clamps == 0)
-							fuls = float(gSP.textureTile[t]->uls % (1 << gSP.textureTile[t]->masks));
-						if (gSP.textureTile[t]->maskt > 0 && gSP.textureTile[t]->clampt == 0)
-							fult = float(gSP.textureTile[t]->ult % (1 << gSP.textureTile[t]->maskt));
+					if (gSP.textureTile[t]->frameBufferAddress > 0) {
+						FrameBuffer * pBuffer = frameBufferList().getBuffer(gSP.textureTile[t]->frameBufferAddress);
+						if (pBuffer != nullptr) {
+							if (gSP.textureTile[t]->masks > 0 && gSP.textureTile[t]->clamps == 0)
+								fuls = float(gSP.textureTile[t]->uls % (1 << gSP.textureTile[t]->masks));
+							if (gSP.textureTile[t]->maskt > 0 && gSP.textureTile[t]->clampt == 0)
+								fult = float(gSP.textureTile[t]->ult % (1 << gSP.textureTile[t]->maskt));
+						} else {
+							gSP.textureTile[t]->frameBufferAddress = 0;
+						}
 					}
 					uTexOffset[t].set(fuls, fult, _force);
 				}
 			}
 
-			if (cache.current[t] != NULL) {
+			if (cache.current[t] != nullptr) {
 				f32 shiftScaleS = 1.0f;
 				f32 shiftScaleT = 1.0f;
 				getTextureShiftScale(t, cache, shiftScaleS, shiftScaleT);

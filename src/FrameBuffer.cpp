@@ -46,10 +46,6 @@ FrameBuffer::FrameBuffer() :
 
 FrameBuffer::~FrameBuffer()
 {
-	for (u32 i = 0; i < 8; ++i) {
-		if (gDP.tiles[i].frameBuffer == this)
-			gDP.tiles[i].frameBuffer = nullptr;
-	}
 	gfxContext.deleteFramebuffer(m_FBO);
 	gfxContext.deleteFramebuffer(m_resolveFBO);
 	gfxContext.deleteFramebuffer(m_SubFBO);
@@ -514,6 +510,15 @@ FrameBuffer * FrameBufferList::findBuffer(u32 _startAddress)
 {
 	for (auto iter = m_list.begin(); iter != m_list.end(); ++iter) {
 		if (iter->m_startAddress <= _startAddress && iter->m_endAddress >= _startAddress) // [  {  ]
+			return &(*iter);
+	}
+	return nullptr;
+}
+
+FrameBuffer * FrameBufferList::getBuffer(u32 _startAddress)
+{
+	for (auto iter = m_list.begin(); iter != m_list.end(); ++iter) {
+		if (iter->m_startAddress == _startAddress)
 			return &(*iter);
 	}
 	return nullptr;
@@ -1243,8 +1248,9 @@ void FrameBufferList::fillRDRAM(s32 ulx, s32 uly, s32 lrx, s32 lry)
 	m_pCurrent->setBufferClearParams(gDP.fillColor.color, ulx, uly, lrx, lry);
 }
 
-void FrameBuffer_ActivateBufferTexture(u32 t, FrameBuffer *pBuffer)
+void FrameBuffer_ActivateBufferTexture(u32 t, u32 _frameBufferAddress)
 {
+	FrameBuffer * pBuffer = frameBufferList().getBuffer(_frameBufferAddress);
 	if (pBuffer == nullptr)
 		return;
 
@@ -1257,8 +1263,9 @@ void FrameBuffer_ActivateBufferTexture(u32 t, FrameBuffer *pBuffer)
 	gDP.changed |= CHANGED_FB_TEXTURE;
 }
 
-void FrameBuffer_ActivateBufferTextureBG(u32 t, FrameBuffer *pBuffer )
+void FrameBuffer_ActivateBufferTextureBG(u32 t, u32 _frameBufferAddress)
 {
+	FrameBuffer * pBuffer = frameBufferList().getBuffer(_frameBufferAddress);
 	if (pBuffer == nullptr)
 		return;
 

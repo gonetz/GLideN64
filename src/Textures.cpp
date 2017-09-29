@@ -1490,10 +1490,10 @@ void TextureCache::update(u32 _t)
 		_updateBackground();
 		return;
 	case TEXTUREMODE_FRAMEBUFFER:
-		FrameBuffer_ActivateBufferTexture( _t, pTile->frameBuffer );
+		FrameBuffer_ActivateBufferTexture( _t, pTile->frameBufferAddress );
 		return;
 	case TEXTUREMODE_FRAMEBUFFER_BG:
-		FrameBuffer_ActivateBufferTextureBG( _t, pTile->frameBuffer );
+		FrameBuffer_ActivateBufferTextureBG( _t, pTile->frameBufferAddress );
 		return;
 	}
 

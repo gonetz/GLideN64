@@ -273,7 +273,7 @@ void gDPSetTile( u32 format, u32 size, u32 line, u32 tmem, u32 tile, u32 palette
 		if (nTile > gSP.texture.tile + 1) {
 			gDP.tiles[tile].textureMode = gDP.tiles[nTile].textureMode;
 			gDP.tiles[tile].loadType = gDP.tiles[nTile].loadType;
-			gDP.tiles[tile].frameBuffer = gDP.tiles[nTile].frameBuffer;
+			gDP.tiles[tile].frameBufferAddress = gDP.tiles[nTile].frameBufferAddress;
 			gDP.tiles[tile].imageAddress = gDP.tiles[nTile].imageAddress;
 		}
 	}
@@ -326,7 +326,7 @@ static
 bool CheckForFrameBufferTexture(u32 _address, u32 _bytes)
 {
 	gDP.loadTile->textureMode = TEXTUREMODE_NORMAL;
-	gDP.loadTile->frameBuffer = nullptr;
+	gDP.loadTile->frameBufferAddress = 0U;
 	gDP.changed |= CHANGED_TMEM;
 	if (!config.frameBufferEmulation.enable)
 		return false;
@@ -376,7 +376,7 @@ bool CheckForFrameBufferTexture(u32 _address, u32 _bytes)
 			pBuffer->m_loadType = gDP.loadTile->loadType;
 			pBuffer->m_loadTileOrigin.uls = gDP.loadTile->uls;
 			pBuffer->m_loadTileOrigin.ult = gDP.loadTile->ult;
-			gDP.loadTile->frameBuffer = pBuffer;
+			gDP.loadTile->frameBufferAddress = pBuffer->m_startAddress;
 			gDP.loadTile->textureMode = TEXTUREMODE_FRAMEBUFFER;
 		}
 	}
@@ -386,7 +386,7 @@ bool CheckForFrameBufferTexture(u32 _address, u32 _bytes)
 			gDPTile & curTile = gDP.tiles[nTile];
 			curTile.textureMode = gDP.loadTile->textureMode;
 			curTile.loadType = gDP.loadTile->loadType;
-			curTile.frameBuffer = gDP.loadTile->frameBuffer;
+			curTile.frameBufferAddress = gDP.loadTile->frameBufferAddress;
 			curTile.imageAddress = gDP.loadTile->imageAddress;
 		}
 	}
@@ -578,7 +578,7 @@ void gDPLoadBlock(u32 tile, u32 uls, u32 ult, u32 lrs, u32 dxt)
 		return;
 	}
 
-	gDP.loadTile->frameBuffer = nullptr;
+	gDP.loadTile->frameBufferAddress = 0;
 	CheckForFrameBufferTexture(address, bytes); // Load data to TMEM even if FB texture is found. See comment to texturedRectDepthBufferCopy
 
 	if (gDP.loadTile->size == G_IM_SIZ_32b)

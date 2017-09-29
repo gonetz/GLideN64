@@ -2523,7 +2523,7 @@ void _loadBGImage(const uObjScaleBg * _bgInfo, bool _loadScale)
 				return;
 			}
 
-			gDP.tiles[0].frameBuffer = pBuffer;
+			gDP.tiles[0].frameBufferAddress = pBuffer->m_startAddress;
 			gDP.tiles[0].textureMode = TEXTUREMODE_FRAMEBUFFER_BG;
 			gDP.tiles[0].loadType = LOADTYPE_TILE;
 			gDP.changed |= CHANGED_TMEM;
@@ -2660,7 +2660,7 @@ void _loadSpriteImage(const uSprite *_pSprite)
 	{
 		FrameBuffer *pBuffer = frameBufferList().findBuffer(gSP.bgImage.address);
 		if (pBuffer != nullptr) {
-			gDP.tiles[0].frameBuffer = pBuffer;
+			gDP.tiles[0].frameBufferAddress = pBuffer->m_startAddress;
 			gDP.tiles[0].textureMode = TEXTUREMODE_FRAMEBUFFER_BG;
 			gDP.tiles[0].loadType = LOADTYPE_TILE;
 			gDP.changed |= CHANGED_TMEM;

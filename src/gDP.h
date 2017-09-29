@@ -93,7 +93,7 @@ struct gDPTile
 	u32 textureMode;
 	u32 loadType;
 	u32 imageAddress;
-	FrameBuffer *frameBuffer;
+	u32 frameBufferAddress;
 };
 
 struct gDPLoadTileInfo {

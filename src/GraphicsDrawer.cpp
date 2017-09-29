@@ -1002,7 +1002,7 @@ static
 bool texturedRectCopyToItself(const GraphicsDrawer::TexturedRectParams & _params)
 {
 	FrameBuffer * pCurrent = frameBufferList().getCurrent();
-	if (pCurrent != nullptr && pCurrent->m_size == G_IM_SIZ_8b && gSP.textureTile[0]->frameBuffer == pCurrent)
+	if (pCurrent != nullptr && pCurrent->m_size == G_IM_SIZ_8b && gSP.textureTile[0]->frameBufferAddress == pCurrent->m_startAddress)
 		return true;
 	return texturedRectDepthBufferCopy(_params);
 }
@@ -1050,7 +1050,7 @@ bool texturedRectPaletteMod(const GraphicsDrawer::TexturedRectParams & _params)
 
 		if (gDP.textureImage.width == 64) {
 			gDPTile & curTile = gDP.tiles[0];
-			curTile.frameBuffer = nullptr;
+			curTile.frameBufferAddress = 0;
 			curTile.textureMode = TEXTUREMODE_NORMAL;
 			textureCache().update(0);
 			currentCombiner()->update(false);
