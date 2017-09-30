@@ -438,8 +438,7 @@ public:
 				"# define OUT					\n"
 				"#endif // __VERSION __			\n"
 			;
-		}
-		else if (_glinfo.isGLESX) {
+		} else if (_glinfo.isGLESX) {
 			std::stringstream ss;
 			ss << "#version " << Utils::to_string(_glinfo.majorVersion) << Utils::to_string(_glinfo.minorVersion) << "0 es " << std::endl;
 			ss << "# define IN in" << std::endl
@@ -464,26 +463,47 @@ public:
 class ShaderBlender1 : public ShaderPart
 {
 public:
-	ShaderBlender1()
+	ShaderBlender1(const opengl::GLInfo & _glinfo)
 	{
 #if 1
-		m_part =
-			"  muxPM[0] = clampedColor;														\n"
-			"  lowp vec4 vprobe = vec4(0.0, 1.0, 2.0, 3.0);									\n"
-			"  if (uForceBlendCycle1 != 0) {												\n"
-			"    muxA[0] = clampedColor.a;													\n"
-			"    lowp float muxa = dot(muxA, ivec4(equal(vec4(uBlendMux1[1]), vprobe)));	\n"
-			"    muxB[0] = 1.0 - muxa;														\n"
-			"    lowp vec4 muxpm0 = muxPM * ivec4(equal(vec4(uBlendMux1[0]), vprobe));		\n"
-			"    lowp vec4 muxpm2 = muxPM * ivec4(equal(vec4(uBlendMux1[2]), vprobe));		\n"
-			"    lowp float muxb = dot(muxB, ivec4(equal(vec4(uBlendMux1[3]), vprobe)));	\n"
-			"    lowp vec4 blend1 = (muxpm0 * muxa) + (muxpm2 * muxb);						\n"
-			"    clampedColor.rgb = clamp(blend1.rgb, 0.0, 1.0);							\n"
-			"  } else {																		\n"
-			"      lowp vec4 muxpm0 = muxPM * ivec4(equal(vec4(uBlendMux1[0]), vprobe));	\n"
-			"      clampedColor.rgb = muxpm0.rgb;											\n"
-			"  }																			\n"
-			;
+		if (_glinfo.renderer != opengl::Renderer::Intel) {
+			m_part =
+				"  muxPM[0] = clampedColor;													\n"
+				"  lowp vec4 vprobe = vec4(0.0, 1.0, 2.0, 3.0);								\n"
+				"  if (uForceBlendCycle1 != 0) {											\n"
+				"    muxA[0] = clampedColor.a;												\n"
+				"    lowp float muxa = dot(muxA, vec4(equal(vec4(uBlendMux1[1]), vprobe)));	\n"
+				"    muxB[0] = 1.0 - muxa;													\n"
+				"    lowp vec4 muxpm0 = muxPM * vec4(equal(vec4(uBlendMux1[0]), vprobe));	\n"
+				"    lowp vec4 muxpm2 = muxPM * vec4(equal(vec4(uBlendMux1[2]), vprobe));	\n"
+				"    lowp float muxb = dot(muxB, vec4(equal(vec4(uBlendMux1[3]), vprobe)));	\n"
+				"    lowp vec4 blend1 = (muxpm0 * muxa) + (muxpm2 * muxb);					\n"
+				"    clampedColor.rgb = clamp(blend1.rgb, 0.0, 1.0);						\n"
+				"  } else {																	\n"
+				"      lowp vec4 muxpm0 = muxPM * vec4(equal(vec4(uBlendMux1[0]), vprobe));	\n"
+				"      clampedColor.rgb = muxpm0.rgb;										\n"
+				"  }																		\n"
+				;
+		} else {
+			// Workarond for Intel drivers for Mac, issue #1601
+			m_part =
+				"  muxPM[0] = clampedColor;														\n"
+				"  lowp vec4 vprobe = vec4(0.0, 1.0, 2.0, 3.0);									\n"
+				"  if (uForceBlendCycle1 != 0) {												\n"
+				"    muxA[0] = clampedColor.a;													\n"
+				"    lowp float muxa = dot(muxA, ivec4(equal(vec4(uBlendMux1[1]), vprobe)));	\n"
+				"    muxB[0] = 1.0 - muxa;														\n"
+				"    lowp vec4 muxpm0 = muxPM * ivec4(equal(vec4(uBlendMux1[0]), vprobe));		\n"
+				"    lowp vec4 muxpm2 = muxPM * ivec4(equal(vec4(uBlendMux1[2]), vprobe));		\n"
+				"    lowp float muxb = dot(muxB, ivec4(equal(vec4(uBlendMux1[3]), vprobe)));	\n"
+				"    lowp vec4 blend1 = (muxpm0 * muxa) + (muxpm2 * muxb);						\n"
+				"    clampedColor.rgb = clamp(blend1.rgb, 0.0, 1.0);							\n"
+				"  } else {																		\n"
+				"      lowp vec4 muxpm0 = muxPM * ivec4(equal(vec4(uBlendMux1[0]), vprobe));	\n"
+				"      clampedColor.rgb = muxpm0.rgb;											\n"
+				"  }																			\n"
+				;
+		}
 #else
 		// Keep old code for reference
 		m_part =
@@ -510,26 +530,47 @@ public:
 class ShaderBlender2 : public ShaderPart
 {
 public:
-	ShaderBlender2()
+	ShaderBlender2(const opengl::GLInfo & _glinfo)
 	{
 #if 1
-		m_part =
-			"  muxPM[0] = clampedColor;														\n"
-			"  muxPM[1] = vec4(0.0);														\n"
-			"  if (uForceBlendCycle2 != 0) {												\n"
-			"    muxA[0] = clampedColor.a;													\n"
-			"    lowp float muxa = dot(muxA, ivec4(equal(vec4(uBlendMux2[1]), vprobe)));	\n"
-			"    muxB[0] = 1.0 - muxa;														\n"
-			"    lowp vec4 muxpm0 = muxPM * ivec4(equal(vec4(uBlendMux2[0]), vprobe));		\n"
-			"    lowp vec4 muxpm2 = muxPM * ivec4(equal(vec4(uBlendMux2[2]), vprobe));		\n"
-			"    lowp float muxb = dot(muxB, ivec4(equal(vec4(uBlendMux2[3]), vprobe)));	\n"
-			"    lowp vec4 blend2 = muxpm0 * muxa + muxpm2 * muxb;							\n"
-			"    clampedColor.rgb = clamp(blend2.rgb, 0.0, 1.0);							\n"
-			"  } else {																		\n"
-			"      lowp vec4 muxpm0 = muxPM * ivec4(equal(vec4(uBlendMux2[0]), vprobe));	\n"
-			"      clampedColor.rgb = muxpm0.rgb;											\n"
-			"  }																			\n"
-			;
+		if (_glinfo.renderer != opengl::Renderer::Intel) {
+			m_part =
+				"  muxPM[0] = clampedColor;													\n"
+				"  muxPM[1] = vec4(0.0);													\n"
+				"  if (uForceBlendCycle2 != 0) {											\n"
+				"    muxA[0] = clampedColor.a;												\n"
+				"    lowp float muxa = dot(muxA, vec4(equal(vec4(uBlendMux2[1]), vprobe)));	\n"
+				"    muxB[0] = 1.0 - muxa;													\n"
+				"    lowp vec4 muxpm0 = muxPM*vec4(equal(vec4(uBlendMux2[0]), vprobe));		\n"
+				"    lowp vec4 muxpm2 = muxPM*vec4(equal(vec4(uBlendMux2[2]), vprobe));		\n"
+				"    lowp float muxb = dot(muxB,vec4(equal(vec4(uBlendMux2[3]), vprobe)));	\n"
+				"    lowp vec4 blend2 = muxpm0 * muxa + muxpm2 * muxb;						\n"
+				"    clampedColor.rgb = clamp(blend2.rgb, 0.0, 1.0);						\n"
+				"  } else {																	\n"
+				"      lowp vec4 muxpm0 = muxPM * vec4(equal(vec4(uBlendMux2[0]), vprobe));	\n"
+				"      clampedColor.rgb = muxpm0.rgb;										\n"
+				"  }																		\n"
+				;
+		} else {
+			// Workarond for Intel drivers for Mac, issue #1601
+			m_part =
+				"  muxPM[0] = clampedColor;														\n"
+				"  muxPM[1] = vec4(0.0);														\n"
+				"  if (uForceBlendCycle2 != 0) {												\n"
+				"    muxA[0] = clampedColor.a;													\n"
+				"    lowp float muxa = dot(muxA, ivec4(equal(vec4(uBlendMux2[1]), vprobe)));	\n"
+				"    muxB[0] = 1.0 - muxa;														\n"
+				"    lowp vec4 muxpm0 = muxPM * ivec4(equal(vec4(uBlendMux2[0]), vprobe));		\n"
+				"    lowp vec4 muxpm2 = muxPM * ivec4(equal(vec4(uBlendMux2[2]), vprobe));		\n"
+				"    lowp float muxb = dot(muxB, ivec4(equal(vec4(uBlendMux2[3]), vprobe)));	\n"
+				"    lowp vec4 blend2 = muxpm0 * muxa + muxpm2 * muxb;							\n"
+				"    clampedColor.rgb = clamp(blend2.rgb, 0.0, 1.0);							\n"
+				"  } else {																		\n"
+				"      lowp vec4 muxpm0 = muxPM * ivec4(equal(vec4(uBlendMux2[0]), vprobe));	\n"
+				"      clampedColor.rgb = muxpm0.rgb;											\n"
+				"  }																			\n"
+				;
+		}
 #else
 		// Keep old code for reference
 		m_part =
@@ -1937,8 +1978,8 @@ GLuint _createVertexShader(ShaderPart * _header, ShaderPart * _body)
 }
 
 CombinerProgramBuilder::CombinerProgramBuilder(const opengl::GLInfo & _glinfo, opengl::CachedUseProgram * _useProgram)
-: m_blender1(new ShaderBlender1)
-, m_blender2(new ShaderBlender2)
+: m_blender1(new ShaderBlender1(_glinfo))
+, m_blender2(new ShaderBlender2(_glinfo))
 , m_legacyBlender(new ShaderLegacyBlender)
 , m_clamp(new ShaderClamp)
 , m_signExtendColorC(new ShaderSignExtendColorC)
