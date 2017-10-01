@@ -150,6 +150,9 @@
     <PostBuildEvent>
       <Message>Copy result to plugins folder</Message>
     </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>call ..\..\src\getRevision.bat</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug_mupenplus|Win32'">
     <ClCompile>
@@ -182,6 +185,9 @@
     <PostBuildEvent>
       <Message>Copy result to plugins folder</Message>
     </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>call ..\..\src\getRevision.bat</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug_mupenplus_uniformset|Win32'">
     <ClCompile>
@@ -247,6 +253,9 @@
     <PostBuildEvent>
       <Message>Copy result to plugins folder</Message>
     </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>call ..\..\src\getRevision.bat</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_mupenplus|Win32'">
     <ClCompile>
@@ -285,6 +294,9 @@
     <PostBuildEvent>
       <Message>Copy result to plugins folder</Message>
     </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>call ..\..\src\getRevision.bat</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\3DMath.cpp" />
