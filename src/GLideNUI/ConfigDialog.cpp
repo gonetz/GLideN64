@@ -120,7 +120,7 @@ void ConfigDialog::_init()
 
 	switch (config.texture.screenShotFormat) {
 	case 0:
-		ui->bmpRadioButton->setChecked(true);
+		ui->pngRadioButton->setChecked(true);
 		break;
 	case 1:
 		ui->jpegRadioButton->setChecked(true);
@@ -385,7 +385,7 @@ void ConfigDialog::accept()
 	else if (ui->blnr3PointRadioButton->isChecked())
 		config.texture.bilinearMode = BILINEAR_3POINT;
 
-	if (ui->bmpRadioButton->isChecked())
+	if (ui->pngRadioButton->isChecked())
 		config.texture.screenShotFormat = 0;
 	else if (ui->jpegRadioButton->isChecked())
 		config.texture.screenShotFormat = 1;

@@ -8,9 +8,9 @@
 
 EXPORT void CALL SaveScreenshot(const wchar_t * _folder, const char * _name, int _width, int _height, const unsigned char * _data)
 {
-	const char * bmp = "bmp";
+	const char * png = "png";
 	const char * jpg = "jpg";
-	const char * fileExt = config.texture.screenShotFormat == 0 ? bmp : jpg;
+	const char * fileExt = config.texture.screenShotFormat == 0 ? png : jpg;
 	QString folderName = QString::fromWCharArray(_folder);
 	QDir folder;
 	if (!folder.exists(folderName) && !folder.mkpath(folderName))

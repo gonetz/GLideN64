@@ -941,9 +941,9 @@
                    </widget>
                   </item>
                   <item>
-                   <widget class="QRadioButton" name="bmpRadioButton">
+                   <widget class="QRadioButton" name="pngRadioButton">
                     <property name="text">
-                     <string>BMP</string>
+                     <string>PNG</string>
                     </property>
                     <attribute name="buttonGroup">
                      <string notr="true">screenshotButtonGroup</string>
@@ -4195,9 +4195,9 @@
  <buttongroups>
   <buttongroup name="screenshotButtonGroup"/>
   <buttongroup name="aspectButtonGroup"/>
-  <buttongroup name="osdButtonGroup"/>
   <buttongroup name="fixTexrectCoordsButtonGroup"/>
   <buttongroup name="bloomBlendModeButtonGroup"/>
+  <buttongroup name="osdButtonGroup"/>
   <buttongroup name="factorButtonGroup"/>
  </buttongroups>
 </ui>
