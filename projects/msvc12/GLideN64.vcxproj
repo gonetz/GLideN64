@@ -145,7 +145,7 @@
       <AdditionalLibraryDirectories>lib/dbg</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
-      <Command>copy /Y "$(OutDir)$(TargetName).*" "$(N64PluginsDir)"</Command>
+      <Command>copy /Y "$(ProjectDir)$(OutDir)$(TargetName).*" "$(N64PluginsDir)"</Command>
     </PostBuildEvent>
     <PostBuildEvent>
       <Message>Copy result to plugins folder</Message>
@@ -180,7 +180,7 @@
       <AdditionalLibraryDirectories>lib/dbg</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
-      <Command>copy /Y "$(OutDir)$(TargetName).*" "$(Mupen64PluginsDir)"</Command>
+      <Command>copy /Y "$(ProjectDir)$(OutDir)$(TargetName).*" "$(Mupen64PluginsDir)"</Command>
     </PostBuildEvent>
     <PostBuildEvent>
       <Message>Copy result to plugins folder</Message>
@@ -248,7 +248,7 @@
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
     </Link>
     <PostBuildEvent>
-      <Command>copy /Y "$(OutDir)$(TargetName).*" "$(N64PluginsDir)"</Command>
+      <Command>copy /Y "$(ProjectDir)$(OutDir)$(TargetName).*" "$(N64PluginsDir)"</Command>
     </PostBuildEvent>
     <PostBuildEvent>
       <Message>Copy result to plugins folder</Message>
@@ -289,7 +289,7 @@
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
     </Link>
     <PostBuildEvent>
-      <Command>copy /Y "$(OutDir)$(TargetName).*" "$(Mupen64PluginsDir)"</Command>
+      <Command>copy /Y "$(ProjectDir)$(OutDir)$(TargetName).*" "$(Mupen64PluginsDir)"</Command>
     </PostBuildEvent>
     <PostBuildEvent>
       <Message>Copy result to plugins folder</Message>
