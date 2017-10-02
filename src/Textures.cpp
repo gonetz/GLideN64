@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <thread>         // std::this_thread::sleep_for
 #include <chrono>         // std::chrono::seconds
+#include "Platform.h"
 #include "Textures.h"
 #include "GBI.h"
 #include "RSP.h"
@@ -1147,8 +1148,16 @@ void TextureCache::_load(u32 _tile, CachedTexture *_pTexture)
 	s32 mipLevel = 0;
 	_pTexture->max_level = 0;
 
-	if (config.generalEmulation.enableLOD != 0 && gSP.texture.level > 1)
-		_pTexture->max_level = static_cast<u8>(_tile == 0 ? 0 : gSP.texture.level - 1);
+	if (config.generalEmulation.enableLOD != 0 && gSP.texture.level > 1) {
+		if (_tile == 0) {
+			_pTexture->max_level = 0;
+		} else {
+			_pTexture->max_level = static_cast<u8>(gSP.texture.level - 1);
+			const u16 dim = std::max(_pTexture->width, _pTexture->height);
+			while (dim <  static_cast<u16>(1 << _pTexture->max_level))
+				--_pTexture->max_level;
+		}
+	}
 
 	ObjectHandle name;
 	CachedTexture tmptex(name);
