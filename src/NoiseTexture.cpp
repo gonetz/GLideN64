@@ -1,3 +1,7 @@
+#ifdef MINGW
+#define _CRT_RAND_S
+#endif
+
 #include <thread>
 #include <array>
 #include <algorithm>
@@ -29,14 +33,28 @@ NoiseTexture::NoiseTexture()
 typedef std::array<std::vector<u8>, NOISE_TEX_NUM> NoiseTexturesData;
 
 static
+u32 Rand(u32 rand_value)
+{
+#ifdef MINGW
+	rand_s(&rand_value);
+#else
+	rand_value = rand();
+#endif
+	return rand_value;
+}
+
+static
 void FillTextureData(u32 _seed, NoiseTexturesData * _pData, u32 _start, u32 _stop)
 {
 	srand(_seed);
 	for (u32 i = _start; i < _stop; ++i) {
 		auto & vec = _pData->at(i);
 		const size_t sz = vec.size();
-		for (size_t t = 0; t < sz; ++t)
-			vec[t] = rand() & 0xFF;
+		u32 rand_value;
+		for (size_t t = 0; t < sz; ++t) {
+			rand_value = Rand(rand_value);
+			vec[t] = rand_value & 0xFF;
+		}
 	}
 }
 
@@ -143,8 +161,11 @@ void NoiseTexture::update()
 	if (m_DList == dwnd().getBuffersSwapCount() || config.generalEmulation.enableNoise == 0)
 		return;
 
-	while (m_currTex == m_prevTex)
-		m_currTex = rand() % NOISE_TEX_NUM;
+	u32 rand_value;
+	while (m_currTex == m_prevTex) {
+		rand_value = Rand(rand_value);
+		m_currTex = rand_value % NOISE_TEX_NUM;
+	}
 	m_prevTex = m_currTex;
 	if (m_pTexture[m_currTex] == nullptr)
 		return;
