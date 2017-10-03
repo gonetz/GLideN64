@@ -131,12 +131,21 @@ bool DisplayWindowMupen64plus::_resizeWindow()
 	m_bFullscreen = false;
 	m_width = m_screenWidth = m_resizeWidth;
 	m_height = m_screenHeight = m_resizeHeight;
-	if (CoreVideo_ResizeWindow(m_screenWidth, m_screenHeight) != M64ERR_SUCCESS) {
-		printf("(EE) Error setting videomode %dx%d\n", m_screenWidth, m_screenHeight);
-		m_width = m_screenWidth = config.video.windowedWidth;
-		m_height = m_screenHeight = config.video.windowedHeight;
-		CoreVideo_Quit();
-		return false;
+	switch (CoreVideo_ResizeWindow(m_screenWidth, m_screenHeight)) 
+	{
+		case M64ERR_INVALID_STATE: 
+			printf("(EE) Error setting videomode %dx%d in fullscreen mode\n", m_screenWidth, m_screenHeight);
+			m_width = m_screenWidth = config.video.windowedWidth;
+			m_height = m_screenHeight = config.video.windowedHeight;
+			break;
+		case M64ERR_SUCCESS:
+			break;
+		default:
+			printf("(EE) Error setting videomode %dx%d\n", m_screenWidth, m_screenHeight);
+			m_width = m_screenWidth = config.video.windowedWidth;
+			m_height = m_screenHeight = config.video.windowedHeight;
+			CoreVideo_Quit();
+			return false;
 	}
 	_setBufferSize();
 	opengl::Utils::isGLError(); // reset GL error.
