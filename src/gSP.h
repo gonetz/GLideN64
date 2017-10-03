@@ -221,18 +221,10 @@ void gSP4Triangles(const s32 v00, const s32 v01, const s32 v02,
 					const s32 v20, const s32 v21, const s32 v22,
 					const s32 v30, const s32 v31, const s32 v32 );
 
-#ifdef __VEC4_OPT
-extern void (*gSPTransformVertex4)(u32 v, float mtx[4][4]);
-extern void (*gSPTransformNormal4)(u32 v, float mtx[4][4]);
-extern void (*gSPLightVertex4)(u32 v);
-extern void (*gSPPointLightVertex4)(u32 v, float _vPos[4][3]);
-extern void (*gSPBillboardVertex4)(u32 v);
-#endif
-extern void (*gSPTransformVertex)(float vtx[4], float mtx[4][4]);
+void gSPLightVertex(SPVertex & _vtx);
+
+extern void (*gSPTransformVector)(float vtx[4], float mtx[4][4]);
 extern void (*gSPInverseTransformVector)(float vtx[4], float mtx[4][4]);
-extern void (*gSPLightVertex)(SPVertex & _vtx);
-extern void (*gSPPointLightVertex)(SPVertex & _vtx, float * _vPos);
-extern void (*gSPBillboardVertex)(u32 v, u32 i);
 void gSPSetupFunctions();
 void gSPFlushTriangles();
 #endif

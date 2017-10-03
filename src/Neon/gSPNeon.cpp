@@ -116,7 +116,7 @@ void gSPBillboardVertex4NEON(u32 v)
     );
 }
 
-void gSPTransformVertex_NEON(float vtx[4], float mtx[4][4])
+void gSPTransformVector_NEON(float vtx[4], float mtx[4][4])
 {
     // Load vtx
     float32x4_t _vtx = vld1q_f32(vtx);
@@ -244,12 +244,11 @@ void DotProductMax4FullNeon( float v0[3], float v1[4][3], float _lights[4][3], f
     );
 }
 
-void gSPLightVertex4_NEON(u32 v)
+void gSPLightVertex4_NEON(u32 v, SPVertex * spVtx)
 {
-	GraphicsDrawer & drawer = dwnd().getDrawer();
 	if (!config.generalEmulation.enableHWLighting) {
 		for(int j = 0; j < 4; ++j) {
-			SPVertex & vtx = drawer.getVertex(v+j);
+			SPVertex & vtx = spVtx[v + j];
 			vtx.r = gSP.lights.rgb[gSP.numLights][R];
 			vtx.g = gSP.lights.rgb[gSP.numLights][G];
 			vtx.b = gSP.lights.rgb[gSP.numLights][B];
@@ -280,7 +279,7 @@ void gSPLightVertex4_NEON(u32 v)
 		}
 	} else {
 		for(int j = 0; j < 4; ++j) {
-			SPVertex & vtx = drawer.getVertex(v+j);
+			SPVertex & vtx = spVtx[v + j];
 			vtx.HWLight = gSP.numLights;
 			vtx.r = vtx.nx;
 			vtx.g = vtx.ny;

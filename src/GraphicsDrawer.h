@@ -135,6 +135,8 @@ public:
 
 	SPVertex & getVertex(u32 _v) { return triangles.vertices[_v]; }
 
+	SPVertex * getVertexPtr(u32 _v) { return triangles.vertices.data() + _v; }
+
 	void setDMAVerticesSize(u32 _size) { if (m_dmaVertices.size() < _size) m_dmaVertices.resize(_size); }
 
 	SPVertex * getDMAVerticesData() { return m_dmaVertices.data(); }
