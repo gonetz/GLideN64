@@ -50,7 +50,7 @@ void FillTextureData(u32 _seed, NoiseTexturesData * _pData, u32 _start, u32 _sto
 	for (u32 i = _start; i < _stop; ++i) {
 		auto & vec = _pData->at(i);
 		const size_t sz = vec.size();
-		u32 rand_value;
+		u32 rand_value(0U);
 		for (size_t t = 0; t < sz; ++t) {
 			rand_value = Rand(rand_value);
 			vec[t] = rand_value & 0xFF;
@@ -161,7 +161,7 @@ void NoiseTexture::update()
 	if (m_DList == dwnd().getBuffersSwapCount() || config.generalEmulation.enableNoise == 0)
 		return;
 
-	u32 rand_value;
+	u32 rand_value(0U);
 	while (m_currTex == m_prevTex) {
 		rand_value = Rand(rand_value);
 		m_currTex = rand_value % NOISE_TEX_NUM;
