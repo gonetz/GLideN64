@@ -2275,17 +2275,13 @@ struct ObjCoordinates
 
 		ulx = frameX;
 		uly = frameY;
-		lrx = frameX + min(imageW/scaleW, frameW) - 1.0f;
-		lry = frameY + min(imageH/scaleH, frameH) - 1.0f;
-		if (gDP.otherMode.cycleType == G_CYC_COPY) {
-			lrx += 1.0f;
-			lry += 1.0f;;
-		}
+		lrx = frameX + min(imageW/scaleW, frameW);
+		lry = frameY + min(imageH/scaleH, frameH);
 
 		uls = imageX;
 		ult = imageY;
-		lrs = uls + (lrx - ulx) * scaleW;
-		lrt = ult + (lry - uly) * scaleH;
+		lrs = uls + (lrx - ulx -1) * scaleW;
+		lrt = ult + (lry - uly -1) * scaleH;
 		if (gDP.otherMode.cycleType != G_CYC_COPY) {
 			if ((gSP.objRendermode&G_OBJRM_SHRINKSIZE_1) != 0) {
 				lrs -= 1.0f / scaleW;
