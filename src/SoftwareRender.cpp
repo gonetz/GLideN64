@@ -195,20 +195,20 @@ f32 renderTriangles(const SPVertex * _pVertices, const u8 * _pElements, u32 _num
 
 		if (orbits == 0) {
 			assert(numVertex == 3);
-			if ((gSP.geometryMode & G_CULL_BACK) != 0) {
-				for (int k = 0; k < 3; ++k) {
-					maxY = std::max(maxY, vclip[k].y);
-					vdraw[k].x = floatToFixed16(vclip[k].x);
-					vdraw[k].y = floatToFixed16(vclip[k].y);
-					vdraw[k].z = floatToFixed16(vclip[k].z);
-				}
-			} else {
+			if ((gSP.geometryMode & G_CULL_FRONT) != 0) {
 				for (int k = 0; k < 3; ++k) {
 					const u32 idx = 3 - k - 1;
 					maxY = std::max(maxY, vclip[idx].y);
 					vdraw[k].x = floatToFixed16(vclip[idx].x);
 					vdraw[k].y = floatToFixed16(vclip[idx].y);
 					vdraw[k].z = floatToFixed16(vclip[idx].z);
+				}
+			} else {
+				for (int k = 0; k < 3; ++k) {
+					maxY = std::max(maxY, vclip[k].y);
+					vdraw[k].x = floatToFixed16(vclip[k].x);
+					vdraw[k].y = floatToFixed16(vclip[k].y);
+					vdraw[k].z = floatToFixed16(vclip[k].z);
 				}
 			}
 		} else {
@@ -217,20 +217,20 @@ f32 renderTriangles(const SPVertex * _pVertices, const u8 * _pElements, u32 _num
 			if (numVertex < 3)
 				continue;
 
-			if ((gSP.geometryMode & G_CULL_BACK) != 0) {
-				for (int k = 0; k < numVertex; ++k) {
-					maxY = std::max(maxY, vtx[k]->y);
-					vdraw[k].x = floatToFixed16(vtx[k]->x);
-					vdraw[k].y = floatToFixed16(vtx[k]->y);
-					vdraw[k].z = floatToFixed16(vtx[k]->z);
-				}
-			} else {
+			if ((gSP.geometryMode & G_CULL_FRONT) != 0) {
 				for (int k = 0; k < numVertex; ++k) {
 					const u32 idx = numVertex - k - 1;
 					maxY = std::max(maxY, vtx[idx]->y);
 					vdraw[k].x = floatToFixed16(vtx[idx]->x);
 					vdraw[k].y = floatToFixed16(vtx[idx]->y);
 					vdraw[k].z = floatToFixed16(vtx[idx]->z);
+				}
+			} else {
+				for (int k = 0; k < numVertex; ++k) {
+					maxY = std::max(maxY, vtx[k]->y);
+					vdraw[k].x = floatToFixed16(vtx[k]->x);
+					vdraw[k].y = floatToFixed16(vtx[k]->y);
+					vdraw[k].z = floatToFixed16(vtx[k]->z);
 				}
 			}
 		}
