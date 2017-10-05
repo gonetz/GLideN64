@@ -30,6 +30,10 @@ using namespace graphics;
 
 #define INDEXMAP_SIZE 80U
 
+#define SP_STATUS_HALT 0x0001
+#define SP_STATUS_BROKE 0x0002
+#define SP_STATUS_TASKDONE 0x0200
+
 #ifdef __VEC4_OPT
 #define VEC_OPT 4U
 #else
@@ -1322,6 +1326,14 @@ void gSPBranchList( u32 dl )
 	}
 
 	DebugMsg(DEBUG_NORMAL, "gSPBranchList( 0x%08X ) nopush\n", dl );
+
+	if (((config.generalEmulation.hacks & hack_Infloop) != 0) && (address == (RSP.PC[RSP.PCi] - 8))) {
+		RSP.infloop = true;
+		RSP.PC[RSP.PCi] -= 8;
+		*REG.SP_STATUS &= ~(SP_STATUS_TASKDONE | SP_STATUS_HALT | SP_STATUS_BROKE);
+		RSP.halt = true;
+		return;
+	}
 
 	RSP.PC[RSP.PCi] = address;
 	RSP.nextCmd = _SHIFTR( *(u32*)&RDRAM[address], 24, 8 );

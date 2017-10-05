@@ -103,41 +103,47 @@ void RSP_ProcessDList()
 		CheckInterrupts();
 		return;
 	}
-	if (*REG.VI_ORIGIN != VI.lastOrigin) {
-		VI_UpdateSize();
-		dwnd().updateScale();
+
+	if (RSP.infloop) {
+		RSP.infloop = false;
+		RSP.halt = false;
+	} else {
+		if (*REG.VI_ORIGIN != VI.lastOrigin) {
+			VI_UpdateSize();
+			dwnd().updateScale();
+		}
+
+		RSP.PC[0] = *(u32*)&DMEM[0x0FF0];
+		RSP.PCi = 0;
+		RSP.count = -1;
+
+		RSP.halt = false;
+		RSP.busy = true;
+
+		gSP.matrix.stackSize = min( 32U, *(u32*)&DMEM[0x0FE4] >> 6 );
+		if (gSP.matrix.stackSize == 0)
+			gSP.matrix.stackSize = 32;
+		gSP.matrix.modelViewi = 0;
+		gSP.status[0] = gSP.status[1] = gSP.status[2] = gSP.status[3] = 0;
+		gSP.changed |= CHANGED_MATRIX | CHANGED_LIGHT | CHANGED_LOOKAT;
+		gDP.changed &= ~CHANGED_CPU_FB_WRITE;
+		gDPSetTexturePersp(G_TP_PERSP);
+
+		// Get the start of the display list and the length of it
+		const u32 dlist_start = *(u32*)(DMEM + 0xFF0);
+		const u32 dlist_length = *(u32*)(DMEM + 0xFF4);
+		DebugMsg(DEBUG_NORMAL, "--- NEW DLIST --- ucode: %d, fbuf: %08lx, fbuf_width: %d, dlist start: %08lx, dlist_length: %d, x_scale: %f, y_scale: %f\n",
+			GBI.getMicrocodeType(), *REG.VI_ORIGIN, *REG.VI_WIDTH, dlist_start, dlist_length, (*REG.VI_X_SCALE & 0xFFF) / 1024.0f, (*REG.VI_Y_SCALE & 0xFFF) / 1024.0f);
+
+		u32 uc_start = *(u32*)&DMEM[0x0FD0];
+		u32 uc_dstart = *(u32*)&DMEM[0x0FD8];
+		u32 uc_dsize = *(u32*)&DMEM[0x0FDC];
+
+		if ((uc_start != RSP.uc_start) || (uc_dstart != RSP.uc_dstart))
+			gSPLoadUcodeEx(uc_start, uc_dstart, uc_dsize);
+
+		depthBufferList().setNotCleared();
 	}
-
-	RSP.PC[0] = *(u32*)&DMEM[0x0FF0];
-	RSP.PCi = 0;
-	RSP.count = -1;
-
-	RSP.halt = false;
-	RSP.busy = true;
-
-	gSP.matrix.stackSize = min( 32U, *(u32*)&DMEM[0x0FE4] >> 6 );
-	if (gSP.matrix.stackSize == 0)
-		gSP.matrix.stackSize = 32;
-	gSP.matrix.modelViewi = 0;
-	gSP.status[0] = gSP.status[1] = gSP.status[2] = gSP.status[3] = 0;
-	gSP.changed |= CHANGED_MATRIX | CHANGED_LIGHT | CHANGED_LOOKAT;
-	gDP.changed &= ~CHANGED_CPU_FB_WRITE;
-	gDPSetTexturePersp(G_TP_PERSP);
-
-	// Get the start of the display list and the length of it
-	const u32 dlist_start = *(u32*)(DMEM + 0xFF0);
-	const u32 dlist_length = *(u32*)(DMEM + 0xFF4);
-	DebugMsg(DEBUG_NORMAL, "--- NEW DLIST --- ucode: %d, fbuf: %08lx, fbuf_width: %d, dlist start: %08lx, dlist_length: %d, x_scale: %f, y_scale: %f\n",
-		GBI.getMicrocodeType(), *REG.VI_ORIGIN, *REG.VI_WIDTH, dlist_start, dlist_length, (*REG.VI_X_SCALE & 0xFFF) / 1024.0f, (*REG.VI_Y_SCALE & 0xFFF) / 1024.0f);
-
-	u32 uc_start = *(u32*)&DMEM[0x0FD0];
-	u32 uc_dstart = *(u32*)&DMEM[0x0FD8];
-	u32 uc_dsize = *(u32*)&DMEM[0x0FDC];
-
-	if ((uc_start != RSP.uc_start) || (uc_dstart != RSP.uc_dstart))
-		gSPLoadUcodeEx(uc_start, uc_dstart, uc_dsize);
-
-	depthBufferList().setNotCleared();
 
 	switch (GBI.getMicrocodeType()) {
 	case Turbo3D:
@@ -153,6 +159,9 @@ void RSP_ProcessDList()
 		_ProcessDList();
 		break;
 	}
+
+	if (RSP.infloop)
+		return;
 
 	if (config.frameBufferEmulation.copyDepthToRDRAM != Config::cdDisable) {
 		if ((config.generalEmulation.hacks & hack_rectDepthBufferCopyCBFD) != 0) {
@@ -242,6 +251,7 @@ void RSP_Init()
 
 	RSP.uc_start = RSP.uc_dstart = 0;
 	RSP.LLE = false;
+	RSP.infloop = false;
 
 	// get the name of the ROM
 	char romname[21];
@@ -306,6 +316,8 @@ void RSP_Init()
 	else if (strstr(RSP.romname, (const char *)"Resident Evil II") ||
 			 strstr(RSP.romname, (const char *)"BioHazard II"))
 		config.generalEmulation.hacks |= hack_RE2 | hack_ModifyVertexXyInShader | hack_LoadDepthTextures;
+	else if (strstr(RSP.romname, (const char *)"GAUNTLET LEGENDS") && (REG.SP_STATUS != nullptr))
+		config.generalEmulation.hacks |= hack_Infloop;
 
 	api().FindPluginPath(RSP.pluginpath);
 

@@ -11,7 +11,7 @@ typedef struct
 	u32 uc_start, uc_dstart, cmd, nextCmd;
 	u32 w0, w1;
 	s32 count;
-	bool busy, halt;
+	bool busy, halt, infloop;
 	bool LLE;
 	char romname[21];
 	wchar_t pluginpath[PLUGIN_PATH_SIZE];

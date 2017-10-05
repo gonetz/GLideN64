@@ -188,6 +188,7 @@ struct Config
 #define hack_texrect_shade_alpha	(1<<5)  //Set vertex alpha to 1 when texrect alpha combiner uses shade. Pokemon Stadium 2
 #define hack_subscreen				(1<<6)  //Fix subscreen delay in Zelda OOT and Doubutsu no Mori
 #define hack_blastCorps				(1<<7)  //Blast Corps black polygons
+#define hack_Infloop				(1<<8) //Gauntlet Legends yielding
 #define hack_rectDepthBufferCopyPD	(1<<9)  //Copy depth buffer only when game need it. Optimized for PD
 #define hack_rectDepthBufferCopyCBFD (1<<10) //Copy depth buffer only when game need it. Optimized for CBFD
 #define hack_WinBack				(1<<11) //Hack for WinBack to remove gray rectangle in HLE mode
