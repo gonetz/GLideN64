@@ -219,24 +219,26 @@ void setDepthClearColor()
 
 void RSP_Init()
 {
+	if (RDRAMSize == 0) {
 #ifdef OS_WINDOWS
-	// Calculate RDRAM size by intentionally causing an access violation
-	u32 test;
-	try
-	{
-		test = RDRAM[0x007FFFFF] + 1;
-	}
-	catch (...)
-	{
-		test = 0;
-	}
-	if (test > 0)
-		RDRAMSize = 0x7FFFFF;
-	else
-		RDRAMSize = 0x3FFFFF;
+		// Calculate RDRAM size by intentionally causing an access violation
+		u32 test;
+		try
+		{
+			test = RDRAM[0x007FFFFF] + 1;
+		}
+		catch (...)
+		{
+			test = 0;
+		}
+		if (test > 0)
+			RDRAMSize = 0x7FFFFF;
+		else
+			RDRAMSize = 0x3FFFFF;
 #else // OS_WINDOWS
-	RDRAMSize = 1024 * 1024 * 8 - 1;
+		RDRAMSize = 1024 * 1024 * 8 - 1;
 #endif // OS_WINDOWS
+	}
 
 	RSP.uc_start = RSP.uc_dstart = 0;
 	RSP.bLLE = false;

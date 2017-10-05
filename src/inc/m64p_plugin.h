@@ -103,6 +103,19 @@ typedef struct {
     unsigned int * VI_Y_SCALE_REG;
 
     void (*CheckInterrupts)(void);
+
+    /* The GFX_INFO.version parameter was added in version 2.5.1 of the core.
+       Plugins should ensure the core is at least this version before
+       attempting to read GFX_INFO.version. */
+    unsigned int version;
+    /* SP_STATUS_REG and RDRAM_SIZE were added in version 2 of GFX_INFO.version.
+       Plugins should only attempt to read these values if GFX_INFO.version is at least 2. */
+
+    /* The RSP plugin should set (HALT | BROKE | TASKDONE) *before* calling ProcessDList.
+       It should not modify SP_STATUS_REG after ProcessDList has returned.
+       This will allow the GFX plugin to unset these bits if it needs. */
+    unsigned int * SP_STATUS_REG;
+    const unsigned int * RDRAM_SIZE;
 } GFX_INFO;
 
 typedef struct {

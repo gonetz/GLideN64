@@ -1,10 +1,15 @@
 #include "PluginAPI.h"
 #include "Types.h"
+#include "mupenplus/GLideN64_mupenplus.h"
+#include "N64.h"
 
 extern "C" {
 
 EXPORT int CALL RomOpen(void)
 {
+	if (rdram_size != nullptr)
+		RDRAMSize = *rdram_size - 1;
+
 	api().RomOpen();
 	return 1;
 }
@@ -43,7 +48,7 @@ EXPORT void CALL SetRenderingCallback(void (*callback)(int))
 {
 	api().SetRenderingCallback(callback);
 }
-	
+
 EXPORT void CALL ResizeVideoOutput(int width, int height)
 {
 	api().ResizeVideoOutput(width, height);

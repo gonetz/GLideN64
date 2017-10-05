@@ -32,6 +32,8 @@ struct N64Regs
 	u32 *VI_V_BURST;
 	u32 *VI_X_SCALE;
 	u32 *VI_Y_SCALE;
+
+	u32 *SP_STATUS;
 };
 
 extern N64Regs REG;
