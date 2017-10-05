@@ -253,6 +253,8 @@ void PluginAPI::_initiateGFX(const GFX_INFO & _gfxInfo) const {
 	REG.VI_Y_SCALE = _gfxInfo.VI_Y_SCALE_REG;
 
 	CheckInterrupts = _gfxInfo.CheckInterrupts;
+
+	REG.SP_STATUS = nullptr;
 }
 
 void PluginAPI::ChangeWindow()

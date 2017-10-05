@@ -6,7 +6,7 @@ u8 *IMEM;
 u64 TMEM[512];
 u8 *RDRAM;
 
-u32 RDRAMSize;
+u32 RDRAMSize = 0;
 
 N64Regs REG;
 
