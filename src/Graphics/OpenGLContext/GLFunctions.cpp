@@ -189,7 +189,7 @@ PFNGLFLUSHMAPPEDBUFFERRANGEPROC g_glFlushMappedBufferRange;
 void initGLFunctions()
 {
 #ifdef VC
-	void *gles2so = dlopen("/opt/vc/lib/libGLESv2.so", RTLD_NOW);
+	void *gles2so = dlopen("/opt/vc/lib/libbrcmGLESv2.so", RTLD_NOW);
 #endif
 #ifdef OS_WINDOWS
 	GL_GET_PROC_ADR(PFNGLACTIVETEXTUREPROC, glActiveTexture);

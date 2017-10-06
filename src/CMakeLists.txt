@@ -7,6 +7,7 @@ endif()
 option(EGL "Set to ON if targeting an EGL device" ${EGL})
 option(PANDORA "Set to ON if targeting an OpenPandora" ${PANDORA})
 option(MUPENPLUSAPI "Set to ON for Mupen64Plus plugin" ${MUPENPLUSAPI})
+option(MESA "Set to ON to disable Raspberry Pi autodetection" ${MESA})
 
 project( GLideN64 )
 
@@ -103,10 +104,11 @@ set(GLideN64_SOURCES
 )
 
 #check if we're running on Raspberry Pi
-if(EXISTS "/opt/vc/include/bcm_host.h")
+if(EXISTS "/opt/vc/include/bcm_host.h" AND NOT MESA)
   message("bcm_host.h found")
   set(BCMHOST ON)
   set(EGL ON)
+  set(EGL_LIB -lbrcmEGL)
   add_definitions(
     -DVC
   )
@@ -120,7 +122,9 @@ if(EXISTS "/opt/vc/include/bcm_host.h")
     "/opt/vc/lib"
     "/opt/vc/lib/GL"
   )
-endif(EXISTS "/opt/vc/include/bcm_host.h")
+else(EXISTS "/opt/vc/include/bcm_host.h" AND NOT MESA)
+  set(EGL_LIB -lEGL)
+endif(EXISTS "/opt/vc/include/bcm_host.h" AND NOT MESA)
 
 if(MUPENPLUSAPI)
   add_definitions(
@@ -288,8 +292,8 @@ endif( CMAKE_BUILD_TYPE STREQUAL "Debug")
 if(EGL)
   add_definitions(
     -DEGL
-   )
-   SET(OPENGL_LIBRARIES -lEGL)
+  )
+  SET(OPENGL_LIBRARIES ${EGL_LIB})
 else(EGL)
   find_package(OpenGL REQUIRED)
   include_directories(${OpenGL_INCLUDE_DIRS})
