@@ -136,6 +136,25 @@ void gSPTransformVector_NEON(float vtx[4], float mtx[4][4])
     vst1q_f32(vtx, _mtx0);
 }
 
+void gSPInverseTransformVector_NEON(float vec[3], float mtx[4][4])
+{
+    float32x4x4_t _mtx = vld4q_f32(mtx[0]);                         // load 4x4 mtx interleaved
+
+    _mtx.val[0] = vmulq_n_f32(_mtx.val[0], vec[0]);                 // mtx[0][0]=mtx[0][0]*_vtx[0]
+                                                                    // mtx[0][1]=mtx[0][1]*_vtx[0]
+                                                                    // mtx[0][2]=mtx[0][2]*_vtx[0]
+    _mtx.val[0] = vmlaq_n_f32(_mtx.val[0], _mtx.val[1], vec[1]);    // mtx[0][0]+=mtx[1][0]*_vtx[1]
+                                                                    // mtx[0][1]+=mtx[1][1]*_vtx[1]
+                                                                    // mtx[0][2]+=mtx[1][2]*_vtx[1]
+    _mtx.val[0] = vmlaq_n_f32(_mtx.val[0], _mtx.val[2], vec[2]);    // mtx[0][0]+=mtx[2][0]*_vtx[2]
+                                                                    // mtx[0][1]+=mtx[2][1]*_vtx[2]
+                                                                    // mtx[0][2]+=mtx[2][2]*_vtx[2]
+    const float32x4_t _vec4 = _mtx.val[0];
+    vec[0] = _vec4[0];                                              // store vec[0]
+    vec[1] = _vec4[1];                                              // store vec[1]
+    vec[2] = _vec4[2];                                              // store vec[2]
+}
+
 void DotProductMax7FullNeon( float v0[3], float v1[7][3], float lights[7][3], float _vtx[3])
 {
     asm volatile (

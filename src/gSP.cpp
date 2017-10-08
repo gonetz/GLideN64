@@ -2621,11 +2621,13 @@ void gSPObjRendermode(u32 _mode)
 	DebugMsg(DEBUG_NORMAL, "gSPObjRendermode(0x%08x)\n", _mode);
 }
 
-void(*gSPInverseTransformVector)(float vtx[4], float mtx[4][4]) = gSPInverseTransformVector_default;
 #ifndef __NEON_OPT
+void(*gSPInverseTransformVector)(float vec[3], float mtx[4][4]) = gSPInverseTransformVector_default;
 void(*gSPTransformVector)(float vtx[4], float mtx[4][4]) = gSPTransformVector_default;
 #else
+void gSPInverseTransformVector_NEON(float vec[3], float mtx[4][4]);
 void gSPTransformVector_NEON(float vtx[4], float mtx[4][4]);
+void(*gSPInverseTransformVector)(float vec[3], float mtx[4][4]) = gSPInverseTransformVector_NEON;
 void(*gSPTransformVector)(float vtx[4], float mtx[4][4]) = gSPTransformVector_NEON;
 #endif //__NEON_OPT
 

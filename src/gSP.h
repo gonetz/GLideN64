@@ -224,7 +224,7 @@ void gSP4Triangles(const s32 v00, const s32 v01, const s32 v02,
 void gSPLightVertex(SPVertex & _vtx);
 
 extern void (*gSPTransformVector)(float vtx[4], float mtx[4][4]);
-extern void (*gSPInverseTransformVector)(float vtx[4], float mtx[4][4]);
+extern void (*gSPInverseTransformVector)(float vec[3], float mtx[4][4]);
 void gSPSetupFunctions();
 void gSPFlushTriangles();
 #endif
