@@ -21,6 +21,8 @@ UnbufferedDrawerThreadSafe::UnbufferedDrawerThreadSafe(const GLInfo & _glinfo, C
 	m_cachedAttribArray->enableVertexAttribArray(rectAttrib::position, false);
 	m_cachedAttribArray->enableVertexAttribArray(rectAttrib::texcoord0, false);
 	m_cachedAttribArray->enableVertexAttribArray(rectAttrib::texcoord1, false);
+
+	m_attribsData.fill(nullptr);
 }
 
 UnbufferedDrawerThreadSafe::~UnbufferedDrawerThreadSafe()
