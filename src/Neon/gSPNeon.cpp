@@ -263,10 +263,10 @@ void DotProductMax4FullNeon( float v0[3], float v1[4][3], float _lights[4][3], f
     );
 }
 
-void gSPLightVertex4_NEON(u32 v, SPVertex * spVtx)
+void gSPLightVertex_NEON(u32 vnum, u32 v, SPVertex * spVtx)
 {
 	if (!config.generalEmulation.enableHWLighting) {
-		for(int j = 0; j < 4; ++j) {
+		for(int j = 0; j < vnum; ++j) {
 			SPVertex & vtx = spVtx[v + j];
 			vtx.r = gSP.lights.rgb[gSP.numLights][R];
 			vtx.g = gSP.lights.rgb[gSP.numLights][G];
@@ -297,49 +297,12 @@ void gSPLightVertex4_NEON(u32 v, SPVertex * spVtx)
 			vtx.b = min(1.0f, vtx.b);
 		}
 	} else {
-		for(int j = 0; j < 4; ++j) {
+		for(int j = 0; j < vnum; ++j) {
 			SPVertex & vtx = spVtx[v + j];
 			vtx.HWLight = gSP.numLights;
 			vtx.r = vtx.nx;
 			vtx.g = vtx.ny;
 			vtx.b = vtx.nz;
 		}
-	}
-}
-
-void gSPLightVertex_NEON(SPVertex & _vtx)
-{
-	if (config.generalEmulation.enableHWLighting == 0) {
-		_vtx.HWLight = 0;
-		_vtx.r = gSP.lights.rgb[gSP.numLights][R];
-		_vtx.g = gSP.lights.rgb[gSP.numLights][G];
-		_vtx.b = gSP.lights.rgb[gSP.numLights][B];
-		s32 count = gSP.numLights-1;
-		while (count >= 6) {
-			DotProductMax7FullNeon(&_vtx.nx,(float (*)[3])gSP.lights.i_xyz[gSP.numLights - count - 1],(float (*)[3])gSP.lights.rgb[gSP.numLights - count - 1],&_vtx.r);
-			count -= 7;
-		}
-		while (count >= 3) {
-			DotProductMax4FullNeon(&_vtx.nx,(float (*)[3])gSP.lights.i_xyz[gSP.numLights - count - 1],(float (*)[3])gSP.lights.rgb[gSP.numLights - count - 1],&_vtx.r);
-			count -= 4;
-		}
-		while (count >= 0)
-		{
-			f32 intensity = DotProduct( &_vtx.nx, gSP.lights.i_xyz[gSP.numLights - count - 1] );
-			if (intensity < 0.0f)
-				intensity = 0.0f;
-			_vtx.r += gSP.lights.rgb[gSP.numLights - count - 1][R] * intensity;
-			_vtx.g += gSP.lights.rgb[gSP.numLights - count - 1][G] * intensity;
-			_vtx.b += gSP.lights.rgb[gSP.numLights - count - 1][B] * intensity;
-			count -= 1;
-		}
-		_vtx.r = min(1.0f, _vtx.r);
-		_vtx.g = min(1.0f, _vtx.g);
-		_vtx.b = min(1.0f, _vtx.b);
-	} else {
-		_vtx.HWLight = gSP.numLights;
-		_vtx.r = _vtx.nx;
-		_vtx.g = _vtx.ny;
-		_vtx.b = _vtx.nz;
 	}
 }

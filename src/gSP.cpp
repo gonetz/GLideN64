@@ -503,12 +503,8 @@ void gSPLightVertexStandard(u32 v, SPVertex * spVtx)
 		}
 	}
 #else
-	void gSPLightVertex_NEON(SPVertex & _vtx);
-	void gSPLightVertex4_NEON(u32 v, SPVertex * spVtx);
-	if (VNUM == 1)
-		gSPLightVertex_NEON(spVtx[v]);
-	else
-		gSPLightVertex4_NEON(v, spVtx);
+	void gSPLightVertex_NEON(u32 vnum, u32 v, SPVertex * spVtx);
+	gSPLightVertex_NEON(VNUM, v, spVtx);
 #endif
 }
 
