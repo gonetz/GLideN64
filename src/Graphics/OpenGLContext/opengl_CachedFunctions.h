@@ -201,6 +201,7 @@ namespace opengl {
 	class CachedTextureUnpackAlignment : public Cached1<s32>
 	{
 	public:
+		CachedTextureUnpackAlignment() { m_cached = -1; }
 		void setTextureUnpackAlignment(s32 _param);
 	};
 

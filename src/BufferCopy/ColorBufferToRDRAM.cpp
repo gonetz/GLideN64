@@ -65,6 +65,7 @@ void ColorBufferToRDRAM::_initFBTexture(void)
 
 	m_pTexture = textureCache().addFrameBufferTexture(false);
 	m_pTexture->format = G_IM_FMT_RGBA;
+	m_pTexture->size = 2;
 	m_pTexture->clampS = 1;
 	m_pTexture->clampT = 1;
 	m_pTexture->frameBufferTexture = CachedTexture::fbOneSample;

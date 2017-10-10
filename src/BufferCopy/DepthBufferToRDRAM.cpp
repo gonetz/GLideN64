@@ -50,6 +50,7 @@ void DepthBufferToRDRAM::init()
 
 	m_pColorTexture = textureCache().addFrameBufferTexture(false);
 	m_pColorTexture->format = G_IM_FMT_I;
+	m_pColorTexture->size = 2;
 	m_pColorTexture->clampS = 1;
 	m_pColorTexture->clampT = 1;
 	m_pColorTexture->frameBufferTexture = CachedTexture::fbOneSample;
@@ -64,6 +65,7 @@ void DepthBufferToRDRAM::init()
 
 	m_pDepthTexture = textureCache().addFrameBufferTexture(false);
 	m_pDepthTexture->format = G_IM_FMT_I;
+	m_pColorTexture->size = 2;
 	m_pDepthTexture->clampS = 1;
 	m_pDepthTexture->clampT = 1;
 	m_pDepthTexture->frameBufferTexture = CachedTexture::fbOneSample;

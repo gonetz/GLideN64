@@ -17,7 +17,7 @@ struct CachedTexture
 	CachedTexture(graphics::ObjectHandle _name) : name(_name), max_level(0), frameBufferTexture(fbNone), bHDTexture(false) {}
 
 	graphics::ObjectHandle name;
-	u32		crc;
+	u32		crc = 0;
 //	float	fulS, fulT;
 //	WORD	ulS, ulT, lrS, lrT;
 	float	offsetS, offsetT;

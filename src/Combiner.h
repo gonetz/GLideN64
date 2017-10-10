@@ -94,9 +94,9 @@
 struct CombinerOp
 {
 	int op;
-	int param1;
-	int param2;
-	int param3;
+	int param1 = -1;
+	int param2 = -1;
+	int param3 = -1;
 };
 
 struct CombinerStage
