@@ -460,6 +460,39 @@ private:
 	iUniform uTextureFilterMode;
 };
 
+class UTileAttributeInfo : public UniformGroup
+{
+public:
+	UTileAttributeInfo(GLuint _program) {
+		LocateUniform(uSTH[0]);
+		LocateUniform(uSTH[1]);
+		LocateUniform(uSTL[0]);
+		LocateUniform(uSTL[1]);
+		LocateUniform(uMask[0]);
+		LocateUniform(uMask[1]);
+		LocateUniform(uClamp[0]);
+		LocateUniform(uClamp[1]);
+		LocateUniform(uMirror[0]);
+		LocateUniform(uMirror[1]);
+	}
+
+	void update(bool _force) 
+	{
+		for (int t = 0; t < 2; t++) {
+			uSTL[t].set(gSP.textureTile[t]->uls, gSP.textureTile[t]->ult, _force);
+			uSTH[t].set(gSP.textureTile[t]->lrs, gSP.textureTile[t]->lrt, _force);
+			uMask[t].set(gSP.textureTile[t]->masks, gSP.textureTile[t]->maskt, _force);
+			uClamp[t].set(gSP.textureTile[t]->clamps, gSP.textureTile[t]->clampt, _force);
+			uMirror[t].set(gSP.textureTile[t]->mirrors, gSP.textureTile[t]->mirrort, _force);
+			}
+	}
+
+
+private:
+	iv2Uniform uSTH[2], uSTL[2], uMask[2], uClamp[2], uMirror[2];
+};
+
+
 class UAlphaTestInfo : public UniformGroup
 {
 public:
@@ -864,6 +897,8 @@ void CombinerProgramUniformFactory::buildUniforms(GLuint _program,
 
 	if (_inputs.usesHwLighting())
 		_uniforms.emplace_back(new ULights(_program));
+
+	_uniforms.emplace_back(new UTileAttributeInfo(_program));
 }
 
 CombinerProgramUniformFactory::CombinerProgramUniformFactory(const opengl::GLInfo & _glInfo)
