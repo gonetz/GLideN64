@@ -941,7 +941,69 @@ public:
 					"  lowp vec4 c1 = TEX_OFFSET(tex, texCoord, vec2(offset.x - sign(offset.x), offset.y));	\\\n"
 					"  lowp vec4 c2 = TEX_OFFSET(tex, texCoord, vec2(offset.x, offset.y - sign(offset.y)));	\\\n"
 					"  lowp vec4 tex3Point = c0 + abs(offset.x)*(c1-c0) + abs(offset.y)*(c2-c0); 						\n"
-					"#define READ_TEX(name, tex, texCoord, fbMonochrome, fbFixedAlpha)	\\\n"
+
+					"uniform lowp ivec2 uSTH[2];		\n"
+					"uniform lowp ivec2 uSTL[2];		\n"
+					"uniform lowp ivec2 uMask[2];		\n"
+					"uniform lowp ivec2 uClamp[2];		\n"
+					"uniform lowp ivec2 uMirror[2];		\n"
+					"lowp ivec4 cmw(vec2 coord, ivec2 stl, ivec2 sth, ivec2 mask, ivec2 clamp, ivec2 mirror)"
+					/*
+					Vectorized version of tile attribute emulation (texture clamp, mirror and wrap). The algorithm
+					does the following to each coordinate:
+					if (mask is 0)
+						clamp between 0 and (high-low) value
+					else {
+						if (clamp is enabled)
+							clamp between 0 and (high-low) value
+						if (mirrorbit is 1 & mirror is enabled)
+							invert coordinate bits
+						mask the value to the last (mask) bits.
+					}
+					*/
+					"{																			\n"
+					"   ivec4 icoord = ivec4(coord.xxyy) + ivec4(0,1,0,1);"
+					"   ivec4 isMask0 = ivec4(equal(mask.xxyy, ivec4(0)));"
+					"   ivec4 isMaskNot0 = ivec4(1) - isMask0;"
+					"   ivec4 isClamp1 = ivec4(equal(clamp.xxyy, ivec4(1)));"
+					"   ivec4 isMirror1 = ivec4(equal(mirror.xxyy, ivec4(1)));"
+					"   ivec4 maskVal = (ivec4(1)<<mask.xxyy) - ivec4(1);"
+					"   ivec4 clamped, wrapped, mirrored, wrappedOrMirrored, isMirrorBit1;"
+					"   clamped = min(max(icoord, ivec4(0)), sth.xxyy - stl.xxyy);"
+					//"   isMask0 = ivec4(0);"
+					"   icoord += (clamped-icoord)*isMask0;"
+					"   icoord += (clamped-icoord)*isClamp1*isMaskNot0;"
+					"   isMirrorBit1 = ivec4(equal(((icoord >> mask.xxyy) & 1), ivec4(1)));"
+					"   wrapped = icoord & maskVal;"
+					"   mirrored = maskVal - wrapped;"
+					"   wrappedOrMirrored = wrapped + (mirrored-wrapped)*isMirror1*isMirrorBit1;"
+					"   icoord += (wrappedOrMirrored-icoord)*isMaskNot0;"
+					"   return icoord;															\n"
+					"}																			\n"
+
+					"lowp vec4 filter_new(in sampler2D tex, in mediump vec2 texCoord, int t){		\n"
+					"lowp vec2 coords = texCoord*textureSize(tex,0);"
+					" coords -= uTextureFilterMode == 0 ? 0:0.5;"
+					"vec2 frac = fract(coords);"
+					" ivec4 icoords;"
+					"if(t == 0){"
+					"	icoords = cmw(coords, uSTL[0], uSTH[0], uMask[0], uClamp[0], uMirror[0]);"
+					"} else {"
+					"	icoords = cmw(coords, uSTL[1], uSTH[1], uMask[1], uClamp[1], uMirror[1]);"
+					"}"
+					" vec4 color00 = texelFetch(tex,icoords.xz,0);"
+					" vec4 color01 = texelFetch(tex,icoords.xw,0);"
+					" vec4 color10 = texelFetch(tex,icoords.yz,0);"
+					" vec4 color11 = texelFetch(tex,icoords.yw,0);"
+					" vec4 texNear = color00;"
+					" vec4 texBilinear = (1-frac.x)*(1-frac.y)*color00 + frac.x*(1-frac.y)*color10 + \n"
+					"       (1-frac.x)*frac.y*color01 + frac.x*frac.y*color11; \n"
+					"lowp vec4 texNew = uTextureFilterMode == 0 ? texNear:texBilinear;"
+					"return texNew;"
+					"}\n"
+
+
+					"#define READ_TEX(name, tex, texCoord, fbMonochrome, fbFixedAlpha, t)	\\\n"
 					"  {		\\\n"
 					"  if (fbMonochrome == 3) {											\\\n"
 					"    mediump ivec2 coord = ivec2(gl_FragCoord.xy);					\\\n"
@@ -949,7 +1011,7 @@ public:
 					"  } else {															\\\n"
 					"    lowp vec4 texStandard = texture(tex, texCoord); 				\\\n"
 					"    FILTER_3POINT(tex, texCoord);									\\\n"
-					"    name = uTextureFilterMode == 0 ? texStandard : tex3Point;		\\\n"
+					"    name = filter_new(tex,texCoord,t); 	\\\n"
 					"  }																\\\n"
 					"  if (fbMonochrome == 1) name = vec4(name.r);						\\\n"
 					"  else if (fbMonochrome == 2) 										\\\n"
@@ -1074,13 +1136,13 @@ public:
 			if (config.video.multisampling > 0) {
 				m_part =
 					"  lowp vec4 readtex0; \n"
-					"  if (uMSTexEnabled[0] == 0) READ_TEX(readtex0, uTex0, vTexCoord0, uFbMonochrome[0], uFbFixedAlpha[0]) \n"
+					"  if (uMSTexEnabled[0] == 0) READ_TEX(readtex0, uTex0, vTexCoord0, uFbMonochrome[0], uFbFixedAlpha[0], 0) \n"
 					"  else readtex0 = readTexMS(uMSTex0, vTexCoord0, uFbMonochrome[0], uFbFixedAlpha[0]); \n"
 					;
 			} else {
 				m_part =
 					"  lowp vec4 readtex0; \n"
-					"  READ_TEX(readtex0, uTex0, vTexCoord0, uFbMonochrome[0], uFbFixedAlpha[0]); \n"
+					"  READ_TEX(readtex0, uTex0, vTexCoord0, uFbMonochrome[0], uFbFixedAlpha[0], 0);"
 					;
 			}
 		}
@@ -1101,13 +1163,13 @@ public:
 			if (config.video.multisampling > 0) {
 				m_part =
 					"  lowp vec4 readtex1; \n"
-					"  if (uMSTexEnabled[1] == 0)  READ_TEX(readtex1, uTex1, vTexCoord1, uFbMonochrome[1], uFbFixedAlpha[1]) \n"
+					"  if (uMSTexEnabled[1] == 0)  READ_TEX(readtex1, uTex1, vTexCoord1, uFbMonochrome[1], uFbFixedAlpha[1], 1) \n"
 					"  else readtex1 = readTexMS(uMSTex1, vTexCoord1, uFbMonochrome[1], uFbFixedAlpha[1]); \n"
 					;
 			} else {
 				m_part =
 					"  lowp vec4 readtex1; \n"
-					"  READ_TEX(readtex1, uTex1, vTexCoord1, uFbMonochrome[1], uFbFixedAlpha[1]); \n"
+					"  READ_TEX(readtex1, uTex1, vTexCoord1, uFbMonochrome[1], uFbFixedAlpha[1], 1);"
 					;
 			}
 		}
