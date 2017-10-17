@@ -1184,7 +1184,7 @@ void GraphicsDrawer::drawTexturedRect(const TexturedRectParams & _params)
 				texST[t].s1 = cache.current[t]->offsetS + texST[t].s1;
 				texST[t].t1 = cache.current[t]->offsetT + texST[t].t1;
 			}
-
+/*
 			if (cache.current[t]->frameBufferTexture != CachedTexture::fbMultiSample) {
 				Context::TexParameters texParams;
 
@@ -1208,7 +1208,7 @@ void GraphicsDrawer::drawTexturedRect(const TexturedRectParams & _params)
 					gfxContext.setTextureParameters(texParams);
 				}
 			}
-
+*/
 			texST[t].s0 *= cache.current[t]->scaleS;
 			texST[t].t0 *= cache.current[t]->scaleT;
 			texST[t].s1 *= cache.current[t]->scaleS;

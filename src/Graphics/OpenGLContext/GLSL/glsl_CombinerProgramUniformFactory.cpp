@@ -453,7 +453,7 @@ public:
 
 	void update(bool _force) override
 	{
-		uTextureFilterMode.set(gDP.otherMode.textureFilter | (gSP.objRendermode&G_OBJRM_BILERP), _force);
+		uTextureFilterMode.set((gDP.otherMode.textureFilter | (gSP.objRendermode&G_OBJRM_BILERP)) == 0 ? 0 : 1, _force);
 	}
 
 private:
