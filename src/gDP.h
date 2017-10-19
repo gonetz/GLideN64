@@ -162,7 +162,11 @@ struct gDPInfo
 				unsigned int colorDither : 2;
 
 				unsigned int combineKey : 1;
-				unsigned int textureConvert : 3;
+//				unsigned int textureConvert : 3;
+				unsigned int convert_one : 1;
+				unsigned int bi_lerp1 : 1;
+				unsigned int bi_lerp0 : 1;
+
 				unsigned int textureFilter : 2;
 				unsigned int textureLUT : 2;
 

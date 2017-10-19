@@ -39,7 +39,7 @@ void gDPSetOtherMode( u32 mode0, u32 mode1 )
 		AlphaDitherText[gDP.otherMode.alphaDither],
 		ColorDitherText[gDP.otherMode.colorDither],
 		CombineKeyText[gDP.otherMode.combineKey],
-		TextureConvertText[gDP.otherMode.textureConvert],
+		TextureConvertText[gDP.otherMode.convert_one | (gDP.otherMode.bi_lerp1 << 1) | (gDP.otherMode.bi_lerp0 << 2)],
 		TextureFilterText[gDP.otherMode.textureFilter],
 		TextureLUTText[gDP.otherMode.textureLUT],
 		TextureLODText[gDP.otherMode.textureLOD],
