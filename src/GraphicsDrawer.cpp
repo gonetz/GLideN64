@@ -1208,11 +1208,12 @@ void GraphicsDrawer::drawTexturedRect(const TexturedRectParams & _params)
 					gfxContext.setTextureParameters(texParams);
 				}
 			}
-*/
+
 			texST[t].s0 *= cache.current[t]->scaleS;
 			texST[t].t0 *= cache.current[t]->scaleT;
 			texST[t].s1 *= cache.current[t]->scaleS;
 			texST[t].t1 *= cache.current[t]->scaleT;
+			*/
 		}
 	}
 
