@@ -288,6 +288,8 @@ void RDRAMtoColorBuffer::copyFromRDRAM(u32 _address, bool _bCFB)
 	textureCache().activateTexture(0, m_pTexture);
 
 	gDPTile tile0 = {0};
+	tile0.lrs = m_pTexture->realWidth;
+	tile0.lrt = m_pTexture->realHeight;
 	gDPTile * pTile0 = gSP.textureTile[0];
 	gSP.textureTile[0] = &tile0;
 
