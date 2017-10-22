@@ -926,63 +926,96 @@ public:
 	ShaderFragmentHeaderReadTex (const opengl::GLInfo & _glinfo)
 	{
 		if (!_glinfo.isGLES2) {
+			m_part =
+				"uniform lowp ivec2 uTextureFormat;									\n"
+				"uniform lowp ivec2 uBiLerp;										\n"
+				"uniform lowp ivec2 uTextureConvert;								\n"
+				"uniform mediump ivec4 uConvertParams;								\n"
+				"uniform lowp int uTextureFilterMode;								\n"
+				"#define YUVCONVERT_TEX(name, tex, texCoord, convert, format, prev)	\\\n"
+				"  {																\\\n"
+				"  if (convert != 0) name = prev;									\\\n"
+				"  else name = texture(tex, texCoord);								\\\n"
+				"  mediump ivec4 icolor = ivec4(name*255.0);						\\\n"
+				"  if (format == 1)													\\\n"
+				"    icolor.rg -= 128;												\\\n"
+				"  mediump ivec4 iconvert;											\\\n"
+				"  iconvert.r = icolor.b + (uConvertParams[0]*icolor.g + 128)/256;	\\\n"
+				"  iconvert.g = icolor.b + (uConvertParams[1]*icolor.r + uConvertParams[2]*icolor.g + 128)/256;	\\\n"
+				"  iconvert.b = icolor.b + (uConvertParams[3]*icolor.r + 128)/256;	\\\n"
+				"  iconvert.a = icolor.b;											\\\n"
+				"  name = vec4(iconvert)/255.0;										\\\n"
+				"  }																\n"
+				;
 			if (config.texture.bilinearMode == BILINEAR_3POINT) {
-				m_part =
-					"uniform lowp int uTextureFilterMode;								\n"
-					// 3 point texture filtering.
-					// Original author: ArthurCarvalho
-					// GLSL implementation: twinaphex, mupen64plus-libretro project.
-					"#define TEX_OFFSET(tex, texCoord, off) texture(tex, texCoord - (off)/texSize)	\n"
-					"#define FILTER_3POINT(tex, texCoord)			\\\n"
-					"  mediump vec2 texSize = vec2(textureSize(tex,0));							\\\n"
-					"  mediump vec2 offset = fract(texCoord*texSize - vec2(0.5));	\\\n"
-					"  offset -= step(1.0, offset.x + offset.y);								\\\n"
-					"  lowp vec4 c0 = TEX_OFFSET(tex, texCoord, offset);										\\\n"
+				// 3 point texture filtering.
+				// Original author: ArthurCarvalho
+				// GLSL implementation: twinaphex, mupen64plus-libretro project.
+				m_part +=
+					"#define TEX_OFFSET(tex, texCoord, off) texture(tex, texCoord - (off)/texSize)			\n"
+					"#define TEX_FILTER(name, tex, texCoord)												\\\n"
+					"  {																					\\\n"
+					"  mediump vec2 texSize = vec2(textureSize(tex,0));										\\\n"
+					"  mediump vec2 offset = fract(texCoord*texSize - vec2(0.5));							\\\n"
+					"  offset -= step(1.0, offset.x + offset.y);											\\\n"
+					"  lowp vec4 c0 = TEX_OFFSET(tex, texCoord, offset);									\\\n"
 					"  lowp vec4 c1 = TEX_OFFSET(tex, texCoord, vec2(offset.x - sign(offset.x), offset.y));	\\\n"
 					"  lowp vec4 c2 = TEX_OFFSET(tex, texCoord, vec2(offset.x, offset.y - sign(offset.y)));	\\\n"
-					"  lowp vec4 tex3Point = c0 + abs(offset.x)*(c1-c0) + abs(offset.y)*(c2-c0); 						\n"
-					"#define READ_TEX(name, tex, texCoord, fbMonochrome, fbFixedAlpha)	\\\n"
-					"  {		\\\n"
-					"  if (fbMonochrome == 3) {											\\\n"
-					"    mediump ivec2 coord = ivec2(gl_FragCoord.xy);					\\\n"
-					"    name = texelFetch(tex, coord, 0);								\\\n"
-					"  } else {															\\\n"
-					"    lowp vec4 texStandard = texture(tex, texCoord); 				\\\n"
-					"    FILTER_3POINT(tex, texCoord);									\\\n"
-					"    name = uTextureFilterMode == 0 ? texStandard : tex3Point;		\\\n"
-					"  }																\\\n"
-					"  if (fbMonochrome == 1) name = vec4(name.r);						\\\n"
-					"  else if (fbMonochrome == 2) 										\\\n"
-					"    name.rgb = vec3(dot(vec3(0.2126, 0.7152, 0.0722), name.rgb));	\\\n"
-					"  else if (fbMonochrome == 3) { 									\\\n"
-					"    name.rgb = vec3(dot(vec3(0.2126, 0.7152, 0.0722), name.rgb));	\\\n"
-					"    name.a = 0.0;													\\\n"
-					"  }																\\\n"
-					"  if (fbFixedAlpha == 1) name.a = 0.825;							\\\n"
-					"  }		\n"
+					"  name = c0 + abs(offset.x)*(c1-c0) + abs(offset.y)*(c2-c0); 							\\\n"
+					"  }																					\n"
 					;
 			} else {
-				m_part =
-					"#define READ_TEX(name, tex, texCoord, fbMonochrome, fbFixedAlpha)	\\\n"
-					"  {																\\\n"
-					"  if (fbMonochrome == 3) {											\\\n"
-					"    mediump ivec2 coord = ivec2(gl_FragCoord.xy);					\\\n"
-					"    name = texelFetch(tex, coord, 0);								\\\n"
-					"  } else  name = texture(tex, texCoord);							\\\n"
-					"  if (fbMonochrome == 1) name = vec4(name.r);						\\\n"
-					"  else if (fbMonochrome == 2)										\\\n"
-					"    name.rgb = vec3(dot(vec3(0.2126, 0.7152, 0.0722), name.rgb));	\\\n"
-					"  else if (fbMonochrome == 3) { 									\\\n"
-					"    name.rgb = vec3(dot(vec3(0.2126, 0.7152, 0.0722), name.rgb));	\\\n"
-					"    name.a = 0.0;													\\\n"
-					"  }																\\\n"
-					"  if (fbFixedAlpha == 1) name.a = 0.825;							\\\n"
-					"  }		\n"
+				m_part +=
+					"#define TEX_OFFSET(off, tex, texCoord) texture(tex, texCoord - (off)/texSize)									\n"
+					"#define TEX_FILTER(name, tex, texCoord)																		\\\n"
+					"{																												\\\n"
+					"  mediump vec2 texSize = vec2(textureSize(tex,0));																\\\n"
+					"  mediump vec2 offset = fract(texCoord*texSize - vec2(0.5));													\\\n"
+					"  offset -= step(1.0, offset.x + offset.y);																	\\\n"
+					"  lowp vec4 zero = vec4(0.0);																					\\\n"
+					"																												\\\n"
+					"  lowp vec4 p0q0 = TEX_OFFSET(offset, tex, texCoord);															\\\n"
+					"  lowp vec4 p1q0 = TEX_OFFSET(vec2(offset.x - sign(offset.x), offset.y), tex, texCoord);						\\\n"
+					"																												\\\n"
+					"  lowp vec4 p0q1 = TEX_OFFSET(vec2(offset.x, offset.y - sign(offset.y)), tex, texCoord);						\\\n"
+					"  lowp vec4 p1q1 = TEX_OFFSET(vec2(offset.x - sign(offset.x), offset.y - sign(offset.y)), tex, texCoord);		\\\n"
+					"																												\\\n"
+					"  mediump vec2 interpolationFactor = abs(offset);																\\\n"
+					"  lowp vec4 pInterp_q0 = mix( p0q0, p1q0, interpolationFactor.x ); 											\\\n" // Interpolates top row in X direction.
+					"  lowp vec4 pInterp_q1 = mix( p0q1, p1q1, interpolationFactor.x ); 											\\\n" // Interpolates bottom row in X direction.
+					"  name = mix( pInterp_q0, pInterp_q1, interpolationFactor.y ); 												\\\n" // Interpolate in Y direction.
+					"}																												\n"
 					;
 			}
+			m_part +=
+				"#define READ_TEX(name, tex, texCoord, fbMonochrome, fbFixedAlpha)	\\\n"
+				"  {																\\\n"
+				"  if (fbMonochrome == 3) {											\\\n"
+				"    mediump ivec2 coord = ivec2(gl_FragCoord.xy);					\\\n"
+				"    name = texelFetch(tex, coord, 0);								\\\n"
+				"  } else {															\\\n"
+				"    if (uTextureFilterMode == 0) name = texture(tex, texCoord);	\\\n"
+				"    else TEX_FILTER(name, tex, texCoord);			 				\\\n"
+				"  }																\\\n"
+				"  if (fbMonochrome == 1) name = vec4(name.r);						\\\n"
+				"  else if (fbMonochrome == 2) 										\\\n"
+				"    name.rgb = vec3(dot(vec3(0.2126, 0.7152, 0.0722), name.rgb));	\\\n"
+				"  else if (fbMonochrome == 3) { 									\\\n"
+				"    name.rgb = vec3(dot(vec3(0.2126, 0.7152, 0.0722), name.rgb));	\\\n"
+				"    name.a = 0.0;													\\\n"
+				"  }																\\\n"
+				"  if (fbFixedAlpha == 1) name.a = 0.825;							\\\n"
+				"  }																\n"
+				;
 		} else {
 			m_part =
+				"uniform lowp ivec2 uTextureFormat;									\n"
+				"uniform lowp ivec2 uBiLerp;										\n"
+				"uniform lowp ivec2 uTextureConvert;								\n"
+				"uniform mediump ivec4 uConvertParams;								\n"
+				"uniform lowp int uTextureFilterMode;								\n"
 				"lowp vec4 readTex(in sampler2D tex, in mediump vec2 texCoord, in lowp int fbMonochrome, in lowp int fbFixedAlpha);	\n"
+				"lowp vec4 YUV_Convert(in sampler2D tex, in mediump vec2 texCoord, in lowp int convert, in lowp int format, in lowp vec4 prev);	\n"
 			;
 		}
 	}
@@ -1068,19 +1101,30 @@ public:
 		if (_glinfo.isGLES2) {
 			m_part =
 				"  nCurrentTile = 0; \n"
-				"  lowp vec4 readtex0 = readTex(uTex0, vTexCoord0, uFbMonochrome[0], uFbFixedAlpha[0]); \n"
+				"  lowp vec4 readtex0;																\n"
+				"  if (uBiLerp[0] != 0)																\n"
+				"    readtex0 = readTex(uTex0, vTexCoord0, uFbMonochrome[0], uFbFixedAlpha[0]);		\n"
+				"  else																				\n"
+				"    readtex0 = YUV_Convert(uTex0, vTexCoord0, uTextureConvert[0], uTextureFormat[0], readtex0);	\n"
 				;
 		} else {
 			if (config.video.multisampling > 0) {
 				m_part =
-					"  lowp vec4 readtex0; \n"
-					"  if (uMSTexEnabled[0] == 0) READ_TEX(readtex0, uTex0, vTexCoord0, uFbMonochrome[0], uFbFixedAlpha[0]) \n"
-					"  else readtex0 = readTexMS(uMSTex0, vTexCoord0, uFbMonochrome[0], uFbFixedAlpha[0]); \n"
+					"  lowp vec4 readtex0;																	\n"
+					"  if (uMSTexEnabled[0] == 0) {															\n"
+					"    if (uBiLerp[0] != 0)																\n"
+					"      READ_TEX(readtex0, uTex0, vTexCoord0, uFbMonochrome[0], uFbFixedAlpha[0])		\n"
+					"    else																				\n"
+					"      YUVCONVERT_TEX(readtex0, uTex0, vTexCoord0, uTextureConvert[0], uTextureFormat[0], readtex0)	\n"
+					"  } else readtex0 = readTexMS(uMSTex0, vTexCoord0, uFbMonochrome[0], uFbFixedAlpha[0]);\n"
 					;
 			} else {
 				m_part =
-					"  lowp vec4 readtex0; \n"
-					"  READ_TEX(readtex0, uTex0, vTexCoord0, uFbMonochrome[0], uFbFixedAlpha[0]); \n"
+					"  lowp vec4 readtex0;																\n"
+					"  if (uBiLerp[0] != 0)																\n"
+					"    READ_TEX(readtex0, uTex0, vTexCoord0, uFbMonochrome[0], uFbFixedAlpha[0])		\n"
+					"  else																				\n"
+					"    YUVCONVERT_TEX(readtex0, uTex0, vTexCoord0, uTextureConvert[0], uTextureFormat[0], readtex0)\n"
 					;
 			}
 		}
@@ -1095,19 +1139,30 @@ public:
 		if (_glinfo.isGLES2) {
 			m_part =
 				"  nCurrentTile = 1; \n"
-				"  lowp vec4 readtex1 = readTex(uTex1, vTexCoord1, uFbMonochrome[1], uFbFixedAlpha[1]); \n"
+				"  lowp vec4 readtex1;																\n"
+				"  if (uBiLerp[1] != 0)																\n"
+				"    readtex1 = readTex(uTex1, vTexCoord1, uFbMonochrome[1], uFbFixedAlpha[1]);		\n"
+				"  else																				\n"
+				"    readtex1 = YUV_Convert(uTex1, vTexCoord1, uTextureConvert[1], uTextureFormat[1], readtex0);	\n"
 				;
 		} else {
 			if (config.video.multisampling > 0) {
 				m_part =
 					"  lowp vec4 readtex1; \n"
-					"  if (uMSTexEnabled[1] == 0)  READ_TEX(readtex1, uTex1, vTexCoord1, uFbMonochrome[1], uFbFixedAlpha[1]) \n"
-					"  else readtex1 = readTexMS(uMSTex1, vTexCoord1, uFbMonochrome[1], uFbFixedAlpha[1]); \n"
+					"  if (uMSTexEnabled[1] == 0) {															\n"
+					"    if (uBiLerp[1] != 0)																\n"
+					"      READ_TEX(readtex1, uTex1, vTexCoord1, uFbMonochrome[1], uFbFixedAlpha[1])		\n"
+					"    else																				\n"
+					"      YUVCONVERT_TEX(readtex1, uTex1, vTexCoord1, uTextureConvert[1], uTextureFormat[1], readtex0)	\n"
+					"  } else readtex1 = readTexMS(uMSTex1, vTexCoord1, uFbMonochrome[1], uFbFixedAlpha[1]);\n"
 					;
 			} else {
 				m_part =
 					"  lowp vec4 readtex1; \n"
-					"  READ_TEX(readtex1, uTex1, vTexCoord1, uFbMonochrome[1], uFbFixedAlpha[1]); \n"
+					"  if (uBiLerp[1] != 0)																\n"
+					"    READ_TEX(readtex1, uTex1, vTexCoord1, uFbMonochrome[1], uFbFixedAlpha[1])		\n"
+					"  else																				\n"
+					"    YUVCONVERT_TEX(readtex1, uTex1, vTexCoord1, uTextureConvert[1], uTextureFormat[1], readtex0)\n"
 					;
 			}
 		}
@@ -1465,15 +1520,31 @@ public:
 	ShaderReadtex(const opengl::GLInfo & _glinfo)
 	{
 		if (_glinfo.isGLES2) {
+			m_part =
+				"lowp vec4 YUV_Convert(in sampler2D tex, in mediump vec2 texCoord, in lowp int convert, in lowp int format, in lowp vec4 prev)	\n"
+				"{																	\n"
+				"  lowp vec4 texColor;												\n"
+				"  if (convert != 0) texColor = prev;								\n"
+				"  else texColor = texture2D(tex, texCoord);						\n"
+				"  mediump ivec4 icolor = ivec4(texColor*255.0);					\n"
+				"  if (format == 1)													\n"
+				"    icolor.rg -= 128;												\n"
+				"  mediump ivec4 iconvert;											\n"
+				"  iconvert.r = icolor.b + (uConvertParams[0]*icolor.g + 128)/256;	\n"
+				"  iconvert.g = icolor.b + (uConvertParams[1]*icolor.r + uConvertParams[2]*icolor.g + 128)/256;	\n"
+				"  iconvert.b = icolor.b + (uConvertParams[3]*icolor.r + 128)/256;	\n"
+				"  iconvert.a = icolor.b;											\n"
+				"  return vec4(iconvert)/255.0;										\n"
+				"  }																\n"
+			;
 			if (config.texture.bilinearMode == BILINEAR_3POINT) {
-				m_part =
+				m_part +=
 					"uniform mediump vec2 uTextureSize[2];										\n"
-					"uniform lowp int uTextureFilterMode;										\n"
 					// 3 point texture filtering.
 					// Original author: ArthurCarvalho
 					// GLSL implementation: twinaphex, mupen64plus-libretro project.
 					"#define TEX_OFFSET(off) texture2D(tex, texCoord - (off)/texSize)			\n"
-					"lowp vec4 filter3point(in sampler2D tex, in mediump vec2 texCoord)			\n"
+					"lowp vec4 TextureFilter(in sampler2D tex, in mediump vec2 texCoord)		\n"
 					"{																			\n"
 					"  mediump vec2 texSize;													\n"
 					"  if (nCurrentTile == 0)													\n"
@@ -1487,23 +1558,42 @@ public:
 					"  lowp vec4 c2 = TEX_OFFSET(vec2(offset.x, offset.y - sign(offset.y)));	\n"
 					"  return c0 + abs(offset.x)*(c1-c0) + abs(offset.y)*(c2-c0);				\n"
 					"}																			\n"
-					"lowp vec4 readTex(in sampler2D tex, in mediump vec2 texCoord, in lowp int fbMonochrome, in lowp int fbFixedAlpha)	\n"
-					"{																			\n"
-					"  lowp vec4 texStandard = texture2D(tex, texCoord); 						\n"
-					"  lowp vec4 tex3Point = filter3point(tex, texCoord); 						\n"
-					"  lowp vec4 texColor = uTextureFilterMode == 0 ? texStandard : tex3Point;	\n"
-					"  if (fbMonochrome == 1) texColor = vec4(texColor.r);						\n"
-					"  else if (fbMonochrome == 2) 												\n"
-					"    texColor.rgb = vec3(dot(vec3(0.2126, 0.7152, 0.0722), texColor.rgb));	\n"
-					"  if (fbFixedAlpha == 1) texColor.a = 0.825;								\n"
-					"  return texColor;															\n"
-					"}																			\n"
-				;
+					;
 			} else {
-				m_part =
+				m_part +=
+					// bilinear filtering.
+					"uniform mediump vec2 uTextureSize[2];										\n"
+					"#define TEX_OFFSET(off) texture2D(tex, texCoord - (off)/texSize)			\n"
+					"lowp vec4 TextureFilter(in sampler2D tex, in mediump vec2 texCoord)		\n"
+					"{																			\n"
+					"  mediump vec2 texSize;													\n"
+					"  if (nCurrentTile == 0)													\n"
+					"    texSize = uTextureSize[0];												\n"
+					"  else																		\n"
+					"    texSize = uTextureSize[1];												\n"
+					"  mediump vec2 offset = fract(texCoord*texSize - vec2(0.5));				\n"
+					"  offset -= step(1.0, offset.x + offset.y);								\n"
+					"  lowp vec4 zero = vec4(0.0);												\n"
+					"																			\n"
+					"  lowp vec4 p0q0 = TEX_OFFSET(offset, tex, texCoord);						\n"
+					"  lowp vec4 p1q0 = TEX_OFFSET(vec2(offset.x - sign(offset.x), offset.y), tex, texCoord);\n"
+					"																			\n"
+					"  lowp vec4 p0q1 = TEX_OFFSET(vec2(offset.x, offset.y - sign(offset.y)), tex, texCoord);\n"
+					"  lowp vec4 p1q1 = TEX_OFFSET(vec2(offset.x - sign(offset.x), offset.y - sign(offset.y)), tex, texCoord);\n"
+					"																			\n"
+					"  mediump vec2 interpolationFactor = abs(offset);							\n"
+					"  lowp vec4 pInterp_q0 = mix( p0q0, p1q0, interpolationFactor.x ); 		\n" // Interpolates top row in X direction.
+					"  lowp vec4 pInterp_q1 = mix( p0q1, p1q1, interpolationFactor.x ); 		\n" // Interpolates bottom row in X direction.
+					"  return mix( pInterp_q0, pInterp_q1, interpolationFactor.y ); 			\n" // Interpolate in Y direction.
+					"}																			\n"
+					;
+			}
+			m_part +=
 					"lowp vec4 readTex(in sampler2D tex, in mediump vec2 texCoord, in lowp int fbMonochrome, in lowp int fbFixedAlpha)	\n"
 					"{																			\n"
-					"  lowp vec4 texColor = texture2D(tex, texCoord); 							\n"
+					"  lowp vec4 texColor;														\n"
+					"  if (uTextureFilterMode == 0) texColor = texture2D(tex, texCoord);		\n"
+					"  else texColor = TextureFilter(tex, texCoord);							\n"
 					"  if (fbMonochrome == 1) texColor = vec4(texColor.r);						\n"
 					"  else if (fbMonochrome == 2) 												\n"
 					"    texColor.rgb = vec3(dot(vec3(0.2126, 0.7152, 0.0722), texColor.rgb));	\n"
@@ -1511,7 +1601,6 @@ public:
 					"  return texColor;															\n"
 					"}																			\n"
 				;
-			}
 		} else {
 			if (config.video.multisampling > 0) {
 				m_part =

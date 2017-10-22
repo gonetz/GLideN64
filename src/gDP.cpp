@@ -765,15 +765,14 @@ void gDPFillRectangle( s32 ulx, s32 uly, s32 lrx, s32 lry )
 void gDPSetConvert( s32 k0, s32 k1, s32 k2, s32 k3, s32 k4, s32 k5 )
 {
 // angrylion's macro
-#define SRA(exp, sa)    ((signed)(exp) >> (sa))
-#define SIGN(i, b)      SRA((i) << (32 - (b)), (32 - (b)))
+#define SIGN(x, numb)	(((x) & ((1 << numb) - 1)) | -((x) & (1 << (numb - 1))))
 
-	gDP.convert.k0 = SIGN(k0, 9);
-	gDP.convert.k1 = SIGN(k1, 9);
-	gDP.convert.k2 = SIGN(k2, 9);
-	gDP.convert.k3 = SIGN(k3, 9);
-	gDP.convert.k4 = SIGN(k4, 9);
-	gDP.convert.k5 = SIGN(k5, 9);
+	gDP.convert.k0 = (SIGN(k0, 9) << 1) + 1;
+	gDP.convert.k1 = (SIGN(k1, 9) << 1) + 1;
+	gDP.convert.k2 = (SIGN(k2, 9) << 1) + 1;
+	gDP.convert.k3 = (SIGN(k3, 9) << 1) + 1;
+	gDP.convert.k4 = k4;
+	gDP.convert.k5 = k5;
 
 	DebugMsg( DEBUG_NORMAL, "gDPSetConvert( %i, %i, %i, %i, %i, %i );\n", k0, k1, k2, k3, k4, k5);
 }

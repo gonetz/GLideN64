@@ -209,6 +209,7 @@ void RSP_SetDefaultState()
 	gSP.matrix.modelView[0][3][3] = 1.0f;
 
 	gDP.otherMode._u64 = 0U;
+	gDP.otherMode.bi_lerp0 = gDP.otherMode.bi_lerp1 = 1;
 }
 
 u32 DepthClearColor = 0xfffcfffc;

@@ -215,6 +215,7 @@ inline u32 GetRGBA8888_RGBA4444( u64 *src, u16 x, u16 i, u8 palette )
 	return RGBA8888_RGBA4444(((u32*)src)[x^i]);
 }
 
+#if 0
 u32 YUV_RGBA8888(u8 y, u8 u, u8 v)
 {
 	s32 r = (s32)(y + (1.370705f * (v - 128)));
@@ -230,11 +231,12 @@ u32 YUV_RGBA8888(u8 y, u8 u, u8 v)
 
 	return (0xff << 24) | (b << 16) | (g << 8) | r;
 }
-
-u16 YUV_RGBA4444(u8 y, u8 u, u8 v)
+#else
+inline u32 YUV_RGBA8888(u8 y, u8 u, u8 v)
 {
-	return RGBA8888_RGBA4444(YUV_RGBA8888(y, u, v));
+	return (0xff << 24) | (y << 16) | (v << 8) | u;
 }
+#endif
 
 inline void GetYUV_RGBA8888(u64 * src, u32 * dst, u16 x)
 {
@@ -246,19 +248,6 @@ inline void GetYUV_RGBA8888(u64 * src, u32 * dst, u16 x)
 	u32 c = YUV_RGBA8888(y0, u, v);
 	*(dst++) = c;
 	c = YUV_RGBA8888(y1, u, v);
-	*(dst++) = c;
-}
-
-inline void GetYUV_RGBA4444(u64 * src, u16 * dst, u16 x)
-{
-	const u32 t = (((u32*)src)[x]);
-	u8 y1 = (u8)t & 0xFF;
-	u8 v = (u8)(t >> 8) & 0xFF;
-	u8 y0 = (u8)(t >> 16) & 0xFF;
-	u8 u = (u8)(t >> 24) & 0xFF;
-	u16 c = YUV_RGBA4444(y0, u, v);
-	*(dst++) = c;
-	c = YUV_RGBA4444(y1, u, v);
 	*(dst++) = c;
 }
 
@@ -307,7 +296,7 @@ ImageFormat::ImageFormat()
 			},
 			{ // 16-bit
 				{ GetRGBA5551_RGBA5551, datatype::UNSIGNED_SHORT_5_5_5_1, internalcolorFormat::RGB5_A1, GetRGBA5551_RGBA8888, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGB5_A1, 2, 2048 }, // RGBA
-				{ GetNone, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetNone, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA4, 2, 2048 }, // YUV
+				{ GetNone, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetNone, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA8, 2, 2048 }, // YUV
 				{ GetIA88_RGBA4444, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetIA88_RGBA8888, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA8, 2, 2048 }, // CI as IA
 				{ GetIA88_RGBA4444, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetIA88_RGBA8888, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA8, 2, 2048 }, // IA
 				{ GetNone, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetNone, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA4, 0, 2048 }, // I
@@ -338,7 +327,7 @@ ImageFormat::ImageFormat()
 			},
 			{ // 16-bit
 				{ GetCI16RGBA_RGBA5551, datatype::UNSIGNED_SHORT_5_5_5_1, internalcolorFormat::RGB5_A1, GetRGBA5551_RGBA8888, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGB5_A1, 2, 2048 }, // RGBA
-				{ GetNone, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetNone, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA4, 2, 2048 }, // YUV
+				{ GetNone, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetNone, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA8, 2, 2048 }, // YUV
 				{ GetNone, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetNone, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA4, 0, 2048 }, // CI
 				{ GetCI16RGBA_RGBA5551, datatype::UNSIGNED_SHORT_5_5_5_1, internalcolorFormat::RGB5_A1, GetCI16RGBA_RGBA8888, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGB5_A1, 2, 2048 }, // IA as CI
 				{ GetNone, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetNone, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA4, 0, 2048 }, // I
@@ -369,7 +358,7 @@ ImageFormat::ImageFormat()
 			},
 			{ // 16-bit
 				{ GetCI16RGBA_RGBA5551, datatype::UNSIGNED_SHORT_5_5_5_1, internalcolorFormat::RGB5_A1, GetRGBA5551_RGBA8888, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGB5_A1, 2, 2048 }, // RGBA
-				{ GetNone, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetNone, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA4, 2, 2048 }, // YUV
+				{ GetNone, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetNone, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA8, 2, 2048 }, // YUV
 				{ GetNone, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetNone, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA4, 0, 2048 }, // CI
 				{ GetCI16RGBA_RGBA5551, datatype::UNSIGNED_SHORT_5_5_5_1, internalcolorFormat::RGB5_A1, GetCI16RGBA_RGBA8888, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGB5_A1, 2, 2048 }, // IA as CI
 				{ GetNone, datatype::UNSIGNED_SHORT_4_4_4_4, internalcolorFormat::RGBA4, GetNone, datatype::UNSIGNED_BYTE, internalcolorFormat::RGBA8, internalcolorFormat::RGBA4, 0, 2048 }, // I
@@ -1076,11 +1065,7 @@ void TextureCache::_getTextureDestData(CachedTexture& tmptex,
 		for (y = 0; y < tmptex.realHeight; ++y) {
 			pSrc = &TMEM[tmptex.tMem] + *pLine * y;
 			for (x = 0; x < tmptex.realWidth / 2; x++) {
-				if (glInternalFormat == internalcolorFormat::RGBA8) {
-					GetYUV_RGBA8888(pSrc, pDest + j, x);
-				} else {
-					GetYUV_RGBA4444(pSrc, (u16*)pDest + j, x);
-				}
+				GetYUV_RGBA8888(pSrc, pDest + j, x);
 				j += 2;
 			}
 		}
@@ -1311,38 +1296,21 @@ void TextureCache::activateTexture(u32 _t, CachedTexture *_pTexture)
 		const s32 texLevel = bUseLOD ? _pTexture->max_level : 0;
 		params.maxMipmapLevel = Parameter(texLevel);
 
-		if (config.texture.bilinearMode == BILINEAR_STANDARD) {
+		if (texLevel > 0) { // Apply standard bilinear to mipmap textures
 			if (bUseBilinear) {
-				if (texLevel > 0)
-					params.minFilter = textureParameters::FILTER_LINEAR_MIPMAP_NEAREST;
-				else
-					params.minFilter = textureParameters::FILTER_LINEAR;
+				params.minFilter = textureParameters::FILTER_LINEAR_MIPMAP_NEAREST;
 				params.magFilter = textureParameters::FILTER_LINEAR;
 			} else {
-				if (texLevel > 0)
-					params.minFilter = textureParameters::FILTER_NEAREST_MIPMAP_NEAREST;
-				else
-					params.minFilter = textureParameters::FILTER_NEAREST;
+				params.minFilter = textureParameters::FILTER_NEAREST_MIPMAP_NEAREST;
 				params.magFilter = textureParameters::FILTER_NEAREST;
 			}
-		} else { // 3 point filter
-			if (texLevel > 0) { // Apply standard bilinear to mipmap textures
-				if (bUseBilinear) {
-					params.minFilter = textureParameters::FILTER_LINEAR_MIPMAP_NEAREST;
-					params.magFilter = textureParameters::FILTER_LINEAR;
-				} else {
-					params.minFilter = textureParameters::FILTER_NEAREST_MIPMAP_NEAREST;
-					params.magFilter = textureParameters::FILTER_NEAREST;
-				}
-			} else if (bUseBilinear && config.generalEmulation.enableLOD != 0 && bUseLOD) { // Apply standard bilinear to first tile of mipmap texture
-				params.minFilter = textureParameters::FILTER_LINEAR;
-				params.magFilter = textureParameters::FILTER_LINEAR;
-			} else { // Don't use texture filter. Texture will be filtered by 3 point filter shader
-				params.minFilter = textureParameters::FILTER_NEAREST;
-				params.magFilter = textureParameters::FILTER_NEAREST;
-			}
+		} else if (bUseBilinear && config.generalEmulation.enableLOD != 0 && bUseLOD) { // Apply standard bilinear to first tile of mipmap texture
+			params.minFilter = textureParameters::FILTER_LINEAR;
+			params.magFilter = textureParameters::FILTER_LINEAR;
+		} else { // Don't use texture filter. Texture will be filtered by filter shader
+			params.minFilter = textureParameters::FILTER_NEAREST;
+			params.magFilter = textureParameters::FILTER_NEAREST;
 		}
-
 
 		// Set clamping modes
 		params.wrapS = _pTexture->clampS ? textureParameters::WRAP_CLAMP_TO_EDGE :
