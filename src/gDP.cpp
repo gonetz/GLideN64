@@ -350,7 +350,7 @@ bool CheckForFrameBufferTexture(u32 _address, u32 _bytes)
 			bRes = false;
 		}
 
-		if ((config.generalEmulation.hacks & hack_noDepthFrameBuffers) != 0 && pBuffer->m_isDepthBuffer) {
+		if (pBuffer->m_isDepthBuffer && (pBuffer->isAuxiliary() || (config.generalEmulation.hacks & hack_noDepthFrameBuffers) != 0)) {
 			fbList.removeBuffer(pBuffer->m_startAddress);
 			bRes = false;
 		}
