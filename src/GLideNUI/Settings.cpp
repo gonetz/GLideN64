@@ -97,14 +97,6 @@ void _loadSettings(QSettings & settings)
 	config.font.colorf[3] = config.font.color[3] == 0 ? 1.0f : _FIXED2FLOAT(config.font.color[3], 8);
 	settings.endGroup();
 
-	settings.beginGroup("bloomFilter");
-	config.bloomFilter.enable = settings.value("enable", config.bloomFilter.enable).toInt();
-	config.bloomFilter.thresholdLevel = settings.value("thresholdLevel", config.bloomFilter.thresholdLevel).toInt();
-	config.bloomFilter.blendMode = settings.value("blendMode", config.bloomFilter.blendMode).toInt();
-	config.bloomFilter.blurAmount = settings.value("blurAmount", config.bloomFilter.blurAmount).toInt();
-	config.bloomFilter.blurStrength = settings.value("blurStrength", config.bloomFilter.blurStrength).toInt();
-	settings.endGroup();
-
 	settings.beginGroup("gammaCorrection");
 	config.gammaCorrection.force = settings.value("force", config.gammaCorrection.force).toInt();
 	config.gammaCorrection.level = settings.value("level", config.gammaCorrection.level).toFloat();
@@ -215,14 +207,6 @@ void writeSettings(const QString & _strIniFolder)
 	settings.setValue("name", config.font.name.c_str());
 	settings.setValue("size", config.font.size);
 	settings.setValue("color", QColor(config.font.color[0], config.font.color[1], config.font.color[2], config.font.color[3]));
-	settings.endGroup();
-
-	settings.beginGroup("bloomFilter");
-	settings.setValue("enable", config.bloomFilter.enable);
-	settings.setValue("thresholdLevel", config.bloomFilter.thresholdLevel);
-	settings.setValue("blendMode", config.bloomFilter.blendMode);
-	settings.setValue("blurAmount", config.bloomFilter.blurAmount);
-	settings.setValue("blurStrength", config.bloomFilter.blurStrength);
 	settings.endGroup();
 
 	settings.beginGroup("gammaCorrection");

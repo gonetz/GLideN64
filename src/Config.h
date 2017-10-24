@@ -4,7 +4,7 @@
 #include <string>
 #include "Types.h"
 
-#define CONFIG_VERSION_CURRENT 17U
+#define CONFIG_VERSION_CURRENT 18U
 
 #define BILINEAR_3POINT   0
 #define BILINEAR_STANDARD 1
@@ -141,14 +141,6 @@ struct Config
 		u8 color[4];
 		float colorf[4];
 	} font;
-
-	struct {
-		u32 enable;
-		u32 thresholdLevel;
-		u32 blendMode;
-		u32 blurAmount;
-		u32 blurStrength;
-	} bloomFilter;
 
 	struct {
 		u32 force;

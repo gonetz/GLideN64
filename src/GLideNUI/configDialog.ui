@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>627</width>
-    <height>644</height>
+    <width>660</width>
+    <height>639</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -34,6 +34,9 @@
        <width>0</width>
        <height>450</height>
       </size>
+     </property>
+     <property name="currentIndex">
+      <number>0</number>
      </property>
      <property name="usesScrollButtons">
       <bool>false</bool>
@@ -2572,236 +2575,6 @@
          <item>
           <layout class="QVBoxLayout" name="verticalLayout_50">
            <item>
-            <widget class="QGroupBox" name="bloomGroupBox">
-             <property name="title">
-              <string>Bloom</string>
-             </property>
-             <property name="checkable">
-              <bool>true</bool>
-             </property>
-             <property name="checked">
-              <bool>true</bool>
-             </property>
-             <layout class="QVBoxLayout" name="verticalLayout_15">
-              <property name="spacing">
-               <number>18</number>
-              </property>
-              <item>
-               <widget class="QFrame" name="bloomBlendModeFrame">
-                <layout class="QVBoxLayout" name="verticalLayout_39">
-                 <property name="spacing">
-                  <number>3</number>
-                 </property>
-                 <property name="leftMargin">
-                  <number>0</number>
-                 </property>
-                 <property name="topMargin">
-                  <number>0</number>
-                 </property>
-                 <property name="rightMargin">
-                  <number>0</number>
-                 </property>
-                 <property name="bottomMargin">
-                  <number>0</number>
-                 </property>
-                 <item>
-                  <widget class="QLabel" name="bloomBlendModeLabel">
-                   <property name="text">
-                    <string>Blending:</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QRadioButton" name="bloomStrongRadioButton">
-                   <property name="text">
-                    <string>Strong</string>
-                   </property>
-                   <attribute name="buttonGroup">
-                    <string notr="true">bloomBlendModeButtonGroup</string>
-                   </attribute>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QRadioButton" name="bloomMildRadioButton">
-                   <property name="text">
-                    <string>Medium</string>
-                   </property>
-                   <attribute name="buttonGroup">
-                    <string notr="true">bloomBlendModeButtonGroup</string>
-                   </attribute>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QRadioButton" name="bloomLightRadioButton">
-                   <property name="text">
-                    <string>Light</string>
-                   </property>
-                   <attribute name="buttonGroup">
-                    <string notr="true">bloomBlendModeButtonGroup</string>
-                   </attribute>
-                  </widget>
-                 </item>
-                </layout>
-               </widget>
-              </item>
-              <item>
-               <layout class="QGridLayout" name="gridLayout_2">
-                <property name="horizontalSpacing">
-                 <number>12</number>
-                </property>
-                <property name="verticalSpacing">
-                 <number>6</number>
-                </property>
-                <item row="4" column="0" alignment="Qt::AlignHCenter">
-                 <widget class="QSlider" name="blurStrengthSlider">
-                  <property name="minimumSize">
-                   <size>
-                    <width>0</width>
-                    <height>150</height>
-                   </size>
-                  </property>
-                  <property name="minimum">
-                   <number>10</number>
-                  </property>
-                  <property name="maximum">
-                   <number>99</number>
-                  </property>
-                  <property name="orientation">
-                   <enum>Qt::Vertical</enum>
-                  </property>
-                  <property name="tickPosition">
-                   <enum>QSlider::TicksBothSides</enum>
-                  </property>
-                  <property name="tickInterval">
-                   <number>10</number>
-                  </property>
-                 </widget>
-                </item>
-                <item row="4" column="2" alignment="Qt::AlignHCenter">
-                 <widget class="QSlider" name="bloomThresholdSlider">
-                  <property name="minimumSize">
-                   <size>
-                    <width>0</width>
-                    <height>150</height>
-                   </size>
-                  </property>
-                  <property name="minimum">
-                   <number>2</number>
-                  </property>
-                  <property name="maximum">
-                   <number>8</number>
-                  </property>
-                  <property name="orientation">
-                   <enum>Qt::Vertical</enum>
-                  </property>
-                  <property name="tickPosition">
-                   <enum>QSlider::TicksBothSides</enum>
-                  </property>
-                  <property name="tickInterval">
-                   <number>1</number>
-                  </property>
-                 </widget>
-                </item>
-                <item row="4" column="1" alignment="Qt::AlignHCenter">
-                 <widget class="QSlider" name="blurAmountSlider">
-                  <property name="minimumSize">
-                   <size>
-                    <width>0</width>
-                    <height>150</height>
-                   </size>
-                  </property>
-                  <property name="minimum">
-                   <number>1</number>
-                  </property>
-                  <property name="maximum">
-                   <number>10</number>
-                  </property>
-                  <property name="orientation">
-                   <enum>Qt::Vertical</enum>
-                  </property>
-                  <property name="tickPosition">
-                   <enum>QSlider::TicksBothSides</enum>
-                  </property>
-                  <property name="tickInterval">
-                   <number>1</number>
-                  </property>
-                 </widget>
-                </item>
-                <item row="1" column="1">
-                 <widget class="QLabel" name="bloomBlurLabel">
-                  <property name="text">
-                   <string>Blur amount:</string>
-                  </property>
-                  <property name="alignment">
-                   <set>Qt::AlignBottom|Qt::AlignHCenter</set>
-                  </property>
-                  <property name="wordWrap">
-                   <bool>true</bool>
-                  </property>
-                 </widget>
-                </item>
-                <item row="1" column="0">
-                 <widget class="QLabel" name="bloomBlurStrengthLabel">
-                  <property name="text">
-                   <string>Blur strength:</string>
-                  </property>
-                  <property name="alignment">
-                   <set>Qt::AlignBottom|Qt::AlignHCenter</set>
-                  </property>
-                  <property name="wordWrap">
-                   <bool>true</bool>
-                  </property>
-                 </widget>
-                </item>
-                <item row="1" column="2">
-                 <widget class="QLabel" name="bloomThresholdLabel">
-                  <property name="text">
-                   <string>Threshold level:</string>
-                  </property>
-                  <property name="alignment">
-                   <set>Qt::AlignBottom|Qt::AlignHCenter</set>
-                  </property>
-                  <property name="wordWrap">
-                   <bool>true</bool>
-                  </property>
-                 </widget>
-                </item>
-                <item row="5" column="0">
-                 <widget class="QLabel" name="blurStrengthLabel">
-                  <property name="text">
-                   <string notr="true"> 0</string>
-                  </property>
-                  <property name="alignment">
-                   <set>Qt::AlignCenter</set>
-                  </property>
-                 </widget>
-                </item>
-                <item row="5" column="1">
-                 <widget class="QLabel" name="blurAmountLabel">
-                  <property name="text">
-                   <string notr="true"> 0</string>
-                  </property>
-                  <property name="alignment">
-                   <set>Qt::AlignCenter</set>
-                  </property>
-                 </widget>
-                </item>
-                <item row="5" column="2">
-                 <widget class="QLabel" name="bloomThresholdLabel_2">
-                  <property name="text">
-                   <string notr="true"> 0</string>
-                  </property>
-                  <property name="alignment">
-                   <set>Qt::AlignCenter</set>
-                  </property>
-                 </widget>
-                </item>
-               </layout>
-              </item>
-             </layout>
-            </widget>
-           </item>
-           <item>
             <spacer name="verticalSpacer_4">
              <property name="orientation">
               <enum>Qt::Vertical</enum>
@@ -3904,54 +3677,6 @@
    </hints>
   </connection>
   <connection>
-   <sender>blurStrengthSlider</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>blurStrengthLabel</receiver>
-   <slot>setNum(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>50</x>
-     <y>325</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>33</x>
-     <y>332</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>blurAmountSlider</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>blurAmountLabel</receiver>
-   <slot>setNum(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>125</x>
-     <y>325</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>111</x>
-     <y>332</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>bloomThresholdSlider</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>bloomThresholdLabel_2</receiver>
-   <slot>setNum(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>206</x>
-     <y>325</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>184</x>
-     <y>332</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>fbInfoEnableCheckBox</sender>
    <signal>toggled(bool)</signal>
    <receiver>readColorChunkCheckBox</receiver>
@@ -4193,11 +3918,11 @@
   </connection>
  </connections>
  <buttongroups>
+  <buttongroup name="osdButtonGroup"/>
+  <buttongroup name="factorButtonGroup"/>
+  <buttongroup name="bloomBlendModeButtonGroup"/>
   <buttongroup name="screenshotButtonGroup"/>
   <buttongroup name="aspectButtonGroup"/>
   <buttongroup name="fixTexrectCoordsButtonGroup"/>
-  <buttongroup name="bloomBlendModeButtonGroup"/>
-  <buttongroup name="osdButtonGroup"/>
-  <buttongroup name="factorButtonGroup"/>
  </buttongroups>
 </ui>

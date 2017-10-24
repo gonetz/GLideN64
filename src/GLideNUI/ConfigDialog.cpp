@@ -223,22 +223,6 @@ void ConfigDialog::_init()
 	ui->txPathLabel->setText(QString::fromWCharArray(config.textureFilter.txPath));
 
 	// Post filter settings
-	ui->bloomGroupBox->setChecked(config.bloomFilter.enable != 0);
-	switch (config.bloomFilter.blendMode) {
-	case 0:
-		ui->bloomStrongRadioButton->setChecked(true);
-		break;
-	case 1:
-		ui->bloomMildRadioButton->setChecked(true);
-		break;
-	case 2:
-		ui->bloomLightRadioButton->setChecked(true);
-		break;
-	}
-	ui->bloomThresholdSlider->setValue(config.bloomFilter.thresholdLevel);
-	ui->blurAmountSlider->setValue(config.bloomFilter.blurAmount);
-	ui->blurStrengthSlider->setValue(config.bloomFilter.blurStrength);
-
 	ui->gammaCorrectionGroupBox->setChecked(config.gammaCorrection.force != 0);
 	ui->gammaLevelSpinBox->setValue(config.gammaCorrection.level);
 
@@ -469,17 +453,6 @@ void ConfigDialog::accept()
 		config.textureFilter.txPath[txPath.toWCharArray(config.textureFilter.txPath)] = L'\0';
 
 	// Post filter settings
-	config.bloomFilter.enable = ui->bloomGroupBox->isChecked() ? 1 : 0;
-	if (ui->bloomStrongRadioButton->isChecked())
-		config.bloomFilter.blendMode = 0;
-	else if (ui->bloomMildRadioButton->isChecked())
-		config.bloomFilter.blendMode = 1;
-	else if (ui->bloomLightRadioButton->isChecked())
-		config.bloomFilter.blendMode = 2;
-	config.bloomFilter.thresholdLevel = ui->bloomThresholdSlider->value();
-	config.bloomFilter.blurAmount = ui->blurAmountSlider->value();
-	config.bloomFilter.blurStrength = ui->blurStrengthSlider->value();
-
 	config.gammaCorrection.force = ui->gammaCorrectionGroupBox->isChecked() ? 1 : 0;
 	config.gammaCorrection.level = ui->gammaLevelSpinBox->value();
 
