@@ -663,7 +663,7 @@ void GraphicsDrawer::_prepareDrawTriangle()
 	m_drawingState = DrawingState::Triangle;
 
 	bool bFlatColors = false;
-	if (!RSP.bLLE && (gSP.geometryMode & G_LIGHTING) == 0) {
+	if (!RSP.LLE && (gSP.geometryMode & G_LIGHTING) == 0) {
 		bFlatColors = (gSP.geometryMode & G_SHADE) == 0;
 		bFlatColors |= (gSP.geometryMode & G_SHADING_SMOOTH) == 0;
 	}

@@ -112,8 +112,8 @@ void RSP_ProcessDList()
 	RSP.PCi = 0;
 	RSP.count = -1;
 
-	RSP.halt = FALSE;
-	RSP.busy = TRUE;
+	RSP.halt = false;
+	RSP.busy = true;
 
 	gSP.matrix.stackSize = min( 32U, *(u32*)&DMEM[0x0FE4] >> 6 );
 	if (gSP.matrix.stackSize == 0)
@@ -164,7 +164,7 @@ void RSP_ProcessDList()
 			FrameBuffer_CopyDepthBuffer(gDP.colorImage.address);
 	}
 
-	RSP.busy = FALSE;
+	RSP.busy = false;
 	gDP.changed |= CHANGED_COLORBUFFER;
 }
 
@@ -241,7 +241,7 @@ void RSP_Init()
 	}
 
 	RSP.uc_start = RSP.uc_dstart = 0;
-	RSP.bLLE = false;
+	RSP.LLE = false;
 
 	// get the name of the ROM
 	char romname[21];

@@ -231,7 +231,7 @@ void RDP_LoadSync( u32 w0, u32 w1 )
 static
 bool _getTexRectParams(u32 & w2, u32 & w3)
 {
-	if (RSP.bLLE) {
+	if (RSP.LLE) {
 		w2 = RDP.w2;
 		w3 = RDP.w3;
 		return true;
@@ -566,7 +566,7 @@ void RDP_ProcessRDPList()
 
 	if (dp_end <= dp_current) return;
 
-	RSP.bLLE = true;
+	RSP.LLE = true;
 
 	// load command data
 	for (u32 i = 0; i < length; i += 4) {
@@ -602,7 +602,7 @@ void RDP_ProcessRDPList()
 		RDP.cmd_cur = 0;
 	}
 
-	RSP.bLLE = false;
+	RSP.LLE = false;
 	gDP.changed |= CHANGED_COLORBUFFER;
 	gDP.changed &= ~CHANGED_CPU_FB_WRITE;
 

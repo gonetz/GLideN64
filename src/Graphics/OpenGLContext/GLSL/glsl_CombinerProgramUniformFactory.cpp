@@ -247,7 +247,7 @@ public:
 
 	void update(bool _force) override
 	{
-		if (RSP.bLLE) {
+		if (RSP.LLE) {
 			uFogUsage.set(0, _force);
 			return;
 		}
@@ -436,7 +436,7 @@ public:
 
 	void update(bool _force) override
 	{
-		const u32 texturePersp = (RSP.bLLE || GBI.isTexturePersp()) ? gDP.otherMode.texturePersp : 1U;
+		const u32 texturePersp = (RSP.LLE || GBI.isTexturePersp()) ? gDP.otherMode.texturePersp : 1U;
 		uTexturePersp.set(texturePersp, _force);
 	}
 
@@ -513,7 +513,7 @@ public:
 
 	void update(bool _force) override
 	{
-		if (RSP.bLLE)
+		if (RSP.LLE)
 			uDepthScale.set(0.5f, 0.5f, _force);
 		else
 			uDepthScale.set(gSP.viewport.vscale[2], gSP.viewport.vtrans[2], _force);

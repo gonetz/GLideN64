@@ -38,7 +38,7 @@ void ZSort_RDPCMD( u32, u32 _w1 )
 {
 	u32 addr = RSP_SegmentToPhysical(_w1) >> 2;
 	if (addr) {
-		RSP.bLLE = true;
+		RSP.LLE = true;
 		while(true)
 		{
 			u32 w0 = ((u32*)RDRAM)[addr++];
@@ -54,7 +54,7 @@ void ZSort_RDPCMD( u32, u32 _w1 )
 			}
 			GBI.cmd[RSP.cmd]( w0, w1 );
 		};
-		RSP.bLLE = false;
+		RSP.LLE = false;
 	}
 }
 

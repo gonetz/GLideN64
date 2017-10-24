@@ -62,7 +62,7 @@ void T3DUX_ProcessRDP(u32 _cmds)
 {
 	u32 addr = RSP_SegmentToPhysical(_cmds) >> 2;
 	if (addr != 0) {
-		RSP.bLLE = true;
+		RSP.LLE = true;
 		u32 w0 = ((u32*)RDRAM)[addr++];
 		u32 w1 = ((u32*)RDRAM)[addr++];
 		RSP.cmd = _SHIFTR( w0, 24, 8 );
@@ -83,7 +83,7 @@ void T3DUX_ProcessRDP(u32 _cmds)
 				break;
 			}
 		}
-		RSP.bLLE = false;
+		RSP.LLE = false;
 	}
 }
 
@@ -219,7 +219,7 @@ void RunT3DUX()
 		const u32 pcol = ((u32*)RDRAM)[addr++];
 		//const u32 pstore = ((u32*)RDRAM)[addr];
 		if (pstate == 0) {
-			RSP.halt = 1;
+			RSP.halt = true;
 			break;
 		}
 		if (pgstate != 0)

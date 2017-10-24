@@ -936,7 +936,7 @@ void Debugger::_drawVertexCoords(f32 _ulx, f32 _uly, f32 _yShift)
 	if (m_triSel->type == ttTriangle) {
 		for (u32 j = 0; j < m_triSel->vertices.size(); ++j) {
 			const Vertex & v = m_triSel->vertices[j];
-			if (RSP.bLLE) {
+			if (RSP.LLE) {
 				OUTPUT2("v[%d].x: %f", j, v.x);
 				OUTPUT2("v[%d].y: %f", j, v.y);
 				OUTPUT2("v[%d].z: %f", j, v.z);

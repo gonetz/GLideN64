@@ -1503,7 +1503,7 @@ void gSPCullDisplayList( u32 v0, u32 vn )
 			RSP.PCi--;
 		else {
 			DebugMsg(DEBUG_NORMAL, "End of display list, halting execution\n");
-			RSP.halt = TRUE;
+			RSP.halt = true;
 		}
 		DebugMsg( DEBUG_DETAIL, "// Culling display list\n" );
 		DebugMsg(DEBUG_NORMAL, "gSPCullDisplayList( %i, %i );\n\n", v0, vn );
@@ -1745,7 +1745,7 @@ void gSPEndDisplayList()
 		--RSP.PCi;
 	else {
 		DebugMsg( DEBUG_NORMAL, "End of display list, halting execution\n" );
-		RSP.halt = TRUE;
+		RSP.halt = true;
 	}
 
 	DebugMsg(DEBUG_NORMAL, "gSPEndDisplayList();\n\n");
