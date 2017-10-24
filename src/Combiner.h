@@ -150,8 +150,6 @@ private:
 
 	void _saveShadersStorage() const;
 	bool _loadShadersStorage();
-	u32 _getConfigOptionsBitSet() const;
-	graphics::CombinerProgram * _compile(u64 mux) const;
 
 	bool m_bChanged;
 	bool m_bShaderCacheSupported;
@@ -173,6 +171,7 @@ graphics::CombinerProgram * currentCombiner() {
 
 void Combiner_Init();
 void Combiner_Destroy();
+graphics::CombinerProgram * Combiner_Compile(CombinerKey key);
 
 #endif
 

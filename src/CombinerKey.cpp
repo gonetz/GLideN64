@@ -4,9 +4,11 @@
 
 /*---------------CombinerKey-------------*/
 
-CombinerKey::CombinerKey(u64 _mux)
+CombinerKey::CombinerKey(u64 _mux, bool _setModeBits)
 {
 	m_key.mux = _mux;
+	if (!_setModeBits)
+		return;
 
 	// High byte of muxs0 is zero. We can use it for addtional combiner flags:
 	// [0 - 0] polygon type: 0 - triangle, 1 - rect
