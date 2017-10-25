@@ -374,6 +374,9 @@
     <ClCompile Include="..\..\src\uCodes\F3DZEX2.cpp">
       <Filter>Source Files\uCodes</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\DisplayLoadProgress.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\3DMath.h">
@@ -693,6 +696,9 @@
     </ClInclude>
     <ClInclude Include="..\..\src\uCodes\F3DZEX2.h">
       <Filter>Header Files\uCodes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\DisplayLoadProgress.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

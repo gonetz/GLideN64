@@ -28,6 +28,7 @@ MY_LOCAL_SRC_FILES :=                                                           
     $(SRCDIR)/Debugger.cpp                                                         \
     $(SRCDIR)/DepthBuffer.cpp                                                      \
     $(SRCDIR)/DisplayWindow.cpp                                                    \
+    $(SRCDIR)/DisplayLoadProgress.cpp                                              \
     $(SRCDIR)/FrameBuffer.cpp                                                      \
     $(SRCDIR)/FrameBufferInfo.cpp                                                  \
     $(SRCDIR)/GBI.cpp                                                              \

@@ -17,6 +17,7 @@
 #include "Textures.h"
 #include "NoiseTexture.h"
 #include "DisplayWindow.h"
+#include "DisplayLoadProgress.h"
 
 using namespace graphics;
 
@@ -62,6 +63,8 @@ void NoiseTexture::init()
 {
 	if (config.generalEmulation.enableNoise == 0)
 		return;
+
+	displayLoadProgress(L"INIT NOISE TEXTURES. PLEASE WAIT...");
 
 	NoiseTexturesData texData;
 	for (auto& vec : texData)

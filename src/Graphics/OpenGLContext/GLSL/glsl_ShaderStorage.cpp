@@ -11,6 +11,7 @@
 #include <RSP.h>
 #include <PluginAPI.h>
 #include <Combiner.h>
+#include <DisplayLoadProgress.h>
 #include <osal_files.h>
 #include "glsl_Utils.h"
 #include "glsl_ShaderStorage.h"
@@ -102,17 +103,19 @@ bool ShaderStorage::saveShadersStorage(const graphics::Combiners & _combiners) c
 	shadersOut.write((char*)&len, sizeof(len));
 	shadersOut.write(strGLVersion, len);
 
+	displayLoadProgress(L"SAVE COMBINER SHADERS %.1f\%", 0.0f);
+
 	len = _combiners.size();
 
-#if 0
-	fout.write((char*)&len, sizeof(len));
-	for (auto cur = _combiners.begin(); cur != _combiners.end(); ++cur)
-		fout << *(cur->second);
-#else
 	u32 totalWritten = 0;
 	std::vector<char> allShaderData;
 	std::vector<u64> keysData;
 	keysData.reserve(len);
+
+	const f32 percent = len / 100.0f;
+	const f32 step = 100.0f / len;
+	f32 progress = 0.0f;
+	f32 percents = percent;
 
 	for (auto cur = _combiners.begin(); cur != _combiners.end(); ++cur)
 	{
@@ -122,6 +125,11 @@ bool ShaderStorage::saveShadersStorage(const graphics::Combiners & _combiners) c
 			keysData.push_back(cur->first.getMux());
 			allShaderData.insert(allShaderData.end(), data.begin(), data.end());
 			++totalWritten;
+			progress += step;
+			if (progress > percents) {
+				displayLoadProgress(L"SAVE COMBINER SHADERS %.1f\%", f32(totalWritten) * 100.f / f32(len));
+				percents += percent;
+			}
 		}
 		else
 		{
@@ -135,10 +143,9 @@ bool ShaderStorage::saveShadersStorage(const graphics::Combiners & _combiners) c
 
 	std::sort(keysData.begin(), keysData.end());
 	keysOut << "0x" << std::hex << std::setfill('0') << std::setw(8) << m_keysFormatVersion << "\n";
+	keysOut << "0x" << std::hex << std::setfill('0') << std::setw(8) << totalWritten << "\n";
 	for (u64 key : keysData)
 		keysOut << "0x" << std::hex << std::setfill('0') << std::setw(16) << key << "\n";
-
-#endif
 
 	shadersOut.flush();
 	shadersOut.close();
@@ -197,12 +204,25 @@ bool ShaderStorage::_loadFromCombinerKeys(graphics::Combiners & _combiners)
 	if (version != m_keysFormatVersion)
 		return false;
 
+	displayLoadProgress(L"LOAD COMBINER SHADERS %.1f\%", 0.0f);
+
+	u32 len;
+	fin >> std::hex >> len;
+	const f32 percent = len / 100.0f;
+	const f32 step = 100.0f / len;
+	f32 progress = 0.0f;
+	f32 percents = percent;
 	u64 key;
-	while (!fin.eof()) {
+	for (u32 i = 0; i < len; ++i) {
 		fin >> std::hex >> key;
 		graphics::CombinerProgram * pCombiner = Combiner_Compile(CombinerKey(key, false));
 		pCombiner->update(true);
 		_combiners[pCombiner->getKey()] = pCombiner;
+		progress += step;
+		if (progress > percents) {
+			displayLoadProgress(L"LOAD COMBINER SHADERS %.1f\%", f32(i + 1) * 100.f / f32(len));
+			percents += percent;
+		}
 	}
 	fin.close();
 
@@ -255,13 +275,23 @@ bool ShaderStorage::loadShadersStorage(graphics::Combiners & _combiners)
 		if (strncmp(strGLVersion, strBuf.data(), len) != 0)
 			return _loadFromCombinerKeys(_combiners);
 
+		displayLoadProgress(L"LOAD COMBINER SHADERS %.1f\%", 0.0f);
 		CombinerProgramUniformFactory uniformFactory(m_glinfo);
 
 		fin.read((char*)&len, sizeof(len));
+		const f32 percent = len / 100.0f;
+		const f32 step = 100.0f / len;
+		f32 progress = 0.0f;
+		f32 percents = percent;
 		for (u32 i = 0; i < len; ++i) {
 			CombinerProgramImpl * pCombiner = _readCominerProgramFromStream(fin, uniformFactory, m_useProgram);
 			pCombiner->update(true);
 			_combiners[pCombiner->getKey()] = pCombiner;
+			progress += step;
+			if (progress > percents) {
+				displayLoadProgress(L"LOAD COMBINER SHADERS %.1f\%", f32(i + 1) * 100.f / f32(len) );
+				percents += percent;
+			}
 		}
 	}
 	catch (...) {

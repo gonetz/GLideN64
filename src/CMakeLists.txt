@@ -23,6 +23,7 @@ set(GLideN64_SOURCES
   Debugger.cpp
   DepthBuffer.cpp
   DisplayWindow.cpp
+  DisplayLoadProgress.cpp
   FrameBuffer.cpp
   FrameBufferInfo.cpp
   GBI.cpp

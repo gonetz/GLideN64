@@ -16,6 +16,7 @@
 #include "Keys.h"
 #include "GLideNHQ/Ext_TxFilter.h"
 #include "TextureFilterHandler.h"
+#include "DisplayLoadProgress.h"
 #include "Graphics/Context.h"
 #include "Graphics/Parameters.h"
 #include "DisplayWindow.h"

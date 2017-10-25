@@ -316,6 +316,7 @@ copy /Y "$(ProjectDir)$(OutDir)$(TargetName).*" "$(Mupen64PluginsDir)"</Command>
     <ClCompile Include="..\..\src\DepthBuffer.cpp" />
     <ClCompile Include="..\..\src\DepthBufferRender\ClipPolygon.cpp" />
     <ClCompile Include="..\..\src\DepthBufferRender\DepthBufferRender.cpp" />
+    <ClCompile Include="..\..\src\DisplayLoadProgress.cpp" />
     <ClCompile Include="..\..\src\DisplayWindow.cpp" />
     <ClCompile Include="..\..\src\FrameBuffer.cpp" />
     <ClCompile Include="..\..\src\FrameBufferInfo.cpp" />
@@ -460,6 +461,7 @@ copy /Y "$(ProjectDir)$(OutDir)$(TargetName).*" "$(Mupen64PluginsDir)"</Command>
     <ClInclude Include="..\..\src\DepthBuffer.h" />
     <ClInclude Include="..\..\src\DepthBufferRender\ClipPolygon.h" />
     <ClInclude Include="..\..\src\DepthBufferRender\DepthBufferRender.h" />
+    <ClInclude Include="..\..\src\DisplayLoadProgress.h" />
     <ClInclude Include="..\..\src\DisplayWindow.h" />
     <ClInclude Include="..\..\src\FrameBuffer.h" />
     <ClInclude Include="..\..\src\FrameBufferInfo.h" />

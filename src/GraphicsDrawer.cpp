@@ -1603,10 +1603,10 @@ void GraphicsDrawer::_initData()
 	_setSpecialTexrect();
 
 	textureCache().init();
+	g_textDrawer.init();
 	DepthBuffer_Init();
 	FrameBuffer_Init();
 	Combiner_Init();
-	g_textDrawer.init();
 	TFH.init();
 	PostProcessor::get().init();
 	g_zlutTexture.init();
@@ -1639,9 +1639,9 @@ void GraphicsDrawer::_destroyData()
 	PostProcessor::get().destroy();
 	if (TFH.optionsChanged())
 		TFH.shutdown();
-	g_textDrawer.destroy();
 	Combiner_Destroy();
 	FrameBuffer_Destroy();
 	DepthBuffer_Destroy();
+	g_textDrawer.destroy();
 	textureCache().destroy();
 }
