@@ -9,6 +9,7 @@ Roms/
 *.user
 projects/msvc15/*db
 projects/msvc15/GeneratedFiles
+projects/msvc15/libGLideNHQ.dir
 projects/msvc12/*db
 projects/msvc12/GeneratedFiles
 src/Revision.h
