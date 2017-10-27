@@ -100,9 +100,7 @@ void PostProcessor::destroy()
 
 PostProcessor & PostProcessor::get()
 {
-#ifndef OS_ANDROID
 	static PostProcessor processor;
-#endif
 	return processor;
 }
 

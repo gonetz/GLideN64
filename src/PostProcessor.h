@@ -38,10 +38,6 @@ private:
 	std::unique_ptr<graphics::ShaderProgram> m_orientationCorrectionProgram;
 	std::unique_ptr<FrameBuffer> m_pResultBuffer;
 	CachedTexture * m_pTextureOriginal;
-
-#ifdef OS_ANDROID
-	static PostProcessor processor;
-#endif
 };
 
 #endif // POST_PROCESSOR_H
