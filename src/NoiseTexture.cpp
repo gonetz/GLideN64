@@ -3,7 +3,6 @@
 #endif
 
 #include <thread>
-#include <array>
 #include <algorithm>
 #include <random>
 #include <functional>
@@ -31,8 +30,6 @@ NoiseTexture::NoiseTexture()
 {
 }
 
-typedef std::array<std::vector<u8>, NOISE_TEX_NUM> NoiseTexturesData;
-
 static
 u32 Rand(u32 rand_value)
 {
@@ -59,15 +56,12 @@ void FillTextureData(u32 _seed, NoiseTexturesData * _pData, u32 _start, u32 _sto
 	}
 }
 
-void NoiseTexture::init()
-{
-	if (config.generalEmulation.enableNoise == 0)
-		return;
 
+void NoiseTexture::_fillTextureData()
+{
 	displayLoadProgress(L"INIT NOISE TEXTURES. PLEASE WAIT...");
 
-	NoiseTexturesData texData;
-	for (auto& vec : texData)
+	for (auto& vec : m_texData)
 		vec.resize(NOISE_TEX_WIDTH * NOISE_TEX_HEIGHT);
 
 	const u32 concurentThreadsSupported = std::thread::hardware_concurrency();
@@ -88,19 +82,31 @@ void NoiseTexture::init()
 			threads.emplace_back(
 				FillTextureData,
 				generator(),
-				&texData,
+				&m_texData,
 				start,
-				std::min(start + chunk, static_cast<u32>(texData.size())));
+				std::min(start + chunk, static_cast<u32>(m_texData.size())));
 			start += chunk;
 		} while (start < NOISE_TEX_NUM - chunk);
 
-		FillTextureData(generator(), &texData, start, texData.size());
+		FillTextureData(generator(), &m_texData, start, m_texData.size());
 
 		for (auto& t : threads)
 			t.join();
 	} else {
-		FillTextureData(static_cast<u32>(time(nullptr)), &texData, 0, texData.size());
+		FillTextureData(static_cast<u32>(time(nullptr)), &m_texData, 0, m_texData.size());
 	}
+
+	displayLoadProgress(L"");
+}
+
+
+void NoiseTexture::init()
+{
+	if (config.generalEmulation.enableNoise == 0)
+		return;
+
+	if (m_texData[0].empty())
+		_fillTextureData();
 
 	for (u32 i = 0; i < NOISE_TEX_NUM; ++i) {
 		m_pTexture[i] = textureCache().addFrameBufferTexture(false);
@@ -145,7 +151,7 @@ void NoiseTexture::init()
 			params.height = m_pTexture[i]->realHeight;
 			params.format = fbTexFormats.noiseFormat;
 			params.dataType = fbTexFormats.noiseType;
-			params.data = texData[i].data();
+			params.data = m_texData[i].data();
 			gfxContext.update2DTexture(params);
 		}
 	}

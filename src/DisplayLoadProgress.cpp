@@ -1,4 +1,5 @@
 #include <stdarg.h>
+#include <string.h>
 #include "GLideNHQ/Ext_TxFilter.h"
 #include <Graphics/Context.h>
 #include <Graphics/Parameters.h>
@@ -38,7 +39,8 @@ void displayLoadProgress(const wchar_t *format, ...)
 
 	GraphicsDrawer & drawer = dwnd().getDrawer();
 	drawer.clearColorBuffer(nullptr);
-	drawer.drawText(buf, -0.9f, 0);
+	if (strlen(buf) > 0)
+		drawer.drawText(buf, -0.9f, 0);
 	dwnd().swapBuffers();
 
 	if (pBuffer != nullptr)
