@@ -242,7 +242,7 @@ bool ShaderStorage::loadShadersStorage(graphics::Combiners & _combiners)
 	std::ifstream fin(shadersFileName, std::ofstream::binary);
 #else
 	char fileName_c[PATH_MAX];
-	wcstombs(fileName_c, fileName, PATH_MAX);
+	wcstombs(fileName_c, shadersFileName, PATH_MAX);
 	std::ifstream fin(fileName_c, std::ofstream::binary);
 #endif
 
