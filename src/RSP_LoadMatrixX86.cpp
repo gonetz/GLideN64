@@ -3,7 +3,7 @@
 void RSP_LoadMatrix( f32 mtx[4][4], u32 address )
 {
     f32 recip = 1.5258789e-05f;
-#if defined (_WIN32)
+#if defined (WIN32_ASM)
     __asm {
         mov     esi, dword ptr [RDRAM];
         add     esi, dword ptr [address];
