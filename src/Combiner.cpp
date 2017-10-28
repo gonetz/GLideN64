@@ -93,10 +93,9 @@ CombinerInfo & CombinerInfo::get()
 void CombinerInfo::init()
 {
 	m_pCurrent = nullptr;
-	m_bShaderCacheSupported = config.generalEmulation.enableShadersStorage != 0 && gfxContext.isSupported(SpecialFeatures::ShaderProgramBinary);
 
 	m_shadersLoaded = 0;
-	if (m_bShaderCacheSupported && !_loadShadersStorage()) {
+	if (config.generalEmulation.enableShadersStorage != 0 && !_loadShadersStorage()) {
 		for (auto cur = m_combiners.begin(); cur != m_combiners.end(); ++cur)
 			delete cur->second;
 		m_combiners.clear();
@@ -120,7 +119,7 @@ void CombinerInfo::destroy()
 	m_texrectCopyProgram.reset();
 
 	m_pCurrent = nullptr;
-	if (m_bShaderCacheSupported)
+	if (config.generalEmulation.enableShadersStorage != 0)
 		_saveShadersStorage();
 	m_shadersLoaded = 0;
 	for (auto cur = m_combiners.begin(); cur != m_combiners.end(); ++cur)
@@ -316,6 +315,11 @@ void CombinerInfo::setDepthFogCombiner()
 ShaderProgram * CombinerInfo::getTexrectCopyProgram()
 {
 	return m_texrectCopyProgram.get();
+}
+
+bool CombinerInfo::isShaderCacheSupported() const
+{
+	return config.generalEmulation.enableShadersStorage != 0 && gfxContext.isSupported(SpecialFeatures::ShaderProgramBinary);
 }
 
 void CombinerInfo::setPolygonMode(DrawingState _drawingState)

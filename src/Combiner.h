@@ -130,8 +130,8 @@ public:
 
 	graphics::CombinerProgram * getCurrent() const { return m_pCurrent; }
 	bool isChanged() const {return m_bChanged;}
-	bool isShaderCacheSupported() const { return m_bShaderCacheSupported; }
 	size_t getCombinersNumber() const { return m_combiners.size();  }
+	bool isShaderCacheSupported() const;
 
 	static CombinerInfo & get();
 
@@ -141,7 +141,6 @@ public:
 private:
 	CombinerInfo()
 		: m_bChanged(false)
-		, m_bShaderCacheSupported(false)
 		, m_rectMode(true)
 		, m_shadersLoaded(0)
 		, m_configOptionsBitSet(0)
@@ -152,7 +151,6 @@ private:
 	bool _loadShadersStorage();
 
 	bool m_bChanged;
-	bool m_bShaderCacheSupported;
 	bool m_rectMode;
 	u32 m_shadersLoaded;
 	u32 m_configOptionsBitSet;
