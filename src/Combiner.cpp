@@ -92,6 +92,7 @@ CombinerInfo & CombinerInfo::get()
 
 void CombinerInfo::init()
 {
+	gfxContext.resetCombinerProgramBuilder();
 	m_pCurrent = nullptr;
 
 	m_shadersLoaded = 0;

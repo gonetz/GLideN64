@@ -22,7 +22,7 @@ namespace graphics {
 
 		virtual bool getBinaryForm(std::vector<char> & _buffer) = 0;
 
-		static void getShaderCombinerOptionsSet(std::vector<u32> & _vecOptions);
+		static u32 getShaderCombinerOptionsBits();
 	};
 
 	typedef std::map<CombinerKey, graphics::CombinerProgram *> Combiners;

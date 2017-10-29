@@ -98,6 +98,10 @@ namespace opengl {
 
 		/*---------------Shaders-------------*/
 
+		bool isCombinerProgramBuilderObsolete() override;
+
+		void resetCombinerProgramBuilder() override;
+
 		graphics::CombinerProgram * createCombinerProgram(Combiner & _color, Combiner & _alpha, const CombinerKey & _key) override;
 
 		bool saveShadersStorage(const graphics::Combiners & _combiners) override;

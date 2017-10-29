@@ -47,17 +47,6 @@ void getStorageFileName(const opengl::GLInfo & _glinfo, wchar_t * _shadersFileNa
 	swprintf(_shadersFileName, PLUGIN_PATH_SIZE, L"%ls/GLideN64.%08lx.%ls.%ls", pPath, std::hash<std::string>()(RSP.romname), strOpenGLType.c_str(), _fileExtension);
 }
 
-static
-u32 _getConfigOptionsBitSet()
-{
-	std::vector<u32> vecOptions;
-	graphics::CombinerProgram::getShaderCombinerOptionsSet(vecOptions);
-	u32 optionsSet = 0;
-	for (u32 i = 0; i < vecOptions.size(); ++i)
-		optionsSet |= vecOptions[i] << i;
-	return optionsSet;
-}
-
 /*
 Storage has text format:
 line_1 Version in hex form
@@ -114,6 +103,10 @@ bool ShaderStorage::saveShadersStorage(const graphics::Combiners & _combiners) c
 	if (!_saveCombinerKeys(_combiners))
 		return false;
 
+	if (gfxContext.isCombinerProgramBuilderObsolete())
+		// Created shaders are obsolete due to changes in config, but we saved combiners keys.
+		return true;
+
 	if (!gfxContext.isSupported(graphics::SpecialFeatures::ShaderProgramBinary))
 		// Shaders storage is not supported, but we saved combiners keys.
 		return true;
@@ -135,7 +128,7 @@ bool ShaderStorage::saveShadersStorage(const graphics::Combiners & _combiners) c
 
 	shadersOut.write((char*)&m_formatVersion, sizeof(m_formatVersion));
 
-	const u32 configOptionsBitSet = _getConfigOptionsBitSet();
+	const u32 configOptionsBitSet = graphics::CombinerProgram::getShaderCombinerOptionsBits();
 	shadersOut.write((char*)&configOptionsBitSet, sizeof(configOptionsBitSet));
 
 	const char * strRenderer = reinterpret_cast<const char *>(glGetString(GL_RENDERER));
@@ -279,7 +272,7 @@ bool ShaderStorage::loadShadersStorage(graphics::Combiners & _combiners)
 
 	wchar_t shadersFileName[PLUGIN_PATH_SIZE];
 	getStorageFileName(m_glinfo, shadersFileName, L"shaders");
-	const u32 configOptionsBitSet = _getConfigOptionsBitSet();
+	const u32 configOptionsBitSet = graphics::CombinerProgram::getShaderCombinerOptionsBits();
 
 #if defined(OS_WINDOWS) && !defined(MINGW)
 	std::ifstream fin(shadersFileName, std::ofstream::binary);

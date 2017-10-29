@@ -1990,6 +1990,7 @@ CombinerProgramBuilder::CombinerProgramBuilder(const opengl::GLInfo & _glinfo, o
 , m_shaderN64DepthCompare(new ShaderN64DepthCompare(_glinfo))
 , m_shaderN64DepthRender(new ShaderN64DepthRender(_glinfo))
 , m_useProgram(_useProgram)
+, m_combinerOptionsBits(graphics::CombinerProgram::getShaderCombinerOptionsBits())
 {
 	m_vertexShaderRect = _createVertexShader(m_vertexHeader.get(), m_vertexRect.get());
 	m_vertexShaderTriangle = _createVertexShader(m_vertexHeader.get(), m_vertexTriangle.get());
@@ -2004,4 +2005,9 @@ CombinerProgramBuilder::~CombinerProgramBuilder()
 	glDeleteShader(m_vertexShaderTriangle);
 	glDeleteShader(m_vertexShaderTexturedRect);
 	glDeleteShader(m_vertexShaderTexturedTriangle);
+}
+
+bool CombinerProgramBuilder::isObsolete() const
+{
+	return m_combinerOptionsBits != graphics::CombinerProgram::getShaderCombinerOptionsBits();
 }

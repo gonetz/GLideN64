@@ -200,6 +200,10 @@ namespace graphics {
 
 		/*---------------Shaders-------------*/
 
+		bool isCombinerProgramBuilderObsolete();
+
+		void resetCombinerProgramBuilder();
+
 		CombinerProgram * createCombinerProgram(Combiner & _color, Combiner & _alpha, const CombinerKey & _key);
 
 		bool saveShadersStorage(const Combiners & _combiners);

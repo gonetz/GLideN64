@@ -31,6 +31,8 @@ namespace glsl {
 
 		const ShaderPart * getFragmentShaderEnd() const;
 
+		bool isObsolete() const;
+
 	private:
 		CombinerInputs compileCombiner(const CombinerKey & _key, Combiner & _color, Combiner & _alpha, std::string & _strShader);
 
@@ -89,6 +91,7 @@ namespace glsl {
 		GLuint  m_vertexShaderTexturedRect;
 		GLuint  m_vertexShaderTexturedTriangle;
 		opengl::CachedUseProgram * m_useProgram;
+		u32 m_combinerOptionsBits;
 	};
 
 }
