@@ -815,6 +815,8 @@ void CombinerProgramUniformFactory::buildUniforms(GLuint _program,
 			_uniforms.emplace_back(new UMipmap1(_program));
 			if (config.generalEmulation.enableLOD != 0)
 				_uniforms.emplace_back(new UMipmap2(_program));
+		} else if (config.texture.bilinearMode == BILINEAR_3POINT) {
+			_uniforms.emplace_back(new UTextureFilterMode(_program));
 		}
 
 		_uniforms.emplace_back(new UTexturePersp(_program));
@@ -824,6 +826,7 @@ void CombinerProgramUniformFactory::buildUniforms(GLuint _program,
 
 		if (!_key.isRectKey())
 			_uniforms.emplace_back(new UTextureParams(_program, _inputs.usesTile(0), _inputs.usesTile(1)));
+
 	}
 
 	_uniforms.emplace_back(new UFog(_program));
@@ -842,9 +845,6 @@ void CombinerProgramUniformFactory::buildUniforms(GLuint _program,
 	_uniforms.emplace_back(new UDitherMode(_program, _inputs.usesNoise()));
 
 	_uniforms.emplace_back(new UScreenScale(_program));
-
-	if (config.texture.bilinearMode == BILINEAR_3POINT)
-		_uniforms.emplace_back(new UTextureFilterMode(_program));
 
 	_uniforms.emplace_back(new UAlphaTestInfo(_program));
 
