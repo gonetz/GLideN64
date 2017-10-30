@@ -251,11 +251,13 @@ void RDRAMtoColorBuffer::copyFromRDRAM(u32 _address, bool _bCFB)
 		}
 	}
 
-	if (bUseAlpha && config.frameBufferEmulation.copyToRDRAM == Config::ctDisable) {
-		u32 totalBytes = (width * height) << m_pCurBuffer->m_size >> 1;
-		if (address + totalBytes > RDRAMSize + 1)
-			totalBytes = RDRAMSize + 1 - address;
-		memset(RDRAM + address, 0, totalBytes);
+	if (!FBInfo::fbInfo.isSupported()) {
+		if (bUseAlpha && config.frameBufferEmulation.copyToRDRAM == Config::ctDisable) {
+			u32 totalBytes = (width * height) << m_pCurBuffer->m_size >> 1;
+			if (address + totalBytes > RDRAMSize + 1)
+				totalBytes = RDRAMSize + 1 - address;
+			memset(RDRAM + address, 0, totalBytes);
+		}
 	}
 
 	m_pbuf->closeWriteBuffer();
