@@ -243,6 +243,10 @@ void Config_LoadCustomConfig()
 	if (result == M64ERR_SUCCESS) config.generalEmulation.correctTexrectCoords = atoi(value);
 	result = ConfigExternalGetParameter(fileHandle, sectionName, "generalEmulation\\enableNativeResTexrects", value, sizeof(value));
 	if (result == M64ERR_SUCCESS) config.generalEmulation.enableNativeResTexrects = atoi(value);
+	result = ConfigExternalGetParameter(fileHandle, sectionName, "generalEmulation\\enableLegacyBlending", value, sizeof(value));
+	if (result == M64ERR_SUCCESS) config.generalEmulation.enableLegacyBlending = atoi(value);
+	result = ConfigExternalGetParameter(fileHandle, sectionName, "generalEmulation\\enableFragmentDepthWrite", value, sizeof(value));
+	if (result == M64ERR_SUCCESS) config.generalEmulation.enableFragmentDepthWrite = atoi(value);
 
 	result = ConfigExternalGetParameter(fileHandle, sectionName, "frameBufferEmulation\\enable", value, sizeof(value));
 	if (result == M64ERR_SUCCESS) config.frameBufferEmulation.enable = atoi(value);
