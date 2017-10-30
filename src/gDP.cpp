@@ -875,8 +875,6 @@ void gDPFullSync()
 			FrameBuffer_CopyDepthBuffer(gDP.colorImage.address);
 	}
 
-	perf.increaseFramesCount();
-
 	*REG.MI_INTR |= MI_INTR_DP;
 
 	CheckInterrupts();

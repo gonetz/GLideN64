@@ -124,6 +124,7 @@ void VI_UpdateScreen()
 		VI_UpdateSize();
 		bVIUpdated = true;
 		wnd.updateScale();
+		perf.increaseFramesCount();
 	}
 
 	if (config.frameBufferEmulation.enable) {
