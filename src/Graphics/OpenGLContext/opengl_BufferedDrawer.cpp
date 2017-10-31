@@ -195,7 +195,7 @@ void BufferedDrawer::drawTriangles(const graphics::Context::DrawTriangleParamete
 {
 	_updateTrianglesBuffers(_params);
 
-	if (config.generalEmulation.enableHWLighting != 0)
+	if (isHWLightingAllowed())
 		glVertexAttrib1f(triangleAttrib::numlights, GLfloat(_params.vertices[0].HWLight));
 
 	if (_params.elements == nullptr) {

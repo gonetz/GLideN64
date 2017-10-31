@@ -23,9 +23,10 @@
 #define Turbo3D			14
 #define ZSortp			15
 #define F3DSETA			16
-#define F3DZEX2			17
-#define F3DTEXA			18
-#define T3DUX			19
+#define F3DZEX2OOT		17
+#define F3DZEX2MM		18
+#define F3DTEXA			19
+#define T3DUX			20
 #define F3DEX2ACCLAIM	21
 #define F3DAM			22
 #define F3DSWRS			23

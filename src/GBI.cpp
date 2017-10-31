@@ -60,7 +60,7 @@ SpecialMicrocodeInfo specialMicrocodes[] =
 	{ Turbo3D,		false,	true,	0x2bdcfc8a, "Turbo3D" },
 	{ F3DEX2CBFD,	true,	true,	0x1b4ace88, "Conker's Bad Fur Day" },
 	{ F3DSWRS,		false,	false,	0xda51ccdb, "Star Wars RS" },
-	{ F3DZEX2,		true,	true,	0xd39a0d4f,	"Animal Forest" },
+	{ F3DZEX2MM,	true,	true,	0xd39a0d4f,	"Animal Forest" },
 	{ S2DEX2,		false,	true,	0x2c399dd,	"Animal Forest" },
 	{ T3DUX,		false,	true,	0xbad437f2, "T3DUX vers 0.83 for Toukon Road" },
 	{ T3DUX,		false,	true,	0xd0a1aa3d, "T3DUX vers 0.85 for Toukon Road 2" },
@@ -141,10 +141,14 @@ bool GBIInfo::isHWLSupported() const
 	if (m_pCurrent == nullptr)
 		return false;
 	switch (m_pCurrent->type) {
+		case L3D:
+		case L3DEX:
+		case L3DEX2:
 		case S2DEX:
 		case S2DEX2:
 		case F3DDKR:
 		case F3DJFG:
+		case F3DZEX2MM:
 		case F3DEX2CBFD:
 		case F3DEX2ACCLAIM:
 		return false;
@@ -191,7 +195,8 @@ void GBIInfo::_makeCurrent(MicrocodeInfo * _pCurrent)
 			case F3DEX2CBFD:	F3DEX2CBFD_Init();		break;
 			case F3DSETA:		F3DSETA_Init();			break;
 			case F3DGOLDEN:		F3DGOLDEN_Init();		break;
-			case F3DZEX2:		F3DZEX2_Init();			break;
+			case F3DZEX2OOT:
+			case F3DZEX2MM:		F3DZEX2_Init();			break;
 			case F3DTEXA:		F3DTEXA_Init();			break;
 			case T3DUX:			F3D_Init();				break;
 			case F3DEX2ACCLAIM:	F3DEX2ACCLAIM_Init();	break;
@@ -304,7 +309,10 @@ void GBIInfo::loadMicrocode(u32 uc_start, u32 uc_dstart, u16 uc_dsize)
 						type = F3DFLX2;
 					else if (strncmp(&uc_str[14], "F3DZEX", 6) == 0) {
 						// Zelda games
-						type = F3DZEX2;
+						if (uc_str[34] == '6')
+							type = F3DZEX2OOT;
+						else
+							type = F3DZEX2MM;
 						current.combineMatrices = false;
 					} else if (strncmp(&uc_str[14], "F3DTEX/A", 8) == 0)
 						type = F3DTEXA;

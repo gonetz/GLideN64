@@ -1873,8 +1873,7 @@ graphics::CombinerProgram * CombinerProgramBuilder::buildCombinerProgram(Combine
 	const bool bUseTextures = combinerInputs.usesTexture();
 	const bool bIsRect = _key.isRectKey();
 	const bool bUseHWLight = !bIsRect && // Rects not use lighting
-							 config.generalEmulation.enableHWLighting != 0 &&
-							 GBI.isHWLSupported() &&
+							 isHWLightingAllowed() &&
 							 combinerInputs.usesShadeColor();
 
 	if (bUseHWLight)

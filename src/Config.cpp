@@ -6,6 +6,7 @@
 #include "RSP.h"
 #include "PluginAPI.h"
 #include "Config.h"
+#include "GBI.h"
 #include "wst.h"
 
 void Config::resetToDefaults()
@@ -111,4 +112,11 @@ void Config::resetToDefaults()
 	onScreenDisplay.pos = posBottomLeft;
 
 	debug.dumpMode = 0;
+}
+
+bool isHWLightingAllowed()
+{
+	if (config.generalEmulation.enableHWLighting == 0)
+		return false;
+	return GBI.isHWLSupported();
 }

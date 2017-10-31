@@ -200,4 +200,6 @@ void Config_LoadConfig();
 void Config_DoConfig(/*HWND hParent*/);
 #endif
 
+bool isHWLightingAllowed();
+
 #endif // CONFIG_H

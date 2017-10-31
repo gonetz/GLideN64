@@ -477,7 +477,7 @@ template <u32 VNUM>
 void gSPLightVertexStandard(u32 v, SPVertex * spVtx)
 {
 #ifndef __NEON_OPT
-	if (config.generalEmulation.enableHWLighting == 0) {
+	if (!isHWLightingAllowed()) {
 		for(int j = 0; j < VNUM; ++j) {
 			SPVertex & vtx = spVtx[v+j];
 			vtx.r = gSP.lights.rgb[gSP.numLights][R];
