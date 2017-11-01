@@ -636,15 +636,16 @@ void gDPLoadTLUT( u32 tile, u32 uls, u32 ult, u32 lrs, u32 lrt )
 		count = 16;
 
 	int i = 0;
+	u32 destIdx = 0;
 	while (i < count) {
 		for (u16 j = 0; (j < 16) && (i < count); ++j, ++i) {
-			*dest = swapword(*(u16*)(RDRAM + (address ^ 2)));
+			dest[destIdx&0x3FF] = swapword(*(u16*)(RDRAM + (address ^ 2)));
 			address += 2;
-			dest += 4;
+			destIdx += 4;
 		}
 
 		gDP.paletteCRC16[pal] = CRC_CalculatePalette(0xFFFFFFFF, &TMEM[256 + (pal << 4)], 16);
-		++pal;
+		pal = (pal + 1) & 0x0F;
 	}
 
 	gDP.paletteCRC256 = CRC_Calculate(0xFFFFFFFF, gDP.paletteCRC16, 64);
