@@ -707,7 +707,7 @@ void _calcTileSizes(u32 _t, TileSizes & _sizes, gDPTile * _pLoadTile)
 }
 
 inline
-void _updateCachedTexture(const GHQTexInfo & _info, CachedTexture *_pTexture, int _scale)
+void _updateCachedTexture(const GHQTexInfo & _info, CachedTexture *_pTexture, f32 _scale)
 {
 	_pTexture->textureBytes = _info.width * _info.height;
 
@@ -723,8 +723,8 @@ void _updateCachedTexture(const GHQTexInfo & _info, CachedTexture *_pTexture, in
 
 	_pTexture->realWidth = _info.width;
 	_pTexture->realHeight = _info.height;
-	_pTexture->scaleS = 1.0f / (f32)(_info.width / _scale);
-	_pTexture->scaleT = 1.0f / (f32)(_info.height / _scale);
+	_pTexture->scaleS = _scale / f32(_info.width);
+	_pTexture->scaleT = _scale / f32(_info.height);
 	_pTexture->bHDTexture = true;
 }
 
@@ -772,7 +772,7 @@ bool TextureCache::_loadHiresBackground(CachedTexture *_pTexture)
 		gfxContext.init2DTexture(params);
 
 		assert(!gfxContext.isError());
-		_updateCachedTexture(ghqTexInfo, _pTexture, ghqTexInfo.width / tile_width);
+		_updateCachedTexture(ghqTexInfo, _pTexture, f32(ghqTexInfo.width) / f32(tile_width));
 		return true;
 	}
 	return false;
@@ -868,7 +868,7 @@ void TextureCache::_loadBackground(CachedTexture *pTexture)
 			params.dataType = DatatypeParam(ghqTexInfo.pixel_type);
 			params.data = ghqTexInfo.data;
 			gfxContext.init2DTexture(params);
-			_updateCachedTexture(ghqTexInfo, pTexture, ghqTexInfo.width / pTexture->realWidth);
+			_updateCachedTexture(ghqTexInfo, pTexture, f32(ghqTexInfo.width) / f32(pTexture->realWidth));
 			bLoaded = true;
 		}
 	}
@@ -974,7 +974,7 @@ bool TextureCache::_loadHiresTexture(u32 _tile, CachedTexture *_pTexture, u64 & 
 		params.data = ghqTexInfo.data;
 		gfxContext.init2DTexture(params);
 		assert(!gfxContext.isError());
-		_updateCachedTexture(ghqTexInfo, _pTexture, ghqTexInfo.width / width);
+		_updateCachedTexture(ghqTexInfo, _pTexture, f32(ghqTexInfo.width) / f32(width));
 		return true;
 	}
 
@@ -1207,7 +1207,7 @@ void TextureCache::_load(u32 _tile, CachedTexture *_pTexture)
 				params.dataType = DatatypeParam(ghqTexInfo.pixel_type);
 				params.data = ghqTexInfo.data;
 				gfxContext.init2DTexture(params);
-				_updateCachedTexture(ghqTexInfo, _pTexture, ghqTexInfo.width / tmptex.realWidth);
+				_updateCachedTexture(ghqTexInfo, _pTexture, f32(ghqTexInfo.width) / f32(tmptex.realWidth));
 				bLoaded = true;
 			}
 		}
