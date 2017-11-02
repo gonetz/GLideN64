@@ -831,7 +831,7 @@ void CombinerProgramUniformFactory::buildUniforms(GLuint _program,
 			_uniforms.emplace_back(new UMipmap1(_program));
 			if (config.generalEmulation.enableLOD != 0)
 				_uniforms.emplace_back(new UMipmap2(_program));
-		} else {
+		} else if (_key.getCycleType() < G_CYC_COPY) {
 			_uniforms.emplace_back(new UTextureFetchMode(_program));
 		}
 

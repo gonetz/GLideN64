@@ -65,11 +65,13 @@ namespace glsl {
 		ShaderPartPtr m_fragmentHeaderDither;
 		ShaderPartPtr m_fragmentHeaderDepthCompare;
 		ShaderPartPtr m_fragmentHeaderReadTex;
+		ShaderPartPtr m_fragmentHeaderReadTexCopyMode;
 		ShaderPartPtr m_fragmentMain;
 		ShaderPartPtr m_fragmentMain2Cycle;
 		ShaderPartPtr m_fragmentBlendMux;
 		ShaderPartPtr m_fragmentReadTex0;
 		ShaderPartPtr m_fragmentReadTex1;
+		ShaderPartPtr m_fragmentReadTexCopyMode;
 		ShaderPartPtr m_fragmentReadTexMipmap;
 		ShaderPartPtr m_fragmentCallN64Depth;
 		ShaderPartPtr m_fragmentRenderTarget;
@@ -81,6 +83,7 @@ namespace glsl {
 		ShaderPartPtr m_shaderMipmap;
 		ShaderPartPtr m_shaderCalcLight;
 		ShaderPartPtr m_shaderReadtex;
+		ShaderPartPtr m_shaderReadtexCopyMode;
 		ShaderPartPtr m_shaderN64DepthCompare;
 		ShaderPartPtr m_shaderN64DepthRender;
 

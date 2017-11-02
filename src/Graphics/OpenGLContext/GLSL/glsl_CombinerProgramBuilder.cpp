@@ -1021,6 +1021,38 @@ public:
 	}
 };
 
+class ShaderFragmentHeaderReadTexCopyMode : public ShaderPart
+{
+public:
+	ShaderFragmentHeaderReadTexCopyMode (const opengl::GLInfo & _glinfo)
+	{
+		if (!_glinfo.isGLES2) {
+			m_part =
+				"#define READ_TEX(name, tex, texCoord, fbMonochrome, fbFixedAlpha)	\\\n"
+				"  {																\\\n"
+				"  if (fbMonochrome == 3) {											\\\n"
+				"    mediump ivec2 coord = ivec2(gl_FragCoord.xy);					\\\n"
+				"    name = texelFetch(tex, coord, 0);								\\\n"
+				"  } else {															\\\n"
+				"    name = texture(tex, texCoord);									\\\n"
+				"  }																\\\n"
+				"  if (fbMonochrome == 1) name = vec4(name.r);						\\\n"
+				"  else if (fbMonochrome == 2) 										\\\n"
+				"    name.rgb = vec3(dot(vec3(0.2126, 0.7152, 0.0722), name.rgb));	\\\n"
+				"  else if (fbMonochrome == 3) { 									\\\n"
+				"    name.rgb = vec3(dot(vec3(0.2126, 0.7152, 0.0722), name.rgb));	\\\n"
+				"    name.a = 0.0;													\\\n"
+				"  }																\\\n"
+				"  if (fbFixedAlpha == 1) name.a = 0.825;							\\\n"
+				"  }																\n"
+				;
+		} else {
+			m_part =
+				"lowp vec4 readTex(in sampler2D tex, in mediump vec2 texCoord, in lowp int fbMonochrome, in lowp int fbFixedAlpha);	\n"
+			;
+		}
+	}
+};
 
 class ShaderFragmentMain : public ShaderPart
 {
@@ -1090,6 +1122,35 @@ public:
 			"  lowp vec4 readtex0, readtex1;						\n"
 			"  lowp float lod_frac = mipmap(readtex0, readtex1);	\n"
 		;
+	}
+};
+
+class ShaderFragmentReadTexCopyMode : public ShaderPart
+{
+public:
+	ShaderFragmentReadTexCopyMode(const opengl::GLInfo & _glinfo)
+	{
+		if (_glinfo.isGLES2) {
+			m_part =
+				"  nCurrentTile = 0; \n"
+				"  lowp vec4 readtex0;																		\n"
+				"  readtex0 = readTex(uTex0, vTexCoord0, uFbMonochrome[0], uFbFixedAlpha[0]);				\n"
+				;
+		} else {
+			if (config.video.multisampling > 0) {
+				m_part =
+					"  lowp vec4 readtex0;																	\n"
+					"  if (uMSTexEnabled[0] == 0) {															\n"
+					"      READ_TEX(readtex0, uTex0, vTexCoord0, uFbMonochrome[0], uFbFixedAlpha[0])		\n"
+					"  } else readtex0 = readTexMS(uMSTex0, vTexCoord0, uFbMonochrome[0], uFbFixedAlpha[0]);\n"
+					;
+			} else {
+				m_part =
+					"  lowp vec4 readtex0;																	\n"
+					"  READ_TEX(readtex0, uTex0, vTexCoord0, uFbMonochrome[0], uFbFixedAlpha[0])			\n"
+					;
+			}
+		}
 	}
 };
 
@@ -1639,6 +1700,61 @@ public:
 	}
 };
 
+class ShaderReadtexCopyMode : public ShaderPart
+{
+public:
+	ShaderReadtexCopyMode(const opengl::GLInfo & _glinfo)
+	{
+		if (_glinfo.isGLES2) {
+			m_part =
+					"lowp vec4 readTex(in sampler2D tex, in mediump vec2 texCoord, in lowp int fbMonochrome, in lowp int fbFixedAlpha)	\n"
+					"{																			\n"
+					"  lowp vec4 texColor = texture2D(tex, texCoord);							\n"
+					"  if (fbMonochrome == 1) texColor = vec4(texColor.r);						\n"
+					"  else if (fbMonochrome == 2) 												\n"
+					"    texColor.rgb = vec3(dot(vec3(0.2126, 0.7152, 0.0722), texColor.rgb));	\n"
+					"  if (fbFixedAlpha == 1) texColor.a = 0.825;								\n"
+					"  return texColor;															\n"
+					"}																			\n"
+				;
+		} else {
+			if (config.video.multisampling > 0) {
+				m_part =
+					"uniform lowp int uMSAASamples;												\n"
+					"lowp vec4 sampleMS(in lowp sampler2DMS mstex, in mediump ivec2 ipos)		\n"
+					"{																			\n"
+					"  lowp vec4 texel = vec4(0.0);												\n"
+					"  for (int i = 0; i < uMSAASamples; ++i)									\n"
+					"    texel += texelFetch(mstex, ipos, i);									\n"
+					"  return texel / float(uMSAASamples);										\n"
+					"}																			\n"
+					"																			\n"
+					"lowp vec4 readTexMS(in lowp sampler2DMS mstex, in mediump vec2 texCoord, in lowp int fbMonochrome, in lowp int fbFixedAlpha)	\n"
+					"{																			\n"
+					"  mediump ivec2 itexCoord;													\n"
+					"  if (fbMonochrome == 3) {													\n"
+					"    itexCoord = ivec2(gl_FragCoord.xy);									\n"
+					"  } else {																	\n"
+					"    mediump vec2 msTexSize = vec2(textureSize(mstex));						\n"
+					"    itexCoord = ivec2(msTexSize * texCoord);								\n"
+					"  }																		\n"
+					"  lowp vec4 texColor = sampleMS(mstex, itexCoord);							\n"
+					"  if (fbMonochrome == 1) texColor = vec4(texColor.r);						\n"
+					"  else if (fbMonochrome == 2) 												\n"
+					"    texColor.rgb = vec3(dot(vec3(0.2126, 0.7152, 0.0722), texColor.rgb));	\n"
+					"  else if (fbMonochrome == 3) { 											\n"
+					"    texColor.rgb = vec3(dot(vec3(0.2126, 0.7152, 0.0722), texColor.rgb));	\n"
+					"    texColor.a = 0.0;														\n"
+					"  }																		\n"
+					"  if (fbFixedAlpha == 1) texColor.a = 0.825;								\n"
+					"  return texColor;															\n"
+					"}																			\n"
+				;
+			}
+		}
+	}
+};
+
 class ShaderN64DepthCompare : public ShaderPart
 {
 public:
@@ -1898,8 +2014,10 @@ graphics::CombinerProgram * CombinerProgramBuilder::buildCombinerProgram(Combine
 		m_fragmentHeaderReadMSTex->write(ssShader);
 		if (bUseLod)
 			m_fragmentHeaderMipMap->write(ssShader);
-		else
+		else if (g_cycleType < G_CYC_COPY)
 			m_fragmentHeaderReadTex->write(ssShader);
+		else
+			m_fragmentHeaderReadTexCopyMode->write(ssShader);
 	} else {
 		m_fragmentGlobalVariablesNotex->write(ssShader);
 
@@ -1925,14 +2043,19 @@ graphics::CombinerProgram * CombinerProgramBuilder::buildCombinerProgram(Combine
 	if (g_cycleType <= G_CYC_2CYCLE)
 		m_fragmentBlendMux->write(ssShader);
 
-	if (bUseLod) {
-		m_fragmentReadTexMipmap->write(ssShader);
-	} else {
-		if (combinerInputs.usesTile(0))
-			m_fragmentReadTex0->write(ssShader);
+	if (bUseTextures) {
+		if (bUseLod) {
+			m_fragmentReadTexMipmap->write(ssShader);
+		} else {
+			if (g_cycleType < G_CYC_COPY) {
+				if (combinerInputs.usesTile(0))
+					m_fragmentReadTex0->write(ssShader);
 
-		if (combinerInputs.usesTile(1))
-			m_fragmentReadTex1->write(ssShader);
+				if (combinerInputs.usesTile(1))
+					m_fragmentReadTex1->write(ssShader);
+			} else
+				m_fragmentReadTexCopyMode->write(ssShader);
+		}
 	}
 
 	if (bUseHWLight)
@@ -1955,10 +2078,16 @@ graphics::CombinerProgram * CombinerProgramBuilder::buildCombinerProgram(Combine
 	if (bUseHWLight)
 		m_shaderCalcLight->write(ssShader);
 
-	if (bUseLod)
-		m_shaderMipmap->write(ssShader);
-	else if (bUseTextures)
-		m_shaderReadtex->write(ssShader);
+	if (bUseTextures) {
+		if (bUseLod)
+			m_shaderMipmap->write(ssShader);
+		else {
+			if (g_cycleType < G_CYC_COPY)
+				m_shaderReadtex->write(ssShader);
+			else
+				m_shaderReadtexCopyMode->write(ssShader);
+		}
+	}
 
 	m_shaderNoise->write(ssShader);
 
@@ -2060,11 +2189,13 @@ CombinerProgramBuilder::CombinerProgramBuilder(const opengl::GLInfo & _glinfo, o
 , m_fragmentHeaderDither(new ShaderFragmentHeaderDither(_glinfo))
 , m_fragmentHeaderDepthCompare(new ShaderFragmentHeaderDepthCompare(_glinfo))
 , m_fragmentHeaderReadTex(new ShaderFragmentHeaderReadTex(_glinfo))
+, m_fragmentHeaderReadTexCopyMode(new ShaderFragmentHeaderReadTexCopyMode(_glinfo))
 , m_fragmentMain(new ShaderFragmentMain(_glinfo))
 , m_fragmentMain2Cycle(new ShaderFragmentMain2Cycle(_glinfo))
 , m_fragmentBlendMux(new ShaderFragmentBlendMux(_glinfo))
 , m_fragmentReadTex0(new ShaderFragmentReadTex0(_glinfo))
 , m_fragmentReadTex1(new ShaderFragmentReadTex1(_glinfo))
+, m_fragmentReadTexCopyMode(new ShaderFragmentReadTexCopyMode(_glinfo))
 , m_fragmentReadTexMipmap(new ShaderFragmentReadTexMipmap(_glinfo))
 , m_fragmentCallN64Depth(new ShaderFragmentCallN64Depth(_glinfo))
 , m_fragmentRenderTarget(new ShaderFragmentRenderTarget(_glinfo))
@@ -2075,6 +2206,7 @@ CombinerProgramBuilder::CombinerProgramBuilder(const opengl::GLInfo & _glinfo, o
 , m_shaderMipmap(new ShaderMipmap(_glinfo))
 , m_shaderCalcLight(new ShaderCalcLight(_glinfo))
 , m_shaderReadtex(new ShaderReadtex(_glinfo))
+, m_shaderReadtexCopyMode(new ShaderReadtexCopyMode(_glinfo))
 , m_shaderN64DepthCompare(new ShaderN64DepthCompare(_glinfo))
 , m_shaderN64DepthRender(new ShaderN64DepthRender(_glinfo))
 , m_useProgram(_useProgram)
