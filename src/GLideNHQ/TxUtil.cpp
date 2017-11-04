@@ -21,6 +21,7 @@
  * the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
+#include <thread>
 #include "TxUtil.h"
 #include "TxDbg.h"
 #include <zlib.h>
@@ -490,41 +491,11 @@ findmax0:
 	return 1;
 }
 
-int
-TxUtil::getNumberofProcessors()
+uint32 TxUtil::getNumberofProcessors()
 {
-	int numcore = 1;
-#ifndef OS_ANDROID
-	try {
-#if defined (OS_WINDOWS)
-		SYSTEM_INFO sysinfo;
-		GetSystemInfo(&sysinfo);
-		numcore = sysinfo.dwNumberOfProcessors;
-#elif defined (OS_MAC_OS_X)
-		int nm[2];
-		size_t len = 4;
-		uint32_t count;
-
-		nm[0] = CTL_HW; nm[1] = HW_AVAILCPU;
-		sysctl(nm, 2, &count, &len, nullptr, 0);
-
-		if (count < 1) {
-			nm[1] = HW_NCPU;
-			sysctl(nm, 2, &count, &len, nullptr, 0);
-			if (count < 1) { count = 1; }
-		}
-		numcore = count;
-#elif defined (OS_LINUX)
-		numcore = sysconf(_SC_NPROCESSORS_ONLN);
-#endif
-	} catch (...) {
-		DBG_INFO(80, wst("Error: number of processor detection failed!\n"));
-	}
-
+	uint32 numcore = std::thread::hardware_concurrency();
 	if (numcore > MAX_NUMCORE) numcore = MAX_NUMCORE;
-#endif // OS_ANDROID
 	DBG_INFO(80, wst("Number of processors : %d\n"), numcore);
-
 	return numcore;
 }
 

@@ -50,7 +50,7 @@ public:
 #endif
 	static uint32 checksum(uint8 *src, int width, int height, int size, int rowStride);
 	static uint64 checksum64(uint8 *src, int width, int height, int size, int rowStride, uint8 *palette);
-	static int getNumberofProcessors();
+	static uint32 getNumberofProcessors();
 };
 
 class TxMemBuf
