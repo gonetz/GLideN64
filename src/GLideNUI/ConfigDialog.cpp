@@ -106,7 +106,6 @@ void ConfigDialog::_init()
 	ui->aliasingSlider->setValue(powof(config.video.multisampling));
 	ui->aliasingLabelVal->setText(QString::number(config.video.multisampling));
 	ui->anisotropicSlider->setValue(config.texture.maxAnisotropy);
-	ui->cacheSizeSpinBox->setValue(config.texture.maxBytes / gc_uMegabyte);
 	ui->vSyncCheckBox->setChecked(config.video.verticalSync != 0);
 
 	switch (config.texture.bilinearMode) {
@@ -362,7 +361,6 @@ void ConfigDialog::accept()
 
 	config.video.multisampling = ui->n64DepthCompareCheckBox->isChecked() ? 0 : pow2(ui->aliasingSlider->value());
 	config.texture.maxAnisotropy = ui->anisotropicSlider->value();
-	config.texture.maxBytes = ui->cacheSizeSpinBox->value() * gc_uMegabyte;
 
 	if (ui->blnrStandardRadioButton->isChecked())
 		config.texture.bilinearMode = BILINEAR_STANDARD;

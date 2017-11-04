@@ -475,7 +475,6 @@ void TextureCache::_initDummyTexture(CachedTexture * _pDummy)
 
 void TextureCache::init()
 {
-	m_maxBytes = config.texture.maxBytes;
 	m_curUnpackAlignment = 0;
 
 	u32 dummyTexture[16] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
@@ -542,27 +541,13 @@ void TextureCache::destroy()
 
 void TextureCache::_checkCacheSize()
 {
-	const size_t maxCacheSize = 8000;
-	if (m_textures.size() >= maxCacheSize) {
+	if (m_textures.size() >= m_maxCacheSize) {
 		CachedTexture& clsTex = m_textures.back();
 		m_cachedBytes -= clsTex.textureBytes;
 		gfxContext.deleteTexture(clsTex.name);
 		m_lruTextureLocations.erase(clsTex.crc);
 		m_textures.pop_back();
 	}
-
-	if (m_cachedBytes <= m_maxBytes)
-		return;
-
-	Textures::iterator iter = m_textures.end();
-	do {
-		--iter;
-		CachedTexture& tex = *iter;
-		m_cachedBytes -= tex.textureBytes;
-		gfxContext.deleteTexture(tex.name);
-		m_lruTextureLocations.erase(tex.crc);
-	} while (m_cachedBytes > m_maxBytes && iter != m_textures.cbegin());
-	m_textures.erase(iter, m_textures.end());
 }
 
 CachedTexture * TextureCache::_addTexture(u32 _crc32)

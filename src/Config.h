@@ -4,7 +4,7 @@
 #include <string>
 #include "Types.h"
 
-#define CONFIG_VERSION_CURRENT 18U
+#define CONFIG_VERSION_CURRENT 19U
 
 #define BILINEAR_3POINT   0
 #define BILINEAR_STANDARD 1
@@ -40,7 +40,6 @@ struct Config
 		u32 maxAnisotropy;
 		f32 maxAnisotropyF;
 		u32 bilinearMode;
-		u32 maxBytes;
 		u32 screenShotFormat;
 	} texture;
 

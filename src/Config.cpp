@@ -29,7 +29,6 @@ void Config::resetToDefaults()
 
 	texture.maxAnisotropy = 0;
 	texture.bilinearMode = BILINEAR_STANDARD;
-	texture.maxBytes = 500 * gc_uMegabyte;
 	texture.screenShotFormat = 0;
 
 	generalEmulation.enableLOD = 1;

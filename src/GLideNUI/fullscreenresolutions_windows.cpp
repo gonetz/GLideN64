@@ -104,12 +104,12 @@ void fillFullscreenResolutionsList(QStringList & _listResolutions, int & _resolu
 
 			fullscreen.resolution[fullscreen.numResolutions].width = deviceMode.dmPelsWidth;
 			fullscreen.resolution[fullscreen.numResolutions].height = deviceMode.dmPelsHeight;
-			sprintf(text, "%i x %i", deviceMode.dmPelsWidth, deviceMode.dmPelsHeight);
+			snprintf(text, 128, "%i x %i", deviceMode.dmPelsWidth, deviceMode.dmPelsHeight);
 
 			for (int j = 0; j < numRatios; ++j)
 				if (fabs((float)deviceMode.dmPelsWidth / (float)deviceMode.dmPelsHeight
 					- (float)ratios[j].x / (float)ratios[j].y) < 0.005f) {
-					sprintf(text, "%s (%s)", text, ratios[j].description);
+					snprintf(text, 128, "%s (%s)", text, ratios[j].description);
 					break;
 				}
 
