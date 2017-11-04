@@ -228,7 +228,7 @@ TxCache::save(const wchar_t *path, const wchar_t *filename, int config)
 	osal_mkdirp(path);
 
 	/* Ugly hack to enable fopen/gzopen in Win9x */
-#ifdef WIN32
+#ifdef OS_WINDOWS
 	wchar_t curpath[MAX_PATH];
 	GETCWD(MAX_PATH, curpath);
 	CHDIR(path);
@@ -306,7 +306,7 @@ TxCache::load(const wchar_t *path, const wchar_t *filename, int config)
 	/* find it on disk */
 	char cbuf[MAX_PATH];
 
-#ifdef WIN32
+#ifdef OS_WINDOWS
 	wchar_t curpath[MAX_PATH];
 	GETCWD(MAX_PATH, curpath);
 	CHDIR(path);
