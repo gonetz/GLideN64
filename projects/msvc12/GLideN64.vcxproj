@@ -158,7 +158,7 @@ copy /Y "$(ProjectDir)$(OutDir)$(TargetName).*" "$(N64PluginsDir)"</Command>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug_mupenplus|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>DEBUG_DUMP;UNICODE;GL_USE_UNIFORMBLOCK;TXFILTER_LIB;MUPENPLUSAPI;WIN32;OS_WINDOWS;_USRDLL;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>DEBUG_DUMP;WIN32_ASM;UNICODE;GL_USE_UNIFORMBLOCK;TXFILTER_LIB;MUPENPLUSAPI;WIN32;OS_WINDOWS;_USRDLL;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
