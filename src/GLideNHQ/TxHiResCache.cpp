@@ -144,7 +144,11 @@ TxHiResCache::load(boolean replace) /* 0 : reload, 1 : replace partial */
 	  dir_path += OSAL_DIR_SEPARATOR_STR;
 	  dir_path += _ident;
 
-	  loadHiResTextures(dir_path.c_str(), replace);
+	  if (!loadHiResTextures(dir_path.c_str(), replace)) {
+		  if (_callback) (*_callback)(wst("Texture pack load failed. Clear hiresolution texture cache.\n"));
+		  INFO(80, wst("Texture pack load failed. Clear hiresolution texture cache.\n"));
+		  _cache.clear();
+	  }
 	  break;
 	case JABO_HIRESTEXTURES:
 	  ;
