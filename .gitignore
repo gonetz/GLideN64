@@ -7,9 +7,9 @@ Roms/
 *.suo
 *.sdf
 *.user
-projects/msvc15/*db
-projects/msvc15/GeneratedFiles
-projects/msvc15/libGLideNHQ.dir
+projects/msvc14/*db
+projects/msvc14/GeneratedFiles
+projects/msvc14/libGLideNHQ.dir
 projects/msvc12/*db
 projects/msvc12/GeneratedFiles
 src/Revision.h
