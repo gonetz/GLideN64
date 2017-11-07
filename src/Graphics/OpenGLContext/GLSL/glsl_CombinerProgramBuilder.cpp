@@ -2050,6 +2050,8 @@ graphics::CombinerProgram * CombinerProgramBuilder::buildCombinerProgram(Combine
 			if (g_cycleType < G_CYC_COPY) {
 				if (combinerInputs.usesTile(0))
 					m_fragmentReadTex0->write(ssShader);
+				else
+					ssShader << "  lowp vec4 readtex0;" << std::endl;
 
 				if (combinerInputs.usesTile(1))
 					m_fragmentReadTex1->write(ssShader);
