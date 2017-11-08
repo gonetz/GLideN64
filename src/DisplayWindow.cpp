@@ -1,6 +1,7 @@
 #include <assert.h>
 #include <cstdlib>
 #include "Config.h"
+#include "RSP.h"
 #include "VI.h"
 #include "Graphics/Context.h"
 #include "DisplayWindow.h"
@@ -29,9 +30,12 @@ void DisplayWindow::swapBuffers()
 {
 	m_drawer.drawOSD();
 	_swapBuffers();
-	gDP.otherMode.l = 0;
-	if ((config.generalEmulation.hacks & hack_doNotResetTLUTmode) == 0)
-		gDPSetTextureLUT(G_TT_NONE);
+	if (!RSP.LLE) {
+		if ((config.generalEmulation.hacks & hack_doNotResetOtherModeL) == 0)
+			gDP.otherMode.l = 0;
+		if ((config.generalEmulation.hacks & hack_doNotResetOtherModeH) == 0)
+			gDP.otherMode.h = 0x0CFF;
+	}
 	++m_buffersSwapCount;
 }
 

@@ -302,9 +302,10 @@ void RSP_Init()
 		config.generalEmulation.hacks |= hack_rectDepthBufferCopyPD;
 	else if (strstr(RSP.romname, (const char *)"Jeremy McGrath Super") != nullptr)
 		config.generalEmulation.hacks |= hack_ModifyVertexXyInShader;
-	else if (strstr(RSP.romname, (const char *)"Quake") != nullptr ||
-			 strstr(RSP.romname, (const char *)"QUAKE II") != nullptr)
-		config.generalEmulation.hacks |= hack_doNotResetTLUTmode;
+	else if (strstr(RSP.romname, (const char *)"Quake") != nullptr)
+		config.generalEmulation.hacks |= hack_doNotResetOtherModeH|hack_doNotResetOtherModeL;
+	else if (strstr(RSP.romname, (const char *)"QUAKE II") != nullptr)
+		config.generalEmulation.hacks |= hack_doNotResetOtherModeH;
 	else if (strstr(RSP.romname, (const char *)"quarterback_club_98") != nullptr)
 		config.generalEmulation.hacks |= hack_LoadDepthTextures;
 	else if (strstr(RSP.romname, (const char *)"WIN BACK") != nullptr ||

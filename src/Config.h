@@ -186,11 +186,12 @@ struct Config
 #define hack_ZeldaMM				(1<<12) //Special hacks for Zelda MM
 #define hack_ModifyVertexXyInShader	(1<<13) //Pass screen coordinates provided in gSPModifyVertex to vertes shader.
 #define hack_legoRacers				(1<<14) //LEGO racers course map
-#define hack_doNotResetTLUTmode		(1<<15) //Don't set TLUT mode to none after dlist end. Quake 64
-#define hack_LoadDepthTextures		(1<<16) //Load textures for depth buffer
-#define hack_Snap					(1<<17) //Frame buffer settings for camera detection in Pokemon Snap. Copy aux buffers at fullsync
-#define hack_MK64					(1<<18) //Hack for load MK64 HD textures properly.
-#define hack_RE2					(1<<19) //RE2 hacks.
+#define hack_doNotResetOtherModeH	(1<<15) //Don't reset othermode.h after dlist end. Quake and Quake 2
+#define hack_doNotResetOtherModeL	(1<<16) //Don't reset othermode.l after dlist end. Quake
+#define hack_LoadDepthTextures		(1<<17) //Load textures for depth buffer
+#define hack_Snap					(1<<18) //Frame buffer settings for camera detection in Pokemon Snap. Copy aux buffers at fullsync
+#define hack_MK64					(1<<19) //Hack for load MK64 HD textures properly.
+#define hack_RE2					(1<<20) //RE2 hacks.
 
 extern Config config;
 
