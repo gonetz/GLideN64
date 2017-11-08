@@ -126,6 +126,7 @@ void GBI_Unknown( u32 w0, u32 w1 )
 
 void GBIInfo::init()
 {
+	m_hwlSupported = true;
 	m_pCurrent = nullptr;
 	_flushCommands();
 }
@@ -138,22 +139,12 @@ void GBIInfo::destroy()
 
 bool GBIInfo::isHWLSupported() const
 {
-	if (m_pCurrent == nullptr)
-		return false;
-	switch (m_pCurrent->type) {
-		case L3D:
-		case L3DEX:
-		case L3DEX2:
-		case S2DEX:
-		case S2DEX2:
-		case F3DDKR:
-		case F3DJFG:
-		case F3DZEX2MM:
-		case F3DEX2CBFD:
-		case F3DEX2ACCLAIM:
-		return false;
-	}
-	return true;
+	return m_hwlSupported;
+}
+
+void GBIInfo::setHWLSupported(bool _supported)
+{
+	m_hwlSupported = _supported;
 }
 
 void GBIInfo::_flushCommands()
@@ -177,31 +168,106 @@ void GBIInfo::_makeCurrent(MicrocodeInfo * _pCurrent)
 		G_TRI1 = G_TRI2 = G_TRIX = G_QUAD = -1; // For correct work of gSPFlushTriangles()
 
 		switch (m_pCurrent->type) {
-			case F3D:			F3D_Init();				break;
-			case F3DEX:			F3DEX_Init();			break;
-			case F3DEX2:		F3DEX2_Init();			break;
-			case L3D:			L3D_Init();				break;
-			case L3DEX:			L3DEX_Init();			break;
-			case L3DEX2:		L3DEX2_Init();			break;
-			case S2DEX:			S2DEX_Init();			break;
-			case S2DEX2:		S2DEX2_Init();			break;
-			case F3DDKR:		F3DDKR_Init();			break;
-			case F3DJFG:		F3DJFG_Init();			break;
-			case F3DBETA:		F3DBETA_Init();			break;
-			case F3DPD:			F3DPD_Init();			break;
-			case F3DAM:			F3DAM_Init();			break;
-			case Turbo3D:		F3D_Init();				break;
-			case ZSortp:		ZSort_Init();			break;
-			case F3DEX2CBFD:	F3DEX2CBFD_Init();		break;
-			case F3DSETA:		F3DSETA_Init();			break;
-			case F3DGOLDEN:		F3DGOLDEN_Init();		break;
+			case F3D:
+				F3D_Init();
+				m_hwlSupported = true;
+			break;
+			case F3DEX:
+				F3DEX_Init();
+				m_hwlSupported = true;
+			break;
+			case F3DEX2:
+				F3DEX2_Init();
+				m_hwlSupported = true;
+			break;
+			case L3D:
+				L3D_Init();
+				m_hwlSupported = false;
+			break;
+			case L3DEX:
+				L3DEX_Init();
+				m_hwlSupported = false;
+			break;
+			case L3DEX2:
+				L3DEX2_Init();
+				m_hwlSupported = false;
+			break;
+			case S2DEX:
+				S2DEX_Init();
+				m_hwlSupported = false;
+			break;
+			case S2DEX2:
+				S2DEX2_Init();
+				m_hwlSupported = false;
+			break;
+			case F3DDKR:
+				F3DDKR_Init();
+				m_hwlSupported = false;
+			break;
+			case F3DJFG:
+				F3DJFG_Init();
+				m_hwlSupported = false;
+			break;
+			case F3DBETA:
+				F3DBETA_Init();
+				m_hwlSupported = true;
+			break;
+			case F3DPD:
+				F3DPD_Init();
+				m_hwlSupported = true;
+			break;
+			case F3DAM:
+				F3DAM_Init();
+				m_hwlSupported = true;
+			break;
+			case Turbo3D:
+				F3D_Init();
+				m_hwlSupported = true;
+			break;
+			case ZSortp:
+				ZSort_Init();
+				m_hwlSupported = true;
+			break;
+			case F3DEX2CBFD:
+				F3DEX2CBFD_Init();
+				m_hwlSupported = false;
+			break;
+			case F3DSETA:
+				F3DSETA_Init();
+				m_hwlSupported = true;
+			break;
+			case F3DGOLDEN:
+				F3DGOLDEN_Init();
+				m_hwlSupported = true;
+			break;
 			case F3DZEX2OOT:
-			case F3DZEX2MM:		F3DZEX2_Init();			break;
-			case F3DTEXA:		F3DTEXA_Init();			break;
-			case T3DUX:			F3D_Init();				break;
-			case F3DEX2ACCLAIM:	F3DEX2ACCLAIM_Init();	break;
-			case F3DSWRS:		F3DSWRS_Init();			break;
-			case F3DFLX2:		F3DFLX2_Init();			break;
+				F3DZEX2_Init();
+				m_hwlSupported = true;
+			break;
+			case F3DZEX2MM:
+				F3DZEX2_Init();
+				m_hwlSupported = false;
+			break;
+			case F3DTEXA:
+				F3DTEXA_Init();
+				m_hwlSupported = true;
+			break;
+			case T3DUX:
+				F3D_Init();
+				m_hwlSupported = true;
+			break;
+			case F3DEX2ACCLAIM:
+				F3DEX2ACCLAIM_Init();
+				m_hwlSupported = false;
+			break;
+			case F3DSWRS:
+				F3DSWRS_Init();
+				m_hwlSupported = false;
+			break;
+			case F3DFLX2:
+				F3DFLX2_Init();
+				m_hwlSupported = true;
+			break;
 		}
 
 		if (gfxContext.isSupported(graphics::SpecialFeatures::NearPlaneClipping)) {

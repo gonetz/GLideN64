@@ -516,6 +516,7 @@ struct GBIInfo
 	void loadMicrocode(u32 uc_start, u32 uc_dstart, u16 uc_dsize);
 	u32 getMicrocodeType() const {return m_pCurrent != nullptr ? m_pCurrent->type : NONE;}
 	bool isHWLSupported() const;
+	void setHWLSupported(bool _supported);
 	bool isNoN() const { return m_pCurrent != nullptr ? m_pCurrent->NoN : false; }
 	bool isNegativeY() const { return m_pCurrent != nullptr ? m_pCurrent->negativeY : true; }
 	bool isTexturePersp() const { return m_pCurrent != nullptr ? m_pCurrent->texturePersp: true; }
@@ -527,6 +528,7 @@ private:
 	void _makeCurrent(MicrocodeInfo * _pCurrent);
 	bool _makeExistingMicrocodeCurrent(u32 uc_start, u32 uc_dstart, u32 uc_dsize);
 
+	bool m_hwlSupported;
 	MicrocodeInfo * m_pCurrent;
 
 	typedef std::list<MicrocodeInfo> Microcodes;

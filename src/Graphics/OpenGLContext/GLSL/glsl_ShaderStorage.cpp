@@ -50,8 +50,9 @@ void getStorageFileName(const opengl::GLInfo & _glinfo, wchar_t * _shadersFileNa
 /*
 Storage has text format:
 line_1 Version in hex form
-line_2 Count - numbers of combiners keys in hex form
-line_3..line_Count+2  combiners keys in hex form, one key per line
+line_2 Hardware per pixel lighting support flag
+line_3 Count - numbers of combiners keys in hex form
+line_4..line_Count+3  combiners keys in hex form, one key per line
 */
 bool ShaderStorage::_saveCombinerKeys(const graphics::Combiners & _combiners) const
 {
@@ -78,6 +79,7 @@ bool ShaderStorage::_saveCombinerKeys(const graphics::Combiners & _combiners) co
 
 	std::sort(keysData.begin(), keysData.end());
 	keysOut << "0x" << std::hex << std::setfill('0') << std::setw(8) << m_keysFormatVersion << "\n";
+	keysOut << "0x" << std::hex << std::setfill('0') << std::setw(8) << static_cast<u32>(GBI.isHWLSupported()) << "\n";
 	keysOut << "0x" << std::hex << std::setfill('0') << std::setw(8) << keysData.size() << "\n";
 	for (u64 key : keysData)
 		keysOut << "0x" << std::hex << std::setfill('0') << std::setw(16) << key << "\n";
@@ -230,6 +232,10 @@ bool ShaderStorage::_loadFromCombinerKeys(graphics::Combiners & _combiners)
 	fin >> std::hex >> version;
 	if (version != m_keysFormatVersion)
 		return false;
+
+	u32 hwlSupport;
+	fin >> std::hex >> hwlSupport;
+	GBI.setHWLSupported(static_cast<bool>(hwlSupport));
 
 	displayLoadProgress(L"LOAD COMBINER SHADERS %.1f%%", 0.0f);
 
