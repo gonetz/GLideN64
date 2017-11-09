@@ -178,6 +178,9 @@ if(UNIX)
 	add_definitions(
 	  -DOS_MAC_OS_X
 	)
+	if (NOT CMAKE_VERSION VERSION_LESS 2.8.12)
+	  set(CMAKE_MACOSX_RPATH 0)
+	endif()
   elseif(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 	add_definitions(
 	  -DOS_LINUX
