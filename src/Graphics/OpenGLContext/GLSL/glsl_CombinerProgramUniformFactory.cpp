@@ -554,6 +554,7 @@ public:
 		LocateUniform(uEnableDepthUpdate);
 		LocateUniform(uDepthMode);
 		LocateUniform(uDepthSource);
+		LocateUniform(uPrimDepth);
 		LocateUniform(uDeltaZ);
 	}
 
@@ -575,8 +576,10 @@ public:
 		}
 		uDepthMode.set(gDP.otherMode.depthMode, _force);
 		uDepthSource.set(gDP.otherMode.depthSource, _force);
-		if (gDP.otherMode.depthSource == G_ZS_PRIM)
+		if (gDP.otherMode.depthSource == G_ZS_PRIM) {
 			uDeltaZ.set(gDP.primDepth.deltaZ, _force);
+			uPrimDepth.set((gDP.primDepth.z + 1.0f) * 0.5f, _force);
+		}
 	}
 
 private:
@@ -585,7 +588,28 @@ private:
 	iUniform uEnableDepthUpdate;
 	iUniform uDepthMode;
 	iUniform uDepthSource;
+	fUniform uPrimDepth;
 	fUniform uDeltaZ;
+};
+
+class UDepthSource : public UniformGroup
+{
+public:
+	UDepthSource(GLuint _program) {
+		LocateUniform(uDepthSource);
+		LocateUniform(uPrimDepth);
+	}
+
+	void update(bool _force) override
+	{
+		uDepthSource.set(gDP.otherMode.depthSource, _force);
+		if (gDP.otherMode.depthSource == G_ZS_PRIM)
+			uPrimDepth.set((gDP.primDepth.z + 1.0f) * 0.5f, _force);
+	}
+
+private:
+	iUniform uDepthSource;
+	fUniform uPrimDepth;
 };
 
 class URenderTarget : public UniformGroup
@@ -871,6 +895,8 @@ void CombinerProgramUniformFactory::buildUniforms(GLuint _program,
 
 	if (config.frameBufferEmulation.N64DepthCompare != 0)
 		_uniforms.emplace_back(new UDepthInfo(_program));
+	else
+		_uniforms.emplace_back(new UDepthSource(_program));
 
 	if (config.generalEmulation.enableFragmentDepthWrite != 0 ||
 		config.frameBufferEmulation.N64DepthCompare != 0)

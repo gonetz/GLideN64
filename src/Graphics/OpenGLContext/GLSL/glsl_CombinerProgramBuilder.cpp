@@ -716,6 +716,8 @@ public:
 			"uniform lowp int uCvgXAlpha;			\n"
 			"uniform lowp int uAlphaCvgSel;			\n"
 			"uniform lowp float uAlphaTestValue;	\n"
+			"uniform lowp int uDepthSource;			\n"
+			"uniform highp float uPrimDepth;		\n"
 			"uniform mediump vec2 uScreenScale;		\n"
 			;
 
@@ -790,6 +792,8 @@ public:
 			"uniform lowp int uCvgXAlpha;			\n"
 			"uniform lowp int uAlphaCvgSel;			\n"
 			"uniform lowp float uAlphaTestValue;	\n"
+			"uniform lowp int uDepthSource;			\n"
+			"uniform highp float uPrimDepth;		\n"
 			"uniform mediump vec2 uScreenScale;		\n"
 			;
 
@@ -1379,7 +1383,8 @@ public:
 					m_part =
 						"void writeDepth()						        		\n"
 						"{														\n"
-						"  gl_FragDepth = clamp((gl_FragCoord.z * 2.0 - 1.0) * uDepthScale.s + uDepthScale.t, 0.0, 1.0);	\n"
+						"  if (uDepthSource == 1) gl_FragDepth = uPrimDepth;	\n"
+						"  else gl_FragDepth = clamp((gl_FragCoord.z * 2.0 - 1.0) * uDepthScale.s + uDepthScale.t, 0.0, 1.0);	\n"
 						"}														\n"
 						;
 				}
@@ -1763,7 +1768,6 @@ public:
 		if (config.frameBufferEmulation.N64DepthCompare != 0) {
 			m_part =
 				"uniform lowp int uDepthMode;							\n"
-				"uniform lowp int uDepthSource;							\n"
 				"uniform lowp int uEnableDepthUpdate;					\n"
 				"uniform mediump float uDeltaZ;							\n"
 				"bool depth_compare()									\n"
