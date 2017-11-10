@@ -441,6 +441,17 @@ void GraphicsDrawer::_setBlendMode() const
 		return;
 	}
 
+	if ((gDP.otherMode.l & 0xFFFF0000) == 0x01500000) {
+		// clr_in * a_in + clr_mem * (1-a)
+		// clr_in * a_fog + clr_mem * (1-a)
+		// impossible to emulate
+		if (gDP.otherMode.forceBlender != 0 && gDP.otherMode.cycleType < G_CYC_COPY) {
+			gfxContext.enable(enable::BLEND, true);
+			gfxContext.setBlending(blend::SRC_ALPHA, blend::ONE_MINUS_SRC_ALPHA);
+			return;
+		}
+	}
+
 	if (gDP.otherMode.forceBlender != 0 && gDP.otherMode.cycleType < G_CYC_COPY) {
 		BlendParam srcFactor = blend::ONE;
 		BlendParam dstFactor = blend::ZERO;

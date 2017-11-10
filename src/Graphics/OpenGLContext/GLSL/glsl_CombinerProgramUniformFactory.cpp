@@ -306,6 +306,12 @@ public:
 
 	void update(bool _force) override
 	{
+		if ((gDP.otherMode.l & 0xFFFF0000) == 0x01500000) {
+			uForceBlendCycle1.set(0, _force);
+			uForceBlendCycle2.set(0, _force);
+			return;
+		}
+
 		uBlendMux1.set(gDP.otherMode.c1_m1a,
 			gDP.otherMode.c1_m1b,
 			gDP.otherMode.c1_m2a,
