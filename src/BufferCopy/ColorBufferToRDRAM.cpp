@@ -310,7 +310,8 @@ void ColorBufferToRDRAM::copyChunkToRDRAM(u32 _address)
 {
 	if (!_prepareCopy(_address))
 		return;
-	_copy(_address, _address + 0x1000, true);
+	const u32 addr = _address & ~0xfff;
+	_copy(addr, addr + 0x1000, true);
 }
 
 

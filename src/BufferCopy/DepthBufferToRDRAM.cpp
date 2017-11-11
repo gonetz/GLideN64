@@ -299,6 +299,6 @@ bool DepthBufferToRDRAM::copyChunkToRDRAM(u32 _address)
 	if (!_prepareCopy(_address, true))
 		return false;
 
-	const u32 endAddress = _address + 0x1000;
-	return _copy(_address, endAddress);
+	const u32 addr = _address & ~0xfff;
+	return _copy(addr, addr + 0x1000);
 }
