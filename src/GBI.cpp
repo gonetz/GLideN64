@@ -254,7 +254,7 @@ void GBIInfo::_makeCurrent(MicrocodeInfo * _pCurrent)
 			break;
 			case T3DUX:
 				F3D_Init();
-				m_hwlSupported = true;
+				m_hwlSupported = false;
 			break;
 			case F3DEX2ACCLAIM:
 				F3DEX2ACCLAIM_Init();
