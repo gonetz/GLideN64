@@ -55,19 +55,19 @@ public:
 	struct TexturedRectParams
 	{
 		float ulx, uly, lrx, lry;
-		float uls, ult, lrs, lrt;
 		float dsdx, dtdy;
+		s16 s, t;
 		bool flip, forceAjustScale, texrectCmd;
 		const FrameBuffer * pBuffer;
 		TexturedRectParams(float _ulx, float _uly, float _lrx, float _lry,
-			float _uls, float _ult, float _lrs, float _lrt,
 			float _dsdx, float _dtdy,
+			s16 _s, s16 _t,
 			bool _flip, bool _forceAjustScale, bool _texrectCmd,
 			const FrameBuffer * _pBuffer
 			) :
 			ulx(_ulx), uly(_uly), lrx(_lrx), lry(_lry),
-			uls(_uls), ult(_ult), lrs(_lrs), lrt(_lrt),
 			dsdx(_dsdx), dtdy(_dtdy),
+			s(_s), t(_t),
 			flip(_flip), forceAjustScale(_forceAjustScale), texrectCmd(_texrectCmd),
 			pBuffer(_pBuffer)
 		{}

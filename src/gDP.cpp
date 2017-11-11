@@ -799,7 +799,7 @@ void gDPSetKeyGB(u32 cG, u32 sG, u32 wG, u32 cB, u32 sB, u32 wB )
 			  cG, sG, wG, cB, sB, wB );
 }
 
-void gDPTextureRectangle(f32 ulx, f32 uly, f32 lrx, f32 lry, s32 tile, f32 s, f32 t, f32 dsdx, f32 dtdy , bool flip)
+void gDPTextureRectangle(f32 ulx, f32 uly, f32 lrx, f32 lry, s32 tile, s16 s, s16 t, f32 dsdx, f32 dtdy , bool flip)
 {
 	if (gDP.otherMode.cycleType == G_CYC_COPY) {
 		dsdx = 1.0f;
@@ -815,17 +815,8 @@ void gDPTextureRectangle(f32 ulx, f32 uly, f32 lrx, f32 lry, s32 tile, f32 s, f3
 	gSP.textureTile[1] = &gDP.tiles[(tile + 1) & 7];
 
 	// HACK ALERT!
-	if ((int(s) == 512) && (gDP.colorImage.width + gSP.textureTile[0]->uls < 512))
+	if (s == 0x4000 && (gDP.colorImage.width + gSP.textureTile[0]->uls < 512))
 		s = 0.0f;
-
-	f32 lrs, lrt;
-	if (flip) {
-		lrs = s + (lry - uly - 1) * dsdx;
-		lrt = t + (lrx - ulx - 1) * dtdy;
-	} else {
-		lrs = s + (lrx - ulx - 1) * dsdx;
-		lrt = t + (lry - uly - 1) * dtdy;
-	}
 
 	gDP.rectColor = gDPInfo::Color();
 	if (gDP.otherMode.cycleType < G_CYC_COPY) {
@@ -835,7 +826,7 @@ void gDPTextureRectangle(f32 ulx, f32 uly, f32 lrx, f32 lry, s32 tile, f32 s, f3
 	}
 
 	GraphicsDrawer & drawer = dwnd().getDrawer();
-	GraphicsDrawer::TexturedRectParams params(ulx, uly, lrx, lry, s, t, lrs, lrt, fabsf(dsdx), fabsf(dtdy),
+	GraphicsDrawer::TexturedRectParams params(ulx, uly, lrx, lry, dsdx, dtdy, s, t,
 		flip, false, true, frameBufferList().getCurrent());
 	if (config.generalEmulation.enableNativeResTexrects == 0 && config.generalEmulation.correctTexrectCoords != Config::tcDisable)
 		drawer.correctTexturedRectParams(params);
@@ -847,11 +838,11 @@ void gDPTextureRectangle(f32 ulx, f32 uly, f32 lrx, f32 lry, s32 tile, f32 s, f3
 	frameBufferList().setBufferChanged(lry);
 
 	if (flip)
-		DebugMsg( DEBUG_NORMAL, "gDPTextureRectangleFlip #%i- #%i ( %f, %f, %f, %f, %i, %f, %f, %f, %f);\n",
-				  gSP.tri_num, gSP.tri_num + 1, ulx, uly, lrx, lry, tile, s, t, dsdx, dtdy );
+		DebugMsg( DEBUG_NORMAL, "gDPTextureRectangleFlip( %f, %f, %f, %f, %i, %f, %f, %f, %f);\n",
+				  ulx, uly, lrx, lry, tile, s/32.0f, t/32.0f, dsdx, dtdy );
 	else
-		DebugMsg( DEBUG_NORMAL, "gDPTextureRectangle #%i- #%i ( %f, %f, %f, %f, %i, %i, %f, %f, %f, %f );\n",
-				  gSP.tri_num, gSP.tri_num+1, ulx, uly, lrx, lry, tile, s, t, dsdx, dtdy );
+		DebugMsg( DEBUG_NORMAL, "gDPTextureRectangle( %f, %f, %f, %f, %i, %i, %f, %f, %f, %f );\n",
+				  ulx, uly, lrx, lry, tile, s/32.0f, t/32.0f, dsdx, dtdy);
 	gSP.tri_num += 2;
 }
 

@@ -1243,9 +1243,6 @@ void F3DSWRS_TexrectGen(u32 _w0, u32 _w1)
 		T = ((0 - (dtdy_i << 6) * uly_i) << 3) + F + 0xFFF0;
 	}
 
-	const f32 s = _FIXED2FLOAT((s16)S, 5);
-	const f32 t = _FIXED2FLOAT((s16)T, 5);
-
 	gDP.primDepth.z = v.z/v.w;
 	gDP.primDepth.deltaZ = 0.0f;
 
@@ -1265,7 +1262,7 @@ void F3DSWRS_TexrectGen(u32 _w0, u32 _w1)
 						_SHIFTR( fogColor,  0, 8 ) );	// a
 	}
 
-	gDPTextureRectangle(ulx, uly, lrx, lry, gSP.texture.tile, s, t, dsdx, dtdy , flip);
+	gDPTextureRectangle(ulx, uly, lrx, lry, gSP.texture.tile, (s16)S, (s16)T, dsdx, dtdy, flip);
 }
 
 void F3DSWRS_SetOtherMode_H_EX(u32 _w0, u32 _w1)

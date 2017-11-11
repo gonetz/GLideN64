@@ -279,7 +279,7 @@ void gDPFillRectangle( s32 ulx, s32 uly, s32 lrx, s32 lry );
 void gDPSetConvert( s32 k0, s32 k1, s32 k2, s32 k3, s32 k4, s32 k5 );
 void gDPSetKeyR( u32 cR, u32 sR, u32 wR );
 void gDPSetKeyGB(u32 cG, u32 sG, u32 wG, u32 cB, u32 sB, u32 wB );
-void gDPTextureRectangle( f32 ulx, f32 uly, f32 lrx, f32 lry, s32 tile, f32 s, f32 t, f32 dsdx, f32 dtdy, bool flip );
+void gDPTextureRectangle( f32 ulx, f32 uly, f32 lrx, f32 lry, s32 tile, s16 s, s16 t, f32 dsdx, f32 dtdy, bool flip );
 void gDPFullSync();
 void gDPTileSync();
 void gDPPipeSync();
