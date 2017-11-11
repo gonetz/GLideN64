@@ -1016,21 +1016,10 @@ u32 gSPLoadDMAVertexData(u32 address, SPVertex * spVtx, u32 v0, u32 vi, u32 n)
 			vtx.y = *(s16*)&RDRAM[(address + 2) ^ 2];
 			vtx.z = *(s16*)&RDRAM[(address + 4) ^ 2];
 
-			if (gSP.geometryMode & G_LIGHTING) {
-				vtx.nx = _FIXED2FLOAT(*(s8*)&RDRAM[(address + 6) ^ 3], 7);
-				vtx.ny = _FIXED2FLOAT(*(s8*)&RDRAM[(address + 7) ^ 3], 7);
-				vtx.nz = _FIXED2FLOAT(*(s8*)&RDRAM[(address + 8) ^ 3], 7);
-				if (isHWLightingAllowed()) {
-					vtx.r = *(s8*)&RDRAM[(address + 6) ^ 3];
-					vtx.g = *(s8*)&RDRAM[(address + 7) ^ 3];
-					vtx.b = *(s8*)&RDRAM[(address + 8) ^ 3];
-				}
-			} else {
-				vtx.r = _FIXED2FLOAT(*(u8*)&RDRAM[(address + 6) ^ 3], 8);
-				vtx.g = _FIXED2FLOAT(*(u8*)&RDRAM[(address + 7) ^ 3], 8);
-				vtx.b = _FIXED2FLOAT(*(u8*)&RDRAM[(address + 9) ^ 3], 8);
-			}
-			vtx.a = _FIXED2FLOAT(*(u8*)&RDRAM[(address + 9) ^ 3], 8);
+			vtx.r = _FIXED2FLOAT((*(u8*)&RDRAM[(address + 6) ^ 3]), 8);
+			vtx.g = _FIXED2FLOAT((*(u8*)&RDRAM[(address + 7) ^ 3]), 8);
+			vtx.b = _FIXED2FLOAT((*(u8*)&RDRAM[(address + 8) ^ 3]), 8);
+			vtx.a = _FIXED2FLOAT((*(u8*)&RDRAM[(address + 9) ^ 3]), 8);
 
 			address += 10;
 		}
@@ -1053,15 +1042,6 @@ void gSPDMAVertex( u32 a, u32 n, u32 v0 )
 
 	if ((address + 10 * n) > RDRAMSize)
 		return;
-
-	if ((gSP.geometryMode & G_LIGHTING) != 0) {
-
-		if ((gSP.changed & CHANGED_LIGHT) != 0)
-			gSPUpdateLightVectors();
-
-		if (((gSP.geometryMode & G_TEXTURE_GEN) != 0) && ((gSP.changed & CHANGED_LOOKAT) != 0))
-			gSPUpdateLookatVectors();
-	}
 
 	SPVertex * spVtx = dwnd().getDrawer().getVertexPtr(0);
 	u32 i = gSPLoadDMAVertexData<VEC_OPT>(address, spVtx, v0, v0, n);
