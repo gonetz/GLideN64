@@ -54,6 +54,13 @@
 #define _FIXED2FLOAT( v, b ) \
 	((f32)v * FIXED2FLOATRECIP##b)
 
+#define FIXED2FLOATRECIPCOLOR7	0.00787401572f
+#define FIXED2FLOATRECIPCOLOR8	0.00392156886f
+
+#define _FIXED2FLOATCOLOR( v, b ) \
+	((f32)v * FIXED2FLOATRECIPCOLOR##b)
+
+
 // Useful macros for decoding GBI command's parameters
 #define _SHIFTL( v, s, w )	\
 	(((u32)v & ((0x01 << w) - 1)) << s)
