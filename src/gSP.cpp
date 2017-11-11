@@ -500,10 +500,8 @@ void gSPLightVertexStandard(u32 v, SPVertex * spVtx)
 	} else {
 		for(int j = 0; j < VNUM; ++j) {
 			SPVertex & vtx = spVtx[v+j];
+			TransformVectorNormalize(&vtx.r, gSP.matrix.modelView[gSP.matrix.modelViewi]);
 			vtx.HWLight = gSP.numLights;
-			vtx.r = vtx.nx;
-			vtx.g = vtx.ny;
-			vtx.b = vtx.nz;
 		}
 	}
 #else
@@ -881,17 +879,23 @@ u32 gSPLoadVertexData(const Vertex *orgVtx, SPVertex * spVtx, u32 v0, u32 vi, u3
 			//vtx.flag = vertex->flag;
 			vtx.s = _FIXED2FLOAT( orgVtx->s, 5 );
 			vtx.t = _FIXED2FLOAT( orgVtx->t, 5 );
+
 			if (gSP.geometryMode & G_LIGHTING) {
-				vtx.nx = _FIXED2FLOAT( orgVtx->normal.x, 7 );
-				vtx.ny = _FIXED2FLOAT( orgVtx->normal.y, 7 );
-				vtx.nz = _FIXED2FLOAT( orgVtx->normal.z, 7 );
-				vtx.a = orgVtx->color.a * 0.0039215689f;
+				vtx.nx = _FIXED2FLOAT(orgVtx->normal.x, 7);
+				vtx.ny = _FIXED2FLOAT(orgVtx->normal.y, 7);
+				vtx.nz = _FIXED2FLOAT(orgVtx->normal.z, 7);
+				if (isHWLightingAllowed()) {
+					vtx.r = orgVtx->normal.x;
+					vtx.g = orgVtx->normal.y;
+					vtx.b = orgVtx->normal.z;
+				}
 			} else {
-				vtx.r = orgVtx->color.r * 0.0039215689f;
-				vtx.g = orgVtx->color.g * 0.0039215689f;
-				vtx.b = orgVtx->color.b * 0.0039215689f;
-				vtx.a = orgVtx->color.a * 0.0039215689f;
+				vtx.r = _FIXED2FLOAT(orgVtx->color.r, 8);
+				vtx.g = _FIXED2FLOAT(orgVtx->color.g, 8);
+				vtx.b = _FIXED2FLOAT(orgVtx->color.b, 8);
 			}
+			vtx.a = _FIXED2FLOAT(orgVtx->color.a, 8);
+
 			++orgVtx;
 		}
 		gSPProcessVertex<VNUM>(vi, spVtx);
@@ -950,13 +954,18 @@ u32 gSPLoadCIVertexData(const PDVertex *orgVtx, SPVertex * spVtx, u32 v0, u32 vi
 				vtx.nx = _FIXED2FLOAT((s8)color[3], 7);
 				vtx.ny = _FIXED2FLOAT((s8)color[2], 7);
 				vtx.nz = _FIXED2FLOAT((s8)color[1], 7);
-				vtx.a = color[0] * 0.0039215689f;
+				if (isHWLightingAllowed()) {
+					vtx.r = (s8)color[3];
+					vtx.g = (s8)color[2];
+					vtx.b = (s8)color[1];
+				}
 			} else {
-				vtx.r = color[3] * 0.0039215689f;
-				vtx.g = color[2] * 0.0039215689f;
-				vtx.b = color[1] * 0.0039215689f;
-				vtx.a = color[0] * 0.0039215689f;
+				vtx.r = _FIXED2FLOAT(color[3], 8);
+				vtx.g = _FIXED2FLOAT(color[2], 8);
+				vtx.b = _FIXED2FLOAT(color[1], 8);
 			}
+			vtx.a = _FIXED2FLOAT(color[0], 8);
+
 			++orgVtx;
 		}
 		gSPProcessVertex<VNUM>(vi, spVtx);
@@ -1011,13 +1020,18 @@ u32 gSPLoadDMAVertexData(u32 address, SPVertex * spVtx, u32 v0, u32 vi, u32 n)
 				vtx.nx = _FIXED2FLOAT(*(s8*)&RDRAM[(address + 6) ^ 3], 7);
 				vtx.ny = _FIXED2FLOAT(*(s8*)&RDRAM[(address + 7) ^ 3], 7);
 				vtx.nz = _FIXED2FLOAT(*(s8*)&RDRAM[(address + 8) ^ 3], 7);
-				vtx.a = *(u8*)&RDRAM[(address + 9) ^ 3] * 0.0039215689f;
+				if (isHWLightingAllowed()) {
+					vtx.r = *(s8*)&RDRAM[(address + 6) ^ 3];
+					vtx.g = *(s8*)&RDRAM[(address + 7) ^ 3];
+					vtx.b = *(s8*)&RDRAM[(address + 8) ^ 3];
+				}
 			} else {
-				vtx.r = *(u8*)&RDRAM[(address + 6) ^ 3] * 0.0039215689f;
-				vtx.g = *(u8*)&RDRAM[(address + 7) ^ 3] * 0.0039215689f;
-				vtx.b = *(u8*)&RDRAM[(address + 8) ^ 3] * 0.0039215689f;
-				vtx.a = *(u8*)&RDRAM[(address + 9) ^ 3] * 0.0039215689f;
+				vtx.r = _FIXED2FLOAT(*(u8*)&RDRAM[(address + 6) ^ 3], 8);
+				vtx.g = _FIXED2FLOAT(*(u8*)&RDRAM[(address + 7) ^ 3], 8);
+				vtx.b = _FIXED2FLOAT(*(u8*)&RDRAM[(address + 9) ^ 3], 8);
 			}
+			vtx.a = _FIXED2FLOAT(*(u8*)&RDRAM[(address + 9) ^ 3], 8);
+
 			address += 10;
 		}
 		gSPProcessVertex<VNUM>(vi, spVtx);
@@ -1073,10 +1087,10 @@ u32 gSPLoadCBFDVertexData(const Vertex *orgVtx, SPVertex * spVtx, u32 v0, u32 vi
 				vtx.ny = _FIXED2FLOAT(((s8*)RDRAM)[(gSP.vertexNormalBase + normaleAddrOffset + 1) ^ 3], 7);
 				vtx.nz = _FIXED2FLOAT((s8)(orgVtx->flag & 0xFF), 7);
 			}
-			vtx.r = orgVtx->color.r * 0.0039215689f;
-			vtx.g = orgVtx->color.g * 0.0039215689f;
-			vtx.b = orgVtx->color.b * 0.0039215689f;
-			vtx.a = orgVtx->color.a * 0.0039215689f;
+			vtx.r = _FIXED2FLOAT(orgVtx->color.r, 8);
+			vtx.g = _FIXED2FLOAT(orgVtx->color.g, 8);
+			vtx.b = _FIXED2FLOAT(orgVtx->color.b, 8);
+			vtx.a = _FIXED2FLOAT(orgVtx->color.a, 8);
 			++orgVtx;
 		}
 		gSPProcessVertex<VNUM>(vi, spVtx);
