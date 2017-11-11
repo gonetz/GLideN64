@@ -355,9 +355,9 @@ void gSPLightCBFD( u32 l, s32 n )
 	Light *light = (Light*)&RDRAM[addrByte];
 
 	if (n < 12) {
-		gSP.lights.rgb[n][R] = light->r * 0.0039215689f;
-		gSP.lights.rgb[n][G] = light->g * 0.0039215689f;
-		gSP.lights.rgb[n][B] = light->b * 0.0039215689f;
+		gSP.lights.rgb[n][R] = _FIXED2FLOATCOLOR(light->r, 8);
+		gSP.lights.rgb[n][G] = _FIXED2FLOATCOLOR(light->g, 8);
+		gSP.lights.rgb[n][B] = _FIXED2FLOATCOLOR(light->b, 8);
 
 		gSP.lights.xyz[n][X] = light->x;
 		gSP.lights.xyz[n][Y] = light->y;
@@ -393,9 +393,9 @@ void gSPLightAcclaim(u32 l, s32 n)
 		gSP.lights.ca[n] = (f32)(((s16*)RDRAM)[(addrShort + 5) ^ 1]);
 		gSP.lights.la[n] = _FIXED2FLOAT((((u16*)RDRAM)[(addrShort + 6) ^ 1]), 16);
 		gSP.lights.qa[n] = (f32)(((u16*)RDRAM)[(addrShort + 7) ^ 1]);
-		gSP.lights.rgb[n][R] = _FIXED2FLOAT((RDRAM[(addrByte + 6) ^ 3]), 8);
-		gSP.lights.rgb[n][G] = _FIXED2FLOAT((RDRAM[(addrByte + 7) ^ 3]), 8);
-		gSP.lights.rgb[n][B] = _FIXED2FLOAT((RDRAM[(addrByte + 8) ^ 3]), 8);
+		gSP.lights.rgb[n][R] = _FIXED2FLOATCOLOR((RDRAM[(addrByte + 6) ^ 3]), 8);
+		gSP.lights.rgb[n][G] = _FIXED2FLOATCOLOR((RDRAM[(addrByte + 7) ^ 3]), 8);
+		gSP.lights.rgb[n][B] = _FIXED2FLOATCOLOR((RDRAM[(addrByte + 8) ^ 3]), 8);
 	}
 
 	gSP.changed |= CHANGED_LIGHT;
@@ -848,7 +848,7 @@ void gSPProcessVertex(u32 v, SPVertex * spVtx)
 					SPVertex & vtx = spVtx[v+i];
 					const f32 intensity = DotProduct(gSP.lookat.i_xyz[0], &vtx.nx) * 128.0f;
 					const s16 index = static_cast<s16>(intensity);
-					vtx.a = _FIXED2FLOAT(RDRAM[(gSP.DMAIO_address + 128 + index) ^ 3], 8);
+					vtx.a = _FIXED2FLOATCOLOR(RDRAM[(gSP.DMAIO_address + 128 + index) ^ 3], 8);
 				}
 			}
 		}
@@ -881,20 +881,20 @@ u32 gSPLoadVertexData(const Vertex *orgVtx, SPVertex * spVtx, u32 v0, u32 vi, u3
 			vtx.t = _FIXED2FLOAT( orgVtx->t, 5 );
 
 			if (gSP.geometryMode & G_LIGHTING) {
-				vtx.nx = _FIXED2FLOAT(orgVtx->normal.x, 7);
-				vtx.ny = _FIXED2FLOAT(orgVtx->normal.y, 7);
-				vtx.nz = _FIXED2FLOAT(orgVtx->normal.z, 7);
+				vtx.nx = _FIXED2FLOATCOLOR(orgVtx->normal.x, 7);
+				vtx.ny = _FIXED2FLOATCOLOR(orgVtx->normal.y, 7);
+				vtx.nz = _FIXED2FLOATCOLOR(orgVtx->normal.z, 7);
 				if (isHWLightingAllowed()) {
 					vtx.r = orgVtx->normal.x;
 					vtx.g = orgVtx->normal.y;
 					vtx.b = orgVtx->normal.z;
 				}
 			} else {
-				vtx.r = _FIXED2FLOAT(orgVtx->color.r, 8);
-				vtx.g = _FIXED2FLOAT(orgVtx->color.g, 8);
-				vtx.b = _FIXED2FLOAT(orgVtx->color.b, 8);
+				vtx.r = _FIXED2FLOATCOLOR(orgVtx->color.r, 8);
+				vtx.g = _FIXED2FLOATCOLOR(orgVtx->color.g, 8);
+				vtx.b = _FIXED2FLOATCOLOR(orgVtx->color.b, 8);
 			}
-			vtx.a = _FIXED2FLOAT(orgVtx->color.a, 8);
+			vtx.a = _FIXED2FLOATCOLOR(orgVtx->color.a, 8);
 
 			++orgVtx;
 		}
@@ -951,20 +951,20 @@ u32 gSPLoadCIVertexData(const PDVertex *orgVtx, SPVertex * spVtx, u32 v0, u32 vi
 			u8 *color = &RDRAM[gSP.vertexColorBase + (orgVtx->ci & 0xff)];
 
 			if (gSP.geometryMode & G_LIGHTING) {
-				vtx.nx = _FIXED2FLOAT((s8)color[3], 7);
-				vtx.ny = _FIXED2FLOAT((s8)color[2], 7);
-				vtx.nz = _FIXED2FLOAT((s8)color[1], 7);
+				vtx.nx = _FIXED2FLOATCOLOR((s8)color[3], 7);
+				vtx.ny = _FIXED2FLOATCOLOR((s8)color[2], 7);
+				vtx.nz = _FIXED2FLOATCOLOR((s8)color[1], 7);
 				if (isHWLightingAllowed()) {
 					vtx.r = (s8)color[3];
 					vtx.g = (s8)color[2];
 					vtx.b = (s8)color[1];
 				}
 			} else {
-				vtx.r = _FIXED2FLOAT(color[3], 8);
-				vtx.g = _FIXED2FLOAT(color[2], 8);
-				vtx.b = _FIXED2FLOAT(color[1], 8);
+				vtx.r = _FIXED2FLOATCOLOR(color[3], 8);
+				vtx.g = _FIXED2FLOATCOLOR(color[2], 8);
+				vtx.b = _FIXED2FLOATCOLOR(color[1], 8);
 			}
-			vtx.a = _FIXED2FLOAT(color[0], 8);
+			vtx.a = _FIXED2FLOATCOLOR(color[0], 8);
 
 			++orgVtx;
 		}
@@ -1016,10 +1016,10 @@ u32 gSPLoadDMAVertexData(u32 address, SPVertex * spVtx, u32 v0, u32 vi, u32 n)
 			vtx.y = *(s16*)&RDRAM[(address + 2) ^ 2];
 			vtx.z = *(s16*)&RDRAM[(address + 4) ^ 2];
 
-			vtx.r = _FIXED2FLOAT((*(u8*)&RDRAM[(address + 6) ^ 3]), 8);
-			vtx.g = _FIXED2FLOAT((*(u8*)&RDRAM[(address + 7) ^ 3]), 8);
-			vtx.b = _FIXED2FLOAT((*(u8*)&RDRAM[(address + 8) ^ 3]), 8);
-			vtx.a = _FIXED2FLOAT((*(u8*)&RDRAM[(address + 9) ^ 3]), 8);
+			vtx.r = _FIXED2FLOATCOLOR((*(u8*)&RDRAM[(address + 6) ^ 3]), 8);
+			vtx.g = _FIXED2FLOATCOLOR((*(u8*)&RDRAM[(address + 7) ^ 3]), 8);
+			vtx.b = _FIXED2FLOATCOLOR((*(u8*)&RDRAM[(address + 8) ^ 3]), 8);
+			vtx.a = _FIXED2FLOATCOLOR((*(u8*)&RDRAM[(address + 9) ^ 3]), 8);
 
 			address += 10;
 		}
@@ -1063,14 +1063,14 @@ u32 gSPLoadCBFDVertexData(const Vertex *orgVtx, SPVertex * spVtx, u32 v0, u32 vi
 			vtx.t = _FIXED2FLOAT( orgVtx->t, 5 );
 			if (gSP.geometryMode & G_LIGHTING) {
 				const u32 normaleAddrOffset = ((vi+j)<<1);
-				vtx.nx = _FIXED2FLOAT(((s8*)RDRAM)[(gSP.vertexNormalBase + normaleAddrOffset + 0) ^ 3], 7);
-				vtx.ny = _FIXED2FLOAT(((s8*)RDRAM)[(gSP.vertexNormalBase + normaleAddrOffset + 1) ^ 3], 7);
-				vtx.nz = _FIXED2FLOAT((s8)(orgVtx->flag & 0xFF), 7);
+				vtx.nx = _FIXED2FLOATCOLOR(((s8*)RDRAM)[(gSP.vertexNormalBase + normaleAddrOffset + 0) ^ 3], 7);
+				vtx.ny = _FIXED2FLOATCOLOR(((s8*)RDRAM)[(gSP.vertexNormalBase + normaleAddrOffset + 1) ^ 3], 7);
+				vtx.nz = _FIXED2FLOATCOLOR((s8)(orgVtx->flag & 0xFF), 7);
 			}
-			vtx.r = _FIXED2FLOAT(orgVtx->color.r, 8);
-			vtx.g = _FIXED2FLOAT(orgVtx->color.g, 8);
-			vtx.b = _FIXED2FLOAT(orgVtx->color.b, 8);
-			vtx.a = _FIXED2FLOAT(orgVtx->color.a, 8);
+			vtx.r = _FIXED2FLOATCOLOR(orgVtx->color.r, 8);
+			vtx.g = _FIXED2FLOATCOLOR(orgVtx->color.g, 8);
+			vtx.b = _FIXED2FLOATCOLOR(orgVtx->color.b, 8);
+			vtx.a = _FIXED2FLOATCOLOR(orgVtx->color.a, 8);
 			++orgVtx;
 		}
 		gSPProcessVertex<VNUM>(vi, spVtx);
@@ -1138,9 +1138,9 @@ u32 gSPLoadF3DAMVertexData(const Vertex *orgVtx, SPVertex * spVtx, u32 v0, u32 v
 			//vtx.flag = orgVtx->flag;
 			calcF3DAMTexCoords(orgVtx, vtx);
 			if (gSP.geometryMode & G_LIGHTING) {
-				vtx.nx = _FIXED2FLOAT( orgVtx->normal.x, 7 );
-				vtx.ny = _FIXED2FLOAT( orgVtx->normal.y, 7 );
-				vtx.nz = _FIXED2FLOAT( orgVtx->normal.z, 7 );
+				vtx.nx = _FIXED2FLOATCOLOR( orgVtx->normal.x, 7 );
+				vtx.ny = _FIXED2FLOATCOLOR( orgVtx->normal.y, 7 );
+				vtx.nz = _FIXED2FLOATCOLOR( orgVtx->normal.z, 7 );
 				vtx.a = orgVtx->color.a * 0.0039215689f;
 			} else {
 				vtx.r = orgVtx->color.r * 0.0039215689f;
@@ -1260,10 +1260,10 @@ void gSPT3DUXVertex(u32 a, u32 n, u32 ci)
 			vtx.z = vertex->z;
 			vtx.s = 0;
 			vtx.t = 0;
-			vtx.r = _FIXED2FLOAT(color->r, 8);
-			vtx.g = _FIXED2FLOAT(color->g, 8);
-			vtx.b = _FIXED2FLOAT(color->b, 8);
-			vtx.a = _FIXED2FLOAT(color->a, 8);
+			vtx.r = _FIXED2FLOATCOLOR(color->r, 8);
+			vtx.g = _FIXED2FLOATCOLOR(color->g, 8);
+			vtx.b = _FIXED2FLOATCOLOR(color->b, 8);
+			vtx.a = _FIXED2FLOATCOLOR(color->a, 8);
 			vertex++;
 			color++;
 		}
@@ -1277,10 +1277,10 @@ void gSPT3DUXVertex(u32 a, u32 n, u32 ci)
 		vtx.z = vertex->z;
 		vtx.s = 0;
 		vtx.t = 0;
-		vtx.r = _FIXED2FLOAT(color->r, 8);
-		vtx.g = _FIXED2FLOAT(color->g, 8);
-		vtx.b = _FIXED2FLOAT(color->b, 8);
-		vtx.a = _FIXED2FLOAT(color->a, 8);
+		vtx.r = _FIXED2FLOATCOLOR(color->r, 8);
+		vtx.g = _FIXED2FLOATCOLOR(color->g, 8);
+		vtx.b = _FIXED2FLOATCOLOR(color->b, 8);
+		vtx.a = _FIXED2FLOATCOLOR(color->a, 8);
 		gSPProcessVertex<1>(i, spVtx);
 		vertex++;
 		color++;
