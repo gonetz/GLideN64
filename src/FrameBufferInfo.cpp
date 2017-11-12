@@ -1,3 +1,4 @@
+#include <assert.h>
 #include "FrameBufferInfoAPI.h"
 #include "FrameBufferInfo.h"
 #include "Config.h"
@@ -13,59 +14,68 @@ namespace FBInfo {
 	FBInfo fbInfo;
 
 	FBInfo::FBInfo()
-		: m_pWriteBuffer(nullptr)
-		, m_pReadBuffer(nullptr)
-		, m_supported(false)
-	{}
+	{
+		reset();
+	}
 
 	void FBInfo::reset() {
 		m_supported = false;
-		m_pWriteBuffer = m_pReadBuffer = nullptr;
+		m_writeBuffers.fill(nullptr);
+		m_readBuffers.fill(nullptr);
 	}
+
+	FBInfo::BufferSearchResult FBInfo::_findBuffer(const BuffersArray& _buffers, const FrameBuffer* _buf) const
+	{
+		u32 i = 0;
+		while (_buffers[i] != nullptr) {
+			if (_buffers[i++] == _buf)
+				return BufferSearchResult(true, i);
+		}
+		assert(i < _buffers.size());
+		return BufferSearchResult(false, i);
+	}
+
 
 	void FBInfo::Write(u32 addr, u32 size)
 	{
-		// TODO: remove debug print
-		//debugPrint("FBWrite addr=%08lx size=%u\n", addr, size);
-
 		const u32 address = RSP_SegmentToPhysical(addr);
-		if (m_pWriteBuffer == nullptr)
-			m_pWriteBuffer = frameBufferList().findBuffer(address);
+		const FrameBuffer* writeBuffer = frameBufferList().findBuffer(address);
+		if (writeBuffer == nullptr)
+			return;
+		const auto findRes = _findBuffer(m_writeBuffers, writeBuffer);
+		if (!findRes.first)
+			m_writeBuffers[findRes.second] = writeBuffer;
 		FrameBuffer_AddAddress(address, size);
 	}
 
 	void FBInfo::WriteList(FrameBufferModifyEntry *plist, u32 size)
 	{
-		debugPrint("FBWList size=%u\n", size);
-		for (u32 i = 0; i < size; ++i)
-			debugPrint(" plist[%u] addr=%08lx val=%08lx size=%u\n", i, plist[i].addr, plist[i].val, plist[i].size);
-		const u32 address = RSP_SegmentToPhysical(plist[0].addr);
-		m_pWriteBuffer = frameBufferList().findBuffer(address);
+		LOG(LOG_WARNING, "FBWList size=%u\n", size);
 	}
 
 	void FBInfo::Read(u32 addr)
 	{
-		// TODO: remove debug print
-		//debugPrint("FBRead addr=%08lx \n", addr);
-
 		const u32 address = RSP_SegmentToPhysical(addr);
 		FrameBuffer * pBuffer = frameBufferList().findBuffer(address);
-		if (pBuffer == nullptr || pBuffer == m_pWriteBuffer)
+
+		if (pBuffer == nullptr || _findBuffer(m_writeBuffers, pBuffer).first)
 			return;
 
+		const auto findRes = _findBuffer(m_readBuffers, pBuffer);
 		if (pBuffer->m_isDepthBuffer) {
 			if (config.frameBufferEmulation.fbInfoReadDepthChunk != 0)
 				FrameBuffer_CopyDepthBufferChunk(address);
-			else if (pBuffer != m_pReadBuffer)
+			else if (!findRes.first)
 				FrameBuffer_CopyDepthBuffer(address);
 		} else {
 			if (config.frameBufferEmulation.fbInfoReadColorChunk != 0)
 				FrameBuffer_CopyChunkToRDRAM(address);
-			else if (pBuffer != m_pReadBuffer)
+			else if (!findRes.first)
 				FrameBuffer_CopyToRDRAM(address, true);
 		}
 
-		m_pReadBuffer = pBuffer;
+		if (!findRes.first)
+			m_readBuffers[findRes.second] = pBuffer;
 	}
 
 	void FBInfo::GetInfo(void *pinfo)
@@ -87,7 +97,8 @@ namespace FBInfo {
 		}
 		frameBufferList().fillBufferInfo(&pFBInfo[idx], 6 - idx);
 
-		m_pWriteBuffer = m_pReadBuffer = nullptr;
+		m_writeBuffers.fill(nullptr);
+		m_readBuffers.fill(nullptr);
 		m_supported = true;
 	}
 }
