@@ -1,11 +1,7 @@
 #ifndef _FRAME_BUFFER_INFO_H_
 #define _FRAME_BUFFER_INFO_H_
 
-#ifdef OS_WINDOWS
-# include <windows.h>
-#else
-# include "winlnxdefs.h"
-#endif // OS_WINDOWS
+#include "Platform.h"
 
 #include "Types.h"
 #include "PluginAPI.h"
