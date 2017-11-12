@@ -7,6 +7,7 @@
 # include "winlnxdefs.h"
 #endif // OS_WINDOWS
 
+#include <array>
 #include "Types.h"
 #include "PluginAPI.h"
 
@@ -46,8 +47,12 @@ namespace FBInfo {
 		void reset();
 
 	private:
-		const FrameBuffer * m_pWriteBuffer;
-		const FrameBuffer * m_pReadBuffer;
+		using BuffersArray = std::array<const FrameBuffer*, 6>;
+		using BufferSearchResult = std::pair<bool, u32>;
+		BufferSearchResult _findBuffer(const BuffersArray& _buffers, const FrameBuffer* _buf) const;
+
+		BuffersArray m_writeBuffers;
+		BuffersArray m_readBuffers;
 		bool m_supported;
 	};
 
