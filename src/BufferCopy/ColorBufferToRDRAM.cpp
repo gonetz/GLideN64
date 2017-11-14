@@ -308,10 +308,16 @@ void ColorBufferToRDRAM::copyToRDRAM(u32 _address, bool _sync)
 
 void ColorBufferToRDRAM::copyChunkToRDRAM(u32 _address)
 {
-	if (!_prepareCopy(_address))
+	FrameBuffer * pBuffer = frameBufferList().findBuffer(_address);
+	u32 startAddr = _address & ~0xfff;
+	u32 endAddr = startAddr + 0x1000;
+
+	if (startAddr < pBuffer->m_startAddress)
+		startAddr = pBuffer->m_startAddress;
+
+	if (!_prepareCopy(startAddr))
 		return;
-	const u32 addr = _address & ~0xfff;
-	_copy(addr, addr + 0x1000, true);
+	_copy(startAddr, endAddr, true);
 }
 
 

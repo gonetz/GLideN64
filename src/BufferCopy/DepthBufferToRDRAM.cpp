@@ -296,9 +296,19 @@ bool DepthBufferToRDRAM::copyChunkToRDRAM(u32 _address)
 	if (!m_pbuf)
 		return false;
 
-	if (!_prepareCopy(_address, true))
+	FrameBuffer *pBuffer = frameBufferList().findBuffer(_address);
+	FrameBuffer *pDepthFrameBuffer = frameBufferList().findBuffer(pBuffer->m_pDepthBuffer->m_address);
+	if (pDepthFrameBuffer != nullptr)
+		pBuffer = pDepthFrameBuffer;
+
+	u32 startAddr = _address & ~0xfff;
+	u32 endAddr = startAddr + 0x1000;
+
+	if (startAddr < pBuffer->m_pDepthBuffer->m_address)
+		startAddr = pBuffer->m_pDepthBuffer->m_address;
+
+	if (!_prepareCopy(startAddr, true))
 		return false;
 
-	const u32 addr = _address & ~0xfff;
-	return _copy(addr, addr + 0x1000);
+	return _copy(startAddr, endAddr);
 }
