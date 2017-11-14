@@ -144,7 +144,7 @@ void DepthBufferToRDRAM::destroy() {
 	m_pbuf.reset();
 }
 
-bool DepthBufferToRDRAM::_prepareCopy(u32 _address, bool _copyChunk)
+bool DepthBufferToRDRAM::_prepareCopy(u32& _startAddress, bool _copyChunk)
 {
 	const u32 curFrame = dwnd().getBuffersSwapCount();
 	if (_copyChunk && m_frameCount == curFrame)
@@ -153,7 +153,7 @@ bool DepthBufferToRDRAM::_prepareCopy(u32 _address, bool _copyChunk)
 	if ((VI.width | VI.height) == 0) // Incorrect buffer size. Don't copy
 		return false;
 
-	FrameBuffer *pBuffer = frameBufferList().findBuffer(_address);
+	FrameBuffer *pBuffer = frameBufferList().findBuffer(_startAddress);
 	if (pBuffer == nullptr || pBuffer->isAuxiliary() || pBuffer->m_pDepthBuffer == nullptr || !pBuffer->m_pDepthBuffer->m_cleared)
 		return false;
 
@@ -167,13 +167,17 @@ bool DepthBufferToRDRAM::_prepareCopy(u32 _address, bool _copyChunk)
 		return false;
 
 	const u32 numPixels = m_pCurFrameBuffer->m_width * m_pCurFrameBuffer->m_height;
-	const u32 address = m_pCurFrameBuffer->m_pDepthBuffer->m_address;
-	if (address + numPixels * 2 > RDRAMSize)
+	const u32 bufferOrigin = m_pCurFrameBuffer->m_pDepthBuffer->m_address;
+	if (bufferOrigin + numPixels * 2 > RDRAMSize)
 		return false;
 
-	const u32 height = cutHeight(address, m_pCurFrameBuffer->m_height, m_pCurFrameBuffer->m_width * 2);
+	const u32 height = cutHeight(bufferOrigin, m_pCurFrameBuffer->m_height, m_pCurFrameBuffer->m_width * 2);
 	if (height == 0)
 		return false;
+
+	_startAddress &= ~0xfff;
+	if (_startAddress < bufferOrigin)
+		_startAddress = bufferOrigin;
 
 	ObjectHandle readBuffer = pBuffer->m_FBO;
 	if (config.video.multisampling != 0) {
@@ -288,7 +292,7 @@ bool DepthBufferToRDRAM::copyToRDRAM(u32 _address)
 	return _copy(m_pCurFrameBuffer->m_pDepthBuffer->m_address, endAddress);
 }
 
-bool DepthBufferToRDRAM::copyChunkToRDRAM(u32 _address)
+bool DepthBufferToRDRAM::copyChunkToRDRAM(u32 _startAddress)
 {
 	if (config.frameBufferEmulation.copyDepthToRDRAM == Config::cdSoftwareRender)
 		return true;
@@ -296,9 +300,10 @@ bool DepthBufferToRDRAM::copyChunkToRDRAM(u32 _address)
 	if (!m_pbuf)
 		return false;
 
-	if (!_prepareCopy(_address, true))
+	const u32 endAddress = (_startAddress & ~0xfff) + 0x1000;
+
+	if (!_prepareCopy(_startAddress, true))
 		return false;
 
-	const u32 addr = _address & ~0xfff;
-	return _copy(addr, addr + 0x1000);
+	return _copy(_startAddress, endAddress);
 }

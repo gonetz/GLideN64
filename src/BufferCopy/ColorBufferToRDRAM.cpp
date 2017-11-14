@@ -128,7 +128,7 @@ void ColorBufferToRDRAM::_destroyFBTexure(void)
 	}
 }
 
-bool ColorBufferToRDRAM::_prepareCopy(u32 _startAddress)
+bool ColorBufferToRDRAM::_prepareCopy(u32& _startAddress)
 {
 	if (VI.width == 0 || frameBufferList().getCurrent() == nullptr)
 		return false;
@@ -139,6 +139,10 @@ bool ColorBufferToRDRAM::_prepareCopy(u32 _startAddress)
 
 	DisplayWindow & wnd = dwnd();
 	const u32 curFrame = wnd.getBuffersSwapCount();
+
+	_startAddress &= ~0xfff;
+	if (_startAddress < pBuffer->m_startAddress)
+		_startAddress = pBuffer->m_startAddress;
 
 	if (m_frameCount == curFrame && pBuffer == m_pCurFrameBuffer && m_startAddress != _startAddress)
 		return true;
@@ -320,12 +324,13 @@ void ColorBufferToRDRAM::copyToRDRAM(u32 _address, bool _sync)
 	_copy(m_pCurFrameBuffer->m_startAddress, m_pCurFrameBuffer->m_startAddress + numBytes, _sync);
 }
 
-void ColorBufferToRDRAM::copyChunkToRDRAM(u32 _address)
+void ColorBufferToRDRAM::copyChunkToRDRAM(u32 _startAddress)
 {
-	if (!_prepareCopy(_address))
+	const u32 endAddress = (_startAddress & ~0xfff) + 0x1000;
+
+	if (!_prepareCopy(_startAddress))
 		return;
-	const u32 addr = _address & ~0xfff;
-	_copy(addr, addr + 0x1000, true);
+	_copy(_startAddress, endAddress, true);
 }
 
 

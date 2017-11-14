@@ -18,7 +18,7 @@ public:
 	void destroy();
 
 	bool copyToRDRAM(u32 _address);
-	bool copyChunkToRDRAM(u32 _address);
+	bool copyChunkToRDRAM(u32 _startAddress);
 
 	static DepthBufferToRDRAM & get();
 
@@ -26,7 +26,7 @@ private:
 	DepthBufferToRDRAM();
 	~DepthBufferToRDRAM();
 
-	bool _prepareCopy(u32 _address, bool _copyChunk);
+	bool _prepareCopy(u32& _startAddress, bool _copyChunk);
 	bool _copy(u32 _startAddress, u32 _endAddress);
 
 	// Convert pixel from video memory to N64 depth buffer format.
