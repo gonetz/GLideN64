@@ -19,7 +19,7 @@ void writeToRdram(TSrc* _src, TDst* _dst, TDst(*converter)(TSrc _c), TSrc _testV
 	TSrc c;
 	if (chunkStart > 0) {
 		for (u32 x = chunkStart; x < _width; ++x) {
-			c = _src[x + (_height - 1)*_width];
+			c = _src[x];
 			if (c != _testValue)
 				_dst[numStored ^ _xor] = converter(c);
 			++numStored;
