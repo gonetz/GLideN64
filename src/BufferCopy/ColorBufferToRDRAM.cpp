@@ -254,8 +254,8 @@ void ColorBufferToRDRAM::_copy(u32 _startAddress, u32 _endAddress, bool _sync)
 
 	const u32 width = m_pCurFrameBuffer->m_width;
 	const s32 x0 = 0;
-	const s32 y0 = max_height - (_endAddress - m_pCurFrameBuffer->m_startAddress) / stride;
-	const u32 y1 = max_height - (_startAddress - m_pCurFrameBuffer->m_startAddress) / stride;
+	const s32 y0 = (_startAddress - m_pCurFrameBuffer->m_startAddress) / stride;
+	const u32 y1 = (_endAddress - m_pCurFrameBuffer->m_startAddress) / stride;
 	const u32 height = std::min(max_height, 1u + y1 - y0);
 
 	const u8* pPixels = m_bufferReader->readPixels(x0, y0, width, height, m_pCurFrameBuffer->m_size, _sync);
