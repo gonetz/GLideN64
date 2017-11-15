@@ -22,7 +22,7 @@ void clipTest(vertexclip & _vtx)
 }
 
 static
-bool calcScreenCoordinates(SPVertex * _vsrc, vertexclip * _vclip, u32 _numVertex)
+bool calcScreenCoordinates(SPVertex * _vsrc, vertexclip * _vclip, u32 _numVertex, bool & _clockwise)
 {
 	for (u32 i = 0; i < _numVertex; ++i) {
 		SPVertex & v = _vsrc[i];
@@ -47,21 +47,21 @@ bool calcScreenCoordinates(SPVertex * _vsrc, vertexclip * _vclip, u32 _numVertex
 	if (_numVertex > 3) // Don't cull w-clipped vertices
 		return true;
 
-	const u32 cullMode = (gSP.geometryMode & G_CULL_BOTH);
-	if (cullMode == 0 || cullMode == G_CULL_BOTH)
-		return true;
-
 	// Check culling
 	const float x1 = _vclip[0].x - _vclip[1].x;
 	const float y1 = _vclip[0].y - _vclip[1].y;
 	const float x2 = _vclip[2].x - _vclip[1].x;
 	const float y2 = _vclip[2].y - _vclip[1].y;
 
-	if ((gSP.geometryMode & G_CULL_BACK) != 0) {
-		if ((x1*y2 - y1*x2) < 0.0f) //counter-clockwise, positive
+	_clockwise = (x1*y2 - y1*x2) >= 0.0f;
+
+	const u32 cullMode = (gSP.geometryMode & G_CULL_BOTH);
+
+	if (cullMode == G_CULL_FRONT) {
+		if (_clockwise) //clockwise, negative
 			return false;
-	} else {
-		if ((x1*y2 - y1*x2) >= 0.0f) //clockwise, negative
+	} else if (cullMode == G_CULL_BACK) {
+		if (!_clockwise) //counter-clockwise, positive
 			return false;
 	}
 
@@ -188,27 +188,28 @@ f32 renderTriangles(const SPVertex * _pVertices, const u8 * _pElements, u32 _num
 
 		u32 numVertex = clipW(vsrc, vdata);
 
-		if (!calcScreenCoordinates(vdata, vclip, numVertex))
+		bool clockwise = true;
+		if (!calcScreenCoordinates(vdata, vclip, numVertex, clockwise))
 			continue;
 
 		const int dzdx = ((orbits & CLIP_W) == 0) ? calcDzDx(vclip) : calcDzDx2(vsrc);
 
 		if (orbits == 0) {
 			assert(numVertex == 3);
-			if ((gSP.geometryMode & G_CULL_FRONT) != 0) {
+			if (clockwise) {
+				for (int k = 0; k < 3; ++k) {
+					maxY = std::max(maxY, vclip[k].y);
+					vdraw[k].x = floatToFixed16(vclip[k].x);
+					vdraw[k].y = floatToFixed16(vclip[k].y);
+					vdraw[k].z = floatToFixed16(vclip[k].z);
+				}
+			} else {
 				for (int k = 0; k < 3; ++k) {
 					const u32 idx = 3 - k - 1;
 					maxY = std::max(maxY, vclip[idx].y);
 					vdraw[k].x = floatToFixed16(vclip[idx].x);
 					vdraw[k].y = floatToFixed16(vclip[idx].y);
 					vdraw[k].z = floatToFixed16(vclip[idx].z);
-				}
-			} else {
-				for (int k = 0; k < 3; ++k) {
-					maxY = std::max(maxY, vclip[k].y);
-					vdraw[k].x = floatToFixed16(vclip[k].x);
-					vdraw[k].y = floatToFixed16(vclip[k].y);
-					vdraw[k].z = floatToFixed16(vclip[k].z);
 				}
 			}
 		} else {
@@ -217,20 +218,20 @@ f32 renderTriangles(const SPVertex * _pVertices, const u8 * _pElements, u32 _num
 			if (numVertex < 3)
 				continue;
 
-			if ((gSP.geometryMode & G_CULL_FRONT) != 0) {
+			if (clockwise) {
+				for (u32 k = 0; k < numVertex; ++k) {
+					maxY = std::max(maxY, vtx[k]->y);
+					vdraw[k].x = floatToFixed16(vtx[k]->x);
+					vdraw[k].y = floatToFixed16(vtx[k]->y);
+					vdraw[k].z = floatToFixed16(vtx[k]->z);
+				}
+			} else {
 				for (u32 k = 0; k < numVertex; ++k) {
 					const u32 idx = numVertex - k - 1;
 					maxY = std::max(maxY, vtx[idx]->y);
 					vdraw[k].x = floatToFixed16(vtx[idx]->x);
 					vdraw[k].y = floatToFixed16(vtx[idx]->y);
 					vdraw[k].z = floatToFixed16(vtx[idx]->z);
-				}
-			} else {
-				for (u32 k = 0; k < numVertex; ++k) {
-					maxY = std::max(maxY, vtx[k]->y);
-					vdraw[k].x = floatToFixed16(vtx[k]->x);
-					vdraw[k].y = floatToFixed16(vtx[k]->y);
-					vdraw[k].z = floatToFixed16(vtx[k]->z);
 				}
 			}
 		}
