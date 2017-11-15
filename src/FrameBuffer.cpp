@@ -256,7 +256,7 @@ bool FrameBuffer::isValid(bool _forceCheck) const
 	if (m_cleared) {
 		const u32 testColor = m_clearParams.fillcolor & 0xFFFEFFFE;
 		const u32 stride = m_width << m_size >> 1;
-		const u32 lry = _cutHeight(m_startAddress, m_clearParams.lry, stride);
+		const s32 lry = (s32)_cutHeight(m_startAddress, m_clearParams.lry, stride);
 		if (lry == 0)
 			return false;
 
@@ -264,8 +264,8 @@ bool FrameBuffer::isValid(bool _forceCheck) const
 		const u32 start = (m_startAddress >> 2) + m_clearParams.uly * ci_width_in_dwords;
 		const u32 * dst = pData + start;
 		u32 wrongPixels = 0;
-		for (u32 y = m_clearParams.uly; y < lry; ++y) {
-			for (u32 x = m_clearParams.ulx; x < m_clearParams.lrx; ++x) {
+		for (s32 y = m_clearParams.uly; y < lry; ++y) {
+			for (s32 x = m_clearParams.ulx; x < m_clearParams.lrx; ++x) {
 				if ((dst[x] & 0xFFFEFFFE) != testColor)
 					++wrongPixels;
 			}
@@ -1221,10 +1221,10 @@ void FrameBufferList::fillRDRAM(s32 ulx, s32 uly, s32 lrx, s32 lry)
 	if (m_pCurrent == nullptr)
 		return;
 
-	ulx = min(max((float)ulx, gDP.scissor.ulx), gDP.scissor.lrx);
-	lrx = min(max((float)lrx, gDP.scissor.ulx), gDP.scissor.lrx);
-	uly = min(max((float)uly, gDP.scissor.uly), gDP.scissor.lry);
-	lry = min(max((float)lry, gDP.scissor.uly), gDP.scissor.lry);
+	ulx = (s32)min(max((float)ulx, gDP.scissor.ulx), gDP.scissor.lrx);
+	lrx = (s32)min(max((float)lrx, gDP.scissor.ulx), gDP.scissor.lrx);
+	uly = (s32)min(max((float)uly, gDP.scissor.uly), gDP.scissor.lry);
+	lry = (s32)min(max((float)lry, gDP.scissor.uly), gDP.scissor.lry);
 
 	const u32 stride = gDP.colorImage.width << gDP.colorImage.size >> 1;
 	const u32 lowerBound = gDP.colorImage.address + lry*stride;
@@ -1235,8 +1235,8 @@ void FrameBufferList::fillRDRAM(s32 ulx, s32 uly, s32 lrx, s32 lry)
 	lrx >>= (3 - gDP.colorImage.size);
 	u32 * dst = (u32*)(RDRAM + gDP.colorImage.address);
 	dst += uly * ci_width_in_dwords;
-	for (u32 y = uly; y < lry; ++y) {
-		for (u32 x = ulx; x < lrx; ++x) {
+	for (s32 y = uly; y < lry; ++y) {
+		for (s32 x = ulx; x < lrx; ++x) {
 			dst[x] = gDP.fillColor.color;
 		}
 		dst += ci_width_in_dwords;

@@ -485,7 +485,7 @@ void gSPLightVertexStandard(u32 v, SPVertex * spVtx)
 			vtx.b = gSP.lights.rgb[gSP.numLights][B];
 			vtx.HWLight = 0;
 
-			for (int i = 0; i < gSP.numLights; ++i) {
+			for (u32 i = 0; i < gSP.numLights; ++i) {
 				const f32 intensity = DotProduct( &vtx.nx, gSP.lights.i_xyz[i] );
 				if (intensity > 0.0f) {
 					vtx.r += gSP.lights.rgb[i][R] * intensity;
@@ -1575,10 +1575,10 @@ void gSPInsertMatrix( u32 where, u32 num )
 
 	if (where < 0x20) {
 		fraction = modff( gSP.matrix.combined[0][where >> 1], &integer );
-		gSP.matrix.combined[0][where >> 1] = (s16)_SHIFTR( num, 16, 16 ) + abs( (int)fraction );
+		gSP.matrix.combined[0][where >> 1] = (f32)((s16)_SHIFTR( num, 16, 16 ) + abs( (int)fraction ));
 
 		fraction = modff( gSP.matrix.combined[0][(where >> 1) + 1], &integer );
-		gSP.matrix.combined[0][(where >> 1) + 1] = (s16)_SHIFTR( num, 0, 16 ) + abs( (int)fraction );
+		gSP.matrix.combined[0][(where >> 1) + 1] = (f32)((s16)_SHIFTR( num, 0, 16 ) + abs( (int)fraction ));
 	} else {
 		f32 newValue;
 
@@ -1720,7 +1720,7 @@ void gSPCoordMod(u32 _w0, u32 _w1)
 	}
 }
 
-void gSPTexture( f32 sc, f32 tc, s32 level, s32 tile, s32 on )
+void gSPTexture( f32 sc, f32 tc, u32 level, u32 tile, u32 on )
 {
 	gSP.texture.on = on;
 	if (on == 0) {
@@ -2020,8 +2020,8 @@ struct ObjCoordinates
 		}
 
 		uls = ult = 0;
-		lrs = data.imageW - 1;
-		lrt = data.imageH - 1;
+		lrs = (f32)(data.imageW - 1);
+		lrt = (f32)(data.imageH - 1);
 		if (data.flipS) {
 			uls = lrs;
 			lrs = 0;
@@ -2158,7 +2158,7 @@ void _drawYUVImageToFrameBuffer(const ObjCoordinates & _objCoords)
 	const u32 lrx = (u32)_objCoords.lrx;
 	const u32 lry = (u32)_objCoords.lry;
 	const u32 ci_width = gDP.colorImage.width;
-	const u32 ci_height = gDP.scissor.lry;
+	const u32 ci_height = (u32)gDP.scissor.lry;
 	if (ulx >= ci_width)
 		return;
 	if (uly >= ci_height)
@@ -2375,15 +2375,21 @@ void gSPObjSprite(u32 _sp)
 	const f32 lrx = data.X1;
 	const f32 lry = data.Y1;
 
-	float uls = 0, lrs =  data.imageW - 1, ult = 0, lrt = data.imageH - 1;
+	f32 uls = 0;
+	f32 lrs = (f32)(data.imageW - 1);
+	f32 ult = 0;
+	f32 lrt = (f32)(data.imageH - 1);
+
 	if (objSprite->imageFlags & 0x01) { // flipS
 		uls = lrs;
 		lrs = 0;
 	}
+
 	if (objSprite->imageFlags & 0x10) { // flipT
 		ult = lrt;
 		lrt = 0;
 	}
+
 	const float z = (gDP.otherMode.depthSource == G_ZS_PRIM) ? gDP.primDepth.z : gSP.viewport.nearz;
 
 	GraphicsDrawer & drawer = dwnd().getDrawer();

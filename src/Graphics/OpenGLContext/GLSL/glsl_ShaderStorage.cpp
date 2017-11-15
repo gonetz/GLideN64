@@ -235,7 +235,7 @@ bool ShaderStorage::_loadFromCombinerKeys(graphics::Combiners & _combiners)
 
 	u32 hwlSupport;
 	fin >> std::hex >> hwlSupport;
-	GBI.setHWLSupported(static_cast<bool>(hwlSupport));
+	GBI.setHWLSupported(hwlSupport != 0);
 
 	displayLoadProgress(L"LOAD COMBINER SHADERS %.1f%%", 0.0f);
 

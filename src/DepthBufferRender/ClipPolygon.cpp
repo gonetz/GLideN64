@@ -95,7 +95,7 @@ int ClipPolygon(vertexclip *** final, vertexclip * vbp, int numVertices)
 		} else if ((src2->visible & RIGHT) != VISIBLE)
 			continue;
 		float a = (RightClip - src1->x) / (src2->x - src1->x);
-		float ima = 1.0 - a;
+		float ima = 1.0f - a;
 		dst[dsti] = vbp++;                      // create new vertex
 		dst[dsti]->y = src1->y*ima + src2->y*a;
 		dst[dsti]->x = RightClip;
@@ -120,7 +120,7 @@ int ClipPolygon(vertexclip *** final, vertexclip * vbp, int numVertices)
 		} else if((src2->visible & LEFT) != VISIBLE)
 			continue;
 		float a = (LeftClip - src1->x) / (src2->x - src1->x);
-		float ima = 1.0-a;
+		float ima = 1.0f - a;
 		dst[dsti] = vbp++;                      // create new vertex
 		dst[dsti]->y = src1->y*ima + src2->y*a;
 		dst[dsti]->x = LeftClip;
@@ -145,7 +145,7 @@ int ClipPolygon(vertexclip *** final, vertexclip * vbp, int numVertices)
 		} else if((src2->visible & TOP) != VISIBLE)
 			continue;
 		float a = (TopClip - src1->y) / (src2->y - src1->y);
-		float ima = 1.0-a;
+		float ima = 1.0f - a;
 		dst[dsti] = vbp++;                      // create new vertex
 		dst[dsti]->x = src1->x*ima + src2->x*a;
 		dst[dsti]->y = TopClip;
@@ -170,7 +170,7 @@ int ClipPolygon(vertexclip *** final, vertexclip * vbp, int numVertices)
 		} else if((src2->visible & BOT) != VISIBLE)
 			continue;
 		float a = (BotClip - src1->y) / (src2->y - src1->y);
-		float ima = 1.0-a;
+		float ima = 1.0f - a;
 		dst[dsti] = vbp++;                      // create new vertex
 		dst[dsti]->x = src1->x*ima + src2->x*a;
 		dst[dsti]->y = BotClip;

@@ -87,7 +87,7 @@ void UnbufferedDrawer::drawTriangles(const graphics::Context::DrawTriangleParame
 	}
 
 	// Draw polygons one by one
-	for (GLint i = 0; i < _params.elementsCount; i += 3) {
+	for (GLuint i = 0; i < _params.elementsCount; i += 3) {
 		glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 		glDrawElements(GLenum(_params.mode), 3, GL_UNSIGNED_BYTE, (u8*)_params.elements + i);
 	}

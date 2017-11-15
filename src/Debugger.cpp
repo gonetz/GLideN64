@@ -451,7 +451,7 @@ void Debugger::_drawTextureCache()
 	const f32 Z = 0.0f;
 	const f32 W = 1.0f;
 
-	if (m_clickY >= wnd.getHeight() * 5 / 8) {
+	if (m_clickY >= (long)(wnd.getHeight() * 5 / 8)) {
 		long y = m_clickY - wnd.getHeight() * 5 / 8;
 		m_selectedTexPos[m_tmu].row = y * m_cacheViewerRows/ areaHeight;
 		m_selectedTexPos[m_tmu].col = m_clickX * m_cacheViewerCols/ wnd.getWidth();
@@ -1090,7 +1090,7 @@ void Debugger::_drawMouseCursor()
 	const u32 winWidth = wnd.getWidth();
 	const u32 winHeight = wnd.getHeight();
 
-	if (x < 0 || x > winWidth || y < 0 || y > winHeight)
+	if (x < 0 || x > (long)winWidth || y < 0 || y > (long)winHeight)
 		return;
 
 	const f32 scaleX = 1.0f / winWidth;
@@ -1134,8 +1134,8 @@ void Debugger::_findSelected()
 	const long x = m_clickX;
 	const long y = m_clickY;
 	DisplayWindow & wnd = dwnd();
-	const u32 winWidth = wnd.getWidth();
-	const u32 winHeight = wnd.getHeight();
+	const long winWidth = (long)wnd.getWidth();
+	const long winHeight = (long)wnd.getHeight();
 
 	if (x < 0 || x > winWidth || y < 0 || y > winHeight)
 		return;

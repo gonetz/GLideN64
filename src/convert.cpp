@@ -110,7 +110,7 @@ void UnswapCopyWrap(const u8 *src, u32 srcIdx, u8 *dest, u32 destIdx, u32 destMa
 		numBytes -= leadingBytes;
 
 		srcIdx ^= 3;
-		for (int i = 0; i < leadingBytes; i++) {
+		for (u32 i = 0; i < leadingBytes; i++) {
 			dest[destIdx&destMask] = src[srcIdx];
 			++destIdx;
 			--srcIdx;

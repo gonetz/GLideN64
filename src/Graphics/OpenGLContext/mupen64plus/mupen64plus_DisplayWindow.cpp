@@ -202,9 +202,9 @@ void DisplayWindowMupen64plus::_readScreen2(void * _dest, int * _width, int * _h
 #endif
 
 	//Convert RGBA to RGB
-	for (u32 y = 0; y < *_height; ++y) {
+	for (s32 y = 0; y < *_height; ++y) {
 		u8 *ptr = pBufferData + ((*_width) * 4 * y);
-		for (u32 x = 0; x < *_width; ++x) {
+		for (s32 x = 0; x < *_width; ++x) {
 			pDest[x * 3] = ptr[0]; // red
 			pDest[x * 3 + 1] = ptr[1]; // green
 			pDest[x * 3 + 2] = ptr[2]; // blue

@@ -22,7 +22,7 @@ void clipTest(vertexclip & _vtx)
 }
 
 static
-bool calcScreenCoordinates(SPVertex * _vsrc, vertexclip * _vclip, int _numVertex)
+bool calcScreenCoordinates(SPVertex * _vsrc, vertexclip * _vclip, u32 _numVertex)
 {
 	for (u32 i = 0; i < _numVertex; ++i) {
 		SPVertex & v = _vsrc[i];
@@ -139,9 +139,9 @@ void copyVertex(SPVertex & _dst, const SPVertex * _src)
 }
 
 static
-int clipW(const SPVertex ** _vsrc, SPVertex * _vdst)
+u32 clipW(const SPVertex ** _vsrc, SPVertex * _vdst)
 {
-	int dsti = 0;
+	u32 dsti = 0;
 	for (int n = 0; n < 3; ++n) {
 		const SPVertex * src1 = _vsrc[n];               // current vertex
 		const SPVertex * src2 = _vsrc[n + 1];           // next vertex
@@ -186,7 +186,7 @@ f32 renderTriangles(const SPVertex * _pVertices, const u8 * _pElements, u32 _num
 		}
 		vsrc[3] = vsrc[0];
 
-		int numVertex = clipW(vsrc, vdata);
+		u32 numVertex = clipW(vsrc, vdata);
 
 		if (!calcScreenCoordinates(vdata, vclip, numVertex))
 			continue;
@@ -218,7 +218,7 @@ f32 renderTriangles(const SPVertex * _pVertices, const u8 * _pElements, u32 _num
 				continue;
 
 			if ((gSP.geometryMode & G_CULL_FRONT) != 0) {
-				for (int k = 0; k < numVertex; ++k) {
+				for (u32 k = 0; k < numVertex; ++k) {
 					const u32 idx = numVertex - k - 1;
 					maxY = std::max(maxY, vtx[idx]->y);
 					vdraw[k].x = floatToFixed16(vtx[idx]->x);
@@ -226,7 +226,7 @@ f32 renderTriangles(const SPVertex * _pVertices, const u8 * _pElements, u32 _num
 					vdraw[k].z = floatToFixed16(vtx[idx]->z);
 				}
 			} else {
-				for (int k = 0; k < numVertex; ++k) {
+				for (u32 k = 0; k < numVertex; ++k) {
 					maxY = std::max(maxY, vtx[k]->y);
 					vdraw[k].x = floatToFixed16(vtx[k]->x);
 					vdraw[k].y = floatToFixed16(vtx[k]->y);

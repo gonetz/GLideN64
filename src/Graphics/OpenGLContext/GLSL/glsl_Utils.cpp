@@ -60,8 +60,8 @@ void Utils::logErrorShader(GLenum _shaderType, const std::string & _strShader)
 {
 	LOG(LOG_ERROR, "Error in %s shader", _shaderType == GL_VERTEX_SHADER ? "vertex" : "fragment");
 
-	const int max = 800;
-	int pos = 0;
+	const u32 max = 800;
+	u32 pos = 0;
 
 	while (pos < _strShader.length()) {
 

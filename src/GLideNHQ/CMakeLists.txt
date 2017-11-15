@@ -75,7 +75,7 @@ if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
 endif()
 
 if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
-    SET(GCC_CPP11_COMPILE_FLAGS "-std=c++0x")
+    SET(GCC_CPP11_COMPILE_FLAGS "-std=c++0x -Wno-unused-result")
     if( NOT GHQCHK )
       if ( NOT MINGW )
           SET ( PIC_FLAGS "-fPIC" )

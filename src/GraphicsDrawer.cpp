@@ -916,16 +916,16 @@ void GraphicsDrawer::drawRect(int _ulx, int _uly, int _lrx, int _lry)
 	calcCoordsScales(frameBufferList().getCurrent(), scaleX, scaleY);
 	const float Z = (gDP.otherMode.depthSource == G_ZS_PRIM) ? gDP.primDepth.z : 0.0f;
 	const float W = 1.0f;
-	m_rect[0].x = (float)_ulx * (2.0f * scaleX) - 1.0;
-	m_rect[0].y = (float)_uly * (-2.0f * scaleY) + 1.0;
+	m_rect[0].x = (float)_ulx * (2.0f * scaleX) - 1.0f;
+	m_rect[0].y = (float)_uly * (-2.0f * scaleY) + 1.0f;
 	m_rect[0].z = Z;
 	m_rect[0].w = W;
-	m_rect[1].x = (float)_lrx * (2.0f * scaleX) - 1.0;
+	m_rect[1].x = (float)_lrx * (2.0f * scaleX) - 1.0f;
 	m_rect[1].y = m_rect[0].y;
 	m_rect[1].z = Z;
 	m_rect[1].w = W;
 	m_rect[2].x = m_rect[0].x;
-	m_rect[2].y = (float)_lry * (-2.0f * scaleY) + 1.0;
+	m_rect[2].y = (float)_lry * (-2.0f * scaleY) + 1.0f;
 	m_rect[2].z = Z;
 	m_rect[2].w = W;
 	m_rect[3].x = m_rect[1].x;
@@ -934,7 +934,7 @@ void GraphicsDrawer::drawRect(int _ulx, int _uly, int _lrx, int _lry)
 	m_rect[3].w = W;
 
 	DisplayWindow & wnd = dwnd();
-	if (wnd.isAdjustScreen() && (gDP.colorImage.width > VI.width * 98 / 100) && (_lrx - _ulx < VI.width * 9 / 10)) {
+	if (wnd.isAdjustScreen() && (gDP.colorImage.width > VI.width * 98 / 100) && ((u32)(_lrx - _ulx) < VI.width * 9 / 10)) {
 		const float scale = wnd.getAdjustScale();
 		for (u32 i = 0; i < 4; ++i)
 			m_rect[i].x *= scale;
@@ -1031,7 +1031,7 @@ bool texturedRectBGCopy(const GraphicsDrawer::TexturedRectParams & _params)
 	const u32 width = (u32)(_params.lrx - _params.ulx);
 	const u32 tex_width = gSP.textureTile[0]->line << 3;
 	const u32 uly = (u32)_params.uly;
-	const u32 lry = flry;
+	const u32 lry = (u32)flry;
 
 	u8 * texaddr = RDRAM + gDP.loadInfo[gSP.textureTile[0]->tmem].texAddress + tex_width*(u32)_params.ult + (u32)_params.uls;
 	u8 * fbaddr = RDRAM + gDP.colorImage.address + (u32)_params.ulx;
@@ -1374,8 +1374,8 @@ void GraphicsDrawer::drawOSD()
 	const bool bottom = (config.posBottom & config.onScreenDisplay.pos) != 0;
 	const bool left = (config.onScreenDisplay.pos == Config::posTopLeft) || (config.onScreenDisplay.pos == Config::posBottomLeft);
 
-	const float hp = left ? -1 : 1;
-	const float vp = bottom ? -1 : 1;
+	const float hp = left ? -1.0f : 1.0f;
+	const float vp = bottom ? -1.0f : 1.0f;
 
 	float hShift, vShift;
 	g_textDrawer.getTextSize("0", hShift, vShift);
@@ -1585,7 +1585,7 @@ void GraphicsDrawer::_initStates()
 
 	gfxContext.clearColorBuffer(0.0f, 0.0f, 0.0f, 0.0f);
 
-	srand(time(nullptr));
+	srand((unsigned int)time(nullptr));
 
 	wnd.swapBuffers();
 }

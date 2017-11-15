@@ -88,13 +88,13 @@ struct gSPInfo
 		f32 ca[2], la[2], qa[2];
 	} lookat;
 	
-	s32 numLights;
+	u32 numLights;
 	bool lookatEnable;
 
 	struct
 	{
 		f32 scales, scalet;
-		s32 level, on, tile;
+		u32 level, on, tile;
 	} texture;
 
 	gDPTile *textureTile[2];
@@ -182,7 +182,7 @@ void gSPNumLights( s32 n );
 void gSPLightColor( u32 lightNum, u32 packedColor );
 void gSPFogFactor( s16 fm, s16 fo );
 void gSPPerspNormalize( u16 scale );
-void gSPTexture( f32 sc, f32 tc, s32 level, s32 tile, s32 on );
+void gSPTexture( f32 sc, f32 tc, u32 level, u32 tile, u32 on );
 void gSPEndDisplayList();
 void gSPGeometryMode( u32 clear, u32 set );
 void gSPSetGeometryMode( u32 mode );

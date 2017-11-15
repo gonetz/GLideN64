@@ -56,7 +56,7 @@ const u8 * ColorBufferReaderWithBufferStorage::_readPixels(const ReadColorBuffer
 		m_curIndex = (m_curIndex + 1) % _numPBO;
 		//Wait for glReadPixels to complete for the currently selected PBO
 		if (m_fence[m_curIndex] != 0) {
-			glClientWaitSync(m_fence[m_curIndex], 0, 1e8);
+			glClientWaitSync(m_fence[m_curIndex], 0, 100000000);
 			glDeleteSync(m_fence[m_curIndex]);
 		}
 	} else {

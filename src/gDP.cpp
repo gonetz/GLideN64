@@ -239,7 +239,7 @@ void gDPGetFillColor(f32 _fillColor[4])
 
 void gDPSetPrimColor( u32 m, u32 l, u32 r, u32 g, u32 b, u32 a )
 {
-	gDP.primColor.m = m * 0.0312500000;
+	gDP.primColor.m = m * 0.0312500000f;
 	gDP.primColor.l = l * 0.0039215689f;
 	gDP.primColor.r = r * 0.0039215689f;
 	gDP.primColor.g = g * 0.0039215689f;
@@ -458,7 +458,7 @@ void gDPLoadTile(u32 tile, u32 uls, u32 ult, u32 lrs, u32 lrt)
 		bpl2 = (gDP.textureImage.width - gDP.loadTile->uls);
 	u32 height2 = height;
 	if (gDP.loadTile->lrt > gDP.scissor.lry)
-		height2 = gDP.scissor.lry - gDP.loadTile->ult;
+		height2 = (u32)gDP.scissor.lry - gDP.loadTile->ult;
 
 	if (CheckForFrameBufferTexture(address, bpl2*height2))
 		return;
@@ -678,8 +678,8 @@ void gDPSetScissor( u32 mode, f32 ulx, f32 uly, f32 lrx, f32 lry )
 		if (ulx > 0 && ulx < maxCropH &&
 			uly > 0 && uly < maxCropV &&
 			(VI.width - lrx) < maxCropH && (VI.height - lry) < maxCropV) {
-			config.video.cropWidth = ulx;
-			config.video.cropHeight = uly;
+			config.video.cropWidth = (u32)ulx;
+			config.video.cropHeight = (u32)uly;
 		}
 	}
 
@@ -758,7 +758,7 @@ void gDPFillRectangle( s32 ulx, s32 uly, s32 lrx, s32 lry )
 		}
 	}
 
-	frameBufferList().setBufferChanged(lry);
+	frameBufferList().setBufferChanged(f32(lry));
 
 	DebugMsg( DEBUG_NORMAL, "gDPFillRectangle( %i, %i, %i, %i );\n", ulx, uly, lrx, lry );
 }

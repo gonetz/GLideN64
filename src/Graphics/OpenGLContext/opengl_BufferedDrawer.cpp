@@ -212,7 +212,7 @@ void BufferedDrawer::drawTriangles(const graphics::Context::DrawTriangleParamete
 	// Draw polygons one by one
 	const GLint eboStartPos = m_trisBuffers.ebo.pos - _params.elementsCount;
 	const GLint vboStartPos = m_trisBuffers.vbo.pos - _params.verticesCount;
-	for (GLint i = 0; i < _params.elementsCount; i += 3) {
+	for (GLuint i = 0; i < _params.elementsCount; i += 3) {
 		glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 		glDrawElementsBaseVertex(GLenum(_params.mode), 3, GL_UNSIGNED_BYTE,
 			(char*)nullptr + eboStartPos + i, vboStartPos);

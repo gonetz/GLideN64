@@ -49,8 +49,8 @@ void Performance::increaseVICount()
 	const double elapsed = double(time_span.count()) * std::chrono::steady_clock::period::num / std::chrono::steady_clock::period::den;
 	if (elapsed < 0.5)
 		return;
-	m_vis = m_vi / elapsed;
-	m_fps = m_frames / elapsed;
+	m_vis = (f32)(m_vi / elapsed);
+	m_fps = (f32)(m_frames / elapsed);
 	m_vi = 0;
 	m_frames = 0;
 	m_startTime = curTime;
