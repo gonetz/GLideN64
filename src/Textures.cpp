@@ -706,10 +706,16 @@ void _updateCachedTexture(const GHQTexInfo & _info, CachedTexture *_pTexture, f3
 		_pTexture->textureBytes <<= 2;
 	}
 
+	if (_pTexture->realWidth == _pTexture->width * 2)
+		_pTexture->clampS = 0; // force wrap or mirror s
+	if (_pTexture->realHeight == _pTexture->height * 2)
+		_pTexture->clampT = 0; // force wrap or mirror t
+
 	_pTexture->realWidth = _info.width;
 	_pTexture->realHeight = _info.height;
 	_pTexture->scaleS = _scale / f32(_info.width);
 	_pTexture->scaleT = _scale / f32(_info.height);
+
 	_pTexture->bHDTexture = true;
 }
 
