@@ -220,7 +220,8 @@ extern "C"{
 
 TAPI boolean TAPIENTRY
 txfilter_init(int maxwidth, int maxheight, int maxbpp, int options, int cachesize,
-	const wchar_t *path, const wchar_t * texPackPath, const wchar_t*ident, dispInfoFuncExt callback);
+	const wchar_t *txCachePath, const wchar_t *txDumpPath, const wchar_t * texPackPath,
+	const wchar_t* ident, dispInfoFuncExt callback);
 
 TAPI void TAPIENTRY
 txfilter_shutdown(void);

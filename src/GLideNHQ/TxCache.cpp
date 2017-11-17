@@ -38,7 +38,7 @@ TxCache::~TxCache()
 	clear();
 }
 
-TxCache::TxCache(int options, int cachesize, const wchar_t *path, const wchar_t *ident,
+TxCache::TxCache(int options, int cachesize, const wchar_t *cachePath, const wchar_t *ident,
 				 dispInfoFuncExt callback)
 {
 	_options = options;
@@ -47,8 +47,8 @@ TxCache::TxCache(int options, int cachesize, const wchar_t *path, const wchar_t 
 	_totalSize = 0;
 
 	/* save path name */
-	if (path)
-		_path.assign(path);
+	if (cachePath)
+		_cachePath.assign(cachePath);
 
 	/* save ROM name */
 	if (ident)

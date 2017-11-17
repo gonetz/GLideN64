@@ -39,7 +39,7 @@ private slots:
 	void on_cropImageComboBox_currentIndexChanged(int index);
 
 	void on_frameBufferCheckBox_toggled(bool checked);
-	
+
 	void on_aliasingSlider_valueChanged(int value);
 
 	void on_fontTreeWidget_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous);
@@ -47,6 +47,10 @@ private slots:
 	void on_fontSizeSpinBox_valueChanged(int value);
 
 	void on_tabWidget_currentChanged(int tab);
+
+	void on_texCachePathButton_clicked();
+
+	void on_texDumpPathButton_clicked();
 
 private:
 	void _init();

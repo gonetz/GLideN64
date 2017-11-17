@@ -79,6 +79,10 @@ void _loadSettings(QSettings & settings)
 	config.textureFilter.txSaveCache = settings.value("txSaveCache", config.textureFilter.txSaveCache).toInt();
 	QString txPath = QString::fromWCharArray(config.textureFilter.txPath);
 	config.textureFilter.txPath[settings.value("txPath", txPath).toString().toWCharArray(config.textureFilter.txPath)] = L'\0';
+	QString txCachePath = QString::fromWCharArray(config.textureFilter.txCachePath);
+	config.textureFilter.txCachePath[settings.value("txCachePath", txCachePath).toString().toWCharArray(config.textureFilter.txCachePath)] = L'\0';
+	QString txDumpPath = QString::fromWCharArray(config.textureFilter.txDumpPath);
+	config.textureFilter.txDumpPath[settings.value("txDumpPath", txDumpPath).toString().toWCharArray(config.textureFilter.txDumpPath)] = L'\0';
 
 	settings.endGroup();
 
@@ -199,6 +203,8 @@ void writeSettings(const QString & _strIniFolder)
 	settings.setValue("txCacheCompression", config.textureFilter.txCacheCompression);
 	settings.setValue("txSaveCache", config.textureFilter.txSaveCache);
 	settings.setValue("txPath", QString::fromWCharArray(config.textureFilter.txPath));
+	settings.setValue("txCachePath", QString::fromWCharArray(config.textureFilter.txCachePath));
+	settings.setValue("txDumpPath", QString::fromWCharArray(config.textureFilter.txDumpPath));
 	settings.endGroup();
 
 	settings.beginGroup("font");

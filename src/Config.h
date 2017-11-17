@@ -4,7 +4,7 @@
 #include <string>
 #include "Types.h"
 
-#define CONFIG_VERSION_CURRENT 19U
+#define CONFIG_VERSION_CURRENT 20U
 
 #define BILINEAR_3POINT   0
 #define BILINEAR_STANDARD 1
@@ -130,7 +130,9 @@ struct Config
 		u32 txCacheCompression;			// Zip textures cache
 		u32 txSaveCache;				// Save texture cache to hard disk
 
-		wchar_t txPath[PLUGIN_PATH_SIZE];
+		wchar_t txPath[PLUGIN_PATH_SIZE]; // Path to texture packs
+		wchar_t txCachePath[PLUGIN_PATH_SIZE]; // Path to store texture cache, that is .htc files
+		wchar_t txDumpPath[PLUGIN_PATH_SIZE]; // Path to store texture dumps
 	} textureFilter;
 
 	struct

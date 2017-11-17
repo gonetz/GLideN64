@@ -56,10 +56,22 @@ TxFilter::~TxFilter()
 	clear();
 }
 
-TxFilter::TxFilter(int maxwidth, int maxheight, int maxbpp, int options,
-	int cachesize, const wchar_t * path, const wchar_t * texPackPath, const wchar_t * ident,
-				   dispInfoFuncExt callback) :
-	_tex1(nullptr), _tex2(nullptr), _txQuantize(nullptr), _txTexCache(nullptr), _txHiResCache(nullptr), _txImage(nullptr)
+TxFilter::TxFilter(int maxwidth,
+				   int maxheight,
+				   int maxbpp,
+				   int options,
+				   int cachesize,
+				   const wchar_t * texCachePath,
+				   const wchar_t * texDumpPath,
+				   const wchar_t * texPackPath,
+				   const wchar_t * ident,
+				   dispInfoFuncExt callback)
+	: _tex1(nullptr)
+	, _tex2(nullptr)
+	, _txQuantize(nullptr)
+	, _txTexCache(nullptr)
+	, _txHiResCache(nullptr)
+	, _txImage(nullptr)
 {
 	/* HACKALERT: the emulator misbehaves and sometimes forgets to shutdown */
 	if ((ident && wcscmp(ident, wst("DEFAULT")) != 0 && _ident.compare(ident) == 0) &&
@@ -69,6 +81,8 @@ TxFilter::TxFilter(int maxwidth, int maxheight, int maxbpp, int options,
 			_options   == options   &&
 			_cacheSize == cachesize) return;
 	//  clear(); /* gcc does not allow the destructor to be called */
+	if (texCachePath == nullptr || texDumpPath == nullptr || texPackPath == nullptr)
+		return;
 
 	/* shamelessness :P this first call to the debug output message creates
    * a file in the executable directory. */
@@ -106,9 +120,9 @@ TxFilter::TxFilter(int maxwidth, int maxheight, int maxbpp, int options,
 
 	/* TODO: validate options and do overrides here*/
 
-	/* save path name */
-	if (path)
-		_path.assign(path);
+	/* save pathes */
+	if (texDumpPath)
+		_dumpPath.assign(texDumpPath);
 
 	/* save ROM name */
 	if (ident && wcscmp(ident, wst("DEFAULT")) != 0)
@@ -128,11 +142,11 @@ TxFilter::TxFilter(int maxwidth, int maxheight, int maxbpp, int options,
 #endif
 
 	/* initialize texture cache in bytes. 128Mb will do nicely in most cases */
-	_txTexCache = new TxTexCache(_options, _cacheSize, _path.c_str(), _ident.c_str(), callback);
+	_txTexCache = new TxTexCache(_options, _cacheSize, texCachePath, _ident.c_str(), callback);
 
 	/* hires texture */
 #if HIRES_TEXTURE
-	_txHiResCache = new TxHiResCache(_maxwidth, _maxheight, _maxbpp, _options, _path.c_str(), texPackPath, _ident.c_str(), callback);
+	_txHiResCache = new TxHiResCache(_maxwidth, _maxheight, _maxbpp, _options, texCachePath, texPackPath, _ident.c_str(), callback);
 
 	if (_txHiResCache->empty())
 		_options &= ~HIRESTEXTURES_MASK;
@@ -586,13 +600,13 @@ TxFilter::dmptx(uint8 *src, int width, int height, int rowStridePixel, uint16 gf
 		src = _tex1;
 	}
 
-	if (!_path.empty() && !_ident.empty()) {
+	if (!_dumpPath.empty() && !_ident.empty()) {
 		/* dump it to disk */
 		FILE *fp = nullptr;
 		tx_wstring tmpbuf;
 
 		/* create directories */
-		tmpbuf.assign(_path + wst("/texture_dump"));
+		tmpbuf.assign(_dumpPath);
 		tmpbuf.append(wst("/"));
 		tmpbuf.append(_ident);
 		tmpbuf.append(wst("/GLideNHQ"));

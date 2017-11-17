@@ -39,7 +39,7 @@ private:
 protected:
   int _options;
   tx_wstring _ident;
-  tx_wstring _path;
+  tx_wstring _cachePath;
   dispInfoFuncExt _callback;
   struct TXCACHE {
     int size;
@@ -56,7 +56,7 @@ protected:
   void clear();
 public:
   ~TxCache();
-  TxCache(int options, int cachesize, const wchar_t *path, const wchar_t *ident,
+  TxCache(int options, int cachesize, const wchar_t *cachePath, const wchar_t *ident,
               dispInfoFuncExt callback);
   boolean add(uint64 checksum, /* checksum hi:palette low:texture */
               GHQTexInfo *info, int dataSize = 0);

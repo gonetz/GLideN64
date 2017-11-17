@@ -51,10 +51,15 @@ TxHiResCache::~TxHiResCache()
   delete _txReSample;
 }
 
-TxHiResCache::TxHiResCache(int maxwidth, int maxheight, int maxbpp, int options,
-	const wchar_t *cachePath, const wchar_t *texPackPath, const wchar_t *ident,
-	dispInfoFuncExt callback
-	) : TxCache((options & ~GZ_TEXCACHE), 0, cachePath, ident, callback)
+TxHiResCache::TxHiResCache(int maxwidth,
+						   int maxheight,
+						   int maxbpp,
+						   int options,
+						   const wchar_t *cachePath,
+						   const wchar_t *texPackPath,
+						   const wchar_t *ident,
+						   dispInfoFuncExt callback)
+	: TxCache((options & ~GZ_TEXCACHE), 0, cachePath, ident, callback)
 {
   _txImage = new TxImage();
   _txQuantize  = new TxQuantize();
@@ -69,7 +74,7 @@ TxHiResCache::TxHiResCache(int maxwidth, int maxheight, int maxbpp, int options,
   if (texPackPath)
 	  _texPackPath.assign(texPackPath);
 
-  if (_path.empty() || _ident.empty()) {
+  if (_cachePath.empty() || _ident.empty()) {
 	_options &= ~DUMP_HIRESTEXCACHE;
 	return;
   }
@@ -79,12 +84,9 @@ TxHiResCache::TxHiResCache(int maxwidth, int maxheight, int maxbpp, int options,
 	/* find it on disk */
 	tx_wstring filename = _ident + wst("_HIRESTEXTURES.") + TEXCACHE_EXT;
 	removeColon(filename);
-	tx_wstring cachepath(_path);
-	cachepath += OSAL_DIR_SEPARATOR_STR;
-	cachepath += wst("cache");
 	int config = _options & (HIRESTEXTURES_MASK|TILE_HIRESTEX|FORCE16BPP_HIRESTEX|GZ_HIRESTEXCACHE|LET_TEXARTISTS_FLY);
 
-	_cacheDumped = TxCache::load(cachepath.c_str(), filename.c_str(), config);
+	_cacheDumped = TxCache::load(_cachePath.c_str(), filename.c_str(), config);
   }
 
 /* read in hires textures */
@@ -98,12 +100,9 @@ void TxHiResCache::dump()
 	  /* dump cache to disk */
 	  tx_wstring filename = _ident + wst("_HIRESTEXTURES.") + TEXCACHE_EXT;
 	  removeColon(filename);
-	  tx_wstring cachepath(_path);
-	  cachepath += OSAL_DIR_SEPARATOR_STR;
-	  cachepath += wst("cache");
 	  int config = _options & (HIRESTEXTURES_MASK|TILE_HIRESTEX|FORCE16BPP_HIRESTEX|GZ_HIRESTEXCACHE|LET_TEXARTISTS_FLY);
 
-	  _cacheDumped = TxCache::save(cachepath.c_str(), filename.c_str(), config);
+	  _cacheDumped = TxCache::save(_cachePath.c_str(), filename.c_str(), config);
 	}
 }
 
@@ -145,8 +144,6 @@ boolean TxHiResCache::load(boolean replace) /* 0 : reload, 1 : replace partial *
 			_cache.clear();
 		}
 		return res == resOk ? 1 : 0;
-	defauilt:
-		break;
 	}
 	return 0;
 }

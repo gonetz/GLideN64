@@ -55,9 +55,14 @@ private:
   LoadResult loadHiResTextures(const wchar_t * dir_path, boolean replace);
 public:
   ~TxHiResCache();
-  TxHiResCache(int maxwidth, int maxheight, int maxbpp, int options,
-	  const wchar_t *cachePath, const wchar_t *texPackPath, const wchar_t *ident,
-      dispInfoFuncExt callback);
+  TxHiResCache(int maxwidth,
+			   int maxheight,
+			   int maxbpp,
+			   int options,
+			   const wchar_t *cachePath,
+			   const wchar_t *texPackPath,
+			   const wchar_t *ident,
+			   dispInfoFuncExt callback);
   boolean empty();
   boolean load(boolean replace);
   void dump();

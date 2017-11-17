@@ -160,7 +160,7 @@ void ConfigDialog::_init()
 	ui->copyColorBufferComboBox->setCurrentIndex(config.frameBufferEmulation.copyToRDRAM);
 	ui->copyDepthBufferComboBox->setCurrentIndex(config.frameBufferEmulation.copyDepthToRDRAM);
 	ui->RenderFBCheckBox->setChecked(config.frameBufferEmulation.copyFromRDRAM != 0);
-	ui->n64DepthCompareCheckBox->toggle(); 
+	ui->n64DepthCompareCheckBox->toggle();
 	ui->n64DepthCompareCheckBox->setChecked(config.frameBufferEmulation.N64DepthCompare != 0);
 
 	switch (config.frameBufferEmulation.aspect) {
@@ -220,6 +220,8 @@ void ConfigDialog::_init()
 	ui->saveTextureCacheCheckBox->setChecked(config.textureFilter.txSaveCache != 0);
 
 	ui->txPathLabel->setText(QString::fromWCharArray(config.textureFilter.txPath));
+	ui->txCachePathLabel->setText(QString::fromWCharArray(config.textureFilter.txCachePath));
+	ui->txDumpPathLabel->setText(QString::fromWCharArray(config.textureFilter.txDumpPath));
 
 	// Post filter settings
 	ui->gammaCorrectionGroupBox->setChecked(config.gammaCorrection.force != 0);
@@ -449,6 +451,12 @@ void ConfigDialog::accept()
 	QString txPath = ui->txPathLabel->text();
 	if (!txPath.isEmpty())
 		config.textureFilter.txPath[txPath.toWCharArray(config.textureFilter.txPath)] = L'\0';
+	QString txCachePath = ui->txCachePathLabel->text();
+	if (!txPath.isEmpty())
+		config.textureFilter.txCachePath[txCachePath.toWCharArray(config.textureFilter.txCachePath)] = L'\0';
+	QString txDumpPath = ui->txDumpPathLabel->text();
+	if (!txDumpPath.isEmpty())
+		config.textureFilter.txDumpPath[txDumpPath.toWCharArray(config.textureFilter.txDumpPath)] = L'\0';
 
 	// Post filter settings
 	config.gammaCorrection.force = ui->gammaCorrectionGroupBox->isChecked() ? 1 : 0;
@@ -558,6 +566,29 @@ void ConfigDialog::on_texPackPathButton_clicked()
 		options);
 	if (!directory.isEmpty())
 		ui->txPathLabel->setText(directory);
+}
+
+
+void ConfigDialog::on_texCachePathButton_clicked()
+{
+	QFileDialog::Options options = QFileDialog::DontResolveSymlinks | QFileDialog::ShowDirsOnly | QFileDialog::ReadOnly | QFileDialog::DontUseSheet | QFileDialog::ReadOnly | QFileDialog::HideNameFilterDetails;
+	QString directory = QFileDialog::getExistingDirectory(this,
+		"",
+		ui->txCachePathLabel->text(),
+		options);
+	if (!directory.isEmpty())
+		ui->txCachePathLabel->setText(directory);
+}
+
+void ConfigDialog::on_texDumpPathButton_clicked()
+{
+	QFileDialog::Options options = QFileDialog::DontResolveSymlinks | QFileDialog::ShowDirsOnly | QFileDialog::ReadOnly | QFileDialog::DontUseSheet | QFileDialog::ReadOnly | QFileDialog::HideNameFilterDetails;
+	QString directory = QFileDialog::getExistingDirectory(this,
+		"",
+		ui->txDumpPathLabel->text(),
+		options);
+	if (!directory.isEmpty())
+		ui->txDumpPathLabel->setText(directory);
 }
 
 void ConfigDialog::on_windowedResolutionComboBox_currentIndexChanged(int index)

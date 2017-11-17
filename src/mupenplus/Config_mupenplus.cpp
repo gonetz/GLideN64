@@ -144,6 +144,12 @@ bool Config_SetDefault()
 	wcstombs(txPath, config.textureFilter.txPath, PLUGIN_PATH_SIZE * 2);
 	res = ConfigSetDefaultString(g_configVideoGliden64, "txPath", txPath, "Path to folder with hi-res texture packs.");
 	assert(res == M64ERR_SUCCESS);
+	wcstombs(txPath, config.textureFilter.txCachePath, PLUGIN_PATH_SIZE * 2);
+	res = ConfigSetDefaultString(g_configVideoGliden64, "txCachePath", txPath, "Path to folder where plugin saves texture cache files.");
+	assert(res == M64ERR_SUCCESS);
+	wcstombs(txPath, config.textureFilter.txDumpPath, PLUGIN_PATH_SIZE * 2);
+	res = ConfigSetDefaultString(g_configVideoGliden64, "txDumpPath", txPath, "Path to folder where plugin saves dumped textures.");
+	assert(res == M64ERR_SUCCESS);
 
 	res = ConfigSetDefaultString(g_configVideoGliden64, "fontName", config.font.name.c_str(), "File name of True Type Font for text messages.");
 	assert(res == M64ERR_SUCCESS);
@@ -355,6 +361,7 @@ void Config_LoadConfig()
 	config.textureFilter.txCacheCompression = ConfigGetParamBool(g_configVideoGliden64, "txCacheCompression");
 	config.textureFilter.txSaveCache = ConfigGetParamBool(g_configVideoGliden64, "txSaveCache");
 	::mbstowcs(config.textureFilter.txPath, ConfigGetParamString(g_configVideoGliden64, "txPath"), PLUGIN_PATH_SIZE);
+	::mbstowcs(config.textureFilter.txCachePath, ConfigGetParamString(g_configVideoGliden64, "txCachePath"), PLUGIN_PATH_SIZE);
 
 	//#Font settings
 	config.font.name = ConfigGetParamString(g_configVideoGliden64, "fontName");

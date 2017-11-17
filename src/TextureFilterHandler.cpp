@@ -75,6 +75,7 @@ void TextureFilterHandler::init()
 	s32 maxTextureSize = gfxContext.getMaxTextureSize();
 	wchar_t wRomName[32];
 	::mbstowcs(wRomName, RSP.romname, 32);
+
 	wchar_t txPath[PLUGIN_PATH_SIZE + 16];
 	wchar_t * pTexPackPath = config.textureFilter.txPath;
 	if (::wcslen(config.textureFilter.txPath) == 0) {
@@ -82,15 +83,30 @@ void TextureFilterHandler::init()
 		gln_wcscat(txPath, wst("/hires_texture"));
 		pTexPackPath = txPath;
 	}
-	wchar_t txCachePath[PLUGIN_PATH_SIZE];
-	api().GetUserCachePath(txCachePath);
+
+	wchar_t txCachePath[PLUGIN_PATH_SIZE + 16];
+	wchar_t * pTexCachePath = config.textureFilter.txCachePath;
+	if (::wcslen(config.textureFilter.txCachePath) == 0) {
+		api().GetUserCachePath(txCachePath);
+		gln_wcscat(txPath, wst("/cache"));
+		pTexCachePath = txCachePath;
+	}
+
+	wchar_t txDumpPath[PLUGIN_PATH_SIZE + 16];
+	wchar_t * pTexDumpPath = config.textureFilter.txDumpPath;
+	if (::wcslen(config.textureFilter.txDumpPath) == 0) {
+		api().GetUserCachePath(txDumpPath);
+		gln_wcscat(txPath, wst("/texture_dump"));
+		pTexDumpPath = txDumpPath;
+	}
 
 	m_inited = txfilter_init(maxTextureSize, // max texture width supported by hardware
 		maxTextureSize, // max texture height supported by hardware
 		32, // max texture bpp supported by hardware
 		m_options,
 		config.textureFilter.txCacheSize, // cache texture to system memory
-		txCachePath, // path to store cache files
+		pTexCachePath, // path to store cache files
+		pTexDumpPath, // path to folder with dumped textures
 		pTexPackPath, // path to texture packs folder
 		wRomName, // name of ROM. must be no longer than 256 characters
 		displayLoadProgress);

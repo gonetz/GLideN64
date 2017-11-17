@@ -34,12 +34,12 @@ TxTexCache::~TxTexCache()
 {
 }
 
-TxTexCache::TxTexCache(int options, int cachesize, const wchar_t *path, const wchar_t *ident,
+TxTexCache::TxTexCache(int options, int cachesize, const wchar_t *cachePath, const wchar_t *ident,
 					   dispInfoFuncExt callback
-					   ) : TxCache((options & ~GZ_HIRESTEXCACHE), cachesize, path, ident, callback)
+					   ) : TxCache((options & ~GZ_HIRESTEXCACHE), cachesize, cachePath, ident, callback)
 {
 	/* assert local options */
-	if (_path.empty() || _ident.empty() || !_cacheSize)
+	if (_cachePath.empty() || _ident.empty() || !_cacheSize)
 		_options &= ~DUMP_TEXCACHE;
 
 	_cacheDumped = 0;
@@ -48,12 +48,9 @@ TxTexCache::TxTexCache(int options, int cachesize, const wchar_t *path, const wc
 		/* find it on disk */
 		tx_wstring filename = _ident + wst("_MEMORYCACHE.") + TEXCACHE_EXT;
 		removeColon(filename);
-		tx_wstring cachepath(_path);
-		cachepath += OSAL_DIR_SEPARATOR_STR;
-		cachepath += wst("cache");
 		int config = _options & (FILTER_MASK | ENHANCEMENT_MASK | FORCE16BPP_TEX | GZ_TEXCACHE);
 
-		_cacheDumped = TxCache::load(cachepath.c_str(), filename.c_str(), config);
+		_cacheDumped = TxCache::load(_cachePath.c_str(), filename.c_str(), config);
 	}
 }
 
@@ -76,11 +73,8 @@ TxTexCache::dump()
 		/* dump cache to disk */
 		tx_wstring filename = _ident + wst("_MEMORYCACHE.") + TEXCACHE_EXT;
 		removeColon(filename);
-		tx_wstring cachepath(_path);
-		cachepath += OSAL_DIR_SEPARATOR_STR;
-		cachepath += wst("cache");
 		int config = _options & (FILTER_MASK | ENHANCEMENT_MASK | FORCE16BPP_TEX | GZ_TEXCACHE);
 
-		_cacheDumped = TxCache::save(cachepath.c_str(), filename.c_str(), config);
+		_cacheDumped = TxCache::save(_cachePath.c_str(), filename.c_str(), config);
 	}
 }
