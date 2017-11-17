@@ -1635,6 +1635,14 @@ void gSPModifyVertex( u32 _vtx, u32 _where, u32 _val )
 				if (gSP.viewport.vscale[0] < 0)
 					vtx0.x = -vtx0.x;
 				vtx0.x *= vtx0.w;
+
+				if (dwnd().isAdjustScreen()) {
+					const f32 adjustScale = dwnd().getAdjustScale();
+					vtx0.x *= adjustScale;
+					if (gSP.matrix.projection[3][2] == -1.f)
+						vtx0.w *= adjustScale;
+				}
+
 				vtx0.y = -(vtx0.y - gSP.viewport.vtrans[1]) / gSP.viewport.vscale[1];
 				if (gSP.viewport.vscale[1] < 0)
 					vtx0.y = -vtx0.y;
