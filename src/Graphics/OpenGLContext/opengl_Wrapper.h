@@ -32,7 +32,7 @@ namespace opengl {
 		static const int MAX_SWAP = 2;
 
 	public:
-		static void setThreadedMode(bool _threaded);
+		static void setThreadedMode(u32 _threaded);
 
 		static void glBlendFunc(GLenum sfactor, GLenum dfactor);
 		static void glPixelStorei(GLenum pname, GLint param);

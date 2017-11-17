@@ -33,15 +33,13 @@ namespace opengl {
 		}
 	}
 
-	void FunctionWrapper::setThreadedMode(bool _threaded)
+	void FunctionWrapper::setThreadedMode(u32 _threaded)
 	{
 #ifdef GL_DEBUG
-		_threaded = false;
+		_threaded = 0;
 #endif
-		_threaded = true;
 
-
-		if (_threaded) {
+		if (_threaded == 1) {
 			m_threaded_wrapper = true;
 			m_shutdown = false;
 			m_commandExecutionThread = std::thread(&FunctionWrapper::commandLoop);
