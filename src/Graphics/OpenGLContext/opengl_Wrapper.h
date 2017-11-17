@@ -203,7 +203,7 @@ namespace opengl {
 	void  FunctionWrapper::glTexImage2D(GLenum target, GLint level, GLint internalformat, GLsizei width, GLsizei height, GLint border, GLenum format, GLenum type, std::unique_ptr<pixelType[]> pixels)
 	{
 		if(m_threaded_wrapper)
-			executeCommand(std::make_shared<GlTexImage2DCommand<pixelType>>(target, level, internalformat, width, height, border, format, type, std::move(pixels)));
+			executeCommand(GlTexImage2DCommand<pixelType>::get(target, level, internalformat, width, height, border, format, type, std::move(pixels)));
 		else
 			g_glTexImage2D(target, level, internalformat, width, height, border, format, type, pixels.get());
 	}
@@ -212,7 +212,7 @@ namespace opengl {
 	void  FunctionWrapper::glTexSubImage2DUnbuffered(GLenum target, GLint level, GLint xoffset, GLint yoffset, GLsizei width, GLsizei height, GLenum format, GLenum type, std::unique_ptr<pixelType[]> pixels)
 	{
 		if(m_threaded_wrapper)
-			executeCommand(std::make_shared<GlTexSubImage2DUnbufferedCommand<pixelType>>(target, level, xoffset, yoffset, width, height, format, type, std::move(pixels)));
+			executeCommand(GlTexSubImage2DUnbufferedCommand<pixelType>::get(target, level, xoffset, yoffset, width, height, format, type, std::move(pixels)));
 		else
 			g_glTexSubImage2D(target, level, xoffset, yoffset, width, height, format, type, pixels.get());
 	}
@@ -221,16 +221,16 @@ namespace opengl {
 	void  FunctionWrapper::glDrawElementsUnbuffered(GLenum mode, GLsizei count, GLenum type, std::unique_ptr<indiceType[]> indices, std::unique_ptr<std::vector<char>> data)
 	{
 		if(m_threaded_wrapper)
-			executeCommand(std::make_shared<GlDrawElementsUnbufferedCommand<indiceType>>(mode, count, type, std::move(indices), std::move(data)));
+			executeCommand(GlDrawElementsUnbufferedCommand<indiceType>::get(mode, count, type, std::move(indices), std::move(data)));
 		else
-			std::make_shared<GlDrawElementsUnbufferedCommand<indiceType>>(mode, count, type, std::move(indices), std::move(data))->performCommandSingleThreaded();
+			GlDrawElementsUnbufferedCommand<indiceType>::get(mode, count, type, std::move(indices), std::move(data))->performCommandSingleThreaded();
 	}
 
 	template <class dataType>
 	void  FunctionWrapper::glBufferData(GLenum target, GLsizeiptr size, std::unique_ptr<dataType[]> data, GLenum usage)
 	{
 		if(m_threaded_wrapper)
-			executeCommand(std::make_shared<GlBufferDataCommand<dataType>>(target, size, std::move(data), usage));
+			executeCommand(GlBufferDataCommand<dataType>::get(target, size, std::move(data), usage));
 		else
 			g_glBufferData(target, size, data.get(), usage);
 	}
@@ -239,7 +239,7 @@ namespace opengl {
 	void  FunctionWrapper::glBufferStorage(GLenum target, GLsizeiptr size, std::unique_ptr<dataType[]> data, GLbitfield flags)
 	{
 		if(m_threaded_wrapper)
-			executeCommand(std::make_shared<GlBufferStorageCommand<dataType>>(target, size, std::move(data), flags));
+			executeCommand(GlBufferStorageCommand<dataType>::get(target, size, std::move(data), flags));
 		else
 			g_glBufferStorage(target, size, data.get(), flags);
 	}
@@ -248,7 +248,7 @@ namespace opengl {
 	void  FunctionWrapper::glBufferSubData(GLenum target, GLintptr offset, GLsizeiptr size, std::unique_ptr<dataType[]> data)
 	{
 		if(m_threaded_wrapper)
-			executeCommand(std::make_shared<GlBufferSubDataCommand<dataType>>(target, offset, size, std::move(data)));
+			executeCommand(GlBufferSubDataCommand<dataType>::get(target, offset, size, std::move(data)));
 		else
 			g_glBufferSubData(target, offset, size, data.get());
 	}
@@ -257,7 +257,7 @@ namespace opengl {
 	void  FunctionWrapper::glProgramBinary(GLuint program, GLenum binaryFormat, std::unique_ptr<dataType[]> binary, GLsizei length)
 	{
 		if(m_threaded_wrapper)
-			executeCommand(std::make_shared<GlProgramBinaryCommand<dataType>>(program, binaryFormat, std::move(binary), length));
+			executeCommand(GlProgramBinaryCommand<dataType>::get(program, binaryFormat, std::move(binary), length));
 		else
 			g_glProgramBinary(program, binaryFormat, binary.get(), length);
 	}
@@ -266,7 +266,7 @@ namespace opengl {
 	void  FunctionWrapper::glTextureSubImage2DUnbuffered(GLuint texture, GLint level, GLint xoffset, GLint yoffset, GLsizei width, GLsizei height, GLenum format, GLenum type, std::unique_ptr<pixelType[]> pixels)
 	{
 		if(m_threaded_wrapper)
-			executeCommand(std::make_shared<GlTextureSubImage2DUnbufferedCommand<pixelType>>(texture, level, xoffset, yoffset, width, height, format, type, std::move(pixels)));
+			executeCommand(GlTextureSubImage2DUnbufferedCommand<pixelType>::get(texture, level, xoffset, yoffset, width, height, format, type, std::move(pixels)));
 		else
 			g_glTextureSubImage2D(texture, level, xoffset, yoffset, width, height, format, type, pixels.get());
 	}

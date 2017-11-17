@@ -38,6 +38,8 @@ namespace opengl {
 #ifdef GL_DEBUG
 		_threaded = false;
 #endif
+		_threaded = true;
+
 
 		if (_threaded) {
 			m_threaded_wrapper = true;
@@ -52,7 +54,7 @@ namespace opengl {
 	void FunctionWrapper::glBlendFunc(GLenum sfactor, GLenum dfactor)
 	{
 		if (m_threaded_wrapper)
-			executeCommand(std::make_shared<GlBlendFuncCommand>(sfactor, dfactor));
+			executeCommand(GlBlendFuncCommand::get(sfactor, dfactor));
 		else
 			g_glBlendFunc(sfactor, dfactor);
 	}
@@ -60,7 +62,7 @@ namespace opengl {
 	void FunctionWrapper::glPixelStorei(GLenum pname, GLint param)
 	{
 		if (m_threaded_wrapper)
-			executeCommand(std::make_shared<GlPixelStoreiCommand>(pname, param));
+			executeCommand(GlPixelStoreiCommand::get(pname, param));
 		else
 			g_glPixelStorei(pname, param);
 	}
@@ -68,7 +70,7 @@ namespace opengl {
 	void FunctionWrapper::glClearColor(GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha)
 	{
 		if (m_threaded_wrapper)
-			executeCommand(std::make_shared<GlClearColorCommand>(red, green, blue, alpha));
+			executeCommand(GlClearColorCommand::get(red, green, blue, alpha));
 		else
 			g_glClearColor(red, green, blue, alpha);
 	}
@@ -76,7 +78,7 @@ namespace opengl {
 	void FunctionWrapper::glCullFace(GLenum mode)
 	{
 		if (m_threaded_wrapper)
-			executeCommand(std::make_shared<GlCullFaceCommand>(mode));
+			executeCommand(GlCullFaceCommand::get(mode));
 		else
 			g_glCullFace(mode);
 	}
@@ -84,7 +86,7 @@ namespace opengl {
 	void FunctionWrapper::glDepthFunc(GLenum func)
 	{
 		if (m_threaded_wrapper)
-			executeCommand(std::make_shared<GlDepthFuncCommand>(func));
+			executeCommand(GlDepthFuncCommand::get(func));
 		else
 			g_glDepthFunc(func);
 	}
@@ -92,7 +94,7 @@ namespace opengl {
 	void FunctionWrapper::glDepthMask(GLboolean flag)
 	{
 		if (m_threaded_wrapper)
-			executeCommand(std::make_shared<GlDepthMaskCommand>(flag));
+			executeCommand(GlDepthMaskCommand::get(flag));
 		else
 			g_glDepthMask(flag);
 	}
@@ -100,7 +102,7 @@ namespace opengl {
 	void FunctionWrapper::glDisable(GLenum cap)
 	{
 		if (m_threaded_wrapper)
-			executeCommand(std::make_shared<GlDisableCommand>(cap));
+			executeCommand(GlDisableCommand::get(cap));
 		else
 			g_glDisable(cap);
 	}
@@ -108,7 +110,7 @@ namespace opengl {
 	void FunctionWrapper::glEnable(GLenum cap)
 	{
 		if (m_threaded_wrapper)
-			executeCommand(std::make_shared<GlEnableCommand>(cap));
+			executeCommand(GlEnableCommand::get(cap));
 		else
 			g_glEnable(cap);
 	}
@@ -116,7 +118,7 @@ namespace opengl {
 	void FunctionWrapper::glPolygonOffset(GLfloat factor, GLfloat units)
 	{
 		if (m_threaded_wrapper)
-			executeCommand(std::make_shared<GlPolygonOffsetCommand>(factor, units));
+			executeCommand(GlPolygonOffsetCommand::get(factor, units));
 		else
 			g_glPolygonOffset(factor, units);
 	}
@@ -124,7 +126,7 @@ namespace opengl {
 	void FunctionWrapper::glScissor(GLint x, GLint y, GLsizei width, GLsizei height)
 	{
 		if (m_threaded_wrapper)
-			executeCommand(std::make_shared<GlScissorCommand>(x, y, width, height));
+			executeCommand(GlScissorCommand::get(x, y, width, height));
 		else
 			g_glScissor(x, y, width, height);
 	}
@@ -132,7 +134,7 @@ namespace opengl {
 	void FunctionWrapper::glViewport(GLint x, GLint y, GLsizei width, GLsizei height)
 	{
 		if (m_threaded_wrapper)
-			executeCommand(std::make_shared<GlViewportCommand>(x, y, width, height));
+			executeCommand(GlViewportCommand::get(x, y, width, height));
 		else
 			g_glViewport(x, y, width, height);
 	}
@@ -140,7 +142,7 @@ namespace opengl {
 	void FunctionWrapper::glBindTexture(GLenum target, GLuint texture)
 	{
 		if (m_threaded_wrapper)
-			executeCommand(std::make_shared<GlBindTextureCommand>(target, texture));
+			executeCommand(GlBindTextureCommand::get(target, texture));
 		else
 			g_glBindTexture(target, texture);
 	}
@@ -148,7 +150,7 @@ namespace opengl {
 	void FunctionWrapper::glTexParameteri(GLenum target, GLenum pname, GLint param)
 	{
 		if (m_threaded_wrapper)
-			executeCommand(std::make_shared<GlTexParameteriCommand>(target, pname, param));
+			executeCommand(GlTexParameteriCommand::get(target, pname, param));
 		else
 			g_glTexParameteri(target, pname, param);
 	}
@@ -156,7 +158,7 @@ namespace opengl {
 	void FunctionWrapper::glGetIntegerv(GLenum pname, GLint* data)
 	{
 		if (m_threaded_wrapper)
-			executeCommand(std::make_shared<GlGetIntegervCommand>(pname, data));
+			executeCommand(GlGetIntegervCommand::get(pname, data));
 		else
 			g_glGetIntegerv(pname, data);
 	}
@@ -166,7 +168,7 @@ namespace opengl {
 		const GLubyte* returnValue;
 
 		if (m_threaded_wrapper)
-			executeCommand(std::make_shared<GlGetStringCommand>(name, returnValue));
+			executeCommand(GlGetStringCommand::get(name, returnValue));
 		else
 			returnValue = g_glGetString(name);
 
@@ -176,7 +178,7 @@ namespace opengl {
 	void FunctionWrapper::glReadPixels(GLint x, GLint y, GLsizei width, GLsizei height, GLenum format, GLenum type, void *pixels)
 	{
 		if (m_threaded_wrapper)
-			executeCommand(std::make_shared<GlReadPixelsCommand>(x, y, width, height, format, type, pixels));
+			executeCommand(GlReadPixelsCommand::get(x, y, width, height, format, type, pixels));
 		else
 			g_glReadPixels(x, y, width, height, format, type, pixels);
 	}
@@ -184,7 +186,7 @@ namespace opengl {
 	void FunctionWrapper::glReadPixelsAsync(GLint x, GLint y, GLsizei width, GLsizei height, GLenum format, GLenum type)
 	{
 		if (m_threaded_wrapper)
-			executeCommand(std::make_shared<GlReadPixelsAsyncCommand>(x, y, width, height, format, type));
+			executeCommand(GlReadPixelsAsyncCommand::get(x, y, width, height, format, type));
 		else
 			g_glReadPixels(x, y, width, height, format, type, nullptr);
 	}
@@ -192,7 +194,7 @@ namespace opengl {
 	void FunctionWrapper::glTexSubImage2DBuffered(GLenum target, GLint level, GLint xoffset, GLint yoffset, GLsizei width, GLsizei height, GLenum format, GLenum type, std::size_t offset)
 	{
 		if (m_threaded_wrapper)
-			executeCommand(std::make_shared<GlTexSubImage2DBufferedCommand>(target, level, xoffset, yoffset, width, height, format, type, offset));
+			executeCommand(GlTexSubImage2DBufferedCommand::get(target, level, xoffset, yoffset, width, height, format, type, offset));
 		else
 			g_glTexSubImage2D(target, level, xoffset, yoffset, width, height, format, type, (const GLvoid *)offset);
 	}
@@ -200,7 +202,7 @@ namespace opengl {
 	void FunctionWrapper::glDrawArrays(GLenum mode, GLint first, GLsizei count)
 	{
 		if (m_threaded_wrapper)
-			executeCommand(std::make_shared<GlDrawArraysCommand>(mode, first, count));
+			executeCommand(GlDrawArraysCommand::get(mode, first, count));
 		else
 			g_glDrawArrays(mode, first, count);
 	}
@@ -208,9 +210,9 @@ namespace opengl {
 	void FunctionWrapper::glDrawArraysUnbuffered(GLenum mode, GLint first, GLsizei count, std::unique_ptr<std::vector<char>> data)
 	{
 		if (m_threaded_wrapper)
-			executeCommand(std::make_shared<GlDrawArraysUnbufferedCommand>(mode, first, count, std::move(data)));
+			executeCommand(GlDrawArraysUnbufferedCommand::get(mode, first, count, std::move(data)));
 		else {
-			auto command = std::make_shared<GlDrawArraysUnbufferedCommand>(mode, first, count, std::move(data));
+			auto command = GlDrawArraysUnbufferedCommand::get(mode, first, count, std::move(data));
 			command->performCommandSingleThreaded();
 		}
 	}
@@ -221,7 +223,7 @@ namespace opengl {
 		GLenum returnValue;
 
 		if (m_threaded_wrapper)
-			executeCommand(std::make_shared<GlGetErrorCommand>(returnValue));
+			executeCommand(GlGetErrorCommand::get(returnValue));
 		else
 			returnValue = g_glGetError();
 
@@ -239,7 +241,7 @@ namespace opengl {
 	void FunctionWrapper::glLineWidth(GLfloat width)
 	{
 		if (m_threaded_wrapper)
-			executeCommand(std::make_shared<GlLineWidthCommand>(width));
+			executeCommand(GlLineWidthCommand::get(width));
 		else
 			g_glLineWidth(width);
 	}
@@ -247,7 +249,7 @@ namespace opengl {
 	void FunctionWrapper::glClear(GLbitfield mask)
 	{
 		if (m_threaded_wrapper)
-			executeCommand(std::make_shared<GlClearCommand>(mask));
+			executeCommand(GlClearCommand::get(mask));
 		else
 			g_glClear(mask);
 	}
@@ -255,7 +257,7 @@ namespace opengl {
 	void FunctionWrapper::glGetFloatv(GLenum pname, GLfloat* data)
 	{
 		if (m_threaded_wrapper)
-			executePriorityCommand(std::make_shared<GlGetFloatvCommand>(pname, data));
+			executePriorityCommand(GlGetFloatvCommand::get(pname, data));
 		else
 			g_glGetFloatv(pname, data);
 	}
@@ -263,7 +265,7 @@ namespace opengl {
 	void FunctionWrapper::glDeleteTextures(GLsizei n, std::unique_ptr<GLuint[]> textures)
 	{
 		if (m_threaded_wrapper)
-			executeCommand(std::make_shared<GlDeleteTexturesCommand>(n, std::move(textures)));
+			executeCommand(GlDeleteTexturesCommand::get(n, std::move(textures)));
 		else
 			g_glDeleteTextures(n, textures.get());
 	}
@@ -271,7 +273,7 @@ namespace opengl {
 	void FunctionWrapper::glGenTextures(GLsizei n, GLuint* textures)
 	{
 		if (m_threaded_wrapper)
-			executePriorityCommand(std::make_shared<GlGenTexturesCommand>(n, textures));
+			executePriorityCommand(GlGenTexturesCommand::get(n, textures));
 		else
 			g_glGenTextures(n, textures);
 	}
@@ -279,7 +281,7 @@ namespace opengl {
 	void FunctionWrapper::glTexParameterf(GLenum target, GLenum pname, GLfloat param)
 	{
 		if (m_threaded_wrapper)
-			executeCommand(std::make_shared<GlTexParameterfCommand>(target, pname, param));
+			executeCommand(GlTexParameterfCommand::get(target, pname, param));
 		else
 			g_glTexParameterf(target, pname, param);
 	}
@@ -287,7 +289,7 @@ namespace opengl {
 	void FunctionWrapper::glActiveTexture(GLenum texture)
 	{
 		if (m_threaded_wrapper)
-			executeCommand(std::make_shared<GlActiveTextureCommand>(texture));
+			executeCommand(GlActiveTextureCommand::get(texture));
 		else
 			g_glActiveTexture(texture);
 	}
@@ -295,7 +297,7 @@ namespace opengl {
 	void FunctionWrapper::glBlendColor(GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha)
 	{
 		if (m_threaded_wrapper)
-			executeCommand(std::make_shared<GlBlendColorCommand>(red, green, blue, alpha));
+			executeCommand(GlBlendColorCommand::get(red, green, blue, alpha));
 		else
 			g_glBlendColor(red, green, blue, alpha);
 	}
@@ -303,7 +305,7 @@ namespace opengl {
 	void FunctionWrapper::glReadBuffer(GLenum src)
 	{
 		if (m_threaded_wrapper)
-			executeCommand(std::make_shared<GlReadBufferCommand>(src));
+			executeCommand(GlReadBufferCommand::get(src));
 		else
 			g_glReadBuffer(src);
 	}
@@ -313,7 +315,7 @@ namespace opengl {
 		GLuint returnValue;
 
 		if (m_threaded_wrapper)
-			executeCommand(std::make_shared<GlCreateShaderCommand>(type, returnValue));
+			executeCommand(GlCreateShaderCommand::get(type, returnValue));
 		else
 			returnValue = g_glCreateShader(type);
 
@@ -323,7 +325,7 @@ namespace opengl {
 	void FunctionWrapper::glCompileShader(GLuint shader)
 	{
 		if (m_threaded_wrapper)
-			executeCommand(std::make_shared<GlCompileShaderCommand>(shader));
+			executeCommand(GlCompileShaderCommand::get(shader));
 		else
 			g_glCompileShader(shader);
 	}
@@ -331,7 +333,7 @@ namespace opengl {
 	void FunctionWrapper::glShaderSource(GLuint shader, const std::string& string)
 	{
 		if (m_threaded_wrapper)
-			executeCommand(std::make_shared<GlShaderSourceCommand>(shader, string));
+			executeCommand(GlShaderSourceCommand::get(shader, string));
 		else {
 			const GLchar* strShaderData = string.data();
 			g_glShaderSource(shader, 1, &strShaderData, nullptr);
@@ -343,7 +345,7 @@ namespace opengl {
 		GLuint returnValue;
 
 		if (m_threaded_wrapper)
-			executeCommand(std::make_shared<GlCreateProgramCommand>(returnValue));
+			executeCommand(GlCreateProgramCommand::get(returnValue));
 		else
 			returnValue = g_glCreateProgram();
 
@@ -353,7 +355,7 @@ namespace opengl {
 	void FunctionWrapper::glAttachShader(GLuint program, GLuint shader)
 	{
 		if (m_threaded_wrapper)
-			executeCommand(std::make_shared<GlAttachShaderCommand>(program, shader));
+			executeCommand(GlAttachShaderCommand::get(program, shader));
 		else
 			g_glAttachShader(program, shader);
 	}
@@ -361,7 +363,7 @@ namespace opengl {
 	void FunctionWrapper::glLinkProgram(GLuint program)
 	{
 		if (m_threaded_wrapper)
-			executeCommand(std::make_shared<GlLinkProgramCommand>(program));
+			executeCommand(GlLinkProgramCommand::get(program));
 		else
 			g_glLinkProgram(program);
 	}
@@ -369,7 +371,7 @@ namespace opengl {
 	void FunctionWrapper::glUseProgram(GLuint program)
 	{
 		if (m_threaded_wrapper)
-			executeCommand(std::make_shared<GlUseProgramCommand>(program));
+			executeCommand(GlUseProgramCommand::get(program));
 		else
 			g_glUseProgram(program);
 	}
@@ -379,7 +381,7 @@ namespace opengl {
 		GLint returnValue;
 
 		if (m_threaded_wrapper)
-			executeCommand(std::make_shared<GlGetUniformLocationCommand>(program, name, returnValue));
+			executeCommand(GlGetUniformLocationCommand::get(program, name, returnValue));
 		else
 			returnValue = g_glGetUniformLocation(program, name);
 
@@ -389,7 +391,7 @@ namespace opengl {
 	void FunctionWrapper::glUniform1i(GLint location, GLint v0)
 	{
 		if (m_threaded_wrapper)
-			executeCommand(std::make_shared<GlUniform1iCommand>(location, v0));
+			executeCommand(GlUniform1iCommand::get(location, v0));
 		else
 			g_glUniform1i(location, v0);
 	}
@@ -397,7 +399,7 @@ namespace opengl {
 	void FunctionWrapper::glUniform1f(GLint location, GLfloat v0)
 	{
 		if (m_threaded_wrapper)
-			executeCommand(std::make_shared<GlUniform1fCommand>(location, v0));
+			executeCommand(GlUniform1fCommand::get(location, v0));
 		else
 			g_glUniform1f(location, v0);
 	}
@@ -405,7 +407,7 @@ namespace opengl {
 	void FunctionWrapper::glUniform2f(GLint location, GLfloat v0, GLfloat v1)
 	{
 		if (m_threaded_wrapper)
-			executeCommand(std::make_shared<GlUniform2fCommand>(location, v0, v1));
+			executeCommand(GlUniform2fCommand::get(location, v0, v1));
 		else
 			g_glUniform2f(location, v0, v1);
 	}
@@ -413,7 +415,7 @@ namespace opengl {
 	void FunctionWrapper::glUniform2i(GLint location, GLint v0, GLint v1)
 	{
 		if (m_threaded_wrapper)
-			executeCommand(std::make_shared<GlUniform2iCommand>(location, v0, v1));
+			executeCommand(GlUniform2iCommand::get(location, v0, v1));
 		else
 			g_glUniform2i(location, v0, v1);
 	}
@@ -421,7 +423,7 @@ namespace opengl {
 	void FunctionWrapper::glUniform4i(GLint location, GLint v0, GLint v1, GLint v2, GLint v3)
 	{
 		if (m_threaded_wrapper)
-			executeCommand(std::make_shared<GlUniform4iCommand>(location, v0, v1, v2, v3));
+			executeCommand(GlUniform4iCommand::get(location, v0, v1, v2, v3));
 		else
 			g_glUniform4i(location, v0, v1, v2, v3);
 	}
@@ -430,7 +432,7 @@ namespace opengl {
 	void FunctionWrapper::glUniform4f(GLint location, GLfloat v0, GLfloat v1, GLfloat v2, GLfloat v3)
 	{
 		if (m_threaded_wrapper)
-			executeCommand(std::make_shared<GlUniform4fCommand>(location, v0, v1, v2, v3));
+			executeCommand(GlUniform4fCommand::get(location, v0, v1, v2, v3));
 		else
 			g_glUniform4f(location, v0, v1, v2, v3);
 	}
@@ -438,7 +440,7 @@ namespace opengl {
 	void FunctionWrapper::glUniform3fv(GLint location, GLsizei count, std::unique_ptr<GLfloat[]> value)
 	{
 		if (m_threaded_wrapper)
-			executeCommand(std::make_shared<GlUniform3fvCommand>(location, count, std::move(value)));
+			executeCommand(GlUniform3fvCommand::get(location, count, std::move(value)));
 		else
 			g_glUniform3fv(location, count, value.get());
 	}
@@ -446,7 +448,7 @@ namespace opengl {
 	void FunctionWrapper::glUniform4fv(GLint location, GLsizei count, std::unique_ptr<GLfloat[]> value)
 	{
 		if (m_threaded_wrapper)
-			executeCommand(std::make_shared<GlUniform4fvCommand>(location, count, std::move(value)));
+			executeCommand(GlUniform4fvCommand::get(location, count, std::move(value)));
 		else
 			g_glUniform4fv(location, count, value.get());
 	}
@@ -454,7 +456,7 @@ namespace opengl {
 	void FunctionWrapper::glDetachShader(GLuint program, GLuint shader)
 	{
 		if (m_threaded_wrapper)
-			executeCommand(std::make_shared<GlDetachShaderCommand>(program, shader));
+			executeCommand(GlDetachShaderCommand::get(program, shader));
 		else
 			g_glDetachShader(program, shader);
 	}
@@ -462,7 +464,7 @@ namespace opengl {
 	void FunctionWrapper::glDeleteShader(GLuint shader)
 	{
 		if (m_threaded_wrapper)
-			executeCommand(std::make_shared<GlDeleteShaderCommand>(shader));
+			executeCommand(GlDeleteShaderCommand::get(shader));
 		else
 			g_glDeleteShader(shader);
 	}
@@ -470,7 +472,7 @@ namespace opengl {
 	void FunctionWrapper::glDeleteProgram(GLuint program)
 	{
 		if (m_threaded_wrapper)
-			executeCommand(std::make_shared<GlDeleteProgramCommand>(program));
+			executeCommand(GlDeleteProgramCommand::get(program));
 		else
 			g_glDeleteProgram(program);
 	}
@@ -478,7 +480,7 @@ namespace opengl {
 	void FunctionWrapper::glGetProgramInfoLog(GLuint program, GLsizei bufSize, GLsizei* length, GLchar *infoLog)
 	{
 		if (m_threaded_wrapper)
-			executeCommand(std::make_shared<GlGetProgramInfoLogCommand>(program, bufSize, length, infoLog));
+			executeCommand(GlGetProgramInfoLogCommand::get(program, bufSize, length, infoLog));
 		else
 			g_glGetProgramInfoLog(program, bufSize, length, infoLog);
 	}
@@ -486,7 +488,7 @@ namespace opengl {
 	void FunctionWrapper::glGetShaderInfoLog(GLuint shader, GLsizei bufSize, GLsizei* length, GLchar *infoLog)
 	{
 		if (m_threaded_wrapper)
-			executeCommand(std::make_shared<GlGetShaderInfoLogCommand>(shader, bufSize, length, infoLog));
+			executeCommand(GlGetShaderInfoLogCommand::get(shader, bufSize, length, infoLog));
 		else
 			g_glGetShaderInfoLog(shader, bufSize, length, infoLog);
 	}
@@ -494,7 +496,7 @@ namespace opengl {
 	void FunctionWrapper::glGetShaderiv(GLuint shader, GLenum pname, GLint* params)
 	{
 		if (m_threaded_wrapper)
-			executeCommand(std::make_shared<GlGetShaderivCommand>(shader, pname, params));
+			executeCommand(GlGetShaderivCommand::get(shader, pname, params));
 		else
 			g_glGetShaderiv(shader, pname, params);
 	}
@@ -502,7 +504,7 @@ namespace opengl {
 	void FunctionWrapper::glGetProgramiv(GLuint program, GLenum pname, GLint* params)
 	{
 		if (m_threaded_wrapper)
-			executeCommand(std::make_shared<GlGetProgramivCommand>(program, pname, params));
+			executeCommand(GlGetProgramivCommand::get(program, pname, params));
 		else
 			g_glGetProgramiv(program, pname, params);
 	}
@@ -510,7 +512,7 @@ namespace opengl {
 	void FunctionWrapper::glEnableVertexAttribArray(GLuint index)
 	{
 		if (m_threaded_wrapper)
-			executeCommand(std::make_shared<GlEnableVertexAttribArrayCommand>(index));
+			executeCommand(GlEnableVertexAttribArrayCommand::get(index));
 		else
 			g_glEnableVertexAttribArray(index);
 	}
@@ -518,7 +520,7 @@ namespace opengl {
 	void FunctionWrapper::glDisableVertexAttribArray(GLuint index)
 	{
 		if (m_threaded_wrapper)
-			executeCommand(std::make_shared<GlDisableVertexAttribArrayCommand>(index));
+			executeCommand(GlDisableVertexAttribArrayCommand::get(index));
 		else
 			g_glDisableVertexAttribArray(index);
 	}
@@ -526,7 +528,7 @@ namespace opengl {
 	void FunctionWrapper::glVertexAttribPointerBuffered(GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, std::size_t offset)
 	{
 		if (m_threaded_wrapper)
-			executeCommand(std::make_shared<GlVertexAttribPointerBufferedCommand>(index, size, type, normalized, stride, offset));
+			executeCommand(GlVertexAttribPointerBufferedCommand::get(index, size, type, normalized, stride, offset));
 		else
 			g_glVertexAttribPointer(index, size, type, normalized, stride, (const GLvoid *)(offset));
 	}
@@ -541,9 +543,9 @@ namespace opengl {
 		std::size_t offset)
 	{
 		if (m_threaded_wrapper)
-			executeCommand(std::make_shared<GlVertexAttribPointerUnbufferedCommand>(index, size, type, normalized, stride, offset));
+			executeCommand(GlVertexAttribPointerUnbufferedCommand::get(index, size, type, normalized, stride, offset));
 		else {
-			auto command = std::make_shared<GlVertexAttribPointerUnbufferedCommand>(index, size, type, normalized, stride, offset);
+			auto command = GlVertexAttribPointerUnbufferedCommand::get(index, size, type, normalized, stride, offset);
 			command->performCommandSingleThreaded();
 		}
 	}
@@ -551,7 +553,7 @@ namespace opengl {
 	void FunctionWrapper::glBindAttribLocation(GLuint program, GLuint index, const std::string& name)
 	{
 		if (m_threaded_wrapper)
-			executeCommand(std::make_shared<GlBindAttribLocationCommand>(program, index, std::move(name)));
+			executeCommand(GlBindAttribLocationCommand::get(program, index, std::move(name)));
 		else
 			g_glBindAttribLocation(program, index, name.data());
 	}
@@ -559,7 +561,7 @@ namespace opengl {
 	void FunctionWrapper::glVertexAttrib1f(GLuint index, GLfloat x)
 	{
 		if (m_threaded_wrapper)
-			executeCommand(std::make_shared<GlVertexAttrib1fCommand>(index, x));
+			executeCommand(GlVertexAttrib1fCommand::get(index, x));
 		else
 			g_glVertexAttrib1f(index, x);
 	}
@@ -567,7 +569,7 @@ namespace opengl {
 	void FunctionWrapper::glVertexAttrib4f(GLuint index, GLfloat x, GLfloat y, GLfloat z, GLfloat w)
 	{
 		if (m_threaded_wrapper)
-			executeCommand(std::make_shared<GlVertexAttrib4fCommand>(index, x, y, z, w));
+			executeCommand(GlVertexAttrib4fCommand::get(index, x, y, z, w));
 		else
 			g_glVertexAttrib4f(index, x, y, z, w);
 	}
@@ -575,7 +577,7 @@ namespace opengl {
 	void FunctionWrapper::glVertexAttrib4fv(GLuint index, std::unique_ptr<GLfloat[]> v)
 	{
 		if (m_threaded_wrapper)
-			executeCommand(std::make_shared<GlVertexAttrib4fvCommand>(index, std::move(v)));
+			executeCommand(GlVertexAttrib4fvCommand::get(index, std::move(v)));
 		else
 			g_glVertexAttrib4fv(index, v.get());
 	}
@@ -583,7 +585,7 @@ namespace opengl {
 	void FunctionWrapper::glDepthRangef(GLfloat n, GLfloat f)
 	{
 		if (m_threaded_wrapper)
-			executeCommand(std::make_shared<GlDepthRangefCommand>(n, f));
+			executeCommand(GlDepthRangefCommand::get(n, f));
 		else
 			g_glDepthRangef(n, f);
 	}
@@ -591,7 +593,7 @@ namespace opengl {
 	void FunctionWrapper::glClearDepthf(GLfloat d)
 	{
 		if (m_threaded_wrapper)
-			executeCommand(std::make_shared<GlClearDepthfCommand>(d));
+			executeCommand(GlClearDepthfCommand::get(d));
 		else
 			g_glClearDepthf(d);
 	}
@@ -599,7 +601,7 @@ namespace opengl {
 	void FunctionWrapper::glDrawBuffers(GLsizei n, std::unique_ptr<GLenum[]> bufs)
 	{
 		if (m_threaded_wrapper)
-			executeCommand(std::make_shared<GlDrawBuffersCommand>(n, std::move(bufs)));
+			executeCommand(GlDrawBuffersCommand::get(n, std::move(bufs)));
 		else
 			g_glDrawBuffers(n, bufs.get());
 	}
@@ -607,7 +609,7 @@ namespace opengl {
 	void FunctionWrapper::glGenFramebuffers(GLsizei n, GLuint* framebuffers)
 	{
 		if (m_threaded_wrapper)
-			executePriorityCommand(std::make_shared<GlGenFramebuffersCommand>(n, framebuffers));
+			executePriorityCommand(GlGenFramebuffersCommand::get(n, framebuffers));
 		else
 			g_glGenFramebuffers(n, framebuffers);
 	}
@@ -615,7 +617,7 @@ namespace opengl {
 	void FunctionWrapper::glBindFramebuffer(GLenum target, GLuint framebuffer)
 	{
 		if (m_threaded_wrapper)
-			executeCommand(std::make_shared<GlBindFramebufferCommand>(target, framebuffer));
+			executeCommand(GlBindFramebufferCommand::get(target, framebuffer));
 		else
 			g_glBindFramebuffer(target, framebuffer);
 	}
@@ -623,7 +625,7 @@ namespace opengl {
 	void FunctionWrapper::glDeleteFramebuffers(GLsizei n, std::unique_ptr<GLuint[]> framebuffers)
 	{
 		if (m_threaded_wrapper)
-			executeCommand(std::make_shared<GlDeleteFramebuffersCommand>(n, std::move(framebuffers)));
+			executeCommand(GlDeleteFramebuffersCommand::get(n, std::move(framebuffers)));
 		else
 			g_glDeleteFramebuffers(n, framebuffers.get());
 	}
@@ -631,7 +633,7 @@ namespace opengl {
 	void FunctionWrapper::glFramebufferTexture2D(GLenum target, GLenum attachment, GLenum textarget, GLuint texture, GLint level)
 	{
 		if (m_threaded_wrapper)
-			executeCommand(std::make_shared<GlFramebufferTexture2DCommand>(target, attachment, textarget, texture, level));
+			executeCommand(GlFramebufferTexture2DCommand::get(target, attachment, textarget, texture, level));
 		else
 			g_glFramebufferTexture2D(target, attachment, textarget, texture, level);
 	}
@@ -639,7 +641,7 @@ namespace opengl {
 	void FunctionWrapper::glTexImage2DMultisample(GLenum target, GLsizei samples, GLenum internalformat, GLsizei width, GLsizei height, GLboolean fixedsamplelocations)
 	{
 		if (m_threaded_wrapper)
-			executeCommand(std::make_shared<GlTexImage2DMultisampleCommand>(target, samples, internalformat, width, height, fixedsamplelocations));
+			executeCommand(GlTexImage2DMultisampleCommand::get(target, samples, internalformat, width, height, fixedsamplelocations));
 		else
 			g_glTexImage2DMultisample(target, samples, internalformat, width, height, fixedsamplelocations);
 	}
@@ -647,7 +649,7 @@ namespace opengl {
 	void FunctionWrapper::glTexStorage2DMultisample(GLenum target, GLsizei samples, GLenum internalformat, GLsizei width, GLsizei height, GLboolean fixedsamplelocations)
 	{
 		if (m_threaded_wrapper)
-			executeCommand(std::make_shared<GlTexStorage2DMultisampleCommand>(target, samples, internalformat, width, height, fixedsamplelocations));
+			executeCommand(GlTexStorage2DMultisampleCommand::get(target, samples, internalformat, width, height, fixedsamplelocations));
 		else
 			g_glTexStorage2DMultisample(target, samples, internalformat, width, height, fixedsamplelocations);
 	}
@@ -655,7 +657,7 @@ namespace opengl {
 	void FunctionWrapper::glGenRenderbuffers(GLsizei n, GLuint* renderbuffers)
 	{
 		if (m_threaded_wrapper)
-			executePriorityCommand(std::make_shared<GlGenRenderbuffersCommand>(n, renderbuffers));
+			executePriorityCommand(GlGenRenderbuffersCommand::get(n, renderbuffers));
 		else
 			g_glGenRenderbuffers(n, renderbuffers);
 	}
@@ -663,7 +665,7 @@ namespace opengl {
 	void FunctionWrapper::glBindRenderbuffer(GLenum target, GLuint renderbuffer)
 	{
 		if (m_threaded_wrapper)
-			executeCommand(std::make_shared<GlBindRenderbufferCommand>(target, renderbuffer));
+			executeCommand(GlBindRenderbufferCommand::get(target, renderbuffer));
 		else
 			g_glBindRenderbuffer(target, renderbuffer);
 	}
@@ -671,7 +673,7 @@ namespace opengl {
 	void FunctionWrapper::glRenderbufferStorage(GLenum target, GLenum internalformat, GLsizei width, GLsizei height)
 	{
 		if (m_threaded_wrapper)
-			executeCommand(std::make_shared<GlRenderbufferStorageCommand>(target, internalformat, width, height));
+			executeCommand(GlRenderbufferStorageCommand::get(target, internalformat, width, height));
 		else
 			g_glRenderbufferStorage(target, internalformat, width, height);
 	}
@@ -679,7 +681,7 @@ namespace opengl {
 	void FunctionWrapper::glDeleteRenderbuffers(GLsizei n, std::unique_ptr<GLuint[]> renderbuffers)
 	{
 		if (m_threaded_wrapper)
-			executeCommand(std::make_shared<GlDeleteRenderbuffersCommand>(n, std::move(renderbuffers)));
+			executeCommand(GlDeleteRenderbuffersCommand::get(n, std::move(renderbuffers)));
 		else
 			g_glDeleteRenderbuffers(n, renderbuffers.get());
 	}
@@ -687,7 +689,7 @@ namespace opengl {
 	void FunctionWrapper::glFramebufferRenderbuffer(GLenum target, GLenum attachment, GLenum renderbuffertarget, GLuint renderbuffer)
 	{
 		if (m_threaded_wrapper)
-			executeCommand(std::make_shared<GlFramebufferRenderbufferCommand>(target, attachment, renderbuffertarget, renderbuffer));
+			executeCommand(GlFramebufferRenderbufferCommand::get(target, attachment, renderbuffertarget, renderbuffer));
 		else
 			g_glFramebufferRenderbuffer(target, attachment, renderbuffertarget, renderbuffer);
 	}
@@ -698,7 +700,7 @@ namespace opengl {
 		GLenum returnValue;
 
 		if (m_threaded_wrapper)
-			executeCommand(std::make_shared<GlCheckFramebufferStatusCommand>(target, returnValue));
+			executeCommand(GlCheckFramebufferStatusCommand::get(target, returnValue));
 		else
 			returnValue = g_glCheckFramebufferStatus(target);
 
@@ -711,7 +713,7 @@ namespace opengl {
 	void FunctionWrapper::glBlitFramebuffer(GLint srcX0, GLint srcY0, GLint srcX1, GLint srcY1, GLint dstX0, GLint dstY0, GLint dstX1, GLint dstY1, GLbitfield mask, GLenum filter)
 	{
 		if (m_threaded_wrapper)
-			executeCommand(std::make_shared<GlBlitFramebufferCommand>(srcX0, srcY0, srcX1, srcY1, dstX0, dstY0, dstX1, dstY1, mask, filter));
+			executeCommand(GlBlitFramebufferCommand::get(srcX0, srcY0, srcX1, srcY1, dstX0, dstY0, dstX1, dstY1, mask, filter));
 		else
 			g_glBlitFramebuffer(srcX0, srcY0, srcX1, srcY1, dstX0, dstY0, dstX1, dstY1, mask, filter);
 	}
@@ -719,7 +721,7 @@ namespace opengl {
 	void FunctionWrapper::glGenVertexArrays(GLsizei n, GLuint* arrays)
 	{
 		if (m_threaded_wrapper)
-			executePriorityCommand(std::make_shared<GlGenVertexArraysCommand>(n, arrays));
+			executePriorityCommand(GlGenVertexArraysCommand::get(n, arrays));
 		else
 			g_glGenVertexArrays(n, arrays);
 	}
@@ -727,7 +729,7 @@ namespace opengl {
 	void FunctionWrapper::glBindVertexArray(GLuint array)
 	{
 		if (m_threaded_wrapper)
-			executeCommand(std::make_shared<GlBindVertexArrayCommand>(array));
+			executeCommand(GlBindVertexArrayCommand::get(array));
 		else
 			g_glBindVertexArray(array);
 	}
@@ -735,7 +737,7 @@ namespace opengl {
 	void FunctionWrapper::glDeleteVertexArrays(GLsizei n, std::unique_ptr<GLuint[]> arrays)
 	{
 		if (m_threaded_wrapper)
-			executeCommand(std::make_shared<GlDeleteVertexArraysCommand>(n, std::move(arrays)));
+			executeCommand(GlDeleteVertexArraysCommand::get(n, std::move(arrays)));
 		else
 			g_glDeleteVertexArrays(n, arrays.get());
 	}
@@ -743,7 +745,7 @@ namespace opengl {
 	void FunctionWrapper::glGenBuffers(GLsizei n, GLuint* buffers)
 	{
 		if (m_threaded_wrapper)
-			executePriorityCommand(std::make_shared<GlGenBuffersCommand>(n, buffers));
+			executePriorityCommand(GlGenBuffersCommand::get(n, buffers));
 		else
 			g_glGenBuffers(n, buffers);
 	}
@@ -751,7 +753,7 @@ namespace opengl {
 	void FunctionWrapper::glBindBuffer(GLenum target, GLuint buffer)
 	{
 		if (m_threaded_wrapper)
-			executeCommand(std::make_shared<GlBindBufferCommand>(target, buffer));
+			executeCommand(GlBindBufferCommand::get(target, buffer));
 		else
 			g_glBindBuffer(target, buffer);
 	}
@@ -759,7 +761,7 @@ namespace opengl {
 	void FunctionWrapper::glMapBuffer(GLenum target, GLenum access)
 	{
 		if (m_threaded_wrapper)
-			executeCommand(std::make_shared<GlMapBufferCommand>(target, access));
+			executeCommand(GlMapBufferCommand::get(target, access));
 		else
 			g_glMapBuffer(target, access);
 	}
@@ -769,7 +771,7 @@ namespace opengl {
 		GLubyte* returnValue;
 
 		if (m_threaded_wrapper)
-			executeCommand(std::make_shared<GlMapBufferRangeCommand>(target, offset, length, access, returnValue));
+			executeCommand(GlMapBufferRangeCommand::get(target, offset, length, access, returnValue));
 		else
 			returnValue = reinterpret_cast<GLubyte*>(g_glMapBufferRange(target, offset, length, access));
 
@@ -779,9 +781,9 @@ namespace opengl {
 	void FunctionWrapper::glMapBufferRangeWriteAsync(GLenum target, GLuint buffer, GLintptr offset, u32 length, GLbitfield access, std::unique_ptr<u8[]> data)
 	{
 		if (m_threaded_wrapper)
-			executeCommand(std::make_shared<GlMapBufferRangeWriteAsyncCommand>(target, buffer, offset, length, access, std::move(data)));
+			executeCommand(GlMapBufferRangeWriteAsyncCommand::get(target, buffer, offset, length, access, std::move(data)));
 		else {
-			auto command = std::make_shared<GlMapBufferRangeWriteAsyncCommand>(target, buffer, offset, length, access, std::move(data));
+			auto command = GlMapBufferRangeWriteAsyncCommand::get(target, buffer, offset, length, access, std::move(data));
 			command->performCommandSingleThreaded();
 		}
 	}
@@ -789,9 +791,9 @@ namespace opengl {
 	std::shared_ptr<std::vector<u8>> FunctionWrapper::glMapBufferRangeReadAsync(GLenum target, GLuint buffer, GLintptr offset, u32 length, GLbitfield access)
 	{
 		if (m_threaded_wrapper)
-			executeCommand(std::make_shared<GlMapBufferRangeReadAsyncCommand>(target, buffer, offset, length, access));
+			executeCommand(GlMapBufferRangeReadAsyncCommand::get(target, buffer, offset, length, access));
 		else {
-			auto command = std::make_shared<GlMapBufferRangeReadAsyncCommand>(target, buffer, offset, length, access);
+			auto command = GlMapBufferRangeReadAsyncCommand::get(target, buffer, offset, length, access);
 			command->performCommandSingleThreaded();
 		}
 		return GlMapBufferRangeReadAsyncCommand::getData(buffer, length);
@@ -802,7 +804,7 @@ namespace opengl {
 		GLboolean returnValue;
 
 		if (m_threaded_wrapper)
-			executeCommand(std::make_shared<GlUnmapBufferCommand>(target, returnValue));
+			executeCommand(GlUnmapBufferCommand::get(target, returnValue));
 		else
 			returnValue = g_glUnmapBuffer(target);
 
@@ -812,7 +814,7 @@ namespace opengl {
 	void FunctionWrapper::glUnmapBufferAsync(GLenum target)
 	{
 		if (m_threaded_wrapper)
-			executeCommand(std::make_shared<GlUnmapBufferAsyncCommand>(target));
+			executeCommand(GlUnmapBufferAsyncCommand::get(target));
 		else
 			g_glUnmapBuffer(target);
 	}
@@ -820,7 +822,7 @@ namespace opengl {
 	void FunctionWrapper::glDeleteBuffers(GLsizei n, std::unique_ptr<GLuint[]> buffers)
 	{
 		if (m_threaded_wrapper)
-			executeCommand(std::make_shared<GlDeleteBuffersCommand>(n, std::move(buffers)));
+			executeCommand(GlDeleteBuffersCommand::get(n, std::move(buffers)));
 		else
 			g_glDeleteBuffers(n, buffers.get());
 	}
@@ -828,7 +830,7 @@ namespace opengl {
 	void FunctionWrapper::glBindImageTexture(GLuint unit, GLuint texture, GLint level, GLboolean layered, GLint layer, GLenum access, GLenum format)
 	{
 		if (m_threaded_wrapper)
-			executeCommand(std::make_shared<GlBindImageTextureCommand>(unit, texture, level, layered, layer, access, format));
+			executeCommand(GlBindImageTextureCommand::get(unit, texture, level, layered, layer, access, format));
 		else
 			g_glBindImageTexture(unit, texture, level, layered, layer, access, format);
 	}
@@ -836,7 +838,7 @@ namespace opengl {
 	void FunctionWrapper::glMemoryBarrier(GLbitfield barriers)
 	{
 		if (m_threaded_wrapper)
-			executeCommand(std::make_shared<GlMemoryBarrierCommand>(barriers));
+			executeCommand(GlMemoryBarrierCommand::get(barriers));
 		else
 			g_glMemoryBarrier(barriers);
 	}
@@ -846,7 +848,7 @@ namespace opengl {
 		const GLubyte* returnValue;
 
 		if (m_threaded_wrapper)
-			executePriorityCommand(std::make_shared<GlGetStringiCommand>(name, index, returnValue));
+			executePriorityCommand(GlGetStringiCommand::get(name, index, returnValue));
 		else
 			returnValue = g_glGetStringi(name, index);
 
@@ -856,7 +858,7 @@ namespace opengl {
 	void FunctionWrapper::glInvalidateFramebuffer(GLenum target, GLsizei numAttachments, std::unique_ptr<GLenum[]> attachments)
 	{
 		if (m_threaded_wrapper)
-			executeCommand(std::make_shared<GlInvalidateFramebufferCommand>(target, numAttachments, std::move(attachments)));
+			executeCommand(GlInvalidateFramebufferCommand::get(target, numAttachments, std::move(attachments)));
 		else
 			g_glInvalidateFramebuffer(target, numAttachments, attachments.get());
 	}
@@ -866,7 +868,7 @@ namespace opengl {
 		GLsync returnValue;
 
 		if (m_threaded_wrapper)
-			executePriorityCommand(std::make_shared<GlFenceSyncCommand>(condition, flags, returnValue));
+			executePriorityCommand(GlFenceSyncCommand::get(condition, flags, returnValue));
 		else
 			returnValue = g_glFenceSync(condition, flags);
 
@@ -876,7 +878,7 @@ namespace opengl {
 	void FunctionWrapper::glClientWaitSync(GLsync sync, GLbitfield flags, GLuint64 timeout)
 	{
 		if (m_threaded_wrapper)
-			executePriorityCommand(std::make_shared<GlClientWaitSyncCommand>(sync, flags, timeout));
+			executePriorityCommand(GlClientWaitSyncCommand::get(sync, flags, timeout));
 		else
 			g_glClientWaitSync(sync, flags, timeout);
 	}
@@ -884,7 +886,7 @@ namespace opengl {
 	void FunctionWrapper::glDeleteSync(GLsync sync)
 	{
 		if (m_threaded_wrapper)
-			executeCommand(std::make_shared<GlDeleteSyncCommand>(sync));
+			executeCommand(GlDeleteSyncCommand::get(sync));
 		else
 			g_glDeleteSync(sync);
 	}
@@ -894,7 +896,7 @@ namespace opengl {
 		GLuint returnValue;
 
 		if (m_threaded_wrapper)
-			executeCommand(std::make_shared<GlGetUniformBlockIndexCommand>(program, uniformBlockName, returnValue));
+			executeCommand(GlGetUniformBlockIndexCommand::get(program, uniformBlockName, returnValue));
 		else
 			returnValue = g_glGetUniformBlockIndex(program, uniformBlockName);
 
@@ -904,7 +906,7 @@ namespace opengl {
 	void FunctionWrapper::glUniformBlockBinding(GLuint program, GLuint uniformBlockIndex, GLuint uniformBlockBinding)
 	{
 		if (m_threaded_wrapper)
-			executeCommand(std::make_shared<GlUniformBlockBindingCommand>(program, uniformBlockIndex, uniformBlockBinding));
+			executeCommand(GlUniformBlockBindingCommand::get(program, uniformBlockIndex, uniformBlockBinding));
 		else
 			g_glUniformBlockBinding(program, uniformBlockIndex, uniformBlockBinding);
 	}
@@ -912,7 +914,7 @@ namespace opengl {
 	void FunctionWrapper::glGetActiveUniformBlockiv(GLuint program, GLuint uniformBlockIndex, GLenum pname, GLint* params)
 	{
 		if (m_threaded_wrapper)
-			executeCommand(std::make_shared<GlGetActiveUniformBlockivCommand>(program, uniformBlockIndex, pname, params));
+			executeCommand(GlGetActiveUniformBlockivCommand::get(program, uniformBlockIndex, pname, params));
 		else
 			g_glGetActiveUniformBlockiv(program, uniformBlockIndex, pname, params);
 	}
@@ -920,7 +922,7 @@ namespace opengl {
 	void FunctionWrapper::glGetUniformIndices(GLuint program, GLsizei uniformCount, const GLchar *const*uniformNames, GLuint* uniformIndices)
 	{
 		if (m_threaded_wrapper)
-			executeCommand(std::make_shared<GlGetUniformIndicesCommand>(program, uniformCount, uniformNames, uniformIndices));
+			executeCommand(GlGetUniformIndicesCommand::get(program, uniformCount, uniformNames, uniformIndices));
 		else
 			g_glGetUniformIndices(program, uniformCount, uniformNames, uniformIndices);
 	}
@@ -928,7 +930,7 @@ namespace opengl {
 	void FunctionWrapper::glGetActiveUniformsiv(GLuint program, GLsizei uniformCount, const GLuint *uniformIndices, GLenum pname, GLint* params)
 	{
 		if (m_threaded_wrapper)
-			executeCommand(std::make_shared<GlGetActiveUniformsivCommand>(program, uniformCount, uniformIndices, pname, params));
+			executeCommand(GlGetActiveUniformsivCommand::get(program, uniformCount, uniformIndices, pname, params));
 		else
 			g_glGetActiveUniformsiv(program, uniformCount, uniformIndices, pname, params);
 	}
@@ -936,7 +938,7 @@ namespace opengl {
 	void FunctionWrapper::glBindBufferBase(GLenum target, GLuint index, GLuint buffer)
 	{
 		if (m_threaded_wrapper)
-			executeCommand(std::make_shared<GlBindBufferBaseCommand>(target, index, buffer));
+			executeCommand(GlBindBufferBaseCommand::get(target, index, buffer));
 		else
 			g_glBindBufferBase(target, index, buffer);
 	}
@@ -944,7 +946,7 @@ namespace opengl {
 	void FunctionWrapper::glGetProgramBinary(GLuint program, GLsizei bufSize, GLsizei* length, GLenum* binaryFormat, void *binary)
 	{
 		if (m_threaded_wrapper)
-			executeCommand(std::make_shared<GlGetProgramBinaryCommand>(program, bufSize, length, binaryFormat, binary));
+			executeCommand(GlGetProgramBinaryCommand::get(program, bufSize, length, binaryFormat, binary));
 		else
 			g_glGetProgramBinary(program, bufSize, length, binaryFormat, binary);
 	}
@@ -952,7 +954,7 @@ namespace opengl {
 	void FunctionWrapper::glProgramParameteri(GLuint program, GLenum pname, GLint value)
 	{
 		if (m_threaded_wrapper)
-			executeCommand(std::make_shared<GlProgramParameteriCommand>(program, pname, value));
+			executeCommand(GlProgramParameteriCommand::get(program, pname, value));
 		else
 			g_glProgramParameteri(program, pname, value);
 	}
@@ -960,7 +962,7 @@ namespace opengl {
 	void FunctionWrapper::glTexStorage2D(GLenum target, GLsizei levels, GLenum internalformat, GLsizei width, GLsizei height)
 	{
 		if (m_threaded_wrapper)
-			executeCommand(std::make_shared<GlTexStorage2DCommand>(target, levels, internalformat, width, height));
+			executeCommand(GlTexStorage2DCommand::get(target, levels, internalformat, width, height));
 		else
 			g_glTexStorage2D(target, levels, internalformat, width, height);
 	}
@@ -968,7 +970,7 @@ namespace opengl {
 	void FunctionWrapper::glTextureStorage2D(GLuint texture, GLsizei levels, GLenum internalformat, GLsizei width, GLsizei height)
 	{
 		if (m_threaded_wrapper)
-			executeCommand(std::make_shared<GlTextureStorage2DCommand>(texture, levels, internalformat, width, height));
+			executeCommand(GlTextureStorage2DCommand::get(texture, levels, internalformat, width, height));
 		else
 			g_glTextureStorage2D(texture, levels, internalformat, width, height);
 	}
@@ -976,7 +978,7 @@ namespace opengl {
 	void FunctionWrapper::glTextureSubImage2DBuffered(GLuint texture, GLint level, GLint xoffset, GLint yoffset, GLsizei width, GLsizei height, GLenum format, GLenum type, std::size_t offset)
 	{
 		if (m_threaded_wrapper)
-			executeCommand(std::make_shared<GlTextureSubImage2DBufferedCommand>(texture, level, xoffset, yoffset, width, height, format, type, offset));
+			executeCommand(GlTextureSubImage2DBufferedCommand::get(texture, level, xoffset, yoffset, width, height, format, type, offset));
 		else
 			g_glTextureSubImage2D(texture, level, xoffset, yoffset, width, height, format, type, (const GLvoid* )offset);
 	}
@@ -984,7 +986,7 @@ namespace opengl {
 	void FunctionWrapper::glTextureStorage2DMultisample(GLuint texture, GLenum target, GLsizei samples, GLenum internalformat, GLsizei width, GLsizei height, GLboolean fixedsamplelocations)
 	{
 		if (m_threaded_wrapper)
-			executeCommand(std::make_shared<GlTextureStorage2DMultisampleCommand>(texture, target, samples, internalformat, width, height, fixedsamplelocations));
+			executeCommand(GlTextureStorage2DMultisampleCommand::get(texture, target, samples, internalformat, width, height, fixedsamplelocations));
 		else
 			g_glTextureStorage2DMultisample(texture, target, samples, internalformat, width, height, fixedsamplelocations);
 	}
@@ -992,7 +994,7 @@ namespace opengl {
 	void FunctionWrapper::glTextureParameteri(GLuint texture, GLenum pname, GLint param)
 	{
 		if (m_threaded_wrapper)
-			executeCommand(std::make_shared<GlTextureParameteriCommand>(texture, pname, param));
+			executeCommand(GlTextureParameteriCommand::get(texture, pname, param));
 		else
 			g_glTextureParameteri(texture, pname, param);
 	}
@@ -1000,7 +1002,7 @@ namespace opengl {
 	void FunctionWrapper::glTextureParameterf(GLuint texture, GLenum pname, GLfloat param)
 	{
 		if (m_threaded_wrapper)
-			executeCommand(std::make_shared<GlTextureParameterfCommand>(texture, pname, param));
+			executeCommand(GlTextureParameterfCommand::get(texture, pname, param));
 		else
 			g_glTextureParameterf(texture, pname, param);
 	}
@@ -1008,7 +1010,7 @@ namespace opengl {
 	void FunctionWrapper::glCreateTextures(GLenum target, GLsizei n, GLuint* textures)
 	{
 		if (m_threaded_wrapper)
-			executePriorityCommand(std::make_shared<GlCreateTexturesCommand>(target, n, textures));
+			executePriorityCommand(GlCreateTexturesCommand::get(target, n, textures));
 		else
 			g_glCreateTextures(target, n, textures);
 	}
@@ -1016,7 +1018,7 @@ namespace opengl {
 	void FunctionWrapper::glCreateBuffers(GLsizei n, GLuint* buffers)
 	{
 		if (m_threaded_wrapper)
-			executePriorityCommand(std::make_shared<GlCreateBuffersCommand>(n, buffers));
+			executePriorityCommand(GlCreateBuffersCommand::get(n, buffers));
 		else
 			g_glCreateBuffers(n, buffers);
 	}
@@ -1024,7 +1026,7 @@ namespace opengl {
 	void FunctionWrapper::glCreateFramebuffers(GLsizei n, GLuint* framebuffers)
 	{
 		if (m_threaded_wrapper)
-			executePriorityCommand(std::make_shared<GlCreateFramebuffersCommand>(n, framebuffers));
+			executePriorityCommand(GlCreateFramebuffersCommand::get(n, framebuffers));
 		else
 			g_glCreateFramebuffers(n, framebuffers);
 	}
@@ -1032,7 +1034,7 @@ namespace opengl {
 	void FunctionWrapper::glNamedFramebufferTexture(GLuint framebuffer, GLenum attachment, GLuint texture, GLint level)
 	{
 		if (m_threaded_wrapper)
-			executeCommand(std::make_shared<GlNamedFramebufferTextureCommand>(framebuffer, attachment, texture, level));
+			executeCommand(GlNamedFramebufferTextureCommand::get(framebuffer, attachment, texture, level));
 		else
 			g_glNamedFramebufferTexture(framebuffer, attachment, texture, level);
 	}
@@ -1040,7 +1042,7 @@ namespace opengl {
 	void FunctionWrapper::glDrawElementsBaseVertex(GLenum mode, GLsizei count, GLenum type, const char* indices, GLint basevertex)
 	{
 		if (m_threaded_wrapper)
-			executeCommand(std::make_shared<GlDrawElementsBaseVertexCommand>(mode, count, type, std::move(indices), basevertex));
+			executeCommand(GlDrawElementsBaseVertexCommand::get(mode, count, type, std::move(indices), basevertex));
 		else
 			g_glDrawElementsBaseVertex(mode, count, type, std::move(indices), basevertex);
 	}
@@ -1048,7 +1050,7 @@ namespace opengl {
 	void FunctionWrapper::glFlushMappedBufferRange(GLenum target, GLintptr offset, GLsizeiptr length)
 	{
 		if (m_threaded_wrapper)
-			executeCommand(std::make_shared<GlFlushMappedBufferRangeCommand>(target, offset, length));
+			executeCommand(GlFlushMappedBufferRangeCommand::get(target, offset, length));
 		else
 			g_glFlushMappedBufferRange(target, offset, length);
 	}
@@ -1056,7 +1058,7 @@ namespace opengl {
 	void FunctionWrapper::glFinish(void)
 	{
 		if (m_threaded_wrapper)
-			executeCommand(std::make_shared<GlFinishCommand>());
+			executeCommand(GlFinishCommand::get());
 		else
 			g_glFinish();
 	}
@@ -1066,17 +1068,17 @@ namespace opengl {
 	void FunctionWrapper::CoreVideo_Init(void)
 	{
 		if (m_threaded_wrapper)
-			executeCommand(std::make_shared<CoreVideoInitCommand>());
+			executeCommand(CoreVideoInitCommand::get());
 		else
-			std::make_shared<CoreVideoInitCommand>()->performCommandSingleThreaded();
+			CoreVideoInitCommand::get()->performCommandSingleThreaded();
 	}
 
 	void FunctionWrapper::CoreVideo_Quit(void)
 	{
 		if (m_threaded_wrapper)
-			executeCommand(std::make_shared<CoreVideoQuitCommand>());
+			executeCommand(CoreVideoQuitCommand::get());
 		else
-			std::make_shared<CoreVideoQuitCommand>()->performCommandSingleThreaded();
+			CoreVideoQuitCommand::get()->performCommandSingleThreaded();
 
 		m_shutdown = true;
 
@@ -1091,9 +1093,9 @@ namespace opengl {
 		m64p_error returnValue;
 
 		if (m_threaded_wrapper)
-			executeCommand(std::make_shared<CoreVideoSetVideoModeCommand>(screenWidth, screenHeight, bitsPerPixel, mode, flags, returnValue));
+			executeCommand(CoreVideoSetVideoModeCommand::get(screenWidth, screenHeight, bitsPerPixel, mode, flags, returnValue));
 		else
-			std::make_shared<CoreVideoSetVideoModeCommand>(screenWidth, screenHeight, bitsPerPixel, mode, flags, returnValue)->performCommandSingleThreaded();
+			CoreVideoSetVideoModeCommand::get(screenWidth, screenHeight, bitsPerPixel, mode, flags, returnValue)->performCommandSingleThreaded();
 
 		return returnValue;
 	}
@@ -1101,17 +1103,17 @@ namespace opengl {
 	void FunctionWrapper::CoreVideo_GL_SetAttribute(m64p_GLattr attribute, int value)
 	{
 		if (m_threaded_wrapper)
-			executeCommand(std::make_shared<CoreVideoGLSetAttributeCommand>(attribute, value));
+			executeCommand(CoreVideoGLSetAttributeCommand::get(attribute, value));
 		else
-			std::make_shared<CoreVideoGLSetAttributeCommand>(attribute, value)->performCommandSingleThreaded();
+			CoreVideoGLSetAttributeCommand::get(attribute, value)->performCommandSingleThreaded();
 	}
 
 	void FunctionWrapper::CoreVideo_GL_GetAttribute(m64p_GLattr attribute, int *value)
 	{
 		if (m_threaded_wrapper)
-			executeCommand(std::make_shared<CoreVideoGLGetAttributeCommand>(attribute, value));
+			executeCommand(CoreVideoGLGetAttributeCommand::get(attribute, value));
 		else
-			std::make_shared<CoreVideoGLGetAttributeCommand>(attribute, value)->performCommandSingleThreaded();
+			CoreVideoGLGetAttributeCommand::get(attribute, value)->performCommandSingleThreaded();
 	}
 
 	void FunctionWrapper::CoreVideo_GL_SwapBuffers(void)
@@ -1119,9 +1121,9 @@ namespace opengl {
 		++m_swapBuffersQueued;
 
 		if (m_threaded_wrapper)
-			executeCommand(std::make_shared<CoreVideoGLSwapBuffersCommand>([]{ReduceSwapBuffersQueued();}));
+			executeCommand(CoreVideoGLSwapBuffersCommand::get([]{ReduceSwapBuffersQueued();}));
 		else
-			std::make_shared<CoreVideoGLSwapBuffersCommand>([]{ReduceSwapBuffersQueued();})->performCommandSingleThreaded();
+			CoreVideoGLSwapBuffersCommand::get([]{ReduceSwapBuffersQueued();})->performCommandSingleThreaded();
 	}
 #else
 	bool FunctionWrapper::windowsStart(void)
@@ -1129,9 +1131,9 @@ namespace opengl {
 		bool returnValue;
 
 		if (m_threaded_wrapper)
-			executeCommand(std::make_shared<WindowsStartCommand>(returnValue));
+			executeCommand(WindowsStartCommand::get(returnValue));
 		else
-			std::make_shared<WindowsStartCommand>(returnValue)->performCommandSingleThreaded();
+			WindowsStartCommand::get(returnValue)->performCommandSingleThreaded();
 
 		return returnValue;
 	}
@@ -1139,9 +1141,9 @@ namespace opengl {
 	void FunctionWrapper::windowsStop(void)
 	{
 		if (m_threaded_wrapper)
-			executeCommand(std::make_shared<WindowsStopCommand>());
+			executeCommand(WindowsStopCommand::get());
 		else
-			std::make_shared<WindowsStopCommand>()->performCommandSingleThreaded();
+			WindowsStopCommand::get()->performCommandSingleThreaded();
 
 		m_shutdown = true;
 
@@ -1156,9 +1158,9 @@ namespace opengl {
 		++m_swapBuffersQueued;
 
 		if (m_threaded_wrapper)
-			executeCommand(std::make_shared<WindowsSwapBuffersCommand>([]{ReduceSwapBuffersQueued();}));
+			executeCommand(WindowsSwapBuffersCommand::get([]{ReduceSwapBuffersQueued();}));
 		else
-			std::make_shared<WindowsSwapBuffersCommand>([]{ReduceSwapBuffersQueued();})->performCommandSingleThreaded();
+			WindowsSwapBuffersCommand::get([]{ReduceSwapBuffersQueued();})->performCommandSingleThreaded();
 	}
 
 #endif
