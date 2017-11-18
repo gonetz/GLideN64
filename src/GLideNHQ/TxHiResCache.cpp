@@ -402,7 +402,7 @@ TxHiResCache::loadHiResTextures(const wchar_t * dir_path, boolean replace)
 			INFO(80, wst("Error: _rgb.* or _a.* not in 32bit color!\n"));
 		  }
 		  if (tex) free(tex);
-		  if (tmptex) free(tmptex);
+		  free(tmptex);
 		  tex = nullptr;
 		  tmptex = nullptr;
 		  continue;

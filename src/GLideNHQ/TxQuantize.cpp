@@ -550,12 +550,6 @@ TxQuantize::ARGB8888_ARGB4444_ErrD(uint32* src, uint32* dst, int width, int heig
 {
 	/* Floyd-Steinberg error-diffusion halftoning */
 
-	/* NOTE: alpha dithering looks better for alpha gradients, but are prone
-   * to producing noisy speckles for constant or step level alpha. Output
-   * results should always be checked.
-   */
-	boolean ditherAlpha = 0;
-
 	int i, x, y;
 	int qr, qg, qb, qa; /* quantized incoming values */
 	int ir, ig, ib, ia; /* incoming values */
@@ -614,13 +608,8 @@ TxQuantize::ARGB8888_ARGB4444_ErrD(uint32* src, uint32* dst, int width, int heig
 			qb = qb * 0xF / 2550000;
 			qa = qa * 0xF / 2550000;
 
-			/* this is the value to be returned */
-			if (ditherAlpha) {
-				t = (qa << 12) | (qr <<  8) | (qg << 4) | qb;
-			} else {
-				t = (qr <<  8) | (qg << 4) | qb;
-				t |= (*src >> 16) & 0xF000;
-			}
+			t = (qr <<  8) | (qg << 4) | qb;
+			t |= (*src >> 16) & 0xF000;
 
 			/* compute the errors */
 			qr = ((qr << 4) | qr) * 10000;
@@ -674,12 +663,6 @@ TxQuantize::ARGB8888_AI44_ErrD(uint32* src, uint32* dst, int width, int height)
 {
 	/* Floyd-Steinberg error-diffusion halftoning */
 
-	/* NOTE: alpha dithering looks better for alpha gradients, but are prone
-   * to producing noisy speckles for constant or step level alpha. Output
-   * results should always be checked.
-   */
-	boolean ditherAlpha = 0;
-
 	int i, x, y;
 	int qi, qa; /* quantized incoming values */
 	int ii, ia; /* incoming values */
@@ -726,13 +709,8 @@ TxQuantize::ARGB8888_AI44_ErrD(uint32* src, uint32* dst, int width, int height)
 			qi = qi * 0xF / 2550000;
 			qa = qa * 0xF / 2550000;
 
-			/* this is the value to be returned */
-			if (ditherAlpha) {
-				t = (qa << 4) | qi;
-			} else {
-				t = qi;
-				t |= ((*src >> 24) & 0xF0);
-			}
+			t = qi;
+			t |= ((*src >> 24) & 0xF0);
 
 			/* compute the errors */
 			qi = ((qi << 4) | qi) * 10000;

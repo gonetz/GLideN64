@@ -43,7 +43,7 @@ txfilter_init(int maxwidth, int maxheight, int maxbpp, int options, int cachesiz
   txFilter = new TxFilter(maxwidth, maxheight, maxbpp, options, cachesize,
 	  path, texPackPath, ident, callback);
 
-  return (txFilter ? 1 : 0);
+  return 1;
 }
 
 TAPI void TAPIENTRY

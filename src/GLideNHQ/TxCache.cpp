@@ -134,46 +134,43 @@ TxCache::add(uint64 checksum, GHQTexInfo *info, int dataSize)
 	uint8 *tmpdata = (uint8*)malloc(dataSize);
 	if (tmpdata) {
 		TXCACHE *txCache = new TXCACHE;
-		if (txCache) {
-			/* we can directly write as we filter, but for now we get away
-	   * with doing memcpy after all the filtering is done.
-	   */
-			memcpy(tmpdata, dest, dataSize);
+		/* we can directly write as we filter, but for now we get away
+   * with doing memcpy after all the filtering is done.
+   */
+		memcpy(tmpdata, dest, dataSize);
 
-			/* copy it */
-			memcpy(&txCache->info, info, sizeof(GHQTexInfo));
-			txCache->info.data = tmpdata;
-			txCache->info.format = format;
-			txCache->size = dataSize;
+		/* copy it */
+		memcpy(&txCache->info, info, sizeof(GHQTexInfo));
+		txCache->info.data = tmpdata;
+		txCache->info.format = format;
+		txCache->size = dataSize;
 
-			/* add to cache */
-			if (_cacheSize > 0) {
-				_cachelist.push_back(checksum);
-				txCache->it = --(_cachelist.end());
-			}
-			/* _cache[checksum] = txCache; */
-			_cache.insert(std::map<uint64, TXCACHE*>::value_type(checksum, txCache));
+		/* add to cache */
+		if (_cacheSize > 0) {
+			_cachelist.push_back(checksum);
+			txCache->it = --(_cachelist.end());
+		}
+		/* _cache[checksum] = txCache; */
+		_cache.insert(std::map<uint64, TXCACHE*>::value_type(checksum, txCache));
 
 #ifdef DEBUG
-			DBG_INFO(80, wst("[%5d] added!! crc:%08X %08X %d x %d gfmt:%x total:%.02fmb\n"),
-					 _cache.size(), (uint32)(checksum >> 32), (uint32)(checksum & 0xffffffff),
-					 info->width, info->height, info->format & 0xffff, (float)_totalSize/1000000);
+		DBG_INFO(80, wst("[%5d] added!! crc:%08X %08X %d x %d gfmt:%x total:%.02fmb\n"),
+			_cache.size(), (uint32)(checksum >> 32), (uint32)(checksum & 0xffffffff),
+			info->width, info->height, info->format & 0xffff, (float)_totalSize / 1000000);
 
-			if (_cacheSize > 0) {
-				DBG_INFO(80, wst("cache max config:%.02fmb\n"), (float)_cacheSize/1000000);
+		if (_cacheSize > 0) {
+			DBG_INFO(80, wst("cache max config:%.02fmb\n"), (float)_cacheSize / 1000000);
 
-				if (_cache.size() != _cachelist.size()) {
-					DBG_INFO(80, wst("Error: cache/cachelist mismatch! (%d/%d)\n"), _cache.size(), _cachelist.size());
-				}
+			if (_cache.size() != _cachelist.size()) {
+				DBG_INFO(80, wst("Error: cache/cachelist mismatch! (%d/%d)\n"), _cache.size(), _cachelist.size());
 			}
+		}
 #endif
 
-			/* total cache size */
-			_totalSize += dataSize;
+		/* total cache size */
+		_totalSize += dataSize;
 
-			return 1;
-		}
-		free(tmpdata);
+		return 1;
 	}
 
 	return 0;
