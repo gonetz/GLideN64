@@ -140,6 +140,11 @@ bool Debugger::TriInfo::isInside(long x, long y) const
 Debugger::Debugger()
 {
 	m_triSel = m_triangles.end();
+	m_startTexRow[0] = m_startTexRow[1] = 0;
+	for (u32 i = 0; i < 2; ++i) {
+		m_selectedTexPos[i].col = 0;
+		m_selectedTexPos[i].row = 0;
+	}
 }
 
 Debugger::~Debugger()

@@ -802,10 +802,14 @@ void TextureCache::_loadBackground(CachedTexture *pTexture)
 	bpl = gSP.bgImage.width << gSP.bgImage.size >> 1;
 	numBytes = bpl * gSP.bgImage.height;
 	pSwapped = (u8*)malloc(numBytes);
-	assert(pSwapped != nullptr);
+	if (pSwapped == nullptr)
+		return;
 	UnswapCopyWrap(RDRAM, gSP.bgImage.address, pSwapped, 0, RDRAMSize, numBytes);
 	pDest = (u32*)malloc(pTexture->textureBytes);
-	assert(pDest != nullptr);
+	if (pDest == nullptr) {
+		free(pSwapped);
+		return;
+	}
 
 	clampSClamp = pTexture->width - 1;
 	clampTClamp = pTexture->height - 1;
@@ -1376,15 +1380,15 @@ void TextureCache::_updateBackground()
 	Texture_Locations::iterator locations_iter = m_lruTextureLocations.find(crc);
 	if (locations_iter != m_lruTextureLocations.end()) {
 		Textures::iterator iter = locations_iter->second;
-		CachedTexture & current = *iter;
+		CachedTexture & currentTex = *iter;
 		m_textures.splice(m_textures.begin(), m_textures, iter);
 
-		assert(current.width == gSP.bgImage.width);
-		assert(current.height == gSP.bgImage.height);
-		assert(current.format == gSP.bgImage.format);
-		assert(current.size == gSP.bgImage.size);
+		assert(currentTex.width == gSP.bgImage.width);
+		assert(currentTex.height == gSP.bgImage.height);
+		assert(currentTex.format == gSP.bgImage.format);
+		assert(currentTex.size == gSP.bgImage.size);
 
-		activateTexture(0, &current);
+		activateTexture(0, &currentTex);
 		m_hits++;
 		return;
 	}
@@ -1484,8 +1488,10 @@ void TextureCache::update(u32 _t)
 
 	if (gDP.otherMode.textureLOD == G_TL_LOD && gSP.texture.level == 0 && !currentCombiner()->usesLOD() && _t == 1) {
 		current[1] = current[0];
-		activateTexture(_t, current[_t]);
-		return;
+		if (current[1] != nullptr) {
+			activateTexture(1, current[1]);
+			return;
+		}
 	}
 
 	if (gSP.texture.tile == 7 &&
@@ -1522,21 +1528,21 @@ void TextureCache::update(u32 _t)
 	Texture_Locations::iterator locations_iter = m_lruTextureLocations.find(crc);
 	if (locations_iter != m_lruTextureLocations.end()) {
 		Textures::iterator iter = locations_iter->second;
-		CachedTexture & current = *iter;
+		CachedTexture & currentTex = *iter;
 
-		if (current.width == sizes.width && current.height == sizes.height) {
+		if (currentTex.width == sizes.width && currentTex.height == sizes.height) {
 			m_textures.splice(m_textures.begin(), m_textures, iter);
 
-			assert(current.format == pTile->format);
-			assert(current.size == pTile->size);
+			assert(currentTex.format == pTile->format);
+			assert(currentTex.size == pTile->size);
 
-			activateTexture(_t, &current);
+			activateTexture(_t, &currentTex);
 			m_hits++;
 			return;
 		}
 
-		m_cachedBytes -= current.textureBytes;
-		gfxContext.deleteTexture(current.name);
+		m_cachedBytes -= currentTex.textureBytes;
+		gfxContext.deleteTexture(currentTex.name);
 		m_lruTextureLocations.erase(locations_iter);
 		m_textures.erase(iter);
 	}

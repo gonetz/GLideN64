@@ -152,7 +152,6 @@ FrameBuffer * PostProcessor::doGammaCorrection(FrameBuffer * _pBuffer)
 	copyParams.dstY0 = 0;
 	copyParams.dstX1 = pDstTex->realWidth;
 	copyParams.dstY1 = pDstTex->realHeight;
-	copyParams.dstHeight = pDstTex->realHeight;
 	copyParams.dstWidth = pDstTex->realWidth;
 	copyParams.dstHeight = pDstTex->realHeight;
 	copyParams.tex[0] = m_pTextureOriginal;
@@ -191,7 +190,6 @@ FrameBuffer * PostProcessor::doOrientationCorrection(FrameBuffer * _pBuffer)
 	copyParams.dstY0 = 0;
 	copyParams.dstX1 = pDstTex->realWidth;
 	copyParams.dstY1 = pDstTex->realHeight;
-	copyParams.dstHeight = pDstTex->realHeight;
 	copyParams.dstWidth = pDstTex->realWidth;
 	copyParams.dstHeight = pDstTex->realHeight;
 	copyParams.tex[0] = m_pTextureOriginal;

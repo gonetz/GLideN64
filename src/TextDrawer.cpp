@@ -209,8 +209,8 @@ bool getFontFileName(char * _strName)
 	return true;
 }
 
-FT_Library ft;
-FT_Face face;
+FT_Library g_ft;
+FT_Face g_face;
 
 void TextDrawer::init()
 {
@@ -222,19 +222,19 @@ void TextDrawer::init()
 		return;
 
 	/* Initialize the FreeType2 library */
-	if (FT_Init_FreeType(&ft)) {
+	if (FT_Init_FreeType(&g_ft)) {
 		fprintf(stderr, "Could not init freetype library\n");
 		return;
 	}
 
 	/* Load a font */
-	if (FT_New_Face(ft, fontfilename, 0, &face)) {
+	if (FT_New_Face(g_ft, fontfilename, 0, &g_face)) {
 		fprintf(stderr, "Could not open font %s\n", fontfilename);
 		return;
 	}
 
 	/* Create texture atlas for selected font size */
-	m_atlas.reset(new Atlas(face, config.font.size));
+	m_atlas.reset(new Atlas(g_face, config.font.size));
 
 	m_program.reset(gfxContext.createTextDrawerShader());
 }
@@ -243,8 +243,8 @@ void TextDrawer::destroy()
 {
 	m_atlas.reset();
 	m_program.reset();
-	FT_Done_Face(face);
-	FT_Done_FreeType(ft);
+	FT_Done_Face(g_face);
+	FT_Done_FreeType(g_ft);
 }
 
 /**

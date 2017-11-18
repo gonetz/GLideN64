@@ -24,7 +24,7 @@ public:
 
 private:
 	PostProcessor();
-	PostProcessor(const PostProcessor & _other);
+	PostProcessor(const PostProcessor & _other) = delete;
 
 	void _createResultBuffer(const FrameBuffer * _pMainBuffer);
 	void _initGammaCorrection();

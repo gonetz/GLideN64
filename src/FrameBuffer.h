@@ -65,8 +65,11 @@ struct FrameBuffer
 
 private:
 	struct {
-		u32 fillcolor;
-		s32 ulx, uly, lrx, lry;
+		u32 fillcolor = 0;
+		s32 ulx = 0;
+		s32 uly = 0;
+		s32 lrx = 0;
+		s32 lry = 0;
 	} m_clearParams;
 
 	void _initTexture(u16 _width, u16 _height, u16 _format, u16 _size, CachedTexture *_pTexture);
@@ -108,8 +111,8 @@ public:
 	static FrameBufferList & get();
 
 private:
-	FrameBufferList() : m_pCurrent(nullptr), m_pCopy(nullptr) {}
-	FrameBufferList(const FrameBufferList &);
+	FrameBufferList() : m_pCurrent(nullptr), m_pCopy(nullptr), m_prevColorImageHeight(0) {}
+	FrameBufferList(const FrameBufferList &) = delete;
 
 	void removeIntersections();
 

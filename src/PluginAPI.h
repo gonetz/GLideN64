@@ -94,7 +94,7 @@ private:
 		: m_pRspThread(NULL), m_pCommand(nullptr)
 #endif
 	{}
-	PluginAPI(const PluginAPI &);
+	PluginAPI(const PluginAPI &) = delete;
 
 	void _initiateGFX(const GFX_INFO & _gfxInfo) const;
 

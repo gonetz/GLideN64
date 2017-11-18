@@ -100,8 +100,7 @@ bool DisplayWindowWindows::_start()
 	if (wglGetExtensionsStringARB != NULL) {
 		const char * wglextensions = wglGetExtensionsStringARB(hDC);
 
-		if (strstr(wglextensions, "WGL_ARB_create_context") != nullptr &&
-			strstr(wglextensions, "WGL_ARB_create_context_profile") != nullptr) {
+		if (strstr(wglextensions, "WGL_ARB_create_context_profile") != nullptr) {
 			PFNWGLCREATECONTEXTATTRIBSARBPROC wglCreateContextAttribsARB =
 				(PFNWGLCREATECONTEXTATTRIBSARBPROC)wglGetProcAddress("wglCreateContextAttribsARB");
 

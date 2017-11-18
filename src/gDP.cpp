@@ -1033,8 +1033,7 @@ void gDPLLETriangle(u32 _w1, u32 _w2, int _shade, int _texture, int _zbuffer, u3
 	j = ym-yh;
 	if (j > 0) {
 		int dx = (xleft-xright)>>16;
-		if ((!flip && xleft < xright) ||
-				(flip/* && xleft > xright*/))
+		if ((!flip && xleft < xright) || (flip/* && xleft > xright*/))
 		{
 			if (_shade != 0) {
 				vtx->r = CSCALE(r+drdx*dx);
@@ -1052,8 +1051,7 @@ void gDPLLETriangle(u32 _w1, u32 _w2, int _shade, int _texture, int _zbuffer, u3
 			vtx->w = WSCALE(w+dwdx*dx);
 			++vtx;
 		}
-		if ((!flip/* && xleft < xright*/) ||
-				(flip && xleft > xright))
+		if ((!flip/* && xleft < xright*/) || (/*flip &&*/ xleft > xright))
 		{
 			if (_shade != 0) {
 				vtx->r = CSCALE(r);
@@ -1073,7 +1071,7 @@ void gDPLLETriangle(u32 _w1, u32 _w2, int _shade, int _texture, int _zbuffer, u3
 		}
 		xleft += xleft_inc*j;  xright += xright_inc*j;
 		s += dsde*j;  t += dtde*j;
-		if (w + dwde*j) w += dwde*j;
+		if (w + dwde*j != 0) w += dwde*j;
 		else w += dwde*(j-1);
 		r += drde*j;  g += dgde*j;  b += dbde*j;  a += dade*j;
 		z += dzde*j;
@@ -1106,7 +1104,7 @@ void gDPLLETriangle(u32 _w1, u32 _w2, int _shade, int _texture, int _zbuffer, u3
 			++vtx;
 		}
 		if ((!flip/* && xleft <= xright*/) ||
-				(flip && xleft >= xright))
+				(/*flip && */xleft >= xright))
 		{
 			if (_shade != 0) {
 				vtx->r = CSCALE(r);
@@ -1169,7 +1167,7 @@ void gDPLLETriangle(u32 _w1, u32 _w2, int _shade, int _texture, int _zbuffer, u3
 			++vtx;
 		}
 		if ((!flip/* && xleft <= xright*/) ||
-				(flip && xleft >= xright))
+				(/*flip &&*/ xleft >= xright))
 		{
 			if (_shade != 0) {
 				vtx->r = CSCALE(r);

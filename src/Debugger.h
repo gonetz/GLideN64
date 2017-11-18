@@ -60,6 +60,8 @@ private:
 			, a(_v.a)
 			, s0(_v.s)
 			, t0(_v.t)
+			, s1(_v.s)
+			, t1(_v.t)
 			, modify(_v.modify)
 		{}
 
@@ -73,7 +75,9 @@ private:
 			, s1(_v.s1)
 			, t1(_v.t1)
 			, modify(0)
-		{}
+		{
+			r = g = b = a = 0.0f;
+		}
 	};
 
 	struct TriInfo {
@@ -169,10 +173,10 @@ private:
 	bool m_bDebugMode = false;
 	bool m_bCapture = false;
 
-	long m_clickX;
-	long m_clickY;
+	long m_clickX = 0;
+	long m_clickY = 0;
 
-	u32 m_tmu;
+	u32 m_tmu = 0;
 	u32 m_startTexRow[2];
 	TexInfos m_texturesToDisplay[2];
 	struct {

@@ -190,8 +190,8 @@ private:
 	struct {
 		std::array<SPVertex, VERTBUFF_SIZE> vertices;
 		std::array<u8, ELEMBUFF_SIZE> elements;
-		u32 num;
-		int maxElement;
+		u32 num = 0;
+		int maxElement = 0;
 	} triangles;
 
 	std::vector<SPVertex> m_dmaVertices;

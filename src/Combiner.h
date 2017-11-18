@@ -93,7 +93,7 @@
 
 struct CombinerOp
 {
-	int op;
+	int op = LOAD;
 	int param1 = -1;
 	int param2 = -1;
 	int param3 = -1;
@@ -145,7 +145,7 @@ private:
 		, m_shadersLoaded(0)
 		, m_configOptionsBitSet(0)
 		, m_pCurrent(nullptr) {}
-	CombinerInfo(const CombinerInfo &);
+	CombinerInfo(const CombinerInfo &) = delete;
 
 	void _saveShadersStorage() const;
 	bool _loadShadersStorage();

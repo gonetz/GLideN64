@@ -26,7 +26,7 @@ public:
 
 private:
 	RDRAMtoColorBuffer();
-	RDRAMtoColorBuffer(const RDRAMtoColorBuffer &);
+	RDRAMtoColorBuffer(const RDRAMtoColorBuffer &) = delete;
 
 	void reset();
 

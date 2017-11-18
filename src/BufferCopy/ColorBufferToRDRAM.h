@@ -26,7 +26,7 @@ public:
 
 private:
 	ColorBufferToRDRAM();
-	ColorBufferToRDRAM(const ColorBufferToRDRAM &);
+	ColorBufferToRDRAM(const ColorBufferToRDRAM &) = delete;
 	virtual ~ColorBufferToRDRAM();
 
 	CachedTexture * m_pTexture;

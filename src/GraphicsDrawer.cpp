@@ -27,10 +27,14 @@
 using namespace graphics;
 
 GraphicsDrawer::GraphicsDrawer()
-: m_modifyVertices(0)
+: m_drawingState(DrawingState::Non)
+, m_dmaVerticesNum(0)
+, m_modifyVertices(0)
+, m_maxLineWidth(1.0f)
 , m_bImageTexture(false)
 , m_bFlatColors(false)
 {
+	memset(m_rect, 0, sizeof(m_rect));
 }
 
 GraphicsDrawer::~GraphicsDrawer()
@@ -1305,7 +1309,7 @@ void GraphicsDrawer::drawTexturedRect(const TexturedRectParams & _params)
 
 	if (wnd.isAdjustScreen() &&
 		(_params.forceAjustScale ||
-		((gDP.colorImage.width > VI.width * 98 / 100) && (_params.lrx - _params.ulx < VI.width * 9 / 10))))
+		((gDP.colorImage.width > VI.width * 98 / 100) && ((u32)(_params.lrx - _params.ulx) < VI.width * 9 / 10))))
 	{
 		const float scale = wnd.getAdjustScale();
 		for (u32 i = 0; i < 4; ++i)

@@ -30,14 +30,29 @@
 using namespace std;
 using namespace graphics;
 
-FrameBuffer::FrameBuffer() :
-	m_startAddress(0), m_endAddress(0), m_size(0), m_width(0), m_height(0), m_validityChecked(0),
-	m_scale(0),
-	m_copiedToRdram(false), m_fingerprint(false), m_cleared(false), m_changed(false), m_cfb(false),
-	m_isDepthBuffer(false), m_isPauseScreen(false), m_isOBScreen(false), m_isMainBuffer(false), m_readable(false),
-	m_loadType(LOADTYPE_BLOCK), m_pDepthBuffer(nullptr),
-	m_pResolveTexture(nullptr), m_resolved(false),
-	m_pSubTexture(nullptr)
+FrameBuffer::FrameBuffer()
+	: m_startAddress(0)
+	, m_endAddress(0)
+	, m_size(0)
+	, m_width(0)
+	, m_height(0)
+	, m_validityChecked(0)
+	, m_scale(0)
+	, m_copiedToRdram(false)
+	, m_fingerprint(false)
+	, m_cleared(false)
+	, m_changed(false)
+	, m_cfb(false)
+	, m_isDepthBuffer(false)
+	, m_isPauseScreen(false)
+	, m_isOBScreen(false)
+	, m_isMainBuffer(false)
+	, m_readable(false)
+	, m_loadType(LOADTYPE_BLOCK)
+	, m_pDepthBuffer(nullptr)
+	, m_pResolveTexture(nullptr)
+	, m_resolved(false)
+	, m_pSubTexture(nullptr)
 {
 	m_loadTileOrigin.uls = m_loadTileOrigin.ult = 0;
 	m_pTexture = textureCache().addFrameBufferTexture(config.video.multisampling != 0);

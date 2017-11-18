@@ -63,7 +63,7 @@ public:
 
 private:
 	DepthBufferList();
-	DepthBufferList(const DepthBufferList &);
+	DepthBufferList(const DepthBufferList &) = delete;
 	~DepthBufferList();
 
 	void _createScreenSizeBuffer(u32 _address);

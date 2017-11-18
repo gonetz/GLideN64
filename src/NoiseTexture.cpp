@@ -27,7 +27,11 @@ NoiseTexture g_noiseTexture;
 
 NoiseTexture::NoiseTexture()
 	: m_DList(0)
+	, m_currTex(0)
+	, m_prevTex(0)
 {
+	for (u32 i = 0; i < m_prevTex; ++i)
+		m_pTexture[i] = nullptr;
 }
 
 static

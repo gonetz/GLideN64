@@ -223,8 +223,6 @@ void Rasterize(vertexi * vtx, int vertices, int dzdx)
 				trueZ = z / 8192;
 				if (trueZ < 0)
 					trueZ = 0;
-				else if (trueZ > 0x3FFFF)
-					trueZ = 0x3FFFF;
 				encodedZ = zLUT[trueZ];
 				idx = (shift + x) ^ 1;
 				if (encodedZ < destptr[idx])
