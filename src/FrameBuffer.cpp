@@ -488,10 +488,10 @@ void FrameBufferList::init()
 }
 
 void FrameBufferList::destroy() {
+	gfxContext.bindFramebuffer(bufferTarget::FRAMEBUFFER, ObjectHandle::null);
 	m_list.clear();
 	m_pCurrent = nullptr;
 	m_pCopy = nullptr;
-	gfxContext.bindFramebuffer(bufferTarget::DRAW_FRAMEBUFFER, ObjectHandle::null);
 }
 
 void FrameBufferList::setBufferChanged(f32 _maxY)
