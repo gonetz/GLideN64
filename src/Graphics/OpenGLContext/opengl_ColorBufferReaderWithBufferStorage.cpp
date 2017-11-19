@@ -37,8 +37,10 @@ void ColorBufferReaderWithBufferStorage::_destroyBuffers()
 {
 	glDeleteBuffers(_numPBO, m_PBO);
 
-	for (int index = 0; index < _numPBO; ++index)
+	for (int index = 0; index < _numPBO; ++index) {
 		m_PBO[index] = 0;
+		glDeleteSync(m_fence[index]);
+	}
 }
 
 const u8 * ColorBufferReaderWithBufferStorage::_readPixels(const ReadColorBufferParams& _params, u32& _heightOffset,
@@ -58,6 +60,7 @@ const u8 * ColorBufferReaderWithBufferStorage::_readPixels(const ReadColorBuffer
 		if (m_fence[m_curIndex] != 0) {
 			glClientWaitSync(m_fence[m_curIndex], 0, 100000000);
 			glDeleteSync(m_fence[m_curIndex]);
+			m_fence[m_curIndex] = 0;
 		}
 	} else {
 		glFinish();
