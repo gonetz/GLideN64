@@ -25,9 +25,6 @@
 #pragma warning(disable: 4786)
 #endif
 
-/* dump cache to disk (0:disable, 1:enable) */
-#define DUMP_CACHE 1
-
 #include "TxTexCache.h"
 #include "TxDbg.h"
 #include <osal_files.h>
@@ -35,19 +32,6 @@
 
 TxTexCache::~TxTexCache()
 {
-#if DUMP_CACHE
-	if (_options & DUMP_TEXCACHE) {
-		/* dump cache to disk */
-		tx_wstring filename = _ident + wst("_MEMORYCACHE.") + TEXCACHE_EXT;
-		removeColon(filename);
-		tx_wstring cachepath(_path);
-		cachepath += OSAL_DIR_SEPARATOR_STR;
-		cachepath += wst("cache");
-		int config = _options & (FILTER_MASK | ENHANCEMENT_MASK | FORCE16BPP_TEX | GZ_TEXCACHE);
-
-		TxCache::save(cachepath.c_str(), filename.c_str(), config);
-	}
-#endif
 }
 
 TxTexCache::TxTexCache(int options, int cachesize, const wchar_t *path, const wchar_t *ident,
@@ -58,7 +42,8 @@ TxTexCache::TxTexCache(int options, int cachesize, const wchar_t *path, const wc
 	if (_path.empty() || _ident.empty() || !_cacheSize)
 		_options &= ~DUMP_TEXCACHE;
 
-#if DUMP_CACHE
+	_cacheDumped = 0;
+
 	if (_options & DUMP_TEXCACHE) {
 		/* find it on disk */
 		tx_wstring filename = _ident + wst("_MEMORYCACHE.") + TEXCACHE_EXT;
@@ -68,15 +53,34 @@ TxTexCache::TxTexCache(int options, int cachesize, const wchar_t *path, const wc
 		cachepath += wst("cache");
 		int config = _options & (FILTER_MASK | ENHANCEMENT_MASK | FORCE16BPP_TEX | GZ_TEXCACHE);
 
-		TxCache::load(cachepath.c_str(), filename.c_str(), config);
+		_cacheDumped = TxCache::load(cachepath.c_str(), filename.c_str(), config);
 	}
-#endif
 }
 
 boolean
 TxTexCache::add(uint64 checksum, GHQTexInfo *info)
 {
-	if (_cacheSize <= 0) return 0;
+	if (_cacheSize <= 0)
+		return 0;
 
-	return TxCache::add(checksum, info);
+	const boolean res = TxCache::add(checksum, info);
+	if (res)
+		_cacheDumped = 0;
+	return res;
+}
+
+void
+TxTexCache::dump()
+{
+	if ((_options & DUMP_TEXCACHE) && !_cacheDumped) {
+		/* dump cache to disk */
+		tx_wstring filename = _ident + wst("_MEMORYCACHE.") + TEXCACHE_EXT;
+		removeColon(filename);
+		tx_wstring cachepath(_path);
+		cachepath += OSAL_DIR_SEPARATOR_STR;
+		cachepath += wst("cache");
+		int config = _options & (FILTER_MASK | ENHANCEMENT_MASK | FORCE16BPP_TEX | GZ_TEXCACHE);
+
+		_cacheDumped = TxCache::save(cachepath.c_str(), filename.c_str(), config);
+	}
 }

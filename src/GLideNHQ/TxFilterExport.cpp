@@ -101,6 +101,14 @@ txfilter_reloadhirestex()
   return 0;
 }
 
+TAPI void TAPIENTRY
+txfilter_dumpcache(void)
+{
+	if (txFilter)
+	  txFilter->dumpcache();
+}
+
+
 #ifdef __cplusplus
 }
 #endif

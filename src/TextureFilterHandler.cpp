@@ -105,4 +105,10 @@ void TextureFilterHandler::shutdown()
 	}
 }
 
+void TextureFilterHandler::dumpcache()
+{
+	if (isInited())
+		txfilter_dumpcache();
+}
+
 TextureFilterHandler TFH;

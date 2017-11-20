@@ -132,7 +132,7 @@ public:
 	}
 
 	bool run() {
-		TFH.shutdown();
+		TFH.dumpcache();
 		dwnd().stop();
 		GBI.destroy();
 		m_pRspThreadMtx->unlock();
@@ -183,7 +183,7 @@ void PluginAPI::RomClosed()
 	delete m_pRspThread;
 	m_pRspThread = nullptr;
 #else
-	TFH.shutdown();
+	TFH.dumpcache();
 	dwnd().stop();
 	GBI.destroy();
 #endif

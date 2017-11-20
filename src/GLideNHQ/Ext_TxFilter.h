@@ -241,6 +241,9 @@ txfilter_dmptx(uint8 *src, int width, int height, int rowStridePixel, uint16 gfm
 TAPI boolean TAPIENTRY
 txfilter_reloadhirestex();
 
+TAPI void TAPIENTRY
+txfilter_dumpcache(void);
+
 #ifdef __cplusplus
 }
 #endif

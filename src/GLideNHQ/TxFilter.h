@@ -75,6 +75,7 @@ public:
   uint64 checksum64(uint8 *src, int width, int height, int size, int rowStride, uint8 *palette);
   boolean dmptx(uint8 *src, int width, int height, int rowStridePixel, uint16 gfmt, uint16 n64fmt, uint64 r_crc64);
   boolean reloadhirestex();
+  void dumpcache();
 };
 
 #endif /* __TXFILTER_H__ */

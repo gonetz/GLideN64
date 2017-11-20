@@ -41,13 +41,18 @@ private:
   int _maxwidth;
   int _maxheight;
   int _maxbpp;
-  boolean _haveCache;
+  boolean _cacheDumped;
   boolean _abortLoad;
   TxImage *_txImage;
   TxQuantize *_txQuantize;
   TxReSample *_txReSample;
   tx_wstring _texPackPath;
-  boolean loadHiResTextures(const wchar_t * dir_path, boolean replace);
+  enum LoadResult {
+	  resOk,
+	  resNotFound,
+	  resError
+  };
+  LoadResult loadHiResTextures(const wchar_t * dir_path, boolean replace);
 public:
   ~TxHiResCache();
   TxHiResCache(int maxwidth, int maxheight, int maxbpp, int options,
@@ -55,6 +60,7 @@ public:
       dispInfoFuncExt callback);
   boolean empty();
   boolean load(boolean replace);
+  void dump();
 };
 
 #endif /* __TXHIRESCACHE_H__ */

@@ -75,15 +75,17 @@ TxCache::add(uint64 checksum, GHQTexInfo *info, int dataSize)
 {
 	/* NOTE: dataSize must be provided if info->data is zlib compressed. */
 
-	if (!checksum || !info->data) return 0;
+	if (!checksum || !info->data || _cache.find(checksum) != _cache.end())
+		return 0;
 
 	uint8 *dest = info->data;
 	uint32 format = info->format;
 
-	if (!dataSize) {
+	if (dataSize == 0) {
 		dataSize = TxUtil::sizeofTx(info->width, info->height, info->format);
 
-		if (!dataSize) return 0;
+		if (!dataSize)
+			return 0;
 
 		if (_options & (GZ_TEXCACHE|GZ_HIRESTEXCACHE)) {
 			/* zlib compress it. compression level:1 (best speed) */
@@ -108,7 +110,7 @@ TxCache::add(uint64 checksum, GHQTexInfo *info, int dataSize)
 			std::list<uint64>::iterator itList = _cachelist.begin();
 			while (itList != _cachelist.end()) {
 				/* find it in _cache */
-				std::map<uint64, TXCACHE*>::iterator itMap = _cache.find(*itList);
+				auto itMap = _cache.find(*itList);
 				if (itMap != _cache.end()) {
 					/* yep we have it. remove it. */
 					_totalSize -= (*itMap).second->size;
@@ -132,48 +134,47 @@ TxCache::add(uint64 checksum, GHQTexInfo *info, int dataSize)
 
 	/* cache it */
 	uint8 *tmpdata = (uint8*)malloc(dataSize);
-	if (tmpdata) {
-		TXCACHE *txCache = new TXCACHE;
-		/* we can directly write as we filter, but for now we get away
-   * with doing memcpy after all the filtering is done.
-   */
-		memcpy(tmpdata, dest, dataSize);
+	if (tmpdata == nullptr)
+		return 0;
 
-		/* copy it */
-		memcpy(&txCache->info, info, sizeof(GHQTexInfo));
-		txCache->info.data = tmpdata;
-		txCache->info.format = format;
-		txCache->size = dataSize;
+	TXCACHE *txCache = new TXCACHE;
+	/* we can directly write as we filter, but for now we get away
+	* with doing memcpy after all the filtering is done.
+	*/
+	memcpy(tmpdata, dest, dataSize);
 
-		/* add to cache */
-		if (_cacheSize > 0) {
-			_cachelist.push_back(checksum);
-			txCache->it = --(_cachelist.end());
-		}
-		/* _cache[checksum] = txCache; */
-		_cache.insert(std::map<uint64, TXCACHE*>::value_type(checksum, txCache));
+	/* copy it */
+	memcpy(&txCache->info, info, sizeof(GHQTexInfo));
+	txCache->info.data = tmpdata;
+	txCache->info.format = format;
+	txCache->size = dataSize;
+
+	/* add to cache */
+	if (_cacheSize > 0) {
+		_cachelist.push_back(checksum);
+		txCache->it = --(_cachelist.end());
+	}
+	/* _cache[checksum] = txCache; */
+	_cache.insert(std::map<uint64, TXCACHE*>::value_type(checksum, txCache));
 
 #ifdef DEBUG
-		DBG_INFO(80, wst("[%5d] added!! crc:%08X %08X %d x %d gfmt:%x total:%.02fmb\n"),
-			_cache.size(), (uint32)(checksum >> 32), (uint32)(checksum & 0xffffffff),
-			info->width, info->height, info->format & 0xffff, (float)_totalSize / 1000000);
+	DBG_INFO(80, wst("[%5d] added!! crc:%08X %08X %d x %d gfmt:%x total:%.02fmb\n"),
+		_cache.size(), (uint32)(checksum >> 32), (uint32)(checksum & 0xffffffff),
+		info->width, info->height, info->format & 0xffff, (float)_totalSize / 1000000);
 
-		if (_cacheSize > 0) {
-			DBG_INFO(80, wst("cache max config:%.02fmb\n"), (float)_cacheSize / 1000000);
+	if (_cacheSize > 0) {
+		DBG_INFO(80, wst("cache max config:%.02fmb\n"), (float)_cacheSize / 1000000);
 
-			if (_cache.size() != _cachelist.size()) {
-				DBG_INFO(80, wst("Error: cache/cachelist mismatch! (%d/%d)\n"), _cache.size(), _cachelist.size());
-			}
+		if (_cache.size() != _cachelist.size()) {
+			DBG_INFO(80, wst("Error: cache/cachelist mismatch! (%d/%d)\n"), _cache.size(), _cachelist.size());
 		}
+	}
 #endif
 
-		/* total cache size */
-		_totalSize += dataSize;
+	/* total cache size */
+	_totalSize += dataSize;
 
-		return 1;
-	}
-
-	return 0;
+	return 1;
 }
 
 boolean
@@ -182,7 +183,7 @@ TxCache::get(uint64 checksum, GHQTexInfo *info)
 	if (!checksum || _cache.empty()) return 0;
 
 	/* find a match in cache */
-	std::map<uint64, TXCACHE*>::iterator itMap = _cache.find(checksum);
+	auto itMap = _cache.find(checksum);
 	if (itMap != _cache.end()) {
 		/* yep, we've got it. */
 		memcpy(info, &(((*itMap).second)->info), sizeof(GHQTexInfo));
@@ -217,7 +218,7 @@ boolean
 TxCache::save(const wchar_t *path, const wchar_t *filename, int config)
 {
 	if (_cache.empty())
-		return true;
+		return 0;
 
 	/* dump cache to disk */
 	char cbuf[MAX_PATH];
@@ -244,7 +245,7 @@ TxCache::save(const wchar_t *path, const wchar_t *filename, int config)
 		/* write header to determine config match */
 		gzwrite(gzfp, &config, 4);
 
-		std::map<uint64, TXCACHE*>::iterator itMap = _cache.begin();
+		auto itMap = _cache.begin();
 		int total = 0;
 		while (itMap != _cache.end()) {
 			uint8 *dest = (*itMap).second->info.data;
@@ -294,7 +295,7 @@ TxCache::save(const wchar_t *path, const wchar_t *filename, int config)
 
 	CHDIR(curpath);
 
-	return _cache.empty();
+	return _cache.empty() ? 0 : 1;
 }
 
 boolean
@@ -372,7 +373,7 @@ TxCache::del(uint64 checksum)
 {
 	if (!checksum || _cache.empty()) return 0;
 
-	std::map<uint64, TXCACHE*>::iterator itMap = _cache.find(checksum);
+	auto itMap = _cache.find(checksum);
 	if (itMap != _cache.end()) {
 
 		/* for texture cache (not hi-res cache) */
@@ -395,7 +396,7 @@ TxCache::del(uint64 checksum)
 boolean
 TxCache::is_cached(uint64 checksum)
 {
-	std::map<uint64, TXCACHE*>::iterator itMap = _cache.find(checksum);
+	auto itMap = _cache.find(checksum);
 	if (itMap != _cache.end()) return 1;
 
 	return 0;
@@ -405,7 +406,7 @@ void
 TxCache::clear()
 {
 	if (!_cache.empty()) {
-		std::map<uint64, TXCACHE*>::iterator itMap = _cache.begin();
+		auto itMap = _cache.begin();
 		while (itMap != _cache.end()) {
 			free((*itMap).second->info.data);
 			delete (*itMap).second;

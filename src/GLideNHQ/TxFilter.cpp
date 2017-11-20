@@ -444,7 +444,8 @@ TxFilter::filter(uint8 *src, int srcwidth, int srcheight, uint16 srcformat, uint
 	setTextureFormat(destformat, info);
 
 	/* cache the texture. */
-	if (_cacheSize) _txTexCache->add(g64crc, info);
+	if (_cacheSize)
+		_txTexCache->add(g64crc, info);
 
 	DBG_INFO(80, wst("filtered texture: %d x %d gfmt:%x\n"), info->width, info->height, info->format);
 
@@ -629,12 +630,22 @@ TxFilter::reloadhirestex()
 {
 	DBG_INFO(80, wst("Reload hires textures from texture pack.\n"));
 
-	if (_txHiResCache->load(0)) {
-		if (_txHiResCache->empty()) _options &= ~HIRESTEXTURES_MASK;
-		else _options |= HIRESTEXTURES_MASK;
-
+	if (_txHiResCache->load(0) && !_txHiResCache->empty()) {
+		_options |= HIRESTEXTURES_MASK;
 		return 1;
 	}
 
+	_options &= ~HIRESTEXTURES_MASK;
 	return 0;
+}
+
+void
+TxFilter::dumpcache()
+{
+	_txTexCache->dump();
+
+	/* hires texture */
+#if HIRES_TEXTURE
+	_txHiResCache->dump();
+#endif
 }

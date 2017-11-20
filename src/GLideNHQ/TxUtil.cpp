@@ -554,9 +554,7 @@ TxMemBuf::shutdown()
 		_size[i] = 0;
 	}
 
-	for (auto i: _bufs) {
-		i.clear();
-	}
+	_bufs.clear();
 }
 
 uint8*
