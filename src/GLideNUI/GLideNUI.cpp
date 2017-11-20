@@ -13,6 +13,8 @@ Q_IMPORT_PLUGIN(QWindowsIntegrationPlugin)
 Q_IMPORT_PLUGIN(QICOPlugin)
 #endif
 
+//#define RUN_DIALOG_IN_THREAD
+
 inline void initMyResource() { Q_INIT_RESOURCE(icon); }
 inline void cleanMyResource() { Q_CLEANUP_RESOURCE(icon); }
 
@@ -62,14 +64,23 @@ int openAboutDialog(const wchar_t * _strFileName)
 
 bool runConfigThread(const wchar_t * _strFileName) {
 	bool accepted = false;
+#ifdef RUN_DIALOG_IN_THREAD
 	std::thread configThread(openConfigDialog, _strFileName, std::ref(accepted));
 	configThread.join();
+#else
+	openConfigDialog(_strFileName, accepted);
+#endif
 	return accepted;
+
 }
 
 int runAboutThread(const wchar_t * _strFileName) {
+#ifdef RUN_DIALOG_IN_THREAD
 	std::thread aboutThread(openAboutDialog, _strFileName);
 	aboutThread.join();
+#else
+	openAboutDialog(_strFileName);
+#endif
 	return 0;
 }
 
