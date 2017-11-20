@@ -5,11 +5,13 @@
 #endif // OS_WINDOWS
 
 #include "PluginAPI.h"
+#include "N64.h"
 
 extern "C" {
 
 EXPORT void CALL RomOpen (void)
 {
+	RDRAMSize = 0;
 	api().RomOpen();
 }
 

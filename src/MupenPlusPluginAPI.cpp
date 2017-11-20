@@ -9,6 +9,8 @@ EXPORT int CALL RomOpen(void)
 {
 	if (rdram_size != nullptr)
 		RDRAMSize = *rdram_size - 1;
+	else
+		RDRAMSize = 0;
 
 	api().RomOpen();
 	return 1;
