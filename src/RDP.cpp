@@ -554,7 +554,7 @@ inline u32 READ_RDP_DATA(u32 address)
 void RDP_ProcessRDPList()
 {
 	if (ConfigOpen || dwnd().isResizeWindow()) {
-		dp_status &= ~0x0002;
+		//dp_status &= ~0x0002;
 		dp_start = dp_current = dp_end;
 		gDPFullSync();
 		return;
@@ -562,7 +562,7 @@ void RDP_ProcessRDPList()
 
 	const u32 length = dp_end - dp_current;
 
-	dp_status &= ~0x0002;
+	//dp_status &= ~0x0002;
 
 	if (dp_end <= dp_current) return;
 
