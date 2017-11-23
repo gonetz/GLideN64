@@ -146,6 +146,10 @@ void ConfigDialog::_init()
 	ui->nativeRes2D_checkBox->toggle();
 	ui->nativeRes2D_checkBox->setChecked(config.generalEmulation.enableNativeResTexrects != 0);
 
+	ui->gammaCorrectionCheckBox->toggle();
+	ui->gammaCorrectionCheckBox->setChecked(config.gammaCorrection.force != 0);
+	ui->gammaLevelSpinBox->setValue(config.gammaCorrection.level);
+
 	ui->frameBufferSwapComboBox->setCurrentIndex(config.frameBufferEmulation.bufferSwapMode);
 
 	ui->fbInfoEnableCheckBox->toggle();
@@ -220,10 +224,6 @@ void ConfigDialog::_init()
 	ui->saveTextureCacheCheckBox->setChecked(config.textureFilter.txSaveCache != 0);
 
 	ui->txPathLabel->setText(QString::fromWCharArray(config.textureFilter.txPath));
-
-	// Post filter settings
-	ui->gammaCorrectionGroupBox->setChecked(config.gammaCorrection.force != 0);
-	ui->gammaLevelSpinBox->setValue(config.gammaCorrection.level);
 
 	// OSD settings
 	QString fontName(config.font.name.c_str());
@@ -390,6 +390,9 @@ void ConfigDialog::accept()
 	config.generalEmulation.enableShadersStorage = ui->enableShadersStorageCheckBox->isChecked() ? 1 : 0;
 	config.generalEmulation.enableCustomSettings = ui->customSettingsCheckBox->isChecked() ? 1 : 0;
 
+	config.gammaCorrection.force = ui->gammaCorrectionCheckBox->isChecked() ? 1 : 0;
+	config.gammaCorrection.level = ui->gammaLevelSpinBox->value();
+
 	if (ui->fixTexrectDisableRadioButton->isChecked())
 		config.generalEmulation.correctTexrectCoords = Config::tcDisable;
 	else if (ui->fixTexrectSmartRadioButton->isChecked())
@@ -449,10 +452,6 @@ void ConfigDialog::accept()
 	QString txPath = ui->txPathLabel->text();
 	if (!txPath.isEmpty())
 		config.textureFilter.txPath[txPath.toWCharArray(config.textureFilter.txPath)] = L'\0';
-
-	// Post filter settings
-	config.gammaCorrection.force = ui->gammaCorrectionGroupBox->isChecked() ? 1 : 0;
-	config.gammaCorrection.level = ui->gammaLevelSpinBox->value();
 
 	// OSD settings
 	config.font.size = ui->fontSizeSpinBox->value();

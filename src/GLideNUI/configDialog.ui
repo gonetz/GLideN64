@@ -35,9 +35,6 @@
        <height>450</height>
       </size>
      </property>
-     <property name="currentIndex">
-      <number>0</number>
-     </property>
      <property name="usesScrollButtons">
       <bool>false</bool>
      </property>
@@ -1166,6 +1163,137 @@
               <property name="checked">
                <bool>true</bool>
               </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <widget class="QFrame" name="gammaCorrectionFrame">
+           <property name="toolTip">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Some N64 games use gamma correction to brighten the image. When the frame buffer is enabled, gamma correction is applied automatically for all games that use it on the N64. You can use your own gamma correction instead with this option. The default level, used on the N64, is 2.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;Unchecked; 2.00&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+           <layout class="QVBoxLayout" name="verticalLayout_15">
+            <property name="spacing">
+             <number>4</number>
+            </property>
+            <property name="leftMargin">
+             <number>0</number>
+            </property>
+            <property name="topMargin">
+             <number>0</number>
+            </property>
+            <property name="rightMargin">
+             <number>0</number>
+            </property>
+            <property name="bottomMargin">
+             <number>0</number>
+            </property>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_12">
+              <item>
+               <widget class="QCheckBox" name="gammaCorrectionCheckBox">
+                <property name="text">
+                 <string>Custom gamma correction level:</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <layout class="QVBoxLayout" name="verticalLayout_16">
+                <property name="spacing">
+                 <number>0</number>
+                </property>
+                <item>
+                 <widget class="QDoubleSpinBox" name="gammaLevelSpinBox">
+                  <property name="minimum">
+                   <double>1.000000000000000</double>
+                  </property>
+                  <property name="maximum">
+                   <double>4.000000000000000</double>
+                  </property>
+                  <property name="singleStep">
+                   <double>0.100000000000000</double>
+                  </property>
+                  <property name="value">
+                   <double>2.000000000000000</double>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <spacer name="verticalSpacer_4">
+                  <property name="orientation">
+                   <enum>Qt::Vertical</enum>
+                  </property>
+                  <property name="sizeType">
+                   <enum>QSizePolicy::Fixed</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>0</width>
+                    <height>2</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+               </layout>
+              </item>
+              <item>
+               <spacer name="horizontalSpacer_5">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>0</width>
+                  <height>0</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <widget class="QFrame" name="gammaCorrectionNoteFrame">
+              <layout class="QHBoxLayout" name="horizontalLayout_21">
+               <property name="spacing">
+                <number>9</number>
+               </property>
+               <property name="leftMargin">
+                <number>0</number>
+               </property>
+               <property name="topMargin">
+                <number>0</number>
+               </property>
+               <property name="rightMargin">
+                <number>0</number>
+               </property>
+               <property name="bottomMargin">
+                <number>0</number>
+               </property>
+               <item>
+                <widget class="QLabel" name="gammaCorrectionNoteIcon">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="pixmap">
+                  <pixmap resource="icon.qrc">:/Info.ico</pixmap>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="gammaCorrectionNoteLabel">
+                 <property name="text">
+                  <string>Selecting this option overrides gamma correction specified by the game.</string>
+                 </property>
+                 <property name="wordWrap">
+                  <bool>true</bool>
+                 </property>
+                </widget>
+               </item>
+              </layout>
              </widget>
             </item>
            </layout>
@@ -2530,152 +2658,6 @@
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="postFilterTab">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <attribute name="title">
-       <string>Filters</string>
-      </attribute>
-      <layout class="QVBoxLayout" name="postFilterVerticalLayout">
-       <item>
-        <layout class="QHBoxLayout" name="horizontalLayout_13">
-         <property name="spacing">
-          <number>16</number>
-         </property>
-         <item>
-          <layout class="QVBoxLayout" name="verticalLayout_50">
-           <item>
-            <spacer name="verticalSpacer_4">
-             <property name="orientation">
-              <enum>Qt::Vertical</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>0</width>
-               <height>0</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
-          </layout>
-         </item>
-         <item>
-          <layout class="QVBoxLayout" name="verticalLayout_51">
-           <item>
-            <widget class="QGroupBox" name="gammaCorrectionGroupBox">
-             <property name="toolTip">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Some N64 games use gamma correction to brighten the image. When the frame buffer is enabled, gamma correction is applied automatically for all games that use it on the N64. You can use your own gamma correction instead with this option. The default level, used on the N64, is 2.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;Unchecked; 2.00&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-             </property>
-             <property name="title">
-              <string>Custom gamma correction</string>
-             </property>
-             <property name="checkable">
-              <bool>true</bool>
-             </property>
-             <property name="checked">
-              <bool>false</bool>
-             </property>
-             <layout class="QVBoxLayout" name="verticalLayout_16">
-              <item>
-               <widget class="QLabel" name="gammaLevelDescLabel">
-                <property name="text">
-                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Selecting this option overrides gamma correction specified by the game.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                </property>
-                <property name="wordWrap">
-                 <bool>true</bool>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <layout class="QHBoxLayout" name="horizontalLayout_14">
-                <item>
-                 <widget class="QLabel" name="gammaLevelLabel">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="toolTip">
-                   <string/>
-                  </property>
-                  <property name="text">
-                   <string>Correction level:</string>
-                  </property>
-                  <property name="buddy">
-                   <cstring>gammaLevelSpinBox</cstring>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <widget class="QDoubleSpinBox" name="gammaLevelSpinBox">
-                  <property name="sizePolicy">
-                   <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                    <horstretch>0</horstretch>
-                    <verstretch>0</verstretch>
-                   </sizepolicy>
-                  </property>
-                  <property name="toolTip">
-                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Gamma correction.&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Some N64 games use gamma correction. Gamma correction makes image brighter. N64 applies gamma correction in its Video Interface. &lt;/p&gt;&lt;p&gt;GLideN64 emulates gamma correction as post-processing effect. That is, it works only when frame buffer emulation enabled. Gamma correction enabled automatically for games, which use it on real N64. You may force gamma correction for all games. Default level of gamma correction is 2, as on N64.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;use defaults&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                  </property>
-                  <property name="minimum">
-                   <double>1.000000000000000</double>
-                  </property>
-                  <property name="maximum">
-                   <double>4.000000000000000</double>
-                  </property>
-                  <property name="singleStep">
-                   <double>0.100000000000000</double>
-                  </property>
-                  <property name="value">
-                   <double>2.000000000000000</double>
-                  </property>
-                 </widget>
-                </item>
-                <item>
-                 <spacer name="horizontalSpacer_16">
-                  <property name="orientation">
-                   <enum>Qt::Horizontal</enum>
-                  </property>
-                  <property name="sizeHint" stdset="0">
-                   <size>
-                    <width>0</width>
-                    <height>0</height>
-                   </size>
-                  </property>
-                 </spacer>
-                </item>
-               </layout>
-              </item>
-             </layout>
-            </widget>
-           </item>
-           <item>
-            <spacer name="verticalSpacer_5">
-             <property name="orientation">
-              <enum>Qt::Vertical</enum>
-             </property>
-             <property name="sizeType">
-              <enum>QSizePolicy::Expanding</enum>
-             </property>
-             <property name="sizeHint" stdset="0">
-              <size>
-               <width>0</width>
-               <height>0</height>
-              </size>
-             </property>
-            </spacer>
-           </item>
-          </layout>
-         </item>
-        </layout>
-       </item>
-      </layout>
-     </widget>
      <widget class="QWidget" name="osdTab">
       <attribute name="title">
        <string>OSD</string>
@@ -3545,8 +3527,8 @@
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>351</x>
-     <y>634</y>
+     <x>360</x>
+     <y>629</y>
     </hint>
     <hint type="destinationlabel">
      <x>343</x>
@@ -3561,108 +3543,12 @@
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>432</x>
-     <y>634</y>
+     <x>441</x>
+     <y>629</y>
     </hint>
     <hint type="destinationlabel">
      <x>426</x>
      <y>629</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>anisotropicSlider</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>anisotropicLabelVal</receiver>
-   <slot>setNum(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>566</x>
-     <y>183</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>397</x>
-     <y>199</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>factor0xRadioButton</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>factorSliderFrame</receiver>
-   <slot>setHidden(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>100</x>
-     <y>199</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>217</x>
-     <y>238</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>factor1xRadioButton</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>factorSliderFrame</receiver>
-   <slot>setHidden(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>100</x>
-     <y>219</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>217</x>
-     <y>238</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>factorXxRadioButton</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>factorSliderFrame</receiver>
-   <slot>setVisible(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>51</x>
-     <y>238</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>217</x>
-     <y>238</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>resolutionFactorSlider</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>factorLabelVal</receiver>
-   <slot>setNum(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>220</x>
-     <y>233</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>389</x>
-     <y>262</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>fbInfoEnableCheckBox</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>readColorChunkCheckBox</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>54</x>
-     <y>211</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>54</x>
-     <y>232</y>
     </hint>
    </hints>
   </connection>
@@ -3683,22 +3569,6 @@
    </hints>
   </connection>
   <connection>
-   <sender>nativeRes2D_checkBox</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>fixTexrectFrame</receiver>
-   <slot>setDisabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>50</x>
-     <y>312</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>49</x>
-     <y>346</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>frameBufferCheckBox</sender>
    <signal>toggled(bool)</signal>
    <receiver>frameBufferOptionsFrame</receiver>
@@ -3711,22 +3581,6 @@
     <hint type="destinationlabel">
      <x>94</x>
      <y>120</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>frameBufferCheckBox</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>cropImageFrame</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>100</x>
-     <y>41</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>114</x>
-     <y>303</y>
     </hint>
    </hints>
   </connection>
@@ -3757,88 +3611,8 @@
      <y>41</y>
     </hint>
     <hint type="destinationlabel">
-     <x>100</x>
-     <y>194</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>factor0xRadioButton</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>nativeRes2DFrame</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>65</x>
-     <y>199</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>65</x>
-     <y>346</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>factor1xRadioButton</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>nativeRes2DFrame</receiver>
-   <slot>setDisabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>100</x>
-     <y>219</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>100</x>
-     <y>346</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>factorXxRadioButton</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>nativeRes2DFrame</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>51</x>
-     <y>238</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>100</x>
-     <y>346</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>texturePackOnCheckBox</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>texturePackOptionsFrame</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>85</x>
-     <y>72</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>78</x>
-     <y>88</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>frameBufferCheckBox</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>frameBufferInfoFrame</receiver>
-   <slot>setHidden(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>100</x>
-     <y>41</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>312</x>
-     <y>584</y>
+     <x>112</x>
+     <y>337</y>
     </hint>
    </hints>
   </connection>
@@ -3853,8 +3627,168 @@
      <y>41</y>
     </hint>
     <hint type="destinationlabel">
-     <x>101</x>
-     <y>592</y>
+     <x>112</x>
+     <y>587</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>anisotropicSlider</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>anisotropicLabelVal</receiver>
+   <slot>setNum(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>566</x>
+     <y>183</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>413</x>
+     <y>199</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>factorXxRadioButton</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>factorSliderFrame</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>64</x>
+     <y>307</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>396</x>
+     <y>336</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>factor1xRadioButton</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>nativeRes2DFrame</receiver>
+   <slot>setDisabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>112</x>
+     <y>286</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>112</x>
+     <y>463</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>n64DepthCompareCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>aliasingWarningFrame</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>91</x>
+     <y>386</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>591</x>
+     <y>130</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>frameBufferCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>cropImageFrame</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>100</x>
+     <y>41</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>127</x>
+     <y>278</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>fbInfoEnableCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>readColorChunkCheckBox</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>54</x>
+     <y>211</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>54</x>
+     <y>232</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>factor0xRadioButton</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>nativeRes2DFrame</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>77</x>
+     <y>266</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>77</x>
+     <y>463</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>factor1xRadioButton</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>factorSliderFrame</receiver>
+   <slot>setHidden(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>112</x>
+     <y>286</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>396</x>
+     <y>336</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>resolutionFactorSlider</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>factorLabelVal</receiver>
+   <slot>setNum(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>431</x>
+     <y>318</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>410</x>
+     <y>334</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>nativeRes2D_checkBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>fixTexrectFrame</receiver>
+   <slot>setDisabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>62</x>
+     <y>372</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>61</x>
+     <y>463</y>
     </hint>
    </hints>
   </connection>
@@ -3875,27 +3809,107 @@
    </hints>
   </connection>
   <connection>
-   <sender>n64DepthCompareCheckBox</sender>
+   <sender>frameBufferCheckBox</sender>
    <signal>toggled(bool)</signal>
-   <receiver>aliasingWarningFrame</receiver>
+   <receiver>frameBufferInfoFrame</receiver>
+   <slot>setHidden(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>100</x>
+     <y>41</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>312</x>
+     <y>584</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>factorXxRadioButton</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>nativeRes2DFrame</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>64</x>
+     <y>307</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>112</x>
+     <y>463</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>texturePackOnCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>texturePackOptionsFrame</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>85</x>
+     <y>72</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>78</x>
+     <y>88</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>factor0xRadioButton</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>factorSliderFrame</receiver>
+   <slot>setHidden(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>112</x>
+     <y>266</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>396</x>
+     <y>336</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>gammaCorrectionCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>gammaCorrectionNoteFrame</receiver>
    <slot>setVisible(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>91</x>
-     <y>386</y>
+     <x>49</x>
+     <y>180</y>
     </hint>
     <hint type="destinationlabel">
-     <x>591</x>
-     <y>130</y>
+     <x>43</x>
+     <y>214</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>gammaCorrectionCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>gammaLevelSpinBox</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>176</x>
+     <y>182</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>214</x>
+     <y>185</y>
     </hint>
    </hints>
   </connection>
  </connections>
  <buttongroups>
   <buttongroup name="factorButtonGroup"/>
-  <buttongroup name="aspectButtonGroup"/>
-  <buttongroup name="osdButtonGroup"/>
-  <buttongroup name="fixTexrectCoordsButtonGroup"/>
   <buttongroup name="screenshotButtonGroup"/>
+  <buttongroup name="osdButtonGroup"/>
+  <buttongroup name="aspectButtonGroup"/>
+  <buttongroup name="fixTexrectCoordsButtonGroup"/>
  </buttongroups>
 </ui>
