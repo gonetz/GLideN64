@@ -35,9 +35,6 @@
        <height>450</height>
       </size>
      </property>
-     <property name="currentIndex">
-      <number>1</number>
-     </property>
      <property name="usesScrollButtons">
       <bool>false</bool>
      </property>
@@ -3909,10 +3906,10 @@
   </connection>
  </connections>
  <buttongroups>
+  <buttongroup name="factorButtonGroup"/>
   <buttongroup name="screenshotButtonGroup"/>
+  <buttongroup name="osdButtonGroup"/>
   <buttongroup name="aspectButtonGroup"/>
   <buttongroup name="fixTexrectCoordsButtonGroup"/>
-  <buttongroup name="osdButtonGroup"/>
-  <buttongroup name="factorButtonGroup"/>
  </buttongroups>
 </ui>
