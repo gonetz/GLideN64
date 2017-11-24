@@ -130,10 +130,7 @@ void TexrectDrawer::add()
 			}
 		}
 		if (!bContinue) {
-			RectVertex rect[4];
-			memcpy(rect, pRect, sizeof(rect));
 			draw();
-			memcpy(pRect, rect, sizeof(rect));
 			drawer._updateTextures();
 			CombinerInfo::get().updateParameters();
 		}
@@ -226,7 +223,7 @@ bool TexrectDrawer::draw()
 	m_lrx = m_max_lrx;
 	m_lry = m_max_lry;
 
-	RectVertex * rect = drawer.m_rect;
+	RectVertex rect[4];
 
 	f32 scaleX, scaleY;
 	calcCoordsScales(m_pBuffer, scaleX, scaleY);
