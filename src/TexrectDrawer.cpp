@@ -183,8 +183,6 @@ void TexrectDrawer::add()
 	m_vecRectCoords.push_back(coords);
 	++m_numRects;
 
-	for (u32 i = 0; i < 4; ++i)
-		pRect[i].y = -pRect[i].y;
 	Context::DrawRectParameters rectParams;
 	rectParams.mode = drawmode::TRIANGLE_STRIP;
 	rectParams.verticesCount = 4;
@@ -259,25 +257,25 @@ bool TexrectDrawer::draw()
 	m_programTex->setTextureBounds(texBounds);
 
 	rect[0].x = m_ulx;
-	rect[0].y = -m_lry;
+	rect[0].y = m_lry;
 	rect[0].z = m_Z;
 	rect[0].w = W;
 	rect[0].s0 = s0;
 	rect[0].t0 = t0;
 	rect[1].x = m_lrx;
-	rect[1].y = -m_lry;
+	rect[1].y = m_lry;
 	rect[1].z = m_Z;
 	rect[1].w = W;
 	rect[1].s0 = s1;
 	rect[1].t0 = t0;
 	rect[2].x = m_ulx;
-	rect[2].y = -m_uly;
+	rect[2].y = m_uly;
 	rect[2].z = m_Z;
 	rect[2].w = W;
 	rect[2].s0 = s0;
 	rect[2].t0 = t1;
 	rect[3].x = m_lrx;
-	rect[3].y = -m_uly;
+	rect[3].y = m_uly;
 	rect[3].z = m_Z;
 	rect[3].w = W;
 	rect[3].s0 = s1;
@@ -296,10 +294,10 @@ bool TexrectDrawer::draw()
 	gfxContext.bindFramebuffer(bufferTarget::DRAW_FRAMEBUFFER, m_FBO);
 	m_programClear->activate();
 
-	rect[0].y = -m_uly;
-	rect[1].y = -m_uly;
-	rect[2].y = -m_lry;
-	rect[3].y = -m_lry;
+	rect[0].y = m_uly;
+	rect[1].y = m_uly;
+	rect[2].y = m_lry;
+	rect[3].y = m_lry;
 
 	_setViewport();
 

@@ -921,7 +921,7 @@ void GraphicsDrawer::drawRect(int _ulx, int _uly, int _lrx, int _lry)
 	const float Z = (gDP.otherMode.depthSource == G_ZS_PRIM) ? gDP.primDepth.z : 0.0f;
 	const float W = 1.0f;
 	m_rect[0].x = (float)_ulx * (2.0f * scaleX) - 1.0f;
-	m_rect[0].y = (float)_uly * (-2.0f * scaleY) + 1.0f;
+	m_rect[0].y = (float)_uly * (2.0f * scaleY) - 1.0f;
 	m_rect[0].z = Z;
 	m_rect[0].w = W;
 	m_rect[1].x = (float)_lrx * (2.0f * scaleX) - 1.0f;
@@ -929,7 +929,7 @@ void GraphicsDrawer::drawRect(int _ulx, int _uly, int _lrx, int _lry)
 	m_rect[1].z = Z;
 	m_rect[1].w = W;
 	m_rect[2].x = m_rect[0].x;
-	m_rect[2].y = (float)_lry * (-2.0f * scaleY) + 1.0f;
+	m_rect[2].y = (float)_lry * (2.0f * scaleY) - 1.0f;
 	m_rect[2].z = Z;
 	m_rect[2].w = W;
 	m_rect[3].x = m_rect[1].x;
@@ -1140,31 +1140,29 @@ void GraphicsDrawer::drawTexturedRect(const TexturedRectParams & _params)
 	calcCoordsScales(pCurrentBuffer, scaleX, scaleY);
 	const float Z = (gDP.otherMode.depthSource == G_ZS_PRIM) ? gDP.primDepth.z : 0.0f;
 	const float W = 1.0f;
-	f32 uly, lry;
-	if (bUseTexrectDrawer) {
-		uly = (float)_params.uly * (2.0f * scaleY) - 1.0f;
-		lry = (float)_params.lry * (2.0f * scaleY) - 1.0f;
-	} else {
-		uly = (float)_params.uly * (-2.0f * scaleY) + 1.0f;
-		lry = (float)_params.lry * (-2.0f * scaleY) + 1.0f;
+	const f32 ulx = _params.ulx * (2.0f * scaleX) - 1.0f;
+	const f32 uly = _params.uly * (2.0f * scaleY) - 1.0f;
+	const f32 lrx = _params.lrx * (2.0f * scaleX) - 1.0f;
+	const f32 lry = _params.lry * (2.0f * scaleY) - 1.0f;
+	if (!bUseTexrectDrawer) {
 		// Flush text drawer
 		if (m_texrectDrawer.draw())
 			_updateStates(DrawingState::TexRect);
 	}
-	m_rect[0].x = (float)_params.ulx * (2.0f * scaleX) - 1.0f;
+	m_rect[0].x = ulx;
 	m_rect[0].y = uly;
 	m_rect[0].z = Z;
 	m_rect[0].w = W;
-	m_rect[1].x = (float)(_params.lrx) * (2.0f * scaleX) - 1.0f;
-	m_rect[1].y = m_rect[0].y;
+	m_rect[1].x = lrx;
+	m_rect[1].y = uly;
 	m_rect[1].z = Z;
 	m_rect[1].w = W;
-	m_rect[2].x = m_rect[0].x;
+	m_rect[2].x = ulx;
 	m_rect[2].y = lry;
 	m_rect[2].z = Z;
 	m_rect[2].w = W;
-	m_rect[3].x = m_rect[1].x;
-	m_rect[3].y = m_rect[2].y;
+	m_rect[3].x = lrx;
+	m_rect[3].y = lry;
 	m_rect[3].z = Z;
 	m_rect[3].w = W;
 
@@ -1487,9 +1485,9 @@ void GraphicsDrawer::copyTexturedRect(const CopyRectParams & _params)
 	const float Z = 0.0f;
 	const float W = 1.0f;
 	float X0 = _params.dstX0 * (2.0f * scaleX) - 1.0f;
-	float Y0 = _params.dstY0 * (-2.0f * scaleY) + 1.0f;
+	float Y0 = _params.dstY0 * (2.0f * scaleY) - 1.0f;
 	float X1 = _params.dstX1 * (2.0f * scaleX) - 1.0f;
-	float Y1 = _params.dstY1 * (-2.0f * scaleY) + 1.0f;
+	float Y1 = _params.dstY1 * (2.0f * scaleY) - 1.0f;
 	if (_params.invertX) {
 		X0 = -X0;
 		X1 = -X1;

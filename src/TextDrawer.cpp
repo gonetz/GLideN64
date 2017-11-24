@@ -288,37 +288,37 @@ void TextDrawer::drawText(const char *_pText, float _x, float _y) const
 			continue;
 
 		rect.x = x2;
-		rect.y = y2;
+		rect.y = -y2;
 		rect.s0 = m_atlas->c[*p].tx;
 		rect.t0 = m_atlas->c[*p].ty;
 		coords.push_back(rect);
 
 		rect.x = x2 + w;
-		rect.y = y2;
+		rect.y = -y2;
 		rect.s0 = m_atlas->c[*p].tx + m_atlas->c[*p].bw / m_atlas->w;
 		rect.t0 = m_atlas->c[*p].ty;
 		coords.push_back(rect);
 
 		rect.x = x2;
-		rect.y = y2 + h;
+		rect.y = -y2 - h;
 		rect.s0 = m_atlas->c[*p].tx;
 		rect.t0 = m_atlas->c[*p].ty + m_atlas->c[*p].bh / m_atlas->h;
 		coords.push_back(rect);
 
 		rect.x = x2 + w;
-		rect.y = y2;
+		rect.y = -y2;
 		rect.s0 = m_atlas->c[*p].tx + m_atlas->c[*p].bw / m_atlas->w;
 		rect.t0 = m_atlas->c[*p].ty;
 		coords.push_back(rect);
 
 		rect.x = x2;
-		rect.y = y2 + h;
+		rect.y = -y2 - h;
 		rect.s0 = m_atlas->c[*p].tx;
 		rect.t0 = m_atlas->c[*p].ty + m_atlas->c[*p].bh / m_atlas->h;
 		coords.push_back(rect);
 
 		rect.x = x2 + w;
-		rect.y = y2 + h;
+		rect.y = -y2 - h;
 		rect.s0 = m_atlas->c[*p].tx + m_atlas->c[*p].bw / m_atlas->w;
 		rect.t0 = m_atlas->c[*p].ty + m_atlas->c[*p].bh / m_atlas->h;
 		coords.push_back(rect);

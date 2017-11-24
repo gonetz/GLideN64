@@ -25,7 +25,6 @@ namespace glsl {
 				"void main()                                                    \n"
 				"{                                                              \n"
 				"  gl_Position = aRectPosition;									\n"
-				"  gl_Position.y = -gl_Position.y;								\n"
 				"}                                                              \n"
 				;
 		}
@@ -43,7 +42,6 @@ namespace glsl {
 				"void main()					\n"
 				"{								\n"
 				"  gl_Position = aRectPosition;	\n"
-				"  gl_Position.y = -gl_Position.y;\n"
 				"  vTexCoord0 = aTexCoord0;		\n"
 				"}								\n"
 			;
