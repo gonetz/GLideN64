@@ -395,7 +395,6 @@ public:
 			"{													\n"
 			"  gl_Position = aRectPosition;						\n"
 			"  vShadeColor = uRectColor;						\n"
-			"  gl_Position.y = -gl_Position.y;					\n"
 			"  vTexCoord0 = aTexCoord0;							\n"
 			"  vTexCoord1 = aTexCoord1;							\n"
 		;
@@ -424,7 +423,6 @@ public:
 			"{													\n"
 			"  gl_Position = aRectPosition;						\n"
 			"  vShadeColor = uRectColor;						\n"
-			"  gl_Position.y = -gl_Position.y;					\n"
 			;
 		if (!_glinfo.isGLESX) {
 			m_part +=
