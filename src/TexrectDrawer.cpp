@@ -47,6 +47,8 @@ void TexrectDrawer::init()
 	m_pTexture->realHeight = 580;
 	m_pTexture->textureBytes = m_pTexture->realWidth * m_pTexture->realHeight * fbTexFormats.colorFormatBytes;
 	textureCache().addFrameBufferTextureSize(m_pTexture->textureBytes);
+	m_stepX = 2.0f / 640.0f;
+	m_stepY = 2.0f / 580.0f;
 
 	Context::InitTextureParams initParams;
 	initParams.handle = m_pTexture->name;
@@ -250,8 +252,6 @@ bool TexrectDrawer::draw()
 
 	m_programTex->activate();
 	m_programTex->setEnableAlphaTest(enableAlphaTest);
-	float texBounds[4] = { s0, t0, s1, t1 };
-	m_programTex->setTextureBounds(texBounds);
 
 	rect[0].x = m_ulx;
 	rect[0].y = m_lry;
@@ -291,10 +291,19 @@ bool TexrectDrawer::draw()
 	gfxContext.bindFramebuffer(bufferTarget::DRAW_FRAMEBUFFER, m_FBO);
 	m_programClear->activate();
 
-	rect[0].y = m_uly;
-	rect[1].y = m_uly;
-	rect[2].y = m_lry;
-	rect[3].y = m_lry;
+	const f32 ulx = std::max(-1.0f, m_ulx - m_stepX);
+	const f32 lrx = std::min( 1.0f, m_lrx + m_stepX);
+	rect[0].x = ulx;
+	rect[1].x = lrx;
+	rect[2].x = ulx;
+	rect[3].x = lrx;
+
+	const f32 uly = std::max(-1.0f, m_uly - m_stepY);
+	const f32 lry = std::min( 1.0f, m_lry + m_stepY);
+	rect[0].y = uly;
+	rect[1].y = uly;
+	rect[2].y = lry;
+	rect[3].y = lry;
 
 	_setViewport();
 

@@ -28,6 +28,8 @@ private:
 	u64 m_mux;
 	f32 m_ulx, m_lrx, m_uly, m_lry, m_Z;
 	f32 m_max_lrx, m_max_lry;
+	f32 m_stepY;
+	f32 m_stepX;
 	graphics::ObjectHandle m_FBO;
 	gDPScissor m_scissor;
 	CachedTexture * m_pTexture;
