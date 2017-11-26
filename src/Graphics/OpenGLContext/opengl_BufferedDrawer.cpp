@@ -75,7 +75,7 @@ BufferedDrawer::~BufferedDrawer()
 
 void BufferedDrawer::_updateBuffer(Buffer & _buffer, u32 _count, u32 _dataSize, const void * _data)
 {
-	if (_buffer.offset + _dataSize > _buffer.size) {
+	if (_buffer.offset + _dataSize >= _buffer.size) {
 		_buffer.offset = 0;
 		_buffer.pos = 0;
 	}
