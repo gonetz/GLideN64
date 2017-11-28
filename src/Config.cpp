@@ -74,7 +74,7 @@ void Config::resetToDefaults()
 	textureFilter.txCacheSize = 100 * gc_uMegabyte;
 
 	textureFilter.txHiresEnable = 0;
-	textureFilter.txHiresFullAlphaChannel = 0;
+	textureFilter.txHiresFullAlphaChannel = 1;
 	textureFilter.txHresAltCRC = 0;
 	textureFilter.txDump = 0;
 
