@@ -47,6 +47,8 @@ void TexrectDrawer::init()
 	m_pTexture->realHeight = 580;
 	m_pTexture->textureBytes = m_pTexture->realWidth * m_pTexture->realHeight * fbTexFormats.colorFormatBytes;
 	textureCache().addFrameBufferTextureSize(m_pTexture->textureBytes);
+	m_stepX = 2.0f / 640.0f;
+	m_stepY = 2.0f / 580.0f;
 
 	Context::InitTextureParams initParams;
 	initParams.handle = m_pTexture->name;
@@ -130,10 +132,7 @@ void TexrectDrawer::add()
 			}
 		}
 		if (!bContinue) {
-			RectVertex rect[4];
-			memcpy(rect, pRect, sizeof(rect));
 			draw();
-			memcpy(pRect, rect, sizeof(rect));
 			drawer._updateTextures();
 			CombinerInfo::get().updateParameters();
 		}
@@ -183,8 +182,6 @@ void TexrectDrawer::add()
 	m_vecRectCoords.push_back(coords);
 	++m_numRects;
 
-	for (u32 i = 0; i < 4; ++i)
-		pRect[i].y = -pRect[i].y;
 	Context::DrawRectParameters rectParams;
 	rectParams.mode = drawmode::TRIANGLE_STRIP;
 	rectParams.verticesCount = 4;
@@ -228,7 +225,7 @@ bool TexrectDrawer::draw()
 	m_lrx = m_max_lrx;
 	m_lry = m_max_lry;
 
-	RectVertex * rect = drawer.m_rect;
+	RectVertex rect[4];
 
 	f32 scaleX, scaleY;
 	calcCoordsScales(m_pBuffer, scaleX, scaleY);
@@ -255,29 +252,27 @@ bool TexrectDrawer::draw()
 
 	m_programTex->activate();
 	m_programTex->setEnableAlphaTest(enableAlphaTest);
-	float texBounds[4] = { s0, t0, s1, t1 };
-	m_programTex->setTextureBounds(texBounds);
 
 	rect[0].x = m_ulx;
-	rect[0].y = -m_lry;
+	rect[0].y = m_lry;
 	rect[0].z = m_Z;
 	rect[0].w = W;
 	rect[0].s0 = s0;
 	rect[0].t0 = t0;
 	rect[1].x = m_lrx;
-	rect[1].y = -m_lry;
+	rect[1].y = m_lry;
 	rect[1].z = m_Z;
 	rect[1].w = W;
 	rect[1].s0 = s1;
 	rect[1].t0 = t0;
 	rect[2].x = m_ulx;
-	rect[2].y = -m_uly;
+	rect[2].y = m_uly;
 	rect[2].z = m_Z;
 	rect[2].w = W;
 	rect[2].s0 = s0;
 	rect[2].t0 = t1;
 	rect[3].x = m_lrx;
-	rect[3].y = -m_uly;
+	rect[3].y = m_uly;
 	rect[3].z = m_Z;
 	rect[3].w = W;
 	rect[3].s0 = s1;
@@ -296,10 +291,19 @@ bool TexrectDrawer::draw()
 	gfxContext.bindFramebuffer(bufferTarget::DRAW_FRAMEBUFFER, m_FBO);
 	m_programClear->activate();
 
-	rect[0].y = -m_uly;
-	rect[1].y = -m_uly;
-	rect[2].y = -m_lry;
-	rect[3].y = -m_lry;
+	const f32 ulx = std::max(-1.0f, m_ulx - m_stepX);
+	const f32 lrx = std::min( 1.0f, m_lrx + m_stepX);
+	rect[0].x = ulx;
+	rect[1].x = lrx;
+	rect[2].x = ulx;
+	rect[3].x = lrx;
+
+	const f32 uly = std::max(-1.0f, m_uly - m_stepY);
+	const f32 lry = std::min( 1.0f, m_lry + m_stepY);
+	rect[0].y = uly;
+	rect[1].y = uly;
+	rect[2].y = lry;
+	rect[3].y = lry;
 
 	_setViewport();
 

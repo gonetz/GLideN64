@@ -25,7 +25,6 @@ namespace glsl {
 				"void main()                                                    \n"
 				"{                                                              \n"
 				"  gl_Position = aRectPosition;									\n"
-				"  gl_Position.y = -gl_Position.y;								\n"
 				"}                                                              \n"
 				;
 		}
@@ -43,7 +42,6 @@ namespace glsl {
 				"void main()					\n"
 				"{								\n"
 				"  gl_Position = aRectPosition;	\n"
-				"  gl_Position.y = -gl_Position.y;\n"
 				"  vTexCoord0 = aTexCoord0;		\n"
 				"}								\n"
 			;
@@ -100,7 +98,8 @@ namespace glsl {
 					"# define IN varying																							\n"
 					"# define OUT																									\n"
 					"#endif // __VERSION __																							\n"
-					"uniform mediump vec4 uTextureBounds;																			\n"
+					"lowp vec4 uTestColor = vec4(4.0/255.0, 2.0/255.0, 1.0/255.0, 0.0);												\n"
+					"uniform lowp int uEnableAlphaTest;																				\n"
 					"uniform mediump vec2 uTextureSize;																				\n"
 					// 3 point texture filtering.
 					// Original author: ArthurCarvalho
@@ -108,47 +107,46 @@ namespace glsl {
 					"#define TEX_OFFSET(off) texture2D(tex, texCoord - (off)/texSize)												\n"
 					"lowp vec4 texFilter(in sampler2D tex, in mediump vec2 texCoord)												\n"
 					"{																												\n"
+					"  lowp vec4 c = texture2D(tex, texCoord);																		\n"
+					"  if (c == uTestColor) discard;																				\n"
+					"  if (uEnableAlphaTest != 0 && !(c.a > 0.0)) discard;															\n"
 					"  mediump vec2 texSize = uTextureSize;																			\n"
-					"  mediump vec2 texelSize = vec2(1.0) / texSize;																\n"
-					"  lowp vec4 c = texture2D(tex, texCoord);		 																\n"
-					"  if (abs(texCoord.s - uTextureBounds[0]) < texelSize.x || abs(texCoord.s - uTextureBounds[2]) < texelSize.x) return c;	\n"
-					"  if (abs(texCoord.t - uTextureBounds[1]) < texelSize.y || abs(texCoord.t - uTextureBounds[3]) < texelSize.y) return c;	\n"
 					"																												\n"
 					"  mediump vec2 offset = fract(texCoord*texSize - vec2(0.5));													\n"
 					"  offset -= step(1.0, offset.x + offset.y);																	\n"
 					"  lowp vec4 zero = vec4(0.0);					 																\n"
 					"  lowp vec4 c0 = TEX_OFFSET(offset);																			\n"
+					"  c0 = c * vec4(equal(c0, uTestColor)) + c0 * vec4(notEqual(c0, uTestColor));									\n"
 					"  lowp vec4 c1 = TEX_OFFSET(vec2(offset.x - sign(offset.x), offset.y));										\n"
+					"  c0 = c * vec4(equal(c1, uTestColor)) + c1 * vec4(notEqual(c1, uTestColor));									\n"
 					"  lowp vec4 c2 = TEX_OFFSET(vec2(offset.x, offset.y - sign(offset.y)));										\n"
+					"  c2 = c * vec4(equal(c2, uTestColor)) + c2 * vec4(notEqual(c2, uTestColor));									\n"
 					"  return c0 + abs(offset.x)*(c1-c0) + abs(offset.y)*(c2-c0);													\n"
 					"}																												\n"
 					"																												\n"
 				;
 			} else {
 				m_part =
-					"uniform mediump vec4 uTextureBounds;																			\n"
 					// 3 point texture filtering.
 					// Original author: ArthurCarvalho
 					// GLSL implementation: twinaphex, mupen64plus-libretro project.
 					"#define TEX_OFFSET(off, tex, texCoord, texSize) texture(tex, texCoord - (off)/texSize)							\n"
 					"#define TEX_FILTER(name, tex, texCoord)																		\\\n"
 					"{																												\\\n"
-					"  mediump vec2 texSize = vec2(textureSize(tex,0));																\\\n"
-					"  mediump vec2 texelSize = vec2(1.0) / texSize;																\\\n"
 					"  lowp vec4 c = texture(tex, texCoord);		 																\\\n"
-					"  if (abs(texCoord.s - uTextureBounds[0]) < texelSize.x || abs(texCoord.s - uTextureBounds[2]) < texelSize.x){	\\\n"
-					"    name = c;												 													\\\n"
-					"  } else if (abs(texCoord.t - uTextureBounds[1]) < texelSize.y || abs(texCoord.t - uTextureBounds[3]) < texelSize.y){	\\\n"
-					"    name = c;												 													\\\n"
-					"  } else {											 															\\\n"
-					"    mediump vec2 offset = fract(texCoord*texSize - vec2(0.5));													\\\n"
-					"    offset -= step(1.0, offset.x + offset.y);																	\\\n"
-					"    lowp vec4 zero = vec4(0.0);					 															\\\n"
-					"    lowp vec4 c0 = TEX_OFFSET(offset, tex, texCoord, texSize);													\\\n"
-					"    lowp vec4 c1 = TEX_OFFSET(vec2(offset.x - sign(offset.x), offset.y), tex, texCoord, texSize);				\\\n"
-					"    lowp vec4 c2 = TEX_OFFSET(vec2(offset.x, offset.y - sign(offset.y)), tex, texCoord, texSize);				\\\n"
-					"    name = c0 + abs(offset.x)*(c1-c0) + abs(offset.y)*(c2-c0);													\\\n"
-					"  }																											\\\n"
+					"  if (c == uTestColor) discard;																				\\\n"
+					"  if (uEnableAlphaTest == 1 && !(c.a > 0.0)) discard;															\\\n"
+					"  mediump vec2 texSize = vec2(textureSize(tex,0));																\\\n"
+					"  mediump vec2 offset = fract(texCoord*texSize - vec2(0.5));													\\\n"
+					"  offset -= step(1.0, offset.x + offset.y);																	\\\n"
+					"  lowp vec4 zero = vec4(0.0);					 																\\\n"
+					"  lowp vec4 c0 = TEX_OFFSET(offset, tex, texCoord, texSize);													\\\n"
+					"  c0 = c * vec4(equal(c0, uTestColor)) + c0 * vec4(notEqual(c0, uTestColor));									\\\n"
+					"  lowp vec4 c1 = TEX_OFFSET(vec2(offset.x - sign(offset.x), offset.y), tex, texCoord, texSize);				\\\n"
+					"  c1 = c * vec4(equal(c1, uTestColor)) + c1 * vec4(notEqual(c1, uTestColor));									\\\n"
+					"  lowp vec4 c2 = TEX_OFFSET(vec2(offset.x, offset.y - sign(offset.y)), tex, texCoord, texSize);				\\\n"
+					"  c2 = c * vec4(equal(c2, uTestColor)) + c2 * vec4(notEqual(c2, uTestColor));									\\\n"
+					"  name = c0 + abs(offset.x)*(c1-c0) + abs(offset.y)*(c2-c0);													\\\n"
 					"}																												\\\n"
 					"																											    \n"
 					;
@@ -170,26 +168,30 @@ namespace glsl {
 					"# define IN varying																							\n"
 					"# define OUT																									\n"
 					"#endif // __VERSION __																							\n"
-					"uniform mediump vec4 uTextureBounds;																			\n"
+					"lowp vec4 uTestColor = vec4(4.0/255.0, 2.0/255.0, 1.0/255.0, 0.0);												\n"
+					"uniform lowp int uEnableAlphaTest;																				\n"
 					"uniform mediump vec2 uTextureSize;																				\n"
 					"#define TEX_OFFSET(off) texture2D(tex, texCoord - (off)/texSize)												\n"
 					"lowp vec4 texFilter(in sampler2D tex, in mediump vec2 texCoord)												\n"
 					"{																												\n"
-					"  mediump vec2 texSize = uTextureSize;																			\n"
-					"  mediump vec2 texelSize = vec2(1.0) / texSize;																\n"
 					"  lowp vec4 c = texture2D(tex, texCoord);																		\n"
-					"  if (abs(texCoord.s - uTextureBounds[0]) < texelSize.x || abs(texCoord.s - uTextureBounds[2]) < texelSize.x) return c;	\n"
-					"  if (abs(texCoord.t - uTextureBounds[1]) < texelSize.y || abs(texCoord.t - uTextureBounds[3]) < texelSize.y) return c;	\n"
+					"  if (c == uTestColor) discard;																				\n"
+					"  if (uEnableAlphaTest != 0 && !(c.a > 0.0)) discard;															\n"
+					"  mediump vec2 texSize = uTextureSize;																			\n"
 					"																												\n"
 					"  mediump vec2 offset = fract(texCoord*texSize - vec2(0.5));													\n"
 					"  offset -= step(1.0, offset.x + offset.y);																	\n"
 					"  lowp vec4 zero = vec4(0.0);																					\n"
 					"																												\n"
 					"  lowp vec4 p0q0 = TEX_OFFSET(offset);																			\n"
+					"  p0q0 = c * vec4(equal(p0q0, uTestColor)) + p0q0 * vec4(notEqual(p0q0, uTestColor));							\n"
 					"  lowp vec4 p1q0 = TEX_OFFSET(vec2(offset.x - sign(offset.x), offset.y));										\n"
+					"  p1q0 = c * vec4(equal(p1q0, uTestColor)) + p1q0 * vec4(notEqual(p1q0, uTestColor));							\n"
 					"																												\n"
 					"  lowp vec4 p0q1 = TEX_OFFSET(vec2(offset.x, offset.y - sign(offset.y)));				                        \n"
+					"  p0q1 = c * vec4(equal(p0q1, uTestColor)) + p0q1 * vec4(notEqual(p0q1, uTestColor));							\n"
 					"  lowp vec4 p1q1 = TEX_OFFSET(vec2(offset.x - sign(offset.x), offset.y - sign(offset.y)));						\n"
+					"  p1q1 = c * vec4(equal(p1q1, uTestColor)) + p1q1 * vec4(notEqual(p1q1, uTestColor));							\n"
 					"																												\n"
 					"  mediump vec2 interpolationFactor = abs(offset);																\n"
 					"  lowp vec4 pInterp_q0 = mix( p0q0, p1q0, interpolationFactor.x ); // Interpolates top row in X direction.		\n"
@@ -200,33 +202,31 @@ namespace glsl {
 			}
 			else {
 				m_part =
-					"uniform mediump vec4 uTextureBounds;																			\n"
 					"#define TEX_OFFSET(off, tex, texCoord, texSize) texture(tex, texCoord - (off)/texSize)							\n"
 					"#define TEX_FILTER(name, tex, texCoord)																		\\\n"
 					"{																												\\\n"
-					"  mediump vec2 texSize = vec2(textureSize(tex,0));																\\\n"
-					"  mediump vec2 texelSize = vec2(1.0) / texSize;																\\\n"
 					"  lowp vec4 c = texture(tex, texCoord);																		\\\n"
-					"  if (abs(texCoord.s - uTextureBounds[0]) < texelSize.x || abs(texCoord.s - uTextureBounds[2]) < texelSize.x){	\\\n"
-					"    name = c;												 													\\\n"
-					"  } else if (abs(texCoord.t - uTextureBounds[1]) < texelSize.y || abs(texCoord.t - uTextureBounds[3]) < texelSize.y){	\\\n"
-					"    name = c;												 													\\\n"
-					"  } else {													 													\\\n"
-					"    mediump vec2 offset = fract(texCoord*texSize - vec2(0.5));													\\\n"
-					"    offset -= step(1.0, offset.x + offset.y);																	\\\n"
-					"    lowp vec4 zero = vec4(0.0);																				\\\n"
+					"  if (c == uTestColor) discard;																				\\\n"
+					"  if (uEnableAlphaTest == 1 && !(c.a > 0.0)) discard;															\\\n"
+					"  mediump vec2 texSize = vec2(textureSize(tex,0));																\\\n"
+					"  mediump vec2 offset = fract(texCoord*texSize - vec2(0.5));													\\\n"
+					"  offset -= step(1.0, offset.x + offset.y);																	\\\n"
+					"  lowp vec4 zero = vec4(0.0);																					\\\n"
 					"																												\\\n"
-					"    lowp vec4 p0q0 = TEX_OFFSET(offset, tex, texCoord, texSize);												\\\n"
-					"    lowp vec4 p1q0 = TEX_OFFSET(vec2(offset.x - sign(offset.x), offset.y), tex, texCoord, texSize);			\\\n"
+					"  lowp vec4 p0q0 = TEX_OFFSET(offset, tex, texCoord, texSize);													\\\n"
+					"  p0q0 = c * vec4(equal(p0q0, uTestColor)) + p0q0 * vec4(notEqual(p0q0, uTestColor));							\\\n"
+					"  lowp vec4 p1q0 = TEX_OFFSET(vec2(offset.x - sign(offset.x), offset.y), tex, texCoord, texSize);				\\\n"
+					"  p1q0 = c * vec4(equal(p1q0, uTestColor)) + p1q0 * vec4(notEqual(p1q0, uTestColor));							\\\n"
 					"																												\\\n"
-					"    lowp vec4 p0q1 = TEX_OFFSET(vec2(offset.x, offset.y - sign(offset.y)), tex, texCoord, texSize);			 \\\n"
-					"    lowp vec4 p1q1 = TEX_OFFSET(vec2(offset.x - sign(offset.x), offset.y - sign(offset.y)), tex, texCoord, texSize);	\\\n"
+					"  lowp vec4 p0q1 = TEX_OFFSET(vec2(offset.x, offset.y - sign(offset.y)), tex, texCoord, texSize);				\\\n"
+					"  p0q1 = c * vec4(equal(p0q1, uTestColor)) + p0q1 * vec4(notEqual(p0q1, uTestColor));							\\\n"
+					"  lowp vec4 p1q1 = TEX_OFFSET(vec2(offset.x - sign(offset.x), offset.y - sign(offset.y)), tex, texCoord, texSize);	\\\n"
+					"  p1q1 = c * vec4(equal(p1q1, uTestColor)) + p1q1 * vec4(notEqual(p1q1, uTestColor));							\\\n"
 					"																												\\\n"
-					"    mediump vec2 interpolationFactor = abs(offset);															\\\n"
-					"    lowp vec4 pInterp_q0 = mix( p0q0, p1q0, interpolationFactor.x ); 											\\\n" // Interpolates top row in X direction.
-					"    lowp vec4 pInterp_q1 = mix( p0q1, p1q1, interpolationFactor.x ); 											\\\n" // Interpolates bottom row in X direction.
-					"    name = mix( pInterp_q0, pInterp_q1, interpolationFactor.y ); 												\\\n" // Interpolate in Y direction.
-					"  }																											\\\n"
+					"  mediump vec2 interpolationFactor = abs(offset);																\\\n"
+					"  lowp vec4 pInterp_q0 = mix( p0q0, p1q0, interpolationFactor.x ); 											\\\n" // Interpolates top row in X direction.
+					"  lowp vec4 pInterp_q1 = mix( p0q1, p1q1, interpolationFactor.x ); 											\\\n" // Interpolates bottom row in X direction.
+					"  name = mix( pInterp_q0, pInterp_q1, interpolationFactor.y ); 												\\\n" // Interpolate in Y direction.
 					"}																												\\\n"
 					"																												\n"
 				;
@@ -242,15 +242,11 @@ namespace glsl {
 			if (_glinfo.isGLES2) {
 				m_part =
 					"uniform sampler2D uTex0;													\n"
-					"uniform lowp int uEnableAlphaTest;											\n"
-					"lowp vec4 uTestColor = vec4(4.0/255.0, 2.0/255.0, 1.0/255.0, 0.0);			\n"
 					"IN mediump vec2 vTexCoord0;												\n"
 					"OUT lowp vec4 fragColor;													\n"
 					"void main()																\n"
 					"{																			\n"
 					"  fragColor = texFilter(uTex0, vTexCoord0);								\n"
-					"  if (fragColor == uTestColor) discard;									\n"
-					"  if (uEnableAlphaTest != 0 && !(fragColor.a > 0.0)) discard;				\n"
 					"  gl_FragColor = fragColor;												\n"
 					"}																			\n"
 				;
@@ -264,8 +260,6 @@ namespace glsl {
 					"void main()																									\n"
 					"{																												\n"
 					"  TEX_FILTER(fragColor, uTex0, vTexCoord0);																	\n"
-					"  if (fragColor == uTestColor) discard;																		\n"
-					"  if (uEnableAlphaTest == 1 && !(fragColor.a > 0.0)) discard;													\n"
 					"}																												\n"
 				;
 			}
@@ -489,8 +483,6 @@ namespace glsl {
 			assert(loc >= 0);
 			glUniform1i(loc, 0);
 			m_textureSizeLoc = glGetUniformLocation(GLuint(m_program), "uTextureSize");
-			m_textureBoundsLoc = glGetUniformLocation(GLuint(m_program), "uTextureBounds");
-			assert(m_textureBoundsLoc >= 0);
 			m_enableAlphaTestLoc = glGetUniformLocation(GLuint(m_program), "uEnableAlphaTest");
 			m_useProgram->useProgram(graphics::ObjectHandle::null);
 		}
@@ -516,13 +508,6 @@ namespace glsl {
 			gDP.changed |= CHANGED_COMBINE;
 		}
 
-		void setTextureBounds(float _texBounds[4])  override
-		{
-			m_useProgram->useProgram(m_program);
-			glUniform4fv(m_textureBoundsLoc, 1, _texBounds);
-			gDP.changed |= CHANGED_COMBINE;
-		}
-
 		void setEnableAlphaTest(int _enable) override
 		{
 			m_useProgram->useProgram(m_program);
@@ -535,7 +520,6 @@ namespace glsl {
 		opengl::CachedUseProgram * m_useProgram;
 		GLint m_enableAlphaTestLoc;
 		GLint m_textureSizeLoc;
-		GLint m_textureBoundsLoc;
 	};
 
 	typedef SpecialShader<VertexShaderTexturedRect, TexrectDrawerFragmentClear> TexrectDrawerShaderClear;

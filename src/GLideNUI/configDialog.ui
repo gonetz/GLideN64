@@ -2430,6 +2430,19 @@
              </item>
             </layout>
            </item>
+           <item>
+            <spacer name="verticalSpacer_5">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>0</width>
+               <height>0</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
           </layout>
          </widget>
          <widget class="QWidget" name="texturePackTab">
@@ -2472,10 +2485,7 @@
                   <property name="toolTip">
                    <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select path to the folder with texture packs.&lt;br/&gt;Default: Plugin/hires_texture&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                   </property>
-                  <layout class="QVBoxLayout" name="verticalLayout_37">
-                   <property name="spacing">
-                    <number>4</number>
-                   </property>
+                  <layout class="QGridLayout" name="gridLayout">
                    <property name="leftMargin">
                     <number>0</number>
                    </property>
@@ -2488,17 +2498,27 @@
                    <property name="bottomMargin">
                     <number>0</number>
                    </property>
-                   <item>
-                    <widget class="QLabel" name="texPackPathLabel">
+                   <item row="6" column="1">
+                    <widget class="QLabel" name="txDumpPathLabel">
                      <property name="text">
-                      <string>Texture pack path:</string>
+                      <string notr="true"/>
                      </property>
-                     <property name="buddy">
-                      <cstring>texPackPathButton</cstring>
+                     <property name="wordWrap">
+                      <bool>true</bool>
                      </property>
                     </widget>
                    </item>
-                   <item>
+                   <item row="3" column="1">
+                    <widget class="QLabel" name="txCachePathLabel">
+                     <property name="text">
+                      <string notr="true"/>
+                     </property>
+                     <property name="wordWrap">
+                      <bool>true</bool>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="0" column="1">
                     <widget class="QLabel" name="txPathLabel">
                      <property name="text">
                       <string notr="true"/>
@@ -2508,7 +2528,55 @@
                      </property>
                     </widget>
                    </item>
-                   <item>
+                   <item row="3" column="0">
+                    <widget class="QLabel" name="texCachePathLabel">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
+                     <property name="text">
+                      <string>Texture cache path:</string>
+                     </property>
+                     <property name="buddy">
+                      <cstring>texCachePathButton</cstring>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="6" column="0">
+                    <widget class="QLabel" name="texDumpPathLabel">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
+                     <property name="text">
+                      <string>Texture dump path:</string>
+                     </property>
+                     <property name="buddy">
+                      <cstring>texDumpPathButton</cstring>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="0" column="0">
+                    <widget class="QLabel" name="texPackPathLabel">
+                     <property name="sizePolicy">
+                      <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                       <horstretch>0</horstretch>
+                       <verstretch>0</verstretch>
+                      </sizepolicy>
+                     </property>
+                     <property name="text">
+                      <string>Texture pack path:</string>
+                     </property>
+                     <property name="buddy">
+                      <cstring>texPackPathButton</cstring>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="1" column="1" alignment="Qt::AlignRight">
                     <widget class="QPushButton" name="texPackPathButton">
                      <property name="sizePolicy">
                       <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -2521,37 +2589,7 @@
                      </property>
                     </widget>
                    </item>
-                   <item>
-                    <widget class="QLabel" name="txPackCacheLabel">
-                     <property name="text">
-                      <string notr="true"/>
-                     </property>
-                     <property name="wordWrap">
-                      <bool>true</bool>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <widget class="QLabel" name="texCachePathLabel">
-                     <property name="text">
-                      <string>Texture cache path:</string>
-                     </property>
-                     <property name="buddy">
-                      <cstring>texCachePathButton</cstring>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <widget class="QLabel" name="txCachePathLabel">
-                     <property name="text">
-                      <string notr="true"/>
-                     </property>
-                     <property name="wordWrap">
-                      <bool>true</bool>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
+                   <item row="4" column="1" alignment="Qt::AlignRight">
                     <widget class="QPushButton" name="texCachePathButton">
                      <property name="sizePolicy">
                       <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -2564,37 +2602,7 @@
                      </property>
                     </widget>
                    </item>
-                   <item>
-                    <widget class="QLabel" name="txCacheDumpLabel">
-                     <property name="text">
-                      <string notr="true"/>
-                     </property>
-                     <property name="wordWrap">
-                      <bool>true</bool>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <widget class="QLabel" name="texDumpPathLabel">
-                     <property name="text">
-                      <string>Texture dump path:</string>
-                     </property>
-                     <property name="buddy">
-                      <cstring>texDumpPathButton</cstring>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <widget class="QLabel" name="txDumpPathLabel">
-                     <property name="text">
-                      <string notr="true"/>
-                     </property>
-                     <property name="wordWrap">
-                      <bool>true</bool>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
+                   <item row="7" column="1" alignment="Qt::AlignRight">
                     <widget class="QPushButton" name="texDumpPathButton">
                      <property name="sizePolicy">
                       <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -2669,6 +2677,19 @@
              </item>
             </layout>
            </item>
+           <item>
+            <spacer name="verticalSpacer_13">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>0</width>
+               <height>0</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
           </layout>
          </widget>
         </widget>
@@ -2728,19 +2749,6 @@
           </widget>
          </item>
         </layout>
-       </item>
-       <item>
-        <spacer name="verticalSpacer">
-         <property name="orientation">
-          <enum>Qt::Vertical</enum>
-         </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>0</width>
-           <height>0</height>
-          </size>
-         </property>
-        </spacer>
        </item>
       </layout>
      </widget>
@@ -3995,7 +4003,7 @@
   <buttongroup name="factorButtonGroup"/>
   <buttongroup name="screenshotButtonGroup"/>
   <buttongroup name="osdButtonGroup"/>
-  <buttongroup name="aspectButtonGroup"/>
   <buttongroup name="fixTexrectCoordsButtonGroup"/>
+  <buttongroup name="aspectButtonGroup"/>
  </buttongroups>
 </ui>
