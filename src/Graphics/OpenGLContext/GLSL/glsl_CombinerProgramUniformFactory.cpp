@@ -203,7 +203,7 @@ public:
 					nFbFixedAlpha0 = 1;
 			} else if (gSP.textureTile[0]->size == G_IM_SIZ_16b && gSP.textureTile[0]->format == G_IM_FMT_IA) {
 				nFbMonochromeMode0 = 2;
-			} else if ((config.generalEmulation.hacks & hack_ZeldaMM) != 0 &&
+			} else if ((config.generalEmulation.hacks & hack_ZeldaMonochrome) != 0 &&
 					   cache.current[0]->size == G_IM_SIZ_16b &&
 					   gSP.textureTile[0]->size == G_IM_SIZ_8b &&
 					   gSP.textureTile[0]->format == G_IM_FMT_CI) {

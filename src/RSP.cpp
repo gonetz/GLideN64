@@ -290,8 +290,9 @@ void RSP_Init()
 	else if (strstr(RSP.romname, (const char *)"POKEMON STADIUM 2") != nullptr)
 		config.generalEmulation.hacks |= hack_texrect_shade_alpha;
 	else if (strstr(RSP.romname, (const char *)"THE LEGEND OF ZELDA") != nullptr ||
-			 strstr(RSP.romname, (const char *)"ZELDA MASTER QUEST") != nullptr ||
-			 strstr(RSP.romname, (const char *)"DOUBUTSUNOMORI") != nullptr ||
+			 strstr(RSP.romname, (const char *)"ZELDA MASTER QUEST") != nullptr)
+		 config.generalEmulation.hacks |= hack_subscreen | hack_ZeldaMonochrome;
+	else if (strstr(RSP.romname, (const char *)"DOUBUTSUNOMORI") != nullptr ||
 			 strstr(RSP.romname, (const char *)"ANIMAL FOREST") != nullptr)
 		config.generalEmulation.hacks |= hack_subscreen;
 	else if (strstr(RSP.romname, (const char *)"LEGORacers") != nullptr)
@@ -299,7 +300,7 @@ void RSP_Init()
 	else if (strstr(RSP.romname, (const char *)"Blast") != nullptr)
 		config.generalEmulation.hacks |= hack_blastCorps;
 	else if (strstr(RSP.romname, (const char *)"MASK") != nullptr) // Zelda MM
-		config.generalEmulation.hacks |= hack_ZeldaMM;
+		config.generalEmulation.hacks |= hack_ZeldaMonochrome | hack_ZeldaMM;
 	else if (strstr(RSP.romname, (const char *)"Perfect Dark") != nullptr ||
 			 strstr(RSP.romname, (const char *)"PERFECT DARK") != nullptr)
 		config.generalEmulation.hacks |= hack_rectDepthBufferCopyPD;
