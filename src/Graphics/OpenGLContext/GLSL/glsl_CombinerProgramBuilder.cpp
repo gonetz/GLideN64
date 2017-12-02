@@ -956,15 +956,15 @@ public:
 				// Original author: ArthurCarvalho
 				// GLSL implementation: twinaphex, mupen64plus-libretro project.
 				m_part +=
-					"#define TEX_OFFSET(tex, texCoord, off) texture(tex, texCoord - (off)/texSize)			\n"
+					"#define TEX_OFFSET(off, tex, texCoord) texture(tex, texCoord - (off)/texSize)									\n"
 					"#define TEX_FILTER(name, tex, texCoord)												\\\n"
 					"  {																					\\\n"
 					"  mediump vec2 texSize = vec2(textureSize(tex,0));										\\\n"
 					"  mediump vec2 offset = fract(texCoord*texSize - vec2(0.5));							\\\n"
 					"  offset -= step(1.0, offset.x + offset.y);											\\\n"
-					"  lowp vec4 c0 = TEX_OFFSET(tex, texCoord, offset);									\\\n"
-					"  lowp vec4 c1 = TEX_OFFSET(tex, texCoord, vec2(offset.x - sign(offset.x), offset.y));	\\\n"
-					"  lowp vec4 c2 = TEX_OFFSET(tex, texCoord, vec2(offset.x, offset.y - sign(offset.y)));	\\\n"
+					"  lowp vec4 c0 = TEX_OFFSET(offset, tex, texCoord);									\\\n"
+					"  lowp vec4 c1 = TEX_OFFSET(vec2(offset.x - sign(offset.x), offset.y), tex, texCoord);	\\\n"
+					"  lowp vec4 c2 = TEX_OFFSET(vec2(offset.x, offset.y - sign(offset.y)), tex, texCoord);	\\\n"
 					"  name = c0 + abs(offset.x)*(c1-c0) + abs(offset.y)*(c2-c0); 							\\\n"
 					"  }																					\n"
 					;
