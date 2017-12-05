@@ -74,8 +74,10 @@ bool ShaderStorage::_saveCombinerKeys(const graphics::Combiners & _combiners) co
 	std::vector<char> allShaderData;
 	std::vector<u64> keysData;
 	keysData.reserve(szCombiners);
-	for (auto cur = _combiners.begin(); cur != _combiners.end(); ++cur)
+	for (auto cur = _combiners.begin(); cur != _combiners.end(); ++cur) {
 		keysData.push_back(cur->first.getMux());
+		keysData.push_back(cur->first.getSecondaryParams());
+	}
 
 	std::sort(keysData.begin(), keysData.end());
 	keysOut << "0x" << std::hex << std::setfill('0') << std::setw(8) << m_keysFormatVersion << "\n";
@@ -147,7 +149,6 @@ bool ShaderStorage::saveShadersStorage(const graphics::Combiners & _combiners) c
 
 	u32 totalWritten = 0;
 	std::vector<char> allShaderData;
-	std::vector<u64> keysData;
 
 	const f32 percent = szCombiners / 100.0f;
 	const f32 step = 100.0f / szCombiners;
@@ -246,9 +247,13 @@ bool ShaderStorage::_loadFromCombinerKeys(graphics::Combiners & _combiners)
 	f32 progress = 0.0f;
 	f32 percents = percent;
 	u64 key;
+	u64 secondaryParams;
+
 	for (u32 i = 0; i < szCombiners; ++i) {
 		fin >> std::hex >> key;
-		graphics::CombinerProgram * pCombiner = Combiner_Compile(CombinerKey(key, false));
+		fin >> std::hex >> secondaryParams;
+
+		graphics::CombinerProgram * pCombiner = Combiner_Compile(CombinerKey(key, secondaryParams, false));
 		pCombiner->update(true);
 		_combiners[pCombiner->getKey()] = pCombiner;
 		progress += step;
