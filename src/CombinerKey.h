@@ -73,3 +73,11 @@ private:
 	gDPCombine m_key;
 	SecondaryShaderParams m_secondaryFlags;
 };
+
+struct CombinerKeyHash {
+public:
+	std::size_t operator()(const CombinerKey &x) const
+	{
+		return std::hash<u64>()(x.getMux()) ^ std::hash<u64>()(x.getSecondaryParams());
+	}
+};
