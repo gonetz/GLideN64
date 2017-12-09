@@ -18,6 +18,7 @@ class CombinerKey {
 				unsigned int alphaCvgSel : 1;
 				unsigned int alphaDither : 2;
 				unsigned int colorDither : 2;
+				unsigned int renderTarget : 2;
 			};
 
 			u64				mux;
@@ -54,6 +55,7 @@ public:
 	void setAlphaCvgSel(unsigned int _alphaCvgSel);
 	void setAlphaDither(unsigned int _alphaDither);
 	void setColorDither(unsigned int _colorDither);
+	void setRenderTarget(unsigned int _renderTarget);
 
 	unsigned int getBiLerp0(void) const;
 	unsigned int getBiLerp1(void) const;
@@ -63,6 +65,7 @@ public:
 	unsigned int getAlphaCvgSel(void) const;
 	unsigned int getAlphaDither(void) const;
 	unsigned int getColorDither(void) const;
+	unsigned int getRenderTarget(void) const;
 
 	void read(std::istream & _is);
 

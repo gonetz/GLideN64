@@ -115,6 +115,11 @@ void CombinerKey::setColorDither(unsigned int _colorDither)
 	m_secondaryFlags.colorDither = _colorDither;
 }
 
+void CombinerKey::setRenderTarget(unsigned int _renderTarget)
+{
+	m_secondaryFlags.renderTarget = _renderTarget;
+}
+
 unsigned int CombinerKey::getBiLerp0(void) const
 {
 	return m_secondaryFlags.bi_lerp0;
@@ -153,6 +158,11 @@ unsigned int CombinerKey::getAlphaDither(void) const
 unsigned int CombinerKey::getColorDither(void) const
 {
 	return m_secondaryFlags.colorDither;
+}
+
+unsigned int CombinerKey::getRenderTarget(void) const
+{
+	return m_secondaryFlags.renderTarget;
 }
 
 void CombinerKey::read(std::istream & _is) {

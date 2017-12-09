@@ -322,6 +322,9 @@ void CombinerInfo::setSecondaryParams(CombinerKey& _key)
 		_key.setAlphaDither(0);
 		_key.setColorDither(0);
 	}
+
+	//Render target
+	_key.setRenderTarget(gDP.colorImage.address == gDP.depthImageAddress ? gDP.otherMode.depthCompare + 1 : 0);
 }
 
 void CombinerInfo::setCombine(u64 _mux )

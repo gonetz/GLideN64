@@ -574,26 +574,6 @@ private:
 	fUniform uPrimDepth;
 };
 
-class URenderTarget : public UniformGroup
-{
-public:
-	URenderTarget(GLuint _program) {
-		LocateUniform(uRenderTarget);
-	}
-
-	void update(bool _force) override
-	{
-		int renderTarget = 0;
-		if (gDP.colorImage.address == gDP.depthImageAddress ) {
-			renderTarget = gDP.otherMode.depthCompare + 1;
-		}
-		uRenderTarget.set(renderTarget, _force);
-	}
-
-private:
-	iUniform uRenderTarget;
-};
-
 class UScreenCoordsScale : public UniformGroup
 {
 public:
@@ -859,10 +839,6 @@ void CombinerProgramUniformFactory::buildUniforms(GLuint _program,
 		_uniforms.emplace_back(new UDepthInfo(_program));
 	else
 		_uniforms.emplace_back(new UDepthSource(_program));
-
-	if (config.generalEmulation.enableFragmentDepthWrite != 0 ||
-		config.frameBufferEmulation.N64DepthCompare != 0)
-		_uniforms.emplace_back(new URenderTarget(_program));
 
 	_uniforms.emplace_back(new UScreenCoordsScale(_program));
 

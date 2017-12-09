@@ -758,7 +758,6 @@ public:
 		if (!_glinfo.isGLES2) {
 			m_part +=
 				"uniform sampler2D uDepthTex;		\n"
-				"uniform lowp int uRenderTarget;	\n"
 				"uniform mediump vec2 uDepthScale;	\n"
 				;
 			if (config.frameBufferEmulation.N64DepthCompare != 0) {
@@ -828,7 +827,6 @@ public:
 		if (!_glinfo.isGLES2) {
 			m_part +=
 				"uniform sampler2D uDepthTex;		\n"
-				"uniform lowp int uRenderTarget;	\n"
 				"uniform mediump vec2 uDepthScale;	\n"
 				;
 			if (config.frameBufferEmulation.N64DepthCompare != 0) {
@@ -1285,12 +1283,23 @@ class ShaderFragmentCallN64Depth : public ShaderPart
 public:
 	ShaderFragmentCallN64Depth(const opengl::GLInfo & _glinfo)
 	{
+
+	}
+
+	void write(std::stringstream & shader, CombinerKey _key) const override
+	{
+		std::string shaderPart;
+
 		if (config.frameBufferEmulation.N64DepthCompare != 0) {
-			m_part =
-				"  if (uRenderTarget != 0) { if (!depth_render(fragColor.r)) discard; } \n"
-				"  else if (!depth_compare()) discard; \n"
-			;
+
+			if(_key.getRenderTarget() != 0) {
+				shaderPart += "  if (!depth_render(fragColor.r)) discard; \n";
+			} else {
+				shaderPart += "  if (!depth_compare()) discard; \n";
+			}
 		}
+
+		shader << shaderPart;
 	}
 };
 
@@ -1299,17 +1308,27 @@ class ShaderFragmentRenderTarget : public ShaderPart
 public:
 	ShaderFragmentRenderTarget(const opengl::GLInfo & _glinfo)
 	{
+
+	}
+
+	void write(std::stringstream & shader, CombinerKey _key) const override
+	{
+		std::string shaderPart;
+
 		if (config.generalEmulation.enableFragmentDepthWrite != 0) {
-			m_part =
-				"  if (uRenderTarget != 0) {					\n"
-				"    if (uRenderTarget > 1) {					\n"
-				"      ivec2 coord = ivec2(gl_FragCoord.xy);	\n"
-				"      if (gl_FragDepth >= texelFetch(uDepthTex, coord, 0).r) discard;	\n"
-				"    }											\n"
-				"    gl_FragDepth = fragColor.r;				\n"
-				"  }											\n"
-			;
+			if(_key.getRenderTarget() != 0) {
+
+				if(_key.getRenderTarget() > 1) {
+					shaderPart +=
+						"  ivec2 coord = ivec2(gl_FragCoord.xy);	\n"
+						"  if (gl_FragDepth >= texelFetch(uDepthTex, coord, 0).r) discard;	\n";
+				}
+
+				shaderPart += "  gl_FragDepth = fragColor.r;				\n";
+			}
 		}
+
+		shader << shaderPart;
 	}
 };
 
