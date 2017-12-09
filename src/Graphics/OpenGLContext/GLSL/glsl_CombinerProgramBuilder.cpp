@@ -502,12 +502,12 @@ public:
 #endif
 	}
 
-	void write(std::stringstream & shader) const override
+	void write(std::stringstream & shader, CombinerKey _key) const override
 	{
 		if (g_cycleType == G_CYC_2CYCLE)
 			shader << "  muxPM[1] = clampedColor;	\n";
 
-		ShaderPart::write(shader);
+		ShaderPart::write(shader, _key);
 	}
 };
 
@@ -663,18 +663,27 @@ class ShaderAlphaTest : public ShaderPart
 public:
 	ShaderAlphaTest()
 	{
-		m_part =
-			"  if (uEnableAlphaTest != 0) {							\n"
-			"    lowp float alphaTestValue = (uAlphaCompareMode == 3) ? snoise() : uAlphaTestValue;	\n"
-			"    lowp float alphaValue;								\n"
-			"    if ((uAlphaCvgSel != 0) && (uCvgXAlpha == 0)) {	\n"
-			"      alphaValue = 0.125;								\n"
-			"    } else {											\n"
-			"      alphaValue = clamp(alpha1, 0.0, 1.0);			\n"
-			"    }													\n"
-			"    if (alphaValue < alphaTestValue) discard;			\n"
-			"  }													\n"
-			;
+
+	}
+
+	void write(std::stringstream & shader, CombinerKey _key) const override
+	{
+		std::string shaderPart;
+
+		if (_key.getEnableAlphaTest() != 0) {
+			shaderPart =
+				"  lowp float alphaTestValue = (uAlphaCompareMode == 3) ? snoise() : uAlphaTestValue;	\n"
+				"  lowp float alphaValue;								\n"
+				"  if ((uAlphaCvgSel != 0) && (uCvgXAlpha == 0)) {	\n"
+				"    alphaValue = 0.125;								\n"
+				"  } else {											\n"
+				"    alphaValue = clamp(alpha1, 0.0, 1.0);			\n"
+				"  }													\n"
+				"  if (alphaValue < alphaTestValue) discard;			\n"
+				;
+		}
+
+		shader << shaderPart;
 	}
 };
 
@@ -712,7 +721,6 @@ public:
 			"uniform lowp int uAlphaCompareMode;	\n"
 			"uniform lowp ivec2 uFbMonochrome;		\n"
 			"uniform lowp ivec2 uFbFixedAlpha;		\n"
-			"uniform lowp int uEnableAlphaTest;		\n"
 			"uniform lowp int uCvgXAlpha;			\n"
 			"uniform lowp int uAlphaCvgSel;			\n"
 			"uniform lowp float uAlphaTestValue;	\n"
@@ -788,7 +796,6 @@ public:
 			"uniform lowp int uAlphaCompareMode;	\n"
 			"uniform lowp ivec2 uFbMonochrome;		\n"
 			"uniform lowp ivec2 uFbFixedAlpha;		\n"
-			"uniform lowp int uEnableAlphaTest;		\n"
 			"uniform lowp int uCvgXAlpha;			\n"
 			"uniform lowp int uAlphaCvgSel;			\n"
 			"uniform lowp float uAlphaTestValue;	\n"
@@ -1164,13 +1171,13 @@ public:
 
 	}
 
-	void write(std::stringstream & shader) const override
+	void write(std::stringstream & shader, CombinerKey _key) const override
 	{
 		std::string shaderPart;
 
 		if (m_glinfo.isGLES2) {
 			shaderPart = "  nCurrentTile = 0; \n";
-			if (gDP.otherMode.bi_lerp0 != 0) {
+			if (_key.getBiLerp0() != 0) {
 				shaderPart += "  lowp vec4 readtex0 = readTex(uTex0, vTexCoord0, uFbMonochrome[0], uFbFixedAlpha[0]);		\n";
 			}
 			else {
@@ -1184,7 +1191,7 @@ public:
 					"  lowp vec4 readtex0;																	\n"
 					"  if (uMSTexEnabled[0] == 0) {															\n";
 
-				if (gDP.otherMode.bi_lerp0 != 0) {
+				if (_key.getBiLerp0() != 0) {
 					shaderPart += "    READ_TEX(readtex0, uTex0, vTexCoord0, uFbMonochrome[0], uFbFixedAlpha[0])		\n";
 				}
 				else {
@@ -1193,8 +1200,10 @@ public:
 				shaderPart += "  } else readtex0 = readTexMS(uMSTex0, vTexCoord0, uFbMonochrome[0], uFbFixedAlpha[0]);\n";
 			}
 			else {
+				LOG(LOG_ERROR, "YUV: lerp0=%d, lerp1=%d", gDP.otherMode.bi_lerp0, gDP.otherMode.bi_lerp1);
+
 				shaderPart = "  lowp vec4 readtex0;																	\n";
-				if (gDP.otherMode.bi_lerp0 != 0) {
+				if (_key.getBiLerp0() != 0) {
 					shaderPart += "  READ_TEX(readtex0, uTex0, vTexCoord0, uFbMonochrome[0], uFbFixedAlpha[0])		\n";
 				}
 				else {
@@ -1217,14 +1226,14 @@ public:
 
 	}
 
-	void write(std::stringstream & shader) const override
+	void write(std::stringstream & shader, CombinerKey _key) const override
 	{
 		std::string shaderPart;
 
 		if (m_glinfo.isGLES2) {
 			shaderPart = "  nCurrentTile = 1; \n";
 
-			if (gDP.otherMode.bi_lerp1 != 0) {
+			if (_key.getBiLerp1() != 0) {
 				shaderPart += "  lowp vec4 readtex1 = readTex(uTex1, vTexCoord1, uFbMonochrome[1], uFbFixedAlpha[1]);		\n";
 			}
 			else {
@@ -1238,7 +1247,7 @@ public:
 					"  lowp vec4 readtex1; \n"
 					"  if (uMSTexEnabled[1] == 0) {															\n";
 
-				if (gDP.otherMode.bi_lerp1 != 0) {
+				if (_key.getBiLerp1() != 0) {
 					shaderPart += "    READ_TEX(readtex1, uTex1, vTexCoord1, uFbMonochrome[1], uFbFixedAlpha[1])		\n";
 				}
 				else {
@@ -1250,7 +1259,7 @@ public:
 			else {
 				shaderPart = "  lowp vec4 readtex1; \n";
 
-				if (gDP.otherMode.bi_lerp1 != 0) {
+				if (_key.getBiLerp1() != 0) {
 					shaderPart += "  READ_TEX(readtex1, uTex1, vTexCoord1, uFbMonochrome[1], uFbFixedAlpha[1])		\n";
 				}
 				else {
@@ -1941,20 +1950,20 @@ CombinerInputs CombinerProgramBuilder::compileCombiner(const CombinerKey & _key,
 	CombinerInputs inputs = _compileCombiner(_alpha.stage[0], AlphaInput, ssShader);
 	// Simulate N64 color sign-extend.
 	if (combinedAlphaC(combine))
-		m_signExtendAlphaC->write(ssShader);
+		m_signExtendAlphaC->write(ssShader, _key);
 	else if (combinedAlphaABD(combine))
-		m_signExtendAlphaABD->write(ssShader);
+		m_signExtendAlphaABD->write(ssShader, _key);
 
 	if (g_cycleType < G_CYC_FILL)
-		m_alphaTest->write(ssShader);
+		m_alphaTest->write(ssShader, _key);
 
 	ssShader << "  color1 = ";
 	inputs += _compileCombiner(_color.stage[0], ColorInput, ssShader);
 	// Simulate N64 color sign-extend.
 	if (combinedColorC(combine))
-		m_signExtendColorC->write(ssShader);
+		m_signExtendColorC->write(ssShader, _key);
 	else if (combinedColorABD(combine))
-		m_signExtendColorABD->write(ssShader);
+		m_signExtendColorABD->write(ssShader, _key);
 
 	if (g_cycleType == G_CYC_2CYCLE) {
 
@@ -1987,24 +1996,24 @@ CombinerInputs CombinerProgramBuilder::compileCombiner(const CombinerKey & _key,
 
 	// Simulate N64 color clamp.
 	if (needClampColor())
-		m_clamp->write(ssShader);
+		m_clamp->write(ssShader, _key);
 	else
 		ssShader << "  lowp vec4 clampedColor = clamp(cmbRes, 0.0, 1.0);" << std::endl;
 
 	if (g_cycleType <= G_CYC_2CYCLE)
-		m_callDither->write(ssShader);
+		m_callDither->write(ssShader, _key);
 
 	if (config.generalEmulation.enableLegacyBlending == 0) {
 		if (g_cycleType <= G_CYC_2CYCLE)
-			m_blender1->write(ssShader);
+			m_blender1->write(ssShader, _key);
 		if (g_cycleType == G_CYC_2CYCLE)
-			m_blender2->write(ssShader);
+			m_blender2->write(ssShader, _key);
 
 		ssShader << "  fragColor = clampedColor;" << std::endl;
 	}
 	else {
 		ssShader << "  fragColor = clampedColor;" << std::endl;
-		m_legacyBlender->write(ssShader);
+		m_legacyBlender->write(ssShader, _key);
 	}
 
 	_strShader = std::move(ssShader.str());
@@ -2033,65 +2042,65 @@ graphics::CombinerProgram * CombinerProgramBuilder::buildCombinerProgram(Combine
 	std::stringstream ssShader;
 
 	/* Write headers */
-	m_fragmentHeader->write(ssShader);
+	m_fragmentHeader->write(ssShader, _key);
 
 	if (bUseTextures) {
-		m_fragmentGlobalVariablesTex->write(ssShader);
+		m_fragmentGlobalVariablesTex->write(ssShader, _key);
 
 		if (g_cycleType == G_CYC_2CYCLE && config.generalEmulation.enableLegacyBlending == 0)
 			ssShader << "uniform lowp ivec4 uBlendMux2;" << std::endl << "uniform lowp int uForceBlendCycle2;" << std::endl;
 
 		if (g_cycleType <= G_CYC_2CYCLE)
-			m_fragmentHeaderDither->write(ssShader);
-		m_fragmentHeaderNoise->write(ssShader);
-		m_fragmentHeaderWriteDepth->write(ssShader);
-		m_fragmentHeaderDepthCompare->write(ssShader);
-		m_fragmentHeaderReadMSTex->write(ssShader);
+			m_fragmentHeaderDither->write(ssShader, _key);
+		m_fragmentHeaderNoise->write(ssShader, _key);
+		m_fragmentHeaderWriteDepth->write(ssShader, _key);
+		m_fragmentHeaderDepthCompare->write(ssShader, _key);
+		m_fragmentHeaderReadMSTex->write(ssShader, _key);
 		if (bUseLod)
-			m_fragmentHeaderMipMap->write(ssShader);
+			m_fragmentHeaderMipMap->write(ssShader, _key);
 		else if (g_cycleType < G_CYC_COPY)
-			m_fragmentHeaderReadTex->write(ssShader);
+			m_fragmentHeaderReadTex->write(ssShader, _key);
 		else
-			m_fragmentHeaderReadTexCopyMode->write(ssShader);
+			m_fragmentHeaderReadTexCopyMode->write(ssShader, _key);
 	} else {
-		m_fragmentGlobalVariablesNotex->write(ssShader);
+		m_fragmentGlobalVariablesNotex->write(ssShader, _key);
 
 		if (g_cycleType == G_CYC_2CYCLE && config.generalEmulation.enableLegacyBlending == 0)
 			ssShader << "uniform lowp ivec4 uBlendMux2;" << std::endl << "uniform lowp int uForceBlendCycle2;" << std::endl;
 
 		if (g_cycleType <= G_CYC_2CYCLE)
-			m_fragmentHeaderDither->write(ssShader);
-		m_fragmentHeaderNoise->write(ssShader);
-		m_fragmentHeaderWriteDepth->write(ssShader);
-		m_fragmentHeaderDepthCompare->write(ssShader);
+			m_fragmentHeaderDither->write(ssShader, _key);
+		m_fragmentHeaderNoise->write(ssShader, _key);
+		m_fragmentHeaderWriteDepth->write(ssShader, _key);
+		m_fragmentHeaderDepthCompare->write(ssShader, _key);
 	}
 
 	if (bUseHWLight)
-		m_fragmentHeaderCalcLight->write(ssShader);
+		m_fragmentHeaderCalcLight->write(ssShader, _key);
 
 	/* Write body */
 	if (g_cycleType == G_CYC_2CYCLE)
-		m_fragmentMain2Cycle->write(ssShader);
+		m_fragmentMain2Cycle->write(ssShader, _key);
 	else
-		m_fragmentMain->write(ssShader);
+		m_fragmentMain->write(ssShader, _key);
 
 	if (g_cycleType <= G_CYC_2CYCLE)
-		m_fragmentBlendMux->write(ssShader);
+		m_fragmentBlendMux->write(ssShader, _key);
 
 	if (bUseTextures) {
 		if (bUseLod) {
-			m_fragmentReadTexMipmap->write(ssShader);
+			m_fragmentReadTexMipmap->write(ssShader, _key);
 		} else {
 			if (g_cycleType < G_CYC_COPY) {
 				if (combinerInputs.usesTile(0))
-					m_fragmentReadTex0->write(ssShader);
+					m_fragmentReadTex0->write(ssShader, _key);
 				else
 					ssShader << "  lowp vec4 readtex0;" << std::endl;
 
 				if (combinerInputs.usesTile(1))
-					m_fragmentReadTex1->write(ssShader);
+					m_fragmentReadTex1->write(ssShader, _key);
 			} else
-				m_fragmentReadTexCopyMode->write(ssShader);
+				m_fragmentReadTexCopyMode->write(ssShader, _key);
 		}
 	}
 
@@ -2104,38 +2113,38 @@ graphics::CombinerProgram * CombinerProgramBuilder::buildCombinerProgram(Combine
 	ssShader << strCombiner << std::endl;
 
 	if (config.frameBufferEmulation.N64DepthCompare != 0)
-		m_fragmentCallN64Depth->write(ssShader);
+		m_fragmentCallN64Depth->write(ssShader, _key);
 	else
-		m_fragmentRenderTarget->write(ssShader);
+		m_fragmentRenderTarget->write(ssShader, _key);
 
 	// End of Main() function
-	m_shaderFragmentMainEnd->write(ssShader);
+	m_shaderFragmentMainEnd->write(ssShader, _key);
 
 	/* Write other functions */
 	if (bUseHWLight)
-		m_shaderCalcLight->write(ssShader);
+		m_shaderCalcLight->write(ssShader, _key);
 
 	if (bUseTextures) {
 		if (bUseLod)
-			m_shaderMipmap->write(ssShader);
+			m_shaderMipmap->write(ssShader, _key);
 		else {
 			if (g_cycleType < G_CYC_COPY)
-				m_shaderReadtex->write(ssShader);
+				m_shaderReadtex->write(ssShader, _key);
 			else
-				m_shaderReadtexCopyMode->write(ssShader);
+				m_shaderReadtexCopyMode->write(ssShader, _key);
 		}
 	}
 
-	m_shaderNoise->write(ssShader);
+	m_shaderNoise->write(ssShader, _key);
 
 	if (g_cycleType <= G_CYC_2CYCLE)
-		m_shaderDither->write(ssShader);
+		m_shaderDither->write(ssShader, _key);
 
-	m_shaderWriteDepth->write(ssShader);
+	m_shaderWriteDepth->write(ssShader, _key);
 
-	m_shaderN64DepthCompare->write(ssShader);
+	m_shaderN64DepthCompare->write(ssShader, _key);
 
-	m_shaderN64DepthRender->write(ssShader);
+	m_shaderN64DepthRender->write(ssShader, _key);
 
 	const std::string strFragmentShader(std::move(ssShader.str()));
 
@@ -2186,8 +2195,8 @@ static
 GLuint _createVertexShader(ShaderPart * _header, ShaderPart * _body)
 {
 	std::stringstream ssShader;
-	_header->write(ssShader);
-	_body->write(ssShader);
+	_header->write(ssShader, CombinerKey(0,0, false));
+	_body->write(ssShader, CombinerKey(0,0, false));
 	const std::string strShader(std::move(ssShader.str()));
 	const GLchar * strShaderData = strShader.data();
 

@@ -12,6 +12,7 @@ class CombinerKey {
 			{
 				unsigned	bi_lerp0 : 1;
 				unsigned	bi_lerp1 : 1;
+				unsigned	enableAlphaTest : 1;
 			};
 
 			u64				mux;
@@ -41,8 +42,12 @@ public:
 	u64 getSecondaryParams() const { return m_secondaryFlags.mux; }
 
 	void setBiLerp0(unsigned int _bilerp0);
-
 	void setBiLerp1(unsigned int _bilerp1);
+	void setEnableAlphaTest(unsigned int _enableAlphaTest);
+
+	unsigned int getBiLerp0(void);
+	unsigned int getBiLerp1(void);
+	unsigned int getEnableAlphaTest(void);
 
 	void read(std::istream & _is);
 

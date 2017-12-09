@@ -483,7 +483,6 @@ class UAlphaTestInfo : public UniformGroup
 {
 public:
 	UAlphaTestInfo(GLuint _program) {
-		LocateUniform(uEnableAlphaTest);
 		LocateUniform(uAlphaCvgSel);
 		LocateUniform(uCvgXAlpha);
 		LocateUniform(uAlphaTestValue);
@@ -492,32 +491,23 @@ public:
 	void update(bool _force) override
 	{
 		if (gDP.otherMode.cycleType == G_CYC_FILL) {
-			uEnableAlphaTest.set(0, _force);
+			//Do nothing
 		}
 		else if (gDP.otherMode.cycleType == G_CYC_COPY) {
 			if (gDP.otherMode.alphaCompare & G_AC_THRESHOLD) {
-				uEnableAlphaTest.set(1, _force);
 				uAlphaCvgSel.set(0, _force);
 				uAlphaTestValue.set(0.5f, _force);
 			}
-			else {
-				uEnableAlphaTest.set(0, _force);
-			}
 		}
 		else if ((gDP.otherMode.alphaCompare & G_AC_THRESHOLD) != 0) {
-			uEnableAlphaTest.set(1, _force);
 			uAlphaTestValue.set(gDP.blendColor.a, _force);
 			uAlphaCvgSel.set(gDP.otherMode.alphaCvgSel, _force);
-		}
-		else {
-			uEnableAlphaTest.set(0, _force);
 		}
 
 		uCvgXAlpha.set(gDP.otherMode.cvgXAlpha, _force);
 	}
 
 private:
-	iUniform uEnableAlphaTest;
 	iUniform uAlphaCvgSel;
 	iUniform uCvgXAlpha;
 	fUniform uAlphaTestValue;

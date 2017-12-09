@@ -282,12 +282,43 @@ void CombinerInfo::update()
 //	}
 }
 
+void CombinerInfo::setSecondaryParams(CombinerKey& _key)
+{
+	//Bilinear filtering
+	_key.setBiLerp0(gDP.otherMode.bi_lerp0);
+	_key.setBiLerp1(gDP.otherMode.bi_lerp1);
+
+	//Alpha test
+	int enableAlphaTest = 0;
+
+	if (gDP.otherMode.cycleType == G_CYC_FILL) {
+		enableAlphaTest = 0;
+	}
+	else if (gDP.otherMode.cycleType == G_CYC_COPY) {
+		if (gDP.otherMode.alphaCompare & G_AC_THRESHOLD) {
+			enableAlphaTest = 1;
+		}
+		else {
+			enableAlphaTest = 0;
+		}
+	}
+	else if ((gDP.otherMode.alphaCompare & G_AC_THRESHOLD) != 0) {
+		enableAlphaTest = 1;
+	}
+	else {
+		enableAlphaTest = 0;
+	}
+
+	_key.setEnableAlphaTest(enableAlphaTest);
+}
+
 void CombinerInfo::setCombine(u64 _mux )
 {
+	//Generate key
 	CombinerKey key(_mux);
-	key.setBiLerp0(gDP.otherMode.bi_lerp0);
-	key.setBiLerp1(gDP.otherMode.bi_lerp1);
+	setSecondaryParams(key);
 
+	//Search for the key
 	if (m_pCurrent != nullptr && m_pCurrent->getKey() == key) {
 		m_bChanged = false;
 		return;

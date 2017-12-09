@@ -85,6 +85,26 @@ void CombinerKey::setBiLerp1(unsigned int _bilerp1)
 	m_secondaryFlags.bi_lerp1 = _bilerp1;
 }
 
+void CombinerKey::setEnableAlphaTest(unsigned int _enableAlphaTest)
+{
+	m_secondaryFlags.enableAlphaTest = _enableAlphaTest;
+}
+
+unsigned int CombinerKey::getBiLerp0(void)
+{
+	return m_secondaryFlags.bi_lerp0;
+}
+
+unsigned int CombinerKey::getBiLerp1(void)
+{
+	return m_secondaryFlags.bi_lerp1;
+}
+
+unsigned int CombinerKey::getEnableAlphaTest(void)
+{
+	return m_secondaryFlags.enableAlphaTest;
+}
+
 void CombinerKey::read(std::istream & _is) {
 	_is.read((char*)&m_key.mux, sizeof(m_key.mux));
 	_is.read((char*)&m_secondaryFlags.mux, sizeof(m_secondaryFlags.mux));

@@ -391,14 +391,14 @@ namespace glsl {
 			FragmentBody fragmentBody(_glinfo);
 
 			std::stringstream ssVertexShader;
-			_vertexHeader->write(ssVertexShader);
-			vertexBody.write(ssVertexShader);
+			_vertexHeader->write(ssVertexShader, CombinerKey(0,0,false));
+			vertexBody.write(ssVertexShader, CombinerKey(0,0,false));
 
 			std::stringstream ssFragmentShader;
-			_fragmentHeader->write(ssFragmentShader);
-			fragmentBody.write(ssFragmentShader);
+			_fragmentHeader->write(ssFragmentShader, CombinerKey(0,0,false));
+			fragmentBody.write(ssFragmentShader, CombinerKey(0,0,false));
 			if (_fragmentEnd != nullptr)
-				_fragmentEnd->write(ssFragmentShader);
+				_fragmentEnd->write(ssFragmentShader, CombinerKey(0,0,false));
 
 			m_program =
 				graphics::ObjectHandle(Utils::createRectShaderProgram(ssVertexShader.str().data(), ssFragmentShader.str().data()));
@@ -464,22 +464,22 @@ namespace glsl {
 		{
 			VertexShaderTexturedRect vertexBody(_glinfo);
 			std::stringstream ssVertexShader;
-			_vertexHeader->write(ssVertexShader);
-			vertexBody.write(ssVertexShader);
+			_vertexHeader->write(ssVertexShader, CombinerKey(0,0,false));
+			vertexBody.write(ssVertexShader, CombinerKey(0,0,false));
 
 			std::stringstream ssFragmentShader;
-			_fragmentHeader->write(ssFragmentShader);
+			_fragmentHeader->write(ssFragmentShader, CombinerKey(0,0,false));
 
 			if (config.texture.bilinearMode == BILINEAR_STANDARD) {
 				TexrectDrawerTexBilinearFilter filter(_glinfo);
-				filter.write(ssFragmentShader);
+				filter.write(ssFragmentShader, CombinerKey(0,0,false));
 			} else {
 				TexrectDrawerTex3PointFilter filter(_glinfo);
-				filter.write(ssFragmentShader);
+				filter.write(ssFragmentShader, CombinerKey(0,0,false));
 			}
 
 			TexrectDrawerFragmentDraw fragmentMain(_glinfo);
-			fragmentMain.write(ssFragmentShader);
+			fragmentMain.write(ssFragmentShader, CombinerKey(0,0,false));
 
 			m_program =
 				graphics::ObjectHandle(Utils::createRectShaderProgram(ssVertexShader.str().data(), ssFragmentShader.str().data()));
