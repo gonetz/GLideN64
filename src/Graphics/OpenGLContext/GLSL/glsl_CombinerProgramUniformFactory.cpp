@@ -185,54 +185,26 @@ class UFrameBufferInfo : public UniformGroup
 {
 public:
 	UFrameBufferInfo(GLuint _program) {
-		LocateUniform(uFbMonochrome);
-		LocateUniform(uFbFixedAlpha);
 		LocateUniform(uMSTexEnabled);
 	}
 
 	void update(bool _force) override
 	{
-		int nFbMonochromeMode0 = 0, nFbMonochromeMode1 = 0;
-		int nFbFixedAlpha0 = 0, nFbFixedAlpha1 = 0;
+
 		int nMSTex0Enabled = 0, nMSTex1Enabled = 0;
 		TextureCache & cache = textureCache();
 		if (cache.current[0] != nullptr && cache.current[0]->frameBufferTexture != CachedTexture::fbNone) {
-			if (cache.current[0]->size == G_IM_SIZ_8b) {
-				nFbMonochromeMode0 = 1;
-				if (gDP.otherMode.imageRead == 0)
-					nFbFixedAlpha0 = 1;
-			} else if (gSP.textureTile[0]->size == G_IM_SIZ_16b && gSP.textureTile[0]->format == G_IM_FMT_IA) {
-				nFbMonochromeMode0 = 2;
-			} else if ((config.generalEmulation.hacks & hack_ZeldaMonochrome) != 0 &&
-					   cache.current[0]->size == G_IM_SIZ_16b &&
-					   gSP.textureTile[0]->size == G_IM_SIZ_8b &&
-					   gSP.textureTile[0]->format == G_IM_FMT_CI) {
-				// Zelda monochrome effect
-				nFbMonochromeMode0 = 3;
-				nFbMonochromeMode1 = 3;
-			}
-
 			nMSTex0Enabled = cache.current[0]->frameBufferTexture == CachedTexture::fbMultiSample ? 1 : 0;
 		}
 		if (cache.current[1] != nullptr && cache.current[1]->frameBufferTexture != CachedTexture::fbNone) {
-			if (cache.current[1]->size == G_IM_SIZ_8b) {
-				nFbMonochromeMode1 = 1;
-				if (gDP.otherMode.imageRead == 0)
-					nFbFixedAlpha1 = 1;
-			}
-			else if (gSP.textureTile[1]->size == G_IM_SIZ_16b && gSP.textureTile[1]->format == G_IM_FMT_IA)
-				nFbMonochromeMode1 = 2;
 			nMSTex1Enabled = cache.current[1]->frameBufferTexture == CachedTexture::fbMultiSample ? 1 : 0;
 		}
-		uFbMonochrome.set(nFbMonochromeMode0, nFbMonochromeMode1, _force);
-		uFbFixedAlpha.set(nFbFixedAlpha0, nFbFixedAlpha1, _force);
+
 		uMSTexEnabled.set(nMSTex0Enabled, nMSTex1Enabled, _force);
 		gDP.changed &= ~CHANGED_FB_TEXTURE;
 	}
 
 private:
-	iv2Uniform uFbMonochrome;
-	iv2Uniform uFbFixedAlpha;
 	iv2Uniform uMSTexEnabled;
 };
 

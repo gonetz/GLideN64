@@ -125,6 +125,26 @@ void CombinerKey::setTextureFilter(unsigned int _textureFilter)
 	m_secondaryFlags.textureFilter = _textureFilter;
 }
 
+void CombinerKey::setFbMonochromeMode0(unsigned int _fbMonochromeMode0)
+{
+	m_secondaryFlags.fbMonochromeMode0 = _fbMonochromeMode0;
+}
+
+void CombinerKey::setFbMonochromeMode1(unsigned int _fbMonochromeMode1)
+{
+	m_secondaryFlags.fbMonochromeMode1 = _fbMonochromeMode1;
+}
+
+void CombinerKey::setFbFixedAlpha0(unsigned int _fbFixedAlpha0)
+{
+	m_secondaryFlags.fbFixedAlpha0 = _fbFixedAlpha0;
+}
+
+void CombinerKey::setFbFixedAlpha1(unsigned int _fbFixedAlpha1)
+{
+	m_secondaryFlags.fbFixedAlpha1 = _fbFixedAlpha1;
+}
+
 unsigned int CombinerKey::getBiLerp0(void) const
 {
 	return m_secondaryFlags.bi_lerp0;
@@ -173,6 +193,26 @@ unsigned int CombinerKey::getRenderTarget(void) const
 unsigned int CombinerKey::getTextureFilter(void) const
 {
 	return m_secondaryFlags.textureFilter;
+}
+
+unsigned int CombinerKey::getFbMonochromeMode0(void) const
+{
+	return m_secondaryFlags.fbMonochromeMode0;
+}
+
+unsigned int CombinerKey::getFbMonochromeMode1(void) const
+{
+	return m_secondaryFlags.fbMonochromeMode1;
+}
+
+unsigned int CombinerKey::getFbFixedAlpha0(void) const
+{
+	return m_secondaryFlags.fbFixedAlpha0;
+}
+
+unsigned int CombinerKey::getFbFixedAlpha1(void) const
+{
+	return m_secondaryFlags.fbFixedAlpha1;
 }
 
 void CombinerKey::read(std::istream & _is) {

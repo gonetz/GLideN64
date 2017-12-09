@@ -736,8 +736,6 @@ public:
 			"uniform lowp float uPrimLod;	\n"
 			"uniform lowp float uK4;		\n"
 			"uniform lowp float uK5;		\n"
-			"uniform lowp ivec2 uFbMonochrome;		\n"
-			"uniform lowp ivec2 uFbFixedAlpha;		\n"
 			"uniform lowp float uAlphaTestValue;	\n"
 			"uniform lowp int uDepthSource;			\n"
 			"uniform highp float uPrimDepth;		\n"
@@ -805,8 +803,6 @@ public:
 			"uniform lowp float uPrimLod;	\n"
 			"uniform lowp float uK4;		\n"
 			"uniform lowp float uK5;		\n"
-			"uniform lowp ivec2 uFbMonochrome;		\n"
-			"uniform lowp ivec2 uFbFixedAlpha;		\n"
 			"uniform lowp float uAlphaTestValue;	\n"
 			"uniform lowp int uDepthSource;			\n"
 			"uniform highp float uPrimDepth;		\n"
@@ -890,19 +886,6 @@ public:
 		m_part =
 			"mediump float mipmap(out lowp vec4 readtex0, out lowp vec4 readtex1);\n";
 		;
-	}
-};
-
-class ShaderFragmentHeaderReadMSTex : public ShaderPart
-{
-public:
-	ShaderFragmentHeaderReadMSTex(const opengl::GLInfo & _glinfo)
-	{
-		if (!_glinfo.isGLES2 && config.video.multisampling > 0) {
-			m_part =
-				"lowp vec4 readTexMS(in lowp sampler2DMS mstex, in mediump vec2 texCoord, in lowp int fbMonochrome, in lowp int fbFixedAlpha);\n";
-			;
-		}
 	}
 };
 
@@ -1009,38 +992,12 @@ public:
 					"}																												\n"
 					;
 			}
-			shaderPart +=
-				"#define READ_TEX(name, tex, texCoord, fbMonochrome, fbFixedAlpha)	\\\n"
-				"  {																\\\n"
-				"  if (fbMonochrome == 3) {											\\\n"
-				"    mediump ivec2 coord = ivec2(gl_FragCoord.xy);					\\\n"
-				"    name = texelFetch(tex, coord, 0);								\\\n"
-				"  } else {															\\\n";
-
-			if (_key.getTextureFilter() == 0) {
-				shaderPart += "  name = texture(tex, texCoord);	\\\n";
-			} else {
-				shaderPart += "  TEX_FILTER(name, tex, texCoord);	\\\n";
-			}
-
-			shaderPart +=
-				"  }																\\\n"
-				"  if (fbMonochrome == 1) name = vec4(name.r);						\\\n"
-				"  else if (fbMonochrome == 2) 										\\\n"
-				"    name.rgb = vec3(dot(vec3(0.2126, 0.7152, 0.0722), name.rgb));	\\\n"
-				"  else if (fbMonochrome == 3) { 									\\\n"
-				"    name.rgb = vec3(dot(vec3(0.2126, 0.7152, 0.0722), name.rgb));	\\\n"
-				"    name.a = 0.0;													\\\n"
-				"  }																\\\n"
-				"  if (fbFixedAlpha == 1) name.a = 0.825;							\\\n"
-				"  }																\n"
-				;
 		} else {
 			shaderPart =
 				"uniform lowp ivec2 uTextureFormat;									\n"
 				"uniform lowp ivec2 uTextureConvert;								\n"
 				"uniform mediump ivec4 uConvertParams;								\n"
-				"lowp vec4 readTex(in sampler2D tex, in mediump vec2 texCoord, in lowp int fbMonochrome, in lowp int fbFixedAlpha);	\n"
+				"lowp vec4 TextureFilter(in sampler2D tex, in mediump vec2 texCoord); \n"
 				"lowp vec4 YUV_Convert(in sampler2D tex, in mediump vec2 texCoord, in lowp int convert, in lowp int format, in lowp vec4 prev);	\n"
 				;
 		}
@@ -1058,29 +1015,9 @@ public:
 	ShaderFragmentHeaderReadTexCopyMode (const opengl::GLInfo & _glinfo)
 	{
 		if (!_glinfo.isGLES2) {
-			m_part =
-				"#define READ_TEX(name, tex, texCoord, fbMonochrome, fbFixedAlpha)	\\\n"
-				"  {																\\\n"
-				"  if (fbMonochrome == 3) {											\\\n"
-				"    mediump ivec2 coord = ivec2(gl_FragCoord.xy);					\\\n"
-				"    name = texelFetch(tex, coord, 0);								\\\n"
-				"  } else {															\\\n"
-				"    name = texture(tex, texCoord);									\\\n"
-				"  }																\\\n"
-				"  if (fbMonochrome == 1) name = vec4(name.r);						\\\n"
-				"  else if (fbMonochrome == 2) 										\\\n"
-				"    name.rgb = vec3(dot(vec3(0.2126, 0.7152, 0.0722), name.rgb));	\\\n"
-				"  else if (fbMonochrome == 3) { 									\\\n"
-				"    name.rgb = vec3(dot(vec3(0.2126, 0.7152, 0.0722), name.rgb));	\\\n"
-				"    name.a = 0.0;													\\\n"
-				"  }																\\\n"
-				"  if (fbFixedAlpha == 1) name.a = 0.825;							\\\n"
-				"  }																\n"
-				;
-		} else {
-			m_part =
-				"lowp vec4 readTex(in sampler2D tex, in mediump vec2 texCoord, in lowp int fbMonochrome, in lowp int fbFixedAlpha);	\n"
-			;
+			if (config.video.multisampling > 0) {
+				m_part += "lowp vec4 sampleMS(in lowp sampler2DMS mstex, in mediump ivec2 ipos);		\n";
+			}
 		}
 	}
 };
@@ -1159,30 +1096,107 @@ public:
 class ShaderFragmentReadTexCopyMode : public ShaderPart
 {
 public:
-	ShaderFragmentReadTexCopyMode(const opengl::GLInfo & _glinfo)
+	ShaderFragmentReadTexCopyMode(const opengl::GLInfo & _glinfo) : m_glinfo(_glinfo)
 	{
-		if (_glinfo.isGLES2) {
-			m_part =
-				"  nCurrentTile = 0; \n"
-				"  lowp vec4 readtex0;																		\n"
-				"  readtex0 = readTex(uTex0, vTexCoord0, uFbMonochrome[0], uFbFixedAlpha[0]);				\n"
-				;
+
+	}
+
+	std::string getReadTex( CombinerKey _key) const {
+		std::string shaderPart;
+
+		if (_key.getFbMonochromeMode0() == 3) {
+			shaderPart +=
+				"  mediump ivec2 coord = ivec2(gl_FragCoord.xy);					\n"
+				"  readtex0 = texelFetch(uTex0, coord, 0);								\n";
 		} else {
+			shaderPart += "  readtex0 = texture(uTex0, vTexCoord0);									\n";
+		}
+
+		if (_key.getFbMonochromeMode0() == 1) {
+			shaderPart += "  readtex0 = vec4(readtex0.r);						\n";
+		} else if (_key.getFbMonochromeMode0() == 2) {
+			shaderPart += "  readtex0.rgb = vec3(dot(vec3(0.2126, 0.7152, 0.0722), readtex0.rgb));	\n";
+		} else if (_key.getFbMonochromeMode0() == 3) {
+			shaderPart +=
+				"  readtex0.rgb = vec3(dot(vec3(0.2126, 0.7152, 0.0722), readtex0.rgb));	\n"
+				"  readtex0.a = 0.0;													\n";
+		}
+
+		if (_key.getFbFixedAlpha0() == 1) {
+			shaderPart += "  readtex0.a = 0.825;						\n";
+		}
+		return shaderPart;
+	}
+
+	std::string getReadTexMs(CombinerKey _key) const {
+		std::string shaderPart;
+
+		if (_key.getFbMonochromeMode0() == 3) {
+			shaderPart += "  mediump ivec2 itexCoord = ivec2(gl_FragCoord.xy);									\n";
+		} else {
+			shaderPart +=
+				"    mediump vec2 msTexSize = vec2(textureSize(uMSTex0));						\n"
+				"    mediump ivec2 itexCoord = ivec2(msTexSize * vTexCoord0);								\n";
+		}
+
+		shaderPart += "  readtex0 = sampleMS(uMSTex0, itexCoord);							\n";
+
+		if (_key.getFbMonochromeMode0() == 1) {
+			shaderPart += "  readtex0 = vec4(readtex0.r);						\n";
+		} else if (_key.getFbMonochromeMode0() == 2) {
+			shaderPart += "  readtex0.rgb = vec3(dot(vec3(0.2126, 0.7152, 0.0722), readtex0.rgb));	\n";
+		} else if (_key.getFbMonochromeMode0() == 3) {
+			shaderPart +=
+				"  readtex0.rgb = vec3(dot(vec3(0.2126, 0.7152, 0.0722), readtex0.rgb));	\n"
+				"  readtex0.a = 0.0;														\n";
+		}
+
+		if (_key.getFbFixedAlpha0() == 1) {
+			shaderPart += "  readtex0.a = 0.825;						\n";
+		}
+
+		return shaderPart;
+	}
+
+	void write(std::stringstream & shader, CombinerKey _key) const override
+	{
+		std::string shaderPart;
+
+		if (m_glinfo.isGLES2) {
+			shaderPart += "  nCurrentTile = 0; \n";
+			shaderPart += "  lowp vec4 readtex0 = texture2D(uTex0, vTexCoord0);							\n";
+
+			if (_key.getFbMonochromeMode0() == 1) {
+				shaderPart += "  readtex0 = vec4(readtex0.r);						\n";
+			} else if (_key.getFbMonochromeMode0() == 2) {
+				shaderPart += "  readtex0.rgb = vec3(dot(vec3(0.2126, 0.7152, 0.0722), readtex0.rgb));	\n";
+			}
+
+			if (_key.getFbFixedAlpha0() == 1) {
+				shaderPart += "  readtex0.a = 0.825;								\n";
+			}
+
+		} else {
+
 			if (config.video.multisampling > 0) {
-				m_part =
+				shaderPart +=
 					"  lowp vec4 readtex0;																	\n"
-					"  if (uMSTexEnabled[0] == 0) {															\n"
-					"      READ_TEX(readtex0, uTex0, vTexCoord0, uFbMonochrome[0], uFbFixedAlpha[0])		\n"
-					"  } else readtex0 = readTexMS(uMSTex0, vTexCoord0, uFbMonochrome[0], uFbFixedAlpha[0]);\n"
-					;
+					"  if (uMSTexEnabled[0] == 0) {															\n";
+				shaderPart += getReadTex(_key);
+				shaderPart +="  } else {                                                       \n";
+				shaderPart += getReadTexMs(_key);
+				shaderPart += "  }  \n";
+						;
 			} else {
-				m_part =
-					"  lowp vec4 readtex0;																	\n"
-					"  READ_TEX(readtex0, uTex0, vTexCoord0, uFbMonochrome[0], uFbFixedAlpha[0])			\n"
-					;
+				shaderPart += "  lowp vec4 readtex0;																	\n";
+				shaderPart += getReadTex(_key);
 			}
 		}
+
+		shader << shaderPart;
 	}
+
+	const opengl::GLInfo & m_glinfo;
 };
 
 class ShaderFragmentReadTex0 : public ShaderPart
@@ -1193,6 +1207,93 @@ public:
 
 	}
 
+	std::string getReadTexGles2(CombinerKey _key) const
+	{
+		std::string shaderPart;
+
+		if (_key.getTextureFilter() == 0) {
+			shaderPart += "  lowp vec4 readtex0 = texture2D(uTex0, vTexCoord0);		\n";
+		} else {
+			shaderPart += "  lowp vec4 readtex0 = TextureFilter(uTex0, vTexCoord0);							\n";
+		}
+
+		if (_key.getFbMonochromeMode0() == 1) {
+			shaderPart += "  readtex0 = vec4(readtex0.r);						\n";
+		} else if (_key.getFbMonochromeMode0() == 2) {
+			shaderPart += "  readtex0.rgb = vec3(dot(vec3(0.2126, 0.7152, 0.0722), readtex0.rgb));	\n";
+		}
+
+		if(_key.getFbFixedAlpha0() == 1) {
+			shaderPart += "  readtex0.a = 0.825;								\n";
+		}
+
+		return shaderPart;
+	}
+
+	std::string getReadTex(CombinerKey _key) const
+	{
+		std::string shaderPart;
+
+		if (_key.getFbMonochromeMode0() == 3) {
+			shaderPart +=
+				"  mediump ivec2 coord = ivec2(gl_FragCoord.xy);					\n"
+				"  readtex0 = texelFetch(uTex0, coord, 0);								\n";
+		} else {
+			if (_key.getTextureFilter() == 0) {
+				shaderPart += "  readtex0 = texture(uTex0, vTexCoord0);	\n";
+			} else {
+				shaderPart += "  TEX_FILTER(readtex0, uTex0, vTexCoord0);	\n";
+			}
+		}
+
+		if (_key.getFbMonochromeMode0() == 1) {
+			shaderPart += "  readtex0 = vec4(readtex0.r);						\n";
+		} else if (_key.getFbMonochromeMode0() == 2) {
+			shaderPart += "  readtex0.rgb = vec3(dot(vec3(0.2126, 0.7152, 0.0722), readtex0.rgb));	\n";
+		} else if (_key.getFbMonochromeMode0() == 3) {
+			shaderPart +=
+				"  readtex0.rgb = vec3(dot(vec3(0.2126, 0.7152, 0.0722), readtex0.rgb));	\n"
+				"  readtex0.a = 0.0;													\n";
+		}
+
+		if (_key.getFbFixedAlpha0() == 1) {
+			shaderPart += "  readtex0.a = 0.825;							\n";
+		}
+
+		return shaderPart;
+	}
+
+	std::string getReadTexMs(CombinerKey _key) const
+	{
+		std::string shaderPart;
+
+		if (_key.getFbMonochromeMode0() == 3) {
+			shaderPart += "  mediump ivec2 itexCoord = ivec2(gl_FragCoord.xy);									\n";
+		} else {
+			shaderPart +=
+				"  mediump vec2 msTexSize = vec2(textureSize(uMSTex0));						\n"
+				"  mediump ivec2 itexCoord = ivec2(msTexSize * vTexCoord0);								\n";
+		}
+
+		shaderPart += "  readtex0 = sampleMS(uMSTex0, itexCoord);							\n";
+
+		if (_key.getFbMonochromeMode0() == 1) {
+			shaderPart += "  readtex0 = vec4(readtex0.r);						\n";
+		} else if (_key.getFbMonochromeMode0() == 2) {
+			shaderPart += "  readtex0.rgb = vec3(dot(vec3(0.2126, 0.7152, 0.0722), readtex0.rgb));	\n";
+		} else if (_key.getFbMonochromeMode0() == 3) {
+			shaderPart +=
+				"  readtex0.rgb = vec3(dot(vec3(0.2126, 0.7152, 0.0722), readtex0.rgb));	\n"
+				"  readtex0.a = 0.0;														\n";
+		}
+
+		if (_key.getFbFixedAlpha0() == 1) {
+			shaderPart += "  readtex0.a = 0.825;							\n";
+		}
+
+		return shaderPart;
+	}
+
 	void write(std::stringstream & shader, CombinerKey _key) const override
 	{
 		std::string shaderPart;
@@ -1200,7 +1301,7 @@ public:
 		if (m_glinfo.isGLES2) {
 			shaderPart = "  nCurrentTile = 0; \n";
 			if (_key.getBiLerp0() != 0) {
-				shaderPart += "  lowp vec4 readtex0 = readTex(uTex0, vTexCoord0, uFbMonochrome[0], uFbFixedAlpha[0]);		\n";
+				shaderPart += getReadTexGles2(_key);
 			}
 			else {
 				shaderPart += "  lowp vec4 readtex0 = YUV_Convert(uTex0, vTexCoord0, uTextureConvert[0], uTextureFormat[0], readtex0);	\n";
@@ -1214,17 +1315,19 @@ public:
 					"  if (uMSTexEnabled[0] == 0) {															\n";
 
 				if (_key.getBiLerp0() != 0) {
-					shaderPart += "    READ_TEX(readtex0, uTex0, vTexCoord0, uFbMonochrome[0], uFbFixedAlpha[0])		\n";
+					shaderPart += getReadTex(_key);
 				}
 				else {
 					shaderPart += "    YUVCONVERT_TEX(readtex0, uTex0, vTexCoord0, uTextureConvert[0], uTextureFormat[0], readtex0)	\n";
 				}
-				shaderPart += "  } else readtex0 = readTexMS(uMSTex0, vTexCoord0, uFbMonochrome[0], uFbFixedAlpha[0]);\n";
+				shaderPart += "  } else { 																	\n";
+				shaderPart += getReadTexMs(_key);
+				shaderPart += "  }  \n";
 			}
 			else {
 				shaderPart = "  lowp vec4 readtex0;																	\n";
 				if (_key.getBiLerp0() != 0) {
-					shaderPart += "  READ_TEX(readtex0, uTex0, vTexCoord0, uFbMonochrome[0], uFbFixedAlpha[0])		\n";
+					shaderPart += getReadTex(_key);
 				}
 				else {
 					shaderPart += "  YUVCONVERT_TEX(readtex0, uTex0, vTexCoord0, uTextureConvert[0], uTextureFormat[0], readtex0)\n";
@@ -1246,6 +1349,92 @@ public:
 
 	}
 
+	std::string getReadTexGles2(CombinerKey _key) const
+	{
+		std::string shaderPart;
+
+		if (_key.getTextureFilter() == 0) {
+			shaderPart += "  lowp vec4 readtex1 = texture2D(uTex1, vTexCoord1);		\n";
+		} else {
+			shaderPart += "  lowp vec4 readtex1 = TextureFilter(uTex1, vTexCoord1);							\n";
+		}
+
+		if (_key.getFbMonochromeMode1() == 1) {
+			shaderPart += "  readtex1 = vec4(readtex1.r);						\n";
+		} else if (_key.getFbMonochromeMode1() == 2) {
+			shaderPart += "  readtex1.rgb = vec3(dot(vec3(0.2126, 0.7152, 0.0722), readtex1.rgb));	\n";
+		}
+
+		if(_key.getFbFixedAlpha1() == 1) {
+			shaderPart += "  readtex1.a = 0.825;								\n";
+		}
+
+		return shaderPart;
+	}
+
+	std::string getReadTex(CombinerKey _key) const
+	{
+		std::string shaderPart;
+
+		if (_key.getFbMonochromeMode1() == 3) {
+			shaderPart +=
+				"  mediump ivec2 coord = ivec2(gl_FragCoord.xy);					\n"
+				"  readtex1 = texelFetch(uTex1, coord, 0);								\n";
+		} else {
+			if (_key.getTextureFilter() == 0) {
+				shaderPart += "  readtex1 = texture(uTex1, vTexCoord1);	\n";
+			} else {
+				shaderPart += "  TEX_FILTER(readtex1, uTex1, vTexCoord1);	\n";
+			}
+		}
+
+		if (_key.getFbMonochromeMode1() == 1) {
+			shaderPart += "  readtex1 = vec4(readtex1.r);						\n";
+		} else if (_key.getFbMonochromeMode1() == 2) {
+			shaderPart += "    readtex1.rgb = vec3(dot(vec3(0.2126, 0.7152, 0.0722), readtex1.rgb));	\n";
+		} else if (_key.getFbMonochromeMode1() == 3) {
+			shaderPart +=
+				"    readtex1.rgb = vec3(dot(vec3(0.2126, 0.7152, 0.0722), readtex1.rgb));	\n"
+				"    readtex1.a = 0.0;													\n";
+		}
+
+		if (_key.getFbFixedAlpha1() == 1) {
+			shaderPart += "  readtex1.a = 0.825;							\n";
+		}
+
+		return shaderPart;
+	}
+
+	std::string getReadTexMs(CombinerKey _key) const
+	{
+		std::string shaderPart;
+
+		if (_key.getFbMonochromeMode1() == 3) {
+			shaderPart += "  mediump ivec2 itexCoord = ivec2(gl_FragCoord.xy);									\n";
+		} else {
+			shaderPart +=
+				"  mediump vec2 msTexSize = vec2(textureSize(uMSTex1));						\n"
+				"  mediump ivec2 itexCoord = ivec2(msTexSize * vTexCoord1);								\n";
+		}
+
+		shaderPart += "  readtex1 = sampleMS(uMSTex1, itexCoord);							\n";
+
+		if (_key.getFbMonochromeMode1() == 1) {
+			shaderPart += "  readtex1 = vec4(readtex1.r);						\n";
+		} else if (_key.getFbMonochromeMode1() == 2) {
+			shaderPart += "  readtex1.rgb = vec3(dot(vec3(0.2126, 0.7152, 0.0722), readtex1.rgb));	\n";
+		} else if (_key.getFbMonochromeMode1() == 3) {
+			shaderPart += "  readtex1.rgb = vec3(dot(vec3(0.2126, 0.7152, 0.0722), readtex1.rgb));	\n"
+					"  readtex1.a = 0.0;														\n";
+		}
+
+		if (_key.getFbFixedAlpha1() == 1) {
+			shaderPart += "  readtex1.a = 0.825;							\n";
+		}
+
+		return shaderPart;
+	}
+
 	void write(std::stringstream & shader, CombinerKey _key) const override
 	{
 		std::string shaderPart;
@@ -1254,7 +1443,7 @@ public:
 			shaderPart = "  nCurrentTile = 1; \n";
 
 			if (_key.getBiLerp1() != 0) {
-				shaderPart += "  lowp vec4 readtex1 = readTex(uTex1, vTexCoord1, uFbMonochrome[1], uFbFixedAlpha[1]);		\n";
+				shaderPart += getReadTexGles2(_key);
 			}
 			else {
 				shaderPart += "  lowp vec4 readtex1 = YUV_Convert(uTex1, vTexCoord1, uTextureConvert[1], uTextureFormat[1], readtex0);	\n";
@@ -1268,19 +1457,22 @@ public:
 					"  if (uMSTexEnabled[1] == 0) {															\n";
 
 				if (_key.getBiLerp1() != 0) {
-					shaderPart += "    READ_TEX(readtex1, uTex1, vTexCoord1, uFbMonochrome[1], uFbFixedAlpha[1])		\n";
+					shaderPart += getReadTex(_key);
+
 				}
 				else {
 					shaderPart += "    YUVCONVERT_TEX(readtex1, uTex1, vTexCoord1, uTextureConvert[1], uTextureFormat[1], readtex0)	\n";
 				}
 
-				shaderPart += "  } else readtex1 = readTexMS(uMSTex1, vTexCoord1, uFbMonochrome[1], uFbFixedAlpha[1]);\n";
+				shaderPart += "  } else { 																	\n";
+				shaderPart += getReadTexMs(_key);
+				shaderPart += "  }  \n";
 			}
 			else {
 				shaderPart = "  lowp vec4 readtex1; \n";
 
 				if (_key.getBiLerp1() != 0) {
-					shaderPart += "  READ_TEX(readtex1, uTex1, vTexCoord1, uFbMonochrome[1], uFbFixedAlpha[1])		\n";
+					shaderPart += getReadTex(_key);
 				}
 				else {
 					shaderPart += "  YUVCONVERT_TEX(readtex1, uTex1, vTexCoord1, uTextureConvert[1], uTextureFormat[1], readtex0)\n";
@@ -1742,25 +1934,7 @@ public:
 					"}																			\n"
 					;
 			}
-			shaderPart +=
-				"lowp vec4 readTex(in sampler2D tex, in mediump vec2 texCoord, in lowp int fbMonochrome, in lowp int fbFixedAlpha)	\n"
-				"{																			\n"
-				"  lowp vec4 texColor;														\n";
 
-			if (_key.getTextureFilter() == 0) {
-				shaderPart += "  texColor = texture2D(tex, texCoord);		\n";
-			} else {
-				shaderPart += "  texColor = TextureFilter(tex, texCoord);							\n";
-			}
-
-			shaderPart +=
-				"  if (fbMonochrome == 1) texColor = vec4(texColor.r);						\n"
-				"  else if (fbMonochrome == 2) 												\n"
-				"    texColor.rgb = vec3(dot(vec3(0.2126, 0.7152, 0.0722), texColor.rgb));	\n"
-				"  if (fbFixedAlpha == 1) texColor.a = 0.825;								\n"
-				"  return texColor;															\n"
-				"}																			\n"
-				;
 		} else {
 			if (config.video.multisampling > 0) {
 				shaderPart =
@@ -1773,26 +1947,6 @@ public:
 					"  return texel / float(uMSAASamples);										\n"
 					"}																			\n"
 					"																			\n"
-					"lowp vec4 readTexMS(in lowp sampler2DMS mstex, in mediump vec2 texCoord, in lowp int fbMonochrome, in lowp int fbFixedAlpha)	\n"
-					"{																			\n"
-					"  mediump ivec2 itexCoord;													\n"
-					"  if (fbMonochrome == 3) {													\n"
-					"    itexCoord = ivec2(gl_FragCoord.xy);									\n"
-					"  } else {																	\n"
-					"    mediump vec2 msTexSize = vec2(textureSize(mstex));						\n"
-					"    itexCoord = ivec2(msTexSize * texCoord);								\n"
-					"  }																		\n"
-					"  lowp vec4 texColor = sampleMS(mstex, itexCoord);							\n"
-					"  if (fbMonochrome == 1) texColor = vec4(texColor.r);						\n"
-					"  else if (fbMonochrome == 2) 												\n"
-					"    texColor.rgb = vec3(dot(vec3(0.2126, 0.7152, 0.0722), texColor.rgb));	\n"
-					"  else if (fbMonochrome == 3) { 											\n"
-					"    texColor.rgb = vec3(dot(vec3(0.2126, 0.7152, 0.0722), texColor.rgb));	\n"
-					"    texColor.a = 0.0;														\n"
-					"  }																		\n"
-					"  if (fbFixedAlpha == 1) texColor.a = 0.825;								\n"
-					"  return texColor;															\n"
-					"}																			\n"
 					;
 			}
 		}
@@ -1808,19 +1962,7 @@ class ShaderReadtexCopyMode : public ShaderPart
 public:
 	ShaderReadtexCopyMode(const opengl::GLInfo & _glinfo)
 	{
-		if (_glinfo.isGLES2) {
-			m_part =
-					"lowp vec4 readTex(in sampler2D tex, in mediump vec2 texCoord, in lowp int fbMonochrome, in lowp int fbFixedAlpha)	\n"
-					"{																			\n"
-					"  lowp vec4 texColor = texture2D(tex, texCoord);							\n"
-					"  if (fbMonochrome == 1) texColor = vec4(texColor.r);						\n"
-					"  else if (fbMonochrome == 2) 												\n"
-					"    texColor.rgb = vec3(dot(vec3(0.2126, 0.7152, 0.0722), texColor.rgb));	\n"
-					"  if (fbFixedAlpha == 1) texColor.a = 0.825;								\n"
-					"  return texColor;															\n"
-					"}																			\n"
-				;
-		} else {
+		if (!_glinfo.isGLES2) {
 			if (config.video.multisampling > 0) {
 				m_part =
 					"uniform lowp int uMSAASamples;												\n"
@@ -1831,28 +1973,8 @@ public:
 					"    texel += texelFetch(mstex, ipos, i);									\n"
 					"  return texel / float(uMSAASamples);										\n"
 					"}																			\n"
-					"																			\n"
-					"lowp vec4 readTexMS(in lowp sampler2DMS mstex, in mediump vec2 texCoord, in lowp int fbMonochrome, in lowp int fbFixedAlpha)	\n"
-					"{																			\n"
-					"  mediump ivec2 itexCoord;													\n"
-					"  if (fbMonochrome == 3) {													\n"
-					"    itexCoord = ivec2(gl_FragCoord.xy);									\n"
-					"  } else {																	\n"
-					"    mediump vec2 msTexSize = vec2(textureSize(mstex));						\n"
-					"    itexCoord = ivec2(msTexSize * texCoord);								\n"
-					"  }																		\n"
-					"  lowp vec4 texColor = sampleMS(mstex, itexCoord);							\n"
-					"  if (fbMonochrome == 1) texColor = vec4(texColor.r);						\n"
-					"  else if (fbMonochrome == 2) 												\n"
-					"    texColor.rgb = vec3(dot(vec3(0.2126, 0.7152, 0.0722), texColor.rgb));	\n"
-					"  else if (fbMonochrome == 3) { 											\n"
-					"    texColor.rgb = vec3(dot(vec3(0.2126, 0.7152, 0.0722), texColor.rgb));	\n"
-					"    texColor.a = 0.0;														\n"
-					"  }																		\n"
-					"  if (fbFixedAlpha == 1) texColor.a = 0.825;								\n"
-					"  return texColor;															\n"
-					"}																			\n"
-				;
+					"																			\n";
+
 			}
 		}
 	}
@@ -2116,7 +2238,6 @@ graphics::CombinerProgram * CombinerProgramBuilder::buildCombinerProgram(Combine
 		m_fragmentHeaderNoise->write(ssShader, _key);
 		m_fragmentHeaderWriteDepth->write(ssShader, _key);
 		m_fragmentHeaderDepthCompare->write(ssShader, _key);
-		m_fragmentHeaderReadMSTex->write(ssShader, _key);
 		if (bUseLod)
 			m_fragmentHeaderMipMap->write(ssShader, _key);
 		else if (g_cycleType < G_CYC_COPY)
@@ -2292,7 +2413,6 @@ CombinerProgramBuilder::CombinerProgramBuilder(const opengl::GLInfo & _glinfo, o
 , m_fragmentHeaderWriteDepth(new ShaderFragmentHeaderWriteDepth(_glinfo))
 , m_fragmentHeaderCalcLight(new ShaderFragmentHeaderCalcLight(_glinfo))
 , m_fragmentHeaderMipMap(new ShaderFragmentHeaderMipMap(_glinfo))
-, m_fragmentHeaderReadMSTex(new ShaderFragmentHeaderReadMSTex(_glinfo))
 , m_fragmentHeaderDither(new ShaderFragmentHeaderDither(_glinfo))
 , m_fragmentHeaderDepthCompare(new ShaderFragmentHeaderDepthCompare(_glinfo))
 , m_fragmentHeaderReadTex(new ShaderFragmentHeaderReadTex(_glinfo))

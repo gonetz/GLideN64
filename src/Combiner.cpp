@@ -11,6 +11,7 @@
 #include "PluginAPI.h"
 #include "RSP.h"
 #include "Graphics/Context.h"
+#include "Textures.h"
 
 using namespace graphics;
 
@@ -331,6 +332,35 @@ void CombinerInfo::setSecondaryParams(CombinerKey& _key)
 	if ((gSP.objRendermode&G_OBJRM_BILERP) != 0)
 		textureFilter |= 2;
 	_key.setTextureFilter(textureFilter);
+
+	//FB monochrome mode and fixed alpha
+	TextureCache & cache = textureCache();
+	if (cache.current[0] != nullptr && cache.current[0]->frameBufferTexture != CachedTexture::fbNone) {
+		if (cache.current[0]->size == G_IM_SIZ_8b) {
+			_key.setFbMonochromeMode0(1);
+
+			if (gDP.otherMode.imageRead == 0)
+				_key.setFbFixedAlpha0(1);
+		} else if (gSP.textureTile[0]->size == G_IM_SIZ_16b && gSP.textureTile[0]->format == G_IM_FMT_IA) {
+			_key.setFbMonochromeMode0(2);
+		} else if ((config.generalEmulation.hacks & hack_ZeldaMonochrome) != 0 &&
+				   cache.current[0]->size == G_IM_SIZ_16b &&
+				   gSP.textureTile[0]->size == G_IM_SIZ_8b &&
+				   gSP.textureTile[0]->format == G_IM_FMT_CI) {
+			// Zelda monochrome effect
+			_key.setFbMonochromeMode0(3);
+			_key.setFbMonochromeMode1(3);
+		}
+	}
+	if (cache.current[1] != nullptr && cache.current[1]->frameBufferTexture != CachedTexture::fbNone) {
+		if (cache.current[1]->size == G_IM_SIZ_8b) {
+			_key.setFbMonochromeMode1(1);
+			if (gDP.otherMode.imageRead == 0)
+				_key.setFbFixedAlpha1(1);
+		}
+		else if (gSP.textureTile[1]->size == G_IM_SIZ_16b && gSP.textureTile[1]->format == G_IM_FMT_IA)
+			_key.setFbMonochromeMode1(2);
+	}
 }
 
 void CombinerInfo::setCombine(u64 _mux )
