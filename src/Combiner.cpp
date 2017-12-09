@@ -310,7 +310,18 @@ void CombinerInfo::setSecondaryParams(CombinerKey& _key)
 	}
 	_key.setCvgXAlpha(gDP.otherMode.cvgXAlpha);
 
+	//Alpha compare
 	_key.setAlphaCompareMode(gDP.otherMode.cycleType < G_CYC_COPY ? gDP.otherMode.alphaCompare : 0);
+
+	//Dither modes
+	if (gDP.otherMode.cycleType < G_CYC_COPY) {
+		_key.setAlphaDither(gDP.otherMode.alphaDither);
+		_key.setColorDither(gDP.otherMode.colorDither);
+	}
+	else {
+		_key.setAlphaDither(0);
+		_key.setColorDither(0);
+	}
 }
 
 void CombinerInfo::setCombine(u64 _mux )

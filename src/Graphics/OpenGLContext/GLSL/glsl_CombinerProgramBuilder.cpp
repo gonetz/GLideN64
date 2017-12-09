@@ -693,15 +693,30 @@ public:
 class ShaderCallDither : public ShaderPart
 {
 public:
-	ShaderCallDither(const opengl::GLInfo & _glinfo)
+	ShaderCallDither(const opengl::GLInfo & _glinfo) : m_glinfo(_glinfo)
 	{
-		if (!_glinfo.isGLES2 && config.generalEmulation.enableNoise != 0) {
-			m_part =
-				"  if (uColorDitherMode == 2) colorNoiseDither(snoise(), clampedColor.rgb);	\n"
-				"  if (uAlphaDitherMode == 2) alphaNoiseDither(snoise(), clampedColor.a);	\n"
-				;
-		}
+
 	}
+
+	void write(std::stringstream & shader, CombinerKey _key) const override
+	{
+		std::string shaderPart;
+
+		if (!m_glinfo.isGLES2 && config.generalEmulation.enableNoise != 0) {
+
+			if(_key.getColorDither() == 2) {
+				shaderPart += "  colorNoiseDither(snoise(), clampedColor.rgb);	\n";
+			}
+
+			if(_key.getAlphaDither() == 2) {
+				shaderPart += "  alphaNoiseDither(snoise(), clampedColor.a);	\n";
+			}
+		}
+
+		shader << shaderPart;
+	}
+
+	const opengl::GLInfo& m_glinfo;
 };
 
 class ShaderFragmentGlobalVariablesTex : public ShaderPart
@@ -743,8 +758,6 @@ public:
 		if (!_glinfo.isGLES2) {
 			m_part +=
 				"uniform sampler2D uDepthTex;		\n"
-				"uniform lowp int uAlphaDitherMode;	\n"
-				"uniform lowp int uColorDitherMode;	\n"
 				"uniform lowp int uRenderTarget;	\n"
 				"uniform mediump vec2 uDepthScale;	\n"
 				;
@@ -815,8 +828,6 @@ public:
 		if (!_glinfo.isGLES2) {
 			m_part +=
 				"uniform sampler2D uDepthTex;		\n"
-				"uniform lowp int uAlphaDitherMode;	\n"
-				"uniform lowp int uColorDitherMode;	\n"
 				"uniform lowp int uRenderTarget;	\n"
 				"uniform mediump vec2 uDepthScale;	\n"
 				;

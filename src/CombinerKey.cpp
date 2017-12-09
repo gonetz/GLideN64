@@ -105,6 +105,16 @@ void CombinerKey::setAlphaCvgSel(unsigned int _alphaCvgSel)
 	m_secondaryFlags.alphaCvgSel = _alphaCvgSel;
 }
 
+void CombinerKey::setAlphaDither(unsigned int _alphaDither)
+{
+	m_secondaryFlags.alphaDither = _alphaDither;
+}
+
+void CombinerKey::setColorDither(unsigned int _colorDither)
+{
+	m_secondaryFlags.colorDither = _colorDither;
+}
+
 unsigned int CombinerKey::getBiLerp0(void) const
 {
 	return m_secondaryFlags.bi_lerp0;
@@ -133,6 +143,16 @@ unsigned int CombinerKey::getCvgXAlpha(void) const
 unsigned int CombinerKey::getAlphaCvgSel(void) const
 {
 	return m_secondaryFlags.alphaCvgSel;
+}
+
+unsigned int CombinerKey::getAlphaDither(void) const
+{
+	return m_secondaryFlags.alphaDither;
+}
+
+unsigned int CombinerKey::getColorDither(void) const
+{
+	return m_secondaryFlags.colorDither;
 }
 
 void CombinerKey::read(std::istream & _is) {

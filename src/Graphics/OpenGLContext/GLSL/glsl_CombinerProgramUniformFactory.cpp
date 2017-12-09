@@ -343,21 +343,10 @@ public:
 	UDitherMode(GLuint _program, bool _usesNoise)
 	: m_usesNoise(_usesNoise)
 	{
-		LocateUniform(uAlphaDitherMode);
-		LocateUniform(uColorDitherMode);
 	}
 
 	void update(bool _force) override
 	{
-		if (gDP.otherMode.cycleType < G_CYC_COPY) {
-			uAlphaDitherMode.set(gDP.otherMode.alphaDither, _force);
-			uColorDitherMode.set(gDP.otherMode.colorDither, _force);
-		}
-		else {
-			uAlphaDitherMode.set(0, _force);
-			uColorDitherMode.set(0, _force);
-		}
-
 		bool updateNoiseTex = m_usesNoise;
 		updateNoiseTex |= (gDP.otherMode.cycleType < G_CYC_COPY) && (gDP.otherMode.colorDither == G_CD_NOISE || gDP.otherMode.alphaDither == G_AD_NOISE || gDP.otherMode.alphaCompare == G_AC_DITHER);
 		if (updateNoiseTex)
@@ -365,8 +354,6 @@ public:
 	}
 
 private:
-	iUniform uAlphaDitherMode;
-	iUniform uColorDitherMode;
 	bool m_usesNoise;
 };
 
