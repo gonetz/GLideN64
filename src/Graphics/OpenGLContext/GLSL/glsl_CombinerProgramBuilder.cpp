@@ -1381,11 +1381,11 @@ public:
 						;
 				} else {
 					m_part =
-						"void writeDepth()						        		\n"
-						"{														\n"
-						"  if (uDepthSource == 1) gl_FragDepth = uPrimDepth;	\n"
-						"  else gl_FragDepth = clamp((gl_FragCoord.z * 2.0 - 1.0) * uDepthScale.s + uDepthScale.t, 0.0, 1.0);	\n"
-						"}														\n"
+						"void writeDepth()						        										\n"
+						"{																						\n"
+						"  highp float depth = uDepthSource == 0 ? (gl_FragCoord.z * 2.0 - 1.0) : uPrimDepth;	\n"
+						"  gl_FragDepth = clamp(depth * uDepthScale.s + uDepthScale.t, 0.0, 1.0);				\n"
+						"}																						\n"
 						;
 				}
 			}

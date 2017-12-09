@@ -578,7 +578,7 @@ public:
 		uDepthSource.set(gDP.otherMode.depthSource, _force);
 		if (gDP.otherMode.depthSource == G_ZS_PRIM) {
 			uDeltaZ.set(gDP.primDepth.deltaZ, _force);
-			uPrimDepth.set((gDP.primDepth.z + 1.0f) * 0.5f, _force);
+			uPrimDepth.set(gDP.primDepth.z, _force);
 		}
 	}
 
@@ -604,7 +604,7 @@ public:
 	{
 		uDepthSource.set(gDP.otherMode.depthSource, _force);
 		if (gDP.otherMode.depthSource == G_ZS_PRIM)
-			uPrimDepth.set((gDP.primDepth.z + 1.0f) * 0.5f, _force);
+			uPrimDepth.set(gDP.primDepth.z, _force);
 	}
 
 private:
