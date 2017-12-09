@@ -93,15 +93,21 @@ bool CombinerProgramImpl::getBinaryForm(std::vector<char> & _buffer)
 		return false;
 
 	u64 key = m_key.getMux();
+	u64 secondaryParams = m_key.getSecondaryParams();
+
 	int inputs(m_inputs);
 
-	int totalSize = sizeof(key)+sizeof(inputs)+sizeof(binaryFormat)+
+	int totalSize = sizeof(key)+sizeof(secondaryParams)+sizeof(inputs)+sizeof(binaryFormat)+
 		sizeof(binaryLength)+binaryLength;
 	_buffer.resize(totalSize);
 
 	char* keyData = reinterpret_cast<char*>(&key);
 	std::copy_n(keyData, sizeof(key), _buffer.data());
 	int offset = sizeof(key);
+
+	char* secondaryParamData = reinterpret_cast<char*>(&secondaryParams);
+	std::copy_n(secondaryParamData, sizeof(secondaryParams), _buffer.data());
+	offset += sizeof(secondaryParams);
 
 	char* inputData = reinterpret_cast<char*>(&inputs);
 	std::copy_n(inputData, sizeof(inputs), _buffer.data() + offset);

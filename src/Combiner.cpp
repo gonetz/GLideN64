@@ -284,7 +284,10 @@ void CombinerInfo::update()
 
 void CombinerInfo::setCombine(u64 _mux )
 {
-	const CombinerKey key(_mux);
+	CombinerKey key(_mux);
+	key.setBiLerp0(gDP.otherMode.bi_lerp0);
+	key.setBiLerp1(gDP.otherMode.bi_lerp1);
+
 	if (m_pCurrent != nullptr && m_pCurrent->getKey() == key) {
 		m_bChanged = false;
 		return;
