@@ -940,14 +940,20 @@ public:
 class ShaderFragmentHeaderReadTex : public ShaderPart
 {
 public:
-	ShaderFragmentHeaderReadTex (const opengl::GLInfo & _glinfo)
+	ShaderFragmentHeaderReadTex (const opengl::GLInfo & _glinfo) : m_glinfo(_glinfo)
 	{
-		if (!_glinfo.isGLES2) {
-			m_part =
+
+	}
+
+	void write(std::stringstream & shader, CombinerKey _key) const override
+	{
+		std::string shaderPart;
+
+		if (!m_glinfo.isGLES2) {
+			shaderPart =
 				"uniform lowp ivec2 uTextureFormat;									\n"
 				"uniform lowp ivec2 uTextureConvert;								\n"
 				"uniform mediump ivec4 uConvertParams;								\n"
-				"uniform lowp int uTextureFilterMode;								\n"
 				"#define YUVCONVERT_TEX(name, tex, texCoord, convert, format, prev)	\\\n"
 				"  {																\\\n"
 				"  if (convert != 0) name = prev;									\\\n"
@@ -967,7 +973,7 @@ public:
 				// 3 point texture filtering.
 				// Original author: ArthurCarvalho
 				// GLSL implementation: twinaphex, mupen64plus-libretro project.
-				m_part +=
+				shaderPart +=
 					"#define TEX_OFFSET(off, tex, texCoord) texture(tex, texCoord - (off)/texSize)									\n"
 					"#define TEX_FILTER(name, tex, texCoord)												\\\n"
 					"  {																					\\\n"
@@ -981,7 +987,7 @@ public:
 					"  }																					\n"
 					;
 			} else {
-				m_part +=
+				shaderPart +=
 					"#define TEX_OFFSET(off, tex, texCoord) texture(tex, texCoord - (off)/texSize)									\n"
 					"#define TEX_FILTER(name, tex, texCoord)																		\\\n"
 					"{																												\\\n"
@@ -1003,15 +1009,21 @@ public:
 					"}																												\n"
 					;
 			}
-			m_part +=
+			shaderPart +=
 				"#define READ_TEX(name, tex, texCoord, fbMonochrome, fbFixedAlpha)	\\\n"
 				"  {																\\\n"
 				"  if (fbMonochrome == 3) {											\\\n"
 				"    mediump ivec2 coord = ivec2(gl_FragCoord.xy);					\\\n"
 				"    name = texelFetch(tex, coord, 0);								\\\n"
-				"  } else {															\\\n"
-				"    if (uTextureFilterMode == 0) name = texture(tex, texCoord);	\\\n"
-				"    else TEX_FILTER(name, tex, texCoord);			 				\\\n"
+				"  } else {															\\\n";
+
+			if (_key.getTextureFilter() == 0) {
+				shaderPart += "  name = texture(tex, texCoord);	\\\n";
+			} else {
+				shaderPart += "  TEX_FILTER(name, tex, texCoord);	\\\n";
+			}
+
+			shaderPart +=
 				"  }																\\\n"
 				"  if (fbMonochrome == 1) name = vec4(name.r);						\\\n"
 				"  else if (fbMonochrome == 2) 										\\\n"
@@ -1024,16 +1036,20 @@ public:
 				"  }																\n"
 				;
 		} else {
-			m_part =
+			shaderPart =
 				"uniform lowp ivec2 uTextureFormat;									\n"
 				"uniform lowp ivec2 uTextureConvert;								\n"
 				"uniform mediump ivec4 uConvertParams;								\n"
-				"uniform lowp int uTextureFilterMode;								\n"
 				"lowp vec4 readTex(in sampler2D tex, in mediump vec2 texCoord, in lowp int fbMonochrome, in lowp int fbFixedAlpha);	\n"
 				"lowp vec4 YUV_Convert(in sampler2D tex, in mediump vec2 texCoord, in lowp int convert, in lowp int format, in lowp vec4 prev);	\n"
-			;
+				;
 		}
+
+
+		shader << shaderPart;
 	}
+
+	const opengl::GLInfo& m_glinfo;
 };
 
 class ShaderFragmentHeaderReadTexCopyMode : public ShaderPart
@@ -1648,10 +1664,17 @@ public:
 class ShaderReadtex : public ShaderPart
 {
 public:
-	ShaderReadtex(const opengl::GLInfo & _glinfo)
+	ShaderReadtex(const opengl::GLInfo & _glinfo) : m_glinfo(_glinfo)
 	{
-		if (_glinfo.isGLES2) {
-			m_part =
+
+	}
+
+	void write(std::stringstream & shader, CombinerKey _key) const override
+	{
+		std::string shaderPart;
+
+		if (m_glinfo.isGLES2) {
+			shaderPart =
 				"lowp vec4 YUV_Convert(in sampler2D tex, in mediump vec2 texCoord, in lowp int convert, in lowp int format, in lowp vec4 prev)	\n"
 				"{																	\n"
 				"  lowp vec4 texColor;												\n"
@@ -1667,9 +1690,9 @@ public:
 				"  iconvert.a = icolor.b;											\n"
 				"  return vec4(iconvert)/255.0;										\n"
 				"  }																\n"
-			;
+				;
 			if (config.texture.bilinearMode == BILINEAR_3POINT) {
-				m_part +=
+				shaderPart +=
 					"uniform mediump vec2 uTextureSize[2];										\n"
 					// 3 point texture filtering.
 					// Original author: ArthurCarvalho
@@ -1691,7 +1714,7 @@ public:
 					"}																			\n"
 					;
 			} else {
-				m_part +=
+				shaderPart +=
 					// bilinear filtering.
 					"uniform mediump vec2 uTextureSize[2];										\n"
 					"#define TEX_OFFSET(off) texture2D(tex, texCoord - (off)/texSize)			\n"
@@ -1719,22 +1742,28 @@ public:
 					"}																			\n"
 					;
 			}
-			m_part +=
-					"lowp vec4 readTex(in sampler2D tex, in mediump vec2 texCoord, in lowp int fbMonochrome, in lowp int fbFixedAlpha)	\n"
-					"{																			\n"
-					"  lowp vec4 texColor;														\n"
-					"  if (uTextureFilterMode == 0) texColor = texture2D(tex, texCoord);		\n"
-					"  else texColor = TextureFilter(tex, texCoord);							\n"
-					"  if (fbMonochrome == 1) texColor = vec4(texColor.r);						\n"
-					"  else if (fbMonochrome == 2) 												\n"
-					"    texColor.rgb = vec3(dot(vec3(0.2126, 0.7152, 0.0722), texColor.rgb));	\n"
-					"  if (fbFixedAlpha == 1) texColor.a = 0.825;								\n"
-					"  return texColor;															\n"
-					"}																			\n"
+			shaderPart +=
+				"lowp vec4 readTex(in sampler2D tex, in mediump vec2 texCoord, in lowp int fbMonochrome, in lowp int fbFixedAlpha)	\n"
+				"{																			\n"
+				"  lowp vec4 texColor;														\n";
+
+			if (_key.getTextureFilter() == 0) {
+				shaderPart += "  texColor = texture2D(tex, texCoord);		\n";
+			} else {
+				shaderPart += "  texColor = TextureFilter(tex, texCoord);							\n";
+			}
+
+			shaderPart +=
+				"  if (fbMonochrome == 1) texColor = vec4(texColor.r);						\n"
+				"  else if (fbMonochrome == 2) 												\n"
+				"    texColor.rgb = vec3(dot(vec3(0.2126, 0.7152, 0.0722), texColor.rgb));	\n"
+				"  if (fbFixedAlpha == 1) texColor.a = 0.825;								\n"
+				"  return texColor;															\n"
+				"}																			\n"
 				;
 		} else {
 			if (config.video.multisampling > 0) {
-				m_part =
+				shaderPart =
 					"uniform lowp int uMSAASamples;												\n"
 					"lowp vec4 sampleMS(in lowp sampler2DMS mstex, in mediump ivec2 ipos)		\n"
 					"{																			\n"
@@ -1764,10 +1793,14 @@ public:
 					"  if (fbFixedAlpha == 1) texColor.a = 0.825;								\n"
 					"  return texColor;															\n"
 					"}																			\n"
-				;
+					;
 			}
 		}
+
+		shader << shaderPart;
 	}
+
+	const opengl::GLInfo & m_glinfo;
 };
 
 class ShaderReadtexCopyMode : public ShaderPart

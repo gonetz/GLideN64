@@ -120,6 +120,11 @@ void CombinerKey::setRenderTarget(unsigned int _renderTarget)
 	m_secondaryFlags.renderTarget = _renderTarget;
 }
 
+void CombinerKey::setTextureFilter(unsigned int _textureFilter)
+{
+	m_secondaryFlags.textureFilter = _textureFilter;
+}
+
 unsigned int CombinerKey::getBiLerp0(void) const
 {
 	return m_secondaryFlags.bi_lerp0;
@@ -163,6 +168,11 @@ unsigned int CombinerKey::getColorDither(void) const
 unsigned int CombinerKey::getRenderTarget(void) const
 {
 	return m_secondaryFlags.renderTarget;
+}
+
+unsigned int CombinerKey::getTextureFilter(void) const
+{
+	return m_secondaryFlags.textureFilter;
 }
 
 void CombinerKey::read(std::istream & _is) {

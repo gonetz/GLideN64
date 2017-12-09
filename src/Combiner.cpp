@@ -325,6 +325,12 @@ void CombinerInfo::setSecondaryParams(CombinerKey& _key)
 
 	//Render target
 	_key.setRenderTarget(gDP.colorImage.address == gDP.depthImageAddress ? gDP.otherMode.depthCompare + 1 : 0);
+
+	//Texture filter mode
+	unsigned int textureFilter = gDP.otherMode.textureFilter;
+	if ((gSP.objRendermode&G_OBJRM_BILERP) != 0)
+		textureFilter |= 2;
+	_key.setTextureFilter(textureFilter);
 }
 
 void CombinerInfo::setCombine(u64 _mux )
