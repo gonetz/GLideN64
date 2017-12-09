@@ -671,8 +671,13 @@ public:
 		std::string shaderPart;
 
 		if (_key.getEnableAlphaTest() != 0) {
-			shaderPart =
-				"  lowp float alphaTestValue = (uAlphaCompareMode == 3) ? snoise() : uAlphaTestValue;	\n"
+			if (_key.getAlphaCompareMode() == 3) {
+				shaderPart = "  lowp float alphaTestValue = snoise();	\n";
+			} else {
+				shaderPart = "  lowp float alphaTestValue = uAlphaTestValue;	\n";
+			}
+
+			shaderPart +=
 				"  lowp float alphaValue;								\n"
 				"  if ((uAlphaCvgSel != 0) && (uCvgXAlpha == 0)) {	\n"
 				"    alphaValue = 0.125;								\n"
@@ -718,7 +723,6 @@ public:
 			"uniform lowp float uPrimLod;	\n"
 			"uniform lowp float uK4;		\n"
 			"uniform lowp float uK5;		\n"
-			"uniform lowp int uAlphaCompareMode;	\n"
 			"uniform lowp ivec2 uFbMonochrome;		\n"
 			"uniform lowp ivec2 uFbFixedAlpha;		\n"
 			"uniform lowp int uCvgXAlpha;			\n"
@@ -793,7 +797,6 @@ public:
 			"uniform lowp float uPrimLod;	\n"
 			"uniform lowp float uK4;		\n"
 			"uniform lowp float uK5;		\n"
-			"uniform lowp int uAlphaCompareMode;	\n"
 			"uniform lowp ivec2 uFbMonochrome;		\n"
 			"uniform lowp ivec2 uFbFixedAlpha;		\n"
 			"uniform lowp int uCvgXAlpha;			\n"
@@ -1200,8 +1203,6 @@ public:
 				shaderPart += "  } else readtex0 = readTexMS(uMSTex0, vTexCoord0, uFbMonochrome[0], uFbFixedAlpha[0]);\n";
 			}
 			else {
-				LOG(LOG_ERROR, "YUV: lerp0=%d, lerp1=%d", gDP.otherMode.bi_lerp0, gDP.otherMode.bi_lerp1);
-
 				shaderPart = "  lowp vec4 readtex0;																	\n";
 				if (_key.getBiLerp0() != 0) {
 					shaderPart += "  READ_TEX(readtex0, uTex0, vTexCoord0, uFbMonochrome[0], uFbFixedAlpha[0])		\n";

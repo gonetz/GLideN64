@@ -10,9 +10,11 @@ class CombinerKey {
 		{
 			struct
 			{
-				unsigned	bi_lerp0 : 1;
-				unsigned	bi_lerp1 : 1;
-				unsigned	enableAlphaTest : 1;
+				unsigned int bi_lerp0 : 1;
+				unsigned int bi_lerp1 : 1;
+				unsigned int enableAlphaTest : 1;
+				unsigned int alphaCompareMode : 2;
+
 			};
 
 			u64				mux;
@@ -44,10 +46,12 @@ public:
 	void setBiLerp0(unsigned int _bilerp0);
 	void setBiLerp1(unsigned int _bilerp1);
 	void setEnableAlphaTest(unsigned int _enableAlphaTest);
+	void setAlphaCompareMode(unsigned int _alphaCompareMode);
 
 	unsigned int getBiLerp0(void);
 	unsigned int getBiLerp1(void);
 	unsigned int getEnableAlphaTest(void);
+	unsigned int getAlphaCompareMode(void);
 
 	void read(std::istream & _is);
 

@@ -90,6 +90,11 @@ void CombinerKey::setEnableAlphaTest(unsigned int _enableAlphaTest)
 	m_secondaryFlags.enableAlphaTest = _enableAlphaTest;
 }
 
+void CombinerKey::setAlphaCompareMode(unsigned int _alphaCompareMode)
+{
+	m_secondaryFlags.alphaCompareMode = _alphaCompareMode;
+}
+
 unsigned int CombinerKey::getBiLerp0(void)
 {
 	return m_secondaryFlags.bi_lerp0;
@@ -103,6 +108,11 @@ unsigned int CombinerKey::getBiLerp1(void)
 unsigned int CombinerKey::getEnableAlphaTest(void)
 {
 	return m_secondaryFlags.enableAlphaTest;
+}
+
+unsigned int CombinerKey::getAlphaCompareMode(void)
+{
+	return m_secondaryFlags.alphaCompareMode;
 }
 
 void CombinerKey::read(std::istream & _is) {

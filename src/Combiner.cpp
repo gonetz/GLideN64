@@ -310,6 +310,7 @@ void CombinerInfo::setSecondaryParams(CombinerKey& _key)
 	}
 
 	_key.setEnableAlphaTest(enableAlphaTest);
+	_key.setAlphaCompareMode(gDP.otherMode.cycleType < G_CYC_COPY ? gDP.otherMode.alphaCompare : 0);
 }
 
 void CombinerInfo::setCombine(u64 _mux )
