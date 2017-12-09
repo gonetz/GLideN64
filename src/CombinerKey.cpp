@@ -95,24 +95,44 @@ void CombinerKey::setAlphaCompareMode(unsigned int _alphaCompareMode)
 	m_secondaryFlags.alphaCompareMode = _alphaCompareMode;
 }
 
-unsigned int CombinerKey::getBiLerp0(void)
+void CombinerKey::setCvgXAlpha(unsigned int _cvgXAlpha)
+{
+	m_secondaryFlags.cvgXAlpha = _cvgXAlpha;
+}
+
+void CombinerKey::setAlphaCvgSel(unsigned int _alphaCvgSel)
+{
+	m_secondaryFlags.alphaCvgSel = _alphaCvgSel;
+}
+
+unsigned int CombinerKey::getBiLerp0(void) const
 {
 	return m_secondaryFlags.bi_lerp0;
 }
 
-unsigned int CombinerKey::getBiLerp1(void)
+unsigned int CombinerKey::getBiLerp1(void) const
 {
 	return m_secondaryFlags.bi_lerp1;
 }
 
-unsigned int CombinerKey::getEnableAlphaTest(void)
+unsigned int CombinerKey::getEnableAlphaTest(void) const
 {
 	return m_secondaryFlags.enableAlphaTest;
 }
 
-unsigned int CombinerKey::getAlphaCompareMode(void)
+unsigned int CombinerKey::getAlphaCompareMode(void) const
 {
 	return m_secondaryFlags.alphaCompareMode;
+}
+
+unsigned int CombinerKey::getCvgXAlpha(void) const
+{
+	return m_secondaryFlags.cvgXAlpha;
+}
+
+unsigned int CombinerKey::getAlphaCvgSel(void) const
+{
+	return m_secondaryFlags.alphaCvgSel;
 }
 
 void CombinerKey::read(std::istream & _is) {

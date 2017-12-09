@@ -14,7 +14,8 @@ class CombinerKey {
 				unsigned int bi_lerp1 : 1;
 				unsigned int enableAlphaTest : 1;
 				unsigned int alphaCompareMode : 2;
-
+				unsigned int cvgXAlpha : 1;
+				unsigned int alphaCvgSel : 1;
 			};
 
 			u64				mux;
@@ -47,11 +48,15 @@ public:
 	void setBiLerp1(unsigned int _bilerp1);
 	void setEnableAlphaTest(unsigned int _enableAlphaTest);
 	void setAlphaCompareMode(unsigned int _alphaCompareMode);
+	void setCvgXAlpha(unsigned int _cvgXAlpha);
+	void setAlphaCvgSel(unsigned int _alphaCvgSel);
 
-	unsigned int getBiLerp0(void);
-	unsigned int getBiLerp1(void);
-	unsigned int getEnableAlphaTest(void);
-	unsigned int getAlphaCompareMode(void);
+	unsigned int getBiLerp0(void) const;
+	unsigned int getBiLerp1(void) const;
+	unsigned int getEnableAlphaTest(void) const;
+	unsigned int getAlphaCompareMode(void) const;
+	unsigned int getCvgXAlpha(void) const;
+	unsigned int getAlphaCvgSel(void) const;
 
 	void read(std::istream & _is);
 

@@ -677,15 +677,13 @@ public:
 				shaderPart = "  lowp float alphaTestValue = uAlphaTestValue;	\n";
 			}
 
-			shaderPart +=
-				"  lowp float alphaValue;								\n"
-				"  if ((uAlphaCvgSel != 0) && (uCvgXAlpha == 0)) {	\n"
-				"    alphaValue = 0.125;								\n"
-				"  } else {											\n"
-				"    alphaValue = clamp(alpha1, 0.0, 1.0);			\n"
-				"  }													\n"
-				"  if (alphaValue < alphaTestValue) discard;			\n"
-				;
+			if (_key.getAlphaCvgSel() != 0 && _key.getCvgXAlpha() == 0) {
+				shaderPart += "  lowp float alphaValue = 0.125;								\n";
+			} else {
+				shaderPart += "  lowp float alphaValue = clamp(alpha1, 0.0, 1.0);								\n";
+			}
+
+			shaderPart += "  if (alphaValue < alphaTestValue) discard;			\n";
 		}
 
 		shader << shaderPart;
@@ -725,8 +723,6 @@ public:
 			"uniform lowp float uK5;		\n"
 			"uniform lowp ivec2 uFbMonochrome;		\n"
 			"uniform lowp ivec2 uFbFixedAlpha;		\n"
-			"uniform lowp int uCvgXAlpha;			\n"
-			"uniform lowp int uAlphaCvgSel;			\n"
 			"uniform lowp float uAlphaTestValue;	\n"
 			"uniform lowp int uDepthSource;			\n"
 			"uniform highp float uPrimDepth;		\n"
@@ -799,8 +795,6 @@ public:
 			"uniform lowp float uK5;		\n"
 			"uniform lowp ivec2 uFbMonochrome;		\n"
 			"uniform lowp ivec2 uFbFixedAlpha;		\n"
-			"uniform lowp int uCvgXAlpha;			\n"
-			"uniform lowp int uAlphaCvgSel;			\n"
 			"uniform lowp float uAlphaTestValue;	\n"
 			"uniform lowp int uDepthSource;			\n"
 			"uniform highp float uPrimDepth;		\n"
@@ -1977,7 +1971,9 @@ CombinerInputs CombinerProgramBuilder::compileCombiner(const CombinerKey & _key,
 		else
 			ssShader << "  alpha2 = alpha1;" << std::endl;
 
-		ssShader << "  if (uCvgXAlpha != 0 && alpha2 < 0.125) discard;" << std::endl;
+		if(_key.getCvgXAlpha() != 0) {
+			ssShader << "  if (alpha2 < 0.125) discard;" << std::endl;
+		}
 
 		if (_color.numStages == 2) {
 			ssShader << "  color2 = ";
@@ -1990,8 +1986,9 @@ CombinerInputs CombinerProgramBuilder::compileCombiner(const CombinerKey & _key,
 		ssShader << "  lowp vec4 cmbRes = vec4(color2, alpha2);" << std::endl;
 	}
 	else {
-		if (g_cycleType < G_CYC_FILL)
-			ssShader << "  if (uCvgXAlpha != 0 && alpha1 < 0.125) discard;" << std::endl;
+		if (g_cycleType < G_CYC_FILL && _key.getCvgXAlpha() != 0) {
+			ssShader << "  if (alpha1 < 0.125) discard;" << std::endl;
+		}
 		ssShader << "  lowp vec4 cmbRes = vec4(color1, alpha1);" << std::endl;
 	}
 

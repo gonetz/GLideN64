@@ -289,27 +289,27 @@ void CombinerInfo::setSecondaryParams(CombinerKey& _key)
 	_key.setBiLerp1(gDP.otherMode.bi_lerp1);
 
 	//Alpha test
-	int enableAlphaTest = 0;
-
 	if (gDP.otherMode.cycleType == G_CYC_FILL) {
-		enableAlphaTest = 0;
+		_key.setEnableAlphaTest(0);
 	}
 	else if (gDP.otherMode.cycleType == G_CYC_COPY) {
 		if (gDP.otherMode.alphaCompare & G_AC_THRESHOLD) {
-			enableAlphaTest = 1;
+			_key.setAlphaCvgSel(0);
+			_key.setEnableAlphaTest(1);
 		}
 		else {
-			enableAlphaTest = 0;
+			_key.setEnableAlphaTest(0);
 		}
 	}
 	else if ((gDP.otherMode.alphaCompare & G_AC_THRESHOLD) != 0) {
-		enableAlphaTest = 1;
+		_key.setEnableAlphaTest(1);
+		_key.setAlphaCvgSel(gDP.otherMode.alphaCvgSel);
 	}
 	else {
-		enableAlphaTest = 0;
+		_key.setEnableAlphaTest(0);
 	}
+	_key.setCvgXAlpha(gDP.otherMode.cvgXAlpha);
 
-	_key.setEnableAlphaTest(enableAlphaTest);
 	_key.setAlphaCompareMode(gDP.otherMode.cycleType < G_CYC_COPY ? gDP.otherMode.alphaCompare : 0);
 }
 

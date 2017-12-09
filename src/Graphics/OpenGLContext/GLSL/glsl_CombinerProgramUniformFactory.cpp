@@ -479,8 +479,6 @@ class UAlphaTestInfo : public UniformGroup
 {
 public:
 	UAlphaTestInfo(GLuint _program) {
-		LocateUniform(uAlphaCvgSel);
-		LocateUniform(uCvgXAlpha);
 		LocateUniform(uAlphaTestValue);
 	}
 
@@ -491,21 +489,15 @@ public:
 		}
 		else if (gDP.otherMode.cycleType == G_CYC_COPY) {
 			if (gDP.otherMode.alphaCompare & G_AC_THRESHOLD) {
-				uAlphaCvgSel.set(0, _force);
 				uAlphaTestValue.set(0.5f, _force);
 			}
 		}
 		else if ((gDP.otherMode.alphaCompare & G_AC_THRESHOLD) != 0) {
 			uAlphaTestValue.set(gDP.blendColor.a, _force);
-			uAlphaCvgSel.set(gDP.otherMode.alphaCvgSel, _force);
 		}
-
-		uCvgXAlpha.set(gDP.otherMode.cvgXAlpha, _force);
 	}
 
 private:
-	iUniform uAlphaCvgSel;
-	iUniform uCvgXAlpha;
 	fUniform uAlphaTestValue;
 };
 
