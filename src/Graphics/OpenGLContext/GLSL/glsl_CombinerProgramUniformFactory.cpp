@@ -456,7 +456,6 @@ public:
 	UTextureFetchMode(GLuint _program) {
 		LocateUniform(uTextureFilterMode);
 		LocateUniform(uTextureFormat);
-		LocateUniform(uBiLerp);
 		LocateUniform(uTextureConvert);
 		LocateUniform(uConvertParams);
 	}
@@ -467,7 +466,6 @@ public:
 		if ((gSP.objRendermode&G_OBJRM_BILERP) != 0)
 			textureFilter |= 2;
 		uTextureFilterMode.set(textureFilter, _force);
-		uBiLerp.set(gDP.otherMode.bi_lerp0, gDP.otherMode.bi_lerp1, _force);
 		uTextureFormat.set(gSP.textureTile[0]->format, gSP.textureTile[1]->format, _force);
 		uTextureConvert.set(0, gDP.otherMode.convert_one, _force);
 		if (gDP.otherMode.bi_lerp0 == 0 || gDP.otherMode.bi_lerp1 == 0)
@@ -477,7 +475,6 @@ public:
 private:
 	iUniform uTextureFilterMode;
 	iv2Uniform uTextureFormat;
-	iv2Uniform uBiLerp;
 	iv2Uniform uTextureConvert;
 	i4Uniform uConvertParams;
 };

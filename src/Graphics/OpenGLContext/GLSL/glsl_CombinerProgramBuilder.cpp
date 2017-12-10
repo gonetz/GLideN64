@@ -10,7 +10,27 @@
 
 using namespace glsl;
 
+class TextureConvert {
+public:
+	void setMode(u32 _mode) {
+		m_mode = _mode;
+	}
+
+	bool getBilerp1() const {
+		return (m_mode & 1) != 0;
+	}
+
+	bool getBilerp0() const {
+		return (m_mode & 2) != 0;
+	}
+
+private:
+	u32 m_mode;
+};
+
+
 u32 g_cycleType = G_CYC_1CYCLE;
+TextureConvert g_textureConvert;
 
 /*---------------_compileCombiner-------------*/
 
@@ -932,7 +952,6 @@ public:
 		if (!_glinfo.isGLES2) {
 			m_part =
 				"uniform lowp ivec2 uTextureFormat;									\n"
-				"uniform lowp ivec2 uBiLerp;										\n"
 				"uniform lowp ivec2 uTextureConvert;								\n"
 				"uniform mediump ivec4 uConvertParams;								\n"
 				"uniform lowp int uTextureFilterMode;								\n"
@@ -1014,7 +1033,6 @@ public:
 		} else {
 			m_part =
 				"uniform lowp ivec2 uTextureFormat;									\n"
-				"uniform lowp ivec2 uBiLerp;										\n"
 				"uniform lowp ivec2 uTextureConvert;								\n"
 				"uniform mediump ivec4 uConvertParams;								\n"
 				"uniform lowp int uTextureFilterMode;								\n"
@@ -1161,77 +1179,100 @@ public:
 class ShaderFragmentReadTex0 : public ShaderPart
 {
 public:
-	ShaderFragmentReadTex0(const opengl::GLInfo & _glinfo)
+	ShaderFragmentReadTex0(const opengl::GLInfo & _glinfo) : m_glinfo(_glinfo)
 	{
-		if (_glinfo.isGLES2) {
-			m_part =
-				"  nCurrentTile = 0; \n"
-				"  lowp vec4 readtex0;																\n"
-				"  if (uBiLerp[0] != 0)																\n"
-				"    readtex0 = readTex(uTex0, vTexCoord0, uFbMonochrome[0], uFbFixedAlpha[0]);		\n"
-				"  else																				\n"
-				"    readtex0 = YUV_Convert(uTex0, vTexCoord0, uTextureConvert[0], uTextureFormat[0], readtex0);	\n"
-				;
+	}
+
+	void write(std::stringstream & shader) const override
+	{
+		std::string shaderPart;
+
+		if (m_glinfo.isGLES2) {
+			shaderPart = "  nCurrentTile = 0; \n";
+			if (g_textureConvert.getBilerp0()) {
+				shaderPart += "  lowp vec4 readtex0 = readTex(uTex0, vTexCoord0, uFbMonochrome[0], uFbFixedAlpha[0]);		\n";
+			} else {
+				shaderPart += "  lowp vec4 tmpTex; \n";
+							  "  lowp vec4 readtex0 = YUV_Convert(uTex0, vTexCoord0, uTextureConvert[0], uTextureFormat[0], tmpTex);	\n";
+			}
+
 		} else {
 			if (config.video.multisampling > 0) {
-				m_part =
+				shaderPart =
 					"  lowp vec4 readtex0;																	\n"
-					"  if (uMSTexEnabled[0] == 0) {															\n"
-					"    if (uBiLerp[0] != 0)																\n"
-					"      READ_TEX(readtex0, uTex0, vTexCoord0, uFbMonochrome[0], uFbFixedAlpha[0])		\n"
-					"    else																				\n"
-					"      YUVCONVERT_TEX(readtex0, uTex0, vTexCoord0, uTextureConvert[0], uTextureFormat[0], readtex0)	\n"
-					"  } else readtex0 = readTexMS(uMSTex0, vTexCoord0, uFbMonochrome[0], uFbFixedAlpha[0]);\n"
-					;
+					"  if (uMSTexEnabled[0] == 0) {															\n";
+
+				if (g_textureConvert.getBilerp0()) {
+					shaderPart += "    READ_TEX(readtex0, uTex0, vTexCoord0, uFbMonochrome[0], uFbFixedAlpha[0])		\n";
+				} else {
+					shaderPart += "  YUVCONVERT_TEX(readtex0, uTex0, vTexCoord0, uTextureConvert[0], uTextureFormat[0], readtex0)	\n";
+				}
+				shaderPart += "  } else readtex0 = readTexMS(uMSTex0, vTexCoord0, uFbMonochrome[0], uFbFixedAlpha[0]);\n";
 			} else {
-				m_part =
-					"  lowp vec4 readtex0;																\n"
-					"  if (uBiLerp[0] != 0)																\n"
-					"    READ_TEX(readtex0, uTex0, vTexCoord0, uFbMonochrome[0], uFbFixedAlpha[0])		\n"
-					"  else																				\n"
-					"    YUVCONVERT_TEX(readtex0, uTex0, vTexCoord0, uTextureConvert[0], uTextureFormat[0], readtex0)\n"
-					;
+				shaderPart = "  lowp vec4 readtex0;																	\n";
+				if (g_textureConvert.getBilerp0()) {
+					shaderPart += "  READ_TEX(readtex0, uTex0, vTexCoord0, uFbMonochrome[0], uFbFixedAlpha[0])		\n";
+				} else {
+					shaderPart += "  YUVCONVERT_TEX(readtex0, uTex0, vTexCoord0, uTextureConvert[0], uTextureFormat[0], readtex0)\n";
+				}
 			}
 		}
+
+		shader << shaderPart;
 	}
+
+private:
+	const opengl::GLInfo& m_glinfo;
 };
 
 class ShaderFragmentReadTex1 : public ShaderPart
 {
 public:
-	ShaderFragmentReadTex1(const opengl::GLInfo & _glinfo)
+	ShaderFragmentReadTex1(const opengl::GLInfo & _glinfo) : m_glinfo(_glinfo)
 	{
-		if (_glinfo.isGLES2) {
-			m_part =
-				"  nCurrentTile = 1; \n"
-				"  lowp vec4 readtex1;																\n"
-				"  if (uBiLerp[1] != 0)																\n"
-				"    readtex1 = readTex(uTex1, vTexCoord1, uFbMonochrome[1], uFbFixedAlpha[1]);		\n"
-				"  else																				\n"
-				"    readtex1 = YUV_Convert(uTex1, vTexCoord1, uTextureConvert[1], uTextureFormat[1], readtex0);	\n"
-				;
+	}
+
+	void write(std::stringstream & shader) const override
+	{
+		std::string shaderPart;
+
+		if (m_glinfo.isGLES2) {
+			shaderPart = "  nCurrentTile = 1; \n";
+
+			if (g_textureConvert.getBilerp1()) {
+				shaderPart += "  lowp vec4 readtex1 = readTex(uTex1, vTexCoord1, uFbMonochrome[1], uFbFixedAlpha[1]);		\n";
+			} else {
+				shaderPart += "  lowp vec4 readtex1 = YUV_Convert(uTex1, vTexCoord1, uTextureConvert[1], uTextureFormat[1], readtex0);	\n";
+			}
 		} else {
 			if (config.video.multisampling > 0) {
-				m_part =
+				shaderPart =
 					"  lowp vec4 readtex1; \n"
-					"  if (uMSTexEnabled[1] == 0) {															\n"
-					"    if (uBiLerp[1] != 0)																\n"
-					"      READ_TEX(readtex1, uTex1, vTexCoord1, uFbMonochrome[1], uFbFixedAlpha[1])		\n"
-					"    else																				\n"
-					"      YUVCONVERT_TEX(readtex1, uTex1, vTexCoord1, uTextureConvert[1], uTextureFormat[1], readtex0)	\n"
-					"  } else readtex1 = readTexMS(uMSTex1, vTexCoord1, uFbMonochrome[1], uFbFixedAlpha[1]);\n"
-					;
+					"  if (uMSTexEnabled[1] == 0) {															\n";
+
+				if (g_textureConvert.getBilerp1()) {
+					shaderPart += "    READ_TEX(readtex1, uTex1, vTexCoord1, uFbMonochrome[1], uFbFixedAlpha[1])		\n";
+				} else {
+					shaderPart += "    YUVCONVERT_TEX(readtex1, uTex1, vTexCoord1, uTextureConvert[1], uTextureFormat[1], readtex0)	\n";
+				}
+
+				shaderPart += "  } else readtex1 = readTexMS(uMSTex1, vTexCoord1, uFbMonochrome[1], uFbFixedAlpha[1]);\n";
 			} else {
-				m_part =
-					"  lowp vec4 readtex1; \n"
-					"  if (uBiLerp[1] != 0)																\n"
-					"    READ_TEX(readtex1, uTex1, vTexCoord1, uFbMonochrome[1], uFbFixedAlpha[1])		\n"
-					"  else																				\n"
-					"    YUVCONVERT_TEX(readtex1, uTex1, vTexCoord1, uTextureConvert[1], uTextureFormat[1], readtex0)\n"
-					;
+				shaderPart = "  lowp vec4 readtex1; \n";
+
+				if (g_textureConvert.getBilerp1()) {
+					shaderPart += "  READ_TEX(readtex1, uTex1, vTexCoord1, uFbMonochrome[1], uFbFixedAlpha[1])		\n";
+				} else {
+					shaderPart += "  YUVCONVERT_TEX(readtex1, uTex1, vTexCoord1, uTextureConvert[1], uTextureFormat[1], readtex0)\n";
+				}
 			}
 		}
+
+		shader << shaderPart;
 	}
+
+private:
+	const opengl::GLInfo& m_glinfo;
 };
 
 class ShaderFragmentCallN64Depth : public ShaderPart
@@ -1985,6 +2026,7 @@ graphics::CombinerProgram * CombinerProgramBuilder::buildCombinerProgram(Combine
 																		const CombinerKey & _key)
 {
 	g_cycleType = _key.getCycleType();
+	g_textureConvert.setMode(_key.getBilerp());
 
 	std::string strCombiner;
 	CombinerInputs combinerInputs(compileCombiner(_key, _color, _alpha, strCombiner));
