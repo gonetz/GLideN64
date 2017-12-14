@@ -6,6 +6,7 @@ endif()
 
 option(EGL "Set to ON if targeting an EGL device" ${EGL})
 option(PANDORA "Set to ON if targeting an OpenPandora" ${PANDORA})
+option(ODROID "Set to ON if targeting an Odroid" ${ODROID})
 option(MUPENPLUSAPI "Set to ON for Mupen64Plus plugin" ${MUPENPLUSAPI})
 option(MESA "Set to ON to disable Raspberry Pi autodetection" ${MESA})
 
@@ -223,6 +224,12 @@ if(PANDORA)
   -DEGL
    )
 endif(PANDORA)
+
+if(ODROID)
+  add_definitions(
+  -DODROID
+   )
+endif(ODROID)
 
 if(UNIX OR BCMHOST)
   SET( FREETYPE_INCLUDE_DIRS "/usr/include/freetype2/" )
