@@ -12,7 +12,7 @@ namespace graphics {
 		virtual void activate() = 0;
 		virtual void update(bool _force) = 0;
 
-		virtual CombinerKey getKey() const = 0;
+		virtual const CombinerKey & getKey() const = 0;
 
 		virtual bool usesTexture() const = 0;
 		virtual bool usesTile(u32 _t) const = 0;

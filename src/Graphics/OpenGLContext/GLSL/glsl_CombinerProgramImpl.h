@@ -31,7 +31,7 @@ namespace glsl {
 
 		void activate() override;
 		void update(bool _force) override;
-		CombinerKey getKey() const override;
+		const CombinerKey & getKey() const override;
 
 		bool usesTexture() const override;
 		bool usesTile(u32 _t) const override;

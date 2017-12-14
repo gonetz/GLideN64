@@ -26,6 +26,8 @@ public:
 
 	void read(std::istream & _is);
 
+	static const CombinerKey & getEmpty();
+
 private:
 	gDPCombine m_key;
 };

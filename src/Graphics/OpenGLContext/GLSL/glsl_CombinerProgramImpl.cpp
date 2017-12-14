@@ -44,7 +44,7 @@ void CombinerProgramImpl::update(bool _force)
 		(*it)->update(_force);
 }
 
-CombinerKey CombinerProgramImpl::getKey() const
+const CombinerKey & CombinerProgramImpl::getKey() const
 {
 	return m_key;
 }

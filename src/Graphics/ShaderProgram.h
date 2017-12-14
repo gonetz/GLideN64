@@ -10,7 +10,7 @@ namespace graphics {
 		virtual ~ShaderProgram() {}
 
 		void update(bool _force) override {}
-		CombinerKey getKey() const override {return CombinerKey();}
+		const CombinerKey & getKey() const override { return CombinerKey::getEmpty(); }
 		bool usesTexture() const override {return true;}
 		virtual bool usesTile(u32 _t) const override {return _t == 0 ? true : false;}
 		virtual bool usesShade() const override {return false;}

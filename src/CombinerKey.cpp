@@ -64,6 +64,13 @@ bool CombinerKey::isRectKey() const
 	return ((m_key.muxs0 >> 24) & 1) != 0;
 }
 
-void CombinerKey::read(std::istream & _is) {
+void CombinerKey::read(std::istream & _is)
+{
 	_is.read((char*)&m_key.mux, sizeof(m_key.mux));
+}
+
+const CombinerKey & CombinerKey::getEmpty()
+{
+	static CombinerKey emptyKey;
+	return emptyKey;
 }
