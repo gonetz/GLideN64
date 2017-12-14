@@ -173,6 +173,7 @@ void PluginAPI::ProcessRDPList()
 void PluginAPI::RomClosed()
 {
 	LOG(LOG_APIFUNC, "RomClosed\n");
+	m_bRomOpen = false;
 #ifdef RSPTHREAD
 	_callAPICommand(RomClosedCommand(
 					&m_rspThreadMtx,
@@ -204,6 +205,7 @@ void PluginAPI::RomOpen()
 	Config_LoadConfig();
 	dwnd().start();
 #endif
+	m_bRomOpen = true;
 }
 
 void PluginAPI::ShowCFB()
@@ -259,7 +261,10 @@ void PluginAPI::_initiateGFX(const GFX_INFO & _gfxInfo) const {
 
 void PluginAPI::ChangeWindow()
 {
+	LOG(LOG_APIFUNC, "ChangeWindow\n");
 	dwnd().setToggleFullscreen();
+	if (!m_bRomOpen)
+		dwnd().closeWindow();
 }
 
 void PluginAPI::FBWrite(unsigned int _addr, unsigned int _size)

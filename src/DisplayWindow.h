@@ -14,6 +14,7 @@ public:
 	void saveScreenshot();
 	bool changeWindow();
 	bool resizeWindow();
+	void closeWindow();
 	void setWindowSize(u32 _width, u32 _height);
 	void setCaptureScreen(const char * const _strDirectory);
 	void setToggleFullscreen() { m_bToggleFullscreen = true; }

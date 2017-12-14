@@ -65,6 +65,17 @@ bool DisplayWindow::changeWindow()
 	return true;
 }
 
+void DisplayWindow::closeWindow()
+{
+	if (!m_bToggleFullscreen || !m_bFullscreen)
+		return;
+	if (m_drawer.getDrawingState() != DrawingState::Non)
+		m_drawer._destroyData();
+	_changeWindow();
+	m_bToggleFullscreen = false;
+}
+
+
 void DisplayWindow::setWindowSize(u32 _width, u32 _height)
 {
 	if (m_width != _width || m_height != _height) {

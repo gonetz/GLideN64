@@ -118,7 +118,7 @@ bool Utils::isFramebufferError()
 		LOG(LOG_ERROR, "[GlideN64]: FBO Unsupported\n");
 		break;
 	case GL_FRAMEBUFFER_COMPLETE:
-		LOG(LOG_VERBOSE, "[GlideN64]: FBO OK\n");
+		//LOG(LOG_VERBOSE, "[GlideN64]: FBO OK\n");
 		break;
 		//		case GL_FRAMEBUFFER_INCOMPLETE_DIMENSIONS_EXT:
 		//			printf("framebuffer FRAMEBUFFER_DIMENSIONS\n");
