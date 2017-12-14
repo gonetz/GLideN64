@@ -1155,8 +1155,7 @@ public:
 		if (_glinfo.isGLES2) {
 			m_part =
 				"  nCurrentTile = 0; \n"
-				"  lowp vec4 readtex0;																		\n"
-				"  readtex0 = readTex(uTex0, vTexCoord0, uFbMonochrome[0], uFbFixedAlpha[0]);				\n"
+				"  lowp vec4 readtex0 = readTex(uTex0, vTexCoord0, uFbMonochrome[0], uFbFixedAlpha[0]);		\n"
 				;
 		} else {
 			if (config.video.multisampling > 0) {
@@ -1190,9 +1189,9 @@ public:
 		if (m_glinfo.isGLES2) {
 			shaderPart = "  nCurrentTile = 0; \n";
 			if (g_textureConvert.getBilerp0()) {
-				shaderPart += "  lowp vec4 readtex0 = readTex(uTex0, vTexCoord0, uFbMonochrome[0], uFbFixedAlpha[0]);		\n";
+				shaderPart += "  lowp vec4 readtex0 = readTex(uTex0, vTexCoord0, uFbMonochrome[0], uFbFixedAlpha[0]);					\n";
 			} else {
-				shaderPart += "  lowp vec4 tmpTex; \n";
+				shaderPart += "  lowp vec4 tmpTex = vec4(0.0);																			\n"
 							  "  lowp vec4 readtex0 = YUV_Convert(uTex0, vTexCoord0, uTextureConvert[0], uTextureFormat[0], tmpTex);	\n";
 			}
 
@@ -1203,17 +1202,17 @@ public:
 					"  if (uMSTexEnabled[0] == 0) {															\n";
 
 				if (g_textureConvert.getBilerp0()) {
-					shaderPart += "    READ_TEX(readtex0, uTex0, vTexCoord0, uFbMonochrome[0], uFbFixedAlpha[0])		\n";
+					shaderPart += "    READ_TEX(readtex0, uTex0, vTexCoord0, uFbMonochrome[0], uFbFixedAlpha[0])					\n";
 				} else {
 					shaderPart += "  YUVCONVERT_TEX(readtex0, uTex0, vTexCoord0, uTextureConvert[0], uTextureFormat[0], readtex0)	\n";
 				}
-				shaderPart += "  } else readtex0 = readTexMS(uMSTex0, vTexCoord0, uFbMonochrome[0], uFbFixedAlpha[0]);\n";
+				shaderPart += "  } else readtex0 = readTexMS(uMSTex0, vTexCoord0, uFbMonochrome[0], uFbFixedAlpha[0]);				\n";
 			} else {
-				shaderPart = "  lowp vec4 readtex0;																	\n";
+				shaderPart = "  lowp vec4 readtex0;																					\n";
 				if (g_textureConvert.getBilerp0()) {
-					shaderPart += "  READ_TEX(readtex0, uTex0, vTexCoord0, uFbMonochrome[0], uFbFixedAlpha[0])		\n";
+					shaderPart += "  READ_TEX(readtex0, uTex0, vTexCoord0, uFbMonochrome[0], uFbFixedAlpha[0])						\n";
 				} else {
-					shaderPart += "  YUVCONVERT_TEX(readtex0, uTex0, vTexCoord0, uTextureConvert[0], uTextureFormat[0], readtex0)\n";
+					shaderPart += "  YUVCONVERT_TEX(readtex0, uTex0, vTexCoord0, uTextureConvert[0], uTextureFormat[0], readtex0)	\n";
 				}
 			}
 		}
