@@ -371,6 +371,9 @@
     <ClCompile Include="..\..\src\uCodes\ZSort.cpp">
       <Filter>Source Files\uCodes</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\uCodes\ZSortBOSS.cpp">
+      <Filter>Source Files\uCodes</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\src\uCodes\F3DZEX2.cpp">
       <Filter>Source Files\uCodes</Filter>
     </ClCompile>
@@ -698,6 +701,9 @@
       <Filter>Header Files\uCodes</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\uCodes\ZSort.h">
+      <Filter>Header Files\uCodes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\uCodes\ZSortBOSS.h">
       <Filter>Header Files\uCodes</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\uCodes\F3DZEX2.h">
