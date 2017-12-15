@@ -1439,8 +1439,6 @@ void GraphicsDrawer::drawOSD()
 	for (const std::string & m : m_osdMessages) {
 		_drawOSD(m.c_str(), x, y);
 	}
-
-	frameBufferList().setCurrentDrawBuffer();
 }
 
 void GraphicsDrawer::showMessage(std::string _message, Milliseconds _interval)
