@@ -2336,7 +2336,7 @@ graphics::CombinerProgram * CombinerProgramBuilder::buildCombinerProgram(Combine
 	const GLchar * strShaderData = strFragmentShader.data();
 	glShaderSource(fragmentShader, 1, &strShaderData, nullptr);
 	glCompileShader(fragmentShader);
-	if (!Utils::checkShaderCompileStatus(fragmentShader))
+	//if (!Utils::checkShaderCompileStatus(fragmentShader))
 	Utils::logErrorShader(GL_FRAGMENT_SHADER, strFragmentShader);
 
 	GLuint program = glCreateProgram();
