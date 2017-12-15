@@ -11,6 +11,7 @@
 #include "PluginAPI.h"
 #include "RSP.h"
 #include "Graphics/Context.h"
+#include "Textures.h"
 
 using namespace graphics;
 
@@ -282,9 +283,93 @@ void CombinerInfo::update()
 //	}
 }
 
+void CombinerInfo::setSecondaryParams(CombinerKey& _key)
+{
+	//Bilinear filtering
+	_key.setBiLerp0(gDP.otherMode.bi_lerp0);
+	_key.setBiLerp1(gDP.otherMode.bi_lerp1);
+
+	//Alpha test
+	if (gDP.otherMode.cycleType == G_CYC_FILL) {
+		_key.setEnableAlphaTest(0);
+	}
+	else if (gDP.otherMode.cycleType == G_CYC_COPY) {
+		if (gDP.otherMode.alphaCompare & G_AC_THRESHOLD) {
+			_key.setAlphaCvgSel(0);
+			_key.setEnableAlphaTest(1);
+		}
+		else {
+			_key.setEnableAlphaTest(0);
+		}
+	}
+	else if ((gDP.otherMode.alphaCompare & G_AC_THRESHOLD) != 0) {
+		_key.setEnableAlphaTest(1);
+		_key.setAlphaCvgSel(gDP.otherMode.alphaCvgSel);
+	}
+	else {
+		_key.setEnableAlphaTest(0);
+	}
+	_key.setCvgXAlpha(gDP.otherMode.cvgXAlpha);
+
+	//Alpha compare
+	_key.setAlphaCompareMode(gDP.otherMode.cycleType < G_CYC_COPY ? gDP.otherMode.alphaCompare : 0);
+
+	//Dither modes
+	if (gDP.otherMode.cycleType < G_CYC_COPY) {
+		_key.setAlphaDither(gDP.otherMode.alphaDither);
+		_key.setColorDither(gDP.otherMode.colorDither);
+	}
+	else {
+		_key.setAlphaDither(0);
+		_key.setColorDither(0);
+	}
+
+	//Render target
+	_key.setRenderTarget(gDP.colorImage.address == gDP.depthImageAddress ? gDP.otherMode.depthCompare + 1 : 0);
+
+	//Texture filter mode
+	unsigned int textureFilter = gDP.otherMode.textureFilter;
+	if ((gSP.objRendermode&G_OBJRM_BILERP) != 0)
+		textureFilter |= 2;
+	_key.setTextureFilter(textureFilter);
+
+	//FB monochrome mode and fixed alpha
+	TextureCache & cache = textureCache();
+	if (cache.current[0] != nullptr && cache.current[0]->frameBufferTexture != CachedTexture::fbNone) {
+		if (cache.current[0]->size == G_IM_SIZ_8b) {
+			_key.setFbMonochromeMode0(1);
+
+			if (gDP.otherMode.imageRead == 0)
+				_key.setFbFixedAlpha0(1);
+		} else if (gSP.textureTile[0]->size == G_IM_SIZ_16b && gSP.textureTile[0]->format == G_IM_FMT_IA) {
+			_key.setFbMonochromeMode0(2);
+		} else if ((config.generalEmulation.hacks & hack_ZeldaMonochrome) != 0 &&
+				   cache.current[0]->size == G_IM_SIZ_16b &&
+				   gSP.textureTile[0]->size == G_IM_SIZ_8b &&
+				   gSP.textureTile[0]->format == G_IM_FMT_CI) {
+			// Zelda monochrome effect
+			_key.setFbMonochromeMode0(3);
+			_key.setFbMonochromeMode1(3);
+		}
+	}
+	if (cache.current[1] != nullptr && cache.current[1]->frameBufferTexture != CachedTexture::fbNone) {
+		if (cache.current[1]->size == G_IM_SIZ_8b) {
+			_key.setFbMonochromeMode1(1);
+			if (gDP.otherMode.imageRead == 0)
+				_key.setFbFixedAlpha1(1);
+		}
+		else if (gSP.textureTile[1]->size == G_IM_SIZ_16b && gSP.textureTile[1]->format == G_IM_FMT_IA)
+			_key.setFbMonochromeMode1(2);
+	}
+}
+
 void CombinerInfo::setCombine(u64 _mux )
 {
-	const CombinerKey key(_mux);
+	//Generate key
+	CombinerKey key(_mux);
+	setSecondaryParams(key);
+
+	//Search for the key
 	if (m_pCurrent != nullptr && m_pCurrent->getKey() == key) {
 		m_bChanged = false;
 		return;

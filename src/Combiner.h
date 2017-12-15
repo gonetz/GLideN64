@@ -122,6 +122,7 @@ public:
 	void init();
 	void destroy();
 	void update();
+	void setSecondaryParams(CombinerKey& _key);
 	void setCombine(u64 _mux);
 	void updateParameters();
 

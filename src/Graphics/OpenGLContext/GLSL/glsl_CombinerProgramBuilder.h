@@ -61,7 +61,6 @@ namespace glsl {
 		ShaderPartPtr m_fragmentHeaderWriteDepth;
 		ShaderPartPtr m_fragmentHeaderCalcLight;
 		ShaderPartPtr m_fragmentHeaderMipMap;
-		ShaderPartPtr m_fragmentHeaderReadMSTex;
 		ShaderPartPtr m_fragmentHeaderDither;
 		ShaderPartPtr m_fragmentHeaderDepthCompare;
 		ShaderPartPtr m_fragmentHeaderReadTex;

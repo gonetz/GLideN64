@@ -185,54 +185,26 @@ class UFrameBufferInfo : public UniformGroup
 {
 public:
 	UFrameBufferInfo(GLuint _program) {
-		LocateUniform(uFbMonochrome);
-		LocateUniform(uFbFixedAlpha);
 		LocateUniform(uMSTexEnabled);
 	}
 
 	void update(bool _force) override
 	{
-		int nFbMonochromeMode0 = 0, nFbMonochromeMode1 = 0;
-		int nFbFixedAlpha0 = 0, nFbFixedAlpha1 = 0;
+
 		int nMSTex0Enabled = 0, nMSTex1Enabled = 0;
 		TextureCache & cache = textureCache();
 		if (cache.current[0] != nullptr && cache.current[0]->frameBufferTexture != CachedTexture::fbNone) {
-			if (cache.current[0]->size == G_IM_SIZ_8b) {
-				nFbMonochromeMode0 = 1;
-				if (gDP.otherMode.imageRead == 0)
-					nFbFixedAlpha0 = 1;
-			} else if (gSP.textureTile[0]->size == G_IM_SIZ_16b && gSP.textureTile[0]->format == G_IM_FMT_IA) {
-				nFbMonochromeMode0 = 2;
-			} else if ((config.generalEmulation.hacks & hack_ZeldaMonochrome) != 0 &&
-					   cache.current[0]->size == G_IM_SIZ_16b &&
-					   gSP.textureTile[0]->size == G_IM_SIZ_8b &&
-					   gSP.textureTile[0]->format == G_IM_FMT_CI) {
-				// Zelda monochrome effect
-				nFbMonochromeMode0 = 3;
-				nFbMonochromeMode1 = 3;
-			}
-
 			nMSTex0Enabled = cache.current[0]->frameBufferTexture == CachedTexture::fbMultiSample ? 1 : 0;
 		}
 		if (cache.current[1] != nullptr && cache.current[1]->frameBufferTexture != CachedTexture::fbNone) {
-			if (cache.current[1]->size == G_IM_SIZ_8b) {
-				nFbMonochromeMode1 = 1;
-				if (gDP.otherMode.imageRead == 0)
-					nFbFixedAlpha1 = 1;
-			}
-			else if (gSP.textureTile[1]->size == G_IM_SIZ_16b && gSP.textureTile[1]->format == G_IM_FMT_IA)
-				nFbMonochromeMode1 = 2;
 			nMSTex1Enabled = cache.current[1]->frameBufferTexture == CachedTexture::fbMultiSample ? 1 : 0;
 		}
-		uFbMonochrome.set(nFbMonochromeMode0, nFbMonochromeMode1, _force);
-		uFbFixedAlpha.set(nFbFixedAlpha0, nFbFixedAlpha1, _force);
+
 		uMSTexEnabled.set(nMSTex0Enabled, nMSTex1Enabled, _force);
 		gDP.changed &= ~CHANGED_FB_TEXTURE;
 	}
 
 private:
-	iv2Uniform uFbMonochrome;
-	iv2Uniform uFbFixedAlpha;
 	iv2Uniform uMSTexEnabled;
 };
 
@@ -343,24 +315,10 @@ public:
 	UDitherMode(GLuint _program, bool _usesNoise)
 	: m_usesNoise(_usesNoise)
 	{
-		LocateUniform(uAlphaCompareMode);
-		LocateUniform(uAlphaDitherMode);
-		LocateUniform(uColorDitherMode);
 	}
 
 	void update(bool _force) override
 	{
-		if (gDP.otherMode.cycleType < G_CYC_COPY) {
-			uAlphaCompareMode.set(gDP.otherMode.alphaCompare, _force);
-			uAlphaDitherMode.set(gDP.otherMode.alphaDither, _force);
-			uColorDitherMode.set(gDP.otherMode.colorDither, _force);
-		}
-		else {
-			uAlphaCompareMode.set(0, _force);
-			uAlphaDitherMode.set(0, _force);
-			uColorDitherMode.set(0, _force);
-		}
-
 		bool updateNoiseTex = m_usesNoise;
 		updateNoiseTex |= (gDP.otherMode.cycleType < G_CYC_COPY) && (gDP.otherMode.colorDither == G_CD_NOISE || gDP.otherMode.alphaDither == G_AD_NOISE || gDP.otherMode.alphaCompare == G_AC_DITHER);
 		if (updateNoiseTex)
@@ -368,9 +326,6 @@ public:
 	}
 
 private:
-	iUniform uAlphaCompareMode;
-	iUniform uAlphaDitherMode;
-	iUniform uColorDitherMode;
 	bool m_usesNoise;
 };
 
@@ -454,20 +409,13 @@ class UTextureFetchMode : public UniformGroup
 {
 public:
 	UTextureFetchMode(GLuint _program) {
-		LocateUniform(uTextureFilterMode);
 		LocateUniform(uTextureFormat);
-		LocateUniform(uBiLerp);
 		LocateUniform(uTextureConvert);
 		LocateUniform(uConvertParams);
 	}
 
 	void update(bool _force) override
 	{
-		int textureFilter = gDP.otherMode.textureFilter;
-		if ((gSP.objRendermode&G_OBJRM_BILERP) != 0)
-			textureFilter |= 2;
-		uTextureFilterMode.set(textureFilter, _force);
-		uBiLerp.set(gDP.otherMode.bi_lerp0, gDP.otherMode.bi_lerp1, _force);
 		uTextureFormat.set(gSP.textureTile[0]->format, gSP.textureTile[1]->format, _force);
 		uTextureConvert.set(0, gDP.otherMode.convert_one, _force);
 		if (gDP.otherMode.bi_lerp0 == 0 || gDP.otherMode.bi_lerp1 == 0)
@@ -475,9 +423,7 @@ public:
 	}
 
 private:
-	iUniform uTextureFilterMode;
 	iv2Uniform uTextureFormat;
-	iv2Uniform uBiLerp;
 	iv2Uniform uTextureConvert;
 	i4Uniform uConvertParams;
 };
@@ -486,43 +432,25 @@ class UAlphaTestInfo : public UniformGroup
 {
 public:
 	UAlphaTestInfo(GLuint _program) {
-		LocateUniform(uEnableAlphaTest);
-		LocateUniform(uAlphaCvgSel);
-		LocateUniform(uCvgXAlpha);
 		LocateUniform(uAlphaTestValue);
 	}
 
 	void update(bool _force) override
 	{
 		if (gDP.otherMode.cycleType == G_CYC_FILL) {
-			uEnableAlphaTest.set(0, _force);
+			//Do nothing
 		}
 		else if (gDP.otherMode.cycleType == G_CYC_COPY) {
 			if (gDP.otherMode.alphaCompare & G_AC_THRESHOLD) {
-				uEnableAlphaTest.set(1, _force);
-				uAlphaCvgSel.set(0, _force);
 				uAlphaTestValue.set(0.5f, _force);
-			}
-			else {
-				uEnableAlphaTest.set(0, _force);
 			}
 		}
 		else if ((gDP.otherMode.alphaCompare & G_AC_THRESHOLD) != 0) {
-			uEnableAlphaTest.set(1, _force);
 			uAlphaTestValue.set(gDP.blendColor.a, _force);
-			uAlphaCvgSel.set(gDP.otherMode.alphaCvgSel, _force);
 		}
-		else {
-			uEnableAlphaTest.set(0, _force);
-		}
-
-		uCvgXAlpha.set(gDP.otherMode.cvgXAlpha, _force);
 	}
 
 private:
-	iUniform uEnableAlphaTest;
-	iUniform uAlphaCvgSel;
-	iUniform uCvgXAlpha;
 	fUniform uAlphaTestValue;
 };
 
@@ -610,26 +538,6 @@ public:
 private:
 	iUniform uDepthSource;
 	fUniform uPrimDepth;
-};
-
-class URenderTarget : public UniformGroup
-{
-public:
-	URenderTarget(GLuint _program) {
-		LocateUniform(uRenderTarget);
-	}
-
-	void update(bool _force) override
-	{
-		int renderTarget = 0;
-		if (gDP.colorImage.address == gDP.depthImageAddress ) {
-			renderTarget = gDP.otherMode.depthCompare + 1;
-		}
-		uRenderTarget.set(renderTarget, _force);
-	}
-
-private:
-	iUniform uRenderTarget;
 };
 
 class UScreenCoordsScale : public UniformGroup
@@ -897,10 +805,6 @@ void CombinerProgramUniformFactory::buildUniforms(GLuint _program,
 		_uniforms.emplace_back(new UDepthInfo(_program));
 	else
 		_uniforms.emplace_back(new UDepthSource(_program));
-
-	if (config.generalEmulation.enableFragmentDepthWrite != 0 ||
-		config.frameBufferEmulation.N64DepthCompare != 0)
-		_uniforms.emplace_back(new URenderTarget(_program));
 
 	_uniforms.emplace_back(new UScreenCoordsScale(_program));
 

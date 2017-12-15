@@ -1,6 +1,6 @@
 #pragma once
-#include <map>
 #include <vector>
+#include <unordered_map>
 #include "CombinerKey.h"
 
 namespace graphics {
@@ -25,5 +25,5 @@ namespace graphics {
 		static u32 getShaderCombinerOptionsBits();
 	};
 
-	typedef std::map<CombinerKey, graphics::CombinerProgram *> Combiners;
+	typedef std::unordered_map<CombinerKey, graphics::CombinerProgram *, CombinerKeyHash> Combiners;
 }
