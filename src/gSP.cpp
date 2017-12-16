@@ -404,7 +404,7 @@ void gSPLightAcclaim(u32 l, s32 n)
 
 	gSP.changed |= CHANGED_LIGHT;
 
-	DebugMsg(DEBUG_NORMAL, "gSPLightAcclaim( 0x%08X, LIGHT_%i );\n", l, n);
+	DebugMsg(DEBUG_NORMAL, "gSPLightAcclaim( 0x%08X, LIGHT_%i ca=%f la=%f);\n", l, n, gSP.lights.ca[n], gSP.lights.la[n]);
 }
 
 void gSPLookAt( u32 _l, u32 _n )
@@ -821,6 +821,9 @@ void gSPProcessVertex(u32 v, SPVertex * spVtx)
 			gSPPointLightVertex<VNUM>(v, vPos, spVtx);
 		else
 			gSPLightVertex<VNUM>(v, spVtx);
+
+		if (gSP.geometryMode & G_ACCLAIM_LIGHTING)
+			gSPPointLightVertexAcclaim<VNUM>(v, spVtx);
 
 		if ((gSP.geometryMode & G_TEXTURE_GEN) != 0) {
 			if (GBI.getMicrocodeType() != F3DFLX2) {
