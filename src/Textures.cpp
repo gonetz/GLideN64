@@ -1264,16 +1264,19 @@ struct TextureParams
 static
 u32 _calculateCRC(u32 _t, const TextureParams & _params, u32 _bytes)
 {
+	const bool rgba32 = gSP.textureTile[_t]->size == G_IM_SIZ_32b;
 	if (_bytes == 0) {
 		const u32 lineBytes = gSP.textureTile[_t]->line << 3;
 		_bytes = _params.height*lineBytes;
 	}
-	const u32 tMemMask = gDP.otherMode.textureLUT == G_TT_NONE ? 0x1FF : 0xFF;
+	if (rgba32)
+		_bytes >>= 1;
+	const u32 tMemMask = (gDP.otherMode.textureLUT == G_TT_NONE && !rgba32) ? 0x1FF : 0xFF;
 	const u64 *src = (u64*)&TMEM[gSP.textureTile[_t]->tmem & tMemMask];
 	u32 crc = 0xFFFFFFFF;
 	crc = CRC_Calculate(crc, src, _bytes);
 
-	if (gSP.textureTile[_t]->size == G_IM_SIZ_32b) {
+	if (rgba32) {
 		src = (u64*)&TMEM[gSP.textureTile[_t]->tmem + 256];
 		crc = CRC_Calculate(crc, src, _bytes);
 	}
