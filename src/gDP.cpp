@@ -816,7 +816,7 @@ void gDPTextureRectangle(f32 ulx, f32 uly, f32 lrx, f32 lry, s32 tile, s16 s, s1
 
 	// HACK ALERT!
 	if (s == 0x4000 && (gDP.colorImage.width + gSP.textureTile[0]->uls < 512))
-		s = 0.0f;
+		s = 0;
 
 	gDP.rectColor = gDPInfo::Color();
 	if (gDP.otherMode.cycleType < G_CYC_COPY) {
