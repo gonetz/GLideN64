@@ -178,14 +178,12 @@ TxFilter::filter(uint8 *src, int srcwidth, int srcheight, uint16 srcformat, uint
 		DBG_INFO(80, wst("filter: crc:%08X %08X %d x %d gfmt:%x\n"),
 				 (uint32)(g64crc >> 32), (uint32)(g64crc & 0xffffffff), srcwidth, srcheight, srcformat);
 
-#if 0 /* use hirestex to retrieve cached textures. */
 		/* check if we have it in cache */
-		if (!(g64crc & 0xffffffff00000000) && /* we reach here only when there is no hires texture for this crc */
+		if ((g64crc & 0xffffffff00000000) == 0 && /* we reach here only when there is no hires texture for this crc */
 				_txTexCache->get(g64crc, info)) {
 			DBG_INFO(80, wst("cache hit: %d x %d gfmt:%x\n"), info->width, info->height, info->format);
 			return 1; /* yep, we've got it */
 		}
-#endif
 	}
 
 	/* Leave small textures alone because filtering makes little difference.
