@@ -269,8 +269,8 @@ public:
 			"uniform mediump vec2 uCacheShiftScale[2];			\n"
 			"uniform lowp ivec2 uCacheFrameBuffer;				\n"
 			"OUT lowp vec4 vShadeColor;							\n"
-			"OUT mediump vec2 vTexCoord0;						\n"
-			"OUT mediump vec2 vTexCoord1;						\n"
+			"OUT highp vec2 vTexCoord0;						\n"
+			"OUT highp vec2 vTexCoord1;						\n"
 			"OUT mediump vec2 vLodTexCoord;						\n"
 			"OUT lowp float vNumLights;							\n"
 
@@ -396,8 +396,8 @@ public:
 			"IN highp vec2 aTexCoord1;							\n"
 			"													\n"
 			"OUT lowp vec4 vShadeColor;							\n"
-			"OUT mediump vec2 vTexCoord0;						\n"
-			"OUT mediump vec2 vTexCoord1;						\n"
+			"OUT highp vec2 vTexCoord0;						\n"
+			"OUT highp vec2 vTexCoord1;						\n"
 			"uniform lowp vec4 uRectColor;						\n"
 			"void main()										\n"
 			"{													\n"
@@ -787,8 +787,8 @@ public:
 
 		m_part +=
 			"IN lowp vec4 vShadeColor;	\n"
-			"IN mediump vec2 vTexCoord0;\n"
-			"IN mediump vec2 vTexCoord1;\n"
+			"IN highp vec2 vTexCoord0;\n"
+			"IN highp vec2 vTexCoord1;\n"
 			"IN mediump vec2 vLodTexCoord;\n"
 			"IN lowp float vNumLights;	\n"
 			"OUT lowp vec4 fragColor;	\n"
@@ -920,7 +920,7 @@ public:
 			(g_cycleType == G_CYC_COPY || g_textureConvert.useTextureFiltering()))
 		{
 			shader <<
-				"lowp vec4 readTexMS(in lowp sampler2DMS mstex, in mediump vec2 texCoord, in lowp int fbMonochrome, in lowp int fbFixedAlpha);\n";
+				"lowp vec4 readTexMS(in lowp sampler2DMS mstex, in highp vec2 texCoord, in lowp int fbMonochrome, in lowp int fbFixedAlpha);\n";
 		}
 	}
 
@@ -1069,7 +1069,7 @@ public:
 			if (g_textureConvert.useTextureFiltering()) {
 				shaderPart +=
 					"uniform lowp int uTextureFilterMode;								\n"
-					"lowp vec4 readTex(in sampler2D tex, in mediump vec2 texCoord, in lowp int fbMonochrome, in lowp int fbFixedAlpha);	\n"
+					"lowp vec4 readTex(in sampler2D tex, in highp vec2 texCoord, in lowp int fbMonochrome, in lowp int fbFixedAlpha);	\n"
 					;
 			}
 			if (g_textureConvert.useYUVCoversion()) {
@@ -1077,7 +1077,7 @@ public:
 					"uniform lowp ivec2 uTextureFormat;									\n"
 					"uniform lowp int uTextureConvert;									\n"
 					"uniform mediump ivec4 uConvertParams;								\n"
-					"lowp vec4 YUV_Convert(in sampler2D tex, in mediump vec2 texCoord, in lowp int convert, in lowp int format, in lowp vec4 prev);	\n"
+					"lowp vec4 YUV_Convert(in sampler2D tex, in highp vec2 texCoord, in lowp int convert, in lowp int format, in lowp vec4 prev);	\n"
 					;
 			}
 		}
@@ -1116,7 +1116,7 @@ public:
 				;
 		} else {
 			m_part =
-				"lowp vec4 readTex(in sampler2D tex, in mediump vec2 texCoord, in lowp int fbMonochrome, in lowp int fbFixedAlpha);	\n"
+				"lowp vec4 readTex(in sampler2D tex, in highp vec2 texCoord, in lowp int fbMonochrome, in lowp int fbFixedAlpha);	\n"
 			;
 		}
 	}
@@ -1678,7 +1678,7 @@ public:
 		if (m_glinfo.isGLES2) {
 			if (g_textureConvert.useYUVCoversion())
 				shaderPart +=
-				"lowp vec4 YUV_Convert(in sampler2D tex, in mediump vec2 texCoord, in lowp int convert, in lowp int format, in lowp vec4 prev)	\n"
+				"lowp vec4 YUV_Convert(in sampler2D tex, in highp vec2 texCoord, in lowp int convert, in lowp int format, in lowp vec4 prev)	\n"
 				"{																	\n"
 				"  lowp vec4 texColor;												\n"
 				"  if (convert != 0) texColor = prev;								\n"
@@ -1702,7 +1702,7 @@ public:
 						// Original author: ArthurCarvalho
 						// GLSL implementation: twinaphex, mupen64plus-libretro project.
 						"#define TEX_OFFSET(off) texture2D(tex, texCoord - (off)/texSize)			\n"
-						"lowp vec4 TextureFilter(in sampler2D tex, in mediump vec2 texCoord)		\n"
+						"lowp vec4 TextureFilter(in sampler2D tex, in highp vec2 texCoord)		\n"
 						"{																			\n"
 						"  mediump vec2 texSize;													\n"
 						"  if (nCurrentTile == 0)													\n"
@@ -1722,7 +1722,7 @@ public:
 						// bilinear filtering.
 						"uniform mediump vec2 uTextureSize[2];										\n"
 						"#define TEX_OFFSET(off) texture2D(tex, texCoord - (off)/texSize)			\n"
-						"lowp vec4 TextureFilter(in sampler2D tex, in mediump vec2 texCoord)		\n"
+						"lowp vec4 TextureFilter(in sampler2D tex, in highp vec2 texCoord)		\n"
 						"{																			\n"
 						"  mediump vec2 texSize;													\n"
 						"  if (nCurrentTile == 0)													\n"
@@ -1747,7 +1747,7 @@ public:
 						;
 				}
 				shaderPart +=
-					"lowp vec4 readTex(in sampler2D tex, in mediump vec2 texCoord, in lowp int fbMonochrome, in lowp int fbFixedAlpha)	\n"
+					"lowp vec4 readTex(in sampler2D tex, in highp vec2 texCoord, in lowp int fbMonochrome, in lowp int fbFixedAlpha)	\n"
 					"{																			\n"
 					"  lowp vec4 texColor;														\n"
 					"  if (uTextureFilterMode == 0) texColor = texture2D(tex, texCoord);		\n"
@@ -1772,7 +1772,7 @@ public:
 					"  return texel / float(uMSAASamples);										\n"
 					"}																			\n"
 					"																			\n"
-					"lowp vec4 readTexMS(in lowp sampler2DMS mstex, in mediump vec2 texCoord, in lowp int fbMonochrome, in lowp int fbFixedAlpha)	\n"
+					"lowp vec4 readTexMS(in lowp sampler2DMS mstex, in highp vec2 texCoord, in lowp int fbMonochrome, in lowp int fbFixedAlpha)	\n"
 					"{																			\n"
 					"  mediump ivec2 itexCoord;													\n"
 					"  if (fbMonochrome == 3) {													\n"
@@ -1810,7 +1810,7 @@ public:
 	{
 		if (_glinfo.isGLES2) {
 			m_part =
-					"lowp vec4 readTex(in sampler2D tex, in mediump vec2 texCoord, in lowp int fbMonochrome, in lowp int fbFixedAlpha)	\n"
+					"lowp vec4 readTex(in sampler2D tex, in highp vec2 texCoord, in lowp int fbMonochrome, in lowp int fbFixedAlpha)	\n"
 					"{																			\n"
 					"  lowp vec4 texColor = texture2D(tex, texCoord);							\n"
 					"  if (fbMonochrome == 1) texColor = vec4(texColor.r);						\n"
@@ -1832,7 +1832,7 @@ public:
 					"  return texel / float(uMSAASamples);										\n"
 					"}																			\n"
 					"																			\n"
-					"lowp vec4 readTexMS(in lowp sampler2DMS mstex, in mediump vec2 texCoord, in lowp int fbMonochrome, in lowp int fbFixedAlpha)	\n"
+					"lowp vec4 readTexMS(in lowp sampler2DMS mstex, in highp vec2 texCoord, in lowp int fbMonochrome, in lowp int fbFixedAlpha)	\n"
 					"{																			\n"
 					"  mediump ivec2 itexCoord;													\n"
 					"  if (fbMonochrome == 3) {													\n"
