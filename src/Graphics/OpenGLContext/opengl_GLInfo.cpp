@@ -27,8 +27,11 @@ void GLInfo::init() {
 	LOG(LOG_VERBOSE, "OpenGL vendor: %s\n", glGetString(GL_VENDOR));
 	const GLubyte * strRenderer = glGetString(GL_RENDERER);
 
-	if (std::regex_match(std::string((const char*)strRenderer), std::regex("Adreno.*5\\d\\d") ))
-		renderer = Renderer::Adreno500;
+	if (std::regex_match(std::string((const char*)strRenderer), std::regex("Adreno.*530")))
+		renderer = Renderer::Adreno530;
+	else if (std::regex_match(std::string((const char*)strRenderer), std::regex("Adreno.*540")) ||
+		std::regex_match(std::string((const char*)strRenderer), std::regex("Adreno.*6\\d\\d")))
+		renderer = Renderer::Adreno_no_bugs;
 	else if (strstr((const char*)strRenderer, "Adreno") != nullptr)
 		renderer = Renderer::Adreno;
 	else if (strstr((const char*)strRenderer, "VideoCore IV") != nullptr)

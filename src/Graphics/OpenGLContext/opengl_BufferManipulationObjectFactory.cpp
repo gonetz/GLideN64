@@ -478,7 +478,7 @@ struct FramebufferTextureFormatsGLES3 : public graphics::FramebufferTextureForma
 protected:
 	void init() override
 	{
-		if (m_glinfo.renderer == Renderer::Adreno500) {
+		if (m_glinfo.renderer == Renderer::Adreno530) {
 			colorInternalFormat = GL_RGBA32F;
 			colorFormat = GL_RGBA;
 			colorType = GL_FLOAT;

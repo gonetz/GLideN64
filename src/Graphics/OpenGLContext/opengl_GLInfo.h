@@ -4,7 +4,8 @@
 namespace opengl {
 
 enum class Renderer {
-	Adreno500,
+	Adreno530,
+	Adreno_no_bugs,
 	Adreno,
 	VideoCore,
 	Intel,
