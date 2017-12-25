@@ -58,48 +58,11 @@ void ZSort_RDPCMD( u32, u32 _w1 )
 	}
 }
 
-//RSP command VRCPL
-static
+inline
 int Calc_invw (int _w) {
-	int count, neg;
-	union {
-		s32 W;
-		u32 UW;
-		s16 HW[2];
-		u16 UHW[2];
-	} Result;
-	Result.W = _w;
-	if (Result.UW == 0) {
-		Result.UW = 0x7FFFFFFF;
-	} else {
-		if (Result.W < 0) {
-			neg = TRUE;
-			if (Result.UHW[1] == 0xFFFF && Result.HW[0] < 0) {
-				Result.W = ~Result.W + 1;
-			} else {
-				Result.W = ~Result.W;
-			}
-		} else {
-			neg = FALSE;
-		}
-		for (count = 31; count > 0; --count) {
-			if ((Result.W & (1 << count))) {
-				Result.W &= (0xFFC00000 >> (31 - count) );
-				count = 0;
-			}
-		}
-		Result.W = 0x7FFFFFFF / Result.W;
-		for (count = 31; count > 0; --count) {
-			if ((Result.W & (1 << count))) {
-				Result.W &= (0xFFFF8000 >> (31 - count) );
-				count = 0;
-			}
-		}
-		if (neg == TRUE) {
-			Result.W = ~Result.W;
-		}
-	}
-	return Result.W;
+	if (_w == 0)
+		return 0x7FFFFFFF;
+	return 0x7FFFFFFF / _w;
 }
 
 static
