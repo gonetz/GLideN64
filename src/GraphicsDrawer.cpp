@@ -258,19 +258,22 @@ void GraphicsDrawer::_updateViewport() const
 void GraphicsDrawer::_updateScreenCoordsViewport() const
 {
 	DisplayWindow & wnd = DisplayWindow::get();
-	FrameBuffer * pCurrentBuffer = frameBufferList().getCurrent();
+	const FrameBuffer * pCurrentBuffer = frameBufferList().getCurrent();
 
-	u32 bufferWidth;
-	f32 viewportScale;
+	u32 bufferWidth, bufferHeight;
+	f32 viewportScaleX, viewportScaleY;
 	if (pCurrentBuffer == nullptr) {
 		bufferWidth = VI.width;
-		viewportScale = wnd.getScaleX();
+		bufferHeight = VI.height;
+		viewportScaleX = wnd.getScaleX();
+		viewportScaleY = wnd.getScaleY();
 	} else {
 		bufferWidth = pCurrentBuffer->m_width;
-		viewportScale = pCurrentBuffer->m_scale;
+		bufferHeight = VI_GetMaxBufferHeight(bufferWidth);
+		viewportScaleX = viewportScaleY = pCurrentBuffer->m_scale;
 	}
-	const u32 bufferHeight = VI_GetMaxBufferHeight(bufferWidth);
-	gfxContext.setViewport(0, 0, (s32)(bufferWidth * viewportScale), (s32)(bufferHeight * viewportScale));
+
+	gfxContext.setViewport(0, 0, (s32)(bufferWidth * viewportScaleX), (s32)(bufferHeight * viewportScaleY));
 	gSP.changed |= CHANGED_VIEWPORT;
 }
 
