@@ -109,63 +109,48 @@ void DisplayWindow::updateScale()
 void DisplayWindow::_setBufferSize()
 {
 	m_bAdjustScreen = false;
-	if (config.frameBufferEmulation.enable) {
-		switch (config.frameBufferEmulation.aspect) {
-		case Config::aStretch: // stretch
-			m_width = m_screenWidth;
+	switch (config.frameBufferEmulation.aspect) {
+	case Config::aStretch: // stretch
+		m_width = m_screenWidth;
+		m_height = m_screenHeight;
+		break;
+	case Config::a43: // force 4/3
+		if (m_screenWidth * 3 / 4 > m_screenHeight) {
 			m_height = m_screenHeight;
-			break;
-		case Config::a43: // force 4/3
-			if (m_screenWidth * 3 / 4 > m_screenHeight) {
-				m_height = m_screenHeight;
-				m_width = m_screenHeight * 4 / 3;
-			}
-			else if (m_screenHeight * 4 / 3 > m_screenWidth) {
-				m_width = m_screenWidth;
-				m_height = m_screenWidth * 3 / 4;
-			}
-			else {
-				m_width = m_screenWidth;
-				m_height = m_screenHeight;
-			}
-			break;
-		case Config::a169: // force 16/9
-			if (m_screenWidth * 9 / 16 > m_screenHeight) {
-				m_height = m_screenHeight;
-				m_width = m_screenHeight * 16 / 9;
-			}
-			else if (m_screenHeight * 16 / 9 > m_screenWidth) {
-				m_width = m_screenWidth;
-				m_height = m_screenWidth * 9 / 16;
-			}
-			else {
-				m_width = m_screenWidth;
-				m_height = m_screenHeight;
-			}
-			break;
-		case Config::aAdjust: // adjust
+			m_width = m_screenHeight * 4 / 3;
+		} else if (m_screenHeight * 4 / 3 > m_screenWidth) {
 			m_width = m_screenWidth;
-			m_height = m_screenHeight;
-			if (m_screenWidth * 3 / 4 > m_screenHeight) {
-				f32 width43 = m_screenHeight * 4.0f / 3.0f;
-				m_adjustScale = width43 / m_screenWidth;
-				m_bAdjustScreen = true;
-			}
-			break;
-		default:
-			assert(false && "Unknown aspect ratio");
+			m_height = m_screenWidth * 3 / 4;
+		} else {
 			m_width = m_screenWidth;
 			m_height = m_screenHeight;
 		}
-	}
-	else {
+		break;
+	case Config::a169: // force 16/9
+		if (m_screenWidth * 9 / 16 > m_screenHeight) {
+			m_height = m_screenHeight;
+			m_width = m_screenHeight * 16 / 9;
+		} else if (m_screenHeight * 16 / 9 > m_screenWidth) {
+			m_width = m_screenWidth;
+			m_height = m_screenWidth * 9 / 16;
+		} else {
+			m_width = m_screenWidth;
+			m_height = m_screenHeight;
+		}
+		break;
+	case Config::aAdjust: // adjust
 		m_width = m_screenWidth;
 		m_height = m_screenHeight;
-		if (config.frameBufferEmulation.aspect == Config::aAdjust && (m_screenWidth * 3 / 4 > m_screenHeight)) {
+		if (m_screenWidth * 3 / 4 > m_screenHeight) {
 			f32 width43 = m_screenHeight * 4.0f / 3.0f;
 			m_adjustScale = width43 / m_screenWidth;
 			m_bAdjustScreen = true;
 		}
+		break;
+	default:
+		assert(false && "Unknown aspect ratio");
+		m_width = m_screenWidth;
+		m_height = m_screenHeight;
 	}
 }
 
