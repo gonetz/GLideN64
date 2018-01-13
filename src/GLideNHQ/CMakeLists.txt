@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.6)
 
 project( GLideNHQ )
-
+set(BCMHOST ON)
 set(GLideNHQ_SOURCES
   TextureFilters.cpp
   TextureFilters_2xsai.cpp
