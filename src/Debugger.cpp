@@ -163,17 +163,41 @@ void Debugger::checkDebugState()
 void Debugger::_debugKeys()
 {
 	if (isKeyPressed(G64_VK_RIGHT, 0x0001)) {
-		if (std::next(m_triSel) != m_triangles.end())
+		if (std::next(m_triSel) != m_triangles.cend())
 			++m_triSel;
 		else
-			m_triSel = m_triangles.begin();
+			m_triSel = m_triangles.cbegin();
 	}
 
 	if (isKeyPressed(G64_VK_LEFT, 0x0001)) {
-		if (m_triSel != m_triangles.begin())
+		if (m_triSel != m_triangles.cbegin())
 			--m_triSel;
 		else
-			m_triSel = std::prev(m_triangles.end());
+			m_triSel = std::prev(m_triangles.cend());
+	}
+
+	if (isKeyPressed(G64_VK_F, 0x0001)) {
+		if (m_pCurTexInfo != nullptr) {
+			auto curTexName = m_pCurTexInfo->texture->name;
+			auto beginItr =
+				(std::next(m_triSel) != m_triangles.cend() &&
+				(m_triSel->tex_info[0]->texture->name == curTexName ||
+					m_triSel->tex_info[1]->texture->name == curTexName)) ?
+				std::next(m_triSel) :
+				m_triangles.cbegin();
+			auto predicate = [curTexName](const Triangles::value_type & val) {
+				if (val.tex_info[0].operator bool() && val.tex_info[0]->texture->name == curTexName)
+					return true;
+				if (val.tex_info[1].operator bool() && val.tex_info[1]->texture->name == curTexName)
+					return true;
+				return false;
+			};
+			auto iter = std::find_if(beginItr, m_triangles.cend(), predicate);
+			if (iter == m_triangles.cend() && beginItr != m_triangles.cbegin())
+				iter = std::find_if(m_triangles.cbegin(), beginItr, predicate);
+			if (iter != m_triangles.cend())
+				m_triSel = iter;
+		}
 	}
 
 	if (isKeyPressed(G64_VK_B, 0x0001)) {

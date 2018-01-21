@@ -70,14 +70,15 @@
 #define G64_VK_A        21
 #define G64_VK_B        22
 #define G64_VK_D        23
-#define G64_VK_G        24
-#define G64_VK_Q        25
-#define G64_VK_R        26
-#define G64_VK_S        27
-#define G64_VK_V        28
-#define G64_VK_W        29
+#define G64_VK_F        24
+#define G64_VK_G        25
+#define G64_VK_Q        26
+#define G64_VK_R        27
+#define G64_VK_S        28
+#define G64_VK_V        29
+#define G64_VK_W        30
 
-#define G64_NUM_KEYS    30
+#define G64_NUM_KEYS    31
 
 class Glide64Keys
 {
