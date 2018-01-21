@@ -360,7 +360,7 @@ void Debugger::_drawTextureFrame(const RectVertex * _rect)
 	memset(vertexBuf, 0, sizeof(vertexBuf));
 	SPVertex & v0 = vertexBuf[0];
 	v0.x = _rect[0].x;
-	v0.y = _rect[0].y;
+	v0.y = -_rect[0].y;
 	v0.z = _rect[0].z;
 	v0.w = _rect[0].w;
 	SPVertex & v1 = vertexBuf[1];
@@ -368,13 +368,13 @@ void Debugger::_drawTextureFrame(const RectVertex * _rect)
 	v1.x = _rect[1].x;
 	gfxContext.drawLine(lineWidth, vertexBuf);
 	v1.x = _rect[0].x;
-	v1.y = _rect[2].y;
+	v1.y = -_rect[2].y;
 	gfxContext.drawLine(lineWidth, vertexBuf);
 	v0.x = _rect[1].x;
 	v1.x = _rect[1].x;
 	gfxContext.drawLine(lineWidth, vertexBuf);
 	v0.x = _rect[0].x;
-	v0.y = _rect[2].y;
+	v0.y = -_rect[2].y;
 	gfxContext.drawLine(lineWidth, vertexBuf);
 
 	_setTextureCombiner();
@@ -463,7 +463,7 @@ void Debugger::_drawTextureCache()
 	}
 
 	f32 X = -1.0f;
-	f32 Y = -1.0f;
+	f32 Y = 1.0f;
 	RectVertex rect[4];
 	RectVertex rectSelected[4];
 	struct Framer {
@@ -530,7 +530,7 @@ void Debugger::_drawTextureCache()
 			rect[1].z = Z;
 			rect[1].w = W;
 			rect[2].x = rect[0].x;
-			rect[2].y = Y + rectHeight;
+			rect[2].y = Y - rectHeight;
 			rect[2].z = Z;
 			rect[2].w = W;
 			rect[3].x = rect[1].x;
@@ -573,7 +573,7 @@ void Debugger::_drawTextureCache()
 		}
 
 		X = -1.0f;
-		Y += rectHeight;
+		Y -= rectHeight;
 	}
 
 	gfxContext.enable(enable::SCISSOR_TEST, true);
