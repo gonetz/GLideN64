@@ -26,7 +26,7 @@
 
 #include "Ext_TxFilter.h"
 #include "txWidestringWrapper.h"
-
+#define GL_RGBA8 GL_RGBA8_OES
 
 #ifdef WIN32
 #define KBHIT(key) ((GetAsyncKeyState(key) & 0x8001) == 0x8001)
