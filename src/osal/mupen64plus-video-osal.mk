@@ -3,7 +3,7 @@
 ###########
 include $(CLEAR_VARS)
 LOCAL_PATH := $(JNI_LOCAL_PATH)
-SRCDIR := ./mupen64plus-video-gliden64/src/osal
+SRCDIR := ./$(BASE_DIR)/src/osal
 
 LOCAL_MODULE := osal
 LOCAL_ARM_MODE := arm
