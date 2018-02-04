@@ -58,14 +58,14 @@ f32 Debugger::TriInfo::getScreenX(const Debugger::Vertex & _v) const
 {
 	if ((_v.modify & MODIFY_XY) != 0)
 		return _v.x;
-	return (_v.x / _v.w * viewport.vscale[0] + viewport.vtrans[0]) * dwnd().getScaleX() * 5.0f / 8.0f;
+	return _v.x / _v.w * viewport.vscale[0] + viewport.vtrans[0];
 }
 
 f32 Debugger::TriInfo::getScreenY(const Debugger::Vertex & _v) const
 {
 	if ((_v.modify & MODIFY_XY) != 0)
 		return _v.y;
-	return (-_v.y / _v.w * viewport.vscale[1] + viewport.vtrans[1]) * dwnd().getScaleY() * 5.0f / 8.0f;;
+	return -_v.y / _v.w * viewport.vscale[1] + viewport.vtrans[1];
 }
 
 f32 Debugger::TriInfo::getScreenZ(const Debugger::Vertex & _v) const
