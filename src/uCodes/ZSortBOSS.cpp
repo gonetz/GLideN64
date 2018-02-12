@@ -717,7 +717,7 @@ void ZSortBOSS_Audio4( u32 _w0, u32 _w1 )
 		int index = (r9 & 0xf) << 1;
 
 		if(index > 6) {
-			LOG(LOG_WARNING, "ZSortBOSS_Audio4: Index out of bound\n");
+			LOG(LOG_VERBOSE, "ZSortBOSS_Audio4: Index out of bound\n");
 			break;
 		}
 
