@@ -57,7 +57,6 @@ void ZSort_RDPCMD( u32, u32 _w1 )
 	}
 }
 
-inline
 int Calc_invw (int _w) {
 	if (_w == 0)
 		return 0x7FFFFFFF;
