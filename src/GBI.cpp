@@ -66,7 +66,8 @@ SpecialMicrocodeInfo specialMicrocodes[] =
 	{ T3DUX,		false,	true,	0xbad437f2, "T3DUX vers 0.83 for Toukon Road" },
 	{ T3DUX,		false,	true,	0xd0a1aa3d, "T3DUX vers 0.85 for Toukon Road 2" },
 	{ F3DEX2ACCLAIM,true,	true,	0xe44df568, "Acclaim games: Turok2 & 3, Armories and South park" },
-	{ ZSortBOSS,	false,	false,  0x553538cc, "World Driver Championship" },
+	{ ZSortBOSS,	false,	false,  0x553538cc, "World Driver Championship" }, // USA
+	{ ZSortBOSS,	false,	false,  0x75ed44cc, "World Driver Championship" }, // European
 	{ ZSortBOSS,	false,	false,  0x6a76f8dd, "Stunt Racer" }
 };
 
