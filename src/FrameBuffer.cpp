@@ -1100,7 +1100,7 @@ void FrameBufferList::renderBuffer()
 
 
 	const u32 stride = pBuffer->m_width << pBuffer->m_size >> 1;
-	FrameBuffer *pNextBuffer = findBuffer(rdpRes.vi_origin + stride * srcHeight);
+	FrameBuffer *pNextBuffer = findBuffer(rdpRes.vi_origin + stride * (srcHeight - 1));
 	if (pNextBuffer == pBuffer)
 		pNextBuffer = nullptr;
 
