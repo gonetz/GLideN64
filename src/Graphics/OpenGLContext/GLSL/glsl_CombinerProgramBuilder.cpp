@@ -527,14 +527,6 @@ public:
 			;
 #endif
 	}
-
-	void write(std::stringstream & shader) const override
-	{
-		if (g_cycleType == G_CYC_2CYCLE)
-			shader << "  muxPM[1] = clampedColor;	\n";
-
-		ShaderPart::write(shader);
-	}
 };
 
 class ShaderBlender2 : public ShaderPart

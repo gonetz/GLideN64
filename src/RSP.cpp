@@ -334,6 +334,8 @@ void RSP_Init()
 	else if (strstr(RSP.romname, (const char *)"Resident Evil II") ||
 			 strstr(RSP.romname, (const char *)"BioHazard II"))
 		config.generalEmulation.hacks |= hack_RE2 | hack_ModifyVertexXyInShader | hack_LoadDepthTextures;
+	else if (strstr(RSP.romname, (const char *)"THPS") != nullptr)
+		config.generalEmulation.hacks |= hack_TonyHawk;
 
 	api().FindPluginPath(RSP.pluginpath);
 
