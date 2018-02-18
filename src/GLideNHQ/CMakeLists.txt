@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.6)
 
 project( GLideNHQ )
-
+set(BCMHOST ON)
 set(GLideNHQ_SOURCES
   TextureFilters.cpp
   TextureFilters_2xsai.cpp
@@ -31,6 +31,23 @@ if(GLES2)
   add_definitions(
     -DGLES2
    )
+   list(APPEND GLideN64_SOURCES 
+    GLES2/GLSLCombiner_gles2.cpp
+    GLES2/UniformSet.cpp
+   )
+   SET(OPENGL_LIBRARIES -lGLESv2 -lEGL)
+else(GLES2)
+  find_package(OpenGL REQUIRED)
+  include_directories(${OpenGL_INCLUDE_DIRS})
+  link_directories(${OpenGL_LIBRARY_DIRS})
+  add_definitions(${OpenGL_DEFINITIONS})
+  if(NOT OPENGL_FOUND)
+  	message(ERROR " OPENGL not found!")
+  endif(NOT OPENGL_FOUND)
+  list(APPEND GLideN64_SOURCES 
+    OGL3X/GLSLCombiner_ogl3x.cpp
+    OGL3X/UniformBlock.cpp
+  )
 endif(GLES2)
 
 if(UNIX)
