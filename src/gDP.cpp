@@ -841,7 +841,7 @@ void gDPTextureRectangle(f32 ulx, f32 uly, f32 lrx, f32 lry, s32 tile, s16 s, s1
 		DebugMsg( DEBUG_NORMAL, "gDPTextureRectangleFlip( %f, %f, %f, %f, %i, %f, %f, %f, %f);\n",
 				  ulx, uly, lrx, lry, tile, s/32.0f, t/32.0f, dsdx, dtdy );
 	else
-		DebugMsg( DEBUG_NORMAL, "gDPTextureRectangle( %f, %f, %f, %f, %i, %i, %f, %f, %f, %f );\n",
+		DebugMsg( DEBUG_NORMAL, "gDPTextureRectangle( %f, %f, %f, %f, %i, %f, %f, %f, %f );\n",
 				  ulx, uly, lrx, lry, tile, s/32.0f, t/32.0f, dsdx, dtdy);
 	gSP.tri_num += 2;
 }
