@@ -26,6 +26,7 @@
 #include <cstddef> //size_t
 #include <cstdint> //uint32_t
 #include <limits.h>
+#include <cmath>
 
 namespace xbrz
 {
