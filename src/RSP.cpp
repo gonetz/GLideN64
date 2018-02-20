@@ -303,7 +303,7 @@ void RSP_Init()
 		config.generalEmulation.hacks |= hack_texrect_shade_alpha;
 	else if (strstr(RSP.romname, (const char *)"THE LEGEND OF ZELDA") != nullptr ||
 			 strstr(RSP.romname, (const char *)"ZELDA MASTER QUEST") != nullptr)
-		 config.generalEmulation.hacks |= hack_subscreen | hack_ZeldaMonochrome;
+		config.generalEmulation.hacks |= hack_subscreen | hack_ZeldaMonochrome;
 	else if (strstr(RSP.romname, (const char *)"DOUBUTSUNOMORI") != nullptr ||
 			 strstr(RSP.romname, (const char *)"ANIMAL FOREST") != nullptr)
 		config.generalEmulation.hacks |= hack_subscreen;
@@ -320,7 +320,8 @@ void RSP_Init()
 		config.generalEmulation.hacks |= hack_ModifyVertexXyInShader;
 	else if (strstr(RSP.romname, (const char *)"Quake") != nullptr)
 		config.generalEmulation.hacks |= hack_doNotResetOtherModeH|hack_doNotResetOtherModeL;
-	else if (strstr(RSP.romname, (const char *)"QUAKE II") != nullptr)
+	else if (strstr(RSP.romname, (const char *)"QUAKE II") != nullptr ||
+			 strstr(RSP.romname, (const char *)"GAUNTLET LEGENDS") != nullptr)
 		config.generalEmulation.hacks |= hack_doNotResetOtherModeH;
 	else if (strstr(RSP.romname, (const char *)"quarterback_club_98") != nullptr)
 		config.generalEmulation.hacks |= hack_LoadDepthTextures;
