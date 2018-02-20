@@ -3,11 +3,11 @@
 #include "F3D.h"
 #include "F3DEX.h"
 #include "F3DEX2.h"
-#include "GBI.h"
-#include "gSP.h"
-#include "gDP.h"
-#include "RSP.h"
-#include "Types.h"
+#include <GBI.h>
+#include <gSP.h>
+#include <gDP.h>
+#include <RSP.h>
+#include <Types.h>
 
 void S2DEX2_MoveWord( u32 w0, u32 w1 )
 {

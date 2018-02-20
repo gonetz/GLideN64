@@ -2,13 +2,13 @@
 #include "S2DEX.h"
 #include "F3D.h"
 #include "F3DEX.h"
-#include "GBI.h"
-#include "gSP.h"
-#include "gDP.h"
-#include "RSP.h"
-#include "RDP.h"
-#include "Types.h"
-#include "Log.h"
+#include <GBI.h>
+#include <gSP.h>
+#include <gDP.h>
+#include <RSP.h>
+#include <RDP.h>
+#include <Types.h>
+#include <Log.h>
 
 void S2DEX_BG_1Cyc( u32 w0, u32 w1 )
 {

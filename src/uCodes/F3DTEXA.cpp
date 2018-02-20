@@ -1,11 +1,12 @@
-#include "GLideN64.h"
+#include <GLideN64.h>
+#include <DebugDump.h>
 #include "F3D.h"
 #include "F3DEX.h"
 #include "F3DTEXA.h"
-#include "N64.h"
-#include "RDP.h"
-#include "gSP.h"
-#include "GBI.h"
+#include <N64.h>
+#include <RDP.h>
+#include <gSP.h>
+#include <GBI.h>
 
 #define F3DTEXA_LOADTEX			0xB5
 #define F3DTEXA_SETTILESIZE		0xBE

@@ -1,10 +1,11 @@
 #include "Turbo3D.h"
-#include "N64.h"
-#include "RSP.h"
-#include "RDP.h"
-#include "gSP.h"
-#include "gDP.h"
-#include "DisplayWindow.h"
+#include <DebugDump.h>
+#include <N64.h>
+#include <RSP.h>
+#include <RDP.h>
+#include <gSP.h>
+#include <gDP.h>
+#include <DisplayWindow.h>
 
 /******************Turbo3D microcode*************************/
 

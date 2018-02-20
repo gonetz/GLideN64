@@ -21,8 +21,10 @@ public:
 	void setTextColor(float * _color);
 
 private:
+#ifndef NO_FREETYPE
 	std::unique_ptr<Atlas> m_atlas;
 	std::unique_ptr<graphics::TextDrawerShaderProgram> m_program;
+#endif
 };
 
 extern TextDrawer g_textDrawer;

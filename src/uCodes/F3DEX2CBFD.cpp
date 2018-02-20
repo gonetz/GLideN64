@@ -1,15 +1,15 @@
-#include "GLideN64.h"
-#include "DebugDump.h"
+#include <GLideN64.h>
+#include <DebugDump.h>
 #include "F3D.h"
 #include "F3DEX.h"
 #include "F3DEX2.h"
 #include "F3DEX2CBFD.h"
-#include "N64.h"
-#include "RSP.h"
-#include "RDP.h"
-#include "gSP.h"
-#include "gDP.h"
-#include "GBI.h"
+#include <N64.h>
+#include <RSP.h>
+#include <RDP.h>
+#include <gSP.h>
+#include <gDP.h>
+#include <GBI.h>
 
 void F3DEX2CBFD_Vtx( u32 w0, u32 w1 )
 {

@@ -15,6 +15,17 @@
 #include <stddef.h>
 #include <OpenGL/gl3.h>
 //#include <OpenGL/gl3ext.h>
+#elif defined(OS_IOS)
+#include <OpenGLES/ES3/gl.h>
+#include <OpenGLES/ES3/glext.h>
+// Add missing type defintions for iOS
+typedef double GLclampd;
+typedef double GLdouble;
+// These will get redefined by other GL headers.
+#undef GL_DRAW_FRAMEBUFFER_BINDING
+#undef GL_COPY_READ_BUFFER_BINDING
+#undef GL_COPY_WRITE_BUFFER_BINDING
+#include <GL/glcorearb.h>
 #else
 #include <GL/gl.h>
 #endif
@@ -35,7 +46,7 @@
 #define IS_GL_FUNCTION_VALID(proc_name) g_##proc_name != nullptr
 #define GET_GL_FUNCTION(proc_name) g_##proc_name
 
-#ifdef EGL
+#if defined(EGL) || defined(OS_IOS)
 
 #define glGetError g_glGetError
 #define glBlendFunc(...) CHECKED_GL_FUNCTION(g_glBlendFunc, __VA_ARGS__)

@@ -1,12 +1,12 @@
-#include "GLideN64.h"
-#include "3DMath.h"
+#include <GLideN64.h>
+#include <3DMath.h>
 #include "F3D.h"
 #include "F3DEX.h"
 #include "F3DEX2.h"
 #include "F3DFLX2.h"
-#include "RSP.h"
-#include "gSP.h"
-#include "DebugDump.h"
+#include <RSP.h>
+#include <gSP.h>
+#include <DebugDump.h>
 
 inline
 void F3DFLX2_LoadAlphaLight(u32 _a)
