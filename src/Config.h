@@ -79,7 +79,8 @@ struct Config
 	enum CopyToRDRAM {
 		ctDisable = 0,
 		ctSync,
-		ctAsync
+		ctDoubleBuffer,
+		ctTripleBuffer
 	};
 
 	enum BufferSwapMode {

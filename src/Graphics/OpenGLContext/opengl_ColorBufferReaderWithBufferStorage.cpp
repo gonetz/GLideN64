@@ -1,3 +1,4 @@
+#include <Config.h>
 #include <Graphics/Context.h>
 #include "opengl_ColorBufferReaderWithBufferStorage.h"
 
@@ -18,12 +19,16 @@ ColorBufferReaderWithBufferStorage::~ColorBufferReaderWithBufferStorage()
 
 void ColorBufferReaderWithBufferStorage::_initBuffers()
 {
+	m_numPBO = config.frameBufferEmulation.copyToRDRAM;
+	if (m_numPBO > _maxPBO)
+		m_numPBO = _maxPBO;
+
 	// Generate Pixel Buffer Objects
-	glGenBuffers(_numPBO, m_PBO);
+	glGenBuffers(m_numPBO, m_PBO);
 	m_curIndex = 0;
 
 	// Initialize Pixel Buffer Objects
-	for (int index = 0; index < _numPBO; ++index) {
+	for (int index = 0; index < m_numPBO; ++index) {
 		m_bindBuffer->bind(Parameter(GL_PIXEL_PACK_BUFFER), ObjectHandle(m_PBO[index]));
 		m_fence[index] = 0;
 		glBufferStorage(GL_PIXEL_PACK_BUFFER, m_pTexture->textureBytes, nullptr, GL_MAP_READ_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT);
@@ -35,9 +40,9 @@ void ColorBufferReaderWithBufferStorage::_initBuffers()
 
 void ColorBufferReaderWithBufferStorage::_destroyBuffers()
 {
-	glDeleteBuffers(_numPBO, m_PBO);
+	glDeleteBuffers(m_numPBO, m_PBO);
 
-	for (int index = 0; index < _numPBO; ++index) {
+	for (int index = 0; index < m_numPBO; ++index) {
 		m_PBO[index] = 0;
 		glDeleteSync(m_fence[index]);
 	}
@@ -55,7 +60,7 @@ const u8 * ColorBufferReaderWithBufferStorage::_readPixels(const ReadColorBuffer
 	if (!_params.sync) {
 		//Setup a fence sync object so that we know when glReadPixels completes
 		m_fence[m_curIndex] = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
-		m_curIndex = (m_curIndex + 1) % _numPBO;
+		m_curIndex = (m_curIndex + 1) % m_numPBO;
 		//Wait for glReadPixels to complete for the currently selected PBO
 		if (m_fence[m_curIndex] != 0) {
 			glClientWaitSync(m_fence[m_curIndex], 0, 100000000);

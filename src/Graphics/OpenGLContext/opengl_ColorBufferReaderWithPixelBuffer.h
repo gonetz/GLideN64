@@ -21,8 +21,9 @@ private:
 
 	CachedBindBuffer * m_bindBuffer;
 
-	static const int _numPBO = 3;
-	GLuint m_PBO[_numPBO];
+	u32 m_numPBO;
+	static const int _maxPBO = 3;
+	GLuint m_PBO[_maxPBO];
 	u32 m_curIndex;
 };
 

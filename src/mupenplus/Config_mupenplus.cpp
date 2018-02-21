@@ -108,7 +108,7 @@ bool Config_SetDefault()
 	assert(res == M64ERR_SUCCESS);
 	res = ConfigSetDefaultBool(g_configVideoGliden64, "FBInfoReadDepthChunk", config.frameBufferEmulation.fbInfoReadDepthChunk, "Read depth buffer by 4kb chunks (strict follow to FBRead specification)");
 	assert(res == M64ERR_SUCCESS);
-	res = ConfigSetDefaultInt(g_configVideoGliden64, "EnableCopyColorToRDRAM", config.frameBufferEmulation.copyToRDRAM, "Enable color buffer copy to RDRAM (0=do not copy, 1=copy in sync mode, 2=copy in async mode)");
+	res = ConfigSetDefaultInt(g_configVideoGliden64, "EnableCopyColorToRDRAM", config.frameBufferEmulation.copyToRDRAM, "Enable color buffer copy to RDRAM (0=do not copy, 1=copy in sync mode, 2=Double Buffer, 3=Triple Buffer)");
 	assert(res == M64ERR_SUCCESS);
 	res = ConfigSetDefaultInt(g_configVideoGliden64, "EnableCopyDepthToRDRAM", config.frameBufferEmulation.copyDepthToRDRAM, "Enable depth buffer copy to RDRAM  (0=do not copy, 1=copy from video memory, 2=use software render)");
 	assert(res == M64ERR_SUCCESS);

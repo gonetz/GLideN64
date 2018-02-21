@@ -305,7 +305,7 @@ graphics::ColorBufferReader * ContextImpl::createColorBufferReader(CachedTexture
 		return new ColorBufferReaderWithPixelBuffer(_pTexture, m_cachedFunctions->getCachedBindBuffer());
 
 #if defined(EGL) && defined(OS_ANDROID)
-	if(config.frameBufferEmulation.copyToRDRAM == Config::ctAsync)
+	if(config.frameBufferEmulation.copyToRDRAM > Config::ctSync)
 		return new ColorBufferReaderWithEGLImage(_pTexture, m_cachedFunctions->getCachedBindTexture());
 #endif
 
