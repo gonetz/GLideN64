@@ -79,7 +79,7 @@ void GLInfo::init() {
 		}
 	}
 #ifndef OS_ANDROID
-	if (isGLES2 && config.frameBufferEmulation.copyToRDRAM == Config::ctAsync) {
+	if (isGLES2 && config.frameBufferEmulation.copyToRDRAM > Config::ctSync) {
 		config.frameBufferEmulation.copyToRDRAM = Config::ctDisable;
 		LOG(LOG_WARNING, "Async color buffer copies are not supported on GLES2\n");
 	}
