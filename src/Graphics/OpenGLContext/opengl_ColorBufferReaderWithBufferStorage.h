@@ -24,11 +24,12 @@ namespace opengl {
 
 		CachedBindBuffer * m_bindBuffer;
 
-		static const int _numPBO = 2;
-		GLuint m_PBO[_numPBO];
-		void* m_PBOData[_numPBO];
+		static const int _maxPBO = 3;
+		u32 m_numPBO;
+		GLuint m_PBO[_maxPBO];
+		void* m_PBOData[_maxPBO];
 		u32 m_curIndex;
-		GLsync m_fence[_numPBO];
+		GLsync m_fence[_maxPBO];
 	};
 
 }

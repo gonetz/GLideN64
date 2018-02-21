@@ -1,3 +1,4 @@
+#include <Config.h>
 #include <Graphics/Context.h>
 #include "opengl_ColorBufferReaderWithPixelBuffer.h"
 
@@ -19,20 +20,24 @@ ColorBufferReaderWithPixelBuffer::~ColorBufferReaderWithPixelBuffer()
 
 void ColorBufferReaderWithPixelBuffer::_destroyBuffers()
 {
-	glDeleteBuffers(_numPBO, m_PBO);
+	glDeleteBuffers(m_numPBO, m_PBO);
 
-	for(int index = 0; index < _numPBO; ++index)
+	for(int index = 0; index < m_numPBO; ++index)
 		m_PBO[index] = 0;
 }
 
 void ColorBufferReaderWithPixelBuffer::_initBuffers()
 {
+	m_numPBO = config.frameBufferEmulation.copyToRDRAM;
+	if (m_numPBO > _maxPBO)
+		m_numPBO = _maxPBO;
+
 	// Generate Pixel Buffer Objects
-	glGenBuffers(_numPBO, m_PBO);
+	glGenBuffers(m_numPBO, m_PBO);
 	m_curIndex = 0;
 
 	// Initialize Pixel Buffer Objects
-	for (u32 i = 0; i < _numPBO; ++i) {
+	for (u32 i = 0; i < m_numPBO; ++i) {
 		m_bindBuffer->bind(Parameter(GL_PIXEL_PACK_BUFFER), ObjectHandle(m_PBO[i]));
 		glBufferData(GL_PIXEL_PACK_BUFFER, m_pTexture->textureBytes, nullptr, GL_DYNAMIC_READ);
 	}
@@ -45,17 +50,13 @@ const u8 * ColorBufferReaderWithPixelBuffer::_readPixels(const ReadColorBufferPa
 	GLenum format = GLenum(_params.colorFormat);
 	GLenum type = GLenum(_params.colorType);
 
+	m_bindBuffer->bind(Parameter(GL_PIXEL_PACK_BUFFER), ObjectHandle(m_PBO[m_curIndex]));
+	glReadPixels(_params.x0, _params.y0, m_pTexture->realWidth, _params.height, format, type, 0);
 	// If Sync, read pixels from the buffer, copy them to RDRAM.
 	// If not Sync, read pixels from the buffer, copy pixels from the previous buffer to RDRAM.
 	if (!_params.sync) {
-		m_curIndex ^= 1;
-		const u32 nextIndex = m_curIndex ^ 1;
+		m_curIndex = (m_curIndex + 1) % m_numPBO;
 		m_bindBuffer->bind(Parameter(GL_PIXEL_PACK_BUFFER), ObjectHandle(m_PBO[m_curIndex]));
-		glReadPixels(_params.x0, _params.y0, m_pTexture->realWidth, _params.height, format, type, 0);
-		m_bindBuffer->bind(Parameter(GL_PIXEL_PACK_BUFFER), ObjectHandle(m_PBO[nextIndex]));
-	} else {
-		m_bindBuffer->bind(Parameter(GL_PIXEL_PACK_BUFFER), ObjectHandle(m_PBO[_numPBO -1]));
-		glReadPixels(_params.x0, _params.y0, m_pTexture->realWidth, _params.height, format, type, 0);
 	}
 
 	_heightOffset = 0;
