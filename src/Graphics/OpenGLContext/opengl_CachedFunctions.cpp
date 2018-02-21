@@ -157,6 +157,7 @@ void CachedFunctions::reset()
 	for (auto it : m_enables)
 		it.second.reset();
 
+	m_fbattachments.clear();
 	m_bindTexture.reset();
 	m_bindFramebuffer.reset();
 	m_bindRenderbuffer.reset();
@@ -259,4 +260,9 @@ CachedUseProgram * CachedFunctions::getCachedUseProgram()
 CachedTextureUnpackAlignment * CachedFunctions::getCachedTextureUnpackAlignment()
 {
 	return &m_unpackAlignment;
+}
+
+FramebufferAttachments * CachedFunctions::getFBAttachments()
+{
+	return &m_fbattachments;
 }

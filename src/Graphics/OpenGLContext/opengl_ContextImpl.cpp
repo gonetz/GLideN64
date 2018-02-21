@@ -251,6 +251,7 @@ void ContextImpl::deleteFramebuffer(graphics::ObjectHandle _name)
 	if (fbo != 0) {
 		glDeleteFramebuffers(1, &fbo);
 		m_cachedFunctions->getCachedBindFramebuffer()->reset();
+		m_cachedFunctions->getFBAttachments()->erase(u32(_name));
 	}
 }
 
