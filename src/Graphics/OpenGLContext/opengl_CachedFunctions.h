@@ -205,6 +205,8 @@ namespace opengl {
 		void setTextureUnpackAlignment(s32 _param);
 	};
 
+	typedef std::unordered_map<u32, u32> FramebufferAttachments;
+
 	/*---------------CachedFunctions-------------*/
 
 	class CachedFunctions
@@ -247,9 +249,12 @@ namespace opengl {
 
 		CachedTextureUnpackAlignment * getCachedTextureUnpackAlignment();
 
+		FramebufferAttachments * getFBAttachments();
+
 	private:
 		typedef std::unordered_map<u32, CachedEnable> EnableParameters;
 
+		FramebufferAttachments m_fbattachments;
 		EnableParameters m_enables;
 		CachedBindTexture m_bindTexture;
 		CachedBindFramebuffer m_bindFramebuffer;
