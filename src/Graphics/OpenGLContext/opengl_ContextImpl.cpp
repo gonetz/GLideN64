@@ -170,6 +170,7 @@ void ContextImpl::deleteTexture(graphics::ObjectHandle _name)
 	u32 glName(_name);
 	glDeleteTextures(1, &glName);
 	m_init2DTexture->reset(_name);
+	m_cachedFunctions->getTexParams()->erase(u32(_name));
 }
 
 void ContextImpl::init2DTexture(const graphics::Context::InitTextureParams & _params)

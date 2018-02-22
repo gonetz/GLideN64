@@ -205,7 +205,17 @@ namespace opengl {
 		void setTextureUnpackAlignment(s32 _param);
 	};
 
+	struct texture_params {
+		GLint magFilter;
+		GLint minFilter;
+		GLint wrapS;
+		GLint wrapT;
+		GLint maxMipmapLevel;
+		GLfloat maxAnisotropy;
+	};
+
 	typedef std::unordered_map<u32, u32> FramebufferAttachments;
+	typedef std::unordered_map<u32, texture_params> TextureParams;
 
 	/*---------------CachedFunctions-------------*/
 
@@ -251,9 +261,12 @@ namespace opengl {
 
 		FramebufferAttachments * getFBAttachments();
 
+		TextureParams * getTexParams();
+
 	private:
 		typedef std::unordered_map<u32, CachedEnable> EnableParameters;
 
+		TextureParams m_texparams;
 		FramebufferAttachments m_fbattachments;
 		EnableParameters m_enables;
 		CachedBindTexture m_bindTexture;
