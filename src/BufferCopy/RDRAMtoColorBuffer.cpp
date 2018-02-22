@@ -43,7 +43,6 @@ void RDRAMtoColorBuffer::init()
 	m_pTexture->realWidth = 640;
 	m_pTexture->realHeight = 580;
 	m_pTexture->textureBytes = m_pTexture->realWidth * m_pTexture->realHeight * fbTexFormats.colorFormatBytes;
-	textureCache().addFrameBufferTextureSize(m_pTexture->textureBytes);
 
 	Context::InitTextureParams initParams;
 	initParams.handle = m_pTexture->name;

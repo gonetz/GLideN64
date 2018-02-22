@@ -494,7 +494,6 @@ void TextureCache::init()
 	params.data = dummyTexture;
 	gfxContext.init2DTexture(params);
 
-	m_cachedBytes = m_pDummy->textureBytes;
 	activateDummy( 0 );
 	activateDummy(1);
 	current[0] = current[1] = nullptr;
@@ -535,15 +534,12 @@ void TextureCache::destroy()
 	for (FBTextures::const_iterator cur = m_fbTextures.cbegin(); cur != m_fbTextures.cend(); ++cur)
 		gfxContext.deleteTexture(cur->second.name);
 	m_fbTextures.clear();
-
-	m_cachedBytes = 0;
 }
 
 void TextureCache::_checkCacheSize()
 {
 	if (m_textures.size() >= m_maxCacheSize) {
 		CachedTexture& clsTex = m_textures.back();
-		m_cachedBytes -= clsTex.textureBytes;
 		gfxContext.deleteTexture(clsTex.name);
 		m_lruTextureLocations.erase(clsTex.crc);
 		m_textures.pop_back();
@@ -566,20 +562,18 @@ void TextureCache::removeFrameBufferTexture(CachedTexture * _pTexture)
 {
 	if (_pTexture == nullptr)
 		return;
-	FBTextures::const_iterator iter = m_fbTextures.find(_pTexture->name);
+	FBTextures::const_iterator iter = m_fbTextures.find(u32(_pTexture->name));
 	assert(iter != m_fbTextures.cend());
-	m_cachedBytes -= iter->second.textureBytes;
 	gfxContext.deleteTexture(ObjectHandle(iter->second.name));
 	m_fbTextures.erase(iter);
 }
 
 CachedTexture * TextureCache::addFrameBufferTexture(bool _multisample)
 {
-	_checkCacheSize();
 	ObjectHandle texName(gfxContext.createTexture(_multisample ?
 		textureTarget::TEXTURE_2D_MULTISAMPLE : textureTarget::TEXTURE_2D));
-	m_fbTextures.emplace(texName, texName);
-	return &m_fbTextures.at(texName);
+	m_fbTextures.emplace(u32(texName), texName);
+	return &m_fbTextures.at(u32(texName));
 }
 
 struct TileSizes
@@ -1443,7 +1437,6 @@ void TextureCache::_updateBackground()
 	_loadBackground(pCurrent);
 	activateTexture(0, pCurrent);
 
-	m_cachedBytes += pCurrent->textureBytes;
 	current[0] = pCurrent;
 }
 
@@ -1452,7 +1445,6 @@ void TextureCache::_clear()
 	current[0] = current[1] = nullptr;
 
 	for (auto cur = m_textures.cbegin(); cur != m_textures.cend(); ++cur) {
-		m_cachedBytes -= cur->textureBytes;
 		gfxContext.deleteTexture(cur->name);
 	}
 	m_textures.clear();
@@ -1551,7 +1543,6 @@ void TextureCache::update(u32 _t)
 			return;
 		}
 
-		m_cachedBytes -= currentTex.textureBytes;
 		gfxContext.deleteTexture(currentTex.name);
 		m_lruTextureLocations.erase(locations_iter);
 		m_textures.erase(iter);
@@ -1601,7 +1592,6 @@ void TextureCache::update(u32 _t)
 	_load(_t, pCurrent);
 	activateTexture( _t, pCurrent );
 
-	m_cachedBytes += pCurrent->textureBytes;
 	current[_t] = pCurrent;
 }
 

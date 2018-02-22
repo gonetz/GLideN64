@@ -61,7 +61,6 @@ void DepthBufferToRDRAM::init()
 	m_pColorTexture->realWidth = DEPTH_TEX_WIDTH;
 	m_pColorTexture->realHeight = DEPTH_TEX_HEIGHT;
 	m_pColorTexture->textureBytes = m_pColorTexture->realWidth * m_pColorTexture->realHeight;
-	textureCache().addFrameBufferTextureSize(m_pColorTexture->textureBytes);
 
 	m_pDepthTexture = textureCache().addFrameBufferTexture(false);
 	m_pDepthTexture->format = G_IM_FMT_I;
@@ -76,7 +75,6 @@ void DepthBufferToRDRAM::init()
 	m_pDepthTexture->realWidth = DEPTH_TEX_WIDTH;
 	m_pDepthTexture->realHeight = DEPTH_TEX_HEIGHT;
 	m_pDepthTexture->textureBytes = m_pDepthTexture->realWidth * m_pDepthTexture->realHeight * sizeof(float);
-	textureCache().addFrameBufferTextureSize(m_pDepthTexture->textureBytes);
 
 	const FramebufferTextureFormats & fbTexFormats = gfxContext.getFramebufferTextureFormats();
 	Context::InitTextureParams initParams;

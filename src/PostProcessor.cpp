@@ -36,7 +36,6 @@ void PostProcessor::_createResultBuffer(const FrameBuffer * _pMainBuffer)
 	pTexture->realWidth = pMainTexture->realWidth;
 	pTexture->realHeight = pMainTexture->realHeight;
 	pTexture->textureBytes = pTexture->realWidth * pTexture->realHeight * 4;
-	textureCache().addFrameBufferTextureSize(pTexture->textureBytes);
 
 	Context::InitTextureParams initParams;
 	initParams.handle = pTexture->name;
