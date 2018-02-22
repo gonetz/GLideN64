@@ -95,7 +95,6 @@ void FrameBuffer::_initTexture(u16 _width, u16 _height, u16 _format, u16 _size, 
 		_pTexture->textureBytes *= fbTexFormats.colorFormatBytes;
 	else
 		_pTexture->textureBytes *= fbTexFormats.monochromeFormatBytes;
-	textureCache().addFrameBufferTextureSize(_pTexture->textureBytes);
 }
 
 void FrameBuffer::_setAndAttachTexture(ObjectHandle _fbo, CachedTexture *_pTexture, u32 _t, bool _multisampling)

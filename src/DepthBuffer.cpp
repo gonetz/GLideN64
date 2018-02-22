@@ -59,7 +59,6 @@ void DepthBuffer::_initDepthImageTexture(FrameBuffer * _pBuffer, CachedTexture& 
 	_cachedTexture.realWidth = _cachedTexture.width;
 	_cachedTexture.realHeight = _cachedTexture.height;
 	_cachedTexture.textureBytes = _cachedTexture.realWidth * _cachedTexture.realHeight * fbTexFormat.depthImageFormatBytes;
-	textureCache().addFrameBufferTextureSize(_cachedTexture.textureBytes);
 
 	{
 		Context::InitTextureParams params;
@@ -133,7 +132,6 @@ void DepthBuffer::_initDepthBufferTexture(FrameBuffer * _pBuffer, CachedTexture 
 	_pTexture->realWidth = _pTexture->width;
 	_pTexture->realHeight = _pTexture->height;
 	_pTexture->textureBytes = _pTexture->realWidth * _pTexture->realHeight * fbTexFormat.depthFormatBytes;
-	textureCache().addFrameBufferTextureSize(_pTexture->textureBytes);
 
 	Context::InitTextureParams initParams;
 	initParams.handle = _pTexture->name;

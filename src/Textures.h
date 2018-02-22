@@ -54,7 +54,6 @@ struct TextureCache
 	void init();
 	void destroy();
 	CachedTexture * addFrameBufferTexture(bool _multisample);
-	void addFrameBufferTextureSize(u32 _size) {m_cachedBytes += _size;}
 	void removeFrameBufferTexture(CachedTexture * _pTexture);
 	void activateTexture(u32 _t, CachedTexture *_pTexture);
 	void activateDummy(u32 _t);
@@ -69,7 +68,6 @@ private:
 		, m_pMSDummy(nullptr)
 		, m_hits(0)
 		, m_misses(0)
-		, m_cachedBytes(0)
 		, m_curUnpackAlignment(4)
 		, m_toggleDumpTex(false)
 	{
@@ -93,14 +91,13 @@ private:
 
 	typedef std::list<CachedTexture> Textures;
 	typedef std::unordered_map<u32, Textures::iterator> Texture_Locations;
-	typedef std::map<graphics::ObjectHandle, CachedTexture> FBTextures;
+	typedef std::unordered_map<u32, CachedTexture> FBTextures;
 	Textures m_textures;
 	Texture_Locations m_lruTextureLocations;
 	FBTextures m_fbTextures;
 	CachedTexture * m_pDummy;
 	CachedTexture * m_pMSDummy;
 	u32 m_hits, m_misses;
-	u32 m_cachedBytes;
 	s32 m_curUnpackAlignment;
 	bool m_toggleDumpTex;
 	const size_t m_maxCacheSize = 8000;

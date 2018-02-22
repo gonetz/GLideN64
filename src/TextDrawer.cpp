@@ -106,7 +106,6 @@ struct Atlas {
 		m_pTexture->realWidth = w;
 		m_pTexture->realHeight = h;
 		m_pTexture->textureBytes = m_pTexture->realWidth * m_pTexture->realHeight * fbTexFormats.noiseFormatBytes;
-		textureCache().addFrameBufferTextureSize(m_pTexture->textureBytes);
 
 		Context::InitTextureParams initParams;
 		initParams.handle = m_pTexture->name;

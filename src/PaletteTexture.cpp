@@ -37,7 +37,6 @@ void PaletteTexture::init()
 	m_pTexture->realWidth = 256;
 	m_pTexture->realHeight = 1;
 	m_pTexture->textureBytes = m_pTexture->realWidth * m_pTexture->realHeight * fbTexFormats.lutFormatBytes;
-	textureCache().addFrameBufferTextureSize(m_pTexture->textureBytes);
 
 	Context::InitTextureParams initParams;
 	initParams.handle = m_pTexture->name;

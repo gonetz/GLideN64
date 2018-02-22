@@ -46,7 +46,6 @@ void TexrectDrawer::init()
 	m_pTexture->realWidth = 640;
 	m_pTexture->realHeight = 580;
 	m_pTexture->textureBytes = m_pTexture->realWidth * m_pTexture->realHeight * fbTexFormats.colorFormatBytes;
-	textureCache().addFrameBufferTextureSize(m_pTexture->textureBytes);
 	m_stepX = 2.0f / 640.0f;
 	m_stepY = 2.0f / 580.0f;
 

@@ -38,7 +38,6 @@ void ZlutTexture::init()
 	m_pTexture->realWidth = 512;
 	m_pTexture->realHeight = 512;
 	m_pTexture->textureBytes = m_pTexture->realWidth * m_pTexture->realHeight * fbTexFormats.lutFormatBytes;
-	textureCache().addFrameBufferTextureSize(m_pTexture->textureBytes);
 
 	Context::InitTextureParams initParams;
 	initParams.handle = m_pTexture->name;

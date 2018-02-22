@@ -125,7 +125,6 @@ void NoiseTexture::init()
 		m_pTexture[i]->realWidth = NOISE_TEX_WIDTH;
 		m_pTexture[i]->realHeight = NOISE_TEX_HEIGHT;
 		m_pTexture[i]->textureBytes = m_pTexture[i]->realWidth * m_pTexture[i]->realHeight;
-		textureCache().addFrameBufferTextureSize(m_pTexture[i]->textureBytes);
 
 		const FramebufferTextureFormats & fbTexFormats = gfxContext.getFramebufferTextureFormats();
 		{

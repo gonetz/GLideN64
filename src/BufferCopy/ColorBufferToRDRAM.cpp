@@ -79,7 +79,6 @@ void ColorBufferToRDRAM::_initFBTexture(void)
 	m_pTexture->realWidth = m_lastBufferWidth;
 	m_pTexture->realHeight = VI_GetMaxBufferHeight(m_lastBufferWidth);
 	m_pTexture->textureBytes = m_pTexture->realWidth * m_pTexture->realHeight * fbTexFormat.colorFormatBytes;
-	textureCache().addFrameBufferTextureSize(m_pTexture->textureBytes);
 
 	{
 		Context::InitTextureParams params;
