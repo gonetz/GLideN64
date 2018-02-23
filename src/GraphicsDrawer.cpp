@@ -443,6 +443,9 @@ void _legacySetBlendMode()
 
 bool GraphicsDrawer::_setUnsupportedBlendMode() const
 {
+	if (gDP.otherMode.cycleType != G_CYC_2CYCLE)
+		return false;
+
 	// Modes, which shader blender can't emulate
 	const u32 mode = _SHIFTR(gDP.otherMode.l, 16, 16);
 	switch (mode) {
