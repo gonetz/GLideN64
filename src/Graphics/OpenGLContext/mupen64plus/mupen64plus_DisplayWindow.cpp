@@ -188,7 +188,7 @@ void DisplayWindowMupen64plus::_readScreen2(void * _dest, int * _width, int * _h
 	u8 *pBufferData = (u8*)malloc((*_width)*(*_height) * 4);
 	u8 *pDest = (u8*)_dest;
 
-#ifndef OS_ANDROID
+#if !defined(OS_ANDROID) && !defined(OS_IOS)
 	GLint oldMode;
 	glGetIntegerv(GL_READ_BUFFER, &oldMode);
 	if (_front != 0)

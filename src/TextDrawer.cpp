@@ -10,8 +10,10 @@
 #include <algorithm>
 #include <assert.h>
 
+#ifndef NO_FREETYPE
 #include <ft2build.h>
 #include FT_FREETYPE_H
+#endif
 
 #include "Platform.h"
 #include "DisplayWindow.h"
@@ -40,6 +42,7 @@ TextDrawer g_textDrawer;
  *
  * After the constructor is run, you don't need to use any FreeType functions anymore.
  */
+#ifndef NO_FREETYPE
 struct Atlas {
 	CachedTexture * m_pTexture;	// texture object
 
@@ -213,9 +216,11 @@ bool getFontFileName(char * _strName)
 
 FT_Library g_ft;
 FT_Face g_face;
+#endif
 
 void TextDrawer::init()
 {
+#ifndef NO_FREETYPE
 	char strBuffer[PLUGIN_PATH_SIZE];
 	const char *fontfilename;
 	if (getFontFileName(strBuffer))
@@ -239,14 +244,17 @@ void TextDrawer::init()
 	m_atlas.reset(new Atlas(g_face, config.font.size));
 
 	m_program.reset(gfxContext.createTextDrawerShader());
+#endif
 }
 
 void TextDrawer::destroy()
 {
+#ifndef NO_FREETYPE
 	m_atlas.reset();
 	m_program.reset();
 	FT_Done_Face(g_face);
 	FT_Done_FreeType(g_ft);
+#endif
 }
 
 /**
@@ -256,6 +264,7 @@ void TextDrawer::destroy()
  */
 void TextDrawer::drawText(const char *_pText, float _x, float _y) const
 {
+#ifndef NO_FREETYPE
 	if (!m_atlas)
 		return;
 
@@ -350,10 +359,12 @@ void TextDrawer::drawText(const char *_pText, float _x, float _y) const
 	rectParams.vertices = coords.data();
 	rectParams.combiner = m_program.get();
 	gfxContext.drawRects(rectParams);
+#endif
 }
 
 void TextDrawer::getTextSize(const char *_pText, float & _w, float & _h) const
 {
+#ifndef NO_FREETYPE
 	_w = _h = 0;
 	if (!m_atlas)
 		return;
@@ -372,10 +383,13 @@ void TextDrawer::getTextSize(const char *_pText, float & _w, float & _h) const
 	}
 	_w += bw;
 	_h += bh;
+#endif
 }
 
 void TextDrawer::setTextColor(float * _color)
 {
+#ifndef NO_FREETYPE
 	if (m_program)
 		m_program->setTextColor(_color);
+#endif
 }

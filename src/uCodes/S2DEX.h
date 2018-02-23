@@ -1,7 +1,7 @@
 #ifndef S2DEX_H
 #define S2DEX_H
 
-#include "Types.h"
+#include <Types.h>
 
 #define	G_BGLT_LOADBLOCK		0x0033
 #define	G_BGLT_LOADTILE			0xfff4

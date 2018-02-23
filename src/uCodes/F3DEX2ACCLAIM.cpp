@@ -1,8 +1,8 @@
 #include <algorithm>
 #include <assert.h>
-#include "GLideN64.h"
-#include "RSP.h"
-#include "gSP.h"
+#include <GLideN64.h>
+#include <RSP.h>
+#include <gSP.h>
 #include "F3D.h"
 #include "F3DEX.h"
 #include "F3DEX2.h"

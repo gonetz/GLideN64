@@ -1,14 +1,14 @@
 #include <assert.h>
-#include "GLideN64.h"
-#include "DebugDump.h"
+#include <GLideN64.h>
+#include <DebugDump.h>
 #include "F3D.h"
 #include "F3DSETA.h"
-#include "N64.h"
-#include "RSP.h"
-#include "RDP.h"
-#include "gSP.h"
-#include "gDP.h"
-#include "GBI.h"
+#include <N64.h>
+#include <RSP.h>
+#include <RDP.h>
+#include <gSP.h>
+#include <gDP.h>
+#include <GBI.h>
 
 #define F3DSETA_PERSPNORM	0xB4
 #define F3DSETA_RDPHALF_1	0xB3

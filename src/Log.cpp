@@ -9,6 +9,15 @@
 void LOG(u16 type, const char * format, ...) {
 	if (type > LOG_LEVEL)
 		return;
+    
+    va_list va;
+    
+#ifdef OS_IOS
+    va_start(va, format);
+    vfprintf(stderr, format, va);
+    va_end(va);
+    return;
+#endif
 
 	wchar_t logPath[PLUGIN_PATH_SIZE + 16];
 	api().GetUserDataPath(logPath);
@@ -25,7 +34,6 @@ void LOG(u16 type, const char * format, ...) {
 
 	if (dumpFile == nullptr)
 		return;
-	va_list va;
 	va_start(va, format);
 	vfprintf(dumpFile, format, va);
 	fclose(dumpFile);

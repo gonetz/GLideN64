@@ -1,15 +1,15 @@
 #include <assert.h>
 #include <math.h>
-#include "N64.h"
-#include "RSP.h"
-#include "RDP.h"
-#include "gSP.h"
-#include "gDP.h"
-#include "Log.h"
+#include <N64.h>
+#include <RSP.h>
+#include <RDP.h>
+#include <gSP.h>
+#include <gDP.h>
+#include <Log.h>
 #include "F3D.h"
 #include "ZSort.h"
-#include "3DMath.h"
-#include "DisplayWindow.h"
+#include <3DMath.h>
+#include <DisplayWindow.h>
 
 #define	GZM_USER0		0
 #define	GZM_USER1		2

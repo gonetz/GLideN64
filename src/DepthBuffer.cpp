@@ -1,4 +1,4 @@
-#ifdef OS_MAC_OS_X
+#if defined(OS_MAC_OS_X) || defined(OS_IOS)
 #include <malloc/malloc.h>
 #else
 #include <malloc.h>

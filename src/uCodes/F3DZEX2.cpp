@@ -1,9 +1,10 @@
-#include "GLideN64.h"
+#include <GLideN64.h>
+#include <DebugDump.h>
 #include "F3D.h"
 #include "F3DEX.h"
 #include "F3DEX2.h"
 #include "F3DZEX2.h"
-#include "gSP.h"
+#include <gSP.h>
 
 #define	F3DZEX2_BRANCH_W	0x04
 

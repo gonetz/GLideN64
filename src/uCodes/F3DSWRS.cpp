@@ -7,18 +7,18 @@
 #include <array>
 #include <algorithm>
 #include <cmath>
-#include "GLideN64.h"
-#include "DebugDump.h"
+#include <GLideN64.h>
+#include <DebugDump.h>
 #include "F3D.h"
 #include "F3DEX.h"
-#include "N64.h"
-#include "RSP.h"
-#include "RDP.h"
-#include "gSP.h"
-#include "gDP.h"
-#include "GBI.h"
-#include "FrameBuffer.h"
-#include "DisplayWindow.h"
+#include <N64.h>
+#include <RSP.h>
+#include <RDP.h>
+#include <gSP.h>
+#include <gDP.h>
+#include <GBI.h>
+#include <FrameBuffer.h>
+#include <DisplayWindow.h>
 
 #define F3DSWRS_VTXCOLOR			0x02
 #define F3DSWRS_MOVEMEM				0x03

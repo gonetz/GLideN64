@@ -142,7 +142,7 @@ void ContextImpl::clearDepthBuffer()
 	CachedDepthMask * depthMask = m_cachedFunctions->getCachedDepthMask();
 	enableScissor->enable(false);
 
-#ifdef OS_ANDROID
+#if defined(OS_ANDROID) || defined(OS_IOS)
 	depthMask->setDepthMask(false);
 	glClear(GL_DEPTH_BUFFER_BIT);
 #endif
