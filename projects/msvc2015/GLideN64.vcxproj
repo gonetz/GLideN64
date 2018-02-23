@@ -718,6 +718,7 @@ copy /Y "$(OutDir)$(TargetName).*" "$(Mupen64PluginsDir_x64)"</Command>
     <ClCompile Include="..\..\src\uCodes\T3DUX.cpp" />
     <ClCompile Include="..\..\src\uCodes\Turbo3D.cpp" />
     <ClCompile Include="..\..\src\uCodes\ZSort.cpp" />
+    <ClCompile Include="..\..\src\uCodes\ZSortBOSS.cpp" />
     <ClCompile Include="..\..\src\VI.cpp" />
     <ClCompile Include="..\..\src\windows\CommonAPIImpl_windows.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_mupenplus|Win32'">true</ExcludedFromBuild>
@@ -869,6 +870,7 @@ copy /Y "$(OutDir)$(TargetName).*" "$(Mupen64PluginsDir_x64)"</Command>
     <ClInclude Include="..\..\src\uCodes\T3DUX.h" />
     <ClInclude Include="..\..\src\uCodes\Turbo3D.h" />
     <ClInclude Include="..\..\src\uCodes\ZSort.h" />
+    <ClInclude Include="..\..\src\uCodes\ZSortBOSS.h" />
     <ClInclude Include="..\..\src\VI.h" />
     <ClInclude Include="..\..\src\windows\GLideN64_windows.h" />
     <ClInclude Include="..\..\src\wst.h" />

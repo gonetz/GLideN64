@@ -3681,22 +3681,6 @@
   <connection>
    <sender>frameBufferCheckBox</sender>
    <signal>toggled(bool)</signal>
-   <receiver>aspectFrame</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>100</x>
-     <y>41</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>101</x>
-     <y>337</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>frameBufferCheckBox</sender>
-   <signal>toggled(bool)</signal>
    <receiver>factorFrame</receiver>
    <slot>setEnabled(bool)</slot>
    <hints>

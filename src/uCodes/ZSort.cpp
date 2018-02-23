@@ -7,6 +7,7 @@
 #include <gDP.h>
 #include <Log.h>
 #include "F3D.h"
+#include "ZSort.h"
 #include <3DMath.h>
 #include <DisplayWindow.h>
 
@@ -25,8 +26,6 @@
 #define	ZH_TXTRI	2
 #define	ZH_SHQUAD	3
 #define	ZH_TXQUAD	4
-
-typedef f32 M44[4][4];
 
 struct ZSORTRDP
 {
@@ -58,7 +57,6 @@ void ZSort_RDPCMD( u32, u32 _w1 )
 	}
 }
 
-inline
 int Calc_invw (int _w) {
 	if (_w == 0)
 		return 0x7FFFFFFF;
@@ -340,17 +338,6 @@ void ZSort_MTXCAT(u32 _w0, u32 _w1)
 	}
 }
 
-struct zSortVDest{
-	s16 sy;
-	s16 sx;
-	s32 invw;
-	s16 yi;
-	s16 xi;
-	s16 wi;
-	u8 fog;
-	u8 cc;
-};
-
 void ZSort_MultMPMTX( u32 _w0, u32 _w1 )
 {
 	int num = 1 + _SHIFTR(_w1, 24, 8);
@@ -562,8 +549,8 @@ void SZort_SetScissor(u32 _w0, u32 _w1)
 #define	G_ZS_XFMLIGHT		0xD1
 #define	G_ZS_INTERPOLATE	0xD0
 
-u32 G_ZOBJ, G_ZRDPCMD, G_ZSENDSIGNAL, G_ZWAITSIGNAL, G_ZSETSUBDL, G_ZLINKSUBDL, G_ZMULT_MPMTX, G_ZMTXCAT, G_ZMTXTRNSP;
-u32 G_ZLIGHTING_L, G_ZLIGHTING, G_ZXFMLIGHT, G_ZINTERPOLATE, G_ZSETSCISSOR;
+u32 G_ZSENDSIGNAL, G_ZSETSUBDL, G_ZLINKSUBDL, G_ZMTXTRNSP;
+u32 G_ZLIGHTING_L, G_ZXFMLIGHT, G_ZINTERPOLATE, G_ZSETSCISSOR;
 
 void ZSort_Init()
 {

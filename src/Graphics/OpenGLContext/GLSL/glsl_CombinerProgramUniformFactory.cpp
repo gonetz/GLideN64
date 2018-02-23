@@ -306,12 +306,6 @@ public:
 
 	void update(bool _force) override
 	{
-		if ((gDP.otherMode.l & 0xFFFF0000) == 0x01500000) {
-			uForceBlendCycle1.set(0, _force);
-			uForceBlendCycle2.set(0, _force);
-			return;
-		}
-
 		uBlendMux1.set(gDP.otherMode.c1_m1a,
 			gDP.otherMode.c1_m1b,
 			gDP.otherMode.c1_m2a,
@@ -328,6 +322,31 @@ public:
 		uForceBlendCycle1.set(forceBlend1, _force);
 		const int forceBlend2 = gDP.otherMode.forceBlender;
 		uForceBlendCycle2.set(forceBlend2, _force);
+
+		// Modes, which shader blender can't emulate
+		const u32 mode = _SHIFTR(gDP.otherMode.l, 16, 16);
+		switch (mode) {
+		case 0x0040:
+			// Mia Hamm Soccer
+			// clr_in * a_in + clr_mem * (1-a)
+			// clr_in * a_in + clr_in * (1-a)
+		case 0x0050:
+			// A Bug's Life
+			// clr_in * a_in + clr_mem * (1-a)
+			// clr_in * a_in + clr_mem * (1-a)
+			uForceBlendCycle1.set(0, _force);
+			uForceBlendCycle2.set(0, _force);
+			break;
+		case 0x0150:
+			// Tony Hawk
+			// clr_in * a_in + clr_mem * (1-a)
+			// clr_in * a_fog + clr_mem * (1-a_fog)
+			if ((config.generalEmulation.hacks & hack_TonyHawk) != 0) {
+				uForceBlendCycle1.set(0, _force);
+				uForceBlendCycle2.set(0, _force);
+			}
+			break;
+		}
 	}
 
 private:

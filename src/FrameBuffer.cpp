@@ -854,11 +854,16 @@ void FrameBufferList::_renderScreenSizeBuffer()
 	FrameBuffer * pFilteredBuffer = postProcessor.doGammaCorrection(postProcessor.doOrientationCorrection(pBuffer));
 	CachedTexture * pBufferTexture = pFilteredBuffer->m_pTexture;
 
+	const u32 wndWidth = wnd.getWidth();
+	const u32 wndHeight = wnd.getHeight();
+	s32 srcCoord[4] = { 0, 0, static_cast<s32>(wndWidth), static_cast<s32>(wndHeight) };
 
-	s32 srcCoord[4] = { 0, 0, pBufferTexture->realWidth, pBufferTexture->realHeight };
-	const s32 hOffset = (wnd.getScreenWidth() - wnd.getWidth()) / 2;
-	const s32 vOffset = (wnd.getScreenHeight() - wnd.getHeight()) / 2 + wnd.getHeightOffset();
-	s32 dstCoord[4] = { hOffset, vOffset, hOffset + pBufferTexture->realWidth, vOffset + pBufferTexture->realHeight };
+	const u32 screenWidth = wnd.getScreenWidth();
+	const u32 screenHeight = wnd.getScreenHeight();
+	const u32 wndHeightOffset = wnd.getHeightOffset();
+	const s32 hOffset = (screenWidth - wndWidth) / 2;
+	const s32 vOffset = (screenHeight - wndHeight) / 2 + wndHeightOffset;
+	s32 dstCoord[4] = { hOffset, vOffset, hOffset + static_cast<s32>(wndWidth), vOffset + static_cast<s32>(wndHeight) };
 
 	gfxContext.bindFramebuffer(bufferTarget::DRAW_FRAMEBUFFER, ObjectHandle::null);
 
@@ -872,14 +877,14 @@ void FrameBufferList::_renderScreenSizeBuffer()
 	blitParams.srcY0 = srcCoord[3];
 	blitParams.srcX1 = srcCoord[2];
 	blitParams.srcY1 = srcCoord[1];
-	blitParams.srcWidth = pBufferTexture->realWidth;
-	blitParams.srcHeight = pBufferTexture->realHeight;
+	blitParams.srcWidth = wndWidth;
+	blitParams.srcHeight = wndHeight;
 	blitParams.dstX0 = dstCoord[0];
 	blitParams.dstY0 = dstCoord[1];
 	blitParams.dstX1 = dstCoord[2];
 	blitParams.dstY1 = dstCoord[3];
-	blitParams.dstWidth = wnd.getScreenWidth();
-	blitParams.dstHeight = wnd.getScreenHeight() + wnd.getHeightOffset();
+	blitParams.dstWidth = screenWidth;
+	blitParams.dstHeight = screenHeight + wndHeightOffset;
 	blitParams.filter = filter;
 	blitParams.mask = blitMask::COLOR_BUFFER;
 	blitParams.tex[0] = pBufferTexture;
@@ -1095,7 +1100,7 @@ void FrameBufferList::renderBuffer()
 
 
 	const u32 stride = pBuffer->m_width << pBuffer->m_size >> 1;
-	FrameBuffer *pNextBuffer = findBuffer(rdpRes.vi_origin + stride * srcHeight);
+	FrameBuffer *pNextBuffer = findBuffer(rdpRes.vi_origin + stride * (srcHeight - 1));
 	if (pNextBuffer == pBuffer)
 		pNextBuffer = nullptr;
 

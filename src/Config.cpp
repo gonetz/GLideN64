@@ -54,7 +54,7 @@ void Config::resetToDefaults()
 	frameBufferEmulation.copyDepthToRDRAM = cdSoftwareRender;
 	frameBufferEmulation.copyFromRDRAM = 0;
 	frameBufferEmulation.copyAuxToRDRAM = 0;
-	frameBufferEmulation.copyToRDRAM = ctAsync;
+	frameBufferEmulation.copyToRDRAM = ctDoubleBuffer;
 	frameBufferEmulation.N64DepthCompare = 0;
 	frameBufferEmulation.aspect = a43;
 	frameBufferEmulation.bufferSwapMode = bsOnVerticalInterrupt;
@@ -94,9 +94,11 @@ void Config::resetToDefaults()
 #elif defined (OS_ANDROID)
 	font.name.assign("DroidSans.ttf");
 #elif defined (PANDORA)
-	font.name.assign("LiberationMono-Regular.ttf");
+	font.name.assign("truetype/LiberationMono-Regular.ttf");
+#elif defined (OS_LINUX)
+	font.name.assign("liberation/LiberationMono-Regular.ttf");
 #else
-	font.name = "FreeSans.ttf";
+	font.name.assign("truetype/freefont/FreeSans.ttf");
 #endif
 	font.size = 18;
 	font.color[0] = 0xB5;

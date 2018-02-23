@@ -103,6 +103,7 @@ set(GLideN64_SOURCES
   uCodes/T3DUX.cpp
   uCodes/Turbo3D.cpp
   uCodes/ZSort.cpp
+  uCodes/ZSortBOSS.cpp
 )
 
 #check if we're running on Raspberry Pi

@@ -31,6 +31,7 @@
 #include "uCodes/F3DSWRS.h"
 #include "uCodes/F3DFLX2.h"
 #include "uCodes/ZSort.h"
+#include "uCodes/ZSortBOSS.h"
 #include "CRC.h"
 #include "Log.h"
 #include "DebugDump.h"
@@ -64,7 +65,10 @@ SpecialMicrocodeInfo specialMicrocodes[] =
 	{ S2DEX2,		false,	true,	0x2c399dd,	"Animal Forest" },
 	{ T3DUX,		false,	true,	0xbad437f2, "T3DUX vers 0.83 for Toukon Road" },
 	{ T3DUX,		false,	true,	0xd0a1aa3d, "T3DUX vers 0.85 for Toukon Road 2" },
-	{ F3DEX2ACCLAIM,true,	true,	0xe44df568, "Acclaim games: Turok2 & 3, Armories and South park" }
+	{ F3DEX2ACCLAIM,true,	true,	0xe44df568, "Acclaim games: Turok2 & 3, Armories and South park" },
+	{ ZSortBOSS,	false,	false,  0x553538cc, "World Driver Championship" }, // USA
+	{ ZSortBOSS,	false,	false,  0x75ed44cc, "World Driver Championship" }, // European
+	{ ZSortBOSS,	false,	false,  0x6a76f8dd, "Stunt Racer" }
 };
 
 u32 G_RDPHALF_1, G_RDPHALF_2, G_RDPHALF_CONT;
@@ -89,6 +93,7 @@ u32 G_SELECT_DL, G_OBJ_RENDERMODE, G_OBJ_RECTANGLE_R;
 u32 G_OBJ_LOADTXTR, G_OBJ_LDTX_SPRITE, G_OBJ_LDTX_RECT, G_OBJ_LDTX_RECT_R;
 u32 G_RDPHALF_0;
 u32 G_PERSPNORM;
+u32 G_ZOBJ, G_ZRDPCMD, G_ZWAITSIGNAL, G_ZMTXCAT, G_ZMULT_MPMTX, G_ZLIGHTING;
 
 
 u32 G_MTX_STACKSIZE;
@@ -157,6 +162,10 @@ void GBIInfo::_makeCurrent(MicrocodeInfo * _pCurrent)
 	if (_pCurrent->type == NONE) {
 		LOG(LOG_ERROR, "[GLideN64]: error - unknown ucode!!!\n");
 		return;
+	}
+
+	if ((_pCurrent->type == ZSortBOSS) && (!REG.SP_STATUS)) {
+		assert(false && "ZSortBOSS ucode needs access to SP_STATUS register'n");
 	}
 
 	if (m_pCurrent == nullptr || (m_pCurrent->type != _pCurrent->type)) {
@@ -266,6 +275,10 @@ void GBIInfo::_makeCurrent(MicrocodeInfo * _pCurrent)
 			break;
 			case F3DFLX2:
 				F3DFLX2_Init();
+				m_hwlSupported = true;
+			break;
+			case ZSortBOSS:
+				ZSortBOSS_Init();
 				m_hwlSupported = true;
 			break;
 		}

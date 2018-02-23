@@ -58,14 +58,14 @@ f32 Debugger::TriInfo::getScreenX(const Debugger::Vertex & _v) const
 {
 	if ((_v.modify & MODIFY_XY) != 0)
 		return _v.x;
-	return (_v.x / _v.w * viewport.vscale[0] + viewport.vtrans[0]) * dwnd().getScaleX() * 5.0f / 8.0f;
+	return _v.x / _v.w * viewport.vscale[0] + viewport.vtrans[0];
 }
 
 f32 Debugger::TriInfo::getScreenY(const Debugger::Vertex & _v) const
 {
 	if ((_v.modify & MODIFY_XY) != 0)
 		return _v.y;
-	return (-_v.y / _v.w * viewport.vscale[1] + viewport.vtrans[1]) * dwnd().getScaleY() * 5.0f / 8.0f;;
+	return -_v.y / _v.w * viewport.vscale[1] + viewport.vtrans[1];
 }
 
 f32 Debugger::TriInfo::getScreenZ(const Debugger::Vertex & _v) const
@@ -163,17 +163,41 @@ void Debugger::checkDebugState()
 void Debugger::_debugKeys()
 {
 	if (isKeyPressed(G64_VK_RIGHT, 0x0001)) {
-		if (std::next(m_triSel) != m_triangles.end())
+		if (std::next(m_triSel) != m_triangles.cend())
 			++m_triSel;
 		else
-			m_triSel = m_triangles.begin();
+			m_triSel = m_triangles.cbegin();
 	}
 
 	if (isKeyPressed(G64_VK_LEFT, 0x0001)) {
-		if (m_triSel != m_triangles.begin())
+		if (m_triSel != m_triangles.cbegin())
 			--m_triSel;
 		else
-			m_triSel = std::prev(m_triangles.end());
+			m_triSel = std::prev(m_triangles.cend());
+	}
+
+	if (isKeyPressed(G64_VK_F, 0x0001)) {
+		if (m_pCurTexInfo != nullptr) {
+			auto curTexName = m_pCurTexInfo->texture->name;
+			auto beginItr =
+				(std::next(m_triSel) != m_triangles.cend() &&
+				(m_triSel->tex_info[0]->texture->name == curTexName ||
+					m_triSel->tex_info[1]->texture->name == curTexName)) ?
+				std::next(m_triSel) :
+				m_triangles.cbegin();
+			auto predicate = [curTexName](const Triangles::value_type & val) {
+				if (val.tex_info[0].operator bool() && val.tex_info[0]->texture->name == curTexName)
+					return true;
+				if (val.tex_info[1].operator bool() && val.tex_info[1]->texture->name == curTexName)
+					return true;
+				return false;
+			};
+			auto iter = std::find_if(beginItr, m_triangles.cend(), predicate);
+			if (iter == m_triangles.cend() && beginItr != m_triangles.cbegin())
+				iter = std::find_if(m_triangles.cbegin(), beginItr, predicate);
+			if (iter != m_triangles.cend())
+				m_triSel = iter;
+		}
 	}
 
 	if (isKeyPressed(G64_VK_B, 0x0001)) {
@@ -360,7 +384,7 @@ void Debugger::_drawTextureFrame(const RectVertex * _rect)
 	memset(vertexBuf, 0, sizeof(vertexBuf));
 	SPVertex & v0 = vertexBuf[0];
 	v0.x = _rect[0].x;
-	v0.y = _rect[0].y;
+	v0.y = -_rect[0].y;
 	v0.z = _rect[0].z;
 	v0.w = _rect[0].w;
 	SPVertex & v1 = vertexBuf[1];
@@ -368,13 +392,13 @@ void Debugger::_drawTextureFrame(const RectVertex * _rect)
 	v1.x = _rect[1].x;
 	gfxContext.drawLine(lineWidth, vertexBuf);
 	v1.x = _rect[0].x;
-	v1.y = _rect[2].y;
+	v1.y = -_rect[2].y;
 	gfxContext.drawLine(lineWidth, vertexBuf);
 	v0.x = _rect[1].x;
 	v1.x = _rect[1].x;
 	gfxContext.drawLine(lineWidth, vertexBuf);
 	v0.x = _rect[0].x;
-	v0.y = _rect[2].y;
+	v0.y = -_rect[2].y;
 	gfxContext.drawLine(lineWidth, vertexBuf);
 
 	_setTextureCombiner();
@@ -463,7 +487,7 @@ void Debugger::_drawTextureCache()
 	}
 
 	f32 X = -1.0f;
-	f32 Y = -1.0f;
+	f32 Y = 1.0f;
 	RectVertex rect[4];
 	RectVertex rectSelected[4];
 	struct Framer {
@@ -530,7 +554,7 @@ void Debugger::_drawTextureCache()
 			rect[1].z = Z;
 			rect[1].w = W;
 			rect[2].x = rect[0].x;
-			rect[2].y = Y + rectHeight;
+			rect[2].y = Y - rectHeight;
 			rect[2].z = Z;
 			rect[2].w = W;
 			rect[3].x = rect[1].x;
@@ -573,7 +597,7 @@ void Debugger::_drawTextureCache()
 		}
 
 		X = -1.0f;
-		Y += rectHeight;
+		Y -= rectHeight;
 	}
 
 	gfxContext.enable(enable::SCISSOR_TEST, true);

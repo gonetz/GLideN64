@@ -78,8 +78,9 @@ struct Config
 
 	enum CopyToRDRAM {
 		ctDisable = 0,
-		ctSync,
-		ctAsync
+		ctSync = 1,
+		ctDoubleBuffer = 2,
+		ctTripleBuffer = 3
 	};
 
 	enum BufferSwapMode {
@@ -181,20 +182,20 @@ struct Config
 #define hack_texrect_shade_alpha	(1<<5)  //Set vertex alpha to 1 when texrect alpha combiner uses shade. Pokemon Stadium 2
 #define hack_subscreen				(1<<6)  //Fix subscreen delay in Zelda OOT and Doubutsu no Mori
 #define hack_blastCorps				(1<<7)  //Blast Corps black polygons
-#define hack_Infloop				(1<<8) //Gauntlet Legends yielding
-#define hack_rectDepthBufferCopyPD	(1<<9)  //Copy depth buffer only when game need it. Optimized for PD
-#define hack_rectDepthBufferCopyCBFD (1<<10) //Copy depth buffer only when game need it. Optimized for CBFD
-#define hack_WinBack				(1<<11) //Hack for WinBack to remove gray rectangle in HLE mode
-#define hack_ZeldaMM				(1<<12) //Special hacks for Zelda MM
-#define hack_ModifyVertexXyInShader	(1<<13) //Pass screen coordinates provided in gSPModifyVertex to vertes shader.
-#define hack_legoRacers				(1<<14) //LEGO racers course map
-#define hack_doNotResetOtherModeH	(1<<15) //Don't reset othermode.h after dlist end. Quake and Quake 2
-#define hack_doNotResetOtherModeL	(1<<16) //Don't reset othermode.l after dlist end. Quake
-#define hack_LoadDepthTextures		(1<<17) //Load textures for depth buffer
-#define hack_Snap					(1<<18) //Frame buffer settings for camera detection in Pokemon Snap. Copy aux buffers at fullsync
-#define hack_MK64					(1<<19) //Hack for load MK64 HD textures properly.
-#define hack_RE2					(1<<20) //RE2 hacks.
-#define hack_ZeldaMonochrome		(1<<21) //Hack for Zeldas monochrome effects.
+#define hack_rectDepthBufferCopyPD	(1<<8)  //Copy depth buffer only when game need it. Optimized for PD
+#define hack_rectDepthBufferCopyCBFD (1<<9) //Copy depth buffer only when game need it. Optimized for CBFD
+#define hack_WinBack				(1<<10) //Hack for WinBack to remove gray rectangle in HLE mode
+#define hack_ZeldaMM				(1<<11) //Special hacks for Zelda MM
+#define hack_ModifyVertexXyInShader	(1<<12) //Pass screen coordinates provided in gSPModifyVertex to vertes shader.
+#define hack_legoRacers				(1<<13) //LEGO racers course map
+#define hack_doNotResetOtherModeH	(1<<14) //Don't reset othermode.h after dlist end. Quake and Quake 2
+#define hack_doNotResetOtherModeL	(1<<15) //Don't reset othermode.l after dlist end. Quake
+#define hack_LoadDepthTextures		(1<<16) //Load textures for depth buffer
+#define hack_Snap					(1<<17) //Frame buffer settings for camera detection in Pokemon Snap. Copy aux buffers at fullsync
+#define hack_MK64					(1<<18) //Hack for load MK64 HD textures properly.
+#define hack_RE2					(1<<19) //RE2 hacks.
+#define hack_ZeldaMonochrome		(1<<20) //Hack for Zeldas monochrome effects.
+#define hack_TonyHawk				(1<<21) //Hack for Tony Hawk blend mode.
 
 extern Config config;
 

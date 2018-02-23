@@ -3,7 +3,7 @@
 #############################
 include $(CLEAR_VARS)
 LOCAL_PATH := $(JNI_LOCAL_PATH)
-SRCDIR := ./mupen64plus-video-gliden64/src
+SRCDIR := ./$(BASE_DIR)/src
 
 MY_LOCAL_MODULE := mupen64plus-video-gliden64
 MY_LOCAL_SHARED_LIBRARIES := freetype glidenhq osal
@@ -15,7 +15,7 @@ MY_LOCAL_C_INCLUDES :=                          \
     $(SDL_INCLUDES)                             \
     $(FREETYPE_INCLUDES)                        \
     $(LOCAL_PATH)/$(SRCDIR)/osal                \
-    $(ANDROID_FRAMEWORK_INCLUDES)               \
+    $(GL_INCLUDES)
 
 MY_LOCAL_SRC_FILES :=                                                              \
     $(SRCDIR)/Combiner.cpp                                                         \
@@ -114,6 +114,7 @@ MY_LOCAL_SRC_FILES :=                                                           
     $(SRCDIR)/uCodes/T3DUX.cpp                                                     \
     $(SRCDIR)/uCodes/Turbo3D.cpp                                                   \
     $(SRCDIR)/uCodes/ZSort.cpp                                                     \
+    $(SRCDIR)/uCodes/ZSortBOSS.cpp                                                 \
     $(SRCDIR)/xxHash/xxhash.c                                                      \
 
 MY_LOCAL_CFLAGS :=          \

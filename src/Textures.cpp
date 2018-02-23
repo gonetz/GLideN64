@@ -1310,12 +1310,19 @@ void TextureCache::activateTexture(u32 _t, CachedTexture *_pTexture)
 		const s32 texLevel = bUseLOD ? _pTexture->max_level : 0;
 		params.maxMipmapLevel = Parameter(texLevel);
 
-		if (texLevel > 0) { // Apply standard bilinear to mipmap textures
+		if (bUseLOD) {
 			if (bUseBilinear) {
-				params.minFilter = textureParameters::FILTER_LINEAR_MIPMAP_NEAREST;
+				// Apply standard bilinear to mipmap textures
+				if (texLevel > 0)
+					params.minFilter = textureParameters::FILTER_LINEAR_MIPMAP_NEAREST;
+				else
+					params.minFilter = textureParameters::FILTER_LINEAR;
 				params.magFilter = textureParameters::FILTER_LINEAR;
 			} else {
-				params.minFilter = textureParameters::FILTER_NEAREST_MIPMAP_NEAREST;
+				if (texLevel > 0)
+					params.minFilter = textureParameters::FILTER_NEAREST_MIPMAP_NEAREST;
+				else
+					params.minFilter = textureParameters::FILTER_NEAREST;
 				params.magFilter = textureParameters::FILTER_NEAREST;
 			}
 		} else if (bUseBilinear && config.generalEmulation.enableLOD != 0 && bUseLOD) { // Apply standard bilinear to first tile of mipmap texture

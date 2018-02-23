@@ -258,19 +258,22 @@ void GraphicsDrawer::_updateViewport() const
 void GraphicsDrawer::_updateScreenCoordsViewport() const
 {
 	DisplayWindow & wnd = DisplayWindow::get();
-	FrameBuffer * pCurrentBuffer = frameBufferList().getCurrent();
+	const FrameBuffer * pCurrentBuffer = frameBufferList().getCurrent();
 
-	u32 bufferWidth;
-	f32 viewportScale;
+	u32 bufferWidth, bufferHeight;
+	f32 viewportScaleX, viewportScaleY;
 	if (pCurrentBuffer == nullptr) {
 		bufferWidth = VI.width;
-		viewportScale = wnd.getScaleX();
+		bufferHeight = VI.height;
+		viewportScaleX = wnd.getScaleX();
+		viewportScaleY = wnd.getScaleY();
 	} else {
 		bufferWidth = pCurrentBuffer->m_width;
-		viewportScale = pCurrentBuffer->m_scale;
+		bufferHeight = VI_GetMaxBufferHeight(bufferWidth);
+		viewportScaleX = viewportScaleY = pCurrentBuffer->m_scale;
 	}
-	const u32 bufferHeight = VI_GetMaxBufferHeight(bufferWidth);
-	gfxContext.setViewport(0, 0, (s32)(bufferWidth * viewportScale), (s32)(bufferHeight * viewportScale));
+
+	gfxContext.setViewport(0, 0, (s32)(bufferWidth * viewportScaleX), (s32)(bufferHeight * viewportScaleY));
 	gSP.changed |= CHANGED_VIEWPORT;
 }
 
@@ -438,6 +441,39 @@ void _legacySetBlendMode()
 	}
 }
 
+bool GraphicsDrawer::_setUnsupportedBlendMode() const
+{
+	if (gDP.otherMode.cycleType != G_CYC_2CYCLE)
+		return false;
+
+	// Modes, which shader blender can't emulate
+	const u32 mode = _SHIFTR(gDP.otherMode.l, 16, 16);
+	switch (mode) {
+	case 0x0040:
+		// Mia Hamm Soccer
+		// clr_in * a_in + clr_mem * (1-a)
+		// clr_in * a_in + clr_in * (1-a)
+	case 0x0050:
+		// A Bug's Life
+		// clr_in * a_in + clr_mem * (1-a)
+		// clr_in * a_in + clr_mem * (1-a)
+		gfxContext.enable(enable::BLEND, true);
+		gfxContext.setBlending(blend::SRC_ALPHA, blend::ONE_MINUS_SRC_ALPHA);
+		return true;
+	case 0x0150:
+		// Tony Hawk
+		// clr_in * a_in + clr_mem * (1-a)
+		// clr_in * a_fog + clr_mem * (1-a_fog)
+		if ((config.generalEmulation.hacks & hack_TonyHawk) != 0) {
+			gfxContext.enable(enable::BLEND, true);
+			gfxContext.setBlending(blend::SRC_ALPHA, blend::ONE_MINUS_SRC_ALPHA);
+			return true;
+		}
+		break;
+	}
+	return false;
+}
+
 void GraphicsDrawer::_setBlendMode() const
 {
 	if (config.generalEmulation.enableLegacyBlending != 0) {
@@ -445,16 +481,8 @@ void GraphicsDrawer::_setBlendMode() const
 		return;
 	}
 
-	if ((gDP.otherMode.l & 0xFFFF0000) == 0x01500000) {
-		// clr_in * a_in + clr_mem * (1-a)
-		// clr_in * a_fog + clr_mem * (1-a)
-		// impossible to emulate
-		if (gDP.otherMode.forceBlender != 0 && gDP.otherMode.cycleType < G_CYC_COPY) {
-			gfxContext.enable(enable::BLEND, true);
-			gfxContext.setBlending(blend::SRC_ALPHA, blend::ONE_MINUS_SRC_ALPHA);
-			return;
-		}
-	}
+	if (_setUnsupportedBlendMode())
+		return;
 
 	if (gDP.otherMode.forceBlender != 0 && gDP.otherMode.cycleType < G_CYC_COPY) {
 		BlendParam srcFactor = blend::ONE;

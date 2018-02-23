@@ -31,7 +31,8 @@
 #define F3DAM			22
 #define F3DSWRS			23
 #define F3DFLX2			24
-#define NONE			25
+#define ZSortBOSS		25
+#define NONE			26
 
 // Fixed point conversion factors
 #define FIXED2FLOATRECIP1	0.5f
@@ -415,6 +416,7 @@ extern u32 G_SELECT_DL, G_OBJ_RENDERMODE, G_OBJ_RECTANGLE_R;
 extern u32 G_OBJ_LOADTXTR, G_OBJ_LDTX_SPRITE, G_OBJ_LDTX_RECT, G_OBJ_LDTX_RECT_R;
 extern u32 G_RDPHALF_0;
 extern u32 G_PERSPNORM;
+extern u32 G_ZOBJ, G_ZRDPCMD, G_ZWAITSIGNAL, G_ZMTXCAT, G_ZMULT_MPMTX, G_ZLIGHTING;
 
 #define LIGHT_1	1
 #define LIGHT_2	2
