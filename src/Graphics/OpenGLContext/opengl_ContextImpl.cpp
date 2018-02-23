@@ -143,8 +143,10 @@ void ContextImpl::clearDepthBuffer()
 	enableScissor->enable(false);
 
 #ifdef OS_ANDROID
-	depthMask->setDepthMask(false);
-	glClear(GL_DEPTH_BUFFER_BIT);
+	if (m_glInfo.isGLESX) {
+		depthMask->setDepthMask(false);
+		glClear(GL_DEPTH_BUFFER_BIT);
+	}
 #endif
 
 	depthMask->setDepthMask(true);
