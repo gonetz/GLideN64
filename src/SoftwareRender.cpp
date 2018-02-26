@@ -164,7 +164,7 @@ u32 clipW(const SPVertex ** _vsrc, SPVertex * _vdst)
 	return dsti;
 }
 
-f32 renderTriangles(const SPVertex * _pVertices, const u8 * _pElements, u32 _numElements)
+f32 renderTriangles(const SPVertex * _pVertices, const u16 * _pElements, u32 _numElements)
 {
 	vertexclip vclip[16];
 	vertexi vdraw[12];
