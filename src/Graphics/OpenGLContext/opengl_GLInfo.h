@@ -9,6 +9,7 @@ enum class Renderer {
 	Adreno,
 	VideoCore,
 	Intel,
+	PowerVR,
 	Other
 };
 
