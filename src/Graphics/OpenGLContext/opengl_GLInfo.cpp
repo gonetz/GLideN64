@@ -38,6 +38,8 @@ void GLInfo::init() {
 		renderer = Renderer::VideoCore;
 	else if (strstr((const char*)strRenderer, "Intel") != nullptr)
 		renderer = Renderer::Intel;
+	else if (strstr((const char*)strRenderer, "PowerVR") != nullptr)
+		renderer = Renderer::PowerVR;
 	LOG(LOG_VERBOSE, "OpenGL renderer: %s\n", strRenderer);
 
 	int numericVersion = majorVersion * 10 + minorVersion;
