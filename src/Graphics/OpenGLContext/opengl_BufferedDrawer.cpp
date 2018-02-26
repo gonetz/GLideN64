@@ -186,7 +186,7 @@ void BufferedDrawer::_updateTrianglesBuffers(const graphics::Context::DrawTriang
 	if (_params.elements == nullptr)
 		return;
 
-	const GLsizeiptr eboDataSize = sizeof(GLubyte) * _params.elementsCount;
+	const GLsizeiptr eboDataSize = sizeof(GLushort) * _params.elementsCount;
 	Buffer & eboBuffer = m_trisBuffers.ebo;
 	_updateBuffer(eboBuffer, _params.elementsCount, eboDataSize, _params.elements);
 }
@@ -204,8 +204,8 @@ void BufferedDrawer::drawTriangles(const graphics::Context::DrawTriangleParamete
 	}
 
 	if (config.frameBufferEmulation.N64DepthCompare == 0) {
-		glDrawElementsBaseVertex(GLenum(_params.mode), _params.elementsCount, GL_UNSIGNED_BYTE,
-			(char*)nullptr + m_trisBuffers.ebo.pos - _params.elementsCount, m_trisBuffers.vbo.pos - _params.verticesCount);
+		glDrawElementsBaseVertex(GLenum(_params.mode), _params.elementsCount, GL_UNSIGNED_SHORT,
+			(u16*)nullptr + m_trisBuffers.ebo.pos - _params.elementsCount, m_trisBuffers.vbo.pos - _params.verticesCount);
 		return;
 	}
 
@@ -214,8 +214,8 @@ void BufferedDrawer::drawTriangles(const graphics::Context::DrawTriangleParamete
 	const GLint vboStartPos = m_trisBuffers.vbo.pos - _params.verticesCount;
 	for (GLuint i = 0; i < _params.elementsCount; i += 3) {
 		glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
-		glDrawElementsBaseVertex(GLenum(_params.mode), 3, GL_UNSIGNED_BYTE,
-			(char*)nullptr + eboStartPos + i, vboStartPos);
+		glDrawElementsBaseVertex(GLenum(_params.mode), 3, GL_UNSIGNED_SHORT,
+			(u16*)nullptr + eboStartPos + i, vboStartPos);
 	}
 }
 

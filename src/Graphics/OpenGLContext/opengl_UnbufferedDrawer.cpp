@@ -82,14 +82,14 @@ void UnbufferedDrawer::drawTriangles(const graphics::Context::DrawTriangleParame
 	}
 
 	if (config.frameBufferEmulation.N64DepthCompare == 0) {
-		glDrawElements(GLenum(_params.mode), _params.elementsCount, GL_UNSIGNED_BYTE, _params.elements);
+		glDrawElements(GLenum(_params.mode), _params.elementsCount, GL_UNSIGNED_SHORT, _params.elements);
 		return;
 	}
 
 	// Draw polygons one by one
 	for (GLuint i = 0; i < _params.elementsCount; i += 3) {
 		glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
-		glDrawElements(GLenum(_params.mode), 3, GL_UNSIGNED_BYTE, (u8*)_params.elements + i);
+		glDrawElements(GLenum(_params.mode), 3, GL_UNSIGNED_SHORT, (u16*)_params.elements + i);
 	}
 }
 

@@ -191,7 +191,7 @@ private:
 
 	struct {
 		std::array<SPVertex, VERTBUFF_SIZE> vertices;
-		std::array<u8, ELEMBUFF_SIZE> elements;
+		std::array<u16, ELEMBUFF_SIZE> elements;
 		u32 num = 0;
 		int maxElement = 0;
 	} triangles;
