@@ -82,6 +82,7 @@ const char* GLErrorString(GLenum errorCode)
 
 bool Utils::isGLError()
 {
+#ifdef GL_DEBUG
 	GLenum errCode;
 	const char* errString;
 
@@ -95,11 +96,13 @@ bool Utils::isGLError()
 
 		return true;
 	}
+#endif
 	return false;
 }
 
 bool Utils::isFramebufferError()
 {
+#ifdef GL_DEBUG
 	GLenum e = glCheckFramebufferStatus(GL_FRAMEBUFFER);
 	switch (e) {
 		//		case GL_FRAMEBUFFER_UNDEFINED:
@@ -131,4 +134,7 @@ bool Utils::isFramebufferError()
 	}
 
 	return e != GL_FRAMEBUFFER_COMPLETE;
+#else
+	return false;
+#endif
 }
