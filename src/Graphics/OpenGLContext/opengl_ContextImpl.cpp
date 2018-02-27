@@ -431,10 +431,7 @@ bool ContextImpl::isSupported(graphics::SpecialFeatures _feature) const
 	case graphics::SpecialFeatures::ShaderProgramBinary:
 		return m_glInfo.shaderStorage;
 	case graphics::SpecialFeatures::DepthFramebufferTextures:
-		if (!m_glInfo.isGLES2 || Utils::isExtensionSupported(m_glInfo, "GL_OES_depth_texture"))
-			return true;
-		else
-			return false;
+		return m_glInfo.depthTexture;
 	}
 	return false;
 }

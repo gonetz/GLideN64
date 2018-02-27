@@ -92,4 +92,6 @@ void GLInfo::init() {
 			LOG(LOG_WARNING, "LOD emulation not possible on this device\n");
 		}
 	}
+
+	depthTexture = !isGLES2 || Utils::isExtensionSupported(*this, "GL_OES_depth_texture");
 }
