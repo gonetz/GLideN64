@@ -31,6 +31,7 @@ public:
 	void addRects(const graphics::Context::DrawRectParameters & _params);
 
 	bool isDebugMode() const { return m_bDebugMode; }
+	bool isCaptureMode() const { return m_bCapture; }
 
 	void draw();
 
