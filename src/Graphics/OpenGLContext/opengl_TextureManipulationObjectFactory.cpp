@@ -288,31 +288,48 @@ namespace opengl {
 	class SetTexParameters : public Set2DTextureParameters
 	{
 	public:
-		SetTexParameters(CachedBindTexture* _bind, bool _supportMipmapLevel)
+		SetTexParameters(CachedBindTexture* _bind, TextureParams * _texparams, bool _supportMipmapLevel)
 			: m_bind(_bind)
+			, m_texparams(_texparams)
 			, m_supportMipmapLevel(_supportMipmapLevel) {
 		}
 
 		void setTextureParameters(const graphics::Context::TexParameters & _parameters) override
 		{
+			TextureParams::const_iterator iter = m_texparams->find(u32(_parameters.handle));
 			m_bind->bind(_parameters.textureUnitIndex, _parameters.target, _parameters.handle);
+
+			const bool iterValid = iter != m_texparams->end();
 			const GLenum target(_parameters.target);
-			if (_parameters.magFilter.isValid())
+			if (_parameters.magFilter.isValid() && !(iterValid && iter->second.magFilter == GLint(_parameters.magFilter))) {
 				glTexParameteri(target, GL_TEXTURE_MAG_FILTER, GLint(_parameters.magFilter));
-			if (_parameters.minFilter.isValid())
+				(*m_texparams)[u32(_parameters.handle)].magFilter = GLint(_parameters.magFilter);
+			}
+			if (_parameters.minFilter.isValid() && !(iterValid && iter->second.minFilter == GLint(_parameters.minFilter))) {
 				glTexParameteri(target, GL_TEXTURE_MIN_FILTER, GLint(_parameters.minFilter));
-			if (_parameters.wrapS.isValid())
+				(*m_texparams)[u32(_parameters.handle)].minFilter = GLint(_parameters.minFilter);
+			}
+			if (_parameters.wrapS.isValid() && !(iterValid && iter->second.wrapS == GLint(_parameters.wrapS))) {
 				glTexParameteri(target, GL_TEXTURE_WRAP_S, GLint(_parameters.wrapS));
-			if (_parameters.wrapT.isValid())
+				(*m_texparams)[u32(_parameters.handle)].wrapS = GLint(_parameters.wrapS);
+			}
+			if (_parameters.wrapT.isValid() && !(iterValid && iter->second.wrapT == GLint(_parameters.wrapT))) {
 				glTexParameteri(target, GL_TEXTURE_WRAP_T, GLint(_parameters.wrapT));
-			if (m_supportMipmapLevel && _parameters.maxMipmapLevel.isValid())
+				(*m_texparams)[u32(_parameters.handle)].wrapT = GLint(_parameters.wrapT);
+			}
+			if (m_supportMipmapLevel && _parameters.maxMipmapLevel.isValid() && !(iterValid && iter->second.maxMipmapLevel == GLint(_parameters.maxMipmapLevel))) {
 				glTexParameteri(target, GL_TEXTURE_MAX_LEVEL, GLint(_parameters.maxMipmapLevel));
-			if (_parameters.maxAnisotropy.isValid())
+				(*m_texparams)[u32(_parameters.handle)].maxMipmapLevel = GLint(_parameters.maxMipmapLevel);
+			}
+			if (_parameters.maxAnisotropy.isValid() && !(iterValid && iter->second.maxAnisotropy == GLfloat(_parameters.maxAnisotropy))) {
 				glTexParameterf(target, GL_TEXTURE_MAX_ANISOTROPY_EXT, GLfloat(_parameters.maxMipmapLevel));
+				(*m_texparams)[u32(_parameters.handle)].maxAnisotropy = GLfloat(_parameters.maxMipmapLevel);
+			}
 		}
 
 	private:
 		CachedBindTexture* m_bind;
+		TextureParams* m_texparams;
 		bool m_supportMipmapLevel;
 	};
 
@@ -405,7 +422,7 @@ namespace opengl {
 		if (SetTextureParameters::Check(m_glInfo))
 			return new SetTextureParameters;
 
-		return new SetTexParameters(m_cachedFunctions.getCachedBindTexture(), !m_glInfo.isGLES2);
+		return new SetTexParameters(m_cachedFunctions.getCachedBindTexture(), m_cachedFunctions.getTexParams(), !m_glInfo.isGLES2);
 	}
 
 }

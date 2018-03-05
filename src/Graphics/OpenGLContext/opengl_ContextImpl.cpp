@@ -170,6 +170,7 @@ void ContextImpl::deleteTexture(graphics::ObjectHandle _name)
 	u32 glName(_name);
 	glDeleteTextures(1, &glName);
 	m_init2DTexture->reset(_name);
+	m_cachedFunctions->getTexParams()->erase(u32(_name));
 }
 
 void ContextImpl::init2DTexture(const graphics::Context::InitTextureParams & _params)
@@ -251,6 +252,7 @@ void ContextImpl::deleteFramebuffer(graphics::ObjectHandle _name)
 	if (fbo != 0) {
 		glDeleteFramebuffers(1, &fbo);
 		m_cachedFunctions->getCachedBindFramebuffer()->reset();
+		m_cachedFunctions->getFBAttachments()->erase(u32(_name));
 	}
 }
 
