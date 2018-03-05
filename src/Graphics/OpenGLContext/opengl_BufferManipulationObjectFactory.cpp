@@ -77,10 +77,16 @@ private:
 class AddFramebufferTexture2D : public AddFramebufferRenderTarget
 {
 public:
-	AddFramebufferTexture2D(CachedBindFramebuffer * _bind) : m_bind(_bind) {}
+	AddFramebufferTexture2D(CachedBindFramebuffer * _bind, FramebufferAttachments * _fbattachments) : m_bind(_bind), m_fbattachments(_fbattachments) {}
 
 	void addFrameBufferRenderTarget(const graphics::Context::FrameBufferRenderTarget & _params) override
 	{
+		FramebufferAttachments::const_iterator iter = m_fbattachments->find(u32(_params.bufferHandle));
+		if (iter != m_fbattachments->end() && iter->second == u32(_params.textureHandle))
+			return;
+
+		(*m_fbattachments)[u32(_params.bufferHandle)] = u32(_params.textureHandle);
+
 		m_bind->bind(_params.bufferTarget, _params.bufferHandle);
 		if (_params.textureTarget == graphics::textureTarget::RENDERBUFFER) {
 			glFramebufferRenderbuffer(GLenum(_params.bufferTarget),
@@ -98,6 +104,7 @@ public:
 
 private:
 	CachedBindFramebuffer * m_bind;
+	FramebufferAttachments * m_fbattachments;
 };
 
 class AddNamedFramebufferTexture : public AddFramebufferRenderTarget
@@ -602,7 +609,7 @@ AddFramebufferRenderTarget * BufferManipulationObjectFactory::getAddFramebufferR
 	if (AddNamedFramebufferTexture::Check(m_glInfo))
 		return new AddNamedFramebufferTexture;
 
-	return new AddFramebufferTexture2D(m_cachedFunctions.getCachedBindFramebuffer());
+	return new AddFramebufferTexture2D(m_cachedFunctions.getCachedBindFramebuffer(), m_cachedFunctions.getFBAttachments());
 }
 
 BlitFramebuffers * BufferManipulationObjectFactory::getBlitFramebuffers() const
