@@ -1426,7 +1426,12 @@ void GraphicsDrawer::_drawOSD(const char *_pText, float _x, float & _y)
 
 void GraphicsDrawer::drawOSD()
 {
-	if ((config.onScreenDisplay.fps | config.onScreenDisplay.vis | config.onScreenDisplay.percent) == 0 &&
+	if ((config.onScreenDisplay.fps |
+		config.onScreenDisplay.vis |
+		config.onScreenDisplay.percent |
+		config.onScreenDisplay.internalResolution |
+		config.onScreenDisplay.renderingResolution
+		) == 0 &&
 		m_osdMessages.empty())
 		return;
 
@@ -1457,7 +1462,7 @@ void GraphicsDrawer::drawOSD()
 	vShift *= 0.5f;
 	const float x = hp - hShift * hp;
 	float y = vp - vShift * vp;
-	char buf[16];
+	char buf[40];
 
 	if (config.onScreenDisplay.fps) {
 		sprintf(buf, "%d FPS", int(perf.getFps()));
@@ -1472,6 +1477,26 @@ void GraphicsDrawer::drawOSD()
 	if (config.onScreenDisplay.percent) {
 		sprintf(buf, "%d %%", int(perf.getPercent()));
 		_drawOSD(buf, x, y);
+	}
+
+	if (config.onScreenDisplay.renderingResolution) {
+		FrameBuffer * pBuffer = frameBufferList().getCurrent();
+		if (pBuffer != nullptr && VI.width != 0) {
+			const float aspect = float(VI.height) / float(VI.width);
+			const u32 height = u32(pBuffer->m_pTexture->width * aspect);
+			sprintf(buf, "Rendering Resolution %ux%u", pBuffer->m_pTexture->width, height);
+			_drawOSD(buf, x, y);
+		}
+	}
+
+	if (config.onScreenDisplay.internalResolution) {
+		FrameBuffer * pBuffer = frameBufferList().getCurrent();
+		if (pBuffer != nullptr && VI.width != 0) {
+			const float aspect = float(VI.height) / float(VI.width);
+			const u32 height = u32(pBuffer->m_width * aspect);
+			sprintf(buf, "Internal Resolution %ux%u", pBuffer->m_width, height);
+			_drawOSD(buf, x, y);
+		}
 	}
 
 	for (const std::string & m : m_osdMessages) {

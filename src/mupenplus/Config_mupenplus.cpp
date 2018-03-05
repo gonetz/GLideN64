@@ -171,6 +171,10 @@ bool Config_SetDefault()
 	assert(res == M64ERR_SUCCESS);
 	res = ConfigSetDefaultBool(g_configVideoGliden64, "ShowPercent", config.onScreenDisplay.percent, "Show percent counter.");
 	assert(res == M64ERR_SUCCESS);
+	res = ConfigSetDefaultBool(g_configVideoGliden64, "ShowInternalResolution", config.onScreenDisplay.internalResolution, "Show internal resolution.");
+	assert(res == M64ERR_SUCCESS);
+	res = ConfigSetDefaultBool(g_configVideoGliden64, "ShowRenderingResolution", config.onScreenDisplay.renderingResolution, "Show rendering resolution.");
+	assert(res == M64ERR_SUCCESS);
 	res = ConfigSetDefaultInt(g_configVideoGliden64, "CountersPos", config.onScreenDisplay.pos,
 		"Counters position (1=top left, 2=top center, 4=top right, 8=bottom left, 16=bottom center, 32=bottom right)");
 	assert(res == M64ERR_SUCCESS);
@@ -393,6 +397,8 @@ void Config_LoadConfig()
 	config.onScreenDisplay.fps = ConfigGetParamBool(g_configVideoGliden64, "ShowFPS");
 	config.onScreenDisplay.vis = ConfigGetParamBool(g_configVideoGliden64, "ShowVIS");
 	config.onScreenDisplay.percent = ConfigGetParamBool(g_configVideoGliden64, "ShowPercent");
+	config.onScreenDisplay.internalResolution = ConfigGetParamBool(g_configVideoGliden64, "ShowInternalResolution");
+	config.onScreenDisplay.renderingResolution = ConfigGetParamBool(g_configVideoGliden64, "ShowRenderingResolution");
 	config.onScreenDisplay.pos = ConfigGetParamInt(g_configVideoGliden64, "CountersPos");
 
 #ifdef DEBUG_DUMP

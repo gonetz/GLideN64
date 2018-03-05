@@ -164,6 +164,8 @@ struct Config
 		u32 vis;
 		u32 fps;
 		u32 percent;
+		u32 internalResolution;
+		u32 renderingResolution;
 		u32 pos;
 	} onScreenDisplay;
 

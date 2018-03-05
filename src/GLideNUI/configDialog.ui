@@ -3275,6 +3275,20 @@
                </property>
               </widget>
              </item>
+             <item>
+              <widget class="QCheckBox" name="internalResolutionCheckBox">
+               <property name="text">
+                <string>Display internal resolution</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QCheckBox" name="renderingResolutionCheckBox">
+               <property name="text">
+                <string>Display rendering resolution</string>
+               </property>
+              </widget>
+             </item>
             </layout>
            </item>
            <item>
