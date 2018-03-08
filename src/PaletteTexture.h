@@ -1,10 +1,6 @@
 #pragma once
 #include <memory>
 
-namespace graphics {
-	class PixelWriteBuffer;
-}
-
 struct CachedTexture;
 
 class PaletteTexture
@@ -18,7 +14,7 @@ public:
 
 private:
 	CachedTexture * m_pTexture;
-	std::unique_ptr<graphics::PixelWriteBuffer> m_pbuf;
+	u8* m_pbuf;
 	u32 m_paletteCRC256;
 };
 

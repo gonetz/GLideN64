@@ -120,173 +120,6 @@ public:
 	}
 };
 
-/*---------------CreatePixelWriteBuffer-------------*/
-
-class PBOWriteBuffer : public graphics::PixelWriteBuffer
-{
-public:
-	PBOWriteBuffer(CachedBindBuffer * _bind, size_t _size)
-		: m_bind(_bind)
-		, m_size(_size)
-	{
-		glGenBuffers(1, &m_PBO);
-		m_bind->bind(graphics::Parameter(GL_PIXEL_UNPACK_BUFFER), graphics::ObjectHandle(m_PBO));
-		glBufferData(GL_PIXEL_UNPACK_BUFFER, m_size, nullptr, GL_DYNAMIC_DRAW);
-		m_bind->bind(graphics::Parameter(GL_PIXEL_UNPACK_BUFFER), graphics::ObjectHandle::null);
-	}
-
-	~PBOWriteBuffer() {
-		glDeleteBuffers(1, &m_PBO);
-		m_PBO = 0;
-	}
-
-	void * getWriteBuffer(size_t _size) override
-	{
-		if (_size > m_size)
-			_size = m_size;
-		return glMapBufferRange(GL_PIXEL_UNPACK_BUFFER, 0, _size, GL_MAP_WRITE_BIT | GL_MAP_UNSYNCHRONIZED_BIT | GL_MAP_INVALIDATE_BUFFER_BIT);
-	}
-
-	void closeWriteBuffer() override
-	{
-		glUnmapBuffer(GL_PIXEL_UNPACK_BUFFER);
-	}
-
-	void * getData() override {
-		return nullptr;
-	}
-
-	void bind() override {
-		m_bind->bind(graphics::Parameter(GL_PIXEL_UNPACK_BUFFER), graphics::ObjectHandle(m_PBO));
-	}
-
-	void unbind() override {
-		m_bind->bind(graphics::Parameter(GL_PIXEL_UNPACK_BUFFER), graphics::ObjectHandle::null);
-	}
-
-private:
-	CachedBindBuffer * m_bind;
-	size_t m_size;
-	GLuint m_PBO;
-};
-
-class PersistentWriteBuffer : public graphics::PixelWriteBuffer
-{
-public:
-	PersistentWriteBuffer(CachedBindBuffer * _bind, size_t _size)
-		: m_bind(_bind)
-		, m_size(_size)
-	{
-		glGenBuffers(1, &m_PBO);
-		m_bind->bind(graphics::Parameter(GL_PIXEL_UNPACK_BUFFER), graphics::ObjectHandle(m_PBO));
-		glBufferStorage(GL_PIXEL_UNPACK_BUFFER, m_size * 32, nullptr, m_bufAccessBits);
-		m_bufferData = glMapBufferRange(GL_PIXEL_UNPACK_BUFFER, 0, m_size * 32, m_bufMapBits);
-		m_bufferOffset = 0;
-		m_bind->bind(graphics::Parameter(GL_PIXEL_UNPACK_BUFFER), graphics::ObjectHandle::null);
-	}
-
-	~PersistentWriteBuffer() {
-		glDeleteBuffers(1, &m_PBO);
-		m_PBO = 0;
-	}
-
-	void * getWriteBuffer(size_t _size) override
-	{
-		if (_size > m_size)
-			_size = m_size;
-		if (m_bufferOffset + _size > m_size * 32)
-			m_bufferOffset = 0;
-		return (char*)m_bufferData + m_bufferOffset;
-	}
-
-	void closeWriteBuffer() override
-	{
-#ifdef GL_DEBUG
-		glFlushMappedBufferRange(GL_PIXEL_UNPACK_BUFFER, m_bufferOffset, m_size);
-#endif
-		m_bufferOffset += m_size;
-	}
-
-	void * getData() override {
-		return (char*)nullptr + m_bufferOffset - m_size;
-	}
-
-	void bind() override {
-		m_bind->bind(graphics::Parameter(GL_PIXEL_UNPACK_BUFFER), graphics::ObjectHandle(m_PBO));
-	}
-
-	void unbind() override {
-		m_bind->bind(graphics::Parameter(GL_PIXEL_UNPACK_BUFFER), graphics::ObjectHandle::null);
-	}
-
-private:
-	CachedBindBuffer * m_bind;
-	size_t m_size;
-	void* m_bufferData;
-	u32 m_bufferOffset;
-	GLuint m_PBO;
-#ifndef GL_DEBUG
-	GLbitfield m_bufAccessBits = GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT;
-	GLbitfield m_bufMapBits = GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT;
-#else
-	GLbitfield m_bufAccessBits = GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT;
-	GLbitfield m_bufMapBits = GL_MAP_WRITE_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_FLUSH_EXPLICIT_BIT;
-#endif
-};
-
-class MemoryWriteBuffer : public graphics::PixelWriteBuffer
-{
-public:
-	MemoryWriteBuffer(CachedBindBuffer * _bind, size_t _size)
-		: m_size(_size)
-		, m_pData(new GLubyte[_size])
-	{
-	}
-
-	~MemoryWriteBuffer() {
-	}
-
-	void * getWriteBuffer(size_t _size) override
-	{
-		return m_pData.get();
-	}
-
-	void closeWriteBuffer() override
-	{
-	}
-
-	void * getData() override {
-		return m_pData.get();
-	}
-
-	void bind() override {
-	}
-
-	void unbind() override {
-	}
-
-private:
-	size_t m_size;
-	std::unique_ptr<GLubyte[]> m_pData;
-};
-
-template<typename T>
-class CreatePixelWriteBufferT : public CreatePixelWriteBuffer
-{
-public:
-	CreatePixelWriteBufferT(CachedBindBuffer * _bind)
-		: m_bind(_bind) {
-	}
-
-	graphics::PixelWriteBuffer * createPixelWriteBuffer(size_t _sizeInBytes) override
-	{
-		return new T(m_bind, _sizeInBytes);
-	}
-
-private:
-	CachedBindBuffer * m_bind;
-};
-
 /*---------------CreatePixelReadBuffer-------------*/
 
 class PBOReadBuffer : public graphics::PixelReadBuffer
@@ -323,7 +156,6 @@ public:
 	{
 		glUnmapBuffer(GL_PIXEL_PACK_BUFFER);
 	}
-
 
 	void bind() override {
 		m_bind->bind(graphics::Parameter(GL_PIXEL_PACK_BUFFER), graphics::ObjectHandle(m_PBO));
@@ -613,16 +445,6 @@ BlitFramebuffers * BufferManipulationObjectFactory::getBlitFramebuffers() const
 										m_glInfo.renderer);
 
 	return new DummyBlitFramebuffers;
-}
-
-CreatePixelWriteBuffer * BufferManipulationObjectFactory::createPixelWriteBuffer() const
-{
-	if (m_glInfo.isGLES2)
-		return new CreatePixelWriteBufferT<MemoryWriteBuffer>(nullptr);
-	if (m_glInfo.bufferStorage)
-		return new CreatePixelWriteBufferT<PersistentWriteBuffer>(m_cachedFunctions.getCachedBindBuffer());
-
-	return new CreatePixelWriteBufferT<PBOWriteBuffer>(m_cachedFunctions.getCachedBindBuffer());
 }
 
 CreatePixelReadBuffer * BufferManipulationObjectFactory::createPixelReadBuffer() const

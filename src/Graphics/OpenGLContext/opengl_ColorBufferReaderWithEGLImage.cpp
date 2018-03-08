@@ -44,10 +44,8 @@ const u8 * ColorBufferReaderWithEGLImage::_readPixels(const ReadColorBufferParam
 	GLenum type = GLenum(_params.colorType);
 
 	void* gpuData = nullptr;
-	const u8* returnData = nullptr;
 
 	if (!_params.sync) {
-
 		m_bindTexture->bind(graphics::Parameter(0), graphics::Parameter(GL_TEXTURE_2D), m_pTexture->name);
 		m_glEGLImageTargetTexture2DOES(GL_TEXTURE_2D, m_image);
 		m_bindTexture->bind(graphics::Parameter(0), graphics::Parameter(GL_TEXTURE_2D), ObjectHandle());
@@ -56,12 +54,11 @@ const u8 * ColorBufferReaderWithEGLImage::_readPixels(const ReadColorBufferParam
 		m_bufferLocked = true;
 		_heightOffset = static_cast<u32>(_params.y0);
 		_stride = m_pTexture->realWidth;
-
 	} else {
 		gpuData = m_pixelData.data();
 		glReadPixels(_params.x0, _params.y0, _params.width, _params.height, format, type, gpuData);
 		_heightOffset = 0;
-		_stride = 0;
+		_stride = m_pTexture->realWidth;
 	}
 
 	return reinterpret_cast<u8*>(gpuData);

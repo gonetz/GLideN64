@@ -54,7 +54,6 @@ void ContextImpl::init()
 		m_createRenderbuffer.reset(bufferObjectFactory.getCreateRenderbuffer());
 		m_initRenderbuffer.reset(bufferObjectFactory.getInitRenderbuffer());
 		m_addFramebufferRenderTarget.reset(bufferObjectFactory.getAddFramebufferRenderTarget());
-		m_createPixelWriteBuffer.reset(bufferObjectFactory.createPixelWriteBuffer());
 		m_createPixelReadBuffer.reset(bufferObjectFactory.createPixelReadBuffer());
 		m_blitFramebuffers.reset(bufferObjectFactory.getBlitFramebuffers());
 	}
@@ -282,11 +281,6 @@ void ContextImpl::addFrameBufferRenderTarget(const graphics::Context::FrameBuffe
 bool ContextImpl::blitFramebuffers(const graphics::Context::BlitFramebuffersParams & _params)
 {
 	return m_blitFramebuffers->blitFramebuffers(_params);
-}
-
-graphics::PixelWriteBuffer * ContextImpl::createPixelWriteBuffer(size_t _sizeInBytes)
-{
-	return m_createPixelWriteBuffer->createPixelWriteBuffer(_sizeInBytes);
 }
 
 graphics::PixelReadBuffer * ContextImpl::createPixelReadBuffer(size_t _sizeInBytes)

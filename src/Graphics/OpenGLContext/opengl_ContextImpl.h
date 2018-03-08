@@ -90,8 +90,6 @@ namespace opengl {
 
 		/*---------------Pixelbuffer-------------*/
 
-		graphics::PixelWriteBuffer * createPixelWriteBuffer(size_t _sizeInBytes) override;
-
 		graphics::PixelReadBuffer * createPixelReadBuffer(size_t _sizeInBytes) override;
 
 		graphics::ColorBufferReader * createColorBufferReader(CachedTexture * _pTexture) override;
@@ -149,7 +147,6 @@ namespace opengl {
 		std::unique_ptr<CreateRenderbuffer> m_createRenderbuffer;
 		std::unique_ptr<InitRenderbuffer> m_initRenderbuffer;
 		std::unique_ptr<AddFramebufferRenderTarget> m_addFramebufferRenderTarget;
-		std::unique_ptr<CreatePixelWriteBuffer> m_createPixelWriteBuffer;
 		std::unique_ptr<CreatePixelReadBuffer> m_createPixelReadBuffer;
 		std::unique_ptr<BlitFramebuffers> m_blitFramebuffers;
 		std::unique_ptr<graphics::FramebufferTextureFormats> m_fbTexFormats;

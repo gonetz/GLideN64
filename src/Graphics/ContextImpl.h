@@ -42,7 +42,6 @@ namespace graphics {
 		virtual ObjectHandle createRenderbuffer() = 0;
 		virtual void initRenderbuffer(const Context::InitRenderbufferParams & _params) = 0;
 		virtual bool blitFramebuffers(const Context::BlitFramebuffersParams & _params) = 0;
-		virtual PixelWriteBuffer * createPixelWriteBuffer(size_t _sizeInBytes) = 0;
 		virtual PixelReadBuffer * createPixelReadBuffer(size_t _sizeInBytes) = 0;
 		virtual ColorBufferReader * createColorBufferReader(CachedTexture * _pTexture) = 0;
 		virtual bool isCombinerProgramBuilderObsolete() = 0;

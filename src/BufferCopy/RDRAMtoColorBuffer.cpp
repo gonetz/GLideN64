@@ -61,7 +61,7 @@ void RDRAMtoColorBuffer::init()
 	setParams.magFilter = textureParameters::FILTER_LINEAR;
 	gfxContext.setTextureParameters(setParams);
 
-	m_pbuf.reset(gfxContext.createPixelWriteBuffer(m_pTexture->textureBytes));
+	m_pbuf = (u8*)malloc(m_pTexture->textureBytes);
 }
 
 void RDRAMtoColorBuffer::destroy()
@@ -70,7 +70,7 @@ void RDRAMtoColorBuffer::destroy()
 		textureCache().removeFrameBufferTexture(m_pTexture);
 		m_pTexture = nullptr;
 	}
-	m_pbuf.reset();
+	free(m_pbuf);
 }
 
 void RDRAMtoColorBuffer::addAddress(u32 _address, u32 _size)
@@ -206,12 +206,6 @@ void RDRAMtoColorBuffer::copyFromRDRAM(u32 _address, bool _bCFB)
 
 	m_pTexture->width = width;
 	m_pTexture->height = height;
-	const u32 gpuDataSize = width*height * fbTexFormats.colorFormatBytes;
-
-	PixelBufferBinder<PixelWriteBuffer> binder(m_pbuf.get());
-	u8* ptr = (u8*)m_pbuf->getWriteBuffer(gpuDataSize);
-	if (ptr == nullptr)
-		return;
 
 	u32 * dst = nullptr;
 	std::unique_ptr<u8[]> dstData;
@@ -222,7 +216,7 @@ void RDRAMtoColorBuffer::copyFromRDRAM(u32 _address, bool _bCFB)
 		dstData = std::unique_ptr<u8[]>(new u8[initialDataSize]);
 		dst = reinterpret_cast<u32*>(dstData.get());
 	} else {
-		dst = reinterpret_cast<u32*>(ptr);
+		dst = reinterpret_cast<u32*>(m_pbuf);
 	}
 
 	bool bCopy;
@@ -241,7 +235,7 @@ void RDRAMtoColorBuffer::copyFromRDRAM(u32 _address, bool _bCFB)
 
 	//Convert integer format to float
 	if (fbTexFormats.colorType == datatype::FLOAT) {
-		f32* floatData = reinterpret_cast<f32*>(ptr);
+		f32* floatData = reinterpret_cast<f32*>(m_pbuf);
 		u8* byteData = dstData.get();
 		const u32 widthPixels = width*4;
 		for (unsigned int heightIndex = 0; heightIndex < height; ++heightIndex) {
@@ -262,8 +256,6 @@ void RDRAMtoColorBuffer::copyFromRDRAM(u32 _address, bool _bCFB)
 		}
 	}
 
-	m_pbuf->closeWriteBuffer();
-
 	if (!bCopy)
 		return;
 
@@ -280,7 +272,7 @@ void RDRAMtoColorBuffer::copyFromRDRAM(u32 _address, bool _bCFB)
 	updateParams.height = height;
 	updateParams.format = fbTexFormats.colorFormat;
 	updateParams.dataType = fbTexFormats.colorType;
-	updateParams.data = m_pbuf->getData();
+	updateParams.data = m_pbuf;
 	gfxContext.update2DTexture(updateParams);
 
 	m_pTexture->scaleS = 1.0f / (float)m_pTexture->realWidth;
