@@ -204,7 +204,7 @@ void BufferedDrawer::drawTriangles(const graphics::Context::DrawTriangleParamete
 	}
 
 	if (config.frameBufferEmulation.N64DepthCompare == 0) {
-		glDrawElementsBaseVertex(GLenum(_params.mode), _params.elementsCount, GL_UNSIGNED_SHORT,
+		glDrawRangeElementsBaseVertex(GLenum(_params.mode), 0, _params.verticesCount - 1, _params.elementsCount, GL_UNSIGNED_SHORT,
 			(u16*)nullptr + m_trisBuffers.ebo.pos - _params.elementsCount, m_trisBuffers.vbo.pos - _params.verticesCount);
 		return;
 	}
@@ -214,7 +214,7 @@ void BufferedDrawer::drawTriangles(const graphics::Context::DrawTriangleParamete
 	const GLint vboStartPos = m_trisBuffers.vbo.pos - _params.verticesCount;
 	for (GLuint i = 0; i < _params.elementsCount; i += 3) {
 		glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
-		glDrawElementsBaseVertex(GLenum(_params.mode), 3, GL_UNSIGNED_SHORT,
+		glDrawRangeElementsBaseVertex(GLenum(_params.mode), 0, _params.verticesCount - 1, 3, GL_UNSIGNED_SHORT,
 			(u16*)nullptr + eboStartPos + i, vboStartPos);
 	}
 }
