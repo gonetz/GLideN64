@@ -130,11 +130,13 @@ void NoiseTexture::init()
 		{
 			Context::InitTextureParams params;
 			params.handle = m_pTexture[i]->name;
+			params.textureUnitIndex = textureIndices::NoiseTex;
 			params.width = m_pTexture[i]->realWidth;
 			params.height = m_pTexture[i]->realHeight;
 			params.internalFormat = fbTexFormats.noiseInternalFormat;
 			params.format = fbTexFormats.noiseFormat;
 			params.dataType = fbTexFormats.noiseType;
+			params.data = m_texData[i].data();
 			gfxContext.init2DTexture(params);
 		}
 		{
@@ -145,17 +147,6 @@ void NoiseTexture::init()
 			params.minFilter = textureParameters::FILTER_NEAREST;
 			params.magFilter = textureParameters::FILTER_NEAREST;
 			gfxContext.setTextureParameters(params);
-		}
-		{
-			Context::UpdateTextureDataParams params;
-			params.handle = m_pTexture[i]->name;
-			params.textureUnitIndex = textureIndices::NoiseTex;
-			params.width = m_pTexture[i]->realWidth;
-			params.height = m_pTexture[i]->realHeight;
-			params.format = fbTexFormats.noiseFormat;
-			params.dataType = fbTexFormats.noiseType;
-			params.data = m_texData[i].data();
-			gfxContext.update2DTexture(params);
 		}
 	}
 }

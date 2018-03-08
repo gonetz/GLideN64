@@ -3,17 +3,6 @@
 
 namespace graphics {
 
-	class PixelWriteBuffer
-	{
-	public:
-		virtual ~PixelWriteBuffer() {}
-		virtual void * getWriteBuffer(size_t _size) = 0;
-		virtual void closeWriteBuffer() = 0;
-		virtual void * getData() = 0;
-		virtual void bind() = 0;
-		virtual void unbind() = 0;
-	};
-
 	class PixelReadBuffer
 	{
 	public:
@@ -41,5 +30,4 @@ namespace graphics {
 	private:
 		T * m_buffer;
 	};
-
 }

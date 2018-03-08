@@ -58,7 +58,6 @@ namespace opengl {
 		void init2DTexture(const graphics::Context::InitTextureParams & _params) override
 		{
 			if (_params.msaaLevel == 0) {
-
 				m_bind->bind(_params.textureUnitIndex, graphics::textureTarget::TEXTURE_2D, _params.handle);
 				glTexImage2D(GL_TEXTURE_2D,
 							 _params.mipMapLevel,
@@ -101,8 +100,7 @@ namespace opengl {
 
 		Init2DTexStorage(CachedBindTexture* _bind, bool _imageTextures)
 			: m_bind(_bind)
-			, m_imageTextures(_imageTextures) {
-		}
+			, m_imageTextures(_imageTextures) {}
 
 		void init2DTexture(const graphics::Context::InitTextureParams & _params) override
 		{
@@ -225,8 +223,7 @@ namespace opengl {
 	public:
 		Update2DTexSubImage(CachedBindTexture* _bind, bool _imageTextures)
 			: m_bind(_bind)
-			, m_imageTextures(_imageTextures) {
-		}
+			, m_imageTextures(_imageTextures) {}
 
 		void update2DTexture(const graphics::Context::UpdateTextureDataParams & _params) override
 		{

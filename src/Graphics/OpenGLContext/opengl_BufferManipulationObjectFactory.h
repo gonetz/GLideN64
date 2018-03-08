@@ -38,13 +38,6 @@ namespace opengl {
 		virtual void addFrameBufferRenderTarget(const graphics::Context::FrameBufferRenderTarget & _params) = 0;
 	};
 
-	class CreatePixelWriteBuffer
-	{
-	public:
-		virtual ~CreatePixelWriteBuffer() {}
-		virtual graphics::PixelWriteBuffer * createPixelWriteBuffer(size_t _sizeInBytes) = 0;
-	};
-
 	class CreatePixelReadBuffer
 	{
 	public:
@@ -72,8 +65,6 @@ namespace opengl {
 		InitRenderbuffer * getInitRenderbuffer() const;
 
 		AddFramebufferRenderTarget * getAddFramebufferRenderTarget() const;
-
-		CreatePixelWriteBuffer * createPixelWriteBuffer() const;
 
 		CreatePixelReadBuffer * createPixelReadBuffer() const;
 

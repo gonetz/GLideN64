@@ -9,7 +9,6 @@
 
 typedef void (APIENTRYP PFNGLEGLIMAGETARGETTEXTURE2DOESPROC) (GLenum target, EGLImageKHR image);
 
-
 namespace opengl {
 
 class ColorBufferReaderWithEGLImage : public graphics::ColorBufferReader

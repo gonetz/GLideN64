@@ -182,11 +182,6 @@ bool Context::blitFramebuffers(const BlitFramebuffersParams & _params)
 	return m_impl->blitFramebuffers(_params);
 }
 
-PixelWriteBuffer * Context::createPixelWriteBuffer(size_t _sizeInBytes)
-{
-	return m_impl->createPixelWriteBuffer(_sizeInBytes);
-}
-
 PixelReadBuffer * Context::createPixelReadBuffer(size_t _sizeInBytes)
 {
 	return m_impl->createPixelReadBuffer(_sizeInBytes);
