@@ -88,7 +88,7 @@ void GraphicsDrawer::addTriangle(int _v0, int _v1, int _v2)
 		}
 	}
 
-	if (!gfxContext.isSupported(SpecialFeatures::NearPlaneClipping)) {
+	if (!gfxContext.isSupported(SpecialFeatures::FragmentDepthWrite)) {
 		if (GBI.isNoN() && gDP.otherMode.depthCompare == 0 && gDP.otherMode.depthUpdate == 0) {
 			for (u32 i = firstIndex; i < triangles.num; ++i) {
 				SPVertex & vtx = triangles.vertices[triangles.elements[i]];
@@ -155,11 +155,11 @@ void GraphicsDrawer::_updateDepthCompare() const
 
 			gfxContext.enable(enable::DEPTH_TEST, true);
 			if (!GBI.isNoN())
-				gfxContext.enable(enable::DEPTH_CLAMP, false);
+				gfxContext.setClampMode(graphics::ClampMode::ClippingEnabled);
 		} else {
 			gfxContext.enable(enable::DEPTH_TEST, false);
 			if (!GBI.isNoN())
-				gfxContext.enable(enable::DEPTH_CLAMP, true);
+				gfxContext.setClampMode(graphics::ClampMode::NoClipping);
 		}
 	}
 }

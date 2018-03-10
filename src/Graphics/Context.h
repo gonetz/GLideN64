@@ -17,13 +17,18 @@ namespace graphics {
 
 	enum class SpecialFeatures {
 		Multisampling,
-		NearPlaneClipping,
 		FragmentDepthWrite,
 		BlitFramebuffer,
 		WeakBlitFramebuffer,
 		DepthFramebufferTextures,
 		ShaderProgramBinary,
 		ImageTextures
+	};
+
+	enum class ClampMode {
+		ClippingEnabled,
+		NoNearPlaneClipping,
+		NoClipping
 	};
 
 	class ContextImpl;
@@ -39,7 +44,13 @@ namespace graphics {
 
 		void destroy();
 
+		void setClampMode(ClampMode _mode);
+
+		ClampMode getClampMode();
+
 		void enable(EnableParam _parameter, bool _enable);
+
+		u32 isEnabled(EnableParam _parameter);
 
 		void cullFace(CullModeParam _mode);
 

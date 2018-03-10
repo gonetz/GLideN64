@@ -87,7 +87,7 @@ struct gSPInfo
 		f32 pos_xyzw[2][4];
 		f32 ca[2], la[2], qa[2];
 	} lookat;
-	
+
 	u32 numLights;
 	bool lookatEnable;
 

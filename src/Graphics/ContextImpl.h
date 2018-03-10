@@ -12,7 +12,10 @@ namespace graphics {
 		virtual ~ContextImpl() {}
 		virtual void init() = 0;
 		virtual void destroy() = 0;
+		virtual void setClampMode(ClampMode _mode) = 0;
+		virtual ClampMode getClampMode() = 0;
 		virtual void enable(EnableParam _parameter, bool _enable) = 0;
+		virtual u32 isEnabled(EnableParam _parameter) = 0;
 		virtual void cullFace(CullModeParam _mode) = 0;
 		virtual void enableDepthWrite(bool _enable) = 0;
 		virtual void setDepthCompare(CompareParam _mode) = 0;

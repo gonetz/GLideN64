@@ -103,6 +103,8 @@ namespace opengl {
 
 		void enable(bool _enable);
 
+		u32 get();
+
 	private:
 		const graphics::Parameter m_parameter;
 	};

@@ -27,6 +27,11 @@ void CachedEnable::enable(bool _enable)
 	}
 }
 
+u32 CachedEnable::get()
+{
+	return u32(m_cached);
+}
+
 /*---------------CachedBindTexture-------------*/
 
 void CachedBindTexture::bind(Parameter _tmuIndex, Parameter _target, ObjectHandle _name)

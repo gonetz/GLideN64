@@ -24,7 +24,13 @@ namespace opengl {
 
 		void destroy() override;
 
+		void setClampMode(graphics::ClampMode _mode) override;
+
+		graphics::ClampMode getClampMode() override;
+
 		void enable(graphics::EnableParam _parameter, bool _enable) override;
+
+		u32 isEnabled(graphics::EnableParam _parameter) override;
 
 		void cullFace(graphics::CullModeParam _mode) override;
 
@@ -156,6 +162,7 @@ namespace opengl {
 		std::unique_ptr<glsl::CombinerProgramBuilder> m_combinerProgramBuilder;
 		std::unique_ptr<glsl::SpecialShadersFactory> m_specialShadersFactory;
 		GLInfo m_glInfo;
+		graphics::ClampMode m_clampMode;
 	};
 
 }
