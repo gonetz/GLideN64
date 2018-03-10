@@ -1,6 +1,7 @@
 #include <Config.h>
 #include "glsl_CombinerProgramUniformFactory.h"
 #include <Graphics/Parameters.h>
+#include <Graphics/Context.h>
 
 #include <Textures.h>
 #include <NoiseTexture.h>
@@ -653,6 +654,53 @@ private:
 	iUniform uRenderTarget;
 };
 
+class UClampMode : public UniformGroup
+{
+public:
+	UClampMode(GLuint _program) {
+		LocateUniform(uClampMode);
+	}
+
+	void update(bool _force) override
+	{
+		int clampMode;
+		switch (gfxContext.getClampMode())
+		{
+		case graphics::ClampMode::ClippingEnabled:
+			clampMode = 0;
+			break;
+		case graphics::ClampMode::NoNearPlaneClipping:
+			clampMode = 1;
+			break;
+		case graphics::ClampMode::NoClipping:
+			clampMode = 2;
+			break;
+		}
+		uClampMode.set(clampMode, _force);
+	}
+
+private:
+	iUniform uClampMode;
+};
+
+class UPolygonOffset : public UniformGroup
+{
+public:
+	UPolygonOffset(GLuint _program) {
+		LocateUniform(uPolygonOffset);
+	}
+
+	void update(bool _force) override
+	{
+		f32 offset = gfxContext.isEnabled(graphics::enable::POLYGON_OFFSET_FILL) ? 0.003f : 0.0f;
+		uPolygonOffset.set(offset, _force);
+	}
+
+private:
+	fUniform uPolygonOffset;
+};
+
+
 class UScreenCoordsScale : public UniformGroup
 {
 public:
@@ -922,6 +970,11 @@ void CombinerProgramUniformFactory::buildUniforms(GLuint _program,
 	if (config.generalEmulation.enableFragmentDepthWrite != 0 ||
 		config.frameBufferEmulation.N64DepthCompare != 0)
 		_uniforms.emplace_back(new URenderTarget(_program));
+
+	if (m_glInfo.isGLESX) {
+		_uniforms.emplace_back(new UClampMode(_program));
+		_uniforms.emplace_back(new UPolygonOffset(_program));
+	}
 
 	_uniforms.emplace_back(new UScreenCoordsScale(_program));
 

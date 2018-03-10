@@ -49,6 +49,7 @@ namespace glsl {
 		ShaderPartPtr m_callDither;
 
 		ShaderPartPtr m_vertexHeader;
+		ShaderPartPtr m_vertexEnd;
 		ShaderPartPtr m_vertexRect;
 		ShaderPartPtr m_vertexTexturedRect;
 		ShaderPartPtr m_vertexTriangle;

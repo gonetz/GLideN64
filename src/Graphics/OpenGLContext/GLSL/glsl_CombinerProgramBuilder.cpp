@@ -229,6 +229,7 @@ public:
 			std::stringstream ss;
 			ss << "#version " << Utils::to_string(_glinfo.majorVersion) << Utils::to_string(_glinfo.minorVersion) << "0 es " << std::endl;
 			ss << "# define IN in" << std::endl << "# define OUT out" << std::endl;
+			ss << "OUT highp float vZCoord;" << std::endl << "uniform lowp int uClampMode;" << std::endl;
 			m_part = ss.str();
 		}
 		else {
@@ -316,14 +317,6 @@ public:
 			"      vShadeColor.rgb = vec3(fp);								\n"
 			"  }															\n"
 			;
-		if (!_glinfo.isGLESX) {
-			m_part +=
-				"  gl_ClipDistance[0] = gl_Position.w - gl_Position.z;			\n"
-				;
-		}
-		m_part +=
-			"} \n"
-		;
 	}
 };
 
@@ -374,14 +367,6 @@ public:
 			"      vShadeColor.rgb = vec3(fp);								\n"
 			"  }															\n"
 			;
-		if (!_glinfo.isGLESX) {
-			m_part +=
-				"  gl_ClipDistance[0] = gl_Position.w - gl_Position.z;			\n"
-				;
-		}
-		m_part +=
-			"} \n"
-			;
 	}
 };
 
@@ -405,14 +390,6 @@ public:
 			"  vShadeColor = uRectColor;						\n"
 			"  vTexCoord0 = aTexCoord0;							\n"
 			"  vTexCoord1 = aTexCoord1;							\n"
-		;
-		if (!_glinfo.isGLESX) {
-			m_part +=
-				"  gl_ClipDistance[0] = gl_Position.w - gl_Position.z;			\n"
-				;
-		}
-		m_part +=
-			"} \n"
 			;
 	}
 };
@@ -432,10 +409,24 @@ public:
 			"  gl_Position = aRectPosition;						\n"
 			"  vShadeColor = uRectColor;						\n"
 			;
+	}
+};
+
+class VertexShaderEnd : public ShaderPart
+{
+public:
+	VertexShaderEnd(const opengl::GLInfo & _glinfo)
+	{
 		if (!_glinfo.isGLESX) {
-			m_part +=
-				"  gl_ClipDistance[0] = gl_Position.w - gl_Position.z;			\n"
+			m_part =
+				"  gl_ClipDistance[0] = gl_Position.w - gl_Position.z;	\n"
 				;
+		} else if (config.generalEmulation.enableFragmentDepthWrite != 0 && config.frameBufferEmulation.N64DepthCompare == 0) {
+				m_part =
+					"  vZCoord = gl_Position.z;	\n"
+					"  if (uClampMode > 0)	\n"
+					"    gl_Position.z = 0.0;	\n"
+					;
 		}
 		m_part +=
 			"} \n"
@@ -872,6 +863,14 @@ public:
 			m_part =
 				"void writeDepth();\n";
 			;
+			if (_glinfo.isGLESX) {
+				m_part =
+					"IN highp float vZCoord;	\n"
+					"uniform lowp float uPolygonOffset;	\n"
+					"uniform lowp int uClampMode;	\n"
+					+ m_part
+				;
+			}
 		}
 	}
 };
@@ -1447,7 +1446,19 @@ public:
 						"layout(binding = 0, r32ui) highp uniform readonly uimage2D uZlutImage;\n"
 						"void writeDepth()						        													\n"
 						"{																									\n"
-						"  gl_FragDepth = clamp((gl_FragCoord.z * 2.0 - 1.0) * uDepthScale.s + uDepthScale.t, 0.0, 1.0);	\n"
+						;
+					if (_glinfo.isGLESX && config.frameBufferEmulation.N64DepthCompare == 0) {
+						m_part +=
+							"  highp float z_value = vZCoord * gl_FragCoord.w;	\n"
+							"  if (uClampMode == 1 && (z_value > 1.0)) discard;	\n"
+							"  gl_FragDepth = clamp((z_value - uPolygonOffset) * uDepthScale.s + uDepthScale.t, 0.0, 1.0);	\n"
+							;
+					} else {
+						m_part +=
+							"  gl_FragDepth = clamp((gl_FragCoord.z * 2.0 - 1.0) * uDepthScale.s + uDepthScale.t, 0.0, 1.0);	\n"
+						;
+					}
+					m_part +=
 						"  highp int iZ = gl_FragDepth > 0.999 ? 262143 : int(floor(gl_FragDepth * 262143.0));				\n"
 						"  mediump int y0 = clamp(iZ/512, 0, 511);															\n"
 						"  mediump int x0 = iZ - 512*y0;																	\n"
@@ -1456,13 +1467,25 @@ public:
 						"}																									\n"
 						;
 				} else {
-					m_part =
-						"void writeDepth()						        										\n"
-						"{																						\n"
-						"  highp float depth = uDepthSource == 0 ? (gl_FragCoord.z * 2.0 - 1.0) : uPrimDepth;	\n"
-						"  gl_FragDepth = clamp(depth * uDepthScale.s + uDepthScale.t, 0.0, 1.0);				\n"
-						"}																						\n"
-						;
+					if (_glinfo.isGLESX && config.frameBufferEmulation.N64DepthCompare == 0) {
+						 m_part =
+							"void writeDepth()                                                                                                                                      \n"
+							"{                                                                                                                                                                              \n"
+							"  highp float z_value = vZCoord * gl_FragCoord.w;      \n"
+							"  if (uClampMode == 1 && (z_value > 1.0)) discard;     \n"
+							"  highp float depth = uDepthSource == 0 ? (z_value - uPolygonOffset) : uPrimDepth;     \n"
+							"  gl_FragDepth = clamp(depth * uDepthScale.s + uDepthScale.t, 0.0, 1.0);                               \n"
+							"}                                                                                                                                                                              \n"
+							;
+					} else {
+						m_part =
+							"void writeDepth()						        										\n"
+							"{																						\n"
+							"  highp float depth = uDepthSource == 0 ? (gl_FragCoord.z * 2.0 - 1.0) : uPrimDepth;	\n"
+							"  gl_FragDepth = clamp(depth * uDepthScale.s + uDepthScale.t, 0.0, 1.0);				\n"
+							"}																						\n"
+							;
+					}
 				}
 			}
 		}
@@ -2243,11 +2266,12 @@ const ShaderPart * CombinerProgramBuilder::getFragmentShaderEnd() const
 }
 
 static
-GLuint _createVertexShader(ShaderPart * _header, ShaderPart * _body)
+GLuint _createVertexShader(ShaderPart * _header, ShaderPart * _body, ShaderPart * _footer)
 {
 	std::stringstream ssShader;
 	_header->write(ssShader);
 	_body->write(ssShader);
+	_footer->write(ssShader);
 	const std::string strShader(std::move(ssShader.str()));
 	const GLchar * strShaderData = strShader.data();
 
@@ -2271,6 +2295,7 @@ CombinerProgramBuilder::CombinerProgramBuilder(const opengl::GLInfo & _glinfo, o
 , m_alphaTest(new ShaderAlphaTest)
 , m_callDither(new ShaderCallDither(_glinfo))
 , m_vertexHeader(new VertexShaderHeader(_glinfo))
+, m_vertexEnd(new VertexShaderEnd(_glinfo))
 , m_vertexRect(new VertexShaderRect(_glinfo))
 , m_vertexTexturedRect(new VertexShaderTexturedRect(_glinfo))
 , m_vertexTriangle(new VertexShaderTriangle(_glinfo))
@@ -2309,10 +2334,10 @@ CombinerProgramBuilder::CombinerProgramBuilder(const opengl::GLInfo & _glinfo, o
 , m_useProgram(_useProgram)
 , m_combinerOptionsBits(graphics::CombinerProgram::getShaderCombinerOptionsBits())
 {
-	m_vertexShaderRect = _createVertexShader(m_vertexHeader.get(), m_vertexRect.get());
-	m_vertexShaderTriangle = _createVertexShader(m_vertexHeader.get(), m_vertexTriangle.get());
-	m_vertexShaderTexturedRect = _createVertexShader(m_vertexHeader.get(), m_vertexTexturedRect.get());
-	m_vertexShaderTexturedTriangle = _createVertexShader(m_vertexHeader.get(), m_vertexTexturedTriangle.get());
+	m_vertexShaderRect = _createVertexShader(m_vertexHeader.get(), m_vertexRect.get(), m_vertexEnd.get());
+	m_vertexShaderTriangle = _createVertexShader(m_vertexHeader.get(), m_vertexTriangle.get(), m_vertexEnd.get());
+	m_vertexShaderTexturedRect = _createVertexShader(m_vertexHeader.get(), m_vertexTexturedRect.get(), m_vertexEnd.get());
+	m_vertexShaderTexturedTriangle = _createVertexShader(m_vertexHeader.get(), m_vertexTexturedTriangle.get(), m_vertexEnd.get());
 	m_uniformFactory.reset(new CombinerProgramUniformFactory(_glinfo));
 }
 

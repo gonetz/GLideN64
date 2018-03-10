@@ -28,6 +28,7 @@ ContextImpl::~ContextImpl()
 
 void ContextImpl::init()
 {
+	m_clampMode = graphics::ClampMode::ClippingEnabled;
 	m_glInfo.init();
 
 	if (m_glInfo.isGLES2) {
@@ -84,9 +85,40 @@ void ContextImpl::destroy()
 	m_cachedFunctions.reset();
 }
 
+void ContextImpl::setClampMode(graphics::ClampMode _mode)
+{
+	if (!m_glInfo.isGLESX) {
+		switch (_mode) {
+		case graphics::ClampMode::ClippingEnabled:
+			m_cachedFunctions->getCachedEnable(graphics::enable::DEPTH_CLAMP)->enable(false);
+			m_cachedFunctions->getCachedEnable(graphics::enable::CLIP_DISTANCE0)->enable(false);
+			break;
+		case graphics::ClampMode::NoNearPlaneClipping:
+			m_cachedFunctions->getCachedEnable(graphics::enable::DEPTH_CLAMP)->enable(true);
+			m_cachedFunctions->getCachedEnable(graphics::enable::CLIP_DISTANCE0)->enable(true);
+			break;
+		case graphics::ClampMode::NoClipping:
+			m_cachedFunctions->getCachedEnable(graphics::enable::DEPTH_CLAMP)->enable(true);
+			m_cachedFunctions->getCachedEnable(graphics::enable::CLIP_DISTANCE0)->enable(false);
+			break;
+		}
+	}
+	m_clampMode = _mode;
+}
+
+graphics::ClampMode ContextImpl::getClampMode()
+{
+	return m_clampMode;
+}
+
 void ContextImpl::enable(graphics::EnableParam _parameter, bool _enable)
 {
 	m_cachedFunctions->getCachedEnable(_parameter)->enable(_enable);
+}
+
+u32 ContextImpl::isEnabled(graphics::EnableParam _parameter)
+{
+	return m_cachedFunctions->getCachedEnable(_parameter)->get();
 }
 
 void ContextImpl::cullFace(graphics::CullModeParam _mode)
@@ -428,9 +460,7 @@ bool ContextImpl::isSupported(graphics::SpecialFeatures _feature) const
 	case graphics::SpecialFeatures::WeakBlitFramebuffer:
 		return m_glInfo.isGLESX;
 	case graphics::SpecialFeatures::FragmentDepthWrite:
-		return !m_glInfo.isGLES2;
-	case graphics::SpecialFeatures::NearPlaneClipping:
-		return !m_glInfo.isGLESX;
+		return config.generalEmulation.enableFragmentDepthWrite;
 	case graphics::SpecialFeatures::Multisampling:
 		return m_glInfo.msaa;
 	case graphics::SpecialFeatures::ImageTextures:

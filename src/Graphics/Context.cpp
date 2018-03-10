@@ -30,9 +30,24 @@ void Context::destroy()
 	m_impl.reset();
 }
 
+void Context::setClampMode(ClampMode _mode)
+{
+	m_impl->setClampMode(_mode);
+}
+
+ClampMode Context::getClampMode()
+{
+	return m_impl->getClampMode();
+}
+
 void Context::enable(EnableParam _parameter, bool _enable)
 {
 	m_impl->enable(_parameter, _enable);
+}
+
+u32 Context::isEnabled(EnableParam _parameter)
+{
+	return m_impl->isEnabled(_parameter);
 }
 
 void Context::cullFace(CullModeParam _parameter)
