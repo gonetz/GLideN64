@@ -644,11 +644,6 @@ void _calcTileSizes(u32 _t, TileSizes & _sizes, gDPTile * _pLoadTile)
 	_sizes.clampWidth = (pTile->clamps && gDP.otherMode.cycleType != G_CYC_COPY) ? tileWidth : width;
 	_sizes.clampHeight = (pTile->clampt && gDP.otherMode.cycleType != G_CYC_COPY) ? tileHeight : height;
 
-	if (_sizes.clampWidth > 256)
-		pTile->clamps = 0;
-	if (_sizes.clampHeight > 256)
-		pTile->clampt = 0;
-
 	// Make sure masking is valid
 	if (maskWidth > width) {
 		pTile->masks = powof(width);
@@ -1000,7 +995,8 @@ void TextureCache::_getTextureDestData(CachedTexture& tmptex,
 {
 	u16 mirrorSBit, maskSMask, clampSClamp;
 	u16 mirrorTBit, maskTMask, clampTClamp;
-	u16 x, y, i, j, tx, ty;
+	u16 x, y, tx, ty;
+	u32 i, j;
 	u64 *pSrc;
 	if (tmptex.maskS > 0) {
 		clampSClamp = tmptex.clampS ? tmptex.clampWidth - 1 : (tmptex.mirrorS ? (tmptex.width << 1) - 1 : tmptex.width - 1);
