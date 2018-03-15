@@ -342,7 +342,7 @@ if( CMAKE_BUILD_TYPE STREQUAL "Debug")
 	PROPERTIES
 	LINKER_LANGUAGE CXX # Or else we get an error message, because cmake can't figure out from the ".o"-suffix that it is a C-linker we need.
 	PREFIX ""
-	LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/plugin/debug
+	LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/plugin/Debug
   )
 
   if(SDL)
@@ -375,7 +375,7 @@ if( CMAKE_BUILD_TYPE STREQUAL "Release")
 	PROPERTIES
 	LINKER_LANGUAGE CXX # Or else we get an error message, because cmake can't figure out from the ".o"-suffix that it is a C-linker we need.
 	PREFIX ""
-	LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/plugin/release
+	LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/plugin/Release
   )
 
   if(SDL)
