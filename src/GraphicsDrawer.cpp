@@ -255,10 +255,10 @@ void GraphicsDrawer::_updateViewport() const
 	gSP.changed &= ~CHANGED_VIEWPORT;
 }
 
-void GraphicsDrawer::_updateScreenCoordsViewport() const
+void GraphicsDrawer::_updateScreenCoordsViewport(const FrameBuffer * _pBuffer) const
 {
 	DisplayWindow & wnd = DisplayWindow::get();
-	const FrameBuffer * pCurrentBuffer = frameBufferList().getCurrent();
+	const FrameBuffer * pCurrentBuffer = _pBuffer != nullptr ? _pBuffer : frameBufferList().getCurrent();
 
 	u32 bufferWidth, bufferHeight;
 	f32 viewportScaleX, viewportScaleY;
@@ -1128,13 +1128,15 @@ void GraphicsDrawer::drawTexturedRect(const TexturedRectParams & _params)
 	gSP.changed &= ~CHANGED_GEOMETRYMODE; // Don't update cull mode
 	m_drawingState = DrawingState::TexRect;
 
-	if (!m_texrectDrawer.isEmpty()) {
+	if (m_texrectDrawer.canContinue()) {
 		CombinerInfo & cmbInfo = CombinerInfo::get();
 		cmbInfo.setPolygonMode(DrawingState::TexRect);
 		cmbInfo.update();
 		_updateTextures();
 		cmbInfo.updateParameters();
 	} else {
+		if (!m_texrectDrawer.isEmpty())
+			m_texrectDrawer.draw();
 		gSP.changed &= ~CHANGED_GEOMETRYMODE; // Don't update cull mode
 		gSP.changed &= ~CHANGED_VIEWPORT; // Don't update viewport
 		if (_params.texrectCmd && (gSP.changed | gDP.changed) != 0)
@@ -1172,11 +1174,6 @@ void GraphicsDrawer::drawTexturedRect(const TexturedRectParams & _params)
 	const f32 uly = _params.uly * (2.0f * scaleY) - 1.0f;
 	const f32 lrx = _params.lrx * (2.0f * scaleX) - 1.0f;
 	const f32 lry = _params.lry * (2.0f * scaleY) - 1.0f;
-	if (!bUseTexrectDrawer) {
-		// Flush text drawer
-		if (m_texrectDrawer.draw())
-			_updateStates(DrawingState::TexRect);
-	}
 	m_rect[0].x = ulx;
 	m_rect[0].y = uly;
 	m_rect[0].z = Z;

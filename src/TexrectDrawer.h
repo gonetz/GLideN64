@@ -19,7 +19,9 @@ public:
 	void destroy();
 	void add();
 	bool draw();
-	bool isEmpty();
+	bool isEmpty() const;
+	bool canContinue() const;
+
 private:
 	void _setViewport() const;
 

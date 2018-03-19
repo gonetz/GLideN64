@@ -237,7 +237,7 @@ bool TexrectDrawer::draw()
 	const float t0 = (m_lry + 1.0f) / scaleY / (float)m_pTexture->realHeight;
 	const float W = 1.0f;
 
-	drawer._updateScreenCoordsViewport();
+	drawer._updateScreenCoordsViewport(m_pBuffer);
 
 	textureCache().activateTexture(0, m_pTexture);
 	// Disable filtering to avoid black outlines
@@ -325,6 +325,15 @@ bool TexrectDrawer::draw()
 	return true;
 }
 
-bool TexrectDrawer::isEmpty() {
+bool TexrectDrawer::isEmpty() const
+{
 	return m_numRects == 0;
+}
+
+bool TexrectDrawer::canContinue() const
+{
+	return (m_numRects != 0 &&
+			m_otherMode == gDP.otherMode._u64 &&
+			m_mux == gDP.combine.mux &&
+			m_pBuffer == frameBufferList().getCurrent());
 }
