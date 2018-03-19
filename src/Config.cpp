@@ -94,11 +94,9 @@ void Config::resetToDefaults()
 #elif defined (OS_ANDROID)
 	font.name.assign("DroidSans.ttf");
 #elif defined (PANDORA)
-	font.name.assign("truetype/LiberationMono-Regular.ttf");
-#elif defined (OS_LINUX)
-	font.name.assign("liberation/LiberationMono-Regular.ttf");
+	font.name.assign("LiberationMono-Regular.ttf");
 #else
-	font.name.assign("truetype/freefont/FreeSans.ttf");
+	font.name = "FreeSans.ttf";
 #endif
 	font.size = 18;
 	font.color[0] = 0xB5;
