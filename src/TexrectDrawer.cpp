@@ -328,7 +328,7 @@ bool TexrectDrawer::draw()
 	gDP.otherMode._u64 = otherMode;
 	gDP.scissor = scissor;
 	gDP.changed |= CHANGED_COMBINE | CHANGED_SCISSOR | CHANGED_RENDERMODE;
-	gSP.changed |= CHANGED_VIEWPORT | CHANGED_TEXTURE;
+	gSP.changed |= CHANGED_VIEWPORT | CHANGED_TEXTURE | CHANGED_GEOMETRYMODE;
 
 	return true;
 }
