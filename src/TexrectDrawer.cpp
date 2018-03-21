@@ -104,6 +104,14 @@ void TexrectDrawer::_setViewport() const
 	gfxContext.setViewport(0, 0, bufferWidth, VI_GetMaxBufferHeight(bufferWidth));
 }
 
+void TexrectDrawer::_setDrawBuffer()
+{
+	if (m_pBuffer != nullptr)
+		gfxContext.bindFramebuffer(bufferTarget::DRAW_FRAMEBUFFER, m_pBuffer->m_FBO);
+	else
+		frameBufferList().setCurrentDrawBuffer();
+}
+
 void TexrectDrawer::add()
 {
 	DisplayWindow & wnd = dwnd();
@@ -278,7 +286,7 @@ bool TexrectDrawer::draw()
 	rect[3].t0 = t1;
 
 	drawer.updateScissor(m_pBuffer);
-	gfxContext.bindFramebuffer(bufferTarget::DRAW_FRAMEBUFFER, m_pBuffer != nullptr ? m_pBuffer->m_FBO : ObjectHandle::null);
+	_setDrawBuffer();
 
 	Context::DrawRectParameters rectParams;
 	rectParams.mode = drawmode::TRIANGLE_STRIP;
@@ -313,7 +321,7 @@ bool TexrectDrawer::draw()
 	gfxContext.enable(enable::SCISSOR_TEST, true);
 
 	m_pBuffer = frameBufferList().getCurrent();
-	gfxContext.bindFramebuffer(bufferTarget::DRAW_FRAMEBUFFER, m_pBuffer != nullptr ? m_pBuffer->m_FBO : ObjectHandle::null);
+	_setDrawBuffer();
 
 	m_numRects = 0;
 	m_vecRectCoords.clear();

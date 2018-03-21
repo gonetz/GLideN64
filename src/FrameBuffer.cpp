@@ -518,6 +518,8 @@ void FrameBufferList::setCurrentDrawBuffer() const
 {
 	if (m_pCurrent != nullptr)
 		gfxContext.bindFramebuffer(bufferTarget::DRAW_FRAMEBUFFER, m_pCurrent->m_FBO);
+	else if (!m_list.empty())
+		gfxContext.bindFramebuffer(bufferTarget::DRAW_FRAMEBUFFER, m_list.back().m_FBO);
 }
 
 FrameBuffer * FrameBufferList::findBuffer(u32 _startAddress)
