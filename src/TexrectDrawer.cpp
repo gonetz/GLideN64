@@ -146,6 +146,7 @@ void TexrectDrawer::add()
 	}
 
 	if (m_numRects == 0) {
+		m_numRects = 1;
 		m_pBuffer = frameBufferList().getCurrent();
 		m_otherMode = gDP.otherMode._u64;
 		m_mux = gDP.combine.mux;
@@ -157,7 +158,9 @@ void TexrectDrawer::add()
 		m_lrx = m_max_lrx = pRect[3].x;
 		m_lry = m_max_lry = pRect[3].y;
 
-		CombinerInfo::get().update();
+		CombinerInfo & cmbInfo = CombinerInfo::get();
+		cmbInfo.update();
+		cmbInfo.updateParameters();
 		gfxContext.enableDepthWrite(false);
 		gfxContext.enable(enable::DEPTH_TEST, false);
 		gfxContext.enable(enable::BLEND, false);
@@ -167,6 +170,8 @@ void TexrectDrawer::add()
 		gfxContext.setScissor((s32)gDP.scissor.ulx, (s32)gDP.scissor.uly, (s32)(gDP.scissor.lrx - gDP.scissor.ulx), (s32)(gDP.scissor.lry - gDP.scissor.uly));
 
 		gfxContext.bindFramebuffer(bufferTarget::DRAW_FRAMEBUFFER, m_FBO);
+	} else {
+		++m_numRects;
 	}
 
 	if (bDownUp) {
@@ -187,7 +192,6 @@ void TexrectDrawer::add()
 	coords.x = pRect[3].x;
 	coords.y = pRect[3].y;
 	m_vecRectCoords.push_back(coords);
-	++m_numRects;
 
 	Context::DrawRectParameters rectParams;
 	rectParams.mode = drawmode::TRIANGLE_STRIP;

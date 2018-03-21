@@ -402,6 +402,11 @@ public:
 
 	void update(bool _force) override
 	{
+		if (dwnd().getDrawer().isTexrectDrawerMode()) {
+			uScreenScale.set(1.0f, 1.0f, _force);
+			return;
+		}
+
 		FrameBuffer * pBuffer = frameBufferList().getCurrent();
 		if (pBuffer == nullptr)
 			uScreenScale.set(dwnd().getScaleX(), dwnd().getScaleY(), _force);

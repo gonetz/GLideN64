@@ -153,6 +153,8 @@ public:
 
 	void flush() { m_texrectDrawer.draw(); }
 
+	bool isTexrectDrawerMode() const { return !m_texrectDrawer.isEmpty(); }
+
 private:
 	friend class DisplayWindow;
 	friend TexrectDrawer;
