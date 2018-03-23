@@ -30,7 +30,9 @@ namespace opengl {
 
 		void enable(graphics::EnableParam _parameter, bool _enable) override;
 
-		u32 isEnabled(graphics::EnableParam _parameter) override;
+		void polygonOffsetEnable(bool _enable) override;
+
+		bool polygonOffsetEnabled() override;
 
 		void cullFace(graphics::CullModeParam _mode) override;
 
@@ -163,6 +165,7 @@ namespace opengl {
 		std::unique_ptr<glsl::SpecialShadersFactory> m_specialShadersFactory;
 		GLInfo m_glInfo;
 		graphics::ClampMode m_clampMode;
+		bool m_polygonOffset;
 	};
 
 }
