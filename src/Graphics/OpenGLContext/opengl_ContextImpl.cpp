@@ -29,6 +29,7 @@ ContextImpl::~ContextImpl()
 void ContextImpl::init()
 {
 	m_clampMode = graphics::ClampMode::ClippingEnabled;
+	m_polygonOffset = false;
 	m_glInfo.init();
 
 	if (m_glInfo.isGLES2) {
@@ -116,9 +117,17 @@ void ContextImpl::enable(graphics::EnableParam _parameter, bool _enable)
 	m_cachedFunctions->getCachedEnable(_parameter)->enable(_enable);
 }
 
-u32 ContextImpl::isEnabled(graphics::EnableParam _parameter)
+void ContextImpl::polygonOffsetEnable(bool _enable)
 {
-	return m_cachedFunctions->getCachedEnable(_parameter)->get();
+	if (config.generalEmulation.enableFragmentDepthWrite == 0 && config.frameBufferEmulation.N64DepthCompare == 0)
+		m_cachedFunctions->getCachedEnable(graphics::enable::POLYGON_OFFSET_FILL)->enable(_enable);
+
+	m_polygonOffset = _enable;
+}
+
+bool ContextImpl::polygonOffsetEnabled()
+{
+	return m_polygonOffset;
 }
 
 void ContextImpl::cullFace(graphics::CullModeParam _mode)

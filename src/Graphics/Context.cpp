@@ -45,9 +45,14 @@ void Context::enable(EnableParam _parameter, bool _enable)
 	m_impl->enable(_parameter, _enable);
 }
 
-u32 Context::isEnabled(EnableParam _parameter)
+void Context::polygonOffsetEnable(bool _enable)
 {
-	return m_impl->isEnabled(_parameter);
+	m_impl->polygonOffsetEnable(_enable);
+}
+
+bool Context::polygonOffsetEnabled()
+{
+	return m_impl->polygonOffsetEnabled();
 }
 
 void Context::cullFace(CullModeParam _parameter)

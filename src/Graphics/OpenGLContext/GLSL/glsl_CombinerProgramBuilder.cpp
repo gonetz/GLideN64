@@ -861,12 +861,12 @@ public:
 	{
 		if (!_glinfo.isGLES2) {
 			m_part =
+				"uniform lowp float uPolygonOffset;	\n"
 				"void writeDepth();\n";
 			;
 			if (_glinfo.isGLESX) {
 				m_part =
 					"IN highp float vZCoord;	\n"
-					"uniform lowp float uPolygonOffset;	\n"
 					"uniform lowp int uClampMode;	\n"
 					+ m_part
 				;
@@ -1455,7 +1455,7 @@ public:
 							;
 					} else {
 						m_part +=
-							"  gl_FragDepth = clamp((gl_FragCoord.z * 2.0 - 1.0) * uDepthScale.s + uDepthScale.t, 0.0, 1.0);	\n"
+							"  gl_FragDepth = clamp(((gl_FragCoord.z * 2.0 - 1.0) - uPolygonOffset) * uDepthScale.s + uDepthScale.t, 0.0, 1.0);	\n"
 						;
 					}
 					m_part +=
@@ -1481,7 +1481,7 @@ public:
 						m_part =
 							"void writeDepth()						        										\n"
 							"{																						\n"
-							"  highp float depth = uDepthSource == 0 ? (gl_FragCoord.z * 2.0 - 1.0) : uPrimDepth;	\n"
+							"  highp float depth = uDepthSource == 0 ? ((gl_FragCoord.z * 2.0 - 1.0) - uPolygonOffset) : uPrimDepth;	\n"
 							"  gl_FragDepth = clamp(depth * uDepthScale.s + uDepthScale.t, 0.0, 1.0);				\n"
 							"}																						\n"
 							;

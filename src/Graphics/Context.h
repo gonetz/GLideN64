@@ -50,7 +50,9 @@ namespace graphics {
 
 		void enable(EnableParam _parameter, bool _enable);
 
-		u32 isEnabled(EnableParam _parameter);
+		void polygonOffsetEnable(bool _enable);
+
+		bool polygonOffsetEnabled();
 
 		void cullFace(CullModeParam _mode);
 

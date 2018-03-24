@@ -127,13 +127,13 @@ void GraphicsDrawer::_updateDepthCompare() const
 			if (gDP.otherMode.depthCompare != 0) {
 				switch (gDP.otherMode.depthMode) {
 				case ZMODE_INTER:
-					gfxContext.enable(enable::POLYGON_OFFSET_FILL, false);
+					gfxContext.polygonOffsetEnable(false);
 					gfxContext.setDepthCompare(compare::LEQUAL);
 					break;
 				case ZMODE_OPA:
 				case ZMODE_XLU:
 					// Max || Infront;
-					gfxContext.enable(enable::POLYGON_OFFSET_FILL, false);
+					gfxContext.polygonOffsetEnable(false);
 					if (gDP.otherMode.depthSource == G_ZS_PRIM && gDP.primDepth.z == 1.0f)
 						// Max
 						gfxContext.setDepthCompare(compare::LEQUAL);
@@ -142,12 +142,12 @@ void GraphicsDrawer::_updateDepthCompare() const
 						gfxContext.setDepthCompare(compare::LESS);
 					break;
 				case ZMODE_DEC:
-					gfxContext.enable(enable::POLYGON_OFFSET_FILL, true);
+					gfxContext.polygonOffsetEnable(true);
 					gfxContext.setDepthCompare(compare::LEQUAL);
 					break;
 				}
 			} else {
-				gfxContext.enable(enable::POLYGON_OFFSET_FILL, false);
+				gfxContext.polygonOffsetEnable(false);
 				gfxContext.setDepthCompare(compare::ALWAYS);
 			}
 
@@ -1662,7 +1662,7 @@ void GraphicsDrawer::_initStates()
 
 	if (config.frameBufferEmulation.N64DepthCompare != 0) {
 		gfxContext.enable(enable::DEPTH_TEST, false);
-		gfxContext.enable(enable::POLYGON_OFFSET_FILL, false);
+		gfxContext.polygonOffsetEnable(false);
 	}
 	else {
 		gfxContext.enable(enable::DEPTH_TEST, true);

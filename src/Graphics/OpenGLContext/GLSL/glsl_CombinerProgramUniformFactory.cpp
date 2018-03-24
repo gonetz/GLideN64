@@ -692,7 +692,7 @@ public:
 
 	void update(bool _force) override
 	{
-		f32 offset = gfxContext.isEnabled(graphics::enable::POLYGON_OFFSET_FILL) ? 0.003f : 0.0f;
+		f32 offset = gfxContext.polygonOffsetEnabled() ? 0.003f : 0.0f;
 		uPolygonOffset.set(offset, _force);
 	}
 
@@ -968,13 +968,13 @@ void CombinerProgramUniformFactory::buildUniforms(GLuint _program,
 		_uniforms.emplace_back(new UDepthSource(_program));
 
 	if (config.generalEmulation.enableFragmentDepthWrite != 0 ||
-		config.frameBufferEmulation.N64DepthCompare != 0)
+		config.frameBufferEmulation.N64DepthCompare != 0) {
 		_uniforms.emplace_back(new URenderTarget(_program));
-
-	if (m_glInfo.isGLESX) {
-		_uniforms.emplace_back(new UClampMode(_program));
 		_uniforms.emplace_back(new UPolygonOffset(_program));
 	}
+
+	if (m_glInfo.isGLESX)
+		_uniforms.emplace_back(new UClampMode(_program));
 
 	_uniforms.emplace_back(new UScreenCoordsScale(_program));
 
