@@ -14,6 +14,7 @@
 //
 //****************************************************************
 
+#include <algorithm>
 #include "N64.h"
 #include "gDP.h"
 #include "FrameBuffer.h"
@@ -227,7 +228,7 @@ void Rasterize(vertexi * vtx, int vertices, int dzdx)
 				idx = (shift + x) ^ 1;
 				if (encodedZ < destptr[idx])
 					destptr[idx] = encodedZ;
-				z += dzdx;
+				z = std::min(z + dzdx, 0x7fffffff);
 			}
 		}
 

@@ -36,9 +36,9 @@ bool calcScreenCoordinates(SPVertex * _vsrc, vertexclip * _vclip, u32 _numVertex
 		}
 
 		if ((v.modify & MODIFY_Z) == 0) {
-			_vclip[i].z = (gSP.viewport.vtrans[2] + (v.z / v.w) * gSP.viewport.vscale[2]) * 32768.0f;
+			_vclip[i].z = (gSP.viewport.vtrans[2] + (v.z / v.w) * gSP.viewport.vscale[2]) * 32767.0f;
 		} else {
-			_vclip[i].z = v.z * 32768.0f;
+			_vclip[i].z = v.z * 32767.0f;
 		}
 
 		clipTest(_vclip[i]);
@@ -104,15 +104,15 @@ int calcDzDx2(const SPVertex ** _vsrc)
 	const SPVertex * v = _vsrc[0];
 	double X0 = gSP.viewport.vtrans[0] + (v->x / v->w) * gSP.viewport.vscale[0];
 	double Y0 = gSP.viewport.vtrans[1] + (v->y / v->w) * -gSP.viewport.vscale[1];
-	double Z0 = (gSP.viewport.vtrans[2] + (v->z / v->w) * gSP.viewport.vscale[2]) * 32768.0f;
+	double Z0 = (gSP.viewport.vtrans[2] + (v->z / v->w) * gSP.viewport.vscale[2]) * 32767.0f;
 	v = _vsrc[1];
 	double X1 = gSP.viewport.vtrans[0] + (v->x / v->w) * gSP.viewport.vscale[0];
 	double Y1 = gSP.viewport.vtrans[1] + (v->y / v->w) * -gSP.viewport.vscale[1];
-	double Z1 = (gSP.viewport.vtrans[2] + (v->z / v->w) * gSP.viewport.vscale[2]) * 32768.0f;
+	double Z1 = (gSP.viewport.vtrans[2] + (v->z / v->w) * gSP.viewport.vscale[2]) * 32767.0f;
 	v = _vsrc[2];
 	double X2 = gSP.viewport.vtrans[0] + (v->x / v->w) * gSP.viewport.vscale[0];
 	double Y2 = gSP.viewport.vtrans[1] + (v->y / v->w) * -gSP.viewport.vscale[1];
-	double Z2 = (gSP.viewport.vtrans[2] + (v->z / v->w) * gSP.viewport.vscale[2]) * 32768.0f;
+	double Z2 = (gSP.viewport.vtrans[2] + (v->z / v->w) * gSP.viewport.vscale[2]) * 32767.0f;
 	double diffy_02 = Y0 - Y2;
 	double diffy_12 = Y1 - Y2;
 	double diffx_02 = X0 - X2;
