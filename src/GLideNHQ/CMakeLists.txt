@@ -27,12 +27,6 @@ else(MINGW OR PANDORA OR BCMHOST)
 endif(MINGW OR PANDORA OR BCMHOST)
 LINK_DIRECTORIES( ${CMAKE_CURRENT_SOURCE_DIR}/lib )
 
-if(GLES2)
-  add_definitions(
-    -DGLES2
-   )
-endif(GLES2)
-
 if(UNIX)
   if(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
     add_definitions(
@@ -161,11 +155,11 @@ else( NOT GHQCHK )
       )
 
     if( CMAKE_BUILD_TYPE STREQUAL "Debug")
-    target_link_libraries(ghqchk ${OPENGL_LIBRARIES} png z )
+    target_link_libraries(ghqchk png z )
     endif( CMAKE_BUILD_TYPE STREQUAL "Debug")
 
     if( CMAKE_BUILD_TYPE STREQUAL "Release")
-    target_link_libraries(ghqchk ${OPENGL_LIBRARIES} png z )
+    target_link_libraries(ghqchk png z )
     endif( CMAKE_BUILD_TYPE STREQUAL "Release")
 endif( NOT GHQCHK )
 

@@ -375,7 +375,7 @@ TxHiResCache::loadHiResTextures(const wchar_t * dir_path, boolean replace)
 	  if (tmptex) {
 		/* check if _rgb.* and _a.* have matching size and format. */
 		if (!tex || width != tmpwidth || height != tmpheight ||
-			format != GL_RGBA8 || tmpformat != GL_RGBA8) {
+			format != u32(graphics::internalcolorFormat::RGBA8) || tmpformat != u32(graphics::internalcolorFormat::RGBA8)) {
 #if !DEBUG
 		  INFO(80, wst("-----\n"));
 		  INFO(80, wst("path: %ls\n"), dir_path.string().c_str());
@@ -385,7 +385,7 @@ TxHiResCache::loadHiResTextures(const wchar_t * dir_path, boolean replace)
 			INFO(80, wst("Error: missing _rgb.*!\n"));
 		  } else if (width != tmpwidth || height != tmpheight) {
 			INFO(80, wst("Error: _rgb.* and _a.* have mismatched width or height!\n"));
-		  } else if (format != GL_RGBA8 || tmpformat != GL_RGBA8) {
+		  } else if (format != u32(graphics::internalcolorFormat::RGBA8) || tmpformat != u32(graphics::internalcolorFormat::RGBA8)) {
 			INFO(80, wst("Error: _rgb.* or _a.* not in 32bit color!\n"));
 		  }
 		  if (tex) free(tex);
@@ -480,7 +480,7 @@ TxHiResCache::loadHiResTextures(const wchar_t * dir_path, boolean replace)
 	DBG_INFO(80, wst("read in as %d x %d gfmt:%x\n"), tmpwidth, tmpheight, tmpformat);
 
 	/* check if size and format are OK */
-	if (!(format == GL_RGBA8 || format == GL_COLOR_INDEX8_EXT ) ||
+	if (!(format == u32(graphics::internalcolorFormat::RGBA8) || format == u32(graphics::internalcolorFormat::COLOR_INDEX8) ) ||
 		(width * height) < 4) { /* TxQuantize requirement: width * height must be 4 or larger. */
 	  free(tex);
 	  tex = nullptr;
@@ -494,7 +494,7 @@ TxHiResCache::loadHiResTextures(const wchar_t * dir_path, boolean replace)
 	}
 
 	/* analyze and determine best format to quantize */
-	if (format == GL_RGBA8) {
+	if (format == u32(graphics::internalcolorFormat::RGBA8)) {
 	  int i;
 	  int alphabits = 0;
 	  int fullalpha = 0;
@@ -597,14 +597,14 @@ TxHiResCache::loadHiResTextures(const wchar_t * dir_path, boolean replace)
 
 	  /* preparations based on above analysis */
 	  if (_maxbpp < 32 || _options & FORCE16BPP_HIRESTEX) {
-		if      (alphabits == 0) destformat = GL_RGB;
-		else if (alphabits == 1) destformat = GL_RGB5_A1;
-		else                     destformat = GL_RGBA8;
+		if      (alphabits == 0) destformat = u32(graphics::internalcolorFormat::RGB8);
+		else if (alphabits == 1) destformat = u32(graphics::internalcolorFormat::RGB5_A1);
+		else                     destformat = u32(graphics::internalcolorFormat::RGBA8);
 	  } else {
-		destformat = GL_RGBA8;
+		destformat = u32(graphics::internalcolorFormat::RGBA8);
 	  }
 	  if (fmt == 4 && alphabits == 0) {
-		destformat = GL_RGBA8;
+		destformat = u32(graphics::internalcolorFormat::RGBA8);
 		/* Rice I format; I = (R + G + B) / 3 */
 		for (i = 0; i < height * width; i++) {
 		  uint32 texel = ((uint32*)tex)[i];
@@ -622,7 +622,7 @@ TxHiResCache::loadHiResTextures(const wchar_t * dir_path, boolean replace)
 
 
 	/* XXX: only RGBA8888 for now. comeback to this later... */
-	if (format == GL_RGBA8) {
+	if (format == u32(graphics::internalcolorFormat::RGBA8)) {
 
 	  /* minification */
 	  if (width > _maxwidth || height > _maxheight) {
@@ -664,22 +664,18 @@ TxHiResCache::loadHiResTextures(const wchar_t * dir_path, boolean replace)
 			result = resError;
 			break;
 		}
-		switch (destformat) {
-		case GL_RGBA8:
-		case GL_RGBA4:
-		if (_maxbpp < 32 || _options & FORCE16BPP_HIRESTEX)
-			destformat = GL_RGBA4;
-		break;
-		case GL_RGB5_A1:
-		if (_maxbpp < 32 || _options & FORCE16BPP_HIRESTEX)
-			destformat = GL_RGB5_A1;
-		break;
-		case GL_RGB:
-		if (_maxbpp < 32 || _options & FORCE16BPP_HIRESTEX)
-			destformat = GL_RGB;
-		break;
+		if (destformat == u32(graphics::internalcolorFormat::RGBA8) ||
+			destformat == u32(graphics::internalcolorFormat::RGBA4)) {
+			if (_maxbpp < 32 || _options & FORCE16BPP_HIRESTEX)
+				destformat = u32(graphics::internalcolorFormat::RGBA4);
+		} else if (destformat == u32(graphics::internalcolorFormat::RGB5_A1)) {
+			if (_maxbpp < 32 || _options & FORCE16BPP_HIRESTEX)
+				destformat = u32(graphics::internalcolorFormat::RGB5_A1);
+		} else if (destformat == u32(graphics::internalcolorFormat::RGB8)) {
+			if (_maxbpp < 32 || _options & FORCE16BPP_HIRESTEX)
+				destformat = u32(graphics::internalcolorFormat::RGB8);
 		}
-		if (_txQuantize->quantize(tex, tmptex, width, height, GL_RGBA8, destformat, 0)) {
+		if (_txQuantize->quantize(tex, tmptex, width, height, u32(graphics::internalcolorFormat::RGBA8), destformat, 0)) {
 			format = destformat;
 			free(tex);
 			tex = tmptex;

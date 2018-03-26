@@ -61,22 +61,17 @@ TxUtil::sizeofTx(int width, int height, uint16 format)
 	int dataSize = 0;
 
 	/* a lookup table for the shifts would be better */
-	switch (format) {
-	case GL_COLOR_INDEX8_EXT:
+	if (format == u32(graphics::internalcolorFormat::COLOR_INDEX8)) {
 		dataSize = width * height;
-	break;
-	case GL_RGBA4:
-	case GL_RGB5_A1:
-	case GL_RGB:
+	} else if (format == u32(graphics::internalcolorFormat::RGBA4) ||
+	format == u32(graphics::internalcolorFormat::RGB5_A1) ||
+	format == u32(graphics::internalcolorFormat::RGB8)) {
 		dataSize = (width * height) << 1;
-	break;
-	case GL_RGBA8:
+	} else if (format == u32(graphics::internalcolorFormat::RGBA8)) {
 		dataSize = (width * height) << 2;
-	break;
-	default:
+	} else {
 		/* unsupported format */
 		DBG_INFO(80, wst("Error: cannot get size. unsupported gfmt:%x\n"), format);
-		;
 	}
 
 	return dataSize;
@@ -592,26 +587,20 @@ TxMemBuf::getThreadBuf(uint32 threadIdx, uint32 num, uint32 size)
 void setTextureFormat(uint16 internalFormat, GHQTexInfo * info)
 {
 	info->format = internalFormat;
-	switch (internalFormat) {
-	case GL_RGBA8:
-		info->texture_format = GL_RGBA;
-		info->pixel_type = GL_UNSIGNED_BYTE;
-	break;
-	case GL_RGB:
-		info->texture_format = GL_RGB;
-		info->pixel_type = GL_UNSIGNED_SHORT_5_6_5;
-	break;
-	case GL_RGBA4:
-		info->texture_format = GL_RGBA;
-		info->pixel_type = GL_UNSIGNED_SHORT_4_4_4_4;
-	break;
-	case GL_RGB5_A1:
-		info->texture_format = GL_RGBA;
-		info->pixel_type = GL_UNSIGNED_SHORT_5_5_5_1;
-	break;
-	default:
-		info->texture_format = GL_RGBA;
-		info->pixel_type = GL_UNSIGNED_BYTE;
-	break;
+	if (internalFormat == u32(graphics::internalcolorFormat::RGBA8)) {
+		info->texture_format = u32(graphics::colorFormat::RGBA);
+		info->pixel_type = u32(graphics::datatype::UNSIGNED_BYTE);
+	} else if (internalFormat == u32(graphics::internalcolorFormat::RGB8)) {
+		info->texture_format = u32(graphics::colorFormat::RED_GREEN_BLUE);
+		info->pixel_type = u32(graphics::datatype::UNSIGNED_SHORT_5_6_5);
+	} else if (internalFormat == u32(graphics::internalcolorFormat::RGBA4)) {
+		info->texture_format = u32(graphics::colorFormat::RGBA);
+		info->pixel_type = u32(graphics::datatype::UNSIGNED_SHORT_4_4_4_4);
+	} else if (internalFormat == u32(graphics::internalcolorFormat::RGB5_A1)) {
+		info->texture_format = u32(graphics::colorFormat::RGBA);
+		info->pixel_type = u32(graphics::datatype::UNSIGNED_SHORT_5_5_5_1);
+	} else {
+		info->texture_format = u32(graphics::colorFormat::RGBA);
+		info->pixel_type = u32(graphics::datatype::UNSIGNED_BYTE);
 	}
 }
