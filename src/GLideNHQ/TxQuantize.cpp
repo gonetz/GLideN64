@@ -837,23 +837,18 @@ TxQuantize::quantize(uint8* src, uint8* dest, int width, int height, uint16 srcf
 	quantizerFunc quantizer;
 	int bpp_shift = 0;
 
-	if (destformat == GL_RGBA8 || destformat == GL_RGBA) {
-		switch (srcformat) {
-		case GL_RGB5_A1:
+	if (destformat == u32(graphics::internalcolorFormat::RGBA8) || destformat == u32(graphics::colorFormat::RGBA)) {
+		if (srcformat == u32(graphics::internalcolorFormat::RGB5_A1)) {
 			quantizer = &TxQuantize::ARGB1555_ARGB8888;
 			bpp_shift = 1;
-		break;
-		case GL_RGBA4:
+		} else if (srcformat == u32(graphics::internalcolorFormat::RGBA4)) {
 			quantizer = &TxQuantize::ARGB4444_ARGB8888;
 			bpp_shift = 1;
-		break;
-		case GL_RGB:
+		} else if (srcformat == u32(graphics::internalcolorFormat::RGB8)) {
 			quantizer = &TxQuantize::RGB565_ARGB8888;
 			bpp_shift = 1;
-		break;
-		default:
-		return 0;
-		}
+		} else
+			return 0;
 
 		unsigned int numcore = _numcore;
 		unsigned int blkrow = 0;
@@ -891,23 +886,18 @@ TxQuantize::quantize(uint8* src, uint8* dest, int width, int height, uint16 srcf
 			(*this.*quantizer)((uint32*)src, (uint32*)dest, width, height);
 		}
 
-	} else if (srcformat == GL_RGBA8 || srcformat == GL_RGBA) {
-		switch (destformat) {
-		case GL_RGB5_A1:
+	} else if (srcformat == u32(graphics::internalcolorFormat::RGBA8) || srcformat == u32(graphics::colorFormat::RGBA)) {
+		if (destformat == u32(graphics::internalcolorFormat::RGB5_A1)) {
 			quantizer = fastQuantizer ? &TxQuantize::ARGB8888_ARGB1555 : &TxQuantize::ARGB8888_ARGB1555_ErrD;
 			bpp_shift = 1;
-		break;
-		case GL_RGBA4:
+		} else if (destformat == u32(graphics::internalcolorFormat::RGBA4)) {
 			quantizer = fastQuantizer ? &TxQuantize::ARGB8888_ARGB4444 : &TxQuantize::ARGB8888_ARGB4444_ErrD;
 			bpp_shift = 1;
-		break;
-		case GL_RGB:
+		} else if (destformat == u32(graphics::internalcolorFormat::RGB8)) {
 			quantizer = fastQuantizer ? &TxQuantize::ARGB8888_RGB565 : &TxQuantize::ARGB8888_RGB565_ErrD;
 			bpp_shift = 1;
-		break;
-		default:
-		return 0;
-		}
+		} else
+			return 0;
 
 		unsigned int numcore = _numcore;
 		unsigned int blkrow = 0;

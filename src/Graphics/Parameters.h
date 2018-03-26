@@ -4,6 +4,7 @@
 namespace graphics {
 
 	namespace colorFormat {
+		extern ColorFormatParam RED_GREEN_BLUE; //Windows has a macro called RGB
 		extern ColorFormatParam RGBA;
 		extern ColorFormatParam RG;
 		extern ColorFormatParam RED;
@@ -21,6 +22,7 @@ namespace graphics {
 		extern InternalColorFormatParam DEPTH;
 		extern InternalColorFormatParam RG32F;
 		extern InternalColorFormatParam LUMINANCE;
+		extern InternalColorFormatParam COLOR_INDEX8;
 	}
 
 	namespace datatype {
@@ -28,6 +30,7 @@ namespace graphics {
 		extern DatatypeParam UNSIGNED_SHORT;
 		extern DatatypeParam UNSIGNED_INT;
 		extern DatatypeParam FLOAT;
+		extern DatatypeParam UNSIGNED_SHORT_5_6_5;
 		extern DatatypeParam UNSIGNED_SHORT_5_5_5_1;
 		extern DatatypeParam UNSIGNED_SHORT_4_4_4_4;
 	}

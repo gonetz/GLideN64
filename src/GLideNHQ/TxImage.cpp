@@ -203,7 +203,7 @@ TxImage::readPNG(FILE* fp, int* width, int* height, uint16* format)
 
 		*width = (row_bytes >> 2);
 		*height = o_height;
-		*format = GL_RGBA8;
+		*format = u32(graphics::internalcolorFormat::RGBA8);
 
 #if POW2_TEXTURES
 		/* next power of 2 size conversions */
@@ -490,8 +490,8 @@ uint8*
 TxImage::readBMP(FILE* fp, int* width, int* height, uint16* format)
 {
 	/* NOTE: returned image format;
-   *       4, 8bit palette bmp -> GL_COLOR_INDEX8_EXT
-   *       24, 32bit bmp -> GL_RGBA8
+   *       4, 8bit palette bmp -> COLOR_INDEX8
+   *       24, 32bit bmp -> RGBA8
    */
 
 	uint8 *image = nullptr;
@@ -611,11 +611,11 @@ TxImage::readBMP(FILE* fp, int* width, int* height, uint16* format)
 		switch (bmp_ihdr.biBitCount) {
 		case 8:
 		case 4:
-			*format = GL_COLOR_INDEX8_EXT;
+			*format = u32(graphics::internalcolorFormat::COLOR_INDEX8);
 		break;
 		case 32:
 		case 24:
-			*format = GL_RGBA8;
+			*format = u32(graphics::internalcolorFormat::RGBA8);
 		}
 
 #if POW2_TEXTURES

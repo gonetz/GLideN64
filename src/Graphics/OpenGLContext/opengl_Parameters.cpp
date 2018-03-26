@@ -4,6 +4,7 @@
 namespace graphics {
 
 	namespace colorFormat {
+		ColorFormatParam RED_GREEN_BLUE(GL_RGB);
 		ColorFormatParam RGBA(GL_RGBA);
 		ColorFormatParam RG(GL_RG);
 		ColorFormatParam RED(GL_RED);
@@ -12,7 +13,7 @@ namespace graphics {
 	}
 
 	namespace internalcolorFormat {
-		InternalColorFormatParam RGB8(GL_RGB);
+		InternalColorFormatParam RGB8(GL_RGB8);
 		InternalColorFormatParam RGBA8(GL_RGBA8);
 		InternalColorFormatParam RGBA4(GL_RGBA4);
 		InternalColorFormatParam RGB5_A1(GL_RGB5_A1);
@@ -21,6 +22,7 @@ namespace graphics {
 		InternalColorFormatParam DEPTH(GL_DEPTH_COMPONENT24);
 		InternalColorFormatParam RG32F(GL_RG32F);
 		InternalColorFormatParam LUMINANCE(0x1909);
+		InternalColorFormatParam COLOR_INDEX8(0x80E5);
 	}
 
 	namespace datatype {
@@ -28,6 +30,7 @@ namespace graphics {
 		DatatypeParam UNSIGNED_SHORT(GL_UNSIGNED_SHORT);
 		DatatypeParam UNSIGNED_INT(GL_UNSIGNED_INT);
 		DatatypeParam FLOAT(GL_FLOAT);
+		DatatypeParam UNSIGNED_SHORT_5_6_5(GL_UNSIGNED_SHORT_5_6_5);
 		DatatypeParam UNSIGNED_SHORT_5_5_5_1(GL_UNSIGNED_SHORT_5_5_5_1);
 		DatatypeParam UNSIGNED_SHORT_4_4_4_4(GL_UNSIGNED_SHORT_4_4_4_4);
 	}

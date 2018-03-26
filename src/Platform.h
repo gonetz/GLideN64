@@ -10,11 +10,6 @@
 #include "winlnxdefs.h"
 #endif
 
-#ifdef __LIBRETRO__
-#include <glsm/glsmsym.h>
-#include <GLideN64_libretro.h>
-#endif
-
 #ifdef PANDORA
 typedef char GLchar;
 #endif
