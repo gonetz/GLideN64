@@ -27,93 +27,78 @@ using namespace std;
 void gSPTransformVertex4NEON(u32 v, float mtx[4][4])
 {
     GraphicsDrawer & drawer = dwnd().getDrawer();
-    SPVertex & vtx = drawer.getVertex(v);
-    void *ptr = &vtx.x;
+    SPVertex & vtx0 = drawer.getVertex(v);
+    SPVertex & vtx1 = drawer.getVertex(v + 1);
+    SPVertex & vtx2 = drawer.getVertex(v + 2);
+    SPVertex & vtx3 = drawer.getVertex(v + 3);
+    
+    // Load vtx
+    float32x4x4_t _vtx;
+    _vtx.val[0] = vld1q_f32(&vtx0.x);
+    _vtx.val[1] = vld1q_f32(&vtx1.x);
+    _vtx.val[2] = vld1q_f32(&vtx2.x);
+    _vtx.val[3] = vld1q_f32(&vtx3.x);
 
-    asm volatile (
-    "vld1.32         {d0, d1}, [%1]          \n\t"    //q0 = {x,y,z,w}
-    "add             %1, %1, %2              \n\t"    //q0 = {x,y,z,w}
-    "vld1.32         {d2, d3}, [%1]          \n\t"    //q1 = {x,y,z,w}
-    "add             %1, %1, %2              \n\t"    //q0 = {x,y,z,w}
-    "vld1.32         {d4, d5}, [%1]          \n\t"    //q2 = {x,y,z,w}
-    "add             %1, %1, %2              \n\t"    //q0 = {x,y,z,w}
-    "vld1.32         {d6, d7}, [%1]          \n\t"    //q3 = {x,y,z,w}
-    "sub             %1, %1, %3              \n\t"    //q0 = {x,y,z,w}
+    // Load mtx
+    float32x4x4_t _mtx;
+    _mtx.val[0] = vld1q_f32(mtx[0]);
+    _mtx.val[1] = vld1q_f32(mtx[1]);
+    _mtx.val[2] = vld1q_f32(mtx[2]);
+    _mtx.val[3] = vld1q_f32(mtx[3]);
 
-    "vld1.32         {d18-d21}, [%0]!        \n\t"    //q9 & q10 = m
-    "vld1.32         {d22-d25}, [%0]         \n\t"    //q11 & q12 = m+8
+    float32x4x4_t _out;
+    
+    _out.val[0] = vmlaq_n_f32(_mtx.val[3], _mtx.val[0], _vtx.val[0][0]);
+    _out.val[1] = vmlaq_n_f32(_mtx.val[3], _mtx.val[0], _vtx.val[1][0]);
+    _out.val[2] = vmlaq_n_f32(_mtx.val[3], _mtx.val[0], _vtx.val[2][0]);
+    _out.val[3] = vmlaq_n_f32(_mtx.val[3], _mtx.val[0], _vtx.val[3][0]);
+    _out.val[0] = vmlaq_n_f32(_out.val[0], _mtx.val[1], _vtx.val[0][1]);
+    _out.val[1] = vmlaq_n_f32(_out.val[1], _mtx.val[1], _vtx.val[1][1]);
+    _out.val[2] = vmlaq_n_f32(_out.val[2], _mtx.val[1], _vtx.val[2][1]);
+    _out.val[3] = vmlaq_n_f32(_out.val[3], _mtx.val[1], _vtx.val[3][1]);
+    _out.val[0] = vmlaq_n_f32(_out.val[0], _mtx.val[2], _vtx.val[0][2]);
+    _out.val[1] = vmlaq_n_f32(_out.val[1], _mtx.val[2], _vtx.val[1][2]);
+    _out.val[2] = vmlaq_n_f32(_out.val[2], _mtx.val[2], _vtx.val[2][2]);
+    _out.val[3] = vmlaq_n_f32(_out.val[3], _mtx.val[2], _vtx.val[3][2]);
 
-    "vmov.f32        q13, q12                \n\t"    //q13 = q12
-    "vmov.f32        q14, q12                \n\t"    //q14 = q12
-    "vmov.f32        q15, q12                \n\t"    //q15 = q12
-
-    "vmla.f32        q12, q9, d0[0]          \n\t"    //q12 = q9*d0[0]
-    "vmla.f32        q13, q9, d2[0]          \n\t"    //q13 = q9*d0[0]
-    "vmla.f32        q14, q9, d4[0]          \n\t"    //q14 = q9*d0[0]
-    "vmla.f32        q15, q9, d6[0]          \n\t"    //q15 = q9*d0[0]
-    "vmla.f32        q12, q10, d0[1]         \n\t"    //q12 = q10*d0[1]
-    "vmla.f32        q13, q10, d2[1]         \n\t"    //q13 = q10*d0[1]
-    "vmla.f32        q14, q10, d4[1]         \n\t"    //q14 = q10*d0[1]
-    "vmla.f32        q15, q10, d6[1]         \n\t"    //q15 = q10*d0[1]
-    "vmla.f32        q12, q11, d1[0]         \n\t"    //q12 = q11*d1[0]
-    "vmla.f32        q13, q11, d3[0]         \n\t"    //q13 = q11*d1[0]
-    "vmla.f32        q14, q11, d5[0]         \n\t"    //q14 = q11*d1[0]
-    "vmla.f32        q15, q11, d7[0]         \n\t"    //q15 = q11*d1[0]
-
-    "vst1.32         {d24, d25}, [%1]        \n\t"    //q12
-    "add             %1, %1, %2              \n\t"    //q0 = {x,y,z,w}
-    "vst1.32         {d26, d27}, [%1]        \n\t"    //q13
-    "add             %1, %1, %2              \n\t"    //q0 = {x,y,z,w}
-    "vst1.32         {d28, d29}, [%1]        \n\t"    //q14
-    "add             %1, %1, %2              \n\t"    //q0 = {x,y,z,w}
-    "vst1.32         {d30, d31}, [%1]        \n\t"    //q15
-
-    : "+&r"(mtx), "+&r"(ptr)
-    : "I"(sizeof(SPVertex)), "I"(3 * sizeof(SPVertex))
-    : "d0", "d1", "d2", "d3", "d4", "d5", "d6", "d7",
-      "d18","d19", "d20", "d21", "d22", "d23", "d24",
-      "d25", "d26", "d27", "d28", "d29", "d30", "d31", "memory"
-    );
+    // Store vtx data
+    vst1q_f32(&vtx0.x, _out.val[0]);
+    vst1q_f32(&vtx1.x, _out.val[1]);
+    vst1q_f32(&vtx2.x, _out.val[2]);
+    vst1q_f32(&vtx3.x, _out.val[3]);
 }
 
 void gSPBillboardVertex4NEON(u32 v)
 {
-    int i = 0;
     GraphicsDrawer & drawer = dwnd().getDrawer();
 
+    SPVertex & vtx = drawer.getVertex(0);
+
     SPVertex & vtx0 = drawer.getVertex(v);
-    SPVertex & vtx1 = drawer.getVertex(i);
+    SPVertex & vtx1 = drawer.getVertex(v+1);
+    SPVertex & vtx2 = drawer.getVertex(v+2);
+    SPVertex & vtx3 = drawer.getVertex(v+3);
 
-    void *ptr0 = (void*)&vtx0.x;
-    void *ptr1 = (void*)&vtx1.x;
-    asm volatile (
+    // Load vtx[0]
+    float32x4_t _vtx = vld1q_f32(&vtx.x);
 
-    "vld1.32         {d0, d1}, [%0]          \n\t"    //q0 = {x,y,z,w}
-    "add             %0, %0, %2              \n\t"    //q0 = {x,y,z,w}
-    "vld1.32         {d2, d3}, [%0]          \n\t"    //q1 = {x,y,z,w}
-    "add             %0, %0, %2              \n\t"    //q0 = {x,y,z,w}
-    "vld1.32         {d4, d5}, [%0]          \n\t"    //q2 = {x,y,z,w}
-    "add             %0, %0, %2              \n\t"    //q0 = {x,y,z,w}
-    "vld1.32         {d6, d7}, [%0]          \n\t"    //q3 = {x,y,z,w}
-    "sub             %0, %0, %3              \n\t"    //q0 = {x,y,z,w}
+    // Load vtx v, v+1, v+2, v+3
+    float32x4_t _vtx0 = vld1q_f32(&vtx0.x);
+    float32x4_t _vtx1 = vld1q_f32(&vtx1.x);
+    float32x4_t _vtx2 = vld1q_f32(&vtx2.x);
+    float32x4_t _vtx3 = vld1q_f32(&vtx3.x);
 
-    "vld1.32         {d16, d17}, [%1]        \n\t"    //q2={x1,y1,z1,w1}
-    "vadd.f32        q0, q0, q8              \n\t"    //q1=q1+q1
-    "vadd.f32        q1, q1, q8              \n\t"    //q1=q1+q1
-    "vadd.f32        q2, q2, q8              \n\t"    //q1=q1+q1
-    "vadd.f32        q3, q3, q8              \n\t"    //q1=q1+q1
-    "vst1.32         {d0, d1}, [%0]          \n\t"    //
-    "add             %0, %0, %2              \n\t"    //q0 = {x,y,z,w}
-    "vst1.32         {d2, d3}, [%0]          \n\t"    //
-    "add             %0, %0, %2              \n\t"    //q0 = {x,y,z,w}
-    "vst1.32         {d4, d5}, [%0]          \n\t"    //
-    "add             %0, %0, %2              \n\t"    //q0 = {x,y,z,w}
-    "vst1.32         {d6, d7}, [%0]          \n\t"    //
-    : "+&r"(ptr0), "+&r"(ptr1)
-    : "I"(sizeof(SPVertex)), "I"(3 * sizeof(SPVertex))
-    : "d0", "d1", "d2", "d3", "d4", "d5", "d6", "d7",
-      "d16", "d17", "memory"
-    );
+    // Add vtx[0] with vtx[n]./.[n+3] quad registers
+    _vtx0 = vaddq_f32(_vtx0, _vtx);
+    _vtx1 = vaddq_f32(_vtx1, _vtx);
+    _vtx2 = vaddq_f32(_vtx2, _vtx);
+    _vtx3 = vaddq_f32(_vtx3, _vtx);
+
+    // Store quad registers
+    vst1q_f32(&vtx0.x, _vtx0);
+    vst1q_f32(&vtx1.x, _vtx1);
+    vst1q_f32(&vtx2.x, _vtx2);
+    vst1q_f32(&vtx3.x, _vtx3);
 }
 
 void gSPTransformVector_NEON(float vtx[4], float mtx[4][4])
@@ -149,118 +134,103 @@ void gSPInverseTransformVector_NEON(float vec[3], float mtx[4][4])
     _mtx.val[0] = vmlaq_n_f32(_mtx.val[0], _mtx.val[2], vec[2]);    // mtx[0][0]+=mtx[2][0]*_vtx[2]
                                                                     // mtx[0][1]+=mtx[2][1]*_vtx[2]
                                                                     // mtx[0][2]+=mtx[2][2]*_vtx[2]
-    const float32x4_t _vec4 = _mtx.val[0];
-    vec[0] = _vec4[0];                                              // store vec[0]
-    vec[1] = _vec4[1];                                              // store vec[1]
-    vec[2] = _vec4[2];                                              // store vec[2]
+
+    vec[0] = _mtx.val[0][0];                                              // store vec[0]
+    vec[1] = _mtx.val[0][1];                                              // store vec[1]
+    vec[2] = _mtx.val[0][2];                                              // store vec[2]
 }
 
 void DotProductMax7FullNeon( float v0[3], float v1[7][3], float lights[7][3], float _vtx[3])
 {
-    asm volatile (
-    "pld            [%0]                           \n\t"	//preload lights
-    "pld            [%0, #64]                      \n\t"	
-    "pld            [%3]                           \n\t"	//preload vtx
-    "vld3.32        {d2[0],d3[0],d4[0]}, [%1]      \n\t"	//load v0
-    "vld3.32        {d6,d8,d10}, [%2]!             \n\t"	//load v1
-    "vld3.32        {d7,d9,d11}, [%2]!             \n\t"	
-    "vld3.32        {d18,d20,d22}, [%2]!           \n\t"	
-    "vld3.32        {d19[0],d21[0],d23[0]}, [%2]   \n\t"	
+    // load v1
+    float32x4x3_t _v10 = vld3q_f32(v1[0]);               // load 4x3 mtx interleaved
+    float32x2x3_t _v11 = vld3_f32(v1[4]);                // load 2x3 mtx interleaved
+    float32x2x3_t _v12 = vld3_dup_f32(v1[6]);            // load 1x3 mtx interleaved
+    for(int i = 0; i< 3; i++){
+        _v12.val[i][1]=0.0;
+    }
+    
+    // load lights
+    float32x4x3_t _lights0 = vld3q_f32(lights[0]);       // load 4x3 mtx interleaved
+    float32x2x3_t _lights1 = vld3_f32(lights[4]);        // load 2x3 mtx interleaved
+    float32x2x3_t _lights2 = vld3_dup_f32(lights[6]);    // load 1x3 mtx interleaved
 
-    "vmul.f32       q0, q3, d2[0]                  \n\t"	//q0=v0[0]*v1[i][0]
-    "vmul.f32       q6, q9, d2[0]                  \n\t"	//q6=v0[0]*v1[i+4][0]
+    float32x4_t product0;
+    float32x2_t product1;
+    float32x2_t product2;
+    float32x4_t max = vmovq_n_f32(0.0);
+    float32x2_t max1 = vmov_n_f32(0.0);
 
-    "vmla.f32       q0, q4, d3[0]                  \n\t"	//q0+=v0[0]*v1[i][1]
-    "vmla.f32       q6, q10, d3[0]                 \n\t"	//q6+=v0[0]*v1[i+4][1]
-    "vmov.f32       q15, #0.0                      \n\t"	//q15={0.0f,0.0f,0.0f,0.0f}
-    "vmla.f32       q0, q5, d4[0]                  \n\t"	//q0+=v0[0]*v1[i][2]
-    "vmla.f32       q6, q11, d4[0]                 \n\t"	//q6+=v0[0]*v1[i+4][2]
-    "vld3.32        {d4,d6,d8}, [%0]!              \n\t"	//load lights
-    "vld3.32        {d5,d7,d9}, [%0]!              \n\t"	
+    // calc product
+    product0 = vmulq_n_f32(_v10.val[0],v0[0]);
+    product1 = vmul_n_f32(_v11.val[0],v0[0]);
+    product2 = vmul_n_f32(_v12.val[0],v0[0]);
+    product0 = vmlaq_n_f32(product0, _v10.val[1],v0[1]);
+    product1 = vmla_n_f32(product1, _v11.val[1],v0[1]);
+    product2 = vmla_n_f32(product2, _v12.val[1],v0[1]);
+    product0 = vmlaq_n_f32(product0, _v10.val[2],v0[2]);
+    product1 = vmla_n_f32(product1, _v11.val[2],v0[2]);
+    product2 = vmla_n_f32(product2, _v12.val[2],v0[2]);
+    
+    product0 = vmaxq_f32(product0, max);
+    product1 = vmax_f32(product1, max1);
+    product2 = vmax_f32(product2, max1);
 
-    "vmax.f32       q0, q0, q15                    \n\t"	//q0=max(q0,q15)
-    "vmov.f32       d11, #0.0                      \n\t"	//d11={0.0f,0.0f}
-    "vmov.f32       d15, #0.0                      \n\t"	//d15={0.0f,0.0f}
-    "vmax.f32       q1, q6, q15                    \n\t"	//q1=max(q6,q15)
-    "vmov.f32       d13, #0.0                      \n\t"	//d13={0.0f,0.0f}
+    // multiply product with lights
+    _lights0.val[0] = vmulq_f32(_lights0.val[0],product0);
+    _lights1.val[0] = vmul_f32(_lights1.val[0],product1);
+    _lights1.val[0] = vmla_f32(_lights1.val[0],_lights2.val[0],product2);
+    _lights0.val[1] = vmulq_f32(_lights0.val[1],product0);
+    _lights1.val[1] = vmul_f32(_lights1.val[1],product1);
+    _lights1.val[1] = vmla_f32(_lights1.val[1],_lights2.val[1],product2);
+    _lights0.val[2] = vmulq_f32(_lights0.val[2],product0);
+    _lights1.val[2] = vmul_f32(_lights1.val[2],product1);
+    _lights1.val[2] = vmla_f32(_lights1.val[2],_lights2.val[2],product2);
 
-    "vld3.32        {d10,d12,d14}, [%0]!           \n\t"	//d10={x1,y1}
-    "vld3.32        {d11[0],d13[0],d15[0]}, [%0]   \n\t"	//d10={x1,y1}	
+    // add x, y and z values
+    float32x2_t d00 = vadd_f32(vget_high_f32(_lights0.val[0]),vget_low_f32(_lights0.val[0]));
+    float32x2_t d10 = vadd_f32(vget_high_f32(_lights0.val[1]),vget_low_f32(_lights0.val[1]));
+    float32x2_t d20 = vadd_f32(vget_high_f32(_lights0.val[2]),vget_low_f32(_lights0.val[2]));
+    d00 = vadd_f32(d00,_lights1.val[0]);
+    d10 = vadd_f32(d10,_lights1.val[1]);
+    d20 = vadd_f32(d20,_lights1.val[2]);
+    d00 = vpadd_f32(d00,d00);
+    d10 = vpadd_f32(d10,d10);
+    d20 = vpadd_f32(d20,d20);
 
-    "vmul.f32       q2, q2, q0                     \n\t"	//q2=light.x*intensity
-    "vmul.f32       q3, q3, q0                     \n\t"	//q3=light.y*intensity
-    "vmul.f32       q4, q4, q0                     \n\t"	//q4=light.z*intensity
-    "vmul.f32       q5, q5, q1                     \n\t"	//q5=(light.x+4)*intensity
-    "vmul.f32       q6, q6, q1                     \n\t"	//q6=(light.y+4)*intensity
-    "vmul.f32       q7, q7, q1                     \n\t"	//q7=(light.z+4)*intensity
-    "vld3.32        {d22[0],d23[0],d24[0]}, [%3]   \n\t"	//load vtx
-
-    "vadd.f32       d4,d4,d5                       \n\t"	//add everything to vtx
-    "vadd.f32       d6,d6,d7                       \n\t"
-    "vadd.f32       d8,d8,d9                       \n\t"
-
-    "vadd.f32       d10,d10,d11                    \n\t"
-    "vadd.f32       d12,d12,d13                    \n\t"
-    "vadd.f32       d14,d14,d15                    \n\t"
-
-    "vpadd.f32      d4,d4,d4                       \n\t"
-    "vpadd.f32      d10,d10,d10                    \n\t"
-    "vpadd.f32      d5,d6,d6                       \n\t"
-    "vpadd.f32      d11,d12,d12                    \n\t"
-    "vpadd.f32      d6,d8,d8                       \n\t"
-    "vpadd.f32      d12,d14,d14                    \n\t"
-
-    "vadd.f32       d4,d4,d10                      \n\t"
-    "vadd.f32       d5,d5,d11                      \n\t"
-    "vadd.f32       d6,d6,d12                      \n\t"
-
-    "vadd.f32       d4,d4,d22                      \n\t"
-    "vadd.f32       d5,d5,d23                      \n\t"
-    "vadd.f32       d6,d6,d24                      \n\t"
-
-    "vst3.32        {d4[0],d5[0],d6[0]}, [%3]      \n\t"
-    : "+r"(lights), "+r"(v0), "+r"(v1), "+r"(_vtx):
-    : "d0", "d1", "d2", "d3", "d4", "d5", "d6", "d7", "d8", "d9", "d10", "d11", "d12", "d13", "d14", 
-    "d15", "d16", "d17", "d18", "d19", "d20", "d21", "d22", "d23", "d24", "memory"
-    );
+    _vtx[0] += d00[0];
+    _vtx[1] += d10[0];
+    _vtx[2] += d20[0];
 }
 
-void DotProductMax4FullNeon( float v0[3], float v1[4][3], float _lights[4][3], float _vtx[3])
+void DotProductMax4FullNeon( float v0[3], float v1[4][3], float lights[4][3], float vtx[3])
 {
-    asm volatile (
-    "vld3.32        {d0[0],d2[0],d4[0]}, [%1]   \n\t"	//load v0
-    "vld3.32        {d6,d8,d10}, [%2]!          \n\t"	//load v1
-    "vld3.32        {d7,d9,d11}, [%2]           \n\t"	//
+    float32x4x3_t _v1 = vld3q_f32(v1[0]);               // load 4x3 mtx interleaved
+    float32x4x3_t _lights = vld3q_f32(lights[0]);       // load 4x3 mtx interleaved
 
-    "vmul.f32       q0, q3, d0[0]               \n\t"	//product=v0[0]*v1[0]
-    "vld3.32        {d12,d14,d16}, [%0]!        \n\t"	//load lights
-    "vmla.f32       q0, q4, d2[0]               \n\t"	//product+=v0[1]*v1[1]
-    "vld3.32        {d13,d15,d17}, [%0]         \n\t"	//load lights +2
-    "vmov.f32       q11, #0.0                   \n\t"	
-    "vmla.f32       q0, q5, d4[0]               \n\t"	//product+=v0[2]*v1[2]
+    float32x4_t product;
+    float32x4_t max = vmovq_n_f32(0.0);
 
-    "vmax.f32       q0, q0, q11                 \n\t"	//product=max(product,0.0f)
-    "vld3.32        {d18[0],d19[0],d20[0]}, [%3]\n\t"	//load vtx
-    "vmul.f32       q6, q6, q0                  \n\t"	//lights.r = lights.r * intensity
-    "vmul.f32       q7, q7, q0                  \n\t"	//lights.g = lights.g * intensity
-    "vmul.f32       q8, q8, q0                  \n\t"	//lights.b = lights.b * intensity
+    product = vmulq_n_f32(_v1.val[0],v0[0]);
+    product = vmlaq_n_f32(product, _v1.val[1],v0[1]);
+    product = vmlaq_n_f32(product, _v1.val[2],v0[2]);
+    
+    product = vmaxq_f32(product, max);
+    
+    _lights.val[0] = vmulq_f32(_lights.val[0],product);
+    _lights.val[1] = vmulq_f32(_lights.val[1],product);
+    _lights.val[2] = vmulq_f32(_lights.val[2],product);
 
-    "vadd.f32       d12,d12,d13                 \n\t"	//add all values
-    "vadd.f32       d14,d14,d15                 \n\t"
-    "vadd.f32       d16,d16,d17                 \n\t"
+    float32x2_t d00 = vadd_f32(vget_high_f32(_lights.val[0]),vget_low_f32(_lights.val[0]));
+    float32x2_t d10 = vadd_f32(vget_high_f32(_lights.val[1]),vget_low_f32(_lights.val[1]));
+    float32x2_t d20 = vadd_f32(vget_high_f32(_lights.val[2]),vget_low_f32(_lights.val[2]));
+    d00 = vpadd_f32(d00,d00);
+    d10 = vpadd_f32(d10,d10);
+    d20 = vpadd_f32(d20,d20);
 
-    "vpadd.f32      d12,d12,d12                 \n\t"
-    "vpadd.f32      d13,d14,d14                 \n\t"
-    "vpadd.f32      d14,d16,d16                 \n\t"
-
-    "vadd.f32       d12,d12,d18                 \n\t"
-    "vadd.f32       d13,d13,d19                 \n\t"
-    "vadd.f32       d14,d14,d20                 \n\t"
-
-    "vst3.32        {d12[0],d13[0],d14[0]}, [%3]\n\t"	//store vtx
-    : "+r"(_lights), "+r"(v0), "+r"(v1), "+r"(_vtx):
-    : "d0", "d1", "d2", "d3", "d4", "d5", "d6", "d7", "d8", "d9", "d10", "d11", "d12", "d13", "memory"
-    );
+    vtx[0] += d00[0];
+    vtx[1] += d10[0];
+    vtx[2] += d20[0];
 }
 
 void gSPLightVertex_NEON(u32 vnum, u32 v, SPVertex * spVtx)
@@ -285,11 +255,11 @@ void gSPLightVertex_NEON(u32 vnum, u32 v, SPVertex * spVtx)
 			while (count >= 0)
 			{
 				f32 intensity = DotProduct( &vtx.nx, gSP.lights.i_xyz[gSP.numLights - count - 1] );
-				if (intensity < 0.0f)
-					intensity = 0.0f;
-				vtx.r += gSP.lights.rgb[gSP.numLights - count - 1][R] * intensity;
-				vtx.g += gSP.lights.rgb[gSP.numLights - count - 1][G] * intensity;
-				vtx.b += gSP.lights.rgb[gSP.numLights - count - 1][B] * intensity;
+				if (intensity > 0.0f){
+					vtx.r += gSP.lights.rgb[gSP.numLights - count - 1][R] * intensity;
+					vtx.g += gSP.lights.rgb[gSP.numLights - count - 1][G] * intensity;
+					vtx.b += gSP.lights.rgb[gSP.numLights - count - 1][B] * intensity;
+				}
 				count -= 1;
 			}
 			vtx.r = min(1.0f, vtx.r);
