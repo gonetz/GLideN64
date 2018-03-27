@@ -42,7 +42,7 @@
  * Utilities
  ******************************************************************************/
 uint32
-TxUtil::checksumTx(uint8 *src, int width, int height, uint16 format)
+TxUtil::checksumTx(uint8 *src, int width, int height, ColorFormat format)
 {
 	int dataSize = sizeofTx(width, height, format);
 
@@ -56,18 +56,18 @@ TxUtil::checksumTx(uint8 *src, int width, int height, uint16 format)
 }
 
 int
-TxUtil::sizeofTx(int width, int height, uint16 format)
+TxUtil::sizeofTx(int width, int height, ColorFormat format)
 {
 	int dataSize = 0;
 
 	/* a lookup table for the shifts would be better */
-	if (format == u32(graphics::internalcolorFormat::COLOR_INDEX8)) {
+	if (format == graphics::internalcolorFormat::COLOR_INDEX8) {
 		dataSize = width * height;
-	} else if (format == u32(graphics::internalcolorFormat::RGBA4) ||
-	format == u32(graphics::internalcolorFormat::RGB5_A1) ||
-	format == u32(graphics::internalcolorFormat::RGB8)) {
+	} else if (format == graphics::internalcolorFormat::RGBA4 ||
+			   format == graphics::internalcolorFormat::RGB5_A1 ||
+			   format == graphics::internalcolorFormat::RGB8) {
 		dataSize = (width * height) << 1;
-	} else if (format == u32(graphics::internalcolorFormat::RGBA8)) {
+	} else if (format == graphics::internalcolorFormat::RGBA8) {
 		dataSize = (width * height) << 2;
 	} else {
 		/* unsupported format */
@@ -584,23 +584,23 @@ TxMemBuf::getThreadBuf(uint32 threadIdx, uint32 num, uint32 size)
 	return buf.data();
 }
 
-void setTextureFormat(uint16 internalFormat, GHQTexInfo * info)
+void setTextureFormat(ColorFormat internalFormat, GHQTexInfo * info)
 {
-	info->format = internalFormat;
-	if (internalFormat == u32(graphics::internalcolorFormat::RGBA8)) {
-		info->texture_format = u32(graphics::colorFormat::RGBA);
-		info->pixel_type = u32(graphics::datatype::UNSIGNED_BYTE);
-	} else if (internalFormat == u32(graphics::internalcolorFormat::RGB8)) {
-		info->texture_format = u32(graphics::colorFormat::RED_GREEN_BLUE);
-		info->pixel_type = u32(graphics::datatype::UNSIGNED_SHORT_5_6_5);
-	} else if (internalFormat == u32(graphics::internalcolorFormat::RGBA4)) {
-		info->texture_format = u32(graphics::colorFormat::RGBA);
-		info->pixel_type = u32(graphics::datatype::UNSIGNED_SHORT_4_4_4_4);
-	} else if (internalFormat == u32(graphics::internalcolorFormat::RGB5_A1)) {
-		info->texture_format = u32(graphics::colorFormat::RGBA);
-		info->pixel_type = u32(graphics::datatype::UNSIGNED_SHORT_5_5_5_1);
+	info->format = u32(internalFormat);
+	if (internalFormat == graphics::internalcolorFormat::RGBA8) {
+		info->texture_format = static_cast<unsigned short>(u32(graphics::colorFormat::RGBA));
+		info->pixel_type = static_cast<unsigned short>(u32(graphics::datatype::UNSIGNED_BYTE));
+	} else if (internalFormat == graphics::internalcolorFormat::RGB8) {
+		info->texture_format = static_cast<unsigned short>(u32(graphics::colorFormat::RED_GREEN_BLUE));
+		info->pixel_type = static_cast<unsigned short>(u32(graphics::datatype::UNSIGNED_SHORT_5_6_5));
+	} else if (internalFormat == graphics::internalcolorFormat::RGBA4) {
+		info->texture_format = static_cast<unsigned short>(u32(graphics::colorFormat::RGBA));
+		info->pixel_type = static_cast<unsigned short>(u32(graphics::datatype::UNSIGNED_SHORT_4_4_4_4));
+	} else if (internalFormat == graphics::internalcolorFormat::RGB5_A1) {
+		info->texture_format = static_cast<unsigned short>(u32(graphics::colorFormat::RGBA));
+		info->pixel_type = static_cast<unsigned short>(u32(graphics::datatype::UNSIGNED_SHORT_5_5_5_1));
 	} else {
-		info->texture_format = u32(graphics::colorFormat::RGBA);
-		info->pixel_type = u32(graphics::datatype::UNSIGNED_BYTE);
+		info->texture_format = static_cast<unsigned short>(u32(graphics::colorFormat::RGBA));
+		info->pixel_type = static_cast<unsigned short>(u32(graphics::datatype::UNSIGNED_BYTE));
 	}
 }

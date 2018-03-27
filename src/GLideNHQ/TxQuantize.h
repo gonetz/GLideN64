@@ -62,7 +62,7 @@ public:
   /* others */
   void P8_16BPP(uint32* src, uint32* dst, int width, int height, uint32* palette);
 
-  boolean quantize(uint8* src, uint8* dest, int width, int height, uint16 srcformat, uint16 destformat, boolean fastQuantizer = 1);
+  boolean quantize(uint8* src, uint8* dest, int width, int height, ColorFormat srcformat, ColorFormat destformat, boolean fastQuantizer = 1);
 };
 
 #endif /* __TXQUANTIZE_H__ */

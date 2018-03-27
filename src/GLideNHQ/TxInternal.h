@@ -35,6 +35,8 @@
 #define KBHIT(key) (0)
 #endif
 
+typedef graphics::InternalColorFormatParam ColorFormat;
+
 /* in-memory zlib texture compression */
 #define GL_TEXFMT_GZ 0x80000000
 

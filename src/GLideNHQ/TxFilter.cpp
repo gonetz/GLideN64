@@ -28,6 +28,7 @@
 #include <functional>
 #include <thread>
 #include <stdlib.h>
+#include <assert.h>
 
 #include <osal_files.h>
 #include "TxFilter.h"
@@ -157,13 +158,12 @@ TxFilter::TxFilter(int maxwidth,
 }
 
 boolean
-TxFilter::filter(uint8 *src, int srcwidth, int srcheight, uint16 srcformat, uint64 g64crc, GHQTexInfo *info)
+TxFilter::filter(uint8 *src, int srcwidth, int srcheight, ColorFormat srcformat, uint64 g64crc, GHQTexInfo *info)
 {
 	uint8 *texture = src;
 	uint8 *tmptex = _tex1;
-	if (srcformat == u32(graphics::colorFormat::RGBA))
-		srcformat = u32(graphics::internalcolorFormat::RGBA8);
-	uint16 destformat = srcformat;
+	assert(srcformat != graphics::colorFormat::RGBA);
+	ColorFormat destformat = srcformat;
 
 	/* We need to be initialized first! */
 	if (!_initialized) return 0;
@@ -176,7 +176,7 @@ TxFilter::filter(uint8 *src, int srcwidth, int srcheight, uint16 srcformat, uint
 			g64crc = (uint64)(TxUtil::checksumTx(texture, srcwidth, srcheight, srcformat));
 
 		DBG_INFO(80, wst("filter: crc:%08X %08X %d x %d gfmt:%x\n"),
-				 (uint32)(g64crc >> 32), (uint32)(g64crc & 0xffffffff), srcwidth, srcheight, srcformat);
+				 (uint32)(g64crc >> 32), (uint32)(g64crc & 0xffffffff), srcwidth, srcheight, u32(srcformat));
 
 		/* check if we have it in cache */
 		if ((g64crc & 0xffffffff00000000) == 0 && /* we reach here only when there is no hires texture for this crc */
@@ -192,22 +192,22 @@ TxFilter::filter(uint8 *src, int srcwidth, int srcheight, uint16 srcformat, uint
    */
 	if ((srcwidth >= 4 && srcheight >= 4) &&
 			((_options & (FILTER_MASK|ENHANCEMENT_MASK)) ||
-			 (srcformat == u32(graphics::internalcolorFormat::RGBA8) && (_maxbpp < 32 || _options & FORCE16BPP_TEX)))) {
+			 (srcformat == graphics::internalcolorFormat::RGBA8 && (_maxbpp < 32 || _options & FORCE16BPP_TEX)))) {
 
-		if (srcformat != u32(graphics::internalcolorFormat::RGBA8)) {
-			if (!_txQuantize->quantize(texture, tmptex, srcwidth, srcheight, srcformat, u32(graphics::internalcolorFormat::RGBA8))) {
-				DBG_INFO(80, wst("Error: unsupported format! gfmt:%x\n"), srcformat);
+		if (srcformat != graphics::internalcolorFormat::RGBA8) {
+			if (!_txQuantize->quantize(texture, tmptex, srcwidth, srcheight, srcformat, graphics::internalcolorFormat::RGBA8)) {
+				DBG_INFO(80, wst("Error: unsupported format! gfmt:%x\n"), u32(srcformat));
 				return 0;
 			}
 			texture = tmptex;
-			destformat = u32(graphics::internalcolorFormat::RGBA8);
+			destformat = graphics::internalcolorFormat::RGBA8;
 		}
 
-		if (destformat == u32(graphics::internalcolorFormat::RGBA8)) {
+		if (destformat == graphics::internalcolorFormat::RGBA8) {
 
 			/*
-	   * prepare texture enhancements (x2, x4 scalers)
-	   */
+			* prepare texture enhancements (x2, x4 scalers)
+			*/
 			int scale = 1, num_filters = 0;
 			uint32 filter = 0;
 
@@ -353,14 +353,14 @@ TxFilter::filter(uint8 *src, int srcwidth, int srcheight, uint16 srcformat, uint
 			}
 
 			/*
-	   * texture (re)conversions
-	   */
-			if (destformat == u32(graphics::internalcolorFormat::RGBA8) && (_maxbpp < 32 || _options & FORCE16BPP_TEX)) {
-				if (srcformat == u32(graphics::internalcolorFormat::RGBA8))
-					srcformat = u32(graphics::internalcolorFormat::RGBA4);
-				if (srcformat != u32(graphics::internalcolorFormat::RGBA8)) {
+			* texture (re)conversions
+			*/
+			if (destformat == graphics::internalcolorFormat::RGBA8 && (_maxbpp < 32 || _options & FORCE16BPP_TEX)) {
+				if (srcformat == graphics::internalcolorFormat::RGBA8)
+					srcformat = graphics::internalcolorFormat::RGBA4;
+				if (srcformat != graphics::internalcolorFormat::RGBA8) {
 					tmptex = (texture == _tex1) ? _tex2 : _tex1;
-					if (!_txQuantize->quantize(texture, tmptex, srcwidth, srcheight, u32(graphics::internalcolorFormat::RGBA8), srcformat)) {
+					if (!_txQuantize->quantize(texture, tmptex, srcwidth, srcheight, graphics::internalcolorFormat::RGBA8, srcformat)) {
 						DBG_INFO(80, wst("Error: unsupported format! gfmt:%x\n"), srcformat);
 						return 0;
 					}
@@ -370,7 +370,7 @@ TxFilter::filter(uint8 *src, int srcwidth, int srcheight, uint16 srcformat, uint
 			}
 		}
 #if !_16BPP_HACK
-		else if (destformat == u32(graphics::internalcolorFormat::RGBA4)) {
+		else if (destformat == graphics::internalcolorFormat::RGBA4) {
 
 			int scale = 1;
 			tmptex = (texture == _tex1) ? _tex2 : _tex1;
@@ -516,12 +516,12 @@ TxFilter::hirestex(uint64 g64crc, uint64 r_crc64, uint16 *palette, GHQTexInfo *i
 	   * A comp comes before RGB comp.
 	   */
 			// TODO: deal with palette textures
-			if (palette && info->format == u32(graphics::internalcolorFormat::COLOR_INDEX8)) {
+			if (palette && u32(info->format) == u32(graphics::internalcolorFormat::COLOR_INDEX8)) {
 				DBG_INFO(80, wst("found COLOR_INDEX8 format. Need conversion!!\n"));
 
 				int width = info->width;
 				int height = info->height;
-				uint16 format = info->format;
+				ColorFormat format(u32(info->format));
 				/* XXX: avoid collision with zlib compression buffer in TxHiResTexture::get */
 				uint8 *texture = info->data;
 				uint8 *tmptex = (texture == _tex1) ? _tex2 : _tex1;
@@ -529,7 +529,7 @@ TxFilter::hirestex(uint64 g64crc, uint64 r_crc64, uint16 *palette, GHQTexInfo *i
 				/* use palette and convert to 16bit format */
 				_txQuantize->P8_16BPP((uint32*)texture, (uint32*)tmptex, info->width, info->height, (uint32*)palette);
 				texture = tmptex;
-				format = u32(graphics::internalcolorFormat::RGB5_A1);
+				format = graphics::internalcolorFormat::RGB5_A1;
 
 				/* fill in the required info to return */
 				info->data = texture;
@@ -541,7 +541,7 @@ TxFilter::hirestex(uint64 g64crc, uint64 r_crc64, uint16 *palette, GHQTexInfo *i
 				/* XXX: add to hires texture cache!!! */
 				_txHiResCache->add(r_crc64, info);
 
-				DBG_INFO(80, wst("COLOR_INDEX8 loaded as gfmt:%x!\n"), format);
+				DBG_INFO(80, wst("COLOR_INDEX8 loaded as gfmt:%x!\n"), u32(format));
 			}
 
 			return 1;
@@ -572,20 +572,21 @@ TxFilter::checksum64(uint8 *src, int width, int height, int size, int rowStride,
 }
 
 boolean
-TxFilter::dmptx(uint8 *src, int width, int height, int rowStridePixel, uint16 gfmt, uint16 n64fmt, uint64 r_crc64)
+TxFilter::dmptx(uint8 *src, int width, int height, int rowStridePixel, ColorFormat gfmt, uint16 n64fmt, uint64 r_crc64)
 {
+	assert(gfmt != graphics::colorFormat::RGBA);
 	if (!_initialized)
 		return 0;
 
 	if (!(_options & DUMP_TEX))
 		return 0;
 
-	DBG_INFO(80, wst("gfmt = %02x n64fmt = %02x\n"), gfmt, n64fmt);
+	DBG_INFO(80, wst("gfmt = %02x n64fmt = %02x\n"), u32(gfmt), n64fmt);
 	DBG_INFO(80, wst("hirestex: r_crc64:%08X %08X\n"),
 			 (uint32)(r_crc64 >> 32), (uint32)(r_crc64 & 0xffffffff));
 
-	if (gfmt != u32(graphics::colorFormat::RGBA) && gfmt != u32(graphics::internalcolorFormat::RGBA8)) {
-		if (!_txQuantize->quantize(src, _tex1, rowStridePixel, height, gfmt, u32(graphics::internalcolorFormat::RGBA8)))
+	if (gfmt != graphics::internalcolorFormat::RGBA8) {
+		if (!_txQuantize->quantize(src, _tex1, rowStridePixel, height, gfmt, graphics::internalcolorFormat::RGBA8))
 			return 0;
 		src = _tex1;
 	}
@@ -620,7 +621,7 @@ TxFilter::dmptx(uint8 *src, int width, int height, int rowStridePixel, uint16 gf
 		wcstombs(cbuf, tmpbuf.c_str(), MAX_PATH);
 		if ((fp = fopen(cbuf, "wb")) != nullptr) {
 #endif
-			_txImage->writePNG(src, fp, width, height, (rowStridePixel << 2), 0x0003, 0);
+			_txImage->writePNG(src, fp, width, height, (rowStridePixel << 2), graphics::internalcolorFormat::RGBA8);
 			fclose(fp);
 			return 1;
 		}

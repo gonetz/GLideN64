@@ -28,11 +28,13 @@
 /* check 8 bytes. use a larger value if needed. */
 #define PNG_CHK_BYTES 8
 
+#include <stdlib.h>
+#include <string.h>
+#include <assert.h>
+
 #include "TxImage.h"
 #include "TxReSample.h"
 #include "TxDbg.h"
-#include <stdlib.h>
-#include <string.h>
 
 boolean
 TxImage::getPNGInfo(FILE *fp, png_structp *png_ptr, png_infop *info_ptr)
@@ -75,7 +77,7 @@ TxImage::getPNGInfo(FILE *fp, png_structp *png_ptr, png_infop *info_ptr)
 }
 
 uint8*
-TxImage::readPNG(FILE* fp, int* width, int* height, uint16* format)
+TxImage::readPNG(FILE* fp, int* width, int* height, ColorFormat *format)
 {
 	/* NOTE: returned image format is GR_TEXFMT_ARGB_8888 */
 
@@ -88,7 +90,7 @@ TxImage::readPNG(FILE* fp, int* width, int* height, uint16* format)
 	/* initialize */
 	*width  = 0;
 	*height = 0;
-	*format = 0;
+	*format = graphics::internalcolorFormat::NOCOLOR;
 
 	/* check if we have a valid png file */
 	if (!fp)
@@ -203,7 +205,7 @@ TxImage::readPNG(FILE* fp, int* width, int* height, uint16* format)
 
 		*width = (row_bytes >> 2);
 		*height = o_height;
-		*format = u32(graphics::internalcolorFormat::RGBA8);
+		*format = graphics::internalcolorFormat::RGBA8;
 
 #if POW2_TEXTURES
 		/* next power of 2 size conversions */
@@ -224,7 +226,7 @@ TxImage::readPNG(FILE* fp, int* width, int* height, uint16* format)
 			}
 			*width = 0;
 			*height = 0;
-			*format = 0;
+			*format = raphics::internalcolorFormat::NOCOLOR;
 		}
 
 		delete txReSample;
@@ -245,16 +247,14 @@ TxImage::readPNG(FILE* fp, int* width, int* height, uint16* format)
 }
 
 boolean
-TxImage::writePNG(uint8* src, FILE* fp, int width, int height, int rowStride, uint16 format, uint8 *palette)
+TxImage::writePNG(uint8* src, FILE* fp, int width, int height, int rowStride, ColorFormat format)
 {
+	assert(format == graphics::internalcolorFormat::RGBA8);
 	png_structp png_ptr = nullptr;
 	png_infop info_ptr = nullptr;
 	png_color_8 sig_bit;
-	png_colorp palette_ptr = nullptr;
-	png_bytep trans_ptr = nullptr;//, tex_ptr;
-	int bit_depth = 0, color_type = 0, row_bytes = 0, num_palette = 0;
+	int bit_depth = 0, color_type = 0, row_bytes = 0;
 	int i = 0;
-	//uint16 srcfmt, destfmt;
 
 	if (!src || !fp)
 		return 0;
@@ -276,111 +276,21 @@ TxImage::writePNG(uint8* src, FILE* fp, int width, int height, int rowStride, ui
 
 	png_init_io(png_ptr, fp);
 
-	/* TODO: images must be converted to RGBA8888 or CI8,
-   * palettes need to be separated to A and RGB. */
+	bit_depth = 8;
+	sig_bit.red   = 8;
+	sig_bit.green = 8;
+	sig_bit.blue  = 8;
+	sig_bit.alpha = 8;
+	color_type = PNG_COLOR_TYPE_RGB_ALPHA;
 
-	/* N64 formats
-   * Format: 0 - RGBA, 1 - YUV, 2 - CI, 3 - IA, 4 - I
-   * Size:   0 - 4bit, 1 - 8bit, 2 - 16bit, 3 - 32 bit
-   * format = (Format << 8 | Size);
-   */
-
-	/* each channel is saved in 8bits for consistency */
-	switch (format) {
-	case 0x0002:/* RGBA5551 */
-		bit_depth = 8;
-		sig_bit.red   = 5;
-		sig_bit.green = 5;
-		sig_bit.blue  = 5;
-		sig_bit.alpha = 1;
-		color_type = PNG_COLOR_TYPE_RGB_ALPHA;
-	break;
-	case 0x0003:/* RGBA8888 */
-	case 0x0302:/* IA88 */
-		bit_depth = 8;
-		sig_bit.red   = 8;
-		sig_bit.green = 8;
-		sig_bit.blue  = 8;
-		sig_bit.alpha = 8;
-		color_type = PNG_COLOR_TYPE_RGB_ALPHA;
-	break;
-	case 0x0300:/* IA31 */
-		bit_depth = 8;
-		sig_bit.red   = 3;
-		sig_bit.green = 3;
-		sig_bit.blue  = 3;
-		sig_bit.alpha = 1;
-		color_type = PNG_COLOR_TYPE_RGB_ALPHA;
-	break;
-	case 0x0301:/* IA44 */
-		bit_depth = 8;
-		sig_bit.red   = 4;
-		sig_bit.green = 4;
-		sig_bit.blue  = 4;
-		sig_bit.alpha = 4;
-		color_type = PNG_COLOR_TYPE_RGB_ALPHA;
-	break;
-	case 0x0400:/* I4 */
-		bit_depth = 8;
-		sig_bit.red   = 4;
-		sig_bit.green = 4;
-		sig_bit.blue  = 4;
-		color_type = PNG_COLOR_TYPE_RGB;
-	break;
-	case 0x0401:/* I8 */
-	case 0x0402:/* I16 */
-		bit_depth = 8;
-		sig_bit.red   = 8;
-		sig_bit.green = 8;
-		sig_bit.blue  = 8;
-		color_type = PNG_COLOR_TYPE_RGB;
-	break;
-	case 0x0200:/* CI4 */
-		bit_depth = 8;
-		num_palette = 16;
-		color_type = PNG_COLOR_TYPE_PALETTE;
-	break;
-	case 0x0201:/* CI8 */
-		bit_depth = 8;
-		num_palette = 256;
-		color_type = PNG_COLOR_TYPE_PALETTE;
-	break;
-	case 0x0102:/* YUV ? */
-	case 0x0103:
-	default:
-		/* unsupported format */
-		png_destroy_write_struct(&png_ptr, &info_ptr);
-	return 0;
-	}
-
-	switch (color_type) {
-	case PNG_COLOR_TYPE_RGB_ALPHA:
-	case PNG_COLOR_TYPE_RGB:
-		//row_bytes = (bit_depth * width) >> 1;
-		row_bytes = rowStride;
-		//png_set_bgr(png_ptr); // OpenGL does not need it
-		png_set_sBIT(png_ptr, info_ptr, &sig_bit);
-	break;
-	case PNG_COLOR_TYPE_PALETTE:
-		//row_bytes = (bit_depth * width) >> 3;
-		row_bytes = rowStride;
-		png_set_PLTE(png_ptr, info_ptr, palette_ptr, num_palette);
-		png_set_tRNS(png_ptr, info_ptr, trans_ptr, num_palette, 0);
-	}
-
-	//png_set_filter(png_ptr, 0, PNG_ALL_FILTERS);
-
-	//if (bit_depth == 16)
-	//  png_set_swap(png_ptr);
-
-	//if (bit_depth < 8)
-	//  png_set_packswap(png_ptr);
+	//row_bytes = (bit_depth * width) >> 1;
+	row_bytes = rowStride;
+	//png_set_bgr(png_ptr); // OpenGL does not need it
+	png_set_sBIT(png_ptr, info_ptr, &sig_bit);
 
 	png_set_IHDR(png_ptr, info_ptr, width, height,
 				 bit_depth, color_type, PNG_INTERLACE_NONE,
 				 PNG_COMPRESSION_TYPE_DEFAULT, PNG_FILTER_TYPE_DEFAULT);
-
-	//png_set_gAMA(png_ptr, info_ptr, 1.0);
 
 	png_write_info(png_ptr, info_ptr);
 	for (i = 0; i < height; i++) {
@@ -390,8 +300,6 @@ TxImage::writePNG(uint8* src, FILE* fp, int width, int height, int rowStride, ui
 	png_write_end(png_ptr, info_ptr);
 
 	png_destroy_write_struct(&png_ptr, &info_ptr);
-
-	//if (tex_ptr) delete [] tex_ptr;
 
 	return 1;
 }
@@ -487,7 +395,7 @@ TxImage::getBMPInfo(FILE* fp, BITMAPFILEHEADER* bmp_fhdr, BITMAPINFOHEADER* bmp_
 }
 
 uint8*
-TxImage::readBMP(FILE* fp, int* width, int* height, uint16* format)
+TxImage::readBMP(FILE* fp, int* width, int* height, ColorFormat *format)
 {
 	/* NOTE: returned image format;
    *       4, 8bit palette bmp -> COLOR_INDEX8
@@ -505,7 +413,7 @@ TxImage::readBMP(FILE* fp, int* width, int* height, uint16* format)
 	/* initialize */
 	*width  = 0;
 	*height = 0;
-	*format = 0;
+	*format = graphics::internalcolorFormat::NOCOLOR;
 
 	/* check if we have a valid bmp file */
 	if (!fp)
@@ -611,11 +519,11 @@ TxImage::readBMP(FILE* fp, int* width, int* height, uint16* format)
 		switch (bmp_ihdr.biBitCount) {
 		case 8:
 		case 4:
-			*format = u32(graphics::internalcolorFormat::COLOR_INDEX8);
+			*format = graphics::internalcolorFormat::COLOR_INDEX8;
 		break;
 		case 32:
 		case 24:
-			*format = u32(graphics::internalcolorFormat::RGBA8);
+			*format = graphics::internalcolorFormat::RGBA8;
 		}
 
 #if POW2_TEXTURES
@@ -637,7 +545,7 @@ TxImage::readBMP(FILE* fp, int* width, int* height, uint16* format)
 			}
 			*width = 0;
 			*height = 0;
-			*format = 0;
+			*format = graphics::internalcolorFormat::NOCOLOR;
 		}
 
 		delete txReSample;

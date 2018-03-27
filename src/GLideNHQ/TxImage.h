@@ -107,9 +107,9 @@ private:
 public:
   TxImage() {}
   ~TxImage() {}
-  uint8* readPNG(FILE* fp, int* width, int* height, uint16* format);
-  boolean writePNG(uint8* src, FILE* fp, int width, int height, int rowStride, uint16 format, uint8 *palette);
-  uint8* readBMP(FILE* fp, int* width, int* height, uint16* format);
+  uint8* readPNG(FILE* fp, int* width, int* height, ColorFormat* format);
+  boolean writePNG(uint8* src, FILE* fp, int width, int height, int rowStride, ColorFormat format/*, uint8 *palette*/);
+  uint8* readBMP(FILE* fp, int* width, int* height, ColorFormat* format);
 };
 
 #endif /* __TXIMAGE_H__ */
