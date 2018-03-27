@@ -861,7 +861,7 @@ public:
 	{
 		if (!_glinfo.isGLES2) {
 			m_part =
-				"void writeDepth();\n";
+				"highp float writeDepth();\n";
 			;
 			if (_glinfo.isGLESX) {
 				m_part =
@@ -943,8 +943,8 @@ public:
 			m_part +=
 				"layout(binding = 2, r32f) highp uniform coherent image2D uDepthImageZ;		\n"
 				"layout(binding = 3, r32f) highp uniform coherent image2D uDepthImageDeltaZ;\n"
-				"bool depth_compare();\n"
-				"bool depth_render(highp float Z);\n";
+				"bool depth_compare(highp float curZ);\n"
+				"bool depth_render(highp float Z, highp float curZ);\n";
 			;
 		}
 	}
@@ -1124,7 +1124,7 @@ public:
 		;
 		if (!_glinfo.isGLES2) {
 			m_part +=
-				"  writeDepth(); \n"
+				"  highp float fragDepth = writeDepth();	\n"
 			;
 		}
 		m_part +=
@@ -1146,7 +1146,7 @@ public:
 		;
 		if (!_glinfo.isGLES2) {
 			m_part +=
-				"  writeDepth(); \n"
+				"  highp float fragDepth = writeDepth(); \n"
 			;
 		}
 		m_part +=
@@ -1316,8 +1316,8 @@ public:
 	{
 		if (config.frameBufferEmulation.N64DepthCompare != 0) {
 			m_part =
-				"  if (uRenderTarget != 0) { if (!depth_render(fragColor.r)) discard; } \n"
-				"  else if (!depth_compare()) discard; \n"
+				"  if (uRenderTarget != 0) { if (!depth_render(fragColor.r, fragDepth)) discard; } \n"
+				"  else if (!depth_compare(fragDepth)) discard; \n"
 			;
 		}
 	}
@@ -1333,10 +1333,11 @@ public:
 				"  if (uRenderTarget != 0) {					\n"
 				"    if (uRenderTarget > 1) {					\n"
 				"      ivec2 coord = ivec2(gl_FragCoord.xy);	\n"
-				"      if (gl_FragDepth >= texelFetch(uDepthTex, coord, 0).r) discard;	\n"
+				"      if (fragDepth >= texelFetch(uDepthTex, coord, 0).r) discard;	\n"
 				"    }											\n"
-				"    gl_FragDepth = fragColor.r;				\n"
+				"    fragDepth = fragColor.r;				\n"
 				"  }											\n"
+				"  gl_FragDepth = fragDepth;	\n"
 			;
 		}
 	}
@@ -1436,53 +1437,54 @@ public:
 				config.frameBufferEmulation.N64DepthCompare == 0) {
 				// Dummy write depth
 				m_part =
-					"void writeDepth()	    \n"
+					"highp float writeDepth()	    \n"
 					"{						\n"
+					"  return 0.0;	\n"
 					"}						\n"
 				;
 			} else {
 				if (_glinfo.imageTextures && (config.generalEmulation.hacks & hack_RE2) != 0) {
 					m_part =
 						"layout(binding = 0, r32ui) highp uniform readonly uimage2D uZlutImage;\n"
-						"void writeDepth()						        													\n"
+						"highp float writeDepth()						        													\n"
 						"{																									\n"
 						;
 					if (_glinfo.isGLESX && config.frameBufferEmulation.N64DepthCompare == 0) {
 						m_part +=
 							"  highp float z_value = vZCoord * gl_FragCoord.w;	\n"
 							"  if (uClampMode == 1 && (z_value > 1.0)) discard;	\n"
-							"  gl_FragDepth = clamp((z_value - uPolygonOffset) * uDepthScale.s + uDepthScale.t, 0.0, 1.0);	\n"
+							"  highp float FragDepth = clamp((z_value - uPolygonOffset) * uDepthScale.s + uDepthScale.t, 0.0, 1.0);	\n"
 							;
 					} else {
 						m_part +=
-							"  gl_FragDepth = clamp((gl_FragCoord.z * 2.0 - 1.0) * uDepthScale.s + uDepthScale.t, 0.0, 1.0);	\n"
+							"  highp float FragDepth = clamp((gl_FragCoord.z * 2.0 - 1.0) * uDepthScale.s + uDepthScale.t, 0.0, 1.0);	\n"
 						;
 					}
 					m_part +=
-						"  highp int iZ = gl_FragDepth > 0.999 ? 262143 : int(floor(gl_FragDepth * 262143.0));				\n"
+						"  highp int iZ = FragDepth > 0.999 ? 262143 : int(floor(FragDepth * 262143.0));				\n"
 						"  mediump int y0 = clamp(iZ/512, 0, 511);															\n"
 						"  mediump int x0 = iZ - 512*y0;																	\n"
 						"  highp uint iN64z = imageLoad(uZlutImage,ivec2(x0,y0)).r;											\n"
-						"  gl_FragDepth = clamp(float(iN64z)/65532.0, 0.0, 1.0);											\n"
+						"  return clamp(float(iN64z)/65532.0, 0.0, 1.0);											\n"
 						"}																									\n"
 						;
 				} else {
 					if (_glinfo.isGLESX && config.frameBufferEmulation.N64DepthCompare == 0) {
 						 m_part =
-							"void writeDepth()                                                                                                                                      \n"
+							"highp float writeDepth()                                                                                                                                      \n"
 							"{                                                                                                                                                                              \n"
 							"  highp float z_value = vZCoord * gl_FragCoord.w;      \n"
 							"  if (uClampMode == 1 && (z_value > 1.0)) discard;     \n"
 							"  highp float depth = uDepthSource == 0 ? (z_value - uPolygonOffset) : uPrimDepth;     \n"
-							"  gl_FragDepth = clamp(depth * uDepthScale.s + uDepthScale.t, 0.0, 1.0);                               \n"
+							"  return clamp(depth * uDepthScale.s + uDepthScale.t, 0.0, 1.0);                               \n"
 							"}                                                                                                                                                                              \n"
 							;
 					} else {
 						m_part =
-							"void writeDepth()						        										\n"
+							"highp float writeDepth()						        										\n"
 							"{																						\n"
 							"  highp float depth = uDepthSource == 0 ? (gl_FragCoord.z * 2.0 - 1.0) : uPrimDepth;	\n"
-							"  gl_FragDepth = clamp(depth * uDepthScale.s + uDepthScale.t, 0.0, 1.0);				\n"
+							"  return clamp(depth * uDepthScale.s + uDepthScale.t, 0.0, 1.0);				\n"
 							"}																						\n"
 							;
 					}
@@ -1883,18 +1885,17 @@ public:
 				"uniform lowp int uDepthMode;							\n"
 				"uniform lowp int uEnableDepthUpdate;					\n"
 				"uniform mediump float uDeltaZ;							\n"
-				"bool depth_compare()									\n"
+				"bool depth_compare(highp float curZ)									\n"
 				"{														\n"
 				"  ivec2 coord = ivec2(gl_FragCoord.xy);				\n"
 				"  highp vec4 depthZ = imageLoad(uDepthImageZ,coord);	\n"
 				"  highp vec4 depthDeltaZ = imageLoad(uDepthImageDeltaZ,coord);\n"
 				"  highp float bufZ = depthZ.r;							\n"
-				"  highp float curZ = gl_FragDepth;						\n"
 				"  highp float dz, dzMin;								\n"
 				"  if (uDepthSource == 1) {								\n"
 				"     dzMin = dz = uDeltaZ;								\n"
 				"  } else {												\n"
-				"    dz = 4.0*fwidth(gl_FragDepth);						\n"
+				"    dz = 4.0*fwidth(curZ);						\n"
 				"    dzMin = min(dz, depthDeltaZ.r);					\n"
 				"  }													\n"
 				"  bool bInfront = curZ < bufZ;							\n"
@@ -1918,7 +1919,7 @@ public:
 				"       break;											\n"
 				"  }													\n"
 				"  if (uEnableDepthUpdate != 0  && bRes) {				\n"
-				"    highp vec4 depthOutZ = vec4(gl_FragDepth, 1.0, 1.0, 1.0); \n"
+				"    highp vec4 depthOutZ = vec4(curZ, 1.0, 1.0, 1.0); \n"
 				"    highp vec4 depthOutDeltaZ = vec4(dz, 1.0, 1.0, 1.0); \n"
 				"    imageStore(uDepthImageZ, coord, depthOutZ);		\n"
 				"    imageStore(uDepthImageDeltaZ, coord, depthOutDeltaZ);\n"
@@ -1942,13 +1943,12 @@ public:
 	{
 		if (config.frameBufferEmulation.N64DepthCompare != 0) {
 			m_part =
-				"bool depth_render(highp float Z)						\n"
+				"bool depth_render(highp float Z, highp float curZ)						\n"
 				"{														\n"
 				"  ivec2 coord = ivec2(gl_FragCoord.xy);				\n"
 				"  if (uEnableDepthCompare != 0) {						\n"
 				"    highp vec4 depthZ = imageLoad(uDepthImageZ,coord);	\n"
 				"    highp float bufZ = depthZ.r;						\n"
-				"    highp float curZ = gl_FragDepth;					\n"
 				"    if (curZ >= bufZ) return false;					\n"
 				"  }													\n"
 				"  highp vec4 depthOutZ = vec4(Z, 1.0, 1.0, 1.0);		\n"
