@@ -100,7 +100,11 @@ private:
 	u32 m_hits, m_misses;
 	s32 m_curUnpackAlignment;
 	bool m_toggleDumpTex;
+#ifdef VC
+	const size_t m_maxCacheSize = 3500;
+#else
 	const size_t m_maxCacheSize = 8000;
+#endif
 };
 
 void getTextureShiftScale(u32 tile, const TextureCache & cache, f32 & shiftScaleS, f32 & shiftScaleT);
