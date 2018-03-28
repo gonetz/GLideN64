@@ -64,11 +64,6 @@ void GLInfo::init() {
 	bufferStorage = (!isGLESX && (numericVersion >= 44)) || Utils::isExtensionSupported(*this, "GL_ARB_buffer_storage") ||
 			Utils::isExtensionSupported(*this, "GL_EXT_buffer_storage");
 
-#ifdef EGL
-	if (isGLESX && bufferStorage)
-		g_glBufferStorage = (PFNGLBUFFERSTORAGEPROC) eglGetProcAddress("glBufferStorageEXT");
-#endif
-
 	texStorage = (isGLESX && (numericVersion >= 30)) || (!isGLESX && numericVersion >= 42) ||
 			Utils::isExtensionSupported(*this, "GL_ARB_texture_storage");
 
@@ -77,12 +72,21 @@ void GLInfo::init() {
 		const char * strGetProgramBinary = isGLESX
 			? "GL_OES_get_program_binary"
 			: "GL_ARB_get_program_binary";
-		if (Utils::isExtensionSupported(*this, strGetProgramBinary)) {
+		if ((isGLESX && numericVersion >= 30) || (!isGLESX && numericVersion >= 41) || Utils::isExtensionSupported(*this, strGetProgramBinary)) {
 			GLint numBinaryFormats = 0;
 			glGetIntegerv(GL_NUM_PROGRAM_BINARY_FORMATS, &numBinaryFormats);
 			shaderStorage = numBinaryFormats > 0;
 		}
 	}
+
+#ifdef EGL
+	if (isGLESX && bufferStorage)
+		g_glBufferStorage = (PFNGLBUFFERSTORAGEPROC) eglGetProcAddress("glBufferStorageEXT");
+	if (isGLES2 && shaderStorage) {
+		g_glProgramBinary = (PFNGLPROGRAMBINARYPROC) eglGetProcAddress("glProgramBinaryOES");
+		g_glGetProgramBinary = (PFNGLGETPROGRAMBINARYPROC) eglGetProcAddress("glGetProgramBinaryOES");
+	}
+#endif
 #ifndef OS_ANDROID
 	if (isGLES2 && config.frameBufferEmulation.copyToRDRAM > Config::ctSync) {
 		config.frameBufferEmulation.copyToRDRAM = Config::ctDisable;

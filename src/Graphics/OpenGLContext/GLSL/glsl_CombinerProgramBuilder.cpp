@@ -2238,8 +2238,10 @@ graphics::CombinerProgram * CombinerProgramBuilder::buildCombinerProgram(Combine
 	else
 		glAttachShader(program, bUseTextures ? m_vertexShaderTexturedTriangle : m_vertexShaderTriangle);
 	glAttachShader(program, fragmentShader);
-	if (CombinerInfo::get().isShaderCacheSupported())
-		glProgramParameteri(program, GL_PROGRAM_BINARY_RETRIEVABLE_HINT, GL_TRUE);
+	if (CombinerInfo::get().isShaderCacheSupported()) {
+		if (IS_GL_FUNCTION_VALID(glProgramParameteri))
+			glProgramParameteri(program, GL_PROGRAM_BINARY_RETRIEVABLE_HINT, GL_TRUE);
+	}
 	glLinkProgram(program);
 	assert(Utils::checkProgramLinkStatus(program));
 	glDeleteShader(fragmentShader);
