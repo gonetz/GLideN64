@@ -43,8 +43,8 @@ private:
 	static boolean RiceCRC32_CI8(const uint8* src, int width, int height, int rowStride,
 						  uint32* crc32, uint32* cimax);
 public:
-	static int sizeofTx(int width, int height, uint16 format);
-	static uint32 checksumTx(uint8 *data, int width, int height, uint16 format);
+	static int sizeofTx(int width, int height, ColorFormat format);
+	static uint32 checksumTx(uint8 *data, int width, int height, ColorFormat format);
 #if 0 /* unused */
 	static uint32 chkAlpha(uint32* src, int width, int height);
 #endif
@@ -73,6 +73,6 @@ public:
 	uint32 *getThreadBuf(uint32 threadIdx, uint32 num, uint32 size);
 };
 
-void setTextureFormat(uint16 internalFormat, GHQTexInfo * info);
+void setTextureFormat(ColorFormat internalFormat, GHQTexInfo * info);
 
 #endif /* __TXUTIL_H__ */

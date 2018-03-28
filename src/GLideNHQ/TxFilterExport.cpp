@@ -59,7 +59,7 @@ txfilter_filter(uint8 *src, int srcwidth, int srcheight, uint16 srcformat,
 		 uint64 g64crc, GHQTexInfo *info)
 {
   if (txFilter)
-	return txFilter->filter(src, srcwidth, srcheight, srcformat,
+	return txFilter->filter(src, srcwidth, srcheight, ColorFormat(u32(srcformat)),
 							   g64crc, info);
 
   return 0;
@@ -87,7 +87,7 @@ TAPI boolean TAPIENTRY
 txfilter_dmptx(uint8 *src, int width, int height, int rowStridePixel, uint16 gfmt, uint16 n64fmt, uint64 r_crc64)
 {
   if (txFilter)
-	return txFilter->dmptx(src, width, height, rowStridePixel, gfmt, n64fmt, r_crc64);
+	return txFilter->dmptx(src, width, height, rowStridePixel, ColorFormat(u32(gfmt)), n64fmt, r_crc64);
 
   return 0;
 }

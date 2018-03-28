@@ -13,6 +13,7 @@ namespace graphics {
 	}
 
 	namespace internalcolorFormat {
+	        extern InternalColorFormatParam NOCOLOR;
 		extern InternalColorFormatParam RGB8;
 		extern InternalColorFormatParam RGBA8;
 		extern InternalColorFormatParam RGBA4;

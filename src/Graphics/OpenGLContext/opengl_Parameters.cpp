@@ -13,6 +13,7 @@ namespace graphics {
 	}
 
 	namespace internalcolorFormat {
+		InternalColorFormatParam NOCOLOR(0U);
 		InternalColorFormatParam RGB8(GL_RGB8);
 		InternalColorFormatParam RGBA8(GL_RGBA8);
 		InternalColorFormatParam RGBA4(GL_RGBA4);
