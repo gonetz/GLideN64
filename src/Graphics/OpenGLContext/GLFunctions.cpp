@@ -37,14 +37,25 @@ typedef struct __GLXFBConfigRec *GLXFBConfig;
 
 static void* AppleGLGetProcAddress (const char *name)
 {
-    static void* image = NULL;
-    if (NULL == image)
-    image = dlopen("/System/Library/Frameworks/OpenGL.framework/Versions/Current/OpenGL", RTLD_LAZY);
+	static void* image = NULL;
+	if (NULL == image)
+		image = dlopen("/System/Library/Frameworks/OpenGL.framework/Versions/Current/OpenGL", RTLD_LAZY);
 
-    return (image ? dlsym(image, name) : NULL);
+	return (image ? dlsym(image, name) : NULL);
 }
 #define glGetProcAddress AppleGLGetProcAddress
 #define GL_GET_PROC_ADR(proc_type, proc_name) g_##proc_name = (proc_type) glGetProcAddress(#proc_name)
+
+#elif defined(OS_IOS)
+#include <dlfcn.h>
+
+static void* IOSGLGetProcAddress (const char *name)
+{
+    return dlsym(RTLD_DEFAULT, name);
+}
+
+#define glGetProcAddress IOSGLGetProcAddress
+#define GL_GET_PROC_ADR(proc_type, proc_name) g_##proc_name = (proc_type)glGetProcAddress(#proc_name)
 
 #endif
 
@@ -53,7 +64,7 @@ static void* AppleGLGetProcAddress (const char *name)
 #ifdef OS_WINDOWS
 PFNGLACTIVETEXTUREPROC g_glActiveTexture;
 PFNGLBLENDCOLORPROC g_glBlendColor;
-#elif defined(EGL)
+#elif defined(EGL) || defined(OS_IOS)
 PFNGLBLENDFUNCPROC g_glBlendFunc;
 PFNGLPIXELSTOREIPROC g_glPixelStorei;
 PFNGLCLEARCOLORPROC g_glClearColor;
@@ -192,7 +203,7 @@ void initGLFunctions()
 #ifdef OS_WINDOWS
 	GL_GET_PROC_ADR(PFNGLACTIVETEXTUREPROC, glActiveTexture);
 	GL_GET_PROC_ADR(PFNGLBLENDCOLORPROC, glBlendColor);
-#elif defined(EGL)
+#elif defined(EGL) || defined(OS_IOS)
 	GL_GET_PROC_ADR(PFNGLBLENDFUNCPROC, glBlendFunc);
 	GL_GET_PROC_ADR(PFNGLPIXELSTOREIPROC, glPixelStorei);
 	GL_GET_PROC_ADR(PFNGLCLEARCOLORPROC, glClearColor);
