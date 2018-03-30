@@ -40,7 +40,7 @@ void Config::resetToDefaults()
 	generalEmulation.enableNativeResTexrects = 0;
 	generalEmulation.enableLegacyBlending = 0;
 	generalEmulation.hacks = 0;
-#ifdef OS_ANDROID
+#if defined(OS_ANDROID) || defined(OS_IOS)
 	generalEmulation.enableFragmentDepthWrite = 0;
 	generalEmulation.enableBlitScreenWorkaround = 0;
 	generalEmulation.forcePolygonOffset = 0;
