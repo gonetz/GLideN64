@@ -722,15 +722,75 @@ bool GraphicsDrawer::_canDraw() const
 	return config.frameBufferEmulation.enable == 0 || frameBufferList().getCurrent() != nullptr;
 }
 
-void GraphicsDrawer::drawTriangles()
+void GraphicsDrawer::_drawTrianglesStereo() {
+    for (int i=0; i<2; i++) {
+        const u32 bufferWidth = VI.width;
+        const u32 bufferHeight = VI_GetMaxBufferHeight(bufferWidth);
+        const f32 viewportScale = DisplayWindow::get().getScaleX();
+
+        const s32 size = bufferWidth / 2;
+        const bool left_eye = (i==0);
+        const s32 start = (left_eye? 0 : size);
+        gfxContext.setViewport((s32) (start * viewportScale), 0, (s32) (size * viewportScale), (s32) (bufferHeight * viewportScale));
+        gSP.changed &= ~CHANGED_VIEWPORT;
+
+        gDPScissor orig_scissor = gDP.scissor;
+
+        gDP.scissor.lrx/=2;
+        gDP.scissor.ulx/=2;
+        gDP.scissor.ulx+=start;
+        gDP.scissor.lrx+=start;
+        gSP.changed |= CHANGED_SCISSOR;
+        updateScissor(frameBufferList().getCurrent());
+
+        //VR_CURRENTLY_RENDERING = true;
+        gSPCombineMatrices(1);
+
+        std::array<SPVertex, VERTBUFF_SIZE> old_verts = triangles.vertices;
+        u32 num = triangles.num;
+        int max = triangles.maxElement;
+
+        for (SPVertex& vtx : triangles.vertices) {
+            vtx.x = vtx.orig_x;
+            vtx.y = vtx.orig_y;
+            vtx.z = vtx.orig_z;
+            vtx.w = vtx.orig_w;
+        }
+
+        config.stereo.enabled = false;
+        for (u32 j=0; j<triangles.vertices.size(); ++j) {
+            gSPProcessVertex<1>(0, &triangles.vertices[j]);
+            triangles.vertices[j].x *= 2;
+        }
+        config.stereo.enabled = true;
+
+        _drawTrianglesMono();
+
+        if (i == 0) {
+            triangles.num = num;
+            triangles.maxElement = max;
+            triangles.vertices = std::move(old_verts);
+        }
+
+        gDP.scissor = orig_scissor;
+    }
+
+    // Hack so that we can avoid clipping next frame
+    // See gSPCombineMatrices
+//    VR_CURRENTLY_RENDERING = false;
+    gSPCombineMatrices(1);
+
+    gSP.changed |= CHANGED_SCISSOR;
+    updateScissor(frameBufferList().getCurrent());
+}
+
+void GraphicsDrawer::_drawTrianglesMono()
 {
 	if (triangles.num == 0 || !_canDraw()) {
 		triangles.num = 0;
 		triangles.maxElement = 0;
 		return;
 	}
-
-	if (config.stereo.enabled) return;
 
 	_prepareDrawTriangle();
 
@@ -759,6 +819,12 @@ void GraphicsDrawer::drawTriangles()
 
 	triangles.num = 0;
 	triangles.maxElement = 0;
+}
+
+void GraphicsDrawer::drawTriangles()
+{
+    if (config.stereo.enabled) _drawTrianglesStereo();
+    else _drawTrianglesMono();
 }
 
 void GraphicsDrawer::drawScreenSpaceTriangle(u32 _numVtx)

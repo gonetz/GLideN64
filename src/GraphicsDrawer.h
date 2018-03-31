@@ -155,6 +155,16 @@ public:
 
 	bool isTexrectDrawerMode() const { return !m_texrectDrawer.isEmpty(); }
 
+//    // Save a vertex before calling gSPProcessVertex, so that
+//    // stereo code can re-process it for the right eye
+//    void saveVertexBeforeProcessing(u32 v, SPVertex * vertices) {
+//        if (vertices != triangles.vertices.data()) return;
+//        if (!unProcessedVertices) {
+//            unProcessedVertices.reset(new std::array<SPVertex, VERTBUFF_SIZE>);
+//        }
+//        (*unProcessedVertices)[v] = triangles.vertices[v];
+//    }
+
 private:
 	friend class DisplayWindow;
 	friend TexrectDrawer;
@@ -169,6 +179,9 @@ private:
 	void _destroyData();
 
 	void _setSpecialTexrect() const;
+
+	void _drawTrianglesStereo();
+	void _drawTrianglesMono();
 
 	void _setBlendMode() const;
 	bool _setUnsupportedBlendMode() const;
@@ -197,6 +210,10 @@ private:
 		u32 num = 0;
 		int maxElement = 0;
 	} triangles;
+
+    // Store for unprocessed vertices so that stereoscopic rendering code can
+    //  gSPProcessVertex them again
+//    std::unique_ptr<std::array<SPVertex, VERTBUFF_SIZE>> unProcessedVertices;
 
 	std::vector<SPVertex> m_dmaVertices;
 	size_t m_dmaVerticesNum;

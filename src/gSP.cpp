@@ -24,6 +24,7 @@
 #include <Graphics/Context.h>
 #include <Graphics/Parameters.h>
 #include "DisplayWindow.h"
+#include "GraphicsDrawer.h"
 
 using namespace std;
 using namespace graphics;
@@ -781,7 +782,19 @@ void gSPProcessVertex(u32 v, SPVertex * spVtx)
 		vPos[i][2] = vtx.z;
 		vPos[i][3] = 0.0f;
 		vtx.modify = 0;
+
+        if (config.stereo.enabled) {
+            vtx.orig_x = vtx.x;
+            vtx.orig_y = vtx.y;
+            vtx.orig_z = vtx.z;
+            vtx.orig_w = vtx.w;
+        }
 	}
+
+//	if (config.stereo.enabled) {
+//		// Preserve the original vertex so it can be called for each eye manually
+//		dwnd().getDrawer().saveVertexBeforeProcessing(v, spVtx);
+//	}
 
 	gSPTransformVertex<VNUM>(v, spVtx, gSP.matrix.combined );
 
