@@ -5,7 +5,7 @@
 #define glGetProcAddress wglGetProcAddress
 #define GL_GET_PROC_ADR(proc_type, proc_name) g_##proc_name = (proc_type) glGetProcAddress(#proc_name)
 
-#elif defined(ODROID) || defined(VC)
+#elif defined(VERO4K) || defined(ODROID) || defined(VC)
 
 #define GL_GET_PROC_ADR(proc_type, proc_name) g_##proc_name = (proc_type) dlsym(gles2so, #proc_name);
 
@@ -186,6 +186,8 @@ void initGLFunctions()
 	void *gles2so = dlopen("/opt/vc/lib/libbrcmGLESv2.so", RTLD_NOW);
 #elif defined(ODROID)
 	void *gles2so = dlopen("/usr/lib/arm-linux-gnueabihf/libGLESv2.so", RTLD_NOW);
+#elif defined(VERO4K)
+       void *gles2so = dlopen("/opt/vero3/lib/libGLESv2.so", RTLD_NOW);
 #endif
 #ifdef OS_WINDOWS
 	GL_GET_PROC_ADR(PFNGLACTIVETEXTUREPROC, glActiveTexture);
