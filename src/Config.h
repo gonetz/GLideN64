@@ -173,6 +173,10 @@ struct Config
 		u32 dumpMode;
 	} debug;
 
+	struct {
+		bool enabled;
+	} stereo;
+
 	void resetToDefaults();
 };
 

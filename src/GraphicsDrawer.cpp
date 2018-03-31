@@ -730,6 +730,8 @@ void GraphicsDrawer::drawTriangles()
 		return;
 	}
 
+	if (config.stereo.enabled) return;
+
 	_prepareDrawTriangle();
 
 	Context::DrawTriangleParameters triParams;
