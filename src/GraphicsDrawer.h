@@ -173,8 +173,10 @@ private:
 
 	void _setSpecialTexrect() const;
 
-	void _drawTrianglesStereo();
+    void _drawStereo(std::function<void(bool)> callback);
+	void _drawTrianglesStereo(bool);
 	void _drawTrianglesMono();
+	void _drawTexturedRectMono(const TexturedRectParams & _params, bool left_eye);
 
 	void _setBlendMode() const;
 	bool _setUnsupportedBlendMode() const;
