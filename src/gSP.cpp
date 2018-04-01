@@ -65,7 +65,7 @@ void _gSPCombineMatrices(f32 x_offset = 0)
 	MultMatrix(trans_mat, gSP.matrix.modelView[gSP.matrix.modelViewi], res_mat);
 	MultMatrix(gSP.matrix.projection, res_mat, gSP.matrix.combined);
 
-    if (config.stereo.enabled) {
+    if (config.stereo.enabled && (x_offset > 0.1f || x_offset < -0.1f)) {
         // Adjust aspect ratio
         float scale[4][4] = {{2,0,0,0},{0,1,0,0},{0,0,1,0},{0,0,0,1}};
         MultMatrix(scale, gSP.matrix.combined, res_mat);

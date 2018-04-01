@@ -767,7 +767,7 @@ void GraphicsDrawer::_drawStereo(std::function<void(bool)> callback) {
 }
 
 void GraphicsDrawer::_drawTrianglesStereo(bool left_eye) {
-    gSPCombineMatrices(1, (left_eye? 100 : -100));
+    gSPCombineMatrices(1, (left_eye? config.stereo.eyedistance : -config.stereo.eyedistance));
 
     std::array<SPVertex, VERTBUFF_SIZE> old_verts = triangles.vertices;
     u32 num = triangles.num;

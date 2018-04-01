@@ -5,6 +5,7 @@
 #include <string.h>
 #include <osal_files.h>
 #include <algorithm>
+#include <Config.h>
 
 #include "../Textures.h"
 #include "../Config.h"
@@ -95,6 +96,8 @@ bool Config_SetDefault()
 	res = ConfigSetDefaultFloat(g_configVideoGliden64, "PolygonOffsetUnits", config.generalEmulation.polygonOffsetUnits, "Is multiplied by an implementation-specific value to create a constant depth offset");
 	assert(res == M64ERR_SUCCESS);
 	res = ConfigSetDefaultBool(g_configVideoGliden64, "EnableStereo", config.stereo.enabled, "Enable to render split screen stereo");
+	assert(res == M64ERR_SUCCESS);
+	res = ConfigSetDefaultFloat(g_configVideoGliden64, "EyeDistance", config.stereo.eyedistance, "Distance between eyes when stereo rendering is enabled");
 	assert(res == M64ERR_SUCCESS);
 #endif
 	//#Frame Buffer Settings:"
@@ -343,6 +346,7 @@ void Config_LoadConfig()
 	config.generalEmulation.polygonOffsetFactor = ConfigGetParamFloat(g_configVideoGliden64, "PolygonOffsetFactor");
 	config.generalEmulation.polygonOffsetUnits = ConfigGetParamFloat(g_configVideoGliden64, "PolygonOffsetUnits");
 	config.stereo.enabled = ConfigGetParamBool(g_configVideoGliden64, "EnableStereo");
+	config.stereo.eyedistance = ConfigGetParamFloat(g_configVideoGliden64, "EyeDistance");
 #endif
 	//#Frame Buffer Settings:"
 	config.frameBufferEmulation.enable = ConfigGetParamBool(g_configVideoGliden64, "EnableFBEmulation");

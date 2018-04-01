@@ -115,7 +115,8 @@ void Config::resetToDefaults()
 	onScreenDisplay.pos = posBottomLeft;
 
 	debug.dumpMode = 0;
-	stereo.enabled = 0;
+	stereo.enabled = false;
+	stereo.eyedistance = 0;
 }
 
 bool isHWLightingAllowed()
