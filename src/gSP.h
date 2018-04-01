@@ -215,7 +215,7 @@ void gSPSetVertexNormaleBase( u32 base );
 template <u32 VNUM>
 void gSPProcessVertex(u32 v, SPVertex * spVtx);
 void gSPCoordMod(u32 _w0, u32 _w1);
-void gSPCombineMatrices(u32 _mode);
+void gSPCombineMatrices(u32 _mode, f32 x_offset = 0);
 
 void gSPTriangle(s32 v0, s32 v1, s32 v2);
 void gSP1Triangle(s32 v0, s32 v1, s32 v2);

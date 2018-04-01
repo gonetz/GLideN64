@@ -9,6 +9,7 @@
 #include "TexrectDrawer.h"
 #include "Graphics/ObjectHandle.h"
 #include "Graphics/Parameter.h"
+#include "Config.h"
 
 namespace graphics {
 	class CombinerProgram;
@@ -129,7 +130,7 @@ public:
 
 	bool isClipped(s32 _v0, s32 _v1, s32 _v2) const
 	{
-		return (triangles.vertices[_v0].clip & triangles.vertices[_v1].clip & triangles.vertices[_v2].clip) != 0;
+		return !config.stereo.enabled && (triangles.vertices[_v0].clip & triangles.vertices[_v1].clip & triangles.vertices[_v2].clip) != 0;
 	}
 
 	bool isImageTexturesSupported() const { return m_bImageTexture; }
@@ -155,15 +156,7 @@ public:
 
 	bool isTexrectDrawerMode() const { return !m_texrectDrawer.isEmpty(); }
 
-//    // Save a vertex before calling gSPProcessVertex, so that
-//    // stereo code can re-process it for the right eye
-//    void saveVertexBeforeProcessing(u32 v, SPVertex * vertices) {
-//        if (vertices != triangles.vertices.data()) return;
-//        if (!unProcessedVertices) {
-//            unProcessedVertices.reset(new std::array<SPVertex, VERTBUFF_SIZE>);
-//        }
-//        (*unProcessedVertices)[v] = triangles.vertices[v];
-//    }
+    void onNewFrame() { m_has_cleared_screen = false; }
 
 private:
 	friend class DisplayWindow;
@@ -211,9 +204,7 @@ private:
 		int maxElement = 0;
 	} triangles;
 
-    // Store for unprocessed vertices so that stereoscopic rendering code can
-    //  gSPProcessVertex them again
-//    std::unique_ptr<std::array<SPVertex, VERTBUFF_SIZE>> unProcessedVertices;
+    bool m_has_cleared_screen = false;
 
 	std::vector<SPVertex> m_dmaVertices;
 	size_t m_dmaVerticesNum;

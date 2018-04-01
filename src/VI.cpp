@@ -100,6 +100,7 @@ void VI_UpdateSize()
 
 void VI_UpdateScreen()
 {
+	dwnd().getDrawer().onNewFrame();
 	if (VI.lastOrigin == -1) // Workaround for Mupen64Plus issue with initialization
 		gfxContext.isError();
 

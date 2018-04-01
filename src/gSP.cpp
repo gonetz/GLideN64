@@ -58,16 +58,27 @@ void gSPFlushTriangles()
 }
 
 static
-void _gSPCombineMatrices()
+void _gSPCombineMatrices(f32 x_offset = 0)
 {
-	MultMatrix(gSP.matrix.projection, gSP.matrix.modelView[gSP.matrix.modelViewi], gSP.matrix.combined);
+    float trans_mat[4][4] = {{1,0,0,0}, {0,1,0,0}, {0,0,1,0}, {x_offset,0,0,1}};
+    float res_mat[4][4] = {{1,0,0,0}, {0,1,0,0}, {0,0,1,0}, {0,0,0,1}};
+	MultMatrix(trans_mat, gSP.matrix.modelView[gSP.matrix.modelViewi], res_mat);
+	MultMatrix(gSP.matrix.projection, res_mat, gSP.matrix.combined);
+
+    if (config.stereo.enabled) {
+        // Adjust aspect ratio
+        float scale[4][4] = {{2,0,0,0},{0,1,0,0},{0,0,1,0},{0,0,0,1}};
+        MultMatrix(scale, gSP.matrix.combined, res_mat);
+        CopyMatrix(gSP.matrix.combined, res_mat);
+   }
+
 	gSP.changed &= ~CHANGED_MATRIX;
 }
 
-void gSPCombineMatrices(u32 _mode)
+void gSPCombineMatrices(u32 _mode, f32 x_offset)
 {
 	if (_mode == 1)
-		_gSPCombineMatrices();
+		_gSPCombineMatrices(x_offset);
 	else
 		DebugMsg(DEBUG_NORMAL | DEBUG_ERROR, "// Unknown gSPCombineMatrices mode: %u\n", _mode);
 	DebugMsg(DEBUG_NORMAL, "gSPCombineMatrices();\n");

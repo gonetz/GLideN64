@@ -18,7 +18,6 @@
 #include "FrameBuffer.h"
 #include "DepthBuffer.h"
 #include "FrameBufferInfo.h"
-#include "Config.h"
 #include "Debugger.h"
 #include "RSP.h"
 #include "RDP.h"
@@ -723,6 +722,16 @@ bool GraphicsDrawer::_canDraw() const
 }
 
 void GraphicsDrawer::_drawTrianglesStereo() {
+    if (!m_has_cleared_screen) {
+        // Hack to work around lack of clearing in-game, exposed
+        //  by stereo viewport
+        f32 fillColor[4];
+        gDPGetFillColor(fillColor);
+        clearColorBuffer(fillColor);
+        gfxContext.clearDepthBuffer();
+        m_has_cleared_screen = true;
+    }
+
     for (int i=0; i<2; i++) {
         const u32 bufferWidth = VI.width;
         const u32 bufferHeight = VI_GetMaxBufferHeight(bufferWidth);
@@ -743,8 +752,7 @@ void GraphicsDrawer::_drawTrianglesStereo() {
         gSP.changed |= CHANGED_SCISSOR;
         updateScissor(frameBufferList().getCurrent());
 
-        //VR_CURRENTLY_RENDERING = true;
-        gSPCombineMatrices(1);
+        gSPCombineMatrices(1, (left_eye? 100 : -100));
 
         std::array<SPVertex, VERTBUFF_SIZE> old_verts = triangles.vertices;
         u32 num = triangles.num;
@@ -757,12 +765,9 @@ void GraphicsDrawer::_drawTrianglesStereo() {
             vtx.w = vtx.orig_w;
         }
 
-        config.stereo.enabled = false;
         for (u32 j=0; j<triangles.vertices.size(); ++j) {
             gSPProcessVertex<1>(0, &triangles.vertices[j]);
-            triangles.vertices[j].x *= 2;
         }
-        config.stereo.enabled = true;
 
         _drawTrianglesMono();
 
@@ -777,7 +782,6 @@ void GraphicsDrawer::_drawTrianglesStereo() {
 
     // Hack so that we can avoid clipping next frame
     // See gSPCombineMatrices
-//    VR_CURRENTLY_RENDERING = false;
     gSPCombineMatrices(1);
 
     gSP.changed |= CHANGED_SCISSOR;
