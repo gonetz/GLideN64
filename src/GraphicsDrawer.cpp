@@ -774,19 +774,16 @@ void GraphicsDrawer::_drawTrianglesStereo(bool left_eye) {
     int max = triangles.maxElement;
 
     for (SPVertex& vtx : triangles.vertices) {
-        vtx.x = vtx.orig_x;
-        vtx.y = vtx.orig_y;
-        vtx.z = vtx.orig_z;
-        vtx.w = vtx.orig_w;
-    }
-
-    {
-        u32 j=0;
-        for (; j+4<triangles.vertices.size(); j+=4) {
-            gSPProcessVertex<4>(j, triangles.vertices.data());
-        }
-        for (; j<triangles.vertices.size(); ++j) {
-            gSPProcessVertex<1>(j, triangles.vertices.data());
+        if (left_eye) {
+            vtx.x = vtx.left_x;
+            vtx.y = vtx.left_y;
+            vtx.z = vtx.left_z;
+            vtx.w = vtx.left_w;
+        } else {
+            vtx.x = vtx.right_x;
+            vtx.y = vtx.right_y;
+            vtx.z = vtx.right_z;
+            vtx.w = vtx.right_w;
         }
     }
 

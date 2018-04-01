@@ -45,7 +45,8 @@ struct SPVertex
 	u8 clip;
 	s16 flag;
 
-    f32 orig_x, orig_y, orig_z, orig_w;
+    f32 left_x, left_y, left_z, left_w;
+    f32 right_x, right_y, right_z, right_w;
 };
 
 struct gSPInfo
