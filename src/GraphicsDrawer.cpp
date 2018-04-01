@@ -765,8 +765,14 @@ void GraphicsDrawer::_drawTrianglesStereo() {
             vtx.w = vtx.orig_w;
         }
 
-        for (u32 j=0; j<triangles.vertices.size(); ++j) {
-            gSPProcessVertex<1>(0, &triangles.vertices[j]);
+        {
+            u32 j=0;
+            for (; j+4<triangles.vertices.size(); j+=4) {
+                gSPProcessVertex<4>(j, triangles.vertices.data());
+            }
+            for (; j<triangles.vertices.size(); ++j) {
+                gSPProcessVertex<1>(j, triangles.vertices.data());
+            }
         }
 
         _drawTrianglesMono();

@@ -802,11 +802,6 @@ void gSPProcessVertex(u32 v, SPVertex * spVtx)
         }
 	}
 
-//	if (config.stereo.enabled) {
-//		// Preserve the original vertex so it can be called for each eye manually
-//		dwnd().getDrawer().saveVertexBeforeProcessing(v, spVtx);
-//	}
-
 	gSPTransformVertex<VNUM>(v, spVtx, gSP.matrix.combined );
 
 	if (dwnd().isAdjustScreen() && (gDP.colorImage.width > VI.width * 98 / 100)) {
