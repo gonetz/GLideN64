@@ -101,4 +101,5 @@ void GLInfo::init() {
 	}
 
 	depthTexture = !isGLES2 || Utils::isExtensionSupported(*this, "GL_OES_depth_texture");
+	noPerspective = Utils::isExtensionSupported(*this, "GL_NV_shader_noperspective_interpolation");
 }
