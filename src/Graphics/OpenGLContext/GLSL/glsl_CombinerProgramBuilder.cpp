@@ -229,7 +229,8 @@ public:
 			std::stringstream ss;
 			ss << "#version " << Utils::to_string(_glinfo.majorVersion) << Utils::to_string(_glinfo.minorVersion) << "0 es " << std::endl;
 			ss << "# define IN in" << std::endl << "# define OUT out" << std::endl;
-			ss << "OUT highp float vZCoord;" << std::endl << "uniform lowp int uClampMode;" << std::endl;
+			if (_glinfo.noPerspective)
+				ss << "noperspective OUT highp float vZCoord;" << std::endl << "uniform lowp int uClampMode;" << std::endl;
 			m_part = ss.str();
 		}
 		else {
@@ -421,9 +422,9 @@ public:
 			m_part =
 				"  gl_ClipDistance[0] = gl_Position.w - gl_Position.z;	\n"
 				;
-		} else if (config.generalEmulation.enableFragmentDepthWrite != 0 && config.frameBufferEmulation.N64DepthCompare == 0) {
+		} else if (config.generalEmulation.enableFragmentDepthWrite != 0 && _glinfo.noPerspective) {
 				m_part =
-					"  vZCoord = gl_Position.z;	\n"
+					"  vZCoord = gl_Position.z / gl_Position.w;	\n"
 					"  if (uClampMode > 0)	\n"
 					"    gl_Position.z = 0.0;	\n"
 					;
@@ -863,9 +864,9 @@ public:
 			m_part =
 				"highp float writeDepth();\n";
 			;
-			if (_glinfo.isGLESX) {
+			if (_glinfo.isGLESX &&  _glinfo.noPerspective) {
 				m_part =
-					"IN highp float vZCoord;	\n"
+					"noperspective IN highp float vZCoord;	\n"
 					"uniform lowp float uPolygonOffset;	\n"
 					"uniform lowp int uClampMode;	\n"
 					+ m_part
@@ -1449,11 +1450,10 @@ public:
 						"highp float writeDepth()						        													\n"
 						"{																									\n"
 						;
-					if (_glinfo.isGLESX && config.frameBufferEmulation.N64DepthCompare == 0) {
+					if (_glinfo.isGLESX && _glinfo.noPerspective) {
 						m_part +=
-							"  highp float z_value = vZCoord * gl_FragCoord.w;	\n"
-							"  if (uClampMode == 1 && (z_value > 1.0)) discard;	\n"
-							"  highp float FragDepth = clamp((z_value - uPolygonOffset) * uDepthScale.s + uDepthScale.t, 0.0, 1.0);	\n"
+							"  if (uClampMode == 1 && (vZCoord > 1.0)) discard;	\n"
+							"  highp float FragDepth = clamp((vZCoord - uPolygonOffset) * uDepthScale.s + uDepthScale.t, 0.0, 1.0);	\n"
 							;
 					} else {
 						m_part +=
@@ -1469,13 +1469,12 @@ public:
 						"}																									\n"
 						;
 				} else {
-					if (_glinfo.isGLESX && config.frameBufferEmulation.N64DepthCompare == 0) {
+					if (_glinfo.isGLESX && _glinfo.noPerspective) {
 						 m_part =
 							"highp float writeDepth()                                                                                                                                      \n"
 							"{                                                                                                                                                                              \n"
-							"  highp float z_value = vZCoord * gl_FragCoord.w;      \n"
-							"  if (uClampMode == 1 && (z_value > 1.0)) discard;     \n"
-							"  highp float depth = uDepthSource == 0 ? (z_value - uPolygonOffset) : uPrimDepth;     \n"
+							"  if (uClampMode == 1 && (vZCoord > 1.0)) discard;     \n"
+							"  highp float depth = uDepthSource == 0 ? (vZCoord - uPolygonOffset) : uPrimDepth;     \n"
 							"  return clamp(depth * uDepthScale.s + uDepthScale.t, 0.0, 1.0);                               \n"
 							"}                                                                                                                                                                              \n"
 							;

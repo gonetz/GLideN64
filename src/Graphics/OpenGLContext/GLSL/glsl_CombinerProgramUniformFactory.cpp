@@ -971,7 +971,7 @@ void CombinerProgramUniformFactory::buildUniforms(GLuint _program,
 		config.frameBufferEmulation.N64DepthCompare != 0)
 		_uniforms.emplace_back(new URenderTarget(_program));
 
-	if (m_glInfo.isGLESX) {
+	if (m_glInfo.isGLESX && m_glInfo.noPerspective) {
 		_uniforms.emplace_back(new UClampMode(_program));
 		_uniforms.emplace_back(new UPolygonOffset(_program));
 	}

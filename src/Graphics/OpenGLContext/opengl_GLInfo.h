@@ -24,6 +24,7 @@ struct GLInfo {
 	bool shaderStorage = false;
 	bool msaa = false;
 	bool depthTexture = false;
+	bool noPerspective = false;
 	Renderer renderer = Renderer::Other;
 
 	void init();
