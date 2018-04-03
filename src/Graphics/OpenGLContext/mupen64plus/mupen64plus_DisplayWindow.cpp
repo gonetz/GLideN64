@@ -35,6 +35,7 @@ private:
 	void _changeWindow() override;
 	void _readScreen(void **_pDest, long *_pWidth, long *_pHeight) override {}
 	void _readScreen2(void * _dest, int * _width, int * _height, int _front) override;
+	graphics::ObjectHandle _getDefaultFramebuffer() override;
 };
 
 DisplayWindow & DisplayWindow::get()
@@ -214,4 +215,11 @@ void DisplayWindowMupen64plus::_readScreen2(void * _dest, int * _width, int * _h
 	}
 
 	free(pBufferData);
+}
+
+graphics::ObjectHandle DisplayWindowMupen64plus::_getDefaultFramebuffer()
+{
+	if (CoreVideo_GL_GetDefaultFramebuffer != nullptr)
+		return graphics::ObjectHandle(CoreVideo_GL_GetDefaultFramebuffer());
+	return graphics::ObjectHandle::null;
 }

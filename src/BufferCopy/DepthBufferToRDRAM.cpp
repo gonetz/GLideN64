@@ -122,7 +122,7 @@ void DepthBufferToRDRAM::init()
 	// check if everything is OK
 	assert(!gfxContext.isFramebufferError());
 	assert(!gfxContext.isError());
-	gfxContext.bindFramebuffer(bufferTarget::DRAW_FRAMEBUFFER, ObjectHandle::null);
+	gfxContext.bindFramebuffer(bufferTarget::DRAW_FRAMEBUFFER, ObjectHandle::defaultFramebuffer);
 }
 
 void DepthBufferToRDRAM::destroy() {

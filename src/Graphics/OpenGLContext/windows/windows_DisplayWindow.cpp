@@ -26,6 +26,7 @@ private:
 	void _changeWindow() override;
 	void _readScreen(void **_pDest, long *_pWidth, long *_pHeight) override;
 	void _readScreen2(void * _dest, int * _width, int * _height, int _front) override {}
+	graphics::ObjectHandle _getDefaultFramebuffer() override;
 
 	HGLRC	hRC;
 	HDC		hDC;
@@ -162,7 +163,7 @@ void DisplayWindowWindows::_saveScreenshot()
 	unsigned char * pixelData = NULL;
 	GLint oldMode;
 	glGetIntegerv(GL_READ_BUFFER, &oldMode);
-	gfxContext.bindFramebuffer(graphics::bufferTarget::READ_FRAMEBUFFER, graphics::ObjectHandle::null);
+	gfxContext.bindFramebuffer(graphics::bufferTarget::READ_FRAMEBUFFER, graphics::ObjectHandle::defaultFramebuffer);
 	glReadBuffer(GL_FRONT);
 	pixelData = (unsigned char*)malloc(m_screenWidth * m_screenHeight * 3);
 	glReadPixels(0, m_heightOffset, m_screenWidth, m_screenHeight, GL_RGB, GL_UNSIGNED_BYTE, pixelData);
@@ -285,7 +286,7 @@ void DisplayWindowWindows::_readScreen(void **_pDest, long *_pWidth, long *_pHei
 #ifndef GLESX
 	GLint oldMode;
 	glGetIntegerv(GL_READ_BUFFER, &oldMode);
-	gfxContext.bindFramebuffer(graphics::bufferTarget::READ_FRAMEBUFFER, graphics::ObjectHandle::null);
+	gfxContext.bindFramebuffer(graphics::bufferTarget::READ_FRAMEBUFFER, graphics::ObjectHandle::defaultFramebuffer);
 	glReadBuffer(GL_FRONT);
 	glReadPixels(0, m_heightOffset, m_width, m_height, GL_BGR_EXT, GL_UNSIGNED_BYTE, *_pDest);
 	if (graphics::BufferAttachmentParam(oldMode) == graphics::bufferAttachment::COLOR_ATTACHMENT0) {
@@ -297,4 +298,9 @@ void DisplayWindowWindows::_readScreen(void **_pDest, long *_pWidth, long *_pHei
 #else
 	glReadPixels(0, m_heightOffset, m_width, m_height, GL_RGB, GL_UNSIGNED_BYTE, *_pDest);
 #endif
+}
+
+graphics::ObjectHandle DisplayWindowWindows::_getDefaultFramebuffer()
+{
+	return graphics::ObjectHandle::null;
 }

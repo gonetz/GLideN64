@@ -43,6 +43,7 @@ ptr_VidExt_GL_GetProcAddress     CoreVideo_GL_GetProcAddress = nullptr;
 ptr_VidExt_GL_SetAttribute       CoreVideo_GL_SetAttribute = nullptr;
 ptr_VidExt_GL_GetAttribute       CoreVideo_GL_GetAttribute = nullptr;
 ptr_VidExt_GL_SwapBuffers        CoreVideo_GL_SwapBuffers = nullptr;
+ptr_VidExt_GL_GetDefaultFramebuffer CoreVideo_GL_GetDefaultFramebuffer = nullptr;
 
 ptr_PluginGetVersion             CoreGetVersion = nullptr;
 
@@ -85,6 +86,7 @@ m64p_error PluginAPI::PluginStartup(m64p_dynlib_handle _CoreLibHandle)
 	CoreVideo_GL_SetAttribute = (ptr_VidExt_GL_SetAttribute) DLSYM(_CoreLibHandle, "VidExt_GL_SetAttribute");
 	CoreVideo_GL_GetAttribute = (ptr_VidExt_GL_GetAttribute) DLSYM(_CoreLibHandle, "VidExt_GL_GetAttribute");
 	CoreVideo_GL_SwapBuffers = (ptr_VidExt_GL_SwapBuffers) DLSYM(_CoreLibHandle, "VidExt_GL_SwapBuffers");
+	CoreVideo_GL_GetDefaultFramebuffer = (ptr_VidExt_GL_GetDefaultFramebuffer) DLSYM(_CoreLibHandle, "VidExt_GL_GetDefaultFramebuffer");
 
 	CoreGetVersion = (ptr_PluginGetVersion) DLSYM(_CoreLibHandle, "PluginGetVersion");
 

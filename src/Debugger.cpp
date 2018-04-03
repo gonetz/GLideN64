@@ -621,7 +621,7 @@ void Debugger::_drawFrameBuffer(FrameBuffer * _pBuffer)
 	const s32 vOffset = (wnd.getScreenHeight() - wnd.getHeight()) / 2 + wnd.getHeightOffset() + wnd.getHeight()*3/8;
 	s32 dstCoord[4] = { hOffset, vOffset, hOffset + (s32)wnd.getWidth()*5/8, vOffset + (s32)wnd.getHeight()*5/8 };
 
-	gfxContext.bindFramebuffer(bufferTarget::DRAW_FRAMEBUFFER, ObjectHandle::null);
+	gfxContext.bindFramebuffer(bufferTarget::DRAW_FRAMEBUFFER, ObjectHandle::defaultFramebuffer);
 
 	float clearColor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
 	drawer.clearColorBuffer(clearColor);
@@ -1287,7 +1287,7 @@ void Debugger::draw()
 		_drawDebugInfo(pBuffer);
 	}
 
-	gfxContext.bindFramebuffer(bufferTarget::READ_FRAMEBUFFER, ObjectHandle::null);
+	gfxContext.bindFramebuffer(bufferTarget::READ_FRAMEBUFFER, ObjectHandle::defaultFramebuffer);
 	gfxContext.bindFramebuffer(bufferTarget::DRAW_FRAMEBUFFER, pBuffer->m_FBO);
 	gDP.changed |= CHANGED_SCISSOR;
 }

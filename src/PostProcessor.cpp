@@ -115,13 +115,13 @@ void PostProcessor::_preDraw(FrameBuffer * _pBuffer)
 		m_pTextureOriginal = _pBuffer->m_pTexture;
 
 	gfxContext.bindFramebuffer(bufferTarget::READ_FRAMEBUFFER,
-		ObjectHandle::null);
+		ObjectHandle::defaultFramebuffer);
 }
 
 void PostProcessor::_postDraw()
 {
 	gfxContext.bindFramebuffer(bufferTarget::DRAW_FRAMEBUFFER,
-		ObjectHandle::null);
+		ObjectHandle::defaultFramebuffer);
 
 	gfxContext.resetShaderProgram();
 }

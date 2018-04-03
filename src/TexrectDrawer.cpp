@@ -80,7 +80,7 @@ void TexrectDrawer::init()
 
 	// check if everything is OK
 	assert(!gfxContext.isFramebufferError());
-	gfxContext.bindFramebuffer(bufferTarget::DRAW_FRAMEBUFFER, ObjectHandle::null);
+	gfxContext.bindFramebuffer(bufferTarget::DRAW_FRAMEBUFFER, ObjectHandle::defaultFramebuffer);
 
 	m_programTex.reset(gfxContext.createTexrectDrawerDrawShader());
 	m_programClear.reset(gfxContext.createTexrectDrawerClearShader());
