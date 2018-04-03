@@ -9,6 +9,9 @@
 void DisplayWindow::start()
 {
 	_start(); // TODO: process initialization error
+
+	graphics::ObjectHandle::defaultFramebuffer = _getDefaultFramebuffer();
+
 	gfxContext.init();
 	m_drawer._initData();
 	m_buffersSwapCount = 0;

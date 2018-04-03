@@ -1432,7 +1432,7 @@ void GraphicsDrawer::drawOSD()
 		m_osdMessages.empty())
 		return;
 
-	gfxContext.bindFramebuffer(bufferTarget::DRAW_FRAMEBUFFER, ObjectHandle::null);
+	gfxContext.bindFramebuffer(bufferTarget::DRAW_FRAMEBUFFER, ObjectHandle::defaultFramebuffer);
 
 	DisplayWindow & wnd = DisplayWindow::get();
 	const s32 X = (wnd.getScreenWidth() - wnd.getWidth()) / 2;

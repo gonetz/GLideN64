@@ -1,6 +1,6 @@
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *   Mupen64plus-core - m64p_types.h                                       *
- *   Mupen64Plus homepage: http://code.google.com/p/mupen64plus/           *
+ *   Mupen64Plus homepage: https://mupen64plus.org/                        *
  *   Copyright (C) 2012 CasualJames                                        *
  *   Copyright (C) 2009 Richard Goedeken                                   *
  *                                                                         *
@@ -30,7 +30,7 @@
 /* necessary headers */
 #include <stdint.h>
 #if defined(WIN32) || defined(WIN64)
-#include <windows.h>
+  #include <windows.h>
 #endif
 
 /* DLL handles and function declaration specifiers */
@@ -184,6 +184,20 @@ typedef struct {
    * Empty or NULL string results in the core generating a default save file with empty content.
    */
   char* (*get_gb_cart_ram)(void* cb_data, int controller_num);
+
+  /* Allow the frontend to specify the DD IPL ROM file to load
+   * cb_data: points to frontend-defined callback data.
+   * Returns a NULL-terminated string owned by the core specifying the DD IPL ROM filename to load
+   * Empty or NULL string results in disabled 64DD.
+   */
+  char* (*get_dd_rom)(void* cb_data);
+
+  /* Allow the frontend to specify the DD disk file to load
+   * cb_data: points to frontend-defined callback data.
+   * Returns a NULL-terminated string owned by the core specifying the DD disk filename to load
+   * Empty or NULL string results in no DD disk being loaded (eg. empty disk drive).
+   */
+  char* (*get_dd_disk)(void* cb_data);
 } m64p_media_loader;
 
 /* ----------------------------------------- */
@@ -384,6 +398,7 @@ typedef struct {
   m64p_error (*VidExtFuncSetCaption)(const char *);
   m64p_error (*VidExtFuncToggleFS)(void);
   m64p_error (*VidExtFuncResizeWindow)(int, int);
+  uint32_t   (*VidExtFuncGLGetDefaultFramebuffer)(void);
 } m64p_video_extension_functions;
 
 #endif /* define M64P_TYPES_H */

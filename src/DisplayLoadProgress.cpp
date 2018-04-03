@@ -36,7 +36,7 @@ void displayLoadProgress(const wchar_t *format, ...)
 
 	FrameBuffer* pBuffer = frameBufferList().getCurrent();
 	if (pBuffer != nullptr)
-		gfxContext.bindFramebuffer(graphics::bufferTarget::DRAW_FRAMEBUFFER, graphics::ObjectHandle::null);
+		gfxContext.bindFramebuffer(graphics::bufferTarget::DRAW_FRAMEBUFFER, graphics::ObjectHandle::defaultFramebuffer);
 
 	GraphicsDrawer & drawer = dwnd().getDrawer();
 	drawer.clearColorBuffer(nullptr);

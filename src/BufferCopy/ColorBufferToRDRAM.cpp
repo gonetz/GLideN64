@@ -112,7 +112,7 @@ void ColorBufferToRDRAM::_initFBTexture(void)
 	// check if everything is OK
 	assert(!gfxContext.isFramebufferError());
 
-	gfxContext.bindFramebuffer(graphics::bufferTarget::DRAW_FRAMEBUFFER, graphics::ObjectHandle::null);
+	gfxContext.bindFramebuffer(graphics::bufferTarget::DRAW_FRAMEBUFFER, graphics::ObjectHandle::defaultFramebuffer);
 
 	m_bufferReader.reset(gfxContext.createColorBufferReader(m_pTexture));
 }

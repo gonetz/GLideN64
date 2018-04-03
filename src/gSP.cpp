@@ -2271,7 +2271,7 @@ void _copyDepthBuffer()
 	// Restore objects
 	if (pTmpBuffer->m_pDepthBuffer != nullptr)
 		pTmpBuffer->m_pDepthBuffer->setDepthAttachment(fbList.getCurrent()->m_FBO, bufferTarget::READ_FRAMEBUFFER);
-	gfxContext.bindFramebuffer(bufferTarget::READ_FRAMEBUFFER, ObjectHandle::null);
+	gfxContext.bindFramebuffer(bufferTarget::READ_FRAMEBUFFER, ObjectHandle::defaultFramebuffer);
 
 	// Set back current depth buffer
 	dbList.saveBuffer(gDP.depthImageAddress);

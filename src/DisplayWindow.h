@@ -75,6 +75,7 @@ private:
 	virtual bool _resizeWindow() = 0;
 	virtual void _readScreen(void **_pDest, long *_pWidth, long *_pHeight) = 0;
 	virtual void _readScreen2(void * _dest, int * _width, int * _height, int _front) = 0;
+	virtual graphics::ObjectHandle _getDefaultFramebuffer() = 0;
 };
 
 inline
