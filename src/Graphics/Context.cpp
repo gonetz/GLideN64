@@ -5,9 +5,6 @@ using namespace graphics;
 
 Context gfxContext;
 
-bool Context::imageTextures = false;
-bool Context::multisampling = false;
-
 Context::Context() {}
 
 Context::~Context() {
@@ -20,8 +17,6 @@ void Context::init()
 	m_impl.reset(new opengl::ContextImpl);
 	m_impl->init();
 	m_fbTexFormats.reset(m_impl->getFramebufferTextureFormats());
-	imageTextures = isSupported(SpecialFeatures::ImageTextures);
-	multisampling = isSupported(SpecialFeatures::Multisampling);
 }
 
 void Context::destroy()

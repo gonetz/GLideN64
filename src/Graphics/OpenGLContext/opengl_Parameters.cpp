@@ -74,8 +74,6 @@ namespace graphics {
 	}
 
 	namespace textureImageUnits {
-		ImageUnitParam Zlut(0U);
-		ImageUnitParam Tlut(1U);
 		ImageUnitParam DepthZ(2U);
 		ImageUnitParam DepthDeltaZ(3U);
 	}

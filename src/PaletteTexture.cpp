@@ -19,7 +19,7 @@ PaletteTexture::PaletteTexture()
 
 void PaletteTexture::init()
 {
-	if (!Context::imageTextures)
+	if (!gfxContext.isSupported(SpecialFeatures::LUTTextures))
 		return;
 
 	const FramebufferTextureFormats & fbTexFormats = gfxContext.getFramebufferTextureFormats();
@@ -40,7 +40,6 @@ void PaletteTexture::init()
 
 	Context::InitTextureParams initParams;
 	initParams.handle = m_pTexture->name;
-	initParams.ImageUnit = textureImageUnits::Tlut;
 	initParams.width = m_pTexture->realWidth;
 	initParams.height = m_pTexture->realHeight;
 	initParams.internalFormat = fbTexFormats.lutInternalFormat;
@@ -64,18 +63,10 @@ void PaletteTexture::init()
 
 void PaletteTexture::destroy()
 {
-	if (!Context::imageTextures)
+	if (!gfxContext.isSupported(SpecialFeatures::LUTTextures))
 		return;
 
 	const FramebufferTextureFormats & fbTexFormats = gfxContext.getFramebufferTextureFormats();
-
-	Context::BindImageTextureParameters bindParams;
-	bindParams.imageUnit = textureImageUnits::Tlut;
-	bindParams.texture = ObjectHandle::null;
-	bindParams.accessMode = textureImageAccessMode::READ_ONLY;
-	bindParams.textureFormat = fbTexFormats.lutInternalFormat;
-
-	gfxContext.bindImageTexture(bindParams);
 
 	textureCache().removeFrameBufferTexture(m_pTexture);
 	m_pTexture = nullptr;
@@ -84,7 +75,7 @@ void PaletteTexture::destroy()
 
 void PaletteTexture::update()
 {
-	if (!Context::imageTextures)
+	if (!gfxContext.isSupported(SpecialFeatures::LUTTextures))
 		return;
 
 	if (m_paletteCRC256 == gDP.paletteCRC256)
@@ -100,7 +91,6 @@ void PaletteTexture::update()
 	const FramebufferTextureFormats & fbTexFormats = gfxContext.getFramebufferTextureFormats();
 	Context::UpdateTextureDataParams params;
 	params.handle = m_pTexture->name;
-	params.ImageUnit = textureImageUnits::Tlut;
 	params.textureUnitIndex = textureIndices::PaletteTex;
 	params.width = m_pTexture->realWidth;
 	params.height = m_pTexture->realHeight;

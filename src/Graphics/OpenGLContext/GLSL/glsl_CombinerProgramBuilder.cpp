@@ -236,10 +236,6 @@ public:
 		else {
 			std::stringstream ss;
 			ss << "#version " << Utils::to_string(_glinfo.majorVersion) << Utils::to_string(_glinfo.minorVersion) << "0 core " << std::endl;
-			if (_glinfo.imageTextures && _glinfo.majorVersion * 10 + _glinfo.minorVersion < 42) {
-				ss << "#extension GL_ARB_shader_image_load_store : enable" << std::endl
-					<< "#extension GL_ARB_shading_language_420pack : enable" << std::endl;
-			}
 			ss << "# define IN in" << std::endl << "# define OUT out" << std::endl;
 			m_part = ss.str();
 		}
@@ -1444,9 +1440,9 @@ public:
 					"}						\n"
 				;
 			} else {
-				if (_glinfo.imageTextures && (config.generalEmulation.hacks & hack_RE2) != 0) {
+				if ((config.generalEmulation.hacks & hack_RE2) != 0) {
 					m_part =
-						"layout(binding = 0, r32ui) highp uniform readonly uimage2D uZlutImage;\n"
+						"uniform lowp usampler2D uZlutImage;\n"
 						"highp float writeDepth()						        													\n"
 						"{																									\n"
 						;
@@ -1464,7 +1460,7 @@ public:
 						"  highp int iZ = FragDepth > 0.999 ? 262143 : int(floor(FragDepth * 262143.0));				\n"
 						"  mediump int y0 = clamp(iZ/512, 0, 511);															\n"
 						"  mediump int x0 = iZ - 512*y0;																	\n"
-						"  highp uint iN64z = imageLoad(uZlutImage,ivec2(x0,y0)).r;											\n"
+						"  highp uint iN64z = texelFetch(uZlutImage,ivec2(x0,y0), 0).r;											\n"
 						"  return clamp(float(iN64z)/65532.0, 0.0, 1.0);											\n"
 						"}																									\n"
 						;

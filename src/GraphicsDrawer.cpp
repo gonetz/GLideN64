@@ -31,7 +31,6 @@ GraphicsDrawer::GraphicsDrawer()
 , m_dmaVerticesNum(0)
 , m_modifyVertices(0)
 , m_maxLineWidth(1.0f)
-, m_bImageTexture(false)
 , m_bFlatColors(false)
 {
 	memset(m_rect, 0, sizeof(m_rect));
@@ -991,7 +990,7 @@ bool texturedRectShadowMap(const GraphicsDrawer::TexturedRectParams &)
 		if (gDP.textureImage.size == 2 && gDP.textureImage.address >= gDP.depthImageAddress &&
 			gDP.textureImage.address < (gDP.depthImageAddress + gDP.colorImage.width*gDP.colorImage.width * 6 / 4)) {
 
-			if (!Context::imageTextures)
+			if (!gfxContext.isSupported(SpecialFeatures::LUTTextures))
 				return true;
 
 			pCurrentBuffer->m_pDepthBuffer->activateDepthBufferTexture(pCurrentBuffer);
@@ -1721,7 +1720,6 @@ void GraphicsDrawer::_initData()
 	FBInfo::fbInfo.reset();
 	m_texrectDrawer.init();
 	m_drawingState = DrawingState::Non;
-	m_bImageTexture = gfxContext.isSupported(SpecialFeatures::ImageTextures);
 	m_maxLineWidth = gfxContext.getMaxLineWidth();
 
 	gSP.changed = gDP.changed = 0xFFFFFFFF;

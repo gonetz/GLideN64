@@ -56,7 +56,7 @@ void GLInfo::init() {
 	}
 	if (!imageTextures && config.frameBufferEmulation.N64DepthCompare != 0) {
 		config.frameBufferEmulation.N64DepthCompare = 0;
-		LOG(LOG_WARNING, "N64 depth compare and depth based fog will not work without Image Textures support provided in OpenGL >= 4.3 or GLES >= 3.1\n");
+		LOG(LOG_WARNING, "N64 depth compare will not work without Image Textures support provided in OpenGL >= 4.3 or GLES >= 3.1\n");
 	}
 	if (isGLES2)
 		config.generalEmulation.enableFragmentDepthWrite = 0;

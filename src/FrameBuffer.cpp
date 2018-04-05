@@ -310,7 +310,7 @@ bool FrameBuffer::isValid(bool _forceCheck) const
 
 void FrameBuffer::resolveMultisampledTexture(bool _bForce)
 {
-	if (!Context::multisampling)
+	if (!gfxContext.isSupported(SpecialFeatures::Multisampling))
 		return;
 
 	if (m_resolved && !_bForce)

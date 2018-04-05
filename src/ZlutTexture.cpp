@@ -16,7 +16,7 @@ ZlutTexture::ZlutTexture()
 
 void ZlutTexture::init()
 {
-	if (!Context::imageTextures)
+	if (!gfxContext.isSupported(SpecialFeatures::LUTTextures))
 		return;
 
 	const FramebufferTextureFormats & fbTexFormats = gfxContext.getFramebufferTextureFormats();
@@ -41,7 +41,6 @@ void ZlutTexture::init()
 
 	Context::InitTextureParams initParams;
 	initParams.handle = m_pTexture->name;
-	initParams.ImageUnit = textureImageUnits::Zlut;
 	initParams.width = m_pTexture->realWidth;
 	initParams.height = m_pTexture->realHeight;
 	initParams.internalFormat = fbTexFormats.lutInternalFormat;
@@ -61,19 +60,12 @@ void ZlutTexture::init()
 	gfxContext.setTextureParameters(setParams);
 }
 
-void ZlutTexture::destroy() {
-	if (!Context::imageTextures)
+void ZlutTexture::destroy()
+{
+	if (!gfxContext.isSupported(SpecialFeatures::LUTTextures))
 		return;
 
 	const FramebufferTextureFormats & fbTexFormats = gfxContext.getFramebufferTextureFormats();
-
-	Context::BindImageTextureParameters bindParams;
-	bindParams.imageUnit = textureImageUnits::Zlut;
-	bindParams.texture = ObjectHandle::null;
-	bindParams.accessMode = textureImageAccessMode::READ_ONLY;
-	bindParams.textureFormat = fbTexFormats.lutInternalFormat;
-
-	gfxContext.bindImageTexture(bindParams);
 
 	textureCache().removeFrameBufferTexture(m_pTexture);
 	m_pTexture = nullptr;
