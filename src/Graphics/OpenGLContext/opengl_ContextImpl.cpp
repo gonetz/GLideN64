@@ -469,6 +469,8 @@ bool ContextImpl::isSupported(graphics::SpecialFeatures _feature) const
 		return m_glInfo.shaderStorage;
 	case graphics::SpecialFeatures::DepthFramebufferTextures:
 		return m_glInfo.depthTexture;
+	case graphics::SpecialFeatures::LUTTextures:
+		return !m_glInfo.isGLES2;
 	}
 	return false;
 }

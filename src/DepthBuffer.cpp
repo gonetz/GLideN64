@@ -318,7 +318,7 @@ void DepthBuffer::activateDepthBufferTexture(FrameBuffer * _pBuffer)
 
 void DepthBuffer::bindDepthImageTexture()
 {
-	if (!Context::imageTextures)
+	if (!gfxContext.isSupported(graphics::SpecialFeatures::ImageTextures))
 		return;
 
 	Context::BindImageTextureParameters bindParams;

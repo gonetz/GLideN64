@@ -22,7 +22,8 @@ namespace graphics {
 		WeakBlitFramebuffer,
 		DepthFramebufferTextures,
 		ShaderProgramBinary,
-		ImageTextures
+		ImageTextures,
+		LUTTextures
 	};
 
 	enum class ClampMode {
@@ -273,9 +274,6 @@ namespace graphics {
 		bool isError() const;
 
 		bool isFramebufferError() const;
-
-		static bool imageTextures;
-		static bool multisampling;
 
 	private:
 		std::unique_ptr<ContextImpl> m_impl;
