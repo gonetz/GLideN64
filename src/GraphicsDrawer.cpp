@@ -767,24 +767,14 @@ void GraphicsDrawer::_drawStereo(std::function<void(bool)> callback) {
 }
 
 void GraphicsDrawer::_drawTrianglesStereo(bool left_eye) {
-    gSPCombineMatrices(1, (left_eye? config.stereo.eyedistance : -config.stereo.eyedistance));
-
     std::array<SPVertex, VERTBUFF_SIZE> old_verts = triangles.vertices;
     u32 num = triangles.num;
     int max = triangles.maxElement;
 
     for (SPVertex& vtx : triangles.vertices) {
-        if (left_eye) {
-            vtx.x = vtx.left_x;
-            vtx.y = vtx.left_y;
-            vtx.z = vtx.left_z;
-            vtx.w = vtx.left_w;
-        } else {
-            vtx.x = vtx.right_x;
-            vtx.y = vtx.right_y;
-            vtx.z = vtx.right_z;
-            vtx.w = vtx.right_w;
-        }
+//        if (vtx.w > 0.001f || vtx.w < -0.001f)
+//            vtx.x += (left_eye? 1 : -1) * 0.25f * (vtx.w-0.01f);
+        vtx.x *= 2;
     }
 
     _drawTrianglesMono();
