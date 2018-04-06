@@ -109,7 +109,7 @@ bool ShaderStorage::saveShadersStorage(const graphics::Combiners & _combiners) c
 		// Created shaders are obsolete due to changes in config, but we saved combiners keys.
 		return true;
 
-	if (!gfxContext.isSupported(graphics::SpecialFeatures::ShaderProgramBinary))
+	if (!graphics::Context::ShaderProgramBinary)
 		// Shaders storage is not supported, but we saved combiners keys.
 		return true;
 
@@ -262,7 +262,7 @@ bool ShaderStorage::_loadFromCombinerKeys(graphics::Combiners & _combiners)
 	if (opengl::Utils::isGLError())
 		return false;
 
-	if (gfxContext.isSupported(graphics::SpecialFeatures::ShaderProgramBinary))
+	if (graphics::Context::ShaderProgramBinary)
 		// Restore shaders storage
 		return saveShadersStorage(_combiners);
 
@@ -272,7 +272,7 @@ bool ShaderStorage::_loadFromCombinerKeys(graphics::Combiners & _combiners)
 
 bool ShaderStorage::loadShadersStorage(graphics::Combiners & _combiners)
 {
-	if (!gfxContext.isSupported(graphics::SpecialFeatures::ShaderProgramBinary))
+	if (!graphics::Context::ShaderProgramBinary)
 		// Shaders storage is not supported, load from combiners keys.
 		return _loadFromCombinerKeys(_combiners);
 

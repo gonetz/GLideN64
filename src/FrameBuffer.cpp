@@ -310,7 +310,7 @@ bool FrameBuffer::isValid(bool _forceCheck) const
 
 void FrameBuffer::resolveMultisampledTexture(bool _bForce)
 {
-	if (!gfxContext.isSupported(SpecialFeatures::Multisampling))
+	if (!Context::Multisampling)
 		return;
 
 	if (m_resolved && !_bForce)
@@ -373,7 +373,7 @@ bool FrameBuffer::_initSubTexture(u32 _t)
 
 CachedTexture * FrameBuffer::_getSubTexture(u32 _t)
 {
-	if (!gfxContext.isSupported(SpecialFeatures::BlitFramebuffer))
+	if (!Context::BlitFramebuffer)
 		return m_pTexture;
 
 	if (!_initSubTexture(_t))
@@ -389,7 +389,7 @@ CachedTexture * FrameBuffer::_getSubTexture(u32 _t)
 		copyHeight = m_pTexture->realHeight - y0;
 
 	ObjectHandle readFBO = m_FBO;
-	if (gfxContext.isSupported(SpecialFeatures::WeakBlitFramebuffer) &&
+	if (Context::WeakBlitFramebuffer &&
 			m_pTexture->frameBufferTexture == CachedTexture::fbMultiSample) {
 		resolveMultisampledTexture(true);
 		readFBO = m_resolveFBO;
@@ -795,8 +795,8 @@ void FrameBufferList::attachDepthBuffer()
 		pDepthBuffer->initDepthBufferTexture(pCurrent);
 
 		bool goodDepthBufferTexture = false;
-		if (gfxContext.isSupported(SpecialFeatures::DepthFramebufferTextures)) {
-			goodDepthBufferTexture = gfxContext.isSupported(SpecialFeatures::WeakBlitFramebuffer) ?
+		if (Context::DepthFramebufferTextures) {
+			goodDepthBufferTexture = Context::WeakBlitFramebuffer ?
 				pDepthBuffer->m_pDepthBufferTexture->realWidth == pCurrent->m_pTexture->realWidth :
 				pDepthBuffer->m_pDepthBufferTexture->realWidth >= pCurrent->m_pTexture->realWidth;
 		} else {

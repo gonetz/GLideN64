@@ -5,6 +5,15 @@ using namespace graphics;
 
 Context gfxContext;
 
+bool Context::Multisampling = false;
+bool Context::BlitFramebuffer = false;
+bool Context::WeakBlitFramebuffer = false;
+bool Context::DepthFramebufferTextures = false;
+bool Context::ShaderProgramBinary = false;
+bool Context::ImageTextures = false;
+bool Context::IntegerTextures = false;
+bool Context::ClipControl = false;
+
 Context::Context() {}
 
 Context::~Context() {
@@ -17,6 +26,14 @@ void Context::init()
 	m_impl.reset(new opengl::ContextImpl);
 	m_impl->init();
 	m_fbTexFormats.reset(m_impl->getFramebufferTextureFormats());
+	Multisampling = m_impl->isSupported(SpecialFeatures::Multisampling);
+	BlitFramebuffer = m_impl->isSupported(SpecialFeatures::BlitFramebuffer);
+	WeakBlitFramebuffer = m_impl->isSupported(SpecialFeatures::WeakBlitFramebuffer);
+	DepthFramebufferTextures = m_impl->isSupported(SpecialFeatures::DepthFramebufferTextures);
+	ShaderProgramBinary = m_impl->isSupported(SpecialFeatures::ShaderProgramBinary);
+	ImageTextures = m_impl->isSupported(SpecialFeatures::ImageTextures);
+	IntegerTextures = m_impl->isSupported(SpecialFeatures::IntegerTextures);
+	ClipControl = m_impl->isSupported(SpecialFeatures::ClipControl);
 }
 
 void Context::destroy()
@@ -288,11 +305,6 @@ void Context::drawLine(f32 _width, SPVertex * _vertices)
 f32 Context::getMaxLineWidth()
 {
 	return m_impl->getMaxLineWidth();
-}
-
-bool Context::isSupported(SpecialFeatures _feature) const
-{
-	return m_impl->isSupported(_feature);
 }
 
 bool Context::isError() const

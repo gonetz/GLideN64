@@ -22,7 +22,7 @@ namespace graphics {
 		DepthFramebufferTextures,
 		ShaderProgramBinary,
 		ImageTextures,
-		LUTTextures,
+		IntegerTextures,
 		ClipControl
 	};
 
@@ -269,11 +269,18 @@ namespace graphics {
 
 		/*---------------Misc-------------*/
 
-		bool isSupported(SpecialFeatures _feature) const;
-
 		bool isError() const;
 
 		bool isFramebufferError() const;
+
+		static bool Multisampling;
+		static bool BlitFramebuffer;
+		static bool WeakBlitFramebuffer;
+		static bool DepthFramebufferTextures;
+		static bool ShaderProgramBinary;
+		static bool ImageTextures;
+		static bool IntegerTextures;
+		static bool ClipControl;
 
 	private:
 		std::unique_ptr<ContextImpl> m_impl;

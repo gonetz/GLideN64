@@ -16,7 +16,7 @@ ZlutTexture::ZlutTexture()
 
 void ZlutTexture::init()
 {
-	if (!gfxContext.isSupported(SpecialFeatures::LUTTextures))
+	if (!Context::IntegerTextures)
 		return;
 
 	const FramebufferTextureFormats & fbTexFormats = gfxContext.getFramebufferTextureFormats();
@@ -62,7 +62,7 @@ void ZlutTexture::init()
 
 void ZlutTexture::destroy()
 {
-	if (!gfxContext.isSupported(SpecialFeatures::LUTTextures))
+	if (!Context::IntegerTextures)
 		return;
 
 	const FramebufferTextureFormats & fbTexFormats = gfxContext.getFramebufferTextureFormats();

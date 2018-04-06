@@ -2232,7 +2232,7 @@ void _copyDepthBuffer()
 	if (!config.frameBufferEmulation.enable)
 		return;
 
-	if (!gfxContext.isSupported(SpecialFeatures::BlitFramebuffer))
+	if (!Context::BlitFramebuffer)
 		return;
 
 	// The game copies content of depth buffer into current color buffer

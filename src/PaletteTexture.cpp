@@ -19,7 +19,7 @@ PaletteTexture::PaletteTexture()
 
 void PaletteTexture::init()
 {
-	if (!gfxContext.isSupported(SpecialFeatures::LUTTextures))
+	if (!Context::IntegerTextures)
 		return;
 
 	const FramebufferTextureFormats & fbTexFormats = gfxContext.getFramebufferTextureFormats();
@@ -63,7 +63,7 @@ void PaletteTexture::init()
 
 void PaletteTexture::destroy()
 {
-	if (!gfxContext.isSupported(SpecialFeatures::LUTTextures))
+	if (!Context::IntegerTextures)
 		return;
 
 	const FramebufferTextureFormats & fbTexFormats = gfxContext.getFramebufferTextureFormats();
@@ -75,7 +75,7 @@ void PaletteTexture::destroy()
 
 void PaletteTexture::update()
 {
-	if (!gfxContext.isSupported(SpecialFeatures::LUTTextures))
+	if (!Context::IntegerTextures)
 		return;
 
 	if (m_paletteCRC256 == gDP.paletteCRC256)

@@ -191,7 +191,7 @@ void DepthBuffer::setDepthAttachment(ObjectHandle _fbo, BufferTargetParam _targe
 	params.attachment = bufferAttachment::DEPTH_ATTACHMENT;
 	params.bufferHandle = _fbo;
 	params.bufferTarget = _target;
-	if (gfxContext.isSupported(SpecialFeatures::DepthFramebufferTextures)) {
+	if (Context::DepthFramebufferTextures) {
 		params.textureHandle = m_pDepthBufferTexture->name;
 		params.textureTarget = config.video.multisampling != 0 ? textureTarget::TEXTURE_2D_MULTISAMPLE : textureTarget::TEXTURE_2D;
 	} else {
@@ -206,7 +206,7 @@ void DepthBuffer::setDepthAttachment(ObjectHandle _fbo, BufferTargetParam _targe
 
 void DepthBuffer::initDepthBufferTexture(FrameBuffer * _pBuffer)
 {
-	if (gfxContext.isSupported(SpecialFeatures::DepthFramebufferTextures)) {
+	if (Context::DepthFramebufferTextures) {
 		if (m_pDepthBufferTexture == nullptr) {
 			m_pDepthBufferTexture = textureCache().addFrameBufferTexture(config.video.multisampling != 0);
 			_initDepthBufferTexture(_pBuffer, m_pDepthBufferTexture, config.video.multisampling != 0);
@@ -318,7 +318,7 @@ void DepthBuffer::activateDepthBufferTexture(FrameBuffer * _pBuffer)
 
 void DepthBuffer::bindDepthImageTexture()
 {
-	if (!gfxContext.isSupported(graphics::SpecialFeatures::ImageTextures))
+	if (!Context::ImageTextures)
 		return;
 
 	Context::BindImageTextureParameters bindParams;
