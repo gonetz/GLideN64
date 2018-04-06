@@ -116,7 +116,8 @@ void Config::resetToDefaults()
 
 	debug.dumpMode = 0;
 	stereo.enabled = false;
-	stereo.eyedistance = 0;
+	stereo.separation = 0;
+	stereo.convergence = 0;
 }
 
 bool isHWLightingAllowed()

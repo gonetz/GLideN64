@@ -895,9 +895,9 @@ void gSPProcessVertex(u32 v, SPVertex * spVtx)
         for(u32 j = 0; j < VNUM; ++j) {
 			SPVertex & vtx = spVtx[v+j];
 
-			vtx.x *= 2;
+			vtx.y /= 2.0f;
 			if (vtx.w > 0.001f || vtx.w < -0.001f)
-				vtx.x += (i==0? 1 : -1) * 0.5f * (vtx.w-10.0f);
+				vtx.x += (i==0? 1 : -1) * config.stereo.separation * (vtx.w-config.stereo.convergence);
 
             if (i == 0) {
                 vtx.left_x = vtx.x;

@@ -175,7 +175,7 @@ struct Config
 
 	struct {
 		bool enabled;
-		f32 eyedistance;
+		f32 convergence, separation;
 	} stereo;
 
 	void resetToDefaults();
