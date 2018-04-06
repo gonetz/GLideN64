@@ -320,7 +320,7 @@ ShaderProgram * CombinerInfo::getTexrectCopyProgram()
 
 bool CombinerInfo::isShaderCacheSupported() const
 {
-	return config.generalEmulation.enableShadersStorage != 0 && gfxContext.isSupported(SpecialFeatures::ShaderProgramBinary);
+	return config.generalEmulation.enableShadersStorage != 0 && Context::ShaderProgramBinary;
 }
 
 void CombinerInfo::setPolygonMode(DrawingState _drawingState)
