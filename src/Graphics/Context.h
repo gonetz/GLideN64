@@ -17,13 +17,13 @@ namespace graphics {
 
 	enum class SpecialFeatures {
 		Multisampling,
-		FragmentDepthWrite,
 		BlitFramebuffer,
 		WeakBlitFramebuffer,
 		DepthFramebufferTextures,
 		ShaderProgramBinary,
 		ImageTextures,
-		LUTTextures
+		LUTTextures,
+		ClipControl
 	};
 
 	enum class ClampMode {
