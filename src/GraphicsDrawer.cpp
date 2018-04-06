@@ -87,7 +87,7 @@ void GraphicsDrawer::addTriangle(int _v0, int _v1, int _v2)
 		}
 	}
 
-	if (!gfxContext.isSupported(SpecialFeatures::FragmentDepthWrite)) {
+	if (!gfxContext.isSupported(SpecialFeatures::ClipControl)) {
 		if (GBI.isNoN() && gDP.otherMode.depthCompare == 0 && gDP.otherMode.depthUpdate == 0) {
 			for (u32 i = firstIndex; i < triangles.num; ++i) {
 				SPVertex & vtx = triangles.vertices[triangles.elements[i]];
@@ -653,7 +653,7 @@ void GraphicsDrawer::_updateStates(DrawingState _drawingState) const
 
 	cmbInfo.updateParameters();
 
-	if (!gfxContext.isSupported(SpecialFeatures::FragmentDepthWrite))
+	if (!config.generalEmulation.enableFragmentDepthWrite)
 		return;
 
 	if (gDP.colorImage.address == gDP.depthImageAddress &&
