@@ -59,6 +59,9 @@ void PostProcessor::_createResultBuffer(const FrameBuffer * _pMainBuffer)
 	bufTarget.attachment = bufferAttachment::COLOR_ATTACHMENT0;
 	bufTarget.textureTarget = textureTarget::TEXTURE_2D;
 	bufTarget.textureHandle = pTexture->name;
+	pTexture->fbo = m_pResultBuffer->m_FBO;
+	pTexture->isFboValid = true;
+	pTexture->isDepthAttachment = false;
 	gfxContext.addFrameBufferRenderTarget(bufTarget);
 	assert(!gfxContext.isFramebufferError());
 }

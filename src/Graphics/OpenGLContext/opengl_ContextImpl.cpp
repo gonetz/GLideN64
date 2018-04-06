@@ -29,6 +29,7 @@ ContextImpl::~ContextImpl()
 void ContextImpl::init()
 {
 	m_clampMode = graphics::ClampMode::ClippingEnabled;
+	hasFBOBeenBlit = false;
 	m_glInfo.init();
 
 	if (m_glInfo.isGLES2) {
@@ -67,10 +68,15 @@ void ContextImpl::init()
 	}
 
 	resetCombinerProgramBuilder();
+
+	generateAdrenoFBOs();
 }
 
 void ContextImpl::destroy()
 {
+	deleteFramebuffer(m_AdrenoFBO);
+	deleteTexture(m_AdrenoTexture, true);
+
 	m_createTexture.reset();
 	m_init2DTexture.reset();
 	m_set2DTextureParameters.reset();
@@ -227,6 +233,24 @@ void ContextImpl::update2DTexture(const graphics::Context::UpdateTextureDataPara
 
 void ContextImpl::setTextureParameters(const graphics::Context::TexParameters & _parameters)
 {
+	if (m_glInfo.buggyFBO && _parameters.isFrameBufferTexture) {
+
+		if (!hasFBOBeenBlit) {
+			graphics::Context::BlitFramebuffersParams blitParams{};
+			blitParams.readBuffer = m_currentFBOTextParams.textureFBO;
+			blitParams.drawBuffer = m_AdrenoFBO;
+			blitParams.mask = m_currentFBOTextParams.isDepthAttachment ?
+			graphics::blitMask::DEPTH_BUFFER : graphics::blitMask::COLOR_BUFFER;
+			blitParams.filter = graphics::textureParameters::FILTER_NEAREST;
+
+			gfxContext.blitFramebuffers(blitParams);
+			gfxContext.bindFramebuffer(graphics::bufferTarget::DRAW_FRAMEBUFFER, _parameters.currentFBO);
+		}
+
+		m_currentFBOTextParams = _parameters;
+		hasFBOBeenBlit = false;
+	}
+
 	m_set2DTextureParameters->setTextureParameters(_parameters);
 }
 
@@ -325,6 +349,10 @@ void ContextImpl::addFrameBufferRenderTarget(const graphics::Context::FrameBuffe
 
 bool ContextImpl::blitFramebuffers(const graphics::Context::BlitFramebuffersParams & _params)
 {
+	if (_params.readBuffer == m_currentFBOTextParams.textureFBO) {
+		hasFBOBeenBlit = true;
+	}
+
 	return m_blitFramebuffers->blitFramebuffers(_params);
 }
 
@@ -481,4 +509,36 @@ bool ContextImpl::isError() const
 bool ContextImpl::isFramebufferError() const
 {
 	return Utils::isFramebufferError();
+}
+
+void ContextImpl::generateAdrenoFBOs()
+{
+	m_AdrenoTexture = createTexture(graphics::textureTarget::TEXTURE_2D);
+	m_AdrenoFBO = createFramebuffer();
+
+	graphics::Context::InitTextureParams initParams;
+	initParams.handle = m_AdrenoTexture;
+	initParams.textureUnitIndex = 0;
+	initParams.width = 320;
+	initParams.height = 240;
+	initParams.internalFormat = m_fbTexFormats->colorInternalFormat;
+	initParams.format = m_fbTexFormats->colorFormat;
+	initParams.dataType = m_fbTexFormats->colorType;
+	init2DTexture(initParams);
+
+	graphics::Context::TexParameters texParams;
+	texParams.handle = m_AdrenoTexture;
+	texParams.target = graphics::textureTarget::TEXTURE_2D;
+	texParams.textureUnitIndex = 0;
+	texParams.minFilter = graphics::textureParameters::FILTER_NEAREST;
+	texParams.magFilter = graphics::textureParameters::FILTER_NEAREST;
+	setTextureParameters(texParams);
+
+	graphics::Context::FrameBufferRenderTarget bufTarget;
+	bufTarget.bufferHandle = m_AdrenoFBO;
+	bufTarget.bufferTarget = graphics::bufferTarget::FRAMEBUFFER;
+	bufTarget.attachment = graphics::bufferAttachment::COLOR_ATTACHMENT0;
+	bufTarget.textureTarget = graphics::textureTarget::TEXTURE_2D;
+	bufTarget.textureHandle = m_AdrenoTexture;
+	addFrameBufferRenderTarget(bufTarget);
 }

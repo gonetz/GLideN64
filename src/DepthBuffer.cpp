@@ -198,6 +198,10 @@ void DepthBuffer::setDepthAttachment(ObjectHandle _fbo, BufferTargetParam _targe
 		params.textureHandle = m_depthRenderbuffer;
 		params.textureTarget = textureTarget::RENDERBUFFER;
 	}
+
+	m_pDepthBufferTexture->fbo = _fbo;
+	m_pDepthBufferTexture->isFboValid = true;
+	m_pDepthBufferTexture->isDepthAttachment = true;
 	gfxContext.addFrameBufferRenderTarget(params);
 
 	m_copied = false;
@@ -235,6 +239,9 @@ CachedTexture * DepthBuffer::resolveDepthBufferTexture(FrameBuffer * _pBuffer)
 	targetParams.bufferTarget = bufferTarget::DRAW_FRAMEBUFFER;
 	targetParams.textureHandle = m_pResolveDepthBufferTexture->name;
 	targetParams.textureTarget = textureTarget::TEXTURE_2D;
+	m_pResolveDepthBufferTexture->fbo = _pBuffer->m_resolveFBO;
+	m_pResolveDepthBufferTexture->isFboValid = true;
+	m_pResolveDepthBufferTexture->isDepthAttachment = true;
 	gfxContext.addFrameBufferRenderTarget(targetParams);
 
 	Context::BlitFramebuffersParams blitParams;
@@ -272,18 +279,24 @@ CachedTexture * DepthBuffer::copyDepthBufferTexture(FrameBuffer * _pBuffer)
 
 
 	Context::FrameBufferRenderTarget targetParams;
+	CachedTexture* texture = _pBuffer->m_pTexture->frameBufferTexture == CachedTexture::fbMultiSample ?
+		_pBuffer->m_pResolveTexture : _pBuffer->m_pTexture;
 	targetParams.bufferHandle = m_copyFBO;
 	targetParams.bufferTarget = bufferTarget::DRAW_FRAMEBUFFER;
 	targetParams.attachment = bufferAttachment::COLOR_ATTACHMENT0;
-	targetParams.textureHandle = _pBuffer->m_pTexture->frameBufferTexture == CachedTexture::fbMultiSample ?
-		_pBuffer->m_pResolveTexture->name :
-		_pBuffer->m_pTexture->name;
+	targetParams.textureHandle = texture->name;
 	targetParams.textureTarget = textureTarget::TEXTURE_2D;
+	texture->fbo = m_copyFBO;
+	texture->isFboValid = true;
+	texture->isDepthAttachment = false;
 
 	gfxContext.addFrameBufferRenderTarget(targetParams);
 
 	targetParams.attachment = bufferAttachment::DEPTH_ATTACHMENT;
 	targetParams.textureHandle = m_pDepthBufferCopyTexture->name;
+	m_pDepthBufferCopyTexture->fbo = m_copyFBO;
+	m_pDepthBufferCopyTexture->isFboValid = true;
+	m_pDepthBufferCopyTexture->isDepthAttachment = true;
 
 	gfxContext.addFrameBufferRenderTarget(targetParams);
 

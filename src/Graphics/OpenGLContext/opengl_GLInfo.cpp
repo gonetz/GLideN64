@@ -42,6 +42,8 @@ void GLInfo::init() {
 		renderer = Renderer::PowerVR;
 	LOG(LOG_VERBOSE, "OpenGL renderer: %s\n", strRenderer);
 
+	buggyFBO = strstr((const char*)strRenderer, "Adreno") != nullptr;
+
 	int numericVersion = majorVersion * 10 + minorVersion;
 	if (isGLES2) {
 		imageTextures = false;
