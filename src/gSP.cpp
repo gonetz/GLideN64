@@ -24,6 +24,7 @@
 #include <Graphics/Context.h>
 #include <Graphics/Parameters.h>
 #include "DisplayWindow.h"
+#include "GraphicsDrawer.h"
 
 using namespace std;
 using namespace graphics;
@@ -774,99 +775,144 @@ void gSPProcessVertex(u32 v, SPVertex * spVtx)
 		_gSPCombineMatrices();
 
 	float vPos[VNUM][4];
-	for(u32 i = 0; i < VNUM; ++i) {
-		SPVertex & vtx = spVtx[v+i];
-		vPos[i][0] = vtx.x;
-		vPos[i][1] = vtx.y;
-		vPos[i][2] = vtx.z;
-		vPos[i][3] = 0.0f;
+	for(u32 j = 0; j < VNUM; ++j) {
+		SPVertex & vtx = spVtx[v+j];
+		vPos[j][0] = vtx.x;
+		vPos[j][1] = vtx.y;
+		vPos[j][2] = vtx.z;
+		vPos[j][3] = 0.0f;
 		vtx.modify = 0;
+
+        if (config.stereo.enabled) {
+            vtx.left_x = vtx.x;
+            vtx.right_x = vtx.x;
+            vtx.left_y = vtx.y;
+            vtx.right_y = vtx.y;
+            vtx.left_z = vtx.z;
+            vtx.right_z = vtx.z;
+            vtx.left_w = vtx.w;
+            vtx.right_w = vtx.w;
+        }
 	}
 
-	gSPTransformVertex<VNUM>(v, spVtx, gSP.matrix.combined );
+    for (int i=0; i<2; i++) {
+        for(u32 j = 0; j < VNUM; ++j) {
+            SPVertex & vtx = spVtx[v+j];
+            vtx.x = vtx.right_x;
+            vtx.y = vtx.right_y;
+            vtx.z = vtx.right_z;
+            vtx.w = vtx.right_w;
+            vtx.modify = 0;
+        }
 
-	if (dwnd().isAdjustScreen() && (gDP.colorImage.width > VI.width * 98 / 100)) {
-		const f32 adjustScale = dwnd().getAdjustScale();
-		for(int i = 0; i < VNUM; ++i) {
-			SPVertex & vtx = spVtx[v+i];
-			vtx.x *= adjustScale;
-			if (gSP.matrix.projection[3][2] == -1.f)
-				vtx.w *= adjustScale;
-		}
-	}
-	if (gSP.viewport.vscale[0] < 0) {
-		for(int i = 0; i < VNUM; ++i) {
-			SPVertex & vtx = spVtx[v+i];
-			vtx.x = -vtx.x;
-		}
-	}
-	if (gSP.viewport.vscale[1] < 0) {
-		for(int i = 0; i < VNUM; ++i) {
-			SPVertex & vtx = spVtx[v+i];
-			vtx.y = -vtx.y;
-		}
-	}
+        gSPTransformVertex<VNUM>(v, spVtx, gSP.matrix.combined);
 
-	if (gSP.matrix.billboard)
-		gSPBillboardVertex<VNUM>(v, spVtx);
+        if (dwnd().isAdjustScreen() && (gDP.colorImage.width > VI.width * 98 / 100)) {
+            const f32 adjustScale = dwnd().getAdjustScale();
+            for (int i = 0; i < VNUM; ++i) {
+                SPVertex &vtx = spVtx[v + i];
+                vtx.x *= adjustScale;
+                if (gSP.matrix.projection[3][2] == -1.f)
+                    vtx.w *= adjustScale;
+            }
+        }
+        if (gSP.viewport.vscale[0] < 0) {
+            for (int i = 0; i < VNUM; ++i) {
+                SPVertex &vtx = spVtx[v + i];
+                vtx.x = -vtx.x;
+            }
+        }
+        if (gSP.viewport.vscale[1] < 0) {
+            for (int i = 0; i < VNUM; ++i) {
+                SPVertex &vtx = spVtx[v + i];
+                vtx.y = -vtx.y;
+            }
+        }
 
-	gSPClipVertex<VNUM>(v, spVtx);
+        if (gSP.matrix.billboard)
+            gSPBillboardVertex<VNUM>(v, spVtx);
 
-	if (gSP.geometryMode & G_LIGHTING) {
-		if (gSP.geometryMode & G_POINT_LIGHTING)
-			gSPPointLightVertex<VNUM>(v, vPos, spVtx);
-		else
-			gSPLightVertex<VNUM>(v, spVtx);
+        gSPClipVertex<VNUM>(v, spVtx);
 
-		if (gSP.geometryMode & G_ACCLAIM_LIGHTING)
-			gSPPointLightVertexAcclaim<VNUM>(v, spVtx);
+        if (gSP.geometryMode & G_LIGHTING) {
+            if (gSP.geometryMode & G_POINT_LIGHTING)
+                gSPPointLightVertex<VNUM>(v, vPos, spVtx);
+            else
+                gSPLightVertex<VNUM>(v, spVtx);
 
-		if ((gSP.geometryMode & G_TEXTURE_GEN) != 0) {
-			if (GBI.getMicrocodeType() != F3DFLX2) {
-				for(int i = 0; i < VNUM; ++i) {
-					SPVertex & vtx = spVtx[v+i];
-					f32 fLightDir[3] = {vtx.nx, vtx.ny, vtx.nz};
-					f32 x, y;
-					if (gSP.lookatEnable) {
-						x = DotProduct(gSP.lookat.i_xyz[0], fLightDir);
-						y = DotProduct(gSP.lookat.i_xyz[1], fLightDir);
-					} else {
-						fLightDir[0] *= 128.0f;
-						fLightDir[1] *= 128.0f;
-						fLightDir[2] *= 128.0f;
-						TransformVectorNormalize(fLightDir, gSP.matrix.modelView[gSP.matrix.modelViewi]);
-						x = fLightDir[0];
-						y = fLightDir[1];
-					}
-					if (gSP.geometryMode & G_TEXTURE_GEN_LINEAR) {
-						vtx.s = acosf(-x) * 325.94931f;
-						vtx.t = acosf(-y) * 325.94931f;
-					} else { // G_TEXTURE_GEN
-						vtx.s = (x + 1.0f) * 512.0f;
-						vtx.t = (y + 1.0f) * 512.0f;
-					}
-				}
-			} else {
-				for(int i = 0; i < VNUM; ++i) {
-					SPVertex & vtx = spVtx[v+i];
-					const f32 intensity = DotProduct(gSP.lookat.i_xyz[0], &vtx.nx) * 128.0f;
-					const s16 index = static_cast<s16>(intensity);
-					vtx.a = _FIXED2FLOATCOLOR(RDRAM[(gSP.DMAIO_address + 128 + index) ^ 3], 8);
-				}
-			}
-		}
-	} else if (gSP.geometryMode & G_ACCLAIM_LIGHTING) {
-		gSPPointLightVertexAcclaim<VNUM>(v, spVtx);
-	} else {
-		for(u32 i = 0; i < VNUM; ++i)
-			spVtx[v].HWLight = 0;
-	}
+            if (gSP.geometryMode & G_ACCLAIM_LIGHTING)
+                gSPPointLightVertexAcclaim<VNUM>(v, spVtx);
 
-	for(u32 i = 0; i < VNUM; ++i) {
-		SPVertex & vtx = spVtx[v+i];
-		DebugMsg(DEBUG_DETAIL, "v%d - x: %f, y: %f, z: %f, w: %f, s: %f, t: %f, r=%02f, g=%02f, b=%02f, a=%02f\n",
-				 i, vtx.x, vtx.y, vtx.z, vtx.w, vtx.s, vtx.t, vtx.r, vtx.g, vtx.b, vtx.a);
-	}
+            if ((gSP.geometryMode & G_TEXTURE_GEN) != 0) {
+                if (GBI.getMicrocodeType() != F3DFLX2) {
+                    for (int i = 0; i < VNUM; ++i) {
+                        SPVertex &vtx = spVtx[v + i];
+                        f32 fLightDir[3] = {vtx.nx, vtx.ny, vtx.nz};
+                        f32 x, y;
+                        if (gSP.lookatEnable) {
+                            x = DotProduct(gSP.lookat.i_xyz[0], fLightDir);
+                            y = DotProduct(gSP.lookat.i_xyz[1], fLightDir);
+                        } else {
+                            fLightDir[0] *= 128.0f;
+                            fLightDir[1] *= 128.0f;
+                            fLightDir[2] *= 128.0f;
+                            TransformVectorNormalize(fLightDir,
+                                                     gSP.matrix.modelView[gSP.matrix.modelViewi]);
+                            x = fLightDir[0];
+                            y = fLightDir[1];
+                        }
+                        if (gSP.geometryMode & G_TEXTURE_GEN_LINEAR) {
+                            vtx.s = acosf(-x) * 325.94931f;
+                            vtx.t = acosf(-y) * 325.94931f;
+                        } else { // G_TEXTURE_GEN
+                            vtx.s = (x + 1.0f) * 512.0f;
+                            vtx.t = (y + 1.0f) * 512.0f;
+                        }
+                    }
+                } else {
+                    for (int i = 0; i < VNUM; ++i) {
+                        SPVertex &vtx = spVtx[v + i];
+                        const f32 intensity = DotProduct(gSP.lookat.i_xyz[0], &vtx.nx) * 128.0f;
+                        const s16 index = static_cast<s16>(intensity);
+                        vtx.a = _FIXED2FLOATCOLOR(RDRAM[(gSP.DMAIO_address + 128 + index) ^ 3], 8);
+                    }
+                }
+            }
+        } else if (gSP.geometryMode & G_ACCLAIM_LIGHTING) {
+            gSPPointLightVertexAcclaim<VNUM>(v, spVtx);
+        } else {
+            for (u32 i = 0; i < VNUM; ++i)
+                spVtx[v].HWLight = 0;
+        }
+
+        for (u32 i = 0; i < VNUM; ++i) {
+            SPVertex &vtx = spVtx[v + i];
+            DebugMsg(DEBUG_DETAIL,
+                     "v%d - x: %f, y: %f, z: %f, w: %f, s: %f, t: %f, r=%02f, g=%02f, b=%02f, a=%02f\n",
+                     i, vtx.x, vtx.y, vtx.z, vtx.w, vtx.s, vtx.t, vtx.r, vtx.g, vtx.b, vtx.a);
+        }
+
+        for(u32 j = 0; j < VNUM; ++j) {
+			SPVertex & vtx = spVtx[v+j];
+
+			vtx.x *= 2;
+			if (vtx.w > 0.001f || vtx.w < -0.001f)
+				vtx.x += (i==0? 1 : -1) * 0.5f * (vtx.w-10.0f);
+
+            if (i == 0) {
+                vtx.left_x = vtx.x;
+                vtx.left_y = vtx.y;
+                vtx.left_z = vtx.z;
+                vtx.left_w = vtx.w;
+            } else {
+                vtx.right_x = vtx.x;
+                vtx.right_y = vtx.y;
+                vtx.right_z = vtx.z;
+                vtx.right_w = vtx.w;
+            }
+
+        }
+    }
 }
 
 template <u32 VNUM>
