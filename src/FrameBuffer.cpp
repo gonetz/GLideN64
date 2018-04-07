@@ -134,6 +134,9 @@ void FrameBuffer::_setAndAttachTexture(ObjectHandle _fbo, CachedTexture *_pTextu
 	bufTarget.attachment = bufferAttachment::COLOR_ATTACHMENT0;
 	bufTarget.textureTarget = _multisampling ? textureTarget::TEXTURE_2D_MULTISAMPLE : textureTarget::TEXTURE_2D;
 	bufTarget.textureHandle = _pTexture->name;
+	_pTexture->fbo = _fbo;
+	_pTexture->isFboValid = true;
+	_pTexture->isDepthAttachment = false;
 	gfxContext.addFrameBufferRenderTarget(bufTarget);
 	assert(!gfxContext.isFramebufferError());
 }

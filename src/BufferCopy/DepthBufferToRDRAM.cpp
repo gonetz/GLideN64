@@ -113,10 +113,16 @@ void DepthBufferToRDRAM::init()
 	bufTarget.attachment = bufferAttachment::COLOR_ATTACHMENT0;
 	bufTarget.textureTarget = textureTarget::TEXTURE_2D;
 	bufTarget.textureHandle = m_pColorTexture->name;
+	m_pColorTexture->fbo = m_FBO;
+	m_pColorTexture->isFboValid = true;
+	m_pColorTexture->isDepthAttachment = false;
 	gfxContext.addFrameBufferRenderTarget(bufTarget);
 
 	bufTarget.attachment = bufferAttachment::DEPTH_ATTACHMENT;
 	bufTarget.textureHandle = m_pDepthTexture->name;
+	m_pDepthTexture->fbo = m_FBO;
+	m_pDepthTexture->isFboValid = true;
+	m_pDepthTexture->isDepthAttachment = true;
 	gfxContext.addFrameBufferRenderTarget(bufTarget);
 
 	// check if everything is OK

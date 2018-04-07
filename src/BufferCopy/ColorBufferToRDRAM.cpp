@@ -101,11 +101,14 @@ void ColorBufferToRDRAM::_initFBTexture(void)
 	}
 	{
 		Context::FrameBufferRenderTarget bufTarget;
-		bufTarget.bufferHandle = ObjectHandle(m_FBO);
+		bufTarget.bufferHandle = m_FBO;
 		bufTarget.bufferTarget = bufferTarget::DRAW_FRAMEBUFFER;
 		bufTarget.attachment = bufferAttachment::COLOR_ATTACHMENT0;
 		bufTarget.textureTarget = textureTarget::TEXTURE_2D;
 		bufTarget.textureHandle = m_pTexture->name;
+		m_pTexture->fbo = m_FBO;
+		m_pTexture->isFboValid = true;
+		m_pTexture->isDepthAttachment = false;
 		gfxContext.addFrameBufferRenderTarget(bufTarget);
 	}
 

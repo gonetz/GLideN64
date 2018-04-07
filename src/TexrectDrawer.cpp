@@ -74,6 +74,9 @@ void TexrectDrawer::init()
 	bufTarget.attachment = bufferAttachment::COLOR_ATTACHMENT0;
 	bufTarget.textureTarget = textureTarget::TEXTURE_2D;
 	bufTarget.textureHandle = m_pTexture->name;
+	m_pTexture->fbo = m_FBO;
+	m_pTexture->isFboValid = true;
+	m_pTexture->isDepthAttachment = false;
 	gfxContext.addFrameBufferRenderTarget(bufTarget);
 
 	// check if everything is OK

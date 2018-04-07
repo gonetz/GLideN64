@@ -123,6 +123,10 @@ namespace graphics {
 			TextureParam wrapT;
 			Parameter maxMipmapLevel;
 			Parameter maxAnisotropy;
+			bool isFrameBufferTexture = false;
+			bool isDepthAttachment = false;
+			ObjectHandle textureFBO;
+			ObjectHandle currentFBO;
 		};
 
 		void setTextureParameters(const TexParameters & _parameters);

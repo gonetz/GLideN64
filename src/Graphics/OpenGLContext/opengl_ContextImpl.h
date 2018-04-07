@@ -143,6 +143,9 @@ namespace opengl {
 		bool isFramebufferError() const override;
 
 	private:
+
+		void generateAdrenoFBOs();
+
 		std::unique_ptr<CachedFunctions> m_cachedFunctions;
 		std::unique_ptr<Create2DTexture> m_createTexture;
 		std::unique_ptr<Init2DTexture> m_init2DTexture;
@@ -163,6 +166,11 @@ namespace opengl {
 		std::unique_ptr<glsl::SpecialShadersFactory> m_specialShadersFactory;
 		GLInfo m_glInfo;
 		graphics::ClampMode m_clampMode;
+
+		graphics::ObjectHandle m_AdrenoFBO;
+		graphics::ObjectHandle m_AdrenoTexture;
+		graphics::Context::TexParameters m_currentFBOTextParams;
+		bool hasFBOBeenBlit;
 	};
 
 }

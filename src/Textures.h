@@ -14,9 +14,12 @@ typedef u32 (*GetTexelFunc)( u64 *src, u16 x, u16 i, u8 palette );
 
 struct CachedTexture
 {
-	CachedTexture(graphics::ObjectHandle _name) : name(_name), max_level(0), frameBufferTexture(fbNone), bHDTexture(false) {}
+	CachedTexture(graphics::ObjectHandle _name) : name(_name), isFboValid(false), max_level(0), frameBufferTexture(fbNone), bHDTexture(false) {}
 
 	graphics::ObjectHandle name;
+	graphics::ObjectHandle fbo;
+	bool isFboValid;
+	bool isDepthAttachment;
 	u32		crc = 0;
 //	float	fulS, fulT;
 //	WORD	ulS, ulT, lrS, lrT;

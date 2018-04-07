@@ -1288,6 +1288,12 @@ void TextureCache::activateTexture(u32 _t, CachedTexture *_pTexture)
 
 	Context::TexParameters params;
 	params.handle = _pTexture->name;
+	params.isFrameBufferTexture = _pTexture->frameBufferTexture != CachedTexture::fbNone && _pTexture->isFboValid;
+	params.isDepthAttachment = _pTexture->isDepthAttachment;
+
+	params.textureFBO = _pTexture->fbo;
+	params.currentFBO = frameBufferList().getCurrent()->m_FBO;
+
 	if (config.video.multisampling > 0 && _pTexture->frameBufferTexture == CachedTexture::fbMultiSample) {
 		params.target = textureTarget::TEXTURE_2D_MULTISAMPLE;
 		params.textureUnitIndex = textureIndices::MSTex[_t];
