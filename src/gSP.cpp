@@ -873,8 +873,9 @@ void gSPProcessVertex(u32 v, SPVertex * spVtx)
             SPVertex orig = spVtx[v+j];
             SPVertex & vtx = spVtx[v+j];
 
-            if (gSP.matrix.projection[3][2] < -0.01f || gSP.matrix.projection[3][2] > 0.01f) {
-                // 'tis a 3d projection matrix, so we adjust the eyes
+            if ((gSP.matrix.projection[3][2] < -0.01f || gSP.matrix.projection[3][2] > 0.01f)
+                    && (vtx.w > 0.01f || vtx.w < 0.01f)) {
+                // 'tis a 3d projection matrix and 3d world object, so we adjust the eyes
 
                 // Convert from clip space into a pseudo camera space
                 // See dolphin VR, https://github.com/CarlKenner/dolphin/blob/4a7c168aeec1e28ae9a2e4f8de990f716cc968ca/Source/Core/VideoCommon/VertexShaderManager.cpp#L1981
@@ -882,7 +883,7 @@ void gSPProcessVertex(u32 v, SPVertex * spVtx)
                 vtx.z = -vtx.w;
                 vtx.w = 1;
 
-                float x_trans = (i == 0 ? 1.0f : -1.0f) * config.stereo.separation;
+                float x_trans = (i == 0 ? 1.0f : -1.0f) * config.stereo.eyedistance;
                 float trans_mat[4][4] = {{1,       0, 0, 0},
                                          {0,       1, 0, 0},
                                          {0,       0, 1, 0},

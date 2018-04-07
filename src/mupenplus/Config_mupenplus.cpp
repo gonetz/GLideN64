@@ -97,9 +97,7 @@ bool Config_SetDefault()
 	assert(res == M64ERR_SUCCESS);
 	res = ConfigSetDefaultBool(g_configVideoGliden64, "EnableStereo", config.stereo.enabled, "Enable to render split screen stereo");
 	assert(res == M64ERR_SUCCESS);
-	res = ConfigSetDefaultFloat(g_configVideoGliden64, "Convergence", config.stereo.convergence, "Distance between eyes when stereo rendering is enabled");
-	assert(res == M64ERR_SUCCESS);
-	res = ConfigSetDefaultFloat(g_configVideoGliden64, "Separation", config.stereo.separation, "Convergence between eyes when stereo rendering is enabled");
+	res = ConfigSetDefaultFloat(g_configVideoGliden64, "EyeDistance", config.stereo.eyedistance, "Distance between eyes when stereo rendering is enabled");
 	assert(res == M64ERR_SUCCESS);
 #endif
 	//#Frame Buffer Settings:"
@@ -348,8 +346,7 @@ void Config_LoadConfig()
 	config.generalEmulation.polygonOffsetFactor = ConfigGetParamFloat(g_configVideoGliden64, "PolygonOffsetFactor");
 	config.generalEmulation.polygonOffsetUnits = ConfigGetParamFloat(g_configVideoGliden64, "PolygonOffsetUnits");
 	config.stereo.enabled = ConfigGetParamBool(g_configVideoGliden64, "EnableStereo");
-	config.stereo.convergence = ConfigGetParamFloat(g_configVideoGliden64, "Convergence");
-	config.stereo.separation = ConfigGetParamFloat(g_configVideoGliden64, "Separation");
+	config.stereo.eyedistance = ConfigGetParamFloat(g_configVideoGliden64, "EyeDistance");
 #endif
 	//#Frame Buffer Settings:"
 	config.frameBufferEmulation.enable = ConfigGetParamBool(g_configVideoGliden64, "EnableFBEmulation");
