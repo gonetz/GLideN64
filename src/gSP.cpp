@@ -743,8 +743,6 @@ void gSPClipVertex(u32 v, SPVertex * spVtx)
 	}
 }
 
-#include <android/log.h>
-
 template <u32 VNUM>
 void gSPTransformVertex(u32 v, SPVertex * spVtx, float mtx[4][4])
 {
@@ -897,11 +895,6 @@ void gSPProcessVertex(u32 v, SPVertex * spVtx)
         for(u32 j = 0; j < VNUM; ++j) {
 			SPVertex & vtx = spVtx[v+j];
 
-//            __android_log_print(ANDROID_LOG_INFO, "*******", "****** Projection matrix:\n");
-//            for (int k=0; k<4; ++k) {
-//                __android_log_print(ANDROID_LOG_INFO, "*******", "****** {%f, %f, %f, %f}\n", gSP.matrix.projection[k][0], gSP.matrix.projection[k][1], gSP.matrix.projection[k][2], gSP.matrix.projection[k][3]);
-//            }
-
             if (i == 0) {
                 // Convert from clip space into a pseudo camera space
                 // See dolphin VR, https://github.com/CarlKenner/dolphin/blob/4a7c168aeec1e28ae9a2e4f8de990f716cc968ca/Source/Core/VideoCommon/VertexShaderManager.cpp#L1981
@@ -909,12 +902,13 @@ void gSPProcessVertex(u32 v, SPVertex * spVtx)
                 vtx.z = -vtx.w;
                 vtx.w = 1;
 
-                float trans_mat[4][4] = {{1,0,0,0}, {0,1,0,0}, {0,0,1,0}, {200.0f,0,0,1}};
+                float trans_mat[4][4] = {{1,0,0,0}, {0,1,0,0}, {0,0,1,0}, {500,-500,0,1}};
                 gSPTransformVector(&vtx.x, trans_mat);
 
 				// Now, project as we see fit
-				float S = 1;
-				float proj[4][4] = {{S,0,0,0}, {0,S*4.0f/3.0f,0,0}, {0,0,-1,-1}, {0,0,-100.0f,1}};
+                // These far and near clip planes will mess up fog, and possibly cause z-fighting
+                float N = 0.000001f, F = 1000000000.0f;
+				float proj[4][4] = {{1,0,0,0}, {0,4.0f/3.0f,0,0}, {0,0,-F*N/(F-N),-1}, {0,0,-F/(F-N),1}};
 
                 gSPTransformVertex<1>(0, &vtx, proj);
             }
