@@ -167,6 +167,11 @@ u32 Context::convertInternalTextureFormat(u32 _format) const
 	return m_impl->convertInternalTextureFormat(_format);
 }
 
+void Context::textureBarrier()
+{
+	m_impl->textureBarrier();
+}
+
 /*---------------Framebuffer-------------*/
 
 const FramebufferTextureFormats & Context::getFramebufferTextureFormats()
