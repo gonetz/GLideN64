@@ -102,4 +102,8 @@ void GLInfo::init() {
 
 	depthTexture = !isGLES2 || Utils::isExtensionSupported(*this, "GL_OES_depth_texture");
 	noPerspective = Utils::isExtensionSupported(*this, "GL_NV_shader_noperspective_interpolation");
+
+	fetch_depth = Utils::isExtensionSupported(*this, "GL_ARM_shader_framebuffer_fetch_depth_stencil");
+	arm_fetch = Utils::isExtensionSupported(*this, "GL_ARM_shader_framebuffer_fetch");
+	ext_fetch = Utils::isExtensionSupported(*this, "GL_EXT_shader_framebuffer_fetch");
 }
