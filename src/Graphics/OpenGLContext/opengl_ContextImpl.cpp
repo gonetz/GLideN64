@@ -276,6 +276,14 @@ u32 ContextImpl::convertInternalTextureFormat(u32 _format) const
 	return _format;
 }
 
+void ContextImpl::textureBarrier()
+{
+	if (m_glInfo.texture_barrier)
+		glTextureBarrier();
+	else if (m_glInfo.texture_barrierNV)
+		glTextureBarrierNV();
+}
+
 /*---------------Framebuffer-------------*/
 
 graphics::FramebufferTextureFormats * ContextImpl::getFramebufferTextureFormats()

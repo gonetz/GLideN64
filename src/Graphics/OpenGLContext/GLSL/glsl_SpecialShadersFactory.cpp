@@ -63,8 +63,18 @@ namespace glsl {
 				"OUT lowp vec4 fragColor;									\n"
 				"lowp float get_alpha()										\n"
 				"{															\n"
-				"  mediump ivec2 coord = ivec2(gl_FragCoord.xy);			\n"
-				"  highp float bufZ = texelFetch(uDepthImage,coord, 0).r;	\n"
+				;
+			if (_glinfo.fetch_depth) {
+				m_part +=
+					"  highp float bufZ = gl_LastFragDepthARM;	\n"
+					;
+			} else {
+				m_part +=
+					"  mediump ivec2 coord = ivec2(gl_FragCoord.xy);	\n"
+					"  highp float bufZ = texelFetch(uDepthImage,coord, 0).r;	\n"
+					;
+			}
+			m_part +=
 				"  highp int iZ = bufZ > 0.999 ? 262143 : int(floor(bufZ * 262143.0));\n"
 				"  mediump int y0 = clamp(iZ/512, 0, 511);					\n"
 				"  mediump int x0 = iZ - 512*y0;							\n"
@@ -79,6 +89,9 @@ namespace glsl {
 				"  fragColor = vec4(uFogColor.rgb, get_alpha());			\n"
 				"}															\n"
 				;
+
+			if (_glinfo.fetch_depth)
+				 m_part = "#extension GL_ARM_shader_framebuffer_fetch_depth_stencil : enable	\n" + m_part;
 		}
 	};
 

@@ -76,6 +76,8 @@ namespace opengl {
 
 		u32 convertInternalTextureFormat(u32 _format) const override;
 
+		void textureBarrier() override;
+
 		/*---------------Framebuffer-------------*/
 
 		graphics::FramebufferTextureFormats * getFramebufferTextureFormats() override;

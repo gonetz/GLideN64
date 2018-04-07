@@ -314,6 +314,7 @@ CachedTexture * DepthBuffer::copyDepthBufferTexture(FrameBuffer * _pBuffer)
 void DepthBuffer::activateDepthBufferTexture(FrameBuffer * _pBuffer)
 {
 	textureCache().activateTexture(0, resolveDepthBufferTexture(_pBuffer));
+	gfxContext.textureBarrier();
 }
 
 void DepthBuffer::bindDepthImageTexture()
