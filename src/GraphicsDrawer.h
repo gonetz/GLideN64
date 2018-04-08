@@ -5,6 +5,7 @@
 #include <list>
 #include <chrono>
 #include <string>
+#include <functional>
 #include "gSP.h"
 #include "TexrectDrawer.h"
 #include "Graphics/ObjectHandle.h"
