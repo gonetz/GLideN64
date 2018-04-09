@@ -57,6 +57,8 @@ FrameBuffer::FrameBuffer()
 	m_loadTileOrigin.uls = m_loadTileOrigin.ult = 0;
 	m_pTexture = textureCache().addFrameBufferTexture(config.video.multisampling != 0);
 	m_FBO = gfxContext.createFramebuffer();
+	m_pFrameBufferCopyTexture = textureCache().addFrameBufferTexture(config.video.multisampling != 0);
+	m_copyFBO = gfxContext.createFramebuffer();
 }
 
 FrameBuffer::~FrameBuffer()
@@ -64,10 +66,12 @@ FrameBuffer::~FrameBuffer()
 	gfxContext.deleteFramebuffer(m_FBO);
 	gfxContext.deleteFramebuffer(m_resolveFBO);
 	gfxContext.deleteFramebuffer(m_SubFBO);
+	gfxContext.deleteFramebuffer(m_copyFBO);
 
 	textureCache().removeFrameBufferTexture(m_pTexture);
 	textureCache().removeFrameBufferTexture(m_pResolveTexture);
 	textureCache().removeFrameBufferTexture(m_pSubTexture);
+	textureCache().removeFrameBufferTexture(m_pFrameBufferCopyTexture);
 }
 
 void FrameBuffer::_initTexture(u16 _width, u16 _height, u16 _format, u16 _size, CachedTexture *_pTexture)
@@ -176,8 +180,12 @@ void FrameBuffer::init(u32 _address, u16 _format, u16 _size, u16 _width, bool _c
 
 	const u16 maxHeight = VI_GetMaxBufferHeight(_width);
 	_initTexture(_width, maxHeight, _format, _size, m_pTexture);
+	_initTexture(_width, maxHeight, _format, _size, m_pFrameBufferCopyTexture);
 
 	if (config.video.multisampling != 0) {
+		_setAndAttachTexture(m_copyFBO, m_pFrameBufferCopyTexture, 0, true);
+		m_pFrameBufferCopyTexture->frameBufferTexture = CachedTexture::fbMultiSample;
+
 		_setAndAttachTexture(m_FBO, m_pTexture, 0, true);
 		m_pTexture->frameBufferTexture = CachedTexture::fbMultiSample;
 
@@ -188,8 +196,10 @@ void FrameBuffer::init(u32 _address, u16 _format, u16 _size, u16 _width, bool _c
 		assert(!gfxContext.isFramebufferError());
 
 		gfxContext.bindFramebuffer(bufferTarget::FRAMEBUFFER, m_FBO);
-	} else
+	} else {
+		_setAndAttachTexture(m_copyFBO, m_pFrameBufferCopyTexture, 0, false);
 		_setAndAttachTexture(m_FBO, m_pTexture, 0, false);
+	}
 
 	wnd.getDrawer().clearColorBuffer(nullptr);
 }
@@ -418,13 +428,37 @@ CachedTexture * FrameBuffer::_getSubTexture(u32 _t)
 	return m_pSubTexture;
 }
 
+CachedTexture * FrameBuffer::_copyFrameBufferTexture()
+{
+	Context::BlitFramebuffersParams blitParams;
+	blitParams.readBuffer = m_FBO;
+	blitParams.drawBuffer = m_copyFBO;
+	blitParams.srcX0 = 0;
+	blitParams.srcY0 = 0;
+	blitParams.srcX1 = m_pTexture->realWidth;
+	blitParams.srcY1 = m_pTexture->realHeight;
+	blitParams.dstX0 = 0;
+	blitParams.dstY0 = 0;
+	blitParams.dstX1 = m_pTexture->realWidth;
+	blitParams.dstY1 = m_pTexture->realHeight;
+	blitParams.mask = blitMask::COLOR_BUFFER;
+	blitParams.filter = textureParameters::FILTER_NEAREST;
+
+	gfxContext.blitFramebuffers(blitParams);
+
+	gfxContext.bindFramebuffer(bufferTarget::READ_FRAMEBUFFER, ObjectHandle::null);
+	frameBufferList().setCurrentDrawBuffer();
+
+	return m_pFrameBufferCopyTexture;
+}
+
 CachedTexture * FrameBuffer::getTexture(u32 _t)
 {
 	const bool getDepthTexture = m_isDepthBuffer &&
 								 gDP.colorImage.address == gDP.depthImageAddress &&
 								 m_pDepthBuffer != nullptr &&
 								 (config.generalEmulation.hacks & hack_ZeldaMM) == 0;
-	CachedTexture *pTexture = getDepthTexture ? m_pDepthBuffer->m_pDepthBufferTexture : m_pTexture;
+	CachedTexture *pTexture = getDepthTexture ? m_pDepthBuffer->copyDepthBufferTexture(this) : _copyFrameBufferTexture();
 
 	const u32 shift = (gSP.textureTile[_t]->imageAddress - m_startAddress) >> (m_size - 1);
 	const u32 factor = m_width;
@@ -461,15 +495,17 @@ CachedTexture * FrameBuffer::getTexture(u32 _t)
 
 CachedTexture * FrameBuffer::getTextureBG(u32 _t)
 {
-	m_pTexture->scaleS = m_scale / (float)m_pTexture->realWidth;
-	m_pTexture->scaleT = m_scale / (float)m_pTexture->realHeight;
+	CachedTexture *pTexture = _copyFrameBufferTexture();
 
-	m_pTexture->shiftScaleS = 1.0f;
-	m_pTexture->shiftScaleT = 1.0f;
+	pTexture->scaleS = m_scale / (float)pTexture->realWidth;
+	pTexture->scaleT = m_scale / (float)pTexture->realHeight;
 
-	m_pTexture->offsetS = gSP.bgImage.imageX;
-	m_pTexture->offsetT = gSP.bgImage.imageY;
-	return m_pTexture;
+	pTexture->shiftScaleS = 1.0f;
+	pTexture->shiftScaleT = 1.0f;
+
+	pTexture->offsetS = gSP.bgImage.imageX;
+	pTexture->offsetT = gSP.bgImage.imageY;
+	return pTexture;
 }
 
 FrameBufferList & FrameBufferList::get()
