@@ -455,6 +455,16 @@ public:
 		} else if (_glinfo.isGLESX) {
 			std::stringstream ss;
 			ss << "#version " << Utils::to_string(_glinfo.majorVersion) << Utils::to_string(_glinfo.minorVersion) << "0 es " << std::endl;
+
+			if (_glinfo.ext_fetch) {
+				ss << "#extension GL_EXT_shader_framebuffer_fetch : enable" << std::endl;
+			} else if (_glinfo.arm_fetch) {
+				ss << "#extension GL_ARM_shader_framebuffer_fetch : enable" << std::endl;
+			}
+			if (_glinfo.fetch_depth) {
+				ss << "#extension GL_ARM_shader_framebuffer_fetch_depth_stencil : enable" << std::endl;
+			}
+
 			ss << "# define IN in" << std::endl
 				<< "# define OUT out" << std::endl
 				<< "# define texture2D texture" << std::endl;
@@ -462,6 +472,9 @@ public:
 		} else {
 			std::stringstream ss;
 			ss << "#version " << Utils::to_string(_glinfo.majorVersion) << Utils::to_string(_glinfo.minorVersion) << "0 core " << std::endl;
+			if (_glinfo.ext_fetch) {
+				ss << "#extension GL_EXT_shader_framebuffer_fetch : enable" << std::endl;
+			}
 			if (_glinfo.imageTextures && _glinfo.majorVersion * 10 + _glinfo.minorVersion < 42) {
 				ss << "#extension GL_ARB_shader_image_load_store : enable" << std::endl
 					<< "#extension GL_ARB_shading_language_420pack : enable" << std::endl;
@@ -771,8 +784,11 @@ public:
 			"IN highp vec2 vTexCoord1;\n"
 			"IN mediump vec2 vLodTexCoord;\n"
 			"IN lowp float vNumLights;	\n"
-			"OUT lowp vec4 fragColor;	\n"
-		;
+			;
+		if (_glinfo.ext_fetch && !_glinfo.isGLES2)
+			m_part += "inout lowp vec4 fragColor;	\n";
+		else
+			m_part += "OUT lowp vec4 fragColor;	\n";
 	}
 };
 
@@ -836,7 +852,11 @@ public:
 		m_part +=
 			"IN lowp vec4 vShadeColor;	\n"
 			"IN lowp float vNumLights;	\n"
-			"OUT lowp vec4 fragColor;	\n";
+			;
+		if (_glinfo.ext_fetch && !_glinfo.isGLES2)
+			m_part += "inout lowp vec4 fragColor;	\n";
+		else
+			m_part += "OUT lowp vec4 fragColor;	\n";
 	}
 };
 
@@ -1006,8 +1026,22 @@ public:
 					"#define READ_TEX(name, tex, texCoord, fbMonochrome, fbFixedAlpha)	\\\n"
 					"  {																\\\n"
 					"  if (fbMonochrome == 3) {											\\\n"
-					"    mediump ivec2 coord = ivec2(gl_FragCoord.xy);					\\\n"
-					"    name = texelFetch(tex, coord, 0);								\\\n"
+					;
+				if (m_glinfo.ext_fetch) {
+					shaderPart +=
+						"    name = fragColor;	\\\n"
+						;
+				} else if (m_glinfo.arm_fetch) {
+					shaderPart +=
+						"    name = gl_LastFragColorARM;	\\\n"
+						;
+				} else {
+					shaderPart +=
+						"    mediump ivec2 coord = ivec2(gl_FragCoord.xy);	\\\n"
+						"    name = texelFetch(tex, coord, 0);								\\\n"
+						;
+				}
+				shaderPart +=
 					"  } else {															\\\n"
 					"    if (uTextureFilterMode == 0) name = texture(tex, texCoord);	\\\n"
 					"    else TEX_FILTER(name, tex, texCoord);			 				\\\n"
@@ -1087,8 +1121,22 @@ public:
 				"#define READ_TEX(name, tex, texCoord, fbMonochrome, fbFixedAlpha)	\\\n"
 				"  {																\\\n"
 				"  if (fbMonochrome == 3) {											\\\n"
-				"    mediump ivec2 coord = ivec2(gl_FragCoord.xy);					\\\n"
-				"    name = texelFetch(tex, coord, 0);								\\\n"
+				;
+			if (_glinfo.ext_fetch) {
+				m_part +=
+					"    name = fragColor; \\\n"
+					;
+			} else if (_glinfo.arm_fetch) {
+				m_part +=
+					"    name = gl_LastFragColorARM;        \\\n"
+					;
+			} else {
+				m_part +=
+					"    mediump ivec2 coord = ivec2(gl_FragCoord.xy);      \\\n"
+					"    name = texelFetch(tex, coord, 0);                                                          \\\n"
+					;
+			}
+			m_part +=
 				"  } else {															\\\n"
 				"    name = texture(tex, texCoord);									\\\n"
 				"  }																\\\n"
