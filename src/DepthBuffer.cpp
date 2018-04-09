@@ -313,7 +313,7 @@ CachedTexture * DepthBuffer::copyDepthBufferTexture(FrameBuffer * _pBuffer)
 
 void DepthBuffer::activateDepthBufferTexture(FrameBuffer * _pBuffer)
 {
-	textureCache().activateTexture(0, resolveDepthBufferTexture(_pBuffer));
+	textureCache().activateTexture(0, copyDepthBufferTexture(_pBuffer));
 }
 
 void DepthBuffer::bindDepthImageTexture()
