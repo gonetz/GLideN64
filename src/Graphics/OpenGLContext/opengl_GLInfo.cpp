@@ -54,10 +54,18 @@ void GLInfo::init() {
 				Utils::isExtensionSupported(*this, "GL_ARB_compute_shader"))) && IS_GL_FUNCTION_VALID(glBindImageTexture);
 		msaa = true;
 	}
-	if (!imageTextures && config.frameBufferEmulation.N64DepthCompare != 0) {
-		config.frameBufferEmulation.N64DepthCompare = 0;
-		LOG(LOG_WARNING, "N64 depth compare will not work without Image Textures support provided in OpenGL >= 4.3 or GLES >= 3.1\n");
+
+	fragment_interlock = Utils::isExtensionSupported(*this, "GL_ARB_fragment_shader_interlock");
+	fragment_interlockNV = Utils::isExtensionSupported(*this, "GL_NV_fragment_shader_interlock") && !fragment_interlock;
+	fragment_ordering = Utils::isExtensionSupported(*this, "GL_INTEL_fragment_shader_ordering") && !fragment_interlock && !fragment_interlockNV;
+
+	if (config.frameBufferEmulation.N64DepthCompare != 0) {
+		if (!(imageTextures && (fragment_interlock || fragment_interlockNV || fragment_ordering))) {
+			config.frameBufferEmulation.N64DepthCompare = 0;
+			LOG(LOG_WARNING, "Your GPU does not support the extensions needed for N64 Depth Compare.\n");
+		}
 	}
+
 	if (isGLES2)
 		config.generalEmulation.enableFragmentDepthWrite = 0;
 
