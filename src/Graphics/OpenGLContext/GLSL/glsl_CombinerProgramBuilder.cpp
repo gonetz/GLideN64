@@ -229,8 +229,10 @@ public:
 			std::stringstream ss;
 			ss << "#version " << Utils::to_string(_glinfo.majorVersion) << Utils::to_string(_glinfo.minorVersion) << "0 es " << std::endl;
 			ss << "# define IN in" << std::endl << "# define OUT out" << std::endl;
-			if (_glinfo.noPerspective)
-				ss << "noperspective OUT highp float vZCoord;" << std::endl << "uniform lowp int uClampMode;" << std::endl;
+			if (_glinfo.noPerspective) {
+				ss << "#extension GL_NV_shader_noperspective_interpolation : enable" << std::endl
+					<< "noperspective OUT highp float vZCoord;" << std::endl << "uniform lowp int uClampMode;" << std::endl;
+			}
 			m_part = ss.str();
 		}
 		else {
@@ -455,6 +457,13 @@ public:
 		} else if (_glinfo.isGLESX) {
 			std::stringstream ss;
 			ss << "#version " << Utils::to_string(_glinfo.majorVersion) << Utils::to_string(_glinfo.minorVersion) << "0 es " << std::endl;
+			if (_glinfo.noPerspective)
+				ss << "#extension GL_NV_shader_noperspective_interpolation : enable" << std::endl;
+			if (config.frameBufferEmulation.N64DepthCompare != 0) {
+				if (_glinfo.fragment_interlockNV)
+					ss << "#extension GL_NV_fragment_shader_interlock : enable" << std::endl
+						<< "layout(pixel_interlock_ordered) in;" << std::endl;
+			}
 			ss << "# define IN in" << std::endl
 				<< "# define OUT out" << std::endl
 				<< "# define texture2D texture" << std::endl;
@@ -462,9 +471,19 @@ public:
 		} else {
 			std::stringstream ss;
 			ss << "#version " << Utils::to_string(_glinfo.majorVersion) << Utils::to_string(_glinfo.minorVersion) << "0 core " << std::endl;
-			if (_glinfo.imageTextures && _glinfo.majorVersion * 10 + _glinfo.minorVersion < 42) {
-				ss << "#extension GL_ARB_shader_image_load_store : enable" << std::endl
-					<< "#extension GL_ARB_shading_language_420pack : enable" << std::endl;
+			if (config.frameBufferEmulation.N64DepthCompare != 0) {
+				if (_glinfo.majorVersion * 10 + _glinfo.minorVersion < 42) {
+					ss << "#extension GL_ARB_shader_image_load_store : enable" << std::endl
+						<< "#extension GL_ARB_shading_language_420pack : enable" << std::endl;
+				}
+				if (_glinfo.fragment_interlock)
+					ss << "#extension GL_ARB_fragment_shader_interlock : enable" << std::endl
+						<< "layout(pixel_interlock_ordered) in;" << std::endl;
+				else if (_glinfo.fragment_interlockNV)
+					ss << "#extension GL_NV_fragment_shader_interlock : enable" << std::endl
+						<< "layout(pixel_interlock_ordered) in;" << std::endl;
+				else if (_glinfo.fragment_ordering)
+					ss << "#extension GL_INTEL_fragment_shader_ordering : enable" << std::endl;
 			}
 			ss << "# define IN in" << std::endl
 				<< "# define OUT out" << std::endl
@@ -938,8 +957,8 @@ public:
 		if (config.frameBufferEmulation.N64DepthCompare != 0) {
 
 			m_part +=
-				"layout(binding = 2, r32f) highp uniform coherent image2D uDepthImageZ;		\n"
-				"layout(binding = 3, r32f) highp uniform coherent image2D uDepthImageDeltaZ;\n"
+				"layout(binding = 2, r32f) highp uniform restrict image2D uDepthImageZ;		\n"
+				"layout(binding = 3, r32f) highp uniform restrict image2D uDepthImageDeltaZ;\n"
 				"bool depth_compare(highp float curZ);\n"
 				"bool depth_render(highp float Z, highp float curZ);\n";
 			;
@@ -1312,10 +1331,27 @@ public:
 	ShaderFragmentCallN64Depth(const opengl::GLInfo & _glinfo)
 	{
 		if (config.frameBufferEmulation.N64DepthCompare != 0) {
-			m_part =
-				"  if (uRenderTarget != 0) { if (!depth_render(fragColor.r, fragDepth)) discard; } \n"
-				"  else if (!depth_compare(fragDepth)) discard; \n"
-			;
+			m_part = "  bool should_discard = false;	\n";
+
+			if (_glinfo.fragment_interlock)
+				m_part += "  beginInvocationInterlockARB();	\n";
+			else if (_glinfo.fragment_interlockNV)
+				m_part += "  beginInvocationInterlockNV();	\n";
+			else if (_glinfo.fragment_ordering)
+				m_part += "  beginFragmentShaderOrderingINTEL();	\n";
+
+			m_part +=
+				"  if (uRenderTarget != 0) { if (!depth_render(fragColor.r, fragDepth)) should_discard = true; } \n"
+				"  else if (!depth_compare(fragDepth)) should_discard = true; \n"
+				;
+
+			if (_glinfo.fragment_interlock)
+				m_part += "  endInvocationInterlockARB();	\n";
+			else if (_glinfo.fragment_interlockNV)
+				m_part += "  endInvocationInterlockNV();	\n";
+
+			m_part += "  if (should_discard) discard;	\n";
+
 		}
 	}
 };
@@ -1919,14 +1955,11 @@ public:
 				"    imageStore(uDepthImageZ, coord, depthOutZ);		\n"
 				"    imageStore(uDepthImageDeltaZ, coord, depthOutDeltaZ);\n"
 				"  }													\n"
-				"  memoryBarrierImage();								\n"
 				"  if (uEnableDepthCompare != 0)						\n"
 				"    return bRes;										\n"
 				"  return true;											\n"
 				"}														\n"
 			;
-			if (!_glinfo.isGLESX && _glinfo.imageTextures && _glinfo.majorVersion * 10 + _glinfo.minorVersion < 43)
-				m_part = "#extension GL_ARB_compute_shader : enable	\n" + m_part;
 		}
 	}
 };
@@ -1950,12 +1983,9 @@ public:
 				"  highp vec4 depthOutDeltaZ = vec4(0.0, 1.0, 1.0, 1.0);\n"
 				"  imageStore(uDepthImageZ,coord, depthOutZ);			\n"
 				"  imageStore(uDepthImageDeltaZ,coord, depthOutDeltaZ);	\n"
-				"  memoryBarrierImage();								\n"
 				"  return true;											\n"
 				"}														\n"
 			;
-			if (!_glinfo.isGLESX && _glinfo.imageTextures && _glinfo.majorVersion * 10 + _glinfo.minorVersion < 43)
-				m_part = "#extension GL_ARB_compute_shader : enable	\n" + m_part;
 		}
 	}
 };

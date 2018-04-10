@@ -81,7 +81,6 @@ namespace graphics {
 
 		struct InitTextureParams {
 			ObjectHandle handle;
-			ImageUnitParam ImageUnit;
 			TextureUnitParam textureUnitIndex{0};
 			u32 msaaLevel = 0;
 			u32 width = 0;
@@ -98,7 +97,6 @@ namespace graphics {
 
 		struct UpdateTextureDataParams {
 			ObjectHandle handle;
-			ImageUnitParam ImageUnit;
 			TextureUnitParam textureUnitIndex{0};
 			u32 x = 0;
 			u32 y = 0;

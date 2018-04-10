@@ -28,6 +28,9 @@ struct GLInfo {
 	bool fetch_depth = false;
 	bool texture_barrier = false;
 	bool texture_barrierNV = false;
+	bool fragment_interlock = false;
+	bool fragment_interlockNV = false;
+	bool fragment_ordering = false;
 	Renderer renderer = Renderer::Other;
 
 	void init();

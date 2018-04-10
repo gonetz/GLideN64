@@ -203,20 +203,8 @@ void BufferedDrawer::drawTriangles(const graphics::Context::DrawTriangleParamete
 		return;
 	}
 
-	if (config.frameBufferEmulation.N64DepthCompare == 0) {
-		glDrawRangeElementsBaseVertex(GLenum(_params.mode), 0, _params.verticesCount - 1, _params.elementsCount, GL_UNSIGNED_SHORT,
-			(u16*)nullptr + m_trisBuffers.ebo.pos - _params.elementsCount, m_trisBuffers.vbo.pos - _params.verticesCount);
-		return;
-	}
-
-	// Draw polygons one by one
-	const GLint eboStartPos = m_trisBuffers.ebo.pos - _params.elementsCount;
-	const GLint vboStartPos = m_trisBuffers.vbo.pos - _params.verticesCount;
-	for (GLuint i = 0; i < _params.elementsCount; i += 3) {
-		glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
-		glDrawRangeElementsBaseVertex(GLenum(_params.mode), 0, _params.verticesCount - 1, 3, GL_UNSIGNED_SHORT,
-			(u16*)nullptr + eboStartPos + i, vboStartPos);
-	}
+	glDrawRangeElementsBaseVertex(GLenum(_params.mode), 0, _params.verticesCount - 1, _params.elementsCount, GL_UNSIGNED_SHORT,
+		(u16*)nullptr + m_trisBuffers.ebo.pos - _params.elementsCount, m_trisBuffers.vbo.pos - _params.verticesCount);
 }
 
 void BufferedDrawer::drawLine(f32 _width, SPVertex * _vertices)
