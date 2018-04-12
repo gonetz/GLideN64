@@ -13,6 +13,7 @@ bool Context::ShaderProgramBinary = false;
 bool Context::ImageTextures = false;
 bool Context::IntegerTextures = false;
 bool Context::ClipControl = false;
+bool Context::FramebufferFetch = false;
 
 Context::Context() {}
 
@@ -34,6 +35,7 @@ void Context::init()
 	ImageTextures = m_impl->isSupported(SpecialFeatures::ImageTextures);
 	IntegerTextures = m_impl->isSupported(SpecialFeatures::IntegerTextures);
 	ClipControl = m_impl->isSupported(SpecialFeatures::ClipControl);
+	FramebufferFetch = m_impl->isSupported(SpecialFeatures::FramebufferFetch);
 }
 
 void Context::destroy()
@@ -212,6 +214,11 @@ void Context::addFrameBufferRenderTarget(const FrameBufferRenderTarget & _params
 bool Context::blitFramebuffers(const BlitFramebuffersParams & _params)
 {
 	return m_impl->blitFramebuffers(_params);
+}
+
+void Context::setDrawBuffers(u32 _num)
+{
+	m_impl->setDrawBuffers(_num);
 }
 
 PixelReadBuffer * Context::createPixelReadBuffer(size_t _sizeInBytes)

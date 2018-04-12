@@ -47,11 +47,11 @@ void GLInfo::init() {
 		imageTextures = false;
 		msaa = false;
 	} else if (isGLESX) {
-		imageTextures = (numericVersion >= 31) && IS_GL_FUNCTION_VALID(glBindImageTexture);
+		imageTextures = (numericVersion >= 31);
 		msaa = numericVersion >= 31;
 	} else {
 		imageTextures = ((numericVersion >= 43) || (Utils::isExtensionSupported(*this, "GL_ARB_shader_image_load_store") &&
-				Utils::isExtensionSupported(*this, "GL_ARB_compute_shader"))) && IS_GL_FUNCTION_VALID(glBindImageTexture);
+				Utils::isExtensionSupported(*this, "GL_ARB_compute_shader")));
 		msaa = true;
 	}
 
@@ -59,12 +59,7 @@ void GLInfo::init() {
 	fragment_interlockNV = Utils::isExtensionSupported(*this, "GL_NV_fragment_shader_interlock") && !fragment_interlock;
 	fragment_ordering = Utils::isExtensionSupported(*this, "GL_INTEL_fragment_shader_ordering") && !fragment_interlock && !fragment_interlockNV;
 
-	if (config.frameBufferEmulation.N64DepthCompare != 0) {
-		if (!(imageTextures && (fragment_interlock || fragment_interlockNV || fragment_ordering))) {
-			config.frameBufferEmulation.N64DepthCompare = 0;
-			LOG(LOG_WARNING, "Your GPU does not support the extensions needed for N64 Depth Compare.\n");
-		}
-	}
+	imageTextures = imageTextures && (fragment_interlock || fragment_interlockNV || fragment_ordering);
 
 	if (isGLES2)
 		config.generalEmulation.enableFragmentDepthWrite = 0;
@@ -87,12 +82,23 @@ void GLInfo::init() {
 		}
 	}
 
+	bool ext_draw_buffers_indexed = isGLESX && (Utils::isExtensionSupported(*this, "GL_EXT_draw_buffers_indexed") || numericVersion >= 32);
 #ifdef EGL
 	if (isGLESX && bufferStorage)
 		g_glBufferStorage = (PFNGLBUFFERSTORAGEPROC) eglGetProcAddress("glBufferStorageEXT");
+	if (isGLESX && numericVersion < 32) {
+		if (ext_draw_buffers_indexed) {
+			g_glEnablei = (PFNGLENABLEIPROC) eglGetProcAddress("glEnableiEXT");
+			g_glDisablei = (PFNGLDISABLEIPROC) eglGetProcAddress("glDisableiEXT");
+		} else {
+			g_glEnablei = nullptr;
+			g_glDisablei = nullptr;
+		}
+	}
 	if (isGLES2 && shaderStorage) {
 		g_glProgramBinary = (PFNGLPROGRAMBINARYPROC) eglGetProcAddress("glProgramBinaryOES");
 		g_glGetProgramBinary = (PFNGLGETPROGRAMBINARYPROC) eglGetProcAddress("glGetProgramBinaryOES");
+		g_glProgramParameteri = nullptr;
 	}
 #endif
 #ifndef OS_ANDROID
@@ -114,4 +120,13 @@ void GLInfo::init() {
 	fetch_depth = Utils::isExtensionSupported(*this, "GL_ARM_shader_framebuffer_fetch_depth_stencil");
 	texture_barrier = (!isGLESX && numericVersion >= 45) || Utils::isExtensionSupported(*this, "GL_ARB_texture_barrier");
 	texture_barrierNV = Utils::isExtensionSupported(*this, "GL_NV_texture_barrier");
+
+	ext_fetch = Utils::isExtensionSupported(*this, "GL_EXT_shader_framebuffer_fetch") && !isGLES2 && (!isGLESX || ext_draw_buffers_indexed) && !imageTextures;
+
+	if (config.frameBufferEmulation.N64DepthCompare != 0) {
+		if (!imageTextures && !ext_fetch) {
+			config.frameBufferEmulation.N64DepthCompare = 0;
+			LOG(LOG_WARNING, "Your GPU does not support the extensions needed for N64 Depth Compare.\n");
+		}
+	}
 }

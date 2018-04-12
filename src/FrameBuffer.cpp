@@ -807,7 +807,7 @@ void FrameBufferList::attachDepthBuffer()
 			pCurrent->m_pDepthBuffer = pDepthBuffer;
 			pDepthBuffer->setDepthAttachment(pCurrent->m_FBO, bufferTarget::DRAW_FRAMEBUFFER);
 			if (config.frameBufferEmulation.N64DepthCompare != 0)
-				pDepthBuffer->bindDepthImageTexture();
+				pDepthBuffer->bindDepthImageTexture(pCurrent->m_FBO);
 		} else
 			pCurrent->m_pDepthBuffer = nullptr;
 	} else
