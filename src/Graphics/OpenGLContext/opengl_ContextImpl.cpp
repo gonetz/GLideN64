@@ -161,8 +161,13 @@ void ContextImpl::clearColorBuffer(f32 _red, f32 _green, f32 _blue, f32 _alpha)
 	CachedEnable * enableScissor = m_cachedFunctions->getCachedEnable(graphics::enable::SCISSOR_TEST);
 	enableScissor->enable(false);
 
-	m_cachedFunctions->getCachedClearColor()->setClearColor(_red, _green, _blue, _alpha);
-	glClear(GL_COLOR_BUFFER_BIT);
+	if (m_glInfo.isGLES2) {
+		m_cachedFunctions->getCachedClearColor()->setClearColor(_red, _green, _blue, _alpha);
+		glClear(GL_COLOR_BUFFER_BIT);
+	} else {
+		GLfloat values[4] = {_red, _green, _blue, _alpha};
+		glClearBufferfv(GL_COLOR, 0, values);
+	}
 
 	enableScissor->enable(true);
 }
@@ -255,8 +260,7 @@ s32 ContextImpl::getMaxTextureSize() const
 
 void ContextImpl::bindImageTexture(const graphics::Context::BindImageTextureParameters & _params)
 {
-	if (IS_GL_FUNCTION_VALID(glBindImageTexture))
-		glBindImageTexture(GLuint(_params.imageUnit), GLuint(_params.texture), 0, GL_FALSE, 0, GLenum(_params.accessMode), GLenum(_params.textureFormat));
+	glBindImageTexture(GLuint(_params.imageUnit), GLuint(_params.texture), 0, GL_FALSE, 0, GLenum(_params.accessMode), GLenum(_params.textureFormat));
 }
 
 u32 ContextImpl::convertInternalTextureFormat(u32 _format) const
@@ -334,6 +338,12 @@ void ContextImpl::addFrameBufferRenderTarget(const graphics::Context::FrameBuffe
 bool ContextImpl::blitFramebuffers(const graphics::Context::BlitFramebuffersParams & _params)
 {
 	return m_blitFramebuffers->blitFramebuffers(_params);
+}
+
+void ContextImpl::setDrawBuffers(u32 _num)
+{
+	GLenum targets[4] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3};
+	glDrawBuffers(_num, targets);
 }
 
 graphics::PixelReadBuffer * ContextImpl::createPixelReadBuffer(size_t _sizeInBytes)
@@ -479,6 +489,8 @@ bool ContextImpl::isSupported(graphics::SpecialFeatures _feature) const
 		return !m_glInfo.isGLES2;
 	case graphics::SpecialFeatures::ClipControl:
 		return !m_glInfo.isGLESX;
+	case graphics::SpecialFeatures::FramebufferFetch:
+		return m_glInfo.ext_fetch;
 	}
 	return false;
 }

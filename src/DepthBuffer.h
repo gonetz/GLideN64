@@ -20,7 +20,7 @@ struct DepthBuffer
 	void setDepthAttachment(graphics::ObjectHandle _fbo, graphics::BufferTargetParam _target);
 	void activateDepthBufferTexture(FrameBuffer * _pBuffer);
 
-	void bindDepthImageTexture();
+	void bindDepthImageTexture(graphics::ObjectHandle _fbo);
 
 	u32 m_address, m_width;
 	u32 m_ulx, m_uly, m_lrx, m_lry; // Parameters of fillrect command.

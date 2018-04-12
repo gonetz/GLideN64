@@ -317,21 +317,34 @@ void DepthBuffer::activateDepthBufferTexture(FrameBuffer * _pBuffer)
 	gfxContext.textureBarrier();
 }
 
-void DepthBuffer::bindDepthImageTexture()
+void DepthBuffer::bindDepthImageTexture(ObjectHandle _fbo)
 {
-	if (!Context::ImageTextures)
-		return;
+	if (Context::ImageTextures) {
+		Context::BindImageTextureParameters bindParams;
+		bindParams.imageUnit = textureImageUnits::DepthZ;
+		bindParams.texture = m_pDepthImageZTexture->name;
+		bindParams.accessMode = textureImageAccessMode::READ_WRITE;
+		bindParams.textureFormat = gfxContext.getFramebufferTextureFormats().depthImageInternalFormat;
+		gfxContext.bindImageTexture(bindParams);
 
-	Context::BindImageTextureParameters bindParams;
-	bindParams.imageUnit = textureImageUnits::DepthZ;
-	bindParams.texture = m_pDepthImageZTexture->name;
-	bindParams.accessMode = textureImageAccessMode::READ_WRITE;
-	bindParams.textureFormat = gfxContext.getFramebufferTextureFormats().depthImageInternalFormat;
-	gfxContext.bindImageTexture(bindParams);
+		bindParams.imageUnit = textureImageUnits::DepthDeltaZ;
+		bindParams.texture = m_pDepthImageDeltaZTexture->name;
+		gfxContext.bindImageTexture(bindParams);
+	} else if (Context::FramebufferFetch) {
+		Context::FrameBufferRenderTarget targetParams;
+		targetParams.bufferHandle = _fbo;
+		targetParams.bufferTarget = bufferTarget::DRAW_FRAMEBUFFER;
+		targetParams.attachment = bufferAttachment::COLOR_ATTACHMENT1;
+		targetParams.textureHandle = m_pDepthImageZTexture->name;
+		targetParams.textureTarget = textureTarget::TEXTURE_2D;
+		gfxContext.addFrameBufferRenderTarget(targetParams);
 
-	bindParams.imageUnit = textureImageUnits::DepthDeltaZ;
-	bindParams.texture = m_pDepthImageDeltaZTexture->name;
-	gfxContext.bindImageTexture(bindParams);
+		targetParams.attachment = bufferAttachment::COLOR_ATTACHMENT2;
+		targetParams.textureHandle = m_pDepthImageDeltaZTexture->name;
+		gfxContext.addFrameBufferRenderTarget(targetParams);
+
+		gfxContext.setDrawBuffers(3);
+	}
 }
 
 DepthBufferList::DepthBufferList() : m_pCurrent(nullptr), m_pzLUT(nullptr)

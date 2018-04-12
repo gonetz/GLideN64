@@ -23,7 +23,8 @@ namespace graphics {
 		ShaderProgramBinary,
 		ImageTextures,
 		IntegerTextures,
-		ClipControl
+		ClipControl,
+		FramebufferFetch
 	};
 
 	enum class ClampMode {
@@ -202,6 +203,8 @@ namespace graphics {
 
 		bool blitFramebuffers(const BlitFramebuffersParams & _params);
 
+		void setDrawBuffers(u32 _num);
+
 		/*---------------Pixelbuffer-------------*/
 
 		PixelReadBuffer * createPixelReadBuffer(size_t _sizeInBytes);
@@ -281,6 +284,7 @@ namespace graphics {
 		static bool ImageTextures;
 		static bool IntegerTextures;
 		static bool ClipControl;
+		static bool FramebufferFetch;
 
 	private:
 		std::unique_ptr<ContextImpl> m_impl;

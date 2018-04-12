@@ -96,6 +96,8 @@ namespace opengl {
 
 		bool blitFramebuffers(const graphics::Context::BlitFramebuffersParams & _params) override;
 
+		void setDrawBuffers(u32 _num) override;
+
 		/*---------------Pixelbuffer-------------*/
 
 		graphics::PixelReadBuffer * createPixelReadBuffer(size_t _sizeInBytes) override;
