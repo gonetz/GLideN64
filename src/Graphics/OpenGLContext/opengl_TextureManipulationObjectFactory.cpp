@@ -228,15 +228,17 @@ namespace opengl {
 		{
 			m_bind->bind(_params.textureUnitIndex, GL_TEXTURE_2D, _params.handle);
 
-			glTexSubImage2D(GL_TEXTURE_2D,
-				_params.mipMapLevel,
-				_params.x,
-				_params.y,
-				_params.width,
-				_params.height,
-				GLuint(_params.format),
-				GLenum(_params.dataType),
-				_params.data);
+			if (_params.data != nullptr) {
+				glTexSubImage2D(GL_TEXTURE_2D,
+					_params.mipMapLevel,
+					_params.x,
+					_params.y,
+					_params.width,
+					_params.height,
+					GLuint(_params.format),
+					GLenum(_params.dataType),
+					_params.data);
+			}
 
 			if (_params.ImageUnit.isValid() && _params.internalFormat.isValid() && m_imageTextures)
 				glBindImageTexture(GLuint(_params.ImageUnit), GLuint(_params.handle),
