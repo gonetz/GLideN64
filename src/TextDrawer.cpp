@@ -161,12 +161,14 @@ struct Atlas {
 				ox = 0;
 			}
 
-			updateParams.x = ox;
-			updateParams.y = oy;
-			updateParams.width = g->bitmap.width;
-			updateParams.height = g->bitmap.rows;
-			updateParams.data = g->bitmap.buffer;
-			gfxContext.update2DTexture(updateParams);
+			if (g->bitmap.buffer != nullptr) {
+				updateParams.x = ox;
+				updateParams.y = oy;
+				updateParams.width = g->bitmap.width;
+				updateParams.height = g->bitmap.rows;
+				updateParams.data = g->bitmap.buffer;
+				gfxContext.update2DTexture(updateParams);
+			}
 
 			c[i].ax = _FIXED2FLOAT(g->advance.x, 6);
 			c[i].ay = _FIXED2FLOAT(g->advance.y, 6);
