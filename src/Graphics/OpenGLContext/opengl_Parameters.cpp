@@ -19,7 +19,7 @@ namespace graphics {
 		InternalColorFormatParam RGBA4(GL_RGBA4);
 		InternalColorFormatParam RGB5_A1(GL_RGB5_A1);
 		InternalColorFormatParam RG(GL_RG8);
-		InternalColorFormatParam RED(GL_R8);
+		InternalColorFormatParam R16F(GL_R16F);
 		InternalColorFormatParam DEPTH(GL_DEPTH_COMPONENT24);
 		InternalColorFormatParam RG32F(GL_RG32F);
 		InternalColorFormatParam LUMINANCE(0x1909);
