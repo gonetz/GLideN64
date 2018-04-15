@@ -971,16 +971,21 @@ void TextureCache::_loadDepthTexture(CachedTexture * _pTexture, u16* _pDest)
 	if (!config.generalEmulation.enableFragmentDepthWrite)
 		return;
 
+	u32 size = _pTexture->realWidth * _pTexture->realHeight;
+	std::vector<f32> pDestFloat(size);
+	for (u32 i = 0; i < size; ++i)
+		pDestFloat[i] = _pDest[i] / 65535.0;
+
 	Context::InitTextureParams params;
 	params.handle = _pTexture->name;
 	params.mipMapLevel = 0;
 	params.msaaLevel = 0;
 	params.width = _pTexture->realWidth;
 	params.height = _pTexture->realHeight;
-	params.internalFormat = internalcolorFormat::RED;
+	params.internalFormat = internalcolorFormat::R16F;
 	params.format = colorFormat::RED;
-	params.dataType = datatype::UNSIGNED_SHORT;
-	params.data = _pDest;
+	params.dataType = datatype::FLOAT;
+	params.data = pDestFloat.data();
 	gfxContext.init2DTexture(params);
 }
 

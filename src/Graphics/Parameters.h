@@ -19,7 +19,7 @@ namespace graphics {
 		extern InternalColorFormatParam RGBA4;
 		extern InternalColorFormatParam RGB5_A1;
 		extern InternalColorFormatParam RG;
-		extern InternalColorFormatParam RED;
+		extern InternalColorFormatParam R16F;
 		extern InternalColorFormatParam DEPTH;
 		extern InternalColorFormatParam RG32F;
 		extern InternalColorFormatParam LUMINANCE;
