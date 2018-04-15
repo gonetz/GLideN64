@@ -1278,7 +1278,8 @@ void FrameBuffer_ActivateBufferTexture(u32 t, u32 _frameBufferAddress)
 
 //	frameBufferList().renderBuffer(pBuffer->m_startAddress);
 	textureCache().activateTexture(t, pTexture);
-	gfxContext.textureBarrier();
+	if (pBuffer == frameBufferList().getCurrent())
+		gfxContext.textureBarrier();
 	gDP.changed |= CHANGED_FB_TEXTURE;
 }
 
@@ -1294,7 +1295,8 @@ void FrameBuffer_ActivateBufferTextureBG(u32 t, u32 _frameBufferAddress)
 
 //	frameBufferList().renderBuffer(pBuffer->m_startAddress);
 	textureCache().activateTexture(t, pTexture);
-	gfxContext.textureBarrier();
+	if (pBuffer == frameBufferList().getCurrent())
+		gfxContext.textureBarrier();
 	gDP.changed |= CHANGED_FB_TEXTURE;
 }
 
