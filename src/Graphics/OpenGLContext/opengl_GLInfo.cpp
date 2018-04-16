@@ -40,6 +40,8 @@ void GLInfo::init() {
 		renderer = Renderer::Intel;
 	else if (strstr((const char*)strRenderer, "PowerVR") != nullptr)
 		renderer = Renderer::PowerVR;
+	else if (strstr((const char*)strRenderer, "NVIDIA Tegra") != nullptr)
+		renderer = Renderer::Tegra;
 	LOG(LOG_VERBOSE, "OpenGL renderer: %s\n", strRenderer);
 
 	int numericVersion = majorVersion * 10 + minorVersion;
@@ -55,8 +57,10 @@ void GLInfo::init() {
 		msaa = true;
 	}
 
-	fragment_interlock = Utils::isExtensionSupported(*this, "GL_ARB_fragment_shader_interlock");
-	fragment_interlockNV = Utils::isExtensionSupported(*this, "GL_NV_fragment_shader_interlock") && !fragment_interlock;
+	//Tegra has a buggy implementation of fragment_shader_interlock that causes graphics lockups
+	bool hasBuggyFragmentShaderInterlock = renderer == Renderer::Tegra;
+	fragment_interlock = Utils::isExtensionSupported(*this, "GL_ARB_fragment_shader_interlock") && !hasBuggyFragmentShaderInterlock;
+	fragment_interlockNV = Utils::isExtensionSupported(*this, "GL_NV_fragment_shader_interlock") && !fragment_interlock && !hasBuggyFragmentShaderInterlock;
 	fragment_ordering = Utils::isExtensionSupported(*this, "GL_INTEL_fragment_shader_ordering") && !fragment_interlock && !fragment_interlockNV;
 
 	imageTextures = imageTextures && (fragment_interlock || fragment_interlockNV || fragment_ordering);
