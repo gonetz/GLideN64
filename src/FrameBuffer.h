@@ -42,6 +42,7 @@ struct FrameBuffer
 	bool m_isOBScreen;
 	bool m_isMainBuffer;
 	bool m_readable;
+	bool m_copied;
 
 	struct {
 		u32 uls, ult;
@@ -61,6 +62,10 @@ struct FrameBuffer
 	graphics::ObjectHandle m_SubFBO;
 	CachedTexture *m_pSubTexture;
 
+	// copy FBO
+	graphics::ObjectHandle m_copyFBO;
+	CachedTexture * m_pFrameBufferCopyTexture;
+
 	std::vector<u8> m_RdramCopy;
 
 private:
@@ -75,6 +80,8 @@ private:
 	void _initTexture(u16 _width, u16 _height, u16 _format, u16 _size, CachedTexture *_pTexture);
 	void _setAndAttachTexture(graphics::ObjectHandle _fbo, CachedTexture *_pTexture, u32 _t, bool _multisampling);
 	bool _initSubTexture(u32 _t);
+	void _initCopyTexture();
+	CachedTexture * _copyFrameBufferTexture();
 	CachedTexture * _getSubTexture(u32 _t);
 	mutable u32 m_validityChecked;
 };

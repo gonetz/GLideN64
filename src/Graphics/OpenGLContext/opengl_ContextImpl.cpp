@@ -491,6 +491,8 @@ bool ContextImpl::isSupported(graphics::SpecialFeatures _feature) const
 		return !m_glInfo.isGLESX;
 	case graphics::SpecialFeatures::FramebufferFetch:
 		return m_glInfo.ext_fetch;
+	case graphics::SpecialFeatures::TextureBarrier:
+		return m_glInfo.texture_barrier || m_glInfo.texture_barrierNV;
 	}
 	return false;
 }

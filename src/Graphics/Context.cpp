@@ -14,6 +14,7 @@ bool Context::ImageTextures = false;
 bool Context::IntegerTextures = false;
 bool Context::ClipControl = false;
 bool Context::FramebufferFetch = false;
+bool Context::TextureBarrier = false;
 
 Context::Context() {}
 
@@ -36,6 +37,7 @@ void Context::init()
 	IntegerTextures = m_impl->isSupported(SpecialFeatures::IntegerTextures);
 	ClipControl = m_impl->isSupported(SpecialFeatures::ClipControl);
 	FramebufferFetch = m_impl->isSupported(SpecialFeatures::FramebufferFetch);
+	TextureBarrier = m_impl->isSupported(SpecialFeatures::TextureBarrier);
 }
 
 void Context::destroy()
