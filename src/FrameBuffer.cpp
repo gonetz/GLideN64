@@ -53,6 +53,9 @@ FrameBuffer::FrameBuffer()
 	, m_pResolveTexture(nullptr)
 	, m_resolved(false)
 	, m_pSubTexture(nullptr)
+	, m_copied(false)
+	, m_pFrameBufferCopyTexture(nullptr)
+	, m_copyFBO(ObjectHandle::null)
 {
 	m_loadTileOrigin.uls = m_loadTileOrigin.ult = 0;
 	m_pTexture = textureCache().addFrameBufferTexture(config.video.multisampling != 0);
@@ -64,10 +67,12 @@ FrameBuffer::~FrameBuffer()
 	gfxContext.deleteFramebuffer(m_FBO);
 	gfxContext.deleteFramebuffer(m_resolveFBO);
 	gfxContext.deleteFramebuffer(m_SubFBO);
+	gfxContext.deleteFramebuffer(m_copyFBO);
 
 	textureCache().removeFrameBufferTexture(m_pTexture);
 	textureCache().removeFrameBufferTexture(m_pResolveTexture);
 	textureCache().removeFrameBufferTexture(m_pSubTexture);
+	textureCache().removeFrameBufferTexture(m_pFrameBufferCopyTexture);
 }
 
 void FrameBuffer::_initTexture(u16 _width, u16 _height, u16 _format, u16 _size, CachedTexture *_pTexture)
@@ -418,6 +423,47 @@ CachedTexture * FrameBuffer::_getSubTexture(u32 _t)
 	return m_pSubTexture;
 }
 
+void FrameBuffer::_initCopyTexture()
+{
+	m_copyFBO = gfxContext.createFramebuffer();
+	m_pFrameBufferCopyTexture = textureCache().addFrameBufferTexture(config.video.multisampling != 0);
+	_initTexture(m_width, VI_GetMaxBufferHeight(m_width), m_pTexture->format, m_pTexture->size, m_pFrameBufferCopyTexture);
+	_setAndAttachTexture(m_copyFBO, m_pFrameBufferCopyTexture, 0, config.video.multisampling != 0);
+	if (config.video.multisampling != 0)
+		m_pFrameBufferCopyTexture->frameBufferTexture = CachedTexture::fbMultiSample;
+}
+
+CachedTexture * FrameBuffer::_copyFrameBufferTexture()
+{
+	if (m_copied)
+		return m_pFrameBufferCopyTexture;
+
+	if (m_pFrameBufferCopyTexture == nullptr)
+		_initCopyTexture();
+
+	Context::BlitFramebuffersParams blitParams;
+	blitParams.readBuffer = m_FBO;
+	blitParams.drawBuffer = m_copyFBO;
+	blitParams.srcX0 = 0;
+	blitParams.srcY0 = 0;
+	blitParams.srcX1 = m_pTexture->realWidth;
+	blitParams.srcY1 = m_pTexture->realHeight;
+	blitParams.dstX0 = 0;
+	blitParams.dstY0 = 0;
+	blitParams.dstX1 = m_pTexture->realWidth;
+	blitParams.dstY1 = m_pTexture->realHeight;
+	blitParams.mask = blitMask::COLOR_BUFFER;
+	blitParams.filter = textureParameters::FILTER_NEAREST;
+
+	gfxContext.blitFramebuffers(blitParams);
+
+	gfxContext.bindFramebuffer(bufferTarget::READ_FRAMEBUFFER, ObjectHandle::null);
+	frameBufferList().setCurrentDrawBuffer();
+
+	m_copied = true;
+	return m_pFrameBufferCopyTexture;
+}
+
 CachedTexture * FrameBuffer::getTexture(u32 _t)
 {
 	const bool getDepthTexture = m_isDepthBuffer &&
@@ -425,6 +471,13 @@ CachedTexture * FrameBuffer::getTexture(u32 _t)
 								 m_pDepthBuffer != nullptr &&
 								 (config.generalEmulation.hacks & hack_ZeldaMM) == 0;
 	CachedTexture *pTexture = getDepthTexture ? m_pDepthBuffer->m_pDepthBufferTexture : m_pTexture;
+
+	if (this == frameBufferList().getCurrent()) {
+		if (Context::TextureBarrier)
+			gfxContext.textureBarrier();
+		else if (Context::BlitFramebuffer)
+			pTexture = getDepthTexture ? m_pDepthBuffer->copyDepthBufferTexture(this) : _copyFrameBufferTexture();
+	}
 
 	const u32 shift = (gSP.textureTile[_t]->imageAddress - m_startAddress) >> (m_size - 1);
 	const u32 factor = m_width;
@@ -461,15 +514,24 @@ CachedTexture * FrameBuffer::getTexture(u32 _t)
 
 CachedTexture * FrameBuffer::getTextureBG(u32 _t)
 {
-	m_pTexture->scaleS = m_scale / (float)m_pTexture->realWidth;
-	m_pTexture->scaleT = m_scale / (float)m_pTexture->realHeight;
+	CachedTexture *pTexture = m_pTexture;
 
-	m_pTexture->shiftScaleS = 1.0f;
-	m_pTexture->shiftScaleT = 1.0f;
+	if (this == frameBufferList().getCurrent()) {
+		if (Context::TextureBarrier)
+			gfxContext.textureBarrier();
+		else if (Context::BlitFramebuffer)
+			pTexture = _copyFrameBufferTexture();
+	}
 
-	m_pTexture->offsetS = gSP.bgImage.imageX;
-	m_pTexture->offsetT = gSP.bgImage.imageY;
-	return m_pTexture;
+	pTexture->scaleS = m_scale / (float)pTexture->realWidth;
+	pTexture->scaleT = m_scale / (float)pTexture->realHeight;
+
+	pTexture->shiftScaleS = 1.0f;
+	pTexture->shiftScaleT = 1.0f;
+
+	pTexture->offsetS = gSP.bgImage.imageX;
+	pTexture->offsetT = gSP.bgImage.imageY;
+	return pTexture;
 }
 
 FrameBufferList & FrameBufferList::get()
@@ -704,6 +766,7 @@ void FrameBufferList::saveBuffer(u32 _address, u16 _format, u16 _size, u16 _widt
 
 	m_pCurrent->m_isDepthBuffer = _address == gDP.depthImageAddress;
 	m_pCurrent->m_isPauseScreen = m_pCurrent->m_isOBScreen = false;
+	m_pCurrent->m_copied = false;
 }
 
 void FrameBufferList::copyAux()
@@ -1278,8 +1341,6 @@ void FrameBuffer_ActivateBufferTexture(u32 t, u32 _frameBufferAddress)
 
 //	frameBufferList().renderBuffer(pBuffer->m_startAddress);
 	textureCache().activateTexture(t, pTexture);
-	if (pBuffer == frameBufferList().getCurrent())
-		gfxContext.textureBarrier();
 	gDP.changed |= CHANGED_FB_TEXTURE;
 }
 
@@ -1295,8 +1356,6 @@ void FrameBuffer_ActivateBufferTextureBG(u32 t, u32 _frameBufferAddress)
 
 //	frameBufferList().renderBuffer(pBuffer->m_startAddress);
 	textureCache().activateTexture(t, pTexture);
-	if (pBuffer == frameBufferList().getCurrent())
-		gfxContext.textureBarrier();
 	gDP.changed |= CHANGED_FB_TEXTURE;
 }
 

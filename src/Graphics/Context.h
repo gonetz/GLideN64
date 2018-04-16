@@ -24,7 +24,8 @@ namespace graphics {
 		ImageTextures,
 		IntegerTextures,
 		ClipControl,
-		FramebufferFetch
+		FramebufferFetch,
+		TextureBarrier
 	};
 
 	enum class ClampMode {
@@ -285,6 +286,7 @@ namespace graphics {
 		static bool IntegerTextures;
 		static bool ClipControl;
 		static bool FramebufferFetch;
+		static bool TextureBarrier;
 
 	private:
 		std::unique_ptr<ContextImpl> m_impl;
