@@ -60,20 +60,51 @@ namespace glsl {
 				"uniform lowp usampler2D uTlutImage;\n"
 				"uniform sampler2D uDepthImage;		\n"
 				"uniform lowp vec4 uFogColor;								\n"
-				"OUT lowp vec4 fragColor;									\n"
+				;
+
+			if (config.frameBufferEmulation.N64DepthCompare != 0) {
+				if (_glinfo.imageTextures)
+					m_part += "layout(binding = 2, r32f) highp uniform restrict readonly image2D uDepthImageZ;		\n";
+
+				if (_glinfo.ext_fetch) {
+					m_part +=
+						"layout(location = 0) OUT lowp vec4 fragColor;	\n"
+						"layout(location = 1) inout highp vec4 depthZ;	\n"
+						;
+				} else
+					m_part += "OUT lowp vec4 fragColor;									\n";
+			} else
+				m_part += "OUT lowp vec4 fragColor;	\n";
+
+			m_part +=
 				"lowp float get_alpha()										\n"
 				"{															\n"
 				;
-			if (_glinfo.fetch_depth) {
-				m_part +=
-					"  highp float bufZ = gl_LastFragDepthARM;	\n"
-					;
+
+			if (config.frameBufferEmulation.N64DepthCompare == 0) {
+				if (_glinfo.fetch_depth) {
+					m_part +=
+						"  highp float bufZ = gl_LastFragDepthARM;	\n"
+						;
+				} else {
+					m_part +=
+						"  mediump ivec2 coord = ivec2(gl_FragCoord.xy);	\n"
+						"  highp float bufZ = texelFetch(uDepthImage,coord, 0).r;	\n"
+						;
+				}
 			} else {
-				m_part +=
-					"  mediump ivec2 coord = ivec2(gl_FragCoord.xy);	\n"
-					"  highp float bufZ = texelFetch(uDepthImage,coord, 0).r;	\n"
-					;
+				if (_glinfo.imageTextures) {
+					m_part +=
+						"  mediump ivec2 coord = ivec2(gl_FragCoord.xy);	\n"
+						"  highp float bufZ = imageLoad(uDepthImageZ,coord).r;	\n"
+						;
+				} else if (_glinfo.ext_fetch) {
+					m_part +=
+						"  highp float bufZ = depthZ.r;	\n"
+						;
+				}
 			}
+
 			m_part +=
 				"  highp int iZ = bufZ > 0.999 ? 262143 : int(floor(bufZ * 262143.0));\n"
 				"  mediump int y0 = clamp(iZ/512, 0, 511);					\n"
@@ -90,7 +121,7 @@ namespace glsl {
 				"}															\n"
 				;
 
-			if (_glinfo.fetch_depth)
+			if (config.frameBufferEmulation.N64DepthCompare == 0 && _glinfo.fetch_depth)
 				 m_part = "#extension GL_ARM_shader_framebuffer_fetch_depth_stencil : enable	\n" + m_part;
 		}
 	};

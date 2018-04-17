@@ -52,8 +52,7 @@ void GLInfo::init() {
 		imageTextures = (numericVersion >= 31);
 		msaa = numericVersion >= 31;
 	} else {
-		imageTextures = ((numericVersion >= 43) || (Utils::isExtensionSupported(*this, "GL_ARB_shader_image_load_store") &&
-				Utils::isExtensionSupported(*this, "GL_ARB_compute_shader")));
+		imageTextures = (numericVersion >= 42) || Utils::isExtensionSupported(*this, "GL_ARB_shader_image_load_store");
 		msaa = true;
 	}
 
