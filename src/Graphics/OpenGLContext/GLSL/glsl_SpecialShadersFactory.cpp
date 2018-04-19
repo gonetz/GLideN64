@@ -93,6 +93,8 @@ namespace glsl {
 						;
 				}
 			} else {
+				// Either _glinfo.imageTextures or _glinfo.ext_fetch must be enabled when N64DepthCompare != 0
+				// see GLInfo::init()
 				if (_glinfo.imageTextures) {
 					m_part +=
 						"  mediump ivec2 coord = ivec2(gl_FragCoord.xy);	\n"
