@@ -504,16 +504,16 @@ void TextureCache::init()
 		m_pMSDummy = addFrameBufferTexture(true); // we don't want to remove dummy texture
 		_initDummyTexture(m_pMSDummy);
 
-		Context::InitTextureParams params;
-		params.handle = m_pMSDummy->name;
-		params.mipMapLevel = 0;
-		params.msaaLevel = config.video.multisampling;
-		params.width = m_pMSDummy->realWidth;
-		params.height = m_pMSDummy->realHeight;
-		params.format = colorFormat::RGBA;
-		params.internalFormat = gfxContext.convertInternalTextureFormat(u32(internalcolorFormat::RGBA8));
-		params.dataType = datatype::UNSIGNED_BYTE;
-		gfxContext.init2DTexture(params);
+		Context::InitTextureParams msParams;
+		msParams.handle = m_pMSDummy->name;
+		msParams.mipMapLevel = 0;
+		msParams.msaaLevel = config.video.multisampling;
+		msParams.width = m_pMSDummy->realWidth;
+		msParams.height = m_pMSDummy->realHeight;
+		msParams.format = colorFormat::RGBA;
+		msParams.internalFormat = gfxContext.convertInternalTextureFormat(u32(internalcolorFormat::RGBA8));
+		msParams.dataType = datatype::UNSIGNED_BYTE;
+		gfxContext.init2DTexture(msParams);
 
 		activateMSDummy(0);
 		activateMSDummy(1);
@@ -763,7 +763,8 @@ void TextureCache::_loadBackground(CachedTexture *pTexture)
 	if (_loadHiresBackground(pTexture))
 		return;
 
-	u32 *pDest;
+	u32 *pDest = nullptr;
+	u16 *pDest16 = nullptr;
 
 	u8 *pSwapped, *pSrc;
 	u32 numBytes, bpl;
@@ -799,6 +800,7 @@ void TextureCache::_loadBackground(CachedTexture *pTexture)
 		free(pSwapped);
 		return;
 	}
+	pDest16 = reinterpret_cast<u16*>(pDest);
 
 	clampSClamp = pTexture->width - 1;
 	clampTClamp = pTexture->height - 1;
@@ -813,9 +815,9 @@ void TextureCache::_loadBackground(CachedTexture *pTexture)
 			tx = min(x, (u32)clampSClamp);
 
 			if (glInternalFormat == internalcolorFormat::RGBA8)
-				((u32*)pDest)[j++] = GetTexel((u64*)pSrc, tx, 0, pTexture->palette);
+				pDest[j++] = GetTexel((u64*)pSrc, tx, 0, pTexture->palette);
 			else
-				((u16*)pDest)[j++] = GetTexel((u64*)pSrc, tx, 0, pTexture->palette);
+				pDest16[j++] = static_cast<u16>(GetTexel((u64*)pSrc, tx, 0, pTexture->palette));
 		}
 	}
 

@@ -117,10 +117,13 @@ void T3DUX_LoadObject(u32 pstate, u32 pvtx, u32 ptri, u32 pcol)
 	gSP.texture.scales = 1.0f;
 	gSP.texture.scalet = 1.0f;
 
-	const u32 w0 = ostate->othermode0;
-	const u32 w1 = ostate->othermode1;
-	gDPSetOtherMode( _SHIFTR( w0, 0, 24 ),	// mode0
-					 w1 );					// mode1
+	{
+		const u32 w0 = ostate->othermode0;
+		const u32 w1 = ostate->othermode1;
+		gDPSetOtherMode(
+			_SHIFTR(w0, 0, 24),	// mode0
+			w1);				// mode1
+	}
 
 	if ((ostate->matrixFlag & 1) == 0) //load matrix
 		gSPForceMatrix(pstate + sizeof(T3DUXState));

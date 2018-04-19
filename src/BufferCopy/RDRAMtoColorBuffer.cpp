@@ -207,30 +207,30 @@ void RDRAMtoColorBuffer::copyFromRDRAM(u32 _address, bool _bCFB)
 	m_pTexture->width = width;
 	m_pTexture->height = height;
 
-	u32 * dst = nullptr;
+	u32 * pDst = nullptr;
 	std::unique_ptr<u8[]> dstData;
 
 	//If not using float, the initial coversion will already be correct
 	if (fbTexFormats.colorType == datatype::FLOAT) {
 		const u32 initialDataSize = width*height * 4;
 		dstData = std::unique_ptr<u8[]>(new u8[initialDataSize]);
-		dst = reinterpret_cast<u32*>(dstData.get());
+		pDst = reinterpret_cast<u32*>(dstData.get());
 	} else {
-		dst = reinterpret_cast<u32*>(m_pbuf);
+		pDst = reinterpret_cast<u32*>(m_pbuf);
 	}
 
 	bool bCopy;
 	if (m_vecAddress.empty()) {
 		if (m_pCurBuffer->m_size == G_IM_SIZ_16b)
-			bCopy = _copyBufferFromRdram<u16>(address, dst, RGBA16ToABGR32, 1, x0, y0, width, height, _bCFB);
+			bCopy = _copyBufferFromRdram<u16>(address, pDst, RGBA16ToABGR32, 1, x0, y0, width, height, _bCFB);
 		else
-			bCopy = _copyBufferFromRdram<u32>(address, dst, RGBA32ToABGR32, 0, x0, y0, width, height, _bCFB);
+			bCopy = _copyBufferFromRdram<u32>(address, pDst, RGBA32ToABGR32, 0, x0, y0, width, height, _bCFB);
 	}
 	else {
 		if (m_pCurBuffer->m_size == G_IM_SIZ_16b)
-			bCopy = _copyPixelsFromRdram<u16>(address, m_vecAddress, dst, RGBA16ToABGR32, 1, width, height, _bCFB);
+			bCopy = _copyPixelsFromRdram<u16>(address, m_vecAddress, pDst, RGBA16ToABGR32, 1, width, height, _bCFB);
 		else
-			bCopy = _copyPixelsFromRdram<u32>(address, m_vecAddress, dst, RGBA32ToABGR32, 0, width, height, _bCFB);
+			bCopy = _copyPixelsFromRdram<u32>(address, m_vecAddress, pDst, RGBA32ToABGR32, 0, width, height, _bCFB);
 	}
 
 	//Convert integer format to float

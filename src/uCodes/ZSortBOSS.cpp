@@ -479,6 +479,10 @@ void ZSortBOSS_TransposeMTX( u32, u32 _w1 )
 		case 0x8b0:
 			mtx = (M44*)gSP.matrix.combined;
 		break;
+
+		default:
+			assert(false);
+			return;
 	}
 
 	memcpy(m, mtx, 64);

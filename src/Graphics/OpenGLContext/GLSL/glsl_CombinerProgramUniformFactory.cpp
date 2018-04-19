@@ -679,7 +679,7 @@ public:
 
 	void update(bool _force) override
 	{
-		int clampMode;
+		int clampMode = -1;
 		switch (gfxContext.getClampMode())
 		{
 		case graphics::ClampMode::ClippingEnabled:
