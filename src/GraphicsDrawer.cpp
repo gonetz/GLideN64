@@ -1143,7 +1143,7 @@ void GraphicsDrawer::drawTexturedRect(const TexturedRectParams & _params)
 		gfxContext.enable(enable::CULL_FACE, false);
 
 		if (_params.texrectCmd && texturedRectSpecial != nullptr && texturedRectSpecial(_params)) {
-			gSP.changed |= CHANGED_GEOMETRYMODE;
+			gSP.changed |= CHANGED_GEOMETRYMODE | CHANGED_VIEWPORT;
 			return;
 		}
 
