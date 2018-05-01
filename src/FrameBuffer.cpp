@@ -961,6 +961,9 @@ void FrameBufferList::_renderScreenSizeBuffer()
 
 	wnd.swapBuffers();
 	gfxContext.bindFramebuffer(bufferTarget::DRAW_FRAMEBUFFER, pBuffer->m_FBO);
+	if (config.frameBufferEmulation.forceDepthBufferClear != 0) {
+		gfxContext.clearDepthBuffer();
+	}
 	gDP.changed |= CHANGED_SCISSOR;
 }
 
@@ -1289,6 +1292,9 @@ void FrameBufferList::renderBuffer()
 	wnd.swapBuffers();
 	if (m_pCurrent != nullptr) {
 		gfxContext.bindFramebuffer(bufferTarget::DRAW_FRAMEBUFFER, m_pCurrent->m_FBO);
+	}
+	if (config.frameBufferEmulation.forceDepthBufferClear != 0) {
+		gfxContext.clearDepthBuffer();
 	}
 
 	const s32 X = hOffset;
