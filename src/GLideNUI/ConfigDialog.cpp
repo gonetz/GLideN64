@@ -166,6 +166,7 @@ void ConfigDialog::_init()
 	ui->RenderFBCheckBox->setChecked(config.frameBufferEmulation.copyFromRDRAM != 0);
 	ui->n64DepthCompareCheckBox->toggle();
 	ui->n64DepthCompareCheckBox->setChecked(config.frameBufferEmulation.N64DepthCompare != 0);
+	ui->forceDepthBufferClearCheckBox->setChecked(config.frameBufferEmulation.forceDepthBufferClear != 0);
 
 	switch (config.frameBufferEmulation.aspect) {
 	case Config::aStretch:
@@ -414,6 +415,7 @@ void ConfigDialog::accept()
 	config.frameBufferEmulation.copyFromRDRAM = ui->RenderFBCheckBox->isChecked() ? 1 : 0;
 
 	config.frameBufferEmulation.N64DepthCompare = ui->n64DepthCompareCheckBox->isChecked() ? 1 : 0;
+	config.frameBufferEmulation.forceDepthBufferClear = ui->forceDepthBufferClearCheckBox->isChecked() ? 1 : 0;
 
 	if (ui->aspectStretchRadioButton->isChecked())
 		config.frameBufferEmulation.aspect = Config::aStretch;

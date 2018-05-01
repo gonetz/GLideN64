@@ -54,6 +54,7 @@ void _loadSettings(QSettings & settings)
 	config.frameBufferEmulation.nativeResFactor = settings.value("nativeResFactor", config.frameBufferEmulation.nativeResFactor).toInt();
 	config.frameBufferEmulation.bufferSwapMode = settings.value("bufferSwapMode", config.frameBufferEmulation.bufferSwapMode).toInt();
 	config.frameBufferEmulation.N64DepthCompare = settings.value("N64DepthCompare", config.frameBufferEmulation.N64DepthCompare).toInt();
+	config.frameBufferEmulation.forceDepthBufferClear = settings.value("forceDepthBufferClear", config.frameBufferEmulation.forceDepthBufferClear).toInt();
 	config.frameBufferEmulation.copyAuxToRDRAM = settings.value("copyAuxToRDRAM", config.frameBufferEmulation.copyAuxToRDRAM).toInt();
 	config.frameBufferEmulation.copyToRDRAM = settings.value("copyToRDRAM", config.frameBufferEmulation.copyToRDRAM).toInt();
 	config.frameBufferEmulation.copyDepthToRDRAM = settings.value("copyDepthToRDRAM", config.frameBufferEmulation.copyDepthToRDRAM).toInt();
@@ -182,6 +183,7 @@ void writeSettings(const QString & _strIniFolder)
 	settings.setValue("nativeResFactor", config.frameBufferEmulation.nativeResFactor);
 	settings.setValue("bufferSwapMode", config.frameBufferEmulation.bufferSwapMode);
 	settings.setValue("N64DepthCompare", config.frameBufferEmulation.N64DepthCompare);
+	settings.setValue("forceDepthBufferClear", config.frameBufferEmulation.forceDepthBufferClear);
 	settings.setValue("copyAuxToRDRAM", config.frameBufferEmulation.copyAuxToRDRAM);
 	settings.setValue("copyFromRDRAM", config.frameBufferEmulation.copyFromRDRAM);
 	settings.setValue("copyToRDRAM", config.frameBufferEmulation.copyToRDRAM);
