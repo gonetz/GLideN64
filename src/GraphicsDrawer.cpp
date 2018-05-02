@@ -850,15 +850,16 @@ void GraphicsDrawer::_drawThickLine(int _v0, int _v1, float _width)
 
 	setDMAVerticesSize(4);
 	SPVertex * pVtx = getDMAVerticesData();
+	const f32 ySign = GBI.isNegativeY() ? -1.0f : 1.0f;
 	pVtx[0] = triangles.vertices[_v0];
 	pVtx[0].x = pVtx[0].x / pVtx[0].w * gSP.viewport.vscale[0] + gSP.viewport.vtrans[0];
-	pVtx[0].y = pVtx[0].y / pVtx[0].w * gSP.viewport.vscale[1] + gSP.viewport.vtrans[1];
+	pVtx[0].y = ySign * pVtx[0].y / pVtx[0].w * gSP.viewport.vscale[1] + gSP.viewport.vtrans[1];
 	pVtx[0].z = pVtx[0].z / pVtx[0].w * gSP.viewport.vscale[2] + gSP.viewport.vtrans[2];
 	pVtx[1] = pVtx[0];
 
 	pVtx[2] = triangles.vertices[_v1];
 	pVtx[2].x = pVtx[2].x / pVtx[2].w * gSP.viewport.vscale[0] + gSP.viewport.vtrans[0];
-	pVtx[2].y = pVtx[2].y / pVtx[2].w * gSP.viewport.vscale[1] + gSP.viewport.vtrans[1];
+	pVtx[2].y = ySign * pVtx[2].y / pVtx[2].w * gSP.viewport.vscale[1] + gSP.viewport.vtrans[1];
 	pVtx[2].z = pVtx[2].z / pVtx[2].w * gSP.viewport.vscale[2] + gSP.viewport.vtrans[2];
 	pVtx[3] = pVtx[2];
 
