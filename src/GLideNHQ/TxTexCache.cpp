@@ -46,11 +46,7 @@ TxTexCache::TxTexCache(int options, int cachesize, const wchar_t *cachePath, con
 
 	if (_options & DUMP_TEXCACHE) {
 		/* find it on disk */
-		tx_wstring filename = _ident + wst("_MEMORYCACHE.") + TEXCACHE_EXT;
-		removeColon(filename);
-		int config = _options & (FILTER_MASK | ENHANCEMENT_MASK | FORCE16BPP_TEX | GZ_TEXCACHE);
-
-		_cacheDumped = TxCache::load(_cachePath.c_str(), filename.c_str(), config);
+		_cacheDumped = TxCache::load(_cachePath.c_str(), _getFileName().c_str(), _getConfig());
 	}
 }
 
@@ -71,10 +67,18 @@ TxTexCache::dump()
 {
 	if ((_options & DUMP_TEXCACHE) && !_cacheDumped) {
 		/* dump cache to disk */
-		tx_wstring filename = _ident + wst("_MEMORYCACHE.") + TEXCACHE_EXT;
-		removeColon(filename);
-		int config = _options & (FILTER_MASK | ENHANCEMENT_MASK | FORCE16BPP_TEX | GZ_TEXCACHE);
-
-		_cacheDumped = TxCache::save(_cachePath.c_str(), filename.c_str(), config);
+		_cacheDumped = TxCache::save(_cachePath.c_str(), _getFileName().c_str(), _getConfig());
 	}
+}
+
+tx_wstring TxTexCache::_getFileName() const
+{
+	tx_wstring filename = _ident + wst("_MEMORYCACHE.") + TEXCACHE_EXT;
+	removeColon(filename);
+	return filename;
+}
+
+int TxTexCache::_getConfig() const
+{
+	return _options & (FILTER_MASK | ENHANCEMENT_MASK | FORCE16BPP_TEX | GZ_TEXCACHE);
 }

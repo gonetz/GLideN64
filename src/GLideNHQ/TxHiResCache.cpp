@@ -82,11 +82,7 @@ TxHiResCache::TxHiResCache(int maxwidth,
   /* read in hires texture cache */
   if (_options & DUMP_HIRESTEXCACHE) {
 	/* find it on disk */
-	tx_wstring filename = _ident + wst("_HIRESTEXTURES.") + TEXCACHE_EXT;
-	removeColon(filename);
-	int config = _options & (HIRESTEXTURES_MASK|TILE_HIRESTEX|FORCE16BPP_HIRESTEX|GZ_HIRESTEXCACHE|LET_TEXARTISTS_FLY);
-
-	_cacheDumped = TxCache::load(_cachePath.c_str(), filename.c_str(), config);
+	_cacheDumped = TxCache::load(_cachePath.c_str(), _getFileName().c_str(), _getConfig());
   }
 
 /* read in hires textures */
@@ -98,16 +94,23 @@ void TxHiResCache::dump()
 {
 	if ((_options & DUMP_HIRESTEXCACHE) && !_cacheDumped && !_abortLoad && !empty()) {
 	  /* dump cache to disk */
-	  tx_wstring filename = _ident + wst("_HIRESTEXTURES.") + TEXCACHE_EXT;
-	  removeColon(filename);
-	  int config = _options & (HIRESTEXTURES_MASK|TILE_HIRESTEX|FORCE16BPP_HIRESTEX|GZ_HIRESTEXCACHE|LET_TEXARTISTS_FLY);
-
-	  _cacheDumped = TxCache::save(_cachePath.c_str(), filename.c_str(), config);
+	  _cacheDumped = TxCache::save(_cachePath.c_str(), _getFileName().c_str(), _getConfig());
 	}
 }
 
-boolean
-TxHiResCache::empty()
+tx_wstring TxHiResCache::_getFileName() const
+{
+	tx_wstring filename = _ident + wst("_HIRESTEXTURES.") + TEXCACHE_EXT;
+	removeColon(filename);
+	return filename;
+}
+
+int TxHiResCache::_getConfig() const
+{
+	return _options & (HIRESTEXTURES_MASK | TILE_HIRESTEX | FORCE16BPP_HIRESTEX | GZ_HIRESTEXCACHE | LET_TEXARTISTS_FLY);
+}
+
+boolean TxHiResCache::empty()
 {
   return _cache.empty();
 }

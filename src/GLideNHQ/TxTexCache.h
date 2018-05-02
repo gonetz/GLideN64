@@ -31,6 +31,9 @@ class TxTexCache : public TxCache
 private:
 	boolean _cacheDumped;
 
+	tx_wstring _getFileName() const;
+	int _getConfig() const;
+
 public:
   ~TxTexCache();
   TxTexCache(int options, int cachesize, const wchar_t *cachePath, const wchar_t *ident,

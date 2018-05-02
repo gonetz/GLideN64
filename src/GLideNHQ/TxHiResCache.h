@@ -53,6 +53,9 @@ private:
 	  resError
   };
   LoadResult loadHiResTextures(const wchar_t * dir_path, boolean replace);
+  tx_wstring _getFileName() const;
+  int _getConfig() const;
+
 public:
   ~TxHiResCache();
   TxHiResCache(int maxwidth,
