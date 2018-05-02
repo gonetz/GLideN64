@@ -263,6 +263,8 @@ void Config_LoadCustomConfig()
 	if (result == M64ERR_SUCCESS) config.frameBufferEmulation.bufferSwapMode = atoi(value);
 	result = ConfigExternalGetParameter(fileHandle, sectionName, "frameBufferEmulation\\N64DepthCompare", value, sizeof(value));
 	if (result == M64ERR_SUCCESS) config.frameBufferEmulation.N64DepthCompare = atoi(value);
+	result = ConfigExternalGetParameter(fileHandle, sectionName, "frameBufferEmulation\\forceDepthBufferClear", value, sizeof(value));
+	if (result == M64ERR_SUCCESS) config.frameBufferEmulation.forceDepthBufferClear = atoi(value);
 	result = ConfigExternalGetParameter(fileHandle, sectionName, "frameBufferEmulation\\copyAuxToRDRAM", value, sizeof(value));
 	if (result == M64ERR_SUCCESS) config.frameBufferEmulation.copyAuxToRDRAM = atoi(value);
 	result = ConfigExternalGetParameter(fileHandle, sectionName, "frameBufferEmulation\\copyToRDRAM", value, sizeof(value));
