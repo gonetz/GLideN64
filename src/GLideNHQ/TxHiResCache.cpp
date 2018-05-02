@@ -86,8 +86,10 @@ TxHiResCache::TxHiResCache(int maxwidth,
   }
 
 /* read in hires textures */
-  if (!_cacheDumped)
-	  TxHiResCache::load(0);
+  if (!_cacheDumped) {
+	  if (TxHiResCache::load(0) && (_options & DUMP_HIRESTEXCACHE) != 0)
+		  _cacheDumped = TxCache::save(_cachePath.c_str(), _getFileName().c_str(), _getConfig());
+  }
 }
 
 void TxHiResCache::dump()
