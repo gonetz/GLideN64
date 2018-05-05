@@ -62,7 +62,15 @@ void _loadSettings(QSettings & settings)
 	config.frameBufferEmulation.fbInfoDisabled = settings.value("fbInfoDisabled", config.frameBufferEmulation.fbInfoDisabled).toInt();
 	config.frameBufferEmulation.fbInfoReadColorChunk = settings.value("fbInfoReadColorChunk", config.frameBufferEmulation.fbInfoReadColorChunk).toInt();
 	config.frameBufferEmulation.fbInfoReadDepthChunk = settings.value("fbInfoReadDepthChunk", config.frameBufferEmulation.fbInfoReadDepthChunk).toInt();
-
+	config.frameBufferEmulation.enableOverscan = settings.value("enableOverscan", config.frameBufferEmulation.enableOverscan).toInt();
+	config.frameBufferEmulation.overscanPAL.left = settings.value("overscanPalLeft", config.frameBufferEmulation.overscanPAL.left).toInt();
+	config.frameBufferEmulation.overscanPAL.right = settings.value("overscanPalRight", config.frameBufferEmulation.overscanPAL.right).toInt();
+	config.frameBufferEmulation.overscanPAL.top = settings.value("overscanPalTop", config.frameBufferEmulation.overscanPAL.top).toInt();
+	config.frameBufferEmulation.overscanPAL.bottom= settings.value("overscanPalBottom", config.frameBufferEmulation.overscanPAL.bottom).toInt();
+	config.frameBufferEmulation.overscanNTSC.left = settings.value("overscanNtscLeft", config.frameBufferEmulation.overscanNTSC.left).toInt();
+	config.frameBufferEmulation.overscanNTSC.right = settings.value("overscanNtscRight", config.frameBufferEmulation.overscanNTSC.right).toInt();
+	config.frameBufferEmulation.overscanNTSC.top = settings.value("overscanNtscTop", config.frameBufferEmulation.overscanNTSC.top).toInt();
+	config.frameBufferEmulation.overscanNTSC.bottom = settings.value("overscanNtscBottom", config.frameBufferEmulation.overscanNTSC.bottom).toInt();
 	settings.endGroup();
 
 	settings.beginGroup("textureFilter");
@@ -191,6 +199,15 @@ void writeSettings(const QString & _strIniFolder)
 	settings.setValue("fbInfoDisabled", config.frameBufferEmulation.fbInfoDisabled);
 	settings.setValue("fbInfoReadColorChunk", config.frameBufferEmulation.fbInfoReadColorChunk);
 	settings.setValue("fbInfoReadDepthChunk", config.frameBufferEmulation.fbInfoReadDepthChunk);
+	settings.setValue("enableOverscan", config.frameBufferEmulation.enableOverscan);
+	settings.setValue("overscanPalLeft", config.frameBufferEmulation.overscanPAL.left);
+	settings.setValue("overscanPalRight", config.frameBufferEmulation.overscanPAL.right);
+	settings.setValue("overscanPalTop", config.frameBufferEmulation.overscanPAL.top);
+	settings.setValue("overscanPalBottom", config.frameBufferEmulation.overscanPAL.bottom);
+	settings.setValue("overscanNtscLeft", config.frameBufferEmulation.overscanNTSC.left);
+	settings.setValue("overscanNtscRight", config.frameBufferEmulation.overscanNTSC.right);
+	settings.setValue("overscanNtscTop", config.frameBufferEmulation.overscanNTSC.top);
+	settings.setValue("overscanNtscBottom", config.frameBufferEmulation.overscanNTSC.bottom);
 	settings.endGroup();
 
 	settings.beginGroup("textureFilter");

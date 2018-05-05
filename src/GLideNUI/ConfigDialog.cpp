@@ -207,6 +207,16 @@ void ConfigDialog::_init()
 	ui->readDepthChunkCheckBox->setChecked(config.frameBufferEmulation.fbInfoReadDepthChunk != 0);
 	ui->readDepthChunkCheckBox->setEnabled(fbEmulationEnabled && config.frameBufferEmulation.fbInfoDisabled == 0);
 
+	ui->overscanCheckBox->setChecked(config.frameBufferEmulation.enableOverscan != 0);
+	ui->overscanNtscLeftSpinBox->setValue(config.frameBufferEmulation.overscanNTSC.left);
+	ui->overscanNtscRightSpinBox->setValue(config.frameBufferEmulation.overscanNTSC.right);
+	ui->overscanNtscTopSpinBox->setValue(config.frameBufferEmulation.overscanNTSC.top);
+	ui->overscanNtscBottomSpinBox->setValue(config.frameBufferEmulation.overscanNTSC.bottom);
+	ui->overscanPalLeftSpinBox->setValue(config.frameBufferEmulation.overscanPAL.left);
+	ui->overscanPalRightSpinBox->setValue(config.frameBufferEmulation.overscanPAL.right);
+	ui->overscanPalTopSpinBox->setValue(config.frameBufferEmulation.overscanPAL.top);
+	ui->overscanPalBottomSpinBox->setValue(config.frameBufferEmulation.overscanPAL.bottom);
+
 	// Texture filter settings
 	ui->filterComboBox->setCurrentIndex(config.textureFilter.txFilterMode);
 	ui->enhancementComboBox->setCurrentIndex(config.textureFilter.txEnhancementMode);
@@ -437,6 +447,16 @@ void ConfigDialog::accept()
 	config.frameBufferEmulation.fbInfoDisabled = ui->fbInfoEnableCheckBox->isChecked() ? 0 : 1;
 	config.frameBufferEmulation.fbInfoReadColorChunk = ui->readColorChunkCheckBox->isChecked() ? 1 : 0;
 	config.frameBufferEmulation.fbInfoReadDepthChunk = ui->readDepthChunkCheckBox->isChecked() ? 1 : 0;
+
+	config.frameBufferEmulation.enableOverscan = ui->overscanCheckBox->isChecked() ? 1 : 0;
+	config.frameBufferEmulation.overscanNTSC.left = ui->overscanNtscLeftSpinBox->value();
+	config.frameBufferEmulation.overscanNTSC.right = ui->overscanNtscRightSpinBox->value();
+	config.frameBufferEmulation.overscanNTSC.top = ui->overscanNtscTopSpinBox->value();
+	config.frameBufferEmulation.overscanNTSC.bottom = ui->overscanNtscBottomSpinBox->value();
+	config.frameBufferEmulation.overscanPAL.left = ui->overscanPalLeftSpinBox->value();
+	config.frameBufferEmulation.overscanPAL.right = ui->overscanPalRightSpinBox->value();
+	config.frameBufferEmulation.overscanPAL.top = ui->overscanPalTopSpinBox->value();
+	config.frameBufferEmulation.overscanPAL.bottom = ui->overscanPalBottomSpinBox->value();
 
 	// Texture filter settings
 	config.textureFilter.txFilterMode = ui->filterComboBox->currentIndex();

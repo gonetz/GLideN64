@@ -374,7 +374,166 @@
             </widget>
            </item>
            <item>
-            <spacer name="verticalSpacer_11">
+            <layout class="QVBoxLayout" name="verticalLayoutOverscan">
+             <item>
+              <widget class="QCheckBox" name="overscanCheckBox">
+               <property name="text">
+                <string>Overscan</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="label_4">
+               <property name="text">
+                <string>NTSC</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignCenter</set>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <layout class="QHBoxLayout" name="horizontalLayout_NTSC13">
+               <item>
+                <widget class="QLabel" name="label_ntsc_l">
+                 <property name="text">
+                  <string>L:</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QSpinBox" name="overscanNtscLeftSpinBox">
+                 <property name="minimum">
+                  <number>-99</number>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="label_ntsc_r">
+                 <property name="text">
+                  <string>R:</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QSpinBox" name="overscanNtscRightSpinBox">
+                 <property name="minimum">
+                  <number>-99</number>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <layout class="QHBoxLayout" name="horizontalLayout_NTSC14">
+               <item>
+                <widget class="QLabel" name="label_ntsc_t">
+                 <property name="text">
+                  <string>T:</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QSpinBox" name="overscanNtscTopSpinBox">
+                 <property name="minimum">
+                  <number>-99</number>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="label_ntsc_b">
+                 <property name="text">
+                  <string>B:</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QSpinBox" name="overscanNtscBottomSpinBox">
+                 <property name="minimum">
+                  <number>-99</number>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <widget class="QLabel" name="label_pal">
+               <property name="text">
+                <string>PAL</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignCenter</set>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <layout class="QHBoxLayout" name="horizontalLayout_pal_13">
+               <item>
+                <widget class="QLabel" name="label_pal_l">
+                 <property name="text">
+                  <string>L:</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QSpinBox" name="overscanPalLeftSpinBox">
+                 <property name="minimum">
+                  <number>-99</number>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="label_pal_2">
+                 <property name="text">
+                  <string>R:</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QSpinBox" name="overscanPalRightSpinBox">
+                 <property name="minimum">
+                  <number>-99</number>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <layout class="QHBoxLayout" name="horizontalLayout_pal_14">
+               <item>
+                <widget class="QLabel" name="label_pal_t">
+                 <property name="text">
+                  <string>T:</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QSpinBox" name="overscanPalTopSpinBox">
+                 <property name="minimum">
+                  <number>-99</number>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="label_pal_b">
+                 <property name="text">
+                  <string>B:</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QSpinBox" name="overscanPalBottomSpinBox">
+                 <property name="minimum">
+                  <number>-99</number>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <spacer name="verticalSpacer">
              <property name="orientation">
               <enum>Qt::Vertical</enum>
              </property>
