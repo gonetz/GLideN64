@@ -67,6 +67,9 @@ void Config::resetToDefaults()
 #else
 	frameBufferEmulation.fbInfoDisabled = 1;
 #endif
+	frameBufferEmulation.enableOverscan = 0;
+	frameBufferEmulation.overscanPAL.init();
+	frameBufferEmulation.overscanNTSC.init();
 
 	textureFilter.txFilterMode = 0;
 	textureFilter.txEnhancementMode = 0;
