@@ -6,6 +6,7 @@
 #include "AboutDialog.h"
 #include "ConfigDialog.h"
 #include "Settings.h"
+#include "../Config.h"
 
 #ifdef QT_STATICPLUGIN
 #include <QtPlugin>
@@ -19,12 +20,14 @@ inline void initMyResource() { Q_INIT_RESOURCE(icon); }
 inline void cleanMyResource() { Q_CLEANUP_RESOURCE(icon); }
 
 static
-int openConfigDialog(const wchar_t * _strFileName, bool & _accepted)
+int openConfigDialog(const wchar_t * _strFileName, const char * _romName, bool & _accepted)
 {
 	cleanMyResource();
 	initMyResource();
 	QString strIniFileName = QString::fromWCharArray(_strFileName);
 	loadSettings(strIniFileName);
+	if (config.generalEmulation.enableCustomSettings != 0 && _romName != nullptr && strlen(_romName) != 0)
+		loadCustomRomSettings(strIniFileName, _romName);
 
 	int argc = 0;
 	char * argv = 0;
@@ -37,6 +40,8 @@ int openConfigDialog(const wchar_t * _strFileName, bool & _accepted)
 	ConfigDialog w(Q_NULLPTR, Qt::WindowTitleHint | Qt::WindowSystemMenuHint | Qt::WindowCloseButtonHint);
 
 	w.setIniPath(strIniFileName);
+	w.setRomName(_romName);
+	w.setTitle();
 	w.show();
 	const int res = a.exec();
 	_accepted = w.isAccepted();
@@ -62,13 +67,13 @@ int openAboutDialog(const wchar_t * _strFileName)
 	return a.exec();
 }
 
-bool runConfigThread(const wchar_t * _strFileName) {
+bool runConfigThread(const wchar_t * _strFileName, const char * _romName) {
 	bool accepted = false;
 #ifdef RUN_DIALOG_IN_THREAD
 	std::thread configThread(openConfigDialog, _strFileName, std::ref(accepted));
 	configThread.join();
 #else
-	openConfigDialog(_strFileName, accepted);
+	openConfigDialog(_strFileName, _romName, accepted);
 #endif
 	return accepted;
 
@@ -84,9 +89,9 @@ int runAboutThread(const wchar_t * _strFileName) {
 	return 0;
 }
 
-EXPORT bool CALL RunConfig(const wchar_t * _strFileName)
+EXPORT bool CALL RunConfig(const wchar_t * _strFileName, const char * _romName)
 {
-	return runConfigThread(_strFileName);
+	return runConfigThread(_strFileName, _romName);
 }
 
 EXPORT int CALL RunAbout(const wchar_t * _strFileName)

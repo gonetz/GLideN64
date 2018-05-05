@@ -18,6 +18,8 @@ public:
 	~ConfigDialog();
 
 	void setIniPath(const QString & _strIniPath);
+	void setRomName(const char * _romName);
+	void setTitle();
 	bool isAccepted() const { return m_accepted; }
 
 public Q_SLOTS:
@@ -36,7 +38,7 @@ private slots:
 
 	void on_windowedResolutionComboBox_currentTextChanged(QString text);
 
-	void on_cropImageComboBox_currentIndexChanged(int index);
+	void on_overscanCheckBox_toggled(bool checked);
 
 	void on_frameBufferCheckBox_toggled(bool checked);
 
@@ -52,6 +54,8 @@ private slots:
 
 	void on_texDumpPathButton_clicked();
 
+	void on_customSettingsCheckBox_clicked();
+
 private:
 	void _init();
 	void _getTranslations(QStringList & _translationFiles) const;
@@ -62,6 +66,7 @@ private:
 	bool m_accepted;
 	bool m_fontsInited;
 	QString m_strIniPath;
+	const char * m_romName;
 };
 
 #endif // CONFIGDIALOG_H

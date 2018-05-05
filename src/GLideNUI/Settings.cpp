@@ -27,9 +27,6 @@ void _loadSettings(QSettings & settings)
 	config.video.fullscreenRefresh = settings.value("fullscreenRefresh", config.video.fullscreenRefresh).toInt();
 	config.video.multisampling = settings.value("multisampling", config.video.multisampling).toInt();
 	config.video.verticalSync = settings.value("verticalSync", config.video.verticalSync).toInt();
-	config.video.cropMode = settings.value("cropMode", config.video.cropMode).toInt();
-	config.video.cropWidth = settings.value("cropWidth", config.video.cropWidth).toInt();
-	config.video.cropHeight = settings.value("cropHeight", config.video.cropHeight).toInt();
 	settings.endGroup();
 
 	settings.beginGroup("texture");
@@ -62,7 +59,15 @@ void _loadSettings(QSettings & settings)
 	config.frameBufferEmulation.fbInfoDisabled = settings.value("fbInfoDisabled", config.frameBufferEmulation.fbInfoDisabled).toInt();
 	config.frameBufferEmulation.fbInfoReadColorChunk = settings.value("fbInfoReadColorChunk", config.frameBufferEmulation.fbInfoReadColorChunk).toInt();
 	config.frameBufferEmulation.fbInfoReadDepthChunk = settings.value("fbInfoReadDepthChunk", config.frameBufferEmulation.fbInfoReadDepthChunk).toInt();
-
+	config.frameBufferEmulation.enableOverscan = settings.value("enableOverscan", config.frameBufferEmulation.enableOverscan).toInt();
+	config.frameBufferEmulation.overscanPAL.left = settings.value("overscanPalLeft", config.frameBufferEmulation.overscanPAL.left).toInt();
+	config.frameBufferEmulation.overscanPAL.right = settings.value("overscanPalRight", config.frameBufferEmulation.overscanPAL.right).toInt();
+	config.frameBufferEmulation.overscanPAL.top = settings.value("overscanPalTop", config.frameBufferEmulation.overscanPAL.top).toInt();
+	config.frameBufferEmulation.overscanPAL.bottom= settings.value("overscanPalBottom", config.frameBufferEmulation.overscanPAL.bottom).toInt();
+	config.frameBufferEmulation.overscanNTSC.left = settings.value("overscanNtscLeft", config.frameBufferEmulation.overscanNTSC.left).toInt();
+	config.frameBufferEmulation.overscanNTSC.right = settings.value("overscanNtscRight", config.frameBufferEmulation.overscanNTSC.right).toInt();
+	config.frameBufferEmulation.overscanNTSC.top = settings.value("overscanNtscTop", config.frameBufferEmulation.overscanNTSC.top).toInt();
+	config.frameBufferEmulation.overscanNTSC.bottom = settings.value("overscanNtscBottom", config.frameBufferEmulation.overscanNTSC.bottom).toInt();
 	settings.endGroup();
 
 	settings.beginGroup("textureFilter");
@@ -156,9 +161,6 @@ void writeSettings(const QString & _strIniFolder)
 	settings.setValue("fullscreenRefresh", config.video.fullscreenRefresh);
 	settings.setValue("multisampling", config.video.multisampling);
 	settings.setValue("verticalSync", config.video.verticalSync);
-	settings.setValue("cropMode", config.video.cropMode);
-	settings.setValue("cropWidth", config.video.cropWidth);
-	settings.setValue("cropHeight", config.video.cropHeight);
 	settings.endGroup();
 
 	settings.beginGroup("texture");
@@ -191,6 +193,15 @@ void writeSettings(const QString & _strIniFolder)
 	settings.setValue("fbInfoDisabled", config.frameBufferEmulation.fbInfoDisabled);
 	settings.setValue("fbInfoReadColorChunk", config.frameBufferEmulation.fbInfoReadColorChunk);
 	settings.setValue("fbInfoReadDepthChunk", config.frameBufferEmulation.fbInfoReadDepthChunk);
+	settings.setValue("enableOverscan", config.frameBufferEmulation.enableOverscan);
+	settings.setValue("overscanPalLeft", config.frameBufferEmulation.overscanPAL.left);
+	settings.setValue("overscanPalRight", config.frameBufferEmulation.overscanPAL.right);
+	settings.setValue("overscanPalTop", config.frameBufferEmulation.overscanPAL.top);
+	settings.setValue("overscanPalBottom", config.frameBufferEmulation.overscanPAL.bottom);
+	settings.setValue("overscanNtscLeft", config.frameBufferEmulation.overscanNTSC.left);
+	settings.setValue("overscanNtscRight", config.frameBufferEmulation.overscanNTSC.right);
+	settings.setValue("overscanNtscTop", config.frameBufferEmulation.overscanNTSC.top);
+	settings.setValue("overscanNtscBottom", config.frameBufferEmulation.overscanNTSC.bottom);
 	settings.endGroup();
 
 	settings.beginGroup("textureFilter");
@@ -263,21 +274,125 @@ u32 Adler32(u32 crc, const void *buffer, u32 count)
 	return (s2 << 16) | s1;
 }
 
-void loadCustomRomSettings(const QString & _strIniFolder, const char * _strRomName)
-{
-	QSettings settings(_strIniFolder + "/" + strCustomSettingsFileName, QSettings::IniFormat);
-
+static
+QString _getRomName(const char * _strRomName) {
 	const QByteArray bytes(_strRomName);
 	bool bASCII = true;
 	for (int i = 0; i < bytes.length() && bASCII; ++i)
 		bASCII = bytes.at(i) >= 0;
 
-	const QString romName = bASCII ? QString::fromLatin1(_strRomName).toUpper() : QString::number(Adler32(0xFFFFFFFF, bytes.data(), bytes.length()), 16).toUpper();
+	return bASCII ?
+		QString::fromLatin1(_strRomName).toUpper() :
+		QString::number(Adler32(0xFFFFFFFF, bytes.data(), bytes.length()), 16).toUpper();
+}
+
+void loadCustomRomSettings(const QString & _strIniFolder, const char * _strRomName)
+{
+	QSettings settings(_strIniFolder + "/" + strCustomSettingsFileName, QSettings::IniFormat);
+
+	const QString romName = _getRomName(_strRomName);
 	if (settings.childGroups().indexOf(romName) < 0)
 		return;
 
 	settings.beginGroup(romName);
 	_loadSettings(settings);
+	settings.endGroup();
+}
+
+void saveCustomRomSettings(const QString & _strIniFolder, const char * _strRomName)
+{
+	Config origConfig;
+	origConfig.resetToDefaults();
+
+	QSettings settings(_strIniFolder + "/" + strCustomSettingsFileName, QSettings::IniFormat);
+	const QString romName = _getRomName(_strRomName);
+
+#define WriteCustomSetting(G, S) \
+	if (config.G.S != settings.value(#S, origConfig.G.S).toInt()) \
+		settings.setValue(#S, config.G.S)
+
+	settings.beginGroup(romName);
+
+	settings.beginGroup("video");
+	WriteCustomSetting(video, multisampling);
+	WriteCustomSetting(video, verticalSync);
+	settings.endGroup();
+
+	settings.beginGroup("texture");
+	WriteCustomSetting(texture, maxAnisotropy);
+	WriteCustomSetting(texture, bilinearMode);
+	settings.endGroup();
+
+	settings.beginGroup("generalEmulation");
+	WriteCustomSetting(generalEmulation, enableNoise);
+	WriteCustomSetting(generalEmulation, enableLOD);
+	WriteCustomSetting(generalEmulation, enableHWLighting);
+	WriteCustomSetting(generalEmulation, correctTexrectCoords);
+	WriteCustomSetting(generalEmulation, enableNativeResTexrects);
+	settings.endGroup();
+
+	settings.beginGroup("frameBufferEmulation");
+	WriteCustomSetting(frameBufferEmulation, enable);
+	WriteCustomSetting(frameBufferEmulation, aspect);
+	WriteCustomSetting(frameBufferEmulation, nativeResFactor);
+	WriteCustomSetting(frameBufferEmulation, bufferSwapMode);
+	WriteCustomSetting(frameBufferEmulation, N64DepthCompare);
+	WriteCustomSetting(frameBufferEmulation, forceDepthBufferClear);
+	WriteCustomSetting(frameBufferEmulation, copyAuxToRDRAM);
+	WriteCustomSetting(frameBufferEmulation, copyFromRDRAM);
+	WriteCustomSetting(frameBufferEmulation, copyToRDRAM);
+	WriteCustomSetting(frameBufferEmulation, copyDepthToRDRAM);
+	WriteCustomSetting(frameBufferEmulation, fbInfoDisabled);
+	WriteCustomSetting(frameBufferEmulation, fbInfoReadColorChunk);
+	WriteCustomSetting(frameBufferEmulation, fbInfoReadDepthChunk);
+	WriteCustomSetting(frameBufferEmulation, enableOverscan);
+
+	if (config.frameBufferEmulation.overscanPAL.left !=
+		settings.value("overscanPalLeft", origConfig.frameBufferEmulation.overscanPAL.left).toInt())
+		settings.setValue("overscanPalLeft", config.frameBufferEmulation.overscanPAL.left);
+	if (config.frameBufferEmulation.overscanPAL.right !=
+		settings.value("overscanPalRight", origConfig.frameBufferEmulation.overscanPAL.right).toInt())
+		settings.setValue("overscanPalRight", config.frameBufferEmulation.overscanPAL.right);
+	if (config.frameBufferEmulation.overscanPAL.top !=
+		settings.value("overscanPalTop", origConfig.frameBufferEmulation.overscanPAL.top).toInt())
+		settings.setValue("overscanPalTop", config.frameBufferEmulation.overscanPAL.top);
+	if (config.frameBufferEmulation.overscanPAL.bottom !=
+		settings.value("overscanPalBottom", origConfig.frameBufferEmulation.overscanPAL.bottom).toInt())
+		settings.setValue("overscanPalBottom", config.frameBufferEmulation.overscanPAL.bottom);
+	if (config.frameBufferEmulation.overscanNTSC.left !=
+		settings.value("overscanNtscLeft", origConfig.frameBufferEmulation.overscanNTSC.left).toInt())
+		settings.setValue("overscanNtscLeft", config.frameBufferEmulation.overscanNTSC.left);
+	if (config.frameBufferEmulation.overscanNTSC.right !=
+		settings.value("overscanNtscRight", origConfig.frameBufferEmulation.overscanNTSC.right).toInt())
+		settings.setValue("overscanNtscRight", config.frameBufferEmulation.overscanNTSC.right);
+	if (config.frameBufferEmulation.overscanNTSC.top !=
+		settings.value("overscanNtscTop", origConfig.frameBufferEmulation.overscanNTSC.top).toInt())
+		settings.setValue("overscanNtscTop", config.frameBufferEmulation.overscanNTSC.top);
+	if (config.frameBufferEmulation.overscanNTSC.bottom !=
+		settings.value("overscanNtscBottom", origConfig.frameBufferEmulation.overscanNTSC.bottom).toInt())
+		settings.setValue("overscanNtscBottom", config.frameBufferEmulation.overscanNTSC.bottom);
+	settings.endGroup();
+
+	settings.beginGroup("textureFilter");
+	WriteCustomSetting(textureFilter, txFilterMode);
+	WriteCustomSetting(textureFilter, txEnhancementMode);
+	WriteCustomSetting(textureFilter, txDeposterize);
+	WriteCustomSetting(textureFilter, txFilterIgnoreBG);
+	WriteCustomSetting(textureFilter, txCacheSize);
+	WriteCustomSetting(textureFilter, txHiresEnable);
+	WriteCustomSetting(textureFilter, txHiresFullAlphaChannel);
+	WriteCustomSetting(textureFilter, txHresAltCRC);
+	WriteCustomSetting(textureFilter, txForce16bpp);
+	WriteCustomSetting(textureFilter, txCacheCompression);
+	WriteCustomSetting(textureFilter, txSaveCache);
+	settings.endGroup();
+
+	settings.beginGroup("gammaCorrection");
+	WriteCustomSetting(gammaCorrection, force);
+	if (config.gammaCorrection.level != settings.value("level", origConfig.gammaCorrection.level).toFloat())
+		settings.setValue("level", config.gammaCorrection.level);
+	settings.endGroup();
+
 	settings.endGroup();
 }
 

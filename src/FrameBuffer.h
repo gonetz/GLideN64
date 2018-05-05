@@ -126,11 +126,43 @@ private:
 	void _createScreenSizeBuffer();
 	void _renderScreenSizeBuffer();
 
+	class OverscanBuffer
+	{
+	public:
+		void init();
+		void destroy();
+
+		void setInputBuffer(const FrameBuffer *  _pBuffer);
+		void activate();
+		void draw(u32 _fullHeight, bool _PAL);
+
+		s32 getHOffset() const;
+		s32 getVOffset() const;
+		f32 getScaleX() const;
+		f32 getScaleY(u32 _fullHeight) const;
+		u32 getDrawingWidth() const { return m_drawingWidth; }
+		u32 getBufferWidth() const { return m_bufferWidth; }
+		u32 getBufferHeight() const { return m_bufferHeight; }
+
+	private:
+		s32 m_hOffset = 0;
+		s32 m_vOffset = 0;
+		f32 m_scale = 1.0f;
+		u32 m_drawingWidth = 0U;
+		u32 m_bufferWidth = 0U;
+		u32 m_bufferHeight = 0U;
+		bool m_enabled = false;
+
+		graphics::ObjectHandle m_FBO;
+		CachedTexture *m_pTexture = nullptr;
+	};
+
 	typedef std::list<FrameBuffer> FrameBuffers;
 	FrameBuffers m_list;
 	FrameBuffer * m_pCurrent;
 	FrameBuffer * m_pCopy;
 	u32 m_prevColorImageHeight;
+	OverscanBuffer m_overscan;
 };
 
 inline

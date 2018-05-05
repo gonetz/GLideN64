@@ -91,10 +91,16 @@ void ConfigDialog::_init()
 	QValidator *windowedValidator = new QRegExpValidator(windowedRegExp, this);
 	ui->windowedResolutionComboBox->setValidator(windowedValidator);
 
-	ui->cropImageComboBox->setCurrentIndex(config.video.cropMode);
-	ui->cropImageWidthSpinBox->setValue(config.video.cropWidth);
-	ui->cropImageHeightSpinBox->setValue(config.video.cropHeight);
-	ui->cropImageCustomFrame->setVisible(config.video.cropMode == Config::cmCustom);
+	ui->overscanCheckBox->toggle();
+	ui->overscanCheckBox->setChecked(config.frameBufferEmulation.enableOverscan != 0);
+	ui->overscanNtscLeftSpinBox->setValue(config.frameBufferEmulation.overscanNTSC.left);
+	ui->overscanNtscRightSpinBox->setValue(config.frameBufferEmulation.overscanNTSC.right);
+	ui->overscanNtscTopSpinBox->setValue(config.frameBufferEmulation.overscanNTSC.top);
+	ui->overscanNtscBottomSpinBox->setValue(config.frameBufferEmulation.overscanNTSC.bottom);
+	ui->overscanPalLeftSpinBox->setValue(config.frameBufferEmulation.overscanPAL.left);
+	ui->overscanPalRightSpinBox->setValue(config.frameBufferEmulation.overscanPAL.right);
+	ui->overscanPalTopSpinBox->setValue(config.frameBufferEmulation.overscanPAL.top);
+	ui->overscanPalBottomSpinBox->setValue(config.frameBufferEmulation.overscanPAL.bottom);
 
 	QStringList fullscreenModesList, fullscreenRatesList;
 	int fullscreenMode, fullscreenRate;
@@ -299,7 +305,6 @@ void ConfigDialog::_getTranslations(QStringList & _translationFiles) const
 	_translationFiles = pluginFolder.entryList(nameFilters, QDir::Files, QDir::Name);
 }
 
-
 void ConfigDialog::setIniPath(const QString & _strIniPath)
 {
 	m_strIniPath = _strIniPath;
@@ -326,6 +331,11 @@ void ConfigDialog::setIniPath(const QString & _strIniPath)
 
 	ui->translationsComboBox->insertItems(0, translationLanguages);
 	ui->translationsComboBox->setCurrentIndex(listIndex);
+}
+
+void ConfigDialog::setRomName(const char * _romName)
+{
+	m_romName = _romName;
 }
 
 ConfigDialog::ConfigDialog(QWidget *parent, Qt::WindowFlags f) :
@@ -359,10 +369,6 @@ void ConfigDialog::accept()
 
 	getFullscreenResolutions(ui->fullScreenResolutionComboBox->currentIndex(), config.video.fullscreenWidth, config.video.fullscreenHeight);
 	getFullscreenRefreshRate(ui->fullScreenRefreshRateComboBox->currentIndex(), config.video.fullscreenRefresh);
-
-	config.video.cropMode = ui->cropImageComboBox->currentIndex();
-	config.video.cropWidth = ui->cropImageWidthSpinBox->value();
-	config.video.cropHeight = ui->cropImageHeightSpinBox->value();
 
 	config.video.multisampling = ui->n64DepthCompareCheckBox->isChecked() ? 0 : pow2(ui->aliasingSlider->value());
 	config.texture.maxAnisotropy = ui->anisotropicSlider->value();
@@ -438,6 +444,16 @@ void ConfigDialog::accept()
 	config.frameBufferEmulation.fbInfoReadColorChunk = ui->readColorChunkCheckBox->isChecked() ? 1 : 0;
 	config.frameBufferEmulation.fbInfoReadDepthChunk = ui->readDepthChunkCheckBox->isChecked() ? 1 : 0;
 
+	config.frameBufferEmulation.enableOverscan = ui->overscanCheckBox->isChecked() ? 1 : 0;
+	config.frameBufferEmulation.overscanNTSC.left = ui->overscanNtscLeftSpinBox->value();
+	config.frameBufferEmulation.overscanNTSC.right = ui->overscanNtscRightSpinBox->value();
+	config.frameBufferEmulation.overscanNTSC.top = ui->overscanNtscTopSpinBox->value();
+	config.frameBufferEmulation.overscanNTSC.bottom = ui->overscanNtscBottomSpinBox->value();
+	config.frameBufferEmulation.overscanPAL.left = ui->overscanPalLeftSpinBox->value();
+	config.frameBufferEmulation.overscanPAL.right = ui->overscanPalRightSpinBox->value();
+	config.frameBufferEmulation.overscanPAL.top = ui->overscanPalTopSpinBox->value();
+	config.frameBufferEmulation.overscanPAL.bottom = ui->overscanPalBottomSpinBox->value();
+
 	// Texture filter settings
 	config.textureFilter.txFilterMode = ui->filterComboBox->currentIndex();
 	config.textureFilter.txEnhancementMode = ui->enhancementComboBox->currentIndex();
@@ -509,6 +525,9 @@ void ConfigDialog::accept()
 	if (ui->dumpDetailCheckBox->isChecked())
 		config.debug.dumpMode |= DEBUG_DETAIL;
 
+	if (config.generalEmulation.enableCustomSettings != 0 && m_romName != nullptr && strlen(m_romName) != 0)
+		saveCustomRomSettings(m_strIniPath, m_romName);
+
 	writeSettings(m_strIniPath);
 
 	QDialog::accept();
@@ -546,8 +565,11 @@ void ConfigDialog::on_buttonBox_clicked(QAbstractButton *button)
 		msgBox.setButtonText(QMessageBox::RestoreDefaults, tr("Restore Defaults"));
 		msgBox.setButtonText(QMessageBox::Cancel, tr("Cancel"));
 		if (msgBox.exec() == QMessageBox::RestoreDefaults) {
+			const u32 enableCustomSettings = config.generalEmulation.enableCustomSettings;
 			config.resetToDefaults();
+			config.generalEmulation.enableCustomSettings = enableCustomSettings;
 			_init();
+			setTitle();
 		}
 	}
 }
@@ -608,10 +630,9 @@ void ConfigDialog::on_windowedResolutionComboBox_currentTextChanged(QString text
 		ui->windowedResolutionComboBox->setCurrentText("");
 }
 
-void ConfigDialog::on_cropImageComboBox_currentIndexChanged(int index)
+void ConfigDialog::on_overscanCheckBox_toggled(bool checked)
 {
-	const bool bCustom = index == Config::cmCustom;
-	ui->cropImageCustomFrame->setVisible(bCustom);
+	ui->overscanCheckBox->setText(tr("Overscan") + (checked ? QString(":") : QString("")));
 }
 
 void ConfigDialog::on_frameBufferCheckBox_toggled(bool checked)
@@ -681,5 +702,29 @@ void ConfigDialog::on_tabWidget_currentChanged(int tab)
 
 		ui->tabWidget->setCursor(QCursor(Qt::ArrowCursor));
 		m_fontsInited = true;
+	}
+}
+
+void ConfigDialog::on_customSettingsCheckBox_clicked()
+{
+	if (ui->customSettingsCheckBox->isChecked()) {
+		loadCustomRomSettings(m_strIniPath, m_romName);
+		config.generalEmulation.enableCustomSettings = 1;
+	} else {
+		loadSettings(m_strIniPath);
+		config.generalEmulation.enableCustomSettings = 0;
+	}
+	_init();
+	setTitle();
+}
+
+void ConfigDialog::setTitle()
+{
+	if (config.generalEmulation.enableCustomSettings != 0 && m_romName != nullptr && strlen(m_romName) != 0) {
+		QString title(tr("GLideN64 Settings for "));
+		title += QString::fromLatin1(m_romName);
+		setWindowTitle(title);
+	} else {
+		setWindowTitle(tr("GLideN64 Settings"));
 	}
 }

@@ -13,7 +13,7 @@ extern "C" {
 #define CALL
 #endif
 
-EXPORT bool CALL RunConfig(const wchar_t * _strFileName);
+EXPORT bool CALL RunConfig(const wchar_t * _strFileName, const char * _romName);
 EXPORT int CALL RunAbout(const wchar_t * _strFileName);
 EXPORT void CALL LoadConfig(const wchar_t * _strFileName);
 EXPORT void CALL LoadCustomRomSettings(const wchar_t * _strFileName, const char * _romName);
