@@ -106,7 +106,7 @@ void BufferedDrawer::_updateRectBuffer(const graphics::Context::DrawRectParamete
 	}
 
 	Buffer & buffer = m_rectsBuffers.vbo;
-	const size_t dataSize = _params.verticesCount * sizeof(RectVertex);
+	const u32 dataSize = _params.verticesCount * static_cast<u32>(sizeof(RectVertex));
 
 	if (m_glInfo.bufferStorage) {
 		_updateBuffer(buffer, _params.verticesCount, dataSize, _params.vertices);
@@ -125,7 +125,7 @@ void BufferedDrawer::_updateRectBuffer(const graphics::Context::DrawRectParamete
 	if (buffer.offset < prevOffset)
 		m_rectBufferOffsets.clear();
 
-	buffer.pos = buffer.offset / sizeof(RectVertex);
+	buffer.pos = static_cast<GLint>(buffer.offset / sizeof(RectVertex));
 	m_rectBufferOffsets[crc] = buffer.pos;
 }
 
@@ -179,14 +179,14 @@ void BufferedDrawer::_updateTrianglesBuffers(const graphics::Context::DrawTriang
 	}
 
 	_convertFromSPVertex(_params.flatColors, _params.verticesCount, _params.vertices);
-	const GLsizeiptr vboDataSize = _params.verticesCount * sizeof(Vertex);
+	const u32 vboDataSize = _params.verticesCount * static_cast<u32>(sizeof(Vertex));
 	Buffer & vboBuffer = m_trisBuffers.vbo;
 	_updateBuffer(vboBuffer, _params.verticesCount, vboDataSize, m_vertices.data());
 
 	if (_params.elements == nullptr)
 		return;
 
-	const GLsizeiptr eboDataSize = sizeof(GLushort) * _params.elementsCount;
+	const u32 eboDataSize = static_cast<u32>(sizeof(GLushort)) * _params.elementsCount;
 	Buffer & eboBuffer = m_trisBuffers.ebo;
 	_updateBuffer(eboBuffer, _params.elementsCount, eboDataSize, _params.elements);
 }

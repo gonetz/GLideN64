@@ -347,7 +347,7 @@ void CombinerInfo::_saveShadersStorage() const
 bool CombinerInfo::_loadShadersStorage()
 {
 	if (gfxContext.loadShadersStorage(m_combiners)) {
-		m_shadersLoaded = m_combiners.size();
+		m_shadersLoaded = static_cast<u32>(m_combiners.size());
 		return true;
 	}
 

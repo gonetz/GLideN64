@@ -27,7 +27,7 @@ namespace graphics {
 		const u32 stridePixels = _stride * colorsPerPixel;
 		
 		if (_height * widthPixels  > m_pixelData.size())
-			_height = m_pixelData.size() / widthPixels;
+			_height = static_cast<u32>(m_pixelData.size()) / widthPixels;
 
 		for (u32 heightIndex = 0; heightIndex < _height; ++heightIndex) {
 			for (u32 widthIndex = 0; widthIndex < widthPixels; ++widthIndex) {
@@ -49,7 +49,7 @@ namespace graphics {
 		u8* pixelDataAlloc = m_pixelData.data();
 		
 		if (_height * widthBytes  > m_pixelData.size())
-			_height = m_pixelData.size() / widthBytes;
+			_height = static_cast<u32>(m_pixelData.size()) / widthBytes;
 
 		for (u32 index = 0; index < _height; ++index) {
 			memcpy(pixelDataAlloc + index * widthBytes, _gpuData + ((index + _heightOffset) * strideBytes), widthBytes);

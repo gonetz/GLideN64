@@ -834,7 +834,7 @@ void TriGen0000()
 
 	// Step 3. Process vertices
 	const SWVertex * vertex = (const SWVertex*)vtxData32.data();
-	const size_t vtxSize = vtxData32.size() / 2;
+	const u32 vtxSize = static_cast<u32>(vtxData32.size()) / 2;
 	gSPSWVertex(vertex, vtxSize, 0);
 
 	// Step 4. Prepare color indices and texture coordinates. Prepare vertices for rendering
@@ -902,7 +902,7 @@ void TriGen0001()
 
 	// Step 3. Process vertices
 	const SWVertex * vertex = (const SWVertex*)vtxData32.data();
-	const size_t vtxSize = vtxData32.size() / 2;
+	const u32 vtxSize = static_cast<u32>(vtxData32.size()) / 2;
 	gSPSWVertex(vertex, vtxSize, 0);
 
 	// Step 4. Prepare color indices and texture coordinates. Prepare vertices for rendering

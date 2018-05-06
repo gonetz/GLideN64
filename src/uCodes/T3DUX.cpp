@@ -155,7 +155,7 @@ void T3DUX_LoadObject(u32 pstate, u32 pvtx, u32 ptri, u32 pcol)
 			const u32 w1 = t32uxSetTileW1 | (tri->pal << 20);
 			const u32 newPal = _SHIFTR(w1, 20, 4);
 			if (pal != newPal) {
-				drawer.drawDMATriangles(pVtx - drawer.getDMAVerticesData());
+				drawer.drawDMATriangles(static_cast<u32>(pVtx - drawer.getDMAVerticesData()));
 				pVtx = drawer.getDMAVerticesData();
 				pal = newPal;
 				RDP_SetTile(t32uxSetTileW0, w1);
@@ -207,7 +207,7 @@ void T3DUX_LoadObject(u32 pstate, u32 pvtx, u32 ptri, u32 pcol)
 		}
 	}
 
-	drawer.drawDMATriangles(pVtx - drawer.getDMAVerticesData());
+	drawer.drawDMATriangles(static_cast<u32>(pVtx - drawer.getDMAVerticesData()));
 }
 
 void RunT3DUX()

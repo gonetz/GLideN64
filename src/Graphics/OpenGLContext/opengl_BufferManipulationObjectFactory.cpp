@@ -155,7 +155,7 @@ public:
 	void * getDataRange(u32 _offset, u32 _range) override
 	{
 		if (_range > m_size)
-			_range = m_size;
+			_range = static_cast<u32>(m_size);
 		return glMapBufferRange(GL_PIXEL_PACK_BUFFER, _offset, _range, GL_MAP_READ_BIT);
 	}
 

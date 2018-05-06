@@ -1192,7 +1192,7 @@ void gDPLLETriangle(u32 _w1, u32 _w2, int _shade, int _texture, int _zbuffer, u3
 	if (_zbuffer != 0)
 		gSP.geometryMode |= G_ZBUFFER;
 
-	drawer.drawScreenSpaceTriangle(vtx - vtx0);
+	drawer.drawScreenSpaceTriangle(static_cast<u32>(vtx - vtx0));
 	gSP.textureTile[0] = textureTileOrg[0];
 	gSP.textureTile[1] = textureTileOrg[1];
 

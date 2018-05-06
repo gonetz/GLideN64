@@ -92,12 +92,12 @@ void NoiseTexture::_fillTextureData()
 			start += chunk;
 		} while (start < NOISE_TEX_NUM - chunk);
 
-		FillTextureData(generator(), &m_texData, start, m_texData.size());
+		FillTextureData(generator(), &m_texData, start, static_cast<u32>(m_texData.size()));
 
 		for (auto& t : threads)
 			t.join();
 	} else {
-		FillTextureData(static_cast<u32>(time(nullptr)), &m_texData, 0, m_texData.size());
+		FillTextureData(static_cast<u32>(time(nullptr)), &m_texData, 0, static_cast<u32>(m_texData.size()));
 	}
 
 	displayLoadProgress(L"");

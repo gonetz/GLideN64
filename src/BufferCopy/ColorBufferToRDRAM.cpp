@@ -307,7 +307,7 @@ void ColorBufferToRDRAM::_copy(u32 _startAddress, u32 _endAddress, bool _sync)
 u32 ColorBufferToRDRAM::_getRealWidth(u32 _viWidth)
 {
 	u32 index = 0;
-	const u32 maxIndex = m_allowedRealWidths.size() - 1;
+	const u32 maxIndex = static_cast<u32>(m_allowedRealWidths.size()) - 1;
 	while (index < maxIndex && _viWidth > m_allowedRealWidths[index])
 	{
 		++index;

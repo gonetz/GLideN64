@@ -141,7 +141,7 @@ public:
 	SPVertex * getDMAVerticesData() { return m_dmaVertices.data(); }
 
 	SPVertex & getCurrentDMAVertex();
-	size_t getDMAVerticesCount() const { return m_dmaVerticesNum; }
+	u32 getDMAVerticesCount() const { return m_dmaVerticesNum; }
 
 	void updateScissor(FrameBuffer * _pBuffer) const;
 
@@ -197,7 +197,7 @@ private:
 	} triangles;
 
 	std::vector<SPVertex> m_dmaVertices;
-	size_t m_dmaVerticesNum;
+	u32 m_dmaVerticesNum;
 
 	RectVertex m_rect[4];
 

@@ -283,7 +283,7 @@ void Debugger::_fillTriInfo(TriInfo & _info)
 void Debugger::_addTrianglesByElements(const Context::DrawTriangleParameters & _params)
 {
 	u8 * elements = reinterpret_cast<u8*>(_params.elements);
-	u32 cur_tri = m_triangles.size();
+	u32 cur_tri = static_cast<u32>(m_triangles.size());
 	for (u32 i = 0; i < _params.elementsCount;) {
 		m_triangles.emplace_back();
 		TriInfo & info = m_triangles.back();
@@ -297,7 +297,7 @@ void Debugger::_addTrianglesByElements(const Context::DrawTriangleParameters & _
 
 void Debugger::_addTriangles(const Context::DrawTriangleParameters & _params)
 {
-	u32 cur_tri = m_triangles.size();
+	u32 cur_tri = static_cast<u32>(m_triangles.size());
 	for (u32 i = 0; i < _params.verticesCount;) {
 		m_triangles.emplace_back();
 		TriInfo & info = m_triangles.back();
@@ -333,7 +333,7 @@ void Debugger::addRects(const graphics::Context::DrawRectParameters & _params)
 	if (!m_bCapture)
 		return;
 
-	u32 cur_tri = m_triangles.size();
+	u32 cur_tri = static_cast<u32>(m_triangles.size());
 	for (u32 i = 0; i < 2; ++i) {
 		m_triangles.emplace_back();
 		TriInfo & info = m_triangles.back();
@@ -530,7 +530,7 @@ void Debugger::_drawTextureCache()
 										return val->texture->name == tex;
 									 });
 			auto d = std::distance(texInfos.begin(), iter);
-			m_startTexRow[m_tmu] = d / m_cacheViewerCols;
+			m_startTexRow[m_tmu] = static_cast<u32>(d) / m_cacheViewerCols;
 			m_clickY = 0;
 			m_selectedTexPos[m_tmu].row = 0;
 			m_selectedTexPos[m_tmu].col = d % m_cacheViewerCols;

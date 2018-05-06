@@ -299,8 +299,8 @@ bool FrameBuffer::isValid(bool _forceCheck) const
 					return false;
 			return true;
 	} else if (!m_RdramCopy.empty()) {
-		const u32 * const pCopy = (const u32*)m_RdramCopy.data();
-		const u32 size = m_RdramCopy.size();
+		const u32 * const pCopy = reinterpret_cast<const u32* >(m_RdramCopy.data());
+		const u32 size = static_cast<u32>(m_RdramCopy.size());
 		const u32 size_dwords = size >> 2;
 		u32 start = m_startAddress >> 2;
 		u32 wrongPixels = 0;

@@ -44,7 +44,8 @@ void getStorageFileName(const opengl::GLInfo & _glinfo, wchar_t * _shadersFileNa
 		strOpenGLType = L"OpenGL";
 	}
 
-	swprintf(_shadersFileName, PLUGIN_PATH_SIZE, L"%ls/GLideN64.%08lx.%ls.%ls", pPath, std::hash<std::string>()(RSP.romname), strOpenGLType.c_str(), _fileExtension);
+	swprintf(_shadersFileName, PLUGIN_PATH_SIZE, L"%ls/GLideN64.%08x.%ls.%ls",
+			pPath, static_cast<u32>(std::hash<std::string>()(RSP.romname)), strOpenGLType.c_str(), _fileExtension);
 }
 
 /*
@@ -134,12 +135,12 @@ bool ShaderStorage::saveShadersStorage(const graphics::Combiners & _combiners) c
 	shadersOut.write((char*)&configOptionsBitSet, sizeof(configOptionsBitSet));
 
 	const char * strRenderer = reinterpret_cast<const char *>(glGetString(GL_RENDERER));
-	u32 len = strlen(strRenderer);
+	u32 len = static_cast<u32>(strlen(strRenderer));
 	shadersOut.write((char*)&len, sizeof(len));
 	shadersOut.write(strRenderer, len);
 
 	const char * strGLVersion = reinterpret_cast<const char *>(glGetString(GL_VERSION));
-	len = strlen(strGLVersion);
+	len = static_cast<u32>(strlen(strGLVersion));
 	shadersOut.write((char*)&len, sizeof(len));
 	shadersOut.write(strGLVersion, len);
 

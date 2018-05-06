@@ -357,7 +357,7 @@ void TextDrawer::drawText(const char *_pText, float _x, float _y) const
 
 	Context::DrawRectParameters rectParams;
 	rectParams.mode = drawmode::TRIANGLES;
-	rectParams.verticesCount = coords.size();
+	rectParams.verticesCount = static_cast<u32>(coords.size());
 	rectParams.vertices = coords.data();
 	rectParams.combiner = m_program.get();
 	gfxContext.drawRects(rectParams);
