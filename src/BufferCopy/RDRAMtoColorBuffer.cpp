@@ -17,7 +17,8 @@ using namespace graphics;
 
 RDRAMtoColorBuffer::RDRAMtoColorBuffer()
 	: m_pCurBuffer(nullptr)
-	, m_pTexture(nullptr) {
+	, m_pTexture(nullptr)
+	, m_pbuf(nullptr) {
 }
 
 RDRAMtoColorBuffer & RDRAMtoColorBuffer::get()

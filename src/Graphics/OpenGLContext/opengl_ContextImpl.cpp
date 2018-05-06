@@ -17,6 +17,7 @@
 using namespace opengl;
 
 ContextImpl::ContextImpl()
+	: m_clampMode(graphics::ClampMode::ClippingEnabled)
 {
 	initGLFunctions();
 }

@@ -13,6 +13,7 @@ using namespace graphics;
 
 PaletteTexture::PaletteTexture()
 : m_pTexture(nullptr)
+, m_pbuf(nullptr)
 , m_paletteCRC256(0)
 {
 }

@@ -28,7 +28,7 @@ void ColorBufferReaderWithBufferStorage::_initBuffers()
 	m_curIndex = 0;
 
 	// Initialize Pixel Buffer Objects
-	for (int index = 0; index < m_numPBO; ++index) {
+	for (u32 index = 0; index < m_numPBO; ++index) {
 		m_bindBuffer->bind(Parameter(GL_PIXEL_PACK_BUFFER), ObjectHandle(m_PBO[index]));
 		m_fence[index] = 0;
 		glBufferStorage(GL_PIXEL_PACK_BUFFER, m_pTexture->textureBytes, nullptr, GL_MAP_READ_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT);
@@ -42,7 +42,7 @@ void ColorBufferReaderWithBufferStorage::_destroyBuffers()
 {
 	glDeleteBuffers(m_numPBO, m_PBO);
 
-	for (int index = 0; index < m_numPBO; ++index) {
+	for (u32 index = 0; index < m_numPBO; ++index) {
 		m_PBO[index] = 0;
 		glDeleteSync(m_fence[index]);
 	}

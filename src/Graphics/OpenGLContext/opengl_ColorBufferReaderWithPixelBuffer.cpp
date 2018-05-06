@@ -22,7 +22,7 @@ void ColorBufferReaderWithPixelBuffer::_destroyBuffers()
 {
 	glDeleteBuffers(m_numPBO, m_PBO);
 
-	for(int index = 0; index < m_numPBO; ++index)
+	for (u32 index = 0; index < m_numPBO; ++index)
 		m_PBO[index] = 0;
 }
 

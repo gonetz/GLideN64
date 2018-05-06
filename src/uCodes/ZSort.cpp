@@ -226,7 +226,7 @@ void ZSort_XFMLight( u32 _w0, u32 _w1 )
 		gSP.lookat.xyz[i][X] = (f32)(((s8*)DMEM)[(addr+8)^3]);
 		gSP.lookat.xyz[i][Y] = (f32)(((s8*)DMEM)[(addr+9)^3]);
 		gSP.lookat.xyz[i][Z] = (f32)(((s8*)DMEM)[(addr+10)^3]);
-		gSP.lookatEnable = (i == 0) || (i == 1 && gSP.lookat.xyz[i][X] != 0 && gSP.lookat.xyz[i][Y] != 0);
+		gSP.lookatEnable = (i == 0) || (gSP.lookat.xyz[i][X] != 0 && gSP.lookat.xyz[i][Y] != 0);
 		addr += 24;
 	}
 }

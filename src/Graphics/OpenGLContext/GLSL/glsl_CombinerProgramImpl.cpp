@@ -84,9 +84,6 @@ bool CombinerProgramImpl::getBinaryForm(std::vector<char> & _buffer)
 
 	std::vector<char> binary(binaryLength);
 
-	if (binary.size() == 0)
-		return false;
-
 	GLenum binaryFormat;
 	glGetProgramBinary(GLuint(m_program), binaryLength, &binaryLength, &binaryFormat, binary.data());
 	if (opengl::Utils::isGLError())

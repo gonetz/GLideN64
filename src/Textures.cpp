@@ -976,7 +976,7 @@ void TextureCache::_loadDepthTexture(CachedTexture * _pTexture, u16* _pDest)
 	u32 size = _pTexture->realWidth * _pTexture->realHeight;
 	std::vector<f32> pDestFloat(size);
 	for (u32 i = 0; i < size; ++i)
-		pDestFloat[i] = _pDest[i] / 65535.0;
+		pDestFloat[i] = _pDest[i] / 65535.0f;
 
 	Context::InitTextureParams params;
 	params.handle = _pTexture->name;
@@ -1322,7 +1322,7 @@ void TextureCache::activateTexture(u32 _t, CachedTexture *_pTexture)
 					params.minFilter = textureParameters::FILTER_NEAREST;
 				params.magFilter = textureParameters::FILTER_NEAREST;
 			}
-		} else if (bUseBilinear && config.generalEmulation.enableLOD != 0 && bUseLOD) { // Apply standard bilinear to first tile of mipmap texture
+		} else if (bUseBilinear && config.generalEmulation.enableLOD != 0) { // Apply standard bilinear to first tile of mipmap texture
 			params.minFilter = textureParameters::FILTER_LINEAR;
 			params.magFilter = textureParameters::FILTER_LINEAR;
 		} else { // Don't use texture filter. Texture will be filtered by filter shader

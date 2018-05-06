@@ -30,7 +30,7 @@ NoiseTexture::NoiseTexture()
 	, m_currTex(0)
 	, m_prevTex(0)
 {
-	for (u32 i = 0; i < m_prevTex; ++i)
+	for (u32 i = 0; i < NOISE_TEX_NUM; ++i)
 		m_pTexture[i] = nullptr;
 }
 
