@@ -1439,7 +1439,7 @@ public:
 			m_part =
 				"lowp float snoise()	\n"
 				"{						\n"
-				"  return 1.0;			\n"
+				"  return 0.5;			\n"
 				"}						\n"
 				;
 		} else {
