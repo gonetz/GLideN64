@@ -79,7 +79,7 @@ namespace graphics {
 
 		ObjectHandle createTexture(Parameter _target);
 
-		void deleteTexture(ObjectHandle _name, bool _isFBTexture);
+		void deleteTexture(ObjectHandle _name);
 
 		struct InitTextureParams {
 			ObjectHandle handle;
