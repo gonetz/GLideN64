@@ -527,12 +527,12 @@ void TextureCache::destroy()
 	current[0] = current[1] = nullptr;
 
 	for (Textures::const_iterator cur = m_textures.cbegin(); cur != m_textures.cend(); ++cur)
-		gfxContext.deleteTexture(cur->name, false);
+		gfxContext.deleteTexture(cur->name);
 	m_textures.clear();
 	m_lruTextureLocations.clear();
 
 	for (FBTextures::const_iterator cur = m_fbTextures.cbegin(); cur != m_fbTextures.cend(); ++cur)
-		gfxContext.deleteTexture(cur->second.name, true);
+		gfxContext.deleteTexture(cur->second.name);
 	m_fbTextures.clear();
 }
 
@@ -540,7 +540,7 @@ void TextureCache::_checkCacheSize()
 {
 	if (m_textures.size() >= m_maxCacheSize) {
 		CachedTexture& clsTex = m_textures.back();
-		gfxContext.deleteTexture(clsTex.name, false);
+		gfxContext.deleteTexture(clsTex.name);
 		m_lruTextureLocations.erase(clsTex.crc);
 		m_textures.pop_back();
 	}
@@ -564,7 +564,7 @@ void TextureCache::removeFrameBufferTexture(CachedTexture * _pTexture)
 		return;
 	FBTextures::const_iterator iter = m_fbTextures.find(u32(_pTexture->name));
 	assert(iter != m_fbTextures.cend());
-	gfxContext.deleteTexture(ObjectHandle(iter->second.name), true);
+	gfxContext.deleteTexture(ObjectHandle(iter->second.name));
 	m_fbTextures.erase(iter);
 }
 
@@ -1448,7 +1448,7 @@ void TextureCache::_clear()
 	current[0] = current[1] = nullptr;
 
 	for (auto cur = m_textures.cbegin(); cur != m_textures.cend(); ++cur) {
-		gfxContext.deleteTexture(cur->name, false);
+		gfxContext.deleteTexture(cur->name);
 	}
 	m_textures.clear();
 	m_lruTextureLocations.clear();
@@ -1546,7 +1546,7 @@ void TextureCache::update(u32 _t)
 			return;
 		}
 
-		gfxContext.deleteTexture(currentTex.name, false);
+		gfxContext.deleteTexture(currentTex.name);
 		m_lruTextureLocations.erase(locations_iter);
 		m_textures.erase(iter);
 	}

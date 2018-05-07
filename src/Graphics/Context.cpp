@@ -121,9 +121,9 @@ ObjectHandle Context::createTexture(Parameter _target)
 	return m_impl->createTexture(_target);
 }
 
-void Context::deleteTexture(ObjectHandle _name, bool _isFBTexture)
+void Context::deleteTexture(ObjectHandle _name)
 {
-	m_impl->deleteTexture(_name, _isFBTexture);
+	m_impl->deleteTexture(_name);
 }
 
 void Context::init2DTexture(const InitTextureParams & _params)

@@ -56,7 +56,7 @@ namespace opengl {
 
 		graphics::ObjectHandle createTexture(graphics::Parameter _target) override;
 
-		void deleteTexture(graphics::ObjectHandle _name, bool _isFBTexture) override;
+		void deleteTexture(graphics::ObjectHandle _name) override;
 
 		void init2DTexture(const graphics::Context::InitTextureParams & _params) override;
 
