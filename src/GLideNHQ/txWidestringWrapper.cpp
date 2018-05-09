@@ -57,14 +57,14 @@ tx_wstring & tx_wstring::operator+=(const wchar_t * wstr)
 	return *this;
 }
 
-tx_wstring tx_wstring::operator + (const tx_wstring & wstr)
+tx_wstring tx_wstring::operator+(const tx_wstring & wstr) const
 {
 	tx_wstring ans(_wstring.c_str());
 	ans.append(wstr);
 	return ans;
 }
 
-tx_wstring tx_wstring::operator+(const wchar_t * wstr)
+tx_wstring tx_wstring::operator+(const wchar_t * wstr) const
 {
 	tx_wstring ans(_wstring.c_str());
 	ans.append(wstr);

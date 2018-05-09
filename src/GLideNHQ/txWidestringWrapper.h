@@ -22,8 +22,8 @@ public:
 	tx_wstring & operator=(const tx_wstring & other);
 	tx_wstring & operator+=(const tx_wstring & other);
 	tx_wstring & operator+=(const wchar_t * wstr);
-	tx_wstring operator+(const tx_wstring & wstr);
-	tx_wstring operator+(const wchar_t * wstr);
+	tx_wstring operator+(const tx_wstring & wstr) const;
+	tx_wstring operator+(const wchar_t * wstr) const;
 	const wchar_t * c_str() const;
 	bool empty() const;
 	int compare(const wchar_t * wstr);
