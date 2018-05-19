@@ -116,6 +116,24 @@ bool Config_SetDefault()
 	assert(res == M64ERR_SUCCESS);
 	res = ConfigSetDefaultBool(g_configVideoGliden64, "EnableCopyColorFromRDRAM", config.frameBufferEmulation.copyFromRDRAM, "Enable color buffer copy from RDRAM.");
 	assert(res == M64ERR_SUCCESS);
+	res = ConfigSetDefaultBool(g_configVideoGliden64, "EnableOverscan", config.frameBufferEmulation.enableOverscan, "Enable resulted image crop by Overscan.");
+	assert(res == M64ERR_SUCCESS);
+	res = ConfigSetDefaultInt(g_configVideoGliden64, "OverscanPalLeft", config.frameBufferEmulation.overscanPAL.left, "PAL mode. Left bound of Overscan");
+	assert(res == M64ERR_SUCCESS);
+	res = ConfigSetDefaultInt(g_configVideoGliden64, "OverscanPalRight", config.frameBufferEmulation.overscanPAL.right, "PAL mode. Right bound of Overscan");
+	assert(res == M64ERR_SUCCESS);
+	res = ConfigSetDefaultInt(g_configVideoGliden64, "OverscanPalTop", config.frameBufferEmulation.overscanPAL.top, "PAL mode. Top bound of Overscan");
+	assert(res == M64ERR_SUCCESS);
+	res = ConfigSetDefaultInt(g_configVideoGliden64, "OverscanPalBottom", config.frameBufferEmulation.overscanPAL.bottom, "PAL mode. Bottom bound of Overscan");
+	assert(res == M64ERR_SUCCESS);
+	res = ConfigSetDefaultInt(g_configVideoGliden64, "OverscanNtscLeft", config.frameBufferEmulation.overscanNTSC.left, "NTSC mode. Left bound of Overscan");
+	assert(res == M64ERR_SUCCESS);
+	res = ConfigSetDefaultInt(g_configVideoGliden64, "OverscanNtscRight", config.frameBufferEmulation.overscanNTSC.right, "NTSC mode. Right bound of Overscan");
+	assert(res == M64ERR_SUCCESS);
+	res = ConfigSetDefaultInt(g_configVideoGliden64, "OverscanNtscTop", config.frameBufferEmulation.overscanNTSC.top, "NTSC mode. Top bound of Overscan");
+	assert(res == M64ERR_SUCCESS);
+	res = ConfigSetDefaultInt(g_configVideoGliden64, "OverscanNtscBottom", config.frameBufferEmulation.overscanNTSC.bottom, "NTSC mode. Bottom bound of Overscan");
+	assert(res == M64ERR_SUCCESS);
 	//#Texture filter settings
 	res = ConfigSetDefaultInt(g_configVideoGliden64, "txFilterMode", config.textureFilter.txFilterMode, "Texture filter (0=none, 1=Smooth filtering 1, 2=Smooth filtering 2, 3=Smooth filtering 3, 4=Smooth filtering 4, 5=Sharp filtering 1, 6=Sharp filtering 2)");
 	assert(res == M64ERR_SUCCESS);
@@ -356,6 +374,15 @@ void Config_LoadConfig()
 	config.frameBufferEmulation.fbInfoDisabled = ConfigGetParamBool(g_configVideoGliden64, "DisableFBInfo");
 	config.frameBufferEmulation.fbInfoReadColorChunk = ConfigGetParamBool(g_configVideoGliden64, "FBInfoReadColorChunk");
 	config.frameBufferEmulation.fbInfoReadDepthChunk = ConfigGetParamBool(g_configVideoGliden64, "FBInfoReadDepthChunk");
+	config.frameBufferEmulation.enableOverscan = ConfigGetParamBool(g_configVideoGliden64, "EnableOverscan");
+	config.frameBufferEmulation.overscanPAL.left = ConfigGetParamInt(g_configVideoGliden64, "OverscanPalLeft");
+	config.frameBufferEmulation.overscanPAL.right = ConfigGetParamInt(g_configVideoGliden64, "OverscanPalRight");
+	config.frameBufferEmulation.overscanPAL.top = ConfigGetParamInt(g_configVideoGliden64, "OverscanPalTop");
+	config.frameBufferEmulation.overscanPAL.bottom = ConfigGetParamInt(g_configVideoGliden64, "OverscanPalBottom");
+	config.frameBufferEmulation.overscanNTSC.left = ConfigGetParamInt(g_configVideoGliden64, "OverscanNtscLeft");
+	config.frameBufferEmulation.overscanNTSC.right = ConfigGetParamInt(g_configVideoGliden64, "OverscanNtscRight");
+	config.frameBufferEmulation.overscanNTSC.top = ConfigGetParamInt(g_configVideoGliden64, "OverscanNtscTop");
+	config.frameBufferEmulation.overscanNTSC.bottom = ConfigGetParamInt(g_configVideoGliden64, "OverscanNtscBottom");
 	//#Texture filter settings
 	config.textureFilter.txFilterMode = ConfigGetParamInt(g_configVideoGliden64, "txFilterMode");
 	config.textureFilter.txEnhancementMode = ConfigGetParamInt(g_configVideoGliden64, "txEnhancementMode");
