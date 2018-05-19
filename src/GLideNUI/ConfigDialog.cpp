@@ -309,7 +309,6 @@ void ConfigDialog::_getTranslations(QStringList & _translationFiles) const
 	_translationFiles = pluginFolder.entryList(nameFilters, QDir::Files, QDir::Name);
 }
 
-
 void ConfigDialog::setIniPath(const QString & _strIniPath)
 {
 	m_strIniPath = _strIniPath;
@@ -336,6 +335,11 @@ void ConfigDialog::setIniPath(const QString & _strIniPath)
 
 	ui->translationsComboBox->insertItems(0, translationLanguages);
 	ui->translationsComboBox->setCurrentIndex(listIndex);
+}
+
+void ConfigDialog::setRomName(const char * _romName)
+{
+	m_romName = _romName;
 }
 
 ConfigDialog::ConfigDialog(QWidget *parent, Qt::WindowFlags f) :
@@ -528,6 +532,20 @@ void ConfigDialog::accept()
 		config.debug.dumpMode |= DEBUG_NORMAL;
 	if (ui->dumpDetailCheckBox->isChecked())
 		config.debug.dumpMode |= DEBUG_DETAIL;
+
+	if (config.generalEmulation.enableCustomSettings != 0 && m_romName != nullptr && strlen(m_romName) != 0) {
+		QString msg(tr("Save settings as custom ones? Current game is "));
+		msg += QString::fromLatin1(m_romName).toUpper();
+		msg += tr("\nIf you select Cancel, game will continue to run with its current custom settings.");
+		QMessageBox msgBox(QMessageBox::Question, tr("Save custom settings"),
+			msg, QMessageBox::Save | QMessageBox::Cancel, this);
+		msgBox.setDefaultButton(QMessageBox::Cancel);
+		msgBox.setButtonText(QMessageBox::Save, tr("Save as custom settings"));
+		msgBox.setButtonText(QMessageBox::Cancel, tr("Cancel"));
+		if (msgBox.exec() == QMessageBox::Save) {
+			saveCustomRomSettings(m_strIniPath, m_romName);
+		}
+	}
 
 	writeSettings(m_strIniPath);
 

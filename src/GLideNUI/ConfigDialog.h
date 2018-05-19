@@ -18,6 +18,7 @@ public:
 	~ConfigDialog();
 
 	void setIniPath(const QString & _strIniPath);
+	void setRomName(const char * _romName);
 	bool isAccepted() const { return m_accepted; }
 
 public Q_SLOTS:
@@ -62,6 +63,7 @@ private:
 	bool m_accepted;
 	bool m_fontsInited;
 	QString m_strIniPath;
+	const char * m_romName;
 };
 
 #endif // CONFIGDIALOG_H
