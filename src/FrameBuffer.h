@@ -140,6 +140,7 @@ private:
 		s32 getVOffset() const;
 		f32 getScaleX() const;
 		f32 getScaleY(u32 _fullHeight) const;
+		u32 getDrawingWidth() const { return m_drawingWidth; }
 		u32 getBufferWidth() const { return m_bufferWidth; }
 		u32 getBufferHeight() const { return m_bufferHeight; }
 
@@ -147,6 +148,7 @@ private:
 		s32 m_hOffset = 0;
 		s32 m_vOffset = 0;
 		f32 m_scale = 1.0f;
+		u32 m_drawingWidth = 0U;
 		u32 m_bufferWidth = 0U;
 		u32 m_bufferHeight = 0U;
 		bool m_enabled = false;

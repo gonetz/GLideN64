@@ -1157,6 +1157,7 @@ void FrameBufferList::OverscanBuffer::init()
 	m_hOffset = (wnd.getScreenWidth() - wnd.getWidth()) / 2;
 	m_vOffset = (wnd.getScreenHeight() - wnd.getHeight()) / 2;
 	m_scale = wnd.getScaleX();
+	m_drawingWidth = wnd.getWidth();
 	m_bufferWidth = wnd.getScreenWidth();
 	m_bufferHeight = wnd.getScreenHeight() + wnd.getHeightOffset();
 }
@@ -1194,7 +1195,7 @@ void FrameBufferList::OverscanBuffer::setInputBuffer(const FrameBuffer *  _pBuff
 		m_pTexture);
 	_setAndAttachBufferTexture(m_FBO, m_pTexture, 0, false);
 	m_scale = _pBuffer->m_scale;
-	m_bufferWidth = m_pTexture->width;
+	m_drawingWidth = m_bufferWidth = m_pTexture->width;
 	m_bufferHeight = m_pTexture->height;
 }
 
@@ -1336,7 +1337,7 @@ void FrameBufferList::renderBuffer()
 	const s32 hx1 = max(0, h0 + 640 - hEnd);
 	//const s32 hx1 = hx0 + rdpRes.vi_hres;
 	dstX0 = (s32)((hx0 * viScaleX + Xoffset) * dstScaleX);
-	dstX1 = m_overscan.getBufferWidth() - (s32)((hx1*viScaleX + Xdivot) * dstScaleX);
+	dstX1 = m_overscan.getDrawingWidth() - (s32)((hx1*viScaleX + Xdivot) * dstScaleX);
 	srcWidth -= Xoffset + Xdivot;
 
 	const f32 srcScaleY = pFilteredBuffer->m_scale;
