@@ -91,10 +91,16 @@ void ConfigDialog::_init()
 	QValidator *windowedValidator = new QRegExpValidator(windowedRegExp, this);
 	ui->windowedResolutionComboBox->setValidator(windowedValidator);
 
-	ui->cropImageComboBox->setCurrentIndex(config.video.cropMode);
-	ui->cropImageWidthSpinBox->setValue(config.video.cropWidth);
-	ui->cropImageHeightSpinBox->setValue(config.video.cropHeight);
-	ui->cropImageCustomFrame->setVisible(config.video.cropMode == Config::cmCustom);
+	ui->overscanCheckBox->toggle();
+	ui->overscanCheckBox->setChecked(config.frameBufferEmulation.enableOverscan != 0);
+	ui->overscanNtscLeftSpinBox->setValue(config.frameBufferEmulation.overscanNTSC.left);
+	ui->overscanNtscRightSpinBox->setValue(config.frameBufferEmulation.overscanNTSC.right);
+	ui->overscanNtscTopSpinBox->setValue(config.frameBufferEmulation.overscanNTSC.top);
+	ui->overscanNtscBottomSpinBox->setValue(config.frameBufferEmulation.overscanNTSC.bottom);
+	ui->overscanPalLeftSpinBox->setValue(config.frameBufferEmulation.overscanPAL.left);
+	ui->overscanPalRightSpinBox->setValue(config.frameBufferEmulation.overscanPAL.right);
+	ui->overscanPalTopSpinBox->setValue(config.frameBufferEmulation.overscanPAL.top);
+	ui->overscanPalBottomSpinBox->setValue(config.frameBufferEmulation.overscanPAL.bottom);
 
 	QStringList fullscreenModesList, fullscreenRatesList;
 	int fullscreenMode, fullscreenRate;
@@ -206,16 +212,6 @@ void ConfigDialog::_init()
 	ui->readColorChunkCheckBox->setEnabled(fbEmulationEnabled && config.frameBufferEmulation.fbInfoDisabled == 0);
 	ui->readDepthChunkCheckBox->setChecked(config.frameBufferEmulation.fbInfoReadDepthChunk != 0);
 	ui->readDepthChunkCheckBox->setEnabled(fbEmulationEnabled && config.frameBufferEmulation.fbInfoDisabled == 0);
-
-	ui->overscanCheckBox->setChecked(config.frameBufferEmulation.enableOverscan != 0);
-	ui->overscanNtscLeftSpinBox->setValue(config.frameBufferEmulation.overscanNTSC.left);
-	ui->overscanNtscRightSpinBox->setValue(config.frameBufferEmulation.overscanNTSC.right);
-	ui->overscanNtscTopSpinBox->setValue(config.frameBufferEmulation.overscanNTSC.top);
-	ui->overscanNtscBottomSpinBox->setValue(config.frameBufferEmulation.overscanNTSC.bottom);
-	ui->overscanPalLeftSpinBox->setValue(config.frameBufferEmulation.overscanPAL.left);
-	ui->overscanPalRightSpinBox->setValue(config.frameBufferEmulation.overscanPAL.right);
-	ui->overscanPalTopSpinBox->setValue(config.frameBufferEmulation.overscanPAL.top);
-	ui->overscanPalBottomSpinBox->setValue(config.frameBufferEmulation.overscanPAL.bottom);
 
 	// Texture filter settings
 	ui->filterComboBox->setCurrentIndex(config.textureFilter.txFilterMode);
@@ -374,10 +370,6 @@ void ConfigDialog::accept()
 	getFullscreenResolutions(ui->fullScreenResolutionComboBox->currentIndex(), config.video.fullscreenWidth, config.video.fullscreenHeight);
 	getFullscreenRefreshRate(ui->fullScreenRefreshRateComboBox->currentIndex(), config.video.fullscreenRefresh);
 
-	config.video.cropMode = ui->cropImageComboBox->currentIndex();
-	config.video.cropWidth = ui->cropImageWidthSpinBox->value();
-	config.video.cropHeight = ui->cropImageHeightSpinBox->value();
-
 	config.video.multisampling = ui->n64DepthCompareCheckBox->isChecked() ? 0 : pow2(ui->aliasingSlider->value());
 	config.texture.maxAnisotropy = ui->anisotropicSlider->value();
 
@@ -534,9 +526,9 @@ void ConfigDialog::accept()
 		config.debug.dumpMode |= DEBUG_DETAIL;
 
 	if (config.generalEmulation.enableCustomSettings != 0 && m_romName != nullptr && strlen(m_romName) != 0) {
-		QString msg(tr("Save settings as custom ones? Current game is "));
+		QString msg(tr("Would you like to save these settings as custom ones for this game: "));
 		msg += QString::fromLatin1(m_romName).toUpper();
-		msg += tr("\nIf you select Cancel, game will continue to run with its current custom settings.");
+		msg += QString("\n") + tr("If you select Cancel, the game will continue to run with its current custom settings.");
 		QMessageBox msgBox(QMessageBox::Question, tr("Save custom settings"),
 			msg, QMessageBox::Save | QMessageBox::Cancel, this);
 		msgBox.setDefaultButton(QMessageBox::Cancel);
@@ -646,10 +638,9 @@ void ConfigDialog::on_windowedResolutionComboBox_currentTextChanged(QString text
 		ui->windowedResolutionComboBox->setCurrentText("");
 }
 
-void ConfigDialog::on_cropImageComboBox_currentIndexChanged(int index)
+void ConfigDialog::on_overscanCheckBox_toggled(bool checked)
 {
-	const bool bCustom = index == Config::cmCustom;
-	ui->cropImageCustomFrame->setVisible(bCustom);
+	ui->overscanCheckBox->setText(tr("Reduce overscan") + (checked ? QString(":") : QString("")));
 }
 
 void ConfigDialog::on_frameBufferCheckBox_toggled(bool checked)

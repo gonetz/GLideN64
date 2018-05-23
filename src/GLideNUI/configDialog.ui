@@ -158,11 +158,14 @@
             </widget>
            </item>
            <item>
-            <widget class="QFrame" name="cropImageFrame">
-             <property name="toolTip">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;You can use this option to crop black borders. Use &lt;span style=&quot; font-weight:600;&quot;&gt;Auto per game&lt;/span&gt; to crop automatically based on the game or &lt;span style=&quot; font-weight:600;&quot;&gt;Custom&lt;/span&gt; to set the number of pixels yourself. The number of pixels is based on the original N64 resolution.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            <widget class="QFrame" name="overscanFrame">
+             <property name="minimumSize">
+              <size>
+               <width>147</width>
+               <height>0</height>
+              </size>
              </property>
-             <layout class="QVBoxLayout" name="verticalLayout_25">
+             <layout class="QVBoxLayout" name="verticalLayout_18">
               <property name="spacing">
                <number>5</number>
               </property>
@@ -179,121 +182,114 @@
                <number>0</number>
               </property>
               <item>
-               <widget class="QLabel" name="cropImageLabel">
-                <property name="locale">
-                 <locale language="English" country="UnitedStates"/>
-                </property>
+               <widget class="QCheckBox" name="overscanCheckBox">
                 <property name="text">
-                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Crop image:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                 <string>Reduce overscan</string>
                 </property>
                </widget>
               </item>
               <item>
-               <widget class="QComboBox" name="cropImageComboBox">
-                <property name="locale">
-                 <locale language="English" country="UnitedStates"/>
+               <widget class="QTabWidget" name="overscanTabWidget">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
                 </property>
-                <item>
-                 <property name="text">
-                  <string>Disable</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>Auto per game</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>Custom</string>
-                 </property>
-                </item>
-               </widget>
-              </item>
-              <item>
-               <widget class="QFrame" name="cropImageCustomFrame">
-                <layout class="QHBoxLayout" name="horizontalLayout_23">
-                 <property name="leftMargin">
-                  <number>0</number>
-                 </property>
-                 <property name="topMargin">
-                  <number>0</number>
-                 </property>
-                 <property name="rightMargin">
-                  <number>0</number>
-                 </property>
-                 <property name="bottomMargin">
-                  <number>0</number>
-                 </property>
-                 <item>
-                  <widget class="QLabel" name="cropImageWidthLabel">
-                   <property name="locale">
-                    <locale language="English" country="UnitedStates"/>
-                   </property>
-                   <property name="text">
-                    <string extracomment="Abbreviation for &quot;width&quot;.">W:</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QSpinBox" name="cropImageWidthSpinBox">
-                   <property name="minimumSize">
-                    <size>
-                     <width>52</width>
-                     <height>0</height>
-                    </size>
-                   </property>
-                   <property name="locale">
-                    <locale language="English" country="UnitedStates"/>
-                   </property>
-                   <property name="maximum">
-                    <number>64</number>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <spacer name="horizontalSpacer_9">
-                   <property name="orientation">
-                    <enum>Qt::Horizontal</enum>
-                   </property>
-                   <property name="sizeType">
-                    <enum>QSizePolicy::Fixed</enum>
-                   </property>
-                   <property name="sizeHint" stdset="0">
-                    <size>
-                     <width>4</width>
-                     <height>0</height>
-                    </size>
-                   </property>
-                  </spacer>
-                 </item>
-                 <item>
-                  <widget class="QLabel" name="cropImageHeightLabel">
-                   <property name="locale">
-                    <locale language="English" country="UnitedStates"/>
-                   </property>
-                   <property name="text">
-                    <string extracomment="Abbreviation for &quot;height&quot;.">H:</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QSpinBox" name="cropImageHeightSpinBox">
-                   <property name="minimumSize">
-                    <size>
-                     <width>52</width>
-                     <height>0</height>
-                    </size>
-                   </property>
-                   <property name="locale">
-                    <locale language="English" country="UnitedStates"/>
-                   </property>
-                   <property name="maximum">
-                    <number>48</number>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
+                <widget class="QWidget" name="overscanNtscTab">
+                 <attribute name="title">
+                  <string>NTSC</string>
+                 </attribute>
+                 <layout class="QGridLayout" name="gridLayout_2">
+                  <property name="leftMargin">
+                   <number>9</number>
+                  </property>
+                  <property name="topMargin">
+                   <number>9</number>
+                  </property>
+                  <property name="rightMargin">
+                   <number>9</number>
+                  </property>
+                  <property name="bottomMargin">
+                   <number>9</number>
+                  </property>
+                  <property name="horizontalSpacing">
+                   <number>0</number>
+                  </property>
+                  <property name="verticalSpacing">
+                   <number>5</number>
+                  </property>
+                  <item row="1" column="0">
+                   <widget class="QSpinBox" name="overscanNtscLeftSpinBox">
+                    <property name="minimum">
+                     <number>-99</number>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="2">
+                   <widget class="QSpinBox" name="overscanNtscRightSpinBox">
+                    <property name="minimum">
+                     <number>-99</number>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="1">
+                   <widget class="QSpinBox" name="overscanNtscTopSpinBox">
+                    <property name="minimum">
+                     <number>-99</number>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="2" column="1">
+                   <widget class="QSpinBox" name="overscanNtscBottomSpinBox">
+                    <property name="minimum">
+                     <number>-99</number>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+                <widget class="QWidget" name="overscanPalTab">
+                 <attribute name="title">
+                  <string>PAL</string>
+                 </attribute>
+                 <layout class="QGridLayout" name="gridLayout_4">
+                  <property name="horizontalSpacing">
+                   <number>0</number>
+                  </property>
+                  <property name="verticalSpacing">
+                   <number>5</number>
+                  </property>
+                  <item row="2" column="1">
+                   <widget class="QSpinBox" name="overscanPalBottomSpinBox">
+                    <property name="minimum">
+                     <number>-99</number>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="2">
+                   <widget class="QSpinBox" name="overscanPalRightSpinBox">
+                    <property name="minimum">
+                     <number>-99</number>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="1" column="0">
+                   <widget class="QSpinBox" name="overscanPalLeftSpinBox">
+                    <property name="minimum">
+                     <number>-99</number>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="0" column="1">
+                   <widget class="QSpinBox" name="overscanPalTopSpinBox">
+                    <property name="minimum">
+                     <number>-99</number>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
                </widget>
               </item>
              </layout>
@@ -372,165 +368,6 @@
               </item>
              </layout>
             </widget>
-           </item>
-           <item>
-            <layout class="QVBoxLayout" name="verticalLayoutOverscan">
-             <item>
-              <widget class="QCheckBox" name="overscanCheckBox">
-               <property name="text">
-                <string>Overscan</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QLabel" name="label_4">
-               <property name="text">
-                <string>NTSC</string>
-               </property>
-               <property name="alignment">
-                <set>Qt::AlignCenter</set>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <layout class="QHBoxLayout" name="horizontalLayout_NTSC13">
-               <item>
-                <widget class="QLabel" name="label_ntsc_l">
-                 <property name="text">
-                  <string>L:</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QSpinBox" name="overscanNtscLeftSpinBox">
-                 <property name="minimum">
-                  <number>-99</number>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QLabel" name="label_ntsc_r">
-                 <property name="text">
-                  <string>R:</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QSpinBox" name="overscanNtscRightSpinBox">
-                 <property name="minimum">
-                  <number>-99</number>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </item>
-             <item>
-              <layout class="QHBoxLayout" name="horizontalLayout_NTSC14">
-               <item>
-                <widget class="QLabel" name="label_ntsc_t">
-                 <property name="text">
-                  <string>T:</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QSpinBox" name="overscanNtscTopSpinBox">
-                 <property name="minimum">
-                  <number>-99</number>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QLabel" name="label_ntsc_b">
-                 <property name="text">
-                  <string>B:</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QSpinBox" name="overscanNtscBottomSpinBox">
-                 <property name="minimum">
-                  <number>-99</number>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </item>
-             <item>
-              <widget class="QLabel" name="label_pal">
-               <property name="text">
-                <string>PAL</string>
-               </property>
-               <property name="alignment">
-                <set>Qt::AlignCenter</set>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <layout class="QHBoxLayout" name="horizontalLayout_pal_13">
-               <item>
-                <widget class="QLabel" name="label_pal_l">
-                 <property name="text">
-                  <string>L:</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QSpinBox" name="overscanPalLeftSpinBox">
-                 <property name="minimum">
-                  <number>-99</number>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QLabel" name="label_pal_2">
-                 <property name="text">
-                  <string>R:</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QSpinBox" name="overscanPalRightSpinBox">
-                 <property name="minimum">
-                  <number>-99</number>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </item>
-             <item>
-              <layout class="QHBoxLayout" name="horizontalLayout_pal_14">
-               <item>
-                <widget class="QLabel" name="label_pal_t">
-                 <property name="text">
-                  <string>T:</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QSpinBox" name="overscanPalTopSpinBox">
-                 <property name="minimum">
-                  <number>-99</number>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QLabel" name="label_pal_b">
-                 <property name="text">
-                  <string>B:</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QSpinBox" name="overscanPalBottomSpinBox">
-                 <property name="minimum">
-                  <number>-99</number>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </item>
-            </layout>
            </item>
            <item>
             <spacer name="verticalSpacer">
@@ -3958,22 +3795,6 @@
    </hints>
   </connection>
   <connection>
-   <sender>frameBufferCheckBox</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>cropImageFrame</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>100</x>
-     <y>41</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>127</x>
-     <y>278</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>fbInfoEnableCheckBox</sender>
    <signal>toggled(bool)</signal>
    <receiver>readColorChunkCheckBox</receiver>
@@ -4108,12 +3929,12 @@
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>85</x>
-     <y>72</y>
+     <x>99</x>
+     <y>71</y>
     </hint>
     <hint type="destinationlabel">
-     <x>78</x>
-     <y>88</y>
+     <x>92</x>
+     <y>85</y>
     </hint>
    </hints>
   </connection>
@@ -4165,12 +3986,28 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>overscanCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>overscanTabWidget</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>149</x>
+     <y>307</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>144</x>
+     <y>332</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <buttongroups>
   <buttongroup name="factorButtonGroup"/>
+  <buttongroup name="aspectButtonGroup"/>
+  <buttongroup name="fixTexrectCoordsButtonGroup"/>
   <buttongroup name="screenshotButtonGroup"/>
   <buttongroup name="osdButtonGroup"/>
-  <buttongroup name="fixTexrectCoordsButtonGroup"/>
-  <buttongroup name="aspectButtonGroup"/>
  </buttongroups>
 </ui>
