@@ -11,6 +11,7 @@
 #include "DebugDump.h"
 #include "F3D.h"
 #include "F3DEX.h"
+#include "F5Rogue.h"
 #include "N64.h"
 #include "RSP.h"
 #include "RDP.h"
@@ -123,13 +124,13 @@ SWRSTriangle TriGen0001_defaultTriangleOrder[8] = {
 };
 
 inline
-void _updateSWDL()
+void _updateF5DL()
 {
 	// Lemmy's note:
 	// differs from the other DL commands because it does skip the first command
 	// the first 32 bits are stored, because they are
 	// used as branch target address in the command in the QUAD "slot"
-	RSP.swDL[RSP.PCi] = _SHIFTR(*(u32*)&RDRAM[RSP.PC[RSP.PCi]], 0, 24);
+	RSP.F5DL[RSP.PCi] = _SHIFTR(*(u32*)&RDRAM[RSP.PC[RSP.PCi]], 0, 24);
 }
 
 void F3DSWRS_Mtx(u32 w0, u32 w1)
@@ -173,7 +174,7 @@ void F3DSWRS_Vtx(u32 _w0, u32 _w1)
 		return;
 
 	const SWVertex * vertex = (const SWVertex*)&RDRAM[address];
-	gSPSWVertex(vertex, n, 0 );
+	gSPSWVertex(vertex, n, nullptr );
 }
 
 static
@@ -835,7 +836,7 @@ void TriGen0000()
 	// Step 3. Process vertices
 	const SWVertex * vertex = (const SWVertex*)vtxData32.data();
 	const u32 vtxSize = static_cast<u32>(vtxData32.size()) / 2;
-	gSPSWVertex(vertex, vtxSize, 0);
+	gSPSWVertex(vertex, vtxSize, nullptr);
 
 	// Step 4. Prepare color indices and texture coordinates. Prepare vertices for rendering
 
@@ -903,7 +904,7 @@ void TriGen0001()
 	// Step 3. Process vertices
 	const SWVertex * vertex = (const SWVertex*)vtxData32.data();
 	const u32 vtxSize = static_cast<u32>(vtxData32.size()) / 2;
-	gSPSWVertex(vertex, vtxSize, 0);
+	gSPSWVertex(vertex, vtxSize, nullptr);
 
 	// Step 4. Prepare color indices and texture coordinates. Prepare vertices for rendering
 
@@ -944,7 +945,7 @@ void TriGen02()
 	u32 vecdata[8];
 	TriGen02_BuildVtxData(params, vecdata);
 	const SWVertex * vertex = (const SWVertex*)&vecdata[0];
-	gSPSWVertex(vertex, 4, 0);
+	gSPSWVertex(vertex, 4, nullptr);
 	GraphicsDrawer & drawer = dwnd().getDrawer();
 
 	const u32 v1 = 0;
@@ -1009,22 +1010,22 @@ void F3DSWRS_TriGen(u32 _w0, u32 _w1)
 void F3DSWRS_JumpSWDL(u32, u32)
 {
 	DebugMsg(DEBUG_NORMAL, "F3DSWRS_JumpSWDL\n");
-	RSP.PC[RSP.PCi] = RSP.swDL[RSP.PCi];
-	_updateSWDL();
+	RSP.PC[RSP.PCi] = RSP.F5DL[RSP.PCi];
+	_updateF5DL();
 }
 
 void F3DSWRS_DList(u32, u32 _w1)
 {
 	DebugMsg(DEBUG_NORMAL, "F3DSWRS_DList (0x%08x)\n", _w1);
 	gSPDisplayList(_w1);
-	_updateSWDL();
+	_updateF5DL();
 }
 
 void F3DSWRS_BranchDList(u32, u32 _w1)
 {
 	DebugMsg(DEBUG_NORMAL, "F3DSWRS_BranchDList (0x%08x)\n", _w1);
 	gSPBranchList(_w1);
-	_updateSWDL();
+	_updateF5DL();
 }
 
 void F3DSWRS_EndDisplayList(u32, u32)
@@ -1247,19 +1248,17 @@ void F3DSWRS_TexrectGen(u32 _w0, u32 _w1)
 	gDP.primDepth.deltaZ = 0.0f;
 
 	const u32 primColor = params[1];
-	gDPSetPrimColor( u32(gDP.primColor.m*255.0f),	// m
-					 u32(gDP.primColor.l*255.0f),	// l
-					 _SHIFTR( primColor, 24, 8 ),	// r
-					 _SHIFTR( primColor, 16, 8 ),	// g
-					 _SHIFTR( primColor,  8, 8 ),	// b
-					 _SHIFTR( primColor,  0, 8 ) );	// a
+	gDP.primColor.r = _FIXED2FLOATCOLOR(_SHIFTR(primColor, 24, 8), 8);
+	gDP.primColor.g = _FIXED2FLOATCOLOR(_SHIFTR(primColor, 16, 8), 8);
+	gDP.primColor.b = _FIXED2FLOATCOLOR(_SHIFTR(primColor,  8, 8), 8);
+	gDP.primColor.a = _FIXED2FLOATCOLOR(_SHIFTR(primColor,  0, 8), 8);
 
 	if ((gSP.geometryMode & G_FOG) != 0) {
 		const u32 fogColor = (params[1] & 0xFFFFFF00) | u32(v.a*255.0f);
-		gDPSetFogColor( _SHIFTR( fogColor, 24, 8 ),		// r
-						_SHIFTR( fogColor, 16, 8 ),		// g
-						_SHIFTR( fogColor,  8, 8 ),		// b
-						_SHIFTR( fogColor,  0, 8 ) );	// a
+		gDPSetFogColor( _SHIFTR( fogColor, 24, 8 ),	// r
+		                _SHIFTR( fogColor, 16, 8 ),	// g
+		                _SHIFTR( fogColor,  8, 8 ),	// b
+		                _SHIFTR( fogColor,  0, 8 ) );	// a
 	}
 
 	gDPTextureRectangle(ulx, uly, lrx, lry, gSP.texture.tile, (s16)S, (s16)T, dsdx, dtdy, flip);
@@ -1281,7 +1280,7 @@ void F3DSWRS_SetOtherMode_L_EX(u32 _w0, u32 _w1)
 	gDP.otherMode.l |= _w1;
 }
 
-void F3DSWRS_Init()
+void F5Rogue_Init()
 {
 	gSPSetupFunctions();
 	// Set GeometryMode flags

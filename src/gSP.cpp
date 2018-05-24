@@ -1194,9 +1194,9 @@ void gSPF3DAMVertex(u32 a, u32 n, u32 v0)
 }
 
 template <u32 VNUM>
-u32 gSPLoadSWVertexData(const SWVertex *orgVtx, SPVertex * spVtx, u32 v0, u32 vi, u32 n)
+u32 gSPLoadSWVertexData(const SWVertex *orgVtx, SPVertex * spVtx, u32 vi, u32 n)
 {
-	const u32 end = n - (n%VNUM) + v0;
+	const u32 end = n - (n%VNUM);
 	for (; vi < end; vi += VNUM) {
 		for(u32 j = 0; j < VNUM; ++j) {
 			SPVertex & vtx = spVtx[vi+j];
@@ -1214,20 +1214,32 @@ u32 gSPLoadSWVertexData(const SWVertex *orgVtx, SPVertex * spVtx, u32 v0, u32 vi
 	return vi;
 }
 
-void gSPSWVertex(const SWVertex * vertex, u32 n, u32 v0)
+void gSPSWVertex(const SWVertex * vertex, u32 n, const bool * const verticesToProcess)
 {
-	DebugMsg(DEBUG_NORMAL, "gSPSWVertex n = %i, v0 = %i\n", n, v0);
-
-	if ((n + v0) > INDEXMAP_SIZE) {
-		LOG(LOG_ERROR, "Using Vertex outside buffer v0=%i, n=%i\n", v0, n);
-		DebugMsg(DEBUG_NORMAL | DEBUG_ERROR, "//Using Vertex outside buffer v0 = %i, n = %i\n", v0, n);
-		return;
-	}
+	DebugMsg(DEBUG_NORMAL, "gSPSWVertex n = %i\n", n);
 
 	SPVertex * spVtx = dwnd().getDrawer().getVertexPtr(0);
-	u32 i = gSPLoadSWVertexData<VEC_OPT>(vertex, spVtx, v0, v0, n);
-	if (i < n + v0)
-		gSPLoadSWVertexData<1>(vertex + (i - v0), spVtx, v0, i, n);
+	if (verticesToProcess == nullptr) {
+		u32 i = gSPLoadSWVertexData<VEC_OPT>(vertex, spVtx, 0, n);
+		if (i < n)
+			gSPLoadSWVertexData<1>(vertex + i, spVtx, i, n);
+	} else {
+		for (u32 i = 0; i < n; ++i) {
+			if (verticesToProcess[i])
+				gSPLoadSWVertexData<1>(vertex + i, spVtx, i, i + 1);
+		}
+	}
+}
+
+void gSPSWVertex(const SWVertex * vertex, u32 v0, u32 n)
+{
+	DebugMsg(DEBUG_NORMAL, "gSPSWVertex v0 = %i, n = %i\n", v0, n);
+
+	SPVertex * spVtx = dwnd().getDrawer().getVertexPtr(0);
+	const u32 endIdx = v0 + n;
+	u32 i = gSPLoadSWVertexData<VEC_OPT>(vertex, spVtx, v0, endIdx);
+	if (i < endIdx)
+		gSPLoadSWVertexData<1>(vertex + i - v0, spVtx, i, endIdx);
 }
 
 void gSPT3DUXVertex(u32 a, u32 n, u32 ci)

@@ -341,9 +341,6 @@
     <ClCompile Include="..\..\src\uCodes\F3DSETA.cpp">
       <Filter>Source Files\uCodes</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\uCodes\F3DSWRS.cpp">
-      <Filter>Source Files\uCodes</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\uCodes\F3DTEXA.cpp">
       <Filter>Source Files\uCodes</Filter>
     </ClCompile>
@@ -379,6 +376,12 @@
     </ClCompile>
     <ClCompile Include="..\..\src\DisplayLoadProgress.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\uCodes\F5Indi_Naboo.cpp">
+      <Filter>Source Files\uCodes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\uCodes\F5Rogue.cpp">
+      <Filter>Source Files\uCodes</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -667,9 +670,6 @@
     <ClInclude Include="..\..\src\uCodes\F3DSETA.h">
       <Filter>Header Files\uCodes</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\uCodes\F3DSWRS.h">
-      <Filter>Header Files\uCodes</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\uCodes\F3DTEXA.h">
       <Filter>Header Files\uCodes</Filter>
     </ClInclude>
@@ -705,6 +705,12 @@
     </ClInclude>
     <ClInclude Include="..\..\src\DisplayLoadProgress.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\uCodes\F5Indi_Naboo.h">
+      <Filter>Header Files\uCodes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\uCodes\F5Rogue.h">
+      <Filter>Header Files\uCodes</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

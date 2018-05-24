@@ -28,8 +28,9 @@
 #include "uCodes/F3DZEX2.h"
 #include "uCodes/F3DTEXA.h"
 #include "uCodes/F3DEX2ACCLAIM.h"
-#include "uCodes/F3DSWRS.h"
 #include "uCodes/F3DFLX2.h"
+#include "uCodes/F5Indi_Naboo.h"
+#include "uCodes/F5Rogue.h"
 #include "uCodes/ZSort.h"
 #include "uCodes/ZSortBOSS.h"
 #include "CRC.h"
@@ -60,15 +61,17 @@ SpecialMicrocodeInfo specialMicrocodes[] =
 	{ F3DPD,		true,	true,	0x1c4f7869, "Perfect Dark" },
 	{ Turbo3D,		false,	true,	0x2bdcfc8a, "Turbo3D" },
 	{ F3DEX2CBFD,	true,	true,	0x1b4ace88, "Conker's Bad Fur Day" },
-	{ F3DSWRS,		false,	false,	0xda51ccdb, "Star Wars RS" },
-	{ F3DZEX2MM,	true,	true,	0xd39a0d4f,	"Animal Forest" },
-	{ S2DEX2,		false,	true,	0x2c399dd,	"Animal Forest" },
+	{ F5Rogue,		false,	false,	0xda51ccdb, "Star Wars RS" },
+	{ F3DZEX2MM,	true,	true,	0xd39a0d4f, "Animal Forest" },
+	{ S2DEX2,		false,	true,	0x02c399dd, "Animal Forest" },
 	{ T3DUX,		false,	true,	0xbad437f2, "T3DUX vers 0.83 for Toukon Road" },
 	{ T3DUX,		false,	true,	0xd0a1aa3d, "T3DUX vers 0.85 for Toukon Road 2" },
 	{ F3DEX2ACCLAIM,true,	true,	0xe44df568, "Acclaim games: Turok2 & 3, Armories and South park" },
 	{ ZSortBOSS,	false,	false,  0x553538cc, "World Driver Championship" }, // USA
 	{ ZSortBOSS,	false,	false,  0x75ed44cc, "World Driver Championship" }, // European
-	{ ZSortBOSS,	false,	false,  0x6a76f8dd, "Stunt Racer" }
+	{ ZSortBOSS,	false,	false,  0x6a76f8dd, "Stunt Racer" },
+	{ F5Indi_Naboo,	false,	false,	0x6859bf8e, "Indiana Jones" },
+	{ F5Indi_Naboo,	false,	false,	0x23fef05f, "SW Ep.1 Battle for Naboo" }
 };
 
 u32 G_RDPHALF_1, G_RDPHALF_2, G_RDPHALF_CONT;
@@ -269,8 +272,8 @@ void GBIInfo::_makeCurrent(MicrocodeInfo * _pCurrent)
 				F3DEX2ACCLAIM_Init();
 				m_hwlSupported = false;
 			break;
-			case F3DSWRS:
-				F3DSWRS_Init();
+			case F5Rogue:
+				F5Rogue_Init();
 				m_hwlSupported = false;
 			break;
 			case F3DFLX2:
@@ -281,6 +284,10 @@ void GBIInfo::_makeCurrent(MicrocodeInfo * _pCurrent)
 				ZSortBOSS_Init();
 				m_hwlSupported = true;
 			break;
+			case F5Indi_Naboo:
+				F5Indi_Naboo_Init();
+				m_hwlSupported = false;
+				break;
 		}
 		if (m_pCurrent->NoN)
 			gfxContext.setClampMode(graphics::ClampMode::NoNearPlaneClipping);

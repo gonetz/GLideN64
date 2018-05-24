@@ -4,7 +4,6 @@
 #include <cmath>
 #include "Platform.h"
 #include "Graphics/Context.h"
-#include "Graphics/Parameters.h"
 #include "DisplayWindow.h"
 #include "SoftwareRender.h"
 #include "GraphicsDrawer.h"
@@ -758,7 +757,7 @@ void GraphicsDrawer::drawTriangles()
 	triangles.maxElement = 0;
 }
 
-void GraphicsDrawer::drawScreenSpaceTriangle(u32 _numVtx)
+void GraphicsDrawer::drawScreenSpaceTriangle(u32 _numVtx, graphics::DrawModeParam _mode)
 {
 	if (_numVtx == 0 || !_canDraw())
 		return;
@@ -776,13 +775,14 @@ void GraphicsDrawer::drawScreenSpaceTriangle(u32 _numVtx)
 	gfxContext.enable(enable::CULL_FACE, false);
 
 	Context::DrawTriangleParameters triParams;
-	triParams.mode = drawmode::TRIANGLE_STRIP;
+	triParams.mode = _mode;
 	triParams.flatColors = m_bFlatColors;
 	triParams.verticesCount = _numVtx;
 	triParams.vertices = m_dmaVertices.data();
 	triParams.combiner = currentCombiner();
 	gfxContext.drawTriangles(triParams);
 	g_debugger.addTriangles(triParams);
+	m_dmaVerticesNum = 0;
 
 	frameBufferList().setBufferChanged(maxY);
 	gSP.changed |= CHANGED_GEOMETRYMODE;

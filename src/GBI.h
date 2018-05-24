@@ -27,12 +27,13 @@
 #define F3DZEX2MM		18
 #define F3DTEXA			19
 #define T3DUX			20
-#define F3DEX2ACCLAIM	21
+#define F3DEX2ACCLAIM		21
 #define F3DAM			22
-#define F3DSWRS			23
-#define F3DFLX2			24
-#define ZSortBOSS		25
-#define NONE			26
+#define F3DFLX2			23
+#define ZSortBOSS		24
+#define F5Rogue			25
+#define F5Indi_Naboo		26
+#define NONE			27
 
 // Fixed point conversion factors
 #define FIXED2FLOATRECIP1	0.5f

@@ -269,11 +269,14 @@ bool _getTexRectParams(u32 & w2, u32 & w3)
 			RSP.PC[RSP.PCi] += 8;
 			return false;
 		}
-		if (GBI.getMicrocodeType() == F3DSWRS) {
-			w2 = *(u32*)&RDRAM[RSP.PC[RSP.PCi] +  8];
-			w3 = *(u32*)&RDRAM[RSP.PC[RSP.PCi] + 12];
-			RSP.PC[RSP.PCi] += 8;
-			return true;
+		{
+			const u32 ucode = GBI.getMicrocodeType();
+			if (ucode == F5Rogue || ucode == F5Indi_Naboo) {
+				w2 = *(u32*)&RDRAM[RSP.PC[RSP.PCi] + 8];
+				w3 = *(u32*)&RDRAM[RSP.PC[RSP.PCi] + 12];
+				RSP.PC[RSP.PCi] += 8;
+				return true;
+			}
 		}
 		w2 = *(u32*)&RDRAM[RSP.PC[RSP.PCi] + 0];
 		w3 = *(u32*)&RDRAM[RSP.PC[RSP.PCi] + 4];

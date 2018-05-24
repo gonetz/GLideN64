@@ -7,7 +7,7 @@
 typedef struct
 {
 	u32 PC[18], PCi;
-	u32 swDL[10];
+	u32 F5DL[10];
 	u32 uc_start, uc_dstart, cmd, nextCmd;
 	u32 w0, w1;
 	s32 count;

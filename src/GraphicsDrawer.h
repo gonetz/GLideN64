@@ -8,7 +8,7 @@
 #include "gSP.h"
 #include "TexrectDrawer.h"
 #include "Graphics/ObjectHandle.h"
-#include "Graphics/Parameter.h"
+#include "Graphics/Parameters.h"
 
 namespace graphics {
 	class CombinerProgram;
@@ -44,7 +44,7 @@ public:
 
 	void drawTriangles();
 
-	void drawScreenSpaceTriangle(u32 _numVtx);
+	void drawScreenSpaceTriangle(u32 _numVtx, graphics::DrawModeParam _mode = graphics::drawmode::TRIANGLE_STRIP);
 
 	void drawDMATriangles(u32 _numVtx);
 

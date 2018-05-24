@@ -408,8 +408,9 @@ copy /Y "$(ProjectDir)$(OutDir)$(TargetName).*" "$(Mupen64PluginsDir)"</Command>
     <ClCompile Include="..\..\src\uCodes\F3DGOLDEN.cpp" />
     <ClCompile Include="..\..\src\uCodes\F3DPD.cpp" />
     <ClCompile Include="..\..\src\uCodes\F3DSETA.cpp" />
-    <ClCompile Include="..\..\src\uCodes\F3DSWRS.cpp" />
     <ClCompile Include="..\..\src\uCodes\F3DTEXA.cpp" />
+    <ClCompile Include="..\..\src\uCodes\F5Indi_Naboo.cpp" />
+    <ClCompile Include="..\..\src\uCodes\F5Rogue.cpp" />
     <ClCompile Include="..\..\src\uCodes\L3D.cpp" />
     <ClCompile Include="..\..\src\uCodes\L3DEX.cpp" />
     <ClCompile Include="..\..\src\uCodes\L3DEX2.cpp" />
@@ -543,8 +544,9 @@ copy /Y "$(ProjectDir)$(OutDir)$(TargetName).*" "$(Mupen64PluginsDir)"</Command>
     <ClInclude Include="..\..\src\uCodes\F3DGOLDEN.h" />
     <ClInclude Include="..\..\src\uCodes\F3DPD.h" />
     <ClInclude Include="..\..\src\uCodes\F3DSETA.h" />
-    <ClInclude Include="..\..\src\uCodes\F3DSWRS.h" />
     <ClInclude Include="..\..\src\uCodes\F3DTEXA.h" />
+    <ClInclude Include="..\..\src\uCodes\F5Indi_Naboo.h" />
+    <ClInclude Include="..\..\src\uCodes\F5Rogue.h" />
     <ClInclude Include="..\..\src\uCodes\L3D.h" />
     <ClInclude Include="..\..\src\uCodes\L3DEX.h" />
     <ClInclude Include="..\..\src\uCodes\L3DEX2.h" />
