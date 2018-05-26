@@ -749,13 +749,10 @@ public:
 			"uniform lowp int uDepthSource;			\n"
 			"uniform highp float uPrimDepth;		\n"
 			"uniform mediump vec2 uScreenScale;		\n"
+			"uniform lowp int uFogUsage;			\n"
 			;
 
-		if (config.generalEmulation.enableLegacyBlending != 0) {
-			m_part +=
-				"uniform lowp int uFogUsage;		\n"
-			;
-		} else {
+		if (config.generalEmulation.enableLegacyBlending == 0) {
 			m_part +=
 				"uniform lowp ivec4 uBlendMux1;		\n"
 				"uniform lowp int uForceBlendCycle1;\n"

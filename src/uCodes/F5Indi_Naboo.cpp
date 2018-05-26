@@ -16,6 +16,7 @@
 #include "gSP.h"
 #include "gDP.h"
 #include "Config.h"
+#include "Combiner.h"
 #include "FrameBuffer.h"
 #include "DisplayWindow.h"
 #include "Debugger.h"
@@ -999,6 +1000,82 @@ u32 F5INDI_TexrectGenVertexMask(u32 _mask, u32 _limAddr, u32 _vtxAddr)
 	return _mask;
 }
 
+#ifdef F5INDI_PARTICLE_OPT
+static
+void F5INDI_AddParticle(f32 _ulx, f32 _uly, f32 _lrx, f32 _lry, s16 _s0, s16 _t0, f32 _dsdx, f32 _dtdy)
+{
+	const f32 Z = (gDP.otherMode.depthSource == G_ZS_PRIM) ? gDP.primDepth.z : 0.0f;
+	const f32 W = 1.0f;
+
+	const f32 offsetX = (_lrx - _ulx) * _dsdx;
+	const f32 offsetY = (_lry - _uly) * _dtdy;
+	const f32 uls = _FIXED2FLOAT(_s0, 5);
+	const f32 lrs = uls + offsetX;
+	const f32 ult = _FIXED2FLOAT(_t0, 5);
+	const f32 lrt = ult + offsetY;
+
+	GraphicsDrawer & drawer = dwnd().getDrawer();
+	auto setupVertex = [&](f32 _x, f32 _y, f32 _s, f32 _t)
+	{
+		SPVertex & vtx = drawer.getCurrentDMAVertex();
+		vtx.x = _x;
+		vtx.y = _y;
+		vtx.z = Z;
+		vtx.w = W;
+		vtx.s = _s;
+		vtx.t = _t;
+		vtx.r = gDP.primColor.r;
+		vtx.g = gDP.primColor.g;
+		vtx.b = gDP.primColor.b;
+		vtx.a = gDP.primColor.a;
+	};
+
+	setupVertex(_ulx, _uly, uls, ult);
+	setupVertex(_lrx, _uly, lrs, ult);
+	setupVertex(_ulx, _lry, uls, lrt);
+	setupVertex(_lrx, _uly, lrs, ult);
+	setupVertex(_ulx, _lry, uls, lrt);
+	setupVertex(_lrx, _lry, lrs, lrt);
+}
+
+static
+void F5INDI_DrawParticle()
+{
+	const u32* pNextCmd = CAST_RDRAM(const u32*, RSP.PC[RSP.PCi] + 40);
+	if (_SHIFTR(pNextCmd[0], 24, 8) != F5INDI_GEOMETRY_GEN ||
+		_SHIFTR(pNextCmd[1], 0, 8) != 0x24)	{
+		// Replace combiner to use vertex color instead of PRIMITIVE
+		const gDPCombine curCombine = gDP.combine;
+		if (gDP.combine.mRGB0 == G_CCMUX_PRIMITIVE)
+			gDP.combine.mRGB0 = G_CCMUX_SHADE;
+		if (gDP.combine.mA0 == G_ACMUX_PRIMITIVE)
+			gDP.combine.mA0 = G_ACMUX_SHADE;
+		if (gDP.combine.mRGB1 == G_CCMUX_PRIMITIVE)
+			gDP.combine.mRGB1 = G_CCMUX_SHADE;
+		if (gDP.combine.mA1 == G_ACMUX_PRIMITIVE)
+			gDP.combine.mA1 = G_ACMUX_SHADE;
+		const u32 othermodeL = gDP.otherMode.l;
+		gDP.otherMode.depthSource = G_ZS_PIXEL;
+		// Replace blending mode
+		gDP.otherMode.l = 0x00550000 | (gDP.otherMode.l & 0xFFFF);
+		const u32 geometryMode = gSP.geometryMode;
+		gSP.geometryMode |= G_ZBUFFER;
+		gSP.geometryMode &= ~G_FOG;
+		CombinerInfo::get().setCombine(gDP.combine.mux);
+		const u32 enableLegacyBlending = config.generalEmulation.enableLegacyBlending;
+		config.generalEmulation.enableLegacyBlending = 1;
+		gDP.changed |= CHANGED_COMBINE | CHANGED_RENDERMODE;
+		GraphicsDrawer & drawer = dwnd().getDrawer();
+		drawer.drawScreenSpaceTriangle(drawer.getDMAVerticesCount(), graphics::drawmode::TRIANGLES);
+		gDP.combine = curCombine;
+		gDP.otherMode.l = othermodeL;
+		gSP.geometryMode = geometryMode;
+		config.generalEmulation.enableLegacyBlending = enableLegacyBlending;
+		gDP.changed |= CHANGED_COMBINE | CHANGED_RENDERMODE;
+	}
+}
+#endif //F5INDI_PARTICLE_OPT
+
 static
 void F5INDI_TexrectGen()
 {
@@ -1104,10 +1181,18 @@ void F5INDI_TexrectGen()
 			DebugMsg(DEBUG_NORMAL, "SetPrimColor( %f, %f, %f, %f )\n",
 			         gDP.primColor.r, gDP.primColor.g, gDP.primColor.b, gDP.primColor.a);
 
+#ifdef F5INDI_PARTICLE_OPT
+			F5INDI_AddParticle(ulx, uly, lrx, lry, S, T, dsdx, dtdy);
+#else
 			gDPTextureRectangle(ulx, uly, lrx, lry, 0, S, T, dsdx, dtdy, false);
+#endif
 		}
 		vtxAddr += 0x100;
 	}
+
+#ifdef F5INDI_PARTICLE_OPT
+	F5INDI_DrawParticle();
+#endif
 }
 
 static
