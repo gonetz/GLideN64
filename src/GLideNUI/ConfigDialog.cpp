@@ -640,7 +640,7 @@ void ConfigDialog::on_windowedResolutionComboBox_currentTextChanged(QString text
 
 void ConfigDialog::on_overscanCheckBox_toggled(bool checked)
 {
-	ui->overscanCheckBox->setText(tr("Reduce overscan") + (checked ? QString(":") : QString("")));
+	ui->overscanCheckBox->setText(tr("Overscan") + (checked ? QString(":") : QString("")));
 }
 
 void ConfigDialog::on_frameBufferCheckBox_toggled(bool checked)
