@@ -314,9 +314,9 @@ void gSPLight( u32 l, s32 n )
 	Light *light = (Light*)&RDRAM[addrByte];
 
 	if (n < 8) {
-		gSP.lights.rgb[n][R] = light->r * 0.0039215689f;
-		gSP.lights.rgb[n][G] = light->g * 0.0039215689f;
-		gSP.lights.rgb[n][B] = light->b * 0.0039215689f;
+		gSP.lights.rgb[n][R] = _FIXED2FLOATCOLOR(light->r,8);
+		gSP.lights.rgb[n][G] = _FIXED2FLOATCOLOR(light->g,8);
+		gSP.lights.rgb[n][B] = _FIXED2FLOATCOLOR(light->b,8);
 
 		gSP.lights.xyz[n][X] = light->x;
 		gSP.lights.xyz[n][Y] = light->y;
@@ -1144,12 +1144,12 @@ u32 gSPLoadF3DAMVertexData(const Vertex *orgVtx, SPVertex * spVtx, u32 v0, u32 v
 				vtx.nx = _FIXED2FLOATCOLOR( orgVtx->normal.x, 7 );
 				vtx.ny = _FIXED2FLOATCOLOR( orgVtx->normal.y, 7 );
 				vtx.nz = _FIXED2FLOATCOLOR( orgVtx->normal.z, 7 );
-				vtx.a = orgVtx->color.a * 0.0039215689f;
+				vtx.a = _FIXED2FLOATCOLOR(orgVtx->color.a,8);
 			} else {
-				vtx.r = orgVtx->color.r * 0.0039215689f;
-				vtx.g = orgVtx->color.g * 0.0039215689f;
-				vtx.b = orgVtx->color.b * 0.0039215689f;
-				vtx.a = orgVtx->color.a * 0.0039215689f;
+				vtx.r = _FIXED2FLOATCOLOR(orgVtx->color.r,8);
+				vtx.g = _FIXED2FLOATCOLOR(orgVtx->color.g,8);
+				vtx.b = _FIXED2FLOATCOLOR(orgVtx->color.b,8);
+				vtx.a = _FIXED2FLOATCOLOR(orgVtx->color.a,8);
 			}
 			++orgVtx;
 		}
@@ -1614,10 +1614,10 @@ void gSPModifyVertex( u32 _vtx, u32 _where, u32 _val )
 	SPVertex & vtx0 = drawer.getVertex(_vtx);
 	switch (_where) {
 		case G_MWO_POINT_RGBA:
-			vtx0.r = _SHIFTR( _val, 24, 8 ) * 0.0039215689f;
-			vtx0.g = _SHIFTR( _val, 16, 8 ) * 0.0039215689f;
-			vtx0.b = _SHIFTR( _val, 8, 8 ) * 0.0039215689f;
-			vtx0.a = _SHIFTR( _val, 0, 8 ) * 0.0039215689f;
+			vtx0.r = _FIXED2FLOATCOLOR(_SHIFTR( _val, 24, 8 ),8);
+			vtx0.g = _FIXED2FLOATCOLOR(_SHIFTR( _val, 16, 8 ),8);
+			vtx0.b = _FIXED2FLOATCOLOR(_SHIFTR( _val, 8, 8 ),8);
+			vtx0.a = _FIXED2FLOATCOLOR(_SHIFTR( _val, 0, 8 ),8);
 			vtx0.modify |= MODIFY_RGBA;
 			DebugMsg(DEBUG_NORMAL, "gSPModifyVertex: RGBA(%02f, %02f, %02f, %02f);\n", vtx0.r, vtx0.g, vtx0.b, vtx0.a);
 			break;
@@ -1687,9 +1687,9 @@ void gSPLightColor( u32 lightNum, u32 packedColor )
 
 	if (lightNum < 8)
 	{
-		gSP.lights.rgb[lightNum][R] = _SHIFTR( packedColor, 24, 8 ) * 0.0039215689f;
-		gSP.lights.rgb[lightNum][G] = _SHIFTR( packedColor, 16, 8 ) * 0.0039215689f;
-		gSP.lights.rgb[lightNum][B] = _SHIFTR( packedColor, 8, 8 ) * 0.0039215689f;
+		gSP.lights.rgb[lightNum][R] = _FIXED2FLOATCOLOR(_SHIFTR( packedColor, 24, 8 ),8);
+		gSP.lights.rgb[lightNum][G] = _FIXED2FLOATCOLOR(_SHIFTR( packedColor, 16, 8 ),8);
+		gSP.lights.rgb[lightNum][B] = _FIXED2FLOATCOLOR(_SHIFTR( packedColor, 8, 8 ),8);
 		gSP.changed |= CHANGED_HW_LIGHT;
 	}
 	DebugMsg(DEBUG_NORMAL, "gSPLightColor( %i, 0x%08X );\n", lightNum, packedColor );
