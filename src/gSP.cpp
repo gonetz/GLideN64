@@ -1575,13 +1575,16 @@ void gSPInsertMatrix( u32 where, u32 num )
 	if ((where & 0x3) || (where > 0x3C))
 		return;
 
+	// integer elements of the matrix to be changed
 	if (where < 0x20) {
 		fraction = modff( gSP.matrix.combined[0][where >> 1], &integer );
-		gSP.matrix.combined[0][where >> 1] = (f32)((s16)_SHIFTR( num, 16, 16 ) + abs( (int)fraction ));
+		gSP.matrix.combined[0][where >> 1] = (f32)((s16)_SHIFTR( num, 16, 16 ) + abs( fraction ));
 
 		fraction = modff( gSP.matrix.combined[0][(where >> 1) + 1], &integer );
-		gSP.matrix.combined[0][(where >> 1) + 1] = (f32)((s16)_SHIFTR( num, 0, 16 ) + abs( (int)fraction ));
-	} else {
+		gSP.matrix.combined[0][(where >> 1) + 1] = (f32)((s16)_SHIFTR( num, 0, 16 ) + abs( fraction ));
+	} 
+	// fractional elements of the matrix to be changed
+	else {
 		f32 newValue;
 
 		fraction = modff( gSP.matrix.combined[0][(where - 0x20) >> 1], &integer );
@@ -1589,7 +1592,7 @@ void gSPInsertMatrix( u32 where, u32 num )
 
 		// Make sure the sign isn't lost
 		if ((integer == 0.0f) && (fraction != 0.0f))
-			newValue = newValue * (fraction / abs( (int)fraction ));
+			newValue = copysignf( newValue, fraction );
 
 		gSP.matrix.combined[0][(where - 0x20) >> 1] = newValue;
 
@@ -1598,7 +1601,7 @@ void gSPInsertMatrix( u32 where, u32 num )
 
 		// Make sure the sign isn't lost
 		if ((integer == 0.0f) && (fraction != 0.0f))
-			newValue = newValue * (fraction / abs( (int)fraction ));
+			newValue = copysignf( newValue, fraction );
 
 		gSP.matrix.combined[0][((where - 0x20) >> 1) + 1] = newValue;
 	}
