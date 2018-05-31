@@ -519,9 +519,9 @@ void ZSortBOSS_Lighting( u32 _w0, u32 _w1 )
 	for(u32 i = 0; i < num; i++) {
 		SPVertex & vtx = pVtx[i];
 
-		vtx.nx = ((s8*)DMEM)[(nsrs++)^3] * 0.00390625f;
-		vtx.ny = ((s8*)DMEM)[(nsrs++)^3] * 0.00390625f;
-		vtx.nz = ((s8*)DMEM)[(nsrs++)^3] * 0.00390625f;
+		vtx.nx = _FIXED2FLOAT(((s8*)DMEM)[(nsrs++)^3],8);
+		vtx.ny = _FIXED2FLOAT(((s8*)DMEM)[(nsrs++)^3],8);
+		vtx.nz = _FIXED2FLOAT(((s8*)DMEM)[(nsrs++)^3],8);
 
 		// TODO: implement light vertex if ever needed
 		//gSPLightVertex(vtx);
@@ -605,17 +605,17 @@ void ZSortBOSS_TransformLights( u32 _w0, u32 _w1 )
 		gSP.lights.rgb[i][G] = (f32)(((u8*)DMEM)[(addr+8+1)^3]) * 0.0039215689f;
 		gSP.lights.rgb[i][B] = (f32)(((u8*)DMEM)[(addr+8+2)^3]) * 0.0039215689f;
 
-		gSP.lights.xyz[i][X] = (f32)(((s8*)DMEM)[(addr+16+0)^3]) * 0.00390625f;
-		gSP.lights.xyz[i][Y] = (f32)(((s8*)DMEM)[(addr+16+1)^3]) * 0.00390625f;
-		gSP.lights.xyz[i][Z] = (f32)(((s8*)DMEM)[(addr+16+2)^3]) * 0.00390625f;
+		gSP.lights.xyz[i][X] = _FIXED2FLOAT((((s8*)DMEM)[(addr+16+0)^3]),8);
+		gSP.lights.xyz[i][Y] = _FIXED2FLOAT((((s8*)DMEM)[(addr+16+1)^3]),8);
+		gSP.lights.xyz[i][Z] = _FIXED2FLOAT((((s8*)DMEM)[(addr+16+2)^3]),8);
 		ZSortBOSS_TransformVectorNormalize( gSP.lights.xyz[i], gSP.matrix.modelView[gSP.matrix.modelViewi] );
 		addr += 24;
 	}
 	for(int i = 0; i < 2; i++)
 	{
-		gSP.lookat.xyz[i][X] = (f32)(((s8*)DMEM)[(addr+16+0)^3]) * 0.00390625f;
-		gSP.lookat.xyz[i][Y] = (f32)(((s8*)DMEM)[(addr+16+1)^3]) * 0.00390625f;
-		gSP.lookat.xyz[i][Z] = (f32)(((s8*)DMEM)[(addr+16+2)^3]) * 0.00390625f;
+		gSP.lookat.xyz[i][X] = _FIXED2FLOAT((((s8*)DMEM)[(addr+16+0)^3]),8);
+		gSP.lookat.xyz[i][Y] = _FIXED2FLOAT((((s8*)DMEM)[(addr+16+1)^3]),8);
+		gSP.lookat.xyz[i][Z] = _FIXED2FLOAT((((s8*)DMEM)[(addr+16+2)^3]),8);
 		ZSortBOSS_TransformVectorNormalize( gSP.lookat.xyz[i], gSP.matrix.modelView[gSP.matrix.modelViewi] );
 		addr += 24;
 	}

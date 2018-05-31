@@ -524,7 +524,7 @@ void gSPLightVertexCBFD(u32 v, SPVertex * spVtx)
 			const f32 vy = (vtx.y + gSP.vertexCoordMod[9])*gSP.vertexCoordMod[13] - gSP.lights.pos_xyzw[l][Y];
 			const f32 vz = (vtx.z + gSP.vertexCoordMod[10])*gSP.vertexCoordMod[14] - gSP.lights.pos_xyzw[l][Z];
 			const f32 vw = (vtx.w + gSP.vertexCoordMod[11])*gSP.vertexCoordMod[15] - gSP.lights.pos_xyzw[l][W];
-			const f32 len = (vx*vx + vy*vy + vz*vz + vw*vw) / 65536.0f;
+			const f32 len = _FIXED2FLOAT((vx*vx + vy*vy + vz*vz + vw*vw),16);
 			f32 intensity = gSP.lights.ca[l] / len;
 			if (intensity > 1.0f) intensity = 1.0f;
 			r += gSP.lights.rgb[l][R] * intensity;
@@ -597,7 +597,7 @@ void gSPPointLightVertexZeldaMM(u32 v, float _vecPos[VNUM][4], SPVertex * spVtx)
 					V = 1.0f;
 
 				const f32 KSF = floorf(KS);
-				const f32 D = (KSF * gSP.lights.la[l] * 2.0f + KSF * KSF * gSP.lights.qa[l] / 8.0f) / 65536.0f + 1.0f;
+				const f32 D = _FIXED2FLOAT((KSF * gSP.lights.la[l] * 2.0f + KSF * KSF * gSP.lights.qa[l] / 8.0f),16) + 1.0f;
 				intensity = V / D;
 			} else {
 				// Standard lighting
@@ -634,7 +634,7 @@ void gSPPointLightVertexCBFD(u32 v, SPVertex * spVtx)
 				const f32 vy = (vtx.y + gSP.vertexCoordMod[9])*gSP.vertexCoordMod[13] - gSP.lights.pos_xyzw[l][Y];
 				const f32 vz = (vtx.z + gSP.vertexCoordMod[10])*gSP.vertexCoordMod[14] - gSP.lights.pos_xyzw[l][Z];
 				const f32 vw = (vtx.w + gSP.vertexCoordMod[11])*gSP.vertexCoordMod[15] - gSP.lights.pos_xyzw[l][W];
-				const f32 len = (vx*vx + vy*vy + vz*vz + vw*vw) / 65536.0f;
+				const f32 len = _FIXED2FLOAT((vx*vx + vy*vy + vz*vz + vw*vw),16);
 				float p_i = gSP.lights.ca[l] / len;
 				if (p_i > 1.0f) p_i = 1.0f;
 				intensity *= p_i;
@@ -1720,8 +1720,8 @@ void gSPCoordMod(u32 _w0, u32 _w1)
 		gSP.vertexCoordMod[1+idx] = (f32)(s16)_SHIFTR(_w1, 0, 16);
 	} else if (pos == 0x10) {
 		assert(idx < 3);
-		gSP.vertexCoordMod[4+idx] = _SHIFTR(_w1, 16, 16)/65536.0f;
-		gSP.vertexCoordMod[5+idx] = _SHIFTR(_w1, 0, 16)/65536.0f;
+		gSP.vertexCoordMod[4+idx] = _FIXED2FLOAT(_SHIFTR(_w1, 16, 16),16);
+		gSP.vertexCoordMod[5+idx] = _FIXED2FLOAT(_SHIFTR(_w1, 0, 16),16);
 		gSP.vertexCoordMod[12+idx] = gSP.vertexCoordMod[0+idx] + gSP.vertexCoordMod[4+idx];
 		gSP.vertexCoordMod[13+idx] = gSP.vertexCoordMod[1+idx] + gSP.vertexCoordMod[5+idx];
 	} else if (pos == 0x20) {
