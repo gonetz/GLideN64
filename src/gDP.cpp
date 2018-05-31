@@ -180,20 +180,20 @@ void gDPSetDepthImage( u32 address )
 
 void gDPSetEnvColor( u32 r, u32 g, u32 b, u32 a )
 {
-	gDP.envColor.r = r * 0.0039215689f;
-	gDP.envColor.g = g * 0.0039215689f;
-	gDP.envColor.b = b * 0.0039215689f;
-	gDP.envColor.a = a * 0.0039215689f;
+	gDP.envColor.r = _FIXED2FLOATCOLOR( r, 8 );
+	gDP.envColor.g = _FIXED2FLOATCOLOR( g, 8 );
+	gDP.envColor.b = _FIXED2FLOATCOLOR( b, 8 );
+	gDP.envColor.a = _FIXED2FLOATCOLOR( a, 8 );
 
 	DebugMsg( DEBUG_NORMAL, "gDPSetEnvColor( %i, %i, %i, %i );\n", r, g, b, a );
 }
 
 void gDPSetBlendColor( u32 r, u32 g, u32 b, u32 a )
 {
-	gDP.blendColor.r = r * 0.0039215689f;
-	gDP.blendColor.g = g * 0.0039215689f;
-	gDP.blendColor.b = b * 0.0039215689f;
-	gDP.blendColor.a = a * 0.0039215689f;
+	gDP.blendColor.r = _FIXED2FLOATCOLOR( r, 8 );
+	gDP.blendColor.g = _FIXED2FLOATCOLOR( g, 8 );
+	gDP.blendColor.b = _FIXED2FLOATCOLOR( b, 8 );
+	gDP.blendColor.a = _FIXED2FLOATCOLOR( a, 8 );
 
 	gDP.changed |= CHANGED_BLENDCOLOR;
 
@@ -202,10 +202,10 @@ void gDPSetBlendColor( u32 r, u32 g, u32 b, u32 a )
 
 void gDPSetFogColor( u32 r, u32 g, u32 b, u32 a )
 {
-	gDP.fogColor.r = r * 0.0039215689f;
-	gDP.fogColor.g = g * 0.0039215689f;
-	gDP.fogColor.b = b * 0.0039215689f;
-	gDP.fogColor.a = a * 0.0039215689f;
+	gDP.fogColor.r = _FIXED2FLOATCOLOR( r, 8 );
+	gDP.fogColor.g = _FIXED2FLOATCOLOR( g, 8 );
+	gDP.fogColor.b = _FIXED2FLOATCOLOR( b, 8 );
+	gDP.fogColor.a = _FIXED2FLOATCOLOR( a, 8 );
 
 	gDP.changed |= CHANGED_FOGCOLOR;
 
@@ -225,26 +225,26 @@ void gDPGetFillColor(f32 _fillColor[4])
 {
 	const u32 c = gDP.fillColor.color;
 	if (gDP.colorImage.size < 3) {
-		_fillColor[0] = _SHIFTR( c, 11, 5 ) * 0.032258064f;
-		_fillColor[1] = _SHIFTR( c,  6, 5 ) * 0.032258064f;
-		_fillColor[2] = _SHIFTR( c,  1, 5 ) * 0.032258064f;
+		_fillColor[0] = _FIXED2FLOATCOLOR( _SHIFTR( c, 11, 5 ), 5 );
+		_fillColor[1] = _FIXED2FLOATCOLOR( _SHIFTR( c,  6, 5 ), 5 );
+		_fillColor[2] = _FIXED2FLOATCOLOR( _SHIFTR( c,  1, 5 ), 5 );
 		_fillColor[3] = (f32)_SHIFTR( c,  0, 1 );
 	} else {
-		_fillColor[0] = _SHIFTR( c, 24, 8 ) * 0.0039215686f;
-		_fillColor[1] = _SHIFTR( c, 16, 8 ) * 0.0039215686f;
-		_fillColor[2] = _SHIFTR( c,  8, 8 ) * 0.0039215686f;
-		_fillColor[3] = _SHIFTR( c,  0, 8 ) * 0.0039215686f;
+		_fillColor[0] = _FIXED2FLOATCOLOR( _SHIFTR( c, 24, 8 ), 8 );
+		_fillColor[1] = _FIXED2FLOATCOLOR( _SHIFTR( c, 16, 8 ), 8 );
+		_fillColor[2] = _FIXED2FLOATCOLOR( _SHIFTR( c,  8, 8 ), 8 );
+		_fillColor[3] = _FIXED2FLOATCOLOR( _SHIFTR( c,  0, 8 ), 8 );
 	}
 }
 
 void gDPSetPrimColor( u32 m, u32 l, u32 r, u32 g, u32 b, u32 a )
 {
-	gDP.primColor.m = m * 0.0312500000f;
-	gDP.primColor.l = l * 0.0039215689f;
-	gDP.primColor.r = r * 0.0039215689f;
-	gDP.primColor.g = g * 0.0039215689f;
-	gDP.primColor.b = b * 0.0039215689f;
-	gDP.primColor.a = a * 0.0039215689f;
+	gDP.primColor.m = _FIXED2FLOAT( m, 5 );
+	gDP.primColor.l = _FIXED2FLOATCOLOR( l, 8 );
+	gDP.primColor.r = _FIXED2FLOATCOLOR( r, 8 );
+	gDP.primColor.g = _FIXED2FLOATCOLOR( g, 8 );
+	gDP.primColor.b = _FIXED2FLOATCOLOR( b, 8 );
+	gDP.primColor.a = _FIXED2FLOATCOLOR( a, 8 );
 
 	DebugMsg( DEBUG_NORMAL, "gDPSetPrimColor( %i, %i, %i, %i, %i, %i );\n", m, l, r, g, b, a );
 }
@@ -781,20 +781,20 @@ void gDPSetConvert( s32 k0, s32 k1, s32 k2, s32 k3, s32 k4, s32 k5 )
 
 void gDPSetKeyR( u32 cR, u32 sR, u32 wR )
 {
-	gDP.key.center.r = cR * 0.0039215689f;
-	gDP.key.scale.r = sR * 0.0039215689f;
-	gDP.key.width.r = wR * 0.0039215689f;
+	gDP.key.center.r = 	_FIXED2FLOATCOLOR( cR, 8 );
+	gDP.key.scale.r = 	_FIXED2FLOATCOLOR( sR, 8 );
+	gDP.key.width.r = 	_FIXED2FLOATCOLOR( wR, 8 );
 	DebugMsg( DEBUG_NORMAL, "gDPSetKeyR( %u, %u, %u );\n", cR, sR, wR );
 }
 
 void gDPSetKeyGB(u32 cG, u32 sG, u32 wG, u32 cB, u32 sB, u32 wB )
 {
-	gDP.key.center.g = cG * 0.0039215689f;
-	gDP.key.scale.g = sG * 0.0039215689f;
-	gDP.key.width.g = wG * 0.0039215689f;
-	gDP.key.center.b = cB * 0.0039215689f;
-	gDP.key.scale.b = sB * 0.0039215689f;
-	gDP.key.width.b = wB * 0.0039215689f;
+	gDP.key.center.g = 	_FIXED2FLOATCOLOR( cG, 8 );
+	gDP.key.scale.g = 	_FIXED2FLOATCOLOR( sG, 8 );
+	gDP.key.width.g = 	_FIXED2FLOATCOLOR( wG, 8 );
+	gDP.key.center.b = 	_FIXED2FLOATCOLOR( cB, 8 );
+	gDP.key.scale.b = 	_FIXED2FLOATCOLOR( sB, 8 );
+	gDP.key.width.b = 	_FIXED2FLOATCOLOR( wB, 8 );
 	DebugMsg( DEBUG_NORMAL, "gDPSetKeyGB( %u, %u, %u, %u, %u, %u );\n",
 			  cG, sG, wG, cB, sB, wB );
 }
@@ -1003,7 +1003,7 @@ void gDPLLETriangle(u32 _w1, u32 _w2, int _shade, int _texture, int _zbuffer, u3
 #define ZSCALE(z) ((gDP.otherMode.depthSource == G_ZS_PRIM)? gDP.primDepth.z : float(u32(z))/0xffff0000)
 #define PERSP_EN (gDP.otherMode.texturePersp != 0)
 #define WSCALE(z) 1.0f/(PERSP_EN? (float(u32(z) + 0x10000)/0xffff0000) : 1.0f)
-#define CSCALE(c) ((((c)>0x3ff0000? 0x3ff0000:((c)<0? 0 : (c)))>>18)*0.0039215689f)
+#define CSCALE(c) _FIXED2FLOATCOLOR((((c)>0x3ff0000? 0x3ff0000:((c)<0? 0 : (c)))>>18), 8)
 #define _PERSP(w) ( w )
 #define PERSP(s, w) ( ((s64)(s) << 20) / (_PERSP(w)? _PERSP(w):1) )
 #define SSCALE(s, _w) (PERSP_EN? float(PERSP(s, _w))/(1 << 10) : float(s)/(1<<21))

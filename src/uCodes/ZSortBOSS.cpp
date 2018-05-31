@@ -383,10 +383,10 @@ void ZSortBOSS_DrawObject(u8 * _addr, u32 _type)
 		vtx.x = _FIXED2FLOAT(((s16*)_addr)[0 ^ 1], 2);
 		vtx.y = _FIXED2FLOAT(((s16*)_addr)[1 ^ 1], 2);
 		vtx.z = 0.0f;
-		vtx.r = _addr[4^3] * 0.0039215689f;
-		vtx.g = _addr[5^3] * 0.0039215689f;
-		vtx.b = _addr[6^3] * 0.0039215689f;
-		vtx.a = _addr[7^3] * 0.0039215689f;
+		vtx.r = _FIXED2FLOATCOLOR(_addr[4^3], 8 );
+		vtx.g = _FIXED2FLOATCOLOR(_addr[5^3], 8 );
+		vtx.b = _FIXED2FLOATCOLOR(_addr[6^3], 8 );
+		vtx.a = _FIXED2FLOATCOLOR(_addr[7^3], 8 );
 		vtx.flag = 0;
 		vtx.HWLight = 0;
 		vtx.clip = 0;
@@ -601,9 +601,9 @@ void ZSortBOSS_TransformLights( u32 _w0, u32 _w1 )
 	{
 		assert(0);
 
-		gSP.lights.rgb[i][R] = (f32)(((u8*)DMEM)[(addr+8+0)^3]) * 0.0039215689f;
-		gSP.lights.rgb[i][G] = (f32)(((u8*)DMEM)[(addr+8+1)^3]) * 0.0039215689f;
-		gSP.lights.rgb[i][B] = (f32)(((u8*)DMEM)[(addr+8+2)^3]) * 0.0039215689f;
+		gSP.lights.rgb[i][R] = _FIXED2FLOATCOLOR(((u8*)DMEM)[(addr+8+0)^3], 8 );
+		gSP.lights.rgb[i][G] = _FIXED2FLOATCOLOR(((u8*)DMEM)[(addr+8+1)^3], 8 );
+		gSP.lights.rgb[i][B] = _FIXED2FLOATCOLOR(((u8*)DMEM)[(addr+8+2)^3], 8 );
 
 		gSP.lights.xyz[i][X] = _FIXED2FLOAT((((s8*)DMEM)[(addr+16+0)^3]),8);
 		gSP.lights.xyz[i][Y] = _FIXED2FLOAT((((s8*)DMEM)[(addr+16+1)^3]),8);

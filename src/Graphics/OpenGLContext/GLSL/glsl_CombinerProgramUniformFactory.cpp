@@ -759,8 +759,8 @@ public:
 		uEnvColor.set(&gDP.envColor.r, _force);
 		uPrimColor.set(&gDP.primColor.r, _force);
 		uPrimLod.set(gDP.primColor.l, _force);
-		uK4.set(gDP.convert.k4*0.0039215689f, _force);
-		uK5.set(gDP.convert.k5*0.0039215689f, _force);
+		uK4.set(_FIXED2FLOATCOLOR(gDP.convert.k4, 8 ), _force);
+		uK5.set(_FIXED2FLOATCOLOR(gDP.convert.k5, 8 ), _force);
 	}
 
 private:
