@@ -195,10 +195,10 @@ void F3DSWRS_PrepareVertices(const u32* _vert,
 	for (u32 i = 0; i < _num; ++i) {
 		SPVertex & vtx = drawer.getVertex(_vert != nullptr ? _vert[i] : i);
 		const u8 *color = _colorbase + _colorIdx[i];
-		vtx.r = color[3] * 0.0039215689f;
-		vtx.g = color[2] * 0.0039215689f;
-		vtx.b = color[1] * 0.0039215689f;
-		vtx.a = color[0] * 0.0039215689f;
+		vtx.r = _FIXED2FLOATCOLOR(color[3], 8 );
+		vtx.g = _FIXED2FLOATCOLOR(color[2], 8 );
+		vtx.b = _FIXED2FLOATCOLOR(color[1], 8 );
+		vtx.a = _FIXED2FLOATCOLOR(color[0], 8 );
 
 		if (_useTex) {
 			const u32 st = *(u32*)&_texbase[4 * i];
