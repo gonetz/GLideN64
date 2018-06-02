@@ -518,13 +518,14 @@ void gSPLightVertexCBFD(u32 v, SPVertex * spVtx)
 		f32 r = gSP.lights.rgb[gSP.numLights][R];
 		f32 g = gSP.lights.rgb[gSP.numLights][G];
 		f32 b = gSP.lights.rgb[gSP.numLights][B];
+		f32 recip = FIXED2FLOATRECIP16;
 
 		for (u32 l = 0; l < gSP.numLights; ++l) {
 			const f32 vx = (vtx.x + gSP.vertexCoordMod[8])*gSP.vertexCoordMod[12] - gSP.lights.pos_xyzw[l][X];
 			const f32 vy = (vtx.y + gSP.vertexCoordMod[9])*gSP.vertexCoordMod[13] - gSP.lights.pos_xyzw[l][Y];
 			const f32 vz = (vtx.z + gSP.vertexCoordMod[10])*gSP.vertexCoordMod[14] - gSP.lights.pos_xyzw[l][Z];
 			const f32 vw = (vtx.w + gSP.vertexCoordMod[11])*gSP.vertexCoordMod[15] - gSP.lights.pos_xyzw[l][W];
-			const f32 len = _FIXED2FLOAT((vx*vx + vy*vy + vz*vz + vw*vw),16);
+			const f32 len = (vx*vx + vy*vy + vz*vz + vw*vw) * recip;
 			f32 intensity = gSP.lights.ca[l] / len;
 			if (intensity > 1.0f) intensity = 1.0f;
 			r += gSP.lights.rgb[l][R] * intensity;
@@ -571,6 +572,7 @@ void gSPPointLightVertexZeldaMM(u32 v, float _vecPos[VNUM][4], SPVertex * spVtx)
 
 		for (u32 l = 0; l < gSP.numLights; ++l) {
 			if (gSP.lights.ca[l] != 0.0f) {
+				f32 recip = FIXED2FLOATRECIP16;
 				// Point lighting
 				f32 lvec[3] = { gSP.lights.pos_xyzw[l][X], gSP.lights.pos_xyzw[l][Y], gSP.lights.pos_xyzw[l][Z] };
 				lvec[0] -= _vecPos[j][0];
@@ -597,7 +599,7 @@ void gSPPointLightVertexZeldaMM(u32 v, float _vecPos[VNUM][4], SPVertex * spVtx)
 					V = 1.0f;
 
 				const f32 KSF = floorf(KS);
-				const f32 D = _FIXED2FLOAT((KSF * gSP.lights.la[l] * 2.0f + KSF * KSF * gSP.lights.qa[l] / 8.0f),16) + 1.0f;
+				const f32 D = (KSF * gSP.lights.la[l] * 2.0f + KSF * KSF * gSP.lights.qa[l] / 8.0f) * recip + 1.0f;
 				intensity = V / D;
 			} else {
 				// Standard lighting
