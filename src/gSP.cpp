@@ -869,6 +869,60 @@ void gSPProcessVertex(u32 v, SPVertex * spVtx)
 		DebugMsg(DEBUG_DETAIL, "v%d - x: %f, y: %f, z: %f, w: %f, s: %f, t: %f, r=%02f, g=%02f, b=%02f, a=%02f\n",
 				 i, vtx.x, vtx.y, vtx.z, vtx.w, vtx.s, vtx.t, vtx.r, vtx.g, vtx.b, vtx.a);
 	}
+
+    for (int i=0; i<2; ++i) {
+        for(u32 j = 0; j < VNUM; ++j) {
+            SPVertex orig = spVtx[v+j];
+            SPVertex & vtx = spVtx[v+j];
+
+            if ((gSP.matrix.projection[3][2] < -0.01f || gSP.matrix.projection[3][2] > 0.01f)
+                    && (vtx.w > 0.01f || vtx.w < 0.01f)) {
+                // 'tis a 3d projection matrix and 3d world object, so we adjust the eyes
+
+                // Convert from clip space into a pseudo camera space
+                // See dolphin VR, https://github.com/CarlKenner/dolphin/blob/4a7c168aeec1e28ae9a2e4f8de990f716cc968ca/Source/Core/VideoCommon/VertexShaderManager.cpp#L1981
+                vtx.y *= 3.0f / 4.0f; // N64 aspect ratio
+                vtx.z = -vtx.w;
+                vtx.w = 1;
+
+                float x_trans = (i == 0 ? 1.0f : -1.0f) * config.stereo.eyedistance;
+                float trans_mat[4][4] = {{1,       0, 0, 0},
+                                         {0,       1, 0, 0},
+                                         {0,       0, 1, 0},
+                                         {x_trans, 0, 0, 1}};
+                gSPTransformVector(&vtx.x, trans_mat);
+
+                // Now, project as we see fit
+                // These far and near clip planes will mess up fog, and possibly cause z-fighting
+                float N = 0.000001f, F = 1000000000.0f;
+                float proj[4][4] = {{1, 0,           0,                0},
+                                    {0, 4.0f / 3.0f, 0,                0},
+                                    {0, 0,           -F * N / (F - N), -1},
+                                    {0, 0,           -F / (F - N),     1}};
+
+                gSPTransformVertex<1>(0, &vtx, proj);
+            }
+
+            vtx.y /= 2;
+
+            if (i == 0) {
+                vtx.left_x = vtx.x;
+                vtx.left_y = vtx.y;
+                vtx.left_z = vtx.z;
+                vtx.left_w = vtx.w;
+            } else {
+                vtx.right_x = vtx.x;
+                vtx.right_y = vtx.y;
+                vtx.right_z = vtx.z;
+                vtx.right_w = vtx.w;
+            }
+
+            vtx.x = orig.x;
+            vtx.y = orig.y;
+            vtx.z = orig.z;
+            vtx.w = orig.w;
+        }
+    }
 }
 
 template <u32 VNUM>

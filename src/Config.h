@@ -174,6 +174,11 @@ struct Config
 		u32 dumpMode;
 	} debug;
 
+	struct {
+		bool enabled;
+		f32 eyedistance;
+	} stereo;
+
 	void resetToDefaults();
 };
 

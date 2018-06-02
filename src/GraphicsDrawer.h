@@ -5,10 +5,12 @@
 #include <list>
 #include <chrono>
 #include <string>
+#include <functional>
 #include "gSP.h"
 #include "TexrectDrawer.h"
 #include "Graphics/ObjectHandle.h"
 #include "Graphics/Parameter.h"
+#include "Config.h"
 
 namespace graphics {
 	class CombinerProgram;
@@ -129,7 +131,7 @@ public:
 
 	bool isClipped(s32 _v0, s32 _v1, s32 _v2) const
 	{
-		return (triangles.vertices[_v0].clip & triangles.vertices[_v1].clip & triangles.vertices[_v2].clip) != 0;
+		return !config.stereo.enabled && (triangles.vertices[_v0].clip & triangles.vertices[_v1].clip & triangles.vertices[_v2].clip) != 0;
 	}
 
 	SPVertex & getVertex(u32 _v) { return triangles.vertices[_v]; }
@@ -153,6 +155,8 @@ public:
 
 	bool isTexrectDrawerMode() const { return !m_texrectDrawer.isEmpty(); }
 
+    void onNewFrame() { m_has_cleared_screen = false; }
+
 private:
 	friend class DisplayWindow;
 	friend TexrectDrawer;
@@ -167,6 +171,11 @@ private:
 	void _destroyData();
 
 	void _setSpecialTexrect() const;
+
+    void _drawStereo(std::function<void(bool)> callback);
+	void _drawTrianglesStereo(bool);
+	void _drawTrianglesMono();
+	void _drawTexturedRectMono(const TexturedRectParams & _params, bool left_eye);
 
 	void _setBlendMode() const;
 	bool _setUnsupportedBlendMode() const;
@@ -195,6 +204,8 @@ private:
 		u32 num = 0;
 		int maxElement = 0;
 	} triangles;
+
+    bool m_has_cleared_screen = false;
 
 	std::vector<SPVertex> m_dmaVertices;
 	u32 m_dmaVerticesNum;

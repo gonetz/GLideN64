@@ -18,11 +18,11 @@
 #include "FrameBuffer.h"
 #include "DepthBuffer.h"
 #include "FrameBufferInfo.h"
-#include "Config.h"
 #include "Debugger.h"
 #include "RSP.h"
 #include "RDP.h"
 #include "VI.h"
+#include "Config.h"
 
 using namespace graphics;
 
@@ -721,7 +721,79 @@ bool GraphicsDrawer::_canDraw() const
 	return config.frameBufferEmulation.enable == 0 || frameBufferList().getCurrent() != nullptr;
 }
 
-void GraphicsDrawer::drawTriangles()
+void GraphicsDrawer::_drawStereo(std::function<void(bool)> callback) {
+    if (!m_has_cleared_screen) {
+        // Hack to work around lack of clearing in-game, exposed
+        //  by stereo viewport
+        f32 fillColor[4];
+        gDPGetFillColor(fillColor);
+        clearColorBuffer(fillColor);
+        gfxContext.clearDepthBuffer();
+        m_has_cleared_screen = true;
+    }
+
+    for (int i=0; i<2; i++) {
+        const u32 bufferWidth = VI.width;
+        const u32 bufferHeight = VI_GetMaxBufferHeight(bufferWidth);
+        const f32 viewportScale = DisplayWindow::get().getScaleX();
+
+        const s32 size = bufferWidth / 2;
+        const bool left_eye = (i==0);
+        const s32 start = (left_eye? 0 : size);
+        gfxContext.setViewport((s32) (start * viewportScale), 0, (s32) (size * viewportScale), (s32) (bufferHeight * viewportScale));
+        gSP.changed &= ~CHANGED_VIEWPORT;
+
+        gDPScissor orig_scissor = gDP.scissor;
+
+        gDP.scissor.lrx/=2;
+        gDP.scissor.ulx/=2;
+        gDP.scissor.ulx+=start;
+        gDP.scissor.lrx+=start;
+        gSP.changed |= CHANGED_SCISSOR;
+        updateScissor(frameBufferList().getCurrent());
+
+        callback(left_eye);
+
+        gDP.scissor = orig_scissor;
+    }
+
+    // Hack so that we can avoid clipping next frame
+    // See gSPCombineMatrices
+    gSPCombineMatrices(1);
+
+    gSP.changed |= CHANGED_SCISSOR;
+    updateScissor(frameBufferList().getCurrent());
+}
+
+void GraphicsDrawer::_drawTrianglesStereo(bool left_eye) {
+    std::array<SPVertex, VERTBUFF_SIZE> old_verts = triangles.vertices;
+    u32 num = triangles.num;
+    int max = triangles.maxElement;
+
+    for (SPVertex& vtx : triangles.vertices) {
+        if (left_eye) {
+            vtx.x = vtx.left_x;
+            vtx.y = vtx.left_y;
+            vtx.z = vtx.left_z;
+            vtx.w = vtx.left_w;
+        } else {
+            vtx.x = vtx.right_x;
+            vtx.y = vtx.right_y;
+            vtx.z = vtx.right_z;
+            vtx.w = vtx.right_w;
+        }
+    }
+
+    _drawTrianglesMono();
+
+    if (left_eye) {
+        triangles.num = num;
+        triangles.maxElement = max;
+        triangles.vertices = std::move(old_verts);
+    }
+}
+
+void GraphicsDrawer::_drawTrianglesMono()
 {
 	if (triangles.num == 0 || !_canDraw()) {
 		triangles.num = 0;
@@ -756,6 +828,12 @@ void GraphicsDrawer::drawTriangles()
 
 	triangles.num = 0;
 	triangles.maxElement = 0;
+}
+
+void GraphicsDrawer::drawTriangles()
+{
+    if (config.stereo.enabled) _drawStereo(std::bind(&GraphicsDrawer::_drawTrianglesStereo, this, std::placeholders::_1));
+    else _drawTrianglesMono();
 }
 
 void GraphicsDrawer::drawScreenSpaceTriangle(u32 _numVtx)
@@ -1123,7 +1201,7 @@ bool texturedRectPaletteMod(const GraphicsDrawer::TexturedRectParams & _params)
 // Return true if actuial rendering is not necessary
 bool(*texturedRectSpecial)(const GraphicsDrawer::TexturedRectParams & _params) = nullptr;
 
-void GraphicsDrawer::drawTexturedRect(const TexturedRectParams & _params)
+void GraphicsDrawer::_drawTexturedRectMono(const TexturedRectParams & _params, bool left_eye)
 {
 	gSP.changed &= ~CHANGED_GEOMETRYMODE; // Don't update cull mode
 	m_drawingState = DrawingState::TexRect;
@@ -1339,10 +1417,16 @@ void GraphicsDrawer::drawTexturedRect(const TexturedRectParams & _params)
 			m_rect[i].x *= scale;
 	}
 
+    if (config.stereo.enabled) {
+        for (int i=0; i<4; i++) {
+            m_rect[i].y *= 0.5;
+        }
+    }
+
 	if (bUseTexrectDrawer)
 		m_texrectDrawer.add();
 	else {
-		_updateScreenCoordsViewport();
+		if (!config.stereo.enabled) _updateScreenCoordsViewport();
 
 		Context::DrawRectParameters rectParams;
 		rectParams.mode = drawmode::TRIANGLE_STRIP;
@@ -1362,8 +1446,14 @@ void GraphicsDrawer::drawTexturedRect(const TexturedRectParams & _params)
 			g_debugger.addRects(rectParams);
 		}
 
-		gSP.changed |= CHANGED_GEOMETRYMODE | CHANGED_VIEWPORT;
+		gSP.changed |= CHANGED_GEOMETRYMODE;
 	}
+}
+
+void GraphicsDrawer::drawTexturedRect(const TexturedRectParams & _params)
+{
+    if (config.stereo.enabled) _drawStereo(std::bind(&GraphicsDrawer::_drawTexturedRectMono, this, _params, std::placeholders::_1));
+    else _drawTexturedRectMono(_params, false);
 }
 
 void GraphicsDrawer::correctTexturedRectParams(TexturedRectParams & _params)
