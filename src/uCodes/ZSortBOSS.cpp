@@ -122,6 +122,8 @@ void ZSortBOSS_ClearBuffer( u32, u32 )
 static
 void StoreMatrix( f32 mtx[4][4], u32 address )
 {
+	s32u32 value;
+
 	struct _N64Matrix
 	{
 		s16 integer[4][4];
@@ -133,9 +135,9 @@ void StoreMatrix( f32 mtx[4][4], u32 address )
 	
 	for(i = 0; i < 4; i++) {
 		for(j = 0; j < 4; j++) {
-			fractpart = modff(mtx[i][j], &intpart);
-			n64Mat->fraction[i][j^1] = (u16)(fractpart * 65536.f);
-			n64Mat->integer[i][j^1] = ((mtx[i][j] < 0.0) && (n64Mat->fraction[i][j^1] != 0)) ? (s16)(intpart-1) : (s16)intpart;
+			value.s = (s32)(mtx[i][j] * 65536.0f);
+			n64Mat->fraction[i][j^1] = (u16)(value.u & 0x0000FFFF);
+			n64Mat->integer[i][j^1] = (s16)(value.s >> 16);
 		}
 	}
 }

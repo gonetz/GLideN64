@@ -69,6 +69,11 @@
 #define _SHIFTR( v, s, w )	\
 	(((u32)v >> s) & ((0x01 << w) - 1))
 
+union s32u32 {
+	s32 s;
+	u32 u;
+};
+
 // BG flags
 #define	G_BGLT_LOADBLOCK	0x0033
 #define	G_BGLT_LOADTILE		0xfff4

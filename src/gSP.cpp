@@ -1572,40 +1572,26 @@ void gSPInsertMatrix( u32 where, u32 num )
 {
 	DebugMsg(DEBUG_NORMAL, "gSPInsertMatrix(%u, %u);\n", where, num);
 
+	s32u32 value;
 	f32 fraction, integer;
 
 	if ((where & 0x3) || (where > 0x3C))
 		return;
 
-	// integer elements of the matrix to be changed
-	if (where < 0x20) {
-		fraction = modff( gSP.matrix.combined[0][where >> 1], &integer );
-		gSP.matrix.combined[0][where >> 1] = (f32)((s16)_SHIFTR( num, 16, 16 ) + abs( fraction ));
-
-		fraction = modff( gSP.matrix.combined[0][(where >> 1) + 1], &integer );
-		gSP.matrix.combined[0][(where >> 1) + 1] = (f32)((s16)_SHIFTR( num, 0, 16 ) + abs( fraction ));
-	} 
-	// fractional elements of the matrix to be changed
-	else {
-		f32 newValue;
-
-		fraction = modff( gSP.matrix.combined[0][(where - 0x20) >> 1], &integer );
-		newValue = integer + _FIXED2FLOAT( _SHIFTR( num, 16, 16 ), 16);
-
-		// Make sure the sign isn't lost
-		if ((integer == 0.0f) && (fraction != 0.0f))
-			newValue = copysignf( newValue, fraction );
-
-		gSP.matrix.combined[0][(where - 0x20) >> 1] = newValue;
-
-		fraction = modff( gSP.matrix.combined[0][((where - 0x20) >> 1) + 1], &integer );
-		newValue = integer + _FIXED2FLOAT( _SHIFTR( num, 0, 16 ), 16 );
-
-		// Make sure the sign isn't lost
-		if ((integer == 0.0f) && (fraction != 0.0f))
-			newValue = copysignf( newValue, fraction );
-
-		gSP.matrix.combined[0][((where - 0x20) >> 1) + 1] = newValue;
+	for(int i = 0; i < 2;i++)
+	{
+		// integer elements of the matrix to be changed
+		if (where < 0x20) {
+			value.s = (s32)(gSP.matrix.combined[0][(where >> 1) + i] * 65536.0f);
+			value.u = value.u & 0x0000FFFF + (s32)(_SHIFTR( num, 16 * (1 - i), 16 ) << 16);
+			gSP.matrix.combined[0][(where >> 1) + i] = _FIXED2FLOAT( value.s, 16 );
+		}
+		// fractional elements of the matrix to be changed
+		else {
+			value.s = (s32)(gSP.matrix.combined[0][((where - 0x20) >> 1) + i] * 65535.0f) ;
+			value.u = value.u & 0xFFFF0000 + _SHIFTR( num, 16 * (1 - i), 16 );
+			gSP.matrix.combined[0][((where - 0x20) >> 1) + i] = _FIXED2FLOAT( value.s, 16 );
+		}
 	}
 }
 
