@@ -656,7 +656,7 @@ void ZSortBOSS_Audio2( u32 _w0, u32 _w1 )
 			f32 intpart, fractpart;
 			f32 val = i*f1 + j*f1 + f2;
 
-			fractpart = modff(val, &intpart);
+			fractpart = fabsf(modff(val, &intpart));
 			int index = ((int)intpart) << 1;
 
 			s16 v9 = ((s16*)DMEM)[((0x30+index)>>1)^1];
