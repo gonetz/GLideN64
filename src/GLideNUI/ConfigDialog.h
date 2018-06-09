@@ -56,6 +56,12 @@ private slots:
 
 	void on_customSettingsCheckBox_clicked();
 
+	void on_profilesComboBox_currentIndexChanged(const QString &arg1);
+
+	void on_addProfilePushButton_clicked();
+
+	void on_removeProfilePushButton_clicked();
+
 private:
 	void _init();
 	void _getTranslations(QStringList & _translationFiles) const;

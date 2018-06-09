@@ -4,7 +4,8 @@
 #include <string>
 #include "Types.h"
 
-#define CONFIG_VERSION_CURRENT 22U
+#define CONFIG_WITH_PROFILES 23U
+#define CONFIG_VERSION_CURRENT 23U
 
 #define BILINEAR_3POINT   0
 #define BILINEAR_STANDARD 1

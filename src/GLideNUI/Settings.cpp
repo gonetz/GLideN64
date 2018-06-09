@@ -13,11 +13,12 @@
 
 static const char * strIniFileName = "GLideN64.ini";
 static const char * strCustomSettingsFileName = "GLideN64.custom.ini";
+static QString strUserProfile("User");
 
 static
 void _loadSettings(QSettings & settings)
 {
-	config.translationFile = settings.value("translation", config.translationFile.c_str()).toString().toLocal8Bit().constData();
+	config.version = settings.value("version").toInt();
 
 	settings.beginGroup("video");
 	config.video.fullscreenWidth = settings.value("fullscreenWidth", config.video.fullscreenWidth).toInt();
@@ -127,22 +128,45 @@ void _loadSettings(QSettings & settings)
 
 void loadSettings(const QString & _strIniFolder)
 {
-//	QSettings settings("Emulation", "GLideN64");
-	const u32 hacks = config.generalEmulation.hacks;
-
-	QSettings settings(_strIniFolder + "/" + strIniFileName, QSettings::IniFormat);
-	config.version = settings.value("version").toInt();
-	if (config.version != CONFIG_VERSION_CURRENT) {
+	bool rewriteSettings = false;
+	{
+		const u32 hacks = config.generalEmulation.hacks;
+		QSettings settings(_strIniFolder + "/" + strIniFileName, QSettings::IniFormat);
+		const u32 configVersion = settings.value("version", 0).toInt();
+		QString configTranslationFile = settings.value("translation", config.translationFile.c_str()).toString();
 		config.resetToDefaults();
-		settings.clear();
-		writeSettings(_strIniFolder);
 		config.generalEmulation.hacks = hacks;
-		return;
+		config.translationFile = configTranslationFile.toLocal8Bit().constData();
+		if (configVersion < CONFIG_WITH_PROFILES) {
+			settings.clear();
+			settings.setValue("version", configVersion);
+			settings.setValue("profile", strUserProfile);
+			settings.setValue("translation", config.translationFile.c_str());
+			settings.beginGroup(strUserProfile);
+			writeSettings(_strIniFolder);
+			settings.endGroup();
+		} else {
+			QString profile = settings.value("profile", strUserProfile).toString();
+			if (settings.childGroups().indexOf(profile) >= 0) {
+				settings.beginGroup(profile);
+				_loadSettings(settings);
+				settings.endGroup();
+			} else
+				rewriteSettings = true;
+			if (config.version != CONFIG_VERSION_CURRENT)
+				rewriteSettings = true;
+		}
 	}
-
-	config.resetToDefaults();
-	_loadSettings(settings);
-	config.generalEmulation.hacks = hacks;
+	if (rewriteSettings) {
+		// Keep settings up-to-date
+		{
+			QSettings settings(_strIniFolder + "/" + strIniFileName, QSettings::IniFormat);
+			QString profile = settings.value("profile", strUserProfile).toString();
+			settings.remove(profile);
+		}
+		config.version = CONFIG_VERSION_CURRENT;
+		writeSettings(_strIniFolder);
+	}
 }
 
 void writeSettings(const QString & _strIniFolder)
@@ -150,8 +174,11 @@ void writeSettings(const QString & _strIniFolder)
 //	QSettings settings("Emulation", "GLideN64");
 	QSettings settings(_strIniFolder + "/" + strIniFileName, QSettings::IniFormat);
 	settings.setValue("version", config.version);
-
 	settings.setValue("translation", config.translationFile.c_str());
+	QString profile = settings.value("profile", strUserProfile).toString();
+
+	settings.beginGroup(profile);
+	settings.setValue("version", config.version);
 
 	settings.beginGroup("video");
 	settings.setValue("fullscreenWidth", config.video.fullscreenWidth);
@@ -245,6 +272,8 @@ void writeSettings(const QString & _strIniFolder)
 	settings.beginGroup("debug");
 	settings.setValue("dumpMode", config.debug.dumpMode);
 	settings.endGroup();
+
+	settings.endGroup();
 }
 
 static
@@ -297,6 +326,7 @@ void loadCustomRomSettings(const QString & _strIniFolder, const char * _strRomNa
 	settings.beginGroup(romName);
 	_loadSettings(settings);
 	settings.endGroup();
+	config.version = CONFIG_VERSION_CURRENT;
 }
 
 void saveCustomRomSettings(const QString & _strIniFolder, const char * _strRomName)
@@ -399,4 +429,40 @@ void saveCustomRomSettings(const QString & _strIniFolder, const char * _strRomNa
 QString getTranslationFile()
 {
 	return config.translationFile.c_str();
+}
+
+QStringList getProfiles(const QString & _strIniFolder)
+{
+	QSettings settings(_strIniFolder + "/" + strIniFileName, QSettings::IniFormat);
+	return settings.childGroups();
+}
+
+QString getCurrentProfile(const QString & _strIniFolder)
+{
+	QSettings settings(_strIniFolder + "/" + strIniFileName, QSettings::IniFormat);
+	return settings.value("profile", strUserProfile).toString();
+}
+
+void changeProfile(const QString & _strIniFolder, const QString & _strProfile)
+{
+	{
+		QSettings settings(_strIniFolder + "/" + strIniFileName, QSettings::IniFormat);
+		settings.setValue("profile", _strProfile);
+	}
+	loadSettings(_strIniFolder);
+}
+
+void addProfile(const QString & _strIniFolder, const QString & _strProfile)
+{
+	{
+		QSettings settings(_strIniFolder + "/" + strIniFileName, QSettings::IniFormat);
+		settings.setValue("profile", _strProfile);
+	}
+	writeSettings(_strIniFolder);
+}
+
+void removeProfile(const QString & _strIniFolder, const QString & _strProfile)
+{
+	QSettings settings(_strIniFolder + "/" + strIniFileName, QSettings::IniFormat);
+	settings.remove(_strProfile);
 }

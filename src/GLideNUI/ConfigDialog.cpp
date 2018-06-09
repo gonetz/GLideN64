@@ -331,11 +331,24 @@ void ConfigDialog::setIniPath(const QString & _strIniPath)
 
 	ui->translationsComboBox->insertItems(0, translationLanguages);
 	ui->translationsComboBox->setCurrentIndex(listIndex);
+
+	// Profile
+	ui->profilesComboBox->blockSignals(true);
+	const QStringList aProfiles = getProfiles(m_strIniPath);
+	ui->profilesComboBox->addItems(aProfiles);
+	ui->profilesComboBox->setCurrentIndex(aProfiles.indexOf(getCurrentProfile(m_strIniPath)));
+	ui->profilesComboBox->blockSignals(false);
+	ui->removeProfilePushButton->setEnabled(ui->profilesComboBox->count() > 1);
 }
 
 void ConfigDialog::setRomName(const char * _romName)
 {
-	m_romName = _romName;
+	const bool bRomNameIsEmpty = _romName == nullptr || strlen(_romName) == 0;
+	m_romName = bRomNameIsEmpty ? nullptr : _romName;
+	ui->customSettingsCheckBox->setEnabled(bRomNameIsEmpty);
+	ui->profilesComboBox->setEnabled(bRomNameIsEmpty);
+	ui->removeProfilePushButton->setEnabled(bRomNameIsEmpty && ui->profilesComboBox->count() > 1);
+	ui->addProfilePushButton->setEnabled(bRomNameIsEmpty);
 }
 
 ConfigDialog::ConfigDialog(QWidget *parent, Qt::WindowFlags f) :
@@ -525,10 +538,10 @@ void ConfigDialog::accept()
 	if (ui->dumpDetailCheckBox->isChecked())
 		config.debug.dumpMode |= DEBUG_DETAIL;
 
-	if (config.generalEmulation.enableCustomSettings != 0 && m_romName != nullptr && strlen(m_romName) != 0)
+	if (config.generalEmulation.enableCustomSettings != 0 && m_romName != nullptr)
 		saveCustomRomSettings(m_strIniPath, m_romName);
-
-	writeSettings(m_strIniPath);
+	else
+		writeSettings(m_strIniPath);
 
 	QDialog::accept();
 }
@@ -707,6 +720,9 @@ void ConfigDialog::on_tabWidget_currentChanged(int tab)
 
 void ConfigDialog::on_customSettingsCheckBox_clicked()
 {
+	if (m_romName == nullptr)
+		return;
+
 	if (ui->customSettingsCheckBox->isChecked()) {
 		loadCustomRomSettings(m_strIniPath, m_romName);
 		config.generalEmulation.enableCustomSettings = 1;
@@ -720,11 +736,72 @@ void ConfigDialog::on_customSettingsCheckBox_clicked()
 
 void ConfigDialog::setTitle()
 {
-	if (config.generalEmulation.enableCustomSettings != 0 && m_romName != nullptr && strlen(m_romName) != 0) {
+	if (config.generalEmulation.enableCustomSettings != 0 && m_romName != nullptr) {
 		QString title(tr("GLideN64 Settings for "));
 		title += QString::fromLatin1(m_romName);
 		setWindowTitle(title);
 	} else {
 		setWindowTitle(tr("GLideN64 Settings"));
+	}
+}
+
+void ConfigDialog::on_profilesComboBox_currentIndexChanged(const QString &profile)
+{
+	changeProfile(m_strIniPath, profile);
+	_init();
+}
+
+void ConfigDialog::on_addProfilePushButton_clicked()
+{
+	QString profile = ui->profilesComboBox->currentText();
+	if (profile.isEmpty()) {
+		QMessageBox msgBox(QMessageBox::Warning, tr("Cannot add profile"),
+			tr("Empty profile name."),
+			QMessageBox::Ok, this
+		);
+		msgBox.exec();
+		return;
+	}
+	if (getProfiles(m_strIniPath).contains(profile)) {
+		QString msg(tr("Profile \""));
+		msg += profile + tr("\" already exists.");
+		QMessageBox msgBox(QMessageBox::Warning, tr("Cannot add profile"), msg, QMessageBox::Ok, this);
+		msgBox.exec();
+		return;
+	}
+	addProfile(m_strIniPath, profile);
+	ui->profilesComboBox->addItem(profile);
+	for (int i = 0; i < ui->profilesComboBox->count(); ++i) {
+		if (ui->profilesComboBox->itemText(i) == profile) {
+			ui->profilesComboBox->setCurrentIndex(i);
+			break;
+		}
+	}
+	ui->removeProfilePushButton->setDisabled(false);
+}
+
+void ConfigDialog::on_removeProfilePushButton_clicked()
+{
+	if (ui->profilesComboBox->count() < 2)
+		return;
+
+	QString profile = ui->profilesComboBox->currentText();
+	if (!getProfiles(m_strIniPath).contains(profile))
+		return;
+	QString msg(tr("Are you sure you want to remove profile \""));
+	msg += profile + "\"";
+	QMessageBox msgBox(QMessageBox::Warning, tr("Remove profile"),
+		msg, QMessageBox::Yes | QMessageBox::Cancel, this);
+	msgBox.setDefaultButton(QMessageBox::Cancel);
+	msgBox.setButtonText(QMessageBox::Yes, tr("Yes"));
+	msgBox.setButtonText(QMessageBox::Cancel, tr("Cancel"));
+	if (msgBox.exec() == QMessageBox::Yes) {
+		removeProfile(m_strIniPath, profile);
+		ui->profilesComboBox->blockSignals(true);
+		ui->profilesComboBox->removeItem(ui->profilesComboBox->currentIndex());
+		changeProfile(m_strIniPath, ui->profilesComboBox->itemText(ui->profilesComboBox->currentIndex()));
+		ui->profilesComboBox->blockSignals(false);
+		_init();
+		ui->removeProfilePushButton->setDisabled(ui->profilesComboBox->count() < 2);
 	}
 }
