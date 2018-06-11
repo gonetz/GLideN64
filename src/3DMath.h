@@ -1,5 +1,6 @@
 #ifndef _3DMATH_H
 #define _3DMATH_H
+#include <utility>
 #include <memory.h>
 #include <string.h>
 #include <Types.h>
@@ -37,5 +38,8 @@ inline float DotProduct(const float v0[3], const float v1[3])
 #endif // WIN32_ASM
 	return dot;
 }
+
+float GetFloatMatrixElement(s16 _int, u16 _fract);
+std::pair<s16, u16> GetIntMatrixElement(f32 _elem);
 
 #endif

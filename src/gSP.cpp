@@ -1572,25 +1572,22 @@ void gSPInsertMatrix( u32 where, u32 num )
 {
 	DebugMsg(DEBUG_NORMAL, "gSPInsertMatrix(%u, %u);\n", where, num);
 
-	s32u32 value;
-	f32 fraction, integer;
-
 	if ((where & 0x3) || (where > 0x3C))
 		return;
 
-	for(int i = 0; i < 2;i++)
-	{
-		// integer elements of the matrix to be changed
+	const u16 * pData = reinterpret_cast<u16*>(&num);
+	const u32 index = (where < 0x20) ? (where >> 1) : ((where - 0x20) >> 1);
+	for (u32 i = 0; i < 2; i++) {
 		if (where < 0x20) {
-			value.s = (s32)(gSP.matrix.combined[0][(where >> 1) + i] * 65536.0f);
-			value.u = value.u & 0x0000FFFF + (s32)(_SHIFTR( num, 16 * (1 - i), 16 ) << 16);
-			gSP.matrix.combined[0][(where >> 1) + i] = _FIXED2FLOAT( value.s, 16 );
-		}
-		// fractional elements of the matrix to be changed
-		else {
-			value.s = (s32)(gSP.matrix.combined[0][((where - 0x20) >> 1) + i] * 65535.0f) ;
-			value.u = value.u & 0xFFFF0000 + _SHIFTR( num, 16 * (1 - i), 16 );
-			gSP.matrix.combined[0][((where - 0x20) >> 1) + i] = _FIXED2FLOAT( value.s, 16 );
+			// integer elements of the matrix to be changed
+			const s16 integer = static_cast<s16>(pData[i ^ 1]);
+			const s32 fract = static_cast<s32>(gSP.matrix.combined[0][index + i] * 65536.0f);
+			gSP.matrix.combined[0][index + i] = GetFloatMatrixElement(integer, static_cast<u16>(fract&0xFFFF));
+		} else {
+			// fractional elements of the matrix to be changed
+			const s32 integer = static_cast<s32>(gSP.matrix.combined[0][index + i]);
+			const u16 fract = pData[i ^ 1];
+			gSP.matrix.combined[0][index + i] = GetFloatMatrixElement(static_cast<s16>(integer), fract);
 		}
 	}
 }
