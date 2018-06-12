@@ -26,6 +26,7 @@ void GLInfo::init() {
 
 	LOG(LOG_VERBOSE, "OpenGL vendor: %s\n", glGetString(GL_VENDOR));
 	const GLubyte * strRenderer = glGetString(GL_RENDERER);
+	const GLubyte * strDriverVersion = glGetString(GL_VERSION);
 
 	if (std::regex_match(std::string((const char*)strRenderer), std::regex("Adreno.*530")))
 		renderer = Renderer::Adreno530;
@@ -56,8 +57,23 @@ void GLInfo::init() {
 		msaa = true;
 	}
 
-	//Tegra has a buggy implementation of fragment_shader_interlock that causes graphics lockups
-	bool hasBuggyFragmentShaderInterlock = renderer == Renderer::Tegra;
+	//Tegra has a buggy implementation of fragment_shader_interlock that causes graphics lockups on drivers below 390.00
+	bool hasBuggyFragmentShaderInterlock = false;
+
+	if (renderer == Renderer::Tegra) {
+		std::string strDriverVersionString((const char*)strDriverVersion);
+		std::string nvidiaText = "NVIDIA";
+		std::size_t versionPosition = strDriverVersionString.find(nvidiaText);
+
+		if (versionPosition == std::string::npos) {
+			hasBuggyFragmentShaderInterlock = true;
+		} else {
+			std::string strDriverVersionNumber = strDriverVersionString.substr(versionPosition + nvidiaText.length() + 1);
+			float versionNumber = std::stof(strDriverVersionNumber);
+			hasBuggyFragmentShaderInterlock = versionNumber < 390.0;
+		}
+	}
+
 	fragment_interlock = Utils::isExtensionSupported(*this, "GL_ARB_fragment_shader_interlock") && !hasBuggyFragmentShaderInterlock;
 	fragment_interlockNV = Utils::isExtensionSupported(*this, "GL_NV_fragment_shader_interlock") && !fragment_interlock && !hasBuggyFragmentShaderInterlock;
 	fragment_ordering = Utils::isExtensionSupported(*this, "GL_INTEL_fragment_shader_ordering") && !fragment_interlock && !fragment_interlockNV;
