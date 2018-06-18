@@ -77,6 +77,7 @@ void ConfigDialog::_init()
 			WindowedModes[i].height == config.video.windowedHeight)
 			windowedModesCurrent = i;
 	}
+	ui->windowedResolutionComboBox->clear();
 	ui->windowedResolutionComboBox->insertItems(0, windowedModesList);
 	if (windowedModesCurrent > -1)
 		ui->windowedResolutionComboBox->setCurrentIndex(windowedModesCurrent);
@@ -105,6 +106,7 @@ void ConfigDialog::_init()
 	QStringList fullscreenModesList, fullscreenRatesList;
 	int fullscreenMode, fullscreenRate;
 	fillFullscreenResolutionsList(fullscreenModesList, fullscreenMode, fullscreenRatesList, fullscreenRate);
+	ui->fullScreenResolutionComboBox->clear();
 	ui->fullScreenResolutionComboBox->insertItems(0, fullscreenModesList);
 	ui->fullScreenResolutionComboBox->setCurrentIndex(fullscreenMode);
 	ui->fullScreenRefreshRateComboBox->setCurrentIndex(fullscreenRate);
