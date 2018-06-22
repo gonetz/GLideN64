@@ -138,8 +138,10 @@ void loadSettings(const QString & _strIniFolder)
 		config.generalEmulation.hacks = hacks;
 		config.translationFile = configTranslationFile.toLocal8Bit().constData();
 		if (configVersion < CONFIG_WITH_PROFILES) {
+			_loadSettings(settings);
+			config.version = CONFIG_VERSION_CURRENT;
 			settings.clear();
-			settings.setValue("version", configVersion);
+			settings.setValue("version", CONFIG_VERSION_CURRENT);
 			settings.setValue("profile", strUserProfile);
 			settings.setValue("translation", config.translationFile.c_str());
 			settings.beginGroup(strUserProfile);
