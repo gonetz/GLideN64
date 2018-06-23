@@ -82,7 +82,7 @@ TxHiResCache::TxHiResCache(int maxwidth,
   /* read in hires texture cache */
   if (_options & DUMP_HIRESTEXCACHE) {
 	/* find it on disk */
-	_cacheDumped = TxCache::load(_cachePath.c_str(), _getFileName().c_str(), _getConfig());
+	_cacheDumped = TxCache::load(_cachePath.c_str(), _getFileName().c_str(), _getConfig(), !_HiResTexPackPathExists());
   }
 
 /* read in hires textures */
@@ -110,6 +110,14 @@ tx_wstring TxHiResCache::_getFileName() const
 int TxHiResCache::_getConfig() const
 {
 	return _options & (HIRESTEXTURES_MASK | TILE_HIRESTEX | FORCE16BPP_HIRESTEX | GZ_HIRESTEXCACHE | LET_TEXARTISTS_FLY);
+}
+
+boolean TxHiResCache::_HiResTexPackPathExists() const
+{
+	tx_wstring dir_path(_texPackPath);
+	dir_path += OSAL_DIR_SEPARATOR_STR;
+	dir_path += _ident;
+	return osal_path_existsW(dir_path.c_str());
 }
 
 boolean TxHiResCache::empty()

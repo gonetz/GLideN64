@@ -50,7 +50,7 @@ protected:
   int _cacheSize;
   std::map<uint64, TXCACHE*> _cache;
   boolean save(const wchar_t *path, const wchar_t *filename, const int config);
-  boolean load(const wchar_t *path, const wchar_t *filename, const int config);
+  boolean load(const wchar_t *path, const wchar_t *filename, const int config, boolean force);
   boolean del(uint64 checksum); /* checksum hi:palette low:texture */
   boolean is_cached(uint64 checksum); /* checksum hi:palette low:texture */
   void clear();

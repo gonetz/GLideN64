@@ -299,7 +299,7 @@ TxCache::save(const wchar_t *path, const wchar_t *filename, int config)
 }
 
 boolean
-TxCache::load(const wchar_t *path, const wchar_t *filename, int config)
+TxCache::load(const wchar_t *path, const wchar_t *filename, int config, boolean force)
 {
 	/* find it on disk */
 	char cbuf[MAX_PATH];
@@ -327,7 +327,7 @@ TxCache::load(const wchar_t *path, const wchar_t *filename, int config)
 		/* read header to determine config match */
 		gzread(gzfp, &tmpconfig, 4);
 
-		if (tmpconfig == config) {
+		if (tmpconfig == config || force) {
 			do {
 				GHQTexInfo tmpInfo;
 

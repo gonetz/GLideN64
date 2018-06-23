@@ -46,7 +46,7 @@ TxTexCache::TxTexCache(int options, int cachesize, const wchar_t *cachePath, con
 
 	if (_options & DUMP_TEXCACHE) {
 		/* find it on disk */
-		_cacheDumped = TxCache::load(_cachePath.c_str(), _getFileName().c_str(), _getConfig());
+		_cacheDumped = TxCache::load(_cachePath.c_str(), _getFileName().c_str(), _getConfig(), 0);
 	}
 }
 
