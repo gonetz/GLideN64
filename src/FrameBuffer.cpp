@@ -1278,7 +1278,7 @@ void FrameBufferList::renderBuffer()
 	s32 srcY0, srcY1;
 	s32 dstX0, dstX1, dstY0, dstY1;
 	s32 srcWidth, srcHeight;
-	s32 Xoffset = 0;
+	s32 XoffsetLeft = 0, XoffsetRight = 0;
 	s32 Xdivot = 0;
 	s32 srcPartHeight = 0;
 	s32 dstPartHeight = 0;
@@ -1294,9 +1294,13 @@ void FrameBufferList::renderBuffer()
 		srcY0 = 1;
 
 	if ((rdpRes.vi_width != addrOffset * 2) && (addrOffset % rdpRes.vi_width != 0))
-		Xoffset = rdpRes.vi_width - addrOffset % rdpRes.vi_width;
-	if (Xoffset == pBuffer->m_width)
-		Xoffset = 0;
+		XoffsetRight = rdpRes.vi_width - addrOffset % rdpRes.vi_width;
+	if (XoffsetRight == pBuffer->m_width) {
+		XoffsetRight = 0;
+	} else if (XoffsetRight > static_cast<s32>(pBuffer->m_width / 2)) {
+		XoffsetRight = 0;
+		XoffsetLeft = addrOffset % rdpRes.vi_width;
+	}
 
 	if (rdpRes.vi_lowerfield) {
 		if (srcY0 > 0)
@@ -1336,15 +1340,14 @@ void FrameBufferList::renderBuffer()
 	const s32 hEnd = _SHIFTR(*REG.VI_H_START, 0, 10);
 	const s32 hx1 = max(0, h0 + 640 - hEnd);
 	//const s32 hx1 = hx0 + rdpRes.vi_hres;
-	dstX0 = (s32)((hx0 * viScaleX + Xoffset) * dstScaleX);
-	dstX1 = m_overscan.getDrawingWidth() - (s32)((hx1*viScaleX + Xdivot) * dstScaleX);
-	srcWidth -= Xoffset + Xdivot;
+	dstX0 = (s32)((hx0 + XoffsetRight) * dstScaleX);
+	dstX1 = m_overscan.getDrawingWidth() - (s32)((hx1 + Xdivot) * dstScaleX);
 
 	const f32 srcScaleY = pFilteredBuffer->m_scale;
 	CachedTexture * pBufferTexture = pFilteredBuffer->m_pTexture;
-	s32 srcCoord[4] = { 0,
+	s32 srcCoord[4] = { (s32)(XoffsetLeft * srcScaleX),
 						(s32)(srcY0*srcScaleY),
-						(s32)(srcWidth * srcScaleX),
+						(s32)((srcWidth + XoffsetLeft - XoffsetRight - Xdivot) * srcScaleX),
 						min((s32)(srcY1*srcScaleY), (s32)pBufferTexture->realHeight) };
 	if (srcCoord[2] > pBufferTexture->realWidth || srcCoord[3] > pBufferTexture->realHeight) {
 		removeBuffer(pBuffer->m_startAddress);
