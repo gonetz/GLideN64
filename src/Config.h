@@ -179,6 +179,7 @@ struct Config
 	} debug;
 
 	void resetToDefaults();
+	void validate();
 };
 
 #define hack_Ogre64					(1<<0)  //Ogre Battle 64 background copy

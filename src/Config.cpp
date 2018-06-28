@@ -125,3 +125,16 @@ bool isHWLightingAllowed()
 		return false;
 	return GBI.isHWLSupported();
 }
+
+void Config::validate()
+{
+	if (frameBufferEmulation.enable != 0 && frameBufferEmulation.N64DepthCompare != 0)
+		video.multisampling = 0;
+	if (frameBufferEmulation.nativeResFactor == 1) {
+		generalEmulation.enableNativeResTexrects = 0;
+		generalEmulation.correctTexrectCoords = tcDisable;
+	} else {
+		if (generalEmulation.enableNativeResTexrects != 0)
+			generalEmulation.correctTexrectCoords = tcDisable;
+	}
+}

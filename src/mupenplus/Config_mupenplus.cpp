@@ -441,4 +441,6 @@ void Config_LoadConfig()
 
 	if (config.generalEmulation.enableCustomSettings)
 		Config_LoadCustomConfig();
+
+	config.validate();
 }
