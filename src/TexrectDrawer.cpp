@@ -6,6 +6,7 @@
 #include <Graphics/Parameters.h>
 #include "DisplayWindow.h"
 #include "Textures.h"
+#include "RSP.h"
 #include "VI.h"
 #include "FrameBuffer.h"
 #include "TexrectDrawer.h"
@@ -114,7 +115,71 @@ void TexrectDrawer::_setDrawBuffer()
 		frameBufferList().setCurrentDrawBuffer();
 }
 
-void TexrectDrawer::add()
+bool TexrectDrawer::_lookAhead(bool _checkCoordinates) const
+{
+	if (RSP.LLE)
+		return true;
+	switch (GBI.getMicrocodeType()) {
+	case Turbo3D:
+	case T3DUX:
+	case F5Rogue:
+	case F5Indi_Naboo:
+		return true;
+	}
+
+	auto sideBySide = [](u32 pc) ->bool {
+		const u32 ulx = _SHIFTR(RSP.w1, 12, 12);
+		const u32 uly = _SHIFTR(RSP.w1, 0, 12);
+		const u32 lrx = _SHIFTR(RSP.w0, 12, 12);
+		const u32 lry = _SHIFTR(RSP.w0, 0, 12);
+
+		const u32 w0 = *(u32*)&RDRAM[pc];
+		const u32 w1 = *(u32*)&RDRAM[pc + 4];
+		const u32 ulx_next = _SHIFTR(w1, 12, 12);
+		const u32 uly_next = _SHIFTR(w1, 0, 12);
+		const u32 lrx_next = _SHIFTR(w0, 12, 12);
+		const u32 lry_next = _SHIFTR(w0, 0, 12);
+
+		if (ulx == ulx_next) {
+			bool sbs = lry == uly_next;
+			sbs |= uly == lry_next;
+			return sbs;
+		}
+		if (uly == uly_next) {
+			bool sbs = lrx == ulx_next;
+			sbs |= ulx == lrx_next;
+			return sbs;
+		}
+		return false;
+	};
+
+	u32 pc = RSP.PC[RSP.PCi] + 8;
+	while (true) {
+		switch (_SHIFTR(*(u32*)&RDRAM[pc], 24, 8)) {
+		case G_RDPLOADSYNC:
+		case G_RDPPIPESYNC:
+		case G_RDPTILESYNC:
+		case G_LOADTLUT:
+		case G_SETTILESIZE:
+		case G_LOADBLOCK:
+		case G_LOADTILE:
+		case G_SETTILE:
+		case G_SETTIMG:
+			break;
+		case G_TEXRECT:
+		case G_TEXRECTFLIP:
+			if (_checkCoordinates)
+				return sideBySide(pc);
+			return true;
+		default:
+			return false;
+		}
+		pc += 8;
+	}
+	return false;
+}
+
+bool TexrectDrawer::add()
 {
 	DisplayWindow & wnd = dwnd();
 	GraphicsDrawer &  drawer = wnd.getDrawer();
@@ -148,6 +213,9 @@ void TexrectDrawer::add()
 	}
 
 	if (m_numRects == 0) {
+		if (!_lookAhead(true))
+			return false;
+
 		m_numRects = 1;
 		m_pBuffer = frameBufferList().getCurrent();
 		m_otherMode = gDP.otherMode._u64;
@@ -201,6 +269,11 @@ void TexrectDrawer::add()
 	rectParams.vertices = pRect;
 	rectParams.combiner = currentCombiner();
 	gfxContext.drawRects(rectParams);
+
+	if (m_numRects > 1 && !_lookAhead(false))
+		draw();
+
+	return true;
 }
 
 bool TexrectDrawer::draw()

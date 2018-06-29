@@ -17,7 +17,7 @@ public:
 
 	void init();
 	void destroy();
-	void add();
+	bool add();
 	bool draw();
 	bool isEmpty() const;
 	bool canContinue() const;
@@ -25,6 +25,7 @@ public:
 private:
 	void _setViewport() const;
 	void _setDrawBuffer();
+	bool _lookAhead(bool _checkCoordinates) const;
 
 	u32 m_numRects;
 	u64 m_otherMode;
