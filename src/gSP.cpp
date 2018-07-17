@@ -1593,13 +1593,13 @@ void gSPInsertMatrix( u32 where, u32 num )
 		if (where < 0x20) {
 			// integer elements of the matrix to be changed
 			const s16 integer = static_cast<s16>(pData[i ^ 1]);
-			const s32 fract = static_cast<s32>(gSP.matrix.combined[0][index + i] * 65536.0f);
-			gSP.matrix.combined[0][index + i] = GetFloatMatrixElement(integer, static_cast<u16>(fract&0xFFFF));
+			const u16 fract = GetIntMatrixElement(gSP.matrix.combined[0][index + i]).second;
+			gSP.matrix.combined[0][index + i] = GetFloatMatrixElement(integer, fract);
 		} else {
 			// fractional elements of the matrix to be changed
-			const s32 integer = static_cast<s32>(gSP.matrix.combined[0][index + i]);
+			const s16 integer = GetIntMatrixElement(gSP.matrix.combined[0][index + i]).first;
 			const u16 fract = pData[i ^ 1];
-			gSP.matrix.combined[0][index + i] = GetFloatMatrixElement(static_cast<s16>(integer), fract);
+			gSP.matrix.combined[0][index + i] = GetFloatMatrixElement(integer, fract);
 		}
 	}
 }
