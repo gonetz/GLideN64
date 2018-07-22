@@ -21,6 +21,9 @@ TexrectDrawer::TexrectDrawer()
 , m_lrx(0)
 , m_uly(0)
 , m_lry(0)
+, m_ulx_i(0)
+, m_uly_i(0)
+, m_lry_i(0)
 , m_Z(0)
 , m_max_lrx(0)
 , m_max_lry(0)
@@ -115,6 +118,18 @@ void TexrectDrawer::_setDrawBuffer()
 		frameBufferList().setCurrentDrawBuffer();
 }
 
+TexrectDrawer::iRect TexrectDrawer::_getiRect(u32 w0, u32 w1) const
+{
+	iRect rect;
+	rect.ulx = _SHIFTR(w1, 12, 12);
+	rect.uly = _SHIFTR(w1, 0, 12);
+	rect.lrx = _SHIFTR(w0, 12, 12);
+	rect.lry = _SHIFTR(w0, 0, 12);
+	return rect;
+}
+
+#define COMPARE_COORDS(a, b) std::abs(a - b) <= 4
+
 bool TexrectDrawer::_lookAhead(bool _checkCoordinates) const
 {
 	if (RSP.LLE)
@@ -127,33 +142,25 @@ bool TexrectDrawer::_lookAhead(bool _checkCoordinates) const
 		return true;
 	}
 
-	auto sideBySide = [](u32 pc) ->bool {
-		const u32 ulx = _SHIFTR(RSP.w1, 12, 12);
-		const u32 uly = _SHIFTR(RSP.w1, 0, 12);
-		const u32 lrx = _SHIFTR(RSP.w0, 12, 12);
-		const u32 lry = _SHIFTR(RSP.w0, 0, 12);
-
+	auto sideBySide = [&](u32 pc) ->bool {
 		const u32 w0 = *(u32*)&RDRAM[pc];
 		const u32 w1 = *(u32*)&RDRAM[pc + 4];
-		const u32 ulx_next = _SHIFTR(w1, 12, 12);
-		const u32 uly_next = _SHIFTR(w1, 0, 12);
-		const u32 lrx_next = _SHIFTR(w0, 12, 12);
-		const u32 lry_next = _SHIFTR(w0, 0, 12);
+		const iRect nextRect = _getiRect(w0, w1);
 
-		if (ulx == ulx_next) {
-			bool sbs = lry == uly_next;
-			sbs |= uly == lry_next;
+		if (COMPARE_COORDS(m_curRect.ulx, nextRect.ulx)) {
+			bool sbs = COMPARE_COORDS(m_curRect.lry, nextRect.uly);
+			sbs |= COMPARE_COORDS(m_curRect.uly, nextRect.lry);
 			return sbs;
 		}
-		if (uly == uly_next) {
-			bool sbs = lrx == ulx_next;
-			sbs |= ulx == lrx_next;
+		if (COMPARE_COORDS(m_curRect.uly, nextRect.uly)) {
+			bool sbs = COMPARE_COORDS(m_curRect.lrx, nextRect.ulx);
+			sbs |= COMPARE_COORDS(m_curRect.ulx, nextRect.lrx);
 			return sbs;
 		}
 		return false;
 	};
 
-	u32 pc = RSP.PC[RSP.PCi] + 8;
+	u32 pc = RSP.PC[RSP.PCi];
 	while (true) {
 		switch (_SHIFTR(*(u32*)&RDRAM[pc], 24, 8)) {
 		case G_RDPLOADSYNC:
@@ -185,20 +192,20 @@ bool TexrectDrawer::add()
 	GraphicsDrawer &  drawer = wnd.getDrawer();
 	RectVertex * pRect = drawer.m_rect;
 
+	m_curRect = _getiRect(RSP.w0, RSP.w1);
+
 	bool bDownUp = false;
 	if (m_numRects != 0) {
 		bool bContinue = false;
 		if (m_otherMode == gDP.otherMode._u64 && m_mux == gDP.combine.mux) {
-			const float scaleY = (m_pBuffer != nullptr ? m_pBuffer->m_height : VI.height) / 2.0f;
-			if (m_ulx == pRect[0].x) {
-				//			bContinue = m_lry == pRect[0].y;
-				bContinue = fabs((m_lry - pRect[0].y) * scaleY) < 1.1f; // Fix for Mario Kart
-				bDownUp = m_uly == pRect[3].y;
+			if (COMPARE_COORDS(m_ulx_i, m_curRect.ulx)) {
+				bContinue = COMPARE_COORDS(m_lry_i, m_curRect.uly);
+				bDownUp = COMPARE_COORDS(m_uly_i, m_curRect.lry);
 				bContinue |= bDownUp;
 			}
 			else {
 				for (auto iter = m_vecRectCoords.crbegin(); iter != m_vecRectCoords.crend(); ++iter) {
-					if (iter->x == pRect[0].x && iter->y == pRect[0].y) {
+					if (COMPARE_COORDS(iter->x, m_curRect.ulx) && COMPARE_COORDS(iter->y, m_curRect.uly)) {
 						bContinue = true;
 						break;
 					}
@@ -207,8 +214,7 @@ bool TexrectDrawer::add()
 		}
 		if (!bContinue) {
 			draw();
-			drawer._updateTextures();
-			CombinerInfo::get().updateParameters();
+			drawer._updateStates(DrawingState::TexRect);
 		}
 	}
 
@@ -227,6 +233,10 @@ bool TexrectDrawer::add()
 		m_uly = pRect[0].y;
 		m_lrx = m_max_lrx = pRect[3].x;
 		m_lry = m_max_lry = pRect[3].y;
+
+		m_ulx_i = m_curRect.ulx;
+		m_uly_i = m_curRect.uly;
+		m_lry_i = m_curRect.lry;
 
 		CombinerInfo & cmbInfo = CombinerInfo::get();
 		cmbInfo.update();
@@ -247,20 +257,22 @@ bool TexrectDrawer::add()
 	if (bDownUp) {
 		m_ulx = pRect[0].x;
 		m_uly = pRect[0].y;
-	}
-	else {
+		m_ulx_i = m_curRect.ulx;
+		m_uly_i = m_curRect.uly;
+	} else {
 		m_lrx = pRect[3].x;
 		m_lry = pRect[3].y;
 		m_max_lrx = std::max(m_max_lrx, m_lrx);
 		m_max_lry = std::max(m_max_lry, m_lry);
+		m_lry_i = m_curRect.lry;
 	}
 
 	RectCoords coords;
-	coords.x = pRect[1].x;
-	coords.y = pRect[1].y;
+	coords.x = m_curRect.lrx;
+	coords.y = m_curRect.uly;
 	m_vecRectCoords.push_back(coords);
-	coords.x = pRect[3].x;
-	coords.y = pRect[3].y;
+	coords.x = m_curRect.lrx;
+	coords.y = m_curRect.lry;
 	m_vecRectCoords.push_back(coords);
 
 	Context::DrawRectParameters rectParams;
