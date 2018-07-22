@@ -409,6 +409,7 @@ void RDP_Init()
 	GBI.cmd[G_RDPLOADSYNC]		= RDP_LoadSync;
 	GBI.cmd[G_TEXRECTFLIP]		= RDP_TexRectFlip;
 	GBI.cmd[G_TEXRECT]			= RDP_TexRect;
+	GBI.cmd[G_RDPNOOP]			= RDP_NoOp;
 
 	RDP.w2 = RDP.w3 = 0;
 	RDP.cmd_ptr = RDP.cmd_cur = 0;
