@@ -2288,8 +2288,8 @@ void _loadBGImage(const uObjScaleBg * _bgInfo, bool _loadScale)
 		gSP.bgImage.width = *REG.VI_WIDTH;
 		gSP.bgImage.height = (imageH * imageW) / gSP.bgImage.width;
 	} else {
-		gSP.bgImage.width = imageW - imageW%2;
-		gSP.bgImage.height = imageH - imageH%2;
+		gSP.bgImage.width = imageW & 0xFFFFFFFE;
+		gSP.bgImage.height = imageH - 1;
 	}
 	gSP.bgImage.format = _bgInfo->imageFmt;
 	gSP.bgImage.size = _bgInfo->imageSiz;
