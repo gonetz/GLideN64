@@ -2072,8 +2072,9 @@ struct ObjCoordinates
 
 		ulx = frameX;
 		uly = frameY;
-		lrx = frameX + min(imageW/scaleW, frameW);
-		lry = frameY + min(imageH/scaleH, frameH);
+		// Lower right X position is 'X + widthX / scaleW - one_scaled_texelW'
+		lrx = frameX + min(imageW/scaleW, frameW) - 1.0f/scaleW;
+		lry = frameY + min(imageH/scaleH, frameH) - 1.0f/scaleH;
 
 		uls = imageX;
 		ult = imageY;
