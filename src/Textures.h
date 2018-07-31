@@ -101,7 +101,7 @@ private:
 	s32 m_curUnpackAlignment;
 	bool m_toggleDumpTex;
 #ifdef VC
-	const size_t m_maxCacheSize = 3500;
+	const size_t m_maxCacheSize = 1500;
 #else
 	const size_t m_maxCacheSize = 8000;
 #endif
