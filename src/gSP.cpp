@@ -2051,8 +2051,8 @@ struct ObjCoordinates
 		const f32 frameY = _FIXED2FLOAT(_pObjScaleBg->frameY, 2);
 		const f32 imageX = gSP.bgImage.imageX;
 		const f32 imageY = gSP.bgImage.imageY;
-		const f32 scaleW = gSP.bgImage.scaleW;
-		const f32 scaleH = gSP.bgImage.scaleH;
+		f32 scaleW = gSP.bgImage.scaleW;
+		f32 scaleH = gSP.bgImage.scaleH;
 
 		f32 frameW = _FIXED2FLOAT(_pObjScaleBg->frameW, 2);
 		f32 frameH = _FIXED2FLOAT(_pObjScaleBg->frameH, 2);
@@ -2068,31 +2068,58 @@ struct ObjCoordinates
 			frameW = width;
 			imageH *= scale;
 			frameH *= scale;
+			scaleW = 1.0f;
+			scaleH = 1.0f;
 		}
 
 		ulx = frameX;
 		uly = frameY;
-		// Lower right X position is 'X + widthX / scaleW - one_scaled_texelW'
-		lrx = frameX + min(imageW/scaleW, frameW) - 1.0f/scaleW;
-		lry = frameY + min(imageH/scaleH, frameH) - 1.0f/scaleH;
 
 		uls = imageX;
 		ult = imageY;
-		lrs = uls + (lrx - ulx) * scaleW;
-		lrt = ult + (lry - uly) * scaleH;
+		lrs = uls + min(imageW, frameW * scaleW);
+		lrt = ult + min(imageH, frameH * scaleH);
+
+		// G_CYC_COPY does not allow texture filtering
 		if (gDP.otherMode.cycleType != G_CYC_COPY) {
+			// Correct texture coordinates -0.5f if G_OBJRM_BILERP 
+			// bilinear interpolation is set
+			if ((gSP.objRendermode&G_OBJRM_BILERP) != 0) {
+				uls -= 0.5f;
+				ult -= 0.5f;
+				lrs -= 0.5f;
+				lrt -= 0.5f;
+			}
+			// SHRINKSIZE_1 adds a 0.5f perimeter around the image
+			// upper left texture coords += 0.5f; lower left texture coords -= 0.5f
 			if ((gSP.objRendermode&G_OBJRM_SHRINKSIZE_1) != 0) {
-				lrs -= 1.0f / scaleW;
-				lrt -= 1.0f / scaleH;
+				uls += 0.5f;
+				ult += 0.5f;
+				lrs -= 0.5f;
+				lrt -= 0.5f;
+			// SHRINKSIZE_2 adds a 1.0f perimeter 
+			// upper left texture coords += 1.0f; lower left texture coords -= 1.0f
 			} else if ((gSP.objRendermode&G_OBJRM_SHRINKSIZE_2) != 0) {
+				uls += 1.0f;
+				ult += 1.0f;
 				lrs -= 1.0f;
 				lrt -= 1.0f;
 			}
 		}
 
+		// limit fraction 2 bit precision --> only allows 1/4 texel movement
+		// see G_OBJRM_BILERP description
+		uls = floorf( uls * 4.0f ) * 0.25f;
+		ult = floorf( ult * 4.0f ) * 0.25f;
+		lrs = floorf( lrs * 4.0f ) * 0.25f;
+		lrt = floorf( lrt * 4.0f ) * 0.25f;
+		
+		// Calculate lrx and lry width new ST values
+		lrx = ulx + ( lrs - uls ) / scaleW;
+		lry = uly + ( lrt - ult ) / scaleH;
+
 		if ((_pObjScaleBg->imageFlip & 0x01) != 0) {
-			ulx = lrx;
-			lrx = frameX;
+			std::swap( ulx, lrx);
 		}
 
 		z = (gDP.otherMode.depthSource == G_ZS_PRIM) ? gDP.primDepth.z : gSP.viewport.nearz;
