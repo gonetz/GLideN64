@@ -2084,7 +2084,7 @@ struct ObjCoordinates
 		if (gDP.otherMode.cycleType != G_CYC_COPY) {
 			// Correct texture coordinates -0.5f if G_OBJRM_BILERP 
 			// bilinear interpolation is set
-			if ((gSP.objRendermode&G_OBJRM_BILERP) != 0) {
+			if ((gSP.objRendermode&G_OBJRM_BILERP) != 0 && (config.generalEmulation.hacks & hack_ZeldaMM) == 0) {
 				uls -= 0.5f;
 				ult -= 0.5f;
 				lrs -= 0.5f;
