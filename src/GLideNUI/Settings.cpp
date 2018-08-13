@@ -112,7 +112,7 @@ void _loadSettings(QSettings & settings)
 	config.gammaCorrection.level = settings.value("level", config.gammaCorrection.level).toFloat();
 	settings.endGroup();
 
-	settings.beginGroup("onScreenDispaly");
+	settings.beginGroup("onScreenDisplay");
 	config.onScreenDisplay.fps = settings.value("showFPS", config.onScreenDisplay.fps).toInt();
 	config.onScreenDisplay.vis = settings.value("showVIS", config.onScreenDisplay.vis).toInt();
 	config.onScreenDisplay.percent = settings.value("showPercent", config.onScreenDisplay.percent).toInt();
@@ -262,7 +262,7 @@ void writeSettings(const QString & _strIniFolder)
 	settings.setValue("level", config.gammaCorrection.level);
 	settings.endGroup();
 
-	settings.beginGroup("onScreenDispaly");
+	settings.beginGroup("onScreenDisplay");
 	settings.setValue("showFPS", config.onScreenDisplay.fps);
 	settings.setValue("showVIS", config.onScreenDisplay.vis);
 	settings.setValue("showPercent", config.onScreenDisplay.percent);
