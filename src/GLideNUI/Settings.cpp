@@ -335,17 +335,40 @@ void saveCustomRomSettings(const QString & _strIniFolder, const char * _strRomNa
 {
 	Config origConfig;
 	origConfig.resetToDefaults();
+	std::swap(config, origConfig);
+	loadSettings(_strIniFolder);
+	std::swap(config, origConfig);
 
 	QSettings settings(_strIniFolder + "/" + strCustomSettingsFileName, QSettings::IniFormat);
 	const QString romName = _getRomName(_strRomName);
 
 #define WriteCustomSetting(G, S) \
-	if (config.G.S != settings.value(#S, origConfig.G.S).toInt()) \
+	if (origConfig.G.S  != config.G.S || \
+		origConfig.G.S != settings.value(#S, config.G.S).toInt()) \
 		settings.setValue(#S, config.G.S)
+#define WriteCustomSetting2(G, N, S) \
+	if (origConfig.G.S  != config.G.S || \
+		origConfig.G.S != settings.value(#N, config.G.S).toInt()) \
+		settings.setValue(#N, config.G.S)
+#define WriteCustomSettingF(G, S) \
+	if (origConfig.G.S  != config.G.S || \
+		origConfig.G.S != settings.value(#S, config.G.S).toFloat()) \
+		settings.setValue(#S, config.G.S)
+#define WriteCustomSettingS(S) \
+	const QString new##S = QString::fromWCharArray(config.textureFilter.txPath); \
+	const QString orig##S = QString::fromWCharArray(origConfig.textureFilter.txPath); \
+	if (orig##S  != new##S || \
+		orig##S != settings.value(#S, new##S).toString()) \
+		settings.setValue(#S, new##S)
 
 	settings.beginGroup(romName);
 
 	settings.beginGroup("video");
+	WriteCustomSetting(video, fullscreenWidth);
+	WriteCustomSetting(video, fullscreenHeight);
+	WriteCustomSetting(video, windowedWidth);
+	WriteCustomSetting(video, windowedHeight);
+	WriteCustomSetting(video, fullscreenRefresh);
 	WriteCustomSetting(video, multisampling);
 	WriteCustomSetting(video, verticalSync);
 	settings.endGroup();
@@ -353,12 +376,14 @@ void saveCustomRomSettings(const QString & _strIniFolder, const char * _strRomNa
 	settings.beginGroup("texture");
 	WriteCustomSetting(texture, maxAnisotropy);
 	WriteCustomSetting(texture, bilinearMode);
+	WriteCustomSetting(texture, screenShotFormat);
 	settings.endGroup();
 
 	settings.beginGroup("generalEmulation");
 	WriteCustomSetting(generalEmulation, enableNoise);
 	WriteCustomSetting(generalEmulation, enableLOD);
 	WriteCustomSetting(generalEmulation, enableHWLighting);
+	WriteCustomSetting(generalEmulation, enableShadersStorage);
 	WriteCustomSetting(generalEmulation, correctTexrectCoords);
 	WriteCustomSetting(generalEmulation, enableNativeResTexrects);
 	settings.endGroup();
@@ -378,31 +403,14 @@ void saveCustomRomSettings(const QString & _strIniFolder, const char * _strRomNa
 	WriteCustomSetting(frameBufferEmulation, fbInfoReadColorChunk);
 	WriteCustomSetting(frameBufferEmulation, fbInfoReadDepthChunk);
 	WriteCustomSetting(frameBufferEmulation, enableOverscan);
-
-	if (config.frameBufferEmulation.overscanPAL.left !=
-		settings.value("overscanPalLeft", origConfig.frameBufferEmulation.overscanPAL.left).toInt())
-		settings.setValue("overscanPalLeft", config.frameBufferEmulation.overscanPAL.left);
-	if (config.frameBufferEmulation.overscanPAL.right !=
-		settings.value("overscanPalRight", origConfig.frameBufferEmulation.overscanPAL.right).toInt())
-		settings.setValue("overscanPalRight", config.frameBufferEmulation.overscanPAL.right);
-	if (config.frameBufferEmulation.overscanPAL.top !=
-		settings.value("overscanPalTop", origConfig.frameBufferEmulation.overscanPAL.top).toInt())
-		settings.setValue("overscanPalTop", config.frameBufferEmulation.overscanPAL.top);
-	if (config.frameBufferEmulation.overscanPAL.bottom !=
-		settings.value("overscanPalBottom", origConfig.frameBufferEmulation.overscanPAL.bottom).toInt())
-		settings.setValue("overscanPalBottom", config.frameBufferEmulation.overscanPAL.bottom);
-	if (config.frameBufferEmulation.overscanNTSC.left !=
-		settings.value("overscanNtscLeft", origConfig.frameBufferEmulation.overscanNTSC.left).toInt())
-		settings.setValue("overscanNtscLeft", config.frameBufferEmulation.overscanNTSC.left);
-	if (config.frameBufferEmulation.overscanNTSC.right !=
-		settings.value("overscanNtscRight", origConfig.frameBufferEmulation.overscanNTSC.right).toInt())
-		settings.setValue("overscanNtscRight", config.frameBufferEmulation.overscanNTSC.right);
-	if (config.frameBufferEmulation.overscanNTSC.top !=
-		settings.value("overscanNtscTop", origConfig.frameBufferEmulation.overscanNTSC.top).toInt())
-		settings.setValue("overscanNtscTop", config.frameBufferEmulation.overscanNTSC.top);
-	if (config.frameBufferEmulation.overscanNTSC.bottom !=
-		settings.value("overscanNtscBottom", origConfig.frameBufferEmulation.overscanNTSC.bottom).toInt())
-		settings.setValue("overscanNtscBottom", config.frameBufferEmulation.overscanNTSC.bottom);
+	WriteCustomSetting2(frameBufferEmulation, overscanPalLeft, overscanPAL.left);
+	WriteCustomSetting2(frameBufferEmulation, overscanPalRight, overscanPAL.right);
+	WriteCustomSetting2(frameBufferEmulation, overscanPalTop, overscanPAL.top);
+	WriteCustomSetting2(frameBufferEmulation, overscanPalBottom, overscanPAL.bottom);
+	WriteCustomSetting2(frameBufferEmulation, overscanNtscLeft, overscanNTSC.left);
+	WriteCustomSetting2(frameBufferEmulation, overscanNtscRight, overscanNTSC.right);
+	WriteCustomSetting2(frameBufferEmulation, overscanNtscTop, overscanNTSC.top);
+	WriteCustomSetting2(frameBufferEmulation, overscanNtscBottom, overscanNTSC.bottom);
 	settings.endGroup();
 
 	settings.beginGroup("textureFilter");
@@ -414,15 +422,27 @@ void saveCustomRomSettings(const QString & _strIniFolder, const char * _strRomNa
 	WriteCustomSetting(textureFilter, txHiresEnable);
 	WriteCustomSetting(textureFilter, txHiresFullAlphaChannel);
 	WriteCustomSetting(textureFilter, txHresAltCRC);
+	WriteCustomSetting(textureFilter, txDump);
 	WriteCustomSetting(textureFilter, txForce16bpp);
 	WriteCustomSetting(textureFilter, txCacheCompression);
 	WriteCustomSetting(textureFilter, txSaveCache);
+	WriteCustomSettingS(txPath);
+	WriteCustomSettingS(txCachePath);
+	WriteCustomSettingS(txDumpPath);
 	settings.endGroup();
 
 	settings.beginGroup("gammaCorrection");
 	WriteCustomSetting(gammaCorrection, force);
-	if (config.gammaCorrection.level != settings.value("level", origConfig.gammaCorrection.level).toFloat())
-		settings.setValue("level", config.gammaCorrection.level);
+	WriteCustomSettingF(gammaCorrection, level);
+	settings.endGroup();
+
+	settings.beginGroup("onScreenDisplay");
+	WriteCustomSetting2(onScreenDisplay, showFPS, fps);
+	WriteCustomSetting2(onScreenDisplay, showVIS, vis);
+	WriteCustomSetting2(onScreenDisplay, showPercent, percent);
+	WriteCustomSetting2(onScreenDisplay, showInternalResolution, internalResolution);
+	WriteCustomSetting2(onScreenDisplay, showRenderingResolution, renderingResolution);
+	WriteCustomSetting2(onScreenDisplay, osdPos, pos);
 	settings.endGroup();
 
 	settings.endGroup();
