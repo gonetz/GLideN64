@@ -351,6 +351,7 @@ void ConfigDialog::setRomName(const char * _romName)
 	ui->profilesComboBox->setEnabled(bRomNameIsEmpty);
 	ui->removeProfilePushButton->setEnabled(bRomNameIsEmpty && ui->profilesComboBox->count() > 1);
 	ui->addProfilePushButton->setEnabled(bRomNameIsEmpty);
+	ui->customSettingsWarningFrame->setVisible(!bRomNameIsEmpty && config.generalEmulation.enableCustomSettings != 0);
 }
 
 ConfigDialog::ConfigDialog(QWidget *parent, Qt::WindowFlags f) :
