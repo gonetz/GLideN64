@@ -586,6 +586,7 @@ void ConfigDialog::on_buttonBox_clicked(QAbstractButton *button)
 			config.generalEmulation.enableCustomSettings = enableCustomSettings;
 			_init();
 			setTitle();
+			setRomName(m_romName);
 		}
 	}
 }
