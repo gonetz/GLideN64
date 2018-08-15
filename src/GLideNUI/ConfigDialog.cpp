@@ -721,22 +721,6 @@ void ConfigDialog::on_tabWidget_currentChanged(int tab)
 	}
 }
 
-void ConfigDialog::on_customSettingsCheckBox_clicked()
-{
-	if (m_romName == nullptr)
-		return;
-
-	if (ui->customSettingsCheckBox->isChecked()) {
-		loadCustomRomSettings(m_strIniPath, m_romName);
-		config.generalEmulation.enableCustomSettings = 1;
-	} else {
-		loadSettings(m_strIniPath);
-		config.generalEmulation.enableCustomSettings = 0;
-	}
-	_init();
-	setTitle();
-}
-
 void ConfigDialog::setTitle()
 {
 	if (config.generalEmulation.enableCustomSettings != 0 && m_romName != nullptr) {

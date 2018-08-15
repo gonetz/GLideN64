@@ -54,8 +54,6 @@ private slots:
 
 	void on_texDumpPathButton_clicked();
 
-	void on_customSettingsCheckBox_clicked();
-
 	void on_profilesComboBox_currentIndexChanged(const QString &arg1);
 
 	void on_addProfilePushButton_clicked();
