@@ -388,8 +388,13 @@ void ZSortBOSS_DrawObject(u8 * _addr, u32 _type)
 		vtx.HWLight = 0;
 		vtx.clip = 0;
 		if(textured != 0) {
-			vtx.s = _FIXED2FLOAT(((s16*)_addr)[4^1], 5 );
-			vtx.t = _FIXED2FLOAT(((s16*)_addr)[5^1], 5 );
+			if (gDP.otherMode.texturePersp != 0) {
+				vtx.s = _FIXED2FLOAT(((s16*)_addr)[4 ^ 1], 5);
+				vtx.t = _FIXED2FLOAT(((s16*)_addr)[5 ^ 1], 5);
+			} else {
+				vtx.s = _FIXED2FLOAT(((s16*)_addr)[4 ^ 1], 6);
+				vtx.t = _FIXED2FLOAT(((s16*)_addr)[5 ^ 1], 6);
+			}
 
 			int invw = ((int*)_addr)[3];
 			int rgba = ((int*)_addr)[1];
