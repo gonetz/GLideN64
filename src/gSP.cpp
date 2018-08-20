@@ -2002,7 +2002,7 @@ struct ObjData
 		imageH = _pObjSprite->imageH >> 5;
 		X0 = _FIXED2FLOAT(_pObjSprite->objX, 2);
 		X1 = X0 + imageW / scaleW;
-		Y0 = _FIXED2FLOAT(_pObjSprite->objY, 2) - 0.5f;
+		Y0 = _FIXED2FLOAT(_pObjSprite->objY, 2);
 		Y1 = Y0 + imageH / scaleH;
 		flipS = (_pObjSprite->imageFlags & 0x01) != 0;
 		flipT = (_pObjSprite->imageFlags & 0x10) != 0;
