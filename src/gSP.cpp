@@ -2414,9 +2414,9 @@ void gSPObjSprite(u32 _sp)
 	const f32 lry = data.Y1;
 
 	f32 uls = 0;
-	f32 lrs = (f32)(data.imageW - 1);
+	f32 lrs = (f32)(data.imageW);
 	f32 ult = 0;
-	f32 lrt = (f32)(data.imageH - 1);
+	f32 lrt = (f32)(data.imageH);
 
 	if (objSprite->imageFlags & 0x01) { // flipS
 		uls = lrs;
