@@ -2406,27 +2406,83 @@ void gSPObjSprite(u32 _sp)
 	const u32 address = RSP_SegmentToPhysical( _sp );
 	uObjSprite *objSprite = (uObjSprite*)&RDRAM[address];
 	gSPSetSpriteTile(objSprite);
-	ObjData data(objSprite);
 
-	const f32 ulx = data.X0;
-	const f32 uly = data.Y0;
-	const f32 lrx = data.X1;
-	const f32 lry = data.Y1;
+	/* Fixed point coordinates calculation. Decoded by olivieryuyu */
 
-	f32 uls = 0;
-	f32 lrs = (f32)(data.imageW - 1);
-	f32 ult = 0;
-	f32 lrt = (f32)(data.imageH - 1);
+	static const u32 MagicValuesA01[] = {
+		0x00000000,
+		0x00100020,
+		0x00200040,
+		0x00300060,
+		0x0000FFF4,
+		0x00100014,
+		0x00200034,
+		0x00300054
+	};
+	static const s16 * MagicValuesA01_16 = reinterpret_cast<const s16*>(MagicValuesA01);
 
-	if (objSprite->imageFlags & 0x01) { // flipS
-		uls = lrs;
-		lrs = 0;
-	}
+	static const u32 MagicValuesA23[] = {
+		0x0001FFFE,
+		0xFFFEFFFE,
+		0x00010000,
+		0x00000000
+	};
+	static const s16 * MagicValuesA23_16 = reinterpret_cast<const s16*>(MagicValuesA23);
 
-	if (objSprite->imageFlags & 0x10) { // flipT
-		ult = lrt;
-		lrt = 0;
-	}
+	static const u32 MagicValuesB03[] = {
+		0xFFFC0000,
+		0x00000001,
+		0xFFFF0003,
+		0xFFF00000
+	};
+	static const s16 * MagicValuesB03_16 = reinterpret_cast<const s16*>(MagicValuesB03);
+
+	const u32 O1 = (gSP.objRendermode & (G_OBJRM_SHRINKSIZE_1 | G_OBJRM_SHRINKSIZE_2 | G_OBJRM_WIDEN)) >> 3;
+	//	const u32 A0 = MagicValuesA01_16[(0 + O1) ^ 1];
+	const s16 A1 = MagicValuesA01_16[(1 + O1) ^ 1];
+	const u32 O2 = (gSP.objRendermode & (G_OBJRM_SHRINKSIZE_1 | G_OBJRM_BILERP)) >> 2;
+	//	const s16 A2 = MagicValuesA23_16[(0 + O2) ^ 1];
+	const s16 A3 = MagicValuesA23_16[(1 + O2) ^ 1];
+	const u32 O3 = (gSP.objRendermode & G_OBJRM_BILERP) >> 1;
+	const s16 B0 = MagicValuesB03_16[(0 + O3) ^ 1];
+	//	const s16 B1 = MagicValuesB03_16[(1 + O3) ^ 1];
+	//	const s16 B2 = MagicValuesB03_16[(2 + O3) ^ 1];
+	const s16 B3 = MagicValuesB03_16[(3 + O3) ^ 1];
+
+	//	X1 = AND (X + B3) by B0 + ((objX + A3) * A) >> 16 + ((objY + A3) * B) >> 16
+	//	Y1 = AND (Y + B3) by B0 + ((objX + A3) * C) >> 16 + ((objY + A3) * D) >> 16
+	//	X2 = AND (X + B3) by B0 + ((((imageW - A1) * 0x0100)/(scaleW * 2) + objX + A3) * A) >> 16  + ((((imageH - A1) * 0x0100)/(scaleH * 2) + objY + A3) * B) >> 16
+	//	Y2 = AND (Y + B3) by B0 + ((((imageW - A1) * 0x0100)/(scaleW * 2) + objX + A3) * C) >> 16 + ((((imageH - A1) * 0x0100)/(scaleH * 2) + objY + A3) * D) >> 16
+	const uObjMtx *objMtx = reinterpret_cast<const uObjMtx *>(RDRAM + gSP.objMatrix.address);
+	const s16 x0 = ((objMtx->X + B3) & B0);
+	const s16 y0 = ((objMtx->Y + B3) & B0);
+	const s16 ulx = objSprite->objX + A3;
+	const s16 uly = objSprite->objY + A3;
+	const s16 lrx = ((objSprite->imageW - A1) << 8) / (objSprite->scaleW << 1) + ulx;
+	const s16 lry = ((objSprite->imageH - A1) << 8) / (objSprite->scaleH << 1) + uly;
+
+	auto calcX = [&](s16 _x, s16 _y) -> f32
+	{
+		const s16 X = x0 + static_cast<s16>(((_x * objMtx->A) >> 16)) + static_cast<s16>(((_y * objMtx->B) >> 16));
+		return _FIXED2FLOAT(X, 2);
+	};
+
+	auto calcY = [&](s16 _x, s16 _y) -> f32
+	{
+		const s16 Y = y0 + static_cast<s16>(((_x * objMtx->C) >> 16)) + static_cast<s16>(((_y * objMtx->D) >> 16));
+		return _FIXED2FLOAT(Y, 2);
+	};
+
+	f32 uls = 0.0f;
+	f32 lrs = _FIXED2FLOAT(objSprite->imageW, 5);
+	f32 ult = 0.0f;
+	f32 lrt = _FIXED2FLOAT(objSprite->imageH, 5);
+
+	if (objSprite->imageFlags & 0x01) // flipS
+		std::swap(uls, lrs);
+
+	if (objSprite->imageFlags & 0x10) // flipT
+		std::swap(ult, lrt);
 
 	const float z = (gDP.otherMode.depthSource == G_ZS_PRIM) ? gDP.primDepth.z : gSP.viewport.nearz;
 
@@ -2435,29 +2491,29 @@ void gSPObjSprite(u32 _sp)
 	SPVertex * pVtx = drawer.getDMAVerticesData();
 
 	SPVertex & vtx0 = pVtx[0];
-	vtx0.x = gSP.objMatrix.A * ulx + gSP.objMatrix.B * uly + gSP.objMatrix.X;
-	vtx0.y = gSP.objMatrix.C * ulx + gSP.objMatrix.D * uly + gSP.objMatrix.Y;
+	vtx0.x = calcX(ulx, uly);
+	vtx0.y = calcY(ulx, uly);
 	vtx0.z = z;
 	vtx0.w = 1.0f;
 	vtx0.s = uls;
 	vtx0.t = ult;
 	SPVertex & vtx1 = pVtx[1];
-	vtx1.x = gSP.objMatrix.A * lrx + gSP.objMatrix.B * uly + gSP.objMatrix.X;
-	vtx1.y = gSP.objMatrix.C * lrx + gSP.objMatrix.D * uly + gSP.objMatrix.Y;
+	vtx1.x = calcX(lrx, uly);
+	vtx1.y = calcY(lrx, uly);
 	vtx1.z = z;
 	vtx1.w = 1.0f;
 	vtx1.s = lrs;
 	vtx1.t = ult;
 	SPVertex & vtx2 = pVtx[2];
-	vtx2.x = gSP.objMatrix.A * ulx + gSP.objMatrix.B * lry + gSP.objMatrix.X;
-	vtx2.y = gSP.objMatrix.C * ulx + gSP.objMatrix.D * lry + gSP.objMatrix.Y;
+	vtx2.x = calcX(ulx, lry);
+	vtx2.y = calcY(ulx, lry);
 	vtx2.z = z;
 	vtx2.w = 1.0f;
 	vtx2.s = uls;
 	vtx2.t = lrt;
 	SPVertex & vtx3 = pVtx[3];
-	vtx3.x = gSP.objMatrix.A * lrx + gSP.objMatrix.B * lry + gSP.objMatrix.X;
-	vtx3.y = gSP.objMatrix.C * lrx + gSP.objMatrix.D * lry + gSP.objMatrix.Y;
+	vtx3.x = calcX(lrx, lry);
+	vtx3.y = calcY(lrx, lry);
 	vtx3.z = z;
 	vtx3.w = 1.0f;
 	vtx3.s = lrs;
@@ -2633,8 +2689,8 @@ void gSPObjLoadTxRectR(u32 txsp)
 
 void gSPObjMatrix( u32 mtx )
 {
-	u32 address = RSP_SegmentToPhysical(mtx);
-	uObjMtx *objMtx = (uObjMtx*)&RDRAM[address];
+	gSP.objMatrix.address = RSP_SegmentToPhysical(mtx);
+	const uObjMtx *objMtx = reinterpret_cast<const uObjMtx *>(RDRAM + gSP.objMatrix.address);
 
 	gSP.objMatrix.A = _FIXED2FLOAT( objMtx->A, 16 );
 	gSP.objMatrix.B = _FIXED2FLOAT( objMtx->B, 16 );
