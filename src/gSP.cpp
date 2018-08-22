@@ -1983,30 +1983,49 @@ void gSPSetSpriteTile(const uObjSprite *_pObjSprite)
 	gSPTexture( 1.0f, 1.0f, 0, 0, TRUE );
 }
 
-struct ObjData
+struct S2DEXCoordCorrector
 {
-	f32 scaleW;
-	f32 scaleH;
-	u32 imageW;
-	u32 imageH;
-	f32 X0;
-	f32 X1;
-	f32 Y0;
-	f32 Y1;
-	bool flipS, flipT;
-	ObjData(const uObjSprite *_pObjSprite)
+	S2DEXCoordCorrector()
 	{
-		scaleW = _FIXED2FLOAT(_pObjSprite->scaleW, 10);
-		scaleH = _FIXED2FLOAT(_pObjSprite->scaleH, 10);
-		imageW = _pObjSprite->imageW >> 5;
-		imageH = _pObjSprite->imageH >> 5;
-		X0 = _FIXED2FLOAT(_pObjSprite->objX, 2);
-		X1 = X0 + imageW / scaleW;
-		Y0 = _FIXED2FLOAT(_pObjSprite->objY, 2);
-		Y1 = Y0 + imageH / scaleH;
-		flipS = (_pObjSprite->imageFlags & 0x01) != 0;
-		flipT = (_pObjSprite->imageFlags & 0x10) != 0;
+		static const u32 CorrectorsA01[] = {
+			0x00000000,
+			0x00100020,
+			0x00200040,
+			0x00300060,
+			0x0000FFF4,
+			0x00100014,
+			0x00200034,
+			0x00300054
+		};
+		static const s16 * CorrectorsA01_16 = reinterpret_cast<const s16*>(CorrectorsA01);
+
+		static const u32 CorrectorsA23[] = {
+			0x0001FFFE,
+			0xFFFEFFFE,
+			0x00010000,
+			0x00000000
+		};
+		static const s16 * CorrectorsA23_16 = reinterpret_cast<const s16*>(CorrectorsA23);
+
+		static const u32 CorrectorsB03[] = {
+			0xFFFC0000,
+			0x00000001,
+			0xFFFF0003,
+			0xFFF00000
+		};
+		static const s16 * CorrectorsB03_16 = reinterpret_cast<const s16*>(CorrectorsB03);
+
+		const u32 O1 = (gSP.objRendermode & (G_OBJRM_SHRINKSIZE_1 | G_OBJRM_SHRINKSIZE_2 | G_OBJRM_WIDEN)) >> 3;
+		A1 = CorrectorsA01_16[(1 + O1) ^ 1];
+		const u32 O2 = (gSP.objRendermode & (G_OBJRM_SHRINKSIZE_1 | G_OBJRM_BILERP)) >> 2;
+		A2 = CorrectorsA23_16[(0 + O2) ^ 1];
+		A3 = CorrectorsA23_16[(1 + O2) ^ 1];
+		const u32 O3 = (gSP.objRendermode & G_OBJRM_BILERP) >> 1;
+		B0 = CorrectorsB03_16[(0 + O3) ^ 1];
+		B3 = CorrectorsB03_16[(3 + O3) ^ 1];
 	}
+
+	s16 A1, A2, A3, B0, B3;
 };
 
 struct ObjCoordinates
@@ -2017,12 +2036,24 @@ struct ObjCoordinates
 
 	ObjCoordinates(const uObjSprite *_pObjSprite, bool _useMatrix)
 	{
-		ObjData data(_pObjSprite);
-		ulx = data.X0;
-		lrx = data.X1;
-		uly = data.Y0;
-		lry = data.Y1;
+		/* Fixed point coordinates calculation. Decoded by olivieryuyu */
+		//XH = AND(objX + A2) by B0
+		//XL = AND(objX + A2) by B0 + ((ImageW - A1) * 0x100) / scaleW * 2
+		//YH = AND(objY + A2) by B0
+		//YL = AND(objY + A2) by B0 + ((ImageH - A1) * 0x100) / scaleH * 2
+		S2DEXCoordCorrector CC;
+		const s16 xh = (_pObjSprite->objX + CC.A2) & CC.B0;
+		const s16 xl = ((_pObjSprite->imageW - CC.A1) << 8) / (_pObjSprite->scaleW << 1) + xh;
+		const s16 yh = (_pObjSprite->objY + CC.A2) & CC.B0;
+		const s16 yl = ((_pObjSprite->imageH - CC.A1) << 8) / (_pObjSprite->scaleH << 1) + yh;
+
+		ulx = _FIXED2FLOAT(xh, 2);
+		lrx = _FIXED2FLOAT(xl, 2);
+		uly = _FIXED2FLOAT(yh, 2);
+		lry = _FIXED2FLOAT(yl, 2);
+
 		if (_useMatrix) {
+			// TODO: use fixed point math
 			ulx = ulx/gSP.objMatrix.baseScaleX + gSP.objMatrix.X;
 			lrx = lrx/gSP.objMatrix.baseScaleX + gSP.objMatrix.X;
 			uly = uly/gSP.objMatrix.baseScaleY + gSP.objMatrix.Y;
@@ -2030,16 +2061,12 @@ struct ObjCoordinates
 		}
 
 		uls = ult = 0;
-		lrs = (f32)(data.imageW - 1);
-		lrt = (f32)(data.imageH - 1);
-		if (data.flipS) {
-			uls = lrs;
-			lrs = 0;
-		}
-		if (data.flipT) {
-			ult = lrt;
-			lrt = 0;
-		}
+		lrs = _FIXED2FLOAT(_pObjSprite->imageW, 5);
+		lrt = _FIXED2FLOAT(_pObjSprite->imageH, 5);
+		if ((_pObjSprite->imageFlags & 0x01) != 0) // flipS
+			std::swap(uls, lrs);
+		if ((_pObjSprite->imageFlags & 0x10) != 0) // flipT
+			std::swap(ult, lrt);
 
 		z = (gDP.otherMode.depthSource == G_ZS_PRIM) ? gDP.primDepth.z : gSP.viewport.nearz;
 		w = 1.0f;
@@ -2230,30 +2257,6 @@ void _drawYUVImageToFrameBuffer(const ObjCoordinates & _objCoords)
 		pBuffer->m_isOBScreen = true;
 }
 
-void gSPObjRectangle(u32 _sp)
-{
-	const u32 address = RSP_SegmentToPhysical(_sp);
-	uObjSprite *objSprite = (uObjSprite*)&RDRAM[address];
-	gSPSetSpriteTile(objSprite);
-	ObjCoordinates objCoords(objSprite, false);
-	gSPDrawObjRect(objCoords);
-	DebugMsg(DEBUG_NORMAL, "gSPObjRectangle\n");
-}
-
-void gSPObjRectangleR(u32 _sp)
-{
-	const u32 address = RSP_SegmentToPhysical(_sp);
-	const uObjSprite *objSprite = (uObjSprite*)&RDRAM[address];
-	gSPSetSpriteTile(objSprite);
-	ObjCoordinates objCoords(objSprite, true);
-
-	if (objSprite->imageFmt == G_IM_FMT_YUV && (config.generalEmulation.hacks&hack_Ogre64)) //Ogre Battle needs to copy YUV texture to frame buffer
-		_drawYUVImageToFrameBuffer(objCoords);
-	gSPDrawObjRect(objCoords);
-
-	DebugMsg(DEBUG_NORMAL, "gSPObjRectangleR\n");
-}
-
 static
 void _copyDepthBuffer()
 {
@@ -2401,6 +2404,31 @@ void gSPBgRectCopy( u32 _bg )
 	DebugMsg(DEBUG_NORMAL, "gSPBgRectCopy\n");
 }
 
+void gSPObjRectangle(u32 _sp)
+{
+	const u32 address = RSP_SegmentToPhysical(_sp);
+	uObjSprite *objSprite = (uObjSprite*)&RDRAM[address];
+	gSPSetSpriteTile(objSprite);
+
+	ObjCoordinates objCoords(objSprite, false);
+	gSPDrawObjRect(objCoords);
+	DebugMsg(DEBUG_NORMAL, "gSPObjRectangle\n");
+}
+
+void gSPObjRectangleR(u32 _sp)
+{
+	const u32 address = RSP_SegmentToPhysical(_sp);
+	const uObjSprite *objSprite = (uObjSprite*)&RDRAM[address];
+	gSPSetSpriteTile(objSprite);
+	ObjCoordinates objCoords(objSprite, true);
+
+	if (objSprite->imageFmt == G_IM_FMT_YUV && (config.generalEmulation.hacks&hack_Ogre64)) //Ogre Battle needs to copy YUV texture to frame buffer
+		_drawYUVImageToFrameBuffer(objCoords);
+	gSPDrawObjRect(objCoords);
+
+	DebugMsg(DEBUG_NORMAL, "gSPObjRectangleR\n");
+}
+
 void gSPObjSprite(u32 _sp)
 {
 	const u32 address = RSP_SegmentToPhysical( _sp );
@@ -2408,58 +2436,19 @@ void gSPObjSprite(u32 _sp)
 	gSPSetSpriteTile(objSprite);
 
 	/* Fixed point coordinates calculation. Decoded by olivieryuyu */
-
-	static const u32 MagicValuesA01[] = {
-		0x00000000,
-		0x00100020,
-		0x00200040,
-		0x00300060,
-		0x0000FFF4,
-		0x00100014,
-		0x00200034,
-		0x00300054
-	};
-	static const s16 * MagicValuesA01_16 = reinterpret_cast<const s16*>(MagicValuesA01);
-
-	static const u32 MagicValuesA23[] = {
-		0x0001FFFE,
-		0xFFFEFFFE,
-		0x00010000,
-		0x00000000
-	};
-	static const s16 * MagicValuesA23_16 = reinterpret_cast<const s16*>(MagicValuesA23);
-
-	static const u32 MagicValuesB03[] = {
-		0xFFFC0000,
-		0x00000001,
-		0xFFFF0003,
-		0xFFF00000
-	};
-	static const s16 * MagicValuesB03_16 = reinterpret_cast<const s16*>(MagicValuesB03);
-
-	const u32 O1 = (gSP.objRendermode & (G_OBJRM_SHRINKSIZE_1 | G_OBJRM_SHRINKSIZE_2 | G_OBJRM_WIDEN)) >> 3;
-	//	const u32 A0 = MagicValuesA01_16[(0 + O1) ^ 1];
-	const s16 A1 = MagicValuesA01_16[(1 + O1) ^ 1];
-	const u32 O2 = (gSP.objRendermode & (G_OBJRM_SHRINKSIZE_1 | G_OBJRM_BILERP)) >> 2;
-	//	const s16 A2 = MagicValuesA23_16[(0 + O2) ^ 1];
-	const s16 A3 = MagicValuesA23_16[(1 + O2) ^ 1];
-	const u32 O3 = (gSP.objRendermode & G_OBJRM_BILERP) >> 1;
-	const s16 B0 = MagicValuesB03_16[(0 + O3) ^ 1];
-	//	const s16 B1 = MagicValuesB03_16[(1 + O3) ^ 1];
-	//	const s16 B2 = MagicValuesB03_16[(2 + O3) ^ 1];
-	const s16 B3 = MagicValuesB03_16[(3 + O3) ^ 1];
-
 	//	X1 = AND (X + B3) by B0 + ((objX + A3) * A) >> 16 + ((objY + A3) * B) >> 16
 	//	Y1 = AND (Y + B3) by B0 + ((objX + A3) * C) >> 16 + ((objY + A3) * D) >> 16
 	//	X2 = AND (X + B3) by B0 + ((((imageW - A1) * 0x0100)/(scaleW * 2) + objX + A3) * A) >> 16  + ((((imageH - A1) * 0x0100)/(scaleH * 2) + objY + A3) * B) >> 16
 	//	Y2 = AND (Y + B3) by B0 + ((((imageW - A1) * 0x0100)/(scaleW * 2) + objX + A3) * C) >> 16 + ((((imageH - A1) * 0x0100)/(scaleH * 2) + objY + A3) * D) >> 16
+
+	S2DEXCoordCorrector CC;
 	const uObjMtx *objMtx = reinterpret_cast<const uObjMtx *>(RDRAM + gSP.objMatrix.address);
-	const s16 x0 = ((objMtx->X + B3) & B0);
-	const s16 y0 = ((objMtx->Y + B3) & B0);
-	const s16 ulx = objSprite->objX + A3;
-	const s16 uly = objSprite->objY + A3;
-	const s16 lrx = ((objSprite->imageW - A1) << 8) / (objSprite->scaleW << 1) + ulx;
-	const s16 lry = ((objSprite->imageH - A1) << 8) / (objSprite->scaleH << 1) + uly;
+	const s16 x0 = (objMtx->X + CC.B3) & CC.B0;
+	const s16 y0 = (objMtx->Y + CC.B3) & CC.B0;
+	const s16 ulx = objSprite->objX + CC.A3;
+	const s16 uly = objSprite->objY + CC.A3;
+	const s16 lrx = ((objSprite->imageW - CC.A1) << 8) / (objSprite->scaleW << 1) + ulx;
+	const s16 lry = ((objSprite->imageH - CC.A1) << 8) / (objSprite->scaleH << 1) + uly;
 
 	auto calcX = [&](s16 _x, s16 _y) -> f32
 	{
