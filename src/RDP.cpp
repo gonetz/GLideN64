@@ -174,11 +174,11 @@ void RDP_SetPrimDepth( u32 w0, u32 w1 )
 
 void RDP_SetScissor( u32 w0, u32 w1 )
 {
-	gDPSetScissor( _SHIFTR( w1, 24, 2 ),						// mode
-				   _FIXED2FLOAT( _SHIFTR( w0, 12, 12 ), 2 ),	// ulx
-				   _FIXED2FLOAT( _SHIFTR( w0,  0, 12 ), 2 ),	// uly
-				   _FIXED2FLOAT( _SHIFTR( w1, 12, 12 ), 2 ),	// lrx
-				   _FIXED2FLOAT( _SHIFTR( w1,  0, 12 ), 2 ) );	// lry
+	gDPSetScissor( _SHIFTR( w1, 24,  2 ),	// mode
+				   _SHIFTR( w0, 12, 12 ),	// ulx
+				   _SHIFTR( w0,  0, 12 ),	// uly
+				   _SHIFTR( w1, 12, 12 ),	// lrx
+				   _SHIFTR( w1,  0, 12 ) );	// lry
 }
 
 void RDP_SetConvert( u32 w0, u32 w1 )

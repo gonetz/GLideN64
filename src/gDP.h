@@ -116,6 +116,7 @@ struct gDPScissor
 {
 	u32 mode;
 	f32 ulx, uly, lrx, lry;
+	s16 xh, yh, xl, yl;
 };
 
 struct gDPInfo
@@ -275,7 +276,7 @@ void gDPSetTileSize( u32 tile, u32 uls, u32 ult, u32 lrs, u32 lrt );
 void gDPLoadTile( u32 tile, u32 uls, u32 ult, u32 lrs, u32 lrt );
 void gDPLoadBlock( u32 tile, u32 uls, u32 ult, u32 lrs, u32 dxt );
 void gDPLoadTLUT( u32 tile, u32 uls, u32 ult, u32 lrs, u32 lrt );
-void gDPSetScissor( u32 mode, f32 ulx, f32 uly, f32 lrx, f32 lry );
+void gDPSetScissor( u32 mode, s16 xh, s16 yh, s16 xl, s16 yl);
 void gDPFillRectangle( s32 ulx, s32 uly, s32 lrx, s32 lry );
 void gDPSetConvert( s32 k0, s32 k1, s32 k2, s32 k3, s32 k4, s32 k5 );
 void gDPSetKeyR( u32 cR, u32 sR, u32 wR );

@@ -667,13 +667,17 @@ void gDPLoadTLUT( u32 tile, u32 uls, u32 ult, u32 lrs, u32 lrt )
 		tile, gDP.tiles[tile].uls, gDP.tiles[tile].ult, gDP.tiles[tile].lrs, gDP.tiles[tile].lrt );
 }
 
-void gDPSetScissor( u32 mode, f32 ulx, f32 uly, f32 lrx, f32 lry )
+void gDPSetScissor(u32 mode, s16 xh, s16 yh, s16 xl, s16 yl)
 {
 	gDP.scissor.mode = mode;
-	gDP.scissor.ulx = ulx;
-	gDP.scissor.uly = uly;
-	gDP.scissor.lrx = lrx;
-	gDP.scissor.lry = lry;
+	gDP.scissor.xh = xh;
+	gDP.scissor.yh = yh;
+	gDP.scissor.xl = xl;
+	gDP.scissor.yl = yl;
+	gDP.scissor.ulx = _FIXED2FLOAT(xh, 2);
+	gDP.scissor.uly = _FIXED2FLOAT(yh, 2);
+	gDP.scissor.lrx = _FIXED2FLOAT(xl, 2);
+	gDP.scissor.lry = _FIXED2FLOAT(yl, 2);
 
 	gDP.changed |= CHANGED_SCISSOR | CHANGED_REJECT_BOX;
 
