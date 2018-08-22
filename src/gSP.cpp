@@ -2088,8 +2088,8 @@ struct ObjCoordinates
 			// Correct texture coordinates -0.5f and +0.5 if G_OBJRM_BILERP 
 			// bilinear interpolation is set
 			if ((gSP.objRendermode&G_OBJRM_BILERP) != 0 && 
-				(gDP.otherMode.textureFilter == 0x02) ||											// Kirby Crystal Shards
-				(gDP.otherMode.textureFilter == 0x00 && gSP.objRendermode&G_OBJRM_NOTXCLAMP != 0)) {// Worms Armageddon
+				((gDP.otherMode.textureFilter == G_TF_BILERP) ||											// Kirby Crystal Shards
+				( gDP.otherMode.textureFilter == G_TF_POINT && gSP.objRendermode&G_OBJRM_NOTXCLAMP != 0))) {// Worms Armageddon
 				uls -= 0.5f;
 				ult -= 0.5f;
 				lrs += 0.5f;
