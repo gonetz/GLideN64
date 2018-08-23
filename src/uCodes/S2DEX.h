@@ -3,20 +3,6 @@
 
 #include "Types.h"
 
-#define	G_BGLT_LOADBLOCK		0x0033
-#define	G_BGLT_LOADTILE			0xfff4
-
-#define	G_BG_FLAG_FLIPS			0x01
-#define	G_BG_FLAG_FLIPT			0x10
-
-#define	G_OBJRM_NOTXCLAMP		0x01
-#define	G_OBJRM_XLU				0x02
-#define	G_OBJRM_ANTIALIAS		0x04
-#define	G_OBJRM_BILERP			0x08
-#define	G_OBJRM_SHRINKSIZE_1	0x10
-#define	G_OBJRM_SHRINKSIZE_2	0x20
-#define	G_OBJRM_WIDEN			0x40
-
 struct uObjScaleBg
 {
   u16 imageW;     /* Texture width (8-byte alignment, u10.2) */
@@ -61,19 +47,6 @@ struct uObjScaleBg
 
   u8  padding[4];  /* Padding */
 };   /* 40 bytes */
-
-struct uSprite {
-	u32 imagePtr;
-	u32 tlutPtr;
-	s16	imageW;
-	s16	stride;
-	s8	imageSiz;
-	s8	imageFmt;
-	s16	imageH;
-	s16	imageY;
-	s16	imageX;
-	s8	dummy[4];
-};    /* 24 bytes */
 
 struct uObjSprite
 {
@@ -184,24 +157,5 @@ void S2DEX_Obj_LdTx_Sprite( u32 w0, u32 w1 );
 void S2DEX_Obj_LdTx_Rect( u32 w0, u32 w1 );
 void S2DEX_Obj_LdTx_Rect_R( u32 w0, u32 w1 );
 void S2DEX_Init();
-
-#define S2DEX_MV_MATRIX			0
-#define S2DEX_MV_SUBMUTRIX		2
-#define S2DEX_MV_VIEWPORT		8
-
-#define	S2DEX_BG_1CYC			0x01
-#define	S2DEX_BG_COPY			0x02
-#define	S2DEX_OBJ_RECTANGLE		0x03
-#define	S2DEX_OBJ_SPRITE		0x04
-#define	S2DEX_OBJ_MOVEMEM		0x05
-#define S2DEX_LOAD_UCODE		0xAF
-#define	S2DEX_SELECT_DL			0xB0
-#define	S2DEX_OBJ_RENDERMODE	0xB1
-#define	S2DEX_OBJ_RECTANGLE_R	0xB2
-#define	S2DEX_OBJ_LOADTXTR		0xC1
-#define	S2DEX_OBJ_LDTX_SPRITE	0xC2
-#define	S2DEX_OBJ_LDTX_RECT		0xC3
-#define	S2DEX_OBJ_LDTX_RECT_R	0xC4
-#define	S2DEX_RDPHALF_0			0xE4
 
 #endif
