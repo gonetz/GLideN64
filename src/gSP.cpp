@@ -2080,10 +2080,16 @@ struct ObjCoordinates
 		const f32 imageY = gSP.bgImage.imageY;
 		f32 scaleW = gSP.bgImage.scaleW;
 		f32 scaleH = gSP.bgImage.scaleH;
+		
+		// gSPBgRectCopy() does not support scaleW and scaleH
+		if (gDP.otherMode.cycleType == G_CYC_COPY) {
+			scaleW = 1.0f;
+			scaleH = 1.0f;
+		}
 
 		f32 frameW = _FIXED2FLOAT(_pObjScaleBg->frameW, 2);
 		f32 frameH = _FIXED2FLOAT(_pObjScaleBg->frameH, 2);
-		f32 imageW = (f32)(_pObjScaleBg->imageW>>2);
+		f32 imageW = (f32)(_pObjScaleBg->imageW >> 2);
 		f32 imageH = (f32)(_pObjScaleBg->imageH >> 2);
 //		const f32 imageW = (f32)gSP.bgImage.width;
 //		const f32 imageH = (f32)gSP.bgImage.height;
@@ -2099,23 +2105,22 @@ struct ObjCoordinates
 			scaleH = 1.0f;
 		}
 
-		ulx = frameX;
-		uly = frameY;
-
 		uls = imageX;
 		ult = imageY;
-		lrs = uls + min(imageW, frameW * scaleW);
-		lrt = ult + min(imageH, frameH * scaleH);
+		lrs = uls + min(imageW, frameW * scaleW) - 1;
+		lrt = ult + min(imageH, frameH * scaleH) - 1;
 
-		// G_CYC_COPY does not allow texture filtering
+		// G_CYC_COPY (gSPBgRectCopy()) does not allow texture filtering
 		if (gDP.otherMode.cycleType != G_CYC_COPY) {
-			// Correct texture coordinates -0.5f if G_OBJRM_BILERP 
+			// Correct texture coordinates -0.5f and +0.5 if G_OBJRM_BILERP 
 			// bilinear interpolation is set
-			if ((gSP.objRendermode&G_OBJRM_BILERP) != 0) {
+			if ((gSP.objRendermode&G_OBJRM_BILERP) != 0 && 
+				((gDP.otherMode.textureFilter == G_TF_BILERP) ||											// Kirby Crystal Shards
+				( gDP.otherMode.textureFilter == G_TF_POINT && gSP.objRendermode&G_OBJRM_NOTXCLAMP != 0))) {// Worms Armageddon
 				uls -= 0.5f;
 				ult -= 0.5f;
-				lrs -= 0.5f;
-				lrt -= 0.5f;
+				lrs += 0.5f;
+				lrt += 0.5f;
 			}
 			// SHRINKSIZE_1 adds a 0.5f perimeter around the image
 			// upper left texture coords += 0.5f; lower left texture coords -= 0.5f
@@ -2134,17 +2139,18 @@ struct ObjCoordinates
 			}
 		}
 
-		// limit fraction 2 bit precision --> only allows 1/4 texel movement
-		// see G_OBJRM_BILERP description
-		uls = floorf( uls * 4.0f ) * 0.25f;
-		ult = floorf( ult * 4.0f ) * 0.25f;
-		lrs = floorf( lrs * 4.0f ) * 0.25f;
-		lrt = floorf( lrt * 4.0f ) * 0.25f;
-		
 		// Calculate lrx and lry width new ST values
+		ulx = frameX;
+		uly = frameY;
 		lrx = ulx + ( lrs - uls ) / scaleW;
 		lry = uly + ( lrt - ult ) / scaleH;
+		if ((gSP.objRendermode&G_OBJRM_BILERP) == 0) {
+			lrx += 1.0f / scaleW;
+			lry += 1.0f / scaleH;
+		}
 
+		// gSPBgRect1Cyc() and gSPBgRectCopy() do only support 
+		// imageFlip in horizontal direction
 		if ((_pObjScaleBg->imageFlip & 0x01) != 0) {
 			std::swap( ulx, lrx);
 		}
@@ -2396,6 +2402,8 @@ void gSPBgRectCopy( u32 _bg )
 	)
 		_copyDepthBuffer();
 
+	gDP.otherMode.cycleType = G_CYC_COPY;
+	gDP.changed |= CHANGED_CYCLETYPE;
 	gSPTexture( 1.0f, 1.0f, 0, 0, TRUE );
 
 	ObjCoordinates objCoords(objBg);
