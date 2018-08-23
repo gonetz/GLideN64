@@ -119,9 +119,9 @@ struct ObjCoordinates
 		uls = ult = 0;
 		lrs = _FIXED2FLOAT(_pObjSprite->imageW, 5);
 		lrt = _FIXED2FLOAT(_pObjSprite->imageH, 5);
-		if ((_pObjSprite->imageFlags & 0x01) != 0) // flipS
+		if ((_pObjSprite->imageFlags & G_BG_FLAG_FLIPS) != 0)
 			std::swap(uls, lrs);
-		if ((_pObjSprite->imageFlags & 0x10) != 0) // flipT
+		if ((_pObjSprite->imageFlags & G_BG_FLAG_FLIPT) != 0)
 			std::swap(ult, lrt);
 
 		z = (gDP.otherMode.depthSource == G_ZS_PRIM) ? gDP.primDepth.z : gSP.viewport.nearz;
@@ -209,7 +209,7 @@ struct ObjCoordinates
 
 		// gSPBgRect1Cyc() and gSPBgRectCopy() do only support 
 		// imageFlip in horizontal direction
-		if ((_pObjScaleBg->imageFlip & 0x01) != 0) {
+		if ((_pObjScaleBg->imageFlip & G_BG_FLAG_FLIPS) != 0) {
 			std::swap(ulx, lrx);
 		}
 
@@ -430,10 +430,10 @@ void gSPObjSprite(u32 _sp)
 	f32 ult = 0.0f;
 	f32 lrt = _FIXED2FLOAT(objSprite->imageH, 5);
 
-	if (objSprite->imageFlags & 0x01) // flipS
+	if (objSprite->imageFlags & G_BG_FLAG_FLIPS)
 		std::swap(uls, lrs);
 
-	if (objSprite->imageFlags & 0x10) // flipT
+	if (objSprite->imageFlags & G_BG_FLAG_FLIPT)
 		std::swap(ult, lrt);
 
 	const float z = (gDP.otherMode.depthSource == G_ZS_PRIM) ? gDP.primDepth.z : gSP.viewport.nearz;
