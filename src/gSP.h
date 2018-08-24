@@ -58,14 +58,6 @@ struct gSPInfo
 		f32 combined[4][4];
 	} matrix;
 
-	struct
-	{
-		f32 A, B, C, D;
-		f32 X, Y;
-		f32 baseScaleX, baseScaleY;
-		u32 address;
-	} objMatrix;
-
 	u32 objRendermode;
 
 	u32 vertexColorBase;

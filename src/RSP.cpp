@@ -210,14 +210,6 @@ void RSP_SetDefaultState()
 	gSP.lookat.xyz[0][Y] = gSP.lookat.xyz[1][X] = 1.0f;
 	gSP.lookatEnable = true;
 
-	gSP.objMatrix.A = 1.0f;
-	gSP.objMatrix.B = 0.0f;
-	gSP.objMatrix.C = 0.0f;
-	gSP.objMatrix.D = 1.0f;
-	gSP.objMatrix.X = 0.0f;
-	gSP.objMatrix.Y = 0.0f;
-	gSP.objMatrix.baseScaleX = 1.0f;
-	gSP.objMatrix.baseScaleY = 1.0f;
 	gSP.objRendermode = 0;
 
 	for (int i = 0; i < 4; i++)
