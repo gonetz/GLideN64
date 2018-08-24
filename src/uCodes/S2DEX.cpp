@@ -117,8 +117,8 @@ struct ObjCoordinates
 		}
 
 		uls = ult = 0;
-		lrs = _FIXED2FLOAT(_pObjSprite->imageW, 5);
-		lrt = _FIXED2FLOAT(_pObjSprite->imageH, 5);
+		lrs = _FIXED2FLOAT(_pObjSprite->imageW, 5) - 1.0f;
+		lrt = _FIXED2FLOAT(_pObjSprite->imageH, 5) - 1.0f;
 		if ((_pObjSprite->imageFlags & G_BG_FLAG_FLIPS) != 0)
 			std::swap(uls, lrs);
 		if ((_pObjSprite->imageFlags & G_BG_FLAG_FLIPT) != 0)
