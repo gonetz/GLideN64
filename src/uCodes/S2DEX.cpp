@@ -252,15 +252,19 @@ struct ObjCoordinates
 		if (_useMatrix) {
 			//	scaleW = (BaseScaleX * 0x40 * scaleW) >> 16
 			//	scaleH = (BaseScaleY * 0x40 * scaleH) >> 16
-			//	XH = ((objX  * 0x0800) / BaseScaleX * 2) + (AND(X + A2) by B0) - 0x0001
+			//	If objX < 0x0000, CX = 0x0001	If objX > 0x0000, CX = 0x00000
+			//	If objY < 0x0000, CY = 0x0001	If objY > 0x0000, CY = 0x00000
+			//	XH = ((objX  * 0x0800) / BaseScaleX * 2) + (AND(X + A2) by B0) - CX
 			//	XL = XH + ((ImageW - A1) << 8) / (scaleW * 2)
-			//	YH = ((objY  * 0x0800) / BaseScaleY * 2) + (AND(Y + A2) by B0) - 0x0001
+			//	YH = ((objY  * 0x0800) / BaseScaleY * 2) + (AND(Y + A2) by B0) - CY
 			//	YL = YL + ((ImageH - A1) << 8) / (scaleH * 2)
 			const u16 scaleW = static_cast<u16>((u32(objMtx.BaseScaleX) * 0x40 * _pObjSprite->scaleW) >> 16);
 			const u16 scaleH = static_cast<u16>((u32(objMtx.BaseScaleY) * 0x40 * _pObjSprite->scaleH) >> 16);
-			xh = static_cast<s16>(((s32(_pObjSprite->objX) << 11) / (objMtx.BaseScaleX << 1)) + ((objMtx.X + CC.A2) & CC.B0) - 1);
+			const s32 CX = _pObjSprite->objX < 0 ? 1 : 0;
+			const s32 CY = _pObjSprite->objY < 0 ? 1 : 0;
+			xh = static_cast<s16>(((s32(_pObjSprite->objX) << 11) / (objMtx.BaseScaleX << 1)) + ((objMtx.X + CC.A2) & CC.B0) - CX);
 			xl = ((_pObjSprite->imageW - CC.A1) << 8) / (scaleW << 1) + xh;
-			yh = static_cast<s16>(((s32(_pObjSprite->objY) << 11) / (objMtx.BaseScaleY << 1)) + ((objMtx.Y + CC.A2) & CC.B0) - 1);
+			yh = static_cast<s16>(((s32(_pObjSprite->objY) << 11) / (objMtx.BaseScaleY << 1)) + ((objMtx.Y + CC.A2) & CC.B0) - CY);
 			yl = ((_pObjSprite->imageH - CC.A1) << 8) / (scaleH << 1) + yh;
 		} else {
 			//	XH = AND(objX + A2) by B0
