@@ -390,9 +390,9 @@ u16 _YUVtoRGBA(u8 y, u8 u, u8 v)
 	g *= 0.125f;
 	b *= 0.125f;
 	//clipping the result
-	if (r > 32) r = 32;
-	if (g > 32) g = 32;
-	if (b > 32) b = 32;
+	if (r > 31) r = 31;
+	if (g > 31) g = 31;
+	if (b > 31) b = 31;
 	if (r < 0) r = 0;
 	if (g < 0) g = 0;
 	if (b < 0) b = 0;
