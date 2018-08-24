@@ -99,6 +99,7 @@ namespace graphics {
 	namespace cullMode {
 		CullModeParam FRONT(GL_BACK);
 		CullModeParam BACK(GL_FRONT);
+		CullModeParam FRONT_AND_BACK(GL_FRONT_AND_BACK);
 	}
 
 	namespace compare {
