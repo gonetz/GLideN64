@@ -39,6 +39,160 @@ using namespace graphics;
 #define	S2DEX_OBJ_LDTX_RECT_R	0xC4
 #define	S2DEX_RDPHALF_0			0xE4
 
+struct uObjScaleBg
+{
+	u16 imageW;     /* Texture width (8-byte alignment, u10.2) */
+	u16 imageX;     /* x-coordinate of upper-left
+					position of texture (u10.5) */
+	u16 frameW;     /* Transfer destination frame width (u10.2) */
+	s16 frameX;     /* x-coordinate of upper-left
+					position of transfer destination frame (s10.2) */
+
+	u16 imageH;     /* Texture height (u10.2) */
+	u16 imageY;     /* y-coordinate of upper-left position of
+					texture (u10.5) */
+	u16 frameH;     /* Transfer destination frame height (u10.2) */
+	s16 frameY;     /* y-coordinate of upper-left position of transfer
+					destination  frame (s10.2) */
+
+	u32 imagePtr;  /* Address of texture source in DRAM*/
+	u8  imageSiz;   /* Texel size
+					G_IM_SIZ_4b (4 bits/texel)
+					G_IM_SIZ_8b (8 bits/texel)
+					G_IM_SIZ_16b (16 bits/texel)
+					G_IM_SIZ_32b (32 bits/texel) */
+	u8  imageFmt;   /*Texel format
+					G_IM_FMT_RGBA (RGBA format)
+					G_IM_FMT_YUV (YUV format)
+					G_IM_FMT_CI (CI format)
+					G_IM_FMT_IA (IA format)
+					G_IM_FMT_I (I format)  */
+	u16 imageLoad;  /* Method for loading the BG image texture
+					G_BGLT_LOADBLOCK (use LoadBlock)
+					G_BGLT_LOADTILE (use LoadTile) */
+	u16 imageFlip;  /* Image inversion on/off (horizontal
+					direction only)
+					0 (normal display (no inversion))
+					G_BG_FLAG_FLIPS (horizontal inversion of texture image) */
+	u16 imagePal;   /* Position of palette for 4-bit color
+					index texture (4-bit precision, 0~15) */
+
+	u16 scaleH;      /* y-direction scale value (u5.10) */
+	u16 scaleW;      /* x-direction scale value (u5.10) */
+	s32 imageYorig;  /* image drawing origin (s20.5)*/
+
+	u8  padding[4];  /* Padding */
+};   /* 40 bytes */
+
+struct uObjSprite
+{
+	u16 scaleW;      /* Width-direction scaling (u5.10) */
+	s16 objX;        /* x-coordinate of upper-left corner of OBJ (s10.2) */
+	u16 paddingX;    /* Unused (always 0) */
+	u16 imageW;      /* Texture width (length in s direction, u10.5)  */
+	u16 scaleH;      /* Height-direction scaling (u5.10) */
+	s16 objY;        /* y-coordinate of upper-left corner of OBJ (s10.2) */
+	u16 paddingY;    /* Unused (always 0) */
+	u16 imageH;      /* Texture height (length in t direction, u10.5)  */
+	u16 imageAdrs;   /* Texture starting position in TMEM (In units of 64-bit words) */
+	u16 imageStride; /* Texel wrapping width (In units of 64-bit words) */
+	u8  imageFlags;  /* Display flag
+					 (*) More than one of the following flags can be specified as the bit sum of the flags:
+					 0 (Normal display (no inversion))
+					 G_OBJ_FLAG_FLIPS (s-direction (x) inversion)
+					 G_OBJ_FLAG_FLIPT (t-direction (y) inversion)  */
+	u8  imagePal;    /* Position of palette for 4-bit color index texture  (4-bit precision, 0~7)  */
+	u8  imageSiz;    /* Texel size
+					 G_IM_SIZ_4b (4 bits/texel)
+					 G_IM_SIZ_8b (8 bits/texel)
+					 G_IM_SIZ_16b (16 bits/texel)
+					 G_IM_SIZ_32b (32 bits/texel) */
+	u8  imageFmt;    /* Texel format
+					 G_IM_FMT_RGBA (RGBA format)
+					 G_IM_FMT_YUV (YUV format)
+					 G_IM_FMT_CI (CI format)
+					 G_IM_FMT_IA (IA format)
+					 G_IM_FMT_I  (I format) */
+};    /* 24 bytes */
+
+struct uObjTxtrBlock
+{
+	u32   type;   /* Structure identifier (G_OBJLT_TXTRBLOCK) */
+	u32   image; /* Texture source address in DRAM (8-byte alignment) */
+	u16   tsize;  /* Texture size (specified by GS_TB_TSIZE) */
+	u16   tmem;   /* TMEM word address where texture will be loaded (8-byte word) */
+	u16   sid;    /* Status ID (multiple of 4: either 0, 4, 8, or 12) */
+	u16   tline;  /* Texture line width (specified by GS_TB_TLINE) */
+	u32   flag;   /* Status flag */
+	u32   mask;   /* Status mask */
+};     /* 24 bytes */
+
+struct uObjTxtrTile
+{
+	u32   type;   /* Structure identifier (G_OBJLT_TXTRTILE) */
+	u32   image; /* Texture source address in DRAM (8-byte alignment) */
+	u16   twidth; /* Texture width (specified by GS_TT_TWIDTH) */
+	u16   tmem;   /* TMEM word address where texture will be loaded (8-byte word) */
+	u16   sid;    /* Status ID (multiple of 4: either 0, 4, 8, or 12) */
+	u16   theight;/* Texture height (specified by GS_TT_THEIGHT) */
+	u32   flag;   /* Status flag */
+	u32   mask;   /* Status mask  */
+};      /* 24 bytes */
+
+struct uObjTxtrTLUT
+{
+	u32   type;   /* Structure identifier (G_OBJLT_TLUT) */
+	u32   image; /* Texture source address in DRAM */
+	u16   pnum;   /* Number of palettes to load - 1 */
+	u16   phead;  /* Palette position at start of load (256~511) */
+	u16   sid;    /* Status ID (multiple of 4: either 0, 4, 8, or 12) */
+	u16   zero;   /* Always assign 0 */
+	u32   flag;   /* Status flag */
+	u32   mask;   /* Status mask */
+};      /* 24 bytes */
+
+typedef union
+{
+	uObjTxtrBlock      block;
+	uObjTxtrTile       tile;
+	uObjTxtrTLUT       tlut;
+} uObjTxtr;
+
+struct uObjTxSprite
+{
+	uObjTxtr      txtr;
+	uObjSprite    sprite;
+};
+
+struct uObjMtx
+{
+	s32 A, B, C, D;   /* s15.16 */
+	s16 Y, X;         /* s10.2 */
+	u16 BaseScaleY;   /* u5.10 */
+	u16 BaseScaleX;   /* u5.10 */
+};
+
+struct uObjSubMtx
+{
+	s16 Y, X;		/* s10.2  */
+	u16 BaseScaleY;	/* u5.10  */
+	u16 BaseScaleX;	/* u5.10  */
+};
+
+static uObjMtx objMtx;
+
+void resetObjMtx()
+{
+	objMtx.A = 1 << 16;
+	objMtx.B = 0;
+	objMtx.C = 0;
+	objMtx.D = 1 << 16;
+	objMtx.X = 0;
+	objMtx.Y = 0;
+	objMtx.BaseScaleX = 1 << 10;
+	objMtx.BaseScaleY = 1 << 10;
+}
+
 struct S2DEXCoordCorrector
 {
 	S2DEXCoordCorrector()
@@ -93,28 +247,36 @@ struct ObjCoordinates
 	ObjCoordinates(const uObjSprite *_pObjSprite, bool _useMatrix)
 	{
 		/* Fixed point coordinates calculation. Decoded by olivieryuyu */
-		//XH = AND(objX + A2) by B0
-		//XL = AND(objX + A2) by B0 + ((ImageW - A1) * 0x100) / scaleW * 2
-		//YH = AND(objY + A2) by B0
-		//YL = AND(objY + A2) by B0 + ((ImageH - A1) * 0x100) / scaleH * 2
 		S2DEXCoordCorrector CC;
-		const s16 xh = (_pObjSprite->objX + CC.A2) & CC.B0;
-		const s16 xl = ((_pObjSprite->imageW - CC.A1) << 8) / (_pObjSprite->scaleW << 1) + xh;
-		const s16 yh = (_pObjSprite->objY + CC.A2) & CC.B0;
-		const s16 yl = ((_pObjSprite->imageH - CC.A1) << 8) / (_pObjSprite->scaleH << 1) + yh;
+		s16 xh, xl, yh, yl;
+		if (_useMatrix) {
+			//	scaleW = (BaseScaleX * 0x40 * scaleW) >> 16
+			//	scaleH = (BaseScaleY * 0x40 * scaleH) >> 16
+			//	XH = ((objX  * 0x0800) / BaseScaleX * 2) + (AND(X + A2) by B0) - 0x0001
+			//	XL = XH + ((ImageW - A1) << 8) / (scaleW * 2)
+			//	YH = ((objY  * 0x0800) / BaseScaleY * 2) + (AND(Y + A2) by B0) - 0x0001
+			//	YL = YL + ((ImageH - A1) << 8) / (scaleH * 2)
+			const u16 scaleW = static_cast<u16>((u32(objMtx.BaseScaleX) * 0x40 * _pObjSprite->scaleW) >> 16);
+			const u16 scaleH = static_cast<u16>((u32(objMtx.BaseScaleY) * 0x40 * _pObjSprite->scaleH) >> 16);
+			xh = static_cast<s16>(((s32(_pObjSprite->objX) << 11) / (objMtx.BaseScaleX << 1)) + ((objMtx.X + CC.A2) & CC.B0) - 1);
+			xl = ((_pObjSprite->imageW - CC.A1) << 8) / (scaleW << 1) + xh;
+			yh = static_cast<s16>(((s32(_pObjSprite->objY) << 11) / (objMtx.BaseScaleY << 1)) + ((objMtx.Y + CC.A2) & CC.B0) - 1);
+			yl = ((_pObjSprite->imageH - CC.A1) << 8) / (scaleH << 1) + yh;
+		} else {
+			//	XH = AND(objX + A2) by B0
+			//	XL = AND(objX + A2) by B0 + ((ImageW - A1) * 0x100) / (scaleW * 2)
+			//	YH = AND(objY + A2) by B0
+			//	YL = AND(objY + A2) by B0 + ((ImageH - A1) * 0x100) / (scaleH * 2)
+			xh = (_pObjSprite->objX + CC.A2) & CC.B0;
+			xl = ((_pObjSprite->imageW - CC.A1) << 8) / (_pObjSprite->scaleW << 1) + xh;
+			yh = (_pObjSprite->objY + CC.A2) & CC.B0;
+			yl = ((_pObjSprite->imageH - CC.A1) << 8) / (_pObjSprite->scaleH << 1) + yh;
+		}
 
 		ulx = _FIXED2FLOAT(xh, 2);
 		lrx = _FIXED2FLOAT(xl, 2);
 		uly = _FIXED2FLOAT(yh, 2);
 		lry = _FIXED2FLOAT(yl, 2);
-
-		if (_useMatrix) {
-			// TODO: use fixed point math
-			ulx = ulx / gSP.objMatrix.baseScaleX + gSP.objMatrix.X;
-			lrx = lrx / gSP.objMatrix.baseScaleX + gSP.objMatrix.X;
-			uly = uly / gSP.objMatrix.baseScaleY + gSP.objMatrix.Y;
-			lry = lry / gSP.objMatrix.baseScaleY + gSP.objMatrix.Y;
-		}
 
 		uls = ult = 0;
 		lrs = _FIXED2FLOAT(_pObjSprite->imageW, 5) - 1.0f;
@@ -405,9 +567,8 @@ void gSPObjSprite(u32 _sp)
 	//	Y2 = AND (Y + B3) by B0 + ((((imageW - A1) * 0x0100)/(scaleW * 2) + objX + A3) * C) >> 16 + ((((imageH - A1) * 0x0100)/(scaleH * 2) + objY + A3) * D) >> 16
 
 	S2DEXCoordCorrector CC;
-	const uObjMtx *objMtx = reinterpret_cast<const uObjMtx *>(RDRAM + gSP.objMatrix.address);
-	const s16 x0 = (objMtx->X + CC.B3) & CC.B0;
-	const s16 y0 = (objMtx->Y + CC.B3) & CC.B0;
+	const s16 x0 = (objMtx.X + CC.B3) & CC.B0;
+	const s16 y0 = (objMtx.Y + CC.B3) & CC.B0;
 	const s16 ulx = objSprite->objX + CC.A3;
 	const s16 uly = objSprite->objY + CC.A3;
 	const s16 lrx = ((objSprite->imageW - CC.A1) << 8) / (objSprite->scaleW << 1) + ulx;
@@ -415,13 +576,13 @@ void gSPObjSprite(u32 _sp)
 
 	auto calcX = [&](s16 _x, s16 _y) -> f32
 	{
-		const s16 X = x0 + static_cast<s16>(((_x * objMtx->A) >> 16)) + static_cast<s16>(((_y * objMtx->B) >> 16));
+		const s16 X = x0 + static_cast<s16>(((_x * objMtx.A) >> 16)) + static_cast<s16>(((_y * objMtx.B) >> 16));
 		return _FIXED2FLOAT(X, 2);
 	};
 
 	auto calcY = [&](s16 _x, s16 _y) -> f32
 	{
-		const s16 Y = y0 + static_cast<s16>(((_x * objMtx->C) >> 16)) + static_cast<s16>(((_y * objMtx->D) >> 16));
+		const s16 Y = y0 + static_cast<s16>(((_x * objMtx.C) >> 16)) + static_cast<s16>(((_y * objMtx.D) >> 16));
 		return _FIXED2FLOAT(Y, 2);
 	};
 
@@ -479,31 +640,18 @@ void gSPObjSprite(u32 _sp)
 static
 void gSPObjMatrix(u32 mtx)
 {
-	gSP.objMatrix.address = RSP_SegmentToPhysical(mtx);
-	const uObjMtx *objMtx = reinterpret_cast<const uObjMtx *>(RDRAM + gSP.objMatrix.address);
-
-	gSP.objMatrix.A = _FIXED2FLOAT(objMtx->A, 16);
-	gSP.objMatrix.B = _FIXED2FLOAT(objMtx->B, 16);
-	gSP.objMatrix.C = _FIXED2FLOAT(objMtx->C, 16);
-	gSP.objMatrix.D = _FIXED2FLOAT(objMtx->D, 16);
-	gSP.objMatrix.X = _FIXED2FLOAT(objMtx->X, 2);
-	gSP.objMatrix.Y = _FIXED2FLOAT(objMtx->Y, 2);
-	gSP.objMatrix.baseScaleX = _FIXED2FLOAT(objMtx->BaseScaleX, 10);
-	gSP.objMatrix.baseScaleY = _FIXED2FLOAT(objMtx->BaseScaleY, 10);
-
+	objMtx = *reinterpret_cast<const uObjMtx *>(RDRAM + RSP_SegmentToPhysical(mtx));
 	DebugMsg(DEBUG_NORMAL, "gSPObjMatrix\n");
 }
 
 static
 void gSPObjSubMatrix(u32 mtx)
 {
-	u32 address = RSP_SegmentToPhysical(mtx);
-	uObjSubMtx *objMtx = (uObjSubMtx*)&RDRAM[address];
-	gSP.objMatrix.X = _FIXED2FLOAT(objMtx->X, 2);
-	gSP.objMatrix.Y = _FIXED2FLOAT(objMtx->Y, 2);
-	gSP.objMatrix.baseScaleX = _FIXED2FLOAT(objMtx->BaseScaleX, 10);
-	gSP.objMatrix.baseScaleY = _FIXED2FLOAT(objMtx->BaseScaleY, 10);
-
+	const uObjSubMtx * pObjSubMtx = reinterpret_cast<const uObjSubMtx*>(RDRAM + RSP_SegmentToPhysical(mtx));
+	objMtx.X = pObjSubMtx->X;
+	objMtx.Y = pObjSubMtx->Y;
+	objMtx.BaseScaleX = pObjSubMtx->BaseScaleX;
+	objMtx.BaseScaleY = pObjSubMtx->BaseScaleY;
 	DebugMsg(DEBUG_NORMAL, "gSPObjSubMatrix\n");
 }
 
@@ -784,6 +932,7 @@ void S2DEX_Init()
 	gSPSetupFunctions();
 	// Set GeometryMode flags
 	GBI_InitFlags( F3DEX );
+	resetObjMtx();
 
 	GBI.PCStackSize = 18;
 
