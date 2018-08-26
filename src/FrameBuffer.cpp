@@ -929,7 +929,7 @@ void FrameBufferList::_renderScreenSizeBuffer()
 	GraphicsDrawer & drawer = wnd.getDrawer();
 	FrameBuffer *pBuffer = &m_list.back();
 	PostProcessor & postProcessor = PostProcessor::get();
-	FrameBuffer * pFilteredBuffer = postProcessor.doGammaCorrection(postProcessor.doOrientationCorrection(pBuffer));
+	FrameBuffer * pFilteredBuffer = postProcessor.doGammaCorrection(postProcessor.doFXAA(postProcessor.doOrientationCorrection(pBuffer)));
 	CachedTexture * pBufferTexture = pFilteredBuffer->m_pTexture;
 
 	const u32 wndWidth = wnd.getWidth();
@@ -1329,7 +1329,7 @@ void FrameBufferList::renderBuffer()
 		srcY1 = srcY0 + srcHeight;
 	}
 	PostProcessor & postProcessor = PostProcessor::get();
-	FrameBuffer * pFilteredBuffer = postProcessor.doGammaCorrection(postProcessor.doOrientationCorrection(pBuffer));
+	FrameBuffer * pFilteredBuffer = postProcessor.doGammaCorrection(postProcessor.doFXAA(postProcessor.doOrientationCorrection(pBuffer)));
 
 	if (rdpRes.vi_fsaa && rdpRes.vi_divot)
 		Xdivot = 1;

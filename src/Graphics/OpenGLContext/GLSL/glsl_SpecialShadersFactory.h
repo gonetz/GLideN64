@@ -34,6 +34,8 @@ namespace glsl {
 
 		graphics::ShaderProgram * createOrientationCorrectionShader() const;
 
+		graphics::ShaderProgram * createFXAAShader() const;
+
 		graphics::TextDrawerShaderProgram * createTextDrawerShader() const;
 
 	private:

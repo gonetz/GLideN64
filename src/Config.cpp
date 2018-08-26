@@ -22,6 +22,7 @@ void Config::resetToDefaults()
 #endif
 	video.fullscreenHeight = video.windowedHeight = 480;
 	video.fullscreenRefresh = 60;
+	video.fxaa = 0;
 	video.multisampling = 0;
 	video.verticalSync = 0;
 

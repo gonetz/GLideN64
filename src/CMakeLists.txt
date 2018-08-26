@@ -78,6 +78,7 @@ set(GLideN64_SOURCES
   Graphics/OpenGLContext/GLSL/glsl_CombinerProgramBuilder.cpp
   Graphics/OpenGLContext/GLSL/glsl_CombinerProgramImpl.cpp
   Graphics/OpenGLContext/GLSL/glsl_CombinerProgramUniformFactory.cpp
+  Graphics/OpenGLContext/GLSL/glsl_FXAA.cpp
   Graphics/OpenGLContext/GLSL/glsl_ShaderStorage.cpp
   Graphics/OpenGLContext/GLSL/glsl_SpecialShadersFactory.cpp
   Graphics/OpenGLContext/GLSL/glsl_Utils.cpp

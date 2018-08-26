@@ -63,37 +63,20 @@ void PostProcessor::_createResultBuffer(const FrameBuffer * _pMainBuffer)
 	assert(!gfxContext.isFramebufferError());
 }
 
-void PostProcessor::_initGammaCorrection()
-{
-	m_gammaCorrectionProgram.reset(gfxContext.createGammaCorrectionShader());
-}
-
-void PostProcessor::_initOrientationCorrection()
-{
-	m_orientationCorrectionProgram.reset(gfxContext.createOrientationCorrectionShader());
-}
-
 void PostProcessor::init()
 {
-	_initGammaCorrection();
+	m_gammaCorrectionProgram.reset(gfxContext.createGammaCorrectionShader());
+	if (config.video.fxaa != 0)
+		m_FXAAProgram.reset(gfxContext.createFXAAShader());
 	if (config.generalEmulation.enableBlitScreenWorkaround != 0)
-		_initOrientationCorrection();
-}
-
-void PostProcessor::_destroyGammaCorrection()
-{
-	m_gammaCorrectionProgram.reset();
-}
-
-void PostProcessor::_destroyOrientationCorrection()
-{
-	m_orientationCorrectionProgram.reset();
+		m_orientationCorrectionProgram.reset(gfxContext.createOrientationCorrectionShader());
 }
 
 void PostProcessor::destroy()
 {
-	_destroyGammaCorrection();
-	_destroyOrientationCorrection();
+	m_gammaCorrectionProgram.reset();
+	m_FXAAProgram.reset();
+	m_orientationCorrectionProgram.reset();
 	m_pResultBuffer.reset();
 }
 
@@ -177,4 +160,15 @@ FrameBuffer * PostProcessor::doOrientationCorrection(FrameBuffer * _pBuffer)
 		return _pBuffer;
 
 	return _doPostProcessing(_pBuffer, m_orientationCorrectionProgram.get());
+}
+
+FrameBuffer * PostProcessor::doFXAA(FrameBuffer * _pBuffer)
+{
+	if (_pBuffer == nullptr)
+		return nullptr;
+
+	if (config.video.fxaa == 0)
+		return _pBuffer;
+
+	return _doPostProcessing(_pBuffer, m_FXAAProgram.get());
 }

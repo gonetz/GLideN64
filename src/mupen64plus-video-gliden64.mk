@@ -85,6 +85,7 @@ MY_LOCAL_SRC_FILES :=                                                           
     $(SRCDIR)/Graphics/OpenGLContext/GLSL/glsl_CombinerProgramBuilder.cpp          \
     $(SRCDIR)/Graphics/OpenGLContext/GLSL/glsl_CombinerProgramImpl.cpp             \
     $(SRCDIR)/Graphics/OpenGLContext/GLSL/glsl_CombinerProgramUniformFactory.cpp   \
+    $(SRCDIR)/Graphics/OpenGLContext/GLSL/glsl_FXAA.cpp                            \
     $(SRCDIR)/Graphics/OpenGLContext/GLSL/glsl_ShaderStorage.cpp                   \
     $(SRCDIR)/Graphics/OpenGLContext/GLSL/glsl_SpecialShadersFactory.cpp           \
     $(SRCDIR)/Graphics/OpenGLContext/GLSL/glsl_Utils.cpp                           \

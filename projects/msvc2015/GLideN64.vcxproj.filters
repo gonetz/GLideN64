@@ -389,6 +389,9 @@
     <ClCompile Include="..\..\src\uCodes\F5Rogue.cpp">
       <Filter>Source Files\uCodes</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\Graphics\OpenGLContext\GLSL\glsl_FXAA.cpp">
+      <Filter>Source Files\Graphics\OpenGL\GLSL</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\3DMath.h">
@@ -717,6 +720,9 @@
     </ClInclude>
     <ClInclude Include="..\..\src\uCodes\F5Rogue.h">
       <Filter>Header Files\uCodes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Graphics\OpenGLContext\GLSL\glsl_FXAA.h">
+      <Filter>Header Files\Graphics\OpenGL\GLSL</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

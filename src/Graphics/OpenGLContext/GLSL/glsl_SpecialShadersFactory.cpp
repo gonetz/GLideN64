@@ -1,14 +1,17 @@
 #include <assert.h>
-#include <Graphics/ShaderProgram.h>
-#include <Graphics/Parameters.h>
-#include <PaletteTexture.h>
-#include <ZlutTexture.h>
+#include <N64.h>
+#include <FrameBuffer.h>
 #include <gDP.h>
 #include <Config.h>
+#include <PaletteTexture.h>
+#include <ZlutTexture.h>
+#include <Graphics/Parameters.h>
 #include <Graphics/ObjectHandle.h>
+#include <Graphics/ShaderProgram.h>
 #include <Graphics/OpenGLContext/opengl_CachedFunctions.h>
 #include "glsl_SpecialShadersFactory.h"
 #include "glsl_ShaderPart.h"
+#include "glsl_FXAA.h"
 #include "glsl_Utils.h"
 
 namespace glsl {
@@ -502,6 +505,42 @@ namespace glsl {
 		int m_locDepthImage;
 	};
 
+	/*---------------FXAAShader-------------*/
+
+	typedef SpecialShader<FXAAVertexShader, FXAAFragmentShader> FXAAShaderBase;
+
+	class FXAAShader : public FXAAShaderBase
+	{
+	public:
+		FXAAShader(const opengl::GLInfo & _glinfo,
+			opengl::CachedUseProgram * _useProgram,
+			const ShaderPart * _vertexHeader,
+			const ShaderPart * _fragmentHeader,
+			const ShaderPart * _fragmentEnd)
+			: FXAAShaderBase(_glinfo, _useProgram, _vertexHeader, _fragmentHeader, _fragmentEnd)
+		{
+			m_useProgram->useProgram(m_program);
+			m_textureSizeLoc = glGetUniformLocation(GLuint(m_program), "uTextureSize");
+			m_useProgram->useProgram(graphics::ObjectHandle::null);
+		}
+
+		void activate() override {
+			FXAAShaderBase::activate();
+			FrameBuffer * pBuffer = frameBufferList().findBuffer(*REG.VI_ORIGIN);
+			if (pBuffer != nullptr && pBuffer->m_pTexture != nullptr &&
+				(m_width != pBuffer->m_pTexture->realWidth || m_height != pBuffer->m_pTexture->realHeight)) {
+				m_width = pBuffer->m_pTexture->realWidth;
+				m_height = pBuffer->m_pTexture->realHeight;
+				glUniform2f(m_textureSizeLoc, GLfloat(m_width), GLfloat(m_height));
+			}
+		}
+
+	private:
+		int m_textureSizeLoc = -1;
+		u16 m_width = 0;
+		u16 m_height = 0;
+	};
+
 	/*---------------TexrectDrawerShader-------------*/
 
 	class TexrectDrawerShaderDraw : public graphics::TexrectDrawerShaderProgram
@@ -725,6 +764,11 @@ namespace glsl {
 	graphics::ShaderProgram * SpecialShadersFactory::createOrientationCorrectionShader() const
 	{
 		return new OrientationCorrectionShader(m_glinfo, m_useProgram, m_vertexHeader, m_fragmentHeader, m_fragmentEnd);
+	}
+
+	graphics::ShaderProgram * SpecialShadersFactory::createFXAAShader() const
+	{
+		return new FXAAShader(m_glinfo, m_useProgram, m_vertexHeader, m_fragmentHeader, m_fragmentEnd);
 	}
 
 	graphics::TextDrawerShaderProgram * SpecialShadersFactory::createTextDrawerShader() const

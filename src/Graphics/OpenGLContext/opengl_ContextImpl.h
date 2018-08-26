@@ -128,6 +128,8 @@ namespace opengl {
 
 		graphics::ShaderProgram * createOrientationCorrectionShader() override;
 
+		graphics::ShaderProgram * createFXAAShader() override;
+
 		graphics::TextDrawerShaderProgram * createTextDrawerShader() override;
 
 		void resetShaderProgram() override;

@@ -727,6 +727,7 @@ copy /Y "$(OutDir)$(TargetName).*" "$(Mupen64PluginsDir_x64)"</Command>
     <ClCompile Include="..\..\src\Graphics\OpenGLContext\GLSL\glsl_CombinerProgramBuilder.cpp" />
     <ClCompile Include="..\..\src\Graphics\OpenGLContext\GLSL\glsl_CombinerProgramImpl.cpp" />
     <ClCompile Include="..\..\src\Graphics\OpenGLContext\GLSL\glsl_CombinerProgramUniformFactory.cpp" />
+    <ClCompile Include="..\..\src\Graphics\OpenGLContext\GLSL\glsl_FXAA.cpp" />
     <ClCompile Include="..\..\src\Graphics\OpenGLContext\GLSL\glsl_ShaderStorage.cpp" />
     <ClCompile Include="..\..\src\Graphics\OpenGLContext\GLSL\glsl_SpecialShadersFactory.cpp" />
     <ClCompile Include="..\..\src\Graphics\OpenGLContext\GLSL\glsl_Utils.cpp" />
@@ -942,6 +943,7 @@ copy /Y "$(OutDir)$(TargetName).*" "$(Mupen64PluginsDir_x64)"</Command>
     <ClInclude Include="..\..\src\Graphics\OpenGLContext\GLSL\glsl_CombinerProgramBuilder.h" />
     <ClInclude Include="..\..\src\Graphics\OpenGLContext\GLSL\glsl_CombinerProgramImpl.h" />
     <ClInclude Include="..\..\src\Graphics\OpenGLContext\GLSL\glsl_CombinerProgramUniformFactory.h" />
+    <ClInclude Include="..\..\src\Graphics\OpenGLContext\GLSL\glsl_FXAA.h" />
     <ClInclude Include="..\..\src\Graphics\OpenGLContext\GLSL\glsl_ShaderPart.h" />
     <ClInclude Include="..\..\src\Graphics\OpenGLContext\GLSL\glsl_ShaderStorage.h" />
     <ClInclude Include="..\..\src\Graphics\OpenGLContext\GLSL\glsl_SpecialShadersFactory.h" />

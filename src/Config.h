@@ -5,7 +5,7 @@
 #include "Types.h"
 
 #define CONFIG_WITH_PROFILES 23U
-#define CONFIG_VERSION_CURRENT 23U
+#define CONFIG_VERSION_CURRENT 24U
 
 #define BILINEAR_3POINT   0
 #define BILINEAR_STANDARD 1
@@ -23,6 +23,7 @@ struct Config
 		u32 fullscreen;
 		u32 windowedWidth, windowedHeight;
 		u32 fullscreenWidth, fullscreenHeight, fullscreenRefresh;
+		u32 fxaa;
 		u32 multisampling;
 		u32 verticalSync;
 	} video;

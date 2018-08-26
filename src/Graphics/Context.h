@@ -236,6 +236,8 @@ namespace graphics {
 
 		ShaderProgram * createOrientationCorrectionShader();
 
+		ShaderProgram * createFXAAShader();
+
 		TextDrawerShaderProgram * createTextDrawerShader();
 
 		void resetShaderProgram();
