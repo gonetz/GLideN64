@@ -47,6 +47,8 @@ bool Config_SetDefault()
 
 	res = ConfigSetDefaultInt(g_configVideoGliden64, "MultiSampling", config.video.multisampling, "Enable/Disable MultiSampling (0=off, 2,4,8,16=quality)");
 	assert(res == M64ERR_SUCCESS);
+	res = ConfigSetDefaultBool(g_configVideoGliden64, "FXAA", config.video.fxaa, "Enable/Disable Fast Approximate Anti-Aliasing FXAA");
+	assert(res == M64ERR_SUCCESS);
 	res = ConfigSetDefaultInt(g_configVideoGliden64, "AspectRatio", config.frameBufferEmulation.aspect, "Screen aspect ratio (0=stretch, 1=force 4:3, 2=force 16:9, 3=adjust)");
 	assert(res == M64ERR_SUCCESS);
 	res = ConfigSetDefaultInt(g_configVideoGliden64, "BufferSwapMode", config.frameBufferEmulation.bufferSwapMode, "Swap frame buffers (0=On VI update call, 1=On VI origin change, 2=On buffer update)");
@@ -233,6 +235,12 @@ void Config_LoadCustomConfig()
 	if (result == M64ERR_SUCCESS) config.video.fullscreenRefresh = atoi(value);
 	result = ConfigExternalGetParameter(fileHandle, sectionName, "video\\multisampling", value, sizeof(value));
 	if (result == M64ERR_SUCCESS) config.video.multisampling = atoi(value);
+	result = ConfigExternalGetParameter(fileHandle, sectionName, "video\\FXAA", value, sizeof(value));
+	if (result == M64ERR_SUCCESS) {
+		config.video.fxaa = atoi(value);
+		if (config.video.fxaa != 0)
+			config.video.multisampling = 0;
+	}
 
 	result = ConfigExternalGetParameter(fileHandle, sectionName, "texture\\maxAnisotropy", value, sizeof(value));
 	if (result == M64ERR_SUCCESS) config.texture.maxAnisotropy = atoi(value);
@@ -342,6 +350,9 @@ void Config_LoadConfig()
 
 	const u32 multisampling = ConfigGetParamInt(g_configVideoGliden64, "MultiSampling");
 	config.video.multisampling = multisampling == 0 ? 0 : pow2(multisampling);
+	config.video.fxaa = ConfigGetParamBool(g_configVideoGliden64, "FXAA");
+	if (config.video.fxaa != 0)
+		config.video.multisampling = 0;
 	config.frameBufferEmulation.aspect = ConfigGetParamInt(g_configVideoGliden64, "AspectRatio");
 	config.frameBufferEmulation.bufferSwapMode = ConfigGetParamInt(g_configVideoGliden64, "BufferSwapMode");
 	config.frameBufferEmulation.nativeResFactor = ConfigGetParamInt(g_configVideoGliden64, "UseNativeResolutionFactor");
