@@ -60,6 +60,10 @@ private slots:
 
 	void on_removeProfilePushButton_clicked();
 
+	void on_fxaaCheckBox_toggled(bool checked);
+
+	void on_n64DepthCompareCheckBox_toggled(bool checked);
+
 private:
 	void _init();
 	void _getTranslations(QStringList & _translationFiles) const;

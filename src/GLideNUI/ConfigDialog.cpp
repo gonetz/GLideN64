@@ -111,6 +111,8 @@ void ConfigDialog::_init()
 	ui->fullScreenResolutionComboBox->setCurrentIndex(fullscreenMode);
 	ui->fullScreenRefreshRateComboBox->setCurrentIndex(fullscreenRate);
 
+	ui->fxaaCheckBox->toggle();
+	ui->fxaaCheckBox->setChecked(config.video.fxaa != 0);
 	ui->aliasingSlider->setValue(powof(config.video.multisampling));
 	ui->aliasingLabelVal->setText(QString::number(config.video.multisampling));
 	ui->anisotropicSlider->setValue(config.texture.maxAnisotropy);
@@ -386,7 +388,8 @@ void ConfigDialog::accept()
 	getFullscreenResolutions(ui->fullScreenResolutionComboBox->currentIndex(), config.video.fullscreenWidth, config.video.fullscreenHeight);
 	getFullscreenRefreshRate(ui->fullScreenRefreshRateComboBox->currentIndex(), config.video.fullscreenRefresh);
 
-	config.video.multisampling = ui->n64DepthCompareCheckBox->isChecked() ? 0 : pow2(ui->aliasingSlider->value());
+	config.video.fxaa = ui->fxaaCheckBox->isChecked() ? 1 : 0;
+	config.video.multisampling = (ui->fxaaCheckBox->isChecked() || ui->n64DepthCompareCheckBox->isChecked()) ? 0 : pow2(ui->aliasingSlider->value());
 	config.texture.maxAnisotropy = ui->anisotropicSlider->value();
 
 	if (ui->blnrStandardRadioButton->isChecked())
@@ -792,4 +795,14 @@ void ConfigDialog::on_removeProfilePushButton_clicked()
 		_init();
 		ui->removeProfilePushButton->setDisabled(ui->profilesComboBox->count() < 2);
 	}
+}
+
+void ConfigDialog::on_fxaaCheckBox_toggled(bool checked)
+{
+	ui->aliasingFrame->setEnabled(!checked && !ui->n64DepthCompareCheckBox->isChecked());
+}
+
+void ConfigDialog::on_n64DepthCompareCheckBox_toggled(bool checked)
+{
+	ui->aliasingFrame->setEnabled(!checked && !ui->fxaaCheckBox->isChecked());
 }

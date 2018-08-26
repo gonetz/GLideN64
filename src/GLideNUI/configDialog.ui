@@ -35,6 +35,9 @@
        <height>450</height>
       </size>
      </property>
+     <property name="currentIndex">
+      <number>0</number>
+     </property>
      <property name="usesScrollButtons">
       <bool>false</bool>
      </property>
@@ -393,6 +396,13 @@
             <number>18</number>
            </property>
            <item>
+            <widget class="QCheckBox" name="fxaaCheckBox">
+             <property name="text">
+              <string>Fast Approximate Anti-Aliasing (FXAA)</string>
+             </property>
+            </widget>
+           </item>
+           <item>
             <layout class="QVBoxLayout" name="verticalLayout_21">
              <item>
               <widget class="QFrame" name="aliasingFrame">
@@ -415,7 +425,7 @@
                 <item>
                  <widget class="QLabel" name="aliasingLabel">
                   <property name="text">
-                   <string>Anti-aliasing:</string>
+                   <string>Multisample Anti-Aliasing (MSAA):</string>
                   </property>
                  </widget>
                 </item>
@@ -585,7 +595,7 @@
                 <item>
                  <widget class="QLabel" name="aliasingWarningLabel">
                   <property name="text">
-                   <string>Anti-aliasing is not compatible with N64-style depth compare</string>
+                   <string>Multisample anti-aliasing is not compatible with N64-style depth compare</string>
                   </property>
                   <property name="wordWrap">
                    <bool>true</bool>
@@ -3807,8 +3817,8 @@
      <y>41</y>
     </hint>
     <hint type="destinationlabel">
-     <x>112</x>
-     <y>587</y>
+     <x>123</x>
+     <y>565</y>
     </hint>
    </hints>
   </connection>
@@ -3819,12 +3829,12 @@
    <slot>setNum(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>566</x>
-     <y>183</y>
+     <x>599</x>
+     <y>218</y>
     </hint>
     <hint type="destinationlabel">
-     <x>413</x>
-     <y>199</y>
+     <x>408</x>
+     <y>234</y>
     </hint>
    </hints>
   </connection>
@@ -3871,8 +3881,8 @@
      <y>386</y>
     </hint>
     <hint type="destinationlabel">
-     <x>591</x>
-     <y>130</y>
+     <x>634</x>
+     <y>165</y>
     </hint>
    </hints>
   </connection>
@@ -3957,22 +3967,6 @@
    </hints>
   </connection>
   <connection>
-   <sender>n64DepthCompareCheckBox</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>aliasingFrame</receiver>
-   <slot>setDisabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>91</x>
-     <y>386</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>400</x>
-     <y>75</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>frameBufferCheckBox</sender>
    <signal>toggled(bool)</signal>
    <receiver>frameBufferInfoFrame</receiver>
@@ -3983,8 +3977,8 @@
      <y>41</y>
     </hint>
     <hint type="destinationlabel">
-     <x>312</x>
-     <y>584</y>
+     <x>323</x>
+     <y>565</y>
     </hint>
    </hints>
   </connection>
@@ -4011,11 +4005,11 @@
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>99</x>
+     <x>111</x>
      <y>71</y>
     </hint>
     <hint type="destinationlabel">
-     <x>92</x>
+     <x>106</x>
      <y>85</y>
     </hint>
    </hints>
@@ -4075,8 +4069,8 @@
    <slot>setVisible(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>149</x>
-     <y>307</y>
+     <x>162</x>
+     <y>232</y>
     </hint>
     <hint type="destinationlabel">
      <x>144</x>
@@ -4086,10 +4080,10 @@
   </connection>
  </connections>
  <buttongroups>
-  <buttongroup name="screenshotButtonGroup"/>
+  <buttongroup name="fixTexrectCoordsButtonGroup"/>
   <buttongroup name="factorButtonGroup"/>
   <buttongroup name="osdButtonGroup"/>
   <buttongroup name="aspectButtonGroup"/>
-  <buttongroup name="fixTexrectCoordsButtonGroup"/>
+  <buttongroup name="screenshotButtonGroup"/>
  </buttongroups>
 </ui>
