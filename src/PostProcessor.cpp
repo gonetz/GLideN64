@@ -126,14 +126,8 @@ void PostProcessor::_postDraw()
 	gfxContext.resetShaderProgram();
 }
 
-FrameBuffer * PostProcessor::doGammaCorrection(FrameBuffer * _pBuffer)
+FrameBuffer * PostProcessor::_doPostProcessing(FrameBuffer * _pBuffer, graphics::ShaderProgram * _pShader)
 {
-	if (_pBuffer == nullptr)
-		return nullptr;
-
-	if (((*REG.VI_STATUS & 8) | config.gammaCorrection.force) == 0)
-		return _pBuffer;
-
 	_preDraw(_pBuffer);
 
 	gfxContext.bindFramebuffer(bufferTarget::DRAW_FRAMEBUFFER,
@@ -155,12 +149,23 @@ FrameBuffer * PostProcessor::doGammaCorrection(FrameBuffer * _pBuffer)
 	copyParams.dstHeight = pDstTex->realHeight;
 	copyParams.tex[0] = m_pTextureOriginal;
 	copyParams.filter = textureParameters::FILTER_NEAREST;
-	copyParams.combiner = m_gammaCorrectionProgram.get();
+	copyParams.combiner = _pShader;
 
 	dwnd().getDrawer().copyTexturedRect(copyParams);
 
 	_postDraw();
 	return m_pResultBuffer.get();
+}
+
+FrameBuffer * PostProcessor::doGammaCorrection(FrameBuffer * _pBuffer)
+{
+	if (_pBuffer == nullptr)
+		return nullptr;
+
+	if (((*REG.VI_STATUS & 8) | config.gammaCorrection.force) == 0)
+		return _pBuffer;
+
+	return _doPostProcessing(_pBuffer, m_gammaCorrectionProgram.get());
 }
 
 FrameBuffer * PostProcessor::doOrientationCorrection(FrameBuffer * _pBuffer)
@@ -171,32 +176,5 @@ FrameBuffer * PostProcessor::doOrientationCorrection(FrameBuffer * _pBuffer)
 	if (config.generalEmulation.enableBlitScreenWorkaround == 0)
 		return _pBuffer;
 
-	_preDraw(_pBuffer);
-
-
-	gfxContext.bindFramebuffer(bufferTarget::DRAW_FRAMEBUFFER,
-		ObjectHandle(m_pResultBuffer->m_FBO));
-
-	CachedTexture * pDstTex = m_pResultBuffer->m_pTexture;
-	GraphicsDrawer::CopyRectParams copyParams;
-	copyParams.srcX0 = 0;
-	copyParams.srcY0 = 0;
-	copyParams.srcX1 = m_pTextureOriginal->realWidth;
-	copyParams.srcY1 = m_pTextureOriginal->realHeight;
-	copyParams.srcWidth = m_pTextureOriginal->realWidth;
-	copyParams.srcHeight = m_pTextureOriginal->realHeight;
-	copyParams.dstX0 = 0;
-	copyParams.dstY0 = 0;
-	copyParams.dstX1 = pDstTex->realWidth;
-	copyParams.dstY1 = pDstTex->realHeight;
-	copyParams.dstWidth = pDstTex->realWidth;
-	copyParams.dstHeight = pDstTex->realHeight;
-	copyParams.tex[0] = m_pTextureOriginal;
-	copyParams.filter = textureParameters::FILTER_NEAREST;
-	copyParams.combiner = m_orientationCorrectionProgram.get();
-
-	dwnd().getDrawer().copyTexturedRect(copyParams);
-
-	_postDraw();
-	return m_pResultBuffer.get();
+	return _doPostProcessing(_pBuffer, m_orientationCorrectionProgram.get());
 }

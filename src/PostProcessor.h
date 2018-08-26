@@ -33,6 +33,7 @@ private:
 	void _destroyOrientationCorrection();
 	void _preDraw(FrameBuffer * _pBuffer);
 	void _postDraw();
+	FrameBuffer * _doPostProcessing(FrameBuffer * _pBuffer, graphics::ShaderProgram * _pShader);
 
 	std::unique_ptr<graphics::ShaderProgram> m_gammaCorrectionProgram;
 	std::unique_ptr<graphics::ShaderProgram> m_orientationCorrectionProgram;
