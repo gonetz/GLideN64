@@ -844,11 +844,15 @@ void gDPFullSync()
 
 	dwnd().getDrawer().flush();
 
+	FrameBuffer * pCurrentBuffer = frameBufferList().getCurrent();
+	if (pCurrentBuffer != nullptr)
+		pCurrentBuffer->updateEndAddress();
+
 	const bool sync = config.frameBufferEmulation.copyToRDRAM == Config::ctSync;
 	if ((config.frameBufferEmulation.copyToRDRAM != Config::ctDisable || (config.generalEmulation.hacks & hack_subscreen) != 0) &&
 		!FBInfo::fbInfo.isSupported() &&
-		frameBufferList().getCurrent() != nullptr &&
-		!frameBufferList().getCurrent()->isAuxiliary()
+		pCurrentBuffer != nullptr &&
+		!pCurrentBuffer->isAuxiliary()
 	)
 		FrameBuffer_CopyToRDRAM(gDP.colorImage.address, sync);
 
