@@ -1136,7 +1136,9 @@ s32 FrameBufferList::OverscanBuffer::getVOffset() const
 
 f32 FrameBufferList::OverscanBuffer::getScaleX() const
 {
-	return m_scale;
+	if (m_enabled)
+		return m_scale;
+	return dwnd().getScaleX();
 }
 
 f32 FrameBufferList::OverscanBuffer::getScaleY(u32 _fullHeight) const
