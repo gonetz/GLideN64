@@ -250,31 +250,37 @@ struct ObjCoordinates
 		S2DEXCoordCorrector CC;
 		s16 xh, xl, yh, yl;
 		if (_useMatrix) {
-			//	scaleW = (BaseScaleX * 0x40 * scaleW) >> 16
-			//	scaleH = (BaseScaleY * 0x40 * scaleH) >> 16
-			//	If objX < 0x0000, CX = 0x0001	If objX > 0x0000, CX = 0x00000
-			//	If objY < 0x0000, CY = 0x0001	If objY > 0x0000, CY = 0x00000
-			//	XH = ((objX  * 0x0800) / BaseScaleX * 2) + (AND(X + A2) by B0) - CX
-			//	XL = XH + ((ImageW - A1) << 8) / (scaleW * 2)
-			//	YH = ((objY  * 0x0800) / BaseScaleY * 2) + (AND(Y + A2) by B0) - CY
-			//	YL = YL + ((ImageH - A1) << 8) / (scaleH * 2)
-			const u16 scaleW = static_cast<u16>((u32(objMtx.BaseScaleX) * 0x40 * _pObjSprite->scaleW) >> 16);
-			const u16 scaleH = static_cast<u16>((u32(objMtx.BaseScaleY) * 0x40 * _pObjSprite->scaleH) >> 16);
-			const s32 CX = _pObjSprite->objX < 0 ? 1 : 0;
-			const s32 CY = _pObjSprite->objY < 0 ? 1 : 0;
-			xh = static_cast<s16>(((s32(_pObjSprite->objX) << 11) / (objMtx.BaseScaleX << 1)) + ((objMtx.X + CC.A2) & CC.B0) - CX);
-			xl = ((_pObjSprite->imageW - CC.A1) << 8) / (scaleW << 1) + xh;
-			yh = static_cast<s16>(((s32(_pObjSprite->objY) << 11) / (objMtx.BaseScaleY << 1)) + ((objMtx.Y + CC.A2) & CC.B0) - CY);
-			yl = ((_pObjSprite->imageH - CC.A1) << 8) / (scaleH << 1) + yh;
+			// scaleW = (BaseScaleX * 0x40 * scaleW) >> 16
+			// scaleH = (BaseScaleY * 0x40 * scaleH) >> 16
+			// XHP = ((objX << 16) * 0x0800) / (BaseScaleX * 2 - 0x02) + ((AND(X + A2) by B0) << 16))
+			// XH = XHP >> 16
+			// XLP = XHP + ((ImageW - A1) << 24) / (scaleW * 2 - 0x02)
+			// XL = XLP >> 16
+			// YHP = ((objY << 16) * 0x0800) / (BaseScaleY * 2 - 0x02) + ((AND(Y + A2) by B0) << 16)
+			// YH = YHP >> 16
+			// YLP = YHP + ((ImageH - A1) << 24)/(scaleH * 2 - 0x02)
+			// YL = YLP >> 16
+			const u32 scaleW = (u32(objMtx.BaseScaleX) * 0x40 * _pObjSprite->scaleW) >> 16;
+			const u32 scaleH = (u32(objMtx.BaseScaleY) * 0x40 * _pObjSprite->scaleH) >> 16;
+			const s32 xhp = ((s64(_pObjSprite->objX) << 16) * 0x0800) / ((objMtx.BaseScaleX - 1) << 1) + (((s32(objMtx.X) + CC.A2) & CC.B0) << 16);
+			xh = static_cast<s16>(xhp >> 16);
+			const s32 xlp = ((u64(_pObjSprite->imageW) - CC.A1) << 24) / ((scaleW - 1) << 1) + xhp;
+			xl = static_cast<s16>(xlp >> 16);
+			const s32 yhp = ((s64(_pObjSprite->objY) << 16) * 0x0800) / ((objMtx.BaseScaleY - 1) << 1) + (((s32(objMtx.Y) + CC.A2) & CC.B0) << 16);
+			yh = static_cast<s16>(yhp >> 16);
+			const s32 ylp = ((u64(_pObjSprite->imageH) - CC.A1) << 24) / ((scaleH - 1) << 1) + yhp;
+			yl = static_cast<s16>(ylp >> 16);
 		} else {
 			//	XH = AND(objX + A2) by B0
-			//	XL = AND(objX + A2) by B0 + ((ImageW - A1) * 0x100) / (scaleW * 2)
+			//	XL = (((AND (objX + A2) by B0) << 16) + ((ImageW - A1) << 24 )/(scaleW * 2 - 0x02)) >> 16
 			//	YH = AND(objY + A2) by B0
-			//	YL = AND(objY + A2) by B0 + ((ImageH - A1) * 0x100) / (scaleH * 2)
+			//	YL = (((AND (objY + A2) by B0) << 16) + ((ImageH - A1) << 24)/(scaleH * 2 - 0x02)) >> 16
 			xh = (_pObjSprite->objX + CC.A2) & CC.B0;
-			xl = ((_pObjSprite->imageW - CC.A1) << 8) / (_pObjSprite->scaleW << 1) + xh;
+			const s32 xlp = ((u64(_pObjSprite->imageW) - CC.A1) << 24) / ((_pObjSprite->scaleW - 1) << 1) + (xh << 16);
+			xl = static_cast<s16>(xlp >> 16);
 			yh = (_pObjSprite->objY + CC.A2) & CC.B0;
-			yl = ((_pObjSprite->imageH - CC.A1) << 8) / (_pObjSprite->scaleH << 1) + yh;
+			const s32 ylp = ((u64(_pObjSprite->imageH) - CC.A1) << 24) / ((_pObjSprite->scaleH - 1) << 1) + (yh << 16);
+			yl = static_cast<s16>(ylp >> 16);
 		}
 
 		ulx = _FIXED2FLOAT(xh, 2);
@@ -575,8 +581,8 @@ void gSPObjSprite(u32 _sp)
 	const s16 y0 = (objMtx.Y + CC.B3) & CC.B0;
 	const s16 ulx = objSprite->objX + CC.A3;
 	const s16 uly = objSprite->objY + CC.A3;
-	const s16 lrx = ((objSprite->imageW - CC.A1) << 8) / (objSprite->scaleW << 1) + ulx;
-	const s16 lry = ((objSprite->imageH - CC.A1) << 8) / (objSprite->scaleH << 1) + uly;
+	const s16 lrx = ((u32(objSprite->imageW) - CC.A1) << 8) / (u32(objSprite->scaleW) << 1) + ulx;
+	const s16 lry = ((u32(objSprite->imageH) - CC.A1) << 8) / (u32(objSprite->scaleH) << 1) + uly;
 
 	auto calcX = [&](s16 _x, s16 _y) -> f32
 	{
