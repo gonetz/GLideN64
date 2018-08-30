@@ -362,9 +362,10 @@ void GBIInfo::loadMicrocode(u32 uc_start, u32 uc_dstart, u16 uc_dsize)
 
 			int type = NONE;
 
-			if (strncmp( &uc_str[4], "SW", 2 ) == 0)
+			if (strncmp(&uc_str[4], "SW", 2) == 0) {
 				type = F3D;
-			else if (strncmp( &uc_str[4], "Gfx", 3 ) == 0) {
+				current.NoN = strncmp(&uc_str[16], "2.0G", 4) == 0;
+			} else if (strncmp(&uc_str[4], "Gfx", 3) == 0) {
 				current.NoN = (strstr( uc_str + 4, ".NoN") != nullptr);
 
 				if (strncmp( &uc_str[14], "F3D", 3 ) == 0) {
