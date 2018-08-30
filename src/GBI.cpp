@@ -376,9 +376,10 @@ void GBIInfo::loadMicrocode(u32 uc_start, u32 uc_dstart, u16 uc_dsize)
 						if (uc_str[35] == 'H')
 							current.combineMatrices = true;
 					}
-					if (strncmp(&uc_str[14], "F3DFLX", 6) == 0)
+					if (strncmp(&uc_str[14], "F3DFLX", 6) == 0) {
 						type = F3DFLX2;
-					else if (strncmp(&uc_str[14], "F3DZEX", 6) == 0) {
+						current.NoN = true;
+					} else if (strncmp(&uc_str[14], "F3DZEX", 6) == 0) {
 						// Zelda games
 						if (uc_str[34] == '6')
 							type = F3DZEX2OOT;
