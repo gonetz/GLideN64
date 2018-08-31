@@ -226,6 +226,10 @@ void GBIInfo::_makeCurrent(MicrocodeInfo * _pCurrent)
 				S2DEX_Init();
 				m_hwlSupported = false;
 			break;
+			case S2DEX_1_03:
+				S2DEX_1_03_Init();
+				m_hwlSupported = false;
+				break;
 			case S2DEX2:
 				S2DEX2_Init();
 				m_hwlSupported = false;
@@ -430,9 +434,12 @@ void GBIInfo::loadMicrocode(u32 uc_start, u32 uc_dstart, u16 uc_dsize)
 				else if (strncmp( &uc_str[14], "S2D", 3 ) == 0) {
 					u32 t = 20;
 					while (!std::isdigit(uc_str[t]) && t++ < j);
-					if (uc_str[t] == '1')
-						type = S2DEX;
-					else if (uc_str[t] == '2')
+					if (uc_str[t] == '1') {
+						if (strncmp(&uc_str[21], "1.03", 4) == 0)
+							type = S2DEX_1_03;
+						else
+							type = S2DEX;
+					} else if (uc_str[t] == '2')
 						type = S2DEX2;
 					current.texturePersp = false;
 				}
