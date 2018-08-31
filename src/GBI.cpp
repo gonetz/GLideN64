@@ -41,37 +41,55 @@
 
 u32 last_good_ucode = (u32) -1;
 
-SpecialMicrocodeInfo specialMicrocodes[] =
+struct SpecialMicrocodeInfo
 {
-	{ F3D,			false,	true,	0xe62a706d, "Fast3D" },
-	{ F3D,			false,	false,	0x7d372819, "Super3D" }, // Pachinko nichi 365
-	{ F3D,			false,	false,	0xe01e14be, "Super3D" }, // Eikou no Saint Andrews
-	{ F3D,			false,	true,	0x4AED6B3B, "Fast3D" }, //Vivid Dolls [ALECK64]
-	{ F3DSETA,		false,	true,	0x2edee7be, "RSP SW Version: 2.0D, 04-01-96" },
-	{ F3DBETA,		false,	true,	0xd17906e2, "RSP SW Version: 2.0D, 04-01-96" }, // Wave Race (U)
-	{ F3DBETA,		false,	true,	0x94c4c833, "RSP SW Version: 2.0D, 04-01-96" }, // Star Wars Shadows of Empire
-	{ F3DEX,		true,	true,	0x637b4b58, "RSP SW Version: 2.0D, 04-01-96" },
-	{ F3D,			true,	true,	0x54c558ba, "RSP SW Version: 2.0D, 04-01-96" }, // Pilot Wings
-	{ L3D,			true,	true,	0x771ce0c4, "RSP SW Version: 2.0D, 04-01-96" }, // Blast Corps
-	{ F3DGOLDEN,	true,	true,	0x302bca09, "RSP SW Version: 2.0G, 09-30-96" }, // GoldenEye
-	{ S2DEX,		false,	true,	0x9df31081, "RSP Gfx ucode S2DEX  1.06 Yoshitaka Yasumoto Nintendo." },
-	{ F3DDKR,		false,	true,	0x8d91244f, "Diddy Kong Racing" },
-	{ F3DDKR,		false,	true,	0x6e6fc893, "Diddy Kong Racing" },
-	{ F3DJFG,		false,	true,	0xbde9d1fb, "Jet Force Gemini" },
-	{ F3DPD,		true,	true,	0x1c4f7869, "Perfect Dark" },
-	{ Turbo3D,		false,	true,	0x2bdcfc8a, "Turbo3D" },
-	{ F3DEX2CBFD,	true,	true,	0x1b4ace88, "Conker's Bad Fur Day" },
-	{ F5Rogue,		false,	false,	0xda51ccdb, "Star Wars RS" },
-	{ F3DZEX2MM,	true,	true,	0xd39a0d4f, "Animal Forest" },
-	{ S2DEX2,		false,	true,	0x02c399dd, "Animal Forest" },
-	{ T3DUX,		false,	true,	0xbad437f2, "T3DUX vers 0.83 for Toukon Road" },
-	{ T3DUX,		false,	true,	0xd0a1aa3d, "T3DUX vers 0.85 for Toukon Road 2" },
-	{ F3DEX2ACCLAIM,true,	true,	0xe44df568, "Acclaim games: Turok2 & 3, Armories and South park" },
-	{ ZSortBOSS,	false,	false,  0x553538cc, "World Driver Championship" }, // USA
-	{ ZSortBOSS,	false,	false,  0x75ed44cc, "World Driver Championship" }, // European
-	{ ZSortBOSS,	false,	false,  0x6a76f8dd, "Stunt Racer" },
-	{ F5Indi_Naboo,	false,	false,	0x6859bf8e, "Indiana Jones" },
-	{ F5Indi_Naboo,	false,	false,	0x23fef05f, "SW Ep.1 Battle for Naboo" }
+	u32 type;
+	bool NoN; // ucode does not use near clipping
+	bool negativeY; // Y is inverted
+	bool fast3DPerspNorm; // ucode is from Fast3D family and has G_PERSPNORMALIZE. See #1303
+	u32 crc;
+};
+
+static const
+std::vector<SpecialMicrocodeInfo> specialMicrocodes =
+{
+	{ S2DEX2,		false,	true,	false,	0x02c399dd }, // Animal Forest
+	{ F3DEX,		false,	false,	true,	0x0ace4c3f }, // Mario Kart 64
+	{ F3D,			true,	false,	false,	0x16c3a775 }, // AeroFighters
+	{ F3DEX2CBFD,	true,	true,	false,	0x1b4ace88 }, // Conker's Bad Fur Day
+	{ F3DPD,		true,	true,	false,	0x1c4f7869 }, // Perfect Dark
+	{ F3DEX,		false,	false,	true,	0x1f24cc84 }, // Wayne Gretzky's 3D Hockey (U)
+	{ F5Indi_Naboo,	false,	false,	false,	0x23fef05f }, // SW Ep.1 Battle for Naboo
+	{ Turbo3D,		false,	true,	false,	0x2bdcfc8a }, // Dark Rift, Turbo3D
+	{ F3DSETA,		false,	true,	true,	0x2edee7be }, // RSP SW Version: 2.0D, 04-01-96
+	{ F3DGOLDEN,	true,	true,	false,	0x302bca09 }, // RSP SW Version: 2.0G, 09-30-96 GoldenEye
+	{ F3D,			false,	true,	false,	0x4AED6B3B }, // Vivid Dolls [ALECK64]
+	{ F3D,			true,	true,	true,	0x54c558ba }, // RSP SW Version: 2.0D, 04-01-96 Pilot Wings, Blast Corps
+	{ ZSortBOSS,	false,	false,	false,	0x553538cc }, // World Driver Championship
+	{ F3D,			false,	false,	true,	0x55be9bad }, // RSP SW Version: 2.0D, 04-01-96, Mischief Makers, Mortal Combat Trilogy, J.League Live
+	{ F3DEX,		true,	true,	true,	0x637b4b58 }, // RSP SW Version: 2.0D, 04-01-96 Power League
+	{ F5Indi_Naboo,	false,	false,	false,	0x6859bf8e }, // Indiana Jones
+	{ F3D,			false,	false,	true,	0x6932365f }, // Super Mario 64
+	{ ZSortBOSS,	false,	false,	false,	0x6a76f8dd }, // Stunt Racer
+	{ F3DDKR,		false,	true,	true,	0x6e6fc893 }, // Diddy Kong Racing
+	{ ZSortBOSS,	false,	false,	false,	0x75ed44cc }, // World Driver Championship, European
+	{ F3D,			true,	false,	true,	0x77195a68 }, // Dark Rift
+	{ L3D,			true,	true,	true,	0x771ce0c4 }, // RSP SW Version: 2.0D, 04-01-96 Blast Corps
+	{ F3D,			false,	false,	true,	0x7d372819 }, // Super Mario 64, Pachinko nichi 365
+	{ F3DDKR,		false,	true,	true,	0x8d91244f }, // Diddy Kong Racing
+	{ F3DBETA,		false,	true,	true,	0x94c4c833 }, // Star Wars Shadows of Empire
+	{ S2DEX,		false,	true,	false,	0x9df31081 }, // RSP Gfx ucode S2DEX  1.06 Yoshitaka Yasumoto Nintendo
+	{ T3DUX,		false,	true,	false,	0xbad437f2 }, // T3DUX vers 0.83 for Toukon Road
+	{ F3DJFG,		false,	true,	true,	0xbde9d1fb }, // Jet Force Gemini, Mickey
+	{ T3DUX,		false,	true,	false,	0xd0a1aa3d }, // T3DUX vers 0.85 for Toukon Road 2
+	{ F3DBETA,		false,	true,	true,	0xd17906e2 }, // RSP SW Version: 2.0D, 04-01-96, Wave Race (U)
+	{ F3DZEX2MM,	true,	true,	false,	0xd39a0d4f }, // Animal Forest
+	{ F3D,			false,	false,	true,	0xd3ab59b2 }, // Cruise'n USA
+	{ F5Rogue,		false,	false,	false,	0xda51ccdb }, // Star Wars RS
+	{ F3D,			false,	false,	false,	0xe01e14be }, // Eikou no Saint Andrews
+	{ F3DEX2ACCLAIM,true,	true,	false,	0xe44df568 }, // Acclaim games: Turok2 & 3, Armories and South park
+	{ F3D,			false,	true,	false,	0xe62a706d }, // Fast3D
+	{ F3D,			false,	false,	true,	0xfff0637d }, // RSP SW Version: 2.0D, 04-01-96, Mischief Makers
 };
 
 u32 G_RDPHALF_1, G_RDPHALF_2, G_RDPHALF_CONT;
@@ -293,6 +311,11 @@ void GBIInfo::_makeCurrent(MicrocodeInfo * _pCurrent)
 			gfxContext.setClampMode(graphics::ClampMode::NoNearPlaneClipping);
 		else
 			gfxContext.setClampMode(graphics::ClampMode::ClippingEnabled);
+		if (m_pCurrent->fast3DPersp) {
+			GBI_SetGBI(G_PERSPNORM, F3DBETA_PERSPNORM, F3DBETA_Perpnorm);
+			GBI_SetGBI(G_RDPHALF_1, F3DBETA_RDPHALF_1, F3D_RDPHalf_1);
+			GBI_SetGBI(G_RDPHALF_2, F3DBETA_RDPHALF_2, F3D_RDPHalf_2);
+		}
 	} else if (m_pCurrent->NoN != _pCurrent->NoN) {
 		if (_pCurrent->NoN)
 			gfxContext.setClampMode(graphics::ClampMode::NoNearPlaneClipping);
@@ -325,23 +348,22 @@ void GBIInfo::loadMicrocode(u32 uc_start, u32 uc_dstart, u16 uc_dsize)
 	current.address = uc_start;
 	current.dataAddress = uc_dstart;
 	current.dataSize = uc_dsize;
-	current.NoN = false;
-	current.negativeY = true;
-	current.texturePersp = true;
-	current.combineMatrices = false;
 	current.type = NONE;
 
 	// See if we can identify it by CRC
 	const u32 uc_crc = CRC_Calculate_Strict( 0xFFFFFFFF, &RDRAM[uc_start & 0x1FFFFFFF], 4096 );
-	const u32 numSpecialMicrocodes = sizeof(specialMicrocodes) / sizeof(SpecialMicrocodeInfo);
-	for (u32 i = 0; i < numSpecialMicrocodes; ++i) {
-		if (uc_crc == specialMicrocodes[i].crc) {
-			current.type = specialMicrocodes[i].type;
-			current.NoN = specialMicrocodes[i].NoN;
-			current.negativeY = specialMicrocodes[i].negativeY;
-			_makeCurrent(&current);
-			return;
-		}
+	SpecialMicrocodeInfo infoToSearch;
+	infoToSearch.crc = uc_crc;
+	auto it = std::lower_bound(specialMicrocodes.begin(), specialMicrocodes.end(), infoToSearch,
+			[](const SpecialMicrocodeInfo & i, const SpecialMicrocodeInfo & j){ return i.crc < j.crc; });
+	if (it != specialMicrocodes.end() && it->crc == uc_crc)	{
+		const SpecialMicrocodeInfo & info = *it;
+		current.type = info.type;
+		current.NoN = info.NoN;
+		current.negativeY = info.negativeY;
+		current.fast3DPersp = info.fast3DPerspNorm;
+		_makeCurrent(&current);
+		return;
 	}
 
 	// See if we can identify it by text
@@ -364,7 +386,6 @@ void GBIInfo::loadMicrocode(u32 uc_start, u32 uc_dstart, u16 uc_dsize)
 
 			if (strncmp(&uc_str[4], "SW", 2) == 0) {
 				type = F3D;
-				current.NoN = strncmp(&uc_str[16], "2.0G", 4) == 0;
 			} else if (strncmp(&uc_str[4], "Gfx", 3) == 0) {
 				current.NoN = (strstr( uc_str + 4, ".NoN") != nullptr);
 

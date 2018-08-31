@@ -33,6 +33,10 @@ void F3DBETA_Quad( u32 w0, u32 w1 )
 	gSP1Quadrangle( _SHIFTR( w1, 24, 8 ) / 5, _SHIFTR( w1, 16, 8 ) / 5, _SHIFTR( w1, 8, 8 ) / 5, _SHIFTR( w1, 0, 8 ) / 5 );
 }
 
+void F3DBETA_Perpnorm(u32 w0, u32 w1)
+{
+	gSPPerspNormalize(w1);
+}
 
 void F3DBETA_Init()
 {
@@ -65,9 +69,9 @@ void F3DBETA_Init()
 	GBI_SetGBI( G_SETGEOMETRYMODE,		F3D_SETGEOMETRYMODE,	F3D_SetGeometryMode );
 	GBI_SetGBI( G_CLEARGEOMETRYMODE,	F3D_CLEARGEOMETRYMODE,	F3D_ClearGeometryMode );
 	GBI_SetGBI( G_QUAD,					F3D_QUAD,				F3DBETA_Quad );
-	GBI_SetGBI( G_RDPHALF_1,			F3D_RDPHALF_1,			F3D_RDPHalf_1 );
-	GBI_SetGBI( G_RDPHALF_2,			F3D_RDPHALF_2,			F3D_RDPHalf_2 );
-	GBI_SetGBI( G_RDPHALF_CONT,			F3D_RDPHALF_CONT,		F3D_RDPHalf_Cont );
+	GBI_SetGBI( G_PERSPNORM,			F3DBETA_PERSPNORM,		F3DBETA_Perpnorm);
+	GBI_SetGBI( G_RDPHALF_1,			F3DBETA_RDPHALF_1,		F3D_RDPHalf_1 );
+	GBI_SetGBI( G_RDPHALF_2,			F3DBETA_RDPHALF_2,		F3D_RDPHalf_2 );
 	GBI_SetGBI( G_TRI2,					F3DBETA_TRI2,			F3DBETA_Tri2 );
 }
 

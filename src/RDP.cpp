@@ -249,10 +249,7 @@ bool _getTexRectParams(u32 & w2, u32 & w3)
 		if (cmd2 == G_RDPHALF_2)
 			texRectMode = gspTexRect;
 	} else if (cmd1 == 0xB3) {
-		if (cmd2 == 0xB2)
-			texRectMode = gspTexRect;
-		else
-			texRectMode = halfTexRect;
+		texRectMode = halfTexRect;
 	} else if (cmd1 == 0xF1)
 		texRectMode = halfTexRect;
 

@@ -493,27 +493,17 @@ struct Light
 
 // GBI commands
 typedef void (*GBIFunc)( u32 w0, u32 w1 );
-//extern GBIFunc GBICmd[256];
-
-struct SpecialMicrocodeInfo
-{
-	u32 type;
-	bool NoN;
-	bool negativeY;
-	u32 crc;
-	const char *text;
-};
 
 struct MicrocodeInfo
 {
 	u32 address, dataAddress;
 	u16 dataSize;
 	u32 type;
-	u32 crc;
-	bool NoN;
-	bool negativeY;
-	bool texturePersp;
-	bool combineMatrices;
+	bool NoN = false;
+	bool negativeY = true;
+	bool fast3DPersp = false;
+	bool texturePersp = true;
+	bool combineMatrices = false;
 };
 
 struct GBIInfo
