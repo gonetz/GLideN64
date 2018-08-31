@@ -597,9 +597,9 @@ void gSPObjSprite(u32 _sp)
 	};
 
 	f32 uls = 0.0f;
-	f32 lrs = _FIXED2FLOAT(objSprite->imageW, 5);
+	f32 lrs = _FIXED2FLOAT(objSprite->imageW, 5) - 1.0f;
 	f32 ult = 0.0f;
-	f32 lrt = _FIXED2FLOAT(objSprite->imageH, 5);
+	f32 lrt = _FIXED2FLOAT(objSprite->imageH, 5) - 1.0f;
 
 	if (objSprite->imageFlags & G_BG_FLAG_FLIPS)
 		std::swap(uls, lrs);
