@@ -193,6 +193,9 @@ void resetObjMtx()
 	objMtx.BaseScaleY = 1 << 10;
 }
 
+static
+bool gs_bVer1_3 = true;
+
 struct S2DEXCoordCorrector
 {
 	S2DEXCoordCorrector()
@@ -217,25 +220,67 @@ struct S2DEXCoordCorrector
 		};
 		static const s16 * CorrectorsA23_16 = reinterpret_cast<const s16*>(CorrectorsA23);
 
-		static const u32 CorrectorsB03[] = {
-			0xFFFC0000,
-			0x00000001,
-			0xFFFF0003,
-			0xFFF00000
-		};
-		static const s16 * CorrectorsB03_16 = reinterpret_cast<const s16*>(CorrectorsB03);
-
 		const u32 O1 = (gSP.objRendermode & (G_OBJRM_SHRINKSIZE_1 | G_OBJRM_SHRINKSIZE_2 | G_OBJRM_WIDEN)) >> 3;
 		A1 = CorrectorsA01_16[(1 + O1) ^ 1];
 		const u32 O2 = (gSP.objRendermode & (G_OBJRM_SHRINKSIZE_1 | G_OBJRM_BILERP)) >> 2;
 		A2 = CorrectorsA23_16[(0 + O2) ^ 1];
 		A3 = CorrectorsA23_16[(1 + O2) ^ 1];
-		const u32 O3 = (gSP.objRendermode & G_OBJRM_BILERP) >> 1;
+
+		const s16 * CorrectorsB03_16 = nullptr;
+		u32 O3 = 0;
+		if (gs_bVer1_3) {
+			static const u32 CorrectorsB03_v1_3[] = {
+				0xFFFC0000,
+				0x00000000,
+				0x00000001,
+				0x00000000,
+				0xFFFC0000,
+				0x00000000,
+				0x00000001,
+				0xFFFF0001,
+				0xFFFC0000,
+				0x00030000,
+				0x00000001,
+				0x00000000,
+				0xFFFC0000,
+				0x00030000,
+				0x00000001,
+				0xFFFF0000,
+				0xFFFF0003,
+				0x0000FFF0,
+				0x00000001,
+				0x0000FFFF,
+				0xFFFF0003,
+				0x0000FFF0,
+				0x00000001,
+				0xFFFFFFFF,
+				0xFFFF0003,
+				0x0000FFF0,
+				0x00000000,
+				0x00000000,
+				0xFFFF0003,
+				0x0000FFF0,
+				0x00000000,
+				0xFFFF0000
+			};
+			CorrectorsB03_16 = reinterpret_cast<const s16*>(CorrectorsB03_v1_3);
+			O3 = (_SHIFTL(gSP.objRendermode, 3, 16) & (G_OBJRM_SHRINKSIZE_1 | G_OBJRM_SHRINKSIZE_2 | G_OBJRM_WIDEN)) >> 1;
+		} else {
+			static const u32 CorrectorsB03[] = {
+				0xFFFC0000,
+				0x00000001,
+				0xFFFF0003,
+				0xFFF00000
+			};
+			CorrectorsB03_16 = reinterpret_cast<const s16*>(CorrectorsB03);
+			O3 = (gSP.objRendermode & G_OBJRM_BILERP) >> 1;
+		}
 		B0 = CorrectorsB03_16[(0 + O3) ^ 1];
+		B2 = CorrectorsB03_16[(2 + O3) ^ 1];
 		B3 = CorrectorsB03_16[(3 + O3) ^ 1];
 	}
 
-	s16 A1, A2, A3, B0, B3;
+	s16 A1, A2, A3, B0, B2, B3;
 };
 
 struct ObjCoordinates
@@ -250,26 +295,35 @@ struct ObjCoordinates
 		S2DEXCoordCorrector CC;
 		s16 xh, xl, yh, yl;
 		if (_useMatrix) {
-			// scaleW = (BaseScaleX * 0x40 * scaleW) >> 16
-			// scaleH = (BaseScaleY * 0x40 * scaleH) >> 16
-			// XHP = ((objX << 16) * 0x0800) / (BaseScaleX * 2 - 0x02) + ((AND(X + A2) by B0) << 16))
-			// XH = XHP >> 16
-			// XLP = XHP + ((ImageW - A1) << 24) / (scaleW * 2 - 0x02)
-			// XL = XLP >> 16
-			// YHP = ((objY << 16) * 0x0800) / (BaseScaleY * 2 - 0x02) + ((AND(Y + A2) by B0) << 16)
-			// YH = YHP >> 16
-			// YLP = YHP + ((ImageH - A1) << 24)/(scaleH * 2 - 0x02)
-			// YL = YLP >> 16
 			const u32 scaleW = (u32(objMtx.BaseScaleX) * 0x40 * _pObjSprite->scaleW) >> 16;
 			const u32 scaleH = (u32(objMtx.BaseScaleY) * 0x40 * _pObjSprite->scaleH) >> 16;
-			const s32 xhp = ((s64(_pObjSprite->objX) << 16) * 0x0800) / ((objMtx.BaseScaleX - 1) << 1) + (((s32(objMtx.X) + CC.A2) & CC.B0) << 16);
-			xh = static_cast<s16>(xhp >> 16);
-			const s32 xlp = ((u64(_pObjSprite->imageW) - CC.A1) << 24) / ((scaleW - 1) << 1) + xhp;
-			xl = static_cast<s16>(xlp >> 16);
-			const s32 yhp = ((s64(_pObjSprite->objY) << 16) * 0x0800) / ((objMtx.BaseScaleY - 1) << 1) + (((s32(objMtx.Y) + CC.A2) & CC.B0) << 16);
-			yh = static_cast<s16>(yhp >> 16);
-			const s32 ylp = ((u64(_pObjSprite->imageH) - CC.A1) << 24) / ((scaleH - 1) << 1) + yhp;
-			yl = static_cast<s16>(ylp >> 16);
+			if (gs_bVer1_3) {
+				// XH = AND((((objX * 0x0800) << 16) / ((BaseScaleX * 2 - 0x02) >> 16) + X + A2) by B0
+				// XL = XH + AND(((imageW - A1) * 0x100) / (scaleW * 2 - 0x02) + B2) by B0
+				// YH = AND((((objY * 0x0800) << 16) / ((BaseScaleY * 2 - 0x02) >> 16) + Y + A2) by B0
+				// YL = YH + AND(((imageH - A1) * 0x100) / (scaleH * 2 - 0x02) + B2) by B0
+				xh = static_cast<s16>(((((s64(_pObjSprite->objX) << 27) / ((objMtx.BaseScaleX - 1) << 1)) >> 16) + objMtx.X + CC.A2) & CC.B0);
+				xl = static_cast<s16>((((u32(_pObjSprite->imageW) - CC.A1) << 8) / ((scaleW - 1) << 1) /*+ CC.B2*/) & CC.B0) + xh;
+				yh = static_cast<s16>(((((s64(_pObjSprite->objY) << 27) / ((objMtx.BaseScaleY - 1) << 1)) >> 16) + objMtx.Y + CC.A2) & CC.B0);
+				yl = static_cast<s16>((((u32(_pObjSprite->imageH) - CC.A1) << 8) / ((scaleH - 1) << 1) /*+ CC.B2*/) & CC.B0) + yh;
+			} else {
+				// XHP = ((objX << 16) * 0x0800) / (BaseScaleX * 2 - 0x02) + ((AND(X + A2) by B0) << 16))
+				// XH = XHP >> 16
+				// XLP = XHP + ((ImageW - A1) << 24) / (scaleW * 2 - 0x02)
+				// XL = XLP >> 16
+				// YHP = ((objY << 16) * 0x0800) / (BaseScaleY * 2 - 0x02) + ((AND(Y + A2) by B0) << 16)
+				// YH = YHP >> 16
+				// YLP = YHP + ((ImageH - A1) << 24)/(scaleH * 2 - 0x02)
+				// YL = YLP >> 16
+				const s32 xhp = ((s64(_pObjSprite->objX) << 16) * 0x0800) / ((objMtx.BaseScaleX - 1) << 1) + (((s32(objMtx.X) + CC.A2) & CC.B0) << 16);
+				xh = static_cast<s16>(xhp >> 16);
+				const s32 xlp = ((u64(_pObjSprite->imageW) - CC.A1) << 24) / ((scaleW - 1) << 1) + xhp;
+				xl = static_cast<s16>(xlp >> 16);
+				const s32 yhp = ((s64(_pObjSprite->objY) << 16) * 0x0800) / ((objMtx.BaseScaleY - 1) << 1) + (((s32(objMtx.Y) + CC.A2) & CC.B0) << 16);
+				yh = static_cast<s16>(yhp >> 16);
+				const s32 ylp = ((u64(_pObjSprite->imageH) - CC.A1) << 24) / ((scaleH - 1) << 1) + yhp;
+				yl = static_cast<s16>(ylp >> 16);
+			}
 		} else {
 			//	XH = AND(objX + A2) by B0
 			//	XL = (((AND (objX + A2) by B0) << 16) + ((ImageW - A1) << 24 )/(scaleW * 2 - 0x02)) >> 16
@@ -289,8 +343,13 @@ struct ObjCoordinates
 		lry = _FIXED2FLOAT(yl, 2);
 
 		uls = ult = 0;
-		lrs = _FIXED2FLOAT(_pObjSprite->imageW, 5) - 1.0f;
-		lrt = _FIXED2FLOAT(_pObjSprite->imageH, 5) - 1.0f;
+		lrs = _FIXED2FLOAT(_pObjSprite->imageW, 5);
+		lrt = _FIXED2FLOAT(_pObjSprite->imageH, 5);
+		if (!gs_bVer1_3) {
+			lrs -= 1.0f;
+			lrt -= 1.0f;
+		}
+
 		if ((_pObjSprite->imageFlags & G_BG_FLAG_FLIPS) != 0)
 			std::swap(uls, lrs);
 		if ((_pObjSprite->imageFlags & G_BG_FLAG_FLIPT) != 0)
@@ -945,6 +1004,7 @@ void S2DEX_Init()
 	resetObjMtx();
 
 	GBI.PCStackSize = 18;
+	gs_bVer1_3 = false;
 
 	//          GBI Command             Command Value			Command Function
 	GBI_SetGBI( G_SPNOOP,				F3D_SPNOOP,				F3D_SPNoOp );
@@ -971,3 +1031,8 @@ void S2DEX_Init()
 	GBI_SetGBI(	G_LOAD_UCODE,			S2DEX_LOAD_UCODE,		F3DEX_Load_uCode );
 }
 
+void S2DEX_1_03_Init()
+{
+	S2DEX_Init();
+	gs_bVer1_3 = true;
+}
