@@ -1158,7 +1158,7 @@ void GraphicsDrawer::drawTexturedRect(const TexturedRectParams & _params)
 	const FrameBuffer * pCurrentBuffer = _params.pBuffer;
 	DisplayWindow & wnd = dwnd();
 	TextureCache & cache = textureCache();
-	const bool bUseBilinear = (gDP.otherMode.textureFilter | (gSP.objRendermode&G_OBJRM_BILERP)) != 0;
+	const bool bUseBilinear = gDP.otherMode.textureFilter != 0;
 	const bool bUseTexrectDrawer = config.generalEmulation.enableNativeResTexrects != 0
 		&& bUseBilinear
 		&& pCurrentCombiner->usesTexture()
