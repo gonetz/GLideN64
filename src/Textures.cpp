@@ -1302,7 +1302,7 @@ void TextureCache::activateTexture(u32 _t, CachedTexture *_pTexture)
 		params.target = textureTarget::TEXTURE_2D;
 		params.textureUnitIndex = textureIndices::Tex[_t];
 
-		const bool bUseBilinear = (gDP.otherMode.textureFilter | (gSP.objRendermode&G_OBJRM_BILERP)) != 0;
+		const bool bUseBilinear = gDP.otherMode.textureFilter != 0;
 		const bool bUseLOD = currentCombiner()->usesLOD();
 		const s32 texLevel = bUseLOD ? _pTexture->max_level : 0;
 		params.maxMipmapLevel = Parameter(texLevel);
