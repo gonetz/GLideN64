@@ -221,6 +221,7 @@ struct S2DEXCoordCorrector
 		static const s16 * CorrectorsA23_16 = reinterpret_cast<const s16*>(CorrectorsA23);
 
 		const u32 O1 = (gSP.objRendermode & (G_OBJRM_SHRINKSIZE_1 | G_OBJRM_SHRINKSIZE_2 | G_OBJRM_WIDEN)) >> 3;
+		A0 = CorrectorsA01_16[(0 + O1) ^ 1];
 		A1 = CorrectorsA01_16[(1 + O1) ^ 1];
 		const u32 O2 = (gSP.objRendermode & (G_OBJRM_SHRINKSIZE_1 | G_OBJRM_BILERP)) >> 2;
 		A2 = CorrectorsA23_16[(0 + O2) ^ 1];
@@ -280,7 +281,7 @@ struct S2DEXCoordCorrector
 		B3 = CorrectorsB03_16[(3 + O3) ^ 1];
 	}
 
-	s16 A1, A2, A3, B0, B2, B3;
+	s16 A0, A1, A2, A3, B0, B2, B3;
 };
 
 struct ObjCoordinates
@@ -294,6 +295,13 @@ struct ObjCoordinates
 		/* Fixed point coordinates calculation. Decoded by olivieryuyu */
 		S2DEXCoordCorrector CC;
 		s16 xh, xl, yh, yl;
+		s16 sh, sl, th, tl;
+		auto calcST = [&](s16 B, u32 scaleH) {
+			sh = CC.A0 + B;
+			sl = sh + _pObjSprite->imageW + CC.A0 - CC.A1 - 1;
+			th = sh - (((yh & 3) * 0x0200 * scaleH) >> 16);
+			tl = th + _pObjSprite->imageH + CC.A0 - CC.A1 - 1;
+		};
 		if (_useMatrix) {
 			const u32 scaleW = (u32(objMtx.BaseScaleX) * 0x40 * _pObjSprite->scaleW) >> 16;
 			const u32 scaleH = (u32(objMtx.BaseScaleY) * 0x40 * _pObjSprite->scaleH) >> 16;
@@ -306,6 +314,7 @@ struct ObjCoordinates
 				xl = static_cast<s16>((((u32(_pObjSprite->imageW) - CC.A1) << 8) / ((scaleW - 1) << 1) /*+ CC.B2*/) & CC.B0) + xh;
 				yh = static_cast<s16>(((((s64(_pObjSprite->objY) << 27) / ((objMtx.BaseScaleY - 1) << 1)) >> 16) + objMtx.Y + CC.A2) & CC.B0);
 				yl = static_cast<s16>((((u32(_pObjSprite->imageH) - CC.A1) << 8) / ((scaleH - 1) << 1) /*+ CC.B2*/) & CC.B0) + yh;
+				calcST(CC.B3, scaleH);
 			} else {
 				// XHP = ((objX << 16) * 0x0800) / (BaseScaleX * 2 - 0x02) + ((AND(X + A2) by B0) << 16))
 				// XH = XHP >> 16
@@ -323,6 +332,7 @@ struct ObjCoordinates
 				yh = static_cast<s16>(yhp >> 16);
 				const s32 ylp = ((u64(_pObjSprite->imageH) - CC.A1) << 24) / ((scaleH - 1) << 1) + yhp;
 				yl = static_cast<s16>(ylp >> 16);
+				calcST(CC.B2, scaleH);
 			}
 		} else {
 			//	XH = AND(objX + A2) by B0
@@ -335,6 +345,7 @@ struct ObjCoordinates
 			yh = (_pObjSprite->objY + CC.A2) & CC.B0;
 			const s32 ylp = ((u64(_pObjSprite->imageH) - CC.A1) << 24) / ((_pObjSprite->scaleH - 1) << 1) + (yh << 16);
 			yl = static_cast<s16>(ylp >> 16);
+			calcST(CC.B2, _pObjSprite->scaleH);
 		}
 
 		ulx = _FIXED2FLOAT(xh, 2);
@@ -342,13 +353,10 @@ struct ObjCoordinates
 		uly = _FIXED2FLOAT(yh, 2);
 		lry = _FIXED2FLOAT(yl, 2);
 
-		uls = ult = 0;
-		lrs = _FIXED2FLOAT(_pObjSprite->imageW, 5);
-		lrt = _FIXED2FLOAT(_pObjSprite->imageH, 5);
-		if (!gs_bVer1_3) {
-			lrs -= 1.0f;
-			lrt -= 1.0f;
-		}
+		uls = _FIXED2FLOAT(sh, 5);
+		lrs = _FIXED2FLOAT(sl, 5);
+		ult = _FIXED2FLOAT(th, 5);
+		lrt = _FIXED2FLOAT(tl, 5);
 
 		if ((_pObjSprite->imageFlags & G_BG_FLAG_FLIPS) != 0)
 			std::swap(uls, lrs);
