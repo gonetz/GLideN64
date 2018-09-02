@@ -443,7 +443,7 @@ void GBIInfo::loadMicrocode(u32 uc_start, u32 uc_dstart, u16 uc_dsize)
 
 			if (type != NONE) {
 				current.type = type;
-				LOG(LOG_VERBOSE, "Load microcode type: %d crc: 0x%08x romname: %s\n", current.type, uc_crc, RSP.romname);
+				LOG(LOG_VERBOSE, "Load microcode (%s) type: %d crc: 0x%08x romname: %s\n", uc_str, current.type, uc_crc, RSP.romname);
 				_makeCurrent(&current);
 				return;
 			}
