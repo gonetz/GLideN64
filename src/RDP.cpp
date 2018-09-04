@@ -296,6 +296,8 @@ void _TexRect( u32 w0, u32 w1, bool flip )
 	u32 w2, w3;
 	if (!_getTexRectParams(w2, w3))
 		return;
+	RDP.w0 = w0;
+	RDP.w1 = w1;
 	const u32 ulx = _SHIFTR(w1, 12, 12);
 	const u32 uly = _SHIFTR(w1, 0, 12);
 	const u32 lrx = _SHIFTR(w0, 12, 12);
@@ -408,7 +410,7 @@ void RDP_Init()
 	GBI.cmd[G_TEXRECT]			= RDP_TexRect;
 	GBI.cmd[G_RDPNOOP]			= RDP_NoOp;
 
-	RDP.w2 = RDP.w3 = 0;
+	RDP.w0 = RDP.w1 = RDP.w2 = RDP.w3 = 0;
 	RDP.cmd_ptr = RDP.cmd_cur = 0;
 }
 
@@ -585,12 +587,12 @@ void RDP_ProcessRDPList()
 			::memcpy(RDP.cmd_data + MAXCMD, RDP.cmd_data, CmdLength[cmd] - (MAXCMD - RDP.cmd_cur) * 4);
 
 		// execute the command
-		u32 w0 = RDP.cmd_data[RDP.cmd_cur+0];
-		u32 w1 = RDP.cmd_data[RDP.cmd_cur+1];
-		RDP.w2 = RDP.cmd_data[RDP.cmd_cur+2];
+		RDP.w0 = RDP.cmd_data[RDP.cmd_cur + 0];
+		RDP.w1 = RDP.cmd_data[RDP.cmd_cur + 1];
+		RDP.w2 = RDP.cmd_data[RDP.cmd_cur + 2];
 		RDP.w3 = RDP.cmd_data[RDP.cmd_cur + 3];
 		RSP.cmd = cmd;
-		LLEcmd[cmd](w0, w1);
+		LLEcmd[cmd](RDP.w0, RDP.w1);
 
 		RDP.cmd_cur = (RDP.cmd_cur + CmdLength[cmd] / 4) & maxCMDMask;
 	}
