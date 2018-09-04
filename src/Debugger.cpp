@@ -181,8 +181,8 @@ void Debugger::_debugKeys()
 			auto curTexName = m_pCurTexInfo->texture->name;
 			auto beginItr =
 				(std::next(m_triSel) != m_triangles.cend() &&
-				(m_triSel->tex_info[0]->texture->name == curTexName ||
-					m_triSel->tex_info[1]->texture->name == curTexName)) ?
+				((m_triSel->tex_info[0] && m_triSel->tex_info[0]->texture->name == curTexName) ||
+				(m_triSel->tex_info[1] && m_triSel->tex_info[1]->texture->name == curTexName))) ?
 				std::next(m_triSel) :
 				m_triangles.cbegin();
 			auto predicate = [curTexName](const Triangles::value_type & val) {
