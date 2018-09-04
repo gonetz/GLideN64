@@ -216,6 +216,7 @@ bool TexrectDrawer::add()
 		if (!bContinue) {
 			draw();
 			drawer._updateStates(DrawingState::TexRect);
+			gfxContext.enable(enable::CULL_FACE, false);
 		}
 	}
 
