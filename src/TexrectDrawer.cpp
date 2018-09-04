@@ -6,6 +6,7 @@
 #include <Graphics/Parameters.h>
 #include "DisplayWindow.h"
 #include "Textures.h"
+#include "RDP.h"
 #include "RSP.h"
 #include "VI.h"
 #include "FrameBuffer.h"
@@ -192,7 +193,7 @@ bool TexrectDrawer::add()
 	GraphicsDrawer &  drawer = wnd.getDrawer();
 	RectVertex * pRect = drawer.m_rect;
 
-	m_curRect = _getiRect(RSP.w0, RSP.w1);
+	m_curRect = _getiRect(RDP.w0, RDP.w1);
 
 	bool bDownUp = false;
 	if (m_numRects != 0) {
