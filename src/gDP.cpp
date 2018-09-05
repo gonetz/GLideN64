@@ -448,6 +448,9 @@ void gDPLoadTile(u32 tile, u32 uls, u32 ult, u32 lrs, u32 lrt)
 	info.size = gDP.textureImage.size;
 	info.loadType = LOADTYPE_TILE;
 	info.bytes = bpl * height;
+	if (gDP.loadTile->size == G_IM_SIZ_32b)
+		// 32 bit texture loaded into lower and upper half of TMEM, thus actual bytes doubled.
+		info.bytes *= 2;
 
 	if (gDP.loadTile->line == 0)
 		return;
