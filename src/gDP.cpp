@@ -632,17 +632,13 @@ void gDPLoadTLUT( u32 tile, u32 uls, u32 ult, u32 lrs, u32 lrt )
 	u16 count = (u16)((gDP.tiles[tile].lrs - gDP.tiles[tile].uls + 1) * (gDP.tiles[tile].lrt - gDP.tiles[tile].ult + 1));
 	u32 address = gDP.textureImage.address + gDP.tiles[tile].ult * gDP.textureImage.bpl + (gDP.tiles[tile].uls << gDP.textureImage.size >> 1);
 	u16 pal = (u16)((gDP.tiles[tile].tmem - 256) >> 4);
-	u16 *dest = (u16*)&TMEM[gDP.tiles[tile].tmem];
-	
-	// Workaround for possible game/emulator bug (see bug #1250)
-	if (pal != 0)
-		count = 16;
+	u16 * dest = reinterpret_cast<u16*>(TMEM);
+	u32 destIdx = gDP.tiles[tile].tmem << 2;
 
 	int i = 0;
-	u32 destIdx = 0;
 	while (i < count) {
 		for (u16 j = 0; (j < 16) && (i < count); ++j, ++i) {
-			dest[destIdx&0x3FF] = swapword(*(u16*)(RDRAM + (address ^ 2)));
+			dest[(destIdx | 0x0400) & 0x07FF] = swapword(*(u16*)(RDRAM + (address ^ 2)));
 			address += 2;
 			destIdx += 4;
 		}
