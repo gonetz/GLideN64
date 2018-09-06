@@ -671,7 +671,8 @@ public:
 	void update(bool _force) override
 	{
 		int renderTarget = 0;
-		if (gDP.colorImage.address == gDP.depthImageAddress ) {
+		if ((gDP.colorImage.address == gDP.depthImageAddress ) ||
+			(gDP.fillColor.color == DepthClearColor && gDP.otherMode.cycleType == G_CYC_FILL)) {
 			renderTarget = gDP.otherMode.depthCompare + 1;
 		}
 		uRenderTarget.set(renderTarget, _force);
