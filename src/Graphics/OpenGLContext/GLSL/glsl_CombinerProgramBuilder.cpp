@@ -1947,11 +1947,13 @@ public:
 	{
 		if (config.frameBufferEmulation.N64DepthCompare != 0) {
 			m_part =
+				"uniform lowp int uEnableDepth;							\n"
 				"uniform lowp int uDepthMode;							\n"
 				"uniform lowp int uEnableDepthUpdate;					\n"
 				"uniform mediump float uDeltaZ;							\n"
-				"bool depth_compare(highp float curZ)									\n"
+				"bool depth_compare(highp float curZ)					\n"
 				"{														\n"
+				"  if (uEnableDepth == 0) return true;					\n"
 				;
 			if (_glinfo.imageTextures) {
 				m_part +=
