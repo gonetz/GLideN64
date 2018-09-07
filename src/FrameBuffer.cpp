@@ -1342,8 +1342,8 @@ void FrameBufferList::renderBuffer()
 	const s32 hEnd = _SHIFTR(*REG.VI_H_START, 0, 10);
 	const s32 hx1 = max(0, h0 + 640 - hEnd);
 	//const s32 hx1 = hx0 + rdpRes.vi_hres;
-	dstX0 = (s32)((hx0 + XoffsetRight) * dstScaleX);
-	dstX1 = m_overscan.getDrawingWidth() - (s32)((hx1 + Xdivot) * dstScaleX);
+	dstX0 = (s32)((hx0 * viScaleX + XoffsetRight) * dstScaleX);
+	dstX1 = m_overscan.getDrawingWidth() - (s32)((hx1 * viScaleX + Xdivot) * dstScaleX);
 
 	const f32 srcScaleY = pFilteredBuffer->m_scale;
 	CachedTexture * pBufferTexture = pFilteredBuffer->m_pTexture;
