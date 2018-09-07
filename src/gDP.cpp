@@ -466,20 +466,22 @@ void gDPLoadTile(u32 tile, u32 uls, u32 ult, u32 lrs, u32 lrt)
 	if (CheckForFrameBufferTexture(address, bpl2*height2))
 		return;
 
-	if ((address + height * gDP.textureImage.bpl) > RDRAMSize)
-		return;
-
 	if (gDP.loadTile->size == G_IM_SIZ_32b)
 		gDPLoadTile32b(gDP.loadTile->uls, gDP.loadTile->ult, gDP.loadTile->lrs, gDP.loadTile->lrt);
 	else {
 		u32 tmemAddr = gDP.loadTile->tmem;
 		const u32 line = gDP.loadTile->line;
 		for (u32 y = 0; y < height; ++y) {
-			UnswapCopyWrap(RDRAM, address, (u8*)TMEM, tmemAddr << 3, 0xFFF, bpl);
+			if (address + bpl > RDRAMSize)
+				UnswapCopyWrap(RDRAM, address, (u8*)TMEM, tmemAddr << 3, 0xFFF, RDRAMSize - address);
+			else
+				UnswapCopyWrap(RDRAM, address, (u8*)TMEM, tmemAddr << 3, 0xFFF, bpl);
 			if (y & 1)
 				DWordInterleaveWrap((u32*)TMEM, tmemAddr << 1, 0x3FF, line);
 
 			address += gDP.textureImage.bpl;
+			if (address >= RDRAMSize)
+				break;
 			tmemAddr += line;
 		}
 	}
