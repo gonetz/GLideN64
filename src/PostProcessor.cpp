@@ -66,18 +66,29 @@ void PostProcessor::_createResultBuffer(const FrameBuffer * _pMainBuffer)
 void PostProcessor::init()
 {
 	m_gammaCorrectionProgram.reset(gfxContext.createGammaCorrectionShader());
-	if (config.video.fxaa != 0)
+	m_postprocessingList.emplace_front(std::mem_fn(&PostProcessor::_doGammaCorrection)); // std::mem_fn to fix compilation with VS 2013
+	if (config.video.fxaa != 0) {
 		m_FXAAProgram.reset(gfxContext.createFXAAShader());
-	if (config.generalEmulation.enableBlitScreenWorkaround != 0)
+		m_postprocessingList.emplace_front(std::mem_fn(&PostProcessor::_doFXAA));
+	}
+	if (config.generalEmulation.enableBlitScreenWorkaround != 0) {
 		m_orientationCorrectionProgram.reset(gfxContext.createOrientationCorrectionShader());
+		m_postprocessingList.emplace_front(std::mem_fn(&PostProcessor::_doOrientationCorrection));
+	}
 }
 
 void PostProcessor::destroy()
 {
+	m_postprocessingList.clear();
 	m_gammaCorrectionProgram.reset();
 	m_FXAAProgram.reset();
 	m_orientationCorrectionProgram.reset();
 	m_pResultBuffer.reset();
+}
+
+const PostProcessor::PostprocessingList & PostProcessor::getPostprocessingList() const
+{
+	return m_postprocessingList;
 }
 
 PostProcessor & PostProcessor::get()
@@ -140,7 +151,7 @@ FrameBuffer * PostProcessor::_doPostProcessing(FrameBuffer * _pBuffer, graphics:
 	return m_pResultBuffer.get();
 }
 
-FrameBuffer * PostProcessor::doGammaCorrection(FrameBuffer * _pBuffer)
+FrameBuffer * PostProcessor::_doGammaCorrection(FrameBuffer * _pBuffer)
 {
 	if (_pBuffer == nullptr)
 		return nullptr;
@@ -151,7 +162,7 @@ FrameBuffer * PostProcessor::doGammaCorrection(FrameBuffer * _pBuffer)
 	return _doPostProcessing(_pBuffer, m_gammaCorrectionProgram.get());
 }
 
-FrameBuffer * PostProcessor::doOrientationCorrection(FrameBuffer * _pBuffer)
+FrameBuffer * PostProcessor::_doOrientationCorrection(FrameBuffer * _pBuffer)
 {
 	if (_pBuffer == nullptr)
 		return nullptr;
@@ -162,7 +173,7 @@ FrameBuffer * PostProcessor::doOrientationCorrection(FrameBuffer * _pBuffer)
 	return _doPostProcessing(_pBuffer, m_orientationCorrectionProgram.get());
 }
 
-FrameBuffer * PostProcessor::doFXAA(FrameBuffer * _pBuffer)
+FrameBuffer * PostProcessor::_doFXAA(FrameBuffer * _pBuffer)
 {
 	if (_pBuffer == nullptr)
 		return nullptr;

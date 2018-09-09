@@ -929,7 +929,9 @@ void FrameBufferList::_renderScreenSizeBuffer()
 	GraphicsDrawer & drawer = wnd.getDrawer();
 	FrameBuffer *pBuffer = &m_list.back();
 	PostProcessor & postProcessor = PostProcessor::get();
-	FrameBuffer * pFilteredBuffer = postProcessor.doGammaCorrection(postProcessor.doFXAA(postProcessor.doOrientationCorrection(pBuffer)));
+	FrameBuffer * pFilteredBuffer = pBuffer;
+	for (const auto & f : postProcessor.getPostprocessingList())
+		pFilteredBuffer = f(postProcessor, pFilteredBuffer);
 	CachedTexture * pBufferTexture = pFilteredBuffer->m_pTexture;
 
 	const u32 wndWidth = wnd.getWidth();
@@ -1329,7 +1331,9 @@ void FrameBufferList::renderBuffer()
 		srcY1 = srcY0 + srcHeight;
 	}
 	PostProcessor & postProcessor = PostProcessor::get();
-	FrameBuffer * pFilteredBuffer = postProcessor.doGammaCorrection(postProcessor.doFXAA(postProcessor.doOrientationCorrection(pBuffer)));
+	FrameBuffer * pFilteredBuffer = pBuffer;
+	for (const auto & f : postProcessor.getPostprocessingList())
+		pFilteredBuffer = f(postProcessor, pFilteredBuffer);
 
 	if (rdpRes.vi_fsaa && rdpRes.vi_divot)
 		Xdivot = 1;
@@ -1401,7 +1405,9 @@ void FrameBufferList::renderBuffer()
 
 	if (pNextBuffer != nullptr) {
 		pNextBuffer->m_isMainBuffer = true;
-		pFilteredBuffer = postProcessor.doGammaCorrection(postProcessor.doOrientationCorrection(pNextBuffer));
+		pFilteredBuffer = pNextBuffer;
+		for (const auto & f : postProcessor.getPostprocessingList())
+			pFilteredBuffer = f(postProcessor, pFilteredBuffer);
 		srcY1 = srcPartHeight;
 		dstY0 = dstY1;
 		dstY1 = dstY0 + dstPartHeight;
