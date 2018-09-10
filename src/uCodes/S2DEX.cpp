@@ -316,35 +316,33 @@ struct ObjCoordinates
 				yl = static_cast<s16>((((u32(_pObjSprite->imageH) - CC.A1) << 8) / ((scaleH - 1) << 1) /*+ CC.B2*/) & CC.B0) + yh;
 				calcST(CC.B3, scaleH);
 			} else {
-				// XHP = ((objX << 16) * 0x0800) / (BaseScaleX * 2 - 0x02) + ((AND(X + A2) by B0) << 16))
+				// XHP = ((objX << 16) * 0x0800 * (0x80007FFF / BaseScaleX)) >> 16 + ((AND(X + A2) by B0) << 16))
 				// XH = XHP >> 16
-				// XLP = XHP + ((ImageW - A1) << 24) / (scaleW * 2 - 0x02)
+				// XLP = XHP + (((ImageW - A1) << 24) * (0x80007FFF / scaleW)) >> 32
 				// XL = XLP >> 16
-				// YHP = ((objY << 16) * 0x0800) / (BaseScaleY * 2 - 0x02) + ((AND(Y + A2) by B0) << 16)
+				// YHP = ((objY << 16) * 0x0800 * (0x80007FFF / BaseScaleY)) >> 16 + ((AND(Y + A2) by B0) << 16))
 				// YH = YHP >> 16
-				// YLP = YHP + ((ImageH - A1) << 24)/(scaleH * 2 - 0x02)
+				// YLP = YHP + (((ImageH - A1) << 24) * (0x80007FFF / scaleH)) >> 32
 				// YL = YLP >> 16
-				const s32 xhp = ((s64(_pObjSprite->objX) << 16) * 0x0800) / ((objMtx.BaseScaleX - 1) << 1) + (((s32(objMtx.X) + CC.A2) & CC.B0) << 16);
+				const s32 xhp = ((((s64(_pObjSprite->objX) << 16) * 0x0800) * (0x80007FFFU / u32(objMtx.BaseScaleX))) >> 32) + (((objMtx.X + CC.A2) & CC.B0) << 16);
 				xh = static_cast<s16>(xhp >> 16);
-				const s32 xlp = ((u64(_pObjSprite->imageW) - CC.A1) << 24) / ((scaleW - 1) << 1) + xhp;
+				const s32 xlp = xhp + ((((u64(_pObjSprite->imageW) - CC.A1) << 24) * (0x80007FFFU / scaleW)) >> 32);
 				xl = static_cast<s16>(xlp >> 16);
-				const s32 yhp = ((s64(_pObjSprite->objY) << 16) * 0x0800) / ((objMtx.BaseScaleY - 1) << 1) + (((s32(objMtx.Y) + CC.A2) & CC.B0) << 16);
+				const s32 yhp = ((((s64(_pObjSprite->objY) << 16) * 0x0800) * (0x80007FFFU / u32(objMtx.BaseScaleY))) >> 32) + (((objMtx.Y + CC.A2) & CC.B0) << 16);
 				yh = static_cast<s16>(yhp >> 16);
-				const s32 ylp = ((u64(_pObjSprite->imageH) - CC.A1) << 24) / ((scaleH - 1) << 1) + yhp;
+				const s32 ylp = yhp + ((((u64(_pObjSprite->imageH) - CC.A1) << 24) * (0x80007FFFU / scaleH)) >> 32);
 				yl = static_cast<s16>(ylp >> 16);
 				calcST(CC.B2, scaleH);
 			}
 		} else {
-			//	XH = AND(objX + A2) by B0
-			//	XL = (((AND (objX + A2) by B0) << 16) + ((ImageW - A1) << 24 )/(scaleW * 2 - 0x02)) >> 16
-			//	YH = AND(objY + A2) by B0
-			//	YL = (((AND (objY + A2) by B0) << 16) + ((ImageH - A1) << 24)/(scaleH * 2 - 0x02)) >> 16
+			// XH = AND(objX + A2) by B0
+			// XL = ((AND(objX + A2) by B0) << 16) + (((ImageW - A1) << 24)*(0x80007FFF / scaleW)) >> 48
+			// YH = AND(objY + A2) by B0
+			// YL = ((AND(objY + A2) by B0) << 16) + (((ImageH - A1) << 24)*(0x80007FFF / scaleH)) >> 48
 			xh = (_pObjSprite->objX + CC.A2) & CC.B0;
-			const s32 xlp = ((u64(_pObjSprite->imageW) - CC.A1) << 24) / ((_pObjSprite->scaleW - 1) << 1) + (xh << 16);
-			xl = static_cast<s16>(xlp >> 16);
+			xl = static_cast<s16>((((u64(_pObjSprite->imageW) - CC.A1) << 24) * (0x80007FFFU / u32(_pObjSprite->scaleW))) >> 48) + xh;
 			yh = (_pObjSprite->objY + CC.A2) & CC.B0;
-			const s32 ylp = ((u64(_pObjSprite->imageH) - CC.A1) << 24) / ((_pObjSprite->scaleH - 1) << 1) + (yh << 16);
-			yl = static_cast<s16>(ylp >> 16);
+			yl = static_cast<s16>((((u64(_pObjSprite->imageH) - CC.A1) << 24) * (0x80007FFFU / u32(_pObjSprite->scaleH))) >> 48) + yh;
 			calcST(CC.B2, _pObjSprite->scaleH);
 		}
 
