@@ -638,16 +638,15 @@ void gSPObjSprite(u32 _sp)
 	/* Fixed point coordinates calculation. Decoded by olivieryuyu */
 	//	X1 = AND (X + B3) by B0 + ((objX + A3) * A) >> 16 + ((objY + A3) * B) >> 16
 	//	Y1 = AND (Y + B3) by B0 + ((objX + A3) * C) >> 16 + ((objY + A3) * D) >> 16
-	//	X2 = AND (X + B3) by B0 + ((((imageW - A1) * 0x0100)/(scaleW * 2) + objX + A3) * A) >> 16  + ((((imageH - A1) * 0x0100)/(scaleH * 2) + objY + A3) * B) >> 16
-	//	Y2 = AND (Y + B3) by B0 + ((((imageW - A1) * 0x0100)/(scaleW * 2) + objX + A3) * C) >> 16 + ((((imageH - A1) * 0x0100)/(scaleH * 2) + objY + A3) * D) >> 16
-
+	//	X2 = AND (X + B3) by B0 + (((((imageW - A1) * 0x0100)* (0x80007FFF/scaleW)) >> 32+ objX + A3) * A) >> 16  + (((((imageH - A1) * 0x0100)* (0x80007FFF/scaleH)) >> 32 + objY + A3) * B) >> 16
+	//	Y2 = AND (Y + B3) by B0 + (((((imageW - A1) * 0x0100)* (0x80007FFF/scaleW)) >> 32 + objX + A3) * C) >> 16 + (((((imageH - A1) * 0x0100)* (0x80007FFF/scaleH)) >> 32 + objY + A3) * D) >> 16
 	S2DEXCoordCorrector CC;
 	const s16 x0 = (objMtx.X + CC.B3) & CC.B0;
 	const s16 y0 = (objMtx.Y + CC.B3) & CC.B0;
 	const s16 ulx = objSprite->objX + CC.A3;
 	const s16 uly = objSprite->objY + CC.A3;
-	const s16 lrx = ((u32(objSprite->imageW) - CC.A1) << 8) / (u32(objSprite->scaleW) << 1) + ulx;
-	const s16 lry = ((u32(objSprite->imageH) - CC.A1) << 8) / (u32(objSprite->scaleH) << 1) + uly;
+	const s16 lrx = ((((u64(objSprite->imageW) - CC.A1) << 8) * (0x80007FFFU / u32(objSprite->scaleW))) >> 32) + ulx;
+	const s16 lry = ((((u64(objSprite->imageH) - CC.A1) << 8) * (0x80007FFFU / u32(objSprite->scaleH))) >> 32) + uly;
 
 	auto calcX = [&](s16 _x, s16 _y) -> f32
 	{
