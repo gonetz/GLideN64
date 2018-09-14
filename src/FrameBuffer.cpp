@@ -173,7 +173,6 @@ bool FrameBuffer::isAuxiliary() const
 
 void FrameBuffer::init(u32 _address, u16 _format, u16 _size, u16 _width, bool _cfb)
 {
-	DisplayWindow & wnd = dwnd();
 	m_startAddress = _address;
 	m_width = _width;
 	m_height = _cfb ? VI.height : 1;
@@ -185,7 +184,7 @@ void FrameBuffer::init(u32 _address, u16 _format, u16 _size, u16 _width, bool _c
 	} else if (config.frameBufferEmulation.nativeResFactor != 0 && config.frameBufferEmulation.enable != 0) {
 		m_scale = static_cast<float>(config.frameBufferEmulation.nativeResFactor);
 	} else {
-		m_scale = wnd.getScaleX();
+		m_scale = dwnd().getScaleX();
 	}
 	m_cfb = _cfb;
 	m_cleared = false;
@@ -708,9 +707,9 @@ void FrameBufferList::saveBuffer(u32 _address, u16 _format, u16 _size, u16 _widt
 			!m_pCurrent->m_isDepthBuffer &&
 			!m_pCurrent->m_copiedToRdram &&
 			!m_pCurrent->m_cfb &&
-			!m_pCurrent->m_cleared
-			&& m_pCurrent->m_RdramCopy.empty()
-			&& m_pCurrent->m_height > 1) {
+			!m_pCurrent->m_cleared &&
+			m_pCurrent->m_RdramCopy.empty() &&
+			m_pCurrent->m_height > 1) {
 			m_pCurrent->copyRdram();
 		}
 
