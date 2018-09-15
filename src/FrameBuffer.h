@@ -26,7 +26,6 @@ struct FrameBuffer
 	void copyRdram();
 	void setDirty();
 	bool isValid(bool _forceCheck) const;
-	bool _isMarioTennisScoreboard() const;
 	bool isAuxiliary() const;
 
 	u32 m_startAddress;
