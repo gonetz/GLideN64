@@ -323,7 +323,7 @@ void gDPSetTileSize( u32 tile, u32 uls, u32 ult, u32 lrs, u32 lrt )
 }
 
 static
-bool CheckForFrameBufferTexture(u32 _address, u32 _bytes)
+bool CheckForFrameBufferTexture(u32 _address, u32 _width, u32 _bytes)
 {
 	gDP.loadTile->textureMode = TEXTUREMODE_NORMAL;
 	gDP.loadTile->frameBufferAddress = 0U;
@@ -356,7 +356,9 @@ bool CheckForFrameBufferTexture(u32 _address, u32 _bytes)
 		}
 
 		const u32 texEndAddress = _address + _bytes - 1;
-		if (_address > pBuffer->m_startAddress && texEndAddress > (pBuffer->m_endAddress + (pBuffer->m_width << pBuffer->m_size >> 1))) {
+		if (_address > pBuffer->m_startAddress &&
+			pBuffer->m_width != _width &&
+			texEndAddress > (pBuffer->m_endAddress + (pBuffer->m_width << pBuffer->m_size >> 1))) {
 			//fbList.removeBuffer(pBuffer->m_startAddress);
 			bRes = false;
 		}
@@ -463,7 +465,7 @@ void gDPLoadTile(u32 tile, u32 uls, u32 ult, u32 lrs, u32 lrt)
 	if (gDP.loadTile->lrt > gDP.scissor.lry)
 		height2 = (u32)gDP.scissor.lry - gDP.loadTile->ult;
 
-	if (CheckForFrameBufferTexture(address, bpl2*height2))
+	if (CheckForFrameBufferTexture(address, info.width, bpl2*height2))
 		return;
 
 	if (gDP.loadTile->size == G_IM_SIZ_32b)
@@ -584,7 +586,7 @@ void gDPLoadBlock(u32 tile, u32 uls, u32 ult, u32 lrs, u32 dxt)
 	}
 
 	gDP.loadTile->frameBufferAddress = 0;
-	CheckForFrameBufferTexture(address, bytes); // Load data to TMEM even if FB texture is found. See comment to texturedRectDepthBufferCopy
+	CheckForFrameBufferTexture(address, info.width, bytes); // Load data to TMEM even if FB texture is found. See comment to texturedRectDepthBufferCopy
 
 	if (gDP.loadTile->size == G_IM_SIZ_32b)
 		gDPLoadBlock32(gDP.loadTile->uls, gDP.loadTile->lrs, dxt);
