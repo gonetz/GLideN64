@@ -270,22 +270,23 @@ void RDRAMtoColorBuffer::_copyFromRDRAM(u32 _height, bool _fullAlpha)
 	gfxContext.enable(enable::BLEND, true);
 	gfxContext.setBlending(blend::SRC_ALPHA, blend::ONE_MINUS_SRC_ALPHA);
 	gfxContext.enable(enable::DEPTH_TEST, false);
-	gfxContext.enable(enable::SCISSOR_TEST, false);
 
 	CombinerInfo::get().updateParameters();
 
 	gfxContext.bindFramebuffer(bufferTarget::DRAW_FRAMEBUFFER, m_pCurBuffer->m_FBO);
 
+	gfxContext.enable(enable::SCISSOR_TEST, false);
 	GraphicsDrawer::TexturedRectParams texRectParams((float)x0, (float)y0, (float)width, (float)height,
 										 1.0f, 1.0f, 0, 0,
 										 false, true, false, m_pCurBuffer);
 	dwnd().getDrawer().drawTexturedRect(texRectParams);
+	gfxContext.enable(enable::SCISSOR_TEST, true);
 
 	frameBufferList().setCurrentDrawBuffer();
 
 	gSP.textureTile[0] = pTile0;
 
-	gDP.changed |= CHANGED_RENDERMODE | CHANGED_COMBINE | CHANGED_SCISSOR;
+	gDP.changed |= CHANGED_RENDERMODE | CHANGED_COMBINE;
 }
 
 void RDRAMtoColorBuffer::copyFromRDRAM(u32 _address, bool _bCFB)
