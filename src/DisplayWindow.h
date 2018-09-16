@@ -12,6 +12,8 @@ public:
 	void restart();
 	void swapBuffers();
 	void saveScreenshot();
+	void saveBufferContent(FrameBuffer * _pBuffer);
+	void saveBufferContent(graphics::ObjectHandle _fbo, CachedTexture *_pTexture);
 	bool changeWindow();
 	bool resizeWindow();
 	void closeWindow();
@@ -71,6 +73,7 @@ private:
 	virtual void _stop() = 0;
 	virtual void _swapBuffers() = 0;
 	virtual void _saveScreenshot() = 0;
+	virtual void _saveBufferContent(graphics::ObjectHandle _fbo, CachedTexture *_pTexture) = 0;
 	virtual void _changeWindow() = 0;
 	virtual bool _resizeWindow() = 0;
 	virtual void _readScreen(void **_pDest, long *_pWidth, long *_pHeight) = 0;

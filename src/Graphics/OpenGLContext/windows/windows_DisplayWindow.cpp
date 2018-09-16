@@ -22,6 +22,7 @@ private:
 	void _stop() override;
 	void _swapBuffers() override;
 	void _saveScreenshot() override;
+	void _saveBufferContent(graphics::ObjectHandle _fbo, CachedTexture *_pTexture) override;
 	bool _resizeWindow() override;
 	void _changeWindow() override;
 	void _readScreen(void **_pDest, long *_pWidth, long *_pHeight) override;
@@ -175,6 +176,24 @@ void DisplayWindowWindows::_saveScreenshot()
 	glReadBuffer(oldMode);
 	SaveScreenshot(m_strScreenDirectory, RSP.romname, m_screenWidth, m_screenHeight, pixelData);
 	free( pixelData );
+}
+
+void DisplayWindowWindows::_saveBufferContent(graphics::ObjectHandle _fbo, CachedTexture *_pTexture)
+{
+	unsigned char * pixelData = NULL;
+	GLint oldMode;
+	glGetIntegerv(GL_READ_BUFFER, &oldMode);
+	gfxContext.bindFramebuffer(graphics::bufferTarget::READ_FRAMEBUFFER, _fbo);
+	pixelData = (unsigned char*)malloc(_pTexture->realWidth * _pTexture->realHeight * 3);
+	glReadPixels(0, 0, _pTexture->realWidth, _pTexture->realHeight, GL_RGB, GL_UNSIGNED_BYTE, pixelData);
+	if (graphics::BufferAttachmentParam(oldMode) == graphics::bufferAttachment::COLOR_ATTACHMENT0) {
+		FrameBuffer * pCurrentBuffer = frameBufferList().getCurrent();
+		if (pCurrentBuffer != nullptr)
+			gfxContext.bindFramebuffer(graphics::bufferTarget::READ_FRAMEBUFFER, pCurrentBuffer->m_FBO);
+	}
+	glReadBuffer(oldMode);
+	SaveScreenshot(m_strScreenDirectory, RSP.romname, _pTexture->realWidth, _pTexture->realHeight, pixelData);
+	free(pixelData);
 }
 
 void DisplayWindowWindows::_changeWindow()
