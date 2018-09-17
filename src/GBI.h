@@ -235,8 +235,10 @@ extern u32 G_MWO_aLIGHT_8, G_MWO_bLIGHT_8;
 #define G_IM_SIZ_32b	3
 #define G_IM_SIZ_DD		5
 
-#define G_TX_MIRROR		0x1
-#define G_TX_CLAMP		0x2
+#define G_TX_NOMIRROR	0x00	// 0 << 0
+#define G_TX_MIRROR		0x01
+#define G_TX_WRAP		0x00	// 0 << 1
+#define G_TX_CLAMP		0x02
 
 #define G_NOOP					0x00
 
@@ -281,6 +283,10 @@ extern u32 G_MWO_aLIGHT_8, G_MWO_bLIGHT_8;
 #define G_TRI_SHADE_ZBUFF		0xCD	/* shade, zbuff triangle:    11001101 */
 #define G_TRI_TXTR_ZBUFF		0xCB	/* texture, zbuff triangle:  11001011 */
 #define G_TRI_SHADE_TXTR_ZBUFF	0xCF	/* shade, txtr, zbuff trngl: 11001111 */
+
+// Tile indices
+ #define G_TX_LOADTILE			0x07
+ #define G_TX_RENDERTILE		0x00
 
 /*
  * G_SETOTHERMODE_L sft: shift count
