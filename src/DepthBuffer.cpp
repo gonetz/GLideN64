@@ -468,6 +468,8 @@ void DepthBufferList::saveBuffer(u32 _address)
 	DepthBuffer * pCurrent = m_pCurrent;
 	m_pCurrent = pDepthBuffer;
 	frameBufferList().attachDepthBuffer();
+	if (pFrameBuffer == nullptr)
+		gfxContext.clearDepthBuffer();
 	if (pDepthBuffer->m_address != gDP.depthImageAddress)
 		m_pCurrent = pCurrent;
 }
