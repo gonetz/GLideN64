@@ -260,8 +260,8 @@ void gDPSetTile( u32 format, u32 size, u32 line, u32 tmem, u32 tile, u32 palette
 	gDP.tiles[tile].palette = palette;
 	gDP.tiles[tile].cmt = cmt;
 	gDP.tiles[tile].cms = cms;
-	gDP.tiles[tile].maskt = maskt;
-	gDP.tiles[tile].masks = masks;
+	gDP.tiles[tile].maskt = gDP.tiles[tile].originalMaskT = maskt;
+	gDP.tiles[tile].masks = gDP.tiles[tile].originalMaskS = masks;
 	gDP.tiles[tile].shiftt = shiftt;
 	gDP.tiles[tile].shifts = shifts;
 

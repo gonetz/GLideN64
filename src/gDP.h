@@ -87,6 +87,7 @@ struct gDPTile
 	};
 
 	u32 maskt, masks;
+	u32 originalMaskT, originalMaskS;
 	u32 shiftt, shifts;
 	f32 fuls, fult, flrs, flrt;
 	u32 uls, ult, lrs, lrt;

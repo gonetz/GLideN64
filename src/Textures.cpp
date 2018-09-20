@@ -587,6 +587,8 @@ static
 void _calcTileSizes(u32 _t, TileSizes & _sizes, gDPTile * _pLoadTile)
 {
 	gDPTile * pTile = _t < 2 ? gSP.textureTile[_t] : &gDP.tiles[_t];
+	pTile->masks = pTile->originalMaskS;
+	pTile->maskt = pTile->originalMaskT;
 
 	const TextureLoadParameters & loadParams =
 			ImageFormat::get().tlp[gDP.otherMode.textureLUT][pTile->size][pTile->format];
