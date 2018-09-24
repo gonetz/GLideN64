@@ -1248,8 +1248,8 @@ void FrameBufferList::OverscanBuffer::draw(u32 _fullHeight, bool _PAL)
 	blitParams.invertY = true;
 
 	gfxContext.clearColorBuffer(0.0f, 0.0f, 0.0f, 0.0f);
-	drawer.blitOrCopyTexturedRect(blitParams);
-//	drawer.copyTexturedRect(blitParams);
+//	drawer.blitOrCopyTexturedRect(blitParams);
+	drawer.copyTexturedRect(blitParams);
 }
 
 void FrameBufferList::renderBuffer()
