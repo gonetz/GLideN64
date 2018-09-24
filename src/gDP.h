@@ -295,5 +295,6 @@ void gDPTriShadeZ( u32 w0, u32 w1 );
 void gDPTriTxtrZ( u32 w0, u32 w1 );
 void gDPTriShadeTxtrZ( u32 w0, u32 w1 );
 
-#endif
+bool isCurrentColorImageDepthImage();
 
+#endif

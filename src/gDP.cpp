@@ -27,6 +27,12 @@ using namespace std;
 
 gDPInfo gDP;
 
+bool isCurrentColorImageDepthImage()
+{
+	return (gDP.colorImage.address == gDP.depthImageAddress) ||
+		(gDP.fillColor.color == DepthClearColor && gDP.otherMode.cycleType == G_CYC_FILL);
+}
+
 void gDPSetOtherMode( u32 mode0, u32 mode1 )
 {
 	gDP.otherMode.h = mode0;
@@ -705,9 +711,7 @@ void gDPFillRectangle( s32 ulx, s32 uly, s32 lrx, s32 lry )
 		if (gDP.fillColor.color == DepthClearColor) {
 			frameBufferList().fillRDRAM(ulx, uly, lrx, lry);
 			depthBuffer = dbFound;
-			if (config.frameBufferEmulation.N64DepthCompare == 0 &&
-				(config.generalEmulation.enableFragmentDepthWrite == 0 ||
-				(ulx == 0 && uly == 0 && lrx == gDP.scissor.lrx && lry == gDP.scissor.lry))) {
+			if (config.generalEmulation.enableFragmentDepthWrite == 0) {
 				drawer.clearDepthBuffer(ulx, uly, lrx, lry);
 				depthBuffer = dbCleared;
 			} else
@@ -717,9 +721,7 @@ void gDPFillRectangle( s32 ulx, s32 uly, s32 lrx, s32 lry )
 		depthBuffer = dbFound;
 		depthBufferList().saveBuffer(gDP.colorImage.address);
 		frameBufferList().fillRDRAM(ulx, uly, lrx, lry);
-		if (config.frameBufferEmulation.N64DepthCompare == 0 &&
-			(config.generalEmulation.enableFragmentDepthWrite == 0 ||
-			(ulx == 0 && uly == 0 && lrx == gDP.scissor.lrx && lry == gDP.scissor.lry))) {
+		if (config.generalEmulation.enableFragmentDepthWrite == 0) {
 			drawer.clearDepthBuffer(ulx, uly, lrx, lry);
 			depthBuffer = dbCleared;
 		} else

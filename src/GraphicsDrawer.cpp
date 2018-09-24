@@ -657,7 +657,7 @@ void GraphicsDrawer::_updateStates(DrawingState _drawingState) const
 	if (!config.generalEmulation.enableFragmentDepthWrite)
 		return;
 
-	if (gDP.colorImage.address == gDP.depthImageAddress &&
+	if (isCurrentColorImageDepthImage() &&
 		config.generalEmulation.enableFragmentDepthWrite != 0 &&
 		config.frameBufferEmulation.N64DepthCompare == 0 &&
 		(config.generalEmulation.hacks & hack_ZeldaMM) == 0
