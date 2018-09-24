@@ -730,24 +730,14 @@ void gDPFillRectangle( s32 ulx, s32 uly, s32 lrx, s32 lry )
 		if (gDP.otherMode.cycleType == G_CYC_FILL) {
 			f32 fillColor[4];
 			gDPGetFillColor(fillColor);
-			if ((depthBuffer == dbNone) &&
-				(ulx == 0) &&
-				(uly == 0) &&
-				(lrx == gDP.scissor.lrx) &&
-				(lry == gDP.scissor.lry)) {
-				frameBufferList().fillRDRAM(ulx, uly, lrx, lry);
-				drawer.clearColorBuffer(fillColor);
-			} else {
-				gDP.rectColor.r = fillColor[0];
-				gDP.rectColor.g = fillColor[1];
-				gDP.rectColor.b = fillColor[2];
-				gDP.rectColor.a = fillColor[3];
-				drawer.drawRect(ulx, uly, lrx, lry);
-			}
+			gDP.rectColor.r = fillColor[0];
+			gDP.rectColor.g = fillColor[1];
+			gDP.rectColor.b = fillColor[2];
+			gDP.rectColor.a = fillColor[3];
 		} else {
 			gDP.rectColor = gDPInfo::Color();
-			drawer.drawRect(ulx, uly, lrx, lry);
 		}
+		drawer.drawRect(ulx, uly, lrx, lry);
 	}
 
 	frameBufferList().setBufferChanged(f32(lry));
