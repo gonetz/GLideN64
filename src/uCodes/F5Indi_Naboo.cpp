@@ -800,14 +800,16 @@ void F5INDI_Tri(u32 _w0, u32 _w1)
 
 	RSP.nextCmd = _SHIFTR(params[8], 24, 8);
 	if (RSP.nextCmd != G_TRI1 && RSP.nextCmd != G_TRI2) {
+		const u32 geometryMode = gSP.geometryMode;
 		if (useTex) {
-			drawer.drawDMATriangles(drawer.getDMAVerticesCount());
+			if ((gSP.geometryMode & G_CULL_BOTH) == G_CULL_BOTH)
+				gSP.geometryMode &= ~(G_CULL_FRONT);
 		} else {
-			const u32 geometryMode = gSP.geometryMode;
+			// culling not used for polygons without textures.
 			gSP.geometryMode &= ~(G_CULL_BOTH);
-			drawer.drawDMATriangles(drawer.getDMAVerticesCount());
-			gSP.geometryMode = geometryMode;
 		}
+		drawer.drawDMATriangles(drawer.getDMAVerticesCount());
+		gSP.geometryMode = geometryMode;
 	}
 
 	if (useTex)
