@@ -192,18 +192,21 @@ void GraphicsDrawer::updateScissor(FrameBuffer * _pBuffer) const
 {
 	DisplayWindow & wnd = DisplayWindow::get();
 	f32 scaleX, scaleY;
+	f32 offsetX = 0.0f, offsetY = 0.0f;
 	if (_pBuffer == nullptr) {
 		scaleX = wnd.getScaleX();
 		scaleY = wnd.getScaleY();
 	} else {
 		scaleX = _pBuffer->m_scale;
 		scaleY = _pBuffer->m_scale;
+		offsetX = f32(_pBuffer->m_originX);
+		offsetY = f32(_pBuffer->m_originY);
 	}
 
-	f32 SX0 = gDP.scissor.ulx;
-	f32 SX1 = gDP.scissor.lrx;
-	f32 SY0 = gDP.scissor.uly;
-	f32 SY1 = gDP.scissor.lry;
+	f32 SX0 = gDP.scissor.ulx + offsetX;
+	f32 SX1 = gDP.scissor.lrx + offsetX;
+	f32 SY0 = gDP.scissor.uly + offsetY;
+	f32 SY1 = gDP.scissor.lry + offsetY;
 
 	if (u32(SX1) == 512 && (config.generalEmulation.hacks & hack_RE2) != 0) {
 		SX1 = f32(*REG.VI_WIDTH);
@@ -245,10 +248,13 @@ void GraphicsDrawer::_updateViewport() const
 		const f32 scaleX = pCurrentBuffer->m_scale;
 		const f32 scaleY = pCurrentBuffer->m_scale;
 		float Xf = gSP.viewport.vscale[0] < 0 ? (gSP.viewport.x + gSP.viewport.vscale[0] * 2.0f) : gSP.viewport.x;
+		Xf += f32(pCurrentBuffer->m_originX);
 		if (_needAdjustCoordinate(wnd))
 			Xf = _adjustViewportX(Xf);
 		const s32 X = (s32)(Xf * scaleX);
-		const s32 Y = gSP.viewport.vscale[1] < 0 ? (s32)((gSP.viewport.y + gSP.viewport.vscale[1] * 2.0f) * scaleY) : (s32)(gSP.viewport.y * scaleY);
+		float Yf = gSP.viewport.vscale[1] < 0 ? (gSP.viewport.y + gSP.viewport.vscale[1] * 2.0f) : gSP.viewport.y;
+		Yf += f32(pCurrentBuffer->m_originY);
+		const s32 Y = (s32)(Yf * scaleY);
 		gfxContext.setViewport(X, Y,
 			std::max((s32)(gSP.viewport.width * scaleX), 0), std::max((s32)(gSP.viewport.height * scaleY), 0));
 	}
@@ -262,6 +268,7 @@ void GraphicsDrawer::_updateScreenCoordsViewport(const FrameBuffer * _pBuffer) c
 
 	u32 bufferWidth, bufferHeight;
 	f32 viewportScaleX, viewportScaleY;
+	s32 X = 0, Y = 0;
 	if (pCurrentBuffer == nullptr) {
 		bufferWidth = VI.width;
 		bufferHeight = VI.height;
@@ -271,9 +278,11 @@ void GraphicsDrawer::_updateScreenCoordsViewport(const FrameBuffer * _pBuffer) c
 		bufferWidth = pCurrentBuffer->m_width;
 		bufferHeight = VI_GetMaxBufferHeight(bufferWidth);
 		viewportScaleX = viewportScaleY = pCurrentBuffer->m_scale;
+		X = static_cast<s32>(pCurrentBuffer->m_originX * viewportScaleX);
+		Y = static_cast<s32>(pCurrentBuffer->m_originY * viewportScaleY);
 	}
 
-	gfxContext.setViewport(0, 0, (s32)(bufferWidth * viewportScaleX), (s32)(bufferHeight * viewportScaleY));
+	gfxContext.setViewport(X, Y, (s32)(bufferWidth * viewportScaleX), (s32)(bufferHeight * viewportScaleY));
 	gSP.changed |= CHANGED_VIEWPORT;
 }
 

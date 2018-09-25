@@ -29,8 +29,14 @@ struct FrameBuffer
 	bool _isMarioTennisScoreboard() const;
 	bool isAuxiliary() const;
 
-	u32 m_startAddress, m_endAddress;
-	u32 m_size, m_width, m_height;
+	u32 m_startAddress;
+	u32 m_endAddress;
+	u32 m_size;
+	u32 m_width;
+	u32 m_height;
+	u32 m_originX;
+	u32 m_originY;
+	u32 m_swapCount;
 	float m_scale;
 	bool m_copiedToRdram;
 	bool m_fingerprint;
@@ -83,6 +89,7 @@ private:
 	void _initCopyTexture();
 	CachedTexture * _copyFrameBufferTexture();
 	CachedTexture * _getSubTexture(u32 _t);
+
 	mutable u32 m_validityChecked;
 };
 

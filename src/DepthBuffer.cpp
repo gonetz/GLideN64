@@ -442,7 +442,11 @@ void DepthBufferList::saveBuffer(u32 _address)
 	if (pFrameBuffer != nullptr)
 		pFrameBuffer->m_isDepthBuffer = true;
 
-	DepthBuffer * pDepthBuffer = findBuffer(_address);
+	DepthBuffer * pDepthBuffer = nullptr;
+	if (pFrameBuffer != nullptr && pFrameBuffer->m_startAddress != _address)
+		pDepthBuffer = findBuffer(pFrameBuffer->m_startAddress);
+	else
+		pDepthBuffer = findBuffer(_address);
 
 	if (pDepthBuffer != nullptr && pFrameBuffer != nullptr && pDepthBuffer->m_width != pFrameBuffer->m_width) {
 		removeBuffer(_address);

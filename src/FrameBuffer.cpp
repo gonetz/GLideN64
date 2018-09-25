@@ -36,7 +36,9 @@ FrameBuffer::FrameBuffer()
 	, m_size(0)
 	, m_width(0)
 	, m_height(0)
-	, m_validityChecked(0)
+	, m_originX(0)
+	, m_originY(0)
+	, m_swapCount(0)
 	, m_scale(0)
 	, m_copiedToRdram(false)
 	, m_fingerprint(false)
@@ -56,6 +58,7 @@ FrameBuffer::FrameBuffer()
 	, m_copied(false)
 	, m_pFrameBufferCopyTexture(nullptr)
 	, m_copyFBO(ObjectHandle::defaultFramebuffer)
+	, m_validityChecked(0)
 {
 	m_loadTileOrigin.uls = m_loadTileOrigin.ult = 0;
 	m_pTexture = textureCache().addFrameBufferTexture(config.video.multisampling != 0);
@@ -189,6 +192,7 @@ void FrameBuffer::init(u32 _address, u16 _format, u16 _size, u16 _width, bool _c
 	m_cfb = _cfb;
 	m_cleared = false;
 	m_fingerprint = false;
+	m_swapCount = dwnd().getBuffersSwapCount();
 
 	const u16 maxHeight = VI_GetMaxBufferHeight(_width);
 	_initTexture(_width, maxHeight, _format, _size, m_pTexture);
@@ -716,17 +720,63 @@ void FrameBufferList::saveBuffer(u32 _address, u16 _format, u16 _size, u16 _widt
 		removeIntersections();
 	}
 
+	const float scaleX = config.frameBufferEmulation.nativeResFactor == 0 ?
+		wnd.getScaleX() :
+		static_cast<float>(config.frameBufferEmulation.nativeResFactor);
+
 	if (m_pCurrent == nullptr || m_pCurrent->m_startAddress != _address || m_pCurrent->m_width != _width)
 		m_pCurrent = findBuffer(_address);
-	const float scaleX = config.frameBufferEmulation.nativeResFactor == 0 ?
-				wnd.getScaleX() :
-				static_cast<float>(config.frameBufferEmulation.nativeResFactor);
-	if (m_pCurrent != nullptr) {
-		if ((m_pCurrent->m_startAddress != _address) ||
-			(m_pCurrent->m_width != _width) ||
-			(m_pCurrent->m_size < _size) ||
-			(m_pCurrent->m_scale != scaleX))
+
+	auto isSubBuffer = [_address, _width, _size, &wnd](const FrameBuffer * _pBuffer) -> bool
+	{
+		if (_pBuffer->m_swapCount == wnd.getBuffersSwapCount() &&
+			!_pBuffer->m_cfb &&
+			_pBuffer->m_width == _width &&
+			_pBuffer->m_size == _size)
 		{
+			const u32 stride = _width << _size >> 1;
+			const u32 diffFromStart = _address - _pBuffer->m_startAddress;
+			if (diffFromStart % stride != 0)
+				return true;
+			const u32 diffFromEnd = _pBuffer->m_endAddress - _address + 1;
+			if ((diffFromEnd / stride > 5))
+				return true;
+		}
+		return false;
+	};
+
+	auto isOverlappingBuffer = [_address, _width, _size](const FrameBuffer * _pBuffer) -> bool
+	{
+		if (_pBuffer->m_width == _width && _pBuffer->m_size == _size) {
+			const u32 stride = _width << _size >> 1;
+			const u32 diffEnd = _pBuffer->m_endAddress - _address + 1;
+			if ((diffEnd / stride < 5))
+				return true;
+		}
+		return false;
+	};
+
+	if (m_pCurrent != nullptr) {
+		m_pCurrent->m_originX = m_pCurrent->m_originY = 0;
+		if ((m_pCurrent->m_startAddress != _address)) {
+			if (isSubBuffer(m_pCurrent)) {
+				const u32 stride = _width << _size >> 1;
+				const u32 addrOffset = _address - m_pCurrent->m_startAddress;
+				m_pCurrent->m_originX = (addrOffset % stride) >> (_size - 1);
+				m_pCurrent->m_originY = addrOffset / stride;
+				gSP.changed |= CHANGED_VIEWPORT;
+				gDP.changed |= CHANGED_SCISSOR;
+				return;
+			} else if (isOverlappingBuffer(m_pCurrent)) {
+				m_pCurrent->m_endAddress = _address - 1;
+				m_pCurrent = nullptr;
+			} else {
+				removeBuffer(m_pCurrent->m_startAddress);
+				m_pCurrent = nullptr;
+			}
+		} else if ((m_pCurrent->m_width != _width) ||
+					(m_pCurrent->m_size < _size) ||
+					(m_pCurrent->m_scale != scaleX)) {
 			removeBuffer(m_pCurrent->m_startAddress);
 			m_pCurrent = nullptr;
 		} else {
@@ -780,6 +830,7 @@ void FrameBufferList::saveBuffer(u32 _address, u16 _format, u16 _size, u16 _widt
 	m_pCurrent->m_isDepthBuffer = _address == gDP.depthImageAddress;
 	m_pCurrent->m_isPauseScreen = m_pCurrent->m_isOBScreen = false;
 	m_pCurrent->m_copied = false;
+	m_pCurrent->m_swapCount = wnd.getBuffersSwapCount();
 }
 
 void FrameBufferList::copyAux()
