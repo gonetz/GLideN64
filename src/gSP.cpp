@@ -1983,8 +1983,8 @@ void gSPSprite2DBase(u32 _base)
 	uSprite *pSprite = (uSprite*)&RDRAM[address];
 
 	if (pSprite->tlutPtr != 0) {
-		gDPSetTextureImage( 0, 2, 1, pSprite->tlutPtr );
-		gDPSetTile( 0, 2, 0, 256, 7, 0, 0, 0, 0, 0, 0, 0 );
+		gDPSetTextureImage( G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, pSprite->tlutPtr );
+		gDPSetTile( G_IM_FMT_RGBA, G_IM_SIZ_16b, 0, 256, 7, 0, G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMIRROR | G_TX_WRAP, 0, 0, 0, 0 );
 		gDPLoadTLUT( 7, 0, 0, 1020, 0 );
 
 		if (pSprite->imageFmt != G_IM_FMT_RGBA)

@@ -236,8 +236,10 @@ extern u32 G_MWO_aLIGHT_8, G_MWO_bLIGHT_8;
 #define G_IM_SIZ_32b	3
 #define G_IM_SIZ_DD		5
 
-#define G_TX_MIRROR		0x1
-#define G_TX_CLAMP		0x2
+#define G_TX_NOMIRROR			0x00	// 0 << 0
+#define G_TX_MIRROR				0x01
+#define G_TX_WRAP				0x00	// 0 << 1
+#define G_TX_CLAMP				0x02
 
 #define G_NOOP					0x00
 
