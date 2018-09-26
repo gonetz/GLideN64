@@ -39,6 +39,10 @@ using namespace graphics;
 #define	S2DEX_OBJ_LDTX_RECT_R	0xC4
 #define	S2DEX_RDPHALF_0			0xE4
 
+// Tile indices
+#define G_TX_LOADTILE			0x07
+#define G_TX_RENDERTILE			0x00
+
 struct uObjScaleBg
 {
 	u16 imageW;     /* Texture width (8-byte alignment, u10.2) */
@@ -564,8 +568,8 @@ void gSPSetSpriteTile(const uObjSprite *_pObjSprite)
 	const u32 w = std::max(_pObjSprite->imageW >> 5, 1);
 	const u32 h = std::max(_pObjSprite->imageH >> 5, 1);
 
-	gDPSetTile(_pObjSprite->imageFmt, _pObjSprite->imageSiz, _pObjSprite->imageStride, _pObjSprite->imageAdrs, 0, _pObjSprite->imagePal, G_TX_CLAMP, G_TX_CLAMP, 0, 0, 0, 0);
-	gDPSetTileSize(0, 0, 0, (w - 1) << 2, (h - 1) << 2);
+	gDPSetTile( _pObjSprite->imageFmt, _pObjSprite->imageSiz, _pObjSprite->imageStride, _pObjSprite->imageAdrs, G_TX_RENDERTILE, _pObjSprite->imagePal, G_TX_NOMIRROR | G_TX_CLAMP, G_TX_NOMIRROR | G_TX_CLAMP, 0, 0, 0, 0 );
+	gDPSetTileSize( G_TX_RENDERTILE, 0, 0, (w - 1) << 2, (h - 1) << 2 );
 	gSPTexture(1.0f, 1.0f, 0, 0, TRUE);
 }
 
@@ -577,25 +581,25 @@ void gSPObjLoadTxtr(u32 tx)
 
 	if ((gSP.status[objTxtr->block.sid >> 2] & objTxtr->block.mask) != objTxtr->block.flag) {
 		switch (objTxtr->block.type) {
-		case G_OBJLT_TXTRBLOCK:
-			gDPSetTextureImage(0, 1, 0, objTxtr->block.image);
-			gDPSetTile(0, 1, 0, objTxtr->block.tmem, 7, 0, 0, 0, 0, 0, 0, 0);
-			gDPLoadBlock(7, 0, 0, ((objTxtr->block.tsize + 1) << 3) - 1, objTxtr->block.tline);
-			DebugMsg(DEBUG_NORMAL, "gSPObjLoadTxtr: load block\n");
-			break;
-		case G_OBJLT_TXTRTILE:
-			gDPSetTextureImage(0, 1, (objTxtr->tile.twidth + 1) << 1, objTxtr->tile.image);
-			gDPSetTile(0, 1, (objTxtr->tile.twidth + 1) >> 2, objTxtr->tile.tmem, 0, 0, 0, 0, 0, 0, 0, 0);
-			gDPSetTile(0, 1, (objTxtr->tile.twidth + 1) >> 2, objTxtr->tile.tmem, 7, 0, 0, 0, 0, 0, 0, 0);
-			gDPLoadTile(7, 0, 0, (((objTxtr->tile.twidth + 1) << 1) - 1) << 2, (((objTxtr->tile.theight + 1) >> 2) - 1) << 2);
-			DebugMsg(DEBUG_NORMAL, "gSPObjLoadTxtr: load tile\n");
-			break;
-		case G_OBJLT_TLUT:
-			gDPSetTextureImage(0, 2, 1, objTxtr->tlut.image);
-			gDPSetTile(0, 2, 0, objTxtr->tlut.phead, 7, 0, 0, 0, 0, 0, 0, 0);
-			gDPLoadTLUT(7, 0, 0, objTxtr->tlut.pnum << 2, 0);
-			DebugMsg(DEBUG_NORMAL, "gSPObjLoadTxtr: load tlut\n");
-			break;
+			case G_OBJLT_TXTRBLOCK:
+				gDPSetTextureImage( G_IM_FMT_RGBA, G_IM_SIZ_8b, 0, objTxtr->block.image );
+				gDPSetTile( G_IM_FMT_RGBA, G_IM_SIZ_8b, 0, objTxtr->block.tmem, G_TX_LOADTILE, 0, G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMIRROR | G_TX_WRAP, 0, 0, 0, 0 );
+				gDPLoadBlock( G_TX_LOADTILE, 0, 0, ((objTxtr->block.tsize + 1) << 3) - 1, objTxtr->block.tline );
+				DebugMsg(DEBUG_NORMAL, "gSPObjLoadTxtr: load block\n");
+				break;
+			case G_OBJLT_TXTRTILE:
+				gDPSetTextureImage( G_IM_FMT_RGBA, G_IM_SIZ_8b, (objTxtr->tile.twidth + 1) << 1, objTxtr->tile.image );
+				gDPSetTile( G_IM_FMT_RGBA, G_IM_SIZ_8b, (objTxtr->tile.twidth + 1) >> 2, objTxtr->tile.tmem, G_TX_RENDERTILE, 0, G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMIRROR | G_TX_WRAP, 0, 0, 0, 0 );
+				gDPSetTile( G_IM_FMT_RGBA, G_IM_SIZ_8b, (objTxtr->tile.twidth + 1) >> 2, objTxtr->tile.tmem, G_TX_LOADTILE, 0, G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMIRROR | G_TX_WRAP, 0, 0, 0, 0 );
+				gDPLoadTile( G_TX_LOADTILE, 0, 0, (((objTxtr->tile.twidth + 1) << 1) - 1) << 2, (((objTxtr->tile.theight + 1) >> 2) - 1) << 2 );
+				DebugMsg(DEBUG_NORMAL, "gSPObjLoadTxtr: load tile\n");
+				break;
+			case G_OBJLT_TLUT:
+				gDPSetTextureImage( G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, objTxtr->tlut.image );
+				gDPSetTile( G_IM_FMT_RGBA, G_IM_SIZ_16b, 0, objTxtr->tlut.phead, G_TX_LOADTILE, 0, G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMIRROR | G_TX_WRAP, 0, 0, 0, 0 );
+				gDPLoadTLUT( G_TX_LOADTILE, 0, 0, objTxtr->tlut.pnum << 2, 0 );
+				DebugMsg(DEBUG_NORMAL, "gSPObjLoadTxtr: load tlut\n");
+				break;
 		}
 		gSP.status[objTxtr->block.sid >> 2] = (gSP.status[objTxtr->block.sid >> 2] & ~objTxtr->block.mask) | (objTxtr->block.flag & objTxtr->block.mask);
 	}
