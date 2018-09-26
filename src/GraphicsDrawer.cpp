@@ -1344,7 +1344,7 @@ void GraphicsDrawer::drawTexturedRect(const TexturedRectParams & _params)
 	if (bUseTexrectDrawer && m_texrectDrawer.add())
 		return;
 
-	_updateScreenCoordsViewport();
+	_updateScreenCoordsViewport(_params.pBuffer);
 	Context::DrawRectParameters rectParams;
 	rectParams.mode = drawmode::TRIANGLE_STRIP;
 	rectParams.verticesCount = 4;
