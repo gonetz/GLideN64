@@ -154,7 +154,7 @@ void RSP_ProcessDList()
 		if ((uc_start != RSP.uc_start) || (uc_dstart != RSP.uc_dstart))
 			gSPLoadUcodeEx(uc_start, uc_dstart, uc_dsize);
 
-		depthBufferList().setNotCleared();
+		depthBufferList().setCleared(false);
 
 		if (GBI.getMicrocodeType() == ZSortBOSS) {
 			RSP.PC[1] = *(u32*)&DMEM[0xff8];

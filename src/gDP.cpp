@@ -708,10 +708,10 @@ void gDPFillRectangle( s32 ulx, s32 uly, s32 lrx, s32 lry )
 			depthBuffer = dbFound;
 			if (config.generalEmulation.enableFragmentDepthWrite == 0) {
 				frameBufferList().fillRDRAM(ulx, uly, lrx, lry);
-				drawer.clearDepthBuffer(ulx, uly, lrx, lry);
+				drawer.clearDepthBuffer();
 				depthBuffer = dbCleared;
 			} else
-				depthBufferList().clearBuffer(ulx, uly, lrx, lry);
+				depthBufferList().setCleared(true);
 		}
 	} else if (gDP.fillColor.color == DepthClearColor && gDP.otherMode.cycleType == G_CYC_FILL) {
 		depthBuffer = dbFound;
@@ -719,10 +719,10 @@ void gDPFillRectangle( s32 ulx, s32 uly, s32 lrx, s32 lry )
 		if (config.generalEmulation.enableFragmentDepthWrite == 0 ||
 			(config.generalEmulation.hacks & hack_Snap) != 0) {
 			frameBufferList().fillRDRAM(ulx, uly, lrx, lry);
-			drawer.clearDepthBuffer(ulx, uly, lrx, lry);
+			drawer.clearDepthBuffer();
 			depthBuffer = dbCleared;
 		} else
-			depthBufferList().clearBuffer(ulx, uly, lrx, lry);
+			depthBufferList().setCleared(true);
 	}
 
 	if (depthBuffer != dbCleared) {

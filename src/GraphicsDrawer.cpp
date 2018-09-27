@@ -1529,14 +1529,12 @@ void GraphicsDrawer::_removeOSDMessage(OSDMessages::iterator _iter, Milliseconds
 	m_osdMessages.erase(_iter);
 }
 
-void GraphicsDrawer::clearDepthBuffer(u32 _ulx, u32 _uly, u32 _lrx, u32 _lry)
+void GraphicsDrawer::clearDepthBuffer()
 {
 	if (!_canDraw())
 		return;
 
-	depthBufferList().clearBuffer(_ulx, _uly, _lrx, _lry);
-
-	gfxContext.clearDepthBuffer();
+	depthBufferList().clearBuffer();
 
 	_updateDepthUpdate();
 }

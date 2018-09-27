@@ -23,26 +23,31 @@ struct DepthBuffer
 	void bindDepthImageTexture(graphics::ObjectHandle _fbo);
 
 	u32 m_address, m_width;
-	u32 m_ulx, m_uly, m_lrx, m_lry; // Parameters of fillrect command.
-	CachedTexture *m_pDepthImageZTexture;
-	CachedTexture *m_pDepthImageDeltaZTexture;
+	bool m_cleared;
+
 	CachedTexture *m_pDepthBufferTexture;
+
 	graphics::ObjectHandle m_depthRenderbuffer;
 	u32 m_depthRenderbufferWidth;
-	bool m_cleared;
+
+	CachedTexture *m_pDepthImageZTexture;
+	CachedTexture *m_pDepthImageDeltaZTexture;
+	graphics::ObjectHandle m_ZTextureClearFBO;
+	graphics::ObjectHandle m_DeltaZTextureClearFBO;
+
 	// multisampling
 	CachedTexture *m_pResolveDepthBufferTexture;
 	bool m_resolved;
+
 	// render to depth buffer
 	graphics::ObjectHandle m_copyFBO;
 	CachedTexture *m_pDepthBufferCopyTexture;
 	bool m_copied;
 
 private:
-	void _initDepthImageTexture(FrameBuffer * _pBuffer, CachedTexture& _cachedTexture);
+	void _initDepthImageTexture(FrameBuffer * _pBuffer, CachedTexture& _cachedTexture, graphics::ObjectHandle & _clearFBO);
 	void _initDepthBufferTexture(FrameBuffer * _pBuffer, CachedTexture *_pTexture, bool _multisample);
 	void _initDepthBufferRenderbuffer(FrameBuffer * _pBuffer);
-	void _DepthBufferTexture(FrameBuffer * _pBuffer);
 };
 
 class DepthBufferList
@@ -52,8 +57,8 @@ public:
 	void destroy();
 	void saveBuffer(u32 _address);
 	void removeBuffer(u32 _address);
-	void clearBuffer(u32 _ulx, u32 _uly, u32 _lrx, u32 _lry);
-	void setNotCleared();
+	void clearBuffer();
+	void setCleared(bool _cleared);
 	DepthBuffer *findBuffer(u32 _address);
 	DepthBuffer * getCurrent() const {return m_pCurrent;}
 

@@ -809,8 +809,7 @@ void FrameBufferList::saveBuffer(u32 _address, u16 _format, u16 _size, u16 _widt
 		(config.generalEmulation.hacks&hack_LoadDepthTextures) == 0) {
 		// N64 games may use partial depth buffer clear for aux buffers
 		// It will not work for GL, so we have to force clear depth buffer for aux buffer
-		const DepthBuffer * pDepth = m_pCurrent->m_pDepthBuffer;
-		wnd.getDrawer().clearDepthBuffer(pDepth->m_ulx, pDepth->m_uly, pDepth->m_lrx, pDepth->m_lry);
+		wnd.getDrawer().clearDepthBuffer();
 	}
 
 	m_pCurrent->m_isDepthBuffer = _address == gDP.depthImageAddress;
@@ -1013,7 +1012,7 @@ void FrameBufferList::_renderScreenSizeBuffer()
 	wnd.swapBuffers();
 	gfxContext.bindFramebuffer(bufferTarget::DRAW_FRAMEBUFFER, pBuffer->m_FBO);
 	if (config.frameBufferEmulation.forceDepthBufferClear != 0) {
-		gfxContext.clearDepthBuffer();
+		drawer.clearDepthBuffer();
 	}
 	gDP.changed |= CHANGED_SCISSOR;
 }
@@ -1484,7 +1483,7 @@ void FrameBufferList::renderBuffer()
 		gfxContext.bindFramebuffer(bufferTarget::DRAW_FRAMEBUFFER, m_pCurrent->m_FBO);
 	}
 	if (config.frameBufferEmulation.forceDepthBufferClear != 0) {
-		gfxContext.clearDepthBuffer();
+		drawer.clearDepthBuffer();
 	}
 
 	const s32 X = hOffset;
