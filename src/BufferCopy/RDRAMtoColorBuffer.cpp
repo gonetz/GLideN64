@@ -243,7 +243,6 @@ void RDRAMtoColorBuffer::_copyFromRDRAM(u32 _height, bool _fullAlpha)
 	gDP.otherMode.cycleType = G_CYC_COPY;
 	CombinerInfo::get().setPolygonMode(DrawingState::TexRect);
 	CombinerInfo::get().update();
-	gDP.otherMode.cycleType = cycleType;
 
 	Context::UpdateTextureDataParams updateParams;
 	updateParams.handle = m_pTexture->name;
@@ -281,6 +280,7 @@ void RDRAMtoColorBuffer::_copyFromRDRAM(u32 _height, bool _fullAlpha)
 										 false, true, false, m_pCurBuffer);
 	dwnd().getDrawer().drawTexturedRect(texRectParams);
 	gfxContext.enable(enable::SCISSOR_TEST, true);
+	gDP.otherMode.cycleType = cycleType;
 
 	frameBufferList().setCurrentDrawBuffer();
 
