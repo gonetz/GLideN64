@@ -127,13 +127,13 @@ void gDPSetColorImage( u32 format, u32 size, u32 width, u32 address )
 {
 	address = RSP_SegmentToPhysical( address );
 
-	frameBufferList().saveBuffer(address, (u16)format, (u16)size, (u16)width, false);
-
 	gDP.colorImage.format = format;
 	gDP.colorImage.size = size;
 	gDP.colorImage.width = width;
 	gDP.colorImage.height = 0;
 	gDP.colorImage.address = address;
+
+	frameBufferList().saveBuffer(address, (u16)format, (u16)size, (u16)width, false);
 
 #ifdef DEBUG_DUMP
 	DebugMsg( DEBUG_NORMAL, "gDPSetColorImage( %s, %s, %i, 0x%08X );\n",
