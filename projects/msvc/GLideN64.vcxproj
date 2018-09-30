@@ -131,28 +131,7 @@
     <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release_mupenplus|x64'" />
     <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release_with_debug_mupen64plus|x64'" />
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_mupenplus|Win32'">
-    <TargetName>mupen64plus-video-GLideN64</TargetName>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_mupenplus|x64'">
-    <TargetName>mupen64plus-video-GLideN64</TargetName>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_mupenplus_uniformset|Win32'">
-    <TargetName>mupen64plus-video-GLideN64</TargetName>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug_mupenplus_uniformset|x64'">
-    <TargetName>mupen64plus-video-GLideN64</TargetName>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_mupenplus|Win32'">
-    <TargetName>mupen64plus-video-GLideN64</TargetName>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_with_debug_mupen64plus|Win32'">
-    <TargetName>mupen64plus-video-GLideN64</TargetName>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_mupenplus|x64'">
-    <TargetName>mupen64plus-video-GLideN64</TargetName>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_with_debug_mupen64plus|x64'">
+  <PropertyGroup Condition="'$(Configuration)'=='Debug_mupenplus' Or '$(Configuration)'=='Release_mupenplus' Or '$(Configuration)'=='Debug_mupenplus_uniformset' Or '$(Configuration)'=='Release_with_debug_mupen64plus'">
     <TargetName>mupen64plus-video-GLideN64</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
