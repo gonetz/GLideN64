@@ -87,17 +87,29 @@
   <PropertyGroup Condition="'$(Configuration)'=='Debug_mupenplus' Or '$(Configuration)'=='Release_mupenplus' Or '$(Configuration)'=='Debug_mupenplus_uniformset' Or '$(Configuration)'=='Release_with_debug_mupen64plus'">
     <TargetName>mupen64plus-video-GLideN64</TargetName>
   </PropertyGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+  <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug' Or '$(Configuration)'=='Debug_mupenplus' Or '$(Configuration)'=='Debug_mupenplus_uniformset'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>GL_DEBUG;DEBUG_DUMP;UNICODE;GL_USE_UNIFORMBLOCK;TXFILTER_LIB;WIN32_ASM;OS_WINDOWS;_USRDLL;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <MinimalRebuild>false</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
-      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)'=='Release' Or '$(Configuration)'=='Release_mupenplus' Or '$(Configuration)'=='Release_with_debug_mupen64plus'">
+    <ClCompile>
+      <Optimization>Full</Optimization>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <MinimalRebuild>false</MinimalRebuild>
+      <WarningLevel>Level3</WarningLevel>
       <PrecompiledHeader>
       </PrecompiledHeader>
-      <PrecompiledHeaderFile>GLideN64.h</PrecompiledHeaderFile>
-      <WarningLevel>Level3</WarningLevel>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PreprocessorDefinitions>GL_DEBUG;DEBUG_DUMP;UNICODE;GL_USE_UNIFORMBLOCK;TXFILTER_LIB;WIN32_ASM;OS_WINDOWS;_USRDLL;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <ExceptionHandling>Async</ExceptionHandling>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -126,15 +138,8 @@ copy /Y "$(ProjectDir)$(OutDir)$(TargetName).*" "$(N64PluginsDir)"
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>DEBUG_DUMP;UNICODE;GL_USE_UNIFORMBLOCK;TXFILTER_LIB;WIN32_ASM;OS_WINDOWS;_USRDLL;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <MinimalRebuild>false</MinimalRebuild>
-      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
-      <PrecompiledHeaderFile>GLideN64.h</PrecompiledHeaderFile>
-      <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <ExceptionHandling>Async</ExceptionHandling>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -162,15 +167,8 @@ copy /Y "$(ProjectDir)$(OutDir)$(TargetName).*" "$(N64PluginsDir)"
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug_mupenplus|Win32'">
     <ClCompile>
-      <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>GL_DEBUG;DEBUG_DUMP;UNICODE;TXFILTER_LIB;MUPENPLUSAPI;WIN32;WIN32_ASM;OS_WINDOWS;_USRDLL;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <MinimalRebuild>false</MinimalRebuild>
-      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
-      <PrecompiledHeaderFile>glN64.h</PrecompiledHeaderFile>
-      <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <AdditionalIncludeDirectories>../../src;../../src/inc;../../src/osal;../../src/inc/freetype/include</AdditionalIncludeDirectories>
       <ExceptionHandling>Async</ExceptionHandling>
@@ -196,15 +194,8 @@ copy /Y "$(ProjectDir)$(OutDir)$(TargetName).*" "$(Mupen64PluginsDir)"</Command>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug_mupenplus|x64'">
     <ClCompile>
-      <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>__VEC4_OPT;WIN64;GL_DEBUG;DEBUG_DUMP;UNICODE;TXFILTER_LIB;MUPENPLUSAPI;OS_WINDOWS;_USRDLL;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <MinimalRebuild>false</MinimalRebuild>
-      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
-      <PrecompiledHeaderFile>glN64.h</PrecompiledHeaderFile>
-      <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <AdditionalIncludeDirectories>../../src;../../src/inc;../../src/osal;../../src/inc/freetype/include</AdditionalIncludeDirectories>
       <ExceptionHandling>Async</ExceptionHandling>
@@ -229,15 +220,8 @@ copy /Y "$(OutDir)$(TargetName).*" "$(Mupen64PluginsDir_x64)"</Command>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug_mupenplus_uniformset|Win32'">
     <ClCompile>
-      <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>UNICODE;TXFILTER_LIB;MUPENPLUSAPI;WIN32;OS_WINDOWS;_USRDLL;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <MinimalRebuild>false</MinimalRebuild>
-      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
-      <PrecompiledHeaderFile>glN64.h</PrecompiledHeaderFile>
-      <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <AdditionalIncludeDirectories>../../src;../../src/inc;../../src/osal;../../../freetype/include</AdditionalIncludeDirectories>
       <ExceptionHandling>Async</ExceptionHandling>
@@ -255,15 +239,8 @@ copy /Y "$(OutDir)$(TargetName).*" "$(Mupen64PluginsDir_x64)"</Command>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug_mupenplus_uniformset|x64'">
     <ClCompile>
-      <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>UNICODE;TXFILTER_LIB;MUPENPLUSAPI;WIN32;OS_WINDOWS;_USRDLL;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <MinimalRebuild>false</MinimalRebuild>
-      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
-      <PrecompiledHeaderFile>glN64.h</PrecompiledHeaderFile>
-      <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <AdditionalIncludeDirectories>../../src;../../src/inc;../../src/osal;../../../freetype/include</AdditionalIncludeDirectories>
       <ExceptionHandling>Async</ExceptionHandling>
@@ -280,7 +257,6 @@ copy /Y "$(OutDir)$(TargetName).*" "$(Mupen64PluginsDir_x64)"</Command>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <Optimization>Full</Optimization>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
@@ -289,9 +265,6 @@ copy /Y "$(OutDir)$(TargetName).*" "$(Mupen64PluginsDir_x64)"</Command>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <FunctionLevelLinking>true</FunctionLevelLinking>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
-      <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <ExceptionHandling>Async</ExceptionHandling>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -321,7 +294,6 @@ copy /Y "$(ProjectDir)$(OutDir)$(TargetName).*" "$(N64PluginsDir)"</Command>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <Optimization>Full</Optimization>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
@@ -330,9 +302,6 @@ copy /Y "$(ProjectDir)$(OutDir)$(TargetName).*" "$(N64PluginsDir)"</Command>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <FunctionLevelLinking>true</FunctionLevelLinking>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
-      <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <ExceptionHandling>Async</ExceptionHandling>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -361,7 +330,6 @@ copy /Y "$(ProjectDir)$(OutDir)$(TargetName).*" "$(N64PluginsDir)"</Command>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_mupenplus|Win32'">
     <ClCompile>
-      <Optimization>Full</Optimization>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
@@ -370,9 +338,6 @@ copy /Y "$(ProjectDir)$(OutDir)$(TargetName).*" "$(N64PluginsDir)"</Command>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <FunctionLevelLinking>true</FunctionLevelLinking>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
-      <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <AdditionalIncludeDirectories>../../src;../../src/inc;../../src/osal;../../src/inc/freetype/include</AdditionalIncludeDirectories>
       <ExceptionHandling>Async</ExceptionHandling>
@@ -403,7 +368,6 @@ copy /Y "$(ProjectDir)$(OutDir)$(TargetName).*" "$(Mupen64PluginsDir)"</Command>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_with_debug_mupen64plus|Win32'">
     <ClCompile>
-      <Optimization>Full</Optimization>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
@@ -412,9 +376,6 @@ copy /Y "$(ProjectDir)$(OutDir)$(TargetName).*" "$(Mupen64PluginsDir)"</Command>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <FunctionLevelLinking>true</FunctionLevelLinking>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
-      <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <AdditionalIncludeDirectories>../../src;../../src/inc;../../src/osal;../../src/inc/freetype/include</AdditionalIncludeDirectories>
       <ExceptionHandling>Async</ExceptionHandling>
@@ -445,7 +406,6 @@ copy /Y "$(ProjectDir)$(OutDir)$(TargetName).*" "$(Mupen64PluginsDir)"</Command>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_mupenplus|x64'">
     <ClCompile>
-      <Optimization>Full</Optimization>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
@@ -454,9 +414,6 @@ copy /Y "$(ProjectDir)$(OutDir)$(TargetName).*" "$(Mupen64PluginsDir)"</Command>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <FunctionLevelLinking>true</FunctionLevelLinking>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
-      <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <AdditionalIncludeDirectories>../../src;../../src/inc;../../src/osal;../../src/inc/freetype/include</AdditionalIncludeDirectories>
       <ExceptionHandling>Async</ExceptionHandling>
@@ -486,7 +443,6 @@ copy /Y "$(OutDir)$(TargetName).*" "$(Mupen64PluginsDir_x64)"</Command>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_with_debug_mupen64plus|x64'">
     <ClCompile>
-      <Optimization>Full</Optimization>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
@@ -495,9 +451,6 @@ copy /Y "$(OutDir)$(TargetName).*" "$(Mupen64PluginsDir_x64)"</Command>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <FunctionLevelLinking>true</FunctionLevelLinking>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
-      <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <AdditionalIncludeDirectories>../../src;../../src/inc;../../src/osal;../../src/inc/freetype/include</AdditionalIncludeDirectories>
       <ExceptionHandling>Async</ExceptionHandling>
