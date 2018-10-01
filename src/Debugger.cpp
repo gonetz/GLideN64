@@ -260,6 +260,8 @@ void Debugger::_fillTriInfo(TriInfo & _info)
 	_info.env_color = gDP.envColor;
 	_info.fill_color = gDP.fillColor;
 	_info.prim_color = gDP.primColor;
+	_info.primDepthZ = gDP.primDepth.z;
+	_info.primDepthDeltaZ = gDP.primDepth.deltaZ;
 	_info.K4 = gDP.convert.k4;
 	_info.K5 = gDP.convert.k5;
 	_info.viewport = gSP.viewport;
@@ -792,8 +794,8 @@ void Debugger::_drawColors(f32 _ulx, f32 _uly, f32 _yShift)
 	OUTPUT1("prim_lodfrac: %.2f", prim.l);
 	const gDPInfo::FillColor & fill = m_triSel->fill_color;
 	OUTPUT1("fill:  %08x", fill.color);
-	OUTPUT1("z:  %.2f", fill.z);
-	OUTPUT1("dz: %.2f", fill.dz);
+	OUTPUT1("prim_z:  %.2f", m_triSel->primDepthZ);
+	OUTPUT1("prim_dz: %.2f", m_triSel->primDepthDeltaZ);
 }
 
 void Debugger::_drawBlender(f32 _ulx, f32 _uly, f32 _yShift)
