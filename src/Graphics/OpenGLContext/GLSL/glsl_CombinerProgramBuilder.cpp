@@ -1535,20 +1535,20 @@ public:
 				} else {
 					if (_glinfo.isGLESX && _glinfo.noPerspective) {
 						 m_part =
-							"highp float writeDepth()                                                                                                                                      \n"
-							"{                                                                                                                                                                              \n"
-							"  if (uClampMode == 1 && (vZCoord > 1.0)) discard;     \n"
-							"  highp float depth = uDepthSource == 0 ? (vZCoord - uPolygonOffset) : uPrimDepth;     \n"
-							"  return clamp(depth * uDepthScale.s + uDepthScale.t, 0.0, 1.0);                               \n"
-							"}                                                                                                                                                                              \n"
+							"highp float writeDepth()																	\n"
+							"{																							\n"
+							"  if (uClampMode == 1 && (vZCoord > 1.0)) discard;											\n"
+							"  if (uDepthSource != 0) return uPrimDepth;												\n"
+							"  return clamp((vZCoord - uPolygonOffset) * uDepthScale.s + uDepthScale.t, 0.0, 1.0);		\n"
+							"}																							\n"
 							;
 					} else {
 						m_part =
-							"highp float writeDepth()						        										\n"
-							"{																						\n"
-							"  highp float depth = uDepthSource == 0 ? (gl_FragCoord.z * 2.0 - 1.0) : uPrimDepth;	\n"
-							"  return clamp(depth * uDepthScale.s + uDepthScale.t, 0.0, 1.0);				\n"
-							"}																						\n"
+							"highp float writeDepth()						        									\n"
+							"{																							\n"
+							"  if (uDepthSource != 0) return uPrimDepth;												\n"
+							"  return clamp((gl_FragCoord.z * 2.0 - 1.0) * uDepthScale.s + uDepthScale.t, 0.0, 1.0);	\n"
+							"}																							\n"
 							;
 					}
 				}

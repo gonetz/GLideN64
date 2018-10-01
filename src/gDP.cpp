@@ -69,12 +69,8 @@ void gDPSetOtherMode( u32 mode0, u32 mode1 )
 
 void gDPSetPrimDepth( u16 z, u16 dz )
 {
-	if (gSP.viewport.vscale[2] == 0)
-		gDP.primDepth.z = _FIXED2FLOAT(_SHIFTR(z, 0, 15), 15);
-	else
-		gDP.primDepth.z = min(1.0f, max(-1.0f, (_FIXED2FLOAT(_SHIFTR(z, 0, 15), 15) - gSP.viewport.vtrans[2]) / gSP.viewport.vscale[2]));
+	gDP.primDepth.z = _FIXED2FLOAT(_SHIFTR(z, 0, 15), 15);
 	gDP.primDepth.deltaZ = _FIXED2FLOAT(_SHIFTR(dz, 0, 15), 15);
-
 	DebugMsg( DEBUG_NORMAL, "gDPSetPrimDepth( %f, %f );\n", gDP.primDepth.z, gDP.primDepth.deltaZ);
 }
 
