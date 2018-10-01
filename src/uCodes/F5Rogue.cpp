@@ -1067,36 +1067,10 @@ void _addVertices(const u32 _vert[3], GraphicsDrawer & _drawer)
 	}
 }
 
-void F3DSWRS_Tri1(u32 _w0, u32 _w1)
+void F3DSWRS_Tri(u32 _w0, u32 _w1)
 {
-	DebugMsg(DEBUG_NORMAL, "F3DSWRS_Tri1 (0x%08x, 0x%08x)\n", _w0, _w1);
-	const u32 v1 = (_SHIFTR(_w1, 13, 11) & 0x7F8) / 40;
-	const u32 v2 = (_SHIFTR( _w1,  5, 11 ) & 0x7F8) / 40;
-	const u32 v3 = ((_w1 <<  3) & 0x7F8) / 40;
-	const u32 vert[3] = { v1, v2, v3 };
-
-	const u32 colorParam = *(u32*)&RDRAM[RSP.PC[RSP.PCi] + 8];
-	const u32 colorIdx[3] = { _SHIFTR(colorParam, 16, 8), _SHIFTR(colorParam, 8, 8), _SHIFTR(colorParam, 0, 8) };
-
-	const bool useTex = (_w0 & 2) != 0;
-    const u8 * texbase = RDRAM + RSP.PC[RSP.PCi] + 16;
-	F3DSWRS_PrepareVertices(vert, RDRAM + gSP.vertexColorBase, colorIdx, texbase, useTex, gDP.otherMode.texturePersp != 0, 3);
-
-	if (useTex)
-		RSP.PC[RSP.PCi] += 16;
-
-	RSP.nextCmd = _SHIFTR(*(u32*)&RDRAM[RSP.PC[RSP.PCi] + 16], 24, 8);
-	GraphicsDrawer & drawer = dwnd().getDrawer();
-	_addVertices(vert, drawer);
-	if (RSP.nextCmd != G_TRI1 && RSP.nextCmd != G_TRI2)
-		drawer.drawDMATriangles(drawer.getDMAVerticesCount());
-
-	RSP.PC[RSP.PCi] += 8;
-}
-
-void F3DSWRS_Tri2(u32 _w0, u32 _w1)
-{
-	DebugMsg(DEBUG_NORMAL, "F3DSWRS_Tri2 (0x%08x, 0x%08x)\n", _w0, _w1);
+	const bool bTri2 = RSP.cmd == F3DSWRS_TRI2;
+	DebugMsg(DEBUG_NORMAL, "F3DSWRS_Tri%d (0x%08x, 0x%08x)\n", bTri2 ? 2 : 1, _w0, _w1);
 	const u32 v1 = (_SHIFTR(_w1, 13, 11) & 0x7F8) / 40;
 	const u32 v2 = (_SHIFTR( _w1,  5, 11 ) & 0x7F8) / 40;
 	const u32 v3 = ((_w1 <<  3) & 0x7F8) / 40;
@@ -1108,8 +1082,8 @@ void F3DSWRS_Tri2(u32 _w0, u32 _w1)
 							_SHIFTR(colorParam, 0, 8), _SHIFTR(colorParam, 24, 8) };
 
 	const bool useTex = (_w0 & 2) != 0;
-    const u8 * texbase = RDRAM + RSP.PC[RSP.PCi] + 16;
-	F3DSWRS_PrepareVertices(vert, RDRAM + gSP.vertexColorBase, colorIdx, texbase, useTex, gDP.otherMode.texturePersp != 0, 4);
+	const u8 * texbase = RDRAM + RSP.PC[RSP.PCi] + 16;
+	F3DSWRS_PrepareVertices(vert, RDRAM + gSP.vertexColorBase, colorIdx, texbase, useTex, gDP.otherMode.texturePersp != 0, bTri2 ? 4 : 3);
 
 	if (useTex)
 		RSP.PC[RSP.PCi] += 16;
@@ -1118,11 +1092,17 @@ void F3DSWRS_Tri2(u32 _w0, u32 _w1)
 	GraphicsDrawer & drawer = dwnd().getDrawer();
 	const u32 vert1[3] = { v1, v2, v3 };
 	_addVertices(vert1, drawer);
-	const u32 vert2[3] = { v1, v3, v4 };
-	_addVertices(vert2, drawer);
-	if (RSP.nextCmd != G_TRI1 && RSP.nextCmd != G_TRI2)
+	if (bTri2) {
+		const u32 vert2[3] = { v1, v3, v4 };
+		_addVertices(vert2, drawer);
+	}
+	if (RSP.nextCmd != G_TRI1 && RSP.nextCmd != G_TRI2) {
+		const u32 geometryMode = gSP.geometryMode;
+		if ((gSP.geometryMode & G_CULL_BOTH) == G_CULL_BOTH)
+			gSP.geometryMode &= ~(G_CULL_FRONT);
 		drawer.drawDMATriangles(drawer.getDMAVerticesCount());
-
+		gSP.geometryMode = geometryMode;
+	}
 	RSP.PC[RSP.PCi] += 8;
 }
 
@@ -1299,7 +1279,7 @@ void F5Rogue_Init()
 	GBI_SetGBI( G_RESERVED2,			F3DSWRS_BRANCHDL,			F3DSWRS_BranchDList );
 	GBI_SetGBI( G_RESERVED3,			F3D_RESERVED3,				F3D_Reserved3 );
 
-	GBI_SetGBI( G_TRI1,					F3DSWRS_TRI1,				F3DSWRS_Tri1 );
+	GBI_SetGBI( G_TRI1,					F3DSWRS_TRI1,				F3DSWRS_Tri );
 	GBI_SetGBI( G_SETOTHERMODE_H_EX,	F3DSWRS_SETOTHERMODE_H_EX,	F3DSWRS_SetOtherMode_H_EX );
 	GBI_SetGBI( G_POPMTX,				F3DSWRS_TEXRECT_GEN,		F3DSWRS_TexrectGen );
 	GBI_SetGBI( G_MOVEWORD,				F3DSWRS_MOVEWORD,			F3DSWRS_MoveWord );
@@ -1310,6 +1290,6 @@ void F5Rogue_Init()
 	GBI_SetGBI( G_SETGEOMETRYMODE,		F3D_SETGEOMETRYMODE,		F3D_SetGeometryMode );
 	GBI_SetGBI( G_CLEARGEOMETRYMODE,	F3D_CLEARGEOMETRYMODE,		F3D_ClearGeometryMode );
 	GBI_SetGBI( G_JUMPSWDL,				F3DSWRS_JUMPSWDL,			F3DSWRS_JumpSWDL );
-	GBI_SetGBI( G_TRI2,					F3DSWRS_TRI2,				F3DSWRS_Tri2 );
+	GBI_SetGBI( G_TRI2,					F3DSWRS_TRI2,				F3DSWRS_Tri );
 	GBI_SetGBI( G_SETOTHERMODE_L_EX,	F3DSWRS_SETOTHERMODE_L_EX,	F3DSWRS_SetOtherMode_L_EX );
 }
