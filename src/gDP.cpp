@@ -726,6 +726,9 @@ void gDPFillRectangle( s32 ulx, s32 uly, s32 lrx, s32 lry )
 
 	if (depthBuffer != dbCleared) {
 		if (gDP.otherMode.cycleType == G_CYC_FILL) {
+			if (depthBuffer == dbNone) {
+				frameBufferList().fillRDRAM(ulx, uly, lrx, lry);
+			}
 			f32 fillColor[4];
 			gDPGetFillColor(fillColor);
 			gDP.rectColor.r = fillColor[0];
