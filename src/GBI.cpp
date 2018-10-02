@@ -89,7 +89,6 @@ std::vector<SpecialMicrocodeInfo> specialMicrocodes =
 	{ F3D,			false,	false,	false,	0xe01e14be }, // Eikou no Saint Andrews
 	{ F3DEX2ACCLAIM,true,	true,	false,	0xe44df568 }, // Acclaim games: Turok2 & 3, Armories and South park
 	{ F3D,			false,	true,	false,	0xe62a706d }, // Fast3D
-	{ F3D,			false,	false,	true,	0xfff0637d }, // RSP SW Version: 2.0D, 04-01-96, Mischief Makers
 };
 
 u32 G_RDPHALF_1, G_RDPHALF_2, G_RDPHALF_CONT;
