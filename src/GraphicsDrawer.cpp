@@ -659,9 +659,7 @@ void GraphicsDrawer::_updateStates(DrawingState _drawingState) const
 
 	if (isCurrentColorImageDepthImage() &&
 		config.generalEmulation.enableFragmentDepthWrite != 0 &&
-		config.frameBufferEmulation.N64DepthCompare == 0 &&
-		(config.generalEmulation.hacks & hack_ZeldaMM) == 0
-		) {
+		config.frameBufferEmulation.N64DepthCompare == 0) {
 		// Current render target is depth buffer.
 		// Shader will set gl_FragDepth to shader color, see ShaderCombiner ctor
 		// Here we enable depth buffer write.
