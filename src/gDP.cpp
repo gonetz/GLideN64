@@ -705,9 +705,9 @@ void gDPFillRectangle( s32 ulx, s32 uly, s32 lrx, s32 lry )
 		// Game may use depth texture as auxilary color texture. Example: Mario Tennis
 		// If color is not depth clear color, that is most likely the case
 		if (gDP.fillColor.color == DepthClearColor) {
-			frameBufferList().fillRDRAM(ulx, uly, lrx, lry);
 			depthBuffer = dbFound;
 			if (config.generalEmulation.enableFragmentDepthWrite == 0) {
+				frameBufferList().fillRDRAM(ulx, uly, lrx, lry);
 				drawer.clearDepthBuffer(ulx, uly, lrx, lry);
 				depthBuffer = dbCleared;
 			} else
@@ -716,8 +716,8 @@ void gDPFillRectangle( s32 ulx, s32 uly, s32 lrx, s32 lry )
 	} else if (gDP.fillColor.color == DepthClearColor && gDP.otherMode.cycleType == G_CYC_FILL) {
 		depthBuffer = dbFound;
 		depthBufferList().saveBuffer(gDP.colorImage.address);
-		frameBufferList().fillRDRAM(ulx, uly, lrx, lry);
 		if (config.generalEmulation.enableFragmentDepthWrite == 0) {
+			frameBufferList().fillRDRAM(ulx, uly, lrx, lry);
 			drawer.clearDepthBuffer(ulx, uly, lrx, lry);
 			depthBuffer = dbCleared;
 		} else
@@ -726,9 +726,7 @@ void gDPFillRectangle( s32 ulx, s32 uly, s32 lrx, s32 lry )
 
 	if (depthBuffer != dbCleared) {
 		if (gDP.otherMode.cycleType == G_CYC_FILL) {
-			if (depthBuffer == dbNone) {
-				frameBufferList().fillRDRAM(ulx, uly, lrx, lry);
-			}
+			frameBufferList().fillRDRAM(ulx, uly, lrx, lry);
 			f32 fillColor[4];
 			gDPGetFillColor(fillColor);
 			gDP.rectColor.r = fillColor[0];
