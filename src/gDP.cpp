@@ -716,7 +716,8 @@ void gDPFillRectangle( s32 ulx, s32 uly, s32 lrx, s32 lry )
 	} else if (gDP.fillColor.color == DepthClearColor && gDP.otherMode.cycleType == G_CYC_FILL) {
 		depthBuffer = dbFound;
 		depthBufferList().saveBuffer(gDP.colorImage.address);
-		if (config.generalEmulation.enableFragmentDepthWrite == 0) {
+		if (config.generalEmulation.enableFragmentDepthWrite == 0 ||
+			(config.generalEmulation.hacks & hack_Snap) != 0) {
 			frameBufferList().fillRDRAM(ulx, uly, lrx, lry);
 			drawer.clearDepthBuffer(ulx, uly, lrx, lry);
 			depthBuffer = dbCleared;
