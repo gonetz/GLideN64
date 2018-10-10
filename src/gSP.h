@@ -110,6 +110,7 @@ struct gSPInfo
 	{
 		u32 address, width, height, format, size, palette;
 		f32 imageX, imageY, scaleW, scaleH;
+		u8 clampS, clampT;
 	} bgImage;
 
 	u32 geometryMode;
