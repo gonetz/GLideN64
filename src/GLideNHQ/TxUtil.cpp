@@ -149,7 +149,7 @@ TxUtil::RiceCRC32(const uint8* src, int width, int height, int size, int rowStri
 	const uint32 bytesPerLine = width << size >> 1;
 
 	try {
-#ifdef __MSC__
+#ifdef WIN32_ASM
 		__asm {
 			push ebx;
 			push esi;
@@ -262,7 +262,7 @@ TxUtil::RiceCRC32_CI4(const uint8* src, int width, int height, int rowStride,
 
 	/* 4bit CI */
 	try {
-#ifdef __MSC__
+#ifdef WIN32_ASM
 		__asm {
 			push ebx;
 			push esi;
@@ -395,7 +395,7 @@ TxUtil::RiceCRC32_CI8(const uint8* src, int width, int height, int rowStride,
 
 	/* 8bit CI */
 	try {
-#ifdef __MSC__
+#ifdef WIN32_ASM
 		const uint32 bytes_per_width = width;
 		__asm {
 			push ebx;
