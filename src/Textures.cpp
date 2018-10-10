@@ -1394,6 +1394,8 @@ void TextureCache::_updateBackground()
 		assert(currentTex.height == gSP.bgImage.height);
 		assert(currentTex.format == gSP.bgImage.format);
 		assert(currentTex.size == gSP.bgImage.size);
+		currentTex.clampS = gSP.bgImage.clampS;
+		currentTex.clampT = gSP.bgImage.clampT;
 
 		activateTexture(0, &currentTex);
 		m_hits++;
@@ -1419,8 +1421,8 @@ void TextureCache::_updateBackground()
 	pCurrent->maskT = 0;
 	pCurrent->mirrorS = 0;
 	pCurrent->mirrorT = 0;
-	pCurrent->clampS = 0;
-	pCurrent->clampT = 0;
+	pCurrent->clampS = gSP.bgImage.clampS;
+	pCurrent->clampT = gSP.bgImage.clampT;
 	pCurrent->line = 0;
 	pCurrent->tMem = 0;
 	pCurrent->frameBufferTexture = CachedTexture::fbNone;

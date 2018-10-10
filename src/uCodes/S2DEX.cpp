@@ -407,14 +407,14 @@ struct ObjCoordinates
 		lrs = uls + std::min(imageW, frameW * scaleW) - 1;
 		lrt = ult + std::min(imageH, frameH * scaleH) - 1;
 
+		gSP.bgImage.clampS = lrs <= (imageW - 1) ? 1 : 0 ;
+		gSP.bgImage.clampT = lrt <= (imageH - 1) ? 1 : 0 ;
+
 		// G_CYC_COPY (gSPBgRectCopy()) does not allow texture filtering
 		if (gDP.otherMode.cycleType != G_CYC_COPY) {
 			// Correct texture coordinates -0.5f and +0.5 if G_OBJRM_BILERP 
 			// bilinear interpolation is set
-			if ((gSP.objRendermode&G_OBJRM_BILERP) != 0 &&
-				((gDP.otherMode.textureFilter == G_TF_BILERP) ||											// Kirby Crystal Shards
-				(gDP.otherMode.textureFilter == G_TF_POINT && (gSP.objRendermode&G_OBJRM_NOTXCLAMP) != 0)) // Worms Armageddon
-				) {
+			if (gDP.otherMode.textureFilter == G_TF_BILERP) {
 				uls -= 0.5f;
 				ult -= 0.5f;
 				lrs += 0.5f;
@@ -443,7 +443,8 @@ struct ObjCoordinates
 		uly = frameY;
 		lrx = ulx + (lrs - uls) / scaleW;
 		lry = uly + (lrt - ult) / scaleH;
-		if ((gSP.objRendermode&G_OBJRM_BILERP) == 0) {
+		if (((gSP.objRendermode&G_OBJRM_BILERP) == 0 && gDP.otherMode.textureFilter != G_TF_BILERP) ||
+			((gSP.objRendermode&G_OBJRM_BILERP) != 0 && gDP.otherMode.textureFilter == G_TF_POINT && (gSP.objRendermode&G_OBJRM_NOTXCLAMP) != 0)) {
 			lrx += 1.0f / scaleW;
 			lry += 1.0f / scaleH;
 		}
