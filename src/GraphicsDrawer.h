@@ -155,6 +155,8 @@ public:
 
 	bool isTexrectDrawerMode() const { return !m_texrectDrawer.isEmpty(); }
 
+	void setBackgroundDrawingMode(bool _mode) { m_bBGMode = _mode; }
+
 private:
 	friend class DisplayWindow;
 	friend TexrectDrawer;
@@ -206,6 +208,7 @@ private:
 	u32 m_modifyVertices;
 	f32 m_maxLineWidth;
 	bool m_bFlatColors;
+	bool m_bBGMode;
 	TexrectDrawer m_texrectDrawer;
 	OSDMessages m_osdMessages;
 };

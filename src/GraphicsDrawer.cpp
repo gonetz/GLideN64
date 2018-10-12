@@ -31,6 +31,7 @@ GraphicsDrawer::GraphicsDrawer()
 , m_modifyVertices(0)
 , m_maxLineWidth(1.0f)
 , m_bFlatColors(false)
+, m_bBGMode(false)
 {
 	memset(m_rect, 0, sizeof(m_rect));
 }
@@ -1174,7 +1175,7 @@ void GraphicsDrawer::drawTexturedRect(const TexturedRectParams & _params)
 	DisplayWindow & wnd = dwnd();
 	TextureCache & cache = textureCache();
 	const bool bUseBilinear = gDP.otherMode.textureFilter != 0;
-	const bool bUseTexrectDrawer = config.generalEmulation.enableNativeResTexrects != 0
+	const bool bUseTexrectDrawer = (config.generalEmulation.enableNativeResTexrects != 0 || m_bBGMode)
 		&& bUseBilinear
 		&& pCurrentCombiner->usesTexture()
 		&& (pCurrentBuffer == nullptr || !pCurrentBuffer->m_cfb)
@@ -1356,8 +1357,14 @@ void GraphicsDrawer::drawTexturedRect(const TexturedRectParams & _params)
 			m_rect[i].x *= scale;
 	}
 
-	if (bUseTexrectDrawer && m_texrectDrawer.add())
-		return;
+	if (bUseTexrectDrawer) {
+		if (m_bBGMode) {
+			m_texrectDrawer.addBackgroundRect();
+			return;
+		}
+		if (m_texrectDrawer.addRect())
+			return;
+	}
 
 	_updateScreenCoordsViewport(_params.pBuffer);
 	Context::DrawRectParameters rectParams;

@@ -895,6 +895,8 @@ void BG1CycNew(u32 _bg)
 	gDP.otherMode.cycleType = G_CYC_1CYCLE;
 	gDP.changed |= CHANGED_CYCLETYPE;
 	RSP.LLE = true;
+	GraphicsDrawer & drawer = dwnd().getDrawer();
+	drawer.setBackgroundDrawingMode(true);
 
 //	auto runCommand = [](u32 w0, u32 w1)
 //	{
@@ -1234,6 +1236,8 @@ void BG1CycNew(u32 _bg)
 	}
 
 	RSP.LLE = false;
+	drawer.flush();
+	drawer.setBackgroundDrawingMode(false);
 }
 
 void S2DEX_BG_1Cyc(u32 w0, u32 w1)

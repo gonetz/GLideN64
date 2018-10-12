@@ -17,7 +17,8 @@ public:
 
 	void init();
 	void destroy();
-	bool add();
+	bool addRect();
+	void addBackgroundRect();
 	bool draw();
 	bool isEmpty() const;
 	bool canContinue() const;

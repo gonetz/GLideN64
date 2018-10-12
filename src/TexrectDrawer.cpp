@@ -187,7 +187,7 @@ bool TexrectDrawer::_lookAhead(bool _checkCoordinates) const
 	return false;
 }
 
-bool TexrectDrawer::add()
+bool TexrectDrawer::addRect()
 {
 	DisplayWindow & wnd = dwnd();
 	GraphicsDrawer &  drawer = wnd.getDrawer();
@@ -290,6 +290,54 @@ bool TexrectDrawer::add()
 		draw();
 
 	return true;
+}
+
+void TexrectDrawer::addBackgroundRect()
+{
+	DisplayWindow & wnd = dwnd();
+	GraphicsDrawer &  drawer = wnd.getDrawer();
+	RectVertex * pRect = drawer.m_rect;
+
+	if (m_numRects == 0) {
+		m_numRects = 1;
+		m_pBuffer = frameBufferList().getCurrent();
+		m_otherMode = gDP.otherMode._u64;
+		m_mux = gDP.combine.mux;
+		m_Z = (gDP.otherMode.depthSource == G_ZS_PRIM) ? gDP.primDepth.z : gSP.viewport.nearz;
+		m_scissor = gDP.scissor;
+
+		m_ulx = pRect[0].x;
+		m_uly = pRect[0].y;
+		m_lrx = m_max_lrx = pRect[3].x;
+		m_lry = m_max_lry = pRect[3].y;
+
+		CombinerInfo & cmbInfo = CombinerInfo::get();
+		cmbInfo.update();
+		cmbInfo.updateParameters();
+		gfxContext.enableDepthWrite(false);
+		gfxContext.enable(enable::DEPTH_TEST, false);
+		gfxContext.enable(enable::BLEND, false);
+
+		_setViewport();
+
+		gfxContext.setScissor((s32)gDP.scissor.ulx, (s32)gDP.scissor.uly, (s32)(gDP.scissor.lrx - gDP.scissor.ulx), (s32)(gDP.scissor.lry - gDP.scissor.uly));
+
+		gfxContext.bindFramebuffer(bufferTarget::DRAW_FRAMEBUFFER, m_FBO);
+	} else {
+		++m_numRects;
+	}
+
+	m_lrx = pRect[3].x;
+	m_lry = pRect[3].y;
+	m_max_lrx = std::max(m_max_lrx, m_lrx);
+	m_max_lry = std::max(m_max_lry, m_lry);
+
+	Context::DrawRectParameters rectParams;
+	rectParams.mode = drawmode::TRIANGLE_STRIP;
+	rectParams.verticesCount = 4;
+	rectParams.vertices = pRect;
+	rectParams.combiner = currentCombiner();
+	gfxContext.drawRects(rectParams);
 }
 
 bool TexrectDrawer::draw()
