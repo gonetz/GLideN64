@@ -1013,7 +1013,9 @@ bool texturedRectDepthBufferCopy(const GraphicsDrawer::TexturedRectParams & _par
 	// Works only with depth buffer emulation enabled.
 	// Load of arbitrary data to that area causes weird camera rotation in CBFD.
 	const gDPTile * pTile = gSP.textureTile[0];
-	if (pTile->loadType == LOADTYPE_BLOCK && gDP.textureImage.size == 2 && gDP.textureImage.address >= gDP.depthImageAddress &&  gDP.textureImage.address < (gDP.depthImageAddress + gDP.colorImage.width*gDP.colorImage.width * 6 / 4)) {
+	if (pTile->loadType == LOADTYPE_BLOCK && gDP.textureImage.size == 2 &&
+		gDP.textureImage.address >= gDP.depthImageAddress &&
+		gDP.textureImage.address < (gDP.depthImageAddress + gDP.colorImage.width*gDP.scissor.lry*2)) {
 		if (config.frameBufferEmulation.copyDepthToRDRAM == Config::cdDisable)
 			return true;
 		FrameBuffer * pBuffer = frameBufferList().getCurrent();
