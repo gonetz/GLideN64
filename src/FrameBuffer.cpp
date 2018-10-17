@@ -1500,6 +1500,10 @@ void FrameBufferList::fillRDRAM(s32 ulx, s32 uly, s32 lrx, s32 lry)
 	if (m_pCurrent == nullptr)
 		return;
 
+	if (config.frameBufferEmulation.copyFromRDRAM !=0 && !m_pCurrent->m_isDepthBuffer)
+		// Do not write to RDRAM color buffer if copyFromRDRAM enabled.
+		return;
+
 	ulx = (s32)min(max((float)ulx, gDP.scissor.ulx), gDP.scissor.lrx);
 	lrx = (s32)min(max((float)lrx, gDP.scissor.ulx), gDP.scissor.lrx);
 	uly = (s32)min(max((float)uly, gDP.scissor.uly), gDP.scissor.lry);
