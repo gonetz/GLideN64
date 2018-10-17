@@ -440,6 +440,23 @@ void gDPLoadTile(u32 tile, u32 uls, u32 ult, u32 lrs, u32 lrt)
 	const u32 height = (gDP.loadTile->lrt - gDP.loadTile->ult + 1) & 0x03FF;
 	const u32 bpl = gDP.loadTile->line << 3;
 
+	u32 alignedWidth = width;
+	u32 wmask = 0;
+	switch (gDP.textureImage.size) {
+	case G_IM_SIZ_8b:
+		wmask = 7;
+		break;
+	case G_IM_SIZ_16b:
+		wmask = 3;
+		break;
+	case G_IM_SIZ_32b:
+		wmask = 1;
+		break;
+	}
+	if ((width & wmask) != 0)
+		alignedWidth = (width & (~wmask)) + wmask + 1;
+	const u32 bpr = alignedWidth << gDP.loadTile->size >> 1;
+
 	gDPLoadTileInfo &info = gDP.loadInfo[gDP.loadTile->tmem];
 	info.texAddress = gDP.loadTile->imageAddress;
 	info.uls = gDP.loadTile->uls;
@@ -447,7 +464,7 @@ void gDPLoadTile(u32 tile, u32 uls, u32 ult, u32 lrs, u32 lrt)
 	info.lrs = gDP.loadTile->lrs;
 	info.lrt = gDP.loadTile->lrt;
 	info.width = gDP.loadTile->masks != 0 ? (u16)min(width, 1U << gDP.loadTile->masks) : (u16)width;
-	info.height = gDP.loadTile->maskt != 0 ? (u16)min(height, 1U<<gDP.loadTile->maskt) : (u16)height;
+	info.height = gDP.loadTile->maskt != 0 ? (u16)min(height, 1U << gDP.loadTile->maskt) : (u16)height;
 	info.texWidth = gDP.textureImage.width;
 	info.size = gDP.textureImage.size;
 	info.loadType = LOADTYPE_TILE;
@@ -458,6 +475,13 @@ void gDPLoadTile(u32 tile, u32 uls, u32 ult, u32 lrs, u32 lrt)
 
 	if (gDP.loadTile->line == 0)
 		return;
+
+	if (gDP.loadTile->masks == 0)
+		gDP.loadTile->loadWidth = max(gDP.loadTile->loadWidth, info.width);
+	if (gDP.loadTile->maskt == 0 && gDP.loadTile->tmem % gDP.loadTile->line == 0) {
+		const u16 theight = info.height + gDP.loadTile->tmem / gDP.loadTile->line;
+		gDP.loadTile->loadHeight = max(gDP.loadTile->loadHeight, theight);
+	}
 
 	u32 address = gDP.textureImage.address + gDP.loadTile->ult * gDP.textureImage.bpl + (gDP.loadTile->uls << gDP.textureImage.size >> 1);
 	u32 bpl2 = bpl;
@@ -475,13 +499,14 @@ void gDPLoadTile(u32 tile, u32 uls, u32 ult, u32 lrs, u32 lrt)
 	else {
 		u32 tmemAddr = gDP.loadTile->tmem;
 		const u32 line = gDP.loadTile->line;
+		const u32 qwpr = bpr >> 3;
 		for (u32 y = 0; y < height; ++y) {
 			if (address + bpl > RDRAMSize)
 				UnswapCopyWrap(RDRAM, address, (u8*)TMEM, tmemAddr << 3, 0xFFF, RDRAMSize - address);
 			else
-				UnswapCopyWrap(RDRAM, address, (u8*)TMEM, tmemAddr << 3, 0xFFF, bpl);
+				UnswapCopyWrap(RDRAM, address, (u8*)TMEM, tmemAddr << 3, 0xFFF, bpr);
 			if (y & 1)
-				DWordInterleaveWrap((u32*)TMEM, tmemAddr << 1, 0x3FF, line);
+				DWordInterleaveWrap((u32*)TMEM, tmemAddr << 1, 0x3FF, qwpr);
 
 			address += gDP.textureImage.bpl;
 			if (address >= RDRAMSize)

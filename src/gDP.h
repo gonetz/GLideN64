@@ -94,6 +94,8 @@ struct gDPTile
 
 	u32 textureMode;
 	u32 loadType;
+	u16 loadWidth;
+	u16 loadHeight;
 	u32 imageAddress;
 	u32 frameBufferAddress;
 };

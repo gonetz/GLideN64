@@ -614,6 +614,15 @@ void _calcTileSizes(u32 _t, TileSizes & _sizes, gDPTile * _pLoadTile)
 
 	const u32 tMemMask = gDP.otherMode.textureLUT == G_TT_NONE ? 0x1FF : 0xFF;
 	gDPLoadTileInfo &info = gDP.loadInfo[pTile->tmem & tMemMask];
+	if (pTile->tmem == gDP.loadTile->tmem) {
+		if (gDP.loadTile->loadWidth != 0 && gDP.loadTile->masks == 0)
+			info.width = gDP.loadTile->loadWidth;
+		if (gDP.loadTile->loadHeight != 0 && gDP.loadTile->maskt == 0) {
+			info.height = gDP.loadTile->loadHeight;
+			info.bytes = info.height * (gDP.loadTile->line << 3);
+		}
+		gDP.loadTile->loadWidth = gDP.loadTile->loadHeight = 0;
+	}
 	_sizes.bytes = info.bytes;
 	if (info.loadType == LOADTYPE_TILE) {
 		if (pTile->masks && ((maskWidth * maskHeight) <= maxTexels))
