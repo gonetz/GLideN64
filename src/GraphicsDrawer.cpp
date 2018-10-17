@@ -1070,7 +1070,7 @@ bool texturedRectCopyToItself(const GraphicsDrawer::TexturedRectParams & _params
 static
 bool texturedRectBGCopy(const GraphicsDrawer::TexturedRectParams & _params)
 {
-	if (GBI.getMicrocodeType() != S2DEX)
+	if (gDP.colorImage.size > G_IM_SIZ_8b)
 		return false;
 
 	float flry = _params.lry;
