@@ -887,9 +887,359 @@ void gSPBgRectCopy(u32 _bg)
 	DebugMsg(DEBUG_NORMAL, "gSPBgRectCopy\n");
 }
 
+static
+void BG1CycNew(u32 _bg)
+{
+	uObjScaleBg objBg = *reinterpret_cast<const uObjScaleBg*>(RDRAM + RSP_SegmentToPhysical(_bg));
+	const u32 imagePtr = RSP_SegmentToPhysical(objBg.imagePtr);
+	gDP.otherMode.cycleType = G_CYC_1CYCLE;
+	gDP.changed |= CHANGED_CYCLETYPE;
+	RSP.LLE = true;
+
+//	auto runCommand = [](u32 w0, u32 w1)
+//	{
+//		GBI.cmd[_SHIFTR(w0, 24, 8)](w0, w1);
+//	};
+#define runCommand(w0, w1) GBI.cmd[_SHIFTR(w0, 24, 8)](w0, w1)
+
+	s32 E2_1;
+	u16 F1_1;
+	u16 P;
+	s16 H2;
+
+	// Part 1
+	{
+		// Step 1 & 2
+		s16 Aw = objBg.frameW - ((((objBg.imageW << 10) / objBg.scaleW) - 1) & 0xFFFC);
+		if (Aw < 0)
+			Aw = 0;
+		if ((objBg.imageFlip & G_BG_FLAG_FLIPS) != 0)
+			objBg.frameX += Aw;
+		s16 Bw = std::max(0, gDP.scissor.xh - objBg.frameX);
+		s16 Cw = std::max(0, objBg.frameX + objBg.frameW - gDP.scissor.xl - Aw);
+		if ((s16)objBg.frameW - Aw - Bw - Cw <= 0)
+			return;
+		s16 Dw = objBg.frameX + Bw;
+		s16 Ew = objBg.frameX + objBg.frameW - Aw - Cw;
+
+		s16 Ah = objBg.frameH - ((((objBg.imageH << 10) / objBg.scaleH) - 1) & 0xFFFC);
+		if (Ah < 0)
+			Ah = 0;
+		s16 Bh = std::max(0, gDP.scissor.yh - objBg.frameY);
+		s16 Ch = std::max(0, objBg.frameY + objBg.frameH - gDP.scissor.yl - Ah);
+		if ((s16)objBg.frameH - Ah - Bh - Ch <= 0)
+			return;
+		s16 Dh = ((objBg.frameY + Bh) * 0x4000) >> 16;
+		s16 Eh = ((objBg.frameH - Ah - Bh - Ch) * 0x4000) >> 16;
+
+		*reinterpret_cast<u32*>(DMEM + 0x548) = (Dw << 16) | Ew;
+		*reinterpret_cast<u32*>(DMEM + 0x54C) = (Dh << 16) | Eh;
+
+		// Step 3
+		u16 Fw = objBg.imageW << 3;
+		if ((objBg.imageFlip & G_BG_FLAG_FLIPS) != 0)
+			Bw = Cw;
+		s16 Gw = ((objBg.scaleW * Bw * 0x0200) >> 16) + objBg.imageX;
+		s32 Hw = Gw - Fw;
+		u16 Fh = objBg.imageH << 3;
+		s16 Gh = ((objBg.scaleH * Bh * 0x0200) >> 16) + objBg.imageY;
+		while (Hw >= 0) {
+			Gw -= Fw;
+			Gh += 0x20;
+			objBg.imageYorig += 0x20;
+			Hw = Gw - Fw;
+		}
+		s32 Hh = Gh - Fh;
+		while (Hh >= 0) {
+			Gh -= Fh;
+			objBg.imageYorig -= Fh;
+			Hh = Gh - Fh;
+		}
+
+		s32 I = (s32(Gh) - objBg.imageYorig) << 5;
+		s16 J = (objBg.scaleW * (objBg.frameW - Aw - Bw - Cw)) >> 7;
+		u8 J_2 = 1;
+		if (J + Gw + 0x0B < Fw)
+			J_2 = 0;
+		u8 K = (gSP.objRendermode & 0x08) >> 3;
+
+		// Step 4
+		static const u32 aSize[] = {
+			0x01FF0080,
+			0x00FF0100,
+			0x007F0200,
+			0x003F0400
+		};
+		static const u32 aFormat[] = {
+			0x04000400,
+			0x02000400,
+			0x04000000
+		};
+		const u16 *  aFormat16 = reinterpret_cast<const u16*>(aFormat);
+		u16 L = aFormat16[objBg.imageFmt ^ 1];
+		u32 M = aSize[objBg.imageSiz];
+		u16 N = ((objBg.frameW * objBg.scaleW) >> 7) + (K << 5);
+		u16 O = N;
+		if (N >= Fw)
+			O = Fw;
+		P = (((O + (M >> 16)) * (M & 0xFFFF)) >> 16) + 1;
+
+		*reinterpret_cast<u32*>(DMEM + 0x550) = (K << 24) | (J_2 << 16) | P;
+		*reinterpret_cast<s32*>(DMEM + 0x554) = I;
+
+		// Step 5
+		u16 Q = L / (P * 2) + K * 0xFFFF;
+		s32 R = (0x100000 * Q) / objBg.scaleH;
+
+		*reinterpret_cast<u32*>(DMEM + 0x558) = R;
+
+		// Step 6
+		s32 S = ((s64(I) * 0x4000000 / objBg.scaleH) >> 16) & 0xFFFFFC00;
+		//s16 T = (S / R);
+		s16 T = static_cast<s16>(((0xFFFFFFFF / R) * s64(S)) >> 0x20);
+		s32 U = R * (T + 1);
+		s16 V = T;
+		if (U <= S)
+			V += 1;
+		s32 W = R * V;
+		s32 Z = R - S + W;
+
+		*reinterpret_cast<u32*>(DMEM + 0x55C) = Z;
+		*reinterpret_cast<s32*>(DMEM + 0x560) = objBg.imageYorig;
+
+		// Step 7
+		u32 A1 = S - (W & 0xFFFFFC00);
+		u32 B1 = (A1 * 0x0040) >> 16;
+		u32 C1 = B1 * objBg.scaleH;
+		u16 D1 = static_cast<u16>(((C1 * 0x0040) >> 16) & 0x0000FFFF);
+		u16 E1 = Q - D1;
+		u16 F1 = C1 & 0xFFFF;
+		F1_1 = ((F1 <<11) >> 16) & 0x001F;
+
+		// Step 8
+		s16 A2 = static_cast<s16>((u32(Q) * u32(V) + u32(D1) + ((objBg.imageYorig << 11) >> 16)) & 0xFFFF);
+		u16 B2 = (objBg.imageH << 14) >> 16;
+		s16 A2_1 = (A2 >= 0) ? A2 : A2 + B2;
+		if (A2 - B2 >= 0)
+			A2_1 -= B2;
+		s16 C2 = static_cast<s16>(((s32(Gw) * (M & 0xFFFF)) >> 16) << 3);
+		s16 D2 = static_cast<s16>(((s32(Fw) * (M & 0xFFFF)) >> 16) << 3);
+		s32 E2 = A2_1 * D2 + C2;
+		E2_1 = E2 + imagePtr;
+		s32 F2 = E1 * D2;
+		s32 G2 = Q * D2;
+		H2 = Gw & (M >> 16);
+		if ((objBg.imageFlip & G_BG_FLAG_FLIPS) != 0)
+			H2 = (H2 + J) * 0xFFFF;
+		u32 I2 = 0xFD100000 | ((D2 >> 1) - 1);
+		u32 J2 = 0xF5100000 | (P << 9);
+		u32 J2_1 = (J2 & 0xFF00FFFF) | (((objBg.imageFmt << 5) | (objBg.imageSiz << 3)) << 16);
+		u32 K2 = (objBg.imagePal << 20) | 0x0007C1F0;
+		u16 L2 = objBg.imageH >> 2;
+
+		*reinterpret_cast<u32*>(DMEM + 0x564) = (C2 << 16) | D2;
+		*reinterpret_cast<u32*>(DMEM + 0x568) = I2;
+		*reinterpret_cast<u32*>(DMEM + 0x56C) = J2;
+		//*reinterpret_cast<u32*>(DMEM + 0x570) = (Q << 16) | E1;
+		*reinterpret_cast<u32*>(DMEM + 0x570) = (E1 << 16) | Q;
+		*reinterpret_cast<u32*>(DMEM + 0x574) = F2;
+		*reinterpret_cast<u32*>(DMEM + 0x578) = G2;
+		*reinterpret_cast<u32*>(DMEM + 0x57C) = (L2 << 16) | A2_1;
+
+		runCommand(J2, 0x27000000);
+		runCommand(J2_1, K2);
+		runCommand((G_SETTILESIZE<<24), 0);
+	}
+
+	//Part two
+	{
+
+	u32 VV = *reinterpret_cast<u32*>(DMEM + 0x57C);
+	s16 AA = _SHIFTR(VV, 16, 16) - _SHIFTR(VV, 0, 16);
+	VV = *reinterpret_cast<u32*>(DMEM + 0x570);
+	s32 CC = VV >> 16;
+	u32 DD = *reinterpret_cast<u32*>(DMEM + 0x55C);
+	u32 EE = *reinterpret_cast<u32*>(DMEM + 0x558);
+	VV = *reinterpret_cast<u32*>(DMEM + 0x54C);
+	s32 FF = _SHIFTR(VV,  0, 16);
+	u16 JJ = _SHIFTR(VV, 16, 16);
+	u32 GG = *reinterpret_cast<u32*>(DMEM + 0x574);
+	VV = *reinterpret_cast<u32*>(DMEM + 0x548);
+	u32 HH = _SHIFTR(VV, 16, 16) << 0x0C;
+	u32 II = _SHIFTR(VV,  0, 16) << 0x0C;
+
+	u32 step = 2;
+	s32 KK;
+	s16 LL, MM, NN, RR, AAA;
+	u32 SS;
+
+	auto setTexture = [&]() {
+//		0x28000000, 0x00000000
+		runCommand(*reinterpret_cast<u32*>(DMEM + 0x56C) | AAA, 0x27000000);
+		runCommand(*reinterpret_cast<u32*>(DMEM + 0x568), SS);
+//		0x26000000, 0x00000000
+		runCommand(0xF4000000, ((P + 0x6FF)<<16) | ((RR << 2) - 1));
+	};
+
+	bool stop = false;
+	while (!stop) {
+		switch (step) {
+		case 2:
+			KK = DD >> 10;
+			if (KK > 0)
+				step = 5;
+			else
+				step = 3;
+			break;
+		case 3:
+			AA -= CC;
+			if (AA > 0)
+				E2_1 += GG;
+			else {
+				VV = *reinterpret_cast<u32*>(DMEM + 0x564);
+				E2_1 = imagePtr + _SHIFTR(VV, 16, 16) + _SHIFTR(VV, 0, 16) * (-AA);
+				VV = *reinterpret_cast<u32*>(DMEM + 0x57C);
+				AA += _SHIFTR(VV, 16, 16);
+			}
+			step = 4;
+			break;
+		case 4:
+			DD += EE;
+			VV = *reinterpret_cast<u32*>(DMEM + 0x570);
+			CC = s32(_SHIFTR(VV, 0, 16));
+			GG = *reinterpret_cast<u32*>(DMEM + 0x578);
+			F1_1 = 0;
+			step = 2;
+			break;
+		case 5:
+			FF -= KK;
+			DD &= 0x03FF;
+			if (FF < 0) {
+				CC += ((objBg.scaleH * FF) >> 10) + 1;
+				KK += FF;
+				VV = *reinterpret_cast<u32*>(DMEM + 0x570);
+				if (CC - s32(_SHIFTR(VV, 0, 16)) > 0)
+					CC = s32(_SHIFTR(VV, 0, 16));
+			}
+			step = 6;
+			break;
+		case 6:
+			LL = JJ + KK;
+			VV = *reinterpret_cast<u32*>(DMEM + 0x550);
+			P = _SHIFTR(VV, 0, 16);
+			MM = CC + _SHIFTR(VV, 24, 8);
+			NN = AA - _SHIFTR(VV, 16, 8);
+			if (NN - MM < 0)
+				step = 7;
+			else
+				step = 77;
+			break;
+		case 7:
+			RR = MM - AA;
+			AAA = AA;
+			if (RR > 0) {
+				VV = *reinterpret_cast<u32*>(DMEM + 0x564);
+				SS = imagePtr + _SHIFTR(VV, 16, 16);
+				if ((AAA & 1) != 0) {
+					AAA--;
+					RR++;
+					SS -= _SHIFTR(VV, 0, 16);
+				}
+				AAA *= P;
+				setTexture();
+			}
+			step = 8;
+			break;
+		case 77:
+			RR = MM;
+			SS = E2_1;
+			runCommand(*reinterpret_cast<u32*>(DMEM + 0x568), SS);
+			//0x26000000, 0x00000000
+			runCommand(0xF4000000, ((P + 0x6FF) << 16) | ((RR << 2) - 1));
+			AA -= CC;
+			E2_1 += GG;
+			step = 11;
+			break;
+		case 8:
+			VV = *reinterpret_cast<u32*>(DMEM + 0x550);
+			if (_SHIFTR(VV, 16, 8) != 0) {
+				SS = imagePtr;
+				s16 BBB = NN;
+				RR = NN & 1;
+				VV = *reinterpret_cast<u32*>(DMEM + 0x564);
+				if (RR != 0) {
+					BBB--;
+					SS -= _SHIFTR(VV, 0, 16);
+				}
+				u32 CCC = E2_1 + BBB * _SHIFTR(VV, 0, 16);
+				RR++;
+				u16 DDD = ((_SHIFTR(VV, 0, 16) - _SHIFTR(VV, 16, 16)) * 0x2000) >> 16;
+				u32 ZZZ = BBB * P;
+				P -= DDD;
+				AAA = ZZZ + DDD;
+				setTexture();
+				SS = CCC;
+				AAA = ZZZ;
+				P = DDD;
+				setTexture();
+			}
+			step = 9;
+			break;
+		case 9:
+			AA -= CC;
+			if (NN <= 0) {
+				runCommand(*reinterpret_cast<u32*>(DMEM + 0x56C), 0x27000000);
+			} else {
+				VV = *reinterpret_cast<u32*>(DMEM + 0x550);
+				P = _SHIFTR(VV, 0, 16);
+				SS = E2_1;
+				RR = NN;
+				AAA = 0;
+				setTexture();
+			}
+			step = 10;
+			break;
+		case 10:
+			if (AA > 0) {
+				E2_1 += GG;
+			} else {
+				VV = *reinterpret_cast<u32*>(DMEM + 0x564);
+				E2_1 = imagePtr + _SHIFTR(VV, 16, 16) + _SHIFTR(VV, 0, 16) * (-AA);
+				VV = *reinterpret_cast<u32*>(DMEM + 0x57C);
+				AA += _SHIFTR(VV, 16, 16);
+			}
+			step = 11;
+			break;
+		case 11:
+			//0x27000000, 0x00000000
+			const u32 w0 = (G_TEXRECT << 24) | (LL << 2) | II;
+			const u32 w1 = (JJ << 2) | HH;
+			RDP.w2 = (H2 << 16) | F1_1;
+			RDP.w3 = (objBg.scaleW << 16) | objBg.scaleH;
+			RDP_TexRect(w0, w1);
+			if (FF <= 0)
+				stop = true;
+			else {
+				JJ = LL;
+				DD = DD + EE;
+				VV = *reinterpret_cast<u32*>(DMEM + 0x570);
+				CC = _SHIFTR(VV, 0, 16);
+				GG = *reinterpret_cast<u32*>(DMEM + 0x578);
+				F1_1 = 0;
+				step = 2;
+			}
+			break;
+		}
+	}
+	}
+
+	RSP.LLE = false;
+}
+
 void S2DEX_BG_1Cyc(u32 w0, u32 w1)
 {
-	gSPBgRect1Cyc(w1);
+	BG1CycNew(w1);
+//	gSPBgRect1Cyc(w1);
 }
 
 void S2DEX_BG_Copy(u32 w0, u32 w1)
