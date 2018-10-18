@@ -1322,9 +1322,6 @@ void TextureCache::activateTexture(u32 _t, CachedTexture *_pTexture)
 					params.minFilter = textureParameters::FILTER_NEAREST;
 				params.magFilter = textureParameters::FILTER_NEAREST;
 			}
-		} else if (bUseBilinear && config.generalEmulation.enableLOD != 0) { // Apply standard bilinear to first tile of mipmap texture
-			params.minFilter = textureParameters::FILTER_LINEAR;
-			params.magFilter = textureParameters::FILTER_LINEAR;
 		} else { // Don't use texture filter. Texture will be filtered by filter shader
 			params.minFilter = textureParameters::FILTER_NEAREST;
 			params.magFilter = textureParameters::FILTER_NEAREST;
