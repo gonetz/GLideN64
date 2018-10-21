@@ -228,7 +228,9 @@ bool TexrectDrawer::add()
 		m_pBuffer = frameBufferList().getCurrent();
 		m_otherMode = gDP.otherMode._u64;
 		m_mux = gDP.combine.mux;
-		m_Z = (gDP.otherMode.depthSource == G_ZS_PRIM) ? gDP.primDepth.z : gSP.viewport.nearz;
+		m_Z = (gDP.otherMode.depthSource == G_ZS_PRIM) ?
+			(gDP.primDepth.z - gSP.viewport.vtrans[2]) / gSP.viewport.vscale[2] :
+			gSP.viewport.nearz;
 		m_scissor = gDP.scissor;
 
 		m_ulx = pRect[0].x;
