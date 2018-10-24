@@ -380,10 +380,10 @@ bool TexrectDrawer::draw()
 	scaleX *= 2.0f;
 	scaleY *= 2.0f;
 
-	const float s0 = (m_ulx + 1.0f) / scaleX / (float)m_pTexture->realWidth;
-	const float t1 = (m_uly + 1.0f) / scaleY / (float)m_pTexture->realHeight;
+	const float s0 = (m_ulx + 1.0f) / scaleX / (float)m_pTexture->realWidth + 0.5f / (float)m_pTexture->realWidth;
+	const float t0 = (m_lry + 1.0f) / scaleY / (float)m_pTexture->realHeight;// +0.5f / (float)m_pTexture->realHeight;
 	const float s1 = (m_lrx + 1.0f) / scaleX / (float)m_pTexture->realWidth;
-	const float t0 = (m_lry + 1.0f) / scaleY / (float)m_pTexture->realHeight;
+	const float t1 = (m_uly + 1.0f) / scaleY / (float)m_pTexture->realHeight;
 	const float W = 1.0f;
 
 	drawer._updateScreenCoordsViewport(m_pBuffer);
