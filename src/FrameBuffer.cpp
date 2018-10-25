@@ -655,6 +655,13 @@ FrameBuffer * FrameBufferList::findTmpBuffer(u32 _address)
 	return nullptr;
 }
 
+void FrameBufferList::updateCurrentBufferEndAddress()
+{
+	if (m_pCurrent == nullptr)
+		return;
+	m_pCurrent->updateEndAddress();
+	removeIntersections();
+}
 
 void FrameBufferList::_createScreenSizeBuffer()
 {

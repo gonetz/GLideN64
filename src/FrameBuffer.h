@@ -109,6 +109,7 @@ public:
 	FrameBuffer * findTmpBuffer(u32 _address);
 	FrameBuffer * getCurrent() const {return m_pCurrent;}
 	void setCurrent(FrameBuffer * _pCurrent) { m_pCurrent = _pCurrent; }
+	void updateCurrentBufferEndAddress();
 	void renderBuffer();
 	void setBufferChanged(f32 _maxY);
 	void clearBuffersChanged();
