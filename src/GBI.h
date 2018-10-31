@@ -71,28 +71,6 @@
 #define _SHIFTR( v, s, w )	\
 	(((u32)v >> s) & ((0x01 << w) - 1))
 
-// BG flags
-#define	G_BGLT_LOADBLOCK	0x0033
-#define	G_BGLT_LOADTILE		0xfff4
-
-#define	G_BG_FLAG_FLIPS		0x01
-#define	G_BG_FLAG_FLIPT		0x10
-
-// Sprite object render modes
-#define	G_OBJRM_NOTXCLAMP		0x01
-#define	G_OBJRM_XLU				0x02	/* Ignored */
-#define	G_OBJRM_ANTIALIAS		0x04	/* Ignored */
-#define	G_OBJRM_BILERP			0x08
-#define	G_OBJRM_SHRINKSIZE_1	0x10
-#define	G_OBJRM_SHRINKSIZE_2	0x20
-#define	G_OBJRM_WIDEN			0x40
-
-// Sprite texture loading types
-#define	G_OBJLT_TXTRBLOCK	0x00001033
-#define	G_OBJLT_TXTRTILE	0x00fc1034
-#define	G_OBJLT_TLUT		0x00000030
-
-
 // These are all the constant flags
 #define G_ZBUFFER				0x00000001
 #define G_SHADE					0x00000004

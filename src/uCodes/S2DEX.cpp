@@ -39,9 +39,83 @@ using namespace graphics;
 #define	S2DEX_OBJ_LDTX_RECT_R	0xC4
 #define	S2DEX_RDPHALF_0			0xE4
 
+// BG flags
+#define	G_BGLT_LOADBLOCK	0x0033
+#define	G_BGLT_LOADTILE		0xFFF4
+
+#define	G_BG_FLAG_FLIPS		0x01
+#define	G_BG_FLAG_FLIPT		0x10
+
+// Sprite object render modes
+#define	G_OBJRM_NOTXCLAMP		0x01
+#define	G_OBJRM_XLU				0x02	/* Ignored */
+#define	G_OBJRM_ANTIALIAS		0x04	/* Ignored */
+#define	G_OBJRM_BILERP			0x08
+#define	G_OBJRM_SHRINKSIZE_1	0x10
+#define	G_OBJRM_SHRINKSIZE_2	0x20
+#define	G_OBJRM_WIDEN			0x40
+
+// Sprite texture loading types
+#define	G_OBJLT_TXTRBLOCK	0x00001033
+#define	G_OBJLT_TXTRTILE	0x00fc1034
+#define	G_OBJLT_TLUT		0x00000030
+
 // Tile indices
 #define G_TX_LOADTILE			0x07
 #define G_TX_RENDERTILE			0x00
+
+struct uObjBg {
+	u16 imageW;     /* Texture width (8-byte alignment, u10.2) */
+	u16 imageX;     /* x-coordinate of upper-left
+					position of texture (u10.5) */
+	u16 frameW;     /* Transfer destination frame width (u10.2) */
+	s16 frameX;     /* x-coordinate of upper-left
+					position of transfer destination frame (s10.2) */
+	u16 imageH;     /* Texture height (u10.2) */
+	u16 imageY;     /* y-coordinate of upper-left position of
+					texture (u10.5) */
+	u16 frameH;     /* Transfer destination frame height (u10.2) */
+	s16 frameY;     /* y-coordinate of upper-left position of transfer
+					destination  frame (s10.2) */
+	u32 imagePtr;  /* Address of texture source in DRAM*/
+	u8  imageSiz;   /* Texel size
+					G_IM_SIZ_4b (4 bits/texel)
+					G_IM_SIZ_8b (8 bits/texel)
+					G_IM_SIZ_16b (16 bits/texel)
+					G_IM_SIZ_32b (32 bits/texel) */
+	u8  imageFmt;   /*Texel format
+					G_IM_FMT_RGBA (RGBA format)
+					G_IM_FMT_YUV (YUV format)
+					G_IM_FMT_CI (CI format)
+					G_IM_FMT_IA (IA format)
+					G_IM_FMT_I (I format)  */
+	u16 imageLoad;  /* Method for loading the BG image texture
+					G_BGLT_LOADBLOCK (use LoadBlock)
+					G_BGLT_LOADTILE (use LoadTile) */
+	u16 imageFlip;  /* Image inversion on/off (horizontal
+					direction only)
+					0 (normal display (no inversion))
+					G_BG_FLAG_FLIPS (horizontal inversion of texture image) */
+	u16 imagePal;   /* Position of palette for 4-bit color
+					index texture (4-bit precision, 0~15) */
+	u16 tmemH;      /* Quadruple TMEM height(s13.2) which can be loaded at once
+					 When normal texture 512/tmemW*4
+					 When CI Texture 	256/tmemW*4 */
+	u16 tmemW;      /* TMEM width Word size for frame 1 line
+					 When LoadBlock GS_PIX2TMEM(imageW/4,imageSiz)
+					 When LoadTile 	GS_PIX2TMEM(frameW/4,imageSiz)+1 */
+	u16 tmemLoadTH; /* TH value or Stride value
+					 When LoadBlock 	GS_CALC_DXT(tmemW)
+					 When LoadTile  	tmemH-1 */
+	u16 tmemLoadSH; /* SH value
+					 When LoadBlock  	tmemSize/2-1
+					 When LoadTile 	tmemW*16-1 */
+	u16 tmemSize;   /* imagePtr skip value for one load iteration
+					 = tmemSizeW*tmemH */
+	u16 tmemSizeW;  /* imagePtr skip value for one line of image 1
+					 When LoadBlock 	tmemW*2
+					 When LoadTile  	GS_PIX2TMEM(imageW/4,imageSiz)*2 */
+};   /* 40 bytes */
 
 struct uObjScaleBg
 {
@@ -890,6 +964,12 @@ void gSPBgRectCopy(u32 _bg)
 	DebugMsg(DEBUG_NORMAL, "gSPBgRectCopy\n");
 }
 
+//#define runCommand(w0, w1) GBI.cmd[_SHIFTR(w0, 24, 8)](w0, w1)
+	auto runCommand = [](u32 w0, u32 w1)
+	{
+		GBI.cmd[_SHIFTR(w0, 24, 8)](w0, w1);
+	};
+
 static
 void BG1CycNew(u32 _bg)
 {
@@ -900,12 +980,6 @@ void BG1CycNew(u32 _bg)
 	RSP.LLE = true;
 	GraphicsDrawer & drawer = dwnd().getDrawer();
 	drawer.setBackgroundDrawingMode(true);
-
-//	auto runCommand = [](u32 w0, u32 w1)
-//	{
-//		GBI.cmd[_SHIFTR(w0, 24, 8)](w0, w1);
-//	};
-#define runCommand(w0, w1) GBI.cmd[_SHIFTR(w0, 24, 8)](w0, w1)
 
 	s32 E2_1;
 	u16 F1_1;
@@ -1243,6 +1317,175 @@ void BG1CycNew(u32 _bg)
 	drawer.setBackgroundDrawingMode(false);
 }
 
+static
+void BGCopyNew(u32 _bg)
+{
+	// Step 1
+	uObjBg objBg = *reinterpret_cast<const uObjBg*>(RDRAM + RSP_SegmentToPhysical(_bg));
+	const u32 imagePtr = RSP_SegmentToPhysical(objBg.imagePtr);
+	gDP.otherMode.cycleType = G_CYC_COPY;
+	gDP.changed |= CHANGED_CYCLETYPE;
+	RSP.LLE = true;
+
+	// Step 2
+	s16 Aw = std::max(0, objBg.frameX + objBg.frameW - gDP.scissor.xl);
+	s16 Bw = std::min(0, objBg.frameX - gDP.scissor.xh);
+	s16 Cw = objBg.frameW + Bw - Aw;
+	if (Cw <= 0)
+		return;
+	s16 Dw = (((objBg.imageX * 0x2000) >> 16) & 0xFFFC) - Bw;
+	s16 Ew = objBg.frameX - Bw;
+
+	s16 Ah = std::max(0, objBg.frameY + objBg.frameH - gDP.scissor.yl);
+	s16 Bh = std::min(0, objBg.frameY - gDP.scissor.yh);
+	s16 Ch = objBg.frameH + Bh - Ah;
+	if (Ch <= 0)
+		return;
+	s16 Dh = (((objBg.imageY * 0x2000) >> 16) & 0xFFFC) - Bh;
+	s16 Eh = objBg.frameY - Bh;
+
+	s16 F = Dh - objBg.imageH;
+	s16 G = (F >= 0) ? F : Dh;
+	s16 H= (objBg.imageFlip != 0) ? Dw + Aw : Dw;
+
+	// Step 3
+	u32 I = (objBg.imageLoad == G_BGLT_LOADTILE) ? 0xFFFFFFFF : 0U;
+	u32 J = objBg.tmemW << 9;
+	u32 K = (G_SETTILE << 24) | 0x100000 | (J & I);
+	u32 L = (objBg.imageFmt << 2) | objBg.imageSiz;
+	L = (L << 0x13) | J;
+	u32 M = (objBg.imagePal << 0x14) | 0x0007C1F0;
+
+	runCommand(K, 0x27000000);
+	runCommand((G_SETTILESIZE<<24), 0);
+	runCommand(((G_SETTILE<<24) | L), M);
+
+	// Step 4
+	static const u32 aSize[] = {
+		0x003F0800,
+		0x10000080,
+		0x001F1000,
+		0x20000100,
+		0x000F2000,
+		0x40000200,
+		0x00074000,
+		0x80000400
+	};
+	const u16 * aSize16 = reinterpret_cast<const u16*>(aSize);
+	u16 imageSzIdx = objBg.imageSiz << 2;
+	u16 N0 = aSize16[(0 + imageSzIdx) ^ 1];
+	u16 N1 = aSize16[(1 + imageSzIdx) ^ 1];
+	u16 N2 = aSize16[(2 + imageSzIdx) ^ 1];
+	G = (G * 0x4000) >> 16;
+	u16 O = (N0 & H) + Cw;
+	u32 P = ((N1 * H) >> 16) + objBg.tmemSizeW * G;
+	u16 Q = (N2 * O) >> 16;
+	u32 R = (objBg.imageFlip != 0) ? (((1 - O) * 8) << 16) : (((N0 & H) * 8) << 16);
+	u32 S = ((P >> 1) << 3) + imagePtr;
+	u16 T = Ew + Cw - 1;
+
+	u16 A1 = objBg.imageH & 0xFFFC;
+	u16 A2 = G <<2;
+	u16 A3 = (N1 * H) >> 16;
+	u32 T0 = Ew << 0x0C;
+	u16 T1 = Eh;
+	u32 T2 = T << 0x0C;
+	s16 AT = Ch;
+	s16 U = A1 - A2;
+
+	u32 V, X, Y, AA, w0, w1;
+	u16 S5, Z, BB;
+	u32 step = 4;
+	bool stop = false;
+	while (!stop) {
+		switch (step) {
+		case 4:
+			if (U <= 0)
+				stop = true;
+			step = 5;
+		break;
+		case 5:
+			if (A3 > 0)
+				U -= 4;
+			if (U > AT)
+				U = AT;
+			V =  0xE4000000 | T2;
+			X = (objBg.imageLoad == G_BGLT_LOADTILE) ? (Q << 2) - 1 : objBg.tmemLoadSH;
+			X = (X | 0x7000) << 0x0C;
+			Y = 0xFD100000 | ((objBg.tmemSizeW << 1) - 1);
+			AT -= U;
+			step = (U <= 0) ? 8 : 55;
+		break;
+		case 55:
+			Z = (objBg.imageLoad == G_BGLT_LOADTILE) ? (objBg.tmemSize << 0x10) | objBg.tmemLoadSH : objBg.tmemSize;
+			S5 = objBg.tmemH;
+			AA = X | objBg.tmemLoadTH;
+			step = 6;
+		break;
+		case 6:
+			U -= S5;
+			if (U < 0) {
+				Z += objBg.tmemSizeW * U;
+				S5 += U;
+				AA = (objBg.imageLoad == G_BGLT_LOADTILE) ? X | (S5 - 1) : (((Z - 2) | 0xE000) << 0x0B) | objBg.tmemLoadTH;
+			}
+			step = 7;
+			break;
+		case 7:
+			BB = T1 + S5 - 1;
+			runCommand(Y, S);
+			if (objBg.imageLoad == G_BGLT_LOADTILE)
+				runCommand((G_LOADTILE<<24), AA);
+			else
+				runCommand((G_LOADBLOCK<<24), AA);
+			w0 = V | BB;
+			w1 = T0 | T1;
+			RDP.w2 = R;
+			RDP.w3 = 0x10000400;
+			RDP_TexRect(w0, w1);
+			T1 = BB + 1;
+			S += Z;
+			if (U > 0)
+				step = 6;
+			else {
+				if (AT <= 0)
+					stop = true;
+				step = 8;
+			}
+			break;
+		case 8:
+			if (A3 > 0) {
+				A3 >>= 1;
+				runCommand(Y, S);
+				runCommand(((G_SETTILE<<24) | 0x35100000), 0x06000000);
+				runCommand((G_LOADBLOCK<<24), (0x06000000 | (((((objBg.tmemSizeW >> 1) - A3) << 2) - 1) << 12)));
+				runCommand(Y, imagePtr);
+				runCommand(((G_SETTILE << 24) | 0x35100000 | ((objBg.tmemSizeW >> 1) - A3)), 0x06000000);
+				runCommand((G_LOADBLOCK<<24), (0x06000000 | (((A3 << 2) - 1) << 12)));
+				w0 = V | T1;
+				w1 = T0 | T1;
+				RDP.w2 = R;
+				RDP.w3 = 0x10000400;
+				RDP_TexRect(w0, w1);
+				T1 += 4;
+				AT -= 4;
+				if (AT <= 0)
+					stop = true;
+			}
+			step = 9;
+			break;
+		case 9:
+			S = imagePtr + (A3 << 3);
+			U = AT;
+			AT = 0;
+			step = 55;
+			break;
+		}
+	}
+
+	RSP.LLE = false;
+}
+
 void S2DEX_BG_1Cyc(u32 w0, u32 w1)
 {
 	BG1CycNew(w1);
@@ -1251,7 +1494,8 @@ void S2DEX_BG_1Cyc(u32 w0, u32 w1)
 
 void S2DEX_BG_Copy(u32 w0, u32 w1)
 {
-	gSPBgRectCopy(w1);
+	BGCopyNew(w1);
+//	gSPBgRectCopy(w1);
 }
 
 void S2DEX_Obj_MoveMem(u32 w0, u32 w1)
