@@ -298,23 +298,36 @@ void _TexRect( u32 w0, u32 w1, bool flip )
 		return;
 	RDP.w0 = w0;
 	RDP.w1 = w1;
-	const u32 ulx = _SHIFTR(w1, 12, 12);
-	const u32 uly = _SHIFTR(w1, 0, 12);
-	const u32 lrx = _SHIFTR(w0, 12, 12);
-	const u32 lry = _SHIFTR(w0, 0, 12);
-	if ((lrx >> 2) < (ulx >> 2) || (lry >> 2) < (uly >> 2))
+	const s32 ulx = _SHIFTR(w1, 12, 12);
+	const s32 uly = _SHIFTR(w1, 0, 12);
+	const s32 lrx = _SHIFTR(w0, 12, 12);
+	const s32 lry = _SHIFTR(w0, 0, 12);
+	if (lrx < ulx || lry < uly)
 		return;
-	gDPTextureRectangle(
-		_FIXED2FLOAT(ulx, 2),
-		_FIXED2FLOAT(uly, 2),
-		_FIXED2FLOAT(lrx, 2),
-		_FIXED2FLOAT(lry, 2),
-		_SHIFTR(w1, 24, 3),							// tile
-		(s16)_SHIFTR(w2, 16, 16),					// s
-		(s16)_SHIFTR(w2, 0, 16),					// t
-		_FIXED2FLOAT((s16)_SHIFTR(w3, 16, 16), 10),	// dsdx
-		_FIXED2FLOAT((s16)_SHIFTR(w3, 0, 16), 10),	// dsdy
-		flip);
+	if (gDP.otherMode.cycleType == G_CYC_COPY)
+		gDPTextureRectangle(
+			f32(ulx >> 2),
+			f32(uly >> 2),
+			f32(lrx >> 2),
+			f32(lry >> 2),
+			_SHIFTR(w1, 24, 3),							// tile
+			(s16)_SHIFTR(w2, 16, 16),					// s
+			(s16)_SHIFTR(w2, 0, 16),					// t
+			_FIXED2FLOAT((s16)_SHIFTR(w3, 16, 16), 10),	// dsdx
+			_FIXED2FLOAT((s16)_SHIFTR(w3, 0, 16), 10),	// dsdy
+			flip);
+	else
+		gDPTextureRectangle(
+			_FIXED2FLOAT(ulx, 2),
+			_FIXED2FLOAT(uly, 2),
+			_FIXED2FLOAT(lrx, 2),
+			_FIXED2FLOAT(lry, 2),
+			_SHIFTR(w1, 24, 3),							// tile
+			(s16)_SHIFTR(w2, 16, 16),					// s
+			(s16)_SHIFTR(w2, 0, 16),					// t
+			_FIXED2FLOAT((s16)_SHIFTR(w3, 16, 16), 10),	// dsdx
+			_FIXED2FLOAT((s16)_SHIFTR(w3, 0, 16), 10),	// dsdy
+			flip);
 }
 
 void RDP_TexRectFlip( u32 w0, u32 w1 )
