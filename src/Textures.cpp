@@ -7,6 +7,7 @@
 #include "Textures.h"
 #include "GBI.h"
 #include "RSP.h"
+#include "RDP.h"
 #include "gDP.h"
 #include "gSP.h"
 #include "N64.h"
@@ -593,8 +594,18 @@ void _calcTileSizes(u32 _t, TileSizes & _sizes, gDPTile * _pLoadTile)
 	const TextureLoadParameters & loadParams =
 			ImageFormat::get().tlp[gDP.otherMode.textureLUT][pTile->size][pTile->format];
 	const u32 maxTexels = loadParams.maxTexels;
-	const u32 tileWidth = ((pTile->lrs - pTile->uls) & 0x03FF) + 1;
-	const u32 tileHeight = ((pTile->lrt - pTile->ult) & 0x03FF) + 1;
+	u32 tileWidth = ((pTile->lrs - pTile->uls) & 0x03FF) + 1;
+	u32 tileHeight = ((pTile->lrt - pTile->ult) & 0x03FF) + 1;
+	if (tileWidth == 1 && tileHeight == 1 &&
+		gDP.otherMode.cycleType == G_CYC_COPY &&
+		_pLoadTile->loadType == LOADTYPE_BLOCK) {
+		const u32 ulx = _SHIFTR(RDP.w1, 14, 10);
+		const u32 uly = _SHIFTR(RDP.w1, 2, 10);
+		const u32 lrx = _SHIFTR(RDP.w0, 14, 10);
+		const u32 lry = _SHIFTR(RDP.w0, 2, 10);
+		tileWidth = lrx - ulx + 1;
+		tileHeight = lry - uly + 1;
+	}
 
 	const bool bUseLoadSizes = _pLoadTile != nullptr && _pLoadTile->loadType == LOADTYPE_TILE &&
 		(pTile->tmem == _pLoadTile->tmem);
