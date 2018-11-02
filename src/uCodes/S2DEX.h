@@ -16,8 +16,9 @@ void S2DEX_Obj_LoadTxtr( u32 w0, u32 w1 );
 void S2DEX_Obj_LdTx_Sprite( u32 w0, u32 w1 );
 void S2DEX_Obj_LdTx_Rect( u32 w0, u32 w1 );
 void S2DEX_Obj_LdTx_Rect_R( u32 w0, u32 w1 );
-void S2DEX_Init();
 void S2DEX_1_03_Init();
+void S2DEX_1_05_Init();
+void S2DEX_1_07_Init();
 void resetObjMtx();
 
 #endif

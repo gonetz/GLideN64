@@ -12,7 +12,7 @@
 #define L3D				3
 #define L3DEX			4
 #define L3DEX2			5
-#define S2DEX			6
+#define S2DEX_1_07		6
 #define S2DEX2			7
 #define F3DPD			8
 #define F3DDKR			9
@@ -34,7 +34,8 @@
 #define F5Rogue			25
 #define F5Indi_Naboo	26
 #define S2DEX_1_03		27
-#define NONE			28
+#define S2DEX_1_05		28
+#define NONE			29
 
 // Fixed point conversion factors
 #define FIXED2FLOATRECIP1	0.5f

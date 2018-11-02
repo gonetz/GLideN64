@@ -271,8 +271,15 @@ void resetObjMtx()
 	objMtx.BaseScaleY = 1 << 10;
 }
 
+enum S2DEXVersion
+{
+	eVer1_3,
+	eVer1_5,
+	eVer1_7
+};
+
 static
-bool gs_bVer1_3 = true;
+S2DEXVersion gs_s2dexversion = S2DEXVersion::eVer1_7;
 
 struct S2DEXCoordCorrector
 {
@@ -307,7 +314,7 @@ struct S2DEXCoordCorrector
 
 		const s16 * CorrectorsB03_16 = nullptr;
 		u32 O3 = 0;
-		if (gs_bVer1_3) {
+		if (gs_s2dexversion == eVer1_3) {
 			static const u32 CorrectorsB03_v1_3[] = {
 				0xFFFC0000,
 				0x00000000,
@@ -383,7 +390,7 @@ struct ObjCoordinates
 		if (_useMatrix) {
 			const u32 scaleW = (u32(objMtx.BaseScaleX) * 0x40 * _pObjSprite->scaleW) >> 16;
 			const u32 scaleH = (u32(objMtx.BaseScaleY) * 0x40 * _pObjSprite->scaleH) >> 16;
-			if (gs_bVer1_3) {
+			if (gs_s2dexversion == eVer1_3) {
 				// XH = AND ((((objX << 0x10) * 0x0800 * (0x80007FFF/BaseScaleX)) >> 0x30) + X + A2) by B0
 				// XL = XH + AND (((((imageW - A1) * 0x100) *  (0x80007FFF/scaleW)) >> 0x20) + B2) by B0
 				// YH = AND ((((objY << 0x10) * 0x0800 * (0x80007FFF/BaseScaleY)) >> 0x30) + Y + A2) by B0
@@ -1393,8 +1400,8 @@ void BGCopyNew(u32 _bg)
 	s16 AT = Ch;
 	s16 U = A1 - A2;
 
-	u32 V, X, Y, AA, w0, w1;
-	u16 S5, Z, BB;
+	u32 V, X, Y, Z, AA, w0, w1;
+	u16 S5, BB;
 	u32 step = 4;
 	bool stop = false;
 	while (!stop) {
@@ -1410,14 +1417,20 @@ void BGCopyNew(u32 _bg)
 			if (U > AT)
 				U = AT;
 			V =  0xE4000000 | T2;
-			X = (objBg.imageLoad == G_BGLT_LOADTILE) ? (Q << 2) - 1 : objBg.tmemLoadSH;
+			if (gs_s2dexversion == eVer1_7)
+				X = (objBg.imageLoad == G_BGLT_LOADTILE) ? (Q << 2) - 1 : objBg.tmemLoadSH;
+			else
+				X = (objBg.imageLoad == G_BGLT_LOADTILE) ? (Q << 2) : objBg.tmemLoadSH;
 			X = (X | 0x7000) << 0x0C;
 			Y = 0xFD100000 | ((objBg.tmemSizeW << 1) - 1);
 			AT -= U;
 			step = (U <= 0) ? 8 : 55;
 		break;
 		case 55:
-			Z = (objBg.imageLoad == G_BGLT_LOADTILE) ? (objBg.tmemSize << 0x10) | objBg.tmemLoadSH : objBg.tmemSize;
+			if (gs_s2dexversion == eVer1_7)
+				Z = (objBg.imageLoad == G_BGLT_LOADTILE) ? (objBg.tmemSize << 0x10) | objBg.tmemLoadSH : objBg.tmemSize;
+			else
+				Z = objBg.tmemSize;
 			S5 = objBg.tmemH;
 			AA = X | objBg.tmemLoadTH;
 			step = 6;
@@ -1615,7 +1628,6 @@ void S2DEX_Init()
 	resetObjMtx();
 
 	GBI.PCStackSize = 18;
-	gs_bVer1_3 = false;
 
 	//          GBI Command             Command Value			Command Function
 	GBI_SetGBI( G_SPNOOP,				F3D_SPNOOP,				F3D_SPNoOp );
@@ -1645,5 +1657,17 @@ void S2DEX_Init()
 void S2DEX_1_03_Init()
 {
 	S2DEX_Init();
-	gs_bVer1_3 = true;
+	gs_s2dexversion = eVer1_3;
+}
+
+void S2DEX_1_05_Init()
+{
+	S2DEX_Init();
+	gs_s2dexversion = eVer1_5;
+}
+
+void S2DEX_1_07_Init()
+{
+	S2DEX_Init();
+	gs_s2dexversion = eVer1_7;
 }
