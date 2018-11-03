@@ -1528,7 +1528,7 @@ void S2DEX_Obj_MoveMem(u32 w0, u32 w1)
 
 void S2DEX_MoveWord(u32 w0, u32 w1)
 {
-	switch (_SHIFTR(w0, 16, 8))
+	switch (_SHIFTR(w0, 0, 8))
 	{
 	case G_MW_GENSTAT:
 		gSPSetStatus(_SHIFTR(w0, 0, 16), w1);
