@@ -599,7 +599,8 @@ void gDPLoadBlock(u32 tile, u32 uls, u32 ult, u32 lrs, u32 dxt)
 	info.size = gDP.textureImage.size;
 	info.loadType = LOADTYPE_BLOCK;
 
-	u32 bytes = (lrs - uls + 1) << gDP.loadTile->size >> 1;
+	const u32 width = (lrs - uls + 1) & 0x0FFF;
+	u32 bytes = width << gDP.loadTile->size >> 1;
 	if ((bytes & 7) != 0)
 		bytes = (bytes & (~7)) + 8;
 
