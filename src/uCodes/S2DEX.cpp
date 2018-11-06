@@ -870,12 +870,12 @@ void _copyDepthBuffer()
 }
 
 static
-void _loadBGImage(const uObjScaleBg * _bgInfo, bool _loadScale)
+void _loadBGImage(const uObjScaleBg * _pBgInfo, bool _loadScale)
 {
-	gSP.bgImage.address = RSP_SegmentToPhysical(_bgInfo->imagePtr);
+	gSP.bgImage.address = RSP_SegmentToPhysical(_pBgInfo->imagePtr);
 
-	const u32 imageW = _bgInfo->imageW >> 2;
-	const u32 imageH = _bgInfo->imageH >> 2;
+	const u32 imageW = _pBgInfo->imageW >> 2;
+	const u32 imageH = _pBgInfo->imageH >> 2;
 	if (imageW == 512 && (config.generalEmulation.hacks & hack_RE2) != 0) {
 		gSP.bgImage.width = *REG.VI_WIDTH;
 		gSP.bgImage.height = (imageH * imageW) / gSP.bgImage.width;
@@ -884,51 +884,71 @@ void _loadBGImage(const uObjScaleBg * _bgInfo, bool _loadScale)
 		gSP.bgImage.width = imageW - imageW % 2;
 		gSP.bgImage.height = imageH - imageH % 2;
 	}
-	gSP.bgImage.format = _bgInfo->imageFmt;
-	gSP.bgImage.size = _bgInfo->imageSiz;
-	gSP.bgImage.palette = _bgInfo->imagePal;
-	gDP.tiles[0].textureMode = TEXTUREMODE_BGIMAGE;
-	gSP.bgImage.imageX = _FIXED2FLOAT(_bgInfo->imageX, 5);
-	gSP.bgImage.imageY = _FIXED2FLOAT(_bgInfo->imageY, 5);
+	gSP.bgImage.format = _pBgInfo->imageFmt;
+	gSP.bgImage.size = _pBgInfo->imageSiz;
+	gSP.bgImage.palette = _pBgInfo->imagePal;
+	gSP.bgImage.imageX = _FIXED2FLOAT(_pBgInfo->imageX, 5);
+	gSP.bgImage.imageY = _FIXED2FLOAT(_pBgInfo->imageY, 5);
 	if (_loadScale) {
-		gSP.bgImage.scaleW = _FIXED2FLOAT(_bgInfo->scaleW, 10);
-		gSP.bgImage.scaleH = _FIXED2FLOAT(_bgInfo->scaleH, 10);
+		gSP.bgImage.scaleW = _FIXED2FLOAT(_pBgInfo->scaleW, 10);
+		gSP.bgImage.scaleH = _FIXED2FLOAT(_pBgInfo->scaleH, 10);
 	}
 	else
 		gSP.bgImage.scaleW = gSP.bgImage.scaleH = 1.0f;
 
-	if (config.frameBufferEmulation.enable) {
-		FrameBuffer *pBuffer = frameBufferList().findBuffer(gSP.bgImage.address);
-		if ((pBuffer != nullptr) && pBuffer->m_size == gSP.bgImage.size && (!pBuffer->m_isDepthBuffer || pBuffer->m_changed)) {
-			if (gSP.bgImage.format == G_IM_FMT_CI && gSP.bgImage.size == G_IM_SIZ_8b) {
-				// Can't use 8bit CI buffer as texture
-				return;
-			}
+	gDP.tiles[0].textureMode = TEXTUREMODE_BGIMAGE;
 
-			if (pBuffer->m_cfb || !pBuffer->isValid(false)) {
-				frameBufferList().removeBuffer(pBuffer->m_startAddress);
-				return;
-			}
+	FrameBuffer *pBuffer = frameBufferList().findBuffer(RSP_SegmentToPhysical(_pBgInfo->imagePtr));
+	if (pBuffer != nullptr) {
 
-			gDP.tiles[0].frameBufferAddress = pBuffer->m_startAddress;
-			gDP.tiles[0].textureMode = TEXTUREMODE_FRAMEBUFFER_BG;
-			gDP.tiles[0].loadType = LOADTYPE_TILE;
-			gDP.changed |= CHANGED_TMEM;
+		gDP.tiles[0].frameBufferAddress = pBuffer->m_startAddress;
+		gDP.tiles[0].textureMode = TEXTUREMODE_FRAMEBUFFER_BG;
+		gDP.tiles[0].loadType = LOADTYPE_TILE;
+		gDP.changed |= CHANGED_TMEM;
 
-			if ((config.generalEmulation.hacks & hack_ZeldaMM) != 0) {
-				if (gDP.colorImage.address == gDP.depthImageAddress)
-					frameBufferList().setCopyBuffer(frameBufferList().getCurrent());
-			}
+		if ((config.generalEmulation.hacks & hack_ZeldaMM) != 0) {
+			if (gDP.colorImage.address == gDP.depthImageAddress)
+				frameBufferList().setCopyBuffer(frameBufferList().getCurrent());
 		}
 	}
+
+}
+
+static
+bool _useOldBgCode(u32 address)
+{
+	if ((config.generalEmulation.hacks & hack_RE2) != 0)
+		return true;
+
+	if (config.frameBufferEmulation.enable == 0)
+		return false;
+
+	uObjScaleBg *pObjScaleBg = (uObjScaleBg*)&RDRAM[address];
+	FrameBuffer *pBuffer = frameBufferList().findBuffer(RSP_SegmentToPhysical(pObjScaleBg->imagePtr));
+	if (pBuffer != nullptr &&
+		pBuffer->m_size == pObjScaleBg->imageSiz &&
+		(!pBuffer->m_isDepthBuffer || pBuffer->m_changed)) {
+		if (gSP.bgImage.format == G_IM_FMT_CI && gSP.bgImage.size == G_IM_SIZ_8b) {
+			// Can't use 8bit CI buffer as texture
+			return false;
+		}
+
+		if (pBuffer->m_cfb || !pBuffer->isValid(false)) {
+			frameBufferList().removeBuffer(pBuffer->m_startAddress);
+			return false;
+		}
+
+		return true;
+	}
+
+	return false;
 }
 
 static
 void gSPBgRect1Cyc(u32 _bg)
 {
-	const u32 address = RSP_SegmentToPhysical(_bg);
-	uObjScaleBg *objScaleBg = (uObjScaleBg*)&RDRAM[address];
-	_loadBGImage(objScaleBg, true);
+	uObjScaleBg *pObjScaleBg = (uObjScaleBg*)&RDRAM[_bg];
+	_loadBGImage(pObjScaleBg, true);
 
 	// Zelda MM uses depth buffer copy in LoT and in pause screen.
 	// In later case depth buffer is used as temporal color buffer, and usual rendering must be used.
@@ -942,7 +962,7 @@ void gSPBgRect1Cyc(u32 _bg)
 	gDP.changed |= CHANGED_CYCLETYPE;
 	gSPTexture(1.0f, 1.0f, 0, 0, TRUE);
 
-	ObjCoordinates objCoords(objScaleBg);
+	ObjCoordinates objCoords(pObjScaleBg);
 	gSPDrawObjRect(objCoords);
 
 	DebugMsg(DEBUG_NORMAL, "gSPBgRect1Cyc\n");
@@ -951,9 +971,8 @@ void gSPBgRect1Cyc(u32 _bg)
 static
 void gSPBgRectCopy(u32 _bg)
 {
-	const u32 address = RSP_SegmentToPhysical(_bg);
-	uObjScaleBg *objBg = (uObjScaleBg*)&RDRAM[address];
-	_loadBGImage(objBg, false);
+	uObjScaleBg *pObjBg = (uObjScaleBg*)&RDRAM[_bg];
+	_loadBGImage(pObjBg, false);
 
 	// See comment to gSPBgRect1Cyc
 	if ((config.generalEmulation.hacks & hack_ZeldaMM) != 0 &&
@@ -965,22 +984,23 @@ void gSPBgRectCopy(u32 _bg)
 	gDP.changed |= CHANGED_CYCLETYPE;
 	gSPTexture(1.0f, 1.0f, 0, 0, TRUE);
 
-	ObjCoordinates objCoords(objBg);
+	ObjCoordinates objCoords(pObjBg);
 	gSPDrawObjRect(objCoords);
 
 	DebugMsg(DEBUG_NORMAL, "gSPBgRectCopy\n");
 }
 
 //#define runCommand(w0, w1) GBI.cmd[_SHIFTR(w0, 24, 8)](w0, w1)
-	auto runCommand = [](u32 w0, u32 w1)
-	{
-		GBI.cmd[_SHIFTR(w0, 24, 8)](w0, w1);
-	};
+inline
+void runCommand(u32 w0, u32 w1)
+{
+	GBI.cmd[_SHIFTR(w0, 24, 8)](w0, w1);
+};
 
 static
-void BG1CycNew(u32 _bg)
+void BG1CycNew(u32 _bgAddr)
 {
-	uObjScaleBg objBg = *reinterpret_cast<const uObjScaleBg*>(RDRAM + RSP_SegmentToPhysical(_bg));
+	uObjScaleBg objBg = *reinterpret_cast<const uObjScaleBg*>(RDRAM + _bgAddr);
 	const u32 imagePtr = RSP_SegmentToPhysical(objBg.imagePtr);
 	gDP.otherMode.cycleType = G_CYC_1CYCLE;
 	gDP.changed |= CHANGED_CYCLETYPE;
@@ -1161,10 +1181,10 @@ void BG1CycNew(u32 _bg)
 
 	auto setTexture = [&]() {
 //		0x28000000, 0x00000000
-		runCommand(*reinterpret_cast<u32*>(DMEM + 0x56C) | AAA, 0x27000000);
-		runCommand(*reinterpret_cast<u32*>(DMEM + 0x568), SS);
+		runCommand((*reinterpret_cast<u32*>(DMEM + 0x56C) | AAA), 0x27000000);
+		runCommand((*reinterpret_cast<u32*>(DMEM + 0x568)), SS);
 //		0x26000000, 0x00000000
-		runCommand(0xF4000000, ((P + 0x6FF)<<16) | ((RR << 2) - 1));
+		runCommand(0xF4000000, (((P + 0x6FF)<<16) | ((RR << 2) - 1)));
 	};
 
 	bool stop = false;
@@ -1241,7 +1261,7 @@ void BG1CycNew(u32 _bg)
 			SS = E2_1;
 			runCommand(*reinterpret_cast<u32*>(DMEM + 0x568), SS);
 			//0x26000000, 0x00000000
-			runCommand(0xF4000000, ((P + 0x6FF) << 16) | ((RR << 2) - 1));
+			runCommand(0xF4000000, (((P + 0x6FF) << 16) | ((RR << 2) - 1)));
 			AA -= CC;
 			E2_1 += GG;
 			step = 11;
@@ -1325,10 +1345,10 @@ void BG1CycNew(u32 _bg)
 }
 
 static
-void BGCopyNew(u32 _bg)
+void BGCopyNew(u32 _bgAddr)
 {
 	// Step 1
-	uObjBg objBg = *reinterpret_cast<const uObjBg*>(RDRAM + RSP_SegmentToPhysical(_bg));
+	uObjBg objBg = *reinterpret_cast<const uObjBg*>(RDRAM + _bgAddr);
 	const u32 imagePtr = RSP_SegmentToPhysical(objBg.imagePtr);
 	gDP.otherMode.cycleType = G_CYC_COPY;
 	gDP.changed |= CHANGED_CYCLETYPE;
@@ -1501,14 +1521,20 @@ void BGCopyNew(u32 _bg)
 
 void S2DEX_BG_1Cyc(u32 w0, u32 w1)
 {
-	BG1CycNew(w1);
-//	gSPBgRect1Cyc(w1);
+	const u32 bgAddr = RSP_SegmentToPhysical(w1);
+	if (_useOldBgCode(bgAddr))
+		gSPBgRect1Cyc(bgAddr);
+	else
+		BG1CycNew(bgAddr);
 }
 
 void S2DEX_BG_Copy(u32 w0, u32 w1)
 {
-	BGCopyNew(w1);
-//	gSPBgRectCopy(w1);
+	const u32 bgAddr = RSP_SegmentToPhysical(w1);
+	if (_useOldBgCode(bgAddr))
+		gSPBgRectCopy(bgAddr);
+	else
+		BGCopyNew(bgAddr);
 }
 
 void S2DEX_Obj_MoveMem(u32 w0, u32 w1)
