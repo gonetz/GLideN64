@@ -1175,14 +1175,14 @@ void GraphicsDrawer::drawTexturedRect(const TexturedRectParams & _params)
 	DisplayWindow & wnd = dwnd();
 	TextureCache & cache = textureCache();
 	const bool bUseBilinear = gDP.otherMode.textureFilter != 0;
-	const bool bUseTexrectDrawer = (config.generalEmulation.enableNativeResTexrects != 0 || m_bBGMode)
+	const bool bUseTexrectDrawer = m_bBGMode || ((config.generalEmulation.enableNativeResTexrects != 0)
 		&& bUseBilinear
 		&& pCurrentCombiner->usesTexture()
 		&& (pCurrentBuffer == nullptr || !pCurrentBuffer->m_cfb)
 		&& (cache.current[0] != nullptr)
 		//		&& (cache.current[0] == nullptr || cache.current[0]->format == G_IM_FMT_RGBA || cache.current[0]->format == G_IM_FMT_CI)
 		&& ((cache.current[0]->frameBufferTexture == CachedTexture::fbNone && !cache.current[0]->bHDTexture))
-		&& (cache.current[1] == nullptr || (cache.current[1]->frameBufferTexture == CachedTexture::fbNone && !cache.current[1]->bHDTexture));
+		&& (cache.current[1] == nullptr || (cache.current[1]->frameBufferTexture == CachedTexture::fbNone && !cache.current[1]->bHDTexture)));
 
 	f32 scaleX, scaleY;
 	calcCoordsScales(pCurrentBuffer, scaleX, scaleY);
