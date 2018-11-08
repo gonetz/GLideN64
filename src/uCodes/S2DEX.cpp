@@ -310,14 +310,14 @@ struct ObjCoordinates
 			const u32 scaleW = (u32(objMtx.BaseScaleX) * 0x40 * _pObjSprite->scaleW) >> 16;
 			const u32 scaleH = (u32(objMtx.BaseScaleY) * 0x40 * _pObjSprite->scaleH) >> 16;
 			if (gs_bVer1_3) {
-				// XH = AND((((objX * 0x0800) << 16) / ((BaseScaleX * 2 - 0x02) >> 16) + X + A2) by B0
-				// XL = XH + AND(((imageW - A1) * 0x100) / (scaleW * 2 - 0x02) + B2) by B0
-				// YH = AND((((objY * 0x0800) << 16) / ((BaseScaleY * 2 - 0x02) >> 16) + Y + A2) by B0
-				// YL = YH + AND(((imageH - A1) * 0x100) / (scaleH * 2 - 0x02) + B2) by B0
-				xh = static_cast<s16>(((((s64(_pObjSprite->objX) << 27) / ((objMtx.BaseScaleX - 1) << 1)) >> 16) + objMtx.X + CC.A2) & CC.B0);
-				xl = static_cast<s16>((((u32(_pObjSprite->imageW) - CC.A1) << 8) / ((scaleW - 1) << 1) /*+ CC.B2*/) & CC.B0) + xh;
-				yh = static_cast<s16>(((((s64(_pObjSprite->objY) << 27) / ((objMtx.BaseScaleY - 1) << 1)) >> 16) + objMtx.Y + CC.A2) & CC.B0);
-				yl = static_cast<s16>((((u32(_pObjSprite->imageH) - CC.A1) << 8) / ((scaleH - 1) << 1) /*+ CC.B2*/) & CC.B0) + yh;
+				// XH = AND ((((objX << 0x10) * 0x0800 * (0x80007FFF/BaseScaleX)) >> 0x30) + X + A2) by B0
+				// XL = XH + AND (((((imageW - A1) * 0x100) *  (0x80007FFF/scaleW)) >> 0x20) + B2) by B0
+				// YH = AND ((((objY << 0x10) * 0x0800 * (0x80007FFF/BaseScaleY)) >> 0x30) + Y + A2) by B0
+				// YL = YH + AND (((((imageH - A1) * 0x100) *  (0x80007FFF/scaleH)) >> 0x20) + B2) by B0
+				xh = static_cast<s16>(((((s64(_pObjSprite->objX) << 27) * (0x80007FFFU / u32(objMtx.BaseScaleX))) >> 0x30) + objMtx.X + CC.A2) & CC.B0);
+				xl = static_cast<s16>((((((s64(_pObjSprite->imageW) - CC.A1) << 8) * (0x80007FFFU / scaleW)) >> 0x20) + CC.B2) & CC.B0) + xh;
+				yh = static_cast<s16>(((((s64(_pObjSprite->objY) << 27) * (0x80007FFFU / u32(objMtx.BaseScaleY))) >> 0x30) + objMtx.Y + CC.A2) & CC.B0);
+				yl = static_cast<s16>((((((s64(_pObjSprite->imageH) - CC.A1) << 8) * (0x80007FFFU / scaleH)) >> 0x20) + CC.B2) & CC.B0) + yh;
 				calcST(CC.B3, scaleH);
 			} else {
 				// XHP = ((objX << 16) * 0x0800 * (0x80007FFF / BaseScaleX)) >> 16 + ((AND(X + A2) by B0) << 16))
