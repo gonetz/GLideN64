@@ -997,6 +997,8 @@ void runCommand(u32 w0, u32 w1)
 	GBI.cmd[_SHIFTR(w0, 24, 8)](w0, w1);
 };
 
+#define USE_TEXRECTDRAWER_BG1CYC
+
 static
 void BG1CycNew(u32 _bgAddr)
 {
@@ -1005,8 +1007,6 @@ void BG1CycNew(u32 _bgAddr)
 	gDP.otherMode.cycleType = G_CYC_1CYCLE;
 	gDP.changed |= CHANGED_CYCLETYPE;
 	RSP.LLE = true;
-	GraphicsDrawer & drawer = dwnd().getDrawer();
-	drawer.setBackgroundDrawingMode(true);
 
 	s32 E2_1;
 	u16 F1_1;
@@ -1157,6 +1157,10 @@ void BG1CycNew(u32 _bgAddr)
 		runCommand((G_SETTILESIZE<<24), 0);
 	}
 
+#ifdef USE_TEXRECTDRAWER_BG1CYC
+	GraphicsDrawer & drawer = dwnd().getDrawer();
+	drawer.setBackgroundDrawingMode(true);
+#endif
 	//Part two
 	{
 
@@ -1340,9 +1344,13 @@ void BG1CycNew(u32 _bgAddr)
 	}
 
 	RSP.LLE = false;
+#ifdef USE_TEXRECTDRAWER_BG1CYC
 	drawer.flush();
 	drawer.setBackgroundDrawingMode(false);
+#endif
 }
+
+#define USE_TEXRECTDRAWER_BGCOPY
 
 static
 void BGCopyNew(u32 _bgAddr)
@@ -1419,6 +1427,11 @@ void BGCopyNew(u32 _bgAddr)
 	u32 T2 = T << 0x0C;
 	s16 AT = Ch;
 	s16 U = A1 - A2;
+
+#ifdef USE_TEXRECTDRAWER_BGCOPY
+	GraphicsDrawer & drawer = dwnd().getDrawer();
+	drawer.setBackgroundDrawingMode(true);
+#endif
 
 	u32 V, X, Y, Z, AA, w0, w1;
 	u16 S5, BB;
@@ -1517,6 +1530,10 @@ void BGCopyNew(u32 _bgAddr)
 	}
 
 	RSP.LLE = false;
+#ifdef USE_TEXRECTDRAWER_BGCOPY
+	drawer.flush();
+	drawer.setBackgroundDrawingMode(false);
+#endif
 }
 
 void S2DEX_BG_1Cyc(u32 w0, u32 w1)
