@@ -336,25 +336,31 @@ bool CheckForFrameBufferTexture(u32 _address, u32 _width, u32 _bytes)
 	FrameBufferList & fbList = frameBufferList();
 	FrameBuffer *pBuffer = fbList.findBuffer(_address);
 	bool bRes = pBuffer != nullptr && pBuffer->m_readable;
-	if (bRes) {
+	while (bRes) {
 		if ((config.generalEmulation.hacks & hack_blurPauseScreen) != 0) {
 			if (gDP.colorImage.address == gDP.depthImageAddress && pBuffer->m_copiedToRdram) {
-				memcpy(RDRAM + gDP.depthImageAddress, RDRAM + pBuffer->m_startAddress, (pBuffer->m_width*pBuffer->m_height) << pBuffer->m_size >> 1);
+				memcpy(RDRAM + gDP.depthImageAddress,
+					RDRAM + pBuffer->m_startAddress,
+					(pBuffer->m_width*pBuffer->m_height) << pBuffer->m_size >> 1);
 				pBuffer->m_copiedToRdram = false;
 				fbList.getCurrent()->m_isPauseScreen = true;
 			}
-			if (pBuffer->m_isPauseScreen)
+			if (pBuffer->m_isPauseScreen) {
 				bRes = false;
+				break;
+			}
 		}
 
 		if (pBuffer->m_cfb) {
 			fbList.removeBuffer(pBuffer->m_startAddress);
 			bRes = false;
+			break;
 		}
 
 		if ((config.generalEmulation.hacks & hack_noDepthFrameBuffers) != 0 && pBuffer->m_isDepthBuffer) {
 			fbList.removeBuffer(pBuffer->m_startAddress);
 			bRes = false;
+			break;
 		}
 
 		const u32 texEndAddress = _address + _bytes - 1;
@@ -363,26 +369,29 @@ bool CheckForFrameBufferTexture(u32 _address, u32 _width, u32 _bytes)
 			texEndAddress > (pBuffer->m_endAddress + (pBuffer->m_width << pBuffer->m_size >> 1))) {
 			//fbList.removeBuffer(pBuffer->m_startAddress);
 			bRes = false;
+			break;
 		}
 
-		if (bRes && gDP.loadTile->loadType == LOADTYPE_TILE && gDP.textureImage.width != pBuffer->m_width && gDP.textureImage.size != pBuffer->m_size) {
+		if (gDP.loadTile->loadType == LOADTYPE_TILE &&
+			gDP.textureImage.width != pBuffer->m_width &&
+			gDP.textureImage.size != pBuffer->m_size) {
 			//fbList.removeBuffer(pBuffer->m_startAddress); // Does not work with Zelda MM
 			bRes = false;
+			break;
 		}
 
-		if (bRes) {
-			bRes = pBuffer->isValid(false);
-			if (!bRes)
-				fbList.removeBuffer(pBuffer->m_startAddress);
+		bRes = pBuffer->isValid(false);
+		if (!bRes && pBuffer != fbList.getCurrent()) {
+			fbList.removeBuffer(pBuffer->m_startAddress);
+			break;
 		}
 
-		if (bRes) {
-			pBuffer->m_loadType = gDP.loadTile->loadType;
-			pBuffer->m_loadTileOrigin.uls = gDP.loadTile->uls;
-			pBuffer->m_loadTileOrigin.ult = gDP.loadTile->ult;
-			gDP.loadTile->frameBufferAddress = pBuffer->m_startAddress;
-			gDP.loadTile->textureMode = TEXTUREMODE_FRAMEBUFFER;
-		}
+		pBuffer->m_loadType = gDP.loadTile->loadType;
+		pBuffer->m_loadTileOrigin.uls = gDP.loadTile->uls;
+		pBuffer->m_loadTileOrigin.ult = gDP.loadTile->ult;
+		gDP.loadTile->frameBufferAddress = pBuffer->m_startAddress;
+		gDP.loadTile->textureMode = TEXTUREMODE_FRAMEBUFFER;
+		break;
 	}
 
 	for (int nTile = gSP.texture.tile; nTile < 6; ++nTile) {
