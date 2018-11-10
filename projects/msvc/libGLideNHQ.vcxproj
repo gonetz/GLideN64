@@ -17,14 +17,6 @@
       <Configuration>Release</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
-    <ProjectConfiguration Include="RelWithDebInfo|Win32">
-      <Configuration>RelWithDebInfo</Configuration>
-      <Platform>Win32</Platform>
-    </ProjectConfiguration>
-    <ProjectConfiguration Include="RelWithDebInfo|x64">
-      <Configuration>RelWithDebInfo</Configuration>
-      <Platform>x64</Platform>
-    </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGUID>{DA965BCF-2219-47AF-ACE7-EAF76D5D4756}</ProjectGUID>
@@ -50,7 +42,6 @@
     <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
     <IntDir Condition="'$(Configuration)'=='Debug'">libGLideNHQ.dir\Debug\</IntDir>
     <IntDir Condition="'$(Configuration)'=='Release'">libGLideNHQ.dir\Release\</IntDir>
-    <IntDir Condition="'$(Configuration)'=='RelWithDebInfo'">libGLideNHQ.dir\RelWithDebInfo\</IntDir>
     <TargetName>libGLideNHQ</TargetName>
     <TargetExt>.lib</TargetExt>
     <OutDir>$(SolutionDir)GLideNHQ\$(Configuration)\</OutDir>
@@ -97,7 +88,7 @@
       <AdditionalLibraryDirectories>lib/x64/dbg</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)'=='Release' Or '$(Configuration)'=='RelWithDebInfo'">
+  <ItemDefinitionGroup Condition="'$(Configuration)'=='Release'">
     <ClCompile>
       <AssemblerListingLocation>Release/</AssemblerListingLocation>
       <DebugInformationFormat>
@@ -111,13 +102,6 @@
       <AdditionalDependencies>libpng.lib;zlib.lib;</AdditionalDependencies>
     </Lib>
   </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)'=='RelWithDebInfo'">
-    <ClCompile>
-      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
-      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
-    </ClCompile>
-  </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="('$(Configuration)'=='Release') And '$(Platform)'=='Win32'">
     <Lib>
       <AdditionalLibraryDirectories>lib/rel</AdditionalLibraryDirectories>
@@ -127,11 +111,6 @@
     <Lib>
       <AdditionalLibraryDirectories>lib/x64/rel</AdditionalLibraryDirectories>
     </Lib>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)'=='RelWithDebInfo'">
-    <ClCompile>
-      <AssemblerListingLocation>$(Configuration)/</AssemblerListingLocation>
-    </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\GLideNHQ\TextureFilters.cpp" />
