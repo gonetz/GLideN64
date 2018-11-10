@@ -13,14 +13,6 @@
       <Configuration>MinSizeRel</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
-    <ProjectConfiguration Include="Release_dll|Win32">
-      <Configuration>Release_dll</Configuration>
-      <Platform>Win32</Platform>
-    </ProjectConfiguration>
-    <ProjectConfiguration Include="Release_dll|x64">
-      <Configuration>Release_dll</Configuration>
-      <Platform>x64</Platform>
-    </ProjectConfiguration>
     <ProjectConfiguration Include="Release_with_debug_mupen64plus|Win32">
       <Configuration>Release_with_debug_mupen64plus</Configuration>
       <Platform>Win32</Platform>
@@ -63,9 +55,6 @@
     <CharacterSet>MultiByte</CharacterSet>
     <PlatformToolSet>$(DefaultPlatformToolset)</PlatformToolSet>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)'=='Release_dll'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
-  </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
@@ -76,7 +65,7 @@
   <PropertyGroup>
     <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
     <IntDir Condition="'$(Configuration)'=='Debug'">libGLideNHQ.dir\Debug\</IntDir>
-    <IntDir Condition="'$(Configuration)'=='Release' Or '$(Configuration)'=='Release_with_debug_mupen64plus' Or '$(Configuration)'=='Release_dll'">libGLideNHQ.dir\Release\</IntDir>
+    <IntDir Condition="'$(Configuration)'=='Release' Or '$(Configuration)'=='Release_with_debug_mupen64plus'">libGLideNHQ.dir\Release\</IntDir>
     <IntDir Condition="'$(Configuration)'=='MinSizeRel'">libGLideNHQ.dir\MinSizeRel\</IntDir>
     <IntDir Condition="'$(Configuration)'=='RelWithDebInfo'">libGLideNHQ.dir\RelWithDebInfo\</IntDir>
     <TargetName>libGLideNHQ</TargetName>
@@ -125,7 +114,7 @@
       <AdditionalLibraryDirectories>lib/x64/dbg</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)'=='Release' Or '$(Configuration)'=='Release_with_debug_mupen64plus' Or '$(Configuration)'=='Release_dll' Or '$(Configuration)'=='RelWithDebInfo' Or '$(Configuration)'=='MinSizeRel'">
+  <ItemDefinitionGroup Condition="'$(Configuration)'=='Release' Or '$(Configuration)'=='Release_with_debug_mupen64plus' Or '$(Configuration)'=='RelWithDebInfo' Or '$(Configuration)'=='MinSizeRel'">
     <ClCompile>
       <AssemblerListingLocation>Release/</AssemblerListingLocation>
       <DebugInformationFormat>
@@ -138,11 +127,6 @@
     <Lib>
       <AdditionalDependencies>libpng.lib;zlib.lib;</AdditionalDependencies>
     </Lib>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)'=='Release_dll'">
-    <ClCompile>
-      <PreprocessorDefinitions>TXFILTER_DLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-    </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)'=='RelWithDebInfo'">
     <ClCompile>
