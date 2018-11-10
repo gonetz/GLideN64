@@ -9,10 +9,6 @@
       <Configuration>Debug</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
-    <ProjectConfiguration Include="MinSizeRel|x64">
-      <Configuration>MinSizeRel</Configuration>
-      <Platform>x64</Platform>
-    </ProjectConfiguration>
     <ProjectConfiguration Include="Release_with_debug_mupen64plus|Win32">
       <Configuration>Release_with_debug_mupen64plus</Configuration>
       <Platform>Win32</Platform>
@@ -23,10 +19,6 @@
     </ProjectConfiguration>
     <ProjectConfiguration Include="Release|Win32">
       <Configuration>Release</Configuration>
-      <Platform>Win32</Platform>
-    </ProjectConfiguration>
-    <ProjectConfiguration Include="MinSizeRel|Win32">
-      <Configuration>MinSizeRel</Configuration>
       <Platform>Win32</Platform>
     </ProjectConfiguration>
     <ProjectConfiguration Include="Release|x64">
@@ -66,7 +58,6 @@
     <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
     <IntDir Condition="'$(Configuration)'=='Debug'">libGLideNHQ.dir\Debug\</IntDir>
     <IntDir Condition="'$(Configuration)'=='Release' Or '$(Configuration)'=='Release_with_debug_mupen64plus'">libGLideNHQ.dir\Release\</IntDir>
-    <IntDir Condition="'$(Configuration)'=='MinSizeRel'">libGLideNHQ.dir\MinSizeRel\</IntDir>
     <IntDir Condition="'$(Configuration)'=='RelWithDebInfo'">libGLideNHQ.dir\RelWithDebInfo\</IntDir>
     <TargetName>libGLideNHQ</TargetName>
     <TargetExt>.lib</TargetExt>
@@ -114,7 +105,7 @@
       <AdditionalLibraryDirectories>lib/x64/dbg</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)'=='Release' Or '$(Configuration)'=='Release_with_debug_mupen64plus' Or '$(Configuration)'=='RelWithDebInfo' Or '$(Configuration)'=='MinSizeRel'">
+  <ItemDefinitionGroup Condition="'$(Configuration)'=='Release' Or '$(Configuration)'=='Release_with_debug_mupen64plus' Or '$(Configuration)'=='RelWithDebInfo'">
     <ClCompile>
       <AssemblerListingLocation>Release/</AssemblerListingLocation>
       <DebugInformationFormat>
@@ -131,15 +122,6 @@
   <ItemDefinitionGroup Condition="'$(Configuration)'=='RelWithDebInfo'">
     <ClCompile>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-    </ClCompile>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)'=='MinSizeRel'">
-    <ClCompile>
-      <Optimization>MinSpace</Optimization>
-    </ClCompile>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)'=='RelWithDebInfo' Or '$(Configuration)'=='MinSizeRel'">
-    <ClCompile>
       <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
     </ClCompile>
@@ -154,7 +136,7 @@
       <AdditionalLibraryDirectories>lib/x64/rel</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)'=='MinSizeRel' Or '$(Configuration)'=='RelWithDebInfo'">
+  <ItemDefinitionGroup Condition="'$(Configuration)'=='RelWithDebInfo'">
     <ClCompile>
       <AssemblerListingLocation>$(Configuration)/</AssemblerListingLocation>
     </ClCompile>
