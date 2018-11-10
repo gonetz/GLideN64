@@ -25,14 +25,6 @@
       <Configuration>Release_mupenplus</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
-    <ProjectConfiguration Include="Release_with_debug_mupen64plus|Win32">
-      <Configuration>Release_with_debug_mupen64plus</Configuration>
-      <Platform>Win32</Platform>
-    </ProjectConfiguration>
-    <ProjectConfiguration Include="Release_with_debug_mupen64plus|x64">
-      <Configuration>Release_with_debug_mupen64plus</Configuration>
-      <Platform>x64</Platform>
-    </ProjectConfiguration>
     <ProjectConfiguration Include="Release|Win32">
       <Configuration>Release</Configuration>
       <Platform>Win32</Platform>
@@ -71,12 +63,12 @@
     <IntDir Condition="'$(Platform)'=='Win32'">Debug\</IntDir>
     <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)'=='Release' Or '$(Configuration)'=='Release_mupenplus' Or '$(Configuration)'=='Release_with_debug_mupen64plus'">
+  <PropertyGroup Condition="'$(Configuration)'=='Release' Or '$(Configuration)'=='Release_mupenplus'">
     <OutDir Condition="'$(Platform)'=='Win32'">Release\</OutDir>
     <IntDir Condition="'$(Platform)'=='Win32'">Release\</IntDir>
     <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)'=='Debug_mupenplus' Or '$(Configuration)'=='Release_mupenplus' Or '$(Configuration)'=='Release_with_debug_mupen64plus'">
+  <PropertyGroup Condition="'$(Configuration)'=='Debug_mupenplus' Or '$(Configuration)'=='Release_mupenplus'">
     <TargetName>mupen64plus-video-GLideN64</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup>
@@ -113,7 +105,7 @@
       <AdditionalDependencies>freetype253MT_D.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)'=='Release' Or '$(Configuration)'=='Release_mupenplus' Or '$(Configuration)'=='Release_with_debug_mupen64plus'">
+  <ItemDefinitionGroup Condition="'$(Configuration)'=='Release' Or '$(Configuration)'=='Release_mupenplus'">
     <ClCompile>
       <Optimization>Full</Optimization>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
@@ -159,23 +151,14 @@
       <AdditionalLibraryDirectories>lib/x64/dbg</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="('$(Configuration)'=='Release' Or '$(Configuration)'=='Release_mupenplus' Or '$(Configuration)'=='Release_with_debug_mupen64plus') And '$(Platform)'=='Win32'">
+  <ItemDefinitionGroup Condition="('$(Configuration)'=='Release' Or '$(Configuration)'=='Release_mupenplus') And '$(Platform)'=='Win32'">
     <Link>
       <AdditionalLibraryDirectories>lib/rel</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="('$(Configuration)'=='Release' Or '$(Configuration)'=='Release_mupenplus' Or '$(Configuration)'=='Release_with_debug_mupen64plus') And '$(Platform)'=='x64'">
+  <ItemDefinitionGroup Condition="('$(Configuration)'=='Release' Or '$(Configuration)'=='Release_mupenplus') And '$(Platform)'=='x64'">
     <Link>
       <AdditionalLibraryDirectories>lib/x64/rel</AdditionalLibraryDirectories>
-    </Link>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)'=='Release_with_debug_mupen64plus'">
-    <ClCompile>
-      <PreprocessorDefinitions>DEBUG_DUMP;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-    </ClCompile>
-    <Link>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-      <FullProgramDatabaseFile>true</FullProgramDatabaseFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug' Or '$(Configuration)'=='Release'">
@@ -191,7 +174,7 @@ copy /Y "$(ProjectDir)$(OutDir)$(TargetName).*" "$(N64PluginsDir)"
       <Message>Copy result to plugins folder</Message>
     </PostBuildEvent>
   </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug_mupenplus' Or '$(Configuration)'=='Release_mupenplus' Or '$(Configuration)'=='Release_with_debug_mupen64plus'">
+  <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug_mupenplus' Or '$(Configuration)'=='Release_mupenplus'">
     <ClCompile>
       <PreprocessorDefinitions>MUPENPLUSAPI;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
@@ -212,7 +195,7 @@ copy /Y "$(ProjectDir)$(OutDir)$(TargetName).*" "$(Mupen64PluginsDir)"</Command>
       <AdditionalOptions>/LTCG %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug' Or '$(Configuration)'=='Debug_mupenplus' Or '$(Configuration)'=='Release' Or '$(Configuration)'=='Release_mupenplus' Or '$(Configuration)'=='Release_with_debug_mupen64plus'">
+  <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug' Or '$(Configuration)'=='Debug_mupenplus' Or '$(Configuration)'=='Release' Or '$(Configuration)'=='Release_mupenplus'">
     <ClCompile>
       <AdditionalIncludeDirectories>../../src/inc/freetype/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
@@ -271,7 +254,7 @@ copy /Y "$(ProjectDir)$(OutDir)$(TargetName).*" "$(Mupen64PluginsDir)"</Command>
     <ClCompile Include="..\..\src\Graphics\OpenGLContext\opengl_Utils.cpp" />
     <ClCompile Include="..\..\src\Graphics\OpenGLContext\opengl_BufferedDrawer.cpp" />
     <ClCompile Include="..\..\src\Graphics\OpenGLContext\windows\windows_DisplayWindow.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)'=='Debug_mupenplus' Or '$(Configuration)'=='Release_mupenplus' Or '$(Configuration)'=='Release_with_debug_mupen64plus'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)'=='Debug_mupenplus' Or '$(Configuration)'=='Release_mupenplus'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\src\gSP.cpp" />
     <ClCompile Include="..\..\src\iob.cpp">
@@ -337,20 +320,20 @@ copy /Y "$(ProjectDir)$(OutDir)$(TargetName).*" "$(Mupen64PluginsDir)"</Command>
     <ClCompile Include="..\..\src\uCodes\ZSortBOSS.cpp" />
     <ClCompile Include="..\..\src\VI.cpp" />
     <ClCompile Include="..\..\src\windows\CommonAPIImpl_windows.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)'=='Debug_mupenplus' Or '$(Configuration)'=='Release_mupenplus' Or '$(Configuration)'=='Release_with_debug_mupen64plus'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)'=='Debug_mupenplus' Or '$(Configuration)'=='Release_mupenplus'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\src\windows\Config_windows.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)'=='Debug_mupenplus' Or '$(Configuration)'=='Release_mupenplus' Or '$(Configuration)'=='Release_with_debug_mupen64plus'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)'=='Debug_mupenplus' Or '$(Configuration)'=='Release_mupenplus'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\src\windows\GLideN64_windows.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)'=='Debug_mupenplus' Or '$(Configuration)'=='Release_mupenplus' Or '$(Configuration)'=='Release_with_debug_mupen64plus'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)'=='Debug_mupenplus' Or '$(Configuration)'=='Release_mupenplus'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\src\windows\ZilmarAPIImpl_windows.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)'=='Debug_mupenplus' Or '$(Configuration)'=='Release_mupenplus' Or '$(Configuration)'=='Release_with_debug_mupen64plus'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)'=='Debug_mupenplus' Or '$(Configuration)'=='Release_mupenplus'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\src\xxHash\xxhash.c" />
     <ClCompile Include="..\..\src\ZilmarPluginAPI.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)'=='Debug_mupenplus' Or '$(Configuration)'=='Release_mupenplus' Or '$(Configuration)'=='Release_with_debug_mupen64plus'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)'=='Debug_mupenplus' Or '$(Configuration)'=='Release_mupenplus'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\src\ZlutTexture.cpp" />
   </ItemGroup>
@@ -466,7 +449,7 @@ copy /Y "$(ProjectDir)$(OutDir)$(TargetName).*" "$(Mupen64PluginsDir)"</Command>
     <ClInclude Include="..\..\src\wst.h" />
     <ClInclude Include="..\..\src\xxHash\xxhash.h" />
     <ClInclude Include="..\..\src\ZilmarGFX_1_3.h">
-      <ExcludedFromBuild Condition="'$(Configuration)'=='Debug_mupenplus' Or '$(Configuration)'=='Release_mupenplus' Or '$(Configuration)'=='Release_with_debug_mupen64plus'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)'=='Debug_mupenplus' Or '$(Configuration)'=='Release_mupenplus'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="..\..\src\ZlutTexture.h" />
   </ItemGroup>

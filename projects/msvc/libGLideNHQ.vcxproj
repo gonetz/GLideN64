@@ -9,14 +9,6 @@
       <Configuration>Debug</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
-    <ProjectConfiguration Include="Release_with_debug_mupen64plus|Win32">
-      <Configuration>Release_with_debug_mupen64plus</Configuration>
-      <Platform>Win32</Platform>
-    </ProjectConfiguration>
-    <ProjectConfiguration Include="Release_with_debug_mupen64plus|x64">
-      <Configuration>Release_with_debug_mupen64plus</Configuration>
-      <Platform>x64</Platform>
-    </ProjectConfiguration>
     <ProjectConfiguration Include="Release|Win32">
       <Configuration>Release</Configuration>
       <Platform>Win32</Platform>
@@ -57,7 +49,7 @@
   <PropertyGroup>
     <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
     <IntDir Condition="'$(Configuration)'=='Debug'">libGLideNHQ.dir\Debug\</IntDir>
-    <IntDir Condition="'$(Configuration)'=='Release' Or '$(Configuration)'=='Release_with_debug_mupen64plus'">libGLideNHQ.dir\Release\</IntDir>
+    <IntDir Condition="'$(Configuration)'=='Release'">libGLideNHQ.dir\Release\</IntDir>
     <IntDir Condition="'$(Configuration)'=='RelWithDebInfo'">libGLideNHQ.dir\RelWithDebInfo\</IntDir>
     <TargetName>libGLideNHQ</TargetName>
     <TargetExt>.lib</TargetExt>
@@ -105,7 +97,7 @@
       <AdditionalLibraryDirectories>lib/x64/dbg</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)'=='Release' Or '$(Configuration)'=='Release_with_debug_mupen64plus' Or '$(Configuration)'=='RelWithDebInfo'">
+  <ItemDefinitionGroup Condition="'$(Configuration)'=='Release' Or '$(Configuration)'=='RelWithDebInfo'">
     <ClCompile>
       <AssemblerListingLocation>Release/</AssemblerListingLocation>
       <DebugInformationFormat>
@@ -126,12 +118,12 @@
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
     </ClCompile>
   </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="('$(Configuration)'=='Release' Or '$(Configuration)'=='Release_with_debug_mupen64plus') And '$(Platform)'=='Win32'">
+  <ItemDefinitionGroup Condition="('$(Configuration)'=='Release') And '$(Platform)'=='Win32'">
     <Lib>
       <AdditionalLibraryDirectories>lib/rel</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="('$(Configuration)'=='Release' Or '$(Configuration)'=='Release_with_debug_mupen64plus') And '$(Platform)'=='x64'">
+  <ItemDefinitionGroup Condition="('$(Configuration)'=='Release') And '$(Platform)'=='x64'">
     <Lib>
       <AdditionalLibraryDirectories>lib/x64/rel</AdditionalLibraryDirectories>
     </Lib>
