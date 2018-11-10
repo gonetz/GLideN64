@@ -40,8 +40,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
     <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
-    <IntDir Condition="'$(Configuration)'=='Debug'">libGLideNHQ.dir\Debug\</IntDir>
-    <IntDir Condition="'$(Configuration)'=='Release'">libGLideNHQ.dir\Release\</IntDir>
+    <IntDir>$(SolutionDir)build\$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
     <TargetName>libGLideNHQ</TargetName>
     <TargetExt>.lib</TargetExt>
     <OutDir>$(SolutionDir)GLideNHQ\$(Configuration)\</OutDir>
