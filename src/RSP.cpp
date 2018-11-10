@@ -251,7 +251,7 @@ void setDepthClearColor()
 void RSP_Init()
 {
 	if (RDRAMSize == 0) {
-#ifdef OS_WINDOWS
+#ifdef _WIN32
 		// Calculate RDRAM size by intentionally causing an access violation
 		u32 test;
 		try
@@ -266,9 +266,9 @@ void RSP_Init()
 			RDRAMSize = 0x7FFFFF;
 		else
 			RDRAMSize = 0x3FFFFF;
-#else // OS_WINDOWS
+#else // _WIN32
 		RDRAMSize = 1024 * 1024 * 8 - 1;
-#endif // OS_WINDOWS
+#endif // _WIN32
 	}
 
 	RSP.uc_start = RSP.uc_dstart = 0;

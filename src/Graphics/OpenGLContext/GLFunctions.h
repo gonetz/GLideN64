@@ -1,7 +1,7 @@
 #ifndef GLFUNCTIONS_H
 #define GLFUNCTIONS_H
 
-#ifdef OS_WINDOWS
+#ifdef _WIN32
 #include <windows.h>
 #elif defined(OS_LINUX)
 //#define GL_GLEXT_PROTOTYPES
@@ -113,7 +113,7 @@ extern PFNGLREADBUFFERPROC g_glReadBuffer;
 extern PFNGLFINISHPROC g_glFinish;
 #endif
 
-#ifdef OS_WINDOWS
+#ifdef _WIN32
 #define glActiveTexture g_glActiveTexture
 #define glBlendColor g_glBlendColor
 

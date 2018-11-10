@@ -60,7 +60,7 @@ bool ShaderStorage::_saveCombinerKeys(const graphics::Combiners & _combiners) co
 	wchar_t keysFileName[PLUGIN_PATH_SIZE];
 	getStorageFileName(m_glinfo, keysFileName, L"keys");
 
-#if defined(OS_WINDOWS) && !defined(MINGW)
+#if defined(_WIN32) && !defined(MINGW)
 	std::ofstream keysOut(keysFileName, std::ofstream::trunc);
 #else
 	char filename_c[PATH_MAX];
@@ -117,7 +117,7 @@ bool ShaderStorage::saveShadersStorage(const graphics::Combiners & _combiners) c
 	wchar_t shadersFileName[PLUGIN_PATH_SIZE];
 	getStorageFileName(m_glinfo, shadersFileName, L"shaders");
 
-#if defined(OS_WINDOWS) && !defined(MINGW)
+#if defined(_WIN32) && !defined(MINGW)
 	std::ofstream shadersOut(shadersFileName, std::ofstream::binary | std::ofstream::trunc);
 #else
 	char filename_c[PATH_MAX];
@@ -219,7 +219,7 @@ bool ShaderStorage::_loadFromCombinerKeys(graphics::Combiners & _combiners)
 {
 	wchar_t keysFileName[PLUGIN_PATH_SIZE];
 	getStorageFileName(m_glinfo, keysFileName, L"keys");
-#if defined(OS_WINDOWS) && !defined(MINGW)
+#if defined(_WIN32) && !defined(MINGW)
 	std::ifstream fin(keysFileName);
 #else
 	char fileName_c[PATH_MAX];
@@ -281,7 +281,7 @@ bool ShaderStorage::loadShadersStorage(graphics::Combiners & _combiners)
 	getStorageFileName(m_glinfo, shadersFileName, L"shaders");
 	const u32 configOptionsBitSet = graphics::CombinerProgram::getShaderCombinerOptionsBits();
 
-#if defined(OS_WINDOWS) && !defined(MINGW)
+#if defined(_WIN32) && !defined(MINGW)
 	std::ifstream fin(shadersFileName, std::ofstream::binary);
 #else
 	char fileName_c[PATH_MAX];

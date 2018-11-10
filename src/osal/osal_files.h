@@ -33,7 +33,7 @@ extern "C" {
 #define OSAL_DIR_SEPARATOR_STR       L"/"
 #define OSAL_DIR_SEPARATOR_CHAR      L'/'
 
-#if defined(OS_WINDOWS)
+#if defined(_WIN32)
 #define EXPORT	__declspec(dllexport)
 #define CALL		__cdecl
 #ifndef PATH_MAX

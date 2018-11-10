@@ -1,8 +1,8 @@
-#ifdef OS_WINDOWS
+#ifdef _WIN32
 # include <windows.h>
 #else
 # include "winlnxdefs.h"
-#endif // OS_WINDOWS
+#endif // _WIN32
 
 #include "PluginAPI.h"
 

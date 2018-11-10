@@ -175,7 +175,7 @@ TxHiResCache::loadHiResTextures(const wchar_t * dir_path, boolean replace)
 
   LoadResult result = resOk;
 
-#ifdef OS_WINDOWS
+#ifdef _WIN32
   wchar_t curpath[MAX_PATH];
   GETCWD(MAX_PATH, curpath);
   CHDIR(dir_path);
@@ -244,7 +244,7 @@ TxHiResCache::loadHiResTextures(const wchar_t * dir_path, boolean replace)
 	/* XXX case sensitivity fiasco!
 	 * files must use _a, _rgb, _all, _allciByRGBA, _ciByRGBA, _ci
 	 * and file extensions must be in lower case letters! */
-#ifdef OS_WINDOWS
+#ifdef _WIN32
 	{
 	  unsigned int i;
 	  for (i = 0; i < strlen(fname); i++) fname[i] = tolower(fname[i]);
@@ -259,7 +259,7 @@ TxHiResCache::loadHiResTextures(const wchar_t * dir_path, boolean replace)
 	/* XXX case sensitivity fiasco!
 	 * files must use _a, _rgb, _all, _allciByRGBA, _ciByRGBA, _ci
 	 * and file extensions must be in lower case letters! */
-#ifdef OS_WINDOWS
+#ifdef _WIN32
 	{
 	  unsigned int i;
 	  for (i = 0; i < strlen(fname); i++) fname[i] = tolower(fname[i]);
@@ -461,7 +461,7 @@ TxHiResCache::loadHiResTextures(const wchar_t * dir_path, boolean replace)
 	 */
 	if (pfname == strstr(fname, "_all.png") ||
 		pfname == strstr(fname, "_all.dds") ||
-#ifdef OS_WINDOWS
+#ifdef _WIN32
 		pfname == strstr(fname, "_allcibyrgba.png") ||
 		pfname == strstr(fname, "_allcibyrgba.dds") ||
 		pfname == strstr(fname, "_cibyrgba.png") ||

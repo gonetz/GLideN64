@@ -1,7 +1,7 @@
 #include <QSettings>
 #include <QColor>
 
-#ifdef OS_WINDOWS
+#ifdef WIN32
 #include <windows.h>
 #else
 #include "../winlnxdefs.h"

@@ -502,7 +502,7 @@ void ConfigDialog::accept()
 
 	// OSD settings
 	config.font.size = ui->fontSizeSpinBox->value();
-#ifdef OS_WINDOWS
+#ifdef WIN32
 	config.font.name = ui->fontLineEdit->text().toLocal8Bit().constData();
 #else
 	config.font.name = ui->fontLineEdit->text().toStdString();

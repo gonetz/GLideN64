@@ -1,7 +1,7 @@
 #ifndef PLATFORM_H
 #define PLATFORM_H
 
-#ifdef OS_WINDOWS
+#ifdef _WIN32
 #ifndef NOMINMAX
 #define NOMINMAX
 #endif
