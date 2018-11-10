@@ -27,7 +27,7 @@
 #include <zlib.h>
 #include <assert.h>
 
-#if defined (OS_WINDOWS)
+#if defined (_WIN32)
 #include <malloc.h>
 #elif defined (OS_MAC_OS_X)
 #include <sys/param.h>

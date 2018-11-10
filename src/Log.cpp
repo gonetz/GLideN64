@@ -14,14 +14,14 @@ void LOG(u16 type, const char * format, ...) {
 	api().GetUserDataPath(logPath);
 	gln_wcscat(logPath, wst("/gliden64.log"));
 
-#ifdef OS_WINDOWS
+#ifdef _WIN32
 	FILE *dumpFile = _wfopen(logPath, wst("a+"));
 #else
 	constexpr size_t bufSize = PLUGIN_PATH_SIZE * 6;
 	char cbuf[bufSize];
 	wcstombs(cbuf, logPath, bufSize);
 	FILE *dumpFile = fopen(cbuf, "a+");
-#endif //OS_WINDOWS
+#endif //_WIN32
 
 	if (dumpFile == nullptr)
 		return;
@@ -32,7 +32,7 @@ void LOG(u16 type, const char * format, ...) {
 	va_end(va);
 }
 
-#if defined(OS_WINDOWS) && !defined(MINGW)
+#if defined(_WIN32) && !defined(MINGW)
 #include "windows/GLideN64_windows.h"
 void debugPrint(const char * format, ...) {
 	char text[256];

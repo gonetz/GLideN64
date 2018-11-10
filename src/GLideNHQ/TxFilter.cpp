@@ -614,7 +614,7 @@ TxFilter::dmptx(uint8 *src, int width, int height, int rowStridePixel, ColorForm
 			tmpbuf.append(wbuf);
 		}
 
-#ifdef OS_WINDOWS
+#ifdef _WIN32
 		if ((fp = _wfopen(tmpbuf.c_str(), wst("wb"))) != nullptr) {
 #else
 		char cbuf[MAX_PATH];

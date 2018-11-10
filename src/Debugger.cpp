@@ -27,7 +27,7 @@ using namespace graphics;
 static
 bool getCursorPos(long & _x, long & _y)
 {
-#ifdef OS_WINDOWS
+#ifdef _WIN32
 	POINT pt;
 	const bool res = GetCursorPos(&pt) == TRUE;
 #ifndef MUPENPLUSAPI
@@ -48,7 +48,7 @@ bool getCursorPos(long & _x, long & _y)
 	_x = pt.x;
 	_y = pt.y;
 	return res;
-#else // OS_WINDOWS
+#else // _WIN32
 	_x = _y = 0;
 	return false;
 #endif

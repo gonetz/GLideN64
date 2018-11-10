@@ -1,8 +1,8 @@
-#ifdef OS_WINDOWS
+#ifdef _WIN32
 # include <windows.h>
 #else
 # include "winlnxdefs.h"
-#endif // OS_WINDOWS
+#endif // _WIN32
 #include "RSP.h"
 #include "PluginAPI.h"
 #include "Config.h"
@@ -92,7 +92,7 @@ void Config::resetToDefaults()
 	api().GetUserCachePath(textureFilter.txDumpPath);
 	gln_wcscat(textureFilter.txDumpPath, wst("/texture_dump"));
 
-#ifdef OS_WINDOWS
+#ifdef _WIN32
 	font.name.assign("arial.ttf");
 #elif defined (OS_ANDROID)
 	font.name.assign("DroidSans.ttf");

@@ -4,12 +4,12 @@
 #include "../Config.h"
 #include <DisplayWindow.h>
 
-#ifdef OS_WINDOWS
+#ifdef _WIN32
 #define DLSYM(a, b) GetProcAddress(a, b)
 #else
 #include <dlfcn.h>
 #define DLSYM(a, b) dlsym(a, b)
-#endif // OS_WINDOWS
+#endif // _WIN32
 
 ptr_ConfigGetSharedDataFilepath ConfigGetSharedDataFilepath = nullptr;
 ptr_ConfigGetUserConfigPath ConfigGetUserConfigPath = nullptr;
