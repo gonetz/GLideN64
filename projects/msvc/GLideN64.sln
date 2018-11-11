@@ -1,4 +1,5 @@
-﻿Microsoft Visual Studio Solution File, Format Version 12.00
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
@@ -75,15 +76,17 @@ Global
 		{7BF6F100-31DB-44AE-A2A5-5DDEED9A909C}.Release|x64.ActiveCfg = Release|x64
 		{7BF6F100-31DB-44AE-A2A5-5DDEED9A909C}.Release|x64.Build.0 = Release|x64
 		{37CAB375-A7A6-3CAB-BD56-0E954D3FD2FE}.Debug_mupenplus|Win32.ActiveCfg = Debug|Win32
-		{37CAB375-A7A6-3CAB-BD56-0E954D3FD2FE}.Debug_mupenplus|x64.ActiveCfg = Release|Win32
+		{37CAB375-A7A6-3CAB-BD56-0E954D3FD2FE}.Debug_mupenplus|x64.ActiveCfg = Debug|x64
 		{37CAB375-A7A6-3CAB-BD56-0E954D3FD2FE}.Debug|Win32.ActiveCfg = Debug|Win32
 		{37CAB375-A7A6-3CAB-BD56-0E954D3FD2FE}.Debug|Win32.Build.0 = Debug|Win32
-		{37CAB375-A7A6-3CAB-BD56-0E954D3FD2FE}.Debug|x64.ActiveCfg = Debug|Win32
+		{37CAB375-A7A6-3CAB-BD56-0E954D3FD2FE}.Debug|x64.ActiveCfg = Debug|x64
+		{37CAB375-A7A6-3CAB-BD56-0E954D3FD2FE}.Debug|x64.Build.0 = Debug|x64
 		{37CAB375-A7A6-3CAB-BD56-0E954D3FD2FE}.Release_mupenplus|Win32.ActiveCfg = Release|Win32
-		{37CAB375-A7A6-3CAB-BD56-0E954D3FD2FE}.Release_mupenplus|x64.ActiveCfg = Release|Win32
+		{37CAB375-A7A6-3CAB-BD56-0E954D3FD2FE}.Release_mupenplus|x64.ActiveCfg = Release|x64
 		{37CAB375-A7A6-3CAB-BD56-0E954D3FD2FE}.Release|Win32.ActiveCfg = Release|Win32
 		{37CAB375-A7A6-3CAB-BD56-0E954D3FD2FE}.Release|Win32.Build.0 = Release|Win32
-		{37CAB375-A7A6-3CAB-BD56-0E954D3FD2FE}.Release|x64.ActiveCfg = Release|Win32
+		{37CAB375-A7A6-3CAB-BD56-0E954D3FD2FE}.Release|x64.ActiveCfg = Release|x64
+		{37CAB375-A7A6-3CAB-BD56-0E954D3FD2FE}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
