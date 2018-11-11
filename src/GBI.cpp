@@ -415,9 +415,10 @@ void GBIInfo::loadMicrocode(u32 uc_start, u32 uc_dstart, u16 uc_dsize)
 						type = F3DTEXA;
 					else if (strncmp(&uc_str[14], "F3DAM", 5) == 0)
 						type = F3DAM;
-					else if (strncmp(&uc_str[14], "F3DLX.Rej", 9) == 0)
+					else if (strncmp(&uc_str[14], "F3DLX.Rej", 9) == 0) {
 						current.NoN = true;
-					else if (strncmp(&uc_str[14], "F3DLP.Rej", 9) == 0) {
+						current.cullBoth = false;
+					} else if (strncmp(&uc_str[14], "F3DLP.Rej", 9) == 0) {
 						current.texturePersp = false;
 						current.NoN = true;
 					}

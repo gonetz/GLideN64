@@ -101,7 +101,7 @@ void GraphicsDrawer::_updateCullFace() const
 	if (gSP.geometryMode & G_CULL_BOTH) {
 		gfxContext.enable(enable::CULL_FACE, true);
 
-		if ((gSP.geometryMode & G_CULL_BOTH) == G_CULL_BOTH && !GBI.isNoN())
+		if ((gSP.geometryMode & G_CULL_BOTH) == G_CULL_BOTH && GBI.isCullBoth())
 			gfxContext.cullFace(cullMode::FRONT_AND_BACK);
 		else if ((gSP.geometryMode & G_CULL_BACK) == G_CULL_BACK)
 			gfxContext.cullFace(cullMode::BACK);
