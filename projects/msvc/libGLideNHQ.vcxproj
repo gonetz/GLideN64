@@ -43,7 +43,7 @@
     <IntDir>$(SolutionDir)build\$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
     <TargetName>libGLideNHQ</TargetName>
     <TargetExt>.lib</TargetExt>
-    <OutDir>$(SolutionDir)GLideNHQ\$(Configuration)\</OutDir>
+    <OutDir>$(SolutionDir)bin\$(Platform)\$(Configuration)\lib\</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
