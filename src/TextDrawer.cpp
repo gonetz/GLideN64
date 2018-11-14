@@ -200,7 +200,7 @@ struct Atlas {
 static
 bool getFontFileName(char * _strName)
 {
-#ifdef _WIN32
+#ifdef OS_WINDOWS
 	char * pSysPath = getenv("WINDIR");
 	if (pSysPath == nullptr)
 		return false;

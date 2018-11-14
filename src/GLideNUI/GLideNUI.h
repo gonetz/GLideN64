@@ -5,7 +5,7 @@
 extern "C" {
 #endif
 
-#ifdef _WIN32
+#ifdef OS_WINDOWS
 #define EXPORT	__declspec(dllexport)
 #define CALL		__cdecl
 #else

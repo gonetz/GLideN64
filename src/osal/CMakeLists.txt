@@ -15,6 +15,7 @@ endif(UNIX)
 if(WIN32)
   set(OSAL_SOURCES osal_files_win32.c)
   add_definitions(
+	-DOS_WINDOWS
 	-D_CRT_SECURE_NO_WARNINGS
   )
 endif(WIN32)

@@ -24,6 +24,7 @@ add_definitions(
 if(WIN32)
   add_definitions(
 	-DWIN32
+	-DOS_WINDOWS
   )
 endif(WIN32)
 

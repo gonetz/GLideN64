@@ -5,7 +5,7 @@
 #include "../PluginAPI.h"
 #include "../RSP.h"
 
-#ifdef _WIN32
+#ifdef OS_WINDOWS
 EXTERN_C IMAGE_DOS_HEADER __ImageBase;
 #endif
 
