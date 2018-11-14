@@ -69,12 +69,8 @@ void gDPSetOtherMode( u32 mode0, u32 mode1 )
 
 void gDPSetPrimDepth( u16 z, u16 dz )
 {
-	if (gSP.viewport.vscale[2] == 0)
-		gDP.primDepth.z = _FIXED2FLOAT(_SHIFTR(z, 0, 15), 15);
-	else
-		gDP.primDepth.z = min(1.0f, max(-1.0f, (_FIXED2FLOAT(_SHIFTR(z, 0, 15), 15) - gSP.viewport.vtrans[2]) / gSP.viewport.vscale[2]));
+	gDP.primDepth.z = _FIXED2FLOAT(_SHIFTR(z, 0, 15), 15);
 	gDP.primDepth.deltaZ = _FIXED2FLOAT(_SHIFTR(dz, 0, 15), 15);
-
 	DebugMsg( DEBUG_NORMAL, "gDPSetPrimDepth( %f, %f );\n", gDP.primDepth.z, gDP.primDepth.deltaZ);
 }
 
@@ -131,13 +127,13 @@ void gDPSetColorImage( u32 format, u32 size, u32 width, u32 address )
 {
 	address = RSP_SegmentToPhysical( address );
 
-	frameBufferList().saveBuffer(address, (u16)format, (u16)size, (u16)width, false);
-
 	gDP.colorImage.format = format;
 	gDP.colorImage.size = size;
 	gDP.colorImage.width = width;
 	gDP.colorImage.height = 0;
 	gDP.colorImage.address = address;
+
+	frameBufferList().saveBuffer(address, (u16)format, (u16)size, (u16)width, false);
 
 #ifdef DEBUG_DUMP
 	DebugMsg( DEBUG_NORMAL, "gDPSetColorImage( %s, %s, %i, 0x%08X );\n",
@@ -709,23 +705,22 @@ void gDPFillRectangle( s32 ulx, s32 uly, s32 lrx, s32 lry )
 		// Game may use depth texture as auxilary color texture. Example: Mario Tennis
 		// If color is not depth clear color, that is most likely the case
 		if (gDP.fillColor.color == DepthClearColor) {
-			frameBufferList().fillRDRAM(ulx, uly, lrx, lry);
 			depthBuffer = dbFound;
 			if (config.generalEmulation.enableFragmentDepthWrite == 0) {
-				drawer.clearDepthBuffer(ulx, uly, lrx, lry);
+				drawer.clearDepthBuffer();
 				depthBuffer = dbCleared;
 			} else
-				depthBufferList().clearBuffer(ulx, uly, lrx, lry);
+				depthBufferList().setCleared(true);
 		}
 	} else if (gDP.fillColor.color == DepthClearColor && gDP.otherMode.cycleType == G_CYC_FILL) {
 		depthBuffer = dbFound;
 		depthBufferList().saveBuffer(gDP.colorImage.address);
-		frameBufferList().fillRDRAM(ulx, uly, lrx, lry);
-		if (config.generalEmulation.enableFragmentDepthWrite == 0) {
-			drawer.clearDepthBuffer(ulx, uly, lrx, lry);
+		if (config.generalEmulation.enableFragmentDepthWrite == 0 ||
+			(config.generalEmulation.hacks & hack_Snap) != 0) {
+			drawer.clearDepthBuffer();
 			depthBuffer = dbCleared;
 		} else
-			depthBufferList().clearBuffer(ulx, uly, lrx, lry);
+			depthBufferList().setCleared(true);
 	}
 
 	if (depthBuffer != dbCleared) {
@@ -741,6 +736,9 @@ void gDPFillRectangle( s32 ulx, s32 uly, s32 lrx, s32 lry )
 		}
 		drawer.drawRect(ulx, uly, lrx, lry);
 	}
+
+	if (gDP.otherMode.cycleType == G_CYC_FILL)
+		frameBufferList().fillRDRAM(ulx, uly, lrx, lry);
 
 	frameBufferList().setBufferChanged(f32(lry));
 

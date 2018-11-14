@@ -16,20 +16,28 @@
 
 using namespace graphics;
 
-DepthBuffer::DepthBuffer() : m_address(0), m_width(0), m_ulx(0), m_uly(0), m_lrx(0), m_lry(0),
-	m_pDepthImageZTexture(nullptr), m_pDepthImageDeltaZTexture(nullptr), m_pDepthBufferTexture(nullptr),
-	m_depthRenderbufferWidth(0), m_cleared(false), m_pResolveDepthBufferTexture(nullptr), m_resolved(false),
-	m_pDepthBufferCopyTexture(nullptr), m_copied(false)
+DepthBuffer::DepthBuffer()
+	: m_address(0)
+	, m_width(0)
+	, m_pDepthImageZTexture(nullptr)
+	, m_pDepthImageDeltaZTexture(nullptr)
+	, m_pDepthBufferTexture(nullptr)
+	, m_depthRenderbufferWidth(0)
+	, m_cleared(false)
+	, m_pResolveDepthBufferTexture(nullptr)
+	, m_resolved(false)
+	, m_pDepthBufferCopyTexture(nullptr)
+	, m_copied(false)
 {
 	m_copyFBO = gfxContext.createFramebuffer();
-	if (config.frameBufferEmulation.N64DepthCompare != 0) {
-	}
 }
 
 DepthBuffer::~DepthBuffer()
 {
 	gfxContext.deleteFramebuffer(m_depthRenderbuffer);
 	gfxContext.deleteFramebuffer(m_copyFBO);
+	gfxContext.deleteFramebuffer(m_ZTextureClearFBO);
+	gfxContext.deleteFramebuffer(m_DeltaZTextureClearFBO);
 
 	textureCache().removeFrameBufferTexture(m_pDepthImageZTexture);
 	textureCache().removeFrameBufferTexture(m_pDepthImageDeltaZTexture);
@@ -38,7 +46,7 @@ DepthBuffer::~DepthBuffer()
 	textureCache().removeFrameBufferTexture(m_pDepthBufferCopyTexture);
 }
 
-void DepthBuffer::_initDepthImageTexture(FrameBuffer * _pBuffer, CachedTexture& _cachedTexture)
+void DepthBuffer::_initDepthImageTexture(FrameBuffer * _pBuffer, CachedTexture& _cachedTexture, graphics::ObjectHandle & _clearFBO)
 {
 	const FramebufferTextureFormats & fbTexFormat = gfxContext.getFramebufferTextureFormats();
 
@@ -79,6 +87,15 @@ void DepthBuffer::_initDepthImageTexture(FrameBuffer * _pBuffer, CachedTexture& 
 		params.magFilter = textureParameters::FILTER_NEAREST;
 		gfxContext.setTextureParameters(params);
 	}
+	{
+		Context::FrameBufferRenderTarget targetParams;
+		targetParams.bufferHandle = _clearFBO;
+		targetParams.bufferTarget = bufferTarget::DRAW_FRAMEBUFFER;
+		targetParams.attachment = bufferAttachment::COLOR_ATTACHMENT0;
+		targetParams.textureHandle = _cachedTexture.name;
+		targetParams.textureTarget = textureTarget::TEXTURE_2D;
+		gfxContext.addFrameBufferRenderTarget(targetParams);
+	}
 }
 
 void DepthBuffer::initDepthImageTexture(FrameBuffer * _pBuffer)
@@ -87,14 +104,14 @@ void DepthBuffer::initDepthImageTexture(FrameBuffer * _pBuffer)
 		return;
 
 	m_pDepthImageZTexture = textureCache().addFrameBufferTexture(false);
+	m_ZTextureClearFBO = gfxContext.createFramebuffer();
 	m_pDepthImageDeltaZTexture = textureCache().addFrameBufferTexture(false);
+	m_DeltaZTextureClearFBO = gfxContext.createFramebuffer();
 
-	_initDepthImageTexture(_pBuffer, *m_pDepthImageZTexture);
-	_initDepthImageTexture(_pBuffer, *m_pDepthImageDeltaZTexture);
+	_initDepthImageTexture(_pBuffer, *m_pDepthImageZTexture, m_ZTextureClearFBO);
+	_initDepthImageTexture(_pBuffer, *m_pDepthImageDeltaZTexture, m_DeltaZTextureClearFBO);
 
-	gfxContext.bindFramebuffer(bufferTarget::DRAW_FRAMEBUFFER, _pBuffer->m_FBO);
-
-	depthBufferList().clearBuffer(0, 0, _pBuffer->m_width, _pBuffer->m_height);
+	depthBufferList().clearBuffer();
 }
 
 void DepthBuffer::_initDepthBufferTexture(FrameBuffer * _pBuffer, CachedTexture * _pTexture, bool _multisample)
@@ -387,10 +404,10 @@ void DepthBufferList::destroy()
 	m_list.clear();
 }
 
-void DepthBufferList::setNotCleared()
+void DepthBufferList::setCleared(bool _cleared)
 {
 	for (DepthBuffers::iterator iter = m_list.begin(); iter != m_list.end(); ++iter)
-		iter->m_cleared = false;
+		iter->m_cleared = _cleared;
 }
 
 DepthBuffer * DepthBufferList::findBuffer(u32 _address)
@@ -442,7 +459,11 @@ void DepthBufferList::saveBuffer(u32 _address)
 	if (pFrameBuffer != nullptr)
 		pFrameBuffer->m_isDepthBuffer = true;
 
-	DepthBuffer * pDepthBuffer = findBuffer(_address);
+	DepthBuffer * pDepthBuffer = nullptr;
+	if (pFrameBuffer != nullptr && pFrameBuffer->m_startAddress != _address)
+		pDepthBuffer = findBuffer(pFrameBuffer->m_startAddress);
+	else
+		pDepthBuffer = findBuffer(_address);
 
 	if (pDepthBuffer != nullptr && pFrameBuffer != nullptr && pDepthBuffer->m_width != pFrameBuffer->m_width) {
 		removeBuffer(_address);
@@ -464,20 +485,54 @@ void DepthBufferList::saveBuffer(u32 _address)
 	DepthBuffer * pCurrent = m_pCurrent;
 	m_pCurrent = pDepthBuffer;
 	frameBufferList().attachDepthBuffer();
+	if (pFrameBuffer == nullptr)
+		clearBuffer();
 	if (pDepthBuffer->m_address != gDP.depthImageAddress)
 		m_pCurrent = pCurrent;
 }
 
-void DepthBufferList::clearBuffer(u32 _ulx, u32 _uly, u32 _lrx, u32 _lry)
+void DepthBufferList::clearBuffer()
 {
-	if (m_pCurrent == nullptr)
-		return;
+	if (m_pCurrent != nullptr)
+		m_pCurrent->m_cleared = true;
 
-	m_pCurrent->m_cleared = true;
-	m_pCurrent->m_ulx = _ulx;
-	m_pCurrent->m_uly = _uly;
-	m_pCurrent->m_lrx = _lrx;
-	m_pCurrent->m_lry = _lry;
+	if (config.frameBufferEmulation.enable == 0 || config.frameBufferEmulation.N64DepthCompare == 0) {
+		gfxContext.clearDepthBuffer();
+		return;
+	}
+
+	// Clear depth image texture
+	FrameBuffer * pColorBuffer = frameBufferList().getCurrent();
+	if (pColorBuffer == nullptr || pColorBuffer->m_pDepthBuffer == nullptr)
+		return;
+	DepthBuffer * pDepthBuffer = pColorBuffer->m_pDepthBuffer;
+
+	//if (pColorBuffer->m_pTexture->realWidth == pDepthBuffer->m_pDepthImageZTexture->realWidth) 
+	{
+		gfxContext.bindFramebuffer(bufferTarget::DRAW_FRAMEBUFFER, pDepthBuffer->m_ZTextureClearFBO);
+		gfxContext.clearColorBuffer(1.0f, 0.0f, 0.0f, 0.0f);
+
+		gfxContext.bindFramebuffer(bufferTarget::DRAW_FRAMEBUFFER, pDepthBuffer->m_DeltaZTextureClearFBO);
+		gfxContext.clearColorBuffer(1.0f, 0.0f, 0.0f, 0.0f);
+	}
+	//else {
+	//	gDP.rectColor.g = gDP.rectColor.b = gDP.rectColor.a = 0.0f;
+	//	u32 cycleType = gDP.otherMode.cycleType;
+	//	u32 fillcolor = gDP.fillColor.color;
+	//	gDP.otherMode.cycleType = G_CYC_FILL;
+	//	gDP.fillColor.color = 0;
+	//	const int lrx = pColorBuffer->m_width;
+	//	const int lry = VI_GetMaxBufferHeight(pColorBuffer->m_width);
+	//	gDP.rectColor.r = 1.0f;
+	//	gfxContext.bindFramebuffer(bufferTarget::DRAW_FRAMEBUFFER, pDepthBuffer->m_ZTextureClearFBO);
+	//	dwnd().getDrawer().drawRect(0, 0, lrx, lry);
+	//	gDP.rectColor.r = 0.0f;
+	//	gfxContext.bindFramebuffer(bufferTarget::DRAW_FRAMEBUFFER, pDepthBuffer->m_DeltaZTextureClearFBO);
+	//	dwnd().getDrawer().drawRect(0, 0, lrx, lry);
+	//	gDP.otherMode.cycleType = cycleType;
+	//	gDP.fillColor.color = fillcolor;
+	//}
+	frameBufferList().setCurrentDrawBuffer();
 }
 
 void DepthBuffer_Init()

@@ -121,7 +121,7 @@ public:
 
 	void showMessage(std::string _message, Milliseconds _interval);
 
-	void clearDepthBuffer(u32 _ulx, u32 _uly, u32 _lrx, u32 _lry);
+	void clearDepthBuffer();
 
 	void clearColorBuffer(float * _pColor);
 

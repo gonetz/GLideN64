@@ -2,6 +2,7 @@
 #include <N64.h>
 #include <FrameBuffer.h>
 #include <gDP.h>
+#include <GBI.h>
 #include <Config.h>
 #include <PaletteTexture.h>
 #include <ZlutTexture.h>
@@ -301,15 +302,25 @@ namespace glsl {
 				;
 			} else {
 				m_part =
-					"uniform sampler2D uTex0;																						\n"
-					"uniform lowp int uEnableAlphaTest;																				\n"
-					"lowp vec4 uTestColor = vec4(4.0/255.0, 2.0/255.0, 1.0/255.0, 0.0);												\n"
-					"in mediump vec2 vTexCoord0;																					\n"
-					"out lowp vec4 fragColor;																						\n"
-					"void main()																									\n"
-					"{																												\n"
-					"  TEX_FILTER(fragColor, uTex0, vTexCoord0);																	\n"
-					"}																												\n"
+					"uniform sampler2D uTex0;													\n"
+					"uniform lowp int uEnableAlphaTest;											\n"
+					"uniform highp float uPrimDepth;											\n"
+					"lowp vec4 uTestColor = vec4(4.0/255.0, 2.0/255.0, 1.0/255.0, 0.0);			\n"
+					"in mediump vec2 vTexCoord0;												\n"
+					"out lowp vec4 fragColor;													\n"
+					"void main()																\n"
+					"{																			\n"
+					"  TEX_FILTER(fragColor, uTex0, vTexCoord0);								\n"
+					;
+				if (!_glinfo.isGLES2 &&
+					config.generalEmulation.enableFragmentDepthWrite != 0 &&
+					config.frameBufferEmulation.N64DepthCompare == 0) {
+					m_part +=
+						"  gl_FragDepth = uPrimDepth;											\n"
+						;
+				}
+				m_part +=
+					"}																			\n"
 				;
 			}
 		}
@@ -552,6 +563,7 @@ namespace glsl {
 			const ShaderPart * _fragmentHeader)
 			: m_program(0)
 			, m_useProgram(_useProgram)
+			, m_depth(0)
 		{
 			VertexShaderTexturedRect vertexBody(_glinfo);
 			std::stringstream ssVertexShader;
@@ -581,6 +593,7 @@ namespace glsl {
 			glUniform1i(loc, 0);
 			m_textureSizeLoc = glGetUniformLocation(GLuint(m_program), "uTextureSize");
 			m_enableAlphaTestLoc = glGetUniformLocation(GLuint(m_program), "uEnableAlphaTest");
+			m_primDepthLoc = glGetUniformLocation(GLuint(m_program), "uPrimDepth");
 			m_useProgram->useProgram(graphics::ObjectHandle::null);
 		}
 
@@ -593,6 +606,13 @@ namespace glsl {
 		void activate() override
 		{
 			m_useProgram->useProgram(m_program);
+			if (m_primDepthLoc >= 0) {
+				const GLfloat depth = gDP.otherMode.depthSource == G_ZS_PRIM ? gDP.primDepth.z : 0.0f;
+				if (depth != m_depth) {
+					m_depth = depth;
+					glUniform1f(m_primDepthLoc, m_depth);
+				}
+			}
 			gDP.changed |= CHANGED_COMBINE;
 		}
 
@@ -617,6 +637,8 @@ namespace glsl {
 		opengl::CachedUseProgram * m_useProgram;
 		GLint m_enableAlphaTestLoc;
 		GLint m_textureSizeLoc;
+		GLint m_primDepthLoc;
+		GLfloat m_depth;
 	};
 
 	typedef SpecialShader<VertexShaderTexturedRect, TexrectDrawerFragmentClear> TexrectDrawerShaderClear;

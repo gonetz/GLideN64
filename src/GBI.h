@@ -27,13 +27,14 @@
 #define F3DZEX2MM		18
 #define F3DTEXA			19
 #define T3DUX			20
-#define F3DEX2ACCLAIM		21
+#define F3DEX2ACCLAIM	21
 #define F3DAM			22
 #define F3DFLX2			23
 #define ZSortBOSS		24
 #define F5Rogue			25
-#define F5Indi_Naboo		26
-#define NONE			27
+#define F5Indi_Naboo	26
+#define S2DEX_1_03		27
+#define NONE			28
 
 // Fixed point conversion factors
 #define FIXED2FLOATRECIP1	0.5f
@@ -235,8 +236,10 @@ extern u32 G_MWO_aLIGHT_8, G_MWO_bLIGHT_8;
 #define G_IM_SIZ_32b	3
 #define G_IM_SIZ_DD		5
 
-#define G_TX_MIRROR		0x1
-#define G_TX_CLAMP		0x2
+#define G_TX_NOMIRROR			0x00	// 0 << 0
+#define G_TX_MIRROR				0x01
+#define G_TX_WRAP				0x00	// 0 << 1
+#define G_TX_CLAMP				0x02
 
 #define G_NOOP					0x00
 
@@ -500,6 +503,7 @@ struct MicrocodeInfo
 	u16 dataSize;
 	u32 type;
 	bool NoN = false;
+	bool cullBoth = true;
 	bool negativeY = true;
 	bool fast3DPersp = false;
 	bool texturePersp = true;
@@ -519,6 +523,7 @@ struct GBIInfo
 	bool isHWLSupported() const;
 	void setHWLSupported(bool _supported);
 	bool isNoN() const { return m_pCurrent != nullptr ? m_pCurrent->NoN : false; }
+	bool isCullBoth() const { return m_pCurrent != nullptr ? m_pCurrent->cullBoth : false; }
 	bool isNegativeY() const { return m_pCurrent != nullptr ? m_pCurrent->negativeY : true; }
 	bool isTexturePersp() const { return m_pCurrent != nullptr ? m_pCurrent->texturePersp: true; }
 	bool isCombineMatrices() const { return m_pCurrent != nullptr ? m_pCurrent->combineMatrices: false; }

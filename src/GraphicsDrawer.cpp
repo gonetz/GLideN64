@@ -101,7 +101,7 @@ void GraphicsDrawer::_updateCullFace() const
 	if (gSP.geometryMode & G_CULL_BOTH) {
 		gfxContext.enable(enable::CULL_FACE, true);
 
-		if ((gSP.geometryMode & G_CULL_BOTH) == G_CULL_BOTH)
+		if ((gSP.geometryMode & G_CULL_BOTH) == G_CULL_BOTH && GBI.isCullBoth())
 			gfxContext.cullFace(cullMode::FRONT_AND_BACK);
 		else if ((gSP.geometryMode & G_CULL_BACK) == G_CULL_BACK)
 			gfxContext.cullFace(cullMode::BACK);
@@ -188,22 +188,31 @@ void _adjustScissorX(f32 & _X0, f32 & _X1, float _scale)
 	_X1 = (_X1 - halfX) * _scale + halfX;
 }
 
+inline
+s32 roundup(f32 _v, f32 _scale)
+{
+	return static_cast<s32>(floorf(_v * _scale + 0.5f));
+}
+
 void GraphicsDrawer::updateScissor(FrameBuffer * _pBuffer) const
 {
 	DisplayWindow & wnd = DisplayWindow::get();
 	f32 scaleX, scaleY;
+	f32 offsetX = 0.0f, offsetY = 0.0f;
 	if (_pBuffer == nullptr) {
 		scaleX = wnd.getScaleX();
 		scaleY = wnd.getScaleY();
 	} else {
 		scaleX = _pBuffer->m_scale;
 		scaleY = _pBuffer->m_scale;
+		offsetX = f32(_pBuffer->m_originX);
+		offsetY = f32(_pBuffer->m_originY);
 	}
 
-	f32 SX0 = gDP.scissor.ulx;
-	f32 SX1 = gDP.scissor.lrx;
-	f32 SY0 = gDP.scissor.uly;
-	f32 SY1 = gDP.scissor.lry;
+	f32 SX0 = gDP.scissor.ulx + offsetX;
+	f32 SX1 = gDP.scissor.lrx + offsetX;
+	f32 SY0 = gDP.scissor.uly + offsetY;
+	f32 SY1 = gDP.scissor.lry + offsetY;
 
 	if (u32(SX1) == 512 && (config.generalEmulation.hacks & hack_RE2) != 0) {
 		SX1 = f32(*REG.VI_WIDTH);
@@ -213,8 +222,8 @@ void GraphicsDrawer::updateScissor(FrameBuffer * _pBuffer) const
 	if (_needAdjustCoordinate(wnd))
 		_adjustScissorX(SX0, SX1, wnd.getAdjustScale());
 
-	gfxContext.setScissor((s32)(SX0 * scaleX), (s32)(SY0 * scaleY),
-		std::max((s32)((SX1 - SX0) * scaleX), 0), std::max((s32)((SY1 - SY0) * scaleY), 0));
+	gfxContext.setScissor(roundup(SX0, scaleX), roundup(SY0, scaleY),
+		std::max(roundup(SX1 - SX0, scaleX), 0), std::max(roundup(SY1 - SY0, scaleY), 0));
 
 	gDP.changed &= ~CHANGED_SCISSOR;
 }
@@ -245,12 +254,15 @@ void GraphicsDrawer::_updateViewport() const
 		const f32 scaleX = pCurrentBuffer->m_scale;
 		const f32 scaleY = pCurrentBuffer->m_scale;
 		float Xf = gSP.viewport.vscale[0] < 0 ? (gSP.viewport.x + gSP.viewport.vscale[0] * 2.0f) : gSP.viewport.x;
+		Xf += f32(pCurrentBuffer->m_originX);
 		if (_needAdjustCoordinate(wnd))
 			Xf = _adjustViewportX(Xf);
-		const s32 X = (s32)(Xf * scaleX);
-		const s32 Y = gSP.viewport.vscale[1] < 0 ? (s32)((gSP.viewport.y + gSP.viewport.vscale[1] * 2.0f) * scaleY) : (s32)(gSP.viewport.y * scaleY);
+		const s32 X = roundup(Xf, scaleX);
+		float Yf = gSP.viewport.vscale[1] < 0 ? (gSP.viewport.y + gSP.viewport.vscale[1] * 2.0f) : gSP.viewport.y;
+		Yf += f32(pCurrentBuffer->m_originY);
+		const s32 Y = roundup(Yf, scaleY);
 		gfxContext.setViewport(X, Y,
-			std::max((s32)(gSP.viewport.width * scaleX), 0), std::max((s32)(gSP.viewport.height * scaleY), 0));
+			std::max(roundup(gSP.viewport.width, scaleX), 0), std::max(roundup(gSP.viewport.height, scaleY), 0));
 	}
 	gSP.changed &= ~CHANGED_VIEWPORT;
 }
@@ -262,6 +274,7 @@ void GraphicsDrawer::_updateScreenCoordsViewport(const FrameBuffer * _pBuffer) c
 
 	u32 bufferWidth, bufferHeight;
 	f32 viewportScaleX, viewportScaleY;
+	s32 X = 0, Y = 0;
 	if (pCurrentBuffer == nullptr) {
 		bufferWidth = VI.width;
 		bufferHeight = VI.height;
@@ -271,9 +284,11 @@ void GraphicsDrawer::_updateScreenCoordsViewport(const FrameBuffer * _pBuffer) c
 		bufferWidth = pCurrentBuffer->m_width;
 		bufferHeight = VI_GetMaxBufferHeight(bufferWidth);
 		viewportScaleX = viewportScaleY = pCurrentBuffer->m_scale;
+		X = roundup(f32(pCurrentBuffer->m_originX), viewportScaleX);
+		Y = roundup(f32(pCurrentBuffer->m_originY), viewportScaleY);
 	}
 
-	gfxContext.setViewport(0, 0, (s32)(bufferWidth * viewportScaleX), (s32)(bufferHeight * viewportScaleY));
+	gfxContext.setViewport(X, Y, roundup(f32(bufferWidth), viewportScaleX), roundup(f32(bufferHeight), viewportScaleY));
 	gSP.changed |= CHANGED_VIEWPORT;
 }
 
@@ -659,9 +674,7 @@ void GraphicsDrawer::_updateStates(DrawingState _drawingState) const
 
 	if (isCurrentColorImageDepthImage() &&
 		config.generalEmulation.enableFragmentDepthWrite != 0 &&
-		config.frameBufferEmulation.N64DepthCompare == 0 &&
-		(config.generalEmulation.hacks & hack_ZeldaMM) == 0
-		) {
+		config.frameBufferEmulation.N64DepthCompare == 0) {
 		// Current render target is depth buffer.
 		// Shader will set gl_FragDepth to shader color, see ShaderCombiner ctor
 		// Here we enable depth buffer write.
@@ -1015,7 +1028,9 @@ bool texturedRectDepthBufferCopy(const GraphicsDrawer::TexturedRectParams & _par
 	// Works only with depth buffer emulation enabled.
 	// Load of arbitrary data to that area causes weird camera rotation in CBFD.
 	const gDPTile * pTile = gSP.textureTile[0];
-	if (pTile->loadType == LOADTYPE_BLOCK && gDP.textureImage.size == 2 && gDP.textureImage.address >= gDP.depthImageAddress &&  gDP.textureImage.address < (gDP.depthImageAddress + gDP.colorImage.width*gDP.colorImage.width * 6 / 4)) {
+	if (pTile->loadType == LOADTYPE_BLOCK && gDP.textureImage.size == 2 &&
+		gDP.textureImage.address >= gDP.depthImageAddress &&
+		gDP.textureImage.address < (gDP.depthImageAddress + gDP.colorImage.width*gDP.scissor.lry*2)) {
 		if (config.frameBufferEmulation.copyDepthToRDRAM == Config::cdDisable)
 			return true;
 		FrameBuffer * pBuffer = frameBufferList().getCurrent();
@@ -1158,7 +1173,7 @@ void GraphicsDrawer::drawTexturedRect(const TexturedRectParams & _params)
 	const FrameBuffer * pCurrentBuffer = _params.pBuffer;
 	DisplayWindow & wnd = dwnd();
 	TextureCache & cache = textureCache();
-	const bool bUseBilinear = (gDP.otherMode.textureFilter | (gSP.objRendermode&G_OBJRM_BILERP)) != 0;
+	const bool bUseBilinear = gDP.otherMode.textureFilter != 0;
 	const bool bUseTexrectDrawer = config.generalEmulation.enableNativeResTexrects != 0
 		&& bUseBilinear
 		&& pCurrentCombiner->usesTexture()
@@ -1514,14 +1529,12 @@ void GraphicsDrawer::_removeOSDMessage(OSDMessages::iterator _iter, Milliseconds
 	m_osdMessages.erase(_iter);
 }
 
-void GraphicsDrawer::clearDepthBuffer(u32 _ulx, u32 _uly, u32 _lrx, u32 _lry)
+void GraphicsDrawer::clearDepthBuffer()
 {
 	if (!_canDraw())
 		return;
 
-	depthBufferList().clearBuffer(_ulx, _uly, _lrx, _lry);
-
-	gfxContext.clearDepthBuffer();
+	depthBufferList().clearBuffer();
 
 	_updateDepthUpdate();
 }

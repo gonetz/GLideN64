@@ -36,7 +36,9 @@ FrameBuffer::FrameBuffer()
 	, m_size(0)
 	, m_width(0)
 	, m_height(0)
-	, m_validityChecked(0)
+	, m_originX(0)
+	, m_originY(0)
+	, m_swapCount(0)
 	, m_scale(0)
 	, m_copiedToRdram(false)
 	, m_fingerprint(false)
@@ -56,6 +58,7 @@ FrameBuffer::FrameBuffer()
 	, m_copied(false)
 	, m_pFrameBufferCopyTexture(nullptr)
 	, m_copyFBO(ObjectHandle::defaultFramebuffer)
+	, m_validityChecked(0)
 {
 	m_loadTileOrigin.uls = m_loadTileOrigin.ult = 0;
 	m_pTexture = textureCache().addFrameBufferTexture(config.video.multisampling != 0);
@@ -155,17 +158,6 @@ void FrameBuffer::_setAndAttachTexture(ObjectHandle _fbo, CachedTexture *_pTextu
 	_setAndAttachBufferTexture(_fbo, _pTexture, _t, _multisampling);
 }
 
-bool FrameBuffer::_isMarioTennisScoreboard() const
-{
-	if ((config.generalEmulation.hacks&hack_scoreboard) != 0) {
-		if (VI.PAL)
-			return m_startAddress == 0x13b480 || m_startAddress == 0x26a530;
-		else
-			return m_startAddress == 0x13ba50 || m_startAddress == 0x264430;
-	}
-	return (config.generalEmulation.hacks&hack_scoreboardJ) != 0 && (m_startAddress == 0x134080 || m_startAddress == 0x1332f8);
-}
-
 bool FrameBuffer::isAuxiliary() const
 {
 	return m_width != VI.width;
@@ -173,7 +165,6 @@ bool FrameBuffer::isAuxiliary() const
 
 void FrameBuffer::init(u32 _address, u16 _format, u16 _size, u16 _width, bool _cfb)
 {
-	DisplayWindow & wnd = dwnd();
 	m_startAddress = _address;
 	m_width = _width;
 	m_height = _cfb ? VI.height : 1;
@@ -185,11 +176,12 @@ void FrameBuffer::init(u32 _address, u16 _format, u16 _size, u16 _width, bool _c
 	} else if (config.frameBufferEmulation.nativeResFactor != 0 && config.frameBufferEmulation.enable != 0) {
 		m_scale = static_cast<float>(config.frameBufferEmulation.nativeResFactor);
 	} else {
-		m_scale = wnd.getScaleX();
+		m_scale = dwnd().getScaleX();
 	}
 	m_cfb = _cfb;
 	m_cleared = false;
 	m_fingerprint = false;
+	m_swapCount = dwnd().getBuffersSwapCount();
 
 	const u16 maxHeight = VI_GetMaxBufferHeight(_width);
 	_initTexture(_width, maxHeight, _format, _size, m_pTexture);
@@ -208,7 +200,7 @@ void FrameBuffer::init(u32 _address, u16 _format, u16 _size, u16 _width, bool _c
 	} else
 		_setAndAttachTexture(m_FBO, m_pTexture, 0, false);
 
-	gfxContext.clearColorBuffer(0.0f, 0.0f, 0.0f, 0.0f);
+//	gfxContext.clearColorBuffer(0.0f, 0.0f, 0.0f, 0.0f);
 }
 
 void FrameBuffer::updateEndAddress()
@@ -704,30 +696,75 @@ void FrameBufferList::saveBuffer(u32 _address, u16 _format, u16 _size, u16 _widt
 		m_pCurrent->m_readable = true;
 		m_pCurrent->updateEndAddress();
 
-		if (!m_pCurrent->_isMarioTennisScoreboard() &&
-			!m_pCurrent->m_isDepthBuffer &&
+		if (!m_pCurrent->m_isDepthBuffer &&
 			!m_pCurrent->m_copiedToRdram &&
 			!m_pCurrent->m_cfb &&
-			!m_pCurrent->m_cleared
-			&& m_pCurrent->m_RdramCopy.empty()
-			&& m_pCurrent->m_height > 1) {
+			!m_pCurrent->m_cleared &&
+			m_pCurrent->m_RdramCopy.empty() &&
+			m_pCurrent->m_height > 1) {
 			m_pCurrent->copyRdram();
 		}
 
 		removeIntersections();
 	}
 
+	const float scaleX = config.frameBufferEmulation.nativeResFactor == 0 ?
+		wnd.getScaleX() :
+		static_cast<float>(config.frameBufferEmulation.nativeResFactor);
+
 	if (m_pCurrent == nullptr || m_pCurrent->m_startAddress != _address || m_pCurrent->m_width != _width)
 		m_pCurrent = findBuffer(_address);
-	const float scaleX = config.frameBufferEmulation.nativeResFactor == 0 ?
-				wnd.getScaleX() :
-				static_cast<float>(config.frameBufferEmulation.nativeResFactor);
-	if (m_pCurrent != nullptr) {
-		if ((m_pCurrent->m_startAddress != _address) ||
-			(m_pCurrent->m_width != _width) ||
-			(m_pCurrent->m_size < _size) ||
-			(m_pCurrent->m_scale != scaleX))
+
+	auto isSubBuffer = [_address, _width, _size, &wnd](const FrameBuffer * _pBuffer) -> bool
+	{
+		if (_pBuffer->m_swapCount == wnd.getBuffersSwapCount() &&
+			!_pBuffer->m_cfb &&
+			_pBuffer->m_width == _width &&
+			_pBuffer->m_size == _size)
 		{
+			const u32 stride = _width << _size >> 1;
+			const u32 diffFromStart = _address - _pBuffer->m_startAddress;
+			if (diffFromStart % stride != 0)
+				return true;
+			const u32 diffFromEnd = _pBuffer->m_endAddress - _address + 1;
+			if ((diffFromEnd / stride > 5))
+				return true;
+		}
+		return false;
+	};
+
+	auto isOverlappingBuffer = [_address, _width, _size](const FrameBuffer * _pBuffer) -> bool
+	{
+		if (_pBuffer->m_width == _width && _pBuffer->m_size == _size) {
+			const u32 stride = _width << _size >> 1;
+			const u32 diffEnd = _pBuffer->m_endAddress - _address + 1;
+			if ((diffEnd / stride < 5))
+				return true;
+		}
+		return false;
+	};
+
+	if (m_pCurrent != nullptr) {
+		m_pCurrent->m_originX = m_pCurrent->m_originY = 0;
+		if ((m_pCurrent->m_startAddress != _address)) {
+			if (isSubBuffer(m_pCurrent)) {
+				const u32 stride = _width << _size >> 1;
+				const u32 addrOffset = _address - m_pCurrent->m_startAddress;
+				m_pCurrent->m_originX = (addrOffset % stride) >> (_size - 1);
+				m_pCurrent->m_originY = addrOffset / stride;
+				gSP.changed |= CHANGED_VIEWPORT;
+				gDP.changed |= CHANGED_SCISSOR;
+				return;
+			} else if (isOverlappingBuffer(m_pCurrent)) {
+				m_pCurrent->m_endAddress = _address - 1;
+				m_pCurrent = nullptr;
+			} else {
+				removeBuffer(m_pCurrent->m_startAddress);
+				m_pCurrent = nullptr;
+			}
+		} else if ((m_pCurrent->m_width != _width) ||
+					(m_pCurrent->m_size < _size) ||
+					(m_pCurrent->m_scale != scaleX)) {
 			removeBuffer(m_pCurrent->m_startAddress);
 			m_pCurrent = nullptr;
 		} else {
@@ -756,9 +793,7 @@ void FrameBufferList::saveBuffer(u32 _address, u16 _format, u16 _size, u16 _widt
 		FrameBuffer & buffer = m_list.front();
 		buffer.init(_address, _format, _size, _width, _cfb);
 		m_pCurrent = &buffer;
-
-		if (m_pCurrent->_isMarioTennisScoreboard() || ((config.generalEmulation.hacks & hack_legoRacers) != 0 && _width == VI.width))
-			RDRAMtoColorBuffer::get().copyFromRDRAM(m_pCurrent->m_startAddress + 4, true);
+		RDRAMtoColorBuffer::get().copyFromRDRAM(m_pCurrent);
 	}
 
 	if (_address == gDP.depthImageAddress)
@@ -774,13 +809,13 @@ void FrameBufferList::saveBuffer(u32 _address, u16 _format, u16 _size, u16 _widt
 		(config.generalEmulation.hacks&hack_LoadDepthTextures) == 0) {
 		// N64 games may use partial depth buffer clear for aux buffers
 		// It will not work for GL, so we have to force clear depth buffer for aux buffer
-		const DepthBuffer * pDepth = m_pCurrent->m_pDepthBuffer;
-		wnd.getDrawer().clearDepthBuffer(pDepth->m_ulx, pDepth->m_uly, pDepth->m_lrx, pDepth->m_lry);
+		wnd.getDrawer().clearDepthBuffer();
 	}
 
 	m_pCurrent->m_isDepthBuffer = _address == gDP.depthImageAddress;
 	m_pCurrent->m_isPauseScreen = m_pCurrent->m_isOBScreen = false;
 	m_pCurrent->m_copied = false;
+	m_pCurrent->m_swapCount = wnd.getBuffersSwapCount();
 }
 
 void FrameBufferList::copyAux()
@@ -977,7 +1012,7 @@ void FrameBufferList::_renderScreenSizeBuffer()
 	wnd.swapBuffers();
 	gfxContext.bindFramebuffer(bufferTarget::DRAW_FRAMEBUFFER, pBuffer->m_FBO);
 	if (config.frameBufferEmulation.forceDepthBufferClear != 0) {
-		gfxContext.clearDepthBuffer();
+		drawer.clearDepthBuffer();
 	}
 	gDP.changed |= CHANGED_SCISSOR;
 }
@@ -1448,7 +1483,7 @@ void FrameBufferList::renderBuffer()
 		gfxContext.bindFramebuffer(bufferTarget::DRAW_FRAMEBUFFER, m_pCurrent->m_FBO);
 	}
 	if (config.frameBufferEmulation.forceDepthBufferClear != 0) {
-		gfxContext.clearDepthBuffer();
+		drawer.clearDepthBuffer();
 	}
 
 	const s32 X = hOffset;
@@ -1463,6 +1498,10 @@ void FrameBufferList::renderBuffer()
 void FrameBufferList::fillRDRAM(s32 ulx, s32 uly, s32 lrx, s32 lry)
 {
 	if (m_pCurrent == nullptr)
+		return;
+
+	if (config.frameBufferEmulation.copyFromRDRAM !=0 && !m_pCurrent->m_isDepthBuffer)
+		// Do not write to RDRAM color buffer if copyFromRDRAM enabled.
 		return;
 
 	ulx = (s32)min(max((float)ulx, gDP.scissor.ulx), gDP.scissor.lrx);

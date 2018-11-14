@@ -5,6 +5,8 @@
 #include "VI.h"
 #include "Graphics/Context.h"
 #include "DisplayWindow.h"
+#include "PluginAPI.h"
+#include "FrameBuffer.h"
 
 void DisplayWindow::start()
 {
@@ -54,6 +56,23 @@ void DisplayWindow::saveScreenshot()
 		return;
 	_saveScreenshot();
 	m_bCaptureScreen = false;
+}
+
+void DisplayWindow::saveBufferContent(FrameBuffer * _pBuffer)
+{
+	saveBufferContent(_pBuffer->m_FBO, _pBuffer->m_pTexture);
+}
+
+void DisplayWindow::saveBufferContent(graphics::ObjectHandle _fbo, CachedTexture *_pTexture)
+{
+	if (wcslen(m_strScreenDirectory) == 0) {
+		api().FindPluginPath(m_strScreenDirectory);
+		std::wstring pluginPath(m_strScreenDirectory);
+		if (pluginPath.back() != L'/')
+			pluginPath += L'/';
+		::wcsncpy(m_strScreenDirectory, pluginPath.c_str(), pluginPath.length() + 1);
+	}
+	_saveBufferContent(_fbo, _pTexture);
 }
 
 bool DisplayWindow::changeWindow()

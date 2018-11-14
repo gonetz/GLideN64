@@ -8,6 +8,10 @@
 
 /******************Turbo3D microcode*************************/
 
+#define GT_FLAG_NOMTX		0x01	/* don't load the matrix */
+#define GT_FLAG_NO_XFM		0x02	/* load vtx, use verbatim */
+#define GT_FLAG_XFM_ONLY	0x04	/* xform vtx, write to *TriN */
+
 struct T3DGlobState
 {
 	u16 pad0;
@@ -41,12 +45,36 @@ struct T3DState
 	u32 othermode1;
 };
 
-
 struct T3DTriN
 {
 	u8	flag, v2, v1, v0;	/* flag is which one for flat shade */
 };
 
+struct VtxOut {
+	s16 yscrn; /* x,y screen coordinates are SSSS10.2 */
+	s16 xscrn;
+	s32 zscrn; /* z screen is S15.16 */
+
+	s16 t;
+	s16 s;
+
+	union {
+		struct
+		{
+			u8 a;
+			u8 b;
+			u8 g;
+			u8 r;
+		} color;
+		struct
+		{
+			s8 a;
+			s8 z;	// b
+			s8 y;	//g
+			s8 x;	//r
+		} normal;
+	};
+};
 
 static
 void Turbo3D_ProcessRDP(u32 _cmds)
@@ -108,25 +136,49 @@ void Turbo3D_LoadObject(u32 pstate, u32 pvtx, u32 ptri)
 
 	gSPSetGeometryMode(ostate->renderState);
 
-	if ((ostate->flag&1) == 0) //load matrix
+	if (ostate->flag != GT_FLAG_NOMTX)
 		gSPForceMatrix(pstate + sizeof(T3DState));
 
 	gSPClearGeometryMode(G_LIGHTING);
 	gSPClearGeometryMode(G_FOG);
 	gSPSetGeometryMode(G_SHADING_SMOOTH);
-	if (pvtx != 0) //load vtx
+
+	if (pvtx != 0)
 		gSPVertex(pvtx, ostate->vtxCount, ostate->vtxV0);
 
 	Turbo3D_ProcessRDP(ostate->rdpCmds);
 
+	GraphicsDrawer & drawer = dwnd().getDrawer();
 	if (ptri != 0) {
 		addr = RSP_SegmentToPhysical(ptri);
-		for (int t = 0; t < ostate->triCount; ++t) {
-			T3DTriN * tri = (T3DTriN*)&RDRAM[addr];
-			addr += 4;
-			gSPTriangle(tri->v0, tri->v1, tri->v2);
+		if (ostate->flag != GT_FLAG_NO_XFM) {
+			for (int t = 0; t < ostate->triCount; ++t) {
+				T3DTriN * tri = (T3DTriN*)&RDRAM[addr];
+				addr += 4;
+				gSPTriangle(tri->v0, tri->v1, tri->v2);
+			}
+			drawer.drawTriangles();
+		} else {
+			const u32 vtxAddr = RSP_SegmentToPhysical(pvtx);
+			const VtxOut *pVertices = (VtxOut*)&RDRAM[vtxAddr];
+			for (u32 i = 0; i < ostate->vtxCount; ++i) {
+				SPVertex & vtx = drawer.getVertex(i);
+				vtx.x = _FIXED2FLOAT(pVertices[i].xscrn, 2);
+				vtx.y = _FIXED2FLOAT(pVertices[i].yscrn, 2);
+				vtx.z = _FIXED2FLOAT(pVertices[i].zscrn, 16);
+				vtx.w = 1.0f;
+			}
+			for (int t = 0; t < ostate->triCount; ++t) {
+				T3DTriN * tri = (T3DTriN*)&RDRAM[addr];
+				addr += 4;
+				u32 vtxIdx[3] = { tri->v0, tri->v1, tri->v2 };
+				for (u32 i = 0; i < 3; ++i) {
+					SPVertex & vtx = drawer.getCurrentDMAVertex();
+					vtx = drawer.getVertex(vtxIdx[i]);
+				}
+			}
+			drawer.drawScreenSpaceTriangle(drawer.getDMAVerticesCount(), graphics::drawmode::TRIANGLES);
 		}
-		dwnd().getDrawer().drawTriangles();
 	}
 }
 

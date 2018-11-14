@@ -31,6 +31,7 @@ private:
 	void _stop() override;
 	void _swapBuffers() override;
 	void _saveScreenshot() override;
+	void _saveBufferContent(graphics::ObjectHandle _fbo, CachedTexture *_pTexture) override;
 	bool _resizeWindow() override;
 	void _changeWindow() override;
 	void _readScreen(void **_pDest, long *_pWidth, long *_pHeight) override {}
@@ -122,6 +123,10 @@ void DisplayWindowMupen64plus::_swapBuffers()
 }
 
 void DisplayWindowMupen64plus::_saveScreenshot()
+{
+}
+
+void DisplayWindowMupen64plus::_saveBufferContent(graphics::ObjectHandle /*_fbo*/, CachedTexture* /*_pTexture*/)
 {
 }
 
