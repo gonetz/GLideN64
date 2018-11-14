@@ -1,6 +1,6 @@
 #include "GLFunctions.h"
 
-#ifdef _WIN32
+#ifdef OS_WINDOWS
 
 #define glGetProcAddress wglGetProcAddress
 #define GL_GET_PROC_ADR(proc_type, proc_name) g_##proc_name = (proc_type) glGetProcAddress(#proc_name)
@@ -61,7 +61,7 @@ static void* IOSGLGetProcAddress (const char *name)
 
 //GL Fucntions
 
-#ifdef _WIN32
+#ifdef OS_WINDOWS
 PFNGLACTIVETEXTUREPROC g_glActiveTexture;
 PFNGLBLENDCOLORPROC g_glBlendColor;
 #elif defined(EGL) || defined(OS_IOS)
@@ -205,7 +205,7 @@ void initGLFunctions()
 #elif defined(VERO4K)
        void *gles2so = dlopen("/opt/vero3/lib/libGLESv2.so", RTLD_NOW);
 #endif
-#ifdef _WIN32
+#ifdef OS_WINDOWS
 	GL_GET_PROC_ADR(PFNGLACTIVETEXTUREPROC, glActiveTexture);
 	GL_GET_PROC_ADR(PFNGLBLENDCOLORPROC, glBlendColor);
 #elif defined(EGL) || defined(OS_IOS)

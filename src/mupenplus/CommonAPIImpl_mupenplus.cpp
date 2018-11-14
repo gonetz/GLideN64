@@ -67,7 +67,7 @@ void PluginAPI::FindPluginPath(wchar_t * _strPath)
 {
 	if (_strPath == nullptr)
 		return;
-#ifdef _WIN32
+#ifdef OS_WINDOWS
 	GetModuleFileNameW(nullptr, _strPath, PLUGIN_PATH_SIZE);
 	_cutLastPathSeparator(_strPath);
 #elif defined(OS_LINUX)

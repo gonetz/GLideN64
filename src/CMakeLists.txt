@@ -202,6 +202,7 @@ endif(MINGW)
 if(WIN32)
   list(APPEND GLideN64_SOURCES ${GLideN64_SOURCES_WIN})
   add_definitions(
+    -DOS_WINDOWS
     -D__WIN32__
     -DWIN32
     -D_WIN32_ASM

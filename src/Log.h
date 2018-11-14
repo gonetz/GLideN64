@@ -22,7 +22,7 @@ void LOG(u16 type, const char * format, ...);
 
 #endif
 
-#if defined(_WIN32) && !defined(MINGW)
+#if defined(OS_WINDOWS) && !defined(MINGW)
 void debugPrint(const char * format, ...);
 #else
 #define debugPrint(A, ...)

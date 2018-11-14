@@ -24,7 +24,7 @@
 #ifndef __EXT_TXFILTER_H__
 #define __EXT_TXFILTER_H__
 
-#ifdef _WIN32
+#ifdef OS_WINDOWS
 #include <windows.h>
 #define TXHMODULE HMODULE
 #define DLOPEN(a) LoadLibraryW(a)
@@ -140,7 +140,7 @@ typedef void (*dispInfoFuncExt)(const wchar_t *format, ...);
 
 /* dll exports */
 /* Use TXFilter as a library. Define exported functions. */
-#ifdef _WIN32
+#ifdef OS_WINDOWS
 #ifdef TXFILTER_LIB
 #define TAPI __declspec(dllexport)
 #define TAPIENTRY
@@ -148,7 +148,7 @@ typedef void (*dispInfoFuncExt)(const wchar_t *format, ...);
 #define TAPI
 #define TAPIENTRY
 #endif
-#else // _WIN32
+#else // OS_WINDOWS
 #ifdef TXFILTER_LIB
 #define TAPI __attribute__((visibility("default")))
 #define TAPIENTRY
@@ -156,7 +156,7 @@ typedef void (*dispInfoFuncExt)(const wchar_t *format, ...);
 #define TAPI
 #define TAPIENTRY
 #endif
-#endif // _WIN32
+#endif // OS_WINDOWS
 
 #ifdef TXFILTER_DLL
 typedef unsigned char  uint8;

@@ -51,7 +51,7 @@
 
 Glide64Keys::Glide64Keys()
 {
-#ifdef _WIN32
+#ifdef OS_WINDOWS
 m_keys[G64_VK_CONTROL] = 0x11;
 m_keys[G64_VK_ALT]     = 0x12;
 m_keys[G64_VK_INSERT]  = 0x2D;
@@ -121,7 +121,7 @@ m_keys[G64_VK_W]       = 119;
 bool isKeyPressed(int _key, int _mask)
 {
 	static Glide64Keys g64Keys;
-#ifdef _WIN32
+#ifdef OS_WINDOWS
 #ifdef MUPENPLUSAPI
 	return (GetAsyncKeyState(g64Keys[_key]) & _mask) != 0;
 #else
