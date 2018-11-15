@@ -79,7 +79,8 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug' And '$(Platform)'=='Win32'">
     <Lib>
-      <AdditionalLibraryDirectories>lib/dbg</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories Condition="'$(MSBuildAssemblyVersion)'=='12.0'">lib/msvc12/dbg</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories Condition="'$(MSBuildAssemblyVersion)'!='12.0'">lib/dbg</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug' And '$(Platform)'=='x64'">
@@ -103,7 +104,8 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="('$(Configuration)'=='Release') And '$(Platform)'=='Win32'">
     <Lib>
-      <AdditionalLibraryDirectories>lib/rel</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories Condition="'$(MSBuildAssemblyVersion)'=='12.0'">lib/msvc12/rel</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories Condition="'$(MSBuildAssemblyVersion)'!='12.0'">lib/rel</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="('$(Configuration)'=='Release') And '$(Platform)'=='x64'">
