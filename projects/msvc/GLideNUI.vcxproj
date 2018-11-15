@@ -64,7 +64,7 @@
     </ClCompile>
     <Lib>
       <AdditionalLibraryDirectories>$(QTDIR)\lib;$(QTDIR)\plugins\platforms;$(QTDIR)\plugins\imageformats</AdditionalLibraryDirectories>
-      <AdditionalDependencies>imm32.lib;Ws2_32.lib</AdditionalDependencies>
+      <AdditionalDependencies>imm32.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug'">
@@ -76,7 +76,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Lib>
-      <AdditionalDependencies>qtpcred.lib;qtmaind.lib;qwindowsd.lib;qicod.lib;qtharfbuzzngd.lib;Qt5Cored.lib;Qt5Guid.lib;Qt5Widgetsd.lib;Qt5PlatformSupportd.lib</AdditionalDependencies>
+      <AdditionalDependencies>qtpcred.lib;qtmaind.lib;qwindowsd.lib;qicod.lib;qtharfbuzzngd.lib;Qt5Cored.lib;Qt5Guid.lib;Qt5Widgetsd.lib;Qt5PlatformSupportd.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
     <Link>
       <AdditionalDependencies>Qt5UiToolsd.lib;Qt5WinExtrasd.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -91,7 +91,7 @@
       <WholeProgramOptimization>true</WholeProgramOptimization>
     </ClCompile>
     <Lib>
-      <AdditionalDependencies>qtpcre.lib;qtmain.lib;qwindows.lib;qico.lib;qtharfbuzzng.lib;Qt5Core.lib;Qt5Gui.lib;Qt5Widgets.lib;Qt5PlatformSupport.lib</AdditionalDependencies>
+      <AdditionalDependencies>qtpcre.lib;qtmain.lib;qwindows.lib;qico.lib;qtharfbuzzng.lib;Qt5Core.lib;Qt5Gui.lib;Qt5Widgets.lib;Qt5PlatformSupport.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
     <Link>
       <AdditionalDependencies>Qt5UiTools.lib;Qt5WinExtras.lib;%(AdditionalDependencies)</AdditionalDependencies>
