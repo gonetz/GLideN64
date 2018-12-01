@@ -997,8 +997,6 @@ void runCommand(u32 w0, u32 w1)
 	GBI.cmd[_SHIFTR(w0, 24, 8)](w0, w1);
 };
 
-#define USE_TEXRECTDRAWER_BG1CYC
-
 static
 void BG1CycNew(u32 _bgAddr)
 {
@@ -1157,10 +1155,9 @@ void BG1CycNew(u32 _bgAddr)
 		runCommand((G_SETTILESIZE<<24), 0);
 	}
 
-#ifdef USE_TEXRECTDRAWER_BG1CYC
-	GraphicsDrawer & drawer = dwnd().getDrawer();
-	drawer.setBackgroundDrawingMode(true);
-#endif
+	if (config.generalEmulation.enableNativeResTexrects != 0)
+		dwnd().getDrawer().setBackgroundDrawingMode(true);
+
 	//Part two
 	{
 
@@ -1344,13 +1341,13 @@ void BG1CycNew(u32 _bgAddr)
 	}
 
 	RSP.LLE = false;
-#ifdef USE_TEXRECTDRAWER_BG1CYC
-	drawer.flush();
-	drawer.setBackgroundDrawingMode(false);
-#endif
-}
 
-#define USE_TEXRECTDRAWER_BGCOPY
+	if (config.generalEmulation.enableNativeResTexrects != 0) {
+		GraphicsDrawer & drawer = dwnd().getDrawer();
+		drawer.flush();
+		drawer.setBackgroundDrawingMode(false);
+	}
+}
 
 static
 void BGCopyNew(u32 _bgAddr)
@@ -1428,10 +1425,8 @@ void BGCopyNew(u32 _bgAddr)
 	s16 AT = Ch;
 	s16 U = A1 - A2;
 
-#ifdef USE_TEXRECTDRAWER_BGCOPY
-	GraphicsDrawer & drawer = dwnd().getDrawer();
-	drawer.setBackgroundDrawingMode(true);
-#endif
+	if (config.generalEmulation.enableNativeResTexrects != 0)
+		dwnd().getDrawer().setBackgroundDrawingMode(true);
 
 	u32 V, X, Y, Z, AA, w0, w1;
 	u16 S5, BB;
@@ -1530,10 +1525,11 @@ void BGCopyNew(u32 _bgAddr)
 	}
 
 	RSP.LLE = false;
-#ifdef USE_TEXRECTDRAWER_BGCOPY
-	drawer.flush();
-	drawer.setBackgroundDrawingMode(false);
-#endif
+	if (config.generalEmulation.enableNativeResTexrects != 0) {
+		GraphicsDrawer & drawer = dwnd().getDrawer();
+		drawer.flush();
+		drawer.setBackgroundDrawingMode(false);
+	}
 }
 
 void S2DEX_BG_1Cyc(u32 w0, u32 w1)
