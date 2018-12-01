@@ -351,6 +351,11 @@ bool CheckForFrameBufferTexture(u32 _address, u32 _width, u32 _bytes)
 			}
 		}
 
+		if (gDP.otherMode.textureLUT == G_TT_RGBA16) {
+			bRes = false;
+			break;
+		}
+
 		if (pBuffer->m_cfb) {
 			fbList.removeBuffer(pBuffer->m_startAddress);
 			bRes = false;
