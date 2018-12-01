@@ -297,10 +297,8 @@ bool TexrectDrawer::draw()
 	if (m_numRects == 0)
 		return false;
 
-	const u64 otherMode = gDP.otherMode._u64;
-	const gDPScissor scissor = gDP.scissor;
-	gDP.scissor = m_scissor;
-	gDP.otherMode._u64 = m_otherMode;
+	ValueKeeper<u64> otherMode(gDP.otherMode._u64, m_otherMode);
+	ValueKeeper<gDPScissor> scissor(gDP.scissor, m_scissor);
 	DisplayWindow & wnd = dwnd();
 	GraphicsDrawer &  drawer = wnd.getDrawer();
 	drawer._setBlendMode();
@@ -420,8 +418,6 @@ bool TexrectDrawer::draw()
 
 	m_numRects = 0;
 	m_vecRectCoords.clear();
-	gDP.otherMode._u64 = otherMode;
-	gDP.scissor = scissor;
 	gDP.changed |= CHANGED_COMBINE | CHANGED_SCISSOR | CHANGED_RENDERMODE;
 	gSP.changed |= CHANGED_VIEWPORT | CHANGED_TEXTURE | CHANGED_GEOMETRYMODE;
 

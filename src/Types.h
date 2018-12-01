@@ -40,4 +40,25 @@ typedef double				f64;	/* double prec floating point */
 #define PLUGIN_PATH_SIZE 260
 #endif
 
+template <typename T>
+class ValueKeeper
+{
+public:
+	ValueKeeper(T& _obj, T _newVal)
+		: m_obj(_obj)
+		, m_val(_obj)
+	{
+		m_obj = _newVal;
+	}
+
+	~ValueKeeper()
+	{
+		m_obj = m_val;
+	}
+
+private:
+	T & m_obj;
+	T m_val;
+};
+
 #endif // TYPES_H
