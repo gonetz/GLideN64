@@ -1004,7 +1004,7 @@ void BG1CycNew(u32 _bgAddr)
 	const u32 imagePtr = RSP_SegmentToPhysical(objBg.imagePtr);
 	gDP.otherMode.cycleType = G_CYC_1CYCLE;
 	gDP.changed |= CHANGED_CYCLETYPE;
-	RSP.LLE = true;
+	ValueKeeper<bool> otherMode(RSP.LLE, true);
 
 	s32 E2_1;
 	u16 F1_1;
@@ -1340,8 +1340,6 @@ void BG1CycNew(u32 _bgAddr)
 	}
 	}
 
-	RSP.LLE = false;
-
 	if (config.generalEmulation.enableNativeResTexrects != 0) {
 		GraphicsDrawer & drawer = dwnd().getDrawer();
 		drawer.flush();
@@ -1357,7 +1355,7 @@ void BGCopyNew(u32 _bgAddr)
 	const u32 imagePtr = RSP_SegmentToPhysical(objBg.imagePtr);
 	gDP.otherMode.cycleType = G_CYC_COPY;
 	gDP.changed |= CHANGED_CYCLETYPE;
-	RSP.LLE = true;
+	ValueKeeper<bool> otherMode(RSP.LLE, true);
 
 	// Step 2
 	s16 Aw = std::max(0, objBg.frameX + objBg.frameW - gDP.scissor.xl);
@@ -1524,7 +1522,6 @@ void BGCopyNew(u32 _bgAddr)
 		}
 	}
 
-	RSP.LLE = false;
 	if (config.generalEmulation.enableNativeResTexrects != 0) {
 		GraphicsDrawer & drawer = dwnd().getDrawer();
 		drawer.flush();
