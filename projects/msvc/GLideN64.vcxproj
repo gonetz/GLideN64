@@ -185,8 +185,10 @@ copy /Y "$(OutDir)$(TargetName).*" "$(N64PluginsDir)" )</Command>
     </ClCompile>
     <PostBuildEvent>
       <Message>Copy result to plugins folder</Message>
-      <Command>if NOT "$(Mupen64PluginsDir)" == "" (if not exist "$(Mupen64PluginsDir)" mkdir "$(Mupen64PluginsDir)"
+      <Command Condition="'$(Platform)'=='Win32'">if NOT "$(Mupen64PluginsDir)" == "" (if not exist "$(Mupen64PluginsDir)" mkdir "$(Mupen64PluginsDir)"
 copy /Y "$(OutDir)$(TargetName).*" "$(Mupen64PluginsDir)")</Command>
+      <Command Condition="'$(Platform)'=='x64'">if NOT "$(Mupen64PluginsDir_x64)" == "" (if not exist "$(Mupen64PluginsDir_x64)" mkdir "$(Mupen64PluginsDir_x64)"
+copy /Y "$(OutDir)$(TargetName).*" "$(Mupen64PluginsDir_x64)")</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug'">
