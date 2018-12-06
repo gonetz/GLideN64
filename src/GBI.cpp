@@ -392,6 +392,7 @@ void GBIInfo::loadMicrocode(u32 uc_start, u32 uc_dstart, u16 uc_dsize)
 				type = F3D;
 			} else if (strncmp(&uc_str[4], "Gfx", 3) == 0) {
 				current.NoN = (strstr( uc_str + 4, ".NoN") != nullptr);
+				current.Rej = (strstr(uc_str + 4, ".Rej") != nullptr);
 
 				if (strncmp( &uc_str[14], "F3D", 3 ) == 0) {
 					if (uc_str[28] == '1' || strncmp(&uc_str[28], "0.95", 4) == 0 || strncmp(&uc_str[28], "0.96", 4) == 0)

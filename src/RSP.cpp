@@ -221,6 +221,8 @@ void RSP_SetDefaultState()
 	gSP.matrix.modelView[0][2][2] = 1.0f;
 	gSP.matrix.modelView[0][3][3] = 1.0f;
 
+	gSP.clipRatio = 1U;
+
 	gDP.otherMode._u64 = 0U;
 	gDP.otherMode.bi_lerp0 = gDP.otherMode.bi_lerp1 = 1;
 }

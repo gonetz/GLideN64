@@ -132,6 +132,8 @@ struct gSPInfo
 
 	u32 tri_num;
 
+	u32 clipRatio;
+
 	// CBFD
 	u32 vertexNormalBase;
 	f32 vertexCoordMod[16];
@@ -172,7 +174,7 @@ void gSPCullDisplayList( u32 v0, u32 vn );
 void gSPPopMatrix( u32 param );
 void gSPPopMatrixN( u32 param, u32 num );
 void gSPSegment( s32 seg, s32 base );
-void gSPClipRatio( u32 r );
+void gSPClipRatio( u32 ratio );
 void gSPInsertMatrix( u32 where, u32 num );
 void gSPModifyVertex(u32 _vtx, u32 _where, u32 _val );
 void gSPNumLights( s32 n );

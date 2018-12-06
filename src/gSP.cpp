@@ -74,6 +74,10 @@ void gSPTriangle(s32 v0, s32 v1, s32 v2)
 			DebugMsg(DEBUG_NORMAL, "Triangle clipped (%i, %i, %i)\n", v0, v1, v2);
 			return;
 		}
+		if (drawer.isRejected(v0, v1, v2)) {
+			DebugMsg(DEBUG_NORMAL, "Triangle rejected (%i, %i, %i)\n", v0, v1, v2);
+			return;
+		}
 		drawer.addTriangle(v0, v1, v2);
 		DebugMsg(DEBUG_NORMAL, "Triangle #%i added (%i, %i, %i)\n", gSP.tri_num++, v0, v1, v2);
 	}
@@ -1575,9 +1579,10 @@ void gSPSegment( s32 seg, s32 base )
 	DebugMsg(DEBUG_NORMAL, "gSPSegment( %s, 0x%08X );\n", SegmentText[seg], base );
 }
 
-void gSPClipRatio( u32 r )
+void gSPClipRatio(u32 ratio)
 {
-	DebugMsg(DEBUG_NORMAL|DEBUG_IGNORED, "gSPClipRatio(%u);\n", r);
+	gSP.clipRatio = std::abs(static_cast<s16>(ratio & 0xFFFF));
+	DebugMsg(DEBUG_NORMAL, "gSPClipRatio(%u);\n", gSP.clipRatio);
 }
 
 void gSPInsertMatrix( u32 where, u32 num )

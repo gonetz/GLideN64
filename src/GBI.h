@@ -503,6 +503,7 @@ struct MicrocodeInfo
 	u16 dataSize;
 	u32 type;
 	bool NoN = false;
+	bool Rej = false;
 	bool cullBoth = true;
 	bool negativeY = true;
 	bool fast3DPersp = false;
@@ -523,6 +524,7 @@ struct GBIInfo
 	bool isHWLSupported() const;
 	void setHWLSupported(bool _supported);
 	bool isNoN() const { return m_pCurrent != nullptr ? m_pCurrent->NoN : false; }
+	bool isRej() const { return m_pCurrent != nullptr ? m_pCurrent->Rej : false; }
 	bool isCullBoth() const { return m_pCurrent != nullptr ? m_pCurrent->cullBoth : false; }
 	bool isNegativeY() const { return m_pCurrent != nullptr ? m_pCurrent->negativeY : true; }
 	bool isTexturePersp() const { return m_pCurrent != nullptr ? m_pCurrent->texturePersp: true; }

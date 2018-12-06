@@ -1547,6 +1547,37 @@ void GraphicsDrawer::clearColorBuffer(float *_pColor)
 		gfxContext.clearColorBuffer(0.0f, 0.0f, 0.0f, 0.0f);
 }
 
+bool GraphicsDrawer::isRejected(s32 _v0, s32 _v1, s32 _v2) const
+{
+	if (!GBI.isRej())
+		return false;
+
+	static gDPScissor rejectBox;
+	if (gDP.changed & CHANGED_SCISSOR) {
+		const f32 scissorWidth2 = (gDP.scissor.lrx - gDP.scissor.ulx) * (gSP.clipRatio - 1) * 0.5f;
+		const f32 scissorHeight2 = (gDP.scissor.lry - gDP.scissor.uly) * (gSP.clipRatio - 1) * 0.5f;
+		rejectBox.ulx = gDP.scissor.ulx - scissorWidth2;
+		rejectBox.lrx = gDP.scissor.lrx + scissorWidth2;
+		rejectBox.uly = gDP.scissor.uly - scissorHeight2;
+		rejectBox.lry = gDP.scissor.lry + scissorHeight2;
+	}
+	s32 verts[3] = { _v0, _v1, _v2 };
+	for (u32 i = 0; i < 3; ++i) {
+		const SPVertex & v = triangles.vertices[verts[i]];
+		const f32 sx = gSP.viewport.vtrans[0] + (v.x / v.w) * gSP.viewport.vscale[0];
+		if (sx < rejectBox.ulx)
+			return true;
+		if (sx > rejectBox.lrx)
+			return true;
+		const f32 sy = gSP.viewport.vtrans[1] + (v.y / v.w) * gSP.viewport.vscale[1];
+		if (sy < rejectBox.uly)
+			return true;
+		if (sy > rejectBox.lry)
+			return true;
+	}
+	return false;
+}
+
 void GraphicsDrawer::copyTexturedRect(const CopyRectParams & _params)
 {
 	m_drawingState = DrawingState::TexRect;
