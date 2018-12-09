@@ -794,6 +794,8 @@ void FrameBufferList::saveBuffer(u32 _address, u16 _format, u16 _size, u16 _widt
 		buffer.init(_address, _format, _size, _width, _cfb);
 		m_pCurrent = &buffer;
 		RDRAMtoColorBuffer::get().copyFromRDRAM(m_pCurrent);
+		if (_cfb)
+			m_pCurrent->copyRdram();
 	}
 
 	if (_address == gDP.depthImageAddress)
