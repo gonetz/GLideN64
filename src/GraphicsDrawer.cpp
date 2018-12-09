@@ -1553,13 +1553,14 @@ bool GraphicsDrawer::isRejected(s32 _v0, s32 _v1, s32 _v2) const
 		return false;
 
 	static gDPScissor rejectBox;
-	if (gDP.changed & CHANGED_SCISSOR) {
+	if ((gDP.changed & CHANGED_REJECT_BOX) != 0) {
 		const f32 scissorWidth2 = (gDP.scissor.lrx - gDP.scissor.ulx) * (gSP.clipRatio - 1) * 0.5f;
 		const f32 scissorHeight2 = (gDP.scissor.lry - gDP.scissor.uly) * (gSP.clipRatio - 1) * 0.5f;
 		rejectBox.ulx = gDP.scissor.ulx - scissorWidth2;
 		rejectBox.lrx = gDP.scissor.lrx + scissorWidth2;
 		rejectBox.uly = gDP.scissor.uly - scissorHeight2;
 		rejectBox.lry = gDP.scissor.lry + scissorHeight2;
+		gDP.changed ^= CHANGED_REJECT_BOX;
 	}
 	s32 verts[3] = { _v0, _v1, _v2 };
 	for (u32 i = 0; i < 3; ++i) {

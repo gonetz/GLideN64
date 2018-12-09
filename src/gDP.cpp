@@ -675,7 +675,7 @@ void gDPSetScissor( u32 mode, f32 ulx, f32 uly, f32 lrx, f32 lry )
 	gDP.scissor.lrx = lrx;
 	gDP.scissor.lry = lry;
 
-	gDP.changed |= CHANGED_SCISSOR;
+	gDP.changed |= CHANGED_SCISSOR | CHANGED_REJECT_BOX;
 
 #ifdef DEBUG_DUMP
 	DebugMsg( DEBUG_NORMAL, "gDPSetScissor( %s, %.2f, %.2f, %.2f, %.2f );\n",
