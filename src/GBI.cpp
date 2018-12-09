@@ -75,7 +75,7 @@ std::vector<SpecialMicrocodeInfo> specialMicrocodes =
 	{ ZSortBOSS,	false,	false,	false,	0x75ed44cc }, // World Driver Championship, European
 	{ F3D,			true,	false,	true,	0x77195a68 }, // Dark Rift
 	{ L3D,			true,	true,	true,	0x771ce0c4 }, // RSP SW Version: 2.0D, 04-01-96 Blast Corps
-	{ F3D,			false,	false,	true,	0x7d372819 }, // Super Mario 64, Pachinko nichi 365
+	{ F3D,			false,	false,	false,	0x7d372819 }, // Pachinko nichi 365
 	{ F3DDKR,		false,	true,	true,	0x8d91244f }, // Diddy Kong Racing
 	{ F3DBETA,		false,	true,	true,	0x94c4c833 }, // Star Wars Shadows of Empire
 	{ S2DEX,		false,	true,	false,	0x9df31081 }, // RSP Gfx ucode S2DEX  1.06 Yoshitaka Yasumoto Nintendo
