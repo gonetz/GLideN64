@@ -1346,7 +1346,7 @@ void FrameBufferList::renderBuffer()
 		XoffsetLeft = addrOffset % rdpRes.vi_width;
 	}
 
-	if (rdpRes.vi_lowerfield) {
+	if (rdpRes.vi_lowerfield && rdpRes.vi_width > 320) {
 		if (srcY0 > 0)
 			--srcY0;
 		if (dstY0 > 0)
