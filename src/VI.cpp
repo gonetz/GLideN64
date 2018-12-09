@@ -103,6 +103,8 @@ void VI_UpdateScreen()
 	if (VI.lastOrigin == -1) // Workaround for Mupen64Plus issue with initialization
 		gfxContext.isError();
 
+	DebugMsg(DEBUG_DETAIL, "VI_UpdateScreen Origin: %08x, Old origin: %08x, width: %d\n", *REG.VI_ORIGIN, VI.lastOrigin, *REG.VI_WIDTH);
+
 	if (ConfigOpen)
 		return;
 
