@@ -54,7 +54,7 @@ void Config::resetToDefaults()
 	frameBufferEmulation.copyFromRDRAM = 0;
 	frameBufferEmulation.copyAuxToRDRAM = 0;
 	frameBufferEmulation.copyToRDRAM = ctDoubleBuffer;
-	frameBufferEmulation.N64DepthCompare = 0;
+	frameBufferEmulation.N64DepthCompare = 1;
 	frameBufferEmulation.forceDepthBufferClear = 0;
 	frameBufferEmulation.aspect = a43;
 	frameBufferEmulation.bufferSwapMode = bsOnVerticalInterrupt;
