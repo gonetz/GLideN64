@@ -1957,9 +1957,9 @@ public:
 				;
 			if (_glinfo.imageTextures) {
 				m_part +=
-					"  ivec2 coord = ivec2(gl_FragCoord.xy);				\n"
-					"  highp vec4 depthZ = imageLoad(uDepthImageZ,coord);	\n"
-					"  highp vec4 depthDeltaZ = imageLoad(uDepthImageDeltaZ,coord);\n"
+				"  ivec2 coord = ivec2(gl_FragCoord.xy);				\n"
+				"  highp vec4 depthZ = imageLoad(uDepthImageZ,coord);	\n"
+				"  highp vec4 depthDeltaZ = imageLoad(uDepthImageDeltaZ,coord);\n"
 					;
 			}
 			m_part +=
@@ -1968,14 +1968,14 @@ public:
 				"  if (uDepthSource == 1) {								\n"
 				"     dzMin = dz = uDeltaZ;								\n"
 				"  } else {												\n"
-				"    dz = 4.0*fwidth(curZ);						\n"
+				"    dz = 4.0*fwidth(curZ);								\n"
 				"    dzMin = min(dz, depthDeltaZ.r);					\n"
 				"  }													\n"
 				"  bool bInfront = curZ < bufZ;							\n"
 				"  bool bFarther = (curZ + dzMin) >= bufZ;				\n"
 				"  bool bNearer = (curZ - dzMin) <= bufZ;				\n"
 				"  bool bMax = bufZ == 1.0;								\n"
-				"  bool bRes;											\n"
+				"  bool bRes = false;									\n"
 				"  switch (uDepthMode) {								\n"
 				"     case 1:											\n"
 				"       bRes = bMax || bNearer;							\n"
@@ -1987,30 +1987,26 @@ public:
 				"     case 3:											\n"
 				"       bRes = bFarther && bNearer && !bMax;			\n"
 				"       break;											\n"
-				"     default:											\n"
-				"       bRes = bInfront;								\n"
-				"       break;											\n"
 				"  }													\n"
-				"  if (uEnableDepthUpdate != 0  && bRes) {				\n"
+				"  bRes = bRes || (uEnableDepthCompare == 0);			\n"
+				"  if (uEnableDepthUpdate != 0 && bRes) {				\n"
 				;
 			if (_glinfo.imageTextures) {
 				m_part +=
-					"    highp vec4 depthOutZ = vec4(curZ, 1.0, 1.0, 1.0); \n"
-					"    highp vec4 depthOutDeltaZ = vec4(dz, 1.0, 1.0, 1.0); \n"
-					"    imageStore(uDepthImageZ, coord, depthOutZ);		\n"
-					"    imageStore(uDepthImageDeltaZ, coord, depthOutDeltaZ);	\n"
+				"    highp vec4 depthOutZ = vec4(curZ, 1.0, 1.0, 1.0);		\n"
+				"    highp vec4 depthOutDeltaZ = vec4(dz, 1.0, 1.0, 1.0);	\n"
+				"    imageStore(uDepthImageZ, coord, depthOutZ);			\n"
+				"    imageStore(uDepthImageDeltaZ, coord, depthOutDeltaZ);	\n"
 					;
 			} else if (_glinfo.ext_fetch) {
 				m_part +=
-					"    depthZ.r = curZ;	\n"
-					"    depthDeltaZ.r = dz;	\n"
+				"    depthZ.r = curZ;									\n"
+				"    depthDeltaZ.r = dz;								\n"
 					;
 			}
 			m_part +=
 				"  }													\n"
-				"  if (uEnableDepthCompare != 0)						\n"
-				"    return bRes;										\n"
-				"  return true;											\n"
+				"  return bRes;											\n"
 				"}														\n"
 			;
 		}
