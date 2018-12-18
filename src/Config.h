@@ -110,13 +110,10 @@ struct Config
 		// Overscan
 		u32 enableOverscan;
 		struct {
-			s32 left;
-			s32 right;
-			s32 top;
-			s32 bottom;
-			void init() {
-				left = right = top = bottom = 0;
-			}
+			s32 left = 0;
+			s32 right = 0;
+			s32 top = 0;
+			s32 bottom = 0;
 		} overscanPAL, overscanNTSC;
 	} frameBufferEmulation;
 
