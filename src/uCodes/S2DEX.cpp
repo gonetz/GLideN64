@@ -351,6 +351,11 @@ struct S2DEXCoordCorrector
 			};
 			CorrectorsB03_16 = reinterpret_cast<const s16*>(CorrectorsB03_v1_3);
 			O3 = (_SHIFTL(gSP.objRendermode, 3, 16) & (G_OBJRM_SHRINKSIZE_1 | G_OBJRM_SHRINKSIZE_2 | G_OBJRM_WIDEN)) >> 1;
+			B0 = CorrectorsB03_16[(0 + O3) ^ 1];
+			B2 = CorrectorsB03_16[(2 + O3) ^ 1];
+			B3 = CorrectorsB03_16[(3 + O3) ^ 1];
+			B5 = CorrectorsB03_16[(5 + O3) ^ 1];
+			B7 = CorrectorsB03_16[(7 + O3) ^ 1];
 		} else {
 			static const u32 CorrectorsB03[] = {
 				0xFFFC0000,
@@ -360,13 +365,15 @@ struct S2DEXCoordCorrector
 			};
 			CorrectorsB03_16 = reinterpret_cast<const s16*>(CorrectorsB03);
 			O3 = (gSP.objRendermode & G_OBJRM_BILERP) >> 1;
+			B0 = CorrectorsB03_16[(0 + O3) ^ 1];
+			B2 = CorrectorsB03_16[(2 + O3) ^ 1];
+			B3 = CorrectorsB03_16[(3 + O3) ^ 1];
+			B5 = 0;
+			B7 = 0;
 		}
-		B0 = CorrectorsB03_16[(0 + O3) ^ 1];
-		B2 = CorrectorsB03_16[(2 + O3) ^ 1];
-		B3 = CorrectorsB03_16[(3 + O3) ^ 1];
 	}
 
-	s16 A0, A1, A2, A3, B0, B2, B3;
+	s16 A0, A1, A2, A3, B0, B2, B3, B5, B7;
 };
 
 struct ObjCoordinates
@@ -730,8 +737,12 @@ void gSPObjSprite(u32 _sp)
 	//	X2 = AND (X + B3) by B0 + (((((imageW - A1) * 0x0100)* (0x80007FFF/scaleW)) >> 32+ objX + A3) * A) >> 16  + (((((imageH - A1) * 0x0100)* (0x80007FFF/scaleH)) >> 32 + objY + A3) * B) >> 16
 	//	Y2 = AND (Y + B3) by B0 + (((((imageW - A1) * 0x0100)* (0x80007FFF/scaleW)) >> 32 + objX + A3) * C) >> 16 + (((((imageH - A1) * 0x0100)* (0x80007FFF/scaleH)) >> 32 + objY + A3) * D) >> 16
 	S2DEXCoordCorrector CC;
-	const s16 x0 = (objMtx.X + CC.B3) & CC.B0;
-	const s16 y0 = (objMtx.Y + CC.B3) & CC.B0;
+	const s16 x0 = (gs_s2dexversion == eVer1_3) ?
+					((objMtx.X + CC.B5) & CC.B0) + CC.B7 :
+					((objMtx.X + CC.B3) & CC.B0);
+	const s16 y0 = (gs_s2dexversion == eVer1_3) ?
+					((objMtx.Y + CC.B5) & CC.B0) + CC.B7 :
+					((objMtx.Y + CC.B3) & CC.B0);
 	const s16 ulx = objSprite->objX + CC.A3;
 	const s16 uly = objSprite->objY + CC.A3;
 	const s16 lrx = ((((u64(objSprite->imageW) - CC.A1) << 8) * (0x80007FFFU / u32(objSprite->scaleW))) >> 32) + ulx;
