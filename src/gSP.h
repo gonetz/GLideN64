@@ -134,9 +134,12 @@ struct gSPInfo
 
 	u32 clipRatio;
 
-	// CBFD
-	u32 vertexNormalBase;
-	f32 vertexCoordMod[16];
+	struct
+	{
+		u32 vertexNormalBase;
+		f32 vertexCoordMod[16];
+		bool advancedLighting;
+	} cbfd;
 
 	u32 textureCoordScaleOrg;
 	u32 textureCoordScale[2];
@@ -194,8 +197,6 @@ void gSPSetStatus(u32 sid, u32 val);
 void gSPSetDMAOffsets( u32 mtxoffset, u32 vtxoffset );
 void gSPSetDMATexOffset(u32 _addr);
 void gSPSetVertexColorBase( u32 base );
-void gSPSetVertexNormaleBase( u32 base );
-void gSPCoordMod(u32 _w0, u32 _w1);
 void gSPCombineMatrices(u32 _mode);
 
 void gSPTriangle(s32 v0, s32 v1, s32 v2);

@@ -11,6 +11,7 @@
 #include "gDP.h"
 #include "GBI.h"
 
+static
 void F3DEX2CBFD_Vtx( u32 w0, u32 w1 )
 {
 	u32 n = _SHIFTR( w0, 12, 8 );
@@ -18,6 +19,31 @@ void F3DEX2CBFD_Vtx( u32 w0, u32 w1 )
 	gSPCBFDVertex( w1, n, _SHIFTR( w0, 1, 7 ) - n );
 }
 
+static
+void F3DEX2CBFD_CoordMod(u32 _w0, u32 _w1)
+{
+	DebugMsg(DEBUG_NORMAL, "gSPCoordMod( %u, %u );\n", _w0, _w1);
+	if ((_w0 & 8) != 0)
+		return;
+	u32 idx = _SHIFTR(_w0, 1, 2);
+	u32 pos = _w0 & 0x30;
+	if (pos == 0) {
+		gSP.cbfd.vertexCoordMod[0 + idx] = (f32)(s16)_SHIFTR(_w1, 16, 16);
+		gSP.cbfd.vertexCoordMod[1 + idx] = (f32)(s16)_SHIFTR(_w1, 0, 16);
+	}
+	else if (pos == 0x10) {
+		gSP.cbfd.vertexCoordMod[4 + idx] = _FIXED2FLOAT(_SHIFTR(_w1, 16, 16), 16);
+		gSP.cbfd.vertexCoordMod[5 + idx] = _FIXED2FLOAT(_SHIFTR(_w1, 0, 16), 16);
+		gSP.cbfd.vertexCoordMod[12 + idx] = gSP.cbfd.vertexCoordMod[0 + idx] + gSP.cbfd.vertexCoordMod[4 + idx];
+		gSP.cbfd.vertexCoordMod[13 + idx] = gSP.cbfd.vertexCoordMod[1 + idx] + gSP.cbfd.vertexCoordMod[5 + idx];
+	}
+	else if (pos == 0x20) {
+		gSP.cbfd.vertexCoordMod[8 + idx] = (f32)(s16)_SHIFTR(_w1, 16, 16);
+		gSP.cbfd.vertexCoordMod[9 + idx] = (f32)(s16)_SHIFTR(_w1, 0, 16);
+	}
+}
+
+static
 void F3DEX2CBFD_MoveWord( u32 w0, u32 w1 )
 {
 	switch (_SHIFTR( w0, 16, 8 ))
@@ -38,11 +64,12 @@ void F3DEX2CBFD_MoveWord( u32 w0, u32 w1 )
 			gSPPerspNormalize( w1 );
 			break;
 		case G_MW_COORD_MOD:
-			gSPCoordMod( w0, w1 );
+			F3DEX2CBFD_CoordMod( w0, w1 );
 			break;
 	}
 }
 
+static
 void F3DEX2CBFD_MoveMem( u32 w0, u32 w1 )
 {
 	switch (_SHIFTR( w0, 0, 8 ))
@@ -61,17 +88,25 @@ void F3DEX2CBFD_MoveMem( u32 w0, u32 w1 )
 			}
 			break;
 		case G_MV_NORMALES:
-			gSPSetVertexNormaleBase(w1);
+			gSP.cbfd.vertexNormalBase = RSP_SegmentToPhysical(w1);
+			DebugMsg(DEBUG_NORMAL, "gSPSetVertexNormaleBase( 0x%08X );\n", w1);
 			break;
 	}
 }
 
+static
 void F3DEX2CBFD_Tri4( u32 w0, u32 w1 )
 {
 	gSP4Triangles( _SHIFTR( w0, 23, 5 ), _SHIFTR( w0, 18, 5 ), (_SHIFTR( w0, 15, 3 )<<2)|_SHIFTR( w1, 30, 2 ),
 				   _SHIFTR( w0, 10, 5 ), _SHIFTR( w0,  5, 5 ), _SHIFTR( w0,  0, 5 ),
 				   _SHIFTR( w1, 25, 5 ), _SHIFTR( w1, 20, 5 ), _SHIFTR( w1, 15, 5 ),
 				   _SHIFTR( w1, 10, 5 ), _SHIFTR( w1,  5, 5 ), _SHIFTR( w1,  0, 5 ) );
+}
+
+static
+void F3DEX2CBFD_SwitchLightingMode(u32, u32)
+{
+	gSP.cbfd.advancedLighting = true;
 }
 
 void F3DEX2CBFD_Init()
@@ -90,7 +125,7 @@ void F3DEX2CBFD_Init()
 	GBI_SetGBI( G_SPNOOP,				F3DEX2_SPNOOP,				F3D_SPNoOp );
 	GBI_SetGBI( G_ENDDL,				F3DEX2_ENDDL,				F3D_EndDL );
 	GBI_SetGBI( G_DL,					F3DEX2_DL,					F3D_DList );
-	GBI_SetGBI( G_LOAD_UCODE,			F3DEX2_LOAD_UCODE,			F3DEX_Load_uCode );
+	GBI_SetGBI( G_LOAD_UCODE,			F3DEX2_LOAD_UCODE,			F3DEX2CBFD_SwitchLightingMode );
 	GBI_SetGBI( G_MOVEMEM,				F3DEX2_MOVEMEM,				F3DEX2CBFD_MoveMem );
 	GBI_SetGBI( G_MOVEWORD,				F3DEX2_MOVEWORD,			F3DEX2CBFD_MoveWord );
 	GBI_SetGBI( G_MTX,					F3DEX2_MTX,					F3DEX2_Mtx );
