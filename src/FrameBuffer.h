@@ -170,6 +170,40 @@ private:
 	FrameBuffer * m_pCopy;
 	u32 m_prevColorImageHeight;
 	OverscanBuffer m_overscan;
+
+	struct RdpUpdateResult {
+		u32 vi_vres;
+		u32 vi_hres;
+		u32 vi_v_start;
+		u32 vi_h_start;
+		u32 vi_x_start;
+		u32 vi_y_start;
+		u32 vi_x_add;
+		u32 vi_y_add;
+		u32 vi_width;
+		u32 vi_origin;
+		u32 vi_minhpass;
+		u32 vi_maxhpass;
+		bool vi_lowerfield;
+		bool vi_fsaa;
+		bool vi_divot;
+		bool vi_ispal;
+	};
+
+	class RdpUpdate
+	{
+	public:
+		void init();
+		bool update(RdpUpdateResult & _result);
+
+	private:
+		u32 oldvstart = 0U;
+		u32 prevvicurrent = 0U;
+		bool prevwasblank = false;
+		bool prevserrate = false;
+		bool oldlowerfield = false;
+		s32 emucontrolsvicurrent = -1;
+	} m_rdpUpdate;
 };
 
 inline
