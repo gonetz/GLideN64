@@ -321,6 +321,8 @@ void RSP_Init()
 		config.generalEmulation.hacks |= hack_rectDepthBufferCopyPD;
 	else if (strstr(RSP.romname, (const char *)"Jeremy McGrath Super") != nullptr)
 		config.generalEmulation.hacks |= hack_ModifyVertexXyInShader;
+	else if (strstr(RSP.romname, (const char *)"RAT ATTACK") != nullptr)
+		config.generalEmulation.hacks |= hack_ModifyVertexXyInShader;
 	else if (strstr(RSP.romname, (const char *)"Quake") != nullptr)
 		config.generalEmulation.hacks |= hack_doNotResetOtherModeH|hack_doNotResetOtherModeL;
 	else if (strstr(RSP.romname, (const char *)"QUAKE II") != nullptr ||
