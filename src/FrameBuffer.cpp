@@ -910,9 +910,11 @@ void FrameBufferList::attachDepthBuffer()
 
 		bool goodDepthBufferTexture = false;
 		if (Context::DepthFramebufferTextures) {
-			goodDepthBufferTexture = Context::WeakBlitFramebuffer ?
-				pDepthBuffer->m_pDepthBufferTexture->realWidth == pCurrent->m_pTexture->realWidth :
-				pDepthBuffer->m_pDepthBufferTexture->realWidth >= pCurrent->m_pTexture->realWidth;
+			if (Context::WeakBlitFramebuffer)
+				goodDepthBufferTexture = pDepthBuffer->m_pDepthBufferTexture->realWidth == pCurrent->m_pTexture->realWidth;
+			else
+				goodDepthBufferTexture = pDepthBuffer->m_pDepthBufferTexture->realWidth >= pCurrent->m_pTexture->realWidth ||
+											std::abs((s32)(pCurrent->m_width - pDepthBuffer->m_width)) < 2;
 		} else {
 			goodDepthBufferTexture = pDepthBuffer->m_depthRenderbufferWidth == pCurrent->m_pTexture->realWidth;
 		}
