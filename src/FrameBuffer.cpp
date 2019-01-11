@@ -1298,9 +1298,9 @@ void FrameBufferList::OverscanBuffer::draw(u32 _fullHeight, bool _PAL)
 	const s32 top = static_cast<s32>(overscan.top * m_scale);
 	const s32 bottom = static_cast<s32>(overscan.bottom * m_scale);
 	blitParams.srcX0 = left;
-	blitParams.srcY0 = top;
+	blitParams.srcY0 = static_cast<s32>(_fullHeight * m_scale) - bottom;
 	blitParams.srcX1 = m_bufferWidth - right;
-	blitParams.srcY1 = static_cast<s32>(_fullHeight * m_scale) - bottom;
+	blitParams.srcY1 = top;
 	blitParams.srcWidth = m_pTexture->realWidth;
 	blitParams.srcHeight = m_pTexture->realHeight;
 	blitParams.dstX0 = m_hOffset;
@@ -1314,7 +1314,7 @@ void FrameBufferList::OverscanBuffer::draw(u32 _fullHeight, bool _PAL)
 	blitParams.tex[0] = m_pTexture;
 	blitParams.combiner = CombinerInfo::get().getTexrectCopyProgram();
 	blitParams.readBuffer = m_FBO;
-	blitParams.invertY = true;
+	blitParams.invertY = false;
 
 	gfxContext.clearColorBuffer(0.0f, 0.0f, 0.0f, 0.0f);
 //	drawer.blitOrCopyTexturedRect(blitParams);
