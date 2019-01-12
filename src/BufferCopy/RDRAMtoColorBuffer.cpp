@@ -325,7 +325,7 @@ void RDRAMtoColorBuffer::copyFromRDRAM(FrameBuffer * _pBuffer)
 	m_pCurBuffer = _pBuffer;
 	const u32 height = cutHeight(m_pCurBuffer->m_startAddress,
 		VI_GetMaxBufferHeight(m_pCurBuffer->m_width), m_pCurBuffer->m_width << m_pCurBuffer->m_size >> 1);
-	_copyFromRDRAM(height, false);
+	_copyFromRDRAM(height, true);
 }
 
 void RDRAMtoColorBuffer::reset()
