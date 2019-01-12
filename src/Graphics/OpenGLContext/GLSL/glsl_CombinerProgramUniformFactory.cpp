@@ -611,15 +611,15 @@ public:
 		if (pBuffer == nullptr || pBuffer->m_pDepthBuffer == nullptr)
 			return;
 
-		const int nDepthEnabled = (gSP.geometryMode & G_ZBUFFER) > 0 ? 1 : 0;
-		uEnableDepth.set(nDepthEnabled, _force);
-		if (nDepthEnabled == 0) {
-			uEnableDepthCompare.set(0, _force);
-			uEnableDepthUpdate.set(0, _force);
-		}
-		else {
+		const bool nDepthEnabled = ((gSP.geometryMode & G_ZBUFFER) || gDP.otherMode.depthSource == G_ZS_PRIM) &&
+									gDP.otherMode.cycleType <= G_CYC_2CYCLE;
+		uEnableDepth.set(nDepthEnabled ? 1 : 0, _force);
+		if (nDepthEnabled) {
 			uEnableDepthCompare.set(gDP.otherMode.depthCompare, _force);
 			uEnableDepthUpdate.set(gDP.otherMode.depthUpdate, _force);
+		} else {
+			uEnableDepthCompare.set(0, _force);
+			uEnableDepthUpdate.set(0, _force);
 		}
 		uDepthMode.set(gDP.otherMode.depthMode, _force);
 		uDepthSource.set(gDP.otherMode.depthSource, _force);
