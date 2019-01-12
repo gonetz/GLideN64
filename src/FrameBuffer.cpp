@@ -1362,6 +1362,11 @@ void FrameBufferList::renderBuffer()
 			--dstY0;
 	}
 
+	if ((config.generalEmulation.hacks & hack_LodeRunner) != 0) {
+		srcY0 = 1;
+		XoffsetRight = XoffsetLeft = 0;
+	}
+
 	srcWidth = min(rdpRes.vi_width, (rdpRes.vi_hres * rdpRes.vi_x_add) >> 10);
 	srcHeight = rdpRes.vi_width * ((rdpRes.vi_vres*rdpRes.vi_y_add + rdpRes.vi_y_start) >> 10) / pBuffer->m_width;
 

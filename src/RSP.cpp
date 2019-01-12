@@ -310,8 +310,8 @@ void RSP_Init()
 	else if (strstr(RSP.romname, (const char *)"DOUBUTSUNOMORI") != nullptr ||
 			 strstr(RSP.romname, (const char *)"ANIMAL FOREST") != nullptr)
 		config.generalEmulation.hacks |= hack_subscreen;
-	else if (strstr(RSP.romname, (const char *)"LEGORacers") != nullptr)
-		config.generalEmulation.hacks |= hack_legoRacers;
+	else if (strstr(RSP.romname, (const char *)"Lode Runner 3D") != nullptr)
+		config.generalEmulation.hacks |= hack_LodeRunner;
 	else if (strstr(RSP.romname, (const char *)"Blast") != nullptr)
 		config.generalEmulation.hacks |= hack_blastCorps;
 	else if (strstr(RSP.romname, (const char *)"MASK") != nullptr) // Zelda MM
