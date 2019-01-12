@@ -202,6 +202,7 @@ struct Config
 #define hack_RE2					(1<<19) //RE2 hacks.
 #define hack_ZeldaMonochrome		(1<<20) //Hack for Zeldas monochrome effects.
 #define hack_TonyHawk				(1<<21) //Hack for Tony Hawk blend mode.
+#define hack_WCWNitro				(1<<22) //Hack for WCW Nitro backgrounds.
 
 extern Config config;
 

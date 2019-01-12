@@ -2060,15 +2060,15 @@ void gSPSprite2DBase(u32 _base)
 		f32 lrs = uls + pSprite->imageW - 1;
 		f32 lrt = ult + pSprite->imageH - 1;
 
-		/* Hack for WCW Nitro. TODO : activate it later.
-		if (WCW_NITRO) {
-			gSP.bgImage.height /= scaleY;
-			gSP.bgImage.imageY /= scaleY;
+		// Hack for WCW Nitro.
+		if ((config.generalEmulation.hacks & hack_WCWNitro) != 0) {
+			const u32 scale = u32(scaleY);
+			gSP.bgImage.height /= scale;
+			gSP.bgImage.imageY /= scale;
 			ult /= scaleY;
 			lrt /= scaleY;
-			gSP.bgImage.width *= scaleY;
+			gSP.bgImage.width *= scale;
 		}
-		*/
 
 		GraphicsDrawer & drawer = dwnd().getDrawer();
 		drawer.setDMAVerticesSize(4);

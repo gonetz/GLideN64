@@ -342,6 +342,8 @@ void RSP_Init()
 		config.generalEmulation.hacks |= hack_RE2 | hack_ModifyVertexXyInShader | hack_LoadDepthTextures;
 	else if (strstr(RSP.romname, (const char *)"THPS") != nullptr)
 		config.generalEmulation.hacks |= hack_TonyHawk;
+	else if (strstr(RSP.romname, (const char *)"NITRO64") != nullptr)
+		config.generalEmulation.hacks |= hack_WCWNitro;
 
 	api().FindPluginPath(RSP.pluginpath);
 
