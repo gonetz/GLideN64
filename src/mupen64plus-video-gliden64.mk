@@ -146,7 +146,23 @@ ifeq ($(TARGET_ARCH_ABI), armeabi-v7a)
     MY_LOCAL_CFLAGS += -D__NEON_OPT
     MY_LOCAL_CFLAGS += -D__VEC4_OPT -mfpu=neon
 
+else ifeq ($(TARGET_ARCH_ABI), arm64-v8a)
+    # Use for ARM8a:
+    MY_LOCAL_SRC_FILES += $(SRCDIR)/Neon/3DMathNeon.cpp
+    MY_LOCAL_SRC_FILES += $(SRCDIR)/Neon/gSPNeon.cpp
+    MY_LOCAL_SRC_FILES += $(SRCDIR)/Neon/RSP_LoadMatrixNeon.cpp
+    MY_LOCAL_SRC_FILES += $(SRCDIR)/Neon/CRC_OPT_NEON.cpp
+    MY_LOCAL_CFLAGS += -D__NEON_OPT
+    MY_LOCAL_CFLAGS += -D__VEC4_OPT -mfpu=neon
+
 else ifeq ($(TARGET_ARCH_ABI), x86)
+#    MY_LOCAL_CFLAGS += -DX86_ASM
+    MY_LOCAL_CFLAGS += -D__VEC4_OPT
+    MY_LOCAL_SRC_FILES += $(SRCDIR)/3DMath.cpp
+    MY_LOCAL_SRC_FILES += $(SRCDIR)/RSP_LoadMatrix.cpp
+    MY_LOCAL_SRC_FILES += $(SRCDIR)/CRC_OPT.cpp
+
+else ifeq ($(TARGET_ARCH_ABI), x86_64)
 #    MY_LOCAL_CFLAGS += -DX86_ASM
     MY_LOCAL_CFLAGS += -D__VEC4_OPT
     MY_LOCAL_SRC_FILES += $(SRCDIR)/3DMath.cpp
