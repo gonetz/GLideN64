@@ -1042,11 +1042,11 @@ void FrameBufferList::RdpUpdate::init()
 /* This function was taken from angrylion's code and adopted for my needs */
 bool FrameBufferList::RdpUpdate::update(RdpUpdateResult & _result)
 {
-	static const u32 PRESCALE_WIDTH = 640U;
-	static const u32 PRESCALE_HEIGHT = 625U;
+	static const s32 PRESCALE_WIDTH = 640U;
+	static const s32 PRESCALE_HEIGHT = 625U;
 
-	const u32 x_add = _SHIFTR(*REG.VI_X_SCALE, 0, 12);
-	const u32 y_add = _SHIFTR(*REG.VI_Y_SCALE, 0, 12);
+	const s32 x_add = _SHIFTR(*REG.VI_X_SCALE, 0, 12);
+	const s32 y_add = _SHIFTR(*REG.VI_Y_SCALE, 0, 12);
 	const u32 v_sync = _SHIFTR(*REG.VI_V_SYNC, 0, 10);
 	const bool ispal = (v_sync > 550);
 	const u32 x1 = _SHIFTR( *REG.VI_H_START, 16, 10 );
@@ -1084,8 +1084,8 @@ bool FrameBufferList::RdpUpdate::update(RdpUpdateResult & _result)
 	} else
 		prevserrate = false;
 
-	u32 hres = delta_x;
-	u32 vres = delta_y;
+	s32 hres = delta_x;
+	s32 vres = delta_y;
 	s32 h_start = x1 - (ispal ? 128 : 108);
 	s32 v_start = (y1 - (ispal ? 44 : 34)) / 2;
 	u32 x_start = _SHIFTR(*REG.VI_X_SCALE, 16, 12);
