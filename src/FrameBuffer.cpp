@@ -1424,11 +1424,11 @@ void FrameBufferList::renderBuffer()
 
 	const f32 srcScaleY = pFilteredBuffer->m_scale;
 	CachedTexture * pBufferTexture = pFilteredBuffer->m_pTexture;
-	const s32 cutleft = static_cast<s32>(rdpRes.vi_minhpass * viScaleX);
-	const s32 cutright = static_cast<s32>(rdpRes.vi_maxhpass * viScaleX);
-	s32 srcCoord[4] = { (s32)((XoffsetLeft + cutleft) * srcScaleX),
+	const s32 cutleft = static_cast<s32>(rdpRes.vi_minhpass * viScaleX * srcScaleX);
+	const s32 cutright = static_cast<s32>(rdpRes.vi_maxhpass * viScaleX * srcScaleX);
+	s32 srcCoord[4] = { (s32)((XoffsetLeft) * srcScaleX) + cutleft,
 						(s32)(srcY0*srcScaleY),
-						(s32)((srcWidth + XoffsetLeft - XoffsetRight - cutright) * srcScaleX),
+						(s32)((srcWidth + XoffsetLeft - XoffsetRight) * srcScaleX) - cutright,
 						min((s32)(srcY1*srcScaleY), (s32)pBufferTexture->realHeight) };
 	if (srcCoord[2] > pBufferTexture->realWidth || srcCoord[3] > pBufferTexture->realHeight) {
 		removeBuffer(pBuffer->m_startAddress);
