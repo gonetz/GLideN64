@@ -42,6 +42,8 @@ namespace opengl {
 		static void glDepthMask(GLboolean flag);
 		static void glDisable(GLenum cap);
 		static void glEnable(GLenum cap);
+		static void glDisablei(GLenum target, GLuint index);
+		static void glEnablei(GLenum target, GLuint index);
 		static void glPolygonOffset(GLfloat factor, GLfloat units);
 
 		static void glScissor(GLint x, GLint y, GLsizei width, GLsizei height);
@@ -66,6 +68,7 @@ namespace opengl {
 		static void glDrawElementsUnbuffered(GLenum mode, GLsizei count, GLenum type, std::unique_ptr<indiceType[]> indices, std::unique_ptr<std::vector<char>> data);
 		static void glLineWidth(GLfloat width);
 		static void glClear(GLbitfield mask);
+		static void glClearBufferfv(GLenum buffer, GLint drawbuffer, std::unique_ptr<GLfloat[]> value);
 		static void glGetFloatv(GLenum pname, GLfloat* data);
 		static void glDeleteTextures(GLsizei n, std::unique_ptr<GLuint[]> textures);
 		static void glGenTextures(GLsizei n, GLuint* textures);
@@ -142,6 +145,8 @@ namespace opengl {
 		static void glDeleteBuffers(GLsizei n, std::unique_ptr<GLuint[]> buffers);
 		static void glBindImageTexture(GLuint unit, GLuint texture, GLint level, GLboolean layered, GLint layer, GLenum access, GLenum format);
 		static void glMemoryBarrier(GLbitfield barriers);
+		static void glTextureBarrier(void);
+		static void glTextureBarrierNV(void);
 		static const GLubyte* glGetStringi(GLenum name, GLuint index);
 		static void glInvalidateFramebuffer(GLenum target, GLsizei numAttachments, std::unique_ptr<GLenum[]> attachments);
 		template <class dataType>
@@ -176,7 +181,7 @@ namespace opengl {
 		static void glCreateBuffers(GLsizei n, GLuint* buffers);
 		static void glCreateFramebuffers(GLsizei n, GLuint* framebuffers);
 		static void glNamedFramebufferTexture(GLuint framebuffer, GLenum attachment, GLuint texture, GLint level);
-		static void glDrawElementsBaseVertex(GLenum mode, GLsizei count, GLenum type, const char* indices, GLint basevertex);
+		static void glDrawRangeElementsBaseVertex(GLenum mode, GLuint start, GLuint end, GLsizei count, GLenum type, const u16* indices, GLint basevertex);
 		static void glFlushMappedBufferRange(GLenum target, GLintptr offset, GLsizeiptr length);
 		static void glFinish(void);
 

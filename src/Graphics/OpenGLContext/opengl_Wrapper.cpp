@@ -113,6 +113,22 @@ namespace opengl {
 			g_glEnable(cap);
 	}
 
+	void FunctionWrapper::glDisablei(GLenum target, GLuint index)
+	{
+		if (m_threaded_wrapper)
+			executeCommand(GlDisableiCommand::get(target, index));
+		else
+			g_glDisablei(target, index);
+	}
+
+	void FunctionWrapper::glEnablei(GLenum target, GLuint index)
+	{
+		if (m_threaded_wrapper)
+			executeCommand(GlEnableiCommand::get(target, index));
+		else
+			g_glEnablei(target, index);
+	}
+
 	void FunctionWrapper::glPolygonOffset(GLfloat factor, GLfloat units)
 	{
 		if (m_threaded_wrapper)
@@ -250,6 +266,14 @@ namespace opengl {
 			executeCommand(GlClearCommand::get(mask));
 		else
 			g_glClear(mask);
+	}
+
+	void FunctionWrapper::glClearBufferfv(GLenum buffer, GLint drawbuffer, std::unique_ptr<GLfloat[]> value)
+	{
+		if (m_threaded_wrapper)
+			executeCommand(GlClearBufferfvCommand::get(buffer, drawbuffer, std::move(value)));
+		else
+			g_glClearBufferfv(buffer, drawbuffer, value.get());
 	}
 
 	void FunctionWrapper::glGetFloatv(GLenum pname, GLfloat* data)
@@ -841,6 +865,22 @@ namespace opengl {
 			g_glMemoryBarrier(barriers);
 	}
 
+	void FunctionWrapper::glTextureBarrier(void)
+	{
+		if (m_threaded_wrapper)
+			executeCommand(GlTextureBarrierCommand::get());
+		else
+			g_glTextureBarrier();
+	}
+
+	void FunctionWrapper::glTextureBarrierNV(void)
+	{
+		if (m_threaded_wrapper)
+			executeCommand(GlTextureBarrierNVCommand::get());
+		else
+			g_glTextureBarrierNV();
+	}
+
 	const GLubyte* FunctionWrapper::glGetStringi(GLenum name, GLuint index)
 	{
 		const GLubyte* returnValue;
@@ -1037,12 +1077,13 @@ namespace opengl {
 			g_glNamedFramebufferTexture(framebuffer, attachment, texture, level);
 	}
 
-	void FunctionWrapper::glDrawElementsBaseVertex(GLenum mode, GLsizei count, GLenum type, const char* indices, GLint basevertex)
+	void FunctionWrapper::glDrawRangeElementsBaseVertex(GLenum mode, GLuint start, GLuint end, GLsizei count, GLenum type,
+		const u16* indices, GLint basevertex)
 	{
 		if (m_threaded_wrapper)
-			executeCommand(GlDrawElementsBaseVertexCommand::get(mode, count, type, std::move(indices), basevertex));
+			executeCommand(GlDrawRangeElementsBaseVertexCommand::get(mode, start, end, count, type, std::move(indices), basevertex));
 		else
-			g_glDrawElementsBaseVertex(mode, count, type, std::move(indices), basevertex);
+			g_glDrawRangeElementsBaseVertex(mode, start, end, count, type, std::move(indices), basevertex);
 	}
 
 	void FunctionWrapper::glFlushMappedBufferRange(GLenum target, GLintptr offset, GLsizeiptr length)

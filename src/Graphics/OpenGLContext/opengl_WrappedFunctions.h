@@ -470,6 +470,68 @@ namespace opengl {
 		GLenum m_cap;
 	};
 
+	class GlDisableiCommand : public OpenGlCommand
+	{
+	public:
+		GlDisableiCommand(void) :
+			OpenGlCommand(false, false, "glDisablei")
+		{
+		}
+
+		static std::shared_ptr<OpenGlCommand> get(GLenum target, GLuint index)
+		{
+			static int poolId = OpenGlCommandPool::get().getNextAvailablePool();
+			auto ptr = getFromPool<GlDisableiCommand>(poolId);
+			ptr->set(target, index);
+			return ptr;
+		}
+
+		void commandToExecute(void) override
+		{
+			g_glDisablei(m_target, m_index);
+		}
+	private:
+		void set(GLenum target, GLuint index)
+		{
+			m_target = target;
+			m_index = index;
+		}
+
+		GLenum m_target;
+		GLuint m_index;
+	};
+
+	class GlEnableiCommand : public OpenGlCommand
+	{
+	public:
+		GlEnableiCommand(void) :
+			OpenGlCommand(false, false, "glEnablei")
+		{
+		}
+
+		static std::shared_ptr<OpenGlCommand> get(GLenum target, GLuint index)
+		{
+			static int poolId = OpenGlCommandPool::get().getNextAvailablePool();
+			auto ptr = getFromPool<GlEnableiCommand>(poolId);
+			ptr->set(target, index);
+			return ptr;
+		}
+
+		void commandToExecute(void) override
+		{
+			g_glEnablei(m_target, m_index);
+		}
+	private:
+		void set(GLenum target, GLuint index)
+		{
+			m_target = target;
+			m_index = index;
+		}
+
+		GLenum m_target;
+		GLuint m_index;
+	};
+
 	class GlPolygonOffsetCommand : public OpenGlCommand
 	{
 	public:
@@ -973,16 +1035,19 @@ namespace opengl {
 
 		void commandToExecute(void) override
 		{
-			if (m_attribsData == nullptr) {
-				m_attribsData = std::unique_ptr<char[]>(new char[2*1024*1024]);
+			static bool attribsDataInitialized = false;
+
+			if (!attribsDataInitialized) {
+				m_attribsData.resize(2*1024*1024, 0);
+				attribsDataInitialized = true;
 			}
 
-			g_glVertexAttribPointer(m_index, m_size, m_type, m_normalized, m_stride, (const GLvoid *)(m_attribsData.get()+m_offset));
+			g_glVertexAttribPointer(m_index, m_size, m_type, m_normalized, m_stride, (const GLvoid *)(m_attribsData.data()+m_offset));
 		}
 
-		static char* getDrawingData()
+		static std::vector<char>& getDrawingData()
 		{
-			return m_attribsData.get();
+			return m_attribsData;
 		}
 	private:
 		void set(GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride,
@@ -1003,7 +1068,7 @@ namespace opengl {
 		GLsizei m_stride;
 		std::size_t m_offset;
 
-		static std::unique_ptr<char[]> m_attribsData;
+		static std::vector<char> m_attribsData;
 	};
 
 	class GlDrawArraysUnbufferedCommand : public OpenGlCommand
@@ -1024,8 +1089,8 @@ namespace opengl {
 
 		void commandToExecute(void) override
 		{
-			char* data = GlVertexAttribPointerUnbufferedCommand::getDrawingData();
-			std::copy_n(m_data->data(), m_data->size(), data);
+			std::vector<char>& drawingData = GlVertexAttribPointerUnbufferedCommand::getDrawingData();
+			std::copy_n(m_data->begin(), m_data->size(), drawingData.begin());
 			g_glDrawArrays(m_mode, m_first, m_count);
 		}
 	private:
@@ -1092,8 +1157,8 @@ namespace opengl {
 
 		void commandToExecute(void) override
 		{
-			char* data = GlVertexAttribPointerUnbufferedCommand::getDrawingData();
-			std::copy_n(m_data->data(), m_data->size(), data);
+			std::vector<char>& drawingData = GlVertexAttribPointerUnbufferedCommand::getDrawingData();
+			std::copy_n(m_data->begin(), m_data->size(), drawingData.begin());
 			g_glDrawElements(m_mode, m_count, m_type, m_indices.get());
 		}
 	private:
@@ -1170,6 +1235,39 @@ namespace opengl {
 		}
 
 		GLbitfield m_mask;
+	};
+
+	class GlClearBufferfvCommand : public OpenGlCommand
+	{
+	public:
+		GlClearBufferfvCommand(void) :
+			OpenGlCommand(false, false, "glClearBufferfv")
+		{
+		}
+
+		static std::shared_ptr<OpenGlCommand> get(GLenum buffer, GLint drawbuffer, std::unique_ptr<GLfloat[]> value)
+		{
+			static int poolId = OpenGlCommandPool::get().getNextAvailablePool();
+			auto ptr = getFromPool<GlClearBufferfvCommand>(poolId);
+			ptr->set(buffer, drawbuffer, std::move(value));
+			return ptr;
+		}
+
+		void commandToExecute(void) override
+		{
+			g_glClearBufferfv(m_buffer, m_drawbuffer, m_value.get());
+		}
+	private:
+		void set(GLenum buffer, GLint drawbuffer, std::unique_ptr<GLfloat[]> value)
+		{
+			m_buffer = buffer;
+			m_drawbuffer = drawbuffer;
+			m_value = std::move(value);
+		}
+
+		GLenum m_buffer;
+		GLint m_drawbuffer;
+		std::unique_ptr<GLfloat[]> m_value;
 	};
 
 	class GlGetFloatvCommand : public OpenGlCommand
@@ -3436,6 +3534,58 @@ namespace opengl {
 		GLbitfield m_barriers;
 	};
 
+	class GlTextureBarrierCommand : public OpenGlCommand
+	{
+	public:
+		GlTextureBarrierCommand(void) :
+			OpenGlCommand(false, false, "glTextureBarrier")
+		{
+		}
+
+		static std::shared_ptr<OpenGlCommand> get(void)
+		{
+			static int poolId = OpenGlCommandPool::get().getNextAvailablePool();
+			auto ptr = getFromPool<GlTextureBarrierCommand>(poolId);
+			ptr->set();
+			return ptr;
+		}
+
+		void commandToExecute(void) override
+		{
+			g_glTextureBarrier();
+		}
+	private:
+		void set(void)
+		{
+		}
+	};
+
+	class GlTextureBarrierNVCommand : public OpenGlCommand
+	{
+	public:
+		GlTextureBarrierNVCommand(void) :
+			OpenGlCommand(false, false, "glTextureBarrierNV")
+		{
+		}
+
+		static std::shared_ptr<OpenGlCommand> get(void)
+		{
+			static int poolId = OpenGlCommandPool::get().getNextAvailablePool();
+			auto ptr = getFromPool<GlTextureBarrierNVCommand>(poolId);
+			ptr->set();
+			return ptr;
+		}
+
+		void commandToExecute(void) override
+		{
+			g_glTextureBarrierNV();
+		}
+	private:
+		void set(void)
+		{
+		}
+	};
+
 	class GlGetStringiCommand : public OpenGlCommand
 	{
 	public:
@@ -4396,32 +4546,34 @@ namespace opengl {
 		GLint m_level;
 	};
 
-	class GlDrawElementsBaseVertexCommand : public OpenGlCommand
+	class GlDrawRangeElementsBaseVertexCommand : public OpenGlCommand
 	{
 	public:
-		GlDrawElementsBaseVertexCommand(void) :
-			OpenGlCommand(false, false, "glDrawElementsBaseVertex")
+		GlDrawRangeElementsBaseVertexCommand(void) :
+			OpenGlCommand(false, false, "glDrawRangeElementsBaseVertex")
 		{
 		}
 
-		static std::shared_ptr<OpenGlCommand> get(GLenum mode, GLsizei count, GLenum type, const char* indices,
-			GLint basevertex)
+		static std::shared_ptr<OpenGlCommand> get(GLenum mode, GLuint start, GLuint end, GLsizei count, GLenum type,
+			const u16* indices, GLint basevertex)
 		{
 			static int poolId = OpenGlCommandPool::get().getNextAvailablePool();
-			auto ptr = getFromPool<GlDrawElementsBaseVertexCommand>(poolId);
-			ptr->set(mode, count, type, indices, basevertex);
+			auto ptr = getFromPool<GlDrawRangeElementsBaseVertexCommand>(poolId);
+			ptr->set(mode, start, end, count, type, indices, basevertex);
 			return ptr;
 		}
 
 		void commandToExecute(void) override
 		{
-			g_glDrawElementsBaseVertex(m_mode, m_count, m_type, m_indices, m_basevertex);
+			g_glDrawRangeElementsBaseVertex(m_mode, m_start, m_end, m_count, m_type, m_indices, m_basevertex);
 		}
 	private:
-		void set(GLenum mode, GLsizei count, GLenum type, const char* indices,
-			GLint basevertex)
+		void set(GLenum mode, GLuint start, GLuint end, GLsizei count, GLenum type,
+			const u16* indices, GLint basevertex)
 		{
-			m_mode = mode;
+		    m_mode = mode;
+			m_start = start;
+			m_end = end;
 			m_count = count;
 			m_type = type;
 			m_indices = indices;
@@ -4429,9 +4581,11 @@ namespace opengl {
 		}
 
 		GLenum m_mode;
+		GLuint m_start;
+		GLuint m_end;
 		GLsizei m_count;
 		GLenum m_type;
-		const char*  m_indices;
+		const u16* m_indices;
 		GLint m_basevertex;
 	};
 
