@@ -35,8 +35,6 @@ void Config::resetToDefaults()
 	generalEmulation.enableHWLighting = 0;
 	generalEmulation.enableCustomSettings = 1;
 	generalEmulation.enableShadersStorage = 1;
-	generalEmulation.correctTexrectCoords = tcDisable;
-	generalEmulation.enableNativeResTexrects = 0;
 	generalEmulation.enableLegacyBlending = 0;
 	generalEmulation.hacks = 0;
 #if defined(OS_ANDROID) || defined(OS_IOS)
@@ -48,6 +46,10 @@ void Config::resetToDefaults()
 #else
 	generalEmulation.enableFragmentDepthWrite = 1;
 #endif
+
+	graphics2D.correctTexrectCoords = tcDisable;
+	graphics2D.enableNativeResTexrects = 0;
+	graphics2D.bgMode = BGMode::bgStripped;
 
 	frameBufferEmulation.enable = 1;
 	frameBufferEmulation.copyDepthToRDRAM = cdSoftwareRender;
@@ -130,10 +132,10 @@ void Config::validate()
 	if (frameBufferEmulation.enable != 0 && frameBufferEmulation.N64DepthCompare != 0)
 		video.multisampling = 0;
 	if (frameBufferEmulation.nativeResFactor == 1) {
-		generalEmulation.enableNativeResTexrects = 0;
-		generalEmulation.correctTexrectCoords = tcDisable;
+		graphics2D.enableNativeResTexrects = 0;
+		graphics2D.correctTexrectCoords = tcDisable;
 	} else {
-		if (generalEmulation.enableNativeResTexrects != 0)
-			generalEmulation.correctTexrectCoords = tcDisable;
+		if (graphics2D.enableNativeResTexrects != 0)
+			graphics2D.correctTexrectCoords = tcDisable;
 	}
 }

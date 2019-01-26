@@ -5,7 +5,7 @@
 #include "Types.h"
 
 #define CONFIG_WITH_PROFILES 23U
-#define CONFIG_VERSION_CURRENT 24U
+#define CONFIG_VERSION_CURRENT 25U
 
 #define BILINEAR_3POINT   0
 #define BILINEAR_STANDARD 1
@@ -48,8 +48,6 @@ struct Config
 		u32 enableHWLighting;
 		u32 enableCustomSettings;
 		u32 enableShadersStorage;
-		u32 correctTexrectCoords;
-		u32 enableNativeResTexrects;
 		u32 enableLegacyBlending;
 		u32 enableFragmentDepthWrite;
 		u32 enableBlitScreenWorkaround;
@@ -60,6 +58,17 @@ struct Config
 		f32 polygonOffsetUnits;
 #endif
 	} generalEmulation;
+
+	enum BGMode {
+		bgOnePiece = 0,
+		bgStripped = 1
+	};
+
+	struct {
+		u32 correctTexrectCoords;
+		u32 enableNativeResTexrects;
+		u32 bgMode;
+	} graphics2D;
 
 	enum Aspect {
 		aStretch = 0,

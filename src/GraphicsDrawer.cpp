@@ -1175,7 +1175,7 @@ void GraphicsDrawer::drawTexturedRect(const TexturedRectParams & _params)
 	DisplayWindow & wnd = dwnd();
 	TextureCache & cache = textureCache();
 	const bool bUseBilinear = gDP.otherMode.textureFilter != 0;
-	const bool bUseTexrectDrawer = m_bBGMode || ((config.generalEmulation.enableNativeResTexrects != 0)
+	const bool bUseTexrectDrawer = m_bBGMode || ((config.graphics2D.enableNativeResTexrects != 0)
 		&& bUseBilinear
 		&& pCurrentCombiner->usesTexture()
 		&& (pCurrentBuffer == nullptr || !pCurrentBuffer->m_cfb)
@@ -1390,7 +1390,7 @@ void GraphicsDrawer::drawTexturedRect(const TexturedRectParams & _params)
 
 void GraphicsDrawer::correctTexturedRectParams(TexturedRectParams & _params)
 {
-	if (config.generalEmulation.correctTexrectCoords == Config::tcSmart) {
+	if (config.graphics2D.correctTexrectCoords == Config::tcSmart) {
 		if (_params.ulx == m_texrectParams.ulx && _params.lrx == m_texrectParams.lrx) {
 			if (fabsf(_params.uly - m_texrectParams.lry) < 0.51f)
 				_params.uly = m_texrectParams.lry;
@@ -1404,7 +1404,7 @@ void GraphicsDrawer::correctTexturedRectParams(TexturedRectParams & _params)
 				_params.lrx = m_texrectParams.ulx;
 		}
 	}
-	else if (config.generalEmulation.correctTexrectCoords == Config::tcForce) {
+	else if (config.graphics2D.correctTexrectCoords == Config::tcForce) {
 		_params.lrx += 0.25f;
 		_params.lry += 0.25f;
 	}

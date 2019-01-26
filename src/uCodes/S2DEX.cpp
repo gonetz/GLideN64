@@ -928,6 +928,9 @@ void _loadBGImage(const uObjScaleBg * _pBgInfo, bool _loadScale)
 static
 bool _useOldBgCode(u32 address)
 {
+	if (config.graphics2D.bgMode == Config::BGMode::bgOnePiece)
+		return true;
+
 	if ((config.generalEmulation.hacks & hack_RE2) != 0)
 		return true;
 
@@ -1166,7 +1169,7 @@ void BG1CycNew(u32 _bgAddr)
 		runCommand((G_SETTILESIZE<<24), 0);
 	}
 
-	if (config.generalEmulation.enableNativeResTexrects != 0)
+	if (config.graphics2D.enableNativeResTexrects != 0)
 		dwnd().getDrawer().setBackgroundDrawingMode(true);
 
 	//Part two
@@ -1351,7 +1354,7 @@ void BG1CycNew(u32 _bgAddr)
 	}
 	}
 
-	if (config.generalEmulation.enableNativeResTexrects != 0) {
+	if (config.graphics2D.enableNativeResTexrects != 0) {
 		GraphicsDrawer & drawer = dwnd().getDrawer();
 		drawer.flush();
 		drawer.setBackgroundDrawingMode(false);
@@ -1434,7 +1437,7 @@ void BGCopyNew(u32 _bgAddr)
 	s16 AT = Ch;
 	s16 U = A1 - A2;
 
-	if (config.generalEmulation.enableNativeResTexrects != 0)
+	if (config.graphics2D.enableNativeResTexrects != 0)
 		dwnd().getDrawer().setBackgroundDrawingMode(true);
 
 	u32 V, X, Y, Z, AA, w0, w1;
@@ -1533,7 +1536,7 @@ void BGCopyNew(u32 _bgAddr)
 		}
 	}
 
-	if (config.generalEmulation.enableNativeResTexrects != 0) {
+	if (config.graphics2D.enableNativeResTexrects != 0) {
 		GraphicsDrawer & drawer = dwnd().getDrawer();
 		drawer.flush();
 		drawer.setBackgroundDrawingMode(false);

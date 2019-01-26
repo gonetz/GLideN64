@@ -70,10 +70,6 @@ bool Config_SetDefault()
 	assert(res == M64ERR_SUCCESS);
 	res = ConfigSetDefaultBool(g_configVideoGliden64, "EnableShadersStorage", config.generalEmulation.enableShadersStorage, "Use persistent storage for compiled shaders.");
 	assert(res == M64ERR_SUCCESS);
-	res = ConfigSetDefaultInt(g_configVideoGliden64, "CorrectTexrectCoords", config.generalEmulation.correctTexrectCoords, "Make texrect coordinates continuous to avoid black lines between them. (0=Off, 1=Auto, 2=Force)");
-	assert(res == M64ERR_SUCCESS);
-	res = ConfigSetDefaultBool(g_configVideoGliden64, "EnableNativeResTexrects", config.generalEmulation.enableNativeResTexrects, "Render 2D texrects in native resolution to fix misalignment between parts of 2D image.");
-	assert(res == M64ERR_SUCCESS);
 	res = ConfigSetDefaultBool(g_configVideoGliden64, "EnableLegacyBlending", config.generalEmulation.enableLegacyBlending, "Do not use shaders to emulate N64 blending modes. Works faster on slow GPU. Can cause glitches.");
 	assert(res == M64ERR_SUCCESS);
 	res = ConfigSetDefaultBool(g_configVideoGliden64, "EnableFragmentDepthWrite", config.generalEmulation.enableFragmentDepthWrite, "Enable writing of fragment depth. Some mobile GPUs do not support it, thus it made optional. Leave enabled.");
@@ -90,6 +86,14 @@ bool Config_SetDefault()
 	res = ConfigSetDefaultFloat(g_configVideoGliden64, "PolygonOffsetUnits", config.generalEmulation.polygonOffsetUnits, "Is multiplied by an implementation-specific value to create a constant depth offset");
 	assert(res == M64ERR_SUCCESS);
 #endif
+	//#2D graphics Settings
+	res = ConfigSetDefaultInt(g_configVideoGliden64, "CorrectTexrectCoords", config.graphics2D.correctTexrectCoords, "Make texrect coordinates continuous to avoid black lines between them. (0=Off, 1=Auto, 2=Force)");
+	assert(res == M64ERR_SUCCESS);
+	res = ConfigSetDefaultBool(g_configVideoGliden64, "EnableNativeResTexrects", config.graphics2D.enableNativeResTexrects, "Render 2D texrects in native resolution to fix misalignment between parts of 2D image.");
+	assert(res == M64ERR_SUCCESS);
+	res = ConfigSetDefaultInt(g_configVideoGliden64, "BackgroundsMode", config.graphics2D.bgMode, "Render backgrounds mode (HLE only). (0=One piece (fast), 1=Stripped (precise))");
+	assert(res == M64ERR_SUCCESS);
+
 	//#Frame Buffer Settings:"
 	res = ConfigSetDefaultBool(g_configVideoGliden64, "EnableFBEmulation", config.frameBufferEmulation.enable, "Enable frame and|or depth buffer emulation.");
 	assert(res == M64ERR_SUCCESS);
@@ -257,14 +261,17 @@ void Config_LoadCustomConfig()
 	if (result == M64ERR_SUCCESS) config.generalEmulation.enableHWLighting = atoi(value);
 	result = ConfigExternalGetParameter(fileHandle, sectionName, "generalEmulation\\enableShadersStorage", value, sizeof(value));
 	if (result == M64ERR_SUCCESS) config.generalEmulation.enableShadersStorage = atoi(value);
-	result = ConfigExternalGetParameter(fileHandle, sectionName, "generalEmulation\\correctTexrectCoords", value, sizeof(value));
-	if (result == M64ERR_SUCCESS) config.generalEmulation.correctTexrectCoords = atoi(value);
-	result = ConfigExternalGetParameter(fileHandle, sectionName, "generalEmulation\\enableNativeResTexrects", value, sizeof(value));
-	if (result == M64ERR_SUCCESS) config.generalEmulation.enableNativeResTexrects = atoi(value);
 	result = ConfigExternalGetParameter(fileHandle, sectionName, "generalEmulation\\enableLegacyBlending", value, sizeof(value));
 	if (result == M64ERR_SUCCESS) config.generalEmulation.enableLegacyBlending = atoi(value);
 	result = ConfigExternalGetParameter(fileHandle, sectionName, "generalEmulation\\enableFragmentDepthWrite", value, sizeof(value));
 	if (result == M64ERR_SUCCESS) config.generalEmulation.enableFragmentDepthWrite = atoi(value);
+
+	result = ConfigExternalGetParameter(fileHandle, sectionName, "graphics2D\\correctTexrectCoords", value, sizeof(value));
+	if (result == M64ERR_SUCCESS) config.graphics2D.correctTexrectCoords = atoi(value);
+	result = ConfigExternalGetParameter(fileHandle, sectionName, "graphics2D\\enableNativeResTexrects", value, sizeof(value));
+	if (result == M64ERR_SUCCESS) config.graphics2D.enableNativeResTexrects = atoi(value);
+	result = ConfigExternalGetParameter(fileHandle, sectionName, "graphics2D\\bgMode", value, sizeof(value));
+	if (result == M64ERR_SUCCESS) config.graphics2D.bgMode = atoi(value);
 
 	result = ConfigExternalGetParameter(fileHandle, sectionName, "frameBufferEmulation\\enable", value, sizeof(value));
 	if (result == M64ERR_SUCCESS) config.frameBufferEmulation.enable = atoi(value);
@@ -365,8 +372,6 @@ void Config_LoadConfig()
 	config.generalEmulation.enableLOD = ConfigGetParamBool(g_configVideoGliden64, "EnableLOD");
 	config.generalEmulation.enableHWLighting = ConfigGetParamBool(g_configVideoGliden64, "EnableHWLighting");
 	config.generalEmulation.enableShadersStorage = ConfigGetParamBool(g_configVideoGliden64, "EnableShadersStorage");
-	config.generalEmulation.correctTexrectCoords = ConfigGetParamInt(g_configVideoGliden64, "CorrectTexrectCoords");
-	config.generalEmulation.enableNativeResTexrects = ConfigGetParamBool(g_configVideoGliden64, "EnableNativeResTexrects");
 	config.generalEmulation.enableLegacyBlending = ConfigGetParamBool(g_configVideoGliden64, "EnableLegacyBlending");
 	config.generalEmulation.enableFragmentDepthWrite = ConfigGetParamBool(g_configVideoGliden64, "EnableFragmentDepthWrite");
 	config.generalEmulation.enableCustomSettings = ConfigGetParamBool(g_configVideoGliden64, "EnableCustomSettings");
@@ -376,6 +381,10 @@ void Config_LoadConfig()
 	config.generalEmulation.polygonOffsetFactor = ConfigGetParamFloat(g_configVideoGliden64, "PolygonOffsetFactor");
 	config.generalEmulation.polygonOffsetUnits = ConfigGetParamFloat(g_configVideoGliden64, "PolygonOffsetUnits");
 #endif
+	//#2D graphics Settings
+	config.graphics2D.correctTexrectCoords = ConfigGetParamInt(g_configVideoGliden64, "CorrectTexrectCoords");
+	config.graphics2D.enableNativeResTexrects = ConfigGetParamBool(g_configVideoGliden64, "EnableNativeResTexrects");
+	config.graphics2D.bgMode = ConfigGetParamBool(g_configVideoGliden64, "BackgroundsMode");
 	//#Frame Buffer Settings:"
 	config.frameBufferEmulation.enable = ConfigGetParamBool(g_configVideoGliden64, "EnableFBEmulation");
 	config.frameBufferEmulation.copyAuxToRDRAM = ConfigGetParamBool(g_configVideoGliden64, "EnableCopyAuxiliaryToRDRAM");

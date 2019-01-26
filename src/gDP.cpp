@@ -854,7 +854,7 @@ void gDPTextureRectangle(f32 ulx, f32 uly, f32 lrx, f32 lry, s32 tile, s16 s, s1
 	GraphicsDrawer & drawer = dwnd().getDrawer();
 	GraphicsDrawer::TexturedRectParams params(ulx, uly, lrx, lry, dsdx, dtdy, s, t,
 		flip, false, true, frameBufferList().getCurrent());
-	if (config.generalEmulation.enableNativeResTexrects == 0 && config.generalEmulation.correctTexrectCoords != Config::tcDisable)
+	if (config.graphics2D.enableNativeResTexrects == 0 && config.graphics2D.correctTexrectCoords != Config::tcDisable)
 		drawer.correctTexturedRectParams(params);
 	drawer.drawTexturedRect(params);
 
