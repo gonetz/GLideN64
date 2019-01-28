@@ -1049,13 +1049,13 @@ bool FrameBufferList::RdpUpdate::update(RdpUpdateResult & _result)
 	const s32 y_add = _SHIFTR(*REG.VI_Y_SCALE, 0, 12);
 	const u32 v_sync = _SHIFTR(*REG.VI_V_SYNC, 0, 10);
 	const bool ispal = (v_sync > 550);
-	const u32 x1 = _SHIFTR( *REG.VI_H_START, 16, 10 );
-	const u32 y1 = _SHIFTR( *REG.VI_V_START, 16, 10 );
-	const u32 x2 = _SHIFTR( *REG.VI_H_START, 0, 10 );
-	const u32 y2 = _SHIFTR( *REG.VI_V_START, 0, 10 );
+	const s32 x1 = _SHIFTR( *REG.VI_H_START, 16, 10 );
+	const s32 y1 = _SHIFTR( *REG.VI_V_START, 16, 10 );
+	const s32 x2 = _SHIFTR( *REG.VI_H_START, 0, 10 );
+	const s32 y2 = _SHIFTR( *REG.VI_V_START, 0, 10 );
 
-	const u32 delta_x = x2 - x1;
-	const u32 delta_y = y2 - y1;
+	const s32 delta_x = x2 - x1;
+	const s32 delta_y = y2 - y1;
 	const u32 vitype = _SHIFTR( *REG.VI_STATUS, 0, 2 );
 
 	const bool serration_pulses = (*REG.VI_STATUS & 0x40) != 0;
