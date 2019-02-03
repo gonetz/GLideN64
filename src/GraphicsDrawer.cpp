@@ -679,7 +679,7 @@ void GraphicsDrawer::_updateStates(DrawingState _drawingState) const
 		// Current render target is depth buffer.
 		// Shader will set gl_FragDepth to shader color, see ShaderCombiner ctor
 		// Here we enable depth buffer write.
-		if (gDP.otherMode.depthCompare != 0) {
+		if (gDP.otherMode.cycleType <= G_CYC_2CYCLE && gDP.otherMode.depthCompare != 0) {
 			// Render to depth buffer with depth compare. Need to get copy of current depth buffer.
 			FrameBuffer * pCurBuf = frameBufferList().getCurrent();
 			if (pCurBuf != nullptr && pCurBuf->m_pDepthBuffer != nullptr) {
@@ -695,8 +695,7 @@ void GraphicsDrawer::_updateStates(DrawingState _drawingState) const
 				params.magFilter = textureParameters::FILTER_NEAREST;
 				gfxContext.setTextureParameters(params);
 			}
-		}
-		else if (frameBufferList().getCurrent() == nullptr) {
+		} else if (frameBufferList().getCurrent() == nullptr) {
 			gfxContext.enable(enable::BLEND, true);
 			gfxContext.setBlending(blend::ZERO, blend::ONE);
 		}

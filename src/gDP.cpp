@@ -33,6 +33,13 @@ bool isCurrentColorImageDepthImage()
 		(gDP.fillColor.color == DepthClearColor && gDP.otherMode.cycleType == G_CYC_FILL);
 }
 
+bool isDepthCompareEnabled()
+{
+	return gDP.otherMode.cycleType <= G_CYC_2CYCLE &&
+		gDP.otherMode.depthCompare != 0 &&
+		((gSP.geometryMode & G_ZBUFFER) || gDP.otherMode.depthSource == G_ZS_PRIM);
+}
+
 void gDPSetOtherMode( u32 mode0, u32 mode1 )
 {
 	gDP.otherMode.h = mode0;

@@ -670,7 +670,7 @@ public:
 	{
 		int renderTarget = 0;
 		if (isCurrentColorImageDepthImage()) {
-			renderTarget = gDP.otherMode.depthCompare + 1;
+			renderTarget = isDepthCompareEnabled() ? 2 : 1;
 		}
 		uRenderTarget.set(renderTarget, _force);
 	}

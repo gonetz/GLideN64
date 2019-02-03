@@ -301,5 +301,6 @@ void gDPTriTxtrZ( u32 w0, u32 w1 );
 void gDPTriShadeTxtrZ( u32 w0, u32 w1 );
 
 bool isCurrentColorImageDepthImage();
+bool isDepthCompareEnabled();
 
 #endif
