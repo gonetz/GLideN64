@@ -57,7 +57,7 @@ bool Config_SetDefault()
 	assert(res == M64ERR_SUCCESS);
 
 	//#Texture Settings
-	res = ConfigSetDefaultBool(g_configVideoGliden64, "bilinearMode", config.texture.bilinearMode, "Bilinear filtering mode (0=N64 3point, 1=standard)");
+	res = ConfigSetDefaultInt(g_configVideoGliden64, "bilinearMode", config.texture.bilinearMode, "Bilinear filtering mode (0=N64 3point, 1=standard, 2=N64 3point with color bleeding, 3=standard with color bleeding and premultiplied alpha)");
 	assert(res == M64ERR_SUCCESS);
 	res = ConfigSetDefaultInt(g_configVideoGliden64, "MaxAnisotropy", config.texture.maxAnisotropy, "Max level of Anisotropic Filtering, 0 for off");
 	assert(res == M64ERR_SUCCESS);
@@ -365,7 +365,7 @@ void Config_LoadConfig()
 	config.frameBufferEmulation.nativeResFactor = ConfigGetParamInt(g_configVideoGliden64, "UseNativeResolutionFactor");
 
 	//#Texture Settings
-	config.texture.bilinearMode = ConfigGetParamBool(g_configVideoGliden64, "bilinearMode");
+	config.texture.bilinearMode = ConfigGetParamInt(g_configVideoGliden64, "bilinearMode");
 	config.texture.maxAnisotropy = ConfigGetParamInt(g_configVideoGliden64, "MaxAnisotropy");
 	//#Emulation Settings
 	config.generalEmulation.enableNoise = ConfigGetParamBool(g_configVideoGliden64, "EnableNoise");
