@@ -44,6 +44,34 @@ bool Utils::isExtensionSupported(const opengl::GLInfo & _glinfo, const char *ext
 	return false;
 }
 
+bool Utils::isEGLExtensionSupported(const char * extension)
+{
+#ifdef EGL
+	const char* where = strchr(extension, ' ');
+	if (where || *extension == '\0')
+		return false;
+
+	const char* extensions = eglQueryString(eglGetDisplay(EGL_DEFAULT_DISPLAY), EGL_EXTENSIONS);
+
+	const char* start = extensions;
+	for (;;) {
+		where = strstr(start, extension);
+		if (where == nullptr)
+			break;
+
+		const char* terminator = where + strlen(extension);
+		if (where == start || *(where - 1) == ' ') if (*terminator == ' ' || *terminator == '\0')
+				return true;
+
+		start = terminator;
+	}
+
+	return false;
+#else
+	return false;
+#endif
+}
+
 
 static
 const char* GLErrorString(GLenum errorCode)

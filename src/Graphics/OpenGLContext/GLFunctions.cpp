@@ -11,8 +11,6 @@
 
 #elif defined(EGL)
 
-#include <EGL/egl.h>
-#include <EGL/eglext.h>
 #define glGetProcAddress eglGetProcAddress
 #define GL_GET_PROC_ADR(proc_type, proc_name) g_##proc_name = (proc_type) glGetProcAddress(#proc_name)
 
@@ -96,6 +94,9 @@ PFNGLACTIVETEXTUREPROC g_glActiveTexture;
 PFNGLBLENDCOLORPROC g_glBlendColor;
 PFNGLREADBUFFERPROC g_glReadBuffer;
 PFNGLFINISHPROC g_glFinish;
+#if defined(OS_ANDROID)
+PFNEGLGETNATIVECLIENTBUFFERANDROIDPROC g_eglGetNativeClientBufferANDROID;
+#endif
 #endif
 PFNGLCREATESHADERPROC g_glCreateShader;
 PFNGLCOMPILESHADERPROC g_glCompileShader;
@@ -195,6 +196,7 @@ PFNGLTEXTUREBARRIERNVPROC g_glTextureBarrierNV;
 PFNGLCLEARBUFFERFVPROC g_glClearBufferfv;
 PFNGLENABLEIPROC g_glEnablei;
 PFNGLDISABLEIPROC g_glDisablei;
+PFNGLEGLIMAGETARGETTEXTURE2DOESPROC g_glEGLImageTargetTexture2DOES;
 
 void initGLFunctions()
 {
@@ -240,6 +242,7 @@ void initGLFunctions()
 	GL_GET_PROC_ADR(PFNGLBLENDCOLORPROC, glBlendColor);
 	GL_GET_PROC_ADR(PFNGLREADBUFFERPROC, glReadBuffer);
 	GL_GET_PROC_ADR(PFNGLFINISHPROC, glFinish);
+	GL_GET_PROC_ADR(PFNEGLGETNATIVECLIENTBUFFERANDROIDPROC, eglGetNativeClientBufferANDROID);
 #endif
 
 	GL_GET_PROC_ADR(PFNGLCREATESHADERPROC, glCreateShader);
@@ -340,4 +343,5 @@ void initGLFunctions()
 	GL_GET_PROC_ADR(PFNGLCLEARBUFFERFVPROC, glClearBufferfv);
 	GL_GET_PROC_ADR(PFNGLENABLEIPROC, glEnablei);
 	GL_GET_PROC_ADR(PFNGLDISABLEIPROC, glDisablei);
+	GL_GET_PROC_ADR(PFNGLEGLIMAGETARGETTEXTURE2DOESPROC, glEGLImageTargetTexture2DOES);
 }

@@ -90,8 +90,10 @@ MY_LOCAL_SRC_FILES :=                                                           
     $(SRCDIR)/Graphics/OpenGLContext/GLSL/glsl_SpecialShadersFactory.cpp           \
     $(SRCDIR)/Graphics/OpenGLContext/GLSL/glsl_Utils.cpp                           \
     $(SRCDIR)/Graphics/OpenGLContext/mupen64plus/mupen64plus_DisplayWindow.cpp     \
-    $(SRCDIR)/Graphics/OpenGLContext/GraphicBufferPrivateApi/GraphicBuffer.cpp     \
-    $(SRCDIR)/Graphics/OpenGLContext/GraphicBufferPrivateApi/libhardware.cpp       \
+    $(SRCDIR)/Graphics/OpenGLContext/GraphicBuffer/PrivateApi/GraphicBuffer.cpp    \
+    $(SRCDIR)/Graphics/OpenGLContext/GraphicBuffer/PrivateApi/libhardware.cpp      \
+    $(SRCDIR)/Graphics/OpenGLContext/GraphicBuffer/PublicApi/android_hardware_buffer_compat.cpp     \
+    $(SRCDIR)/Graphics/OpenGLContext/GraphicBuffer/GraphicBufferWrapper.cpp        \
     $(SRCDIR)/uCodes/F3D.cpp                                                       \
     $(SRCDIR)/uCodes/F3DAM.cpp                                                     \
     $(SRCDIR)/uCodes/F3DBETA.cpp                                                   \
@@ -135,7 +137,7 @@ MY_LOCAL_CPPFLAGS := $(COMMON_CPPFLAGS) -std=c++11 -g
 
 MY_LOCAL_LDFLAGS := $(COMMON_LDFLAGS) -Wl,-version-script,$(LOCAL_PATH)/$(SRCDIR)/mupenplus/video_api_export.ver
 
-MY_LOCAL_LDLIBS := -llog -latomic -lEGL
+MY_LOCAL_LDLIBS := -llog -lEGL
 
 ifeq ($(TARGET_ARCH_ABI), armeabi-v7a)
     # Use for ARM7a:
