@@ -10,6 +10,8 @@
 
 #ifdef EGL
 #include <GL/glcorearb.h>
+#include <EGL/egl.h>
+#include <EGL/eglext.h>
 #elif defined(OS_MAC_OS_X)
 #include <OpenGL/OpenGL.h>
 #include <stddef.h>
@@ -79,6 +81,9 @@ typedef double GLdouble;
 #define glBlendColor(...) CHECKED_GL_FUNCTION(g_glBlendColor, __VA_ARGS__)
 #define glReadBuffer(...) CHECKED_GL_FUNCTION(g_glReadBuffer, __VA_ARGS__)
 #define glFinish(...) CHECKED_GL_FUNCTION(g_glFinish, __VA_ARGS__)
+#if defined(OS_ANDROID)
+#define eglGetNativeClientBufferANDROID(...) CHECKED_GL_FUNCTION_WITH_RETURN(g_eglGetNativeClientBufferANDROID, EGLClientBuffer, __VA_ARGS__)
+#endif
 
 extern PFNGLBLENDFUNCPROC g_glBlendFunc;
 extern PFNGLPIXELSTOREIPROC g_glPixelStorei;
@@ -111,6 +116,9 @@ extern PFNGLACTIVETEXTUREPROC g_glActiveTexture;
 extern PFNGLBLENDCOLORPROC g_glBlendColor;
 extern PFNGLREADBUFFERPROC g_glReadBuffer;
 extern PFNGLFINISHPROC g_glFinish;
+#if defined(OS_ANDROID)
+extern PFNEGLGETNATIVECLIENTBUFFERANDROIDPROC g_eglGetNativeClientBufferANDROID;
+#endif
 #endif
 
 #ifdef OS_WINDOWS
@@ -219,6 +227,7 @@ extern PFNGLBLENDCOLORPROC g_glBlendColor;
 #define glClearBufferfv(...) CHECKED_GL_FUNCTION(g_glClearBufferfv, __VA_ARGS__)
 #define glEnablei(...) CHECKED_GL_FUNCTION(g_glEnablei, __VA_ARGS__)
 #define glDisablei(...) CHECKED_GL_FUNCTION(g_glDisablei, __VA_ARGS__)
+#define glEGLImageTargetTexture2DOES(...) CHECKED_GL_FUNCTION(g_glEGLImageTargetTexture2DOES, __VA_ARGS__)
 
 extern PFNGLCREATESHADERPROC g_glCreateShader;
 extern PFNGLCOMPILESHADERPROC g_glCompileShader;
@@ -318,6 +327,9 @@ extern PFNGLTEXTUREBARRIERNVPROC g_glTextureBarrierNV;
 extern PFNGLCLEARBUFFERFVPROC g_glClearBufferfv;
 extern PFNGLENABLEIPROC g_glEnablei;
 extern PFNGLDISABLEIPROC g_glDisablei;
+
+typedef void (APIENTRYP PFNGLEGLIMAGETARGETTEXTURE2DOESPROC) (GLenum target, void* image);
+extern PFNGLEGLIMAGETARGETTEXTURE2DOESPROC g_glEGLImageTargetTexture2DOES;
 
 void initGLFunctions();
 

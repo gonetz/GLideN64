@@ -33,6 +33,7 @@ struct GLInfo {
 	bool fragment_interlockNV = false;
 	bool fragment_ordering = false;
 	bool ext_fetch = false;
+	bool eglImage = false;
 	Renderer renderer = Renderer::Other;
 
 	void init();

@@ -7,6 +7,10 @@
 #include <EGL/egl.h>
 #endif
 
+#ifdef OS_ANDROID
+#include <Graphics/OpenGLContext/GraphicBuffer/GraphicBufferWrapper.h>
+#endif
+
 using namespace opengl;
 
 void GLInfo::init() {
@@ -141,6 +145,13 @@ void GLInfo::init() {
 	texture_barrierNV = Utils::isExtensionSupported(*this, "GL_NV_texture_barrier");
 
 	ext_fetch = Utils::isExtensionSupported(*this, "GL_EXT_shader_framebuffer_fetch") && !isGLES2 && (!isGLESX || ext_draw_buffers_indexed) && !imageTextures;
+	eglImage = (Utils::isEGLExtensionSupported("EGL_KHR_image_base") || Utils::isEGLExtensionSupported("EGL_KHR_image"));
+
+#ifdef OS_ANDROID
+	eglImage = eglImage &&
+	        ( (isGLES2 && GraphicBufferWrapper::isSupportAvailable()) || (isGLESX && GraphicBufferWrapper::isPublicSupportAvailable()) ) &&
+		    (renderer != Renderer::PowerVR);
+#endif
 
 	if (config.frameBufferEmulation.N64DepthCompare != 0) {
 		if (!imageTextures && !ext_fetch) {

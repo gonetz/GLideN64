@@ -7,6 +7,7 @@ namespace opengl {
 	struct Utils
 	{
 		static bool isExtensionSupported(const opengl::GLInfo & _glinfo, const char * extension);
+		static bool isEGLExtensionSupported(const char * extension);
 		static bool isGLError();
 		static bool isFramebufferError();
 	};
