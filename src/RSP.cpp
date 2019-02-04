@@ -298,10 +298,8 @@ void RSP_Init()
 		config.generalEmulation.hacks |= hack_blurPauseScreen | hack_rectDepthBufferCopyCBFD;
 	else if (strstr(RSP.romname, (const char *)"MICKEY USA") != nullptr)
 		config.generalEmulation.hacks |= hack_blurPauseScreen;
-	else if (strstr(RSP.romname, (const char *)"MarioTennis64") != nullptr)
-		config.generalEmulation.hacks |= hack_scoreboardJ;
-	else if (strstr(RSP.romname, (const char *)"MarioTennis") != nullptr)
-		config.generalEmulation.hacks |= hack_scoreboard;
+	else if (strstr(RSP.romname, (const char *)"GOLDENEYE") != nullptr)
+		config.generalEmulation.hacks |= hack_clearAloneDepthBuffer;
 	else if (strstr(RSP.romname, (const char *)"POKEMON STADIUM 2") != nullptr ||
 			 strstr(RSP.romname, (const char *)"Bottom of the 9th") != nullptr)
 		config.generalEmulation.hacks |= hack_texrect_shade_alpha;
@@ -319,7 +317,7 @@ void RSP_Init()
 		config.generalEmulation.hacks |= hack_ZeldaMonochrome | hack_ZeldaMM;
 	else if (strstr(RSP.romname, (const char *)"Perfect Dark") != nullptr ||
 			 strstr(RSP.romname, (const char *)"PERFECT DARK") != nullptr)
-		config.generalEmulation.hacks |= hack_rectDepthBufferCopyPD;
+		config.generalEmulation.hacks |= hack_rectDepthBufferCopyPD | hack_clearAloneDepthBuffer;
 	else if (strstr(RSP.romname, (const char *)"Jeremy McGrath Super") != nullptr)
 		config.generalEmulation.hacks |= hack_ModifyVertexXyInShader;
 	else if (strstr(RSP.romname, (const char *)"RAT ATTACK") != nullptr)
