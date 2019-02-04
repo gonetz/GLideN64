@@ -1224,7 +1224,7 @@ void F3DSWRS_TexrectGen(u32 _w0, u32 _w1)
 		T = ((0 - (dtdy_i << 6) * uly_i) << 3) + F + 0xFFF0;
 	}
 
-	gDP.primDepth.z = v.z/v.w;
+	gDP.primDepth.z = v.z / v.w * gSP.viewport.vscale[2] + gSP.viewport.vtrans[2];
 	gDP.primDepth.deltaZ = 0.0f;
 
 	const u32 primColor = params[1];

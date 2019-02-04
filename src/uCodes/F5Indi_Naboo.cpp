@@ -1171,7 +1171,7 @@ void F5INDI_TexrectGen()
 			const f32 dsdx = _FIXED2FLOAT((s16)dsdx_i, 10);
 			const f32 dtdy = _FIXED2FLOAT((s16)dtdy_i, 10);
 
-			gDP.primDepth.z = v.z / v.w;
+			gDP.primDepth.z = v.z / v.w * gSP.viewport.vscale[2] + gSP.viewport.vtrans[2];
 			gDP.primDepth.deltaZ = 0.0f;
 			DebugMsg(DEBUG_NORMAL, "SetPrimDepth( %f, %f );\n", gDP.primDepth.z, gDP.primDepth.deltaZ);
 
@@ -1289,7 +1289,7 @@ void F5Naboo_TexrectGen()
 
 	F5INDI_DoSubDList();
 
-	gDP.primDepth.z = v.z / v.w;
+	gDP.primDepth.z = v.z / v.w * gSP.viewport.vscale[2] + gSP.viewport.vtrans[2];
 	gDP.primDepth.deltaZ = 0.0f;
 
 	const u32 primColor = params[7];
