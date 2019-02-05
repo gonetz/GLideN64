@@ -56,7 +56,7 @@ int GraphicBufferWrapper::lock(uint64_t usage, void **out_virtual_address) {
 
 	int returnValue = 0;
 	if (m_private) {
-		returnValue = m_privateGraphicBuffer->lock(GRALLOC_USAGE_SW_READ_OFTEN, out_virtual_address);
+		returnValue = m_privateGraphicBuffer->lock(usage, out_virtual_address);
 	} else {
 		returnValue = AndroidHardwareBufferCompat::GetInstance().Lock(m_publicGraphicBuffer, usage, -1, nullptr, out_virtual_address);
 	};
@@ -76,7 +76,7 @@ void GraphicBufferWrapper::unlock() {
 	if (m_private) {
 		m_privateGraphicBuffer->unlock();
 	} else {
-		AndroidHardwareBufferCompat::GetInstance().Unlock(m_publicGraphicBuffer, NULL);
+		AndroidHardwareBufferCompat::GetInstance().Unlock(m_publicGraphicBuffer, nullptr);
 	}
 
 }
@@ -89,8 +89,6 @@ EGLClientBuffer GraphicBufferWrapper::getClientBuffer() {
 	} else {
 		clientBuffer = eglGetNativeClientBufferANDROID(m_publicGraphicBuffer);
 	}
-
-	LOG(LOG_ERROR, "USING API=%d", m_private);
 
 	return clientBuffer;
 }
