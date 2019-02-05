@@ -24,6 +24,7 @@ private:
 	CachedBindTexture * m_bindTexture;
 	GraphicBufferWrapper m_hardwareBuffer;
 	EGLImageKHR m_image;
+	uint64_t m_usage;
 	bool m_bufferLocked;
 };
 
