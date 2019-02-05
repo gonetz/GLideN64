@@ -125,6 +125,12 @@ void ConfigDialog::_init()
 	case BILINEAR_STANDARD:
 		ui->blnrStandardRadioButton->setChecked(true);
 		break;
+	case BILINEAR_3POINT_WITH_COLOR_BLEEDING:
+		ui->blnr3PointColorBleedingRadioButton->setChecked(true);
+		break;
+	case BILINEAR_STANDARD_WITH_COLOR_BLEEDING_AND_PREMULTIPLIED_ALPHA:
+		ui->blnrStandardColorBleedingRadioButton->setChecked(true);
+		break;
 	}
 
 	switch (config.texture.screenShotFormat) {
@@ -406,6 +412,10 @@ void ConfigDialog::accept()
 		config.texture.bilinearMode = BILINEAR_STANDARD;
 	else if (ui->blnr3PointRadioButton->isChecked())
 		config.texture.bilinearMode = BILINEAR_3POINT;
+	else if (ui->blnr3PointColorBleedingRadioButton->isChecked())
+		config.texture.bilinearMode = BILINEAR_3POINT_WITH_COLOR_BLEEDING;
+	else if (ui->blnrStandardColorBleedingRadioButton->isChecked())
+		config.texture.bilinearMode = BILINEAR_STANDARD_WITH_COLOR_BLEEDING_AND_PREMULTIPLIED_ALPHA;
 
 	if (ui->pngRadioButton->isChecked())
 		config.texture.screenShotFormat = 0;

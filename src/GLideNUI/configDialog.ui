@@ -783,7 +783,7 @@
                <item>
                 <widget class="QFrame" name="blnrFrame">
                  <property name="toolTip">
-                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Bilinear filtering&lt;/span&gt;: Textures will use standard PC-style bilinear filtering.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;N64-style 3 point&lt;/span&gt;: Textures will be filtered more like the N64. The result is less smooth but more accurate.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                  <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Bilinear filtering&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Standard&lt;/span&gt;: Textures will use standard PC-style bilinear filtering.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;N64-style 3 point&lt;/span&gt;: Textures will be filtered more like the N64. The result is less smooth but more accurate.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;3 point with halos removal&lt;/span&gt;: Same as N64-style 3point, but also removes color outline around transparent textures.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Standard with halos removal&lt;/span&gt;: Same as Standard, but also removes color outline around transparent textures.&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                  </property>
                  <layout class="QVBoxLayout" name="verticalLayout_66">
                   <property name="spacing">
@@ -819,6 +819,20 @@
                    <widget class="QRadioButton" name="blnr3PointRadioButton">
                     <property name="text">
                      <string extracomment="3 point bilinear filtering as used by the Nintendo 64.">N64-style 3 point</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QRadioButton" name="blnr3PointColorBleedingRadioButton">
+                    <property name="text">
+                     <string>3 point with halos removal</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QRadioButton" name="blnrStandardColorBleedingRadioButton">
+                    <property name="text">
+                     <string>Standard with halos removal</string>
                     </property>
                    </widget>
                   </item>
@@ -4140,11 +4154,11 @@
   </connection>
  </connections>
  <buttongroups>
-  <buttongroup name="aspectButtonGroup"/>
   <buttongroup name="screenshotButtonGroup"/>
-  <buttongroup name="factorButtonGroup"/>
-  <buttongroup name="osdButtonGroup"/>
-  <buttongroup name="fixTexrectCoordsButtonGroup"/>
+  <buttongroup name="aspectButtonGroup"/>
   <buttongroup name="bgModeButtonGroup"/>
+  <buttongroup name="factorButtonGroup"/>
+  <buttongroup name="fixTexrectCoordsButtonGroup"/>
+  <buttongroup name="osdButtonGroup"/>
  </buttongroups>
 </ui>
