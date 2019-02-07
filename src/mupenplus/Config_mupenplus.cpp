@@ -57,7 +57,7 @@ bool Config_SetDefault()
 	assert(res == M64ERR_SUCCESS);
 
 	//#Texture Settings
-	res = ConfigSetDefaultInt(g_configVideoGliden64, "bilinearMode", config.texture.bilinearMode, "Bilinear filtering mode (0=N64 3point, 1=standard)");
+	res = ConfigSetDefaultBool(g_configVideoGliden64, "bilinearMode", config.texture.bilinearMode, "Bilinear filtering mode (0=N64 3point, 1=standard)");
 	assert(res == M64ERR_SUCCESS);
 	res = ConfigSetDefaultBool(g_configVideoGliden64, "enableHalosRemoval", config.texture.enableHalosRemoval, "Remove halos around filtered textures.");
 	assert(res == M64ERR_SUCCESS);
@@ -369,7 +369,7 @@ void Config_LoadConfig()
 	config.frameBufferEmulation.nativeResFactor = ConfigGetParamInt(g_configVideoGliden64, "UseNativeResolutionFactor");
 
 	//#Texture Settings
-	config.texture.bilinearMode = ConfigGetParamInt(g_configVideoGliden64, "bilinearMode");
+	config.texture.bilinearMode = ConfigGetParamBool(g_configVideoGliden64, "bilinearMode");
 	config.texture.maxAnisotropy = ConfigGetParamInt(g_configVideoGliden64, "MaxAnisotropy");
 	config.texture.enableHalosRemoval = ConfigGetParamBool(g_configVideoGliden64, "enableHalosRemoval");
 	//#Emulation Settings
