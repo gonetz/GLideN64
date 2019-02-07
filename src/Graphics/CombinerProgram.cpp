@@ -10,6 +10,7 @@ namespace graphics {
 		std::vector<u32> vecOptions;
 		vecOptions.push_back(config.video.multisampling > 0 ? 1 : 0);
 		vecOptions.push_back(config.texture.bilinearMode);
+		vecOptions.push_back(config.texture.enableHalosRemoval);
 		vecOptions.push_back(config.generalEmulation.enableHWLighting);
 		vecOptions.push_back(config.generalEmulation.enableNoise);
 		vecOptions.push_back(config.generalEmulation.enableLOD);

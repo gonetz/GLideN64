@@ -5,7 +5,7 @@
 #include "Types.h"
 
 #define CONFIG_WITH_PROFILES 23U
-#define CONFIG_VERSION_CURRENT 25U
+#define CONFIG_VERSION_CURRENT 26U
 
 #define BILINEAR_3POINT   0
 #define BILINEAR_STANDARD 1
@@ -35,6 +35,7 @@ struct Config
 		u32 maxAnisotropy;
 		f32 maxAnisotropyF;
 		u32 bilinearMode;
+		u32 enableHalosRemoval;
 		u32 screenShotFormat;
 	} texture;
 

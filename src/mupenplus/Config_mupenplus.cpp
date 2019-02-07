@@ -57,7 +57,9 @@ bool Config_SetDefault()
 	assert(res == M64ERR_SUCCESS);
 
 	//#Texture Settings
-	res = ConfigSetDefaultInt(g_configVideoGliden64, "bilinearMode", config.texture.bilinearMode, "Bilinear filtering mode (0=N64 3point, 1=standard, 2=N64 3point with color bleeding, 3=standard with color bleeding and premultiplied alpha)");
+	res = ConfigSetDefaultInt(g_configVideoGliden64, "bilinearMode", config.texture.bilinearMode, "Bilinear filtering mode (0=N64 3point, 1=standard)");
+	assert(res == M64ERR_SUCCESS);
+	res = ConfigSetDefaultBool(g_configVideoGliden64, "enableHalosRemoval", config.texture.enableHalosRemoval, "Remove halos around filtered textures.");
 	assert(res == M64ERR_SUCCESS);
 	res = ConfigSetDefaultInt(g_configVideoGliden64, "MaxAnisotropy", config.texture.maxAnisotropy, "Max level of Anisotropic Filtering, 0 for off");
 	assert(res == M64ERR_SUCCESS);
@@ -250,6 +252,8 @@ void Config_LoadCustomConfig()
 	if (result == M64ERR_SUCCESS) config.texture.maxAnisotropy = atoi(value);
 	result = ConfigExternalGetParameter(fileHandle, sectionName, "texture\\bilinearMode", value, sizeof(value));
 	if (result == M64ERR_SUCCESS) config.texture.bilinearMode = atoi(value);
+	result = ConfigExternalGetParameter(fileHandle, sectionName, "texture\\enableHalosRemoval", value, sizeof(value));
+	if (result == M64ERR_SUCCESS) config.texture.enableHalosRemoval = atoi(value);
 	result = ConfigExternalGetParameter(fileHandle, sectionName, "texture\\screenShotFormat", value, sizeof(value));
 	if (result == M64ERR_SUCCESS) config.texture.screenShotFormat = atoi(value);
 
@@ -367,6 +371,7 @@ void Config_LoadConfig()
 	//#Texture Settings
 	config.texture.bilinearMode = ConfigGetParamInt(g_configVideoGliden64, "bilinearMode");
 	config.texture.maxAnisotropy = ConfigGetParamInt(g_configVideoGliden64, "MaxAnisotropy");
+	config.texture.enableHalosRemoval = ConfigGetParamBool(g_configVideoGliden64, "enableHalosRemoval");
 	//#Emulation Settings
 	config.generalEmulation.enableNoise = ConfigGetParamBool(g_configVideoGliden64, "EnableNoise");
 	config.generalEmulation.enableLOD = ConfigGetParamBool(g_configVideoGliden64, "EnableLOD");

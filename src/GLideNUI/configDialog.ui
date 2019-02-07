@@ -823,16 +823,9 @@
                    </widget>
                   </item>
                   <item>
-                   <widget class="QRadioButton" name="blnr3PointColorBleedingRadioButton">
+                   <widget class="QCheckBox" name="halosRemovalCheckBox">
                     <property name="text">
-                     <string>3 point with halos removal</string>
-                    </property>
-                   </widget>
-                  </item>
-                  <item>
-                   <widget class="QRadioButton" name="blnrStandardColorBleedingRadioButton">
-                    <property name="text">
-                     <string>Standard with halos removal</string>
+                     <string>Enable halos removal</string>
                     </property>
                    </widget>
                   </item>

@@ -1009,7 +1009,8 @@ public:
 
 			if (g_textureConvert.useTextureFiltering()) {
 				shaderPart += "uniform lowp int uTextureFilterMode;								\n";
-				if (config.texture.bilinearMode == BILINEAR_3POINT) {
+				switch (config.texture.bilinearMode + config.texture.enableHalosRemoval * 2) {
+				case BILINEAR_3POINT:
 					// 3 point texture filtering.
 					// Original author: ArthurCarvalho
 					// GLSL implementation: twinaphex, mupen64plus-libretro project.
@@ -1026,7 +1027,8 @@ public:
 						"  name = c0 + abs(offset.x)*(c1-c0) + abs(offset.y)*(c2-c0); 							\\\n"
 						"  }																					\n"
 						;
-				} else if (config.texture.bilinearMode == BILINEAR_STANDARD) {
+				break;
+				case BILINEAR_STANDARD:
 					shaderPart +=
 						"#define TEX_OFFSET(off, tex, texCoord) texture(tex, texCoord - (off)/texSize)									\n"
 						"#define TEX_FILTER(name, tex, texCoord)																		\\\n"
@@ -1048,7 +1050,8 @@ public:
 						"  name = mix( pInterp_q0, pInterp_q1, interpolationFactor.y ); 												\\\n" // Interpolate in Y direction.
 						"}																												\n"
 						;
-				} else if (config.texture.bilinearMode == BILINEAR_3POINT_WITH_COLOR_BLEEDING) {
+				break;
+				case BILINEAR_3POINT_WITH_COLOR_BLEEDING:
 					// 3 point texture filtering.
 					// Original author: ArthurCarvalho
 					// GLSL implementation: twinaphex, mupen64plus-libretro project.
@@ -1073,7 +1076,8 @@ public:
 						"  else name = c0 + abs(offset.x)*(c1-c0) + abs(offset.y)*(c2-c0); 						\\\n"
 						"}																						\n"
 						;
-				} else { // BILINEAR_STANDARD_WITH_COLOR_BLEEDING_AND_PREMULTIPLIED_ALPHA
+				break;
+				case BILINEAR_STANDARD_WITH_COLOR_BLEEDING_AND_PREMULTIPLIED_ALPHA:
 					shaderPart +=
 						"#define TEX_OFFSET(off, tex, texCoord) texture(tex, texCoord - (off)/texSize)									\n"
 						"#define TEX_FILTER(name, tex, texCoord)																		\\\n"
@@ -1114,7 +1118,7 @@ public:
 						"    mediump vec2 interpolationFactor = abs(offset);															\\\n"
 						"    lowp vec4 pInterp_q0 = mix( p0q0, p1q0, interpolationFactor.x );											\\\n" // Interpolates top row in X direction.
 						"    lowp vec4 pInterp_q1 = mix( p0q1, p1q1, interpolationFactor.x );											\\\n" // Interpolates bottom row in X direction.
-						"    name = mix( pInterp_q0, pInterp_q1, interpolationFactor.y );												\\\n" 
+						"    name = mix( pInterp_q0, pInterp_q1, interpolationFactor.y );												\\\n"
 						"  }																											\\\n"
 						"  else{																										\\\n"
 						"    mediump vec2 interpolationFactor = abs(offset);															\\\n"
@@ -1124,6 +1128,7 @@ public:
 						"  }																											\\\n"
 						"}																												\n"
 						;
+				break;
 				}
 				shaderPart +=
 					"#define READ_TEX(name, tex, texCoord, fbMonochrome, fbFixedAlpha)	\\\n"
@@ -1853,7 +1858,7 @@ public:
 				"  }																\n"
 			;
 			if (g_textureConvert.useTextureFiltering()) {
-				if (config.texture.bilinearMode == BILINEAR_3POINT || config.texture.bilinearMode == BILINEAR_3POINT_WITH_COLOR_BLEEDING) {
+				if (config.texture.bilinearMode == BILINEAR_3POINT) {
 					shaderPart +=
 						"uniform mediump vec2 uTextureSize[2];										\n"
 						// 3 point texture filtering.

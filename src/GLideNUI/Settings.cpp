@@ -34,6 +34,7 @@ void _loadSettings(QSettings & settings)
 	settings.beginGroup("texture");
 	config.texture.maxAnisotropy = settings.value("maxAnisotropy", config.texture.maxAnisotropy).toInt();
 	config.texture.bilinearMode = settings.value("bilinearMode", config.texture.bilinearMode).toInt();
+	config.texture.enableHalosRemoval = settings.value("enableHalosRemoval", config.texture.enableHalosRemoval).toInt();
 	config.texture.screenShotFormat = settings.value("screenShotFormat", config.texture.screenShotFormat).toInt();
 	settings.endGroup();
 
@@ -201,6 +202,7 @@ void writeSettings(const QString & _strIniFolder)
 	settings.beginGroup("texture");
 	settings.setValue("maxAnisotropy", config.texture.maxAnisotropy);
 	settings.setValue("bilinearMode", config.texture.bilinearMode);
+	settings.setValue("enableHalosRemoval", config.texture.enableHalosRemoval);
 	settings.setValue("screenShotFormat", config.texture.screenShotFormat);
 	settings.endGroup();
 
@@ -387,6 +389,7 @@ void saveCustomRomSettings(const QString & _strIniFolder, const char * _strRomNa
 	settings.beginGroup("texture");
 	WriteCustomSetting(texture, maxAnisotropy);
 	WriteCustomSetting(texture, bilinearMode);
+	WriteCustomSetting(texture, enableHalosRemoval);
 	WriteCustomSetting(texture, screenShotFormat);
 	settings.endGroup();
 
