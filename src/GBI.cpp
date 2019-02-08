@@ -58,7 +58,7 @@ std::vector<SpecialMicrocodeInfo> specialMicrocodes =
 	{ F3D,			true,	false,	false,	0x16c3a775 }, // AeroFighters
 	{ F3DEX2CBFD,	true,	true,	false,	0x1b4ace88 }, // Conker's Bad Fur Day
 	{ F3DPD,		true,	true,	false,	0x1c4f7869 }, // Perfect Dark
-	{ F3DEX,		false,	false,	true,	0x1f24cc84 }, // Wayne Gretzky's 3D Hockey (U)
+	{ F3D,			false,	false,	true,	0x1f24cc84 }, // Wayne Gretzky's 3D Hockey (U)
 	{ F5Indi_Naboo,	false,	false,	false,	0x23fef05f }, // SW Ep.1 Battle for Naboo
 	{ Turbo3D,		false,	true,	false,	0x2bdcfc8a }, // Dark Rift, Turbo3D
 	{ F3DSETA,		false,	true,	true,	0x2edee7be }, // RSP SW Version: 2.0D, 04-01-96
