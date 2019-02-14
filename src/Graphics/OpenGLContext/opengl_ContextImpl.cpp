@@ -7,7 +7,9 @@
 #include "opengl_UnbufferedDrawer.h"
 #include "opengl_ColorBufferReaderWithPixelBuffer.h"
 #include "opengl_ColorBufferReaderWithBufferStorage.h"
+#ifdef OS_ANDROID
 #include "opengl_ColorBufferReaderWithEGLImage.h"
+#endif
 #include "opengl_ColorBufferReaderWithReadPixels.h"
 #include "opengl_Utils.h"
 #include "GLSL/glsl_CombinerProgramBuilder.h"
