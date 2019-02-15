@@ -1209,6 +1209,10 @@ void TextureCache::_load(u32 _tile, CachedTexture *_pTexture)
 			if (txfilter_filter((u8*)pDest, tmptex.realWidth, tmptex.realHeight,
 							(u16)u32(glInternalFormat), (uint64)_pTexture->crc,
 							&ghqTexInfo) != 0 && ghqTexInfo.data != nullptr) {
+				if (ghqTexInfo.width % 2 != 0 &&
+					ghqTexInfo.format != u32(internalcolorFormat::RGBA8) &&
+					m_curUnpackAlignment > 1)
+					gfxContext.setTextureUnpackAlignment(2);
 				ghqTexInfo.format = gfxContext.convertInternalTextureFormat(ghqTexInfo.format);
 				Context::InitTextureParams params;
 				params.handle = _pTexture->name;
