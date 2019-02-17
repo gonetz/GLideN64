@@ -644,8 +644,7 @@ void F5INDI_CalcST(const u32* params, u32 * _st)
 		if (R > 0x0000FFFFFFFF)
 			R1 = 0x7FFF0000 | (R & 0xFFFF);
 		u32 D = static_cast<u32>(sqrt(R1));
-		D = (0xFFFFFFFF / D) >> 1;
-		D = (D * 0xAB) >> 16;
+		D = 0xFFFFFFFF / (D * 0x300);
 		u32 V = static_cast<u32>((D * X2) >> 16);
 		u32 W = static_cast<u32>((D * Y2) >> 16);
 		u32 S = (V * muls[0 ^ 1]) >> 16;
