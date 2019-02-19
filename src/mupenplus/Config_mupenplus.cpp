@@ -389,7 +389,7 @@ void Config_LoadConfig()
 	//#2D graphics Settings
 	config.graphics2D.correctTexrectCoords = ConfigGetParamInt(g_configVideoGliden64, "CorrectTexrectCoords");
 	config.graphics2D.enableNativeResTexrects = ConfigGetParamBool(g_configVideoGliden64, "EnableNativeResTexrects");
-	config.graphics2D.bgMode = ConfigGetParamBool(g_configVideoGliden64, "BackgroundsMode");
+	config.graphics2D.bgMode = ConfigGetParamInt(g_configVideoGliden64, "BackgroundsMode");
 	//#Frame Buffer Settings:"
 	config.frameBufferEmulation.enable = ConfigGetParamBool(g_configVideoGliden64, "EnableFBEmulation");
 	config.frameBufferEmulation.copyAuxToRDRAM = ConfigGetParamBool(g_configVideoGliden64, "EnableCopyAuxiliaryToRDRAM");
