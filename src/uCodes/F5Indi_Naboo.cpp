@@ -459,10 +459,10 @@ void F5INDI_RebuildAndAdjustColors(u32 _w0, u32 _w1)
 	std::vector<u32> vres(count);
 	for (u32 i = 0; i < count; ++i) {
 		u16 V = data[i ^ 1];
-		u32 I = (V >> 8) & 0xF8;
-		u32 J = (V & 0x7E0) >> 3;
-		u32 K = (V & 0x1F) << 3;
-		vres[i] = (I << 24) | (J << 16) | (K << 8) | 0xFF;
+		u32 R = (V >> 8) & 0xF8;
+		u32 G = (V & 0x7E0) >> 3;
+		u32 B = (V & 0x1F) << 3;
+		vres[i] = (R << 24) | (G << 16) | (B << 8) | 0xFF;
 	}
 	memcpy(DMEM + addr, vres.data(), count << 2);
 }
