@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <string>
 #include <thread>
 #include <assert.h>
 #include <cmath>
@@ -1743,17 +1744,19 @@ void GraphicsDrawer::_initStates()
 
 void GraphicsDrawer::_setSpecialTexrect() const
 {
-	const char * name = RSP.romname;
-	if (strstr(name, (const char *)"Beetle") || strstr(name, (const char *)"BEETLE") || strstr(name, (const char *)"HSV")
-		|| strstr(name, (const char *)"DUCK DODGERS") || strstr(name, (const char *)"DAFFY DUCK"))
+	std::string name(RSP.romname);
+	std::transform(name.begin(), name.end(), name.begin(), ::toupper);
+#define FOUND(romname) name.find(romname) != std::string::npos
+
+	if (FOUND("BEETLE") || FOUND("HSV") || FOUND("DUCK DODGERS") || FOUND("DAFFY DUCK"))
 		texturedRectSpecial = texturedRectShadowMap;
-	else if (strstr(name, (const char *)"Perfect Dark") || strstr(name, (const char *)"PERFECT DARK"))
+	else if (FOUND("PERFECT DARK") || FOUND("TUROK_DINOSAUR_HUNTE"))
 		texturedRectSpecial = texturedRectDepthBufferCopy; // See comments to that function!
-	else if (strstr(name, (const char *)"CONKER BFD"))
+	else if (FOUND("CONKER BFD"))
 		texturedRectSpecial = texturedRectCopyToItself;
-	else if (strstr(name, (const char *)"YOSHI STORY"))
+	else if (FOUND("YOSHI STORY"))
 		texturedRectSpecial = texturedRectBGCopy;
-	else if (strstr(name, (const char *)"PAPER MARIO") || strstr(name, (const char *)"MARIO STORY"))
+	else if (FOUND("PAPER MARIO") || FOUND("MARIO STORY"))
 		texturedRectSpecial = texturedRectPaletteMod;
 	else
 		texturedRectSpecial = nullptr;
