@@ -166,7 +166,7 @@ bool DepthBufferToRDRAM::_prepareCopy(u32& _startAddress, bool _copyChunk)
 
 	const u32 numPixels = m_pCurFrameBuffer->m_width * m_pCurFrameBuffer->m_height;
 	const u32 bufferOrigin = m_pCurFrameBuffer->m_pDepthBuffer->m_address;
-	if (bufferOrigin + numPixels * 2 > RDRAMSize)
+	if (bufferOrigin + numPixels * 2 > RDRAMSize + 1)
 		return false;
 
 	const u32 height = cutHeight(bufferOrigin, m_pCurFrameBuffer->m_height, m_pCurFrameBuffer->m_width * 2);
