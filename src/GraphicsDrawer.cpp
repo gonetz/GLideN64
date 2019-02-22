@@ -1040,7 +1040,7 @@ bool texturedRectDepthBufferCopy(const GraphicsDrawer::TexturedRectParams & _par
 		if (config.frameBufferEmulation.copyDepthToRDRAM == Config::cdCopyFromVRam) {
 			if (rectDepthBufferCopyFrame != dwnd().getBuffersSwapCount()) {
 				rectDepthBufferCopyFrame = dwnd().getBuffersSwapCount();
-				if (!FrameBuffer_CopyDepthBuffer(gDP.colorImage.address))
+				if (!FrameBuffer_CopyDepthBuffer(gDP.depthImageAddress))
 					return true;
 			}
 			RDP_RepeatLastLoadBlock();
