@@ -110,26 +110,23 @@ namespace opengl {
 	};
 
 
-	template<typename Bind>
-	class CachedBind : public Cached2<graphics::Parameter, graphics::ObjectHandle>
+	class CachedBindFramebuffer : public Cached2<graphics::Parameter, graphics::ObjectHandle>
 	{
 	public:
-		CachedBind(Bind _bind) : m_bind(_bind) {}
-
-		void bind(graphics::Parameter _target, graphics::ObjectHandle _name) {
-			if (update(_target, _name))
-				m_bind(GLenum(_target), GLuint(_name));
-		}
-
-	private:
-		Bind m_bind;
+		void bind(graphics::Parameter _target, graphics::ObjectHandle _name);
 	};
 
-	typedef CachedBind<decltype(GET_GL_FUNCTION(glBindFramebuffer))> CachedBindFramebuffer;
+	class CachedBindRenderbuffer : public Cached2<graphics::Parameter, graphics::ObjectHandle>
+	{
+	public:
+		void bind(graphics::Parameter _target, graphics::ObjectHandle _name);
+	};
 
-	typedef CachedBind<decltype(GET_GL_FUNCTION(glBindRenderbuffer))> CachedBindRenderbuffer;
-
-	typedef CachedBind<decltype(GET_GL_FUNCTION(glBindBuffer))> CachedBindBuffer;
+	class CachedBindBuffer : public Cached2<graphics::Parameter, graphics::ObjectHandle>
+	{
+	public:
+		void bind(graphics::Parameter _target, graphics::ObjectHandle _name);
+	};
 
 	class CachedBindTexture : public Cached2<graphics::Parameter, graphics::ObjectHandle>
 	{

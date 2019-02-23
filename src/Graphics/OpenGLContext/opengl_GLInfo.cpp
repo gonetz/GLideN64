@@ -108,20 +108,20 @@ void GLInfo::init() {
 	bool ext_draw_buffers_indexed = isGLESX && (Utils::isExtensionSupported(*this, "GL_EXT_draw_buffers_indexed") || numericVersion >= 32);
 #ifdef EGL
 	if (isGLESX && bufferStorage)
-		g_glBufferStorage = (PFNGLBUFFERSTORAGEPROC) eglGetProcAddress("glBufferStorageEXT");
+		ptrBufferStorage = (PFNGLBUFFERSTORAGEPROC) eglGetProcAddress("glBufferStorageEXT");
 	if (isGLESX && numericVersion < 32) {
 		if (ext_draw_buffers_indexed) {
-			g_glEnablei = (PFNGLENABLEIPROC) eglGetProcAddress("glEnableiEXT");
-			g_glDisablei = (PFNGLDISABLEIPROC) eglGetProcAddress("glDisableiEXT");
+			ptrEnablei = (PFNGLENABLEIPROC) eglGetProcAddress("glEnableiEXT");
+			ptrDisablei = (PFNGLDISABLEIPROC) eglGetProcAddress("glDisableiEXT");
 		} else {
-			g_glEnablei = nullptr;
-			g_glDisablei = nullptr;
+			ptrEnablei = nullptr;
+			ptrDisablei = nullptr;
 		}
 	}
 	if (isGLES2 && shaderStorage) {
-		g_glProgramBinary = (PFNGLPROGRAMBINARYPROC) eglGetProcAddress("glProgramBinaryOES");
-		g_glGetProgramBinary = (PFNGLGETPROGRAMBINARYPROC) eglGetProcAddress("glGetProgramBinaryOES");
-		g_glProgramParameteri = nullptr;
+		ptrProgramBinary = (PFNGLPROGRAMBINARYPROC) eglGetProcAddress("glProgramBinaryOES");
+		ptrGetProgramBinary = (PFNGLGETPROGRAMBINARYPROC) eglGetProcAddress("glGetProgramBinaryOES");
+		ptrProgramParameteri = nullptr;
 	}
 #endif
 #ifndef OS_ANDROID

@@ -45,6 +45,9 @@ bool Config_SetDefault()
 	res = ConfigSetDefaultInt(g_configVideoGliden64, "configVersion", CONFIG_VERSION_CURRENT, "Settings version. Don't touch it.");
 	assert(res == M64ERR_SUCCESS);
 
+	res = ConfigSetDefaultBool(g_configVideoGliden64, "ThreadedVideo", config.video.threadedVideo, "Enable threaded video backend");
+	assert(res == M64ERR_SUCCESS);
+
 	res = ConfigSetDefaultInt(g_configVideoGliden64, "MultiSampling", config.video.multisampling, "Enable/Disable MultiSampling (0=off, 2,4,8,16=quality)");
 	assert(res == M64ERR_SUCCESS);
 	res = ConfigSetDefaultBool(g_configVideoGliden64, "FXAA", config.video.fxaa, "Enable/Disable Fast Approximate Anti-Aliasing FXAA");
@@ -358,7 +361,7 @@ void Config_LoadConfig()
 	config.video.windowedWidth = ConfigGetParamInt(g_configVideoGeneral, "ScreenWidth");
 	config.video.windowedHeight = ConfigGetParamInt(g_configVideoGeneral, "ScreenHeight");
 	config.video.verticalSync = ConfigGetParamBool(g_configVideoGeneral, "VerticalSync");
-
+	config.video.threadedVideo = ConfigGetParamBool(g_configVideoGliden64, "ThreadedVideo");
 	const u32 multisampling = ConfigGetParamInt(g_configVideoGliden64, "MultiSampling");
 	config.video.multisampling = multisampling == 0 ? 0 : pow2(multisampling);
 	config.video.fxaa = ConfigGetParamBool(g_configVideoGliden64, "FXAA");

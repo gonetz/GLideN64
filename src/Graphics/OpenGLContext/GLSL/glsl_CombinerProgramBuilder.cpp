@@ -2445,7 +2445,7 @@ graphics::CombinerProgram * CombinerProgramBuilder::buildCombinerProgram(Combine
 		glAttachShader(program, bUseTextures ? m_vertexShaderTexturedTriangle : m_vertexShaderTriangle);
 	glAttachShader(program, fragmentShader);
 	if (CombinerInfo::get().isShaderCacheSupported()) {
-		if (IS_GL_FUNCTION_VALID(glProgramParameteri))
+		if (IS_GL_FUNCTION_VALID(ProgramParameteri))
 			glProgramParameteri(program, GL_PROGRAM_BINARY_RETRIEVABLE_HINT, GL_TRUE);
 	}
 	glLinkProgram(program);

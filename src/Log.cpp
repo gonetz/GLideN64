@@ -5,10 +5,15 @@
 #include "Log.h"
 #include "PluginAPI.h"
 #include "wst.h"
+#include <mutex>
+
+std::mutex g_logMutex;
 
 void LOG(u16 type, const char * format, ...) {
 	if (type > LOG_LEVEL)
 		return;
+
+	std::unique_lock<std::mutex> lock(g_logMutex);
 
 	wchar_t logPath[PLUGIN_PATH_SIZE + 16];
 	api().GetUserDataPath(logPath);

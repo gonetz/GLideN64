@@ -28,6 +28,7 @@ struct Config
 		u32 fxaa;
 		u32 multisampling;
 		u32 verticalSync;
+		u32 threadedVideo;
 	} video;
 
 	struct

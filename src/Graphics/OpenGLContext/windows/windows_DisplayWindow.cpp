@@ -1,6 +1,3 @@
-#include <stdio.h>
-#include <Graphics/OpenGLContext/GLFunctions.h>
-#include <GL/wglext.h>
 #include <windows/GLideN64_Windows.h>
 #include <GLideN64.h>
 #include <Config.h>
@@ -11,11 +8,14 @@
 #include <Graphics/Context.h>
 #include <Graphics/Parameters.h>
 #include <DisplayWindow.h>
+#include <Graphics/OpenGLContext/ThreadedOpenGl/opengl_Wrapper.h>
+
+using namespace opengl;
 
 class DisplayWindowWindows : public DisplayWindow
 {
 public:
-	DisplayWindowWindows() : hRC(NULL), hDC(NULL) {}
+	DisplayWindowWindows() = default;
 
 private:
 	bool _start() override;
@@ -28,9 +28,6 @@ private:
 	void _readScreen(void **_pDest, long *_pWidth, long *_pHeight) override;
 	void _readScreen2(void * _dest, int * _width, int * _height, int _front) override {}
 	graphics::ObjectHandle _getDefaultFramebuffer() override;
-
-	HGLRC	hRC;
-	HDC		hDC;
 };
 
 DisplayWindow & DisplayWindow::get()
@@ -41,122 +38,23 @@ DisplayWindow & DisplayWindow::get()
 
 bool DisplayWindowWindows::_start()
 {
-	int pixelFormat;
+	FunctionWrapper::setThreadedMode(config.video.threadedVideo);
 
-	PIXELFORMATDESCRIPTOR pfd = {
-		sizeof(PIXELFORMATDESCRIPTOR),    // size of this pfd
-		1,                                // version number
-		PFD_DRAW_TO_WINDOW |              // support window
-		PFD_SUPPORT_OPENGL |              // support OpenGL
-		PFD_DOUBLEBUFFER,                 // double buffered
-		PFD_TYPE_RGBA,                    // RGBA type
-		32,								  // color depth
-		0, 0, 0, 0, 0, 0,                 // color bits ignored
-		0,                                // no alpha buffer
-		0,                                // shift bit ignored
-		0,                                // no accumulation buffer
-		0, 0, 0, 0,                       // accum bits ignored
-		32,								  // z-buffer
-		0,                                // no stencil buffer
-		0,                                // no auxiliary buffer
-		PFD_MAIN_PLANE,                   // main layer
-		0,                                // reserved
-		0, 0, 0                           // layer masks ignored
-	};
-
-	if (hWnd == NULL)
-		hWnd = GetActiveWindow();
-
-	if ((hDC = GetDC( hWnd )) == NULL) {
-		MessageBox( hWnd, L"Error while getting a device context!", pluginNameW, MB_ICONERROR | MB_OK );
-		return false;
-	}
-
-	if ((pixelFormat = ChoosePixelFormat(hDC, &pfd )) == 0) {
-		MessageBox( hWnd, L"Unable to find a suitable pixel format!", pluginNameW, MB_ICONERROR | MB_OK );
-		_stop();
-		return false;
-	}
-
-	if ((SetPixelFormat(hDC, pixelFormat, &pfd )) == FALSE) {
-		MessageBox( hWnd, L"Error while setting pixel format!", pluginNameW, MB_ICONERROR | MB_OK );
-		_stop();
-		return false;
-	}
-
-	if ((hRC = wglCreateContext(hDC)) == NULL) {
-		MessageBox( hWnd, L"Error while creating OpenGL context!", pluginNameW, MB_ICONERROR | MB_OK );
-		_stop();
-		return false;
-	}
-
-	if ((wglMakeCurrent(hDC, hRC)) == FALSE) {
-		MessageBox( hWnd, L"Error while making OpenGL context current!", pluginNameW, MB_ICONERROR | MB_OK );
-		_stop();
-		return false;
-	}
-
-	PFNWGLGETEXTENSIONSSTRINGARBPROC wglGetExtensionsStringARB =
-		(PFNWGLGETEXTENSIONSSTRINGARBPROC)wglGetProcAddress("wglGetExtensionsStringARB");
-
-	if (wglGetExtensionsStringARB != NULL) {
-		const char * wglextensions = wglGetExtensionsStringARB(hDC);
-
-		if (strstr(wglextensions, "WGL_ARB_create_context_profile") != nullptr) {
-			PFNWGLCREATECONTEXTATTRIBSARBPROC wglCreateContextAttribsARB =
-				(PFNWGLCREATECONTEXTATTRIBSARBPROC)wglGetProcAddress("wglCreateContextAttribsARB");
-
-			GLint majorVersion = 0;
-			glGetIntegerv(GL_MAJOR_VERSION, &majorVersion);
-			GLint minorVersion = 0;
-			glGetIntegerv(GL_MINOR_VERSION, &minorVersion);
-
-			const int attribList[] =
-			{
-				WGL_CONTEXT_MAJOR_VERSION_ARB, majorVersion,
-				WGL_CONTEXT_MINOR_VERSION_ARB, minorVersion,
-				WGL_CONTEXT_PROFILE_MASK_ARB, WGL_CONTEXT_CORE_PROFILE_BIT_ARB,
-				0        //End
-			};
-
-			HGLRC coreHrc = wglCreateContextAttribsARB(hDC, 0, attribList);
-			if (coreHrc != NULL) {
-				wglDeleteContext(hRC);
-				wglMakeCurrent(hDC, coreHrc);
-				hRC = coreHrc;
-			}
-		}
-
-		if (strstr(wglextensions, "WGL_EXT_swap_control") != nullptr) {
-			PFNWGLSWAPINTERVALEXTPROC wglSwapIntervalEXT = (PFNWGLSWAPINTERVALEXTPROC)wglGetProcAddress("wglSwapIntervalEXT");
-			wglSwapIntervalEXT(config.video.verticalSync);
-		}
-	}
-
+	FunctionWrapper::windowsStart();
 	return _resizeWindow();
 }
 
 void DisplayWindowWindows::_stop()
 {
-	wglMakeCurrent( NULL, NULL );
-
-	if (hRC != NULL) {
-		wglDeleteContext(hRC);
-		hRC = NULL;
-	}
-
-	if (hDC != NULL) {
-		ReleaseDC(hWnd, hDC);
-		hDC = NULL;
-	}
+	FunctionWrapper::windowsStop();
 }
 
 void DisplayWindowWindows::_swapBuffers()
 {
-	if (hDC == NULL)
-		SwapBuffers( wglGetCurrentDC() );
-	else
-		SwapBuffers( hDC );
+	//Don't let the command queue grow too big buy waiting on no more swap buffers being queued
+	FunctionWrapper::WaitForSwapBuffersQueued();
+
+	FunctionWrapper::windowsSwapBuffers();
 }
 
 void DisplayWindowWindows::_saveScreenshot()
