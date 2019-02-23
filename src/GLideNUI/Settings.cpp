@@ -29,6 +29,7 @@ void _loadSettings(QSettings & settings)
 	config.video.multisampling = settings.value("multisampling", config.video.multisampling).toInt();
 	config.video.fxaa= settings.value("fxaa", config.video.fxaa).toInt();
 	config.video.verticalSync = settings.value("verticalSync", config.video.verticalSync).toInt();
+	config.video.threadedVideo = settings.value("threadedVideo", config.video.threadedVideo).toInt();
 	settings.endGroup();
 
 	settings.beginGroup("texture");
@@ -197,6 +198,7 @@ void writeSettings(const QString & _strIniFolder)
 	settings.setValue("multisampling", config.video.multisampling);
 	settings.setValue("fxaa", config.video.fxaa);
 	settings.setValue("verticalSync", config.video.verticalSync);
+	settings.setValue("threadedVideo", config.video.threadedVideo);
 	settings.endGroup();
 
 	settings.beginGroup("texture");

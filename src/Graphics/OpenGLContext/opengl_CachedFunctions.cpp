@@ -23,12 +23,12 @@ void CachedEnable::enable(bool _enable)
 		return;
 
 	if (_enable) {
-		if (m_parameter == enable::BLEND && IS_GL_FUNCTION_VALID(glEnablei))
+		if (m_parameter == enable::BLEND && IS_GL_FUNCTION_VALID(Enablei))
 			glEnablei(GLenum(m_parameter), 0);
 		else
 			glEnable(GLenum(m_parameter));
 	} else {
-		if (m_parameter == enable::BLEND && IS_GL_FUNCTION_VALID(glDisablei))
+		if (m_parameter == enable::BLEND && IS_GL_FUNCTION_VALID(Disablei))
 			glDisablei(GLenum(m_parameter), 0);
 		else
 			glDisable(GLenum(m_parameter));
@@ -38,6 +38,27 @@ void CachedEnable::enable(bool _enable)
 u32 CachedEnable::get()
 {
 	return u32(m_cached);
+}
+
+/*---------------CachedBindFramebuffer-------------*/
+
+void CachedBindFramebuffer::bind(graphics::Parameter _target, graphics::ObjectHandle _name) {
+	if (update(_target, _name))
+		glBindFramebuffer(GLenum(_target), GLuint(_name));
+}
+
+/*---------------CachedBindRenderbuffer-------------*/
+
+void CachedBindRenderbuffer::bind(graphics::Parameter _target, graphics::ObjectHandle _name) {
+	if (update(_target, _name))
+		glBindRenderbuffer(GLenum(_target), GLuint(_name));
+}
+
+/*---------------CachedBindBuffer-------------*/
+
+void CachedBindBuffer::bind(graphics::Parameter _target, graphics::ObjectHandle _name) {
+	if (update(_target, _name))
+		glBindBuffer(GLenum(_target), GLuint(_name));
 }
 
 /*---------------CachedBindTexture-------------*/
@@ -152,9 +173,7 @@ void CachedTextureUnpackAlignment::setTextureUnpackAlignment(s32 _param)
 /*---------------CachedFunctions-------------*/
 
 CachedFunctions::CachedFunctions(const GLInfo & _glinfo)
-: m_bindFramebuffer(GET_GL_FUNCTION(glBindFramebuffer))
-, m_bindRenderbuffer(GET_GL_FUNCTION(glBindRenderbuffer))
-, m_bindBuffer(GET_GL_FUNCTION(glBindBuffer)) {
+{
 	if (_glinfo.isGLESX) {
 		// Disable parameters, not avalible for GLESX
 		m_enables.emplace(GL_DEPTH_CLAMP, Parameter());

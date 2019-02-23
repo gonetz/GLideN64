@@ -30,7 +30,6 @@ void ColorBufferReaderWithBufferStorage::_initBuffers()
 	// Initialize Pixel Buffer Objects
 	for (u32 index = 0; index < m_numPBO; ++index) {
 		m_bindBuffer->bind(Parameter(GL_PIXEL_PACK_BUFFER), ObjectHandle(m_PBO[index]));
-		m_fence[index] = 0;
 		glBufferStorage(GL_PIXEL_PACK_BUFFER, m_pTexture->textureBytes, nullptr, GL_MAP_READ_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT | GL_CLIENT_STORAGE_BIT);
 		m_PBOData[index] = glMapBufferRange(GL_PIXEL_PACK_BUFFER, 0, m_pTexture->textureBytes, GL_MAP_READ_BIT | GL_MAP_PERSISTENT_BIT | GL_MAP_COHERENT_BIT);
 	}
@@ -44,7 +43,6 @@ void ColorBufferReaderWithBufferStorage::_destroyBuffers()
 
 	for (u32 index = 0; index < m_numPBO; ++index) {
 		m_PBO[index] = 0;
-		glDeleteSync(m_fence[index]);
 	}
 }
 
@@ -55,18 +53,11 @@ const u8 * ColorBufferReaderWithBufferStorage::_readPixels(const ReadColorBuffer
 	GLenum type = GLenum(_params.colorType);
 
 	m_bindBuffer->bind(Parameter(GL_PIXEL_PACK_BUFFER), ObjectHandle(m_PBO[m_curIndex]));
-	glReadPixels(_params.x0, _params.y0, m_pTexture->realWidth, _params.height, format, type, 0);
+
+	glReadPixels(_params.x0, _params.y0, m_pTexture->realWidth, _params.height, format, type, nullptr);
 
 	if (!_params.sync) {
-		//Setup a fence sync object so that we know when glReadPixels completes
-		m_fence[m_curIndex] = glFenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0);
 		m_curIndex = (m_curIndex + 1) % m_numPBO;
-		//Wait for glReadPixels to complete for the currently selected PBO
-		if (m_fence[m_curIndex] != 0) {
-			glClientWaitSync(m_fence[m_curIndex], 0, 100000000);
-			glDeleteSync(m_fence[m_curIndex]);
-			m_fence[m_curIndex] = 0;
-		}
 	} else {
 		glFinish();
 	}

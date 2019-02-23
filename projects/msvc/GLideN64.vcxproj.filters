@@ -69,6 +69,12 @@
     <Filter Include="Source Files\Graphics\OpenGL\mupen64plus">
       <UniqueIdentifier>{77259791-9942-4601-a63f-5a0468e69e49}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Graphics\OpenGL\ThreadedOpenGL">
+      <UniqueIdentifier>{09919f83-2933-4b48-a4c7-f7bf6e790304}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Graphics\OpenGL\ThreadedOpenGL">
+      <UniqueIdentifier>{32e9be50-cb55-445a-9562-bbe05085bbe1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Combiner.cpp">
@@ -260,6 +266,9 @@
     <ClCompile Include="..\..\src\Graphics\OpenGLContext\windows\windows_DisplayWindow.cpp">
       <Filter>Source Files\Graphics\OpenGL\windows</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\Graphics\OpenGLContext\windows\WindowsWGL.cpp">
+      <Filter>Source Files\Graphics\OpenGL\windows</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\src\Graphics\OpenGLContext\mupen64plus\mupen64plus_DisplayWindow.cpp">
       <Filter>Source Files\Graphics\OpenGL\mupen64plus</Filter>
     </ClCompile>
@@ -397,6 +406,21 @@
     </ClCompile>
     <ClCompile Include="..\..\src\mupenplus\MemoryStatus_mupenplus.cpp">
       <Filter>Source Files\mupenplus</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Graphics\OpenGLContext\ThreadedOpenGl\opengl_Wrapper.cpp">
+      <Filter>Source Files\Graphics\OpenGL\ThreadedOpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Graphics\OpenGLContext\ThreadedOpenGl\opengl_WrappedFunctions.cpp">
+      <Filter>Source Files\Graphics\OpenGL\ThreadedOpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Graphics\OpenGLContext\ThreadedOpenGl\opengl_Command.cpp">
+      <Filter>Source Files\Graphics\OpenGL\ThreadedOpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Graphics\OpenGLContext\ThreadedOpenGl\opengl_ObjectPool.cpp">
+      <Filter>Source Files\Graphics\OpenGL\ThreadedOpenGL</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\Graphics\OpenGLContext\ThreadedOpenGl\RingBufferPool.cpp">
+      <Filter>Source Files\Graphics\OpenGL\ThreadedOpenGL</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -634,6 +658,9 @@
     <ClInclude Include="..\..\src\Graphics\OpenGLContext\opengl_ColorBufferReaderWithReadPixels.h">
       <Filter>Header Files\Graphics\OpenGL</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\Graphics\OpenGLContext\windows\WindowsWGL.h">
+      <Filter>Header Files\Graphics\OpenGL\windows</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\src\TexrectDrawer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -729,6 +756,30 @@
     </ClInclude>
     <ClInclude Include="..\..\src\MemoryStatus.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Graphics\OpenGLContext\ThreadedOpenGl\opengl_Wrapper.h">
+      <Filter>Header Files\Graphics\OpenGL\ThreadedOpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Graphics\OpenGLContext\ThreadedOpenGl\opengl_WrappedFunctions.h">
+      <Filter>Header Files\Graphics\OpenGL\ThreadedOpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Graphics\OpenGLContext\ThreadedOpenGl\BlockingQueue.h">
+      <Filter>Header Files\Graphics\OpenGL\ThreadedOpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Graphics\OpenGLContext\ThreadedOpenGl\opengl_Command.h">
+      <Filter>Header Files\Graphics\OpenGL\ThreadedOpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Graphics\OpenGLContext\ThreadedOpenGl\opengl_ObjectPool.h">
+      <Filter>Header Files\Graphics\OpenGL\ThreadedOpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Graphics\OpenGLContext\ThreadedOpenGl\RingBufferPool.h">
+      <Filter>Header Files\Graphics\OpenGL\ThreadedOpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Graphics\OpenGLContext\ThreadedOpenGl\atomicops.h">
+      <Filter>Header Files\Graphics\OpenGL\ThreadedOpenGL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\Graphics\OpenGLContext\ThreadedOpenGl\readerwriterqueue.h">
+      <Filter>Header Files\Graphics\OpenGL\ThreadedOpenGL</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
