@@ -26,12 +26,22 @@ using namespace glsl;
 static
 std::string getStorageFileName(const opengl::GLInfo & _glinfo, const char * _fileExtension)
 {
+	class SetLocale
+	{
+	public:
+		SetLocale() : m_locale(setlocale(LC_CTYPE, NULL)) { setlocale(LC_CTYPE, ""); }
+		~SetLocale() { setlocale(LC_CTYPE, m_locale.c_str()); }
+	private:
+		std::string m_locale;
+	} setLocale;
+
 	wchar_t strCacheFolderPath[PLUGIN_PATH_SIZE];
 	api().GetUserCachePath(strCacheFolderPath);
 
-	// Convert wchar string to char string
-	char strCacheFolderPathChar[PLUGIN_PATH_SIZE];
-	std::wcstombs(strCacheFolderPathChar, strCacheFolderPath, PLUGIN_PATH_SIZE);
+	// Convert wchar string to multibyte string
+	// Use large enough buffer to hold multibyte conversion of wchar string
+	char strCacheFolderPathChar[PLUGIN_PATH_SIZE * 4];
+	std::wcstombs(strCacheFolderPathChar, strCacheFolderPath, sizeof(strCacheFolderPathChar));
 
 	std::stringstream path;
 	path << strCacheFolderPathChar << "/" << SHADER_STORAGE_FOLDER_NAME;
