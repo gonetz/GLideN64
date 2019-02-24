@@ -1210,11 +1210,25 @@ void TextureCache::_load(u32 _tile, CachedTexture *_pTexture)
 		}
 
 		bool bLoaded = false;
-		if ((config.textureFilter.txEnhancementMode | config.textureFilter.txFilterMode) != 0 &&
-				_pTexture->max_level == 0 &&
-				(config.textureFilter.txFilterIgnoreBG == 0 || (RSP.cmd != G_TEXRECT && RSP.cmd != G_TEXRECTFLIP)) &&
-				TFH.isInited())
-		{
+		bool needEnhance = (config.textureFilter.txEnhancementMode | config.textureFilter.txFilterMode) != 0 &&
+			_pTexture->max_level == 0 &&
+			TFH.isInited();
+		if (needEnhance) {
+			if (config.textureFilter.txFilterIgnoreBG != 0) {
+				switch (GBI.getMicrocodeType()) {
+				case S2DEX_1_07:
+				case S2DEX_1_03:
+				case S2DEX_1_05:
+					needEnhance = RSP.cmd != 0x01 && RSP.cmd != 0x02;
+					break;
+				case S2DEX2:
+					needEnhance = RSP.cmd != 0x09 && RSP.cmd != 0x0A;
+					break;
+				}
+			}
+		}
+
+		if (needEnhance) {
 			GHQTexInfo ghqTexInfo;
 			if (txfilter_filter((u8*)pDest, tmptex.realWidth, tmptex.realHeight,
 							(u16)u32(glInternalFormat), (uint64)_pTexture->crc,
