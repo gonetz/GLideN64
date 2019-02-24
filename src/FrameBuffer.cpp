@@ -1114,12 +1114,12 @@ bool FrameBufferList::RdpUpdate::update(RdpUpdateResult & _result)
 
 	s32 vactivelines = v_sync - (ispal ? 44 : 34);
 	if (vactivelines > PRESCALE_HEIGHT) {
-		LOG(LOG_MINIMAL, "VI_V_SYNC_REG too big\n");
+		LOG(LOG_VERBOSE, "VI_V_SYNC_REG too big\n");
 		return false;
 	}
 
 	if (vactivelines < 0) {
-		LOG(LOG_MINIMAL, "vactivelines lesser than 0\n");
+		LOG(LOG_VERBOSE, "vactivelines lesser than 0\n");
 		return false;
 	}
 
