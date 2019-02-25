@@ -1335,6 +1335,9 @@ u32 _calculateCRC(u32 _t, const TextureParams & _params, u32 _bytes)
 			crc = CRC_Calculate( crc, &gDP.paletteCRC256, 4 );
 	}
 
+	if (config.generalEmulation.enableLOD != 0 && gSP.texture.level > 1 && _t > 0)
+		crc = CRC_Calculate(crc, &gSP.texture.level, 4);
+
 	crc = CRC_Calculate(crc, &_params, sizeof(_params));
 
 	return crc;
