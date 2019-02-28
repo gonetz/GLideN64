@@ -53,6 +53,11 @@ EXPORT int CALL osal_path_existsW(const wchar_t *_path)
     return stat(path, &fileinfo) == 0 ? 1 : 0;
 }
 
+EXPORT int CALL osal_is_absolute_path(const wchar_t* name)
+{
+	return name[0] == L'/';
+}
+
 EXPORT int CALL osal_is_directory(const wchar_t * _name)
 {
     char name[PATH_MAX + 1];

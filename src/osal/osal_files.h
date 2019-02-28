@@ -50,6 +50,8 @@ extern "C" {
 
 // Returns 1 if name contains path to a directory, 0 otherwise
 EXPORT int CALL osal_is_directory(const wchar_t* name);
+// Returns 1 if name contains an absolute path, 0 otherwise. Path validity not tested.
+EXPORT int CALL osal_is_absolute_path(const wchar_t* name);
 // Returns 1 if path points to file or directory, 0 otherwise
 EXPORT int CALL osal_path_existsA(const char *path);
 // Returns 1 if path points to file or directory, 0 otherwise
