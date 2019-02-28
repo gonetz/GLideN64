@@ -88,7 +88,7 @@ void TextureFilterHandler::init()
 	wchar_t * pTexCachePath = config.textureFilter.txCachePath;
 	if (::wcslen(config.textureFilter.txCachePath) == 0) {
 		api().GetUserCachePath(txCachePath);
-		gln_wcscat(txPath, wst("/cache"));
+		gln_wcscat(txCachePath, wst("/cache"));
 		pTexCachePath = txCachePath;
 	}
 
@@ -96,7 +96,7 @@ void TextureFilterHandler::init()
 	wchar_t * pTexDumpPath = config.textureFilter.txDumpPath;
 	if (::wcslen(config.textureFilter.txDumpPath) == 0) {
 		api().GetUserCachePath(txDumpPath);
-		gln_wcscat(txPath, wst("/texture_dump"));
+		gln_wcscat(txDumpPath, wst("/texture_dump"));
 		pTexDumpPath = txDumpPath;
 	}
 
