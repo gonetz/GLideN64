@@ -2277,9 +2277,8 @@ void F5INDI_MoveWord(u32 _w0, u32 _w1)
 static
 void F5INDI_SetOtherMode(u32 w0, u32 w1)
 {
-	s32 AT = 0x80000000;
-	AT >>= _SHIFTR(w0, 0, 5);
-	u32 mask = u32(AT) >> _SHIFTR(w0, 8, 5);
+	u32 mask = (s32)0x80000000 >> _SHIFTR(w0, 0, 5);
+	mask >>= _SHIFTR(w0, 8, 5);
 
 	const u32 A0 = _SHIFTR(w0, 16, 3);
 	if (A0 == 0) {

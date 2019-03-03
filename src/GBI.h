@@ -462,7 +462,7 @@ typedef struct
 typedef struct
 {
 	s16 y, x;
-	u16	flag;
+	u16 flag;
 	s16 z;
 } SWVertex;
 
@@ -478,9 +478,10 @@ typedef void (*GBIFunc)( u32 w0, u32 w1 );
 
 struct MicrocodeInfo
 {
-	u32 address, dataAddress;
-	u16 dataSize;
-	u32 type;
+	u32 address = 0;
+	u32 dataAddress = 0;;
+	u16 dataSize = 0;
+	u32 type = NONE;
 	bool NoN = false;
 	bool Rej = false;
 	bool cullBoth = true;

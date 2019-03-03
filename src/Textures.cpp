@@ -598,6 +598,7 @@ void _calcTileSizes(u32 _t, TileSizes & _sizes, gDPTile * _pLoadTile)
 	u32 tileHeight = ((pTile->lrt - pTile->ult) & 0x03FF) + 1;
 	if (tileWidth == 1 && tileHeight == 1 &&
 		gDP.otherMode.cycleType == G_CYC_COPY &&
+		_pLoadTile != nullptr &&
 		_pLoadTile->loadType == LOADTYPE_BLOCK) {
 		const u32 ulx = _SHIFTR(RDP.w1, 14, 10);
 		const u32 uly = _SHIFTR(RDP.w1, 2, 10);

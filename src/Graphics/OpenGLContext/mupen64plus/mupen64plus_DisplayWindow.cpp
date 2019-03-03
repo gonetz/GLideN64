@@ -192,6 +192,8 @@ void DisplayWindowMupen64plus::_readScreen2(void * _dest, int * _width, int * _h
 		return;
 
 	u8 *pBufferData = (u8*)malloc((*_width)*(*_height) * 4);
+	if (pBufferData == nullptr)
+		return;
 	u8 *pDest = (u8*)_dest;
 
 #if !defined(OS_ANDROID) && !defined(OS_IOS)
