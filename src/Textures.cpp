@@ -632,6 +632,9 @@ void _calcTileSizes(u32 _t, TileSizes & _sizes, gDPTile * _pLoadTile)
 		if (gDP.loadTile->loadHeight != 0 && gDP.loadTile->maskt == 0) {
 			info.height = gDP.loadTile->loadHeight;
 			info.bytes = info.height * (gDP.loadTile->line << 3);
+			if (gDP.loadTile->size == G_IM_SIZ_32b)
+				// 32 bit texture loaded into lower and upper half of TMEM, thus actual bytes doubled.
+				info.bytes *= 2;
 		}
 		gDP.loadTile->loadWidth = gDP.loadTile->loadHeight = 0;
 	}
