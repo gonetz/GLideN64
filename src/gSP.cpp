@@ -1672,9 +1672,10 @@ void gSPModifyVertex( u32 _vtx, u32 _where, u32 _val )
 		break;
 		case G_MWO_POINT_ZSCREEN:
 		{
-			f32 scrZ = _FIXED2FLOAT((s16)_SHIFTR(_val, 16, 16), 15);
-			DebugMsg(DEBUG_NORMAL, "gSPModifyVertex: Z(%02f);\n", vtx0.z);
-			vtx0.z = (scrZ - gSP.viewport.vtrans[2]) / (gSP.viewport.vscale[2]);
+			// All 32 bits of _val are the z value (16.11)
+			f32 scrZ = float(_val) / 65535.0f / 2048.0f;
+			DebugMsg(DEBUG_NORMAL, "gSPModifyVertex: iZ(0x%08x) Z(%02f);\n", _val, scrZ);
+			vtx0.z = scrZ;
 			vtx0.clip &= ~CLIP_W;
 			vtx0.modify |= MODIFY_Z;
 		}
