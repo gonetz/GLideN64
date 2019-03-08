@@ -78,7 +78,10 @@ void F3DEX2_MoveWord( u32 w0, u32 w1 )
 	switch (_SHIFTR( w0, 16, 8 ))
 	{
 		case G_MW_FORCEMTX:
-			// Handled in movemem
+			if (w1 == 0)
+				gSP.changed |= CHANGED_MATRIX;
+			else
+				gSP.changed &= ~CHANGED_MATRIX;
 			break;
 		case G_MW_MATRIX:
 			gSPInsertMatrix( _SHIFTR( w0, 0, 16 ), w1 );
