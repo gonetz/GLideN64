@@ -1,0 +1,32 @@
+version: 1.0.{build}
+pull_requests:
+  do_not_increment_build_number: true
+branches:
+  only:
+  - master
+skip_branch_with_pr: true
+configuration: Release_mupenplus
+platform:
+  - win32
+  - x64
+environment:
+  N64PluginsDir: C:\projects\gliden64\build\zilmar-spec\
+  Mupen64PluginsDir: C:\projects\gliden64\build\mupen64plus\
+  Mupen64PluginsDir_x64: C:\projects\gliden64\build\mupen64plus_x64\
+build:
+  project: projects\msvc\GLideN64.sln
+  parallel: true
+  verbosity: normal
+artifacts:
+- path: build\mupen64plus\mupen64plus-video-GLideN64.dll
+  name: mupen64plus-video-GLideN64.dll
+- path: build\mupen64plus_x64\mupen64plus-video-GLideN64.dll
+  name: mupen64plus-video-GLideN64.dll
+deploy:
+- provider: GitHub
+  release: GLideN64-mupen64plus-win32-v$(APPVEYOR_REPO_COMMIT)
+  description: Win32 release build of GLideN64 for mupen64plus, commit $(APPVEYOR_REPO_COMMIT)
+  auth_token:
+    secure: 5fZs6/e+QeeOs6CkKnyHULqkFyEIhK/aJ61IFtLoPYwTQDcb6nG8sqs5KA+XohP5
+  on:
+    DEPLOY_GITHUB: ON
