@@ -1556,7 +1556,7 @@ void GraphicsDrawer::clearColorBuffer(float *_pColor)
 
 bool GraphicsDrawer::isRejected(s32 _v0, s32 _v1, s32 _v2) const
 {
-	if (!GBI.isRej())
+	if (!GBI.isRej() || gSP.clipRatio < 2)
 		return false;
 
 	static gDPScissor rejectBox;
@@ -1570,6 +1570,7 @@ bool GraphicsDrawer::isRejected(s32 _v0, s32 _v1, s32 _v2) const
 		gDP.changed ^= CHANGED_REJECT_BOX;
 	}
 	s32 verts[3] = { _v0, _v1, _v2 };
+	const f32 ySign = GBI.isNegativeY() ? -1.0f : 1.0f;
 	for (u32 i = 0; i < 3; ++i) {
 		const SPVertex & v = triangles.vertices[verts[i]];
 		const f32 sx = gSP.viewport.vtrans[0] + (v.x / v.w) * gSP.viewport.vscale[0];
@@ -1577,7 +1578,7 @@ bool GraphicsDrawer::isRejected(s32 _v0, s32 _v1, s32 _v2) const
 			return true;
 		if (sx > rejectBox.lrx)
 			return true;
-		const f32 sy = gSP.viewport.vtrans[1] + (v.y / v.w) * gSP.viewport.vscale[1];
+		const f32 sy = gSP.viewport.vtrans[1] + (v.y / v.w) * gSP.viewport.vscale[1] * ySign;
 		if (sy < rejectBox.uly)
 			return true;
 		if (sy > rejectBox.lry)
