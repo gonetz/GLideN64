@@ -10,6 +10,7 @@
 #include <N64.h>
 #include <VI.h>
 #include "Log.h"
+#include "MemoryStatus.h"
 
 /*
 #include "ColorBufferToRDRAM_GL.h"
@@ -318,6 +319,8 @@ u32 ColorBufferToRDRAM::_getRealWidth(u32 _viWidth)
 
 void ColorBufferToRDRAM::copyToRDRAM(u32 _address, bool _sync)
 {
+	if (!isMemoryWritable(RDRAM + _address, gDP.colorImage.width << gDP.colorImage.size >> 1))
+		return;
 	if (!_prepareCopy(_address))
 		return;
 	const u32 numBytes = (m_pCurFrameBuffer->m_width*m_pCurFrameBuffer->m_height) << m_pCurFrameBuffer->m_size >> 1;
@@ -328,6 +331,8 @@ void ColorBufferToRDRAM::copyChunkToRDRAM(u32 _startAddress)
 {
 	const u32 endAddress = (_startAddress & ~0xfff) + 0x1000;
 
+	if (!isMemoryWritable(RDRAM + _startAddress, endAddress - _startAddress))
+		return;
 	if (!_prepareCopy(_startAddress))
 		return;
 	_copy(_startAddress, endAddress, true);

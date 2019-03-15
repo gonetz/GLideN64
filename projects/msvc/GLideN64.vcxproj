@@ -278,6 +278,9 @@ copy /Y "$(OutDir)$(TargetName).*" "$(Mupen64PluginsDir_x64)")</Command>
     <ClCompile Include="..\..\src\mupenplus\Config_mupenplus.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)'=='Debug' Or '$(Configuration)'=='Release'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="..\..\src\mupenplus\MemoryStatus_mupenplus.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)'=='Debug' Or '$(Configuration)'=='Release'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\..\src\mupenplus\MupenPlusAPIImpl.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)'=='Debug' Or '$(Configuration)'=='Release'">true</ExcludedFromBuild>
     </ClCompile>
@@ -333,6 +336,9 @@ copy /Y "$(OutDir)$(TargetName).*" "$(Mupen64PluginsDir_x64)")</Command>
       <ExcludedFromBuild Condition="'$(Configuration)'=='Debug_mupenplus' Or '$(Configuration)'=='Release_mupenplus'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\src\windows\GLideN64_windows.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)'=='Debug_mupenplus' Or '$(Configuration)'=='Release_mupenplus'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\..\src\windows\MemoryStatus_windows.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)'=='Debug_mupenplus' Or '$(Configuration)'=='Release_mupenplus'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\src\windows\ZilmarAPIImpl_windows.cpp">
@@ -406,6 +412,7 @@ copy /Y "$(OutDir)$(TargetName).*" "$(Mupen64PluginsDir_x64)")</Command>
     <ClInclude Include="..\..\src\inc\glext.h" />
     <ClInclude Include="..\..\src\Keys.h" />
     <ClInclude Include="..\..\src\Log.h" />
+    <ClInclude Include="..\..\src\MemoryStatus.h" />
     <ClInclude Include="..\..\src\mupenplus\GLideN64_mupenplus.h">
       <ExcludedFromBuild Condition="'$(Configuration)'=='Debug' Or '$(Configuration)'=='Release'">true</ExcludedFromBuild>
     </ClInclude>

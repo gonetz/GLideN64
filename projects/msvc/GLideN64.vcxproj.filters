@@ -392,6 +392,12 @@
     <ClCompile Include="..\..\src\Graphics\OpenGLContext\GLSL\glsl_FXAA.cpp">
       <Filter>Source Files\Graphics\OpenGL\GLSL</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\windows\MemoryStatus_windows.cpp">
+      <Filter>Source Files\windows</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\mupenplus\MemoryStatus_mupenplus.cpp">
+      <Filter>Source Files\mupenplus</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\3DMath.h">
@@ -720,6 +726,9 @@
     </ClInclude>
     <ClInclude Include="..\..\src\Graphics\OpenGLContext\GLSL\glsl_FXAA.h">
       <Filter>Header Files\Graphics\OpenGL\GLSL</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\MemoryStatus.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

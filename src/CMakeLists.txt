@@ -142,6 +142,7 @@ if(MUPENPLUSAPI)
 	MupenPlusPluginAPI.cpp
 	mupenplus/Config_mupenplus.cpp
 	mupenplus/CommonAPIImpl_mupenplus.cpp
+	mupenplus/MemoryStatus_mupenplus.cpp
 	mupenplus/MupenPlusAPIImpl.cpp
 	Graphics/OpenGLContext/mupen64plus/mupen64plus_DisplayWindow.cpp
   )
@@ -158,6 +159,7 @@ else(MUPENPLUSAPI)
 	windows/Config_windows.cpp
 	windows/CommonAPIImpl_windows.cpp
 	windows/GLideN64_windows.cpp
+	windows/MemoryStatus_windows.cpp
 	common/GLFunctions.cpp
 	windows/ZilmarAPIImpl_windows.cpp
 	Graphics/OpenGLContext/windows/windows_DisplayWindow.cpp

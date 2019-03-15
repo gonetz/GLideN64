@@ -56,6 +56,7 @@ MY_LOCAL_SRC_FILES :=                                                           
     $(SRCDIR)/common/CommonAPIImpl_common.cpp                                      \
     $(SRCDIR)/mupenplus/CommonAPIImpl_mupenplus.cpp                                \
     $(SRCDIR)/mupenplus/Config_mupenplus.cpp                                       \
+    $(SRCDIR)/mupenplus/MemoryStatus_mupenplus.cpp                                 \
     $(SRCDIR)/mupenplus/MupenPlusAPIImpl.cpp                                       \
     $(SRCDIR)/DepthBufferRender/ClipPolygon.cpp                                    \
     $(SRCDIR)/DepthBufferRender/DepthBufferRender.cpp                              \
