@@ -1,3 +1,4 @@
+#pragma once
 #include "Types.h"
 
 void CRC_Init();
