@@ -355,7 +355,6 @@ copy /Y "$(OutDir)$(TargetName).*" "$(Mupen64PluginsDir_x64)")</Command>
     <ClInclude Include="..\..\src\Config.h" />
     <ClInclude Include="..\..\src\convert.h" />
     <ClInclude Include="..\..\src\CRC.h" />
-    <ClInclude Include="..\..\src\CRC32.h" />
     <ClInclude Include="..\..\src\DebugDump.h" />
     <ClInclude Include="..\..\src\Debugger.h" />
     <ClInclude Include="..\..\src\DepthBuffer.h" />

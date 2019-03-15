@@ -508,9 +508,6 @@
     <ClInclude Include="..\..\src\Performance.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\CRC32.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\Graphics\ContextImpl.h">
       <Filter>Header Files\Graphics</Filter>
     </ClInclude>
