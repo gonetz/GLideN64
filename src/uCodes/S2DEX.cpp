@@ -394,9 +394,11 @@ struct ObjCoordinates
 			th = sh - (((yh & 3) * 0x0200 * scaleH) >> 16);
 			tl = th + _pObjSprite->imageH + CC.A0 - CC.A1 - 1;
 		};
+		const u16 objSpriteScaleW = std::max(_pObjSprite->scaleW, u16(1));
+		const u16 objSpriteScaleH = std::max(_pObjSprite->scaleH, u16(1));
 		if (_useMatrix) {
-			const u32 scaleW = (u32(objMtx.BaseScaleX) * 0x40 * _pObjSprite->scaleW) >> 16;
-			const u32 scaleH = (u32(objMtx.BaseScaleY) * 0x40 * _pObjSprite->scaleH) >> 16;
+			const u32 scaleW = (u32(objMtx.BaseScaleX) * 0x40 * objSpriteScaleW) >> 16;
+			const u32 scaleH = (u32(objMtx.BaseScaleY) * 0x40 * objSpriteScaleH) >> 16;
 			if (gs_s2dexversion == eVer1_3) {
 				// XH = AND ((((objX << 0x10) * 0x0800 * (0x80007FFF/BaseScaleX)) >> 0x30) + X + A2) by B0
 				// XL = XH + AND (((((imageW - A1) * 0x100) *  (0x80007FFF/scaleW)) >> 0x20) + B2) by B0
@@ -432,10 +434,10 @@ struct ObjCoordinates
 			// YH = AND(objY + A2) by B0
 			// YL = ((AND(objY + A2) by B0) << 16) + (((ImageH - A1) << 24)*(0x80007FFF / scaleH)) >> 48
 			xh = (_pObjSprite->objX + CC.A2) & CC.B0;
-			xl = static_cast<s16>((((u64(_pObjSprite->imageW) - CC.A1) << 24) * (0x80007FFFU / u32(_pObjSprite->scaleW))) >> 48) + xh;
+			xl = static_cast<s16>((((u64(_pObjSprite->imageW) - CC.A1) << 24) * (0x80007FFFU / u32(objSpriteScaleW))) >> 48) + xh;
 			yh = (_pObjSprite->objY + CC.A2) & CC.B0;
-			yl = static_cast<s16>((((u64(_pObjSprite->imageH) - CC.A1) << 24) * (0x80007FFFU / u32(_pObjSprite->scaleH))) >> 48) + yh;
-			calcST(CC.B2, _pObjSprite->scaleH);
+			yl = static_cast<s16>((((u64(_pObjSprite->imageH) - CC.A1) << 24) * (0x80007FFFU / u32(objSpriteScaleH))) >> 48) + yh;
+			calcST(CC.B2, objSpriteScaleH);
 		}
 
 		ulx = _FIXED2FLOAT(xh, 2);
