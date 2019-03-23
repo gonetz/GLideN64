@@ -300,6 +300,8 @@ void RSP_Init()
 		config.generalEmulation.hacks |= hack_blurPauseScreen;
 	else if (strstr(RSP.romname, (const char *)"GOLDENEYE") != nullptr)
 		config.generalEmulation.hacks |= hack_clearAloneDepthBuffer;
+	else if (strstr(RSP.romname, (const char *)"STARCRAFT 64") != nullptr)
+		config.generalEmulation.hacks |= hack_StarCraftBackgrounds;
 	else if (strstr(RSP.romname, (const char *)"POKEMON STADIUM 2") != nullptr ||
 			 strstr(RSP.romname, (const char *)"Bottom of the 9th") != nullptr)
 		config.generalEmulation.hacks |= hack_texrect_shade_alpha;

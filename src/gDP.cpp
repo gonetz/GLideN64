@@ -358,7 +358,7 @@ bool CheckForFrameBufferTexture(u32 _address, u32 _width, u32 _bytes)
 			}
 		}
 
-		if (gDP.otherMode.textureLUT == G_TT_RGBA16) {
+		if (gDP.otherMode.textureLUT == G_TT_RGBA16 && (config.generalEmulation.hacks & hack_StarCraftBackgrounds) != 0) {
 			bRes = false;
 			break;
 		}

@@ -196,6 +196,7 @@ struct Config
 #define hack_noDepthFrameBuffers	(1<<1)  //Do not use depth buffers as texture
 #define hack_blurPauseScreen		(1<<2)  //Game copies frame buffer to depth buffer area, CPU blurs it. That image is used as background for pause screen.
 #define hack_clearAloneDepthBuffer	(1<<3)  //Force clear depth buffer if there is no frame buffer for it. Multiplayer in GE and PD.
+#define hack_StarCraftBackgrounds	(1<<4)  //StarCraft special check for frame buffer usage.
 #define hack_texrect_shade_alpha	(1<<5)  //Set vertex alpha to 1 when texrect alpha combiner uses shade. Pokemon Stadium 2
 #define hack_subscreen				(1<<6)  //Fix subscreen delay in Zelda OOT and Doubutsu no Mori
 #define hack_blastCorps				(1<<7)  //Blast Corps black polygons
