@@ -34,14 +34,14 @@ inline u32 GetCI4_RGBA8888(u64 *src, u16 x, u16 i, u8 palette)
 {
 	u8 color4B = ((u8*)src)[(x >> 1) ^ (i << 1)];
 
-	return CI4_RGBA8888((x & 1) ? (color4B & 0x0F) : (color4B >> 4));
+	return CI4_RGBA8888((x & 1) ? (palette << 4) | (color4B & 0x0F) : (palette << 4) | (color4B >> 4));
 }
 
 inline u32 GetCI4_RGBA4444(u64 *src, u16 x, u16 i, u8 palette)
 {
 	u8 color4B = ((u8*)src)[(x >> 1) ^ (i << 1)];
 
-	return CI4_RGBA4444((x & 1) ? (color4B & 0x0F) : (color4B >> 4));
+	return CI4_RGBA4444((x & 1) ? (palette << 4) | (color4B & 0x0F) : (palette << 4) | (color4B >> 4));
 }
 
 inline u32 GetCI4IA_RGBA4444(u64 *src, u16 x, u16 i, u8 palette)

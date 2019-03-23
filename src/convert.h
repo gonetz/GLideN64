@@ -327,13 +327,10 @@ inline u16 I4_RGBA4444( u8 color )
 
 inline u32 CI4_RGBA4444(u8 color)
 {
-#if 0
-	u16 ret = (color & 0x0f) >> 3;
+	u16 ret = color >> 4;
 	ret |= ret << 4;
 	ret |= ret << 8;
 	return ret;
-#endif
-	return 0;
 }
 
 inline u32 CI4_RGBA8888(u8 color)
