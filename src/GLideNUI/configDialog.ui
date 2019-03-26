@@ -462,7 +462,7 @@
                     <item>
                      <widget class="QSlider" name="aliasingSlider">
                       <property name="maximum">
-                       <number>3</number>
+                       <number>4</number>
                       </property>
                       <property name="singleStep">
                        <number>1</number>
