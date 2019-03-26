@@ -397,6 +397,9 @@
            </property>
            <item>
             <widget class="QCheckBox" name="fxaaCheckBox">
+             <property name="toolTip">
+              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Fast Approximate Anti-Aliasing&lt;/span&gt;&lt;/p&gt;&lt;p&gt;FXAA is an anti-aliasing algorithm. It works as post-processing filter. FXAA provides decent result, but not as good as with MSAA. The main reason to use FXAA is that it is compatible with &amp;quot;N64-style depth compare&amp;quot; option, while MSAA is not.&lt;/p&gt;&lt;p&gt;Note:&lt;br/&gt;* FXAA adds some blurriness to output image. Some textures, such as text, may look worse with it.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+             </property>
              <property name="text">
               <string>Fast Approximate Anti-Aliasing (FXAA)</string>
              </property>
@@ -406,6 +409,9 @@
             <layout class="QVBoxLayout" name="verticalLayout_21">
              <item>
               <widget class="QFrame" name="aliasingFrame">
+               <property name="toolTip">
+                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Multisample Anti-Aliasing&lt;/span&gt;&lt;/p&gt;&lt;p&gt;MSAA is a standard anti-aliasing technique used in computer graphics to improve image quality. Most modern GPUs support 2×, 4×, 8×, and 16× MSAA samples. Higher values result in better quality, but are slower.&lt;/p&gt;&lt;p&gt;Notes:&lt;br/&gt;* MSAA is incompatible with &amp;quot;N64-style depth compare&amp;quot; option.&lt;/p&gt;&lt;p&gt;* Use of MSAA may cause minor glitches in some games.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+               </property>
                <layout class="QVBoxLayout" name="verticalLayout_54">
                 <property name="spacing">
                  <number>5</number>
@@ -2161,11 +2167,14 @@
                      </property>
                      <item>
                       <widget class="QCheckBox" name="n64DepthCompareCheckBox">
+                       <property name="acceptDrops">
+                        <bool>false</bool>
+                       </property>
                        <property name="toolTip">
-                        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The N64 uses a unique method of calculating depth to the camera. When checked, GlideN64 uses shaders to try to emulate these calculations correctly. Not compatible with anti-aliasing. &lt;span style=&quot; font-weight:600;&quot;&gt;Experimental!&lt;/span&gt;&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;Sometimes checked, for a few games&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The N64 uses a unique method of calculating depth to the camera. When checked, GlideN64 uses shaders to try to emulate these calculations correctly. This option fixes many  issues with depth compare, but it is not compatible with Multisample Anti-Aliasing (MSAA). It also may cause slowdown in some games.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;must be on for some games. Try with every game. &lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
                        </property>
                        <property name="text">
-                        <string>Enable N64-style depth compare (experimental)</string>
+                        <string>Enable N64-style depth compare</string>
                        </property>
                       </widget>
                      </item>
@@ -4148,10 +4157,10 @@
  </connections>
  <buttongroups>
   <buttongroup name="screenshotButtonGroup"/>
+  <buttongroup name="osdButtonGroup"/>
+  <buttongroup name="factorButtonGroup"/>
   <buttongroup name="aspectButtonGroup"/>
   <buttongroup name="bgModeButtonGroup"/>
-  <buttongroup name="factorButtonGroup"/>
   <buttongroup name="fixTexrectCoordsButtonGroup"/>
-  <buttongroup name="osdButtonGroup"/>
  </buttongroups>
 </ui>
