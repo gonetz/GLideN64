@@ -415,14 +415,14 @@ namespace glsl {
 		TextDraw(const opengl::GLInfo & _glinfo)
 		{
 			m_part =
-				"IN mediump vec2 vTexCoord0;							\n"
-				"uniform sampler2D uTex0;								\n"
-				"uniform lowp vec4 uColor;								\n"
-				"OUT lowp vec4 fragColor;								\n"
-				"														\n"
-				"void main()											\n"
-				"{														\n"
-				"  fragColor = texture2D(uTex0, vTexCoord0).r * uColor;		\n"
+				"IN mediump vec2 vTexCoord0;	\n"
+				"uniform sampler2D uTex0;			\n"
+				"uniform lowp vec4 uColor;		\n"
+				"OUT lowp vec4 fragColor;			\n"
+				"															\n"
+				"void main()																														\n"
+				"{																																			\n"
+				"  fragColor = pow(texture2D(uTex0, vTexCoord0).r, 1.0 / 1.8) * uColor;	\n"
 			;
 		}
 	};
