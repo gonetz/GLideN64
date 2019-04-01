@@ -225,32 +225,7 @@
            <item>
             <widget class="QLabel" name="label_17">
              <property name="text">
-              <string notr="true">purplemarshmallow
-Francisco Zurita
-Logan McNaughton
-gizmo98
-matthewharvey
-lioncash
-Predator82Germany
-AmbientMalice
-baptiste0602
-Gilles Siberlin
-Daniel Eck
-Víctor &quot;IlDucci&quot;
-orbea
-BenjaminSiskoo
-ptitSeb
-Kimberly J. Ortega
-Maxime Morel
-tony971
-SigmaVirus
-Jools Wills
-Nekokabu
-nicklauslittle
-Nebuleon
-sergiobenrocha2
-Michał Durak
-Mushman</string>
+              <string notr="true">&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Logan McNaughton&lt;/p&gt;&lt;p&gt;Francisco Zurita&lt;/p&gt;&lt;p&gt;gizmo98&lt;/p&gt;&lt;p&gt;purplemarshmallow&lt;/p&gt;&lt;p&gt;zilmar&lt;/p&gt;&lt;p&gt;matthewharvey&lt;/p&gt;&lt;p&gt;lioncash&lt;/p&gt;&lt;p&gt;Predator82Germany&lt;/p&gt;&lt;p&gt;AmbientMalice&lt;/p&gt;&lt;p&gt;baptiste0602&lt;/p&gt;&lt;p&gt;Gilles Siberlin&lt;/p&gt;&lt;p&gt;Daniel Eck&lt;/p&gt;&lt;p&gt;Víctor &amp;quot;IlDucci&amp;quot;&lt;/p&gt;&lt;p&gt;orbea&lt;/p&gt;&lt;p&gt;BenjaminSiskoo&lt;/p&gt;&lt;p&gt;ptitSeb&lt;/p&gt;&lt;p&gt;Kimberly J. Ortega&lt;/p&gt;&lt;p&gt;Maxime Morel&lt;/p&gt;&lt;p&gt;tony971&lt;/p&gt;&lt;p&gt;SigmaVirus&lt;/p&gt;&lt;p&gt;Jools Wills&lt;/p&gt;&lt;p&gt;Nekokabu&lt;/p&gt;&lt;p&gt;nicklauslittle&lt;/p&gt;&lt;p&gt;Nebuleon&lt;/p&gt;&lt;p&gt;sergiobenrocha2&lt;/p&gt;&lt;p&gt;Michał Durak&lt;/p&gt;&lt;p&gt;Mushman&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
              </property>
             </widget>
            </item>
