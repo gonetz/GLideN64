@@ -136,7 +136,8 @@ void RSP_ProcessDList()
 			gSP.matrix.stackSize = 32;
 		gSP.matrix.modelViewi = 0;
 		gSP.status[0] = gSP.status[1] = gSP.status[2] = gSP.status[3] = 0;
-		gSP.changed |= CHANGED_MATRIX | CHANGED_LIGHT | CHANGED_LOOKAT;
+		gSP.geometryMode = 0U;
+		gSP.changed |= CHANGED_MATRIX | CHANGED_LIGHT | CHANGED_LOOKAT | CHANGED_GEOMETRYMODE;
 		gSP.tri_num = 0;
 		gSP.cbfd.advancedLighting = false;
 		gDP.changed &= ~CHANGED_CPU_FB_WRITE;
@@ -180,7 +181,7 @@ void RSP_ProcessDList()
 		break;
 	}
 
-	if(RSP.infloop && REG.SP_STATUS) {
+	if (RSP.infloop && REG.SP_STATUS) {
 		*REG.SP_STATUS &= ~(SP_STATUS_TASKDONE | SP_STATUS_HALT | SP_STATUS_BROKE);
 		return;
 	}

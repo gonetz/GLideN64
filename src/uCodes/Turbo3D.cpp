@@ -134,14 +134,11 @@ void Turbo3D_LoadObject(u32 pstate, u32 pvtx, u32 ptri)
 	gDPSetOtherMode( _SHIFTR( w0, 0, 24 ),	// mode0
 					 w1 );					// mode1
 
-	gSPSetGeometryMode(ostate->renderState);
-
 	if (ostate->flag != GT_FLAG_NOMTX)
 		gSPForceMatrix(pstate + sizeof(T3DState));
 
-	gSPClearGeometryMode(G_LIGHTING);
-	gSPClearGeometryMode(G_FOG);
-	gSPSetGeometryMode(G_SHADING_SMOOTH);
+	gSPClearGeometryMode(G_LIGHTING | G_FOG);
+	gSPSetGeometryMode(ostate->renderState | G_SHADING_SMOOTH | G_SHADE | G_ZBUFFER | G_CULL_BACK);
 
 	if (pvtx != 0)
 		gSPVertex(pvtx, ostate->vtxCount, ostate->vtxV0);

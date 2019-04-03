@@ -903,9 +903,6 @@ void gDPFullSync()
 			FrameBuffer_CopyDepthBuffer(gDP.colorImage.address);
 	}
 
-	gSP.geometryMode = 0U;
-	gSP.changed |= CHANGED_GEOMETRYMODE;
-
 	*REG.MI_INTR |= MI_INTR_DP;
 
 	CheckInterrupts();
