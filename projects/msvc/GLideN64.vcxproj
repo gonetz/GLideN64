@@ -72,7 +72,7 @@
   <ItemDefinitionGroup>
     <ClCompile>
       <AdditionalIncludeDirectories>../../src;../../src/inc;../../src/osal;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>UNICODE;_USRDLL;_CRT_SECURE_NO_WARNINGS;TXFILTER_LIB;OS_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>UNICODE;_USRDLL;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;TXFILTER_LIB;OS_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <WarningLevel>Level3</WarningLevel>
       <PrecompiledHeader>
