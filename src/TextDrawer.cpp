@@ -188,7 +188,7 @@ struct Atlas {
 
 		gfxContext.setTextureUnpackAlignment(curUnpackAlignment);
 
-		LOG(LOG_VERBOSE, "Generated a %d x %d (%d kb) texture atlas\n", w, h, w * h / 1024);
+		LOG(LOG_VERBOSE, "Generated a %d x %d (%d kb) texture atlas", w, h, w * h / 1024);
 	}
 
 	~Atlas() {

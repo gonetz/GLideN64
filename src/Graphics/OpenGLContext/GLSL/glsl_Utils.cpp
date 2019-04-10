@@ -37,7 +37,7 @@ bool Utils::checkShaderCompileStatus(GLuint obj)
 		GLsizei nLogSize = nShaderLogSize;
 		glGetShaderInfoLog(obj, nShaderLogSize, &nLogSize, shader_log);
 		shader_log[nLogSize] = 0;
-		LOG(LOG_ERROR, "shader_compile error: %s\n", shader_log);
+		LOG(LOG_ERROR, "shader_compile error: %s", shader_log);
 		return false;
 	}
 #endif
@@ -53,7 +53,7 @@ bool Utils::checkProgramLinkStatus(GLuint obj)
 		GLsizei nLogSize = nShaderLogSize;
 		GLchar shader_log[nShaderLogSize];
 		glGetProgramInfoLog(obj, nShaderLogSize, &nLogSize, shader_log);
-		LOG(LOG_ERROR, "shader_link error: %s\n", shader_log);
+		LOG(LOG_ERROR, "shader_link error: %s", shader_log);
 		return false;
 	}
 #endif

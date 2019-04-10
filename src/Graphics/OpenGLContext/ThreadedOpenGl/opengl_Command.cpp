@@ -18,7 +18,7 @@ namespace opengl {
 			auto error = ptrGetError();
 			if (error != GL_NO_ERROR) {
 				std::stringstream errorString;
-				errorString << " OpenGL error: 0x" << std::hex << error << ", on function: " << m_functionName << std::endl;
+				errorString << " OpenGL error: 0x" << std::hex << error << ", on function: " << m_functionName;
 				LOG(LOG_ERROR, errorString.str().c_str());
 				throw std::runtime_error(errorString.str().c_str());
 			}
@@ -39,7 +39,7 @@ namespace opengl {
 #ifdef GL_DEBUG
 			if (m_logIfSynced) {
 				std::stringstream errorString;
-				errorString << " Executing synced: " << m_functionName << std::endl;
+				errorString << " Executing synced: " << m_functionName;
 				LOG(LOG_ERROR, errorString.str().c_str());
 			}
 #endif
