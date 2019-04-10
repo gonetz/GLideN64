@@ -4750,7 +4750,7 @@ class ShutdownCommand : public OpenGlCommand
 {
 public:
 	ShutdownCommand() :
-		OpenGlCommand(false, false, "Shutdown")
+		OpenGlCommand(false, false, "Shutdown", false)
 	{
 	}
 

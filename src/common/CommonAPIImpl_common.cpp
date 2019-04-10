@@ -172,8 +172,12 @@ void PluginAPI::ProcessRDPList()
 
 void PluginAPI::RomClosed()
 {
-	LOG(LOG_APIFUNC, "RomClosed\n");
+	if (!m_bRomOpen)
+		return;
+
 	m_bRomOpen = false;
+
+	LOG(LOG_APIFUNC, "RomClosed\n");
 #ifdef RSPTHREAD
 	_callAPICommand(RomClosedCommand(
 					&m_rspThreadMtx,
