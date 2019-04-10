@@ -10,8 +10,6 @@ bool WindowsWGL::start()
 {
 	int pixelFormat;
 
-	LOG(LOG_APIFUNC, "WindowsWGL::start TEST1\n");
-
 	PIXELFORMATDESCRIPTOR pfd = {
 		sizeof(PIXELFORMATDESCRIPTOR),    // size of this pfd
 		1,                                // version number
@@ -32,70 +30,55 @@ bool WindowsWGL::start()
 		0,                                // reserved
 		0, 0, 0                           // layer masks ignored
 	};
-	LOG(LOG_APIFUNC, "WindowsWGL::start TEST2\n");
 
 	if (hWnd == NULL)
 		hWnd = GetActiveWindow();
 
-	LOG(LOG_APIFUNC, "WindowsWGL::start TEST3\n");
 	if ((hDC = GetDC(hWnd)) == NULL) {
 		MessageBox(hWnd, L"Error while getting a device context!", pluginNameW, MB_ICONERROR | MB_OK);
 		return false;
 	}
 
-	LOG(LOG_APIFUNC, "WindowsWGL::start TEST4\n");
 	if ((pixelFormat = ChoosePixelFormat(hDC, &pfd)) == 0) {
 		MessageBox(hWnd, L"Unable to find a suitable pixel format!", pluginNameW, MB_ICONERROR | MB_OK);
 		stop();
 		return false;
 	}
 
-	LOG(LOG_APIFUNC, "WindowsWGL::start TEST5\n");
 	if ((SetPixelFormat(hDC, pixelFormat, &pfd)) == FALSE) {
 		MessageBox(hWnd, L"Error while setting pixel format!", pluginNameW, MB_ICONERROR | MB_OK);
 		stop();
 		return false;
 	}
 
-	LOG(LOG_APIFUNC, "WindowsWGL::start TEST6\n");
 	if ((hRC = wglCreateContext(hDC)) == NULL) {
 		MessageBox(hWnd, L"Error while creating OpenGL context!", pluginNameW, MB_ICONERROR | MB_OK);
 		stop();
 		return false;
 	}
 
-	LOG(LOG_APIFUNC, "WindowsWGL::start TEST7\n");
 	if ((wglMakeCurrent(hDC, hRC)) == FALSE) {
 		MessageBox(hWnd, L"Error while making OpenGL context current!", pluginNameW, MB_ICONERROR | MB_OK);
 		stop();
 		return false;
 	}
 
-	LOG(LOG_APIFUNC, "WindowsWGL::start TEST7.1\n");
 	initGLFunctions();
-	LOG(LOG_APIFUNC, "WindowsWGL::start TEST7.2\n");
 
-	LOG(LOG_APIFUNC, "WindowsWGL::start TEST8\n");
 	PFNWGLGETEXTENSIONSSTRINGARBPROC wglGetExtensionsStringARB =
 		(PFNWGLGETEXTENSIONSSTRINGARBPROC)wglGetProcAddress("wglGetExtensionsStringARB");
 
-	LOG(LOG_APIFUNC, "WindowsWGL::start TEST9\n");
 	if (wglGetExtensionsStringARB != NULL) {
 		const char * wglextensions = wglGetExtensionsStringARB(hDC);
-		LOG(LOG_APIFUNC, "WindowsWGL::start TEST9.1\n");
 
 		if (strstr(wglextensions, "WGL_ARB_create_context_profile") != nullptr) {
-			LOG(LOG_APIFUNC, "WindowsWGL::start TEST9.1.1\n");
 			PFNWGLCREATECONTEXTATTRIBSARBPROC wglCreateContextAttribsARB =
 				(PFNWGLCREATECONTEXTATTRIBSARBPROC)wglGetProcAddress("wglCreateContextAttribsARB");
-			LOG(LOG_APIFUNC, "WindowsWGL::start TEST9.2\n");
 
 			GLint majorVersion = 0;
 			ptrGetIntegerv(GL_MAJOR_VERSION, &majorVersion);
-			LOG(LOG_APIFUNC, "WindowsWGL::start TEST9.3\n");
 			GLint minorVersion = 0;
 			ptrGetIntegerv(GL_MINOR_VERSION, &minorVersion);
-			LOG(LOG_APIFUNC, "WindowsWGL::start TEST9.4\n");
 
 			const int attribList[] =
 			{
@@ -106,21 +89,16 @@ bool WindowsWGL::start()
 			};
 
 			HGLRC coreHrc = wglCreateContextAttribsARB(hDC, 0, attribList);
-			LOG(LOG_APIFUNC, "WindowsWGL::start TEST9.5\n");
 			if (coreHrc != NULL) {
 				wglDeleteContext(hRC);
 				wglMakeCurrent(hDC, coreHrc);
 				hRC = coreHrc;
 			}
 		}
-			LOG(LOG_APIFUNC, "WindowsWGL::start TEST9.1.1\n");
 
 		if (strstr(wglextensions, "WGL_EXT_swap_control") != nullptr) {
-			LOG(LOG_APIFUNC, "WindowsWGL::start TEST9.6\n");
 			PFNWGLSWAPINTERVALEXTPROC wglSwapIntervalEXT = (PFNWGLSWAPINTERVALEXTPROC)wglGetProcAddress("wglSwapIntervalEXT");
-			LOG(LOG_APIFUNC, "WindowsWGL::start TEST9.7\n");
 			wglSwapIntervalEXT(config.video.verticalSync);
-			LOG(LOG_APIFUNC, "WindowsWGL::start TEST9.8\n");
 		}
 	}
 

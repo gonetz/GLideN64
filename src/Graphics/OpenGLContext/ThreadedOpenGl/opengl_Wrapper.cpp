@@ -58,14 +58,22 @@ namespace opengl {
 
 	void FunctionWrapper::setThreadedMode(u32 _threaded)
 	{
+#ifdef GL_DEBUG
+		m_threaded_wrapper = true;
+		m_shutdown = false;
+#else
 		if (_threaded == 1) {
 			m_threaded_wrapper = true;
 			m_shutdown = false;
 			m_commandExecutionThread = std::thread(&FunctionWrapper::commandLoop);
-		} else {
+
+		}
+		else {
 			m_threaded_wrapper = false;
 			m_shutdown = true;
 		}
+#endif
+
 	}
 
 	void FunctionWrapper::wrBlendFunc(GLenum sfactor, GLenum dfactor)
@@ -1404,10 +1412,12 @@ namespace opengl {
 
 		m_shutdown = true;
 
+#ifndef GL_DEBUG
 		if (m_threaded_wrapper) {
 			m_condition.notify_all();
 			m_commandExecutionThread.join();
 		}
+#endif
 	}
 
 	void FunctionWrapper::windowsSwapBuffers()
