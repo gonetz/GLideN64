@@ -35,7 +35,7 @@ BufferedLog::BufferedLog(u32 _mode) : m_mode(_mode)
 		m_logBuffer.resize(1024*1024);
 		m_log.rdbuf()->pubsetbuf(&m_logBuffer.front(), m_logBuffer.size());
 	} catch(std::bad_alloc&) {
-		LOG(LOG_ERROR, "Failed to alloc memory for log buffer\n");
+		LOG(LOG_ERROR, "Failed to alloc memory for log buffer");
 	}
 
 	wchar_t logPath[PLUGIN_PATH_SIZE + 16];

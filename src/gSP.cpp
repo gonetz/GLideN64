@@ -935,7 +935,7 @@ void gSPVertex(u32 a, u32 n, u32 v0)
 	DebugMsg(DEBUG_NORMAL, "gSPVertex n = %i, v0 = %i, from %08x\n", n, v0, a);
 
 	if ((n + v0) > INDEXMAP_SIZE) {
-		LOG(LOG_ERROR, "Using Vertex outside buffer v0=%i, n=%i\n", v0, n);
+		LOG(LOG_ERROR, "Using Vertex outside buffer v0=%i, n=%i", v0, n);
 		DebugMsg(DEBUG_NORMAL | DEBUG_ERROR, "//Using Vertex outside buffer v0 = %i, n = %i\n", v0, n);
 		return;
 	}
@@ -1005,7 +1005,7 @@ void gSPCIVertex( u32 a, u32 n, u32 v0 )
 	DebugMsg(DEBUG_NORMAL, "gSPCIVertex n = %i, v0 = %i, from %08x\n", n, v0, a);
 
 	if ((n + v0) > INDEXMAP_SIZE) {
-		LOG(LOG_ERROR, "Using Vertex outside buffer v0=%i, n=%i\n", v0, n);
+		LOG(LOG_ERROR, "Using Vertex outside buffer v0=%i, n=%i", v0, n);
 		DebugMsg(DEBUG_NORMAL | DEBUG_ERROR, "//Using Vertex outside buffer v0 = %i, n = %i\n", v0, n);
 		return;
 	}
@@ -1060,7 +1060,7 @@ void gSPDMAVertex( u32 a, u32 n, u32 v0 )
 	DebugMsg(DEBUG_NORMAL, "gSPDMAVertex n = %i, v0 = %i, from %08x\n", n, v0, a);
 
 	if ((n + v0) > INDEXMAP_SIZE) {
-		LOG(LOG_ERROR, "Using Vertex outside buffer v0=%i, n=%i\n", v0, n);
+		LOG(LOG_ERROR, "Using Vertex outside buffer v0=%i, n=%i", v0, n);
 		DebugMsg(DEBUG_NORMAL | DEBUG_ERROR, "//Using Vertex outside buffer v0 = %i, n = %i\n", v0, n);
 		return;
 	}
@@ -1111,7 +1111,7 @@ void gSPCBFDVertex( u32 a, u32 n, u32 v0 )
 	DebugMsg(DEBUG_NORMAL, "gSPCBFDVertex n = %i, v0 = %i, from %08x\n", n, v0, a);
 
 	if ((n + v0) > INDEXMAP_SIZE) {
-		LOG(LOG_ERROR, "Using Vertex outside buffer v0=%i, n=%i\n", v0, n);
+		LOG(LOG_ERROR, "Using Vertex outside buffer v0=%i, n=%i", v0, n);
 		DebugMsg(DEBUG_NORMAL | DEBUG_ERROR, "//Using Vertex outside buffer v0 = %i, n = %i\n", v0, n);
 		return;
 	}
@@ -1188,7 +1188,7 @@ void gSPF3DAMVertex(u32 a, u32 n, u32 v0)
 	DebugMsg(DEBUG_NORMAL, "gSPF3DAMVertex n = %i, v0 = %i, from %08x\n", n, v0, a);
 
 	if ((n + v0) > INDEXMAP_SIZE) {
-		LOG(LOG_ERROR, "Using Vertex outside buffer v0=%i, n=%i\n", v0, n);
+		LOG(LOG_ERROR, "Using Vertex outside buffer v0=%i, n=%i", v0, n);
 		DebugMsg(DEBUG_NORMAL | DEBUG_ERROR, "//Using Vertex outside buffer v0 = %i, n = %i\n", v0, n);
 		return;
 	}

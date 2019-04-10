@@ -24,11 +24,11 @@ void GLInfo::init() {
 		glGetIntegerv(GL_MAJOR_VERSION, &majorVersion);
 		glGetIntegerv(GL_MINOR_VERSION, &minorVersion);
 	}
-	LOG(LOG_VERBOSE, "%s major version: %d\n", isGLESX ? "OpenGL ES" : "OpenGL", majorVersion);
-	LOG(LOG_VERBOSE, "%s minor version: %d\n", isGLESX ? "OpenGL ES" : "OpenGL", minorVersion);
+	LOG(LOG_VERBOSE, "%s major version: %d", isGLESX ? "OpenGL ES" : "OpenGL", majorVersion);
+	LOG(LOG_VERBOSE, "%s minor version: %d", isGLESX ? "OpenGL ES" : "OpenGL", minorVersion);
 
 
-	LOG(LOG_VERBOSE, "OpenGL vendor: %s\n", glGetString(GL_VENDOR));
+	LOG(LOG_VERBOSE, "OpenGL vendor: %s", glGetString(GL_VENDOR));
 	const GLubyte * strRenderer = glGetString(GL_RENDERER);
 	const GLubyte * strDriverVersion = glGetString(GL_VERSION);
 
@@ -47,7 +47,7 @@ void GLInfo::init() {
 		renderer = Renderer::PowerVR;
 	else if (strstr((const char*)strRenderer, "NVIDIA Tegra") != nullptr)
 		renderer = Renderer::Tegra;
-	LOG(LOG_VERBOSE, "OpenGL renderer: %s\n", strRenderer);
+	LOG(LOG_VERBOSE, "OpenGL renderer: %s", strRenderer);
 
 	int numericVersion = majorVersion * 10 + minorVersion;
 	if (isGLES2) {
@@ -127,13 +127,13 @@ void GLInfo::init() {
 #ifndef OS_ANDROID
 	if (isGLES2 && config.frameBufferEmulation.copyToRDRAM > Config::ctSync) {
 		config.frameBufferEmulation.copyToRDRAM = Config::ctDisable;
-		LOG(LOG_WARNING, "Async color buffer copies are not supported on GLES2\n");
+		LOG(LOG_WARNING, "Async color buffer copies are not supported on GLES2");
 	}
 #endif
 	if (isGLES2 && config.generalEmulation.enableLOD) {
 		if (!Utils::isExtensionSupported(*this, "GL_EXT_shader_texture_lod") || !Utils::isExtensionSupported(*this, "GL_OES_standard_derivatives")) {
 			config.generalEmulation.enableLOD = 0;
-			LOG(LOG_WARNING, "LOD emulation not possible on this device\n");
+			LOG(LOG_WARNING, "LOD emulation not possible on this device");
 		}
 	}
 
@@ -156,7 +156,7 @@ void GLInfo::init() {
 	if (config.frameBufferEmulation.N64DepthCompare != 0) {
 		if (!imageTextures && !ext_fetch) {
 			config.frameBufferEmulation.N64DepthCompare = 0;
-			LOG(LOG_WARNING, "Your GPU does not support the extensions needed for N64 Depth Compare.\n");
+			LOG(LOG_WARNING, "Your GPU does not support the extensions needed for N64 Depth Compare.");
 		}
 	}
 }

@@ -60,7 +60,7 @@ void ZSortBOSS_EndMainDL( u32, u32 )
 			*REG.SP_STATUS &= ~0x80;  // clear sig0
 		}
 	}
-	LOG(LOG_VERBOSE, "ZSortBOSS_EndMainDL\n");
+	LOG(LOG_VERBOSE, "ZSortBOSS_EndMainDL");
 }
 
 void ZSortBOSS_EndSubDL( u32, u32 )
@@ -77,7 +77,7 @@ void ZSortBOSS_EndSubDL( u32, u32 )
 		RSP.PCi = 0;
 		gstate.subdl = PROCESSED;
 	}
-	LOG(LOG_VERBOSE, "ZSortBOSS_EndSubDL\n");
+	LOG(LOG_VERBOSE, "ZSortBOSS_EndSubDL");
 }
 
 void ZSortBOSS_WaitSignal( u32 , u32 )
@@ -98,7 +98,7 @@ void ZSortBOSS_WaitSignal( u32 , u32 )
 	else
 		gstate.waiting_for_signal = false;
 
-	LOG(LOG_VERBOSE, "ZSortBOSS_WaitSignal\n");
+	LOG(LOG_VERBOSE, "ZSortBOSS_WaitSignal");
 }
 
 void ZSortBOSS_MoveWord( u32 _w0, u32 _w1 )
@@ -110,13 +110,13 @@ void ZSortBOSS_MoveWord( u32 _w0, u32 _w1 )
 	}
 
 	memcpy((DMEM + (_w0 & 0xfff)), &_w1, sizeof(u32));
-	LOG(LOG_VERBOSE, "ZSortBOSS_MoveWord (Write 0x%08x to DMEM: 0x%04x)\n", _w1, (_w0 & 0xfff));
+	LOG(LOG_VERBOSE, "ZSortBOSS_MoveWord (Write 0x%08x to DMEM: 0x%04x)", _w1, (_w0 & 0xfff));
 }
 
 void ZSortBOSS_ClearBuffer( u32, u32 )
 {
 	memset((DMEM + 0xc20), 0, 512);
-	LOG(LOG_VERBOSE, "ZSortBOSS_ClearBuffer (Write 0x0 to DMEM: 0x0c20 -> 0x0e20)\n");
+	LOG(LOG_VERBOSE, "ZSortBOSS_ClearBuffer (Write 0x0 to DMEM: 0x0c20 -> 0x0e20)");
 }
 
 static
@@ -145,7 +145,7 @@ void ZSortBOSS_MoveMem( u32 _w0, u32 _w1 )
 	assert((addr & 3) == 0);
 	assert((_w0 & 3) == 0);
 
-	LOG(LOG_VERBOSE, "ZSortBOSS_MoveMem (R/W: %d, RDRAM: 0x%08x, DMEM: 0x%04x; len: %d)\n", flag, addr, (_w0 & 0xfff), len);
+	LOG(LOG_VERBOSE, "ZSortBOSS_MoveMem (R/W: %d, RDRAM: 0x%08x, DMEM: 0x%04x; len: %d)", flag, addr, (_w0 & 0xfff), len);
 
 	// model matrix
 	if((_w0 & 0xfff) == 0x830) {
@@ -290,7 +290,7 @@ void ZSortBOSS_MTXCAT(u32 _w0, u32 _w1)
 	assert(d != nullptr);
 	memcpy(*d, m, 64);
 
-	LOG(LOG_VERBOSE, "ZSortBOSS_MTXCAT (S: 0x%04x, T: 0x%04x, D: 0x%04x)\n", S, T, D);
+	LOG(LOG_VERBOSE, "ZSortBOSS_MTXCAT (S: 0x%04x, T: 0x%04x, D: 0x%04x)", S, T, D);
 }
 
 void ZSortBOSS_MultMPMTX( u32 _w0, u32 _w1 )
@@ -347,7 +347,7 @@ void ZSortBOSS_MultMPMTX( u32 _w0, u32 _w1 )
 		daddr[i] = v;
 	}
 
-	LOG(LOG_VERBOSE, "ZSortBOSS_MultMPMTX (src: 0x%04x, dest: 0x%04x, num: %d)\n", src, dst, num);
+	LOG(LOG_VERBOSE, "ZSortBOSS_MultMPMTX (src: 0x%04x, dest: 0x%04x, num: %d)", src, dst, num);
 }
 
 static
@@ -495,7 +495,7 @@ void ZSortBOSS_TransposeMTX( u32, u32 _w1 )
 		}
 	}
 
-	LOG(LOG_VERBOSE, "ZSortBOSS_TransposeMTX (MTX: 0x%04x)\n", (_w1 & 0xfff));
+	LOG(LOG_VERBOSE, "ZSortBOSS_TransposeMTX (MTX: 0x%04x)", (_w1 & 0xfff));
 }
 
 void ZSortBOSS_Lighting( u32 _w0, u32 _w1 )
@@ -545,7 +545,7 @@ void ZSortBOSS_Lighting( u32 _w0, u32 _w1 )
 		((s16*)DMEM)[(tdest++)^1] = (s16)vtx.t;
 	}
 	
-	LOG(LOG_VERBOSE, "ZSortBOSS_Lighting (0x%08x, 0x%08x)\n", _w0, _w1);
+	LOG(LOG_VERBOSE, "ZSortBOSS_Lighting (0x%08x, 0x%08x)", _w0, _w1);
 }
 
 static
@@ -622,7 +622,7 @@ void ZSortBOSS_TransformLights( u32 _w0, u32 _w1 )
 		addr += 24;
 	}
 
-	LOG(LOG_VERBOSE, "ZSortBOSS_TransformLights (0x%08x, 0x%08x)\n", _w0, _w1);
+	LOG(LOG_VERBOSE, "ZSortBOSS_TransformLights (0x%08x, 0x%08x)", _w0, _w1);
 }
 
 void ZSortBOSS_Audio1( u32 _w0, u32 _w1 )
@@ -631,7 +631,7 @@ void ZSortBOSS_Audio1( u32 _w0, u32 _w1 )
 	u32 val = ((u32*)DMEM)[(_w0 & 0xfff) >> 2];
 	((u32*)DMEM)[0] = val;
 	memcpy(RDRAM+addr, DMEM, 0x8);
-	LOG(LOG_VERBOSE, "ZSortBOSS_Audio1 (0x%08x, 0x%08x)\n", _w0, _w1);
+	LOG(LOG_VERBOSE, "ZSortBOSS_Audio1 (0x%08x, 0x%08x)", _w0, _w1);
 }
 
 void ZSortBOSS_Audio2( u32 _w0, u32 _w1 )
@@ -680,7 +680,7 @@ void ZSortBOSS_Audio2( u32 _w0, u32 _w1 )
 		}
 	}
 
-	LOG(LOG_VERBOSE, "ZSortBOSS_Audio2 (0x%08x, 0x%08x)\n", _w0, _w1);
+	LOG(LOG_VERBOSE, "ZSortBOSS_Audio2 (0x%08x, 0x%08x)", _w0, _w1);
 }
 
 void ZSortBOSS_Audio3( u32 _w0, u32 _w1 )
@@ -701,7 +701,7 @@ void ZSortBOSS_Audio3( u32 _w0, u32 _w1 )
 	memcpy(DMEM, (RDRAM + addr), 0x8);
 	memcpy((DMEM+8), &addr, sizeof(addr));
 
-	LOG(LOG_VERBOSE, "ZSortBOSS_Audio3 (0x%08x, 0x%08x)\n", _w0, _w1);
+	LOG(LOG_VERBOSE, "ZSortBOSS_Audio3 (0x%08x, 0x%08x)", _w0, _w1);
 }
 
 void ZSortBOSS_Audio4( u32 _w0, u32 _w1 )
@@ -723,7 +723,7 @@ void ZSortBOSS_Audio4( u32 _w0, u32 _w1 )
 		int index = (r9 & 0xf) << 1;
 
 		if(index > 6) {
-			LOG(LOG_VERBOSE, "ZSortBOSS_Audio4: Index out of bound\n");
+			LOG(LOG_VERBOSE, "ZSortBOSS_Audio4: Index out of bound");
 			break;
 		}
 
@@ -771,7 +771,7 @@ void ZSortBOSS_Audio4( u32 _w0, u32 _w1 )
 		}
 	}
 
-	LOG(LOG_VERBOSE, "ZSortBOSS_Audio4 (0x%08x, 0x%08x)\n", _w0, _w1);
+	LOG(LOG_VERBOSE, "ZSortBOSS_Audio4 (0x%08x, 0x%08x)", _w0, _w1);
 }
 
 // RDP Commands
@@ -779,7 +779,7 @@ void ZSortBOSS_UpdateMask( u32 _w0, u32 _w1 )
 {
 	gstate.updatemask[0] = _w0 | 0xff000000;
 	gstate.updatemask[1] = _w1;
-	LOG(LOG_VERBOSE, "ZSortBOSS_UpdateMask (mask0: 0x%08x, mask1: 0x%08x)\n", gstate.updatemask[0], gstate.updatemask[1]);
+	LOG(LOG_VERBOSE, "ZSortBOSS_UpdateMask (mask0: 0x%08x, mask1: 0x%08x)", gstate.updatemask[0], gstate.updatemask[1]);
 }
 
 void ZSortBOSS_SetOtherMode_L( u32 _w0, u32 _w1 )
@@ -794,7 +794,7 @@ void ZSortBOSS_SetOtherMode_L( u32 _w0, u32 _w1 )
 	gDPSetOtherMode( _SHIFTR( w0, 0, 24 ),	// mode0
 					 w1 );					// mode1
 
-	LOG(LOG_VERBOSE, "ZSortBOSS_SetOtherMode_L (mode0: 0x%08x, mode1: 0x%08x)\n", gDP.otherMode.h, gDP.otherMode.l);
+	LOG(LOG_VERBOSE, "ZSortBOSS_SetOtherMode_L (mode0: 0x%08x, mode1: 0x%08x)", gDP.otherMode.h, gDP.otherMode.l);
 }
 
 void ZSortBOSS_SetOtherMode_H( u32 _w0, u32 _w1 )
@@ -809,7 +809,7 @@ void ZSortBOSS_SetOtherMode_H( u32 _w0, u32 _w1 )
 	gDPSetOtherMode( _SHIFTR( w0, 0, 24 ),	// mode0
 					 w1 );					// mode1
 
-	LOG(LOG_VERBOSE, "ZSortBOSS_SetOtherMode_H (mode0: 0x%08x, mode1: 0x%08x)\n", gDP.otherMode.h, gDP.otherMode.l);
+	LOG(LOG_VERBOSE, "ZSortBOSS_SetOtherMode_H (mode0: 0x%08x, mode1: 0x%08x)", gDP.otherMode.h, gDP.otherMode.l);
 }
 
 void ZSortBOSS_SetOtherMode( u32 _w0, u32 _w1 )
@@ -823,7 +823,7 @@ void ZSortBOSS_SetOtherMode( u32 _w0, u32 _w1 )
 	gDPSetOtherMode( _SHIFTR( w0, 0, 24 ),	// mode0
 					 w1 );					// mode1
 
-	LOG(LOG_VERBOSE, "ZSortBOSS_SetOtherMode (mode0: 0x%08x, mode1: 0x%08x)\n", gDP.otherMode.h, gDP.otherMode.l);
+	LOG(LOG_VERBOSE, "ZSortBOSS_SetOtherMode (mode0: 0x%08x, mode1: 0x%08x)", gDP.otherMode.h, gDP.otherMode.l);
 }
 
 void ZSortBOSS_TriangleCommand( u32, u32 _w1 )
@@ -836,12 +836,12 @@ void ZSortBOSS_TriangleCommand( u32, u32 _w1 )
 	gSP.texture.tile = _w1 & 0x7;
 
 	gSPSetGeometryMode(G_SHADING_SMOOTH | G_SHADE);
-	LOG(LOG_VERBOSE, "ZSortBOSS_TriangleCommand (cmd: 0x%02x, level: %d, tile: %d)\n", ((_w1 >> 8) & 0x3f), gSP.texture.level, gSP.texture.tile);
+	LOG(LOG_VERBOSE, "ZSortBOSS_TriangleCommand (cmd: 0x%02x, level: %d, tile: %d)", ((_w1 >> 8) & 0x3f), gSP.texture.level, gSP.texture.tile);
 }
 
 void ZSortBOSS_FlushRDPCMDBuffer( u32, u32 )
 {
-	LOG(LOG_VERBOSE, "ZSortBOSS_FlushRDPCMDBuffer Ignored\n");
+	LOG(LOG_VERBOSE, "ZSortBOSS_FlushRDPCMDBuffer Ignored");
 }
 
 void ZSortBOSS_Reserved( u32, u32 )
