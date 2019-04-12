@@ -1,5 +1,10 @@
-dist:     trusty
+dist:     xenial
 sudo:     false
+
+addons:
+  apt:
+    packages:
+    - libgl1-mesa-dev
 
 language: cpp
 
