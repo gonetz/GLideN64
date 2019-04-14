@@ -1346,10 +1346,12 @@ namespace opengl {
 
 		m_shutdown = true;
 
+#ifndef GL_DEBUG
 		if (m_threaded_wrapper) {
 			m_condition.notify_all();
 			m_commandExecutionThread.join();
 		}
+#endif
 	}
 
 	m64p_error FunctionWrapper::CoreVideo_SetVideoMode(int screenWidth, int screenHeight, int bitsPerPixel, m64p_video_mode mode, m64p_video_flags flags)

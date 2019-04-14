@@ -41,6 +41,6 @@ namespace opengl {
 
 	private:
 		std::vector<std::vector<std::shared_ptr<PoolObject>>> m_objectPool;
-		std::vector<int> m_objectPoolIndex;
+		std::vector<unsigned int> m_objectPoolIndex;
 	};
 }
