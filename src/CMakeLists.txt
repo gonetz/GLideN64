@@ -115,27 +115,27 @@ set(GLideN64_SOURCES
 )
 
 #check if we're running on Raspberry Pi
-if(EXISTS "/opt/vc/include/bcm_host.h" AND NOT MESA)
+if(EXISTS "${CMAKE_FIND_ROOT_PATH}/opt/vc/include/bcm_host.h" AND NOT MESA)
   message("bcm_host.h found")
   set(BCMHOST ON)
   set(EGL ON)
-  set(EGL_LIB -lbrcmEGL)
+  set(EGL_LIB -lbrcmEGL -lbrcmGLESv2)
   add_definitions(
     -DVC
   )
   include_directories(
-    "/opt/vc/include"
-    "/opt/vc/include/interface/vcos"
-    "/opt/vc/include/interface/vmcs_host/linux"
-    "/opt/vc/include/interface/vcos/pthreads"
+    "${CMAKE_FIND_ROOT_PATH}/opt/vc/include"
+    "${CMAKE_FIND_ROOT_PATH}/opt/vc/include/interface/vcos"
+    "${CMAKE_FIND_ROOT_PATH}/opt/vc/include/interface/vmcs_host/linux"
+    "${CMAKE_FIND_ROOT_PATH}/opt/vc/include/interface/vcos/pthreads"
   )
   link_directories(
-    "/opt/vc/lib"
-    "/opt/vc/lib/GL"
+    "${CMAKE_FIND_ROOT_PATH}/opt/vc/lib"
+    "${CMAKE_FIND_ROOT_PATH}/opt/vc/lib/GL"
   )
-else(EXISTS "/opt/vc/include/bcm_host.h" AND NOT MESA)
+else(EXISTS "${CMAKE_FIND_ROOT_PATH}/opt/vc/include/bcm_host.h" AND NOT MESA)
   set(EGL_LIB -lEGL)
-endif(EXISTS "/opt/vc/include/bcm_host.h" AND NOT MESA)
+endif(EXISTS "${CMAKE_FIND_ROOT_PATH}/opt/vc/include/bcm_host.h" AND NOT MESA)
 
 if(MUPENPLUSAPI)
   add_definitions(
