@@ -108,9 +108,9 @@ struct Atlas {
 		m_pTexture->maskT = 0;
 		m_pTexture->mirrorS = 0;
 		m_pTexture->mirrorT = 0;
-		m_pTexture->realWidth = w;
-		m_pTexture->realHeight = h;
-		m_pTexture->textureBytes = m_pTexture->realWidth * m_pTexture->realHeight * fbTexFormats.noiseFormatBytes;
+		m_pTexture->width = w;
+		m_pTexture->height = h;
+		m_pTexture->textureBytes = m_pTexture->width * m_pTexture->height * fbTexFormats.noiseFormatBytes;
 
 		Context::InitTextureParams initParams;
 		initParams.handle = m_pTexture->name;

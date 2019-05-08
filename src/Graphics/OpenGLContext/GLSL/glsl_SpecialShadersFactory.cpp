@@ -539,9 +539,9 @@ namespace glsl {
 			FXAAShaderBase::activate();
 			FrameBuffer * pBuffer = frameBufferList().findBuffer(*REG.VI_ORIGIN);
 			if (pBuffer != nullptr && pBuffer->m_pTexture != nullptr &&
-				(m_width != pBuffer->m_pTexture->realWidth || m_height != pBuffer->m_pTexture->realHeight)) {
-				m_width = pBuffer->m_pTexture->realWidth;
-				m_height = pBuffer->m_pTexture->realHeight;
+				(m_width != pBuffer->m_pTexture->width || m_height != pBuffer->m_pTexture->height)) {
+				m_width = pBuffer->m_pTexture->width;
+				m_height = pBuffer->m_pTexture->height;
 				glUniform2f(m_textureSizeLoc, GLfloat(m_width), GLfloat(m_height));
 			}
 		}

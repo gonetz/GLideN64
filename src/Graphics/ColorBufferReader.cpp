@@ -18,14 +18,14 @@ namespace graphics {
 	const u8* ColorBufferReader::_convertFloatTextureBuffer(const u8* _gpuData, u32 _width, u32 _height,
 		u32 _heightOffset, u32 _stride)
 	{
-		int bytesToCopy = m_pTexture->realWidth * _height * 16;
+		int bytesToCopy = m_pTexture->width * _height * 16;
 		std::copy_n(_gpuData, bytesToCopy, m_tempPixelData.data());
 		u8* pixelDataAlloc = m_pixelData.data();
 		float* pixelData = reinterpret_cast<float*>(m_tempPixelData.data());
 		const u32 colorsPerPixel = 4;
 		const u32 widthPixels = _width * colorsPerPixel;
 		const u32 stridePixels = _stride * colorsPerPixel;
-		
+
 		if (_height * widthPixels  > m_pixelData.size())
 			_height = static_cast<u32>(m_pixelData.size()) / widthPixels;
 
@@ -47,7 +47,7 @@ namespace graphics {
 		const u32 strideBytes = _stride * _colorsPerPixel;
 
 		u8* pixelDataAlloc = m_pixelData.data();
-		
+
 		if (_height * widthBytes  > m_pixelData.size())
 			_height = static_cast<u32>(m_pixelData.size()) / widthBytes;
 

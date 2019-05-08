@@ -82,15 +82,15 @@ void DisplayWindowWindows::_saveBufferContent(graphics::ObjectHandle _fbo, Cache
 	GLint oldMode;
 	glGetIntegerv(GL_READ_BUFFER, &oldMode);
 	gfxContext.bindFramebuffer(graphics::bufferTarget::READ_FRAMEBUFFER, _fbo);
-	pixelData = (unsigned char*)malloc(_pTexture->realWidth * _pTexture->realHeight * 3);
-	glReadPixels(0, 0, _pTexture->realWidth, _pTexture->realHeight, GL_RGB, GL_UNSIGNED_BYTE, pixelData);
+	pixelData = (unsigned char*)malloc(_pTexture->width * _pTexture->height * 3);
+	glReadPixels(0, 0, _pTexture->width, _pTexture->height, GL_RGB, GL_UNSIGNED_BYTE, pixelData);
 	if (graphics::BufferAttachmentParam(oldMode) == graphics::bufferAttachment::COLOR_ATTACHMENT0) {
 		FrameBuffer * pCurrentBuffer = frameBufferList().getCurrent();
 		if (pCurrentBuffer != nullptr)
 			gfxContext.bindFramebuffer(graphics::bufferTarget::READ_FRAMEBUFFER, pCurrentBuffer->m_FBO);
 	}
 	glReadBuffer(oldMode);
-	SaveScreenshot(m_strScreenDirectory, RSP.romname, _pTexture->realWidth, _pTexture->realHeight, pixelData);
+	SaveScreenshot(m_strScreenDirectory, RSP.romname, _pTexture->width, _pTexture->height, pixelData);
 	free(pixelData);
 }
 

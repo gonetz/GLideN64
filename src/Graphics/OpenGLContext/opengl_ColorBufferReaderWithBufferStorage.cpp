@@ -54,7 +54,7 @@ const u8 * ColorBufferReaderWithBufferStorage::_readPixels(const ReadColorBuffer
 
 	m_bindBuffer->bind(Parameter(GL_PIXEL_PACK_BUFFER), ObjectHandle(m_PBO[m_curIndex]));
 
-	glReadPixels(_params.x0, _params.y0, m_pTexture->realWidth, _params.height, format, type, nullptr);
+	glReadPixels(_params.x0, _params.y0, m_pTexture->width, _params.height, format, type, nullptr);
 
 	if (!_params.sync) {
 		m_curIndex = (m_curIndex + 1) % m_numPBO;
@@ -63,7 +63,7 @@ const u8 * ColorBufferReaderWithBufferStorage::_readPixels(const ReadColorBuffer
 	}
 
 	_heightOffset = 0;
-	_stride = m_pTexture->realWidth;
+	_stride = m_pTexture->width;
 
 	return reinterpret_cast<u8*>(m_PBOData[m_curIndex]);
 }

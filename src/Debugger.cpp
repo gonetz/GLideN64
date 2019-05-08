@@ -618,7 +618,7 @@ void Debugger::_drawFrameBuffer(FrameBuffer * _pBuffer)
 		pBufferTexture = _pBuffer->m_pResolveTexture;
 	}
 
-	s32 srcCoord[4] = { 0, 0, pBufferTexture->realWidth, (s32)(_pBuffer->m_height * _pBuffer->m_scale) };
+	s32 srcCoord[4] = { 0, 0, pBufferTexture->width, (s32)(_pBuffer->m_height * _pBuffer->m_scale) };
 	const s32 hOffset = (wnd.getScreenWidth() - wnd.getWidth()) / 2;
 	const s32 vOffset = (wnd.getScreenHeight() - wnd.getHeight()) / 2 + wnd.getHeightOffset() + wnd.getHeight()*3/8;
 	s32 dstCoord[4] = { hOffset, vOffset, hOffset + (s32)wnd.getWidth()*5/8, vOffset + (s32)wnd.getHeight()*5/8 };
@@ -635,8 +635,8 @@ void Debugger::_drawFrameBuffer(FrameBuffer * _pBuffer)
 	blitParams.srcY0 = srcCoord[3];
 	blitParams.srcX1 = srcCoord[2];
 	blitParams.srcY1 = srcCoord[1];
-	blitParams.srcWidth = pBufferTexture->realWidth;
-	blitParams.srcHeight = pBufferTexture->realHeight;
+	blitParams.srcWidth = pBufferTexture->width;
+	blitParams.srcHeight = pBufferTexture->height;
 	blitParams.dstX0 = dstCoord[0];
 	blitParams.dstY0 = dstCoord[1];
 	blitParams.dstX1 = dstCoord[2];

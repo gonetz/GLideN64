@@ -122,17 +122,17 @@ void NoiseTexture::init()
 		m_pTexture[i]->maskT = 0;
 		m_pTexture[i]->mirrorS = 0;
 		m_pTexture[i]->mirrorT = 0;
-		m_pTexture[i]->realWidth = NOISE_TEX_WIDTH;
-		m_pTexture[i]->realHeight = NOISE_TEX_HEIGHT;
-		m_pTexture[i]->textureBytes = m_pTexture[i]->realWidth * m_pTexture[i]->realHeight;
+		m_pTexture[i]->width = NOISE_TEX_WIDTH;
+		m_pTexture[i]->height = NOISE_TEX_HEIGHT;
+		m_pTexture[i]->textureBytes = m_pTexture[i]->width * m_pTexture[i]->height;
 
 		const FramebufferTextureFormats & fbTexFormats = gfxContext.getFramebufferTextureFormats();
 		{
 			Context::InitTextureParams params;
 			params.handle = m_pTexture[i]->name;
 			params.textureUnitIndex = textureIndices::NoiseTex;
-			params.width = m_pTexture[i]->realWidth;
-			params.height = m_pTexture[i]->realHeight;
+			params.width = m_pTexture[i]->width;
+			params.height = m_pTexture[i]->height;
 			params.internalFormat = fbTexFormats.noiseInternalFormat;
 			params.format = fbTexFormats.noiseFormat;
 			params.dataType = fbTexFormats.noiseType;

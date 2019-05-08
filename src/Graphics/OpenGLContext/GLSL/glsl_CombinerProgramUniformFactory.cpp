@@ -815,9 +815,9 @@ public:
 	{
 		TextureCache & cache = textureCache();
 		if (m_useT0 && cache.current[0] != NULL)
-			uTextureSize[0].set((float)cache.current[0]->realWidth, (float)cache.current[0]->realHeight, _force);
+			uTextureSize[0].set((float)cache.current[0]->width, (float)cache.current[0]->height, _force);
 		if (m_useT1 && cache.current[1] != NULL)
-			uTextureSize[1].set((float)cache.current[1]->realWidth, (float)cache.current[1]->realHeight, _force);
+			uTextureSize[1].set((float)cache.current[1]->width, (float)cache.current[1]->height, _force);
 	}
 
 private:
@@ -853,35 +853,37 @@ public:
 			if (!m_useTile[t])
 				continue;
 
-			if (gSP.textureTile[t] != nullptr) {
-				if (gSP.textureTile[t]->textureMode == TEXTUREMODE_BGIMAGE || gSP.textureTile[t]->textureMode == TEXTUREMODE_FRAMEBUFFER_BG)
+			gDPTile * pTile = gSP.textureTile[t];
+			if (pTile != nullptr) {
+				if (pTile->textureMode == TEXTUREMODE_BGIMAGE || pTile->textureMode == TEXTUREMODE_FRAMEBUFFER_BG)
 					uTexOffset[t].set(0.0f, 0.0f, _force);
 				else {
-					float fuls = gSP.textureTile[t]->fuls;
-					float fult = gSP.textureTile[t]->fult;
-					if (gSP.textureTile[t]->frameBufferAddress > 0) {
-						FrameBuffer * pBuffer = frameBufferList().getBuffer(gSP.textureTile[t]->frameBufferAddress);
+					float fuls = pTile->fuls;
+					float fult = pTile->fult;
+					if (pTile->frameBufferAddress > 0) {
+						FrameBuffer * pBuffer = frameBufferList().getBuffer(pTile->frameBufferAddress);
 						if (pBuffer != nullptr) {
-							if (gSP.textureTile[t]->masks > 0 && gSP.textureTile[t]->clamps == 0)
-								fuls = float(gSP.textureTile[t]->uls % (1 << gSP.textureTile[t]->masks));
-							if (gSP.textureTile[t]->maskt > 0 && gSP.textureTile[t]->clampt == 0)
-								fult = float(gSP.textureTile[t]->ult % (1 << gSP.textureTile[t]->maskt));
+							if (pTile->masks > 0 && pTile->clamps == 0)
+								fuls = float(pTile->uls % (1 << pTile->masks));
+							if (pTile->maskt > 0 && pTile->clampt == 0)
+								fult = float(pTile->ult % (1 << pTile->maskt));
 						} else {
-							gSP.textureTile[t]->frameBufferAddress = 0;
+							pTile->frameBufferAddress = 0;
 						}
 					}
 					uTexOffset[t].set(fuls, fult, _force);
 				}
 			}
 
-			if (cache.current[t] != nullptr) {
+			CachedTexture *_pTexture = cache.current[t];
+			if (_pTexture != nullptr) {
 				f32 shiftScaleS = 1.0f;
 				f32 shiftScaleT = 1.0f;
 				getTextureShiftScale(t, cache, shiftScaleS, shiftScaleT);
 				uCacheShiftScale[t].set(shiftScaleS, shiftScaleT, _force);
-				uCacheScale[t].set(cache.current[t]->scaleS, cache.current[t]->scaleT, _force);
-				uCacheOffset[t].set(cache.current[t]->offsetS, cache.current[t]->offsetT, _force);
-				nFB[t] = cache.current[t]->frameBufferTexture;
+				uCacheScale[t].set(_pTexture->scaleS, _pTexture->scaleT, _force);
+				uCacheOffset[t].set(_pTexture->offsetS, _pTexture->offsetT, _force);
+				nFB[t] = _pTexture->frameBufferTexture;
 			}
 		}
 
@@ -899,6 +901,107 @@ private:
 	iv2Uniform uCacheFrameBuffer;
 };
 
+class UClampWrapMirrorTex : public UniformGroup
+{
+public:
+	UClampWrapMirrorTex(GLuint _program, bool _useT0, bool _useT1)
+	{
+		m_useTile[0] = _useT0;
+		m_useTile[1] = _useT1;
+		LocateUniform(uTexClamp0);
+		LocateUniform(uTexClamp1);
+		LocateUniform(uTexWrap0);
+		LocateUniform(uTexWrap1);
+		LocateUniform(uTexMirror0);
+		LocateUniform(uTexMirror1);
+		LocateUniform(uTexScale0);
+		LocateUniform(uTexScale1);
+	}
+
+	void update(bool _force) override
+	{
+		std::array<f32, 4> aTexClamp[2] = { { -10000.0f, -10000.0f, 10000.0f, 10000.0f },
+											{ -10000.0f, -10000.0f, 10000.0f, 10000.0f } };
+		std::array<f32, 2> aTexWrap[2] = { { 10000.0f, 10000.0f }, { 10000.0f, 10000.0f } };
+		std::array<f32, 2> aTexMirror[2] = { { 0.0f, 0.0f}, { 0.0f, 0.0f } };
+		std::array<f32, 2> aTexScale[2] = { { 1.0f, 1.0f },{ 1.0f, 1.0f } };
+		TextureCache & cache = textureCache();
+		for (u32 t = 0; t < 2; ++t) {
+			if (!m_useTile[t])
+				continue;
+
+			const gDPTile * pTile = gSP.textureTile[t];
+			CachedTexture * pTexture = cache.current[t];
+			if (pTile == nullptr || pTexture == nullptr)
+				continue;
+
+			if (gDP.otherMode.cycleType != G_CYC_COPY) {
+				if (pTexture->clampS) {
+					aTexClamp[t][0] = 0.0f; // S lower bound
+					if (pTexture->frameBufferTexture != CachedTexture::fbNone)
+						aTexClamp[t][2] = 1.0f;
+					else {
+						u32 tileWidth = ((pTile->lrs - pTile->uls) & 0x03FF) + 1;
+						if (pTile->size > pTexture->size)
+							tileWidth <<= pTile->size - pTexture->size;
+						//	aTexClamp[t][2] = f32(tileWidth) / (pTexture->mirrorS ? f32(pTexture->width) : f32(pTexture->clampWidth)); // S upper bound
+						aTexClamp[t][2] = f32(tileWidth) / f32(pTexture->width); // S upper bound
+					}
+				}
+				if (pTexture->clampT) {
+					aTexClamp[t][1] = 0.0f; // T lower bound
+					if (pTexture->frameBufferTexture != CachedTexture::fbNone)
+						aTexClamp[t][3] = 1.0f;
+					else {
+						const u32 tileHeight = ((pTile->lrt - pTile->ult) & 0x03FF) + 1;
+						//	aTexClamp[t][3] = f32(tileHeight) / (pTexture->mirrorT ? f32(pTexture->height) : f32(pTexture->clampHeight)); // T upper bound
+						aTexClamp[t][3] = f32(tileHeight) / f32(pTexture->height); // T upper bound
+					}
+				}
+			}
+			if (pTexture->maskS) {
+				u32 wrapWidth = 1 << pTile->originalMaskS;
+				u32 pow2Width = pow2(pTexture->width);
+				aTexWrap[t][0] = f32(wrapWidth) / f32(pow2Width);
+				aTexScale[t][0] = 1.0f / (1.0f - f32(pow2Width - pTexture->width) / f32(pow2Width));
+			}
+			if (pTexture->maskT) {
+				u32 wrapHeight = 1 << pTile->originalMaskT;
+				u32 pow2Height = pow2(pTexture->height);
+				aTexWrap[t][1] = f32(wrapHeight) / f32(pow2Height);
+				aTexScale[t][1] = 1.0f / (1.0f - f32(pow2Height - pTexture->height) / f32(pow2Height));
+			}
+			if (pTexture->mirrorS) {
+				aTexMirror[t][0] = 1.0f;
+				aTexWrap[t][0] *= 2.0f;
+			}
+			if (pTexture->mirrorT) {
+				aTexMirror[t][1] = 1.0f;
+				aTexWrap[t][1] *= 2.0f;
+			}
+		}
+		
+		uTexClamp0.set(aTexClamp[0].data(), _force);
+		uTexClamp1.set(aTexClamp[1].data(), _force);
+		uTexWrap0.set(aTexWrap[0][0], aTexWrap[0][1], _force);
+		uTexWrap1.set(aTexWrap[1][0], aTexWrap[1][1], _force);
+		uTexMirror0.set(aTexMirror[0][0], aTexMirror[0][1], _force);
+		uTexMirror1.set(aTexMirror[1][0], aTexMirror[1][1], _force);
+		uTexScale0.set(aTexScale[0][0], aTexScale[0][1], _force);
+		uTexScale1.set(aTexScale[1][0], aTexScale[1][1], _force);
+	}
+
+private:
+	bool m_useTile[2];
+	fv4Uniform uTexClamp0;
+	fv4Uniform uTexClamp1;
+	fv2Uniform uTexWrap0;
+	fv2Uniform uTexWrap1;
+	fv2Uniform uTexMirror0;
+	fv2Uniform uTexMirror1;
+	fv2Uniform uTexScale0;
+	fv2Uniform uTexScale1;
+};
 
 class ULights : public UniformGroup
 {
@@ -966,6 +1069,8 @@ void CombinerProgramUniformFactory::buildUniforms(GLuint _program,
 
 		if (!_key.isRectKey())
 			_uniforms.emplace_back(new UTextureParams(_program, _inputs.usesTile(0), _inputs.usesTile(1)));
+
+		_uniforms.emplace_back(new UClampWrapMirrorTex(_program, _inputs.usesTile(0), _inputs.usesTile(1)));
 	}
 
 	_uniforms.emplace_back(new UFog(_program));

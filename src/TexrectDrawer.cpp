@@ -50,17 +50,17 @@ void TexrectDrawer::init()
 	m_pTexture->maskT = 0;
 	m_pTexture->mirrorS = 0;
 	m_pTexture->mirrorT = 0;
-	m_pTexture->realWidth = 640;
-	m_pTexture->realHeight = 580;
-	m_pTexture->textureBytes = m_pTexture->realWidth * m_pTexture->realHeight * fbTexFormats.colorFormatBytes;
+	m_pTexture->width = 640;
+	m_pTexture->height = 580;
+	m_pTexture->textureBytes = m_pTexture->width * m_pTexture->height * fbTexFormats.colorFormatBytes;
 	m_stepX = 2.0f / 640.0f;
 	m_stepY = 2.0f / 580.0f;
 
 	Context::InitTextureParams initParams;
 	initParams.handle = m_pTexture->name;
 	initParams.textureUnitIndex = textureIndices::Tex[0];
-	initParams.width = m_pTexture->realWidth;
-	initParams.height = m_pTexture->realHeight;
+	initParams.width = m_pTexture->width;
+	initParams.height = m_pTexture->height;
 	initParams.internalFormat = fbTexFormats.colorInternalFormat;
 	initParams.format = fbTexFormats.colorFormat;
 	initParams.dataType = fbTexFormats.colorType;
@@ -89,7 +89,7 @@ void TexrectDrawer::init()
 
 	m_programTex.reset(gfxContext.createTexrectDrawerDrawShader());
 	m_programClear.reset(gfxContext.createTexrectDrawerClearShader());
-	m_programTex->setTextureSize(m_pTexture->realWidth, m_pTexture->realHeight);
+	m_programTex->setTextureSize(m_pTexture->width, m_pTexture->height);
 
 	m_vecRectCoords.reserve(256);
 }
@@ -378,10 +378,10 @@ bool TexrectDrawer::draw()
 	scaleX *= 2.0f;
 	scaleY *= 2.0f;
 
-	const float s0 = (m_ulx + 1.0f) / scaleX / (float)m_pTexture->realWidth + 0.5f / (float)m_pTexture->realWidth;
-	const float t0 = (m_lry + 1.0f) / scaleY / (float)m_pTexture->realHeight;// +0.5f / (float)m_pTexture->realHeight;
-	const float s1 = (m_lrx + 1.0f) / scaleX / (float)m_pTexture->realWidth;
-	const float t1 = (m_uly + 1.0f) / scaleY / (float)m_pTexture->realHeight;
+	const float s0 = (m_ulx + 1.0f) / scaleX / (float)m_pTexture->width + 0.5f / (float)m_pTexture->width;
+	const float t0 = (m_lry + 1.0f) / scaleY / (float)m_pTexture->height;// +0.5f / (float)m_pTexture->height;
+	const float s1 = (m_lrx + 1.0f) / scaleX / (float)m_pTexture->width;
+	const float t1 = (m_uly + 1.0f) / scaleY / (float)m_pTexture->height;
 	const float W = 1.0f;
 
 	drawer._updateScreenCoordsViewport(m_pBuffer);

@@ -1,9 +1,10 @@
 #ifndef TEXTURES_H
 #define TEXTURES_H
 
+#include <array>
+#include <list>
 #include <map>
 #include <unordered_map>
-#include <list>
 
 #include "CRC.h"
 #include "convert.h"
@@ -31,7 +32,6 @@ struct CachedTexture
 	u32		palette;
 	u16		width, height;			  // N64 width and height
 	u16		clampWidth, clampHeight;  // Size to clamp to
-	u16		realWidth, realHeight;	  // Actual texture size
 	f32		scaleS, scaleT;			  // Scale to map to 0.0-1.0
 	f32		shiftScaleS, shiftScaleT; // Scale to shift
 	u32		textureBytes;
@@ -108,6 +108,9 @@ private:
 };
 
 void getTextureShiftScale(u32 tile, const TextureCache & cache, f32 & shiftScaleS, f32 & shiftScaleT);
+
+using MirrorClamp = std::array<f32, 4>;
+void getMirrorClamp(u32 _tile, const CachedTexture * _pTexture, MirrorClamp& aMirrorClamp);
 
 inline TextureCache & textureCache()
 {

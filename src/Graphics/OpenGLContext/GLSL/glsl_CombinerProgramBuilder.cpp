@@ -269,8 +269,8 @@ public:
 			"uniform mediump vec2 uCacheShiftScale[2];			\n"
 			"uniform lowp ivec2 uCacheFrameBuffer;				\n"
 			"OUT lowp vec4 vShadeColor;							\n"
-			"OUT highp vec2 vTexCoord0;						\n"
-			"OUT highp vec2 vTexCoord1;						\n"
+			"OUT highp vec2 vTexCoord0;							\n"
+			"OUT highp vec2 vTexCoord1;							\n"
 			"OUT mediump vec2 vLodTexCoord;						\n"
 			"OUT lowp float vNumLights;							\n"
 
@@ -749,7 +749,17 @@ public:
 			"uniform lowp int uDepthSource;			\n"
 			"uniform highp float uPrimDepth;		\n"
 			"uniform mediump vec2 uScreenScale;		\n"
+			"uniform highp vec4 uTexClamp0;			\n"
+			"uniform highp vec4 uTexClamp1;			\n"
+			"uniform highp vec2 uTexWrap0;			\n"
+			"uniform highp vec2 uTexWrap1;			\n"
+			"uniform lowp vec2 uTexMirror0;			\n"
+			"uniform lowp vec2 uTexMirror1;			\n"
+			"uniform highp vec2 uTexScale0;			\n"
+			"uniform highp vec2 uTexScale1;			\n"
 			"uniform lowp int uFogUsage;			\n"
+			"highp vec2 texCoord0;					\n"
+			"highp vec2 texCoord1;					\n"
 			;
 
 		if (config.generalEmulation.enableLegacyBlending == 0) {
@@ -934,6 +944,19 @@ public:
 	{
 		m_part =
 			"mediump float mipmap(out lowp vec4 readtex0, out lowp vec4 readtex1);\n";
+		;
+	}
+};
+
+class ShaderFragmentHeaderClampWrapMirror : public ShaderPart
+{
+public:
+	ShaderFragmentHeaderClampWrapMirror(const opengl::GLInfo & _glinfo)
+	{
+		m_part =
+			"highp vec2 clampWrapMirror(in highp vec2 vTexCoord,	\n"
+			"	in highp vec4 vClamp, in highp vec2 vWrap,			\n"
+			"	in lowp vec2 vMirror, in highp vec2 vOffset);		\n"
 		;
 	}
 };
@@ -1297,6 +1320,28 @@ public:
 	}
 };
 
+class ShaderFragmentClampWrapMirrorTex0 : public ShaderPart
+{
+public:
+	ShaderFragmentClampWrapMirrorTex0(const opengl::GLInfo & _glinfo)
+	{
+		m_part =
+			"  texCoord0 = clampWrapMirror(vTexCoord0, uTexClamp0, uTexWrap0, uTexMirror0, uTexScale0);	\n"
+			;
+	}
+};
+
+class ShaderFragmentClampWrapMirrorTex1 : public ShaderPart
+{
+public:
+	ShaderFragmentClampWrapMirrorTex1(const opengl::GLInfo & _glinfo)
+	{
+		m_part =
+			"  texCoord1 = clampWrapMirror(vTexCoord1, uTexClamp1, uTexWrap1, uTexMirror1, uTexScale1);	\n"
+			;
+	}
+};
+
 class ShaderFragmentReadTexMipmap : public ShaderPart
 {
 public:
@@ -1317,20 +1362,20 @@ public:
 		if (_glinfo.isGLES2) {
 			m_part =
 				"  nCurrentTile = 0; \n"
-				"  lowp vec4 readtex0 = readTex(uTex0, vTexCoord0, uFbMonochrome[0], uFbFixedAlpha[0]);		\n"
+				"  lowp vec4 readtex0 = readTex(uTex0, texCoord0, uFbMonochrome[0], uFbFixedAlpha[0]);		\n"
 				;
 		} else {
 			if (config.video.multisampling > 0) {
 				m_part =
 					"  lowp vec4 readtex0;																	\n"
 					"  if (uMSTexEnabled[0] == 0) {															\n"
-					"      READ_TEX(readtex0, uTex0, vTexCoord0, uFbMonochrome[0], uFbFixedAlpha[0])		\n"
-					"  } else readtex0 = readTexMS(uMSTex0, vTexCoord0, uFbMonochrome[0], uFbFixedAlpha[0]);\n"
+					"      READ_TEX(readtex0, uTex0, texCoord0, uFbMonochrome[0], uFbFixedAlpha[0])		\n"
+					"  } else readtex0 = readTexMS(uMSTex0, texCoord0, uFbMonochrome[0], uFbFixedAlpha[0]);\n"
 					;
 			} else {
 				m_part =
 					"  lowp vec4 readtex0;																	\n"
-					"  READ_TEX(readtex0, uTex0, vTexCoord0, uFbMonochrome[0], uFbFixedAlpha[0])			\n"
+					"  READ_TEX(readtex0, uTex0, texCoord0, uFbMonochrome[0], uFbFixedAlpha[0])			\n"
 					;
 			}
 		}
@@ -1352,27 +1397,27 @@ public:
 
 			shaderPart = "  nCurrentTile = 0; \n";
 			if (g_textureConvert.getBilerp0()) {
-				shaderPart += "  lowp vec4 readtex0 = readTex(uTex0, vTexCoord0, uFbMonochrome[0], uFbFixedAlpha[0]);		\n";
+				shaderPart += "  lowp vec4 readtex0 = readTex(uTex0, texCoord0, uFbMonochrome[0], uFbFixedAlpha[0]);		\n";
 			} else {
 				shaderPart += "  lowp vec4 tmpTex = vec4(0.0);																\n"
-							  "  lowp vec4 readtex0 = YUV_Convert(uTex0, vTexCoord0, 0, uTextureFormat[0], tmpTex);			\n";
+							  "  lowp vec4 readtex0 = YUV_Convert(uTex0, texCoord0, 0, uTextureFormat[0], tmpTex);			\n";
 			}
 
 		} else {
 
 			if (!g_textureConvert.getBilerp0()) {
 				shaderPart = "  lowp vec4 readtex0;																			\n"
-							 "  YUVCONVERT_TEX0(readtex0, uTex0, vTexCoord0, uTextureFormat[0])								\n";
+							 "  YUVCONVERT_TEX0(readtex0, uTex0, texCoord0, uTextureFormat[0])								\n";
 			} else {
 				if (config.video.multisampling > 0) {
 					shaderPart =
 						"  lowp vec4 readtex0;																				\n"
 						"  if (uMSTexEnabled[0] == 0) {																		\n"
-						"    READ_TEX(readtex0, uTex0, vTexCoord0, uFbMonochrome[0], uFbFixedAlpha[0])						\n"
-						"  } else readtex0 = readTexMS(uMSTex0, vTexCoord0, uFbMonochrome[0], uFbFixedAlpha[0]);			\n";
+						"    READ_TEX(readtex0, uTex0, texCoord0, uFbMonochrome[0], uFbFixedAlpha[0])						\n"
+						"  } else readtex0 = readTexMS(uMSTex0, texCoord0, uFbMonochrome[0], uFbFixedAlpha[0]);			\n";
 				} else {
 					shaderPart = "  lowp vec4 readtex0;																		\n"
-								 "  READ_TEX(readtex0, uTex0, vTexCoord0, uFbMonochrome[0], uFbFixedAlpha[0])				\n";
+								 "  READ_TEX(readtex0, uTex0, texCoord0, uFbMonochrome[0], uFbFixedAlpha[0])				\n";
 				}
 			}
 
@@ -1401,9 +1446,9 @@ public:
 			shaderPart = "  nCurrentTile = 1; \n";
 
 			if (g_textureConvert.getBilerp1()) {
-				shaderPart += "  lowp vec4 readtex1 = readTex(uTex1, vTexCoord1, uFbMonochrome[1], uFbFixedAlpha[1]);				\n";
+				shaderPart += "  lowp vec4 readtex1 = readTex(uTex1, texCoord1, uFbMonochrome[1], uFbFixedAlpha[1]);				\n";
 			} else {
-				shaderPart += "  lowp vec4 readtex1 = YUV_Convert(uTex1, vTexCoord1, uTextureConvert, uTextureFormat[1], readtex0);	\n";
+				shaderPart += "  lowp vec4 readtex1 = YUV_Convert(uTex1, texCoord1, uTextureConvert, uTextureFormat[1], readtex0);	\n";
 			}
 
 		} else {
@@ -1411,17 +1456,17 @@ public:
 			if (!g_textureConvert.getBilerp1()) {
 				shaderPart =
 					"  lowp vec4 readtex1;																							\n"
-					"    YUVCONVERT_TEX1(readtex1, uTex1, vTexCoord1, uTextureFormat[1], readtex0)					\n";
+					"    YUVCONVERT_TEX1(readtex1, uTex1, texCoord1, uTextureFormat[1], readtex0)					\n";
 			} else {
 				if (config.video.multisampling > 0) {
 					shaderPart =
 						"  lowp vec4 readtex1;																						\n"
 						"  if (uMSTexEnabled[1] == 0) {																				\n"
-						"    READ_TEX(readtex1, uTex1, vTexCoord1, uFbMonochrome[1], uFbFixedAlpha[1])								\n"
-						"  } else readtex1 = readTexMS(uMSTex1, vTexCoord1, uFbMonochrome[1], uFbFixedAlpha[1]);					\n";
+						"    READ_TEX(readtex1, uTex1, texCoord1, uFbMonochrome[1], uFbFixedAlpha[1])								\n"
+						"  } else readtex1 = readTexMS(uMSTex1, texCoord1, uFbMonochrome[1], uFbFixedAlpha[1]);					\n";
 				} else {
 					shaderPart = "  lowp vec4 readtex1;																				\n"
-								 "  READ_TEX(readtex1, uTex1, vTexCoord1, uFbMonochrome[1], uFbFixedAlpha[1])						\n";
+								 "  READ_TEX(readtex1, uTex1, texCoord1, uFbMonochrome[1], uFbFixedAlpha[1])						\n";
 				}
 			}
 
@@ -1651,8 +1696,8 @@ public:
 					"uniform mediump float uMinLod;		\n"
 					"														\n"
 					"mediump float mipmap(out lowp vec4 readtex0, out lowp vec4 readtex1) {	\n"
-					"  readtex0 = texture2D(uTex0, vTexCoord0);				\n"
-					"  readtex1 = texture2D(uTex1, vTexCoord1);				\n"
+					"  readtex0 = texture2D(uTex0, texCoord0);				\n"
+					"  readtex1 = texture2D(uTex1, texCoord1);				\n"
 					"  if (uMaxTile == 0) return 1.0;						\n"
 					"  return uMinLod;										\n"
 					"}														\n"
@@ -1665,8 +1710,8 @@ public:
 					"uniform lowp int uTextureDetail;	\n"
 					"														\n"
 					"mediump float mipmap(out lowp vec4 readtex0, out lowp vec4 readtex1) {	\n"
-					"  readtex0 = texture2D(uTex0, vTexCoord0);				\n"
-					"  readtex1 = texture2DLodEXT(uTex1, vTexCoord1, 0.0);		\n"
+					"  readtex0 = texture2D(uTex0, texCoord0);				\n"
+					"  readtex1 = texture2DLodEXT(uTex1, texCoord1, 0.0);		\n"
 					"														\n"
 					"  mediump float fMaxTile = float(uMaxTile);			\n"
 					"  mediump vec2 dx = abs(dFdx(vLodTexCoord));			\n"
@@ -1695,9 +1740,9 @@ public:
 					"  lod_tile = min(lod_tile, fMaxTile);					\n"
 					"  lowp float lod_tile_m1 = max(0.0, lod_tile - 1.0);	\n"
 					"  lowp float lod_tile_p1 = min(fMaxTile - 1.0, lod_tile + 1.0);	\n"
-					"  lowp vec4 lodT = texture2DLodEXT(uTex1, vTexCoord1, lod_tile);	\n"
-					"  lowp vec4 lodT_m1 = texture2DLodEXT(uTex1, vTexCoord1, lod_tile_m1);	\n"
-					"  lowp vec4 lodT_p1 = texture2DLodEXT(uTex1, vTexCoord1, lod_tile_p1);	\n"
+					"  lowp vec4 lodT = texture2DLodEXT(uTex1, texCoord1, lod_tile);	\n"
+					"  lowp vec4 lodT_m1 = texture2DLodEXT(uTex1, texCoord1, lod_tile_m1);	\n"
+					"  lowp vec4 lodT_p1 = texture2DLodEXT(uTex1, texCoord1, lod_tile_p1);	\n"
 					"  if (lod_tile < 1.0) {								\n"
 					"    if (magnify) {									\n"
 					//     !sharpen && !detail
@@ -1731,8 +1776,8 @@ public:
 					"uniform mediump float uMinLod;		\n"
 					"														\n"
 					"mediump float mipmap(out lowp vec4 readtex0, out lowp vec4 readtex1) {	\n"
-					"  readtex0 = texture(uTex0, vTexCoord0);				\n"
-					"  readtex1 = texture(uTex1, vTexCoord1);				\n"
+					"  readtex0 = texture(uTex0, texCoord0);				\n"
+					"  readtex1 = texture(uTex1, texCoord1);				\n"
 					"  if (uMaxTile == 0) return 1.0;						\n"
 					"  return uMinLod;										\n"
 					"}														\n"
@@ -1777,8 +1822,8 @@ public:
 					"uniform lowp int uTextureDetail;	\n"
 					"																		\n"
 					"mediump float mipmap(out lowp vec4 readtex0, out lowp vec4 readtex1) {	\n"
-					"  READ_TEX_NORMAL(readtex0, uTex0, vTexCoord0, 0.0);					\n"
-					"  READ_TEX_MIPMAP(readtex1, uTex1, vTexCoord1, 0.0);					\n"
+					"  READ_TEX_NORMAL(readtex0, uTex0, texCoord0, 0.0);					\n"
+					"  READ_TEX_MIPMAP(readtex1, uTex1, texCoord1, 0.0);					\n"
 					"																		\n"
 					"  mediump float fMaxTile = float(uMaxTile);							\n"
 					"  mediump vec2 dx = abs(dFdx(vLodTexCoord));							\n"
@@ -1808,9 +1853,9 @@ public:
 					"  lowp float lod_tile_m1 = max(0.0, lod_tile - 1.0);					\n"
 					"  lowp float lod_tile_p1 = min(fMaxTile - 1.0, lod_tile + 1.0);		\n"
 					"  lowp vec4 lodT, lodT_m1, lodT_p1;									\n"
-					"  READ_TEX_MIPMAP(lodT, uTex1, vTexCoord1, lod_tile);					\n"
-					"  READ_TEX_MIPMAP(lodT_m1, uTex1, vTexCoord1, lod_tile_m1);			\n"
-					"  READ_TEX_MIPMAP(lodT_p1, uTex1, vTexCoord1, lod_tile_p1);			\n"
+					"  READ_TEX_MIPMAP(lodT, uTex1, texCoord1, lod_tile);					\n"
+					"  READ_TEX_MIPMAP(lodT_m1, uTex1, texCoord1, lod_tile_m1);				\n"
+					"  READ_TEX_MIPMAP(lodT_p1, uTex1, texCoord1, lod_tile_p1);				\n"
 					"  if (lod_tile < 1.0) {												\n"
 					"    if (magnify) {														\n"
 					//     !sharpen && !detail
@@ -2174,6 +2219,33 @@ public:
 	}
 };
 
+class ShaderClampWrapMirror : public ShaderPart
+{
+public:
+	ShaderClampWrapMirror(const opengl::GLInfo & _glinfo)
+	{
+		m_part =
+			"highp vec2 clampWrapMirror(in highp vec2 vTexCoord, in highp vec4 vClamp,		\n"
+			"	in highp vec2 vWrap, in lowp vec2 vMirror, in highp vec2 vScale)			\n"
+			"{																				\n"
+			"  highp vec2 texCoord = clamp(vTexCoord, vClamp.xy, vClamp.zw);				\n"
+			"  lowp vec2 one = vec2(1.0);													\n"
+			"  lowp vec2 clamped = step(vClamp.zw, texCoord);								\n"
+			"  lowp vec2 notClamped = one - clamped;										\n"
+			"  texCoord = clamped * texCoord + notClamped * mod(texCoord, vWrap);			\n"
+			"  highp vec2 intPart = floor(texCoord);															\n"
+			"  highp vec2 fractPart = fract(texCoord);								\n"
+			"  lowp vec2 needMirror = step(vec2(0.5), mod(intPart, vec2(2.0))) * vMirror;	\n"
+			"  texCoord = clamped * texCoord + notClamped * fractPart;						\n"
+			"  texCoord = (one - vMirror) * texCoord + vMirror * fractPart;					\n"
+			"  texCoord = (one - texCoord) * needMirror + texCoord * (one - needMirror);	\n"
+			"  texCoord *= vScale;															\n"
+			"  return texCoord;																\n"
+			"}																				\n"
+			;
+	}
+};
+
 /*---------------ShaderPartsEnd-------------*/
 
 static
@@ -2339,6 +2411,7 @@ graphics::CombinerProgram * CombinerProgramBuilder::buildCombinerProgram(Combine
 		m_fragmentHeaderWriteDepth->write(ssShader);
 		m_fragmentHeaderDepthCompare->write(ssShader);
 		m_fragmentHeaderReadMSTex->write(ssShader);
+		m_fragmentHeaderClampWrapMirror->write(ssShader);
 		if (bUseLod)
 			m_fragmentHeaderMipMap->write(ssShader);
 		else if (g_cycleType < G_CYC_COPY)
@@ -2371,6 +2444,11 @@ graphics::CombinerProgram * CombinerProgramBuilder::buildCombinerProgram(Combine
 		m_fragmentBlendMux->write(ssShader);
 
 	if (bUseTextures) {
+		if (combinerInputs.usesTile(0))
+			m_fragmentClampWrapMirrorTex0->write(ssShader);
+		if (combinerInputs.usesTile(1))
+			m_fragmentClampWrapMirrorTex1->write(ssShader);
+
 		if (bUseLod) {
 			m_fragmentReadTexMipmap->write(ssShader);
 		} else {
@@ -2408,6 +2486,7 @@ graphics::CombinerProgram * CombinerProgramBuilder::buildCombinerProgram(Combine
 		m_shaderCalcLight->write(ssShader);
 
 	if (bUseTextures) {
+		m_shaderClampWrapMirror->write(ssShader);
 		if (bUseLod)
 			m_shaderMipmap->write(ssShader);
 		else {
@@ -2518,6 +2597,7 @@ CombinerProgramBuilder::CombinerProgramBuilder(const opengl::GLInfo & _glinfo, o
 , m_fragmentHeaderWriteDepth(new ShaderFragmentHeaderWriteDepth(_glinfo))
 , m_fragmentHeaderCalcLight(new ShaderFragmentHeaderCalcLight(_glinfo))
 , m_fragmentHeaderMipMap(new ShaderFragmentHeaderMipMap(_glinfo))
+, m_fragmentHeaderClampWrapMirror(new ShaderFragmentHeaderClampWrapMirror(_glinfo))
 , m_fragmentHeaderReadMSTex(new ShaderFragmentHeaderReadMSTex(_glinfo))
 , m_fragmentHeaderDither(new ShaderFragmentHeaderDither(_glinfo))
 , m_fragmentHeaderDepthCompare(new ShaderFragmentHeaderDepthCompare(_glinfo))
@@ -2528,6 +2608,8 @@ CombinerProgramBuilder::CombinerProgramBuilder(const opengl::GLInfo & _glinfo, o
 , m_fragmentBlendMux(new ShaderFragmentBlendMux(_glinfo))
 , m_fragmentReadTex0(new ShaderFragmentReadTex0(_glinfo))
 , m_fragmentReadTex1(new ShaderFragmentReadTex1(_glinfo))
+, m_fragmentClampWrapMirrorTex0(new ShaderFragmentClampWrapMirrorTex0(_glinfo))
+, m_fragmentClampWrapMirrorTex1(new ShaderFragmentClampWrapMirrorTex1(_glinfo))
 , m_fragmentReadTexCopyMode(new ShaderFragmentReadTexCopyMode(_glinfo))
 , m_fragmentReadTexMipmap(new ShaderFragmentReadTexMipmap(_glinfo))
 , m_fragmentCallN64Depth(new ShaderFragmentCallN64Depth(_glinfo))
@@ -2542,6 +2624,7 @@ CombinerProgramBuilder::CombinerProgramBuilder(const opengl::GLInfo & _glinfo, o
 , m_shaderReadtexCopyMode(new ShaderReadtexCopyMode(_glinfo))
 , m_shaderN64DepthCompare(new ShaderN64DepthCompare(_glinfo))
 , m_shaderN64DepthRender(new ShaderN64DepthRender(_glinfo))
+, m_shaderClampWrapMirror(new ShaderClampWrapMirror(_glinfo))
 , m_useProgram(_useProgram)
 , m_combinerOptionsBits(graphics::CombinerProgram::getShaderCombinerOptionsBits())
 {

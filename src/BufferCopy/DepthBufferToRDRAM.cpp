@@ -59,9 +59,9 @@ void DepthBufferToRDRAM::init()
 	m_pColorTexture->maskT = 0;
 	m_pColorTexture->mirrorS = 0;
 	m_pColorTexture->mirrorT = 0;
-	m_pColorTexture->realWidth = DEPTH_TEX_WIDTH;
-	m_pColorTexture->realHeight = DEPTH_TEX_HEIGHT;
-	m_pColorTexture->textureBytes = m_pColorTexture->realWidth * m_pColorTexture->realHeight;
+	m_pColorTexture->width = DEPTH_TEX_WIDTH;
+	m_pColorTexture->height = DEPTH_TEX_HEIGHT;
+	m_pColorTexture->textureBytes = m_pColorTexture->width * m_pColorTexture->height;
 
 	m_pDepthTexture = textureCache().addFrameBufferTexture(false);
 	m_pDepthTexture->format = G_IM_FMT_I;
@@ -73,16 +73,16 @@ void DepthBufferToRDRAM::init()
 	m_pDepthTexture->maskT = 0;
 	m_pDepthTexture->mirrorS = 0;
 	m_pDepthTexture->mirrorT = 0;
-	m_pDepthTexture->realWidth = DEPTH_TEX_WIDTH;
-	m_pDepthTexture->realHeight = DEPTH_TEX_HEIGHT;
-	m_pDepthTexture->textureBytes = m_pDepthTexture->realWidth * m_pDepthTexture->realHeight * sizeof(float);
+	m_pDepthTexture->width = DEPTH_TEX_WIDTH;
+	m_pDepthTexture->height = DEPTH_TEX_HEIGHT;
+	m_pDepthTexture->textureBytes = m_pDepthTexture->width * m_pDepthTexture->height * sizeof(float);
 
 	const FramebufferTextureFormats & fbTexFormats = gfxContext.getFramebufferTextureFormats();
 	Context::InitTextureParams initParams;
 	initParams.handle = m_pColorTexture->name;
 	initParams.textureUnitIndex = textureIndices::Tex[0];
-	initParams.width = m_pColorTexture->realWidth;
-	initParams.height = m_pColorTexture->realHeight;
+	initParams.width = m_pColorTexture->width;
+	initParams.height = m_pColorTexture->height;
 	initParams.internalFormat = fbTexFormats.monochromeInternalFormat;
 	initParams.format = fbTexFormats.monochromeFormat;
 	initParams.dataType = fbTexFormats.monochromeType;
@@ -97,8 +97,8 @@ void DepthBufferToRDRAM::init()
 	gfxContext.setTextureParameters(setParams);
 
 	initParams.handle = m_pDepthTexture->name;
-	initParams.width = m_pDepthTexture->realWidth;
-	initParams.height = m_pDepthTexture->realHeight;
+	initParams.width = m_pDepthTexture->width;
+	initParams.height = m_pDepthTexture->height;
 	initParams.internalFormat = fbTexFormats.depthInternalFormat;
 	initParams.format = fbTexFormats.depthFormat;
 	initParams.dataType = fbTexFormats.depthType;
@@ -189,7 +189,7 @@ bool DepthBufferToRDRAM::_prepareCopy(u32& _startAddress, bool _copyChunk)
 	blitParams.drawBuffer = m_FBO;
 	blitParams.srcX0 = 0;
 	blitParams.srcY0 = 0;
-	blitParams.srcX1 = m_pCurFrameBuffer->m_pTexture->realWidth;
+	blitParams.srcX1 = m_pCurFrameBuffer->m_pTexture->width;
 	blitParams.srcY1 = s32(m_pCurFrameBuffer->m_height * m_pCurFrameBuffer->m_scale);
 	blitParams.dstX0 = 0;
 	blitParams.dstY0 = 0;

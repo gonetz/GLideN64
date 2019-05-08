@@ -637,6 +637,15 @@ void gDPLoadBlock(u32 tile, u32 uls, u32 ult, u32 lrs, u32 dxt)
 	gDP.loadTile->frameBufferAddress = 0;
 	CheckForFrameBufferTexture(address, info.width, bytes); // Load data to TMEM even if FB texture is found. See comment to texturedRectDepthBufferCopy
 
+	const u32 texLowerBound = gDP.loadTile->tmem;
+	const u32 texUpperBound = gDP.loadTile->tmem + (bytes >> 3);
+	for (u32 i = 0; i < tile; ++i) {
+		if (gDP.tiles[i].tmem >= texLowerBound && gDP.tiles[i].tmem < texUpperBound) {
+			gDPLoadTileInfo &info = gDP.loadInfo[gDP.tiles[i].tmem];
+			info.loadType = LOADTYPE_BLOCK;
+		}
+	}
+
 	if (gDP.loadTile->size == G_IM_SIZ_32b)
 		gDPLoadBlock32(gDP.loadTile->uls, gDP.loadTile->lrs, dxt);
 	else if (gDP.loadTile->format == G_IM_FMT_YUV)
