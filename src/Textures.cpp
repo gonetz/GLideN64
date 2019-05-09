@@ -860,26 +860,27 @@ bool TextureCache::_loadHiresTexture(u32 _tile, CachedTexture *_pTexture, u64 & 
 		if ((config.generalEmulation.hacks & hack_MK64) != 0 && (height % 2) != 0)
 			height--;
 	} else {
-		int tile_width = gDP.tiles[_tile].lrs - gDP.tiles[_tile].uls + 1;
-		int tile_height = gDP.tiles[_tile].lrt - gDP.tiles[_tile].ult + 1;
+		const gDPTile * pTile = gSP.textureTile[_tile];
+		int tile_width = pTile->lrs - pTile->uls + 1;
+		int tile_height = pTile->lrt - pTile->ult + 1;
 
-		int mask_width = (gDP.tiles[_tile].masks == 0) ? (tile_width) : (1 << gDP.tiles[_tile].masks);
-		int mask_height = (gDP.tiles[_tile].maskt == 0) ? (tile_height) : (1 << gDP.tiles[_tile].maskt);
+		int mask_width = (pTile->masks == 0) ? (tile_width) : (1 << pTile->masks);
+		int mask_height = (pTile->maskt == 0) ? (tile_height) : (1 << pTile->maskt);
 
-		if ((gDP.tiles[_tile].clamps && tile_width <= 256))
+		if ((pTile->clamps && tile_width <= 256))
 			width = min(mask_width, tile_width);
 		else
 			width = mask_width;
 
-		if ((gDP.tiles[_tile].clampt && tile_height <= 256) || (mask_height > 256))
+		if ((pTile->clampt && tile_height <= 256) || (mask_height > 256))
 			height = min(mask_height, tile_height);
 		else
 			height = mask_height;
 
-		if (gSP.textureTile[_tile]->size == G_IM_SIZ_32b)
-			bpl = gSP.textureTile[_tile]->line << 4;
+		if (pTile->size == G_IM_SIZ_32b)
+			bpl = pTile->line << 4;
 		else if (info.dxt == 0)
-			bpl = gSP.textureTile[_tile]->line << 3;
+			bpl = pTile->line << 3;
 		else {
 			u32 dxt = info.dxt;
 			if (dxt > 1)
