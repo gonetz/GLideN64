@@ -120,11 +120,6 @@ boolean TxHiResCache::_HiResTexPackPathExists() const
 	return osal_path_existsW(dir_path.c_str());
 }
 
-boolean TxHiResCache::empty()
-{
-  return _cache.empty();
-}
-
 boolean TxHiResCache::load(boolean replace) /* 0 : reload, 1 : replace partial */
 {
 	if (_texPackPath.empty() || _ident.empty())
@@ -154,7 +149,7 @@ boolean TxHiResCache::load(boolean replace) /* 0 : reload, 1 : replace partial *
 		if (res == resError) {
 			if (_callback) (*_callback)(wst("Texture pack load failed. Clear hiresolution texture cache.\n"));
 			INFO(80, wst("Texture pack load failed. Clear hiresolution texture cache.\n"));
-			_cache.clear();
+			clear();
 		}
 		return res == resOk ? 1 : 0;
 	}
@@ -311,7 +306,7 @@ TxHiResCache::loadHiResTextures(const wchar_t * dir_path, boolean replace)
 	  uint64 chksum64 = (uint64)palchksum;
 	  chksum64 <<= 32;
 	  chksum64 |= (uint64)chksum;
-	  if (TxCache::is_cached(chksum64)) {
+	  if (isCached(chksum64)) {
 #if !DEBUG
 		INFO(80, wst("-----\n"));
 		INFO(80, wst("path: %ls\n"), dir_path.string().c_str());
@@ -740,7 +735,7 @@ TxHiResCache::loadHiResTextures(const wchar_t * dir_path, boolean replace)
 		if (_callback) {
 		  wchar_t tmpbuf[MAX_PATH];
 		  mbstowcs(tmpbuf, fname, MAX_PATH);
-		  (*_callback)(wst("[%d] total mem:%.2fmb - %ls\n"), _cache.size(), (float)_totalSize/1000000, tmpbuf);
+		  (*_callback)(wst("[%d] total mem:%.2fmb - %ls\n"), size(), (totalSize()/1024)/1024.0, tmpbuf);
 		}
 		DBG_INFO(80, wst("texture loaded!\n"));
 	  } else {

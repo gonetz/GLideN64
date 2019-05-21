@@ -24,44 +24,65 @@
 #ifndef __TXCACHE_H__
 #define __TXCACHE_H__
 
-#include "TxInternal.h"
-#include "TxUtil.h"
 #include <list>
 #include <map>
+#include <memory>
+
+#include "TxInternal.h"
+#include "TxUtil.h"
+
+struct  Checksum
+{
+	union
+	{
+		uint64 _checksum; /* checksum hi:palette low:texture */
+		struct
+		{
+			uint32 _low;
+			uint32 _hi;
+		};
+	};
+
+	Checksum(uint64 checksum) : _checksum(checksum) {}
+	operator bool() {
+		return _checksum != 0;
+	}
+	operator uint64() {
+		return _checksum;
+	}
+};
+
+//class TxCacheImpl;
 
 class TxCache
 {
 private:
-  std::list<uint64> _cachelist;
-  uint8 *_gzdest0;
-  uint8 *_gzdest1;
-  uint32 _gzdestLen;
+  class TxCacheImpl;
+	friend class TxCacheImpl;
+	std::unique_ptr<TxCacheImpl> _pImpl;
+
 protected:
-  int _options;
-  tx_wstring _ident;
-  tx_wstring _cachePath;
-  dispInfoFuncExt _callback;
-  struct TXCACHE {
-    int size;
-    GHQTexInfo info;
-    std::list<uint64>::iterator it;
-  };
-  int _totalSize;
-  int _cacheSize;
-  std::map<uint64, TXCACHE*> _cache;
-  boolean save(const wchar_t *path, const wchar_t *filename, const int config);
-  boolean load(const wchar_t *path, const wchar_t *filename, const int config, boolean force);
-  boolean del(uint64 checksum); /* checksum hi:palette low:texture */
-  boolean is_cached(uint64 checksum); /* checksum hi:palette low:texture */
-  void clear();
+	mutable uint32 _options;
+	tx_wstring _ident;
+	tx_wstring _cachePath;
+	dispInfoFuncExt _callback;
+
+	boolean save(const wchar_t *path, const wchar_t *filename, const int config);
+	boolean load(const wchar_t *path, const wchar_t *filename, const int config, boolean force);
+	boolean del(Checksum checksum); /* checksum hi:palette low:texture */
+	boolean isCached(Checksum checksum); /* checksum hi:palette low:texture */
+	void clear();
+	uint64 size() const; // number of elements
+	uint64 totalSize() const; // size of elements in bytes
+	uint64 cacheLimit() const;
+
 public:
-  ~TxCache();
-  TxCache(int options, int cachesize, const wchar_t *cachePath, const wchar_t *ident,
-              dispInfoFuncExt callback);
-  boolean add(uint64 checksum, /* checksum hi:palette low:texture */
-              GHQTexInfo *info, int dataSize = 0);
-  boolean get(uint64 checksum, /* checksum hi:palette low:texture */
-              GHQTexInfo *info);
+	~TxCache();
+	TxCache(uint32 options, uint64 cacheLimit, const wchar_t *cachePath, const wchar_t *ident,
+		dispInfoFuncExt callback);
+	bool add(Checksum checksum, GHQTexInfo *info, int dataSize = 0);
+	bool get(Checksum checksum, GHQTexInfo *info);
+	bool empty() const;
 };
 
 #endif /* __TXCACHE_H__ */

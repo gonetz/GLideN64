@@ -25,6 +25,7 @@
 #pragma warning(disable: 4786)
 #endif
 
+#include <assert.h>
 #include "TxCache.h"
 #include "TxDbg.h"
 #include <osal_files.h>
@@ -32,37 +33,60 @@
 #include <memory.h>
 #include <stdlib.h>
 
-TxCache::~TxCache()
+class TxCache::TxCacheImpl
 {
-	/* free memory, clean up, etc */
-	clear();
-}
+public:
+	TxCacheImpl(const TxCache* pCache, uint64 cacheLimit);
 
-TxCache::TxCache(int options, int cachesize, const wchar_t *cachePath, const wchar_t *ident,
-				 dispInfoFuncExt callback)
+	bool add(Checksum checksum, GHQTexInfo *info, int dataSize = 0);
+	bool get(Checksum checksum, GHQTexInfo *info);
+
+	bool save(const wchar_t *path, const wchar_t *filename, const int config);
+	bool load(const wchar_t *path, const wchar_t *filename, const int config, boolean force);
+	bool del(Checksum checksum);
+	bool isCached(Checksum checksum);
+	void clear();
+	bool empty() const { return _cache.empty(); }
+
+	uint64 size() const { return _cache.size(); }
+	uint64 totalSize() const { return _totalSize; }
+	uint64 cacheLimit() const { return _cacheLimit; }
+
+private:
+	struct TXCACHE {
+		int size;
+		GHQTexInfo info;
+		std::list<uint64>::iterator it;
+	};
+
+	std::map<uint64, TXCACHE*> _cache;
+	std::list<uint64> _cachelist;
+
+	uint8 *_gzdest0;
+	uint8 *_gzdest1;
+	uint32 _gzdestLen;
+
+	uint64 _totalSize;
+	uint64 _cacheLimit;
+
+private:
+	const TxCache* _pTxCache;
+};
+
+TxCache::TxCacheImpl::TxCacheImpl(const TxCache* pCache, uint64 cacheLimit)
+	: _pTxCache(pCache)
+	, _cacheLimit(cacheLimit)
+	, _totalSize(0U)
 {
-	_options = options;
-	_cacheSize = cachesize;
-	_callback = callback;
-	_totalSize = 0;
-
-	/* save path name */
-	if (cachePath)
-		_cachePath.assign(cachePath);
-
-	/* save ROM name */
-	if (ident)
-		_ident.assign(ident);
-
 	/* zlib memory buffers to (de)compress hires textures */
-	if (_options & (GZ_TEXCACHE|GZ_HIRESTEXCACHE)) {
-		_gzdest0   = TxMemBuf::getInstance()->get(0);
-		_gzdest1   = TxMemBuf::getInstance()->get(1);
+	if (_pTxCache->_options & (GZ_TEXCACHE | GZ_HIRESTEXCACHE)) {
+		_gzdest0 = TxMemBuf::getInstance()->get(0);
+		_gzdest1 = TxMemBuf::getInstance()->get(1);
 		_gzdestLen = (TxMemBuf::getInstance()->size_of(0) < TxMemBuf::getInstance()->size_of(1)) ?
-					TxMemBuf::getInstance()->size_of(0) : TxMemBuf::getInstance()->size_of(1);
+			TxMemBuf::getInstance()->size_of(0) : TxMemBuf::getInstance()->size_of(1);
 
 		if (!_gzdest0 || !_gzdest1 || !_gzdestLen) {
-			_options &= ~(GZ_TEXCACHE|GZ_HIRESTEXCACHE);
+			_pTxCache->_options &= ~(GZ_TEXCACHE | GZ_HIRESTEXCACHE);
 			_gzdest0 = nullptr;
 			_gzdest1 = nullptr;
 			_gzdestLen = 0;
@@ -70,13 +94,12 @@ TxCache::TxCache(int options, int cachesize, const wchar_t *cachePath, const wch
 	}
 }
 
-boolean
-TxCache::add(uint64 checksum, GHQTexInfo *info, int dataSize)
+bool TxCache::TxCacheImpl::add(Checksum checksum, GHQTexInfo *info, int dataSize)
 {
 	/* NOTE: dataSize must be provided if info->data is zlib compressed. */
 
 	if (!checksum || !info->data || _cache.find(checksum) != _cache.end())
-		return 0;
+		return false;
 
 	uint8 *dest = info->data;
 	uint32 format = info->format;
@@ -85,27 +108,29 @@ TxCache::add(uint64 checksum, GHQTexInfo *info, int dataSize)
 		dataSize = TxUtil::sizeofTx(info->width, info->height, info->format);
 
 		if (!dataSize)
-			return 0;
+			return false;
 
-		if (_options & (GZ_TEXCACHE|GZ_HIRESTEXCACHE)) {
+		if (_pTxCache->_options & (GZ_TEXCACHE | GZ_HIRESTEXCACHE)) {
 			/* zlib compress it. compression level:1 (best speed) */
 			uLongf destLen = _gzdestLen;
 			dest = (dest == _gzdest0) ? _gzdest1 : _gzdest0;
 			if (compress2(dest, &destLen, info->data, dataSize, 1) != Z_OK) {
 				dest = info->data;
 				DBG_INFO(80, wst("Error: zlib compression failed!\n"));
-			} else {
-				DBG_INFO(80, wst("zlib compressed: %.02fkb->%.02fkb\n"), (float)dataSize/1000, (float)destLen/1000);
+			}
+			else {
+				DBG_INFO(80, wst("zlib compressed: %.02fkb->%.02fkb\n"), (float)dataSize / 1000, (float)destLen / 1000);
 				dataSize = destLen;
 				format |= GL_TEXFMT_GZ;
 			}
 		}
 	}
 
-	/* if cache size exceeds limit, remove old cache */
-	if (_cacheSize > 0) {
+  
+  /* if cache size exceeds limit, remove old cache */
+	if (_cacheLimit != 0) {
 		_totalSize += dataSize;
-		if ((_totalSize > _cacheSize) && !_cachelist.empty()) {
+		if ((_totalSize > _cacheLimit) && !_cachelist.empty()) {
 			/* _cachelist is arranged so that frequently used textures are in the back */
 			std::list<uint64>::iterator itList = _cachelist.begin();
 			while (itList != _cachelist.end()) {
@@ -121,7 +146,7 @@ TxCache::add(uint64 checksum, GHQTexInfo *info, int dataSize)
 				itList++;
 
 				/* check if memory cache has enough space */
-				if (_totalSize <= _cacheSize)
+				if (_totalSize <= _cacheLimit)
 					break;
 			}
 			/* remove from _cachelist */
@@ -135,7 +160,7 @@ TxCache::add(uint64 checksum, GHQTexInfo *info, int dataSize)
 	/* cache it */
 	uint8 *tmpdata = (uint8*)malloc(dataSize);
 	if (tmpdata == nullptr)
-		return 0;
+		return false;
 
 	TXCACHE *txCache = new TXCACHE;
 	/* we can directly write as we filter, but for now we get away
@@ -150,7 +175,7 @@ TxCache::add(uint64 checksum, GHQTexInfo *info, int dataSize)
 	txCache->size = dataSize;
 
 	/* add to cache */
-	if (_cacheSize > 0) {
+	if (_cacheLimit != 0) {
 		_cachelist.push_back(checksum);
 		txCache->it = --(_cachelist.end());
 	}
@@ -159,11 +184,11 @@ TxCache::add(uint64 checksum, GHQTexInfo *info, int dataSize)
 
 #ifdef DEBUG
 	DBG_INFO(80, wst("[%5d] added!! crc:%08X %08X %d x %d gfmt:%x total:%.02fmb\n"),
-		_cache.size(), (uint32)(checksum >> 32), (uint32)(checksum & 0xffffffff),
-		info->width, info->height, info->format & 0xffff, (float)_totalSize / 1000000);
+		_cache.size(), checksum._hi, checksum._low,
+		info->width, info->height, info->format & 0xffff, (double)_totalSize / 1000000);
 
-	if (_cacheSize > 0) {
-		DBG_INFO(80, wst("cache max config:%.02fmb\n"), (float)_cacheSize / 1000000);
+	if (_cacheLimit != 0) {
+		DBG_INFO(80, wst("cache max config:%.02fmb\n"), (double)_cacheLimit / 1000000);
 
 		if (_cache.size() != _cachelist.size()) {
 			DBG_INFO(80, wst("Error: cache/cachelist mismatch! (%d/%d)\n"), _cache.size(), _cachelist.size());
@@ -174,13 +199,13 @@ TxCache::add(uint64 checksum, GHQTexInfo *info, int dataSize)
 	/* total cache size */
 	_totalSize += dataSize;
 
-	return 1;
+	return true;
 }
 
-boolean
-TxCache::get(uint64 checksum, GHQTexInfo *info)
+bool TxCache::TxCacheImpl::get(Checksum checksum, GHQTexInfo *info)
 {
-	if (!checksum || _cache.empty()) return 0;
+	if (!checksum || _cache.empty())
+		return false;
 
 	/* find a match in cache */
 	auto itMap = _cache.find(checksum);
@@ -189,7 +214,7 @@ TxCache::get(uint64 checksum, GHQTexInfo *info)
 		memcpy(info, &(((*itMap).second)->info), sizeof(GHQTexInfo));
 
 		/* push it to the back of the list */
-		if (_cacheSize > 0) {
+		if (_cacheLimit != 0) {
 			_cachelist.erase(((*itMap).second)->it);
 			_cachelist.push_back(checksum);
 			((*itMap).second)->it = --(_cachelist.end());
@@ -201,24 +226,23 @@ TxCache::get(uint64 checksum, GHQTexInfo *info)
 			uint8 *dest = (_gzdest0 == info->data) ? _gzdest1 : _gzdest0;
 			if (uncompress(dest, &destLen, info->data, ((*itMap).second)->size) != Z_OK) {
 				DBG_INFO(80, wst("Error: zlib decompression failed!\n"));
-				return 0;
+				return false;
 			}
 			info->data = dest;
 			info->format &= ~GL_TEXFMT_GZ;
-			DBG_INFO(80, wst("zlib decompressed: %.02fkb->%.02fkb\n"), (float)(((*itMap).second)->size)/1000, (float)destLen/1000);
+			DBG_INFO(80, wst("zlib decompressed: %.02fkb->%.02fkb\n"), (float)(((*itMap).second)->size) / 1000, (float)destLen / 1000);
 		}
 
-		return 1;
+		return true;
 	}
 
-	return 0;
+	return false;
 }
 
-boolean
-TxCache::save(const wchar_t *path, const wchar_t *filename, int config)
+bool TxCache::TxCacheImpl::save(const wchar_t *path, const wchar_t *filename, int config)
 {
 	if (_cache.empty())
-		return 0;
+		return false;
 
 	/* dump cache to disk */
 	char cbuf[MAX_PATH];
@@ -254,20 +278,20 @@ TxCache::save(const wchar_t *path, const wchar_t *filename, int config)
 
 			/* to keep things simple, we save the texture data in a zlib uncompressed state. */
 			/* sigh... for those who cannot wait the extra few seconds. changed to keep
-	 * texture data in a zlib compressed state. if the GZ_TEXCACHE or GZ_HIRESTEXCACHE
-	 * option is toggled, the cache will need to be rebuilt.
-	 */
+			* texture data in a zlib compressed state. if the GZ_TEXCACHE or GZ_HIRESTEXCACHE
+			* option is toggled, the cache will need to be rebuilt.
+			*/
 			/*if (format & GL_TEXFMT_GZ) {
-	  dest = _gzdest0;
-	  destLen = _gzdestLen;
-	  if (dest && destLen) {
-	  if (uncompress(dest, &destLen, (*itMap).second->info.data, (*itMap).second->size) != Z_OK) {
-	  dest = nullptr;
-	  destLen = 0;
-	  }
-	  format &= ~GL_TEXFMT_GZ;
-	  }
-	  }*/
+			dest = _gzdest0;
+			destLen = _gzdestLen;
+			if (dest && destLen) {
+			if (uncompress(dest, &destLen, (*itMap).second->info.data, (*itMap).second->size) != Z_OK) {
+			dest = nullptr;
+			destLen = 0;
+			}
+			format &= ~GL_TEXFMT_GZ;
+			}
+			}*/
 
 			if (dest && destLen) {
 				/* texture checksum */
@@ -287,19 +311,18 @@ TxCache::save(const wchar_t *path, const wchar_t *filename, int config)
 
 			itMap++;
 
-			if (_callback)
-				(*_callback)(wst("Total textures saved to HDD: %d\n"), ++total);
+			if (_pTxCache->_callback)
+				(*_pTxCache->_callback)(wst("Total textures saved to HDD: %d\n"), ++total);
 		}
 		gzclose(gzfp);
 	}
 
 	CHDIR(curpath);
 
-	return _cache.empty() ? 0 : 1;
+	return !_cache.empty();
 }
 
-boolean
-TxCache::load(const wchar_t *path, const wchar_t *filename, int config, boolean force)
+bool TxCache::TxCacheImpl::load(const wchar_t *path, const wchar_t *filename, int config, boolean force)
 {
 	/* find it on disk */
 	char cbuf[MAX_PATH];
@@ -350,13 +373,14 @@ TxCache::load(const wchar_t *path, const wchar_t *filename, int config, boolean 
 					add(checksum, &tmpInfo, (tmpInfo.format & GL_TEXFMT_GZ) ? dataSize : 0);
 
 					free(tmpInfo.data);
-				} else {
+				}
+				else {
 					gzseek(gzfp, dataSize, SEEK_CUR);
 				}
 
 				/* skip in between to prevent the loop from being tied down to vsync */
-				if (_callback && (!(_cache.size() % 100) || gzeof(gzfp)))
-					(*_callback)(wst("[%d] total mem:%.02fmb - %ls\n"), _cache.size(), (float)_totalSize/1000000, filename);
+				if (_pTxCache->_callback && (!(_cache.size() % 100) || gzeof(gzfp)))
+					(*_pTxCache->_callback)(wst("[%d] total mem:%.02fmb - %ls\n"), _cache.size(), (float)_totalSize / 1000000, filename);
 
 			} while (!gzeof(gzfp));
 			gzclose(gzfp);
@@ -368,16 +392,17 @@ TxCache::load(const wchar_t *path, const wchar_t *filename, int config, boolean 
 	return !_cache.empty();
 }
 
-boolean
-TxCache::del(uint64 checksum)
+bool TxCache::TxCacheImpl::del(Checksum checksum)
 {
-	if (!checksum || _cache.empty()) return 0;
+	if (!checksum || _cache.empty())
+		return false;
 
 	auto itMap = _cache.find(checksum);
 	if (itMap != _cache.end()) {
 
 		/* for texture cache (not hi-res cache) */
-		if (!_cachelist.empty()) _cachelist.erase(((*itMap).second)->it);
+		if (!_cachelist.empty())
+			_cachelist.erase(((*itMap).second)->it);
 
 		/* remove from cache */
 		free((*itMap).second->info.data);
@@ -385,25 +410,20 @@ TxCache::del(uint64 checksum)
 		delete (*itMap).second;
 		_cache.erase(itMap);
 
-		DBG_INFO(80, wst("removed from cache: checksum = %08X %08X\n"), (uint32)(checksum & 0xffffffff), (uint32)(checksum >> 32));
+		DBG_INFO(80, wst("removed from cache: checksum = %08X %08X\n"), checksum._low, checksum._hi);
 
-		return 1;
+		return true;
 	}
 
-	return 0;
+	return false;
 }
 
-boolean
-TxCache::is_cached(uint64 checksum)
+bool TxCache::TxCacheImpl::isCached(Checksum checksum)
 {
-	auto itMap = _cache.find(checksum);
-	if (itMap != _cache.end()) return 1;
-
-	return 0;
+	return _cache.find(checksum) != _cache.end();
 }
 
-void
-TxCache::clear()
+void TxCache::TxCacheImpl::clear()
 {
 	if (!_cache.empty()) {
 		auto itMap = _cache.begin();
@@ -418,4 +438,84 @@ TxCache::clear()
 	if (!_cachelist.empty()) _cachelist.clear();
 
 	_totalSize = 0;
+}
+
+TxCache::~TxCache()
+{
+	/* free memory, clean up, etc */
+	clear();
+}
+
+TxCache::TxCache(uint32 options,
+	uint64 cachesize,
+	const wchar_t *cachePath,
+	const wchar_t *ident,
+	dispInfoFuncExt callback)
+	: _options(options)
+	, _callback(callback)
+{
+	/* save path name */
+	if (cachePath)
+		_cachePath.assign(cachePath);
+
+	/* save ROM name */
+	if (ident)
+		_ident.assign(ident);
+
+	_pImpl.reset(new TxCacheImpl(this, cachesize));
+}
+
+bool TxCache::add(Checksum checksum, GHQTexInfo *info, int dataSize)
+{
+	return _pImpl->add(checksum, info, dataSize);
+}
+
+bool TxCache::get(Checksum checksum, GHQTexInfo *info)
+{
+	return _pImpl->get(checksum, info);
+}
+
+uint64 TxCache::size() const
+{
+	return _pImpl->size();
+}
+
+uint64 TxCache::totalSize() const
+{
+	return _pImpl->totalSize();
+}
+
+uint64 TxCache::cacheLimit() const
+{
+	return _pImpl->cacheLimit();
+}
+
+boolean TxCache::save(const wchar_t *path, const wchar_t *filename, const int config)
+{
+	return _pImpl->save(path, filename, config);
+}
+
+boolean TxCache::load(const wchar_t *path, const wchar_t *filename, const int config, boolean force)
+{
+	return _pImpl->load(path, filename, config, force);
+}
+
+boolean TxCache::del(Checksum checksum)
+{
+	return _pImpl->del(checksum);
+}
+
+boolean TxCache::isCached(Checksum checksum)
+{
+	return _pImpl->isCached(checksum);
+}
+
+void TxCache::clear()
+{
+	_pImpl->clear();
+}
+
+bool TxCache::empty() const
+{
+	return _pImpl->empty();
 }

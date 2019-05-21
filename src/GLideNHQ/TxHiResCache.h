@@ -67,7 +67,6 @@ public:
 			   const wchar_t *texPackPath,
 			   const wchar_t *ident,
 			   dispInfoFuncExt callback);
-  boolean empty();
   boolean load(boolean replace);
   void dump();
 };

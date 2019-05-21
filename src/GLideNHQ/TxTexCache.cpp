@@ -39,7 +39,7 @@ TxTexCache::TxTexCache(int options, int cachesize, const wchar_t *cachePath, con
 					   ) : TxCache((options & ~GZ_HIRESTEXCACHE), cachesize, cachePath, ident, callback)
 {
 	/* assert local options */
-	if (_cachePath.empty() || _ident.empty() || !_cacheSize)
+  if (_cachePath.empty() || _ident.empty())
 		_options &= ~DUMP_TEXCACHE;
 
 	_cacheDumped = 0;
@@ -53,9 +53,6 @@ TxTexCache::TxTexCache(int options, int cachesize, const wchar_t *cachePath, con
 boolean
 TxTexCache::add(uint64 checksum, GHQTexInfo *info)
 {
-	if (_cacheSize <= 0)
-		return 0;
-
 	const boolean res = TxCache::add(checksum, info);
 	if (res)
 		_cacheDumped = 0;
