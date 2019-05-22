@@ -52,17 +52,15 @@ struct  Checksum
 	}
 };
 
-//class TxCacheImpl;
+class TxCacheImpl;
 
 class TxCache
 {
 private:
-  class TxCacheImpl;
-	friend class TxCacheImpl;
 	std::unique_ptr<TxCacheImpl> _pImpl;
 
 protected:
-	mutable uint32 _options;
+	uint32 _options;
 	tx_wstring _ident;
 	tx_wstring _cachePath;
 	dispInfoFuncExt _callback;

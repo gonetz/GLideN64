@@ -33,24 +33,43 @@
 #include <memory.h>
 #include <stdlib.h>
 
-class TxCache::TxCacheImpl
+class TxCacheImpl
 {
 public:
-	TxCacheImpl(const TxCache* pCache, uint64 cacheLimit);
+	virtual ~TxCacheImpl() = default;
 
-	bool add(Checksum checksum, GHQTexInfo *info, int dataSize = 0);
-	bool get(Checksum checksum, GHQTexInfo *info);
+	virtual bool add(Checksum checksum, GHQTexInfo *info, int dataSize = 0) = 0;
+	virtual bool get(Checksum checksum, GHQTexInfo *info) = 0;
+	virtual bool save(const wchar_t *path, const wchar_t *filename, const int config) = 0;
+	virtual bool load(const wchar_t *path, const wchar_t *filename, const int config, boolean force) = 0;
+	virtual bool del(Checksum checksum) = 0;
+	virtual bool isCached(Checksum checksum) = 0;
+	virtual void clear() = 0;
+	virtual bool empty() const = 0;
 
-	bool save(const wchar_t *path, const wchar_t *filename, const int config);
-	bool load(const wchar_t *path, const wchar_t *filename, const int config, boolean force);
-	bool del(Checksum checksum);
-	bool isCached(Checksum checksum);
-	void clear();
-	bool empty() const { return _cache.empty(); }
+	virtual uint64 size() const = 0;
+	virtual uint64 totalSize() const = 0;
+	virtual uint64 cacheLimit() const = 0;
+};
 
-	uint64 size() const { return _cache.size(); }
-	uint64 totalSize() const { return _totalSize; }
-	uint64 cacheLimit() const { return _cacheLimit; }
+class TxMemoryCache : public TxCacheImpl
+{
+public:
+	TxMemoryCache(uint32 & _options, uint64 cacheLimit, dispInfoFuncExt callback);
+
+	bool add(Checksum checksum, GHQTexInfo *info, int dataSize = 0) override;
+	bool get(Checksum checksum, GHQTexInfo *info) override;
+
+	bool save(const wchar_t *path, const wchar_t *filename, const int config) override;
+	bool load(const wchar_t *path, const wchar_t *filename, const int config, boolean force) override;
+	bool del(Checksum checksum) override;
+	bool isCached(Checksum checksum) override;
+	void clear() override;
+	bool empty() const  override { return _cache.empty(); }
+
+	uint64 size() const  override { return _cache.size(); }
+	uint64 totalSize() const  override { return _totalSize; }
+	uint64 cacheLimit() const  override { return _cacheLimit; }
 
 private:
 	struct TXCACHE {
@@ -59,34 +78,36 @@ private:
 		std::list<uint64>::iterator it;
 	};
 
+	uint32 & _options;
+	dispInfoFuncExt _callback;
+	uint64 _cacheLimit;
+	uint64 _totalSize;
+
 	std::map<uint64, TXCACHE*> _cache;
 	std::list<uint64> _cachelist;
 
-	uint8 *_gzdest0;
-	uint8 *_gzdest1;
-	uint32 _gzdestLen;
-
-	uint64 _totalSize;
-	uint64 _cacheLimit;
-
-private:
-	const TxCache* _pTxCache;
+	uint8 *_gzdest0 = nullptr;
+	uint8 *_gzdest1 = nullptr;
+	uint32 _gzdestLen = 0;
 };
 
-TxCache::TxCacheImpl::TxCacheImpl(const TxCache* pCache, uint64 cacheLimit)
-	: _pTxCache(pCache)
+TxMemoryCache::TxMemoryCache(uint32 & options,
+							uint64 cacheLimit,
+							dispInfoFuncExt callback)
+	: _options(options)
 	, _cacheLimit(cacheLimit)
+	, _callback(callback)
 	, _totalSize(0U)
 {
 	/* zlib memory buffers to (de)compress hires textures */
-	if (_pTxCache->_options & (GZ_TEXCACHE | GZ_HIRESTEXCACHE)) {
+	if (_options & (GZ_TEXCACHE | GZ_HIRESTEXCACHE)) {
 		_gzdest0 = TxMemBuf::getInstance()->get(0);
 		_gzdest1 = TxMemBuf::getInstance()->get(1);
 		_gzdestLen = (TxMemBuf::getInstance()->size_of(0) < TxMemBuf::getInstance()->size_of(1)) ?
 			TxMemBuf::getInstance()->size_of(0) : TxMemBuf::getInstance()->size_of(1);
 
 		if (!_gzdest0 || !_gzdest1 || !_gzdestLen) {
-			_pTxCache->_options &= ~(GZ_TEXCACHE | GZ_HIRESTEXCACHE);
+			_options &= ~(GZ_TEXCACHE | GZ_HIRESTEXCACHE);
 			_gzdest0 = nullptr;
 			_gzdest1 = nullptr;
 			_gzdestLen = 0;
@@ -94,7 +115,7 @@ TxCache::TxCacheImpl::TxCacheImpl(const TxCache* pCache, uint64 cacheLimit)
 	}
 }
 
-bool TxCache::TxCacheImpl::add(Checksum checksum, GHQTexInfo *info, int dataSize)
+bool TxMemoryCache::add(Checksum checksum, GHQTexInfo *info, int dataSize)
 {
 	/* NOTE: dataSize must be provided if info->data is zlib compressed. */
 
@@ -110,7 +131,7 @@ bool TxCache::TxCacheImpl::add(Checksum checksum, GHQTexInfo *info, int dataSize
 		if (!dataSize)
 			return false;
 
-		if (_pTxCache->_options & (GZ_TEXCACHE | GZ_HIRESTEXCACHE)) {
+		if (_options & (GZ_TEXCACHE | GZ_HIRESTEXCACHE)) {
 			/* zlib compress it. compression level:1 (best speed) */
 			uLongf destLen = _gzdestLen;
 			dest = (dest == _gzdest0) ? _gzdest1 : _gzdest0;
@@ -202,7 +223,7 @@ bool TxCache::TxCacheImpl::add(Checksum checksum, GHQTexInfo *info, int dataSize
 	return true;
 }
 
-bool TxCache::TxCacheImpl::get(Checksum checksum, GHQTexInfo *info)
+bool TxMemoryCache::get(Checksum checksum, GHQTexInfo *info)
 {
 	if (!checksum || _cache.empty())
 		return false;
@@ -239,7 +260,7 @@ bool TxCache::TxCacheImpl::get(Checksum checksum, GHQTexInfo *info)
 	return false;
 }
 
-bool TxCache::TxCacheImpl::save(const wchar_t *path, const wchar_t *filename, int config)
+bool TxMemoryCache::save(const wchar_t *path, const wchar_t *filename, int config)
 {
 	if (_cache.empty())
 		return false;
@@ -249,7 +270,6 @@ bool TxCache::TxCacheImpl::save(const wchar_t *path, const wchar_t *filename, in
 
 	osal_mkdirp(path);
 
-	/* Ugly hack to enable fopen/gzopen in Win9x */
 #ifdef OS_WINDOWS
 	wchar_t curpath[MAX_PATH];
 	GETCWD(MAX_PATH, curpath);
@@ -311,8 +331,8 @@ bool TxCache::TxCacheImpl::save(const wchar_t *path, const wchar_t *filename, in
 
 			itMap++;
 
-			if (_pTxCache->_callback)
-				(*_pTxCache->_callback)(wst("Total textures saved to HDD: %d\n"), ++total);
+			if (_callback)
+				(*_callback)(wst("Total textures saved to HDD: %d\n"), ++total);
 		}
 		gzclose(gzfp);
 	}
@@ -322,7 +342,7 @@ bool TxCache::TxCacheImpl::save(const wchar_t *path, const wchar_t *filename, in
 	return !_cache.empty();
 }
 
-bool TxCache::TxCacheImpl::load(const wchar_t *path, const wchar_t *filename, int config, boolean force)
+bool TxMemoryCache::load(const wchar_t *path, const wchar_t *filename, int config, boolean force)
 {
 	/* find it on disk */
 	char cbuf[MAX_PATH];
@@ -379,8 +399,8 @@ bool TxCache::TxCacheImpl::load(const wchar_t *path, const wchar_t *filename, in
 				}
 
 				/* skip in between to prevent the loop from being tied down to vsync */
-				if (_pTxCache->_callback && (!(_cache.size() % 100) || gzeof(gzfp)))
-					(*_pTxCache->_callback)(wst("[%d] total mem:%.02fmb - %ls\n"), _cache.size(), (float)_totalSize / 1000000, filename);
+				if (_callback && (!(_cache.size() % 100) || gzeof(gzfp)))
+					(*_callback)(wst("[%d] total mem:%.02fmb - %ls\n"), _cache.size(), (float)_totalSize / 1000000, filename);
 
 			} while (!gzeof(gzfp));
 			gzclose(gzfp);
@@ -392,7 +412,7 @@ bool TxCache::TxCacheImpl::load(const wchar_t *path, const wchar_t *filename, in
 	return !_cache.empty();
 }
 
-bool TxCache::TxCacheImpl::del(Checksum checksum)
+bool TxMemoryCache::del(Checksum checksum)
 {
 	if (!checksum || _cache.empty())
 		return false;
@@ -418,12 +438,12 @@ bool TxCache::TxCacheImpl::del(Checksum checksum)
 	return false;
 }
 
-bool TxCache::TxCacheImpl::isCached(Checksum checksum)
+bool TxMemoryCache::isCached(Checksum checksum)
 {
 	return _cache.find(checksum) != _cache.end();
 }
 
-void TxCache::TxCacheImpl::clear()
+void TxMemoryCache::clear()
 {
 	if (!_cache.empty()) {
 		auto itMap = _cache.begin();
@@ -462,7 +482,7 @@ TxCache::TxCache(uint32 options,
 	if (ident)
 		_ident.assign(ident);
 
-	_pImpl.reset(new TxCacheImpl(this, cachesize));
+	_pImpl.reset(new TxMemoryCache(_options, cachesize, _callback));
 }
 
 bool TxCache::add(Checksum checksum, GHQTexInfo *info, int dataSize)
