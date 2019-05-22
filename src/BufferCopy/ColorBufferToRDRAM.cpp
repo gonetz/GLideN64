@@ -323,6 +323,9 @@ void ColorBufferToRDRAM::copyToRDRAM(u32 _address, bool _sync)
 		return;
 	if (!_prepareCopy(_address))
 		return;
+	if (config.frameBufferEmulation.copyToRDRAM == Config::CopyToRDRAM::ctDisable)
+		return;
+
 	const u32 numBytes = (m_pCurFrameBuffer->m_width*m_pCurFrameBuffer->m_height) << m_pCurFrameBuffer->m_size >> 1;
 	_copy(m_pCurFrameBuffer->m_startAddress, m_pCurFrameBuffer->m_startAddress + numBytes, _sync);
 }
