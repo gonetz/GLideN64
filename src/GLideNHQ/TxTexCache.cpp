@@ -30,52 +30,60 @@
 #include <osal_files.h>
 #include <zlib.h>
 
+#define TEXCACHE_DUMP_ENABLED (FILE_TEXCACHE|DUMP_TEXCACHE)
+
 TxTexCache::~TxTexCache()
 {
 }
 
 TxTexCache::TxTexCache(int options, int cachesize, const wchar_t *cachePath, const wchar_t *ident,
-					   dispInfoFuncExt callback
-					   ) : TxCache((options & ~GZ_HIRESTEXCACHE), cachesize, cachePath, ident, callback)
+					   dispInfoFuncExt callback)
+						 : TxCache((options & ~(GZ_HIRESTEXCACHE | FILE_HIRESTEXCACHE)), cachesize, cachePath, ident, callback)
+						 , _cacheDumped(false)
 {
 	/* assert local options */
   if (_cachePath.empty() || _ident.empty())
-		_options &= ~DUMP_TEXCACHE;
+		setOptions(getOptions() & ~TEXCACHE_DUMP_ENABLED);
 
-	_cacheDumped = 0;
-
-	if (_options & DUMP_TEXCACHE) {
+	if (getOptions() & TEXCACHE_DUMP_ENABLED) {
 		/* find it on disk */
-		_cacheDumped = TxCache::load(_cachePath.c_str(), _getFileName().c_str(), _getConfig(), 0);
+		_cacheDumped = TxCache::load(false);
+		if (!_cacheDumped)
+			TxCache::clear();
 	}
 }
 
-boolean
-TxTexCache::add(uint64 checksum, GHQTexInfo *info)
+bool TxTexCache::add(uint64 checksum, GHQTexInfo *info)
 {
-	const boolean res = TxCache::add(checksum, info);
+	const bool res = TxCache::add(checksum, info);
 	if (res)
-		_cacheDumped = 0;
+		_cacheDumped = false;
 	return res;
 }
 
 void
 TxTexCache::dump()
 {
-	if ((_options & DUMP_TEXCACHE) && !_cacheDumped) {
+	if ((getOptions() & TEXCACHE_DUMP_ENABLED) && !_cacheDumped) {
 		/* dump cache to disk */
-		_cacheDumped = TxCache::save(_cachePath.c_str(), _getFileName().c_str(), _getConfig());
+		_cacheDumped = TxCache::save();
 	}
 }
 
 tx_wstring TxTexCache::_getFileName() const
 {
-	tx_wstring filename = _ident + wst("_MEMORYCACHE.") + TEXCACHE_EXT;
+	tx_wstring filename = _ident + wst("_MEMORYCACHE.");
+	filename += ((getOptions() & FILE_TEXCACHE) == 0) ? TEXCACHE_EXT : TEXSTREAM_EXT;
 	removeColon(filename);
 	return filename;
 }
 
 int TxTexCache::_getConfig() const
 {
-	return _options & (FILTER_MASK | ENHANCEMENT_MASK | FORCE16BPP_TEX | GZ_TEXCACHE);
+	return getOptions() &
+		(FILTER_MASK |
+		ENHANCEMENT_MASK |
+		FORCE16BPP_TEX |
+		FILE_TEXCACHE |
+		GZ_TEXCACHE);
 }

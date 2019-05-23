@@ -41,11 +41,11 @@ private:
   int _maxwidth;
   int _maxheight;
   int _maxbpp;
-  boolean _cacheDumped;
-  boolean _abortLoad;
-  TxImage *_txImage;
-  TxQuantize *_txQuantize;
-  TxReSample *_txReSample;
+	bool _abortLoad;
+	bool _cacheDumped;
+	std::unique_ptr<TxImage> _txImage;
+	std::unique_ptr<TxQuantize> _txQuantize;
+	std::unique_ptr<TxReSample> _txReSample;
   tx_wstring _texPackPath;
   enum LoadResult {
 	  resOk,
@@ -53,9 +53,9 @@ private:
 	  resError
   };
   LoadResult loadHiResTextures(const wchar_t * dir_path, boolean replace);
-  tx_wstring _getFileName() const;
-  int _getConfig() const;
   boolean _HiResTexPackPathExists() const;
+	tx_wstring _getFileName() const override;
+	int _getConfig() const override;
 
 public:
   ~TxHiResCache();
@@ -67,7 +67,7 @@ public:
 			   const wchar_t *texPackPath,
 			   const wchar_t *ident,
 			   dispInfoFuncExt callback);
-  boolean load(boolean replace);
+  bool load(boolean replace);
   void dump();
 };
 

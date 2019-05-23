@@ -92,8 +92,9 @@ typedef unsigned char boolean;
 #define RICE_HIRESTEXTURES  0x00020000
 #define JABO_HIRESTEXTURES  0x00030000
 
-//#define COMPRESS_TEX        0x00100000 // Not used anymore
-//#define COMPRESS_HIRESTEX   0x00200000 // Not used anymore
+#define FILE_CACHE_MASK     0x00300000
+#define FILE_TEXCACHE       0x00100000
+#define FILE_HIRESTEXCACHE  0x00200000
 #define GZ_TEXCACHE         0x00400000
 #define GZ_HIRESTEXCACHE    0x00800000
 #define DUMP_TEXCACHE       0x01000000
@@ -106,18 +107,13 @@ typedef unsigned char boolean;
 #define DUMP_TEX            0x80000000
 
 struct GHQTexInfo {
-  unsigned char *data;
-  int width;
-  int height;
-  unsigned int format;
-  unsigned short texture_format;
-  unsigned short pixel_type;
-  unsigned char is_hires_tex;
-
-  GHQTexInfo() :
-	  data(NULL), width(0), height(0), format(0),
-	  texture_format(0), pixel_type(0), is_hires_tex(0)
-  {}
+  unsigned char *data = nullptr;
+  int width = 0;
+  int height = 0;
+  unsigned int format = 0;
+  unsigned short texture_format = 0;
+  unsigned short pixel_type = 0;
+  unsigned char is_hires_tex = 0;
 };
 
 /* Callback to display hires texture info.
