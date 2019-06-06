@@ -147,7 +147,7 @@ bool Config_SetDefault()
 	assert(res == M64ERR_SUCCESS);
 	res = ConfigSetDefaultBool(g_configVideoGliden64, "txFilterIgnoreBG", config.textureFilter.txFilterIgnoreBG, "Don't filter background textures.");
 	assert(res == M64ERR_SUCCESS);
-	res = ConfigSetDefaultInt(g_configVideoGliden64, "txCacheSize", config.textureFilter.txCacheSize/ gc_uMegabyte, "Size of filtered textures cache in megabytes.");
+	res = ConfigSetDefaultInt(g_configVideoGliden64, "txCacheSize", config.textureFilter.txCacheSize/ gc_uMegabyte, "Size of memory cache for enhanced textures in megabytes.");
 	assert(res == M64ERR_SUCCESS);
 	res = ConfigSetDefaultBool(g_configVideoGliden64, "txHiresEnable", config.textureFilter.txHiresEnable, "Use high-resolution texture packs if available.");
 	assert(res == M64ERR_SUCCESS);
@@ -162,6 +162,10 @@ bool Config_SetDefault()
 	res = ConfigSetDefaultBool(g_configVideoGliden64, "txForce16bpp", config.textureFilter.txForce16bpp, "Force use 16bit texture formats for HD textures.");
 	assert(res == M64ERR_SUCCESS);
 	res = ConfigSetDefaultBool(g_configVideoGliden64, "txSaveCache", config.textureFilter.txSaveCache, "Save texture cache to hard disk.");
+	assert(res == M64ERR_SUCCESS);
+	res = ConfigSetDefaultBool(g_configVideoGliden64, "txEnhancedTextureFileStorage", config.textureFilter.txEnhancedTextureFileStorage, "Use file storage instead of memory cache for enhanced textures.");
+	assert(res == M64ERR_SUCCESS);
+	res = ConfigSetDefaultBool(g_configVideoGliden64, "txHiresTextureFileStorage", config.textureFilter.txHiresTextureFileStorage, "Use file storage instead of memory cache for HD textures.");
 	assert(res == M64ERR_SUCCESS);
 	// Convert to multibyte
 	char txPath[PLUGIN_PATH_SIZE * 2];
@@ -349,6 +353,10 @@ void Config_LoadCustomConfig()
 	if (result == M64ERR_SUCCESS) config.textureFilter.txCacheCompression = atoi(value);
 	result = ConfigExternalGetParameter(fileHandle, sectionName, "textureFilter\\txSaveCache", value, sizeof(value));
 	if (result == M64ERR_SUCCESS) config.textureFilter.txSaveCache = atoi(value);
+	result = ConfigExternalGetParameter(fileHandle, sectionName, "textureFilter\\txEnhancedTextureFileStorage", value, sizeof(value));
+	if (result == M64ERR_SUCCESS) config.textureFilter.txEnhancedTextureFileStorage = atoi(value);
+	result = ConfigExternalGetParameter(fileHandle, sectionName, "textureFilter\\txHiresTextureFileStorage", value, sizeof(value));
+	if (result == M64ERR_SUCCESS) config.textureFilter.txHiresTextureFileStorage = atoi(value);
 	ConfigExternalClose(fileHandle);
 }
 
@@ -426,6 +434,8 @@ void Config_LoadConfig()
 	config.textureFilter.txForce16bpp = ConfigGetParamBool(g_configVideoGliden64, "txForce16bpp");
 	config.textureFilter.txCacheCompression = ConfigGetParamBool(g_configVideoGliden64, "txCacheCompression");
 	config.textureFilter.txSaveCache = ConfigGetParamBool(g_configVideoGliden64, "txSaveCache");
+	config.textureFilter.txEnhancedTextureFileStorage = ConfigGetParamBool(g_configVideoGliden64, "txEnhancedTextureFileStorage");
+	config.textureFilter.txHiresTextureFileStorage = ConfigGetParamBool(g_configVideoGliden64, "txHiresTextureFileStorage");
 	::mbstowcs(config.textureFilter.txPath, ConfigGetParamString(g_configVideoGliden64, "txPath"), PLUGIN_PATH_SIZE);
 	::mbstowcs(config.textureFilter.txCachePath, ConfigGetParamString(g_configVideoGliden64, "txCachePath"), PLUGIN_PATH_SIZE);
 	::mbstowcs(config.textureFilter.txDumpPath, ConfigGetParamString(g_configVideoGliden64, "txDumpPath"), PLUGIN_PATH_SIZE);
