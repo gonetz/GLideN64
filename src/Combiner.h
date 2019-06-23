@@ -130,7 +130,6 @@ public:
 
 	graphics::CombinerProgram * getCurrent() const { return m_pCurrent; }
 	bool isChanged() const {return m_bChanged;}
-	size_t getCombinersNumber() const { return m_combiners.size();  }
 	bool isShaderCacheSupported() const;
 
 	static CombinerInfo & get();
