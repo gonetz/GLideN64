@@ -112,12 +112,14 @@ void CombinerInfo::init()
 
 	m_shadowmapProgram.reset(gfxContext.createDepthFogShader());
 	m_texrectCopyProgram.reset(gfxContext.createTexrectCopyShader());
+	m_texrectColorAndDepthCopyProgram.reset(gfxContext.createTexrectColorAndDepthCopyShader());
 }
 
 void CombinerInfo::destroy()
 {
 	m_shadowmapProgram.reset();
 	m_texrectCopyProgram.reset();
+	m_texrectColorAndDepthCopyProgram.reset();
 
 	m_pCurrent = nullptr;
 	if (config.generalEmulation.enableShadersStorage != 0)
@@ -316,6 +318,11 @@ void CombinerInfo::setDepthFogCombiner()
 ShaderProgram * CombinerInfo::getTexrectCopyProgram()
 {
 	return m_texrectCopyProgram.get();
+}
+
+ShaderProgram * CombinerInfo::getTexrectColorAndDepthCopyProgram()
+{
+	return m_texrectColorAndDepthCopyProgram.get();
 }
 
 bool CombinerInfo::isShaderCacheSupported() const

@@ -281,6 +281,11 @@ ShaderProgram * Context::createTexrectCopyShader()
 	return m_impl->createTexrectCopyShader();
 }
 
+ShaderProgram * Context::createTexrectColorAndDepthCopyShader()
+{
+	return m_impl->createTexrectColorAndDepthCopyShader();
+}
+
 ShaderProgram * Context::createGammaCorrectionShader()
 {
 	return m_impl->createGammaCorrectionShader();

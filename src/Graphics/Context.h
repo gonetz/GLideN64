@@ -232,6 +232,8 @@ namespace graphics {
 
 		ShaderProgram * createTexrectCopyShader();
 
+		ShaderProgram * createTexrectColorAndDepthCopyShader();
+
 		ShaderProgram * createGammaCorrectionShader();
 
 		ShaderProgram * createOrientationCorrectionShader();

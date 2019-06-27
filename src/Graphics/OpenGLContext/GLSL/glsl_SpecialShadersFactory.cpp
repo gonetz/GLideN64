@@ -371,6 +371,27 @@ namespace glsl {
 		}
 	};
 
+	/*---------------TexrectDepthCopyShaderPart-------------*/
+
+	class TexrectColorAndDepthCopy : public ShaderPart
+	{
+	public:
+		TexrectColorAndDepthCopy(const opengl::GLInfo & _glinfo)
+		{
+			m_part =
+				"IN mediump vec2 vTexCoord0;							\n"
+				"uniform sampler2D uTex0;								\n"
+				"uniform sampler2D uTex1;								\n"
+				"OUT lowp vec4 fragColor;								\n"
+				"														\n"
+				"void main()											\n"
+				"{														\n"
+				"	fragColor = texture2D(uTex0, vTexCoord0);			\n"
+				"	gl_FragDepth = texture2D(uTex1, vTexCoord0).r;	\n"
+				;
+		}
+	};
+
 	/*---------------PostProcessorShaderPart-------------*/
 
 	class GammaCorrection : public ShaderPart
@@ -664,6 +685,29 @@ namespace glsl {
 		}
 	};
 
+	/*---------------TexrectColorAndDepthCopyShader-------------*/
+
+	typedef SpecialShader<VertexShaderTexturedRect, TexrectColorAndDepthCopy> TexrectColorAndDepthCopyShaderBase;
+
+	class TexrectColorAndDepthCopyShader : public TexrectColorAndDepthCopyShaderBase
+	{
+	public:
+		TexrectColorAndDepthCopyShader(const opengl::GLInfo & _glinfo,
+			opengl::CachedUseProgram * _useProgram,
+			const ShaderPart * _vertexHeader,
+			const ShaderPart * _fragmentHeader,
+			const ShaderPart * _fragmentEnd)
+			: TexrectColorAndDepthCopyShaderBase(_glinfo, _useProgram, _vertexHeader, _fragmentHeader, _fragmentEnd)
+		{
+			m_useProgram->useProgram(m_program);
+			const int texLoc0 = glGetUniformLocation(GLuint(m_program), "uTex0");
+			glUniform1i(texLoc0, 0);
+			const int texLoc1 = glGetUniformLocation(GLuint(m_program), "uTex1");
+			glUniform1i(texLoc1, 1);
+			m_useProgram->useProgram(graphics::ObjectHandle::null);
+		}
+	};
+
 	/*---------------PostProcessorShader-------------*/
 
 	typedef SpecialShader<VertexShaderTexturedRect, GammaCorrection> GammaCorrectionShaderBase;
@@ -776,6 +820,11 @@ namespace glsl {
 	graphics::ShaderProgram * SpecialShadersFactory::createTexrectCopyShader() const
 	{
 		return new TexrectCopyShader(m_glinfo, m_useProgram, m_vertexHeader, m_fragmentHeader, m_fragmentEnd);
+	}
+
+	graphics::ShaderProgram * SpecialShadersFactory::createTexrectColorAndDepthCopyShader() const
+	{
+		return new TexrectColorAndDepthCopyShader(m_glinfo, m_useProgram, m_vertexHeader, m_fragmentHeader, m_fragmentEnd);
 	}
 
 	graphics::ShaderProgram * SpecialShadersFactory::createGammaCorrectionShader() const

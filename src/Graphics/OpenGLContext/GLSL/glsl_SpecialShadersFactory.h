@@ -30,6 +30,8 @@ namespace glsl {
 
 		graphics::ShaderProgram * createTexrectCopyShader() const;
 
+		graphics::ShaderProgram * createTexrectColorAndDepthCopyShader() const;
+
 		graphics::ShaderProgram * createGammaCorrectionShader() const;
 
 		graphics::ShaderProgram * createOrientationCorrectionShader() const;

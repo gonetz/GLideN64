@@ -20,6 +20,7 @@ struct FrameBuffer
 	void init(u32 _address, u16 _format, u16 _size, u16 _width, bool _cfb);
 	void updateEndAddress();
 	void resolveMultisampledTexture(bool _bForce = false);
+	void copyDepthTexture();
 	CachedTexture * getTexture(u32 _t);
 	CachedTexture * getTextureBG(u32 _t);
 	void setBufferClearParams(u32 _fillcolor, s32 _ulx, s32 _uly, s32 _lrx, s32 _lry);
@@ -56,6 +57,10 @@ struct FrameBuffer
 
 	graphics::ObjectHandle m_FBO;
 	CachedTexture *m_pTexture;
+
+	graphics::ObjectHandle m_depthFBO;
+	CachedTexture *m_pDepthTexture;
+
 	DepthBuffer *m_pDepthBuffer;
 
 	// multisampling
@@ -162,6 +167,7 @@ private:
 
 		graphics::ObjectHandle m_FBO;
 		CachedTexture *m_pTexture = nullptr;
+		CachedTexture *m_pDepthTexture = nullptr;
 	};
 
 	typedef std::list<FrameBuffer> FrameBuffers;

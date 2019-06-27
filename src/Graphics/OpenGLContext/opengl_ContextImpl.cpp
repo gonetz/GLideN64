@@ -423,6 +423,11 @@ graphics::ShaderProgram * ContextImpl::createTexrectCopyShader()
 	return m_specialShadersFactory->createTexrectCopyShader();
 }
 
+graphics::ShaderProgram * ContextImpl::createTexrectColorAndDepthCopyShader()
+{
+	return m_specialShadersFactory->createTexrectColorAndDepthCopyShader();
+}
+
 graphics::ShaderProgram * ContextImpl::createGammaCorrectionShader()
 {
 	return m_specialShadersFactory->createGammaCorrectionShader();

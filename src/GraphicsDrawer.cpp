@@ -1665,8 +1665,15 @@ void GraphicsDrawer::copyTexturedRect(const CopyRectParams & _params)
 	gfxContext.setViewport(0, 0, _params.dstWidth, _params.dstHeight);
 	gfxContext.enable(enable::CULL_FACE, false);
 	gfxContext.enable(enable::BLEND, false);
-	gfxContext.enable(enable::DEPTH_TEST, false);
-	gfxContext.enableDepthWrite(false);
+
+	if (config.frameBufferEmulation.copyDepthToMainDepthBuffer == 0 || _params.tex[1] == nullptr) {
+		gfxContext.enable(enable::DEPTH_TEST, false);
+		gfxContext.enableDepthWrite(false);
+	} else {
+		gfxContext.setDepthCompare(compare::ALWAYS);
+		gfxContext.enableDepthWrite(true);
+		gfxContext.enable(enable::DEPTH_TEST, true);
+	}
 
 	Context::DrawRectParameters rectParams;
 	rectParams.mode = drawmode::TRIANGLE_STRIP;
@@ -1698,10 +1705,10 @@ void GraphicsDrawer::blitOrCopyTexturedRect(const BlitOrCopyRectParams & _params
 	blitParams.mask = _params.mask;
 	blitParams.filter = _params.filter;
 	if (_params.invertX) {
-		std::swap(blitParams.srcX0, blitParams.srcX1);
+		std::swap(blitParams.dstX0, blitParams.dstX1);
 	}
 	if (_params.invertY) {
-		std::swap(blitParams.srcY0, blitParams.srcY1);
+		std::swap(blitParams.dstY0, blitParams.dstY1);
 	}
 
 	if (gfxContext.blitFramebuffers(blitParams))

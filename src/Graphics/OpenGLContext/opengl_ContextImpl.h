@@ -124,6 +124,8 @@ namespace opengl {
 
 		graphics::ShaderProgram * createTexrectCopyShader() override;
 
+		graphics::ShaderProgram * createTexrectColorAndDepthCopyShader() override;
+
 		graphics::ShaderProgram * createGammaCorrectionShader() override;
 
 		graphics::ShaderProgram * createOrientationCorrectionShader() override;

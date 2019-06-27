@@ -120,6 +120,9 @@ struct Config
 		u32 fbInfoReadColorChunk;
 		u32 fbInfoReadDepthChunk;
 
+		// Depth buffer copy. For Reshade.
+		u32 copyDepthToMainDepthBuffer;
+
 		// Overscan
 		u32 enableOverscan;
 		struct {
