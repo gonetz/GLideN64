@@ -120,6 +120,7 @@ void ConfigDialog::_init()
 	ui->aliasingLabelVal->setText(QString::number(config.video.multisampling));
 	ui->anisotropicSlider->setValue(config.texture.maxAnisotropy);
 	ui->vSyncCheckBox->setChecked(config.video.verticalSync != 0);
+	ui->threadedVideoCheckBox->setChecked(config.video.threadedVideo != 0);
 
 	switch (config.texture.bilinearMode) {
 	case BILINEAR_3POINT:
@@ -145,7 +146,7 @@ void ConfigDialog::_init()
 	ui->enableHWLightingCheckBox->setChecked(config.generalEmulation.enableHWLighting != 0);
 	ui->enableShadersStorageCheckBox->setChecked(config.generalEmulation.enableShadersStorage != 0);
 	ui->customSettingsCheckBox->setChecked(config.generalEmulation.enableCustomSettings != 0);
-	switch (config.generalEmulation.correctTexrectCoords) {
+	switch (config.graphics2D.correctTexrectCoords) {
 	case Config::tcDisable:
 		ui->fixTexrectDisableRadioButton->setChecked(true);
 		break;
@@ -156,8 +157,20 @@ void ConfigDialog::_init()
 		ui->fixTexrectForceRadioButton->setChecked(true);
 		break;
 	}
+
+	switch (config.graphics2D.bgMode) {
+	case Config::BGMode::bgOnePiece:
+		ui->bgModeOnePieceRadioButton->setChecked(true);
+		break;
+	case Config::BGMode::bgStripped:
+		ui->bgModeStrippedRadioButton->setChecked(true);
+		break;
+	}
+
+	ui->halosRemovalCheckBox->setChecked(config.texture.enableHalosRemoval != 0);
+
 	ui->nativeRes2D_checkBox->toggle();
-	ui->nativeRes2D_checkBox->setChecked(config.generalEmulation.enableNativeResTexrects != 0);
+	ui->nativeRes2D_checkBox->setChecked(config.graphics2D.enableNativeResTexrects != 0);
 
 	ui->gammaCorrectionNoteFrame->setHidden(true);
 	ui->gammaLevelSpinBox->setValue(config.gammaCorrection.force != 0 ? config.gammaCorrection.level : 2.0);
@@ -419,6 +432,7 @@ void ConfigDialog::accept()
 	}
 
 	config.video.verticalSync = ui->vSyncCheckBox->isChecked() ? 1 : 0;
+	config.video.threadedVideo = ui->threadedVideoCheckBox->isChecked() ? 1 : 0;
 
 	// Emulation settings
 	config.generalEmulation.enableLOD = ui->emulateLodCheckBox->isChecked() ? 1 : 0;
@@ -431,13 +445,19 @@ void ConfigDialog::accept()
 	config.gammaCorrection.level = ui->gammaLevelSpinBox->value();
 
 	if (ui->fixTexrectDisableRadioButton->isChecked())
-		config.generalEmulation.correctTexrectCoords = Config::tcDisable;
+		config.graphics2D.correctTexrectCoords = Config::tcDisable;
 	else if (ui->fixTexrectSmartRadioButton->isChecked())
-		config.generalEmulation.correctTexrectCoords = Config::tcSmart;
+		config.graphics2D.correctTexrectCoords = Config::tcSmart;
 	else if (ui->fixTexrectForceRadioButton->isChecked())
-		config.generalEmulation.correctTexrectCoords = Config::tcForce;
+		config.graphics2D.correctTexrectCoords = Config::tcForce;
+	
+	if (ui->bgModeOnePieceRadioButton->isChecked())
+		config.graphics2D.bgMode = Config::BGMode::bgOnePiece;
+	else if (ui->bgModeStrippedRadioButton->isChecked())
+		config.graphics2D.bgMode = Config::BGMode::bgStripped;
 
-	config.generalEmulation.enableNativeResTexrects = ui->nativeRes2D_checkBox->isChecked() ? 1 : 0;
+	config.texture.enableHalosRemoval = ui->halosRemovalCheckBox->isChecked() ? 1 : 0;
+	config.graphics2D.enableNativeResTexrects = ui->nativeRes2D_checkBox->isChecked() ? 1 : 0;
 
 	config.frameBufferEmulation.enable = ui->frameBufferCheckBox->isChecked() ? 1 : 0;
 

@@ -5,6 +5,14 @@
   <property name="windowModality">
    <enum>Qt::WindowModal</enum>
   </property>
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>559</width>
+    <height>603</height>
+   </rect>
+  </property>
   <property name="windowTitle">
    <string>GLideN64 Settings</string>
   </property>
@@ -24,7 +32,7 @@
      <property name="minimumSize">
       <size>
        <width>0</width>
-       <height>490</height>
+       <height>590</height>
       </size>
      </property>
      <property name="usesScrollButtons">
@@ -205,6 +213,16 @@
               </property>
               <property name="text">
                <string>Enable VSync</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QCheckBox" name="threadedVideoCheckBox">
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Threaded video can improve performance with poor OpenGL drivers at the cost of very marginal input lag, usually less than half a frame.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;Usually off, unless there are performance issues&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="text">
+               <string>Enable threaded video</string>
               </property>
              </widget>
             </item>
@@ -1402,6 +1420,13 @@
              <number>0</number>
             </property>
             <item>
+             <widget class="QCheckBox" name="halosRemovalCheckBox">
+              <property name="text">
+               <string>Try to remove colored halos around transparent objects</string>
+              </property>
+             </widget>
+            </item>
+            <item>
              <widget class="QCheckBox" name="nativeRes2D_checkBox">
               <property name="toolTip">
                <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;When checked, 2D elements are rendered at the N64s resolution before copying them to output. This usually eliminates display issues with 2D elements, but it can be slow. This option uses heuristics to detect adjacent 2D elements that doesn't work for every game.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;Checked, unless you have performance problems&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
@@ -1482,6 +1507,51 @@
                  <attribute name="buttonGroup">
                   <string notr="true">fixTexrectCoordsButtonGroup</string>
                  </attribute>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item>
+             <widget class="QFrame" name="bgModeFrame">
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Background is a complex macro command used to render large (normally full screen) images. Since background images usually don't fit texture memory, the microcode splits them on narrow strips and renders them one by one. HLE code has two modes to emulate background commands:&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;One piece&lt;/span&gt;: The whole background image rendred as one textured rectangle. This method is normally much faster, but the result is not always correct.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Stripped&lt;/span&gt;: This method emulates background commands as close as possible to actual microcode implementation. It's slower but more precise. Another problem: some games may have gaps between rendered strips in high resolution. Use &amp;quot;Render 2D elements in N64 resolution&amp;quot; option to remove the gaps.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;Game dependent, mostly Stripped&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <layout class="QVBoxLayout" name="verticalLayout_35">
+               <property name="spacing">
+                <number>3</number>
+               </property>
+               <property name="leftMargin">
+                <number>0</number>
+               </property>
+               <property name="topMargin">
+                <number>0</number>
+               </property>
+               <property name="rightMargin">
+                <number>0</number>
+               </property>
+               <property name="bottomMargin">
+                <number>0</number>
+               </property>
+               <item>
+                <widget class="QLabel" name="bgModeLabel">
+                 <property name="text">
+                  <string>Background rendering mode (HLE only):</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QRadioButton" name="bgModeOnePieceRadioButton">
+                 <property name="text">
+                  <string>One piece</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QRadioButton" name="bgModeStrippedRadioButton">
+                 <property name="text">
+                  <string>Stripped</string>
+                 </property>
                 </widget>
                </item>
               </layout>
@@ -3620,22 +3690,6 @@
   <connection>
    <sender>frameBufferCheckBox</sender>
    <signal>toggled(bool)</signal>
-   <receiver>factorFrame</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>100</x>
-     <y>41</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>124</x>
-     <y>315</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>frameBufferCheckBox</sender>
-   <signal>toggled(bool)</signal>
    <receiver>frameBufferInfoFrame2</receiver>
    <slot>setHidden(bool)</slot>
    <hints>
@@ -3694,22 +3748,6 @@
     <hint type="destinationlabel">
      <x>82</x>
      <y>242</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>nativeRes2D_checkBox</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>fixTexrectFrame</receiver>
-   <slot>setDisabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>74</x>
-     <y>350</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>73</x>
-     <y>441</y>
     </hint>
    </hints>
   </connection>
@@ -3778,22 +3816,6 @@
    </hints>
   </connection>
   <connection>
-   <sender>gammaCorrectionCheckBox</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>gammaCorrectionNoteFrame</receiver>
-   <slot>setVisible(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>74</x>
-     <y>187</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>42</x>
-     <y>213</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>textureDumpCheckBox</sender>
    <signal>toggled(bool)</signal>
    <receiver>texDumpPathLabel</receiver>
@@ -3841,11 +3863,59 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>nativeRes2D_checkBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>fixTexrectFrame</receiver>
+   <slot>setDisabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>74</x>
+     <y>350</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>73</x>
+     <y>441</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>frameBufferCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>factorFrame</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>100</x>
+     <y>41</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>124</x>
+     <y>315</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>gammaCorrectionCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>gammaCorrectionNoteFrame</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>74</x>
+     <y>187</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>42</x>
+     <y>213</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <buttongroups>
-  <buttongroup name="osdButtonGroup"/>
-  <buttongroup name="fixTexrectCoordsButtonGroup"/>
-  <buttongroup name="screenshotButtonGroup"/>
   <buttongroup name="factorButtonGroup"/>
+  <buttongroup name="fixTexrectCoordsButtonGroup"/>
+  <buttongroup name="osdButtonGroup"/>
+  <buttongroup name="screenshotButtonGroup"/>
  </buttongroups>
 </ui>
