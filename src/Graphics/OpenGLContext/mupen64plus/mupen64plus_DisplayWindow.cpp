@@ -78,7 +78,6 @@ bool DisplayWindowMupen64plus::_start()
 	FunctionWrapper::setThreadedMode(config.video.threadedVideo);
 
 	FunctionWrapper::CoreVideo_Init();
-	_setAttributes();
 
 	m_bFullscreen = config.video.fullscreen > 0;
 	m_screenWidth = config.video.windowedWidth;
@@ -96,6 +95,8 @@ bool DisplayWindowMupen64plus::_start()
 	}
 	LOG(LOG_VERBOSE, "[gles2GlideN64]: Create setting videomode %dx%d", m_screenWidth, m_screenHeight);
 
+	_setAttributes();
+	
 	char caption[128];
 # ifdef _DEBUG
 	sprintf(caption, "%s debug. Revision %s", pluginName, PLUGIN_REVISION);
