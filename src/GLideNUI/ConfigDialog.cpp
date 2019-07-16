@@ -755,15 +755,11 @@ void ConfigDialog::on_frameBufferInfoLabel2_linkActivated(QString link)
 
 void ConfigDialog::on_frameBufferCheckBox_toggled(bool checked)
 {
-
-	if (!checked) {
-		ui->nativeRes2DFrame->setEnabled(true);
-	}  else {
-		ui->nativeRes2DFrame->setEnabled(!ui->factor1xRadioButton->isChecked());
-	}
-
 	ui->readColorChunkCheckBox->setEnabled(checked && ui->fbInfoEnableCheckBox->isChecked());
 	ui->readDepthChunkCheckBox->setEnabled(checked && ui->fbInfoEnableCheckBox->isChecked());
+
+	if (!checked && ui->fxaaRadioButton->isChecked())
+		ui->noaaRadioButton->setChecked(true);
 
 	ui->frameBufferCheckBox->setStyleSheet("");
 }
