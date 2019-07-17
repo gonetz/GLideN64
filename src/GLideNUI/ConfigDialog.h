@@ -46,8 +46,6 @@ private slots:
 
 	void on_frameBufferCheckBox_toggled(bool checked);
 
-	void on_noaaRadioButton_toggled(bool checked);
-
 	void on_aliasingSlider_valueChanged(int value);
 
 	void on_n64DepthCompareCheckBox_toggled(bool checked);
