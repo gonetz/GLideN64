@@ -112,12 +112,13 @@ void ConfigDialog::_init()
 	ui->fullScreenResolutionComboBox->setCurrentIndex(fullscreenMode);
 	ui->fullScreenRefreshRateComboBox->setCurrentIndex(fullscreenRate);
 
-	ui->noaaRadioButton->setChecked(config.video.multisampling == 0);
-	ui->msaaRadioButton->setChecked(config.video.fxaa == 0 && config.video.multisampling > 0);
-	ui->fxaaRadioButton->setChecked(config.video.fxaa != 0);
-
-	ui->aliasingSlider->setValue(powof(config.video.multisampling));
-	ui->aliasingLabelVal->setText(QString::number(config.video.multisampling));
+	const unsigned int multisampling = config.video.fxaa == 0 && config.video.multisampling > 0
+		? config.video.multisampling
+		: 8;
+	ui->aliasingSlider->blockSignals(true);
+	ui->aliasingSlider->setValue(powof(multisampling));
+	ui->aliasingSlider->blockSignals(false);
+	ui->aliasingLabelVal->setText(QString::number(multisampling));
 	ui->anisotropicSlider->setValue(config.texture.maxAnisotropy);
 	ui->vSyncCheckBox->setChecked(config.video.verticalSync != 0);
 	ui->threadedVideoCheckBox->setChecked(config.video.threadedVideo != 0);
@@ -193,6 +194,13 @@ void ConfigDialog::_init()
 	ui->n64DepthCompareCheckBox->toggle();
 	ui->n64DepthCompareCheckBox->setChecked(config.frameBufferEmulation.N64DepthCompare != 0);
 	ui->forceDepthBufferClearCheckBox->setChecked(config.frameBufferEmulation.forceDepthBufferClear != 0);
+
+	if (config.video.fxaa != 0)
+		ui->fxaaRadioButton->setChecked(true);
+	else if (config.video.multisampling == 0)
+		ui->noaaRadioButton->setChecked(true);
+	else
+		ui->msaaRadioButton->setChecked(true);
 
 	switch (config.frameBufferEmulation.aspect) {
 	case Config::aStretch:
@@ -630,13 +638,6 @@ void ConfigDialog::on_PickFontColorButton_clicked()
 	ui->PickFontColorButton->setStyleSheet(QString("color:") + m_color.name());
 }
 
-void ConfigDialog::on_noaaRadioButton_toggled(bool checked)
-{
-	if (checked) {
-		ui->aliasingSlider->setValue(0);
-	}
-}
-
 void ConfigDialog::on_aliasingSlider_valueChanged(int value)
 {
 	ui->aliasingLabelVal->setText(QString::number(pow2(value)));
@@ -766,10 +767,8 @@ void ConfigDialog::on_frameBufferCheckBox_toggled(bool checked)
 
 void ConfigDialog::on_n64DepthCompareCheckBox_toggled(bool checked)
 {
-	if (checked && !ui->fxaaRadioButton->isChecked()) {
-		if (ui->aliasingSlider->value() > 0) ui->fxaaRadioButton->setChecked(true);
-		else ui->noaaRadioButton->setChecked(true);
-	}
+	if (checked && ui->msaaRadioButton->isChecked())
+		ui->fxaaRadioButton->setChecked(true);
 	ui->n64DepthCompareCheckBox->setStyleSheet("");
 }
 
