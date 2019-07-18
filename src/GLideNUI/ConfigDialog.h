@@ -42,6 +42,8 @@ private slots:
 
 	void on_frameBufferInfoLabel_linkActivated(QString link);
 
+	void on_customSettingsCheckBox_toggled(bool checked);
+
 	void on_frameBufferInfoLabel2_linkActivated(QString link);
 
 	void on_frameBufferCheckBox_toggled(bool checked);
