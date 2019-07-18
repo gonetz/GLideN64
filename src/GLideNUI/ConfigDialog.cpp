@@ -375,8 +375,8 @@ void ConfigDialog::setRomName(const char * _romName)
 {
 	const bool bRomNameIsEmpty = _romName == nullptr || strlen(_romName) == 0;
 	m_romName = bRomNameIsEmpty ? nullptr : _romName;
-	ui->profilesFrame->setEnabled(bRomNameIsEmpty);
-	ui->customSettingsWarningFrame->setVisible(!bRomNameIsEmpty && config.generalEmulation.enableCustomSettings != 0);
+	ui->customSettingsCheckBox->toggle();
+	ui->customSettingsCheckBox->setChecked(config.generalEmulation.enableCustomSettings != 0);
 }
 
 ConfigDialog::ConfigDialog(QWidget *parent, Qt::WindowFlags f) :
@@ -614,7 +614,7 @@ void ConfigDialog::accept()
 	if (ui->dumpDetailCheckBox->isChecked())
 		config.debug.dumpMode |= DEBUG_DETAIL;
 
-	if (config.generalEmulation.enableCustomSettings != 0 && m_romName != nullptr)
+	if (config.generalEmulation.enableCustomSettings && ui->settingsDestGameRadioButton->isChecked() && m_romName != nullptr)
 		saveCustomRomSettings(m_strIniPath, m_romName);
 	else
 		writeSettings(m_strIniPath);
@@ -745,6 +745,19 @@ void ConfigDialog::on_frameBufferInfoLabel_linkActivated(QString link)
 	}
 }
 
+void ConfigDialog::on_customSettingsCheckBox_toggled(bool checked)
+{
+	const bool romLoaded = checked && m_romName != nullptr;
+	if (romLoaded) {
+		ui->settingsDestGameRadioButton->setText(QString::fromLatin1(m_romName));
+		ui->settingsDestGameRadioButton->setChecked(true);
+	} else {
+		ui->settingsDestProfileRadioButton->setChecked(true);
+	}
+	ui->profilesLabel->setHidden(romLoaded);
+	ui->settingsDestFrame->setVisible(romLoaded);
+}
+
 void ConfigDialog::on_frameBufferInfoLabel2_linkActivated(QString link)
 {
 	if (link == "#frameBuffer") {
@@ -853,17 +866,12 @@ void ConfigDialog::on_tabWidget_currentChanged(int tab)
 
 void ConfigDialog::setTitle()
 {
-	if (config.generalEmulation.enableCustomSettings != 0 && m_romName != nullptr) {
-		QString title(tr("GLideN64 Settings for "));
-		title += QString::fromLatin1(m_romName);
-		setWindowTitle(title);
-	} else {
-		setWindowTitle(tr("GLideN64 Settings"));
-	}
+	setWindowTitle(tr("GLideN64 Settings"));
 }
 
 void ConfigDialog::on_profilesComboBox_currentIndexChanged(const QString &profile)
 {
+	ui->settingsDestProfileRadioButton->setChecked(true);
 	if (profile == tr("New...")) {
 		bool ok;
 		QString switchToProfile = getCurrentProfile(m_strIniPath);
@@ -925,8 +933,8 @@ void ConfigDialog::on_removeProfilePushButton_clicked()
 	QMessageBox msgBox(QMessageBox::Warning, tr("Remove Profile"),
 		msg, QMessageBox::Yes | QMessageBox::Cancel, this);
 	msgBox.setDefaultButton(QMessageBox::Cancel);
-	msgBox.setButtonText(QMessageBox::Yes, tr("Yes"));
-	msgBox.setButtonText(QMessageBox::Cancel, tr("Cancel"));
+	msgBox.setButtonText(QMessageBox::Yes, tr("Remove"));
+	msgBox.setButtonText(QMessageBox::No, tr("Cancel"));
 	if (msgBox.exec() == QMessageBox::Yes) {
 		removeProfile(m_strIniPath, profile);
 		ui->profilesComboBox->blockSignals(true);
