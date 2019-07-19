@@ -29,9 +29,6 @@
    </property>
    <item>
     <widget class="QTabWidget" name="tabWidget">
-     <property name="currentIndex">
-      <number>1</number>
-     </property>
      <property name="usesScrollButtons">
       <bool>false</bool>
      </property>
@@ -2306,6 +2303,19 @@
                 </layout>
                </widget>
               </item>
+              <item>
+               <spacer name="verticalSpacer_12">
+                <property name="orientation">
+                 <enum>Qt::Vertical</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>0</width>
+                  <height>0</height>
+                 </size>
+                </property>
+               </spacer>
+              </item>
              </layout>
             </item>
             <item>
@@ -2347,90 +2357,15 @@
                </widget>
               </item>
               <item>
-               <spacer name="verticalSpacer_12">
-                <property name="orientation">
-                 <enum>Qt::Vertical</enum>
+               <widget class="QCheckBox" name="enhancedTexFileStorageCheckBox">
+                <property name="text">
+                 <string>Use file storage instead of memory cache</string>
                 </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>0</width>
-                  <height>0</height>
-                 </size>
-                </property>
-               </spacer>
+               </widget>
               </item>
              </layout>
             </item>
            </layout>
-          </item>
-          <item>
-           <widget class="QFrame" name="textureFilterCacheFrame">
-            <property name="toolTip">
-             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enhanced and filtered textures can be cached to improve performance. This option adjusts how much memory is dedicated to the texture cache. This can improve performance if there are many requests for the same texture, which is usually the case. Normally 128 MB should be more than enough, but the best option is different for each game. Super Mario 64 may not need more than 32 MB, but Conker's Bad Fur Day can take advantage of 256 MB+. Adjust accordingly if you are having performance problems. Setting this option to 0 disables the cache.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;PC and game dependent&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-            </property>
-            <layout class="QHBoxLayout" name="horizontalLayout_8">
-             <property name="spacing">
-              <number>5</number>
-             </property>
-             <property name="leftMargin">
-              <number>0</number>
-             </property>
-             <property name="topMargin">
-              <number>0</number>
-             </property>
-             <property name="rightMargin">
-              <number>0</number>
-             </property>
-             <property name="bottomMargin">
-              <number>0</number>
-             </property>
-             <item>
-              <widget class="QLabel" name="textureFilterCacheLabel">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="text">
-                <string>Enhanced texture cache size:</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QSpinBox" name="textureFilterCacheSpinBox">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-                 <horstretch>0</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="suffix">
-                <string extracomment="Megabytes"> MB</string>
-               </property>
-               <property name="maximum">
-                <number>999</number>
-               </property>
-               <property name="singleStep">
-                <number>50</number>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <spacer name="horizontalSpacer_11">
-               <property name="orientation">
-                <enum>Qt::Horizontal</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>0</width>
-                 <height>0</height>
-                </size>
-               </property>
-              </spacer>
-             </item>
-            </layout>
-           </widget>
           </item>
          </layout>
         </widget>
@@ -2605,6 +2540,13 @@
                 </widget>
                </item>
                <item>
+                <widget class="QCheckBox" name="hiresTexFileStorageCheckBox">
+                 <property name="text">
+                  <string>Use file storage instead of memory cache</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
                 <widget class="QCheckBox" name="textureDumpCheckBox">
                  <property name="enabled">
                   <bool>true</bool>
@@ -2621,6 +2563,75 @@
              </item>
             </layout>
            </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QFrame" name="textureFilterCacheFrame">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enhanced and filtered textures can be cached to improve performance. This option adjusts how much memory is dedicated to the texture cache. This can improve performance if there are many requests for the same texture, which is usually the case. Normally 128 MB should be more than enough, but the best option is different for each game. Super Mario 64 may not need more than 32 MB, but Conker's Bad Fur Day can take advantage of 256 MB+. Adjust accordingly if you are having performance problems. Setting this option to 0 disables the cache.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;PC and game dependent&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <layout class="QHBoxLayout" name="horizontalLayout_8">
+          <property name="spacing">
+           <number>5</number>
+          </property>
+          <property name="leftMargin">
+           <number>0</number>
+          </property>
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <property name="rightMargin">
+           <number>0</number>
+          </property>
+          <property name="bottomMargin">
+           <number>0</number>
+          </property>
+          <item>
+           <widget class="QLabel" name="textureFilterCacheLabel">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="text">
+             <string>Size of memory cache for enhanced textures:</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QSpinBox" name="textureFilterCacheSpinBox">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="suffix">
+             <string extracomment="Megabytes"> MB</string>
+            </property>
+            <property name="maximum">
+             <number>999</number>
+            </property>
+            <property name="singleStep">
+             <number>50</number>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="horizontalSpacer_11">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>0</width>
+              <height>0</height>
+             </size>
+            </property>
+           </spacer>
           </item>
          </layout>
         </widget>
@@ -3728,8 +3739,8 @@
      <y>41</y>
     </hint>
     <hint type="destinationlabel">
-     <x>145</x>
-     <y>525</y>
+     <x>156</x>
+     <y>604</y>
     </hint>
    </hints>
   </connection>
@@ -3792,8 +3803,8 @@
      <y>41</y>
     </hint>
     <hint type="destinationlabel">
-     <x>345</x>
-     <y>525</y>
+     <x>356</x>
+     <y>604</y>
     </hint>
    </hints>
   </connection>
@@ -3852,12 +3863,12 @@
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>107</x>
-     <y>337</y>
+     <x>129</x>
+     <y>356</y>
     </hint>
     <hint type="destinationlabel">
-     <x>109</x>
-     <y>253</y>
+     <x>125</x>
+     <y>257</y>
     </hint>
    </hints>
   </connection>
@@ -3868,12 +3879,12 @@
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>363</x>
-     <y>331</y>
+     <x>385</x>
+     <y>356</y>
     </hint>
     <hint type="destinationlabel">
-     <x>348</x>
-     <y>256</y>
+     <x>471</x>
+     <y>255</y>
     </hint>
    </hints>
   </connection>
@@ -3885,11 +3896,11 @@
    <hints>
     <hint type="sourcelabel">
      <x>525</x>
-     <y>341</y>
+     <y>356</y>
     </hint>
     <hint type="destinationlabel">
      <x>526</x>
-     <y>263</y>
+     <y>257</y>
     </hint>
    </hints>
   </connection>
@@ -3900,12 +3911,12 @@
    <slot>setVisible(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>378</x>
-     <y>194</y>
+     <x>462</x>
+     <y>218</y>
     </hint>
     <hint type="destinationlabel">
-     <x>405</x>
-     <y>219</y>
+     <x>524</x>
+     <y>253</y>
     </hint>
    </hints>
   </connection>
@@ -3932,12 +3943,12 @@
    <slot>setDisabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>212</x>
-     <y>329</y>
+     <x>235</x>
+     <y>350</y>
     </hint>
     <hint type="destinationlabel">
-     <x>230</x>
-     <y>367</y>
+     <x>253</x>
+     <y>446</y>
     </hint>
    </hints>
   </connection>
@@ -3973,11 +3984,27 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>enhancedTexFileStorageCheckBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>textureFilterCacheFrame</receiver>
+   <slot>setDisabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>350</x>
+     <y>116</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>278</x>
+     <y>395</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <buttongroups>
-  <buttongroup name="osdButtonGroup"/>
-  <buttongroup name="factorButtonGroup"/>
   <buttongroup name="screenshotButtonGroup"/>
+  <buttongroup name="osdButtonGroup"/>
   <buttongroup name="fixTexrectCoordsButtonGroup"/>
+  <buttongroup name="factorButtonGroup"/>
  </buttongroups>
 </ui>
