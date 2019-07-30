@@ -67,8 +67,18 @@ u32 powof(u32 dim)
 }
 
 
-void ConfigDialog::_init()
+void ConfigDialog::_init(bool reInit, bool blockCustomSettings)
 {
+	if (m_blockReInit)
+		return;
+	m_blockReInit = true;
+
+	if (reInit && m_romName != nullptr && ui->customSettingsCheckBox->isChecked() && ui->settingsDestGameRadioButton->isChecked()) {
+		loadCustomRomSettings(m_strIniPath, m_romName);
+	} else if (reInit) {
+		loadSettings(m_strIniPath);
+	}
+
 	// Video settings
 	QStringList windowedModesList;
 	int windowedModesCurrent = -1;
@@ -146,7 +156,9 @@ void ConfigDialog::_init()
 	ui->emulateNoiseCheckBox->setChecked(config.generalEmulation.enableNoise != 0);
 	ui->enableHWLightingCheckBox->setChecked(config.generalEmulation.enableHWLighting != 0);
 	ui->enableShadersStorageCheckBox->setChecked(config.generalEmulation.enableShadersStorage != 0);
-	ui->customSettingsCheckBox->setChecked(config.generalEmulation.enableCustomSettings != 0);
+	if (!blockCustomSettings)
+		ui->customSettingsCheckBox->setChecked(config.generalEmulation.enableCustomSettings != 0);
+
 	switch (config.graphics2D.correctTexrectCoords) {
 	case Config::tcDisable:
 		ui->fixTexrectDisableRadioButton->setChecked(true);
@@ -310,8 +322,9 @@ void ConfigDialog::_init()
 	ui->renderingResolutionCheckBox->setChecked(config.onScreenDisplay.renderingResolution != 0);
 
 	// Buttons
-	ui->buttonBox->button(QDialogButtonBox::Ok)->setText(tr("OK"));
-	ui->buttonBox->button(QDialogButtonBox::Cancel)->setText(tr("Cancel"));
+	ui->buttonBox->button(QDialogButtonBox::Ok)->setText(tr("Save and Close"));
+	ui->buttonBox->button(QDialogButtonBox::Save)->setText(tr("Save"));
+	ui->buttonBox->button(QDialogButtonBox::Close)->setText(tr("Close"));
 	ui->buttonBox->button(QDialogButtonBox::RestoreDefaults)->setText(tr("Restore Defaults"));
 
 	ui->dumpLowCheckBox->setChecked((config.debug.dumpMode & DEBUG_LOW) != 0);
@@ -326,6 +339,8 @@ void ConfigDialog::_init()
 		}
 	}
 #endif
+
+	m_blockReInit = false;
 }
 
 void ConfigDialog::_getTranslations(QStringList & _translationFiles) const
@@ -377,15 +392,15 @@ void ConfigDialog::setRomName(const char * _romName)
 {
 	const bool bRomNameIsEmpty = _romName == nullptr || strlen(_romName) == 0;
 	m_romName = bRomNameIsEmpty ? nullptr : _romName;
-	ui->customSettingsCheckBox->toggle();
-	ui->customSettingsCheckBox->setChecked(config.generalEmulation.enableCustomSettings != 0);
+	this->on_customSettingsCheckBox_toggled(ui->customSettingsCheckBox->isChecked());
 }
 
 ConfigDialog::ConfigDialog(QWidget *parent, Qt::WindowFlags f) :
 QDialog(parent, f),
 ui(new Ui::ConfigDialog),
 m_accepted(false),
-m_fontsInited(false)
+m_fontsInited(false),
+m_blockReInit(false)
 {
 	ui->setupUi(this);
 	_init();
@@ -396,8 +411,8 @@ ConfigDialog::~ConfigDialog()
 	delete ui;
 }
 
-void ConfigDialog::accept()
-{
+void ConfigDialog::accept(bool justSave) {
+
 	m_accepted = true;
 
 	int windowedValidatorPos = 0;
@@ -623,7 +638,9 @@ void ConfigDialog::accept()
 	else
 		writeSettings(m_strIniPath);
 
-	QDialog::accept();
+	if (!justSave) {
+		QDialog::accept();
+	}
 }
 
 void ConfigDialog::on_PickFontColorButton_clicked()
@@ -666,10 +683,14 @@ void ConfigDialog::on_buttonBox_clicked(QAbstractButton *button)
 			const u32 enableCustomSettings = config.generalEmulation.enableCustomSettings;
 			config.resetToDefaults();
 			config.generalEmulation.enableCustomSettings = enableCustomSettings;
-			_init();
 			setTitle();
 			setRomName(m_romName);
+			_init();
 		}
+	} else if ((QPushButton *)button == ui->buttonBox->button(QDialogButtonBox::Save)) {
+		this->accept(true);
+	} else if ((QPushButton *)button == ui->buttonBox->button(QDialogButtonBox::Ok)) {
+		this->accept(false);
 	}
 }
 
@@ -758,8 +779,10 @@ void ConfigDialog::on_customSettingsCheckBox_toggled(bool checked)
 	} else {
 		ui->settingsDestProfileRadioButton->setChecked(true);
 	}
+
 	ui->profilesLabel->setHidden(romLoaded);
 	ui->settingsDestFrame->setVisible(romLoaded);
+	_init(false, true);
 }
 
 void ConfigDialog::on_frameBufferInfoLabel2_linkActivated(QString link)
@@ -769,7 +792,6 @@ void ConfigDialog::on_frameBufferInfoLabel2_linkActivated(QString link)
 		ui->frameBufferCheckBox->setStyleSheet("background:yellow");
 	}
 }
-
 
 void ConfigDialog::on_frameBufferCheckBox_toggled(bool checked)
 {
@@ -789,8 +811,7 @@ void ConfigDialog::on_n64DepthCompareCheckBox_toggled(bool checked)
 	ui->n64DepthCompareCheckBox->setStyleSheet("");
 }
 
-
-void ConfigDialog::on_gammaLevelSpinBox_valueChanged(double value)
+void ConfigDialog::on_gammaLevelSpinBox_valueChanged(double /*value*/)
 {
 	ui->gammaCorrectionCheckBox->setChecked(true);
 }
@@ -803,7 +824,7 @@ void ConfigDialog::on_gammaCorrectionCheckBox_toggled(bool checked)
 	}
 }
 
-void ConfigDialog::on_resolutionFactorSpinBox_valueChanged(int value)
+void ConfigDialog::on_resolutionFactorSpinBox_valueChanged(int /*value*/)
 {
 	ui->factorXxRadioButton->setChecked(true);
 }
@@ -921,7 +942,12 @@ void ConfigDialog::on_profilesComboBox_currentIndexChanged(const QString &profil
 		return;
 	}
 	changeProfile(m_strIniPath, profile);
-	_init();
+	_init(true);
+}
+
+void ConfigDialog::on_settingsDestProfileRadioButton_toggled(bool /*checked*/)
+{
+	_init(true, true);
 }
 
 void ConfigDialog::on_removeProfilePushButton_clicked()
@@ -945,7 +971,7 @@ void ConfigDialog::on_removeProfilePushButton_clicked()
 		ui->profilesComboBox->removeItem(ui->profilesComboBox->currentIndex());
 		changeProfile(m_strIniPath, ui->profilesComboBox->itemText(ui->profilesComboBox->currentIndex()));
 		ui->profilesComboBox->blockSignals(false);
-		_init();
+		_init(true);
 		ui->removeProfilePushButton->setDisabled(ui->profilesComboBox->count() == 3);
 	}
 }

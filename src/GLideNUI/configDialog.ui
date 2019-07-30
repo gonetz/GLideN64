@@ -2464,6 +2464,9 @@
                     <height>16777215</height>
                    </size>
                   </property>
+                  <property name="styleSheet">
+                   <string notr="true">padding:4px 1em 3px</string>
+                  </property>
                   <property name="text">
                    <string>...</string>
                   </property>
@@ -2477,6 +2480,9 @@
                     <height>16777215</height>
                    </size>
                   </property>
+                  <property name="styleSheet">
+                   <string notr="true">padding:4px 1em 3px</string>
+                  </property>
                   <property name="text">
                    <string>...</string>
                   </property>
@@ -2489,6 +2495,9 @@
                     <width>40</width>
                     <height>16777215</height>
                    </size>
+                  </property>
+                  <property name="styleSheet">
+                   <string notr="true">padding:4px 1em 3px</string>
                   </property>
                   <property name="text">
                    <string>...</string>
@@ -3627,6 +3636,9 @@
       </item>
       <item>
        <widget class="QPushButton" name="removeProfilePushButton">
+        <property name="styleSheet">
+         <string notr="true">padding:3px 7px 4px</string>
+        </property>
         <property name="text">
          <string>Remove</string>
         </property>
@@ -3650,11 +3662,11 @@
    </item>
    <item>
     <widget class="QDialogButtonBox" name="buttonBox">
-     <property name="standardButtons">
-      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok|QDialogButtonBox::RestoreDefaults</set>
+     <property name="styleSheet">
+      <string notr="true">padding:4px 1em;min-width:47px</string>
      </property>
-     <property name="centerButtons">
-      <bool>false</bool>
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Close|QDialogButtonBox::Ok|QDialogButtonBox::RestoreDefaults|QDialogButtonBox::Save</set>
      </property>
     </widget>
    </item>
@@ -3664,22 +3676,6 @@
   <include location="icon.qrc"/>
  </resources>
  <connections>
-  <connection>
-   <sender>buttonBox</sender>
-   <signal>accepted()</signal>
-   <receiver>ConfigDialog</receiver>
-   <slot>accept()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>369</x>
-     <y>675</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>343</x>
-     <y>619</y>
-    </hint>
-   </hints>
-  </connection>
   <connection>
    <sender>buttonBox</sender>
    <signal>rejected()</signal>
@@ -4002,9 +3998,9 @@
   </connection>
  </connections>
  <buttongroups>
-  <buttongroup name="screenshotButtonGroup"/>
   <buttongroup name="osdButtonGroup"/>
-  <buttongroup name="fixTexrectCoordsButtonGroup"/>
   <buttongroup name="factorButtonGroup"/>
+  <buttongroup name="fixTexrectCoordsButtonGroup"/>
+  <buttongroup name="screenshotButtonGroup"/>
  </buttongroups>
 </ui>

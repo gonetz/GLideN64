@@ -23,7 +23,7 @@ public:
 	bool isAccepted() const { return m_accepted; }
 
 public Q_SLOTS:
-	virtual void accept();
+	virtual void accept(bool justSave);
 
 private slots:
 	void on_PickFontColorButton_clicked();
@@ -72,17 +72,21 @@ private slots:
 
 	void on_profilesComboBox_currentIndexChanged(const QString &arg1);
 
+	void on_settingsDestProfileRadioButton_toggled(bool checked);
+
 	void on_removeProfilePushButton_clicked();
 
 private:
-	void _init();
+	void _init(bool reInit = false, bool blockCustomSettings = false);
 	void _getTranslations(QStringList & _translationFiles) const;
+	void _switchDest(bool isGame);
 
 	Ui::ConfigDialog *ui;
 	QFont m_font;
 	QColor m_color;
 	bool m_accepted;
 	bool m_fontsInited;
+	bool m_blockReInit;
 	QString m_strIniPath;
 	const char * m_romName;
 };
