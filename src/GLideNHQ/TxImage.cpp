@@ -180,7 +180,7 @@ TxImage::readPNG(FILE* fp, int* width, int* height, ColorFormat *format)
 	png_read_update_info(png_ptr, info_ptr);
 
 	/* we only get here if RGBA8888 */
-	row_bytes = png_get_rowbytes(png_ptr, info_ptr);
+	row_bytes = static_cast<int>(png_get_rowbytes(png_ptr, info_ptr));
 
 	/* allocate memory to read in image */
 	image = (uint8*)malloc(row_bytes * o_height);
