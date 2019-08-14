@@ -393,6 +393,9 @@
               </property>
               <item>
                <widget class="QFrame" name="aliasingFrame">
+                <property name="toolTip">
+                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;GLideN64 offers two methods to smooth jagged polygons:&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Fast approximate anti-aliasing (FXAA)&lt;/span&gt;: FXAA is a post-processing filter that can provide a decent result, but as good as MSAA. The main reason to use FXAA is to use with &lt;span style=&quot; font-weight:600;&quot;&gt;N64-style depth compare&lt;/span&gt;. FXAA adds some blurriness to the output image, causing some textures like text to possibly look worse.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Multisample anti-aliasing (MSAA)&lt;/span&gt;: MSAA is a standard anti-aliasing technique used in computer graphics to improve image quality. Most modern GPUs support 2, 4, 8, and 16 samples. More samples mean better quality, but are slower. There are two downsides: it's incompatible with &lt;span style=&quot; font-weight:600;&quot;&gt;N64-style depth compare&lt;/span&gt; and may cause minor glitches in some games.&lt;/p&gt;&lt;p&gt;Recommendation: [&lt;span style=&quot; font-style:italic;&quot;&gt;Usually 16x MSAA, or FXAA with N64-style depth compare&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                </property>
                 <layout class="QVBoxLayout" name="verticalLayout_54">
                  <property name="spacing">
                   <number>3</number>
@@ -3998,9 +4001,9 @@
   </connection>
  </connections>
  <buttongroups>
-  <buttongroup name="osdButtonGroup"/>
+  <buttongroup name="screenshotButtonGroup"/>
   <buttongroup name="factorButtonGroup"/>
   <buttongroup name="fixTexrectCoordsButtonGroup"/>
-  <buttongroup name="screenshotButtonGroup"/>
+  <buttongroup name="osdButtonGroup"/>
  </buttongroups>
 </ui>
