@@ -37,7 +37,7 @@ bool getCursorPos(long & _x, long & _y)
 	if (hWnd == NULL) {
 		wchar_t caption[64];
 # ifdef _DEBUG
-		swprintf(caption, 64, L"%ls debug. Revision %ls", pluginNameW, PLUGIN_REVISION_W);
+		swprintf(caption, 64, L"mupen64plus: %ls debug. Revision %ls", pluginNameW, PLUGIN_REVISION_W);
 # else // _DEBUG
 		swprintf(caption, 64, L"%s. Revision %s", pluginName, PLUGIN_REVISION);
 # endif // _DEBUG
