@@ -1573,22 +1573,3 @@ void getTextureShiftScale(u32 t, const TextureCache & cache, f32 & shiftScaleS, 
 	else if (gSP.textureTile[t]->shiftt > 0)
 		shiftScaleT /= (f32)(1 << gSP.textureTile[t]->shiftt);
 }
-
-void getMirrorClamp(u32 _tile, const CachedTexture * _pTexture, MirrorClamp& aMirrorClamp)
-{
-	const gDPTile * pTile = gSP.textureTile[_tile];
-	const u32 tileWidth = ((pTile->lrs - pTile->uls) & 0x03FF) + 1;
-	const u32 tileHeight = ((pTile->lrt - pTile->ult) & 0x03FF) + 1;
-	const bool mirrorClampS = _pTexture->mirrorS && _pTexture->clampS &&
-		tileWidth > _pTexture->width && tileWidth % _pTexture->width == 0;
-	const bool mirrorClampT = _pTexture->mirrorT && _pTexture->clampT &&
-		tileHeight > _pTexture->height && tileHeight % _pTexture->height == 0;
-	if (mirrorClampS) {
-		aMirrorClamp[0] = 0.0f;
-		aMirrorClamp[2] = f32(tileWidth / _pTexture->width);
-	}
-	if (mirrorClampT) {
-		aMirrorClamp[1] = 0.0f;
-		aMirrorClamp[3] = f32(tileHeight / _pTexture->height);
-	}
-}

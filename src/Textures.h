@@ -109,9 +109,6 @@ private:
 
 void getTextureShiftScale(u32 tile, const TextureCache & cache, f32 & shiftScaleS, f32 & shiftScaleT);
 
-using MirrorClamp = std::array<f32, 4>;
-void getMirrorClamp(u32 _tile, const CachedTexture * _pTexture, MirrorClamp& aMirrorClamp);
-
 inline TextureCache & textureCache()
 {
 	return TextureCache::get();
