@@ -926,12 +926,14 @@ public:
 		std::array<f32, 2> aTexMirror[2] = { { 0.0f, 0.0f}, { 0.0f, 0.0f } };
 		std::array<f32, 2> aTexScale[2] = { { 1.0f, 1.0f },{ 1.0f, 1.0f } };
 		TextureCache & cache = textureCache();
+		const bool replaceTex1ByTex0 = needReplaceTex1ByTex0();
 		for (u32 t = 0; t < 2; ++t) {
 			if (!m_useTile[t])
 				continue;
 
-			const gDPTile * pTile = gSP.textureTile[t];
-			CachedTexture * pTexture = cache.current[t];
+			const u32 tile = replaceTex1ByTex0 ? 0 : t;
+			const gDPTile * pTile = gSP.textureTile[tile];
+			CachedTexture * pTexture = cache.current[tile];
 			if (pTile == nullptr || pTexture == nullptr)
 				continue;
 

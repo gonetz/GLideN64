@@ -109,6 +109,9 @@ private:
 
 void getTextureShiftScale(u32 tile, const TextureCache & cache, f32 & shiftScaleS, f32 & shiftScaleT);
 
+// Check for situation when Tex0 is used instead of Tex1
+bool needReplaceTex1ByTex0();
+
 inline TextureCache & textureCache()
 {
 	return TextureCache::get();
