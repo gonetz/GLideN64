@@ -629,11 +629,11 @@ void _calcTileSizes(u32 _t, TileSizes & _sizes, gDPTile * _pLoadTile)
 			height = mask_height;
 	}
 
-	_sizes.width = width;
-	_sizes.height = height;
-
 	_sizes.clampWidth = (pTile->clamps && gDP.otherMode.cycleType != G_CYC_COPY) ? tileWidth : width;
 	_sizes.clampHeight = (pTile->clampt && gDP.otherMode.cycleType != G_CYC_COPY) ? tileHeight : height;
+
+	_sizes.width = (pTile->clamps != 0 && info.loadType == LOADTYPE_TILE) ? _sizes.clampWidth : width;
+	_sizes.height = (pTile->clampt != 0 && info.loadType == LOADTYPE_TILE) ? _sizes.clampHeight : height;
 }
 
 
