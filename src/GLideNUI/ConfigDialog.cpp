@@ -203,6 +203,7 @@ void ConfigDialog::_init(bool reInit, bool blockCustomSettings)
 	ui->copyColorBufferComboBox->setCurrentIndex(config.frameBufferEmulation.copyToRDRAM);
 	ui->copyDepthBufferComboBox->setCurrentIndex(config.frameBufferEmulation.copyDepthToRDRAM);
 	ui->RenderFBCheckBox->setChecked(config.frameBufferEmulation.copyFromRDRAM != 0);
+	ui->copyDepthToMainDepthBufferCheckBox->setChecked(config.frameBufferEmulation.copyDepthToMainDepthBuffer != 0);
 	ui->n64DepthCompareCheckBox->toggle();
 	ui->n64DepthCompareCheckBox->setChecked(config.frameBufferEmulation.N64DepthCompare != 0);
 	ui->forceDepthBufferClearCheckBox->setChecked(config.frameBufferEmulation.forceDepthBufferClear != 0);
@@ -490,6 +491,7 @@ void ConfigDialog::accept(bool justSave) {
 	config.frameBufferEmulation.copyToRDRAM = ui->copyColorBufferComboBox->currentIndex();
 	config.frameBufferEmulation.copyDepthToRDRAM = ui->copyDepthBufferComboBox->currentIndex();
 	config.frameBufferEmulation.copyFromRDRAM = ui->RenderFBCheckBox->isChecked() ? 1 : 0;
+	config.frameBufferEmulation.copyDepthToMainDepthBuffer = ui->copyDepthToMainDepthBufferCheckBox->isChecked() ? 1 : 0;
 
 	config.frameBufferEmulation.N64DepthCompare = ui->n64DepthCompareCheckBox->isChecked() ? 1 : 0;
 	config.frameBufferEmulation.forceDepthBufferClear = ui->forceDepthBufferClearCheckBox->isChecked() ? 1 : 0;

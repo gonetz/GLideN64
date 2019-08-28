@@ -2065,6 +2065,16 @@
                        </property>
                       </widget>
                      </item>
+                     <item>
+                      <widget class="QCheckBox" name="copyDepthToMainDepthBufferCheckBox">
+                       <property name="toolTip">
+                        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;This option is required for some Reshade depth dependant effects, such as SSAO and depth of field.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;only if you use Reshade and need depth dependant effects&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                       </property>
+                       <property name="text">
+                        <string>Copy depth to main depth buffer</string>
+                       </property>
+                      </widget>
+                     </item>
                     </layout>
                    </item>
                   </layout>

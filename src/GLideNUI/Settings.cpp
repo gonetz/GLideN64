@@ -67,6 +67,7 @@ void _loadSettings(QSettings & settings)
 	config.frameBufferEmulation.fbInfoDisabled = settings.value("fbInfoDisabled", config.frameBufferEmulation.fbInfoDisabled).toInt();
 	config.frameBufferEmulation.fbInfoReadColorChunk = settings.value("fbInfoReadColorChunk", config.frameBufferEmulation.fbInfoReadColorChunk).toInt();
 	config.frameBufferEmulation.fbInfoReadDepthChunk = settings.value("fbInfoReadDepthChunk", config.frameBufferEmulation.fbInfoReadDepthChunk).toInt();
+	config.frameBufferEmulation.copyDepthToMainDepthBuffer = settings.value("copyDepthToMainDepthBuffer", config.frameBufferEmulation.copyDepthToMainDepthBuffer).toInt();
 	config.frameBufferEmulation.enableOverscan = settings.value("enableOverscan", config.frameBufferEmulation.enableOverscan).toInt();
 	config.frameBufferEmulation.overscanPAL.left = settings.value("overscanPalLeft", config.frameBufferEmulation.overscanPAL.left).toInt();
 	config.frameBufferEmulation.overscanPAL.right = settings.value("overscanPalRight", config.frameBufferEmulation.overscanPAL.right).toInt();
@@ -238,6 +239,7 @@ void writeSettings(const QString & _strIniFolder)
 	settings.setValue("fbInfoDisabled", config.frameBufferEmulation.fbInfoDisabled);
 	settings.setValue("fbInfoReadColorChunk", config.frameBufferEmulation.fbInfoReadColorChunk);
 	settings.setValue("fbInfoReadDepthChunk", config.frameBufferEmulation.fbInfoReadDepthChunk);
+	settings.setValue("copyDepthToMainDepthBuffer", config.frameBufferEmulation.copyDepthToMainDepthBuffer);
 	settings.setValue("enableOverscan", config.frameBufferEmulation.enableOverscan);
 	settings.setValue("overscanPalLeft", config.frameBufferEmulation.overscanPAL.left);
 	settings.setValue("overscanPalRight", config.frameBufferEmulation.overscanPAL.right);
@@ -426,6 +428,7 @@ void saveCustomRomSettings(const QString & _strIniFolder, const char * _strRomNa
 	WriteCustomSetting(frameBufferEmulation, fbInfoDisabled);
 	WriteCustomSetting(frameBufferEmulation, fbInfoReadColorChunk);
 	WriteCustomSetting(frameBufferEmulation, fbInfoReadDepthChunk);
+	WriteCustomSetting(frameBufferEmulation, copyDepthToMainDepthBuffer);
 	WriteCustomSetting(frameBufferEmulation, enableOverscan);
 	WriteCustomSetting2(frameBufferEmulation, overscanPalLeft, overscanPAL.left);
 	WriteCustomSetting2(frameBufferEmulation, overscanPalRight, overscanPAL.right);
