@@ -480,11 +480,11 @@ void TxMemoryCache::clear()
 
 /************************** TxFileCache *************************************/
 
-class TxFileCache : public TxCacheImpl
+class TxFileStorage : public TxCacheImpl
 {
 public:
-	TxFileCache(uint32 & _options, const wchar_t *cachePath, dispInfoFuncExt callback);
-	~TxFileCache() = default;
+	TxFileStorage(uint32 & _options, const wchar_t *cachePath, dispInfoFuncExt callback);
+	~TxFileStorage() = default;
 
 	bool add(Checksum checksum, GHQTexInfo *info, int dataSize = 0) override;
 	bool get(Checksum checksum, GHQTexInfo *info) override;
@@ -494,9 +494,9 @@ public:
 	bool del(Checksum checksum) override { return false; }
 	bool isCached(Checksum checksum) override;
 	void clear() override;
-	bool empty() const override { return _cache.empty(); }
+	bool empty() const override { return _storage.empty(); }
 
-	uint64 size() const override { return _cache.size(); }
+	uint64 size() const override { return _storage.size(); }
 	uint64 totalSize() const override { return _totalSize; }
 	uint64 cacheLimit() const override { return 0UL; }
 	uint32 getOptions() const override { return _options; }
@@ -515,8 +515,8 @@ private:
 	dispInfoFuncExt _callback;
 	uint64 _totalSize = 0;
 
-	using CacheMap = std::unordered_map<uint64, int64>;
-	CacheMap _cache;
+	using StorageMap = std::unordered_map<uint64, int64>;
+	StorageMap _storage;
 
 	uint8 *_gzdest0 = nullptr;
 	uint8 *_gzdest1 = nullptr;
@@ -524,16 +524,16 @@ private:
 
   std::ifstream _infile;
   std::ofstream _outfile;
-	int64 _cachePos = 0;
+	int64 _storagePos = 0;
 	bool _dirty = false;
 	static const int _fakeConfig;
 	static const int64 _initialPos;
 };
 
-const int TxFileCache::_fakeConfig = -1;
-const int64 TxFileCache::_initialPos = sizeof(int64) + sizeof(int);
+const int TxFileStorage::_fakeConfig = -1;
+const int64 TxFileStorage::_initialPos = sizeof(int64) + sizeof(int);
 
-TxFileCache::TxFileCache(uint32 & options,
+TxFileStorage::TxFileStorage(uint32 & options,
 	const wchar_t *cachePath,
 	dispInfoFuncExt callback)
 	: _options(options)
@@ -562,7 +562,7 @@ TxFileCache::TxFileCache(uint32 & options,
 #define FWRITE(a) _outfile.write((char*)(&a), sizeof(a))
 #define FREAD(a) _infile.read((char*)(&a), sizeof(a))
 
-void TxFileCache::buildFullPath()
+void TxFileStorage::buildFullPath()
 {
 	char cbuf[MAX_PATH*2];
 	tx_wstring filename = _cachePath + OSAL_DIR_SEPARATOR_STR + _filename;
@@ -570,7 +570,7 @@ void TxFileCache::buildFullPath()
 	_fullPath = cbuf;
 }
 
-bool TxFileCache::open(bool forRead)
+bool TxFileStorage::open(bool forRead)
 {
 	if (_infile.is_open())
 		_infile.close();
@@ -585,7 +585,7 @@ bool TxFileCache::open(bool forRead)
 	}
 
 	if (osal_path_existsA(_fullPath.c_str()) != 0) {
-		assert(_cachePos != 0L);
+		assert(_storagePos != 0L);
 		_outfile.open(_fullPath, std::ofstream::out | std::ofstream::binary);
 		DBG_INFO(80, wst("file:%s %s\n"), _fullPath.c_str(), _outfile.good() ? "opened for write" : "failed to open");
 		return _outfile.good();
@@ -600,19 +600,19 @@ bool TxFileCache::open(bool forRead)
 		return false;
 
 	FWRITE(_fakeConfig);
-	_cachePos = _initialPos;
-	FWRITE(_cachePos);
+	_storagePos = _initialPos;
+	FWRITE(_storagePos);
 
 	return _outfile.good();
 }
 
-void TxFileCache::clear()
+void TxFileStorage::clear()
 {
 	if (empty() && osal_path_existsA(_fullPath.c_str()) == 0)
 		return;
 
-	_cache.clear();
-	_cachePos = 0UL;
+	_storage.clear();
+	_storagePos = 0UL;
 	_dirty = false;
 
 	if (_infile.is_open())
@@ -622,12 +622,12 @@ void TxFileCache::clear()
 
 	_outfile.open(_fullPath, std::ofstream::out | std::ofstream::binary | std::ofstream::trunc);
 	FWRITE(_fakeConfig);
-	_cachePos = _initialPos;
-	FWRITE(_cachePos);
+	_storagePos = _initialPos;
+	FWRITE(_storagePos);
 	_outfile.close();
 }
 
-bool TxFileCache::writeData(uint32 dataSize, const GHQTexInfo & info)
+bool TxFileStorage::writeData(uint32 dataSize, const GHQTexInfo & info)
 {
 	if (info.data == nullptr || dataSize == 0)
 		return false;
@@ -642,7 +642,7 @@ bool TxFileCache::writeData(uint32 dataSize, const GHQTexInfo & info)
 	return _outfile.good();
 }
 
-bool TxFileCache::readData(GHQTexInfo & info)
+bool TxFileStorage::readData(GHQTexInfo & info)
 {
 	FREAD(info.width);
 	FREAD(info.height);
@@ -678,11 +678,11 @@ bool TxFileCache::readData(GHQTexInfo & info)
 	return true;
 }
 
-bool TxFileCache::add(Checksum checksum, GHQTexInfo *info, int dataSize)
+bool TxFileStorage::add(Checksum checksum, GHQTexInfo *info, int dataSize)
 {
 	/* NOTE: dataSize must be provided if info->data is zlib compressed. */
 
-	if (!checksum || !info->data || _cache.find(checksum) != _cache.end())
+	if (!checksum || !info->data || _storage.find(checksum) != _storage.end())
 		return false;
 
 	if (_infile.is_open() || !_outfile.is_open())
@@ -690,8 +690,8 @@ bool TxFileCache::add(Checksum checksum, GHQTexInfo *info, int dataSize)
 			return false;
 
 	if (!_dirty) {
-		// Make position of cache data invalid.
-		// It will prevent attempts to load unsaved cache file.
+		// Make position of storage data invalid.
+		// It will prevent attempts to load unsaved storage file.
 		_outfile.seekp(sizeof(_options), std::ofstream::beg);
 		int64 pos = -1;
 		FWRITE(pos);
@@ -726,35 +726,35 @@ bool TxFileCache::add(Checksum checksum, GHQTexInfo *info, int dataSize)
 	infoToWrite.data = dest;
 	infoToWrite.format = format;
 
-	_outfile.seekp(_cachePos, std::ofstream::beg);
-	assert(_cachePos == _outfile.tellp());
+	_outfile.seekp(_storagePos, std::ofstream::beg);
+	assert(_storagePos == _outfile.tellp());
 
-	_cache.insert(CacheMap::value_type(checksum._checksum, _cachePos));
+	_storage.insert(StorageMap::value_type(checksum._checksum, _storagePos));
 	if (!writeData(dataSize, infoToWrite))
 		return false;
-	_cachePos = _outfile.tellp();
+	_storagePos = _outfile.tellp();
 	_dirty = true;
 
 #ifdef DEBUG
 	DBG_INFO(80, wst("[%5d] added!! crc:%08X %08X %d x %d gfmt:%x total:%.02fmb\n"),
-		_cache.size(), checksum._hi, checksum._low,
+		_storage.size(), checksum._hi, checksum._low,
 		info->width, info->height, info->format & 0xffff, (double)(_totalSize / 1024) / 1024.0);
 #endif
 
-	/* total cache size */
+	/* total storage size */
 	_totalSize += dataSize;
 
 	return true;
 }
 
-bool TxFileCache::get(Checksum checksum, GHQTexInfo *info)
+bool TxFileStorage::get(Checksum checksum, GHQTexInfo *info)
 {
-	if (!checksum || _cache.empty())
+	if (!checksum || _storage.empty())
 		return false;
 
-	/* find a match in cache */
-	auto itMap = _cache.find(checksum);
-	if (itMap == _cache.end())
+	/* find a match in storage */
+	auto itMap = _storage.find(checksum);
+	if (itMap == _storage.end())
 		return false;
 
 	if (_outfile.is_open() || !_infile.is_open())
@@ -765,7 +765,7 @@ bool TxFileCache::get(Checksum checksum, GHQTexInfo *info)
 	return readData(*info);
 }
 
-bool TxFileCache::save(const wchar_t *path, const wchar_t *filename, int config)
+bool TxFileStorage::save(const wchar_t *path, const wchar_t *filename, int config)
 {
 	assert(_cachePath == path);
 	if (_filename.empty()) {
@@ -777,7 +777,7 @@ bool TxFileCache::save(const wchar_t *path, const wchar_t *filename, int config)
 	if (!_dirty)
 		return true;
 
-	if (_cache.empty() || _cachePos == 0UL)
+	if (_storage.empty() || _storagePos == 0UL)
 		return false;
 
 	if (_infile.is_open() || !_outfile.is_open())
@@ -787,13 +787,13 @@ bool TxFileCache::save(const wchar_t *path, const wchar_t *filename, int config)
 	_outfile.seekp(0L, std::ofstream::beg);
 
 	FWRITE(config);
-	FWRITE(_cachePos);
-	_outfile.seekp(_cachePos, std::ofstream::beg);
-	int cacheSize = static_cast<int>(_cache.size());
-	FWRITE(cacheSize);
+	FWRITE(_storagePos);
+	_outfile.seekp(_storagePos, std::ofstream::beg);
+	int storageSize = static_cast<int>(_storage.size());
+	FWRITE(storageSize);
 	if (_callback)
 		(*_callback)(wst("Saving texture storage...\n"));
-	for (auto& item : _cache) {
+	for (auto& item : _storage) {
 		FWRITE(item.first);
 		FWRITE(item.second);
 	}
@@ -804,7 +804,7 @@ bool TxFileCache::save(const wchar_t *path, const wchar_t *filename, int config)
 	return true;
 }
 
-bool TxFileCache::load(const wchar_t *path, const wchar_t *filename, int config, bool force)
+bool TxFileStorage::load(const wchar_t *path, const wchar_t *filename, int config, bool force)
 {
 	assert(_cachePath == path);
 	if (_filename.empty()) {
@@ -821,41 +821,41 @@ bool TxFileCache::load(const wchar_t *path, const wchar_t *filename, int config,
 	/* read header to determine config match */
 	_infile.seekg(0L, std::ifstream::beg);
 	FREAD(tmpconfig);
-	FREAD(_cachePos);
+	FREAD(_storagePos);
 	if (tmpconfig == _fakeConfig) {
-		if (_cachePos != _initialPos)
+		if (_storagePos != _initialPos)
 			return false;
 	}	else if (tmpconfig != config && !force)
 		return false;
 
-	if (_cachePos <= sizeof(config) + sizeof(_cachePos))
+	if (_storagePos <= sizeof(config) + sizeof(_storagePos))
 		return false;
-	_infile.seekg(_cachePos, std::ifstream::beg);
+	_infile.seekg(_storagePos, std::ifstream::beg);
 
-	int cacheSize = 0;
-	FREAD(cacheSize);
-	if (cacheSize <= 0)
+	int storageSize = 0;
+	FREAD(storageSize);
+	if (storageSize <= 0)
 		return false;
 
 	if (_callback)
 		(*_callback)(wst("Loading texture storage...\n"));
 	uint64 key;
 	int64 value;
-	for (int i = 0; i < cacheSize; ++i) {
+	for (int i = 0; i < storageSize; ++i) {
 		FREAD(key);
 		FREAD(value);
-		_cache.insert(CacheMap::value_type(key, value));
+		_storage.insert(StorageMap::value_type(key, value));
 	}
 	if (_callback)
 		(*_callback)(wst("Done\n"));
 
 	_dirty = false;
-	return !_cache.empty();
+	return !_storage.empty();
 }
 
-bool TxFileCache::isCached(Checksum checksum)
+bool TxFileStorage::isCached(Checksum checksum)
 {
-	return _cache.find(checksum) != _cache.end();
+	return _storage.find(checksum) != _storage.end();
 }
 
 /************************** TxCache *************************************/
@@ -882,7 +882,7 @@ TxCache::TxCache(uint32 options,
 	if ((options & FILE_CACHE_MASK) == 0)
 		_pImpl.reset(new TxMemoryCache(options, cachesize, _callback));
 	else
-		_pImpl.reset(new TxFileCache(options, cachePath, _callback));
+		_pImpl.reset(new TxFileStorage(options, cachePath, _callback));
 }
 
 bool TxCache::add(Checksum checksum, GHQTexInfo *info, int dataSize)
