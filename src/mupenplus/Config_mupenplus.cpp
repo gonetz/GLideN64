@@ -120,6 +120,10 @@ bool Config_SetDefault()
 	assert(res == M64ERR_SUCCESS);
 	res = ConfigSetDefaultBool(g_configVideoGliden64, "EnableCopyColorFromRDRAM", config.frameBufferEmulation.copyFromRDRAM, "Enable color buffer copy from RDRAM.");
 	assert(res == M64ERR_SUCCESS);
+#if defined(OS_WINDOWS)
+	res = ConfigSetDefaultBool(g_configVideoGliden64, "EnableCopyDepthToMainDepthBuffer", config.frameBufferEmulation.copyDepthToMainDepthBuffer, "Enable copy of depth information from FBO to main depth buffer. Required for some Reshade shaders.");
+	assert(res == M64ERR_SUCCESS);
+#endif
 	res = ConfigSetDefaultBool(g_configVideoGliden64, "EnableOverscan", config.frameBufferEmulation.enableOverscan, "Enable resulted image crop by Overscan.");
 	assert(res == M64ERR_SUCCESS);
 	res = ConfigSetDefaultInt(g_configVideoGliden64, "OverscanPalLeft", config.frameBufferEmulation.overscanPAL.left, "PAL mode. Left bound of Overscan");
@@ -310,6 +314,10 @@ void Config_LoadCustomConfig()
 	if (result == M64ERR_SUCCESS) config.frameBufferEmulation.fbInfoReadColorChunk = atoi(value);
 	result = ConfigExternalGetParameter(fileHandle, sectionName, "frameBufferEmulation\\fbInfoReadDepthChunk", value, sizeof(value));
 	if (result == M64ERR_SUCCESS) config.frameBufferEmulation.fbInfoReadDepthChunk = atoi(value);
+#if defined(OS_WINDOWS)
+	result = ConfigExternalGetParameter(fileHandle, sectionName, "frameBufferEmulation\\EnableCopyDepthToMainDepthBuffer", value, sizeof(value));
+	if (result == M64ERR_SUCCESS) config.frameBufferEmulation.copyDepthToMainDepthBuffer = atoi(value);
+#endif
 	result = ConfigExternalGetParameter(fileHandle, sectionName, "frameBufferEmulation\\EnableOverscan", value, sizeof(value));
 	if (result == M64ERR_SUCCESS) config.frameBufferEmulation.enableOverscan = atoi(value);
 	result = ConfigExternalGetParameter(fileHandle, sectionName, "frameBufferEmulation\\OverscanPalLeft", value, sizeof(value));
@@ -412,6 +420,9 @@ void Config_LoadConfig()
 	config.frameBufferEmulation.fbInfoDisabled = ConfigGetParamBool(g_configVideoGliden64, "DisableFBInfo");
 	config.frameBufferEmulation.fbInfoReadColorChunk = ConfigGetParamBool(g_configVideoGliden64, "FBInfoReadColorChunk");
 	config.frameBufferEmulation.fbInfoReadDepthChunk = ConfigGetParamBool(g_configVideoGliden64, "FBInfoReadDepthChunk");
+#if defined(OS_WINDOWS)
+	config.frameBufferEmulation.copyDepthToMainDepthBuffer = ConfigGetParamBool(g_configVideoGliden64, "EnableCopyDepthToMainDepthBuffer");
+#endif
 	config.frameBufferEmulation.enableOverscan = ConfigGetParamBool(g_configVideoGliden64, "EnableOverscan");
 	config.frameBufferEmulation.overscanPAL.left = ConfigGetParamInt(g_configVideoGliden64, "OverscanPalLeft");
 	config.frameBufferEmulation.overscanPAL.right = ConfigGetParamInt(g_configVideoGliden64, "OverscanPalRight");
