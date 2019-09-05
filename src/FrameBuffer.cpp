@@ -175,7 +175,7 @@ void FrameBuffer::init(u32 _address, u16 _format, u16 _size, u16 _width, bool _c
 	} else if (config.frameBufferEmulation.nativeResFactor != 0 && config.frameBufferEmulation.enable != 0) {
 		m_scale = static_cast<float>(config.frameBufferEmulation.nativeResFactor);
 	} else {
-		m_scale = dwnd().getScaleX();
+		m_scale = std::max(dwnd().getScaleX(), 1.0f);
 	}
 	m_cfb = _cfb;
 	m_cleared = false;
