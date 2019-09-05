@@ -24,7 +24,7 @@ ColorBufferReaderWithEGLImage::~ColorBufferReaderWithEGLImage()
 
 void ColorBufferReaderWithEGLImage::_initBuffers()
 {
-	AHardwareBuffer_Desc bufferDesc{m_pTexture->realWidth, m_pTexture->realHeight,
+	AHardwareBuffer_Desc bufferDesc{m_pTexture->width, m_pTexture->height,
 		1, AHARDWAREBUFFER_FORMAT_R8G8B8A8_UNORM,
 		m_usage,
 		0,0};
@@ -55,12 +55,12 @@ const u8 * ColorBufferReaderWithEGLImage::_readPixels(const ReadColorBufferParam
 		m_hardwareBuffer.lock(m_usage, &gpuData);
 		m_bufferLocked = true;
 		_heightOffset = static_cast<u32>(_params.y0);
-		_stride = m_pTexture->realWidth;
+		_stride = m_pTexture->width;
 	} else {
 		gpuData = m_pixelData.data();
 		glReadPixels(_params.x0, _params.y0, _params.width, _params.height, format, type, gpuData);
 		_heightOffset = 0;
-		_stride = m_pTexture->realWidth;
+		_stride = m_pTexture->width;
 	}
 
 	return reinterpret_cast<u8*>(gpuData);
