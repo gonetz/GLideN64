@@ -284,7 +284,7 @@ void Debugger::_fillTriInfo(TriInfo & _info)
 
 void Debugger::_addTrianglesByElements(const Context::DrawTriangleParameters & _params)
 {
-	u8 * elements = reinterpret_cast<u8*>(_params.elements);
+	u16 * elements = reinterpret_cast<u16*>(_params.elements);
 	u32 cur_tri = static_cast<u32>(m_triangles.size());
 	for (u32 i = 0; i < _params.elementsCount;) {
 		m_triangles.emplace_back();
