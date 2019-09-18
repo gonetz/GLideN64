@@ -309,12 +309,14 @@ void Debugger::_addTriangles(const Context::DrawTriangleParameters & _params)
 		} else {
 			assert(_params.mode == drawmode::TRIANGLE_STRIP);
 			for (u32 j = 0; j < 3; ++j)
-				info.vertices[j] = Vertex(_params.vertices[i+j]);
+				info.vertices[j] = Vertex(_params.vertices[i + j]);
 			++i;
 		}
 		info.tri_n = cur_tri++;
 		info.type = ttTriangle;
 		_fillTriInfo(info);
+		if (i + 3 >= _params.verticesCount)
+			return;
 	}
 }
 
