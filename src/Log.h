@@ -13,6 +13,8 @@
 #if LOG_LEVEL > 0
 
 #include "Types.h"
+#include <cstdio>
+#include <string>
 
 #ifdef OS_WINDOWS
 #define __FILENAME__ (strrchr(__FILE__, '\\') ? strrchr(__FILE__, '\\') + 1 : __FILE__)
