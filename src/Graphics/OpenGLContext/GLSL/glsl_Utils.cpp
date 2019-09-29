@@ -95,7 +95,7 @@ GLuint Utils::createRectShaderProgram(const char * _strVertex, const char * _str
 	assert(checkShaderCompileStatus(fragment_shader_object));
 
 	if (!checkShaderCompileStatus(fragment_shader_object))
-		logErrorShader(GL_VERTEX_SHADER, _strFragment);
+		logErrorShader(GL_FRAGMENT_SHADER, _strFragment);
 
 	GLuint program = glCreateProgram();
 	locateAttributes(program, true, true);
