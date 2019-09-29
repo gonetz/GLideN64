@@ -31,7 +31,7 @@ typedef struct __GLXFBConfigRec *GLXFBConfig;
 #define GLX_GLXEXT_PROTOTYPES
 #include <GL/glxext.h>
 #define glGetProcAddress glXGetProcAddress
-#define GL_GET_PROC_ADR(proc_type, proc_name) ptr##proc_name = (proc_type) glGetProcAddress((const GLubyte*)#proc_name)
+#define GL_GET_PROC_ADR(proc_type, proc_name) ptr##proc_name = (proc_type) glGetProcAddress((const GLubyte*)"gl"#proc_name)
 
 #elif defined(OS_MAC_OS_X)
 #include <dlfcn.h>
@@ -60,7 +60,7 @@ static void* IOSGLGetProcAddress (const char *name)
 
 #endif
 
-//GL Fucntions
+//GL Functions
 PFNGLBLENDFUNCPROC ptrBlendFunc;
 PFNGLPIXELSTOREIPROC ptrPixelStorei;
 PFNGLCLEARCOLORPROC ptrClearColor;
