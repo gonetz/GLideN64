@@ -824,6 +824,9 @@ namespace glsl {
 
 	graphics::ShaderProgram * SpecialShadersFactory::createTexrectColorAndDepthCopyShader() const
 	{
+		if (m_glinfo.isGLES2)
+			return nullptr;
+
 		return new TexrectColorAndDepthCopyShader(m_glinfo, m_useProgram, m_vertexHeader, m_fragmentHeader, m_fragmentEnd);
 	}
 
