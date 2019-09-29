@@ -1350,7 +1350,9 @@ void FrameBufferList::OverscanBuffer::draw(u32 _fullHeight, bool _PAL)
 	if (config.frameBufferEmulation.copyDepthToMainDepthBuffer != 0) {
 		blitParams.tex[1] = m_pDepthTexture;
 		blitParams.combiner = CombinerInfo::get().getTexrectColorAndDepthCopyProgram();
-	} else {
+	}
+	if (blitParams.combiner == nullptr) {
+		// copyDepthToMainDepthBuffer not set or not supported
 		blitParams.combiner = CombinerInfo::get().getTexrectCopyProgram();
 	}
 	blitParams.readBuffer = m_FBO;
@@ -1518,7 +1520,9 @@ void FrameBufferList::renderBuffer()
 	if (config.frameBufferEmulation.copyDepthToMainDepthBuffer != 0) {
 		blitParams.tex[1] = pBuffer->m_pDepthTexture;
 		blitParams.combiner = CombinerInfo::get().getTexrectColorAndDepthCopyProgram();
-	} else {
+	}
+	if (blitParams.combiner == nullptr) {
+		// copyDepthToMainDepthBuffer not set or not supported
 		blitParams.combiner = CombinerInfo::get().getTexrectCopyProgram();
 	}
 	blitParams.readBuffer = readBuffer;
