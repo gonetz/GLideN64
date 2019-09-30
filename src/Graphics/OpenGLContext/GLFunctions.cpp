@@ -45,7 +45,7 @@ static void* AppleGLGetProcAddress (const char *name)
 	return (image ? dlsym(image, name) : NULL);
 }
 #define glGetProcAddress AppleGLGetProcAddress
-#define GL_GET_PROC_ADR(proc_type, proc_name) ptr##proc_name = (proc_type) glGetProcAddress(#proc_name)
+#define GL_GET_PROC_ADR(proc_type, proc_name) ptr##proc_name = (proc_type) glGetProcAddress("gl"#proc_name)
 
 #elif defined(OS_IOS)
 #include <dlfcn.h>
