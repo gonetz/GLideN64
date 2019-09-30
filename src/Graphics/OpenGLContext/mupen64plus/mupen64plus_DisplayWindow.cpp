@@ -50,7 +50,7 @@ DisplayWindow & DisplayWindow::get()
 
 void DisplayWindowMupen64plus::_setAttributes()
 {
-	LOG(LOG_VERBOSE, "[gles2GlideN64]: _setAttributes");
+	LOG(LOG_VERBOSE, "_setAttributes");
 
 	FunctionWrapper::CoreVideo_GL_SetAttribute(M64P_GL_CONTEXT_PROFILE_MASK, M64P_GL_CONTEXT_PROFILE_CORE);
 	FunctionWrapper::CoreVideo_GL_SetAttribute(M64P_GL_CONTEXT_MAJOR_VERSION, 3);
@@ -77,6 +77,21 @@ bool DisplayWindowMupen64plus::_start()
 {
 	FunctionWrapper::setThreadedMode(config.video.threadedVideo);
 
+#ifdef EGL
+	// Normally this is initialized externally through VidExt, but if VidExt is not implemented,
+	// do this here anyways. Calling eglInitialize has no negative effect according to the spec
+
+	EGLDisplay display;
+	if ((display = eglGetDisplay(EGL_DEFAULT_DISPLAY)) == EGL_NO_DISPLAY) {
+		LOG(LOG_ERROR, "eglGetDisplay() returned error %d", eglGetError());
+		return false;
+	}
+	if (!eglInitialize(display, nullptr, nullptr)) {
+		LOG(LOG_ERROR, "eglInitialize() returned error %d", eglGetError());
+		return false;
+	}
+#endif
+
 	FunctionWrapper::CoreVideo_Init();
 	_setAttributes();
 
@@ -90,11 +105,11 @@ bool DisplayWindowMupen64plus::_start()
 	const m64p_video_flags flags = M64VIDEOFLAG_SUPPORT_RESIZING;
 	if (FunctionWrapper::CoreVideo_SetVideoMode(m_screenWidth, m_screenHeight, 0, m_bFullscreen ? M64VIDEO_FULLSCREEN : M64VIDEO_WINDOWED, flags) != M64ERR_SUCCESS) {
 		//printf("(EE) Error setting videomode %dx%d\n", m_screenWidth, m_screenHeight);
-		LOG(LOG_ERROR, "[gles2GlideN64]: Error setting videomode %dx%d", m_screenWidth, m_screenHeight);
+		LOG(LOG_ERROR, "Error setting videomode %dx%d", m_screenWidth, m_screenHeight);
 		FunctionWrapper::CoreVideo_Quit();
 		return false;
 	}
-	LOG(LOG_VERBOSE, "[gles2GlideN64]: Create setting videomode %dx%d", m_screenWidth, m_screenHeight);
+		LOG(LOG_VERBOSE, "Create setting videomode %dx%d", m_screenWidth, m_screenHeight);
 
 	char caption[128];
 # ifdef _DEBUG

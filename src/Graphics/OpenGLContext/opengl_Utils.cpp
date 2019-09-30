@@ -27,6 +27,10 @@ bool Utils::isExtensionSupported(const opengl::GLInfo & _glinfo, const char *ext
 		return false;
 
 	const GLubyte *extensions = glGetString(GL_EXTENSIONS);
+	if (extensions == nullptr) {
+		LOG(LOG_WARNING, "Could not query GL extensions on this device");
+		return false;
+	}
 
 	const GLubyte *start = extensions;
 	for (;;) {
@@ -52,6 +56,10 @@ bool Utils::isEGLExtensionSupported(const char * extension)
 		return false;
 
 	const char* extensions = eglQueryString(eglGetDisplay(EGL_DEFAULT_DISPLAY), EGL_EXTENSIONS);
+	if (extensions == nullptr) {
+		LOG(LOG_WARNING, "Could not query EGL extensions on this device");
+		return false;
+	}
 
 	const char* start = extensions;
 	for (;;) {
@@ -71,7 +79,6 @@ bool Utils::isEGLExtensionSupported(const char * extension)
 	return false;
 #endif
 }
-
 
 static
 const char* GLErrorString(GLenum errorCode)
