@@ -56,7 +56,7 @@ static void* IOSGLGetProcAddress (const char *name)
 }
 
 #define glGetProcAddress IOSGLGetProcAddress
-#define GL_GET_PROC_ADR(proc_type, proc_name) ptr##proc_name = (proc_type)glGetProcAddress(#proc_name)
+#define GL_GET_PROC_ADR(proc_type, proc_name) ptr##proc_name = (proc_type)glGetProcAddress("gl"#proc_name)
 
 #endif
 
