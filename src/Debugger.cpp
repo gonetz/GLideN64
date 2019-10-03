@@ -315,7 +315,7 @@ void Debugger::_addTriangles(const Context::DrawTriangleParameters & _params)
 		info.tri_n = cur_tri++;
 		info.type = ttTriangle;
 		_fillTriInfo(info);
-		if (i + 3 >= _params.verticesCount)
+		if (i + 3 > _params.verticesCount)
 			return;
 	}
 }
