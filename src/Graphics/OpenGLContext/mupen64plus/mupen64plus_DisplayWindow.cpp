@@ -75,8 +75,6 @@ void DisplayWindowMupen64plus::_setAttributes()
 
 bool DisplayWindowMupen64plus::_start()
 {
-	FunctionWrapper::setThreadedMode(config.video.threadedVideo);
-
 #ifdef EGL
 	// Normally this is initialized externally through VidExt, but if VidExt is not implemented,
 	// do this here anyways. Calling eglInitialize has no negative effect according to the spec
@@ -92,6 +90,7 @@ bool DisplayWindowMupen64plus::_start()
 	}
 #endif
 
+	FunctionWrapper::setThreadedMode(config.video.threadedVideo);
 	FunctionWrapper::CoreVideo_Init();
 	_setAttributes();
 

@@ -7,7 +7,7 @@ class DisplayWindow
 public:
 	virtual ~DisplayWindow() {}
 
-	void start();
+	bool start();
 	void stop();
 	void restart();
 	void swapBuffers();
