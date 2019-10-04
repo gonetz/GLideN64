@@ -8,7 +8,7 @@
 #include "dcheck.h"
 
 extern "C" {
-using PFAHardwareBuffer_allocate = void (*)(const AHardwareBuffer_Desc *desc,
+using PFAHardwareBuffer_allocate = int (*)(const AHardwareBuffer_Desc *desc,
 											AHardwareBuffer **outBuffer) ;
 using PFAHardwareBuffer_acquire = void (*)(AHardwareBuffer *buffer) ;
 using PFAHardwareBuffer_describe = void (*)(const AHardwareBuffer *buffer,
@@ -41,7 +41,7 @@ public:
 	static bool IsSupportAvailable();
 	static AndroidHardwareBufferCompat& GetInstance();
 
-	void Allocate(const AHardwareBuffer_Desc* desc, AHardwareBuffer** outBuffer);
+	int Allocate(const AHardwareBuffer_Desc* desc, AHardwareBuffer** outBuffer);
 	void Acquire(AHardwareBuffer* buffer);
 	void Describe(const AHardwareBuffer* buffer, AHardwareBuffer_Desc* outDesc);
 	int Lock(AHardwareBuffer* buffer,

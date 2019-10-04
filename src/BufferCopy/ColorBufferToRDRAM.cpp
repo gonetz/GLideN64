@@ -81,9 +81,12 @@ void ColorBufferToRDRAM::_initFBTexture(void)
 	m_pTexture->height = VI_GetMaxBufferHeight(m_lastBufferWidth);
 	m_pTexture->textureBytes = m_pTexture->width * m_pTexture->height * fbTexFormat.colorFormatBytes;
 
+    TextureTargetParam target = Context::EglImage ? textureTarget::TEXTURE_EXTERNAL : textureTarget::TEXTURE_2D;
+
 	{
 		Context::InitTextureParams params;
 		params.handle = m_pTexture->name;
+		params.target = target;
 		params.width = m_pTexture->width;
 		params.height = m_pTexture->height;
 		params.internalFormat = fbTexFormat.colorInternalFormat;
@@ -94,7 +97,7 @@ void ColorBufferToRDRAM::_initFBTexture(void)
 	{
 		Context::TexParameters params;
 		params.handle = m_pTexture->name;
-		params.target = textureTarget::TEXTURE_2D;
+		params.target = target;
 		params.textureUnitIndex = textureIndices::Tex[0];
 		params.minFilter = textureParameters::FILTER_LINEAR;
 		params.magFilter = textureParameters::FILTER_LINEAR;
@@ -105,7 +108,7 @@ void ColorBufferToRDRAM::_initFBTexture(void)
 		bufTarget.bufferHandle = ObjectHandle(m_FBO);
 		bufTarget.bufferTarget = bufferTarget::DRAW_FRAMEBUFFER;
 		bufTarget.attachment = bufferAttachment::COLOR_ATTACHMENT0;
-		bufTarget.textureTarget = textureTarget::TEXTURE_2D;
+		bufTarget.textureTarget = target;
 		bufTarget.textureHandle = m_pTexture->name;
 		gfxContext.addFrameBufferRenderTarget(bufTarget);
 	}

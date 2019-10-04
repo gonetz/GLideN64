@@ -58,8 +58,8 @@ namespace opengl {
 		void init2DTexture(const graphics::Context::InitTextureParams & _params) override
 		{
 			if (_params.msaaLevel == 0) {
-				m_bind->bind(_params.textureUnitIndex, graphics::textureTarget::TEXTURE_2D, _params.handle);
-				glTexImage2D(GL_TEXTURE_2D,
+				m_bind->bind(_params.textureUnitIndex, _params.target, _params.handle);
+				glTexImage2D(GLuint(_params.target),
 							 _params.mipMapLevel,
 							 GLuint(_params.internalFormat),
 							 _params.width,
@@ -104,10 +104,10 @@ namespace opengl {
 		void init2DTexture(const graphics::Context::InitTextureParams & _params) override
 		{
 			if (_params.msaaLevel == 0) {
-				m_bind->bind(_params.textureUnitIndex, graphics::textureTarget::TEXTURE_2D, _params.handle);
+				m_bind->bind(_params.textureUnitIndex, _params.target, _params.handle);
 				if (m_handle != _params.handle) {
 					m_handle = _params.handle;
-					glTexStorage2D(GL_TEXTURE_2D,
+					glTexStorage2D(GLuint(_params.target),
 								   _params.mipMapLevels,
 								   GLenum(_params.internalFormat),
 								   _params.width,
@@ -115,7 +115,7 @@ namespace opengl {
 				}
 
 				if (_params.data != nullptr) {
-					glTexSubImage2D(GL_TEXTURE_2D,
+					glTexSubImage2D(GLuint(_params.target),
 						_params.mipMapLevel,
 						0, 0,
 						_params.width,

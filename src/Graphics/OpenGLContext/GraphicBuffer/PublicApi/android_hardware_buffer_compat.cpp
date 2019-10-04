@@ -80,10 +80,10 @@ AndroidHardwareBufferCompat &AndroidHardwareBufferCompat::GetInstance() {
     return compat;
 }
 
-void AndroidHardwareBufferCompat::Allocate(const AHardwareBuffer_Desc *desc,
+int AndroidHardwareBufferCompat::Allocate(const AHardwareBuffer_Desc *desc,
                                            AHardwareBuffer **out_buffer) {
     DCHECK(IsSupportAvailable());
-    allocate_(desc, out_buffer);
+    return allocate_(desc, out_buffer);
 }
 
 void AndroidHardwareBufferCompat::Acquire(AHardwareBuffer *buffer) {

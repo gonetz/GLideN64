@@ -23,7 +23,7 @@ public:
 
     static bool isPublicSupportAvailable();
 
-	void allocate(const AHardwareBuffer_Desc* desc);
+	bool allocate(const AHardwareBuffer_Desc* desc);
 	int lock(uint64_t usage, void** out_virtual_address);
 	void release();
 	void unlock();
