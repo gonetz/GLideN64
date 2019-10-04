@@ -25,7 +25,8 @@ namespace graphics {
 		IntegerTextures,
 		ClipControl,
 		FramebufferFetch,
-		TextureBarrier
+		TextureBarrier,
+		EglImage
 	};
 
 	enum class ClampMode {
@@ -84,6 +85,7 @@ namespace graphics {
 		struct InitTextureParams {
 			ObjectHandle handle;
 			TextureUnitParam textureUnitIndex{0};
+			TextureTargetParam target = textureTarget::TEXTURE_2D;
 			u32 msaaLevel = 0;
 			u32 width = 0;
 			u32 height = 0;
@@ -291,6 +293,7 @@ namespace graphics {
 		static bool ClipControl;
 		static bool FramebufferFetch;
 		static bool TextureBarrier;
+		static bool EglImage;
 
 	private:
 		std::unique_ptr<ContextImpl> m_impl;

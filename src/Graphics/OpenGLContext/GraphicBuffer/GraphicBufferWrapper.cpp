@@ -42,12 +42,12 @@ bool GraphicBufferWrapper::isPublicSupportAvailable() {
 	return apiLevel >= 26;
 }
 
-void GraphicBufferWrapper::allocate(const AHardwareBuffer_Desc *desc) {
+bool GraphicBufferWrapper::allocate(const AHardwareBuffer_Desc *desc) {
 
 	if (m_private) {
-		m_privateGraphicBuffer->reallocate(desc->width, desc->height, desc->format, desc->usage);
+		return m_privateGraphicBuffer->reallocate(desc->width, desc->height, desc->format, desc->usage);
 	} else {
-		AndroidHardwareBufferCompat::GetInstance().Allocate(desc, &m_publicGraphicBuffer);
+		return AndroidHardwareBufferCompat::GetInstance().Allocate(desc, &m_publicGraphicBuffer) == 0;
 	}
 }
 
