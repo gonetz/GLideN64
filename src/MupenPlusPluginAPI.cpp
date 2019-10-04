@@ -12,8 +12,7 @@ EXPORT int CALL RomOpen(void)
 	else
 		RDRAMSize = 0;
 
-	api().RomOpen();
-	return 1;
+	return api().RomOpen();
 }
 
 EXPORT m64p_error CALL PluginGetVersion(
