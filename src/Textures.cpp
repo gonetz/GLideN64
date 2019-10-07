@@ -1401,8 +1401,8 @@ void TextureCache::_updateBackground()
 	pCurrent->shiftScaleS = 1.0f;
 	pCurrent->shiftScaleT = 1.0f;
 
-	pCurrent->offsetS = 0.5f;
-	pCurrent->offsetT = 0.5f;
+	pCurrent->offsetS = 0.0f;
+	pCurrent->offsetT = 0.0f;
 
 	_loadBackground(pCurrent);
 	activateTexture(0, pCurrent);
@@ -1553,8 +1553,8 @@ void TextureCache::update(u32 _t)
 	pCurrent->scaleS = 1.0f / (pCurrent->maskS ? f32(pow2(pCurrent->width)) : f32(pCurrent->width));
 	pCurrent->scaleT = 1.0f / (pCurrent->maskT ? f32(pow2(pCurrent->height)) : f32(pCurrent->height));
 
-	pCurrent->offsetS = 0.5f;
-	pCurrent->offsetT = 0.5f;
+	pCurrent->offsetS = 0.0f;
+	pCurrent->offsetT = 0.0f;
 
 	_load(_t, pCurrent);
 	activateTexture( _t, pCurrent );
