@@ -574,18 +574,6 @@ void _calcTileSizes(u32 _t, TileSizes & _sizes, gDPTile * _pLoadTile)
 	u32 tileWidth = ((pTile->lrs - pTile->uls) & 0x03FF) + 1;
 	u32 tileHeight = ((pTile->lrt - pTile->ult) & 0x03FF) + 1;
 
-	if (tileWidth == 1 && tileHeight == 1 &&
-		gDP.otherMode.cycleType == G_CYC_COPY &&
-		_pLoadTile != nullptr &&
-		_pLoadTile->loadType == LOADTYPE_BLOCK) {
-		const u32 ulx = _SHIFTR(RDP.w1, 14, 10);
-		const u32 uly = _SHIFTR(RDP.w1, 2, 10);
-		const u32 lrx = _SHIFTR(RDP.w0, 14, 10);
-		const u32 lry = _SHIFTR(RDP.w0, 2, 10);
-		tileWidth = lrx - ulx + 1;
-		tileHeight = lry - uly + 1;
-	}
-
 	const u32 tMemMask = gDP.otherMode.textureLUT == G_TT_NONE ? 0x1FF : 0xFF;
 	gDPLoadTileInfo &info = gDP.loadInfo[pTile->tmem & tMemMask];
 	if (pTile->tmem == gDP.loadTile->tmem) {
@@ -601,6 +589,22 @@ void _calcTileSizes(u32 _t, TileSizes & _sizes, gDPTile * _pLoadTile)
 		gDP.loadTile->loadWidth = gDP.loadTile->loadHeight = 0;
 	}
 	_sizes.bytes = info.bytes;
+
+	if (tileWidth == 1 && tileHeight == 1 &&
+		gDP.otherMode.cycleType == G_CYC_COPY &&
+		_pLoadTile != nullptr) {
+		const u32 ulx = _SHIFTR(RDP.w1, 14, 10);
+		const u32 uly = _SHIFTR(RDP.w1, 2, 10);
+		const u32 lrx = _SHIFTR(RDP.w0, 14, 10);
+		const u32 lry = _SHIFTR(RDP.w0, 2, 10);
+		tileWidth = lrx - ulx + 1;
+		tileHeight = lry - uly + 1;
+		_sizes.clampWidth = tileWidth;
+		_sizes.clampHeight = tileHeight;
+		_sizes.width = tileWidth;
+		_sizes.height = tileHeight;
+		return;
+	}
 
 	u32 width = 0, height = 0;
 	if (info.loadType == LOADTYPE_TILE) {
