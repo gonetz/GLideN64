@@ -499,9 +499,15 @@ void gDPLoadTile(u32 tile, u32 uls, u32 ult, u32 lrs, u32 lrt)
 
 	if (gDP.loadTile->masks == 0)
 		gDP.loadTile->loadWidth = max(gDP.loadTile->loadWidth, info.width);
-	if (gDP.loadTile->maskt == 0 && gDP.loadTile->tmem % gDP.loadTile->line == 0) {
-		const u16 theight = info.height + gDP.loadTile->tmem / gDP.loadTile->line;
-		gDP.loadTile->loadHeight = max(gDP.loadTile->loadHeight, theight);
+	if (gDP.loadTile->maskt == 0 &&
+		gDP.loadTile->tmem % gDP.loadTile->line == 0) {
+		u32 idx = 0;
+		while (gDP.tiles[idx].tmem != gDP.loadTile->tmem)
+			++idx;
+		if (idx == gSP.texture.tile) {
+			u16 theight = info.height + gDP.loadTile->tmem / gDP.loadTile->line;
+			gDP.loadTile->loadHeight = max(gDP.loadTile->loadHeight, theight);
+		}
 	}
 
 	u32 address = gDP.textureImage.address + gDP.loadTile->ult * gDP.textureImage.bpl + (gDP.loadTile->uls << gDP.textureImage.size >> 1);
