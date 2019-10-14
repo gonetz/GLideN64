@@ -139,10 +139,12 @@ const char* RingBufferPool::getBufferFromPool(PoolBufferPointer _poolBufferPoint
 
 void RingBufferPool::removeBufferFromPool(PoolBufferPointer _poolBufferPointer)
 {
-	std::unique_lock<std::mutex> lock(m_mutex);
-	m_inUseStartOffset = _poolBufferPointer.m_offset + _poolBufferPointer.m_realSize;
-	m_full = false;
-	m_condition.notify_one();
+	if (_poolBufferPointer.isValid()) {
+		std::unique_lock<std::mutex> lock(m_mutex);
+		m_inUseStartOffset = _poolBufferPointer.m_offset + _poolBufferPointer.m_realSize;
+		m_full = false;
+		m_condition.notify_one();
+	}
 }
 
 }
