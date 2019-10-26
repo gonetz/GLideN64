@@ -855,6 +855,11 @@ bool TextureCache::_loadHiresTexture(u32 _tile, CachedTexture *_pTexture, u64 & 
 
 	gDPLoadTileInfo & info = gDP.loadInfo[_pTexture->tMem];
 
+	// Temporal workaround for crash problem with mip-mapped textures. See #1711 for details.
+	// TODO: make proper fix.
+	if (info.texAddress == 0)
+		return false;
+
 	int bpl;
 	int width, height;
 	u8 * addr = (u8*)(RDRAM + info.texAddress);
