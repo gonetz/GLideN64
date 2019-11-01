@@ -4746,6 +4746,78 @@ private:
 	void* m_image;
 };
 
+class GlDebugMessageCallbackCommand : public OpenGlCommand
+{
+	public:
+	GlDebugMessageCallbackCommand() :
+				OpenGlCommand(true, false, "glDebugMessageCallback")
+	{
+	}
+
+	static std::shared_ptr<OpenGlCommand> get(GLDEBUGPROC callback, const void *userParam)
+	{
+		static int poolId = OpenGlCommandPool::get().getNextAvailablePool();
+		auto ptr = getFromPool<GlDebugMessageCallbackCommand>(poolId);
+		ptr->set(callback, userParam);
+		return ptr;
+	}
+
+	void commandToExecute() override
+	{
+		ptrDebugMessageCallback(m_callback, m_userParam);
+	}
+
+private:
+	void set(GLDEBUGPROC callback, const void *userParam)
+	{
+		m_callback = callback;
+		m_userParam = userParam;
+	}
+
+	GLDEBUGPROC m_callback;
+	const void* m_userParam;
+};
+
+class GlDebugMessageControlCommand : public OpenGlCommand
+{
+public:
+	GlDebugMessageControlCommand() :
+			OpenGlCommand(true, false, "glDebugMessageControl")
+	{
+	}
+
+	static std::shared_ptr<OpenGlCommand> get(GLenum source, GLenum type, GLenum severity, GLsizei count, const GLuint *ids, GLboolean enabled)
+	{
+		static int poolId = OpenGlCommandPool::get().getNextAvailablePool();
+		auto ptr = getFromPool<GlDebugMessageControlCommand>(poolId);
+		ptr->set(source, type, severity, count, ids, enabled);
+		return ptr;
+	}
+
+	void commandToExecute() override
+	{
+		ptrDebugMessageControl(m_source, m_type, m_severity, m_count, m_ids, m_enabled);
+	}
+
+private:
+	void set(GLenum source, GLenum type, GLenum severity, GLsizei count, const GLuint *ids, GLboolean enabled)
+	{
+		m_source = source;
+		m_type = type;
+		m_severity = severity;
+		m_count = count;
+		m_ids = ids;
+		m_enabled = enabled;
+	}
+
+	GLenum m_source;
+	GLenum m_type;
+	GLenum m_severity;
+	GLsizei m_count;
+	const GLuint* m_ids;
+	GLboolean m_enabled;
+};
+
 class ShutdownCommand : public OpenGlCommand
 {
 public:

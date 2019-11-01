@@ -188,6 +188,9 @@ extern PFNGLTEXTUREBARRIERNVPROC ptrTextureBarrierNV;
 extern PFNGLCLEARBUFFERFVPROC ptrClearBufferfv;
 extern PFNGLENABLEIPROC ptrEnablei;
 extern PFNGLDISABLEIPROC ptrDisablei;
+extern PFNGLDEBUGMESSAGECALLBACKPROC ptrDebugMessageCallback;
+extern PFNGLDEBUGMESSAGECONTROLPROC ptrDebugMessageControl;
+
 
 typedef void (APIENTRYP PFNGLEGLIMAGETARGETTEXTURE2DOESPROC) (GLenum target, void* image);
 extern PFNGLEGLIMAGETARGETTEXTURE2DOESPROC ptrEGLImageTargetTexture2DOES;
@@ -327,6 +330,8 @@ void initGLFunctions();
 #define glEnablei(...) opengl::FunctionWrapper::wrEnablei(__VA_ARGS__)
 #define glDisablei(...) opengl::FunctionWrapper::wrDisablei(__VA_ARGS__)
 #define glEGLImageTargetTexture2DOES(...) opengl::FunctionWrapper::wrEGLImageTargetTexture2DOES(__VA_ARGS__)
+#define glDebugMessageCallback(...) opengl::FunctionWrapper::wrDebugMessageCallback(__VA_ARGS__)
+#define glDebugMessageControl(...) opengl::FunctionWrapper::wrDebugMessageControl(__VA_ARGS__)
 
 #define GL_TEXTURE_EXTERNAL_OES 0x8D65
 
