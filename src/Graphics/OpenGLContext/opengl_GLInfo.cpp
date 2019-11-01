@@ -13,6 +13,11 @@
 
 using namespace opengl;
 
+static void on_gl_error(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const char* message, const void *userParam)
+{
+	LOG(LOG_ERROR, "%s", message);
+}
+
 void GLInfo::init() {
 	const char * strDriverVersion = reinterpret_cast<const char *>(glGetString(GL_VERSION));
 	isGLESX = strstr(strDriverVersion, "OpenGL ES") != nullptr;
@@ -158,4 +163,18 @@ void GLInfo::init() {
 			LOG(LOG_WARNING, "Your GPU does not support the extensions needed for N64 Depth Compare.");
 		}
 	}
+
+#ifdef EGL
+	if (isGLESX)
+	{
+		ptrDebugMessageCallback = (PFNGLDEBUGMESSAGECALLBACKPROC) eglGetProcAddress("glDebugMessageCallbackKHR");
+		ptrDebugMessageControl = (PFNGLDEBUGMESSAGECONTROLPROC) eglGetProcAddress("glDebugMessageControlKHR");
+	}
+#endif
+
+#ifdef GL_DEBUG
+	glDebugMessageCallback(on_gl_error, nullptr);
+	glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, NULL, GL_TRUE);
+	glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+#endif
 }

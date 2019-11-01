@@ -1310,6 +1310,24 @@ namespace opengl {
 			ptrEGLImageTargetTexture2DOES(target, image);
 	}
 
+	void FunctionWrapper::wrDebugMessageCallback(GLDEBUGPROC callback, const void *userParam)
+	{
+		if (m_threaded_wrapper)
+			executeCommand(GlDebugMessageCallbackCommand::get(callback, userParam));
+		else
+			ptrDebugMessageCallback(callback, userParam);
+	}
+
+
+	void FunctionWrapper::wrDebugMessageControl(GLenum source, GLenum type, GLenum severity, GLsizei count, const GLuint *ids, GLboolean enabled)
+	{
+		if (m_threaded_wrapper)
+			executeCommand(GlDebugMessageControlCommand::get(source, type, severity, count, ids, enabled));
+		else
+			ptrDebugMessageControl(source, type, severity, count, ids, enabled);
+	}
+
+
 #if defined(OS_ANDROID)
 	EGLClientBuffer FunctionWrapper::ewrGetNativeClientBufferANDROID(const AHardwareBuffer *buffer)
 	{
