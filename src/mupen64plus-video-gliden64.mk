@@ -127,19 +127,18 @@ MY_LOCAL_SRC_FILES :=                                                           
     $(SRCDIR)/uCodes/ZSortBOSS.cpp                                                 \
     $(SRCDIR)/xxHash/xxhash.c                                                      \
 
-MY_LOCAL_CFLAGS :=          \
-    $(COMMON_CFLAGS)        \
-    -g                      \
-    -DTXFILTER_LIB          \
-    -DOS_ANDROID            \
-    -DUSE_SDL               \
-    -DMUPENPLUSAPI          \
-    -DEGL                   \
-    -DEGL_EGLEXT_PROTOTYPES \
-    -fsigned-char           \
-    #-DSDL_NO_COMPAT        \
+MY_COMMON_FLAGS := \
+   -g                      \
+   -DTXFILTER_LIB          \
+   -DOS_ANDROID            \
+   -DMUPENPLUSAPI          \
+   -DEGL                   \
+   -DEGL_EGLEXT_PROTOTYPES \
+   -fsigned-char
 
-MY_LOCAL_CPPFLAGS := $(COMMON_CPPFLAGS) -std=c++11 -g
+MY_LOCAL_CFLAGS := $(COMMON_CFLAGS) $(MY_COMMON_FLAGS)
+
+MY_LOCAL_CPPFLAGS := $(COMMON_CPPFLAGS) $(MY_COMMON_FLAGS) -std=c++17
 
 MY_LOCAL_LDFLAGS := $(COMMON_LDFLAGS) -Wl,-version-script,$(LOCAL_PATH)/$(SRCDIR)/mupenplus/video_api_export.ver
 
@@ -151,8 +150,8 @@ ifeq ($(TARGET_ARCH_ABI), armeabi-v7a)
     MY_LOCAL_SRC_FILES += $(SRCDIR)/Neon/gSPNeon.cpp
     MY_LOCAL_SRC_FILES += $(SRCDIR)/Neon/RSP_LoadMatrixNeon.cpp
     MY_LOCAL_SRC_FILES += $(SRCDIR)/Neon/CRC_OPT_NEON.cpp
-    MY_LOCAL_CFLAGS += -D__NEON_OPT
-    MY_LOCAL_CFLAGS += -D__VEC4_OPT -mfpu=neon
+    MY_LOCAL_CPPFLAGS += -D__NEON_OPT
+    MY_LOCAL_CPPFLAGS += -D__VEC4_OPT -mfpu=neon
 
 else ifeq ($(TARGET_ARCH_ABI), arm64-v8a)
     # Use for ARM8a:
@@ -160,19 +159,19 @@ else ifeq ($(TARGET_ARCH_ABI), arm64-v8a)
     MY_LOCAL_SRC_FILES += $(SRCDIR)/Neon/gSPNeon.cpp
     MY_LOCAL_SRC_FILES += $(SRCDIR)/Neon/RSP_LoadMatrixNeon.cpp
     MY_LOCAL_SRC_FILES += $(SRCDIR)/Neon/CRC_OPT_NEON.cpp
-    MY_LOCAL_CFLAGS += -D__NEON_OPT
-    MY_LOCAL_CFLAGS += -D__VEC4_OPT -mfpu=neon
+    MY_LOCAL_CPPFLAGS += -D__NEON_OPT
+    MY_LOCAL_CPPFLAGS += -D__VEC4_OPT -mfpu=neon
 
 else ifeq ($(TARGET_ARCH_ABI), x86)
-#    MY_LOCAL_CFLAGS += -DX86_ASM
-    MY_LOCAL_CFLAGS += -D__VEC4_OPT
+#    MY_LOCAL_CPPFLAGS += -DX86_ASM
+    MY_LOCAL_CPPFLAGS += -D__VEC4_OPT
     MY_LOCAL_SRC_FILES += $(SRCDIR)/3DMath.cpp
     MY_LOCAL_SRC_FILES += $(SRCDIR)/RSP_LoadMatrix.cpp
     MY_LOCAL_SRC_FILES += $(SRCDIR)/CRC_OPT.cpp
 
 else ifeq ($(TARGET_ARCH_ABI), x86_64)
-#    MY_LOCAL_CFLAGS += -DX86_ASM
-    MY_LOCAL_CFLAGS += -D__VEC4_OPT
+#    MY_LOCAL_CPPFLAGS += -DX86_ASM
+    MY_LOCAL_CPPFLAGS += -D__VEC4_OPT
     MY_LOCAL_SRC_FILES += $(SRCDIR)/3DMath.cpp
     MY_LOCAL_SRC_FILES += $(SRCDIR)/RSP_LoadMatrix.cpp
     MY_LOCAL_SRC_FILES += $(SRCDIR)/CRC_OPT.cpp

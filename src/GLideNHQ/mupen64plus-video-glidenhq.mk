@@ -38,10 +38,11 @@ LOCAL_CFLAGS :=         \
     $(COMMON_CFLAGS)    \
     -DOS_ANDROID        \
     -DTXFILTER_LIB      \
-    -fsigned-char       \
-    #-DDEBUG             \
-    #-DSDL_NO_COMPAT     \
+    -fsigned-char
 
-LOCAL_CPPFLAGS := $(COMMON_CPPFLAGS) -std=c++11 -fexceptions
+LOCAL_CPPFLAGS := $(COMMON_CPPFLAGS) -std=c++17 -fexceptions \
+    -DOS_ANDROID        \
+    -DTXFILTER_LIB      \
+    -fsigned-char
 
 include $(BUILD_STATIC_LIBRARY)
