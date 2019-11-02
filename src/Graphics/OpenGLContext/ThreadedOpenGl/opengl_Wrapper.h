@@ -5,6 +5,7 @@
 #include "opengl_WrappedFunctions.h"
 #include "opengl_Command.h"
 #include <thread>
+#include <map>
 
 #ifdef MUPENPLUSAPI
 #include <mupenplus/GLideN64_mupenplus.h>
@@ -33,6 +34,24 @@ namespace opengl {
 		static std::thread m_commandExecutionThread;
 		static std::mutex m_condvarMutex;
 		static std::condition_variable m_condition;
+
+#if defined(GL_DEBUG) && defined(GL_PROFILE)
+		static void logProfilingData();
+
+		struct FunctionProfilingData
+		{
+			double m_totalTime;
+			int m_callCount;
+
+			FunctionProfilingData()
+			{
+				m_totalTime = 0;
+				m_callCount = 0;
+			}
+		};
+		static std::map<std::string, FunctionProfilingData> m_functionProfiling;
+		static std::chrono::time_point<std::chrono::high_resolution_clock> m_lastProfilingOutput;
+#endif
 
 		static const int MAX_SWAP = 2;
 

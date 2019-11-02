@@ -18,6 +18,9 @@ namespace opengl {
 		void performCommand();
 
 		void waitOnCommand();
+#ifdef GL_DEBUG
+		std::string getFunctionName();
+#endif
 
 		virtual bool isTimeToShutdown();
 

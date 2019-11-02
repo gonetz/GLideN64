@@ -2,6 +2,7 @@
 #include "opengl_WrappedFunctions.h"
 #include "Graphics/OpenGLContext/GLFunctions.h"
 #include <memory>
+#include <set>
 
 namespace opengl {
 
@@ -12,28 +13,50 @@ namespace opengl {
 	std::thread FunctionWrapper::m_commandExecutionThread;
 	std::mutex FunctionWrapper::m_condvarMutex;
 	std::condition_variable FunctionWrapper::m_condition;
+#if defined(GL_DEBUG) && defined(GL_PROFILE)
+	std::map<std::string, FunctionWrapper::FunctionProfilingData> FunctionWrapper::m_functionProfiling;
+	std::chrono::time_point<std::chrono::high_resolution_clock> FunctionWrapper::m_lastProfilingOutput;
+#endif
 	BlockingReaderWriterQueue<std::shared_ptr<OpenGlCommand>> FunctionWrapper::m_commandQueue;
 	BlockingReaderWriterQueue<std::shared_ptr<OpenGlCommand>> FunctionWrapper::m_commandQueueHighPriority;
 
 
 	void FunctionWrapper::executeCommand(std::shared_ptr<OpenGlCommand> _command)
 	{
-#ifndef GL_DEBUG
+#if !defined(GL_DEBUG)
 		m_commandQueue.enqueue(_command);
 		_command->waitOnCommand();
-#else
+#elif !defined(GL_PROFILE)
 		_command->performCommandSingleThreaded();
+#else
+		auto callStartTime = std::chrono::high_resolution_clock::now();
+		_command->performCommandSingleThreaded();
+		std::chrono::duration<double> callDuration = std::chrono::high_resolution_clock::now() - callStartTime;
+
+		++m_functionProfiling[_command->getFunctionName()].m_callCount;
+		m_functionProfiling[_command->getFunctionName()].m_totalTime += callDuration.count();
+
+		logProfilingData();
 #endif
 	}
 
 	void FunctionWrapper::executePriorityCommand(std::shared_ptr<OpenGlCommand> _command)
 	{
-#ifndef GL_DEBUG
+#if !defined(GL_DEBUG)
 		m_commandQueueHighPriority.enqueue(_command);
 		m_commandQueue.enqueue(nullptr);
 		_command->waitOnCommand();
+#elif !defined(GL_PROFILE)
+                _command->performCommandSingleThreaded();
 #else
+		auto callStartTime = std::chrono::high_resolution_clock::now();
 		_command->performCommandSingleThreaded();
+		std::chrono::duration<double> callDuration = std::chrono::high_resolution_clock::now() - callStartTime;
+
+		++m_functionProfiling[_command->getFunctionName()].m_callCount;
+		m_functionProfiling[_command->getFunctionName()].m_totalTime += callDuration.count();
+
+		logProfilingData();
 #endif
 	}
 
@@ -56,11 +79,48 @@ namespace opengl {
 		}
 	}
 
+#if defined(GL_DEBUG) && defined(GL_PROFILE)
+	void FunctionWrapper::logProfilingData()
+	{
+		std::chrono::duration<double> timeSinceLastOutput = std::chrono::high_resolution_clock::now() - m_lastProfilingOutput;
+
+		static const double profilingOutputInterval = 10.0;
+		if (timeSinceLastOutput.count() > profilingOutputInterval) {
+
+			// Declaring the type of Predicate that accepts 2 pairs and return a bool
+			typedef std::function<bool(std::pair<std::string, FunctionProfilingData>, std::pair<std::string, FunctionProfilingData>)> Comparator;
+
+			// Defining a lambda function to compare two pairs. It will compare two pairs using second field
+			Comparator compFunctor =
+					[](std::pair<std::string, FunctionProfilingData> elem1, std::pair<std::string, FunctionProfilingData> elem2)
+					{
+						return elem1.second.m_totalTime > elem2.second.m_totalTime;
+					};
+			std::set<std::pair<std::string, FunctionProfilingData>, Comparator> functionSet(m_functionProfiling.begin(), m_functionProfiling.end(), compFunctor);
+
+			LOG(LOG_ERROR, "Profiling output");
+			for ( auto element : functionSet ) {
+				std::stringstream output;
+				output << element.first << ": call_count=" << element.second.m_callCount
+					   << " duration=" << element.second.m_totalTime
+					   << " average_per_call=" << element.second.m_totalTime/element.second.m_callCount;
+				LOG(LOG_ERROR, output.str().c_str());
+			}
+
+			m_functionProfiling.clear();
+			m_lastProfilingOutput = std::chrono::high_resolution_clock::now();
+		}
+	}
+#endif
+
 	void FunctionWrapper::setThreadedMode(u32 _threaded)
 	{
 #ifdef GL_DEBUG
 		m_threaded_wrapper = true;
 		m_shutdown = false;
+#ifdef GL_PROFILE
+		m_lastProfilingOutput = std::chrono::high_resolution_clock::now();
+#endif
 #else
 		if (_threaded == 1) {
 			m_threaded_wrapper = true;
