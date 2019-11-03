@@ -13,7 +13,14 @@
 
 using namespace opengl;
 
-static void on_gl_error(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const char* message, const void *userParam)
+static
+void APIENTRY on_gl_error(GLenum source,
+						GLenum type,
+						GLuint id,
+						GLenum severity,
+						GLsizei length,
+						const char* message,
+						const void *userParam)
 {
 	LOG(LOG_ERROR, "%s", message);
 }

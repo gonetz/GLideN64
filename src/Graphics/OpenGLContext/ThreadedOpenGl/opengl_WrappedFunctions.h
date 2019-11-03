@@ -4714,36 +4714,48 @@ private:
 	}
 };
 
-class GlEGLImageTargetTexture2DOESCommand : public OpenGlCommand
+class GlCopyTexImage2DCommand : public OpenGlCommand
 {
 public:
-	GlEGLImageTargetTexture2DOESCommand() :
-		OpenGlCommand(false, false, "glEGLImageTargetTexture2DOES")
+	GlCopyTexImage2DCommand() :
+			OpenGlCommand(false, false, "glCopyTexImage2D")
 	{
 	}
 
-	static std::shared_ptr<OpenGlCommand> get(GLenum target, void* image)
+	static std::shared_ptr<OpenGlCommand> get(GLenum target, GLint level, GLenum internalformat, GLint x, GLint y, GLsizei width, GLsizei height, GLint border)
 	{
 		static int poolId = OpenGlCommandPool::get().getNextAvailablePool();
-		auto ptr = getFromPool<GlEGLImageTargetTexture2DOESCommand>(poolId);
-		ptr->set(target, image);
+		auto ptr = getFromPool<GlCopyTexImage2DCommand>(poolId);
+		ptr->set(target, level, internalformat, x, y, width, height, border);
 		return ptr;
 	}
 
 	void commandToExecute() override
 	{
-		ptrEGLImageTargetTexture2DOES(m_target, m_image);
+		ptrCopyTexImage2D(m_target, m_level, m_internalformat, m_x, m_y, m_width, m_height, m_border);
 	}
 
 private:
-	void set(GLenum target, void* image)
+	void set(GLenum target, GLint level, GLenum internalformat, GLint x, GLint y, GLsizei width, GLsizei height, GLint border)
 	{
 		m_target = target;
-		m_image = image;
+		m_level = level;
+		m_internalformat = internalformat;
+		m_x = x;
+		m_y = y;
+		m_width = width;
+		m_height = height;
+		m_border = border;
 	}
 
 	GLenum m_target;
-	void* m_image;
+	GLint m_level;
+	GLenum m_internalformat;
+	GLint m_x;
+	GLint m_y;
+	GLsizei m_width;
+	GLsizei m_height;
+	GLint m_border;
 };
 
 class GlDebugMessageCallbackCommand : public OpenGlCommand
@@ -4816,6 +4828,70 @@ private:
 	GLsizei m_count;
 	const GLuint* m_ids;
 	GLboolean m_enabled;
+};
+
+class GlEGLImageTargetTexture2DOESCommand : public OpenGlCommand
+{
+public:
+	GlEGLImageTargetTexture2DOESCommand() :
+		OpenGlCommand(false, false, "glEGLImageTargetTexture2DOES")
+	{
+	}
+
+	static std::shared_ptr<OpenGlCommand> get(GLenum target, void* image)
+	{
+		static int poolId = OpenGlCommandPool::get().getNextAvailablePool();
+		auto ptr = getFromPool<GlEGLImageTargetTexture2DOESCommand>(poolId);
+		ptr->set(target, image);
+		return ptr;
+	}
+
+	void commandToExecute() override
+	{
+		ptrEGLImageTargetTexture2DOES(m_target, m_image);
+	}
+
+private:
+	void set(GLenum target, void* image)
+	{
+		m_target = target;
+		m_image = image;
+	}
+
+	GLenum m_target;
+	void* m_image;
+};
+
+class GlEGLImageTargetRenderbufferStorageOESCommand : public OpenGlCommand
+{
+public:
+	GlEGLImageTargetRenderbufferStorageOESCommand() :
+			OpenGlCommand(false, false, "glEGLImageTargetRenderbufferStorageOES")
+	{
+	}
+
+	static std::shared_ptr<OpenGlCommand> get(GLenum target, void* image)
+	{
+		static int poolId = OpenGlCommandPool::get().getNextAvailablePool();
+		auto ptr = getFromPool<GlEGLImageTargetRenderbufferStorageOESCommand>(poolId);
+		ptr->set(target, image);
+		return ptr;
+	}
+
+	void commandToExecute() override
+	{
+		ptrEGLImageTargetRenderbufferStorageOES(m_target, m_image);
+	}
+
+private:
+	void set(GLenum target, void* image)
+	{
+		m_target = target;
+		m_image = image;
+	}
+
+	GLenum m_target;
+	void* m_image;
 };
 
 class ShutdownCommand : public OpenGlCommand
