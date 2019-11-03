@@ -171,10 +171,11 @@ namespace opengl {
 		static void wrDrawRangeElementsBaseVertex(GLenum mode, GLuint start, GLuint end, GLsizei count, GLenum type, const u16* indices, GLint basevertex);
 		static void wrFlushMappedBufferRange(GLenum target, GLintptr offset, GLsizeiptr length);
 		static void wrFinish();
-		static void wrEGLImageTargetTexture2DOES(GLenum target, void* image);
+		static void wrCopyTexImage2D(GLenum target, GLint level, GLenum internalformat, GLint x, GLint y, GLsizei width, GLsizei height, GLint border);
 		static void wrDebugMessageCallback(GLDEBUGPROC callback, const void *userParam);
 		static void wrDebugMessageControl(GLenum source, GLenum type, GLenum severity, GLsizei count, const GLuint *ids, GLboolean enabled);
-
+		static void wrEGLImageTargetTexture2DOES(GLenum target, void* image);
+		static void wrEGLImageTargetRenderbufferStorageOES(GLenum target, void* image);
 
 #if defined(OS_ANDROID)
 		static EGLClientBuffer ewrGetNativeClientBufferANDROID(const AHardwareBuffer *buffer);

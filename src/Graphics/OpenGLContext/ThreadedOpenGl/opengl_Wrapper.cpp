@@ -1302,12 +1302,12 @@ namespace opengl {
 			ptrFinish();
 	}
 
-	void FunctionWrapper::wrEGLImageTargetTexture2DOES(GLenum target, void* image)
+	void FunctionWrapper::wrCopyTexImage2D(GLenum target, GLint level, GLenum internalformat, GLint x, GLint y, GLsizei width, GLsizei height, GLint border)
 	{
 		if (m_threaded_wrapper)
-			executeCommand(GlEGLImageTargetTexture2DOESCommand::get(target, image));
+			executeCommand(GlCopyTexImage2DCommand::get(target, level, internalformat, x, y, width, height, border));
 		else
-			ptrEGLImageTargetTexture2DOES(target, image);
+			ptrCopyTexImage2D(target, level, internalformat, x, y, width, height, border);
 	}
 
 	void FunctionWrapper::wrDebugMessageCallback(GLDEBUGPROC callback, const void *userParam)
@@ -1318,7 +1318,6 @@ namespace opengl {
 			ptrDebugMessageCallback(callback, userParam);
 	}
 
-
 	void FunctionWrapper::wrDebugMessageControl(GLenum source, GLenum type, GLenum severity, GLsizei count, const GLuint *ids, GLboolean enabled)
 	{
 		if (m_threaded_wrapper)
@@ -1327,6 +1326,21 @@ namespace opengl {
 			ptrDebugMessageControl(source, type, severity, count, ids, enabled);
 	}
 
+	void FunctionWrapper::wrEGLImageTargetTexture2DOES(GLenum target, void* image)
+	{
+		if (m_threaded_wrapper)
+			executeCommand(GlEGLImageTargetTexture2DOESCommand::get(target, image));
+		else
+			ptrEGLImageTargetTexture2DOES(target, image);
+	}
+
+	void FunctionWrapper::wrEGLImageTargetRenderbufferStorageOES(GLenum target, void* image)
+	{
+		if (m_threaded_wrapper)
+			executeCommand(GlEGLImageTargetRenderbufferStorageOESCommand::get(target, image));
+		else
+			ptrEGLImageTargetRenderbufferStorageOES(target, image);
+	}
 
 #if defined(OS_ANDROID)
 	EGLClientBuffer FunctionWrapper::ewrGetNativeClientBufferANDROID(const AHardwareBuffer *buffer)
