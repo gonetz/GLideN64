@@ -81,12 +81,17 @@ void ColorBufferToRDRAM::_initFBTexture(void)
 	m_pTexture->height = VI_GetMaxBufferHeight(m_lastBufferWidth);
 	m_pTexture->textureBytes = m_pTexture->width * m_pTexture->height * fbTexFormat.colorFormatBytes;
 
-    TextureTargetParam target = Context::EglImage ? textureTarget::TEXTURE_EXTERNAL : textureTarget::TEXTURE_2D;
 
+	m_bufferReader.reset(gfxContext.createColorBufferReader(m_pTexture));
+
+	TextureTargetParam target = Context::EglImage ? textureTarget::TEXTURE_EXTERNAL : textureTarget::TEXTURE_2D;
+
+	// Skip this since texture is initialized in the EGL color buffer reader
+	if (!Context::EglImage)
 	{
 		Context::InitTextureParams params;
 		params.handle = m_pTexture->name;
-		params.target = target;
+		params.target = textureTarget::TEXTURE_2D;
 		params.width = m_pTexture->width;
 		params.height = m_pTexture->height;
 		params.internalFormat = fbTexFormat.colorInternalFormat;
@@ -94,6 +99,7 @@ void ColorBufferToRDRAM::_initFBTexture(void)
 		params.dataType = fbTexFormat.colorType;
 		gfxContext.init2DTexture(params);
 	}
+
 	{
 		Context::TexParameters params;
 		params.handle = m_pTexture->name;
@@ -117,8 +123,6 @@ void ColorBufferToRDRAM::_initFBTexture(void)
 	assert(!gfxContext.isFramebufferError());
 
 	gfxContext.bindFramebuffer(graphics::bufferTarget::DRAW_FRAMEBUFFER, graphics::ObjectHandle::defaultFramebuffer);
-
-	m_bufferReader.reset(gfxContext.createColorBufferReader(m_pTexture));
 }
 
 void ColorBufferToRDRAM::_destroyFBTexure(void)

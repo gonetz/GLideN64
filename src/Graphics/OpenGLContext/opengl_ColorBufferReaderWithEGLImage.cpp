@@ -35,6 +35,10 @@ void ColorBufferReaderWithEGLImage::_initBuffers()
 		EGLint eglImgAttrs[] = { EGL_IMAGE_PRESERVED_KHR, EGL_TRUE, EGL_NONE, EGL_NONE };
 		m_image = eglCreateImageKHR(eglGetDisplay(EGL_DEFAULT_DISPLAY), EGL_NO_CONTEXT,
 			EGL_NATIVE_BUFFER_ANDROID, m_hardwareBuffer.getClientBuffer(), eglImgAttrs);
+
+		m_bindTexture->bind(graphics::Parameter(0), graphics::Parameter(GL_TEXTURE_EXTERNAL_OES), m_pTexture->name);
+		glEGLImageTargetTexture2DOES(GL_TEXTURE_EXTERNAL_OES, m_image);
+		m_bindTexture->bind(graphics::Parameter(0), graphics::Parameter(GL_TEXTURE_EXTERNAL_OES), ObjectHandle());
 	}
 }
 
@@ -48,9 +52,6 @@ const u8 * ColorBufferReaderWithEGLImage::_readPixels(const ReadColorBufferParam
 	void* gpuData = nullptr;
 
 	if (!_params.sync) {
-		m_bindTexture->bind(graphics::Parameter(0), graphics::Parameter(GL_TEXTURE_EXTERNAL_OES), m_pTexture->name);
-		glEGLImageTargetTexture2DOES(GL_TEXTURE_EXTERNAL_OES, m_image);
-		m_bindTexture->bind(graphics::Parameter(0), graphics::Parameter(GL_TEXTURE_EXTERNAL_OES), ObjectHandle());
 		m_hardwareBuffer.lock(AHARDWAREBUFFER_USAGE_CPU_READ_OFTEN, &gpuData);
 		m_bufferLocked = true;
 		_heightOffset = static_cast<u32>(_params.y0);
