@@ -172,11 +172,11 @@
       <PreprocessorDefinitions>ZILMAR_API;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
     <PostBuildEvent>
-      <Command>if NOT "$(N64PluginsDir)" == "" (if not exist "$(N64PluginsDir)" mkdir "$(N64PluginsDir)"
-copy /Y "$(OutDir)$(TargetName).*" "$(N64PluginsDir)" )</Command>
-    </PostBuildEvent>
-    <PostBuildEvent>
       <Message>Copy result to plugins folder</Message>
+      <Command Condition="'$(Platform)'=='Win32'">if NOT "$(N64PluginsDir)" == "" (if not exist "$(N64PluginsDir)" mkdir "$(N64PluginsDir)"
+copy /Y "$(OutDir)$(TargetName).*" "$(N64PluginsDir)")</Command>
+      <Command Condition="'$(Platform)'=='x64'">if NOT "$(N64PluginsDir_x64)" == "" (if not exist "$(N64PluginsDir_x64)" mkdir "$(N64PluginsDir_x64)"
+copy /Y "$(OutDir)$(TargetName).*" "$(N64PluginsDir_x64)")</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug_mupenplus' Or '$(Configuration)'=='Release_mupenplus'">
@@ -193,12 +193,12 @@ copy /Y "$(OutDir)$(TargetName).*" "$(Mupen64PluginsDir_x64)")</Command>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug'">
     <Link>
-      <AdditionalDependencies>bin\Win32\Debug\lib\GLideNUI.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>bin\$(Platform)\Debug\lib\GLideNUI.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Release'">
     <Link>
-      <AdditionalDependencies>bin\Win32\Release\lib\GLideNUI.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>bin\$(Platform)\Release\lib\GLideNUI.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalOptions>/LTCG %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
