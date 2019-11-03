@@ -4820,23 +4820,25 @@ public:
 	{
 	}
 
-	static std::shared_ptr<OpenGlCommand> get()
+	static std::shared_ptr<OpenGlCommand> get(m64p_error& returnValue)
 	{
 		static int poolId = OpenGlCommandPool::get().getNextAvailablePool();
 		auto ptr = getFromPool<CoreVideoInitCommand>(poolId);
-		ptr->set();
+		ptr->set(returnValue);
 		return ptr;
 	}
 
 	void commandToExecute() override
 	{
-		::CoreVideo_Init();
+		*m_returnValue = ::CoreVideo_Init();
 	}
 
 private:
-	void set()
+	void set(m64p_error& returnValue)
 	{
+		m_returnValue = &returnValue;
 	}
+	m64p_error* m_returnValue;
 };
 
 class CoreVideoQuitCommand : public OpenGlCommand

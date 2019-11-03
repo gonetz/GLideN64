@@ -179,7 +179,7 @@ namespace opengl {
 
 #ifdef MUPENPLUSAPI
 		//Vid_ext functions
-		static void CoreVideo_Init();
+		static m64p_error CoreVideo_Init();
 		static void CoreVideo_Quit();
 		static m64p_error CoreVideo_SetVideoMode(int screenWidth, int screenHeight, int bitsPerPixel, m64p_video_mode mode, m64p_video_flags flags);
 		static void CoreVideo_GL_SetAttribute(m64p_GLattr attribute, int value);

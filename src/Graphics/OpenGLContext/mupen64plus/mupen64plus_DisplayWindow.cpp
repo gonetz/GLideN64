@@ -76,7 +76,13 @@ void DisplayWindowMupen64plus::_setAttributes()
 bool DisplayWindowMupen64plus::_start()
 {
 	FunctionWrapper::setThreadedMode(config.video.threadedVideo);
-	FunctionWrapper::CoreVideo_Init();
+	auto returnValue = FunctionWrapper::CoreVideo_Init();
+	if (returnValue != M64ERR_SUCCESS) {
+		LOG(LOG_ERROR, "Error in CoreVideo_Init. Error code: %d", returnValue);
+		FunctionWrapper::CoreVideo_Quit();
+		return false;
+	}
+
 	_setAttributes();
 
 	m_bFullscreen = config.video.fullscreen > 0;
@@ -87,9 +93,10 @@ bool DisplayWindowMupen64plus::_start()
 
 	printf("(II) Setting video mode %dx%d...\n", m_screenWidth, m_screenHeight);
 	const m64p_video_flags flags = M64VIDEOFLAG_SUPPORT_RESIZING;
-	if (FunctionWrapper::CoreVideo_SetVideoMode(m_screenWidth, m_screenHeight, 0, m_bFullscreen ? M64VIDEO_FULLSCREEN : M64VIDEO_WINDOWED, flags) != M64ERR_SUCCESS) {
+	returnValue = FunctionWrapper::CoreVideo_SetVideoMode(m_screenWidth, m_screenHeight, 0, m_bFullscreen ? M64VIDEO_FULLSCREEN : M64VIDEO_WINDOWED, flags);
+	if (returnValue != M64ERR_SUCCESS) {
 		//printf("(EE) Error setting videomode %dx%d\n", m_screenWidth, m_screenHeight);
-		LOG(LOG_ERROR, "Error setting videomode %dx%d", m_screenWidth, m_screenHeight);
+		LOG(LOG_ERROR, "Error setting videomode %dx%d. Error code: %d", m_screenWidth, m_screenHeight, returnValue);
 		FunctionWrapper::CoreVideo_Quit();
 		return false;
 	}

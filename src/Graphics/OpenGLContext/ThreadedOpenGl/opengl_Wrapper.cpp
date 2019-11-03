@@ -1327,12 +1327,14 @@ namespace opengl {
 
 #ifdef MUPENPLUSAPI
 
-	void FunctionWrapper::CoreVideo_Init()
+	m64p_error FunctionWrapper::CoreVideo_Init()
 	{
+		m64p_error returnValue;
 		if (m_threaded_wrapper)
-			executeCommand(CoreVideoInitCommand::get());
+			executeCommand(CoreVideoInitCommand::get(returnValue));
 		else
-			CoreVideoInitCommand::get()->performCommandSingleThreaded();
+			CoreVideoInitCommand::get(returnValue)->performCommandSingleThreaded();
+		return returnValue;
 	}
 
 	void FunctionWrapper::CoreVideo_Quit()
