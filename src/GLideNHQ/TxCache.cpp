@@ -64,7 +64,7 @@ public:
 class TxMemoryCache : public TxCacheImpl
 {
 public:
-	TxMemoryCache(uint32 & _options, uint64 cacheLimit, dispInfoFuncExt callback);
+	TxMemoryCache(uint32 _options, uint64 cacheLimit, dispInfoFuncExt callback);
 	~TxMemoryCache();
 
 	bool add(Checksum checksum, GHQTexInfo *info, int dataSize = 0) override;
@@ -103,7 +103,7 @@ private:
 	uint32 _gzdestLen = 0;
 };
 
-TxMemoryCache::TxMemoryCache(uint32 & options,
+TxMemoryCache::TxMemoryCache(uint32 options,
 	uint64 cacheLimit,
 	dispInfoFuncExt callback)
 	: _options(options)
@@ -481,7 +481,7 @@ void TxMemoryCache::clear()
 class TxFileStorage : public TxCacheImpl
 {
 public:
-	TxFileStorage(uint32 & _options, const wchar_t *cachePath, dispInfoFuncExt callback);
+	TxFileStorage(uint32 _options, const wchar_t *cachePath, dispInfoFuncExt callback);
 	~TxFileStorage() = default;
 
 	bool add(Checksum checksum, GHQTexInfo *info, int dataSize = 0) override;
@@ -531,7 +531,7 @@ private:
 const int TxFileStorage::_fakeConfig = -1;
 const int64 TxFileStorage::_initialPos = sizeof(int64) + sizeof(int);
 
-TxFileStorage::TxFileStorage(uint32 & options,
+TxFileStorage::TxFileStorage(uint32 options,
 	const wchar_t *cachePath,
 	dispInfoFuncExt callback)
 	: _options(options)
@@ -541,19 +541,16 @@ TxFileStorage::TxFileStorage(uint32 & options,
 	if (cachePath)
 		_cachePath.assign(cachePath);
 
-	/* zlib memory buffers to (de)compress hires textures */
-	if (_options & (GZ_TEXCACHE | GZ_HIRESTEXCACHE)) {
-		_gzdest0 = TxMemBuf::getInstance()->get(0);
-		_gzdest1 = TxMemBuf::getInstance()->get(1);
-		_gzdestLen = (TxMemBuf::getInstance()->size_of(0) < TxMemBuf::getInstance()->size_of(1)) ?
-			TxMemBuf::getInstance()->size_of(0) : TxMemBuf::getInstance()->size_of(1);
+	_gzdest0 = TxMemBuf::getInstance()->get(0);
+	_gzdest1 = TxMemBuf::getInstance()->get(1);
+	_gzdestLen = (TxMemBuf::getInstance()->size_of(0) < TxMemBuf::getInstance()->size_of(1)) ?
+		TxMemBuf::getInstance()->size_of(0) : TxMemBuf::getInstance()->size_of(1);
 
-		if (!_gzdest0 || !_gzdest1 || !_gzdestLen) {
-			_options &= ~(GZ_TEXCACHE | GZ_HIRESTEXCACHE);
-			_gzdest0 = nullptr;
-			_gzdest1 = nullptr;
-			_gzdestLen = 0;
-		}
+	if (!_gzdest0 || !_gzdest1 || !_gzdestLen) {
+		_options &= ~(GZ_TEXCACHE | GZ_HIRESTEXCACHE);
+		_gzdest0 = nullptr;
+		_gzdest1 = nullptr;
+		_gzdestLen = 0;
 	}
 }
 
@@ -652,6 +649,9 @@ bool TxFileStorage::readData(GHQTexInfo & info)
 	uint32 dataSize = 0U;
 	FREAD(dataSize);
 	if (dataSize == 0)
+		return false;
+
+	if (_gzdest0 == nullptr)
 		return false;
 
 	_infile.read((char*)_gzdest0, dataSize);
