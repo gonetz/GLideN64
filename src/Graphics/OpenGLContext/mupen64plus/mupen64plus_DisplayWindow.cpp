@@ -91,16 +91,14 @@ bool DisplayWindowMupen64plus::_start()
 	_getDisplaySize();
 	_setBufferSize();
 
-	printf("(II) Setting video mode %dx%d...\n", m_screenWidth, m_screenHeight);
+	LOG(LOG_VERBOSE, "Setting video mode %dx%d", m_screenWidth, m_screenHeight);
 	const m64p_video_flags flags = M64VIDEOFLAG_SUPPORT_RESIZING;
 	returnValue = FunctionWrapper::CoreVideo_SetVideoMode(m_screenWidth, m_screenHeight, 0, m_bFullscreen ? M64VIDEO_FULLSCREEN : M64VIDEO_WINDOWED, flags);
 	if (returnValue != M64ERR_SUCCESS) {
-		//printf("(EE) Error setting videomode %dx%d\n", m_screenWidth, m_screenHeight);
 		LOG(LOG_ERROR, "Error setting videomode %dx%d. Error code: %d", m_screenWidth, m_screenHeight, returnValue);
 		FunctionWrapper::CoreVideo_Quit();
 		return false;
 	}
-		LOG(LOG_VERBOSE, "Create setting videomode %dx%d", m_screenWidth, m_screenHeight);
 
 	char caption[128];
 # ifdef _DEBUG
@@ -155,14 +153,14 @@ bool DisplayWindowMupen64plus::_resizeWindow()
 	switch (CoreVideo_ResizeWindow(m_screenWidth, m_screenHeight)) 
 	{
 		case M64ERR_INVALID_STATE: 
-			printf("(EE) Error setting videomode %dx%d in fullscreen mode\n", m_screenWidth, m_screenHeight);
+			LOG(LOG_ERROR, "Error setting videomode %dx%d in fullscreen mode", m_screenWidth, m_screenHeight);
 			m_width = m_screenWidth = config.video.windowedWidth;
 			m_height = m_screenHeight = config.video.windowedHeight;
 			break;
 		case M64ERR_SUCCESS:
 			break;
 		default:
-			printf("(EE) Error setting videomode %dx%d\n", m_screenWidth, m_screenHeight);
+			LOG(LOG_ERROR, "Error setting videomode %dx%d", m_screenWidth, m_screenHeight);
 			m_width = m_screenWidth = config.video.windowedWidth;
 			m_height = m_screenHeight = config.video.windowedHeight;
 			FunctionWrapper::CoreVideo_Quit();
@@ -186,7 +184,7 @@ void DisplayWindowMupen64plus::_getDisplaySize()
 		u32 fb_width;
 		u32 fb_height;
 		if (graphics_get_display_size(0 /* LCD */, &fb_width, &fb_height) < 0)
-			printf("ERROR: Failed to get display size\n");
+			LOG(LOG_ERROR, "Failed to get display size");
 		else {
 			m_screenWidth = fb_width;
 			m_screenHeight = fb_height;
