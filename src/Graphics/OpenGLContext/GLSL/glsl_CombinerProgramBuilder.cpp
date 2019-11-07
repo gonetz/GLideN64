@@ -603,7 +603,7 @@ public:
 	ShaderClamp()
 	{
 		m_part =
-			"  lowp vec4 wrappedColor = cmbRes + 2.0 * step(cmbRes, vec4(-0.51)) - 2.0*step(vec4(1.51), cmbRes); \n"
+			"  lowp vec4 wrappedColor = WRAP(cmbRes, -0.51, 1.51); \n"
 			"  lowp vec4 clampedColor = clamp(wrappedColor, 0.0, 1.0); \n"
 			;
 	}
@@ -622,7 +622,7 @@ public:
 	ShaderSignExtendColorC()
 	{
 		m_part =
-			"  color1 = color1 - 2.0*(vec3(1.0) - step(color1, vec3(1.0)));	\n"
+			" color1 = WRAP(color1, -1.00, 1.01); \n"
 			;
 	}
 };
@@ -633,7 +633,7 @@ public:
 	ShaderSignExtendAlphaC()
 	{
 		m_part =
-			"  alpha1 = alpha1 - 2.0*(1.0 - step(alpha1, 1.0));					\n"
+			" alpha1 = WRAP(alpha1, -1.00, 1.01); \n"
 			;
 	}
 };
@@ -654,7 +654,7 @@ public:
 	ShaderSignExtendColorABD()
 	{
 		m_part =
-			"  color1 = color1 + 2.0*step(color1, vec3(-0.51)) - 2.0*step(vec3(1.51), color1); \n"
+			" color1 = WRAP(color1, -0.50, 1.51); \n"
 			;
 	}
 };
@@ -665,7 +665,7 @@ public:
 	ShaderSignExtendAlphaABD()
 	{
 		m_part =
-			"  alpha1 = alpha1 + 2.0*step(alpha1, -0.51) - 2.0*step(1.51, alpha1); \n"
+			"  alpha1 = WRAP(alpha1, -0.50,1.51); \n"
 			;
 	}
 };
@@ -1262,6 +1262,10 @@ public:
 			"  lowp float alpha1;				\n"
 			"  lowp vec3 color1, input_color;	\n"
 		;
+		m_part += "#define WRAP(x, low, high) mod((x)-(low), (high)-(low)) + (low) \n"; // Return wrapped value of x in interval [low, high)
+		// m_part += "#define WRAP(x, low, high) (x) - ((high)-(low)) * floor(((x)-(low))/((high)-(low)))  \n"; // Perhaps more compatible?
+		// m_part += "#define WRAP(x, low, high) (x) - ((high)-(low)) * (ceil(((x)-(low))/((high)-(low))) - 1.0) \n"; // Return wrapped value of x in interval (low,high]
+
 	}
 };
 
@@ -1284,6 +1288,9 @@ public:
 			"  lowp float alpha1, alpha2;				\n"
 			"  lowp vec3 color1, color2, input_color;	\n"
 		;
+		m_part += "#define WRAP(x, low, high) mod((x)-(low), (high)-(low)) + (low) \n"; // Return wrapped value of x in interval [low, high)
+		// m_part += "#define WRAP(x, low, high) (x) - ((high)-(low)) * floor(((x)-(low))/((high)-(low)))  \n"; // Perhaps more compatible?
+		// m_part += "#define WRAP(x, low, high) (x) - ((high)-(low)) * (ceil(((x)-(low))/((high)-(low))) - 1.0) \n"; // Return wrapped value of x in interval (low,high]
 	}
 };
 
