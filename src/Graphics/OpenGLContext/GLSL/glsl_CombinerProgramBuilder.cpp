@@ -508,38 +508,29 @@ public:
 	{
 #if 1
 			m_part =
-				"  muxPM[0] = clampedColor;													\n"
-				"  lowp vec4 vprobe = vec4(0.0, 1.0, 2.0, 3.0);								\n"
-				"  if (uForceBlendCycle1 != 0) {											\n"
-				"    muxA[0] = clampedColor.a;												\n"
-				"    lowp float muxa = dot(muxA, vec4(equal(vec4(uBlendMux1[1]), vprobe)));	\n"
-				"    muxB[0] = 1.0 - muxa;													\n"
-				"    lowp vec4 muxpm0 = muxPM * vec4(equal(vec4(uBlendMux1[0]), vprobe));	\n"
-				"    lowp vec4 muxpm2 = muxPM * vec4(equal(vec4(uBlendMux1[2]), vprobe));	\n"
-				"    lowp float muxb = dot(muxB, vec4(equal(vec4(uBlendMux1[3]), vprobe)));	\n"
-				"    lowp vec4 blend1 = (muxpm0 * muxa) + (muxpm2 * muxb);					\n"
-				"    clampedColor.rgb = clamp(blend1.rgb, 0.0, 1.0);						\n"
-				"  } else {																	\n"
-// Workaround for Intel drivers for Mac, issue #1601
-#if defined(OS_MAC_OS_X)
-				"      clampedColor.rgb = muxPM[uBlendMux1[0]].rgb;							\n"
-#else
-				"      lowp vec4 muxpm0 = muxPM * vec4(equal(vec4(uBlendMux1[0]), vprobe));	\n"
-				"      clampedColor.rgb = muxpm0.rgb;										\n"
-#endif
-				"  }																		\n"
+				"  #define STVEC(pos) step(float(pos) - 0.5, vec4(0.0,1.0,2.0,3.0)) - step(float(pos) + 0.5, vec4(0.0,1.0,2.0,3.0)) \n" // Return the vector of the standard basis of R^4 with a 1 at position <pos> and 0 otherwise.
+				"  #define MUXA(pos) dot(muxA, STVEC(pos))				\n"
+				"  #define MUXB(pos) dot(muxB, STVEC(pos))				\n"
+				"  #define MUXPM(pos) muxPM*(STVEC(pos))				\n"
+				"  muxPM[0] = clampedColor;								\n"
+				"  if (uForceBlendCycle1 != 0) {						\n"
+				"    muxA[0] = clampedColor.a;							\n"
+				"    muxB[0] = 1.0 - MUXA(uBlendMux1[1]);				\n"
+				"    lowp vec4 blend1 = MUXPM(uBlendMux1[0]) * MUXA(uBlendMux1[1]) + MUXPM(uBlendMux1[2]) * MUXB(uBlendMux1[3]);	\n"
+				"    clampedColor.rgb = clamp(blend1.rgb, 0.0, 1.0);	\n"
+				"  } else clampedColor.rgb = (MUXPM(uBlendMux1[0])).rgb;	\n"
 				;
 #else
-		// Keep old code for reference
-		m_part =
-			"  muxPM[0] = clampedColor;								\n"
-			"  if (uForceBlendCycle1 != 0) {						\n"
-			"    muxA[0] = clampedColor.a;							\n"
-			"    muxB[0] = 1.0 - muxA[uBlendMux1[1]];				\n"
-			"    lowp vec4 blend1 = (muxPM[uBlendMux1[0]] * muxA[uBlendMux1[1]]) + (muxPM[uBlendMux1[2]] * muxB[uBlendMux1[3]]);	\n"
-			"    clampedColor.rgb = clamp(blend1.rgb, 0.0, 1.0);	\n"
-			"  } else clampedColor.rgb = muxPM[uBlendMux1[0]].rgb;	\n"
-			;
+			// Keep old code for reference
+			m_part =
+				"  muxPM[0] = clampedColor;								\n"
+				"  if (uForceBlendCycle1 != 0) {						\n"
+				"    muxA[0] = clampedColor.a;							\n"
+				"    muxB[0] = 1.0 - muxA[uBlendMux1[1]];				\n"
+				"    lowp vec4 blend1 = (muxPM[uBlendMux1[0]] * muxA[uBlendMux1[1]]) + (muxPM[uBlendMux1[2]] * muxB[uBlendMux1[3]]);	\n"
+				"    clampedColor.rgb = clamp(blend1.rgb, 0.0, 1.0);	\n"
+				"  } else clampedColor.rgb = muxPM[uBlendMux1[0]].rgb;	\n"
+				;
 #endif
 	}
 };
@@ -550,28 +541,16 @@ public:
 	ShaderBlender2()
 	{
 #if 1
-			m_part =
-				"  muxPM[0] = clampedColor;													\n"
-				"  muxPM[1] = vec4(0.0);													\n"
-				"  if (uForceBlendCycle2 != 0) {											\n"
-				"    muxA[0] = clampedColor.a;												\n"
-				"    lowp float muxa = dot(muxA, vec4(equal(vec4(uBlendMux2[1]), vprobe)));	\n"
-				"    muxB[0] = 1.0 - muxa;													\n"
-				"    lowp vec4 muxpm0 = muxPM*vec4(equal(vec4(uBlendMux2[0]), vprobe));		\n"
-				"    lowp vec4 muxpm2 = muxPM*vec4(equal(vec4(uBlendMux2[2]), vprobe));		\n"
-				"    lowp float muxb = dot(muxB,vec4(equal(vec4(uBlendMux2[3]), vprobe)));	\n"
-				"    lowp vec4 blend2 = muxpm0 * muxa + muxpm2 * muxb;						\n"
-				"    clampedColor.rgb = clamp(blend2.rgb, 0.0, 1.0);						\n"
-				"  } else {																	\n"
-// Workaround for Intel drivers for Mac, issue #1601
-#if defined(OS_MAC_OS_X)
-				"      clampedColor.rgb = muxPM[uBlendMux2[0]].rgb;							\n"
-#else
-				"      lowp vec4 muxpm0 = muxPM * vec4(equal(vec4(uBlendMux2[0]), vprobe));	\n"
-				"      clampedColor.rgb = muxpm0.rgb;										\n"
-#endif
-				"  }																		\n"
-				;
+		m_part =
+			"  muxPM[0] = clampedColor;								\n"
+			"  muxPM[1] = vec4(0.0);								\n"
+			"  if (uForceBlendCycle2 != 0) {						\n"
+			"    muxA[0] = clampedColor.a;							\n"
+			"    muxB[0] = 1.0 - MUXA(uBlendMux2[1]);				\n"
+			"    lowp vec4 blend2 = MUXPM(uBlendMux2[0]) * MUXA(uBlendMux2[1]) + MUXPM(uBlendMux2[2]) * MUXB(uBlendMux2[3]);	\n"
+			"    clampedColor.rgb = clamp(blend2.rgb, 0.0, 1.0);	\n"
+			"  } else clampedColor.rgb = (MUXPM(uBlendMux2[0])).rgb;	\n"
+			;
 #else
 		// Keep old code for reference
 		m_part =
@@ -583,7 +562,7 @@ public:
 			"    lowp vec4 blend2 = muxPM[uBlendMux2[0]] * muxA[uBlendMux2[1]] + muxPM[uBlendMux2[2]] * muxB[uBlendMux2[3]];	\n"
 			"    clampedColor.rgb = clamp(blend2.rgb, 0.0, 1.0);	\n"
 			"  } else clampedColor.rgb = muxPM[uBlendMux2[0]].rgb;	\n"
-			;
+		;
 #endif
 	}
 };
