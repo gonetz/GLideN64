@@ -1251,22 +1251,22 @@ public:
 		m_part =
 			"void main() \n"
 			"{			 \n"
-		;
+			;
 		if (!_glinfo.isGLES2) {
 			m_part +=
 				"  highp float fragDepth = writeDepth();	\n"
-			;
+				;
 		}
 		m_part +=
 			"  lowp vec4 vec_color;				\n"
 			"  lowp float alpha1;				\n"
 			"  lowp vec3 color1, input_color;	\n"
-		;
+			;
 		m_part += "#define WRAP(x, low, high) mod((x)-(low), (high)-(low)) + (low) \n"; // Return wrapped value of x in interval [low, high)
 		// m_part += "#define WRAP(x, low, high) (x) - ((high)-(low)) * floor(((x)-(low))/((high)-(low)))  \n"; // Perhaps more compatible?
-		// m_part += "#define WRAP(x, low, high) (x) - ((high)-(low)) * (ceil(((x)-(low))/((high)-(low))) - 1.0) \n"; // Return wrapped value of x in interval (low,high]
-
+		// m_part += "#define WRAP(x, low, high) (x) + ((high)-(low)) * (1.0-step(low,x)) - ((high)-(low)) * step(high,x) \n"; // Step based version. Only wraps correctly if input is in the range [low-(high-low), high + (high-low)). Similar to old code.
 	}
+
 };
 
 class ShaderFragmentMain2Cycle : public ShaderPart
@@ -1290,7 +1290,7 @@ public:
 		;
 		m_part += "#define WRAP(x, low, high) mod((x)-(low), (high)-(low)) + (low) \n"; // Return wrapped value of x in interval [low, high)
 		// m_part += "#define WRAP(x, low, high) (x) - ((high)-(low)) * floor(((x)-(low))/((high)-(low)))  \n"; // Perhaps more compatible?
-		// m_part += "#define WRAP(x, low, high) (x) - ((high)-(low)) * (ceil(((x)-(low))/((high)-(low))) - 1.0) \n"; // Return wrapped value of x in interval (low,high]
+		// m_part += "#define WRAP(x, low, high) (x) + (2.0) * (1.0-step(low,x)) - (2.0) * step(high,x) \n"; // Step based version. Only wraps correctly if input is in the range [low-(high-low), high + (high-low)). Similar to old code.
 	}
 };
 
