@@ -622,7 +622,7 @@ public:
 	ShaderSignExtendColorC()
 	{
 		m_part =
-			" color1 = WRAP(color1, -1.00, 1.01); \n"
+			" color1 = WRAP(color1, -1.01, 1.01); \n"
 			;
 	}
 };
@@ -633,7 +633,7 @@ public:
 	ShaderSignExtendAlphaC()
 	{
 		m_part =
-			" alpha1 = WRAP(alpha1, -1.00, 1.01); \n"
+			" alpha1 = WRAP(alpha1, -1.01, 1.01); \n"
 			;
 	}
 };
@@ -654,7 +654,7 @@ public:
 	ShaderSignExtendColorABD()
 	{
 		m_part =
-			" color1 = WRAP(color1, -0.50, 1.51); \n"
+			" color1 = WRAP(color1, -0.51, 1.51); \n"
 			;
 	}
 };
@@ -665,7 +665,7 @@ public:
 	ShaderSignExtendAlphaABD()
 	{
 		m_part =
-			"  alpha1 = WRAP(alpha1, -0.50,1.51); \n"
+			"  alpha1 = WRAP(alpha1, -0.51,1.51); \n"
 			;
 	}
 };
