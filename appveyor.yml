@@ -28,13 +28,13 @@ before_build:
 build_script:
   - cd %APPVEYOR_BUILD_FOLDER%
   - set QTDIR=%QTDIR_x64%\%QT_BUILD_x64%
-  - msbuild projects/msvc/GLideNUI.vcxproj /p:Configuration=Release;Platform=x64
-  - msbuild projects/msvc/GLideN64.sln /p:Configuration=Release;Platform=x64
+  - msbuild projects/msvc/GLideNUI.vcxproj /m /p:Configuration=Release;Platform=x64
+  - msbuild projects/msvc/GLideN64.sln /m /p:Configuration=Release;Platform=x64
   - set QTDIR=%QTDIR_x86%\%QT_BUILD_x86%
-  - msbuild projects/msvc/GLideNUI.vcxproj /p:Configuration=Release;Platform=Win32
-  - msbuild projects/msvc/GLideN64.sln /p:Configuration=Release;Platform=Win32
-  - msbuild projects/msvc/GLideN64.sln /p:Configuration=Release_mupenplus;Platform=x64
-  - msbuild projects/msvc/GLideN64.sln /p:Configuration=Release_mupenplus;Platform=Win32
+  - msbuild projects/msvc/GLideNUI.vcxproj /m /p:Configuration=Release;Platform=Win32
+  - msbuild projects/msvc/GLideN64.sln /m /p:Configuration=Release;Platform=Win32
+  - msbuild projects/msvc/GLideN64.sln /m /p:Configuration=Release_mupenplus;Platform=x64
+  - msbuild projects/msvc/GLideN64.sln /m /p:Configuration=Release_mupenplus;Platform=Win32
 
 after_build:
   - copy ini\GLideN64.custom.ini %N64PluginsDir_x64%
