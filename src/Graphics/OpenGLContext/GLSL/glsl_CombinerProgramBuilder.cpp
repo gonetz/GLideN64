@@ -2227,7 +2227,7 @@ public:
 			"  texCoord = clamped * texCoord + notClamped * (wrapped*mod(texCoord, vWrap) + notWrapped*texCoord);			\n"
 			"  highp vec2 intPart = floor(texCoord);										\n"
 			"  highp vec2 fractPart = fract(texCoord);										\n"
-			"  lowp vec2 needMirror = step(vec2(0.5), mod(intPart, vec2(2.0))) * vMirror;	\n"
+			"  lowp vec2 needMirror = step(vec2(0.5), mod(intPart, vWrap)) * vMirror;	\n"
 			"  texCoord = clamped * texCoord + notClamped * fractPart;						\n"
 			"  texCoord = (one - vMirror) * texCoord + vMirror * fractPart;					\n"
 			"  texCoord = (one - texCoord) * needMirror + texCoord * (one - needMirror);	\n"
