@@ -377,7 +377,7 @@ bool CheckForFrameBufferTexture(u32 _address, u32 _width, u32 _bytes)
 
 		const u32 texEndAddress = _address + _bytes - 1;
 		if (_address > pBuffer->m_startAddress &&
-			pBuffer->m_width != _width &&
+			std::abs((s32)pBuffer->m_width - (s32)_width) > 1 &&
 			texEndAddress > (pBuffer->m_endAddress + (pBuffer->m_width << pBuffer->m_size >> 1))) {
 			//fbList.removeBuffer(pBuffer->m_startAddress);
 			bRes = false;
