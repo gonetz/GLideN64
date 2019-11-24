@@ -303,8 +303,8 @@ public:
 			"    vec2 texCoordOut = texCoord*uCacheShiftScale[idx];			\n"
 			"    texCoordOut -= uTexOffset[idx];							\n"
 			"    texCoordOut += uCacheOffset[idx];							\n"
-			"    if (uTextureFilterMode != 0 && uCacheFrameBuffer[idx] == 0)\n"
-			"      texCoordOut += vec2(0.5);								\n"
+			"    if (uTextureFilterMode != 0 && uCacheFrameBuffer[idx] != 0) \n"
+			"      texCoordOut -= vec2(0.5);								\n"
 			"    return texCoordOut* uCacheScale[idx];						\n"
 			"}																\n"
 			"																\n"
@@ -1110,7 +1110,6 @@ public:
 	void write(std::stringstream & shader) const override
 	{
 		std::string shaderPart;
-
 		if (!m_glinfo.isGLES2) {
 
 			if (g_textureConvert.useTextureFiltering()) {
@@ -1121,39 +1120,36 @@ public:
 					// Original author: ArthurCarvalho
 					// GLSL implementation: twinaphex, mupen64plus-libretro project.
 					shaderPart +=
-						"#define TEX_OFFSET(off, tex, texCoord) texture(tex, texCoord - (off)/texSize)			\n"
+						"#define TEX_OFFSET(off, tex, texCoord) texture(tex, (texCoord) + ((off)+0.5)/texSize) \n"
 						"#define TEX_FILTER(name, tex, texCoord)												\\\n"
 						"  {																					\\\n"
 						"  mediump vec2 texSize = vec2(textureSize(tex,0));										\\\n"
-						"  mediump vec2 offset = fract(texCoord*texSize - vec2(0.5));							\\\n"
+						"  mediump vec2 offset = fract(texCoord*texSize);										\\\n"
 						"  offset -= step(1.0, offset.x + offset.y);											\\\n"
-						"  lowp vec4 c0 = TEX_OFFSET(offset, tex, texCoord);									\\\n"
-						"  lowp vec4 c1 = TEX_OFFSET(vec2(offset.x - sign(offset.x), offset.y), tex, texCoord);	\\\n"
-						"  lowp vec4 c2 = TEX_OFFSET(vec2(offset.x, offset.y - sign(offset.y)), tex, texCoord);	\\\n"
+						"  lowp vec4 c0 = TEX_OFFSET(-offset, tex, texCoord);									\\\n"
+						"  lowp vec4 c1 = TEX_OFFSET(-offset + vec2(sign(offset.x), 0.0), tex, texCoord);		\\\n"
+						"  lowp vec4 c2 = TEX_OFFSET(-offset + vec2(0.0, sign(offset.y)), tex, texCoord);		\\\n"
 						"  name = c0 + abs(offset.x)*(c1-c0) + abs(offset.y)*(c2-c0); 							\\\n"
 						"  }																					\n"
 						;
 				break;
 				case BILINEAR_STANDARD:
 					shaderPart +=
-						"#define TEX_OFFSET(off, tex, texCoord) texture(tex, texCoord - (off)/texSize)									\n"
+						"#define TEX_OFFSET(off, tex, texCoord) texture(tex, (texCoord) + ((off)+0.5)/texSize)							\n"
 						"#define TEX_FILTER(name, tex, texCoord)																		\\\n"
 						"{																												\\\n"
 						"  mediump vec2 texSize = vec2(textureSize(tex,0));																\\\n"
-						"  mediump vec2 offset = fract(texCoord*texSize - vec2(0.5));													\\\n"
-						"  offset -= step(1.0, offset.x + offset.y);																	\\\n"
+						"  mediump vec2 offset = fract(texCoord*texSize);																\\\n"
 						"  lowp vec4 zero = vec4(0.0);																					\\\n"
 						"																												\\\n"
-						"  lowp vec4 p0q0 = TEX_OFFSET(offset, tex, texCoord);															\\\n"
-						"  lowp vec4 p1q0 = TEX_OFFSET(vec2(offset.x - sign(offset.x), offset.y), tex, texCoord);						\\\n"
+						"  lowp vec4 p0q0 = TEX_OFFSET(-offset, tex, texCoord);															\\\n"
+						"  lowp vec4 p1q0 = TEX_OFFSET(-offset + vec2(1.0,0.0), tex, texCoord);										\\\n"
+						"  lowp vec4 p0q1 = TEX_OFFSET(-offset + vec2(0.0,1.0), tex, texCoord);										\\\n"
+						"  lowp vec4 p1q1 = TEX_OFFSET(-offset + vec2(1.0,1.0), tex, texCoord);										\\\n"
 						"																												\\\n"
-						"  lowp vec4 p0q1 = TEX_OFFSET(vec2(offset.x, offset.y - sign(offset.y)), tex, texCoord);						\\\n"
-						"  lowp vec4 p1q1 = TEX_OFFSET(vec2(offset.x - sign(offset.x), offset.y - sign(offset.y)), tex, texCoord);		\\\n"
-						"																												\\\n"
-						"  mediump vec2 interpolationFactor = abs(offset);																\\\n"
-						"  lowp vec4 pInterp_q0 = mix( p0q0, p1q0, interpolationFactor.x ); 											\\\n" // Interpolates top row in X direction.
-						"  lowp vec4 pInterp_q1 = mix( p0q1, p1q1, interpolationFactor.x ); 											\\\n" // Interpolates bottom row in X direction.
-						"  name = mix( pInterp_q0, pInterp_q1, interpolationFactor.y ); 												\\\n" // Interpolate in Y direction.
+						"  lowp vec4 pInterp_q0 = mix( p0q0, p1q0, offset.x ); 															\\\n" // Interpolates top row in X direction.
+						"  lowp vec4 pInterp_q1 = mix( p0q1, p1q1, offset.x ); 															\\\n" // Interpolates bottom row in X direction.
+						"  name = mix( pInterp_q0, pInterp_q1, offset.y ); 																\\\n" // Interpolate in Y direction.
 						"}																												\n"
 						;
 				break;
@@ -1162,15 +1158,15 @@ public:
 					// Original author: ArthurCarvalho
 					// GLSL implementation: twinaphex, mupen64plus-libretro project.
 					shaderPart +=
-						"#define TEX_OFFSET(off, tex, texCoord) texture(tex, texCoord - (off)/texSize)									\n"
+						"#define TEX_OFFSET(off, tex, texCoord) texture(tex, (texCoord) + (off+0.5)/texSize)	\n"
 						"#define TEX_FILTER(name, tex, texCoord)												\\\n"
 						"{																						\\\n"
 						"  mediump vec2 texSize = vec2(textureSize(tex,0));										\\\n"
-						"  mediump vec2 offset = fract(texCoord*texSize - vec2(0.5));							\\\n"
+						"  mediump vec2 offset = fract(texCoord*texSize);										\\\n"
 						"  offset -= step(1.0, offset.x + offset.y);											\\\n"
-						"  lowp vec4 c0 = TEX_OFFSET(offset, tex, texCoord);									\\\n"
-						"  lowp vec4 c1 = TEX_OFFSET(vec2(offset.x - sign(offset.x), offset.y), tex, texCoord);	\\\n"
-						"  lowp vec4 c2 = TEX_OFFSET(vec2(offset.x, offset.y - sign(offset.y)), tex, texCoord);	\\\n"
+						"  lowp vec4 c0 = TEX_OFFSET(-offset, tex, texCoord);									\\\n"
+						"  lowp vec4 c1 = TEX_OFFSET(-offset + vec2(sign(offset.x), 0.0), tex, texCoord);		\\\n"
+						"  lowp vec4 c2 = TEX_OFFSET(-offset + vec2(0.0, sign(offset.y)), tex, texCoord);		\\\n"
 						"																						\\\n"
 						"  if(uEnableAlphaTest == 1 ){															\\\n" // Calculate premultiplied color values
 						"    c0.rgb *= c0.a;																	\\\n"
@@ -1185,19 +1181,17 @@ public:
 				break;
 				case BILINEAR_STANDARD_WITH_COLOR_BLEEDING_AND_PREMULTIPLIED_ALPHA:
 					shaderPart +=
-						"#define TEX_OFFSET(off, tex, texCoord) texture(tex, texCoord - (off)/texSize)									\n"
+						"#define TEX_OFFSET(off, tex, texCoord) texture(tex, (texCoord) + (off+0.5)/texSize)									\n"
 						"#define TEX_FILTER(name, tex, texCoord)																		\\\n"
 						"{																												\\\n"
 						"  mediump vec2 texSize = vec2(textureSize(tex,0));																\\\n"
-						"  mediump vec2 offset = fract(texCoord*texSize - vec2(0.5));													\\\n"
-						"  offset -= step(1.0, offset.x + offset.y);																	\\\n"
+						"  mediump vec2 offset = fract(texCoord*texSize);													\\\n"
 						"  lowp vec4 zero = vec4(0.0);																					\\\n"
 						"																												\\\n"
-						"  lowp vec4 p0q0 = TEX_OFFSET(offset, tex, texCoord);															\\\n"
-						"  lowp vec4 p1q0 = TEX_OFFSET(vec2(offset.x - sign(offset.x), offset.y), tex, texCoord);						\\\n"
-						"																												\\\n"
-						"  lowp vec4 p0q1 = TEX_OFFSET(vec2(offset.x, offset.y - sign(offset.y)), tex, texCoord);						\\\n"
-						"  lowp vec4 p1q1 = TEX_OFFSET(vec2(offset.x - sign(offset.x), offset.y - sign(offset.y)), tex, texCoord);		\\\n"
+						"  lowp vec4 p0q0 = TEX_OFFSET(-offset, tex, texCoord);															\\\n"
+						"  lowp vec4 p1q0 = TEX_OFFSET(-offset + vec2(1.0,0.0), tex, texCoord);										\\\n"
+						"  lowp vec4 p0q1 = TEX_OFFSET(-offset + vec2(0.0,1.0), tex, texCoord);										\\\n"
+						"  lowp vec4 p1q1 = TEX_OFFSET(-offset + vec2(1.0,1.0), tex, texCoord);										\\\n"
 						"																												\\\n"
 						"  if(uEnableAlphaTest == 1){																					\\\n" // Calculate premultiplied color values
 						"    p0q0.rgb *= p0q0.a;																						\\\n"
@@ -1205,10 +1199,9 @@ public:
 						"    p0q1.rgb *= p0q1.a;																						\\\n"
 						"    p1q1.rgb *= p1q1.a;																						\\\n"
 						"																												\\\n"
-						"    mediump vec2 interpolationFactor = abs(offset);															\\\n"
-						"    lowp vec4 pInterp_q0 = mix( p0q0, p1q0, interpolationFactor.x ); 											\\\n" // Interpolates top row in X direction.
-						"    lowp vec4 pInterp_q1 = mix( p0q1, p1q1, interpolationFactor.x ); 											\\\n" // Interpolates bottom row in X direction.
-						"    name = mix( pInterp_q0, pInterp_q1, interpolationFactor.y ); 												\\\n" // Interpolate in Y direction.
+						"    lowp vec4 pInterp_q0 = mix( p0q0, p1q0, offset.x ); 											\\\n" // Interpolates top row in X direction.
+						"    lowp vec4 pInterp_q1 = mix( p0q1, p1q1, offset.x ); 											\\\n" // Interpolates bottom row in X direction.
+						"    name = mix( pInterp_q0, pInterp_q1, offset.y ); 												\\\n" // Interpolate in Y direction.
 						"    name.rgb /= name.a;																						\\\n" // Divide alpha to get actual color value
 						"  }																											\\\n"
 						"  else if(uCvgXAlpha == 1){																					\\\n" // Use texture bleeding for mk64
@@ -1221,16 +1214,14 @@ public:
 						"    if(p1q0.a > p1q1.a) p1q1.rgb = p1q0.rgb;																	\\\n"
 						"    if(p1q1.a > p1q0.a) p1q0.rgb = p1q1.rgb;																	\\\n"
 						"																												\\\n"
-						"    mediump vec2 interpolationFactor = abs(offset);															\\\n"
-						"    lowp vec4 pInterp_q0 = mix( p0q0, p1q0, interpolationFactor.x );											\\\n" // Interpolates top row in X direction.
-						"    lowp vec4 pInterp_q1 = mix( p0q1, p1q1, interpolationFactor.x );											\\\n" // Interpolates bottom row in X direction.
-						"    name = mix( pInterp_q0, pInterp_q1, interpolationFactor.y );												\\\n"
+						"    lowp vec4 pInterp_q0 = mix( p0q0, p1q0, offset.x );											\\\n" // Interpolates top row in X direction.
+						"    lowp vec4 pInterp_q1 = mix( p0q1, p1q1, offset.x );											\\\n" // Interpolates bottom row in X direction.
+						"    name = mix( pInterp_q0, pInterp_q1, offset.y );												\\\n"
 						"  }																											\\\n"
 						"  else{																										\\\n"
-						"    mediump vec2 interpolationFactor = abs(offset);															\\\n"
-						"    lowp vec4 pInterp_q0 = mix( p0q0, p1q0, interpolationFactor.x ); 											\\\n" // Interpolates top row in X direction.
-						"    lowp vec4 pInterp_q1 = mix( p0q1, p1q1, interpolationFactor.x ); 											\\\n" // Interpolates bottom row in X direction.
-						"    name = mix( pInterp_q0, pInterp_q1, interpolationFactor.y ); 												\\\n" // Interpolate in Y direction.
+						"    lowp vec4 pInterp_q0 = mix( p0q0, p1q0, offset.x ); 											\\\n" // Interpolates top row in X direction.
+						"    lowp vec4 pInterp_q1 = mix( p0q1, p1q1, offset.x ); 											\\\n" // Interpolates bottom row in X direction.
+						"    name = mix( pInterp_q0, pInterp_q1, offset.y ); 												\\\n" // Interpolate in Y direction.
 						"  }																											\\\n"
 						"}																												\n"
 						;
