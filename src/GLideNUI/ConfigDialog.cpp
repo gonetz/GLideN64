@@ -182,8 +182,7 @@ void ConfigDialog::_init(bool reInit, bool blockCustomSettings)
 
 	ui->halosRemovalCheckBox->setChecked(config.texture.enableHalosRemoval != 0);
 
-	ui->nativeRes2D_checkBox->toggle();
-	ui->nativeRes2D_checkBox->setChecked(config.graphics2D.enableNativeResTexrects != 0);
+	ui->nativeRes2DComboBox->setCurrentIndex(config.graphics2D.enableNativeResTexrects);
 
 	ui->gammaCorrectionNoteFrame->setHidden(true);
 	ui->gammaLevelSpinBox->setValue(config.gammaCorrection.force != 0 ? config.gammaCorrection.level : 2.0);
@@ -483,7 +482,7 @@ void ConfigDialog::accept(bool justSave) {
 		config.graphics2D.bgMode = Config::BGMode::bgStripped;
 
 	config.texture.enableHalosRemoval = ui->halosRemovalCheckBox->isChecked() ? 1 : 0;
-	config.graphics2D.enableNativeResTexrects = ui->nativeRes2D_checkBox->isChecked() ? 1 : 0;
+	config.graphics2D.enableNativeResTexrects = ui->nativeRes2DComboBox->currentIndex();
 
 	config.frameBufferEmulation.enable = ui->frameBufferCheckBox->isChecked() ? 1 : 0;
 
@@ -976,4 +975,9 @@ void ConfigDialog::on_removeProfilePushButton_clicked()
 		_init(true);
 		ui->removeProfilePushButton->setDisabled(ui->profilesComboBox->count() == 3);
 	}
+}
+
+void ConfigDialog::on_nativeRes2DComboBox_currentIndexChanged(int index)
+{
+	ui->fixTexrectFrame->setEnabled(index == 0);
 }

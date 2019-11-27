@@ -76,6 +76,8 @@ private slots:
 
 	void on_removeProfilePushButton_clicked();
 
+    void on_nativeRes2DComboBox_currentIndexChanged(int index);
+
 private:
 	void _init(bool reInit = false, bool blockCustomSettings = false);
 	void _getTranslations(QStringList & _translationFiles) const;

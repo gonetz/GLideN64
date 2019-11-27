@@ -68,6 +68,12 @@ struct Config
 		bgStripped = 1
 	};
 
+	enum NativeResTexrectsMode {
+		ntDisable = 0,
+		ntOptimized,
+		ntUnptimized
+	};
+
 	struct {
 		u32 correctTexrectCoords;
 		u32 enableNativeResTexrects;

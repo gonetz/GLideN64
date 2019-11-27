@@ -4,6 +4,7 @@
 #include <cmath>
 #include <Graphics/Context.h>
 #include <Graphics/Parameters.h>
+#include "Config.h"
 #include "DisplayWindow.h"
 #include "Textures.h"
 #include "RDP.h"
@@ -133,6 +134,8 @@ TexrectDrawer::iRect TexrectDrawer::_getiRect(u32 w0, u32 w1) const
 
 bool TexrectDrawer::_lookAhead(bool _checkCoordinates) const
 {
+	if (config.graphics2D.enableNativeResTexrects != Config::NativeResTexrectsMode::ntOptimized)
+		return true;
 	if (RSP.LLE)
 		return true;
 	switch (GBI.getMicrocodeType()) {

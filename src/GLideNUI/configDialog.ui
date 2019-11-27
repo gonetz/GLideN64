@@ -1420,22 +1420,45 @@
                <number>0</number>
               </property>
               <item>
+               <layout class="QHBoxLayout" name="nativeRes2Dlayout">
+                <item>
+                 <widget class="QLabel" name="nativeRes2DLabel">
+                  <property name="toolTip">
+                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;When checked, 2D elements are rendered at the N64s resolution before copying them to output. This usually eliminates display issues with 2D elements, but it can be slow. This option uses heuristics to detect adjacent 2D elements that doesn't work for every game.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;Checked, unless you have performance problems&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                  </property>
+                  <property name="text">
+                   <string>Render 2D elements in N64 resolution (best quality, can be slow):</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QComboBox" name="nativeRes2DComboBox">
+                  <property name="toolTip">
+                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;When checked, 2D elements are rendered at the N64s resolution before copying them to output. This usually eliminates display issues with 2D elements, but it can be slow. This option uses heuristics to detect adjacent 2D elements that doesn't work for every game.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;Checked, unless you have performance problems&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                  </property>
+                  <item>
+                   <property name="text">
+                    <string>Disable</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text">
+                    <string>Enable optimized</string>
+                   </property>
+                  </item>
+                  <item>
+                   <property name="text">
+                    <string>Enable unoptimized</string>
+                   </property>
+                  </item>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item>
                <widget class="QCheckBox" name="halosRemovalCheckBox">
                 <property name="text">
                  <string>Try to remove colored halos around transparent objects</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QCheckBox" name="nativeRes2D_checkBox">
-                <property name="toolTip">
-                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;When checked, 2D elements are rendered at the N64s resolution before copying them to output. This usually eliminates display issues with 2D elements, but it can be slow. This option uses heuristics to detect adjacent 2D elements that doesn't work for every game.&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;Checked, unless you have performance problems&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                </property>
-                <property name="text">
-                 <string extracomment="2D elements, formerly labelled texrects, are usually used for title screens or HUDs">Render 2D elements in N64 resolution (best quality, can be slow)</string>
-                </property>
-                <property name="checked">
-                 <bool>true</bool>
                 </property>
                </widget>
               </item>
@@ -3942,22 +3965,6 @@
     <hint type="destinationlabel">
      <x>140</x>
      <y>201</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>nativeRes2D_checkBox</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>fixTexrectFrame</receiver>
-   <slot>setDisabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>235</x>
-     <y>350</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>253</x>
-     <y>446</y>
     </hint>
    </hints>
   </connection>

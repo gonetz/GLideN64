@@ -94,7 +94,7 @@ bool Config_SetDefault()
 	//#2D graphics Settings
 	res = ConfigSetDefaultInt(g_configVideoGliden64, "CorrectTexrectCoords", config.graphics2D.correctTexrectCoords, "Make texrect coordinates continuous to avoid black lines between them. (0=Off, 1=Auto, 2=Force)");
 	assert(res == M64ERR_SUCCESS);
-	res = ConfigSetDefaultBool(g_configVideoGliden64, "EnableNativeResTexrects", config.graphics2D.enableNativeResTexrects, "Render 2D texrects in native resolution to fix misalignment between parts of 2D image.");
+	res = ConfigSetDefaultInt(g_configVideoGliden64, "EnableNativeResTexrects", config.graphics2D.enableNativeResTexrects, "Render 2D texrects in native resolution to fix misalignment between parts of 2D image. (0=Off, 1=Optimized, 2=Unoptimized)");
 	assert(res == M64ERR_SUCCESS);
 	res = ConfigSetDefaultInt(g_configVideoGliden64, "BackgroundsMode", config.graphics2D.bgMode, "Render backgrounds mode (HLE only). (0=One piece (fast), 1=Stripped (precise))");
 	assert(res == M64ERR_SUCCESS);
@@ -407,7 +407,7 @@ void Config_LoadConfig()
 #endif
 	//#2D graphics Settings
 	config.graphics2D.correctTexrectCoords = ConfigGetParamInt(g_configVideoGliden64, "CorrectTexrectCoords");
-	config.graphics2D.enableNativeResTexrects = ConfigGetParamBool(g_configVideoGliden64, "EnableNativeResTexrects");
+	config.graphics2D.enableNativeResTexrects = ConfigGetParamInt(g_configVideoGliden64, "EnableNativeResTexrects");
 	config.graphics2D.bgMode = ConfigGetParamInt(g_configVideoGliden64, "BackgroundsMode");
 	//#Frame Buffer Settings:"
 	config.frameBufferEmulation.enable = ConfigGetParamBool(g_configVideoGliden64, "EnableFBEmulation");
