@@ -1,6 +1,8 @@
 #include "RingBufferPool.h"
 #include <memory>
 #include <algorithm>
+#include <sstream>
+#include <Log.h>
 
 namespace opengl {
 
@@ -50,10 +52,11 @@ size_t PoolBufferPointer::getSize() const
 }
 
 RingBufferPool::RingBufferPool(size_t _poolSize) :
-	m_poolBuffer(_poolSize, 0),
+	m_poolBuffer(m_startBufferPoolSize, 0),
 	m_inUseStartOffset(0),
 	m_inUseEndOffset(0),
-	m_full(false)
+	m_full(false),
+	m_maxBufferPoolSize(_poolSize)
 {
 
 }
@@ -61,14 +64,14 @@ RingBufferPool::RingBufferPool(size_t _poolSize) :
 PoolBufferPointer RingBufferPool::createPoolBuffer(const char* _buffer, size_t _bufferSize)
 {
 	size_t realBufferSize = _bufferSize;
-	size_t remainder = _bufferSize % 4;
+	const size_t remainder = _bufferSize % 4;
 
 	if (remainder != 0)
 		realBufferSize = _bufferSize + 4 - remainder;
 
-	size_t tempInUseStart = m_inUseStartOffset;
+	const size_t tempInUseStart = m_inUseStartOffset;
 
-	size_t remaining = tempInUseStart > m_inUseEndOffset || m_full ?
+	const size_t remaining = tempInUseStart > m_inUseEndOffset || m_full ?
 		static_cast<size_t>(tempInUseStart - m_inUseEndOffset) :
 		m_poolBuffer.size() - m_inUseEndOffset + tempInUseStart;
 
@@ -91,7 +94,7 @@ PoolBufferPointer RingBufferPool::createPoolBuffer(const char* _buffer, size_t _
 				{
 					std::unique_lock<std::mutex> lock(m_mutex);
 					m_condition.wait(lock, [this, realBufferSize] {
-						size_t tempInUseStartLocal = m_inUseStartOffset;
+						const size_t tempInUseStartLocal = m_inUseStartOffset;
 						return realBufferSize < tempInUseStartLocal ||
 							   tempInUseStartLocal == m_inUseEndOffset;
 					});
@@ -105,14 +108,28 @@ PoolBufferPointer RingBufferPool::createPoolBuffer(const char* _buffer, size_t _
 	} else {
 		// Wait until enough space is avalable
 		{
+			if (realBufferSize > m_maxBufferPoolSize) {
+				std::stringstream errorString;
+				errorString << " Attempted to create buffer of invalid size, size=" << realBufferSize << ", max_size=" << m_maxBufferPoolSize;
+				LOG(LOG_ERROR, errorString.str().c_str());
+				throw std::runtime_error(errorString.str().c_str());
+			}
+
 			std::unique_lock<std::mutex> lock(m_mutex);
+			if (m_poolBuffer.size() < realBufferSize) {
+				std::stringstream errorString;
+				errorString << " Increasing buffer size from " << m_poolBuffer.size() << " to " << realBufferSize;
+				LOG(LOG_VERBOSE, errorString.str().c_str());
+
+				m_poolBuffer.resize(realBufferSize);
+			}
 
 			m_condition.wait(lock, [this, realBufferSize] {
-				size_t tempInUseStartLocal = m_inUseStartOffset;
-				size_t remainingLocal =
-						tempInUseStartLocal > m_inUseEndOffset || m_full ? static_cast<size_t>(
-								tempInUseStartLocal - m_inUseEndOffset) :
-						m_poolBuffer.size() - m_inUseEndOffset + tempInUseStartLocal;
+				const size_t tempInUseStartLocal = m_inUseStartOffset;
+				const size_t remainingLocal =
+					tempInUseStartLocal > m_inUseEndOffset || m_full ? static_cast<size_t>(
+						tempInUseStartLocal - m_inUseEndOffset) :
+					m_poolBuffer.size() - m_inUseEndOffset + tempInUseStartLocal;
 
 				return remainingLocal >= realBufferSize;
 			});
@@ -133,6 +150,7 @@ const char* RingBufferPool::getBufferFromPool(PoolBufferPointer _poolBufferPoint
 	if (!_poolBufferPointer.isValid()) {
 		return nullptr;
 	} else {
+		std::unique_lock<std::mutex> lock(m_mutex);
 		return m_poolBuffer.data() + _poolBufferPointer.m_offset;
 	}
 }
