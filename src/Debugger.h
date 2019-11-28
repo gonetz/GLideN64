@@ -140,7 +140,7 @@ private:
 	void _addTrianglesByElements(const graphics::Context::DrawTriangleParameters & _params);
 	void _debugKeys();
 	void _drawFrameBuffer(FrameBuffer * _pBuffer);
-	void _drawDebugInfo(FrameBuffer * _pBuffer);
+	void _drawDebugInfo();
 	void _setTextureCombiner();
 	void _setLineCombiner();
 	void _drawTextureFrame(const RectVertex * _rect);
