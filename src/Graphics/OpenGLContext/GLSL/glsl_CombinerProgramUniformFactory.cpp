@@ -940,7 +940,8 @@ public:
 			if (gDP.otherMode.cycleType != G_CYC_COPY) {
 				if (pTexture->clampS) {
 					aTexClamp[t][0] = 0.0f; // S lower bound
-					if (pTexture->frameBufferTexture != CachedTexture::fbNone)
+					if (pTexture->frameBufferTexture != CachedTexture::fbNone ||
+						pTile->textureMode == TEXTUREMODE_BGIMAGE)
 						aTexClamp[t][2] = 1.0f;
 					else {
 						u32 tileWidth = ((pTile->lrs - pTile->uls) & 0x03FF) + 1;
@@ -952,7 +953,8 @@ public:
 				}
 				if (pTexture->clampT) {
 					aTexClamp[t][1] = 0.0f; // T lower bound
-					if (pTexture->frameBufferTexture != CachedTexture::fbNone)
+					if (pTexture->frameBufferTexture != CachedTexture::fbNone ||
+						pTile->textureMode == TEXTUREMODE_BGIMAGE)
 						aTexClamp[t][3] = 1.0f;
 					else {
 						const u32 tileHeight = ((pTile->lrt - pTile->ult) & 0x03FF) + 1;
