@@ -4714,6 +4714,42 @@ private:
 	}
 };
 
+class GlGetTexLevelParameterivCommand : public OpenGlCommand
+{
+public:
+	GlGetTexLevelParameterivCommand() :
+			OpenGlCommand(true, true, "getTexLevelParameteriv")
+	{
+	}
+
+	static std::shared_ptr<OpenGlCommand> get(GLenum target, GLint level, GLenum pname, GLint *params)
+	{
+		static int poolId = OpenGlCommandPool::get().getNextAvailablePool();
+		auto ptr = getFromPool<GlGetTexLevelParameterivCommand>(poolId);
+		ptr->set(target, level, pname, params);
+		return ptr;
+	}
+
+	void commandToExecute() override
+	{
+		ptrGetTexLevelParameteriv(m_target, m_level, m_pname, m_params);
+	}
+
+private:
+	void set(GLenum target, GLint level, GLenum pname, GLint *params)
+	{
+		m_target = target;
+		m_level = level;
+		m_pname = pname;
+		m_params = params;
+	}
+
+	GLenum m_target;
+	GLint m_level;
+	GLenum m_pname;
+	GLint* m_params;
+};
+
 class GlCopyTexImage2DCommand : public OpenGlCommand
 {
 public:

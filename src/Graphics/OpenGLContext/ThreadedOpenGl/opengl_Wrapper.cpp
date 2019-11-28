@@ -1362,6 +1362,14 @@ namespace opengl {
 			ptrFinish();
 	}
 
+	void FunctionWrapper::wrGetTexLevelParameteriv(GLenum target, GLint level, GLenum pname, GLint *params)
+	{
+		if (m_threaded_wrapper)
+			executeCommand(GlGetTexLevelParameterivCommand::get(target, level, pname, params));
+		else
+			ptrGetTexLevelParameteriv(target, level, pname, params);
+	}
+
 	void FunctionWrapper::wrCopyTexImage2D(GLenum target, GLint level, GLenum internalformat, GLint x, GLint y, GLsizei width, GLsizei height, GLint border)
 	{
 		if (m_threaded_wrapper)
