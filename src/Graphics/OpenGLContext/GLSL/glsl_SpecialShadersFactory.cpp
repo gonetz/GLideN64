@@ -445,10 +445,7 @@ namespace glsl {
 			"       // interpolate first on S direction then on T.                                \n"
 			"       vec4 top = mix(t00, t10, ratio.s);                                            \n"
 			"       vec4 bottom = mix(t01, t11, ratio.s);                                         \n"
-			"       // only interpolate within texture bounds to avoid sampling black texels      \n"
-			"       float is_opaque = step(2.0f, top.a + bottom.a);                               \n"
-			"       return mix(top, bottom, ratio.t) * is_opaque +                                \n"
-			"           texel_fetch(tex, rounded_idx, texSize) * (1.0 - is_opaque);               \n"
+			"       return mix(top, bottom, ratio.t);                                             \n"
 			"}                                                                                    \n"
 			;
 		return strFilter;
