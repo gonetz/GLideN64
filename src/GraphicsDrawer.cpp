@@ -1681,6 +1681,7 @@ void GraphicsDrawer::copyTexturedRect(const CopyRectParams & _params)
 	rectParams.vertices = m_rect;
 	rectParams.combiner = _params.combiner;
 	_params.combiner->activate();
+	_params.combiner->setTextureSize(_params.srcWidth, _params.srcHeight);
 	gfxContext.enable(enable::SCISSOR_TEST, false);
 	gfxContext.drawRects(rectParams);
 	gfxContext.enable(enable::SCISSOR_TEST, true);

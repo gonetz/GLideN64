@@ -278,27 +278,27 @@ ShaderProgram * Context::createTexrectDrawerClearShader()
 	return m_impl->createTexrectDrawerClearShader();
 }
 
-ShaderProgram * Context::createTexrectCopyShader()
+TexrectCopyShaderProgram * Context::createTexrectCopyShader()
 {
 	return m_impl->createTexrectCopyShader();
 }
 
-ShaderProgram * Context::createTexrectColorAndDepthCopyShader()
+TexrectCopyShaderProgram * Context::createTexrectColorAndDepthCopyShader()
 {
 	return m_impl->createTexrectColorAndDepthCopyShader();
 }
 
-ShaderProgram * Context::createGammaCorrectionShader()
+TexrectCopyShaderProgram * Context::createGammaCorrectionShader()
 {
 	return m_impl->createGammaCorrectionShader();
 }
 
-ShaderProgram * Context::createOrientationCorrectionShader()
+TexrectCopyShaderProgram * Context::createOrientationCorrectionShader()
 {
 	return m_impl->createOrientationCorrectionShader();
 }
 
-ShaderProgram * Context::createFXAAShader()
+TexrectCopyShaderProgram * Context::createFXAAShader()
 {
 	return m_impl->createFXAAShader();
 }

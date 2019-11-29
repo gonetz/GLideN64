@@ -122,15 +122,15 @@ namespace opengl {
 
 		graphics::ShaderProgram * createTexrectDrawerClearShader() override;
 
-		graphics::ShaderProgram * createTexrectCopyShader() override;
+		graphics::TexrectCopyShaderProgram * createTexrectCopyShader() override;
 
-		graphics::ShaderProgram * createTexrectColorAndDepthCopyShader() override;
+		graphics::TexrectCopyShaderProgram * createTexrectColorAndDepthCopyShader() override;
 
-		graphics::ShaderProgram * createGammaCorrectionShader() override;
+		graphics::TexrectCopyShaderProgram * createGammaCorrectionShader() override;
 
-		graphics::ShaderProgram * createOrientationCorrectionShader() override;
+		graphics::TexrectCopyShaderProgram * createOrientationCorrectionShader() override;
 
-		graphics::ShaderProgram * createFXAAShader() override;
+		graphics::TexrectCopyShaderProgram * createFXAAShader() override;
 
 		graphics::TextDrawerShaderProgram * createTextDrawerShader() override;
 

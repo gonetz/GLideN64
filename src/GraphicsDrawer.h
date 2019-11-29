@@ -100,7 +100,7 @@ public:
 		bool invertY = false;
 		typedef std::array<CachedTexture *, 2> Textures;
 		Textures tex = Textures{ { nullptr, nullptr } };
-		graphics::CombinerProgram * combiner = nullptr;
+		graphics::TexrectCopyShaderProgram * combiner = nullptr;
 		graphics::TextureParam filter;
 	};
 
