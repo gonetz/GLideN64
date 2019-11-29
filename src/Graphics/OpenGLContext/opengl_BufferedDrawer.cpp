@@ -82,10 +82,6 @@ void BufferedDrawer::_updateBuffer(Buffer & _buffer, u32 _count, u32 _dataSize, 
 
 	if (m_glInfo.bufferStorage) {
 		memcpy(&_buffer.data[_buffer.offset], _data, _dataSize);
-#ifdef GL_DEBUG
-		m_bindBuffer->bind(Parameter(_buffer.type), ObjectHandle(_buffer.handle));
-		glFlushMappedBufferRange(_buffer.type, _buffer.offset, _dataSize);
-#endif
 	} else {
 		m_bindBuffer->bind(Parameter(_buffer.type), ObjectHandle(_buffer.handle));
 		void* buffer_pointer = glMapBufferRange(_buffer.type, _buffer.offset, _dataSize, GL_MAP_WRITE_BIT | GL_MAP_UNSYNCHRONIZED_BIT);
