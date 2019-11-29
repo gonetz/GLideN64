@@ -101,9 +101,9 @@ void DepthBuffer::initDepthImageTexture(FrameBuffer * _pBuffer)
 	if (config.frameBufferEmulation.N64DepthCompare == 0 || m_pDepthImageZTexture != nullptr)
 		return;
 
-	m_pDepthImageZTexture = textureCache().addFrameBufferTexture(false);
+	m_pDepthImageZTexture = textureCache().addFrameBufferTexture(textureTarget::TEXTURE_2D);
 	m_ZTextureClearFBO = gfxContext.createFramebuffer();
-	m_pDepthImageDeltaZTexture = textureCache().addFrameBufferTexture(false);
+	m_pDepthImageDeltaZTexture = textureCache().addFrameBufferTexture(textureTarget::TEXTURE_2D);
 	m_DeltaZTextureClearFBO = gfxContext.createFramebuffer();
 
 	_initDepthImageTexture(_pBuffer, *m_pDepthImageZTexture, m_ZTextureClearFBO);
@@ -221,7 +221,8 @@ void DepthBuffer::initDepthBufferTexture(FrameBuffer * _pBuffer)
 {
 	if (Context::DepthFramebufferTextures) {
 		if (m_pDepthBufferTexture == nullptr) {
-			m_pDepthBufferTexture = textureCache().addFrameBufferTexture(config.video.multisampling != 0);
+			m_pDepthBufferTexture = textureCache().addFrameBufferTexture(config.video.multisampling != 0 ?
+					textureTarget::TEXTURE_2D_MULTISAMPLE : textureTarget::TEXTURE_2D);
 			_initDepthBufferTexture(_pBuffer, m_pDepthBufferTexture, config.video.multisampling != 0);
 		}
 	} else {
@@ -229,7 +230,7 @@ void DepthBuffer::initDepthBufferTexture(FrameBuffer * _pBuffer)
 	}
 
 	if (config.video.multisampling != 0 && m_pResolveDepthBufferTexture == nullptr) {
-		m_pResolveDepthBufferTexture = textureCache().addFrameBufferTexture(false);
+		m_pResolveDepthBufferTexture = textureCache().addFrameBufferTexture(textureTarget::TEXTURE_2D);
 		_initDepthBufferTexture(_pBuffer, m_pResolveDepthBufferTexture, false);
 	}
 }
@@ -276,7 +277,7 @@ CachedTexture * DepthBuffer::resolveDepthBufferTexture(FrameBuffer * _pBuffer)
 void DepthBuffer::copyDepthBufferTexture(FrameBuffer * _pBuffer, CachedTexture *& _pTexture, graphics::ObjectHandle _copyFBO)
 {
 	if (_pTexture == nullptr) {
-		_pTexture = textureCache().addFrameBufferTexture(false);
+		_pTexture = textureCache().addFrameBufferTexture(textureTarget::TEXTURE_2D);
 		_initDepthBufferTexture(_pBuffer, _pTexture, false);
 	}
 

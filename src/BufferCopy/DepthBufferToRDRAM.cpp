@@ -49,7 +49,7 @@ void DepthBufferToRDRAM::init()
 	if (!m_pbuf)
 		return;
 
-	m_pColorTexture = textureCache().addFrameBufferTexture(false);
+	m_pColorTexture = textureCache().addFrameBufferTexture(textureTarget::TEXTURE_2D);
 	m_pColorTexture->format = G_IM_FMT_I;
 	m_pColorTexture->size = 2;
 	m_pColorTexture->clampS = 1;
@@ -63,7 +63,7 @@ void DepthBufferToRDRAM::init()
 	m_pColorTexture->height = DEPTH_TEX_HEIGHT;
 	m_pColorTexture->textureBytes = m_pColorTexture->width * m_pColorTexture->height;
 
-	m_pDepthTexture = textureCache().addFrameBufferTexture(false);
+	m_pDepthTexture = textureCache().addFrameBufferTexture(textureTarget::TEXTURE_2D);
 	m_pDepthTexture->format = G_IM_FMT_I;
 	m_pColorTexture->size = 2;
 	m_pDepthTexture->clampS = 1;

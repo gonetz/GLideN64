@@ -99,7 +99,7 @@ struct Atlas {
 		/* Create a texture that will be used to hold all ASCII glyphs */
 		const FramebufferTextureFormats & fbTexFormats = gfxContext.getFramebufferTextureFormats();
 
-		m_pTexture = textureCache().addFrameBufferTexture(false);
+		m_pTexture = textureCache().addFrameBufferTexture(textureTarget::TEXTURE_2D);
 		m_pTexture->format = G_IM_FMT_I;
 		m_pTexture->clampS = 1;
 		m_pTexture->clampT = 1;

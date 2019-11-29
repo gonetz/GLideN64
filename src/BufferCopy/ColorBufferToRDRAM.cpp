@@ -65,7 +65,7 @@ void ColorBufferToRDRAM::_initFBTexture(void)
 {
 	const FramebufferTextureFormats & fbTexFormat = gfxContext.getFramebufferTextureFormats();
 
-	m_pTexture = textureCache().addFrameBufferTexture(false);
+	m_pTexture = textureCache().addFrameBufferTexture(Context::EglImage ? textureTarget::TEXTURE_EXTERNAL : textureTarget::TEXTURE_2D);
 	m_pTexture->format = G_IM_FMT_RGBA;
 	m_pTexture->size = 2;
 	m_pTexture->clampS = 1;
@@ -84,8 +84,6 @@ void ColorBufferToRDRAM::_initFBTexture(void)
 
 	m_bufferReader.reset(gfxContext.createColorBufferReader(m_pTexture));
 
-	TextureTargetParam target = Context::EglImage ? textureTarget::TEXTURE_EXTERNAL : textureTarget::TEXTURE_2D;
-
 	// Skip this since texture is initialized in the EGL color buffer reader
 	if (!Context::EglImage)
 	{
@@ -103,7 +101,7 @@ void ColorBufferToRDRAM::_initFBTexture(void)
 	{
 		Context::TexParameters params;
 		params.handle = m_pTexture->name;
-		params.target = target;
+		params.target = Context::EglImage ? textureTarget::TEXTURE_EXTERNAL : textureTarget::TEXTURE_2D;
 		params.textureUnitIndex = textureIndices::Tex[0];
 		params.minFilter = textureParameters::FILTER_LINEAR;
 		params.magFilter = textureParameters::FILTER_LINEAR;
@@ -114,7 +112,7 @@ void ColorBufferToRDRAM::_initFBTexture(void)
 		bufTarget.bufferHandle = ObjectHandle(m_FBO);
 		bufTarget.bufferTarget = bufferTarget::DRAW_FRAMEBUFFER;
 		bufTarget.attachment = bufferAttachment::COLOR_ATTACHMENT0;
-		bufTarget.textureTarget = target;
+		bufTarget.textureTarget = Context::EglImageFramebuffer ? textureTarget::TEXTURE_EXTERNAL : textureTarget::TEXTURE_2D;
 		bufTarget.textureHandle = m_pTexture->name;
 		gfxContext.addFrameBufferRenderTarget(bufTarget);
 	}

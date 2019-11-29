@@ -31,7 +31,7 @@ void RDRAMtoColorBuffer::init()
 {
 	const FramebufferTextureFormats & fbTexFormats = gfxContext.getFramebufferTextureFormats();
 
-	m_pTexture = textureCache().addFrameBufferTexture(false);
+	m_pTexture = textureCache().addFrameBufferTexture(textureTarget::TEXTURE_2D);
 	m_pTexture->format = G_IM_FMT_RGBA;
 	m_pTexture->size = 2;
 	m_pTexture->clampS = 1;

@@ -164,6 +164,8 @@ void GLInfo::init() {
 		    (renderer != Renderer::PowerVR);
 #endif
 
+	eglImageFramebuffer = eglImage && !isGLES2;
+
 	if (config.frameBufferEmulation.N64DepthCompare != 0) {
 		if (!imageTextures && !ext_fetch) {
 			config.frameBufferEmulation.N64DepthCompare = 0;
