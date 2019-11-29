@@ -501,6 +501,8 @@ bool ContextImpl::isSupported(graphics::SpecialFeatures _feature) const
 		return m_glInfo.texture_barrier || m_glInfo.texture_barrierNV;
 	case graphics::SpecialFeatures::EglImage:
 		return m_glInfo.eglImage;
+	case graphics::SpecialFeatures::EglImageFramebuffer:
+		return m_glInfo.eglImageFramebuffer;
 	}
 	return false;
 }

@@ -113,7 +113,7 @@ void NoiseTexture::init()
 		_fillTextureData();
 
 	for (u32 i = 0; i < NOISE_TEX_NUM; ++i) {
-		m_pTexture[i] = textureCache().addFrameBufferTexture(false);
+		m_pTexture[i] = textureCache().addFrameBufferTexture(textureTarget::TEXTURE_2D);
 		m_pTexture[i]->format = G_IM_FMT_RGBA;
 		m_pTexture[i]->clampS = 1;
 		m_pTexture[i]->clampT = 1;

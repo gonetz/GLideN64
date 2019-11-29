@@ -34,6 +34,7 @@ struct GLInfo {
 	bool fragment_ordering = false;
 	bool ext_fetch = false;
 	bool eglImage = false;
+	bool eglImageFramebuffer = false;
 	Renderer renderer = Renderer::Other;
 
 	void init();

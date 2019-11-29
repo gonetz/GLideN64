@@ -62,7 +62,8 @@ FrameBuffer::FrameBuffer()
 	, m_validityChecked(0)
 {
 	m_loadTileOrigin.uls = m_loadTileOrigin.ult = 0;
-	m_pTexture = textureCache().addFrameBufferTexture(config.video.multisampling != 0);
+	m_pTexture = textureCache().addFrameBufferTexture(config.video.multisampling != 0 ?
+		textureTarget::TEXTURE_2D_MULTISAMPLE : textureTarget::TEXTURE_2D);
 	m_FBO = gfxContext.createFramebuffer();
 
 	m_pDepthTexture = nullptr;
@@ -195,7 +196,7 @@ void FrameBuffer::init(u32 _address, u16 _format, u16 _size, u16 _width, bool _c
 		_setAndAttachTexture(m_FBO, m_pTexture, 0, true);
 		m_pTexture->frameBufferTexture = CachedTexture::fbMultiSample;
 
-		m_pResolveTexture = textureCache().addFrameBufferTexture(false);
+		m_pResolveTexture = textureCache().addFrameBufferTexture(textureTarget::TEXTURE_2D);
 		_initTexture(_width, maxHeight, _format, _size, m_pResolveTexture);
 		m_resolveFBO = gfxContext.createFramebuffer();
 		_setAndAttachTexture(m_resolveFBO, m_pResolveTexture, 0, false);
@@ -377,7 +378,7 @@ bool FrameBuffer::_initSubTexture(u32 _t)
 		textureCache().removeFrameBufferTexture(m_pSubTexture);
 	}
 
-	m_pSubTexture = textureCache().addFrameBufferTexture(false);
+	m_pSubTexture = textureCache().addFrameBufferTexture(textureTarget::TEXTURE_2D);
 	_initTexture(width, height, m_pTexture->format, m_pTexture->size, m_pSubTexture);
 
 	m_pSubTexture->clampS = pTile->clamps;
@@ -441,7 +442,8 @@ CachedTexture * FrameBuffer::_getSubTexture(u32 _t)
 void FrameBuffer::_initCopyTexture()
 {
 	m_copyFBO = gfxContext.createFramebuffer();
-	m_pFrameBufferCopyTexture = textureCache().addFrameBufferTexture(config.video.multisampling != 0);
+	m_pFrameBufferCopyTexture = textureCache().addFrameBufferTexture(config.video.multisampling != 0 ?
+		textureTarget::TEXTURE_2D_MULTISAMPLE : textureTarget::TEXTURE_2D);
 	_initTexture(m_width, VI_GetMaxBufferHeight(m_width), m_pTexture->format, m_pTexture->size, m_pFrameBufferCopyTexture);
 	_setAndAttachTexture(m_copyFBO, m_pFrameBufferCopyTexture, 0, config.video.multisampling != 0);
 	if (config.video.multisampling != 0)
@@ -1274,7 +1276,7 @@ void FrameBufferList::OverscanBuffer::setInputBuffer(const FrameBuffer *  _pBuff
 	}
 
 	textureCache().removeFrameBufferTexture(m_pTexture);
-	m_pTexture = textureCache().addFrameBufferTexture(false);
+	m_pTexture = textureCache().addFrameBufferTexture(textureTarget::TEXTURE_2D);
 	const CachedTexture * pSrcTexture = _pBuffer->m_pTexture;
 	_initFrameBufferTexture(0,
 		_pBuffer->m_width,
@@ -1293,7 +1295,7 @@ void FrameBufferList::OverscanBuffer::setInputBuffer(const FrameBuffer *  _pBuff
 
 	// Init depth texture
 	textureCache().removeFrameBufferTexture(m_pDepthTexture);
-	m_pDepthTexture = textureCache().addFrameBufferTexture(false);
+	m_pDepthTexture = textureCache().addFrameBufferTexture(textureTarget::TEXTURE_2D);
 	DepthBuffer::_initDepthBufferTexture(_pBuffer, m_pDepthTexture, false);
 	Context::FrameBufferRenderTarget params;
 	params.attachment = bufferAttachment::DEPTH_ATTACHMENT;
