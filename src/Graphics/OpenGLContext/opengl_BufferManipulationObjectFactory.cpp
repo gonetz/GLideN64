@@ -92,7 +92,6 @@ public:
 				GLenum(_params.textureTarget),
 				GLuint(_params.textureHandle));
 		} else {
-			//FRAMEBUFFER
 			glFramebufferTexture2D(GLenum(_params.bufferTarget),
 				GLenum(_params.attachment),
 				GLenum(_params.textureTarget),
