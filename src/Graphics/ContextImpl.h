@@ -57,11 +57,11 @@ namespace graphics {
 		virtual ShaderProgram * createDepthFogShader() = 0;
 		virtual TexrectDrawerShaderProgram * createTexrectDrawerDrawShader() = 0;
 		virtual ShaderProgram * createTexrectDrawerClearShader() = 0;
-		virtual ShaderProgram * createTexrectCopyShader() = 0;
-		virtual ShaderProgram * createTexrectColorAndDepthCopyShader() = 0;
-		virtual ShaderProgram * createGammaCorrectionShader() = 0;
-		virtual ShaderProgram * createOrientationCorrectionShader() = 0;
-		virtual ShaderProgram * createFXAAShader() = 0;
+		virtual TexrectCopyShaderProgram * createTexrectCopyShader() = 0;
+		virtual TexrectCopyShaderProgram * createTexrectColorAndDepthCopyShader() = 0;
+		virtual TexrectCopyShaderProgram * createGammaCorrectionShader() = 0;
+		virtual TexrectCopyShaderProgram * createOrientationCorrectionShader() = 0;
+		virtual TexrectCopyShaderProgram * createFXAAShader() = 0;
 		virtual TextDrawerShaderProgram * createTextDrawerShader() = 0;
 		virtual void resetShaderProgram() = 0;
 		virtual void drawTriangles(const Context::DrawTriangleParameters & _params) = 0;

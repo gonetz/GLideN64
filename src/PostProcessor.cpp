@@ -120,7 +120,7 @@ void PostProcessor::_postDraw()
 	gfxContext.resetShaderProgram();
 }
 
-FrameBuffer * PostProcessor::_doPostProcessing(FrameBuffer * _pBuffer, graphics::ShaderProgram * _pShader)
+FrameBuffer * PostProcessor::_doPostProcessing(FrameBuffer * _pBuffer, graphics::TexrectCopyShaderProgram * _pShader)
 {
 	_preDraw(_pBuffer);
 

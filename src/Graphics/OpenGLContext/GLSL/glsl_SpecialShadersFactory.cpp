@@ -372,7 +372,7 @@ namespace glsl {
 			"}                                                                                  \n"
 			"mediump vec2 norm2denorm(in mediump vec2 uv, in ivec2 texture_size)                \n"
 			"{                                                                                  \n"
-			"       return uv * vec2(texture_size) - 0.5;                                       \n"
+			"       return uv * vec2(texture_size) - 0.5;                                      \n"
 			"}                                                                                  \n"
 			"ivec2 denorm2idx(in mediump vec2 d_uv)                                             \n"
 			"{                                                                                  \n"
@@ -384,7 +384,7 @@ namespace glsl {
 			"}                                                                                  \n"
 			"mediump vec2 idx2norm(in ivec2 idx, in ivec2 texture_size)                         \n"
 			"{                                                                                  \n"
-			"       mediump vec2 denorm_uv = vec2(idx) + 0.5;                                   \n"
+			"       mediump vec2 denorm_uv = vec2(idx) + 0.5;                                  \n"
 			"       return denorm_uv / vec2(texture_size);                                      \n"
 			"}                                                                                  \n"
 			"mediump vec4 texel_fetch(in sampler2D tex, in ivec2 idx, in ivec2 texture_size)    \n"
@@ -398,7 +398,7 @@ namespace glsl {
 			"       mediump vec2 denorm_uv = norm2denorm(uv,texSize);                           \n"
 			"       ivec2 idx_low = denorm2idx(denorm_uv);                                      \n"
 			"       mediump vec2 ratio = denorm_uv - vec2(idx_low);                             \n"
-			"       ivec2 rounded_idx = idx_low + ivec2(step(0.5, ratio));                      \n"
+			"       ivec2 rounded_idx = idx_low + ivec2(step(0.5, ratio));                     \n"
 			"                                                                                   \n"
 			"       ivec2 idx00 = idx_low;                                                      \n"
 			"       mediump vec4 t00 = texel_fetch(tex, idx00, texSize);                        \n"
@@ -428,19 +428,19 @@ namespace glsl {
 			"                                                                                     \n"
 			"       // Here, fwidth() is used to estimte how much denorm_uv changes per fragment. \n"
 			"       // But we divide it by 2, since fwidth() is adding abs(dx) + abs(dy).         \n"
-			"       mediump vec2 fragment_size = fwidth(denorm_uv) / 2.0;                         \n"
+			"       mediump vec2 fragment_size = fwidth(denorm_uv) / 2.0;                        \n"
 			"                                                                                     \n"
 			"       mediump float is_frag_gt1, radius;                                            \n"
 			"       // Do nothing if fragment is greater than 1 texel                             \n"
 			"       // Don't make the transition more than one fragment (+/- 0.5 fragment)        \n"
-			"       is_frag_gt1 = step(1.0, fragment_size.s);                                     \n"
-			"       radius = min(fragment_size.s, 0.5);                                           \n"
-			"       ratio.s = ratio.s * is_frag_gt1 + smoothstep(0.5 - radius,                    \n"
-			"           0.5 + radius,	ratio.s) * (1.0 - is_frag_gt1);                       \n"
-			"       is_frag_gt1 = step(1.0, fragment_size.t);                                     \n"
-			"       radius = min(fragment_size.t, 0.5);                                           \n"
-			"       ratio.t = ratio.t * is_frag_gt1 + smoothstep(0.5 - radius,                    \n"
-			"           0.5 + radius,	ratio.t) * (1.0 - is_frag_gt1);                       \n"
+			"       is_frag_gt1 = step(1.0, fragment_size.s);                                    \n"
+			"       radius = min(fragment_size.s, 0.5);                                          \n"
+			"       ratio.s = ratio.s * is_frag_gt1 + smoothstep(0.5 - radius,                   \n"
+			"           0.5 + radius,	ratio.s) * (1.0 - is_frag_gt1);                           \n"
+			"       is_frag_gt1 = step(1.0, fragment_size.t);                                    \n"
+			"       radius = min(fragment_size.t, 0.5);                                          \n"
+			"       ratio.t = ratio.t * is_frag_gt1 + smoothstep(0.5 - radius,                   \n"
+			"           0.5 + radius,	ratio.t) * (1.0 - is_frag_gt1);                           \n"
 			"                                                                                     \n"
 			"       // interpolate first on S direction then on T.                                \n"
 			"       mediump vec4 top = mix(t00, t10, ratio.s);                                    \n"
@@ -640,7 +640,7 @@ namespace glsl {
 
 	/*---------------FXAAShader-------------*/
 
-	typedef SpecialShader<FXAAVertexShader, FXAAFragmentShader> FXAAShaderBase;
+	typedef SpecialShader<FXAAVertexShader, FXAAFragmentShader, graphics::TexrectCopyShaderProgram> FXAAShaderBase;
 
 	class FXAAShader : public FXAAShaderBase
 	{
@@ -656,6 +656,11 @@ namespace glsl {
 			m_textureSizeLoc = glGetUniformLocation(GLuint(m_program), "uTextureSize");
 			m_useProgram->useProgram(graphics::ObjectHandle::null);
 		}
+
+        void setTextureSize(u32 _width, u32 _height) override
+        {
+
+        }
 
 		void activate() override {
 			FXAAShaderBase::activate();
@@ -767,7 +772,7 @@ namespace glsl {
 
 	/*---------------TexrectCopyShader-------------*/
 
-	typedef SpecialShader<VertexShaderTexturedRect, TexrectCopy> TexrectCopyShaderBase;
+	typedef SpecialShader<VertexShaderTexturedRect, TexrectCopy, graphics::TexrectCopyShaderProgram> TexrectCopyShaderBase;
 
 	class TexrectCopyShader : public TexrectCopyShaderBase
 	{
@@ -786,15 +791,11 @@ namespace glsl {
 			m_useProgram->useProgram(graphics::ObjectHandle::null);
 		}
 
-		void activate() override
+		void setTextureSize(u32 _width, u32 _height) override
 		{
-			TexrectCopyShaderBase::activate();
 			if (m_textureSizeLoc < 0)
 				return;
-			GLint texWidth, texHeight;
-			glGetTexLevelParameteriv(0, 0, GL_TEXTURE_WIDTH, &texWidth);
-			glGetTexLevelParameteriv(0, 0, GL_TEXTURE_HEIGHT, &texHeight);
-			glUniform2i(m_textureSizeLoc, texWidth, texHeight);
+			glUniform2i(m_textureSizeLoc, (GLint)_width, (GLint)_height);
 		}
 
 	private:
@@ -803,7 +804,7 @@ namespace glsl {
 
 	/*---------------TexrectColorAndDepthCopyShader-------------*/
 
-	typedef SpecialShader<VertexShaderTexturedRect, TexrectColorAndDepthCopy> TexrectColorAndDepthCopyShaderBase;
+	typedef SpecialShader<VertexShaderTexturedRect, TexrectColorAndDepthCopy, graphics::TexrectCopyShaderProgram> TexrectColorAndDepthCopyShaderBase;
 
 	class TexrectColorAndDepthCopyShader : public TexrectColorAndDepthCopyShaderBase
 	{
@@ -824,15 +825,11 @@ namespace glsl {
 			m_useProgram->useProgram(graphics::ObjectHandle::null);
 		}
 
-		void activate() override
+		void setTextureSize(u32 _width, u32 _height) override
 		{
-			TexrectColorAndDepthCopyShaderBase::activate();
 			if (m_textureSizeLoc < 0)
 				return;
-			GLint texWidth, texHeight;
-			glGetTexLevelParameteriv(0, 0, GL_TEXTURE_WIDTH, &texWidth);
-			glGetTexLevelParameteriv(0, 0, GL_TEXTURE_HEIGHT, &texHeight);
-			glUniform2i(m_textureSizeLoc, texWidth, texHeight);
+			glUniform2i(m_textureSizeLoc, (GLint)_width, (GLint)_height);
 		}
 
 	private:
@@ -841,7 +838,7 @@ namespace glsl {
 
 	/*---------------PostProcessorShader-------------*/
 
-	typedef SpecialShader<VertexShaderTexturedRect, GammaCorrection> GammaCorrectionShaderBase;
+	typedef SpecialShader<VertexShaderTexturedRect, GammaCorrection, graphics::TexrectCopyShaderProgram> GammaCorrectionShaderBase;
 
 	class GammaCorrectionShader : public GammaCorrectionShaderBase
 	{
@@ -862,9 +859,14 @@ namespace glsl {
 			glUniform1f(levelLoc, gammaLevel);
 			m_useProgram->useProgram(graphics::ObjectHandle::null);
 		}
+
+        void setTextureSize(u32 _width, u32 _height) override
+        {
+
+        }
 	};
 
-	typedef SpecialShader<VertexShaderTexturedRect, OrientationCorrection> OrientationCorrectionShaderBase;
+	typedef SpecialShader<VertexShaderTexturedRect, OrientationCorrection, graphics::TexrectCopyShaderProgram> OrientationCorrectionShaderBase;
 
 	class OrientationCorrectionShader : public OrientationCorrectionShaderBase
 	{
@@ -881,6 +883,11 @@ namespace glsl {
 			glUniform1i(texLoc, 0);
 			m_useProgram->useProgram(graphics::ObjectHandle::null);
 		}
+
+        void setTextureSize(u32 _width, u32 _height) override
+        {
+
+        }
 	};
 
 	/*---------------TexrectDrawerShader-------------*/
@@ -948,12 +955,12 @@ namespace glsl {
 		return new TexrectDrawerShaderClear(m_glinfo, m_useProgram, m_vertexHeader, m_fragmentHeader);
 	}
 
-	graphics::ShaderProgram * SpecialShadersFactory::createTexrectCopyShader() const
+	graphics::TexrectCopyShaderProgram * SpecialShadersFactory::createTexrectCopyShader() const
 	{
 		return new TexrectCopyShader(m_glinfo, m_useProgram, m_vertexHeader, m_fragmentHeader, m_fragmentEnd);
 	}
 
-	graphics::ShaderProgram * SpecialShadersFactory::createTexrectColorAndDepthCopyShader() const
+	graphics::TexrectCopyShaderProgram * SpecialShadersFactory::createTexrectColorAndDepthCopyShader() const
 	{
 		if (m_glinfo.isGLES2)
 			return nullptr;
@@ -961,17 +968,17 @@ namespace glsl {
 		return new TexrectColorAndDepthCopyShader(m_glinfo, m_useProgram, m_vertexHeader, m_fragmentHeader, m_fragmentEnd);
 	}
 
-	graphics::ShaderProgram * SpecialShadersFactory::createGammaCorrectionShader() const
+	graphics::TexrectCopyShaderProgram * SpecialShadersFactory::createGammaCorrectionShader() const
 	{
 		return new GammaCorrectionShader(m_glinfo, m_useProgram, m_vertexHeader, m_fragmentHeader, m_fragmentEnd);
 	}
 
-	graphics::ShaderProgram * SpecialShadersFactory::createOrientationCorrectionShader() const
+	graphics::TexrectCopyShaderProgram * SpecialShadersFactory::createOrientationCorrectionShader() const
 	{
 		return new OrientationCorrectionShader(m_glinfo, m_useProgram, m_vertexHeader, m_fragmentHeader, m_fragmentEnd);
 	}
 
-	graphics::ShaderProgram * SpecialShadersFactory::createFXAAShader() const
+	graphics::TexrectCopyShaderProgram * SpecialShadersFactory::createFXAAShader() const
 	{
 		return new FXAAShader(m_glinfo, m_useProgram, m_vertexHeader, m_fragmentHeader, m_fragmentEnd);
 	}
