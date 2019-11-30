@@ -232,15 +232,15 @@ namespace graphics {
 
 		ShaderProgram * createTexrectDrawerClearShader();
 
-		TexrectCopyShaderProgram * createTexrectCopyShader();
+		ShaderProgram * createTexrectCopyShader();
 
-		TexrectCopyShaderProgram * createTexrectColorAndDepthCopyShader();
+		ShaderProgram * createTexrectColorAndDepthCopyShader();
 
-		TexrectCopyShaderProgram * createGammaCorrectionShader();
+		ShaderProgram * createGammaCorrectionShader();
 
-		TexrectCopyShaderProgram * createOrientationCorrectionShader();
+		ShaderProgram * createOrientationCorrectionShader();
 
-		TexrectCopyShaderProgram * createFXAAShader();
+		ShaderProgram * createFXAAShader();
 
 		TextDrawerShaderProgram * createTextDrawerShader();
 

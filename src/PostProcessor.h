@@ -10,7 +10,6 @@
 
 namespace graphics {
 	class ShaderProgram;
-	class TexrectCopyShaderProgram;
 }
 
 struct FrameBuffer;
@@ -37,11 +36,11 @@ private:
 	void _createResultBuffer(const FrameBuffer * _pMainBuffer);
 	void _preDraw(FrameBuffer * _pBuffer);
 	void _postDraw();
-	FrameBuffer * _doPostProcessing(FrameBuffer * _pBuffer, graphics::TexrectCopyShaderProgram * _pShader);
+	FrameBuffer * _doPostProcessing(FrameBuffer * _pBuffer, graphics::ShaderProgram * _pShader);
 
-	std::unique_ptr<graphics::TexrectCopyShaderProgram> m_gammaCorrectionProgram;
-	std::unique_ptr<graphics::TexrectCopyShaderProgram> m_orientationCorrectionProgram;
-	std::unique_ptr<graphics::TexrectCopyShaderProgram> m_FXAAProgram;
+	std::unique_ptr<graphics::ShaderProgram> m_gammaCorrectionProgram;
+	std::unique_ptr<graphics::ShaderProgram> m_orientationCorrectionProgram;
+	std::unique_ptr<graphics::ShaderProgram> m_FXAAProgram;
 	std::unique_ptr<FrameBuffer> m_pResultBuffer;
 	CachedTexture * m_pTextureOriginal;
 	PostprocessingList m_postprocessingList;

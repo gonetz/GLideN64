@@ -26,12 +26,6 @@ namespace graphics {
 		virtual void setEnableAlphaTest(int _enable) = 0;
 	};
 
-	class TexrectCopyShaderProgram : public ShaderProgram
-	{
-	public:
-		virtual void setTextureSize(u32 _width, u32 _height) = 0;
-	};
-
 	class TextDrawerShaderProgram : public ShaderProgram
 	{
 	public:

@@ -315,12 +315,12 @@ void CombinerInfo::setDepthFogCombiner()
 	}
 }
 
-TexrectCopyShaderProgram * CombinerInfo::getTexrectCopyProgram()
+ShaderProgram * CombinerInfo::getTexrectCopyProgram()
 {
 	return m_texrectCopyProgram.get();
 }
 
-TexrectCopyShaderProgram * CombinerInfo::getTexrectColorAndDepthCopyProgram()
+ShaderProgram * CombinerInfo::getTexrectColorAndDepthCopyProgram()
 {
 	return m_texrectColorAndDepthCopyProgram.get();
 }

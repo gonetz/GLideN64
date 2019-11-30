@@ -126,8 +126,8 @@ public:
 	void updateParameters();
 
 	void setDepthFogCombiner();
-	graphics::TexrectCopyShaderProgram * getTexrectCopyProgram();
-	graphics::TexrectCopyShaderProgram * getTexrectColorAndDepthCopyProgram();
+	graphics::ShaderProgram * getTexrectCopyProgram();
+	graphics::ShaderProgram * getTexrectColorAndDepthCopyProgram();
 
 	graphics::CombinerProgram * getCurrent() const { return m_pCurrent; }
 	bool isChanged() const {return m_bChanged;}
@@ -159,8 +159,8 @@ private:
 	graphics::Combiners m_combiners;
 
 	std::unique_ptr<graphics::ShaderProgram> m_shadowmapProgram;
-	std::unique_ptr<graphics::TexrectCopyShaderProgram> m_texrectCopyProgram;
-	std::unique_ptr<graphics::TexrectCopyShaderProgram> m_texrectColorAndDepthCopyProgram;
+	std::unique_ptr<graphics::ShaderProgram> m_texrectCopyProgram;
+	std::unique_ptr<graphics::ShaderProgram> m_texrectColorAndDepthCopyProgram;
 };
 
 inline

@@ -418,27 +418,27 @@ graphics::ShaderProgram * ContextImpl::createTexrectDrawerClearShader()
 	return m_specialShadersFactory->createTexrectDrawerClearShader();
 }
 
-graphics::TexrectCopyShaderProgram * ContextImpl::createTexrectCopyShader()
+graphics::ShaderProgram * ContextImpl::createTexrectCopyShader()
 {
 	return m_specialShadersFactory->createTexrectCopyShader();
 }
 
-graphics::TexrectCopyShaderProgram * ContextImpl::createTexrectColorAndDepthCopyShader()
+graphics::ShaderProgram * ContextImpl::createTexrectColorAndDepthCopyShader()
 {
 	return m_specialShadersFactory->createTexrectColorAndDepthCopyShader();
 }
 
-graphics::TexrectCopyShaderProgram * ContextImpl::createGammaCorrectionShader()
+graphics::ShaderProgram * ContextImpl::createGammaCorrectionShader()
 {
 	return m_specialShadersFactory->createGammaCorrectionShader();
 }
 
-graphics::TexrectCopyShaderProgram * ContextImpl::createOrientationCorrectionShader()
+graphics::ShaderProgram * ContextImpl::createOrientationCorrectionShader()
 {
 	return m_specialShadersFactory->createOrientationCorrectionShader();
 }
 
-graphics::TexrectCopyShaderProgram * ContextImpl::createFXAAShader()
+graphics::ShaderProgram * ContextImpl::createFXAAShader()
 {
 	return m_specialShadersFactory->createFXAAShader();
 }
