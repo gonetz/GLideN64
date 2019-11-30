@@ -10,6 +10,16 @@ option(ODROID "Set to ON if targeting an Odroid" ${ODROID})
 option(MUPENPLUSAPI "Set to ON for Mupen64Plus plugin" ${MUPENPLUSAPI})
 option(MESA "Set to ON to disable Raspberry Pi autodetection" ${MESA})
 option(VERO4K "Set to ON if targeting a Vero4k" ${VERO4K})
+option(ANDROID "Set to ON if targeting an Android device" ${ANDROID})
+option(GL_PROFILE "Set to ON to turn on GL profiling" ${GL_PROFILE})
+
+# run script to generate Revision.h
+set(PATH_REVISION "Revision.h")
+add_custom_command(
+        OUTPUT ${PATH_REVISION}
+        COMMAND ${CMAKE_SOURCE_DIR}/getRevision.sh
+        COMMENT "Generate Git version"
+)
 
 project( GLideN64 )
 
@@ -248,12 +258,73 @@ if(VERO4K)
    )
 endif(VERO4K)
 
-if(UNIX OR BCMHOST)
-  SET( FREETYPE_INCLUDE_DIRS "/usr/include/freetype2/" )
+if(ANDROID)
+   add_definitions(-DOS_ANDROID -DEGL_EGLEXT_PROTOTYPES -DEGL)
+   set(EGL ON)
+
+   if(ANDROID_ABI STREQUAL "armeabi-v7a" OR ANDROID_ABI STREQUAL "arm64-v8a")
+       set(NEON_OPT ON)
+       set(VEC4_OPT ON)
+       set(CRC_NEON ON)
+   elseif(ANDROID_ABI STREQUAL "x86" OR ANDROID_ABI STREQUAL "x86_64")
+       set(CRC_OPT ON)
+       set(VEC4_OPT ON)
+   endif()
+
+   list(APPEND GLideN64_SOURCES
+           Log_android.cpp
+           Graphics/OpenGLContext/opengl_ColorBufferReaderWithEGLImage.cpp
+           Graphics/OpenGLContext/GraphicBuffer/PrivateApi/GraphicBuffer.cpp
+           Graphics/OpenGLContext/GraphicBuffer/PrivateApi/libhardware.cpp
+           Graphics/OpenGLContext/GraphicBuffer/PublicApi/android_hardware_buffer_compat.cpp
+           Graphics/OpenGLContext/GraphicBuffer/GraphicBufferWrapper.cpp
+           )
+
+   list(REMOVE_ITEM GLideN64_SOURCES
+           Log.cpp
+           )
+
+   find_library( # Defines the name of the path variable that stores the
+           # location of the NDK library.
+           LOG_LIB
+
+           # Specifies the name of the NDK library that
+           # CMake needs to locate.
+           log )
+endif(ANDROID)
+
+if(ANDROID)
+  set( FREETYPE_INCLUDE_DIRS "${ANDROID_LIB_PATH}/freetype/include" )
+elseif(UNIX OR BCMHOST)
+  set( FREETYPE_INCLUDE_DIRS "/usr/include/freetype2/" )
 else(UNIX OR BCMHOST)
-  SET( ENV{FREETYPE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/../../freetype )
-endif(UNIX OR BCMHOST)
-FIND_PACKAGE( Freetype REQUIRED )
+  set( ENV{FREETYPE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/../../freetype )
+endif(ANDROID)
+
+if(ANDROID)
+    add_library( ANDROID_FREETYPE
+            SHARED
+            IMPORTED )
+
+    if( CMAKE_BUILD_TYPE STREQUAL "Debug")
+        set( BUILD_VARIANT "debug" )
+    else()
+        set( BUILD_VARIANT "release" )
+    endif()
+
+    set_target_properties( # Specifies the target library.
+            ANDROID_FREETYPE
+
+            # Specifies the parameter you want to define.
+            PROPERTIES IMPORTED_LOCATION
+
+            # Provides the path to the library you want to import.
+            ${ANDROID_LIB_PATH}/libs/${BUILD_VARIANT}/${ANDROID_ABI}/libfreetype.so)
+    set(FREETYPE_LIBRARIES ANDROID_FREETYPE)
+elseif(ANDROID)
+    FIND_PACKAGE( Freetype REQUIRED )
+endif(ANDROID)
+
 include_directories( ${FREETYPE_INCLUDE_DIRS} )
 
 if(VEC4_OPT)
@@ -271,11 +342,19 @@ if(CRC_ARMV8)
   )
 elseif(CRC_OPT)
   list(REMOVE_ITEM GLideN64_SOURCES
-        CRC32.cpp
+    CRC32.cpp
   )
   list(APPEND GLideN64_SOURCES
-        CRC_OPT.cpp
-        xxHash/xxhash.c
+    CRC_OPT.cpp
+    xxHash/xxhash.c
+  )
+elseif(CRC_NEON)
+  list(REMOVE_ITEM GLideN64_SOURCES
+    CRC32.cpp
+  )
+  list(APPEND GLideN64_SOURCES
+    Neon/CRC_OPT_NEON.cpp
+    xxHash/xxhash.c
   )
 endif(CRC_ARMV8)
 
@@ -317,11 +396,17 @@ if( CMAKE_BUILD_TYPE STREQUAL "Debug")
 	)
 endif( CMAKE_BUILD_TYPE STREQUAL "Debug")
 
+if(GL_PROFILE)
+    add_definitions(
+            -DGL_PROFILE -DGL_DEBUG
+    )
+endif(GL_PROFILE)
+
 if(EGL)
   add_definitions(
     -DEGL
   )
-  SET(OPENGL_LIBRARIES ${EGL_LIB})
+  set(OPENGL_LIBRARIES ${EGL_LIB})
 else(EGL)
   find_package(OpenGL REQUIRED)
   include_directories(${OpenGL_INCLUDE_DIRS})
@@ -342,15 +427,15 @@ if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" OR "${CMAKE_CXX_COMPILER_ID}" STREQ
     message("Found compiler version " ${G++_VERSION})
     message(SEND_ERROR "You need at least Clang 3.3 to compile GLideN64!")
   endif()
-  SET(GCC_CPP11_COMPILE_FLAGS "-std=c++11")
-  SET( CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} ${GCC_CPP11_COMPILE_FLAGS}" )
+  set(GCC_CPP11_COMPILE_FLAGS "-std=c++11")
+  set( CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} ${GCC_CPP11_COMPILE_FLAGS}" )
   if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
-    SET(GCC_STATIC_LINK_FLAGS "-static-libgcc")
+    set(GCC_STATIC_LINK_FLAGS "-static-libgcc")
   endif()
-  SET( CMAKE_SHARED_LINKER_FLAGS  "${CMAKE_SHARED_LINKER_FLAGS} ${GCC_STATIC_LINK_FLAGS}" )
+  set( CMAKE_SHARED_LINKER_FLAGS  "${CMAKE_SHARED_LINKER_FLAGS} ${GCC_STATIC_LINK_FLAGS}" )
 endif()
 
-add_library( ${GLideN64_DLL_NAME} SHARED ${GLideN64_SOURCES})
+add_library( ${GLideN64_DLL_NAME} SHARED ${GLideN64_SOURCES} ${PATH_REVISION})
 
 if( CMAKE_BUILD_TYPE STREQUAL "Debug")
   SET_TARGET_PROPERTIES(
@@ -363,15 +448,15 @@ if( CMAKE_BUILD_TYPE STREQUAL "Debug")
 
   if(SDL)
         if (NOHQ)
-	  target_link_libraries(${GLideN64_DLL_NAME} PRIVATE ${OPENGL_LIBRARIES} ${SDL_LIBRARIES} ${FREETYPE_LIBRARIES} osald )
+	  target_link_libraries(${GLideN64_DLL_NAME} PRIVATE ${OPENGL_LIBRARIES} ${SDL_LIBRARIES} ${FREETYPE_LIBRARIES} ${LOG_LIB} osald )
 	else (NOHQ)
-	  target_link_libraries(${GLideN64_DLL_NAME} PRIVATE ${OPENGL_LIBRARIES} ${SDL_LIBRARIES} ${FREETYPE_LIBRARIES} osald GLideNHQd )
+	  target_link_libraries(${GLideN64_DLL_NAME} PRIVATE ${OPENGL_LIBRARIES} ${SDL_LIBRARIES} ${FREETYPE_LIBRARIES} ${LOG_LIB} osald GLideNHQd )
 	endif (NOHQ)
   else(SDL)
 	if (NOHQ)
-	  target_link_libraries(${GLideN64_DLL_NAME} PRIVATE ${OPENGL_LIBRARIES} ${FREETYPE_LIBRARIES} osald )
+	  target_link_libraries(${GLideN64_DLL_NAME} PRIVATE ${OPENGL_LIBRARIES} ${FREETYPE_LIBRARIES} ${LOG_LIB} osald )
 	else (NOHQ)
-	  target_link_libraries(${GLideN64_DLL_NAME} PRIVATE ${OPENGL_LIBRARIES} ${FREETYPE_LIBRARIES} osald GLideNHQd )
+	  target_link_libraries(${GLideN64_DLL_NAME} PRIVATE ${OPENGL_LIBRARIES} ${FREETYPE_LIBRARIES} ${LOG_LIB} osald GLideNHQd )
 	endif (NOHQ)
   endif(SDL)
 endif( CMAKE_BUILD_TYPE STREQUAL "Debug")
@@ -396,15 +481,15 @@ if( CMAKE_BUILD_TYPE STREQUAL "Release")
 
   if(SDL)
 	if (NOHQ)
-	  target_link_libraries(${GLideN64_DLL_NAME} ${OPENGL_LIBRARIES} ${SDL_LIBRARIES} ${FREETYPE_LIBRARIES} osal )
+	  target_link_libraries(${GLideN64_DLL_NAME} ${OPENGL_LIBRARIES} ${SDL_LIBRARIES} ${FREETYPE_LIBRARIES} ${LOG_LIB} osal )
 	else (NOHQ)
-	  target_link_libraries(${GLideN64_DLL_NAME} ${OPENGL_LIBRARIES} ${SDL_LIBRARIES} ${FREETYPE_LIBRARIES} osal GLideNHQ )
+	  target_link_libraries(${GLideN64_DLL_NAME} ${OPENGL_LIBRARIES} ${SDL_LIBRARIES} ${FREETYPE_LIBRARIES} ${LOG_LIB} osal GLideNHQ )
 	endif (NOHQ)
   else(SDL)
 	if (NOHQ)
-	  target_link_libraries(${GLideN64_DLL_NAME} ${OPENGL_LIBRARIES} ${FREETYPE_LIBRARIES} osal )
+	  target_link_libraries(${GLideN64_DLL_NAME} ${OPENGL_LIBRARIES} ${FREETYPE_LIBRARIES} ${LOG_LIB} osal )
 	else (NOHQ)
-	  target_link_libraries(${GLideN64_DLL_NAME} ${OPENGL_LIBRARIES} ${FREETYPE_LIBRARIES} osal GLideNHQ )
+	  target_link_libraries(${GLideN64_DLL_NAME} ${OPENGL_LIBRARIES} ${FREETYPE_LIBRARIES} ${LOG_LIB} osal GLideNHQ )
 	endif (NOHQ)
   endif(SDL)
 endif( CMAKE_BUILD_TYPE STREQUAL "Release")

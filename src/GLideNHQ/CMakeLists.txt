@@ -87,6 +87,12 @@ if( NOT GHQCHK )
     add_definitions( -DTXFILTER_LIB)
 
     if( CMAKE_BUILD_TYPE STREQUAL "Debug")
+        SET( BUILD_VARIANT "debug" )
+    else()
+        SET( BUILD_VARIANT "release" )
+    endif()
+
+    if( CMAKE_BUILD_TYPE STREQUAL "Debug")
       add_library( GLideNHQd STATIC ${GLideNHQ_SOURCES})
 
       set_target_properties(GLideNHQd PROPERTIES LINK_SEARCH_START_STATIC 1)
@@ -100,6 +106,13 @@ if( NOT GHQCHK )
           ${ZLIB_LIBRARIES}
           osald
         )
+      elseif(ANDROID)
+          target_link_libraries(GLideNHQ PRIVATE
+                  ${ANDROID_LIB_PATH}/libs/${BUILD_VARIANT}/${ANDROID_ABI}/libpng.a
+                  z
+                  dl
+                  osal
+                  )
       else(MINGW OR BCMHOST OR APPLE OR USE_SYSTEM_LIBS)
         target_link_libraries(GLideNHQd PRIVATE
           ${CMAKE_CURRENT_SOURCE_DIR}/lib/libpng.a
@@ -130,6 +143,13 @@ if( NOT GHQCHK )
         target_link_libraries(GLideNHQ
           ${PNG_LIBRARIES}
           ${ZLIB_LIBRARIES}
+          osal
+        )
+      elseif(ANDROID)
+        target_link_libraries(GLideNHQ PRIVATE
+          ${ANDROID_LIB_PATH}/libs/${BUILD_VARIANT}/${ANDROID_ABI}/libpng.a
+          z
+          dl
           osal
         )
       else(PANDORA)
