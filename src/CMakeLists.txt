@@ -297,7 +297,7 @@ if(ANDROID)
   set( FREETYPE_INCLUDE_DIRS "${ANDROID_LIB_PATH}/freetype/include" )
 elseif(UNIX OR BCMHOST)
   set( FREETYPE_INCLUDE_DIRS "/usr/include/freetype2/" )
-else(UNIX OR BCMHOST)
+else(ANDROID)
   set( ENV{FREETYPE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/../../freetype )
 endif(ANDROID)
 
@@ -321,7 +321,7 @@ if(ANDROID)
             # Provides the path to the library you want to import.
             ${ANDROID_LIB_PATH}/libs/${BUILD_VARIANT}/${ANDROID_ABI}/libfreetype.so)
     set(FREETYPE_LIBRARIES ANDROID_FREETYPE)
-elseif(ANDROID)
+else(ANDROID)
     FIND_PACKAGE( Freetype REQUIRED )
 endif(ANDROID)
 
