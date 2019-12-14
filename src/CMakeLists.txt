@@ -164,7 +164,11 @@ if(MUPENPLUSAPI)
 
   set(GLideN64_SOURCES_WIN ${GLideN64_SOURCES_UNIX}
   )
-  set(GLideN64_DLL_NAME mupen64plus-video-GLideN64)
+  if (ANDROID)
+      set(GLideN64_DLL_NAME libmupen64plus-video-GLideN64)
+  else()
+      set(GLideN64_DLL_NAME mupen64plus-video-GLideN64)
+  endif()
 else(MUPENPLUSAPI)
   if(UNIX)
     message(FATAL_ERROR "UNIX build requires MUPENPLUSAPI!")
