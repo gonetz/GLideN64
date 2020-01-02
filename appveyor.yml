@@ -38,9 +38,9 @@ build_script:
 
 after_build:
   - copy ini\GLideN64.custom.ini %N64PluginsDir_x64%
-  - copy translations\*.* %N64PluginsDir_x64%
+  - copy translations\release\*.qm %N64PluginsDir_x64%
   - copy ini\GLideN64.custom.ini %N64PluginsDir%
-  - copy translations\*.* %N64PluginsDir%
+  - copy translations\release\*.qm %N64PluginsDir%
   - copy ini\GLideN64.custom.ini %Mupen64PluginsDir_x64%\
   - copy ini\GLideN64.custom.ini %Mupen64PluginsDir%\
   - del /Q %N64PluginsDir_x64%\*.lib %N64PluginsDir_x64%\*.exp
