@@ -623,14 +623,14 @@ void _calcTileSizes(u32 _t, TileSizes & _sizes, gDPTile * _pLoadTile)
 		int mask_width = (pTile->masks == 0) ? (tile_width) : (1 << pTile->masks);
 		int mask_height = (pTile->maskt == 0) ? (tile_height) : (1 << pTile->maskt);
 
-		if (pTile->clamps && tile_width <= 256)
+		if (pTile->clamps)
 			width = min(mask_width, tile_width);
 		else if ((u32)(mask_width * mask_height) <= loadParams.maxTexels)
 			width = mask_width;
 		else
 			width = tileWidth;
 
-		if (pTile->clampt && tile_height <= 256)
+		if (pTile->clampt)
 			height = min(mask_height, tile_height);
 		else if ((u32)(mask_width * mask_height) <= loadParams.maxTexels)
 			height = mask_height;
