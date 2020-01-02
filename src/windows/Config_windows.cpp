@@ -11,6 +11,9 @@ Config config;
 
 void Config_DoConfig(/*HWND hParent*/)
 {
+	if (ConfigOpen)
+		return;
+
 	wchar_t strIniFolderPath[PLUGIN_PATH_SIZE];
 	api().FindPluginPath(strIniFolderPath);
 
