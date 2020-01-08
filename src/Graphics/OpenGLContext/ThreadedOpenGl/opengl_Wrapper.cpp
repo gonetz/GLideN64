@@ -1370,6 +1370,23 @@ namespace opengl {
 			ptrCopyTexImage2D(target, level, internalformat, x, y, width, height, border);
 	}
 
+	void FunctionWrapper::wrViewportIndexedf(GLuint index, GLfloat x, GLfloat y, GLfloat w, GLfloat h)
+	{
+		if (m_threaded_wrapper)
+			executeCommand(GlViewportIndexedfCommand::get(index, x, y, w, h));
+		else
+			ptrViewportIndexedf(index, x, y, w, h);
+	}
+
+	void FunctionWrapper::wrViewportIndexedfv(GLuint index, const GLfloat *v)
+	{
+		if (m_threaded_wrapper) {
+			PoolBufferPointer values = OpenGlCommand::m_ringBufferPool.createPoolBuffer(reinterpret_cast<const char *>(v), 4 * sizeof(GLfloat));
+			executeCommand(GlViewportIndexedfvCommand::get(index, values));
+		} else
+			ptrViewportIndexedfv(index, v);
+	}
+
 	void FunctionWrapper::wrDebugMessageCallback(GLDEBUGPROC callback, const void *userParam)
 	{
 		if (m_threaded_wrapper)

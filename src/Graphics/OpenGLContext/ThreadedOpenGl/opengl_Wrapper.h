@@ -191,6 +191,8 @@ namespace opengl {
 		static void wrFlushMappedBufferRange(GLenum target, GLintptr offset, GLsizeiptr length);
 		static void wrFinish();
 		static void wrCopyTexImage2D(GLenum target, GLint level, GLenum internalformat, GLint x, GLint y, GLsizei width, GLsizei height, GLint border);
+		static void wrViewportIndexedf(GLuint index, GLfloat x, GLfloat y, GLfloat w, GLfloat h);
+		static void wrViewportIndexedfv(GLuint index, const GLfloat *v);
 		static void wrDebugMessageCallback(GLDEBUGPROC callback, const void *userParam);
 		static void wrDebugMessageControl(GLenum source, GLenum type, GLenum severity, GLsizei count, const GLuint *ids, GLboolean enabled);
 		static void wrEGLImageTargetTexture2DOES(GLenum target, void* image);

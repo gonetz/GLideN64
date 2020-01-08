@@ -4758,6 +4758,77 @@ private:
 	GLint m_border;
 };
 
+class GlViewportIndexedfCommand : public OpenGlCommand
+{
+public:
+	GlViewportIndexedfCommand() :
+			OpenGlCommand(false, false, "glViewportIndexedf")
+	{
+	}
+
+	static std::shared_ptr<OpenGlCommand> get(GLuint index, GLfloat x, GLfloat y, GLfloat w, GLfloat h)
+	{
+		static int poolId = OpenGlCommandPool::get().getNextAvailablePool();
+		auto ptr = getFromPool<GlViewportIndexedfCommand>(poolId);
+		ptr->set(index, x, y, w, h);
+		return ptr;
+	}
+
+	void commandToExecute() override
+	{
+		ptrViewportIndexedf(m_index, m_x, m_y, m_w, m_h);
+	}
+
+private:
+	void set(GLuint index, GLfloat x, GLfloat y, GLfloat w, GLfloat h)
+	{
+		m_index = index;
+		m_x = x;
+		m_y = y;
+		m_w = w;
+		m_h = h;
+	}
+
+	GLuint m_index;
+	GLfloat m_x;
+	GLfloat m_y;
+	GLfloat m_w;
+	GLfloat m_h;
+};
+
+class GlViewportIndexedfvCommand : public OpenGlCommand
+{
+public:
+	GlViewportIndexedfvCommand() :
+			OpenGlCommand(false, false, "glViewportIndexedfv")
+	{
+	}
+
+	static std::shared_ptr<OpenGlCommand> get(GLuint index, const PoolBufferPointer& v)
+	{
+		static int poolId = OpenGlCommandPool::get().getNextAvailablePool();
+		auto ptr = getFromPool<GlViewportIndexedfvCommand>(poolId);
+		ptr->set(index, v);
+		return ptr;
+	}
+
+	void commandToExecute() override
+	{
+		ptrViewportIndexedfv(m_index, reinterpret_cast<const GLfloat*>(OpenGlCommand::m_ringBufferPool.getBufferFromPool(m_v)));
+		OpenGlCommand::m_ringBufferPool.removeBufferFromPool(m_v);
+	}
+
+private:
+	void set(GLuint index, const PoolBufferPointer& v)
+	{
+		m_index = index;
+		m_v = v;
+	}
+
+	GLuint m_index;
+	PoolBufferPointer m_v;
+};
+
 class GlDebugMessageCallbackCommand : public OpenGlCommand
 {
 	public:

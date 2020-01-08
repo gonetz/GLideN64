@@ -192,6 +192,8 @@ extern PFNGLDISABLEIPROC ptrDisablei;
 extern PFNGLDEBUGMESSAGECALLBACKPROC ptrDebugMessageCallback;
 extern PFNGLDEBUGMESSAGECONTROLPROC ptrDebugMessageControl;
 extern PFNGLCOPYTEXIMAGE2DPROC ptrCopyTexImage2D;
+extern PFNGLVIEWPORTINDEXEDFPROC ptrViewportIndexedf;
+extern PFNGLVIEWPORTINDEXEDFVPROC ptrViewportIndexedfv;
 
 typedef void (APIENTRYP PFNGLEGLIMAGETARGETTEXTURE2DOESPROC) (GLenum target, void* image);
 extern PFNGLEGLIMAGETARGETTEXTURE2DOESPROC ptrEGLImageTargetTexture2DOES;
@@ -334,6 +336,8 @@ void initGLFunctions();
 #define glEnablei(...) opengl::FunctionWrapper::wrEnablei(__VA_ARGS__)
 #define glDisablei(...) opengl::FunctionWrapper::wrDisablei(__VA_ARGS__)
 #define glCopyTexImage2D(...) opengl::FunctionWrapper::wrCopyTexImage2D(__VA_ARGS__)
+#define glViewportIndexedf(...) opengl::FunctionWrapper::wrViewportIndexedf(__VA_ARGS__)
+#define glViewportIndexedfv(...) opengl::FunctionWrapper::wrViewportIndexedfv(__VA_ARGS__)
 #define glDebugMessageCallback(...) opengl::FunctionWrapper::wrDebugMessageCallback(__VA_ARGS__)
 #define glDebugMessageControl(...) opengl::FunctionWrapper::wrDebugMessageControl(__VA_ARGS__)
 #define glEGLImageTargetTexture2DOES(...) opengl::FunctionWrapper::wrEGLImageTargetTexture2DOES(__VA_ARGS__)
