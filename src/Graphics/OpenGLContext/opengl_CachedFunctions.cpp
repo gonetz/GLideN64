@@ -99,15 +99,21 @@ void CachedDepthCompare::setDepthCompare(Parameter _mode)
 
 void CachedViewport::setViewport(s32 _x, s32 _y, s32 _width, s32 _height)
 {
-	if (update(Parameter(_x), Parameter(_y), Parameter(_width), Parameter(_height)))
+	if (update({ Parameter(_x), Parameter(_y), Parameter(_width), Parameter(_height) }))
 		glViewport(_x, _y, _width, _height);
+}
+
+void CachedViewportIndexedf::setViewport(u32 _index, f32 _x, f32 _y, f32 _width, f32 _height)
+{
+	if (update({ Parameter(_index), Parameter(_x), Parameter(_y), Parameter(_width), Parameter(_height) }))
+		glViewportIndexedf(_index, _x, _y, _width, _height);
 }
 
 /*---------------CachedScissor-------------*/
 
 void CachedScissor::setScissor(s32 _x, s32 _y, s32 _width, s32 _height)
 {
-	if (update(Parameter(_x), Parameter(_y), Parameter(_width), Parameter(_height)))
+	if (update({ Parameter(_x), Parameter(_y), Parameter(_width), Parameter(_height) }))
 		glScissor(_x, _y, _width, _height);
 }
 
@@ -123,7 +129,7 @@ void CachedBlending::setBlending(Parameter _sfactor, Parameter _dfactor)
 
 void CachedBlendColor::setBlendColor(f32 _red, f32 _green, f32 _blue, f32 _alpha)
 {
-	if (update(Parameter(_red), Parameter(_green), Parameter(_blue), Parameter(_alpha)))
+	if (update({ Parameter(_red), Parameter(_green), Parameter(_blue), Parameter(_alpha) }))
 		glBlendColor(_red, _green, _blue, _alpha);
 }
 
@@ -131,7 +137,7 @@ void CachedBlendColor::setBlendColor(f32 _red, f32 _green, f32 _blue, f32 _alpha
 
 void CachedClearColor::setClearColor(f32 _red, f32 _green, f32 _blue, f32 _alpha)
 {
-	if (update(Parameter(_red), Parameter(_green), Parameter(_blue), Parameter(_alpha)))
+	if (update({ Parameter(_red), Parameter(_green), Parameter(_blue), Parameter(_alpha) }))
 		glClearColor(_red, _green, _blue, _alpha);
 }
 
@@ -198,6 +204,7 @@ void CachedFunctions::reset()
 	m_depthMask.reset();
 	m_depthCompare.reset();
 	m_viewport.reset();
+	m_viewportIndexedf.reset();
 	m_scissor.reset();
 	m_blending.reset();
 	m_blendColor.reset();
@@ -257,6 +264,11 @@ CachedDepthCompare * CachedFunctions::getCachedDepthCompare()
 CachedViewport * CachedFunctions::getCachedViewport()
 {
 	return &m_viewport;
+}
+
+CachedViewportIndexedf * CachedFunctions::getCachedViewportIndexedf()
+{
+	return &m_viewportIndexedf;
 }
 
 CachedScissor * CachedFunctions::getCachedScissor()

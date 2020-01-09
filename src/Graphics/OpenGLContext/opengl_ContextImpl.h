@@ -40,6 +40,8 @@ namespace opengl {
 
 		void setViewport(s32 _x, s32 _y, s32 _width, s32 _height) override;
 
+		void setViewportIndexedf(u32 _index, f32 _x, f32 _y, f32 _width, f32 _height) override;
+
 		void setScissor(s32 _x, s32 _y, s32 _width, s32 _height) override;
 
 		void setBlending(graphics::BlendParam _sfactor, graphics::BlendParam _dfactor) override;

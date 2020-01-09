@@ -62,39 +62,30 @@ namespace opengl {
 		T2 m_p2;
 	};
 
-	class Cached4
+	template <std::size_t N>
+	class CachedN
 	{
 	public:
-		bool update(graphics::Parameter _p1,
-			graphics::Parameter _p2,
-			graphics::Parameter _p3,
-			graphics::Parameter _p4)
-		{
-#ifdef CACHED_USE_CACHE4
-			if (_p1 == m_p1 &&
-				_p2 == m_p2 &&
-				_p3 == m_p3 &&
-				_p4 == m_p4)
-			return false;
-#endif
-			m_p1 = _p1;
-			m_p2 = _p2;
-			m_p3 = _p3;
-			m_p4 = _p4;
+		using Parameters = std::array<graphics::Parameter, N>;
+		bool update(Parameters&& _params) {
+			if (_params == m_params)
+				return false;
+			m_params.swap(_params);
 			return true;
 		}
 
 		void reset()
 		{
-			m_p1.reset();
-			m_p2.reset();
-			m_p3.reset();
-			m_p4.reset();
+			for (auto& param: m_params)
+				param.reset();
 		}
 
 	protected:
-		graphics::Parameter m_p1, m_p2, m_p3, m_p4;
+		Parameters m_params;
 	};
+
+	using Cached4 = CachedN<4>;
+	using Cached5 = CachedN<5>;
 
 	class CachedEnable : public Cached1<graphics::Parameter>
 	{
@@ -156,6 +147,12 @@ namespace opengl {
 	{
 	public:
 		void setViewport(s32 _x, s32 _y, s32 _width, s32 _height);
+	};
+
+	class CachedViewportIndexedf : public Cached5
+	{
+	public:
+		void setViewport(u32 _index, f32 _x, f32 _y, f32 _width, f32 _height);
 	};
 
 	class CachedScissor : public Cached4
@@ -243,6 +240,8 @@ namespace opengl {
 
 		CachedViewport * getCachedViewport();
 
+		CachedViewportIndexedf * getCachedViewportIndexedf();
+
 		CachedScissor * getCachedScissor();
 
 		CachedBlending * getCachedBlending();
@@ -272,6 +271,7 @@ namespace opengl {
 		CachedDepthMask m_depthMask;
 		CachedDepthCompare m_depthCompare;
 		CachedViewport m_viewport;
+		CachedViewportIndexedf m_viewportIndexedf;
 		CachedScissor m_scissor;
 		CachedBlending m_blending;
 		CachedBlendColor m_blendColor;

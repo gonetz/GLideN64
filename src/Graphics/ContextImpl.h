@@ -20,6 +20,7 @@ namespace graphics {
 		virtual void enableDepthWrite(bool _enable) = 0;
 		virtual void setDepthCompare(CompareParam _mode) = 0;
 		virtual void setViewport(s32 _x, s32 _y, s32 _width, s32 _height) = 0;
+		virtual void setViewportIndexedf(u32 _index, f32 _x, f32 _y, f32 _width, f32 _height) = 0;
 		virtual void setScissor(s32 _x, s32 _y, s32 _width, s32 _height) = 0;
 		virtual void setBlending(BlendParam _sfactor, BlendParam _dfactor) = 0;
 		virtual void setBlendColor(f32 _red, f32 _green, f32 _blue, f32 _alpha) = 0;

@@ -65,6 +65,8 @@ namespace graphics {
 
 		void setViewport(s32 _x, s32 _y, s32 _width, s32 _height);
 
+		void setViewportIndexedf(u32 _index, f32 _x, f32 _y, f32 _width, f32 _height);
+
 		void setScissor(s32 _x, s32 _y, s32 _width, s32 _height);
 
 		void setBlending(BlendParam _sfactor, BlendParam _dfactor);
