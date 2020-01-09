@@ -145,7 +145,8 @@ void ContextImpl::setDepthCompare(graphics::CompareParam _mode)
 
 void ContextImpl::setViewport(s32 _x, s32 _y, s32 _width, s32 _height)
 {
-	m_cachedFunctions->getCachedViewport()->setViewport(_x, _y, _width, _height);
+//	m_cachedFunctions->getCachedViewport()->setViewport(_x, _y, _width, _height);
+	m_cachedFunctions->getCachedViewportIndexedf()->setViewport(0, f32(_x) + 0.495f, f32(_y) + 0.495f, f32(_width), f32(_height));
 }
 
 void ContextImpl::setViewportIndexedf(u32 _index, f32 _x, f32 _y, f32 _width, f32 _height)
