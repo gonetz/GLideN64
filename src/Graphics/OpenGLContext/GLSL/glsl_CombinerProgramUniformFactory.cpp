@@ -964,16 +964,16 @@ public:
 				}
 			}
 			if (pTexture->maskS) {
-				u32 wrapWidth = 1 << pTile->originalMaskS;
-				u32 pow2Width = pow2(pTexture->width);
-				aTexWrap[t][0] = f32(wrapWidth) / f32(pow2Width);
-				aTexScale[t][0] = 1.0f / (1.0f - f32(pow2Width - pTexture->width) / f32(pow2Width));
+				const f32 wrapWidth = static_cast<f32>(1 << pTile->originalMaskS);
+				const f32 pow2Width = static_cast<f32>(pow2(pTexture->width));
+				aTexWrap[t][0] = wrapWidth / pow2Width;
+				aTexScale[t][0] = pow2Width / f32(pTexture->width);
 			}
 			if (pTexture->maskT) {
-				u32 wrapHeight = 1 << pTile->originalMaskT;
-				u32 pow2Height = pow2(pTexture->height);
-				aTexWrap[t][1] = f32(wrapHeight) / f32(pow2Height);
-				aTexScale[t][1] = 1.0f / (1.0f - f32(pow2Height - pTexture->height) / f32(pow2Height));
+				const f32 wrapHeight = static_cast<f32>(1 << pTile->originalMaskT);
+				const f32 pow2Height = static_cast<f32>(pow2(pTexture->height));
+				aTexWrap[t][1] = wrapHeight / pow2Height;
+				aTexScale[t][1] = pow2Height / f32(pTexture->height);
 			}
 			if (pTexture->mirrorS) {
 				aTexMirror[t][0] = 1.0f;
