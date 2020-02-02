@@ -292,12 +292,16 @@ public:
 			"uniform mediump vec2 uCacheOffset[2];				\n"
 			"uniform mediump vec2 uCacheShiftScale[2];			\n"
 			"uniform lowp ivec2 uCacheFrameBuffer;				\n"
-			"OUT lowp vec4 vShadeColor;							\n"
 			"OUT highp vec2 vTexCoord0;							\n"
 			"OUT highp vec2 vTexCoord1;							\n"
 			"OUT mediump vec2 vLodTexCoord;						\n"
 			"OUT lowp float vNumLights;							\n"
-
+			;
+		if (!_glinfo.isGLESX || _glinfo.noPerspective)
+			m_part += "noperspective OUT lowp vec4 vShadeColor;	\n";
+		else
+			m_part += "OUT lowp vec4 vShadeColor;				\n";
+		m_part +=
 			"mediump vec2 calcTexCoord(in vec2 texCoord, in int idx)		\n"
 			"{																\n"
 			"    vec2 texCoordOut = texCoord*uCacheShiftScale[idx];			\n"
@@ -352,17 +356,22 @@ public:
 	VertexShaderTriangle(const opengl::GLInfo & _glinfo)
 	{
 		m_part =
-			"IN highp vec4 aPosition;			\n"
-			"IN lowp vec4 aColor;				\n"
-			"IN lowp float aNumLights;			\n"
-			"IN highp vec4 aModify;				\n"
-			"									\n"
-			"uniform lowp int uFogUsage;		\n"
-			"uniform mediump vec2 uFogScale;	\n"
-			"uniform mediump vec2 uScreenCoordsScale;\n"
-			"									\n"
-			"OUT lowp vec4 vShadeColor;			\n"
-			"OUT lowp float vNumLights;			\n"
+			"IN highp vec4 aPosition;										\n"
+			"IN lowp vec4 aColor;											\n"
+			"IN lowp float aNumLights;										\n"
+			"IN highp vec4 aModify;											\n"
+			"																\n"
+			"uniform lowp int uFogUsage;									\n"
+			"uniform mediump vec2 uFogScale;								\n"
+			"uniform mediump vec2 uScreenCoordsScale;						\n"
+			"																\n"
+			"OUT lowp float vNumLights;										\n"
+			;
+		if (!_glinfo.isGLESX || _glinfo.noPerspective)
+			m_part += "noperspective OUT lowp vec4 vShadeColor;				\n";
+		else
+			m_part += "OUT lowp vec4 vShadeColor;							\n";
+		m_part +=
 			"																\n"
 			"void main()													\n"
 			"{																\n"
@@ -406,9 +415,14 @@ public:
 			"IN highp vec2 aTexCoord0;							\n"
 			"IN highp vec2 aTexCoord1;							\n"
 			"													\n"
-			"OUT lowp vec4 vShadeColor;							\n"
-			"OUT highp vec2 vTexCoord0;						\n"
-			"OUT highp vec2 vTexCoord1;						\n"
+			"OUT highp vec2 vTexCoord0;							\n"
+			"OUT highp vec2 vTexCoord1;							\n"
+			;
+		if (!_glinfo.isGLESX || _glinfo.noPerspective)
+			m_part += "noperspective OUT lowp vec4 vShadeColor;	\n";
+		else
+			m_part += "OUT lowp vec4 vShadeColor;				\n";
+		m_part +=
 			"uniform lowp vec4 uRectColor;						\n"
 			"void main()										\n"
 			"{													\n"
@@ -428,7 +442,12 @@ public:
 		m_part =
 			"IN highp vec4 aRectPosition;						\n"
 			"													\n"
-			"OUT lowp vec4 vShadeColor;							\n"
+			;
+		if (!_glinfo.isGLESX || _glinfo.noPerspective)
+			m_part += "noperspective OUT lowp vec4 vShadeColor;	\n";
+		else
+			m_part += "OUT lowp vec4 vShadeColor;				\n";
+		m_part +=
 			"uniform lowp vec4 uRectColor;						\n"
 			"void main()										\n"
 			"{													\n"
@@ -876,8 +895,12 @@ public:
 			;
 		}
 
+		if (!_glinfo.isGLESX || _glinfo.noPerspective)
+			m_part += "noperspective IN lowp vec4 vShadeColor;	\n";
+		else
+			m_part += "IN lowp vec4 vShadeColor;	\n";
+
 		m_part +=
-			"IN lowp vec4 vShadeColor;	\n"
 			"IN highp vec2 vTexCoord0;\n"
 			"IN highp vec2 vTexCoord1;\n"
 			"IN mediump vec2 vLodTexCoord;\n"
@@ -955,10 +978,12 @@ public:
 				;
 		}
 
-		m_part +=
-			"IN lowp vec4 vShadeColor;	\n"
-			"IN lowp float vNumLights;	\n"
-			;
+		if (!_glinfo.isGLESX || _glinfo.noPerspective)
+			m_part += "noperspective IN lowp vec4 vShadeColor;	\n";
+		else
+			m_part += "IN lowp vec4 vShadeColor;	\n";
+
+		m_part += "IN lowp float vNumLights;	\n";
 
 		if (config.frameBufferEmulation.N64DepthCompare == Config::dcFast && _glinfo.ext_fetch) {
 			m_part +=

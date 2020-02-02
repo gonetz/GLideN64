@@ -260,6 +260,25 @@ struct gDPInfo
 
 extern gDPInfo gDP;
 
+//#define OLD_LLE
+
+class LLETriangle
+{
+public:
+	void draw(bool _shade, bool _texture, bool _zbuffer, s32 * _pData);
+	void flush(u32 _cmd);
+	static LLETriangle& get();
+
+private:
+	LLETriangle();
+	LLETriangle(LLETriangle&) = delete;
+	void start(u32 _tile);
+
+	gDPTile *m_textureTileOrg[2];
+	f32 m_textureScaleOrg[2];
+	bool m_flushed{ true };
+};
+
 void gDPSetOtherMode( u32 mode0, u32 mode1 );
 void gDPSetPrimDepth( u16 z, u16 dz );
 void gDPSetTexturePersp( u32 enable );

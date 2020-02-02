@@ -109,6 +109,8 @@ void RSP_CheckDLCounter()
 
 void RSP_ProcessDList()
 {
+	RSP.LLE = false;
+
 	if (ConfigOpen || dwnd().isResizeWindow()) {
 		*REG.MI_INTR |= MI_INTR_DP;
 		CheckInterrupts();

@@ -3,6 +3,7 @@
 #include "DepthBufferRender/ClipPolygon.h"
 #include "DepthBufferRender/DepthBufferRender.h"
 #include "gSP.h"
+#include "RSP.h"
 #include "SoftwareRender.h"
 #include "DepthBuffer.h"
 #include "Config.h"
@@ -54,6 +55,8 @@ bool calcScreenCoordinates(SPVertex * _vsrc, vertexclip * _vclip, u32 _numVertex
 	const float y2 = _vclip[2].y - _vclip[1].y;
 
 	_clockwise = (x1*y2 - y1*x2) >= 0.0f;
+	if (RSP.LLE)
+		return true;
 
 	const u32 cullMode = (gSP.geometryMode & G_CULL_BOTH);
 

@@ -302,6 +302,10 @@ void GraphicsDrawer::_updateScreenCoordsViewport(const FrameBuffer * _pBuffer) c
 		viewportScaleX = viewportScaleY = pCurrentBuffer->m_scale;
 		X = roundup(f32(pCurrentBuffer->m_originX), viewportScaleX);
 		Y = roundup(f32(pCurrentBuffer->m_originY), viewportScaleY);
+		if (RSP.LLE) {
+			gSP.viewport.width = f32(bufferWidth);
+			gSP.viewport.height = f32(bufferHeight);
+		}
 	}
 	s32 WIDTH = roundup(f32(bufferWidth), viewportScaleX);
 	s32 HEIGHT = roundup(f32(bufferHeight), viewportScaleY);
@@ -801,12 +805,17 @@ void GraphicsDrawer::drawScreenSpaceTriangle(u32 _numVtx, graphics::DrawModePara
 		SPVertex & vtx = m_dmaVertices[i];
 		vtx.modify = MODIFY_ALL;
 		maxY = std::max(maxY, vtx.y);
+
+		vtx.clip = 0;
+		if (vtx.x > gSP.viewport.width) vtx.clip |= CLIP_POSX;
+		if (vtx.x < 0) vtx.clip |= CLIP_NEGX;
+		if (vtx.y > gSP.viewport.height) vtx.clip |= CLIP_POSY;
+		if (vtx.y < 0) vtx.clip |= CLIP_NEGY;
 	}
 	m_modifyVertices = MODIFY_ALL;
 
 	gSP.changed &= ~CHANGED_GEOMETRYMODE; // Don't update cull mode
 	_prepareDrawTriangle();
-	gfxContext.enable(enable::CULL_FACE, false);
 
 	Context::DrawTriangleParameters triParams;
 	triParams.mode = _mode;
@@ -818,7 +827,18 @@ void GraphicsDrawer::drawScreenSpaceTriangle(u32 _numVtx, graphics::DrawModePara
 	g_debugger.addTriangles(triParams);
 	m_dmaVerticesNum = 0;
 
-	frameBufferList().setBufferChanged(maxY);
+#ifndef OLD_LLE
+	if (config.frameBufferEmulation.enable != 0) {
+		const f32 maxY = renderTriangles(m_dmaVertices.data(), nullptr, _numVtx);
+		frameBufferList().setBufferChanged(maxY);
+		if (config.frameBufferEmulation.copyDepthToRDRAM == Config::cdSoftwareRender &&
+			gDP.otherMode.depthUpdate != 0) {
+			FrameBuffer * pCurrentDepthBuffer = frameBufferList().findBuffer(gDP.depthImageAddress);
+			if (pCurrentDepthBuffer != nullptr)
+				pCurrentDepthBuffer->setDirty();
+		}
+	}
+#endif
 	gSP.changed |= CHANGED_GEOMETRYMODE;
 }
 
