@@ -10,6 +10,7 @@
 #include <Graphics/ObjectHandle.h>
 #include <Graphics/ShaderProgram.h>
 #include <Graphics/OpenGLContext/opengl_CachedFunctions.h>
+#include <Config.h>
 #include "glsl_SpecialShadersFactory.h"
 #include "glsl_ShaderPart.h"
 #include "glsl_FXAA.h"
@@ -448,17 +449,7 @@ namespace glsl {
 	public:
 		TexrectCopy(const opengl::GLInfo & _glinfo)
 		{
-			if (_glinfo.isGLES2) {
-				m_part =
-					"IN mediump vec2 vTexCoord0;							\n"
-					"uniform sampler2D uTex0;								\n"
-					"OUT lowp vec4 fragColor;								\n"
-					"														\n"
-					"void main()											\n"
-					"{														\n"
-					"	fragColor = texture2D(uTex0, vTexCoord0);			\n"
-					;
-			} else {
+			if (config.generalEmulation.enableHybridFilter) {
 				m_part = getHybridTextureFilter();
 				m_part +=
 					"IN mediump vec2 vTexCoord0;				\n"
@@ -467,6 +458,16 @@ namespace glsl {
 					"void main()								\n"
 					"{											\n"
 					"	fragColor = hybridFilter(vTexCoord0);	\n"
+					;
+			} else {
+				m_part =
+					"IN mediump vec2 vTexCoord0;							\n"
+					"uniform sampler2D uTex0;								\n"
+					"OUT lowp vec4 fragColor;								\n"
+					"														\n"
+					"void main()											\n"
+					"{														\n"
+					"	fragColor = texture2D(uTex0, vTexCoord0);			\n"
 					;
 			}
 		}
@@ -479,19 +480,7 @@ namespace glsl {
 	public:
 		TexrectColorAndDepthCopy(const opengl::GLInfo & _glinfo)
 		{
-			if (_glinfo.isGLES2) {
-				m_part =
-					"IN mediump vec2 vTexCoord0;							\n"
-					"uniform sampler2D uTex0;								\n"
-					"uniform sampler2D uTex1;								\n"
-					"OUT lowp vec4 fragColor;								\n"
-					"														\n"
-					"void main()											\n"
-					"{														\n"
-					"	fragColor = texture2D(uTex0, vTexCoord0);			\n"
-					"	gl_FragDepth = texture2D(uTex1, vTexCoord0).r;		\n"
-					;
-			} else {
+			if (config.generalEmulation.enableHybridFilter) {
 				m_part = getHybridTextureFilter();
 				m_part +=
 					"IN mediump vec2 vTexCoord0;						\n"
@@ -502,6 +491,18 @@ namespace glsl {
 					"{													\n"
 					"	fragColor = hybridFilter(vTexCoord0);			\n"
 					"	gl_FragDepth = texture2D(uTex1, vTexCoord0).r;	\n"
+					;
+			} else {
+				m_part =
+					"IN mediump vec2 vTexCoord0;							\n"
+					"uniform sampler2D uTex0;								\n"
+					"uniform sampler2D uTex1;								\n"
+					"OUT lowp vec4 fragColor;								\n"
+					"														\n"
+					"void main()											\n"
+					"{														\n"
+					"	fragColor = texture2D(uTex0, vTexCoord0);			\n"
+					"	gl_FragDepth = texture2D(uTex1, vTexCoord0).r;		\n"
 					;
 			}
 		}
