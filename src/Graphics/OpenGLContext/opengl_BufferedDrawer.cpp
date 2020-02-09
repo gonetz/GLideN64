@@ -194,13 +194,41 @@ void BufferedDrawer::drawTriangles(const graphics::Context::DrawTriangleParamete
 	if (isHWLightingAllowed())
 		glVertexAttrib1f(triangleAttrib::numlights, GLfloat(_params.vertices[0].HWLight));
 
-	if (_params.elements == nullptr) {
-		glDrawArrays(GLenum(_params.mode), m_trisBuffers.vbo.pos - _params.verticesCount, _params.verticesCount);
+	if (config.frameBufferEmulation.N64DepthCompare != Config::dcCompatible) {
+		if (_params.elements == nullptr) {
+			glDrawArrays(GLenum(_params.mode), m_trisBuffers.vbo.pos - _params.verticesCount, _params.verticesCount);
+			return;
+		}
+
+		glDrawRangeElementsBaseVertex(GLenum(_params.mode), 0, _params.verticesCount - 1, _params.elementsCount, GL_UNSIGNED_SHORT,
+			(u16*)nullptr + m_trisBuffers.ebo.pos - _params.elementsCount, m_trisBuffers.vbo.pos - _params.verticesCount);
 		return;
 	}
 
-	glDrawRangeElementsBaseVertex(GLenum(_params.mode), 0, _params.verticesCount - 1, _params.elementsCount, GL_UNSIGNED_SHORT,
-		(u16*)nullptr + m_trisBuffers.ebo.pos - _params.elementsCount, m_trisBuffers.vbo.pos - _params.verticesCount);
+	// Draw polygons one by one
+
+	if (_params.elements == nullptr) {
+		const GLint vboStartPos = m_trisBuffers.vbo.pos - _params.verticesCount;
+		if (_params.mode != graphics::drawmode::TRIANGLES) {
+			glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+			glDrawArrays(GLenum(_params.mode), m_trisBuffers.vbo.pos - _params.verticesCount, _params.verticesCount);
+			return;
+		}
+
+		for (GLint i = 0; i < GLint(_params.verticesCount); i += 3) {
+			glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+			glDrawArrays(GLenum(_params.mode), vboStartPos + i, 3);
+		}
+		return;
+	}
+
+	const GLint eboStartPos = m_trisBuffers.ebo.pos - _params.elementsCount;
+	const GLint vboStartPos = m_trisBuffers.vbo.pos - _params.verticesCount;
+	for (GLint i = 0; i < GLint(_params.elementsCount); i += 3) {
+		glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+		glDrawRangeElementsBaseVertex(GLenum(_params.mode), i, i + 2, 3, GL_UNSIGNED_SHORT,
+			(u16*)nullptr + eboStartPos + i, vboStartPos);
+	}
 }
 
 void BufferedDrawer::drawLine(f32 _width, SPVertex * _vertices)

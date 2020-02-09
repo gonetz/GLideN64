@@ -120,7 +120,7 @@ void GraphicsDrawer::_updateDepthUpdate() const
 
 void GraphicsDrawer::_updateDepthCompare() const
 {
-	if (config.frameBufferEmulation.N64DepthCompare != 0) {
+	if (config.frameBufferEmulation.N64DepthCompare != Config::dcDisable) {
 		gfxContext.enable(enable::DEPTH_TEST, false);
 		gfxContext.enableDepthWrite(false);
 	}
@@ -676,7 +676,7 @@ void GraphicsDrawer::_updateStates(DrawingState _drawingState) const
 
 	if (isCurrentColorImageDepthImage() &&
 		config.generalEmulation.enableFragmentDepthWrite != 0 &&
-		config.frameBufferEmulation.N64DepthCompare == 0) {
+		config.frameBufferEmulation.N64DepthCompare == Config::dcDisable) {
 		// Current render target is depth buffer.
 		// Shader will set gl_FragDepth to shader color, see ShaderCombiner ctor
 		// Here we enable depth buffer write.
@@ -1726,7 +1726,7 @@ void GraphicsDrawer::_initStates()
 	gfxContext.enableDepthWrite(false);
 	gfxContext.setDepthCompare(compare::ALWAYS);
 
-	if (config.frameBufferEmulation.N64DepthCompare != 0) {
+	if (config.frameBufferEmulation.N64DepthCompare != Config::dcDisable) {
 		gfxContext.enable(enable::DEPTH_TEST, false);
 		gfxContext.enable(enable::POLYGON_OFFSET_FILL, false);
 	}

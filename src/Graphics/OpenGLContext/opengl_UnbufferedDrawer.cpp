@@ -76,12 +76,36 @@ void UnbufferedDrawer::drawTriangles(const graphics::Context::DrawTriangleParame
 	m_cachedAttribArray->enableVertexAttribArray(rectAttrib::texcoord0, false);
 	m_cachedAttribArray->enableVertexAttribArray(rectAttrib::texcoord1, false);
 
-	if (_params.elements == nullptr) {
-		glDrawArrays(GLenum(_params.mode), 0, _params.verticesCount);
+	if (config.frameBufferEmulation.N64DepthCompare != Config::dcCompatible) {
+		if (_params.elements == nullptr) {
+			glDrawArrays(GLenum(_params.mode), 0, _params.verticesCount);
+			return;
+		}
+
+		glDrawElements(GLenum(_params.mode), _params.elementsCount, GL_UNSIGNED_SHORT, _params.elements);
 		return;
 	}
 
-	glDrawElements(GLenum(_params.mode), _params.elementsCount, GL_UNSIGNED_SHORT, _params.elements);
+	// Draw polygons one by one
+
+	if (_params.elements == nullptr) {
+		if (_params.mode != graphics::drawmode::TRIANGLES) {
+			glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+			glDrawArrays(GLenum(_params.mode), 0, _params.verticesCount);
+			return;
+		}
+
+		for (GLint i = 0; i < GLint(_params.verticesCount); i += 3) {
+			glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+			glDrawArrays(GLenum(_params.mode), i, 3);
+		}
+		return;
+	}
+
+	for (GLint i = 0; i < GLint(_params.elementsCount); i += 3) {
+		glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+		glDrawElements(GLenum(_params.mode), 3, GL_UNSIGNED_BYTE, (u8*)_params.elements + i);
+	}
 }
 
 void UnbufferedDrawer::drawRects(const graphics::Context::DrawRectParameters & _params)

@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>559</width>
-    <height>685</height>
+    <height>595</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -2059,14 +2059,40 @@
                       <number>4</number>
                      </property>
                      <item>
-                      <widget class="QCheckBox" name="n64DepthCompareCheckBox">
-                       <property name="toolTip">
-                        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The N64 uses a unique method of calculating depth to the camera. When checked, GlideN64 uses shaders to try to emulate these calculations correctly. Not compatible with anti-aliasing. &lt;span style=&quot; font-weight:600;&quot;&gt;Experimental!&lt;/span&gt;&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;Sometimes checked, for a few games&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                       </property>
-                       <property name="text">
-                        <string>Enable N64-style depth compare (experimental, disables MSAA)</string>
-                       </property>
-                      </widget>
+                      <layout class="QHBoxLayout" name="n64DepthCompareHorizontalLayout">
+                       <item>
+                        <widget class="QLabel" name="n64DepthCompareLabel">
+                         <property name="toolTip">
+                          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The N64 uses a unique method of calculating depth to the camera. When enabled, GlideN64 uses shaders to try to emulate these calculations correctly. Not compatible with anti-aliasing. &lt;span style=&quot; font-weight:600;&quot;&gt;Experimental!&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Fast mode requires OpenGL 4.2 and &amp;quot;fragment shader interlock&amp;quot; extensions.&lt;/p&gt;&lt;p&gt;Compatible mode requires only core OpenGL 4.2 &lt;span style=&quot; font-weight:600;&quot;&gt;Can be slow!&lt;/span&gt;&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;Sometimes checked, for several games&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                         </property>
+                         <property name="text">
+                          <string>N64-style depth compare (experimental, disables MSAA)</string>
+                         </property>
+                        </widget>
+                       </item>
+                       <item>
+                        <widget class="QComboBox" name="n64DepthCompareComboBox">
+                         <property name="toolTip">
+                          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The N64 uses a unique method of calculating depth to the camera. When enabled, GlideN64 uses shaders to try to emulate these calculations correctly. Not compatible with anti-aliasing. &lt;span style=&quot; font-weight:600;&quot;&gt;Experimental!&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Fast mode requires OpenGL 4.2 and &amp;quot;fragment shader interlock&amp;quot; extensions.&lt;/p&gt;&lt;p&gt;Compatible mode requires only core OpenGL 4.2 &lt;span style=&quot; font-weight:600;&quot;&gt;Can be slow!&lt;/span&gt;&lt;/p&gt;&lt;p&gt;[Recommended: &lt;span style=&quot; font-style:italic;&quot;&gt;Sometimes checked, for several games&lt;/span&gt;]&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                         </property>
+                         <item>
+                          <property name="text">
+                           <string>Disable</string>
+                          </property>
+                         </item>
+                         <item>
+                          <property name="text">
+                           <string>Fast</string>
+                          </property>
+                         </item>
+                         <item>
+                          <property name="text">
+                           <string>Compatible</string>
+                          </property>
+                         </item>
+                        </widget>
+                       </item>
+                      </layout>
                      </item>
                      <item>
                       <widget class="QCheckBox" name="forceDepthBufferClearCheckBox">
@@ -3793,22 +3819,6 @@
    </hints>
   </connection>
   <connection>
-   <sender>n64DepthCompareCheckBox</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>aliasingWarningFrame</receiver>
-   <slot>setVisible(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>106</x>
-     <y>396</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>524</x>
-     <y>199</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>fbInfoEnableCheckBox</sender>
    <signal>toggled(bool)</signal>
    <receiver>readColorChunkCheckBox</receiver>
@@ -3853,38 +3863,6 @@
     <hint type="destinationlabel">
      <x>152</x>
      <y>463</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>n64DepthCompareCheckBox</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>aliasingSliderFrame</receiver>
-   <slot>setDisabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>123</x>
-     <y>396</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>420</x>
-     <y>147</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>n64DepthCompareCheckBox</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>msaaRadioButton</receiver>
-   <slot>setDisabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>123</x>
-     <y>396</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>420</x>
-     <y>113</y>
     </hint>
    </hints>
   </connection>

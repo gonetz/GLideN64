@@ -1099,13 +1099,13 @@ void CombinerProgramUniformFactory::buildUniforms(GLuint _program,
 	if ((config.generalEmulation.hacks & hack_RE2) != 0 && config.generalEmulation.enableFragmentDepthWrite != 0)
 		_uniforms.emplace_back(new UZLutTexture(_program));
 
-	if (config.frameBufferEmulation.N64DepthCompare != 0)
+	if (config.frameBufferEmulation.N64DepthCompare != Config::dcDisable)
 		_uniforms.emplace_back(new UDepthInfo(_program));
 	else
 		_uniforms.emplace_back(new UDepthSource(_program));
 
 	if (config.generalEmulation.enableFragmentDepthWrite != 0 ||
-		config.frameBufferEmulation.N64DepthCompare != 0)
+		config.frameBufferEmulation.N64DepthCompare != Config::dcDisable)
 		_uniforms.emplace_back(new URenderTarget(_program));
 
 	if (m_glInfo.isGLESX && m_glInfo.noPerspective) {

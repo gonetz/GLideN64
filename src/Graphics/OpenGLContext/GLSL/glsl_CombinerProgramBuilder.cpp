@@ -463,7 +463,7 @@ public:
 			ss << "#version " << Utils::to_string(_glinfo.majorVersion) << Utils::to_string(_glinfo.minorVersion) << "0 es " << std::endl;
 			if (_glinfo.noPerspective)
 				ss << "#extension GL_NV_shader_noperspective_interpolation : enable" << std::endl;
-			if (config.frameBufferEmulation.N64DepthCompare != 0) {
+			if (config.frameBufferEmulation.N64DepthCompare == Config::dcFast) {
 				if (_glinfo.imageTextures && _glinfo.fragment_interlockNV) {
 					ss << "#extension GL_NV_fragment_shader_interlock : enable" << std::endl
 						<< "layout(pixel_interlock_ordered) in;" << std::endl;
@@ -477,7 +477,7 @@ public:
 		} else {
 			std::stringstream ss;
 			ss << "#version " << Utils::to_string(_glinfo.majorVersion) << Utils::to_string(_glinfo.minorVersion) << "0 core " << std::endl;
-			if (config.frameBufferEmulation.N64DepthCompare != 0) {
+			if (config.frameBufferEmulation.N64DepthCompare != Config::dcDisable) {
 				if (_glinfo.imageTextures) {
 					if (_glinfo.majorVersion * 10 + _glinfo.minorVersion < 42) {
 						ss << "#extension GL_ARB_shader_image_load_store : enable" << std::endl
@@ -760,7 +760,7 @@ public:
 				"uniform lowp int uRenderTarget;	\n"
 				"uniform mediump vec2 uDepthScale;	\n"
 				;
-			if (config.frameBufferEmulation.N64DepthCompare != 0) {
+			if (config.frameBufferEmulation.N64DepthCompare != Config::dcDisable) {
 				m_part +=
 					"uniform lowp int uEnableDepthCompare;	\n"
 					;
@@ -787,7 +787,7 @@ public:
 			"IN lowp float vNumLights;	\n"
 			;
 
-		if (config.frameBufferEmulation.N64DepthCompare != 0 && _glinfo.ext_fetch) {
+		if (config.frameBufferEmulation.N64DepthCompare == Config::dcFast && _glinfo.ext_fetch) {
 			m_part +=
 				"layout(location = 0) OUT lowp vec4 fragColor;	\n"
 				"layout(location = 1) inout highp vec4 depthZ;	\n"
@@ -847,7 +847,7 @@ public:
 				"uniform lowp int uRenderTarget;	\n"
 				"uniform mediump vec2 uDepthScale;	\n"
 				;
-			if (config.frameBufferEmulation.N64DepthCompare != 0) {
+			if (config.frameBufferEmulation.N64DepthCompare != Config::dcDisable) {
 				m_part +=
 					"uniform lowp int uEnableDepthCompare;	\n"
 					;
@@ -863,7 +863,7 @@ public:
 			"IN lowp float vNumLights;	\n"
 			;
 
-		if (config.frameBufferEmulation.N64DepthCompare != 0 && _glinfo.ext_fetch) {
+		if (config.frameBufferEmulation.N64DepthCompare == Config::dcFast && _glinfo.ext_fetch) {
 			m_part +=
 				"layout(location = 0) OUT lowp vec4 fragColor;	\n"
 				"layout(location = 1) inout highp vec4 depthZ;	\n"
@@ -985,7 +985,7 @@ class ShaderFragmentHeaderDepthCompare : public ShaderPart
 public:
 	ShaderFragmentHeaderDepthCompare(const opengl::GLInfo & _glinfo)
 	{
-		if (config.frameBufferEmulation.N64DepthCompare != 0) {
+		if (config.frameBufferEmulation.N64DepthCompare != Config::dcDisable) {
 			m_part =
 				"bool depth_compare(highp float curZ);	\n"
 				"bool depth_render(highp float Z, highp float curZ);	\n"
@@ -1474,7 +1474,7 @@ class ShaderFragmentCallN64Depth : public ShaderPart
 public:
 	ShaderFragmentCallN64Depth(const opengl::GLInfo & _glinfo)
 	{
-		if (config.frameBufferEmulation.N64DepthCompare != 0) {
+		if (config.frameBufferEmulation.N64DepthCompare != Config::dcDisable) {
 			m_part = "  bool should_discard = false;	\n";
 
 			if (_glinfo.imageTextures) {
@@ -1615,7 +1615,7 @@ public:
 	{
 		if (!_glinfo.isGLES2) {
 			if (config.generalEmulation.enableFragmentDepthWrite == 0 &&
-				config.frameBufferEmulation.N64DepthCompare == 0) {
+				config.frameBufferEmulation.N64DepthCompare == Config::dcDisable) {
 				// Dummy write depth
 				m_part =
 					"highp float writeDepth()	    \n"
@@ -2098,7 +2098,7 @@ class ShaderN64DepthCompare : public ShaderPart
 public:
 	ShaderN64DepthCompare(const opengl::GLInfo & _glinfo)
 	{
-		if (config.frameBufferEmulation.N64DepthCompare != 0) {
+		if (config.frameBufferEmulation.N64DepthCompare != Config::dcDisable) {
 			m_part =
 				"uniform lowp int uEnableDepth;							\n"
 				"uniform lowp int uDepthMode;							\n"
@@ -2171,7 +2171,7 @@ class ShaderN64DepthRender : public ShaderPart
 public:
 	ShaderN64DepthRender(const opengl::GLInfo & _glinfo)
 	{
-		if (config.frameBufferEmulation.N64DepthCompare != 0) {
+		if (config.frameBufferEmulation.N64DepthCompare != Config::dcDisable) {
 			m_part =
 				"bool depth_render(highp float Z, highp float curZ)						\n"
 				"{														\n"
@@ -2465,7 +2465,7 @@ graphics::CombinerProgram * CombinerProgramBuilder::buildCombinerProgram(Combine
 	ssShader << "  vec_color = vec4(input_color, vShadeColor.a);" << std::endl;
 	ssShader << strCombiner << std::endl;
 
-	if (config.frameBufferEmulation.N64DepthCompare != 0)
+	if (config.frameBufferEmulation.N64DepthCompare != Config::dcDisable)
 		m_fragmentCallN64Depth->write(ssShader);
 	else
 		m_fragmentRenderTarget->write(ssShader);

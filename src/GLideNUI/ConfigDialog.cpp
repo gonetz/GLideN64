@@ -203,8 +203,7 @@ void ConfigDialog::_init(bool reInit, bool blockCustomSettings)
 	ui->copyDepthBufferComboBox->setCurrentIndex(config.frameBufferEmulation.copyDepthToRDRAM);
 	ui->RenderFBCheckBox->setChecked(config.frameBufferEmulation.copyFromRDRAM != 0);
 	ui->copyDepthToMainDepthBufferCheckBox->setChecked(config.frameBufferEmulation.copyDepthToMainDepthBuffer != 0);
-	ui->n64DepthCompareCheckBox->toggle();
-	ui->n64DepthCompareCheckBox->setChecked(config.frameBufferEmulation.N64DepthCompare != 0);
+	ui->n64DepthCompareComboBox->setCurrentIndex(config.frameBufferEmulation.N64DepthCompare);
 	ui->forceDepthBufferClearCheckBox->setChecked(config.frameBufferEmulation.forceDepthBufferClear != 0);
 
 	if (config.video.fxaa != 0)
@@ -430,9 +429,9 @@ void ConfigDialog::accept(bool justSave) {
 	getFullscreenRefreshRate(ui->fullScreenRefreshRateComboBox->currentIndex(), config.video.fullscreenRefresh);
 
 	config.video.fxaa = ui->fxaaRadioButton->isChecked() ? 1 : 0;
-	config.video.multisampling = 
+	config.video.multisampling =
 		(ui->fxaaRadioButton->isChecked()
-			|| ui->n64DepthCompareCheckBox->isChecked()
+			|| ui->n64DepthCompareComboBox->currentIndex() != 0
 			|| ui->noaaRadioButton->isChecked()
 		) ? 0
 		: pow2(ui->aliasingSlider->value());
@@ -476,7 +475,7 @@ void ConfigDialog::accept(bool justSave) {
 		config.graphics2D.correctTexrectCoords = Config::tcSmart;
 	else if (ui->fixTexrectForceRadioButton->isChecked())
 		config.graphics2D.correctTexrectCoords = Config::tcForce;
-	
+
 	if (ui->bgModeOnePieceRadioButton->isChecked())
 		config.graphics2D.bgMode = Config::BGMode::bgOnePiece;
 	else if (ui->bgModeStrippedRadioButton->isChecked())
@@ -493,7 +492,7 @@ void ConfigDialog::accept(bool justSave) {
 	config.frameBufferEmulation.copyFromRDRAM = ui->RenderFBCheckBox->isChecked() ? 1 : 0;
 	config.frameBufferEmulation.copyDepthToMainDepthBuffer = ui->copyDepthToMainDepthBufferCheckBox->isChecked() ? 1 : 0;
 
-	config.frameBufferEmulation.N64DepthCompare = ui->n64DepthCompareCheckBox->isChecked() ? 1 : 0;
+	config.frameBufferEmulation.N64DepthCompare = ui->n64DepthCompareComboBox->currentIndex();
 	config.frameBufferEmulation.forceDepthBufferClear = ui->forceDepthBufferClearCheckBox->isChecked() ? 1 : 0;
 
 	if (ui->aspectComboBox->currentIndex() == 2)
@@ -760,7 +759,7 @@ void ConfigDialog::on_aliasingWarningLabel_linkActivated(QString link)
 {
 	if (link == "#n64DepthCompare") {
 		ui->tabWidget->setCurrentIndex(2);
-		ui->n64DepthCompareCheckBox->setStyleSheet("background:yellow");
+		ui->n64DepthCompareComboBox->setStyleSheet("background:yellow");
 	}
 }
 
@@ -810,7 +809,7 @@ void ConfigDialog::on_n64DepthCompareCheckBox_toggled(bool checked)
 {
 	if (checked && ui->msaaRadioButton->isChecked())
 		ui->fxaaRadioButton->setChecked(true);
-	ui->n64DepthCompareCheckBox->setStyleSheet("");
+	ui->n64DepthCompareComboBox->setStyleSheet("");
 }
 
 void ConfigDialog::on_gammaLevelSpinBox_valueChanged(double /*value*/)
@@ -887,7 +886,7 @@ void ConfigDialog::on_tabWidget_currentChanged(int tab)
 		m_fontsInited = true;
 	}
 
-	ui->n64DepthCompareCheckBox->setStyleSheet("");
+	ui->n64DepthCompareComboBox->setStyleSheet("");
 	ui->frameBufferCheckBox->setStyleSheet("");
 }
 
@@ -981,4 +980,11 @@ void ConfigDialog::on_removeProfilePushButton_clicked()
 void ConfigDialog::on_nativeRes2DComboBox_currentIndexChanged(int index)
 {
 	ui->fixTexrectFrame->setEnabled(index == 0);
+}
+
+void ConfigDialog::on_n64DepthCompareComboBox_currentIndexChanged(int index)
+{
+	ui->aliasingWarningFrame->setVisible(index > 0);
+	ui->aliasingSliderFrame->setDisabled(index > 0);
+	ui->msaaRadioButton->setDisabled(index > 0);
 }

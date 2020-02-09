@@ -66,7 +66,7 @@ namespace glsl {
 				"uniform lowp vec4 uFogColor;								\n"
 				;
 
-			if (config.frameBufferEmulation.N64DepthCompare != 0) {
+			if (config.frameBufferEmulation.N64DepthCompare != Config::dcDisable) {
 				if (_glinfo.imageTextures)
 					m_part += "layout(binding = 2, r32f) highp uniform restrict readonly image2D uDepthImageZ;		\n";
 
@@ -85,7 +85,7 @@ namespace glsl {
 				"{															\n"
 				;
 
-			if (config.frameBufferEmulation.N64DepthCompare == 0) {
+			if (config.frameBufferEmulation.N64DepthCompare == Config::dcDisable) {
 				if (_glinfo.fetch_depth) {
 					m_part +=
 						"  highp float bufZ = gl_LastFragDepthARM;	\n"
@@ -127,7 +127,7 @@ namespace glsl {
 				"}															\n"
 				;
 
-			if (config.frameBufferEmulation.N64DepthCompare == 0 && _glinfo.fetch_depth)
+			if (config.frameBufferEmulation.N64DepthCompare == Config::dcDisable && _glinfo.fetch_depth)
 				 m_part = "#extension GL_ARM_shader_framebuffer_fetch_depth_stencil : enable	\n" + m_part;
 		}
 	};
@@ -314,7 +314,7 @@ namespace glsl {
 					;
 				if (!_glinfo.isGLES2 &&
 					config.generalEmulation.enableFragmentDepthWrite != 0 &&
-					config.frameBufferEmulation.N64DepthCompare == 0) {
+					config.frameBufferEmulation.N64DepthCompare == Config::dcDisable) {
 					m_part +=
 						"  gl_FragDepth = uPrimDepth;											\n"
 						;

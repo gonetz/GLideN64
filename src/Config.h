@@ -107,6 +107,12 @@ struct Config
 		cdSoftwareRender = 2
 	};
 
+	enum N64DepthCompareMode {
+		dcDisable = 0,
+		dcFast,
+		dcCompatible
+	};
+
 	struct {
 		u32 enable;
 		u32 aspect; // 0: stretch ; 1: 4/3 ; 2: 16/9; 3: adjust

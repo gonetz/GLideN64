@@ -98,7 +98,7 @@ void DepthBuffer::_initDepthImageTexture(FrameBuffer * _pBuffer, CachedTexture& 
 
 void DepthBuffer::initDepthImageTexture(FrameBuffer * _pBuffer)
 {
-	if (config.frameBufferEmulation.N64DepthCompare == 0 || m_pDepthImageZTexture != nullptr)
+	if (config.frameBufferEmulation.N64DepthCompare == Config::dcDisable || m_pDepthImageZTexture != nullptr)
 		return;
 
 	m_pDepthImageZTexture = textureCache().addFrameBufferTexture(textureTarget::TEXTURE_2D);
@@ -491,7 +491,7 @@ void DepthBufferList::clearBuffer()
 	if (m_pCurrent != nullptr)
 		m_pCurrent->m_cleared = true;
 
-	if (config.frameBufferEmulation.enable == 0 || config.frameBufferEmulation.N64DepthCompare == 0) {
+	if (config.frameBufferEmulation.enable == 0 || config.frameBufferEmulation.N64DepthCompare == Config::dcDisable) {
 		gfxContext.clearDepthBuffer();
 		return;
 	}

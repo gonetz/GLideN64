@@ -121,7 +121,7 @@ void DisplayWindowMupen64plus::_swapBuffers()
 	// if emulator defined a render callback function, call it before buffer swap
 	if (renderCallback != nullptr) {
 		gfxContext.resetShaderProgram();
-		if (config.frameBufferEmulation.N64DepthCompare == 0) {
+		if (config.frameBufferEmulation.N64DepthCompare == Config::dcDisable) {
 			gfxContext.setViewport(0, getHeightOffset(), getScreenWidth(), getScreenHeight());
 			gSP.changed |= CHANGED_VIEWPORT;
 		}
