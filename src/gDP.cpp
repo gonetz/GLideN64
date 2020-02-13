@@ -1438,7 +1438,7 @@ void LLETriangle::draw(bool _shade, bool _texture, bool _zbuffer, s32 * _pData)
 			//if (vtx->z < 0.0f)
 			//	vtx->z = 1.0f + vtx->z - ceil(vtx->z);
 		} else
-			vtx->z = 1.0f;
+			vtx->z = 0.0f;
 
 		if (_texture) {
 			if (gDP.otherMode.texturePersp != 0) {
