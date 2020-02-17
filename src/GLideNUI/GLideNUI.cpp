@@ -1,3 +1,5 @@
+#include "About.h"
+
 #include <thread>
 #include <QApplication>
 #include <QTranslator>
@@ -96,6 +98,8 @@ EXPORT bool CALL RunConfig(const wchar_t * _strFileName, const char * _romName)
 
 EXPORT int CALL RunAbout(const wchar_t * _strFileName)
 {
+	CAboutDlg Dlg;
+	Dlg.DoModal();
 	return runAboutThread(_strFileName);
 }
 

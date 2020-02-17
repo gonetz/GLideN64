@@ -101,6 +101,7 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\src\GLideNUI\About.cpp" />
     <ClCompile Include="..\..\src\GLideNUI\AboutDialog.cpp" />
     <ClCompile Include="..\..\src\GLideNUI\ConfigDialog.cpp" />
     <ClCompile Include="Debug\moc_AboutDialog.cpp">
@@ -145,11 +146,35 @@ endlocal
       <Outputs>$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
       <AdditionalInputs>$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
     </CustomBuild>
+    <ClInclude Include="..\..\src\GLideNUI\About.h" />
     <ClInclude Include="..\..\src\GLideNUI\FullscreenResolutions.h" />
+    <ClInclude Include="..\..\src\GLideNUI\WTL\atlapp.h" />
+    <ClInclude Include="..\..\src\GLideNUI\WTL\atlcrack.h" />
+    <ClInclude Include="..\..\src\GLideNUI\WTL\atlctrls.h" />
+    <ClInclude Include="..\..\src\GLideNUI\WTL\atlctrlw.h" />
+    <ClInclude Include="..\..\src\GLideNUI\WTL\atlctrlx.h" />
+    <ClInclude Include="..\..\src\GLideNUI\WTL\atlddx.h" />
+    <ClInclude Include="..\..\src\GLideNUI\WTL\atldlgs.h" />
+    <ClInclude Include="..\..\src\GLideNUI\WTL\atldwm.h" />
+    <ClInclude Include="..\..\src\GLideNUI\WTL\atlfind.h" />
+    <ClInclude Include="..\..\src\GLideNUI\WTL\atlframe.h" />
+    <ClInclude Include="..\..\src\GLideNUI\WTL\atlgdi.h" />
+    <ClInclude Include="..\..\src\GLideNUI\WTL\atlmisc.h" />
+    <ClInclude Include="..\..\src\GLideNUI\WTL\atlprint.h" />
+    <ClInclude Include="..\..\src\GLideNUI\WTL\atlres.h" />
+    <ClInclude Include="..\..\src\GLideNUI\WTL\atlresce.h" />
+    <ClInclude Include="..\..\src\GLideNUI\WTL\atlribbon.h" />
+    <ClInclude Include="..\..\src\GLideNUI\WTL\atlscrl.h" />
+    <ClInclude Include="..\..\src\GLideNUI\WTL\atlsplit.h" />
+    <ClInclude Include="..\..\src\GLideNUI\WTL\atltheme.h" />
+    <ClInclude Include="..\..\src\GLideNUI\WTL\atluser.h" />
+    <ClInclude Include="..\..\src\GLideNUI\WTL\atlwince.h" />
+    <ClInclude Include="..\..\src\GLideNUI\WTL\atlwinx.h" />
     <ClInclude Include="GeneratedFiles\ui_AboutDialog.h" />
     <ClInclude Include="GeneratedFiles\ui_configDialog.h" />
     <ClInclude Include="..\..\src\GLideNUI\GLideNUI.h" />
     <ClInclude Include="..\..\src\GLideNUI\Settings.h" />
+    <ClInclude Include="..\..\src\GLideNUI\resource.h" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="..\..\src\GLideNUI\AboutDialog.ui">
@@ -178,6 +203,9 @@ endlocal
       <Message>Rcc%27ing %(Identity)...</Message>
       <Outputs>.\GeneratedFiles\qrc_%(Filename).cpp;%(Outputs)</Outputs>
     </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="..\..\src\GLideNUI\GLideNUI.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />

@@ -55,6 +55,9 @@
       <Extensions>cpp;moc</Extensions>
       <SourceControlFiles>False</SourceControlFiles>
     </Filter>
+    <Filter Include="Header Files\wtl">
+      <UniqueIdentifier>{710359e2-8ed7-4e99-ae3d-6be2e6d53aab}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\GLideNUI\AboutDialog.cpp">
@@ -89,6 +92,9 @@
     </ClCompile>
     <ClCompile Include="GeneratedFiles\qrc_icon.cpp">
       <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\GLideNUI\About.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -131,5 +137,82 @@
     <ClInclude Include="GeneratedFiles\ui_configDialog.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\GLideNUI\WTL\atlapp.h">
+      <Filter>Header Files\wtl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\GLideNUI\WTL\atlcrack.h">
+      <Filter>Header Files\wtl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\GLideNUI\WTL\atlctrls.h">
+      <Filter>Header Files\wtl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\GLideNUI\WTL\atlctrlw.h">
+      <Filter>Header Files\wtl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\GLideNUI\WTL\atlctrlx.h">
+      <Filter>Header Files\wtl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\GLideNUI\WTL\atlddx.h">
+      <Filter>Header Files\wtl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\GLideNUI\WTL\atldlgs.h">
+      <Filter>Header Files\wtl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\GLideNUI\WTL\atldwm.h">
+      <Filter>Header Files\wtl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\GLideNUI\WTL\atlfind.h">
+      <Filter>Header Files\wtl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\GLideNUI\WTL\atlframe.h">
+      <Filter>Header Files\wtl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\GLideNUI\WTL\atlgdi.h">
+      <Filter>Header Files\wtl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\GLideNUI\WTL\atlmisc.h">
+      <Filter>Header Files\wtl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\GLideNUI\WTL\atlprint.h">
+      <Filter>Header Files\wtl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\GLideNUI\WTL\atlres.h">
+      <Filter>Header Files\wtl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\GLideNUI\WTL\atlresce.h">
+      <Filter>Header Files\wtl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\GLideNUI\WTL\atlribbon.h">
+      <Filter>Header Files\wtl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\GLideNUI\WTL\atlscrl.h">
+      <Filter>Header Files\wtl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\GLideNUI\WTL\atlsplit.h">
+      <Filter>Header Files\wtl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\GLideNUI\WTL\atltheme.h">
+      <Filter>Header Files\wtl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\GLideNUI\WTL\atluser.h">
+      <Filter>Header Files\wtl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\GLideNUI\WTL\atlwince.h">
+      <Filter>Header Files\wtl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\GLideNUI\WTL\atlwinx.h">
+      <Filter>Header Files\wtl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\GLideNUI\About.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\GLideNUI\resource.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="..\..\src\GLideNUI\GLideNUI.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>
