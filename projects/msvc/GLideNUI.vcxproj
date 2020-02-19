@@ -103,6 +103,7 @@
   <ItemGroup>
     <ClCompile Include="..\..\src\GLideNUI\About.cpp" />
     <ClCompile Include="..\..\src\GLideNUI\AboutDialog.cpp" />
+    <ClCompile Include="..\..\src\GLideNUI\config.cpp" />
     <ClCompile Include="..\..\src\GLideNUI\ConfigDialog.cpp" />
     <ClCompile Include="Debug\moc_AboutDialog.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)'=='Release'">true</ExcludedFromBuild>
@@ -147,6 +148,7 @@ endlocal
       <AdditionalInputs>$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
     </CustomBuild>
     <ClInclude Include="..\..\src\GLideNUI\About.h" />
+    <ClInclude Include="..\..\src\GLideNUI\config.h" />
     <ClInclude Include="..\..\src\GLideNUI\FullscreenResolutions.h" />
     <ClInclude Include="..\..\src\GLideNUI\WTL\atlapp.h" />
     <ClInclude Include="..\..\src\GLideNUI\WTL\atlcrack.h" />
@@ -206,6 +208,9 @@ endlocal
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\..\src\GLideNUI\GLideNUI.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Icon.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />

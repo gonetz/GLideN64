@@ -1,4 +1,5 @@
 #include "GLideN64_Windows.h"
+#include "../GLideNUI/config.h"
 
 HWND		hWnd;
 HWND		hStatusBar;
@@ -7,7 +8,14 @@ HINSTANCE	hInstance;
 
 BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD dwReason, LPVOID /*lpvReserved*/)
 {
-	hInstance = hinstDLL;
-
+    if (dwReason == DLL_PROCESS_ATTACH)
+    {
+        hInstance = hinstDLL;
+        ConfigInit(hinstDLL);
+    }
+    else if (dwReason == DLL_PROCESS_DETACH)
+    {
+        ConfigCleanup();
+    }
 	return TRUE;
 }

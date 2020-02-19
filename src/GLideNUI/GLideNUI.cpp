@@ -100,7 +100,7 @@ EXPORT int CALL RunAbout(const wchar_t * _strFileName)
 {
 	CAboutDlg Dlg;
 	Dlg.DoModal();
-	return runAboutThread(_strFileName);
+	return 0;
 }
 
 EXPORT void CALL LoadConfig(const wchar_t * _strFileName)
