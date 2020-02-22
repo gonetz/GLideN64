@@ -114,11 +114,17 @@ void ConfigDialog::_init(bool reInit, bool blockCustomSettings)
 	ui->overscanPalTopSpinBox->setValue(config.frameBufferEmulation.overscanPAL.top);
 	ui->overscanPalBottomSpinBox->setValue(config.frameBufferEmulation.overscanPAL.bottom);
 
-	QStringList fullscreenModesList, fullscreenRatesList;
+    StringList fullscreenModesList, fullscreenRatesList;
 	int fullscreenMode, fullscreenRate;
 	fillFullscreenResolutionsList(fullscreenModesList, fullscreenMode, fullscreenRatesList, fullscreenRate);
+
+    QStringList qfullscreenModesList;
+    for (StringList::const_iterator itr = fullscreenModesList.begin(); itr != fullscreenModesList.end(); itr++)
+    {
+        qfullscreenModesList.push_back(itr->c_str());
+    }
 	ui->fullScreenResolutionComboBox->clear();
-	ui->fullScreenResolutionComboBox->insertItems(0, fullscreenModesList);
+	ui->fullScreenResolutionComboBox->insertItems(0, qfullscreenModesList);
 	ui->fullScreenResolutionComboBox->setCurrentIndex(fullscreenMode);
 	ui->fullScreenRefreshRateComboBox->setCurrentIndex(fullscreenRate);
 
@@ -697,11 +703,16 @@ void ConfigDialog::on_buttonBox_clicked(QAbstractButton *button)
 
 void ConfigDialog::on_fullScreenResolutionComboBox_currentIndexChanged(int index)
 {
-	QStringList fullscreenRatesList;
+    StringList fullscreenRatesList;
 	int fullscreenRate;
 	fillFullscreenRefreshRateList(index, fullscreenRatesList, fullscreenRate);
-	ui->fullScreenRefreshRateComboBox->clear();
-	ui->fullScreenRefreshRateComboBox->insertItems(0, fullscreenRatesList);
+    QStringList qfullscreenRatesList;
+    for (StringList::const_iterator itr = fullscreenRatesList.begin(); itr != fullscreenRatesList.end(); itr++)
+    {
+        qfullscreenRatesList.push_back(itr->c_str());
+    }
+    ui->fullScreenRefreshRateComboBox->clear();
+	ui->fullScreenRefreshRateComboBox->insertItems(0, qfullscreenRatesList);
 	ui->fullScreenRefreshRateComboBox->setCurrentIndex(fullscreenRate);
 }
 

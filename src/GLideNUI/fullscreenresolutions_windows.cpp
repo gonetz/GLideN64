@@ -55,7 +55,7 @@ struct
 } fullscreen;
 
 static
-void _fillFullscreenRefreshRateList(QStringList & _listRefreshRates, int & _rateIdx)
+void _fillFullscreenRefreshRateList(StringList & _listRefreshRates, int & _rateIdx)
 {
 	memset(&fullscreen.refreshRate, 0, sizeof(fullscreen.refreshRate));
 	fullscreen.numRefreshRates = 0;
@@ -63,6 +63,8 @@ void _fillFullscreenRefreshRateList(QStringList & _listRefreshRates, int & _rate
 
 	int i = 0;
 	DEVMODE deviceMode;
+    char text[128];
+
 	while (EnumDisplaySettings(NULL, i++, &deviceMode) != 0)
 	{
 		if (deviceMode.dmBitsPerPel != 32)
@@ -79,7 +81,8 @@ void _fillFullscreenRefreshRateList(QStringList & _listRefreshRates, int & _rate
 
 			fullscreen.refreshRate[j] = deviceMode.dmDisplayFrequency;
 			//: Abbreviation for Hertz; include a leading space if appropriate
-			_listRefreshRates.append(QString::number(deviceMode.dmDisplayFrequency) + QObject::tr(" Hz"));
+            snprintf(text, sizeof(text), "%d Hz", deviceMode.dmDisplayFrequency);
+            _listRefreshRates.push_back(text);
 
 			if (fullscreen.selected.refreshRate == deviceMode.dmDisplayFrequency)
 				_rateIdx = fullscreen.numRefreshRates;
@@ -89,7 +92,7 @@ void _fillFullscreenRefreshRateList(QStringList & _listRefreshRates, int & _rate
 	}
 }
 
-void fillFullscreenResolutionsList(QStringList & _listResolutions, int & _resolutionIdx, QStringList & _listRefreshRates, int & _rateIdx)
+void fillFullscreenResolutionsList(StringList & _listResolutions, int & _resolutionIdx, StringList & _listRefreshRates, int & _rateIdx)
 {
 	fullscreen.selected.width = config.video.fullscreenWidth;
 	fullscreen.selected.height = config.video.fullscreenHeight;
@@ -145,7 +148,7 @@ void fillFullscreenResolutionsList(QStringList & _listResolutions, int & _resolu
 					break;
 				}
 
-			_listResolutions.append(text);
+            _listResolutions.push_back(text);
 
 			if ((fullscreen.selected.width == deviceMode.dmPelsWidth) &&
 				(fullscreen.selected.height == deviceMode.dmPelsHeight))
@@ -158,7 +161,7 @@ void fillFullscreenResolutionsList(QStringList & _listResolutions, int & _resolu
 	_fillFullscreenRefreshRateList(_listRefreshRates, _rateIdx);
 }
 
-void fillFullscreenRefreshRateList(int _resolutionIdx, QStringList & _listRefreshRates, int & _rateIdx)
+void fillFullscreenRefreshRateList(int _resolutionIdx, StringList & _listRefreshRates, int & _rateIdx)
 {
 	fullscreen.selected.width = fullscreen.resolution[_resolutionIdx].width;
 	fullscreen.selected.height = fullscreen.resolution[_resolutionIdx].height;

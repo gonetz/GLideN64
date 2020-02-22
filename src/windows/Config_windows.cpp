@@ -4,6 +4,7 @@
 #include "../RSP.h"
 #include "../PluginAPI.h"
 #include "../GLideNUI/GLideNUI.h"
+#include "../GLideNUI/config.h"
 #include <DisplayWindow.h>
 
 
@@ -18,6 +19,10 @@ void Config_DoConfig(/*HWND hParent*/)
 	api().FindPluginPath(strIniFolderPath);
 
 	ConfigOpen = true;
+    {
+        CConfigDlg Dlg;
+        Dlg.DoModal();
+    }
 	const bool bRestart = RunConfig(strIniFolderPath, api().isRomOpen() ? RSP.romname : nullptr);
 	if (config.generalEmulation.enableCustomSettings != 0)
 		LoadCustomRomSettings(strIniFolderPath, RSP.romname);
