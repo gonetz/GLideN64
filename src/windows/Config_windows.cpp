@@ -19,10 +19,6 @@ void Config_DoConfig(/*HWND hParent*/)
 	api().FindPluginPath(strIniFolderPath);
 
 	ConfigOpen = true;
-    {
-        CConfigDlg Dlg;
-        Dlg.DoModal();
-    }
 	const bool bRestart = RunConfig(strIniFolderPath, api().isRomOpen() ? RSP.romname : nullptr);
 	if (config.generalEmulation.enableCustomSettings != 0)
 		LoadCustomRomSettings(strIniFolderPath, RSP.romname);
