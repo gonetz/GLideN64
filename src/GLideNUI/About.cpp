@@ -78,7 +78,7 @@ class CAboutFundersTab :
     public CAboutTab
 {
 public:
-    BEGIN_MSG_MAP(CAboutContributersTab)
+    BEGIN_MSG_MAP(CAboutFundersTab)
         MSG_WM_INITDIALOG(OnInitDialog)
         MESSAGE_HANDLER(WM_CTLCOLORDLG, OnColorStatic)
         MESSAGE_HANDLER(WM_CTLCOLORSTATIC, OnColorStatic)
