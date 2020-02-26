@@ -49,9 +49,9 @@ private:
 	u32 _getRealWidth(u32 _viWidth);
 
 	// Convert pixel from video memory to N64 buffer format.
-	static u8 _RGBAtoR8(u8 _c);
-	static u16 _RGBAtoRGBA16(u32 _c);
-	static u32 _RGBAtoRGBA32(u32 _c);
+	static u8 _RGBAtoR8(u8 _c, u32 x, u32 y);
+	static u16 _RGBAtoRGBA16(u32 _c, u32 x, u32 y);
+	static u32 _RGBAtoRGBA32(u32 _c, u32 x, u32 y);
 
 	graphics::ObjectHandle m_FBO;
 	FrameBuffer * m_pCurFrameBuffer;

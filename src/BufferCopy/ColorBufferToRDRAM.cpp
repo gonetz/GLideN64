@@ -234,17 +234,51 @@ bool ColorBufferToRDRAM::_prepareCopy(u32& _startAddress)
 	return true;
 }
 
-u8 ColorBufferToRDRAM::_RGBAtoR8(u8 _c) {
+u8 ColorBufferToRDRAM::_RGBAtoR8(u8 _c, u32 x, u32 y) {
 	return _c;
 }
 
-u16 ColorBufferToRDRAM::_RGBAtoRGBA16(u32 _c) {
-	RGBA c;
+u16 ColorBufferToRDRAM::_RGBAtoRGBA16(u32 _c, u32 x, u32 y) {
+	// Precalculated 4x4 bayer matrix values for 5Bit
+	static const s32 thresholdMapBayer[4][4] = {
+		{ -4, 2, -3, 4 },
+		{ 0, -2, 2, -1 },
+		{ -3, 3, -4, 3 },
+		{ 1, -1, 1, -2 }
+	};
+
+	// Precalculated 4x4 magic square matrix values for 5Bit
+	static const s32 thresholdMapMagicSquare[4][4] = {
+		{ -4, 2, 2, -1 },
+		{ 3, -2, -3, 1 },
+		{ -3, 0, 4, -2 },
+		{ 3, -1, -4, 1 }
+	};
+
+	union RGBA c;
 	c.raw = _c;
-	return ((c.r >> 3) << 11) | ((c.g >> 3) << 6) | ((c.b >> 3) << 1) | (c.a == 0 ? 0 : 1);
+	
+	if(gDP.otherMode.colorDither <= 1) {
+		s32 threshold = 0;
+		
+		switch(gDP.otherMode.colorDither){
+			case G_CD_BAYER:
+				threshold = thresholdMapBayer[x & 3][y & 3];
+				break;
+			case G_CD_MAGICSQ:
+				threshold = thresholdMapMagicSquare[x & 3][y & 3];
+				break;
+		}
+		
+		c.r = (u8)std::max(std::min((s32)c.r + threshold, 255), 0);
+		c.g = (u8)std::max(std::min((s32)c.g + threshold, 255), 0);
+		c.b = (u8)std::max(std::min((s32)c.b + threshold, 255), 0);
+	}
+		
+	return ((c.r >> 3) << 11) | ((c.g >> 3) << 6) | ((c.b >> 3) << 1) | (c.a == 0 ? 0 : 1);	
 }
 
-u32 ColorBufferToRDRAM::_RGBAtoRGBA32(u32 _c) {
+u32 ColorBufferToRDRAM::_RGBAtoRGBA32(u32 _c, u32 x, u32 y) {
 	RGBA c;
 	c.raw = _c;
 	return (c.r << 24) | (c.g << 16) | (c.b << 8) | c.a;
