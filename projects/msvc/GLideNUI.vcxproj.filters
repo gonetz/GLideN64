@@ -99,6 +99,12 @@
     <ClCompile Include="..\..\src\GLideNUI\config.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\GLideNUI\FileClass.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\GLideNUI\IniFileClass.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="..\..\src\GLideNUI\AboutDialog.h">
@@ -214,6 +220,12 @@
     </ClInclude>
     <ClInclude Include="..\..\src\GLideNUI\config.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\GLideNUI\FileClass.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\GLideNUI\IniFileClass.h">
+      <Filter>Generated Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
