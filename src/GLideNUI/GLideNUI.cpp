@@ -5,7 +5,6 @@
 #include <QTranslator>
 
 #include "GLideNUI.h"
-#include "AboutDialog.h"
 #include "ConfigDialog.h"
 #include "Settings.h"
 #include "../Config.h"
@@ -55,25 +54,6 @@ int openConfigDialog(const wchar_t * _strFileName, const char * _romName, bool &
     return res;
 }
 
-static
-int openAboutDialog(const wchar_t * _strFileName)
-{
-    cleanMyResource();
-    initMyResource();
-
-    int argc = 0;
-    char * argv = 0;
-    QApplication a(argc, &argv);
-
-    QTranslator translator;
-    if (translator.load(getTranslationFile().c_str(), QString::fromWCharArray(_strFileName)))
-        a.installTranslator(&translator);
-
-    AboutDialog w(Q_NULLPTR, Qt::WindowTitleHint | Qt::WindowSystemMenuHint | Qt::WindowCloseButtonHint);
-    w.show();
-    return a.exec();
-}
-
 bool runConfigThread(const wchar_t * _strFileName, const char * _romName) {
     bool accepted = false;
 #ifdef RUN_DIALOG_IN_THREAD
@@ -84,16 +64,6 @@ bool runConfigThread(const wchar_t * _strFileName, const char * _romName) {
 #endif
     return accepted;
 
-}
-
-int runAboutThread(const wchar_t * _strFileName) {
-#ifdef RUN_DIALOG_IN_THREAD
-    std::thread aboutThread(openAboutDialog, _strFileName);
-    aboutThread.join();
-#else
-    openAboutDialog(_strFileName);
-#endif
-    return 0;
 }
 
 EXPORT bool CALL RunConfig(const wchar_t * _strFileName, const char * _romName)

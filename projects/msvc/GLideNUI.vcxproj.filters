@@ -60,9 +60,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\src\GLideNUI\AboutDialog.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\GLideNUI\ConfigDialog.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -77,12 +74,6 @@
     </ClCompile>
     <ClCompile Include="..\..\src\GLideNUI\Settings.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Debug\moc_AboutDialog.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="Release\moc_AboutDialog.cpp">
-      <Filter>Generated Files\Release</Filter>
     </ClCompile>
     <ClCompile Include="Debug\moc_ConfigDialog.cpp">
       <Filter>Generated Files\Debug</Filter>
@@ -110,9 +101,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="..\..\src\GLideNUI\AboutDialog.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
     <CustomBuild Include="..\..\src\GLideNUI\ConfigDialog.h">
       <Filter>Header Files</Filter>
     </CustomBuild>
@@ -140,9 +128,6 @@
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="GeneratedFiles\ui_AboutDialog.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
     <ClInclude Include="GeneratedFiles\ui_configDialog.h">
       <Filter>Generated Files</Filter>
     </ClInclude>

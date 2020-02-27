@@ -102,15 +102,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\GLideNUI\About.cpp" />
-    <ClCompile Include="..\..\src\GLideNUI\AboutDialog.cpp" />
     <ClCompile Include="..\..\src\GLideNUI\config.cpp" />
     <ClCompile Include="..\..\src\GLideNUI\ConfigDialog.cpp" />
     <ClCompile Include="..\..\src\GLideNUI\FileClass.cpp" />
     <ClCompile Include="..\..\src\GLideNUI\GlSettings.cpp" />
     <ClCompile Include="..\..\src\GLideNUI\IniFileClass.cpp" />
-    <ClCompile Include="Debug\moc_AboutDialog.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)'=='Release'">true</ExcludedFromBuild>
-    </ClCompile>
     <ClCompile Include="Debug\moc_ConfigDialog.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)'=='Release'">true</ExcludedFromBuild>
     </ClCompile>
@@ -120,9 +116,6 @@
       </PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\..\src\GLideNUI\GLideNUI.cpp" />
-    <ClCompile Include="Release\moc_AboutDialog.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)'=='Debug'">true</ExcludedFromBuild>
-    </ClCompile>
     <ClCompile Include="Release\moc_ConfigDialog.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)'=='Debug'">true</ExcludedFromBuild>
     </ClCompile>
@@ -130,16 +123,6 @@
     <ClCompile Include="..\..\src\GLideNUI\Settings.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="..\..\src\GLideNUI\AboutDialog.h">
-      <Command>setlocal
-if errorlevel 1 goto VCEnd
-if errorlevel 1 goto VCEnd
-endlocal
-"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o "$(ConfigurationName)\moc_%(Filename).cpp" -D_WINDOWS -DUNICODE -DWIN32 -DQT_STATICPLUGIN -DQT_NO_DEBUG -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CORE_LIB -DNDEBUG -DQT_UITOOLS_LIB -DQT_WINEXTRAS_LIB  "-I$(QTDIR)\include" "-I$(QTDIR)\include\QtWidgets" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtCore" "-I.\release" "-I." "-I$(QTDIR)\mkspecs\win32-msvc2013" "-I.\GeneratedFiles" "-I$(QTDIR)\include\QtUiTools" "-I$(QTDIR)\include\QtWinExtras"</Command>
-      <Message>Moc%27ing AboutDialog.h...</Message>
-      <Outputs>$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
-      <AdditionalInputs>$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
-    </CustomBuild>
     <CustomBuild Include="..\..\src\GLideNUI\ConfigDialog.h">
       <Command>setlocal
 if errorlevel 1 goto VCEnd
@@ -178,7 +161,6 @@ endlocal
     <ClInclude Include="..\..\src\GLideNUI\WTL\atluser.h" />
     <ClInclude Include="..\..\src\GLideNUI\WTL\atlwince.h" />
     <ClInclude Include="..\..\src\GLideNUI\WTL\atlwinx.h" />
-    <ClInclude Include="GeneratedFiles\ui_AboutDialog.h" />
     <ClInclude Include="GeneratedFiles\ui_configDialog.h" />
     <ClInclude Include="..\..\src\GLideNUI\GLideNUI.h" />
     <ClInclude Include="..\..\src\GLideNUI\Settings.h" />

@@ -20,15 +20,13 @@ SOURCES += \
 	GLideNUI.cpp \
 	FullscreenResolutions_windows.cpp \
 	Settings.cpp \
-	ScreenShot.cpp \
-	AboutDialog.cpp
+	ScreenShot.cpp
 
 HEADERS += \
 	ConfigDialog.h \
 	GLideNUI.h \
 	FullscreenResolutions.h \
-	Settings.h \
-	AboutDialog.h
+	Settings.h 
 
 RESOURCES += \
 	icon.qrc
