@@ -185,13 +185,6 @@ endlocal
     <ClInclude Include="..\..\src\GLideNUI\resource.h" />
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="..\..\src\GLideNUI\AboutDialog.ui">
-      <FileType>Document</FileType>
-      <AdditionalInputs>$(QTDIR)\bin\uic.exe;%(AdditionalInputs)</AdditionalInputs>
-      <Command>"$(QTDIR)\bin\uic.exe" -o ".\GeneratedFiles\ui_%(Filename).h" "%(FullPath)"</Command>
-      <Message>Uic%27ing %(Identity)...</Message>
-      <Outputs>.\GeneratedFiles\ui_%(Filename).h;%(Outputs)</Outputs>
-    </CustomBuild>
     <CustomBuild Include="..\..\src\GLideNUI\configDialog.ui">
       <FileType>Document</FileType>
       <AdditionalInputs>$(QTDIR)\bin\uic.exe;%(AdditionalInputs)</AdditionalInputs>

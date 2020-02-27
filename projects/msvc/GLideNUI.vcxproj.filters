@@ -127,9 +127,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="..\..\src\GLideNUI\AboutDialog.ui">
-      <Filter>Form Files</Filter>
-    </CustomBuild>
     <CustomBuild Include="..\..\src\GLideNUI\configDialog.ui">
       <Filter>Form Files</Filter>
     </CustomBuild>

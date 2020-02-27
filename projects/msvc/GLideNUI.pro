@@ -34,8 +34,7 @@ RESOURCES += \
 	icon.qrc
 
 FORMS += \
-	configDialog.ui \
-	AboutDialog.ui
+	configDialog.ui 
 
 TRANSLATIONS = gliden64_fr.ts \
                gliden64_de.ts \
