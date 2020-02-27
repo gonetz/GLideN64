@@ -136,12 +136,16 @@ void _loadSettings(QSettings & settings)
 	settings.endGroup();
 }
 
-void loadSettings(const QString & _strIniFolder)
+void loadSettings(const char * _strIniFolder)
 {
-	bool rewriteSettings = false;
+    std::string IniFileName = _strIniFolder;
+    IniFileName += "/";
+    IniFileName += strIniFileName;
+    
+    bool rewriteSettings = false;
 	{
 		const u32 hacks = config.generalEmulation.hacks;
-		QSettings settings(_strIniFolder + "/" + strIniFileName, QSettings::IniFormat);
+		QSettings settings(IniFileName.c_str(), QSettings::IniFormat);
 		const u32 configVersion = settings.value("version", 0).toInt();
 		QString configTranslationFile = settings.value("translation", config.translationFile.c_str()).toString();
 		config.resetToDefaults();
@@ -172,7 +176,7 @@ void loadSettings(const QString & _strIniFolder)
 	if (rewriteSettings) {
 		// Keep settings up-to-date
 		{
-			QSettings settings(_strIniFolder + "/" + strIniFileName, QSettings::IniFormat);
+			QSettings settings(IniFileName.c_str(), QSettings::IniFormat);
 			QString profile = settings.value("profile", strUserProfile).toString();
 			settings.remove(profile);
 		}
@@ -181,10 +185,13 @@ void loadSettings(const QString & _strIniFolder)
 	}
 }
 
-void writeSettings(const QString & _strIniFolder)
+void writeSettings(const char * _strIniFolder)
 {
-//	QSettings settings("Emulation", "GLideN64");
-	QSettings settings(_strIniFolder + "/" + strIniFileName, QSettings::IniFormat);
+    std::string IniFileName = _strIniFolder;
+    IniFileName += "/";
+    IniFileName += strIniFileName;
+
+	QSettings settings(IniFileName.c_str(), QSettings::IniFormat);
 	settings.setValue("version", config.version);
 	settings.setValue("translation", config.translationFile.c_str());
 	QString profile = settings.value("profile", strUserProfile).toString();
@@ -337,9 +344,13 @@ QString _getRomName(const char * _strRomName) {
 		QString::number(Adler32(0xFFFFFFFF, bytes.data(), bytes.length()), 16).toUpper();
 }
 
-void loadCustomRomSettings(const QString & _strIniFolder, const char * _strRomName)
+void loadCustomRomSettings(const char * _strIniFolder, const char * _strRomName)
 {
-	QSettings settings(_strIniFolder + "/" + strCustomSettingsFileName, QSettings::IniFormat);
+    std::string CustomIniFileName = _strIniFolder;
+    CustomIniFileName += "/";
+    CustomIniFileName += strCustomSettingsFileName;
+
+    QSettings settings(CustomIniFileName.c_str(), QSettings::IniFormat);
 
 	const QString romName = _getRomName(_strRomName);
 	if (settings.childGroups().indexOf(romName) < 0)
@@ -351,7 +362,7 @@ void loadCustomRomSettings(const QString & _strIniFolder, const char * _strRomNa
 	config.version = CONFIG_VERSION_CURRENT;
 }
 
-void saveCustomRomSettings(const QString & _strIniFolder, const char * _strRomName)
+void saveCustomRomSettings(const char * _strIniFolder, const char * _strRomName)
 {
 	Config origConfig;
 	origConfig.resetToDefaults();
@@ -359,7 +370,11 @@ void saveCustomRomSettings(const QString & _strIniFolder, const char * _strRomNa
 	loadSettings(_strIniFolder);
 	std::swap(config, origConfig);
 
-	QSettings settings(_strIniFolder + "/" + strCustomSettingsFileName, QSettings::IniFormat);
+    std::string CustomIniFileName = _strIniFolder;
+    CustomIniFileName += "/";
+    CustomIniFileName += strCustomSettingsFileName;
+
+	QSettings settings(CustomIniFileName.c_str(), QSettings::IniFormat);
 	const QString romName = _getRomName(_strRomName);
 
 #define WriteCustomSetting(G, S) \
@@ -477,43 +492,68 @@ void saveCustomRomSettings(const QString & _strIniFolder, const char * _strRomNa
 	settings.endGroup();
 }
 
-QString getTranslationFile()
+std::string getTranslationFile()
 {
 	return config.translationFile.c_str();
 }
 
-QStringList getProfiles(const QString & _strIniFolder)
+ProfileList getProfiles(const char * _strIniFolder)
 {
-	QSettings settings(_strIniFolder + "/" + strIniFileName, QSettings::IniFormat);
-	return settings.childGroups();
+    std::string IniFileName = _strIniFolder;
+    IniFileName += "/";
+    IniFileName += strIniFileName;
+    QSettings settings(IniFileName.c_str(), QSettings::IniFormat);
+    QStringList children = settings.childGroups();
+
+    ProfileList profiles;
+    for (int i = 0, n = children.size(); i < n; i++)
+    {
+        profiles.insert(children[i].toStdString().c_str());
+    }
+	return profiles;
 }
 
-QString getCurrentProfile(const QString & _strIniFolder)
+std::string getCurrentProfile(const char * _strIniFolder)
 {
-	QSettings settings(_strIniFolder + "/" + strIniFileName, QSettings::IniFormat);
-	return settings.value("profile", strUserProfile).toString();
+    std::string IniFileName = _strIniFolder;
+    IniFileName += "/";
+    IniFileName += strIniFileName;
+    QSettings settings(IniFileName.c_str(), QSettings::IniFormat);
+	return settings.value("profile", strUserProfile).toString().toStdString();
 }
 
-void changeProfile(const QString & _strIniFolder, const QString & _strProfile)
+void changeProfile(const char * _strIniFolder, const char * _strProfile)
 {
 	{
-		QSettings settings(_strIniFolder + "/" + strIniFileName, QSettings::IniFormat);
+        std::string IniFileName = _strIniFolder;
+        IniFileName += "/";
+        IniFileName += strIniFileName;
+        
+        QSettings settings(IniFileName.c_str(), QSettings::IniFormat);
 		settings.setValue("profile", _strProfile);
 	}
 	loadSettings(_strIniFolder);
 }
 
-void addProfile(const QString & _strIniFolder, const QString & _strProfile)
+void addProfile(const char * _strIniFolder, const char * _strProfile)
 {
 	{
-		QSettings settings(_strIniFolder + "/" + strIniFileName, QSettings::IniFormat);
+        std::string IniFileName = _strIniFolder;
+        IniFileName += "/";
+        IniFileName += strIniFileName;
+        
+        QSettings settings(IniFileName.c_str(), QSettings::IniFormat);
 		settings.setValue("profile", _strProfile);
 	}
 	writeSettings(_strIniFolder);
 }
 
-void removeProfile(const QString & _strIniFolder, const QString & _strProfile)
+void removeProfile(const char * _strIniFolder, const char * _strProfile)
 {
-	QSettings settings(_strIniFolder + "/" + strIniFileName, QSettings::IniFormat);
+    std::string IniFileName = _strIniFolder;
+    IniFileName += "/";
+    IniFileName += strIniFileName;
+    
+    QSettings settings(IniFileName.c_str(), QSettings::IniFormat);
 	settings.remove(_strProfile);
 }

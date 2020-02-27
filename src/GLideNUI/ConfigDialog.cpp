@@ -74,9 +74,9 @@ void ConfigDialog::_init(bool reInit, bool blockCustomSettings)
 	m_blockReInit = true;
 
 	if (reInit && m_romName != nullptr && ui->customSettingsCheckBox->isChecked() && ui->settingsDestGameRadioButton->isChecked()) {
-		loadCustomRomSettings(m_strIniPath, m_romName);
+		loadCustomRomSettings(m_strIniPath.c_str(), m_romName);
 	} else if (reInit) {
-		loadSettings(m_strIniPath);
+		loadSettings(m_strIniPath.c_str());
 	}
 
 	// Video settings
@@ -350,25 +350,25 @@ void ConfigDialog::_init(bool reInit, bool blockCustomSettings)
 
 void ConfigDialog::_getTranslations(QStringList & _translationFiles) const
 {
-	QDir pluginFolder(m_strIniPath);
+    QDir pluginFolder(QString(m_strIniPath.c_str()));
 	QStringList nameFilters("gliden64_*.qm");
 	_translationFiles = pluginFolder.entryList(nameFilters, QDir::Files, QDir::Name);
 }
 
-void ConfigDialog::setIniPath(const QString & _strIniPath)
+void ConfigDialog::setIniPath(const std::string & _strIniPath)
 {
 	m_strIniPath = _strIniPath;
 
 	QStringList translationFiles;
 	_getTranslations(translationFiles);
 
-	const QString currentTranslation = getTranslationFile();
+	std::string currentTranslation = getTranslationFile();
 	int listIndex = 0;
 	QStringList translationLanguages("English");
 	for (int i = 0; i < translationFiles.size(); ++i) {
 		// get locale extracted by filename
 		QString locale = translationFiles[i]; // "TranslationExample_de.qm"
-		const bool bCurrent = locale == currentTranslation;
+		const bool bCurrent = locale.toStdString() == currentTranslation;
 		locale.truncate(locale.lastIndexOf('.')); // "TranslationExample_de"
 		locale.remove(0, locale.indexOf('_') + 1); // "de"
 		QString language = QLocale(locale).nativeLanguageName();
@@ -385,9 +385,14 @@ void ConfigDialog::setIniPath(const QString & _strIniPath)
 
 	// Profile
 	ui->profilesComboBox->blockSignals(true);
-	const QStringList aProfiles = getProfiles(m_strIniPath);
+    const ProfileList Profiles = getProfiles(m_strIniPath.c_str());
+    QStringList aProfiles;
+    for (ProfileList::const_iterator itr = Profiles.begin(); itr != Profiles.end(); itr++)
+    {
+        aProfiles.append(itr->c_str());
+    }
 	ui->profilesComboBox->addItems(aProfiles);
-	ui->profilesComboBox->setCurrentIndex(aProfiles.indexOf(getCurrentProfile(m_strIniPath)));
+	ui->profilesComboBox->setCurrentIndex(aProfiles.indexOf(getCurrentProfile(m_strIniPath.c_str()).c_str()));
 	ui->profilesComboBox->insertSeparator(ui->profilesComboBox->count());
 	ui->profilesComboBox->insertItem(ui->profilesComboBox->count(), tr("New..."));
 	ui->profilesComboBox->blockSignals(false);
@@ -641,9 +646,9 @@ void ConfigDialog::accept(bool justSave) {
 		config.debug.dumpMode |= DEBUG_DETAIL;
 
 	if (config.generalEmulation.enableCustomSettings && ui->settingsDestGameRadioButton->isChecked() && m_romName != nullptr)
-		saveCustomRomSettings(m_strIniPath, m_romName);
+		saveCustomRomSettings(m_strIniPath.c_str(), m_romName);
 	else
-		writeSettings(m_strIniPath);
+		writeSettings(m_strIniPath.c_str());
 
 	if (!justSave) {
 		QDialog::accept();
@@ -911,12 +916,13 @@ void ConfigDialog::on_profilesComboBox_currentIndexChanged(const QString &profil
 	ui->settingsDestProfileRadioButton->setChecked(true);
 	if (profile == tr("New...")) {
 		bool ok;
-		QString switchToProfile = getCurrentProfile(m_strIniPath);
+		QString switchToProfile = getCurrentProfile(m_strIniPath.c_str()).c_str();
 		QString newProfile = QInputDialog::getText(this,
 			tr("New Profile"), tr("New profile name:"), QLineEdit::Normal, "", &ok,
 			Qt::WindowCloseButtonHint | Qt::WindowTitleHint);
 		if (ok) {
 			ui->profilesComboBox->blockSignals(true);
+            ProfileList Profiles = getProfiles(m_strIniPath.c_str());
 			if (newProfile == tr("New...")) {
 				QMessageBox msgBox(QMessageBox::Warning, tr("New Profile"),
 					tr("New settings profiles cannot be called \"New...\"."),
@@ -929,7 +935,7 @@ void ConfigDialog::on_profilesComboBox_currentIndexChanged(const QString &profil
 					QMessageBox::Close, this
 				);
 				msgBox.exec();
-			} else if (getProfiles(m_strIniPath).contains(newProfile)) {
+			} else if (Profiles.find(newProfile.toStdString().c_str()) != Profiles.end()) {
 				QMessageBox msgBox(QMessageBox::Warning, tr("New Profile"),
 					tr("This settings profile already exists."),
 					QMessageBox::Close, this
@@ -937,7 +943,7 @@ void ConfigDialog::on_profilesComboBox_currentIndexChanged(const QString &profil
 				msgBox.exec();
 			} else {
 				ui->profilesComboBox->insertItem(0, newProfile);
-				addProfile(m_strIniPath, newProfile);
+				addProfile(m_strIniPath.c_str(), newProfile.toStdString().c_str());
 				if (ui->profilesComboBox->count() > 3) {
 					ui->removeProfilePushButton->setEnabled(true);
 				}
@@ -953,7 +959,7 @@ void ConfigDialog::on_profilesComboBox_currentIndexChanged(const QString &profil
 		}
 		return;
 	}
-	changeProfile(m_strIniPath, profile);
+	changeProfile(m_strIniPath.c_str(), profile.toStdString().c_str());
 	_init(true);
 }
 
@@ -968,7 +974,8 @@ void ConfigDialog::on_removeProfilePushButton_clicked()
 		return;
 
 	QString profile = ui->profilesComboBox->currentText();
-	if (!getProfiles(m_strIniPath).contains(profile))
+    const ProfileList Profiles = getProfiles(m_strIniPath.c_str());
+	if (Profiles.find(profile.toStdString()) == Profiles.end())
 		return;
 	QString msg(tr("Are you sure you want to remove the settings profile \""));
 	msg += "" + profile + tr("\"?");
@@ -978,10 +985,10 @@ void ConfigDialog::on_removeProfilePushButton_clicked()
 	msgBox.setButtonText(QMessageBox::Yes, tr("Remove"));
 	msgBox.setButtonText(QMessageBox::No, tr("Cancel"));
 	if (msgBox.exec() == QMessageBox::Yes) {
-		removeProfile(m_strIniPath, profile);
+		removeProfile(m_strIniPath.c_str(), profile.toStdString().c_str());
 		ui->profilesComboBox->blockSignals(true);
 		ui->profilesComboBox->removeItem(ui->profilesComboBox->currentIndex());
-		changeProfile(m_strIniPath, ui->profilesComboBox->itemText(ui->profilesComboBox->currentIndex()));
+		changeProfile(m_strIniPath.c_str(), ui->profilesComboBox->itemText(ui->profilesComboBox->currentIndex()).toStdString().c_str());
 		ui->profilesComboBox->blockSignals(false);
 		_init(true);
 		ui->removeProfilePushButton->setDisabled(ui->profilesComboBox->count() == 3);

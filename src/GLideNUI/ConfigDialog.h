@@ -17,7 +17,7 @@ public:
 	explicit ConfigDialog(QWidget *parent = Q_NULLPTR, Qt::WindowFlags f = Qt::WindowFlags());
 	~ConfigDialog();
 
-	void setIniPath(const QString & _strIniPath);
+	void setIniPath(const std::string & _strIniPath);
 	void setRomName(const char * _romName);
 	void setTitle();
 	bool isAccepted() const { return m_accepted; }
@@ -91,7 +91,7 @@ private:
 	bool m_accepted;
 	bool m_fontsInited;
 	bool m_blockReInit;
-	QString m_strIniPath;
+	std::string m_strIniPath;
 	const char * m_romName;
 };
 

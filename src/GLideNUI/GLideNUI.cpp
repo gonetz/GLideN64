@@ -24,24 +24,29 @@ inline void cleanMyResource() { Q_CLEANUP_RESOURCE(icon); }
 static
 int openConfigDialog(const wchar_t * _strFileName, const char * _romName, bool & _accepted)
 {
+    std::string IniFolder;
+    uint32_t slength = WideCharToMultiByte(CP_ACP, 0, _strFileName, -1, NULL, 0, NULL, NULL);
+    IniFolder.resize(slength);
+    slength = WideCharToMultiByte(CP_ACP, 0, _strFileName, -1, (LPSTR)IniFolder.c_str(), slength, NULL, NULL);
+    IniFolder.resize(slength - 1); //Remove null end char
+
 	cleanMyResource();
 	initMyResource();
-	QString strIniFileName = QString::fromWCharArray(_strFileName);
-	loadSettings(strIniFileName);
+	loadSettings(IniFolder.c_str());
 	if (config.generalEmulation.enableCustomSettings != 0 && _romName != nullptr && strlen(_romName) != 0)
-		loadCustomRomSettings(strIniFileName, _romName);
+		loadCustomRomSettings(IniFolder.c_str(), _romName);
 
 	int argc = 0;
 	char * argv = 0;
 	QApplication a(argc, &argv);
 
 	QTranslator translator;
-	if (translator.load(getTranslationFile(), strIniFileName))
+	if (translator.load(getTranslationFile().c_str(), IniFolder.c_str()))
 		a.installTranslator(&translator);
 
 	ConfigDialog w(Q_NULLPTR, Qt::WindowTitleHint | Qt::WindowSystemMenuHint | Qt::WindowCloseButtonHint);
 
-	w.setIniPath(strIniFileName);
+	w.setIniPath(IniFolder.c_str());
 	w.setRomName(_romName);
 	w.setTitle();
 	w.show();
@@ -61,7 +66,7 @@ int openAboutDialog(const wchar_t * _strFileName)
 	QApplication a(argc, &argv);
 
 	QTranslator translator;
-	if (translator.load(getTranslationFile(), QString::fromWCharArray(_strFileName)))
+	if (translator.load(getTranslationFile().c_str(), QString::fromWCharArray(_strFileName)))
 		a.installTranslator(&translator);
 
 	AboutDialog w(Q_NULLPTR, Qt::WindowTitleHint | Qt::WindowSystemMenuHint | Qt::WindowCloseButtonHint);
@@ -96,7 +101,7 @@ EXPORT bool CALL RunConfig(const wchar_t * _strFileName, const char * _romName)
 	return runConfigThread(_strFileName, _romName);
 }
 
-EXPORT int CALL RunAbout(const wchar_t * _strFileName)
+EXPORT int CALL RunAbout(const wchar_t * /*_strFileName*/)
 {
 	CAboutDlg Dlg;
 	Dlg.DoModal();
@@ -105,10 +110,22 @@ EXPORT int CALL RunAbout(const wchar_t * _strFileName)
 
 EXPORT void CALL LoadConfig(const wchar_t * _strFileName)
 {
-	loadSettings(QString::fromWCharArray(_strFileName));
+    std::string IniFolder;
+    uint32_t slength = WideCharToMultiByte(CP_ACP, 0, _strFileName, -1, NULL, 0, NULL, NULL);
+    IniFolder.resize(slength);
+    slength = WideCharToMultiByte(CP_ACP, 0, _strFileName, -1, (LPSTR)IniFolder.c_str(), slength, NULL, NULL);
+    IniFolder.resize(slength - 1); //Remove null end char
+    
+    loadSettings(IniFolder.c_str());
 }
 
 EXPORT void CALL LoadCustomRomSettings(const wchar_t * _strFileName, const char * _romName)
 {
-	loadCustomRomSettings(QString::fromWCharArray(_strFileName), _romName);
+    std::string IniFolder;
+    uint32_t slength = WideCharToMultiByte(CP_ACP, 0, _strFileName, -1, NULL, 0, NULL, NULL);
+    IniFolder.resize(slength);
+    slength = WideCharToMultiByte(CP_ACP, 0, _strFileName, -1, (LPSTR)IniFolder.c_str(), slength, NULL, NULL);
+    IniFolder.resize(slength - 1); //Remove null end char
+
+    loadCustomRomSettings(IniFolder.c_str(), _romName);
 }

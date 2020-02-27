@@ -1,16 +1,15 @@
-#ifndef SETTINGS_H
-#define SETTINGS_H
+#pragma once
+#include <string>
+#include <set>
+typedef std::set<std::string> ProfileList;
 
-void loadSettings(const QString & _strIniFolder);
-void writeSettings(const QString & _strIniFolder);
-void loadCustomRomSettings(const QString & _strIniFolder, const char * _strRomName);
-void saveCustomRomSettings(const QString & _strIniFolder, const char * _strRomName);
-QString getTranslationFile();
-QStringList getProfiles(const QString & _strIniFolder);
-QString getCurrentProfile(const QString & _strIniFolder);
-void changeProfile(const QString & _strIniFolder, const QString & _strProfile);
-void addProfile(const QString & _strIniFolder, const QString & _strProfile);
-void removeProfile(const QString & _strIniFolder, const QString & _strProfile);
-
-#endif // SETTINGS_H
-
+void loadSettings(const char * _strIniFolder);
+void writeSettings(const char * _strIniFolder);
+void loadCustomRomSettings(const char * _strIniFolder, const char * _strRomName);
+void saveCustomRomSettings(const char * _strIniFolder, const char * _strRomName);
+std::string getTranslationFile();
+ProfileList getProfiles(const char * _strIniFolder);
+std::string getCurrentProfile(const char * _strIniFolder);
+void changeProfile(const char * _strIniFolder, const char * _strProfile);
+void addProfile(const char * _strIniFolder, const char * _strProfile);
+void removeProfile(const char * _strIniFolder, const char * _strProfile);
