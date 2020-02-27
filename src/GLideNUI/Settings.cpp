@@ -10,6 +10,7 @@
 #include "../Config.h"
 
 #include "Settings.h"
+#include <memory>
 
 static const char * strIniFileName = "GLideN64.ini";
 static const char * strCustomSettingsFileName = "GLideN64.custom.ini";
@@ -306,42 +307,39 @@ void writeSettings(const char * _strIniFolder)
 }
 
 static
-u32 Adler32(u32 crc, const void *buffer, u32 count)
+std::string _getRomName(const char * _strRomName)
 {
-    register u32 s1 = crc & 0xFFFF;
-    register u32 s2 = (crc >> 16) & 0xFFFF;
-    int k;
-    const u8 *Buffer = (const u8*)buffer;
+    std::string RomName;
 
-    if (Buffer == NULL)
-        return 0;
+    enum { CP_SHIFT_JIS = 932 };
+    int utf16size = MultiByteToWideChar(CP_SHIFT_JIS, MB_ERR_INVALID_CHARS, _strRomName, -1, 0, 0);
+    if (utf16size != 0)
+    {
+        std::unique_ptr<wchar_t> pUTF16(new WCHAR[utf16size]);
+        if (MultiByteToWideChar(CP_SHIFT_JIS, 0, (LPCCH)_strRomName, -1, pUTF16.get(), utf16size) != 0)
+        {
+            std::wstring wsRomName(pUTF16.get(), utf16size);
+            std::transform(wsRomName.begin(), wsRomName.end(), wsRomName.begin(), (int(*)(int)) toupper);
+            std::string::size_type pos = wsRomName.find(L" ");
+            std::wstring replace = L"%20";
+            while (pos != std::string::npos)
+            {
+                wsRomName.replace(pos, 1, replace);
+                pos = wsRomName.find(L" ", pos + replace.length());
+            }
 
-    while (count > 0) {
-        /* 5552 is the largest n such that 255n(n+1)/2 + (n+1)(BASE-1) <= 2^32-1 */
-        k = (count < 5552 ? count : 5552);
-        count -= k;
-        while (k--) {
-            s1 += *Buffer++;
-            s2 += s1;
+            int utf8size = ::WideCharToMultiByte(CP_UTF8, 0, wsRomName.c_str(), -1, 0, 0, 0, 0);
+            if (utf8size != 0)
+            {
+                std::unique_ptr<char> pUTF8(new char[utf8size]);
+                if (::WideCharToMultiByte(CP_UTF8, 0, wsRomName.c_str(), -1, pUTF8.get(), utf8size, 0, 0) != 0)
+                {
+                    RomName = std::string(pUTF8.get());
+                }
+            }
         }
-        /* 65521 is the largest prime smaller than 65536 */
-        s1 %= 65521;
-        s2 %= 65521;
     }
-
-    return (s2 << 16) | s1;
-}
-
-static
-QString _getRomName(const char * _strRomName) {
-    const QByteArray bytes(_strRomName);
-    bool bASCII = true;
-    for (int i = 0; i < bytes.length() && bASCII; ++i)
-        bASCII = bytes.at(i) >= 0;
-
-    return bASCII ?
-        QString::fromLatin1(_strRomName).toUpper() :
-        QString::number(Adler32(0xFFFFFFFF, bytes.data(), bytes.length()), 16).toUpper();
+    return RomName;
 }
 
 void loadCustomRomSettings(const char * _strIniFolder, const char * _strRomName)
@@ -352,11 +350,11 @@ void loadCustomRomSettings(const char * _strIniFolder, const char * _strRomName)
 
     QSettings settings(CustomIniFileName.c_str(), QSettings::IniFormat);
 
-    const QString romName = _getRomName(_strRomName);
-    if (settings.childGroups().indexOf(romName) < 0)
+    const std::string romName = _getRomName(_strRomName);
+    if (settings.childGroups().indexOf(romName.c_str()) < 0)
         return;
 
-    settings.beginGroup(romName);
+    settings.beginGroup(romName.c_str());
     _loadSettings(settings);
     settings.endGroup();
     config.version = CONFIG_VERSION_CURRENT;
@@ -375,7 +373,7 @@ void saveCustomRomSettings(const char * _strIniFolder, const char * _strRomName)
     CustomIniFileName += strCustomSettingsFileName;
 
     QSettings settings(CustomIniFileName.c_str(), QSettings::IniFormat);
-    const QString romName = _getRomName(_strRomName);
+    const std::string romName = _getRomName(_strRomName);
 
 #define WriteCustomSetting(G, S) \
     if (origConfig.G.S  != config.G.S || \
@@ -396,7 +394,7 @@ void saveCustomRomSettings(const char * _strIniFolder, const char * _strRomName)
         orig##S != settings.value(#S, new##S).toString()) \
         settings.setValue(#S, new##S)
 
-    settings.beginGroup(romName);
+    settings.beginGroup(romName.c_str());
 
     settings.beginGroup("video");
     WriteCustomSetting(video, fullscreenWidth);
