@@ -496,87 +496,73 @@ bool CIniFileBase::IsFileOpen(void)
 
 bool CIniFileBase::DeleteSection(const char * lpSectionName)
 {
+    if (!m_File.IsOpen()) { return false; }
+    
     SaveCurrentSection();
+    if (!MoveToSectionNameData(lpSectionName, true))
+    {
+        return false;
+    }
+    m_File.Seek(m_CurrentSectionFilePos, CFileBase::begin);
+    long DeleteSectionStart = m_CurrentSectionFilePos - (strlen(lpSectionName) + strlen(m_LineFeed) + 2);
+    long NextSectionStart = -1;
+
+    {
+        int MaxDataSize = 0, DataSize = 0, ReadPos = 0, NextLine = 0, result;
+        std::unique_ptr <char> Data;
+        char *Input = NULL;
+        do
+        {
+            result = GetStringFromFile(Input, Data, MaxDataSize, DataSize, ReadPos);
+            if (result <= 1) { continue; }
+            if (strlen(CleanLine(Input)) <= 1) { continue; }
+
+            if (Input[0] != '[') 
+            { 
+                NextLine = (m_File.GetPosition() - DataSize) + ReadPos;
+                continue; 
+            }
+            NextSectionStart = NextLine != 0 ? NextLine : (m_File.GetPosition() - DataSize) + ReadPos;
+            break;
+        } while (result >= 0);
+    }
+
+    if (NextSectionStart != -1)
+    {
+        m_File.Seek(0, CFileBase::end);
+        long end = m_File.GetPosition();
+        long ReadPos = NextSectionStart;
+        long WritePos = DeleteSectionStart;
+
+        enum { fIS_MvSize = 0x2000 };
+        unsigned char Data[fIS_MvSize + 1];
+        int SizeToRead;
+        do
+        {
+            SizeToRead = end - ReadPos;
+            if (SizeToRead > fIS_MvSize) { SizeToRead = fIS_MvSize; }
+            m_File.Seek(ReadPos, CFileBase::begin);
+            m_File.Read(Data, SizeToRead);
+            m_File.Seek(WritePos, CFileBase::begin);
+            m_File.Write(Data, SizeToRead);
+            ReadPos += SizeToRead;
+            WritePos += SizeToRead;
+        } while (SizeToRead > 0);
+        m_File.Seek(DeleteSectionStart + (end - NextSectionStart), CFileBase::begin);
+        m_File.Flush();
+        m_File.SetEndOfFile();
+    }
+    else
+    {
+        m_File.Seek(DeleteSectionStart, CFileBase::begin);
+        m_File.Flush();
+        m_File.SetEndOfFile();
+    }
+    m_File.Flush();
     ClearSectionPosList(0);
     m_CurrentSection = "";
     m_CurrentSectionData.clear();
     m_CurrentSectionFilePos = -1;
-
-    std::string strSection = FormatStr("[%s]", lpSectionName);
-
-    if (!m_File.IsOpen())
-    {
-        return false;
-    }
-    m_CurrentSectionFilePos = 0;
-    m_File.Seek(m_CurrentSectionFilePos, CFileBase::begin);
-
-    size_t dwSize = m_File.GetLength();
-    if (dwSize == 0)
-    {
-        return false;
-    }
-
-    std::unique_ptr<char> pData(new char[dwSize + 1]);
-    if (pData.get() == NULL)
-    {
-        return false;
-    }
-    uint32_t dwRet = m_File.Read(pData.get(), (uint32_t)dwSize);
-    if (dwRet == 0 || dwRet < dwSize)
-    {
-        return false;
-    }
-    pData.get()[dwRet] = 0;
-
-    char *pSection = strstr(pData.get(), strSection.c_str());
-    if (pSection == NULL)
-    {
-        return false;
-    }
-    char tmp = pSection[0];
-    pSection[0] = 0;
-
-    std::string strNewData = pData.get();
-    pSection[0] = tmp;
-
-    char *pEndSection = pSection + strlen(strSection.c_str()), *Data = pData.get();
-    char *pNextSection = NULL;
-    int result, ReadPos = (int)(pEndSection - pData.get());
-    do
-    {
-        char * Input = NULL;
-        int MaxDataSize = (int)(dwSize + 1);
-        result = -1;
-        for (int count = ReadPos; count < MaxDataSize; count++)
-        {
-            if (Data[count] != '\n')
-            {
-                continue;
-            }
-            int len = (count - ReadPos) + 1;
-            Input = &Data[ReadPos];
-            ReadPos = count + 1;
-            result = len;
-            break;
-        }
-        if (result <= 1) { continue; }
-        std::string line(Input, result);
-        if (strlen(CleanLine((char *)line.c_str())) <= 1) { continue; }
-        if (line[0] != '[') { continue; }
-        pNextSection = Input;
-        break;
-    } while (result >= 0);
-
-    if (pNextSection)
-    {
-        strNewData += pNextSection;
-    }
-
-    m_File.Seek(m_CurrentSectionFilePos, CFileBase::begin);
-    m_File.Write(strNewData.c_str(), (uint32_t)strlen(strNewData.c_str()));
-    m_File.Flush();
-    m_File.SetEndOfFile();
     return true;
 }
 

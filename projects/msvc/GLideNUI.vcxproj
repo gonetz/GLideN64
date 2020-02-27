@@ -106,6 +106,7 @@
     <ClCompile Include="..\..\src\GLideNUI\config.cpp" />
     <ClCompile Include="..\..\src\GLideNUI\ConfigDialog.cpp" />
     <ClCompile Include="..\..\src\GLideNUI\FileClass.cpp" />
+    <ClCompile Include="..\..\src\GLideNUI\GlSettings.cpp" />
     <ClCompile Include="..\..\src\GLideNUI\IniFileClass.cpp" />
     <ClCompile Include="Debug\moc_AboutDialog.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)'=='Release'">true</ExcludedFromBuild>
@@ -153,6 +154,7 @@ endlocal
     <ClInclude Include="..\..\src\GLideNUI\config.h" />
     <ClInclude Include="..\..\src\GLideNUI\FileClass.h" />
     <ClInclude Include="..\..\src\GLideNUI\FullscreenResolutions.h" />
+    <ClInclude Include="..\..\src\GLideNUI\GlSettings.h" />
     <ClInclude Include="..\..\src\GLideNUI\IniFileClass.h" />
     <ClInclude Include="..\..\src\GLideNUI\WTL\atlapp.h" />
     <ClInclude Include="..\..\src\GLideNUI\WTL\atlcrack.h" />

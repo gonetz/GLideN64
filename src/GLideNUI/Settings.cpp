@@ -1,6 +1,3 @@
-#include <QSettings>
-#include <QColor>
-
 #ifdef OS_WINDOWS
 #include <windows.h>
 #else
@@ -10,14 +7,50 @@
 #include "../Config.h"
 
 #include "Settings.h"
+#include "GlSettings.h"
+#include <algorithm>
 #include <memory>
 
 static const char * strIniFileName = "GLideN64.ini";
 static const char * strCustomSettingsFileName = "GLideN64.custom.ini";
-static QString strUserProfile("User");
+static const char * strUserProfile = "User";
+
+std::string FromUTF16(const wchar_t * UTF16Source)
+{
+    std::string Result;
+
+    uint32_t utf8size = WideCharToMultiByte(CP_UTF8, 0, UTF16Source, -1, NULL, 0, NULL, NULL);
+    if (utf8size > 0)
+    {
+        std::unique_ptr<char> pUTF8(new char[utf8size]);
+        WideCharToMultiByte(CP_UTF8, 0, UTF16Source, -1, pUTF8.get(), utf8size, NULL, NULL);
+        Result = pUTF8.get();
+    }
+    return Result;
+}
+
+std::wstring ToUTF16(const char * Source)
+{
+    std::wstring res;
+
+    DWORD nNeeded = MultiByteToWideChar(CP_UTF8, 0, Source, -1, NULL, 0);
+    if (nNeeded > 0)
+    {
+        std::unique_ptr<wchar_t> pUTF8(new wchar_t[nNeeded]);
+        if (pUTF8.get() != NULL)
+        {
+            nNeeded = MultiByteToWideChar(CP_UTF8, 0, Source, -1, pUTF8.get(), nNeeded);
+            if (nNeeded)
+            {
+                res = pUTF8.get();
+            }
+        }
+    }
+    return res;
+}
 
 static
-void _loadSettings(QSettings & settings)
+void _loadSettings(GlSettings & settings)
 {
     config.version = settings.value("version").toInt();
 
@@ -95,23 +128,19 @@ void _loadSettings(QSettings & settings)
     config.textureFilter.txSaveCache = settings.value("txSaveCache", config.textureFilter.txSaveCache).toInt();
     config.textureFilter.txEnhancedTextureFileStorage = settings.value("txEnhancedTextureFileStorage", config.textureFilter.txEnhancedTextureFileStorage).toInt();
     config.textureFilter.txHiresTextureFileStorage = settings.value("txHiresTextureFileStorage", config.textureFilter.txHiresTextureFileStorage).toInt();
-    QString txPath = QString::fromWCharArray(config.textureFilter.txPath);
-    config.textureFilter.txPath[settings.value("txPath", txPath).toString().toWCharArray(config.textureFilter.txPath)] = L'\0';
-    QString txCachePath = QString::fromWCharArray(config.textureFilter.txCachePath);
-    config.textureFilter.txCachePath[settings.value("txCachePath", txCachePath).toString().toWCharArray(config.textureFilter.txCachePath)] = L'\0';
-    QString txDumpPath = QString::fromWCharArray(config.textureFilter.txDumpPath);
-    config.textureFilter.txDumpPath[settings.value("txDumpPath", txDumpPath).toString().toWCharArray(config.textureFilter.txDumpPath)] = L'\0';
-
+    wcscpy_s(config.textureFilter.txPath, ToUTF16(settings.value("txPath", FromUTF16(config.textureFilter.txPath).c_str()).toString().c_str()).c_str());
+    wcscpy_s(config.textureFilter.txCachePath, ToUTF16(settings.value("txCachePath", FromUTF16(config.textureFilter.txPath).c_str()).toString().c_str()).c_str());
+    wcscpy_s(config.textureFilter.txDumpPath, ToUTF16(settings.value("txDumpPath", FromUTF16(config.textureFilter.txPath).c_str()).toString().c_str()).c_str());
     settings.endGroup();
 
     settings.beginGroup("font");
-    config.font.name = settings.value("name", config.font.name.c_str()).toString().toLocal8Bit().constData();
+    config.font.name = settings.value("name", config.font.name.c_str()).toString();
     config.font.size = settings.value("size", config.font.size).toInt();
-    QColor fontColor = settings.value("color", QColor(config.font.color[0], config.font.color[1], config.font.color[2])).value<QColor>();
-    config.font.color[0] = fontColor.red();
-    config.font.color[1] = fontColor.green();
-    config.font.color[2] = fontColor.blue();
-    config.font.color[3] = fontColor.alpha();
+    GlColor fontColor = settings.value("color", GlColor(config.font.color[0], config.font.color[1], config.font.color[2])).toGlColor();
+    config.font.color[0] = fontColor.Red();
+    config.font.color[1] = fontColor.Green();
+    config.font.color[2] = fontColor.Blue();
+    config.font.color[3] = fontColor.Alpha();
     config.font.colorf[0] = _FIXED2FLOAT(config.font.color[0], 8);
     config.font.colorf[1] = _FIXED2FLOAT(config.font.color[1], 8);
     config.font.colorf[2] = _FIXED2FLOAT(config.font.color[2], 8);
@@ -146,12 +175,11 @@ void loadSettings(const char * _strIniFolder)
     bool rewriteSettings = false;
     {
         const u32 hacks = config.generalEmulation.hacks;
-        QSettings settings(IniFileName.c_str(), QSettings::IniFormat);
+        GlSettings settings(IniFileName.c_str());
         const u32 configVersion = settings.value("version", 0).toInt();
-        QString configTranslationFile = settings.value("translation", config.translationFile.c_str()).toString();
         config.resetToDefaults();
         config.generalEmulation.hacks = hacks;
-        config.translationFile = configTranslationFile.toLocal8Bit().constData();
+        config.translationFile = settings.value("translation", config.translationFile.c_str()).toString();
         if (configVersion < CONFIG_WITH_PROFILES) {
             _loadSettings(settings);
             config.version = CONFIG_VERSION_CURRENT;
@@ -163,9 +191,10 @@ void loadSettings(const char * _strIniFolder)
             writeSettings(_strIniFolder);
             settings.endGroup();
         } else {
-            QString profile = settings.value("profile", strUserProfile).toString();
-            if (settings.childGroups().indexOf(profile) >= 0) {
-                settings.beginGroup(profile);
+            std::string profile = settings.value("profile", strUserProfile).toString();
+            GlSettings::sections childGroups = settings.childGroups();
+            if (childGroups.find(profile.c_str()) != childGroups.end()) {
+                settings.beginGroup(profile.c_str());
                 _loadSettings(settings);
                 settings.endGroup();
             } else
@@ -177,9 +206,9 @@ void loadSettings(const char * _strIniFolder)
     if (rewriteSettings) {
         // Keep settings up-to-date
         {
-            QSettings settings(IniFileName.c_str(), QSettings::IniFormat);
-            QString profile = settings.value("profile", strUserProfile).toString();
-            settings.remove(profile);
+            GlSettings settings(IniFileName.c_str());
+            std::string profile = settings.value("profile", strUserProfile).toString();
+            settings.remove(profile.c_str());
         }
         config.version = CONFIG_VERSION_CURRENT;
         writeSettings(_strIniFolder);
@@ -192,118 +221,120 @@ void writeSettings(const char * _strIniFolder)
     IniFileName += "/";
     IniFileName += strIniFileName;
 
-    QSettings settings(IniFileName.c_str(), QSettings::IniFormat);
+    GlSettings settings(IniFileName.c_str());
     settings.setValue("version", config.version);
     settings.setValue("translation", config.translationFile.c_str());
-    QString profile = settings.value("profile", strUserProfile).toString();
+    std::string profile = settings.value("profile", strUserProfile).toString();
+    if (profile.length() > 0)
+    {
+        settings.beginGroup(profile.c_str());
+        settings.setValue("version", config.version);
 
-    settings.beginGroup(profile);
-    settings.setValue("version", config.version);
+        settings.beginGroup("video");
+        settings.setValue("fullscreenWidth", config.video.fullscreenWidth);
+        settings.setValue("fullscreenHeight", config.video.fullscreenHeight);
+        settings.setValue("windowedWidth", config.video.windowedWidth);
+        settings.setValue("windowedHeight", config.video.windowedHeight);
+        settings.setValue("fullscreenRefresh", config.video.fullscreenRefresh);
+        settings.setValue("multisampling", config.video.multisampling);
+        settings.setValue("fxaa", config.video.fxaa);
+        settings.setValue("verticalSync", config.video.verticalSync);
+        settings.setValue("threadedVideo", config.video.threadedVideo);
+        settings.endGroup();
 
-    settings.beginGroup("video");
-    settings.setValue("fullscreenWidth", config.video.fullscreenWidth);
-    settings.setValue("fullscreenHeight", config.video.fullscreenHeight);
-    settings.setValue("windowedWidth", config.video.windowedWidth);
-    settings.setValue("windowedHeight", config.video.windowedHeight);
-    settings.setValue("fullscreenRefresh", config.video.fullscreenRefresh);
-    settings.setValue("multisampling", config.video.multisampling);
-    settings.setValue("fxaa", config.video.fxaa);
-    settings.setValue("verticalSync", config.video.verticalSync);
-    settings.setValue("threadedVideo", config.video.threadedVideo);
-    settings.endGroup();
+        settings.beginGroup("texture");
+        settings.setValue("maxAnisotropy", config.texture.maxAnisotropy);
+        settings.setValue("bilinearMode", config.texture.bilinearMode);
+        settings.setValue("enableHalosRemoval", config.texture.enableHalosRemoval);
+        settings.setValue("screenShotFormat", config.texture.screenShotFormat);
+        settings.endGroup();
 
-    settings.beginGroup("texture");
-    settings.setValue("maxAnisotropy", config.texture.maxAnisotropy);
-    settings.setValue("bilinearMode", config.texture.bilinearMode);
-    settings.setValue("enableHalosRemoval", config.texture.enableHalosRemoval);
-    settings.setValue("screenShotFormat", config.texture.screenShotFormat);
-    settings.endGroup();
+        settings.beginGroup("generalEmulation");
+        settings.setValue("enableNoise", config.generalEmulation.enableNoise);
+        settings.setValue("enableLOD", config.generalEmulation.enableLOD);
+        settings.setValue("enableHWLighting", config.generalEmulation.enableHWLighting);
+        settings.setValue("enableShadersStorage", config.generalEmulation.enableShadersStorage);
+        settings.setValue("enableCustomSettings", config.generalEmulation.enableCustomSettings);
+        settings.endGroup();
 
-    settings.beginGroup("generalEmulation");
-    settings.setValue("enableNoise", config.generalEmulation.enableNoise);
-    settings.setValue("enableLOD", config.generalEmulation.enableLOD);
-    settings.setValue("enableHWLighting", config.generalEmulation.enableHWLighting);
-    settings.setValue("enableShadersStorage", config.generalEmulation.enableShadersStorage);
-    settings.setValue("enableCustomSettings", config.generalEmulation.enableCustomSettings);
-    settings.endGroup();
+        settings.beginGroup("graphics2D");
+        settings.setValue("correctTexrectCoords", config.graphics2D.correctTexrectCoords);
+        settings.setValue("enableNativeResTexrects", config.graphics2D.enableNativeResTexrects);
+        settings.setValue("bgMode", config.graphics2D.bgMode);
+        settings.endGroup();
 
-    settings.beginGroup("graphics2D");
-    settings.setValue("correctTexrectCoords", config.graphics2D.correctTexrectCoords);
-    settings.setValue("enableNativeResTexrects", config.graphics2D.enableNativeResTexrects);
-    settings.setValue("bgMode", config.graphics2D.bgMode);
-    settings.endGroup();
+        settings.beginGroup("frameBufferEmulation");
+        settings.setValue("enable", config.frameBufferEmulation.enable);
+        settings.setValue("aspect", config.frameBufferEmulation.aspect);
+        settings.setValue("nativeResFactor", config.frameBufferEmulation.nativeResFactor);
+        settings.setValue("bufferSwapMode", config.frameBufferEmulation.bufferSwapMode);
+        settings.setValue("N64DepthCompare", config.frameBufferEmulation.N64DepthCompare);
+        settings.setValue("forceDepthBufferClear", config.frameBufferEmulation.forceDepthBufferClear);
+        settings.setValue("copyAuxToRDRAM", config.frameBufferEmulation.copyAuxToRDRAM);
+        settings.setValue("copyFromRDRAM", config.frameBufferEmulation.copyFromRDRAM);
+        settings.setValue("copyToRDRAM", config.frameBufferEmulation.copyToRDRAM);
+        settings.setValue("copyDepthToRDRAM", config.frameBufferEmulation.copyDepthToRDRAM);
+        settings.setValue("fbInfoDisabled", config.frameBufferEmulation.fbInfoDisabled);
+        settings.setValue("fbInfoReadColorChunk", config.frameBufferEmulation.fbInfoReadColorChunk);
+        settings.setValue("fbInfoReadDepthChunk", config.frameBufferEmulation.fbInfoReadDepthChunk);
+        settings.setValue("copyDepthToMainDepthBuffer", config.frameBufferEmulation.copyDepthToMainDepthBuffer);
+        settings.setValue("enableOverscan", config.frameBufferEmulation.enableOverscan);
+        settings.setValue("overscanPalLeft", config.frameBufferEmulation.overscanPAL.left);
+        settings.setValue("overscanPalRight", config.frameBufferEmulation.overscanPAL.right);
+        settings.setValue("overscanPalTop", config.frameBufferEmulation.overscanPAL.top);
+        settings.setValue("overscanPalBottom", config.frameBufferEmulation.overscanPAL.bottom);
+        settings.setValue("overscanNtscLeft", config.frameBufferEmulation.overscanNTSC.left);
+        settings.setValue("overscanNtscRight", config.frameBufferEmulation.overscanNTSC.right);
+        settings.setValue("overscanNtscTop", config.frameBufferEmulation.overscanNTSC.top);
+        settings.setValue("overscanNtscBottom", config.frameBufferEmulation.overscanNTSC.bottom);
+        settings.endGroup();
 
-    settings.beginGroup("frameBufferEmulation");
-    settings.setValue("enable", config.frameBufferEmulation.enable);
-    settings.setValue("aspect", config.frameBufferEmulation.aspect);
-    settings.setValue("nativeResFactor", config.frameBufferEmulation.nativeResFactor);
-    settings.setValue("bufferSwapMode", config.frameBufferEmulation.bufferSwapMode);
-    settings.setValue("N64DepthCompare", config.frameBufferEmulation.N64DepthCompare);
-    settings.setValue("forceDepthBufferClear", config.frameBufferEmulation.forceDepthBufferClear);
-    settings.setValue("copyAuxToRDRAM", config.frameBufferEmulation.copyAuxToRDRAM);
-    settings.setValue("copyFromRDRAM", config.frameBufferEmulation.copyFromRDRAM);
-    settings.setValue("copyToRDRAM", config.frameBufferEmulation.copyToRDRAM);
-    settings.setValue("copyDepthToRDRAM", config.frameBufferEmulation.copyDepthToRDRAM);
-    settings.setValue("fbInfoDisabled", config.frameBufferEmulation.fbInfoDisabled);
-    settings.setValue("fbInfoReadColorChunk", config.frameBufferEmulation.fbInfoReadColorChunk);
-    settings.setValue("fbInfoReadDepthChunk", config.frameBufferEmulation.fbInfoReadDepthChunk);
-    settings.setValue("copyDepthToMainDepthBuffer", config.frameBufferEmulation.copyDepthToMainDepthBuffer);
-    settings.setValue("enableOverscan", config.frameBufferEmulation.enableOverscan);
-    settings.setValue("overscanPalLeft", config.frameBufferEmulation.overscanPAL.left);
-    settings.setValue("overscanPalRight", config.frameBufferEmulation.overscanPAL.right);
-    settings.setValue("overscanPalTop", config.frameBufferEmulation.overscanPAL.top);
-    settings.setValue("overscanPalBottom", config.frameBufferEmulation.overscanPAL.bottom);
-    settings.setValue("overscanNtscLeft", config.frameBufferEmulation.overscanNTSC.left);
-    settings.setValue("overscanNtscRight", config.frameBufferEmulation.overscanNTSC.right);
-    settings.setValue("overscanNtscTop", config.frameBufferEmulation.overscanNTSC.top);
-    settings.setValue("overscanNtscBottom", config.frameBufferEmulation.overscanNTSC.bottom);
-    settings.endGroup();
+        settings.beginGroup("textureFilter");
+        settings.setValue("txFilterMode", config.textureFilter.txFilterMode);
+        settings.setValue("txEnhancementMode", config.textureFilter.txEnhancementMode);
+        settings.setValue("txDeposterize", config.textureFilter.txDeposterize);
+        settings.setValue("txFilterIgnoreBG", config.textureFilter.txFilterIgnoreBG);
+        settings.setValue("txCacheSize", config.textureFilter.txCacheSize);
+        settings.setValue("txHiresEnable", config.textureFilter.txHiresEnable);
+        settings.setValue("txHiresFullAlphaChannel", config.textureFilter.txHiresFullAlphaChannel);
+        settings.setValue("txHresAltCRC", config.textureFilter.txHresAltCRC);
+        settings.setValue("txDump", config.textureFilter.txDump);
+        settings.setValue("txForce16bpp", config.textureFilter.txForce16bpp);
+        settings.setValue("txCacheCompression", config.textureFilter.txCacheCompression);
+        settings.setValue("txSaveCache", config.textureFilter.txSaveCache);
+        settings.setValue("txEnhancedTextureFileStorage", config.textureFilter.txEnhancedTextureFileStorage);
+        settings.setValue("txHiresTextureFileStorage", config.textureFilter.txHiresTextureFileStorage);
+        settings.setValue("txPath", FromUTF16(config.textureFilter.txPath).c_str());
+        settings.setValue("txCachePath", FromUTF16(config.textureFilter.txCachePath).c_str());
+        settings.setValue("txDumpPath", FromUTF16(config.textureFilter.txDumpPath).c_str());
+        settings.endGroup();
 
-    settings.beginGroup("textureFilter");
-    settings.setValue("txFilterMode", config.textureFilter.txFilterMode);
-    settings.setValue("txEnhancementMode", config.textureFilter.txEnhancementMode);
-    settings.setValue("txDeposterize", config.textureFilter.txDeposterize);
-    settings.setValue("txFilterIgnoreBG", config.textureFilter.txFilterIgnoreBG);
-    settings.setValue("txCacheSize", config.textureFilter.txCacheSize);
-    settings.setValue("txHiresEnable", config.textureFilter.txHiresEnable);
-    settings.setValue("txHiresFullAlphaChannel", config.textureFilter.txHiresFullAlphaChannel);
-    settings.setValue("txHresAltCRC", config.textureFilter.txHresAltCRC);
-    settings.setValue("txDump", config.textureFilter.txDump);
-    settings.setValue("txForce16bpp", config.textureFilter.txForce16bpp);
-    settings.setValue("txCacheCompression", config.textureFilter.txCacheCompression);
-    settings.setValue("txSaveCache", config.textureFilter.txSaveCache);
-    settings.setValue("txEnhancedTextureFileStorage", config.textureFilter.txEnhancedTextureFileStorage);
-    settings.setValue("txHiresTextureFileStorage", config.textureFilter.txHiresTextureFileStorage);
-    settings.setValue("txPath", QString::fromWCharArray(config.textureFilter.txPath));
-    settings.setValue("txCachePath", QString::fromWCharArray(config.textureFilter.txCachePath));
-    settings.setValue("txDumpPath", QString::fromWCharArray(config.textureFilter.txDumpPath));
-    settings.endGroup();
+        settings.beginGroup("font");
+        settings.setValue("name", config.font.name.c_str());
+        settings.setValue("size", config.font.size);
+        settings.setValue("color", GlColor(config.font.color[0], config.font.color[1], config.font.color[2], config.font.color[3]));
+        settings.endGroup();
 
-    settings.beginGroup("font");
-    settings.setValue("name", config.font.name.c_str());
-    settings.setValue("size", config.font.size);
-    settings.setValue("color", QColor(config.font.color[0], config.font.color[1], config.font.color[2], config.font.color[3]));
-    settings.endGroup();
+        settings.beginGroup("gammaCorrection");
+        settings.setValue("force", config.gammaCorrection.force);
+        settings.setValue("level", config.gammaCorrection.level);
+        settings.endGroup();
 
-    settings.beginGroup("gammaCorrection");
-    settings.setValue("force", config.gammaCorrection.force);
-    settings.setValue("level", config.gammaCorrection.level);
-    settings.endGroup();
+        settings.beginGroup("onScreenDisplay");
+        settings.setValue("showFPS", config.onScreenDisplay.fps);
+        settings.setValue("showVIS", config.onScreenDisplay.vis);
+        settings.setValue("showPercent", config.onScreenDisplay.percent);
+        settings.setValue("showInternalResolution", config.onScreenDisplay.internalResolution);
+        settings.setValue("showRenderingResolution", config.onScreenDisplay.renderingResolution);
+        settings.setValue("osdPos", config.onScreenDisplay.pos);
+        settings.endGroup();
 
-    settings.beginGroup("onScreenDisplay");
-    settings.setValue("showFPS", config.onScreenDisplay.fps);
-    settings.setValue("showVIS", config.onScreenDisplay.vis);
-    settings.setValue("showPercent", config.onScreenDisplay.percent);
-    settings.setValue("showInternalResolution", config.onScreenDisplay.internalResolution);
-    settings.setValue("showRenderingResolution", config.onScreenDisplay.renderingResolution);
-    settings.setValue("osdPos", config.onScreenDisplay.pos);
-    settings.endGroup();
+        settings.beginGroup("debug");
+        settings.setValue("dumpMode", config.debug.dumpMode);
+        settings.endGroup();
 
-    settings.beginGroup("debug");
-    settings.setValue("dumpMode", config.debug.dumpMode);
-    settings.endGroup();
-
-    settings.endGroup();
+        settings.endGroup();
+    }
 }
 
 static
@@ -348,10 +379,10 @@ void loadCustomRomSettings(const char * _strIniFolder, const char * _strRomName)
     CustomIniFileName += "/";
     CustomIniFileName += strCustomSettingsFileName;
 
-    QSettings settings(CustomIniFileName.c_str(), QSettings::IniFormat);
-
+    GlSettings settings(CustomIniFileName.c_str());
+    GlSettings::sections childGroups = settings.childGroups();
     const std::string romName = _getRomName(_strRomName);
-    if (settings.childGroups().indexOf(romName.c_str()) < 0)
+    if (childGroups.find(romName.c_str()) == childGroups.end())
         return;
 
     settings.beginGroup(romName.c_str());
@@ -372,7 +403,7 @@ void saveCustomRomSettings(const char * _strIniFolder, const char * _strRomName)
     CustomIniFileName += "/";
     CustomIniFileName += strCustomSettingsFileName;
 
-    QSettings settings(CustomIniFileName.c_str(), QSettings::IniFormat);
+    GlSettings settings(CustomIniFileName.c_str());
     const std::string romName = _getRomName(_strRomName);
 
 #define WriteCustomSetting(G, S) \
@@ -388,11 +419,11 @@ void saveCustomRomSettings(const char * _strIniFolder, const char * _strRomName)
         origConfig.G.S != settings.value(#S, config.G.S).toFloat()) \
         settings.setValue(#S, config.G.S)
 #define WriteCustomSettingS(S) \
-    const QString new##S = QString::fromWCharArray(config.textureFilter.txPath); \
-    const QString orig##S = QString::fromWCharArray(origConfig.textureFilter.txPath); \
-    if (orig##S  != new##S || \
-        orig##S != settings.value(#S, new##S).toString()) \
-        settings.setValue(#S, new##S)
+    const std::string new##S = FromUTF16(config.textureFilter.txPath); \
+    const std::string orig##S = FromUTF16(origConfig.textureFilter.txPath); \
+    if (orig##S != new##S || \
+        orig##S != settings.value(#S, new##S.c_str()).toString()) \
+        settings.setValue(#S, new##S.c_str())
 
     settings.beginGroup(romName.c_str());
 
@@ -500,13 +531,13 @@ ProfileList getProfiles(const char * _strIniFolder)
     std::string IniFileName = _strIniFolder;
     IniFileName += "/";
     IniFileName += strIniFileName;
-    QSettings settings(IniFileName.c_str(), QSettings::IniFormat);
-    QStringList children = settings.childGroups();
+    GlSettings settings(IniFileName.c_str());
+    GlSettings::sections children = settings.childGroups();
 
     ProfileList profiles;
-    for (int i = 0, n = children.size(); i < n; i++)
+    for (GlSettings::sections::const_iterator itr = children.begin(); itr != children.end(); itr++)
     {
-        profiles.insert(children[i].toStdString().c_str());
+        profiles.insert(itr->c_str());
     }
     return profiles;
 }
@@ -516,8 +547,8 @@ std::string getCurrentProfile(const char * _strIniFolder)
     std::string IniFileName = _strIniFolder;
     IniFileName += "/";
     IniFileName += strIniFileName;
-    QSettings settings(IniFileName.c_str(), QSettings::IniFormat);
-    return settings.value("profile", strUserProfile).toString().toStdString();
+    GlSettings settings(IniFileName.c_str());
+    return settings.value("profile", strUserProfile).toString();
 }
 
 void changeProfile(const char * _strIniFolder, const char * _strProfile)
@@ -527,7 +558,7 @@ void changeProfile(const char * _strIniFolder, const char * _strProfile)
         IniFileName += "/";
         IniFileName += strIniFileName;
 
-        QSettings settings(IniFileName.c_str(), QSettings::IniFormat);
+        GlSettings settings(IniFileName.c_str());
         settings.setValue("profile", _strProfile);
     }
     loadSettings(_strIniFolder);
@@ -540,7 +571,7 @@ void addProfile(const char * _strIniFolder, const char * _strProfile)
         IniFileName += "/";
         IniFileName += strIniFileName;
 
-        QSettings settings(IniFileName.c_str(), QSettings::IniFormat);
+        GlSettings settings(IniFileName.c_str());
         settings.setValue("profile", _strProfile);
     }
     writeSettings(_strIniFolder);
@@ -552,6 +583,6 @@ void removeProfile(const char * _strIniFolder, const char * _strProfile)
     IniFileName += "/";
     IniFileName += strIniFileName;
 
-    QSettings settings(IniFileName.c_str(), QSettings::IniFormat);
+    GlSettings settings(IniFileName.c_str());
     settings.remove(_strProfile);
 }
