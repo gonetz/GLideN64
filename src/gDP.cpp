@@ -1368,59 +1368,59 @@ void LLETriangle::draw(bool _shade, bool _texture, bool _zbuffer, s32 * _pData)
 		return _FIXED2FLOATCOLOR((((c) > 0x3ff0000 ? 0x3ff0000 : ((c) < 0 ? 0 : (c))) >> 18), 8);
 	};
 
-	float rf = cscale(r << 2);
-	float gf = cscale(g << 2);
-	float bf = cscale(b << 2);
-	float af = cscale(a << 2);
-	double wf = double(w) / double(0xffff0000);
-	double zf = double(z) / double(0xffff0000);
-	double sf = double(s) / double(1 << 18);
-	double tf = double(t) / double(1 << 18);
+	f32 rf = cscale(r << 2);
+	f32 gf = cscale(g << 2);
+	f32 bf = cscale(b << 2);
+	f32 af = cscale(a << 2);
+	f32 wf = f32(w) / f32(0xffff0000);
+	f32 zf = f32(z) / f32(0xffff0000);
+	f32 sf = f32(s) / f32(1 << 18);
+	f32 tf = f32(t) / f32(1 << 18);
 
-	double drdef = _FIXED2FLOAT(((drde >> 2) & ~1), 16) / 255.0;
-	double dgdef = _FIXED2FLOAT(((dgde >> 2) & ~1), 16) / 255.0;
-	double dbdef = _FIXED2FLOAT(((dbde >> 2) & ~1), 16) / 255.0;
-	double dadef = _FIXED2FLOAT(((dade >> 2) & ~1), 16) / 255.0;
-	double dwdef = double(dwde >> 2) / double(0xffff0000);
-	double dzdef = double(dzde >> 2) / double(0xffff0000);
+	f32 drdef = _FIXED2FLOAT(((drde >> 2) & ~1), 16) / 255.0f;
+	f32 dgdef = _FIXED2FLOAT(((dgde >> 2) & ~1), 16) / 255.0f;
+	f32 dbdef = _FIXED2FLOAT(((dbde >> 2) & ~1), 16) / 255.0f;
+	f32 dadef = _FIXED2FLOAT(((dade >> 2) & ~1), 16) / 255.0f;
+	f32 dwdef = f32(dwde >> 2) / f32(0xffff0000);
+	f32 dzdef = f32(dzde >> 2) / f32(0xffff0000);
 
-	double dsdef = double(dsde >> 2) / double(1 << 18);
-	double dtdef = double(dtde >> 2) / double(1 << 18);
+	f32 dsdef = f32(dsde >> 2) / f32(1 << 18);
+	f32 dtdef = f32(dtde >> 2) / f32(1 << 18);
 
-	double drdxf = _FIXED2FLOAT(drdx, 16) / 255.0;
-	double dgdxf = _FIXED2FLOAT(dgdx, 16) / 255.0;
-	double dbdxf = _FIXED2FLOAT(dbdx, 16) / 255.0;
-	double dadxf = _FIXED2FLOAT(dadx, 16) / 255.0;
+	f32 drdxf = _FIXED2FLOAT(drdx, 16) / 255.0f;
+	f32 dgdxf = _FIXED2FLOAT(dgdx, 16) / 255.0f;
+	f32 dbdxf = _FIXED2FLOAT(dbdx, 16) / 255.0f;
+	f32 dadxf = _FIXED2FLOAT(dadx, 16) / 255.0f;
 
-	double dwdxf = double(dwdx >> 2) / double(0xffff0000);
-	double dzdxf = double(dzdx >> 2) / double(0xffff0000);
+	f32 dwdxf = f32(dwdx >> 2) / f32(0xffff0000);
+	f32 dzdxf = f32(dzdx >> 2) / f32(0xffff0000);
 
-	double dsdxf = _FIXED2FLOAT(((dsdx >> 2) & ~1), 16);
-	double dtdxf = _FIXED2FLOAT(((dtdx >> 2) & ~1), 16);
+	f32 dsdxf = _FIXED2FLOAT(((dsdx >> 2) & ~1), 16);
+	f32 dtdxf = _FIXED2FLOAT(((dtdx >> 2) & ~1), 16);
 
-	double xhf = _FIXED2FLOAT((xh & ~0x1), 16);
-	double xmf = _FIXED2FLOAT((xm & ~0x1), 16);
+	f32 xhf = _FIXED2FLOAT((xh & ~0x1), 16);
+	f32 xmf = _FIXED2FLOAT((xm & ~0x1), 16);
 
-	double yhf = double(yh);
-	double ymf = double(ym);
-	double ylf = double(yl);
-	double hk = _FIXED2FLOAT(((dxhdy >> 2) & ~0x1), 16);
-	double mk = _FIXED2FLOAT(((dxmdy >> 2) & ~0x1), 16);
-	double hc = xhf - hk * yhf;
-	double mc = xmf - mk * yhf;
+	f32 yhf = f32(yh);
+	f32 ymf = f32(ym);
+	f32 ylf = f32(yl);
+	f32 hk = _FIXED2FLOAT(((dxhdy >> 2) & ~0x1), 16);
+	f32 mk = _FIXED2FLOAT(((dxmdy >> 2) & ~0x1), 16);
+	f32 hc = xhf - hk * yhf;
+	f32 mc = xmf - mk * yhf;
 
-	auto updateVtx = [&](SPVertex * vtx, double diffY, double diffx)
+	auto updateVtx = [&](SPVertex * vtx, f32 diffY, f32 diffx)
 	{
 		if (_shade) {
-			auto colorClamp = [](double c) -> float
+			auto colorClamp = [](f32 c) -> f32
 			{
-				float res;
-				if (c < 0.0)
+				f32 res;
+				if (c < 0.0f)
 					res = 0.0f;
-				else if (c > 1.0)
+				else if (c > 1.0f)
 					res = 1.0f;
 				else
-					res = static_cast<float>(c);
+					res = static_cast<f32>(c);
 				return res;
 			};
 
@@ -1431,10 +1431,10 @@ void LLETriangle::draw(bool _shade, bool _texture, bool _zbuffer, s32 * _pData)
 		}
 
 		if (_zbuffer) {
-			//((gDP.otherMode.depthSource == G_ZS_PRIM) ? gDP.primDepth.z : float(u32(z)) / 0xffff0000)
+			//((gDP.otherMode.depthSource == G_ZS_PRIM) ? gDP.primDepth.z : f32(u32(z)) / 0xffff0000)
 			vtx->z = (gDP.otherMode.depthSource == G_ZS_PRIM) ?
-				float(gDP.primDepth.z) / float(0xffff0000) :
-				static_cast<float>((zf + dzdef * diffY + dzdxf * diffx * 4.0)*2.0);
+				f32(gDP.primDepth.z) / f32(0xffff0000) :
+				static_cast<f32>((zf + dzdef * diffY + dzdxf * diffx * 4.0f)*2.0f);
 			//if (vtx->z < 0.0f)
 			//	vtx->z = 1.0f + vtx->z - ceil(vtx->z);
 		} else
@@ -1442,23 +1442,23 @@ void LLETriangle::draw(bool _shade, bool _texture, bool _zbuffer, s32 * _pData)
 
 		if (_texture) {
 			if (gDP.otherMode.texturePersp != 0) {
-				double vw = wf + dwdef * diffY + dwdxf * diffx * 4.0f;
+				f32 vw = wf + dwdef * diffY + dwdxf * diffx * 4.0f;
 				if (vw == 0)
 					int t = 0;
-				vtx->w = static_cast<float>(1.0 / (vw > 0.0 ? vw : (1.0 + vw - ceil(vw))));
-				//vtx->w = static_cast<float>(1.0 / vw);
-				if (vw <= 0.0) {
+				vtx->w = static_cast<f32>(1.0f / (vw > 0.0f ? vw : (1.0f + vw - ceil(vw))));
+				//vtx->w = static_cast<f32>(1.0f / vw);
+				if (vw <= 0.0f) {
 					// TODO fix with proper coords
-					vtx->s = static_cast<float>(1 << gSP.textureTile[0]->masks);
-					vtx->t = static_cast<float>(1 << gSP.textureTile[0]->maskt);
+					vtx->s = static_cast<f32>(1 << gSP.textureTile[0]->masks);
+					vtx->t = static_cast<f32>(1 << gSP.textureTile[0]->maskt);
 				} else {
-					vtx->s = static_cast<float>((sf + dsdef * diffY + dsdxf*diffx) / vw * 0.0625);
-					vtx->t = static_cast<float>((tf + dtdef * diffY + dtdxf*diffx) / vw * 0.0625);
+					vtx->s = static_cast<f32>((sf + dsdef * diffY + dsdxf*diffx) / vw * 0.0625f);
+					vtx->t = static_cast<f32>((tf + dtdef * diffY + dtdxf*diffx) / vw * 0.0625f);
 				}
 			} else {
 				vtx->w = 1.0f;
-				vtx->s = static_cast<float>((sf + dsdef * diffY + dsdxf*diffx) * 0.125);
-				vtx->t = static_cast<float>((tf + dtdef * diffY + dtdxf*diffx) * 0.125);
+				vtx->s = static_cast<f32>((sf + dsdef * diffY + dsdxf*diffx) * 0.125f);
+				vtx->t = static_cast<f32>((tf + dtdef * diffY + dtdxf*diffx) * 0.125f);
 			}
 		} else
 			vtx->w = 1.0f;
@@ -1466,84 +1466,84 @@ void LLETriangle::draw(bool _shade, bool _texture, bool _zbuffer, s32 * _pData)
 	};
 
 	u32 vtxCount = 0;
-	if (fabs(hk - mk) < 0.00000001) {
+	if (fabs(hk - mk) < 0.00000001f) {
 		SPVertex * vtx = &vertices[vtxCount++];
-		vtx->x = static_cast<float>(hk * yhf + hc);
-		vtx->y = static_cast<float>(yhf * 0.25f);
-		updateVtx(vtx, 0.0, 0.0);
+		vtx->x = static_cast<f32>(hk * yhf + hc);
+		vtx->y = static_cast<f32>(yhf * 0.25f);
+		updateVtx(vtx, 0.0f, 0.0f);
 
 		if (mc != hc) {
 			vtx = &vertices[vtxCount++];
-			vtx->x = static_cast<float>(mk * yhf + mc);
-			vtx->y = static_cast<float>(yhf * 0.25);
-			updateVtx(vtx, 0.0, (mc - hc));
+			vtx->x = static_cast<f32>(mk * yhf + mc);
+			vtx->y = static_cast<f32>(yhf * 0.25f);
+			updateVtx(vtx, 0.0f, (mc - hc));
 		}
 
-		double diffym = (ymf - yhf);
-		double xhym = (hk * ymf + hc);
-		double xmym = (mk * ymf + mc);
-		double diffxm = (xmym - xhym);
+		f32 diffym = (ymf - yhf);
+		f32 xhym = (hk * ymf + hc);
+		f32 xmym = (mk * ymf + mc);
+		f32 diffxm = (xmym - xhym);
 
 #if 1
-		double vw = wf + dwdef * diffym + dwdxf * diffxm * 4.0;
-		if (vw <= 0.0) {
-			double xhyf, xmyf, diffyf, diffxf;
-			double yf = ymf;
+		f32 vw = wf + dwdef * diffym + dwdxf * diffxm * 4.0f;
+		if (vw <= 0.0f) {
+			f32 xhyf, xmyf, diffyf, diffxf;
+			f32 yf = ymf;
 			do {
-				yf -= 1.0;
+				yf -= 1.0f;
 				diffyf = (yf - yhf);
 				xhyf = hk * yf + hc;
 				xmyf = mk * yf + mc;
 				diffxf = xmyf - xhyf;
-				vw = wf + dwdef * diffyf + dwdxf * diffxf * 4.0;
-			} while (vw <= 0.0 && yf > yhf);
+				vw = wf + dwdef * diffyf + dwdxf * diffxf * 4.0f;
+			} while (vw <= 0.0f && yf > yhf);
 
 			SPVertex * vtx = &vertices[vtxCount++];
-			vtx->x = static_cast<float>(xhyf);
-			vtx->y = static_cast<float>(yf * 0.25);
-			updateVtx(vtx, diffyf, 0.0);
+			vtx->x = static_cast<f32>(xhyf);
+			vtx->y = static_cast<f32>(yf * 0.25);
+			updateVtx(vtx, diffyf, 0.0f);
 
 			vtx = &vertices[vtxCount++];
-			vtx->x = static_cast<float>(xmyf);
-			vtx->y = static_cast<float>(yf * 0.25);
+			vtx->x = static_cast<f32>(xmyf);
+			vtx->y = static_cast<f32>(yf * 0.25);
 			updateVtx(vtx, diffyf, diffxf);
 		}
 #endif
 
 		vtx = &vertices[vtxCount++];
-		vtx->x = static_cast<float>(xhym);
-		vtx->y = static_cast<float>(ymf * 0.25);
-		updateVtx(vtx, diffym, 0.0);
+		vtx->x = static_cast<f32>(xhym);
+		vtx->y = static_cast<f32>(ymf * 0.25);
+		updateVtx(vtx, diffym, 0.0f);
 
 		vtx = &vertices[vtxCount++];
-		vtx->x = static_cast<float>(xmym);
-		vtx->y = static_cast<float>(ymf * 0.25);
+		vtx->x = static_cast<f32>(xmym);
+		vtx->y = static_cast<f32>(ymf * 0.25);
 		updateVtx(vtx, diffym, diffxm);
 
 		if (dxldy != dxmdy && ym < yl) {
-			double xlf = _FIXED2FLOAT((xl & ~1), 16);
-			double lk = _FIXED2FLOAT(((dxldy >> 2) & ~1), 16);
-			double lc = xlf - lk * ym;
-			double y4f = (lc - hc) / (hk - lk);
+			f32 xlf = _FIXED2FLOAT((xl & ~1), 16);
+			f32 lk = _FIXED2FLOAT(((dxldy >> 2) & ~1), 16);
+			f32 lc = xlf - lk * ym;
+			f32 y4f = (lc - hc) / (hk - lk);
 			vtx = &vertices[vtxCount++];
-			vtx->x = static_cast<float>(hk * y4f + hc);
-			vtx->y = static_cast<float>(y4f * 0.25);
-			updateVtx(vtx, (y4f - yhf), 0.0);
+			vtx->x = static_cast<f32>(hk * y4f + hc);
+			vtx->y = static_cast<f32>(y4f * 0.25);
+			updateVtx(vtx, (y4f - yhf), 0.0f);
 		}
 	} else {
-		double y0f = (mc - hc) / (hk - mk);
+		f32 y0f = (mc - hc) / (hk - mk);
 
 		SPVertex * vtx = &vertices[vtxCount++];
-		vtx->x = static_cast<float>(hk * y0f + hc);
-		vtx->y = static_cast<float>(y0f * 0.25f);
-		updateVtx(vtx, (y0f - yhf), 0.0);
+		vtx->x = static_cast<f32>(hk * y0f + hc);
+		vtx->y = static_cast<f32>(y0f * 0.25f);
+		updateVtx(vtx, (y0f - yhf), 0.0f);
 
-		double y1f = ymf;
-		double xlf = _FIXED2FLOAT((xl & ~1), 16);
-		double lk = _FIXED2FLOAT(((dxldy >> 2) & ~1), 16);
-		double lc = xlf - lk * y1f;
+		f32 y1f = ymf;
+		f32 xlf = _FIXED2FLOAT((xl & ~1), 16);
+		f32 lk = _FIXED2FLOAT(((dxldy >> 2) & ~1), 16);
+		f32 lc = xlf - lk * y1f;
 
-		//double lc = xt - lk * yf;
+		//f32 lc = xt - lk * yf;
 		//if ((dxldy >> 2) == (dxmdy >> 2))
 		//	y1f = (lc - hc) / (hk - lk);
 		//else
@@ -1553,11 +1553,11 @@ void LLETriangle::draw(bool _shade, bool _texture, bool _zbuffer, s32 * _pData)
 		//	y1f = ymf;
 
 		vtx = &vertices[vtxCount++];
-		vtx->x = static_cast<float>(xlf);
-		vtx->y = static_cast<float>(y1f * 0.25);
+		vtx->x = static_cast<f32>(xlf);
+		vtx->y = static_cast<f32>(y1f * 0.25);
 
-		double x1f = hk * y1f + hc;
-		double diffx1 = xlf - x1f;
+		f32 x1f = hk * y1f + hc;
+		f32 diffx1 = xlf - x1f;
 
 #if 0
 		if ((dxldy >> 2) == (dxmdy >> 2))
@@ -1566,65 +1566,65 @@ void LLETriangle::draw(bool _shade, bool _texture, bool _zbuffer, s32 * _pData)
 			y1f = (lc - mc) / (mk - lk);
 #endif
 
-		double diffy1 = (y1f - yhf);
+		f32 diffy1 = (y1f - yhf);
 		updateVtx(vtx, diffy1, diffx1);
 
 #if 1
-		double vw1 = wf + dwdef * diffy1 + dwdxf * diffx1 * 4.0;
-		if (vw1 <= 0.0) {
-			double y1_1f = y1f;
-			double vw1_1 = vw1;
-			double x1_1f = x1f;
-			double x1_2f = xlf;
-			double diffy1_1 = diffy1;
-			double diffx1_1 = diffx1;
+		f32 vw1 = wf + dwdef * diffy1 + dwdxf * diffx1 * 4.0f;
+		if (vw1 <= 0.0f) {
+			f32 y1_1f = y1f;
+			f32 vw1_1 = vw1;
+			f32 x1_1f = x1f;
+			f32 x1_2f = xlf;
+			f32 diffy1_1 = diffy1;
+			f32 diffx1_1 = diffx1;
 			do {
-				y1_1f += 1.0;
+				y1_1f += 1.0f;
 				diffy1_1 = (y1_1f - yhf);
 				x1_1f = hk * y1_1f + hc;
 				x1_2f = lk * y1_1f + lc;
 				diffx1_1 = x1_2f - x1_1f;
-				vw1_1 = wf + dwdef * diffy1_1 + dwdxf * diffx1_1 * 4.0;
-			} while (vw1_1 <= 0.0 && y1_1f < ylf);
+				vw1_1 = wf + dwdef * diffy1_1 + dwdxf * diffx1_1 * 4.0f;
+			} while (vw1_1 <= 0.0f && y1_1f < ylf);
 
 			vtx = &vertices[vtxCount++];
-			vtx->x = static_cast<float>(x1_1f);
-			vtx->y = static_cast<float>(y1_1f * 0.25);
-			updateVtx(vtx, diffy1_1, 0.0);
+			vtx->x = static_cast<f32>(x1_1f);
+			vtx->y = static_cast<f32>(y1_1f * 0.25f);
+			updateVtx(vtx, diffy1_1, 0.0f);
 
 			vtx = &vertices[vtxCount++];
-			vtx->x = static_cast<float>(x1_2f);
-			vtx->y = static_cast<float>(y1_1f * 0.25);
+			vtx->x = static_cast<f32>(x1_2f);
+			vtx->y = static_cast<f32>(y1_1f * 0.25f);
 			updateVtx(vtx, diffy1_1, diffx1_1);
 
 		}
 #endif
 
 		if (hk == lk) {
-			double lrx = lk * ylf + lc;
+			f32 lrx = lk * ylf + lc;
 			vtx = &vertices[vtxCount++];
-			vtx->x = static_cast<float>(lrx);
-			vtx->y = static_cast<float>(ylf * 0.25 - (vertices[1].y - vertices[0].y));
-			double ydiff = (vtx->y*4.0 - yhf);
+			vtx->x = static_cast<f32>(lrx);
+			vtx->y = static_cast<f32>(ylf * 0.25f - (vertices[1].y - vertices[0].y));
+			f32 ydiff = (vtx->y*4.0f - yhf);
 			updateVtx(vtx, ydiff, diffx1);
 
 			vtx = &vertices[vtxCount++];
-			vtx->x = static_cast<float>(lrx);
-			vtx->y = static_cast<float>(ylf*0.25);
+			vtx->x = static_cast<f32>(lrx);
+			vtx->y = static_cast<f32>(ylf*0.25f);
 			ydiff = (ylf - yhf);
 
-			double x2f = hk * ylf + hc;
-			double diffx2 = vtx->x - x2f;
+			f32 x2f = hk * ylf + hc;
+			f32 diffx2 = vtx->x - x2f;
 			updateVtx(vtx, ydiff, diffx2);
 		}
 		else if (mk == lk) {
 			vtx = &vertices[vtxCount++];
-			vtx->x = static_cast<float>(hk * ylf + hc);
-			vtx->y = static_cast<float>(ylf * 0.25);
-			updateVtx(vtx, (ylf - yhf), 0.0);
+			vtx->x = static_cast<f32>(hk * ylf + hc);
+			vtx->y = static_cast<f32>(ylf * 0.25f);
+			updateVtx(vtx, (ylf - yhf), 0.0f);
 		}
 		else {
-			double y2f = ylf;
+			f32 y2f = ylf;
 
 			if (yl == ym) {
 				y2f = (lc - mc) / (mk - lk);
@@ -1634,9 +1634,9 @@ void LLETriangle::draw(bool _shade, bool _texture, bool _zbuffer, s32 * _pData)
 			}
 
 			vtx = &vertices[vtxCount++];
-			vtx->x = static_cast<float>(hk * y2f + hc);
-			vtx->y = static_cast<float>(y2f * 0.25);
-			updateVtx(vtx, (y2f - yhf), 0.0);
+			vtx->x = static_cast<f32>(hk * y2f + hc);
+			vtx->y = static_cast<f32>(y2f * 0.25f);
+			updateVtx(vtx, (y2f - yhf), 0.0f);
 		}
 	}
 
