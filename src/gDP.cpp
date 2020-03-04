@@ -1302,6 +1302,9 @@ void LLETriangle::draw(bool _shade, bool _texture, bool _zbuffer, s32 * _pData)
 
 	gSP.texture.level = _SHIFTR(_pData[0], 19, 3);
 	const u32 tile = _SHIFTR(_pData[0], 16, 3);
+	if (tile != m_tile)
+		flush(0);
+	m_tile = tile;
 	const int flip = (_pData[0] & 0x800000) >> 23;
 	start(tile);
 

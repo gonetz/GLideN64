@@ -277,6 +277,7 @@ private:
 	gDPTile *m_textureTileOrg[2];
 	f32 m_textureScaleOrg[2];
 	bool m_flushed{ true };
+	u32 m_tile{ 0 };
 };
 
 void gDPSetOtherMode( u32 mode0, u32 mode1 );
