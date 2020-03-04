@@ -1433,7 +1433,7 @@ void LLETriangle::draw(bool _shade, bool _texture, bool _zbuffer, s32 * _pData)
 		if (_zbuffer) {
 			//((gDP.otherMode.depthSource == G_ZS_PRIM) ? gDP.primDepth.z : f32(u32(z)) / 0xffff0000)
 			vtx->z = (gDP.otherMode.depthSource == G_ZS_PRIM) ?
-				f32(gDP.primDepth.z) / f32(0xffff0000) :
+				gDP.primDepth.z :
 				static_cast<f32>((zf + dzdef * diffY + dzdxf * diffx * 4.0f)*2.0f);
 			//if (vtx->z < 0.0f)
 			//	vtx->z = 1.0f + vtx->z - ceil(vtx->z);
