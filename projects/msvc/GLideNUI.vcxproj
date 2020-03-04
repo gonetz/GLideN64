@@ -102,7 +102,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\GLideNUI\About.cpp" />
-    <ClCompile Include="..\..\src\GLideNUI\config.cpp" />
+    <ClCompile Include="..\..\src\GLideNUI\ConfigDlg.cpp" />
     <ClCompile Include="..\..\src\GLideNUI\ConfigDialog.cpp" />
     <ClCompile Include="..\..\src\GLideNUI\FileClass.cpp" />
     <ClCompile Include="..\..\src\GLideNUI\GlSettings.cpp" />
@@ -134,7 +134,7 @@ endlocal
       <AdditionalInputs>$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
     </CustomBuild>
     <ClInclude Include="..\..\src\GLideNUI\About.h" />
-    <ClInclude Include="..\..\src\GLideNUI\config.h" />
+    <ClInclude Include="..\..\src\GLideNUI\ConfigDlg.h" />
     <ClInclude Include="..\..\src\GLideNUI\FileClass.h" />
     <ClInclude Include="..\..\src\GLideNUI\FullscreenResolutions.h" />
     <ClInclude Include="..\..\src\GLideNUI\GlSettings.h" />

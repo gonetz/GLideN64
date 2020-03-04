@@ -1,5 +1,5 @@
 #include "GLideN64_Windows.h"
-#include "../GLideNUI/config.h"
+#include "../GLideNUI/ConfigDlg.h"
 
 HWND		hWnd;
 HWND		hStatusBar;

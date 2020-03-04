@@ -1,6 +1,6 @@
 #pragma once
 #include "wtl.h"
-#include "config.h"
+#include "ConfigDlg.h"
 
 class GlideN64WtlModule :
     public CAppModule

@@ -87,7 +87,7 @@
     <ClCompile Include="..\..\src\GLideNUI\About.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\GLideNUI\config.cpp">
+    <ClCompile Include="..\..\src\GLideNUI\ConfigDlg.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\GLideNUI\FileClass.cpp">
@@ -203,7 +203,7 @@
     <ClInclude Include="..\..\src\GLideNUI\resource.h">
       <Filter>Generated Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\GLideNUI\config.h">
+    <ClInclude Include="..\..\src\GLideNUI\ConfigDlg.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\GLideNUI\FileClass.h">
