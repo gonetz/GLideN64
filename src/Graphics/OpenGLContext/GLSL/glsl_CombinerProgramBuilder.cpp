@@ -720,8 +720,38 @@ public:
 	{
 		if (!_glinfo.isGLES2 && config.generalEmulation.enableNoise != 0) {
 			m_part =
-				"  if (uColorDitherMode == 2) colorNoiseDither(snoise(), clampedColor.rgb);	\n"
-				"  if (uAlphaDitherMode == 2) alphaNoiseDither(snoise(), clampedColor.a);	\n"
+				"  if (uColorDitherMode == 2) {												\n"
+				"    colorNoiseDither(snoiseRGB(), clampedColor.rgb);						\n"
+				"    quantize(clampedColor.rgb);											\n"
+				"  }																		\n"
+				"  if (uAlphaDitherMode == 2) alphaNoiseDither(snoiseA(), clampedColor.a);\n"
+				;
+		}
+		if (!_glinfo.isGLES2 && config.generalEmulation.enableDithering != 0) {
+			m_part +=
+				"  mediump mat4 threshold;													\n"
+				"  if (uColorDitherMode < 2) {												\n"
+				     // Try to eep dithering visible even at higher resolutions
+				"    lowp float divider = 1.0 + step(3.0, uScreenScale.x);					\n"
+				"    mediump ivec2 position = ivec2(mod((gl_FragCoord.xy - 0.5) / divider,4.0));\n"
+				"  																			\n"
+				"    lowp mat4 bayer = mat4( 0.0, 0.75, 0.1875, 0.9375,						\n"
+				"                            0.5, 0.25, 0.6875, 0.4375,						\n"
+				"                            0.125, 0.875, 0.0625, 0.8125,					\n"
+				"                            0.625, 0.375, 0.5625, 0.3125);					\n"
+				"    lowp mat4 mSquare = mat4( 0.0, 0.6875, 0.75, 0.4375,					\n"
+				"                              0.875, 0.3125, 0.125, 0.5625, 				\n"
+				"                              0.1875, 0.5, 0.9375, 0.25,					\n"
+				"                              0.8125, 0.375, 0.0625, 0.625);				\n"
+				"  																			\n"
+				"    lowp float bayerThreshold = bayer[position.x][position.y];				\n"
+				"    lowp float mSquareThreshold = mSquare[position.x][position.y];			\n"
+				"  																			\n"
+				"    lowp float threshold = mix(bayerThreshold,mSquareThreshold,float(uColorDitherMode));\n"
+				"    colorDither(threshold, clampedColor.rgb);								\n"
+					// 16 Bit quantization
+				"    quantize(clampedColor.rgb);											\n"
+				"  }																		\n"
 				;
 		}
 	}
@@ -905,8 +935,14 @@ public:
 	ShaderFragmentHeaderNoise(const opengl::GLInfo & _glinfo)
 	{
 		m_part =
-			"lowp float snoise();\n";
+			"lowp float snoise();\n"
 		;
+		if (!_glinfo.isGLES2 && config.generalEmulation.enableNoise != 0) {
+			m_part +=
+			"lowp vec3 snoiseRGB();\n"
+			"lowp float snoiseA();\n"
+			;
+		}
 	}
 };
 
@@ -995,8 +1031,18 @@ public:
 	{
 		if (!_glinfo.isGLES2 && config.generalEmulation.enableNoise != 0) {
 			m_part =
-				"void colorNoiseDither(in lowp float _noise, inout lowp vec3 _color);\n"
-				"void alphaNoiseDither(in lowp float _noise, inout lowp float _alpha);\n";
+				"void colorNoiseDither(in lowp vec3 _noise, inout lowp vec3 _color);\n"
+				"void alphaNoiseDither(in lowp float _noise, inout lowp float _alpha);\n"
+			;
+		}
+		if (!_glinfo.isGLES2 && config.generalEmulation.enableDithering != 0) {
+			m_part +=
+				"void colorDither(in lowp float _threshold, inout lowp vec3 _color);\n"
+			;
+		}
+		if (!_glinfo.isGLES2 && (config.generalEmulation.enableNoise != 0 || config.generalEmulation.enableDithering != 0)) {
+			m_part +=
+				"void quantize(inout lowp vec3 _color);\n"
 			;
 		}
 	}
@@ -1590,11 +1636,39 @@ public:
 				;
 			} else {
 				m_part =
-					"uniform sampler2D uTexNoise;		\n"
+					"uniform sampler2D uTexNoise;							\n"
 					"lowp float snoise()									\n"
 					"{														\n"
 					"  ivec2 coord = ivec2(gl_FragCoord.xy/uScreenScale);	\n"
 					"  return texelFetch(uTexNoise, coord, 0).r;			\n"
+					"}														\n"
+					"lowp vec3 snoiseRGB()									\n"
+					"{														\n"
+					"  mediump vec2 texSize = vec2(640.0, 580.0);			\n"
+					// multiplier for higher res noise effect
+					"  lowp float mult = 1.0 + step(2.0, uScreenScale.x);	\n"
+					"														\n"
+					"	mediump vec2 coordR = mult * ((gl_FragCoord.xy)/uScreenScale/texSize);\n"
+					"	mediump vec2 coordG = mult * ((gl_FragCoord.xy + vec2( 0.0, texSize.y / 2.0 ))/uScreenScale/texSize);\n"
+					"	mediump vec2 coordB = mult * ((gl_FragCoord.xy + vec2( texSize.x / 2.0,  0.0))/uScreenScale/texSize);\n"
+					"														\n"
+					// Only red channel of noise texture contains noise. 
+					"  lowp float r = texture(uTexNoise,coordR).r;			\n"
+					"  lowp float g = texture(uTexNoise,coordG).r;			\n"
+					"  lowp float b = texture(uTexNoise,coordB).r;			\n"
+					"														\n"
+					"  return vec3(r,g,b);									\n"
+					"}														\n"
+					"lowp float snoiseA()									\n"
+					"{														\n"
+					"  mediump vec2 texSize = vec2(640.0, 580.0);			\n"
+					// multiplier for higher res noise effect
+					"  lowp float mult = 1.0 + step(2.0, uScreenScale.x);	\n"
+					"														\n"
+					"	mediump vec2 coord = mult * ((gl_FragCoord.xy)/uScreenScale/texSize);\n"
+					"														\n"
+					// Only red channel of noise texture contains noise. 
+					"  return texture(uTexNoise,coord).r;					\n"
 					"}														\n"
 					;
 			}
@@ -1609,23 +1683,42 @@ public:
 	{
 		if (!_glinfo.isGLES2 && config.generalEmulation.enableNoise != 0) {
 			m_part =
-				"void colorNoiseDither(in lowp float _noise, inout lowp vec3 _color)	\n"
+				"void colorNoiseDither(in lowp vec3 _noise, inout lowp vec3 _color)\n"
 				"{															\n"
-				"    mediump vec3 tmpColor = _color*255.0;					\n"
-				"    mediump ivec3 iColor = ivec3(tmpColor);				\n"
-				//"    iColor &= 248;										\n" // does not work with HW lighting enabled (why?!)
-				"    iColor |= ivec3(tmpColor*_noise)&7;					\n"
-				"    _color = vec3(iColor)/255.0;							\n"
+				"    mediump vec3 threshold = 7.0 / 255.0 * (_noise - 0.5);\n"
+				"    _color = clamp(_color + threshold,0.0,1.0);			\n"
 				"}															\n"
-				"void alphaNoiseDither(in lowp float _noise, inout lowp float _alpha)	\n"
+				"void alphaNoiseDither(in lowp float _noise, inout lowp float _alpha)\n"
 				"{															\n"
-				"    mediump float tmpAlpha = _alpha*255.0;					\n"
-				"    mediump int iAlpha = int(tmpAlpha);					\n"
-				//"    iAlpha &= 248;											\n" // causes issue #518. need further investigation
-				"    iAlpha |= int(tmpAlpha*_noise)&7;						\n"
-				"    _alpha = float(iAlpha)/255.0;							\n"
+				"    mediump float threshold = 7.0 / 255.0 * (_noise - 0.5);\n"
+				"    _alpha = clamp(_alpha + threshold,0.0,1.0);			\n"
 				"}															\n"
 			;
+		}
+		if (!_glinfo.isGLES2 && config.generalEmulation.enableDithering != 0) {
+			m_part +=
+				"void colorDither(in lowp float _threshold, inout lowp vec3 _color)\n"
+				"{															\n"
+				"    lowp vec3 threshold = vec3(7.0 / 255.0 * (_threshold - 0.5));\n"
+				"    _color = clamp(_color + threshold,0.0,1.0);			\n"
+				"}															\n"
+			;
+		}
+		if (!_glinfo.isGLES2 && (config.generalEmulation.enableNoise != 0 || config.generalEmulation.enableDithering != 0)) {
+			if (config.generalEmulation.ditheringMode == 1 ) {
+				m_part +=
+					"void quantize(inout lowp vec3 _color)\n"
+					"{															\n"
+					"     _color.rgb = round(_color.rgb * 32.0)/32.0;			\n"
+					"}															\n"
+				;
+			}
+			else
+			{
+				m_part +=
+					"void quantize(inout lowp vec3 _color){}\n"
+				;
+			}
 		}
 	}
 };

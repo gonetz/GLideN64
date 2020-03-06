@@ -13,6 +13,8 @@ namespace graphics {
 		vecOptions.push_back(config.texture.enableHalosRemoval);
 		vecOptions.push_back(config.generalEmulation.enableHWLighting);
 		vecOptions.push_back(config.generalEmulation.enableNoise);
+		vecOptions.push_back(config.generalEmulation.enableDithering);
+		vecOptions.push_back(config.generalEmulation.ditheringMode);
 		vecOptions.push_back(config.generalEmulation.enableLOD);
 		vecOptions.push_back(config.frameBufferEmulation.N64DepthCompare == Config::dcFast ? 1 : 0);
 		vecOptions.push_back(config.frameBufferEmulation.N64DepthCompare == Config::dcCompatible ? 1 : 0);
