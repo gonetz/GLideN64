@@ -258,7 +258,7 @@ u16 ColorBufferToRDRAM::_RGBAtoRGBA16(u32 _c, u32 x, u32 y) {
 	union RGBA c;
 	c.raw = _c;
 	
-	if(gDP.otherMode.colorDither <= 1) {
+	if(gDP.otherMode.colorDither <= 1 && config.frameBufferEmulation.nativeResFactor != 1 && config.generalEmulation.enableDithering == 0) {
 		s32 threshold = 0;
 		
 		switch(gDP.otherMode.colorDither){
