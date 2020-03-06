@@ -204,6 +204,7 @@ void ConfigDialog::_init(bool reInit, bool blockCustomSettings)
 	ui->RenderFBCheckBox->setChecked(config.frameBufferEmulation.copyFromRDRAM != 0);
 	ui->copyDepthToMainDepthBufferCheckBox->setChecked(config.frameBufferEmulation.copyDepthToMainDepthBuffer != 0);
 	ui->n64DepthCompareComboBox->setCurrentIndex(config.frameBufferEmulation.N64DepthCompare);
+	on_n64DepthCompareComboBox_currentIndexChanged(config.frameBufferEmulation.N64DepthCompare);
 	ui->forceDepthBufferClearCheckBox->setChecked(config.frameBufferEmulation.forceDepthBufferClear != 0);
 
 	if (config.video.fxaa != 0)
@@ -805,13 +806,6 @@ void ConfigDialog::on_frameBufferCheckBox_toggled(bool checked)
 	ui->frameBufferCheckBox->setStyleSheet("");
 }
 
-void ConfigDialog::on_n64DepthCompareCheckBox_toggled(bool checked)
-{
-	if (checked && ui->msaaRadioButton->isChecked())
-		ui->fxaaRadioButton->setChecked(true);
-	ui->n64DepthCompareComboBox->setStyleSheet("");
-}
-
 void ConfigDialog::on_gammaLevelSpinBox_valueChanged(double /*value*/)
 {
 	ui->gammaCorrectionCheckBox->setChecked(true);
@@ -986,5 +980,8 @@ void ConfigDialog::on_n64DepthCompareComboBox_currentIndexChanged(int index)
 {
 	ui->aliasingWarningFrame->setVisible(index > 0);
 	ui->aliasingSliderFrame->setDisabled(index > 0);
+	if (index > 0 && ui->msaaRadioButton->isChecked())
+		ui->fxaaRadioButton->setChecked(true);
 	ui->msaaRadioButton->setDisabled(index > 0);
+	ui->n64DepthCompareComboBox->setStyleSheet("");
 }

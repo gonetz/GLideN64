@@ -50,8 +50,6 @@ private slots:
 
 	void on_aliasingSlider_valueChanged(int value);
 
-	void on_n64DepthCompareCheckBox_toggled(bool checked);
-
 	void on_gammaLevelSpinBox_valueChanged(double value);
 
 	void on_gammaCorrectionCheckBox_toggled(bool checked);
