@@ -39,6 +39,8 @@ void Config::resetToDefaults()
 
 	generalEmulation.enableLOD = 1;
 	generalEmulation.enableNoise = 1;
+	generalEmulation.enableDithering = 0;
+	generalEmulation.ditheringMode = 0;
 	generalEmulation.enableHWLighting = 0;
 	generalEmulation.enableCustomSettings = 1;
 	generalEmulation.enableShadersStorage = 1;

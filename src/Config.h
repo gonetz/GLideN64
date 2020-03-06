@@ -5,7 +5,7 @@
 #include "Types.h"
 
 #define CONFIG_WITH_PROFILES 23U
-#define CONFIG_VERSION_CURRENT 27U
+#define CONFIG_VERSION_CURRENT 28U
 
 #define BILINEAR_3POINT   0
 #define BILINEAR_STANDARD 1
@@ -48,6 +48,8 @@ struct Config
 
 	struct {
 		u32 enableNoise;
+		u32 enableDithering;
+		u32 ditheringMode;
 		u32 enableLOD;
 		u32 enableHWLighting;
 		u32 enableCustomSettings;

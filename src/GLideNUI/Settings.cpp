@@ -41,6 +41,8 @@ void _loadSettings(QSettings & settings)
 
 	settings.beginGroup("generalEmulation");
 	config.generalEmulation.enableNoise = settings.value("enableNoise", config.generalEmulation.enableNoise).toInt();
+	config.generalEmulation.enableDithering = settings.value("enableDithering", config.generalEmulation.enableDithering).toInt();
+	config.generalEmulation.ditheringMode = settings.value("ditheringMode", config.generalEmulation.ditheringMode).toInt();
 	config.generalEmulation.enableLOD = settings.value("enableLOD", config.generalEmulation.enableLOD).toInt();
 	config.generalEmulation.enableHWLighting = settings.value("enableHWLighting", config.generalEmulation.enableHWLighting).toInt();
 	config.generalEmulation.enableShadersStorage = settings.value("enableShadersStorage", config.generalEmulation.enableShadersStorage).toInt();
