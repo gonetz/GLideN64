@@ -1028,10 +1028,12 @@ bool texturedRectDepthBufferCopy(const GraphicsDrawer::TexturedRectParams & _par
 	// Data from depth buffer loaded into TMEM and then rendered to RDRAM by texrect.
 	// Works only with depth buffer emulation enabled.
 	// Load of arbitrary data to that area causes weird camera rotation in CBFD.
+	if (_params.uly != 0.0f || std::min(_params.lry, gDP.scissor.lry) != 1.0f)
+		return false;
 	const gDPTile * pTile = gSP.textureTile[0];
 	if (pTile->loadType == LOADTYPE_BLOCK && gDP.textureImage.size == 2 &&
 		gDP.textureImage.address >= gDP.depthImageAddress &&
-		gDP.textureImage.address < (gDP.depthImageAddress + gDP.colorImage.width*gDP.scissor.lry*2)) {
+		gDP.textureImage.address < (gDP.depthImageAddress + gDP.colorImage.width*VI.height*2)) {
 		if (config.frameBufferEmulation.copyDepthToRDRAM == Config::cdDisable)
 			return true;
 		FrameBuffer * pBuffer = frameBufferList().getCurrent();
