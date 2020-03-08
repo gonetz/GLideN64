@@ -1,13 +1,11 @@
 #include "About.h"
 
 #include <thread>
-#include <QApplication>
-#include <QTranslator>
 
 #include "GLideNUI.h"
-#include "ConfigDialog.h"
 #include "Settings.h"
 #include "../Config.h"
+#include "ConfigDlg.h"
 
 #ifdef QT_STATICPLUGIN
 #include <QtPlugin>
@@ -16,9 +14,6 @@ Q_IMPORT_PLUGIN(QICOPlugin)
 #endif
 
 //#define RUN_DIALOG_IN_THREAD
-
-inline void initMyResource() { Q_INIT_RESOURCE(icon); }
-inline void cleanMyResource() { Q_CLEANUP_RESOURCE(icon); }
 
 static
 int openConfigDialog(const wchar_t * _strFileName, const char * _romName, bool & _accepted)
@@ -29,29 +24,15 @@ int openConfigDialog(const wchar_t * _strFileName, const char * _romName, bool &
     slength = WideCharToMultiByte(CP_ACP, 0, _strFileName, -1, (LPSTR)IniFolder.c_str(), slength, NULL, NULL);
     IniFolder.resize(slength - 1); //Remove null end char
 
-    cleanMyResource();
-    initMyResource();
     loadSettings(IniFolder.c_str());
     if (config.generalEmulation.enableCustomSettings != 0 && _romName != nullptr && strlen(_romName) != 0)
         loadCustomRomSettings(IniFolder.c_str(), _romName);
 
-    int argc = 0;
-    char * argv = 0;
-    QApplication a(argc, &argv);
-
-    QTranslator translator;
-    if (translator.load(getTranslationFile().c_str(), IniFolder.c_str()))
-        a.installTranslator(&translator);
-
-    ConfigDialog w(Q_NULLPTR, Qt::WindowTitleHint | Qt::WindowSystemMenuHint | Qt::WindowCloseButtonHint);
-
-    w.setIniPath(IniFolder.c_str());
-    w.setRomName(_romName);
-    w.setTitle();
-    w.show();
-    const int res = a.exec();
-    _accepted = w.isAccepted();
-    return res;
+    CConfigDlg Dlg;
+    Dlg.setIniPath(IniFolder.c_str());
+    Dlg.setRomName(_romName);
+    Dlg.DoModal();
+    return 0;
 }
 
 bool runConfigThread(const wchar_t * _strFileName, const char * _romName) {

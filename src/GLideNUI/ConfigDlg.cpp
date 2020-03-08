@@ -2,6 +2,24 @@
 #include "wtl.h"
 #include "ConfigDlg.h"
 
+CConfigDlg::CConfigDlg() 
+{
+}
+
+CConfigDlg::~CConfigDlg()
+{
+}
+
+void CConfigDlg::setIniPath(const std::string & IniPath)
+{
+    m_strIniPath = IniPath;
+}
+
+void CConfigDlg::setRomName(const char * RomName)
+{
+    m_romName = RomName == NULL || strlen(RomName) == 0 ? NULL : RomName;
+}
+
 class GlideN64WtlModule :
     public CAppModule
 {

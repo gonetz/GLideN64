@@ -21,7 +21,6 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{37CAB375-A7A6-3CAB-BD56-0E954D3FD2FE}</ProjectGuid>
     <RootNamespace>GLideNUI</RootNamespace>
-    <Keyword>Qt4VSv1.0</Keyword>
     <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -46,8 +45,8 @@
   </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
-      <PreprocessorDefinitions>_WINDOWS;UNICODE;WIN32;QT_STATICPLUGIN;QT_WIDGETS_LIB;QT_GUI_LIB;QT_CORE_LIB;QT_UITOOLS_LIB;QT_WINEXTRAS_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(QTDIR)\include;$(QTDIR)\include\QtWidgets;$(QTDIR)\include\QtGui;$(QTDIR)\include\QtCore;release;.;$(QTDIR)\mkspecs\win32-msvc2013;.\GeneratedFiles;$(QTDIR)\include\QtUiTools;$(QTDIR)\include\QtWinExtras;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_WINDOWS;UNICODE;WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>-Zm200 -w34100 -w34189 %(AdditionalOptions)</AdditionalOptions>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <BrowseInformation>false</BrowseInformation>
@@ -63,7 +62,6 @@
       <OutputFile>$(OutDir)\GLideNUI.lib</OutputFile>
     </ClCompile>
     <Lib>
-      <AdditionalLibraryDirectories>$(QTDIR)\lib;$(QTDIR)\plugins\platforms;$(QTDIR)\plugins\imageformats</AdditionalLibraryDirectories>
       <AdditionalDependencies>imm32.lib;Ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Lib>
   </ItemDefinitionGroup>
@@ -75,27 +73,14 @@
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
-    <Lib>
-      <AdditionalDependencies>qtpcred.lib;qtmaind.lib;qwindowsd.lib;qicod.lib;qtharfbuzzngd.lib;Qt5Cored.lib;Qt5Guid.lib;Qt5Widgetsd.lib;Qt5PlatformSupportd.lib;%(AdditionalDependencies)</AdditionalDependencies>
-    </Lib>
-    <Link>
-      <AdditionalDependencies>Qt5UiToolsd.lib;Qt5WinExtrasd.lib;%(AdditionalDependencies)</AdditionalDependencies>
-    </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Release'">
     <ClCompile>
-      <PreprocessorDefinitions>QT_NO_DEBUG;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <DebugInformationFormat>None</DebugInformationFormat>
       <Optimization>MaxSpeed</Optimization>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <WholeProgramOptimization>false</WholeProgramOptimization>
     </ClCompile>
-    <Lib>
-      <AdditionalDependencies>qtpcre.lib;qtmain.lib;qwindows.lib;qico.lib;qtharfbuzzng.lib;Qt5Core.lib;Qt5Gui.lib;Qt5Widgets.lib;Qt5PlatformSupport.lib;%(AdditionalDependencies)</AdditionalDependencies>
-    </Lib>
-    <Link>
-      <AdditionalDependencies>Qt5UiTools.lib;Qt5WinExtras.lib;%(AdditionalDependencies)</AdditionalDependencies>
-    </Link>
     <Lib>
       <LinkTimeCodeGeneration>true</LinkTimeCodeGeneration>
     </Lib>
@@ -103,36 +88,15 @@
   <ItemGroup>
     <ClCompile Include="..\..\src\GLideNUI\About.cpp" />
     <ClCompile Include="..\..\src\GLideNUI\ConfigDlg.cpp" />
-    <ClCompile Include="..\..\src\GLideNUI\ConfigDialog.cpp" />
     <ClCompile Include="..\..\src\GLideNUI\FileClass.cpp" />
     <ClCompile Include="..\..\src\GLideNUI\GlSettings.cpp" />
     <ClCompile Include="..\..\src\GLideNUI\IniFileClass.cpp" />
-    <ClCompile Include="Debug\moc_ConfigDialog.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)'=='Release'">true</ExcludedFromBuild>
-    </ClCompile>
     <ClCompile Include="..\..\src\GLideNUI\FullscreenResolutions_windows.cpp" />
-    <ClCompile Include="GeneratedFiles\qrc_icon.cpp">
-      <PrecompiledHeader>
-      </PrecompiledHeader>
-    </ClCompile>
     <ClCompile Include="..\..\src\GLideNUI\GLideNUI.cpp" />
-    <ClCompile Include="Release\moc_ConfigDialog.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)'=='Debug'">true</ExcludedFromBuild>
-    </ClCompile>
     <ClCompile Include="..\..\src\GLideNUI\ScreenShot.cpp" />
     <ClCompile Include="..\..\src\GLideNUI\Settings.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="..\..\src\GLideNUI\ConfigDialog.h">
-      <Command>setlocal
-if errorlevel 1 goto VCEnd
-if errorlevel 1 goto VCEnd
-endlocal
-"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o "$(ConfigurationName)\moc_%(Filename).cpp" -D_WINDOWS -DUNICODE -DWIN32 -DQT_STATICPLUGIN -DQT_NO_DEBUG -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CORE_LIB -DNDEBUG -DQT_UITOOLS_LIB -DQT_WINEXTRAS_LIB  "-I$(QTDIR)\include" "-I$(QTDIR)\include\QtWidgets" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtCore" "-I.\release" "-I." "-I$(QTDIR)\mkspecs\win32-msvc2013" "-I.\GeneratedFiles" "-I$(QTDIR)\include\QtUiTools" "-I$(QTDIR)\include\QtWinExtras"</Command>
-      <Message>Moc%27ing ConfigDialog.h...</Message>
-      <Outputs>$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
-      <AdditionalInputs>$(QTDIR)\bin\moc.exe;%(FullPath)</AdditionalInputs>
-    </CustomBuild>
     <ClInclude Include="..\..\src\GLideNUI\About.h" />
     <ClInclude Include="..\..\src\GLideNUI\ConfigDlg.h" />
     <ClInclude Include="..\..\src\GLideNUI\FileClass.h" />
@@ -161,31 +125,14 @@ endlocal
     <ClInclude Include="..\..\src\GLideNUI\WTL\atluser.h" />
     <ClInclude Include="..\..\src\GLideNUI\WTL\atlwince.h" />
     <ClInclude Include="..\..\src\GLideNUI\WTL\atlwinx.h" />
-    <ClInclude Include="GeneratedFiles\ui_configDialog.h" />
     <ClInclude Include="..\..\src\GLideNUI\GLideNUI.h" />
     <ClInclude Include="..\..\src\GLideNUI\Settings.h" />
     <ClInclude Include="..\..\src\GLideNUI\resource.h" />
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="..\..\src\GLideNUI\configDialog.ui">
-      <FileType>Document</FileType>
-      <AdditionalInputs>$(QTDIR)\bin\uic.exe;%(AdditionalInputs)</AdditionalInputs>
-      <Command>"$(QTDIR)\bin\uic.exe" -o ".\GeneratedFiles\ui_%(Filename).h" "%(FullPath)"</Command>
-      <Message>Uic%27ing %(Identity)...</Message>
-      <Outputs>.\GeneratedFiles\ui_%(Filename).h;%(Outputs)</Outputs>
-    </CustomBuild>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="..\..\src\GLideNUI\Icon.ico">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </None>
-    <CustomBuild Include="..\..\src\GLideNUI\icon.qrc">
-      <FileType>Document</FileType>
-      <AdditionalInputs>%(FullPath);.\Icon.ico;%(AdditionalInputs)</AdditionalInputs>
-      <Command>"$(QTDIR)\bin\rcc.exe" -name "%(Filename)" -no-compress "%(FullPath)" -o .\GeneratedFiles\qrc_%(Filename).cpp</Command>
-      <Message>Rcc%27ing %(Identity)...</Message>
-      <Outputs>.\GeneratedFiles\qrc_%(Filename).cpp;%(Outputs)</Outputs>
-    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\..\src\GLideNUI\GLideNUI.rc" />
@@ -196,8 +143,5 @@ endlocal
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />
   <ProjectExtensions>
-    <VisualStudio>
-      <UserProperties UicDir=".\GeneratedFiles" RccDir=".\GeneratedFiles" Qt5Version_x0020_Win32="$(DefaultQtVersion)" />
-    </VisualStudio>
   </ProjectExtensions>
 </Project>

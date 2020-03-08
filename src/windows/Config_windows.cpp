@@ -4,7 +4,7 @@
 #include "../RSP.h"
 #include "../PluginAPI.h"
 #include "../GLideNUI/GLideNUI.h"
-#include "../GLideNUI/config.h"
+#include "../GLideNUI/ConfigDlg.h"
 #include <DisplayWindow.h>
 
 

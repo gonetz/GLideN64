@@ -60,9 +60,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\src\GLideNUI\ConfigDialog.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\GLideNUI\FullscreenResolutions_windows.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -74,15 +71,6 @@
     </ClCompile>
     <ClCompile Include="..\..\src\GLideNUI\Settings.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Debug\moc_ConfigDialog.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="Release\moc_ConfigDialog.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\qrc_icon.cpp">
-      <Filter>Generated Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\GLideNUI\About.cpp">
       <Filter>Source Files</Filter>
@@ -101,9 +89,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="..\..\src\GLideNUI\ConfigDialog.h">
-      <Filter>Header Files</Filter>
-    </CustomBuild>
     <ClInclude Include="..\..\src\GLideNUI\FullscreenResolutions.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -113,24 +98,16 @@
     <ClInclude Include="..\..\src\GLideNUI\Settings.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <CustomBuild Include="..\..\src\GLideNUI\configDialog.ui">
-      <Filter>Form Files</Filter>
-    </CustomBuild>
+    <ClInclude Include="..\..\src\GLideNUI\ConfigDlg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\src\GLideNUI\Icon.ico">
       <Filter>Resource Files</Filter>
     </None>
-    <CustomBuild Include="..\..\src\GLideNUI\icon.qrc">
-      <Filter>Resource Files</Filter>
-    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="GeneratedFiles\ui_configDialog.h">
-      <Filter>Generated Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\GLideNUI\WTL\atlapp.h">
       <Filter>Header Files\wtl</Filter>
     </ClInclude>
@@ -202,9 +179,6 @@
     </ClInclude>
     <ClInclude Include="..\..\src\GLideNUI\resource.h">
       <Filter>Generated Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\GLideNUI\ConfigDlg.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\GLideNUI\FileClass.h">
       <Filter>Generated Files</Filter>

@@ -5,7 +5,6 @@
 #endif
 
 #include "FileClass.h"
-//#include "SmartPointer.h"
 #include <string>
 #include <map>
 #include <vector>
