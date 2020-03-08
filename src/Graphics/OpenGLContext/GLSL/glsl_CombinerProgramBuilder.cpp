@@ -64,7 +64,8 @@ const char *ColorInput[] = {
 	"vec3(uK4)",
 	"vec3(uK5)",
 	"vec3(1.0)",
-	"vec3(0.0)"
+	"vec3(0.0)",
+	"vec3(0.5)"
 };
 
 static
@@ -89,7 +90,8 @@ const char *AlphaInput[] = {
 	"uK4",
 	"uK5",
 	"1.0",
-	"0.0"
+	"0.0",
+	"0.5"
 };
 
 inline
@@ -111,6 +113,26 @@ void _correctFirstStageParams(CombinerStage & _stage)
 		_stage.op[i].param1 = correctFirstStageParam(_stage.op[i].param1);
 		_stage.op[i].param2 = correctFirstStageParam(_stage.op[i].param2);
 		_stage.op[i].param3 = correctFirstStageParam(_stage.op[i].param3);
+	}
+}
+
+inline
+int correctFirstStageParam2Cyc(int _param)
+{
+	switch (_param) {
+	case G_GCI_COMBINED:
+		return G_GCI_HALF;
+	}
+	return _param;
+}
+
+static
+void _correctFirstStageParams2Cyc(CombinerStage & _stage)
+{
+	for (int i = 0; i < _stage.numOps; ++i) {
+		_stage.op[i].param1 = correctFirstStageParam2Cyc(_stage.op[i].param1);
+		_stage.op[i].param2 = correctFirstStageParam2Cyc(_stage.op[i].param2);
+		_stage.op[i].param3 = correctFirstStageParam2Cyc(_stage.op[i].param3);
 	}
 }
 
@@ -2291,6 +2313,9 @@ CombinerInputs CombinerProgramBuilder::compileCombiner(const CombinerKey & _key,
 	if (g_cycleType != G_CYC_2CYCLE) {
 		_correctFirstStageParams(_alpha.stage[0]);
 		_correctFirstStageParams(_color.stage[0]);
+	} else {
+		_correctFirstStageParams2Cyc(_alpha.stage[0]);
+		_correctFirstStageParams2Cyc(_color.stage[0]);
 	}
 	ssShader << "  alpha1 = ";
 	CombinerInputs inputs = _compileCombiner(_alpha.stage[0], AlphaInput, ssShader);
