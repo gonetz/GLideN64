@@ -228,7 +228,6 @@ TxFilter::filter(uint8 *src, int srcwidth, int srcheight, ColorFormat srcformat,
 				}
 			break;
 			case BRZ3X_ENHANCEMENT:
-				xbrz::init();
 				if (srcwidth  <= (_maxwidth / 3) && srcheight <= (_maxheight / 3)) {
 					filter |= BRZ3X_ENHANCEMENT;
 					scale = 3;
@@ -240,7 +239,6 @@ TxFilter::filter(uint8 *src, int srcwidth, int srcheight, ColorFormat srcformat,
 				}
 			break;
 			case BRZ4X_ENHANCEMENT:
-				xbrz::init();
 				if (srcwidth <= (_maxwidth >> 2) && srcheight <= (_maxheight >> 2)) {
 					filter |= BRZ4X_ENHANCEMENT;
 					scale = 4;
@@ -252,7 +250,6 @@ TxFilter::filter(uint8 *src, int srcwidth, int srcheight, ColorFormat srcformat,
 				}
 			break;
 			case BRZ5X_ENHANCEMENT:
-				xbrz::init();
 				if (srcwidth <= (_maxwidth / 5) && srcheight <= (_maxheight / 5)) {
 					filter |= BRZ5X_ENHANCEMENT;
 					scale = 5;
@@ -264,7 +261,6 @@ TxFilter::filter(uint8 *src, int srcwidth, int srcheight, ColorFormat srcformat,
 				}
 			break;
 			case BRZ6X_ENHANCEMENT:
-				xbrz::init();
 				if (srcwidth <= (_maxwidth / 6) && srcheight <= (_maxheight / 6)) {
 					filter |= BRZ6X_ENHANCEMENT;
 					scale = 6;
