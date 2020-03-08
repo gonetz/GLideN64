@@ -1,4 +1,4 @@
-#ifdef OS_WINDOWS
+#ifdef _WIN32
 #include <windows.h>
 #else
 #include "../winlnxdefs.h"
@@ -8,46 +8,13 @@
 
 #include "Settings.h"
 #include "GlSettings.h"
+#include "util.h"
 #include <algorithm>
 #include <memory>
 
 static const char * strIniFileName = "GLideN64.ini";
 static const char * strCustomSettingsFileName = "GLideN64.custom.ini";
 static const char * strUserProfile = "User";
-
-std::string FromUTF16(const wchar_t * UTF16Source)
-{
-    std::string Result;
-
-    uint32_t utf8size = WideCharToMultiByte(CP_UTF8, 0, UTF16Source, -1, NULL, 0, NULL, NULL);
-    if (utf8size > 0)
-    {
-        std::unique_ptr<char> pUTF8(new char[utf8size]);
-        WideCharToMultiByte(CP_UTF8, 0, UTF16Source, -1, pUTF8.get(), utf8size, NULL, NULL);
-        Result = pUTF8.get();
-    }
-    return Result;
-}
-
-std::wstring ToUTF16(const char * Source)
-{
-    std::wstring res;
-
-    DWORD nNeeded = MultiByteToWideChar(CP_UTF8, 0, Source, -1, NULL, 0);
-    if (nNeeded > 0)
-    {
-        std::unique_ptr<wchar_t> pUTF8(new wchar_t[nNeeded]);
-        if (pUTF8.get() != NULL)
-        {
-            nNeeded = MultiByteToWideChar(CP_UTF8, 0, Source, -1, pUTF8.get(), nNeeded);
-            if (nNeeded)
-            {
-                res = pUTF8.get();
-            }
-        }
-    }
-    return res;
-}
 
 static
 void _loadSettings(GlSettings & settings)

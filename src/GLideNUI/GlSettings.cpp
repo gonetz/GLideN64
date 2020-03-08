@@ -232,7 +232,7 @@ GlColor GlSettingValue::toGlColor() const
             tokens.push_back(value.substr(lastPos));
         }
 
-        if (tokens.size() == 15)
+        if (tokens.size() >= 14)
         {
             Red = ParseGlColor(tokens[7].c_str());
             Green = ParseGlColor(tokens[9].c_str());
