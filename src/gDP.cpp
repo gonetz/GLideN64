@@ -1277,6 +1277,7 @@ void LLETriangle::start(u32 _tile)
 	gSP.textureTile[1] = needReplaceTex1ByTex0() ? &gDP.tiles[_tile] : &gDP.tiles[(_tile + 1) & 7];
 	gSP.texture.scales = 1.0f;
 	gSP.texture.scalet = 1.0f;
+	m_flushed = false;
 }
 
 void LLETriangle::flush(u32 _cmd)
@@ -1293,6 +1294,7 @@ void LLETriangle::flush(u32 _cmd)
 	gSP.textureTile[1] = m_textureTileOrg[1];
 	gSP.texture.scales = m_textureScaleOrg[0];
 	gSP.texture.scalet = m_textureScaleOrg[1];
+	m_flushed = true;
 #endif
 }
 
