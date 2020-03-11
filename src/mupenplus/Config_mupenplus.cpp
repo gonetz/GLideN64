@@ -69,9 +69,7 @@ bool Config_SetDefault()
 	//#Emulation Settings
 	res = ConfigSetDefaultBool(g_configVideoGliden64, "EnableNoise", config.generalEmulation.enableNoise, "Enable color noise emulation.");
 	assert(res == M64ERR_SUCCESS);
-	res = ConfigSetDefaultBool(g_configVideoGliden64, "EnableDithering", config.generalEmulation.enableDithering, "Enable dithering emulation.");
-	assert(res == M64ERR_SUCCESS);
-	res = ConfigSetDefaultBool(g_configVideoGliden64, "DitheringMode", config.generalEmulation.ditheringMode, "Dithering mode. (false=32Bit colors, true=16Bit quantization like original hardware)");
+	res = ConfigSetDefaultInt(g_configVideoGliden64, "DitheringMode", config.generalEmulation.ditheringMode, "Dithering mode. (0=disable, 1=only noise dithering (default), 2=noise dithering with 16bit quantization,3=noise and ordered grid dithering, 4=dithering with 16bit quantization)");
 	assert(res == M64ERR_SUCCESS);
 	res = ConfigSetDefaultBool(g_configVideoGliden64, "EnableLOD", config.generalEmulation.enableLOD, "Enable LOD emulation.");
 	assert(res == M64ERR_SUCCESS);
@@ -276,8 +274,6 @@ void Config_LoadCustomConfig()
 
 	result = ConfigExternalGetParameter(fileHandle, sectionName, "generalEmulation\\enableNoise", value, sizeof(value));
 	if (result == M64ERR_SUCCESS) config.generalEmulation.enableNoise = atoi(value);
-	result = ConfigExternalGetParameter(fileHandle, sectionName, "generalEmulation\\enableDithering", value, sizeof(value));
-	if (result == M64ERR_SUCCESS) config.generalEmulation.enableDithering = atoi(value);
 	result = ConfigExternalGetParameter(fileHandle, sectionName, "generalEmulation\\ditheringMode", value, sizeof(value));
 	if (result == M64ERR_SUCCESS) config.generalEmulation.ditheringMode = atoi(value);
 	result = ConfigExternalGetParameter(fileHandle, sectionName, "generalEmulation\\enableLOD", value, sizeof(value));
@@ -403,8 +399,7 @@ void Config_LoadConfig()
 	config.texture.enableHalosRemoval = ConfigGetParamBool(g_configVideoGliden64, "enableHalosRemoval");
 	//#Emulation Settings
 	config.generalEmulation.enableNoise = ConfigGetParamBool(g_configVideoGliden64, "EnableNoise");
-	config.generalEmulation.enableDithering = ConfigGetParamBool(g_configVideoGliden64, "EnableDithering");
-	config.generalEmulation.ditheringMode = ConfigGetParamBool(g_configVideoGliden64, "DitheringMode");
+	config.generalEmulation.ditheringMode = ConfigGetParamInt(g_configVideoGliden64, "DitheringMode");
 	config.generalEmulation.enableLOD = ConfigGetParamBool(g_configVideoGliden64, "EnableLOD");
 	config.generalEmulation.enableHWLighting = ConfigGetParamBool(g_configVideoGliden64, "EnableHWLighting");
 	config.generalEmulation.enableShadersStorage = ConfigGetParamBool(g_configVideoGliden64, "EnableShadersStorage");

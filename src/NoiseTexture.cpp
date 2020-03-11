@@ -106,7 +106,7 @@ void NoiseTexture::_fillTextureData()
 
 void NoiseTexture::init()
 {
-	if (config.generalEmulation.enableNoise == 0)
+	if (config.generalEmulation.enableNoise == 0 && config.generalEmulation.ditheringMode == 0)
 		return;
 
 	if (m_texData[0].empty())
@@ -161,7 +161,7 @@ void NoiseTexture::destroy()
 
 void NoiseTexture::update()
 {
-	if (m_DList == dwnd().getBuffersSwapCount() || config.generalEmulation.enableNoise == 0)
+	if (m_DList == dwnd().getBuffersSwapCount() || (config.generalEmulation.enableNoise == 0 && config.generalEmulation.ditheringMode == 0))
 		return;
 
 	u32 rand_value(0U);
