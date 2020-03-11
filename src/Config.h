@@ -48,7 +48,6 @@ struct Config
 
 	struct {
 		u32 enableNoise;
-		u32 enableDithering;
 		u32 ditheringMode;
 		u32 enableLOD;
 		u32 enableHWLighting;
