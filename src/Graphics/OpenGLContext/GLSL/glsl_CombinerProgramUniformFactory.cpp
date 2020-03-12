@@ -1042,8 +1042,10 @@ void CombinerProgramUniformFactory::buildUniforms(GLuint _program,
 												  const CombinerKey & _key,
 												  UniformGroups & _uniforms)
 {
-	if (config.generalEmulation.enableNoise != 0 || config.generalEmulation.ditheringMode > 0)
+	if (config.generalEmulation.enableNoise != 0 ||
+		config.generalEmulation.ditheringMode != Config::DitheringMode::dmDisable) {
 		_uniforms.emplace_back(new UNoiseTex(_program));
+	}
 
 	if (!m_glInfo.isGLES2) {
 		_uniforms.emplace_back(new UDepthTex(_program));

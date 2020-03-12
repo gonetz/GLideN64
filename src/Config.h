@@ -46,6 +46,14 @@ struct Config
 		tcForce
 	};
 
+	enum DitheringMode {
+		dmDisable = 0,
+		dmNoise,
+		dmNoiseWithQuant,
+		dmFull,
+		dmFullWithQuant
+	};
+
 	struct {
 		u32 enableNoise;
 		u32 ditheringMode;

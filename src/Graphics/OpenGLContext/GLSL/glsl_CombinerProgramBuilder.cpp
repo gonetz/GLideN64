@@ -719,7 +719,7 @@ public:
 	ShaderCallDither(const opengl::GLInfo & _glinfo)
 	{
 		if (!_glinfo.isGLES2) {
-			if (config.generalEmulation.ditheringMode >= 1) {
+			if (config.generalEmulation.ditheringMode != Config::DitheringMode::dmDisable) {
 				m_part =
 					"  if (uColorDitherMode == 2) {												\n"
 					"    colorNoiseDither(snoiseRGB(), clampedColor.rgb);						\n"
@@ -731,7 +731,7 @@ public:
 					"  }																		\n"
 				;
 			}
-			if (config.generalEmulation.ditheringMode >= 3) {
+			if (config.generalEmulation.ditheringMode >= Config::DitheringMode::dmFull) {
 				m_part +=
 					// Try to keep dithering visible even at higher resolutions
 					"  lowp float divider = 1.0 + step(3.0, uScreenScale.x);					\n"
@@ -1042,7 +1042,7 @@ public:
 	ShaderFragmentHeaderDither(const opengl::GLInfo & _glinfo)
 	{
 		if (!_glinfo.isGLES2) {
-			if(config.generalEmulation.ditheringMode >= 1) {
+			if (config.generalEmulation.ditheringMode != Config::DitheringMode::dmDisable) {
 				m_part =
 					"void colorNoiseDither(in lowp vec3 _noise, inout lowp vec3 _color);\n"
 					"void alphaNoiseDither(in lowp float _noise, inout lowp float _alpha);\n"
@@ -1631,7 +1631,7 @@ public:
 				"  return 0.5;			\n"
 				"}						\n"
 				;
-			if (config.generalEmulation.ditheringMode >= 1) {
+			if (config.generalEmulation.ditheringMode != Config::DitheringMode::dmDisable) {
 				m_part +=
 					"uniform sampler2D uTexNoise;							\n"
 				;
@@ -1667,7 +1667,7 @@ public:
 	ShaderDither(const opengl::GLInfo & _glinfo)
 	{
 		if (!_glinfo.isGLES2) {
-			if( config.generalEmulation.ditheringMode >= 1 ) {
+			if (config.generalEmulation.ditheringMode != Config::DitheringMode::dmDisable) {
 				m_part =
 					"void colorNoiseDither(in lowp vec3 _noise, inout lowp vec3 _color)\n"
 					"{															\n"
@@ -1708,7 +1708,8 @@ public:
 					"  return texture(uTexNoise,coord).r;					\n"
 					"}														\n"
 				;
-				if ( config.generalEmulation.ditheringMode == 2 || config.generalEmulation.ditheringMode == 4 ) {
+				if (config.generalEmulation.ditheringMode == Config::DitheringMode::dmNoiseWithQuant ||
+					config.generalEmulation.ditheringMode == Config::DitheringMode::dmFullWithQuant) {
 					m_part +=
 						"void quantizeRGB(inout lowp vec3 _color)\n"
 						"{															\n"

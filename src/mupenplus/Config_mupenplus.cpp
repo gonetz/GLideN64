@@ -69,7 +69,7 @@ bool Config_SetDefault()
 	//#Emulation Settings
 	res = ConfigSetDefaultBool(g_configVideoGliden64, "EnableNoise", config.generalEmulation.enableNoise, "Enable color noise emulation.");
 	assert(res == M64ERR_SUCCESS);
-	res = ConfigSetDefaultInt(g_configVideoGliden64, "DitheringMode", config.generalEmulation.ditheringMode, "Dithering mode. (0=disable, 1=only noise dithering (default), 2=noise dithering with 16bit quantization,3=noise and ordered grid dithering, 4=dithering with 16bit quantization)");
+	res = ConfigSetDefaultInt(g_configVideoGliden64, "DitheringMode", config.generalEmulation.ditheringMode, "Dithering mode. (0=disable, 1=noise dithering (default), 2=noise dithering with 5bit quantization, 3=full dithering, 4=full dithering with 5bit quantization)");
 	assert(res == M64ERR_SUCCESS);
 	res = ConfigSetDefaultBool(g_configVideoGliden64, "EnableLOD", config.generalEmulation.enableLOD, "Enable LOD emulation.");
 	assert(res == M64ERR_SUCCESS);

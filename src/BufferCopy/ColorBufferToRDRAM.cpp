@@ -258,9 +258,10 @@ u16 ColorBufferToRDRAM::_RGBAtoRGBA16(u32 _c, u32 x, u32 y) {
 	union RGBA c;
 	c.raw = _c;
 	
-	if(gDP.otherMode.colorDither <= 1 && 
-		((config.frameBufferEmulation.nativeResFactor != 1 	&& config.generalEmulation.ditheringMode >= 3) 
-		|| config.generalEmulation.ditheringMode < 3)) {
+	if (gDP.otherMode.colorDither <= G_CD_BAYER // ordered grid dithering enabled in othermode
+		&& (config.frameBufferEmulation.nativeResFactor != 1 // image is not already dithered
+			|| config.generalEmulation.ditheringMode < Config::DitheringMode::dmFull))
+	{
 		s32 threshold = 0;
 		
 		switch(gDP.otherMode.colorDither){
