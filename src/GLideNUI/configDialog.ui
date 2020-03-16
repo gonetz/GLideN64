@@ -873,6 +873,72 @@
             </widget>
            </item>
            <item>
+            <widget class="QGroupBox" name="ditheringGroupBox">
+             <property name="title">
+              <string>Dithering</string>
+             </property>
+             <layout class="QVBoxLayout" name="ditheringGroupBoxVerticalLayout">
+              <item>
+               <widget class="QFrame" name="ditheringFrame">
+                <layout class="QVBoxLayout" name="ditheringFrameVerticalLayout">
+                 <property name="spacing">
+                  <number>5</number>
+                 </property>
+                 <property name="leftMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="topMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="rightMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="bottomMargin">
+                  <number>0</number>
+                 </property>
+                </layout>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLabel" name="ditheringLabel">
+                <property name="text">
+                 <string>Dithering mode:</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QComboBox" name="ditheringModeComboBox">
+                <item>
+                 <property name="text">
+                  <string>disable</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>only noise dithering (default)</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>noise dithering with 5bit quantization</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>noise and ordered grid dithering</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>dithering with 5bit quantization</string>
+                 </property>
+                </item>
+               </widget>
+              </item>
+             </layout>
+            </widget>
+           </item>
+           <item>
             <layout class="QHBoxLayout" name="horizontalLayout_14">
              <property name="spacing">
               <number>18</number>

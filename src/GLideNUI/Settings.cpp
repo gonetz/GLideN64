@@ -214,6 +214,7 @@ void writeSettings(const QString & _strIniFolder)
 
 	settings.beginGroup("generalEmulation");
 	settings.setValue("enableNoise", config.generalEmulation.enableNoise);
+	settings.setValue("ditheringMode", config.generalEmulation.ditheringMode);
 	settings.setValue("enableLOD", config.generalEmulation.enableLOD);
 	settings.setValue("enableHWLighting", config.generalEmulation.enableHWLighting);
 	settings.setValue("enableShadersStorage", config.generalEmulation.enableShadersStorage);
@@ -404,6 +405,7 @@ void saveCustomRomSettings(const QString & _strIniFolder, const char * _strRomNa
 
 	settings.beginGroup("generalEmulation");
 	WriteCustomSetting(generalEmulation, enableNoise);
+	WriteCustomSetting(generalEmulation, ditheringMode);
 	WriteCustomSetting(generalEmulation, enableLOD);
 	WriteCustomSetting(generalEmulation, enableHWLighting);
 	WriteCustomSetting(generalEmulation, enableShadersStorage);

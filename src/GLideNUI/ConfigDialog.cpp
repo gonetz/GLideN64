@@ -142,6 +142,8 @@ void ConfigDialog::_init(bool reInit, bool blockCustomSettings)
 		break;
 	}
 
+	ui->ditheringModeComboBox->setCurrentIndex(config.generalEmulation.ditheringMode);
+
 	switch (config.texture.screenShotFormat) {
 	case 0:
 		ui->pngRadioButton->setChecked(true);
@@ -442,6 +444,8 @@ void ConfigDialog::accept(bool justSave) {
 		config.texture.bilinearMode = BILINEAR_STANDARD;
 	else if (ui->blnr3PointRadioButton->isChecked())
 		config.texture.bilinearMode = BILINEAR_3POINT;
+
+	config.generalEmulation.ditheringMode = ui->ditheringModeComboBox->currentIndex();
 
 	if (ui->pngRadioButton->isChecked())
 		config.texture.screenShotFormat = 0;
