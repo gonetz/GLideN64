@@ -19,7 +19,7 @@ public:
     {
     }
 
-    BOOL OnInitDialog(CWindow wndFocus, LPARAM lInitParam)
+    BOOL OnInitDialog(CWindow /*wndFocus*/, LPARAM /*lInitParam*/)
     {
         const TCHAR Contributors[] =
         {
@@ -90,7 +90,7 @@ public:
     {
     }
 
-    BOOL OnInitDialog(CWindow wndFocus, LPARAM lInitParam)
+    BOOL OnInitDialog(CWindow /*wndFocus*/, LPARAM /*lInitParam*/)
     {
         const TCHAR Funders1[] =
         {
@@ -285,7 +285,7 @@ public:
         CAboutTab(IDD_TAB_CREDITS)
     {
     }
-    BOOL OnInitDialog(CWindow wndFocus, LPARAM lInitParam)
+    BOOL OnInitDialog(CWindow /*wndFocus*/, LPARAM /*lInitParam*/)
     {
         CWindow Author = GetDlgItem(IDC_ORKIN);
         
@@ -338,7 +338,7 @@ CAboutDlg::~CAboutDlg()
     m_TabWindows.clear();
 }
 
-LRESULT CAboutDlg::OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled)
+LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
 	HICON hIcon = AtlLoadIconImage(IDI_APPICON, LR_DEFAULTCOLOR, ::GetSystemMetrics(SM_CXICON), ::GetSystemMetrics(SM_CYICON));
 	SetIcon(hIcon, TRUE);
@@ -407,7 +407,7 @@ void CAboutDlg::ShowTab(int nPage)
     m_Tabs.RedrawWindow();
 }
 
-LRESULT CAboutDlg::OnTabChange(NMHDR* pNMHDR)
+LRESULT CAboutDlg::OnTabChange(NMHDR* /*pNMHDR*/)
 {
 	ShowTab(m_Tabs.GetCurSel());
 	return FALSE;
