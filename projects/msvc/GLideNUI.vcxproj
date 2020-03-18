@@ -87,6 +87,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\GLideNUI\About.cpp" />
+    <ClCompile Include="..\..\src\GLideNUI\config-tab.cpp" />
+    <ClCompile Include="..\..\src\GLideNUI\config-video.cpp" />
     <ClCompile Include="..\..\src\GLideNUI\ConfigDlg.cpp" />
     <ClCompile Include="..\..\src\GLideNUI\FileClass.cpp" />
     <ClCompile Include="..\..\src\GLideNUI\GlSettings.cpp" />
@@ -99,6 +101,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\GLideNUI\About.h" />
+    <ClInclude Include="..\..\src\GLideNUI\config-video.h" />
     <ClInclude Include="..\..\src\GLideNUI\ConfigDlg.h" />
     <ClInclude Include="..\..\src\GLideNUI\FileClass.h" />
     <ClInclude Include="..\..\src\GLideNUI\FullscreenResolutions.h" />
