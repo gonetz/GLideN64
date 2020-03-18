@@ -16,6 +16,7 @@ public:
 
     BEGIN_MSG_MAP_EX(CConfigDlg)
         MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
+        NOTIFY_HANDLER_EX(IDC_TABS, TCN_SELCHANGE, OnTabChange)
         COMMAND_ID_HANDLER(ID_SAVECLOSE, OnSaveClose)
         COMMAND_ID_HANDLER(ID_SAVE, OnSave)
         COMMAND_ID_HANDLER(IDCANCEL, OnCancel)
@@ -29,6 +30,7 @@ protected:
     LRESULT OnSaveClose(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
     LRESULT OnSave(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
     LRESULT OnCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
+    LRESULT OnTabChange(NMHDR* pNMHDR);
 
     void AddTab(const wchar_t * caption, CConfigTab * tab);
     void ShowTab(int nPage);

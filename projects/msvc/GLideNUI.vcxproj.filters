@@ -83,6 +83,9 @@
     <ClCompile Include="..\..\src\GLideNUI\config-overscan.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\GLideNUI\config-emulation.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\GLideNUI\FullscreenResolutions.h">

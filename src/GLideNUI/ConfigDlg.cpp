@@ -2,6 +2,7 @@
 #include "wtl.h"
 #include "ConfigDlg.h"
 #include "config-video.h"
+#include "config-emulation.h"
 
 CConfigDlg::CConfigDlg() 
 {
@@ -35,6 +36,7 @@ LRESULT CConfigDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPar
 
     m_Tabs.Attach(GetDlgItem(IDC_TABS));
     AddTab(L"Video", new CVideoTab);
+    AddTab(L"Emulation", new CEmulationTab);
     return 0;
 }
 
@@ -47,6 +49,12 @@ LRESULT CConfigDlg::OnSaveClose(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/
 LRESULT CConfigDlg::OnSave(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
     return 0;
+}
+
+LRESULT CConfigDlg::OnTabChange(NMHDR* /*pNMHDR*/)
+{
+    ShowTab(m_Tabs.GetCurSel());
+    return FALSE;
 }
 
 LRESULT CConfigDlg::OnCancel(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)

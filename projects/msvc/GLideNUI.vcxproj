@@ -87,6 +87,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\GLideNUI\About.cpp" />
+    <ClCompile Include="..\..\src\GLideNUI\config-emulation.cpp" />
     <ClCompile Include="..\..\src\GLideNUI\config-overscan.cpp" />
     <ClCompile Include="..\..\src\GLideNUI\config-tab.cpp" />
     <ClCompile Include="..\..\src\GLideNUI\config-video.cpp" />
