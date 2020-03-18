@@ -77,6 +77,12 @@
     <ClCompile Include="..\..\src\GLideNUI\config-tab.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\GLideNUI\wtl-BitmapPicture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\GLideNUI\config-overscan.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\GLideNUI\FullscreenResolutions.h">
@@ -104,6 +110,9 @@
       <Filter>Resource Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\GLideNUI\config-video.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\GLideNUI\wtl-BitmapPicture.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

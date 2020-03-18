@@ -87,6 +87,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\GLideNUI\About.cpp" />
+    <ClCompile Include="..\..\src\GLideNUI\config-overscan.cpp" />
     <ClCompile Include="..\..\src\GLideNUI\config-tab.cpp" />
     <ClCompile Include="..\..\src\GLideNUI\config-video.cpp" />
     <ClCompile Include="..\..\src\GLideNUI\ConfigDlg.cpp" />
@@ -98,6 +99,7 @@
     <ClCompile Include="..\..\src\GLideNUI\ScreenShot.cpp" />
     <ClCompile Include="..\..\src\GLideNUI\Settings.cpp" />
     <ClCompile Include="..\..\src\GLideNUI\util.cpp" />
+    <ClCompile Include="..\..\src\GLideNUI\wtl-BitmapPicture.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\GLideNUI\About.h" />
@@ -108,6 +110,7 @@
     <ClInclude Include="..\..\src\GLideNUI\GlSettings.h" />
     <ClInclude Include="..\..\src\GLideNUI\IniFileClass.h" />
     <ClInclude Include="..\..\src\GLideNUI\util.h" />
+    <ClInclude Include="..\..\src\GLideNUI\wtl-BitmapPicture.h" />
     <ClInclude Include="..\..\src\GLideNUI\WTL\atlapp.h" />
     <ClInclude Include="..\..\src\GLideNUI\WTL\atlcrack.h" />
     <ClInclude Include="..\..\src\GLideNUI\WTL\atlctrls.h" />
