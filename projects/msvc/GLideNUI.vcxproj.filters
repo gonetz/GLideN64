@@ -86,6 +86,9 @@
     <ClCompile Include="..\..\src\GLideNUI\config-emulation.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\GLideNUI\config-framebuffer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\GLideNUI\FullscreenResolutions.h">
@@ -116,6 +119,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\GLideNUI\wtl-BitmapPicture.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\GLideNUI\config-framebuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

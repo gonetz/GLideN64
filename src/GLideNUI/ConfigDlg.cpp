@@ -3,6 +3,7 @@
 #include "ConfigDlg.h"
 #include "config-video.h"
 #include "config-emulation.h"
+#include "config-framebuffer.h"
 
 CConfigDlg::CConfigDlg() 
 {
@@ -37,6 +38,7 @@ LRESULT CConfigDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPar
     m_Tabs.Attach(GetDlgItem(IDC_TABS));
     AddTab(L"Video", new CVideoTab);
     AddTab(L"Emulation", new CEmulationTab);
+    AddTab(L"Frame buffer", new CFrameBufferTab);
     return 0;
 }
 
