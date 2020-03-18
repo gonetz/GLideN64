@@ -1,56 +1,32 @@
-cmake_minimum_required(VERSION 2.6)
-
+cmake_minimum_required(VERSION 3.9)
 project( osal )
 
-LINK_DIRECTORIES( ${CMAKE_CURRENT_SOURCE_DIR}/lib )
-
+add_library(osal STATIC)
+set(osal_Private_Compile_Definitions)
+set(osal_Private_Sources)
+#########################################################
+#Platform Specific Configurations
+#########################################################
 if(UNIX)
-  set(OSAL_SOURCES osal_files_unix.c)
-  add_definitions(
-    -DNDEBUG
-    -DOS_LINUX
-  )
-endif(UNIX)
+  list(APPEND osal_Private_Sources ${CMAKE_CURRENT_LIST_DIR}/osal_files_unix.c)
+  list(APPEND osal_Private_Compile_Definitions NDEBUG OS_LINUX)
+endif()
 
 if(WIN32)
-  set(OSAL_SOURCES osal_files_win32.c)
-  add_definitions(
-	-DOS_WINDOWS
-	-D_CRT_SECURE_NO_WARNINGS
-  )
-endif(WIN32)
-
-# Build type
-
-if( NOT CMAKE_BUILD_TYPE)
-	set( CMAKE_BUILD_TYPE Release)
-endif( NOT CMAKE_BUILD_TYPE)
-
-if( CMAKE_BUILD_TYPE STREQUAL "Debug")
-	set( CMAKE_BUILD_TYPE Debug)
-	set( DEBUG_BUILD TRUE)
-	add_definitions(
-		-DDEBUG
-	)
-endif( CMAKE_BUILD_TYPE STREQUAL "Debug")
-
-if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
-	add_definitions( -D__MSC__)
+  list(APPEND osal_Private_Sources ${CMAKE_CURRENT_LIST_DIR}/osal_files_win32.c)
+  list(APPEND osal_Private_Compile_Definitions OS_WINDOWS _CRT_SECURE_NO_WARNINGS)
 endif()
 
-if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" OR "${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
-    SET(GCC_CPP11_COMPILE_FLAGS "-std=c++0x")
-    if (NOT MINGW)
-        SET( PIC_FLAGS "-fPIC")
-    endif(NOT MINGW)
-    SET( CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} ${GCC_CPP11_COMPILE_FLAGS} -static ${PIC_FLAGS} " )
-    SET( CMAKE_C_FLAGS  "${CMAKE_C_FLAGS} -static ${PIC_FLAGS} " )
+if(MSVC)
+  list(APPEND osal_Private_Compile_Definitions __MSC__)
 endif()
 
-if( CMAKE_BUILD_TYPE STREQUAL "Debug")
-  add_library( osald STATIC ${OSAL_SOURCES})
-endif( CMAKE_BUILD_TYPE STREQUAL "Debug")
-
-if( CMAKE_BUILD_TYPE STREQUAL "Release")
-  add_library( osal STATIC ${OSAL_SOURCES})
-endif( CMAKE_BUILD_TYPE STREQUAL "Release")
+target_sources(osal PRIVATE ${osal_Private_Sources})
+target_include_directories(osal PUBLIC ${CMAKE_CURRENT_LIST_DIR} ${CMAKE_CURRENT_LIST_DIR}/..)
+target_link_directories(osal PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/lib)
+set_target_properties(osal
+                      PROPERTIES
+                      CXX_STANDARD 11
+                      DEBUG_POSTFIX d
+                      COMPILE_DEFINITIONS_DEBUG DEBUG
+                      POSITION_INDEPENDENT_CODE ON)
