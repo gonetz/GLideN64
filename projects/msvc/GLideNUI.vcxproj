@@ -91,6 +91,7 @@
     <ClCompile Include="..\..\src\GLideNUI\config-framebuffer.cpp" />
     <ClCompile Include="..\..\src\GLideNUI\config-overscan.cpp" />
     <ClCompile Include="..\..\src\GLideNUI\config-tab.cpp" />
+    <ClCompile Include="..\..\src\GLideNUI\config-texture.cpp" />
     <ClCompile Include="..\..\src\GLideNUI\config-video.cpp" />
     <ClCompile Include="..\..\src\GLideNUI\ConfigDlg.cpp" />
     <ClCompile Include="..\..\src\GLideNUI\FileClass.cpp" />
@@ -106,6 +107,7 @@
   <ItemGroup>
     <ClInclude Include="..\..\src\GLideNUI\About.h" />
     <ClInclude Include="..\..\src\GLideNUI\config-framebuffer.h" />
+    <ClInclude Include="..\..\src\GLideNUI\config-texture.h" />
     <ClInclude Include="..\..\src\GLideNUI\config-video.h" />
     <ClInclude Include="..\..\src\GLideNUI\ConfigDlg.h" />
     <ClInclude Include="..\..\src\GLideNUI\FileClass.h" />

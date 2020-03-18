@@ -4,6 +4,7 @@
 #include "config-video.h"
 #include "config-emulation.h"
 #include "config-framebuffer.h"
+#include "config-texture.h"
 
 CConfigDlg::CConfigDlg() 
 {
@@ -39,6 +40,7 @@ LRESULT CConfigDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPar
     AddTab(L"Video", new CVideoTab);
     AddTab(L"Emulation", new CEmulationTab);
     AddTab(L"Frame buffer", new CFrameBufferTab);
+    AddTab(L"Texture enhancement", new CTextureEnhancementTab);
     return 0;
 }
 
