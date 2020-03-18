@@ -1677,7 +1677,7 @@ void gSPModifyVertex( u32 _vtx, u32 _where, u32 _val )
 				vtx0.y *= vtx0.w;
 			} else {
 				vtx0.modify |= MODIFY_XY;
-				if (vtx0.w == 0.0f) {
+				if (vtx0.w == 0.0f || gDP.otherMode.depthSource == G_ZS_PRIM) {
 					vtx0.w = 1.0f;
 					vtx0.clip &= ~(CLIP_W);
 				}

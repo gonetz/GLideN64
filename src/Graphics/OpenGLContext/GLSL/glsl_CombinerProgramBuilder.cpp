@@ -1649,17 +1649,19 @@ public:
 				if ((config.generalEmulation.hacks & hack_RE2) != 0) {
 					m_part =
 						"uniform lowp usampler2D uZlutImage;\n"
-						"highp float writeDepth()						        													\n"
-						"{																									\n"
+						"highp float writeDepth()																		\n"
+						"{																								\n"
 						;
 					if (_glinfo.isGLESX && _glinfo.noPerspective) {
 						m_part +=
 							"  if (uClampMode == 1 && (vZCoord > 1.0)) discard;	\n"
-							"  highp float FragDepth = clamp((vZCoord - uPolygonOffset) * uDepthScale.s + uDepthScale.t, 0.0, 1.0);	\n"
+							"  highp float FragDepth = (uDepthSource != 0) ? uPrimDepth :								\n"
+							"           clamp((vZCoord - uPolygonOffset) * uDepthScale.s + uDepthScale.t, 0.0, 1.0);	\n"
 							;
 					} else {
 						m_part +=
-							"  highp float FragDepth = clamp((gl_FragCoord.z * 2.0 - 1.0) * uDepthScale.s + uDepthScale.t, 0.0, 1.0);	\n"
+							"  highp float FragDepth = (uDepthSource != 0) ? uPrimDepth :								\n"
+							"            clamp((gl_FragCoord.z * 2.0 - 1.0) * uDepthScale.s + uDepthScale.t, 0.0, 1.0);	\n"
 						;
 					}
 					m_part +=
