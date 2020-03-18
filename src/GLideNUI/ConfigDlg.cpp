@@ -20,6 +20,23 @@ void CConfigDlg::setRomName(const char * RomName)
     m_romName = RomName == NULL || strlen(RomName) == 0 ? NULL : RomName;
 }
 
+LRESULT CConfigDlg::OnSaveClose(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+    EndDialog(wID);
+    return 0;
+}
+
+LRESULT CConfigDlg::OnSave(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+    return 0;
+}
+
+LRESULT CConfigDlg::OnCancel(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+    EndDialog(wID);
+    return 0;
+}
+
 class GlideN64WtlModule :
     public CAppModule
 {
