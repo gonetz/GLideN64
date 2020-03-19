@@ -87,6 +87,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\GLideNUI\About.cpp" />
+    <ClCompile Include="..\..\src\GLideNUI\config-debug.cpp" />
     <ClCompile Include="..\..\src\GLideNUI\config-emulation.cpp" />
     <ClCompile Include="..\..\src\GLideNUI\config-framebuffer.cpp" />
     <ClCompile Include="..\..\src\GLideNUI\config-osd.cpp" />
@@ -111,6 +112,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\GLideNUI\About.h" />
+    <ClInclude Include="..\..\src\GLideNUI\config-debug.h" />
     <ClInclude Include="..\..\src\GLideNUI\config-framebuffer.h" />
     <ClInclude Include="..\..\src\GLideNUI\config-osd.h" />
     <ClInclude Include="..\..\src\GLideNUI\config-texture.h" />
