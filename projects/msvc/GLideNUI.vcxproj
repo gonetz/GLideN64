@@ -89,12 +89,14 @@
     <ClCompile Include="..\..\src\GLideNUI\About.cpp" />
     <ClCompile Include="..\..\src\GLideNUI\config-emulation.cpp" />
     <ClCompile Include="..\..\src\GLideNUI\config-framebuffer.cpp" />
+    <ClCompile Include="..\..\src\GLideNUI\config-osd.cpp" />
     <ClCompile Include="..\..\src\GLideNUI\config-overscan.cpp" />
     <ClCompile Include="..\..\src\GLideNUI\config-tab.cpp" />
     <ClCompile Include="..\..\src\GLideNUI\config-texture.cpp" />
     <ClCompile Include="..\..\src\GLideNUI\config-video.cpp" />
     <ClCompile Include="..\..\src\GLideNUI\ConfigDlg.cpp" />
     <ClCompile Include="..\..\src\GLideNUI\FileClass.cpp" />
+    <ClCompile Include="..\..\src\GLideNUI\FontInfo.cpp" />
     <ClCompile Include="..\..\src\GLideNUI\GlSettings.cpp" />
     <ClCompile Include="..\..\src\GLideNUI\IniFileClass.cpp" />
     <ClCompile Include="..\..\src\GLideNUI\FullscreenResolutions_windows.cpp" />
@@ -103,19 +105,27 @@
     <ClCompile Include="..\..\src\GLideNUI\Settings.cpp" />
     <ClCompile Include="..\..\src\GLideNUI\util.cpp" />
     <ClCompile Include="..\..\src\GLideNUI\wtl-BitmapPicture.cpp" />
+    <ClCompile Include="..\..\src\GLideNUI\wtl-ColorButton.cpp" />
+    <ClCompile Include="..\..\src\GLideNUI\wtl-OsdButton.cpp" />
+    <ClCompile Include="..\..\src\GLideNUI\wtl-OsdPreview.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\GLideNUI\About.h" />
     <ClInclude Include="..\..\src\GLideNUI\config-framebuffer.h" />
+    <ClInclude Include="..\..\src\GLideNUI\config-osd.h" />
     <ClInclude Include="..\..\src\GLideNUI\config-texture.h" />
     <ClInclude Include="..\..\src\GLideNUI\config-video.h" />
     <ClInclude Include="..\..\src\GLideNUI\ConfigDlg.h" />
     <ClInclude Include="..\..\src\GLideNUI\FileClass.h" />
+    <ClInclude Include="..\..\src\GLideNUI\FontInfo.h" />
     <ClInclude Include="..\..\src\GLideNUI\FullscreenResolutions.h" />
     <ClInclude Include="..\..\src\GLideNUI\GlSettings.h" />
     <ClInclude Include="..\..\src\GLideNUI\IniFileClass.h" />
     <ClInclude Include="..\..\src\GLideNUI\util.h" />
     <ClInclude Include="..\..\src\GLideNUI\wtl-BitmapPicture.h" />
+    <ClInclude Include="..\..\src\GLideNUI\wtl-ColorButton.h" />
+    <ClInclude Include="..\..\src\GLideNUI\wtl-OsdButton.h" />
+    <ClInclude Include="..\..\src\GLideNUI\wtl-OsdPreview.h" />
     <ClInclude Include="..\..\src\GLideNUI\WTL\atlapp.h" />
     <ClInclude Include="..\..\src\GLideNUI\WTL\atlcrack.h" />
     <ClInclude Include="..\..\src\GLideNUI\WTL\atlctrls.h" />

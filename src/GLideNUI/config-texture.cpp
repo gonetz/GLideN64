@@ -75,7 +75,7 @@ void CTextureEnhancementTab::OnTexturePack(UINT /*Code*/, int /*id*/, HWND /*ctl
     CButton(GetDlgItem(IDC_CHK_TEXTURE_DUMP)).EnableWindow(UseTextPack);
 }
 
-LRESULT CTextureEnhancementTab::OnScroll(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
+LRESULT CTextureEnhancementTab::OnScroll(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
 {
     LONG CtrlId = CWindow((HWND)lParam).GetWindowLong(GWL_ID);
     if (CtrlId == IDC_TEXTURE_FILTER_CACHE_SPIN)

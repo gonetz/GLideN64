@@ -5,6 +5,7 @@
 #include "config-emulation.h"
 #include "config-framebuffer.h"
 #include "config-texture.h"
+#include "config-osd.h"
 
 CConfigDlg::CConfigDlg() 
 {
@@ -41,6 +42,7 @@ LRESULT CConfigDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPar
     AddTab(L"Emulation", new CEmulationTab);
     AddTab(L"Frame buffer", new CFrameBufferTab);
     AddTab(L"Texture enhancement", new CTextureEnhancementTab);
+    AddTab(L"OSD", new COsdTab);
     return 0;
 }
 
