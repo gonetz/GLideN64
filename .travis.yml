@@ -3,10 +3,6 @@ sudo:     false
 
 addons:
   apt:
-    sources:
-    - kitware
-    - sourceline: 'deb https://apt.kitware.com/ubuntu/ bionic main'
-      key_url 'https://apt.kitware.com/keys/kitware-archive-latest.asc'
     packages:
     - libgl1-mesa-dev
     - cmake
