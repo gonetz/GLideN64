@@ -177,7 +177,8 @@ set(GlideN64_Private_Link_Options)
 set(PATH_REVISION "Revision.h")
 add_custom_command(
         OUTPUT ${PATH_REVISION}
-        COMMAND ${CMAKE_SOURCE_DIR}/getRevision.sh
+        COMMAND ${CMAKE_CURRENT_LIST_DIR}/getRevision.sh
+        WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
         COMMENT "Generate Git version"
 )
 
