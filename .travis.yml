@@ -38,6 +38,7 @@ matrix:
           env: TARGET_CPU=x86 BUILD_CONFIGURATION=Release
 
 script:
+    - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo apt -y install cmake; fi #Need to force Ubuntu to get Kitware's official release
     - src/getRevision.sh
     - cd projects/cmake
     - cmake -DCMAKE_BUILD_TYPE=$BUILD_CONFIGURATION -DTARGET_CPU=$TARGET_CPU -DVEC4_OPT=On -DMUPENPLUSAPI=On ../../src/
