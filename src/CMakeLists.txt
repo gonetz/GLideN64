@@ -9,14 +9,6 @@ option(VERO4K "Set to ON if targeting a Vero4k" ${VERO4K})
 option(ANDROID "Set to ON if targeting an Android device" ${ANDROID})
 option(GL_PROFILE "Set to ON to turn on GL profiling" ${GL_PROFILE})
 
-# run script to generate Revision.h
-set(PATH_REVISION "Revision.h")
-add_custom_command(
-        OUTPUT ${PATH_REVISION}
-        COMMAND ${CMAKE_SOURCE_DIR}/getRevision.sh
-        COMMENT "Generate Git version"
-)
-
 project( GLideN64 )
 
 set(GLideN64_SOURCES
@@ -40,7 +32,6 @@ set(GLideN64_SOURCES
   GraphicsDrawer.cpp
   gSP.cpp
   Keys.cpp
-  Log.cpp
   N64.cpp
   NoiseTexture.cpp
   PaletteTexture.cpp
@@ -140,6 +131,10 @@ set(GLideN64_SOURCES_WIN
   Graphics/OpenGLContext/windows/windows_DisplayWindow.cpp
   )
 
+set(GLideN64_SOURCES_NON_ANDROID
+  Log.cpp
+  )
+
 set(GLideN64_SOURCES_ANDROID
    Log_android.cpp
    Graphics/OpenGLContext/opengl_ColorBufferReaderWithEGLImage.cpp
@@ -148,54 +143,6 @@ set(GLideN64_SOURCES_ANDROID
    Graphics/OpenGLContext/GraphicBuffer/PublicApi/android_hardware_buffer_compat.cpp
    Graphics/OpenGLContext/GraphicBuffer/GraphicBufferWrapper.cpp
   )
-
-#check if we're running on Raspberry Pi
-if(EXISTS "${CMAKE_FIND_ROOT_PATH}/opt/vc/include/bcm_host.h" AND NOT MESA)
-  message("bcm_host.h found")
-  set(BCMHOST ON)
-  set(EGL ON)
-  set(EGL_LIB -lbrcmEGL -lbrcmGLESv2)
-else(EXISTS "${CMAKE_FIND_ROOT_PATH}/opt/vc/include/bcm_host.h" AND NOT MESA)
-  set(EGL_LIB -lEGL)
-endif(EXISTS "${CMAKE_FIND_ROOT_PATH}/opt/vc/include/bcm_host.h" AND NOT MESA)
-
-
-add_subdirectory( osal )
-
-if (NOHQ)
-  list(APPEND GLideN64_SOURCES TxFilterStub.cpp)
-else (NOHQ)
-  add_subdirectory( GLideNHQ )
-  include_directories( GLideNHQ )
-endif(NOHQ)
-
-
-if(ANDROID)
-   set(EGL ON)
-   if(ANDROID_ABI STREQUAL "armeabi-v7a" OR ANDROID_ABI STREQUAL "arm64-v8a")
-       set(NEON_OPT ON)
-       set(VEC4_OPT ON)
-       set(CRC_NEON ON)
-   elseif(ANDROID_ABI STREQUAL "x86" OR ANDROID_ABI STREQUAL "x86_64")
-       set(CRC_OPT ON)
-       set(VEC4_OPT ON)
-   endif()
-
-   list(APPEND GLideN64_SOURCES ${GLideN64_SOURCES_ANDROID})
-
-   list(REMOVE_ITEM GLideN64_SOURCES
-           Log.cpp
-           )
-
-   find_library( # Defines the name of the path variable that stores the
-           # location of the NDK library.
-           LOG_LIB
-
-           # Specifies the name of the NDK library that
-           # CMake needs to locate.
-           log )
-endif(ANDROID)
-
 
 #########################################################
 # Build type
@@ -214,12 +161,33 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 add_library(GLideN64 SHARED )
 
 set(GLideN64_Output_Name GLideN64)
+set(GlideN64_Private_Source)
 set(GlideN64_Private_Compile_Definitions)
 set(GlideN64_Private_Include_Directories)
 set(GlideN64_Private_Link_Directories)
 set(GlideN64_Private_Link_Libraries)
 set(GlideN64_Private_Link_Options)
 
+
+#########################################################
+#Project configuration
+#########################################################
+# Rsun script to generate Revision.h
+set(PATH_REVISION "Revision.h")
+add_custom_command(
+        OUTPUT ${PATH_REVISION}
+        COMMAND ${CMAKE_SOURCE_DIR}/getRevision.sh
+        COMMENT "Generate Git version"
+)
+
+list(APPEND GlideN64_Private_Source ${PATH_REVISION})
+
+if (NOHQ)
+  list(APPEND GlideN64_Private_Source TxFilterStub.cpp)
+else (NOHQ)
+  add_subdirectory( GLideNHQ )
+endif(NOHQ)
+add_subdirectory( osal )
 
 #########################################################
 #Platform Specific Configurations
@@ -233,6 +201,15 @@ if(SDL)
   list(APPEND GlideN64_Private_Link_Libraries ${SDL_LIBRARIES})
 endif(SDL)
 
+#check if we're running on Raspberry Pi
+if(EXISTS "${CMAKE_FIND_ROOT_PATH}/opt/vc/include/bcm_host.h" AND NOT MESA)
+  message("bcm_host.h found")
+  set(BCMHOST ON)
+  set(EGL ON)
+  set(EGL_LIB -lbrcmEGL -lbrcmGLESv2)
+else(EXISTS "${CMAKE_FIND_ROOT_PATH}/opt/vc/include/bcm_host.h" AND NOT MESA)
+  set(EGL_LIB -lEGL)
+endif(EXISTS "${CMAKE_FIND_ROOT_PATH}/opt/vc/include/bcm_host.h" AND NOT MESA)
 
 if(BCMHOST)
   list(APPEND GlideN64_Private_Include_Directories
@@ -248,18 +225,40 @@ if(BCMHOST)
   list(APPEND GlideN64_Private_Compile_Definitions VC)
 endif()
 
+if(UNIX AND NOT MUPENPLUSAPI)
+  message(WARNING "UNIX build requires MUPENPLUSAPI! Enabling MUPENPLUSAPI")
+  set(MUPENPLUSAPI true)
+endif()
+
 if(MUPENPLUSAPI)
   set(GLideN64_Output_Name mupen64plus-video-GLideN64)
   list(APPEND GlideN64_Private_Compile_Definitions MUPENPLUSAPI TXFILTER_LIB)
   list(APPEND GlideN64_Private_Include_Directories ${CMAKE_CURRENT_LIST_DIR} ${CMAKE_CURRENT_LIST_DIR}/inc)
-else()
-  if(UNIX)
-    message(FATAL_ERROR "UNIX build requires MUPENPLUSAPI!")
-  endif()
-endif(MUPENPLUSAPI)
+endif()
 
 ####Android Support####
 if(ANDROID)
+    list(APPEND GlideN64_Private_Source ${GLideN64_SOURCES_ANDROID})
+
+   set(EGL ON)
+   if(ANDROID_ABI STREQUAL "armeabi-v7a" OR ANDROID_ABI STREQUAL "arm64-v8a")
+       set(NEON_OPT ON)
+       set(VEC4_OPT ON)
+       set(CRC_NEON ON)
+   elseif(ANDROID_ABI STREQUAL "x86" OR ANDROID_ABI STREQUAL "x86_64")
+       set(CRC_OPT ON)
+       set(VEC4_OPT ON)
+   endif()
+
+
+   find_library( # Defines the name of the path variable that stores the
+           # location of the NDK library.
+           LOG_LIB
+
+           # Specifies the name of the NDK library that
+           # CMake needs to locate.
+           log )
+
     set(GLideN64_Output_Name libmupen64plus-video-GLideN64)
     list(APPEND GlideN64_Private_Compile_Definitions OS_ANDROID GL_EGLEXT_PROTOTYPES EGL)
     add_library(ANDROID_FREETYPE SHARED IMPORTED)
@@ -283,6 +282,7 @@ else()
   find_package(Freetype REQUIRED )
   list(APPEND GlideN64_Private_Link_Libraries ${FREETYPE_LIBRARIES})
   list(APPEND GlideN64_Private_Include_Directories ${FREETYPE_INCLUDE_DIRS})
+  list(APPEND GlideN64_Private_Source ${GLideN64_SOURCES_NON_ANDROID})
 endif()
 
 ####Windows Support####
@@ -409,7 +409,7 @@ endif()
 #########################################################
 #Wrap it all together
 #########################################################
-target_sources(GLideN64 PRIVATE ${GLideN64_SOURCES} ${PATH_REVISION})
+target_sources(GLideN64 PRIVATE  ${GlideN64_Private_Source} ${GLideN64_SOURCES})
 target_compile_definitions(GLideN64 PRIVATE ${GlideN64_Private_Compile_Definitions})
 target_link_directories(GLideN64 PRIVATE ${GlideN64_Private_Link_Directories})
 target_link_options(GLideN64 PRIVATE ${GlideN64_Private_Link_Options})
