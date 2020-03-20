@@ -54,7 +54,7 @@ if(MINGW OR BCMHOST OR APPLE OR USE_SYSTEM_LIBS)
     FIND_PACKAGE( ZLIB REQUIRED )
     FIND_PACKAGE( PNG REQUIRED )
     list(APPEND GLideNHQ_Public_Link_Libraries ${PNG_LIBRARIES} ${ZLIB_LIBRARIES} dl)
-    list(APPEND GLideNHQ_Public_Include_Directories ${PNG_INCLUDE_DIRS})
+    list(APPEND GLideNHQ_Public_Include_Directories ${PNG_INCLUDE_DIRS} ${ZLIB_INCLUDE_DIRS})
 endif()
 
 if(ANDROID)
