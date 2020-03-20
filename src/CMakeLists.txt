@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.15.5)
+cmake_minimum_required(VERSION 3.12.4)
 
 option(EGL "Set to ON if targeting an EGL device" ${EGL})
 option(PANDORA "Set to ON if targeting an OpenPandora" ${PANDORA})
@@ -411,7 +411,10 @@ endif()
 #########################################################
 target_sources(GLideN64 PRIVATE  ${GlideN64_Private_Source} ${GLideN64_SOURCES})
 target_compile_definitions(GLideN64 PRIVATE ${GlideN64_Private_Compile_Definitions})
-target_link_directories(GLideN64 PRIVATE ${GlideN64_Private_Link_Directories})
+#TODO Once Cmake 3.15.5 is available uncomment this
+#target_link_directories(GLideN64 PRIVATE ${GlideN64_Private_Link_Directories})
+#and remove the line below
+link_directories(${GlideN64_Private_Link_Directories})
 target_link_options(GLideN64 PRIVATE ${GlideN64_Private_Link_Options})
 target_link_libraries(GLideN64 PRIVATE ${GlideN64_Private_Link_Libraries})
 target_include_directories(GLideN64 PRIVATE ${GlideN64_Private_Include_Directories})
