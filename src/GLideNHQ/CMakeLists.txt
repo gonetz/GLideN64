@@ -22,6 +22,7 @@ set(GLideNHQ_SOURCES
 
 add_library(GLideNHQ STATIC ${GLideNHQ_SOURCES})
 set(GLideNHQ_Private_Compile_Definitions TXFILTER_LIB)
+set(GLideNHQ_Public_Include_Directories)
 set(GLideNHQ_Private_Include_Directories {CMAKE_CURRENT_LIST_DIR}/..)
 set(GLideNHQ_Public_Link_Libraries osal)
 
@@ -53,6 +54,7 @@ if(MINGW OR BCMHOST OR APPLE OR USE_SYSTEM_LIBS)
     FIND_PACKAGE( ZLIB REQUIRED )
     FIND_PACKAGE( PNG REQUIRED )
     list(APPEND GLideNHQ_Public_Link_Libraries ${PNG_LIBRARIES} ${ZLIB_LIBRARIES} dl)
+    list(APPEND GLideNHQ_Public_Include_Directories ${PNG_INCLUDE_DIRS})
 endif()
 
 if(ANDROID)
@@ -65,6 +67,7 @@ endif()
 ###########################################
 target_compile_definitions(GLideNHQ PRIVATE ${GLideNHQ_Private_Compile_Definitions})
 target_include_directories(GLideNHQ PRIVATE ${GLideNHQ_Private_Include_Directories})
+target_include_directories(GLideNHQ PUBLIC ${GLideNHQ_Public_Include_Directories})
 target_link_libraries(GLideNHQ PUBLIC ${GLideNHQ_Public_Link_Libraries})
 set_target_properties(GLideNHQ
                       PROPERTIES
