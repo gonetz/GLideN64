@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.15.5)
+cmake_minimum_required(VERSION 3.12.4)
 project( osal )
 
 add_library(osal STATIC)
@@ -23,7 +23,10 @@ endif()
 
 target_sources(osal PRIVATE ${osal_Private_Sources})
 target_include_directories(osal PUBLIC ${CMAKE_CURRENT_LIST_DIR} ${CMAKE_CURRENT_LIST_DIR}/..)
-target_link_directories(osal PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/lib)
+#TODO Once Cmake 3.15.5 is available uncomment this
+#target_link_directories(osal PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/lib)
+#and remove the line below
+link_directories(${CMAKE_CURRENT_SOURCE_DIR}/lib)
 set_target_properties(osal
                       PROPERTIES
                       CXX_STANDARD 11
