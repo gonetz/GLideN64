@@ -11,7 +11,6 @@ public:
         MSG_WM_INITDIALOG(OnInitDialog)
         MESSAGE_HANDLER(WM_CTLCOLORDLG, OnColorStatic)
         MESSAGE_HANDLER(WM_CTLCOLORSTATIC, OnColorStatic)
-        MESSAGE_HANDLER(WM_SIZE, OnSize)
     END_MSG_MAP()
 
     CAboutContributersTab() :
@@ -23,45 +22,36 @@ public:
     {
         const TCHAR Contributors[] =
         {
-            L"Logan McNaughton\r\n"
-            L"Francisco Zurita\r\n"
-            L"gizmo98\r\n"
-            L"purplemarshmallow\r\n"
-            L"zilmar\r\n"
-            L"matthewharvey\r\n"
-            L"lioncash\r\n"
-            L"Predator82Germany\r\n"
-            L"AmbientMalice\r\n"
-            L"baptiste0602\r\n"
-            L"Gilles Siberlin\r\n"
-            L"Daniel Eck\r\n"
-            L"Víctor \"IlDucci\"\r\n"
-            L"orbea\r\n"
-            L"BenjaminSiskoo\r\n"
-            L"ptitSeb\r\n"
-            L"Kimberly J.Ortega\r\n"
-            L"Maxime Morel\r\n"
-            L"tony971\r\n"
-            L"SigmaVirus\r\n"
-            L"Jools Wills\r\n"
-            L"Nekokabu\r\n"
-            L"nicklauslittle\r\n"
-            L"Nebuleon\r\n"
-            L"sergiobenrocha2\r\n"
-            L"Michał Durak\r\n"
-            L"Mushman\r\n"
+            L"Logan McNaughton\r\n\r\n"
+            L"Francisco Zurita\r\n\r\n"
+            L"gizmo98\r\n\r\n"
+            L"purplemarshmallow\r\n\r\n"
+            L"zilmar\r\n\r\n"
+            L"matthewharvey\r\n\r\n"
+            L"lioncash\r\n\r\n"
+            L"Predator82Germany\r\n\r\n"
+            L"AmbientMalice\r\n\r\n"
+            L"baptiste0602\r\n\r\n"
+            L"Gilles Siberlin\r\n\r\n"
+            L"Daniel Eck\r\n\r\n"
+            L"Víctor \"IlDucci\"\r\n\r\n"
+            L"orbea\r\n\r\n"
+            L"BenjaminSiskoo\r\n\r\n"
+            L"ptitSeb\r\n\r\n"
+            L"Kimberly J.Ortega\r\n\r\n"
+            L"Maxime Morel\r\n\r\n"
+            L"tony971\r\n\r\n"
+            L"SigmaVirus\r\n\r\n"
+            L"Jools Wills\r\n\r\n"
+            L"Nekokabu\r\n\r\n"
+            L"nicklauslittle\r\n\r\n"
+            L"Nebuleon\r\n\r\n"
+            L"sergiobenrocha2\r\n\r\n"
+            L"Michał Durak\r\n\r\n"
+            L"Mushman"
         };
         GetDlgItem(IDC_CONTRIBUTORS).SetWindowText(Contributors);
         return true;
-    }
-    LRESULT OnSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
-    {
-        CRect WinRect;
-        GetWindowRect(&WinRect);
-        ScreenToClient(&WinRect);
-
-        GetDlgItem(IDC_CONTRIBUTORS).SetWindowPos(HWND_TOP, WinRect.left + 20, WinRect.top + 20, WinRect.Width() - 40, WinRect.Height() - 40, SWP_SHOWWINDOW);
-        return 0;
     }
     LRESULT OnColorStatic(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
     {
@@ -82,7 +72,6 @@ public:
         MSG_WM_INITDIALOG(OnInitDialog)
         MESSAGE_HANDLER(WM_CTLCOLORDLG, OnColorStatic)
         MESSAGE_HANDLER(WM_CTLCOLORSTATIC, OnColorStatic)
-        MESSAGE_HANDLER(WM_SIZE, OnSize)
     END_MSG_MAP()
 
     CAboutFundersTab() :
@@ -228,36 +217,15 @@ public:
             L"famicom4\r\n"
             L"Keith_at_UMR\r\n"
             L"sweatypickle\r\n"
-            L"jeremydmiller\r\n"
+            L"jeremydmiller"
         };
         CWindow Funders = GetDlgItem(IDC_FUNDERS);
         Funders.SetWindowText(Funders1);
+        m_SubtitleFont.Apply(m_hWnd, CWindowFont::typeBold | CWindowFont::typeSubheading, IDC_FUNDERS);
         GetDlgItem(IDC_FUNDERS_LIST).SetWindowText(FundersList);
-
-        CClientDC dc(m_hWnd);
-        int nHeight = -MulDiv(9, dc.GetDeviceCaps(LOGPIXELSY), 72);
-
-        CFontHandle cfh;
-        LOGFONT lf = { 0 };
-        cfh.Attach(Funders.GetFont());
-        cfh.GetLogFont(&lf);
-        lf.lfHeight = nHeight;
-        lf.lfWeight = 800;
-        m_FounderFont.CreateFontIndirect(&lf);
-        Funders.SetFont(m_FounderFont);
 
         return true;
     };
-    LRESULT OnSize(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
-    {
-        CRect WinRect;
-        GetWindowRect(&WinRect);
-        ScreenToClient(&WinRect);
-
-        GetDlgItem(IDC_FUNDERS).SetWindowPos(HWND_TOP, WinRect.left + 20, WinRect.top + 20, (WinRect.Width() / 2) - 20, WinRect.Height() - 40, SWP_SHOWWINDOW);
-        GetDlgItem(IDC_FUNDERS_LIST).SetWindowPos(HWND_TOP, (WinRect.Width() / 2) + WinRect.left + 20, WinRect.top + 20, (WinRect.Width() / 2) - 40, WinRect.Height() - 40, SWP_SHOWWINDOW);
-        return 0;
-    }
     LRESULT OnColorStatic(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
     {
         if ((HWND)lParam == GetDlgItem(IDC_FUNDERS_LIST))
@@ -267,8 +235,6 @@ public:
         }
         return (LRESULT)GetStockObject(WHITE_BRUSH);
     }
-
-    CFont m_FounderFont;
 };
 
 class CAboutCreditsTab :
@@ -287,27 +253,18 @@ public:
     }
     BOOL OnInitDialog(CWindow /*wndFocus*/, LPARAM /*lInitParam*/)
     {
-        CWindow Author = GetDlgItem(IDC_ORKIN);
-        
-        CClientDC dc(m_hWnd);
-        int nHeight = -MulDiv(12, dc.GetDeviceCaps(LOGPIXELSY), 72);
-
-        CFontHandle cfh;
-        LOGFONT lf = { 0 };
-        cfh.Attach(Author.GetFont());
-        cfh.GetLogFont(&lf);
-        lf.lfHeight = nHeight;
-        lf.lfWeight = 800;
-        m_AuthorFont.CreateFontIndirect(&lf);
-        Author.SetFont(m_AuthorFont);
-
-        GetDlgItem(IDC_YONGZH).SetFont(m_AuthorFont);
-        GetDlgItem(IDC_HIROSHI).SetFont(m_AuthorFont);
-        GetDlgItem(IDC_ZIGGY).SetFont(m_AuthorFont);
+        const UINT Creditors[] =
+        {
+            IDC_ORKIN,
+            IDC_YONGZH,
+            IDC_HIROSHI,
+            IDC_ZIGGY
+        };
+        for (const UINT &Creditor : Creditors) {
+          m_SubtitleFont.Apply(m_hWnd, CWindowFont::typeBold | CWindowFont::typeSubheading, Creditor);
+        }
         return true;
     };
-
-    CFont m_AuthorFont;
 };
 
 CAboutTab::CAboutTab(uint32_t _IDD) :
@@ -321,10 +278,19 @@ CAboutTab::~CAboutTab()
 
 BOOL CAboutTab::OnInitDialog(CWindow /*wndFocus*/, LPARAM /*lInitParam*/)
 {
+    const UINT Authors[] =
+    {
+        IDC_SERGEY,
+        IDC_OLIVIER,
+        IDC_RYAN
+    };
+    for (const UINT &Author : Authors) {
+      m_SubtitleFont.Apply(m_hWnd, CWindowFont::typeBold | CWindowFont::typeSubheading, Author);
+    }
     return true;
 }
 
-LRESULT CAboutTab::OnColorStatic(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+LRESULT CAboutTab::OnColorStatic(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
     return (LRESULT)GetStockObject(WHITE_BRUSH);
 }
@@ -338,27 +304,14 @@ CAboutDlg::~CAboutDlg()
     m_TabWindows.clear();
 }
 
-LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
 	HICON hIcon = AtlLoadIconImage(IDI_APPICON, LR_DEFAULTCOLOR, ::GetSystemMetrics(SM_CXICON), ::GetSystemMetrics(SM_CYICON));
 	SetIcon(hIcon, TRUE);
 	HICON hIconSmall = AtlLoadIconImage(IDI_APPICON, LR_DEFAULTCOLOR, ::GetSystemMetrics(SM_CXSMICON), ::GetSystemMetrics(SM_CYSMICON));
 	SetIcon(hIconSmall, FALSE);
 
-	CStatic AboutTitle;
-	AboutTitle.Attach(GetDlgItem(IDC_ABOUT_TITLE));
-	
-	CClientDC dc(m_hWnd);
-	int nHeight = -MulDiv(29, dc.GetDeviceCaps(LOGPIXELSY), 72);
-
-	CFontHandle cfh;
-	LOGFONT lf = { 0 };
-	cfh.Attach(AboutTitle.GetFont());
-	cfh.GetLogFont(&lf);
-	lf.lfHeight = nHeight;
-	lf.lfWeight = 800;
-	m_TitleFont.CreateFontIndirect(&lf);
-	AboutTitle.SetFont(m_TitleFont);
+    m_TitleFont.Apply(m_hWnd, CWindowFont::typeBold | CWindowFont::typeHeading, IDC_ABOUT_TITLE);
 
 	m_Tabs.Attach(GetDlgItem(IDC_TABS));
     AddTab(L"About", new CAboutTab(IDD_TAB_ABOUT));

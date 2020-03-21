@@ -128,6 +128,7 @@
     <ClInclude Include="..\..\src\GLideNUI\wtl-ColorButton.h" />
     <ClInclude Include="..\..\src\GLideNUI\wtl-OsdButton.h" />
     <ClInclude Include="..\..\src\GLideNUI\wtl-OsdPreview.h" />
+    <ClInclude Include="..\..\src\GLideNUI\wtl-WindowFont.h" />
     <ClInclude Include="..\..\src\GLideNUI\WTL\atlapp.h" />
     <ClInclude Include="..\..\src\GLideNUI\WTL\atlcrack.h" />
     <ClInclude Include="..\..\src\GLideNUI\WTL\atlctrls.h" />
@@ -163,6 +164,16 @@
     <ResourceCompile Include="..\..\src\GLideNUI\GLideNUI.rc" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="..\..\src\GLideNUI\BottomLeft.ico" />
+    <Image Include="..\..\src\GLideNUI\BottomRight.ico" />
+    <Image Include="..\..\src\GLideNUI\Down.ico" />
+    <Image Include="..\..\src\GLideNUI\Info.ico" />
+    <Image Include="..\..\src\GLideNUI\Left.ico" />
+    <Image Include="..\..\src\GLideNUI\Right.ico" />
+    <Image Include="..\..\src\GLideNUI\TopLeft.ico" />
+    <Image Include="..\..\src\GLideNUI\TopRight.ico" />
+    <Image Include="..\..\src\GLideNUI\Up.ico" />
+    <Image Include="..\..\src\GLideNUI\Warning.ico" />
     <Image Include="Icon.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

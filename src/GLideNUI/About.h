@@ -1,5 +1,7 @@
 #pragma once
 #include "wtl.h"
+#include "wtl-WindowFont.h"
+#include "wtl-BitmapPicture.h"
 #include "resource.h"
 #include <vector>
 
@@ -22,6 +24,8 @@ public:
 protected:
     BOOL OnInitDialog(CWindow wndFocus, LPARAM lInitParam);
     LRESULT OnColorStatic(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+
+    CWindowFont m_SubtitleFont;
 };
 
 class CAboutDlg :
@@ -49,7 +53,8 @@ protected:
 	void ShowTab(int nPage);
 	CRect GetTabRect();
 
-	CFont m_TitleFont;
+    CWindowFont m_TitleFont;
+    CBitmapPicture m_AboutIcon;
 	CTabCtrl m_Tabs;
 	std::vector<CAboutTab *> m_TabWindows;
 };

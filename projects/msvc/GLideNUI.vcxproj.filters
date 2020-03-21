@@ -166,6 +166,9 @@
     <ClInclude Include="..\..\src\GLideNUI\config-debug.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\GLideNUI\wtl-WindowFont.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\src\GLideNUI\Icon.ico">
@@ -253,5 +256,15 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="Icon.ico" />
+    <Image Include="..\..\src\GLideNUI\Info.ico" />
+    <Image Include="..\..\src\GLideNUI\Warning.ico" />
+    <Image Include="..\..\src\GLideNUI\TopLeft.ico" />
+    <Image Include="..\..\src\GLideNUI\Up.ico" />
+    <Image Include="..\..\src\GLideNUI\TopRight.ico" />
+    <Image Include="..\..\src\GLideNUI\Left.ico" />
+    <Image Include="..\..\src\GLideNUI\Right.ico" />
+    <Image Include="..\..\src\GLideNUI\BottomLeft.ico" />
+    <Image Include="..\..\src\GLideNUI\Down.ico" />
+    <Image Include="..\..\src\GLideNUI\BottomRight.ico" />
   </ItemGroup>
 </Project>

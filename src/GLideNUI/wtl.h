@@ -13,7 +13,8 @@
 #include "wtl\atlapp.h"
 #include "wtl\atlcrack.h"
 #include "wtl\atlctrls.h"
-#include "WTL\atlmisc.h"
 #include "WTL\atlctrlx.h"
+#include "WTL\atlgdi.h"
+#include "WTL\atlmisc.h"
 #include <atlwin.h>
 #pragma warning(pop)
