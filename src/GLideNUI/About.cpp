@@ -312,6 +312,8 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/,
 	SetIcon(hIconSmall, FALSE);
 
     m_TitleFont.Apply(m_hWnd, CWindowFont::typeBold | CWindowFont::typeHeading, IDC_ABOUT_TITLE);
+    m_AboutIcon.SubclassWindow(GetDlgItem(IDC_ABOUT_ICON));
+    m_AboutIcon.SetIcon(MAKEINTRESOURCE(IDI_APPICON), 32, 32);
 
 	m_Tabs.Attach(GetDlgItem(IDC_TABS));
     AddTab(L"About", new CAboutTab(IDD_TAB_ABOUT));
