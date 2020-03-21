@@ -22,7 +22,6 @@ private:
     CBitmapPicture& operator=(const CBitmapPicture&);
 
     bool CBitmapPicture::SetBitmap(HBITMAP hBitmap);
-    void DrawIcon(void);
 
     int m_nResourceID;
     std::wstring m_strResourceName;
