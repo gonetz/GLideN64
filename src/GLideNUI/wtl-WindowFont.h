@@ -83,8 +83,10 @@ public:
     bool Apply(HWND hWnd, int nType, UINT nControlID)
     {
         // First create the font
-        if (!Create(hWnd, nType))
+        if (IsNull() && !Create(hWnd, nType))
+        {
             return false;
+        }
         // Apply to the nominated control
         CWindow wndControl = ::GetDlgItem(hWnd, nControlID);
         ATLASSERT(wndControl != NULL);
