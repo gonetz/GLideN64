@@ -181,6 +181,59 @@ LRESULT COsdTab::OnNotifyOsdColor(LPNMHDR /*pnmh*/)
 
 void COsdTab::LoadSettings(bool /*blockCustomSettings*/)
 {
+    m_FontSizeTxt.SetWindowText(FormatStrW(L"%d", config.font.size).c_str());
+    m_FontSizeSpin.SetPos(config.font.size);
+    m_OsdColor.SetColor(config.font.color[0], config.font.color[1], config.font.color[2]);
+    m_OsdPreview.SetColor(config.font.color[0], config.font.color[1], config.font.color[2]);
+    m_OsdPreview.SetFontSize(config.font.size);
+    
+    m_PosTopLeft.SetChecked(config.onScreenDisplay.pos == Config::posTopLeft); 
+    m_PosTop.SetChecked(config.onScreenDisplay.pos == Config::posTopCenter); 
+    m_PosTopRight.SetChecked(config.onScreenDisplay.pos == Config::posTopRight);
+    m_PosBottomLeft.SetChecked(config.onScreenDisplay.pos == Config::posBottomLeft);
+    m_PosBottom.SetChecked(config.onScreenDisplay.pos == Config::posBottomCenter);
+    m_PosBottomRight.SetChecked(config.onScreenDisplay.pos == Config::posBottomRight); 
+
+    CButton(GetDlgItem(IDC_CHK_FPS)).SetCheck(config.onScreenDisplay.fps != 0 ? BST_CHECKED : BST_UNCHECKED);
+    CButton(GetDlgItem(IDC_CHK_VIS)).SetCheck(config.onScreenDisplay.vis != 0 ? BST_CHECKED : BST_UNCHECKED);
+    CButton(GetDlgItem(IDC_CHK_PERCENT)).SetCheck(config.onScreenDisplay.percent != 0 ? BST_CHECKED : BST_UNCHECKED);
+    CButton(GetDlgItem(IDC_INTERNAL_RESOLUTION)).SetCheck(config.onScreenDisplay.internalResolution != 0 ? BST_CHECKED : BST_UNCHECKED);
+    CButton(GetDlgItem(IDC_RENDERING_RESOLUTION)).SetCheck(config.onScreenDisplay.renderingResolution != 0 ? BST_CHECKED : BST_UNCHECKED);
+
+    std::wstring CurrentFile = ToUTF16(config.font.name.c_str());
+    TVINSERTSTRUCT tv = { 0 };
+    wchar_t Item[500];
+    tv.item.mask = TVIF_TEXT;
+    tv.item.pszText = Item;
+    tv.item.cchTextMax = sizeof(Item) / sizeof(Item[0]);
+    tv.item.hItem = m_Fonts.GetChildItem(TVI_ROOT);
+    HTREEITEM hParent = TVI_ROOT, hCurrentItem = NULL;
+    while (hCurrentItem == NULL && tv.item.hItem)
+    {
+        m_Fonts.GetItem(&tv.item);
+        HTREEITEM hChild = m_Fonts.GetChildItem(tv.item.hItem);
+        HTREEITEM NextItem = m_Fonts.GetNextSiblingItem(tv.item.hItem);
+        if (hCurrentItem == NULL && hChild != NULL)
+        {
+            tv.item.hItem = hChild;
+            while (hCurrentItem == NULL && tv.item.hItem)
+            {
+                m_Fonts.GetItem(&tv.item);
+                if (Item == CurrentFile)
+                {
+                    hCurrentItem = tv.item.hItem;
+                }
+                tv.item.hItem = m_Fonts.GetNextSiblingItem(tv.item.hItem);
+            }
+        }
+        tv.item.hItem = NextItem;
+    }
+    if (hCurrentItem != TVI_ROOT)
+    {
+        m_Fonts.SelectItem(hCurrentItem);
+        m_Fonts.SetItemState(hCurrentItem, TVIF_STATE | TVIS_SELECTED, TVIF_STATE | TVIS_SELECTED);
+        m_Fonts.SetFocus();
+    }
 }
 
 std::wstring COsdTab::GetSelectedFont()
