@@ -238,6 +238,30 @@ void COsdTab::LoadSettings(bool /*blockCustomSettings*/)
 
 void COsdTab::SaveSettings()
 {
+    if (m_PosTopLeft.isChecked()) { config.onScreenDisplay.pos = Config::posTopLeft; }
+    else if (m_PosTop.isChecked()) { config.onScreenDisplay.pos = Config::posTopCenter; }
+    else if (m_PosTopRight.isChecked()) { config.onScreenDisplay.pos = Config::posTopRight; }
+    else if (m_PosBottomLeft.isChecked()) { config.onScreenDisplay.pos = Config::posBottomLeft; }
+    else if (m_PosBottom.isChecked()) { config.onScreenDisplay.pos = Config::posBottomCenter; }
+    else if (m_PosBottomRight.isChecked()) { config.onScreenDisplay.pos = Config::posBottomRight; }
+
+    config.onScreenDisplay.fps = CButton(GetDlgItem(IDC_CHK_FPS)).GetCheck() == BST_CHECKED ? 1 : 0;
+    config.onScreenDisplay.vis = CButton(GetDlgItem(IDC_CHK_VIS)).GetCheck() == BST_CHECKED ? 1 : 0;
+    config.onScreenDisplay.percent = CButton(GetDlgItem(IDC_CHK_PERCENT)).GetCheck() == BST_CHECKED ? 1 : 0;
+    config.onScreenDisplay.internalResolution = CButton(GetDlgItem(IDC_INTERNAL_RESOLUTION)).GetCheck() == BST_CHECKED ? 1 : 0;
+    config.onScreenDisplay.renderingResolution = CButton(GetDlgItem(IDC_RENDERING_RESOLUTION)).GetCheck() == BST_CHECKED ? 1 : 0;
+
+    config.font.name = FromUTF16(GetSelectedFont().c_str());
+    config.font.size = m_FontSizeSpin.GetPos();
+
+    config.font.color[0] = m_OsdColor.Red();
+    config.font.color[1] = m_OsdColor.Green();
+    config.font.color[2] = m_OsdColor.Blue();
+    config.font.color[3] = 0;
+    config.font.colorf[0] = (float)m_OsdColor.Red();
+    config.font.colorf[1] = (float)m_OsdColor.Green();
+    config.font.colorf[2] = (float)m_OsdColor.Blue();
+    config.font.colorf[3] = 0.0f;
 }
 
 std::wstring COsdTab::GetSelectedFont()
