@@ -95,4 +95,29 @@ LRESULT CTextureEnhancementTab::OnScroll(UINT /*uMsg*/, WPARAM /*wParam*/, LPARA
 
 void CTextureEnhancementTab::LoadSettings(bool /*blockCustomSettings*/)
 {
+    CComboBox(GetDlgItem(IDC_CMB_FILTER)).SetCurSel(config.textureFilter.txFilterMode);
+    CComboBox(GetDlgItem(IDC_CMB_ENHANCEMENT)).SetCurSel(config.textureFilter.txEnhancementMode);
+    CButton(GetDlgItem(IDC_CHK_DEPOSTERIZE)).SetCheck(config.textureFilter.txDeposterize != 0 ? BST_CHECKED : BST_UNCHECKED);
+    CButton(GetDlgItem(IDC_CHK_IGNORE_BACKGROUNDS)).SetCheck(config.textureFilter.txFilterIgnoreBG != 0 ? BST_CHECKED : BST_UNCHECKED);
+    CButton(GetDlgItem(IDC_CHK_ENHANCED_TEX_FILE_STORAGE)).SetCheck(config.textureFilter.txEnhancedTextureFileStorage != 0 ? BST_CHECKED : BST_UNCHECKED);
+    CButton(GetDlgItem(IDC_CHK_TEXTURE_PACK)).SetCheck(config.textureFilter.txHiresEnable != 0 ? BST_CHECKED : BST_UNCHECKED);
+        
+    GetDlgItem(IDC_TEX_PACK_PATH_EDIT).SetWindowText(config.textureFilter.txPath);
+    GetDlgItem(IDC_TEX_CACHE_PATH_EDIT).SetWindowText(config.textureFilter.txCachePath);
+    GetDlgItem(IDC_TEX_DUMP_PATH_EDIT).SetWindowText(config.textureFilter.txDumpPath);
+
+    CButton(GetDlgItem(IDC_CHK_ALPHA_CHANNEL)).SetCheck(config.textureFilter.txHiresFullAlphaChannel != 0 ? BST_CHECKED : BST_UNCHECKED);
+    CButton(GetDlgItem(IDC_CHK_ALTERNATIVE_CRC)).SetCheck(config.textureFilter.txHresAltCRC != 0 ? BST_CHECKED : BST_UNCHECKED);
+    CButton(GetDlgItem(IDC_CHK_HIRES_TEX_FILESTORAGE)).SetCheck(config.textureFilter.txHiresTextureFileStorage != 0 ? BST_CHECKED : BST_UNCHECKED);
+    CButton(GetDlgItem(IDC_CHK_TEXTURE_DUMP)).SetCheck(config.textureFilter.txDump != 0 ? BST_CHECKED : BST_UNCHECKED);
+    CButton(GetDlgItem(IDC_CHK_SAVE_TEXTURE_CACHE)).SetCheck(config.textureFilter.txSaveCache != 0 ? BST_CHECKED : BST_UNCHECKED);
+    CButton(GetDlgItem(IDC_CHK_COMPRESS_CACHE)).SetCheck(config.textureFilter.txCacheCompression != 0 ? BST_CHECKED : BST_UNCHECKED);
+    CButton(GetDlgItem(IDC_CHK_FORCE_16BPP)).SetCheck(config.textureFilter.txForce16bpp != 0 ? BST_CHECKED : BST_UNCHECKED);
+   
+    m_TextureFilterCacheSpin.SetPos((config.textureFilter.txCacheSize / gc_uMegabyte) /  50);
+
+    OnFileStorage(0, 0, NULL);
+    OnTexturePack(0, 0, NULL);
+    BOOL bHandled;
+    OnScroll(0, 0, (LPARAM)(GetDlgItem(IDC_TEXTURE_FILTER_CACHE_SPIN).Detach()), bHandled);
 }
