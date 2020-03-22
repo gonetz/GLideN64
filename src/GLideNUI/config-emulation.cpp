@@ -58,6 +58,38 @@ void CEmulationTab::OnGammaCorrection(UINT /*Code*/, int /*id*/, HWND /*ctl*/)
 
 void CEmulationTab::LoadSettings(bool blockCustomSettings)
 {
+    if (!blockCustomSettings)
+    {
+        CButton(GetDlgItem(IDC_CHK_USE_PER_GAME)).SetCheck(config.generalEmulation.enableCustomSettings != 0 ? BST_CHECKED : BST_UNCHECKED);
+    }
+    CButton(GetDlgItem(IDC_CHK_N64_STYLE_MIP_MAPPING)).SetCheck(config.generalEmulation.enableLOD != 0 ? BST_CHECKED : BST_UNCHECKED);
+    CButton(GetDlgItem(IDC_CHK_NOISE)).SetCheck(config.generalEmulation.enableNoise != 0 ? BST_CHECKED : BST_UNCHECKED);
+    CButton(GetDlgItem(IDC_CHK_HWLIGHTING)).SetCheck(config.generalEmulation.enableHWLighting != 0 ? BST_CHECKED : BST_UNCHECKED);
+    CButton(GetDlgItem(IDC_CHK_SHADERS_STORAGE)).SetCheck(config.generalEmulation.enableShadersStorage != 0 ? BST_CHECKED : BST_UNCHECKED);
+    
+    CButton(GetDlgItem(IDC_CHK_HALOS_REMOVAL)).SetCheck(config.texture.enableHalosRemoval != 0 ? BST_CHECKED : BST_UNCHECKED);
+    CButton(GetDlgItem(IDC_FIXTEXRECT_NEVER)).SetCheck(config.graphics2D.correctTexrectCoords == Config::tcDisable ? BST_CHECKED : BST_UNCHECKED);
+    CButton(GetDlgItem(IDC_FIXTEXRECT_SMART)).SetCheck(config.graphics2D.correctTexrectCoords == Config::tcSmart ? BST_CHECKED : BST_UNCHECKED);
+    CButton(GetDlgItem(IDC_FIXTEXRECT_FORCE)).SetCheck(config.graphics2D.correctTexrectCoords == Config::tcForce ? BST_CHECKED : BST_UNCHECKED);
+
+    CButton(GetDlgItem(IDC_BGMODE_ONEPIECE)).SetCheck(config.graphics2D.bgMode == Config::BGMode::bgOnePiece ? BST_CHECKED : BST_UNCHECKED);
+    CButton(GetDlgItem(IDC_BGMODE_STRIPPED)).SetCheck(config.graphics2D.bgMode == Config::BGMode::bgStripped ? BST_CHECKED : BST_UNCHECKED);
+
+    CComboBox nativeRes2DComboBox(GetDlgItem(IDC_CMB_NATIVE_RES_2D));
+    nativeRes2DComboBox.SetCurSel(config.graphics2D.enableNativeResTexrects);
+
+    CButton(GetDlgItem(IDC_CHK_GAMMA_CORRECTION)).SetCheck(config.gammaCorrection.force != 0 ? BST_CHECKED : BST_UNCHECKED);
+    int GammaPos = (int)(config.gammaCorrection.force != 0 ? config.gammaCorrection.level : 2.0) * 10;
+    m_GamaSpin.SetPos(GammaPos);
+    m_GamaTxt.SetWindowText(FormatStrW(L"%0.1f", (float)GammaPos / 10.0f).c_str());
+    GetDlgItem(IDC_GAMMA_ICON).ShowWindow(config.gammaCorrection.force != 0 ? SW_SHOW : SW_HIDE);
+    GetDlgItem(IDC_GAMMA_INFO).ShowWindow(config.gammaCorrection.force != 0 ? SW_SHOW : SW_HIDE);
+ 
+    CButton(GetDlgItem(IDC_FACTOR0X_RADIO)).SetCheck(config.frameBufferEmulation.nativeResFactor == 0 ? BST_CHECKED : BST_UNCHECKED);
+    CButton(GetDlgItem(IDC_FACTOR1X_RADIO)).SetCheck(config.frameBufferEmulation.nativeResFactor == 1 ? BST_CHECKED : BST_UNCHECKED);
+    CButton(GetDlgItem(IDC_FACTORXX_RADIO)).SetCheck(config.frameBufferEmulation.nativeResFactor > 1 ? BST_CHECKED : BST_UNCHECKED);
+    m_N64ResMultiplerSpin.SetPos(config.frameBufferEmulation.nativeResFactor > 1 ? config.frameBufferEmulation.nativeResFactor : 2);
+    m_N64ResMultiplerTxt.SetWindowText(FormatStrW(L"%dx", m_N64ResMultiplerSpin.GetPos()).c_str());
 }
 
 LRESULT CEmulationTab::OnScroll(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
