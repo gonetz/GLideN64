@@ -262,4 +262,72 @@ void CVideoTab::LoadSettings(bool /*blockCustomSettings*/)
 
 void CVideoTab::SaveSettings()
 {
+    getFullscreenResolutions(CComboBox(GetDlgItem(IDC_CMB_FULL_SCREEN_RES)).GetCurSel(), config.video.fullscreenWidth, config.video.fullscreenHeight);
+    getFullscreenRefreshRate(CComboBox(GetDlgItem(IDC_CMB_REFRESH_RATE)).GetCurSel(), config.video.fullscreenRefresh);
+
+    CComboBox WindowResCB(GetDlgItem(IDC_CMB_WINDOWED_RESOLUTION));
+    int WindowResIndx = WindowResCB.GetItemData(WindowResCB.GetCurSel());
+    if (WindowResIndx >= 0 && WindowResIndx < numWindowedModes)
+    {
+        config.video.windowedWidth = WindowedModes[WindowResIndx].width;
+        config.video.windowedHeight = WindowedModes[WindowResIndx].height;
+    }
+
+    int AspectIndx = CComboBox(GetDlgItem(IDC_CMB_ASPECT_RATIO)).GetCurSel();
+    if (AspectIndx == 2)
+    {
+        config.frameBufferEmulation.aspect = Config::aStretch;
+    }
+    else if (AspectIndx == 0)
+    {
+        config.frameBufferEmulation.aspect = Config::a43;
+    }
+    else if (AspectIndx == 1)
+    {
+        config.frameBufferEmulation.aspect = Config::a169;
+    }
+    else if (AspectIndx == 3)
+    {
+        config.frameBufferEmulation.aspect = Config::aAdjust;
+    }
+
+    config.video.verticalSync = CButton(GetDlgItem(IDC_CHK_VERTICAL_SYNC)).GetCheck() == BST_CHECKED;
+    config.video.threadedVideo = CButton(GetDlgItem(IDC_CHK_THREADED_VIDEO)).GetCheck() == BST_CHECKED;
+    config.frameBufferEmulation.enableOverscan = CButton(GetDlgItem(IDC_CHK_OVERSCAN)).GetCheck() == BST_CHECKED;
+
+    m_OverscanTabs[0]->GetValue(
+        config.frameBufferEmulation.overscanNTSC.left,
+        config.frameBufferEmulation.overscanNTSC.right,
+        config.frameBufferEmulation.overscanNTSC.top,
+        config.frameBufferEmulation.overscanNTSC.bottom
+    );
+
+    m_OverscanTabs[1]->GetValue(
+        config.frameBufferEmulation.overscanPAL.left,
+        config.frameBufferEmulation.overscanPAL.right,
+        config.frameBufferEmulation.overscanPAL.top,
+        config.frameBufferEmulation.overscanPAL.bottom
+    );
+
+    config.video.fxaa = CButton(GetDlgItem(IDC_FXAA_RADIO)).GetCheck() == BST_CHECKED ? 1 : 0;
+    config.video.multisampling = m_AliasingSlider.GetPos() << 1;
+    config.texture.maxAnisotropy = m_AnisotropicSlider.GetPos();
+
+    if (CButton(GetDlgItem(IDC_BILINEAR_3POINT)).GetCheck() == BST_CHECKED)
+    {
+        config.texture.bilinearMode = BILINEAR_3POINT;
+    }
+    if (CButton(GetDlgItem(IDC_BILINEAR_STANDARD)).GetCheck() == BST_CHECKED)
+    {
+        config.texture.bilinearMode = BILINEAR_STANDARD;
+    }
+
+    if (CButton(GetDlgItem(IDC_SCREENSHOT_PNG)).GetCheck() == BST_CHECKED)
+    {
+        config.texture.screenShotFormat = 0;
+    }
+    else if (CButton(GetDlgItem(IDC_SCREENSHOT_JPEG)).GetCheck() == BST_CHECKED)
+    {
+        config.texture.screenShotFormat = 1;
+    }
 }

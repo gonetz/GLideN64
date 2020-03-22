@@ -47,6 +47,14 @@ void COverScanTab::SetValue(int32_t Left, int32_t Right, int32_t Top, int32_t Bo
     m_BottomSpin.SetPos(Bottom);
 }
 
+void COverScanTab::GetValue(int32_t & Left, int32_t & Right, int32_t & Top, int32_t & Bottom)
+{
+    Left = m_LeftSpin.GetPos();
+    Right = m_RightSpin.GetPos();
+    Top = m_TopSpin.GetPos();
+    Bottom = m_BottomSpin.GetPos();
+}
+
 LRESULT COverScanTab::OnColorStatic(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
     return (LRESULT)GetStockObject(WHITE_BRUSH);

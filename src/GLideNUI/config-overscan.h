@@ -17,6 +17,7 @@ public:
     COverScanTab();
     BOOL OnInitDialog(CWindow wndFocus, LPARAM lInitParam);
     void SetValue(int32_t Left, int32_t Right, int32_t Top, int32_t Bottom);
+    void GetValue(int32_t & Left, int32_t & Right, int32_t & Top, int32_t & Bottom);
     LRESULT OnColorStatic(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 
 private:
