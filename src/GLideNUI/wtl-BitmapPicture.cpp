@@ -20,7 +20,7 @@ LRESULT CBitmapPicture::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
     dc.PatBlt(rect.left, rect.top, rect.Width(), rect.Height(), PATCOPY);
     if (m_ResourceIcon)
     {
-        CIcon hIcon = ::LoadIcon(ModuleHelper::GetResourceInstance(), m_nResourceID > 0 ? MAKEINTRESOURCE(m_nResourceID) : m_strResourceName.c_str());
+        CIcon hIcon = (HICON)::LoadImage(ModuleHelper::GetResourceInstance(), m_nResourceID > 0 ? MAKEINTRESOURCE(m_nResourceID) : m_strResourceName.c_str(), IMAGE_ICON, m_IconWidth, m_IconHeight, LR_DEFAULTCOLOR | LR_DEFAULTSIZE);
         if (!hIcon.IsNull())
         {
             dc.DrawIconEx(0, 0, hIcon, rect.Width(), rect.Height(), 0, NULL, DI_NORMAL);
@@ -32,7 +32,7 @@ LRESULT CBitmapPicture::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPara
 
 bool CBitmapPicture::SetIcon(LPCWSTR lpszResourceName, uint32_t nWidth, uint32_t nHeight)
 {
-    CIcon hIcon = ::LoadIcon(ModuleHelper::GetResourceInstance(), lpszResourceName);
+    CIcon hIcon = (HICON)::LoadImage(ModuleHelper::GetResourceInstance(), lpszResourceName > 0 ? MAKEINTRESOURCE(lpszResourceName) : lpszResourceName, IMAGE_ICON, nWidth, nHeight, LR_DEFAULTCOLOR | LR_DEFAULTSIZE);
     if (hIcon.IsNull())
     {
         return false;
