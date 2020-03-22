@@ -94,6 +94,50 @@ void CEmulationTab::LoadSettings(bool blockCustomSettings)
 
 void CEmulationTab::SaveSettings()
 {
+    config.generalEmulation.enableCustomSettings = CButton(GetDlgItem(IDC_CHK_USE_PER_GAME)).GetCheck() == BST_CHECKED ? 1 : 0;
+    config.generalEmulation.enableLOD = CButton(GetDlgItem(IDC_CHK_N64_STYLE_MIP_MAPPING)).GetCheck() == BST_CHECKED ? 1 : 0;
+    config.generalEmulation.enableNoise = CButton(GetDlgItem(IDC_CHK_NOISE)).GetCheck() == BST_CHECKED ? 1 : 0;
+    config.generalEmulation.enableHWLighting = CButton(GetDlgItem(IDC_CHK_HWLIGHTING)).GetCheck() == BST_CHECKED ? 1 : 0;
+    config.generalEmulation.enableShadersStorage = CButton(GetDlgItem(IDC_CHK_SHADERS_STORAGE)).GetCheck() == BST_CHECKED ? 1 : 0;
+    
+    if (CButton(GetDlgItem(IDC_FACTOR0X_RADIO)).GetCheck() == BST_CHECKED)
+    {
+        config.frameBufferEmulation.nativeResFactor = 0;
+    }
+    else if (CButton(GetDlgItem(IDC_FACTOR1X_RADIO)).GetCheck() == BST_CHECKED)
+    {
+        config.frameBufferEmulation.nativeResFactor = 1;
+    }
+    else if (CButton(GetDlgItem(IDC_FACTORXX_RADIO)).GetCheck() == BST_CHECKED)
+    {
+        config.frameBufferEmulation.nativeResFactor = m_N64ResMultiplerSpin.GetPos();
+    }
+    config.gammaCorrection.force = CButton(GetDlgItem(IDC_CHK_GAMMA_CORRECTION)).GetCheck() == BST_CHECKED ? 1 : 0;
+    config.gammaCorrection.level = ((float)m_GamaSpin.GetPos()) / 10;
+    config.graphics2D.enableNativeResTexrects = CComboBox(GetDlgItem(IDC_CMB_NATIVE_RES_2D)).GetCurSel();
+    config.texture.enableHalosRemoval = CButton(GetDlgItem(IDC_CHK_HALOS_REMOVAL)).GetCheck() == BST_CHECKED ? 1 : 0;
+
+    if (CButton(GetDlgItem(IDC_FIXTEXRECT_NEVER)).GetCheck() == BST_CHECKED)
+    {
+        config.graphics2D.correctTexrectCoords = Config::tcDisable;
+    }
+    else if (CButton(GetDlgItem(IDC_FIXTEXRECT_SMART)).GetCheck() == BST_CHECKED)
+    {
+        config.graphics2D.correctTexrectCoords = Config::tcSmart;
+    }
+    else if (CButton(GetDlgItem(IDC_FIXTEXRECT_FORCE)).GetCheck() == BST_CHECKED)
+    {
+        config.graphics2D.correctTexrectCoords = Config::tcForce;
+    }
+
+    if (CButton(GetDlgItem(IDC_BGMODE_ONEPIECE)).GetCheck() == BST_CHECKED)
+    {
+        config.graphics2D.bgMode = Config::BGMode::bgOnePiece;
+    }
+    else if (CButton(GetDlgItem(IDC_BGMODE_STRIPPED)).GetCheck() == BST_CHECKED)
+    {
+        config.graphics2D.bgMode = Config::BGMode::bgStripped;
+    }
 }
 
 LRESULT CEmulationTab::OnScroll(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
