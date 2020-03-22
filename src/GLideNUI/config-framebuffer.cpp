@@ -69,4 +69,20 @@ LRESULT CFrameBufferTab::OnFbInfoEnable(UINT /*Code*/, int /*id*/, HWND /*ctl*/)
 
 void CFrameBufferTab::LoadSettings(bool /*blockCustomSettings*/)
 {
+    const bool fbEmulationEnabled = config.frameBufferEmulation.enable != 0;
+    CButton(GetDlgItem(IDC_CHK_ENABLE_FRAMEBUFFER)).SetCheck(fbEmulationEnabled != 0 ? BST_CHECKED : BST_UNCHECKED);
+    CButton(GetDlgItem(IDC_CHK_COPY_AUX_BUFFERS)).SetCheck(config.frameBufferEmulation.copyAuxToRDRAM != 0 ? BST_CHECKED : BST_UNCHECKED);
+    CComboBox(GetDlgItem(IDC_CMB_FRAMEBUFFER_SWAP)).SetCurSel(config.frameBufferEmulation.bufferSwapMode);
+    CButton(GetDlgItem(IDC_CHK_FB_INFO_ENABLE)).SetCheck(config.frameBufferEmulation.fbInfoDisabled == 0 ? BST_CHECKED : BST_UNCHECKED);
+    CButton(GetDlgItem(IDC_CHK_READ_COLOR_CHUNK)).SetCheck(config.frameBufferEmulation.fbInfoReadColorChunk != 0 ? BST_CHECKED : BST_UNCHECKED);
+    CButton(GetDlgItem(IDC_CHK_READ_DEPTH_CHUNK)).SetCheck(config.frameBufferEmulation.fbInfoReadDepthChunk != 0 ? BST_CHECKED : BST_UNCHECKED);
+    CComboBox(GetDlgItem(IDC_CMB_COPY_COLOR_BUFFER)).SetCurSel(config.frameBufferEmulation.copyToRDRAM);
+    CComboBox(GetDlgItem(IDC_CMB_COPY_DEPTH_BUFFER)).SetCurSel(config.frameBufferEmulation.copyDepthToRDRAM);
+    CComboBox(GetDlgItem(IDC_CMB_N64_DEPTH_COMPARE)).SetCurSel(config.frameBufferEmulation.N64DepthCompare);
+    CButton(GetDlgItem(IDC_CHK_FORCE_DEPTH_BUFFER_CLEAR)).SetCheck(config.frameBufferEmulation.forceDepthBufferClear != 0 ? BST_CHECKED : BST_UNCHECKED);
+    CButton(GetDlgItem(IDC_CHK_RENDER_FRAMEBUFFER)).SetCheck(config.frameBufferEmulation.copyFromRDRAM != 0 ? BST_CHECKED : BST_UNCHECKED);
+    CButton(GetDlgItem(IDC_CHK_COPY_DEPTH_TO_MAIN_DEPTH_BUFFER)).SetCheck(config.frameBufferEmulation.copyDepthToMainDepthBuffer != 0 ? BST_CHECKED : BST_UNCHECKED);
+
+    OnFbInfoEnable(0, 0, NULL);
+    OnEnableFramebuffer(0, 0, NULL);
 }
