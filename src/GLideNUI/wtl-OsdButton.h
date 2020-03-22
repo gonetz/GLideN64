@@ -11,6 +11,8 @@ public:
     void DoPaint(CDCHandle dc);
     void SetChecked(bool checked);
 
+    inline bool isChecked(void) const { return m_Checked; }
+
 private:
     CIcon m_Icon;
     bool m_Checked;

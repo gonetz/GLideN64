@@ -33,6 +33,7 @@ void CColorButton::SetColor(uint8_t Red, uint8_t Green, uint8_t Blue)
     m_Green = Green;
     m_Blue = Blue;
     SendNotification(CPN_SELCHANGE);
+    Invalidate();
 }
 
 LRESULT CColorButton::OnClicked(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)

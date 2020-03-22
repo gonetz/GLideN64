@@ -52,5 +52,9 @@ void COSDButton::DoPaint(CDCHandle dc)
 
 void COSDButton::SetChecked(bool checked)
 {
-    m_Checked = checked;
+    if (m_Checked != checked)
+    {
+        m_Checked = checked;
+        Invalidate();
+    }
 }
