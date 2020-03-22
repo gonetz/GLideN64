@@ -27,4 +27,17 @@ void CDebugTab::LoadSettings(bool /*blockCustomSettings*/)
 
 void CDebugTab::SaveSettings()
 {
+    config.debug.dumpMode = 0;
+    if (CButton(GetDlgItem(IDC_CHK_DUMP_LOW)).GetCheck() == BST_CHECKED)
+    {
+        config.debug.dumpMode |= DEBUG_LOW;
+    }
+    if (CButton(GetDlgItem(IDC_CHK_DUMP_NORMAL)).GetCheck() == BST_CHECKED)
+    {
+        config.debug.dumpMode |= DEBUG_NORMAL;
+    }
+    if (CButton(GetDlgItem(IDC_CHK_DUMP_DETAIL)).GetCheck() == BST_CHECKED)
+    {
+        config.debug.dumpMode |= DEBUG_DETAIL;
+    }
 }
