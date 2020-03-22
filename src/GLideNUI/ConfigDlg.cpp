@@ -53,6 +53,20 @@ LRESULT CConfigDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPar
     return 0;
 }
 
+LRESULT CConfigDlg::OnRestoreDefaults(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+    int Res = MessageBox(L"Are you sure you want to reset all settings to default?", L"Restore Defaults?", MB_YESNO | MB_ICONWARNING);
+    if (Res == IDYES)
+    {
+        const u32 enableCustomSettings = config.generalEmulation.enableCustomSettings;
+        config.resetToDefaults();
+        config.generalEmulation.enableCustomSettings = enableCustomSettings;
+        setRomName(m_romName);
+        Init();
+    }
+    return 0;
+}
+
 LRESULT CConfigDlg::OnSaveClose(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
     EndDialog(wID);

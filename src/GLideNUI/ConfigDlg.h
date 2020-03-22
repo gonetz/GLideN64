@@ -17,6 +17,7 @@ public:
     BEGIN_MSG_MAP_EX(CConfigDlg)
         MESSAGE_HANDLER(WM_INITDIALOG, OnInitDialog)
         NOTIFY_HANDLER_EX(IDC_TABS, TCN_SELCHANGE, OnTabChange)
+        COMMAND_ID_HANDLER(ID_RESTORE_DEFAULTS, OnRestoreDefaults)
         COMMAND_ID_HANDLER(ID_SAVECLOSE, OnSaveClose)
         COMMAND_ID_HANDLER(ID_SAVE, OnSave)
         COMMAND_ID_HANDLER(IDCANCEL, OnCancel)
@@ -27,6 +28,7 @@ public:
 
 protected:
     LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
+    LRESULT OnRestoreDefaults(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
     LRESULT OnSaveClose(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
     LRESULT OnSave(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
     LRESULT OnCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
