@@ -123,8 +123,50 @@ void CTextureEnhancementTab::LoadSettings(bool /*blockCustomSettings*/)
     OnScroll(0, 0, (LPARAM)(GetDlgItem(IDC_TEXTURE_FILTER_CACHE_SPIN).Detach()), bHandled);
 }
 
+void CTextureEnhancementTab::SaveDirectory(int EditCtrl, wchar_t * txPath)
+{
+    CWindow EditWnd = GetDlgItem(EditCtrl);
+    int TxtLen = EditWnd.GetWindowTextLength();
+    std::wstring Path;
+    Path.resize(TxtLen + 1);
+    EditWnd.GetWindowText((wchar_t *)Path.data(), Path.size());
+
+    WIN32_FIND_DATA	FindData;
+    HANDLE hFindFile = FindFirstFile(Path.c_str(), &FindData);
+    bool exists = (hFindFile != INVALID_HANDLE_VALUE);
+
+    if (hFindFile != NULL)
+    {
+        FindClose(hFindFile);
+    }
+
+    if (exists)
+    {
+        wcscpy(txPath, Path.c_str());
+    }
+}
+
 void CTextureEnhancementTab::SaveSettings()
 {
+    config.textureFilter.txFilterMode = CComboBox(GetDlgItem(IDC_CMB_FILTER)).GetCurSel();
+    config.textureFilter.txEnhancementMode = CComboBox(GetDlgItem(IDC_CMB_ENHANCEMENT)).GetCurSel();
+    config.textureFilter.txDeposterize = CButton(GetDlgItem(IDC_CHK_DEPOSTERIZE)).GetCheck() == BST_CHECKED ? 1 : 0;
+    config.textureFilter.txFilterIgnoreBG = CButton(GetDlgItem(IDC_CHK_IGNORE_BACKGROUNDS)).GetCheck() == BST_CHECKED ? 1 : 0;
+    config.textureFilter.txEnhancedTextureFileStorage = CButton(GetDlgItem(IDC_CHK_ENHANCED_TEX_FILE_STORAGE)).GetCheck() == BST_CHECKED ? 1 : 0;
+    config.textureFilter.txHiresEnable = CButton(GetDlgItem(IDC_CHK_TEXTURE_PACK)).GetCheck() == BST_CHECKED ? 1 : 0;
+
+    SaveDirectory(IDC_TEX_PACK_PATH_EDIT, config.textureFilter.txPath);
+    SaveDirectory(IDC_TEX_CACHE_PATH_EDIT, config.textureFilter.txCachePath);
+    SaveDirectory(IDC_TEX_DUMP_PATH_EDIT, config.textureFilter.txDumpPath);
+
+    config.textureFilter.txHiresFullAlphaChannel = CButton(GetDlgItem(IDC_CHK_ALPHA_CHANNEL)).GetCheck() == BST_CHECKED ? 1 : 0;
+    config.textureFilter.txHresAltCRC = CButton(GetDlgItem(IDC_CHK_ALTERNATIVE_CRC)).GetCheck() == BST_CHECKED ? 1 : 0;
+    config.textureFilter.txHiresTextureFileStorage = CButton(GetDlgItem(IDC_CHK_HIRES_TEX_FILESTORAGE)).GetCheck() == BST_CHECKED ? 1 : 0;
+    config.textureFilter.txDump = CButton(GetDlgItem(IDC_CHK_TEXTURE_DUMP)).GetCheck() == BST_CHECKED ? 1 : 0;
+    config.textureFilter.txCacheSize = m_TextureFilterCacheSpin.GetPos() * gc_uMegabyte * 50;
+    config.textureFilter.txSaveCache = CButton(GetDlgItem(IDC_CHK_SAVE_TEXTURE_CACHE)).GetCheck() == BST_CHECKED ? 1 : 0;
+    config.textureFilter.txCacheCompression = CButton(GetDlgItem(IDC_CHK_COMPRESS_CACHE)).GetCheck() == BST_CHECKED ? 1 : 0;
+    config.textureFilter.txForce16bpp = CButton(GetDlgItem(IDC_CHK_FORCE_16BPP)).GetCheck() == BST_CHECKED ? 1 : 0;
 }
 
 void CTextureEnhancementTab::OnSelectTexPackPath(UINT /*Code*/, int /*id*/, HWND /*ctl*/)

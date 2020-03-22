@@ -30,6 +30,7 @@ public:
 private:
     static int CALLBACK SelectDirCallBack(HWND hwnd, uint32_t uMsg, uint32_t lp, uint32_t lpData);
 
+    void SaveDirectory(int EditCtrl, wchar_t * txPath);
     void SelectDir(wchar_t * Title, int EditCtrl);
     void OnSelectTexPackPath(UINT Code, int id, HWND ctl);
     void OnSelectTexCachePath(UINT Code, int id, HWND ctl);
