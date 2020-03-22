@@ -20,6 +20,7 @@ public:
     BOOL OnInitDialog(CWindow /*wndFocus*/, LPARAM /*lInitParam*/);
     LRESULT OnColorStatic(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
     void OnGammaCorrection(UINT /*Code*/, int id, HWND /*ctl*/);
+    void LoadSettings(bool /*blockCustomSettings*/);
 
 private:
     LRESULT OnScroll(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/);

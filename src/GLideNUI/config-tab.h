@@ -12,5 +12,6 @@ public:
     BEGIN_MSG_MAP(CConfigTab)
     END_MSG_MAP()
 
+    virtual void LoadSettings(bool blockCustomSettings) = 0;
     uint32_t IDD;
 };

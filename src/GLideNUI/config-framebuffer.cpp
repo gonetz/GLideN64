@@ -66,3 +66,7 @@ LRESULT CFrameBufferTab::OnFbInfoEnable(UINT /*Code*/, int /*id*/, HWND /*ctl*/)
     CButton(GetDlgItem(IDC_CHK_READ_DEPTH_CHUNK)).EnableWindow(fbInfoEnabled);
     return 0;
 }
+
+void CFrameBufferTab::LoadSettings(bool /*blockCustomSettings*/)
+{
+}

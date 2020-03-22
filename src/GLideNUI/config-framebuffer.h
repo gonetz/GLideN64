@@ -20,6 +20,7 @@ public:
     LRESULT OnColorStatic(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
     LRESULT OnEnableFramebuffer(UINT /*Code*/, int id, HWND /*ctl*/);
     LRESULT OnFbInfoEnable(UINT /*Code*/, int id, HWND /*ctl*/);
+    void LoadSettings(bool blockCustomSettings);
 
 private:
     CBitmapPicture m_EmulateFBIcon;

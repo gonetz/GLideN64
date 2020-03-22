@@ -92,3 +92,7 @@ LRESULT CTextureEnhancementTab::OnScroll(UINT /*uMsg*/, WPARAM /*wParam*/, LPARA
     }
     return 0;
 }
+
+void CTextureEnhancementTab::LoadSettings(bool /*blockCustomSettings*/)
+{
+}

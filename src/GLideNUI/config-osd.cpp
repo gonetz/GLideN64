@@ -93,7 +93,7 @@ BOOL COsdTab::OnInitDialog(CWindow /*wndFocus*/, LPARAM /*lInitParam*/)
     return true;
 }
 
-LRESULT COsdTab::OnScroll(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
+LRESULT COsdTab::OnScroll(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
 {
     LONG CtrlId = CWindow((HWND)lParam).GetWindowLong(GWL_ID);
     if (CtrlId == IDC_FONT_SIZE_SPIN)
@@ -172,11 +172,15 @@ LRESULT COsdTab::OnColorStatic(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam
     return (LRESULT)GetStockObject(WHITE_BRUSH);
 }
 
-LRESULT COsdTab::OnNotifyOsdColor(LPNMHDR pnmh)
+LRESULT COsdTab::OnNotifyOsdColor(LPNMHDR /*pnmh*/)
 {
     m_OsdPreview.SetColor(m_OsdColor.Red(), m_OsdColor.Green(), m_OsdColor.Blue());
     m_OsdPreview.Invalidate();
     return 0;
+}
+
+void COsdTab::LoadSettings(bool /*blockCustomSettings*/)
+{
 }
 
 std::wstring COsdTab::GetSelectedFont()

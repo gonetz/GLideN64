@@ -146,3 +146,6 @@ void CVideoTab::ShowOverScanTab(int nTab)
     m_OverScanTab.RedrawWindow();
 }
 
+void CVideoTab::LoadSettings(bool /*blockCustomSettings*/)
+{
+}

@@ -1,6 +1,8 @@
 #pragma once
 #include "wtl.h"
 #include "ConfigDlg.h"
+#include "../Config.h"
+#include "Settings.h"
 #include "config-video.h"
 #include "config-emulation.h"
 #include "config-framebuffer.h"
@@ -8,7 +10,8 @@
 #include "config-osd.h"
 #include "config-debug.h"
 
-CConfigDlg::CConfigDlg() 
+CConfigDlg::CConfigDlg() :
+    m_blockReInit(false)
 {
 }
 
@@ -45,6 +48,8 @@ LRESULT CConfigDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPar
     AddTab(L"Texture enhancement", new CTextureEnhancementTab);
     AddTab(L"OSD", new COsdTab);
     AddTab(L"Debug", new CDebugTab);
+
+    Init();
     return 0;
 }
 
@@ -69,6 +74,26 @@ LRESULT CConfigDlg::OnCancel(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, B
 {
     EndDialog(wID);
     return 0;
+}
+
+void CConfigDlg::Init(bool reInit, bool blockCustomSettings)
+{
+    if (m_blockReInit)
+    {
+        return;
+    }
+    m_blockReInit = true;
+
+    if (reInit) 
+    {
+        loadSettings(m_strIniPath.c_str());
+    }
+
+    for (size_t i = 0; i < m_TabWindows.size(); i++)
+    {
+        m_TabWindows[i]->LoadSettings(blockCustomSettings);
+    }
+    m_blockReInit = false;
 }
 
 CRect CConfigDlg::GetTabRect()

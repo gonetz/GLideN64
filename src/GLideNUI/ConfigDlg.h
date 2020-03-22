@@ -32,6 +32,7 @@ protected:
     LRESULT OnCancel(WORD wNotifyCode, WORD wID, HWND hWndCtl, BOOL& bHandled);
     LRESULT OnTabChange(NMHDR* pNMHDR);
 
+    void Init(bool reInit = false, bool blockCustomSettings = false);
     void AddTab(const wchar_t * caption, CConfigTab * tab);
     void ShowTab(int nPage);
     CRect GetTabRect();
@@ -40,6 +41,7 @@ protected:
     std::vector<CConfigTab *> m_TabWindows;
     std::string m_strIniPath;
     const char * m_romName;
+    bool m_blockReInit;
 };
 
 #ifdef _WIN32

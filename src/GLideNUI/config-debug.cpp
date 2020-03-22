@@ -17,3 +17,7 @@ LRESULT CDebugTab::OnColorStatic(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPar
 {
     return (LRESULT)GetStockObject(WHITE_BRUSH);
 }
+
+void CDebugTab::LoadSettings(bool /*blockCustomSettings*/)
+{
+}

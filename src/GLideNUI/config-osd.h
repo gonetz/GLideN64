@@ -40,6 +40,7 @@ public:
     LRESULT OnFontItemChanged(NMHDR* /*phdr*/);
     LRESULT OnColorStatic(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
     LRESULT OnNotifyOsdColor(LPNMHDR pnmh);
+    void LoadSettings(bool blockCustomSettings);
 
 private:
     std::wstring GetSelectedFont();

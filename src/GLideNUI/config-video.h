@@ -32,6 +32,7 @@ public:
     void OnFullScreenChanged(UINT /*Code*/, int id, HWND /*ctl*/);
     void AddOverScanTab(const wchar_t * caption);
     void ShowOverScanTab(int nTab);
+    void LoadSettings(bool blockCustomSettings);
 
     CTabCtrl m_OverScanTab;
     std::vector<COverScanTab *> m_OverscanTabs;

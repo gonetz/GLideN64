@@ -56,6 +56,10 @@ void CEmulationTab::OnGammaCorrection(UINT /*Code*/, int /*id*/, HWND /*ctl*/)
     }
 }
 
+void CEmulationTab::LoadSettings(bool blockCustomSettings)
+{
+}
+
 LRESULT CEmulationTab::OnScroll(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
 {
     LONG CtrlId = CWindow((HWND)lParam).GetWindowLong(GWL_ID);
@@ -69,6 +73,5 @@ LRESULT CEmulationTab::OnScroll(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam,
         int Pos = m_N64ResMultiplerSpin.GetPos();
         m_N64ResMultiplerTxt.SetWindowText(FormatStrW(L"%dx", Pos).c_str());
     }
-
     return 0;
 }
