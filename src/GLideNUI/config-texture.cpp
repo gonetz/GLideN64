@@ -121,3 +121,7 @@ void CTextureEnhancementTab::LoadSettings(bool /*blockCustomSettings*/)
     BOOL bHandled;
     OnScroll(0, 0, (LPARAM)(GetDlgItem(IDC_TEXTURE_FILTER_CACHE_SPIN).Detach()), bHandled);
 }
+
+void CTextureEnhancementTab::SaveSettings()
+{
+}

@@ -33,6 +33,7 @@ public:
     void AddOverScanTab(const wchar_t * caption);
     void ShowOverScanTab(int nTab);
     void LoadSettings(bool blockCustomSettings);
+    void SaveSettings();
 
     CTabCtrl m_OverScanTab;
     std::vector<COverScanTab *> m_OverscanTabs;

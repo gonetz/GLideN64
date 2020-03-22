@@ -21,6 +21,7 @@ public:
     LRESULT OnEnableFramebuffer(UINT /*Code*/, int id, HWND /*ctl*/);
     LRESULT OnFbInfoEnable(UINT /*Code*/, int id, HWND /*ctl*/);
     void LoadSettings(bool blockCustomSettings);
+    void SaveSettings();
 
 private:
     CBitmapPicture m_EmulateFBIcon;

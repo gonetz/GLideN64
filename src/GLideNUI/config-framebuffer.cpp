@@ -86,3 +86,7 @@ void CFrameBufferTab::LoadSettings(bool /*blockCustomSettings*/)
     OnFbInfoEnable(0, 0, NULL);
     OnEnableFramebuffer(0, 0, NULL);
 }
+
+void CFrameBufferTab::SaveSettings()
+{
+}

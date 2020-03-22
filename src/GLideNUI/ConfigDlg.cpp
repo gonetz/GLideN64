@@ -11,7 +11,8 @@
 #include "config-debug.h"
 
 CConfigDlg::CConfigDlg() :
-    m_blockReInit(false)
+    m_blockReInit(false),
+    m_Saved(false)
 {
 }
 
@@ -53,6 +54,16 @@ LRESULT CConfigDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPar
     return 0;
 }
 
+void CConfigDlg::SaveSettings()
+{
+    m_Saved = true;
+    for (size_t i = 0; i < m_TabWindows.size(); i++)
+    {
+        m_TabWindows[i]->SaveSettings();
+    }
+    writeSettings(m_strIniPath.c_str());
+}
+
 LRESULT CConfigDlg::OnRestoreDefaults(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
     int Res = MessageBox(L"Are you sure you want to reset all settings to default?", L"Restore Defaults?", MB_YESNO | MB_ICONWARNING);
@@ -69,12 +80,14 @@ LRESULT CConfigDlg::OnRestoreDefaults(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /
 
 LRESULT CConfigDlg::OnSaveClose(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
+    SaveSettings();
     EndDialog(wID);
     return 0;
 }
 
 LRESULT CConfigDlg::OnSave(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
 {
+    SaveSettings();
     return 0;
 }
 

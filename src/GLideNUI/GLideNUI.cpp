@@ -16,7 +16,7 @@ Q_IMPORT_PLUGIN(QICOPlugin)
 //#define RUN_DIALOG_IN_THREAD
 
 static
-int openConfigDialog(const wchar_t * _strFileName, const char * _romName, bool & /*_accepted*/)
+int openConfigDialog(const wchar_t * _strFileName, const char * _romName, bool & _accepted)
 {
     std::string IniFolder;
     uint32_t slength = WideCharToMultiByte(CP_ACP, 0, _strFileName, -1, NULL, 0, NULL, NULL);
@@ -32,6 +32,7 @@ int openConfigDialog(const wchar_t * _strFileName, const char * _romName, bool &
     Dlg.setIniPath(IniFolder.c_str());
     Dlg.setRomName(_romName);
     Dlg.DoModal();
+    _accepted = Dlg.Saved();
     return 0;
 }
 

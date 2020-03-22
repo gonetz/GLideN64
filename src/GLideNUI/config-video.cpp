@@ -259,3 +259,7 @@ void CVideoTab::LoadSettings(bool /*blockCustomSettings*/)
         break;
     }
 }
+
+void CVideoTab::SaveSettings()
+{
+}

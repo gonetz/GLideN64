@@ -236,6 +236,10 @@ void COsdTab::LoadSettings(bool /*blockCustomSettings*/)
     }
 }
 
+void COsdTab::SaveSettings()
+{
+}
+
 std::wstring COsdTab::GetSelectedFont()
 {
     HTREEITEM hItem = m_Fonts.GetSelectedItem();

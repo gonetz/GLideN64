@@ -25,6 +25,7 @@ public:
 
     void setIniPath(const std::string & IniPath);
     void setRomName(const char * RomName);
+    bool Saved(void) const { return m_Saved; }
 
 protected:
     LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
@@ -38,12 +39,14 @@ protected:
     void AddTab(const wchar_t * caption, CConfigTab * tab);
     void ShowTab(int nPage);
     CRect GetTabRect();
+    void SaveSettings();
 
     CTabCtrl m_Tabs;
     std::vector<CConfigTab *> m_TabWindows;
     std::string m_strIniPath;
     const char * m_romName;
     bool m_blockReInit;
+    bool m_Saved;
 };
 
 #ifdef _WIN32

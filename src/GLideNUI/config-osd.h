@@ -41,6 +41,7 @@ public:
     LRESULT OnColorStatic(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
     LRESULT OnNotifyOsdColor(LPNMHDR pnmh);
     void LoadSettings(bool blockCustomSettings);
+    void SaveSettings();
 
 private:
     std::wstring GetSelectedFont();

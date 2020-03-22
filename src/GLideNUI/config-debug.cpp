@@ -24,3 +24,7 @@ void CDebugTab::LoadSettings(bool /*blockCustomSettings*/)
     CButton(GetDlgItem(IDC_CHK_DUMP_NORMAL)).SetCheck((config.debug.dumpMode & DEBUG_NORMAL) != 0 ? BST_CHECKED : BST_UNCHECKED);
     CButton(GetDlgItem(IDC_CHK_DUMP_DETAIL)).SetCheck((config.debug.dumpMode & DEBUG_DETAIL) != 0 ? BST_CHECKED : BST_UNCHECKED);
 }
+
+void CDebugTab::SaveSettings()
+{
+}

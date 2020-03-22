@@ -92,6 +92,10 @@ void CEmulationTab::LoadSettings(bool blockCustomSettings)
     m_N64ResMultiplerTxt.SetWindowText(FormatStrW(L"%dx", m_N64ResMultiplerSpin.GetPos()).c_str());
 }
 
+void CEmulationTab::SaveSettings()
+{
+}
+
 LRESULT CEmulationTab::OnScroll(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
 {
     LONG CtrlId = CWindow((HWND)lParam).GetWindowLong(GWL_ID);

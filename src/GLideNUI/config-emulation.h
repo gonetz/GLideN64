@@ -21,6 +21,7 @@ public:
     LRESULT OnColorStatic(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
     void OnGammaCorrection(UINT /*Code*/, int id, HWND /*ctl*/);
     void LoadSettings(bool /*blockCustomSettings*/);
+    void SaveSettings();
 
 private:
     LRESULT OnScroll(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/);

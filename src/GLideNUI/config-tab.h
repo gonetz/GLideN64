@@ -13,5 +13,7 @@ public:
     END_MSG_MAP()
 
     virtual void LoadSettings(bool blockCustomSettings) = 0;
+    virtual void SaveSettings() = 0;
+
     uint32_t IDD;
 };
