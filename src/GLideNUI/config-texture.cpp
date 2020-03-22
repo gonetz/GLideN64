@@ -2,6 +2,7 @@
 #include "resource.h"
 #include "util.h"
 #include "../Config.h"
+#include <Shlobj.h>
 
 CTextureEnhancementTab::CTextureEnhancementTab() :
     CConfigTab(IDD_TAB_TEXTURE_ENHANCEMENT)
@@ -124,4 +125,63 @@ void CTextureEnhancementTab::LoadSettings(bool /*blockCustomSettings*/)
 
 void CTextureEnhancementTab::SaveSettings()
 {
+}
+
+void CTextureEnhancementTab::OnSelectTexPackPath(UINT /*Code*/, int /*id*/, HWND /*ctl*/)
+{
+    SelectDir(L"Select directory for texture pack path", IDC_TEX_PACK_PATH_EDIT);
+}
+
+void CTextureEnhancementTab::OnSelectTexCachePath(UINT /*Code*/, int /*id*/, HWND /*ctl*/)
+{
+    SelectDir(L"Select directory for texture cache path", IDC_TEX_CACHE_PATH_EDIT);
+}
+
+void CTextureEnhancementTab::OnSelectTexDumpPath(UINT /*Code*/, int /*id*/, HWND /*ctl*/)
+{
+    SelectDir(L"Select directory for texture dump path", IDC_TEX_DUMP_PATH_EDIT);
+}
+
+void CTextureEnhancementTab::SelectDir(wchar_t * Title, int EditCtrl)
+{
+    wchar_t Buffer[MAX_PATH], Directory[MAX_PATH];
+    LPITEMIDLIST pidl;
+    BROWSEINFOW bi;
+
+    CWindow EditWnd = GetDlgItem(EditCtrl);
+    int TxtLen = EditWnd.GetWindowTextLength();
+    std::wstring EditText;
+    EditText.resize(TxtLen + 1);
+    EditWnd.GetWindowText((wchar_t *)EditText.data(), EditText.size());
+
+    bi.hwndOwner = m_hWnd;
+    bi.pidlRoot = NULL;
+    bi.pszDisplayName = Buffer;
+    bi.lpszTitle = Title;
+    bi.ulFlags = BIF_RETURNFSANCESTORS | BIF_RETURNONLYFSDIRS;
+    bi.lpfn = (BFFCALLBACK)SelectDirCallBack;
+    bi.lParam = (DWORD)EditText.c_str();
+    if ((pidl = SHBrowseForFolderW(&bi)) != NULL)
+    {
+        if (SHGetPathFromIDListW(pidl, Directory))
+        {
+            EditWnd.SetWindowText(Directory);
+        }
+    }
+}
+
+int CALLBACK CTextureEnhancementTab::SelectDirCallBack(HWND hwnd, uint32_t uMsg, uint32_t /*lp*/, uint32_t lpData)
+{
+    switch (uMsg)
+    {
+    case BFFM_INITIALIZED:
+        // WParam is TRUE since you are passing a path.
+        // It would be FALSE if you were passing a pidl.
+        if (lpData)
+        {
+            SendMessage(hwnd, BFFM_SETSELECTION, TRUE, lpData);
+        }
+        break;
+    }
+    return 0;
 }
