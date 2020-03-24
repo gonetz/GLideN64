@@ -75,6 +75,9 @@
     <Filter Include="Source Files\Graphics\OpenGL\ThreadedOpenGL">
       <UniqueIdentifier>{32e9be50-cb55-445a-9562-bbe05085bbe1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{afe20b4b-eb13-4282-bf72-47335887c770}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\Combiner.cpp">
@@ -781,5 +784,13 @@
     <ClInclude Include="..\..\src\Graphics\OpenGLContext\ThreadedOpenGl\readerwriterqueue.h">
       <Filter>Header Files\Graphics\OpenGL\ThreadedOpenGL</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\resource.h">
+      <Filter>Resource Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="..\..\src\GLideN64.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>
