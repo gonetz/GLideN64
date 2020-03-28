@@ -723,12 +723,10 @@ public:
 
 		m_part =
 			"  if (uColorDitherMode == 2) {												\n"
-			"    colorNoiseDither(snoiseRGB(), clampedColor.rgb);						\n"
-			"    quantizeRGB(clampedColor.rgb);											\n"
+			"    colorDither(snoiseRGB(), clampedColor.rgb);						\n"
 			"  }																		\n"
 			"  if (uAlphaDitherMode == 2) {												\n"
-			"    alphaNoiseDither(snoiseA(), clampedColor.a);							\n"
-			"    quantizeA(clampedColor.a);												\n"
+			"    alphaDither(snoiseA(), clampedColor.a);							\n"
 			"  }																		\n"
 			;
 
@@ -752,9 +750,7 @@ public:
 				"  																			\n"
 				"  if (uColorDitherMode < 2) {												\n"
 				"    lowp float threshold = mix(mSquareThreshold,bayerThreshold,float(uColorDitherMode));\n"
-				"    colorNoiseDither(vec3(threshold), clampedColor.rgb);					\n"
-				// 16 Bit quantization
-				"    quantizeRGB(clampedColor.rgb);											\n"
+				"    colorDither(vec3(threshold), clampedColor.rgb);					\n"
 				"  }																		\n"
 				"  if (uAlphaDitherMode < 2) {												\n"
 				"    lowp float thresholdPattern = mix(mSquareThreshold,bayerThreshold,clamp(float(uColorDitherMode),0.0,1.0));\n"
@@ -766,9 +762,7 @@ public:
 				"    thresholdNotPattern = mix(thresholdNotPattern,mSquareThreshold,clamp(float(uColorDitherMode - 2),0.0,1.0));\n" // uColorDitherMode = 3
 				"  																			\n"
 				"    lowp float threshold = mix(thresholdNotPattern, thresholdPattern,float(uAlphaDitherMode));\n"
-				"    alphaNoiseDither(threshold, clampedColor.a);							\n"
-				// 16 Bit quantization
-				"    quantizeA(clampedColor.a);												\n"
+				"    alphaDither(threshold, clampedColor.a);							\n"
 				"  }																		\n"
 				;
 		}
@@ -1046,10 +1040,8 @@ public:
 			return;
 
 		m_part =
-			"void colorNoiseDither(in lowp vec3 _noise, inout lowp vec3 _color);\n"
-			"void alphaNoiseDither(in lowp float _noise, inout lowp float _alpha);\n"
-			"void quantizeRGB(inout lowp vec3 _color);\n"
-			"void quantizeA(inout lowp float _alpha);\n"
+			"void colorDither(in lowp vec3 _threshold, inout lowp vec3 _color);\n"
+			"void alphaDither(in lowp float _threshold, inout lowp float _alpha);\n"
 			"lowp vec3 snoiseRGB();\n"
 			"lowp float snoiseA();\n"
 			;
@@ -1654,16 +1646,36 @@ public:
 		if (_glinfo.isGLES2)
 			return;
 
-		m_part =
-			"void colorNoiseDither(in lowp vec3 _noise, inout lowp vec3 _color)\n"
+		if (config.generalEmulation.enableDitheringQuantization != 0) {
+			m_part =
+				"void quantizeRGB(inout lowp vec3 _color)				\n"
+				"{														\n"
+				"     _color.rgb = round(_color.rgb * 32.0)/32.0;		\n"
+				"}														\n"
+				"void quantizeA(inout lowp float _alpha)				\n"
+				"{														\n"
+				"     _alpha = round(_alpha * 32.0)/32.0;				\n"
+				"}														\n"
+				;
+		} else {
+			m_part =
+				"void quantizeRGB(inout lowp vec3 _color){}\n"
+				"void quantizeA(inout lowp float _alpha){}\n"
+				;
+		}
+
+		m_part +=
+			"void colorDither(in lowp vec3 _noise, inout lowp vec3 _color)\n"
 			"{															\n"
-			"    mediump vec3 threshold = 7.0 / 255.0 * (_noise - 0.5);\n"
-			"    _color = clamp(_color + threshold,0.0,1.0);			\n"
+			"  mediump vec3 threshold = 7.0 / 255.0 * (_noise - 0.5);	\n"
+			"  _color = clamp(_color + threshold,0.0,1.0);				\n"
+			"  quantizeRGB(_color);										\n"
 			"}															\n"
-			"void alphaNoiseDither(in lowp float _noise, inout lowp float _alpha)\n"
+			"void alphaDither(in lowp float _noise, inout lowp float _alpha)\n"
 			"{															\n"
-			"    mediump float threshold = 7.0 / 255.0 * (_noise - 0.5);\n"
-			"    _alpha = clamp(_alpha + threshold,0.0,1.0);			\n"
+			"  mediump float threshold = 7.0 / 255.0 * (_noise - 0.5);	\n"
+			"  _alpha = clamp(_alpha + threshold,0.0,1.0);				\n"
+			"  quantizeA(_alpha);										\n"
 			"}															\n"
 			"lowp vec3 snoiseRGB()									\n"
 			"{														\n"
@@ -1694,24 +1706,6 @@ public:
 			"  return texture(uTexNoise,coord).r;					\n"
 			"}														\n"
 			;
-
-		if (config.generalEmulation.enableDitheringQuantization != 0) {
-			m_part +=
-				"void quantizeRGB(inout lowp vec3 _color)				\n"
-				"{														\n"
-				"     _color.rgb = round(_color.rgb * 32.0)/32.0;		\n"
-				"}														\n"
-				"void quantizeA(inout lowp float _alpha)				\n"
-				"{														\n"
-				"     _alpha = round(_alpha * 32.0)/32.0;				\n"
-				"}														\n"
-				;
-		} else {
-			m_part +=
-				"void quantizeRGB(inout lowp vec3 _color){}\n"
-				"void quantizeA(inout lowp float _alpha){}\n"
-				;
-		}
 	}
 };
 
