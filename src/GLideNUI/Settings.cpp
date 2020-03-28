@@ -40,7 +40,6 @@ void _loadSettings(QSettings & settings)
 	settings.endGroup();
 
 	settings.beginGroup("generalEmulation");
-	config.generalEmulation.enableNoise = settings.value("enableNoise", config.generalEmulation.enableNoise).toInt();
 	config.generalEmulation.ditheringMode = settings.value("ditheringMode", config.generalEmulation.ditheringMode).toInt();
 	config.generalEmulation.enableLOD = settings.value("enableLOD", config.generalEmulation.enableLOD).toInt();
 	config.generalEmulation.enableHWLighting = settings.value("enableHWLighting", config.generalEmulation.enableHWLighting).toInt();
@@ -213,7 +212,6 @@ void writeSettings(const QString & _strIniFolder)
 	settings.endGroup();
 
 	settings.beginGroup("generalEmulation");
-	settings.setValue("enableNoise", config.generalEmulation.enableNoise);
 	settings.setValue("ditheringMode", config.generalEmulation.ditheringMode);
 	settings.setValue("enableLOD", config.generalEmulation.enableLOD);
 	settings.setValue("enableHWLighting", config.generalEmulation.enableHWLighting);
@@ -404,7 +402,6 @@ void saveCustomRomSettings(const QString & _strIniFolder, const char * _strRomNa
 	settings.endGroup();
 
 	settings.beginGroup("generalEmulation");
-	WriteCustomSetting(generalEmulation, enableNoise);
 	WriteCustomSetting(generalEmulation, ditheringMode);
 	WriteCustomSetting(generalEmulation, enableLOD);
 	WriteCustomSetting(generalEmulation, enableHWLighting);

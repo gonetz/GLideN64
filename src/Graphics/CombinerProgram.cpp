@@ -12,7 +12,6 @@ namespace graphics {
 		vecOptions.push_back(config.texture.bilinearMode);
 		vecOptions.push_back(config.texture.enableHalosRemoval);
 		vecOptions.push_back(config.generalEmulation.enableHWLighting);
-		vecOptions.push_back(config.generalEmulation.enableNoise);
 		vecOptions.push_back(config.generalEmulation.ditheringMode == Config::DitheringMode::dmNoise ? 1 : 0);
 		vecOptions.push_back(config.generalEmulation.ditheringMode == Config::DitheringMode::dmNoiseWithQuant ? 1 : 0);
 		vecOptions.push_back(config.generalEmulation.ditheringMode == Config::DitheringMode::dmFull ? 1 : 0);

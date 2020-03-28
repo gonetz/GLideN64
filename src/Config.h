@@ -5,7 +5,7 @@
 #include "Types.h"
 
 #define CONFIG_WITH_PROFILES 23U
-#define CONFIG_VERSION_CURRENT 28U
+#define CONFIG_VERSION_CURRENT 29U
 
 #define BILINEAR_3POINT   0
 #define BILINEAR_STANDARD 1
@@ -62,7 +62,6 @@ struct Config
 	};
 
 	struct {
-		u32 enableNoise;
 		u32 ditheringMode;
 		u32 bufferDitheringMode;
 		u32 enableLOD;

@@ -38,7 +38,6 @@ void Config::resetToDefaults()
 	texture.screenShotFormat = 0;
 
 	generalEmulation.enableLOD = 1;
-	generalEmulation.enableNoise = 1;
 	generalEmulation.ditheringMode = DitheringMode::dmNoise;
 	generalEmulation.bufferDitheringMode = BufferDitheringMode::bdmBlueNoise;
 	generalEmulation.enableHWLighting = 0;

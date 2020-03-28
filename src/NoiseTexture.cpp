@@ -106,11 +106,6 @@ void NoiseTexture::_fillTextureData()
 
 void NoiseTexture::init()
 {
-	if (config.generalEmulation.enableNoise == 0 &&
-		config.generalEmulation.ditheringMode == Config::DitheringMode::dmDisable) {
-		return;
-	}
-
 	if (m_texData[0].empty())
 		_fillTextureData();
 

@@ -1623,40 +1623,25 @@ class ShaderNoise : public ShaderPart
 public:
 	ShaderNoise(const opengl::GLInfo & _glinfo)
 	{
-		if (config.generalEmulation.enableNoise == 0) {
-			// Dummy noise
+		if (_glinfo.isGLES2) {
 			m_part =
-				"lowp float snoise()	\n"
-				"{						\n"
-				"  return 0.5;			\n"
-				"}						\n"
+				"uniform sampler2D uTexNoise;							\n"
+				"lowp float snoise()									\n"
+				"{														\n"
+				"  mediump vec2 texSize = vec2(640.0, 580.0);			\n"
+				"  mediump vec2 coord = gl_FragCoord.xy/uScreenScale/texSize;	\n"
+				"  return texture2D(uTexNoise, coord).r;				\n"
+				"}														\n"
 				;
-			if (config.generalEmulation.ditheringMode != Config::DitheringMode::dmDisable) {
-				m_part +=
-					"uniform sampler2D uTexNoise;							\n"
-				;
-			}
 		} else {
-			if (_glinfo.isGLES2) {
-				m_part =
-					"uniform sampler2D uTexNoise;							\n"
-					"lowp float snoise()									\n"
-					"{														\n"
-					"  mediump vec2 texSize = vec2(640.0, 580.0);			\n"
-					"  mediump vec2 coord = gl_FragCoord.xy/uScreenScale/texSize;	\n"
-					"  return texture2D(uTexNoise, coord).r;				\n"
-					"}														\n"
+			m_part =
+				"uniform sampler2D uTexNoise;							\n"
+				"lowp float snoise()									\n"
+				"{														\n"
+				"  ivec2 coord = ivec2(gl_FragCoord.xy/uScreenScale);	\n"
+				"  return texelFetch(uTexNoise, coord, 0).r;			\n"
+				"}														\n"
 				;
-			} else {
-				m_part =
-					"uniform sampler2D uTexNoise;							\n"
-					"lowp float snoise()									\n"
-					"{														\n"
-					"  ivec2 coord = ivec2(gl_FragCoord.xy/uScreenScale);	\n"
-					"  return texelFetch(uTexNoise, coord, 0).r;			\n"
-					"}														\n"
-				;
-			}
 		}
 	}
 };

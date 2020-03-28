@@ -155,7 +155,6 @@ void ConfigDialog::_init(bool reInit, bool blockCustomSettings)
 
 	// Emulation settings
 	ui->emulateLodCheckBox->setChecked(config.generalEmulation.enableLOD != 0);
-	ui->emulateNoiseCheckBox->setChecked(config.generalEmulation.enableNoise != 0);
 	ui->enableHWLightingCheckBox->setChecked(config.generalEmulation.enableHWLighting != 0);
 	ui->enableShadersStorageCheckBox->setChecked(config.generalEmulation.enableShadersStorage != 0);
 	if (!blockCustomSettings)
@@ -466,7 +465,6 @@ void ConfigDialog::accept(bool justSave) {
 
 	// Emulation settings
 	config.generalEmulation.enableLOD = ui->emulateLodCheckBox->isChecked() ? 1 : 0;
-	config.generalEmulation.enableNoise = ui->emulateNoiseCheckBox->isChecked() ? 1 : 0;
 	config.generalEmulation.enableHWLighting = ui->enableHWLightingCheckBox->isChecked() ? 1 : 0;
 	config.generalEmulation.enableShadersStorage = ui->enableShadersStorageCheckBox->isChecked() ? 1 : 0;
 	config.generalEmulation.enableCustomSettings = ui->customSettingsCheckBox->isChecked() ? 1 : 0;
