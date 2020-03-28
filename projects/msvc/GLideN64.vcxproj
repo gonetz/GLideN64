@@ -209,6 +209,7 @@ copy /Y "$(OutDir)$(TargetName).*" "$(Mupen64PluginsDir_x64)")</Command>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\3DMath.cpp" />
+    <ClCompile Include="..\..\src\BufferCopy\BlueNoiseTexture.cpp" />
     <ClCompile Include="..\..\src\BufferCopy\ColorBufferToRDRAM.cpp" />
     <ClCompile Include="..\..\src\BufferCopy\DepthBufferToRDRAM.cpp" />
     <ClCompile Include="..\..\src\BufferCopy\RDRAMtoColorBuffer.cpp" />
@@ -359,6 +360,7 @@ copy /Y "$(OutDir)$(TargetName).*" "$(Mupen64PluginsDir_x64)")</Command>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\3DMath.h" />
+    <ClInclude Include="..\..\src\BufferCopy\BlueNoiseTexture.h" />
     <ClInclude Include="..\..\src\BufferCopy\ColorBufferToRDRAM.h" />
     <ClInclude Include="..\..\src\BufferCopy\DepthBufferToRDRAM.h" />
     <ClInclude Include="..\..\src\BufferCopy\RDRAMtoColorBuffer.h" />

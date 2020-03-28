@@ -60,6 +60,8 @@ private:
 
 	u32 m_lastBufferWidth;
 
+	static u32 m_blueNoiseIdx;
+
 	std::array<u32, 3> m_allowedRealWidths;
 	std::unique_ptr<graphics::ColorBufferReader> m_bufferReader;
 };

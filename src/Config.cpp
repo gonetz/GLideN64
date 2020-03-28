@@ -40,6 +40,7 @@ void Config::resetToDefaults()
 	generalEmulation.enableLOD = 1;
 	generalEmulation.enableNoise = 1;
 	generalEmulation.ditheringMode = DitheringMode::dmNoise;
+	generalEmulation.bufferDitheringMode = BufferDitheringMode::bdmBlueNoise;
 	generalEmulation.enableHWLighting = 0;
 	generalEmulation.enableCustomSettings = 1;
 	generalEmulation.enableShadersStorage = 1;

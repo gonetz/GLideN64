@@ -56,6 +56,7 @@ set(GLideN64_SOURCES
   Textures.cpp
   VI.cpp
   ZlutTexture.cpp
+  BufferCopy/BlueNoiseTexture.cpp
   BufferCopy/ColorBufferToRDRAM.cpp
   BufferCopy/DepthBufferToRDRAM.cpp
   BufferCopy/RDRAMtoColorBuffer.cpp

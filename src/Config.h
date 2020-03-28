@@ -54,9 +54,17 @@ struct Config
 		dmFullWithQuant
 	};
 
+	enum BufferDitheringMode {
+		bdmDisable = 0,
+		bdmBayer,
+		bdmMagicSquare,
+		bdmBlueNoise
+	};
+
 	struct {
 		u32 enableNoise;
 		u32 ditheringMode;
+		u32 bufferDitheringMode;
 		u32 enableLOD;
 		u32 enableHWLighting;
 		u32 enableCustomSettings;

@@ -71,6 +71,8 @@ bool Config_SetDefault()
 	assert(res == M64ERR_SUCCESS);
 	res = ConfigSetDefaultInt(g_configVideoGliden64, "DitheringMode", config.generalEmulation.ditheringMode, "Dithering mode. (0=disable, 1=noise dithering (default), 2=noise dithering with 5bit quantization, 3=full dithering, 4=full dithering with 5bit quantization)");
 	assert(res == M64ERR_SUCCESS);
+	res = ConfigSetDefaultInt(g_configVideoGliden64, "BufferDitheringMode", config.generalEmulation.bufferDitheringMode, "Dithering mode for buffer in RDRAM. (0=disable, 1=bayer, 2=magic square, 3=blue noise)");
+	assert(res == M64ERR_SUCCESS);
 	res = ConfigSetDefaultBool(g_configVideoGliden64, "EnableLOD", config.generalEmulation.enableLOD, "Enable LOD emulation.");
 	assert(res == M64ERR_SUCCESS);
 	res = ConfigSetDefaultBool(g_configVideoGliden64, "EnableHWLighting", config.generalEmulation.enableHWLighting, "Enable hardware per-pixel lighting.");
@@ -276,6 +278,8 @@ void Config_LoadCustomConfig()
 	if (result == M64ERR_SUCCESS) config.generalEmulation.enableNoise = atoi(value);
 	result = ConfigExternalGetParameter(fileHandle, sectionName, "generalEmulation\\ditheringMode", value, sizeof(value));
 	if (result == M64ERR_SUCCESS) config.generalEmulation.ditheringMode = atoi(value);
+	result = ConfigExternalGetParameter(fileHandle, sectionName, "generalEmulation\\bufferDitheringMode", value, sizeof(value));
+	if (result == M64ERR_SUCCESS) config.generalEmulation.bufferDitheringMode = atoi(value);
 	result = ConfigExternalGetParameter(fileHandle, sectionName, "generalEmulation\\enableLOD", value, sizeof(value));
 	if (result == M64ERR_SUCCESS) config.generalEmulation.enableLOD = atoi(value);
 	result = ConfigExternalGetParameter(fileHandle, sectionName, "generalEmulation\\enableHWLighting", value, sizeof(value));
@@ -400,6 +404,7 @@ void Config_LoadConfig()
 	//#Emulation Settings
 	config.generalEmulation.enableNoise = ConfigGetParamBool(g_configVideoGliden64, "EnableNoise");
 	config.generalEmulation.ditheringMode = ConfigGetParamInt(g_configVideoGliden64, "DitheringMode");
+	config.generalEmulation.bufferDitheringMode = ConfigGetParamInt(g_configVideoGliden64, "BufferDitheringMode");
 	config.generalEmulation.enableLOD = ConfigGetParamBool(g_configVideoGliden64, "EnableLOD");
 	config.generalEmulation.enableHWLighting = ConfigGetParamBool(g_configVideoGliden64, "EnableHWLighting");
 	config.generalEmulation.enableShadersStorage = ConfigGetParamBool(g_configVideoGliden64, "EnableShadersStorage");
