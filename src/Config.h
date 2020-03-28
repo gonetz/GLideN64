@@ -46,14 +46,6 @@ struct Config
 		tcForce
 	};
 
-	enum DitheringMode {
-		dmDisable = 0,
-		dmNoise,
-		dmNoiseWithQuant,
-		dmFull,
-		dmFullWithQuant
-	};
-
 	enum BufferDitheringMode {
 		bdmDisable = 0,
 		bdmBayer,
@@ -62,8 +54,10 @@ struct Config
 	};
 
 	struct {
-		u32 ditheringMode;
-		u32 bufferDitheringMode;
+		u32 enableHiresNoiseDithering;
+		u32 enableDitheringPattern;
+		u32 enableDitheringQuantization;
+		u32 rdramImageDitheringMode;
 		u32 enableLOD;
 		u32 enableHWLighting;
 		u32 enableCustomSettings;

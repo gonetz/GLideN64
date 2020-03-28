@@ -718,61 +718,62 @@ class ShaderCallDither : public ShaderPart
 public:
 	ShaderCallDither(const opengl::GLInfo & _glinfo)
 	{
-		if (!_glinfo.isGLES2) {
-			if (config.generalEmulation.ditheringMode != Config::DitheringMode::dmDisable) {
-				m_part =
-					"  if (uColorDitherMode == 2) {												\n"
-					"    colorNoiseDither(snoiseRGB(), clampedColor.rgb);						\n"
-					"    quantizeRGB(clampedColor.rgb);											\n"
-					"  }																		\n"
-					"  if (uAlphaDitherMode == 2) {												\n"
-					"    alphaNoiseDither(snoiseA(), clampedColor.a);							\n"
-					"    quantizeA(clampedColor.a);												\n"
-					"  }																		\n"
+		if (_glinfo.isGLES2)
+			return;
+
+		m_part =
+			"  if (uColorDitherMode == 2) {												\n"
+			"    colorNoiseDither(snoiseRGB(), clampedColor.rgb);						\n"
+			"    quantizeRGB(clampedColor.rgb);											\n"
+			"  }																		\n"
+			"  if (uAlphaDitherMode == 2) {												\n"
+			"    alphaNoiseDither(snoiseA(), clampedColor.a);							\n"
+			"    quantizeA(clampedColor.a);												\n"
+			"  }																		\n"
+			;
+
+		if (config.generalEmulation.enableDitheringPattern != 0) {
+			m_part +=
+				// Try to keep dithering visible even at higher resolutions
+				"  lowp float divider = 1.0 + step(3.0, uScreenScale.x);					\n"
+				"  mediump ivec2 position = ivec2(mod((gl_FragCoord.xy - 0.5) / divider,4.0));\n"
+				"  																			\n"
+				"  lowp mat4 bayer = mat4( 0.0, 0.75, 0.1875, 0.9375,						\n"
+				"                            0.5, 0.25, 0.6875, 0.4375,						\n"
+				"                            0.125, 0.875, 0.0625, 0.8125,					\n"
+				"                            0.625, 0.375, 0.5625, 0.3125);					\n"
+				"  lowp mat4 mSquare = mat4( 0.0, 0.6875, 0.75, 0.4375,						\n"
+				"                              0.875, 0.3125, 0.125, 0.5625, 				\n"
+				"                              0.1875, 0.5, 0.9375, 0.25,					\n"
+				"                              0.8125, 0.375, 0.0625, 0.625);				\n"
+				"  																			\n"
+				"  lowp float bayerThreshold = bayer[position.x][position.y];				\n"
+				"  lowp float mSquareThreshold = mSquare[position.x][position.y];			\n"
+				"  																			\n"
+				"  if (uColorDitherMode < 2) {												\n"
+				"    lowp float threshold = mix(mSquareThreshold,bayerThreshold,float(uColorDitherMode));\n"
+				"    colorNoiseDither(vec3(threshold), clampedColor.rgb);					\n"
+				// 16 Bit quantization
+				"    quantizeRGB(clampedColor.rgb);											\n"
+				"  }																		\n"
+				"  if (uAlphaDitherMode < 2) {												\n"
+				"    lowp float thresholdPattern = mix(mSquareThreshold,bayerThreshold,clamp(float(uColorDitherMode),0.0,1.0));\n"
+				"    thresholdPattern = mix(thresholdPattern,mSquareThreshold,clamp(float(uColorDitherMode - 1),0.0,1.0));\n" // uColorDitherMode = 2
+				"    thresholdPattern = mix(thresholdPattern,bayerThreshold,clamp(float(uColorDitherMode - 2),0.0,1.0));\n" // uColorDitherMode = 3
+				"  																			\n"
+				"    lowp float thresholdNotPattern = mix(bayerThreshold,mSquareThreshold,clamp(float(uColorDitherMode),0.0,1.0));\n"
+				"    thresholdNotPattern = mix(thresholdNotPattern,bayerThreshold,clamp(float(uColorDitherMode - 1),0.0,1.0));\n" // uColorDitherMode = 2
+				"    thresholdNotPattern = mix(thresholdNotPattern,mSquareThreshold,clamp(float(uColorDitherMode - 2),0.0,1.0));\n" // uColorDitherMode = 3
+				"  																			\n"
+				"    lowp float threshold = mix(thresholdNotPattern, thresholdPattern,float(uAlphaDitherMode));\n"
+				"    alphaNoiseDither(threshold, clampedColor.a);							\n"
+				// 16 Bit quantization
+				"    quantizeA(clampedColor.a);												\n"
+				"  }																		\n"
 				;
-			}
-			if (config.generalEmulation.ditheringMode >= Config::DitheringMode::dmFull) {
-				m_part +=
-					// Try to keep dithering visible even at higher resolutions
-					"  lowp float divider = 1.0 + step(3.0, uScreenScale.x);					\n"
-					"  mediump ivec2 position = ivec2(mod((gl_FragCoord.xy - 0.5) / divider,4.0));\n"
-					"  																			\n"
-					"  lowp mat4 bayer = mat4( 0.0, 0.75, 0.1875, 0.9375,						\n"
-					"                            0.5, 0.25, 0.6875, 0.4375,						\n"
-					"                            0.125, 0.875, 0.0625, 0.8125,					\n"
-					"                            0.625, 0.375, 0.5625, 0.3125);					\n"
-					"  lowp mat4 mSquare = mat4( 0.0, 0.6875, 0.75, 0.4375,						\n"
-					"                              0.875, 0.3125, 0.125, 0.5625, 				\n"
-					"                              0.1875, 0.5, 0.9375, 0.25,					\n"
-					"                              0.8125, 0.375, 0.0625, 0.625);				\n"
-					"  																			\n"
-					"  lowp float bayerThreshold = bayer[position.x][position.y];				\n"
-					"  lowp float mSquareThreshold = mSquare[position.x][position.y];			\n"
-					"  																			\n"
-					"  if (uColorDitherMode < 2) {												\n"
-					"    lowp float threshold = mix(mSquareThreshold,bayerThreshold,float(uColorDitherMode));\n"
-					"    colorNoiseDither(vec3(threshold), clampedColor.rgb);					\n"
-						// 16 Bit quantization
-					"    quantizeRGB(clampedColor.rgb);											\n"
-					"  }																		\n"
-					"  if (uAlphaDitherMode < 2) {												\n"
-					"    lowp float thresholdPattern = mix(mSquareThreshold,bayerThreshold,clamp(float(uColorDitherMode),0.0,1.0));\n"
-					"    thresholdPattern = mix(thresholdPattern,mSquareThreshold,clamp(float(uColorDitherMode - 1),0.0,1.0));\n" // uColorDitherMode = 2
-					"    thresholdPattern = mix(thresholdPattern,bayerThreshold,clamp(float(uColorDitherMode - 2),0.0,1.0));\n" // uColorDitherMode = 3
-					"  																			\n"
-					"    lowp float thresholdNotPattern = mix(bayerThreshold,mSquareThreshold,clamp(float(uColorDitherMode),0.0,1.0));\n"
-					"    thresholdNotPattern = mix(thresholdNotPattern,bayerThreshold,clamp(float(uColorDitherMode - 1),0.0,1.0));\n" // uColorDitherMode = 2
-					"    thresholdNotPattern = mix(thresholdNotPattern,mSquareThreshold,clamp(float(uColorDitherMode - 2),0.0,1.0));\n" // uColorDitherMode = 3
-					"  																			\n"
-					"    lowp float threshold = mix(thresholdNotPattern, thresholdPattern,float(uAlphaDitherMode));\n"
-					"    alphaNoiseDither(threshold, clampedColor.a);							\n"
-						// 16 Bit quantization
-					"    quantizeA(clampedColor.a);												\n"
-					"  }																		\n"
-				;
-			}
 		}
 	}
+
 };
 
 class ShaderFragmentGlobalVariablesTex : public ShaderPart
@@ -1041,18 +1042,17 @@ class ShaderFragmentHeaderDither : public ShaderPart
 public:
 	ShaderFragmentHeaderDither(const opengl::GLInfo & _glinfo)
 	{
-		if (!_glinfo.isGLES2) {
-			if (config.generalEmulation.ditheringMode != Config::DitheringMode::dmDisable) {
-				m_part =
-					"void colorNoiseDither(in lowp vec3 _noise, inout lowp vec3 _color);\n"
-					"void alphaNoiseDither(in lowp float _noise, inout lowp float _alpha);\n"
-					"void quantizeRGB(inout lowp vec3 _color);\n"
-					"void quantizeA(inout lowp float _alpha);\n"
-					"lowp vec3 snoiseRGB();\n"
-					"lowp float snoiseA();\n"
-				;
-			}
-		}
+		if (_glinfo.isGLES2)
+			return;
+
+		m_part =
+			"void colorNoiseDither(in lowp vec3 _noise, inout lowp vec3 _color);\n"
+			"void alphaNoiseDither(in lowp float _noise, inout lowp float _alpha);\n"
+			"void quantizeRGB(inout lowp vec3 _color);\n"
+			"void quantizeA(inout lowp float _alpha);\n"
+			"lowp vec3 snoiseRGB();\n"
+			"lowp float snoiseA();\n"
+			;
 	}
 };
 
@@ -1651,68 +1651,66 @@ class ShaderDither : public ShaderPart
 public:
 	ShaderDither(const opengl::GLInfo & _glinfo)
 	{
-		if (!_glinfo.isGLES2) {
-			if (config.generalEmulation.ditheringMode != Config::DitheringMode::dmDisable) {
-				m_part =
-					"void colorNoiseDither(in lowp vec3 _noise, inout lowp vec3 _color)\n"
-					"{															\n"
-					"    mediump vec3 threshold = 7.0 / 255.0 * (_noise - 0.5);\n"
-					"    _color = clamp(_color + threshold,0.0,1.0);			\n"
-					"}															\n"
-					"void alphaNoiseDither(in lowp float _noise, inout lowp float _alpha)\n"
-					"{															\n"
-					"    mediump float threshold = 7.0 / 255.0 * (_noise - 0.5);\n"
-					"    _alpha = clamp(_alpha + threshold,0.0,1.0);			\n"
-					"}															\n"
-					"lowp vec3 snoiseRGB()									\n"
-					"{														\n"
-					"  mediump vec2 texSize = vec2(640.0, 580.0);			\n"
-					// multiplier for higher res noise effect
-					"  lowp float mult = 1.0 + step(2.0, uScreenScale.x);	\n"
-					"														\n"
-					"	mediump vec2 coordR = mult * ((gl_FragCoord.xy)/uScreenScale/texSize);\n"
-					"	mediump vec2 coordG = mult * ((gl_FragCoord.xy + vec2( 0.0, texSize.y / 2.0 ))/uScreenScale/texSize);\n"
-					"	mediump vec2 coordB = mult * ((gl_FragCoord.xy + vec2( texSize.x / 2.0,  0.0))/uScreenScale/texSize);\n"
-					"														\n"
-					// Only red channel of noise texture contains noise. 
-					"  lowp float r = texture(uTexNoise,coordR).r;			\n"
-					"  lowp float g = texture(uTexNoise,coordG).r;			\n"
-					"  lowp float b = texture(uTexNoise,coordB).r;			\n"
-					"														\n"
-					"  return vec3(r,g,b);									\n"
-					"}														\n"
-					"lowp float snoiseA()									\n"
-					"{														\n"
-					"  mediump vec2 texSize = vec2(640.0, 580.0);			\n"
-					// multiplier for higher res noise effect
-					"  lowp float mult = 1.0 + step(2.0, uScreenScale.x);	\n"
-					"														\n"
-					"	mediump vec2 coord = mult * ((gl_FragCoord.xy)/uScreenScale/texSize);\n"
-					"														\n"
-					// Only red channel of noise texture contains noise. 
-					"  return texture(uTexNoise,coord).r;					\n"
-					"}														\n"
+		if (_glinfo.isGLES2)
+			return;
+
+		m_part =
+			"void colorNoiseDither(in lowp vec3 _noise, inout lowp vec3 _color)\n"
+			"{															\n"
+			"    mediump vec3 threshold = 7.0 / 255.0 * (_noise - 0.5);\n"
+			"    _color = clamp(_color + threshold,0.0,1.0);			\n"
+			"}															\n"
+			"void alphaNoiseDither(in lowp float _noise, inout lowp float _alpha)\n"
+			"{															\n"
+			"    mediump float threshold = 7.0 / 255.0 * (_noise - 0.5);\n"
+			"    _alpha = clamp(_alpha + threshold,0.0,1.0);			\n"
+			"}															\n"
+			"lowp vec3 snoiseRGB()									\n"
+			"{														\n"
+			"  mediump vec2 texSize = vec2(640.0, 580.0);			\n"
+			// multiplier for higher res noise effect
+			"  lowp float mult = 1.0 + step(2.0, uScreenScale.x);	\n"
+			"														\n"
+			"	mediump vec2 coordR = mult * ((gl_FragCoord.xy)/uScreenScale/texSize);\n"
+			"	mediump vec2 coordG = mult * ((gl_FragCoord.xy + vec2( 0.0, texSize.y / 2.0 ))/uScreenScale/texSize);\n"
+			"	mediump vec2 coordB = mult * ((gl_FragCoord.xy + vec2( texSize.x / 2.0,  0.0))/uScreenScale/texSize);\n"
+			"														\n"
+			// Only red channel of noise texture contains noise.
+			"  lowp float r = texture(uTexNoise,coordR).r;			\n"
+			"  lowp float g = texture(uTexNoise,coordG).r;			\n"
+			"  lowp float b = texture(uTexNoise,coordB).r;			\n"
+			"														\n"
+			"  return vec3(r,g,b);									\n"
+			"}														\n"
+			"lowp float snoiseA()									\n"
+			"{														\n"
+			"  mediump vec2 texSize = vec2(640.0, 580.0);			\n"
+			// multiplier for higher res noise effect
+			"  lowp float mult = 1.0 + step(2.0, uScreenScale.x);	\n"
+			"														\n"
+			"	mediump vec2 coord = mult * ((gl_FragCoord.xy)/uScreenScale/texSize);\n"
+			"														\n"
+			// Only red channel of noise texture contains noise.
+			"  return texture(uTexNoise,coord).r;					\n"
+			"}														\n"
+			;
+
+		if (config.generalEmulation.enableDitheringQuantization != 0) {
+			m_part +=
+				"void quantizeRGB(inout lowp vec3 _color)				\n"
+				"{														\n"
+				"     _color.rgb = round(_color.rgb * 32.0)/32.0;		\n"
+				"}														\n"
+				"void quantizeA(inout lowp float _alpha)				\n"
+				"{														\n"
+				"     _alpha = round(_alpha * 32.0)/32.0;				\n"
+				"}														\n"
 				;
-				if (config.generalEmulation.ditheringMode == Config::DitheringMode::dmNoiseWithQuant ||
-					config.generalEmulation.ditheringMode == Config::DitheringMode::dmFullWithQuant) {
-					m_part +=
-						"void quantizeRGB(inout lowp vec3 _color)\n"
-						"{															\n"
-						"     _color.rgb = round(_color.rgb * 32.0)/32.0;			\n"
-						"}															\n"
-						"void quantizeA(inout lowp float _alpha)\n"
-						"{															\n"
-						"     _alpha = round(_alpha * 32.0)/32.0;					\n"
-						"}															\n"
-					;
-				}
-				else {
-					m_part +=
-						"void quantizeRGB(inout lowp vec3 _color){}\n"
-						"void quantizeA(inout lowp float _alpha){}\n"
-					;
-				}
-			}
+		} else {
+			m_part +=
+				"void quantizeRGB(inout lowp vec3 _color){}\n"
+				"void quantizeA(inout lowp float _alpha){}\n"
+				;
 		}
 	}
 };

@@ -142,7 +142,7 @@ void ConfigDialog::_init(bool reInit, bool blockCustomSettings)
 		break;
 	}
 
-	ui->ditheringModeComboBox->setCurrentIndex(config.generalEmulation.ditheringMode);
+	ui->ditheringModeComboBox->setCurrentIndex(config.generalEmulation.rdramImageDitheringMode);
 
 	switch (config.texture.screenShotFormat) {
 	case 0:
@@ -444,7 +444,7 @@ void ConfigDialog::accept(bool justSave) {
 	else if (ui->blnr3PointRadioButton->isChecked())
 		config.texture.bilinearMode = BILINEAR_3POINT;
 
-	config.generalEmulation.ditheringMode = ui->ditheringModeComboBox->currentIndex();
+	config.generalEmulation.rdramImageDitheringMode = ui->ditheringModeComboBox->currentIndex();
 
 	if (ui->pngRadioButton->isChecked())
 		config.texture.screenShotFormat = 0;

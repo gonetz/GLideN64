@@ -261,26 +261,29 @@ u16 ColorBufferToRDRAM::_RGBAtoRGBA16(u32 _c, u32 x, u32 y) {
 	union RGBA c;
 	c.raw = _c;
 	
-	switch (config.generalEmulation.bufferDitheringMode) {
-	case Config::BufferDitheringMode::bdmBayer:
-	case Config::BufferDitheringMode::bdmMagicSquare:
-	{
-		s32 threshold = config.generalEmulation.bufferDitheringMode == Config::BufferDitheringMode::bdmBayer ?
-			thresholdMapBayer[x & 3][y & 3] :
-			thresholdMapMagicSquare[x & 3][y & 3];
-		c.r = (u8)std::max(std::min((s32)c.r + threshold, 255), 0);
-		c.g = (u8)std::max(std::min((s32)c.g + threshold, 255), 0);
-		c.b = (u8)std::max(std::min((s32)c.b + threshold, 255), 0);
-	}
-	break;
-	case Config::BufferDitheringMode::bdmBlueNoise:
-	{
-		const BlueNoiseItem& threshold = blueNoiseTex[m_blueNoiseIdx & 7][x & 63][y & 63];
-		c.r = (u8)std::max(std::min((s32)c.r + threshold.r, 255), 0);
-		c.g = (u8)std::max(std::min((s32)c.g + threshold.g, 255), 0);
-		c.b = (u8)std::max(std::min((s32)c.b + threshold.b, 255), 0);
-	}
-	break;
+	if (config.generalEmulation.enableDitheringPattern == 0 || config.frameBufferEmulation.nativeResFactor != 1) {
+		// Apply color dithering
+		switch (config.generalEmulation.rdramImageDitheringMode) {
+		case Config::BufferDitheringMode::bdmBayer:
+		case Config::BufferDitheringMode::bdmMagicSquare:
+		{
+			s32 threshold = config.generalEmulation.rdramImageDitheringMode == Config::BufferDitheringMode::bdmBayer ?
+				thresholdMapBayer[x & 3][y & 3] :
+				thresholdMapMagicSquare[x & 3][y & 3];
+			c.r = (u8)std::max(std::min((s32)c.r + threshold, 255), 0);
+			c.g = (u8)std::max(std::min((s32)c.g + threshold, 255), 0);
+			c.b = (u8)std::max(std::min((s32)c.b + threshold, 255), 0);
+		}
+		break;
+		case Config::BufferDitheringMode::bdmBlueNoise:
+		{
+			const BlueNoiseItem& threshold = blueNoiseTex[m_blueNoiseIdx & 7][x & 63][y & 63];
+			c.r = (u8)std::max(std::min((s32)c.r + threshold.r, 255), 0);
+			c.g = (u8)std::max(std::min((s32)c.g + threshold.g, 255), 0);
+			c.b = (u8)std::max(std::min((s32)c.b + threshold.b, 255), 0);
+		}
+		break;
+		}
 	}
 
 	return ((c.r >> 3) << 11) | ((c.g >> 3) << 6) | ((c.b >> 3) << 1) | (c.a == 0 ? 0 : 1);	

@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>559</width>
-    <height>595</height>
+    <height>613</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -900,9 +900,23 @@
                </widget>
               </item>
               <item>
+               <widget class="QCheckBox" name="shaderDitheringCheckBox">
+                <property name="text">
+                 <string>Dithering pattern on output image</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QCheckBox" name="hiresNoiseDitheringCheckBox">
+                <property name="text">
+                 <string>High resolution noise dithering</string>
+                </property>
+               </widget>
+              </item>
+              <item>
                <widget class="QLabel" name="ditheringLabel">
                 <property name="text">
-                 <string>Dithering mode:</string>
+                 <string>RDRAM image dithering mode:</string>
                 </property>
                </widget>
               </item>
@@ -915,22 +929,17 @@
                 </item>
                 <item>
                  <property name="text">
-                  <string>only noise dithering (default)</string>
+                  <string>Bayer</string>
                  </property>
                 </item>
                 <item>
                  <property name="text">
-                  <string>noise dithering with 5bit quantization</string>
+                  <string>Magic square</string>
                  </property>
                 </item>
                 <item>
                  <property name="text">
-                  <string>noise and ordered grid dithering</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>dithering with 5bit quantization</string>
+                  <string>Blue noise</string>
                  </property>
                 </item>
                </widget>
@@ -4049,9 +4058,9 @@
   </connection>
  </connections>
  <buttongroups>
-  <buttongroup name="screenshotButtonGroup"/>
   <buttongroup name="factorButtonGroup"/>
-  <buttongroup name="fixTexrectCoordsButtonGroup"/>
   <buttongroup name="osdButtonGroup"/>
+  <buttongroup name="fixTexrectCoordsButtonGroup"/>
+  <buttongroup name="screenshotButtonGroup"/>
  </buttongroups>
 </ui>
