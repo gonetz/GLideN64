@@ -1680,13 +1680,18 @@ public:
 			"lowp vec3 snoiseRGB()									\n"
 			"{														\n"
 			"  mediump vec2 texSize = vec2(640.0, 580.0);			\n"
+			;
+		if (config.generalEmulation.enableHiresNoiseDithering != 0)
 			// multiplier for higher res noise effect
-			"  lowp float mult = 1.0 + step(2.0, uScreenScale.x);	\n"
-			"														\n"
+			m_part +=
+			"  lowp float mult = 1.0 + step(2.0, uScreenScale.x);	\n";
+		else
+			m_part +=
+			"  lowp float mult = 1.0;								\n";
+		m_part +=
 			"	mediump vec2 coordR = mult * ((gl_FragCoord.xy)/uScreenScale/texSize);\n"
 			"	mediump vec2 coordG = mult * ((gl_FragCoord.xy + vec2( 0.0, texSize.y / 2.0 ))/uScreenScale/texSize);\n"
 			"	mediump vec2 coordB = mult * ((gl_FragCoord.xy + vec2( texSize.x / 2.0,  0.0))/uScreenScale/texSize);\n"
-			"														\n"
 			// Only red channel of noise texture contains noise.
 			"  lowp float r = texture(uTexNoise,coordR).r;			\n"
 			"  lowp float g = texture(uTexNoise,coordG).r;			\n"
@@ -1697,8 +1702,15 @@ public:
 			"lowp float snoiseA()									\n"
 			"{														\n"
 			"  mediump vec2 texSize = vec2(640.0, 580.0);			\n"
+			;
+		if (config.generalEmulation.enableHiresNoiseDithering != 0)
 			// multiplier for higher res noise effect
-			"  lowp float mult = 1.0 + step(2.0, uScreenScale.x);	\n"
+			m_part +=
+			"  lowp float mult = 1.0 + step(2.0, uScreenScale.x);	\n";
+		else
+			m_part +=
+			"  lowp float mult = 1.0;								\n";
+		m_part +=
 			"														\n"
 			"	mediump vec2 coord = mult * ((gl_FragCoord.xy)/uScreenScale/texSize);\n"
 			"														\n"
