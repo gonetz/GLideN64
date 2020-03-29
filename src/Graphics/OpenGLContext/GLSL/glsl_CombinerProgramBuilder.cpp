@@ -521,6 +521,10 @@ public:
 				<< "# define texture2D texture" << std::endl;
 			m_part = ss.str();
 		}
+		m_part +=
+			// Return the vector of the standard basis of R^4 with a 1 at position <pos> and 0 otherwise.
+			"  #define STVEC(pos) step(float(pos) - 0.5, vec4(0.0,1.0,2.0,3.0)) - step(float(pos) + 0.5, vec4(0.0,1.0,2.0,3.0)) \n";
+
 	}
 };
 
@@ -531,7 +535,6 @@ public:
 	{
 #if 1
 			m_part =
-				"  #define STVEC(pos) step(float(pos) - 0.5, vec4(0.0,1.0,2.0,3.0)) - step(float(pos) + 0.5, vec4(0.0,1.0,2.0,3.0)) \n" // Return the vector of the standard basis of R^4 with a 1 at position <pos> and 0 otherwise.
 				"  #define MUXA(pos) dot(muxA, STVEC(pos))				\n"
 				"  #define MUXB(pos) dot(muxB, STVEC(pos))				\n"
 				"  #define MUXPM(pos) muxPM*(STVEC(pos))				\n"
@@ -745,8 +748,10 @@ public:
 			// Try to keep dithering visible even at higher resolutions
 			"  lowp float divider = 1.0 + step(3.0, uScreenScale.x);					\n"
 			"  mediump ivec2 position = ivec2(mod((gl_FragCoord.xy - 0.5) / divider,4.0));\n"
-			"  lowp float bayerThreshold = bayer[position.x][position.y];				\n"
-			"  lowp float mSquareThreshold = mSquare[position.x][position.y];			\n"
+			"  lowp vec4 posX = STVEC(position.x);										\n"
+			"  lowp vec4 posY = STVEC(position.y);										\n"
+			"  lowp float bayerThreshold = dot(bayer*posY, posX);						\n"
+			"  lowp float mSquareThreshold = dot(mSquare*posY, posX);					\n"
 			"  switch (uColorDitherMode) {												\n"
 			"     case 0:																\n"
 			"       colorDither(vec3(mSquareThreshold), clampedColor.rgb);				\n"
