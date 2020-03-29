@@ -713,61 +713,86 @@ public:
 	}
 };
 
-class ShaderCallDither : public ShaderPart
+class ShaderDithering : public ShaderPart
 {
 public:
-	ShaderCallDither(const opengl::GLInfo & _glinfo)
+	ShaderDithering(const opengl::GLInfo & _glinfo)
 	{
 		if (_glinfo.isGLES2)
 			return;
 
-		m_part =
-			"  if (uColorDitherMode == 2) {												\n"
-			"    colorDither(snoiseRGB(), clampedColor.rgb);						\n"
+		if (config.generalEmulation.enableDitheringPattern == 0) {
+			m_part =
+				"  if (uColorDitherMode == 2) {											\n"
+				"    colorDither(snoiseRGB(), clampedColor.rgb);						\n"
+				"  }																	\n"
+				"  if (uAlphaDitherMode == 2) {											\n"
+				"    alphaDither(snoiseA(), clampedColor.a);							\n"
+				"  }																	\n"
+				;
+			return;
+		}
+
+		m_part +=
+			"  lowp mat4 bayer = mat4( 0.0, 0.75, 0.1875, 0.9375,						\n"
+			"                          0.5, 0.25, 0.6875, 0.4375,						\n"
+			"                          0.125, 0.875, 0.0625, 0.8125,					\n"
+			"                          0.625, 0.375, 0.5625, 0.3125);					\n"
+			"  lowp mat4 mSquare = mat4( 0.0, 0.6875, 0.75, 0.4375,						\n"
+			"                            0.875, 0.3125, 0.125, 0.5625, 					\n"
+			"                            0.1875, 0.5, 0.9375, 0.25,						\n"
+			"                            0.8125, 0.375, 0.0625, 0.625);					\n"
+			// Try to keep dithering visible even at higher resolutions
+			"  lowp float divider = 1.0 + step(3.0, uScreenScale.x);					\n"
+			"  mediump ivec2 position = ivec2(mod((gl_FragCoord.xy - 0.5) / divider,4.0));\n"
+			"  lowp float bayerThreshold = bayer[position.x][position.y];				\n"
+			"  lowp float mSquareThreshold = mSquare[position.x][position.y];			\n"
+			"  switch (uColorDitherMode) {												\n"
+			"     case 0:																\n"
+			"       colorDither(vec3(mSquareThreshold), clampedColor.rgb);				\n"
+			"     break;																\n"
+			"     case 1:																\n"
+			"       colorDither(vec3(bayerThreshold), clampedColor.rgb);				\n"
+			"       break;																\n"
+			"     case 2:																\n"
+			"       colorDither(snoiseRGB(), clampedColor.rgb);							\n"
+			"       break;																\n"
+			"     case 3:																\n"
+			"       break;																\n"
 			"  }																		\n"
-			"  if (uAlphaDitherMode == 2) {												\n"
-			"    alphaDither(snoiseA(), clampedColor.a);							\n"
+			"  switch (uAlphaDitherMode) {												\n"
+			"     case 0:																\n"
+			"       switch (uColorDitherMode) {											\n"
+			"         case 0:															\n"
+			"         case 2:															\n"
+			"           alphaDither(mSquareThreshold, clampedColor.a);					\n"
+			"           break;															\n"
+			"         case 1:															\n"
+			"         case 3:															\n"
+			"           alphaDither(bayerThreshold, clampedColor.a);					\n"
+			"           break;															\n"
+			"       }																	\n"
+			"       break;																\n"
+			"     case 1:																\n"
+			"       switch (uColorDitherMode) {											\n"
+			"         case 0:															\n"
+			"         case 2:															\n"
+			"           alphaDither(bayerThreshold, clampedColor.a);					\n"
+			"           break;															\n"
+			"         case 1:															\n"
+			"         case 3:															\n"
+			"           alphaDither(mSquareThreshold, clampedColor.a);					\n"
+			"           break;															\n"
+			"       }																	\n"
+			"       break;																\n"
+			"     case 2:																\n"
+			"       alphaDither(snoiseA(), clampedColor.a);								\n"
+			"       break;																\n"
+			"     case 3:																\n"
+			"       break;																\n"
 			"  }																		\n"
 			;
-
-		if (config.generalEmulation.enableDitheringPattern != 0) {
-			m_part +=
-				// Try to keep dithering visible even at higher resolutions
-				"  lowp float divider = 1.0 + step(3.0, uScreenScale.x);					\n"
-				"  mediump ivec2 position = ivec2(mod((gl_FragCoord.xy - 0.5) / divider,4.0));\n"
-				"  																			\n"
-				"  lowp mat4 bayer = mat4( 0.0, 0.75, 0.1875, 0.9375,						\n"
-				"                            0.5, 0.25, 0.6875, 0.4375,						\n"
-				"                            0.125, 0.875, 0.0625, 0.8125,					\n"
-				"                            0.625, 0.375, 0.5625, 0.3125);					\n"
-				"  lowp mat4 mSquare = mat4( 0.0, 0.6875, 0.75, 0.4375,						\n"
-				"                              0.875, 0.3125, 0.125, 0.5625, 				\n"
-				"                              0.1875, 0.5, 0.9375, 0.25,					\n"
-				"                              0.8125, 0.375, 0.0625, 0.625);				\n"
-				"  																			\n"
-				"  lowp float bayerThreshold = bayer[position.x][position.y];				\n"
-				"  lowp float mSquareThreshold = mSquare[position.x][position.y];			\n"
-				"  																			\n"
-				"  if (uColorDitherMode < 2) {												\n"
-				"    lowp float threshold = mix(mSquareThreshold,bayerThreshold,float(uColorDitherMode));\n"
-				"    colorDither(vec3(threshold), clampedColor.rgb);					\n"
-				"  }																		\n"
-				"  if (uAlphaDitherMode < 2) {												\n"
-				"    lowp float thresholdPattern = mix(mSquareThreshold,bayerThreshold,clamp(float(uColorDitherMode),0.0,1.0));\n"
-				"    thresholdPattern = mix(thresholdPattern,mSquareThreshold,clamp(float(uColorDitherMode - 1),0.0,1.0));\n" // uColorDitherMode = 2
-				"    thresholdPattern = mix(thresholdPattern,bayerThreshold,clamp(float(uColorDitherMode - 2),0.0,1.0));\n" // uColorDitherMode = 3
-				"  																			\n"
-				"    lowp float thresholdNotPattern = mix(bayerThreshold,mSquareThreshold,clamp(float(uColorDitherMode),0.0,1.0));\n"
-				"    thresholdNotPattern = mix(thresholdNotPattern,bayerThreshold,clamp(float(uColorDitherMode - 1),0.0,1.0));\n" // uColorDitherMode = 2
-				"    thresholdNotPattern = mix(thresholdNotPattern,mSquareThreshold,clamp(float(uColorDitherMode - 2),0.0,1.0));\n" // uColorDitherMode = 3
-				"  																			\n"
-				"    lowp float threshold = mix(thresholdNotPattern, thresholdPattern,float(uAlphaDitherMode));\n"
-				"    alphaDither(threshold, clampedColor.a);							\n"
-				"  }																		\n"
-				;
-		}
 	}
-
 };
 
 class ShaderFragmentGlobalVariablesTex : public ShaderPart
@@ -2693,7 +2718,7 @@ CombinerProgramBuilder::CombinerProgramBuilder(const opengl::GLInfo & _glinfo, o
 , m_signExtendColorABD(new ShaderSignExtendColorABD)
 , m_signExtendAlphaABD(new ShaderSignExtendAlphaABD)
 , m_alphaTest(new ShaderAlphaTest)
-, m_callDither(new ShaderCallDither(_glinfo))
+, m_callDither(new ShaderDithering(_glinfo))
 , m_vertexHeader(new VertexShaderHeader(_glinfo))
 , m_vertexEnd(new VertexShaderEnd(_glinfo))
 , m_vertexRect(new VertexShaderRect(_glinfo))
