@@ -43,7 +43,7 @@
     <TargetName>$(ProjectName)</TargetName>
     <IgnoreImportLibrary>true</IgnoreImportLibrary>
   </PropertyGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+  <ItemDefinitionGroup>
     <ClCompile>
       <PreprocessorDefinitions>_WINDOWS;UNICODE;WIN32;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
@@ -52,7 +52,6 @@
       <BrowseInformation>false</BrowseInformation>
       <ExceptionHandling>Sync</ExceptionHandling>
       <ObjectFileName>$(IntDir)</ObjectFileName>
-      <PreprocessorDefinitions>OS_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessToFile>false</PreprocessToFile>
       <ProgramDataBaseFileName>$(IntDir)vc$(VisualStudioVersion).pdb</ProgramDataBaseFileName>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
@@ -171,6 +170,17 @@
     <Image Include="..\..\src\GLideNUI-wtl\TopLeft.ico" />
     <Image Include="..\..\src\GLideNUI-wtl\TopRight.ico" />
     <Image Include="..\..\src\GLideNUI-wtl\Up.ico" />
+    <Image Include="..\..\src\GLideNUI\BottomLeft.ico" />
+    <Image Include="..\..\src\GLideNUI\BottomRight.ico" />
+    <Image Include="..\..\src\GLideNUI\Down.ico" />
+    <Image Include="..\..\src\GLideNUI\Icon.ico" />
+    <Image Include="..\..\src\GLideNUI\Info.ico" />
+    <Image Include="..\..\src\GLideNUI\Left.ico" />
+    <Image Include="..\..\src\GLideNUI\Right.ico" />
+    <Image Include="..\..\src\GLideNUI\TopLeft.ico" />
+    <Image Include="..\..\src\GLideNUI\TopRight.ico" />
+    <Image Include="..\..\src\GLideNUI\Up.ico" />
+    <Image Include="..\..\src\GLideNUI\Warning.ico" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\..\src\GLideNUI-wtl\GLideNUI.rc" />

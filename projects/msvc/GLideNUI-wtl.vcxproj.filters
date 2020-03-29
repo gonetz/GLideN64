@@ -265,6 +265,39 @@
     <Image Include="..\..\src\GLideNUI-wtl\Up.ico">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="..\..\src\GLideNUI\Icon.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\..\src\GLideNUI\Info.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\..\src\GLideNUI\Warning.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\..\src\GLideNUI\TopLeft.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\..\src\GLideNUI\Up.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\..\src\GLideNUI\TopRight.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\..\src\GLideNUI\Left.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\..\src\GLideNUI\Right.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\..\src\GLideNUI\BottomLeft.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\..\src\GLideNUI\Down.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\..\src\GLideNUI\BottomRight.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\..\src\GLideNUI-wtl\GLideNUI.rc">
