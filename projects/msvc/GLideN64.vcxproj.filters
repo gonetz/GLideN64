@@ -305,9 +305,6 @@
     <ClCompile Include="..\..\src\CRC_OPT.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\xxHash\xxhash.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\DebugDump.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

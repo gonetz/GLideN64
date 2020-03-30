@@ -251,8 +251,8 @@ struct gDPInfo
 	u32 changed;
 
 	u16 TexFilterPalette[512];
-	u32 paletteCRC16[16];
-	u32 paletteCRC256;
+	u64 paletteCRC16[16];
+	u64 paletteCRC256;
 	u32 half_1, half_2;
 
 	 gDPLoadTileInfo loadInfo[512];

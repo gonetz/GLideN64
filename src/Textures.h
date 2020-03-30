@@ -18,7 +18,7 @@ struct CachedTexture
 	CachedTexture(graphics::ObjectHandle _name) : name(_name), max_level(0), frameBufferTexture(fbNone), bHDTexture(false) {}
 
 	graphics::ObjectHandle name;
-	u32		crc = 0;
+	u64		crc = 0;
 //	float	fulS, fulT;
 //	WORD	ulS, ulT, lrS, lrT;
 	float	offsetS, offsetT;
@@ -78,7 +78,7 @@ private:
 	TextureCache(const TextureCache &) = delete;
 
 	void _checkCacheSize();
-	CachedTexture * _addTexture(u32 _crc32);
+	CachedTexture * _addTexture(u64 _crc64);
 	void _load(u32 _tile, CachedTexture *_pTexture);
 	bool _loadHiresTexture(u32 _tile, CachedTexture *_pTexture, u64 & _ricecrc);
 	void _loadBackground(CachedTexture *pTexture);
@@ -90,7 +90,7 @@ private:
 	void _getTextureDestData(CachedTexture& tmptex, u32* pDest, graphics::Parameter glInternalFormat, GetTexelFunc GetTexel, u16* pLine);
 
 	typedef std::list<CachedTexture> Textures;
-	typedef std::unordered_map<u32, Textures::iterator> Texture_Locations;
+	typedef std::unordered_map<u64, Textures::iterator> Texture_Locations;
 	typedef std::unordered_map<u32, CachedTexture> FBTextures;
 	Textures m_textures;
 	Texture_Locations m_lruTextureLocations;
