@@ -525,15 +525,15 @@ void TextureCache::_checkCacheSize()
 	}
 }
 
-CachedTexture * TextureCache::_addTexture(u32 _crc32)
+CachedTexture * TextureCache::_addTexture(u64 _crc64)
 {
 	if (m_curUnpackAlignment == 0)
 		m_curUnpackAlignment = gfxContext.getTextureUnpackAlignment();
 	_checkCacheSize();
 	m_textures.emplace_front(gfxContext.createTexture(textureTarget::TEXTURE_2D));
 	Textures::iterator new_iter = m_textures.begin();
-	new_iter->crc = _crc32;
-	m_lruTextureLocations.insert(std::pair<u32, Textures::iterator>(_crc32, new_iter));
+	new_iter->crc = _crc64;
+	m_lruTextureLocations.insert(std::pair<u64, Textures::iterator>(_crc64, new_iter));
 	return &(*new_iter);
 }
 
@@ -1241,7 +1241,7 @@ struct TextureParams
 };
 
 static
-u32 _calculateCRC(u32 _t, const TextureParams & _params, u32 _bytes)
+u64 _calculateCRC(u32 _t, const TextureParams & _params, u32 _bytes)
 {
 	const bool rgba32 = gSP.textureTile[_t]->size == G_IM_SIZ_32b;
 	if (_bytes == 0) {
@@ -1252,7 +1252,7 @@ u32 _calculateCRC(u32 _t, const TextureParams & _params, u32 _bytes)
 		_bytes >>= 1;
 	const u32 tMemMask = (gDP.otherMode.textureLUT == G_TT_NONE && !rgba32) ? 0x1FF : 0xFF;
 	const u64 *src = (u64*)&TMEM[gSP.textureTile[_t]->tmem & tMemMask];
-	u32 crc = 0xFFFFFFFF;
+	u64 crc = UINT64_MAX;
 	crc = CRC_Calculate(crc, src, _bytes);
 
 	if (rgba32) {
@@ -1350,9 +1350,9 @@ void TextureCache::activateMSDummy(u32 _t)
 void TextureCache::_updateBackground()
 {
 	u32 numBytes = gSP.bgImage.width * gSP.bgImage.height << gSP.bgImage.size >> 1;
-	u32 crc;
+	u64 crc;
 
-	crc = CRC_Calculate( 0xFFFFFFFF, &RDRAM[gSP.bgImage.address], numBytes );
+	crc = CRC_Calculate( UINT64_MAX, &RDRAM[gSP.bgImage.address], numBytes );
 
 	if (gDP.otherMode.textureLUT != G_TT_NONE || gSP.bgImage.format == G_IM_FMT_CI) {
 		if (gSP.bgImage.size == G_IM_SIZ_4b)
@@ -1502,7 +1502,7 @@ void TextureCache::update(u32 _t)
 	params.width = sizes.width;
 	params.height = sizes.height;
 
-	const u32 crc = _calculateCRC(_t, params, sizes.bytes);
+	const u64 crc = _calculateCRC(_t, params, sizes.bytes);
 
 	if (current[_t] != nullptr && current[_t]->crc == crc) {
 		activateTexture(_t, current[_t]);

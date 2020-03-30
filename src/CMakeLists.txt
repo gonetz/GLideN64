@@ -346,7 +346,6 @@ elseif(CRC_OPT)
   )
   list(APPEND GLideN64_SOURCES
     CRC_OPT.cpp
-    xxHash/xxhash.c
   )
 elseif(CRC_NEON)
   list(REMOVE_ITEM GLideN64_SOURCES
@@ -354,7 +353,6 @@ elseif(CRC_NEON)
   )
   list(APPEND GLideN64_SOURCES
     Neon/CRC_OPT_NEON.cpp
-    xxHash/xxhash.c
   )
 endif(CRC_ARMV8)
 
