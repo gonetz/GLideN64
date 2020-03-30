@@ -238,6 +238,16 @@ float _adjustViewportX(f32 _X0)
 	return (_X0 + halfVP - halfX) * dwnd().getAdjustScale() + halfX - halfVP;
 }
 
+inline
+void _adjustViewportToClipRatio(s32 & x, s32 & y, s32 & width, s32 & height)
+{
+	x -= (gSP.clipRatio - 1) * width / 2;
+	y -= (gSP.clipRatio - 1) * height / 2;
+	width *= gSP.clipRatio;
+	height *= gSP.clipRatio;
+}
+
+
 void GraphicsDrawer::_updateViewport() const
 {
 	DisplayWindow & wnd = DisplayWindow::get();
@@ -248,10 +258,12 @@ void GraphicsDrawer::_updateViewport() const
 		float Xf = gSP.viewport.vscale[0] < 0 ? (gSP.viewport.x + gSP.viewport.vscale[0] * 2.0f) : gSP.viewport.x;
 		if (_needAdjustCoordinate(wnd))
 			Xf = _adjustViewportX(Xf);
-		const s32 X = (s32)(Xf * scaleX);
-		const s32 Y = (s32)(gSP.viewport.y * scaleY);
-		gfxContext.setViewport(X, Y,
-			std::max((s32)(gSP.viewport.width * scaleX), 0), std::max((s32)(gSP.viewport.height * scaleY), 0));
+		s32 X = (s32)(Xf * scaleX);
+		s32 Y = (s32)(gSP.viewport.y * scaleY);
+		s32 WIDTH = std::max((s32)(gSP.viewport.width * scaleX), 0);
+		s32 HEIGHT = std::max((s32)(gSP.viewport.height * scaleY), 0);
+		_adjustViewportToClipRatio(X, Y, WIDTH, HEIGHT);
+		gfxContext.setViewport(X, Y, WIDTH, HEIGHT);
 	} else {
 		const f32 scaleX = pCurrentBuffer->m_scale;
 		const f32 scaleY = pCurrentBuffer->m_scale;
@@ -259,12 +271,14 @@ void GraphicsDrawer::_updateViewport() const
 		Xf += f32(pCurrentBuffer->m_originX);
 		if (_needAdjustCoordinate(wnd))
 			Xf = _adjustViewportX(Xf);
-		const s32 X = roundup(Xf, scaleX);
+		s32 X = roundup(Xf, scaleX);
 		float Yf = gSP.viewport.vscale[1] < 0 ? (gSP.viewport.y + gSP.viewport.vscale[1] * 2.0f) : gSP.viewport.y;
 		Yf += f32(pCurrentBuffer->m_originY);
-		const s32 Y = roundup(Yf, scaleY);
-		gfxContext.setViewport(X, Y,
-			std::max(roundup(gSP.viewport.width, scaleX), 0), std::max(roundup(gSP.viewport.height, scaleY), 0));
+		s32 Y = roundup(Yf, scaleY);
+		s32 WIDTH = std::max(roundup(gSP.viewport.width, scaleX), 0);
+		s32 HEIGHT = std::max(roundup(gSP.viewport.height, scaleY), 0);
+		_adjustViewportToClipRatio(X, Y, WIDTH, HEIGHT);
+		gfxContext.setViewport(X, Y, WIDTH, HEIGHT);
 	}
 	gSP.changed &= ~CHANGED_VIEWPORT;
 }
@@ -289,8 +303,10 @@ void GraphicsDrawer::_updateScreenCoordsViewport(const FrameBuffer * _pBuffer) c
 		X = roundup(f32(pCurrentBuffer->m_originX), viewportScaleX);
 		Y = roundup(f32(pCurrentBuffer->m_originY), viewportScaleY);
 	}
-
-	gfxContext.setViewport(X, Y, roundup(f32(bufferWidth), viewportScaleX), roundup(f32(bufferHeight), viewportScaleY));
+	s32 WIDTH = roundup(f32(bufferWidth), viewportScaleX);
+	s32 HEIGHT = roundup(f32(bufferHeight), viewportScaleY);
+	_adjustViewportToClipRatio(X, Y, WIDTH, HEIGHT);
+	gfxContext.setViewport(X, Y, WIDTH, HEIGHT);
 	gSP.changed |= CHANGED_VIEWPORT;
 }
 

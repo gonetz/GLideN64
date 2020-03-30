@@ -263,6 +263,7 @@ public:
 			ss << "# define IN in" << std::endl << "# define OUT out" << std::endl;
 			m_part = ss.str();
 		}
+		m_part += "uniform lowp float uClipRatio; \n";
 	}
 };
 
@@ -454,6 +455,7 @@ public:
 					;
 		}
 		m_part +=
+			" gl_Position.zw *= vec2(uClipRatio);	 \n"
 			"} \n"
 			;
 	}

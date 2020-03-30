@@ -708,6 +708,22 @@ private:
 	iUniform uClampMode;
 };
 
+class UClipRatio : public UniformGroup
+{
+public:
+	UClipRatio(GLuint _program) {
+		LocateUniform(uClipRatio);
+	}
+
+	void update(bool _force) override
+	{
+		uClipRatio.set(float(gSP.clipRatio), _force);
+	}
+
+private:
+	fUniform uClipRatio;
+};
+
 class UPolygonOffset : public UniformGroup
 {
 public:
@@ -1111,6 +1127,8 @@ void CombinerProgramUniformFactory::buildUniforms(GLuint _program,
 		_uniforms.emplace_back(new UClampMode(_program));
 		_uniforms.emplace_back(new UPolygonOffset(_program));
 	}
+
+	_uniforms.emplace_back(new UClipRatio(_program));
 
 	_uniforms.emplace_back(new UScreenCoordsScale(_program));
 
