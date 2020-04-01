@@ -2,9 +2,11 @@
 #include "util.h"
 #include "../Config.h"
 #include "resource.h"
+#include "ConfigDlg.h"
 
-CEmulationTab::CEmulationTab() :
-    CConfigTab(IDD_TAB_EMULATION)
+CEmulationTab::CEmulationTab(CConfigDlg & Dlg) :
+    CConfigTab(IDD_TAB_EMULATION),
+    m_Dlg(Dlg)
 {
 }
 
@@ -56,11 +58,17 @@ void CEmulationTab::OnGammaCorrection(UINT /*Code*/, int /*id*/, HWND /*ctl*/)
     }
 }
 
+void CEmulationTab::OnPerGameSettings(UINT /*Code*/, int /*id*/, HWND /*ctl*/)
+{
+    m_Dlg.OnCustomSettingsToggled(CButton(GetDlgItem(IDC_CHK_USE_PER_GAME)).GetCheck() == BST_CHECKED);
+}
+
 void CEmulationTab::LoadSettings(bool blockCustomSettings)
 {
     if (!blockCustomSettings)
     {
         CButton(GetDlgItem(IDC_CHK_USE_PER_GAME)).SetCheck(config.generalEmulation.enableCustomSettings != 0 ? BST_CHECKED : BST_UNCHECKED);
+        m_Dlg.OnCustomSettingsToggled(config.generalEmulation.enableCustomSettings != 0);
     }
     CButton(GetDlgItem(IDC_CHK_N64_STYLE_MIP_MAPPING)).SetCheck(config.generalEmulation.enableLOD != 0 ? BST_CHECKED : BST_UNCHECKED);
     CButton(GetDlgItem(IDC_CHK_NOISE)).SetCheck(config.generalEmulation.enableNoise != 0 ? BST_CHECKED : BST_UNCHECKED);

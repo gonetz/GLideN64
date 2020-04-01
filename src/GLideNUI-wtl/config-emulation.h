@@ -3,6 +3,8 @@
 #include "wtl-BitmapPicture.h"
 #include "resource.h"
 
+class CConfigDlg;
+
 class CEmulationTab :
     public CConfigTab
 {
@@ -13,13 +15,15 @@ public:
         MESSAGE_HANDLER(WM_CTLCOLORSTATIC, OnColorStatic)
         MESSAGE_HANDLER(WM_VSCROLL, OnScroll)
         COMMAND_HANDLER_EX(IDC_CHK_GAMMA_CORRECTION, BN_CLICKED, OnGammaCorrection)
+        COMMAND_HANDLER_EX(IDC_CHK_USE_PER_GAME, BN_CLICKED, OnPerGameSettings)
         REFLECT_NOTIFICATIONS()
     END_MSG_MAP()
 
-    CEmulationTab();
+    CEmulationTab(CConfigDlg & Dlg);
     BOOL OnInitDialog(CWindow /*wndFocus*/, LPARAM /*lInitParam*/);
     LRESULT OnColorStatic(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
     void OnGammaCorrection(UINT /*Code*/, int id, HWND /*ctl*/);
+    void OnPerGameSettings(UINT /*Code*/, int id, HWND /*ctl*/);
     void LoadSettings(bool /*blockCustomSettings*/);
     void SaveSettings();
 
@@ -29,4 +33,5 @@ private:
     CEdit m_GamaTxt, m_N64ResMultiplerTxt;
     CUpDownCtrl m_GamaSpin, m_N64ResMultiplerSpin;
     CBitmapPicture m_GammaIcon;
+    CConfigDlg & m_Dlg;
 };
