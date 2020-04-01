@@ -5,6 +5,8 @@
 #include "resource.h"
 #include <vector>
 
+class CEmulationTab;
+
 class CConfigDlg :
     public CDialogImpl<CConfigDlg>
 {
@@ -26,6 +28,7 @@ public:
     void setIniPath(const std::string & IniPath);
     void setRomName(const char * RomName);
     bool Saved(void) const { return m_Saved; }
+    void OnCustomSettingsToggled(bool checked);
 
 protected:
     LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
@@ -46,6 +49,8 @@ protected:
     std::string m_strIniPath;
     const char * m_romName;
     bool m_blockReInit;
+    CEmulationTab * m_EmulationTab;
+    uint32_t m_TabLeft, m_ProfileLeft;
     bool m_Saved;
 };
 
