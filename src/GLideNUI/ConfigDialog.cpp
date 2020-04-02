@@ -143,6 +143,9 @@ void ConfigDialog::_init(bool reInit, bool blockCustomSettings)
 	}
 
 	ui->ditheringModeComboBox->setCurrentIndex(config.generalEmulation.rdramImageDitheringMode);
+	ui->ditheringQuantizationCheckBox->setChecked(config.generalEmulation.enableDitheringQuantization);
+	ui->hiresNoiseDitheringCheckBox->setChecked(config.generalEmulation.enableHiresNoiseDithering);
+	ui->ditheringPatternCheckBox->setChecked(config.generalEmulation.enableDitheringPattern);
 
 	switch (config.texture.screenShotFormat) {
 	case 0:
@@ -445,6 +448,9 @@ void ConfigDialog::accept(bool justSave) {
 		config.texture.bilinearMode = BILINEAR_3POINT;
 
 	config.generalEmulation.rdramImageDitheringMode = ui->ditheringModeComboBox->currentIndex();
+	config.generalEmulation.enableDitheringQuantization = ui->ditheringQuantizationCheckBox->isChecked() ? 1 : 0;
+	config.generalEmulation.enableHiresNoiseDithering = ui->hiresNoiseDitheringCheckBox->isChecked() ? 1 : 0;
+	config.generalEmulation.enableDitheringPattern = ui->ditheringPatternCheckBox->isChecked() ? 1 : 0;
 
 	if (ui->pngRadioButton->isChecked())
 		config.texture.screenShotFormat = 0;

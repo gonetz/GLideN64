@@ -873,81 +873,6 @@
             </widget>
            </item>
            <item>
-            <widget class="QGroupBox" name="ditheringGroupBox">
-             <property name="title">
-              <string>Dithering</string>
-             </property>
-             <layout class="QVBoxLayout" name="ditheringGroupBoxVerticalLayout">
-              <item>
-               <widget class="QFrame" name="ditheringFrame">
-                <layout class="QVBoxLayout" name="ditheringFrameVerticalLayout">
-                 <property name="spacing">
-                  <number>5</number>
-                 </property>
-                 <property name="leftMargin">
-                  <number>0</number>
-                 </property>
-                 <property name="topMargin">
-                  <number>0</number>
-                 </property>
-                 <property name="rightMargin">
-                  <number>0</number>
-                 </property>
-                 <property name="bottomMargin">
-                  <number>0</number>
-                 </property>
-                </layout>
-               </widget>
-              </item>
-              <item>
-               <widget class="QCheckBox" name="shaderDitheringCheckBox">
-                <property name="text">
-                 <string>Dithering pattern on output image</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QCheckBox" name="hiresNoiseDitheringCheckBox">
-                <property name="text">
-                 <string>High resolution noise dithering</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QLabel" name="ditheringLabel">
-                <property name="text">
-                 <string>RDRAM image dithering mode:</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QComboBox" name="ditheringModeComboBox">
-                <item>
-                 <property name="text">
-                  <string>disable</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>Bayer</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>Magic square</string>
-                 </property>
-                </item>
-                <item>
-                 <property name="text">
-                  <string>Blue noise</string>
-                 </property>
-                </item>
-               </widget>
-              </item>
-             </layout>
-            </widget>
-           </item>
-           <item>
             <layout class="QHBoxLayout" name="horizontalLayout_14">
              <property name="spacing">
               <number>18</number>
@@ -1454,6 +1379,86 @@
             </widget>
            </item>
           </layout>
+         </item>
+         <item>
+          <widget class="QGroupBox" name="ditheringGroupBox">
+           <property name="title">
+            <string>Dithering</string>
+           </property>
+           <layout class="QGridLayout" name="gridLayout_6">
+            <item row="0" column="1">
+             <widget class="QCheckBox" name="ditheringQuantizationCheckBox">
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Tooltip to be here.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="text">
+               <string>Enable 5bit quantization</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0">
+             <widget class="QCheckBox" name="hiresNoiseDitheringCheckBox">
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Tooltip to be here.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="text">
+               <string>High resolution noise dithering</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="0">
+             <widget class="QCheckBox" name="ditheringPatternCheckBox">
+              <property name="toolTip">
+               <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Tooltip to be here.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="text">
+               <string>Dithering pattern on output image</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <layout class="QHBoxLayout" name="horizontalLayout_24">
+              <item>
+               <widget class="QLabel" name="ditheringLabel">
+                <property name="toolTip">
+                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Tooltip to be here.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                </property>
+                <property name="text">
+                 <string>RDRAM image dithering:</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QComboBox" name="ditheringModeComboBox">
+                <property name="toolTip">
+                 <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Tooltip to be here.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                </property>
+                <item>
+                 <property name="text">
+                  <string>disable</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Bayer</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Magic square</string>
+                 </property>
+                </item>
+                <item>
+                 <property name="text">
+                  <string>Blue noise</string>
+                 </property>
+                </item>
+               </widget>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </widget>
          </item>
          <item>
           <widget class="QGroupBox" name="nativeRes2DGroupBox">
