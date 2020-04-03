@@ -173,7 +173,7 @@
     <Image Include="..\..\src\GLideNUI\BottomLeft.ico" />
     <Image Include="..\..\src\GLideNUI\BottomRight.ico" />
     <Image Include="..\..\src\GLideNUI\Down.ico" />
-    <Image Include="..\..\src\GLideNUI\Icon.ico" />
+    <Image Include="..\..\src\GLideNUI\Icon-Original.ico" />
     <Image Include="..\..\src\GLideNUI\Info.ico" />
     <Image Include="..\..\src\GLideNUI\Left.ico" />
     <Image Include="..\..\src\GLideNUI\Right.ico" />

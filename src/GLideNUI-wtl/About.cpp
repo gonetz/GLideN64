@@ -217,7 +217,8 @@ public:
             L"famicom4\r\n"
             L"Keith_at_UMR\r\n"
             L"sweatypickle\r\n"
-            L"jeremydmiller"
+            L"jeremydmiller\r\n\r\n"
+            L"... and more"
         };
         CWindow Funders = GetDlgItem(IDC_FUNDERS);
         Funders.SetWindowText(Funders1);
@@ -290,7 +291,7 @@ BOOL CAboutTab::OnInitDialog(CWindow /*wndFocus*/, LPARAM /*lInitParam*/)
     return true;
 }
 
-LRESULT CAboutTab::OnColorStatic(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+LRESULT CAboutTab::OnColorStatic(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
     return (LRESULT)GetStockObject(WHITE_BRUSH);
 }
@@ -304,16 +305,24 @@ CAboutDlg::~CAboutDlg()
     m_TabWindows.clear();
 }
 
-LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM wParam, LPARAM /*lParam*/, BOOL& /*bHandled*/)
+LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/ , LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
 	HICON hIcon = AtlLoadIconImage(IDI_APPICON, LR_DEFAULTCOLOR, ::GetSystemMetrics(SM_CXICON), ::GetSystemMetrics(SM_CYICON));
 	SetIcon(hIcon, TRUE);
 	HICON hIconSmall = AtlLoadIconImage(IDI_APPICON, LR_DEFAULTCOLOR, ::GetSystemMetrics(SM_CXSMICON), ::GetSystemMetrics(SM_CYSMICON));
 	SetIcon(hIconSmall, FALSE);
+    SIZEF dpiScale = DpiScale(m_hWnd);
+    SIZE iconSz = { (LONG)(48 * dpiScale.cx), (LONG)(48 * dpiScale.cy) };
 
     m_TitleFont.Apply(m_hWnd, CWindowFont::typeBold | CWindowFont::typeHeading, IDC_ABOUT_TITLE);
     m_AboutIcon.SubclassWindow(GetDlgItem(IDC_ABOUT_ICON));
-    m_AboutIcon.SetIcon(MAKEINTRESOURCE(IDI_APPICON), 48, 48);
+    if (dpiScale.cx > 1.0 || dpiScale.cy > 1.0) {
+        m_AboutIcon.SetIcon(MAKEINTRESOURCE(IDI_APPICON), 256, 256); //load hi-def icon
+    }
+    else {
+        m_AboutIcon.SetIcon(MAKEINTRESOURCE(IDI_APPICON), 48, 48);   //load regular icon
+    }
+    m_AboutIcon.SetWindowPos(HWND_TOP, 0, 0, iconSz.cx, iconSz.cy, SWP_NOMOVE | SWP_NOZORDER);
 
 	m_Tabs.Attach(GetDlgItem(IDC_TABS));
     AddTab(L"About", new CAboutTab(IDD_TAB_ABOUT));
