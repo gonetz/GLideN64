@@ -323,6 +323,7 @@ void GBIInfo::_makeCurrent(MicrocodeInfo * _pCurrent)
 			GBI_SetGBI(G_RDPHALF_1, F3DBETA_RDPHALF_1, F3D_RDPHalf_1);
 			GBI_SetGBI(G_RDPHALF_2, F3DBETA_RDPHALF_2, F3D_RDPHalf_2);
 		}
+		gSP.clipRatio = m_pCurrent->Rej ? 2U : 1U;
 	} else if (m_pCurrent->NoN != _pCurrent->NoN) {
 		if (_pCurrent->NoN)
 			gfxContext.setClampMode(graphics::ClampMode::NoNearPlaneClipping);
