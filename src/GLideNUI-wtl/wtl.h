@@ -16,5 +16,6 @@
 #include "WTL\atlctrlx.h"
 #include "WTL\atlgdi.h"
 #include "WTL\atlmisc.h"
+#include "WTL\atlwinx.h"
 #include <atlwin.h>
 #pragma warning(pop)

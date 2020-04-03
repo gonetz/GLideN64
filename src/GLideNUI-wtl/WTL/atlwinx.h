@@ -520,6 +520,78 @@ static LRESULT Atl3ForwardNotifications(HWND hWnd, UINT uMsg, WPARAM wParam, LPA
 
 #endif // (_ATL_VER < 0x0700)
 
+#define DEFAULT_DPI 96.0
+
+typedef struct tagSIZEF
+{
+    FLOAT        cx;
+    FLOAT        cy;
+} SIZEF, *PSIZEF, *LPSIZEF;
+
+inline ATLAPI_(SIZE) Dpi()
+{
+    SIZE dpi;
+    int nPixelsPerInchX;    // Pixels per logical inch along width
+    int nPixelsPerInchY;    // Pixels per logical inch along height
+
+    HDC hDCScreen = GetDC(NULL); // Gets DC of virtual display
+    ATLASSUME(hDCScreen != NULL);
+    nPixelsPerInchX = GetDeviceCaps(hDCScreen, LOGPIXELSX);
+    nPixelsPerInchY = GetDeviceCaps(hDCScreen, LOGPIXELSY);
+    ReleaseDC(NULL, hDCScreen);
+
+    dpi.cx = nPixelsPerInchX;
+    dpi.cy = nPixelsPerInchY;
+
+    return dpi;
+}
+
+inline ATLAPI_(SIZEF) DpiScale()
+{
+    SIZE dpi = Dpi();
+    ATLASSUME(dpi != NULL);
+    SIZEF dpiScale = { (FLOAT)dpi.cx, (FLOAT)dpi.cy };
+
+    dpiScale.cx /= DEFAULT_DPI;
+    dpiScale.cy /= DEFAULT_DPI;
+
+    return dpiScale;
+}
+
+inline ATLAPI_(SIZE) Dpi(
+    _In_ const HWND &hWnd)
+{
+    ATLENSURE_THROW(hWnd != NULL, E_POINTER);
+    SIZE dpi;
+    int nPixelsPerInchX;    // Pixels per logical inch along width
+    int nPixelsPerInchY;    // Pixels per logical inch along height
+
+    HDC hDCWindow = GetDC(hWnd);
+    ATLASSUME(hDCWindow != NULL);
+    nPixelsPerInchX = GetDeviceCaps(hDCWindow, LOGPIXELSX);
+    nPixelsPerInchY = GetDeviceCaps(hDCWindow, LOGPIXELSY);
+    ReleaseDC(hWnd, hDCWindow);
+
+    dpi.cx = nPixelsPerInchX;
+    dpi.cy = nPixelsPerInchY;
+
+    return dpi;
+}
+
+inline ATLAPI_(SIZEF) DpiScale(
+    _In_ const HWND &hWnd)
+{
+    ATLENSURE_THROW(hWnd != NULL, E_POINTER);
+    SIZE dpi = Dpi(hWnd);
+    ATLASSUME(dpi != NULL);
+    SIZEF dpiScale = { (FLOAT)dpi.cx, (FLOAT)dpi.cy };
+
+    dpiScale.cx /= DEFAULT_DPI;
+    dpiScale.cy /= DEFAULT_DPI;
+
+    return dpiScale;
+}
+
 }; // namespace WTL
 
 #endif // __ATLWINX_H__

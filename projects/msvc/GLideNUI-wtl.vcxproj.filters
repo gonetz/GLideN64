@@ -241,7 +241,7 @@
     <Image Include="..\..\src\GLideNUI-wtl\Down.ico">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="..\..\src\GLideNUI-wtl\Icon.ico">
+    <Image Include="..\..\src\GLideNUI-wtl\Icon-Original.ico">
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="..\..\src\GLideNUI-wtl\Icon-Original.ico">
