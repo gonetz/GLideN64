@@ -1594,6 +1594,7 @@ void gSPSegment( s32 seg, s32 base )
 void gSPClipRatio(u32 ratio)
 {
 	gSP.clipRatio = std::abs(static_cast<s16>(ratio & 0xFFFF));
+	gSP.changed |= CHANGED_VIEWPORT;
 	DebugMsg(DEBUG_NORMAL, "gSPClipRatio(%u);\n", gSP.clipRatio);
 }
 
