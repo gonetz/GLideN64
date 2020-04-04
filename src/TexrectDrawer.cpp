@@ -17,6 +17,7 @@ using namespace graphics;
 
 TexrectDrawer::TexrectDrawer()
 : m_numRects(0)
+, m_clipRatio(gSP.clipRatio)
 , m_otherMode(0)
 , m_mux(0)
 , m_ulx(0)
@@ -227,7 +228,9 @@ bool TexrectDrawer::addRect()
 		if (!_lookAhead(true))
 			return false;
 
-		m_numRects = 1;
+		m_numRects = 1U;
+		m_clipRatio = gSP.clipRatio;
+		gSP.clipRatio = 1U;
 		m_pBuffer = frameBufferList().getCurrent();
 		m_otherMode = gDP.otherMode._u64;
 		m_mux = gDP.combine.mux;
@@ -300,7 +303,9 @@ void TexrectDrawer::addBackgroundRect()
 	RectVertex * pRect = drawer.m_rect;
 
 	if (m_numRects == 0) {
-		m_numRects = 1;
+		m_numRects = 1U;
+		m_clipRatio = gSP.clipRatio;
+		gSP.clipRatio = 1U;
 		m_pBuffer = frameBufferList().getCurrent();
 		m_otherMode = gDP.otherMode._u64;
 		m_mux = gDP.combine.mux;
@@ -353,6 +358,8 @@ bool TexrectDrawer::draw()
 	drawer._setBlendMode();
 	gDP.changed |= CHANGED_RENDERMODE;  // Force update of depth compare parameters
 	drawer._updateDepthCompare();
+	const u32 clipRatioPrev = gSP.clipRatio;
+	gSP.clipRatio = 1U;
 
 	int enableAlphaTest = 0;
 	switch (gDP.otherMode.cycleType) {
@@ -464,6 +471,7 @@ bool TexrectDrawer::draw()
 
 	m_pBuffer = frameBufferList().getCurrent();
 	_setDrawBuffer();
+	gSP.clipRatio = clipRatioPrev != 1U ? clipRatioPrev : m_clipRatio;
 
 	m_numRects = 0;
 	m_vecRectCoords.clear();

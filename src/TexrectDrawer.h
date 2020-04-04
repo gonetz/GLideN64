@@ -29,6 +29,7 @@ private:
 	bool _lookAhead(bool _checkCoordinates) const;
 
 	u32 m_numRects;
+	u32 m_clipRatio;
 	u64 m_otherMode;
 	u64 m_mux;
 	f32 m_ulx, m_lrx, m_uly, m_lry, m_Z;
