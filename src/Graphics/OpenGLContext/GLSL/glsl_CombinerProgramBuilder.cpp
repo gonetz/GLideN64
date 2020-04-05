@@ -305,7 +305,8 @@ public:
 			"    texCoordOut += uCacheOffset[idx];							\n"
 			"    if (uTextureFilterMode != 0 && uCacheFrameBuffer[idx] != 0) \n"
 			"      texCoordOut -= vec2(0.5);								\n"
-			"    return texCoordOut* uCacheScale[idx];						\n"
+			//"    return texCoordOut* uCacheScale[idx];						\n"
+			"  return texCoordOut; \n"
 			"}																\n"
 			"																\n"
 			"void main()													\n"
@@ -829,14 +830,14 @@ public:
 			"uniform lowp int uDepthSource;			\n"
 			"uniform highp float uPrimDepth;		\n"
 			"uniform mediump vec2 uScreenScale;		\n"
-			"uniform highp vec4 uTexClamp0;			\n"
-			"uniform highp vec4 uTexClamp1;			\n"
+			"uniform highp vec2 uTexClamp0;			\n"
+			"uniform highp vec2 uTexClamp1;			\n"
 			"uniform highp vec2 uTexWrap0;			\n"
 			"uniform highp vec2 uTexWrap1;			\n"
-			"uniform lowp vec2 uTexMirror0;			\n"
-			"uniform lowp vec2 uTexMirror1;			\n"
-			"uniform highp vec2 uTexScale0;			\n"
-			"uniform highp vec2 uTexScale1;			\n"
+			"uniform lowp vec2 uTexMirrorEn0;			\n"
+			"uniform lowp vec2 uTexMirrorEn1;			\n"
+			"uniform lowp vec2 uTexClampEn0;			\n"
+			"uniform lowp vec2 uTexClampEn1;			\n"
 			"uniform lowp int uFogUsage;			\n"
 			"highp vec2 texCoord0;					\n"
 			"highp vec2 texCoord1;					\n"
@@ -1033,10 +1034,10 @@ class ShaderFragmentHeaderClampWrapMirror : public ShaderPart
 public:
 	ShaderFragmentHeaderClampWrapMirror(const opengl::GLInfo & _glinfo)
 	{
-		m_part =
+		m_part = 
 			"highp vec2 clampWrapMirror(in highp vec2 vTexCoord,	\n"
-			"	in highp vec4 vClamp, in highp vec2 vWrap,			\n"
-			"	in lowp vec2 vMirror, in highp vec2 vOffset);		\n"
+			"	in highp vec2 vWrap, in highp vec2 vClamp,			\n"
+			"	in lowp vec2 vClampEn, in lowp vec2 vMirrorEn );		\n"
 		;
 	}
 };
@@ -1114,17 +1115,23 @@ public:
 
 			if (g_textureConvert.useTextureFiltering()) {
 				shaderPart += "uniform lowp int uTextureFilterMode;								\n";
+				shaderPart += "#define TEX_NEAREST(name, tex, texCoord)							\\\n"
+					"{																			\\\n"
+					"  mediump vec2 texSize = vec2(textureSize(tex,0));							\\\n"
+					"  name = texture(tex, texCoord/texSize);									\\\n"
+					"}																			\n"
+					;
 				switch (config.texture.bilinearMode + config.texture.enableHalosRemoval * 2) {
 				case BILINEAR_3POINT:
 					// 3 point texture filtering.
 					// Original author: ArthurCarvalho
 					// GLSL implementation: twinaphex, mupen64plus-libretro project.
 					shaderPart +=
-						"#define TEX_OFFSET(off, tex, texCoord) texture(tex, (texCoord) + ((off)+0.5)/texSize) \n"
+						"#define TEX_OFFSET(off, tex, texCoord) texture(tex, ((texCoord) + (off) + 0.5)/texSize) \n"
 						"#define TEX_FILTER(name, tex, texCoord)												\\\n"
 						"  {																					\\\n"
 						"  mediump vec2 texSize = vec2(textureSize(tex,0));										\\\n"
-						"  mediump vec2 offset = fract(texCoord*texSize);										\\\n"
+						"  mediump vec2 offset = fract(texCoord);										\\\n"
 						"  offset -= step(1.0, offset.x + offset.y);											\\\n"
 						"  lowp vec4 c0 = TEX_OFFSET(-offset, tex, texCoord);									\\\n"
 						"  lowp vec4 c1 = TEX_OFFSET(-offset + vec2(sign(offset.x), 0.0), tex, texCoord);		\\\n"
@@ -1135,11 +1142,11 @@ public:
 				break;
 				case BILINEAR_STANDARD:
 					shaderPart +=
-						"#define TEX_OFFSET(off, tex, texCoord) texture(tex, (texCoord) + ((off)+0.5)/texSize)							\n"
+						"#define TEX_OFFSET(off, tex, texCoord) texture(tex, ((texCoord) + (off) + 0.5)/texSize)							\n"
 						"#define TEX_FILTER(name, tex, texCoord)																		\\\n"
 						"{																												\\\n"
 						"  mediump vec2 texSize = vec2(textureSize(tex,0));																\\\n"
-						"  mediump vec2 offset = fract(texCoord*texSize);																\\\n"
+						"  mediump vec2 offset = fract(texCoord);																\\\n"
 						"  lowp vec4 zero = vec4(0.0);																					\\\n"
 						"																												\\\n"
 						"  lowp vec4 p0q0 = TEX_OFFSET(-offset, tex, texCoord);															\\\n"
@@ -1234,7 +1241,10 @@ public:
 					"    mediump ivec2 coord = ivec2(gl_FragCoord.xy);					\\\n"
 					"    name = texelFetch(tex, coord, 0);								\\\n"
 					"  } else {															\\\n"
-					"    if (uTextureFilterMode == 0) name = texture(tex, texCoord);	\\\n"
+					"    if (uTextureFilterMode == 0)									\\\n"
+					"  {																\\\n"
+					"    TEX_NEAREST(name, tex, texCoord);								\\\n"
+					"  }																\\\n"
 					"    else TEX_FILTER(name, tex, texCoord);			 				\\\n"
 					"  }																\\\n"
 					"  if (fbMonochrome == 1) name = vec4(name.r);						\\\n"
@@ -1315,7 +1325,8 @@ public:
 				"    mediump ivec2 coord = ivec2(gl_FragCoord.xy);					\\\n"
 				"    name = texelFetch(tex, coord, 0);								\\\n"
 				"  } else {															\\\n"
-				"    name = texture(tex, texCoord);									\\\n"
+				"    mediump vec2 texSize = vec2(textureSize(tex,0));				\\\n"
+				"    name = texture(tex, texCoord/texSize);							\\\n"
 				"  }																\\\n"
 				"  if (fbMonochrome == 1) name = vec4(name.r);						\\\n"
 				"  else if (fbMonochrome == 2) 										\\\n"
@@ -1407,7 +1418,7 @@ public:
 	ShaderFragmentClampWrapMirrorTex0(const opengl::GLInfo & _glinfo)
 	{
 		m_part =
-			"  texCoord0 = clampWrapMirror(vTexCoord0, uTexClamp0, uTexWrap0, uTexMirror0, uTexScale0);	\n"
+			" texCoord0 = clampWrapMirror(vTexCoord0, uTexWrap0, uTexClamp0, uTexClampEn0, uTexMirrorEn0);	\n"
 			;
 	}
 };
@@ -1418,7 +1429,7 @@ public:
 	ShaderFragmentClampWrapMirrorTex1(const opengl::GLInfo & _glinfo)
 	{
 		m_part =
-			"  texCoord1 = clampWrapMirror(vTexCoord1, uTexClamp1, uTexWrap1, uTexMirror1, uTexScale1);	\n"
+			"  texCoord1 = clampWrapMirror(vTexCoord1, uTexWrap1, uTexClamp1, uTexClampEn1, uTexMirrorEn1);	\n"
 			;
 	}
 };
@@ -2353,24 +2364,20 @@ public:
 	ShaderClampWrapMirror(const opengl::GLInfo & _glinfo)
 	{
 		m_part =
-			"highp vec2 clampWrapMirror(in highp vec2 vTexCoord, in highp vec4 vClamp,		\n"
-			"	in highp vec2 vWrap, in lowp vec2 vMirror, in highp vec2 vScale)			\n"
+			"highp vec2 clampWrapMirror(in highp vec2 vTexCoord, in highp vec2 vWrap,		\n"
+			"	in highp vec2 vClamp, in lowp vec2 vClampEn, in lowp vec2 vMirrorEn)		\n"
 			"{																				\n"
-			"  highp vec2 texCoord = clamp(vTexCoord, vClamp.xy, vClamp.zw);				\n"
-			"  lowp vec2 one = vec2(1.0);													\n"
-			"  lowp vec2 clamped = step(vClamp.zw, texCoord);								\n"
-			"  lowp vec2 notClamped = one - clamped;										\n"
-			"  lowp vec2 wrapped = step(vWrap , texCoord);									\n"
-			"  lowp vec2 notWrapped = one - wrapped;										\n"
-			"  texCoord = clamped * texCoord + notClamped * (wrapped*mod(texCoord, vWrap) + notWrapped*texCoord);			\n"
-			"  highp vec2 intPart = floor(texCoord);										\n"
-			"  highp vec2 fractPart = fract(texCoord);										\n"
-			"  lowp vec2 needMirror = step(vec2(0.5), mod(intPart, vWrap)) * vMirror;	\n"
-			"  texCoord = clamped * texCoord + notClamped * fractPart;						\n"
-			"  texCoord = (one - vMirror) * texCoord + vMirror * fractPart;					\n"
-			"  texCoord = (one - texCoord) * needMirror + texCoord * (one - needMirror);	\n"
-			"  texCoord *= vScale;															\n"
-			"  return texCoord;																\n"
+			"	highp vec2 texCoord = vTexCoord;											\n"
+			"	highp vec2 clampedCoord = clamp(texCoord, vec2(0.0), vClamp);				\n"
+			"	texCoord += vClampEn*(clampedCoord-texCoord);								\n"
+			"	highp vec2 invertedCoord = mod(-texCoord-vec2(1.0), vWrap);	 						\n"
+			"	texCoord += vMirrorEn*step(vWrap,mod(texCoord,2.0*vWrap))*(invertedCoord-texCoord);	 	\n"
+			"	texCoord = mod(texCoord,vWrap);						\n"
+			"	texCoord += (1.0-step(1.5,vWrap))*(clampedCoord-texCoord);					\n"
+			"	return texCoord;															\n"
+			"																				\n"
+			"																				\n"
+			"																				\n"
 			"}																				\n"
 			;
 	}

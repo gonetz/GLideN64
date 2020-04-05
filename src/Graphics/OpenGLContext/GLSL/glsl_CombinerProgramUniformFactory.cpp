@@ -924,23 +924,23 @@ public:
 	{
 		m_useTile[0] = _useT0;
 		m_useTile[1] = _useT1;
-		LocateUniform(uTexClamp0);
-		LocateUniform(uTexClamp1);
 		LocateUniform(uTexWrap0);
 		LocateUniform(uTexWrap1);
-		LocateUniform(uTexMirror0);
-		LocateUniform(uTexMirror1);
-		LocateUniform(uTexScale0);
-		LocateUniform(uTexScale1);
+		LocateUniform(uTexClamp0);
+		LocateUniform(uTexClamp1);
+		LocateUniform(uTexClampEn0);
+		LocateUniform(uTexClampEn1);
+		LocateUniform(uTexMirrorEn0);
+		LocateUniform(uTexMirrorEn1);
 	}
 
 	void update(bool _force) override
 	{
-		std::array<f32, 4> aTexClamp[2] = { { -10000.0f, -10000.0f, 10000.0f, 10000.0f },
-											{ -10000.0f, -10000.0f, 10000.0f, 10000.0f } };
-		std::array<f32, 2> aTexWrap[2] = { { 10000.0f, 10000.0f }, { 10000.0f, 10000.0f } };
-		std::array<f32, 2> aTexMirror[2] = { { 0.0f, 0.0f}, { 0.0f, 0.0f } };
-		std::array<f32, 2> aTexScale[2] = { { 1.0f, 1.0f },{ 1.0f, 1.0f } };
+		std::array<f32, 2> aTexWrap[2] = { {0.0f,0.0f}, {0.0f,0.0f} };
+		std::array<f32, 2> aTexClamp[2] = { { 0.0f,0.0f },{ 0.0f,0.0f } };
+		std::array<f32, 2> aTexClampEn[2] = { { 0.0f,0.0f },{ 0.0f,0.0f } };
+		std::array<f32, 2> aTexMirrorEn[2] = { { 0.0f,0.0f },{ 0.0f,0.0f } };
+
 		TextureCache & cache = textureCache();
 		const bool replaceTex1ByTex0 = needReplaceTex1ByTex0();
 		for (u32 t = 0; t < 2; ++t) {
@@ -952,75 +952,53 @@ public:
 			CachedTexture * pTexture = cache.current[tile];
 			if (pTile == nullptr || pTexture == nullptr)
 				continue;
+		
+			if (pTexture->frameBufferTexture != CachedTexture::fbNone)
+			{
+				aTexWrap[t][0] = 1.0;
+				aTexWrap[t][1] = 1.0;
+				aTexClamp[t][0] = f32(pTexture->width);
+				aTexClamp[t][1] = f32(pTexture->height);
+				aTexClampEn[t][0] = 1.0;
+				aTexClampEn[t][1] = 1.0;
+				aTexMirrorEn[t][0] = 0.0;
+				aTexMirrorEn[t][1] = 0.0;
 
-			if (gDP.otherMode.cycleType != G_CYC_COPY) {
-				if (pTexture->clampS) {
-					aTexClamp[t][0] = 0.0f; // S lower bound
-					if (pTexture->frameBufferTexture != CachedTexture::fbNone ||
-						pTile->textureMode == TEXTUREMODE_BGIMAGE)
-						aTexClamp[t][2] = 1.0f;
-					else {
-						u32 tileWidth = ((pTile->lrs - pTile->uls) & 0x03FF) + 1;
-						if (pTile->size > pTexture->size)
-							tileWidth <<= pTile->size - pTexture->size;
-						//	aTexClamp[t][2] = f32(tileWidth) / (pTexture->mirrorS ? f32(pTexture->width) : f32(pTexture->clampWidth)); // S upper bound
-						aTexClamp[t][2] = f32(tileWidth) / f32(pTexture->width); // S upper bound
-					}
-				}
-				if (pTexture->clampT) {
-					aTexClamp[t][1] = 0.0f; // T lower bound
-					if (pTexture->frameBufferTexture != CachedTexture::fbNone ||
-						pTile->textureMode == TEXTUREMODE_BGIMAGE)
-						aTexClamp[t][3] = 1.0f;
-					else {
-						const u32 tileHeight = ((pTile->lrt - pTile->ult) & 0x03FF) + 1;
-						//	aTexClamp[t][3] = f32(tileHeight) / (pTexture->mirrorT ? f32(pTexture->height) : f32(pTexture->clampHeight)); // T upper bound
-						aTexClamp[t][3] = f32(tileHeight) / f32(pTexture->height); // T upper bound
-					}
-				}
 			}
-			if (pTexture->maskS) {
-				const f32 wrapWidth = static_cast<f32>(1 << pTile->originalMaskS);
-				const f32 pow2Width = static_cast<f32>(pow2(pTexture->width));
-				aTexWrap[t][0] = wrapWidth / pow2Width;
-				aTexScale[t][0] = pow2Width / f32(pTexture->width);
-			}
-			if (pTexture->maskT) {
-				const f32 wrapHeight = static_cast<f32>(1 << pTile->originalMaskT);
-				const f32 pow2Height = static_cast<f32>(pow2(pTexture->height));
-				aTexWrap[t][1] = wrapHeight / pow2Height;
-				aTexScale[t][1] = pow2Height / f32(pTexture->height);
-			}
-			if (pTexture->mirrorS) {
-				aTexMirror[t][0] = 1.0f;
-				aTexWrap[t][0] *= 2.0f;
-			}
-			if (pTexture->mirrorT) {
-				aTexMirror[t][1] = 1.0f;
-				aTexWrap[t][1] *= 2.0f;
+			else
+			{
+				aTexWrap[t][0] = f32(1 << pTile->masks);
+				aTexWrap[t][1] = f32(1 << pTile->maskt);
+				aTexClamp[t][0] = f32(pTile->lrs - pTile->uls);
+				aTexClamp[t][1] = f32(pTile->lrt - pTile->ult);
+				aTexClampEn[t][0] = f32(pTile->clamps);
+				aTexClampEn[t][1] = f32(pTile->clampt);
+				aTexMirrorEn[t][0] = f32(pTile->mirrors);
+				aTexMirrorEn[t][1] = f32(pTile->mirrort);
 			}
 		}
-		
-		uTexClamp0.set(aTexClamp[0].data(), _force);
-		uTexClamp1.set(aTexClamp[1].data(), _force);
+
 		uTexWrap0.set(aTexWrap[0][0], aTexWrap[0][1], _force);
 		uTexWrap1.set(aTexWrap[1][0], aTexWrap[1][1], _force);
-		uTexMirror0.set(aTexMirror[0][0], aTexMirror[0][1], _force);
-		uTexMirror1.set(aTexMirror[1][0], aTexMirror[1][1], _force);
-		uTexScale0.set(aTexScale[0][0], aTexScale[0][1], _force);
-		uTexScale1.set(aTexScale[1][0], aTexScale[1][1], _force);
+		uTexClamp0.set(aTexClamp[0][0], aTexClamp[0][1], _force);
+		uTexClamp1.set(aTexClamp[1][0], aTexClamp[1][1], _force);
+		uTexClampEn0.set(aTexClampEn[0][0], aTexClampEn[0][1], _force);
+		uTexClampEn1.set(aTexClampEn[1][0], aTexClampEn[1][1], _force);
+		uTexMirrorEn0.set(aTexMirrorEn[0][0], aTexMirrorEn[0][1], _force);
+		uTexMirrorEn1.set(aTexMirrorEn[1][0], aTexMirrorEn[1][1], _force);
+				
 	}
 
 private:
 	bool m_useTile[2];
-	fv4Uniform uTexClamp0;
-	fv4Uniform uTexClamp1;
 	fv2Uniform uTexWrap0;
 	fv2Uniform uTexWrap1;
-	fv2Uniform uTexMirror0;
-	fv2Uniform uTexMirror1;
-	fv2Uniform uTexScale0;
-	fv2Uniform uTexScale1;
+	fv2Uniform uTexClamp0;
+	fv2Uniform uTexClamp1;
+	fv2Uniform uTexClampEn0;
+	fv2Uniform uTexClampEn1;
+	fv2Uniform uTexMirrorEn0;
+	fv2Uniform uTexMirrorEn1;
 };
 
 class ULights : public UniformGroup
