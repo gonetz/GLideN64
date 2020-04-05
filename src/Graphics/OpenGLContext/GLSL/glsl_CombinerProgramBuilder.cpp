@@ -867,6 +867,8 @@ public:
 			"uniform lowp int uScreenSpaceTriangle;	\n"
 			"highp vec2 texCoord0;					\n"
 			"highp vec2 texCoord1;					\n"
+			"highp vec2[5] tcData0;					\n"
+			"highp vec2[5] tcData1;					\n"
 		;
 
 		if (config.generalEmulation.enableLegacyBlending != 0) {
@@ -1080,6 +1082,18 @@ public:
 			"	in highp vec4 vClamp, in highp vec2 vWrap,			\n"
 			"	in lowp vec2 vMirror, in highp vec2 vOffset);		\n"
 		;
+	}
+};
+
+class ShaderFragmentHeaderTextureEngine : public ShaderPart
+{
+public:
+	ShaderFragmentHeaderTextureEngine(const opengl::GLInfo & _glinfo)
+	{
+		m_part =
+			 "lowp vec2[5] textureEngine0(in highp vec2 texCoord); \n"
+			 "lowp vec2[5] textureEngine1(in highp vec2 texCoord); \n"
+			;
 	}
 };
 
@@ -2429,6 +2443,59 @@ public:
 	}
 };
 
+class ShaderTextureEngine : public ShaderPart
+{
+public:
+	ShaderTextureEngine(const opengl::GLInfo _glinfo) {
+		m_part =
+
+			"highp vec2[5] textureEngine0(in highp vec2 texCoord) \n"
+			"{  \n"
+			"  highp vec2[5] tcData; \n" // {tc00, tc01, tc10, tc11, frPart}
+			"  mediump vec2 intPart = floor(texCoord); \n"
+			"  tcData[0] = clampWrapMirror(intPart, uTexWrap0, uTexClamp0, uTexClampEn0, uTexMirrorEn0); \n"
+			"  tcData[3] = clampWrapMirror(intPart + vec2(1.0,1.0), uTexWrap0, uTexClamp0, uTexClampEn0, uTexMirrorEn0); \n"
+			"  tcData[1] = vec2(tcData[0].s, tcData[3].t); \n"
+			"  tcData[2] = vec2(tcData[3].s, tcData[0].t); \n"
+			"  tcData[4] = texCoord - intPart; \n"
+			"  return tcData;"
+			"}  \n"
+			"highp vec2[5] textureEngine1(in highp vec2 texCoord) \n"
+			"{  \n"
+			"  highp vec2[5] tcData; \n" // {tc00, tc01, tc10, tc11, frPart}
+			"  mediump vec2 intPart = floor(texCoord); \n"
+			"  tcData[0] = clampWrapMirror(intPart, uTexWrap1, uTexClamp1, uTexClampEn1, uTexMirrorEn1); \n"
+			"  tcData[3] = clampWrapMirror(intPart + vec2(1.0,1.0), uTexWrap1, uTexClamp1, uTexClampEn1, uTexMirrorEn1); \n"
+			"  tcData[1] = vec2(tcData[0].s, tcData[3].t); \n"
+			"  tcData[2] = vec2(tcData[3].s, tcData[0].t); \n"
+			"  tcData[4] = texCoord - intPart; \n"
+			"  return tcData;"
+			"}  \n"
+			;
+	}
+};
+
+
+class ShaderFragmentTextureEngineTex0 : public ShaderPart {
+public:
+	ShaderFragmentTextureEngineTex0(const opengl::GLInfo _glinfo)
+	{
+		m_part =
+			"tcData0 = textureEngine0(vTexCoord0); \n"
+			;
+	}
+};
+
+class ShaderFragmentTextureEngineTex1 : public ShaderPart {
+public:
+	ShaderFragmentTextureEngineTex1(const opengl::GLInfo _glinfo)
+	{
+		m_part =
+			"tcData1 = textureEngine1(vTexCoord1); \n"
+			;
+	}
+};
+
 /*---------------ShaderPartsEnd-------------*/
 
 static
@@ -2598,6 +2665,7 @@ graphics::CombinerProgram * CombinerProgramBuilder::buildCombinerProgram(Combine
 		m_fragmentHeaderDepthCompare->write(ssShader);
 		m_fragmentHeaderReadMSTex->write(ssShader);
 		m_fragmentHeaderClampWrapMirror->write(ssShader);
+		m_fragmentHeaderTextureEngine->write(ssShader);
 		if (bUseLod)
 			m_fragmentHeaderMipMap->write(ssShader);
 		else if (g_cycleType < G_CYC_COPY)
@@ -2631,9 +2699,15 @@ graphics::CombinerProgram * CombinerProgramBuilder::buildCombinerProgram(Combine
 
 	if (bUseTextures) {
 		if (combinerInputs.usesTile(0))
+		{
 			m_fragmentClampWrapMirrorTex0->write(ssShader);
+			m_fragmentTextureEngineTex0->write(ssShader);
+		}
 		if (combinerInputs.usesTile(1))
+		{
 			m_fragmentClampWrapMirrorTex1->write(ssShader);
+			m_fragmentTextureEngineTex1->write(ssShader);
+		}
 
 		if (bUseLod) {
 			m_fragmentReadTexMipmap->write(ssShader);
@@ -2673,6 +2747,7 @@ graphics::CombinerProgram * CombinerProgramBuilder::buildCombinerProgram(Combine
 
 	if (bUseTextures) {
 		m_shaderClampWrapMirror->write(ssShader);
+		m_shaderTextureEngine->write(ssShader);
 		if (bUseLod)
 			m_shaderMipmap->write(ssShader);
 		else {
@@ -2784,6 +2859,7 @@ CombinerProgramBuilder::CombinerProgramBuilder(const opengl::GLInfo & _glinfo, o
 , m_fragmentHeaderCalcLight(new ShaderFragmentHeaderCalcLight(_glinfo))
 , m_fragmentHeaderMipMap(new ShaderFragmentHeaderMipMap(_glinfo))
 , m_fragmentHeaderClampWrapMirror(new ShaderFragmentHeaderClampWrapMirror(_glinfo))
+, m_fragmentHeaderTextureEngine(new ShaderFragmentHeaderTextureEngine(_glinfo))
 , m_fragmentHeaderReadMSTex(new ShaderFragmentHeaderReadMSTex(_glinfo))
 , m_fragmentHeaderDither(new ShaderFragmentHeaderDither(_glinfo))
 , m_fragmentHeaderDepthCompare(new ShaderFragmentHeaderDepthCompare(_glinfo))
@@ -2796,6 +2872,8 @@ CombinerProgramBuilder::CombinerProgramBuilder(const opengl::GLInfo & _glinfo, o
 , m_fragmentReadTex1(new ShaderFragmentReadTex1(_glinfo))
 , m_fragmentClampWrapMirrorTex0(new ShaderFragmentClampWrapMirrorTex0(_glinfo))
 , m_fragmentClampWrapMirrorTex1(new ShaderFragmentClampWrapMirrorTex1(_glinfo))
+, m_fragmentTextureEngineTex0(new ShaderFragmentTextureEngineTex0(_glinfo))
+, m_fragmentTextureEngineTex1(new ShaderFragmentTextureEngineTex1(_glinfo))
 , m_fragmentReadTexCopyMode(new ShaderFragmentReadTexCopyMode(_glinfo))
 , m_fragmentReadTexMipmap(new ShaderFragmentReadTexMipmap(_glinfo))
 , m_fragmentCallN64Depth(new ShaderFragmentCallN64Depth(_glinfo))
@@ -2811,6 +2889,7 @@ CombinerProgramBuilder::CombinerProgramBuilder(const opengl::GLInfo & _glinfo, o
 , m_shaderN64DepthCompare(new ShaderN64DepthCompare(_glinfo))
 , m_shaderN64DepthRender(new ShaderN64DepthRender(_glinfo))
 , m_shaderClampWrapMirror(new ShaderClampWrapMirror(_glinfo))
+, m_shaderTextureEngine(new ShaderTextureEngine(_glinfo))
 , m_useProgram(_useProgram)
 , m_combinerOptionsBits(graphics::CombinerProgram::getShaderCombinerOptionsBits())
 {
