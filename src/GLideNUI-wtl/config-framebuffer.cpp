@@ -9,8 +9,10 @@ CFrameBufferTab::CFrameBufferTab() :
 
 BOOL CFrameBufferTab::OnInitDialog(CWindow /*wndFocus*/, LPARAM /*lInitParam*/)
 {
+    SIZE iconSz = { ::GetSystemMetrics(SM_CXICON), ::GetSystemMetrics(SM_CYICON) };
     m_EmulateFBIcon.SubclassWindow(GetDlgItem(IDC_EMULATE_FB_ICON));
-    m_EmulateFBIcon.SetIcon(MAKEINTRESOURCE(IDI_ICON_WARNING), 16, 16);
+    m_EmulateFBIcon.SetIcon(MAKEINTRESOURCE(IDI_ICON_WARNING), iconSz.cx, iconSz.cy);
+    m_EmulateFBIcon.SetWindowPos(HWND_TOP, 0, 0, iconSz.cx, iconSz.cy, SWP_NOMOVE | SWP_NOZORDER);
     m_EmulateFBIcon.SetBackroundBrush((HBRUSH)GetStockObject(WHITE_BRUSH));
 
     CComboBox frameBufferSwapComboBox(GetDlgItem(IDC_CMB_FRAMEBUFFER_SWAP));

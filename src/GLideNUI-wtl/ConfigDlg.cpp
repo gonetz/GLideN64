@@ -118,7 +118,7 @@ void CConfigDlg::OnCustomSettingsToggled(bool checked)
             Rect.right -= Move;
             UseProfile.MoveWindow(&Rect);
         }
-        uint32_t Left = Rect.right + 7;
+        uint32_t Left = Rect.right + 2;
 
         CWindow ProfileStatic = GetDlgItem(IDC_SETTINGS_PROFILE_STATIC);
         ProfileStatic.GetWindowRect(&Rect);
