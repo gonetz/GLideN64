@@ -62,7 +62,6 @@ namespace glsl {
 		ShaderPartPtr m_fragmentHeaderWriteDepth;
 		ShaderPartPtr m_fragmentHeaderCalcLight;
 		ShaderPartPtr m_fragmentHeaderMipMap;
-		ShaderPartPtr m_fragmentHeaderClampWrapMirror;
 		ShaderPartPtr m_fragmentHeaderTextureEngine;
 		ShaderPartPtr m_fragmentHeaderReadMSTex;
 		ShaderPartPtr m_fragmentHeaderDither;
@@ -74,8 +73,6 @@ namespace glsl {
 		ShaderPartPtr m_fragmentBlendMux;
 		ShaderPartPtr m_fragmentReadTex0;
 		ShaderPartPtr m_fragmentReadTex1;
-		ShaderPartPtr m_fragmentClampWrapMirrorTex0;
-		ShaderPartPtr m_fragmentClampWrapMirrorTex1;
 		ShaderPartPtr m_fragmentTextureEngineTex0;
 		ShaderPartPtr m_fragmentTextureEngineTex1;
 		ShaderPartPtr m_fragmentReadTexCopyMode;
@@ -93,7 +90,6 @@ namespace glsl {
 		ShaderPartPtr m_shaderReadtexCopyMode;
 		ShaderPartPtr m_shaderN64DepthCompare;
 		ShaderPartPtr m_shaderN64DepthRender;
-		ShaderPartPtr m_shaderClampWrapMirror;
 		ShaderPartPtr m_shaderTextureEngine;
 
 		std::unique_ptr<CombinerProgramUniformFactory> m_uniformFactory;

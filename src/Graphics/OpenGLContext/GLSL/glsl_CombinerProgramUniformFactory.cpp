@@ -917,10 +917,10 @@ private:
 	iv2Uniform uCacheFrameBuffer;
 };
 
-class UClampWrapMirrorTex : public UniformGroup
+class UTextureEngine : public UniformGroup
 {
 public:
-	UClampWrapMirrorTex(GLuint _program, bool _useT0, bool _useT1)
+	UTextureEngine(GLuint _program, bool _useT0, bool _useT1)
 	{
 		m_useTile[0] = _useT0;
 		m_useTile[1] = _useT1;
@@ -1067,7 +1067,7 @@ void CombinerProgramUniformFactory::buildUniforms(GLuint _program,
 		if (!_key.isRectKey())
 			_uniforms.emplace_back(new UTextureParams(_program, _inputs.usesTile(0), _inputs.usesTile(1)));
 
-		_uniforms.emplace_back(new UClampWrapMirrorTex(_program, _inputs.usesTile(0), _inputs.usesTile(1)));
+		_uniforms.emplace_back(new UTextureEngine(_program, _inputs.usesTile(0), _inputs.usesTile(1)));
 	}
 
 	_uniforms.emplace_back(new UFog(_program));
