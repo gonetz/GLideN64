@@ -53,7 +53,7 @@ BOOL CVideoTab::OnInitDialog(CWindow /*wndFocus*/, LPARAM /*lInitParam*/)
     m_AliasingSlider.SetRangeMax(3);
 
     m_AnisotropicSlider.Attach(GetDlgItem(IDC_ANISOTROPIC_SLIDER));
-    m_AnisotropicSlider.SetTicFreq(1);
+    m_AnisotropicSlider.SetTicFreq(2);
     m_AnisotropicSlider.SetRangeMin(0);
     m_AnisotropicSlider.SetRangeMax(16);
 
@@ -63,8 +63,10 @@ BOOL CVideoTab::OnInitDialog(CWindow /*wndFocus*/, LPARAM /*lInitParam*/)
     aspectComboBox.AddString(L"Stretch");
     aspectComboBox.AddString(L"Try to adjust game to fit");
 
+    SIZE iconSz = { ::GetSystemMetrics(SM_CXSMICON), ::GetSystemMetrics(SM_CYSMICON) };
     m_AAInfoIcon.SubclassWindow(GetDlgItem(IDC_AA_INFO_ICON));
-    m_AAInfoIcon.SetIcon(MAKEINTRESOURCE(IDI_ICON_INFO), 16, 16);
+    m_AAInfoIcon.SetIcon(MAKEINTRESOURCE(IDI_ICON_INFO), iconSz.cx, iconSz.cy);
+    m_AAInfoIcon.SetWindowPos(HWND_TOP, 0, 0, iconSz.cx, iconSz.cy, SWP_NOMOVE | SWP_NOZORDER);
     m_AAInfoIcon.SetBackroundBrush((HBRUSH)GetStockObject(WHITE_BRUSH));
     return true;
 }

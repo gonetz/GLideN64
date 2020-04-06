@@ -84,11 +84,11 @@ LRESULT CTextureEnhancementTab::OnScroll(UINT /*uMsg*/, WPARAM /*wParam*/, LPARA
         int Pos = m_TextureFilterCacheSpin.GetPos();
         if (Pos == 20)
         {
-            m_TextureFilterCacheTxt.SetWindowText(L"999 mb");
+            m_TextureFilterCacheTxt.SetWindowText(L"999 MB");
         }
         else
         {
-            m_TextureFilterCacheTxt.SetWindowText(FormatStrW(L"%d mb", Pos * 50).c_str());
+            m_TextureFilterCacheTxt.SetWindowText(FormatStrW(L"%d MB", Pos * 50).c_str());
         }
     }
     return 0;
