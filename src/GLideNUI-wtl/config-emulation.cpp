@@ -32,8 +32,10 @@ BOOL CEmulationTab::OnInitDialog(CWindow /*wndFocus*/, LPARAM /*lInitParam*/)
     m_N64ResMultiplerSpin.SetPos(2);
     m_N64ResMultiplerSpin.SetBuddy(m_N64ResMultiplerTxt);
 
+    SIZE iconSz = { ::GetSystemMetrics(SM_CXSMICON), ::GetSystemMetrics(SM_CYSMICON) };
     m_GammaIcon.SubclassWindow(GetDlgItem(IDC_GAMMA_ICON));
-    m_GammaIcon.SetIcon(MAKEINTRESOURCE(IDI_ICON_INFO), 16, 16);
+    m_GammaIcon.SetIcon(MAKEINTRESOURCE(IDI_ICON_INFO), iconSz.cx, iconSz.cy);
+    m_GammaIcon.SetWindowPos(HWND_TOP, 0, 0, iconSz.cx, iconSz.cy, SWP_NOMOVE | SWP_NOZORDER);
     m_GammaIcon.SetBackroundBrush((HBRUSH)GetStockObject(WHITE_BRUSH));
     return true;
 }
@@ -71,7 +73,6 @@ void CEmulationTab::LoadSettings(bool blockCustomSettings)
         m_Dlg.OnCustomSettingsToggled(config.generalEmulation.enableCustomSettings != 0);
     }
     CButton(GetDlgItem(IDC_CHK_N64_STYLE_MIP_MAPPING)).SetCheck(config.generalEmulation.enableLOD != 0 ? BST_CHECKED : BST_UNCHECKED);
-    CButton(GetDlgItem(IDC_CHK_NOISE)).SetCheck(config.generalEmulation.enableNoise != 0 ? BST_CHECKED : BST_UNCHECKED);
     CButton(GetDlgItem(IDC_CHK_HWLIGHTING)).SetCheck(config.generalEmulation.enableHWLighting != 0 ? BST_CHECKED : BST_UNCHECKED);
     CButton(GetDlgItem(IDC_CHK_SHADERS_STORAGE)).SetCheck(config.generalEmulation.enableShadersStorage != 0 ? BST_CHECKED : BST_UNCHECKED);
     
@@ -104,7 +105,6 @@ void CEmulationTab::SaveSettings()
 {
     config.generalEmulation.enableCustomSettings = CButton(GetDlgItem(IDC_CHK_USE_PER_GAME)).GetCheck() == BST_CHECKED ? 1 : 0;
     config.generalEmulation.enableLOD = CButton(GetDlgItem(IDC_CHK_N64_STYLE_MIP_MAPPING)).GetCheck() == BST_CHECKED ? 1 : 0;
-    config.generalEmulation.enableNoise = CButton(GetDlgItem(IDC_CHK_NOISE)).GetCheck() == BST_CHECKED ? 1 : 0;
     config.generalEmulation.enableHWLighting = CButton(GetDlgItem(IDC_CHK_HWLIGHTING)).GetCheck() == BST_CHECKED ? 1 : 0;
     config.generalEmulation.enableShadersStorage = CButton(GetDlgItem(IDC_CHK_SHADERS_STORAGE)).GetCheck() == BST_CHECKED ? 1 : 0;
     
