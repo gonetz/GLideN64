@@ -1244,15 +1244,15 @@ public:
 					"  iconvert.b = icolor.b + (uConvertParams[3]*icolor.r + 128)/256;	\\\n"
 					"  iconvert.a = icolor.b;											\\\n"
 					"  name = vec4(iconvert)/255.0;										\n"
-					"#define YUVCONVERT_TEX0(name, tex, texCoord, format)				\\\n"
+					"#define YUVCONVERT_TEX0(name, tex, tcData, format)				\\\n"
 					"  {																\\\n"
-					"  name = texture(tex, texCoord);									\\\n"
+					"  name = texelFetch(tex, ivec2(tcData[0]), 0);									\\\n"
 					"  YUVCONVERT(name, format)											\\\n"
 					"  }																\n"
-					"#define YUVCONVERT_TEX1(name, tex, texCoord, format, prev)			\\\n"
+					"#define YUVCONVERT_TEX1(name, tex, tcData, format, prev)			\\\n"
 					"  {																\\\n"
 					"  if (uTextureConvert != 0) name = prev;							\\\n"
-					"  else name = texture(tex, texCoord);								\\\n"
+					"  else name = texelFetch(tex, ivec2(tcData[0]), 0);								\\\n"
 					"  YUVCONVERT(name, format)											\\\n"
 					"  }																\n"
 					;
@@ -1446,7 +1446,7 @@ public:
 
 			if (!g_textureConvert.getBilerp0()) {
 				shaderPart = "  lowp vec4 readtex0;																			\n"
-							 "  YUVCONVERT_TEX0(readtex0, uTex0, texCoord0, uTextureFormat[0])								\n";
+							 "  YUVCONVERT_TEX0(readtex0, uTex0, tcData0, uTextureFormat[0])								\n";
 			} else {
 				if (config.video.multisampling > 0) {
 					shaderPart =
@@ -1495,7 +1495,7 @@ public:
 			if (!g_textureConvert.getBilerp1()) {
 				shaderPart =
 					"  lowp vec4 readtex1;																							\n"
-					"    YUVCONVERT_TEX1(readtex1, uTex1, texCoord1, uTextureFormat[1], readtex0)					\n";
+					"    YUVCONVERT_TEX1(readtex1, uTex1, tcData1, uTextureFormat[1], readtex0)					\n";
 			} else {
 				if (config.video.multisampling > 0) {
 					shaderPart =
