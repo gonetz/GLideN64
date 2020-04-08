@@ -27,6 +27,7 @@
 #include <Graphics/Parameters.h>
 #include <Graphics/ColorBufferReader.h>
 #include <DisplayWindow.h>
+#include "BlueNoiseTexture.h"
 
 using namespace graphics;
 
@@ -42,6 +43,8 @@ ColorBufferToRDRAM::ColorBufferToRDRAM()
 	m_allowedRealWidths[1] = 480;
 	m_allowedRealWidths[2] = 640;
 }
+
+u32 ColorBufferToRDRAM::m_blueNoiseIdx = 0;
 
 ColorBufferToRDRAM::~ColorBufferToRDRAM()
 {
@@ -234,17 +237,59 @@ bool ColorBufferToRDRAM::_prepareCopy(u32& _startAddress)
 	return true;
 }
 
-u8 ColorBufferToRDRAM::_RGBAtoR8(u8 _c) {
+u8 ColorBufferToRDRAM::_RGBAtoR8(u8 _c, u32 x, u32 y) {
 	return _c;
 }
 
-u16 ColorBufferToRDRAM::_RGBAtoRGBA16(u32 _c) {
-	RGBA c;
+u16 ColorBufferToRDRAM::_RGBAtoRGBA16(u32 _c, u32 x, u32 y) {
+	// Precalculated 4x4 bayer matrix values for 5Bit
+	static const s32 thresholdMapBayer[4][4] = {
+		{ -4, 2, -3, 4 },
+		{ 0, -2, 2, -1 },
+		{ -3, 3, -4, 3 },
+		{ 1, -1, 1, -2 }
+	};
+
+	// Precalculated 4x4 magic square matrix values for 5Bit
+	static const s32 thresholdMapMagicSquare[4][4] = {
+		{ -4, 2, 2, -1 },
+		{ 3, -2, -3, 1 },
+		{ -3, 0, 4, -2 },
+		{ 3, -1, -4, 1 }
+	};
+
+	union RGBA c;
 	c.raw = _c;
-	return ((c.r >> 3) << 11) | ((c.g >> 3) << 6) | ((c.b >> 3) << 1) | (c.a == 0 ? 0 : 1);
+	
+	if (config.generalEmulation.enableDitheringPattern == 0 || config.frameBufferEmulation.nativeResFactor != 1) {
+		// Apply color dithering
+		switch (config.generalEmulation.rdramImageDitheringMode) {
+		case Config::BufferDitheringMode::bdmBayer:
+		case Config::BufferDitheringMode::bdmMagicSquare:
+		{
+			s32 threshold = config.generalEmulation.rdramImageDitheringMode == Config::BufferDitheringMode::bdmBayer ?
+				thresholdMapBayer[x & 3][y & 3] :
+				thresholdMapMagicSquare[x & 3][y & 3];
+			c.r = (u8)std::max(std::min((s32)c.r + threshold, 255), 0);
+			c.g = (u8)std::max(std::min((s32)c.g + threshold, 255), 0);
+			c.b = (u8)std::max(std::min((s32)c.b + threshold, 255), 0);
+		}
+		break;
+		case Config::BufferDitheringMode::bdmBlueNoise:
+		{
+			const BlueNoiseItem& threshold = blueNoiseTex[m_blueNoiseIdx & 7][x & 63][y & 63];
+			c.r = (u8)std::max(std::min((s32)c.r + threshold.r, 255), 0);
+			c.g = (u8)std::max(std::min((s32)c.g + threshold.g, 255), 0);
+			c.b = (u8)std::max(std::min((s32)c.b + threshold.b, 255), 0);
+		}
+		break;
+		}
+	}
+
+	return ((c.r >> 3) << 11) | ((c.g >> 3) << 6) | ((c.b >> 3) << 1) | (c.a == 0 ? 0 : 1);	
 }
 
-u32 ColorBufferToRDRAM::_RGBAtoRGBA32(u32 _c) {
+u32 ColorBufferToRDRAM::_RGBAtoRGBA32(u32 _c, u32 x, u32 y) {
 	RGBA c;
 	c.raw = _c;
 	return (c.r << 24) | (c.g << 16) | (c.b << 8) | c.a;
@@ -284,6 +329,7 @@ void ColorBufferToRDRAM::_copy(u32 _startAddress, u32 _endAddress, bool _sync)
 	} else if (m_pCurFrameBuffer->m_size == G_IM_SIZ_16b) {
 		u32 *ptr_src = (u32*)pPixels;
 		u16 *ptr_dst = (u16*)(RDRAM + _startAddress);
+		m_blueNoiseIdx++;
 
 		if (!FBInfo::fbInfo.isSupported() && config.frameBufferEmulation.copyFromRDRAM != 0) {
 			memset(ptr_dst, 0, numPixels * 2);

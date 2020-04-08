@@ -89,6 +89,7 @@
 #define G_GCI_K5				18
 #define G_GCI_ONE				19
 #define G_GCI_ZERO				20
+#define G_GCI_HALF				21
 #define G_GCI_HW_LIGHT			22
 
 struct CombinerOp

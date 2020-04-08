@@ -109,7 +109,7 @@ void BufferedDrawer::_updateRectBuffer(const graphics::Context::DrawRectParamete
 		return;
 	}
 
-	const u32 crc = CRC_Calculate(0xFFFFFFFF, _params.vertices, dataSize);
+	const u64 crc = CRC_Calculate(UINT64_MAX, _params.vertices, dataSize);
 	auto iter = m_rectBufferOffsets.find(crc);
 	if (iter != m_rectBufferOffsets.end()) {
 		buffer.pos = iter->second;

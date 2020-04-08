@@ -64,7 +64,8 @@ const char *ColorInput[] = {
 	"vec3(uK4)",
 	"vec3(uK5)",
 	"vec3(1.0)",
-	"vec3(0.0)"
+	"vec3(0.0)",
+	"vec3(0.5)"
 };
 
 static
@@ -89,7 +90,8 @@ const char *AlphaInput[] = {
 	"uK4",
 	"uK5",
 	"1.0",
-	"0.0"
+	"0.0",
+	"0.5"
 };
 
 inline
@@ -111,6 +113,26 @@ void _correctFirstStageParams(CombinerStage & _stage)
 		_stage.op[i].param1 = correctFirstStageParam(_stage.op[i].param1);
 		_stage.op[i].param2 = correctFirstStageParam(_stage.op[i].param2);
 		_stage.op[i].param3 = correctFirstStageParam(_stage.op[i].param3);
+	}
+}
+
+inline
+int correctFirstStageParam2Cyc(int _param)
+{
+	switch (_param) {
+	case G_GCI_COMBINED:
+		return G_GCI_HALF;
+	}
+	return _param;
+}
+
+static
+void _correctFirstStageParams2Cyc(CombinerStage & _stage)
+{
+	for (int i = 0; i < _stage.numOps; ++i) {
+		_stage.op[i].param1 = correctFirstStageParam2Cyc(_stage.op[i].param1);
+		_stage.op[i].param2 = correctFirstStageParam2Cyc(_stage.op[i].param2);
+		_stage.op[i].param3 = correctFirstStageParam2Cyc(_stage.op[i].param3);
 	}
 }
 
@@ -241,6 +263,7 @@ public:
 			ss << "# define IN in" << std::endl << "# define OUT out" << std::endl;
 			m_part = ss.str();
 		}
+		m_part += "uniform lowp float uClipRatio; \n";
 	}
 };
 
@@ -432,6 +455,7 @@ public:
 					;
 		}
 		m_part +=
+			" gl_Position.zw *= vec2(uClipRatio);	 \n"
 			"} \n"
 			;
 	}
@@ -499,6 +523,10 @@ public:
 				<< "# define texture2D texture" << std::endl;
 			m_part = ss.str();
 		}
+		m_part +=
+			// Return the vector of the standard basis of R^4 with a 1 at position <pos> and 0 otherwise.
+			"  #define STVEC(pos) step(float(pos) - 0.5, vec4(0.0,1.0,2.0,3.0)) - step(float(pos) + 0.5, vec4(0.0,1.0,2.0,3.0)) \n";
+
 	}
 };
 
@@ -509,7 +537,6 @@ public:
 	{
 #if 1
 			m_part =
-				"  #define STVEC(pos) step(float(pos) - 0.5, vec4(0.0,1.0,2.0,3.0)) - step(float(pos) + 0.5, vec4(0.0,1.0,2.0,3.0)) \n" // Return the vector of the standard basis of R^4 with a 1 at position <pos> and 0 otherwise.
 				"  #define MUXA(pos) dot(muxA, STVEC(pos))				\n"
 				"  #define MUXB(pos) dot(muxB, STVEC(pos))				\n"
 				"  #define MUXPM(pos) muxPM*(STVEC(pos))				\n"
@@ -691,17 +718,87 @@ public:
 	}
 };
 
-class ShaderCallDither : public ShaderPart
+class ShaderDithering : public ShaderPart
 {
 public:
-	ShaderCallDither(const opengl::GLInfo & _glinfo)
+	ShaderDithering(const opengl::GLInfo & _glinfo)
 	{
-		if (!_glinfo.isGLES2 && config.generalEmulation.enableNoise != 0) {
+		if (_glinfo.isGLES2)
+			return;
+
+		if (config.generalEmulation.enableDitheringPattern == 0) {
 			m_part =
-				"  if (uColorDitherMode == 2) colorNoiseDither(snoise(), clampedColor.rgb);	\n"
-				"  if (uAlphaDitherMode == 2) alphaNoiseDither(snoise(), clampedColor.a);	\n"
+				"  if (uColorDitherMode == 2) {											\n"
+				"    colorDither(snoiseRGB(), clampedColor.rgb);						\n"
+				"  }																	\n"
+				"  if (uAlphaDitherMode == 2) {											\n"
+				"    alphaDither(snoiseA(), clampedColor.a);							\n"
+				"  }																	\n"
 				;
+			return;
 		}
+
+		m_part +=
+			"  lowp mat4 bayer = mat4( 0.0, 0.75, 0.1875, 0.9375,						\n"
+			"                          0.5, 0.25, 0.6875, 0.4375,						\n"
+			"                          0.125, 0.875, 0.0625, 0.8125,					\n"
+			"                          0.625, 0.375, 0.5625, 0.3125);					\n"
+			"  lowp mat4 mSquare = mat4( 0.0, 0.6875, 0.75, 0.4375,						\n"
+			"                            0.875, 0.3125, 0.125, 0.5625, 					\n"
+			"                            0.1875, 0.5, 0.9375, 0.25,						\n"
+			"                            0.8125, 0.375, 0.0625, 0.625);					\n"
+			// Try to keep dithering visible even at higher resolutions
+			"  lowp float divider = 1.0 + step(3.0, uScreenScale.x);					\n"
+			"  mediump ivec2 position = ivec2(mod((gl_FragCoord.xy - 0.5) / divider,4.0));\n"
+			"  lowp vec4 posX = STVEC(position.x);										\n"
+			"  lowp vec4 posY = STVEC(position.y);										\n"
+			"  lowp float bayerThreshold = dot(bayer*posY, posX);						\n"
+			"  lowp float mSquareThreshold = dot(mSquare*posY, posX);					\n"
+			"  switch (uColorDitherMode) {												\n"
+			"     case 0:																\n"
+			"       colorDither(vec3(mSquareThreshold), clampedColor.rgb);				\n"
+			"     break;																\n"
+			"     case 1:																\n"
+			"       colorDither(vec3(bayerThreshold), clampedColor.rgb);				\n"
+			"       break;																\n"
+			"     case 2:																\n"
+			"       colorDither(snoiseRGB(), clampedColor.rgb);							\n"
+			"       break;																\n"
+			"     case 3:																\n"
+			"       break;																\n"
+			"  }																		\n"
+			"  switch (uAlphaDitherMode) {												\n"
+			"     case 0:																\n"
+			"       switch (uColorDitherMode) {											\n"
+			"         case 0:															\n"
+			"         case 2:															\n"
+			"           alphaDither(mSquareThreshold, clampedColor.a);					\n"
+			"           break;															\n"
+			"         case 1:															\n"
+			"         case 3:															\n"
+			"           alphaDither(bayerThreshold, clampedColor.a);					\n"
+			"           break;															\n"
+			"       }																	\n"
+			"       break;																\n"
+			"     case 1:																\n"
+			"       switch (uColorDitherMode) {											\n"
+			"         case 0:															\n"
+			"         case 2:															\n"
+			"           alphaDither(bayerThreshold, clampedColor.a);					\n"
+			"           break;															\n"
+			"         case 1:															\n"
+			"         case 3:															\n"
+			"           alphaDither(mSquareThreshold, clampedColor.a);					\n"
+			"           break;															\n"
+			"       }																	\n"
+			"       break;																\n"
+			"     case 2:																\n"
+			"       alphaDither(snoiseA(), clampedColor.a);								\n"
+			"       break;																\n"
+			"     case 3:																\n"
+			"       break;																\n"
+			"  }																		\n"
+			;
 	}
 };
 
@@ -883,7 +980,7 @@ public:
 	ShaderFragmentHeaderNoise(const opengl::GLInfo & _glinfo)
 	{
 		m_part =
-			"lowp float snoise();\n";
+			"lowp float snoise();\n"
 		;
 	}
 };
@@ -971,12 +1068,15 @@ class ShaderFragmentHeaderDither : public ShaderPart
 public:
 	ShaderFragmentHeaderDither(const opengl::GLInfo & _glinfo)
 	{
-		if (!_glinfo.isGLES2 && config.generalEmulation.enableNoise != 0) {
-			m_part =
-				"void colorNoiseDither(in lowp float _noise, inout lowp vec3 _color);\n"
-				"void alphaNoiseDither(in lowp float _noise, inout lowp float _alpha);\n";
+		if (_glinfo.isGLES2)
+			return;
+
+		m_part =
+			"void colorDither(in lowp vec3 _threshold, inout lowp vec3 _color);\n"
+			"void alphaDither(in lowp float _threshold, inout lowp float _alpha);\n"
+			"lowp vec3 snoiseRGB();\n"
+			"lowp float snoiseA();\n"
 			;
-		}
 	}
 };
 
@@ -1547,35 +1647,25 @@ class ShaderNoise : public ShaderPart
 public:
 	ShaderNoise(const opengl::GLInfo & _glinfo)
 	{
-		if (config.generalEmulation.enableNoise == 0) {
-			// Dummy noise
+		if (_glinfo.isGLES2) {
 			m_part =
-				"lowp float snoise()	\n"
-				"{						\n"
-				"  return 0.5;			\n"
-				"}						\n"
+				"uniform sampler2D uTexNoise;							\n"
+				"lowp float snoise()									\n"
+				"{														\n"
+				"  mediump vec2 texSize = vec2(640.0, 580.0);			\n"
+				"  mediump vec2 coord = gl_FragCoord.xy/uScreenScale/texSize;	\n"
+				"  return texture2D(uTexNoise, coord).r;				\n"
+				"}														\n"
 				;
 		} else {
-			if (_glinfo.isGLES2) {
-				m_part =
-					"uniform sampler2D uTexNoise;							\n"
-					"lowp float snoise()									\n"
-					"{														\n"
-					"  mediump vec2 texSize = vec2(640.0, 580.0);			\n"
-					"  mediump vec2 coord = gl_FragCoord.xy/uScreenScale/texSize;	\n"
-					"  return texture2D(uTexNoise, coord).r;				\n"
-					"}														\n"
+			m_part =
+				"uniform sampler2D uTexNoise;							\n"
+				"lowp float snoise()									\n"
+				"{														\n"
+				"  ivec2 coord = ivec2(gl_FragCoord.xy/uScreenScale);	\n"
+				"  return texelFetch(uTexNoise, coord, 0).r;			\n"
+				"}														\n"
 				;
-			} else {
-				m_part =
-					"uniform sampler2D uTexNoise;		\n"
-					"lowp float snoise()									\n"
-					"{														\n"
-					"  ivec2 coord = ivec2(gl_FragCoord.xy/uScreenScale);	\n"
-					"  return texelFetch(uTexNoise, coord, 0).r;			\n"
-					"}														\n"
-					;
-			}
 		}
 	}
 };
@@ -1585,26 +1675,81 @@ class ShaderDither : public ShaderPart
 public:
 	ShaderDither(const opengl::GLInfo & _glinfo)
 	{
-		if (!_glinfo.isGLES2 && config.generalEmulation.enableNoise != 0) {
+		if (_glinfo.isGLES2)
+			return;
+
+		if (config.generalEmulation.enableDitheringQuantization != 0) {
 			m_part =
-				"void colorNoiseDither(in lowp float _noise, inout lowp vec3 _color)	\n"
-				"{															\n"
-				"    mediump vec3 tmpColor = _color*255.0;					\n"
-				"    mediump ivec3 iColor = ivec3(tmpColor);				\n"
-				//"    iColor &= 248;										\n" // does not work with HW lighting enabled (why?!)
-				"    iColor |= ivec3(tmpColor*_noise)&7;					\n"
-				"    _color = vec3(iColor)/255.0;							\n"
-				"}															\n"
-				"void alphaNoiseDither(in lowp float _noise, inout lowp float _alpha)	\n"
-				"{															\n"
-				"    mediump float tmpAlpha = _alpha*255.0;					\n"
-				"    mediump int iAlpha = int(tmpAlpha);					\n"
-				//"    iAlpha &= 248;											\n" // causes issue #518. need further investigation
-				"    iAlpha |= int(tmpAlpha*_noise)&7;						\n"
-				"    _alpha = float(iAlpha)/255.0;							\n"
-				"}															\n"
-			;
+				"void quantizeRGB(inout lowp vec3 _color)				\n"
+				"{														\n"
+				"     _color.rgb = round(_color.rgb * 32.0)/32.0;		\n"
+				"}														\n"
+				"void quantizeA(inout lowp float _alpha)				\n"
+				"{														\n"
+				"     _alpha = round(_alpha * 32.0)/32.0;				\n"
+				"}														\n"
+				;
+		} else {
+			m_part =
+				"void quantizeRGB(inout lowp vec3 _color){}\n"
+				"void quantizeA(inout lowp float _alpha){}\n"
+				;
 		}
+
+		m_part +=
+			"void colorDither(in lowp vec3 _noise, inout lowp vec3 _color)\n"
+			"{															\n"
+			"  mediump vec3 threshold = 7.0 / 255.0 * (_noise - 0.5);	\n"
+			"  _color = clamp(_color + threshold,0.0,1.0);				\n"
+			"  quantizeRGB(_color);										\n"
+			"}															\n"
+			"void alphaDither(in lowp float _noise, inout lowp float _alpha)\n"
+			"{															\n"
+			"  mediump float threshold = 7.0 / 255.0 * (_noise - 0.5);	\n"
+			"  _alpha = clamp(_alpha + threshold,0.0,1.0);				\n"
+			"  quantizeA(_alpha);										\n"
+			"}															\n"
+			"lowp vec3 snoiseRGB()									\n"
+			"{														\n"
+			"  mediump vec2 texSize = vec2(640.0, 580.0);			\n"
+			;
+		if (config.generalEmulation.enableHiresNoiseDithering != 0)
+			// multiplier for higher res noise effect
+			m_part +=
+			"  lowp float mult = 1.0 + step(2.0, uScreenScale.x);	\n";
+		else
+			m_part +=
+			"  lowp float mult = 1.0;								\n";
+		m_part +=
+			"	mediump vec2 coordR = mult * ((gl_FragCoord.xy)/uScreenScale/texSize);\n"
+			"	mediump vec2 coordG = mult * ((gl_FragCoord.xy + vec2( 0.0, texSize.y / 2.0 ))/uScreenScale/texSize);\n"
+			"	mediump vec2 coordB = mult * ((gl_FragCoord.xy + vec2( texSize.x / 2.0,  0.0))/uScreenScale/texSize);\n"
+			// Only red channel of noise texture contains noise.
+			"  lowp float r = texture(uTexNoise,coordR).r;			\n"
+			"  lowp float g = texture(uTexNoise,coordG).r;			\n"
+			"  lowp float b = texture(uTexNoise,coordB).r;			\n"
+			"														\n"
+			"  return vec3(r,g,b);									\n"
+			"}														\n"
+			"lowp float snoiseA()									\n"
+			"{														\n"
+			"  mediump vec2 texSize = vec2(640.0, 580.0);			\n"
+			;
+		if (config.generalEmulation.enableHiresNoiseDithering != 0)
+			// multiplier for higher res noise effect
+			m_part +=
+			"  lowp float mult = 1.0 + step(2.0, uScreenScale.x);	\n";
+		else
+			m_part +=
+			"  lowp float mult = 1.0;								\n";
+		m_part +=
+			"														\n"
+			"	mediump vec2 coord = mult * ((gl_FragCoord.xy)/uScreenScale/texSize);\n"
+			"														\n"
+			// Only red channel of noise texture contains noise.
+			"  return texture(uTexNoise,coord).r;					\n"
+			"}														\n"
+			;
 	}
 };
 
@@ -1627,17 +1772,19 @@ public:
 				if ((config.generalEmulation.hacks & hack_RE2) != 0) {
 					m_part =
 						"uniform lowp usampler2D uZlutImage;\n"
-						"highp float writeDepth()						        													\n"
-						"{																									\n"
+						"highp float writeDepth()																		\n"
+						"{																								\n"
 						;
 					if (_glinfo.isGLESX && _glinfo.noPerspective) {
 						m_part +=
 							"  if (uClampMode == 1 && (vZCoord > 1.0)) discard;	\n"
-							"  highp float FragDepth = clamp((vZCoord - uPolygonOffset) * uDepthScale.s + uDepthScale.t, 0.0, 1.0);	\n"
+							"  highp float FragDepth = (uDepthSource != 0) ? uPrimDepth :								\n"
+							"           clamp((vZCoord - uPolygonOffset) * uDepthScale.s + uDepthScale.t, 0.0, 1.0);	\n"
 							;
 					} else {
 						m_part +=
-							"  highp float FragDepth = clamp((gl_FragCoord.z * 2.0 - 1.0) * uDepthScale.s + uDepthScale.t, 0.0, 1.0);	\n"
+							"  highp float FragDepth = (uDepthSource != 0) ? uPrimDepth :								\n"
+							"            clamp((gl_FragCoord.z * 2.0 - 1.0) * uDepthScale.s + uDepthScale.t, 0.0, 1.0);	\n"
 						;
 					}
 					m_part +=
@@ -2291,6 +2438,9 @@ CombinerInputs CombinerProgramBuilder::compileCombiner(const CombinerKey & _key,
 	if (g_cycleType != G_CYC_2CYCLE) {
 		_correctFirstStageParams(_alpha.stage[0]);
 		_correctFirstStageParams(_color.stage[0]);
+	} else {
+		_correctFirstStageParams2Cyc(_alpha.stage[0]);
+		_correctFirstStageParams2Cyc(_color.stage[0]);
 	}
 	ssShader << "  alpha1 = ";
 	CombinerInputs inputs = _compileCombiner(_alpha.stage[0], AlphaInput, ssShader);
@@ -2575,7 +2725,7 @@ CombinerProgramBuilder::CombinerProgramBuilder(const opengl::GLInfo & _glinfo, o
 , m_signExtendColorABD(new ShaderSignExtendColorABD)
 , m_signExtendAlphaABD(new ShaderSignExtendAlphaABD)
 , m_alphaTest(new ShaderAlphaTest)
-, m_callDither(new ShaderCallDither(_glinfo))
+, m_callDither(new ShaderDithering(_glinfo))
 , m_vertexHeader(new VertexShaderHeader(_glinfo))
 , m_vertexEnd(new VertexShaderEnd(_glinfo))
 , m_vertexRect(new VertexShaderRect(_glinfo))

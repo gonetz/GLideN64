@@ -40,7 +40,10 @@ void _loadSettings(QSettings & settings)
 	settings.endGroup();
 
 	settings.beginGroup("generalEmulation");
-	config.generalEmulation.enableNoise = settings.value("enableNoise", config.generalEmulation.enableNoise).toInt();
+	config.generalEmulation.enableDitheringPattern = settings.value("enableDitheringPattern", config.generalEmulation.enableDitheringPattern).toInt();
+	config.generalEmulation.enableDitheringQuantization = settings.value("enableDitheringQuantization", config.generalEmulation.enableDitheringQuantization).toInt();
+	config.generalEmulation.enableHiresNoiseDithering = settings.value("enableHiresNoiseDithering", config.generalEmulation.enableHiresNoiseDithering).toInt();
+	config.generalEmulation.rdramImageDitheringMode = settings.value("rdramImageDitheringMode", config.generalEmulation.rdramImageDitheringMode).toInt();
 	config.generalEmulation.enableLOD = settings.value("enableLOD", config.generalEmulation.enableLOD).toInt();
 	config.generalEmulation.enableHWLighting = settings.value("enableHWLighting", config.generalEmulation.enableHWLighting).toInt();
 	config.generalEmulation.enableShadersStorage = settings.value("enableShadersStorage", config.generalEmulation.enableShadersStorage).toInt();
@@ -212,7 +215,10 @@ void writeSettings(const QString & _strIniFolder)
 	settings.endGroup();
 
 	settings.beginGroup("generalEmulation");
-	settings.setValue("enableNoise", config.generalEmulation.enableNoise);
+	settings.setValue("enableDitheringPattern", config.generalEmulation.enableDitheringPattern);
+	settings.setValue("enableDitheringQuantization", config.generalEmulation.enableDitheringQuantization);
+	settings.setValue("enableHiresNoiseDithering", config.generalEmulation.enableHiresNoiseDithering);
+	settings.setValue("rdramImageDitheringMode", config.generalEmulation.rdramImageDitheringMode);
 	settings.setValue("enableLOD", config.generalEmulation.enableLOD);
 	settings.setValue("enableHWLighting", config.generalEmulation.enableHWLighting);
 	settings.setValue("enableShadersStorage", config.generalEmulation.enableShadersStorage);
@@ -402,7 +408,10 @@ void saveCustomRomSettings(const QString & _strIniFolder, const char * _strRomNa
 	settings.endGroup();
 
 	settings.beginGroup("generalEmulation");
-	WriteCustomSetting(generalEmulation, enableNoise);
+	WriteCustomSetting(generalEmulation, enableDitheringPattern);
+	WriteCustomSetting(generalEmulation, enableDitheringQuantization);
+	WriteCustomSetting(generalEmulation, enableHiresNoiseDithering);
+	WriteCustomSetting(generalEmulation, rdramImageDitheringMode);
 	WriteCustomSetting(generalEmulation, enableLOD);
 	WriteCustomSetting(generalEmulation, enableHWLighting);
 	WriteCustomSetting(generalEmulation, enableShadersStorage);

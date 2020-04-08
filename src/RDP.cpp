@@ -564,7 +564,7 @@ inline u32 READ_RDP_DATA(u32 address)
 	if (dp_status & 0x1)          // XBUS_DMEM_DMA enabled
 		return rsp_dmem[(address & 0xfff)>>2];
 	else
-		return rdram[address>>2];
+		return rdram[(address & 0xffffff)>>2];
 }
 
 void RDP_ProcessRDPList()

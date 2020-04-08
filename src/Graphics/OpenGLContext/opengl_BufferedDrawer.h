@@ -74,7 +74,7 @@ namespace opengl {
 
 		std::vector<Vertex> m_vertices;
 
-		typedef std::unordered_map<u32, u32> BufferOffsets;
+		typedef std::unordered_map<u64, u32> BufferOffsets;
 		BufferOffsets m_rectBufferOffsets;
 
 		static const u32 m_bufMaxSize;

@@ -119,11 +119,11 @@ u32 ReliableHash32NEON(const void *input, size_t len, u32 seed) {
 	return h32;
 }
 
-u32 CRC_Calculate(u32 crc, const void *buffer, u32 count) {
+u64 CRC_Calculate(u64 crc, const void *buffer, u32 count) {
 	return ReliableHash32NEON(buffer, count, crc);
 }
 
-u32 CRC_CalculatePalette(u32 crc, const void *buffer, u32 count) {
+u64 CRC_CalculatePalette(u64 crc, const void *buffer, u32 count) {
 	u8 *p = (u8 *) buffer;
 	while (count--) {
 		crc = ReliableHash32NEON(p, 2, crc);
