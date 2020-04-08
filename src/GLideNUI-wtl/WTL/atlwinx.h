@@ -549,7 +549,6 @@ inline ATLAPI_(SIZE) Dpi()
 inline ATLAPI_(SIZEF) DpiScale()
 {
     SIZE dpi = Dpi();
-    ATLASSUME(dpi != NULL);
     SIZEF dpiScale = { (FLOAT)dpi.cx, (FLOAT)dpi.cy };
 
     dpiScale.cx /= DEFAULT_DPI;
@@ -583,7 +582,6 @@ inline ATLAPI_(SIZEF) DpiScale(
 {
     ATLENSURE_THROW(hWnd != NULL, E_POINTER);
     SIZE dpi = Dpi(hWnd);
-    ATLASSUME(dpi != NULL);
     SIZEF dpiScale = { (FLOAT)dpi.cx, (FLOAT)dpi.cy };
 
     dpiScale.cx /= DEFAULT_DPI;
