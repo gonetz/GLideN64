@@ -63,6 +63,12 @@ BOOL CVideoTab::OnInitDialog(CWindow /*wndFocus*/, LPARAM /*lInitParam*/)
     aspectComboBox.AddString(L"Stretch");
     aspectComboBox.AddString(L"Try to adjust game to fit");
 
+    CComboBox ditheringModeComboBox(GetDlgItem(IDC_CMB_PATTERN));
+    ditheringModeComboBox.AddString(L"disable");
+    ditheringModeComboBox.AddString(L"Bayer");
+    ditheringModeComboBox.AddString(L"Magic square");
+    ditheringModeComboBox.AddString(L"Blue noise");
+
     SIZE iconSz = { ::GetSystemMetrics(SM_CXSMICON), ::GetSystemMetrics(SM_CYSMICON) };
     m_AAInfoIcon.SubclassWindow(GetDlgItem(IDC_AA_INFO_ICON));
     m_AAInfoIcon.SetIcon(MAKEINTRESOURCE(IDI_ICON_INFO), iconSz.cx, iconSz.cy);
@@ -260,6 +266,11 @@ void CVideoTab::LoadSettings(bool /*blockCustomSettings*/)
         aspectComboBox.SetCurSel(3);
         break;
     }
+
+    CComboBox(GetDlgItem(IDC_CMB_PATTERN)).SetCurSel(config.generalEmulation.rdramImageDitheringMode);
+    CButton(GetDlgItem(IDC_CHK_APPLY_TO_OUTPUT)).SetCheck(config.generalEmulation.enableDitheringPattern == 0 ? BST_CHECKED : BST_UNCHECKED);
+    CButton(GetDlgItem(IDC_CHK_5BIT_QUANTIZATION)).SetCheck(config.generalEmulation.enableDitheringQuantization == 0 ? BST_CHECKED : BST_UNCHECKED);
+    CButton(GetDlgItem(IDC_CHK_HIRES_NOISE)).SetCheck(config.generalEmulation.enableHiresNoiseDithering == 0 ? BST_CHECKED : BST_UNCHECKED);
 }
 
 void CVideoTab::SaveSettings()
@@ -332,4 +343,9 @@ void CVideoTab::SaveSettings()
     {
         config.texture.screenShotFormat = 1;
     }
+
+    config.generalEmulation.rdramImageDitheringMode = CComboBox(GetDlgItem(IDC_CMB_PATTERN)).GetCurSel();
+    config.generalEmulation.enableDitheringPattern = CButton(GetDlgItem(IDC_CHK_APPLY_TO_OUTPUT)).GetCheck() == BST_CHECKED ? 1 : 0;
+    config.generalEmulation.enableDitheringQuantization = CButton(GetDlgItem(IDC_CHK_5BIT_QUANTIZATION)).GetCheck() == BST_CHECKED ? 1 : 0;
+    config.generalEmulation.enableHiresNoiseDithering = CButton(GetDlgItem(IDC_CHK_HIRES_NOISE)).GetCheck() == BST_CHECKED ? 1 : 0;
 }
