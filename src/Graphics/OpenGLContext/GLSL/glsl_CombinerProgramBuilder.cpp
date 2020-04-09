@@ -1851,9 +1851,9 @@ public:
 					"  readtex1 = texture2DLodEXT(uTex1, texCoord1, 0.0);		\n"
 					"														\n"
 					"  mediump float fMaxTile = float(uMaxTile);			\n"
-					"  mediump vec2 dx = abs(dFdx(vLodTexCoord));			\n"
-					"  dx *= uScreenScale;									\n"
-					"  mediump float lod = max(dx.x, dx.y);					\n"
+					"  mediump vec2 dx = abs(dFdx(vLodTexCoord)) * uScreenScale;	\n"
+					"  mediump vec2 dy = abs(dFdy(vLodTexCoord)) * uScreenScale;	\n"
+					"  mediump float lod = max(dx.x + dx.y, dy.x + dy.y);	\n" /*LINEAR*/
 					"  bool magnify = lod < 1.0;							\n"
 					"  mediump float lod_tile = magnify ? 0.0 : floor(log2(floor(lod))); \n"
 					"  bool distant = lod > 128.0 || lod_tile >= fMaxTile;	\n"
