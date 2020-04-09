@@ -106,6 +106,8 @@ void _initFrameBufferTexture(u32 _address, u16 _width, u16 _height, f32 _scale, 
 	_pTexture->mirrorS = 0;
 	_pTexture->mirrorT = 0;
 	_pTexture->textureBytes = _pTexture->width * _pTexture->height;
+	_pTexture->hdRatioS = _scale;
+	_pTexture->hdRatioT = _scale;
 	if (_size > G_IM_SIZ_8b)
 		_pTexture->textureBytes *= fbTexFormats.colorFormatBytes;
 	else
@@ -385,6 +387,8 @@ bool FrameBuffer::_initSubTexture(u32 _t)
 	m_pSubTexture->clampT = pTile->clampt;
 	m_pSubTexture->offsetS = 0.0f;
 	m_pSubTexture->offsetT = 0.0f;
+	m_pSubTexture->hdRatioS = 1.0f;
+	m_pSubTexture->hdRatioT = 1.0f;
 
 
 	_setAndAttachTexture(m_SubFBO, m_pSubTexture, _t, false);

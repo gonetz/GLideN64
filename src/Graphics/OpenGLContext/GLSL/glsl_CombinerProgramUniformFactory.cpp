@@ -897,7 +897,7 @@ public:
 				f32 shiftScaleT = 1.0f;
 				getTextureShiftScale(t, cache, shiftScaleS, shiftScaleT);
 				uCacheShiftScale[t].set(shiftScaleS, shiftScaleT, _force);
-				uCacheScale[t].set(_pTexture->scaleS, _pTexture->scaleT, _force);
+				uCacheScale[t].set(_pTexture->hdRatioS, _pTexture->hdRatioT, _force);
 				uCacheOffset[t].set(_pTexture->offsetS, _pTexture->offsetT, _force);
 				nFB[t] = _pTexture->frameBufferTexture;
 			}
@@ -972,10 +972,10 @@ public:
 			}
 			else
 			{
-				aTexWrap[t][0] = f32(1 << pTile->masks);
-				aTexWrap[t][1] = f32(1 << pTile->maskt);
-				aTexClamp[t][0] = f32(pTile->lrs - pTile->uls);
-				aTexClamp[t][1] = f32(pTile->lrt - pTile->ult);
+				aTexWrap[t][0] = f32(1 << pTile->masks) * pTexture->hdRatioS;
+				aTexWrap[t][1] = f32(1 << pTile->maskt) * pTexture->hdRatioT;
+				aTexClamp[t][0] = f32(pTile->lrs - pTile->uls) * pTexture->hdRatioS;
+				aTexClamp[t][1] = f32(pTile->lrt - pTile->ult) * pTexture->hdRatioT;
 				aTexWrapEn[t][0] = f32(pTile->masks == 0 ? 0 : 1);
 				aTexWrapEn[t][1] = f32(pTile->maskt == 0 ? 0 : 1);
 				aTexClampEn[t][0] = f32(pTile->masks == 0 ? 1 : pTile->clamps);

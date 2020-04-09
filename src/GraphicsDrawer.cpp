@@ -1328,6 +1328,12 @@ void GraphicsDrawer::drawTexturedRect(const TexturedRectParams & _params)
 				texST[t].t1 -= 0.5f;
 			}
 
+			texST[t].s0 *= cache.current[t]->hdRatioS;
+			texST[t].t0 *= cache.current[t]->hdRatioT;
+			texST[t].s1 *= cache.current[t]->hdRatioS;
+			texST[t].t1 *= cache.current[t]->hdRatioT;
+
+
 		}
 	}
 
