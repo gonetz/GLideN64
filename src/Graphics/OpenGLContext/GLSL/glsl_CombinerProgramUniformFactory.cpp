@@ -928,6 +928,8 @@ public:
 		LocateUniform(uTexWrap1);
 		LocateUniform(uTexClamp0);
 		LocateUniform(uTexClamp1);
+		LocateUniform(uTexWrapEn0);
+		LocateUniform(uTexWrapEn1);
 		LocateUniform(uTexClampEn0);
 		LocateUniform(uTexClampEn1);
 		LocateUniform(uTexMirrorEn0);
@@ -938,6 +940,7 @@ public:
 	{
 		std::array<f32, 2> aTexWrap[2] = { {0.0f,0.0f}, {0.0f,0.0f} };
 		std::array<f32, 2> aTexClamp[2] = { { 0.0f,0.0f },{ 0.0f,0.0f } };
+		std::array<f32, 2> aTexWrapEn[2] = { { 0.0f,0.0f },{ 0.0f,0.0f } };
 		std::array<f32, 2> aTexClampEn[2] = { { 0.0f,0.0f },{ 0.0f,0.0f } };
 		std::array<f32, 2> aTexMirrorEn[2] = { { 0.0f,0.0f },{ 0.0f,0.0f } };
 
@@ -959,6 +962,8 @@ public:
 				aTexWrap[t][1] = 1.0;
 				aTexClamp[t][0] = f32(pTexture->width);
 				aTexClamp[t][1] = f32(pTexture->height);
+				aTexWrapEn[t][0] = 0.0;
+				aTexWrapEn[t][1] = 0.0;
 				aTexClampEn[t][0] = 1.0;
 				aTexClampEn[t][1] = 1.0;
 				aTexMirrorEn[t][0] = 0.0;
@@ -971,10 +976,12 @@ public:
 				aTexWrap[t][1] = f32(1 << pTile->maskt);
 				aTexClamp[t][0] = f32(pTile->lrs - pTile->uls);
 				aTexClamp[t][1] = f32(pTile->lrt - pTile->ult);
-				aTexClampEn[t][0] = f32(pTile->clamps);
-				aTexClampEn[t][1] = f32(pTile->clampt);
-				aTexMirrorEn[t][0] = f32(pTile->mirrors);
-				aTexMirrorEn[t][1] = f32(pTile->mirrort);
+				aTexWrapEn[t][0] = f32(pTile->masks == 0 ? 0 : 1);
+				aTexWrapEn[t][1] = f32(pTile->maskt == 0 ? 0 : 1);
+				aTexClampEn[t][0] = f32(pTile->masks == 0 ? 1 : pTile->clamps);
+				aTexClampEn[t][1] = f32(pTile->maskt == 0 ? 1 : pTile->clampt);
+				aTexMirrorEn[t][0] = f32(pTile->masks == 0 ? 0 : pTile->mirrors);
+				aTexMirrorEn[t][1] = f32(pTile->maskt == 0 ? 0 : pTile->mirrort);
 			}
 		}
 
@@ -982,6 +989,8 @@ public:
 		uTexWrap1.set(aTexWrap[1][0], aTexWrap[1][1], _force);
 		uTexClamp0.set(aTexClamp[0][0], aTexClamp[0][1], _force);
 		uTexClamp1.set(aTexClamp[1][0], aTexClamp[1][1], _force);
+		uTexWrapEn0.set(aTexWrapEn[0][0], aTexWrapEn[0][1], _force);
+		uTexWrapEn1.set(aTexWrapEn[1][0], aTexWrapEn[1][1], _force);
 		uTexClampEn0.set(aTexClampEn[0][0], aTexClampEn[0][1], _force);
 		uTexClampEn1.set(aTexClampEn[1][0], aTexClampEn[1][1], _force);
 		uTexMirrorEn0.set(aTexMirrorEn[0][0], aTexMirrorEn[0][1], _force);
@@ -995,6 +1004,8 @@ private:
 	fv2Uniform uTexWrap1;
 	fv2Uniform uTexClamp0;
 	fv2Uniform uTexClamp1;
+	fv2Uniform uTexWrapEn0;
+	fv2Uniform uTexWrapEn1;
 	fv2Uniform uTexClampEn0;
 	fv2Uniform uTexClampEn1;
 	fv2Uniform uTexMirrorEn0;
