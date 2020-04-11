@@ -730,8 +730,8 @@ static
 void gSPObjSprite(u32 _sp)
 {
 	const u32 address = RSP_SegmentToPhysical(_sp);
-	uObjSprite *objSprite = (uObjSprite*)&RDRAM[address];
-	gSPSetSpriteTile(objSprite);
+	uObjSprite *pObjSprite = (uObjSprite*)&RDRAM[address];
+	gSPSetSpriteTile(pObjSprite);
 
 	/* Fixed point coordinates calculation. Decoded by olivieryuyu */
 	//	X1 = AND (X + B3) by B0 + ((objX + A3) * A) >> 16 + ((objY + A3) * B) >> 16
@@ -745,10 +745,12 @@ void gSPObjSprite(u32 _sp)
 	const s16 y0 = (gs_s2dexversion == eVer1_3) ?
 					((objMtx.Y + CC.B5) & CC.B0) + CC.B7 :
 					((objMtx.Y + CC.B3) & CC.B0);
-	const s16 ulx = objSprite->objX + CC.A3;
-	const s16 uly = objSprite->objY + CC.A3;
-	const s16 lrx = ((((u64(objSprite->imageW) - CC.A1) << 8) * (0x80007FFFU / u32(objSprite->scaleW))) >> 32) + ulx;
-	const s16 lry = ((((u64(objSprite->imageH) - CC.A1) << 8) * (0x80007FFFU / u32(objSprite->scaleH))) >> 32) + uly;
+	const s16 ulx = pObjSprite->objX + CC.A3;
+	const s16 uly = pObjSprite->objY + CC.A3;
+	const u32 objSpriteScaleW = std::max(u32(pObjSprite->scaleW), 1U);
+	const u32 objSpriteScaleH = std::max(u32(pObjSprite->scaleH), 1U);
+	const s16 lrx = ((((u64(pObjSprite->imageW) - CC.A1) << 8) * (0x80007FFFU / objSpriteScaleW)) >> 32) + ulx;
+	const s16 lry = ((((u64(pObjSprite->imageH) - CC.A1) << 8) * (0x80007FFFU / objSpriteScaleH)) >> 32) + uly;
 
 	auto calcX = [&](s16 _x, s16 _y) -> f32
 	{
@@ -763,14 +765,14 @@ void gSPObjSprite(u32 _sp)
 	};
 
 	f32 uls = 0.0f;
-	f32 lrs = _FIXED2FLOAT(objSprite->imageW, 5) - 1.0f;
+	f32 lrs = _FIXED2FLOAT(pObjSprite->imageW, 5) - 1.0f;
 	f32 ult = 0.0f;
-	f32 lrt = _FIXED2FLOAT(objSprite->imageH, 5) - 1.0f;
+	f32 lrt = _FIXED2FLOAT(pObjSprite->imageH, 5) - 1.0f;
 
-	if (objSprite->imageFlags & G_BG_FLAG_FLIPS)
+	if (pObjSprite->imageFlags & G_BG_FLAG_FLIPS)
 		std::swap(uls, lrs);
 
-	if (objSprite->imageFlags & G_BG_FLAG_FLIPT)
+	if (pObjSprite->imageFlags & G_BG_FLAG_FLIPT)
 		std::swap(ult, lrt);
 
 	const float z = (gDP.otherMode.depthSource == G_ZS_PRIM) ? gDP.primDepth.z : gSP.viewport.nearz;
