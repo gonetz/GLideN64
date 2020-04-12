@@ -387,8 +387,8 @@ bool FrameBuffer::_initSubTexture(u32 _t)
 	m_pSubTexture->clampT = pTile->clampt;
 	m_pSubTexture->offsetS = 0.0f;
 	m_pSubTexture->offsetT = 0.0f;
-	m_pSubTexture->hdRatioS = 1.0f;
-	m_pSubTexture->hdRatioT = 1.0f;
+	m_pSubTexture->hdRatioS = m_pTexture->hdRatioS;
+	m_pSubTexture->hdRatioT = m_pTexture->hdRatioT;
 
 
 	_setAndAttachTexture(m_SubFBO, m_pSubTexture, _t, false);

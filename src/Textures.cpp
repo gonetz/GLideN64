@@ -675,8 +675,6 @@ void _updateCachedTexture(const GHQTexInfo & _info, CachedTexture *_pTexture, u1
 	
 	_pTexture->hdRatioS = f32(_info.width / _pTexture->width);
 	_pTexture->hdRatioT = f32(_info.height / _pTexture->height);
-	//_pTexture->hdRatioS = 1.0;
-	//_pTexture->hdRatioT = 1.0;
 
 	_pTexture->bHDTexture = true;
 }

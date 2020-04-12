@@ -66,8 +66,8 @@ void DepthBuffer::_initDepthImageTexture(FrameBuffer * _pBuffer, CachedTexture& 
 	_cachedTexture.mirrorT = 0;
 	_cachedTexture.textureBytes = _cachedTexture.width * _cachedTexture.height * fbTexFormat.depthImageFormatBytes;
 
-	_cachedTexture.hdRatioS = 1.0f;
-	_cachedTexture.hdRatioT = 1.0f;
+	_cachedTexture.hdRatioS = _pBuffer->m_pTexture->hdRatioS;
+	_cachedTexture.hdRatioT = _pBuffer->m_pTexture->hdRatioT;
 
 
 	{
@@ -150,8 +150,8 @@ void DepthBuffer::_initDepthBufferTexture(const FrameBuffer * _pBuffer, CachedTe
 	_pTexture->mirrorT = 0;
 	_pTexture->textureBytes = _pTexture->width * _pTexture->height * fbTexFormat.depthFormatBytes;
 
-	_pTexture->hdRatioS = 1.0f;
-	_pTexture->hdRatioT = 1.0f;
+	_pTexture->hdRatioS = _pBuffer->m_pTexture->hdRatioS;
+	_pTexture->hdRatioT = _pBuffer->m_pTexture->hdRatioT;
 
 
 	Context::InitTextureParams initParams;
