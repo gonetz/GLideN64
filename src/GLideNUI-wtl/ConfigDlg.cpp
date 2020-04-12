@@ -10,6 +10,7 @@
 #include "config-osd.h"
 #include "config-debug.h"
 #include "util.h"
+#include "InputDialog.h"
 
 CConfigDlg::CConfigDlg() :
     m_blockReInit(false),
@@ -80,14 +81,33 @@ LRESULT CConfigDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPar
         dlgItem.SetWindowText(RomName.c_str());
 
         m_ProfileLeft = Rect.right + 10;
+
+        CButton(GetDlgItem(IDC_GAME_PROFILE)).SetCheck(BST_CHECKED);
+        CButton(GetDlgItem(IDC_USE_PROFILE)).SetCheck(BST_UNCHECKED);
     }
     else
     {
+        CButton(GetDlgItem(IDC_GAME_PROFILE)).SetCheck(BST_UNCHECKED);
+        CButton(GetDlgItem(IDC_USE_PROFILE)).SetCheck(BST_CHECKED);
         GetDlgItem(IDC_SETTINGS_PROFILE_STATIC).GetWindowRect(&Rect);
         ::MapWindowPoints(NULL, m_hWnd, (LPPOINT)&Rect, 2);
         m_ProfileLeft = Rect.left;
     }
 
+    ProfileList Profiles = getProfiles(m_strIniPath.c_str());
+    std::string CurrentProfile = getCurrentProfile(m_strIniPath.c_str());
+    CComboBox profilesComboBox(GetDlgItem(IDC_PROFILE));
+    profilesComboBox.ResetContent();
+    for (ProfileList::const_iterator itr = Profiles.begin(); itr != Profiles.end(); itr++)
+    {
+        int Index = profilesComboBox.AddString(ToUTF16(itr->c_str()).c_str());
+        if (CurrentProfile == *itr)
+        {
+            profilesComboBox.SetCurSel(Index);
+        }
+    }
+    profilesComboBox.AddString(L"New...");
+    GetDlgItem(IDC_REMOVE_PROFILE).EnableWindow(profilesComboBox.GetCount() > 2);
     Init();
     return 0;
 }
@@ -159,6 +179,60 @@ void CConfigDlg::OnCustomSettingsToggled(bool checked)
     }
 }
 
+LRESULT CConfigDlg::OnProfileChanged(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hwnd*/, BOOL& /*bHandled*/)
+{
+    CComboBox profilesComboBox(GetDlgItem(IDC_PROFILE));
+    int nIndex = profilesComboBox.GetCurSel();
+    if (nIndex < 0) { return 0; }
+
+    int nLen = profilesComboBox.GetLBTextLen(nIndex);
+    if (nLen == CB_ERR) { return FALSE; }
+
+    std::wstring Profile;
+    Profile.resize(nLen);
+    profilesComboBox.GetLBText(nIndex, (wchar_t *)Profile.data());
+
+    CButton(GetDlgItem(IDC_USE_PROFILE)).SetCheck(BST_CHECKED);
+    CButton(GetDlgItem(IDC_GAME_PROFILE)).SetCheck(BST_UNCHECKED);
+    if (Profile == L"New...") {
+        bool ok;
+        std::string switchToProfile = getCurrentProfile(m_strIniPath.c_str());
+        std::string newProfile = FromUTF16(CInputDialog::getText(L"New Profile", L"New profile name:", ok).c_str());
+        CComboBox profilesComboBox(GetDlgItem(IDC_PROFILE));
+        if (ok) {
+            ProfileList Profiles = getProfiles(m_strIniPath.c_str());
+            if (strcmp(newProfile.c_str(), "New...") == 0) {
+                MessageBox(L"New settings profiles cannot be called \"New...\".", L"New Profile", MB_OK | MB_ICONWARNING);
+            }
+            else if (newProfile.empty()) {
+                MessageBox(L"Please type a name for your new settings profile.", L"New Profile", MB_OK | MB_ICONWARNING);
+            }
+            else if (Profiles.find(newProfile.c_str()) != Profiles.end()) {
+                MessageBox(L"This settings profile already exists.", L"New Profile", MB_OK | MB_ICONWARNING);
+            } else {
+                profilesComboBox.AddString(ToUTF16(newProfile.c_str()).c_str());
+                addProfile(m_strIniPath.c_str(), newProfile.c_str());
+                GetDlgItem(IDC_REMOVE_PROFILE).EnableWindow(profilesComboBox.GetCount() > 2);
+                switchToProfile = newProfile;
+            }
+        }
+        for (int i = 0, n = profilesComboBox.GetCount(); i < n; ++i) {
+            std::wstring Profile;
+            Profile.resize(profilesComboBox.GetLBTextLen(i) + 1);
+            profilesComboBox.GetLBText(i, (wchar_t *)Profile.data());
+
+            if (strcmp(FromUTF16(Profile.c_str()).c_str(),switchToProfile.c_str()) == 0) {
+                profilesComboBox.SetCurSel(i);
+                break;
+            }
+        }
+        return 0;
+    }
+    changeProfile(m_strIniPath.c_str(), FromUTF16(Profile.c_str()).c_str());
+    Init(true);
+    return 0;
+}
+
 void CConfigDlg::SaveSettings()
 {
     m_Saved = true;
@@ -179,6 +253,66 @@ LRESULT CConfigDlg::OnRestoreDefaults(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /
         config.generalEmulation.enableCustomSettings = enableCustomSettings;
         setRomName(m_romName);
         Init();
+    }
+    return 0;
+}
+
+LRESULT CConfigDlg::OnGameProfile(UINT /*Code*/, int /*id*/, HWND /*ctl*/)
+{
+    CButton(GetDlgItem(IDC_USE_PROFILE)).SetCheck(BST_UNCHECKED);
+    Init(true, true);
+    return 0;
+}
+
+LRESULT CConfigDlg::OnUseProfile(UINT /*Code*/, int /*id*/, HWND /*ctl*/)
+{
+    CButton(GetDlgItem(IDC_GAME_PROFILE)).SetCheck(BST_UNCHECKED);
+    Init(true, true);
+    return 0;
+}
+
+LRESULT CConfigDlg::OnRemoveProfile(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
+{
+    CComboBox profilesComboBox(GetDlgItem(IDC_PROFILE));
+    if (profilesComboBox.GetCount() <= 2)
+        return 0;
+
+    int nIndex = profilesComboBox.GetCurSel();
+    std::wstring profile;
+    profile.resize(profilesComboBox.GetLBTextLen(nIndex) + 1);
+    profilesComboBox.GetLBText(nIndex, (wchar_t *)profile.data());
+
+    ProfileList Profiles = getProfiles(m_strIniPath.c_str());
+    if (Profiles.find(FromUTF16(profile.c_str()).c_str()) == Profiles.end())
+        return 0;
+
+    std::wstring msg = L"Are you sure you want to remove the settings profile \"";
+    msg += profile.c_str();
+    msg += L"\"?";
+    if (MessageBox(msg.c_str(), L"Remove Profile", MB_YESNO | MB_ICONWARNING) == IDYES) {
+        removeProfile(m_strIniPath.c_str(), FromUTF16(profile.c_str()).c_str());
+        for (int i = 0, n = profilesComboBox.GetCount(); i < n; ++i) {
+            std::wstring ProfileItem;
+            ProfileItem.resize(profilesComboBox.GetLBTextLen(i) + 1);
+            profilesComboBox.GetLBText(i, (wchar_t *)ProfileItem.data());
+
+            if (wcscmp(ProfileItem.c_str(),profile.c_str()) == 0) {
+                profilesComboBox.DeleteString(i);
+                break;
+            }
+        }
+        for (int i = 0, n = profilesComboBox.GetCount(); i < n; ++i) {
+            std::wstring ProfileItem;
+            ProfileItem.resize(profilesComboBox.GetLBTextLen(i) + 1);
+            profilesComboBox.GetLBText(i, (wchar_t *)ProfileItem.data());
+            if (wcscmp(ProfileItem.c_str(),L"New...") != 0) {
+                profilesComboBox.SetCurSel(i);
+                changeProfile(m_strIniPath.c_str(), FromUTF16(ProfileItem.c_str()).c_str());
+                Init(true);
+                break;
+            }
+        }
+        GetDlgItem(IDC_REMOVE_PROFILE).EnableWindow(profilesComboBox.GetCount() > 2);
     }
     return 0;
 }
@@ -217,13 +351,12 @@ void CConfigDlg::Init(bool reInit, bool blockCustomSettings)
     m_blockReInit = true;
     bool CustomSettings = m_EmulationTab != NULL && CButton(m_EmulationTab->GetDlgItem(IDC_CHK_USE_PER_GAME)).GetCheck() == BST_CHECKED;
 
-    /*if (reInit && m_romName != NULL &&
-        m_EmulationTab
-        ui->customSettingsCheckBox->isChecked() && ui->settingsDestGameRadioButton->isChecked()) 
+    if (reInit && m_romName != NULL &&
+        CustomSettings && CButton(m_EmulationTab->GetDlgItem(IDC_GAME_PROFILE)).GetCheck() == BST_CHECKED)
     {
-        loadCustomRomSettings(m_strIniPath, m_romName);
+        loadCustomRomSettings(m_strIniPath.c_str(), m_romName);
     }
-    else*/ if (reInit)
+    else if (reInit)
     {
         loadSettings(m_strIniPath.c_str());
     }

@@ -207,7 +207,7 @@ void COsdTab::LoadSettings(bool /*blockCustomSettings*/)
     tv.item.pszText = Item;
     tv.item.cchTextMax = sizeof(Item) / sizeof(Item[0]);
     tv.item.hItem = m_Fonts.GetChildItem(TVI_ROOT);
-    HTREEITEM hParent = TVI_ROOT, hCurrentItem = NULL;
+    HTREEITEM hCurrentItem = NULL;
     while (hCurrentItem == NULL && tv.item.hItem)
     {
         m_Fonts.GetItem(&tv.item);
