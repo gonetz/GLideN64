@@ -87,6 +87,9 @@
     <ClCompile Include="..\..\src\GLideNUI-wtl\wtl-OsdPreview.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\GLideNUI-wtl\InputDialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\GLideNUI-wtl\About.h">
@@ -230,6 +233,9 @@
     <ClInclude Include="..\..\src\GLideNUI-wtl\WTL\atlwinx.h">
       <Filter>Header Files\WTL</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\GLideNUI-wtl\InputDialog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="..\..\src\GLideNUI-wtl\BottomLeft.ico">
@@ -265,9 +271,6 @@
     <Image Include="..\..\src\GLideNUI-wtl\Up.ico">
       <Filter>Resource Files</Filter>
     </Image>
-    <Image Include="..\..\src\GLideNUI\Icon.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
     <Image Include="..\..\src\GLideNUI\Info.ico">
       <Filter>Resource Files</Filter>
     </Image>
@@ -296,6 +299,12 @@
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="..\..\src\GLideNUI\BottomRight.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\..\src\GLideNUI-wtl\Icon.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="..\..\src\GLideNUI\Icon-Original.ico">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>
