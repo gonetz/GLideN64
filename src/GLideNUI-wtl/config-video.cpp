@@ -247,9 +247,6 @@ void CVideoTab::LoadSettings(bool /*blockCustomSettings*/)
     CButton(GetDlgItem(IDC_BILINEAR_3POINT)).SetCheck(config.texture.bilinearMode == BILINEAR_3POINT ? BST_CHECKED : BST_UNCHECKED);
     CButton(GetDlgItem(IDC_BILINEAR_STANDARD)).SetCheck(config.texture.bilinearMode == BILINEAR_STANDARD ? BST_CHECKED : BST_UNCHECKED);
 
-    CButton(GetDlgItem(IDC_SCREENSHOT_PNG)).SetCheck(config.texture.screenShotFormat == 0 ? BST_CHECKED : BST_UNCHECKED);
-    CButton(GetDlgItem(IDC_SCREENSHOT_JPEG)).SetCheck(config.texture.screenShotFormat == 1 ? BST_CHECKED : BST_UNCHECKED);
-
     CComboBox aspectComboBox(GetDlgItem(IDC_CMB_ASPECT_RATIO));
     switch (config.frameBufferEmulation.aspect)
     {
@@ -333,15 +330,6 @@ void CVideoTab::SaveSettings()
     if (CButton(GetDlgItem(IDC_BILINEAR_STANDARD)).GetCheck() == BST_CHECKED)
     {
         config.texture.bilinearMode = BILINEAR_STANDARD;
-    }
-
-    if (CButton(GetDlgItem(IDC_SCREENSHOT_PNG)).GetCheck() == BST_CHECKED)
-    {
-        config.texture.screenShotFormat = 0;
-    }
-    else if (CButton(GetDlgItem(IDC_SCREENSHOT_JPEG)).GetCheck() == BST_CHECKED)
-    {
-        config.texture.screenShotFormat = 1;
     }
 
     config.generalEmulation.rdramImageDitheringMode = CComboBox(GetDlgItem(IDC_CMB_PATTERN)).GetCurSel();
