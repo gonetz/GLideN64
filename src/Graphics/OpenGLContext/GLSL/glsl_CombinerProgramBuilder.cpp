@@ -1150,6 +1150,7 @@ public:
 
 class ShaderFragmentHeaderReadTex : public ShaderPart
 {
+#define USE_TEX_WORKAROUND // Enable workaround for issue with Mario Tennis Intro
 public:
 	ShaderFragmentHeaderReadTex(const opengl::GLInfo & _glinfo) : m_glinfo(_glinfo)
 	{
@@ -1176,10 +1177,18 @@ public:
 						"#define TEX_FILTER(name, tex, tcData)												\\\n"
 						"  {																					\\\n"
 						"  lowp float bottomRightTri = step(1.0, tcData[4].s + tcData[4].t);					\\\n"
+#ifndef USE_TEX_WORKAROUND
 						"  lowp vec4 c00 = texelFetch(tex, ivec2(tcData[0]), 0); \\\n"
 						"  lowp vec4 c01 = texelFetch(tex, ivec2(tcData[1]), 0); \\\n"
 						"  lowp vec4 c10 = texelFetch(tex, ivec2(tcData[2]), 0); \\\n"
 						"  lowp vec4 c11 = texelFetch(tex, ivec2(tcData[3]), 0); \\\n"
+#else
+						"  lowp vec2 texSize = vec2(textureSize(tex,0)); \\\n"
+						"  lowp vec4 c00 = texture(tex, (tcData[0] + 0.5)/texSize); \\\n"
+						"  lowp vec4 c01 = texture(tex, (tcData[1] + 0.5)/texSize); \\\n"
+						"  lowp vec4 c10 = texture(tex, (tcData[2] + 0.5)/texSize); \\\n"
+						"  lowp vec4 c11 = texture(tex, (tcData[3] + 0.5)/texSize); \\\n"
+#endif
 						"  lowp vec4 c0 = c00 + tcData[4].s*(c10-c00) + tcData[4].t*(c01-c00);			\\\n"
 						"  lowp vec4 c1 = c11 + (1.0-tcData[4].s)*(c01-c11) + (1.0-tcData[4].t)*(c10-c11); \\\n"
 						"  name = c0 + bottomRightTri * (c1-c0); \\\n"
@@ -1189,11 +1198,19 @@ public:
 				case BILINEAR_STANDARD:
 					shaderPart +=
 						"#define TEX_FILTER(name, tex, tcData)																		\\\n"
-						"{																												\\\n"
+						"{																											\\\n"
+#ifndef USE_TEX_WORKAROUND
 						"  lowp vec4 c00 = texelFetch(tex, ivec2(tcData[0]), 0); \\\n"
 						"  lowp vec4 c01 = texelFetch(tex, ivec2(tcData[1]), 0); \\\n"
 						"  lowp vec4 c10 = texelFetch(tex, ivec2(tcData[2]), 0); \\\n"
 						"  lowp vec4 c11 = texelFetch(tex, ivec2(tcData[3]), 0); \\\n"
+#else
+						"  lowp vec2 texSize = vec2(textureSize(tex,0)); \\\n"
+						"  lowp vec4 c00 = texture(tex, (tcData[0] + 0.5)/texSize); \\\n"
+						"  lowp vec4 c01 = texture(tex, (tcData[1] + 0.5)/texSize); \\\n"
+						"  lowp vec4 c10 = texture(tex, (tcData[2] + 0.5)/texSize); \\\n"
+						"  lowp vec4 c11 = texture(tex, (tcData[3] + 0.5)/texSize); \\\n"
+#endif
 						"  lowp vec4 c0 = c00 + tcData[4].s * (c10-c00);						\\\n"
 						"  lowp vec4 c1 = c01 + tcData[4].s * (c11-c01);						\\\n"
 						"  name = c0 + tcData[4].t * (c1-c0);									\\\n"
@@ -1208,10 +1225,18 @@ public:
 						"#define TEX_FILTER(name, tex, tcData)												\\\n"
 						"{																						\\\n"
 						"  lowp float bottomRightTri = step(1.0, tcData[4].s + tcData[4].t);					\\\n"
+#ifndef USE_TEX_WORKAROUND
 						"  lowp vec4 c00 = texelFetch(tex, ivec2(tcData[0]), 0);								\\\n"
 						"  lowp vec4 c01 = texelFetch(tex, ivec2(tcData[1]), 0);								\\\n"
 						"  lowp vec4 c10 = texelFetch(tex, ivec2(tcData[2]), 0);								\\\n"
 						"  lowp vec4 c11 = texelFetch(tex, ivec2(tcData[3]), 0);								\\\n"
+#else
+						"  lowp vec2 texSize = vec2(textureSize(tex,0)); \\\n"
+						"  lowp vec4 c00 = texture(tex, (tcData[0] + 0.5)/texSize); \\\n"
+						"  lowp vec4 c01 = texture(tex, (tcData[1] + 0.5)/texSize); \\\n"
+						"  lowp vec4 c10 = texture(tex, (tcData[2] + 0.5)/texSize); \\\n"
+						"  lowp vec4 c11 = texture(tex, (tcData[3] + 0.5)/texSize); \\\n"
+#endif
 						"  if(uEnableAlphaTest == 1 ){															\\\n" // Calculate premultiplied color values
 						"    c00.rgb *= c00.a;																	\\\n"
 						"    c01.rgb *= c01.a;																	\\\n"
@@ -1229,10 +1254,18 @@ public:
 					shaderPart +=
 						"#define TEX_FILTER(name, tex, tcData)																	\\\n"
 						"{																										\\\n"
+#ifndef USE_TEX_WORKAROUND
 						"  lowp vec4 c00 = texelFetch(tex, ivec2(tcData[0]), 0);												\\\n"
 						"  lowp vec4 c01 = texelFetch(tex, ivec2(tcData[1]), 0);												\\\n"
 						"  lowp vec4 c10 = texelFetch(tex, ivec2(tcData[2]), 0);												\\\n"
 						"  lowp vec4 c11 = texelFetch(tex, ivec2(tcData[3]), 0);												\\\n"
+#else
+						"  lowp vec2 texSize = vec2(textureSize(tex,0)); \\\n"
+						"  lowp vec4 c00 = texture(tex, (tcData[0] + 0.5)/texSize); \\\n"
+						"  lowp vec4 c01 = texture(tex, (tcData[1] + 0.5)/texSize); \\\n"
+						"  lowp vec4 c10 = texture(tex, (tcData[2] + 0.5)/texSize); \\\n"
+						"  lowp vec4 c11 = texture(tex, (tcData[3] + 0.5)/texSize); \\\n"
+#endif
 						"  if(uEnableAlphaTest == 1){																			\\\n" // Calculate premultiplied color values
 						"    c00.rgb *= c00.a;																					\\\n"
 						"    c01.rgb *= c01.a;																					\\\n"
