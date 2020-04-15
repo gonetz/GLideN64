@@ -591,7 +591,7 @@ void FrameBufferList::setBufferChanged(f32 _maxY)
 void FrameBufferList::clearBuffersChanged()
 {
 	gDP.colorImage.changed = FALSE;
-	FrameBuffer * pBuffer = frameBufferList().findBuffer(*REG.VI_ORIGIN);
+	FrameBuffer * pBuffer = frameBufferList().findBuffer(*REG.VI_ORIGIN & 0xffffff);
 	if (pBuffer != nullptr)
 		pBuffer->m_changed = false;
 }
