@@ -1890,49 +1890,49 @@ public:
 			}
 		}
 		else {
+			if (config.texture.bilinearMode == BILINEAR_3POINT)
+				m_part =
+				"#define READ_TEX_MIPMAP(name, tex, tcData, lod)																		\\\n"
+				"{																												\\\n"
+				"  lowp float bottomRightTri = step(1.0, tcData[4].s + tcData[4].t);					\\\n"
+				"  lowp vec2 lod_scale = vec2(textureSize(tex,int(lod))) / vec2(textureSize(tex,0)); \\\n"
+				"  lowp vec4 c00 = texelFetch(tex, ivec2(tcData[0]*lod_scale), int(lod)); \\\n"
+				"  lowp vec4 c01 = texelFetch(tex, ivec2(tcData[1]*lod_scale), int(lod)); \\\n"
+				"  lowp vec4 c10 = texelFetch(tex, ivec2(tcData[2]*lod_scale), int(lod)); \\\n"
+				"  lowp vec4 c11 = texelFetch(tex, ivec2(tcData[3]*lod_scale), int(lod)); \\\n"
+				"  lowp vec4 c0 = c00 + tcData[4].s*(c10-c00) + tcData[4].t*(c01-c00);			\\\n"
+				"  lowp vec4 c1 = c11 + (1.0-tcData[4].s)*(c01-c11) + (1.0-tcData[4].t)*(c10-c11); \\\n"
+				"  name = c0 + bottomRightTri * (c1-c0); \\\n"
+				"}																												\n"
+				;
+			else
+				m_part =
+				"#define READ_TEX_MIPMAP(name, tex, tcData, lod)																		\\\n"
+				"{																												\\\n"
+				"  lowp vec2 lod_scale = vec2(textureSize(tex,int(lod))) / vec2(textureSize(tex,0)); \\\n"
+				"  lowp vec4 c00 = texelFetch(tex, ivec2(tcData[0]*lod_scale), int(lod)); \\\n"
+				"  lowp vec4 c01 = texelFetch(tex, ivec2(tcData[1]*lod_scale), int(lod)); \\\n"
+				"  lowp vec4 c10 = texelFetch(tex, ivec2(tcData[2]*lod_scale), int(lod)); \\\n"
+				"  lowp vec4 c11 = texelFetch(tex, ivec2(tcData[3]*lod_scale), int(lod)); \\\n"
+				"  lowp vec4 c0 = c00 + tcData[4].s * (c10-c00);						\\\n"
+				"  lowp vec4 c1 = c01 + tcData[4].s * (c11-c01);						\\\n"
+				"  name = c0 + tcData[4].t * (c1-c0);									\\\n"
+				"}																												\n"
+				;
 			if (config.generalEmulation.enableLOD == 0) {
 				// Fake mipmap
-				m_part =
+				m_part +=
 					"uniform lowp int uMaxTile;			\n"
 					"uniform mediump float uMinLod;		\n"
 					"														\n"
 					"mediump float mipmap(out lowp vec4 readtex0, out lowp vec4 readtex1) {	\n"
-					"  readtex0 = texelFetch(uTex0, ivec2(tcData0[0]),0);		\n"
-					"  readtex1 = texelFetch(uTex1, ivec2(tcData1[0]),0);		\n"
+					"  READ_TEX_MIPMAP(readtex0, uTex0, tcData0, 0);			\n"
+					"  READ_TEX_MIPMAP(readtex1, uTex1, tcData1, 0);			\n"
 					"  if (uMaxTile == 0) return 1.0;							\n"
 					"  return uMinLod;											\n"
 					"}															\n"
 				;
 			} else {
-				if (config.texture.bilinearMode == BILINEAR_3POINT)
-					m_part =
-					"#define READ_TEX_MIPMAP(name, tex, tcData, lod)																		\\\n"
-					"{																												\\\n"
-					"  lowp float bottomRightTri = step(1.0, tcData[4].s + tcData[4].t);					\\\n"
-					"  lowp vec2 lod_scale = vec2(textureSize(tex,int(lod))) / vec2(textureSize(tex,0)); \\\n"
-					"  lowp vec4 c00 = texelFetch(tex, ivec2(tcData[0]*lod_scale), int(lod)); \\\n"
-					"  lowp vec4 c01 = texelFetch(tex, ivec2(tcData[1]*lod_scale), int(lod)); \\\n"
-					"  lowp vec4 c10 = texelFetch(tex, ivec2(tcData[2]*lod_scale), int(lod)); \\\n"
-					"  lowp vec4 c11 = texelFetch(tex, ivec2(tcData[3]*lod_scale), int(lod)); \\\n"
-					"  lowp vec4 c0 = c00 + tcData[4].s*(c10-c00) + tcData[4].t*(c01-c00);			\\\n"
-					"  lowp vec4 c1 = c11 + (1.0-tcData[4].s)*(c01-c11) + (1.0-tcData[4].t)*(c10-c11); \\\n"
-					"  name = c0 + bottomRightTri * (c1-c0); \\\n"
-					"}																												\n"
-					;
-				else
-					m_part =
-					"#define READ_TEX_MIPMAP(name, tex, tcData, lod)																		\\\n"
-					"{																												\\\n"
-					"  lowp vec2 lod_scale = vec2(textureSize(tex,int(lod))) / vec2(textureSize(tex,0)); \\\n"
-					"  lowp vec4 c00 = texelFetch(tex, ivec2(tcData[0]*lod_scale), int(lod)); \\\n" 
-					"  lowp vec4 c01 = texelFetch(tex, ivec2(tcData[1]*lod_scale), int(lod)); \\\n"
-					"  lowp vec4 c10 = texelFetch(tex, ivec2(tcData[2]*lod_scale), int(lod)); \\\n"
-					"  lowp vec4 c11 = texelFetch(tex, ivec2(tcData[3]*lod_scale), int(lod)); \\\n"
-					"  lowp vec4 c0 = c00 + tcData[4].s * (c10-c00);						\\\n"
-					"  lowp vec4 c1 = c01 + tcData[4].s * (c11-c01);						\\\n"
-					"  name = c0 + tcData[4].t * (c1-c0);									\\\n"
-					"}																												\n"
-					;
 				m_part +=
 					"uniform lowp int uEnableLod;		\n"
 					"uniform mediump float uMinLod;		\n"
