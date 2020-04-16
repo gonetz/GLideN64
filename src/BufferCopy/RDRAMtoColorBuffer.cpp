@@ -302,9 +302,6 @@ void RDRAMtoColorBuffer::copyFromRDRAM(u32 _address, bool _bCFB)
 	if (m_pCurBuffer == nullptr || m_pCurBuffer->m_size < G_IM_SIZ_16b)
 		return;
 
-	if (m_pCurBuffer->m_startAddress == _address && gDP.colorImage.changed != 0)
-		return;
-
 	const u32 height = cutHeight(m_pCurBuffer->m_startAddress,
 		m_pCurBuffer->m_startAddress == _address ?
 			VI.real_height :
