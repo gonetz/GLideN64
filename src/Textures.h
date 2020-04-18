@@ -33,6 +33,7 @@ struct CachedTexture
 	u16		width, height;			  // N64 width and height
 	u16		clampWidth, clampHeight;  // Size to clamp to
 	f32		scaleS, scaleT;			  // Scale to map to 0.0-1.0
+	f32     hdRatioS, hdRatioT;       // HD / N64 width and height 
 	f32		shiftScaleS, shiftScaleT; // Scale to shift
 	u32		textureBytes;
 
