@@ -306,7 +306,6 @@ public:
 			"    if (uTextureFilterMode != 0 && uCacheFrameBuffer[idx] != 0) \n"
 			"      texCoordOut -= vec2(0.5);								\n"
 			"    return texCoordOut * uCacheScale[idx];						\n"
-			//"  return texCoordOut; \n"
 			"}																\n"
 			"																\n"
 			"void main()													\n"
