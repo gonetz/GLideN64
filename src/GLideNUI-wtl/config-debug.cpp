@@ -13,6 +13,10 @@ BOOL CDebugTab::OnInitDialog(CWindow /*wndFocus*/, LPARAM /*lInitParam*/)
     return true;
 }
 
+void CDebugTab::ApplyLanguage(void)
+{
+}
+
 LRESULT CDebugTab::OnColorStatic(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
     return (LRESULT)GetStockObject(WHITE_BRUSH);

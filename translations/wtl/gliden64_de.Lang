@@ -1,0 +1,63 @@
+﻿/*********************************************************************************
+* Meta Information                                                               *
+*********************************************************************************/
+#0001# "Deutsch"
+
+/*********************************************************************************
+* Config Dialog                                                                  *
+*********************************************************************************/
+#1000# "Video"
+#1001# "Emulation"
+#1002# "Frame-Buffer"
+#1003# "Textur-Verbesserungen"
+#1004# "OSD"
+#1005# "Debuggen"
+#1010# "Einstellungen speichern für:"
+#1011# "Einstellungen Profil:"
+#1012# "Entfernen"
+#1013# "Standardeinstellungen wiederherstellen"
+#1014# "Speichern und schließen"
+#1015# "Speichern"
+#1016# "Schließen"
+
+/*********************************************************************************
+* Video Tab                                                                      *
+*********************************************************************************/
+#2000# "Video"
+#2001# "Vollbild-Auflösung:"
+#2002# "Alle von der Grafikkarte/Monitor unterstützten Auflösungen sollten angezeigt werden.\n[Empfehlung: Die maximale Auflösung des Monitors, außer es gibt Geschwindigkeitprobleme]"
+#2003# "Aktualisierungsrate:"
+#2005# "Fenster-Auflösung:"
+#2006# "Diese Option wählt die Auflösung für den Fenstermodus aus. Du kannst auch eine benutzerdefinierte Fenstergröße eingeben.\n[Empfehlung: 640 x 480, 800 x 600, 1024 x 768, 1280 x 960]"
+#2007# "Seitenverhältnis:"
+#2008# "Diese Einstellung legt das Seitenverhältnis der Ausgabe fest. Alle N64 Spiele unterstützen 4:3. Einige Spiele unterstützen 16:9 innerhalb der Spieleinstellungen. Verwende Strecken um den kompletten Bildschirm ohne schwarze Ränder anzuzeigen.\nVersuche das Spiel passend einzustellen versucht den Betrachtungsraum ohne Strecken anzupassen. Viele Spiele funktionieren gut. Einige nicht."
+#2009# "4:3 (empfohlen)"
+#2010# "16:9"
+#2011# "Strecken"
+#2012# "Versuche das Spiel passend einzustellen"
+#2013# "Aktiviere VSync"
+#2014# "Vertikale Synchronisation, oder VSync, kann die Bildqualität durch die Synchronisation der Aktualisierungsrate des Spiels mit der Bildwiederholrate des Monitors verbessern. Dies verhindert Bildversatz/Tearing, kann zu Leistungseinbrüchen führen.\n[Empfehlung: Gewöhnlich aus, außer es gibt Tearing]"
+#2015# "Threaded Video aktivieren"
+#2016# "Threaded Video kann die Leistung mit schlechten OpenGL-Treibern auf Kosten einer sehr marginalen Eingangsverzögerung, normalerweise weniger als ein halbes Frame, verbessern.\n[Empfehlung: Gewöhnlich aus, es sei denn, es gibt Leistungsprobleme]"
+#2017# "Overscan"
+#2018# "Wenn aktiviert, wird das Bild um die in N64 Pixel angegebenen Werte beschnitten. Nützlich, um schwarze Ränder in einigen Spielen zu entfernen."
+#2019# "NTSC"
+#2020# "PAL"
+#2021# "Antialiasing"
+#2022# "Kein Antialiasing"
+#2023# "Fast Approximate Antialiasing (FXAA)"
+#2024# "Multisample-Antialiasing (MSAA):"
+#2025# "Aus"
+#2026# "Hoch"
+#2027# "GLideN64 bietet zwei Methoden zur Kantenglättung an:\nFast Approximate Antialiasing (FXAA): FXAA ist ein Nachbearbeitungsfilter, der ein anständiges Ergebnis liefern kann, aber so gut wie MSAA ist. Der Hauptgrund für die Verwendung von FXAA ist die Verwendung mit N64-Style-Tiefenvergleich. FXAA fügt dem Ausgabebild etwas Unschärfe hinzu, wodurch einige Texturen wie Text möglicherweise schlechter aussehen.\nMultisample-Antialiasing (MSAA): MSAA ist eine Standard-Antialiasing-Technik, die in der Computergrafik zur Verbesserung der Bildqualität eingesetzt wird. Die meisten modernen GPUs unterstützen 2, 4, 8 und 16 Samples. Mehr Samples bedeuten bessere Qualität, sind aber langsamer. Es gibt zwei Nachteile: Es ist inkompatibel mit N64-Style-Tiefenvergleich und kann bei einigen Spielen zu kleineren Störungen führen.\nEmpfehlung: [Normalerweise 16x MSAA, oder FXAA mit N64-Style-Tiefenvergleich]"
+#2028# "Multisample-Antialiasing ist nicht kompatibel mit N64-Style-Tiefenvergleich."
+#2029# "Filtern"
+#2030# "Anisotrope Filterung:"
+#2031# "Aus"
+#2032# "Hoch"
+#2033# "Bilineare Filterung:"
+#2034# "Standard"
+#2035# "N64-Style 3 Punkt"
+#2036# "Bilineare Filterung: Texturen verwenden standard PC-Style bilineare Filtering.\nN64-Style 3 point: Texturen werden ähnlich dem N64 gefiltert. Das Resultat sieht nicht so weich aus, entspricht aber ehr dem N64."
+#2046# "Deaktivieren"
+#2050# "Sprache:"

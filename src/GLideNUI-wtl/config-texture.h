@@ -24,6 +24,7 @@ public:
     LRESULT OnScroll(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/);
     void OnFileStorage(UINT /*Code*/, int id, HWND /*ctl*/);
     void OnTexturePack(UINT /*Code*/, int id, HWND /*ctl*/);
+    void ApplyLanguage(void);
     void LoadSettings(bool blockCustomSettings);
     void SaveSettings();
 

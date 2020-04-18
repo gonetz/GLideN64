@@ -15,6 +15,7 @@ public:
 
     BOOL OnInitDialog(CWindow /*wndFocus*/, LPARAM /*lInitParam*/);
     LRESULT OnColorStatic(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
+    void ApplyLanguage(void);
     void LoadSettings(bool /*blockCustomSettings*/);
     void SaveSettings();
 };

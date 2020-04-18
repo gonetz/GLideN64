@@ -24,6 +24,7 @@ public:
     LRESULT OnColorStatic(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
     void OnGammaCorrection(UINT /*Code*/, int id, HWND /*ctl*/);
     void OnPerGameSettings(UINT /*Code*/, int id, HWND /*ctl*/);
+    void ApplyLanguage(void);
     void LoadSettings(bool /*blockCustomSettings*/);
     void SaveSettings();
 

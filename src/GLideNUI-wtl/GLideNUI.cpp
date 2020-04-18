@@ -28,6 +28,8 @@ int openConfigDialog(const wchar_t * _strFileName, const char * _romName, bool &
     if (config.generalEmulation.enableCustomSettings != 0 && _romName != nullptr && strlen(_romName) != 0)
         loadCustomRomSettings(IniFolder.c_str(), _romName);
 
+    LoadCurrentStrings(IniFolder.c_str(), config.translationFile);
+
     CConfigDlg Dlg;
     Dlg.setIniPath(IniFolder.c_str());
     Dlg.setRomName(_romName);

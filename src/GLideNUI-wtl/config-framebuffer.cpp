@@ -37,6 +37,10 @@ BOOL CFrameBufferTab::OnInitDialog(CWindow /*wndFocus*/, LPARAM /*lInitParam*/)
     return true;
 }
 
+void CFrameBufferTab::ApplyLanguage(void)
+{
+}
+
 LRESULT CFrameBufferTab::OnColorStatic(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
     return (LRESULT)GetStockObject(WHITE_BRUSH);

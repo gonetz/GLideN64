@@ -65,6 +65,10 @@ void CEmulationTab::OnPerGameSettings(UINT /*Code*/, int /*id*/, HWND /*ctl*/)
     m_Dlg.OnCustomSettingsToggled(CButton(GetDlgItem(IDC_CHK_USE_PER_GAME)).GetCheck() == BST_CHECKED);
 }
 
+void CEmulationTab::ApplyLanguage(void)
+{
+}
+
 void CEmulationTab::LoadSettings(bool blockCustomSettings)
 {
     if (!blockCustomSettings)
