@@ -446,6 +446,8 @@ void TextureCache::_initDummyTexture(CachedTexture * _pDummy)
 	_pDummy->maskT = 0;
 	_pDummy->scaleS = 0.5f;
 	_pDummy->scaleT = 0.5f;
+	_pDummy->hdRatioS = 1.0f;
+	_pDummy->hdRatioT = 1.0f;
 	_pDummy->shiftScaleS = 1.0f;
 	_pDummy->shiftScaleT = 1.0f;
 	_pDummy->textureBytes = 2 * 2 * 4;
@@ -670,6 +672,9 @@ void _updateCachedTexture(const GHQTexInfo & _info, CachedTexture *_pTexture, u1
 
 	_pTexture->scaleS = 1.0f / (_pTexture->maskS ? f32(pow2(widthOrg)) : f32(widthOrg));
 	_pTexture->scaleT = 1.0f / (_pTexture->maskT ? f32(pow2(heightOrg)) : f32(heightOrg));
+	
+	_pTexture->hdRatioS = f32(_info.width / _pTexture->width);
+	_pTexture->hdRatioT = f32(_info.height / _pTexture->height);
 
 	_pTexture->bHDTexture = true;
 }
@@ -1416,6 +1421,9 @@ void TextureCache::_updateBackground()
 	pCurrent->scaleS = 1.0f / (f32)(pCurrent->width);
 	pCurrent->scaleT = 1.0f / (f32)(pCurrent->height);
 
+	pCurrent->hdRatioS = 1.0f;
+	pCurrent->hdRatioT = 1.0f;
+
 	pCurrent->shiftScaleS = 1.0f;
 	pCurrent->shiftScaleT = 1.0f;
 
@@ -1570,6 +1578,9 @@ void TextureCache::update(u32 _t)
 
 	pCurrent->scaleS = 1.0f / (pCurrent->maskS ? f32(pow2(pCurrent->width)) : f32(pCurrent->width));
 	pCurrent->scaleT = 1.0f / (pCurrent->maskT ? f32(pow2(pCurrent->height)) : f32(pCurrent->height));
+
+	pCurrent->hdRatioS = 1.0f;
+	pCurrent->hdRatioT = 1.0f;
 
 	pCurrent->offsetS = 0.0f;
 	pCurrent->offsetT = 0.0f;

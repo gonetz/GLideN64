@@ -45,6 +45,9 @@ void RDRAMtoColorBuffer::init()
 	m_pTexture->height = 580;
 	m_pTexture->textureBytes = m_pTexture->width * m_pTexture->height * fbTexFormats.colorFormatBytes;
 
+	m_pTexture->hdRatioS = 1.0f;
+	m_pTexture->hdRatioT = 1.0f;
+
 	Context::InitTextureParams initParams;
 	initParams.handle = m_pTexture->name;
 	initParams.width = m_pTexture->width;
