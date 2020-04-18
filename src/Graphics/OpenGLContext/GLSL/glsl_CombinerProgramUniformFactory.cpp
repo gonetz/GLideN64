@@ -975,8 +975,8 @@ public:
 			{
 				aTexWrap[t][0] = f32(1 << pTile->masks) * pTexture->hdRatioS;
 				aTexWrap[t][1] = f32(1 << pTile->maskt) * pTexture->hdRatioT;
-				aTexClamp[t][0] = f32(pTile->lrs - pTile->uls + 1) * pTexture->hdRatioS - 1.0;
-				aTexClamp[t][1] = f32(pTile->lrt - pTile->ult + 1) * pTexture->hdRatioT - 1.0;
+				aTexClamp[t][0] = (pTile->flrs - pTile->fuls + 1.0) * pTexture->hdRatioS - 1.0;
+				aTexClamp[t][1] = (pTile->flrt - pTile->fult + 1.0) * pTexture->hdRatioT - 1.0;
 				aTexWrapEn[t][0] = f32(pTile->masks == 0 ? 0 : 1);
 				aTexWrapEn[t][1] = f32(pTile->maskt == 0 ? 0 : 1);
 				aTexClampEn[t][0] = f32(pTile->masks == 0 ? 1 : pTile->clamps);
