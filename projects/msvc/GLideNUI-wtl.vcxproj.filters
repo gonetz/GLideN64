@@ -90,6 +90,9 @@
     <ClCompile Include="..\..\src\GLideNUI-wtl\InputDialog.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\GLideNUI-wtl\Language.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\GLideNUI-wtl\About.h">
@@ -234,6 +237,12 @@
       <Filter>Header Files\WTL</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\GLideNUI-wtl\InputDialog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\GLideNUI-wtl\Language.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\GLideNUI-wtl\wtl-tooltip.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

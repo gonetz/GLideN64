@@ -2,11 +2,16 @@
 #include "config-tab.h"
 #include "config-overscan.h"
 #include "wtl-BitmapPicture.h"
+#include "wtl-tooltip.h"
 #include "resource.h"
+#include "Language.h"
 #include <vector>
 
+class CConfigDlg;
+
 class CVideoTab :
-    public CConfigTab
+    public CConfigTab,
+    public CToolTipDialog<CVideoTab>
 {
 public:
     BEGIN_MSG_MAP(CVideoTab)
@@ -17,12 +22,14 @@ public:
         NOTIFY_HANDLER_EX(IDC_TAB_OVERSCAN, TCN_SELCHANGE, OnOverscanTabChange)
         COMMAND_HANDLER_EX(IDC_CMB_FULL_SCREEN_RES, CBN_SELCHANGE, OnFullScreenChanged)
         COMMAND_HANDLER_EX(IDC_CHK_OVERSCAN, BN_CLICKED, OnOverscan)
+        COMMAND_HANDLER(IDC_CMB_LANGUAGE, CBN_SELCHANGE, OnLanguageChanged)
         MESSAGE_HANDLER(WM_HSCROLL, OnScroll)
         MESSAGE_HANDLER(WM_VSCROLL, OnScroll)
+        CHAIN_MSG_MAP(CToolTipDialog<CVideoTab>)
         REFLECT_NOTIFICATIONS()
     END_MSG_MAP()
 
-    CVideoTab();
+    CVideoTab(CConfigDlg & Dlg, const char * strIniPath);
     ~CVideoTab();
 
     BOOL OnInitDialog(CWindow /*wndFocus*/, LPARAM /*lInitParam*/);
@@ -31,8 +38,10 @@ public:
     LRESULT OnColorStatic(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
     LRESULT OnOverscanTabChange(NMHDR* /*pNMHDR*/);
     void OnFullScreenChanged(UINT /*Code*/, int id, HWND /*ctl*/);
-    void AddOverScanTab(const wchar_t * caption);
+    LRESULT OnLanguageChanged(WORD wNotifyCode, WORD wID, HWND hwnd, BOOL& bHandled);
+    void AddOverScanTab(languageStringID caption);
     void ShowOverScanTab(int nTab);
+    void ApplyLanguage(void);
     void LoadSettings(bool blockCustomSettings);
     void SaveSettings();
 
@@ -41,4 +50,7 @@ public:
     CTrackBarCtrl m_AliasingSlider;
     CTrackBarCtrl m_AnisotropicSlider;
     CBitmapPicture m_AAInfoIcon;
+    std::string m_strIniPath;
+    LanguageList m_LangList;
+    CConfigDlg & m_Dlg;
 };

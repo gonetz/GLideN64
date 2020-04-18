@@ -1,0 +1,41 @@
+﻿/*********************************************************************************
+* Meta Information                                                               *
+*********************************************************************************/
+#0001# "Français"
+
+/*********************************************************************************
+* Config Dialog                                                                  *
+*********************************************************************************/
+#1000# "Vidéo"
+#1001# "Émulation"
+#1002# "Tampon image"
+#1003# "Améliorations des Textures"
+#1004# "OSD"
+
+/*********************************************************************************
+* Video Tab                                                                      *
+*********************************************************************************/
+#2000# "Vidéo"
+#2001# "Résolution Plein Ecran :"
+#2002# "Toutes les résolutions supportées par votre carte graphique / moniteur devraient être affichées.\n[Recommandé : Résolution native (maximum) de votre moniteur - sauf si les performances sont dégradées]"
+#2003# "Taux de rafraîchissement :"
+#2005# "Résolution en Mode Fenêtré :"
+#2007# "Format d'écran :"
+#2008# "Cette option ajuste le format d'écran de la sortie vidéo. Tous les jeux N64 supportent 4:3. Quelques jeux supportent 16:9 dans leurs paramétrages. Utilisez Étiré pour remplir l'écran sans bords noirs.\nAjusté à l'écran sans étirer tente d'ajuster l'espace de vue afin de remplir sans étirer. De nombreux jeux fonctionnent correctement en mode ajusté, mais d'autres non."
+#2009# "4:3 (recommandé)"
+#2010# "16:9"
+#2011# "Étiré"
+#2012# "Ajusté à l'écran sans étirer"
+#2013# "Activer la synchro verticale"
+#2014# "La synchronisation verticale, ou VSync, peut améliorer l'image en synchronisant le taux d'échantillonage du jeu à celui du taux de rafraîchissement de votre écran. Cela évite la déchirure de l'image, mais peut engendrer des problèmes de performance.\n[Recommandé : Généralement désactivé, sauf si vous avez des problèmes de déchirure d'image]"
+#2025# "Off"
+#2026# "Max"
+#2030# "Filtrage Anisotropique :"
+#2031# "Off"
+#2032# "Max"
+#2033# "Filtrage bilinéaire :"
+#2034# "Standard"
+#2035# "Style N64 3 points"
+#2036# "Filtrage bilinéaire: les textures vont utiliser le filtrage bilinéaire standard d'un PC.\nStyle N64 3 points: Les textures seront filtrés comme sur la N64. Le résultat est moins lisse mais plus authentique."
+#2046# "Désactivé"
+#2050# "Langue :"

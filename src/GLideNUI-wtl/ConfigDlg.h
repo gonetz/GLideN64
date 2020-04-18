@@ -2,6 +2,7 @@
 #include <string>
 #include "wtl.h"
 #include "config-tab.h"
+#include "language.h"
 #include "resource.h"
 #include <vector>
 
@@ -33,6 +34,7 @@ public:
     void setRomName(const char * RomName);
     bool Saved(void) const { return m_Saved; }
     void OnCustomSettingsToggled(bool checked);
+    void SetLanguage(const std::string & language);
 
 protected:
     LRESULT OnInitDialog(UINT uMsg, WPARAM wParam, LPARAM lParam, BOOL& bHandled);
@@ -47,10 +49,11 @@ protected:
     LRESULT OnUseProfile(UINT /*Code*/, int id, HWND /*ctl*/);
 
     void Init(bool reInit = false, bool blockCustomSettings = false);
-    void AddTab(const wchar_t * caption, CConfigTab * tab);
+    void AddTab(languageStringID StringID, CConfigTab * tab);
     void ShowTab(int nPage);
     CRect GetTabRect();
     void SaveSettings();
+    void ApplyLanguage();
 
     CTabCtrl m_Tabs;
     std::vector<CConfigTab *> m_TabWindows;

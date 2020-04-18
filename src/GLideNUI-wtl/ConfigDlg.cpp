@@ -11,6 +11,7 @@
 #include "config-debug.h"
 #include "util.h"
 #include "InputDialog.h"
+#include "Language.h"
 
 CConfigDlg::CConfigDlg() :
     m_blockReInit(false),
@@ -21,28 +22,22 @@ CConfigDlg::CConfigDlg() :
 {
 }
 
-CConfigDlg::~CConfigDlg()
-{
+CConfigDlg::~CConfigDlg() {
     m_EmulationTab = NULL;
     for (size_t i = 0; i < m_TabWindows.size(); i++)
-    {
         delete m_TabWindows[i];
-    }
     m_TabWindows.clear();
 }
 
-void CConfigDlg::setIniPath(const std::string & IniPath)
-{
+void CConfigDlg::setIniPath(const std::string & IniPath) {
     m_strIniPath = IniPath;
 }
 
-void CConfigDlg::setRomName(const char * RomName)
-{
+void CConfigDlg::setRomName(const char * RomName) {
     m_romName = RomName == NULL || strlen(RomName) == 0 ? NULL : RomName;
 }
 
-LRESULT CConfigDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
-{
+LRESULT CConfigDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/) {
     HICON hIcon = AtlLoadIconImage(IDI_APPICON, LR_DEFAULTCOLOR, ::GetSystemMetrics(SM_CXICON), ::GetSystemMetrics(SM_CYICON));
     SetIcon(hIcon, TRUE);
     HICON hIconSmall = AtlLoadIconImage(IDI_APPICON, LR_DEFAULTCOLOR, ::GetSystemMetrics(SM_CXSMICON), ::GetSystemMetrics(SM_CYSMICON));
@@ -51,20 +46,19 @@ LRESULT CConfigDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPar
     m_EmulationTab = new CEmulationTab(*this);
 
     m_Tabs.Attach(GetDlgItem(IDC_TABS));
-    AddTab(L"Video", new CVideoTab);
-    AddTab(L"Emulation", m_EmulationTab);
-    AddTab(L"Frame buffer", new CFrameBufferTab);
-    AddTab(L"Texture enhancement", new CTextureEnhancementTab);
-    AddTab(L"OSD", new COsdTab);
-    AddTab(L"Debug", new CDebugTab);
+    AddTab(TAB_VIDEO, new CVideoTab(*this, m_strIniPath.c_str()));
+    AddTab(TAB_EMULATION, m_EmulationTab);
+    AddTab(TAB_FRAME_BUFFER, new CFrameBufferTab);
+    AddTab(TAB_TEXTURE_ENHANCEMENT, new CTextureEnhancementTab);
+    AddTab(TAB_OSD, new COsdTab);
+    AddTab(TAB_DEBUG, new CDebugTab);
 
     RECT Rect;
     GetDlgItem(IDC_TABS).GetWindowRect(&Rect);
     ::MapWindowPoints(NULL, m_hWnd, (LPPOINT)&Rect, 2);
     m_TabLeft = Rect.left;
 
-    if (m_romName != NULL)
-    {
+    if (m_romName != NULL) {
         std::wstring RomName(ToUTF16(m_romName));
         CWindow dlgItem = GetDlgItem(IDC_GAME_PROFILE_NAME);
         CDC dc;
@@ -84,9 +78,7 @@ LRESULT CConfigDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPar
 
         CButton(GetDlgItem(IDC_GAME_PROFILE)).SetCheck(BST_CHECKED);
         CButton(GetDlgItem(IDC_USE_PROFILE)).SetCheck(BST_UNCHECKED);
-    }
-    else
-    {
+    } else {
         CButton(GetDlgItem(IDC_GAME_PROFILE)).SetCheck(BST_UNCHECKED);
         CButton(GetDlgItem(IDC_USE_PROFILE)).SetCheck(BST_CHECKED);
         GetDlgItem(IDC_SETTINGS_PROFILE_STATIC).GetWindowRect(&Rect);
@@ -98,13 +90,10 @@ LRESULT CConfigDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPar
     std::string CurrentProfile = getCurrentProfile(m_strIniPath.c_str());
     CComboBox profilesComboBox(GetDlgItem(IDC_PROFILE));
     profilesComboBox.ResetContent();
-    for (ProfileList::const_iterator itr = Profiles.begin(); itr != Profiles.end(); itr++)
-    {
+    for (ProfileList::const_iterator itr = Profiles.begin(); itr != Profiles.end(); itr++) {
         int Index = profilesComboBox.AddString(ToUTF16(itr->c_str()).c_str());
         if (CurrentProfile == *itr)
-        {
             profilesComboBox.SetCurSel(Index);
-        }
     }
     profilesComboBox.AddString(L"New...");
     GetDlgItem(IDC_REMOVE_PROFILE).EnableWindow(profilesComboBox.GetCount() > 2);
@@ -112,12 +101,10 @@ LRESULT CConfigDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPar
     return 0;
 }
 
-void CConfigDlg::OnCustomSettingsToggled(bool checked)
-{
+void CConfigDlg::OnCustomSettingsToggled(bool checked) {
     if (m_hWnd == NULL)
-    {
         return;
-    }
+
     checked = m_romName != NULL ? checked : false;
     GetDlgItem(IDC_GAME_PROFILE).ShowWindow(checked ? SW_SHOWNORMAL : SW_HIDE);
     GetDlgItem(IDC_SAVE_SETTINGS_STATIC).ShowWindow(checked ? SW_SHOWNORMAL : SW_HIDE);
@@ -125,15 +112,13 @@ void CConfigDlg::OnCustomSettingsToggled(bool checked)
     GetDlgItem(IDC_USE_PROFILE).ShowWindow(checked ? SW_SHOWNORMAL : SW_HIDE);
 
     int32_t Move = 0;
-    if (checked)
-    {
+    if (checked) {
         RECT Rect;
         CWindow UseProfile = GetDlgItem(IDC_USE_PROFILE);
         UseProfile.GetWindowRect(&Rect);
         ::MapWindowPoints(NULL, m_hWnd, (LPPOINT)&Rect, 2);
         Move = Rect.left - m_ProfileLeft;
-        if (Move != 0)
-        {
+        if (Move != 0) {
             Rect.left -= Move;
             Rect.right -= Move;
             UseProfile.MoveWindow(&Rect);
@@ -144,19 +129,15 @@ void CConfigDlg::OnCustomSettingsToggled(bool checked)
         ProfileStatic.GetWindowRect(&Rect);
         ::MapWindowPoints(NULL, m_hWnd, (LPPOINT)&Rect, 2);
         Move = Rect.left - Left;
-    }
-    else
-    {
+    } else {
         RECT Rect;
         GetDlgItem(IDC_SETTINGS_PROFILE_STATIC).GetWindowRect(&Rect);
         ::MapWindowPoints(NULL, m_hWnd, (LPPOINT)&Rect, 2);
 
         Move = Rect.left - m_TabLeft;
     }
-    if (Move != 0)
-    {
-        int nID[] =
-        {
+    if (Move != 0) {
+        int nID[] = {
             IDC_SETTINGS_PROFILE_STATIC,
             IDC_PROFILE,
             IDC_REMOVE_PROFILE,
@@ -166,8 +147,7 @@ void CConfigDlg::OnCustomSettingsToggled(bool checked)
         GetDlgItem(nID[0]).GetWindowRect(&Rect);
         ::MapWindowPoints(NULL, m_hWnd, (LPPOINT)&Rect, 2);
 
-        for (size_t i = 0, n = sizeof(nID) / sizeof(nID[0]); i < n; i++)
-        {
+        for (size_t i = 0, n = sizeof(nID) / sizeof(nID[0]); i < n; i++) {
             CWindow window = GetDlgItem(nID[i]);
             window.GetWindowRect(&Rect);
             ::MapWindowPoints(NULL, m_hWnd, (LPPOINT)&Rect, 2);
@@ -179,8 +159,7 @@ void CConfigDlg::OnCustomSettingsToggled(bool checked)
     }
 }
 
-LRESULT CConfigDlg::OnProfileChanged(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hwnd*/, BOOL& /*bHandled*/)
-{
+LRESULT CConfigDlg::OnProfileChanged(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hwnd*/, BOOL& /*bHandled*/) {
     CComboBox profilesComboBox(GetDlgItem(IDC_PROFILE));
     int nIndex = profilesComboBox.GetCurSel();
     if (nIndex < 0) { return 0; }
@@ -233,21 +212,16 @@ LRESULT CConfigDlg::OnProfileChanged(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*
     return 0;
 }
 
-void CConfigDlg::SaveSettings()
-{
+void CConfigDlg::SaveSettings() {
     m_Saved = true;
     for (size_t i = 0; i < m_TabWindows.size(); i++)
-    {
         m_TabWindows[i]->SaveSettings();
-    }
     writeSettings(m_strIniPath.c_str());
 }
 
-LRESULT CConfigDlg::OnRestoreDefaults(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
+LRESULT CConfigDlg::OnRestoreDefaults(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
     int Res = MessageBox(L"Are you sure you want to reset all settings to default?", L"Restore Defaults?", MB_YESNO | MB_ICONWARNING);
-    if (Res == IDYES)
-    {
+    if (Res == IDYES) {
         const u32 enableCustomSettings = config.generalEmulation.enableCustomSettings;
         config.resetToDefaults();
         config.generalEmulation.enableCustomSettings = enableCustomSettings;
@@ -257,22 +231,19 @@ LRESULT CConfigDlg::OnRestoreDefaults(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /
     return 0;
 }
 
-LRESULT CConfigDlg::OnGameProfile(UINT /*Code*/, int /*id*/, HWND /*ctl*/)
-{
+LRESULT CConfigDlg::OnGameProfile(UINT /*Code*/, int /*id*/, HWND /*ctl*/) {
     CButton(GetDlgItem(IDC_USE_PROFILE)).SetCheck(BST_UNCHECKED);
     Init(true, true);
     return 0;
 }
 
-LRESULT CConfigDlg::OnUseProfile(UINT /*Code*/, int /*id*/, HWND /*ctl*/)
-{
+LRESULT CConfigDlg::OnUseProfile(UINT /*Code*/, int /*id*/, HWND /*ctl*/) {
     CButton(GetDlgItem(IDC_GAME_PROFILE)).SetCheck(BST_UNCHECKED);
     Init(true, true);
     return 0;
 }
 
-LRESULT CConfigDlg::OnRemoveProfile(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
+LRESULT CConfigDlg::OnRemoveProfile(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
     CComboBox profilesComboBox(GetDlgItem(IDC_PROFILE));
     if (profilesComboBox.GetCount() <= 2)
         return 0;
@@ -317,59 +288,50 @@ LRESULT CConfigDlg::OnRemoveProfile(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*h
     return 0;
 }
 
-LRESULT CConfigDlg::OnSaveClose(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
+LRESULT CConfigDlg::OnSaveClose(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
     SaveSettings();
     EndDialog(wID);
     return 0;
 }
 
-LRESULT CConfigDlg::OnSave(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
+LRESULT CConfigDlg::OnSave(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
     SaveSettings();
     return 0;
 }
 
-LRESULT CConfigDlg::OnTabChange(NMHDR* /*pNMHDR*/)
-{
+LRESULT CConfigDlg::OnTabChange(NMHDR* /*pNMHDR*/) {
     ShowTab(m_Tabs.GetCurSel());
     return FALSE;
 }
 
-LRESULT CConfigDlg::OnCancel(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/)
-{
+LRESULT CConfigDlg::OnCancel(WORD /*wNotifyCode*/, WORD wID, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
     EndDialog(wID);
     return 0;
 }
 
-void CConfigDlg::Init(bool reInit, bool blockCustomSettings)
-{
+void CConfigDlg::Init(bool reInit, bool blockCustomSettings) {
     if (m_blockReInit)
-    {
         return;
-    }
+
     m_blockReInit = true;
     bool CustomSettings = m_EmulationTab != NULL && CButton(m_EmulationTab->GetDlgItem(IDC_CHK_USE_PER_GAME)).GetCheck() == BST_CHECKED;
 
-    if (reInit && m_romName != NULL &&
-        CustomSettings && CButton(m_EmulationTab->GetDlgItem(IDC_GAME_PROFILE)).GetCheck() == BST_CHECKED)
-    {
+    if (reInit && m_romName != NULL && CustomSettings && CButton(m_EmulationTab->GetDlgItem(IDC_GAME_PROFILE)).GetCheck() == BST_CHECKED) {
         loadCustomRomSettings(m_strIniPath.c_str(), m_romName);
-    }
-    else if (reInit)
-    {
+    } else if (reInit) {
         loadSettings(m_strIniPath.c_str());
     }
 
     for (size_t i = 0; i < m_TabWindows.size(); i++)
-    {
         m_TabWindows[i]->LoadSettings(blockCustomSettings);
-    }
+
+    for (size_t i = 0; i < m_TabWindows.size(); i++)
+        m_TabWindows[i]->ApplyLanguage();
+    ApplyLanguage();
     m_blockReInit = false;
 }
 
-CRect CConfigDlg::GetTabRect()
-{
+CRect CConfigDlg::GetTabRect() {
     CRect TabRect;
     m_Tabs.GetWindowRect(&TabRect);
     ScreenToClient(&TabRect);
@@ -377,25 +339,19 @@ CRect CConfigDlg::GetTabRect()
     return TabRect;
 }
 
-void CConfigDlg::AddTab(const wchar_t * caption, CConfigTab * tab)
-{
-    m_Tabs.AddItem(caption);
+void CConfigDlg::AddTab(languageStringID caption, CConfigTab * tab) {
+    m_Tabs.AddItem(TCIF_TEXT | TCIF_PARAM, wGS(caption).c_str(), 0, caption);
     tab->Create(m_hWnd, 0);
     tab->SetWindowPos(m_hWnd, 0, 0, 0, 0, SWP_HIDEWINDOW);
     m_TabWindows.push_back(tab);
 
     if (m_TabWindows.size() == 1)
-    {
         ShowTab(0);
-    }
 }
 
-void CConfigDlg::ShowTab(int nPage)
-{
+void CConfigDlg::ShowTab(int nPage) {
     for (size_t i = 0; i < m_TabWindows.size(); i++)
-    {
         m_TabWindows[i]->ShowWindow(SW_HIDE);
-    }
 
     CRect TabRect = GetTabRect();
     m_TabWindows[nPage]->SetWindowPos(HWND_TOP, TabRect.left, TabRect.top, TabRect.Width(), TabRect.Height(), SWP_SHOWWINDOW);
@@ -407,31 +363,55 @@ void CConfigDlg::ShowTab(int nPage)
     m_Tabs.RedrawWindow();
 }
 
+void CConfigDlg::SetLanguage(const std::string & language) {
+    LoadCurrentStrings(m_strIniPath.c_str(), language);
+    for (int i = 0, n = m_Tabs.GetItemCount(); i < n; i++) {
+        TCITEM tci = { 0 };
+        tci.mask = TCIF_PARAM;
+        m_Tabs.GetItem(i, &tci);
+        if (tci.lParam != 0) {
+            tci.mask = TCIF_TEXT;
+            std::wstring caption = wGS((languageStringID)tci.lParam);
+            tci.pszText = (LPWSTR)caption.c_str();
+            m_Tabs.SetItem(i, &tci);
+        }
+    }
+    for (size_t i = 0; i < m_TabWindows.size(); i++) 
+        m_TabWindows[i]->ApplyLanguage();
+    ApplyLanguage();
+}
+
+void CConfigDlg::ApplyLanguage(void)
+{
+    SetDlgItemTextW(IDC_SAVE_SETTINGS_STATIC, wGS(CFG_SAVE_SETTINGS_FOR).c_str());
+    SetDlgItemTextW(IDC_SETTINGS_PROFILE_STATIC, wGS(CFG_SETTINGS_PROFILE).c_str());
+    SetDlgItemTextW(IDC_REMOVE_PROFILE, wGS(CFG_REMOVE).c_str());
+    SetDlgItemTextW(ID_RESTORE_DEFAULTS, wGS(CFG_RESTORE_DEFAULTS).c_str());
+    SetDlgItemTextW(ID_SAVECLOSE, wGS(CFG_SAVE_AND_CLOSE).c_str());
+    SetDlgItemTextW(ID_SAVE, wGS(CFG_SAVE).c_str());
+    SetDlgItemTextW(IDCANCEL, wGS(CFG_CLOSE).c_str());
+}
+
 class GlideN64WtlModule :
     public CAppModule
 {
 public:
-    GlideN64WtlModule(HINSTANCE hinst)
-    {
+    GlideN64WtlModule(HINSTANCE hinst) {
         Init(NULL, hinst);
     }
-    virtual ~GlideN64WtlModule(void)
-    {
+    virtual ~GlideN64WtlModule(void) {
         Term();
     }
 };
 
 GlideN64WtlModule * WtlModule = NULL;
 
-void ConfigInit(void * hinst)
-{
+void ConfigInit(void * hinst) {
     WtlModule = new GlideN64WtlModule((HINSTANCE)hinst);
 }
 
-void ConfigCleanup(void)
-{
-    if (WtlModule)
-    {
+void ConfigCleanup(void) {
+    if (WtlModule) {
         delete WtlModule;
         WtlModule = NULL;
     }

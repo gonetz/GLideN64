@@ -93,6 +93,10 @@ BOOL COsdTab::OnInitDialog(CWindow /*wndFocus*/, LPARAM /*lInitParam*/)
     return true;
 }
 
+void COsdTab::ApplyLanguage(void)
+{
+}
+
 LRESULT COsdTab::OnScroll(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
 {
     LONG CtrlId = CWindow((HWND)lParam).GetWindowLong(GWL_ID);

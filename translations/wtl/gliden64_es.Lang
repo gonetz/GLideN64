@@ -1,0 +1,41 @@
+﻿/*********************************************************************************
+* Meta Information                                                               *
+*********************************************************************************/
+#0001# "Español"
+
+/*********************************************************************************
+* Config Dialog                                                                  *
+*********************************************************************************/
+#1000# "Vídeo"
+#1001# "Emulación"
+#1002# "Frame buffer"
+#1003# "Mejora de texturas"
+#1004# "OSD"
+
+/*********************************************************************************
+* Video Tab                                                                      *
+*********************************************************************************/
+#2000# "Vídeo"
+#2001# "Resolución de pantalla completa:"
+#2002# "Aquí deberían aparecer todas las resoluciones que admite tu tarjeta gráfica o monitor.\n[Recomendación: La resolución máxima que permita tu monitor salvo que haya problemas de rendimiento]"
+#2003# "Frecuencia de actualización:"
+#2005# "Resolución de ventana:"
+#2007# "Proporción de aspecto:"
+#2008# "Ajusta la proporción de aspecto de la salida de vídeo. Todos los juegos de N64 admiten la proporción 4:3. Algunos son compatibles con 16:9 dentro de las opciones de cada juego. Utiliza la opción «estirar» para llenar toda la pantalla sin provocar bordes en cualquier punto de la pantalla.\n«Intentar ajustar el tamaño del juego» intentará ajustar el espacio de la pantalla sin estirar la imagen. Muchos juegos funcionan correctamente bajo este ajuste, pero algunos no funcionarán bien."
+#2009# "4:3 (recomendado)"
+#2010# "16:9"
+#2011# "Estirar"
+#2012# "Intentar ajustar el tamaño del juego"
+#2013# "Sincronía vertical"
+#2014# "La sincronía vertical (También llamada VSync) puede mejorar la calidad de imagen sincronizando la velocidad de fotogramas del juego con la frecuencia de actualización de tu monitor. Esto evita que la imagen aparezca cortada, pero podría provocar problemas de rendimiento.\n[Recomendación: Por norma general desactivado, activar si las imágenes salen cortadas]"
+#2025# "Desactivado"
+#2026# "Alto"
+#2030# "Filtro anisotrópico:"
+#2031# "Desactivado"
+#2032# "Alto"
+#2033# "Filtrado bilineal:"
+#2034# "Estándar"
+#2035# "Tripunto N64"
+#2036# "Filtrado bilineal: Las texturas utilizarán el filtro bilineal estándar de PC.\nTripunto N64: Las texturas se filtrarán de una forma más parecida a la que hace la N64. El resultado será menos suave, pero más preciso."
+#2046# "Desactivado"
+#2050# "Idioma:"

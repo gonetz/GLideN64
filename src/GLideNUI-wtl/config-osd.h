@@ -40,6 +40,7 @@ public:
     LRESULT OnFontItemChanged(NMHDR* /*phdr*/);
     LRESULT OnColorStatic(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
     LRESULT OnNotifyOsdColor(LPNMHDR pnmh);
+    void ApplyLanguage(void);
     void LoadSettings(bool blockCustomSettings);
     void SaveSettings();
 
