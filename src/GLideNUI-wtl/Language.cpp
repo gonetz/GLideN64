@@ -80,6 +80,41 @@ void loadDefaultStrings(void)
     g_defaultStrings.insert(LANG_STRINGS::value_type(VIDEO_DITHERING_MAGIC_SQUARE, "Magic square"));
     g_defaultStrings.insert(LANG_STRINGS::value_type(VIDEO_DITHERING_BLUE_NOISE, "Blue noise"));
     g_defaultStrings.insert(LANG_STRINGS::value_type(VIDEO_LANGUAGE, "Language:"));
+
+    //Emulation Tab
+    g_defaultStrings.insert(LANG_STRINGS::value_type(EMULATION_USE_PER_GAME, "Use per-game settings"));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(EMULATION_USE_PER_GAME_TOOLTIP, "When enabled, all non-default values of settings are stored individually for each game.\nWhen a game is running, settings are displayed and saved for the currently running game.\nNote: GLideN64 already contains settings for the optimal performance of most games. Be careful when altering options on 'Emulation' and 'Frame buffer' tab.\n[Recommended: Checked]"));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(EMULATION_N64_STYLE_MIP_MAPPING, "Enable N64-style mip-mapping"));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(EMULATION_N64_STYLE_MIP_MAPPING_TOOLTIP, "The N64 uses a unique method of mip-mapping that's difficult to reproduce correctly on PCs. When checked, this option emulates N64-accurate mip-mapping. When unchecked, some games have sharper distant textures.\n[Recommended: Checked]"));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(EMULATION_HWLIGHTING, "Enable per-pixel lighting (better quality, HLE only)"));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(EMULATION_HWLIGHTING_TOOLTIP, "In N64 games lighting is calculated per vertex. This option enables Phong shading, which provides smoother and more realistic lighting.\n\n[Recommended: Your preference]"));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(EMULATION_SHADERS_STORAGE, "Store compiled shaders for performance (recommended)"));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(EMULATION_SHADERS_STORAGE_TOOLTIP, "Use persistent storage for compiled shader programs.\nEach game uses a set of combiners. A combiner is an equation that defines how to build output color from various color inputs. GLideN64 translates shaders, and compiles shader programs on the fly. Shaders are large and complex. If the game uses several new combiners, compiling new shaders will take time and result in stuttering. When this option is checked, these shaders are saved so they're not recompiled the next time you run the game.\n[Recommended: Checked]"));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(EMULATION_INTERNAL_RES, "Internal resolution"));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(EMULATION_INTERNAL_RES_TOOLTIP, "This option sets the output render buffer size. By default, the render buffer is set to the Same as output resolution, but you can set it to the Original N64 resolution or a Multiple of N64 resolution."));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(EMULATION_FACTOR0X, "Same as output resolution"));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(EMULATION_FACTOR1X, "Original N64 resolution (most accurate)"));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(EMULATION_FACTORXX, "Multiple of N64 resolution:"));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(EMULATION_GAMMA, "Gamma"));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(EMULATION_GAMMA_TOOLTIP, "Gamma correction.\nSome N64 games use gamma correction. Gamma correction makes image brighter. N64 applies gamma correction in its Video Interface. \nGLideN64 emulates gamma correction as post-processing effect. That is, it works only when frame buffer emulation enabled. Gamma correction enabled automatically for games, which use it on real N64. You may force gamma correction for all games. Default level of gamma correction is 2, as on N64.\n[Recommended: use defaults]"));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(EMULATION_GAMMA_CORRECTION, "Custom gamma correction level:"));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(EMULATION_GAMMA_INFO, "Selecting this option overrides gamma correction specified by the game."));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(EMULATION_2D_ELEMENTS, "2D elements"));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(EMULATION_RENDER_2D_ELEMENTS, "Render 2D elements in N64 resolution (best quality, can be slow):"));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(EMULATION_RENDER_2D_TOOLTIP, "When checked, 2D elements are rendered at the N64s resolution before copying them to output. This usually eliminates display issues with 2D elements, but it can be slow. This option uses heuristics to detect adjacent 2D elements that doesn't work for every game.\n[Recommended: Checked, unless you have performance problems]"));    
+    g_defaultStrings.insert(LANG_STRINGS::value_type(EMULATION_RENDER_DISABLE, "Disable"));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(EMULATION_RENDER_ENABLE_OPTIMIZED, "Enable optimized"));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(EMULATION_RENDER_ENABLE_UNOPTIMIZED, "Enable unoptimized"));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(EMULATION_HALOS_REMOVAL, "Try to remove colored halos around transparent objects"));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(EMULATION_FIX_BLACK_LINES, "Fix black lines between 2D elements:"));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(EMULATION_FIX_BLACK_LINES_TOOLTIP, "In some games the coordinates for parts of 2D elements are not aligned: there is a half-pixel split between adjacent elements. When rendering at the N64's original resolution it isn't visible, but when the image is scaled up it results in black lines. This option attempts to connect these 2D elements.\nFor adjacent 2D elements: Apply the correction only for polygons that need it. Select this option for games that have issues with black lines.\nAlways: Apply the correction for every 2D element. Select this option when For adjacent 2D elements doesn't help.\nNever: Don't attempt to correct black lines between 2D elements.\n[Recommended: Game dependent, mostly Never]"));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(EMULATION_ADJACENT_2D_ELEMENTS, "For adjacent 2D elements"));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(EMULATION_ALWAYS, "Always"));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(EMULATION_NEVER, "Never"));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(EMULATION_BACKGROUND, "Background rendering mode (HLE only):"));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(EMULATION_BACKGROUND_TOOLTIP, "Background is a complex macro command used to render large (normally full screen) images. Since background images usually don't fit texture memory, the microcode splits them on narrow strips and renders them one by one. HLE code has two modes to emulate background commands:\nOne piece: The whole background image rendred as one textured rectangle. This method is normally much faster, but the result is not always correct.\nStripped: This method emulates background commands as close as possible to actual microcode implementation. It's slower but more precise. Another problem: some games may have gaps between rendered strips in high resolution. Use &quot;Render 2D elements in N64 resolution&quot; option to remove the gaps.\n[Recommended: Game dependent, mostly Stripped]"));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(EMULATION_ONE_PIECE, "One piece"));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(EMULATION_STRIPPED, "Stripped"));
 }
 
 LANG_STR GetNextLangString(FILE * file)

@@ -1,12 +1,14 @@
 #pragma once
 #include "config-tab.h"
 #include "wtl-BitmapPicture.h"
+#include "wtl-tooltip.h"
 #include "resource.h"
 
 class CConfigDlg;
 
 class CEmulationTab :
-    public CConfigTab
+    public CConfigTab,
+    public CToolTipDialog<CEmulationTab>
 {
 public:
     BEGIN_MSG_MAP(CEmulationTab)
@@ -16,6 +18,7 @@ public:
         MESSAGE_HANDLER(WM_VSCROLL, OnScroll)
         COMMAND_HANDLER_EX(IDC_CHK_GAMMA_CORRECTION, BN_CLICKED, OnGammaCorrection)
         COMMAND_HANDLER_EX(IDC_CHK_USE_PER_GAME, BN_CLICKED, OnPerGameSettings)
+        CHAIN_MSG_MAP(CToolTipDialog<CEmulationTab>)
         REFLECT_NOTIFICATIONS()
     END_MSG_MAP()
 

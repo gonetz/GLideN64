@@ -12,11 +12,14 @@ CEmulationTab::CEmulationTab(CConfigDlg & Dlg) :
 
 BOOL CEmulationTab::OnInitDialog(CWindow /*wndFocus*/, LPARAM /*lInitParam*/)
 {
+    TTInit();
+    TTSize(400);
+
     CComboBox nativeRes2DComboBox(GetDlgItem(IDC_CMB_NATIVE_RES_2D));
     nativeRes2DComboBox.ResetContent();
-    nativeRes2DComboBox.AddString(L"Disable");
-    nativeRes2DComboBox.AddString(L"Enable optimized");
-    nativeRes2DComboBox.AddString(L"Enable unoptimized");
+    nativeRes2DComboBox.AddString(wGS(EMULATION_RENDER_DISABLE).c_str());
+    nativeRes2DComboBox.AddString(wGS(EMULATION_RENDER_ENABLE_OPTIMIZED).c_str());
+    nativeRes2DComboBox.AddString(wGS(EMULATION_RENDER_ENABLE_UNOPTIMIZED).c_str());
 
     m_GamaTxt.Attach(GetDlgItem(IDC_GAMMA_VALUE));
     m_GamaSpin.Attach(GetDlgItem(IDC_GAMMA_SPIN));
@@ -48,13 +51,10 @@ LRESULT CEmulationTab::OnColorStatic(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*
 void CEmulationTab::OnGammaCorrection(UINT /*Code*/, int /*id*/, HWND /*ctl*/)
 {
     CButton OverScan(GetDlgItem(IDC_CHK_GAMMA_CORRECTION));
-    if (OverScan.GetCheck() == BST_CHECKED)
-    {
+    if (OverScan.GetCheck() == BST_CHECKED) {
         GetDlgItem(IDC_GAMMA_ICON).ShowWindow(SW_SHOW);
         GetDlgItem(IDC_GAMMA_INFO).ShowWindow(SW_SHOW);
-    }
-    else
-    {
+    } else {
         GetDlgItem(IDC_GAMMA_ICON).ShowWindow(SW_HIDE);
         GetDlgItem(IDC_GAMMA_INFO).ShowWindow(SW_HIDE);
     }
@@ -67,12 +67,70 @@ void CEmulationTab::OnPerGameSettings(UINT /*Code*/, int /*id*/, HWND /*ctl*/)
 
 void CEmulationTab::ApplyLanguage(void)
 {
+    SetDlgItemTextW(IDC_CHK_USE_PER_GAME, wGS(EMULATION_USE_PER_GAME).c_str());
+    SetDlgItemTextW(IDC_CHK_N64_STYLE_MIP_MAPPING, wGS(EMULATION_N64_STYLE_MIP_MAPPING).c_str());
+    SetDlgItemTextW(IDC_CHK_HWLIGHTING, wGS(EMULATION_HWLIGHTING).c_str());
+    SetDlgItemTextW(IDC_CHK_SHADERS_STORAGE, wGS(EMULATION_SHADERS_STORAGE).c_str());
+    SetDlgItemTextW(IDC_INTERNAL_RES_GROUP, wGS(EMULATION_INTERNAL_RES).c_str());
+    SetDlgItemTextW(IDC_FACTOR0X_RADIO, wGS(EMULATION_FACTOR0X).c_str());
+    SetDlgItemTextW(IDC_FACTOR1X_RADIO, wGS(EMULATION_FACTOR1X).c_str());
+    SetDlgItemTextW(IDC_FACTORXX_RADIO, wGS(EMULATION_FACTORXX).c_str());
+    SetDlgItemTextW(IDC_GAMMA_GROUP, wGS(EMULATION_GAMMA).c_str());
+    SetDlgItemTextW(IDC_CHK_GAMMA_CORRECTION, wGS(EMULATION_GAMMA_CORRECTION).c_str());
+    SetDlgItemTextW(IDC_GAMMA_INFO, wGS(EMULATION_GAMMA_INFO).c_str());
+    SetDlgItemTextW(IDC_2D_ELEMENTS_GROUP, wGS(EMULATION_2D_ELEMENTS).c_str());
+    SetDlgItemTextW(IDC_RENDER_2D_ELEMENTS, wGS(EMULATION_RENDER_2D_ELEMENTS).c_str());
+    SetDlgItemTextW(IDC_CHK_HALOS_REMOVAL, wGS(EMULATION_HALOS_REMOVAL).c_str());
+    SetDlgItemTextW(IDC_TXT_FIXBLACK_LINES, wGS(EMULATION_FIX_BLACK_LINES).c_str());
+    SetDlgItemTextW(IDC_FIXTEXRECT_SMART, wGS(EMULATION_ADJACENT_2D_ELEMENTS).c_str());
+    SetDlgItemTextW(IDC_FIXTEXRECT_FORCE, wGS(EMULATION_ALWAYS).c_str());
+    SetDlgItemTextW(IDC_FIXTEXRECT_NEVER, wGS(EMULATION_NEVER).c_str());
+    SetDlgItemTextW(IDC_TXT_BACKGROUND_RENDERING, wGS(EMULATION_BACKGROUND).c_str());
+    SetDlgItemTextW(IDC_BGMODE_ONEPIECE, wGS(EMULATION_ONE_PIECE).c_str());
+    SetDlgItemTextW(IDC_BGMODE_STRIPPED, wGS(EMULATION_STRIPPED).c_str());
+
+    std::wstring tooltip = wGS(EMULATION_USE_PER_GAME_TOOLTIP);
+    TTSetTxt(GetDlgItem(IDC_CHK_USE_PER_GAME), tooltip.c_str());
+    tooltip = wGS(EMULATION_N64_STYLE_MIP_MAPPING_TOOLTIP);
+    TTSetTxt(GetDlgItem(IDC_CHK_N64_STYLE_MIP_MAPPING), tooltip.c_str());
+    tooltip = wGS(EMULATION_HWLIGHTING_TOOLTIP);
+    TTSetTxt(GetDlgItem(IDC_CHK_HWLIGHTING), tooltip.c_str());
+    tooltip = wGS(EMULATION_SHADERS_STORAGE_TOOLTIP);
+    TTSetTxt(GetDlgItem(IDC_CHK_SHADERS_STORAGE), tooltip.c_str());
+    tooltip = wGS(EMULATION_INTERNAL_RES_TOOLTIP);
+    TTSetTxt(GetDlgItem(IDC_INTERNAL_RES_GROUP), tooltip.c_str());
+    TTSetTxt(GetDlgItem(IDC_FACTOR0X_RADIO), tooltip.c_str());
+    TTSetTxt(GetDlgItem(IDC_FACTOR1X_RADIO), tooltip.c_str());
+    TTSetTxt(GetDlgItem(IDC_FACTORXX_RADIO), tooltip.c_str());
+    tooltip = wGS(EMULATION_GAMMA_TOOLTIP);
+    TTSetTxt(GetDlgItem(IDC_GAMMA_GROUP), tooltip.c_str());
+    TTSetTxt(GetDlgItem(IDC_CHK_GAMMA_CORRECTION), tooltip.c_str());
+    tooltip = wGS(EMULATION_RENDER_2D_TOOLTIP);
+    TTSetTxt(GetDlgItem(IDC_RENDER_2D_ELEMENTS), tooltip.c_str());
+    TTSetTxt(GetDlgItem(IDC_CMB_NATIVE_RES_2D), tooltip.c_str());
+    tooltip = wGS(EMULATION_FIX_BLACK_LINES_TOOLTIP);
+    TTSetTxt(GetDlgItem(IDC_TXT_FIXBLACK_LINES), tooltip.c_str());
+    TTSetTxt(GetDlgItem(IDC_FIXTEXRECT_SMART), tooltip.c_str());
+    TTSetTxt(GetDlgItem(IDC_FIXTEXRECT_FORCE), tooltip.c_str());
+    TTSetTxt(GetDlgItem(IDC_FIXTEXRECT_NEVER), tooltip.c_str());
+    tooltip = wGS(EMULATION_BACKGROUND_TOOLTIP);
+    TTSetTxt(GetDlgItem(IDC_TXT_BACKGROUND_RENDERING), tooltip.c_str());
+    TTSetTxt(GetDlgItem(IDC_BGMODE_ONEPIECE), tooltip.c_str());
+    TTSetTxt(GetDlgItem(IDC_BGMODE_STRIPPED), tooltip.c_str());
+
+    CComboBox nativeRes2DComboBox(GetDlgItem(IDC_CMB_NATIVE_RES_2D));
+    int selectedIndx = nativeRes2DComboBox.GetCurSel();
+    nativeRes2DComboBox.ResetContent();
+    nativeRes2DComboBox.AddString(wGS(EMULATION_RENDER_DISABLE).c_str());
+    nativeRes2DComboBox.AddString(wGS(EMULATION_RENDER_ENABLE_OPTIMIZED).c_str());
+    nativeRes2DComboBox.AddString(wGS(EMULATION_RENDER_ENABLE_UNOPTIMIZED).c_str());
+    if (selectedIndx >= 0)
+        nativeRes2DComboBox.SetCurSel(selectedIndx);
 }
 
 void CEmulationTab::LoadSettings(bool blockCustomSettings)
 {
-    if (!blockCustomSettings)
-    {
+    if (!blockCustomSettings) {
         CButton(GetDlgItem(IDC_CHK_USE_PER_GAME)).SetCheck(config.generalEmulation.enableCustomSettings != 0 ? BST_CHECKED : BST_UNCHECKED);
         m_Dlg.OnCustomSettingsToggled(config.generalEmulation.enableCustomSettings != 0);
     }
@@ -112,16 +170,11 @@ void CEmulationTab::SaveSettings()
     config.generalEmulation.enableHWLighting = CButton(GetDlgItem(IDC_CHK_HWLIGHTING)).GetCheck() == BST_CHECKED ? 1 : 0;
     config.generalEmulation.enableShadersStorage = CButton(GetDlgItem(IDC_CHK_SHADERS_STORAGE)).GetCheck() == BST_CHECKED ? 1 : 0;
     
-    if (CButton(GetDlgItem(IDC_FACTOR0X_RADIO)).GetCheck() == BST_CHECKED)
-    {
+    if (CButton(GetDlgItem(IDC_FACTOR0X_RADIO)).GetCheck() == BST_CHECKED) {
         config.frameBufferEmulation.nativeResFactor = 0;
-    }
-    else if (CButton(GetDlgItem(IDC_FACTOR1X_RADIO)).GetCheck() == BST_CHECKED)
-    {
+    } else if (CButton(GetDlgItem(IDC_FACTOR1X_RADIO)).GetCheck() == BST_CHECKED) {
         config.frameBufferEmulation.nativeResFactor = 1;
-    }
-    else if (CButton(GetDlgItem(IDC_FACTORXX_RADIO)).GetCheck() == BST_CHECKED)
-    {
+    } else if (CButton(GetDlgItem(IDC_FACTORXX_RADIO)).GetCheck() == BST_CHECKED) {
         config.frameBufferEmulation.nativeResFactor = m_N64ResMultiplerSpin.GetPos();
     }
     config.gammaCorrection.force = CButton(GetDlgItem(IDC_CHK_GAMMA_CORRECTION)).GetCheck() == BST_CHECKED ? 1 : 0;
@@ -129,25 +182,17 @@ void CEmulationTab::SaveSettings()
     config.graphics2D.enableNativeResTexrects = CComboBox(GetDlgItem(IDC_CMB_NATIVE_RES_2D)).GetCurSel();
     config.texture.enableHalosRemoval = CButton(GetDlgItem(IDC_CHK_HALOS_REMOVAL)).GetCheck() == BST_CHECKED ? 1 : 0;
 
-    if (CButton(GetDlgItem(IDC_FIXTEXRECT_NEVER)).GetCheck() == BST_CHECKED)
-    {
+    if (CButton(GetDlgItem(IDC_FIXTEXRECT_NEVER)).GetCheck() == BST_CHECKED) {
         config.graphics2D.correctTexrectCoords = Config::tcDisable;
-    }
-    else if (CButton(GetDlgItem(IDC_FIXTEXRECT_SMART)).GetCheck() == BST_CHECKED)
-    {
+    } else if (CButton(GetDlgItem(IDC_FIXTEXRECT_SMART)).GetCheck() == BST_CHECKED) {
         config.graphics2D.correctTexrectCoords = Config::tcSmart;
-    }
-    else if (CButton(GetDlgItem(IDC_FIXTEXRECT_FORCE)).GetCheck() == BST_CHECKED)
-    {
+    } else if (CButton(GetDlgItem(IDC_FIXTEXRECT_FORCE)).GetCheck() == BST_CHECKED) {
         config.graphics2D.correctTexrectCoords = Config::tcForce;
     }
 
-    if (CButton(GetDlgItem(IDC_BGMODE_ONEPIECE)).GetCheck() == BST_CHECKED)
-    {
+    if (CButton(GetDlgItem(IDC_BGMODE_ONEPIECE)).GetCheck() == BST_CHECKED) {
         config.graphics2D.bgMode = Config::BGMode::bgOnePiece;
-    }
-    else if (CButton(GetDlgItem(IDC_BGMODE_STRIPPED)).GetCheck() == BST_CHECKED)
-    {
+    } else if (CButton(GetDlgItem(IDC_BGMODE_STRIPPED)).GetCheck() == BST_CHECKED) {
         config.graphics2D.bgMode = Config::BGMode::bgStripped;
     }
 }
@@ -155,13 +200,10 @@ void CEmulationTab::SaveSettings()
 LRESULT CEmulationTab::OnScroll(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
 {
     LONG CtrlId = CWindow((HWND)lParam).GetWindowLong(GWL_ID);
-    if (CtrlId == IDC_GAMMA_SPIN)
-    {
+    if (CtrlId == IDC_GAMMA_SPIN) {
         int Pos = m_GamaSpin.GetPos();
         m_GamaTxt.SetWindowText(FormatStrW(L"%0.1f", (float)Pos / 10.0f).c_str());
-    }
-    else if (CtrlId == IDC_N64_RES_MULTIPLER_SPIN)
-    {
+    } else if (CtrlId == IDC_N64_RES_MULTIPLER_SPIN) {
         int Pos = m_N64ResMultiplerSpin.GetPos();
         m_N64ResMultiplerTxt.SetWindowText(FormatStrW(L"%dx", Pos).c_str());
     }

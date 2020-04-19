@@ -39,3 +39,27 @@
 #2036# "Filtrado bilineal: Las texturas utilizarán el filtro bilineal estándar de PC.\nTripunto N64: Las texturas se filtrarán de una forma más parecida a la que hace la N64. El resultado será menos suave, pero más preciso."
 #2046# "Desactivado"
 #2050# "Idioma:"
+
+/*********************************************************************************
+* Emulation Tab                                                                  *
+*********************************************************************************/
+#3002# "Mip-mapping de N64"
+#3003# "La N64 utiliza un sistema de mip-mapping que es difícil de reproducir correctamente en PCs. Al activar esta opción se emulará el mip-mapping de N64. Si se desactiva, algunos juegos tendrán texturas más definidas a lo lejos.\n[Recomendación: Activado]"
+#3004# "Iluminación por píxel (mejor calidad, sólo en HLE)"
+#3005# "La iluminación de los juegos de N64 se calcula según cada vértice. Esta opción activa el sombreado Phong, que da una iluminación más suave y realista.\n\n[Recomendación: Lo que prefieras]"
+#3006# "Guardar shaders compilados para mejorar el rendimiento (recomendado)"
+#3007# "Guarda de forma persistente los programas de shaders compilados.\nCada juego utiliza un conjunto de combinadores. Un combinador es una ecuación que define el color que se muestra a partir de varios colores de la imagen original. GLideN64 traduce los shaders y compila los programas de shaders al vuelo. Los shaders ocupan mucho espacio y son complejos. Si una escena nueva utiliza varios combinadores nuevos, se tardará más en compilar un shader nuevo y eso puede provocar trompicones. Al activar esta opción se guardarán los shaders para no tener que recompilarlos la próxima vez que ejecutes el juego.\n[Recomendación: Activado]"
+#3008# "Resolución interna:"
+#3009# "Esta opción asigna el tamaño del búfer de renderizado de salida. La configuración prdeterminada del búfer de renderizado es «Idéntica a la resolución de salida», pero puedes utilizar la «Resolución original de N64» o un «Múltiplo de la resolución de N64»."
+#3010# "Idéntica a la resolución de salida"
+#3011# "Resolución original de N64 (más precisa)"
+#3012# "Múltiplo de la resolución de N64:"
+#3014# "Corrección gamma.\nAlgunos juegos de N64 utilizan la corrección gamma, que hace que la imagen sea más brillante. La N64 aplica la corrección gamma a su interfaz de vídeo. \nGLideN64 emula la corrección gamma como un efecto de posprocesado. Es decir, sólo funciona si se utiliza la emulación del frame buffer. La corrección gamma se activa automáticamente en los juegos que la utilizan en una N64 real. Puedes forzar la corrección gamma en todos los juegos. El nivel predeterminado de corrección es 2, como en una N64 real.\n[Recomendación: Utilizar el valor predeterminado]"
+#3016# "Al seleccionar esta opción se anulará la corrección de gamma que especifique el juego."
+#3019# "Si se activa esta opción, el plugin renderizará los elementos 2D en la resolución nativa de N64 y después copiará el resultado al búfer principal. Esto debería eliminar los problemas gráficos en los elementos 2D, pero puede provocar ralentizaciones. Esta opción utiliza heurística para detectar los elementos 2D adyacentes, pero no funcionará en todos los juegos.\n[Recomendación: Activado salvo que tengas problemas de rendimiento]"
+#3020# "Desactivado"
+#3024# "Corregir líneas negras entre elementos en 2D:"
+#3025# "En algunos juegos no se alinean las coordenadas de los elementos en 2D: Hay una separación de medio píxel entre cada elemento adyacente. No es algo visible cuando se renderizan en la resolución nativa de N64, pero provoca líneas negras cuando se escala la imagen. Esta opción intenta unir estos elementos en 2D.\nPara elementos en 2D adyacentes: Aplica la corrección sólo en los polígonos que la necesiten. Selecciona esta opción para los juegos que tengan problemas de líneas negras.\nSiempre: Aplica la corrección en todos los elementos en 2D. Selecciona esta opción cuando «Para elementos adyacentes» no funcione.\nNunca: No corregir las líneas negras entre los elementos en 2D.\n[Recomendación: En función de cada juego, por lo general «Nunca»]"
+#3026# "Para elementos en 2D adyacentes"
+#3027# "Siempre"
+#3028# "Nunca"
