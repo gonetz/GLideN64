@@ -39,3 +39,27 @@
 #2036# "Filtrage bilinéaire: les textures vont utiliser le filtrage bilinéaire standard d'un PC.\nStyle N64 3 points: Les textures seront filtrés comme sur la N64. Le résultat est moins lisse mais plus authentique."
 #2046# "Désactivé"
 #2050# "Langue :"
+
+/*********************************************************************************
+* Emulation Tab                                                                  *
+*********************************************************************************/
+#3002# "Activer le mip-mapping N64"
+#3003# "La N64 utilise une méthode unique de mip-mapping qu'il est difficile de reproduire correctement sur les PCs. Quand elle est cochée, cette option émule un mip-mapping N64 précis. Quand elle est décochée, certains jeux ont des textures distantes plus nettes.\n[Recommandé : Activé]"
+#3004# "Activer l'éclairage matériel (meilleure qualité, HLE seulement)"
+#3005# "Dans les jeux N64, l'éclairage est calculé par vertex. Cette option active un Shader Phong, qui apporte un éclairage plus doux et plus réaliste.\n\n[Recommandé : Selon votre préférence]"
+#3006# "Stocker les Shaders compilés pour plus de performance (recommandé)"
+#3007# "Utiliser un stockage persistent pour compiler les Shaders.\nChaque jeu utilise un ensemble de combinateurs. Un combinateur est une équation qui définie couleur depuis des entrées de couleurs diverses. GLideN64 traduit les Shaders, et les compile à la volée. Les Shaders sont larges et complexes. Si le jeu utilise de nombreux mélangeurs, la compilation des Shaders prendra du temps et engendrera des saccades. Quand cette option est cochée, ces Shaders sont sauvegardés et ne seront donc pas recompilés la prochaine fois que vous lancerez le jeu.\n[Recommandé : Activé]"
+#3008# "Résolution interne :"
+#3009# "Cette option définie la taille de rendu du tampon de sortie. Par défaut, le rendu est défini sur Identique à la résolution de sortie, mais vous pouvez la définir comme identique à la Résolution N64 d'origine ou à un Multiple de la résolution N64."
+#3010# "Identique à la résolution de sortie"
+#3011# "Résolution N64 d'origine (le plus précis)"
+#3012# "Multiple de la résolution N64 :"
+#3014# "Correction gamma.\nCertains jeux N64 utilise la correction gamma. La correction gamma rend l'image plus lumineuse. La N64 applique la correction gamma dans son Interface Vidéo. \nGLideN64 émule la correction gamma tel un effet de post-traitement. C'est pourquoi cela fonctionne uniquement si l'émulation du Tampon Image est activée. La correction gamma est automatiquement activée pour les jeux qui l'utilise nativement sur la N64. Vous pouvez forcer la correction gamma pour tous les jeux. La niveau de correction gamma par défaut est 2, comme sur la N64.\n[Recommandé : valeur par défaut]"
+#3016# "Sélectionner cette option outrepasse les corrections gamma définies par le jeu."
+#3019# "Quand cette option est activée, les éléments 2D sont restitués à la même résolution que la N64 avant de les copier vers la sortie. Généralement, cela elimine les erreurs d'affichage avec les éléments 2D, mais cela peut être lent. Cette option utilise des heuristiques pour détecter les éléments 2D adjacents, cela ne fonctionne pas pour tous les jeux.\n[Recommandé : Coché, sauf si vous avez des problèmes de performance]"
+#3020# "Désactivé"
+#3024# "Fixer les lignes noires entre les éléments 2D :"
+#3025# "Dans certains jeux les coordonées des sections d'éléments 2D ne sont pas alignés : il y a un demi-pixel d'écart entre les éléments adjacents. Quand le rendu est défini à la résolution N64 d'origine cela n'est pas visible, mais quand l'image est mise à l'échelle supérieure cela résulte en l'affichage de lignes noires. Cette option tente de connecter les éléments 2D.\nPour les éléments 2D adjacents : Applique la correction seulement pour les polygones qui la nécessite. Sélectionnez cette option pour les jeux qui affiche des lignes noires.\nToujours : Applique la correction pour tous les éléments 2D. Sélectionnez cette option quand Pour les éléments 2D adjacents ne fonctionne pas.\nJamais : N'essaye pas de corriger les lignes noires entre les éléments 2D.\n[Recommandé : En fonction du jeu, généralement Jamais]"
+#3026# "Pour les éléments 2D adjacents"
+#3027# "Toujours"
+#3028# "Jamais"
