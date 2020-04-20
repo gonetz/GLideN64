@@ -153,6 +153,47 @@ void loadDefaultStrings(void)
     g_defaultStrings.insert(LANG_STRINGS::value_type(FRAMEBUFFER_RENDER_FRAMEBUFFER_TOOLTIP, "When this option is checked, the frame buffer is rendered directly to the screen. This prevents some graphic problems but may cause slowdowns or visual quality problems.\n[Recommended: Usually unchecked]"));
     g_defaultStrings.insert(LANG_STRINGS::value_type(FRAMEBUFFER_COPY_DEPTH_TO_MAIN, "Copy depth to main depth buffer"));
     g_defaultStrings.insert(LANG_STRINGS::value_type(FRAMEBUFFER_COPY_DEPTH_TO_MAIN_TOOLTIP, "This option is required for some Reshade depth dependant effects, such as SSAO and depth of field.\n[Recommended: only if you use Reshade and need depth dependant effects]"));
+
+    //Texture enhancement
+    g_defaultStrings.insert(LANG_STRINGS::value_type(TEXTURE_N64_TEXTURES_GROUP, "N64 textures"));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(TEXTURE_N64_FILTER, "Filter:"));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(TEXTURE_N64_FILTER_TOOLTIP, "This filter smooths or sharpens textures. There are four smoothing filters and two sharpening filters. The higher the number, the stronger the effect. Performance may be affected depending on the game and/or your PC.\n[Recommended: Your preference]"));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(TEXTURE_N64_FILTER_NONE, "None"));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(TEXTURE_N64_FILTER_SMOOTH1, "Smooth filtering 1"));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(TEXTURE_N64_FILTER_SMOOTH2, "Smooth filtering 2"));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(TEXTURE_N64_FILTER_SMOOTH3, "Smooth filtering 3"));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(TEXTURE_N64_FILTER_SMOOTH4, "Smooth filtering 4"));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(TEXTURE_N64_FILTER_SHARP1, "Sharp filtering 1"));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(TEXTURE_N64_FILTER_SHARP2, "Sharp filtering 2"));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(TEXTURE_ENHANCEMENT, "Enhancement:"));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(TEXTURE_ENHANCEMENT_TOOLTIP, "There are 12 distinct filters to select. Depending on which filter, they may cause performance problems.\nWhen Store is selected, textures are saved to the cache as-is. This improves performance in games that load many textures. Uncheck Disable for backgrounds for the best performance.\n[Recommended: Your preference]"));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(TEXTURE_ENHANCEMENT_NONE, "None"));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(TEXTURE_ENHANCEMENT_STORE, "Store"));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(TEXTURE_DECREASE_COLOR, "Decrease color banding (recommended for xBRZ enhancement)"));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(TEXTURE_DECREASE_COLOR_TOOLTIP, "This option enables a pre-processing step that reduces posterization issues on enhanced textures.\n[Recommended: Checked for xBRZ]"));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(TEXTURE_IGNORE_BACKGROUNDS, "Disable for backgrounds"));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(TEXTURE_IGNORE_BACKGROUNDS_TOOLTIP, "This option skips texture enhancements for long, narrow textures that are usually used for backgrounds. This may save texture memory and improve performance.\n[Recommended: Checked, unless Enhancement is set to Store]"));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(TEXTURE_USE_FILE_STORAGE, "Use file storage instead of memory cache"));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(TEXTURE_USE_TEXTURE_PACK, "Use texture pack"));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(TEXTURE_TEXTURE_PACK, "Texture pack path:"));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(TEXTURE_TEXTURE_PACK_TOOLTIP, "Select path to the folder with texture packs.\nDefault: Plugin / hires_texture"));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(TEXTURE_CACHE_PATH, "Texture cache path:"));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(TEXTURE_DUMP_PATH, "Texture dump path:"));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(TEXTURE_USE_FULL_TRANSPARENCIES, "Use full transparencies (recommended for newer texture packs)"));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(TEXTURE_USE_FULL_TRANSPARENCIES_TOOLTIP, "When this option is cleared, textures will be loaded as they are when using Rice Video: transparencies either on or off. When this option is selected, GlideN64 will check how the texture's alpha channel was designed and will select the most appropriate format. This gives texture pack designers freedom to use semi-transparent textures.\nClear this option for older or poorly designed texture packs.\n[Recommended: Texture pack dependent]"));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(TEXTURE_ALTERNATIVE_CRC, "Alternative CRC calculation (for old Rice Video packs)"));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(TEXTURE_ALTERNATIVE_CRC_TOOLTIP, "This option emulates a palette CRC calculation bug in Rice Video. If you have problems loading textures, try checking or unchecking this option.\n[Recommended: Mostly unchecked, checked for old texture packs]"));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(TEXTURE_FILE_STORAGE, "Use file storage instead of memory cache"));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(TEXTURE_DUMP_EDIT, "Dump/edit textures"));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(TEXTURE_DUMP_EDIT_TOOLTIP, "This option dumps textures on screen to a texture pack folder. You can also reload textures while the game is running to see how they look instantly—big time saver!\nHotkeys:\nUse R to reload textures from the texture pack\nUse D to toggle texture dumping on or off"));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(TEXTURE_SIZE_OF_MEMORY_CACHE, "Size of memory cache for enhanced textures:"));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(TEXTURE_SIZE_OF_MEMORY_CACHE_TOOLTIP, "Enhanced and filtered textures can be cached to improve performance. This option adjusts how much memory is dedicated to the texture cache. This can improve performance if there are many requests for the same texture, which is usually the case. Normally 128 MB should be more than enough, but the best option is different for each game. Super Mario 64 may not need more than 32 MB, but Conker's Bad Fur Day can take advantage of 256 MB+. Adjust accordingly if you are having performance problems. Setting this option to 0 disables the cache.\n[Recommended: PC and game dependent]"));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(TEXTURE_SAVE_ENHANCED, "Save enhanced texture cache to hard disk"));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(TEXTURE_SAVE_ENHANCED_TOOLTIP, "This option saves all previously loaded and enhanced textures to your PC. When the game is next launched, textures don't have to be recreated, causing smoother performance.\nWhen using texture packs, loading packs will take only a few seconds when the game is launched as opposed to the 5–60 seconds that loading usually takes. However, if you change the texture pack you'll have to manually delete the texture cache. Saved cache files are saved to a folder called Cache within the plugins folder.\n[Recommended: Checked]"));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(TEXTURE_COMPRESS_CACHE, "Compress texture cache"));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(TEXTURE_COMPRESS_CACHE_TOOLTIP, "Textures will be compressed so more textures can be held in the cache. The compression ratio varies per texture, but the compression is typically 1/5 of the original size.\n[Recommended: Checked]"));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(TEXTURE_CONVERT_16BPP, "Convert textures to 16 bpp"));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(TEXTURE_CONVERT_16BPP_TOOLTIP, "This option halves the space used by textures in the texture cache and video card memory to improve performance. When reducing the color, GLideN64 tries to perserve the original quality as much as possible. On most textures it's hardly noticeable, but some textures, like skies, can look noticeably worse.\n[Recommended: Unchecked]"));
 }
 
 LANG_STR GetNextLangString(FILE * file)

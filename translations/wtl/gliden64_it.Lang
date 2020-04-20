@@ -23,3 +23,12 @@
 * Frame Buffer Tab                                                               *
 *********************************************************************************/
 #4000# "Emula il frame buffer"
+
+/*********************************************************************************
+* Texture enhancement                                                            *
+*********************************************************************************/
+#5001# "Filtro:"
+#5010# "Miglioramento:"
+#5019# "Utilizza un pacchetto texture modificate"
+#5020# "Percorso cartella pacchetti texture:"
+#5035# "Comprimi cache texture"
