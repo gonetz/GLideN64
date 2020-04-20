@@ -115,6 +115,44 @@ void loadDefaultStrings(void)
     g_defaultStrings.insert(LANG_STRINGS::value_type(EMULATION_BACKGROUND_TOOLTIP, "Background is a complex macro command used to render large (normally full screen) images. Since background images usually don't fit texture memory, the microcode splits them on narrow strips and renders them one by one. HLE code has two modes to emulate background commands:\nOne piece: The whole background image rendred as one textured rectangle. This method is normally much faster, but the result is not always correct.\nStripped: This method emulates background commands as close as possible to actual microcode implementation. It's slower but more precise. Another problem: some games may have gaps between rendered strips in high resolution. Use &quot;Render 2D elements in N64 resolution&quot; option to remove the gaps.\n[Recommended: Game dependent, mostly Stripped]"));
     g_defaultStrings.insert(LANG_STRINGS::value_type(EMULATION_ONE_PIECE, "One piece"));
     g_defaultStrings.insert(LANG_STRINGS::value_type(EMULATION_STRIPPED, "Stripped"));
+
+    //Frame Buffer Tab
+    g_defaultStrings.insert(LANG_STRINGS::value_type(FRAMEBUFFER_ENABLE, "Emulate frame buffer"));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(FRAMEBUFFER_ENABLE_INFO, "Unchecking this option disables many effects including cropping, aspect ratio, N64 resolution factor, N64-style depth compare and more. Don't uncheck this option unless you have performance issues."));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(FRAMEBUFFER_COPY_AUX_BUFFERS, "Copy auxiliary color buffers to N64 memory (sometimes slow, fewer game issues)"));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(FRAMEBUFFER_COPY_AUX_BUFFERS_TOOLTIP, "When checked, the auxiliary color buffer is copied to N64 memory right after rendering to it is finished. This option helps to correctly emulate frame buffer effects in some games. This option may noticeably reduce performance.\n[Recommended: Usually unchecked]"));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(FRAMEBUFFER_SWAP, "Frame buffer swap on:"));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(FRAMEBUFFER_SWAP_TOOLTIP, "This option controls how often GLideN64 updates the main frame buffer.\nVertical interrupt : Update the buffer as quickly as possible, every vertical interrupt per second(50 for PAL and 60 for NTSC games).This option is the most compatible.Use this mode unless you have performance problems.\nVI origin change : The VI origin changes corresponding to the game's actual FPS. N64 games typically run between 20 to 30 FPS so the buffers swap less often than the first mode. This mode does not work for games that use single buffering, which is rare.\nColor buffer change: This option checks to see if the frame buffer has been changed. There are some games where this doesn't work."));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(FRAMEBUFFER_VERTICAL_INTERRUPT, "Vertical interrupt (recommended, fewest game issues)"));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(FRAMEBUFFER_VI_ORIGIN_CHANGE, "VI origin change (faster, few game issues)"));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(FRAMEBUFFER_COLOR_BUFFER_CHANGE, "Color buffer change (fastest, some game issues)"));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(FRAMEBUFFER_INFO_ENABLE, "Use emulator help to read/write frame buffers"));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(FRAMEBUFFER_INFO_ENABLE_TOOLTIP, "Some emulators do a poor job of detecting when to read/write frame buffers. You can disable emulator help to let GLideN64 read/write frame buffers itself.\n[Recommended: Usually unchecked, but for some games/emulators it may be faster checked]"));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(FRAMEBUFFER_READ_COLOR_CHUNK, "Read color buffer in 4 KB chunks"));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(FRAMEBUFFER_READ_COLOR_CHUNK_TOOLTIP, "When checked, the color buffer will be read in chunks. Otherwise, the buffer will be read in its entirety. If a game needs to read the entire buffer, selecting this option may be slow.\n[Recommended: Usually unchecked, because the color buffer is usually read entirely]"));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(FRAMEBUFFER_READ_DEPTH_CHUNK, "Read depth buffer in 4 KB chunks"));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(FRAMEBUFFER_READ_DEPTH_CHUNK_TOOLTIP, "When checked, the depth buffer will be read in chunks. Otherwise the buffer will be read in its entirety. If a game needs to read the entire buffer, selecting this option may be slow.\n[Recommended: Checked, because the depth buffer is not often read entirely]"));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(FRAMEBUFFER_COPY_COLOR_BUFFER, "Copy video card frame buffer to N64 memory:"));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(FRAMEBUFFER_COPY_COLOR_BUFFER_TOOLTIP, "In some games GLideN64 can't detect when the game uses the frame buffer. With these options, you can have GLideN64 copy each frame of your video card's frame buffer to N64 memory.\nNever: Disable copying buffers from video card.\nSynchronous: Effects are detected for all games, but it can be slow. Use for games where Asynchronous doesn't work.\nAsynchronous: Effects are detected for most games. [Recommended: Usually Asynchronous]"));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(FRAMEBUFFER_COPY_NEVER, "Never (fastest, many game issues)"));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(FRAMEBUFFER_COPY_SYNCHRONOUS, "Synchronous (slowest, fewest game issues)"));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(FRAMEBUFFER_COPY_ASYNCHRONOUS, "Asynchronous (fast, few game issues)"));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(FRAMEBUFFER_COPY_DEPTH_BUFFER, "Copy video card depth buffer to N64 memory:"));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(FRAMEBUFFER_COPY_DEPTH_BUFFER_TOOLTIP, "The depth buffer is used to emulate some effects (e.g. coronas):\nNever: Depth buffer is disabled.\nFrom VRAM: Your video card's depth buffer is copied to N64 memory each frame, which can be slow on some games.\nIn software: Generally faster than copying from VRAM, but the result can be imperfect.\n[Recommended: In software]"));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(FRAMEBUFFER_COPY_DEPTH_NEVER, "Never (fastest, most game issues)"));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(FRAMEBUFFER_COPY_DEPTH_VRAM, "From VRAM (slow, some game issues)"));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(FRAMEBUFFER_COPY_DEPTH_SOFTWARE, "In software (fast, fewest game issues)"));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(FRAMEBUFFER_N64_DEPTH_COMPARE, "N64-style depth compare (experimental, disables MSAA)"));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(FRAMEBUFFER_N64_DEPTH_COMPARE_TOOLTIP, "The N64 uses a unique method of calculating depth to the camera. When enabled, GlideN64 uses shaders to try to emulate these calculations correctly. Not compatible with anti-aliasing. Experimental!\nFast mode requires OpenGL 4.2 and fragment shader interlock extensions.\nCompatible mode requires only core OpenGL 4.2 Can be slow!\n[Recommended: Sometimes checked, for several games]"));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(FRAMEBUFFER_N64_DEPTH_DISABLE, "Disable"));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(FRAMEBUFFER_N64_DEPTH_FAST, "Fast"));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(FRAMEBUFFER_N64_DEPTH_COMPATIBLE, "Compatible"));   
+    g_defaultStrings.insert(LANG_STRINGS::value_type(FRAMEBUFFER_FORCE_DEPTH_BUFFER_CLEAR, "Force depth buffer clear"));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(FRAMEBUFFER_FORCE_DEPTH_BUFFER_CLEAR_TOOLTIP, "Enable force depth buffer clear. A hack. Necessary for Eikou no Saint Andrews.\n[Recommended: except for Eikou no Saint Andrews]"));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(FRAMEBUFFER_RENDER_FRAMEBUFFER, "Render N64 frame buffer to output"));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(FRAMEBUFFER_RENDER_FRAMEBUFFER_TOOLTIP, "When this option is checked, the frame buffer is rendered directly to the screen. This prevents some graphic problems but may cause slowdowns or visual quality problems.\n[Recommended: Usually unchecked]"));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(FRAMEBUFFER_COPY_DEPTH_TO_MAIN, "Copy depth to main depth buffer"));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(FRAMEBUFFER_COPY_DEPTH_TO_MAIN_TOOLTIP, "This option is required for some Reshade depth dependant effects, such as SSAO and depth of field.\n[Recommended: only if you use Reshade and need depth dependant effects]"));
 }
 
 LANG_STR GetNextLangString(FILE * file)

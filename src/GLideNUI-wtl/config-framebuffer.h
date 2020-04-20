@@ -1,10 +1,12 @@
 #pragma once
 #include "config-tab.h"
 #include "wtl-BitmapPicture.h"
+#include "wtl-tooltip.h"
 #include "resource.h"
 
 class CFrameBufferTab :
-    public CConfigTab
+    public CConfigTab,
+    public CToolTipDialog<CFrameBufferTab>
 {
 public:
     BEGIN_MSG_MAP(CFrameBufferTab)
@@ -13,6 +15,7 @@ public:
         MESSAGE_HANDLER(WM_CTLCOLORSTATIC, OnColorStatic)
         COMMAND_HANDLER_EX(IDC_CHK_ENABLE_FRAMEBUFFER, BN_CLICKED, OnEnableFramebuffer)
         COMMAND_HANDLER_EX(IDC_CHK_FB_INFO_ENABLE, BN_CLICKED, OnFbInfoEnable)
+        CHAIN_MSG_MAP(CToolTipDialog<CFrameBufferTab>)
     END_MSG_MAP()
     
     CFrameBufferTab();

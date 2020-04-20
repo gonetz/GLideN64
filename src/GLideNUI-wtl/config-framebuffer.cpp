@@ -1,6 +1,7 @@
 #include "config-framebuffer.h"
 #include "resource.h"
 #include "../Config.h"
+#include "Language.h"
 
 CFrameBufferTab::CFrameBufferTab() :
     CConfigTab(IDD_TAB_FRAME_BUFFER)
@@ -9,6 +10,9 @@ CFrameBufferTab::CFrameBufferTab() :
 
 BOOL CFrameBufferTab::OnInitDialog(CWindow /*wndFocus*/, LPARAM /*lInitParam*/)
 {
+    TTInit();
+    TTSize(400);
+
     SIZE iconSz = { ::GetSystemMetrics(SM_CXICON), ::GetSystemMetrics(SM_CYICON) };
     m_EmulateFBIcon.SubclassWindow(GetDlgItem(IDC_EMULATE_FB_ICON));
     m_EmulateFBIcon.SetIcon(MAKEINTRESOURCE(IDI_ICON_WARNING), iconSz.cx, iconSz.cy);
@@ -16,29 +20,105 @@ BOOL CFrameBufferTab::OnInitDialog(CWindow /*wndFocus*/, LPARAM /*lInitParam*/)
     m_EmulateFBIcon.SetBackroundBrush((HBRUSH)GetStockObject(WHITE_BRUSH));
 
     CComboBox frameBufferSwapComboBox(GetDlgItem(IDC_CMB_FRAMEBUFFER_SWAP));
-    frameBufferSwapComboBox.AddString(L"Vertical interrupt (recommended, fewest game issues)");
-    frameBufferSwapComboBox.AddString(L"VI origin change (faster, few game issues)");
-    frameBufferSwapComboBox.AddString(L"Color buffer change (fastest, some game issues)");
+    frameBufferSwapComboBox.AddString(wGS(FRAMEBUFFER_VERTICAL_INTERRUPT).c_str());
+    frameBufferSwapComboBox.AddString(wGS(FRAMEBUFFER_VI_ORIGIN_CHANGE).c_str());
+    frameBufferSwapComboBox.AddString(wGS(FRAMEBUFFER_COLOR_BUFFER_CHANGE).c_str());
 
     CComboBox copyColorBufferComboBox(GetDlgItem(IDC_CMB_COPY_COLOR_BUFFER));
-    copyColorBufferComboBox.AddString(L"Never (fastest, many game issues)");
-    copyColorBufferComboBox.AddString(L"Synchronous (slowest, fewest game issues)");
-    copyColorBufferComboBox.AddString(L"Asynchronous (fast, few game issues)");
+    copyColorBufferComboBox.AddString(wGS(FRAMEBUFFER_COPY_NEVER).c_str());
+    copyColorBufferComboBox.AddString(wGS(FRAMEBUFFER_COPY_SYNCHRONOUS).c_str());
+    copyColorBufferComboBox.AddString(wGS(FRAMEBUFFER_COPY_ASYNCHRONOUS).c_str());
 
     CComboBox copyDepthBufferComboBox(GetDlgItem(IDC_CMB_COPY_DEPTH_BUFFER));
-    copyDepthBufferComboBox.AddString(L"Never (fastest, most game issues)");
-    copyDepthBufferComboBox.AddString(L"From VRAM (slow, some game issues)");
-    copyDepthBufferComboBox.AddString(L"In software (fast, fewest game issues)");
+    copyDepthBufferComboBox.AddString(wGS(FRAMEBUFFER_COPY_DEPTH_NEVER).c_str());
+    copyDepthBufferComboBox.AddString(wGS(FRAMEBUFFER_COPY_DEPTH_VRAM).c_str());
+    copyDepthBufferComboBox.AddString(wGS(FRAMEBUFFER_COPY_DEPTH_SOFTWARE).c_str());
 
     CComboBox n64DepthCompareComboBox(GetDlgItem(IDC_CMB_N64_DEPTH_COMPARE));
-    n64DepthCompareComboBox.AddString(L"Disable");
-    n64DepthCompareComboBox.AddString(L"Fast");
-    n64DepthCompareComboBox.AddString(L"Compatible");
+    n64DepthCompareComboBox.AddString(wGS(FRAMEBUFFER_N64_DEPTH_DISABLE).c_str());
+    n64DepthCompareComboBox.AddString(wGS(FRAMEBUFFER_N64_DEPTH_FAST).c_str());
+    n64DepthCompareComboBox.AddString(wGS(FRAMEBUFFER_N64_DEPTH_COMPATIBLE).c_str());
     return true;
 }
 
 void CFrameBufferTab::ApplyLanguage(void)
 {
+    SetDlgItemTextW(IDC_CHK_ENABLE_FRAMEBUFFER, wGS(FRAMEBUFFER_ENABLE).c_str());
+    SetDlgItemTextW(IDC_FRAME_BUFFER_INFO, wGS(FRAMEBUFFER_ENABLE_INFO).c_str());
+    SetDlgItemTextW(IDC_CHK_COPY_AUX_BUFFERS, wGS(FRAMEBUFFER_COPY_AUX_BUFFERS).c_str());
+    SetDlgItemTextW(IDC_TXT_FRAMEBUFFER_SWAP, wGS(FRAMEBUFFER_SWAP).c_str());
+    SetDlgItemTextW(IDC_CHK_FB_INFO_ENABLE, wGS(FRAMEBUFFER_INFO_ENABLE).c_str());
+    SetDlgItemTextW(IDC_CHK_READ_COLOR_CHUNK, wGS(FRAMEBUFFER_READ_COLOR_CHUNK).c_str());
+    SetDlgItemTextW(IDC_CHK_READ_DEPTH_CHUNK, wGS(FRAMEBUFFER_READ_DEPTH_CHUNK).c_str());
+    SetDlgItemTextW(IDC_TXT_COPY_COLOR_BUFFER, wGS(FRAMEBUFFER_COPY_COLOR_BUFFER).c_str());
+    SetDlgItemTextW(IDC_TXT_COPY_DEPTH_BUFFER, wGS(FRAMEBUFFER_COPY_DEPTH_BUFFER).c_str());
+    SetDlgItemTextW(IDC_TXT_N64_DEPTH_COMPARE, wGS(FRAMEBUFFER_N64_DEPTH_COMPARE).c_str());
+    SetDlgItemTextW(IDC_CHK_FORCE_DEPTH_BUFFER_CLEAR, wGS(FRAMEBUFFER_FORCE_DEPTH_BUFFER_CLEAR).c_str());
+    SetDlgItemTextW(IDC_CHK_RENDER_FRAMEBUFFER, wGS(FRAMEBUFFER_RENDER_FRAMEBUFFER).c_str());
+    SetDlgItemTextW(IDC_CHK_COPY_DEPTH_TO_MAIN_DEPTH_BUFFER, wGS(FRAMEBUFFER_COPY_DEPTH_TO_MAIN).c_str());
+
+    std::wstring tooltip = wGS(FRAMEBUFFER_COPY_AUX_BUFFERS_TOOLTIP);
+    TTSetTxt(GetDlgItem(IDC_CHK_COPY_AUX_BUFFERS), tooltip.c_str());
+    tooltip = wGS(FRAMEBUFFER_SWAP_TOOLTIP);
+    TTSetTxt(GetDlgItem(IDC_TXT_FRAMEBUFFER_SWAP), tooltip.c_str());
+    TTSetTxt(GetDlgItem(IDC_CMB_FRAMEBUFFER_SWAP), tooltip.c_str());
+    tooltip = wGS(FRAMEBUFFER_INFO_ENABLE_TOOLTIP);
+    TTSetTxt(GetDlgItem(IDC_CHK_FB_INFO_ENABLE), tooltip.c_str());
+    tooltip = wGS(FRAMEBUFFER_READ_COLOR_CHUNK_TOOLTIP);
+    TTSetTxt(GetDlgItem(IDC_CHK_READ_COLOR_CHUNK), tooltip.c_str());
+    tooltip = wGS(FRAMEBUFFER_READ_DEPTH_CHUNK_TOOLTIP);
+    TTSetTxt(GetDlgItem(IDC_CHK_READ_DEPTH_CHUNK), tooltip.c_str());
+    tooltip = wGS(FRAMEBUFFER_COPY_COLOR_BUFFER_TOOLTIP);
+    TTSetTxt(GetDlgItem(IDC_TXT_COPY_COLOR_BUFFER), tooltip.c_str());
+    TTSetTxt(GetDlgItem(IDC_CMB_COPY_COLOR_BUFFER), tooltip.c_str());
+    tooltip = wGS(FRAMEBUFFER_COPY_DEPTH_BUFFER_TOOLTIP);
+    TTSetTxt(GetDlgItem(IDC_TXT_COPY_COLOR_BUFFER), tooltip.c_str());
+    TTSetTxt(GetDlgItem(IDC_CMB_COPY_DEPTH_BUFFER), tooltip.c_str());
+    tooltip = wGS(FRAMEBUFFER_N64_DEPTH_COMPARE_TOOLTIP);
+    TTSetTxt(GetDlgItem(IDC_TXT_N64_DEPTH_COMPARE), tooltip.c_str());
+    TTSetTxt(GetDlgItem(IDC_CMB_N64_DEPTH_COMPARE), tooltip.c_str());
+    tooltip = wGS(FRAMEBUFFER_FORCE_DEPTH_BUFFER_CLEAR_TOOLTIP);
+    TTSetTxt(GetDlgItem(IDC_CHK_FORCE_DEPTH_BUFFER_CLEAR), tooltip.c_str());
+    tooltip = wGS(FRAMEBUFFER_RENDER_FRAMEBUFFER_TOOLTIP);
+    TTSetTxt(GetDlgItem(IDC_CHK_RENDER_FRAMEBUFFER), tooltip.c_str());
+    tooltip = wGS(FRAMEBUFFER_COPY_DEPTH_TO_MAIN_TOOLTIP);
+    TTSetTxt(GetDlgItem(IDC_CHK_COPY_DEPTH_TO_MAIN_DEPTH_BUFFER), tooltip.c_str());
+
+    CComboBox frameBufferSwapComboBox(GetDlgItem(IDC_CMB_FRAMEBUFFER_SWAP));
+    int selectedIndx = frameBufferSwapComboBox.GetCurSel();
+    frameBufferSwapComboBox.ResetContent();
+    frameBufferSwapComboBox.AddString(wGS(FRAMEBUFFER_VERTICAL_INTERRUPT).c_str());
+    frameBufferSwapComboBox.AddString(wGS(FRAMEBUFFER_VI_ORIGIN_CHANGE).c_str());
+    frameBufferSwapComboBox.AddString(wGS(FRAMEBUFFER_COLOR_BUFFER_CHANGE).c_str());
+    if (selectedIndx >= 0)
+        frameBufferSwapComboBox.SetCurSel(selectedIndx);
+
+    CComboBox copyColorBufferComboBox(GetDlgItem(IDC_CMB_COPY_COLOR_BUFFER));
+    selectedIndx = copyColorBufferComboBox.GetCurSel();
+    copyColorBufferComboBox.ResetContent();
+    copyColorBufferComboBox.AddString(wGS(FRAMEBUFFER_COPY_NEVER).c_str());
+    copyColorBufferComboBox.AddString(wGS(FRAMEBUFFER_COPY_SYNCHRONOUS).c_str());
+    copyColorBufferComboBox.AddString(wGS(FRAMEBUFFER_COPY_ASYNCHRONOUS).c_str());
+    if (selectedIndx >= 0)
+        copyColorBufferComboBox.SetCurSel(selectedIndx);
+
+    CComboBox copyDepthBufferComboBox(GetDlgItem(IDC_CMB_COPY_DEPTH_BUFFER));
+    selectedIndx = copyDepthBufferComboBox.GetCurSel();
+    copyDepthBufferComboBox.ResetContent();
+    copyDepthBufferComboBox.AddString(wGS(FRAMEBUFFER_COPY_DEPTH_NEVER).c_str());
+    copyDepthBufferComboBox.AddString(wGS(FRAMEBUFFER_COPY_DEPTH_VRAM).c_str());
+    copyDepthBufferComboBox.AddString(wGS(FRAMEBUFFER_COPY_DEPTH_SOFTWARE).c_str());
+    if (selectedIndx >= 0)
+        copyDepthBufferComboBox.SetCurSel(selectedIndx);
+
+    CComboBox n64DepthCompareComboBox(GetDlgItem(IDC_CMB_N64_DEPTH_COMPARE));
+    selectedIndx = n64DepthCompareComboBox.GetCurSel();
+    n64DepthCompareComboBox.ResetContent();
+    n64DepthCompareComboBox.AddString(wGS(FRAMEBUFFER_N64_DEPTH_DISABLE).c_str());
+    n64DepthCompareComboBox.AddString(wGS(FRAMEBUFFER_N64_DEPTH_FAST).c_str());
+    n64DepthCompareComboBox.AddString(wGS(FRAMEBUFFER_N64_DEPTH_COMPATIBLE).c_str());
+    if (selectedIndx >= 0)
+        n64DepthCompareComboBox.SetCurSel(selectedIndx);
 }
 
 LRESULT CFrameBufferTab::OnColorStatic(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
