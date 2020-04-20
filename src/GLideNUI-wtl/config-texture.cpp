@@ -2,6 +2,7 @@
 #include "resource.h"
 #include "util.h"
 #include "../Config.h"
+#include "Language.h"
 #include <Shlobj.h>
 
 CTextureEnhancementTab::CTextureEnhancementTab() :
@@ -11,18 +12,21 @@ CTextureEnhancementTab::CTextureEnhancementTab() :
 
 BOOL CTextureEnhancementTab::OnInitDialog(CWindow /*wndFocus*/, LPARAM /*lInitParam*/)
 {
+    TTInit();
+    TTSize(400);
+
     CComboBox filterComboBox(GetDlgItem(IDC_CMB_FILTER));
-    filterComboBox.AddString(L"None");
-    filterComboBox.AddString(L"Smooth filtering 1");
-    filterComboBox.AddString(L"Smooth filtering 2");
-    filterComboBox.AddString(L"Smooth filtering 3");
-    filterComboBox.AddString(L"Smooth filtering 4");
-    filterComboBox.AddString(L"Sharp filtering 1");
-    filterComboBox.AddString(L"Sharp filtering 2");
+    filterComboBox.AddString(wGS(TEXTURE_N64_FILTER_NONE).c_str());
+    filterComboBox.AddString(wGS(TEXTURE_N64_FILTER_SMOOTH1).c_str());
+    filterComboBox.AddString(wGS(TEXTURE_N64_FILTER_SMOOTH2).c_str());
+    filterComboBox.AddString(wGS(TEXTURE_N64_FILTER_SMOOTH3).c_str());
+    filterComboBox.AddString(wGS(TEXTURE_N64_FILTER_SMOOTH4).c_str());
+    filterComboBox.AddString(wGS(TEXTURE_N64_FILTER_SHARP1).c_str());
+    filterComboBox.AddString(wGS(TEXTURE_N64_FILTER_SHARP2).c_str());
 
     CComboBox enhancementComboBox(GetDlgItem(IDC_CMB_ENHANCEMENT));
-    enhancementComboBox.AddString(L"None");
-    enhancementComboBox.AddString(L"Store");
+    enhancementComboBox.AddString(wGS(TEXTURE_ENHANCEMENT_NONE).c_str());
+    enhancementComboBox.AddString(wGS(TEXTURE_ENHANCEMENT_STORE).c_str());
     enhancementComboBox.AddString(L"X2");
     enhancementComboBox.AddString(L"X2SAI");
     enhancementComboBox.AddString(L"HQ2X");
@@ -47,6 +51,84 @@ BOOL CTextureEnhancementTab::OnInitDialog(CWindow /*wndFocus*/, LPARAM /*lInitPa
 
 void CTextureEnhancementTab::ApplyLanguage(void)
 {
+    SetDlgItemTextW(IDC_TXT_N64_TEXTURE, wGS(TEXTURE_N64_TEXTURES_GROUP).c_str());
+    SetDlgItemTextW(IDC_TXT_TEXTURE_FILTER, wGS(TEXTURE_N64_FILTER).c_str());
+    SetDlgItemTextW(IDC_TXT_ENHANCEMENT, wGS(TEXTURE_ENHANCEMENT).c_str());
+    SetDlgItemTextW(IDC_CHK_DECREASE_COLOR, wGS(TEXTURE_DECREASE_COLOR).c_str());
+    SetDlgItemTextW(IDC_CHK_IGNORE_BACKGROUNDS, wGS(TEXTURE_IGNORE_BACKGROUNDS).c_str());
+    SetDlgItemTextW(IDC_CHK_ENHANCED_TEX_FILE_STORAGE, wGS(TEXTURE_USE_FILE_STORAGE).c_str());
+    SetDlgItemTextW(IDC_TEX_PACK_PATH_STATIC, wGS(TEXTURE_TEXTURE_PACK).c_str());
+    SetDlgItemTextW(IDC_TEX_CACHE_PATH_STATIC, wGS(TEXTURE_CACHE_PATH).c_str());
+    SetDlgItemTextW(IDC_TEX_DUMP_PATH_STATIC, wGS(TEXTURE_DUMP_PATH).c_str());
+    SetDlgItemTextW(IDC_CHK_ALPHA_CHANNEL, wGS(TEXTURE_USE_FULL_TRANSPARENCIES).c_str());
+    SetDlgItemTextW(IDC_CHK_ALTERNATIVE_CRC, wGS(TEXTURE_ALTERNATIVE_CRC).c_str());
+    SetDlgItemTextW(IDC_CHK_HIRES_TEX_FILESTORAGE, wGS(TEXTURE_FILE_STORAGE).c_str());
+    SetDlgItemTextW(IDC_CHK_TEXTURE_DUMP, wGS(TEXTURE_DUMP_EDIT).c_str());
+    SetDlgItemTextW(IDC_TEXTURE_FILTER_CACHE_STATIC, wGS(TEXTURE_SIZE_OF_MEMORY_CACHE).c_str());
+    SetDlgItemTextW(IDC_CHK_SAVE_TEXTURE_CACHE, wGS(TEXTURE_SAVE_ENHANCED).c_str());
+    SetDlgItemTextW(IDC_CHK_COMPRESS_CACHE, wGS(TEXTURE_COMPRESS_CACHE).c_str());
+    SetDlgItemTextW(IDC_CHK_FORCE_16BPP, wGS(TEXTURE_CONVERT_16BPP).c_str());
+
+    std::wstring tooltip = wGS(TEXTURE_N64_FILTER_TOOLTIP);
+    TTSetTxt(GetDlgItem(IDC_TXT_TEXTURE_FILTER), tooltip.c_str());
+    TTSetTxt(GetDlgItem(IDC_CMB_FILTER), tooltip.c_str());
+    tooltip = wGS(TEXTURE_ENHANCEMENT_TOOLTIP);
+    TTSetTxt(GetDlgItem(IDC_TXT_ENHANCEMENT), tooltip.c_str());
+    TTSetTxt(GetDlgItem(IDC_CMB_ENHANCEMENT), tooltip.c_str());
+    tooltip = wGS(TEXTURE_DECREASE_COLOR_TOOLTIP);
+    TTSetTxt(GetDlgItem(IDC_CHK_DECREASE_COLOR), tooltip.c_str());
+    tooltip = wGS(TEXTURE_IGNORE_BACKGROUNDS_TOOLTIP);
+    TTSetTxt(GetDlgItem(IDC_CHK_IGNORE_BACKGROUNDS), tooltip.c_str());
+    tooltip = wGS(TEXTURE_TEXTURE_PACK_TOOLTIP);
+    TTSetTxt(GetDlgItem(IDC_TEX_PACK_PATH_STATIC), tooltip.c_str());
+    TTSetTxt(GetDlgItem(IDC_TEX_PACK_PATH_EDIT), tooltip.c_str());
+    tooltip = wGS(TEXTURE_USE_FULL_TRANSPARENCIES_TOOLTIP);
+    TTSetTxt(GetDlgItem(IDC_CHK_ALPHA_CHANNEL), tooltip.c_str());
+    tooltip = wGS(TEXTURE_ALTERNATIVE_CRC_TOOLTIP);
+    TTSetTxt(GetDlgItem(IDC_CHK_ALTERNATIVE_CRC), tooltip.c_str());
+    tooltip = wGS(TEXTURE_DUMP_EDIT_TOOLTIP);
+    TTSetTxt(GetDlgItem(IDC_CHK_TEXTURE_DUMP), tooltip.c_str());
+    tooltip = wGS(TEXTURE_SIZE_OF_MEMORY_CACHE_TOOLTIP);
+    TTSetTxt(GetDlgItem(IDC_TEXTURE_FILTER_CACHE_STATIC), tooltip.c_str());
+    TTSetTxt(GetDlgItem(IDC_TEXTURE_FILTER_CACHE_EDIT), tooltip.c_str());
+    tooltip = wGS(TEXTURE_SAVE_ENHANCED_TOOLTIP);
+    TTSetTxt(GetDlgItem(IDC_CHK_SAVE_TEXTURE_CACHE), tooltip.c_str());
+    tooltip = wGS(TEXTURE_COMPRESS_CACHE_TOOLTIP);
+    TTSetTxt(GetDlgItem(IDC_CHK_COMPRESS_CACHE), tooltip.c_str());
+    tooltip = wGS(TEXTURE_CONVERT_16BPP_TOOLTIP);
+    TTSetTxt(GetDlgItem(IDC_CHK_FORCE_16BPP), tooltip.c_str());
+
+    CComboBox filterComboBox(GetDlgItem(IDC_CMB_FILTER));
+    int selectedIndx = filterComboBox.GetCurSel();
+    filterComboBox.ResetContent();
+    filterComboBox.AddString(wGS(TEXTURE_N64_FILTER_NONE).c_str());
+    filterComboBox.AddString(wGS(TEXTURE_N64_FILTER_SMOOTH1).c_str());
+    filterComboBox.AddString(wGS(TEXTURE_N64_FILTER_SMOOTH2).c_str());
+    filterComboBox.AddString(wGS(TEXTURE_N64_FILTER_SMOOTH3).c_str());
+    filterComboBox.AddString(wGS(TEXTURE_N64_FILTER_SMOOTH4).c_str());
+    filterComboBox.AddString(wGS(TEXTURE_N64_FILTER_SHARP1).c_str());
+    filterComboBox.AddString(wGS(TEXTURE_N64_FILTER_SHARP2).c_str());
+    if (selectedIndx >= 0)
+        filterComboBox.SetCurSel(selectedIndx);
+
+    CComboBox enhancementComboBox(GetDlgItem(IDC_CMB_ENHANCEMENT));
+    selectedIndx = enhancementComboBox.GetCurSel();
+    enhancementComboBox.AddString(wGS(TEXTURE_ENHANCEMENT_NONE).c_str());
+    enhancementComboBox.AddString(wGS(TEXTURE_ENHANCEMENT_STORE).c_str());
+    enhancementComboBox.AddString(L"X2");
+    enhancementComboBox.AddString(L"X2SAI");
+    enhancementComboBox.AddString(L"HQ2X");
+    enhancementComboBox.AddString(L"HQ2XS");
+    enhancementComboBox.AddString(L"LQ2X");
+    enhancementComboBox.AddString(L"LQ2XS");
+    enhancementComboBox.AddString(L"HQ4X");
+    enhancementComboBox.AddString(L"2xBRZ");
+    enhancementComboBox.AddString(L"3xBRZ");
+    enhancementComboBox.AddString(L"4xBRZ");
+    enhancementComboBox.AddString(L"5xBRZ");
+    enhancementComboBox.AddString(L"6xBRZ");
+    if (selectedIndx >= 0)
+        enhancementComboBox.SetCurSel(selectedIndx);
 }
 
 LRESULT CTextureEnhancementTab::OnColorStatic(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/)
@@ -83,17 +165,9 @@ void CTextureEnhancementTab::OnTexturePack(UINT /*Code*/, int /*id*/, HWND /*ctl
 LRESULT CTextureEnhancementTab::OnScroll(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
 {
     LONG CtrlId = CWindow((HWND)lParam).GetWindowLong(GWL_ID);
-    if (CtrlId == IDC_TEXTURE_FILTER_CACHE_SPIN)
-    {
+    if (CtrlId == IDC_TEXTURE_FILTER_CACHE_SPIN) {
         int Pos = m_TextureFilterCacheSpin.GetPos();
-        if (Pos == 20)
-        {
-            m_TextureFilterCacheTxt.SetWindowText(L"999 MB");
-        }
-        else
-        {
-            m_TextureFilterCacheTxt.SetWindowText(FormatStrW(L"%d MB", Pos * 50).c_str());
-        }
+        m_TextureFilterCacheTxt.SetWindowText(FormatStrW(L"%d MB", Pos == 20 ? 999 : Pos * 50).c_str());
     }
     return 0;
 }
@@ -140,14 +214,10 @@ void CTextureEnhancementTab::SaveDirectory(int EditCtrl, wchar_t * txPath)
     bool exists = (hFindFile != INVALID_HANDLE_VALUE);
 
     if (hFindFile != NULL)
-    {
         FindClose(hFindFile);
-    }
 
     if (exists)
-    {
         wcscpy(txPath, Path.c_str());
-    }
 }
 
 void CTextureEnhancementTab::SaveSettings()
@@ -207,13 +277,8 @@ void CTextureEnhancementTab::SelectDir(wchar_t * Title, int EditCtrl)
     bi.ulFlags = BIF_RETURNFSANCESTORS | BIF_RETURNONLYFSDIRS;
     bi.lpfn = (BFFCALLBACK)SelectDirCallBack;
     bi.lParam = (DWORD)EditText.c_str();
-    if ((pidl = SHBrowseForFolderW(&bi)) != NULL)
-    {
-        if (SHGetPathFromIDListW(pidl, Directory))
-        {
-            EditWnd.SetWindowText(Directory);
-        }
-    }
+    if ((pidl = SHBrowseForFolderW(&bi)) != NULL && SHGetPathFromIDListW(pidl, Directory))
+        EditWnd.SetWindowText(Directory);
 }
 
 int CALLBACK CTextureEnhancementTab::SelectDirCallBack(HWND hwnd, uint32_t uMsg, uint32_t /*lp*/, uint32_t lpData)
@@ -224,9 +289,7 @@ int CALLBACK CTextureEnhancementTab::SelectDirCallBack(HWND hwnd, uint32_t uMsg,
         // WParam is TRUE since you are passing a path.
         // It would be FALSE if you were passing a pidl.
         if (lpData)
-        {
             SendMessage(hwnd, BFFM_SETSELECTION, TRUE, lpData);
-        }
         break;
     }
     return 0;

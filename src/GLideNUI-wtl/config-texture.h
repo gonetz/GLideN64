@@ -1,9 +1,11 @@
 #pragma once
 #include "config-tab.h"
+#include "wtl-tooltip.h"
 #include "resource.h"
 
 class CTextureEnhancementTab :
-    public CConfigTab
+    public CConfigTab,
+    public CToolTipDialog<CTextureEnhancementTab>
 {
 public:
     BEGIN_MSG_MAP(CTextureEnhancementTab)
@@ -16,6 +18,7 @@ public:
         COMMAND_ID_HANDLER_EX(IDC_TEX_CACHE_PATH_BTN, OnSelectTexCachePath)
         COMMAND_ID_HANDLER_EX(IDC_TEX_DUMP_PATH_BTN, OnSelectTexDumpPath)
         MESSAGE_HANDLER(WM_VSCROLL, OnScroll)
+        CHAIN_MSG_MAP(CToolTipDialog<CTextureEnhancementTab>)
     END_MSG_MAP()
 
     CTextureEnhancementTab();
