@@ -197,3 +197,21 @@
 #7000# "Low-Level-Info ausgeben"
 #7001# "Display-Listen-Befehle ausgeben"
 #7002# "Detaillierte Informationen ausgeben (Matrizen, Eckpunkte, etc.)"
+
+/*********************************************************************************
+* About                                                                          *
+*********************************************************************************/
+#9000# "Über GLideN64"
+#9001# "Über"
+#9002# "Beiträger"
+#9003# "Finanzierer"
+#9004# "Danksagung"
+#9005# "Das N64 Open-Source Grafik-Plugin der nächsten Generation."
+#9006# "Autoren"
+#9007# "Entwickler"
+#9008# "Betatester"
+#9009# "Oberflächendesigner"
+#9011# "Autor des originalen glN64 Grafikplugins"
+#9012# "Autor des glesn64 Grafikplugins, einem GLES 2.0 Port von glN64"
+#9013# "Autor der GlideHQ Texturbibliothek"
+#9014# "Autor von z64, einem OpenGL LLE Grafikplugin"

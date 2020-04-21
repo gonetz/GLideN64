@@ -215,3 +215,22 @@
 #7000# "Dump low-level info"
 #7001# "Dump display list commands"
 #7002# "Dump detailed info (matrices, vertices, etc.)"
+
+/*********************************************************************************
+* About                                                                          *
+*********************************************************************************/
+#9000# "About GLideN64"
+#9001# "About"
+#9002# "Contributors"
+#9003# "Funders"
+#9004# "Credits"
+#9005# "The next generation open source graphics plugin for N64 emulators."
+#9006# "Authors"
+#9007# "Developer"
+#9008# "Beta tester"
+#9009# "GUI designer"
+#9010# ".. and more"
+#9011# "Author of the original glN64 graphics plugin"
+#9012# "Author of gles2n64, a port of glN64 to GL ES 2.0"
+#9013# "Author of the GlideHQ texture library"
+#9014# "Author of z64, an OpenGL LLE plugin"
