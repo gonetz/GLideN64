@@ -280,14 +280,18 @@ void CVideoTab::ShowOverScanTab(int nTab) {
 
 void CVideoTab::LoadSettings(bool /*blockCustomSettings*/) {
 	CComboBox WindowedResolutionComboBox(GetDlgItem(IDC_CMB_WINDOWED_RESOLUTION));
-	for (unsigned int i = 0; i < numWindowedModes; ++i) {
-		int index = WindowedResolutionComboBox.AddString(WindowedModes[i].description);
-		WindowedResolutionComboBox.SetItemData(index, i);
-		if (WindowedModes[i].width == config.video.windowedWidth && WindowedModes[i].height == config.video.windowedHeight)
-			WindowedResolutionComboBox.SetCurSel(index);
+	if (WindowedResolutionComboBox.GetCount() == 0) {
+		for (unsigned int i = 0; i < numWindowedModes; ++i) {
+			int index = WindowedResolutionComboBox.AddString(WindowedModes[i].description);
+			WindowedResolutionComboBox.SetItemData(index, i);
+			if (WindowedModes[i].width == config.video.windowedWidth && WindowedModes[i].height == config.video.windowedHeight)
+				WindowedResolutionComboBox.SetCurSel(index);
+		}
+		if (WindowedResolutionComboBox.GetCount() > 0 && WindowedResolutionComboBox.GetCurSel() < 0) {
+			WindowedResolutionComboBox.AddString(FormatStrW(L"%d x %d", config.video.windowedWidth, config.video.windowedHeight).c_str());
+			WindowedResolutionComboBox.SetCurSel(numWindowedModes);
+		}
 	}
-	if (WindowedResolutionComboBox.GetCount() > 0 && WindowedResolutionComboBox.GetCurSel() < 0)
-		WindowedResolutionComboBox.SetCurSel(0);
 
 	CButton overscanCheckBox(GetDlgItem(IDC_CHK_OVERSCAN));
 	overscanCheckBox.SetCheck(config.frameBufferEmulation.enableOverscan != 0 ? BST_CHECKED : BST_UNCHECKED);
@@ -377,6 +381,17 @@ void CVideoTab::SaveSettings()
 	if (WindowResIndx >= 0 && WindowResIndx < numWindowedModes) {
 		config.video.windowedWidth = WindowedModes[WindowResIndx].width;
 		config.video.windowedHeight = WindowedModes[WindowResIndx].height;
+	} else {  // custom resolution
+		CString WindowResStr;
+		WindowResCB.GetWindowText(WindowResStr);
+		std::string resolution(CW2A(WindowResStr.GetString()));
+		// matches w x h where w is 300-7999 and h is 200-3999, spaces around x optional
+		std::regex parseRes("([3-9][0-9]{2}|[1-7][0-9]{3}) ?x ?([2-9][0-9]{2}|[1-3][0-9]{3})");
+		std::smatch tokens;
+		if (std::regex_search(resolution, tokens, parseRes) && tokens.size() > 1) {
+			config.video.windowedWidth = std::stoi(tokens[1]);
+			config.video.windowedHeight = std::stoi(tokens[2]);
+		}
 	}
 
 	int AspectIndx = CComboBox(GetDlgItem(IDC_CMB_ASPECT_RATIO)).GetCurSel();

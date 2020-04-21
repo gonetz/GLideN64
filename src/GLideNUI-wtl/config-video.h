@@ -1,3 +1,5 @@
+#define _WTL_NO_CSTRING
+
 #pragma once
 #include "config-tab.h"
 #include "config-overscan.h"
@@ -5,7 +7,9 @@
 #include "wtl-tooltip.h"
 #include "resource.h"
 #include "Language.h"
+#include <atlstr.h>
 #include <vector>
+#include <regex>
 
 class CConfigDlg;
 
