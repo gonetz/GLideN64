@@ -7,6 +7,7 @@
 #include <vector>
 
 class CEmulationTab;
+class COsdTab;
 
 class CConfigDlg :
 	public CDialogImpl<CConfigDlg>
@@ -61,6 +62,7 @@ protected:
 	const char * m_romName;
 	bool m_blockReInit;
 	CEmulationTab * m_EmulationTab;
+	COsdTab * m_OsdTab;
 	uint32_t m_TabLeft, m_ProfileLeft;
 	bool m_Saved;
 };
