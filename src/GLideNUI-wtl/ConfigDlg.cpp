@@ -51,7 +51,9 @@ LRESULT CConfigDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPar
 	AddTab(TAB_FRAME_BUFFER, new CFrameBufferTab);
 	AddTab(TAB_TEXTURE_ENHANCEMENT, new CTextureEnhancementTab);
 	AddTab(TAB_OSD, new COsdTab);
+#ifdef DEBUG_DUMP
 	AddTab(TAB_DEBUG, new CDebugTab);
+#endif
 
 	RECT Rect;
 	GetDlgItem(IDC_TABS).GetWindowRect(&Rect);
