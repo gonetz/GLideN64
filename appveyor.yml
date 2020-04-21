@@ -29,10 +29,14 @@ build_script:
   - cd %APPVEYOR_BUILD_FOLDER%
   - set QTDIR=%QTDIR_x64%\%QT_BUILD_x64%
   - msbuild projects/msvc/GLideNUI.vcxproj /m /p:Configuration=Release;Platform=x64
-  - msbuild projects/msvc/GLideN64.sln /m /p:Configuration=Release;Platform=x64
+  - msbuild projects/msvc/GLideN64.sln /m /p:Configuration=Release_qt;Platform=x64
   - set QTDIR=%QTDIR_x86%\%QT_BUILD_x86%
   - msbuild projects/msvc/GLideNUI.vcxproj /m /p:Configuration=Release;Platform=Win32
-  - msbuild projects/msvc/GLideN64.sln /m /p:Configuration=Release;Platform=Win32
+  - msbuild projects/msvc/GLideN64.sln /m /p:Configuration=Release_qt;Platform=Win32
+  - msbuild projects/msvc/GLideNUI-wtl.vcxproj /m /p:Configuration=Release;Platform=x64
+  - msbuild projects/msvc/GLideN64.sln /m /p:Configuration=Release_wtl;Platform=x64
+  - msbuild projects/msvc/GLideNUI-wtl.vcxproj /m /p:Configuration=Release;Platform=Win32
+  - msbuild projects/msvc/GLideN64.sln /m /p:Configuration=Release_wtl;Platform=Win32
   - msbuild projects/msvc/GLideN64.sln /m /p:Configuration=Release_mupenplus;Platform=x64
   - msbuild projects/msvc/GLideN64.sln /m /p:Configuration=Release_mupenplus;Platform=Win32
 
