@@ -44,13 +44,14 @@ LRESULT CConfigDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPar
 	SetIcon(hIconSmall, FALSE);
 
 	m_EmulationTab = new CEmulationTab(*this);
+	m_OsdTab = new COsdTab();
 
 	m_Tabs.Attach(GetDlgItem(IDC_TABS));
 	AddTab(TAB_VIDEO, new CVideoTab(*this, m_strIniPath.c_str()));
 	AddTab(TAB_EMULATION, m_EmulationTab);
 	AddTab(TAB_FRAME_BUFFER, new CFrameBufferTab);
 	AddTab(TAB_TEXTURE_ENHANCEMENT, new CTextureEnhancementTab);
-	AddTab(TAB_OSD, new COsdTab);
+	AddTab(TAB_OSD, m_OsdTab);
 #ifdef DEBUG_DUMP
 	AddTab(TAB_DEBUG, new CDebugTab);
 #endif
@@ -352,6 +353,10 @@ void CConfigDlg::AddTab(languageStringID caption, CConfigTab * tab) {
 }
 
 void CConfigDlg::ShowTab(int nPage) {
+	if (nPage == 4 && !m_OsdTab->m_FontsLoaded) { // OSD tab
+		m_OsdTab->LoadFonts();
+	}
+
 	for (size_t i = 0; i < m_TabWindows.size(); i++)
 		m_TabWindows[i]->ShowWindow(SW_HIDE);
 
