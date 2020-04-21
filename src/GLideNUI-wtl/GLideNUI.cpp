@@ -55,8 +55,16 @@ EXPORT bool CALL RunConfig(const wchar_t * _strFileName, const char * _romName)
     return runConfigThread(_strFileName, _romName);
 }
 
-EXPORT int CALL RunAbout(const wchar_t * /*_strFileName*/)
+EXPORT int CALL RunAbout(const wchar_t * _strFileName)
 {
+    std::string IniFolder;
+    uint32_t slength = WideCharToMultiByte(CP_ACP, 0, _strFileName, -1, NULL, 0, NULL, NULL);
+    IniFolder.resize(slength);
+    slength = WideCharToMultiByte(CP_ACP, 0, _strFileName, -1, (LPSTR)IniFolder.c_str(), slength, NULL, NULL);
+    IniFolder.resize(slength - 1); //Remove null end char
+
+    LoadCurrentStrings(IniFolder.c_str(), config.translationFile);
+
     CAboutDlg Dlg;
     Dlg.DoModal();
     return 0;

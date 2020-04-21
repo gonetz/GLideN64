@@ -212,6 +212,23 @@ void loadDefaultStrings(void)
     g_defaultStrings.insert(LANG_STRINGS::value_type(DEBUG_DUMP_LOWLEVEL_INFO, "Dump low-level info"));
     g_defaultStrings.insert(LANG_STRINGS::value_type(DEBUG_DUMP_DISPLAY_LIST, "Dump display list commands"));
     g_defaultStrings.insert(LANG_STRINGS::value_type(DEBUG_DUMP_DETAILED_INFO, "Dump detailed info (matrices, vertices, etc.)"));
+
+    //About
+    g_defaultStrings.insert(LANG_STRINGS::value_type(ABOUT_ABOUT_TITLE, "About GLideN64"));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(ABOUT_TAB_ABOUT, "About"));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(ABOUT_TAB_CONTRIBUTORS, "Contributors"));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(ABOUT_TAB_FUNDERS, "Funders"));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(ABOUT_TAB_CREDITS, "Credits"));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(ABOUT_NEXT_GENERATION, "The next generation open source graphics plugin for N64 emulators."));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(ABOUT_AUTHORS, "Authors"));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(ABOUT_DEVELOPER, "Developer"));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(ABOUT_BETA_TESTER, "Beta tester"));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(ABOUT_GUI_DESIGNER, "GUI designer"));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(ABOUT_AND_MORE, ".. and more"));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(ABOUT_AUTHOR_GLN64, "Author of the original glN64 graphics plugin"));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(ABOUT_AUTHOR_GLES2N64, "Author of gles2n64, a port of glN64 to GL ES 2.0"));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(ABOUT_AUTHOR_GLIDEHQ, "Author of the GlideHQ texture library"));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(ABOUT_AUTHOR_Z64, "Author of z64, an OpenGL LLE plugin"));
 }
 
 LANG_STR GetNextLangString(FILE * file)

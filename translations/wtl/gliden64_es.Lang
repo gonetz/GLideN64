@@ -140,3 +140,21 @@
 #6003# "Mostrar porcentaje"
 #6009# "Color:"
 #6010# "Demostración"
+
+/*********************************************************************************
+* About                                                                          *
+*********************************************************************************/
+#9000# "Acerca de GLideN64"
+#9001# "Acerca de"
+#9002# "Contribuyentes"
+#9003# "Financiadores"
+#9004# "Créditos"
+#9005# "La nueva generación de los plugins gráficos de código abierto para emuladores de N64."
+#9006# "Autores"
+#9007# "Desarrollo"
+#9008# "Testeo de las betas"
+#9009# "Diseñador de la interfaz"
+#9011# "Autor del plugin gráfico original glN64"
+#9012# "Autor de gles2n64, una conversión de glN64 a GL ES 2.0"
+#9013# "Autor de la librería de texturas GlideHQ"
+#9014# "Autor de z64, un plugin LLE para OpenGL"

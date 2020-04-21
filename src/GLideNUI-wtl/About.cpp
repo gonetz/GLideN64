@@ -1,5 +1,6 @@
 ﻿#include "About.h"
 #include "resource.h"
+#include "Language.h"
 
 extern HINSTANCE hInstance;
 
@@ -92,7 +93,7 @@ public:
             L"Paul Lamb\r\n"
             L"zilmar\r\n"
         };
-        const TCHAR FundersList[] =
+        std::wstring FundersList =
         {
             L"Ryan Rosser\r\n"
             L"Amadeus Sterl\r\n"
@@ -218,13 +219,12 @@ public:
             L"Keith_at_UMR\r\n"
             L"sweatypickle\r\n"
             L"jeremydmiller\r\n\r\n"
-            L"... and more"
         };
+        FundersList += wGS(ABOUT_AND_MORE);
         CWindow Funders = GetDlgItem(IDC_FUNDERS);
         Funders.SetWindowText(Funders1);
         m_SubtitleFont.Apply(m_hWnd, CWindowFont::typeBold | CWindowFont::typeSubheading, IDC_FUNDERS);
-        GetDlgItem(IDC_FUNDERS_LIST).SetWindowText(FundersList);
-
+        GetDlgItem(IDC_FUNDERS_LIST).SetWindowText(FundersList.c_str());
         return true;
     };
     LRESULT OnColorStatic(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/)
@@ -254,6 +254,11 @@ public:
     }
     BOOL OnInitDialog(CWindow /*wndFocus*/, LPARAM /*lInitParam*/)
     {
+        SetDlgItemTextW(IDC_TXT_AUTHOR_GLN64, wGS(ABOUT_AUTHOR_GLN64).c_str());
+        SetDlgItemTextW(IDC_TXT_AUTHOR_GLES2N64, wGS(ABOUT_AUTHOR_GLES2N64).c_str());
+        SetDlgItemTextW(IDC_TXT_AUTHOR_GLIDEHQ, wGS(ABOUT_AUTHOR_GLIDEHQ).c_str());
+        SetDlgItemTextW(IDC_TXT_AUTHOR_Z64, wGS(ABOUT_AUTHOR_Z64).c_str());
+
         const UINT Creditors[] =
         {
             IDC_ORKIN,
@@ -279,6 +284,12 @@ CAboutTab::~CAboutTab()
 
 BOOL CAboutTab::OnInitDialog(CWindow /*wndFocus*/, LPARAM /*lInitParam*/)
 {
+    SetDlgItemTextW(IDC_TXT_NEW_GEN, wGS(ABOUT_NEXT_GENERATION).c_str());
+    SetDlgItemTextW(IDC_TXT_AUTHORS, wGS(ABOUT_AUTHORS).c_str());
+    SetDlgItemTextW(IDC_TXT_DEVELOPER, wGS(ABOUT_DEVELOPER).c_str());
+    SetDlgItemTextW(IDC_TXT_BETA_TESTER, wGS(ABOUT_BETA_TESTER).c_str());
+    SetDlgItemTextW(IDC_TXT_GUI_DESIGNER, wGS(ABOUT_GUI_DESIGNER).c_str());
+
     const UINT Authors[] =
     {
         IDC_SERGEY,
@@ -307,6 +318,8 @@ CAboutDlg::~CAboutDlg()
 
 LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/ , LPARAM /*lParam*/, BOOL& /*bHandled*/)
 {
+    SetWindowText(wGS(ABOUT_ABOUT_TITLE).c_str());
+
 	HICON hIcon = AtlLoadIconImage(IDI_APPICON, LR_DEFAULTCOLOR, ::GetSystemMetrics(SM_CXICON), ::GetSystemMetrics(SM_CYICON));
 	SetIcon(hIcon, TRUE);
 	HICON hIconSmall = AtlLoadIconImage(IDI_APPICON, LR_DEFAULTCOLOR, ::GetSystemMetrics(SM_CXSMICON), ::GetSystemMetrics(SM_CYSMICON));
@@ -325,10 +338,10 @@ LRESULT CAboutDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/ , LPARAM /*lPar
     m_AboutIcon.SetWindowPos(HWND_TOP, 0, 0, iconSz.cx, iconSz.cy, SWP_NOMOVE | SWP_NOZORDER);
 
 	m_Tabs.Attach(GetDlgItem(IDC_TABS));
-    AddTab(L"About", new CAboutTab(IDD_TAB_ABOUT));
-    AddTab(L"Contributors", new CAboutContributersTab);
-    AddTab(L"Funders", new CAboutFundersTab);
-    AddTab(L"Credits", new CAboutCreditsTab);
+    AddTab(wGS(ABOUT_TAB_ABOUT).c_str(), new CAboutTab(IDD_TAB_ABOUT));
+    AddTab(wGS(ABOUT_TAB_CONTRIBUTORS).c_str(), new CAboutContributersTab);
+    AddTab(wGS(ABOUT_TAB_FUNDERS).c_str(), new CAboutFundersTab);
+    AddTab(wGS(ABOUT_TAB_CREDITS).c_str(), new CAboutCreditsTab);
 	return 0;
 }
 

@@ -222,6 +222,25 @@ enum languageStringID
     DEBUG_DUMP_LOWLEVEL_INFO = 7000,
     DEBUG_DUMP_DISPLAY_LIST = 7001,
     DEBUG_DUMP_DETAILED_INFO = 7002,
+
+    /*********************************************************************************
+    * About                                                                          *
+    *********************************************************************************/
+    ABOUT_ABOUT_TITLE = 9000,
+    ABOUT_TAB_ABOUT = 9001,
+    ABOUT_TAB_CONTRIBUTORS = 9002,
+    ABOUT_TAB_FUNDERS = 9003,
+    ABOUT_TAB_CREDITS = 9004,
+    ABOUT_NEXT_GENERATION = 9005,
+    ABOUT_AUTHORS = 9006,
+    ABOUT_DEVELOPER = 9007,
+    ABOUT_BETA_TESTER = 9008,
+    ABOUT_GUI_DESIGNER = 9009,
+    ABOUT_AND_MORE = 9010,
+    ABOUT_AUTHOR_GLN64 = 9011,
+    ABOUT_AUTHOR_GLES2N64 = 9012,
+    ABOUT_AUTHOR_GLIDEHQ = 9013,
+    ABOUT_AUTHOR_Z64 = 9014,
 };
 
 struct LanguageFile
