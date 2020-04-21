@@ -6,10 +6,10 @@ extern "C" {
 #endif
 
 #ifdef _WIN32
-#define EXPORT    __declspec(dllexport)
-#define CALL      __cdecl
+#define EXPORT	__declspec(dllexport)
+#define CALL	  __cdecl
 #else
-#define EXPORT    __attribute__((visibility("default")))
+#define EXPORT	__attribute__((visibility("default")))
 #define CALL
 #endif
 

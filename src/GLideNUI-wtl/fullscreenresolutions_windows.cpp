@@ -62,7 +62,7 @@ void _fillFullscreenRefreshRateList(StringList & _listRefreshRates, int & _rateI
 
 	int i = 0;
 	DEVMODE deviceMode;
-    char text[128];
+	char text[128];
 
 	while (EnumDisplaySettings(NULL, i++, &deviceMode) != 0)
 	{
@@ -80,8 +80,8 @@ void _fillFullscreenRefreshRateList(StringList & _listRefreshRates, int & _rateI
 
 			fullscreen.refreshRate[j] = deviceMode.dmDisplayFrequency;
 			//: Abbreviation for Hertz; include a leading space if appropriate
-            snprintf(text, sizeof(text), "%d Hz", deviceMode.dmDisplayFrequency);
-            _listRefreshRates.push_back(text);
+			snprintf(text, sizeof(text), "%d Hz", deviceMode.dmDisplayFrequency);
+			_listRefreshRates.push_back(text);
 
 			if (fullscreen.selected.refreshRate == deviceMode.dmDisplayFrequency)
 				_rateIdx = fullscreen.numRefreshRates;
@@ -147,7 +147,7 @@ void fillFullscreenResolutionsList(StringList & _listResolutions, int & _resolut
 					break;
 				}
 
-            _listResolutions.push_back(text);
+			_listResolutions.push_back(text);
 
 			if ((fullscreen.selected.width == deviceMode.dmPelsWidth) &&
 				(fullscreen.selected.height == deviceMode.dmPelsHeight))
