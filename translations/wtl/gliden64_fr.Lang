@@ -132,3 +132,11 @@
 #5036# "Les textures seront compressées, ainsi plus de textures pourront être mises en cache. Le ratio de compression varie suivant les textures, mais il est en moyenne de 1/5 par rapport à la taille originale.\n[Recommandé : Activé]"
 #5037# "Convertir les textures en 16 bits"
 #5038# "Cette option réduit de moitié l'espace occupé par les textures dans le cache ainsi que celui de la mémoire de votre carte graphique, cela afin d'améliorer les performances. Quand la taille du codage de la couleur est réduite, GLideN64 essaye de préserver la qualité originale autant que possible. Sur certaines textures c'est difficilement visible, mais sur d'autres, tel le ciel, le rendu peut être mauvais.\n[Recommandé : Désactivé]"
+
+/*********************************************************************************
+* On-screen display                                                              *
+*********************************************************************************/
+#6000# "Position"
+#6003# "Afficher le pourcentage"
+#6009# "Couleur :"
+#6010# "Prévisualisation"

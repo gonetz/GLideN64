@@ -175,3 +175,18 @@
 #5036# "Texturen werden komprimiert, damit mehr Texturen im Cache gehalten werden können. Die Kompressionsrate variiert je nach Textur, aber ist normalerweise 1/5 der Originalgröße.\n[Empfehlung: Ausgewählt]"
 #5037# "Konvertiere Texturen zu 16Bit"
 #5038# "Diese Einstellung halbiert den Speicherbedarf von Texturen im Texture-Cache und VRAM um die Leistung zu steigern. Wenn die Farbtiefe reduziert wird versucht GLideN64 die originale Qualität so gut wie möglich zu erhalten. Bei den meisten Texturen ist es kaum wahrnehmbar, aber einige Texturen, wie z.B. für den Himmel, können schlechter aussehen.\n[Empfehlung: Nicht ausgewählt]"
+
+/*********************************************************************************
+* On-screen display                                                              *
+*********************************************************************************/
+#6000# "Position"
+#6001# "FPS anzeigen"
+#6002# "VI/s anzeigen"
+#6003# "Anzeige in Prozent"
+#6004# "Interne Auflösung anzeigen"
+#6005# "Rendering-Auflösung anzeigen"
+#6006# "Schriftart"
+#6007# "Größe:"
+#6008# "px"
+#6009# "Farbe:"
+#6010# "Vorschau"

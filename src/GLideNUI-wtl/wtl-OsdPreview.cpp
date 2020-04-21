@@ -1,6 +1,7 @@
 #include "wtl-OsdPreview.h"
 #include "FontInfo.h"
 #include "util.h"
+#include "Language.h"
 #include <DWrite.h>
 
 #pragma comment(lib, "Dwrite.lib")
@@ -61,7 +62,7 @@ LRESULT COsdPreview::OnPaint(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/
         HFONT hOldFont = (HFONT)dc.SelectFont(hf);
         if (hOldFont)
         {
-            dc.DrawText(L"Preview", -1, rect, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
+            dc.DrawText(wGS(OSD_PREVIEW).c_str(), -1, rect, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
             dc.SelectFont(hOldFont);
         }
     }

@@ -194,6 +194,19 @@ void loadDefaultStrings(void)
     g_defaultStrings.insert(LANG_STRINGS::value_type(TEXTURE_COMPRESS_CACHE_TOOLTIP, "Textures will be compressed so more textures can be held in the cache. The compression ratio varies per texture, but the compression is typically 1/5 of the original size.\n[Recommended: Checked]"));
     g_defaultStrings.insert(LANG_STRINGS::value_type(TEXTURE_CONVERT_16BPP, "Convert textures to 16 bpp"));
     g_defaultStrings.insert(LANG_STRINGS::value_type(TEXTURE_CONVERT_16BPP_TOOLTIP, "This option halves the space used by textures in the texture cache and video card memory to improve performance. When reducing the color, GLideN64 tries to perserve the original quality as much as possible. On most textures it's hardly noticeable, but some textures, like skies, can look noticeably worse.\n[Recommended: Unchecked]"));
+
+    //On-screen display
+    g_defaultStrings.insert(LANG_STRINGS::value_type(OSD_POSITION, "Position"));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(OSD_DISPLAY_FPS, "Display FPS"));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(OSD_DISPLAY_VI, "Display VI/s"));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(OSD_DISPLAY_PERCENTAGE, "Display percentage"));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(OSD_DISPLAY_INTERNAL_RESOLUTION, "Display internal resolution"));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(OSD_DISPLAY_RENDERING_RESOLUTION, "Display rendering resolution"));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(OSD_FONT, "Font"));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(OSD_SIZE, "Size:"));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(OSD_PX, "px"));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(OSD_COLOR, "Color:"));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(OSD_PREVIEW, "Preview"));
 }
 
 LANG_STR GetNextLangString(FILE * file)

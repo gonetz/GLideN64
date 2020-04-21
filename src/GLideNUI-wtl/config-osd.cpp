@@ -3,6 +3,7 @@
 #include "util.h"
 #include "../Config.h"
 #include "FontInfo.h"
+#include "Language.h"
 
 COsdTab::COsdTab() :
     CConfigTab(IDD_TAB_OSD),
@@ -45,8 +46,7 @@ BOOL COsdTab::OnInitDialog(CWindow /*wndFocus*/, LPARAM /*lInitParam*/)
 
     FontList fonts = GetFontFiles();
     HTREEITEM hCurrentItem = TVI_ROOT;
-    for (FontList::const_iterator itr = fonts.begin(); itr != fonts.end(); itr++)
-    {
+    for (FontList::const_iterator itr = fonts.begin(); itr != fonts.end(); itr++) {
         std::wstring FontFile = ToUTF16(itr->first.c_str());
         std::wstring FontName = ToUTF16(itr->second.c_str());
 
@@ -57,19 +57,16 @@ BOOL COsdTab::OnInitDialog(CWindow /*wndFocus*/, LPARAM /*lInitParam*/)
         tv.item.cchTextMax = sizeof(Item) / sizeof(Item[0]);
         tv.item.hItem = m_Fonts.GetChildItem(TVI_ROOT);
         HTREEITEM hParent = TVI_ROOT;
-        while (tv.item.hItem)
-        {
+        while (tv.item.hItem) {
             m_Fonts.GetItem(&tv.item);
-            if (wcscmp(FontName.c_str(), Item) == 0)
-            {
+            if (wcscmp(FontName.c_str(), Item) == 0) {
                 hParent = tv.item.hItem;
                 break;
             }
             tv.item.hItem = m_Fonts.GetNextSiblingItem(tv.item.hItem);
         }
 
-        if (hParent == TVI_ROOT)
-        {
+        if (hParent == TVI_ROOT) {
             tv.item.mask = TVIF_TEXT;
             tv.item.pszText = (LPWSTR)FontName.c_str();
             tv.item.cchTextMax = FontName.length();
@@ -84,8 +81,7 @@ BOOL COsdTab::OnInitDialog(CWindow /*wndFocus*/, LPARAM /*lInitParam*/)
         tv.hParent = hParent;
         m_Fonts.InsertItem(&tv);
     }
-    if (hCurrentItem != TVI_ROOT)
-    {
+    if (hCurrentItem != TVI_ROOT) {
         m_Fonts.SelectItem(hCurrentItem);
         m_Fonts.SetItemState(hCurrentItem, TVIF_STATE | TVIS_SELECTED, TVIF_STATE | TVIS_SELECTED);
         m_Fonts.SetFocus();
@@ -95,15 +91,23 @@ BOOL COsdTab::OnInitDialog(CWindow /*wndFocus*/, LPARAM /*lInitParam*/)
 
 void COsdTab::ApplyLanguage(void)
 {
+    SetDlgItemTextW(IDC_POSITION, wGS(OSD_POSITION).c_str());
+    SetDlgItemTextW(IDC_CHK_FPS, wGS(OSD_DISPLAY_FPS).c_str());
+    SetDlgItemTextW(IDC_CHK_VIS, wGS(OSD_DISPLAY_VI).c_str());
+    SetDlgItemTextW(IDC_CHK_PERCENT, wGS(OSD_DISPLAY_PERCENTAGE).c_str());
+    SetDlgItemTextW(IDC_INTERNAL_RESOLUTION, wGS(OSD_DISPLAY_INTERNAL_RESOLUTION).c_str());
+    SetDlgItemTextW(IDC_RENDERING_RESOLUTION, wGS(OSD_DISPLAY_RENDERING_RESOLUTION).c_str());
+    SetDlgItemTextW(IDC_FONT, wGS(OSD_FONT).c_str());
+    SetDlgItemTextW(IDC_TXT_SIZE, wGS(OSD_SIZE).c_str());
+    SetDlgItemTextW(IDC_PX, wGS(OSD_PX).c_str());
+    SetDlgItemTextW(IDC_COLOR, wGS(OSD_COLOR).c_str());
 }
 
 LRESULT COsdTab::OnScroll(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/)
 {
     LONG CtrlId = CWindow((HWND)lParam).GetWindowLong(GWL_ID);
     if (CtrlId == IDC_FONT_SIZE_SPIN)
-    {
         m_OsdPreview.SetFontSize(m_FontSizeSpin.GetPos());
-    }
     return 0;
 }
 
@@ -212,28 +216,22 @@ void COsdTab::LoadSettings(bool /*blockCustomSettings*/)
     tv.item.cchTextMax = sizeof(Item) / sizeof(Item[0]);
     tv.item.hItem = m_Fonts.GetChildItem(TVI_ROOT);
     HTREEITEM hCurrentItem = NULL;
-    while (hCurrentItem == NULL && tv.item.hItem)
-    {
+    while (hCurrentItem == NULL && tv.item.hItem) {
         m_Fonts.GetItem(&tv.item);
         HTREEITEM hChild = m_Fonts.GetChildItem(tv.item.hItem);
         HTREEITEM NextItem = m_Fonts.GetNextSiblingItem(tv.item.hItem);
-        if (hCurrentItem == NULL && hChild != NULL)
-        {
+        if (hCurrentItem == NULL && hChild != NULL) {
             tv.item.hItem = hChild;
-            while (hCurrentItem == NULL && tv.item.hItem)
-            {
+            while (hCurrentItem == NULL && tv.item.hItem) {
                 m_Fonts.GetItem(&tv.item);
                 if (Item == CurrentFile)
-                {
                     hCurrentItem = tv.item.hItem;
-                }
                 tv.item.hItem = m_Fonts.GetNextSiblingItem(tv.item.hItem);
             }
         }
         tv.item.hItem = NextItem;
     }
-    if (hCurrentItem != TVI_ROOT)
-    {
+    if (hCurrentItem != TVI_ROOT) {
         m_Fonts.SelectItem(hCurrentItem);
         m_Fonts.SetItemState(hCurrentItem, TVIF_STATE | TVIS_SELECTED, TVIF_STATE | TVIS_SELECTED);
         m_Fonts.SetFocus();
@@ -272,19 +270,13 @@ std::wstring COsdTab::GetSelectedFont()
 {
     HTREEITEM hItem = m_Fonts.GetSelectedItem();
     if (hItem == NULL)
-    {
         return L"";
-    }
     HTREEITEM hChild = m_Fonts.GetChildItem(hItem);
     if (hChild != NULL)
-    {
         hItem = hChild;
-    }
 
     wchar_t ItemText[MAX_PATH];
     if (!m_Fonts.GetItemText(hItem, ItemText, sizeof(ItemText) / sizeof(ItemText[0])))
-    {
         return L"";
-    }
     return std::wstring(ItemText);
 }
