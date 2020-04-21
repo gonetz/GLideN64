@@ -190,3 +190,10 @@
 #6008# "px"
 #6009# "Farbe:"
 #6010# "Vorschau"
+
+/*********************************************************************************
+* Debug                                                                          *
+*********************************************************************************/
+#7000# "Low-Level-Info ausgeben"
+#7001# "Display-Listen-Befehle ausgeben"
+#7002# "Detaillierte Informationen ausgeben (Matrizen, Eckpunkte, etc.)"

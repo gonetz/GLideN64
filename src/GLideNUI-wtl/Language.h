@@ -215,6 +215,13 @@ enum languageStringID
     OSD_PX = 6008,
     OSD_COLOR = 6009,
     OSD_PREVIEW = 6010,
+
+    /*********************************************************************************
+    * Debug                                                                          *
+    *********************************************************************************/
+    DEBUG_DUMP_LOWLEVEL_INFO = 7000,
+    DEBUG_DUMP_DISPLAY_LIST = 7001,
+    DEBUG_DUMP_DETAILED_INFO = 7002,
 };
 
 struct LanguageFile

@@ -207,6 +207,11 @@ void loadDefaultStrings(void)
     g_defaultStrings.insert(LANG_STRINGS::value_type(OSD_PX, "px"));
     g_defaultStrings.insert(LANG_STRINGS::value_type(OSD_COLOR, "Color:"));
     g_defaultStrings.insert(LANG_STRINGS::value_type(OSD_PREVIEW, "Preview"));
+
+    //Debug tab
+    g_defaultStrings.insert(LANG_STRINGS::value_type(DEBUG_DUMP_LOWLEVEL_INFO, "Dump low-level info"));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(DEBUG_DUMP_DISPLAY_LIST, "Dump display list commands"));
+    g_defaultStrings.insert(LANG_STRINGS::value_type(DEBUG_DUMP_DETAILED_INFO, "Dump detailed info (matrices, vertices, etc.)"));
 }
 
 LANG_STR GetNextLangString(FILE * file)
