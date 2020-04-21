@@ -132,3 +132,11 @@
 #5036# "Se comprimirán las texturas para que entren más texturas en la caché. La proporción de compresión cambia según la textura, pero suele ser de 1/5 del tamaño original.\n[Recomendación: Activado]"
 #5037# "Convertir texturas a 16 BPP"
 #5038# "Esta opción reduce a la mitad el tamaño que utilizan las texturas de la caché de texturas y de la memoria de la tarjeta gráfica para mejorar el rendimiento. A la hora de reducir el color, GlideN64 intentará preservar la calidad original en la medida de lo posible. Es apenas imperceptible en la mayoría de las texturas, pero algunas como los cielos quedarán peor.\n[Recomendación: Desactivado]"
+
+/*********************************************************************************
+* On-screen display                                                              *
+*********************************************************************************/
+#6000# "Posición"
+#6003# "Mostrar porcentaje"
+#6009# "Color:"
+#6010# "Demostración"

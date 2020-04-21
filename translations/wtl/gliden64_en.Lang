@@ -193,3 +193,18 @@
 #5036# "Textures will be compressed so more textures can be held in the cache. The compression ratio varies per texture, but the compression is typically 1/5 of the original size.\n[Recommended: Checked]"
 #5037# "Convert textures to 16 bpp"
 #5038# "This option halves the space used by textures in the texture cache and video card memory to improve performance. When reducing the color, GLideN64 tries to perserve the original quality as much as possible. On most textures it's hardly noticeable, but some textures, like skies, can look noticeably worse.\n[Recommended: Unchecked]"
+
+/*********************************************************************************
+* On-screen display                                                              *
+*********************************************************************************/
+#6000# "Position"
+#6001# "Display FPS"
+#6002# "Display VI/s"
+#6003# "Display percentage"
+#6004# "Display internal resolution"
+#6005# "Display rendering resolution"
+#6006# "Font"
+#6007# "Size:"
+#6008# "px"
+#6009# "Color:"
+#6010# "Preview"

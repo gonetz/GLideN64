@@ -200,6 +200,21 @@ enum languageStringID
     TEXTURE_COMPRESS_CACHE_TOOLTIP = 5036,
     TEXTURE_CONVERT_16BPP = 5037,
     TEXTURE_CONVERT_16BPP_TOOLTIP = 5038,
+
+    /*********************************************************************************
+    * On-screen display                                                              *
+    *********************************************************************************/
+    OSD_POSITION = 6000,
+    OSD_DISPLAY_FPS = 6001,
+    OSD_DISPLAY_VI = 6002,
+    OSD_DISPLAY_PERCENTAGE = 6003,
+    OSD_DISPLAY_INTERNAL_RESOLUTION = 6004,
+    OSD_DISPLAY_RENDERING_RESOLUTION = 6005,
+    OSD_FONT = 6006,
+    OSD_SIZE = 6007,
+    OSD_PX = 6008,
+    OSD_COLOR = 6009,
+    OSD_PREVIEW = 6010,
 };
 
 struct LanguageFile
