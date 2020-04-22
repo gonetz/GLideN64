@@ -28,6 +28,7 @@ public:
 
 	COsdTab();
 
+	bool m_FontsLoaded;
 	BOOL OnInitDialog(CWindow /*wndFocus*/, LPARAM /*lInitParam*/);
 	LRESULT OnScroll(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/);
 	void ClearOsdChecked();
@@ -41,6 +42,8 @@ public:
 	LRESULT OnColorStatic(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lParam*/, BOOL& /*bHandled*/);
 	LRESULT OnNotifyOsdColor(LPNMHDR pnmh);
 	void ApplyLanguage(void);
+	void LoadFonts(void);
+	void SelCurrentFont(void);
 	void LoadSettings(bool blockCustomSettings);
 	void SaveSettings();
 

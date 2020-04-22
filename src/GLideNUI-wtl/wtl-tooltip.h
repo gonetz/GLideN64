@@ -24,6 +24,7 @@ protected:
 		CToolInfo ToolInfo(pT->m_uToolFlags, *pT, 0, 0, MAKEINTRESOURCE(pT->IDD));
 		m_TT.AddTool(&ToolInfo);
 		::EnumChildWindows(*pT, SetTool, (LPARAM)pT);
+		TTDelay();
 		TTSize(0);
 		TTActivate(TRUE);
 	}
@@ -36,6 +37,12 @@ public:
 	void TTSize(int nPixel)
 	{
 		m_TT.SetMaxTipWidth(nPixel);
+	}
+	void TTDelay()
+	{
+		m_TT.SetDelayTime(TTDT_INITIAL, 1250);
+		m_TT.SetDelayTime(TTDT_RESHOW, 600);
+		m_TT.SetDelayTime(TTDT_AUTOPOP, 32767);
 	}
 
 	void TTSetTxt(HWND hTool, _U_STRINGorID text)
