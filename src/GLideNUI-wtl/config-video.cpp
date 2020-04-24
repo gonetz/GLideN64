@@ -26,6 +26,7 @@ WindowedModes[] = {
 	{ 1600, 1200, _T("1600 x 1200") }
 };
 static const unsigned int numWindowedModes = sizeof(WindowedModes) / sizeof(WindowedModes[0]);
+static const LPCTSTR englishLang = _T("English");
 
 CVideoTab::CVideoTab(CConfigDlg & Dlg, const char * strIniPath) :
 	CConfigTab(IDD_TAB_VIDEO),
@@ -81,6 +82,10 @@ BOOL CVideoTab::OnInitDialog(CWindow /*wndFocus*/, LPARAM /*lInitParam*/) {
 	for (LanguageList::const_iterator itr = m_LangList.begin(); itr != m_LangList.end(); itr++) {
 		int indx = translationsComboBox.AddString(ToUTF16(itr->LanguageName.c_str()).c_str());
 		translationsComboBox.SetItemData(indx, (DWORD_PTR)itr->Filename.c_str());
+	}
+	if (translationsComboBox.FindString(-1, englishLang) == CB_ERR) {
+		int indx = translationsComboBox.AddString(englishLang);
+		translationsComboBox.SetItemData(indx, (DWORD_PTR)"");
 	}
 	return true;
 }
@@ -243,7 +248,7 @@ void CVideoTab::OnFullScreenChanged(UINT /*Code*/, int /*id*/, HWND /*ctl*/) {
 
 LRESULT CVideoTab::OnLanguageChanged(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hwnd*/, BOOL& /*bHandled*/) {
 	CComboBox translationsComboBox(GetDlgItem(IDC_CMB_LANGUAGE));
-	std::string currentLang = translationsComboBox.GetCurSel() >= 0 ? (const char *)translationsComboBox.GetItemDataPtr(translationsComboBox.GetCurSel()) : "";
+	std::string currentLang = (const char *)translationsComboBox.GetItemDataPtr(translationsComboBox.GetCurSel());
 	m_Dlg.SetLanguage(currentLang);
 	return 0;
 }
@@ -354,7 +359,6 @@ void CVideoTab::LoadSettings(bool /*blockCustomSettings*/) {
 	CButton(GetDlgItem(IDC_CHK_HIRES_NOISE)).SetCheck(config.generalEmulation.enableHiresNoiseDithering == 0 ? BST_CHECKED : BST_UNCHECKED);
 
 	CComboBox translationsComboBox(GetDlgItem(IDC_CMB_LANGUAGE));
-	std::string currentLang = translationsComboBox.GetCurSel() > 0 ? (const char *)translationsComboBox.GetItemDataPtr(translationsComboBox.GetCurSel()) : "";
 	translationsComboBox.SetCurSel(-1);
 	int englishIndx = -1;
 	for (int i = 0, n = translationsComboBox.GetCount(); i < n; i++) {
@@ -366,9 +370,11 @@ void CVideoTab::LoadSettings(bool /*blockCustomSettings*/) {
 			translationsComboBox.SetCurSel(i);
 			break;
 		}
-	}
-	if (englishIndx >= 0 && translationsComboBox.GetCurSel() < 0)
+	} // default: attempt to use gliden64_en.Lang
+	if (englishIndx >= 0 && translationsComboBox.GetCurSel() < 0) 
 		translationsComboBox.SetCurSel(englishIndx);
+	else if (translationsComboBox.GetCurSel() < 0) // gliden64_en.Lang not found; select hardcoded english
+		translationsComboBox.SetCurSel(translationsComboBox.FindString(-1, englishLang));
 }
 
 void CVideoTab::SaveSettings()
@@ -433,5 +439,5 @@ void CVideoTab::SaveSettings()
 	config.generalEmulation.enableHiresNoiseDithering = CButton(GetDlgItem(IDC_CHK_HIRES_NOISE)).GetCheck() == BST_CHECKED ? 1 : 0;
 
 	CComboBox translationsComboBox(GetDlgItem(IDC_CMB_LANGUAGE));
-	config.translationFile = translationsComboBox.GetCurSel() >= 0 ? (const char *)translationsComboBox.GetItemDataPtr(translationsComboBox.GetCurSel()) : "";
+	config.translationFile = (const char *)translationsComboBox.GetItemDataPtr(translationsComboBox.GetCurSel());
 }
