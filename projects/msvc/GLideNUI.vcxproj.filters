@@ -117,7 +117,7 @@
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\src\GLideNUI\Icon.ico">
+    <None Include="..\..\src\GLideNUI\Resources\Icon.ico">
       <Filter>Resource Files</Filter>
     </None>
     <CustomBuild Include="..\..\src\GLideNUI\icon.qrc">
