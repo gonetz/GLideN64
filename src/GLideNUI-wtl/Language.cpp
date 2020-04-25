@@ -316,7 +316,7 @@ void LoadCurrentStrings(const char * path, const std::string & lang)
 		{
 			return;
 		}
-	}
+	} // default: attempt to use gliden64_en.Lang
 	std::string langFile = translationsFolder + "gliden64_en.Lang";
 	LoadLanguageFile(langFile);
 }
