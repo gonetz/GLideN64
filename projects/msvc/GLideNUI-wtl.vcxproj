@@ -164,31 +164,21 @@
     <ClInclude Include="..\..\src\GLideNUI-wtl\WTL\atlwinx.h" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="..\..\src\GLideNUI-wtl\BottomLeft.ico" />
-    <Image Include="..\..\src\GLideNUI-wtl\BottomRight.ico" />
-    <Image Include="..\..\src\GLideNUI-wtl\Down.ico" />
-    <Image Include="..\..\src\GLideNUI-wtl\Icon-Original.ico" />
-    <Image Include="..\..\src\GLideNUI-wtl\Icon.ico" />
-    <Image Include="..\..\src\GLideNUI-wtl\Info.ico" />
-    <Image Include="..\..\src\GLideNUI-wtl\Left.ico" />
-    <Image Include="..\..\src\GLideNUI-wtl\Right.ico" />
-    <Image Include="..\..\src\GLideNUI-wtl\TopLeft.ico" />
-    <Image Include="..\..\src\GLideNUI-wtl\TopRight.ico" />
-    <Image Include="..\..\src\GLideNUI-wtl\Up.ico" />
-    <Image Include="..\..\src\GLideNUI\BottomLeft.ico" />
-    <Image Include="..\..\src\GLideNUI\BottomRight.ico" />
-    <Image Include="..\..\src\GLideNUI\Down.ico" />
-    <Image Include="..\..\src\GLideNUI\Icon-Original.ico" />
-    <Image Include="..\..\src\GLideNUI\Info.ico" />
-    <Image Include="..\..\src\GLideNUI\Left.ico" />
-    <Image Include="..\..\src\GLideNUI\Right.ico" />
-    <Image Include="..\..\src\GLideNUI\TopLeft.ico" />
-    <Image Include="..\..\src\GLideNUI\TopRight.ico" />
-    <Image Include="..\..\src\GLideNUI\Up.ico" />
-    <Image Include="..\..\src\GLideNUI\Warning.ico" />
+    <ResourceCompile Include="..\..\src\GLideNUI-wtl\GLideNUI.rc" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="..\..\src\GLideNUI-wtl\GLideNUI.rc" />
+    <Image Include="..\..\src\GLideNUI\Resources\BottomLeft.ico" />
+    <Image Include="..\..\src\GLideNUI\Resources\BottomRight.ico" />
+    <Image Include="..\..\src\GLideNUI\Resources\Down.ico" />
+    <Image Include="..\..\src\GLideNUI\Resources\Icon-Original.ico" />
+    <Image Include="..\..\src\GLideNUI\Resources\Icon.ico" />
+    <Image Include="..\..\src\GLideNUI\Resources\Info.ico" />
+    <Image Include="..\..\src\GLideNUI\Resources\Left.ico" />
+    <Image Include="..\..\src\GLideNUI\Resources\Right.ico" />
+    <Image Include="..\..\src\GLideNUI\Resources\TopLeft.ico" />
+    <Image Include="..\..\src\GLideNUI\Resources\TopRight.ico" />
+    <Image Include="..\..\src\GLideNUI\Resources\Up.ico" />
+    <Image Include="..\..\src\GLideNUI\Resources\Warning.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />

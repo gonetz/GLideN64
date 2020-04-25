@@ -188,7 +188,7 @@
       <AdditionalLibraryDirectories>lib/x64/rel</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug_qt' Or '$(Configuration)'=='Debug_wtl' Or '$(Configuration)'=='Release_qt' Or '$(Configuration)'=='Release_wtl'">
+  <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug_qt' Or '$(Configuration)'=='Release_qt'">
     <ClCompile>
       <PreprocessorDefinitions>GL_USE_UNIFORMBLOCK;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
@@ -201,6 +201,21 @@
 copy /Y "$(OutDir)$(TargetName).*" "$(N64PluginsDir)")</Command>
       <Command Condition="'$(Platform)'=='x64'">if NOT "$(N64PluginsDir_x64)" == "" (if not exist "$(N64PluginsDir_x64)" mkdir "$(N64PluginsDir_x64)"
 copy /Y "$(OutDir)$(TargetName).*" "$(N64PluginsDir_x64)")</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug_wtl' Or '$(Configuration)'=='Release_wtl'">
+    <ClCompile>
+      <PreprocessorDefinitions>GL_USE_UNIFORMBLOCK;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>ZILMAR_API;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ResourceCompile>
+    <PostBuildEvent>
+      <Message>Copy result to plugins folder</Message>
+      <Command Condition="'$(Platform)'=='Win32'">if NOT "$(N64PluginsDir-wtl)" == "" (if not exist "$(N64PluginsDir-wtl)" mkdir "$(N64PluginsDir-wtl)"
+copy /Y "$(OutDir)$(TargetName).*" "$(N64PluginsDir-wtl)")</Command>
+      <Command Condition="'$(Platform)'=='x64'">if NOT "$(N64PluginsDir-wtl_x64)" == "" (if not exist "$(N64PluginsDir-wtl_x64)" mkdir "$(N64PluginsDir-wtl_x64)"
+copy /Y "$(OutDir)$(TargetName).*" "$(N64PluginsDir-wtl_x64)")</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug_mupenplus' Or '$(Configuration)'=='Release_mupenplus'">
