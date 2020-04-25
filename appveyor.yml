@@ -9,10 +9,12 @@ branches:
 skip_branch_with_pr: true
 
 environment:
-  N64PluginsDir: C:\projects\gliden64\build\Zilmar-spec\
-  N64PluginsDir_x64: C:\projects\gliden64\build\Zilmar-spec_x64\
-  Mupen64PluginsDir: C:\projects\gliden64\build\Mupen64Plus\
-  Mupen64PluginsDir_x64: C:\projects\gliden64\build\Mupen64Plus_x64\
+  PJ64PluginsDirQT: C:\projects\gliden64\build\GLideN64-QT_for_Project64\
+  PJ64PluginsDirQT_x64: C:\projects\gliden64\build\GLideN64-QT_for_Project64_x64\
+  PJ64PluginsDirWTL: C:\projects\gliden64\build\GLideN64-WTL_for_Project64\
+  PJ64PluginsDirWTL_x64: C:\projects\gliden64\build\GLideN64-WTL_for_Project64_x64\
+  Mupen64PluginsDir: C:\projects\gliden64\build\GLideN64_for_Mupen64Plus\
+  Mupen64PluginsDir_x64: C:\projects\gliden64\build\GLideN64_for_Mupen64Plus_x64\
   QTDIR_x86: C:\Static_Qt_x86
   QTDIR_x64: C:\Static_Qt_x64
   QT_BUILD_BASE_URL: https://github.com/gonetz/GLideN64/releases/download/qt_build/
@@ -41,14 +43,20 @@ build_script:
   - msbuild projects/msvc/GLideN64.sln /m /p:Configuration=Release_mupenplus;Platform=Win32
 
 after_build:
-  - copy ini\GLideN64.custom.ini %N64PluginsDir_x64%
-  - copy translations\release\*.qm %N64PluginsDir_x64%
-  - copy ini\GLideN64.custom.ini %N64PluginsDir%
-  - copy translations\release\*.qm %N64PluginsDir%
+  - copy ini\GLideN64.custom.ini %PJ64PluginsDirQT%
+  - copy ini\GLideN64.custom.ini %PJ64PluginsDirQT_x64%
+  - copy ini\GLideN64.custom.ini %PJ64PluginsDirWTL%
+  - copy ini\GLideN64.custom.ini %PJ64PluginsDirWTL_x64%
+  - copy translations\release\*.qm %PJ64PluginsDirQT%
+  - copy translations\release\*.qm %PJ64PluginsDirQT_x64%
+  - copy translations\release\*.qm %PJ64PluginsDirWTL%
+  - copy translations\release\*.qm %PJ64PluginsDirWTL_x64%
   - copy ini\GLideN64.custom.ini %Mupen64PluginsDir_x64%\
   - copy ini\GLideN64.custom.ini %Mupen64PluginsDir%\
-  - del /Q %N64PluginsDir_x64%\*.lib %N64PluginsDir_x64%\*.exp
-  - del /Q %N64PluginsDir%\*.lib %N64PluginsDir%\*.exp
+  - del /Q %PJ64PluginsDir%\*.lib %PJ64PluginsDirQT%\*.exp
+  - del /Q %PJ64PluginsDir_x64%\*.lib %PJ64PluginsDirQT_x64%\*.exp
+  - del /Q %PJ64PluginsDir%\*.lib %PJ64PluginsDirWTL%\*.exp
+  - del /Q %PJ64PluginsDir_x64%\*.lib %PJ64PluginsDirWTL_x64%\*.exp
   - del /Q %Mupen64PluginsDir_x64%\*.lib %Mupen64PluginsDir_x64%\*.exp
   - del /Q %Mupen64PluginsDir%\*.lib %Mupen64PluginsDir%\*.exp
   - cd C:\projects\gliden64\build
