@@ -168,7 +168,7 @@ endlocal
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\src\GLideNUI\Icon.ico">
+    <None Include="..\..\src\GLideNUI\Resources\Icon.ico">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </None>
     <CustomBuild Include="..\..\src\GLideNUI\icon.qrc">
