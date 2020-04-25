@@ -123,20 +123,16 @@ Global
 		{37CAB375-A7A6-3CAB-BD56-0E954D3FD2FE}.Release_wtl|x64.ActiveCfg = Release|x64
 		{9E05B70F-A294-44A9-A151-B2CC95AA884E}.Debug_mupenplus|Win32.ActiveCfg = Debug|Win32
 		{9E05B70F-A294-44A9-A151-B2CC95AA884E}.Debug_mupenplus|x64.ActiveCfg = Debug|x64
-		{9E05B70F-A294-44A9-A151-B2CC95AA884E}.Debug_mupenplus|x64.Build.0 = Debug|x64
 		{9E05B70F-A294-44A9-A151-B2CC95AA884E}.Debug_qt|Win32.ActiveCfg = Debug|Win32
 		{9E05B70F-A294-44A9-A151-B2CC95AA884E}.Debug_qt|x64.ActiveCfg = Debug|x64
-		{9E05B70F-A294-44A9-A151-B2CC95AA884E}.Debug_qt|x64.Build.0 = Debug|x64
 		{9E05B70F-A294-44A9-A151-B2CC95AA884E}.Debug_wtl|Win32.ActiveCfg = Debug|Win32
 		{9E05B70F-A294-44A9-A151-B2CC95AA884E}.Debug_wtl|Win32.Build.0 = Debug|Win32
 		{9E05B70F-A294-44A9-A151-B2CC95AA884E}.Debug_wtl|x64.ActiveCfg = Debug|x64
 		{9E05B70F-A294-44A9-A151-B2CC95AA884E}.Debug_wtl|x64.Build.0 = Debug|x64
 		{9E05B70F-A294-44A9-A151-B2CC95AA884E}.Release_mupenplus|Win32.ActiveCfg = Release|Win32
 		{9E05B70F-A294-44A9-A151-B2CC95AA884E}.Release_mupenplus|x64.ActiveCfg = Release|x64
-		{9E05B70F-A294-44A9-A151-B2CC95AA884E}.Release_mupenplus|x64.Build.0 = Release|x64
 		{9E05B70F-A294-44A9-A151-B2CC95AA884E}.Release_qt|Win32.ActiveCfg = Release|Win32
 		{9E05B70F-A294-44A9-A151-B2CC95AA884E}.Release_qt|x64.ActiveCfg = Release|x64
-		{9E05B70F-A294-44A9-A151-B2CC95AA884E}.Release_qt|x64.Build.0 = Release|x64
 		{9E05B70F-A294-44A9-A151-B2CC95AA884E}.Release_wtl|Win32.ActiveCfg = Release|Win32
 		{9E05B70F-A294-44A9-A151-B2CC95AA884E}.Release_wtl|Win32.Build.0 = Release|Win32
 		{9E05B70F-A294-44A9-A151-B2CC95AA884E}.Release_wtl|x64.ActiveCfg = Release|x64
@@ -146,7 +142,7 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {D7155823-2893-4425-94B4-BA469E774A27}
 		Qt5Version = $(DefaultQtVersion)
+		SolutionGuid = {D7155823-2893-4425-94B4-BA469E774A27}
 	EndGlobalSection
 EndGlobal
