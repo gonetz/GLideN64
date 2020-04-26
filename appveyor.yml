@@ -78,4 +78,3 @@ after_build:
 artifacts:
   - path: build\*.7z
     name: GLideN64 plugin
-    type: 7z archive
