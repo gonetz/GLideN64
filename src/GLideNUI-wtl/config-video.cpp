@@ -383,18 +383,14 @@ void CVideoTab::SaveSettings()
 	getFullscreenRefreshRate(CComboBox(GetDlgItem(IDC_CMB_REFRESH_RATE)).GetCurSel(), config.video.fullscreenRefresh);
 
 	CComboBox WindowResCB(GetDlgItem(IDC_CMB_WINDOWED_RESOLUTION));
-	int WindowResIndx = WindowResCB.GetItemData(WindowResCB.GetCurSel());
-	if (WindowResIndx >= 0 && WindowResIndx < numWindowedModes) {
-		config.video.windowedWidth = WindowedModes[WindowResIndx].width;
-		config.video.windowedHeight = WindowedModes[WindowResIndx].height;
-	} else {  // custom resolution
-		CString WindowResStr;
-		WindowResCB.GetWindowText(WindowResStr);
-		std::string resolution(CW2A(WindowResStr.GetString()));
-		// matches w x h where w is 300-7999 and h is 200-3999, spaces around x optional
-		std::regex parseRes("([3-9][0-9]{2}|[1-7][0-9]{3}) ?x ?([2-9][0-9]{2}|[1-3][0-9]{3})");
-		std::smatch tokens;
-		if (std::regex_search(resolution, tokens, parseRes) && tokens.size() > 1) {
+	CString WindowResStr;
+	WindowResCB.GetWindowText(WindowResStr);
+	std::string resolution(CW2A(WindowResStr.GetString()));
+	std::regex parseRes("(\\d+) ?x ?(\\d+)");
+	std::smatch tokens;
+	if (std::regex_search(resolution, tokens, parseRes) && tokens.size() > 1) {
+		// matches w x h where w is 300-7999 and h is 200-3999
+		if (range<300, 8000>::contains(std::stoi(tokens[1])) && range<200, 4000>::contains(std::stoi(tokens[2]))) {
 			config.video.windowedWidth = std::stoi(tokens[1]);
 			config.video.windowedHeight = std::stoi(tokens[2]);
 		}
