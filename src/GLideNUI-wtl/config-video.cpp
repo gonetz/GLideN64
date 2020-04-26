@@ -28,6 +28,25 @@ WindowedModes[] = {
 static const unsigned int numWindowedModes = sizeof(WindowedModes) / sizeof(WindowedModes[0]);
 static const LPCTSTR englishLang = _T("English");
 
+static u32 pow2(u32 dim)
+{
+	if (dim == 0) return 0;
+
+	return (1 << dim);
+}
+
+static u32 powof(u32 dim)
+{
+	if (dim == 0) return 0;
+
+	u32 num = 2; u32 i = 1;
+	while (num < dim) {
+		num <<= 1;
+		i++;
+	}
+	return i;
+}
+
 CVideoTab::CVideoTab(CConfigDlg & Dlg, const char * strIniPath) :
 	CConfigTab(IDD_TAB_VIDEO),
 	m_strIniPath(strIniPath),
@@ -197,11 +216,11 @@ void CVideoTab::ApplyLanguage(void) {
 LRESULT CVideoTab::OnScroll(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM lParam, BOOL& /*bHandled*/) {
 	LONG SliderId = CWindow((HWND)lParam).GetWindowLong(GWL_ID);
 	if (SliderId == IDC_ALIASING_SLIDER) {
-		int32_t value = m_AliasingSlider.GetPos();
-		std::wstring AliasingText = FormatStrW(L"%dx", value > 0 ? 1 << value : 0);
+		int32_t multisampling = m_AliasingSlider.GetPos();
+		std::wstring AliasingText = FormatStrW(L"%dx", pow2(multisampling));
 		CWindow(GetDlgItem(IDC_ALIASING_LABEL)).SetWindowTextW(AliasingText.c_str());
-		CButton(GetDlgItem(value != 0 ? IDC_MSAA_RADIO : IDC_NOAA_RADIO)).SetCheck(BST_CHECKED);
-		CButton(GetDlgItem(value != 0 ? IDC_NOAA_RADIO : IDC_MSAA_RADIO)).SetCheck(BST_UNCHECKED);
+		CButton(GetDlgItem(multisampling != 0 ? IDC_MSAA_RADIO : IDC_NOAA_RADIO)).SetCheck(BST_CHECKED);
+		CButton(GetDlgItem(multisampling != 0 ? IDC_NOAA_RADIO : IDC_MSAA_RADIO)).SetCheck(BST_UNCHECKED);
 		CButton(GetDlgItem(IDC_FXAA_RADIO)).SetCheck(BST_UNCHECKED);
 	} else if (SliderId == IDC_ANISOTROPIC_SLIDER) {
 		CWindow(GetDlgItem(IDC_ANISOTROPIC_LABEL)).SetWindowTextW(FormatStrW(L"%dx", m_AnisotropicSlider.GetPos()).c_str());
@@ -329,8 +348,11 @@ void CVideoTab::LoadSettings(bool /*blockCustomSettings*/) {
 			fullScreenResolutionComboBox.SetCurSel(index);
 	}
 	OnFullScreenChanged(0, 0, NULL);
-	m_AliasingSlider.SetPos(config.video.multisampling >> 1);
-	std::wstring AliasingText = FormatStrW(L"%dx", config.video.multisampling > 0 ? 1 << config.video.multisampling : 0);
+	const unsigned int multisampling = config.video.fxaa == 0 && config.video.multisampling > 0
+		? config.video.multisampling
+		: 8;
+	m_AliasingSlider.SetPos(powof(multisampling));
+	std::wstring AliasingText = FormatStrW(L"%dx", multisampling);
 	CWindow(GetDlgItem(IDC_ALIASING_LABEL)).SetWindowTextW(AliasingText.c_str());
 
 	CButton(GetDlgItem(IDC_NOAA_RADIO)).SetCheck(config.video.multisampling == 0 ? BST_CHECKED : BST_UNCHECKED);
@@ -421,7 +443,7 @@ void CVideoTab::SaveSettings()
 	);
 
 	config.video.fxaa = CButton(GetDlgItem(IDC_FXAA_RADIO)).GetCheck() == BST_CHECKED ? 1 : 0;
-	config.video.multisampling = m_AliasingSlider.GetPos() << 1;
+	config.video.multisampling = pow2(m_AliasingSlider.GetPos());
 	config.texture.maxAnisotropy = m_AnisotropicSlider.GetPos();
 
 	if (CButton(GetDlgItem(IDC_BILINEAR_3POINT)).GetCheck() == BST_CHECKED)
