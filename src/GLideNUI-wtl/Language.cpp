@@ -224,7 +224,7 @@ void loadDefaultStrings(void)
 	g_defaultStrings.insert(LANG_STRINGS::value_type(ABOUT_DEVELOPER, "Developer"));
 	g_defaultStrings.insert(LANG_STRINGS::value_type(ABOUT_BETA_TESTER, "Beta tester"));
 	g_defaultStrings.insert(LANG_STRINGS::value_type(ABOUT_GUI_DESIGNER, "GUI designer"));
-	g_defaultStrings.insert(LANG_STRINGS::value_type(ABOUT_AND_MORE, ".. and more"));
+	g_defaultStrings.insert(LANG_STRINGS::value_type(ABOUT_AND_MORE, "... and more"));
 	g_defaultStrings.insert(LANG_STRINGS::value_type(ABOUT_AUTHOR_GLN64, "Author of the original glN64 graphics plugin"));
 	g_defaultStrings.insert(LANG_STRINGS::value_type(ABOUT_AUTHOR_GLES2N64, "Author of gles2n64, a port of glN64 to GL ES 2.0"));
 	g_defaultStrings.insert(LANG_STRINGS::value_type(ABOUT_AUTHOR_GLIDEHQ, "Author of the GlideHQ texture library"));
