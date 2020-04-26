@@ -113,6 +113,7 @@ void CTextureEnhancementTab::ApplyLanguage(void)
 
 	CComboBox enhancementComboBox(GetDlgItem(IDC_CMB_ENHANCEMENT));
 	selectedIndx = enhancementComboBox.GetCurSel();
+	enhancementComboBox.ResetContent();
 	enhancementComboBox.AddString(wGS(TEXTURE_ENHANCEMENT_NONE).c_str());
 	enhancementComboBox.AddString(wGS(TEXTURE_ENHANCEMENT_STORE).c_str());
 	enhancementComboBox.AddString(L"X2");
