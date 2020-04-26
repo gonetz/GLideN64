@@ -22,6 +22,11 @@
     <ProjectGuid>{7BF6F100-31DB-44AE-A2A5-5DDEED9A909C}</ProjectGuid>
     <RootNamespace>osal</RootNamespace>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(WindowsTargetPlatformVersion)'=='' and '$(VisualStudioVersion)' != '12.0' and '$(VisualStudioVersion)' != '14.0'">
+    <LatestTargetPlatformVersion>$([Microsoft.Build.Utilities.ToolLocationHelper]::GetLatestSDKTargetPlatformVersion('Windows', '10.0'))</LatestTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>$(LatestTargetPlatformVersion)</WindowsTargetPlatformVersion>
+    <TargetPlatformVersion>$(WindowsTargetPlatformVersion)</TargetPlatformVersion>
+  </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
