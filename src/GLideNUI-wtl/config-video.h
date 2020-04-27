@@ -3,6 +3,7 @@
 #pragma once
 #include "config-tab.h"
 #include "config-overscan.h"
+#include "config-framebuffer.h"
 #include "wtl-BitmapPicture.h"
 #include "wtl-tooltip.h"
 #include "resource.h"
@@ -12,6 +13,7 @@
 #include <regex>
 
 class CConfigDlg;
+class CFrameBufferTab;
 
 class CVideoTab :
 	public CConfigTab,
@@ -33,7 +35,7 @@ public:
 		REFLECT_NOTIFICATIONS()
 	END_MSG_MAP()
 
-	CVideoTab(CConfigDlg & Dlg, const char * strIniPath);
+	CVideoTab(CConfigDlg & Dlg, CFrameBufferTab & FrameBufferTab, const char * strIniPath);
 	~CVideoTab();
 
 	BOOL OnInitDialog(CWindow /*wndFocus*/, LPARAM /*lInitParam*/);
@@ -57,4 +59,5 @@ public:
 	std::string m_strIniPath;
 	LanguageList m_LangList;
 	CConfigDlg & m_Dlg;
+	CFrameBufferTab & m_FrameBufferTab;
 };

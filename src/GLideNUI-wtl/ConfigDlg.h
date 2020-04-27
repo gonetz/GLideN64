@@ -6,6 +6,8 @@
 #include "resource.h"
 #include <vector>
 
+class CFrameBufferTab;
+class CVideoTab;
 class CEmulationTab;
 class COsdTab;
 
@@ -61,6 +63,8 @@ protected:
 	std::string m_strIniPath;
 	const char * m_romName;
 	bool m_blockReInit;
+	CFrameBufferTab * m_FrameBufferTab;
+	CVideoTab * m_VideoTab;
 	CEmulationTab * m_EmulationTab;
 	COsdTab * m_OsdTab;
 	uint32_t m_TabLeft, m_ProfileLeft;

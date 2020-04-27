@@ -43,13 +43,15 @@ LRESULT CConfigDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPar
 	HICON hIconSmall = AtlLoadIconImage(IDI_APPICON, LR_DEFAULTCOLOR, ::GetSystemMetrics(SM_CXSMICON), ::GetSystemMetrics(SM_CYSMICON));
 	SetIcon(hIconSmall, FALSE);
 
+	m_FrameBufferTab = new CFrameBufferTab();
+	m_VideoTab = new CVideoTab(*this, *m_FrameBufferTab, m_strIniPath.c_str());
 	m_EmulationTab = new CEmulationTab(*this);
 	m_OsdTab = new COsdTab();
 
 	m_Tabs.Attach(GetDlgItem(IDC_TABS));
-	AddTab(TAB_VIDEO, new CVideoTab(*this, m_strIniPath.c_str()));
+	AddTab(TAB_VIDEO, m_VideoTab);
 	AddTab(TAB_EMULATION, m_EmulationTab);
-	AddTab(TAB_FRAME_BUFFER, new CFrameBufferTab);
+	AddTab(TAB_FRAME_BUFFER, m_FrameBufferTab);
 	AddTab(TAB_TEXTURE_ENHANCEMENT, new CTextureEnhancementTab);
 	AddTab(TAB_OSD, m_OsdTab);
 #ifdef DEBUG_DUMP
