@@ -268,7 +268,7 @@ LANG_STR GetNextLangString(FILE * file)
 
 	std::string::size_type pos = text.find("\\n");
 	while (pos != std::string::npos) {
-		text.replace(pos, 1, "\n");
+		text.replace(pos, 2, "\n");
 		pos = text.find("\\n", pos + 1);
 	}
 	return LANG_STR(StringID, text);
