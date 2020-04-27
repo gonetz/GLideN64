@@ -47,11 +47,12 @@ static u32 powof(u32 dim)
 	return i;
 }
 
-CVideoTab::CVideoTab(CConfigDlg & Dlg, const char * strIniPath) :
+CVideoTab::CVideoTab(CConfigDlg & Dlg, CFrameBufferTab & FrameBufferTab, const char * strIniPath) :
 	CConfigTab(IDD_TAB_VIDEO),
 	m_strIniPath(strIniPath),
 	m_LangList(GetLanguageList(strIniPath)),
-	m_Dlg(Dlg)
+	m_Dlg(Dlg),
+	m_FrameBufferTab(FrameBufferTab)
 {
 }
 
@@ -376,9 +377,9 @@ void CVideoTab::LoadSettings(bool /*blockCustomSettings*/) {
 	}
 
 	CComboBox(GetDlgItem(IDC_CMB_PATTERN)).SetCurSel(config.generalEmulation.rdramImageDitheringMode);
-	CButton(GetDlgItem(IDC_CHK_APPLY_TO_OUTPUT)).SetCheck(config.generalEmulation.enableDitheringPattern == 0 ? BST_CHECKED : BST_UNCHECKED);
-	CButton(GetDlgItem(IDC_CHK_5BIT_QUANTIZATION)).SetCheck(config.generalEmulation.enableDitheringQuantization == 0 ? BST_CHECKED : BST_UNCHECKED);
-	CButton(GetDlgItem(IDC_CHK_HIRES_NOISE)).SetCheck(config.generalEmulation.enableHiresNoiseDithering == 0 ? BST_CHECKED : BST_UNCHECKED);
+	CButton(GetDlgItem(IDC_CHK_APPLY_TO_OUTPUT)).SetCheck(config.generalEmulation.enableDitheringPattern != 0 ? BST_CHECKED : BST_UNCHECKED);
+	CButton(GetDlgItem(IDC_CHK_5BIT_QUANTIZATION)).SetCheck(config.generalEmulation.enableDitheringQuantization != 0 ? BST_CHECKED : BST_UNCHECKED);
+	CButton(GetDlgItem(IDC_CHK_HIRES_NOISE)).SetCheck(config.generalEmulation.enableHiresNoiseDithering != 0 ? BST_CHECKED : BST_UNCHECKED);
 
 	CComboBox translationsComboBox(GetDlgItem(IDC_CMB_LANGUAGE));
 	translationsComboBox.SetCurSel(-1);
@@ -443,7 +444,12 @@ void CVideoTab::SaveSettings()
 	);
 
 	config.video.fxaa = CButton(GetDlgItem(IDC_FXAA_RADIO)).GetCheck() == BST_CHECKED ? 1 : 0;
-	config.video.multisampling = pow2(m_AliasingSlider.GetPos());
+	config.video.multisampling =
+		(CButton(GetDlgItem(IDC_FXAA_RADIO)).GetCheck() == BST_CHECKED
+			|| CComboBox(m_FrameBufferTab.GetDlgItem(IDC_CMB_N64_DEPTH_COMPARE)).GetCurSel() != 0
+			|| CButton(GetDlgItem(IDC_NOAA_RADIO)).GetCheck() == BST_CHECKED
+			) ? 0
+		: pow2(m_AliasingSlider.GetPos());
 	config.texture.maxAnisotropy = m_AnisotropicSlider.GetPos();
 
 	if (CButton(GetDlgItem(IDC_BILINEAR_3POINT)).GetCheck() == BST_CHECKED)
