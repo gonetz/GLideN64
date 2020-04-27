@@ -106,14 +106,16 @@ void COsdTab::SelCurrentFont(void)
 	tv.item.cchTextMax = sizeof(Item) / sizeof(Item[0]);
 	tv.item.hItem = m_Fonts.GetChildItem(TVI_ROOT);
 	HTREEITEM hCurrentItem = NULL;
-	while (hCurrentItem == NULL && tv.item.hItem) {
+	while (tv.item.hItem) {
 		m_Fonts.GetItem(&tv.item);
-		HTREEITEM hChild = m_Fonts.GetChildItem(tv.item.hItem);
+        m_Fonts.SetItemState(tv.item.hItem, 0, TVIF_STATE | TVIS_SELECTED);
+        HTREEITEM hChild = m_Fonts.GetChildItem(tv.item.hItem);
 		HTREEITEM NextItem = m_Fonts.GetNextSiblingItem(tv.item.hItem);
-		if (hCurrentItem == NULL && hChild != NULL) {
+		if (hChild != NULL) {
 			tv.item.hItem = hChild;
-			while (hCurrentItem == NULL && tv.item.hItem) {
+			while (tv.item.hItem) {
 				m_Fonts.GetItem(&tv.item);
+                m_Fonts.SetItemState(tv.item.hItem, 0, TVIF_STATE | TVIS_SELECTED);
 				if (Item == CurrentFile)
 					hCurrentItem = tv.item.hItem;
 				tv.item.hItem = m_Fonts.GetNextSiblingItem(tv.item.hItem);
