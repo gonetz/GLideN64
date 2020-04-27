@@ -11,6 +11,7 @@ GlColor::GlColor(uint8_t Red, uint8_t Green, uint8_t Blue, uint8_t Alpha) :
 GlSettings::GlSettings(const char * IniFile) :
 	m_IniFile(IniFile)
 {
+	m_IniFile.SetAutoFlush(false);
 	m_CurrentSection = "General";
 }
 
@@ -240,7 +241,7 @@ GlColor GlSettingValue::toGlColor() const
 			Alpha = ParseGlColor(tokens[13].c_str());
 		}
 	}
-	
+
 	return GlColor(Red, Green, Blue, Alpha);
 }
 
@@ -248,7 +249,7 @@ uint8_t GlSettingValue::ParseGlColor(const char * color)
 {
 	if (color == NULL) { return 0; }
 	if (color[0] == '0') { return 0; }
-	if (color[0] == 'x') 
+	if (color[0] == 'x')
 	{
 		uint32_t Value = 0;
 #pragma warning(disable: 4996)
