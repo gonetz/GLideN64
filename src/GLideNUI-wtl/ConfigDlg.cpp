@@ -219,7 +219,12 @@ void CConfigDlg::SaveSettings() {
 	m_Saved = true;
 	for (size_t i = 0; i < m_TabWindows.size(); i++)
 		m_TabWindows[i]->SaveSettings();
-	writeSettings(m_strIniPath.c_str());
+    
+    if (config.generalEmulation.enableCustomSettings && CButton(m_EmulationTab->GetDlgItem(IDC_GAME_PROFILE)).GetCheck() == BST_CHECKED && m_romName != nullptr)
+        saveCustomRomSettings(m_strIniPath.c_str(), m_romName);
+    else
+        writeSettings(m_strIniPath.c_str());
+    
 }
 
 LRESULT CConfigDlg::OnRestoreDefaults(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*hWndCtl*/, BOOL& /*bHandled*/) {
