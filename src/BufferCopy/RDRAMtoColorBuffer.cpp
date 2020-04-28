@@ -72,6 +72,7 @@ void RDRAMtoColorBuffer::destroy()
 		m_pTexture = nullptr;
 	}
 	free(m_pbuf);
+    m_pbuf = nullptr;
 }
 
 void RDRAMtoColorBuffer::addAddress(u32 _address, u32 _size)
