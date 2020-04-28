@@ -27,7 +27,8 @@ namespace graphics {
 		FramebufferFetch,
 		TextureBarrier,
 		EglImage,
-		EglImageFramebuffer
+		EglImageFramebuffer,
+		DualSourceBlending
 	};
 
 	enum class ClampMode {
@@ -302,6 +303,7 @@ namespace graphics {
 		static bool TextureBarrier;
 		static bool EglImage;
 		static bool EglImageFramebuffer;
+		static bool DualSourceBlending;
 
 	private:
 		std::unique_ptr<ContextImpl> m_impl;

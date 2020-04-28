@@ -369,30 +369,33 @@ public:
 		const int forceBlend2 = gDP.otherMode.forceBlender;
 		uForceBlendCycle2.set(forceBlend2, _force);
 
-		// Modes, which shader blender can't emulate
-		const u32 mode = _SHIFTR(gDP.otherMode.l, 16, 16);
-		switch (mode) {
-		case 0x0040:
-			// Mia Hamm Soccer
-			// clr_in * a_in + clr_mem * (1-a)
-			// clr_in * a_in + clr_in * (1-a)
-		case 0x0050:
-			// A Bug's Life
-			// clr_in * a_in + clr_mem * (1-a)
-			// clr_in * a_in + clr_mem * (1-a)
-			uForceBlendCycle1.set(0, _force);
-			uForceBlendCycle2.set(0, _force);
-			break;
-		case 0x0150:
-			// Tony Hawk
-			// clr_in * a_in + clr_mem * (1-a)
-			// clr_in * a_fog + clr_mem * (1-a_fog)
-			if ((config.generalEmulation.hacks & hack_TonyHawk) != 0) {
+		if (!graphics::Context::DualSourceBlending) {
+			// Modes, which shader blender can't emulate
+			const u32 mode = _SHIFTR(gDP.otherMode.l, 16, 16);
+			switch (mode) {
+			case 0x0040:
+				// Mia Hamm Soccer
+				// clr_in * a_in + clr_mem * (1-a)
+				// clr_in * a_in + clr_in * (1-a)
+			case 0x0050:
+				// A Bug's Life
+				// clr_in * a_in + clr_mem * (1-a)
+				// clr_in * a_in + clr_mem * (1-a)
 				uForceBlendCycle1.set(0, _force);
 				uForceBlendCycle2.set(0, _force);
+				break;
+			case 0x0150:
+				// Tony Hawk
+				// clr_in * a_in + clr_mem * (1-a)
+				// clr_in * a_fog + clr_mem * (1-a_fog)
+				if ((config.generalEmulation.hacks & hack_TonyHawk) != 0) {
+					uForceBlendCycle1.set(0, _force);
+					uForceBlendCycle2.set(0, _force);
+				}
+				break;
 			}
-			break;
 		}
+
 	}
 
 private:
@@ -400,6 +403,24 @@ private:
 	i4Uniform uBlendMux2;
 	iUniform uForceBlendCycle1;
 	iUniform uForceBlendCycle2;
+};
+
+class UBlendCvg : public UniformGroup
+{
+public:
+	UBlendCvg(GLuint _program) {
+		LocateUniform(uCvgDest);
+		LocateUniform(uForceBlendAlpha);
+	}
+
+	void update(bool _force) override 
+	{
+		uCvgDest.set(gDP.otherMode.cvgDest, _force);
+		uForceBlendAlpha.set(gDP.otherMode.forceBlender, _force);
+	}
+private:
+	iUniform uCvgDest;
+	iUniform uForceBlendAlpha;
 };
 
 class UDitherMode : public UniformGroup
@@ -1125,6 +1146,8 @@ void CombinerProgramUniformFactory::buildUniforms(GLuint _program,
 			break;
 		}
 	}
+
+	_uniforms.emplace_back(new UBlendCvg(_program));
 
 	_uniforms.emplace_back(new UDitherMode(_program, _inputs.usesNoise()));
 
