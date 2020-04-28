@@ -72,7 +72,7 @@ void PaletteTexture::destroy()
 	textureCache().removeFrameBufferTexture(m_pTexture);
 	m_pTexture = nullptr;
 	free(m_pbuf);
-    m_pbuf = nullptr;
+	m_pbuf = nullptr;
 }
 
 void PaletteTexture::update()
