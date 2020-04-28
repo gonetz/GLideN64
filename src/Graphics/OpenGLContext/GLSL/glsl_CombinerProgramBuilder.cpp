@@ -563,18 +563,27 @@ public:
 	ShaderBlender1()
 	{
 #if 1
-			m_part =
-				"  #define MUXA(pos) dot(muxA, STVEC(pos))				\n"
-				"  #define MUXB(pos) dot(muxB, STVEC(pos))				\n"
-				"  #define MUXPM(pos) muxPM*(STVEC(pos))				\n"
-				"  muxPM[0] = clampedColor;								\n"
-				"  if (uForceBlendCycle1 != 0) {						\n"
-				"    muxA[0] = clampedColor.a;							\n"
-				"    muxB[0] = 1.0 - MUXA(uBlendMux1[1]);				\n"
-				"    lowp vec4 blend1 = MUXPM(uBlendMux1[0]) * MUXA(uBlendMux1[1]) + MUXPM(uBlendMux1[2]) * MUXB(uBlendMux1[3]);	\n"
-				"    clampedColor.rgb = clamp(blend1.rgb, 0.0, 1.0);	\n"
-				"  } else clampedColor.rgb = (MUXPM(uBlendMux1[0])).rgb;	\n"
-				;
+		m_part =
+			"  cs1 = vec4(0.0); \n"
+			"  fd1 = 0.0;"
+			"  muxPM[0] = clampedColor;									\n"
+			"  muxA[0] = clampedColor.a;								\n"
+			"  muxa = MUXA(uBlendMux1[1]); \n"
+			"  muxB[0] = 1.0 - muxa;					\n"
+			"  muxb = MUXB(uBlendMux1[3]); \n"
+			"  muxp = MUXPM(uBlendMux1[0]); \n"
+			"  muxm = MUXPM(uBlendMux1[2]); \n"
+			"  if (uForceBlendCycle1 != 0) {							\n"
+			"    cs1 = muxp * muxa + muxm * muxb; \n"
+			"    if (uBlendMux1[0] == 1) fd1 += muxa; \n"
+			"    if (uBlendMux1[2] == 1) fd1 += muxb; \n"
+			"    cs1 = clamp(cs1, 0.0, 1.0); \n"
+			"  } else {"
+			"    cs1 = muxp; "
+			"    if (uBlendMux1[0]==1) fd1 = 1.0;"
+			"  }"
+			"  clampedColor = vec4(cs1.rgb, 1.0 - fd1); \n "
+			;
 #else
 		// Keep old code for reference
 		m_part =
@@ -597,15 +606,29 @@ public:
 	{
 #if 1
 		m_part =
-			"  muxPM[0] = clampedColor;								\n"
-			"  muxPM[1] = vec4(0.0);								\n"
-			"  if (uForceBlendCycle2 != 0) {						\n"
-			"    muxA[0] = clampedColor.a;							\n"
-			"    muxB[0] = 1.0 - MUXA(uBlendMux2[1]);				\n"
-			"    lowp vec4 blend2 = MUXPM(uBlendMux2[0]) * MUXA(uBlendMux2[1]) + MUXPM(uBlendMux2[2]) * MUXB(uBlendMux2[3]);	\n"
-			"    clampedColor.rgb = clamp(blend2.rgb, 0.0, 1.0);	\n"
-			"  } else clampedColor.rgb = (MUXPM(uBlendMux2[0])).rgb;	\n"
+			"  cs2 = vec4(0.0); \n"
+			"  fd2 = 0.0;"
+			"  muxPM[0] = cs1;							\n"
+			"  muxa = MUXA(uBlendMux2[1]); \n"
+			"  muxB[0] = 1.0 - muxa;					\n"
+			"  muxb = MUXB(uBlendMux2[3]); \n"
+			"  muxp = MUXPM(uBlendMux2[0]); \n"
+			"  muxm = MUXPM(uBlendMux2[2]); \n"
+			"  if (uForceBlendCycle2 != 0) {							\n"
+			"    cs2 = muxp * muxa + muxm * muxb; \n"
+			"    if (uBlendMux2[0] == 0) fd2 += fd1 * muxa; \n"
+			"    if (uBlendMux2[0] == 1) fd2 += muxa; \n"
+			"    if (uBlendMux2[2] == 0) fd2 += fd1 * muxb; \n"
+			"    if (uBlendMux2[2] == 1) fd2 += muxb; \n"
+			"    cs2 = clamp(cs2, 0.0, 1.0); \n"
+			"  } else {"
+			"    cs2 = muxp; \n"
+			"    if (uBlendMux2[0] == 0) fd2 = fd1;"
+			"    if (uBlendMux2[0] == 1) fd2 = 1.0;"
+			"  }"
+			" clampedColor = vec4(cs2.rgb, 1.0 - fd2); \n"
 			;
+			
 #else
 		// Keep old code for reference
 		m_part =
@@ -1418,9 +1441,14 @@ public:
 	{
 		if (config.generalEmulation.enableLegacyBlending == 0) {
 			m_part =
+				"  #define MUXA(pos) dot(muxA, STVEC(pos))					\n"
+				"  #define MUXB(pos) dot(muxB, STVEC(pos))					\n"
+				"  #define MUXPM(pos) muxPM*(STVEC(pos))					\n"
 				"  lowp mat4 muxPM = mat4(vec4(0.0), vec4(0.0), uBlendColor, uFogColor);	\n"
 				"  lowp vec4 muxA = vec4(0.0, uFogColor.a, shadeColor.a, 0.0);				\n"
 				"  lowp vec4 muxB = vec4(0.0, 1.0, 1.0, 0.0);								\n"
+				"  lowp vec4 muxp, muxm, cs1, cs2; \n"
+				"  lowp float muxa, muxb, fd1, fd2; \n"
 			;
 		}
 	}

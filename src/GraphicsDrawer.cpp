@@ -480,6 +480,7 @@ void _legacySetBlendMode()
 
 bool GraphicsDrawer::_setUnsupportedBlendMode() const
 {
+	return false;
 	if (gDP.otherMode.cycleType != G_CYC_2CYCLE)
 		return false;
 
@@ -522,6 +523,7 @@ void GraphicsDrawer::_setBlendMode() const
 		return;
 
 	if (gDP.otherMode.forceBlender != 0 && gDP.otherMode.cycleType < G_CYC_COPY) {
+#if 0
 		BlendParam srcFactor = blend::ONE;
 		BlendParam dstFactor = blend::ZERO;
 		u32 memFactorSource = 2, muxA, muxB;
@@ -617,10 +619,37 @@ void GraphicsDrawer::_setBlendMode() const
 		}
 		gfxContext.enable(enable::BLEND, true);
 		gfxContext.setBlending(srcFactor, dstFactor);
-	} else if ((config.generalEmulation.hacks & hack_blastCorps) != 0 && gDP.otherMode.cycleType < G_CYC_COPY && gSP.texture.on == 0 && currentCombiner()->usesTexture()) { // Blast Corps
+#else
+		BlendParam srcFactor = blend::ONE;
+		BlendParam dstFactor = blend::ONE_MINUS_SRC_ALPHA;
+		if (gDP.otherMode.cycleType == G_CYC_2CYCLE) {
+			if (gDP.otherMode.c2_m2a != 1 && gDP.otherMode.c2_m2b == 1) {
+				srcFactor = blend::DST_ALPHA;
+			}
+			if (gDP.otherMode.c2_m2a == 1 && gDP.otherMode.c2_m2b == 1) {
+				dstFactor = blend::DST_ALPHA;
+			}
+		}
+		else {
+			if (gDP.otherMode.c1_m2a != 1 && gDP.otherMode.c1_m2b == 1) {
+				srcFactor = blend::DST_ALPHA;
+			}
+			if (gDP.otherMode.c1_m2a == 1 && gDP.otherMode.c2_m2b == 1) {
+				dstFactor = blend::DST_ALPHA;
+			}
+		}
+		gfxContext.enable(enable::BLEND, true);
+		gfxContext.setBlending(srcFactor, dstFactor);
+#endif
+	}
+#if 0
+	else if ((config.generalEmulation.hacks & hack_blastCorps) != 0 && gDP.otherMode.cycleType < G_CYC_COPY && gSP.texture.on == 0 && currentCombiner()->usesTexture()) { // Blast Corps
 		gfxContext.enable(enable::BLEND, true);
 		gfxContext.setBlending(blend::ZERO, blend::ONE);
-	} else if ((gDP.otherMode.forceBlender == 0 && gDP.otherMode.cycleType < G_CYC_COPY)) {
+	}
+#endif
+	else if ((gDP.otherMode.forceBlender == 0 && gDP.otherMode.cycleType < G_CYC_COPY)) {
+#if 0
 		// Just use first mux of blender
 		bool useMemColor = false;
 		if (gDP.otherMode.cycleType == G_CYC_1CYCLE) {
@@ -636,6 +665,10 @@ void GraphicsDrawer::_setBlendMode() const
 		} else {
 			gfxContext.enable(enable::BLEND, false);
 		}
+#else
+		gfxContext.enable(enable::BLEND, true);
+		gfxContext.setBlending(blend::ONE, blend::ONE_MINUS_SRC_ALPHA);
+#endif
 	} else {
 		gfxContext.enable(enable::BLEND, false);
 	}

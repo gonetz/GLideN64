@@ -369,6 +369,7 @@ public:
 		const int forceBlend2 = gDP.otherMode.forceBlender;
 		uForceBlendCycle2.set(forceBlend2, _force);
 
+#if 0
 		// Modes, which shader blender can't emulate
 		const u32 mode = _SHIFTR(gDP.otherMode.l, 16, 16);
 		switch (mode) {
@@ -393,6 +394,7 @@ public:
 			}
 			break;
 		}
+#endif
 	}
 
 private:
