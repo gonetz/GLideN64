@@ -272,7 +272,11 @@ void COsdTab::SaveSettings()
 	config.onScreenDisplay.internalResolution = CButton(GetDlgItem(IDC_INTERNAL_RESOLUTION)).GetCheck() == BST_CHECKED ? 1 : 0;
 	config.onScreenDisplay.renderingResolution = CButton(GetDlgItem(IDC_RENDERING_RESOLUTION)).GetCheck() == BST_CHECKED ? 1 : 0;
 
-	config.font.name = FromUTF16(GetSelectedFont().c_str());
+	std::string SelectedFont = FromUTF16(GetSelectedFont().c_str());
+	if (!SelectedFont.empty())
+		config.font.name = SelectedFont;
+	if (config.font.name.empty())
+		config.font.name = "arial.ttf";
 	config.font.size = m_FontSizeSpin.GetPos();
 
 	config.font.color[0] = m_OsdColor.Red();
