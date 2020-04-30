@@ -105,6 +105,8 @@ void _loadSettings(GlSettings & settings)
 
 	settings.beginGroup("font");
 	config.font.name = settings.value("name", config.font.name.c_str()).toString();
+	if (config.font.name.empty())
+		config.font.name = "arial.ttf";
 	config.font.size = settings.value("size", config.font.size).toInt();
 	GlColor fontColor = settings.value("color", GlColor(config.font.color[0], config.font.color[1], config.font.color[2])).toGlColor();
 	config.font.color[0] = fontColor.Red();
