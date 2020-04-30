@@ -239,13 +239,13 @@ void COsdTab::LoadSettings(bool /*blockCustomSettings*/)
 		m_OsdColor.SetColor(config.font.color[0], config.font.color[1], config.font.color[2]);
 		m_OsdPreview.SetColor(config.font.color[0], config.font.color[1], config.font.color[2]);
 	}
-	
-	m_PosTopLeft.SetChecked(config.onScreenDisplay.pos == Config::posTopLeft); 
-	m_PosTop.SetChecked(config.onScreenDisplay.pos == Config::posTopCenter); 
+
+	m_PosTopLeft.SetChecked(config.onScreenDisplay.pos == Config::posTopLeft);
+	m_PosTop.SetChecked(config.onScreenDisplay.pos == Config::posTopCenter);
 	m_PosTopRight.SetChecked(config.onScreenDisplay.pos == Config::posTopRight);
 	m_PosBottomLeft.SetChecked(config.onScreenDisplay.pos == Config::posBottomLeft);
 	m_PosBottom.SetChecked(config.onScreenDisplay.pos == Config::posBottomCenter);
-	m_PosBottomRight.SetChecked(config.onScreenDisplay.pos == Config::posBottomRight); 
+	m_PosBottomRight.SetChecked(config.onScreenDisplay.pos == Config::posBottomRight);
 
 	CButton(GetDlgItem(IDC_CHK_FPS)).SetCheck(config.onScreenDisplay.fps != 0 ? BST_CHECKED : BST_UNCHECKED);
 	CButton(GetDlgItem(IDC_CHK_VIS)).SetCheck(config.onScreenDisplay.vis != 0 ? BST_CHECKED : BST_UNCHECKED);
@@ -291,6 +291,8 @@ void COsdTab::SaveSettings()
 
 std::wstring COsdTab::GetSelectedFont()
 {
+	if (!m_FontsLoaded)
+		return ToUTF16(config.font.name.c_str());
 	HTREEITEM hItem = m_Fonts.GetSelectedItem();
 	if (hItem == NULL)
 		return L"";
