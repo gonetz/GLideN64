@@ -262,6 +262,8 @@ void Debugger::_fillTriInfo(TriInfo & _info)
 	_info.prim_color = gDP.primColor;
 	_info.primDepthZ = gDP.primDepth.z;
 	_info.primDepthDeltaZ = gDP.primDepth.deltaZ;
+	_info.fogMultiplier = gSP.fog.multiplierf;
+	_info.fogOffset = gSP.fog.offsetf;
 	_info.K4 = gDP.convert.k4;
 	_info.K5 = gDP.convert.k5;
 	_info.viewport = gSP.viewport;
@@ -983,7 +985,23 @@ void Debugger::_drawVertexCoords(f32 _ulx, f32 _uly, f32 _yShift)
 			OUTPUT2("v[%d].r: %.2f", j, v.r);
 			OUTPUT2("v[%d].g: %.2f", j, v.g);
 			OUTPUT2("v[%d].b: %.2f", j, v.b);
-			OUTPUT2("v[%d].a: %.2f", j, v.a);
+			if (RSP.LLE) {
+				OUTPUT2("v[%d].a: %.2f", j, v.a);
+			}
+			else {
+				if ((m_triSel->geometryMode & G_FOG) == 0) {
+					OUTPUT2("v[%d].a: %.2f", j, v.a);
+				}
+				else {
+					f32 f = v.z / v.w * m_triSel->fogMultiplier + m_triSel->fogOffset;
+					if (f < 0.0f)
+						f = 0.0f;
+					if (f > 1.0f)
+						f = 1.0f;
+					OUTPUT2("v[%d].a: %.2f", j, f);
+				}
+			}
+
 		}
 		return;
 	}
