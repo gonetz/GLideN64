@@ -280,12 +280,8 @@ public:
 			"IN highp vec4 aModify;								\n"
 			"													\n"
 			"uniform int uTexturePersp;							\n"
-			"uniform lowp int uTextureFilterMode;		\n"
-			"													\n"
-			"uniform lowp int uFogUsage;						\n"
-			"uniform mediump vec2 uFogScale;					\n"
+			"uniform lowp int uTextureFilterMode;				\n"
 			"uniform mediump vec2 uScreenCoordsScale;			\n"
-			"													\n"
 			"uniform mediump vec2 uTexScale;					\n"
 			"uniform mediump vec2 uTexOffset[2];				\n"
 			"uniform mediump vec2 uCacheScale[2];				\n"
@@ -334,18 +330,6 @@ public:
 			"      vNumLights = 0.0;										\n"
 			"  }															\n"
 			"  gl_Position.y = -gl_Position.y;								\n"
-			"  if (uFogUsage > 0) {											\n"
-			"    lowp float fp;												\n"
-			"    if (aPosition.z < -aPosition.w && aModify[1] == 0.0)		\n"
-			"      fp = -uFogScale.s + uFogScale.t;							\n"
-			"    else														\n"
-			"      fp = aPosition.z/aPosition.w*uFogScale.s + uFogScale.t;	\n"
-			"    fp = clamp(fp, 0.0, 1.0);									\n"
-			"    if (uFogUsage == 1)										\n"
-			"      vShadeColor.a = fp;										\n"
-			"    else														\n"
-			"      vShadeColor.rgb = vec3(fp);								\n"
-			"  }															\n"
 			;
 	}
 };
@@ -360,9 +344,6 @@ public:
 			"IN lowp vec4 aColor;											\n"
 			"IN lowp float aNumLights;										\n"
 			"IN highp vec4 aModify;											\n"
-			"																\n"
-			"uniform lowp int uFogUsage;									\n"
-			"uniform mediump vec2 uFogScale;								\n"
 			"uniform mediump vec2 uScreenCoordsScale;						\n"
 			"																\n"
 			"OUT lowp float vNumLights;										\n"
@@ -389,18 +370,6 @@ public:
 			"      vNumLights = 0.0;										\n"
 			"  }															\n"
 			"  gl_Position.y = -gl_Position.y;								\n"
-			"  if (uFogUsage > 0) {											\n"
-			"    lowp float fp;												\n"
-			"    if (aPosition.z < -aPosition.w && aModify[1] == 0.0)		\n"
-			"      fp = -uFogScale.s + uFogScale.t;							\n"
-			"    else														\n"
-			"      fp = aPosition.z/aPosition.w*uFogScale.s + uFogScale.t;	\n"
-			"    fp = clamp(fp, 0.0, 1.0);									\n"
-			"    if (uFogUsage == 1)										\n"
-			"      vShadeColor.a = fp;										\n"
-			"    else														\n"
-			"      vShadeColor.rgb = vec3(fp);								\n"
-			"  }															\n"
 			;
 	}
 };
@@ -621,7 +590,7 @@ public:
 	{
 		m_part =
 			"  if (uFogUsage == 1) \n"
-			"    fragColor.rgb = mix(fragColor.rgb, uFogColor.rgb, vShadeColor.a); \n"
+			"    fragColor.rgb = mix(fragColor.rgb, uFogColor.rgb, shadeColor.a); \n"
 			;
 	}
 };
@@ -857,6 +826,7 @@ public:
 			"uniform highp vec2 uTexScale0;			\n"
 			"uniform highp vec2 uTexScale1;			\n"
 			"uniform lowp int uFogUsage;			\n"
+			"uniform mediump vec2 uFogScale;		\n"
 			"highp vec2 texCoord0;					\n"
 			"highp vec2 texCoord1;					\n"
 			;
@@ -946,13 +916,11 @@ public:
 			"uniform lowp int uDepthSource;			\n"
 			"uniform highp float uPrimDepth;		\n"
 			"uniform mediump vec2 uScreenScale;		\n"
+			"uniform lowp int uFogUsage;			\n"
+			"uniform mediump vec2 uFogScale;		\n"
 			;
 
-		if (config.generalEmulation.enableLegacyBlending != 0) {
-			m_part +=
-				"uniform lowp int uFogUsage;		\n"
-				;
-		} else {
+		if (config.generalEmulation.enableLegacyBlending == 0) {
 			m_part +=
 				"uniform lowp ivec4 uBlendMux1;		\n"
 				"uniform lowp int uForceBlendCycle1;\n"
@@ -1378,11 +1346,8 @@ public:
 			"void main() \n"
 			"{			 \n"
 			;
-		if (!_glinfo.isGLES2) {
-			m_part +=
-				"  highp float fragDepth = writeDepth();	\n"
-				;
-		}
+		m_part += _glinfo.isGLES2 ? "  highp float fragDepth = gl_FragCoord.z; \n"
+			: "  highp float fragDepth = writeDepth(); \n";
 		m_part +=
 			"  lowp vec4 vec_color;				\n"
 			"  lowp float alpha1;				\n"
@@ -1392,7 +1357,6 @@ public:
 		// m_part += "#define WRAP(x, low, high) (x) - ((high)-(low)) * floor(((x)-(low))/((high)-(low)))  \n"; // Perhaps more compatible?
 		// m_part += "#define WRAP(x, low, high) (x) + ((high)-(low)) * (1.0-step(low,x)) - ((high)-(low)) * step(high,x) \n"; // Step based version. Only wraps correctly if input is in the range [low-(high-low), high + (high-low)). Similar to old code.
 	}
-
 };
 
 class ShaderFragmentMain2Cycle : public ShaderPart
@@ -1404,11 +1368,8 @@ public:
 			"void main() \n"
 			"{			 \n"
 		;
-		if (!_glinfo.isGLES2) {
-			m_part +=
-				"  highp float fragDepth = writeDepth(); \n"
-			;
-		}
+		m_part += _glinfo.isGLES2 ? "  highp float fragDepth = gl_FragCoord.z; \n"
+			: "  highp float fragDepth = writeDepth(); \n";
 		m_part +=
 			"  lowp vec4 vec_color, combined_color;		\n"
 			"  lowp float alpha1, alpha2;				\n"
@@ -1420,6 +1381,24 @@ public:
 	}
 };
 
+class ShaderFragmentFog : public ShaderPart
+{
+public:
+	ShaderFragmentFog(const opengl::GLInfo & _glinfo)
+	{
+		m_part =
+			"  lowp vec4 shadeColor = vShadeColor;										\n"
+			"  if (uFogUsage == 1) {													\n"
+			"    lowp float fp = fragDepth*uFogScale.s + uFogScale.t;					\n"
+			"    shadeColor.a = clamp(fp, 0.0, 1.0);									\n"
+			"  } else if (uFogUsage == 2) {												\n"
+			"    lowp float fp = fragDepth*uFogScale.s + uFogScale.t;					\n"
+			"    shadeColor.rgb = vec3(clamp(fp, 0.0, 1.0));							\n"
+			"  }																		\n"
+			;
+	}
+};
+
 class ShaderFragmentBlendMux : public ShaderPart
 {
 public:
@@ -1428,7 +1407,7 @@ public:
 		if (config.generalEmulation.enableLegacyBlending == 0) {
 			m_part =
 				"  lowp mat4 muxPM = mat4(vec4(0.0), vec4(0.0), uBlendColor, uFogColor);	\n"
-				"  lowp vec4 muxA = vec4(0.0, uFogColor.a, vShadeColor.a, 0.0);				\n"
+				"  lowp vec4 muxA = vec4(0.0, uFogColor.a, shadeColor.a, 0.0);				\n"
 				"  lowp vec4 muxB = vec4(0.0, 1.0, 1.0, 0.0);								\n"
 			;
 		}
@@ -2607,6 +2586,8 @@ graphics::CombinerProgram * CombinerProgramBuilder::buildCombinerProgram(Combine
 	else
 		m_fragmentMain->write(ssShader);
 
+	m_fragmentFog->write(ssShader);
+
 	if (g_cycleType <= G_CYC_2CYCLE)
 		m_fragmentBlendMux->write(ssShader);
 
@@ -2633,11 +2614,11 @@ graphics::CombinerProgram * CombinerProgramBuilder::buildCombinerProgram(Combine
 	}
 
 	if (bUseHWLight)
-		ssShader << "  calc_light(vNumLights, vShadeColor.rgb, input_color);" << std::endl;
+		ssShader << "  calc_light(vNumLights, shadeColor.rgb, input_color);" << std::endl;
 	else
-		ssShader << "  input_color = vShadeColor.rgb;" << std::endl;
+		ssShader << "  input_color = shadeColor.rgb;" << std::endl;
 
-	ssShader << "  vec_color = vec4(input_color, vShadeColor.a);" << std::endl;
+	ssShader << "  vec_color = vec4(input_color, shadeColor.a);" << std::endl;
 	ssShader << strCombiner << std::endl;
 
 	if (config.frameBufferEmulation.N64DepthCompare != Config::dcDisable)
@@ -2772,6 +2753,7 @@ CombinerProgramBuilder::CombinerProgramBuilder(const opengl::GLInfo & _glinfo, o
 , m_fragmentHeaderReadTexCopyMode(new ShaderFragmentHeaderReadTexCopyMode(_glinfo))
 , m_fragmentMain(new ShaderFragmentMain(_glinfo))
 , m_fragmentMain2Cycle(new ShaderFragmentMain2Cycle(_glinfo))
+, m_fragmentFog(new ShaderFragmentFog(_glinfo))
 , m_fragmentBlendMux(new ShaderFragmentBlendMux(_glinfo))
 , m_fragmentReadTex0(new ShaderFragmentReadTex0(_glinfo))
 , m_fragmentReadTex1(new ShaderFragmentReadTex1(_glinfo))
