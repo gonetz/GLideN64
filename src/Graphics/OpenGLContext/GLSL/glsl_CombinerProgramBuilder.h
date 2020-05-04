@@ -70,7 +70,6 @@ namespace glsl {
 		ShaderPartPtr m_fragmentHeaderReadTexCopyMode;
 		ShaderPartPtr m_fragmentMain;
 		ShaderPartPtr m_fragmentMain2Cycle;
-		ShaderPartPtr m_fragmentFog;
 		ShaderPartPtr m_fragmentBlendMux;
 		ShaderPartPtr m_fragmentReadTex0;
 		ShaderPartPtr m_fragmentReadTex1;
