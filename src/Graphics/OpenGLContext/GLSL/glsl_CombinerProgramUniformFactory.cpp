@@ -198,6 +198,23 @@ private:
 	iUniform uMSAASamples;
 };
 
+class UScreenSpaceTriangleInfo : public UniformGroup
+{
+public:
+	UScreenSpaceTriangleInfo(GLuint _program) {
+		LocateUniform(uScreenSpaceTriangle);
+	}
+
+	void update(bool _force) override
+	{
+		uScreenSpaceTriangle.set(
+			(dwnd().getDrawer().getDrawingState() == DrawingState::ScreenSpaceTriangle) ? 1 : 0, _force);
+	}
+
+private:
+	iUniform uScreenSpaceTriangle;
+};
+
 class UFrameBufferInfo : public UniformGroup
 {
 public:
@@ -1059,6 +1076,7 @@ void CombinerProgramUniformFactory::buildUniforms(GLuint _program,
 												  UniformGroups & _uniforms)
 {
 	_uniforms.emplace_back(new UNoiseTex(_program));
+	_uniforms.emplace_back(new UScreenSpaceTriangleInfo(_program));
 
 	if (!m_glInfo.isGLES2) {
 		_uniforms.emplace_back(new UDepthTex(_program));

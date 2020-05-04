@@ -296,11 +296,12 @@ public:
 			"OUT highp vec2 vTexCoord1;							\n"
 			"OUT mediump vec2 vLodTexCoord;						\n"
 			"OUT lowp float vNumLights;							\n"
-			;
+			"OUT lowp vec4 vShadeColor;							\n"
+		;
 		if (!_glinfo.isGLESX || _glinfo.noPerspective)
-			m_part += "noperspective OUT lowp vec4 vShadeColor;	\n";
+			m_part += "noperspective OUT lowp vec4 vShadeColorNoperspective;\n";
 		else
-			m_part += "OUT lowp vec4 vShadeColor;				\n";
+			m_part += "OUT lowp vec4 vShadeColorNoperspective;				\n";
 		m_part +=
 			"mediump vec2 calcTexCoord(in vec2 texCoord, in int idx)		\n"
 			"{																\n"
@@ -316,6 +317,7 @@ public:
 			"{																\n"
 			"  gl_Position = aPosition;										\n"
 			"  vShadeColor = aColor;										\n"
+			"  vShadeColorNoperspective = aColor;							\n"
 			"  vec2 texCoord = aTexCoord;									\n"
 			"  texCoord *= uTexScale;										\n"
 			"  if (uTexturePersp == 0 && aModify[2] == 0.0) texCoord *= 0.5;\n"
@@ -366,17 +368,19 @@ public:
 			"uniform mediump vec2 uScreenCoordsScale;						\n"
 			"																\n"
 			"OUT lowp float vNumLights;										\n"
-			;
+			"OUT lowp vec4 vShadeColor;										\n"
+		;
 		if (!_glinfo.isGLESX || _glinfo.noPerspective)
-			m_part += "noperspective OUT lowp vec4 vShadeColor;				\n";
+			m_part += "noperspective OUT lowp vec4 vShadeColorNoperspective;\n";
 		else
-			m_part += "OUT lowp vec4 vShadeColor;							\n";
+			m_part += "OUT lowp vec4 vShadeColorNoperspective;				\n";
 		m_part +=
 			"																\n"
 			"void main()													\n"
 			"{																\n"
 			"  gl_Position = aPosition;										\n"
 			"  vShadeColor = aColor;										\n"
+			"  vShadeColorNoperspective = aColor;							\n"
 			"  vNumLights = aNumLights;										\n"
 			"  if (aModify != vec4(0.0)) {									\n"
 			"    if ((aModify[0]) != 0.0) {									\n"
@@ -417,17 +421,19 @@ public:
 			"													\n"
 			"OUT highp vec2 vTexCoord0;							\n"
 			"OUT highp vec2 vTexCoord1;							\n"
-			;
+			"OUT lowp vec4 vShadeColor;							\n"
+		;
 		if (!_glinfo.isGLESX || _glinfo.noPerspective)
-			m_part += "noperspective OUT lowp vec4 vShadeColor;	\n";
+			m_part += "noperspective OUT lowp vec4 vShadeColorNoperspective;\n";
 		else
-			m_part += "OUT lowp vec4 vShadeColor;				\n";
+			m_part += "OUT lowp vec4 vShadeColorNoperspective;				\n";
 		m_part +=
 			"uniform lowp vec4 uRectColor;						\n"
 			"void main()										\n"
 			"{													\n"
 			"  gl_Position = aRectPosition;						\n"
 			"  vShadeColor = uRectColor;						\n"
+			"  vShadeColorNoperspective = uRectColor;			\n"
 			"  vTexCoord0 = aTexCoord0;							\n"
 			"  vTexCoord1 = aTexCoord1;							\n"
 			;
@@ -442,17 +448,19 @@ public:
 		m_part =
 			"IN highp vec4 aRectPosition;						\n"
 			"													\n"
+			"OUT lowp vec4 vShadeColor;							\n"
 			;
 		if (!_glinfo.isGLESX || _glinfo.noPerspective)
-			m_part += "noperspective OUT lowp vec4 vShadeColor;	\n";
+			m_part += "noperspective OUT lowp vec4 vShadeColorNoperspective;\n";
 		else
-			m_part += "OUT lowp vec4 vShadeColor;				\n";
+			m_part += "OUT lowp vec4 vShadeColorNoperspective;				\n";
 		m_part +=
 			"uniform lowp vec4 uRectColor;						\n"
 			"void main()										\n"
 			"{													\n"
 			"  gl_Position = aRectPosition;						\n"
 			"  vShadeColor = uRectColor;						\n"
+			"  vShadeColorNoperspective = uRectColor;			\n"
 			;
 	}
 };
@@ -856,12 +864,16 @@ public:
 			"uniform lowp vec2 uTexMirror1;			\n"
 			"uniform highp vec2 uTexScale0;			\n"
 			"uniform highp vec2 uTexScale1;			\n"
-			"uniform lowp int uFogUsage;			\n"
+			"uniform lowp int uScreenSpaceTriangle;	\n"
 			"highp vec2 texCoord0;					\n"
 			"highp vec2 texCoord1;					\n"
-			;
+		;
 
-		if (config.generalEmulation.enableLegacyBlending == 0) {
+		if (config.generalEmulation.enableLegacyBlending != 0) {
+			m_part +=
+				"uniform lowp int uFogUsage;		\n"
+			;
+		} else {
 			m_part +=
 				"uniform lowp ivec4 uBlendMux1;		\n"
 				"uniform lowp int uForceBlendCycle1;\n"
@@ -896,23 +908,24 @@ public:
 		}
 
 		if (!_glinfo.isGLESX || _glinfo.noPerspective)
-			m_part += "noperspective IN lowp vec4 vShadeColor;	\n";
+			m_part += "noperspective IN lowp vec4 vShadeColorNoperspective;	\n";
 		else
-			m_part += "IN lowp vec4 vShadeColor;	\n";
+			m_part += "IN lowp vec4 vShadeColorNoperspective;				\n";
 
 		m_part +=
-			"IN highp vec2 vTexCoord0;\n"
-			"IN highp vec2 vTexCoord1;\n"
-			"IN mediump vec2 vLodTexCoord;\n"
-			"IN lowp float vNumLights;	\n"
-			;
+			"IN lowp vec4 vShadeColor;		\n"
+			"IN highp vec2 vTexCoord0;		\n"
+			"IN highp vec2 vTexCoord1;		\n"
+			"IN mediump vec2 vLodTexCoord;	\n"
+			"IN lowp float vNumLights;		\n"
+		;
 
 		if (config.frameBufferEmulation.N64DepthCompare == Config::dcFast && _glinfo.ext_fetch) {
 			m_part +=
-				"layout(location = 0) OUT lowp vec4 fragColor;	\n"
-				"layout(location = 1) inout highp vec4 depthZ;	\n"
+				"layout(location = 0) OUT lowp vec4 fragColor;		\n"
+				"layout(location = 1) inout highp vec4 depthZ;		\n"
 				"layout(location = 2) inout highp vec4 depthDeltaZ;	\n"
-				;
+			;
 		} else {
 			m_part +=
 				"OUT lowp vec4 fragColor;	\n"
@@ -946,17 +959,18 @@ public:
 			"uniform lowp int uDepthSource;			\n"
 			"uniform highp float uPrimDepth;		\n"
 			"uniform mediump vec2 uScreenScale;		\n"
-			;
+			"uniform lowp int uScreenSpaceTriangle;	\n"
+		;
 
 		if (config.generalEmulation.enableLegacyBlending != 0) {
 			m_part +=
 				"uniform lowp int uFogUsage;		\n"
-				;
+			;
 		} else {
 			m_part +=
 				"uniform lowp ivec4 uBlendMux1;		\n"
 				"uniform lowp int uForceBlendCycle1;\n"
-				;
+			;
 		}
 
 		if (!_glinfo.isGLES2) {
@@ -979,18 +993,21 @@ public:
 		}
 
 		if (!_glinfo.isGLESX || _glinfo.noPerspective)
-			m_part += "noperspective IN lowp vec4 vShadeColor;	\n";
+			m_part += "noperspective IN lowp vec4 vShadeColorNoperspective;	\n";
 		else
-			m_part += "IN lowp vec4 vShadeColor;	\n";
+			m_part += "IN lowp vec4 vShadeColorNoperspective;				\n";
 
-		m_part += "IN lowp float vNumLights;	\n";
+		m_part +=
+			"IN lowp vec4 vShadeColor;	\n"
+			"IN lowp float vNumLights;	\n"
+		;
 
 		if (config.frameBufferEmulation.N64DepthCompare == Config::dcFast && _glinfo.ext_fetch) {
 			m_part +=
-				"layout(location = 0) OUT lowp vec4 fragColor;	\n"
-				"layout(location = 1) inout highp vec4 depthZ;	\n"
+				"layout(location = 0) OUT lowp vec4 fragColor;		\n"
+				"layout(location = 1) inout highp vec4 depthZ;		\n"
 				"layout(location = 2) inout highp vec4 depthDeltaZ;	\n"
-				;
+			;
 		} else {
 			m_part +=
 				"OUT lowp vec4 fragColor;	\n"
@@ -1387,7 +1404,8 @@ public:
 			"  lowp vec4 vec_color;				\n"
 			"  lowp float alpha1;				\n"
 			"  lowp vec3 color1, input_color;	\n"
-			;
+			"  lowp vec4 shadeColor = uScreenSpaceTriangle == 0 ? vShadeColor : vShadeColorNoperspective;	\n"
+		;
 		m_part += "#define WRAP(x, low, high) mod((x)-(low), (high)-(low)) + (low) \n"; // Return wrapped value of x in interval [low, high)
 		// m_part += "#define WRAP(x, low, high) (x) - ((high)-(low)) * floor(((x)-(low))/((high)-(low)))  \n"; // Perhaps more compatible?
 		// m_part += "#define WRAP(x, low, high) (x) + ((high)-(low)) * (1.0-step(low,x)) - ((high)-(low)) * step(high,x) \n"; // Step based version. Only wraps correctly if input is in the range [low-(high-low), high + (high-low)). Similar to old code.
@@ -1413,6 +1431,7 @@ public:
 			"  lowp vec4 vec_color, combined_color;		\n"
 			"  lowp float alpha1, alpha2;				\n"
 			"  lowp vec3 color1, color2, input_color;	\n"
+			"  lowp vec4 shadeColor = uScreenSpaceTriangle == 0 ? vShadeColor : vShadeColorNoperspective;	\n"
 		;
 		m_part += "#define WRAP(x, low, high) mod((x)-(low), (high)-(low)) + (low) \n"; // Return wrapped value of x in interval [low, high)
 		// m_part += "#define WRAP(x, low, high) (x) - ((high)-(low)) * floor(((x)-(low))/((high)-(low)))  \n"; // Perhaps more compatible?
@@ -1428,7 +1447,7 @@ public:
 		if (config.generalEmulation.enableLegacyBlending == 0) {
 			m_part =
 				"  lowp mat4 muxPM = mat4(vec4(0.0), vec4(0.0), uBlendColor, uFogColor);	\n"
-				"  lowp vec4 muxA = vec4(0.0, uFogColor.a, vShadeColor.a, 0.0);				\n"
+				"  lowp vec4 muxA = vec4(0.0, uFogColor.a, shadeColor.a, 0.0);				\n"
 				"  lowp vec4 muxB = vec4(0.0, 1.0, 1.0, 0.0);								\n"
 			;
 		}
@@ -2633,11 +2652,11 @@ graphics::CombinerProgram * CombinerProgramBuilder::buildCombinerProgram(Combine
 	}
 
 	if (bUseHWLight)
-		ssShader << "  calc_light(vNumLights, vShadeColor.rgb, input_color);" << std::endl;
+		ssShader << "  calc_light(vNumLights, shadeColor.rgb, input_color);" << std::endl;
 	else
-		ssShader << "  input_color = vShadeColor.rgb;" << std::endl;
+		ssShader << "  input_color = shadeColor.rgb;" << std::endl;
 
-	ssShader << "  vec_color = vec4(input_color, vShadeColor.a);" << std::endl;
+	ssShader << "  vec_color = vec4(input_color, shadeColor.a);" << std::endl;
 	ssShader << strCombiner << std::endl;
 
 	if (config.frameBufferEmulation.N64DepthCompare != Config::dcDisable)

@@ -1318,8 +1318,14 @@ void TextureCache::activateTexture(u32 _t, CachedTexture *_pTexture)
 		params.wrapT = _pTexture->clampT ? textureParameters::WRAP_CLAMP_TO_EDGE :
 			_pTexture->mirrorT ? textureParameters::WRAP_MIRRORED_REPEAT : textureParameters::WRAP_REPEAT;
 
-		if (dwnd().getDrawer().getDrawingState() == DrawingState::Triangle && config.texture.maxAnisotropyF > 0.0f)
-			params.maxAnisotropy = Parameter(config.texture.maxAnisotropyF);
+		if (config.texture.maxAnisotropyF > 0.0f) {
+			switch (dwnd().getDrawer().getDrawingState()) {
+				case DrawingState::Triangle:
+				case DrawingState::ScreenSpaceTriangle:
+					params.maxAnisotropy = Parameter(config.texture.maxAnisotropyF);
+					break;
+			}
+		}
 	}
 
 	gfxContext.setTextureParameters(params);
