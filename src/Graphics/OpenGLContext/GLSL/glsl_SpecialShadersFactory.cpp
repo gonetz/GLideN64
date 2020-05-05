@@ -427,10 +427,10 @@ namespace glsl {
 
 	/*---------------TexrectCopyShaderPart-------------*/
 
-	class TexrectCopy : public ShaderPart
+	class TexrectUpscaleCopy : public ShaderPart
 	{
 	public:
-		TexrectCopy(const opengl::GLInfo & _glinfo)
+		TexrectUpscaleCopy(const opengl::GLInfo & _glinfo)
 		{
 			if (config.generalEmulation.enableHybridFilter) {
 				m_part = getHybridTextureFilter();
@@ -456,12 +456,29 @@ namespace glsl {
 		}
 	};
 
-	/*---------------TexrectDepthCopyShaderPart-------------*/
-
-	class TexrectColorAndDepthCopy : public ShaderPart
+	class TexrectDownscaleCopy : public ShaderPart
 	{
 	public:
-		TexrectColorAndDepthCopy(const opengl::GLInfo & _glinfo)
+		TexrectDownscaleCopy(const opengl::GLInfo & _glinfo)
+		{
+			m_part =
+				"IN mediump vec2 vTexCoord0;							\n"
+				"uniform sampler2D uTex0;								\n"
+				"OUT lowp vec4 fragColor;								\n"
+				"														\n"
+				"void main()											\n"
+				"{														\n"
+				"	fragColor = texture2D(uTex0, vTexCoord0);			\n"
+				;
+		}
+	};
+
+	/*---------------TexrectDepthCopyShaderPart-------------*/
+
+	class TexrectColorAndDepthUpscaleCopy : public ShaderPart
+	{
+	public:
+		TexrectColorAndDepthUpscaleCopy(const opengl::GLInfo & _glinfo)
 		{
 			if (config.generalEmulation.enableHybridFilter) {
 				m_part = getHybridTextureFilter();
@@ -488,6 +505,25 @@ namespace glsl {
 					"	gl_FragDepth = texture2D(uTex1, vTexCoord0).r;		\n"
 					;
 			}
+		}
+	};
+
+	class TexrectColorAndDepthDownscaleCopy : public ShaderPart
+	{
+	public:
+		TexrectColorAndDepthDownscaleCopy(const opengl::GLInfo & _glinfo)
+		{
+			m_part =
+				"IN mediump vec2 vTexCoord0;							\n"
+				"uniform sampler2D uTex0;								\n"
+				"uniform sampler2D uTex1;								\n"
+				"OUT lowp vec4 fragColor;								\n"
+				"														\n"
+				"void main()											\n"
+				"{														\n"
+				"	fragColor = texture2D(uTex0, vTexCoord0);			\n"
+				"	gl_FragDepth = texture2D(uTex1, vTexCoord0).r;		\n"
+				;
 		}
 	};
 
@@ -765,17 +801,36 @@ namespace glsl {
 
 	/*---------------TexrectCopyShader-------------*/
 
-	typedef SpecialShader<VertexShaderTexturedRect, TexrectCopy> TexrectCopyShaderBase;
+	typedef SpecialShader<VertexShaderTexturedRect, TexrectUpscaleCopy> TexrectUpscaleCopyShaderBase;
 
-	class TexrectCopyShader : public TexrectCopyShaderBase
+	class TexrectUpscaleCopyShader : public TexrectUpscaleCopyShaderBase
 	{
 	public:
-		TexrectCopyShader(const opengl::GLInfo & _glinfo,
+		TexrectUpscaleCopyShader(const opengl::GLInfo & _glinfo,
 			opengl::CachedUseProgram * _useProgram,
 			const ShaderPart * _vertexHeader,
 			const ShaderPart * _fragmentHeader,
 			const ShaderPart * _fragmentEnd)
-			: TexrectCopyShaderBase(_glinfo, _useProgram, _vertexHeader, _fragmentHeader, _fragmentEnd)
+			: TexrectUpscaleCopyShaderBase(_glinfo, _useProgram, _vertexHeader, _fragmentHeader, _fragmentEnd)
+		{
+			m_useProgram->useProgram(m_program);
+			const int texLoc = glGetUniformLocation(GLuint(m_program), "uTex0");
+			glUniform1i(texLoc, 0);
+			m_useProgram->useProgram(graphics::ObjectHandle::null);
+		}
+	};
+
+	typedef SpecialShader<VertexShaderTexturedRect, TexrectDownscaleCopy> TexrectDownscaleCopyShaderBase;
+
+	class TexrectDownscaleCopyShader : public TexrectDownscaleCopyShaderBase
+	{
+	public:
+		TexrectDownscaleCopyShader(const opengl::GLInfo & _glinfo,
+			opengl::CachedUseProgram * _useProgram,
+			const ShaderPart * _vertexHeader,
+			const ShaderPart * _fragmentHeader,
+			const ShaderPart * _fragmentEnd)
+			: TexrectDownscaleCopyShaderBase(_glinfo, _useProgram, _vertexHeader, _fragmentHeader, _fragmentEnd)
 		{
 			m_useProgram->useProgram(m_program);
 			const int texLoc = glGetUniformLocation(GLuint(m_program), "uTex0");
@@ -786,17 +841,38 @@ namespace glsl {
 
 	/*---------------TexrectColorAndDepthCopyShader-------------*/
 
-	typedef SpecialShader<VertexShaderTexturedRect, TexrectColorAndDepthCopy> TexrectColorAndDepthCopyShaderBase;
+	typedef SpecialShader<VertexShaderTexturedRect, TexrectColorAndDepthUpscaleCopy> TexrectColorAndDepthUpscaleCopyShaderBase;
 
-	class TexrectColorAndDepthCopyShader : public TexrectColorAndDepthCopyShaderBase
+	class TexrectColorAndDepthUpscaleCopyShader : public TexrectColorAndDepthUpscaleCopyShaderBase
 	{
 	public:
-		TexrectColorAndDepthCopyShader(const opengl::GLInfo & _glinfo,
+		TexrectColorAndDepthUpscaleCopyShader(const opengl::GLInfo & _glinfo,
 			opengl::CachedUseProgram * _useProgram,
 			const ShaderPart * _vertexHeader,
 			const ShaderPart * _fragmentHeader,
 			const ShaderPart * _fragmentEnd)
-			: TexrectColorAndDepthCopyShaderBase(_glinfo, _useProgram, _vertexHeader, _fragmentHeader, _fragmentEnd)
+			: TexrectColorAndDepthUpscaleCopyShaderBase(_glinfo, _useProgram, _vertexHeader, _fragmentHeader, _fragmentEnd)
+		{
+			m_useProgram->useProgram(m_program);
+			const int texLoc0 = glGetUniformLocation(GLuint(m_program), "uTex0");
+			glUniform1i(texLoc0, 0);
+			const int texLoc1 = glGetUniformLocation(GLuint(m_program), "uTex1");
+			glUniform1i(texLoc1, 1);
+			m_useProgram->useProgram(graphics::ObjectHandle::null);
+		}
+	};
+
+	typedef SpecialShader<VertexShaderTexturedRect, TexrectColorAndDepthDownscaleCopy> TexrectColorAndDepthDownscaleCopyShaderBase;
+
+	class TexrectColorAndDepthDownscaleCopyShader : public TexrectColorAndDepthDownscaleCopyShaderBase
+	{
+	public:
+		TexrectColorAndDepthDownscaleCopyShader(const opengl::GLInfo & _glinfo,
+			opengl::CachedUseProgram * _useProgram,
+			const ShaderPart * _vertexHeader,
+			const ShaderPart * _fragmentHeader,
+			const ShaderPart * _fragmentEnd)
+			: TexrectColorAndDepthDownscaleCopyShaderBase(_glinfo, _useProgram, _vertexHeader, _fragmentHeader, _fragmentEnd)
 		{
 			m_useProgram->useProgram(m_program);
 			const int texLoc0 = glGetUniformLocation(GLuint(m_program), "uTex0");
@@ -916,17 +992,30 @@ namespace glsl {
 		return new TexrectDrawerShaderClear(m_glinfo, m_useProgram, m_vertexHeader, m_fragmentHeader);
 	}
 
-	graphics::ShaderProgram * SpecialShadersFactory::createTexrectCopyShader() const
+	graphics::ShaderProgram * SpecialShadersFactory::createTexrectUpscaleCopyShader() const
 	{
-		return new TexrectCopyShader(m_glinfo, m_useProgram, m_vertexHeader, m_fragmentHeader, m_fragmentEnd);
+		return new TexrectUpscaleCopyShader(m_glinfo, m_useProgram, m_vertexHeader, m_fragmentHeader, m_fragmentEnd);
 	}
 
-	graphics::ShaderProgram * SpecialShadersFactory::createTexrectColorAndDepthCopyShader() const
+	graphics::ShaderProgram * SpecialShadersFactory::createTexrectColorAndDepthUpscaleCopyShader() const
 	{
 		if (m_glinfo.isGLES2)
 			return nullptr;
 
-		return new TexrectColorAndDepthCopyShader(m_glinfo, m_useProgram, m_vertexHeader, m_fragmentHeader, m_fragmentEnd);
+		return new TexrectColorAndDepthUpscaleCopyShader(m_glinfo, m_useProgram, m_vertexHeader, m_fragmentHeader, m_fragmentEnd);
+	}
+
+	graphics::ShaderProgram * SpecialShadersFactory::createTexrectDownscaleCopyShader() const
+	{
+		return new TexrectDownscaleCopyShader(m_glinfo, m_useProgram, m_vertexHeader, m_fragmentHeader, m_fragmentEnd);
+	}
+
+	graphics::ShaderProgram * SpecialShadersFactory::createTexrectColorAndDepthDownscaleCopyShader() const
+	{
+		if (m_glinfo.isGLES2)
+			return nullptr;
+
+		return new TexrectColorAndDepthDownscaleCopyShader(m_glinfo, m_useProgram, m_vertexHeader, m_fragmentHeader, m_fragmentEnd);
 	}
 
 	graphics::ShaderProgram * SpecialShadersFactory::createGammaCorrectionShader() const

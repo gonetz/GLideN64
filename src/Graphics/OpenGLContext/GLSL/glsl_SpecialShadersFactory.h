@@ -28,9 +28,13 @@ namespace glsl {
 
 		graphics::ShaderProgram * createTexrectDrawerClearShader() const;
 
-		graphics::ShaderProgram * createTexrectCopyShader() const;
+		graphics::ShaderProgram * createTexrectUpscaleCopyShader() const;
 
-		graphics::ShaderProgram * createTexrectColorAndDepthCopyShader() const;
+		graphics::ShaderProgram * createTexrectColorAndDepthUpscaleCopyShader() const;
+
+		graphics::ShaderProgram * createTexrectDownscaleCopyShader() const;
+
+		graphics::ShaderProgram * createTexrectColorAndDepthDownscaleCopyShader() const;
 
 		graphics::ShaderProgram * createGammaCorrectionShader() const;
 

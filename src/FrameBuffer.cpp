@@ -1027,7 +1027,9 @@ void FrameBufferList::_renderScreenSizeBuffer()
 	blitParams.filter = filter;
 	blitParams.mask = blitMask::COLOR_BUFFER;
 	blitParams.tex[0] = pBufferTexture;
-	blitParams.combiner = CombinerInfo::get().getTexrectCopyProgram();
+	const bool downscale = blitParams.srcWidth >= blitParams.dstWidth && blitParams.srcHeight >= blitParams.dstHeight;
+	blitParams.combiner = downscale ? CombinerInfo::get().getTexrectDownscaleCopyProgram() :
+		CombinerInfo::get().getTexrectUpscaleCopyProgram();
 	blitParams.readBuffer = pFilteredBuffer->m_FBO;
 
 	drawer.blitOrCopyTexturedRect(blitParams);
@@ -1349,14 +1351,18 @@ void FrameBufferList::OverscanBuffer::draw(u32 _fullHeight, bool _PAL)
 	blitParams.filter = textureParameters::FILTER_LINEAR;
 	blitParams.mask = blitMask::COLOR_BUFFER;
 	blitParams.tex[0] = m_pTexture;
+	const bool downscale = blitParams.srcWidth >= blitParams.dstWidth && blitParams.srcHeight >= blitParams.dstHeight;
 	if (config.frameBufferEmulation.copyDepthToMainDepthBuffer != 0) {
 		blitParams.tex[1] = m_pDepthTexture;
-		blitParams.combiner = CombinerInfo::get().getTexrectColorAndDepthCopyProgram();
+		blitParams.combiner = downscale ? CombinerInfo::get().getTexrectColorAndDepthDownscaleCopyProgram() :
+			CombinerInfo::get().getTexrectColorAndDepthUpscaleCopyProgram();
 	}
 	if (blitParams.combiner == nullptr) {
 		// copyDepthToMainDepthBuffer not set or not supported
-		blitParams.combiner = CombinerInfo::get().getTexrectCopyProgram();
+		blitParams.combiner = downscale ? CombinerInfo::get().getTexrectDownscaleCopyProgram() :
+			CombinerInfo::get().getTexrectUpscaleCopyProgram();
 	}
+
 	blitParams.readBuffer = m_FBO;
 	blitParams.invertY = false;
 
@@ -1519,13 +1525,16 @@ void FrameBufferList::renderBuffer()
 	blitParams.filter = filter;
 	blitParams.mask = blitMask::COLOR_BUFFER;
 	blitParams.tex[0] = pBufferTexture;
+	const bool downscale = blitParams.srcWidth >= blitParams.dstWidth && blitParams.srcHeight >= blitParams.dstHeight;
 	if (config.frameBufferEmulation.copyDepthToMainDepthBuffer != 0) {
 		blitParams.tex[1] = pBuffer->m_pDepthTexture;
-		blitParams.combiner = CombinerInfo::get().getTexrectColorAndDepthCopyProgram();
+		blitParams.combiner = downscale ? CombinerInfo::get().getTexrectColorAndDepthDownscaleCopyProgram():
+			CombinerInfo::get().getTexrectColorAndDepthUpscaleCopyProgram();
 	}
 	if (blitParams.combiner == nullptr) {
 		// copyDepthToMainDepthBuffer not set or not supported
-		blitParams.combiner = CombinerInfo::get().getTexrectCopyProgram();
+		blitParams.combiner = downscale ? CombinerInfo::get().getTexrectDownscaleCopyProgram() :
+			CombinerInfo::get().getTexrectUpscaleCopyProgram();
 	}
 	blitParams.readBuffer = readBuffer;
 	blitParams.invertY = config.frameBufferEmulation.enableOverscan == 0;

@@ -650,7 +650,9 @@ void Debugger::_drawFrameBuffer(FrameBuffer * _pBuffer)
 	blitParams.filter = filter;
 	blitParams.mask = blitMask::COLOR_BUFFER;
 	blitParams.tex[0] = pBufferTexture;
-	blitParams.combiner = CombinerInfo::get().getTexrectCopyProgram();
+	const bool downscale = blitParams.srcWidth >= blitParams.dstWidth && blitParams.srcHeight >= blitParams.dstHeight;
+	blitParams.combiner = downscale ? CombinerInfo::get().getTexrectDownscaleCopyProgram() :
+		CombinerInfo::get().getTexrectUpscaleCopyProgram();
 	blitParams.readBuffer = readBuffer;
 
 	drawer.blitOrCopyTexturedRect(blitParams);
@@ -751,7 +753,7 @@ void Debugger::_drawTex(f32 _ulx, f32 _uly, f32 _yShift)
 	}
 	const CachedTexture * texture = m_triSel->tex_info[tex]->texture;
 	const gDPLoadTileInfo & texLoadInfo = m_triSel->tex_info[tex]->texLoadInfo;
-	OUTPUT1("CRC: 0x%08x", texture->crc);
+	OUTPUT1("CRC: 0x%llx", texture->crc);
 	OUTPUT1("tex_size: %s", ImageSizeText[texture->size]);
 	OUTPUT1("tex_format: %s", ImageFormatText[texture->format]);
 	OUTPUT1("width: %d", texture->width);
@@ -1044,7 +1046,7 @@ void Debugger::_drawTexture(f32 _ulx, f32 _uly, f32 _lrx, f32 _lry, f32 _yShift)
 	OUTPUT1("line: %d", texture->line);
 	OUTPUT1("lod: %d", texture->max_level);
 	OUTPUT1("framebuffer: %s", FrameBufferType[(u32)texture->frameBufferTexture]);
-	OUTPUT1("crc: %08x", texture->crc);
+	OUTPUT1("crc: %llx", texture->crc);
 
 	const f32 Z = 0.0f;
 	const f32 W = 1.0f;

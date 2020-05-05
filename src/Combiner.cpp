@@ -111,15 +111,19 @@ void CombinerInfo::init()
 	}
 
 	m_shadowmapProgram.reset(gfxContext.createDepthFogShader());
-	m_texrectCopyProgram.reset(gfxContext.createTexrectCopyShader());
-	m_texrectColorAndDepthCopyProgram.reset(gfxContext.createTexrectColorAndDepthCopyShader());
+	m_texrectUpscaleCopyProgram.reset(gfxContext.createTexrectUpscaleCopyShader());
+	m_texrectColorAndDepthUpscaleCopyProgram.reset(gfxContext.createTexrectColorAndDepthUpscaleCopyShader());
+	m_texrectDownscaleCopyProgram.reset(gfxContext.createTexrectDownscaleCopyShader());
+	m_texrectColorAndDepthDownscaleCopyProgram.reset(gfxContext.createTexrectColorAndDepthDownscaleCopyShader());
 }
 
 void CombinerInfo::destroy()
 {
 	m_shadowmapProgram.reset();
-	m_texrectCopyProgram.reset();
-	m_texrectColorAndDepthCopyProgram.reset();
+	m_texrectUpscaleCopyProgram.reset();
+	m_texrectColorAndDepthUpscaleCopyProgram.reset();
+	m_texrectDownscaleCopyProgram.reset();
+	m_texrectColorAndDepthDownscaleCopyProgram.reset();
 
 	m_pCurrent = nullptr;
 	if (config.generalEmulation.enableShadersStorage != 0)
@@ -315,14 +319,24 @@ void CombinerInfo::setDepthFogCombiner()
 	}
 }
 
-ShaderProgram * CombinerInfo::getTexrectCopyProgram()
+ShaderProgram * CombinerInfo::getTexrectUpscaleCopyProgram()
 {
-	return m_texrectCopyProgram.get();
+	return m_texrectUpscaleCopyProgram.get();
 }
 
-ShaderProgram * CombinerInfo::getTexrectColorAndDepthCopyProgram()
+ShaderProgram * CombinerInfo::getTexrectColorAndDepthUpscaleCopyProgram()
 {
-	return m_texrectColorAndDepthCopyProgram.get();
+	return m_texrectColorAndDepthUpscaleCopyProgram.get();
+}
+
+ShaderProgram * CombinerInfo::getTexrectDownscaleCopyProgram()
+{
+	return m_texrectDownscaleCopyProgram.get();
+}
+
+ShaderProgram * CombinerInfo::getTexrectColorAndDepthDownscaleCopyProgram()
+{
+	return m_texrectColorAndDepthDownscaleCopyProgram.get();
 }
 
 bool CombinerInfo::isShaderCacheSupported() const
