@@ -1486,7 +1486,7 @@ void FrameBufferList::renderBuffer()
 						hOffset + dstX1,
 						vOffset + (s32)(dstY1*dstScaleY) };
 
-	const TextureParam filter = textureParameters::FILTER_NEAREST;
+	const TextureParam filter = textureParameters::FILTER_LINEAR;
 	ObjectHandle readBuffer;
 
 	if (pFilteredBuffer->m_pTexture->frameBufferTexture == CachedTexture::fbMultiSample) {
