@@ -233,9 +233,13 @@ namespace graphics {
 
 		ShaderProgram * createTexrectDrawerClearShader();
 
-		ShaderProgram * createTexrectCopyShader();
+		ShaderProgram * createTexrectUpscaleCopyShader();
 
-		ShaderProgram * createTexrectColorAndDepthCopyShader();
+		ShaderProgram * createTexrectColorAndDepthUpscaleCopyShader();
+
+		ShaderProgram * createTexrectDownscaleCopyShader();
+
+		ShaderProgram * createTexrectColorAndDepthDownscaleCopyShader();
 
 		ShaderProgram * createGammaCorrectionShader();
 

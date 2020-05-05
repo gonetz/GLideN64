@@ -650,7 +650,9 @@ void Debugger::_drawFrameBuffer(FrameBuffer * _pBuffer)
 	blitParams.filter = filter;
 	blitParams.mask = blitMask::COLOR_BUFFER;
 	blitParams.tex[0] = pBufferTexture;
-	blitParams.combiner = CombinerInfo::get().getTexrectCopyProgram();
+	const bool downscale = blitParams.srcWidth >= blitParams.dstWidth && blitParams.srcHeight >= blitParams.dstHeight;
+	blitParams.combiner = downscale ? CombinerInfo::get().getTexrectDownscaleCopyProgram() :
+		CombinerInfo::get().getTexrectUpscaleCopyProgram();
 	blitParams.readBuffer = readBuffer;
 
 	drawer.blitOrCopyTexturedRect(blitParams);

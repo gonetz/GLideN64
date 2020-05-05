@@ -219,9 +219,9 @@ bool ColorBufferToRDRAM::_prepareCopy(u32& _startAddress)
 		blitParams.dstY1 = bufferHeight;
 		blitParams.dstWidth = m_pTexture->width;
 		blitParams.dstHeight = m_pTexture->height;
-		blitParams.filter = textureParameters::FILTER_NEAREST;
+		blitParams.filter = textureParameters::FILTER_LINEAR;
 		blitParams.tex[0] = pInputTexture;
-		blitParams.combiner = CombinerInfo::get().getTexrectCopyProgram();
+		blitParams.combiner = CombinerInfo::get().getTexrectDownscaleCopyProgram();
 		blitParams.readBuffer = readBuffer;
 		blitParams.drawBuffer = m_FBO;
 		blitParams.mask = blitMask::COLOR_BUFFER;
@@ -260,7 +260,7 @@ u16 ColorBufferToRDRAM::_RGBAtoRGBA16(u32 _c, u32 x, u32 y) {
 
 	union RGBA c;
 	c.raw = _c;
-	
+
 	if (config.generalEmulation.enableDitheringPattern == 0 || config.frameBufferEmulation.nativeResFactor != 1) {
 		// Apply color dithering
 		switch (config.generalEmulation.rdramImageDitheringMode) {
@@ -286,7 +286,7 @@ u16 ColorBufferToRDRAM::_RGBAtoRGBA16(u32 _c, u32 x, u32 y) {
 		}
 	}
 
-	return ((c.r >> 3) << 11) | ((c.g >> 3) << 6) | ((c.b >> 3) << 1) | (c.a == 0 ? 0 : 1);	
+	return ((c.r >> 3) << 11) | ((c.g >> 3) << 6) | ((c.b >> 3) << 1) | (c.a == 0 ? 0 : 1);
 }
 
 u32 ColorBufferToRDRAM::_RGBAtoRGBA32(u32 _c, u32 x, u32 y) {
