@@ -54,6 +54,7 @@ CVideoTab::CVideoTab(CConfigDlg & Dlg, CFrameBufferTab & FrameBufferTab, const c
 	m_Dlg(Dlg),
 	m_FrameBufferTab(FrameBufferTab)
 {
+	m_AAInfoWarning = false;
 }
 
 CVideoTab::~CVideoTab() {
@@ -273,6 +274,65 @@ LRESULT CVideoTab::OnLanguageChanged(WORD /*wNotifyCode*/, WORD /*wID*/, HWND /*
 	return 0;
 }
 
+void CVideoTab::HideMSAADepthWarning(bool hide)
+{
+	int nID[] = {
+	IDC_AA_INFO,
+	IDC_AA_INFO_ICON,
+	IDC_FILTERING_GROUP,
+	IDC_ANISOTROPIC,
+	IDC_ANISOTROPIC_OFF,
+	IDC_ANISOTROPIC_HIGH,
+	IDC_ANISOTROPIC_SLIDER,
+	IDC_ANISOTROPIC_LABEL,
+	IDC_BILINEAR,
+	IDC_BILINEAR_STANDARD,
+	IDC_BILINEAR_3POINT,
+	IDC_DITHERING_GROUP,
+	IDC_PATTERN,
+	IDC_CMB_PATTERN,
+	IDC_CHK_APPLY_TO_OUTPUT,
+	IDC_CHK_5BIT_QUANTIZATION,
+	IDC_CHK_HIRES_NOISE
+	};
+
+	RECT Rect; RECT groupRect;
+	GetDlgItem(nID[0]).GetWindowRect(&Rect);
+	::MapWindowPoints(NULL, m_hWnd, (LPPOINT)&Rect, 2);
+	int32_t Move = Rect.bottom - Rect.top + 2;
+
+	GetDlgItem(nID[0]).ShowWindow(hide ? SW_HIDE : SW_SHOWNORMAL);
+	GetDlgItem(nID[1]).ShowWindow(hide ? SW_HIDE : SW_SHOWNORMAL);
+
+	CWindow AAgroup = GetDlgItem(IDC_AA_GROUP);
+	AAgroup.GetWindowRect(&groupRect);
+	::MapWindowPoints(NULL, m_hWnd, (LPPOINT)&groupRect, 2);
+	SIZE AAgroupSz = { groupRect.right - groupRect.left, hide ? groupRect.bottom - groupRect.top - Move - 1 : groupRect.bottom - groupRect.top + Move + 1 };
+	AAgroup.SetWindowPos(HWND_TOP, 0, 0, AAgroupSz.cx, AAgroupSz.cy, SWP_NOMOVE | SWP_NOZORDER);
+
+	for (size_t i = 2, n = sizeof(nID) / sizeof(nID[0]); i < n; i++) {
+		CWindow window = GetDlgItem(nID[i]);
+		window.GetWindowRect(&Rect);
+		::MapWindowPoints(NULL, m_hWnd, (LPPOINT)&Rect, 2);
+
+		Rect.top -= hide ? Move : -Move;
+		Rect.bottom -= hide ? Move : -Move;
+		window.MoveWindow(&Rect);
+	}
+
+	m_AAInfoWarning = hide;
+}
+
+void CVideoTab::DisallowMSAA(bool disallow)
+{
+	GetDlgItem(IDC_MSAA_RADIO).EnableWindow(!disallow);
+	GetDlgItem(IDC_ALIASING_SLIDER).EnableWindow(!disallow);
+	GetDlgItem(IDC_ALIASING_LABEL).EnableWindow(!disallow);
+	GetDlgItem(IDC_AA_HIGH).EnableWindow(!disallow);
+	GetDlgItem(IDC_AA_OFF).EnableWindow(!disallow);
+}
+
+
 void CVideoTab::AddOverScanTab(languageStringID caption) {
 	m_OverScanTab.AddItem(TCIF_TEXT | TCIF_PARAM, wGS(caption).c_str(), 0, caption);
 
@@ -356,8 +416,22 @@ void CVideoTab::LoadSettings(bool /*blockCustomSettings*/) {
 	std::wstring AliasingText = FormatStrW(L"%dx", multisampling);
 	CWindow(GetDlgItem(IDC_ALIASING_LABEL)).SetWindowTextW(AliasingText.c_str());
 
-	CButton(GetDlgItem(IDC_NOAA_RADIO)).SetCheck(config.video.multisampling == 0 ? BST_CHECKED : BST_UNCHECKED);
-	CButton(GetDlgItem(IDC_FXAA_RADIO)).SetCheck(config.video.fxaa != 0 && config.video.multisampling != 0 ? BST_CHECKED : BST_UNCHECKED);
+	if (config.frameBufferEmulation.N64DepthCompare == 0) {
+		if (!m_AAInfoWarning) {
+			HideMSAADepthWarning(true);
+			DisallowMSAA(false);
+			RedrawWindow();
+		}
+	} else {
+		if (m_AAInfoWarning) {
+			HideMSAADepthWarning(false);
+			DisallowMSAA(true);
+			RedrawWindow();
+		}
+	}
+
+	CButton(GetDlgItem(IDC_NOAA_RADIO)).SetCheck(config.video.multisampling == 0 && config.video.fxaa == 0 ? BST_CHECKED : BST_UNCHECKED);
+	CButton(GetDlgItem(IDC_FXAA_RADIO)).SetCheck(config.video.fxaa != 0 && config.video.multisampling == 0 ? BST_CHECKED : BST_UNCHECKED);
 	CButton(GetDlgItem(IDC_MSAA_RADIO)).SetCheck(config.video.fxaa == 0 && config.video.multisampling != 0 ? BST_CHECKED : BST_UNCHECKED);
 	m_AnisotropicSlider.SetPos(config.texture.maxAnisotropy);
 	CWindow(GetDlgItem(IDC_ANISOTROPIC_LABEL)).SetWindowTextW(FormatStrW(L"%dx", m_AnisotropicSlider.GetPos()).c_str());

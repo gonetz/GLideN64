@@ -38,6 +38,7 @@ public:
 	CVideoTab(CConfigDlg & Dlg, CFrameBufferTab & FrameBufferTab, const char * strIniPath);
 	~CVideoTab();
 
+	bool m_AAInfoWarning;
 	BOOL OnInitDialog(CWindow /*wndFocus*/, LPARAM /*lInitParam*/);
 	LRESULT OnScroll(UINT /*uMsg*/, WPARAM wParam, LPARAM lParam, BOOL& /*bHandled*/);
 	void OnOverscan(UINT /*Code*/, int id, HWND /*ctl*/);
@@ -45,6 +46,8 @@ public:
 	LRESULT OnOverscanTabChange(NMHDR* /*pNMHDR*/);
 	void OnFullScreenChanged(UINT /*Code*/, int id, HWND /*ctl*/);
 	LRESULT OnLanguageChanged(WORD wNotifyCode, WORD wID, HWND hwnd, BOOL& bHandled);
+	void HideMSAADepthWarning(bool hide);
+	void DisallowMSAA(bool disallow);
 	void AddOverScanTab(languageStringID caption);
 	void ShowOverScanTab(int nTab);
 	void ApplyLanguage(void);
