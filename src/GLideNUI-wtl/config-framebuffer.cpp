@@ -178,7 +178,7 @@ void CFrameBufferTab::SaveSettings()
 	config.frameBufferEmulation.enable = CButton(GetDlgItem(IDC_CHK_ENABLE_FRAMEBUFFER)).GetCheck() == BST_CHECKED ? 1 : 0;
 	config.frameBufferEmulation.copyAuxToRDRAM = CButton(GetDlgItem(IDC_CHK_COPY_AUX_BUFFERS)).GetCheck() == BST_CHECKED ? 1 : 0;
 	config.frameBufferEmulation.bufferSwapMode = CComboBox(GetDlgItem(IDC_CMB_FRAMEBUFFER_SWAP)).GetCurSel();
-	config.frameBufferEmulation.fbInfoDisabled = CButton(GetDlgItem(IDC_CHK_FB_INFO_ENABLE)).GetCheck() == BST_CHECKED ? 1 : 0;
+	config.frameBufferEmulation.fbInfoDisabled = CButton(GetDlgItem(IDC_CHK_FB_INFO_ENABLE)).GetCheck() == BST_CHECKED ? 0 : 1;
 	config.frameBufferEmulation.fbInfoReadColorChunk = CButton(GetDlgItem(IDC_CHK_READ_COLOR_CHUNK)).GetCheck() == BST_CHECKED ? 1 : 0;
 	config.frameBufferEmulation.fbInfoReadDepthChunk = CButton(GetDlgItem(IDC_CHK_READ_DEPTH_CHUNK)).GetCheck() == BST_CHECKED ? 1 : 0;
 	config.frameBufferEmulation.copyToRDRAM = CComboBox(GetDlgItem(IDC_CMB_COPY_COLOR_BUFFER)).GetCurSel();
