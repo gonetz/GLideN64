@@ -134,7 +134,7 @@ void CVideoTab::ApplyLanguage(void) {
 	SetDlgItemTextW(IDC_BILINEAR, wGS(VIDEO_BILINEAR).c_str());
 	SetDlgItemTextW(IDC_BILINEAR_STANDARD, wGS(VIDEO_BILINEAR_STANDARD).c_str());
 	SetDlgItemTextW(IDC_BILINEAR_3POINT, wGS(VIDEO_BILINEAR_3POINT).c_str());
-	
+
 	SetDlgItemTextW(IDC_DITHERING_GROUP, wGS(VIDEO_DITHERING_GROUP).c_str());
 	SetDlgItemTextW(IDC_PATTERN, wGS(VIDEO_PATTERN).c_str());
 	SetDlgItemTextW(IDC_CHK_APPLY_TO_OUTPUT, wGS(VIDEO_DITHERING_APPLY_TO_OUTPUT).c_str());
@@ -408,7 +408,14 @@ void CVideoTab::LoadSettings(bool /*blockCustomSettings*/) {
 		if (fullscreenMode == i)
 			fullScreenResolutionComboBox.SetCurSel(index);
 	}
-	OnFullScreenChanged(0, 0, NULL);
+	CComboBox RefreshRateComboBox(GetDlgItem(IDC_CMB_REFRESH_RATE));
+	RefreshRateComboBox.ResetContent();
+	for (size_t i = 0, n = fullscreenRatesList.size(); i < n; i++) {
+		std::wstring fullscreenRateStr(fullscreenRatesList[i].begin(), fullscreenRatesList[i].end());
+		int index = RefreshRateComboBox.AddString(fullscreenRateStr.c_str());
+		if (fullscreenRate == i)
+			RefreshRateComboBox.SetCurSel(index);
+	}
 	const unsigned int multisampling = config.video.fxaa == 0 && config.video.multisampling > 0
 		? config.video.multisampling
 		: 8;
@@ -468,7 +475,7 @@ void CVideoTab::LoadSettings(bool /*blockCustomSettings*/) {
 			break;
 		}
 	} // default: attempt to use gliden64_en.Lang
-	if (englishIndx >= 0 && translationsComboBox.GetCurSel() < 0) 
+	if (englishIndx >= 0 && translationsComboBox.GetCurSel() < 0)
 		translationsComboBox.SetCurSel(englishIndx);
 	else if (translationsComboBox.GetCurSel() < 0) // gliden64_en.Lang not found; select hardcoded english
 		translationsComboBox.SetCurSel(translationsComboBox.FindString(-1, englishLang));
