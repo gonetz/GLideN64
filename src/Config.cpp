@@ -25,12 +25,7 @@ void Config::resetToDefaults()
 	video.fxaa = 0;
 	video.multisampling = 0;
 	video.verticalSync = 0;
-
-#if defined(OS_MAC_OS_X)
 	video.threadedVideo = 0;
-#else
-	video.threadedVideo = 1;
-#endif
 
 	texture.maxAnisotropy = 0;
 	texture.bilinearMode = BILINEAR_STANDARD;
