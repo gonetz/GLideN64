@@ -514,6 +514,8 @@ public:
 			ss << "#version " << Utils::to_string(_glinfo.majorVersion) << Utils::to_string(_glinfo.minorVersion) << "0 es " << std::endl;
 			if (_glinfo.noPerspective)
 				ss << "#extension GL_NV_shader_noperspective_interpolation : enable" << std::endl;
+			if (_glinfo.blend_func_extended)
+				ss << "#extension GL_ARB_blend_func_extended : enable" << std::endl;
 			if (config.frameBufferEmulation.N64DepthCompare == Config::dcFast) {
 				if (_glinfo.imageTextures && _glinfo.fragment_interlockNV) {
 					ss << "#extension GL_NV_fragment_shader_interlock : enable" << std::endl
@@ -528,6 +530,8 @@ public:
 		} else {
 			std::stringstream ss;
 			ss << "#version " << Utils::to_string(_glinfo.majorVersion) << Utils::to_string(_glinfo.minorVersion) << "0 core " << std::endl;
+			if (_glinfo.blend_func_extended)
+				ss << "#extension ARB_blend_func_extended : enable" << std::endl;
 			if (config.frameBufferEmulation.N64DepthCompare != Config::dcDisable) {
 				if (_glinfo.imageTextures) {
 					if (_glinfo.majorVersion * 10 + _glinfo.minorVersion < 42) {
@@ -560,7 +564,7 @@ public:
 class ShaderBlender1 : public ShaderPart
 {
 public:
-	ShaderBlender1()
+	ShaderBlender1(const opengl::GLInfo & _glinfo)
 	{
 #if 1
 		m_part =
@@ -582,8 +586,17 @@ public:
 			"    cs1 = muxp; "
 			"    if (uBlendMux1[0]==1) fd1 = 1.0;"
 			"  }"
-			"  clampedColor = vec4(cs1.rgb, 1.0 - fd1); \n "
+			"  clampedColor.rgb = cs1.rgb; \n "
 			;
+		if (_glinfo.blend_func_extended) {
+			m_part +=
+				"  fragColor1 = vec4(fd1); \n"
+				;
+		} else {
+			m_part +=
+				"  clampedColor.a = 1.0 - fd1;  \n"
+				;
+		}
 #else
 		// Keep old code for reference
 		m_part =
@@ -602,7 +615,7 @@ public:
 class ShaderBlender2 : public ShaderPart
 {
 public:
-	ShaderBlender2()
+	ShaderBlender2(const opengl::GLInfo & _glinfo)
 	{
 #if 1
 		m_part =
@@ -626,8 +639,17 @@ public:
 			"    if (uBlendMux2[0] == 0) fd2 = fd1;"
 			"    if (uBlendMux2[0] == 1) fd2 = 1.0;"
 			"  }"
-			" clampedColor = vec4(cs2.rgb, 1.0 - fd2); \n"
+			"  clampedColor.rgb = cs2.rgb; \n"
 			;
+		if (_glinfo.blend_func_extended) {
+			m_part +=
+				"  fragColor1 = vec4(fd2); \n"
+				;
+		} else {
+			m_part +=
+				"  clampedColor.a = 1.0 - fd2;  \n"
+				;
+		}
 			
 #else
 		// Keep old code for reference
@@ -947,15 +969,18 @@ public:
 			"IN lowp float vNumLights;		\n"
 		;
 
+		m_part +=
+			"layout(location = 0, index = 0) OUT lowp vec4 fragColor; 	\n"
+			;
+		if (_glinfo.blend_func_extended) {
+			m_part +=
+				"layout(location = 0, index = 1) OUT lowp vec4 fragColor1;   \n"
+				;
+		}
 		if (config.frameBufferEmulation.N64DepthCompare == Config::dcFast && _glinfo.ext_fetch) {
 			m_part +=
-				"layout(location = 0) OUT lowp vec4 fragColor;		\n"
-				"layout(location = 1) inout highp vec4 depthZ;		\n"
+				"layout(location = 1) inout highp vec4 depthZ;	\n"
 				"layout(location = 2) inout highp vec4 depthDeltaZ;	\n"
-			;
-		} else {
-			m_part +=
-				"OUT lowp vec4 fragColor;	\n"
 				;
 		}
 	}
@@ -1029,17 +1054,20 @@ public:
 			"IN lowp float vNumLights;	\n"
 		;
 
-		if (config.frameBufferEmulation.N64DepthCompare == Config::dcFast && _glinfo.ext_fetch) {
-			m_part +=
-				"layout(location = 0) OUT lowp vec4 fragColor;		\n"
-				"layout(location = 1) inout highp vec4 depthZ;		\n"
-				"layout(location = 2) inout highp vec4 depthDeltaZ;	\n"
+		m_part +=
+			"layout(location = 0, index = 0) OUT lowp vec4 fragColor; 	\n"
 			;
-		} else {
+		if (_glinfo.blend_func_extended) {
 			m_part +=
-				"OUT lowp vec4 fragColor;	\n"
+				"layout(location = 0, index = 1) OUT lowp vec4 fragColor1;   \n"
 				;
 		}
+		if (config.frameBufferEmulation.N64DepthCompare == Config::dcFast && _glinfo.ext_fetch) {
+			m_part +=
+				"layout(location = 1) inout highp vec4 depthZ;	\n"
+				"layout(location = 2) inout highp vec4 depthDeltaZ;	\n"
+				;
+		} 
 	}
 };
 
@@ -2605,7 +2633,8 @@ CombinerInputs CombinerProgramBuilder::compileCombiner(const CombinerKey & _key,
 		if (g_cycleType == G_CYC_2CYCLE)
 			m_blender2->write(ssShader);
 
-		ssShader << "  fragColor = clampedColor;" << std::endl;
+		if (g_cycleType >= G_CYC_COPY)
+			ssShader << "  fragColor = clampedColor;" << std::endl;
 	}
 	else {
 		ssShader << "  fragColor = clampedColor;" << std::endl;
@@ -2820,8 +2849,8 @@ GLuint _createVertexShader(ShaderPart * _header, ShaderPart * _body, ShaderPart 
 }
 
 CombinerProgramBuilder::CombinerProgramBuilder(const opengl::GLInfo & _glinfo, opengl::CachedUseProgram * _useProgram)
-: m_blender1(new ShaderBlender1)
-, m_blender2(new ShaderBlender2)
+: m_blender1(new ShaderBlender1(_glinfo))
+, m_blender2(new ShaderBlender2(_glinfo))
 , m_legacyBlender(new ShaderLegacyBlender)
 , m_clamp(new ShaderClamp)
 , m_signExtendColorC(new ShaderSignExtendColorC)

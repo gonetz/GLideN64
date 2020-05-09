@@ -621,7 +621,7 @@ void GraphicsDrawer::_setBlendMode() const
 		gfxContext.setBlending(srcFactor, dstFactor);
 #else
 		BlendParam srcFactor = blend::ONE;
-		BlendParam dstFactor = blend::ONE_MINUS_SRC_ALPHA;
+		BlendParam dstFactor = blend::SRC1_ALPHA;
 		if (gDP.otherMode.cycleType == G_CYC_2CYCLE) {
 			if (gDP.otherMode.c2_m2a != 1 && gDP.otherMode.c2_m2b == 1) {
 				srcFactor = blend::DST_ALPHA;
@@ -667,7 +667,7 @@ void GraphicsDrawer::_setBlendMode() const
 		}
 #else
 		gfxContext.enable(enable::BLEND, true);
-		gfxContext.setBlending(blend::ONE, blend::ONE_MINUS_SRC_ALPHA);
+		gfxContext.setBlending(blend::ONE, blend::SRC1_ALPHA);
 #endif
 	} else {
 		gfxContext.enable(enable::BLEND, false);
