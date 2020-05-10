@@ -632,8 +632,6 @@ void Debugger::_drawFrameBuffer(FrameBuffer * _pBuffer)
 	float clearColor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
 	drawer.clearColorBuffer(clearColor);
 
-	TextureParam filter = textureParameters::FILTER_LINEAR;
-
 	GraphicsDrawer::BlitOrCopyRectParams blitParams;
 	blitParams.srcX0 = srcCoord[0];
 	blitParams.srcY0 = srcCoord[3];
@@ -647,7 +645,9 @@ void Debugger::_drawFrameBuffer(FrameBuffer * _pBuffer)
 	blitParams.dstY1 = dstCoord[3];
 	blitParams.dstWidth = wnd.getScreenWidth();
 	blitParams.dstHeight = wnd.getScreenHeight() + wnd.getHeightOffset();
-	blitParams.filter = filter;
+	blitParams.filter = config.generalEmulation.enableHybridFilter > 0 ?
+		textureParameters::FILTER_LINEAR :
+		textureParameters::FILTER_NEAREST;
 	blitParams.mask = blitMask::COLOR_BUFFER;
 	blitParams.tex[0] = pBufferTexture;
 	const bool downscale = blitParams.srcWidth >= blitParams.dstWidth && blitParams.srcHeight >= blitParams.dstHeight;

@@ -1009,8 +1009,6 @@ void FrameBufferList::_renderScreenSizeBuffer()
 
 	gfxContext.clearColorBuffer(0.0f, 0.0f, 0.0f, 0.0f);
 
-	TextureParam filter = textureParameters::FILTER_LINEAR;
-
 	GraphicsDrawer::BlitOrCopyRectParams blitParams;
 	blitParams.srcX0 = srcCoord[0];
 	blitParams.srcY0 = srcCoord[3];
@@ -1024,7 +1022,9 @@ void FrameBufferList::_renderScreenSizeBuffer()
 	blitParams.dstY1 = dstCoord[3];
 	blitParams.dstWidth = screenWidth;
 	blitParams.dstHeight = screenHeight + wndHeightOffset;
-	blitParams.filter = filter;
+	blitParams.filter = config.generalEmulation.enableHybridFilter > 0 ?
+		textureParameters::FILTER_LINEAR :
+		textureParameters::FILTER_NEAREST;
 	blitParams.mask = blitMask::COLOR_BUFFER;
 	blitParams.tex[0] = pBufferTexture;
 	const bool downscale = blitParams.srcWidth >= blitParams.dstWidth && blitParams.srcHeight >= blitParams.dstHeight;
@@ -1348,7 +1348,9 @@ void FrameBufferList::OverscanBuffer::draw(u32 _fullHeight, bool _PAL)
 	blitParams.dstY1 = m_vOffset + wnd.getHeight() + wnd.getHeightOffset();
 	blitParams.dstWidth = wnd.getScreenWidth();
 	blitParams.dstHeight = wnd.getScreenHeight() + wnd.getHeightOffset();
-	blitParams.filter = textureParameters::FILTER_LINEAR;
+	blitParams.filter = config.generalEmulation.enableHybridFilter > 0 ?
+		textureParameters::FILTER_LINEAR :
+		textureParameters::FILTER_NEAREST;
 	blitParams.mask = blitMask::COLOR_BUFFER;
 	blitParams.tex[0] = m_pTexture;
 	const bool downscale = blitParams.srcWidth >= blitParams.dstWidth && blitParams.srcHeight >= blitParams.dstHeight;
@@ -1492,7 +1494,6 @@ void FrameBufferList::renderBuffer()
 						hOffset + dstX1,
 						vOffset + (s32)(dstY1*dstScaleY) };
 
-	const TextureParam filter = config.generalEmulation.enableHybridFilter > 0 ? textureParameters::FILTER_LINEAR : textureParameters::FILTER_NEAREST;
 	ObjectHandle readBuffer;
 
 	if (pFilteredBuffer->m_pTexture->frameBufferTexture == CachedTexture::fbMultiSample) {
@@ -1522,7 +1523,9 @@ void FrameBufferList::renderBuffer()
 	blitParams.dstY1 = dstCoord[3];
 	blitParams.dstWidth = m_overscan.getBufferWidth();
 	blitParams.dstHeight = m_overscan.getBufferHeight();
-	blitParams.filter = filter;
+	blitParams.filter = config.generalEmulation.enableHybridFilter > 0 ?
+		textureParameters::FILTER_LINEAR :
+		textureParameters::FILTER_NEAREST;
 	blitParams.mask = blitMask::COLOR_BUFFER;
 	blitParams.tex[0] = pBufferTexture;
 	const bool downscale = blitParams.srcWidth >= blitParams.dstWidth && blitParams.srcHeight >= blitParams.dstHeight;
@@ -1568,7 +1571,6 @@ void FrameBufferList::renderBuffer()
 		blitParams.dstHeight = m_overscan.getBufferHeight();
 		blitParams.tex[0] = pBufferTexture;
 		blitParams.tex[1] = pNextBuffer->m_pDepthTexture;
-		blitParams.filter = filter;
 		blitParams.mask = blitMask::COLOR_BUFFER;
 		blitParams.readBuffer = readBuffer;
 
