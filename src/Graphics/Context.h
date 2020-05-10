@@ -69,6 +69,8 @@ namespace graphics {
 
 		void setBlending(BlendParam _sfactor, BlendParam _dfactor);
 
+		void setBlendingSeparate(BlendParam _sfactorcolor, BlendParam _dfactorcolor, BlendParam _sfactoralpha, BlendParam _dfactoralpha);
+
 		void setBlendColor(f32 _red, f32 _green, f32 _blue, f32 _alpha);
 
 		void clearColorBuffer(f32 _red, f32 _green, f32 _blue, f32 _alpha);

@@ -100,6 +100,11 @@ void Context::setBlending(BlendParam _sfactor, BlendParam _dfactor)
 	m_impl->setBlending(_sfactor, _dfactor);
 }
 
+void graphics::Context::setBlendingSeparate(BlendParam _sfactorcolor, BlendParam _dfactorcolor, BlendParam _sfactoralpha, BlendParam _dfactoralpha)
+{
+	m_impl->setBlendingSeparate(_sfactorcolor, _dfactorcolor, _sfactoralpha, _dfactoralpha);
+}
+
 void Context::setBlendColor(f32 _red, f32 _green, f32 _blue, f32 _alpha)
 {
 	m_impl->setBlendColor(_red, _green, _blue, _alpha);
