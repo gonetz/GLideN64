@@ -816,6 +816,7 @@ void GraphicsDrawer::drawScreenSpaceTriangle(u32 _numVtx, graphics::DrawModePara
 
 	gSP.changed &= ~CHANGED_GEOMETRYMODE; // Don't update cull mode
 	_prepareDrawTriangle(DrawingState::ScreenSpaceTriangle);
+	gfxContext.enable(enable::CULL_FACE, false);
 
 	Context::DrawTriangleParameters triParams;
 	triParams.mode = _mode;
