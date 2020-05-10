@@ -7,6 +7,7 @@
 #include <NoiseTexture.h>
 #include <FrameBuffer.h>
 #include <DisplayWindow.h>
+#include <Debugger.h>
 #include <GBI.h>
 #include <RSP.h>
 #include <gSP.h>
@@ -974,7 +975,7 @@ public:
 				continue;
 			
 			/* Not sure if special treatment of framebuffer textures is correct */
-			if (pTexture->frameBufferTexture != CachedTexture::fbNone) 
+			if (pTexture->frameBufferTexture != CachedTexture::fbNone || g_debugger.isDebugMode())
 			{
 				aTexWrap[t][0] = 1.0;
 				aTexWrap[t][1] = 1.0;
