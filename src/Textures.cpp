@@ -155,7 +155,7 @@ inline u32 GetI8_RGBA4444( u64 *src, u16 x, u16 i, u8 palette )
 inline u32 GetCI16IA_RGBA8888(u64 *src, u16 x, u16 i, u8 palette)
 {
 	const u16 tex = ((u16*)src)[x^i];
-	const u16 col = (*(u16*)&TMEM[256 + (tex >> 8)]);
+	const u16 col = (*(u16*)&TMEM[256 + (tex & 0xFF)]);
 	const u16 c = col >> 8;
 	const u16 a = col & 0xFF;
 	return (a << 24) | (c << 16) | (c << 8) | c;
@@ -164,7 +164,7 @@ inline u32 GetCI16IA_RGBA8888(u64 *src, u16 x, u16 i, u8 palette)
 inline u32 GetCI16IA_RGBA4444(u64 *src, u16 x, u16 i, u8 palette)
 {
 	const u16 tex = ((u16*)src)[x^i];
-	const u16 col = (*(u16*)&TMEM[256 + (tex >> 8)]);
+	const u16 col = (*(u16*)&TMEM[256 + (tex & 0xFF)]);
 	const u16 c = col >> 12;
 	const u16 a = col & 0x0F;
 	return (a << 12) | (c << 8) | (c << 4) | c;
