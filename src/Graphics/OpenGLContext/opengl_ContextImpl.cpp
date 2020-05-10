@@ -158,6 +158,11 @@ void ContextImpl::setBlending(graphics::BlendParam _sfactor, graphics::BlendPara
 	m_cachedFunctions->getCachedBlending()->setBlending(_sfactor, _dfactor);
 }
 
+void ContextImpl::setBlendingSeparate(graphics::BlendParam _sfactorcolor, graphics::BlendParam _dfactorcolor, graphics::BlendParam _sfactoralpha, graphics::BlendParam _dfactoralpha)
+{
+	m_cachedFunctions->getCachedBlendingSeparate()->setBlendingSeparate(_sfactorcolor, _dfactorcolor, _sfactoralpha, _dfactoralpha);
+}
+
 void ContextImpl::setBlendColor(f32 _red, f32 _green, f32 _blue, f32 _alpha)
 {
 	m_cachedFunctions->getCachedBlendColor()->setBlendColor(_red, _green, _blue, _alpha);
