@@ -75,14 +75,14 @@ void COsdTab::LoadFonts(void)
 		if (hParent == TVI_ROOT) {
 			tv.item.mask = TVIF_TEXT;
 			tv.item.pszText = (LPWSTR)FontName.c_str();
-			tv.item.cchTextMax = FontName.length();
+			tv.item.cchTextMax = static_cast<int>(FontName.length());
 			tv.hInsertAfter = TVI_SORT;
 			tv.hParent = TVI_ROOT;
 			hParent = m_Fonts.InsertItem(&tv);
 		}
 		tv.item.mask = TVIF_TEXT;
 		tv.item.pszText = (LPWSTR)FontFile.c_str();
-		tv.item.cchTextMax = FontFile.length();
+		tv.item.cchTextMax = static_cast<int>(FontFile.length());
 		tv.hInsertAfter = TVI_SORT;
 		tv.hParent = hParent;
 		m_Fonts.InsertItem(&tv);

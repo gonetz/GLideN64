@@ -70,7 +70,7 @@ LRESULT CConfigDlg::OnInitDialog(UINT /*uMsg*/, WPARAM /*wParam*/, LPARAM /*lPar
 		dc.CreateCompatibleDC(NULL);
 		dc.SelectFont(dlgItem.GetFont());
 		SIZE size;
-		dc.GetTextExtent(RomName.c_str(), RomName.length(), &size);
+		dc.GetTextExtent(RomName.c_str(), static_cast<int>(RomName.length()), &size);
 
 		RECT Rect;
 		dlgItem.GetWindowRect(&Rect);

@@ -102,7 +102,7 @@ private:
 	static BOOL CALLBACK SetTool(HWND hTool, LPARAM pDlg)
 	{
 		T* pT = (T*)pDlg;
-		int idTool = ::GetWindowLong(hTool, GWL_ID);
+		auto idTool = ::GetWindowLong(hTool, GWL_ID);
 		if (idTool != IDC_STATIC)
 		{
 			CToolInfo ToolInfo(pT->m_uToolFlags, hTool, 0, 0, (LPTSTR)idTool);

@@ -208,7 +208,7 @@ void CTextureEnhancementTab::SaveDirectory(int EditCtrl, wchar_t * txPath)
 	int TxtLen = EditWnd.GetWindowTextLength();
 	std::wstring Path;
 	Path.resize(TxtLen + 1);
-	EditWnd.GetWindowText((wchar_t *)Path.data(), Path.size());
+	EditWnd.GetWindowText((wchar_t *)Path.data(), static_cast<int>(Path.size()));
 
 	WIN32_FIND_DATA	FindData;
 	HANDLE hFindFile = FindFirstFile(Path.c_str(), &FindData);
@@ -269,7 +269,7 @@ void CTextureEnhancementTab::SelectDir(wchar_t * Title, int EditCtrl)
 	int TxtLen = EditWnd.GetWindowTextLength();
 	std::wstring EditText;
 	EditText.resize(TxtLen + 1);
-	EditWnd.GetWindowText((wchar_t *)EditText.data(), EditText.size());
+	EditWnd.GetWindowText((wchar_t *)EditText.data(), static_cast<int>(EditText.size()));
 
 	bi.hwndOwner = m_hWnd;
 	bi.pidlRoot = NULL;
