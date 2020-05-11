@@ -876,6 +876,8 @@ public:
 		LocateUniform(uCacheOffset[0]);
 		LocateUniform(uCacheOffset[1]);
 		LocateUniform(uTexScale);
+		LocateUniform(uTexSize[0]);
+		LocateUniform(uTexSize[1]);
 		LocateUniform(uCacheFrameBuffer);
 	}
 
@@ -932,6 +934,7 @@ private:
 	fv2Uniform uCacheScale[2];
 	fv2Uniform uCacheOffset[2];
 	fv2Uniform uTexScale;
+	fv2Uniform uTexSize[2];
 	iv2Uniform uCacheFrameBuffer;
 };
 
@@ -952,6 +955,8 @@ public:
 		LocateUniform(uTexClampEn1);
 		LocateUniform(uTexMirrorEn0);
 		LocateUniform(uTexMirrorEn1);
+		LocateUniform(uTexSize0);
+		LocateUniform(uTexSize1);
 	}
 
 	void update(bool _force) override
@@ -961,6 +966,7 @@ public:
 		std::array<f32, 2> aTexWrapEn[2] = { { 0.0f,0.0f },{ 0.0f,0.0f } };
 		std::array<f32, 2> aTexClampEn[2] = { { 0.0f,0.0f },{ 0.0f,0.0f } };
 		std::array<f32, 2> aTexMirrorEn[2] = { { 0.0f,0.0f },{ 0.0f,0.0f } };
+		std::array<f32, 2> aTexSize[2] = { { 0.0f,0.0f },{ 0.0f,0.0f } };
 
 		TextureCache & cache = textureCache();
 		const bool replaceTex1ByTex0 = needReplaceTex1ByTex0();
@@ -974,6 +980,9 @@ public:
 			if (pTile == nullptr || pTexture == nullptr)
 				continue;
 			
+			aTexSize[t][0] = pTexture->width * pTexture->hdRatioS;
+			aTexSize[t][1] = pTexture->height * pTexture->hdRatioT;
+
 			/* Not sure if special treatment of framebuffer textures is correct */
 			if (pTexture->frameBufferTexture != CachedTexture::fbNone ||
 				pTile->textureMode != TEXTUREMODE_NORMAL ||
@@ -996,8 +1005,8 @@ public:
 				aTexClamp[t][1] = (pTile->flrt - pTile->fult + 1.0f) * pTexture->hdRatioT - 1.0f;
 				aTexWrapEn[t][0] = f32(pTile->masks == 0 ? 0 : 1);
 				aTexWrapEn[t][1] = f32(pTile->maskt == 0 ? 0 : 1);
-				aTexClampEn[t][0] = f32(pTile->masks == 0 ? 1 : pTile->clamps);
-				aTexClampEn[t][1] = f32(pTile->maskt == 0 ? 1 : pTile->clampt);
+				aTexClampEn[t][0] = f32(gDP.otherMode.cycleType == G_CYC_COPY ? 0 : (pTile->masks == 0 ? 1 : pTile->clamps));
+				aTexClampEn[t][1] = f32(gDP.otherMode.cycleType == G_CYC_COPY ? 0 : (pTile->maskt == 0 ? 1 : pTile->clampt));
 				aTexMirrorEn[t][0] = f32(pTile->masks == 0 ? 0 : pTile->mirrors);
 				aTexMirrorEn[t][1] = f32(pTile->maskt == 0 ? 0 : pTile->mirrort);
 			}
@@ -1013,6 +1022,8 @@ public:
 		uTexClampEn1.set(aTexClampEn[1][0], aTexClampEn[1][1], _force);
 		uTexMirrorEn0.set(aTexMirrorEn[0][0], aTexMirrorEn[0][1], _force);
 		uTexMirrorEn1.set(aTexMirrorEn[1][0], aTexMirrorEn[1][1], _force);
+		uTexSize0.set(aTexSize[0][0], aTexSize[0][1], _force);
+		uTexSize1.set(aTexSize[1][0], aTexSize[1][1], _force);
 				
 	}
 
@@ -1028,6 +1039,8 @@ private:
 	fv2Uniform uTexClampEn1;
 	fv2Uniform uTexMirrorEn0;
 	fv2Uniform uTexMirrorEn1;
+	fv2Uniform uTexSize0;
+	fv2Uniform uTexSize1;
 };
 
 class ULights : public UniformGroup

@@ -2431,29 +2431,42 @@ public:
 			"	return texCoord;															\n"
 			"}																				\n"
 
+			"highp vec2 wrap2D(in highp vec2 tc, in highp float width) \n"
+			"{ \n"
+			"  float address = tc.s + tc.t * width; \n"
+			"  return vec2(mod(address, width), floor(address/width)); \n"
+			"} \n"
+
+			"uniform mediump vec2 uTexSize0;		\n"
 			"highp vec2[5] textureEngine0(in highp vec2 texCoord) \n"
 			"{  \n"
 			"  highp vec2[5] tcData; \n" // {tc00, tc01, tc10, tc11, frPart}
 			"  mediump vec2 intPart = floor(texCoord); \n"
-			"  tcData[0] = clampWrapMirror(intPart, uTexWrap0, uTexClamp0, uTexWrapEn0, uTexClampEn0, uTexMirrorEn0); \n"
-			"  tcData[3] = clampWrapMirror(intPart + vec2(1.0,1.0), uTexWrap0, uTexClamp0, uTexWrapEn0, uTexClampEn0, uTexMirrorEn0); \n"
+			"  highp vec2 tc00 = clampWrapMirror(intPart, uTexWrap0, uTexClamp0, uTexWrapEn0, uTexClampEn0, uTexMirrorEn0); \n"
+			"  highp vec2 tc11 = clampWrapMirror(intPart + vec2(1.0,1.0), uTexWrap0, uTexClamp0, uTexWrapEn0, uTexClampEn0, uTexMirrorEn0); \n"
+			"  tcData[0] = wrap2D(tc00, uTexSize0.s); \n"
+			"  tcData[3] = wrap2D(tc11, uTexSize0.s); \n"
 			"  tcData[1] = vec2(tcData[0].s, tcData[3].t); \n"
 			"  tcData[2] = vec2(tcData[3].s, tcData[0].t); \n"
 			"  tcData[4] = texCoord - intPart; \n"
 			"  return tcData;"
 			"}  \n"
 
+			"uniform mediump vec2 uTexSize1;		\n"
 			"highp vec2[5] textureEngine1(in highp vec2 texCoord) \n"
 			"{  \n"
 			"  highp vec2[5] tcData; \n" // {tc00, tc01, tc10, tc11, frPart}
 			"  mediump vec2 intPart = floor(texCoord); \n"
-			"  tcData[0] = clampWrapMirror(intPart, uTexWrap1, uTexClamp1, uTexWrapEn1, uTexClampEn1, uTexMirrorEn1); \n"
-			"  tcData[3] = clampWrapMirror(intPart + vec2(1.0,1.0), uTexWrap1, uTexClamp1, uTexWrapEn1, uTexClampEn1, uTexMirrorEn1); \n"
+			"  highp vec2 tc00 = clampWrapMirror(intPart, uTexWrap1, uTexClamp1, uTexWrapEn1, uTexClampEn1, uTexMirrorEn1); \n"
+			"  highp vec2 tc11 = clampWrapMirror(intPart + vec2(1.0,1.0), uTexWrap1, uTexClamp1, uTexWrapEn1, uTexClampEn1, uTexMirrorEn1); \n"
+			"  tcData[0] = wrap2D(tc00, uTexSize1.s); \n"
+			"  tcData[3] = wrap2D(tc11, uTexSize1.s); \n"
 			"  tcData[1] = vec2(tcData[0].s, tcData[3].t); \n"
 			"  tcData[2] = vec2(tcData[3].s, tcData[0].t); \n"
 			"  tcData[4] = texCoord - intPart; \n"
 			"  return tcData;"
 			"}  \n"
+
 			;
 	}
 };
