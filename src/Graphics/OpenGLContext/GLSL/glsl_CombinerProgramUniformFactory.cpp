@@ -975,7 +975,9 @@ public:
 				continue;
 			
 			/* Not sure if special treatment of framebuffer textures is correct */
-			if (pTexture->frameBufferTexture != CachedTexture::fbNone || g_debugger.isDebugMode())
+			if (pTexture->frameBufferTexture != CachedTexture::fbNone ||
+				pTile->textureMode != TEXTUREMODE_NORMAL ||
+				g_debugger.isDebugMode())
 			{
 				aTexWrap[t][0] = 1.0;
 				aTexWrap[t][1] = 1.0;
@@ -987,10 +989,7 @@ public:
 				aTexClampEn[t][1] = 1.0;
 				aTexMirrorEn[t][0] = 0.0;
 				aTexMirrorEn[t][1] = 0.0;
-
-			}
-			else
-			{
+			} else {
 				aTexWrap[t][0] = f32(1 << pTile->masks) * pTexture->hdRatioS;
 				aTexWrap[t][1] = f32(1 << pTile->maskt) * pTexture->hdRatioT;
 				aTexClamp[t][0] = (pTile->flrs - pTile->fuls + 1.0f) * pTexture->hdRatioS - 1.0f;
