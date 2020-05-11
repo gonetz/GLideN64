@@ -857,18 +857,18 @@ void gSPProcessVertex(u32 v, SPVertex * spVtx)
 			if (GBI.getMicrocodeType() != F3DFLX2) {
 				for(int i = 0; i < VNUM; ++i) {
 					SPVertex & vtx = spVtx[v+i];
-					f32 fLightDir[3] = {vtx.nx, vtx.ny, vtx.nz};
+					f32 vNormale[3] = {vtx.nx, vtx.ny, vtx.nz};
 					f32 x, y;
 					if (gSP.lookatEnable) {
-						x = DotProduct(gSP.lookat.i_xyz[0], fLightDir);
-						y = DotProduct(gSP.lookat.i_xyz[1], fLightDir);
+						x = DotProduct(gSP.lookat.i_xyz[0], vNormale);
+						y = DotProduct(gSP.lookat.i_xyz[1], vNormale);
 					} else {
-						fLightDir[0] *= 128.0f;
-						fLightDir[1] *= 128.0f;
-						fLightDir[2] *= 128.0f;
-						TransformVectorNormalize(fLightDir, gSP.matrix.modelView[gSP.matrix.modelViewi]);
-						x = fLightDir[0];
-						y = fLightDir[1];
+						vNormale[0] *= 128.0f;
+						vNormale[1] *= 128.0f;
+						vNormale[2] *= 128.0f;
+						TransformVectorNormalize(vNormale, gSP.matrix.modelView[gSP.matrix.modelViewi]);
+						x = vNormale[0];
+						y = vNormale[1];
 					}
 					if (gSP.geometryMode & G_TEXTURE_GEN_LINEAR) {
 						if (x < -1.0f) x = -1.0f;
@@ -877,7 +877,7 @@ void gSPProcessVertex(u32 v, SPVertex * spVtx)
 						if (y > 1.0f) y = 1.0f;
 						vtx.s = acosf(-x) * 325.94931f;
 						vtx.t = acosf(-y) * 325.94931f;
-					} else { // G_TEXTURE_GEN
+					} else {
 						vtx.s = (x + 1.0f) * 512.0f;
 						vtx.t = (y + 1.0f) * 512.0f;
 					}
