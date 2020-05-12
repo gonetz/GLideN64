@@ -2433,8 +2433,8 @@ public:
 
 			"highp vec2 wrap2D(in highp vec2 tc, in highp float width) \n"
 			"{ \n"
-			"  float address = tc.s + tc.t * width; \n"
-			"  return vec2(mod(address, width), floor(address/width)); \n"
+			"  float div = floor(tc.s/width); \n"
+			"  return tc + vec2(-div*width, div); \n"
 			"} \n"
 
 			"uniform mediump vec2 uTexSize0;		\n"
