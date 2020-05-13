@@ -1082,9 +1082,9 @@ public:
 		m_part =
 			"highp vec2 clampWrapMirror(in highp vec2 vTexCoord,	\n"
 			"	in highp vec2 vWrap, in highp vec2 vClamp,			\n"
-			"	in lowp vec2 vClampEn, in lowp vec2 vMirrorEn );		\n"
-			 "lowp vec2[5] textureEngine0(in highp vec2 texCoord); \n"
-			 "lowp vec2[5] textureEngine1(in highp vec2 texCoord); \n"
+			"	in lowp vec2 vClampEn, in lowp vec2 vMirrorEn );	\n"
+			"highp vec2[5] textureEngine0(in highp vec2 texCoord);	\n"
+			"highp vec2[5] textureEngine1(in highp vec2 texCoord);	\n"
 			;
 	}
 };
@@ -2433,8 +2433,8 @@ public:
 
 			"highp vec2 wrap2D(in highp vec2 tc, in highp float width) \n"
 			"{ \n"
-			"  float div = floor(tc.s/width); \n"
-			"  return tc + vec2(-div*width, div); \n"
+			"  highp float div = floor(tc.s/width);	\n"
+			"  return tc + vec2(-div*width, div);	\n"
 			"} \n"
 
 			"uniform mediump vec2 uTexSize0;		\n"
