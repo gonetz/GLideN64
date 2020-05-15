@@ -478,40 +478,6 @@ void _legacySetBlendMode()
 	}
 }
 
-bool GraphicsDrawer::_setUnsupportedBlendMode() const
-{
-	return false;
-	if (gDP.otherMode.cycleType != G_CYC_2CYCLE)
-		return false;
-
-	// Modes, which shader blender can't emulate
-	const u32 mode = _SHIFTR(gDP.otherMode.l, 16, 16);
-	switch (mode) {
-	case 0x0040:
-		// Mia Hamm Soccer
-		// clr_in * a_in + clr_mem * (1-a)
-		// clr_in * a_in + clr_in * (1-a)
-	case 0x0050:
-		// A Bug's Life
-		// clr_in * a_in + clr_mem * (1-a)
-		// clr_in * a_in + clr_mem * (1-a)
-		gfxContext.enable(enable::BLEND, true);
-		gfxContext.setBlending(blend::SRC_ALPHA, blend::ONE_MINUS_SRC_ALPHA);
-		return true;
-	case 0x0150:
-		// Tony Hawk
-		// clr_in * a_in + clr_mem * (1-a)
-		// clr_in * a_fog + clr_mem * (1-a_fog)
-		if ((config.generalEmulation.hacks & hack_TonyHawk) != 0) {
-			gfxContext.enable(enable::BLEND, true);
-			gfxContext.setBlending(blend::SRC_ALPHA, blend::ONE_MINUS_SRC_ALPHA);
-			return true;
-		}
-		break;
-	}
-	return false;
-}
-
 void GraphicsDrawer::_setBlendMode() const
 {
 	if (config.generalEmulation.enableLegacyBlending != 0) {
@@ -519,156 +485,33 @@ void GraphicsDrawer::_setBlendMode() const
 		return;
 	}
 
-	if (_setUnsupportedBlendMode())
-		return;
-
-	if (gDP.otherMode.forceBlender != 0 && gDP.otherMode.cycleType < G_CYC_COPY) {
-#if 0
-		BlendParam srcFactor = blend::ONE;
-		BlendParam dstFactor = blend::ZERO;
-		u32 memFactorSource = 2, muxA, muxB;
-		if (gDP.otherMode.cycleType == G_CYC_2CYCLE) {
-			muxA = gDP.otherMode.c2_m1b;
-			muxB = gDP.otherMode.c2_m2b;
-			if (gDP.otherMode.c2_m1a == 1) {
-				if (gDP.otherMode.c2_m2a == 1) {
-					gfxContext.enable(enable::BLEND, true);
-					gfxContext.setBlending(blend::ZERO, blend::ONE);
-					return;
-				}
-				memFactorSource = 0;
-			} else if (gDP.otherMode.c2_m2a == 1) {
-				memFactorSource = 1;
-			}
-			if (gDP.otherMode.c2_m2a == 0 && gDP.otherMode.c2_m2b == 1) {
-				// c_in * a_mem
-				srcFactor = blend::DST_ALPHA;
-			}
-		} else {
-			muxA = gDP.otherMode.c1_m1b;
-			muxB = gDP.otherMode.c1_m2b;
-			if (gDP.otherMode.c1_m1a == 1) {
-				if (gDP.otherMode.c1_m2a == 1) {
-					gfxContext.enable(enable::BLEND, true);
-					gfxContext.setBlending(blend::ZERO, blend::ONE);
-					return;
-				}
-				memFactorSource = 0;
-			}
-			else if (gDP.otherMode.c1_m2a == 1) {
-				memFactorSource = 1;
-			}
-			if (gDP.otherMode.c1_m2a == 0 && gDP.otherMode.c1_m2b == 1) {
-				// c_pixel * a_mem
-				srcFactor = blend::DST_ALPHA;
-			}
-		}
-		switch (memFactorSource) {
-		case 0:
-			switch (muxA) {
-			case 0:
-				dstFactor = blend::SRC_ALPHA;
-				break;
-			case 1:
-				gfxContext.setBlendColor(gDP.fogColor.r, gDP.fogColor.g, gDP.fogColor.b, gDP.fogColor.a);
-				dstFactor = blend::CONSTANT_ALPHA;
-				break;
-			case 2:
-				assert(false); // shade alpha
-				dstFactor = blend::SRC_ALPHA;
-				break;
-			case 3:
-				dstFactor = blend::ZERO;
-				break;
-			}
-			break;
-		case 1:
-			switch (muxB) {
-			case 0:
-				// 1.0 - muxA
-				switch (muxA) {
-				case 0:
-					dstFactor = blend::ONE_MINUS_SRC_ALPHA;
-					break;
-				case 1:
-					gfxContext.setBlendColor(gDP.fogColor.r, gDP.fogColor.g, gDP.fogColor.b, gDP.fogColor.a);
-					dstFactor = blend::ONE_MINUS_CONSTANT_ALPHA;
-					break;
-				case 2:
-					assert(false); // shade alpha
-					dstFactor = blend::ONE_MINUS_SRC_ALPHA;
-					break;
-				case 3:
-					dstFactor = blend::ONE;
-					break;
-				}
-				break;
-			case 1:
-				dstFactor = blend::DST_ALPHA;
-				break;
-			case 2:
-				dstFactor = blend::ONE;
-				break;
-			case 3:
-				dstFactor = blend::ZERO;
-				break;
-			}
-			break;
-		default:
-			dstFactor = blend::ZERO;
-		}
-		gfxContext.enable(enable::BLEND, true);
-		gfxContext.setBlending(srcFactor, dstFactor);
-#else
+	if (gDP.otherMode.cycleType < G_CYC_COPY) {
 		BlendParam srcFactor = blend::ONE;
 		BlendParam dstFactor = blend::SRC1_ALPHA;
-		if (gDP.otherMode.cycleType == G_CYC_2CYCLE) {
-			if (gDP.otherMode.c2_m2a != 1 && gDP.otherMode.c2_m2b == 1) {
-				srcFactor = blend::DST_ALPHA;
+		if (gDP.otherMode.forceBlender != 0) {
+			if (gDP.otherMode.cycleType == G_CYC_2CYCLE) {
+				if (gDP.otherMode.c2_m2a != 1 && gDP.otherMode.c2_m2b == 1) {
+					srcFactor = blend::DST_ALPHA;
+				}
+				if (gDP.otherMode.c2_m2a == 1 && gDP.otherMode.c2_m2b == 1) {
+					dstFactor = blend::DST_ALPHA;
+				}
 			}
-			if (gDP.otherMode.c2_m2a == 1 && gDP.otherMode.c2_m2b == 1) {
-				dstFactor = blend::DST_ALPHA;
+			else {
+				if (gDP.otherMode.c1_m2a != 1 && gDP.otherMode.c1_m2b == 1) {
+					srcFactor = blend::DST_ALPHA;
+				}
+				if (gDP.otherMode.c1_m2a == 1 && gDP.otherMode.c2_m2b == 1) {
+					dstFactor = blend::DST_ALPHA;
+				}
 			}
 		}
-		else {
-			if (gDP.otherMode.c1_m2a != 1 && gDP.otherMode.c1_m2b == 1) {
-				srcFactor = blend::DST_ALPHA;
-			}
-			if (gDP.otherMode.c1_m2a == 1 && gDP.otherMode.c2_m2b == 1) {
-				dstFactor = blend::DST_ALPHA;
-			}
+		else if ((config.generalEmulation.hacks & hack_blastCorps) != 0 && gSP.texture.on == 0 && currentCombiner()->usesTexture()) { // Blast Corps
+			srcFactor = blend::ZERO;
+			dstFactor = blend::ONE;
 		}
 		gfxContext.enable(enable::BLEND, true);
 		gfxContext.setBlending(srcFactor, dstFactor);
-#endif
-	}
-#if 0
-	else if ((config.generalEmulation.hacks & hack_blastCorps) != 0 && gDP.otherMode.cycleType < G_CYC_COPY && gSP.texture.on == 0 && currentCombiner()->usesTexture()) { // Blast Corps
-		gfxContext.enable(enable::BLEND, true);
-		gfxContext.setBlending(blend::ZERO, blend::ONE);
-	}
-#endif
-	else if ((gDP.otherMode.forceBlender == 0 && gDP.otherMode.cycleType < G_CYC_COPY)) {
-#if 0
-		// Just use first mux of blender
-		bool useMemColor = false;
-		if (gDP.otherMode.cycleType == G_CYC_1CYCLE) {
-			if (gDP.otherMode.c1_m1a == 1)
-				useMemColor = true;
-		} else if (gDP.otherMode.cycleType == G_CYC_2CYCLE) {
-			if (gDP.otherMode.c2_m1a == 1)
-				useMemColor = true;
-		}
-		if (useMemColor) {
-			gfxContext.enable(enable::BLEND, true);
-			gfxContext.setBlending(blend::ZERO, blend::ONE);
-		} else {
-			gfxContext.enable(enable::BLEND, false);
-		}
-#else
-		gfxContext.enable(enable::BLEND, true);
-		gfxContext.setBlending(blend::ONE, blend::SRC1_ALPHA);
-#endif
 	} else {
 		gfxContext.enable(enable::BLEND, false);
 	}
