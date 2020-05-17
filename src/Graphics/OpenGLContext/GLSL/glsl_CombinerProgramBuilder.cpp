@@ -1150,7 +1150,6 @@ public:
 
 class ShaderFragmentHeaderReadTex : public ShaderPart
 {
-#define USE_TEX_WORKAROUND // Enable workaround for issue with Mario Tennis Intro
 public:
 	ShaderFragmentHeaderReadTex(const opengl::GLInfo & _glinfo) : m_glinfo(_glinfo)
 	{
@@ -1177,18 +1176,10 @@ public:
 						"#define TEX_FILTER(name, tex, tcData)												\\\n"
 						"  {																					\\\n"
 						"  lowp float bottomRightTri = step(1.0, tcData[4].s + tcData[4].t);					\\\n"
-#ifndef USE_TEX_WORKAROUND
 						"  lowp vec4 c00 = texelFetch(tex, ivec2(tcData[0]), 0); \\\n"
 						"  lowp vec4 c01 = texelFetch(tex, ivec2(tcData[1]), 0); \\\n"
 						"  lowp vec4 c10 = texelFetch(tex, ivec2(tcData[2]), 0); \\\n"
 						"  lowp vec4 c11 = texelFetch(tex, ivec2(tcData[3]), 0); \\\n"
-#else
-						"  lowp vec2 texSize = vec2(textureSize(tex,0)); \\\n"
-						"  lowp vec4 c00 = texture(tex, (tcData[0] + 0.5)/texSize); \\\n"
-						"  lowp vec4 c01 = texture(tex, (tcData[1] + 0.5)/texSize); \\\n"
-						"  lowp vec4 c10 = texture(tex, (tcData[2] + 0.5)/texSize); \\\n"
-						"  lowp vec4 c11 = texture(tex, (tcData[3] + 0.5)/texSize); \\\n"
-#endif
 						"  lowp vec4 c0 = c00 + tcData[4].s*(c10-c00) + tcData[4].t*(c01-c00);			\\\n"
 						"  lowp vec4 c1 = c11 + (1.0-tcData[4].s)*(c01-c11) + (1.0-tcData[4].t)*(c10-c11); \\\n"
 						"  name = c0 + bottomRightTri * (c1-c0); \\\n"
@@ -1199,18 +1190,10 @@ public:
 					shaderPart +=
 						"#define TEX_FILTER(name, tex, tcData)																		\\\n"
 						"{																											\\\n"
-#ifndef USE_TEX_WORKAROUND
 						"  lowp vec4 c00 = texelFetch(tex, ivec2(tcData[0]), 0); \\\n"
 						"  lowp vec4 c01 = texelFetch(tex, ivec2(tcData[1]), 0); \\\n"
 						"  lowp vec4 c10 = texelFetch(tex, ivec2(tcData[2]), 0); \\\n"
 						"  lowp vec4 c11 = texelFetch(tex, ivec2(tcData[3]), 0); \\\n"
-#else
-						"  lowp vec2 texSize = vec2(textureSize(tex,0)); \\\n"
-						"  lowp vec4 c00 = texture(tex, (tcData[0] + 0.5)/texSize); \\\n"
-						"  lowp vec4 c01 = texture(tex, (tcData[1] + 0.5)/texSize); \\\n"
-						"  lowp vec4 c10 = texture(tex, (tcData[2] + 0.5)/texSize); \\\n"
-						"  lowp vec4 c11 = texture(tex, (tcData[3] + 0.5)/texSize); \\\n"
-#endif
 						"  lowp vec4 c0 = c00 + tcData[4].s * (c10-c00);						\\\n"
 						"  lowp vec4 c1 = c01 + tcData[4].s * (c11-c01);						\\\n"
 						"  name = c0 + tcData[4].t * (c1-c0);									\\\n"
@@ -1225,18 +1208,10 @@ public:
 						"#define TEX_FILTER(name, tex, tcData)												\\\n"
 						"{																						\\\n"
 						"  lowp float bottomRightTri = step(1.0, tcData[4].s + tcData[4].t);					\\\n"
-#ifndef USE_TEX_WORKAROUND
 						"  lowp vec4 c00 = texelFetch(tex, ivec2(tcData[0]), 0);								\\\n"
 						"  lowp vec4 c01 = texelFetch(tex, ivec2(tcData[1]), 0);								\\\n"
 						"  lowp vec4 c10 = texelFetch(tex, ivec2(tcData[2]), 0);								\\\n"
 						"  lowp vec4 c11 = texelFetch(tex, ivec2(tcData[3]), 0);								\\\n"
-#else
-						"  lowp vec2 texSize = vec2(textureSize(tex,0)); \\\n"
-						"  lowp vec4 c00 = texture(tex, (tcData[0] + 0.5)/texSize); \\\n"
-						"  lowp vec4 c01 = texture(tex, (tcData[1] + 0.5)/texSize); \\\n"
-						"  lowp vec4 c10 = texture(tex, (tcData[2] + 0.5)/texSize); \\\n"
-						"  lowp vec4 c11 = texture(tex, (tcData[3] + 0.5)/texSize); \\\n"
-#endif
 						"  if(uEnableAlphaTest == 1 ){															\\\n" // Calculate premultiplied color values
 						"    c00.rgb *= c00.a;																	\\\n"
 						"    c01.rgb *= c01.a;																	\\\n"
@@ -1254,18 +1229,15 @@ public:
 					shaderPart +=
 						"#define TEX_FILTER(name, tex, tcData)																	\\\n"
 						"{																										\\\n"
-#ifndef USE_TEX_WORKAROUND
 						"  lowp vec4 c00 = texelFetch(tex, ivec2(tcData[0]), 0);												\\\n"
 						"  lowp vec4 c01 = texelFetch(tex, ivec2(tcData[1]), 0);												\\\n"
 						"  lowp vec4 c10 = texelFetch(tex, ivec2(tcData[2]), 0);												\\\n"
 						"  lowp vec4 c11 = texelFetch(tex, ivec2(tcData[3]), 0);												\\\n"
-#else
 						"  lowp vec2 texSize = vec2(textureSize(tex,0)); \\\n"
 						"  lowp vec4 c00 = texture(tex, (tcData[0] + 0.5)/texSize); \\\n"
 						"  lowp vec4 c01 = texture(tex, (tcData[1] + 0.5)/texSize); \\\n"
 						"  lowp vec4 c10 = texture(tex, (tcData[2] + 0.5)/texSize); \\\n"
 						"  lowp vec4 c11 = texture(tex, (tcData[3] + 0.5)/texSize); \\\n"
-#endif
 						"  if(uEnableAlphaTest == 1){																			\\\n" // Calculate premultiplied color values
 						"    c00.rgb *= c00.a;																					\\\n"
 						"    c01.rgb *= c01.a;																					\\\n"
@@ -2431,36 +2403,37 @@ public:
 			"	return texCoord;															\n"
 			"}																				\n"
 
-			"highp vec2 wrap2D(in highp vec2 tc, in highp float width) \n"
-			"{ \n"
-			"  highp float div = floor(tc.s/width);	\n"
-			"  return tc + vec2(-div*width, div);	\n"
-			"} \n"
+			"highp vec2 wrap2D(in highp vec2 tc, in highp vec2 size)						\n"
+			"{																				\n"
+			"  highp float divs = floor(tc.s / size.s);										\n"
+			"  highp float divt = floor((tc.t + divs) / size.t);							\n"
+			"  return vec2(tc.s - divs * size.s, tc.t + divs - divt*size.t);				\n"
+			"}																				\n"
 
-			"uniform mediump vec2 uTexSize0;		\n"
+			"uniform highp vec2 uTexSize0;		\n"
 			"highp vec2[5] textureEngine0(in highp vec2 texCoord) \n"
 			"{  \n"
 			"  highp vec2[5] tcData; \n" // {tc00, tc01, tc10, tc11, frPart}
 			"  mediump vec2 intPart = floor(texCoord); \n"
 			"  highp vec2 tc00 = clampWrapMirror(intPart, uTexWrap0, uTexClamp0, uTexWrapEn0, uTexClampEn0, uTexMirrorEn0); \n"
 			"  highp vec2 tc11 = clampWrapMirror(intPart + vec2(1.0,1.0), uTexWrap0, uTexClamp0, uTexWrapEn0, uTexClampEn0, uTexMirrorEn0); \n"
-			"  tcData[0] = wrap2D(tc00, uTexSize0.s); \n"
-			"  tcData[3] = wrap2D(tc11, uTexSize0.s); \n"
+			"  tcData[0] = wrap2D(tc00, uTexSize0); \n"
+			"  tcData[3] = wrap2D(tc11, uTexSize0); \n"
 			"  tcData[1] = vec2(tcData[0].s, tcData[3].t); \n"
 			"  tcData[2] = vec2(tcData[3].s, tcData[0].t); \n"
 			"  tcData[4] = texCoord - intPart; \n"
 			"  return tcData;"
 			"}  \n"
 
-			"uniform mediump vec2 uTexSize1;		\n"
+			"uniform highp vec2 uTexSize1;		\n"
 			"highp vec2[5] textureEngine1(in highp vec2 texCoord) \n"
 			"{  \n"
 			"  highp vec2[5] tcData; \n" // {tc00, tc01, tc10, tc11, frPart}
 			"  mediump vec2 intPart = floor(texCoord); \n"
 			"  highp vec2 tc00 = clampWrapMirror(intPart, uTexWrap1, uTexClamp1, uTexWrapEn1, uTexClampEn1, uTexMirrorEn1); \n"
 			"  highp vec2 tc11 = clampWrapMirror(intPart + vec2(1.0,1.0), uTexWrap1, uTexClamp1, uTexWrapEn1, uTexClampEn1, uTexMirrorEn1); \n"
-			"  tcData[0] = wrap2D(tc00, uTexSize1.s); \n"
-			"  tcData[3] = wrap2D(tc11, uTexSize1.s); \n"
+			"  tcData[0] = wrap2D(tc00, uTexSize1); \n"
+			"  tcData[3] = wrap2D(tc11, uTexSize1); \n"
 			"  tcData[1] = vec2(tcData[0].s, tcData[3].t); \n"
 			"  tcData[2] = vec2(tcData[3].s, tcData[0].t); \n"
 			"  tcData[4] = texCoord - intPart; \n"
