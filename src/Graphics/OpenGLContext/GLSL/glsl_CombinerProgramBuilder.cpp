@@ -1233,11 +1233,6 @@ public:
 						"  lowp vec4 c01 = texelFetch(tex, ivec2(tcData[1]), 0);												\\\n"
 						"  lowp vec4 c10 = texelFetch(tex, ivec2(tcData[2]), 0);												\\\n"
 						"  lowp vec4 c11 = texelFetch(tex, ivec2(tcData[3]), 0);												\\\n"
-						"  lowp vec2 texSize = vec2(textureSize(tex,0)); \\\n"
-						"  lowp vec4 c00 = texture(tex, (tcData[0] + 0.5)/texSize); \\\n"
-						"  lowp vec4 c01 = texture(tex, (tcData[1] + 0.5)/texSize); \\\n"
-						"  lowp vec4 c10 = texture(tex, (tcData[2] + 0.5)/texSize); \\\n"
-						"  lowp vec4 c11 = texture(tex, (tcData[3] + 0.5)/texSize); \\\n"
 						"  if(uEnableAlphaTest == 1){																			\\\n" // Calculate premultiplied color values
 						"    c00.rgb *= c00.a;																					\\\n"
 						"    c01.rgb *= c01.a;																					\\\n"
