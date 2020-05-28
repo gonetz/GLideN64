@@ -519,6 +519,9 @@ void TextureCache::destroy()
 
 void TextureCache::_checkCacheSize()
 {
+	if (m_maxCacheSize == 0)
+		return;
+
 	if (m_textures.size() >= m_maxCacheSize) {
 		CachedTexture& clsTex = m_textures.back();
 		gfxContext.deleteTexture(clsTex.name);
