@@ -568,34 +568,34 @@ public:
 	{
 #if 1
 		m_part =
-			"  cs1 = vec4(0.0); \n"
-			"  fd1 = 0.0;"
+			"  srcColor1 = vec4(0.0);									\n"
+			"  dstFactor1 = 0.0;										\n"
 			"  muxPM[0] = clampedColor;									\n"
 			"  muxA[0] = clampedColor.a;								\n"
-			"  muxa = MUXA(uBlendMux1[1]); \n"
-			"  muxB[0] = 1.0 - muxa;					\n"
-			"  muxb = MUXB(uBlendMux1[3]); \n"
-			"  muxp = MUXPM(uBlendMux1[0]); \n"
-			"  muxm = MUXPM(uBlendMux1[2]); \n"
-			"  fa = FDEST(uBlendMux1[0]); \n"
-			"  fb = FDEST(uBlendMux1[2]); \n"
+			"  muxa = MUXA(uBlendMux1[1]);								\n"
+			"  muxB[0] = 1.0 - muxa;									\n"
+			"  muxb = MUXB(uBlendMux1[3]);								\n"
+			"  muxp = MUXPM(uBlendMux1[0]);								\n"
+			"  muxm = MUXPM(uBlendMux1[2]);								\n"
+			"  muxaf = MUXF(uBlendMux1[0]);								\n"
+			"  muxbf = MUXF(uBlendMux1[2]);								\n"
 			"  if (uForceBlendCycle1 != 0) {							\n"
-			"    cs1 = muxp * muxa + muxm * muxb; \n"
-			"    fd1 = fa * muxa + fb * muxb; \n"
-			"    cs1 = clamp(cs1, 0.0, 1.0); \n"
-			"  } else {"
-			"    cs1 = muxp; "
-			"    fd1 = fa;"
-			"  }"
-			"  clampedColor.rgb = cs1.rgb; \n "
-			;
+			"    srcColor1 = muxp * muxa + muxm * muxb;					\n"
+			"    dstFactor1 = muxaf * muxa + muxbf * muxb;				\n"
+			"    srcColor1 = clamp(srcColor1, 0.0, 1.0);				\n"
+			"  } else {													\n"
+			"    srcColor1 = muxp;										\n"
+			"    dstFactor1 = muxaf;									\n"
+			"  }														\n"
+			;	
 		if (_glinfo.blend_func_extended) {
 			m_part +=
-				"  fragColor1 = vec4(fd1); \n"
+				"  fragColor = srcColor1;								\n"
+				"  fragColor1 = vec4(dstFactor1);						\n"
 				;
 		} else {
 			m_part +=
-				"  clampedColor.a = 1.0 - fd1;  \n"
+				"  fragColor = vec4(srcColor1.rgb, 1.0 - dstFactor1);	\n"
 				;
 		}
 #else
@@ -620,34 +620,34 @@ public:
 	{
 #if 1
 		m_part =
-			"  cs2 = vec4(0.0); \n"
-			"  fd2 = 0.0;"
-			"  muxPM[0] = cs1;							\n"
-			"  muxa = MUXA(uBlendMux2[1]); \n"
-			"  muxB[0] = 1.0 - muxa;					\n"
-			"  muxb = MUXB(uBlendMux2[3]); \n"
-			"  muxp = MUXPM(uBlendMux2[0]); \n"
-			"  muxm = MUXPM(uBlendMux2[2]); \n"
-			"  fDest[0] = fd1;				\n"
-			"  fa = FDEST(uBlendMux2[0]); \n"
-			"  fb = FDEST(uBlendMux2[2]); \n"
+			"  srcColor2 = vec4(0.0);									\n"
+			"  dstFactor2 = 0.0;										\n"
+			"  muxPM[0] = srcColor1;									\n"
+			"  muxa = MUXA(uBlendMux2[1]);								\n"
+			"  muxB[0] = 1.0 - muxa;									\n"
+			"  muxb = MUXB(uBlendMux2[3]);								\n"
+			"  muxp = MUXPM(uBlendMux2[0]);								\n"
+			"  muxm = MUXPM(uBlendMux2[2]);								\n"
+			"  muxF[0] = dstFactor1;									\n"
+			"  muxaf = MUXF(uBlendMux2[0]);								\n"
+			"  muxbf = MUXF(uBlendMux2[2]);								\n"
 			"  if (uForceBlendCycle2 != 0) {							\n"
-			"    cs2 = muxp * muxa + muxm * muxb; \n"
-			"    fd2 = fa * muxa + fb * muxb; \n"
-			"    cs2 = clamp(cs2, 0.0, 1.0); \n"
-			"  } else {"
-			"    cs2 = muxp; \n"
-			"    fd2 = fa;  \n"
-			"  }"
-			"  clampedColor.rgb = cs2.rgb; \n"
+			"    srcColor2 = muxp * muxa + muxm * muxb;					\n"
+			"    dstFactor2 = muxaf * muxa + muxbf * muxb;				\n"
+			"    srcColor2 = clamp(srcColor2, 0.0, 1.0);				\n"
+			"  } else {													\n"
+			"    srcColor2 = muxp;										\n"
+			"    dstFactor2 = muxaf;									\n"
+			"  }														\n"
 			;
 		if (_glinfo.blend_func_extended) {
 			m_part +=
-				"  fragColor1 = vec4(fd2); \n"
+				"  fragColor = srcColor2;								\n"
+				"  fragColor1 = vec4(dstFactor2);						\n"
 				;
 		} else {
 			m_part +=
-				"  clampedColor.a = 1.0 - fd2;  \n"
+				"  fragColor =  vec4(srcColor2.rgb, 1.0 - dstFactor2);	\n"
 				;
 		}
 			
@@ -1469,16 +1469,16 @@ public:
 	{
 		if (config.generalEmulation.enableLegacyBlending == 0) {
 			m_part =
-				"  #define MUXA(pos) dot(muxA, STVEC(pos))					\n"
-				"  #define MUXB(pos) dot(muxB, STVEC(pos))					\n"
-				"  #define MUXPM(pos) muxPM*(STVEC(pos))					\n"
-				"  #define FDEST(pos) dot(fDest, STVEC(pos))				\n"
+				"  #define MUXA(pos) dot(muxA, STVEC(pos))									\n"
+				"  #define MUXB(pos) dot(muxB, STVEC(pos))									\n"
+				"  #define MUXPM(pos) muxPM*(STVEC(pos))									\n"
+				"  #define MUXF(pos) dot(muxF, STVEC(pos))									\n"
 				"  lowp mat4 muxPM = mat4(vec4(0.0), vec4(0.0), uBlendColor, uFogColor);	\n"
 				"  lowp vec4 muxA = vec4(0.0, uFogColor.a, shadeColor.a, 0.0);				\n"
 				"  lowp vec4 muxB = vec4(0.0, 1.0, 1.0, 0.0);								\n"
-				"  lowp vec4 fDest = vec4(0.0, 1.0, 0.0, 0.0);"
-				"  lowp vec4 muxp, muxm, cs1, cs2; \n"
-				"  lowp float muxa, muxb, fd1, fd2, fa, fb; \n"
+				"  lowp vec4 muxF = vec4(0.0, 1.0, 0.0, 0.0);								\n"
+				"  lowp vec4 muxp, muxm, srcColor1, srcColor2;								\n"
+				"  lowp float muxa, muxb, dstFactor1, dstFactor2, muxaf, muxbf;				\n"
 			;
 		}
 	}
